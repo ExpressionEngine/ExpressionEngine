@@ -11,10 +11,20 @@
  * 
  * 
  * 2. Define a function in your controller that will act as the datasource.
- * This function should be public and independent, it will be used for async requests.
  *
- * The function should return an array of table rows. Each row is an array similar
+ * The function should return an array containing the following data:
+ *
+ * rows - an array of table rows. Each row is an array similar
  * to the normal add_row() parameter, but with a key equal to the column name.
+ *
+ * no_results - html to display if filtering results in no results
+ *
+ * Pagination settings:
+ *
+ * total_rows - number of rows without php
+ * per_page - number of rows per page
+ * *_link - link styles as per pagination
+ * full_tag_* - as per pagination
  *
  * Using names from the previous example:
  * return array(
@@ -30,15 +40,16 @@
  * 
  * If this is a filtering/pagination/sorting call, the request will stop here
  * the table will automatically be updated using the data returned from the
- * datasource.
+ * datasource. You should try to call this as soon as possible to avoid filtering
+ * delays.
  *
  * Your datasource will receive an options parameter that contains the current
- * page, filtering (form data), and sorting requirements in this format:
+ * page and sorting requirements in this format:
  * 
  * array(
  *     'page' => 2,
- *     'filters' => array('form_field' => 'value'),
- *     'sorting' => array('name' => 'asc/desc')
+ *     'sort' => array('name' => 'asc/desc'),
+ *	   'columns' => array('id' => FALSE, 'name' => TRUE)
  * );
  *
  * Otherwise this call will return your datasource array, but *without* the
@@ -67,6 +78,24 @@
  * $('table').bind('tablecreate')	// initial automatic setup
  * $('table').bind('tableupdate')	// changes (pagination/sorting/filtering)
  *
+ * If you want to filter, you will need to connect the filtering plugin. You can
+ * either give it a serializable set of form elements (form, or multiple inputs).
+ * These will automatically be observed for changes.
+ *
+ * $('table').table('set_filter', $('form'));
+ *
+ * Or you can apply filters yourself, by passing a json object:
+ *
+ * $('table').table('add_filter', {'foo': 'bar'});
+ *
+ * multiple calls to add_filter stack, set_filter overrides all
+ *
+ * You can also remove filters:
+ * $('table').table('remove_filter', 'key'/object/serializable);
+ *
+ * Or clear them:
+ * $('table').table('clear_filter');
+ *
  */
 
 /**
@@ -79,6 +108,7 @@
 class EE_Table extends CI_Table {
 
 	protected $EE;
+	protected $no_results = '';
 	protected $jq_template = FALSE;
 	protected $column_config = array();
 
@@ -107,45 +137,42 @@ class EE_Table extends CI_Table {
 	{
 		$settings = array(
 			'page'			=> 1,
-			'filters'		=> array(),		// form_field => value
-			'sorting'		=> array(),		// column_name => value
+			'sort'			=> array(),		// column_name => value
+			'columns'		=> $this->column_config
 		);
 		
 		// override settings on non-ajax load
-		// @todo @confirm @pk recursive, also tbl_ prefixed
+		// @todo @confirm @pk recursive, also tbl_ prefixed?
 		foreach (array_keys($settings) as $key)
 		{
-			if (isset($options[$key]))
+			if (isset($options['tbl_'.$key]))
 			{
-				$settings[$key] = $options[$key];
+				$settings[$key] = $options['tbl_'.$key];
+				unset($options['tbl_'.$key]);
 			}
 		}
 		
-		// override settings through GET
-		foreach (array_keys($_GET) as $key)
+		// override settings
+		if (isset($_GET['tbl_page']) && is_numeric($_GET['tbl_page']))
 		{
-			if (strncmp($key, 'tbl_', 4) == 0)
-			{
-				$settings[substr($key, 4)] = $_GET[$key];
-				unset($_GET[$key]);
-			}
+			$settings['page'] = $_GET['tbl_page'];
 		}
-		
-		// set options / override from $_GET
-		$options = array_merge($options, $_GET);
-		
-		
-		
-		if ($this->input->get('tbl_page'))
+
+		if (isset($_GET['tbl_sorting']))
 		{
-			$options['page'] = $_GET['tbl_page'];
+			$settings['sorting'] = $_GET['tbl_sorting'];
 		}
-		
+
 		
 		$data = $this->EE->$func($settings, $options);
+		$this->no_results = $data['no_results'];
+		
 		// returns PHP array (shown in js syntax for brevity):
 		/*
-			[
+		{
+			no_results: 'something',
+			total_rows: 44038,
+			rows: [
 				{key: value, key2: value2, key3: value3},
 				{key: eulav, key2: eulav2, key3: eulav3},
 			]
@@ -154,24 +181,41 @@ class EE_Table extends CI_Table {
 			key: {class:foo, data:value}
 		*/
 		
+
 		if (AJAX_REQUEST)
 		{
 			// do we need to apply a cell function?
 			if ($this->function)
 			{
-				// loop through rows array_map cells?
+				// @todo loop through rows array_map cells?
 			}
 			
 			$this->EE->javascript->send_ajax_request(array(
-				'page' => 1,
-				'rows' => $data
+				'rows'		 => $data['rows'],
+				'total_rows' => $data['total_rows']
 			));
 		}
 		
 		// make sure we add a jq template
-		$jq_template = TRUE;
-		
+		$this->jq_template = TRUE;
+				
 		// remove the key information from the row data to make it usable
+		// by the CI generate function. Unfortunately that means reordering
+		// to match our columns. Easy enough, simply overwrite the booleans.
+		foreach ($data['rows'] as &$row)
+		{
+			$row = array_values(array_merge($this->column_config, $row));
+		}
+		
+		if ( ! count($data))
+		{
+			
+			// @todo
+		}
+				
+		$data['table_html'] = $this->generate($data['rows']);
+		$data['pagination_html'] = '';
+		
 		return $data;
 	}
 	
@@ -203,7 +247,7 @@ class EE_Table extends CI_Table {
 		
 		if ( ! $this->jq_template)
 		{
-			return parent::generate();
+			return parent::generate($table_data);
 		}
 		
 		$open_bak = $this->template['table_open'];
@@ -234,7 +278,8 @@ class EE_Table extends CI_Table {
 			'columns'		=> $this->column_config,
 			'template'		=> $template,
 			'template_alt'	=> $template_alt,
-			'empty_cells'	=> $this->empty_cells
+			'empty_cells'	=> $this->empty_cells,
+			'no_results'	=> $this->no_results
 		);
 		
 		$table_config_data = 'data-table_config="'.form_prep($this->EE->javascript->generate_json($jq_config, TRUE)).'"';

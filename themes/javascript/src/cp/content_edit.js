@@ -10,6 +10,7 @@
  * @filesource
  */
 $(document).ready(function() {
+
 	$(".paginationLinks .first").hide();
 	$(".paginationLinks .previous").hide();
 	
@@ -148,6 +149,7 @@ $(document).ready(function() {
 		}
 	});
 
+/*
 	var oCache = {
 		iCacheLower: -1
 	};
@@ -171,7 +173,7 @@ $(document).ready(function() {
 	}
 
 	function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
-		var iPipe 			= +EE.edit.pipe,  /* Ajust the pipe size */
+		var iPipe 			= +EE.edit.pipe,  /* Ajust the pipe size * /
 			bNeedServer 	= false,
 			sEcho 			= fnGetKey(aoData, "sEcho"),
 			iRequestStart 	= fnGetKey(aoData, "iDisplayStart"),
@@ -216,12 +218,12 @@ $(document).ready(function() {
 
 		oCache.iDisplayStart = iRequestStart;
 
-		/* outside pipeline? */
+		/* outside pipeline? * /
 		if ( oCache.iCacheLower < 0 || iRequestStart < oCache.iCacheLower || iRequestEnd > oCache.iCacheUpper ) {
 			bNeedServer = true;
 		}
 
-		/* sorting etc changed? */
+		/* sorting etc changed? * /
 		if ( oCache.lastRequest && !bNeedServer ) {
 			for( var i=0, iLen=aoData.length ; i<iLen ; i++ ) {
 				if ( aoData[i].name != "iDisplayStart" && aoData[i].name != "iDisplayLength" && aoData[i].name != "sEcho" ) {
@@ -233,7 +235,7 @@ $(document).ready(function() {
 			}
 		}
 
-		/* Store the request for checking next time around */
+		/* Store the request for checking next time around * /
 		oCache.lastRequest = aoData.slice();
 
 		if ( bNeedServer ) {
@@ -261,7 +263,7 @@ $(document).ready(function() {
 		 			);
 
 			$.getJSON( sSource, aoData, function (json) { 
-				/* Callback processing */
+				/* Callback processing * /
 				oCache.lastJson = jQuery.extend(true, {}, json);
 
 				if ( oCache.iCacheLower != oCache.iDisplayStart ) {
@@ -273,7 +275,7 @@ $(document).ready(function() {
 			});
 		} else {
 			json = jQuery.extend(true, {}, oCache.lastJson);
-			json.sEcho = sEcho; /* Update the echo for each response */
+			json.sEcho = sEcho; /* Update the echo for each response * /
 			json.aaData.splice( 0, iRequestStart-oCache.iCacheLower );
 			json.aaData.splice( iRequestLength, json.aaData.length );
 			fnCallback(json);
@@ -315,7 +317,7 @@ $(document).ready(function() {
 			});
 
 			$("#keywords").keyup( function () {
-			/* Filter on the column (the index) of this element */
+			/* Filter on the column (the index) of this element * /
 				oTable.fnDraw();
 			});
 
@@ -338,7 +340,7 @@ $(document).ready(function() {
 			$("select#f_perpage").change(function () {
 				oTable.fnDraw();
 			});			
-	
+	*/
 });
 
 /*
