@@ -1,4 +1,107 @@
 (function($) {
+	
+function Cache(limit) {
+	this.limit = limit;
+	this.cache = [];	 // [[page, data], [page2, data2]]
+	this.cache_map = {}; // stores page_# -> index (this.cache) for faster access
+}
+
+Cache.prototype = {
+	set: function(page, data) {
+		var el, len;
+		
+		// updating existing?
+		if (page in this.cache_map) {
+			// detach
+			el = this.cache.splice(this.cache_map[page], 1);
+			
+			// update
+			el[1] = data;
+			
+			// push on top of the queue (newest element)
+			len = this.cache.push(el);
+			this.cache_map[page] = len - 1;
+
+			return this;
+		}
+		
+		// evict
+		if (this.cache.length >= limit) {
+			el = this.cache.shift();
+			delete this.cache_map[ el[0] ];
+			delete el;
+		}
+		
+		len = this.cache.push( [page, data] );
+		this.cache_map[page] = len - 1;
+		
+		return this;
+	},
+	
+	get: function(page) {
+		if ( ! page in this.cache_map) {
+			return null;
+		}
+		
+		return this.cache[ this.cache_map[page] ][1];
+	},
+	
+	clear: function() {
+		this.cache = [];
+		this.cache_map = {};
+	}
+}
+
+Cache.prototype = {
+	set: function(page, data) {
+		var el, len;
+		
+		// updating existing?
+		if (page in this.cache_map) {
+			// detach
+			el = this.cache.splice(this.cache_map[page], 1);
+			
+			// update
+			el[1] = data;
+			
+			// push on top of the queue (newest element)
+			len = this.cache.push(el);
+			this.cache_map[page] = len - 1;
+
+			return this;
+		}
+		
+		// evict
+		if (this.cache.length >= limit) {
+			el = this.cache.shift();
+			delete this.cache_map[ el[0] ];
+			delete el;
+		}
+		
+		len = this.cache.push( [page, data] );
+		this.cache_map[page] = len - 1;
+		
+		return this;
+	},
+	
+	get: function(page) {
+		if ( ! page in this.cache_map) {
+			return null;
+		}
+		
+		return this.cache[ this.cache_map[page] ][1];
+	},
+	
+	clear: function() {
+		this.cache = [];
+		this.cache_map = {};
+	}
+}
+
+
+
+
+
 
 $.widget('ee.table', {
 	options: {
@@ -12,20 +115,29 @@ $.widget('ee.table', {
 		
 		cache_limit: 5,
 		
+		page: 1,
+		filters: [],
+		sorting: [],
+		
 		// events as callbacks
 		create: null,
 		update: null
 	},
 	
 	_create: function() {
+		this.forms = $();
+		
+		console.log(self.options);
+		
 		var self = this,
 			options = self.options;
 		
-		self.cache = [];
-		self.cache_map = {};	// stores page_# -> cache_idx for faster and easier evicting
+		self.page = options.page;
+		self.filters = options.filters;
+		self.sorting = options.sorting;
 		
-		self.form_cache = {};	// figure out if form data changed on submit | @todo need it?
-		
+		self.cache = new Cache(options.cache_limit);
+				
 		// @todo @pk ideas -------------
 		
 		// bind to table headers
@@ -53,8 +165,8 @@ $.widget('ee.table', {
 	},
 	
 	update: function(data) {
-		data._page // @todo update pagination
-		self.template.render(data._rows); // @todo fix up syntax
+		// data._page // @todo update pagination
+		// self.template.render(data._rows); // @todo fix up syntax
 		
 		
 		self._trigger('update', null, self._ui(/* @todo args */));
@@ -67,6 +179,35 @@ $.widget('ee.table', {
 		*/
 	},
 	
+	set_page: function(page) {
+		var data = this.cache.get(page),
+			self = this;
+		
+		if ( ! data) {
+			this._async(function() {
+				self.page = page;
+			});
+		} else {
+			self.page = page;
+		}
+		
+		return this;
+	},
+	
+	set_filters: function() {
+		// self.filters = // data;
+	},
+	clear_filters: function() {
+		// if form connected, reset content
+	},
+	
+	add_filter: function() {
+		
+	},
+	remove_filter: function() {
+		
+	},
+	
 	_filter: function() {
 		// @todo pseudo code
 		if (this.name in columns) {
@@ -76,7 +217,10 @@ $.widget('ee.table', {
 		this._async(); // @todo fix scope here and for called func: this == element
 	},
 	
-	_async: function() {
+	_async: function(callback) {
+		
+		// show progress indicator
+		
 		
 		// @todo if they want to remap? not sure how to handle columns from php end
 		// @todo more like not sure where to draw the line, actually
@@ -109,8 +253,13 @@ $('table').table({
 
 // Idea
 // Only works if a template is available.
+/*
 $.extend($.ee.table, {
-	async: function(url, form /* or form elements */) {
+	cache: function(cache_limit) {
+		
+	}
+	
+	async: function(url, form /* or form elements * /) {
 		// extend to add async filtering/sorting
 		// by default just do sorting, filtering, and pagination if provided
 		// pushes off this rather complex logic. I like it.
@@ -118,12 +267,16 @@ $.extend($.ee.table, {
 	
 	paginate: function(url) {}
 });
-
-/* PHP ????:
-$this->table->async(function, [$paginate=TRUE/false]);
-// if ajax_request: automatically call func and return at this point?
-// if not: trigger template creation, trigger additional data, pagination template if desired (add class to pagination elements)
 */
 
-
 })(jQuery);
+
+
+$('table').each(function() {
+	var el;
+	
+	if (this['data-table_config']) {
+		el = $(this);
+		el.table(el.data('table_config'));
+	}
+})

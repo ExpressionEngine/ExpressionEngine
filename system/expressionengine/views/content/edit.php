@@ -23,7 +23,7 @@ if ($EE_view_disable !== TRUE)
 				<legend><?=lang('search_entries')?></legend>
 			<?php $this->load->view('_shared/message');?>
 
-			<?=form_open($search_form, array('name'=>'filterform', 'id'=>'filterform'), $search_form_hidden)?>
+			<?=form_open($search_form, array('name' => 'filterform', 'id' => 'filterform'))?>
 
 				<div class="group">
 					<?=form_dropdown('channel_id', $channel_select_options, $channel_selected, 'id="f_channel_id"').NBS.NBS?>
@@ -68,35 +68,21 @@ if ($EE_view_disable !== TRUE)
 			</fieldset>
 			
 			</div> <!-- filterMenu -->
+			
+			<?=form_open($entries_form, array('id' => 'entries_form'), $form_hidden)?>
 
-			<?php if ($total_count == 0):?>
-				<div class="tableFooter">
-					<p class="notice"><?=lang('no_entries_matching_that_criteria')?></p>
+				<?=$table_html?>
+
+				<div class="tableSubmit">
+					<?=form_submit('submit', lang('submit'), 'class="submit"').NBS.NBS?>
+					<?php if (count($action_options) > 0):?>
+					<?=form_dropdown('action', $action_options).NBS.NBS?>
+					<?php endif;?>
 				</div>
-			<?php else:?>
 
-				<?=form_open($entries_form, array('id' => 'entries_form'), $form_hidden)?>
+				<span class="pagination" id="filter_pagination"><?=$pagination_html?></span>
 
-				<?php
-					$this->table->set_template($cp_table_template);
-					$this->table->set_heading($table_headings);
-
-					echo $this->table->generate($entries);
-				?>
-
-			<div class="tableSubmit">
-				<?=form_submit('submit', lang('submit'), 'class="submit"').NBS.NBS?>
-				<?php if (count($action_options) > 0):?>
-				<?=form_dropdown('action', $action_options).NBS.NBS?>
-				<?php endif;?>
-			</div>
-
-			<span class="js_hide"><?=$pagination?></span>
-			<span class="pagination" id="filter_pagination"></span>
-
-			<?php endif; /* if $total_count > 0*/?>
-
-		<?=form_close()?>
+			<?=form_close()?>
 		</div>
 	</div> <!-- contents -->
 </div> <!-- mainContent -->
