@@ -990,12 +990,40 @@ class Safecracker_lib
 			
 			//$this->head .= $script;
 		//}
-		
+
 		//add datepicker class
 		if ($this->datepicker)
 		{
 			$this->head .= '<style type="text/css">.hasDatepicker{background:#fff url('.$this->EE->config->item('theme_folder_url').'cp_themes/default/images/calendar_bg.gif) no-repeat 98% 2px;background-repeat:no-repeat;background-position:99%;}</style>';
-			$this->head .= '<script type="text/javascript">$.createDatepickerTime=function(){a=new Date();b=a.getHours();c=a.getMinutes();if(c<10){c="0"+c;}if(b>12){b-=12;d=" PM";}else if(b==12){d=" PM";}else{d=" AM";}EE.date_obj_time=" \'"+b+":"+c+d+"\'";};$.createDatepickerTime();</script>';
+			$this->head .= trim('
+				<script type="text/javascript">
+					$.createDatepickerTime=function(){
+						date = new Date();
+						hours = date.getHours();
+						minutes = date.getMinutes();
+						suffix = "";
+						format = "' . $this->EE->config->item('time_format') . '";
+					
+						if (minutes < 10) {
+							minutes = "0" + minutes;
+						}
+					
+						if (format == "us") {
+							if (hours > 12) {
+								hours -= 12;
+								suffix = " PM";
+							} else if (hours == 12) {
+								suffix = " PM";
+							} else {
+								suffix = " AM";
+							}
+						}
+					
+						return " \'" + hours + ":" + minutes + suffix + "\'";
+					}
+				
+					EE.date_obj_time = $.createDatepickerTime();
+				</script>');
 		}
 		
 		//make head appear by default
