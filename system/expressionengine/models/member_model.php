@@ -1349,7 +1349,7 @@ class Member_model extends CI_Model {
 	function can_access_module($module, $group_id = '')
 	{	
 		// Superadmin sees all		
-		if ($this->session->userdata('group_id') === 1)
+		if ($this->session->userdata('group_id') == 1)
 		{
 			return TRUE;
 		}
