@@ -1274,7 +1274,7 @@ class Comment_mcp {
 		if ($this->EE->extensions->active_hook('update_comment_additional'))
 		{
 
-			$qry = $this->EE->db->where_in('comment_id', $comment_ids)
+			$qry = $this->EE->db->where_in('comment_id', $comments)
 								->get('comments');
 			
 			foreach ($qry->result_array() as $row)
