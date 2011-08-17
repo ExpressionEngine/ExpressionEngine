@@ -290,7 +290,7 @@ class Comment {
 			}
 
 			$this->EE->db->from('channel_titles');
-			//$this->EE->db->from('channels');
+
 			$query = $this->EE->db->get();
 
 			// Bad ID?  See ya!
@@ -440,7 +440,7 @@ class Comment {
 				// not based on an entry id or url title
 				// in the URL, we can make the query much 
 				// more efficient and save some work.
-				$total_rows = $this->EE->db->count_all_results('comments');
+				$total_rows = $this->EE->db->count_all_results();
 			}
 			
 			$this_sort = ($random) ? 'random' : strtolower($sort);
