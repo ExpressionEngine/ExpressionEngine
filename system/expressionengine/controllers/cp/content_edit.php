@@ -53,6 +53,10 @@ class Content_edit extends CI_Controller {
 	 */
 	function _pk_edit_ajax($tbl_settings, $defaults)
 	{
+		// $this->output->enable_profiler(FALSE);
+		
+		
+		
 		// Get filter information
 		// ----------------------------------------------------------------
 		
@@ -109,7 +113,9 @@ class Content_edit extends CI_Controller {
 			
 			'search_keywords'	=> $search_keywords
 		);
-				
+		
+		$channels = $defaults['channels'];
+		
 		$order = $tbl_settings['sort'];
 		$columns = $tbl_settings['columns'];
 		
@@ -121,22 +127,215 @@ class Content_edit extends CI_Controller {
 		
 		$filter_url = $this->create_return_filter($filter_data);
 		
+		
+		// Gather up ids for a single quick query down the line
+		$entry_ids = array();
+		foreach ($rows as $row)
+		{
+			$entry_ids[] = $row['entry_id'];
+		}
+		
+		
+		
+		// Load the site's templates
+		// ----------------------------------------------------------------
+
+		$templates = array();
+
+		$tquery = $this->db->query("SELECT exp_template_groups.group_name, exp_templates.template_name, exp_templates.template_id
+							FROM exp_template_groups, exp_templates
+							WHERE exp_template_groups.group_id = exp_templates.group_id
+							AND exp_templates.site_id = '".$this->db->escape_str($this->config->item('site_id'))."'");
+
+		if ($tquery->num_rows() > 0)
+		{
+			foreach ($tquery->result_array() as $row)
+			{
+				$templates[$row['template_id']] = $row['group_name'].'/'.$row['template_name'];
+			}
+		}
+		
+		
+		// Comment count
+		// ----------------------------------------------------------------
+		
+		$show_link = TRUE;
+		$comment_counts = array();
+		
+		// @todo gracefully handle no channel results
+		$id_in = implode(',', $entry_ids);
+		$comment_qry = $this->db->query("SELECT entry_id, COUNT(*) as count FROM exp_comments WHERE entry_id IN($id_in) GROUP BY entry_id");
+		
+		foreach ($comment_qry->result() as $row)
+		{
+			$comment_counts[$row->entry_id] = $row->count;
+		}
+		
+		
+		// Date formatting
+		$date_fmt = ($this->session->userdata('time_format') != '') ? $this->session->userdata('time_format') : $this->config->item('time_format');
+		
+		$datestr = '%m/%d/%y %h:%i %a';
+		
+		if ($date_fmt != 'us')
+		{
+			$datestr = '%Y-%m-%d %H:%i';
+		}
+				
+		
+		// Autosave - Grab all autosaved entries
+		// ----------------------------------------------------------------
+		
+		$this->prune_autosave();
+		$this->db->select('entry_id, original_entry_id, channel_id, title, author_id, status, entry_date, dst_enabled, comment_total');
+		$autosave = $this->db->get('channel_entries_autosave');
+		
+		$autosave_array = array();
+		
+		foreach ($autosave->result() as $entry)
+		{
+			if ($entry->original_entry_id)
+			{
+				$autosave_array[] = $entry->original_entry_id;
+			}
+		}		
+		
+		
+		// Status Highlight Colors
+		// ----------------------------------------------------------------
+
+		$cql = "SELECT exp_channels.channel_id, exp_channels.channel_name, exp_statuses.status, exp_statuses.highlight
+				 FROM  exp_channels, exp_statuses, exp_status_groups
+				 WHERE exp_status_groups.group_id = exp_channels.status_group
+				 AND   exp_status_groups.group_id = exp_statuses.group_id
+				 AND	exp_statuses.highlight != ''
+				 AND	exp_status_groups.site_id = '".$this->db->escape_str($this->config->item('site_id'))."' ";
+		
+		
+		// Limit to channels assigned to user
+		$cql .= " AND exp_channels.channel_id IN (";
+
+		foreach ($channels as $id => $info)
+		{
+			$cql .= "'".$id."',";
+		}
+		
+		$cql = substr($cql, 0, -1).')';
+		
+		$result = $this->db->query($cql);
+
+		$c_array = array();
+
+		if ($result->num_rows() > 0)
+		{			
+			foreach ($result->result_array() as $rez)
+			{			
+				$c_array[$rez['channel_id'].'_'.$rez['status']] = str_replace('#', '', $rez['highlight']);
+			}
+		}
+		
+		$colors = '';
+
+		//  Fetch Color Library
+		if (file_exists(APPPATH.'config/colors.php'))
+		{
+			include (APPPATH.'config/colors.php');
+		}
+		
+		
+		// Generate row data
+		// ----------------------------------------------------------------
+				
 		foreach ($rows as &$row)
 		{
+			$row['title'] = anchor(BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.$row['channel_id'].AMP.'entry_id='.$row['entry_id'].$filter_url, $row['title']);
+			$row['title'] .= (in_array($row['entry_id'], $autosave_array)) ? NBS.required() : '';
+			
 			$row['status'] = $row['status']; /* @todo grab name and color */
-			$row['view'] = '---'; /* check live_look_template and link */
-			$row['channel_name'] = 'channel_'.$row['channel_id']; /* grab from channel info */
-			$row['entry_date'] = $row['entry_date']; /* localize and human readable */
-			$row['_check'] = '<input type="checkbox" name="f" value="k" />'; /* figure this out */
+			$row['view'] = '---';
+			$row['channel_name'] = $channels[$row['channel_id']]->channel_title;
+			$row['entry_date'] = $this->localize->decode_date($datestr, $row['entry_date'], TRUE);
+			$row['_check'] = form_checkbox('toggle[]', $row['entry_id'], '', ' class="toggle" id="delete_box_'.$row['entry_id'].'"');
+
+			
+			// screen name email link
+			$name = ($row['screen_name'] != '') ? $row['screen_name'] : $row['username'];
+			$row['screen_name'] = mailto($row['email'], $name);
+			
+			
+			// live look template
+			$llt = $row['live_look_template'];
+			if ($llt && isset($templates[$llt]))
+			{
+				$qm = ($this->config->item('force_query_string') == 'y') ? '' : '?';
+				$url = $this->functions->create_url($templates[$row['live_look_template']].'/'.$row['entry_id']);
+				$row['view'] = anchor($this->functions->fetch_site_index().$qm.'URL='.$url, lang('view'));
+			}
+			
+			
+			// Status
+			$color_info = '';
+			$status_name = ($row['status'] == 'open' OR $row['status'] == 'closed') ? lang($row['status']) : $row['status'];
+
+			if (isset($c_array[$row['channel_id'].'_'.$row['status']]) AND $c_array[$row['channel_id'].'_'.$row['status']] != '')
+			{			
+				$color = $c_array[$row['channel_id'].'_'.$row['status']];
+				$prefix = (is_array($colors) AND ! array_key_exists(strtolower($color), $colors)) ? '#' : '';
+
+				// There are custom colours, override the class above
+				$color_info = 'style="color:'.$prefix.$color.';"';
+			}
+
+			$row['status'] = '<span class="status_'.$row['status'].'"'.$color_info.'>'.$status_name.'</span>';
+			
+			
+			// comment_total link
+			if ( isset($this->installed_modules['comment']))
+			{
+				$show_link = TRUE;
+				
+				if ($row['author_id'] == $this->session->userdata('member_id'))
+				{
+					// do not move these to the new allowed_group style - they are ANDs not ORs
+					if ( ! $this->cp->allowed_group('can_edit_own_comments') AND 
+						 ! $this->cp->allowed_group('can_delete_own_comments') AND 
+						 ! $this->cp->allowed_group('can_moderate_comments'))
+					{
+						$show_link = FALSE;
+					}
+				}
+				else
+				{
+					if ( ! $this->cp->allowed_group('can_edit_all_comments') AND 
+						 ! $this->cp->allowed_group('can_delete_all_comments') AND 
+						 ! $this->cp->allowed_group('can_moderate_comments'))
+					{
+						$show_link = FALSE;
+					}
+				}
+				
+				if ($show_link)
+				{
+					$comment_count = isset($comment_counts[$row['entry_id']]) ? $comment_counts[$row['entry_id']] : 0;
+					$view_url = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=comment'.AMP.'method=index'.AMP.'entry_id='.$row['entry_id'];
+					$row['comment_total'] = '<div class="lightLinks">('.$comment_count.')'.NBS.anchor($view_url, lang('view')).'</div>';
+				}
+				else
+				{
+					$row['comment_total'] = '<div class="lightLinks">--</div>';
+				}
+			}
 			
 			$row = array_intersect_key($row, $columns);
 		}
 		
 		return array(
-			'rows'			=> $rows,
-			'total_rows'	=> $total,
-			'no_results'	=> lang('no_entries_matching_that_criteria'),
-			'filter_data'	=> $filter_data
+			'rows'				=> $rows,
+			'total_rows'		=> $total,
+			'no_results'		=> lang('no_entries_matching_that_criteria'),
+			'filter_data'		=> $filter_data,
+			
+			'autosave_array'	=> $autosave_array
 		);
 	}
 
@@ -149,7 +348,6 @@ class Content_edit extends CI_Controller {
 	 */	
 	public function index()
 	{
-		
 		// @todo use the cp version - figure out how to best do that (func in cp? move to table?)
 		$cp_table_template = array(
 				'table_open'		=> '<table class="mainTable" border="0" cellspacing="0" cellpadding="0">',
@@ -172,6 +370,28 @@ class Content_edit extends CI_Controller {
 			show_error(lang('no_channels'));
 		}
 		
+		
+		
+		// Fetch channels
+		// ----------------------------------------------------------------
+		
+		$where = array();
+		$fields = array('channel_title', 'channel_id', 'cat_group');
+
+		if ($this->session->userdata['group_id'] != 1)
+		{
+			$where[] = array('channel_id' => $allowed_channels);
+		}
+		
+		$query = $this->channel_model->get_channels($this->config->item('site_id'), $fields, $where);
+		
+		$channels = array();
+		
+		foreach($query->result() as $c_row)
+		{
+			$channels[$c_row->channel_id] = $c_row;
+		}
+
 		
 		// Table
 		// ----------------------------------------------------------------
@@ -216,6 +436,7 @@ class Content_edit extends CI_Controller {
 		
 		$defaults = array(
 			'perpage'	=> 50,
+			'channels'	=> $channels,
 			'tbl_sort'	=> array('entry_date' => 'asc')
 		);
 		
@@ -259,48 +480,37 @@ class Content_edit extends CI_Controller {
 		
 		// Channel selection pull-down menu
 		// ----------------------------------------------------------------
-		
+
+		$c_row = FALSE;
 		$cat_group = '';
-
-
-		$where = array();
-		$fields = array('channel_title', 'channel_id', 'cat_group');
-
-		if ($this->session->userdata['group_id'] != 1)
+		$channel_id = $this->input->get_post('channel_id');
+		
+		if (count($channels) == 1)
 		{
-			$where[] = array('channel_id' => $allowed_channels);
+			$c_row = current($channels);
+		}
+		elseif (isset($channels[$filter_data['channel_id']]))
+		{
+			$c_row = $channels[$filter_data['channel_id']];
 		}
 		
-		$query = $this->channel_model->get_channels($this->config->item('site_id'), $fields, $where);
-		
-		if ($query->num_rows() == 1)
+		if ($c_row)
 		{
-			$channel_id = $query->row('channel_id');
-			$cat_group = $query->row('cat_group');
-		}
-		elseif ($filter_data['channel_id'] != '')
-		{
-			foreach($query->result_array() as $row)
-			{
-				if ($row['channel_id'] == $filter_data['channel_id'])
-				{
-					$channel_id = $row['channel_id'];
-					$cat_group = $row['cat_group'];
-				}
-			}
+			$channel_id = $c_row->channel_id;
+			$cat_group = $c_row->cat_group;
 		}
 
 		$vars['channel_selected'] = $this->input->get_post('channel_id');
 		$vars['channel_select_options'] = array('null' => lang('filter_by_channel'));
 
-		if ($query->num_rows() > 1)
+		if (count($channels) > 1)
 		{
 			$vars['channel_select_options']['all'] = lang('all');
 		}
 
-		foreach ($query->result_array() as $row)
+		foreach ($channels as $id => $row)
 		{
-			$vars['channel_select_options'][$row['channel_id']] = $row['channel_title'];
+			$vars['channel_select_options'][$id] = $row->channel_title;
 		}
 		
 		
@@ -453,41 +663,6 @@ class Content_edit extends CI_Controller {
 		$vars['autosave_show'] = FALSE;
 		
 		
-		
-		// Status Highlight Colors
-		// ----------------------------------------------------------------
-
-		$cql = "SELECT exp_channels.channel_id, exp_channels.channel_name, exp_statuses.status, exp_statuses.highlight
-				 FROM  exp_channels, exp_statuses, exp_status_groups
-				 WHERE exp_status_groups.group_id = exp_channels.status_group
-				 AND   exp_status_groups.group_id = exp_statuses.group_id
-				 AND	exp_statuses.highlight != ''
-				 AND	exp_status_groups.site_id = '".$this->db->escape_str($this->config->item('site_id'))."' ";
-		
-		
-		// Limit to channels assigned to user
-		$cql .= " AND exp_channels.channel_id IN (";
-
-		foreach ($allowed_channels as $val)
-		{
-			$cql .= "'".$val."',";
-		}
-		
-		$cql = substr($cql, 0, -1).')';
-		
-		$result = $this->db->query($cql);
-
-		$c_array = array();
-
-		if ($result->num_rows() > 0)
-		{			
-			foreach ($result->result_array() as $rez)
-			{			
-				$c_array[$rez['channel_id'].'_'.$rez['status']] = str_replace('#', '', $rez['highlight']);
-			}
-		}
-		
-		
 		// Action Options!	@todo what is toggle?
 		// ----------------------------------------------------------------
 		
@@ -522,36 +697,25 @@ class Content_edit extends CI_Controller {
 		$pageurl = BASE.AMP.'C=content_edit';
 		$vars['heading'] = 'edit_channel_entries';
 		
+		
 		$vars['form_hidden']	= array();
 		$vars['search_form']	= 'C=content_edit';
 		$vars['entries_form']	= 'C=content_edit'.AMP.'M=multi_edit_form';
 		
 		$this->cp->set_variable('cp_page_title', lang('edit'));
+		
 		$this->cp->add_js_script(array(
 			'ui'		=> 'datepicker',
 			'file'		=> 'cp/content_edit',
 			'plugin'	=> array('dataTables', 'ee_table')
 		));
 
+		$this->javascript->set_global('autosave_map', $vars['autosave_array']);
 		$this->javascript->compile();
 		$this->load->view('content/edit', $vars);
-		return;
-		
-		
-		
-
-		
-	//	$this->load->helper(array('form', 'text', 'url', 'snippets', 'search'));
 
 
-
-
-		
-
-
-
-
-		/* @todo
+		/* @todo comment url redirect
 		// If we're filtering using ajax, we redirect comment only searches
 		// So- pass along the filter in the url
 		if (isset($this->installed_modules['comment']))
@@ -563,273 +727,6 @@ class Content_edit extends CI_Controller {
 		}
 		*/
 		/*
-		$table_columns = (isset($this->installed_modules['comment'])) ? 9 : 8;
-
-		$this->javascript->set_global(array(
-			'edit.pipe' 		=> $this->pipe_length,
-			'edit.perPage'		=> $perpage,
-			'edit.themeUrl'		=> $this->cp->cp_theme_url,
-			'edit.tableColumns'	=> $table_columns,
-			'lang.noEntries'	=> lang('no_entries_matching_that_criteria'),
-			'lang.selection_required' => lang('selection_required')
-		));
-		*/
-		
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-		
-
-
-
-
-		
-		// $filter = $this->create_return_filter($filter_data);
-
-
-		// Get the current row number and add the LIMIT clause to the SQL query
-/*
-		if ( ! $rownum = $this->input->get_post('rownum'))
-		{
-			$rownum = 0;
-		}
-		
-		$filter_data['rownum'] = $rownum;
-		$filter_data['perpage'] = $perpage;
-
-		//	 Are there results?
-		$filtered_entries = $this->search_model->get_filtered_entries($filter_data);
-
-		// No result?  Show the "no results" message
-		
-		$vars['autosave_show'] = FALSE;
-
-		$vars['total_count'] = $filtered_entries['total_count'];
-		$pageurl .= $filtered_entries['pageurl'];
-
-		if ($vars['total_count'] == 0)
-		{
-			$this->javascript->compile();
-			$vars['heading'] = 'edit_channel_entries';
-			$vars['search_form_hidden']  = array();
-			$this->load->view('content/edit', $vars);
-			return; 
-		}
-
-		$pageurl .= AMP.'perpage='.$perpage;
-		$vars['form_hidden']['pageurl'] = base64_encode($pageurl); // for pagination
-
-		// Full SQL query results
-
-		$query_results =  $filtered_entries['results'];
-*/
-
-		// information for entries table
-		
-		
-
-		// load the site's templates
-		$templates = array();
-		
-		$tquery = $this->db->query("SELECT exp_template_groups.group_name, exp_templates.template_name, exp_templates.template_id
-							FROM exp_template_groups, exp_templates
-							WHERE exp_template_groups.group_id = exp_templates.group_id
-							AND exp_templates.site_id = '".$this->db->escape_str($this->config->item('site_id'))."'");
-
-		if ($tquery->num_rows() > 0)
-		{
-			foreach ($tquery->result_array() as $row)
-			{
-				$templates[$row['template_id']] = $row['group_name'].'/'.$row['template_name'];
-			}
-		}
-
-		// Grab all autosaved entries
-		$this->prune_autosave();
-		$this->db->select('entry_id, original_entry_id, channel_id, title, author_id, status, entry_date, dst_enabled, comment_total');
-		$autosave = $this->db->get('channel_entries_autosave');
-		
-		$autosave_array = array();
-		
-		foreach ($autosave->result() as $entry)
-		{
-			if ($entry->original_entry_id)
-			{
-				$autosave_array[] = $entry->original_entry_id;
-			}
-		}
-
-		$vars['autosave_show'] = ($autosave->num_rows() > 0) ? TRUE : FALSE;
-
-		// Loop through the main query result and set up data structure for table
-
-		$vars['entries'] = array();
-		
-		$comment_totals = array();
-
-		$i = 0;
-			
-		$colors = '';
-
-		//  Fetch Color Library - We use this to assist with our status colors
-		if (file_exists(APPPATH.'config/colors.php'))
-		{
-			include (APPPATH.'config/colors.php');
-		}
-
-		foreach($query_results as $row)
-		{
-			// Entry ID number
-			$id_column = $i++;
-			
-			if ( ! isset($row['original_entry_id']))
-			{
-				$vars['entries'][$id_column][] = $row['entry_id'];
-			}
-			elseif ($row['original_entry_id'] == 0)
-			{
-				$row['entry_id'] = 0;
-				$vars['entries'][$id_column][] = $row['original_entry_id'];
-			}
-
-			// Channel entry title (view entry)			
-			$output = anchor(BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.$row['channel_id'].AMP.'entry_id='.$row['entry_id'].$filter, $row['title']);
-			
-			$output .= isset($autosave_array[$row['entry_id']]) ? NBS.required() : '';
-			$vars['entries'][$id_column][] = $output;
-
-			// "View"
-			if ($row['live_look_template'] != 0 && isset($templates[$row['live_look_template']]))
-			{
-				$qm = ($this->config->item('force_query_string') == 'y') ? '' : '?';
-
-				$url = $this->functions->create_url($templates[$row['live_look_template']].'/'.$id_column);
-
-				$view_link = anchor($this->functions->fetch_site_index().QUERY_MARKER.'URL='.$url,
-									lang('view'));
-			}
-			else
-			{
-					$view_link = '--';
-			}
-
-			$vars['entries'][$id_column][] = $view_link;
-
-
-			// Comment count
-			$show_link = TRUE;
-
-			if ($row['author_id'] == $this->session->userdata('member_id'))
-			{
-				// do not move these to the new allowed_group style - they are ANDs not ORs
-				if ( ! $this->cp->allowed_group('can_edit_own_comments') AND 
-					 ! $this->cp->allowed_group('can_delete_own_comments') AND 
-					 ! $this->cp->allowed_group('can_moderate_comments'))
-				{
-					$show_link = FALSE;
-				}
-			}
-			else
-			{
-				if ( ! $this->cp->allowed_group('can_edit_all_comments') AND 
-					 ! $this->cp->allowed_group('can_delete_all_comments') AND 
-					 ! $this->cp->allowed_group('can_moderate_comments'))
-				{
-					$show_link = FALSE;
-				}
-			}
-			
-			if (isset($this->cp->installed_modules['comment']))
-			{
-				$view_url = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=comment	'.AMP.'method=index'.AMP.'entry_id='.$id_column;
-				
-				$view_link = ($show_link === FALSE) ? '<div class="lightLinks">--</div>' : 
-					'<div class="lightLinks">(0)'.NBS.anchor($view_url, lang('view')).'</div>';
-				
-				$vars['entries'][$id_column][] = $view_link;
-
-				// Setup an array of entry IDs here so we can do an aggregate query to
-				// get an accurate count of total comments for each entry.
-				$comment_totals[] = $id_column;
-
-			}			
-			
-			
-			// Username
-			$name = ($row['screen_name'] != '') ? $row['screen_name'] : $row['username'];
-			$vars['entries'][$id_column][] = mailto($row['email'], $name);
-
-			// Date
-			$date_fmt = ($this->session->userdata('time_format') != '') ? $this->session->userdata('time_format') : $this->config->item('time_format');
-
-			if ($date_fmt == 'us')
-			{
-				$datestr = '%m/%d/%y %h:%i %a';
-			}
-			else
-			{
-				$datestr = '%Y-%m-%d %H:%i';
-			}
-
-			$vars['entries'][$id_column][] = $this->localize->decode_date($datestr, $row['entry_date'], TRUE);
-
-			// Channel
-	//		$vars['entries'][$id_column][] = (isset($w_array[$row['channel_id']])) ? '<div class="smallNoWrap">'. $w_array[$row['channel_id']].'</div>' : '';
-
-			// Status
-			$status_name = ($row['status'] == 'open' OR $row['status'] == 'closed') ? lang($row['status']) : $row['status'];
-
-			$color_info = '';
-
-			if (isset($c_array[$row['channel_id'].'_'.$row['status']]) AND $c_array[$row['channel_id'].'_'.$row['status']] != '')
-			{			
-				$color = $c_array[$row['channel_id'].'_'.$row['status']];
-				$prefix = (is_array($colors) AND ! array_key_exists(strtolower($color), $colors)) ? '#' : '';
-
-				// There are custom colours, override the class above
-				$color_info = 'style="color:'.$prefix.$color.';"';
-			}
-
-			$vars['entries'][$id_column][] = '<span class="status_'.$row['status'].'"'.$color_info.'>'.$status_name.'</span>';
-
-			// Delete checkbox
-			$vars['entries'][$id_column][] = form_checkbox('toggle[]', $id_column, '', ' class="toggle" id="delete_box_'.$id_column.'"');
-		
-		}
-
-		if (isset($this->cp->installed_modules['comment']))
-		{
-			// Get the total number of comments for each entry
-			$this->db->select('comment_id, entry_id, channel_id, COUNT(*) as count');
-			$this->db->where_in('entry_id', $comment_totals);
-			$this->db->group_by('entry_id');
-			$comment_query = $this->db->get('comments');
-
-			foreach ($comment_query->result() as $row)
-			{
-				if ($show_link !== FALSE)
-				{
-					$view_url = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=comment'.AMP.'method=index'.AMP.'entry_id='.$row->entry_id;
-				}
-					
-				$view_link = ($show_link === FALSE) ? '<div class="lightLinks">--</div>' : 
-				'<div class="lightLinks">('.$row->count.')'.NBS.anchor($view_url, lang('view')).'</div>';
-				
-				$vars['entries'][$row->entry_id][3] = $view_link;
-			}
-		}
-
 		// Pass the relevant data to the paginate class
 		$config['base_url'] = $pageurl;
 		$config['total_rows'] = $vars['total_count'];
@@ -847,35 +744,7 @@ class Content_edit extends CI_Controller {
 
 		$vars['pagination'] = $this->pagination->create_links();
 		$vars['heading'] = 'edit_channel_entries';
-		
-		$vars['action_options'] = array();
-
-		if ( ! $this->input->post('toggle'))
-		{
-			$vars['action_options'] = array(
-				'edit'				=> lang('edit_selected'),
-				'delete'			=> lang('delete_selected'),
-				'------'			=> '------',
-				'add_categories'	=> lang('add_categories'),
-				'remove_categories'	=> lang('remove_categories')
-			);
-		}
-
-		$this->javascript->set_global('autosave_map', $autosave_array);
-
-		/*
-		$this->cp->set_variable('cp_page_title', lang('edit'));
-
-		$this->cp->add_js_script(array(
-			'plugin'	=> array('dataTables', 'ee_table'),
-			'ui'		=> 'datepicker',
-			'file'		=> 'cp/content_edit'
-		));
-
-		$this->javascript->compile();
-		$this->load->view('content/edit', $vars);
-		*/
-		exit('cwap');
+*/
 	}
 
 	// --------------------------------------------------------------------
@@ -886,35 +755,10 @@ class Content_edit extends CI_Controller {
 	public function _edit_ajax_filter()
 	{
 		$this->output->enable_profiler(FALSE);
-		$this->load->helper(array('form', 'text', 'url', 'snippets'));
-		/*
-		$filter_data['channel_id'] = ($this->input->get_post('channel_id') != 'null' && $this->input->get_post('channel_id') != 'all') ? $this->input->get_post('channel_id') : '';
-		$filter_data['cat_id'] = ($this->input->get_post('cat_id') != 'all') ? $this->input->get_post('cat_id') : '';
 
-		$filter_data['status'] = ($this->input->get_post('status') != 'all') ? $this->input->get_post('status') : '';
-		$filter_data['date_range'] = $this->input->get_post('date_range');	
-		$filter_data['author_id'] = $this->input->get_post('author_id');	
-	
-		$filter_data['keywords'] = ($this->input->get_post('keywords')) ? $this->input->get_post('keywords') : '';
-		$filter_data['search_in'] = ($this->input->get_post('search_in') != '') ? $this->input->get_post('search_in') : 'title';
-		$filter_data['exact_match'] = $this->input->get_post('exact_match');
-
-		// Because of the auto convert we prepare a specific variable with the converted ascii
-		// characters while leaving the $keywords variable intact for display and URL purposes
-		$search_keywords = ($this->config->item('auto_convert_high_ascii') == 'y') ? ascii_to_entities($filter_data['keywords']) : $filter_data['keywords'];
-
-		$filter_data['search_keywords'] = $search_keywords;
-
-		$filter = $this->create_return_filter($filter_data);
-		
-		// Apply only to comments- not part of edit page filter
-		$filter_data['entry_id'] = $this->input->get_post('entry_id');
-		$filter_data['comment_id'] = $this->input->get_post('comment_id');
-		$filter_data['id_array'] = ($this->input->get_post('id_array')) ? explode($this->input->get_post('id_array')) : array();		
-	
 		$filter_data['validate'] = ($this->input->get_post('validate') == 'true') ? TRUE : FALSE;
 		$validate = $filter_data['validate'];
-*/
+
 
 		$perpage = $this->input->get_post('iDisplayLength');
 		$offset = ($this->input->get_post('iDisplayStart')) ? $this->input->get_post('iDisplayStart') : 0; // Display start point		
@@ -954,221 +798,8 @@ class Content_edit extends CI_Controller {
 		$query_results = $filtered_entries['results'];
 
 		$j_response['sEcho'] = $sEcho;
-		$j_response['iTotalRecords'] = $this->db->count_all('channel_titles');  
-		$j_response['iTotalDisplayRecords'] = $total;		
-		
-		
-		// --------------------------------------------
-		//	 Fetch the channel information we need later
-		// --------------------------------------------
-		
-		// Fetch channel ID numbers assigned to the current user
-		$allowed_channels = $this->functions->fetch_assigned_channels();
-
-		if (empty($allowed_channels))
-		{
-			show_error(lang('no_channels'));
-		}
-
-		//  Fetch Color Library - We use this to assist with our status colors
-		if (file_exists(APPPATH.'config/colors.php'))
-		{
-			include (APPPATH.'config/colors.php');
-		}
-		else
-		{	
-			$colors = '';
-		}
-
-		$sql = "SELECT channel_id, channel_name FROM exp_channels ";
-		$sql .= "WHERE site_id = '".$this->db->escape_str($this->config->item('site_id'))."' ";
-
-		$w_array = array();
-
-		$result = $this->db->query($sql);
-
-		if ($result->num_rows() > 0)
-		{			
-			foreach ($result->result_array() as $rez)
-			{
-				$w_array[$rez['channel_id']] = $rez['channel_name'];
-			}
-		}
-
-		// --------------------------------------------
-		//	 Fetch the status highlight colors
-		// --------------------------------------------
-
-		$cql = "SELECT exp_channels.channel_id, exp_channels.channel_name, exp_statuses.status, exp_statuses.highlight
-				 FROM  exp_channels, exp_statuses, exp_status_groups
-				 WHERE exp_status_groups.group_id = exp_channels.status_group
-				 AND   exp_status_groups.group_id = exp_statuses.group_id
-				 AND	exp_statuses.highlight != ''
-				 AND	exp_status_groups.site_id = '".$this->db->escape_str($this->config->item('site_id'))."' ";
-
-
-		// Limit to channels assigned to user
-
-		$cql .= " AND exp_channels.channel_id IN (";
-
-		foreach ($allowed_channels as $val)
-		{
-			$cql .= "'".$val."',"; 
-		}
-
-		$cql = substr($cql, 0, -1).')';
-
-		$result = $this->db->query($cql);
-
-		$c_array = array();
-
-		if ($result->num_rows() > 0)
-		{			
-			foreach ($result->result_array() as $rez)
-			{			
-				$c_array[$rez['channel_id'].'_'.$rez['status']] = str_replace('#', '', $rez['highlight']);
-			}
-		}
-
-
-		// load the site's templates
-		$templates = array();
-
-		$tquery = $this->db->query("SELECT exp_template_groups.group_name, exp_templates.template_name, exp_templates.template_id
-							FROM exp_template_groups, exp_templates
-							WHERE exp_template_groups.group_id = exp_templates.group_id
-							AND exp_templates.site_id = '".$this->db->escape_str($this->config->item('site_id'))."'");
-
-		if ($tquery->num_rows() > 0)
-		{
-			foreach ($tquery->result_array() as $row)
-			{
-				$templates[$row['template_id']] = $row['group_name'].'/'.$row['template_name'];
-			}
-		}
-
-		$tdata = array();
-		$i = 0;
-		
-		// Grab all autosaved entries
-		$this->db->select('original_entry_id');
-		$autosave = $this->db->get('channel_entries_autosave');
-		$autosave_array = array();
-
-		foreach ($autosave->result() as $entry)
-		{
-			$autosave_array[] = $entry->original_entry_id;
-		}
-
-		foreach($query_results as $row)
-		{
-			$m[] = $row['entry_id'];
-			$title_output = anchor(BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.$row['channel_id'].AMP.'entry_id='.$row['entry_id'].$filter, $row['title']);
-			$title_output .= (in_array($row['entry_id'], $autosave_array)) ? NBS.required() : '';
-
-			$m[] = $title_output;
-
-			// "View"
-			if ($row['live_look_template'] != 0 && isset($templates[$row['live_look_template']]))
-			{
-				$qm = ($this->config->item('force_query_string') == 'y') ? '' : '?';
-
-				$url = $this->functions->create_url($templates[$row['live_look_template']].'/'.$row['entry_id']);
-				$view_link = anchor($this->functions->fetch_site_index().$qm.'URL='.$url,
-									lang('view'));
-			}
-			else
-			{
-					$view_link = '--';
-			}
-			
-			$m[] = $view_link; // Add live look template
-			
-			// Comment count
-			$show_link = TRUE;
-
-			if ($row['author_id'] == $this->session->userdata('member_id'))
-			{
-				// do not move these to the new allowed_group style - they are ANDs not ORs
-				if ( ! $this->cp->allowed_group('can_edit_own_comments') AND 
-					 ! $this->cp->allowed_group('can_delete_own_comments') AND 
-					 ! $this->cp->allowed_group('can_moderate_comments'))
-				{
-					$show_link = FALSE;
-				}
-			}
-			else
-			{
-				if ( ! $this->cp->allowed_group('can_edit_all_comments') AND 
-					 ! $this->cp->allowed_group('can_delete_all_comments') AND 
-					 ! $this->cp->allowed_group('can_moderate_comments'))
-				{
-					$show_link = FALSE;
-				}
-			}
-
-			if ( isset($this->installed_modules['comment']))
-			{
-				//	Comment Link
-				if ($show_link !== FALSE)
-				{
-					$res = $this->db->query("SELECT COUNT(*) AS count FROM exp_comments WHERE entry_id = '".$row['entry_id']."'");$this->db->query_count--;
-					$view_url = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=comment'.AMP.'method=index'.AMP.'entry_id='.$row['entry_id'];
-				}
-
-				$view_link = ($show_link == FALSE) ? '<div class="lightLinks">--</div>' : '<div class="lightLinks">('.$res->row('count').')'.NBS.anchor($view_url, lang('view')).'</div>';
-
-				$m[] = $view_link;
-			}
-
-			// Username
-			$name = ($row['screen_name'] != '') ? $row['screen_name'] : $row['username'];
-			$m[] = mailto($row['email'], $name);
-
-			// Date
-			$date_fmt = ($this->session->userdata('time_format') != '') ? $this->session->userdata('time_format') : $this->config->item('time_format');
-
-			if ($date_fmt == 'us')
-			{
-				$datestr = '%m/%d/%y %h:%i %a';
-			}
-			else
-			{
-				$datestr = '%Y-%m-%d %H:%i';
-			}
-			
-			$m[] = $this->localize->decode_date($datestr, $row['entry_date'], TRUE);
-
-			// Channel
-			$m[] = (isset($w_array[$row['channel_id']])) ? '<div class="smallNoWrap">'.$w_array[$row['channel_id']].'</div>' : '';
-
-			// Status
-			$status_name = ($row['status'] == 'open' OR $row['status'] == 'closed') ? lang($row['status']) : $row['status'];
-
-			$color_info = '';
-
-			if (isset($c_array[$row['channel_id'].'_'.$row['status']]) AND $c_array[$row['channel_id'].'_'.$row['status']] != '')
-			{			
-				$color = $c_array[$row['channel_id'].'_'.$row['status']];
-				$prefix = (is_array($colors) AND ! array_key_exists(strtolower($color), $colors)) ? '#' : '';
-
-				// There are custom colours, override the class above
-				$color_info = 'style="color:'.$prefix.$color.';"';
-			}
-
-			$m[] = '<span class="status_'.$row['status'].'"'.$color_info.'>'.$status_name.'</span>';
-
-			// Delete checkbox
-			$m[] = form_checkbox('toggle[]', $row['entry_id'], '', ' class="toggle" id="delete_box_'.$row['entry_id'].'"');
-
-			$tdata[$i] = $m;
-			$i++;
-			unset($m);
-
-		} // End foreach
-		
-
-		$j_response['aaData'] = $tdata;	
+		$j_response['iTotalRecords'] = $this->db->count_all('channel_titles');
+		$j_response['iTotalDisplayRecords'] = $total;
 
 		$this->output->send_ajax_response($j_response);
 	}
