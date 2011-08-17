@@ -1277,7 +1277,7 @@ class Comment_mcp {
 			$qry = $this->EE->db->where_in('comment_id', $comment_ids)
 								->get('comments');
 			
-			foreach ($qry->result() as $row)
+			foreach ($qry->result_array() as $row)
 			{
 				/* -------------------------------------------
 				/* 'update_comment_additional' hook.
@@ -1285,7 +1285,7 @@ class Comment_mcp {
 				*/
 					$edata = $this->EE->extensions->call(
 													'update_comment_additional', 
-													$row->comment_id, $row
+													$row['comment_id'], $row
 												);
 
 					if ($this->EE->extensions->end_script === TRUE) return;
