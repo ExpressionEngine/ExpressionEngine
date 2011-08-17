@@ -611,7 +611,7 @@ class Safecracker_lib
 		}
 		elseif ($this->channel('channel_id'))
 		{
-			$this->parse_variables['entry_date'] = $this->EE->localize->set_human_time($this->EE->localize->now-3600);
+			$this->parse_variables['entry_date'] = $this->EE->localize->set_human_time();
 			
 			if ($this->datepicker)
 			{
