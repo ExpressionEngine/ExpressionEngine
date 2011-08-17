@@ -69,8 +69,9 @@ class Search_model extends CI_Model {
 		
 		$base_qry_obj->_data_seek($data['rownum']);
 
-		while ($perpage-- && ($row = $base_qry_obj->_fetch_assoc()))
+		while ($perpage && ($row = $base_qry_obj->_fetch_assoc()))
 		{
+			$perpage--;
 			$base_results[] = $row;
 		}
 
