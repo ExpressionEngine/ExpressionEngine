@@ -3065,8 +3065,8 @@ class Channel {
 
 				$this->EE->pagination->initialize($config);
 				$this->pagination_links = $this->EE->pagination->create_links();
+				$this->EE->pagination->initialize($config); // Re-initialize to reset config
 				$this->pagination_array = $this->EE->pagination->create_link_array();
-
 
 				if ((($this->total_pages * $this->p_limit) - $this->p_limit) > $this->p_page)
 				{
