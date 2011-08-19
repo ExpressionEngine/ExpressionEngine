@@ -905,27 +905,29 @@ class Channel {
 
 		if ($this->paginate == TRUE)
 		{
+			// Parse current_page and total_pages by default
+			$parse_array = array(
+				'current_page' => $this->current_page,
+				'total_pages' => $this->total_pages,
+			);
+
+			// Check to see if pagination_links is being used as a single 
+			// variable or as a variable pair
 			if (preg_match_all("/".LD."pagination_links".RD."(.+?)".LD.'\/'."pagination_links".RD."/s", $this->paginate_data, $matches))
 			{
-				// var_dump($this->paginate_data, $this->pagination_array);
-				$this->paginate_data = $this->EE->TMPL->parse_variables(
-					$this->paginate_data, 
-					array(array(
-						'pagination_links' => array($this->pagination_array)
-					))
-				);
+				$parse_array['pagination_links'] = array($this->pagination_array);
+			}
+			else
+			{
+				$parse_array['pagination_links'] = $this->pagination_links;
 			}
 			
+			// Parse current_page and total_pages
 			$this->paginate_data = $this->EE->TMPL->parse_variables(
-				$this->paginate_data, 
-				array(array(
-					'current_page' => $this->current_page,
-					'total_pages' => $this->total_pages,
-					// 'pagination_links' => $this->pagination_links
-				))
+				$this->paginate_data,
+				array($parse_array)
 			);
 			
-
 			if (preg_match_all("/".LD."if previous_page".RD."(.+?)".LD.'\/'."if".RD."/s", $this->paginate_data, $matches))
 			{
 				if ($this->page_previous == '')
