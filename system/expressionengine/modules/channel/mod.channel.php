@@ -905,10 +905,29 @@ class Channel {
 
 		if ($this->paginate == TRUE)
 		{
-			$this->paginate_data = str_replace(LD.'current_page'.RD, 		$this->current_page, 		$this->paginate_data);
-			$this->paginate_data = str_replace(LD.'total_pages'.RD,			$this->total_pages,  		$this->paginate_data);
-			$this->paginate_data = str_replace(LD.'pagination_links'.RD,	$this->pagination_links,	$this->paginate_data);
+			// Parse current_page and total_pages by default
+			$parse_array = array(
+				'current_page' => $this->current_page,
+				'total_pages' => $this->total_pages,
+			);
 
+			// Check to see if pagination_links is being used as a single 
+			// variable or as a variable pair
+			if (preg_match_all("/".LD."pagination_links".RD."(.+?)".LD.'\/'."pagination_links".RD."/s", $this->paginate_data, $matches))
+			{
+				$parse_array['pagination_links'] = array($this->pagination_array);
+			}
+			else
+			{
+				$parse_array['pagination_links'] = $this->pagination_links;
+			}
+			
+			// Parse current_page and total_pages
+			$this->paginate_data = $this->EE->TMPL->parse_variables(
+				$this->paginate_data,
+				array($parse_array)
+			);
+			
 			if (preg_match_all("/".LD."if previous_page".RD."(.+?)".LD.'\/'."if".RD."/s", $this->paginate_data, $matches))
 			{
 				if ($this->page_previous == '')
@@ -3045,8 +3064,9 @@ class Channel {
 				$config['uri_segment'] = 0;
 
 				$this->EE->pagination->initialize($config);
-				$this->pagination_links = $this->EE->pagination->create_links();				
-
+				$this->pagination_links = $this->EE->pagination->create_links();
+				$this->EE->pagination->initialize($config); // Re-initialize to reset config
+				$this->pagination_array = $this->EE->pagination->create_link_array();
 
 				if ((($this->total_pages * $this->p_limit) - $this->p_limit) > $this->p_page)
 				{
