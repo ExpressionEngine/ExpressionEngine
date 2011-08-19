@@ -905,9 +905,26 @@ class Channel {
 
 		if ($this->paginate == TRUE)
 		{
-			$this->paginate_data = str_replace(LD.'current_page'.RD, 		$this->current_page, 		$this->paginate_data);
-			$this->paginate_data = str_replace(LD.'total_pages'.RD,			$this->total_pages,  		$this->paginate_data);
-			$this->paginate_data = str_replace(LD.'pagination_links'.RD,	$this->pagination_links,	$this->paginate_data);
+			if (preg_match_all("/".LD."pagination_links".RD."(.+?)".LD.'\/'."pagination_links".RD."/s", $this->paginate_data, $matches))
+			{
+				// var_dump($this->paginate_data, $this->pagination_array);
+				$this->paginate_data = $this->EE->TMPL->parse_variables(
+					$this->paginate_data, 
+					array(array(
+						'pagination_links' => array($this->pagination_array)
+					))
+				);
+			}
+			
+			$this->paginate_data = $this->EE->TMPL->parse_variables(
+				$this->paginate_data, 
+				array(array(
+					'current_page' => $this->current_page,
+					'total_pages' => $this->total_pages,
+					// 'pagination_links' => $this->pagination_links
+				))
+			);
+			
 
 			if (preg_match_all("/".LD."if previous_page".RD."(.+?)".LD.'\/'."if".RD."/s", $this->paginate_data, $matches))
 			{
@@ -3045,7 +3062,8 @@ class Channel {
 				$config['uri_segment'] = 0;
 
 				$this->EE->pagination->initialize($config);
-				$this->pagination_links = $this->EE->pagination->create_links();				
+				$this->pagination_links = $this->EE->pagination->create_links();
+				$this->pagination_array = $this->EE->pagination->create_link_array();
 
 
 				if ((($this->total_pages * $this->p_limit) - $this->p_limit) > $this->p_page)
