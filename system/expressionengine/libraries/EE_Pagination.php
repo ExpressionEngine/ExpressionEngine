@@ -149,14 +149,15 @@ class EE_Pagination extends CI_Pagination
 						$link_array['page'][] = array(
 							'pagination_url'			=> $this->base_url.$n,
 							'pagination_page_number'	=> $loop,
-							'current'					=> TRUE
+							'current_page'				=> TRUE
 						);
 					}
 					else if ($n == '' && $this->first_url != '')
 					{
 						$link_array['page'][] = array(
 							'pagination_url'			=> $this->first_url,
-							'pagination_page_number'	=> $loop
+							'pagination_page_number'	=> $loop,
+							'current_page'				=> FALSE
 						);
 					}
 					else
@@ -165,7 +166,8 @@ class EE_Pagination extends CI_Pagination
 						
 						$link_array['page'][] = array(
 							'pagination_url'			=> $this->base_url.$n,
-							'pagination_page_number'	=> $loop
+							'pagination_page_number'	=> $loop,
+							'current_page'				=> FALSE
 						);
 					}
 				}
