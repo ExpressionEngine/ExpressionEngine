@@ -3689,8 +3689,8 @@ class Admin_content extends CI_Controller {
 		}
 
 		$this->cp->set_right_nav(array(
-					'create_new_custom_field' =>
-					BASE.AMP.'C=admin_content'.AMP.'M=field_edit'.AMP.'group_id='.$vars['group_id']
+			'create_new_custom_field' =>
+			BASE.AMP.'C=admin_content'.AMP.'M=field_edit'.AMP.'group_id='.$vars['group_id']
 		));
 
 		$vars['message'] = $message; //lang('preferences_updated')
@@ -3730,6 +3730,8 @@ class Admin_content extends CI_Controller {
 			headers: {4: {sorter: false}},
 			widgets: ["zebra"]
 		}');
+		
+		$this->cp->add_js_script('file', 'cp/custom_fields');
 
 		$this->javascript->compile();
 		$this->load->view('admin/field_management', $vars);

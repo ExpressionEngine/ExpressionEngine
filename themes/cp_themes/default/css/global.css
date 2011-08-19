@@ -81,6 +81,17 @@ input[type="password"]:focus {
 	padding:				3px;
 }
 
+input.input-copy,
+input.input-copy:focus {
+	background: transparent;
+	border: 0 none;
+	color: #5F6C74;
+	display: block;
+	font-size: 100%;
+	margin: 0;
+	padding: 0;
+}
+
 textarea.markItUpEditor:focus{ background-color: #FFFFFF; }
 
 /* -------------------------------------
