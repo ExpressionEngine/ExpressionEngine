@@ -114,11 +114,24 @@ class Member_model extends CI_Model {
 			$this->db->offset($offset);
 		}
 
-		if ($search_value != '')
+		if (is_array($search_value))
+		{
+			foreach ($search_value as $token_name => $token_value)
+			{
+				// Check to see if the token is ID
+				$token_name = ($token_name === 'id') ? 'member_id' : $token_name;
+				
+				$this->db->like('members.'.$token_name, $token_value);
+			}
+		}
+		else if ($search_value != '')
 		{
 			if ($column == 'all')
 			{
-				$this->db->where("(`exp_members`.`screen_name` LIKE '%".$this->db->escape_like_str($search_value)."%' OR `exp_members`.`username` LIKE '%".$this->db->escape_like_str($search_value)."%' OR `exp_members`.`email` LIKE '%".$this->db->escape_like_str($search_value)."%')", NULL, TRUE);		
+				$this->db->like('members.screen_name', $search_value);
+				$this->db->or_like('members.username', $search_value);
+				$this->db->or_like('members.email', $search_value);
+				$this->db->or_like('members.member_id', $search_value);
 			}
 			else
 			{

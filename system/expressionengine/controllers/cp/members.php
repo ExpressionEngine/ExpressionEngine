@@ -120,6 +120,7 @@ class Members extends CI_Controller {
 
 		$vars['column_filter_options'] = array(
 			'all'				=> lang('all'),
+			'member_id'			=> lang('id'),
 			'screen_name'		=> lang('screen_name'),
 			'username'			=> lang('username'),
 			'email'				=> lang('email')
@@ -411,7 +412,9 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		
 		$search_value = ($this->input->get_post('k_search')) ? $this->input->get_post('k_search') : '';
 		$group_id = ($this->input->get_post('group')) ? $this->input->get_post('group') : '';		
-
+		
+		// Check for search tokens within the search_value
+		$search_value = $this->_check_search_tokens($search_value);
 		
 		// Note- we pipeline the js, so pull more data than are displayed on the page		
 		$perpage = $this->input->get_post('iDisplayLength');
@@ -484,6 +487,51 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		exit($sOutput);
 	}
 
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Looks through the member search string for search tokens (e.g. id:3
+	 * or username:john)
+	 * 
+	 * @param string $search_string The string to look through for tokens
+	 * @return string/array String if there are no tokens within the 
+	 * 	string, otherwise it's an associative array with the tokens as 
+	 * 	the keys
+	 */
+	private function _check_search_tokens($search_string = '')
+	{
+		if (strpos($search_string, ':') !== FALSE)
+		{
+			$search_array = array();
+			$tokens = array('id', 'member_id', 'username', 'screen_name', 'email');
+			
+			foreach ($tokens as $token)
+			{
+				// This regular expression looks for a token immediately 
+				// followed by one of three things:
+				// - a value within double quotes
+				// - a value within single quotes
+				// - a value without spaces
+				
+				if (preg_match('/'.$token.'\:((?:"(.*?)")|(?:\'(.*?)\')|(?:[^\s:]+?))(?:\s|$)/', $search_string, $matches))
+				{
+					// The last item within matches is what we want
+					$search_array[$token] = end($matches);
+				}
+			}
+			
+			// If both ID and Member_ID are set, unset ID
+			if (isset($search_array['id']) AND isset($search_array['member_id']))
+			{
+				unset($search_array['id']);
+			}
+			
+			return $search_array;
+		}
+		
+		return $search_string;
+	}
+	
 	// --------------------------------------------------------------------
 
 	/**
