@@ -114,7 +114,17 @@ class Member_model extends CI_Model {
 			$this->db->offset($offset);
 		}
 
-		if ($search_value != '')
+		if (is_array($search_value))
+		{
+			foreach ($search_value as $token_name => $token_value)
+			{
+				// Check to see if the token is ID
+				$token_name = ($token_name === 'id') ? 'member_id' : $token_name;
+				
+				$this->db->like('members.'.$token_name, $token_value);
+			}
+		}
+		else if ($search_value != '')
 		{
 			if ($column == 'all')
 			{
