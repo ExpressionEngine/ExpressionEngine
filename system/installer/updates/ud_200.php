@@ -1565,7 +1565,7 @@ class Updater {
 		$Q[] = "ALTER TABLE `exp_weblogs` CHANGE `weblog_require_membership` `channel_require_membership` char(1) NOT NULL default 'y'";
 		$Q[] = "ALTER TABLE `exp_weblogs` CHANGE `weblog_html_formatting` `channel_html_formatting` char(4) NOT NULL default 'all'";
 		$Q[] = "ALTER TABLE `exp_weblogs` CHANGE `weblog_allow_img_urls` `channel_allow_img_urls` char(1) NOT NULL default 'y'";
-		$Q[] = "ALTER TABLE `exp_weblogs` CHANGE `weblog_auto_link_urls` `channel_auto_link_urls` char(1) NOT NULL default 'y'";
+		$Q[] = "ALTER TABLE `exp_weblogs` CHANGE `weblog_auto_link_urls` `channel_auto_link_urls` char(1) NOT NULL default 'n'";
 		$Q[] = "ALTER TABLE `exp_weblogs` CHANGE `weblog_notify_emails` `channel_notify_emails` varchar(255) NULL DEFAULT NULL";
 		$Q[] = "ALTER TABLE `exp_weblogs` RENAME TO `exp_channels`";
 		$Q[] = "ALTER TABLE `exp_weblog_titles` CHANGE `weblog_id` `channel_id` int(4) unsigned NOT NULL";
