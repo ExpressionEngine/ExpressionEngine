@@ -120,6 +120,7 @@ class Members extends CI_Controller {
 
 		$vars['column_filter_options'] = array(
 			'all'				=> lang('all'),
+			'member_id'			=> lang('id'),
 			'screen_name'		=> lang('screen_name'),
 			'username'			=> lang('username'),
 			'email'				=> lang('email')
