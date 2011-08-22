@@ -128,7 +128,10 @@ class Member_model extends CI_Model {
 		{
 			if ($column == 'all')
 			{
-				$this->db->where("(`exp_members`.`screen_name` LIKE '%".$this->db->escape_like_str($search_value)."%' OR `exp_members`.`username` LIKE '%".$this->db->escape_like_str($search_value)."%' OR `exp_members`.`email` LIKE '%".$this->db->escape_like_str($search_value)."%')", NULL, TRUE);		
+				$this->db->like('members.screen_name', $search_value);
+				$this->db->or_like('members.username', $search_value);
+				$this->db->or_like('members.email', $search_value);
+				$this->db->or_like('members.member_id', $search_value);
 			}
 			else
 			{
