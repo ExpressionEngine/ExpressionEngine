@@ -2455,7 +2455,7 @@ PAPAYA;
 						'image_resize_protocol'			=>	'gd2',
 						'image_library_path'			=>	'',
 						'thumbnail_prefix'				=>	'thumb',
-						'word_separator'				=>	'underscore',
+						'word_separator'				=>	'dash',
 						'use_category_name'				=>	'n',
 						'reserved_category_word'		=>	'category',
 						'auto_convert_high_ascii'		=>	'n',
