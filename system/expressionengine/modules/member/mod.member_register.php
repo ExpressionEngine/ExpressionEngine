@@ -320,7 +320,7 @@ class Member_register extends Member {
 		$VAL->validate_email();
 
 		// Do we have any custom fields?
-		$query = $this->EE->db->select('m_field_id, m_field_name, m_field_label, m_field_required')
+		$query = $this->EE->db->select('m_field_id, m_field_name, m_field_label, m_field_type, m_field_list_items, m_field_required')
 							  ->where('m_field_reg', 'y')
 							  ->get('member_fields');
 
@@ -331,15 +331,31 @@ class Member_register extends Member {
 		{
 			foreach ($query->result_array() as $row)
 			{
-				if ($row['m_field_required'] == 'y' && 
-					( ! isset($_POST['m_field_id_'.$row['m_field_id']]) OR 
-						$_POST['m_field_id_'.$row['m_field_id']] == ''))
+				$field_name = 'm_field_id_'.$row['m_field_id'];
+
+				// Assume we're going to save this data, unless it's empty to begin with
+				$valid = isset($_POST[$field_name]) && $_POST[$field_name] != '';
+
+				// Basic validations
+				if ($row['m_field_required'] == 'y' && ! $valid)
 				{
 					$cust_errors[] = lang('mbr_field_required').'&nbsp;'.$row['m_field_label'];
-				}
-				elseif (isset($_POST['m_field_id_'.$row['m_field_id']]))
+				}				
+				elseif ($row['m_field_type'] == 'select' && $valid)
 				{
-					$cust_fields['m_field_id_'.$row['m_field_id']] = $this->EE->security->xss_clean($_POST['m_field_id_'.$row['m_field_id']]);
+					// Ensure their selection is actually a valid choice
+					$options = explode("\n", $row['m_field_list_items']);
+					
+					if (! in_array($_POST[$field_name], $options))
+					{
+						$valid = FALSE;
+						$cust_errors[] = lang('mbr_field_invalid').'&nbsp;'.$row['m_field_label'];
+					}
+				}				
+				
+				if ($valid)
+				{
+					$cust_fields[$field_name] = $this->EE->security->xss_clean($_POST[$field_name]);
 				}
 			}
 		}
