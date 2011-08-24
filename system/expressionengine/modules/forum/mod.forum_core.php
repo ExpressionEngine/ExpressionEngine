@@ -1428,30 +1428,28 @@ class Forum_Core extends Forum {
 			return $this->trigger_error('no_feed_specified');
 		}		
 		
-		// Fetch the topics		
-		$idx = implode(',', $ids);		
-		
 		$qry = $this->EE->db->select('t.topic_id, t.author_id, t.title, 
-									  t.body, t.topic_date, t.thread_total, 
-									  t.last_post_author_id,  t.last_post_date, 
-									  t.topic_edit_date, t.parse_smileys,
-									  f.forum_text_formatting, f.forum_html_formatting, 
-									  f.forum_auto_link_urls, f.forum_allow_img_urls,
-									  m.screen_name AS last_post_author,
-									  m.screen_name AS author, m.email, m.url')
-							->from(array('forum_topics t', 'forums f', 'members m'))
-							->where('t.last_post_author_id = m.member_id', '', FALSE)
-							->where('f.forum_id = t.forum_id', '', FALSE)
-							->where('m.member_id = t.author_id', '', FALSE)
-							->where('t.announcement', 'n', '', FALSE)
-							->where_in('t.forum_id', $idx)
-							->or_where_in('t.moved_forum_id', $idx)
-							->where('t.board_id', $this->fetch_pref('board_id'))
-							->order_by('t.last_post_date', 'DESC')
-							->order_by('t.topic_date', "DESC")
-							->limit(10)
-							->get();
-								
+				t.body, t.topic_date, t.thread_total, 
+				t.last_post_author_id,  t.last_post_date, 
+				t.topic_edit_date, t.parse_smileys,
+				f.forum_text_formatting, f.forum_html_formatting, 
+				f.forum_auto_link_urls, f.forum_allow_img_urls,
+				lp.screen_name AS last_post_author,
+				m.screen_name AS author, m.email, m.url'
+			)
+			->from('forum_topics t')
+			->join('forums f', 'f.forum_id = t.forum_id', 'left')
+			->join('members m', 'm.member_id = t.author_id', 'left')
+			->join('members lp', 'lp.member_id = t.last_post_author_id', 'left')
+			->where('t.announcement', 'n', '', FALSE)
+			->where_in('t.forum_id', $ids)
+			->or_where_in('t.moved_forum_id', $ids)
+			->where('t.board_id', $this->fetch_pref('board_id'))
+			->order_by('t.last_post_date', 'DESC')
+			->order_by('t.topic_date', "DESC")
+			->limit(10)
+			->get();
+		
 		if ($qry->num_rows() == 0)
 		{
 			return $this->trigger_error('no_feed_results');
