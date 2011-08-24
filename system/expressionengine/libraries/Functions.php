@@ -2586,7 +2586,7 @@ class EE_Functions {
 		$embedded_tags = (stristr($str, LD.'exp:')) ? TRUE : FALSE;
 		
 		$valid = array('!=','==','<=','>=','<','>','<>',
-						'AND', 'XOR', 'OR','&&','||',
+						' AND ',' XOR ',' OR ','&&','||',
 						')','(',
 						'TRUE', 'FALSE');
 		
