@@ -1220,38 +1220,23 @@ class Metaweblog_api {
 	 */
 	function fetch_member_data($username, $password)
 	{
-		// Query DB for member data.  Depending on the validation type we'll
-		// either use the cookie data or the member ID gathered with the session query.
-		$sql = " SELECT exp_members.screen_name,
-						exp_members.member_id,
-						exp_members.email,
-						exp_members.url,
-						exp_members.group_id,
-						exp_member_groups.*
-						FROM exp_members, exp_member_groups
-						WHERE username = '".$this->EE->db->escape_str($username)."'
-						AND exp_members.group_id = exp_member_groups.group_id ";
-
-		$sha_sql = "AND password = '".$this->EE->functions->hash(stripslashes($password))."'";
-		$md5_sql = "AND password = '".md5(stripslashes($password))."'";
-
-		$query = $this->EE->db->query($sql.$sha_sql);
-
-		if ($query->num_rows() == 0)
+		$this->EE->load->library('auth');
+		
+		if (FALSE == ($auth = $this->EE->auth->authenticate_username($username, $password)))
 		{
-			$query = $this->EE->db->query($sql.$md5_sql);
-
-			if ($query->num_rows() == 0)
-			{
-				return FALSE;
-			}
+			return FALSE;
 		}
 
-		// Turn the query rows into array values
-
-		foreach ($query->row_array() as $key => $val)
+		// load userdata from Auth object, a few fields from the members table, but most from the group
+		
+		foreach (array('screen_name', 'member_id', 'email', 'url', 'group_id') as $member_item)
 		{
-			$this->userdata[$key] = $val;
+			$this->userdata[$member_item] = $auth->member($member_item);
+		}
+
+		foreach ($this->EE->db->list_fields('member_groups') as $field)
+		{
+			$this->userdata[$field] = $auth->group($field);
 		}
 
 		/** -------------------------------------------------
@@ -1278,6 +1263,7 @@ class Metaweblog_api {
 		}
 		else
 		{
+
 			return FALSE; // Nowhere to Post!!
 		}
 

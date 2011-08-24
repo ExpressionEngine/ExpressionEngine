@@ -24,7 +24,7 @@
  */
 class Metaweblog_api_upd {
 
-	var $version = '2.0';
+	var $version = '2.1';
 
 	function Metaweblog_api_upd()
 	{
@@ -181,7 +181,7 @@ class Metaweblog_api_upd {
 
 	function update($version = '')
 	{
-		if ($this->EE->db->table_exists('exp_metaweblog_api'))
+		if ($version < 2 && $this->EE->db->table_exists('exp_metaweblog_api'))
 		{
 			$existing_fields = array();
 
@@ -201,6 +201,11 @@ class Metaweblog_api_upd {
 					$this->EE->db->query("ALTER table exp_metaweblog_api ADD COLUMN {$alter}");
 				}
 			}
+		}
+		
+		if ($version < 2.1)
+		{
+			// nothing to see here!
 		}
 
 		return TRUE;
