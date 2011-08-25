@@ -91,6 +91,11 @@ class EE_Config Extends CI_Config {
 		
 		// Set the default_ini data, used by the sites feature
 		$this->default_ini = $this->config;
+		
+		if ( ! defined('REQ') OR REQ != 'CP')
+		{
+			$this->default_ini = array_merge($this->default_ini, $assign_to_config);
+		}
 	}
 
 	// --------------------------------------------------------------------
