@@ -984,10 +984,10 @@ class EE_Typography extends CI_Typography {
 			$height = $height_match[0];
 		}
 
-		if (preg_match_all("/\s+alt=(\"|\')([^\\1]*?)\\1/", $matches[1], $alt_match))
+		if (preg_match_all("/\s+alt=(\"|\')([^\\1]*?)\\1/", $matches[1], $alt_match, PREG_SET_ORDER))
 		{
 			// If there's more than one match for alt, use the first and remove the second
-			if (is_array($alt_match[0]))
+			if (isset($alt_match[1]) AND is_array($alt_match[1]))
 			{
 				$alt_tag = $alt_match[0][0];
 				$alt_value = $alt_match[2][0];
@@ -996,8 +996,8 @@ class EE_Typography extends CI_Typography {
 			}
 			else
 			{
-				$alt_tag = $alt_match[0];
-				$alt_value = $alt_match[2];
+				$alt_tag = $alt_match[0][0];
+				$alt_value = $alt_match[0][2];
 			}
 
 			$url = trim(str_replace($alt_tag, '', $url));
