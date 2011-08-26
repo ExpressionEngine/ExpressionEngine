@@ -222,7 +222,7 @@ p.submit {
 .notice {
 	color:				#ce0000;
 	font-weight: 		bold;
-	padding-top:		20px;
+	margin-top:			20px;
 	margin-bottom:		0;
 }
 
