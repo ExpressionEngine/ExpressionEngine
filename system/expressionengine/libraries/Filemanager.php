@@ -54,7 +54,6 @@ class Filemanager {
 		$this->EE->load->library('security');
 		$this->EE->lang->loadfile('filemanager');
 		
-		
 		$this->theme_url = $this->EE->config->item('theme_folder_url').'cp_themes/'.$this->EE->config->item('cp_theme').'/';
 	}
 
@@ -873,8 +872,10 @@ class Filemanager {
 	
 	public function setup_upload()
 	{
+		$base = (defined('BASE')) ? BASE : $this->EE->functions->fetch_site_index(0,0).QUERY_MARKER; 
+		
 		$vars = array(
-			'base_url'	=> BASE.AMP.'C=content_files_modal'
+			'base_url'	=> $base.AMP.'C=content_files_modal'
 		);
 		
 		$this->EE->output->send_ajax_response(array(
