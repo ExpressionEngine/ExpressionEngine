@@ -203,7 +203,7 @@ class Wiki_upd {
 	
 	function update($current='')
 	{
-		if ($current < 2.0)
+		if (version_compare($current, '2.0', '<'))
 		{
 			$this->EE->db->query("ALTER TABLE `exp_wiki_category_articles` DROP KEY `page_id`");
 			$this->EE->db->query("ALTER TABLE `exp_wiki_category_articles` DROP KEY `cat_id`");
@@ -214,17 +214,17 @@ class Wiki_upd {
 			$this->EE->db->query("ALTER TABLE `exp_wiki_page` CHANGE `last_revision_id` `last_revision_id` INT(10) NULL DEFAULT NULL");
 		}
 		
-		if ($current < 2.1)
+		if (version_compare($current, '2.1', '<'))
 		{
 			$this->EE->db->query("ALTER TABLE `exp_wiki_page` CHANGE `page_namespace` `page_namespace` VARCHAR(125) NOT NULL DEFAULT ''");
 		}
 		
-		if ($current < 2.2)
+		if (version_compare($current, '2.2', '<'))
 		{
 			$this->EE->db->query("ALTER TABLE `exp_wiki_search` ADD COLUMN search_date int(10) NOT NULL AFTER wiki_search_id");
 		}
 		
-		if ($current < 2.3)
+		if (version_compare($current, '2.3', '<'))
 		{
 			// Add Extension Hook
 			$this->EE->db->insert('extensions', array(

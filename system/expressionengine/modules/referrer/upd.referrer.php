@@ -141,7 +141,7 @@ class Referrer_upd {
 			return FALSE;
 		}
 		
-		if ($current < 2.0)
+		if (version_compare($current, '2.0', '<'))
 		{
 			$this->EE->db->query("ALTER TABLE `exp_referrers` DROP COLUMN `user_blog`");
 			$this->EE->db->query("ALTER TABLE `exp_referrers` CHANGE `ref_from` `ref_from` VARCHAR(150) NOT NULL");

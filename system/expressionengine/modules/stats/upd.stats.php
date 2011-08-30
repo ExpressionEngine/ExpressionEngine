@@ -92,7 +92,7 @@ class Stats_upd {
 			return FALSE;
 		}
 		
-		if ($current < 2.0)
+		if (version_compare($current, '2.0', '<'))
 		{
 			$this->EE->dbforge->drop_column('stats', 'weblog_id');
 		}
