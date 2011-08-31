@@ -984,24 +984,10 @@ class EE_Typography extends CI_Typography {
 			$height = $height_match[0];
 		}
 
-		if (preg_match_all("/\s+alt=(\"|\')([^\\1]*?)\\1/", $matches[1], $alt_match, PREG_SET_ORDER))
+		if (preg_match("/\s+alt=(\"|\')([^\\1]*?)\\1/", $matches[1], $alt_match))
 		{
-			// If there's more than one match for alt, use the first and remove the second
-			if (isset($alt_match[1]) AND is_array($alt_match[1]))
-			{
-				$alt_tag = $alt_match[0][0];
-				$alt_value = $alt_match[2][0];
-				
-				$url = trim(str_replace($alt_match[0][1], '', $url));
-			}
-			else
-			{
-				$alt_tag = $alt_match[0][0];
-				$alt_value = $alt_match[0][2];
-			}
-
-			$url = trim(str_replace($alt_tag, '', $url));
-			$alt = str_replace(array('"', "'"), '', $alt_value);
+			$url = trim(str_replace($alt_match[0], '', $url));
+			$alt = str_replace(array('"', "'"), '', $alt_match[2]);
 		}
 		else
 		{
@@ -1013,6 +999,13 @@ class EE_Typography extends CI_Typography {
 			}
 			
 			$alt = substr($alt, strrpos($alt, '/')+1);
+		}
+		
+		if (preg_match("/(.*?(?:\.[^\s]{2,10}))(.*?)$/", $matches[1], $url_matches))
+		{
+			var_dump($url_matches);
+			// $url_matches = explode(' ', $url, 2);
+			// $url = $url_matches[0];
 		}
 		
 		return "<img src=\"{$url}\" alt=\"{$alt}\"{$width}{$height} />";
