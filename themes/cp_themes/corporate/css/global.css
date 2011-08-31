@@ -1172,7 +1172,54 @@ h2.innerHeading{
 	padding:			5px 20px 25px 20px;
 }
 
+#action_nav {
+	display: inline-block;
+	float: right;
+	font-size: 12px;
+	margin-top: -6px;
+}
 
+#fileChooser {
+	font-size: 12px;
+}
+
+#fileChooser #filterMenu {
+	margin: 12px 0;
+}
+
+#fileChooser table.mainTable, #mainContent table.mainTable {
+	width: 100%;
+	text-align: left;
+	line-height: 13px;
+}
+
+#fileChooser table.mainTable td {
+	padding: 7px 10px;
+}
+
+#file_chooser_body {
+	border:				1px solid #ccc;
+	border-width: 		0 0 1px;
+	display:			block;
+	height: 			455px;
+	margin-bottom: 		10px;
+	padding-bottom: 	0px;
+	overflow:			auto;
+	width:				100%;
+}
+
+#fileChooser #dir_choice_form, #mainContent #dir_choice_form {
+	float: left;
+}
+
+#fileChooser .tableSubmit, #mainContent .tableSubmit {
+	float: right;
+	margin-top: 0;
+}
+
+#fileChooser #pagination_meta, #mainContent #paginationCount {
+	margin: 0 0 10px;
+}
 
 #registerUser table input[type=text], #registerUser table textarea {
 	width:				100%;

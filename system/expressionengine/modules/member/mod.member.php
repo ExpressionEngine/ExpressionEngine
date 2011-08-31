@@ -1655,6 +1655,11 @@ class Member {
 			preg_match("#^[a-zA-Z0-9_\-]+$#i", $this->EE->TMPL->fetch_param('name'), $match))
 		{
 			$data['name'] = $this->EE->TMPL->fetch_param('name');
+			$this->EE->TMPL->log_item('Member Login Form:  The \'name\' parameter has been deprecated.  Please use form_name');
+		}
+		elseif ($this->EE->TMPL->fetch_param('form_name') && $this->EE->TMPL->fetch_param('form_name') != "")
+		{
+			$data['name'] = $this->EE->TMPL->fetch_param('form_name');
 		}
 
 		if ($this->EE->TMPL->fetch_param('id') !== FALSE && 

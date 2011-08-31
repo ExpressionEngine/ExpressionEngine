@@ -70,7 +70,7 @@ $lang = array(
 'New Configuration',
 
 'modify_config' =>
-'Modify Configuration',
+'Edit Configuration',
 
 'configuration_options' =>
 'Configuration Options',

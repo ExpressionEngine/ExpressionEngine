@@ -2451,7 +2451,8 @@ class Content_files extends CI_Controller {
 		$this->load->helper('form');
 
 		$this->cp->set_variable('cp_page_title', lang('delete_upload_preference'));
-		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=file_upload_preferences',
+		$this->cp->set_breadcrumb(BASE.AMP.'C=content_files', lang('file_manager'));
+		$this->cp->set_breadcrumb(BASE.AMP.'C=content_files'.AMP.'M=file_upload_preferences',
 								lang('file_upload_preferences'));
 
 		$data = array(

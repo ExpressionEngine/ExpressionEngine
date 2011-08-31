@@ -7,7 +7,7 @@
 		<input type="submit" class="submit js_hide" value="<?=lang('update')?>">
 		<?=form_close(); ?>
 <?php else: ?>
-		<span class="button" style="float:right;"><a class="submit" href="<?=$_base?>"><?=lang('home')?></a></span>
+		<span style="float:right;"><a class="submit" href="<?=$_base?>"><?=lang('home')?></a></span>
 <?php endif; ?>
 		<div class="clear_left shun">&nbsp;</div>
 	</div>

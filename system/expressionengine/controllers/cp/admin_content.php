@@ -2270,44 +2270,41 @@ class Admin_content extends CI_Controller {
 			);
 
 			$this->db->insert('categories', $category_data);
+			$cat_id = $this->db->insert_id();
 
 			$update = FALSE;
 
-			// need this later for custom fields
-			$field_cat_id = $this->db->insert_id();
-
-			// Re-order categories
-
-			// When a new category is inserted we need to assign it an order.
-			// Since the list of categories might have a custom order, all we
-			// can really do is position the new category alphabetically.
-
-			// First we'll fetch all the categories alphabetically and assign
-			// the position of our new category
-
-			$this->db->select('cat_id, cat_name');
-			$this->db->where('group_id', $group_id);
-			$this->db->where('parent_id', $_POST['parent_id']);
-			$this->db->order_by('cat_name', 'ASC');
-			$query = $this->db->get('categories');
-
+			// Re-order categories contingent upon the group's sort order.
+			// If a custom sort order is in use the new category will simply
+			// show up first and they can have their way with it.
 			$position = 0;
-			$cat_id = '';
 
-			foreach ($query->result_array() as $row)
+			$this->db->select('sort_order');
+			$query = $this->db->get_where('category_groups', array('group_id' => $group_id));
+			
+			if ($query->num_rows() == 1 && $query->row()->sort_order == 'a')
 			{
-				if ($_POST['cat_name'] == $row['cat_name'])
-				{
-					$cat_id = $row['cat_id'];
-					break;
-				}
+				// Fetch all the categories alphabetically and assign
+				// the position of our new category
+				$this->db->select('cat_id, cat_name');
+				$this->db->where('group_id', $group_id);
+				$this->db->where('parent_id', $_POST['parent_id']);
+				$this->db->order_by('cat_name', 'ASC');
+				$query = $this->db->get('categories');
 
-				$position++;
+				foreach ($query->result_array() as $row)
+				{
+					if ($_POST['cat_name'] == $row['cat_name'])
+					{
+						break;
+					}
+	
+					$position++;
+				}
 			}
 
-			// Next we'll fetch the list of categories ordered by the custom order
+			// Now we'll fetch the list of categories
 			// and create an array with the category ID numbers
-
 			$this->db->select('cat_id, cat_name');
 			$this->db->where('group_id', $group_id);
 			$this->db->where('parent_id', $_POST['parent_id']);
@@ -2323,12 +2320,10 @@ class Admin_content extends CI_Controller {
 			}
 
 			// Now we'll splice in our new category to the array.
-			// Thus, we now have an array in the proper order, with the new
-			// category added in alphabetically
+			// Thus, we now have an array in the proper order
 			array_splice($cat_array, $position, 0, $cat_id);
 
 			// Lastly, update the whole list
-
 			$i = 1;
 			foreach ($cat_array as $val)
 			{
@@ -2432,7 +2427,7 @@ class Admin_content extends CI_Controller {
 			$update = TRUE;
 
 			// need this later for custom fields
-			$field_cat_id = $this->input->post('cat_id');
+			$cat_id = $this->input->post('cat_id');
 		}
 
 		// Insert / Update Custom Field Data
@@ -2440,14 +2435,14 @@ class Admin_content extends CI_Controller {
 		if ($edit == FALSE)
 		{
 			$fields['site_id'] = $this->config->item('site_id');
-			$fields['cat_id'] = $field_cat_id;
+			$fields['cat_id'] = $cat_id;
 			$fields['group_id'] = $group_id;
 
 			$this->db->insert('category_field_data', $fields);
 		}
 		elseif ( ! empty($fields))
 		{
-			$this->db->query($this->db->update_string('exp_category_field_data', $fields, array('cat_id' => $field_cat_id)));
+			$this->db->query($this->db->update_string('exp_category_field_data', $fields, array('cat_id' => $cat_id)));
 		}
 
 		$this->functions->clear_caching('relationships');
@@ -2515,9 +2510,6 @@ class Admin_content extends CI_Controller {
 		}
 		
 		$order = ($_POST['sort_order'] == 'a') ? 'a' : 'c';
-		
-		$this->db->select('sort_order');
-		$query = $this->db->get_where('category_groups', array('group_id' => $group_id));
 		
 		if ($order == 'a')
 		{

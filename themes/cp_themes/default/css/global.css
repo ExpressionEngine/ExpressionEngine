@@ -382,10 +382,6 @@ select.select {
 	width: 99%;
 }
 
-.pageContents span.button .submit,
-span.button .submit{
-	color: #546875;
-}
 
 /* for those elements that just don't like to be next to each other */
 .shun {
