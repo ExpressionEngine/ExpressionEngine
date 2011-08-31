@@ -126,7 +126,7 @@ class Api_channel_categories extends Api {
 				$sel = (isset($catarray[$key])) ? TRUE : FALSE;
 				$depth = 1;
 
-				$this->categories[$key] = array($key, $val[1], $val[2], $val[3], $sel, $depth);
+				$this->categories[$key] = array($key, $val[1], (int) $val[2], $val[3], $sel, $depth, FALSE);
 				//$this->categories[$key] = array('cat_id' => $key, 'cat_name' => $val['1'], 'group_id' => $val['2'], 'group_name' => $val['3'], 'selected' => $sel, 'depth' => $depth);				
 				$this->_category_subtree($key, $cat_array, $depth, $selected);
 			}
@@ -169,7 +169,7 @@ class Api_channel_categories extends Api {
 			if ($cat_id == $val['0'])
 			{
 				$sel = (isset($catarray[$key])) ? TRUE : FALSE;
-				$this->categories[$key] = array($key, $val['1'], $val['2'], $val['3'], $sel, $depth);
+				$this->categories[$key] = array($key, $val['1'], (int) $val['2'], $val['3'], $sel, $depth, (int) $val[0]);
 				//$this->categories[$key] = array('cat_id' => $key, 'cat_name' => $val['1'], 'group_id' => $val['2'], 'group_name' => $val['3'], 'selected' => $sel, 'depth' => $depth);					
 				
 				$this->_category_subtree($key, $cat_array, $depth, $selected);

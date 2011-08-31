@@ -1777,12 +1777,14 @@ class Safecracker_lib
 				'category_name' => $category_info[1],
 				'category_group_id' => $category_info[2],
 				'category_group' => $category_info[3],
+				'category_parent' => $category_info[6],
+				'category_depth' => $category_info[5],
 
 				'selected' => $category_info[4],
 				'checked' => $category_info[4]
 			);
 		}
-
+		
 		$this->categories = $categories;
 	}
 
