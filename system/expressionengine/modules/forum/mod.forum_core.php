@@ -7633,7 +7633,9 @@ class Forum_Core extends Forum {
 				$member_ids[] = $row['member_id'];
 			}
 			
-			$this->EE->db->query("DELETE FROM exp_forum_subscriptions WHERE topic_id = '{$merge_id}' AND member_id IN (".implode(',', $member_ids).")");
+			$this->EE->db->where('topic_id', $merge_id);
+			$this->EE->db->where_in('member_id', $member_ids);
+			$this->EE->db->delete('forum_subscriptions');
 		}
 		
 		$this->EE->db->query("UPDATE exp_forum_subscriptions SET topic_id = '{$topic_id}' WHERE topic_id = '{$merge_id}'");
@@ -7780,7 +7782,10 @@ class Forum_Core extends Forum {
 		// The earliest ID will become the topic so just to be
 		// safe we'll fetch the post_ids based on date
 	
-		$query = $this->EE->db->query("SELECT post_id, post_date, author_id FROM exp_forum_posts WHERE post_id IN (".implode(', ', $_POST['post_id']).") ORDER BY post_date ASC");
+		$query = $this->EE->db->select('post_id, post_date, author_id')
+			->where_in('post_id', $_POST['post_id'])
+			->order_by('post_date', 'asc')
+			->get('forum_posts');
 
 		if ($query->num_rows() == 0)
 		{
@@ -8380,35 +8385,35 @@ class Forum_Core extends Forum {
 		{
 			// Delete the user and kill all posts
 			// first fetch affected forum topics for stat updating later
-			$tquery = $this->EE->db->query("SELECT topic_id FROM exp_forum_topics WHERE author_id ='{$this->current_id}'");
-			$pquery = $this->EE->db->query("SELECT topic_id FROM exp_forum_posts WHERE author_id = '{$this->current_id}'");
-			$topics = array();
-			$ids	= array();
+			$forum_topics_query	= $this->EE->db->query("SELECT topic_id FROM exp_forum_topics WHERE author_id ='{$this->current_id}'");
+			$forum_posts_query 	= $this->EE->db->query("SELECT topic_id FROM exp_forum_posts WHERE author_id = '{$this->current_id}'");
+			$topics 			= array();
+			$topic_ids			= array();
 			
-			if ($tquery->num_rows() > 0)
+			if ($forum_topics_query->num_rows() > 0)
 			{
-				foreach ($tquery->result_array() as $row)
+				foreach ($forum_topics_query->result_array() as $row)
 				{
 					$topics[] = $row['topic_id'];
-					$ids[] = "topic_id = '".$row['topic_id']."'";
+					$topic_ids[] = $row['topic_id'];
 				}
 			}
 
-			if ($pquery->num_rows() > 0)
+			if ($forum_posts_query->num_rows() > 0)
 			{
-				foreach ($pquery->result_array() as $row)
+				foreach ($forum_posts_query->result_array() as $row)
 				{
 					$topics[] = $row['topic_id'];
 				}
 			}
 			
-			$topics = array_unique($topics);			
-			$IDS = implode(" OR ", $ids);
+			$topics = array_unique($topics);
 			
 			// Delete any posts from other users that belong to topics that we will be decimating shortly
-			if ($IDS != '')
+			if ( ! empty($topic_ids))
 			{
-				$this->EE->db->query("DELETE FROM exp_forum_posts WHERE ".$IDS);				
+				$this->EE->db->where_in('topic_id', $topic_ids)
+					->delete('forum_posts');
 			}
 			
 			// Now we can zap the rest
