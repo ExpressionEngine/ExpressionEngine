@@ -5965,7 +5965,7 @@ class Wiki {
 	
 	function update_module($current='')
 	{
-		if ($current == '' OR $current == $this->version)
+		if ($current == '' OR version_compare($current, $this->version, '==')))
 		{
 			return FALSE;
 		}

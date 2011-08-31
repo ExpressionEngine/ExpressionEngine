@@ -169,7 +169,7 @@ class Ip_to_nation_upd {
 	 */
 	function update($current='')
 	{
-		if ($current == '' OR $current == $this->version)
+		if ($current == '' OR version_compare($current, $this->version, '==')))
 		{
 			return FALSE;
 		}

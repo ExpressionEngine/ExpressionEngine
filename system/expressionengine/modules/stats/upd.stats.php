@@ -87,7 +87,7 @@ class Stats_upd {
 	 */
 	function update($current='')
 	{
-		if ($current == $this->version)
+		if (version_compare($current, $this->version, '==')))
 		{
 			return FALSE;
 		}
