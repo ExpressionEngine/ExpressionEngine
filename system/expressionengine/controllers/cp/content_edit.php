@@ -1525,6 +1525,7 @@ class Content_edit extends CI_Controller {
 							'title'				=> strip_tags($_POST['title'][$id]),
 							'url_title'			=> $_POST['url_title'][$id],
 							'entry_date'		=> $_POST['entry_date'][$id],
+							'edit_date'			=> date("YmdHis"),
 							'status'			=> $_POST['status'][$id],
 							'sticky'			=> (isset($_POST['sticky'][$id]) AND $_POST['sticky'][$id] == 'y') ? 'y' : 'n',
 							'allow_comments'	=> (isset($_POST['allow_comments'][$id]) AND $_POST['allow_comments'][$id] == 'y') ? 'y' : 'n'
