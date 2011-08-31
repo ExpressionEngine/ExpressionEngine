@@ -1001,11 +1001,13 @@ class EE_Typography extends CI_Typography {
 			$alt = substr($alt, strrpos($alt, '/')+1);
 		}
 		
-		if (preg_match("/(.*?(?:\.[^\s]{2,10}))(.*?)$/", $matches[1], $url_matches))
+		if (preg_match("/(.*?(?:\.[^\s]{2,10}))(.*?)$/", $url, $url_matches))
 		{
-			var_dump($url_matches);
-			// $url_matches = explode(' ', $url, 2);
-			// $url = $url_matches[0];
+			$url = $url_matches[1];
+			
+			// Contains all of the other properties of the image
+			// These are currently discarded
+			$other = $url_matches[2];
 		}
 		
 		return "<img src=\"{$url}\" alt=\"{$alt}\"{$width}{$height} />";
