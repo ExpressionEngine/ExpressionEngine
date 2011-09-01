@@ -181,7 +181,7 @@ class Metaweblog_api_upd {
 
 	function update($version = '')
 	{
-		if ($version < 2 && $this->EE->db->table_exists('exp_metaweblog_api'))
+		if (version_compare($version, '2', '<') && $this->EE->db->table_exists('exp_metaweblog_api'))
 		{
 			$existing_fields = array();
 
@@ -203,7 +203,7 @@ class Metaweblog_api_upd {
 			}
 		}
 		
-		if ($version < 2.1)
+		if (version_compare($version, '2.1', '<'))
 		{
 			// nothing to see here!
 		}
