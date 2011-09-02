@@ -203,7 +203,83 @@ class Wiki_upd {
 	
 	function update($current='')
 	{
-		if ($current < 2.0)
+		if (version_compare($current, '1.1', '<'))
+    	{
+			$this->EE->load->dbforge();
+			$this->EE->dbforge->drop_column('wikis', 'wiki_namespaces_list');
+			$this->EE->dbforge->add_field(array(
+				'namespace_id' => array(
+					'type'				=> 'int',
+					'constraint'		=> 6,
+					'auto_increment'	=> TRUE
+				),
+				'wiki_id' => array(
+					'type'				=> 'int',
+					'constraint'		=> 10,
+					'unsigned'			=> TRUE
+				),
+				'namespace_name' => array(
+					'type'				=> 'varchar',
+					'constraint'		=> 100
+				),
+				'namespace_label' => array(
+					'type'				=> 'varchar',
+					'constraint'		=> 150
+				),
+				'namespace_users' => array(
+					'type'				=> 'text'
+					'null'				=> TRUE
+				),
+				'namespace_admins' => array(
+					'type'				=> 'text',
+					'null'				=> TRUE
+				),
+			));
+			$this->EE->dbforge->add_key('namespace_id', TRUE);
+			$this->EE->dbforge->add_key('wiki_id');
+			$this->EE->dbforge->create_table('wiki_namespaces');
+    	
+    		/* -------------------------------
+    		/*  The Category NS needs a non-changing short name, so we use 
+    		/*  'category'.  Prior to this it was using the Label, so we need
+    		/*  to do a conversion for any category articles already in the 
+    		/*  exp_wiki_page database table.
+    		/* -------------------------------*/
+    		
+			$this->EE->db->where('page_namespace', lang('category_ns'));
+			$this->EE->db->update('wiki_page', array(
+				'page_namespace' => 'category'
+			));
+    	}
+
+		if (version_compare($current, '1.2', '<'))
+		{
+			$this->EE->load->dbforge();
+			
+			$this->EE->dbforge->add_column(
+				'wiki_page', 
+				array(
+					'last_revision_id' => array(
+						'type'			=> 'int',
+						'constraint'	=> 10
+					)
+				), 
+				'last_updated'
+			);
+			
+			$this->EE->db->query("
+				UPDATE exp_wiki_page, exp_wiki_revisions
+				SET exp_wiki_page.last_revision_id = 
+					(
+						SELECT MAX(exp_wiki_revisions.revision_id)
+						FROM exp_wiki_revisions
+						WHERE exp_wiki_revisions.page_id = exp_wiki_page.page_id
+					)
+				WHERE exp_wiki_page.page_id = exp_wiki_revisions.page_id"
+			);
+		}
+		
+		if (version_compare($current, '2.0', '<'))
 		{
 			$this->EE->db->query("ALTER TABLE `exp_wiki_category_articles` DROP KEY `page_id`");
 			$this->EE->db->query("ALTER TABLE `exp_wiki_category_articles` DROP KEY `cat_id`");
@@ -214,17 +290,17 @@ class Wiki_upd {
 			$this->EE->db->query("ALTER TABLE `exp_wiki_page` CHANGE `last_revision_id` `last_revision_id` INT(10) NULL DEFAULT NULL");
 		}
 		
-		if ($current < 2.1)
+		if (version_compare($current, '2.1', '<'))
 		{
 			$this->EE->db->query("ALTER TABLE `exp_wiki_page` CHANGE `page_namespace` `page_namespace` VARCHAR(125) NOT NULL DEFAULT ''");
 		}
 		
-		if ($current < 2.2)
+		if (version_compare($current, '2.2', '<'))
 		{
 			$this->EE->db->query("ALTER TABLE `exp_wiki_search` ADD COLUMN search_date int(10) NOT NULL AFTER wiki_search_id");
 		}
 		
-		if ($current < 2.3)
+		if (version_compare($current, '2.3', '<'))
 		{
 			// Add Extension Hook
 			$this->EE->db->insert('extensions', array(

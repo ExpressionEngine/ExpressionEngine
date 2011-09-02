@@ -142,7 +142,7 @@ class Blacklist_upd {
 	 */
 	function update($current='')
 	{
-		if ($current < '3.0.1')
+		if (version_compare($current, '3.0.1', '<'))
 		{
 			$this->EE->load->dbforge();
 			
@@ -162,7 +162,7 @@ class Blacklist_upd {
 			}
 		}
 		
-		if ($current < 3.0)
+		if (version_compare($current, '3.0', '<'))
 		{
 			$this->EE->load->dbforge();
 

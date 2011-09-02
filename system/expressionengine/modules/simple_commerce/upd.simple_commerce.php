@@ -185,7 +185,7 @@ class Simple_commerce_upd {
 	 */	
 	function update($current = '')
 	{
-		if ($current < 2.0)
+		if (version_compare($current, '2.0', '<'))
 		{
 			$this->EE->db->query("ALTER TABLE `exp_simple_commerce_purchases` CHANGE `paypal_details` `paypal_details` TEXT NULL DEFAULT NULL");			
 

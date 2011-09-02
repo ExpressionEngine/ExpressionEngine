@@ -141,13 +141,13 @@ class Pages_upd {
 			return FALSE;
 		}
 		
-		if ($current < '2.1')
+		if (version_compare($current, '2.1', '<'))
 		{
 			$this->EE->db->where('module_name', 'Pages');
 			$this->EE->db->update('modules', array('has_publish_fields' => 'y'));
 		}
 		
-		if ($current < '2.2')
+		if (version_compare($current, '2.2', '<'))
 		{
 			$this->_do_22_update();
 		}

@@ -138,7 +138,7 @@ class Moblog_upd {
 
 	function update($current = '')
 	{
-		if ($current == $this->version)
+		if (version_compare($current, $this->version, '==')))
 		{
 			return FALSE;
 		}
@@ -147,7 +147,7 @@ class Moblog_upd {
 		/**  Update Fields
 		/** ----------------------------------*/
 
-		if ($current < 2.0)
+		if (version_compare($current, '2.0', '<'))
 		{
 			$new_fields = array(
 				'moblog_type' => array(
@@ -188,7 +188,7 @@ class Moblog_upd {
 			$this->_add_fields($new_fields);
 		}
 
-		if ($current < 3.0)
+		if (version_compare($current, '3.0', '<'))
 		{
 			$this->EE->load->dbforge();
 
@@ -206,7 +206,7 @@ class Moblog_upd {
 			));
 		}
 
-		if ($current < 3.1)
+		if (version_compare($current, '3.1', '<'))
 		{
 			// Add new columns
 			$new_fields = array(

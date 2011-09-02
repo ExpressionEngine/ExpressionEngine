@@ -125,7 +125,7 @@ class Search_upd {
 	
 	function update($current='')
 	{
-		if ($current < 2.1)
+		if (version_compare($current, '2.1', '<'))
 		{
 			$this->EE->load->library('utf8_db_convert');			
 			

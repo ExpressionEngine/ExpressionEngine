@@ -2259,14 +2259,14 @@ class Admin_content extends CI_Controller {
 		if ($edit == FALSE)
 		{
 			$category_data = array(
-							'group_id' => $this->input->post('group_id'),
-							'cat_name'  => $this->input->post('cat_name'),
-							'cat_url_title' => $this->input->post('cat_url_title'),
-							'cat_description' => $this->input->post('cat_description'),
-							'cat_image' => $this->input->post('cat_image'),
-							'parent_id' => $this->input->post('parent_id'),
-							'cat_order' => $this->input->post('cat_order'),
-							'site_id' => $this->input->post('site_id')
+							'group_id'			=> $group_id,
+							'cat_name'			=> $this->input->post('cat_name'),
+							'cat_url_title'		=> $this->input->post('cat_url_title'),
+							'cat_description'	=> $this->input->post('cat_description'),
+							'cat_image'			=> $this->input->post('cat_image'),
+							'parent_id'			=> $this->input->post('parent_id'),
+							'cat_order'			=> 1, // Default to the new category appearing first
+							'site_id'			=> $this->input->post('site_id')
 			);
 
 			$this->db->insert('categories', $category_data);
@@ -2274,62 +2274,12 @@ class Admin_content extends CI_Controller {
 
 			$update = FALSE;
 
-			// Re-order categories contingent upon the group's sort order.
-			// If a custom sort order is in use the new category will simply
-			// show up first and they can have their way with it.
-			$position = 0;
-
-			$this->db->select('sort_order');
-			$query = $this->db->get_where('category_groups', array('group_id' => $group_id));
-			
-			if ($query->num_rows() == 1 && $query->row()->sort_order == 'a')
-			{
-				// Fetch all the categories alphabetically and assign
-				// the position of our new category
-				$this->db->select('cat_id, cat_name');
-				$this->db->where('group_id', $group_id);
-				$this->db->where('parent_id', $_POST['parent_id']);
-				$this->db->order_by('cat_name', 'ASC');
-				$query = $this->db->get('categories');
-
-				foreach ($query->result_array() as $row)
-				{
-					if ($_POST['cat_name'] == $row['cat_name'])
-					{
-						break;
-					}
-	
-					$position++;
-				}
-			}
-
-			// Now we'll fetch the list of categories
-			// and create an array with the category ID numbers
-			$this->db->select('cat_id, cat_name');
+			// Increment each pre-existing category's sort order to make room for the n00b
+			$this->db->set('cat_order', 'cat_order + 1', FALSE);
+			$this->db->where('cat_id !=', $cat_id);
 			$this->db->where('group_id', $group_id);
 			$this->db->where('parent_id', $_POST['parent_id']);
-			$this->db->where('cat_id !=', $cat_id);
-			$this->db->order_by('cat_order');
-			$query = $this->db->get('categories');
-
-			$cat_array = array();
-
-			foreach ($query->result_array() as $row)
-			{
-				$cat_array[] = $row['cat_id'];
-			}
-
-			// Now we'll splice in our new category to the array.
-			// Thus, we now have an array in the proper order
-			array_splice($cat_array, $position, 0, $cat_id);
-
-			// Lastly, update the whole list
-			$i = 1;
-			foreach ($cat_array as $val)
-			{
-				$this->db->query("UPDATE exp_categories SET cat_order = '$i' WHERE cat_id = '$val'");
-				$i++;
-			}
+			$this->db->update('categories');
 		}
 		else
 		{
@@ -2430,8 +2380,16 @@ class Admin_content extends CI_Controller {
 			$cat_id = $this->input->post('cat_id');
 		}
 
-		// Insert / Update Custom Field Data
+		// Need to re-sort alphabetically now?
+		$this->db->select('sort_order');
+		$query = $this->db->get_where('category_groups', array('group_id' => $group_id));
 
+		if ($query->num_rows() == 1 && $query->row()->sort_order == 'a')
+		{
+			$this->_reorder_cats_alphabetically($group_id);
+		}
+
+		// Insert / Update Custom Field Data
 		if ($edit == FALSE)
 		{
 			$fields['site_id'] = $this->config->item('site_id');
@@ -2519,7 +2477,7 @@ class Admin_content extends CI_Controller {
 			}
 			else
 			{
-				$this->reorder_cats_alphabetically();
+				$this->_reorder_cats_alphabetically($group_id);
 			}
 		}
 
@@ -2585,25 +2543,13 @@ class Admin_content extends CI_Controller {
 	/**  Re-order Categories Alphabetically
 	/** --------------------------------*/
 
-	function reorder_cats_alphabetically()
+	private function _reorder_cats_alphabetically($group_id)
 	{
-		if (AJAX_REQUEST)
-		{
-			if ( ! $this->cp->allowed_group('can_edit_categories'))
-			{
-				show_error(lang('unauthorized_access'));
-			}
-		}
-		else
-		{
-			$this->_restrict_prefs_access();
-		}
-
-		if (($group_id = $this->input->get_post('group_id')) === FALSE OR ! is_numeric($group_id))
+		if ( ! isset($group_id) OR ! is_numeric($group_id))
 		{
 			return FALSE;
 		}
-				
+		
 		$data = $this->process_category_group($group_id);
 		
 		if (count($data) == 0)
