@@ -962,16 +962,14 @@ class EE_Typography extends CI_Typography {
 	// --------------------------------------------------------------------	
 	
 	/**
-	 * Make images safe
+	 * Make images safe, limited what attributes are carried through
 	 *
-	 * This simply removes parenthesis so that javascript event handlers
+	 * This also removes parenthesis so that javascript event handlers
 	 * can't be invoked. 
 	 */
 	public function image_sanitize($matches)
 	{
-		$marker_pos = strpos($matches[1], $this->safe_img_src_end);
-		$url = substr($matches[1], 0, $marker_pos);
-		$extra = str_replace($this->safe_img_src_end, '', substr($matches[1], $marker_pos));
+		list($url, $extra) = explode($marker, $matches[1]);
 		
 		$url = str_replace(array('(', ')'), '', $url);
 
