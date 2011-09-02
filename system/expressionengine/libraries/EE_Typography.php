@@ -221,7 +221,7 @@ class EE_Typography extends CI_Typography {
 		{
 			return $str;
 		}
-		
+
 		foreach ($this->EE->functions->fetch_file_paths() as $key => $val)
 		{
 			$str = str_replace(array("{filedir_{$key}}", "&#123;filedir_{$key}&#125;"), $val, $str);
@@ -969,7 +969,7 @@ class EE_Typography extends CI_Typography {
 	 */
 	public function image_sanitize($matches)
 	{
-		list($url, $extra) = explode($marker, $matches[1]);
+		list($url, $extra) = explode($this->safe_img_src_end, $matches[1]);
 		
 		$url = str_replace(array('(', ')'), '', $url);
 
@@ -977,33 +977,19 @@ class EE_Typography extends CI_Typography {
 		$width	= '';
 		$height	= '';
 
-		if (preg_match("/\s+width=(\"|\')([^\\1]*?)\\1/", $extra, $width_match))
+		foreach (array('width', 'height', 'alt') as $attr)
 		{
-			$width = $width_match[0];
-		}
-
-		if (preg_match("/\s+height=(\"|\')([^\\1]*?)\\1/", $extra, $height_match))
-		{	
-			$height = $height_match[0];
-		}
-
-		if (preg_match("/\s+alt=(\"|\')([^\\1]*?)\\1/", $extra, $alt_match))
-		{
-			$alt = str_replace(array('"', "'"), '', $alt_match[2]);
-		}
-		else
-		{
-			$alt = str_replace(array('"', "'"), '', $url);
-			
-			if (substr($alt, -1) == '/')
+			if (preg_match("/\s+{$attr}=(\"|\')([^\\1]*?)\\1/", $extra, $attr_match))
 			{
-				$alt = substr($alt, 0, -1);
+				${$attr} = $attr_match[0];
 			}
-			
-			$alt = substr($alt, strrpos($alt, '/')+1);
+			elseif ($attr == 'alt')	// always make sure there's some alt text
+			{
+				$alt = 'alt="'.htmlentities($url).'" ';
+			}
 		}
 		
-		return "<img src=\"{$url}\" alt=\"{$alt}\"{$width}{$height} />";
+		return "<img src=\"{$url}\" {$alt}{$width}{$height} />";
 	}
 
 	// --------------------------------------------------------------------	
