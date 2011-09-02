@@ -52,7 +52,8 @@ class EE_Typography extends CI_Typography {
 	var $code_chunks				= array();
 	var $code_counter				= 0;
 	var $http_hidden 				= NULL; // hash to protect URLs in [url] BBCode
-	
+	var $safe_img_src_end			= NULL; // hash to mark end of image URLs during sanitizing of image tags
+
 	// Allowed tags  Note: Specified in initialize()
 	var $safe_encode = array();
 	var $safe_decode = array();
@@ -130,6 +131,7 @@ class EE_Typography extends CI_Typography {
 		$this->EE->load->helper('string');
 		
 		$this->http_hidden 			= unique_marker('typography_url_protect'); // hash to protect URLs in [url] BBCode
+		$this->safe_img_src_end		= unique_marker('typography_img_src_end'); // hash to mark end of image URLs during sanitizing of image tags
 
 		foreach ($config as $key => $val)
 		{
@@ -608,7 +610,7 @@ class EE_Typography extends CI_Typography {
 		
 		if (stristr($str, '<img') !== FALSE)
 		{
-			$str = preg_replace("#<img(.*?)src=\s*[\"'](.+?)[\"'](.*?)\s*\>#si", "[img]\\2\\3\\1[/img]", $str);
+			$str = preg_replace("#<img(.*?)src=\s*[\"'](.+?)[\"'](.*?)\s*\>#si", "[img]\\2{$this->safe_img_src_end}\\3\\1[/img]", $str);
 		}
 		
 		if (stristr($str, '://') !== FALSE)
@@ -967,26 +969,28 @@ class EE_Typography extends CI_Typography {
 	 */
 	public function image_sanitize($matches)
 	{
-		$url = str_replace(array('(', ')'), '', $matches['1']);
+		$marker_pos = strpos($matches[1], $this->safe_img_src_end);
+		$url = substr($matches[1], 0, $marker_pos);
+		$extra = str_replace($this->safe_img_src_end, '', substr($matches[1], $marker_pos));
+		
+		$url = str_replace(array('(', ')'), '', $url);
 
-		$width = '';
-		$height = '';
+		$alt	= '';
+		$width	= '';
+		$height	= '';
 
-		if (preg_match("/\s+width=(\"|\')([^\\1]*?)\\1/", $matches[1], $width_match))
+		if (preg_match("/\s+width=(\"|\')([^\\1]*?)\\1/", $extra, $width_match))
 		{
-			$url = trim(str_replace($width_match[0], '', $url));
 			$width = $width_match[0];
 		}
 
-		if (preg_match("/\s+height=(\"|\')([^\\1]*?)\\1/", $matches[1], $height_match))
+		if (preg_match("/\s+height=(\"|\')([^\\1]*?)\\1/", $extra, $height_match))
 		{	
-			$url = trim(str_replace($height_match[0], '', $url));
 			$height = $height_match[0];
 		}
 
-		if (preg_match("/\s+alt=(\"|\')([^\\1]*?)\\1/", $matches[1], $alt_match))
+		if (preg_match("/\s+alt=(\"|\')([^\\1]*?)\\1/", $extra, $alt_match))
 		{
-			$url = trim(str_replace($alt_match[0], '', $url));
 			$alt = str_replace(array('"', "'"), '', $alt_match[2]);
 		}
 		else
@@ -999,15 +1003,6 @@ class EE_Typography extends CI_Typography {
 			}
 			
 			$alt = substr($alt, strrpos($alt, '/')+1);
-		}
-		
-		if (preg_match("/(.*?(?:\.[^\s]{2,10}))(.*?)$/", $url, $url_matches))
-		{
-			$url = $url_matches[1];
-			
-			// Contains all of the other properties of the image
-			// These are currently discarded
-			$other = $url_matches[2];
 		}
 		
 		return "<img src=\"{$url}\" alt=\"{$alt}\"{$width}{$height} />";
