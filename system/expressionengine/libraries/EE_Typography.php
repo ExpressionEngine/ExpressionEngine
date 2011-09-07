@@ -610,7 +610,7 @@ class EE_Typography extends CI_Typography {
 		
 		if (stristr($str, '<img') !== FALSE)
 		{
-			$str = preg_replace("#<img(.*?)src=\s*[\"'](.+?)[\"'](.*?)\s*\>#si", "[img]\\2{$this->safe_img_src_end}\\3\\1[/img]", $str);
+			$str = preg_replace("#<img(.*?)src=\s*[\"'](.+?)[\"'](.*?)\s*\>#si", "[img]\${2}{$this->safe_img_src_end}\\3\\1[/img]", $str);
 		}
 		
 		if (stristr($str, '://') !== FALSE)
