@@ -555,7 +555,7 @@ class Forum_upd {
 	
 	function update($current='')
 	{
-		if (version_compare($current, $this->version, '==')))
+		if (version_compare($current, $this->version, '=='))
 		{
 			return FALSE;
 		}
