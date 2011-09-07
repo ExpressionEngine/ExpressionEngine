@@ -985,7 +985,7 @@ class EE_Typography extends CI_Typography {
 			}
 			elseif ($attr == 'alt')	// always make sure there's some alt text
 			{
-				$alt = 'alt="'.htmlentities($url).'" ';
+				$alt = 'alt="" ';
 			}
 		}
 		
