@@ -52,7 +52,8 @@ class EE_Typography extends CI_Typography {
 	var $code_chunks				= array();
 	var $code_counter				= 0;
 	var $http_hidden 				= NULL; // hash to protect URLs in [url] BBCode
-	
+	var $safe_img_src_end			= NULL; // hash to mark end of image URLs during sanitizing of image tags
+
 	// Allowed tags  Note: Specified in initialize()
 	var $safe_encode = array();
 	var $safe_decode = array();
@@ -130,6 +131,7 @@ class EE_Typography extends CI_Typography {
 		$this->EE->load->helper('string');
 		
 		$this->http_hidden 			= unique_marker('typography_url_protect'); // hash to protect URLs in [url] BBCode
+		$this->safe_img_src_end		= unique_marker('typography_img_src_end'); // hash to mark end of image URLs during sanitizing of image tags
 
 		foreach ($config as $key => $val)
 		{
@@ -219,7 +221,7 @@ class EE_Typography extends CI_Typography {
 		{
 			return $str;
 		}
-		
+
 		foreach ($this->EE->functions->fetch_file_paths() as $key => $val)
 		{
 			$str = str_replace(array("{filedir_{$key}}", "&#123;filedir_{$key}&#125;"), $val, $str);
@@ -608,7 +610,7 @@ class EE_Typography extends CI_Typography {
 		
 		if (stristr($str, '<img') !== FALSE)
 		{
-			$str = preg_replace("#<img(.*?)src=\s*[\"'](.+?)[\"'](.*?)\s*\>#si", "[img]\\2\\3\\1[/img]", $str);
+			$str = preg_replace("#<img(.*?)src=\s*[\"'](.+?)[\"'](.*?)\s*\>#si", "[img]\\2{$this->safe_img_src_end}\\3\\1[/img]", $str);
 		}
 		
 		if (stristr($str, '://') !== FALSE)
@@ -960,62 +962,34 @@ class EE_Typography extends CI_Typography {
 	// --------------------------------------------------------------------	
 	
 	/**
-	 * Make images safe
+	 * Make images safe, limited what attributes are carried through
 	 *
-	 * This simply removes parenthesis so that javascript event handlers
+	 * This also removes parenthesis so that javascript event handlers
 	 * can't be invoked. 
 	 */
 	public function image_sanitize($matches)
 	{
-		$url = str_replace(array('(', ')'), '', $matches['1']);
+		list($url, $extra) = explode($this->safe_img_src_end, $matches[1]);
+		
+		$url = str_replace(array('(', ')'), '', $url);
 
-		$width = '';
-		$height = '';
+		$alt	= '';
+		$width	= '';
+		$height	= '';
 
-		if (preg_match("/\s+width=(\"|\')([^\\1]*?)\\1/", $matches[1], $width_match))
+		foreach (array('width', 'height', 'alt') as $attr)
 		{
-			$url = trim(str_replace($width_match[0], '', $url));
-			$width = $width_match[0];
-		}
-
-		if (preg_match("/\s+height=(\"|\')([^\\1]*?)\\1/", $matches[1], $height_match))
-		{	
-			$url = trim(str_replace($height_match[0], '', $url));
-			$height = $height_match[0];
-		}
-
-		if (preg_match_all("/\s+alt=(\"|\')([^\\1]*?)\\1/", $matches[1], $alt_match, PREG_SET_ORDER))
-		{
-			// If there's more than one match for alt, use the first and remove the second
-			if (isset($alt_match[1]) AND is_array($alt_match[1]))
+			if (preg_match("/\s+{$attr}=(\"|\')([^\\1]*?)\\1/", $extra, $attr_match))
 			{
-				$alt_tag = $alt_match[0][0];
-				$alt_value = $alt_match[2][0];
-				
-				$url = trim(str_replace($alt_match[0][1], '', $url));
+				${$attr} = $attr_match[0];
 			}
-			else
+			elseif ($attr == 'alt')	// always make sure there's some alt text
 			{
-				$alt_tag = $alt_match[0][0];
-				$alt_value = $alt_match[0][2];
+				$alt = 'alt="" ';
 			}
-
-			$url = trim(str_replace($alt_tag, '', $url));
-			$alt = str_replace(array('"', "'"), '', $alt_value);
-		}
-		else
-		{
-			$alt = str_replace(array('"', "'"), '', $url);
-			
-			if (substr($alt, -1) == '/')
-			{
-				$alt = substr($alt, 0, -1);
-			}
-			
-			$alt = substr($alt, strrpos($alt, '/')+1);
 		}
 		
-		return "<img src=\"{$url}\" alt=\"{$alt}\"{$width}{$height} />";
+		return "<img src=\"{$url}\" {$alt}{$width}{$height} />";
 	}
 
 	// --------------------------------------------------------------------	
