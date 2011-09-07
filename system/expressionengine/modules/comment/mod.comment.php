@@ -93,6 +93,7 @@ class Comment {
 		$paginate			= FALSE;
 		$paginate_data		= '';
 		$pagination_links	= '';
+		$pagination_array	= '';
 		$page_next			= '';
 		$page_previous		= '';
 		$current_page		= 0;
@@ -580,6 +581,8 @@ class Comment {
 
 				$this->EE->pagination->initialize($config);
 				$pagination_links = $this->EE->pagination->create_links();
+				$this->EE->pagination->initialize($config); // Re-initialize to reset config
+				$pagination_array = $this->EE->pagination->create_link_array();
 
 				if ((($total_pages * $limit) - $limit) > $current_page)
 				{
@@ -1282,10 +1285,40 @@ class Comment {
 		/** ----------------------------------------*/
 		if ($paginate == TRUE)
 		{
-			$paginate_data = str_replace(LD.'current_page'.RD, 	$t_current_page, 	$paginate_data);
-			$paginate_data = str_replace(LD.'total_pages'.RD,		$total_pages,  		$paginate_data);
-			$paginate_data = str_replace(LD.'pagination_links'.RD,	$pagination_links,	$paginate_data);
+			// Check to see if pagination_links is being used as a single 
+			// variable or as a variable pair
+			if (preg_match_all("/".LD."pagination_links".RD."(.+?)".LD.'\/'."pagination_links".RD."/s", $paginate_data, $matches))
+			{
+				$pagination_links = array($pagination_array);
+			}
+			else
+			{
+				$pagination_links = $pagination_links;
+			}
 
+			// Parse current_page and total_pages by default
+			$parse_array = array(
+				'current_page' => $t_current_page,
+				'total_pages' => $total_pages,
+			);
+
+			// Check to see if pagination_links is being used as a single 
+			// variable or as a variable pair
+			if (preg_match_all("/".LD."pagination_links".RD."(.+?)".LD.'\/'."pagination_links".RD."/s", $paginate_data, $matches))
+			{
+				$parse_array['pagination_links'] = array($pagination_array);
+			}
+			else
+			{
+				$parse_array['pagination_links'] = $pagination_links;
+			}
+			
+			// Parse current_page and total_pages
+			$paginate_data = $this->EE->TMPL->parse_variables(
+				$paginate_data,
+				array($parse_array)
+			);
+			
 			if (preg_match("/".LD."if previous_page".RD."(.+?)".LD.'\/'."if".RD."/s", $paginate_data, $match))
 			{
 				if ($page_previous == '')
