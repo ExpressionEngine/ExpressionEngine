@@ -2824,7 +2824,7 @@ class EE_Functions {
 	 */
 	function fetch_file_paths()
 	{
-		if (count($this->file_paths) > 0)
+		if ( ! empty($this->file_paths))
 		{
 			return $this->file_paths;
 		}
