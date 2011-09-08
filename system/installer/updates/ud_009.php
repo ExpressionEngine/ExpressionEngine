@@ -37,7 +37,7 @@ class Updater {
 		
 		$this->EE->db->query("insert into exp_template_groups(group_name, group_order) values ('search', '$num')");
 		
-		$id = $DB->insert_id;
+		$id = $this->EE->db->insert_id();
 		
 		$Q[] = "insert into exp_templates(group_id, template_name, template_data) values ('$id', 'index', '".addslashes(search_index())."')";
 		$Q[] = "insert into exp_templates(group_id, template_name, template_data) values ('$id', 'results', '".addslashes(search_results())."')";

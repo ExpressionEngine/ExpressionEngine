@@ -27,6 +27,7 @@ if ($EE_view_disable !== TRUE)
 			$this->table->add_row(array(
 					form_label(required().lang('username'), 'username').NBS.form_error('username'),
 					form_input(array(
+						'id'	=> 'username',
 						'name'	=> 'username',
 						'class' => 'field',
 						'maxlength' => 50,
@@ -40,6 +41,7 @@ if ($EE_view_disable !== TRUE)
 			$this->table->add_row(array(
 					form_label(required().lang('password'), 'password').NBS.form_error('password'),
 					form_password(array(
+						'id'	=> 'password',
 						'name'	=> 'password',
 						'class' => 'field',
 						'maxlength' => 40,
@@ -53,6 +55,7 @@ if ($EE_view_disable !== TRUE)
 			$this->table->add_row(array(
 					form_label(required().lang('password_confirm'), 'password_confirm').NBS.form_error('password_confirm'),
 					form_password(array(
+						'id'	=> 'password_confirm',
 						'name'	=> 'password_confirm',
 						'class' => 'field',
 						'maxlength' => 40,
@@ -66,6 +69,7 @@ if ($EE_view_disable !== TRUE)
 			$this->table->add_row(array(
 					form_label(lang('screen_name'), 'screen_name').NBS.form_error('screen_name'),
 					form_input(array(
+						'id'	=> 'screen_name',
 						'name'	=> 'screen_name',
 						'class' => 'field',
 						'maxlength' => 50,
@@ -79,6 +83,7 @@ if ($EE_view_disable !== TRUE)
 			$this->table->add_row(array(
 					form_label(required().lang('email'), 'email').NBS.form_error('email'),
 					form_input(array(
+						'id'	=> 'email',
 						'name'	=> 'email',
 						'class' => 'field',
 						'maxlength' => 72,
@@ -110,6 +115,7 @@ if ($EE_view_disable !== TRUE)
 			$this->table->add_row(array(
 				form_label(lang('url'), 'url'),
 				form_input(array(
+					'id'=>'url',
 					'name'=>'url',
 					'class'=>'field',
 					'value'=>$url,
@@ -119,6 +125,7 @@ if ($EE_view_disable !== TRUE)
 			$this->table->add_row(array(
 				form_label(lang('location'), 'location'),
 				form_input(array(
+					'id'=>'location',
 					'name'=>'location',
 					'class'=>'field',
 					'value'=>$location,
@@ -128,6 +135,7 @@ if ($EE_view_disable !== TRUE)
 			$this->table->add_row(array(
 				form_label(lang('occupation'), 'occupation'),
 				form_input(array(
+					'id'=>'occupation',
 					'name'=>'occupation',
 					'class'=>'field',
 					'value'=>$occupation,
@@ -137,6 +145,7 @@ if ($EE_view_disable !== TRUE)
 			$this->table->add_row(array(
 				form_label(lang('interests'), 'interests'),
 				form_input(array(
+					'id'=>'interests',
 					'name'=>'interests',
 					'class'=>'field',
 					'value'=>$interests,
@@ -146,6 +155,7 @@ if ($EE_view_disable !== TRUE)
 			$this->table->add_row(array(
 				form_label(lang('aol_im'), 'aol_im'),
 				form_input(array(
+					'id'=>'aol_im',
 					'name'=>'aol_im',
 					'class'=>'field',
 					'value'=>$aol_im,
@@ -155,6 +165,7 @@ if ($EE_view_disable !== TRUE)
 			$this->table->add_row(array(
 				form_label(lang('icq'), 'icq'),
 				form_input(array(
+					'id'=>'icq',
 					'name'=>'icq',
 					'class'=>'field',
 					'value'=>$icq,
@@ -164,6 +175,7 @@ if ($EE_view_disable !== TRUE)
 			$this->table->add_row(array(
 				form_label(lang('yahoo_im'), 'yahoo_im'),
 				form_input(array(
+					'id'=>'yahoo_im',
 					'name'=>'yahoo_im',
 					'class'=>'field',
 					'value'=>$yahoo_im,
@@ -173,6 +185,7 @@ if ($EE_view_disable !== TRUE)
 			$this->table->add_row(array(
 				form_label(lang('msn_im'), 'msn_im'),
 				form_input(array(
+					'id'=>'msn_im',
 					'name'=>'msn_im',
 					'class'=>'field',
 					'value'=>$msn_im,
@@ -182,6 +195,7 @@ if ($EE_view_disable !== TRUE)
 			$this->table->add_row(array(
 				form_label(lang('bio'), 'bio'),
 				form_textarea(array(
+					'id'=>'bio',
 					'rows'=> 12,
 					'name'=>'bio',
 					'class'=>'field',
@@ -206,6 +220,7 @@ if ($EE_view_disable !== TRUE)
 						form_textarea(array(
 							'name'	=>	'm_field_id_'.$row['m_field_id'],
 							'class'	=>	'field',
+							'id'	=>	'm_field_id_'.$row['m_field_id'], 
 							'rows'	=>	$rows, 
 							'style'=>'width:99%;', 
 							'value'	=> 	set_value('m_field_id_'.$row['m_field_id']))
@@ -234,6 +249,7 @@ if ($EE_view_disable !== TRUE)
 						NBS.form_error('m_field_id_'.$row['m_field_id']).BR.$row['m_field_description'],
 						form_input(array(
 							'name'		=>	'm_field_id_'.$row['m_field_id'], 
+							'id'		=>	'm_field_id_'.$row['m_field_id'], 
 							'class'		=>	'field', 
 							'value'		=>	set_value('m_field_id_'.$row['m_field_id']), 
 							'maxlength'	=>	$row['m_field_maxl'])))
