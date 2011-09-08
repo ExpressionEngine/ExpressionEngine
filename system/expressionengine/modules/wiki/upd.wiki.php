@@ -227,7 +227,7 @@ class Wiki_upd {
 					'constraint'		=> 150
 				),
 				'namespace_users' => array(
-					'type'				=> 'text'
+					'type'				=> 'text',
 					'null'				=> TRUE
 				),
 				'namespace_admins' => array(
