@@ -337,7 +337,7 @@ class EE_Template {
 		// don't worry with undeclared embed: vars in conditionals as the conditionals processor will handle that adequately
 		if (strpos($this->template, LD.'embed:') !== FALSE)
 		{
-			$this->template = preg_replace('/'.LD.'embed:(.+?)'.RD.'/', '', $this->template);
+			$this->template = preg_replace('/'.LD.'embed:([^!]+?)'.RD.'/', '', $this->template);
 		}		
 	
 		// Parse date format string "constants"		
