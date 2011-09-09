@@ -675,7 +675,7 @@ class Updater {
 			// continue with general database changes
 
 			$has_duplicates = $this->dupe_check();
-			$next_step = 'database_changes';
+			$next_step = 'database_changes_new';
 
 			if ( ! empty($has_duplicates))
 			{
@@ -752,7 +752,7 @@ class Updater {
 	function backup_trackbacks()
 	{
 		$has_duplicates = $this->dupe_check();
-		$next_step = 'database_changes';
+		$next_step = 'database_changes_new';
 
 		if ( ! empty($has_duplicates))
 		{
@@ -980,20 +980,14 @@ class Updater {
 			 $this->EE->db->query($sql);
 		}
 
-		return 'database_changes';
+		return 'database_changes_new';
 	}
 
 	// ------------------------------------------------------------------------ 
 
-	function database_changes()
+	function database_changes_new()
 	{
-		$this->EE->progress->update_state("Creating and updating database tables");
-
-		$has_duplicates = ( ! isset($this->config['table_duplicates'])) ? array() : explode('|', $this->config['table_duplicates']);
-
-		$Q[] = "INSERT INTO `exp_actions` (`class`, `method`) VALUES ('Jquery', 'output_javascript')";
-
-		$Q[] = "UPDATE `exp_templates` SET template_type = 'feed' WHERE template_type = 'rss'";
+		$this->EE->progress->update_state("Creating new database tables");
 
 		$Q[] = "CREATE TABLE `exp_snippets` (
 				`snippet_id` int(10) unsigned NOT NULL auto_increment,
@@ -1079,16 +1073,104 @@ class Updater {
 			 KEY `entry_date` (`entry_date`),
 			 KEY `expiration_date` (`expiration_date`),
 			 KEY `site_id` (`site_id`)
-			)";
+		)";
+
+		$this->_run_queries('Adding new tables', $Q);
+
+		return 'database_changes_members';
+	}
+
+	// ------------------------------------------------------------------------ 
+
+	function database_changes_members()
+	{
+		$this->EE->progress->update_state("Updating member tables");
+	
+		// Update members table: parse_smileys and crypt_key
+		$Q[] = "ALTER TABLE `exp_members` ADD `parse_smileys` CHAR(1) NOT NULL DEFAULT 'y' AFTER `display_signatures`";
+		$Q[] = "ALTER TABLE `exp_members` ADD `crypt_key` varchar(40) NULL DEFAULT NULL AFTER `unique_id`";
+
+		// drop user weblog related fields
+		$Q[] = "ALTER TABLE `exp_members` DROP COLUMN `weblog_id`";
+		$Q[] = "ALTER TABLE `exp_members` DROP COLUMN `tmpl_group_id`";
+		$Q[] = "ALTER TABLE `exp_members` DROP COLUMN `upload_id`";
+		$Q[] = "ALTER TABLE `exp_template_groups` DROP COLUMN `is_user_blog`";
+		$Q[] = "ALTER TABLE `exp_weblogs` DROP COLUMN `is_user_blog`";
+		$Q[] = "ALTER TABLE `exp_global_variables` DROP COLUMN `user_blog_id`";
+		$Q[] = "ALTER TABLE `exp_online_users` DROP COLUMN `weblog_id`";
+
+		// members table default tweaks
+		$Q[] = "ALTER TABLE `exp_members` CHANGE `authcode` `authcode` varchar(10) NULL DEFAULT NULL";
+		$Q[] = "ALTER TABLE `exp_members` CHANGE `url` `url` varchar(150) NULL DEFAULT NULL";
+		$Q[] = "ALTER TABLE `exp_members` CHANGE `location` `location`  varchar(50) NULL DEFAULT NULL";
+		$Q[] = "ALTER TABLE `exp_members` CHANGE `occupation` `occupation` varchar(80) NULL DEFAULT NULL";
+		$Q[] = "ALTER TABLE `exp_members` CHANGE `interests` `interests` varchar(120) NULL DEFAULT NULL";
+		$Q[] = "ALTER TABLE `exp_members` CHANGE `bday_d` `bday_d` int(2) NULL DEFAULT NULL";
+		$Q[] = "ALTER TABLE `exp_members` CHANGE `bday_m` `bday_m` int(2) NULL DEFAULT NULL";
+		$Q[] = "ALTER TABLE `exp_members` CHANGE `bday_y` `bday_y` int(4) NULL DEFAULT NULL";
+		$Q[] = "ALTER TABLE `exp_members` CHANGE `aol_im` `aol_im` varchar(50) NULL DEFAULT NULL";
+		$Q[] = "ALTER TABLE `exp_members` CHANGE `yahoo_im` `yahoo_im` varchar(50) NULL DEFAULT NULL";
+		$Q[] = "ALTER TABLE `exp_members` CHANGE `msn_im` `msn_im` varchar(50) NULL DEFAULT NULL";
+		$Q[] = "ALTER TABLE `exp_members` CHANGE `icq` `icq` varchar(50) NULL DEFAULT NULL";
+		$Q[] = "ALTER TABLE `exp_members` CHANGE `bio` `bio` text NULL";
+		$Q[] = "ALTER TABLE `exp_members` CHANGE `signature` `signature` text NULL";
+		$Q[] = "ALTER TABLE `exp_members` CHANGE `avatar_filename` `avatar_filename` varchar(120) NULL DEFAULT NULL";
+		$Q[] = "ALTER TABLE `exp_members` CHANGE `avatar_width` `avatar_width` int(4) unsigned NULL DEFAULT NULL";
+		$Q[] = "ALTER TABLE `exp_members` CHANGE `avatar_height` `avatar_height` int(4) unsigned NULL DEFAULT NULL";
+		$Q[] = "ALTER TABLE `exp_members` CHANGE `photo_filename` `photo_filename` varchar(120) NULL DEFAULT NULL";
+		$Q[] = "ALTER TABLE `exp_members` CHANGE `photo_width` `photo_width` int(4) unsigned NULL DEFAULT NULL";
+		$Q[] = "ALTER TABLE `exp_members` CHANGE `photo_height` `photo_height` int(4) unsigned NULL DEFAULT NULL";
+		$Q[] = "ALTER TABLE `exp_members` CHANGE `sig_img_filename` `sig_img_filename` varchar(120) NULL DEFAULT NULL";
+		$Q[] = "ALTER TABLE `exp_members` CHANGE `sig_img_width` `sig_img_width` int(4) unsigned NULL DEFAULT NULL";
+		$Q[] = "ALTER TABLE `exp_members` CHANGE `sig_img_height` `sig_img_height` int(4) unsigned NULL DEFAULT NULL";
+		$Q[] = "ALTER TABLE `exp_members` CHANGE `ignore_list` `ignore_list` text NULL";
+		$Q[] = "ALTER TABLE `exp_members` CHANGE `cp_theme` `cp_theme` varchar(32) NULL DEFAULT NULL";
+		$Q[] = "ALTER TABLE `exp_members` CHANGE `profile_theme` `profile_theme` varchar(32) NULL DEFAULT NULL";
+		$Q[] = "ALTER TABLE `exp_members` CHANGE `forum_theme` `forum_theme` varchar(32) NULL DEFAULT NULL";
+		$Q[] = "ALTER TABLE `exp_members` CHANGE `tracker` `tracker` text NULL";
+		$Q[] = "ALTER TABLE `exp_members` CHANGE `notepad` `notepad` text NULL";
+		$Q[] = "ALTER TABLE `exp_members` CHANGE `quick_links` `quick_links` text NULL";
+		$Q[] = "ALTER TABLE `exp_members` CHANGE `quick_tabs` `quick_tabs` text NULL";
+		$Q[] = "UPDATE exp_members SET quick_tabs = ''";
+
+		$Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_content` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_cp`";
+		$Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_files` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_edit`";
+		$Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_addons` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_design`";
+		$Q[] = "ALTER TABLE `exp_member_groups` MODIFY COLUMN `can_access_modules` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_addons`";
+		$Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_extensions` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_modules`";
+		$Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_accessories` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_extensions`";
+		$Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_plugins` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_accessories`";	  
+		$Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_members` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_plugins`";  
+		$Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_sys_prefs` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_admin`";  
+		$Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_content_prefs` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_sys_prefs`";  
+		$Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_tools` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_content_prefs`";  
+		$Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_utilities` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_comm`";
+		$Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_data` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_utilities`";
+		$Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_logs` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_data`";
+		$Q[] = "ALTER TABLE `exp_member_groups` ADD `can_admin_design` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_admin_weblogs`";	 
+
+		$this->_run_queries('Updating member tables', $Q);
+
+		return 'database_changes_weblog';
+	}
+
+	// ------------------------------------------------------------------------ 
+
+	function database_changes_weblog()
+	{
+		$this->EE->progress->update_state("Updating weblog tables");
+
+		$has_duplicates = ( ! isset($this->config['table_duplicates'])) ? array() : explode('|', $this->config['table_duplicates']);
+
+		$Q[] = "INSERT INTO `exp_actions` (`class`, `method`) VALUES ('Jquery', 'output_javascript')";
+
+		$Q[] = "UPDATE `exp_templates` SET template_type = 'feed' WHERE template_type = 'rss'";
 
 		// Channel fields can now have content restrictions
 		$Q[] = "ALTER TABLE `exp_weblog_fields` ADD COLUMN `field_content_type` VARCHAR(20) NOT NULL default 'any'";
 
 		// get rid of 'blog_encoding from exp_weblogs' - everything's utf-8 now
 		$Q[] = "ALTER TABLE `exp_weblogs` DROP COLUMN `blog_encoding`";
-
-		$Q[] = "ALTER TABLE `exp_members` ADD `parse_smileys` CHAR(1) NOT NULL DEFAULT 'y' AFTER `display_signatures`";
-		$Q[] = "ALTER TABLE `exp_members` ADD `crypt_key` varchar(40) NULL DEFAULT NULL AFTER `unique_id`";
 
 		// HTML buttons now have an identifying classname
 		$Q[] = "ALTER TABLE `exp_html_buttons` ADD `classname` varchar(20) NULL DEFAULT NULL";
@@ -1125,15 +1207,6 @@ class Updater {
 		// increase path fields to 150 characters
 		$Q[] = "ALTER TABLE `exp_upload_prefs` CHANGE `server_path` `server_path` VARCHAR(150) NOT NULL default ''";
 		$Q[] = "ALTER TABLE `exp_message_attachments` CHANGE `attachment_location` `attachment_location` VARCHAR(150) NOT NULL default ''";		 
-
-		// drop user weblog related fields
-		$Q[] = "ALTER TABLE `exp_members` DROP COLUMN `weblog_id`";
-		$Q[] = "ALTER TABLE `exp_members` DROP COLUMN `tmpl_group_id`";
-		$Q[] = "ALTER TABLE `exp_members` DROP COLUMN `upload_id`";
-		$Q[] = "ALTER TABLE `exp_template_groups` DROP COLUMN `is_user_blog`";
-		$Q[] = "ALTER TABLE `exp_weblogs` DROP COLUMN `is_user_blog`";
-		$Q[] = "ALTER TABLE `exp_global_variables` DROP COLUMN `user_blog_id`";
-		$Q[] = "ALTER TABLE `exp_online_users` DROP COLUMN `weblog_id`";
 
 		// drop trackback related fields
 		$Q[] = "ALTER TABLE `exp_stats` DROP COLUMN `total_trackbacks`";
@@ -1252,40 +1325,6 @@ class Updater {
 		$Q[] = "ALTER TABLE `exp_weblogs` CHANGE `rss_url` `rss_url` varchar(80) NULL DEFAULT NULL";
 		$Q[] = "ALTER TABLE `exp_weblogs` DROP COLUMN `enable_qucksave_versioning`";
 
-		// members table default tweaks
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `authcode` `authcode` varchar(10) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `url` `url` varchar(150) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `location` `location`  varchar(50) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `occupation` `occupation` varchar(80) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `interests` `interests` varchar(120) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `bday_d` `bday_d` int(2) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `bday_m` `bday_m` int(2) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `bday_y` `bday_y` int(4) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `aol_im` `aol_im` varchar(50) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `yahoo_im` `yahoo_im` varchar(50) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `msn_im` `msn_im` varchar(50) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `icq` `icq` varchar(50) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `bio` `bio` text NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `signature` `signature` text NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `avatar_filename` `avatar_filename` varchar(120) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `avatar_width` `avatar_width` int(4) unsigned NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `avatar_height` `avatar_height` int(4) unsigned NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `photo_filename` `photo_filename` varchar(120) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `photo_width` `photo_width` int(4) unsigned NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `photo_height` `photo_height` int(4) unsigned NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `sig_img_filename` `sig_img_filename` varchar(120) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `sig_img_width` `sig_img_width` int(4) unsigned NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `sig_img_height` `sig_img_height` int(4) unsigned NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `ignore_list` `ignore_list` text NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `cp_theme` `cp_theme` varchar(32) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `profile_theme` `profile_theme` varchar(32) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `forum_theme` `forum_theme` varchar(32) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `tracker` `tracker` text NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `notepad` `notepad` text NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `quick_links` `quick_links` text NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `quick_tabs` `quick_tabs` text NULL";
-		$Q[] = "UPDATE exp_members SET quick_tabs = ''";
-
 		// Remove trackback actions
 		$Q[] = "DELETE FROM `exp_actions` WHERE `class` = 'Trackback'";
 		$Q[] = "DELETE FROM `exp_actions` WHERE `class` = 'Trackback_CP'";
@@ -1304,6 +1343,27 @@ class Updater {
 			}
 		}
 
+		// Run the queries
+		$this->_run_queries('Updating weblog tables', $Q);
+
+		$this->EE->progress->update_state("Installing default Accessories");
+		$this->EE->_install_accessories();  
+
+		if ( ! empty($has_duplicates))
+		{
+			$this->EE->config->_update_config(array(), array('table_duplicates' => ''));
+		}
+
+		// weblogs are channels!
+		return 'update_custom_fields';
+	}
+
+	// ------------------------------------------------------------------------ 
+
+	function update_custom_fields()
+	{
+		$this->EE->progress->update_state("Updating custom field tables");
+		
 		// Update category custom fields to allow null
 		$query = $this->EE->db->query("SELECT field_id FROM exp_category_fields");
 
@@ -1339,22 +1399,17 @@ class Updater {
 			}
 		}
 
-		$Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_content` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_cp`";
-		$Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_files` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_edit`";
-		$Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_addons` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_design`";
-		$Q[] = "ALTER TABLE `exp_member_groups` MODIFY COLUMN `can_access_modules` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_addons`";
-		$Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_extensions` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_modules`";
-		$Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_accessories` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_extensions`";
-		$Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_plugins` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_accessories`";	  
-		$Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_members` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_plugins`";  
-		$Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_sys_prefs` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_admin`";  
-		$Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_content_prefs` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_sys_prefs`";  
-		$Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_tools` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_content_prefs`";  
-		$Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_utilities` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_comm`";
-		$Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_data` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_utilities`";
-		$Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_logs` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_data`";
-		$Q[] = "ALTER TABLE `exp_member_groups` ADD `can_admin_design` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_admin_weblogs`";	 
+		$this->_run_queries('Updating custom fields', $Q);
 
+		return 'resync_member_groups';
+	}
+
+	// ------------------------------------------------------------------------ 
+
+	function resync_member_groups()
+	{
+		$this->EE->progress->update_state("Synchronizing member groups");
+		
 		//  Update access priveleges for 2.0
 		// resync member groups.  In 1.x, a bug existed where deleting a member group would only delete it from the currently logged in site,
 		// leaving orphaned member groups in the member groups table.
@@ -1433,18 +1488,16 @@ class Updater {
 			}
 		}
 
-		$count = count($Q);
+		// Run the queries
+		$this->_run_queries('Synchronizing member groups', $Q);
 
-		foreach ($Q as $num => $sql)
-		{
-			$this->EE->progress->update_state("Creating and updating database tables (Query $num of $count)");
+		return 'convert_fresh_variables';
+	}
 
-			$this->EE->db->query($sql);
-		}
+	// ------------------------------------------------------------------------ 
 
-		$this->EE->progress->update_state("Installing default Accessories");
-		$this->EE->_install_accessories();  
-
+	function convert_fresh_variables()
+	{
 		// port over old Fresh Variables to Snippets?
 		$this->EE->progress->update_state('Checking for Fresh Variables');
 		$this->EE->db->select('settings');
@@ -1453,6 +1506,8 @@ class Updater {
 
 		if ($query->num_rows() > 0 && $query->row('settings') != '')
 		{
+			$this->EE->progress->update_state("Converting Fresh Variables");
+			
 			// Load the string helper
 			$this->EE->load->helper('string');
 
@@ -1486,15 +1541,22 @@ class Updater {
 			$this->EE->db->query("DELETE FROM exp_actions WHERE class = 'Fresh_variables'");
 		}
 
-		if ( ! empty($has_duplicates))
-		{
-			$this->EE->config->_update_config(array(), array('table_duplicates' => ''));
-		}
-
-		// weblogs are channels!
 		return 'weblog_terminology_changes';
 	}
 
+	// ------------------------------------------------------------------------ 
+
+	function _run_queries($summary = 'Creating and updating database tables', $queries = array())
+	{
+		$count = count($queries);
+		
+		foreach ($queries as $num => $sql)
+		{
+			$this->EE->progress->update_state("{$summary} (Query {$num} of {$count})");
+
+			$this->EE->db->query($sql);
+		}
+	}
 
 	// ------------------------------------------------------------------------
 
