@@ -10923,8 +10923,9 @@ class Forum_Core extends Forum {
 		if ($fetch_replies)
 		{
 			$rquery = $this->EE->db->select('topic_id, body as last_reply, parse_smileys')
-								->where_in('post_id', $post_ids)
-								->get('forum_posts');
+									->where_in('post_id', $post_ids)
+									->get('forum_posts');
+
 
 			if ($rquery->num_rows() > 0)
 			{
