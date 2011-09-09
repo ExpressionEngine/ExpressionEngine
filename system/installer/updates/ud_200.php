@@ -517,53 +517,56 @@ class Updater {
 
 		$tables = $this->EE->db->list_tables(TRUE); 
 
-		$field_list = array('exp_captcha'					=> array('date'),
-							'exp_comments'					=> array('comment_date'),
-							'exp_cp_log'					=> array('act_date'),
-							'exp_email_cache'				=> array('cache_date'),
-							'exp_email_console_cache'		=> array('cache_date'),
-							'exp_email_tracker'				=> array('email_date'),
-							'exp_entry_versioning'			=> array('version_date'),
-							'exp_forum_attachments'			=> array('attachment_date'),
-							'exp_forum_boards'				=> array('board_install_date'),
-							'exp_forum_polls'				=> array('poll_date'),
-							'exp_forum_posts'				=> array('post_date', 'post_edit_date'),
-							'exp_forum_read_topics'			=> array('last_visit'),
-							'exp_forum_search'				=> array('search_date'),
-							'exp_forum_subscriptions'		=> array('subscription_date'),
-							'exp_forum_topics'				=> array('topic_date', 'last_post_date', 'topic_edit_date'),
-							'exp_forums'					=> array('forum_last_post_date'),
-							'exp_gallery_categories'		=> array('recent_entry_date', 'recent_comment_date'),
-							'exp_gallery_comments'			=> array('comment_date'),
-							'exp_gallery_entries'			=> array('entry_date', 'recent_comment_date', 'comment_expiration_date'),
-							'exp_mailing_list_queue'		=> array('date'),
-							'exp_member_search'				=> array('search_date'),
-							'exp_member_bulletin_board'		=> array('bulletin_date', 'bulletin_expires'),
-							'exp_members'					=> array('last_view_bulletins', 'last_bulletin_date', 'join_date', 'last_visit', 'last_activity', 'last_entry_date', 'last_forum_post_date', 'last_comment_date', 'last_email_date'),
-							'exp_message_attachments'		=> array('attachment_date'),
-							'exp_message_copies'			=> array('message_time_read'),
-							'exp_message_data'				=> array('message_date'),
-							'exp_online_users'				=> array('date'),
-							'exp_referrers'					=> array('ref_date'),
-							'exp_reset_password'			=> array('date'),
-							'exp_revision_tracker'			=> array('item_date'),
-							'exp_search'					=> array('search_date'),
-							'exp_search_log'				=> array('search_date'),
-							'exp_sessions'					=> array('last_activity'),
-							'exp_simple_commerce_purchases'	=> array('purchase_date'),
-							'exp_stats'						=> array('last_entry_date', 'last_visitor_date', 'most_visitor_date', 'last_cache_clear', 'last_forum_post_date', 'last_comment_date', 'last_trackback_date'),
-							'exp_templates'					=> array('edit_date'),
-							'exp_throttle'					=> array('last_activity'),
-							'exp_trackbacks'				=> array('trackback_date'),
-							'exp_updated_site_pings'		=> array('ping_date'),
-							'exp_weblog_data'				=> array(),
-							'exp_weblog_titles'				=> array('entry_date', 'expiration_date', 'comment_expiration_date', 'recent_comment_date', 'recent_trackback_date'),
-							'exp_weblogs'					=> array('last_entry_date', 'last_comment_date', 'last_trackback_date'),
-							'exp_wiki_page'					=> array('last_updated'),
-							'exp_wiki_revisions'			=> array('revision_date'),
-							'exp_wiki_uploads'				=> array('upload_date'),
-							);
+		// List of known date fields
+		$field_list = array(
+			'exp_captcha'					=> array('date'),
+			'exp_comments'					=> array('comment_date'),
+			'exp_cp_log'					=> array('act_date'),
+			'exp_email_cache'				=> array('cache_date'),
+			'exp_email_console_cache'		=> array('cache_date'),
+			'exp_email_tracker'				=> array('email_date'),
+			'exp_entry_versioning'			=> array('version_date'),
+			'exp_forum_attachments'			=> array('attachment_date'),
+			'exp_forum_boards'				=> array('board_install_date'),
+			'exp_forum_polls'				=> array('poll_date'),
+			'exp_forum_posts'				=> array('post_date', 'post_edit_date'),
+			'exp_forum_read_topics'			=> array('last_visit'),
+			'exp_forum_search'				=> array('search_date'),
+			'exp_forum_subscriptions'		=> array('subscription_date'),
+			'exp_forum_topics'				=> array('topic_date', 'last_post_date', 'topic_edit_date'),
+			'exp_forums'					=> array('forum_last_post_date'),
+			'exp_gallery_categories'		=> array('recent_entry_date', 'recent_comment_date'),
+			'exp_gallery_comments'			=> array('comment_date'),
+			'exp_gallery_entries'			=> array('entry_date', 'recent_comment_date', 'comment_expiration_date'),
+			'exp_mailing_list_queue'		=> array('date'),
+			'exp_member_search'				=> array('search_date'),
+			'exp_member_bulletin_board'		=> array('bulletin_date', 'bulletin_expires'),
+			'exp_members'					=> array('last_view_bulletins', 'last_bulletin_date', 'join_date', 'last_visit', 'last_activity', 'last_entry_date', 'last_forum_post_date', 'last_comment_date', 'last_email_date'),
+			'exp_message_attachments'		=> array('attachment_date'),
+			'exp_message_copies'			=> array('message_time_read'),
+			'exp_message_data'				=> array('message_date'),
+			'exp_online_users'				=> array('date'),
+			'exp_referrers'					=> array('ref_date'),
+			'exp_reset_password'			=> array('date'),
+			'exp_revision_tracker'			=> array('item_date'),
+			'exp_search'					=> array('search_date'),
+			'exp_search_log'				=> array('search_date'),
+			'exp_sessions'					=> array('last_activity'),
+			'exp_simple_commerce_purchases'	=> array('purchase_date'),
+			'exp_stats'						=> array('last_entry_date', 'last_visitor_date', 'most_visitor_date', 'last_cache_clear', 'last_forum_post_date', 'last_comment_date', 'last_trackback_date'),
+			'exp_templates'					=> array('edit_date'),
+			'exp_throttle'					=> array('last_activity'),
+			'exp_trackbacks'				=> array('trackback_date'),
+			'exp_updated_site_pings'		=> array('ping_date'),
+			'exp_weblog_data'				=> array(),
+			'exp_weblog_titles'				=> array('entry_date', 'expiration_date', 'comment_expiration_date', 'recent_comment_date', 'recent_trackback_date'),
+			'exp_weblogs'					=> array('last_entry_date', 'last_comment_date', 'last_trackback_date'),
+			'exp_wiki_page'					=> array('last_updated'),
+			'exp_wiki_revisions'			=> array('revision_date'),
+			'exp_wiki_uploads'				=> array('upload_date'),
+		);
 
+		// Also find all custom fields that are date fields as well
 		$query = $this->EE->db->query("SELECT field_id FROM exp_weblog_fields WHERE field_type = 'date'");
 
 		if ($query->num_rows() > 0)
@@ -574,8 +577,7 @@ class Updater {
 			}
 		}
 
-
-		$not_field_list = array();
+		// $not_field_list = array();
 		$table_keys = array();
 
 		/**
@@ -583,10 +585,10 @@ class Updater {
 		 * Use some logic to determine 3rd party
 		 */
 
-		foreach($tables as $num => $table)
+		foreach(array_keys($field_list) as $table)
 		{
 			$query = $this->EE->db->query("SHOW FIELDS FROM `".$this->EE->db->escape_str($table)."`");
-
+		
 			if ($query->num_rows() > 0)
 			{
 				foreach($query->result_array() as $row)
@@ -595,52 +597,14 @@ class Updater {
 					{
 						$table_keys[$table] = $row['Field'];
 					}
-
-					if (isset($field_list[$table]) && in_array($row['Type'], $field_list[$table]))
-					{
-						continue;
-					}
-
-					if (stristr($row['Type'], 'int(10)') && strtolower($row['Key']) !== 'pri' &&
-						! stristr($row['Field'], '_id') && ! stristr($row['Field'], 'view') && 
-						! stristr($row['Field'], 'size') && ! stristr($row['Field'], 'hits'))
-					{
-						$result = $this->EE->db->query("SELECT MAX(`".$this->EE->db->escape_str($row['Field'])."`) AS test FROM `".$this->EE->db->escape_str($table)."`");
-
-						$res_row = $result->row_array(); // Instead of no results, MySQL can return 1 row with the field value NULL  ::boggle::
-
-						if ($result->num_rows() > 0 && isset($res_row['test']) && strlen($res_row['test']) == 10 && strncmp($res_row['test'], '1' , 1) == 0)
-						{
-							$field_list[$table][] = $row['Field'];
-						}
-						elseif( ! isset($field_list[$table]) OR ! in_array($row['Field'], $field_list[$table]))
-						{
-							$not_field_list[$table][] = $row['Field'];
-						}
-					}
-				}
-
-				if (isset($field_list[$table]))
-				{
-					$field_list[$table] = array_unique($field_list[$table]);
-				}
-
-				if (isset($not_field_list[$table]))
-				{
-					$not_field_list[$table] = array_unique($not_field_list[$table]);
 				}
 			}
-		}
-
-		if (count($field_list) == 0)
-		{
-			show_error('There are no DateTime Fields to Update.');
 		}
 
 		/**
 		 * Perform the Updates
 		 */
-
+		
 		foreach($field_list as $table => $fields)
 		{
 			if ( ! in_array($table, $tables))
@@ -663,46 +627,13 @@ class Updater {
 				{
 					$count = $this->EE->db->count_all($table);
 
-					if ($count > 50000)
+					for($i = 0; $i <= $count; $i = $i + 50000)
 					{
-						for($i = 0; $i <= $count; $i = $i + 50000)
-						{
-							$this->EE->progress->update_state("Searching `{$table}` for DST discrepancies ({$i} / {$count})");
-
-							$query = $this->EE->db->query("SELECT `{$field}`, `".$this->EE->db->escape_str($table_keys[$table])."`
-															FROM `{$table}` LIMIT {$i}, 50000");
-
-							if ($query->num_rows() > 0)
-							{
-								$dst_dates = array();
-
-								foreach ($query->result_array() as $row)
-								{
-									if (date('I', $row[$field]) == 1)
-									{
-										$dst_dates[] = $row[$table_keys[$table]];
-									}
-								}
-
-								$query->free_result();
-
-								if ( ! empty($dst_dates))
-								{
-									$tot = count($dst_dates);
-									$this->EE->progress->update_state("Updating `{$table}` to compensate for DST discrepancies ({$tot} records)");
-
-									$this->EE->db->query("UPDATE `{$table}` SET `{$field}` = `{$field}` + 3600
-															WHERE `".$this->EE->db->escape_str($table_keys[$table])."` IN ('".implode("','", $dst_dates)."')");
-								}
-							}
-						}
-					}
-					else
-					{
-						$this->EE->progress->update_state("Searching `{$table}` for DST discrepancies");
+						$this->EE->progress->update_state("Searching `{$table}` for DST discrepancies ({$i} / {$count})");
 
 						$query = $this->EE->db->query("SELECT `{$field}`, `".$this->EE->db->escape_str($table_keys[$table])."`
-														FROM `{$table}`");
+														FROM `{$table}` LIMIT {$i}, 50000");
+
 						if ($query->num_rows() > 0)
 						{
 							$dst_dates = array();
@@ -715,17 +646,17 @@ class Updater {
 								}
 							}
 
+							$query->free_result();
+
 							if ( ! empty($dst_dates))
 							{
 								$tot = count($dst_dates);
 								$this->EE->progress->update_state("Updating `{$table}` to compensate for DST discrepancies ({$tot} records)");
 
 								$this->EE->db->query("UPDATE `{$table}` SET `{$field}` = `{$field}` + 3600
-														WHERE `".$this->EE->db->escape_str($table_keys[$table])."` IN ('".implode("','", $dst_dates)."')");
+									WHERE `".$this->EE->db->escape_str($table_keys[$table])."` IN ('".implode("','", $dst_dates)."')");
 							}
 						}
-
-						$query->free_result();
 					}
 				}
 
