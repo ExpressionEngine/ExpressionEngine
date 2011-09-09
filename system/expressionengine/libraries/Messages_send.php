@@ -62,7 +62,7 @@ class EE_Messages_send extends EE_Messages {
 		{
 			$this->EE->db->select('attachment_id, attachment_size, attachment_location');
 			$this->EE->db->where_in('attachment_id', str_replace('|',"','", $this->EE->input->get_post('attach')));
-			$query = $this->EE->select('message_attachments');
+			$query = $this->EE->db->select('message_attachments');
 			 			
  			if ($query->num_rows() + 1 > $this->max_attachments)
  			{
