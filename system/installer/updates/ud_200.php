@@ -342,12 +342,14 @@ class Updater {
 		{
 			$tables = implode(' ', $this->EE->db->list_tables(TRUE));
 			
+			$password_parameter = ($this->EE->db->password != '') ? '-p '.$this->EE->db->password : '';
+			
 			$this->errors[] = "Your database is too large to perform this part of the upgrade via a web request.
 								Please contact your system administrator and have them run the following commands,
 								then access this page again.<br /><br />
 
 								<code>mysqldump -h {$this->EE->db->hostname} -u {$this->EE->db->username} 
-									-p {$this->EE->db->password} --opt --quote-names --skip-set-charset
+									{$password_parameter} --opt --quote-names --skip-set-charset
 									--default-character-set=latin1 {$this->EE->db->database} 
 									{$tables}
 									> {$this->EE->db->database}-pre-upgrade-dump.sql</code>
@@ -355,13 +357,13 @@ class Updater {
 								<br /><br />
 
 								<code>mysql -h {$this->EE->db->hostname} -u {$this->EE->db->username}
-									-p {$this->EE->db->password} --default-character-set=utf8
+									{$password_parameter} --default-character-set=utf8
 									{$this->EE->db->database} < {$this->EE->db->database}-pre-upgrade-dump.sql</code>
 
 								<br /><br />
 
 								<code>mysql -h {$this->EE->db->hostname} -u {$this->EE->db->username}
-									-p {$this->EE->db->password} {$this->EE->db->database}
+									{$password_parameter} {$this->EE->db->database}
 									-e 'CREATE TABLE {$this->EE->db->dbprefix}utf8_conversion_completed(`id` int)'</code>";
 
 			return FALSE;
@@ -382,7 +384,7 @@ class Updater {
 		$this->EE->load->dbforge();
 		$this->EE->dbforge->drop_table('utf8_conversion_completed');
 		
-		exit('hi');
+		return 'standardize_datetime_large_db';
 	}
 	
 	// --------------------------------------------------------------------
@@ -465,7 +467,7 @@ class Updater {
 		}
 
 		// more work to do
-		return ($this->large_db) ? 'standardize_datetime_large_db' : 'standardize_datetime';
+		return 'standardize_datetime';
 	}
 
 	// --------------------------------------------------------------------
