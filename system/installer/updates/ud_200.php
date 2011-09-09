@@ -618,15 +618,16 @@ class Updater {
 			{
 				$field = $this->EE->db->escape_str($field);
 
-				/**
-				 * Compensate for 1.x's $LOC->now DST behavior by adding an hour
-				 * to all dates that the server considers to have been in DST
-				 */
+				 // Compensate for 1.x's $LOC->now DST behavior by adding an hour
+				 // to all dates that the server considers to have been in DST
 
 				if (isset($table_keys[$table]))
 				{
 					$count = $this->EE->db->count_all($table);
 
+					// Split up into 50,000 records per update so we don't
+					// run mysql into the ground
+					
 					for($i = 0; $i <= $count; $i = $i + 50000)
 					{
 						$this->EE->progress->update_state("Searching `{$table}` for DST discrepancies ({$i} / {$count})");
@@ -634,6 +635,8 @@ class Updater {
 						$query = $this->EE->db->query("SELECT `{$field}`, `".$this->EE->db->escape_str($table_keys[$table])."`
 														FROM `{$table}` LIMIT {$i}, 50000");
 
+						// check the field value to see if the record needs to be updated,
+						// if so we add that row's primary key to $dst_dates
 						if ($query->num_rows() > 0)
 						{
 							$dst_dates = array();
@@ -653,6 +656,9 @@ class Updater {
 								$tot = count($dst_dates);
 								$this->EE->progress->update_state("Updating `{$table}` to compensate for DST discrepancies ({$tot} records)");
 
+								// add one hour to the field we're converting, for all the
+								// rows we gathered above ($dst_dates == array of primary keys)
+								
 								$this->EE->db->query("UPDATE `{$table}` SET `{$field}` = `{$field}` + 3600
 									WHERE `".$this->EE->db->escape_str($table_keys[$table])."` IN ('".implode("','", $dst_dates)."')");
 							}
