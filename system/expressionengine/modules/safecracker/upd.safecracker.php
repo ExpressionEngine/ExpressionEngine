@@ -150,7 +150,7 @@ class Safecracker_upd
 	 */
 	public function update($current = '')
 	{
-		if (version_compare($current, $this->version, '==')))
+		if (version_compare($current, $this->version, '=='))
 		{
 			return FALSE;
 		}
