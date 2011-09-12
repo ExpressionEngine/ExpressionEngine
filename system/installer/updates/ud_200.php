@@ -97,10 +97,66 @@ class Updater {
 		// turn off extensions
 		$this->EE->db->update('extensions', array('enabled' => 'n'));
 		
+		$this->_update_site_prefs();
+		
 		// step 1, utf8 conversion
 		return ($this->large_db) ? 'convert_large_db_to_utf8' : 'convert_db_to_utf8';
 	}
+	// --------------------------------------------------------------------
+	
+	function _update_site_prefs()
+	{		
+		// Load the string helper
+		$this->EE->load->helper('string');
 
+		$query = $this->EE->db->query("SELECT es.* FROM exp_sites AS es");
+
+		// Update Flat File Templates if we have any
+		$this->_update_templates_saved_as_files($query, $ignore, $manual_move);
+
+		foreach($query->result_array() as $row)
+		{
+			foreach($row as $name => $data)
+			{
+				if (substr($name, -12) == '_preferences')
+				{
+					// base64 encode the serialized arrays
+					$data = strip_slashes(unserialize($data));
+
+					// one quick path adjustment if they were using the old default location for template files
+					if (isset($data['tmpl_file_basepath']) && trim($data['tmpl_file_basepath'], '/') == BASEPATH.'templates')
+					{
+						$data['tmpl_file_basepath'] = EE_APPPATH.'/templates/';
+					}
+					
+					// also, make sure they start with the default cp theme
+					if (isset($data['cp_theme']) && $data['cp_theme'] != 'default')
+					{
+						$data['cp_theme'] = 'default';
+					}
+					
+					// new name for a debugging preference
+					if (isset($data['show_queries']))
+					{
+						$data['show_profiler'] = $data['show_queries'];
+						unset($data['show_queries']);
+					}
+					
+					// docs location
+					if (isset($data['doc_url']))
+					{
+						$data['doc_url'] = 'http://expressionengine.com/user_guide/';
+					}
+
+					$data = base64_encode(serialize($data));
+					$row[$name] = $data;
+				}
+			}
+
+			$this->EE->db->query($this->EE->db->update_string('exp_sites', $row, "site_id = '".$this->EE->db->escape_str($row['site_id'])."'"));
+		}
+	}
+	
 	// ------------------------------------------------------------------------
 	
 	/**
@@ -580,10 +636,9 @@ class Updater {
 		// $not_field_list = array();
 		$table_keys = array();
 
-		/**
-		 * Get a list of our timestamp fields
-		 * Use some logic to determine 3rd party
-		 */
+		
+		// Get a list of our timestamp fields
+		// Use some logic to determine 3rd party
 
 		foreach(array_keys($field_list) as $table)
 		{
@@ -601,10 +656,7 @@ class Updater {
 			}
 		}
 
-		/**
-		 * Perform the Updates
-		 */
-		
+		// Perform the Updates
 		foreach($field_list as $table => $fields)
 		{
 			if ( ! in_array($table, $tables))
@@ -618,8 +670,8 @@ class Updater {
 			{
 				$field = $this->EE->db->escape_str($field);
 
-				 // Compensate for 1.x's $LOC->now DST behavior by adding an hour
-				 // to all dates that the server considers to have been in DST
+				// Compensate for 1.x's $LOC->now DST behavior by adding an hour
+				// to all dates that the server considers to have been in DST
 
 				if (isset($table_keys[$table]))
 				{
@@ -692,64 +744,6 @@ class Updater {
 		}
 
 		// update site prefs
-		return 'update_site_prefs';
-	}
-	
-	// --------------------------------------------------------------------
-	
-	function update_site_prefs()
-	{		
-		// Load the string helper
-		$this->EE->load->helper('string');
-
-		$query = $this->EE->db->query("SELECT es.* FROM exp_sites AS es");
-
-		// Update Flat File Templates if we have any
-		$this->_update_templates_saved_as_files($query, $ignore, $manual_move);
-
-		foreach($query->result_array() as $row)
-		{
-			foreach($row as $name => $data)
-			{
-				if (substr($name, -12) == '_preferences')
-				{
-					// base64 encode the serialized arrays
-					$data = strip_slashes(unserialize($data));
-
-					// one quick path adjustment if they were using the old default location for template files
-					if (isset($data['tmpl_file_basepath']) && trim($data['tmpl_file_basepath'], '/') == BASEPATH.'templates')
-					{
-						$data['tmpl_file_basepath'] = EE_APPPATH.'/templates/';
-					}
-					
-					// also, make sure they start with the default cp theme
-					if (isset($data['cp_theme']) && $data['cp_theme'] != 'default')
-					{
-						$data['cp_theme'] = 'default';
-					}
-					
-					// new name for a debugging preference
-					if (isset($data['show_queries']))
-					{
-						$data['show_profiler'] = $data['show_queries'];
-						unset($data['show_queries']);
-					}
-					
-					// docs location
-					if (isset($data['doc_url']))
-					{
-						$data['doc_url'] = 'http://expressionengine.com/user_guide/';
-					}
-
-					$data = base64_encode(serialize($data));
-					$row[$name] = $data;
-				}
-			}
-
-			$this->EE->db->query($this->EE->db->update_string('exp_sites', $row, "site_id = '".$this->EE->db->escape_str($row['site_id'])."'"));
-		}
-
-		// there's another step yet
 		return 'backup_trackbacks';
 	}
 
