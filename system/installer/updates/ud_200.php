@@ -474,12 +474,12 @@ class Updater {
 
 	function standardize_datetime_large_db()
 	{
-		return $this->standardize_datetime();
+		return $this->standardize_datetime(TRUE);
 	}
 	
 	// --------------------------------------------------------------------
 
-	function standardize_datetime()
+	function standardize_datetime($large_db = FALSE)
 	{
 		@set_time_limit(0);
 		$this->EE->progress->update_state("Standardizing Timestamps");
@@ -577,9 +577,17 @@ class Updater {
 			}
 		}
 
-		// $not_field_list = array();
 		$table_keys = array();
-
+		
+		// Remove any tables we do not have
+		foreach(array_keys($field_list) as $table)
+		{
+			if ( ! in_array($table, $tables))
+			{
+				unset($field_list[$table]);
+			}
+		}
+		
 		/**
 		 * Get a list of our timestamp fields
 		 * Use some logic to determine 3rd party
@@ -605,13 +613,10 @@ class Updater {
 		 * Perform the Updates
 		 */
 		
+		$conversion_queries = array();
+		
 		foreach($field_list as $table => $fields)
 		{
-			if ( ! in_array($table, $tables))
-			{
-				continue;
-			}
-
 			$table = $this->EE->db->escape_str($table);
 
 			foreach($fields as $field)
@@ -659,17 +664,45 @@ class Updater {
 								// add one hour to the field we're converting, for all the
 								// rows we gathered above ($dst_dates == array of primary keys)
 								
-								$this->EE->db->query("UPDATE `{$table}` SET `{$field}` = `{$field}` + 3600
-									WHERE `".$this->EE->db->escape_str($table_keys[$table])."` IN ('".implode("','", $dst_dates)."')");
+								$conversion_queries[] = "UPDATE `{$table}` SET `{$field}` = `{$field}` + 3600
+									WHERE `".$this->EE->db->escape_str($table_keys[$table])."` IN ('".implode("','", $dst_dates)."');";
 							}
 						}
 					}
 				}
 
 				// add the offset, which may be a negative number
-				$this->EE->db->query("UPDATE `{$table}` SET `{$field}` = `{$field}` + {$add_time} WHERE `{$field}` != 0");
+				$conversion_queries[] = "UPDATE `{$table}` SET `{$field}` = `{$field}` + {$add_time} WHERE `{$field}` != 0;";
 			}
 		}
+		
+		
+		if ($large_db)
+		{
+			if ( ! is_dir(EE_APPPATH.'cache/installer'))
+			{
+				mkdir(EE_APPPATH.'cache/installer', DIR_WRITE_MODE);
+				@chmod(EE_APPPATH.'cache/installer', DIR_WRITE_MODE);	
+			}
+
+			$data = implode("\n", $conversion_queries);
+			$filepath = EE_APPPATH.'cache/installer/convert_dst.sql';
+
+			if (file_put_contents($filepath, $data)))
+			{
+				@chmod($filepath, FILE_WRITE_MODE);			
+			}
+			
+			$errors[] = "Please run the queries in: $filepath";
+		}
+		else
+		{
+			foreach ($conversion_queries as $query)
+			{
+				$this->EE->db->query($query);
+			}
+		}
+		
 
 		// Do we need to consider trackbacks?
 		if (( ! isset($this->config['trackbacks_to_comments']) OR $this->config['trackbacks_to_comments'] != 'y') AND
