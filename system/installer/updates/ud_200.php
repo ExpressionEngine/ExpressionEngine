@@ -681,16 +681,7 @@ BSH;
 			$this->EE->config->_update_config(array(), array('trackbacks_to_comments' => '', 'archive_trackbacks' => ''));
 
 			// continue with general database changes
-
-			$has_duplicates = $this->_dupe_check();
-			$next_step = 'database_changes_new';
-
-			if ( ! empty($has_duplicates))
-			{
-				$next_step = 'database_clean';
-			}
-
-			return $next_step;
+			return 'database_clean';
 		}
 
 		// update site prefs
@@ -701,13 +692,7 @@ BSH;
 	
 	public function backup_trackbacks()
 	{
-		$has_duplicates = $this->_dupe_check();
-		$next_step = 'database_changes_new';
-
-		if ( ! empty($has_duplicates))
-		{
-			$next_step = 'database_clean';
-		}
+		$next_step = 'database_clean';
 
 		// Grab the main table
 		$t_query = $this->EE->db->get('trackbacks');
@@ -855,14 +840,9 @@ BSH;
 
 	public function database_clean()
 	{
-		 $this->EE->progress->update_state("Cleaning duplicate data");
+		$has_duplicates = $this->_dupe_check();
 
-		if ( ! isset($this->config['table_duplicates']))
-		{
-			return;
-		}
-
-		$has_duplicates = explode('|', $this->config['table_duplicates']);
+		$Q = array();
 
 		// Eliminate duplicate primaries
 
@@ -889,10 +869,7 @@ BSH;
 			$Q[] = "ALTER TABLE exp_tmp_category_posts RENAME TO exp_category_posts";
 		}
 
-		foreach ($Q as $sql)
-		{
-			 $this->EE->db->query($sql);
-		}
+		$this->_run_queries('Cleaning duplicate data.', $Q);
 
 		return 'database_changes_new';
 	}
