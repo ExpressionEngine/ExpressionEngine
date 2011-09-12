@@ -31,7 +31,7 @@ class Updater {
 	var $errors					= array();
 	
 	
-	function Updater()
+	public function Updater()
 	{
 		$this->EE =& get_instance();
 
@@ -73,7 +73,7 @@ class Updater {
 
 	// --------------------------------------------------------------------
 	
-	function do_update()
+	public function do_update()
 	{
 		$ignore = FALSE;
 		$manual_move = FALSE;
@@ -100,11 +100,12 @@ class Updater {
 		$this->_update_site_prefs();
 		
 		// step 1, utf8 conversion
-		return ($this->large_db) ? 'convert_large_db_to_utf8' : 'convert_db_to_utf8';
+		return ($this->large_db) ? 'large_db_check' : 'convert_db_to_utf8';
 	}
+	
 	// --------------------------------------------------------------------
 	
-	function _update_site_prefs()
+	private function _update_site_prefs()
 	{		
 		// Load the string helper
 		$this->EE->load->helper('string');
@@ -167,7 +168,7 @@ class Updater {
 	 * @param object	Query object from sites query.
 	 * @return void
 	 */
-	function _update_templates_saved_as_files($sites, $ignore_setting, $manual_move)
+	private function _update_templates_saved_as_files($sites, $ignore_setting, $manual_move)
 	{
 		$sites_with_templates = array();
 		$template_move_errors = FALSE;
@@ -390,62 +391,15 @@ class Updater {
 		return;
 	}
 
-	// ------------------------------------------------------------------------ 
-
-	function convert_large_db_to_utf8()
-	{
-		if ( ! $this->EE->db->table_exists('utf8_conversion_completed'))
-		{
-			$tables = implode(' ', $this->EE->db->list_tables(TRUE));
-			
-			$password_parameter = ($this->EE->db->password != '') ? '-p '.$this->EE->db->password : '';
-			
-			$this->errors[] = "Your database is too large to perform this part of the upgrade via a web request.
-								Please contact your system administrator and have them run the following commands,
-								then access this page again.<br /><br />
-
-								<code>mysqldump -h {$this->EE->db->hostname} -u {$this->EE->db->username} 
-									{$password_parameter} --opt --quote-names --skip-set-charset
-									--default-character-set=latin1 {$this->EE->db->database} 
-									{$tables}
-									> {$this->EE->db->database}-pre-upgrade-dump.sql</code>
-
-								<br /><br />
-
-								<code>mysql -h {$this->EE->db->hostname} -u {$this->EE->db->username}
-									{$password_parameter} --default-character-set=utf8
-									{$this->EE->db->database} < {$this->EE->db->database}-pre-upgrade-dump.sql</code>
-
-								<br /><br />
-
-								<code>mysql -h {$this->EE->db->hostname} -u {$this->EE->db->username}
-									{$password_parameter} {$this->EE->db->database}
-									-e 'CREATE TABLE {$this->EE->db->dbprefix}utf8_conversion_completed(`id` int)'</code>";
-
-			return FALSE;
-		}
-		
-		@set_time_limit(0);
-		$this->EE->db->save_queries = FALSE;
-		
-		foreach ($this->EE->db->list_tables(TRUE) as $table)
-		{
-			$this->EE->progress->update_state("Altering character set of `{$table}` to UTF-8");
-			$this->EE->db->query("ALTER TABLE `{$table}` CHARACTER SET utf8 COLLATE utf8_general_ci");
-		}
-
-		$this->EE->progress->update_state("Altering character set of the `{$this->EE->db->database}` database to UTF-8");		
-		$this->EE->db->query("ALTER DATABASE `{$this->EE->db->database}` CHARACTER SET utf8 COLLATE utf8_general_ci");
-		
-		$this->EE->load->dbforge();
-		$this->EE->dbforge->drop_table('utf8_conversion_completed');
-		
-		return 'standardize_datetime_large_db';
-	}
+	// ------------------------------------------------------------------------
 	
-	// --------------------------------------------------------------------
-
-	function convert_db_to_utf8()
+	/**=====================================================================
+	 * Standard Database UTF8/Time Conversion
+	 * - convert_db_to_utf8
+	 * - standardize_datetime
+	 * ===================================================================== */
+	
+	public function convert_db_to_utf8()
 	{
 		// this step can be a doozy.  Set time limit to infinity.
 		// Server process timeouts are out of our control, unfortunately
@@ -527,15 +481,8 @@ class Updater {
 	}
 
 	// --------------------------------------------------------------------
-
-	function standardize_datetime_large_db()
-	{
-		return $this->standardize_datetime();
-	}
 	
-	// --------------------------------------------------------------------
-
-	function standardize_datetime()
+	public function standardize_datetime()
 	{
 		@set_time_limit(0);
 		$this->EE->progress->update_state("Standardizing Timestamps");
@@ -722,7 +669,131 @@ class Updater {
 				$this->EE->db->query("UPDATE `{$table}` SET `{$field}` = `{$field}` + {$add_time} WHERE `{$field}` != 0");
 			}
 		}
+		
+		return 'trackback_check';
+	}
 
+	// ------------------------------------------------------------------------
+	
+	/**=====================================================================
+	 * Large Database UTF8/Time Conversion
+	 * - large_db_check
+	 * - generate_queries
+	 * - convert_large_db_to_utf8
+	 * - standardize_datetime_large_db
+	 * ===================================================================== */
+	
+	/**
+	 * Large Database Gatekeeper
+	 */
+	public function large_db_check()
+	{
+		if ( ! $this->EE->db->table_exists('utf8_conversion_completed'))
+		{
+			return $this->generate_queries();
+		}
+		
+		// This table is only used as an indicator
+		$this->EE->load->dbforge();
+		$this->EE->dbforge->drop_table('utf8_conversion_completed');
+		
+		return 'trackback_check';
+	}
+
+	// ------------------------------------------------------------------------
+	
+	/**
+	 * Generate queries for the sysadmin to run to update a large EE2 
+	 * installation
+	 */
+	public function generate_queries()
+	{
+		// Show commands for converting large_db_to_utf8
+		
+		// Queries include:
+		// - Convert database to UTF8 (first part of convert_large_db_to_utf8)
+		// - Change collation to UTF8 on tables and database (second part of convert_large_db_to_utf8)
+		// - Changing datetime to be GMT time (get queries from standardize_datetime)
+	}
+	
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Wrap up converting the db to utf8
+	 */
+	public function convert_large_db_to_utf8()
+	{
+		if ( ! $this->EE->db->table_exists('utf8_conversion_completed'))
+		{
+			$tables = implode(' ', $this->EE->db->list_tables(TRUE));
+			
+			$password_parameter = ($this->EE->db->password != '') ? '-p '.$this->EE->db->password : '';
+			
+			$this->errors[] = "Your database is too large to perform this part of the upgrade via a web request.
+								Please contact your system administrator and have them run the following commands,
+								then access this page again.<br /><br />
+
+								<code>mysqldump -h {$this->EE->db->hostname} -u {$this->EE->db->username} 
+									{$password_parameter} --opt --quote-names --skip-set-charset
+									--default-character-set=latin1 {$this->EE->db->database} 
+									{$tables}
+									> {$this->EE->db->database}-pre-upgrade-dump.sql</code>
+
+								<br /><br />
+
+								<code>mysql -h {$this->EE->db->hostname} -u {$this->EE->db->username}
+									{$password_parameter} --default-character-set=utf8
+									{$this->EE->db->database} < {$this->EE->db->database}-pre-upgrade-dump.sql</code>
+
+								<br /><br />
+
+								<code>mysql -h {$this->EE->db->hostname} -u {$this->EE->db->username}
+									{$password_parameter} {$this->EE->db->database}
+									-e 'CREATE TABLE {$this->EE->db->dbprefix}utf8_conversion_completed(`id` int)'</code>";
+
+			return FALSE;
+		}
+		
+		@set_time_limit(0);
+		$this->EE->db->save_queries = FALSE;
+		
+		foreach ($this->EE->db->list_tables(TRUE) as $table)
+		{
+			$this->EE->progress->update_state("Altering character set of `{$table}` to UTF-8");
+			$this->EE->db->query("ALTER TABLE `{$table}` CHARACTER SET utf8 COLLATE utf8_general_ci");
+		}
+
+		$this->EE->progress->update_state("Altering character set of the `{$this->EE->db->database}` database to UTF-8");		
+		$this->EE->db->query("ALTER DATABASE `{$this->EE->db->database}` CHARACTER SET utf8 COLLATE utf8_general_ci");
+		
+		return 'standardize_datetime_large_db';
+	}
+	
+	// --------------------------------------------------------------------
+
+	public function standardize_datetime_large_db()
+	{
+		return $this->standardize_datetime();
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**=====================================================================
+	 * Normal/Large Database Conversion Tasks
+	 * - trackback_check
+	 * - backup_trackbacks
+	 * - database_clean
+	 * - database_changes_new
+	 * - database_changes_members
+	 * - database_changes_weblog
+	 * - update_custom_fields
+	 * - resync_member_groups
+	 * - convert_fresh_variables
+	 * - weblog_terminology_changes
+	 * ===================================================================== */
+	
+	public function trackback_check()
+	{
 		// Do we need to consider trackbacks?
 		if (( ! isset($this->config['trackbacks_to_comments']) OR $this->config['trackbacks_to_comments'] != 'y') AND
 			( ! isset($this->config['archive_trackbacks']) OR $this->config['archive_trackbacks'] != 'y'))
@@ -732,7 +803,7 @@ class Updater {
 
 			// continue with general database changes
 
-			$has_duplicates = $this->dupe_check();
+			$has_duplicates = $this->_dupe_check();
 			$next_step = 'database_changes_new';
 
 			if ( ! empty($has_duplicates))
@@ -746,12 +817,12 @@ class Updater {
 		// update site prefs
 		return 'backup_trackbacks';
 	}
-
+	
 	// --------------------------------------------------------------------
 	
-	function backup_trackbacks()
+	public function backup_trackbacks()
 	{
-		$has_duplicates = $this->dupe_check();
+		$has_duplicates = $this->_dupe_check();
 		$next_step = 'database_changes_new';
 
 		if ( ! empty($has_duplicates))
@@ -903,43 +974,7 @@ class Updater {
 
 	// --------------------------------------------------------------------
 
-	function dupe_check()
-	{
-		$has_duplicates = array();
-
-		// Check whether we need to run duplicate record clean up
-		$query = $this->EE->db->query("SELECT `upload_id`, `member_group`, count(`member_group`) FROM `exp_upload_no_access` GROUP BY `upload_id`, `member_group` HAVING COUNT(`member_group`) > 1");
-
-		if ($query->num_rows() > 0)
-		{
-			$has_duplicates[] = 'upload_no_access';
-		}
-
-		$query = $this->EE->db->query("SELECT `member_id`, count(`member_id`) FROM `exp_message_folders` GROUP BY `member_id` HAVING COUNT(`member_id`) > 1");
-
-		if ($query->num_rows() > 0)
-		{
-			$has_duplicates[] = 'message_folders';
-		}
-
-		$query = $this->EE->db->query("SELECT `entry_id`, `cat_id`, count(`cat_id`) FROM `exp_category_posts` GROUP BY `entry_id`, `cat_id` HAVING count(`cat_id`) > 1");
-
-		if ($query->num_rows() > 0)
-		{
-			$has_duplicates[] = 'category_posts';
-		}
-
-		if ( ! empty($has_duplicates))
-		{
-			$this->EE->config->_update_config(array('table_duplicates' => implode('|', $has_duplicates)));
-		}
-
-		return $has_duplicates;
-	}
-
-	// --------------------------------------------------------------------
-
-	function database_clean()
+	public function database_clean()
 	{
 		 $this->EE->progress->update_state("Cleaning duplicate data");
 
@@ -985,7 +1020,7 @@ class Updater {
 
 	// ------------------------------------------------------------------------ 
 
-	function database_changes_new()
+	public function database_changes_new()
 	{
 		$this->EE->progress->update_state("Creating new database tables");
 
@@ -1082,7 +1117,7 @@ class Updater {
 
 	// ------------------------------------------------------------------------ 
 
-	function database_changes_members()
+	public function database_changes_members()
 	{
 		$this->EE->progress->update_state("Updating member tables");
 	
@@ -1156,7 +1191,7 @@ class Updater {
 
 	// ------------------------------------------------------------------------ 
 
-	function database_changes_weblog()
+	public function database_changes_weblog()
 	{
 		$this->EE->progress->update_state("Updating weblog tables");
 
@@ -1360,7 +1395,7 @@ class Updater {
 
 	// ------------------------------------------------------------------------ 
 
-	function update_custom_fields()
+	public function update_custom_fields()
 	{
 		$this->EE->progress->update_state("Updating custom field tables");
 		
@@ -1406,7 +1441,7 @@ class Updater {
 
 	// ------------------------------------------------------------------------ 
 
-	function resync_member_groups()
+	public function resync_member_groups()
 	{
 		$this->EE->progress->update_state("Synchronizing member groups");
 		
@@ -1496,7 +1531,7 @@ class Updater {
 
 	// ------------------------------------------------------------------------ 
 
-	function convert_fresh_variables()
+	public function convert_fresh_variables()
 	{
 		// port over old Fresh Variables to Snippets?
 		$this->EE->progress->update_state('Checking for Fresh Variables');
@@ -1546,21 +1581,7 @@ class Updater {
 
 	// ------------------------------------------------------------------------ 
 
-	function _run_queries($summary = 'Creating and updating database tables', $queries = array())
-	{
-		$count = count($queries);
-		
-		foreach ($queries as $num => $sql)
-		{
-			$this->EE->progress->update_state("{$summary} (Query {$num} of {$count})");
-
-			$this->EE->db->query($sql);
-		}
-	}
-
-	// ------------------------------------------------------------------------
-
-	function weblog_terminology_changes()
+	public function weblog_terminology_changes()
 	{
 		$this->EE->progress->update_state("Replacing weblog with channel.");
 
@@ -1621,6 +1642,57 @@ class Updater {
 
 		// Finished!
 		return TRUE;
+	}
+
+
+	// ------------------------------------------------------------------------
+	
+	private function _run_queries($summary = 'Creating and updating database tables', $queries = array())
+	{
+		$count = count($queries);
+		
+		foreach ($queries as $num => $sql)
+		{
+			$this->EE->progress->update_state("{$summary} (Query {$num} of {$count})");
+
+			$this->EE->db->query($sql);
+		}
+	}
+
+	// ------------------------------------------------------------------------
+
+	private function _dupe_check()
+	{
+		$has_duplicates = array();
+
+		// Check whether we need to run duplicate record clean up
+		$query = $this->EE->db->query("SELECT `upload_id`, `member_group`, count(`member_group`) FROM `exp_upload_no_access` GROUP BY `upload_id`, `member_group` HAVING COUNT(`member_group`) > 1");
+
+		if ($query->num_rows() > 0)
+		{
+			$has_duplicates[] = 'upload_no_access';
+		}
+
+		$query = $this->EE->db->query("SELECT `member_id`, count(`member_id`) FROM `exp_message_folders` GROUP BY `member_id` HAVING COUNT(`member_id`) > 1");
+
+		if ($query->num_rows() > 0)
+		{
+			$has_duplicates[] = 'message_folders';
+		}
+
+		$query = $this->EE->db->query("SELECT `entry_id`, `cat_id`, count(`cat_id`) FROM `exp_category_posts` GROUP BY `entry_id`, `cat_id` HAVING count(`cat_id`) > 1");
+
+		if ($query->num_rows() > 0)
+		{
+			$has_duplicates[] = 'category_posts';
+		}
+
+		if ( ! empty($has_duplicates))
+		{
+			$this->EE->config->_update_config(array('table_duplicates' => implode('|', $has_duplicates)));
+		}
+
+		return $has_duplicates;
 	}
 
 	// --------------------------------------------------------------------
