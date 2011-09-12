@@ -1661,15 +1661,8 @@ class Updater {
 		$Q[] = "UPDATE `exp_modules` SET `module_name` = 'Channel' WHERE `module_name` = 'Weblog'";
 
 
-		$count = count($Q);
-
-		foreach ($Q as $num => $sql)
-		{
-			$this->EE->progress->update_state("Replacing weblog with channel (Query $num of $count)");
-
-			$this->EE->db->query($sql);
-		}
-
+		$this->_run_queries('Replacing weblog with channel', $Q);
+		
 		// Finished!
 		return TRUE;
 	}
