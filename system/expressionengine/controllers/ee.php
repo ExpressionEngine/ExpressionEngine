@@ -93,7 +93,7 @@ class EE extends CI_Controller {
 		/*  This is most helpful if you wish for debug to be set to 0, as EE will not
 		/*  strip out javascript.
 		/* -------------------------------------------*/		
-		$remove_vars = ($this->config->item('remove_unparsed_vars') == 'n') ? FALSE : TRUE;
+		$remove_vars = ($this->config->item('remove_unparsed_vars') == 'y') ? TRUE : FALSE;
 		$this->output->remove_unparsed_variables($remove_vars);
 
 		if ($this->config->item('debug') == 0 && 
