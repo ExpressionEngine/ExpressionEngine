@@ -148,6 +148,7 @@ $mimes = array(
 				'txt'	=>	'text/plain',
 				'wav'	=>	'audio/x-wav',
 				'wbxml'	=>	'application/wbxml',
+				'webm'	=>	'video/webm',
 				'wmlc'	=>	'application/wmlc',
 				'word'	=>	array('application/msword', 'application/octet-stream'),
 				'xht'	=>	'application/xhtml+xml',
