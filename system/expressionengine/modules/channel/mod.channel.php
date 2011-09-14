@@ -3052,6 +3052,7 @@ class Channel {
 					$this->basepath = $this->EE->functions->create_url(trim_slashes($this->EE->TMPL->fetch_param('paginate_base')));
 				}
 				
+				$config['first_url'] 	= rtrim($this->basepath, '/');
 				$config['base_url']		= $this->basepath;
 				$config['prefix']		= 'P';
 				$config['total_rows'] 	= $this->total_rows;
