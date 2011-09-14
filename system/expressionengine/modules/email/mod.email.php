@@ -64,9 +64,7 @@ class Email {
 		$user_recipients = $this->EE->TMPL->fetch_param('user_recipients', 'no');
 
 		// Backwards compatible with previously documented "true/false" parameters (now "yes/no")
-		($user_recipients == 'true' OR $user_recipients == 'yes') ? $user_recipients = 'yes' : $user_recipients = 'no'; 
-
-		$this->_user_recipients = $user_recipients;
+		$this->_user_recipients = ($user_recipients == 'true' OR $user_recipients == 'yes') ? 'yes' : 'no'; 
 
 		$recipients = $this->EE->TMPL->fetch_param('recipients', '');
 		$channel = $this->EE->TMPL->fetch_param('channel', '');
