@@ -42,7 +42,7 @@ Setting Up Your Local Fork
 	git submodule sync
 	git submodule update
 
-..important:: These repositories must remain private and all work under NDA.  Any violation of this policy will result in immediate removal from the ExpressionEngine Reactor program.  Keep in mind that making any of these files public by way of GitHub or any other mechanism would be tantamount to unlawfully redistributing the application.
+.. important:: These repositories must remain private and all work under NDA.  Any violation of this policy will result in immediate removal from the ExpressionEngine Reactor program.  Keep in mind that making any of these files public by way of GitHub or any other mechanism would be tantamount to unlawfully redistributing the application.
 
 *****************************
 Making and Submitting Changes
