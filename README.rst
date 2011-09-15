@@ -55,6 +55,11 @@ In your fork, you'll typically always want to start on a feature branch for a ch
 
 Which will automatically create and checkout a feature/some-feature branch for you.  The second line publishes the feature branch to your GitHub fork.  Now you can commit and make whatever changes you like.
 
+When you are done, you can merge the changes into your develop branch and remove the remote feature branch::
+
+	git flow feature finish some-feature
+	git push origin :feature/some-feature
+
 When you are happy with your changes, or want to solicit feedback, send a Pull Request via GitHub to the ExpressionEngine-Reactor private repo, which will create an issue in the EllisLab repo attached to your change sets for discussion or merging.
 
 ***************
