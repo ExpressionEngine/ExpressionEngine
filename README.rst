@@ -10,7 +10,7 @@ Getting Started
 
 ExpressionEngine uses CodeIgniter as a submodule, and rather than requiring that you have another account at Beanstalk to have read access to the repo, we have opted to push to a private GitHub repo as another remote.
 
-The tricky part is that Git revisions the `.gitmodules` file, so Git will send that change along with push/pulls.  So every time a change is made and pulled, submodules would have to be recommitted, synced, then committed back to the desired location for working locally.
+The tricky part is that Git revisions the ``.gitmodules`` file, so Git will send that change along with push/pulls.  So every time a change is made and pulled, submodules would have to be recommitted, synced, then committed back to the desired location for working locally.
 
 The following steps have been designed to avoid this back and forth, and to provide the smoothest experience for all involved.
 
@@ -31,16 +31,20 @@ Setting Up Your Local Fork
 
 	git update-index --assume-unchanged .gitmodules
 
-4. Next we will change the .gitmodules file to point to GitHub for the CodeIgniter submodule.  (Here assumes we used TextMate, with `mate .gitmodules`).  Change to the following::
+4. Next we will change the .gitmodules file to point to GitHub for the CodeIgniter submodule.  (Here assumes we used TextMate, with ``mate .gitmodules``).  Change to the following::
 
 	[submodule "system/codeigniter"]
 	    path = system/codeigniter
 	    url = git@github.com:EllisLab/CodeIgniter-ELCore-Reactor.git
 
-5. And finally we will sync the submodule and pull in CodeIgniter::
+5. And finally we will initialize the submodule and pull in CodeIgniter::
+
+	git submodule init
+	git submodule update
+
+If you cloned using ``--recursive`` or initialized the submodule before changing the url, you will have to synchronize the submodule url before updating the submodule::
 
 	git submodule sync
-	git submodule update
 
 .. important:: These repositories must remain private and all work under NDA.  Any violation of this policy will result in immediate removal from the ExpressionEngine Reactor program.  Keep in mind that making any of these files public by way of GitHub or any other mechanism would be tantamount to unlawfully redistributing the application.
 
