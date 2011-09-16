@@ -782,8 +782,9 @@ class Member_auth extends Member {
 
 		// Kill old data from the reset_password field
 		$this->EE->db->where('date <', $time)
-					 ->where('member_id', $member_id)
+					 ->or_where('member_id', $member_id)
 					 ->delete('reset_password');
+					
 
 		// Buid the email message
 		if ($this->EE->input->get_post('r') == 'f')
