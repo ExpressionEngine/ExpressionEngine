@@ -405,6 +405,10 @@ class Comment_mcp {
 			$url .= AMP.'status='.$this->_date_range;
 		}
 
+		if ($this->_entry_id)
+		{
+			$url .= AMP.'entry_id='.$this->_entry_id;
+		}
 
 		$p_button = "<img src=\"{$this->EE->cp->cp_theme_url}images/pagination_%s_button.gif\" width=\"13\" height=\"13\" alt=\"%s\" />";
 
