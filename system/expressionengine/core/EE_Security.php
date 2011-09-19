@@ -70,7 +70,7 @@ class EE_Security extends CI_Security {
 		if ( ! $xid)
 		{
 			return FALSE;
-		}		
+		}
 
 		$total = $EE->db->where('hash', $xid)
 						->where('ip_address', $EE->input->ip_address())
