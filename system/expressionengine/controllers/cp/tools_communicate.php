@@ -452,7 +452,7 @@ class Tools_communicate extends CI_Controller {
 
 		if (count($groups) == 0 AND count($list_ids) == 0 )
 		{ 
-			$to = ($recipient == '') ? $this->session->userdata['email'] : $recipient;
+			$to = $recipient;
 
 			$this->email->wordwrap  = ($wordwrap == 'y') ? TRUE : FALSE;
 			$this->email->mailtype  = $mailtype;
@@ -558,18 +558,6 @@ class Tools_communicate extends CI_Controller {
 			}
 		}
 
-		// Kill duplicates
-
-		$cleaned_emails = array();
-
-		foreach($emails as $key => $value)
-		{
-			if ( ! isset($cleaned_emails[$key]))
-			{
-				$cleaned_emails[$key] = $value;
-			}
-		}
-
 		// After all that, do we have any emails?
 
 		if (count($emails) == 0 AND $recipient == '')
@@ -584,9 +572,7 @@ class Tools_communicate extends CI_Controller {
 		//  If so, we'll send those separately first
 
 		$total_sent = 0;
-
-		$recips = array();
-
+		
 		if ($cc != '' OR $bcc != '')
 		{				
 			$to = ($recipient == '') ? $this->session->userdata['email'] : $recipient;
@@ -693,15 +679,8 @@ class Tools_communicate extends CI_Controller {
 				$msg_alt = str_replace('{name}', $screen_name, $msg_alt);
 
 				$this->email->message($msg, $msg_alt);	
-
-				$error = FALSE;
-
+				
 				if ( ! $this->email->send())
-				{
-					$error = TRUE;
-				}
-
-				if ($error == TRUE)
 				{
 					// Let's adjust the recipient array up to this point
 					reset($recipient_array);
