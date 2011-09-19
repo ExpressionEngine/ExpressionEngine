@@ -18,10 +18,6 @@ if ($EE_view_disable !== TRUE)
 		<?php endif; ?>
 			<div class="pageContents">
 
-				<?php if ($alert): ?>
-				<p class="notice"><?=$alert?></p>
-				<?php endif; ?>
-
 				<?=form_open_multipart('C=tools_communicate'.AMP.'M=send_email')?>
 
 				<div id="communicate_info">

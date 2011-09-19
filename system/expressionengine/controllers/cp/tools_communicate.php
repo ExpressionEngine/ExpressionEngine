@@ -59,7 +59,7 @@ class Tools_communicate extends CI_Controller {
 	 * @param	string
 	 * @return	void
 	 */	
-	function index($alert = '')
+	function index()
 	{
 		$this->load->library('spellcheck');
 		$this->load->library('table');
@@ -97,19 +97,19 @@ class Tools_communicate extends CI_Controller {
 		$mailing_lists	= array();
 		
 		$default = array(
-							'name'			=> '',
-							'from'		 	=> $this->session->userdata['email'],
-							'recipient'  	=> '',
-							'cc'			=> '',
-							'bcc'			=> '',
-							'subject' 		=> '',
-							'message'		=> '',
-							'plaintext_alt'	=> '',
-							'priority'		=>  3,
-							'text_fmt'		=> 'none',
-							'mailtype'		=> $this->config->item('mail_format'),
-							'wordwrap'		=> $this->config->item('word_wrap')
-						);
+			'name'			=> '',
+			'from'		 	=> $this->session->userdata['email'],
+			'recipient'  	=> '',
+			'cc'			=> '',
+			'bcc'			=> '',
+			'subject' 		=> '',
+			'message'		=> '',
+			'plaintext_alt'	=> '',
+			'priority'		=>  3,
+			'text_fmt'		=> 'none',
+			'mailtype'		=> $this->config->item('mail_format'),
+			'wordwrap'		=> $this->config->item('word_wrap')
+		);
 		
 		/** -----------------------------
 		/**  Are we emailing a member?
@@ -254,9 +254,7 @@ class Tools_communicate extends CI_Controller {
 				$vars['member_groups'][$row->group_title] = array('name' => 'group_'.$row->group_id, 'value' => $row->group_id, 'checked' => $checked);
 			}
 		}
-
-		$vars['alert'] = $alert;
-
+		
 		$this->javascript->compile();
 
 		$this->load->view('tools/communicate', $vars);
@@ -301,29 +299,26 @@ class Tools_communicate extends CI_Controller {
 		{
 			$temp_attachment = $_FILES['attachment']['tmp_name'];
 
-			if (is_uploaded_file($temp_attachment))
-			{
-				$temp_path = substr($temp_attachment, 0, strrpos($temp_attachment, DIRECTORY_SEPARATOR)+1);
-				$attachment = $temp_path.$_FILES['attachment']['name'];
-
-				// Try to give it a humane name. This should happen so quickly that multiple users
-				// won't be able to collide, but check for that first
-				if ( ! file_exists($attachment) AND ! rename($temp_attachment, $attachment))
-				{
-					// If we aren't able to rename this for any reason, then just attach
-					// the file with the temp name instead.
-					$attachment = $temp_attachment;
-				}
-
-				$this->attachments[] = $attachment;
-				$this->email->attach($attachment);
-				return TRUE;
-			}
-			else
+			if ( ! is_uploaded_file($temp_attachment))
 			{
 				$this->form_validation->set_message('_attachment_handler', lang('attachment_problem'));
 				return FALSE;
 			}
+
+			$temp_path = substr($temp_attachment, 0, strrpos($temp_attachment, DIRECTORY_SEPARATOR)+1);
+			$attachment = $temp_path.$_FILES['attachment']['name'];
+
+			// Try to give it a humane name. This should happen so quickly that multiple users
+			// won't be able to collide, but check for that first
+			if ( ! file_exists($attachment) AND ! rename($temp_attachment, $attachment))
+			{
+				// If we aren't able to rename this for any reason, then just attach
+				// the file with the temp name instead.
+				$attachment = $temp_attachment;
+			}
+
+			$this->attachments[] = $attachment;
+			$this->email->attach($attachment);
 		}
 
 		return TRUE;
@@ -404,48 +399,45 @@ class Tools_communicate extends CI_Controller {
 
 		// Assign data for caching
 		$cache_data = array(
-								'cache_date'		=> $this->localize->now,
-								'total_sent'		=> 0,
-								'from_name'	 		=> $name,
-								'from_email'		=> $from,
-								'recipient'			=> $recipient,
-								'cc'				=> $cc,
-								'bcc'				=> $bcc,
-								'recipient_array'	=> '',
-								'subject'			=> $subject,
-								'message'			=> $message,
-								'plaintext_alt'		=> $plaintext_alt,
-								'mailtype'	  		=> $mailtype,
-								'text_fmt'			=> $text_fmt,
-								'wordwrap'	  		=> $wordwrap,
-								'priority'	  		=> $priority
-							);
+			'cache_date'		=> $this->localize->now,
+			'total_sent'		=> 0,
+			'from_name'	 		=> $name,
+			'from_email'		=> $from,
+			'recipient'			=> $recipient,
+			'cc'				=> $cc,
+			'bcc'				=> $bcc,
+			'recipient_array'	=> '',
+			'subject'			=> $subject,
+			'message'			=> $message,
+			'plaintext_alt'		=> $plaintext_alt,
+			'mailtype'	  		=> $mailtype,
+			'text_fmt'			=> $text_fmt,
+			'wordwrap'	  		=> $wordwrap,
+			'priority'	  		=> $priority
+		);
 
 		//  Apply text formatting if necessary
 
 		if ($text_fmt != 'none' && $text_fmt != '')
 		{
 			$this->load->library('typography');
-			$this->typography->initialize();
-
 			$this->typography->initialize(array(
-						'parse_images'	=> FALSE,
-						'parse_smileys'	=> FALSE)
-						);
+				'parse_images'	=> FALSE,
+				'parse_smileys'	=> FALSE
+			));
 
-			if ($this->config->item('enable_censoring') == 'y' && $this->config->item('censored_words') != '')
+			if ($this->config->item('enable_censoring') == 'y' &&
+				$this->config->item('censored_words') != '')
         	{
 				$subject = $this->typography->filter_censored_words($subject);
 			}
 
-			$message = $this->typography->parse_type($message, 
-											  array(
-													'text_format'   => $text_fmt,
-													'html_format'   => 'all',
-													'auto_links'	=> 'n',
-													'allow_img_url' => 'y'
-												  )
-											);
+			$message = $this->typography->parse_type($message, array(
+				'text_format'   => $text_fmt,
+				'html_format'   => 'all',
+				'auto_links'	=> 'n',
+				'allow_img_url' => 'y'
+			));
 		}
 
 		//  Send a single email
@@ -484,7 +476,10 @@ class Tools_communicate extends CI_Controller {
 
 			$this->communicate_model->save_cache_data($cache_data);
 
-			$this->load->view('tools/email_sent', array('debug' => $this->email->_debug_msg));
+			$this->load->view('tools/email_sent', array(
+				'debug' => $this->email->_debug_msg
+			));
+			
 			return;
 		}
 
@@ -520,7 +515,10 @@ class Tools_communicate extends CI_Controller {
 			{
 				foreach ($query->result_array() as $row)
 				{
-					$emails['m'.$row['member_id']] = array($row['email'], $row['screen_name']);
+					$emails['m'.$row['member_id']] = array(
+						$row['email'],
+						$row['screen_name']
+					);
 				}
 			}
 		}
@@ -537,7 +535,10 @@ class Tools_communicate extends CI_Controller {
 			{
 				// Fetch the template for each list
 				$query = $this->communicate_model->get_mailing_lists($id);
-				$list_templates[$id] = array('list_template' => $query->row('list_template') , 'list_title' => $query->row('list_title') );
+				$list_templates[$id] = array(
+					'list_title'	=> $query->row('list_title'),
+					'list_template'	=> $query->row('list_template')
+				);
 			}
 
 			$query = $this->communicate_model->get_mailing_list_emails($list_ids);
@@ -553,7 +554,10 @@ class Tools_communicate extends CI_Controller {
 			{
 				foreach ($query->result_array() as $row)
 				{
-					$emails['l'.$row['authcode']] = array($row['email'], $row['list_id']);
+					$emails['l'.$row['authcode']] = array(
+						$row['email'],
+						$row['list_id']
+					);
 				}
 			}
 		}
@@ -698,7 +702,11 @@ class Tools_communicate extends CI_Controller {
 			//  Update email cache
 			$this->communicate_model->update_email_cache($total_sent, '', $id);
 
-			$this->load->view('tools/email_sent', array('debug' => $this->email->_debug_msg, 'total_sent' => $total_sent));
+			$this->load->view('tools/email_sent', array(
+				'debug' => $this->email->_debug_msg,
+				'total_sent' => $total_sent
+			));
+			
 			return;
 		}
 		
@@ -706,15 +714,17 @@ class Tools_communicate extends CI_Controller {
 		/**  Start Batch-Mode
 		/** ----------------------------------------*/
 
-		$vars['redirect_url'] =  BASE.AMP.'C=tools_communicate'.AMP.'M=batch_send'.AMP.'id='.$id;
-		$vars['refresh_rate'] = 6;
-		$vars['refresh_message'] = lang('batchmode_ready_to_begin');
-		$vars['refresh_notice'] = lang('batchmode_warning');
-		$vars['refresh_heading'] = lang('sending_email');
+		$data = array(
+			'redirect_url'		=> BASE.AMP.'C=tools_communicate'.AMP.'M=batch_send'.AMP.'id='.$id,
+			'refresh_rate'		=> 6,
+			'refresh_message'	=> lang('batchmode_ready_to_begin'),
+			'refresh_notice'	=> lang('batchmode_warning'),
+			'refresh_heading'	=> lang('sending_email'),
+		);
 		
 		$this->cp->set_variable('cp_page_title', lang('sending_email'));
 		
-		$this->load->view('_shared/refresh_message', $vars);
+		$this->load->view('_shared/refresh_message', $data);
 		return;
 	}
 
@@ -818,12 +828,10 @@ class Tools_communicate extends CI_Controller {
 		if ($text_fmt != 'none' && $text_fmt != '')
 		{
 			$this->load->library('typography');
-			$this->typography->initialize();
-
 			$this->typography->initialize(array(
-						'parse_images'	=> FALSE,
-						'parse_smileys'	=> FALSE)
-						);
+				'parse_images'	=> FALSE,
+				'parse_smileys'	=> FALSE
+			));
 
 			$message = $this->typography->parse_type($message, 
 											  array(
@@ -1397,14 +1405,12 @@ var time = new Date().getTime();
 		$this->load->library('typography');
 		$this->typography->initialize();
 
-		$vars['message'] = $this->typography->parse_type( $message, 
-								 array(
-											'text_format'	=> 'xhtml',
-											'html_format'	=> 'all',
-											'auto_links'	=> 'y',
-											'allow_img_url' => 'y'
-										)
-								);
+		$vars['message'] = $this->typography->parse_type($message, array(
+			'text_format'	=> 'xhtml',
+			'html_format'	=> 'all',
+			'auto_links'	=> 'y',
+			'allow_img_url' => 'y'
+		));
 		
 		$this->cp->set_variable('cp_page_title', $vars['subject']);
 
