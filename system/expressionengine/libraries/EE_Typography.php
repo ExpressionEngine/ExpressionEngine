@@ -969,7 +969,15 @@ class EE_Typography extends CI_Typography {
 	 */
 	public function image_sanitize($matches)
 	{
-		list($url, $extra) = explode($this->safe_img_src_end, $matches[1]);
+		if (strpos($matches[1], $this->safe_img_src_end))
+		{
+			list($url, $extra) = explode($this->safe_img_src_end, $matches[1]);			
+		}
+		else
+		{
+			$url = $matches[1];
+			$extra = '';
+		}
 		
 		$url = str_replace(array('(', ')'), '', $url);
 
