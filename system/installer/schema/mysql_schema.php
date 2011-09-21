@@ -8,7 +8,6 @@ class EE_Schema {
 	var $year;
 	var $month;
 	var $day;
-	var $full_install	= FALSE;
 	var $default_entry	= '';
 	var $theme_path		= '';
 
