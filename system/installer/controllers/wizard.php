@@ -1298,6 +1298,10 @@ PAPAYA;
 			));
 		}
 		
+		// Set a liberal execution time limit, some of these
+		// updates are pretty big.
+		@set_time_limit(0);
+		
 		// Instantiate the updater class
 		$UD = new Updater;
 		$method = 'do_update';

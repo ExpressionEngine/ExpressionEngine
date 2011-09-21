@@ -403,7 +403,6 @@ class Updater {
 	{
 		// this step can be a doozy.  Set time limit to infinity.
 		// Server process timeouts are out of our control, unfortunately
-		@set_time_limit(0);
 		$this->EE->db->save_queries = FALSE;
 
 		$this->EE->progress->update_state('Converting Database Tables to UTF-8');
@@ -539,9 +538,6 @@ class Updater {
 	 */
 	public function generate_queries()
 	{
-		// Set time limit to infinity
-		@set_time_limit(0);
-		
 		// Show commands for converting large_db_to_utf8
 		
 		// Queries include:
@@ -694,9 +690,6 @@ BSH;
 	
 	public function backup_trackbacks()
 	{
-		// Set time limit to infinity
-		@set_time_limit(0);
-		
 		$next_step = 'database_clean';
 
 		// Grab the main table
@@ -845,9 +838,6 @@ BSH;
 
 	public function database_clean()
 	{
-		// Set time limit to infinity
-		@set_time_limit(0);
-		
 		$has_duplicates = $this->_dupe_check();
 
 		$Q = array();
@@ -886,9 +876,6 @@ BSH;
 
 	public function database_changes_new()
 	{
-		// Set time limit to infinity
-		@set_time_limit(0);
-		
 		$this->EE->progress->update_state("Creating new database tables");
 
 		$Q[] = "CREATE TABLE `exp_snippets` (
@@ -986,9 +973,6 @@ BSH;
 
 	public function database_changes_members()
 	{
-		// Set time limit to infinity
-		@set_time_limit(0);
-		
 		$this->EE->progress->update_state("Updating member tables");
 	
 		// Update members table: parse_smileys and crypt_key
@@ -1063,9 +1047,6 @@ BSH;
 
 	public function database_changes_weblog()
 	{
-		// Set time limit to infinity
-		@set_time_limit(0);
-		
 		$this->EE->progress->update_state("Updating weblog tables");
 
 		$has_duplicates = ( ! isset($this->config['table_duplicates'])) ? array() : explode('|', $this->config['table_duplicates']);
@@ -1270,9 +1251,6 @@ BSH;
 
 	public function update_custom_fields()
 	{
-		// Set time limit to infinity
-		@set_time_limit(0);
-		
 		$this->EE->progress->update_state("Updating custom field tables");
 		
 		// Update category custom fields to allow null
@@ -1319,9 +1297,6 @@ BSH;
 
 	public function resync_member_groups()
 	{
-		// Set time limit to infinity
-		@set_time_limit(0);
-		
 		$this->EE->progress->update_state("Synchronizing member groups");
 		
 		//  Update access priveleges for 2.0
@@ -1412,9 +1387,6 @@ BSH;
 
 	public function convert_fresh_variables()
 	{
-		// Set time limit to infinity
-		@set_time_limit(0);
-		
 		// port over old Fresh Variables to Snippets?
 		$this->EE->progress->update_state('Checking for Fresh Variables');
 		$this->EE->db->select('settings');
@@ -1465,9 +1437,6 @@ BSH;
 
 	public function weblog_terminology_changes()
 	{
-		// Set time limit to infinity
-		@set_time_limit(0);
-		
 		$this->EE->progress->update_state("Replacing weblog with channel.");
 
 		$Q[] = "ALTER TABLE `exp_sites` CHANGE `site_weblog_preferences` `site_channel_preferences` TEXT NOT NULL";
@@ -1526,9 +1495,6 @@ BSH;
 	
 	private function _standardize_datetime_queries()
 	{
-		// Set time limit to infinity
-		@set_time_limit(0);
-		
 		// @todo - doesn't work for entries made in the DST period opposite of that of
 		// when you run this script!!  Blargh!
 
@@ -1723,9 +1689,6 @@ BSH;
 	
 	private function _run_queries($summary = 'Creating and updating database tables', $queries = array())
 	{
-		// Set time limit to infinity
-		@set_time_limit(0);
-		
 		$count = count($queries);
 		
 		foreach ($queries as $num => $sql)
@@ -1740,9 +1703,6 @@ BSH;
 
 	private function _dupe_check()
 	{
-		// Set time limit to infinity
-		@set_time_limit(0);
-		
 		$has_duplicates = array();
 
 		// Check whether we need to run duplicate record clean up
