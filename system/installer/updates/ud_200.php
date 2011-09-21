@@ -572,7 +572,7 @@ class Updater {
 		
 		
 		$tables = implode(' ', $this->EE->db->list_tables(TRUE));
-		$password_parameter = ($this->EE->db->password != '') ? '-p '.$this->EE->db->password : '';
+		$password_parameter = ($this->EE->db->password != '') ? '-p'.$this->EE->db->password : '';
 		
 		$data = <<<BSH
 #!/bin/sh
@@ -597,7 +597,7 @@ mysql -h {$this->EE->db->hostname} -u {$this->EE->db->username} \
 
 
 echo "UTF-8 Conversion (Step 3: Removing database dump)"
-rm ellislab_site-pre-upgrade-dump.sql
+rm {$this->EE->db->database}-pre-upgrade-dump.sql
 
 
 ##
