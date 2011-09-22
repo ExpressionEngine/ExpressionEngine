@@ -24,10 +24,14 @@
  */
 class Updater {
 
-	var $version_suffix = 'pb01';
-	var $mylang = 'english';
-
-	function Updater()
+	var $version_suffix			= 'pb01';	
+	var $mylang					= 'english';
+	var $large_db				= FALSE;
+	var $large_db_threshold		= 150;	// database size in megabytes
+	var $errors					= array();
+	
+	
+	public function Updater()
 	{
 		$this->EE =& get_instance();
 
@@ -51,10 +55,25 @@ class Updater {
 		$this->EE->load->library('progress');
 
 		$this->config =& $config;
+		
+		// truncate some tables
+		$trunc = array('captcha', 'sessions', 'security_hashes');
 
+		foreach ($trunc as $table_name)
+		{
+			$this->EE->db->truncate($table_name);
+		}
+		
+		// we will use this conditionally to branch the update path
+		if ($this->_fetch_db_size() > $this->large_db_threshold)
+		{
+			$this->large_db = TRUE;
+		}
 	}
 
-	function do_update()
+	// --------------------------------------------------------------------
+	
+	public function do_update()
 	{
 		$ignore = FALSE;
 		$manual_move = FALSE;
@@ -63,7 +82,6 @@ class Updater {
 		{
 			$this->mylang = $this->EE->input->get_post('language');
 		}
-
 
 		if ($this->EE->input->get_post('templates') == 'ignore')
 		{
@@ -78,13 +96,20 @@ class Updater {
 
 		// turn off extensions
 		$this->EE->db->update('extensions', array('enabled' => 'n'));
-
+		
+		$this->_update_site_prefs($ignore, $manual_move);
+		
+		// step 1, utf8 conversion
+		return ($this->large_db) ? 'large_db_check' : 'convert_db_to_utf8';
+	}
+	
+	// --------------------------------------------------------------------
+	
+	private function _update_site_prefs($ignore, $manual_move)
+	{		
 		// Load the string helper
 		$this->EE->load->helper('string');
 
-		// set charset to PHP default so non-latin characters stored in preferences are retreived correctly
-		// @todo - might do a little dance for people who hacked version 1.x to use utf8 charset with MySQL
-		$this->EE->db->db_set_charset('latin1', 'latin1_swedish_ci');
 		$query = $this->EE->db->query("SELECT es.* FROM exp_sites AS es");
 
 		// Update Flat File Templates if we have any
@@ -104,19 +129,22 @@ class Updater {
 					{
 						$data['tmpl_file_basepath'] = EE_APPPATH.'/templates/';
 					}
+					
 					// also, make sure they start with the default cp theme
-					elseif (isset($data['cp_theme']) && $data['cp_theme'] != 'default')
+					if (isset($data['cp_theme']) && $data['cp_theme'] != 'default')
 					{
 						$data['cp_theme'] = 'default';
 					}
+					
 					// new name for a debugging preference
-					elseif (isset($data['show_queries']))
+					if (isset($data['show_queries']))
 					{
 						$data['show_profiler'] = $data['show_queries'];
 						unset($data['show_queries']);
 					}
+					
 					// docs location
-					elseif (isset($data['doc_url']))
+					if (isset($data['doc_url']))
 					{
 						$data['doc_url'] = 'http://expressionengine.com/user_guide/';
 					}
@@ -126,28 +154,12 @@ class Updater {
 				}
 			}
 
-			// change the charset back to utf-8
-			$this->EE->db->db_set_charset($this->EE->db->char_set, $this->EE->db->dbcollat);
-
 			$this->EE->db->query($this->EE->db->update_string('exp_sites', $row, "site_id = '".$this->EE->db->escape_str($row['site_id'])."'"));
 		}
-
- 		$trunc = array('captcha', 'sessions', 'security_hashes');
-
-		foreach ($trunc as $table_name)
-		{
-				$this->EE->db->truncate($table_name);
-		}
-
-		// there's another step yet
-		return 'convert_db_to_utf8';
-
-
 	}
-
-
+	
 	// ------------------------------------------------------------------------
-
+	
 	/**
 	 * Look for any templates saved as files, sync them with the database
 	 * And move them out of the way.
@@ -156,7 +168,7 @@ class Updater {
 	 * @param object	Query object from sites query.
 	 * @return void
 	 */
-	function _update_templates_saved_as_files($sites, $ignore_setting, $manual_move)
+	private function _update_templates_saved_as_files($sites, $ignore_setting, $manual_move)
 	{
 		$sites_with_templates = array();
 		$template_move_errors = FALSE;
@@ -379,13 +391,18 @@ class Updater {
 		return;
 	}
 
-	// ------------------------------------------------------------------------ 
-
-	function convert_db_to_utf8()
+	// ------------------------------------------------------------------------
+	
+	/**=====================================================================
+	 * Standard Database UTF8/Time Conversion
+	 * - convert_db_to_utf8
+	 * - standardize_datetime
+	 * ===================================================================== */
+	
+	public function convert_db_to_utf8()
 	{
 		// this step can be a doozy.  Set time limit to infinity.
 		// Server process timeouts are out of our control, unfortunately
-		@set_time_limit(0);
 		$this->EE->db->save_queries = FALSE;
 
 		$this->EE->progress->update_state('Converting Database Tables to UTF-8');
@@ -393,15 +410,15 @@ class Updater {
 		// make sure STRICT MODEs aren't in use, at least on servers that don't default to that
 		$this->EE->db->query('SET SESSION sql_mode=""');
 
-		$tables = $this->EE->db->list_tables(TRUE);
+		$tables = $this->EE->db->list_tables(TRUE); // TRUE prefix limit, only operate on EE tables
 		$batch = 100;
-
+					
 		foreach ($tables as $table)
 		{
 			$progress	= "Converting Database Table {$table}: %s";
 			$count		= $this->EE->db->count_all($table);
 			$offset	 = 0;
-
+			
 			if ($count > 0)
 			{
 				for ($i = 0; $i < $count; $i = $i + $batch)
@@ -443,6 +460,8 @@ class Updater {
 						if ($update === TRUE)
 						{
 							$this->EE->db->where($where);
+							
+							
 							$this->EE->db->update($table, $row, $where);
 						}
 					}
@@ -455,266 +474,203 @@ class Updater {
 
 			$this->EE->db->query("ALTER TABLE `{$table}` CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci");
 		}
+		
+		
+		// And update the database to use utf8 in the future
+		$this->EE->db->query("ALTER DATABASE `{$this->EE->db->database}` CHARACTER SET utf8 COLLATE utf8_general_ci;");
 
 		// more work to do
 		return 'standardize_datetime';
 	}
 
-	function standardize_datetime()
+	// --------------------------------------------------------------------
+	
+	public function standardize_datetime()
 	{
-		@set_time_limit(0);
-		$this->EE->progress->update_state("Standardizing Timestamps");
+		$queries = $this->_standardize_datetime_queries();
+		
+		$this->_run_queries('Standardizing Timestamps', $queries);
+				
+		return 'trackback_check';
+	}
 
-		// @todo - doesn't work for entries made in the DST period opposite of that of
-		// when you run this script!!  Blargh!
-
-		/**
-		 * What's the Offset, Kenneth?
-		 */
-
-		$now = time();
-
-		$new = gmmktime(gmdate("H", $now),
-						gmdate("i", $now),
-						gmdate("s", $now),
-						gmdate("m", $now),
-						gmdate("d", $now),
-						gmdate("Y", $now)
-						);
-
-		$old = mktime(  gmdate("H", $now),
-						gmdate("i", $now),
-						gmdate("s", $now),
-						gmdate("m", $now),
-						gmdate("d", $now),
-						gmdate("Y", $now)
-						);
-
-		$add_time = $new - $old;
-
-		/**
-		 * EE's default timestamp fields
-		 */
-
-		$tables = $this->EE->db->list_tables(TRUE); 
-
-		$field_list = array('exp_captcha'					=> array('date'),
-							'exp_comments'					=> array('comment_date'),
-							'exp_cp_log'					=> array('act_date'),
-							'exp_email_cache'				=> array('cache_date'),
-							'exp_email_console_cache'		=> array('cache_date'),
-							'exp_email_tracker'				=> array('email_date'),
-							'exp_entry_versioning'			=> array('version_date'),
-							'exp_forum_attachments'			=> array('attachment_date'),
-							'exp_forum_boards'				=> array('board_install_date'),
-							'exp_forum_polls'				=> array('poll_date'),
-							'exp_forum_posts'				=> array('post_date', 'post_edit_date'),
-							'exp_forum_read_topics'			=> array('last_visit'),
-							'exp_forum_search'				=> array('search_date'),
-							'exp_forum_subscriptions'		=> array('subscription_date'),
-							'exp_forum_topics'				=> array('topic_date', 'last_post_date', 'topic_edit_date'),
-							'exp_forums'					=> array('forum_last_post_date'),
-							'exp_gallery_categories'		=> array('recent_entry_date', 'recent_comment_date'),
-							'exp_gallery_comments'			=> array('comment_date'),
-							'exp_gallery_entries'			=> array('entry_date', 'recent_comment_date', 'comment_expiration_date'),
-							'exp_mailing_list_queue'		=> array('date'),
-							'exp_member_search'				=> array('search_date'),
-							'exp_member_bulletin_board'		=> array('bulletin_date', 'bulletin_expires'),
-							'exp_members'					=> array('last_view_bulletins', 'last_bulletin_date', 'join_date', 'last_visit', 'last_activity', 'last_entry_date', 'last_forum_post_date', 'last_comment_date', 'last_email_date'),
-							'exp_message_attachments'		=> array('attachment_date'),
-							'exp_message_copies'			=> array('message_time_read'),
-							'exp_message_data'				=> array('message_date'),
-							'exp_online_users'				=> array('date'),
-							'exp_referrers'					=> array('ref_date'),
-							'exp_reset_password'			=> array('date'),
-							'exp_revision_tracker'			=> array('item_date'),
-							'exp_search'					=> array('search_date'),
-							'exp_search_log'				=> array('search_date'),
-							'exp_sessions'					=> array('last_activity'),
-							'exp_simple_commerce_purchases'	=> array('purchase_date'),
-							'exp_stats'						=> array('last_entry_date', 'last_visitor_date', 'most_visitor_date', 'last_cache_clear', 'last_forum_post_date', 'last_comment_date', 'last_trackback_date'),
-							'exp_templates'					=> array('edit_date'),
-							'exp_throttle'					=> array('last_activity'),
-							'exp_trackbacks'				=> array('trackback_date'),
-							'exp_updated_site_pings'		=> array('ping_date'),
-							'exp_weblog_data'				=> array(),
-							'exp_weblog_titles'				=> array('entry_date', 'expiration_date', 'comment_expiration_date', 'recent_comment_date', 'recent_trackback_date'),
-							'exp_weblogs'					=> array('last_entry_date', 'last_comment_date', 'last_trackback_date'),
-							'exp_wiki_page'					=> array('last_updated'),
-							'exp_wiki_revisions'			=> array('revision_date'),
-							'exp_wiki_uploads'				=> array('upload_date'),
-							);
-
-		$query = $this->EE->db->query("SELECT field_id FROM exp_weblog_fields WHERE field_type = 'date'");
-
-		if ($query->num_rows() > 0)
+	// ------------------------------------------------------------------------
+	
+	/**=====================================================================
+	 * Large Database UTF8/Time Conversion
+	 * - large_db_check
+	 * - generate_queries
+	 * - convert_large_db_to_utf8
+	 * - standardize_datetime_large_db
+	 * ===================================================================== */
+	
+	/**
+	 * Large Database Gatekeeper
+	 */
+	public function large_db_check()
+	{
+		if ( ! $this->EE->db->table_exists('large_db_update_completed'))
 		{
-			foreach($query->result_array() as $row)
+			return $this->generate_queries();
+		}
+		
+		// This table is only used as an indicator
+		$this->EE->load->dbforge();
+		$this->EE->dbforge->drop_table('large_db_update_completed');
+		
+		// The sysadmin may not have removed this file
+		if (is_dir(EE_APPPATH.'cache/installer'))
+		{
+			if (file_exists(EE_APPPATH.'cache/installer/update.sh'))
 			{
-				$field_list['exp_weblog_data'][] = 'field_id_'.$row['field_id'];
+				unlink(EE_APPPATH.'cache/installer/update.sh');
 			}
 		}
+		
+		return 'trackback_check';
+	}
 
+	// ------------------------------------------------------------------------
+	
+	/**
+	 * Generate queries for the sysadmin to run to update a large EE2 
+	 * installation
+	 */
+	public function generate_queries()
+	{
+		// Show commands for converting large_db_to_utf8
+		
+		// Queries include:
+		// - Changing datetime to be GMT time (get queries from standardize_datetime)
+		// - Convert database to UTF8 (first part of convert_large_db_to_utf8)
+		// - Change collation to UTF8 on tables and database (second part of convert_large_db_to_utf8)
 
-		$not_field_list = array();
-		$table_keys = array();
-
-		/**
-		 * Get a list of our timestamp fields
-		 * Use some logic to determine 3rd party
-		 */
-
-		foreach($tables as $num => $table)
+		// Grab datetime queries
+		$queries = $this->_standardize_datetime_queries();
+		
+		
+		// Add utf-8 conversion queries
+		foreach ($this->EE->db->list_tables(TRUE) as $table)
 		{
-			$query = $this->EE->db->query("SHOW FIELDS FROM `".$this->EE->db->escape_str($table)."`");
+			$queries[] = "ALTER TABLE `{$table}` CHARACTER SET utf8 COLLATE utf8_general_ci;";
+		}
+		
+		$queries[] = "ALTER DATABASE `{$this->EE->db->database}` CHARACTER SET utf8 COLLATE utf8_general_ci;";
+		
+		
+		// Lastly, create a table to indicate a successful update
+		$queries[] = "CREATE TABLE {$this->EE->db->dbprefix}large_db_update_completed(`id` int);";
+		
+		
+		// Write bash file
+		$this->EE->progress->update_state('Imploding queries.');
+		
+		
+		$queries = implode("\n", $queries);	// @todo ensure semicolons?
+		
+		
+		$tables = implode(' ', $this->EE->db->list_tables(TRUE));
+		$password_parameter = ($this->EE->db->password != '') ? '-p'.$this->EE->db->password : '';
+		
+		$data = <<<BSH
+#!/bin/sh
 
-			if ($query->num_rows() > 0)
-			{
-				foreach($query->result_array() as $row)
-				{
-					if (strtolower($row['Key']) == 'pri')
-					{
-						$table_keys[$table] = $row['Field'];
-					}
+##
+# UTF-8 Conversion
+##
 
-					if (isset($field_list[$table]) && in_array($row['Type'], $field_list[$table]))
-					{
-						continue;
-					}
+echo "Starting Large Database Conversion"
 
-					if (stristr($row['Type'], 'int(10)') && strtolower($row['Key']) !== 'pri' &&
-						! stristr($row['Field'], '_id') && ! stristr($row['Field'], 'view') && 
-						! stristr($row['Field'], 'size') && ! stristr($row['Field'], 'hits'))
-					{
-						$result = $this->EE->db->query("SELECT MAX(`".$this->EE->db->escape_str($row['Field'])."`) AS test FROM `".$this->EE->db->escape_str($table)."`");
+echo "UTF-8 Conversion (Step 1: Dumping database with current charset)"
+mysqldump -h {$this->EE->db->hostname} -u {$this->EE->db->username} \
+	{$password_parameter} --opt --quote-names --skip-set-charset \
+	--default-character-set=latin1 {$this->EE->db->database} \
+	{$tables} \
+	> {$this->EE->db->database}-pre-upgrade-dump.sql
 
-						$res_row = $result->row_array(); // Instead of no results, MySQL can return 1 row with the field value NULL  ::boggle::
+echo "UTF-8 Conversion (Step 2: Importing database with UTF-8 charset)"
+mysql -h {$this->EE->db->hostname} -u {$this->EE->db->username} \
+	{$password_parameter} --default-character-set=utf8 \
+	{$this->EE->db->database} < {$this->EE->db->database}-pre-upgrade-dump.sql
 
-						if ($result->num_rows() > 0 && isset($res_row['test']) && strlen($res_row['test']) == 10 && strncmp($res_row['test'], '1' , 1) == 0)
-						{
-							$field_list[$table][] = $row['Field'];
-						}
-						elseif( ! isset($field_list[$table]) OR ! in_array($row['Field'], $field_list[$table]))
-						{
-							$not_field_list[$table][] = $row['Field'];
-						}
-					}
-				}
 
-				if (isset($field_list[$table]))
-				{
-					$field_list[$table] = array_unique($field_list[$table]);
-				}
+echo "UTF-8 Conversion (Step 3: Removing database dump)"
+rm {$this->EE->db->database}-pre-upgrade-dump.sql
 
-				if (isset($not_field_list[$table]))
-				{
-					$not_field_list[$table] = array_unique($not_field_list[$table]);
-				}
-			}
+
+##
+# Rest of the Queries (Datetime and some finalization) 
+##
+
+echo "DST Conversion (Step 1: Reading queries)"
+
+read -d '' Queries <<"EOF"
+
+{$queries}
+
+EOF
+
+echo "DST Conversion (Step 2: Writing temporary SQL file)"
+echo "\${Queries}" > temp.sql
+
+echo "DST Conversion (Step 3: Importing temp file, this may take several minutes)"
+mysql -h {$this->EE->db->hostname} -u {$this->EE->db->username} \
+	{$password_parameter} {$this->EE->db->database} < temp.sql
+
+echo "DST Conversion (Step 4: Removing temp file)"
+rm temp.sql
+
+echo "Large Database Conversion Completed: Please return to the browser to finish your upgrade."
+BSH;
+
+		$this->EE->progress->update_state('Writing large db update file.');
+		
+		if ( ! is_dir(EE_APPPATH.'cache/installer'))
+		{
+			mkdir(EE_APPPATH.'cache/installer', DIR_WRITE_MODE);
+			@chmod(EE_APPPATH.'cache/installer', DIR_WRITE_MODE);	
 		}
 
-		if (count($field_list) == 0)
+		$filepath = EE_APPPATH.'cache/installer/update.sh';
+
+		if (file_put_contents($filepath, $data))
 		{
-			show_error('There are no DateTime Fields to Update.');
+			@chmod($filepath, FILE_WRITE_MODE);			
 		}
+		
+		
+		// We need to wait for them to run the update,
+		// so we'll nudge them in the right direction
+		// and then bail out.
+		
+		$this->errors[] = "Your database is too large to perform this part of the upgrade via a web request.
+							Please contact your system administrator and have them run the script located at:
+							<br /><br />
+							{$filepath}
+							<br /><br />
+							Then access this page again.";
 
-		/**
-		 * Perform the Updates
-		 */
+		return FALSE;
+	}
 
-		foreach($field_list as $table => $fields)
-		{
-			if ( ! in_array($table, $tables))
-			{
-				continue;
-			}
-
-			$table = $this->EE->db->escape_str($table);
-
-			foreach($fields as $field)
-			{
-				$field = $this->EE->db->escape_str($field);
-
-				/**
-				 * Compensate for 1.x's $LOC->now DST behavior by adding an hour
-				 * to all dates that the server considers to have been in DST
-				 */
-
-				if (isset($table_keys[$table]))
-				{
-					$count = $this->EE->db->count_all($table);
-
-					if ($count > 50000)
-					{
-						for($i = 0; $i <= $count; $i = $i + 50000)
-						{
-							$this->EE->progress->update_state("Searching `{$table}` for DST discrepancies ({$i} / {$count})");
-
-							$query = $this->EE->db->query("SELECT `{$field}`, `".$this->EE->db->escape_str($table_keys[$table])."`
-															FROM `{$table}` LIMIT {$i}, 50000");
-
-							if ($query->num_rows() > 0)
-							{
-								$dst_dates = array();
-
-								foreach ($query->result_array() as $row)
-								{
-									if (date('I', $row[$field]) == 1)
-									{
-										$dst_dates[] = $row[$table_keys[$table]];
-									}
-								}
-
-								$query->free_result();
-
-								if ( ! empty($dst_dates))
-								{
-									$tot = count($dst_dates);
-									$this->EE->progress->update_state("Updating `{$table}` to compensate for DST discrepancies ({$tot} records)");
-
-									$this->EE->db->query("UPDATE `{$table}` SET `{$field}` = `{$field}` + 3600
-															WHERE `".$this->EE->db->escape_str($table_keys[$table])."` IN ('".implode("','", $dst_dates)."')");
-								}
-							}
-						}
-					}
-					else
-					{
-						$this->EE->progress->update_state("Searching `{$table}` for DST discrepancies");
-
-						$query = $this->EE->db->query("SELECT `{$field}`, `".$this->EE->db->escape_str($table_keys[$table])."`
-														FROM `{$table}`");
-						if ($query->num_rows() > 0)
-						{
-							$dst_dates = array();
-
-							foreach ($query->result_array() as $row)
-							{
-								if (date('I', $row[$field]) == 1)
-								{
-									$dst_dates[] = $row[$table_keys[$table]];
-								}
-							}
-
-							if ( ! empty($dst_dates))
-							{
-								$tot = count($dst_dates);
-								$this->EE->progress->update_state("Updating `{$table}` to compensate for DST discrepancies ({$tot} records)");
-
-								$this->EE->db->query("UPDATE `{$table}` SET `{$field}` = `{$field}` + 3600
-														WHERE `".$this->EE->db->escape_str($table_keys[$table])."` IN ('".implode("','", $dst_dates)."')");
-							}
-						}
-
-						$query->free_result();
-					}
-				}
-
-				// add the offset, which may be a negative number
-				$this->EE->db->query("UPDATE `{$table}` SET `{$field}` = `{$field}` + {$add_time} WHERE `{$field}` != 0");
-			}
-		}
-
+	// --------------------------------------------------------------------
+	
+	/**=====================================================================
+	 * Normal/Large Database Conversion Tasks
+	 * - trackback_check
+	 * - backup_trackbacks
+	 * - database_clean
+	 * - database_changes_new
+	 * - database_changes_members
+	 * - database_changes_weblog
+	 * - update_custom_fields
+	 * - resync_member_groups
+	 * - convert_fresh_variables
+	 * - weblog_terminology_changes
+	 * ===================================================================== */
+	
+	public function trackback_check()
+	{
 		// Do we need to consider trackbacks?
 		if (( ! isset($this->config['trackbacks_to_comments']) OR $this->config['trackbacks_to_comments'] != 'y') AND
 			( ! isset($this->config['archive_trackbacks']) OR $this->config['archive_trackbacks'] != 'y'))
@@ -723,31 +679,18 @@ class Updater {
 			$this->EE->config->_update_config(array(), array('trackbacks_to_comments' => '', 'archive_trackbacks' => ''));
 
 			// continue with general database changes
-
-			$has_duplicates = $this->dupe_check();
-			$next_step = 'database_changes_new';
-
-			if ( ! empty($has_duplicates))
-			{
-				$next_step = 'database_clean';
-			}
-
-			return $next_step;
+			return 'database_clean';
 		}
 
-		// deal with trackbacks
+		// update site prefs
 		return 'backup_trackbacks';
 	}
-
-	function backup_trackbacks()
+	
+	// --------------------------------------------------------------------
+	
+	public function backup_trackbacks()
 	{
-		$has_duplicates = $this->dupe_check();
-		$next_step = 'database_changes_new';
-
-		if ( ! empty($has_duplicates))
-		{
-			$next_step = 'database_clean';
-		}
+		$next_step = 'database_clean';
 
 		// Grab the main table
 		$t_query = $this->EE->db->get('trackbacks');
@@ -891,50 +834,13 @@ class Updater {
 		return $next_step;
 	}
 
-	function dupe_check()
+	// --------------------------------------------------------------------
+
+	public function database_clean()
 	{
-		$has_duplicates = array();
+		$has_duplicates = $this->_dupe_check();
 
-		// Check whether we need to run duplicate record clean up
-		$query = $this->EE->db->query("SELECT `upload_id`, `member_group`, count(`member_group`) FROM `exp_upload_no_access` GROUP BY `upload_id`, `member_group` HAVING COUNT(`member_group`) > 1");
-
-		if ($query->num_rows() > 0)
-		{
-			$has_duplicates[] = 'upload_no_access';
-		}
-
-		$query = $this->EE->db->query("SELECT `member_id`, count(`member_id`) FROM `exp_message_folders` GROUP BY `member_id` HAVING COUNT(`member_id`) > 1");
-
-		if ($query->num_rows() > 0)
-		{
-			$has_duplicates[] = 'message_folders';
-		}
-
-		$query = $this->EE->db->query("SELECT `entry_id`, `cat_id`, count(`cat_id`) FROM `exp_category_posts` GROUP BY `entry_id`, `cat_id` HAVING count(`cat_id`) > 1");
-
-		if ($query->num_rows() > 0)
-		{
-			$has_duplicates[] = 'category_posts';
-		}
-
-		if ( ! empty($has_duplicates))
-		{
-			$this->EE->config->_update_config(array('table_duplicates' => implode('|', $has_duplicates)));
-		}
-
-		return $has_duplicates;
-	}
-
-	function database_clean()
-	{
-		 $this->EE->progress->update_state("Cleaning duplicate data");
-
-		if ( ! isset($this->config['table_duplicates']))
-		{
-			return;
-		}
-
-		$has_duplicates = explode('|', $this->config['table_duplicates']);
+		$Q = array();
 
 		// Eliminate duplicate primaries
 
@@ -961,17 +867,14 @@ class Updater {
 			$Q[] = "ALTER TABLE exp_tmp_category_posts RENAME TO exp_category_posts";
 		}
 
-		foreach ($Q as $sql)
-		{
-			 $this->EE->db->query($sql);
-		}
+		$this->_run_queries('Cleaning duplicate data.', $Q);
 
 		return 'database_changes_new';
 	}
 
 	// ------------------------------------------------------------------------ 
 
-	function database_changes_new()
+	public function database_changes_new()
 	{
 		$this->EE->progress->update_state("Creating new database tables");
 
@@ -1068,7 +971,7 @@ class Updater {
 
 	// ------------------------------------------------------------------------ 
 
-	function database_changes_members()
+	public function database_changes_members()
 	{
 		$this->EE->progress->update_state("Updating member tables");
 	
@@ -1142,7 +1045,7 @@ class Updater {
 
 	// ------------------------------------------------------------------------ 
 
-	function database_changes_weblog()
+	public function database_changes_weblog()
 	{
 		$this->EE->progress->update_state("Updating weblog tables");
 
@@ -1346,7 +1249,7 @@ class Updater {
 
 	// ------------------------------------------------------------------------ 
 
-	function update_custom_fields()
+	public function update_custom_fields()
 	{
 		$this->EE->progress->update_state("Updating custom field tables");
 		
@@ -1392,7 +1295,7 @@ class Updater {
 
 	// ------------------------------------------------------------------------ 
 
-	function resync_member_groups()
+	public function resync_member_groups()
 	{
 		$this->EE->progress->update_state("Synchronizing member groups");
 		
@@ -1482,7 +1385,7 @@ class Updater {
 
 	// ------------------------------------------------------------------------ 
 
-	function convert_fresh_variables()
+	public function convert_fresh_variables()
 	{
 		// port over old Fresh Variables to Snippets?
 		$this->EE->progress->update_state('Checking for Fresh Variables');
@@ -1532,21 +1435,7 @@ class Updater {
 
 	// ------------------------------------------------------------------------ 
 
-	function _run_queries($summary = 'Creating and updating database tables', $queries = array())
-	{
-		$count = count($queries);
-		
-		foreach ($queries as $num => $sql)
-		{
-			$this->EE->progress->update_state("{$summary} (Query {$num} of {$count})");
-
-			$this->EE->db->query($sql);
-		}
-	}
-
-	// ------------------------------------------------------------------------
-
-	function weblog_terminology_changes()
+	public function weblog_terminology_changes()
 	{
 		$this->EE->progress->update_state("Replacing weblog with channel.");
 
@@ -1565,7 +1454,7 @@ class Updater {
 		$Q[] = "ALTER TABLE `exp_weblogs` CHANGE `weblog_require_membership` `channel_require_membership` char(1) NOT NULL default 'y'";
 		$Q[] = "ALTER TABLE `exp_weblogs` CHANGE `weblog_html_formatting` `channel_html_formatting` char(4) NOT NULL default 'all'";
 		$Q[] = "ALTER TABLE `exp_weblogs` CHANGE `weblog_allow_img_urls` `channel_allow_img_urls` char(1) NOT NULL default 'y'";
-		$Q[] = "ALTER TABLE `exp_weblogs` CHANGE `weblog_auto_link_urls` `channel_auto_link_urls` char(1) NOT NULL default 'n'";
+		$Q[] = "ALTER TABLE `exp_weblogs` CHANGE `weblog_auto_link_urls` `channel_auto_link_urls` char(1) NOT NULL default 'y'";
 		$Q[] = "ALTER TABLE `exp_weblogs` CHANGE `weblog_notify_emails` `channel_notify_emails` varchar(255) NULL DEFAULT NULL";
 		$Q[] = "ALTER TABLE `exp_weblogs` RENAME TO `exp_channels`";
 		$Q[] = "ALTER TABLE `exp_weblog_titles` CHANGE `weblog_id` `channel_id` int(4) unsigned NOT NULL";
@@ -1596,18 +1485,291 @@ class Updater {
 		$Q[] = "UPDATE `exp_modules` SET `module_name` = 'Channel' WHERE `module_name` = 'Weblog'";
 
 
-		$count = count($Q);
-
-		foreach ($Q as $num => $sql)
-		{
-			$this->EE->progress->update_state("Replacing weblog with channel (Query $num of $count)");
-
-			$this->EE->db->query($sql);
-		}
-
+		$this->_run_queries('Replacing weblog with channel', $Q);
+		
 		// Finished!
 		return TRUE;
 	}
+	
+	// ------------------------------------------------------------------------
+	
+	private function _standardize_datetime_queries()
+	{
+		// @todo - doesn't work for entries made in the DST period opposite of that of
+		// when you run this script!!  Blargh!
+
+		/**
+		 * What's the Offset, Kenneth?
+		 */
+
+		$now = time();
+
+		$new = gmmktime(gmdate("H", $now),
+						gmdate("i", $now),
+						gmdate("s", $now),
+						gmdate("m", $now),
+						gmdate("d", $now),
+						gmdate("Y", $now)
+						);
+
+		$old = mktime(  gmdate("H", $now),
+						gmdate("i", $now),
+						gmdate("s", $now),
+						gmdate("m", $now),
+						gmdate("d", $now),
+						gmdate("Y", $now)
+						);
+
+		$add_time = $new - $old;
+
+		/**
+		 * EE's default timestamp fields
+		 */
+
+		$tables = $this->EE->db->list_tables(TRUE); 
+
+		// List of known date fields
+		$field_list = array(
+			'exp_captcha'					=> array('date'),
+			'exp_comments'					=> array('comment_date'),
+			'exp_cp_log'					=> array('act_date'),
+			'exp_email_cache'				=> array('cache_date'),
+			'exp_email_console_cache'		=> array('cache_date'),
+			'exp_email_tracker'				=> array('email_date'),
+			'exp_entry_versioning'			=> array('version_date'),
+			'exp_forum_attachments'			=> array('attachment_date'),
+			'exp_forum_boards'				=> array('board_install_date'),
+			'exp_forum_polls'				=> array('poll_date'),
+			'exp_forum_posts'				=> array('post_date', 'post_edit_date'),
+			'exp_forum_read_topics'			=> array('last_visit'),
+			'exp_forum_search'				=> array('search_date'),
+			'exp_forum_subscriptions'		=> array('subscription_date'),
+			'exp_forum_topics'				=> array('topic_date', 'last_post_date', 'topic_edit_date'),
+			'exp_forums'					=> array('forum_last_post_date'),
+			'exp_gallery_categories'		=> array('recent_entry_date', 'recent_comment_date'),
+			'exp_gallery_comments'			=> array('comment_date'),
+			'exp_gallery_entries'			=> array('entry_date', 'recent_comment_date', 'comment_expiration_date'),
+			'exp_mailing_list_queue'		=> array('date'),
+			'exp_member_search'				=> array('search_date'),
+			'exp_member_bulletin_board'		=> array('bulletin_date', 'bulletin_expires'),
+			'exp_members'					=> array('last_view_bulletins', 'last_bulletin_date', 'join_date', 'last_visit', 'last_activity', 'last_entry_date', 'last_forum_post_date', 'last_comment_date', 'last_email_date'),
+			'exp_message_attachments'		=> array('attachment_date'),
+			'exp_message_copies'			=> array('message_time_read'),
+			'exp_message_data'				=> array('message_date'),
+			'exp_online_users'				=> array('date'),
+			'exp_referrers'					=> array('ref_date'),
+			'exp_reset_password'			=> array('date'),
+			'exp_revision_tracker'			=> array('item_date'),
+			'exp_search'					=> array('search_date'),
+			'exp_search_log'				=> array('search_date'),
+			'exp_sessions'					=> array('last_activity'),
+			'exp_simple_commerce_purchases'	=> array('purchase_date'),
+			'exp_stats'						=> array('last_entry_date', 'last_visitor_date', 'most_visitor_date', 'last_cache_clear', 'last_forum_post_date', 'last_comment_date', 'last_trackback_date'),
+			'exp_templates'					=> array('edit_date'),
+			'exp_throttle'					=> array('last_activity'),
+			'exp_trackbacks'				=> array('trackback_date'),
+			'exp_updated_site_pings'		=> array('ping_date'),
+			'exp_weblog_data'				=> array(),
+			'exp_weblog_titles'				=> array('entry_date', 'expiration_date', 'comment_expiration_date', 'recent_comment_date', 'recent_trackback_date'),
+			'exp_weblogs'					=> array('last_entry_date', 'last_comment_date', 'last_trackback_date'),
+			'exp_wiki_page'					=> array('last_updated'),
+			'exp_wiki_revisions'			=> array('revision_date'),
+			'exp_wiki_uploads'				=> array('upload_date'),
+		);
+
+		// Also find all custom fields that are date fields as well
+		$query = $this->EE->db->query("SELECT field_id FROM exp_weblog_fields WHERE field_type = 'date'");
+
+		if ($query->num_rows() > 0)
+		{
+			foreach($query->result_array() as $row)
+			{
+				$field_list['exp_weblog_data'][] = 'field_id_'.$row['field_id'];
+			}
+		}
+
+		$table_keys = array();
+		
+		// Remove any tables we do not have
+		foreach(array_keys($field_list) as $table)
+		{
+			if ( ! in_array($table, $tables))
+			{
+				unset($field_list[$table]);
+			}
+		}
+		
+		// Get a list of our timestamp fields
+		// Use some logic to determine 3rd party
+		foreach(array_keys($field_list) as $table)
+		{
+			$query = $this->EE->db->query("SHOW FIELDS FROM `".$this->EE->db->escape_str($table)."`");
+		
+			if ($query->num_rows() > 0)
+			{
+				foreach($query->result_array() as $row)
+				{
+					if (strtolower($row['Key']) == 'pri')
+					{
+						$table_keys[$table] = $row['Field'];
+					}
+				}
+			}
+		}
+
+		// Perform the Updates
+
+		$conversion_queries = array();
+		
+		foreach($field_list as $table => $fields)
+		{
+			$table = $this->EE->db->escape_str($table);
+
+			foreach($fields as $field)
+			{
+				$field = $this->EE->db->escape_str($field);
+
+				// Compensate for 1.x's $LOC->now DST behavior by adding an hour
+				// to all dates that the server considers to have been in DST
+
+				if (isset($table_keys[$table]))
+				{
+					$count = $this->EE->db->count_all($table);
+
+					// Split up into 50,000 records per update so we don't
+					// run mysql into the ground
+					
+					for($i = 0; $i <= $count; $i = $i + 50000)
+					{
+						$this->EE->progress->update_state("Searching `{$table}.{$field}` for DST discrepancies ({$i} / {$count})");
+
+						$query = $this->EE->db->query("SELECT `{$field}`, `".$this->EE->db->escape_str($table_keys[$table])."`
+														FROM `{$table}` LIMIT {$i}, 50000");
+
+						// check the field value to see if the record needs to be updated,
+						// if so we add that row's primary key to $dst_dates
+						if ($query->num_rows() > 0)
+						{
+							$dst_dates = array();
+
+							foreach ($query->result_array() as $row)
+							{
+								if (date('I', $row[$field]) == 1)
+								{
+									$dst_dates[] = $row[$table_keys[$table]];
+								}
+							}
+
+							$query->free_result();
+
+							if ( ! empty($dst_dates))
+							{
+								$tot = count($dst_dates);
+								$this->EE->progress->update_state("Generating queries to compensate for DST discrepancies in `{$table}` ({$tot} records)");
+
+								// add one hour to the field we're converting, for all the
+								// rows we gathered above ($dst_dates == array of primary keys)
+								
+								$conversion_queries[] = "UPDATE `{$table}` SET `{$field}` = `{$field}` + 3600
+									WHERE `".$this->EE->db->escape_str($table_keys[$table])."` IN ('".implode("','", $dst_dates)."');";
+							}
+						}
+					}
+				}
+
+				// add the offset, which may be a negative number
+				$conversion_queries[] = "UPDATE `{$table}` SET `{$field}` = `{$field}` + {$add_time} WHERE `{$field}` != 0;";
+			}
+		}
+		
+		return $conversion_queries;
+	}
+
+	// ------------------------------------------------------------------------
+	
+	private function _run_queries($summary = 'Creating and updating database tables', $queries = array())
+	{
+		$count = count($queries);
+		
+		foreach ($queries as $num => $sql)
+		{
+			$this->EE->progress->update_state("{$summary} (Query {$num} of {$count})");
+
+			$this->EE->db->query($sql);
+		}
+	}
+
+	// ------------------------------------------------------------------------
+
+	private function _dupe_check()
+	{
+		$has_duplicates = array();
+
+		// Check whether we need to run duplicate record clean up
+		$query = $this->EE->db->query("SELECT `upload_id`, `member_group`, count(`member_group`) FROM `exp_upload_no_access` GROUP BY `upload_id`, `member_group` HAVING COUNT(`member_group`) > 1");
+
+		if ($query->num_rows() > 0)
+		{
+			$has_duplicates[] = 'upload_no_access';
+		}
+
+		$query = $this->EE->db->query("SELECT `member_id`, count(`member_id`) FROM `exp_message_folders` GROUP BY `member_id` HAVING COUNT(`member_id`) > 1");
+
+		if ($query->num_rows() > 0)
+		{
+			$has_duplicates[] = 'message_folders';
+		}
+
+		$query = $this->EE->db->query("SELECT `entry_id`, `cat_id`, count(`cat_id`) FROM `exp_category_posts` GROUP BY `entry_id`, `cat_id` HAVING count(`cat_id`) > 1");
+
+		if ($query->num_rows() > 0)
+		{
+			$has_duplicates[] = 'category_posts';
+		}
+
+		if ( ! empty($has_duplicates))
+		{
+			$this->EE->config->_update_config(array('table_duplicates' => implode('|', $has_duplicates)));
+		}
+
+		return $has_duplicates;
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Fetch DB Size
+	 *
+	 * Returns the size of the db, in megabytes
+	 *
+	 * @access	private
+	 * @return	string
+	 */
+	private function _fetch_db_size()
+	{
+		// db records and size
+		$query = $this->EE->db->query("SHOW TABLE STATUS FROM `{$this->EE->db->database}`");
+
+		$totsize = 0;
+		$records = 0;
+
+		$prefix_len = strlen($this->EE->db->dbprefix);
+		
+		foreach ($query->result_array() as $row)
+		{
+			if (strncmp($row['Name'], $this->EE->db->dbprefix, $prefix_len) != 0)
+			{
+				continue;
+			}
+			
+			$totsize += $row['Data_length'] + $row['Index_length'];
+		}
+		
+		return round($totsize / 1048576);
+	}
+
+	// --------------------------------------------------------------------
+
 }
 /* END CLASS */
 

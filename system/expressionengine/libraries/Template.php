@@ -930,7 +930,8 @@ class EE_Template {
 
 						if ($this->EE->config->item('debug') >= 1)
 						{
-							if ($this->tag_data[$i]['tagparts'][0] == $this->tag_data[$i]['tagparts'][1] &&
+							if (isset($this->tag_data[$i]['tagparts'][1]) &&
+								$this->tag_data[$i]['tagparts'][0] == $this->tag_data[$i]['tagparts'][1] &&
 								! isset($this->tag_data[$i]['tagparts'][2]))
 							{
 								unset($this->tag_data[$i]['tagparts'][1]);

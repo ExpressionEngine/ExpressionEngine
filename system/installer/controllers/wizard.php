@@ -27,7 +27,6 @@ class Wizard extends CI_Controller {
 	var $version			= '2.2.2';	// The version being installed
 	var $installed_version	= ''; 		// The version the user is currently running (assuming they are running EE)
 	var $minimum_php		= '5.1.6';	// Minimum version required to run EE
-	var $full_install		= FALSE;	// Set dynamically.  Determines which version is being installed  (full or core)
 	var $schema				= NULL;		// This will contain the schema object with our queries	
 	var $languages			= array(); 	// Available languages the installer supports (set dynamically based on what is in the "languages" folder)
 	var $mylang				= 'english';// Set dynamically by the user when they run the installer
@@ -282,9 +281,6 @@ class Wizard extends CI_Controller {
 			$this->_set_output('unsupported', array('required_ver' => $this->minimum_php));
 			return FALSE;
 		}
-		
-		// Set the installation type (core or full)
-		$this->full_install = $this->_is_full_install();
 
 		// Is the config file readable?
 		if ( ! @include($this->config->config_path))
@@ -1020,7 +1016,6 @@ PAPAYA;
 		unset($_POST['password_confirm']);
 		
 		// We assign some values to the Schema class
-		$this->schema->full_install = $this->full_install;
 		$this->schema->default_entry = $this->_default_channel_entry();
 		
 		// Encrypt the password and unique ID
@@ -1303,6 +1298,10 @@ PAPAYA;
 			));
 		}
 		
+		// Set a liberal execution time limit, some of these
+		// updates are pretty big.
+		@set_time_limit(0);
+		
 		// Instantiate the updater class
 		$UD = new Updater;
 		$method = 'do_update';
@@ -1367,7 +1366,14 @@ PAPAYA;
 		
 		if (($status = $UD->{$method}()) === FALSE)
 		{
-			$this->_set_output('error', array('error' => $this->lang->line('update_error')));
+			$error_msg = $this->lang->line('update_error');
+			
+			if ( ! empty($UD->errors))
+			{
+				$error_msg .= "</p>\n\n<ul>\n\t<li>" . implode("</li>\n\t<li>", $UD->errors) . "</li>\n</ul>\n\n<p>";
+			}
+
+			$this->_set_output('error', array('error' => $error_msg));
 			return FALSE;
 		}
 
@@ -1806,34 +1812,6 @@ PAPAYA;
 		}
 		
 		$this->userdata['databases'] = $dbs;
-	}
-	
-	// --------------------------------------------------------------------
-
-	/**
-	 * Set the installation type (core or full)
-	 *
-	 * @access	private
-	 * @return	array
-	 */
-	function _is_full_install()
-	{
-		if ($fp = @opendir(EE_APPPATH.'/modules/')) 
-		{ 
-			while (false !== ($file = readdir($fp))) 
-			{ 
-				if (strpos($file, '.') === FALSE)
-				{
-					if ($file == 'mailinglist')
-					{
-						return TRUE;
-					}
-				}
-			} 
-			closedir($fp); 
-		} 
-	
-		return FALSE;
 	}
 	
 	// --------------------------------------------------------------------
