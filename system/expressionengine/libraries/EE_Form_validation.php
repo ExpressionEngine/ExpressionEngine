@@ -64,7 +64,13 @@ class EE_Form_validation extends CI_Form_validation {
 		$error = '';
 		$value = TRUE;
 		
-		$this->CI->api_channel_fields->setup_handler($field_id);
+		$exists = $this->CI->api_channel_fields->setup_handler($field_id);
+        
+        if ( ! $exists)
+        {
+            return TRUE;
+        }
+
 		$res = $this->CI->api_channel_fields->apply('validate', array($data));
 		
 		if (is_array($res))
