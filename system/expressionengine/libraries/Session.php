@@ -702,7 +702,7 @@ class EE_Session {
 
 		if (REQ != 'CP') // Each 'Site' has own Sessions
 		{
-			$this->EE->db->where('site_id', (int) $this->EE->config->item('site_id'));
+			//$this->EE->db->where('site_id', (int) $this->EE->config->item('site_id'));
 		}
 		
 		$query = $this->EE->db->get('sessions');
