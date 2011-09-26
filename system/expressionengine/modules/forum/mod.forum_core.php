@@ -5776,9 +5776,9 @@ class Forum_Core extends Forum {
 		{
 			if (FALSE === ($meta = $this->_fetch_topic_metadata($this->current_id)))
 			{
-				return $this->trigger_error();
+				return $this->trigger_error('topic_no_exists');
 			}
-						
+			
 			if ($meta[$this->current_id]['forum_is_cat'] == 'y' OR ($meta[$this->current_id]['status'] == 'c' AND $this->EE->session->userdata('group_id') != 1) OR $meta[$this->current_id]['forum_status'] == 'a')
 			{
 				return $this->trigger_error('not_authorized');
