@@ -1090,8 +1090,7 @@ class Channel_standalone extends Channel {
 		
 		$this->EE->db->select('cat_name, cat_id, parent_id');
 		$this->EE->db->where_in('group_id', $group_ids);
-		$this->EE->db->order_by('parent_id');
-		$this->EE->db->order_by('cat_order');
+		$this->EE->db->order_by('group_id, parent_id, cat_order');
 		$kitty_query = $this->EE->db->get('categories');
 
 		if ($kitty_query->num_rows() == 0)
