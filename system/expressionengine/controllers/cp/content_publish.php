@@ -2302,7 +2302,7 @@ class Content_publish extends CI_Controller {
 		);
 		
 		// comment expiry here.
-		if (isset($this->cp->installed_modules['comment']))
+		if (isset($this->cp->installed_modules['comment']) && $this->_channel_data['comment_system_enabled'] == 'y')
 		{
 			$deft_fields['comment_expiration_date'] = array(
 				'field_id'				=> 'comment_expiration_date',
