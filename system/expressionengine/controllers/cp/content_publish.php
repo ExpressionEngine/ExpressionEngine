@@ -2507,6 +2507,7 @@ class Content_publish extends CI_Controller {
 		
 		$html_buttons = $this->admin_model->get_html_buttons($this->session->userdata('member_id'));
 		$button_js = array();
+		$has_image = FALSE;
 		
 		foreach ($html_buttons->result() as $button)
 		{
@@ -2514,6 +2515,8 @@ class Content_publish extends CI_Controller {
 			{
 				// images are handled differently because of the file browser
 				// at least one image must be available for this to work
+				$has_image = TRUE;
+				
 				if (count($this->_file_manager['file_list']))
 				{
 					$button_js[] = array('name' => $button->tag_name, 'key' => $button->accesskey, 'replaceWith' => '', 'className' => $button->classname);
@@ -2530,6 +2533,14 @@ class Content_publish extends CI_Controller {
 				$button_js[] = array('name' => $button->tag_name, 'key' => strtoupper($button->accesskey), 'openWith' => $button->tag_open, 'closeWith' => $button->tag_close, 'className' => $button->classname);
 			}
 		}
+		
+		// We force an image button if it doesn't already exist
+		if ($has_image == FALSE && count($this->_file_manager['file_list']))
+		{
+					$button_js[] = array('name' => 'img', 'key' => '', 'replaceWith' => '', 'className' => 'btn_img');
+					$this->javascript->set_global('filebrowser.image_tag', '<img src="[![Link:!:http://]!]" alt="[![Alternative text]!]" />');			
+		}
+		
 		$this->javascript->set_global('p.image_tag', 'foo you!');
 
 		$markItUp = $markItUp_writemode = array(
