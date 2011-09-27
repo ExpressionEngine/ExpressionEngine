@@ -1781,31 +1781,39 @@ class Safecracker_lib
 		{
 			return;
 		}
-		
-		$this->EE->db->order_by('group_id, cat_order');
-		$this->EE->db->where_in('group_id', explode('|', $this->channel('cat_group')));
-		
-		$query = $this->EE->db->get('categories');
-		
-		foreach ($query->result_array() as $row)
+
+		// Load up the library and figure out what belongs and what's selected
+		$this->EE->load->library('api');
+		$this->EE->api->instantiate('channel_categories');
+		$category_list = $this->EE->api_channel_categories->category_tree(
+			$this->channel('cat_group'),
+			$this->entry('categories')
+		);
+
+		$categories = array();
+
+		foreach ($category_list as $category_id => $category_info)
 		{
-			$category = $row;
-			
-			foreach ($row as $key => $value)
-			{
-				if (preg_match('/^cat_(.*)/', $key, $match))
-				{
-					$key = 'category_'.$match[1];
-				}
-				
-				$category[$key] = $value;
+			// Indent category names
+			if ($category_info[5] > 1) {
+				$category_info[1] = str_repeat(NBS.NBS.NBS.NBS, $category_info[5] - 1) . $category_info[1];
 			}
 			
-			$category['selected'] = (is_array($this->entry('categories')) && in_array($category['category_id'], $this->entry('categories'))) ? ' selected="selected"' : '';
-			$category['checked'] = (is_array($this->entry('categories')) && in_array($category['category_id'], $this->entry('categories'))) ? ' checked="checked"' : '';
-			
-			$this->categories[] = $category;
+			// Translate response from API to something parse variables can understand
+			$categories[$category_id] = array(
+				'category_id' => $category_info[0],
+				'category_name' => $category_info[1],
+				'category_group_id' => $category_info[2],
+				'category_group' => $category_info[3],
+				'category_parent' => $category_info[6],
+				'category_depth' => $category_info[5],
+
+				'selected' => $category_info[4],
+				'checked' => $category_info[4]
+			);
 		}
+		
+		$this->categories = $categories;
 	}
 
 	// --------------------------------------------------------------------

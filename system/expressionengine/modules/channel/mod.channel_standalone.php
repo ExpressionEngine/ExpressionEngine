@@ -545,7 +545,7 @@ class Channel_standalone extends Channel {
 
 		$allow_cmts = ( ! isset($_POST['allow_cmts'])) ? $this->EE->TMPL->fetch_param('allow_comments') : $_POST['allow_cmts'];
 
-		if ($allow_cmts != '' AND $comment_system_enabled == 'y')
+		if ($allow_cmts != '' AND (isset($comment_system_enabled) AND $comment_system_enabled == 'y'))
 		{
 			$hidden_fields['allow_comments'] = ($allow_cmts == 'yes') ? 'y' : 'n';
 		}
@@ -1090,8 +1090,7 @@ class Channel_standalone extends Channel {
 		
 		$this->EE->db->select('cat_name, cat_id, parent_id');
 		$this->EE->db->where_in('group_id', $group_ids);
-		$this->EE->db->order_by('parent_id');
-		$this->EE->db->order_by('cat_order');
+		$this->EE->db->order_by('group_id, parent_id, cat_order');
 		$kitty_query = $this->EE->db->get('categories');
 
 		if ($kitty_query->num_rows() == 0)

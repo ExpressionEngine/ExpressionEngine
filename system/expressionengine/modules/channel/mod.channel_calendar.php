@@ -347,7 +347,7 @@ class Channel_calendar extends Channel {
 					$if_entries = trim($val['2']);
 
 					$row_chunk = str_replace ($val['1'], $if_entries_m, $row_chunk);
-
+					
 					unset($this->EE->TMPL->var_cond[$key]);
 				}
 
@@ -428,8 +428,8 @@ class Channel_calendar extends Channel {
 
 				$this->EE->load->library('typography');
 			 	$this->EE->typography->initialize(array(
-			 				 	'convert_curly'	=> FALSE)
-			 				 	);
+ 				 	'convert_curly'	=> FALSE
+				));
 
 				/** ----------------------------------------
 				/**  Fetch query results and build data array
@@ -451,19 +451,18 @@ class Channel_calendar extends Channel {
 					/** ----------------------------------------*/
 
 					$defaults = array(
-										'entry_date'					=> 'a',
-										'permalink'						=> 'a',
-										'title_permalink'				=> 'a',
-										'author'						=> 's',
-										'profile_path'					=> 'a',
-										'id_path'						=> 'a',
-										'base_fields' 					=> 'a',
-										'day_path'						=> 'a',
-										'comment_auto_path'				=> 's',
-										'comment_entry_id_auto_path'	=> 's',
-										'comment_url_title_auto_path'	=> 's'
-										);
-
+						'entry_date'					=> 'a',
+						'permalink'						=> 'a',
+						'title_permalink'				=> 'a',
+						'author'						=> 's',
+						'profile_path'					=> 'a',
+						'id_path'						=> 'a',
+						'base_fields' 					=> 'a',
+						'day_path'						=> 'a',
+						'comment_auto_path'				=> 's',
+						'comment_entry_id_auto_path'	=> 's',
+						'comment_url_title_auto_path'	=> 's'
+					);
 
 					foreach ($defaults as $key => $val)
 					{
@@ -479,8 +478,18 @@ class Channel_calendar extends Channel {
 						if (isset($entry_dates[$key]))
 						{
 							foreach ($entry_dates[$key] as $dvar)
-								$val = str_replace($dvar, $this->EE->localize->convert_timestamp($dvar, $row['entry_date'], TRUE), $val);
-
+							{
+								$val = str_replace(
+									$dvar, 
+									$this->EE->localize->convert_timestamp(
+										$dvar, 
+										$row['entry_date'], 
+										TRUE
+									), 
+									$val
+								);
+							}
+							
 							$entry_date[$key] = $val;
 						}
 
@@ -614,28 +623,28 @@ class Channel_calendar extends Channel {
 					/**  Build Data Array
 					/** ----------------------------------------*/
 
-					$d = date('d', $this->EE->localize->set_localized_time($row['entry_date']));
-
+					$d = gmdate('d', $this->EE->localize->set_localized_time($row['entry_date']));
+					
 					if (substr($d, 0, 1) == '0')
 					{
 						$d = substr($d, 1);
 					}
-
+					
 					$data[$d][] = array(
-											$this->EE->typography->parse_type($row['title'], array('text_format' => 'lite', 'html_format' => 'none', 'auto_links' => 'n', 'allow_img_url' => 'no')),
-											$row['url_title'],
-											$entry_date,
-											$permalink,
-											$title_permalink,
-											$author,
-											$profile_path,
-											$id_path,
-											$base_fields,
-											$day_path,
-											$comment_auto_path,
-											$comment_url_title_auto_path,
-											$comment_entry_id_auto_path
-										);
+						$this->EE->typography->parse_type($row['title'], array('text_format' => 'lite', 'html_format' => 'none', 'auto_links' => 'n', 'allow_img_url' => 'no')),
+						$row['url_title'],
+						$entry_date,
+						$permalink,
+						$title_permalink,
+						$author,
+						$profile_path,
+						$id_path,
+						$base_fields,
+						$day_path,
+						$comment_auto_path,
+						$comment_url_title_auto_path,
+						$comment_entry_id_auto_path
+					);
 
 				} // END FOREACH
 			} // END if ($query->num_rows() > 0)
@@ -697,15 +706,18 @@ class Channel_calendar extends Channel {
 		}
 
 		// Garbage collection
-
-		$out = str_replace(array($entries_m,
-								 $if_blank_m,
-								 $if_today_m,
-								 $if_entries_m,
-								 $if_not_entries_m),
-							'',
-							$out);
-
+		$out = str_replace(
+			array(
+				$entries_m,
+				 $if_blank_m,
+				 $if_today_m,
+				 $if_entries_m,
+				 $if_not_entries_m
+			),
+			'',
+			$out
+		);
+		
 		return str_replace ($row_chunk_m, $out, $this->EE->TMPL->tagdata);
 	}
 
