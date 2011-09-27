@@ -29,18 +29,17 @@ class EE_Localize {
 	var $ctz				=  0;  // Current user's timezone setting
 	var $zones				= array();
  	var $cached				= array();
-	var $format				= array(
-		'DATE_ATOM'		=>	'%Y-%m-%dT%H:%i:%s%Q',
-		'DATE_COOKIE'	=>	'%l, %d-%M-%y %H:%i:%s UTC',
-		'DATE_ISO8601'	=>	'%Y-%m-%dT%H:%i:%s%Q',
-		'DATE_RFC822'	=>	'%D, %d %M %y %H:%i:%s %O',
-		'DATE_RFC850'	=>	'%l, %d-%M-%y %H:%m:%i UTC',
-		'DATE_RFC1036'	=>	'%D, %d %M %y %H:%i:%s %O',
-		'DATE_RFC1123'	=>	'%D, %d %M %Y %H:%i:%s %O',
-		'DATE_RFC2822'	=>	'%D, %d %M %Y %H:%i:%s %O',
-		'DATE_RSS'		=>	'%D, %d %M %Y %H:%i:%s %O',
-		'DATE_W3C'		=>	'%Y-%m-%dT%H:%i:%s%Q'
-	);
+	var $format				= array('DATE_ATOM'		=>	'%Y-%m-%dT%H:%i:%s%Q',
+									'DATE_COOKIE'	=>	'%l, %d-%M-%y %H:%i:%s UTC',
+									'DATE_ISO8601'	=>	'%Y-%m-%dT%H:%i:%s%Q',
+									'DATE_RFC822'	=>	'%D, %d %M %y %H:%i:%s %O',
+									'DATE_RFC850'	=>	'%l, %d-%M-%y %H:%m:%i UTC',
+									'DATE_RFC1036'	=>	'%D, %d %M %y %H:%i:%s %O',
+									'DATE_RFC1123'	=>	'%D, %d %M %Y %H:%i:%s %O',
+									'DATE_RFC2822'	=>	'%D, %d %M %Y %H:%i:%s %O',
+									'DATE_RSS'		=>	'%D, %d %M %Y %H:%i:%s %O',
+									'DATE_W3C'		=>	'%Y-%m-%dT%H:%i:%s%Q'
+									);
   
 	/**
 	 * Constructor
@@ -71,19 +70,18 @@ class EE_Localize {
 	{	
 		if ($now == '')
 		{
-			$now = time();
+			$now = time(); 
 		}
-		
-		$time = mktime(
-			gmdate("H", $now),
-			gmdate("i", $now),
-			gmdate("s", $now),
-			gmdate("m", $now),
-			gmdate("d", $now),
-			gmdate("Y", $now),
-			-1	// this must be explicitly set or some FreeBSD servers behave erratically
-		);
-		
+			
+		$time = gmmktime( gmdate("H", $now),
+						 gmdate("i", $now),
+						 gmdate("s", $now),
+						 gmdate("m", $now),
+						 gmdate("d", $now),
+						 gmdate("Y", $now),
+						 -1	// this must be explicitly set or some FreeBSD servers behave erratically
+						);
+
 		// mktime() has a bug that causes it to fail during the DST "spring forward gap"
 		// when clocks are offset an hour forward (around April 4).  Instead of returning a valid
 		// timestamp, it returns -1.  Basically, mktime() gets caught in purgatory, not 
@@ -167,7 +165,7 @@ class EE_Localize {
 		{
 			return $this->set_server_time($now);
 		}
-		
+
 		// $now = $this->now + ($this->zones[$timezone] * 3600);
 		$now += $this->zones[$timezone] * 3600;
 
@@ -176,11 +174,11 @@ class EE_Localize {
 			$dst = $this->EE->session->userdata('daylight_savings');
 		}
 		
-		if ($dst == 'n')
+		if ($dst == 'y')
 		{
 			$now += 3600;
 		}
-
+		
 		return $this->set_server_offset($now);
 	}
 	
@@ -346,33 +344,33 @@ class EE_Localize {
 		}
 		
 		$fmt = ($this->EE->session->userdata['time_format'] != '') ? $this->EE->session->userdata['time_format'] : $this->EE->config->item('time_format');
-		
+	
 		if ($localize)
 		{
 			$now = $this->set_localized_time($now);
 		}
-		
-		$r  = date('Y', $now).'-'.date('m', $now).'-'.date('d', $now).' ';
+			
+		$r  = gmdate('Y', $now).'-'.gmdate('m', $now).'-'.gmdate('d', $now).' ';
 			
 		if ($fmt == 'us')
 		{
-			$r .= date('h', $now).':'.date('i', $now);
+			$r .= gmdate('h', $now).':'.gmdate('i', $now);
 		}
 		else
 		{
-			$r .= date('H', $now).':'.date('i', $now);
+			$r .= gmdate('H', $now).':'.gmdate('i', $now);
 		}
 		
 		if ($seconds)
 		{
-			$r .= ':'.date('s', $now);
+			$r .= ':'.gmdate('s', $now);
 		}
 		
 		if ($fmt == 'us')
 		{
-			$r .= ' '.date('A', $now);
+			$r .= ' '.gmdate('A', $now);
 		}
-		
+			
 		return $r;
 	}
 	
@@ -1038,11 +1036,11 @@ class EE_Localize {
 		{
 			if ($dst == FALSE)
 			{
-				return $zones[$zone][0];
+				return $zones[$zone][0];		
 			}
 			else
 			{
-				return $zones[$zone][1];
+				return $zones[$zone][1];		
 			}
 		}
 		
