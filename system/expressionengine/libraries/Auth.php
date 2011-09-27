@@ -262,7 +262,7 @@ class Auth {
 		}
 
 		// No cp access
-		if ( ! $incoming->has_permission('can_access_cp'))
+		if (REQ == 'CP' && ! $incoming->has_permission('can_access_cp'))
 		{
 			$this->errors[] = 'not_authorized';
 			return FALSE;
