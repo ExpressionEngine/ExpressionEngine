@@ -50,8 +50,7 @@ class EE_Localize {
 		$this->EE =& get_instance();
 
 		// Fetch the current local server time and convert it to GMT
-		$this->server_now	= time();
-		$this->now			= $this->set_gmt($this->server_now); 
+		$this->now			= time();
 		$this->zones		= $this->zones();
 	}
 	
@@ -62,42 +61,26 @@ class EE_Localize {
 	 *
 	 * Takes a Unix timestamp as input and returns it as GMT
 	 *
+	 * @deprecated 2.3
 	 * @access	public
 	 * @param	string
 	 * @return	string
 	 */	
 	function set_gmt($now = '')
-	{	
+	{
+		// TODO: Add deprecation notice
+		
 		if ($now == '')
 		{
 			$now = time(); 
 		}
-			
-		$time = gmmktime( gmdate("H", $now),
-						 gmdate("i", $now),
-						 gmdate("s", $now),
-						 gmdate("m", $now),
-						 gmdate("d", $now),
-						 gmdate("Y", $now),
-						 -1	// this must be explicitly set or some FreeBSD servers behave erratically
-						);
-
-		// mktime() has a bug that causes it to fail during the DST "spring forward gap"
-		// when clocks are offset an hour forward (around April 4).  Instead of returning a valid
-		// timestamp, it returns -1.  Basically, mktime() gets caught in purgatory, not 
-		// sure if DST is active or not.  As a work-around for this we'll test for "-1",
-		// and if present, return the current time.  This is not a great solution, as this time
-		// may not be what the user intended, but it's preferable than storing -1 as the timestamp, 
-		// which correlates to: 1969-12-31 16:00:00. 
-
-		if ($time == -1)
+		
+		if ( ! is_numeric($now))
 		{
-			return $this->set_gmt();
+			$now = strtotime($now);
 		}
-		else
-		{
-			return $time;
-		}
+		
+		return $now;
 	}	
 
 	// --------------------------------------------------------------------
@@ -121,14 +104,14 @@ class EE_Localize {
 		
 		// YYYYMMDDHHMMSS
 
-		return  $this->set_gmt( gmmktime( substr($str,8,2),
-										substr($str,10,2),
-										substr($str,12,2),
-										substr($str,4,2),
-										substr($str,6,2),
-										substr($str,0,4)
-									  )
-								);
+		return gmmktime(
+			substr($str,8,2),
+			substr($str,10,2),
+			substr($str,12,2),
+			substr($str,4,2),
+			substr($str,6,2),
+			substr($str,0,4)
+		);
 	}
 	
 	
@@ -459,7 +442,7 @@ class EE_Localize {
 			return $this->EE->lang->line('date_outside_of_range');
 		}
 		
-		$time = $this->set_gmt(gmmktime($hour, $min, $sec, $month, $day, $year));
+		$time = gmmktime($hour, $min, $sec, $month, $day, $year);
 
 		// Are we fibbing?
 		if ($fib_seconds === TRUE)

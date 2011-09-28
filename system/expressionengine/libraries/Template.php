@@ -1621,6 +1621,7 @@ class EE_Template {
 		else
 		{
 			// Timestamp valid - read rest of file
+			$this->cache_timestamp = $this->EE->localize->now;
 			$status = 'CURRENT';
 			$cache = @fread($fp, filesize($file));
 		}
