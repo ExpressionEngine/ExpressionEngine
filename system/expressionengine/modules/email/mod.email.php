@@ -244,7 +244,7 @@ class Email {
 				$entry_id = preg_replace("#/.+#", "", $entry_id);
 
 				//  Do we have a vaild channel and ID number?
-				$timestamp	= ($this->EE->TMPL->cache_timestamp != '') ? $this->EE->localize->set_gmt($this->EE->TMPL->cache_timestamp) : $this->EE->localize->now;
+				$timestamp = ($this->EE->TMPL->cache_timestamp != '') ? $this->EE->TMPL->cache_timestamp : $this->EE->localize->now;
 				$channel = $this->EE->TMPL->fetch_param('channel', '');
 
 				$this->EE->db->select('entry_id')

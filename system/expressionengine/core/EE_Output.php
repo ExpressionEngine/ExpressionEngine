@@ -148,7 +148,7 @@ class EE_Output extends CI_Output {
 		}
 		else
 		{
-			$last_update = $EE->localize->set_gmt();					
+			$last_update = $EE->localize->now;
 		}
 		
 		$output = trim($output);
