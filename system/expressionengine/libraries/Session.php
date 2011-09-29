@@ -410,7 +410,6 @@ class EE_Session {
 		$this->sdata['ip_address']  	= $this->EE->input->ip_address();  
 		$this->sdata['member_id']  		= (int) $member_id; 
 		$this->sdata['last_activity']	= $this->EE->localize->now;  
-		$this->sdata['site_id']  		= (int) $this->EE->config->item('site_id'); 
 		$this->sdata['user_agent']		= substr($this->EE->input->user_agent(), 0, 120);
 		$this->userdata['member_id']	= (int) $member_id;  
 		$this->userdata['session_id']	= $this->sdata['session_id'];
@@ -700,11 +699,6 @@ class EE_Session {
 					 ->where('ip_address', $this->sdata['ip_address'])
 					 ->where('user_agent', $this->sdata['user_agent']);
 
-		if (REQ != 'CP') // Each 'Site' has own Sessions
-		{
-			$this->EE->db->where('site_id', (int) $this->EE->config->item('site_id'));
-		}
-		
 		$query = $this->EE->db->get('sessions');
 		
 		if ($query->num_rows() == 0 OR $query->row('member_id') == 0)
