@@ -772,7 +772,27 @@ class Member_auth extends Member {
 		$address = $query->row('email') ;
 		$username = $query->row('username') ;
 
-		$rand = $this->EE->functions->random('alnum', 8);
+		// Generate a new password that is valid according to our
+		// security preferences
+		$len = $this->EE->config->item('pw_min_len');
+		
+		if ($len < 8)
+		{
+			$len = 8;
+		}
+		
+		$rand = $this->EE->functions->random('alnum', $len);
+		
+		// add one of each character we require
+		if ($this->EE->config->item('require_secure_passwords') == 'y')
+		{
+			$numer = rand(0, 9);
+			$alpha = range('a', 'z');
+			
+			shuffle($alpha);
+			
+			$rand .= $numer.$alpha[0].strtoupper($alpha[1]);
+		}
 
 		// Update member's password
 
