@@ -791,12 +791,12 @@ class Member_auth extends Member {
 		// add one of each character we require
 		if ($this->EE->config->item('require_secure_passwords') == 'y')
 		{
-			$numer = rand(0, 9);
 			$alpha = range('a', 'z');
+			$number = rand(0, 9);
 			
 			shuffle($alpha);
 			
-			$rand .= $numer.$alpha[0].strtoupper($alpha[1]);
+			$rand .= $number.$alpha[0].strtoupper($alpha[1]);
 		}
 
 		// Update member's password
