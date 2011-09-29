@@ -569,12 +569,12 @@ class Login extends CI_Controller {
 		// add one of each character we require
 		if ($this->config->item('require_secure_passwords') == 'y')
 		{
-			$numer = rand(0, 9);
 			$alpha = range('a', 'z');
+			$number = rand(0, 9);
 			
 			shuffle($alpha);
 			
-			$rand .= $numer.$alpha[0].strtoupper($alpha[1]);
+			$rand .= $number.$alpha[0].strtoupper($alpha[1]);
 		}
 		
 		
