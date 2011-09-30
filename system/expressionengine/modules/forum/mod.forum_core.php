@@ -9921,7 +9921,7 @@ class Forum_Core extends Forum {
 							->order_by('last_post_date','DESC')
 							->get();
 			
-		if ($query->num_rows() == 0)
+		if ($qry->num_rows() == 0)
 		{
 			return $this->EE->output->show_user_error('off', array(lang('search_no_result')), lang('search_result_heading'));		
 		}
