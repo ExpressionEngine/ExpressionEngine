@@ -1263,7 +1263,8 @@ class Design extends CI_Controller {
 			$radio_options = '';
 			foreach ($yes_no_options as $key => $lang)
 			{
-				$radio_options .= '<label>'.form_radio('access_'.$row->group_id, $key, '', 'class="access_'.$key.'"').NBS.$lang.'</label>'.NBS.NBS.NBS.NBS.NBS.NBS.NBS;
+				$checked = ($key === 'null') ? TRUE : FALSE;
+				$radio_options .= '<label>'.form_radio('access_'.$row->group_id, $key, $checked, 'class="access_'.$key.'"').NBS.$lang.'</label>'.NBS.NBS.NBS.NBS.NBS.NBS.NBS;
 			}
 
 			$vars['template_access'][$row->group_id][] = $radio_options;
@@ -1271,9 +1272,9 @@ class Design extends CI_Controller {
 
 		$vars['template_access']['select_all'][] = lang('select_all');
 
-		$select_all_radios = '<label>'.form_radio('select_all', 'access_null', '', 'class="select_all"').NBS.lang('do_not_change').'</label>'.NBS.NBS.NBS.NBS.NBS.NBS.NBS;
-		$select_all_radios .= '<label>'.form_radio('select_all', 'access_y', '', 'class="select_all"').NBS.lang('yes').'</label>'.NBS.NBS.NBS.NBS.NBS.NBS.NBS;
-		$select_all_radios .= '<label>'.form_radio('select_all', 'access_n', '', 'class="select_all"').NBS.lang('no').'</label>';
+		$select_all_radios = '<label>'.form_radio('select_all', 'access_null', TRUE, 'class="select_all"').NBS.lang('do_not_change').'</label>'.NBS.NBS.NBS.NBS.NBS.NBS.NBS;
+		$select_all_radios .= '<label>'.form_radio('select_all', 'access_y', FALSE, 'class="select_all"').NBS.lang('yes').'</label>'.NBS.NBS.NBS.NBS.NBS.NBS.NBS;
+		$select_all_radios .= '<label>'.form_radio('select_all', 'access_n', FALSE, 'class="select_all"').NBS.lang('no').'</label>';
 
 		$vars['template_access']['select_all'][] = $select_all_radios;
 
