@@ -249,7 +249,7 @@ class Comment {
 			}
 
 			//  Do we have a valid entry ID number?
-			$timestamp = ($this->EE->TMPL->cache_timestamp != '') ? $this->EE->localize->set_gmt($this->EE->TMPL->cache_timestamp) : $this->EE->localize->now;
+			$timestamp = ($this->EE->TMPL->cache_timestamp != '') ? $this->EE->TMPL->cache_timestamp : $this->EE->localize->now;
 
 			$this->EE->db->select('entry_id, channel_id');
 			//$this->EE->db->where('channel_titles.channel_id = '.$this->EE->db->dbprefix('channels').'.channel_id');
@@ -428,7 +428,7 @@ class Comment {
 
 			if ($this->EE->TMPL->fetch_param('show_expired') !== 'yes')
 			{
-				$timestamp = ($this->EE->TMPL->cache_timestamp != '') ? $this->EE->localize->set_gmt($this->EE->TMPL->cache_timestamp) : $this->EE->localize->now;
+				$timestamp = ($this->EE->TMPL->cache_timestamp != '') ? $this->EE->TMPL->cache_timestamp : $this->EE->localize->now;
 
 				$date_where = "(".$this->EE->db->protect_identifiers('ct.expiration_date')." = 0 OR "
 				.$this->EE->db->protect_identifiers('ct.expiration_date')." > {$timestamp})";

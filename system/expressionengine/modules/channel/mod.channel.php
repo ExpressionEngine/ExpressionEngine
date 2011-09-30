@@ -1734,8 +1734,8 @@ class Channel {
 		/**------
 		/**  We only select entries that have not expired
 		/**------*/
-
-		$timestamp = ($this->EE->TMPL->cache_timestamp != '') ? $this->EE->localize->set_gmt($this->EE->TMPL->cache_timestamp) : $this->EE->localize->now;
+		
+		$timestamp = ($this->EE->TMPL->cache_timestamp != '') ? $this->EE->TMPL->cache_timestamp : $this->EE->localize->now;
 
 		if ($this->EE->TMPL->fetch_param('show_future_entries') != 'yes')
 		{
@@ -1885,8 +1885,8 @@ class Channel {
 				$eday = $day;
 			}
 
-			$stime = $this->EE->localize->set_gmt(mktime(0, 0, 0, $smonth, $sday, $year));
-			$etime = $this->EE->localize->set_gmt(mktime(23, 59, 59, $emonth, $eday, $year));
+			$stime = gmmktime(0, 0, 0, $smonth, $sday, $year);
+			$etime = gmmktime(23, 59, 59, $emonth, $eday, $year);
 
 			$sql .= " AND t.entry_date >= ".$stime." AND t.entry_date <= ".$etime." ";
 		}
@@ -1909,8 +1909,8 @@ class Channel {
 					$eday = $day;
 				}
 
-				$stime = $this->EE->localize->set_gmt(mktime(0, 0, 0, $month, $sday, $year));
-				$etime = $this->EE->localize->set_gmt(mktime(23, 59, 59, $month, $eday, $year));
+				$stime = gmmktime(0, 0, 0, $month, $sday, $year);
+				$etime = gmmktime(23, 59, 59, $month, $eday, $year);
 
 				if (date("I", $this->EE->localize->now) AND ! date("I", $stime))
 				{
@@ -5323,7 +5323,7 @@ class Channel {
 				/**  We only select entries that have not expired
 				/**------*/
 
-				$timestamp = ($this->EE->TMPL->cache_timestamp != '') ? $this->EE->localize->set_gmt($this->EE->TMPL->cache_timestamp) : $this->EE->localize->now;
+				$timestamp = ($this->EE->TMPL->cache_timestamp != '') ? $this->EE->TMPL->cache_timestamp : $this->EE->localize->now;
 
 				if ($this->EE->TMPL->fetch_param('show_future_entries') != 'yes')
 				{
@@ -5615,7 +5615,7 @@ class Channel {
 				WHERE channel_id = '$channel_id'
 				AND exp_channel_titles.entry_id = exp_category_posts.entry_id ";
 
-		$timestamp = ($this->EE->TMPL->cache_timestamp != '') ? $this->EE->localize->set_gmt($this->EE->TMPL->cache_timestamp) : $this->EE->localize->now;
+		$timestamp = ($this->EE->TMPL->cache_timestamp != '') ? $this->EE->TMPL->cache_timestamp : $this->EE->localize->now;
 
 		if ($this->EE->TMPL->fetch_param('show_future_entries') != 'yes')
 		{
@@ -6142,7 +6142,7 @@ class Channel {
 			/**  We only select entries that have not expired
 			/**------*/
 
-			$timestamp = ($this->EE->TMPL->cache_timestamp != '') ? $this->EE->localize->set_gmt($this->EE->TMPL->cache_timestamp) : $this->EE->localize->now;
+			$timestamp = ($this->EE->TMPL->cache_timestamp != '') ? $this->EE->TMPL->cache_timestamp : $this->EE->localize->now;
 
 			if ($this->EE->TMPL->fetch_param('show_future_entries') != 'yes')
 			{
@@ -6999,7 +6999,7 @@ class Channel {
 
 		$sql .= ' WHERE t.entry_id != '.$this->EE->session->cache['channel']['single_entry_id'].' '.$ids;
 
-		$timestamp = ($this->EE->TMPL->cache_timestamp != '') ? $this->EE->localize->set_gmt($this->EE->TMPL->cache_timestamp) : $this->EE->localize->now;
+		$timestamp = ($this->EE->TMPL->cache_timestamp != '') ? $this->EE->TMPL->cache_timestamp : $this->EE->localize->now;
 
 	    if ($this->EE->TMPL->fetch_param('show_future_entries') != 'yes')
 	    {
@@ -7215,7 +7215,7 @@ class Channel {
 						AND site_id IN ('".implode("','", $this->EE->TMPL->site_ids)."') ";
 
 
-		$timestamp = ($this->EE->TMPL->cache_timestamp != '') ? $this->EE->localize->set_gmt($this->EE->TMPL->cache_timestamp) : $this->EE->localize->now;
+		$timestamp = ($this->EE->TMPL->cache_timestamp != '') ? $this->EE->TMPL->cache_timestamp : $this->EE->localize->now;
 
 		if ($this->EE->TMPL->fetch_param('show_future_entries') != 'yes')
 		{
