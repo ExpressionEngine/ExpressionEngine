@@ -907,8 +907,8 @@ class Tools_data extends CI_Controller {
 						$member_entries[$row->recipient_id]['total_comments'] = 0;
 						$member_entries[$row->recipient_id]['private_messages'] = $row->count;
 						
-						$member_entries[$row->author_id]['total_forum_posts'] = 0;
-						$member_entries[$row->author_id]['total_forum_topics'] = 0;
+						$member_entries[$row->recipient_id]['total_forum_posts'] = 0;
+						$member_entries[$row->recipient_id]['total_forum_topics'] = 0;
 					}
 				}
 			}

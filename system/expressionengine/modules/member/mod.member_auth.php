@@ -317,9 +317,8 @@ class Member_auth extends Member {
 		$incoming->start_session();
 		
 		$new_row = $sess_q->row_array();
-        $some_row['site_id'] = $this->EE->config->item('site_id');
+		$some_row['site_id'] = $this->EE->config->item('site_id');
 
-		
 		return $incoming;
 	}	
 	// --------------------------------------------------------------------
@@ -338,6 +337,7 @@ class Member_auth extends Member {
 		$num_sites = count($sites);
 		$orig_id = $this->EE->input->get('orig_site_id');
 		$orig_idx = $this->EE->input->get('orig');
+		$return = $this->EE->input->get('RET');
 		
 		$next_idx = $current_idx + 1;
 		
@@ -347,6 +347,8 @@ class Member_auth extends Member {
 			$orig_id = $this->EE->config->item('site_id');
 			$orig_idx = $current_idx;
 			$next_idx = ($current_idx == '0') ? '1' : '0';
+			$return = $this->EE->functions->remove_double_slashes($this->EE->functions->form_backtrack());
+			$return = strtr(base64_encode($return), '/=', '_-');
 		}
 		elseif ($next_idx == $orig_idx)
 		{
@@ -364,6 +366,7 @@ class Member_auth extends Member {
 			// next site
 			$next_qs = array(
 				'ACT'	=> $action_id->row('action_id'),
+				'RET'	=> $return,
 				'cur'	=> $next_idx,
 				'orig'	=> $orig_idx,
 				'multi'	=> $this->EE->session->userdata('session_id'),
@@ -382,20 +385,13 @@ class Member_auth extends Member {
 	private function _build_multi_success_message($sites)
 	{
 		// Figure out return
-		if  ( ! $ret = $this->EE->input->get('ret'))
+		if  ( ! $ret = $this->EE->input->get('RET'))
 		{
 			$ret = $sites[$this->EE->input->get('orig')];
 		}
 		else
 		{
-			if (strncmp($ret, 's-', 2) == 0) 
-			{
-				$ret = substr_replace($ret, 'https:', 0, 2);
-			}
-			elseif (strncmp($ret, 'n-', 2) == 0) 
-			{
-				$ret = substr_replace($ret, 'http:', 0, 2);
-			}
+			$ret = base64_decode(strtr($ret, '_-', '/='));
 		}
 				
 		// That was our last site, show the success message
