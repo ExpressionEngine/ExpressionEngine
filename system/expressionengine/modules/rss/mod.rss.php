@@ -341,7 +341,7 @@ class Rss {
 		}
 
 		//  We only select entries that have not expired 
-		$timestamp = ($this->EE->TMPL->cache_timestamp != '') ? $this->EE->localize->set_gmt($this->EE->TMPL->cache_timestamp) : $this->EE->localize->now;
+		$timestamp = ($this->EE->TMPL->cache_timestamp != '') ? $this->EE->TMPL->cache_timestamp : $this->EE->localize->now;
 
 		if ($this->EE->TMPL->fetch_param('show_future_entries') != 'yes')
 		{

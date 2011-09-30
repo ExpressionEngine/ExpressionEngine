@@ -1518,10 +1518,10 @@ class Moblog {
 						
 							$thumb_replace		= '';	
 							$thumb_dimensions	= FALSE;
-							$thumb_rel_path		= $thumb_data['dir'].$file;
 							
 							if ( ! empty($thumb_data))
 							{
+								$thumb_rel_path		= $thumb_data['dir'].$file;
 								$thumb_replace		= $this->upload_dir_code.$thumb_rel_path;
 								$thumb_dimensions	= @getimagesize($dir_server_path.$thumb_rel_path);
 							}
@@ -1561,13 +1561,13 @@ class Moblog {
 						$file_rel_path		= empty($image_data) ? $file : $image_data['dir'].$file;
 						$file_dimensions	= @getimagesize($dir_server_path.$file_rel_path);
 						$filename			= $this->upload_dir_code.$file_rel_path;
-					
+						
 						$thumb_replace		= '';	
 						$thumb_dimensions	= FALSE;
-						$thumb_rel_path		= $thumb_data['dir'].$file;
 						
 						if ( ! empty($thumb_data))
 						{
+							$thumb_rel_path		= $thumb_data['dir'].$file;
 							$thumb_replace		= $this->upload_dir_code.$thumb_rel_path;
 							$thumb_dimensions	= @getimagesize($dir_server_path.$thumb_rel_path);
 						}

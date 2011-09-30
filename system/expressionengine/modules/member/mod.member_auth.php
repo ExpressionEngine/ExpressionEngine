@@ -141,7 +141,7 @@ class Member_auth extends Member {
 		if ($multi)
 		{
 			// Multiple Site Login
-			$incoming = $this->_do_multi_auth($sites);
+			$incoming = $this->_do_multi_auth($sites, $multi);
 			$success = '_build_multi_success_message';
 
 			$current_url = $this->EE->functions->fetch_site_index();
@@ -271,7 +271,7 @@ class Member_auth extends Member {
 	 * @param 	array 	array of sites
 	 * @return 	object 	member auth object
 	 */
-	private function _do_multi_auth($sites)
+	private function _do_multi_auth($sites, $session_id)
 	{
 		if ( ! $sites OR $this->EE->config->item('allow_multi_logins') == 'n')
 		{
@@ -284,8 +284,10 @@ class Member_auth extends Member {
 		
 		// Grab session
 		$sess_q = $this->EE->db->get_where('sessions', array(
-			'session_id' => $this->EE->session->userdata('session_id')
+			'session_id' => $session_id
 		));
+		
+ 
 		
 		if ( ! $sess_q->num_rows())
 		{
@@ -311,12 +313,15 @@ class Member_auth extends Member {
 		}
 		
 		// hook onto an existing session
-		$incoming->use_session_id($this->EE->session->userdata('session_id'));
+		$incoming->use_session_id($session_id);
 		$incoming->start_session();
 		
+		$new_row = $sess_q->row_array();
+        $some_row['site_id'] = $this->EE->config->item('site_id');
+
+		
 		return $incoming;
-	}
-	
+	}	
 	// --------------------------------------------------------------------
 
 	/**
@@ -772,7 +777,27 @@ class Member_auth extends Member {
 		$address = $query->row('email') ;
 		$username = $query->row('username') ;
 
-		$rand = $this->EE->functions->random('alnum', 8);
+		// Generate a new password that is valid according to our
+		// security preferences
+		$len = $this->EE->config->item('pw_min_len');
+		
+		if ($len < 8)
+		{
+			$len = 8;
+		}
+		
+		$rand = $this->EE->functions->random('alnum', $len);
+		
+		// add one of each character we require
+		if ($this->EE->config->item('require_secure_passwords') == 'y')
+		{
+			$alpha = range('a', 'z');
+			$number = rand(0, 9);
+			
+			shuffle($alpha);
+			
+			$rand .= $number.$alpha[0].strtoupper($alpha[1]);
+		}
 
 		// Update member's password
 

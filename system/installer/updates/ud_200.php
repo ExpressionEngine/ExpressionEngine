@@ -1072,14 +1072,20 @@ BSH;
 
 		// Remove EE 1.6.X default button set
 		$Q[] = "DELETE FROM `exp_html_buttons` WHERE `member_id`=0";
-
-		// Add in the EE 2 default button set (as determined by expressionengine/config/html_buttons.php)
-		$buttoncount = 1;
-
-		foreach ($installation_defaults as $button)
+		
+		$site_query = $this->EE->db->query("SELECT site_id FROM `exp_sites`");
+		
+		foreach ($site_query->result() as $site)
 		{
-			$Q[] = "INSERT INTO exp_html_buttons (site_id, member_id, tag_name, tag_open, tag_close, accesskey, tag_order, tag_row, classname)
-											values (1, '0', '".$predefined_buttons[$button]['tag_name']."', '".$predefined_buttons[$button]['tag_open']."', '".$predefined_buttons[$button]['tag_close']."', '".$predefined_buttons[$button]['accesskey']."', '".$buttoncount++."', '1', '".$predefined_buttons[$button]['classname']."')";
+			// Add in the EE 2 default button set (as determined by expressionengine/config/html_buttons.php)
+			$buttoncount = 1;
+			
+			foreach ($installation_defaults as $button)
+			{
+				$Q[] = "INSERT INTO exp_html_buttons 
+					(site_id, member_id, tag_name, tag_open, tag_close, accesskey, tag_order, tag_row, classname)
+					values ({$site->site_id}, '0', '".$predefined_buttons[$button]['tag_name']."', '".$predefined_buttons[$button]['tag_open']."', '".$predefined_buttons[$button]['tag_close']."', '".$predefined_buttons[$button]['accesskey']."', '".$buttoncount++."', '1', '".$predefined_buttons[$button]['classname']."')";
+			}
 		}
 
 		// Any current HTML buttons need to be changed up now to match the EE2 styles.

@@ -50,8 +50,7 @@ class EE_Localize {
 		$this->EE =& get_instance();
 
 		// Fetch the current local server time and convert it to GMT
-		$this->server_now	= time();
-		$this->now			= $this->set_gmt($this->server_now); 
+		$this->now			= time();
 		$this->zones		= $this->zones();
 	}
 	
@@ -62,42 +61,26 @@ class EE_Localize {
 	 *
 	 * Takes a Unix timestamp as input and returns it as GMT
 	 *
+	 * @deprecated 2.3
 	 * @access	public
 	 * @param	string
 	 * @return	string
 	 */	
 	function set_gmt($now = '')
-	{	
+	{
+		// TODO: Add deprecation notice
+		
 		if ($now == '')
 		{
 			$now = time(); 
 		}
-			
-		$time = gmmktime( gmdate("H", $now),
-						 gmdate("i", $now),
-						 gmdate("s", $now),
-						 gmdate("m", $now),
-						 gmdate("d", $now),
-						 gmdate("Y", $now),
-						 -1	// this must be explicitly set or some FreeBSD servers behave erratically
-						);
-
-		// mktime() has a bug that causes it to fail during the DST "spring forward gap"
-		// when clocks are offset an hour forward (around April 4).  Instead of returning a valid
-		// timestamp, it returns -1.  Basically, mktime() gets caught in purgatory, not 
-		// sure if DST is active or not.  As a work-around for this we'll test for "-1",
-		// and if present, return the current time.  This is not a great solution, as this time
-		// may not be what the user intended, but it's preferable than storing -1 as the timestamp, 
-		// which correlates to: 1969-12-31 16:00:00. 
-
-		if ($time == -1)
+		
+		if ( ! is_numeric($now))
 		{
-			return $this->set_gmt();
+			$now = strtotime($now);
 		}
-		else
-		{
-			return $time;
-		}
+		
+		return $now;
 	}	
 
 	// --------------------------------------------------------------------
@@ -121,14 +104,14 @@ class EE_Localize {
 		
 		// YYYYMMDDHHMMSS
 
-		return  $this->set_gmt( gmmktime( substr($str,8,2),
-										substr($str,10,2),
-										substr($str,12,2),
-										substr($str,4,2),
-										substr($str,6,2),
-										substr($str,0,4)
-									  )
-								);
+		return gmmktime(
+			substr($str,8,2),
+			substr($str,10,2),
+			substr($str,12,2),
+			substr($str,4,2),
+			substr($str,6,2),
+			substr($str,0,4)
+		);
 	}
 	
 	
@@ -290,15 +273,9 @@ class EE_Localize {
 				$offset += 1;
 			}
 		} 
-				
-		// Grab local time	
-		$time = $this->server_now;
-		
-		// Determine the number of seconds between the local time and GMT
-		$time -= $this->now;
 		
 		// Offset this number based on the server offset (if it exists)
-		$time = $this->set_server_offset($time, 1);
+		$time = $this->set_server_offset(0, 1);
 		
 		// Divide by 3600, making our offset into hours
 		$time = $time/3600;
@@ -311,7 +288,9 @@ class EE_Localize {
 		
 		// Convert it to seconds
 		if ($offset != 0)
+		{
 			$offset = $offset * (60 * 60);
+		}
 		
 		return $offset;
 	}
@@ -402,18 +381,18 @@ class EE_Localize {
 			return $this->EE->lang->line('invalid_date_formatting');
 		}
 		
-		$split = explode(' ', $datestr);
+		$split	= explode(' ', $datestr);
 
-		$ex = explode("-", $split[0]);
+		$ex		= explode("-", $split[0]);
 		
-		$year  = (strlen($ex[0]) == 2) ? '20'.$ex[0] : $ex[0];
-		$month = (strlen($ex[1]) == 1) ? '0'.$ex[1]  : $ex[1];
+		$year	= (strlen($ex[0]) == 2) ? '20'.$ex[0] : $ex[0];
+		$month	= (strlen($ex[1]) == 1) ? '0'.$ex[1]  : $ex[1];
 		$day	= (strlen($ex[2]) == 1) ? '0'.$ex[2]  : $ex[2];
 
-		$ex = explode(":", $split[1]); 
+		$ex		= explode(":", $split[1]); 
 		
-		$hour = (strlen($ex[0]) == 1) ? '0'.$ex[0] : $ex[0];
-		$min  = (strlen($ex[1]) == 1) ? '0'.$ex[1] : $ex[1];
+		$hour	= (strlen($ex[0]) == 1) ? '0'.$ex[0] : $ex[0];
+		$min	= (strlen($ex[1]) == 1) ? '0'.$ex[1] : $ex[1];
 
 		// I'll explain later
 		$fib_seconds = FALSE;
@@ -445,21 +424,27 @@ class EE_Localize {
 			$ampm = strtolower($split[2]);
 			
 			if (substr($ampm, 0, 1) == 'p' AND $hour < 12)
+			{
 				$hour = $hour + 12;
-				
+			}
+			
 			if (substr($ampm, 0, 1) == 'a' AND $hour == 12)
+			{
 				$hour =  '00';
-				
+			}
+			
 			if (strlen($hour) == 1)
+			{
 				$hour = '0'.$hour;
+			}
 		}
 
 		if ($year < 1902 OR $year > 2037)
 		{
 			return $this->EE->lang->line('date_outside_of_range');
 		}
-		
-		$time = $this->set_gmt(gmmktime($hour, $min, $sec, $month, $day, $year));
+
+		$time = gmmktime($hour, $min, $sec, $month, $day, $year, -1);
 
 		// Are we fibbing?
 		if ($fib_seconds === TRUE)
@@ -468,7 +453,7 @@ class EE_Localize {
 		}
 		
 		$time += $this->set_localized_offset();
-
+		
 		return $time;
 	}
 	

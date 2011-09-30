@@ -756,6 +756,8 @@ class Auth_result {
 				$this->session_id,
 				$this->EE->session->session_length
 			);
+
+			$this->EE->session->userdata['session_id'] = $this->session_id;
 		}
 		else
 		{

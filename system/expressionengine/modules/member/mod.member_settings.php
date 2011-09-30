@@ -2178,9 +2178,9 @@ UNGA;
 			require APPPATH.'libraries/Validate.php';
 		}
 
-		$new_un  = (string) $_POST['new_username'];
-		$new_pw  = (string) $_POST['new_password'];
-		$new_pwc = (string) $_POST['new_password_confirm'];
+		$new_un  = (string) $this->EE->input->post('new_username');
+		$new_pw  = (string) $this->EE->input->post('new_password');
+		$new_pwc = (string) $this->EE->input->post('new_password_confirm');
 
 		$VAL = new EE_Validate(array(
 			'val_type'			=> 'new',
