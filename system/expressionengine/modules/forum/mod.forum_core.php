@@ -1513,7 +1513,7 @@ class Forum_Core extends Forum {
 		{	
 			for ($j = 0; $j < count($matches['0']); $j++)
 			{				
-				$template = preg_replace("/".$matches['0'][$j]."/", $this->EE->localize->decode_date($matches['1'][$j], $qry->row('last_post_date') ), $template, 1);				
+				$template = preg_replace("/".$matches['0'][$j]."/", $this->EE->localize->decode_date($matches['1'][$j], $qry->row('last_post_date'), FALSE), $template, 1);				
 			}
 		}  		
 
@@ -1522,11 +1522,11 @@ class Forum_Core extends Forum {
 		{	
 			for ($j = 0; $j < count($matches['0']); $j++)
 			{				
-				$template = preg_replace("/".$matches['0'][$j]."/", $this->EE->localize->decode_date($matches['1'][$j], $qry->row('topic_edit_date') ), $template, 1);				
+				$template = preg_replace("/".$matches['0'][$j]."/", $this->EE->localize->decode_date($matches['1'][$j], $qry->row('topic_edit_date'), FALSE ), $template, 1);				
 			}
 		}
 		
-		// {gmt_edit_date format="%Y %m %d %H:%i:%s"}
+		// {gmt_post_date format="%Y %m %d %H:%i:%s"}
 		if ( ! preg_match_all("/".LD."gmt_post_date\s+format=[\"\'](.+?)[\"\']".RD."/", $row_chunk, $gmt_post_date))
 		{	
 			$gmt_post_date = array();
@@ -1600,7 +1600,7 @@ class Forum_Core extends Forum {
 			{
 				for ($j = 0; $j < count($gmt_post_date['0']); $j++)
 				{				
-					$temp = preg_replace("/".$gmt_post_date['0'][$j]."/", $this->EE->localize->decode_date($gmt_post_date['1'][$j], $row['topic_date']), $temp, 1);				
+					$temp = preg_replace("/".$gmt_post_date['0'][$j]."/", $this->EE->localize->decode_date($gmt_post_date['1'][$j], $row['topic_date'], FALSE), $temp, 1);				
 				}
 			}
 			
@@ -1608,7 +1608,7 @@ class Forum_Core extends Forum {
 			{
 				for ($j = 0; $j < count($gmt_edit_date['0']); $j++)
 				{				
-					$temp = preg_replace("/".$gmt_edit_date['0'][$j]."/", $this->EE->localize->decode_date($gmt_edit_date['1'][$j], $row['topic_edit_date']), $temp, 1);				
+					$temp = preg_replace("/".$gmt_edit_date['0'][$j]."/", $this->EE->localize->decode_date($gmt_edit_date['1'][$j], $row['topic_edit_date'], FALSE), $temp, 1);				
 				}
 			}			
 		
