@@ -1445,7 +1445,6 @@ class Forum_Core extends Forum {
 			->where_in('t.forum_id', $ids)
 			->or_where_in('t.moved_forum_id', $ids)
 			->where('t.board_id', $this->fetch_pref('board_id'))
-			->order_by('t.last_post_date', 'DESC')
 			->order_by('t.topic_date', "DESC")
 			->limit(10)
 			->get();
