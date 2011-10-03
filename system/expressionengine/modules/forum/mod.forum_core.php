@@ -1456,9 +1456,9 @@ class Forum_Core extends Forum {
 		}
 
 		// Set the output type
-		$this->EE->output->out_type = 'rss';
+		$this->EE->output->out_type = 'feed';
 		$this->EE->config->core_ini['send_headers'] = 'y';
-		$this->EE->TMPL->template_type = 'rss';
+		$this->EE->TMPL->template_type = 'feed';
 		
 		// Load the requested theme file	
 		// What RSS type are they requesting?  Can be "rss" or "atom"
