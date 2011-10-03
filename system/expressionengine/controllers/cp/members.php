@@ -149,7 +149,7 @@ class Members extends CI_Controller {
 			$vars['member_groups_dropdown'][$group->group_id] = $group->group_title;
 		}
 
-		$vars['member_list'] = $this->member_model->get_members($group_id, $this->config->item('memberlist_row_limit'), $per_page, $member_name);
+		$vars['member_list'] = $this->member_model->get_members($group_id, $this->config->item('memberlist_row_limit'), $per_page, $member_name, array('member_id' => 'asc'));
 
 		if ($vars['member_list'] === FALSE)
 		{
@@ -362,7 +362,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			"fnServerData": fnDataTablesPipeline
 	} );
 
-		$("#member_name").bind("keyup blur paste", function (e) {
+		$("#member_name").bind("keydown blur paste", function (e) {
 		/* Filter on the column (the index) of this element */
     	setTimeout(function(){oTable.fnDraw();}, 1);
 		});
@@ -513,7 +513,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 				// - a value within single quotes
 				// - a value without spaces
 				
-				if (preg_match('/'.$token.'\:((?:"(.*?)")|(?:\'(.*?)\')|(?:[^\s:]+?))(?:\s|$)/', $search_string, $matches))
+				if (preg_match('/'.$token.'\:((?:"(.*?)")|(?:\'(.*?)\')|(?:[^\s:]+?))(?:\s|$)/i', $search_string, $matches))
 				{
 					// The last item within matches is what we want
 					$search_array[$token] = end($matches);
