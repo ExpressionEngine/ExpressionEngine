@@ -149,7 +149,7 @@ class Members extends CI_Controller {
 			$vars['member_groups_dropdown'][$group->group_id] = $group->group_title;
 		}
 
-		$vars['member_list'] = $this->member_model->get_members($group_id, $this->config->item('memberlist_row_limit'), $per_page, $member_name);
+		$vars['member_list'] = $this->member_model->get_members($group_id, $this->config->item('memberlist_row_limit'), $per_page, $member_name, array('member_id' => 'asc'));
 
 		if ($vars['member_list'] === FALSE)
 		{
