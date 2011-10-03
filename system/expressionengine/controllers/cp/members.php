@@ -362,7 +362,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			"fnServerData": fnDataTablesPipeline
 	} );
 
-		$("#member_name").bind("keyup blur paste", function (e) {
+		$("#member_name").bind("keydown blur paste", function (e) {
 		/* Filter on the column (the index) of this element */
     	setTimeout(function(){oTable.fnDraw();}, 1);
 		});
