@@ -4149,15 +4149,19 @@ class Forum_Core extends Forum {
 						'path:member_profile'		=> $this->profile_path($row['author_id']),
 						'path:send_private_message'	=> $this->profile_path('messages/pm/'.$row['author_id']),
 						'path:send_pm'				=> $this->profile_path($row['author_id']),
-						'body'						=> $this->_quote_decode($this->EE->typography->parse_type($row['body'], 
-		 								  array(
-												'text_format'	=> $formatting['text_format'],
-												'html_format'	=> $formatting['html_format'],
-												'auto_links'	=> $formatting['auto_links'],
-												'allow_img_url' => $formatting['allow_img_url']
-												)
-										  )
-						)
+						'body'						=> $this->EE->functions->encode_ee_tags(
+														$this->_quote_decode(
+															$this->EE->typography->parse_type(
+																$row['body'],
+							 									array(
+																	'text_format'	=> $formatting['text_format'],
+																	'html_format'	=> $formatting['html_format'],
+																	'auto_links'	=> $formatting['auto_links'],
+																	'allow_img_url' => $formatting['allow_img_url']
+																)
+										  					)
+														),
+														TRUE)
 					)
 				);
 				
