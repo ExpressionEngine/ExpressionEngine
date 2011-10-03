@@ -205,7 +205,7 @@ class Content_files extends CI_Controller {
 			'1'				=> lang('file_type'),
 			'all'			=> lang('all'),
 			'image'			=> lang('image'),
-			'non-image'		=> lang('non-image')
+			'non-image'		=> lang('non_image')
 		);
 
 		$search_select_options = array(

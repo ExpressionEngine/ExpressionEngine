@@ -1445,7 +1445,6 @@ class Forum_Core extends Forum {
 			->where_in('t.forum_id', $ids)
 			->or_where_in('t.moved_forum_id', $ids)
 			->where('t.board_id', $this->fetch_pref('board_id'))
-			->order_by('t.last_post_date', 'DESC')
 			->order_by('t.topic_date', "DESC")
 			->limit(10)
 			->get();
@@ -1456,9 +1455,9 @@ class Forum_Core extends Forum {
 		}
 
 		// Set the output type
-		$this->EE->output->out_type = 'rss';
+		$this->EE->output->out_type = 'feed';
 		$this->EE->config->core_ini['send_headers'] = 'y';
-		$this->EE->TMPL->template_type = 'rss';
+		$this->EE->TMPL->template_type = 'feed';
 		
 		// Load the requested theme file	
 		// What RSS type are they requesting?  Can be "rss" or "atom"
@@ -1513,7 +1512,7 @@ class Forum_Core extends Forum {
 		{	
 			for ($j = 0; $j < count($matches['0']); $j++)
 			{				
-				$template = preg_replace("/".$matches['0'][$j]."/", $this->EE->localize->decode_date($matches['1'][$j], $qry->row('last_post_date') ), $template, 1);				
+				$template = preg_replace("/".$matches['0'][$j]."/", $this->EE->localize->decode_date($matches['1'][$j], $qry->row('last_post_date'), FALSE), $template, 1);				
 			}
 		}  		
 
@@ -1522,11 +1521,11 @@ class Forum_Core extends Forum {
 		{	
 			for ($j = 0; $j < count($matches['0']); $j++)
 			{				
-				$template = preg_replace("/".$matches['0'][$j]."/", $this->EE->localize->decode_date($matches['1'][$j], $qry->row('topic_edit_date') ), $template, 1);				
+				$template = preg_replace("/".$matches['0'][$j]."/", $this->EE->localize->decode_date($matches['1'][$j], $qry->row('topic_edit_date'), FALSE ), $template, 1);				
 			}
 		}
 		
-		// {gmt_edit_date format="%Y %m %d %H:%i:%s"}
+		// {gmt_post_date format="%Y %m %d %H:%i:%s"}
 		if ( ! preg_match_all("/".LD."gmt_post_date\s+format=[\"\'](.+?)[\"\']".RD."/", $row_chunk, $gmt_post_date))
 		{	
 			$gmt_post_date = array();
@@ -1600,7 +1599,7 @@ class Forum_Core extends Forum {
 			{
 				for ($j = 0; $j < count($gmt_post_date['0']); $j++)
 				{				
-					$temp = preg_replace("/".$gmt_post_date['0'][$j]."/", $this->EE->localize->decode_date($gmt_post_date['1'][$j], $row['topic_date']), $temp, 1);				
+					$temp = preg_replace("/".$gmt_post_date['0'][$j]."/", $this->EE->localize->decode_date($gmt_post_date['1'][$j], $row['topic_date'], FALSE), $temp, 1);				
 				}
 			}
 			
@@ -1608,7 +1607,7 @@ class Forum_Core extends Forum {
 			{
 				for ($j = 0; $j < count($gmt_edit_date['0']); $j++)
 				{				
-					$temp = preg_replace("/".$gmt_edit_date['0'][$j]."/", $this->EE->localize->decode_date($gmt_edit_date['1'][$j], $row['topic_edit_date']), $temp, 1);				
+					$temp = preg_replace("/".$gmt_edit_date['0'][$j]."/", $this->EE->localize->decode_date($gmt_edit_date['1'][$j], $row['topic_edit_date'], FALSE), $temp, 1);				
 				}
 			}			
 		
@@ -4149,15 +4148,19 @@ class Forum_Core extends Forum {
 						'path:member_profile'		=> $this->profile_path($row['author_id']),
 						'path:send_private_message'	=> $this->profile_path('messages/pm/'.$row['author_id']),
 						'path:send_pm'				=> $this->profile_path($row['author_id']),
-						'body'						=> $this->_quote_decode($this->EE->typography->parse_type($row['body'], 
-		 								  array(
-												'text_format'	=> $formatting['text_format'],
-												'html_format'	=> $formatting['html_format'],
-												'auto_links'	=> $formatting['auto_links'],
-												'allow_img_url' => $formatting['allow_img_url']
-												)
-										  )
-						)
+						'body'						=> $this->EE->functions->encode_ee_tags(
+														$this->_quote_decode(
+															$this->EE->typography->parse_type(
+																$row['body'],
+							 									array(
+																	'text_format'	=> $formatting['text_format'],
+																	'html_format'	=> $formatting['html_format'],
+																	'auto_links'	=> $formatting['auto_links'],
+																	'allow_img_url' => $formatting['allow_img_url']
+																)
+										  					)
+														),
+														TRUE)
 					)
 				);
 				

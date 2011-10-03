@@ -45,8 +45,6 @@ class Updater {
 	 */
 	public function do_update()
 	{
-		$this->EE->load->dbforge();
-		
 		$this->_update_session_table();
 				
 		return TRUE;
@@ -63,8 +61,10 @@ class Updater {
 	 */
 	private function _update_session_table()
 	{
+		$this->EE->load->dbforge();
+		
 		// Drop site_id
-		$this->dbforge->drop_column('sessions', 'site_id');
+		$this->EE->dbforge->drop_column('sessions', 'site_id');
     }
 }   
 /* END CLASS */

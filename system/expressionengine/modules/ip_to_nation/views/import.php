@@ -2,10 +2,9 @@
 
 <p><strong><?=lang('update_blurb')?></strong></p><br/>
 
-	<? if ($last_update):
+	<?php if ($last_update):
 		echo '<p>' . lang('last_update').$last_update . '</p><br/>';
-		endif;
-	?>
+	endif; ?>
 	
 <?=form_open('C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=ip_to_nation'.AMP.'method=import_form')?>
 
