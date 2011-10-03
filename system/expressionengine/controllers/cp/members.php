@@ -513,7 +513,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 				// - a value within single quotes
 				// - a value without spaces
 				
-				if (preg_match('/'.$token.'\:((?:"(.*?)")|(?:\'(.*?)\')|(?:[^\s:]+?))(?:\s|$)/', $search_string, $matches))
+				if (preg_match('/'.$token.'\:((?:"(.*?)")|(?:\'(.*?)\')|(?:[^\s:]+?))(?:\s|$)/i', $search_string, $matches))
 				{
 					// The last item within matches is what we want
 					$search_array[$token] = end($matches);
