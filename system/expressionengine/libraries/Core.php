@@ -292,7 +292,7 @@ class EE_Core {
 					$var_keys[] = LD.$k.RD;
 				}
 
-				$snippets = str_replace($var_keys, array_values($_global_vars), $snippets);
+				$snippets = str_replace($var_keys, $this->EE->config->_global_vars, $snippets);
 
 				$this->EE->config->_global_vars = $this->EE->config->_global_vars + $snippets; 
 
