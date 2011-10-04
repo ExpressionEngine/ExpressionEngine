@@ -202,8 +202,7 @@ Array.min = function(array) {
 	 */
 	$.ee_filebrowser.clean_up = function(file_uploader, original_upload_html) {
 		file_uploader.html(original_upload_html); // Restore the upload form
-		console.log('clean_up');
-		//trigger_callback(file);
+		//trigger_callback(file_uploader);
 		
 		// Clear caches
 		dir_info = {};

@@ -89,14 +89,12 @@
 				// Disable upload file button
 				$.ee_fileuploader.reset_upload();
 
-				if (original_upload_html == undefined)
-				{
+				// Save original contents for clean_up later
+				if (original_upload_html == undefined) {
 					original_upload_html = file_uploader.html();
-					console.log('first');
 				}
 				
 				// Call open callback
-
 				if (typeof settings.open == 'function') {
 					settings.open.call(this, file_uploader);
 				}
@@ -105,8 +103,6 @@
 				upload_listen();
 			},
 			close: function() {
-				console.log('close');
-
 				if (typeof window.upload_iframe.file != "undefined") {
 					if (delete_file) {
 						// Delete the file
@@ -205,7 +201,8 @@
 	 * Cleans up the file upload and the file chooser after a file has
 	 * been selected
 	 *
-	 * @param {Object} file File object passed from 
+	 * @param {Object} current_file File object passed from 
+	 * @param {String} original_upload_html HTML of modal on initial load 
 	 */
 	var clean_up = function(current_file, original_upload_html) {
 		$.ee_filebrowser.clean_up(current_file, original_upload_html);
