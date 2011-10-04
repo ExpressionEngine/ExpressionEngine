@@ -1321,6 +1321,11 @@ table.mainTable th {
 	text-shadow:		0 1px 1px #617280;
 }
 
+table.mainTable tr.new td {
+	background-color: #fcfcdc;
+	font-weight: bold;
+}
+
 #toggle_all, td.file_select {
 	width: 19px;
 	padding: 0 7px 0 9px !important;
