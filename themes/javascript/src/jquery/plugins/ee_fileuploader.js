@@ -13,6 +13,7 @@
 (function($) {
 	
 	var file_uploader,
+		original_upload_html,
 		settings,
 		current_file,
 		delete_file = true;
@@ -75,6 +76,7 @@
 			autoOpen: false,
 			zIndex: 99999,
 			open: function() {
+
 				// Make sure we're on before_upload
 				change_class('before_upload');
 		
@@ -86,15 +88,25 @@
 				
 				// Disable upload file button
 				$.ee_fileuploader.reset_upload();
+
+				if (original_upload_html == undefined)
+				{
+					original_upload_html = file_uploader.html();
+					console.log('first');
+				}
 				
 				// Call open callback
+
 				if (typeof settings.open == 'function') {
 					settings.open.call(this, file_uploader);
 				}
+
 				
 				upload_listen();
 			},
 			close: function() {
+				console.log('close');
+
 				if (typeof window.upload_iframe.file != "undefined") {
 					if (delete_file) {
 						// Delete the file
@@ -111,12 +123,14 @@
 							}
 						});
 					};
-					
+
 					// Call close callback, passing the file info
 					if (typeof settings.close == 'function') {
 						settings.close.call(this, file_uploader, current_file);
-					};
-				};
+					}
+				}
+
+				clean_up(file_uploader, original_upload_html);
 			}
 		});
 		
@@ -193,12 +207,8 @@
 	 *
 	 * @param {Object} file File object passed from 
 	 */
-	var clean_up = function() {
-		// Hide the dialog
-		file_uploader.dialog('close');
-
-		// Close filebrowser
-		$.ee_filebrowser.clean_up(current_file, '');
+	var clean_up = function(current_file, original_upload_html) {
+		$.ee_filebrowser.clean_up(current_file, original_upload_html);
 	};
 	
 	// --------------------------------------------------------------------

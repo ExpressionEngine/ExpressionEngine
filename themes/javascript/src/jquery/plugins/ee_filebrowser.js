@@ -198,13 +198,12 @@ Array.min = function(array) {
 	/*
 	 * Clean Up
 	 *
-	 * Takes care of restoring the file upload, closing the modal, and firing needed callbacks
+	 * Takes care of restoring the file upload and firing needed callbacks
 	 */
-	$.ee_filebrowser.clean_up = function(file, original_upload_html) {
-		// Clean up
-		$("#page_0 .items").html(original_upload_html); // Restore the upload form
-		file_manager_obj.dialog("close"); // close dialog
-		trigger_callback(file);
+	$.ee_filebrowser.clean_up = function(file_uploader, original_upload_html) {
+		file_uploader.html(original_upload_html); // Restore the upload form
+		console.log('clean_up');
+		//trigger_callback(file);
 		
 		// Clear caches
 		dir_info = {};
