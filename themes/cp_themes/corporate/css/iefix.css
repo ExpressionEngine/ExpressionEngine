@@ -50,7 +50,7 @@ div.search {
 	zoom: 1; 
 }
 
-.submit.upload_file {
+.submit.upload_file, .submit.create_new_upload_pref, .submit.create_new_wm_pref {
 	margin-top: -28px;
 }
 
