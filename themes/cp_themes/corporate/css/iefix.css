@@ -43,3 +43,26 @@ img#hideToolbarImg {
 div.search {
 	width: 210px;
 }
+
+/* File Manager */
+
+#file_upload_iframe .upload_rename span.extension {
+	zoom: 1; 
+}
+
+.submit.upload_file {
+	margin-top: -28px;
+}
+
+table.mainTable th {
+	background:	#59656d;
+}
+
+table.mainTable th.headerSortUp {
+	background:			#74848e url('../images/table_sort_desc.gif') top right no-repeat !important;
+}
+
+table.mainTable th.headerSortDown {
+	background:			#74848e url('../images/table_sort_asc.gif') top right no-repeat  !important;
+}
+
