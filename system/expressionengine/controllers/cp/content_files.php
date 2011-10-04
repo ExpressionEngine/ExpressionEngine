@@ -170,23 +170,25 @@ class Content_files extends CI_Controller {
 		foreach ($this->_upload_dirs as $k => $dir)
 		{
 			$upload_dirs_options[$dir['id']] = $dir['name'];
-			$allowed_dirs[] = $k;
 		}
 		
 		$selected_dir = ($selected_dir = $this->input->get_post('dir_id')) ? $selected_dir : NULL;
-
+		
 		// We need this for the filter, so grab it now
 		$cat_form_array = $this->api_channel_categories->category_form_tree($this->nest_categories);
-
+		
 		// If we have directories we'll write the JavaScript menu switching code
 		if (count($allowed_dirs) > 0)
 		{
 			$this->filtering_menus($cat_form_array);
 		}
+		
+		// Figure out default category groups
+		$category_groups = $this->file_upload_preferences_model->get_category_groups($allowed_dirs);
 
 		// Cat filter
-		$cat_group = isset($get_post['cat_id']) ? $get_post['cat_id'] : NULL;
-		$category_options = $this->category_filter_options($cat_group, $cat_form_array, count($allowed_dirs));
+		$cat_group = (isset($get_post['cat_id']) AND ! empty($get_post['cat_id'])) ? $get_post['cat_id'] : implode('|', $category_groups);
+		$category_options = $this->category_filter_options($cat_group, $cat_form_array, $allowed_dirs);
 
 		// Date range pull-down menu
 		$date_selected = $get_post['date_range'];
@@ -590,17 +592,20 @@ class Content_files extends CI_Controller {
 	 *
 	 * @param
 	 */
-	function category_filter_options($cat_group, $cat_form_array, $total_dirs)
+	function category_filter_options($cat_group, $cat_form_array, $allowed_dirs)
 	{
 		$category_select_options[''] = lang('filter_by_category');
 
-		if ($total_dirs > 1)
+		// If there's more than one directory, make sure all categories is an option
+		if (count($allowed_dirs) > 1)
 		{
 			$category_select_options['all'] = lang('all');
 		}
 
+		// Also make sure none is an option as well
 		$category_select_options['none'] = lang('none');
-
+		
+		// Check and see if we're filtering on a category group
 		if ($cat_group != '')
 		{
 			foreach($cat_form_array as $key => $val)
@@ -612,23 +617,22 @@ class Content_files extends CI_Controller {
 			}
 
 			$i = 1;
-			$new_array = array();
 
 			foreach ($cat_form_array as $ckey => $cat)
 			{
-		    	if ($ckey - 1 < 0 OR ! isset($cat_form_array[$ckey - 1]))
-    		   	{
+				if ($ckey - 1 < 0 OR ! isset($cat_form_array[$ckey - 1]))
+				{
 					$category_select_options['NULL_'.$i] = '-------';
-            	}
+				}
 
 				$category_select_options[$cat[1]] = (str_replace("!-!","&nbsp;", $cat[2]));
 
-            	if (isset($cat_form_array[$ckey + 1]) && $cat_form_array[$ckey + 1][0] != $cat[0])
-	        	{
+				if (isset($cat_form_array[$ckey + 1]) && $cat_form_array[$ckey + 1][0] != $cat[0])
+				{
 					$category_select_options['NULL_'.$i] = '-------';
-       			}
+				}
 
-       			$i++;
+				$i++;
 			}
 		}
 
