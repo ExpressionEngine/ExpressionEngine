@@ -59,10 +59,10 @@ table.mainTable th {
 }
 
 table.mainTable th.headerSortUp {
-	background:			#74848e url('../images/table_sort_desc.gif') top right no-repeat !important;
+	background:			#74848e url('../images/table_sort_desc.gif') top right no-repeat;
 }
 
 table.mainTable th.headerSortDown {
-	background:			#74848e url('../images/table_sort_asc.gif') top right no-repeat  !important;
+	background:			#74848e url('../images/table_sort_asc.gif') top right no-repeat;
 }
 

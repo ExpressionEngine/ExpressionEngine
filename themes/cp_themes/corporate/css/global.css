@@ -306,7 +306,7 @@ ul.bulleted {
 }
 
 
-input.submit, button.submit, a.submit, a.submit_alt {
+input[type=submit], input.submit, button.submit, a.submit, a.submit_alt {
 	background: 		#80a210;
 	background: 		-webkit-gradient(linear, left top, left bottom, from(#a7b63e), to(#879e2e));
 	background: 		-moz-linear-gradient(top,  #a7b63e,  #879e2e);	
@@ -393,6 +393,15 @@ button span {
 	position: relative;
 	display: block; 
 	white-space: nowrap;	
+}
+
+.disabled-btn,
+input.disabled-btn{
+	background: #CED8DF;
+	border: 0;
+	color: #B0BEC7;
+	cursor: not-allowed;
+	padding: 5px 9px;
 }
 
 @media screen and (-webkit-min-device-pixel-ratio:0) {
