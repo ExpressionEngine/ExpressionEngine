@@ -38,6 +38,8 @@ class Members extends CI_Controller {
 	{
 		parent::__construct();
 		
+		$this->perpage = $this->config->item('memberlist_row_limit');
+		
 		if ( ! $this->cp->allowed_group('can_access_members'))
 		{
 			show_error(lang('unauthorized_access'));
@@ -362,7 +364,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			"fnServerData": fnDataTablesPipeline
 	} );
 
-		$("#member_name").bind("keyup blur paste", function (e) {
+		$("#member_name").bind("keydown blur paste", function (e) {
 		/* Filter on the column (the index) of this element */
     	setTimeout(function(){oTable.fnDraw();}, 1);
 		});
@@ -513,7 +515,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 				// - a value within single quotes
 				// - a value without spaces
 				
-				if (preg_match('/'.$token.'\:((?:"(.*?)")|(?:\'(.*?)\')|(?:[^\s:]+?))(?:\s|$)/', $search_string, $matches))
+				if (preg_match('/'.$token.'\:((?:"(.*?)")|(?:\'(.*?)\')|(?:[^\s:]+?))(?:\s|$)/i', $search_string, $matches))
 				{
 					// The last item within matches is what we want
 					$search_array[$token] = end($matches);

@@ -79,11 +79,23 @@ class EE_Config Extends CI_Config {
 		{
 			$this->set_item($key, $val);
 		}
+				
 		unset($config);
 
 		// Set any config overrides.  These are the items that used to be in 
 		// the path.php file, which are now located in the main index file
 		global $assign_to_config;
+		
+		
+		// Override enable_query_strings to always be false on the frontend.
+		// We need this to get the pagination library to behave. ACT and CSS
+		// query strings are handled by EE_Input::_sanitize_global
+
+		if ( ! defined('REQ') OR REQ != 'CP')
+		{
+			$assign_to_config['enable_query_strings'] = FALSE;
+		}
+		
 		$this->_set_overrides($assign_to_config);
 		
 		// Freelancer version?
