@@ -128,8 +128,10 @@ class Member_auth extends Member {
 		// Check password lockout status
 		if (TRUE === $this->EE->session->check_password_lockout($username))
 		{
+			$this->EE->lang->loadfile('login');
+			
 			$line = lang('password_lockout_in_effect');
-			$line = str_replace("%x", $this->EE->config->item('password_lockout_interval'), $line);
+			$line = sprintf($line, $this->EE->config->item('password_lockout_interval'));
 
 			$this->EE->output->show_user_error('general', $line);
 		}
