@@ -87,13 +87,27 @@ class EE_Config Extends CI_Config {
 		global $assign_to_config;
 		
 		
-		// Override enable_query_strings to always be false on the frontend.
-		// We need this to get the pagination library to behave. ACT and CSS
-		// query strings are handled by EE_Input::_sanitize_global
-
+		// Override enable_query_strings to always be false on the frontend
+		// and true on the backend. We need this to get the pagination library
+		// to behave. ACT and CSS get special treatment (see EE_Input::_sanitize_global)
+		
+		$assign_to_config['enable_query_strings'] = FALSE;
+		
+		// CP?
+		if (defined('REQ') && REQ == 'CP')
+		{
+			$assign_to_config['enable_query_strings'] = TRUE;
+		}
+		
+		// ACT exception
+		if (isset($_GET['ACT']) && preg_match("/^(\w)+$/i", $_GET['ACT']))
+		{
+			$assign_to_config['enable_query_strings'] = TRUE;
+		}
+		
+		
 		if ( ! defined('REQ') OR REQ != 'CP')
 		{
-			$assign_to_config['enable_query_strings'] = FALSE;
 		}
 		else
 		{
