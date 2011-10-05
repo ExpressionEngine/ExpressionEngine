@@ -143,10 +143,11 @@ class EE_Input extends CI_Input {
 	// --------------------------------------------------------------------
 	
 	/**
-	 * Extend _sanitize_globals to allow ACT and css
+	 * Extend _sanitize_globals to allow css
 	 *
-	 * For action requests we need to fully allow GET variables. For css,
-	 * we only need that one.
+	 * For action requests we need to fully allow GET variables, so we set
+	 * an exception in EE_Config. For css, we only need that one and it's a
+	 * path, so we'll do some stricter cleaning.
 	 *
 	 * @param	string
 	 * @return	string
@@ -155,16 +156,11 @@ class EE_Input extends CI_Input {
 	{
 		$_css = $this->get('css');
 		
-		if ($this->get('ACT'))
-		{
-			$this->_allow_get_array = TRUE;
-		}
-		
 		parent::_sanitize_globals();
 		
 		if ($_css)
 		{
-			$_GET['css'] = $_css;
+			$_GET['css'] = remove_invisible_characters($_css);
 		}
 	}
 	

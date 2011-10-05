@@ -115,7 +115,6 @@
  *  Mandatory config overrides
  * --------------------------------------------------------------------
  */
-	$assign_to_config['enable_query_strings'] = TRUE;
 	$assign_to_config['subclass_prefix'] = 'EE_';
 
 /*
