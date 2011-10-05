@@ -1287,8 +1287,8 @@ class EE_Session {
 		$u_item = $this->EE->config->item('user_session_ttl');
 		$cp_item = $this->EE->config->item('cp_session_ttl');
 
-		$this->cpan_session_len = ($cp_item) ? $cp_item : $this->cpan_session_len;
-		$this->user_session_len = ($u_item) ? $u_item : $this->user_session_len;
+		$this->cpan_session_len = ($cp_item !== FALSE) ? $cp_item : $this->cpan_session_len;
+		$this->user_session_len = ($u_item !== FALSE) ? $u_item : $this->user_session_len;
 		
 		return (REQ == 'CP') ? $this->cpan_session_len : $this->user_session_len;
 	}
