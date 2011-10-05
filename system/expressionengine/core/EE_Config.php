@@ -105,14 +105,18 @@ class EE_Config Extends CI_Config {
 			$assign_to_config['enable_query_strings'] = TRUE;
 		}
 		
-		
-		if ( ! defined('REQ') OR REQ != 'CP')
+		// URL exception
+		if (isset($_GET['URL']) && $_GET['URL'])
 		{
-		}
-		else
-		{
+			// no other get values allowed
+			$_url = $_GET['URL'];
+			$_GET = array();
+			$_GET['URL'] = $_url;
+			unset($_url);
+			
 			$assign_to_config['enable_query_strings'] = TRUE;
 		}
+
 		
 		$this->_set_overrides($assign_to_config);
 		
