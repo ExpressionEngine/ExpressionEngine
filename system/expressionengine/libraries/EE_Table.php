@@ -5,9 +5,11 @@
  *
  * 1. Name your columns and set their sorting properties:
  *
- * $this->table->set_columns(array('id' => FALSE, 'name' => TRUE)); // @todo sorting datatype? (bit of a pain to let them pick, must work in js and mysql, maybe just ask them what sql will sort on)
- * 
+ * $this->table->set_columns(array('id' => FALSE, 'name' => TRUE));
+ *
+ * @todo sorting datatype? (bit of a pain to let them pick, must work in js and mysql, maybe just ask them what sql will sort on)
  * @todo if you just need non-ajax sorting, should be done here.
+ * @todo allow Wes's tokens? 	'entry_id' => array('filter' => TRUE, 'token' => TRUE, 'alias' => 'id')
  * 
  * 
  * 2. Define a function in your controller that will act as the datasource.
@@ -198,7 +200,7 @@ class EE_Table extends CI_Table {
 		
 		// make sure we add a jq template
 		$this->jq_template = TRUE;
-				
+		
 		// remove the key information from the row data to make it usable
 		// by the CI generate function. Unfortunately that means reordering
 		// to match our columns. Easy enough, simply overwrite the booleans.
@@ -262,7 +264,7 @@ class EE_Table extends CI_Table {
 		{
 			$temp = $this->template['row_'.$k.'start'];
 
-			foreach($this->column_config as $column => $sort)
+			foreach($this->column_config as $column => $conf)
 			{
 				$temp .= $this->template['cell_'.$k.'start'];
 				$temp .= '{{'.$column.'}}';

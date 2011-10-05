@@ -399,14 +399,14 @@ class Content_edit extends CI_Controller {
 		$this->load->library('table');
 		
 		$columns = array(
-			'entry_id'		=> TRUE,
-			'title'			=> TRUE,
+			'entry_id'		=> array('filter' => TRUE),
+			'title'			=> array('filter' => TRUE),
 			'view'			=> FALSE,
-			'comment_total'	=> TRUE,
-			'screen_name'	=> TRUE,
-			'entry_date'	=> TRUE,
-			'channel_name'	=> TRUE,
-			'status'		=> TRUE,
+			'comment_total'	=> array('filter' => TRUE),
+			'screen_name'	=> array('filter' => TRUE),
+			'entry_date'	=> array('filter' => TRUE),
+			'channel_name'	=> array('filter' => TRUE),
+			'status'		=> array('filter' => TRUE),
 			'_check'		=> FALSE
 		);
 		
@@ -444,6 +444,7 @@ class Content_edit extends CI_Controller {
 		
 		$filter_data = $vars['filter_data'];
 		unset($vars['filter_data']);
+		
 		
 		// Set up Pagination
 		// ----------------------------------------------------------------
