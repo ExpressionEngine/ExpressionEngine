@@ -38,6 +38,8 @@ class Members extends CI_Controller {
 	{
 		parent::__construct();
 		
+		$this->perpage = $this->config->item('memberlist_row_limit');
+		
 		if ( ! $this->cp->allowed_group('can_access_members'))
 		{
 			show_error(lang('unauthorized_access'));
