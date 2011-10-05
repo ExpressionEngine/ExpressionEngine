@@ -156,8 +156,7 @@ class File_model extends CI_Model {
 		}
 		
 		$return_data['results'] = $this->db->get('files');
-
-		$this->db->flush_cache();
+		//$this->db->flush_cache();
 		
 		return $return_data;
 	}
