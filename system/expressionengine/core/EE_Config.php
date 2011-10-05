@@ -95,6 +95,10 @@ class EE_Config Extends CI_Config {
 		{
 			$assign_to_config['enable_query_strings'] = FALSE;
 		}
+		else
+		{
+			$assign_to_config['enable_query_strings'] = TRUE;
+		}
 		
 		$this->_set_overrides($assign_to_config);
 		
