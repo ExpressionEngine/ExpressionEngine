@@ -409,8 +409,8 @@ $lang = array(
 'invalid_directory' =>
 'You specified an invalid directory',
 
-'file_security_failure' =>
-'File could not be uploaded because of a security failure',
+'security_failure' =>
+'The file type you are attempting to upload is not allowed.',
 
 'thumb_not_created' =>
 'Thumbnail could not be created for the image. Please make sure the thumbnail directory is writable.',
