@@ -1656,13 +1656,21 @@ BSH;
 						// if so we add that row's primary key to $dst_dates
 						if ($query->num_rows() > 0)
 						{
-							$dst_dates = array();
+							$dst_add = array();
+							$dst_subtract = array();
+							$dst_now = (boolean) date('I');
 
 							foreach ($query->result_array() as $row)
 							{
-								if (date('I', $row[$field]) == 1)
+								if ($row[$field] != 0 AND $dst_now AND date('I', $row[$field]) == 0)
 								{
-									$dst_dates[] = $row[$table_keys[$table]];
+									// Needs to subtract 3600
+									$dst_subtract[] = $row[$table_keys[$table]];
+								}
+								elseif ($row[$field] != 0 AND ! $dst_now AND date('I', $row[$field]) == 1)
+								{
+									// Needs to add 3600
+									$dst_add[] = $row[$table_keys[$table]];
 								}
 							}
 
