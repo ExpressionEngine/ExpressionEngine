@@ -805,9 +805,10 @@ class Content_edit extends CI_Controller {
 		$total = $filtered_entries['total_count'];
 		$query_results = $filtered_entries['results'];
 
+		$this->db->where('site_id', $this->config->item('site_id'));
 		$j_response['sEcho'] = $sEcho;
-		$j_response['iTotalRecords'] = $this->db->count_all('channel_titles');  
-		$j_response['iTotalDisplayRecords'] = $total;		
+		$j_response['iTotalRecords'] = $this->db->count_all_results('channel_titles');
+		$j_response['iTotalDisplayRecords'] = $total;
 		
 		
 		// --------------------------------------------
