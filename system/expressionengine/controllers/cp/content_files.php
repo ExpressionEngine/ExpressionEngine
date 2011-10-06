@@ -127,7 +127,7 @@ class Content_files extends CI_Controller {
 		
 		$no_files_message = sprintf(
 			lang('no_uploaded_files'), 
-			'http://expressionengine.com/user_guide/cp/content/files/sync_files.html',
+			$this->cp->masked_url('http://expressionengine.com/user_guide/cp/content/files/sync_files.html'),
 			BASE.AMP.'C=content_files'.AMP.'M=file_upload_preferences'
 		);
 
