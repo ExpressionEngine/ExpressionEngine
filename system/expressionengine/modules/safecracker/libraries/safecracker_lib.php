@@ -1801,7 +1801,10 @@ class Safecracker_lib
 			if ($category_info[5] > 1) {
 				$category_info[1] = str_repeat(NBS.NBS.NBS.NBS, $category_info[5] - 1) . $category_info[1];
 			}
-			
+
+			$selected = ($category_info[4] === TRUE) ? ' selected="selected"' : '';
+			$checked = ($category_info[4] === TRUE) ? ' checked="checked"' : '';
+
 			// Translate response from API to something parse variables can understand
 			$categories[$category_id] = array(
 				'category_id' => $category_info[0],
@@ -1811,8 +1814,8 @@ class Safecracker_lib
 				'category_parent' => $category_info[6],
 				'category_depth' => $category_info[5],
 
-				'selected' => $category_info[4],
-				'checked' => $category_info[4]
+				'selected' => $selected,
+				'checked' => $checked
 			);
 		}
 		
