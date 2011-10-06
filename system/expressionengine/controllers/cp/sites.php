@@ -254,6 +254,7 @@ class Sites extends CI_Controller {
 		
 		$this->load->model('site_model');
 		$this->load->helper(array('form', 'snippets'));
+		$this->lang->loadfile('filemanager');
 		
 		$values = array('site_id'					=> '',
 						'site_label'				=> '',
