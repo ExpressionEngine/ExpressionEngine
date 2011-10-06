@@ -10735,7 +10735,7 @@ class Forum_Core extends Forum {
 		}
 		
 		
-		$path = $this->EE->config->slash_item('emoticon_path');
+		$path = $this->EE->config->slash_item('emoticon_url');
 				
 		ob_start();
 		?>			 

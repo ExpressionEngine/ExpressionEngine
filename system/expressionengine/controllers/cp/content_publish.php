@@ -2457,7 +2457,7 @@ class Content_publish extends CI_Controller {
 				'<table style="text-align: center; margin-top: 5px;" class="mainTable padTable smileyTable">'
 		));
 
-		$image_array = get_clickable_smileys($this->config->slash_item('emoticon_path'), 
+		$image_array = get_clickable_smileys($this->config->slash_item('emoticon_url'), 
 											 $field_name);
 		$col_array = $this->table->make_columns($image_array, 8);
 		$smilies = '<div class="smileyContent" style="display: none;">';

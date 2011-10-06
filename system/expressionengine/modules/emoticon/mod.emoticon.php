@@ -66,7 +66,7 @@ class Emoticon {
 		}
 
 
-		$path = $this->EE->config->slash_item('emoticon_path');
+		$path = $this->EE->config->slash_item('emoticon_url');
 
 		$columns  = ( ! $this->EE->TMPL->fetch_param('columns'))  ? '4' : $this->EE->TMPL->fetch_param('columns');
 

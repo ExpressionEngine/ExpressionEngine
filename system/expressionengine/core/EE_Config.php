@@ -502,7 +502,7 @@ class EE_Config Extends CI_Config {
 								'ban_message',
 								'ban_destination',
 								'enable_emoticons',
-								'emoticon_path',
+								'emoticon_url',
 								'recount_batch_total',
 								'new_version_check',
 								'enable_throttling',
