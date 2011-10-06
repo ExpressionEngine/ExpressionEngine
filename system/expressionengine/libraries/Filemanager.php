@@ -1682,6 +1682,12 @@ class Filemanager {
 				'offset' => $offset
 			)
 		);
+
+		if ($files['results'] === FALSE)
+		{
+			return array();
+		}
+
 		$files = $files['results']->result_array();
 
 		foreach ($files as &$file)

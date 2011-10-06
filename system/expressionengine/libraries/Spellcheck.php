@@ -1160,7 +1160,7 @@ EOT;
 		
 		if (REQ == 'CP')
 		{
-			$header .= "<link rel='stylesheet' href='".BASE.AMP."C=css".AMP."M=spellcheck_frame' type='text/css' media='screen' />\n";			
+			$header .= $this->view->head_link('css/spellcheck_frame.css');			
 		}
 		else
 		{

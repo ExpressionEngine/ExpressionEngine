@@ -994,6 +994,9 @@ class Safecracker_lib
 		//add datepicker class
 		if ($this->datepicker)
 		{
+			$date_fmt = $this->EE->session->userdata('time_format');
+			$date_fmt = $date_fmt ? $date_fmt : $this->EE->config->item('time_format');
+
 			$this->head .= '<style type="text/css">.hasDatepicker{background:#fff url('.$this->EE->config->item('theme_folder_url').'cp_themes/default/images/calendar_bg.gif) no-repeat 98% 2px;background-repeat:no-repeat;background-position:99%;}</style>';
 			$this->head .= trim('
 				<script type="text/javascript">
@@ -1002,7 +1005,7 @@ class Safecracker_lib
 						hours = date.getHours();
 						minutes = date.getMinutes();
 						suffix = "";
-						format = "' . $this->EE->config->item('time_format') . '";
+						format = "'.$date_fmt.'";
 					
 						if (minutes < 10) {
 							minutes = "0" + minutes;

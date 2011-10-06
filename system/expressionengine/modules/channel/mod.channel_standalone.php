@@ -2356,7 +2356,7 @@ class Channel_standalone extends Channel {
 			$this->EE->load->library('table');
 			
 			$output .= '<a href="#" id="smiley_link_'.$row['field_id'].'" class="smiley_link" title="'.lang('emotions').'">'.lang('emotions').'</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
-			$image_array = get_clickable_smileys($path = $this->EE->config->slash_item('emoticon_path'), 'field_id_'.$row['field_id']);
+			$image_array = get_clickable_smileys($path = $this->EE->config->slash_item('emoticon_url'), 'field_id_'.$row['field_id']);
 			$col_array = $this->EE->table->make_columns($image_array, 8);
 			$output .= '<div id="smiley_table_'.$row['field_id'].'" class="smileyContent" style="display: none;">'.$this->EE->table->generate($col_array).'</div>';
 			$this->EE->table->clear(); // clear out tables for the next smiley

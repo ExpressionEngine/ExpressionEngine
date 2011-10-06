@@ -13,6 +13,7 @@
 (function($) {
 	
 	var file_uploader,
+		original_upload_html,
 		settings,
 		current_file,
 		delete_file = true;
@@ -87,6 +88,10 @@
 				// Disable upload file button
 				$.ee_fileuploader.reset_upload();
 				
+				// Save original contents for reset on close
+				if (original_upload_html == undefined) {
+					original_upload_html = file_uploader.html();
+				}
 				// Call open callback
 				if (typeof settings.open == 'function') {
 					settings.open.call(this, file_uploader);
@@ -117,6 +122,8 @@
 						settings.close.call(this, file_uploader, current_file);
 					};
 				};
+
+				file_uploader.html(original_upload_html);
 			}
 		});
 		

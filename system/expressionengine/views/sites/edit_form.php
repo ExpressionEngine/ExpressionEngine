@@ -51,14 +51,14 @@ if ($EE_view_disable !== TRUE)
 			<?php if($values['site_id'] == ''): ?>
 			
 			<tr>
-				<td colspan="2"><strong><?=lang('move_data')?></strong></td>
+				<th colspan="2"><strong><?=lang('move_data')?></strong></th>
 			</tr>
 			<tr>
 				<td colspan="2" class="notice"><?=lang('timeout_warning')?></td>
 			</tr>
 			<tr>
-				<td><?=lang('channels')?></td>
-				<td><?=lang('move_options')?></td>
+				<th><?=lang('channels')?></th>
+				<th><?=lang('move_options')?></th>
 			</tr>
 			
 			<?php foreach($channels->result() as $channel):?>
@@ -73,8 +73,8 @@ if ($EE_view_disable !== TRUE)
 			<?php endforeach;?>
 			
 			<tr>
-				<td><?=lang('file_upload_preferences')?></td>
-				<td><?=lang('move_options')?></td>
+				<th><?=lang('file_upload_preferences')?></th>
+				<th><?=lang('move_options')?></th>
 			</tr>
 			
 			<?php foreach($upload_directories->result() as $upload):?>
@@ -89,8 +89,8 @@ if ($EE_view_disable !== TRUE)
 			<?php endforeach;?>
 
 			<tr>
-				<td><?=lang('template_groups')?></td>
-				<td><?=lang('move_options')?></td>
+				<th><?=lang('template_groups')?></th>
+				<th><?=lang('move_options')?></th>
 			</tr>
 			
 			<?php foreach($template_groups->result() as $group):?>
@@ -105,8 +105,8 @@ if ($EE_view_disable !== TRUE)
 			<?php endforeach;?>
 
 			<tr>
-				<td><?=lang('design').NBS.'-'.NBS.lang('global_variables')?></td>
-				<td><?=lang('move_options')?></td>
+				<th><?=lang('design').NBS.'-'.NBS.lang('global_variables')?></th>
+				<th><?=lang('move_options')?></th>
 			</tr>
 			
 			<?php foreach($global_variables->result() as $row):?>
