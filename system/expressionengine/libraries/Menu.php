@@ -802,15 +802,19 @@ class EE_Menu {
 
 		$help_map = array(
 			'addons_accessories'	=> 'cp/add-ons/accessory_manager.html',
-			
 			'addons_extensions'		=> 'cp/add-ons/extension_manager.html',
-			
 			'addons_modules'		=> 'cp/add-ons/module_manager.html',
-			
 			'addons_plugins'		=> 'cp/add-ons/plugin_manager.html',
-			
-			'addons'				=> 'cp/add-ons/index.html',
-			
+
+			'addons'				=> array(
+				'index'								=> 'cp/add-ons/index.html',
+				'modules'							=> 'cp/add-ons/module_manager.html',
+				'accessories'						=> 'cp/add-ons/accessory_manager.html',
+				'extensions'						=> 'cp/add-ons/extension_manager.html',
+				'fieldtypes'						=> 'cp/add-ons/fieldtype_manager.html',
+				'plugins'							=> 'cp/add-ons/plugin_manager.html'
+			),
+						
 			'admin_content'			=> array(
 				'index'								=> 'cp/admin/content_admin/index.html',
 				'category_edit'						=> 'cp/admin/content_admin/category_create.html',
@@ -890,10 +894,9 @@ class EE_Menu {
 				'manager'						=> 'cp/design/templates/templates.html',
 				'snippets'						=> 'cp/design/templates/snippets.html',
 				
-				'email_notification'			=> 'cp/design/specialty_templates/index.html',
-				'edit_email_notification'		=> 'cp/design/specialty_templates/index.html',
-				'user_message'					=> 'cp/design/specialty_templates/index.html',
-				'system_offline'				=> 'cp/design/specialty_templates/index.html',
+				'email_notification'			=> 'cp/design/message_pages/index.html',
+				'user_message'					=> 'cp/design/message_pages/index.html',
+				'system_offline'				=> 'cp/design/message_pages/index.html',
 				
 				'member_profile_templates'		=> 'cp/design/themes/member_profile_templates.html',
 				'list_profile_templates'		=> 'cp/design/themes/member_profile_templates.html',
