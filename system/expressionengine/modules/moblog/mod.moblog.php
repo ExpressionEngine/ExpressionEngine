@@ -1934,15 +1934,15 @@ class Moblog {
 				$ext = trim(strrchr($filename, '.'), '.');
 				$is_image = FALSE; // This is needed for XSS cleaning
 				
-				if (in_array($ext, $this->movie)) // Movies
+				if (in_array(strtolower($ext), $this->movie)) // Movies
 				{
 					$this->post_data['movie'][] = $filename;
 				}
-				elseif (in_array($ext, $this->audio)) // Audio
+				elseif (in_array(strtolower($ext), $this->audio)) // Audio
 				{
 					$this->post_data['audio'][] = $filename;
 				}
-				elseif (in_array($ext, $this->image)) // Images
+				elseif (in_array(strtolower($ext), $this->image)) // Images
 				{
 					$this->post_data['images'][] = $filename;
 
@@ -1952,7 +1952,7 @@ class Moblog {
 					
 					$is_image = TRUE;
 				}
-				elseif (in_array($ext, $this->files)) // Files
+				elseif (in_array(strtolower($ext), $this->files)) // Files
 				{
 					$this->post_data['files'][] = $filename;
 				}
