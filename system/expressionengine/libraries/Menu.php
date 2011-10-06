@@ -886,21 +886,30 @@ class EE_Menu {
 			'design'				=> array(
 				'index'							=> 'cp/design/templates/index.html',
 				'edit_template'					=> 'cp/design/templates/edit_template.html',
+				'template_preferences'			=> 'cp/design/templates/template_preferences_manager.html',
+				'template_preferences_manager'	=> 'cp/design/templates/template_preferences_manager.html',
 				'global_template_preferences'	=> 'cp/design/templates/global_template_preferences.html',
+				'global_preferences'			=> 'cp/design/templates/global_template_preferences.html',
 				'global_variables'				=> 'cp/design/templates/global_variables.html',
 				'manager'						=> 'cp/design/templates/index.html',
 				'new_template_group'			=> 'cp/design/templates/new_template_group.html',
 				'new_template'					=> 'cp/design/templates/new_template.html',
 				'manager'						=> 'cp/design/templates/templates.html',
+				'template_manager'				=> 'cp/design/templates/templates.html',
 				'snippets'						=> 'cp/design/templates/snippets.html',
+				'sync_templates'				=> 'cp/design/templates/synchronize_templates.html',
 				
 				'email_notification'			=> 'cp/design/message_pages/index.html',
 				'user_message'					=> 'cp/design/message_pages/index.html',
 				'system_offline'				=> 'cp/design/message_pages/index.html',
+				'offline_template'				=> 'cp/design/message_pages/index.html',
 				
 				'member_profile_templates'		=> 'cp/design/themes/member_profile_templates.html',
 				'list_profile_templates'		=> 'cp/design/themes/member_profile_templates.html',
 				'edit_profile_template'			=> 'cp/design/themes/member_profile_templates.html',
+
+				'forum_themes'					=> 'modules/forum/forum_themes.html',
+				'wiki_themes'					=> 'modules/wiki/wiki_templates.html',
 			),
 			
 			'help'					=> '',
