@@ -914,15 +914,20 @@ class EE_Menu {
 			'members'				=> array(
 				'index'					=> 'cp/members/index.html',
 				'new_member_form'		=> 'cp/members/new_member_registration.html',
+				'register_member'		=> 'cp/members/new_member_registration.html',
 				'member_banning'		=> 'cp/members/user_banning.html',
+				'user_banning'			=> 'cp/members/user_banning.html',
 				'member_validation'		=> 'cp/members/activate_pending_members.html',
+				'activate_pending_members'	=> 'cp/members/activate_pending_members.html',
 				'member_group_manager'	=> 'cp/members/member_groups.html',
+				'member_groups'			=> 'cp/members/member_groups.html',
 				'edit_member_group'		=> 'cp/members/member_groups_edit.html',
 				'custom_profile_fields'	=> 'cp/members/custom_member_fields.html',
+				'custom_member_fields'	=> 'cp/members/custom_member_fields.html',
 				'edit_profile_field'	=> 'cp/members/custom_profile_fields_edit.html',
 				'member_config'			=> 'cp/members/membership_preferences.html',
 				'view_all_members'		=> 'cp/members/view_members.html',
-				'ip_search'				=> 'cp/members/index.html'
+				'ip_search'				=> 'cp/members/ip_search.html'
 			),
 			
 			'myaccount'				=> 'cp/my_account/index.html',
