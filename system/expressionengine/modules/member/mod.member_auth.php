@@ -137,7 +137,6 @@ class Member_auth extends Member {
 		}
 
 		$success = '';
-		$sites	 = $this->EE->config->item('multi_login_sites');
 		
 		// Log me in.
 		if ($multi)
@@ -147,7 +146,8 @@ class Member_auth extends Member {
 			$success = '_build_multi_success_message';
 
 			$current_url = $this->EE->functions->fetch_site_index();
-			$current_idx = array_search($current_url, $sites_array);
+			$current_search_url = preg_replace('/\/S=.*$/', '', $current_url);
+			$current_idx = array_search($current_search_url, $sites_array);
 		}
 		else
 		{
@@ -156,7 +156,8 @@ class Member_auth extends Member {
 			$success = '_build_success_message';
 			
 			$current_url = $this->EE->functions->fetch_site_index();
-			$current_idx = array_search($current_url, $sites_array);
+			$current_search_url = preg_replace('/\/S=.*$/', '', $current_url);
+			$current_idx = array_search($current_search_url, $sites_array);
 		}
 		
 		// More sites?
@@ -364,7 +365,7 @@ class Member_auth extends Member {
 									  ->where('class', 'Member')
 									  ->where('method', 'member_login')
 									  ->get('actions');
-
+			
 			// next site
 			$next_qs = array(
 				'ACT'	=> $action_id->row('action_id'),
