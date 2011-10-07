@@ -1412,7 +1412,7 @@ class Content_files extends CI_Controller {
 							'dimensions'	=> $replace_sizes,
 							'mime_type'		=> $file['mime']
 						),
-						FALSE
+						FALSE	// Don't create thumb
 					);
 					
 					if ( ! $thumb_created)
@@ -1423,15 +1423,15 @@ class Content_files extends CI_Controller {
 
 				// Now for anything that wasn't forcably replaced- we make sure an image exists
 				$thumb_created = $this->filemanager->create_thumb(
-						$this->_upload_dirs[$id]['server_path'].$file['name'],
-						array(
-							'server_path'	=> $this->_upload_dirs[$id]['server_path'],
-							'file_name'		=> $file['name'],
-							'dimensions'	=> $missing_only_sizes,
-							'mime_type'		=> $file['mime']
-						),
-						TRUE,
-						TRUE
+					$this->_upload_dirs[$id]['server_path'].$file['name'],
+					array(
+						'server_path'	=> $this->_upload_dirs[$id]['server_path'],
+						'file_name'		=> $file['name'],
+						'dimensions'	=> $missing_only_sizes,
+						'mime_type'		=> $file['mime']
+					),
+					TRUE, 	// Create thumb
+					TRUE 	// Missing sizes only
 				);
 				
 				// Update dimensions
