@@ -127,7 +127,7 @@ class Content_files extends CI_Controller {
 		
 		$no_files_message = sprintf(
 			lang('no_uploaded_files'), 
-			'http://expressionengine.com/user_guide/cp/content/files/sync_files.html',
+			$this->cp->masked_url('http://expressionengine.com/user_guide/cp/content/files/sync_files.html'),
 			BASE.AMP.'C=content_files'.AMP.'M=file_upload_preferences'
 		);
 
@@ -177,18 +177,18 @@ class Content_files extends CI_Controller {
 		// We need this for the filter, so grab it now
 		$cat_form_array = $this->api_channel_categories->category_form_tree($this->nest_categories);
 		
-		// If we have directories we'll write the JavaScript menu switching code
-		if (count($allowed_dirs) > 0)
-		{
-			$this->filtering_menus($cat_form_array);
-		}
-		
 		// Figure out default category groups
 		$category_groups = $this->file_upload_preferences_model->get_category_groups($allowed_dirs);
 
 		// Cat filter
 		$cat_group = (isset($get_post['cat_id']) AND ! empty($get_post['cat_id'])) ? $get_post['cat_id'] : implode('|', $category_groups);
 		$category_options = $this->category_filter_options($cat_group, $cat_form_array, $allowed_dirs);
+		
+		// If we have directories we'll write the JavaScript menu switching code
+		if (count($allowed_dirs) > 0)
+		{
+			$this->filtering_menus($cat_form_array, $category_options);
+		}
 
 		// Date range pull-down menu
 		$date_selected = $get_post['date_range'];
@@ -648,7 +648,7 @@ class Content_files extends CI_Controller {
 	 * are used to switch the various pull-down menus in the
 	 * EDIT page
 	 */
-	public function filtering_menus($cat_form_array)
+	public function filtering_menus($cat_form_array, $category_options)
 	{
 		if ( ! $this->cp->allowed_group('can_access_content'))
 		{
@@ -664,13 +664,18 @@ class Content_files extends CI_Controller {
 			$dir_array[$id] = array(str_replace('"','',$this->_upload_dirs[$id]['name']), $this->_upload_dirs[$id]['cat_group']);
 		}
 
+
+		$no_directory_categories = array();
+		foreach ($category_options as $cat_id => $cat_name)
+		{
+			$no_directory_categories[] = array($cat_id, $cat_name);
+		}
+		$file_info[0]['categories'] = $no_directory_categories;
+		
 		$default_cats[] = array('', lang('filter_by_category'));
 		$default_cats[] = array('all', lang('all'));
 		$default_cats[] = array('none', lang('none'));
-
-
-		$file_info[0]['categories'] = $default_cats;
-
+		
 		foreach ($dir_array as $key => $val)
 		{
 			$any = 0;
@@ -1407,7 +1412,7 @@ class Content_files extends CI_Controller {
 							'dimensions'	=> $replace_sizes,
 							'mime_type'		=> $file['mime']
 						),
-						FALSE
+						FALSE	// Don't create thumb
 					);
 					
 					if ( ! $thumb_created)
@@ -1418,15 +1423,15 @@ class Content_files extends CI_Controller {
 
 				// Now for anything that wasn't forcably replaced- we make sure an image exists
 				$thumb_created = $this->filemanager->create_thumb(
-						$this->_upload_dirs[$id]['server_path'].$file['name'],
-						array(
-							'server_path'	=> $this->_upload_dirs[$id]['server_path'],
-							'file_name'		=> $file['name'],
-							'dimensions'	=> $missing_only_sizes,
-							'mime_type'		=> $file['mime']
-						),
-						TRUE,
-						TRUE
+					$this->_upload_dirs[$id]['server_path'].$file['name'],
+					array(
+						'server_path'	=> $this->_upload_dirs[$id]['server_path'],
+						'file_name'		=> $file['name'],
+						'dimensions'	=> $missing_only_sizes,
+						'mime_type'		=> $file['mime']
+					),
+					TRUE, 	// Create thumb
+					TRUE 	// Missing sizes only
 				);
 				
 				// Update dimensions

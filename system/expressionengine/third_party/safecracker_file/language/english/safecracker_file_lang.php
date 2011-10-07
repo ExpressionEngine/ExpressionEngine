@@ -26,7 +26,7 @@ $lang['upload_no_filepath'] = "The upload path does not appear to be valid.";
 $lang['upload_no_file_types'] = "You have not specified any allowed file types.";
 $lang['upload_bad_filename'] = "The file name you submitted already exists on the server.";
 $lang['upload_not_writable'] = "The upload destination folder does not appear to be writable.";
-
+$lang['upload_destination_does_not_exist'] = 'The selected Upload Directory for a SafeCracker File field no longer exists.';
 
 /* End of file lang.safecracker_file.php */
 /* Location: ./system/expressionengine/third_party/safecracker_file/language/english/lang.safecracker_file.php */

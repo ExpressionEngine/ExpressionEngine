@@ -46,6 +46,7 @@ class Updater {
 	public function do_update()
 	{
 		$this->_update_session_table();
+		$this->_fix_emoticon_config();
 				
 		return TRUE;
 	}
@@ -66,6 +67,21 @@ class Updater {
 		// Drop site_id
 		$this->EE->dbforge->drop_column('sessions', 'site_id');
     }
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Replaces emoticon_path in your config file with emoticon_url
+	 *
+	 * @return 	void
+	 */
+	private function _fix_emoticon_config()
+	{
+		if ($emoticon_url = $this->EE->config->item('emoticon_path'))
+		{
+			$this->EE->config->_update_config(array('emoticon_url' => $emoticon_url), array('emoticon_path' => ''));
+		}
+	}
 }   
 /* END CLASS */
 

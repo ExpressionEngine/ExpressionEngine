@@ -2428,7 +2428,7 @@ PAPAYA;
 						'ban_message'           		=>  'This site is currently unavailable',
 						'ban_destination'       		=>  'http://www.yahoo.com/',
 						'enable_emoticons'      		=>  'y',
-						'emoticon_path'         		=>  $this->userdata['site_url'].'images/smileys/',
+						'emoticon_url'					=>  $this->userdata['site_url'].'images/smileys/',
 						'recount_batch_total'   		=>  '1000',
 						'image_resize_protocol'			=>	'gd2',
 						'image_library_path'			=>	'',
@@ -2541,7 +2541,7 @@ PAPAYA;
 								'ban_message',
 								'ban_destination',
 								'enable_emoticons',
-								'emoticon_path',
+								'emoticon_url',
 								'recount_batch_total',
 // deprecated					'remap_pm_urls',  		// Get out of Channel Prefs
 // deprecated					'remap_pm_dest',		// Get out of Channel Prefs
