@@ -816,47 +816,49 @@ class EE_Menu {
 			),
 						
 			'admin_content'			=> array(
-				'index'								=> 'cp/admin/content_admin/index.html',
-				'category_edit'						=> 'cp/admin/content_admin/category_create.html',
-				'edit_category_group'				=> 'cp/admin/content_admin/category_create_group.html',
-				'category_editor'					=> 'cp/admin/content_admin/category_edit.html',
-				'category_custom_field_group_manager'	=> 'cp/admin/content_admin/category_field_management.html',
-				'category_management'				=>	'cp/admin/content_admin/category_management.html',
-				'channel_add'						=> 'cp/admin/content_admin/channel_create.html',
-				'channel_delete_confirm'			=> 'cp/admin/content_admin/channel_delete.html',
-				'channel_edit'						=> 'cp/admin/content_admin/channel_edit_preferences.html',
-				'channel_edit_group_assignments'	=> 'cp/admin/content_admin/channel_groups.html',
-				'channel_management'				=> 'cp/admin/content_admin/channel_management.html',
-				'edit_custom_category_field'		=> 'cp/admin/content_admin/category_field_edit.html',
-				'field_management'					=> 'cp/admin/content_admin/custom_channel_fields.html',
-				'field_group_management'			=> 'cp/admin/content_admin/custom_channel_fields.html',
-				'status_group_management'			=> 'cp/admin/content_admin/custom_entry_statuses.html',
-				'field_edit'						=> 'cp/admin/content_admin/custom_fields_edit.html',
-				'field_group_edit'					=> 'cp/admin/content_admin/custom_channel_fields.html',
-				'default_html_buttons'				=> 'cp/admin/content_admin/default_html_buttons.html',
-				'default_ping_servers'				=> 'cp/admin/content_admin/default_ping_servers.html',
-				'global_channel_preferences'		=> 'cp/admin/content_admin/global_channel_preferences.html',
-				'status_group_edit'					=> 'cp/admin/content_admin/statuses_edit.html',
-				'file_upload_preferences'			=> 'cp/admin/content_admin/file_upload_preferences.html',
-				'edit_upload_preferences'			=> 'cp/admin/content_admin/file_upload_preferences.html'
+				'index'								=> 'cp/admin/channels/index.html',
+				'category_edit'						=> 'cp/admin/channels/category_create.html',
+				'edit_category_group'				=> 'cp/admin/channels/category_create_group.html',
+				'category_editor'					=> 'cp/admin/channels/category_edit.html',
+				'category_custom_field_group_manager'	=> 'cp/admin/channels/category_field_management.html',
+				'category_management'				=>	'cp/admin/channels/category_management.html',
+				'channel_add'						=> 'cp/admin/channels/channel_create.html',
+				'channel_delete_confirm'			=> 'cp/admin/channels/channel_delete.html',
+				'channel_edit'						=> 'cp/admin/channels/channel_edit_preferences.html',
+				'channel_edit_group_assignments'	=> 'cp/admin/channels/channel_groups.html',
+				'channel_management'				=> 'cp/admin/channels/channel_management.html',
+				'channels'							=> 'cp/admin/channels/channel_management.html',
+				'edit_custom_category_field'		=> 'cp/admin/channels/category_field_edit.html',
+				'field_management'					=> 'cp/admin/channels/custom_channel_fields.html',
+				'field_group_management'			=> 'cp/admin/channels/custom_channel_fields.html',
+				'status_group_management'			=> 'cp/admin/channels/statuses.html',
+				'field_edit'						=> 'cp/admin/channels/custom_fields_edit.html',
+				'field_group_edit'					=> 'cp/admin/channels/custom_channel_fields.html',
+				'default_html_buttons'				=> 'cp/admin/default_html_buttons.html',
+				'default_ping_servers'				=> 'cp/admin/default_ping_servers.html',
+				'global_channel_preferences'		=> 'cp/admin/channels/global_channel_preferences.html',
+				'status_group_edit'					=> 'cp/admin/channels/statuses_edit.html',
+				'file_upload_preferences'			=> 'cp/admin/channels/file_upload_preferences.html',
+				'edit_upload_preferences'			=> 'cp/admin/channels/file_upload_preferences.html'
 			),
 			
 			'admin_system'			=> array(
-				'index'							=> 'cp/admin/system_admin/index.html',								
-				'captcha_preferences'			=> 'cp/admin/system_admin/captcha_preferences.html',
-				'database_settings'				=> 'cp/admin/system_admin/database_settings.html',
-				'cookie_settings'				=> 'cp/admin/system_admin/cookie_settings.html',
-				'email_configuration'			=> 'cp/admin/system_admin/email_configuration.html',
-				'emoticon_preferences'			=> 'cp/admin/system_admin/emoticon_preferences.html',
-				'general_configuration'			=> 'cp/admin/system_admin/general_configuration.html',
-				'image_resizing_preferences'	=> 'cp/admin/system_admin/image_resizing_preferences.html',
-				'localization_settings'			=> 'cp/admin/system_admin/localization_settings.html',
-				'output_debugging_preferences'	=> 'cp/admin/system_admin/output_and_debugging_preferences.html',
-				'search_log_configuration'		=> 'cp/admin/system_admin/search_log_preferences.html',
-				'security_session_preferences'	=> 'cp/admin/system_admin/security_settings.html',
-				'throttling_configuration'		=> 'cp/admin/system_admin/throttling_settings.html',
-				'tracking_preferences'			=> 'cp/admin/system_admin/tracking_preferences.html',
-				'word_censoring'				=> 'cp/admin/system_admin/word_censoring.html'
+				'index'							=> 'cp/admin/index.html',								
+				'captcha_preferences'			=> 'cp/admin/captcha_preferences.html',
+				'database_settings'				=> 'cp/admin/database_settings.html',
+				'cookie_settings'				=> 'cp/admin/cookie_settings.html',
+				'email_configuration'			=> 'cp/admin/email_configuration.html',
+				'emoticon_preferences'			=> 'cp/admin/emoticon_preferences.html',
+				'general_configuration'			=> 'cp/admin/general_configuration.html',
+				'image_resizing_preferences'	=> 'cp/admin/image_resizing_preferences.html',
+				'localization_settings'			=> 'cp/admin/localization_settings.html',
+				'output_debugging_preferences'	=> 'cp/admin/output_and_debugging_preferences.html',
+				'search_log_configuration'		=> 'cp/admin/search_log_preferences.html',
+				'config_editor'					=> 'cp/admin/config_editor.html',
+				'security_session_preferences'	=> 'cp/admin/security_settings.html',
+				'throttling_configuration'		=> 'cp/admin/throttling_settings.html',
+				'tracking_preferences'			=> 'cp/admin/tracking_preferences.html',
+				'word_censoring'				=> 'cp/admin/word_censoring.html'
 			),
 			
 			'admin'					=> 'cp/admin/index.html',
@@ -940,8 +942,29 @@ class EE_Menu {
 			),
 			
 			'myaccount'				=> 'cp/my_account/index.html',
+						
+			'content_files'			=> array(
+				'index'							=> 'cp/content/files/file_manager.html',
+				'file_manager'					=> 'cp/content/files/file_manager.html',
+				'edit_upload_preferences'		=> 'cp/content/files/file_upload_preferences.html',
+				'file_upload_preferences'		=> 'cp/content/files/file_upload_preferences.html',					
+				'watermark_preferences'			=> 'cp/content/files/watermark_preferences.html'
+			),
 			
+			'tools'					=> 'cp/tools/index.html',
 			'tools_communicate'		=> 'cp/tools/communicate.html',
+
+			'tools_utilities'		=> array(
+				'config_editor'				=> 'cp/tools/utilities/config_editor.html',
+				'import_utilities'			=> 'cp/tools/utilities/import_utilities.html',
+				'php_info'					=> 'cp/tools/utilities/php_info.html',
+				'translation_tool'			=> 'cp/tools/utilities/translation_utility.html',
+				'member_import'				=> 'cp/tools/utilities/member_import/index.html',
+				'pair_fields'				=> 'cp/tools/utilities/member_import/index.html',
+				'convert_from_delimited'	=> 'cp/tools/utilities/member_import/convert_to_xml.html',
+				'import_from_xml'			=> 'cp/tools/utilities/member_import/import_from_xml.html',
+				'confirm_xml_form'			=> 'cp/tools/utilities/member_import/import_from_xml.html'
+			),
 			
 			'tools_data'			=> array(
 				'index'					=> 'cp/tools/index.html',
@@ -956,17 +979,7 @@ class EE_Menu {
 				'sql_status'			=> 'cp/tools/data/sql_status_info.html',
 				'sql_system_vars'		=> 'cp/tools/data/sql_system_variables.html'
 			),
-			
-			'cp/tools/data/',
-			
-			'content_files'			=> array(
-				'index'							=> 'cp/content/files/file_manager.html',
-				'file_manager'					=> 'cp/content/files/file_manager.html',
-				'edit_upload_preferences'		=> 'cp/content/files/file_upload_preferences.html',
-				'file_upload_preferences'		=> 'cp/content/files/file_upload_preferences.html',					
-				'watermark_preferences'			=> 'cp/content/files/watermark_preferences.html'
-				),
-			
+
 			'tools_logs'			=> array(
 				'index'				=> 'cp/tools/index.html',
 				'view_cp_log'		=> 'cp/tools/logs/cp_log.html',
@@ -974,22 +987,6 @@ class EE_Menu {
 				'view_search_log'	=> 'cp/tools/logs/search_log.html',
 				'view_throttle_log'	=> 'cp/tools/logs/throttle_log.html',
 			),
-			
-			'tools_utilities'		=> array(
-				'index'						=> 'cp/tools/index.html',
-				'config_editor'				=> 'cp/tools/utilities/config_editor.html',
-				'import_utilities'			=> 'cp/tools/utilities/import_utilities.html',
-				'php_info'					=> 'cp/tools/utilities/php_info.html',
-				'translation_tool'			=> 'cp/tools/utilities/translation_utility.html',
-				'translate'					=> 'cp/tools/utilities/translation_utility.html',
-				'member_import'				=> 'cp/tools/utilities/member_import/index.html',
-				'pair_fields'				=> 'cp/tools/utilities/member_import/index.html',
-				'convert_from_delimited'	=> 'cp/tools/utilities/member_import/convert_to_xml.html',
-				'import_from_xml'			=> 'cp/tools/utilities/member_import/import_from_xml.html',
-				'confirm_xml_form'			=> 'cp/tools/utilities/member_import/import_from_xml.html'
-			),
-			
-			'tools'					=> 'cp/tools/index.html',
 
 			// Consider new doc pages specifically for the cp links
 			'sites'					=> array(
@@ -1009,7 +1006,7 @@ class EE_Menu {
 		// This usually happens on shared "landing pages"
 		if ($override == 'tools')
 		{
-			$help_map['tools'] = array_merge(array('tools_communicate'=>$help_map['tools_communicate']), $help_map['tools_data'], array($help_map['tools_logs'], $help_map['tools_utilities']));
+			$help_map['tools'] = array_merge(array('tools_communicate'=>$help_map['tools_communicate']), $help_map['tools_data'], $help_map['tools_logs'], $help_map['tools_utilities']);
 		}
 
 		if ($override == 'admin')
