@@ -475,7 +475,11 @@ EE.date_obj_time = (function() {
 		    date_obj_hours = ((date_obj_hours + 11) % 12) + 1;
 		}
 	}
-		
+	
+	if (date_obj_hours < 10) {
+		date_obj_hours = "0" + date_obj_hours;
+	}
+	
 	return " '" + date_obj_hours + ":" + date_obj_mins + date_obj_am_pm + "'";
 }());
 
