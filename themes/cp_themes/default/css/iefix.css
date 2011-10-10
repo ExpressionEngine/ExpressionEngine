@@ -127,7 +127,16 @@ div.search {
 	zoom: 1; 
 }
 
-.submit.upload_file, .submit.create_new_upload_pref, .submit.create_new_wm_pref {
+.submit.upload_file,
+.submit.create_new_upload_pref,
+.submit.create_new_wm_pref {
 	margin-top: -26px;
 	margin-right: 8px;
+}
+
+/* Write Mode */
+
+#write_mode_close_container .discard_changes,
+#write_mode_footer .discard_changes {
+	float:				none;
 }

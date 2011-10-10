@@ -3013,40 +3013,65 @@ label.hide_field {
 }
 
 /* Write Mode */
-.closeWindowButton {
-	cursor:				pointer;
+
+#write_mode_footer,
+#write_mode_close_container {
+	position:			relative;
+	margin:				8px 0 13px 0;
+	padding-left:		5px;
 }
 
-#write_mode_close_container .closeWindowButton, 
-.publish_to_field {
-	position: 			absolute;
-}
-
-#write_mode_close_container .closeWindowButton {
-	left: 				9px;
-	top: 				0px;
-}
-
+#write_mode_footer .discard_changes,
+#write_mode_footer .publish_to_field,
+#write_mode_close_container .discard_changes,
 #write_mode_close_container .publish_to_field {
-	left: 				30px;
-	top: 				1px;
+	float:				left;
+	margin-left:		10px;
+	font-size:			11px;
+	padding-top:		3px;
 }
 
-#write_mode_footer .publish_to_field {
-	left: 				30px;
+#write_mode_container .publish_to_field {
+	border:					1px solid #eee;
+	color:					#fff;
+	font-weight:			bold;
+	padding:				2px 13px 3px 13px;
+	text-shadow:			0 -1px 0 #000;
+	
+	background:				#444;
+	background:				-webkit-gradient(linear, 0 0, 0 100%, from(#666), to(#000));
+	background:				-moz-linear-gradient(#666, #000);
+	
+	-webkit-border-radius:	10px;
+	-moz-border-radius:		10px;
+	border-radius:			10px;
+	
+	-webkit-box-shadow:		0 1px 0 #000;
+	-moz-box-shadow:		0 1px 0 #000;
+	box-shadow:				0 1px 0 #000;
+	
+	-webkit-font-smoothing:	antialiased;
 }
 
-#write_mode_container{
+#write_mode_container {
 	display:			none;
-	background-color:	transparent;
+	background:			transparent;
 	width:				90%;
 	height:				93%;
 	top:				1px;
 }
 
+#write_mode_container .discard_changes {
+	color:				#aaa;
+}
+
+#write_mode_container a:hover {
+	text-decoration:	none;
+	color:				#fff;
+}
+
 #write_mode_header {
 	text-align: 		center;
-	
 }
 
 #write_mode_header .show_tools {
@@ -3056,22 +3081,18 @@ label.hide_field {
 	margin-left: 		-51px;
 }
 
+
 #write_mode_writer {
 	background: 		#FFF;
 	margin: 			10px 14px 0 14px;
-	padding: 			10px 16px;
-}
-
-#write_mode_footer {
-	padding-top: 		24px;
-	position:			relative;
+	padding: 			0 16px;
 }
 
 #write_mode_writer textarea {
 	width: 				100%;
-	margin-top: 		-1px;
+	border: 			0;
+	margin-top: 		14px;
 	font-size:			13px;
-	-moz-box-sizing:	border-box; /* firefox never does 100% textareas without this */
 }
 
 /* Show Entry */
