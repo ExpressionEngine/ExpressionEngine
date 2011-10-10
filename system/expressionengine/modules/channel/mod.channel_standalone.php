@@ -545,7 +545,7 @@ class Channel_standalone extends Channel {
 
 		$allow_cmts = ( ! isset($_POST['allow_cmts'])) ? $this->EE->TMPL->fetch_param('allow_comments') : $_POST['allow_cmts'];
 
-		if ($allow_cmts != '' AND (isset($comment_system_enabled) AND $comment_system_enabled == 'y'))
+		if ($allow_cmts != '' && $channel_q->row('comment_system_enabled') == 'y')
 		{
 			$hidden_fields['allow_comments'] = ($allow_cmts == 'yes') ? 'y' : 'n';
 		}
