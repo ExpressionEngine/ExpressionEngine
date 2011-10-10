@@ -186,7 +186,7 @@ class MyAccount extends CI_Controller {
 		// Whose profile are we editing?
 		$id = ( ! $this->input->get_post('id')) ? $this->session->userdata('member_id') : $this->input->get_post('id');
 
-		if ( ! is_numeric($id))
+		if ( ! ctype_digit($id))
 		{
 			return FALSE;
 		}
