@@ -128,7 +128,7 @@ class EE_Stylesheet {
 	{
 		// $files[] = PATH_THEMES.'jquery_ui/default/min_filebrowser.css';
         // $files[] = PATH_THEMES.'cp_themes/default/css/file_browser.css';
-		$files[] = PATH_THEMES.'cp_themes/default/css/jquery-ui-1.7.2.custom.css';
+		$files[] = PATH_THEMES.'cp_themes/default/css/jquery-ui-1.8.16.custom.css';
 		$files[] = PATH_THEMES.'cp_themes/default/css/saef.css';
 		
 		$out = '';
@@ -139,9 +139,9 @@ class EE_Stylesheet {
 			{
 				$out .= file_get_contents($file);
 				
-				if ($file == PATH_THEMES.'jquery_ui/default/jquery-ui-1.7.2.custom.css')
+				if ($file == PATH_THEMES.'cp_themes/default/css/jquery-ui-1.8.16.custom.css')
 				{
-					$theme_url = $this->EE->config->item('theme_folder_url').'jquery_ui/'.$this->EE->config->item('cp_theme');
+					$theme_url = $this->EE->config->item('theme_folder_url').'cp_themes/'.$this->EE->config->item('cp_theme');
 					
 					$out = str_replace('url(images/', 'url('.$theme_url.'/images/', $out);
 				}
