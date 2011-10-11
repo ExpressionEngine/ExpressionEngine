@@ -81,6 +81,17 @@ input[type="password"]:focus {
 	padding:				3px;
 }
 
+input.input-copy,
+input.input-copy:focus {
+	background: transparent;
+	border: 0 none;
+	color: #5F6C74;
+	display: block;
+	font-size: 100%;
+	margin: 0;
+	padding: 0;
+}
+
 textarea.markItUpEditor:focus{ background-color: #FFFFFF; }
 
 /* -------------------------------------
@@ -371,10 +382,6 @@ select.select {
 	width: 99%;
 }
 
-.pageContents span.button .submit,
-span.button .submit{
-	color: #546875;
-}
 
 /* for those elements that just don't like to be next to each other */
 .shun {
@@ -3150,16 +3157,17 @@ input#ip_address {
 #mainContent table caption {
 	border: 1px solid #37444D;
 	background: #2A3930 url('../images/backgrounds_sprite.png') repeat-x 0 -540px;
-	clear: 				left;
-	color:				#ffffff;
-	cursor:				pointer;
-	font-size:			14px;
-	font-weight:		bold;
+	clear: left;
+	color: #ffffff;
+	cursor: pointer;
+	font-size: 14px;
+	font-weight: bold;
 	line-height: 1.3;
 	margin-bottom: 0;
-	padding:			3px 4px 3px 28px;
+	padding: 5px 10px;
+	position: relative;
 	text-align: left;
-	text-shadow:		#666 0px 1px 0px;
+	text-shadow: #666 0px 1px 0px;
 
 	-webkit-border-top-left-radius: 5px;
 	-webkit-border-top-right-radius: 5px;
@@ -3169,10 +3177,9 @@ input#ip_address {
 	border-radius-topright: 5px;
 }
 
-/* TODO: Temporary Class */
-#mainContent table caption {
-	cursor: default;
-	padding: 5px 10px;
+#mainContent h3.accordion {
+	cursor: pointer;
+	padding: 3px 4px 3px 28px;
 }
 
 #mainContent h3.accordion[aria-expanded=false] {
@@ -3626,7 +3633,7 @@ html#file_upload_iframe p {
 
 #file_upload_iframe .upload_rename span.extension {
 	color: #999;
-	margin-left: -32px;
+	margin-left: -40px;
 }
 
 #file_upload_iframe .image {

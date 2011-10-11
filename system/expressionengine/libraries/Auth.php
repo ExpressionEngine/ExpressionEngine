@@ -63,6 +63,7 @@ should always be as long as the best available hash.
 class Auth {
 
 	private $EE;
+	public $errors = array();
 
 	// Hashing algorithms to try with their respective
 	// byte sizes. The byte sizes are used to identify
@@ -165,6 +166,122 @@ class Auth {
 		die('@todo');
 	}
 	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Run through the majority of the authentication checks
+	 * 
+	 * @return array(
+	 *		username: from POST
+	 *		password: from POST
+	 *		incoming: from Auth library, using username and password
+	 *	)
+	 * 
+	 * Your best option is to use:
+	 * 		list($username, $password, $incoming) = $this->_verify()
+	 * 
+	 * If an error results, the lang key will be added to $this->(auth->)errors[]
+	 * and this method will return FALSE
+	 */
+	public function verify()
+	{
+		$username = $this->EE->input->post('username');
+
+		// No username/password?  Bounce them...
+		if ( ! $username)
+		{
+			$this->errors[] = 'no_username';
+			return FALSE;
+		}
+
+		$this->EE->session->set_flashdata('username', $username);
+
+		if ( ! $this->EE->input->get_post('password'))
+		{
+			$this->errors[] = 'no_password';
+			return FALSE;
+		}
+
+		// If this is being called from the CP, use the hook
+		if (REQ == 'CP')
+		{
+			/* -------------------------------------------
+			/* 'login_authenticate_start' hook.
+			/*  - Take control of CP authentication routine
+			/*  - Added EE 1.4.2
+			*/
+				$edata = $this->EE->extensions->call('login_authenticate_start');
+				if ($this->EE->extensions->end_script === TRUE) return;
+			/*
+			/* -------------------------------------------*/
+		}
+
+		// Is IP and User Agent required for login?	
+		if ( ! $this->EE->auth->check_require_ip())
+		{
+			$this->errors[] = 'unauthorized_request';
+			return FALSE;
+		}
+
+		// Check password lockout status
+		if ($this->EE->session->check_password_lockout($username) === TRUE)
+		{
+			$this->EE->lang->loadfile('login');
+			
+			$line = lang('password_lockout_in_effect');
+			$line = sprintf($line, $this->EE->config->item('password_lockout_interval'));
+
+			if (AJAX_REQUEST)
+			{
+				$this->EE->output->send_ajax_response(array(
+					'messageType'	=> 'logout'
+				));
+			}
+
+			$this->EE->session->set_flashdata('message', $line);
+			$this->EE->functions->redirect(BASE.AMP.'C=login');
+		}
+
+
+		//  Check credentials
+		// ----------------------------------------------------------------
+
+		$password = $this->EE->input->post('password');
+		$incoming = $this->EE->auth->authenticate_username($username, $password);
+
+		// Not even close
+		if ( ! $incoming)
+		{
+			$this->EE->session->save_password_lockout($username);
+			$this->errors[] = 'credential_missmatch';
+			return FALSE;
+		}
+
+		// Banned
+		if ($incoming->is_banned())
+		{
+			return $this->EE->output->fatal_error(lang('not_authorized'));
+		}
+
+		// No cp access
+		if (REQ == 'CP' && ! $incoming->has_permission('can_access_cp'))
+		{
+			$this->errors[] = 'not_authorized';
+			return FALSE;
+		}
+
+		// Do we allow multiple logins on the same account?		
+		if ($this->EE->config->item('allow_multi_logins') == 'n')
+		{
+			if ($incoming->has_other_session())
+			{
+				$this->errors[] = 'multi_login_warning';
+				return FALSE;
+			}
+		}
+		
+		return array($username, $password, $incoming);
+	}
 	
 	// --------------------------------------------------------------------
 
@@ -254,6 +371,21 @@ class Auth {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Update Username
+	 *
+	 * @access	public
+	 */
+	public function update_username($member_id, $username)
+	{
+		$this->EE->db->where('member_id', (int) $member_id);
+		$this->EE->db->set('username', $username);
+		$this->EE->db->update('members');
+		
+		return (bool) $this->EE->db->affected_rows();
+	}
+	// --------------------------------------------------------------------
+
+	/**
 	 * Update Password
 	 *
 	 * @access	public
@@ -282,11 +414,18 @@ class Auth {
 	 */
 	private function _authenticate(CI_DB_result $member, $password)
 	{
+		$always_disallowed = array(4);
+
 		if ($member->num_rows() !== 1)
 		{
 			return FALSE;
 		}
-		
+
+		if (in_array($member->row('group_id'), $always_disallowed))
+		{
+			return $this->EE->output->show_user_error('general', lang('mbr_account_not_active'));
+		}
+
 		$m_salt = $member->row('salt');
 		$m_pass = $member->row('password');
 		
@@ -460,7 +599,8 @@ class Auth_result {
 		if ( ! is_object($this->group))
 		{
 			$group_q = $this->EE->db->get_where('member_groups', array(
-				'group_id' => $this->member('group_id')
+				'group_id' => $this->member('group_id'),
+				'site_id' => $this->EE->config->item('site_id'),
 			));
 			
 			$this->group = $group_q->row();
@@ -618,6 +758,8 @@ class Auth_result {
 				$this->session_id,
 				$this->EE->session->session_length
 			);
+
+			$this->EE->session->userdata['session_id'] = $this->session_id;
 		}
 		else
 		{

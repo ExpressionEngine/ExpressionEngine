@@ -905,10 +905,29 @@ class Channel {
 
 		if ($this->paginate == TRUE)
 		{
-			$this->paginate_data = str_replace(LD.'current_page'.RD, 		$this->current_page, 		$this->paginate_data);
-			$this->paginate_data = str_replace(LD.'total_pages'.RD,			$this->total_pages,  		$this->paginate_data);
-			$this->paginate_data = str_replace(LD.'pagination_links'.RD,	$this->pagination_links,	$this->paginate_data);
+			// Parse current_page and total_pages by default
+			$parse_array = array(
+				'current_page' => $this->current_page,
+				'total_pages' => $this->total_pages,
+			);
 
+			// Check to see if pagination_links is being used as a single 
+			// variable or as a variable pair
+			if (preg_match_all("/".LD."pagination_links".RD."(.+?)".LD.'\/'."pagination_links".RD."/s", $this->paginate_data, $matches))
+			{
+				$parse_array['pagination_links'] = array($this->pagination_array);
+			}
+			else
+			{
+				$parse_array['pagination_links'] = $this->pagination_links;
+			}
+			
+			// Parse current_page and total_pages
+			$this->paginate_data = $this->EE->TMPL->parse_variables(
+				$this->paginate_data,
+				array($parse_array)
+			);
+			
 			if (preg_match_all("/".LD."if previous_page".RD."(.+?)".LD.'\/'."if".RD."/s", $this->paginate_data, $matches))
 			{
 				if ($this->page_previous == '')
@@ -1715,8 +1734,8 @@ class Channel {
 		/**------
 		/**  We only select entries that have not expired
 		/**------*/
-
-		$timestamp = ($this->EE->TMPL->cache_timestamp != '') ? $this->EE->localize->set_gmt($this->EE->TMPL->cache_timestamp) : $this->EE->localize->now;
+		
+		$timestamp = ($this->EE->TMPL->cache_timestamp != '') ? $this->EE->TMPL->cache_timestamp : $this->EE->localize->now;
 
 		if ($this->EE->TMPL->fetch_param('show_future_entries') != 'yes')
 		{
@@ -1866,8 +1885,8 @@ class Channel {
 				$eday = $day;
 			}
 
-			$stime = $this->EE->localize->set_gmt(mktime(0, 0, 0, $smonth, $sday, $year));
-			$etime = $this->EE->localize->set_gmt(mktime(23, 59, 59, $emonth, $eday, $year));
+			$stime = gmmktime(0, 0, 0, $smonth, $sday, $year);
+			$etime = gmmktime(23, 59, 59, $emonth, $eday, $year);
 
 			$sql .= " AND t.entry_date >= ".$stime." AND t.entry_date <= ".$etime." ";
 		}
@@ -1890,8 +1909,8 @@ class Channel {
 					$eday = $day;
 				}
 
-				$stime = $this->EE->localize->set_gmt(mktime(0, 0, 0, $month, $sday, $year));
-				$etime = $this->EE->localize->set_gmt(mktime(23, 59, 59, $month, $eday, $year));
+				$stime = gmmktime(0, 0, 0, $month, $sday, $year);
+				$etime = gmmktime(23, 59, 59, $month, $eday, $year);
 
 				if (date("I", $this->EE->localize->now) AND ! date("I", $stime))
 				{
@@ -3033,6 +3052,7 @@ class Channel {
 					$this->basepath = $this->EE->functions->create_url(trim_slashes($this->EE->TMPL->fetch_param('paginate_base')));
 				}
 				
+				$config['first_url'] 	= rtrim($this->basepath, '/');
 				$config['base_url']		= $this->basepath;
 				$config['prefix']		= 'P';
 				$config['total_rows'] 	= $this->total_rows;
@@ -3045,8 +3065,9 @@ class Channel {
 				$config['uri_segment'] = 0;
 
 				$this->EE->pagination->initialize($config);
-				$this->pagination_links = $this->EE->pagination->create_links();				
-
+				$this->pagination_links = $this->EE->pagination->create_links();
+				$this->EE->pagination->initialize($config); // Re-initialize to reset config
+				$this->pagination_array = $this->EE->pagination->create_link_array();
 
 				if ((($this->total_pages * $this->p_limit) - $this->p_limit) > $this->p_page)
 				{
@@ -3159,8 +3180,8 @@ class Channel {
 			$row['signature_image']			= ($row['sig_img_filename'] == '' OR $this->EE->config->item('enable_signatures') == 'n' OR $this->EE->session->userdata('display_signatures') == 'n') ? 'FALSE' : 'TRUE';
 			$row['avatar']					= ($row['avatar_filename'] == '' OR $this->EE->config->item('enable_avatars') == 'n' OR $this->EE->session->userdata('display_avatars') == 'n') ? 'FALSE' : 'TRUE';
 			$row['photo']					= ($row['photo_filename'] == '' OR $this->EE->config->item('enable_photos') == 'n' OR $this->EE->session->userdata('display_photos') == 'n') ? 'FALSE' : 'TRUE';
-			$row['forum_topic']				= ($row['forum_topic_id'] == 0) ? 'FALSE' : 'TRUE';
-			$row['not_forum_topic']			= ($row['forum_topic_id'] != 0) ? 'FALSE' : 'TRUE';
+			$row['forum_topic']				= (empty($row['forum_topic_id'])) ? 'FALSE' : 'TRUE';
+			$row['not_forum_topic']			= ( ! empty($row['forum_topic_id'])) ? 'FALSE' : 'TRUE';
 			$row['category_request']		= ($this->cat_request === FALSE) ? 'FALSE' : 'TRUE';
 			$row['not_category_request']	= ($this->cat_request !== FALSE) ? 'FALSE' : 'TRUE';
 			$row['channel']					= $row['channel_title'];
@@ -3804,8 +3825,8 @@ class Channel {
 			$cond['signature_image']		= ($row['sig_img_filename'] == '' OR $this->EE->config->item('enable_signatures') == 'n' OR $this->EE->session->userdata('display_signatures') == 'n') ? 'FALSE' : 'TRUE';
 			$cond['avatar']					= ($row['avatar_filename'] == '' OR $this->EE->config->item('enable_avatars') == 'n' OR $this->EE->session->userdata('display_avatars') == 'n') ? 'FALSE' : 'TRUE';
 			$cond['photo']					= ($row['photo_filename'] == '' OR $this->EE->config->item('enable_photos') == 'n' OR $this->EE->session->userdata('display_photos') == 'n') ? 'FALSE' : 'TRUE';
-			$cond['forum_topic']			= ($row['forum_topic_id'] == 0) ? 'FALSE' : 'TRUE';
-			$cond['not_forum_topic']		= ($row['forum_topic_id'] != 0) ? 'FALSE' : 'TRUE';
+			$cond['forum_topic']			= (empty($row['forum_topic_id'])) ? 'FALSE' : 'TRUE';
+			$cond['not_forum_topic']		= ( ! empty($row['forum_topic_id'])) ? 'FALSE' : 'TRUE';
 			$cond['category_request']		= ($this->cat_request === FALSE) ? 'FALSE' : 'TRUE';
 			$cond['not_category_request']	= ($this->cat_request !== FALSE) ? 'FALSE' : 'TRUE';
 			$cond['channel']				= $row['channel_title'];
@@ -5302,7 +5323,7 @@ class Channel {
 				/**  We only select entries that have not expired
 				/**------*/
 
-				$timestamp = ($this->EE->TMPL->cache_timestamp != '') ? $this->EE->localize->set_gmt($this->EE->TMPL->cache_timestamp) : $this->EE->localize->now;
+				$timestamp = ($this->EE->TMPL->cache_timestamp != '') ? $this->EE->TMPL->cache_timestamp : $this->EE->localize->now;
 
 				if ($this->EE->TMPL->fetch_param('show_future_entries') != 'yes')
 				{
@@ -5594,7 +5615,7 @@ class Channel {
 				WHERE channel_id = '$channel_id'
 				AND exp_channel_titles.entry_id = exp_category_posts.entry_id ";
 
-		$timestamp = ($this->EE->TMPL->cache_timestamp != '') ? $this->EE->localize->set_gmt($this->EE->TMPL->cache_timestamp) : $this->EE->localize->now;
+		$timestamp = ($this->EE->TMPL->cache_timestamp != '') ? $this->EE->TMPL->cache_timestamp : $this->EE->localize->now;
 
 		if ($this->EE->TMPL->fetch_param('show_future_entries') != 'yes')
 		{
@@ -6121,7 +6142,7 @@ class Channel {
 			/**  We only select entries that have not expired
 			/**------*/
 
-			$timestamp = ($this->EE->TMPL->cache_timestamp != '') ? $this->EE->localize->set_gmt($this->EE->TMPL->cache_timestamp) : $this->EE->localize->now;
+			$timestamp = ($this->EE->TMPL->cache_timestamp != '') ? $this->EE->TMPL->cache_timestamp : $this->EE->localize->now;
 
 			if ($this->EE->TMPL->fetch_param('show_future_entries') != 'yes')
 			{
@@ -6978,7 +6999,7 @@ class Channel {
 
 		$sql .= ' WHERE t.entry_id != '.$this->EE->session->cache['channel']['single_entry_id'].' '.$ids;
 
-		$timestamp = ($this->EE->TMPL->cache_timestamp != '') ? $this->EE->localize->set_gmt($this->EE->TMPL->cache_timestamp) : $this->EE->localize->now;
+		$timestamp = ($this->EE->TMPL->cache_timestamp != '') ? $this->EE->TMPL->cache_timestamp : $this->EE->localize->now;
 
 	    if ($this->EE->TMPL->fetch_param('show_future_entries') != 'yes')
 	    {
@@ -7194,7 +7215,7 @@ class Channel {
 						AND site_id IN ('".implode("','", $this->EE->TMPL->site_ids)."') ";
 
 
-		$timestamp = ($this->EE->TMPL->cache_timestamp != '') ? $this->EE->localize->set_gmt($this->EE->TMPL->cache_timestamp) : $this->EE->localize->now;
+		$timestamp = ($this->EE->TMPL->cache_timestamp != '') ? $this->EE->TMPL->cache_timestamp : $this->EE->localize->now;
 
 		if ($this->EE->TMPL->fetch_param('show_future_entries') != 'yes')
 		{
@@ -7722,7 +7743,7 @@ class Channel {
 			return;
 		}
 		
-		$path = $this->EE->config->slash_item('emoticon_path');
+		$path = $this->EE->config->slash_item('emoticon_url');
 				
 		ob_start();
 		?>			 

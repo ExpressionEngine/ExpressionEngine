@@ -475,7 +475,11 @@ EE.date_obj_time = (function() {
 		    date_obj_hours = ((date_obj_hours + 11) % 12) + 1;
 		}
 	}
-		
+	
+	if (date_obj_hours < 10) {
+		date_obj_hours = "0" + date_obj_hours;
+	}
+	
 	return " '" + date_obj_hours + ":" + date_obj_mins + date_obj_am_pm + "'";
 }());
 
@@ -703,9 +707,18 @@ $(document).ready(function() {
 				// recreate the old cursor position
 				wm_txt.focus();
 				wm_txt.createSelection(source_sel.start, source_sel.end);
+				
+ 				// monkey patching the closers so that we can
+				// standardize srcElement for all browsers
+				// (looking at you FireFox)
+				var that = this;
+				that.getClosers().unbind('click').click(function(e) {
+					e.srcElement = this;
+					that.close(e);
+				});
 			},
 			
-			onClose: function(evt) {
+			onBeforeClose: function(evt) {
 				var closer = $(evt.srcElement).closest('.close'),	// evt.target is overriden by the custom event trigger =(
 					isSave = closer.hasClass('publish_to_field');
 

@@ -611,7 +611,7 @@ class Safecracker_lib
 		}
 		elseif ($this->channel('channel_id'))
 		{
-			$this->parse_variables['entry_date'] = $this->EE->localize->set_human_time($this->EE->localize->now-3600);
+			$this->parse_variables['entry_date'] = $this->EE->localize->set_human_time();
 			
 			if ($this->datepicker)
 			{
@@ -990,12 +990,43 @@ class Safecracker_lib
 			
 			//$this->head .= $script;
 		//}
-		
+
 		//add datepicker class
 		if ($this->datepicker)
 		{
+			$date_fmt = $this->EE->session->userdata('time_format');
+			$date_fmt = $date_fmt ? $date_fmt : $this->EE->config->item('time_format');
+
 			$this->head .= '<style type="text/css">.hasDatepicker{background:#fff url('.$this->EE->config->item('theme_folder_url').'cp_themes/default/images/calendar_bg.gif) no-repeat 98% 2px;background-repeat:no-repeat;background-position:99%;}</style>';
-			$this->head .= '<script type="text/javascript">$.createDatepickerTime=function(){a=new Date();b=a.getHours();c=a.getMinutes();if(c<10){c="0"+c;}if(b>12){b-=12;d=" PM";}else if(b==12){d=" PM";}else{d=" AM";}EE.date_obj_time=" \'"+b+":"+c+d+"\'";};$.createDatepickerTime();</script>';
+			$this->head .= trim('
+				<script type="text/javascript">
+					$.createDatepickerTime=function(){
+						date = new Date();
+						hours = date.getHours();
+						minutes = date.getMinutes();
+						suffix = "";
+						format = "'.$date_fmt.'";
+					
+						if (minutes < 10) {
+							minutes = "0" + minutes;
+						}
+					
+						if (format == "us") {
+							if (hours > 12) {
+								hours -= 12;
+								suffix = " PM";
+							} else if (hours == 12) {
+								suffix = " PM";
+							} else {
+								suffix = " AM";
+							}
+						}
+					
+						return " \'" + hours + ":" + minutes + suffix + "\'";
+					}
+				
+					EE.date_obj_time = $.createDatepickerTime();
+				</script>');
 		}
 		
 		//make head appear by default
@@ -1753,31 +1784,42 @@ class Safecracker_lib
 		{
 			return;
 		}
-		
-		$this->EE->db->order_by('group_id, cat_order');
-		$this->EE->db->where_in('group_id', explode('|', $this->channel('cat_group')));
-		
-		$query = $this->EE->db->get('categories');
-		
-		foreach ($query->result_array() as $row)
+
+		// Load up the library and figure out what belongs and what's selected
+		$this->EE->load->library('api');
+		$this->EE->api->instantiate('channel_categories');
+		$category_list = $this->EE->api_channel_categories->category_tree(
+			$this->channel('cat_group'),
+			$this->entry('categories')
+		);
+
+		$categories = array();
+
+		foreach ($category_list as $category_id => $category_info)
 		{
-			$category = $row;
-			
-			foreach ($row as $key => $value)
-			{
-				if (preg_match('/^cat_(.*)/', $key, $match))
-				{
-					$key = 'category_'.$match[1];
-				}
-				
-				$category[$key] = $value;
+			// Indent category names
+			if ($category_info[5] > 1) {
+				$category_info[1] = str_repeat(NBS.NBS.NBS.NBS, $category_info[5] - 1) . $category_info[1];
 			}
-			
-			$category['selected'] = (is_array($this->entry('categories')) && in_array($category['category_id'], $this->entry('categories'))) ? ' selected="selected"' : '';
-			$category['checked'] = (is_array($this->entry('categories')) && in_array($category['category_id'], $this->entry('categories'))) ? ' checked="checked"' : '';
-			
-			$this->categories[] = $category;
+
+			$selected = ($category_info[4] === TRUE) ? ' selected="selected"' : '';
+			$checked = ($category_info[4] === TRUE) ? ' checked="checked"' : '';
+
+			// Translate response from API to something parse variables can understand
+			$categories[$category_id] = array(
+				'category_id' => $category_info[0],
+				'category_name' => $category_info[1],
+				'category_group_id' => $category_info[2],
+				'category_group' => $category_info[3],
+				'category_parent' => $category_info[6],
+				'category_depth' => $category_info[5],
+
+				'selected' => $selected,
+				'checked' => $checked
+			);
 		}
+		
+		$this->categories = $categories;
 	}
 
 	// --------------------------------------------------------------------

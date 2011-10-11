@@ -8,7 +8,6 @@ class EE_Schema {
 	var $year;
 	var $month;
 	var $day;
-	var $full_install	= FALSE;
 	var $default_entry	= '';
 	var $theme_path		= '';
 
@@ -552,7 +551,7 @@ class EE_Schema {
 			 channel_max_chars int(5) unsigned NULL DEFAULT NULL,
 			 channel_html_formatting char(4) NOT NULL default 'all',
 			 channel_allow_img_urls char(1) NOT NULL default 'y',
-			 channel_auto_link_urls char(1) NOT NULL default 'y', 
+			 channel_auto_link_urls char(1) NOT NULL default 'n', 
 			 channel_notify char(1) NOT NULL default 'n',
 			 channel_notify_emails varchar(255) NULL DEFAULT NULL,
 			 comment_url varchar(80) NULL DEFAULT NULL,

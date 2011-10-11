@@ -54,7 +54,6 @@ class Filemanager {
 		$this->EE->load->library('security');
 		$this->EE->lang->loadfile('filemanager');
 		
-		
 		$this->theme_url = $this->EE->config->item('theme_folder_url').'cp_themes/'.$this->EE->config->item('cp_theme').'/';
 	}
 
@@ -67,8 +66,36 @@ class Filemanager {
 
 	// ---------------------------------------------------------------------
 
-	function clean_filename($filename, $dir_id, $dupe_check = FALSE)
+	/**
+	 * Cleans the filename to prep it for the system, mostly removing spaces
+	 * sanitizing the file name and checking for duplicates.
+	 *
+	 * @param string $filename The filename to clean the name of
+	 * @param integer $dir_id The ID of the directory in which we'll check for duplicates
+	 * @param array $parameters Associative array containing optional parameters
+	 * 		'convert_spaces' (Default: TRUE) Setting this to FALSE will not remove spaces
+	 * 		'ignore_dupes' (Default: TRUE) Setting this to FALSE will check for duplicates
+	 * 
+	 * @return string Full path and filename of the file, use basepath() to just
+	 * 		get the filename
+	 */
+	function clean_filename($filename, $dir_id, $parameters = array())
 	{
+		// at one time the third parameter was (bool) $dupe_check
+		if ( ! is_array($parameters))
+		{
+			$parameters = array('ignore_dupes' => ! $parameters); 
+		}
+
+		// Establish the default parameters
+		$default_parameters = array(
+			'convert_spaces' => TRUE,
+			'ignore_dupes' => TRUE
+		);
+
+		// Get the actual set of parameters and go
+		$parameters = array_merge($default_parameters, $parameters);
+
 		$prefs = $this->fetch_upload_dir_prefs($dir_id);
 		
 		$i = 1;
@@ -76,7 +103,11 @@ class Filemanager {
 		$path = $prefs['server_path'];
 		
 		// clean up the filename
-		$filename = preg_replace("/\s+/", "_", $filename);
+		if ($parameters['convert_spaces'] === TRUE)
+		{
+			$filename = preg_replace("/\s+/", "_", $filename);
+		}
+
 		$filename = $this->EE->security->sanitize_filename($filename);
 		
 		if (strpos($filename, '.') !== FALSE)
@@ -92,7 +123,7 @@ class Filemanager {
 		$ext = '.'.$ext;
 		
 		// Figure out a unique filename
-		if ($dupe_check == TRUE)
+		if ($parameters['ignore_dupes'] === FALSE)
 		{
 			$basename = $filename;
 			
@@ -841,8 +872,10 @@ class Filemanager {
 	
 	public function setup_upload()
 	{
+		$base = (defined('BASE')) ? BASE : $this->EE->functions->fetch_site_index(0,0).QUERY_MARKER; 
+		
 		$vars = array(
-			'base_url'	=> BASE.AMP.'C=content_files_modal'
+			'base_url'	=> $base.AMP.'C=content_files_modal'
 		);
 		
 		$this->EE->output->send_ajax_response(array(
@@ -1263,14 +1296,36 @@ class Filemanager {
 			}
 			elseif (isset($size['resize_type']) AND $size['resize_type'] == 'crop')
 			{
+				// Scale the larger dimension up so only one dimension of our 
+				// image fits within the desired dimension
+				if ($prefs['width'] > $prefs['height'])
+				{
+					$config['width'] = round($prefs['width'] * $size['height'] / $prefs['height']);
+				}
+				elseif ($prefs['height'] > $prefs['width'])
+				{
+					$config['height'] = round($pref['height'] * $size['width'] / $prefs['width']);
+				}
 				
-				// This may need to change if we let them manually set crop
-				// For now, let's crop from center for Wes
-
-				$config['x_axis'] = (($prefs['width'] / 2) - ($config['width'] / 2));
-				$config['y_axis'] = (($prefs['height'] / 2) - ($config['height'] / 2));
+				// First resize down to smallest possible size (greater of height and width)
+				$this->EE->image_lib->initialize($config);
+				
+				if ( ! $this->EE->image_lib->resize())
+				{
+					return FALSE;
+				}
+				
+				// Next set crop accordingly
+				$resized_image_dimensions = $this->get_image_dimensions($resized_path.$prefs['file_name']);
+				$config['source_image'] = $resized_path.$prefs['file_name'];
+				$config['x_axis'] = (($resized_image_dimensions['width'] / 2) - ($config['width'] / 2));
+				$config['y_axis'] = (($resized_image_dimensions['height'] / 2) - ($config['height'] / 2));
 				$config['maintain_ratio'] = FALSE;
-
+				
+				// Change height and width back to the desired size
+				$config['width'] = $size['width'];
+				$config['height'] = $size['height'];
+				
 				$this->EE->image_lib->initialize($config);
 
 				if ( ! @$this->EE->image_lib->crop())
@@ -1649,6 +1704,12 @@ class Filemanager {
 				'offset' => $offset
 			)
 		);
+
+		if ($files['results'] === FALSE)
+		{
+			return array();
+		}
+
 		$files = $files['results']->result_array();
 
 		foreach ($files as &$file)
@@ -1846,7 +1907,11 @@ class Filemanager {
 		
 		$field = ($field_name) ? $field_name : 'userfile';
 		$original_filename = $_FILES[$field]['name'];
-		$clean_filename = basename($this->clean_filename($_FILES[$field]['name'], $dir['id'], TRUE));
+		$clean_filename = basename($this->clean_filename(
+			$_FILES[$field]['name'],
+			$dir['id'], 
+			array('ignore_dupes' => FALSE)
+		));
 		
 		$config = array(
 			'file_name'		=> $clean_filename,
@@ -1942,8 +2007,8 @@ class Filemanager {
 					array(
 						'file_name'		=> $file['file_name'],
 						'directory_id'	=> $dir['id']
-						)
-					);
+					)
+				);
 			}
 		}		
 		

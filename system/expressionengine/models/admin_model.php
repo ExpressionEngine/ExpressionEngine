@@ -35,44 +35,52 @@ class Admin_model extends CI_Model {
 	 */
 	function get_config_fields($type)
 	{
-		$f_data = array(
+		$debug_options = array('1' => 'debug_one', '2' => 'debug_two');
+
+		// If debug is set to 0, make sure it's an option in Output and Debugging
+		if ($this->config->item('debug') == 0)
+		{
+			$debug_options['0'] = 'debug_zero';
+			ksort($debug_options);
+		}
 		
+		$f_data = array(
 			'general_cfg'		=>	array(
-											'multiple_sites_enabled'	=> array('r', array('y' => 'yes', 'n' => 'no')),
-											'is_system_on'				=> array('r', array('y' => 'yes', 'n' => 'no')),
-											'is_site_on'				=> array('r', array('y' => 'yes', 'n' => 'no')),											
-											'license_number'			=> array('i', ''),
-											'site_name'					=> array('i', '', 'required'),
-											'site_index'				=> array('i', ''),
-											'site_url'					=> array('i', '', 'required|prep_url'),
-											'cp_url'					=> array('i', '', 'required|prep_url'),
-											'theme_folder_url'			=> array('i', '', 'required|prep_url'),
-											'theme_folder_path'			=> array('i', '', 'required'),
-											'cp_theme'					=> array('f', 'theme_menu'),
-											'deft_lang'					=> array('f', 'language_menu'),											
-											'xml_lang'					=> array('f', 'fetch_encoding'),
-											'max_caches'				=> array('i', ''),
-											'new_version_check'			=> array('r', array('y' => 'yes', 'n' => 'no')),
-					// deprecated			'channel_nomenclature'		=> array('i', ''),
-											'doc_url'					=> array('i', ''),
-											),
+				'multiple_sites_enabled'	=> array('r', array('y' => 'yes', 'n' => 'no')),
+				'is_system_on'				=> array('r', array('y' => 'yes', 'n' => 'no')),
+				'is_site_on'				=> array('r', array('y' => 'yes', 'n' => 'no')),											
+				'license_number'			=> array('i', ''),
+				'site_name'					=> array('i', '', 'required'),
+				'site_index'				=> array('i', ''),
+				'site_url'					=> array('i', '', 'required'),
+				'cp_url'					=> array('i', '', 'required'),
+				'theme_folder_url'			=> array('i', '', 'required'),
+				'theme_folder_path'			=> array('i', '', 'required'),
+				'cp_theme'					=> array('f', 'theme_menu'),
+				'deft_lang'					=> array('f', 'language_menu'),											
+				'xml_lang'					=> array('f', 'fetch_encoding'),
+				'max_caches'				=> array('i', ''),
+				'new_version_check'			=> array('r', array('y' => 'yes', 'n' => 'no')),
+				// 'channel_nomenclature'		=> array('i', ''),
+				'doc_url'					=> array('i', ''),
+			),
 
 			'db_cfg'			=>	array(
-											'db_debug'					=> array('r', array('y' => 'yes', 'n' => 'no')),
-											'pconnect'					=> array('r', array('y' => 'yes', 'n' => 'no')),
-					// CI only				'cache_on'					=> array('r', array('y' => 'yes', 'n' => 'no')),
-											'enable_db_caching'			=> array('r', array('y' => 'yes', 'n' => 'no')),
-											),
+				'db_debug'					=> array('r', array('y' => 'yes', 'n' => 'no')),
+				'pconnect'					=> array('r', array('y' => 'yes', 'n' => 'no')),
+				// 'cache_on'					=> array('r', array('y' => 'yes', 'n' => 'no')),
+				'enable_db_caching'			=> array('r', array('y' => 'yes', 'n' => 'no')),
+			),
 											
 			'output_cfg'		=>	array(
-											'send_headers'				=> array('r', array('y' => 'yes', 'n' => 'no')),
-											'gzip_output'				=> array('r', array('y' => 'yes', 'n' => 'no')),
-											'force_query_string'		=> array('r', array('y' => 'yes', 'n' => 'no')),
-											'redirect_method'			=> array('s', array('redirect' => 'location_method', 'refresh' => 'refresh_method')),
-											'debug'						=> array('s', array('1' => 'debug_one', '2' => 'debug_two')),
-											'show_profiler'				=> array('r', array('y' => 'yes', 'n' => 'no')),
-											'template_debugging'		=> array('r', array('y' => 'yes', 'n' => 'no'))
-											),
+				'send_headers'				=> array('r', array('y' => 'yes', 'n' => 'no')),
+				'gzip_output'				=> array('r', array('y' => 'yes', 'n' => 'no')),
+				'force_query_string'		=> array('r', array('y' => 'yes', 'n' => 'no')),
+				'redirect_method'			=> array('s', array('redirect' => 'location_method', 'refresh' => 'refresh_method')),
+				'debug'						=> array('s', $debug_options),
+				'show_profiler'				=> array('r', array('y' => 'yes', 'n' => 'no')),
+				'template_debugging'		=> array('r', array('y' => 'yes', 'n' => 'no'))
+			),
 											
 			'channel_cfg'		=>	array(
 											'use_category_name'			=> array('r', array('y' => 'yes', 'n' => 'no')),
@@ -185,7 +193,7 @@ class Admin_model extends CI_Model {
 										 ),
 			'emoticon_cfg'		=>	array(												
 											'enable_emoticons'			=> array('r', array('y' => 'yes', 'n' => 'no')),
-											'emoticon_path'				=> array('i', '')
+											'emoticon_url'				=> array('i', '')
 										 ),									
 			'tracking_cfg'		=>	array(
 											'enable_online_user_tracking'	=> array('r', array('y' => 'yes', 'n' => 'no'), 'y'),

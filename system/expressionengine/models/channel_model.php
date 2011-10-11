@@ -198,6 +198,8 @@ class Channel_model extends CI_Model {
 	 * Get Channel Categories
 	 *
 	 * Gets category information for a given category group, by default only fetches cat_id and cat_name
+	 * 
+	 * @deprecated 2.3, Use category_model->get_channel_categories instead
 	 *
 	 * @access	public
 	 * @param	int
@@ -205,44 +207,8 @@ class Channel_model extends CI_Model {
 	 */
 	function get_channel_categories($cat_group, $additional_fields = array(), $additional_where = array())
 	{
-		if ( ! is_array($additional_fields))
-		{
-			$additional_fields = array($additional_fields);
-		}
-
-		if ( ! isset($additional_where[0]))
-		{
-			$additional_where = array($additional_where);
-		}
-
-		if (count($additional_fields) > 0)
-		{
-			$this->db->select(implode(',', $additional_fields));
-		}
-
-
-		$this->db->select("cat_id, cat_name");
-		$this->db->from("categories");
-		$this->db->where("group_id", $cat_group);
-
-		foreach ($additional_where as $where)
-		{
-			foreach ($where as $field => $value)
-			{
-				if (is_array($value))
-				{
-					$this->db->where_in($field, $value);
-				}
-				else
-				{
-					$this->db->where($field, $value);
-				}
-			}
-		}
-
-		$this->db->order_by('cat_name, group_title');
-
-		return $this->db->get();		
+		$this->load->model('category_model');
+		return $this->category_model->get_channel_categories($cat_group, $additional_fields, $additional_where);
 	}
 	
 	// --------------------------------------------------------------------

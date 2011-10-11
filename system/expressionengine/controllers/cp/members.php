@@ -38,6 +38,8 @@ class Members extends CI_Controller {
 	{
 		parent::__construct();
 		
+		$this->perpage = $this->config->item('memberlist_row_limit');
+		
 		if ( ! $this->cp->allowed_group('can_access_members'))
 		{
 			show_error(lang('unauthorized_access'));
@@ -120,6 +122,7 @@ class Members extends CI_Controller {
 
 		$vars['column_filter_options'] = array(
 			'all'				=> lang('all'),
+			'member_id'			=> lang('id'),
 			'screen_name'		=> lang('screen_name'),
 			'username'			=> lang('username'),
 			'email'				=> lang('email')
@@ -148,7 +151,7 @@ class Members extends CI_Controller {
 			$vars['member_groups_dropdown'][$group->group_id] = $group->group_title;
 		}
 
-		$vars['member_list'] = $this->member_model->get_members($group_id, $this->config->item('memberlist_row_limit'), $per_page, $member_name);
+		$vars['member_list'] = $this->member_model->get_members($group_id, $this->config->item('memberlist_row_limit'), $per_page, $member_name, array('member_id' => 'asc'));
 
 		if ($vars['member_list'] === FALSE)
 		{
@@ -341,7 +344,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			"bAutoWidth": false,
 			"iDisplayLength": '.$this->perpage.',  
 
-		"aoColumns": [null, null, null, null, null, { "bSortable" : false }, { "bSortable" : false } ],
+		"aoColumns": [null, null, null, null, null, null, { "bSortable" : false }, { "bSortable" : false } ],
 			
 			
 		"oLanguage": {
@@ -361,7 +364,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			"fnServerData": fnDataTablesPipeline
 	} );
 
-		$("#member_name").bind("keyup blur paste", function (e) {
+		$("#member_name").bind("keydown blur paste", function (e) {
 		/* Filter on the column (the index) of this element */
     	setTimeout(function(){oTable.fnDraw();}, 1);
 		});
@@ -407,11 +410,13 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 
 		$this->output->enable_profiler(FALSE);
 		
-		$col_map = array('username', 'screen_name', 'email', 'join_date', 'last_visit');
+		$col_map = array('member_id', 'username', 'screen_name', 'email', 'join_date', 'last_visit');
 		
 		$search_value = ($this->input->get_post('k_search')) ? $this->input->get_post('k_search') : '';
 		$group_id = ($this->input->get_post('group')) ? $this->input->get_post('group') : '';		
-
+		
+		// Check for search tokens within the search_value
+		$search_value = $this->_check_search_tokens($search_value);
 		
 		// Note- we pipeline the js, so pull more data than are displayed on the page		
 		$perpage = $this->input->get_post('iDisplayLength');
@@ -461,6 +466,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			foreach ($members->result_array() as $k => $member)
 			{
 		
+				$m[] = $member['member_id'];
 				$m[] = '<a href="'.BASE.AMP.'C=myaccount'.AMP.'id='.$member['member_id'].'">'.$member['username'].'</a>';
 				$m[] = $member['screen_name'];
 				$m[] = '<a href="mailto:'.$member['email'].'">'.$member['email'].'</a>';
@@ -483,6 +489,51 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		exit($sOutput);
 	}
 
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Looks through the member search string for search tokens (e.g. id:3
+	 * or username:john)
+	 * 
+	 * @param string $search_string The string to look through for tokens
+	 * @return string/array String if there are no tokens within the 
+	 * 	string, otherwise it's an associative array with the tokens as 
+	 * 	the keys
+	 */
+	private function _check_search_tokens($search_string = '')
+	{
+		if (strpos($search_string, ':') !== FALSE)
+		{
+			$search_array = array();
+			$tokens = array('id', 'member_id', 'username', 'screen_name', 'email');
+			
+			foreach ($tokens as $token)
+			{
+				// This regular expression looks for a token immediately 
+				// followed by one of three things:
+				// - a value within double quotes
+				// - a value within single quotes
+				// - a value without spaces
+				
+				if (preg_match('/'.$token.'\:((?:"(.*?)")|(?:\'(.*?)\')|(?:[^\s:]+?))(?:\s|$)/i', $search_string, $matches))
+				{
+					// The last item within matches is what we want
+					$search_array[$token] = end($matches);
+				}
+			}
+			
+			// If both ID and Member_ID are set, unset ID
+			if (isset($search_array['id']) AND isset($search_array['member_id']))
+			{
+				unset($search_array['id']);
+			}
+			
+			return $search_array;
+		}
+		
+		return $search_string;
+	}
+	
 	// --------------------------------------------------------------------
 
 	/**
@@ -667,7 +718,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			// Find Valid Member Replacements
 			$this->db->select('member_id, username, screen_name');
 			$this->db->from('members');
-			$this->db->where_in('member_id', $group_ids);
+			$this->db->where_in('group_id', $group_ids);
 			$this->db->where_not_in('member_id', $damned);
 			$this->db->order_by('screen_name');
 			$heirs = $this->db->get();
@@ -1266,6 +1317,8 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 	 */		
 	public function edit_member_group()
 	{
+		$is_clone = FALSE;
+
 		if ($this->session->userdata('group_id') != 1)
 		{
 			show_error(lang('only_superadmins_can_admin_groups'));
@@ -1298,25 +1351,29 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		$group_id = (int) $this->input->get_post('group_id');
 		$clone_id = (int) $this->input->get_post('clone_id');
 
+		// $id is the id we will use as group_id, but it may not be the actual 
+		// group_id depending on if this is a clone or if group_id was null
+		
 		$id = ( ! $group_id) ? 3 : $group_id;
 
 		// If we're cloning, set $id to the member group id that we clone
 		if ($clone_id)
 		{
+			$is_clone = TRUE;
 			$id = $clone_id;
 		}
 
-		
-		
 		$this->cp->set_variable('cp_page_title', 
-								($group_id != '') ? lang('edit_member_group') : lang('create_member_group'));
+								($group_id !== 0) ? lang('edit_member_group') : lang('create_member_group'));
 		$this->cp->set_breadcrumb(BASE.AMP.'C=members'.AMP.'M=member_group_manager', lang('member_groups'));
 		
 		$group_data = $this->_setup_group_data($id);
 
 		$default_id = $this->config->item('site_id');
 		
-		list($group_title, $group_description) = $this->_setup_title_desc($group_id, $group_data);
+		list($group_title, $group_description) = $this->_setup_title_desc($group_id, $group_data, $is_clone);
+		
+		$page_title_lang = ($is_clone OR ! $group_id) ? 'member_cfg' : 'member_cfg_existing';
 	
 		$data = array(
 			'action'			=> ( ! $group_id) ? 'submit' : 'update',
@@ -1324,12 +1381,13 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 				'clone_id'			=> ( ! $clone_id) ? '' : $clone_id,
 				'group_id'			=> $group_id
 			),
-			'group_data'		=> $this->_setup_final_group_data($sites, $group_data, $id),
+			'group_data'		=> $this->_setup_final_group_data($sites, $group_data, $id, $is_clone),
 			'group_description'	=> $group_description,
 			'group_id'			=> $group_id,
-			'group_title'		=> $group_title,
+			'page_title'		=> sprintf(lang($page_title_lang), $group_title),
+			'group_title'		=> ($is_clone) ? '' : $group_title,
 			'sites_dropdown'	=> $sites_dropdown,
-			'module_data'		=> $this->_setup_module_data($group_id)
+			'module_data'		=> $this->_setup_module_data($id)
 		);
 
 		$this->load->view('members/edit_member_group', $data);
@@ -1349,14 +1407,14 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 	 *
 	 * @return 	array 		
 	 */
-	private function _setup_final_group_data($sites, $group_data, $group_id)
+	private function _setup_final_group_data($sites, $group_data, $group_id, $is_clone = FALSE)
 	{
 		// Get the channel, module and template names and preferences
 		list($channel_names, $channel_perms) = $this->_setup_channel_names($group_id);
 		list($template_names, $template_perms) = $this->_setup_template_names($group_id);
 
 		// Build the structural array
-		$group_cluster = $this->_member_group_cluster($channel_perms, $template_perms, $group_id);
+		$group_cluster = $this->_member_group_cluster($channel_perms, $template_perms, $group_id, $is_clone);
 
 		$form = array();
 
@@ -1413,7 +1471,6 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 							$site->site_id
 						)
 					);
-					continue;
 				}
 				// Otherwise, loop through the keyed preferences
 				else if ($group_name != 'cp_template_access_privs' AND $group_name != 'cp_channel_post_privs')
@@ -1585,7 +1642,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 	 * NOTE: the associative value (y/n) is the default setting used
 	 * only when we are showing the "create new group" form
 	 */
-	private function _member_group_cluster($channel_perms, $template_perms, $group_id)
+	private function _member_group_cluster($channel_perms, $template_perms, $group_id, $is_clone = FALSE)
 	{
 		$G = array(
 			'security_lock'		=> array(
@@ -1693,7 +1750,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 
 		// Super Admin Group can not be edited
 		// If the form being viewed is the Super Admin one we only allow the name to be changed.
-		if ($group_id === 1)
+		if ($group_id === 1 AND $is_clone === FALSE)
 		{
 			$G = array('mbr_account_privs' => array (
 				'include_in_authorlist' => 'n', 'include_in_memberlist' => 'n'
@@ -1960,12 +2017,12 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 	 *
 	 * @return 	array
 	 */
-	private function _setup_title_desc($group_id, $group_data)
+	private function _setup_title_desc($group_id, $group_data, $is_clone)
 	{
 		$site_id = $this->config->item('site_id');
 		
-		$group_title = ( ! $group_id) ? '' : $group_data[$site_id]['group_title'];
-		$group_description = ( ! $group_id) ? '' : $group_data[$site_id]['group_description'];
+		$group_title = ( ! $group_id OR $is_clone) ? '' : $group_data[$site_id]['group_title'];
+		$group_description = ( ! $group_id OR $is_clone) ? '' : $group_data[$site_id]['group_description'];
 
 		// Can this be translated?
 		if (isset($this->english[$group_title]))
@@ -2689,51 +2746,50 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			show_error(lang('unauthorized_access'));
 		}		
 		
-		$this->load->library('form_validation');
+		$this->load->library(array('form_validation', 'table'));
 		$this->load->helper(array('form', 'string', 'snippets'));
 		$this->lang->loadfile('myaccount');
-		$this->load->library('table');
 		$this->load->language('calendar');
 		
 		$vars['custom_profile_fields'] = array();
 		
 		$config = array(
-						array(
-							'field'  => 'username', 
-							'label'  => 'lang:username', 
-							'rules'  => 'required|trim|valid_username[new]'
-						),
-						array(
-							'field'  => 'screen_name',
-							'label'  => 'lang:screen_name',
-							'rules'  => 'trim|valid_screen_name[new]'
-						),
-						array(
-							'field'  => 'password', 
-							'label'  => 'lang:password', 
-							'rules'  => 'required|valid_password[username]'
-						),
-						array(
-							'field'  => 'password_confirm', 
-							'label'  => 'lang:password_confirm', 
-							'rules'  => 'required|matches[password]'
-						),
-						array(
-			   				'field'  => 'email', 
-			   				'label'  => 'lang:email', 
-			   				'rules'  => 'trim|required|valid_user_email[new]'
-						),
-						array(
-			   				'field'  => 'group_id', 
-			   				'label'  => 'lang:member_group_assignment', 
-			   				'rules'  => 'required|integer'
-						)
-		            );
+			array(
+				'field'  => 'username', 
+				'label'  => 'lang:username', 
+				'rules'  => 'required|trim|valid_username[new]'
+			),
+			array(
+				'field'  => 'screen_name',
+				'label'  => 'lang:screen_name',
+				'rules'  => 'trim|valid_screen_name[new]'
+			),
+			array(
+				'field'  => 'password', 
+				'label'  => 'lang:password', 
+				'rules'  => 'required|valid_password[username]'
+			),
+			array(
+				'field'  => 'password_confirm', 
+				'label'  => 'lang:password_confirm', 
+				'rules'  => 'required|matches[password]'
+			),
+			array(
+				'field'  => 'email', 
+				'label'  => 'lang:email', 
+				'rules'  => 'trim|required|valid_user_email[new]'
+			),
+			array(
+				'field'  => 'group_id', 
+				'label'  => 'lang:member_group_assignment', 
+				'rules'  => 'required|integer'
+			)
+		);
 
 		$stock_member_fields = array(
-				'url', 'location', 'occupation', 'interests', 'aol_im', 
-				'yahoo_im', 'msn_im', 'icq', 'bio', 'bday_y', 'bday_m', 'bday_d'
-			);
+			'url', 'location', 'occupation', 'interests', 'aol_im', 
+			'yahoo_im', 'msn_im', 'icq', 'bio', 'bday_y', 'bday_m', 'bday_d'
+		);
 		
 		foreach ($stock_member_fields as $fname)
 		{
@@ -2753,24 +2809,24 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		
 		for ($i = date('Y', $this->localize->now); $i > 1904; $i--)
 		{
-		  $vars['bday_y_options'][$i] = $i;
+			$vars['bday_y_options'][$i] = $i;
 		}
 
 		$vars['bday_m_options'] = array(
-							''	 => lang('month'),
-							'01' => lang('cal_january'),
-							'02' => lang('cal_february'),
-							'03' => lang('cal_march'),
-							'04' => lang('cal_april'),
-							'05' => lang('cal_mayl'),
-							'06' => lang('cal_june'),
-							'07' => lang('cal_july'),
-							'08' => lang('cal_august'),
-							'09' => lang('cal_september'),
-							'10' => lang('cal_october'),
-							'11' => lang('cal_november'),
-							'12' => lang('cal_december')
-						);
+			''	 => lang('month'),
+			'01' => lang('cal_january'),
+			'02' => lang('cal_february'),
+			'03' => lang('cal_march'),
+			'04' => lang('cal_april'),
+			'05' => lang('cal_mayl'),
+			'06' => lang('cal_june'),
+			'07' => lang('cal_july'),
+			'08' => lang('cal_august'),
+			'09' => lang('cal_september'),
+			'10' => lang('cal_october'),
+			'11' => lang('cal_november'),
+			'12' => lang('cal_december')
+		);
 
 		$vars['bday_d_options'][''] = lang('day');
 		
@@ -2787,7 +2843,6 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		// Extended profile fields
 		$query = $this->member_model->get_all_member_fields(array(array('m_field_cp_reg' => 'y')), FALSE);
 		
-		
 		if ($query->num_rows() > 0)
 		{
 			$vars['custom_profile_fields'] = $query->result_array();
@@ -2797,15 +2852,14 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			{
 				$required  = ($row['m_field_required'] == 'n') ? '' : 'required';
 				$c_config[] = array(
-							'field'  => 'm_field_id_'.$row['m_field_id'], 
-							'label'  => $row['m_field_label'], 
-							'rules'  => $required
-						);
+					'field'  => 'm_field_id_'.$row['m_field_id'], 
+					'label'  => $row['m_field_label'], 
+					'rules'  => $required
+				);
 			}
 			
 			$config = array_merge($config, $c_config);
 		}
-
 
 		$this->form_validation->set_rules($config);
 		$this->form_validation->set_error_delimiters('<br /><span class="notice">', '</span>');
@@ -2834,7 +2888,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			$this->_register_member();
 		}
 	}
-
+	
 	// --------------------------------------------------------------------
 
 	/**

@@ -805,9 +805,10 @@ class Content_edit extends CI_Controller {
 		$total = $filtered_entries['total_count'];
 		$query_results = $filtered_entries['results'];
 
+		$this->db->where('site_id', $this->config->item('site_id'));
 		$j_response['sEcho'] = $sEcho;
-		$j_response['iTotalRecords'] = $this->db->count_all('channel_titles');  
-		$j_response['iTotalDisplayRecords'] = $total;		
+		$j_response['iTotalRecords'] = $this->db->count_all_results('channel_titles');
+		$j_response['iTotalDisplayRecords'] = $total;
 		
 		
 		// --------------------------------------------
@@ -1481,7 +1482,7 @@ class Content_edit extends CI_Controller {
 		
 		$cutoff_date = time();
 		$cutoff_date -= $autosave_prune;
-		$cutoff_date = date("YmdHis", $cutoff_date);
+		$cutoff_date = gmdate("YmdHis", $cutoff_date);
 		
 		$this->db->where('edit_date <', $cutoff_date)->delete('channel_entries_autosave');
 	}
@@ -1514,21 +1515,25 @@ class Content_edit extends CI_Controller {
 		
 		$channel_ids = array();
 
+		// Outside the for loop so seconds are consistent
+		$edit_date = gmdate("YmdHis");
+
 		foreach ($_POST['entry_id'] as $id)
 		{
 			$channel_id = $_POST['channel_id'][$id];
 			
 			// Remember channels we've touched so we can update stats at the end
 			$channel_ids[] = intval($channel_id);
-		
+			
 			$data = array(
-							'title'				=> strip_tags($_POST['title'][$id]),
-							'url_title'			=> $_POST['url_title'][$id],
-							'entry_date'		=> $_POST['entry_date'][$id],
-							'status'			=> $_POST['status'][$id],
-							'sticky'			=> (isset($_POST['sticky'][$id]) AND $_POST['sticky'][$id] == 'y') ? 'y' : 'n',
-							'allow_comments'	=> (isset($_POST['allow_comments'][$id]) AND $_POST['allow_comments'][$id] == 'y') ? 'y' : 'n'
-							);
+				'title'				=> strip_tags($_POST['title'][$id]),
+				'url_title'			=> $_POST['url_title'][$id],
+				'entry_date'		=> $_POST['entry_date'][$id],
+				'edit_date'			=> $edit_date,
+				'status'			=> $_POST['status'][$id],
+				'sticky'			=> (isset($_POST['sticky'][$id]) AND $_POST['sticky'][$id] == 'y') ? 'y' : 'n',
+				'allow_comments'	=> (isset($_POST['allow_comments'][$id]) AND $_POST['allow_comments'][$id] == 'y') ? 'y' : 'n'
+			);
 
 			$error = array();
 
@@ -1600,10 +1605,10 @@ class Content_edit extends CI_Controller {
 			{
 				$error[] = lang('missing_date');
 			}
-
+			
 			// Convert the date to a Unix timestamp
 			$data['entry_date'] = $this->localize->convert_human_date_to_gmt($data['entry_date']);
-
+			
 			if ( ! is_numeric($data['entry_date'])) 
 			{ 
 				// Localize::convert_human_date_to_gmt() returns verbose errors

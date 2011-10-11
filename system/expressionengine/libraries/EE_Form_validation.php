@@ -64,7 +64,13 @@ class EE_Form_validation extends CI_Form_validation {
 		$error = '';
 		$value = TRUE;
 		
-		$this->CI->api_channel_fields->setup_handler($field_id);
+		$exists = $this->CI->api_channel_fields->setup_handler($field_id);
+        
+        if ( ! $exists)
+        {
+            return TRUE;
+        }
+
 		$res = $this->CI->api_channel_fields->apply('validate', array($data));
 		
 		if (is_array($res))
@@ -107,30 +113,27 @@ class EE_Form_validation extends CI_Form_validation {
 			$type = 'update';
 		}
 		
+		$this->CI->load->helper('string');
+		$str = trim_nbs($str);
+		
 		// Is username formatting correct?
-
 		// Reserved characters:  |  "  '  ! < > { }
-	
 		if (preg_match("/[\|'\"!<>\{\}]/", $str))
 		{
 			$this->set_message('valid_username', $this->CI->lang->line('invalid_characters_in_username'));      
 			return FALSE;
-		}					
+		}
 		
-		
-		// Is username min length correct?
-		
+		// Is username min length correct?		
 		$len = $this->CI->config->item('un_min_len');
 	
 		if (strlen($str) < $len)
 		{
 			$this->set_message('valid_username', str_replace('%x', $len, $this->CI->lang->line('username_too_short')));      
 			return FALSE;
-		}					
-
+		}
 
 		// Is username max length correct?
-		
 		if (strlen($str) > 50)
 		{
 			$this->set_message('valid_username', $this->CI->lang->line('username_password_too_long'));      
@@ -168,7 +171,7 @@ class EE_Form_validation extends CI_Form_validation {
 			}
 		}
 		
-		return TRUE;
+		return $str;
 	}
 	
 	// --------------------------------------------------------------------
@@ -363,6 +366,9 @@ class EE_Form_validation extends CI_Form_validation {
 			$type = 'update';
 		}
 		
+		$this->CI->load->helper('string');
+		$str = trim_nbs($str);
+		
 		// Is email valid?
 
 		if ( ! $this->valid_email($str))
@@ -403,7 +409,7 @@ class EE_Form_validation extends CI_Form_validation {
 			}
 		}
 		
-		return TRUE;
+		return $str;
 	}
 	
 	// --------------------------------------------------------------------

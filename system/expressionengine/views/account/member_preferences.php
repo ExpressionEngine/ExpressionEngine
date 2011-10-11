@@ -8,7 +8,7 @@
 		<?php if (isset($group_id_options)): ?>
 			<p>
 				<?=form_label(lang('member_group_assignment'), 'group_id')?>
-				<?=form_dropdown('group_id', $group_id_options, $group_id, 'id="group_id"')?>
+				<?=form_dropdown('group_id', $group_id_options, $group_id, 'id="group_id"' . (count($group_id_options) == 1 ? ' disabled' : ''))?>
 			</p>
 		<?php endif ?>
 

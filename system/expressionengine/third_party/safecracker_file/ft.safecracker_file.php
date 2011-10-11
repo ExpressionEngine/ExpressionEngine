@@ -637,6 +637,13 @@ class Safecracker_file_ft extends File_ft
 			return array();
 		}
 		
+		// Check to make sure the directory exists
+		$directory_info = $this->EE->file_upload_preferences_model->get_upload_preferences($directory_id);
+		if ($directory_info->num_rows() <= 0)
+		{
+			show_error(lang('upload_destination_does_not_exist'));
+		}
+		
 		// Check to see if there's an imposed limit
 		if ( ! is_numeric($this->settings('safecracker_num_existing')))
 		{

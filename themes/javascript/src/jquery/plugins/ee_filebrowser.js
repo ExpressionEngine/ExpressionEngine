@@ -102,6 +102,7 @@ Array.min = function(array) {
 			type: 'GET',
 			dataType: 'json',
 			data: data,
+			cache: false,
 			success: function(data, textStatus, xhr) {
 				if (typeof callback == 'function') {
 					callback.call(this, data);

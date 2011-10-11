@@ -61,12 +61,16 @@ class Email {
 		$tagdata = $this->EE->TMPL->tagdata;
 
 		// Recipient Email Checking
-		$this->_user_recipients = $this->EE->TMPL->fetch_param('user_recipients', 'false');
+		$user_recipients = $this->EE->TMPL->fetch_param('user_recipients', 'no');
+
+		// Backwards compatible with previously documented "true/false" parameters (now "yes/no")
+		$this->_user_recipients = ($user_recipients == 'true' OR $user_recipients == 'yes') ? 'yes' : 'no'; 
+
 		$recipients = $this->EE->TMPL->fetch_param('recipients', '');
 		$channel = $this->EE->TMPL->fetch_param('channel', '');
 
 		// No email left behind act
-		if ( ! $this->_user_recipients && $recipients == '')
+		if ($this->_user_recipients == 'no' && $recipients == '')
 		{
 			$recipients = $this->EE->config->item('webmaster_email');
 		}
@@ -240,7 +244,7 @@ class Email {
 				$entry_id = preg_replace("#/.+#", "", $entry_id);
 
 				//  Do we have a vaild channel and ID number?
-				$timestamp	= ($this->EE->TMPL->cache_timestamp != '') ? $this->EE->localize->set_gmt($this->EE->TMPL->cache_timestamp) : $this->EE->localize->now;
+				$timestamp = ($this->EE->TMPL->cache_timestamp != '') ? $this->EE->TMPL->cache_timestamp : $this->EE->localize->now;
 				$channel = $this->EE->TMPL->fetch_param('channel', '');
 
 				$this->EE->db->select('entry_id')

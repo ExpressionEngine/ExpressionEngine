@@ -222,7 +222,7 @@ p.submit {
 .notice {
 	color:				#ce0000;
 	font-weight: 		bold;
-	padding-top:		20px;
+	margin-top:			20px;
 	margin-bottom:		0;
 }
 
@@ -306,7 +306,7 @@ ul.bulleted {
 }
 
 
-input.submit, button.submit, a.submit, a.submit_alt {
+input[type=submit], input.submit, button.submit, a.submit, a.submit_alt {
 	background: 		#80a210;
 	background: 		-webkit-gradient(linear, left top, left bottom, from(#a7b63e), to(#879e2e));
 	background: 		-moz-linear-gradient(top,  #a7b63e,  #879e2e);	
@@ -393,6 +393,15 @@ button span {
 	position: relative;
 	display: block; 
 	white-space: nowrap;	
+}
+
+.disabled-btn,
+input.disabled-btn{
+	background: #CED8DF;
+	border: 0;
+	color: #B0BEC7;
+	cursor: not-allowed;
+	padding: 5px 9px;
 }
 
 @media screen and (-webkit-min-device-pixel-ratio:0) {
@@ -668,6 +677,9 @@ ul#navigationTabs li #addQuickTab:active {
 
 #navigationTabs .msm_sites {
 	float:				right;
+}
+
+#navigationTabs .msm_sites.parent {
 	margin-right:		24px;
 }
 
@@ -1172,7 +1184,54 @@ h2.innerHeading{
 	padding:			5px 20px 25px 20px;
 }
 
+#action_nav {
+	display: inline-block;
+	float: right;
+	font-size: 12px;
+	margin-top: -6px;
+}
 
+#fileChooser {
+	font-size: 12px;
+}
+
+#fileChooser #filterMenu {
+	margin: 12px 0;
+}
+
+#fileChooser table.mainTable, #mainContent table.mainTable {
+	width: 100%;
+	text-align: left;
+	line-height: 13px;
+}
+
+#fileChooser table.mainTable td {
+	padding: 7px 10px;
+}
+
+#file_chooser_body {
+	border:				1px solid #ccc;
+	border-width: 		0 0 1px;
+	display:			block;
+	height: 			455px;
+	margin-bottom: 		10px;
+	padding-bottom: 	0px;
+	overflow:			auto;
+	width:				100%;
+}
+
+#fileChooser #dir_choice_form, #mainContent #dir_choice_form {
+	float: left;
+}
+
+#fileChooser .tableSubmit, #mainContent .tableSubmit {
+	float: right;
+	margin-top: 0;
+}
+
+#fileChooser #pagination_meta, #mainContent #paginationCount {
+	margin: 0 0 10px;
+}
 
 #registerUser table input[type=text], #registerUser table textarea {
 	width:				100%;
@@ -1262,6 +1321,7 @@ input.submit,input.delete, a.submit {
 	border-bottom:		1px solid #8ba0b1;
 }
 
+
 table.mainTable th {
 	background:			#617280 url('../images/table_column_heading_bg.jpg') top left repeat-x;
 	color:				#fff;
@@ -1273,6 +1333,11 @@ table.mainTable th {
 	text-shadow:		0 1px 1px #617280;
 }
 
+table.mainTable tr.new td {
+	background-color: #fcfcdc;
+	font-weight: bold;
+}
+
 #toggle_all, td.file_select {
 	width: 19px;
 	padding: 0 7px 0 9px !important;
@@ -1282,8 +1347,13 @@ table.padTable th:last-child,table.mainTable th:last-child {
 	border-right:		1px solid #6f8393;
 }
 
-table.mainTable th.headerSortDown {
+table.mainTable .headerSortDown {
 	background:			transparent url('../images/table_sort_asc.gif') top right no-repeat;
+	border-left:		1px solid #d0d7df;
+}
+
+table.mainTable .headerSortUp {
+	background:			transparent url('../images/table_sort_desc.gif') top right no-repeat;
 	border-left:		1px solid #d0d7df;
 }
 
@@ -1319,12 +1389,6 @@ table.padTable tr.odd td, table#controllers tr.odd td {
 
 table.mainTable thead {
 	background:			#617280 url('../images/table_column_heading_active_bg.jpg') bottom left repeat-x;
-}
-
-table.mainTable .headerSortUp {
-	background:			transparent url('../images/table_sort_desc.gif') top right no-repeat;
-	border-left:		1px solid #d0d7df;
-
 }
 
 table.mainTable td.id {
@@ -2952,40 +3016,65 @@ label.hide_field {
 }
 
 /* Write Mode */
-.closeWindowButton {
-	cursor:				pointer;
+
+#write_mode_footer,
+#write_mode_close_container {
+	position:			relative;
+	margin:				8px 0 13px 0;
+	padding-left:		5px;
 }
 
-#write_mode_close_container .closeWindowButton, 
-.publish_to_field {
-	position: 			absolute;
-}
-
-#write_mode_close_container .closeWindowButton {
-	left: 				9px;
-	top: 				0px;
-}
-
+#write_mode_footer .discard_changes,
+#write_mode_footer .publish_to_field,
+#write_mode_close_container .discard_changes,
 #write_mode_close_container .publish_to_field {
-	left: 				30px;
-	top: 				1px;
+	float:				left;
+	margin-left:		10px;
+	font-size:			11px;
+	padding-top:		3px;
 }
 
-#write_mode_footer .publish_to_field {
-	left: 				30px;
+#write_mode_container .publish_to_field {
+	border:					1px solid #eee;
+	color:					#fff;
+	font-weight:			bold;
+	padding:				2px 13px 3px 13px;
+	text-shadow:			0 -1px 0 #000;
+	
+	background:				#444;
+	background:				-webkit-gradient(linear, 0 0, 0 100%, from(#666), to(#000));
+	background:				-moz-linear-gradient(#666, #000);
+	
+	-webkit-border-radius:	10px;
+	-moz-border-radius:		10px;
+	border-radius:			10px;
+	
+	-webkit-box-shadow:		0 1px 0 #000;
+	-moz-box-shadow:		0 1px 0 #000;
+	box-shadow:				0 1px 0 #000;
+	
+	-webkit-font-smoothing:	antialiased;
 }
 
-#write_mode_container{
+#write_mode_container {
 	display:			none;
-	background-color:	transparent;
+	background:			transparent;
 	width:				90%;
 	height:				93%;
 	top:				1px;
 }
 
+#write_mode_container .discard_changes {
+	color:				#aaa;
+}
+
+#write_mode_container a:hover {
+	text-decoration:	none;
+	color:				#fff;
+}
+
 #write_mode_header {
 	text-align: 		center;
-	
 }
 
 #write_mode_header .show_tools {
@@ -2995,22 +3084,18 @@ label.hide_field {
 	margin-left: 		-51px;
 }
 
+
 #write_mode_writer {
 	background: 		#FFF;
 	margin: 			10px 14px 0 14px;
-	padding: 			10px 16px;
-}
-
-#write_mode_footer {
-	padding-top: 		24px;
-	position:			relative;
+	padding: 			0 16px;
 }
 
 #write_mode_writer textarea {
 	width: 				100%;
-	margin-top: 		-1px;
+	border: 			0;
+	margin-top: 		14px;
 	font-size:			13px;
-	-moz-box-sizing:	border-box; /* firefox never does 100% textareas without this */
 }
 
 /* Show Entry */
@@ -4165,3 +4250,150 @@ td .markItUp{
 }
 
 th.hidden_col { display: none; } td.hidden_col { display: none; }
+
+/* @group File Uploader */
+
+#file_uploader {
+	padding: 			14px 14px 50px;
+	position: 			relative;
+	overflow: 			hidden;
+}
+
+#file_uploader .button_bar {
+	bottom:				0px;
+	left:				0;
+	min-height:			22px;
+	padding:			6px;
+	position:			absolute;
+	text-align:			right;
+	width:				586px;
+}
+
+.button_bar a.submit {
+	color: #fff;
+	font-weight: normal;
+	margin: 0 0 0 4px;
+	text-decoration: none;
+}
+
+.button_bar .loading {
+	position: relative;
+	right: 2px;
+	top: 3px;
+}
+
+.button_bar .loading.visualEscapism {
+	right: -9999px;
+}
+
+#file_uploader.before_upload .after_upload,
+#file_uploader.before_upload .file_exists {
+	display: none;
+}
+
+#file_uploader.file_exists .after_upload,
+#file_uploader.file_exists .before_upload {
+	display: none;
+}
+
+#file_uploader.after_upload .before_upload,
+#file_uploader.after_upload .file_exists {
+	display: none;
+}
+
+#file_uploader .cancel:link,
+#file_uploader .cancel:visited {
+	color: 				#e0e5e6;
+	color: 				rgba(255, 255, 255, 0.7);
+	line-height: 1.9;
+}
+
+#file_uploader .cancel:hover {
+	color: 				#fff;
+}
+
+#file_uploader iframe {
+	border:				0 none;
+	height:				290px;
+	width:				572px;
+}
+
+#file_uploader iframe,
+html#file_upload_iframe,
+html#file_upload_iframe body {
+	border: none;
+	background:			#ecf1f4;
+}
+
+html#file_upload_iframe body {
+	min-width: 0;
+	padding: 0;
+	width: auto;
+}
+
+html#file_upload_iframe #upload_dir {
+	display:			block;
+	width:				auto;
+}
+
+html#file_upload_iframe p {
+	margin:				11px 0;
+}
+
+#file_upload_iframe .upload_rename input.text {
+	margin-right: 5px;
+	padding-right: 30px;
+	width: 400px;
+}
+
+#file_upload_iframe .upload_rename span.extension {
+	color: #999;
+	margin-left: -40px;
+}
+
+#file_upload_iframe .image {
+	float: left;
+	width: 85px;
+}
+
+#file_upload_iframe .image img {
+	border: 1px solid #cdd7e0;
+	display: block;
+	margin: 0 auto 5px;
+	padding: 5px;
+}
+
+#file_upload_iframe h2 {
+	margin-bottom: 		10px;
+}
+
+#file_upload_iframe .upload_success table,
+#file_upload_iframe .edit_controls {
+	border-collapse: collapse;
+	float: right;
+	width: 470px;
+}
+
+#file_upload_iframe .upload_success th,
+#file_upload_iframe .upload_success td {
+	border-bottom: 		1px solid #cdd7e0;
+	padding: 			4px;
+}
+
+#file_upload_iframe .upload_success tr:last-child th,
+#file_upload_iframe .upload_success tr:last-child td {
+	border-bottom: 		0 none;
+}
+
+#file_upload_iframe .upload_success th {
+	padding-right: 		25px;
+	text-align: 		left;
+}
+
+#file_upload_iframe .edit_controls {
+	overflow: hidden;
+	height: 265px;
+}
+
+/* @end */
+

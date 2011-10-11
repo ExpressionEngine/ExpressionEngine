@@ -545,7 +545,7 @@ class Channel_standalone extends Channel {
 
 		$allow_cmts = ( ! isset($_POST['allow_cmts'])) ? $this->EE->TMPL->fetch_param('allow_comments') : $_POST['allow_cmts'];
 
-		if ($allow_cmts != '' AND $comment_system_enabled == 'y')
+		if ($allow_cmts != '' && $channel_q->row('comment_system_enabled') == 'y')
 		{
 			$hidden_fields['allow_comments'] = ($allow_cmts == 'yes') ? 'y' : 'n';
 		}
@@ -1090,8 +1090,7 @@ class Channel_standalone extends Channel {
 		
 		$this->EE->db->select('cat_name, cat_id, parent_id');
 		$this->EE->db->where_in('group_id', $group_ids);
-		$this->EE->db->order_by('parent_id');
-		$this->EE->db->order_by('cat_order');
+		$this->EE->db->order_by('group_id, parent_id, cat_order');
 		$kitty_query = $this->EE->db->get('categories');
 
 		if ($kitty_query->num_rows() == 0)
@@ -2357,7 +2356,7 @@ class Channel_standalone extends Channel {
 			$this->EE->load->library('table');
 			
 			$output .= '<a href="#" id="smiley_link_'.$row['field_id'].'" class="smiley_link" title="'.lang('emotions').'">'.lang('emotions').'</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
-			$image_array = get_clickable_smileys($path = $this->EE->config->slash_item('emoticon_path'), 'field_id_'.$row['field_id']);
+			$image_array = get_clickable_smileys($path = $this->EE->config->slash_item('emoticon_url'), 'field_id_'.$row['field_id']);
 			$col_array = $this->EE->table->make_columns($image_array, 8);
 			$output .= '<div id="smiley_table_'.$row['field_id'].'" class="smileyContent" style="display: none;">'.$this->EE->table->generate($col_array).'</div>';
 			$this->EE->table->clear(); // clear out tables for the next smiley

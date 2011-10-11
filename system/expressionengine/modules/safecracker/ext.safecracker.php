@@ -101,7 +101,7 @@ class Safecracker_ext
 		//show_error('This extension is automatically updated with the Safecracker module');
 
 		/*
-		if ($current == '' OR $current == $this->version)
+		if ($current == '' OR version_compare($current, $this->version, '=='))
 		{
 			return FALSE;
 		}

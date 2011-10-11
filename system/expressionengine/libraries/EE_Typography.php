@@ -40,7 +40,7 @@ class EE_Typography extends CI_Typography {
 	var $parse_smileys				= TRUE;
 	var $highlight_code				= TRUE;
 	var $convert_curly				= TRUE;		// Convert Curly Brackets Into Entities
-	var $emoticon_path  			= '';
+	var $emoticon_url				= '';
 	var $site_index					= '';
 	var $word_censor				= FALSE;
 	var $censored_words 			= array();
@@ -52,7 +52,8 @@ class EE_Typography extends CI_Typography {
 	var $code_chunks				= array();
 	var $code_counter				= 0;
 	var $http_hidden 				= NULL; // hash to protect URLs in [url] BBCode
-	
+	var $safe_img_src_end			= NULL; // hash to mark end of image URLs during sanitizing of image tags
+
 	// Allowed tags  Note: Specified in initialize()
 	var $safe_encode = array();
 	var $safe_decode = array();
@@ -115,7 +116,7 @@ class EE_Typography extends CI_Typography {
 		$this->parse_smileys		= TRUE;
 		$this->highlight_code		= TRUE;
 		$this->convert_curly		= TRUE;		// Convert Curly Brackets Into Entities
-		$this->emoticon_path  		= '';
+		$this->emoticon_url  		= '';
 		$this->site_index			= '';
 		$this->word_censor			= FALSE;
 		$this->censored_words 		= array();
@@ -130,6 +131,7 @@ class EE_Typography extends CI_Typography {
 		$this->EE->load->helper('string');
 		
 		$this->http_hidden 			= unique_marker('typography_url_protect'); // hash to protect URLs in [url] BBCode
+		$this->safe_img_src_end		= unique_marker('typography_img_src_end'); // hash to mark end of image URLs during sanitizing of image tags
 
 		foreach ($config as $key => $val)
 		{
@@ -219,7 +221,7 @@ class EE_Typography extends CI_Typography {
 		{
 			return $str;
 		}
-		
+
 		foreach ($this->EE->functions->fetch_file_paths() as $key => $val)
 		{
 			$str = str_replace(array("{filedir_{$key}}", "&#123;filedir_{$key}&#125;"), $val, $str);
@@ -608,7 +610,7 @@ class EE_Typography extends CI_Typography {
 		
 		if (stristr($str, '<img') !== FALSE)
 		{
-			$str = preg_replace("#<img(.*?)src=\s*[\"'](.+?)[\"'](.*?)\s*\>#si", "[img]\\2\\3\\1[/img]", $str);
+			$str = preg_replace("#<img(.*?)src=\s*[\"'](.+?)[\"'](.*?)\s*\>#si", "[img]\${2}{$this->safe_img_src_end}\\3\\1[/img]", $str);
 		}
 		
 		if (stristr($str, '://') !== FALSE)
@@ -960,62 +962,42 @@ class EE_Typography extends CI_Typography {
 	// --------------------------------------------------------------------	
 	
 	/**
-	 * Make images safe
+	 * Make images safe, limited what attributes are carried through
 	 *
-	 * This simply removes parenthesis so that javascript event handlers
+	 * This also removes parenthesis so that javascript event handlers
 	 * can't be invoked. 
 	 */
 	public function image_sanitize($matches)
 	{
-		$url = str_replace(array('(', ')'), '', $matches['1']);
-
-		$width = '';
-		$height = '';
-
-		if (preg_match("/\s+width=(\"|\')([^\\1]*?)\\1/", $matches[1], $width_match))
+		if (strpos($matches[1], $this->safe_img_src_end))
 		{
-			$url = trim(str_replace($width_match[0], '', $url));
-			$width = $width_match[0];
-		}
-
-		if (preg_match("/\s+height=(\"|\')([^\\1]*?)\\1/", $matches[1], $height_match))
-		{	
-			$url = trim(str_replace($height_match[0], '', $url));
-			$height = $height_match[0];
-		}
-
-		if (preg_match_all("/\s+alt=(\"|\')([^\\1]*?)\\1/", $matches[1], $alt_match))
-		{
-			// If there's more than one match for alt, use the first and remove the second
-			if (is_array($alt_match[0]))
-			{
-				$alt_tag = $alt_match[0][0];
-				$alt_value = $alt_match[2][0];
-				
-				$url = trim(str_replace($alt_match[0][1], '', $url));
-			}
-			else
-			{
-				$alt_tag = $alt_match[0];
-				$alt_value = $alt_match[2];
-			}
-
-			$url = trim(str_replace($alt_tag, '', $url));
-			$alt = str_replace(array('"', "'"), '', $alt_value);
+			list($url, $extra) = explode($this->safe_img_src_end, $matches[1]);			
 		}
 		else
 		{
-			$alt = str_replace(array('"', "'"), '', $url);
-			
-			if (substr($alt, -1) == '/')
-			{
-				$alt = substr($alt, 0, -1);
-			}
-			
-			$alt = substr($alt, strrpos($alt, '/')+1);
+			$url = $matches[1];
+			$extra = '';
 		}
 		
-		return "<img src=\"{$url}\" alt=\"{$alt}\"{$width}{$height} />";
+		$url = str_replace(array('(', ')'), '', $url);
+
+		$alt	= '';
+		$width	= '';
+		$height	= '';
+
+		foreach (array('width', 'height', 'alt') as $attr)
+		{
+			if (preg_match("/\s+{$attr}=(\"|\')([^\\1]*?)\\1/", $extra, $attr_match))
+			{
+				${$attr} = $attr_match[0];
+			}
+			elseif ($attr == 'alt')	// always make sure there's some alt text
+			{
+				$alt = 'alt="" ';
+			}
+		}
+		
+		return "<img src=\"{$url}\" {$alt}{$width}{$height} />";
 	}
 
 	// --------------------------------------------------------------------	
@@ -1145,7 +1127,7 @@ class EE_Typography extends CI_Typography {
 		{
 			if (strpos($str, $key) !== FALSE)
 			{
-				$img = "<img src=\"".$this->emoticon_path.$this->smiley_array[$key]['0']."\" width=\"".$this->smiley_array[$key]['1']."\" height=\"".$this->smiley_array[$key]['2']."\" alt=\"".$this->smiley_array[$key]['3']."\" style=\"border:0;\" />";
+				$img = "<img src=\"".$this->emoticon_url.$this->smiley_array[$key]['0']."\" width=\"".$this->smiley_array[$key]['1']."\" height=\"".$this->smiley_array[$key]['2']."\" alt=\"".$this->smiley_array[$key]['3']."\" style=\"border:0;\" />";
 			
 				foreach(array(' ', "\t", "\n", "\r", '.', ',', '>') as $char)
 				{
@@ -1395,7 +1377,7 @@ document.getElementById('<?php echo $span_id; ?>').innerHTML = output;
 			if (is_array($smileys))
 			{
 				$this->smiley_array = $smileys;
-				$this->emoticon_path = $this->EE->config->slash_item('emoticon_path');
+				$this->emoticon_url = $this->EE->config->slash_item('emoticon_url');
 			}
 		}
 	}

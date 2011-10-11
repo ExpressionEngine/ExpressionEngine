@@ -93,6 +93,7 @@ class Comment {
 		$paginate			= FALSE;
 		$paginate_data		= '';
 		$pagination_links	= '';
+		$pagination_array	= '';
 		$page_next			= '';
 		$page_previous		= '';
 		$current_page		= 0;
@@ -248,7 +249,7 @@ class Comment {
 			}
 
 			//  Do we have a valid entry ID number?
-			$timestamp = ($this->EE->TMPL->cache_timestamp != '') ? $this->EE->localize->set_gmt($this->EE->TMPL->cache_timestamp) : $this->EE->localize->now;
+			$timestamp = ($this->EE->TMPL->cache_timestamp != '') ? $this->EE->TMPL->cache_timestamp : $this->EE->localize->now;
 
 			$this->EE->db->select('entry_id, channel_id');
 			//$this->EE->db->where('channel_titles.channel_id = '.$this->EE->db->dbprefix('channels').'.channel_id');
@@ -290,7 +291,7 @@ class Comment {
 			}
 
 			$this->EE->db->from('channel_titles');
-			//$this->EE->db->from('channels');
+
 			$query = $this->EE->db->get();
 
 			// Bad ID?  See ya!
@@ -427,7 +428,7 @@ class Comment {
 
 			if ($this->EE->TMPL->fetch_param('show_expired') !== 'yes')
 			{
-				$timestamp = ($this->EE->TMPL->cache_timestamp != '') ? $this->EE->localize->set_gmt($this->EE->TMPL->cache_timestamp) : $this->EE->localize->now;
+				$timestamp = ($this->EE->TMPL->cache_timestamp != '') ? $this->EE->TMPL->cache_timestamp : $this->EE->localize->now;
 
 				$date_where = "(".$this->EE->db->protect_identifiers('ct.expiration_date')." = 0 OR "
 				.$this->EE->db->protect_identifiers('ct.expiration_date')." > {$timestamp})";
@@ -440,7 +441,7 @@ class Comment {
 				// not based on an entry id or url title
 				// in the URL, we can make the query much 
 				// more efficient and save some work.
-				$total_rows = $this->EE->db->count_all_results('comments');
+				$total_rows = $this->EE->db->count_all_results();
 			}
 			
 			$this_sort = ($random) ? 'random' : strtolower($sort);
@@ -580,6 +581,8 @@ class Comment {
 
 				$this->EE->pagination->initialize($config);
 				$pagination_links = $this->EE->pagination->create_links();
+				$this->EE->pagination->initialize($config); // Re-initialize to reset config
+				$pagination_array = $this->EE->pagination->create_link_array();
 
 				if ((($total_pages * $limit) - $limit) > $current_page)
 				{
@@ -1282,10 +1285,40 @@ class Comment {
 		/** ----------------------------------------*/
 		if ($paginate == TRUE)
 		{
-			$paginate_data = str_replace(LD.'current_page'.RD, 	$t_current_page, 	$paginate_data);
-			$paginate_data = str_replace(LD.'total_pages'.RD,		$total_pages,  		$paginate_data);
-			$paginate_data = str_replace(LD.'pagination_links'.RD,	$pagination_links,	$paginate_data);
+			// Check to see if pagination_links is being used as a single 
+			// variable or as a variable pair
+			if (preg_match_all("/".LD."pagination_links".RD."(.+?)".LD.'\/'."pagination_links".RD."/s", $paginate_data, $matches))
+			{
+				$pagination_links = array($pagination_array);
+			}
+			else
+			{
+				$pagination_links = $pagination_links;
+			}
 
+			// Parse current_page and total_pages by default
+			$parse_array = array(
+				'current_page' => $t_current_page,
+				'total_pages' => $total_pages,
+			);
+
+			// Check to see if pagination_links is being used as a single 
+			// variable or as a variable pair
+			if (preg_match_all("/".LD."pagination_links".RD."(.+?)".LD.'\/'."pagination_links".RD."/s", $paginate_data, $matches))
+			{
+				$parse_array['pagination_links'] = array($pagination_array);
+			}
+			else
+			{
+				$parse_array['pagination_links'] = $pagination_links;
+			}
+			
+			// Parse current_page and total_pages
+			$paginate_data = $this->EE->TMPL->parse_variables(
+				$paginate_data,
+				array($parse_array)
+			);
+			
 			if (preg_match("/".LD."if previous_page".RD."(.+?)".LD.'\/'."if".RD."/s", $paginate_data, $match))
 			{
 				if ($page_previous == '')

@@ -234,7 +234,7 @@ class Mailinglist_upd {
 	 */
 	function update($current='')
 	{
-		if ($current < 3.0)
+		if (version_compare($current, '3.0', '<'))
 		{
 			$this->EE->db->query("ALTER TABLE `exp_mailing_list` MODIFY COLUMN `user_id` int(10) unsigned NOT NULL PRIMARY KEY auto_increment");
 			$this->EE->db->query("ALTER TABLE `exp_mailing_list` DROP KEY `user_id`");

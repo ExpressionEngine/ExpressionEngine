@@ -337,7 +337,7 @@ class EE_Template {
 		// don't worry with undeclared embed: vars in conditionals as the conditionals processor will handle that adequately
 		if (strpos($this->template, LD.'embed:') !== FALSE)
 		{
-			$this->template = preg_replace('/'.LD.'embed:(.+?)'.RD.'/', '', $this->template);
+			$this->template = preg_replace('/'.LD.'embed:([^!]+?)'.RD.'/', '', $this->template);
 		}		
 	
 		// Parse date format string "constants"		
@@ -930,7 +930,8 @@ class EE_Template {
 
 						if ($this->EE->config->item('debug') >= 1)
 						{
-							if ($this->tag_data[$i]['tagparts'][0] == $this->tag_data[$i]['tagparts'][1] &&
+							if (isset($this->tag_data[$i]['tagparts'][1]) &&
+								$this->tag_data[$i]['tagparts'][0] == $this->tag_data[$i]['tagparts'][1] &&
 								! isset($this->tag_data[$i]['tagparts'][2]))
 							{
 								unset($this->tag_data[$i]['tagparts'][1]);
@@ -1620,6 +1621,7 @@ class EE_Template {
 		else
 		{
 			// Timestamp valid - read rest of file
+			$this->cache_timestamp = (int) $timestamp;
 			$status = 'CURRENT';
 			$cache = @fread($fp, filesize($file));
 		}

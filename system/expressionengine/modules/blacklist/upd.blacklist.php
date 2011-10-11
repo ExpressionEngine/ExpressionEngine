@@ -25,7 +25,7 @@
 
 class Blacklist_upd {
 
-	var $version	= '3.0';
+	var $version	= '3.0.1';
 
 	function Blacklist_upd()
 	{
@@ -55,19 +55,19 @@ class Blacklist_upd {
 		$this->EE->db->insert('modules', $data);
 
 		$fields = array(
-						'blacklisted_id'	=> array(
-													'type'				=> 'int',
-													'constraint'		=> 10,
-													'unsigned'			=> TRUE,
-													'auto_increment'	=> TRUE
-												),
-						'blacklisted_type'  => array(
-													'type' 				=> 'varchar',
-													'constraint'		=> '20',
-												),
-						'blacklisted_value' => array(
-													'type'				=> 'text'
-												)
+			'blacklisted_id'	=> array(
+				'type'				=> 'int',
+				'constraint'		=> 10,
+				'unsigned'			=> TRUE,
+				'auto_increment'	=> TRUE
+			),
+			'blacklisted_type'  => array(
+				'type' 				=> 'varchar',
+				'constraint'		=> '20',
+			),
+			'blacklisted_value' => array(
+				'type'				=> 'longtext'
+			)
 		);
 
 		$this->EE->dbforge->add_field($fields);
@@ -75,19 +75,19 @@ class Blacklist_upd {
 		$this->EE->dbforge->create_table('blacklisted');
 
 		$fields = array(
-						'whitelisted_id'	=> array(
-													'type'				=> 'int',
-													'constraint'		=> 10,
-													'unsigned'			=> TRUE,
-													'auto_increment'	=> TRUE
-												),
-						'whitelisted_type'  => array(
-													'type' 				=> 'varchar',
-													'constraint'		=> '20',
-												),
-						'whitelisted_value' => array(
-													'type'				=> 'text'
-												)
+			'whitelisted_id'	=> array(
+				'type'				=> 'int',
+				'constraint'		=> 10,
+				'unsigned'			=> TRUE,
+				'auto_increment'	=> TRUE
+			),
+			'whitelisted_type'  => array(
+				'type' 				=> 'varchar',
+				'constraint'		=> '20',
+			),
+			'whitelisted_value' => array(
+				'type'				=> 'longtext'
+			)
 		);
 
 		$this->EE->dbforge->add_field($fields);
@@ -142,7 +142,27 @@ class Blacklist_upd {
 	 */
 	function update($current='')
 	{
-		if ($current < 3.0)
+		if (version_compare($current, '3.0.1', '<'))
+		{
+			$this->EE->load->dbforge();
+			
+			foreach (array('blacklisted', 'whitelisted') as $table_name)
+			{
+				if ($this->EE->db->table_exists($table_name))
+				{
+					$fields = array(
+						$table_name.'_value' => array(
+							'name' => $table_name.'_value',
+							'type' => 'LONGTEXT'
+						)
+					);
+					
+					$this->EE->dbforge->modify_column($table_name, $fields);
+				}
+			}
+		}
+		
+		if (version_compare($current, '3.0', '<'))
 		{
 			$this->EE->load->dbforge();
 
@@ -152,19 +172,19 @@ class Blacklist_upd {
 			if ( ! $this->EE->db->table_exists('whitelisted'))
 			{
 				$fields = array(
-								'whitelisted_id'	=> array(
-															'type'				=> 'int',
-															'constraint'		=> 10,
-															'unsigned'			=> TRUE,
-															'auto_increment'	=> TRUE
-														),
-								'whitelisted_type'  => array(
-															'type' 		 => 'varchar',
-															'constraint' => '20',
-														),
-								'whitelisted_value' => array(
-															'type' => 'text'
-														)
+					'whitelisted_id'	=> array(
+						'type'				=> 'int',
+						'constraint'		=> 10,
+						'unsigned'			=> TRUE,
+						'auto_increment'	=> TRUE
+					),
+					'whitelisted_type'  => array(
+						'type' 		 => 'varchar',
+						'constraint' => '20',
+					),
+					'whitelisted_value' => array(
+						'type' => 'text'
+					)
 				);
 
 				$this->EE->dbforge->add_field($fields);
@@ -181,11 +201,9 @@ class Blacklist_upd {
 			{
 				$this->EE->db->query($query);
 			}
-
-			return TRUE;
 		}
 
-		return FALSE;
+		return TRUE;
 	}
 }
 

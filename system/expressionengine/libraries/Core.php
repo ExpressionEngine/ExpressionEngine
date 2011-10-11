@@ -73,7 +73,7 @@ class EE_Core {
 		// application constants
 		define('IS_FREELANCER',	FALSE);
 		define('APP_NAME',		'ExpressionEngine'.(IS_FREELANCER ? ' Freelancer' : ''));
-		define('APP_BUILD',		'20110705');
+		define('APP_BUILD',		'20110801');
 		define('APP_VER',		substr($this->EE->config->item('app_version'), 0, 1).'.'.substr($this->EE->config->item('app_version'), 1, 1).'.'.substr($this->EE->config->item('app_version'), 2));
 		define('SLASH',			'&#47;');
 		define('LD',			'{');
@@ -292,11 +292,7 @@ class EE_Core {
 					$var_keys[] = LD.$k.RD;
 				}
 
-				foreach ($snippets as $name => $content)
-				{
-					$snippets[$name] = str_replace($var_keys, 
-								array_values($this->EE->config->_global_vars), $content);
-				}
+				$snippets = str_replace($var_keys, $this->EE->config->_global_vars, $snippets);
 
 				$this->EE->config->_global_vars = $this->EE->config->_global_vars + $snippets; 
 

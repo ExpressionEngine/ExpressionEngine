@@ -117,7 +117,7 @@ referencing the namespace.  Your short name should only contain word characters 
 'Create Wiki',
 
 'wiki_created' =>
-'Wiki has been created.  You may now modify the preferences.',
+'Wiki has been created.  You may now edit the preferences.',
 
 'no_wiki' =>
 'No wikis currently exist.',

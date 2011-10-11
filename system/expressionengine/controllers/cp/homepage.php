@@ -31,7 +31,7 @@ class Homepage extends CI_Controller {
 	 * @return	void
 	 */	
 	function index($message = '')
-	{	
+	{
 		$this->cp->get_installed_modules();
 		$this->cp->set_variable('cp_page_title', lang('main_menu'));
 
