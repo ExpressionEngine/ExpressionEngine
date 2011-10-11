@@ -296,6 +296,8 @@ class Member_register extends Member {
 		{
 			require APPPATH.'libraries/Validate.php';
 		}
+		
+		$this->EE->load->helper('string');
 
 		$VAL = new EE_Validate(array(
 			'member_id'			=> '',
@@ -303,9 +305,9 @@ class Member_register extends Member {
 			'fetch_lang' 		=> TRUE,
 			'require_cpw' 		=> FALSE,
 		 	'enable_log'		=> FALSE,
-			'username'			=> trim($_POST['username']),
+			'username'			=> trim_nbs($_POST['username']),
 			'cur_username'		=> '',
-			'screen_name'		=> trim($_POST['screen_name']),
+			'screen_name'		=> trim_nbs($_POST['screen_name']),
 			'cur_screen_name'	=> '',
 			'password'			=> $_POST['password'],
 		 	'password_confirm'	=> $_POST['password_confirm'],
@@ -414,16 +416,16 @@ class Member_register extends Member {
 
 			$this->EE->db->query("DELETE FROM exp_security_hashes WHERE (hash='".$this->EE->db->escape_str($_POST['XID'])."' AND ip_address = '".$this->EE->input->ip_address()."') OR date < UNIX_TIMESTAMP()-7200");
 		}
-
+		
 		// Assign the base query data
 		$data = array(
-			'username'		=> trim($this->EE->input->post('username')),
+			'username'		=> trim_nbs($this->EE->input->post('username')),
 			'password'		=> $this->EE->functions->hash($_POST['password']),
 			'ip_address'	=> $this->EE->input->ip_address(),
 			'unique_id'		=> $this->EE->functions->random('encrypt'),
 			'join_date'		=> $this->EE->localize->now,
-			'email'			=> trim($this->EE->input->post('email')),
-			'screen_name'	=> trim($this->EE->input->post('screen_name')),
+			'email'			=> trim_nbs($this->EE->input->post('email')),
+			'screen_name'	=> trim_nbs($this->EE->input->post('screen_name')),
 			'url'			=> prep_url($this->EE->input->post('url')),
 			'location'		=> $this->EE->input->post('location'),
 

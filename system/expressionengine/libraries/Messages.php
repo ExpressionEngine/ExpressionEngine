@@ -4575,7 +4575,7 @@ EOT;
 		}
 		
 		
-		$path = $this->EE->config->slash_item('emoticon_path');
+		$path = $this->EE->config->slash_item('emoticon_url');
 				
 		$i = 1;
 		

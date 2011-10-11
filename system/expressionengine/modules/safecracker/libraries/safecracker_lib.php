@@ -994,6 +994,9 @@ class Safecracker_lib
 		//add datepicker class
 		if ($this->datepicker)
 		{
+			$date_fmt = $this->EE->session->userdata('time_format');
+			$date_fmt = $date_fmt ? $date_fmt : $this->EE->config->item('time_format');
+
 			$this->head .= '<style type="text/css">.hasDatepicker{background:#fff url('.$this->EE->config->item('theme_folder_url').'cp_themes/default/images/calendar_bg.gif) no-repeat 98% 2px;background-repeat:no-repeat;background-position:99%;}</style>';
 			$this->head .= trim('
 				<script type="text/javascript">
@@ -1002,7 +1005,7 @@ class Safecracker_lib
 						hours = date.getHours();
 						minutes = date.getMinutes();
 						suffix = "";
-						format = "' . $this->EE->config->item('time_format') . '";
+						format = "'.$date_fmt.'";
 					
 						if (minutes < 10) {
 							minutes = "0" + minutes;
@@ -1798,7 +1801,10 @@ class Safecracker_lib
 			if ($category_info[5] > 1) {
 				$category_info[1] = str_repeat(NBS.NBS.NBS.NBS, $category_info[5] - 1) . $category_info[1];
 			}
-			
+
+			$selected = ($category_info[4] === TRUE) ? ' selected="selected"' : '';
+			$checked = ($category_info[4] === TRUE) ? ' checked="checked"' : '';
+
 			// Translate response from API to something parse variables can understand
 			$categories[$category_id] = array(
 				'category_id' => $category_info[0],
@@ -1808,8 +1814,8 @@ class Safecracker_lib
 				'category_parent' => $category_info[6],
 				'category_depth' => $category_info[5],
 
-				'selected' => $category_info[4],
-				'checked' => $category_info[4]
+				'selected' => $selected,
+				'checked' => $checked
 			);
 		}
 		

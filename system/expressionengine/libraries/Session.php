@@ -187,7 +187,7 @@ class EE_Session {
 		{
 			$this->validation = ( ! in_array($this->EE->config->item('user_session_type'), array('cs', 'c', 's'))) ? 'cs' : $this->EE->config->item('user_session_type');
 		}
-				
+		
 		// Do session IDs exist?
 		switch ($this->validation)
 		{

@@ -226,8 +226,10 @@ class Auth {
 		// Check password lockout status
 		if ($this->EE->session->check_password_lockout($username) === TRUE)
 		{
+			$this->EE->lang->loadfile('login');
+			
 			$line = lang('password_lockout_in_effect');
-			$line = str_replace("%x", $this->EE->config->item('password_lockout_interval'), $line);
+			$line = sprintf($line, $this->EE->config->item('password_lockout_interval'));
 
 			if (AJAX_REQUEST)
 			{
