@@ -677,6 +677,9 @@ ul#navigationTabs li #addQuickTab:active {
 
 #navigationTabs .msm_sites {
 	float:				right;
+}
+
+#navigationTabs .msm_sites.parent {
 	margin-right:		24px;
 }
 
