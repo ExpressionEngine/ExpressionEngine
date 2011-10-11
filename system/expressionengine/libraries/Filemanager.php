@@ -1296,14 +1296,36 @@ class Filemanager {
 			}
 			elseif (isset($size['resize_type']) AND $size['resize_type'] == 'crop')
 			{
+				// Scale the larger dimension up so only one dimension of our 
+				// image fits within the desired dimension
+				if ($prefs['width'] > $prefs['height'])
+				{
+					$config['width'] = round($prefs['width'] * $size['height'] / $prefs['height']);
+				}
+				elseif ($prefs['height'] > $prefs['width'])
+				{
+					$config['height'] = round($pref['height'] * $size['width'] / $prefs['width']);
+				}
 				
-				// This may need to change if we let them manually set crop
-				// For now, let's crop from center for Wes
-
-				$config['x_axis'] = (($prefs['width'] / 2) - ($config['width'] / 2));
-				$config['y_axis'] = (($prefs['height'] / 2) - ($config['height'] / 2));
+				// First resize down to smallest possible size (greater of height and width)
+				$this->EE->image_lib->initialize($config);
+				
+				if ( ! $this->EE->image_lib->resize())
+				{
+					return FALSE;
+				}
+				
+				// Next set crop accordingly
+				$resized_image_dimensions = $this->get_image_dimensions($resized_path.$prefs['file_name']);
+				$config['source_image'] = $resized_path.$prefs['file_name'];
+				$config['x_axis'] = (($resized_image_dimensions['width'] / 2) - ($config['width'] / 2));
+				$config['y_axis'] = (($resized_image_dimensions['height'] / 2) - ($config['height'] / 2));
 				$config['maintain_ratio'] = FALSE;
-
+				
+				// Change height and width back to the desired size
+				$config['width'] = $size['width'];
+				$config['height'] = $size['height'];
+				
 				$this->EE->image_lib->initialize($config);
 
 				if ( ! @$this->EE->image_lib->crop())
@@ -1682,6 +1704,12 @@ class Filemanager {
 				'offset' => $offset
 			)
 		);
+
+		if ($files['results'] === FALSE)
+		{
+			return array();
+		}
+
 		$files = $files['results']->result_array();
 
 		foreach ($files as &$file)
@@ -1979,8 +2007,8 @@ class Filemanager {
 					array(
 						'file_name'		=> $file['file_name'],
 						'directory_id'	=> $dir['id']
-						)
-					);
+					)
+				);
 			}
 		}		
 		

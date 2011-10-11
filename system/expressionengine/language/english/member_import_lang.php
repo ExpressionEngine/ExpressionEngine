@@ -175,6 +175,9 @@ on your server, and then submit the location of the file.',
 'language' =>
 'Default Language',
 
+'timezone' =>
+'Default Timezone',
+
 'member_fields' =>
 'Member Fields',
 

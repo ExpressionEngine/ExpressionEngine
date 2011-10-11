@@ -1272,7 +1272,7 @@ $lang = array(
 "enable_emoticons" =>
 "Display Smileys?",
 
-"emoticon_path" =>
+"emoticon_url" =>
 "URL to the directory containing your smileys ",
 
 "tracking_cfg" =>

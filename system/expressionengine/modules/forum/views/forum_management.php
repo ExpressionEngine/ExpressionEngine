@@ -68,7 +68,7 @@ if (count($forums))
 		else
 		{
 			$this->table->add_row(
-				$row['forum_name'].NBS.$row['forum_description'],
+				'<strong>'.$row['forum_name'].'</strong><br>'.$row['forum_description'],
 				$status,
 				$arrows,
 				array(

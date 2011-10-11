@@ -193,7 +193,7 @@ class Admin_model extends CI_Model {
 										 ),
 			'emoticon_cfg'		=>	array(												
 											'enable_emoticons'			=> array('r', array('y' => 'yes', 'n' => 'no')),
-											'emoticon_path'				=> array('i', '')
+											'emoticon_url'				=> array('i', '')
 										 ),									
 			'tracking_cfg'		=>	array(
 											'enable_online_user_tracking'	=> array('r', array('y' => 'yes', 'n' => 'no'), 'y'),

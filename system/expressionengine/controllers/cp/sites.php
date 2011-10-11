@@ -24,8 +24,8 @@
  */
 class Sites extends CI_Controller {
 
-	var $version 			= '2.1.0';
-	var $build_number		= '20110621';
+	var $version 			= '2.1.1';
+	var $build_number		= '20111011';
 	var $allow_new_sites 	= FALSE;
 
 	/**
@@ -254,6 +254,7 @@ class Sites extends CI_Controller {
 		
 		$this->load->model('site_model');
 		$this->load->helper(array('form', 'snippets'));
+		$this->lang->loadfile('filemanager');
 		
 		$values = array('site_id'					=> '',
 						'site_label'				=> '',
@@ -1108,9 +1109,11 @@ class Sites extends CI_Controller {
 									foreach(array('field_name', 'field_label') AS $check)
 									{
 										$count_query = $this->db->query("SELECT COUNT(*) AS count FROM exp_channel_fields 
-																	WHERE site_id = '".$this->db->escape_str($site_id)."' 
-																	AND `".$check."` LIKE '".$this->db->escape_like_str($row[$check])."%'");
-																	
+											WHERE site_id = '".$this->db->escape_str($site_id)."'
+											AND `".$check."` LIKE '".$this->db->escape_like_str($row[$check])."%' ".
+											"AND group_id = '".$this->db->escape_str($query->row('field_group'))."'"
+										);
+										
 										if ($count_query->row('count')  > 0)
 										{
 											$row[$check] = $row[$check].'-'.($count_query->row('count')  + 1);
@@ -1801,7 +1804,6 @@ class Sites extends CI_Controller {
 						'exp_referrers',
 						'exp_search',
 						'exp_search_log',
-						'exp_sessions',
 						'exp_sites',
 						'exp_specialty_templates',
 						'exp_stats',

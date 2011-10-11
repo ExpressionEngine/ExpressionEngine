@@ -50,5 +50,18 @@ function unique_marker($ident)
 	return $rand.$ident;
 }
 
+// ----------------------------------------------------------------------------
+
+/**
+ * Just like trim, but also removes non-breaking spaces
+ * 
+ * @param string $string The string to trim
+ * @return string The trimmed string
+ */
+function trim_nbs($string)
+{
+	return trim($string, " \t\n\r\0\xB\xA0".chr(0xC2).chr(0xA0));
+}
+
 /* End of file EE_string_helper.php */
 /* Location: ./system/expressionengine/helpers/EE_string_helper.php */

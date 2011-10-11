@@ -36,7 +36,6 @@ class Installer_Config Extends EE_Config {
 	
 	var $config_path 		= ''; // Set in the constructor below
 	var $database_path		= ''; // Set in the constructor below
-	var $default_ini 		= array();
 	var $exceptions	 		= array();	 // path.php exceptions
 	
 	/**
@@ -90,9 +89,7 @@ class Installer_Config Extends EE_Config {
 		// Set any config overrides.  These are the items that used to be in 
 		// the path.php file, which are now located in the main index file
 		$this->_set_overrides($this->config);
-		
-		// Set the default_ini data, used by the sites feature
-		$this->default_ini = $this->config;
+		$this->set_item('enable_query_strings', TRUE);
 	}
 
 	// --------------------------------------------------------------------

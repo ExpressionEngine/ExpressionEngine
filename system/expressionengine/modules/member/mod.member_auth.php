@@ -128,14 +128,15 @@ class Member_auth extends Member {
 		// Check password lockout status
 		if (TRUE === $this->EE->session->check_password_lockout($username))
 		{
+			$this->EE->lang->loadfile('login');
+			
 			$line = lang('password_lockout_in_effect');
-			$line = str_replace("%x", $this->EE->config->item('password_lockout_interval'), $line);
+			$line = sprintf($line, $this->EE->config->item('password_lockout_interval'));
 
 			$this->EE->output->show_user_error('general', $line);
 		}
 
 		$success = '';
-		$sites	 = $this->EE->config->item('multi_login_sites');
 		
 		// Log me in.
 		if ($multi)
@@ -145,7 +146,8 @@ class Member_auth extends Member {
 			$success = '_build_multi_success_message';
 
 			$current_url = $this->EE->functions->fetch_site_index();
-			$current_idx = array_search($current_url, $sites_array);
+			$current_search_url = preg_replace('/\/S=.*$/', '', $current_url);
+			$current_idx = array_search($current_search_url, $sites_array);
 		}
 		else
 		{
@@ -154,7 +156,8 @@ class Member_auth extends Member {
 			$success = '_build_success_message';
 			
 			$current_url = $this->EE->functions->fetch_site_index();
-			$current_idx = array_search($current_url, $sites_array);
+			$current_search_url = preg_replace('/\/S=.*$/', '', $current_url);
+			$current_idx = array_search($current_search_url, $sites_array);
 		}
 		
 		// More sites?
@@ -362,7 +365,7 @@ class Member_auth extends Member {
 									  ->where('class', 'Member')
 									  ->where('method', 'member_login')
 									  ->get('actions');
-
+			
 			// next site
 			$next_qs = array(
 				'ACT'	=> $action_id->row('action_id'),

@@ -1,30 +1,28 @@
-<?xml version="1.0" encoding="{encoding}" ?>
-<rss version="2.0"
-    xmlns:dc="http://purl.org/dc/elements/1.1/"
-    xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
-    xmlns:admin="http://webns.net/mvcb/"
-    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-    xmlns:content="http://purl.org/rss/1.0/modules/content/">
-    
-    <channel>
-    
-    <title>{exp:xml_encode}{forum_name}{/exp:xml_encode}</title>
-    <link>{forum_url}</link>
-    <description>{exp:xml_encode}{forum_name}{/exp:xml_encode}</description>
-    <dc:language>{forum_language}</dc:language>
-    <dc:rights>Copyright {gmt_date format="%Y"}</dc:rights>
-    <dc:date>{gmt_date format="%Y-%m-%dT%H:%i:%s%Q"}</dc:date>
-    <admin:generatorAgent rdf:resource="http://expressionengine.com/" />
-    
+<?xml version="1.0" encoding="{encoding}"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+	
+	<channel>
+	
+	<title>{exp:xml_encode}{forum_name}{/exp:xml_encode}</title>
+	<link>{forum_url}</link>
+	<description>{exp:xml_encode}{forum_name}{/exp:xml_encode}</description>
+	<copyright>Copyright {gmt_date format="%Y"}</copyright>
+	<docs>http://www.rssboard.org/rss-specification</docs>
+	<generator>ExpressionEngine v{version} http://expressionengine.com/</generator>
+	<language>{forum_language}</language>
+	<lastBuildDate>{gmt_edit_date format='%D, %d %M %Y %H:%i:%s GMT'}</lastBuildDate>
+	<atom:link href="{forum_rss_url}" rel="self" type="application/rss+xml" />
+		
 {rows}
-    <item>
-      <title>{exp:xml_encode}{title}{/exp:xml_encode}</title>
-      <link>{exp:xml_encode}{path:view_thread}{/exp:xml_encode}</link>
-      <guid>{path:view_thread}#When:{gmt_post_date format="%H:%i:%sZ"}</guid>
-      <description>{exp:xml_encode}{body}{/exp:xml_encode}</description>
-      <dc:date>{gmt_post_date format="%Y-%m-%dT%H:%i:%s%Q"}</dc:date>
-    </item>
+	<item>
+		<title>{exp:xml_encode}{title}{/exp:xml_encode}</title>
+		<link>{exp:xml_encode}{path:view_thread}{/exp:xml_encode}</link>
+		<author>{author}</author>
+		<description><![CDATA[{body}]]></description>
+		<guid>{path:view_thread}#When:{gmt_post_date format="%H:%i:%sZ"}</guid>
+		<pubDate>{gmt_post_date format='%D, %d %M %Y %H:%i:%s GMT'}</pubDate>
+	</item>
 {/rows}
-    
-    </channel>
+	
+	</channel>
 </rss>

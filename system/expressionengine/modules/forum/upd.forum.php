@@ -26,7 +26,7 @@
 
 class Forum_upd {
 
-	var $version			= '3.1.5';
+	var $version			= '3.1.6';
 	
 	function Forum_upd()
 	{
@@ -920,6 +920,8 @@ class Forum_upd {
 		if (version_compare($current, '3.1.4', '<')) { }
 
 		if (version_compare($current, '3.1.5', '<')) { }
+		
+		if (version_compare($current, '3.1.6', '<')) { }
 		
 		return TRUE;		
 		
