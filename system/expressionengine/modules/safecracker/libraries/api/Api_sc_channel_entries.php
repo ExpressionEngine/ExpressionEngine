@@ -62,6 +62,8 @@ class Api_sc_channel_entries extends Api_channel_entries
 			return;
 		}
 
+		$rel_ids = array();
+		
 		foreach($this->EE->safecracker->custom_fields as $field)
 		{
 			if ( ! $this->EE->safecracker->preserve_checkboxes && $field['field_type'] == 'checkboxes')
@@ -73,6 +75,30 @@ class Api_sc_channel_entries extends Api_channel_entries
 			if (empty($field['isset']))
 			{
 				$data['field_id_'.$field['field_id']] = ($this->EE->safecracker->entry($field['field_name']) !== FALSE) ? $this->EE->safecracker->entry($field['field_name']) : '';
+
+
+				// The entry API expects the rel_child_id from the exp_relationships field 
+				// rather than the rel_id stored in channel_data
+				if ($field['field_type'] == 'rel' && $this->EE->safecracker->entry($field['field_name']) !== FALSE)
+				{
+					$rel_ids[$this->EE->safecracker->entry($field['field_name'])] = 'field_id_'.$field['field_id'];
+				}
+
+			}
+		}
+
+		if ( ! empty($rel_ids))
+		{
+			$relationships = $this->EE->safecracker->api_safe_rel_ids(array_keys($rel_ids));
+			
+			if ($relationships->num_rows() > 0)
+			{
+				foreach ($relationships->result_array() as $row)
+				{
+					 $data[$rel_ids[$row['rel_id']]] = $row['rel_child_id'];
+					
+				}
+				
 			}
 		}
 	}
