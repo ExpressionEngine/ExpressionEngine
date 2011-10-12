@@ -955,6 +955,7 @@ class EE_Menu {
 			'tools_communicate'		=> 'cp/tools/communicate.html',
 
 			'tools_utilities'		=> array(
+				'index'						=> 'cp/tools/index.html',
 				'config_editor'				=> 'cp/tools/utilities/config_editor.html',
 				'import_utilities'			=> 'cp/tools/utilities/import_utilities.html',
 				'php_info'					=> 'cp/tools/utilities/php_info.html',
