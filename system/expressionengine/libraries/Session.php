@@ -68,6 +68,35 @@ There are three validation types, set in the config file:
 	NOTE: The control panel and public pages can each have their own session preference.
 */
 
+
+
+/*
+	Remember Me Addition:
+	- remember_me table:
+		- random_token (set as cookie), member_id, ip?, user agent, creation time, admin_sess, site_id (to aid in counting active remember_me's)
+	
+	- when user visits:
+		- if session expired and cookie set: check ip, ua, etc
+		- update the row's creation time and set new random token + cookie
+	
+	- pruning:
+		- anything older than a year
+		- members with more than 5 (configurable) remembered sessions (prune oldest | effect on msm)
+		- members that don't exist / banned / etc
+		- on password change (also clear non-current sessions)
+	
+	- clear all remember me's on password change
+	- clear all sessions that are not current on password change
+	
+	- thoughts/ideas
+		- user logs in and immediately clears cookies - we're left with row for a year
+		- maybe query for duplicate member_id+ip+ua in pruning?
+*/
+
+
+
+
+
 class EE_Session {
 	
 	public $user_session_len	 = 7200;  // User sessions expire in two hours
