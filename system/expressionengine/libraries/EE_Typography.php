@@ -1335,7 +1335,13 @@ class EE_Typography extends CI_Typography {
 
 		ob_start();
 		
-?>
+
+/* CAREFUL
+ *
+ * This javascript currently breaks [email] links in the forum if
+ * it outputs curly brackets. Test if you change it.
+*/ ?>
+
 <span id='<?php echo $span_id; ?>'>.<?php echo $this->EE->lang->line('encoded_email'); ?></span><script type="text/javascript">
 /*<![CDATA[*/
 var l=new Array();
@@ -1349,10 +1355,10 @@ var output = '';
 	}
 ?>
 
-for (var i = l.length-1; i >= 0; i=i-1){ 
+for (var i = l.length-1; i >= 0; i=i-1)
 if (l[i].substring(0, 1) == ' ') output += "&#"+unescape(l[i].substring(1))+";"; 
 else output += unescape(l[i]);
-}
+
 document.getElementById('<?php echo $span_id; ?>').innerHTML = output;
 /*]]>*/
 </script><?php
