@@ -2887,6 +2887,23 @@ class Safecracker_lib
 	{
 		return (is_numeric($this->EE->localize->convert_human_date_to_gmt($data)));
 	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Get relationship data
+	 * 
+	 * @param	array $rel_ids
+	 * @return	object
+	 */
+	public function api_safe_rel_ids($rel_ids)
+	{
+		$this->EE->db->select('rel_id, rel_parent_id, rel_child_id');
+		$this->EE->db->where_in('rel_id', $rel_ids);
+		$query = $this->EE->db->get('relationships');		
+
+		return $query;		
+	}
 }
 
 /* End of file safecracker_lib.php */
