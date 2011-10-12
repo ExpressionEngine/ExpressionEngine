@@ -87,7 +87,7 @@ class File {
 
 		$this->build_sql_query();
 		
-		if ($this->sql == '')
+		if (empty($this->sql))
 		{
 			return $this->EE->TMPL->no_results();
 		}
