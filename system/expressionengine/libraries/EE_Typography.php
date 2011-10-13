@@ -1293,7 +1293,7 @@ class EE_Typography extends CI_Typography {
 			$bit[] .= " ".ord(substr($email, $i, 1));
 		}
 		
-		$temp	= array();
+		$temp = array();
 		
 		if ($anchor == TRUE)
 		{		
@@ -1340,24 +1340,20 @@ class EE_Typography extends CI_Typography {
  *
  * This javascript currently breaks [email] links in the forum if
  * it outputs curly brackets. Test if you change it.
+ *
+ * Regex speed hat tip: http://blog.stevenlevithan.com/archives/faster-trim-javascript
 */ ?>
+
+
 
 <span id='<?php echo $span_id; ?>'>.<?php echo $this->EE->lang->line('encoded_email'); ?></span><script type="text/javascript">
 /*<![CDATA[*/
-var l=new Array();
-var output = '';
-<?php
-	
-	$i = 0;
-	foreach ($bit as $val)
-	{
-?>l[<?php echo $i++; ?>]='<?php echo $val; ?>';<?php
-	}
-?>
+var output = '',
+	l = ['<?php echo implode("','", $bit)?>'],
+	i = l.length;
 
-for (var i = l.length-1; i >= 0; i=i-1)
-if (l[i].substring(0, 1) == ' ') output += "&#"+unescape(l[i].substring(1))+";"; 
-else output += unescape(l[i]);
+for ( ; --i >= 0 ; )
+output += unescape(l[i].replace(/^\s\s*/, '&#'));
 
 document.getElementById('<?php echo $span_id; ?>').innerHTML = output;
 /*]]>*/
