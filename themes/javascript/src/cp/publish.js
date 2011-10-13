@@ -32,6 +32,13 @@ EE.publish.category_editor = function() {
 		refresh_cats, setup_page, reload, i,
 		selected_cats = {};
 
+	// categories with a lot of custom fields need to scroll
+	cat_modal_container.css({
+		height: '100%',
+		padding: '0 10px',	// account for vert scrollbar
+		overflow: 'auto'
+	});
+
 	// IE caches $.load requests, so we need a unique number
 	function now() {
 		return +new Date();
