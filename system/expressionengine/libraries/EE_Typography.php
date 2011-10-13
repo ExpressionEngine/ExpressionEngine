@@ -1331,38 +1331,40 @@ class EE_Typography extends CI_Typography {
 		}
 		
 		$bit = array_reverse($bit);
-		$span_id = 'eeEncEmail_'.$this->EE->functions->random('alpha', 10);
+		$span_marker = 'eeEncEmail_'.$this->EE->functions->random('alpha', 10);
 
 		ob_start();
-		
 
 /* CAREFUL
  *
- * This javascript currently breaks [email] links in the forum if
+ * This javascript currently breaks in the forum if
  * it outputs curly brackets. Test if you change it.
  *
  * Regex speed hat tip: http://blog.stevenlevithan.com/archives/faster-trim-javascript
 */ ?>
 
-
-
-<span id='<?php echo $span_id; ?>'>.<?php echo $this->EE->lang->line('encoded_email'); ?></span><script type="text/javascript">
+<span <?php echo $span_marker; ?>='1'>.<?php echo lang('encoded_email'); ?></span><script type="text/javascript">
 /*<![CDATA[*/
-var output = '',
+var out = '',
+	el = document.getElementsByTagName('span'),
 	l = ['<?php echo implode("','", $bit)?>'],
-	i = l.length;
+	i = l.length,
+	j = el.length;
 
-for ( ; --i >= 0 ; )
-output += unescape(l[i].replace(/^\s\s*/, '&#'));
+while (--i)
+	out += unescape(l[i].replace(/^\s\s*/, '&#'));
 
-document.getElementById('<?php echo $span_id; ?>').innerHTML = output;
+while (--j)
+	if (el[j].getAttribute('<?php echo $span_marker ?>'))
+		el[j].innerHTML = out;
+		
 /*]]>*/
 </script><?php
 
 		$buffer = ob_get_contents();
 		ob_end_clean(); 
 
-		return str_replace("\n", '', $buffer);		
+		return str_replace(array("\n", "\t"), '', $buffer);		
 	}
 	
 	// --------------------------------------------------------------------
