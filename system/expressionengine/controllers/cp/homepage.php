@@ -100,9 +100,16 @@ class Homepage extends CI_Controller {
 		$vars['cp_recent_ids'] = array(
 			'entry'		=> $this->channel_model->get_most_recent_id('entry')
 		);
+		
+		// 2.3.1 Patch
+		if (version_compare(APP_VER, '2.3.1', '<') && $this->session->userdata('group_id') == 1)
+		{
+			$show_notice = TRUE;
+			$vars['info_message_open'] = TRUE; // big mistakes cannot be hidden
+			$vars['version'] = $this->_check_patch();
+		}
 
 		// Prep js
-		
 		$this->javascript->set_global('lang.close', lang('close'));
 		
 		if ($show_notice)
@@ -244,6 +251,7 @@ class Homepage extends CI_Controller {
 		
 		return FALSE;
 	}
+	
 	// --------------------------------------------------------------------
 
 	/**
@@ -338,6 +346,41 @@ class Homepage extends CI_Controller {
 						   $download_url,
 						   $this->cp->masked_url($this->config->item('doc_url').'installation/update.html'));					
 		}
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * EE 2.3.1 Patch Check
+	 *
+	 * @access	private
+	 * @return	string
+	 */
+	private function _check_patch()
+	{
+		if (version_compare(APP_VER, '2.3.0', '<'))
+		{
+			$msg = '<span class="notice">Patch unsuccessful!</span><br><br>';
+			$msg .= 'This patch cannot be applied to ExpressionEngine versions older than 2.3.0.<br><br>Please do a full upgrade to version 2.3.1 or contact <a href="http://expressionengine.com/forums">tech support</a> for more information.';
+			return $msg;
+		}
+
+		$contents = file_get_contents(BASEPATH.'core/Security.php');
+		$checksum = substr_count($contents, 'replace');
+		
+		unset($contents);
+		
+		if ($checksum != 40)
+		{
+			$msg = '<span class="notice">Patch unsuccessful!</span><br><br>';
+			$msg .= 'Incorrect File: <kbd>system/codeigniter/core/Security.php</kbd>.<br><br>If you need assistance, please contact <a href="http://expressionengine.com/forums">tech support</a> for more information.';
+			return $msg;
+		}
+
+		$this->config->update_site_prefs(array('app_version' => '231'));
+		$msg = '<span class="go_notice">Patch successfully applied!</span><br><br>';
+		$msg .= 'You are now on ExpressionEngine 2.3.1.';
+		return $msg;
 	}
 
 }
