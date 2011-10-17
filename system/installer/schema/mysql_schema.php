@@ -68,7 +68,6 @@ class EE_Schema {
 			  last_activity int(10) unsigned DEFAULT '0' NOT NULL,
 			  PRIMARY KEY `session_id` (`session_id`),
 			  KEY `member_id` (`member_id`),
-			  KEY `site_id` (`site_id`),
 			  KEY `last_activity_idx` (`last_activity`)
 			)";
 		
