@@ -419,7 +419,7 @@ class File {
 		$this->EE->db->order_by($order_by, $this_sort);		
 
 		// Add the limit
-		$this_page = ($this->current_page == '' OR ($this->limit > 1 AND $this->current_page == 1)) ? 0 : $this->current_page;
+		$this_page = ($this->p_page == '' OR ($this->limit > 1 AND $this->p_page == 1)) ? 0 : $this->p_page;
 		$this->EE->db->limit($this->limit, $this_page);
 		
 		
