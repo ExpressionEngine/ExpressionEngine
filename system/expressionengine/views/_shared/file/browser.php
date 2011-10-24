@@ -28,7 +28,7 @@
 					<td colspan="4"><?=lang('no_uploaded_files')?></td>
 				</tr>
 				<tr id="rowTmpl">
-					<td><a href="#" onclick="$.ee_filebrowser.placeImage('${file_id}'); return false;">${file_name}</a></td>
+					<td><a href="#" title="${file_name}" onclick="$.ee_filebrowser.placeImage('${file_id}'); return false;">${file_name}</a></td>
 					<td>${file_size}</td>
 					<td>${mime_type}</td>
 					<td>${date}</td>
