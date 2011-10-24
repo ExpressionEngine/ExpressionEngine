@@ -2211,8 +2211,8 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 						switch ($val['1'])
 						{
 							case 'member_groups' :	
-								$groups = $this->member_model->get_member_groups('', array('group_id !='=>'1'));
-								
+								$groups = $this->member_model->get_member_groups();
+
 								$options = array();
 
 								foreach ($groups->result() as $group)
@@ -2220,8 +2220,8 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 									$options[$group->group_id] = $group->group_title;
 								}
 
-								// Remove the Pending group as it makes no sense for members to go from Pending to Pending
-								unset($options[4]);
+								// Remove the Super Admin, Guests and Pending groups as they are not sensible choices
+								unset($options[1], $options[3], $options[4]);
 		
 								$preference_controls['type'] = "dropdown";
 								$preference_controls['id'] = 'default_member_group';
