@@ -125,6 +125,21 @@ class Content_files_modal extends CI_Controller {
 	public function upload_file()
 	{
 		$this->output->enable_profiler(FALSE);
+		
+		// Handles situation where the file attempted to upload exceeds the max upload size so much
+		// that it removes all headers in $_POST and $_FILES; we need to handle this before anything
+		// else because everything below depends on $_POST
+		if (empty($_POST)
+			&& empty($_FILES)
+			&& $_SERVER['REQUEST_METHOD'] == 'POST'
+			&& $_SERVER['CONTENT_LENGTH'] > 0)
+		{
+			$this->lang->loadfile('upload');
+			$vars = $this->_get_index_vars();
+			$vars['error'] = lang('upload_file_exceeds_limit');
+			
+			return $this->load->view('_shared/file_upload/index', $vars);
+		}
 
 		// Make sure this is a valid form submit
 		if (empty($_POST))
