@@ -3471,6 +3471,18 @@ div.contentWrap {
 	margin-top: 3px;
 }
 
+/* Fix for long file names */
+#file_manager .mainTable td,
+#file_chooser_body #tableView td {
+	max-width: 200px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+#file_chooser_body .mainTable td {
+	max-width: 500px;
+}
+
 a.file_chooser_thumbnail:link,
 a.file_chooser_thumbnail:visited {
 	border:				1px solid #ddd;
