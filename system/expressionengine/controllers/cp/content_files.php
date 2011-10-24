@@ -1467,7 +1467,9 @@ class Content_files extends CI_Controller {
 				'file_size'				=> $file['size'],
 				'uploaded_by_member_id'	=> $this->session->userdata('member_id'),
 				'modified_by_member_id' => $this->session->userdata('member_id'),
-				'file_hw_original'		=> $image_dimensions['height'] . ' ' . $image_dimensions['width']
+				'file_hw_original'		=> $image_dimensions['height'] . ' ' . $image_dimensions['width'],
+				'upload_date'			=> $file['date'],
+				'modified_date'			=> $file['date']
 			);
 			
 			
