@@ -208,10 +208,14 @@ class File_model extends CI_Model {
 		
 		// Set some defaults if missing
 		if ( ! isset($data['modified_by_member_id']))
-			$data['modified_by_member_id'] = $this->session->userdata('member_id');
+		{
+			$data['modified_by_member_id'] = $this->session->userdata('member_id')
+		}
 		
 		if ( ! isset($data['modified_date']))
+		{
 			$data['modified_date'] = $this->localize->now;
+		}
 			
 		$data['status'] = ( ! isset($data['status'])) ? 'o' : $data['status'];
 		
