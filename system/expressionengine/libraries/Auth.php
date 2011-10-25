@@ -245,7 +245,18 @@ class Auth {
 		// ----------------------------------------------------------------
 
 		$password = $this->EE->input->post('password');
-		$incoming = $this->EE->auth->authenticate_username($username, $password);
+
+	        // Allow users to register with Email
+	        // ----------------------------------------------------------------
+
+		if(strpos($username,"@") !== false && $username)
+	        {
+    			$incoming = $this->EE->auth->authenticate_email($username, $password);
+        	}
+        	else
+        	{
+            		$incoming = $this->EE->auth->authenticate_username($username, $password);
+        	}
 
 		// Not even close
 		if ( ! $incoming)
