@@ -251,8 +251,9 @@ class Auth {
 
 		if(strpos($username,"@") !== false && $username)
 	        {
-    			$incoming = $this->EE->auth->authenticate_email($username, $password);
-        	}
+	     		$incoming = $this->EE->auth->authenticate_email($username, $password);
+    			$username = $incoming->member('username');
+       		}
         	else
         	{
             		$incoming = $this->EE->auth->authenticate_username($username, $password);
