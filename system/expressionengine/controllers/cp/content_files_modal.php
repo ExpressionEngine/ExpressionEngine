@@ -131,8 +131,8 @@ class Content_files_modal extends CI_Controller {
 		// else because everything below depends on $_POST
 		if (empty($_POST)
 			AND empty($_FILES)
-			AND $_SERVER['REQUEST_METHOD'] == 'POST'
-			AND $_SERVER['CONTENT_LENGTH'] > 0)
+			AND $this->input->server('REQUEST_METHOD') == 'POST'
+			AND $this->input->server('CONTENT_LENGTH') > 0)
 		{
 			$this->lang->loadfile('upload');
 			$vars = $this->_get_index_vars();
