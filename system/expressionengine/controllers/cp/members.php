@@ -2352,7 +2352,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		}
 
 		// No group name
-		if ( ! $this->input->post('group_title'))
+		if ( ! $group_title = $this->input->post('group_title'))
 		{
 			show_error(lang('missing_group_title'));
 		}
@@ -2368,9 +2368,19 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			
 			$query = $this->db->query("SELECT MAX(group_id) as max_group FROM exp_member_groups");
 			
-			$group_id = $query->row('max_group')  + 1;
+			$group_id = $query->row('max_group') + 1;
 		}
 		
+		// Group Title already exists?
+		$this->db->from('member_groups')
+					->where('group_title', $group_title)
+					->where('group_id !=', $group_id);
+		
+		if ($this->db->count_all_results())
+		{
+			show_error(lang('group_title_exists'));
+		}
+
 		// get existing category privileges if necessary
 		
 		if ($edit == TRUE)
