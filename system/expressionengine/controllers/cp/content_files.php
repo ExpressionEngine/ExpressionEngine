@@ -1431,7 +1431,7 @@ class Content_files extends CI_Controller {
 						'mime_type'		=> $file['mime']
 					),
 					TRUE, 	// Create thumb
-					TRUE 	// Missing sizes only
+					FALSE 	// Overwrite existing thumbs
 				);
 				
 				// Update dimensions
