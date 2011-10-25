@@ -772,7 +772,7 @@ class EE_Menu {
 		}
 		else
 		{
-			$menu[$this->EE->config->item('site_name')] = $this->EE->config->item('base_url').$this->EE->config->item('index_page').'?URL='.$this->EE->config->item('base_url').$this->EE->config->item('index_page');
+			$menu[$this->EE->config->item('site_name')] = $this->EE->config->item('base_url').$this->EE->config->item('site_index').'?URL='.$this->EE->config->item('base_url').$this->EE->config->item('site_index');
 		}
 		
 		return $menu;
