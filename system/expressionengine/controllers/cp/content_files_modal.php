@@ -130,9 +130,9 @@ class Content_files_modal extends CI_Controller {
 		// that it removes all headers in $_POST and $_FILES; we need to handle this before anything
 		// else because everything below depends on $_POST
 		if (empty($_POST)
-			&& empty($_FILES)
-			&& $_SERVER['REQUEST_METHOD'] == 'POST'
-			&& $_SERVER['CONTENT_LENGTH'] > 0)
+			AND empty($_FILES)
+			AND $_SERVER['REQUEST_METHOD'] == 'POST'
+			AND $_SERVER['CONTENT_LENGTH'] > 0)
 		{
 			$this->lang->loadfile('upload');
 			$vars = $this->_get_index_vars();
