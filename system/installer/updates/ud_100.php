@@ -103,7 +103,7 @@ class Updater {
 
 		$query = $this->EE->db->query("SELECT * FROM exp_weblog_data");
 
-		foreach ($query->row as $key => $val)
+		foreach ($query->result_array() as $key => $val)
 		{
 			if (substr($key, 0, 9) == 'field_ft_')
 			{

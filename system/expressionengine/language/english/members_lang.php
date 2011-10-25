@@ -511,6 +511,9 @@ $lang = array(
 "missing_group_title" =>
 "The member group must have a name",
 
+"group_title_exists" =>
+"There is already a Member Group with that name.",
+
 "site_access" =>
 "Site Access",
 

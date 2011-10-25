@@ -11015,7 +11015,7 @@ class Forum_Core extends Forum {
 			$cond['views'] = $row['thread_views'];
 						
 			$tagdata = $this->EE->functions->prep_conditionals($tagdata, $cond);
-			
+						
 			if (isset($replies[$row['topic_id']]))
 			{
 				$tagdata = $this->EE->functions->prep_conditionals($tagdata, $replies[$row['topic_id']]);				
@@ -11168,7 +11168,7 @@ class Forum_Core extends Forum {
 				// Parse 1:1 fields
 				if (isset($row[$val]))
 				{					
-					$tagdata = $this->EE->TMPL->swap_var_single($val, $row[$val], $tagdata);
+					$tagdata = $this->EE->TMPL->swap_var_single($val, $this->_convert_special_chars($row[$val]), $tagdata);
 				}
 				
 			}

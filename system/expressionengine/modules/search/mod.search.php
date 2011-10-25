@@ -55,7 +55,8 @@ class Search {
 	{
 		$this->EE->lang->loadfile('search');
 
-		if ( ! $this->EE->security->secure_forms_check($this->EE->input->post('XID')))
+		// We make an exception for "view all posts by member" - it's a link
+		if ( ! isset($_GET['mbr']) && ! $this->EE->security->secure_forms_check($this->EE->input->post('XID')))
 		{
 			return $this->EE->output->show_user_error('general', array(lang('invalid_action')));
 		}
