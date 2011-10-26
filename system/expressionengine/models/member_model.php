@@ -638,7 +638,7 @@ class Member_model extends CI_Model {
 		$this->db->select('members.member_id, members.group_id, 
 						members.username, members.screen_name, members.in_authorlist');
 		$this->db->from('members');
-		$this->db->join("member_groups", "members.group_id = members.group_id", 'left');
+		$this->db->join('member_groups', 'member_groups.group_id = members.group_id');
 		
 		if ($author_id)
 		{
