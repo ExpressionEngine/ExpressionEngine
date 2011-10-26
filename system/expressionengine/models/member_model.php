@@ -662,6 +662,23 @@ class Member_model extends CI_Model {
 	}
 	
 	// --------------------------------------------------------------------
+	
+	/**
+	 * Get Authors Simple
+	 *
+	 * This function returns a set of members who are authors in a set channel- member group data is omitted
+	 *
+	 * @deprecated	Use member_model->get_authors instead
+	 * @access	public
+	 * @param	integer
+	 * @return	mixed
+	 */
+	function get_authors_simple($author_id = FALSE, $limit = FALSE, $offset = FALSE)
+	{
+		return $this->get_authors($author_id, $limit, $offset);
+	}
+	
+	// --------------------------------------------------------------------
 
 	/**
 	 * Get Member Groups
