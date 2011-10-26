@@ -28,7 +28,7 @@
 					<td colspan="4"><?=lang('no_uploaded_files')?></td>
 				</tr>
 				<tr id="rowTmpl">
-					<td><a href="#" onclick="$.ee_filebrowser.placeImage('${file_id}'); return false;">${file_name}</a></td>
+					<td><a href="#" title="${file_name}" onclick="$.ee_filebrowser.placeImage('${file_id}'); return false;">${file_name}</a></td>
 					<td>${file_size}</td>
 					<td>${mime_type}</td>
 					<td>${date}</td>
@@ -38,7 +38,7 @@
 		
 		<script type="text/x-jquery-tmpl" id="thumbTmpl">
 			<a title="${file_name}" href="#" onclick="$.ee_filebrowser.placeImage('${file_id}'); return false;" class="file_chooser_thumbnail">
-				<img src="${thumb}" class="${thumb_class}" data-dimensions="${file_hw_original}" />
+				<img src="${thumb}?r=${modified_date}" class="${thumb_class}" data-dimensions="${file_hw_original}" />
 				<p>${short_name}</p>
 			</a>
 		</script>

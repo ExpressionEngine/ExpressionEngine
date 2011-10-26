@@ -2034,7 +2034,7 @@ class Content_publish extends CI_Controller {
 		$menu_author_options[$author_id] = $author;
 		
 		// Next we'll gather all the authors that are allowed to be in this list
-		$author_list = $this->member_model->get_authors_simple();
+		$author_list = $this->member_model->get_authors();
 
 		$channel_id = (isset($entry_data['channel_id'])) ? $entry_data['channel_id'] : $this->input->get('channel_id');
 

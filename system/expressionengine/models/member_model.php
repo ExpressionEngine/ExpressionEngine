@@ -636,9 +636,9 @@ class Member_model extends CI_Model {
 	function get_authors($author_id = FALSE, $limit = FALSE, $offset = FALSE)
 	{
 		$this->db->select('members.member_id, members.group_id, 
-						members.username, members.screen_name, members.in_authorlist, member_groups.*');
+						members.username, members.screen_name, members.in_authorlist');
 		$this->db->from('members');
-		$this->db->join("member_groups", "members.group_id = members.group_id", 'left');
+		$this->db->join('member_groups', 'member_groups.group_id = members.group_id');
 		
 		if ($author_id)
 		{
@@ -662,62 +662,22 @@ class Member_model extends CI_Model {
 	}
 	
 	// --------------------------------------------------------------------
-
+	
 	/**
 	 * Get Authors Simple
 	 *
 	 * This function returns a set of members who are authors in a set channel- member group data is omitted
 	 *
+	 * @deprecated	Use member_model->get_authors instead
 	 * @access	public
 	 * @param	integer
 	 * @return	mixed
 	 */
 	function get_authors_simple($author_id = FALSE, $limit = FALSE, $offset = FALSE)
 	{
-		$group_ids = array();
-			
-		$this->db->select('group_id');
-		$this->db->where('include_in_authorlist', 'y');
-		$this->db->where('site_id', $this->config->item('site_id'));
-		$group_query = $this->db->get('member_groups');
-			
-		if ($group_query->num_rows() > 0)
-		{
-			foreach($group_query->result() as $group)
-			{
-				$group_ids[] = $group->group_id;
-			}
-		}
-			
-		$this->db->select('members.member_id, members.group_id, 
-							members.username, members.screen_name, members.in_authorlist');
-		$this->db->from('members');
-		
-		if ($author_id)
-		{
-			$this->db->where('members.member_id !=', $author_id);
-		}
-		
-		$this->db->where('in_authorlist', "y");
-		
-		if (count($group_ids) > 0)
-		{
-			$this->db->or_where_in('group_id', $group_ids);	
-		}		
-	
-		$this->db->order_by('members.screen_name', 'ASC');
-		$this->db->order_by('members.username', 'ASC');
-		
-		if ($limit)
-		{
-			$this->db->limit($limit, $offset);
-		}
-		
-		return $this->db->get();
+		return $this->get_authors($author_id, $limit, $offset);
 	}
-
-
-
+	
 	// --------------------------------------------------------------------
 
 	/**

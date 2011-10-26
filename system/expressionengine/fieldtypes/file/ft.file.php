@@ -53,13 +53,13 @@ class File_ft extends EE_Fieldtype {
 	{
 		if ($data != '')
 		{
-			$directory = 'field_id_'.$this->field_id.'_directory';
-			$directory = $this->EE->input->post($directory);	
+			$directory = $this->EE->input->post('field_id_'.$this->field_id.'_directory');
 
-			if( ! empty($directory))
+			if ( ! empty($directory))
 			{
 			     return '{filedir_'.$directory.'}'.$data;
 			}
+
 			return $data;
 		}
 	}

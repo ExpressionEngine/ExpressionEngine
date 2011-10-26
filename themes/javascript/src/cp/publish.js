@@ -408,7 +408,7 @@ EE.publish.save_layout = function() {
 			type: "POST",
 			dataType: 	'json',
 			url: EE.BASE+"&C=content_publish&M=save_layout",
-			data: "XID="+EE.XID+"&json_tab_layout="+JSON.stringify(layout_object)+"&"+$("#layout_groups_holder input").serialize()+"&channel_id="+EE.publish.channel_id,
+			data: "XID="+EE.XID+"&json_tab_layout="+encodeURIComponent(JSON.stringify(layout_object))+"&"+$("#layout_groups_holder input").serialize()+"&channel_id="+EE.publish.channel_id,
 			success: function(result){
 				if (result.messageType === 'success') {
 					$.ee_notice(result.message, {type: "success"});
