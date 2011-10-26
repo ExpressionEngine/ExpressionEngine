@@ -1260,7 +1260,7 @@ class Api_channel_entries extends Api {
 					$allowed_authors = array();
 					
 					$this->EE->load->model('member_model');
-					$query = $this->EE->member_model->get_authors_simple();
+					$query = $this->EE->member_model->get_authors();
 
 					if ($query->num_rows() > 0)
 					{
