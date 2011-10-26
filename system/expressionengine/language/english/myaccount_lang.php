@@ -566,6 +566,10 @@ $lang = array(
 'sidebar_updated' =>
 'Sidebar State Updated',
 
+'no_unlocked_member_groups' =>
+'You do not have the required permissions to add new members to any group.<br />
+Please <a href="%s">contact your System Admin</a> if you feel this is incorrect.',
+
 ''=>''
 );
 

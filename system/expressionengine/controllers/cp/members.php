@@ -2754,11 +2754,27 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		if ( ! $this->cp->allowed_group('can_access_members') OR ! $this->cp->allowed_group('can_admin_members'))
 		{
 			show_error(lang('unauthorized_access'));
-		}		
+		}
+		
+		$this->lang->loadfile('myaccount');
+		$this->cp->set_variable('cp_page_title', lang('register_member'));
+		
+		// Find out if the user has access to any member groups
+		$is_locked = ($this->session->userdata['group_id'] == 1) ? array() : array('is_locked' => 'n');
+		$member_groups = $this->member_model->get_member_groups('', $is_locked);
+		
+		// If the user does not have access to any member groups, don't show the form
+		// and explain the situation
+		$vars['notice'] = ( ! count($member_groups->result()));
+		if ($vars['notice'])
+		{
+			$vars['sys_admin_email'] = $this->config->item('webmaster_email');
+			$this->load->view('members/register', $vars);
+			return;
+		}
 		
 		$this->load->library(array('form_validation', 'table'));
 		$this->load->helper(array('form', 'string', 'snippets'));
-		$this->lang->loadfile('myaccount');
 		$this->load->language('calendar');
 		
 		$vars['custom_profile_fields'] = array();
@@ -2873,15 +2889,10 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 
 		$this->form_validation->set_rules($config);
 		$this->form_validation->set_error_delimiters('<br /><span class="notice">', '</span>');
-		
-		$this->cp->set_variable('cp_page_title', lang('register_member'));
 
 		if ($this->form_validation->run() === FALSE)
 		{
 			$this->javascript->compile();
-
-			$is_locked = ($this->session->userdata['group_id'] == 1) ? array() : array('is_locked' => 'n');
-			$member_groups = $this->member_model->get_member_groups('', $is_locked);
 
 			$vars['member_groups'] = array();
 
