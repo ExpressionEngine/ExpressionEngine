@@ -170,6 +170,7 @@ class Content_files extends CI_Controller {
 		foreach ($this->_upload_dirs as $k => $dir)
 		{
 			$upload_dirs_options[$dir['id']] = $dir['name'];
+			$allowed_dirs[] = $k;
 		}
 		
 		$selected_dir = ($selected_dir = $this->input->get_post('dir_id')) ? $selected_dir : NULL;
@@ -182,13 +183,10 @@ class Content_files extends CI_Controller {
 		{
 			$this->filtering_menus($cat_form_array);
 		}
-		
-		// Figure out default category groups
-		$category_groups = $this->file_upload_preferences_model->get_category_groups($allowed_dirs);
 
 		// Cat filter
-		$cat_group = (isset($get_post['cat_id']) AND ! empty($get_post['cat_id'])) ? $get_post['cat_id'] : implode('|', $category_groups);
-		$category_options = $this->category_filter_options($cat_group, $cat_form_array, $allowed_dirs);
+		$cat_group = isset($get_post['cat_id']) ? $get_post['cat_id'] : NULL;
+		$category_options = $this->category_filter_options($cat_group, $cat_form_array, count($allowed_dirs));
 
 		// Date range pull-down menu
 		$date_selected = $get_post['date_range'];
@@ -592,20 +590,16 @@ class Content_files extends CI_Controller {
 	 *
 	 * @param
 	 */
-	function category_filter_options($cat_group, $cat_form_array, $allowed_dirs)
+	function category_filter_options($cat_group, $cat_form_array, $total_dirs)
 	{
 		$category_select_options[''] = lang('filter_by_category');
 
-		// If there's more than one directory, make sure all categories is an option
-		if (count($allowed_dirs) > 1)
+		if ($total_dirs > 1)
 		{
 			$category_select_options['all'] = lang('all');
 		}
 
-		// Also make sure none is an option as well
 		$category_select_options['none'] = lang('none');
-		
-		// Check and see if we're filtering on a category group
 		if ($cat_group != '')
 		{
 			foreach($cat_form_array as $key => $val)
@@ -617,6 +611,7 @@ class Content_files extends CI_Controller {
 			}
 
 			$i = 1;
+			$new_array = array();
 
 			foreach ($cat_form_array as $ckey => $cat)
 			{
