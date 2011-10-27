@@ -371,7 +371,7 @@ class Addons_installer {
 				$c_ids = array_unique($channel_ids);
 				
 				$this->EE->load->library('layout');
-				$this->EE->layout->delete_layout_fields($id, $c_ids);				
+				$this->EE->layout->delete_layout_fields($ids, $c_ids);
 
 				$this->EE->db->where_in('field_id', $ids);
 				$this->EE->db->delete(array('channel_fields', 'field_formatting'));
