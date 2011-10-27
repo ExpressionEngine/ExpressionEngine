@@ -18,7 +18,7 @@ if ($EE_view_disable !== TRUE)
 			<? if ($notice): ?>
 				<p align="center">
 					<strong>
-						<?=str_replace('%s', 'mailto:'.$sys_admin_email, lang('no_unlocked_member_groups'))?>
+						<?=sprintf(lang('no_unlocked_member_groups'), 'mailto:'.$sys_admin_email)?>
 					</strong>
 				</p>
 			<? else: ?>

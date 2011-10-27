@@ -2769,8 +2769,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		if ($vars['notice'])
 		{
 			$vars['sys_admin_email'] = $this->config->item('webmaster_email');
-			$this->load->view('members/register', $vars);
-			return;
+			return $this->load->view('members/register', $vars);
 		}
 		
 		$this->load->library(array('form_validation', 'table'));
