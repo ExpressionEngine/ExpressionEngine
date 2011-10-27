@@ -68,7 +68,14 @@ class EE_Core {
 		define('PATH_EXT',		APPPATH.'extensions/');
 		define('PATH_ACC',		APPPATH.'accessories/');
 		define('PATH_FT',		APPPATH.'fieldtypes/');
-		define('PATH_THIRD',	APPPATH.'third_party/');
+		if ($this->EE->config->item('third_party_path'))
+		{
+			define('PATH_THIRD',    rtrim($this->EE->config->item('third_party_path'), '/').'/');
+		}
+		else
+		{
+			define('PATH_THIRD',	APPPATH.'third_party/');
+		}
 		
 		// application constants
 		define('IS_FREELANCER',	FALSE);
