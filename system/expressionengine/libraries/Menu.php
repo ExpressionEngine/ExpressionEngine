@@ -178,15 +178,18 @@ class EE_Menu {
 		if ($channels != FALSE AND $channels->num_rows() > 0)
 		{
 			$menu['content']['publish'] = array();
+			$menu['content']['edit'] = array();
 			
 			foreach($channels->result() as $channel)
 			{
 				$menu['content']['publish'][$channel->channel_title] = BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.$channel->channel_id;
+				$menu['content']['edit'][$channel->channel_title] = BASE.AMP.'C=content_edit'.AMP.'channel_id='.$channel->channel_id;
 			}
 			
-			if (count($menu['content']['publish']) == 1)
+			if ($channels->num_rows() === 1)
 			{
 				$menu['content']['publish'] = current($menu['content']['publish']);
+				$menu['content']['edit'] = current($menu['content']['edit']);
 			}
 		}
 		
@@ -322,7 +325,7 @@ class EE_Menu {
 		foreach($m as $name => $data)
 		{
 			$label = ($use_lang_keys) ? lang('nav_'.$name) : $name;
-			$sub_use_lang = ( ! $use_lang_keys OR in_array($name, array('publish', 'edit_templates'))) ? FALSE : TRUE;
+			$sub_use_lang = ( ! $use_lang_keys OR in_array($name, array('publish', 'edit', 'edit_templates'))) ? FALSE : TRUE;
 			$link_class = $depth ? '' : 'first_level';
 			
 			if (is_array($data))
