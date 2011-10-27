@@ -544,7 +544,9 @@ class EE_Core {
 			{
 				$edata = $this->EE->extensions->call('core_template_route', $this->EE->uri->uri_string);
 				if (is_array($edata) && count($edata) == 2)
+				{
 					list($template_group, $template) = $edata;
+				}
 			}
 		//
 		// -------------------------------------------
