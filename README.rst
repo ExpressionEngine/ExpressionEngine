@@ -37,10 +37,12 @@ Setting Up Your Local Fork
 	    path = system/codeigniter
 	    url = git@github.com:EllisLab/CodeIgniter-ELCore-Reactor.git
 
-5. And finally we will initialize the submodule and pull in CodeIgniter::
+5. Next we will initialize the submodule and pull in CodeIgniter::
 
 	git submodule init
 	git submodule update
+
+6. Finally you'll need to add teams to your fork. Go to your fork in GitHub, click Admin at the top right, choose Teams from the left menu and make sure that Owners, Admins, EllisLab Engineers, and ExpressionEngine Reactor are in that list.
 
 If you cloned using ``--recursive`` or initialized the submodule before changing the url, you will have to synchronize the submodule url before updating the submodule::
 
