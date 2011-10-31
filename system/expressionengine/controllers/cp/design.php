@@ -3802,6 +3802,7 @@ class Design extends CI_Controller {
 	{
 		if ( ! preg_match("#^[a-zA-Z0-9_\-/]+$#i", $str))
 		{
+			$this->lang->loadfile('admin');
 			$this->form_validation->set_message('_group_name_checks', lang('illegal_characters'));
 			return FALSE;			
 		}
