@@ -2418,10 +2418,16 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			
 			$data = array('group_title' 		=> $this->input->post('group_title'),
 						  'group_description'	=> $this->input->post('group_description'),
-						  'is_locked'			=> $this->input->post('is_locked'),
 						  'site_id'				=> $site_id,
 						  'group_id'			=> $group_id);
-							
+			
+			// If editing Super Admin group, the is_locked field doesn't exist, so make sure we
+			// got a value from the form before writing 0 to the database
+			if ($this->input->post('is_locked') != 0)
+			{
+				$data['is_locked'] = $this->input->post('is_locked');
+			}
+			
 			foreach ($_POST as $key => $val)
 			{
 				if (substr($key, 0, strlen($site_id.'_channel_id_')) == $site_id.'_channel_id_')
