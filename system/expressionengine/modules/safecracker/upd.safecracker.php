@@ -104,7 +104,7 @@ class Safecracker_upd
 		
 		if ($this->EE->config->item('allow_extensions') != 'y')
 		{
-			//$this->EE->output->show_user_error('general', $this->EE->lang->line('safecracker_extensions_disabled'));
+			//$this->EE->output->show_user_error('general', lang('safecracker_extensions_disabled'));
 		}
 		
 		//  Added to core with 2.1.5
