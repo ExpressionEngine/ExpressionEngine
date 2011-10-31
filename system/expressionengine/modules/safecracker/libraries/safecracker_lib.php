@@ -325,7 +325,7 @@ class Safecracker_lib
 				'date' => 0,
 				'radio' => 0,
 				'display_field' => '',
-				'options' => $this->get_field_options($field_name, ($field['field_required'] == 'n' && ! preg_match('/multi_?select|radio|checkbox/', $field['field_type']))),
+				'options' => $this->get_field_options($field_name),
 				'error' => ( ! empty($this->field_errors[$field['field_name']])) ? $this->EE->lang->line($this->field_errors[$field['field_name']]) : ''
 			);
 			
@@ -2278,24 +2278,13 @@ class Safecracker_lib
 	 * Gets a field's options
 	 * 
 	 * @param	mixed $field_name
-	 * @param	mixed $add_blank = FALSE
 	 * @return	void
 	 */
-	public function get_field_options($field_name, $add_blank = FALSE)
+	public function get_field_options($field_name)
 	{
 		$field = $this->get_field_data($field_name);
 		
 		$options = array();
-		
-		if ($add_blank)
-		{
-			$options[] = array(
-				'option_value' => '',
-				'option_name' => '--',
-				'selected' => '',
-				'checked' => ''
-			);
-		}
 		
 		if (in_array($field['field_type'], $this->option_fields))
 		{
