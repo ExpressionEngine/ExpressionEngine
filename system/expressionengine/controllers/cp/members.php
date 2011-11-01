@@ -2428,7 +2428,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			
 			// If editing Super Admin group, the is_locked field doesn't exist, so make sure we
 			// got a value from the form before writing 0 to the database
-			if ($this->input->post('is_locked') != 0)
+			if ($this->input->post('is_locked') !== FALSE)
 			{
 				$data['is_locked'] = $this->input->post('is_locked');
 			}
