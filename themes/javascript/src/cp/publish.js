@@ -190,10 +190,13 @@ EE.publish.category_editor = function() {
 			gid = $(this).closest(".cat_group_container").data("gid");
 		}
 		
-		// grab selection
-		selected_cats[gid] = cat_groups_containers[gid].find('input:checked').map(function() {
-			return this.value;
-		}).toArray();
+		// Grab selection if checkboxes are available
+		if ($(this).hasClass("edit_categories_link"))
+		{
+			selected_cats[gid] = cat_groups_containers[gid].find('input:checked').map(function() {
+				return this.value;
+			}).toArray();
+		}
 		
 		cat_groups_containers[gid].text(EE.lang.loading);
 
