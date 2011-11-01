@@ -384,11 +384,11 @@ class Search_model extends CI_Model {
 			{
 				if ($key == 'channel_name')
 				{
-					$this->db->order_by('FIELD(channel_id, '.$channel_name_order.')');
+					$this->db->order_by('FIELD(channel_id, '.$channel_name_order.')', NULL, FALSE);
 				}
 				elseif ($key == 'screen_name')
 				{
-					$this->db->order_by('FIELD(author_id, '.$screen_name_order.')');
+					$this->db->order_by('FIELD(author_id, '.$screen_name_order.')', NULL, FALSE);
 				}
 				else
 				{

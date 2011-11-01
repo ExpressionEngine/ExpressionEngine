@@ -1430,15 +1430,20 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 					isset($preferences[$site->site_id])
 				)
 				{
+					// We'll conditionally set the language for the preference below
+					$group_name_lang = '';
+					
 					switch ($group_name)
 					{
 						case 'cp_channel_post_privs':
 							$current_permissions = $channel_perms[$site->site_id];
 							$current_names = $channel_names;
+							$group_name_lang = lang('can_post_in');
 							break;
 						case 'cp_template_access_privs':
 							$current_permissions = $preferences[$site->site_id];
 							$current_names = $template_names;
+							$group_name_lang = lang('can_access_tg');
 							break;
 						default:
 							continue;
@@ -1448,7 +1453,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 					foreach ($current_permissions as $current_id => $preference_value) 
 					{
 						$form[$site->site_id][$group_name][] = array(
-							'label' => lang('can_post_in') . NBS . NBS . $this->_build_group_data_label(
+							'label' => $group_name_lang . NBS . NBS . $this->_build_group_data_label(
 								$current_names[$current_id],
 								TRUE
 							),
@@ -2423,7 +2428,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			
 			// If editing Super Admin group, the is_locked field doesn't exist, so make sure we
 			// got a value from the form before writing 0 to the database
-			if ($this->input->post('is_locked') != 0)
+			if ($this->input->post('is_locked') !== FALSE)
 			{
 				$data['is_locked'] = $this->input->post('is_locked');
 			}
