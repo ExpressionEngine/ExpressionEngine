@@ -98,7 +98,7 @@ class Rel_ft extends EE_Fieldtype {
 				$field_options[$relrow['entry_id']] = $relrow['title'];
 			}
 
-			return form_dropdown($this->field_name, $field_options, $data);
+			return form_dropdown($this->field_name, $field_options, $data, 'id="field_id_'.$this->field_id.'"');
 		}
 	}
 	
