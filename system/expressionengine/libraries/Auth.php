@@ -248,17 +248,10 @@ class Auth {
 
 	        // Allow users to register with Email
 	        // ----------------------------------------------------------------
-
-		if(strpos($username,"@") !== false && $username)
-	        {
-	     		$incoming = $this->EE->auth->authenticate_email($username, $password);
-    			$username = $incoming->member('username');
-       		}
-        	else
-        	{
-            		$incoming = $this->EE->auth->authenticate_username($username, $password);
-        	}
-
+		if(!$incoming = $this->EE->auth->authenticate_username($username, $password)) {
+			$incoming = $this->EE->auth->authenticate_email($username, $password);
+		}
+		
 		// Not even close
 		if ( ! $incoming)
 		{
