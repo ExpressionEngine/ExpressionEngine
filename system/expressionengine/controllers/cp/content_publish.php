@@ -263,7 +263,7 @@ class Content_publish extends CI_Controller {
 		$this->load->library('filemanager');
 		$this->load->helper('snippets');
 		
-		$this->filemanager->filebrowser('C=content_publish&M=filemanager_actions');
+		$this->load->library('file_browser');
 		
 		$this->cp->add_js_script(array(
 			'ui'		=> array('datepicker', 'resizable', 'draggable', 'droppable'),

@@ -1,238 +1,390 @@
-/* headings *
-.items h3 {
-	font-size:1.2em;
-	margin-bottom:10px;
+/* File Chooser ============================================================ */
+
+#file_browser .pageContents p {
+	margin-bottom: 11px;
 }
 
-/* Upload form *
-input#upload_file.field {
-	padding: 4px;
-	border: 1px solid #b6c0c2;
-	border-radius: 3px;
-  	-webkit-border-radius: 3px;
-  	-moz-border-radius:	3px;
-  	margin:0;
-  	color:	#5f6c74;
+#file_browser #filterMenu {
+	background-color: #ECF1F4;
+	color: #5f6c74;
+	font-size: 12px;
+	margin-bottom: 10px;
 }
 
-#upload_form .submit_alt {
-	border: 1px solid #b6c0c2;
-	padding:4px 12px 4px 8px;
-	border-radius: 3px;
-  	-webkit-border-radius: 3px;
-  	-moz-border-radius:	3px;
+#file_browser #filterMenu .group {
+	margin-bottom: 12px;
+	padding-top: 5px; /* IE stupidity */
 }
 
-#upload_form .submit_alt img {
-	vertical-align:middle;
-}
-	
-#upload_form label {
-	margin-right:5px;
-}
-	
-/* main vertical scroll *
-#file_manager_main {
-	position:relative;
-	overflow:hidden;
-	height: 450px;
-	background-color:#E1E8ED;
+#file_browser table.mainTable {
+	width: 100%;
+	text-align: left;
+	line-height: 13px;
+	color: #5f6c74;
 }
 
-#file_manager_body {
-	background:url(<?=$cp_theme_url?>images/publish_file_manager_bg.gif) repeat-y 0px 0px;
+#file_browser .tableSubmit {
+	float: right; 
+	margin-top: 0;
 }
 
-/* root element for pages *
-#file_manager_main #pages {
-	position:absolute;
-	height:20000em;
+#file_browser #pagination_meta {
+	margin: 0 0 10px;
 }
 
-/* single page *
-.page {
-	padding:10px 10px 10px 0px;
-	height: 430px;
-	width:480px;
-	overflow-y:auto;
-	overflow-x: hidden;
+#file_browser #filterMenu {
+	background-color: #ECF1F4;
+	color: #5f6c74;
+	font-size: 12px;
 }
 
-/* root element for horizontal scrollables *
-.vertscrollable {
-	position:relative;
-	overflow:hidden;
-	width: 470px;
-	height: 410px;
-}
-
-/* root element for scrollable items *
-.vertscrollable .items {
-	width:20000em;
-	position:absolute;
-	clear:both;
-}
-
-/* single scrollable item *
-.item {
-	float:left;
-	width:500px;
-	height:450px;
-	padding: 10px 0;
-	background: none;
-}
-
-.item div {
-	text-align: center;
-	width: 75px;
-	height:75px;
+#file_browser #dir_choice_form {
 	float: left;
-	word-wrap:break-word;
-	margin: 0 10px 20px 10px;
-	font-size: 10px;
-	line-height: 15px;
-	cursor:pointer;
 }
 
-.item div > div {
-	height:60px;
-	width: 73px;
-	overflow: hidden;
+#file_browser #upload_form {
+	margin: -4px 0 10px;
+}
+
+#file_browser #upload_file.field {
+	width: 196px;
+	margin: 0;
+	padding: 3px;
+}
+
+#progress {
+	display: none;
+}
+
+#file_browser table.mainTable th {
+	cursor: default;
+}
+
+/* Edit Controls =========================================================== */
+
+/*
+	TODO Figure out if I need to remove the edit controls. Are these same 
+		controls used by the basic edits post upload?
+*/
+
+.edit_controls {
+	color: #5f6c74;
+	float: left;
+	font-size: 11px;
+	margin-top: -7px;
+	width: 14.5%;
+}
+
+.edit_controls h3 {
+	margin: 7px 0 0;
+}
+
+.edit_controls .ui-accordion-content {
+	border: 1px solid #D0D7DF;
+	border-width: 0 1px 1px;
+	margin: 0 0 10px;
+	padding: 5px 8px 8px;
+}
+
+.edit_controls label {
+	margin: 0 0 0;
+}
+
+.edit_controls .ui-accordion-content input {
+	margin: 0 0 5px;
+	width: 92%;
+}
+
+.edit_controls ul {
 	margin: 0;
 }
 
-/* main navigator *
-
-div#nav_wreaper {
-	height:450px;
-	overflow-y:auto;
-	overflow-x: hidden;
-
-	width:215px;
-	float:left;
-/*	margin-top:40px;*
+.edit_controls legend {
+	font-size: 14px;
 }
 
-#main_navi {
-	float:left;
-	padding:0px;
-	margin:0px;
+.edit_controls  p.submit_button {
+	margin: 10px 0 0;
+	text-align: right;
 }
 
-
-#main_navi li {
-	background: #27343C;
-	clear:both;
-	color:#FFFFFF;
-	height:40px;
-	line-height: 40px;
-	list-style-type:none;
-	width:160px;
-	overflow:hidden;
-	cursor:pointer;
-	padding-left: 20px;
-	border-bottom:1px solid #ecf1f4;
+.edit_controls  p.submit_button a {
+	clear: right;
+	display: inline-block;
+	float: right;
+	font-size: 12px;
+	line-height: 12px;
+	margin: 0 0 5px;
 }
 
-/*#main_navi li:hover {
-	background-color:#0072BC;
-}*
-
-#main_navi li.active {
-	background:url(<?=$cp_theme_url?>images/publish_file_manager_nav_arrow.png) no-repeat right;
-	width:180px;
-	border-bottom:1px solid #ecf1f4;
-}
-
-#main_navi strong {
-	display:block;
-}
-
-#file_manager_main #progress {
-	text-align:	left;
-	display:none;
-}
-
-#file_manager_main .navi {
-	padding-top:2px;
-	margin-left:auto;
-}
-
-#file_manager_main div.navi a {
-	background: url(<?=$cp_theme_url?>images/publish_file_manager_nav_button_inactive.png) no-repeat center center;
-	cursor:pointer;
-	width:15px;
-	height: 15px;
+.edit_controls  p.submit_button input {
+	clear: right;
 	display: block;
+	float: right;
+	margin-bottom: 5px;
+	width: auto;
+}
+
+.edit_controls .notice {
+	margin: 0 0 10px;
+}
+
+#rotate_fieldset li {
+	margin: 4px 0;
+}
+
+#rotate_fieldset.ui-accordion-content li input {
+	width: auto;
+}
+
+.edit_controls .oversized {
+	border: 2px solid #c6220a;
+}
+
+/* ========================================================================= */
+
+#file_manager_edit_file {
+	float: right;
+	overflow: auto;
+	width: 84%;
+}
+
+#file_browser #upload_form input.submit {
+	margin-left: 10px;
+}
+
+#file_browser_body {
+	border: 1px solid #ccc;
+	border-width: 0 0 1px;
+	display: block;
+	height: 455px;
+	margin-bottom: 10px;
+	padding-bottom: 0px;
+	overflow: auto;
+	width: 100%;
+}
+
+#file_browser #filterMenu {
+	margin: 12px 0 7px;
+}
+
+#file_browser_body #tableView {
+	margin-top: 3px;
+}
+
+#file_browser_body #tableView td {
+	max-width: 200px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+#file_browser_body #tableView td {
+	max-width: 500px;
+}
+
+a.file_browser_thumbnail:link,
+a.file_browser_thumbnail:visited {
+	border: 1px solid #ddd;
+	border-width: 1px 1px 1px;
+	color: #fff;
 	float: left;
-	margin: 5px 2px;
-
-}
-#file_manager_main div.navi a.active {
-	background:url(<?=$cp_theme_url?>images/publish_file_manager_nav_button_active.png) no-repeat center center;
-}
-
-.navi_area {
-	background: #8ea1ad url(<?=$cp_theme_url?>images/ui-bg_highlight-soft_40_8ea1ad_1x100.png) 50% 50% repeat-x;
-	min-height:40px;
-	margin-top:-40px;
-	line-height:40px;
+	height: 70px;
+	overflow: hidden;
+	padding: 10px 9px 24px;
+	position: relative;
+	text-align: center;
+	width: 80px;
+	margin: 6px 3px 0;
 }
 
-.prevThumbs {
-	float:left;
-	height:27px;
-	width: 27px;
-	background:url(<?=$cp_theme_url?>images/publish_file_manager_prevthumbs.png) no-repeat center center;
-	cursor: pointer;
-	margin-right: 5px;
+a.file_browser_thumbnail img {
+	border: 1px solid #fff;
 }
 
-.newThumbs {
-	display:block;
-	height:27px;
-	width: 27px;
-	background: url(<?=$cp_theme_url?>images/publish_file_manager_newthumbs.png) no-repeat center center;
-	cursor: pointer;
-	margin-left: 5px;
-	float: left;
+a.file_browser_thumbnail img.no_image {
+	border: 0 none;
 }
 
-.nav_controls {
+a.file_browser_thumbnail p {
+	background: #2a3940 url('../images/backgrounds_sprite.png') repeat-x 0 -540px;
+	position: absolute;
+	bottom: 0;
+	font-size: 11px;
+	left: 0;
+	line-height: 1.8;
+	height: 1.8em;
+	width: 100%;
+}
+
+a.file_browser_thumbnail:hover {
+	background: #fff;
+}
+
+a.file_browser_thumbnail.first {
+	margin-left: 0;
+}
+
+a.file_browser_thumbnail.last {
+	margin-right: 0;
+}
+
+a.file_browser_thumbnail.last_row {
+	border-bottom: 0 none;
+}
+
+#file_browser #pagination_meta {
+	line-height: 1.9;
+	margin-bottom: 4px;
+}
+
+#file_browser_footer #paginationLinks a {
+	display: inline-block;
+	margin-top: 2px;
+}
+
+#file_browser_footer #paginationLinks select {
+	margin: 0 5px 0 0;
+}
+
+/* File Uploader =========================================================== */
+
+#file_uploader {
+	padding: 14px 14px 50px;
+	position: relative;
+	overflow: hidden;
+}
+
+#file_uploader .button_bar {
+	bottom: 0px;
+	left: 0;
+	min-height: 22px;
+	padding: 6px;
+	position: absolute;
+	text-align: right;
+	width: 586px;
+}
+
+.button_bar a.submit {
+	color: #fff;
+	font-weight: normal;
+	margin: 0 0 0 4px;
+	text-decoration: none;
+}
+
+.button_bar .loading {
+	position: relative;
+	right: 2px;
+	top: 3px;
+}
+
+.button_bar .loading.visualEscapism {
+	right: -9999px;
+}
+
+#file_uploader.before_upload .after_upload,
+#file_uploader.before_upload .file_exists {
 	display: none;
-	padding:3px 10px;
-	margin-top:0;
 }
 
-#file_manager_body button {
+#file_uploader.file_exists .after_upload,
+#file_uploader.file_exists .before_upload {
+	display: none;
+}
+
+#file_uploader.after_upload .before_upload,
+#file_uploader.after_upload .file_exists {
+	display: none;
+}
+
+#file_uploader .cancel:link,
+#file_uploader .cancel:visited {
+	color: #e0e5e6;
+	color: rgba(255, 255, 255, 0.7);
+	line-height: 1.9;
+}
+
+#file_uploader .cancel:hover {
+	color: #fff;
+}
+
+#file_uploader iframe {
+	border: 0 none;
+	height: 290px;
+	width: 572px;
+}
+
+#file_uploader iframe,
+html#file_upload_iframe,
+html#file_upload_iframe body {
+	background: #ecf1f4;
+}
+
+html#file_upload_iframe body {
+	min-width: 0;
+	padding: 0;
+	width: auto;
+}
+
+html#file_upload_iframe #upload_dir {
+	display: block;
+	width: auto;
+}
+
+html#file_upload_iframe p {
+	margin: 11px 0;
+}
+
+#file_upload_iframe .upload_rename input.text {
+	margin-right: 5px;
+	padding-right: 30px;
+	width: 400px;
+}
+
+#file_upload_iframe .upload_rename span.extension {
+	color: #999;
+	margin-left: -40px;
+}
+
+#file_upload_iframe .image {
+	float: left;
+	width: 85px;
+}
+
+#file_upload_iframe .image img {
+	border: 1px solid #cdd7e0;
+	display: block;
+	margin: 0 auto 5px;
 	padding: 5px;
 }
 
-
-
-
-.image_edit_form_options #image_edit_form fieldset {
-	width:				440px;
-	padding:			6px 10px;
+#file_upload_iframe h2 {
+	margin-bottom: 10px;
 }
 
-#image_edit_form fieldset {
-	background-color:	#ECF1F4;
-	padding:			12px 10px;
-	color:				#505050;
-	font-size:			11px;
+#file_upload_iframe .upload_success table,
+#file_upload_iframe .edit_controls {
+	border-collapse: collapse;
+	float: right;
+	width: 470px;
 }
 
-.image_edit_form_options #image_edit_form fieldset#rotate_fieldset ul {
-	display: block;
+#file_upload_iframe .upload_success th,
+#file_upload_iframe .upload_success td {
+	border-bottom: 1px solid #cdd7e0;
+	padding: 4px;
 }
 
-#image_edit_form fieldset#rotate_fieldset ul {
-	display: none;
+#file_upload_iframe .upload_success tr:last-child th,
+#file_upload_iframe .upload_success tr:last-child td {
+	border-bottom: 0 none;
 }
 
-#image_edit_form fieldset#rotate_fieldset li {
-	display: inline;
-	cursor: pointer;
+#file_upload_iframe .upload_success th {
+	padding-right: 25px;
+	text-align: left;
 }
-*/
+
+#file_upload_iframe .edit_controls {
+	overflow: hidden;
+	height: 265px;
+}

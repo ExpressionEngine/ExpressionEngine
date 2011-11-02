@@ -1,4 +1,4 @@
-<div id="fileChooser" class="pageContents" style="padding: 0 10px">
+<div id="file_browser" class="pageContents" style="padding: 0 10px">
 	<div id="filterMenu">
 		<?php if ( ! empty($filemanager_directories)):?>
 			<?=form_open('', array('id' => 'dir_choice_form'))?>
@@ -12,7 +12,7 @@
 		<div class="clear_left"></div>
 	</div>
 	
-	<div id="file_chooser_body" class="">
+	<div id="file_browser_body" class="">
 	
 		<table class="mainTable padTable" id="tableView" border="0" cellspacing="0" cellpadding="0">
 			<thead>
@@ -37,14 +37,14 @@
 		</table>
 		
 		<script type="text/x-jquery-tmpl" id="thumbTmpl">
-			<a title="${file_name}" href="#" onclick="$.ee_filebrowser.placeImage('${file_id}'); return false;" class="file_chooser_thumbnail">
+			<a title="${file_name}" href="#" onclick="$.ee_filebrowser.placeImage('${file_id}'); return false;" class="file_browser_thumbnail">
 				<img src="${thumb}?r=${modified_date}" class="${thumb_class}" data-dimensions="${file_hw_original}" />
 				<p>${short_name}</p>
 			</a>
 		</script>
 	</div>
 	
-	<div id="file_chooser_footer">
+	<div id="file_browser_footer">
 		<div id="paginationTmpl">
 			<p id="pagination_meta">
 				<?=sprintf(lang('pagination_filter_text'), $view_filters).NBS;?>
