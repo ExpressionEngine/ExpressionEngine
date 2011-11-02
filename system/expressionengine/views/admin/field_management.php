@@ -37,6 +37,7 @@ if ($EE_view_disable !== TRUE)
 						'<a href="'.BASE.AMP.'C=admin_content'.AMP.'M=field_edit'.AMP.'field_id='.$field['field_id'].AMP.'group_id='.$group_id.'">'.$field['field_label'].'</a>',
 						form_input(array(
 							'name'			=> 'field_name', 
+							'readonly'		=> 'readonly',
 							'value'			=> '{'.$field['field_name'].'}', 
 							'class'			=> 'input-copy',
 							'data-original'	=> '{'.$field['field_name'].'}'
