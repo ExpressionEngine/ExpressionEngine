@@ -148,6 +148,14 @@ $(document).ready(function() {
 			return false;
 		}
 	});
+	
+	// Keyword filter
+	$('table').table('add_filter', $('#keywords').closest('form'));
+	
+	var keyword_timer;
+	$('#keywords').keyup(function() {
+		$(this).closest('form').triggerHandler('submit');
+	});
 
 /*
 	var oCache = {

@@ -295,7 +295,6 @@ class Forum {
 		// the output directly to the output class.  Otherwise, the output
 		// is sent to the template class like normal.  The exception to this is
 		// when action requests are processed
-				
 		if ($this->use_trigger() OR $this->EE->input->get_post('ACT') !== FALSE)
 		{ 
 			$this->EE->output->set_output(

@@ -55,8 +55,6 @@ class Content_edit extends CI_Controller {
 	{
 		// $this->output->enable_profiler(FALSE);
 		
-		
-		
 		// Get filter information
 		// ----------------------------------------------------------------
 		
@@ -75,6 +73,7 @@ class Content_edit extends CI_Controller {
 		
 		if ($keywords)
 		{
+			$this->load->helper('search');
 			$keywords = sanitize_search_terms($keywords);
 			
 			if (substr(strtolower($keywords), 0, 3) == 'ip:')
@@ -88,11 +87,10 @@ class Content_edit extends CI_Controller {
 		// characters while leaving the $keywords variable intact for display and URL purposes
 		$search_keywords = ($this->config->item('auto_convert_high_ascii') == 'y') ? ascii_to_entities($keywords) : $keywords;				
 		
-		
 		$perpage = $this->input->get_post('perpage');
 		$perpage = $perpage ? $perpage : $defaults['perpage'];
 		
-		$rownum = $tbl_settings['page'] * $perpage;
+		$rownum = $tbl_settings['offset'];
 		
 		// We want the filter to work based on both get and post
 		$filter_data = array(
@@ -162,14 +160,17 @@ class Content_edit extends CI_Controller {
 		$show_link = TRUE;
 		$comment_counts = array();
 		
-		// @todo gracefully handle no channel results
-		$id_in = implode(',', $entry_ids);
-		$comment_qry = $this->db->query("SELECT entry_id, COUNT(*) as count FROM exp_comments WHERE entry_id IN($id_in) GROUP BY entry_id");
-		
-		foreach ($comment_qry->result() as $row)
+		if (count($entry_ids))
 		{
-			$comment_counts[$row->entry_id] = $row->count;
-		}
+			$id_in = implode(',', $entry_ids);
+			$comment_qry = $this->db->query("SELECT entry_id, COUNT(*) as count FROM exp_comments WHERE entry_id IN($id_in) GROUP BY entry_id");
+
+			foreach ($comment_qry->result() as $row)
+			{
+				$comment_counts[$row->entry_id] = $row->count;
+			}
+		}		
+
 		
 		
 		// Date formatting
@@ -198,7 +199,7 @@ class Content_edit extends CI_Controller {
 			{
 				$autosave_array[] = $entry->original_entry_id;
 			}
-		}		
+		}
 		
 		
 		// Status Highlight Colors
@@ -290,7 +291,7 @@ class Content_edit extends CI_Controller {
 			
 			
 			// comment_total link
-			if ( isset($this->installed_modules['comment']))
+			if (isset($this->installed_modules['comment']))
 			{
 				$show_link = TRUE;
 				
@@ -333,8 +334,13 @@ class Content_edit extends CI_Controller {
 			'rows'				=> $rows,
 			'total_rows'		=> $total,
 			'no_results'		=> lang('no_entries_matching_that_criteria'),
-			'filter_data'		=> $filter_data,
+			'pagination'		=> array(
+				'per_page' => $filter_data['perpage'],
+				'base_url' => BASE.AMP.'C=content_edit'
+			),
 			
+			// used by index on non-ajax requests
+			'filter_data'		=> $filter_data,
 			'autosave_array'	=> $autosave_array
 		);
 	}
@@ -408,6 +414,17 @@ class Content_edit extends CI_Controller {
 			'channel_name'	=> array('filter' => TRUE),
 			'status'		=> array('filter' => TRUE),
 			'_check'		=> FALSE
+/*
+			'entry_id'		=> array('sort' => TRUE, 'html' => FALSE, 'sort_by' => 'numeric'),
+			'title'			=> array('sort' => TRUE, 'html' => TRUE),
+			'view'			=> array('sort' => FALSE, 'html' => TRUE),
+			'comment_total'	=> array('sort' => TRUE, 'html' => TRUE),
+			'screen_name'	=> array('sort' => TRUE, 'html' => TRUE),
+			'entry_date'	=> TRUE,
+			'channel_name'	=> TRUE,
+			'status'		=> array('sort' => TRUE, 'html' => TRUE),
+			'_check'		=> array('sort' => FALSE, 'html' => TRUE)
+*/
 		);
 		
 		// table headings
@@ -457,7 +474,6 @@ class Content_edit extends CI_Controller {
 			$perpage = $this->input->cookie('perpage');
 		}
 		
-		$perpage = $perpage ? $perpage : 50;
 		
 		
 		
@@ -695,9 +711,7 @@ class Content_edit extends CI_Controller {
 		
 		// Declare the "filtering" form
 
-		$pageurl = BASE.AMP.'C=content_edit';
-		$vars['heading'] = 'edit_channel_entries';
-		
+		$vars['heading'] = 'edit_channel_entries';		
 		
 		$vars['form_hidden']	= array();
 		$vars['search_form']	= 'C=content_edit';
@@ -708,7 +722,7 @@ class Content_edit extends CI_Controller {
 		$this->cp->add_js_script(array(
 			'ui'		=> 'datepicker',
 			'file'		=> 'cp/content_edit',
-			'plugin'	=> array('dataTables', 'ee_table')
+			'plugin'	=> array('tmpl', 'ee_table')
 		));
 
 		$this->javascript->set_global('autosave_map', $vars['autosave_array']);

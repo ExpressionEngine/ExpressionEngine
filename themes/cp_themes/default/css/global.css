@@ -3,6 +3,23 @@
 /**
  * ExpressionEngine Default Theme 
  */
+
+/* For modern browsers */
+.cf:before,
+.cf:after {
+    content:"";
+    display:table;
+}
+
+.cf:after {
+    clear:both;
+}
+
+/* For IE 6/7 (trigger hasLayout) */
+.cf {
+    zoom:1;
+}
+
 html, body, p, img, div, h1, h2, h3, h4, h5, h6, ol, ul, li, form, input, select, option, fieldset {
 	margin:					0;
 	padding:				0;

@@ -43,6 +43,7 @@ class Forum_Core extends Forum {
 	 */
 	public function display_forum($function = '')
 	{
+	
 		// Determine the function call
 		// The function is based on the 2nd segment of the URI
 		if ($function == '')

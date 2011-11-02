@@ -70,7 +70,8 @@ if ($EE_view_disable !== TRUE)
 			</div> <!-- filterMenu -->
 			
 			<?=form_open($entries_form, array('id' => 'entries_form'), $form_hidden)?>
-
+				<?=$pagination_html?>
+				
 				<?=$table_html?>
 
 				<div class="tableSubmit">
@@ -80,7 +81,7 @@ if ($EE_view_disable !== TRUE)
 					<?php endif;?>
 				</div>
 
-				<span class="pagination" id="filter_pagination"><?=$pagination_html?></span>
+				<?=$pagination_html?>
 
 			<?=form_close()?>
 		</div>

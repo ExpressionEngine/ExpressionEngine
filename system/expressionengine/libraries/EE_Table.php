@@ -39,26 +39,46 @@
  * 
  * 3. Connect the datasource to your table:
  * $table_data = $this->table->datasource('somefunc');
- * 
- * If this is a filtering/pagination/sorting call, the request will stop here
- * the table will automatically be updated using the data returned from the
- * datasource. You should try to call this as soon as possible to avoid filtering
- * delays.
  *
- * Your datasource will receive an options parameter that contains the current
- * page and sorting requirements in this format:
+ * Your datasource will receive an parameter that contains the current row offset
+ * and sorting requirements in this format [columns specified to be non-
+ * sortable will be removed from the sort array.]:
  * 
  * array(
- *     'page' => 2,
- *     'sort' => array('name' => 'asc/desc'),
+ *     'offset' => 2,
+ *     'sort' 	=> array('name' => 'asc/desc'),
  *	   'columns' => array('id' => FALSE, 'name' => TRUE)
  * );
  *
- * Otherwise this call will return your datasource array, but *without* the
- * column names. This allows you to feed the data directly into add_row()
- * @todo just create the table and return that? have everything we need.
  *
+ * If this is a filtering/pagination/sorting call, the request will stop here
+ * the table will automatically be updated using the data returned from the
+ * datasource. As a result, you should try to call this function as soon as
+ * possible to avoid filtering delays.
+ *
+ * On a regular (non-ajax) load this call will return a slightly modified version
+ * of your datasource return array:
  * 
+ * 1. The 'row' and 'pagination' keys will be removed.
+ * 2. Two keys will be added: table_html and pagination_html
+ *
+ * table_html is generated using your existing table configuration, make sure your
+ * table headers and template are set before returning from your datasource.
+ *
+ * If you did not provide pagination configuration, in your return pagination_html
+ * will be blank.
+ *
+ * Note: If you need to provide additional data to your datasource, you can do so by adding
+ * an array as a second parameter to table->datasource(). This will be passed to your
+ * datasource method as the second parameter. Additionally, it can be used to set defaults
+ * for the page (reg. default = 1) and sorting configuration, by prefixing them with tbl_
+ *
+ * array(
+ *     'tbl_offset' => 4,
+ *	   'tbl_sort' => array('entry_date' => 'desc')
+ * )
+ *
+ *
  * 4. Include the javascript (tmpl and table plugins):
  * 
  * $this->cp->add_js_script('plugin' => array('tmpl', 'table'))
@@ -105,12 +125,16 @@
  *
  * Protected column names: data
  *
+ * @todo need to support array/data syntax for table cells (on js end):
+ *
  */
 
 class EE_Table extends CI_Table {
 
 	protected $EE;
+	protected $uniqid = '';
 	protected $no_results = '';
+	protected $pagination_tmpl = '';
 	protected $jq_template = FALSE;
 	protected $column_config = array();
 
@@ -138,13 +162,12 @@ class EE_Table extends CI_Table {
 	function datasource($func, $options = array())
 	{
 		$settings = array(
-			'page'			=> 1,
+			'offset'		=> 0,
 			'sort'			=> array(),		// column_name => value
 			'columns'		=> $this->column_config
 		);
 		
 		// override settings on non-ajax load
-		// @todo @confirm @pk recursive, also tbl_ prefixed?
 		foreach (array_keys($settings) as $key)
 		{
 			if (isset($options['tbl_'.$key]))
@@ -154,22 +177,19 @@ class EE_Table extends CI_Table {
 			}
 		}
 		
-		// override settings
-		if (isset($_GET['tbl_page']) && is_numeric($_GET['tbl_page']))
+		// override settings from GET
+		if (isset($_GET['tbl_offset']) && is_numeric($_GET['tbl_offset']))
 		{
-			$settings['page'] = $_GET['tbl_page'];
+			$settings['offset'] = $_GET['tbl_offset'];
 		}
 
 		if (isset($_GET['tbl_sorting']))
 		{
 			$settings['sorting'] = $_GET['tbl_sorting'];
 		}
-
 		
-		$data = $this->EE->$func($settings, $options);
-		$this->no_results = $data['no_results'];
 		
-		// returns PHP array (shown in js syntax for brevity):
+		// datasource returns PHP array (shown in js syntax for brevity):
 		/*
 		{
 			no_results: 'something',
@@ -177,13 +197,29 @@ class EE_Table extends CI_Table {
 			rows: [
 				{key: value, key2: value2, key3: value3},
 				{key: eulav, key2: eulav2, key3: eulav3},
+			],
+			pagination: [
+				base_url: 
 			]
-			
-			@todo also need to support other table syntax:
-			key: {class:foo, data:value}
 		*/
+		$data = $this->EE->$func($settings, $options);
+		
+		$this->uniqid = uniqid('tbl_');
+		$this->no_results = $data['no_results'];
+		
+		
+		///// move this down ///// 
+		
+		// create pagination (do it before generate, it adds a template)
+		$pagination_html = $this->_create_pagination($data);
 		
 
+		$data['pagination_html'] = $pagination_html;
+		
+		///// move this down ///// 
+		
+		
+		
 		if (AJAX_REQUEST)
 		{
 			// do we need to apply a cell function?
@@ -192,9 +228,13 @@ class EE_Table extends CI_Table {
 				// @todo loop through rows array_map cells?
 			}
 			
-			$this->EE->javascript->send_ajax_request(array(
+			$this->EE->output->send_ajax_response(array(
 				'rows'		 => $data['rows'],
-				'total_rows' => $data['total_rows']
+				'total_rows' => $data['total_rows'],
+				'page'		 => $settings['offset'] ? ceil($data['total_rows'] / $settings['offset']) : 1,
+				
+				// @todo remove
+				'pagination_html' => $pagination_html,
 			));
 		}
 		
@@ -209,14 +249,7 @@ class EE_Table extends CI_Table {
 			$row = array_values(array_merge($this->column_config, $row));
 		}
 		
-		if ( ! count($data))
-		{
-			
-			// @todo
-		}
-				
 		$data['table_html'] = $this->generate($data['rows']);
-		$data['pagination_html'] = '';
 		
 		return $data;
 	}
@@ -264,10 +297,17 @@ class EE_Table extends CI_Table {
 		{
 			$temp = $this->template['row_'.$k.'start'];
 
-			foreach($this->column_config as $column => $conf)
+			foreach($this->column_config as $column => $config)
 			{
+				$html = FALSE;
+				
+				if (is_array($config))
+				{
+					$html = (isset($config['html'])) ? (bool) $config['html'] : FALSE;
+				}
+				
 				$temp .= $this->template['cell_'.$k.'start'];
-				$temp .= '{{'.$column.'}}';
+				$temp .= $html ? '{{html '.$column.'}}' : '${'.$column.'}';
 				$temp .= $this->template['cell_'.$k.'end'];
 			}
 
@@ -281,11 +321,17 @@ class EE_Table extends CI_Table {
 			'template'		=> $template,
 			'template_alt'	=> $template_alt,
 			'empty_cells'	=> $this->empty_cells,
-			'no_results'	=> $this->no_results
+			'no_results'	=> $this->no_results,
+			'template_page'	=> $this->pagination_tmpl,
+			'uniqid'		=> $this->uniqid
 		);
 		
 		$table_config_data = 'data-table_config="'.form_prep($this->EE->javascript->generate_json($jq_config, TRUE)).'"';
-		$this->template['table_open'] = str_replace('<table', '<table '.$table_config_data, $open_bak);
+		$this->template['table_open'] = str_replace(
+			'<table',
+			'<table '.$table_config_data,
+			$open_bak
+		);
 		
 		$table = parent::generate($table_data);
 		
@@ -303,10 +349,83 @@ class EE_Table extends CI_Table {
 	 */
 	public function clear()
 	{
+		$this->uniqid = '';
+		$this->no_result = '';
+		$this->pagination_tmpl = '';
 		$this->column_config = array();
 		$this->jq_template = FALSE;
 		
 		parent::clear();
+	}
+	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Setup table pagination
+	 *
+	 * @access	protected
+	 * @param	string	pagination html
+	 */
+	protected function _create_pagination($data)
+	{
+		if ( ! isset($data['pagination']))
+		{
+			return '';
+		}
+		
+		if ( ! isset($data['pagination']['base_url']))
+		{
+			return '';
+		}
+		
+		// sensible CP defaults
+		$config = array(
+			'per_page'				=> 50,
+			'total_rows'			=> $data['total_rows'],
+			
+			'page_query_string'		=> TRUE,
+			'query_string_segment'	=> 'tbl_offset',
+			
+			'full_tag_open'			=> '<p id="paginationLinks">', // having an id here is nonsense, you can have more than one!
+			'full_tag_close'		=> '</p>',
+			
+			'prev_link'				=> '<img src="'.$this->EE->cp->cp_theme_url.'images/pagination_prev_button.gif" width="13" height="13" alt="&lt;" />',
+			'next_link'				=> '<img src="'.$this->EE->cp->cp_theme_url.'images/pagination_next_button.gif" width="13" height="13" alt="&gt;" />',
+			'first_link'			=> '<img src="'.$this->EE->cp->cp_theme_url.'images/pagination_first_button.gif" width="13" height="13" alt="&lt; &lt;" />',
+			'last_link'				=> '<img src="'.$this->EE->cp->cp_theme_url.'images/pagination_last_button.gif" width="13" height="13" alt="&gt; &gt;" />'
+		);
+		
+		$config = array_merge($config, $data['pagination']);
+		
+		// add the uniqid as a class so we can find it from
+		// the table. Note: You can have multiple instances
+		// of the pagination html on the page.
+		if (strpos($config['full_tag_open'], 'class')) // will never be 0
+		{
+			$config['full_tag_open'] = preg_replace(
+				'#class\s*=\s*(\042|\047)#i',
+				'$0'.$this->uniqid.' ',
+				$config['full_tag_open']
+			);
+		}
+		else
+		{
+			$config['full_tag_open'] = preg_replace(
+				'#(<\w+)#i',
+				'$1 class="'.$this->uniqid.'"',
+				$config['full_tag_open']
+			);
+		}
+		
+		$this->EE->load->library('pagination');
+		$this->EE->pagination->initialize($config);
+		
+		// @todo create the pagination template
+		$this->pagination_tmpl = '';
+		
+		$pagination_html = $this->EE->pagination->create_links();
+		
+		return $pagination_html;
 	}
 }
 
