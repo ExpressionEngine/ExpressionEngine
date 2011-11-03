@@ -10,14 +10,6 @@
  * @filesource
  */
 
-Array.max = function(array) {
-    return Math.max.apply(Math, array);
-};
-
-Array.min = function(array) {
-    return Math.min.apply(Math, array);
-};
-
 (function($) {
 
 	var file_manager_obj,
@@ -263,10 +255,10 @@ Array.min = function(array) {
 
 					// Keep cache small-ish
 					if (cache_pages > 3) {
-						if (page_offset < Array.min(page_indexes)) {
-							delete dir_files[directory_id][Array.max(page_indexes)];
-						} else if (page_offset > Array.max(page_indexes)) {
-							delete dir_files[directory_id][Array.min(page_indexes)];
+						if (page_offset < _.min(page_indexes)) {
+							delete dir_files[directory_id][_.max(page_indexes)];
+						} else if (page_offset > _.max(page_indexes)) {
+							delete dir_files[directory_id][_.min(page_indexes)];
 						};
 					};
 					

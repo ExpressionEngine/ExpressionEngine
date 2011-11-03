@@ -8,7 +8,7 @@
  * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
- * @since		Version 2.0
+ * @since		Version 2.4
  * @filesource
  */
  
@@ -48,7 +48,14 @@ class File_browser {
 	{
 		// Include dependencies
 		$this->EE->cp->add_js_script(array(
-			'plugin'    => array('scrollable', 'scrollable.navigator', 'ee_filebrowser', 'ee_fileuploader', 'tmpl')
+			'plugin'    => array(
+				'underscore',
+				'scrollable',
+				'scrollable.navigator',
+				'ee_filebrowser',
+				'ee_fileuploader',
+				'tmpl'
+			)
 		));
 		
 		$this->EE->load->helper('html');
