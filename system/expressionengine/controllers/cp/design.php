@@ -380,7 +380,9 @@ class Design extends CI_Controller {
 			$vars['templates'][$template->group_name][$template->template_id] = $template->template_name;
 		}
 
-		$vars['form_hidden']['group_id'] = $group_id; 
+		$vars['form_hidden']['group_id'] = $group_id;
+		
+		$vars['template_types'] = $this->_get_template_types();
 
 		//create_new_template
 
@@ -4631,6 +4633,44 @@ class Design extends CI_Controller {
 				unset($existing[$group]);
 			}
 		}
+	}
+	
+	/**
+	 * Get template types
+	 *
+	 * Returns a list of the standard EE template types to be used in
+	 * template type selection dropdowns, optionally merged with
+	 * user-defined template types via the template_types hook.
+	 *
+	 * @access private
+	 * @return array Array of available template types
+	 */
+	function _get_template_types()
+	{
+		$template_types = array(
+			'webpage'	=> lang('webpage'),
+			'feed'		=> lang('rss'),
+			'css'		=> lang('css_stylesheet'),
+			'js'		=> lang('js'),
+			'static'	=> lang('static'),
+			'xml'		=> lang('xml')
+		);
+		
+		// Get custom template types if set
+		$custom_templates = $this->extensions->call('template_types');
+		
+		if (count($custom_templates) > 0)
+		{
+			// Instead of just merging the arrays, we need to get the
+			// template_name value out of the associative array for
+			// easy use of the form_dropdown helper
+			foreach ($custom_templates as $key => $value)
+			{
+				$template_types[$key] = $value['template_name'];
+			}
+		}
+		
+		return $template_types;
 	}
 }
 
