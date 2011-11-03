@@ -207,19 +207,6 @@ class EE_Table extends CI_Table {
 		$this->uniqid = uniqid('tbl_');
 		$this->no_results = $data['no_results'];
 		
-		
-		///// move this down ///// 
-		
-		// create pagination (do it before generate, it adds a template)
-		$pagination_html = $this->_create_pagination($data);
-		
-
-		$data['pagination_html'] = $pagination_html;
-		
-		///// move this down ///// 
-		
-		
-		
 		if (AJAX_REQUEST)
 		{
 			// do we need to apply a cell function?
@@ -232,9 +219,7 @@ class EE_Table extends CI_Table {
 				'rows'		 => $data['rows'],
 				'total_rows' => $data['total_rows'],
 				'page'		 => $settings['offset'] ? ceil($data['total_rows'] / $settings['offset']) : 1,
-				
-				// @todo remove
-				'pagination_html' => $pagination_html,
+				'pagination' => $this->_create_pagination($data, TRUE)
 			));
 		}
 		
@@ -249,6 +234,7 @@ class EE_Table extends CI_Table {
 			$row = array_values(array_merge($this->column_config, $row));
 		}
 		
+		$data['pagination_html'] = $this->_create_pagination($data);
 		$data['table_html'] = $this->generate($data['rows']);
 		
 		return $data;
@@ -322,7 +308,7 @@ class EE_Table extends CI_Table {
 			'template_alt'	=> $template_alt,
 			'empty_cells'	=> $this->empty_cells,
 			'no_results'	=> $this->no_results,
-			'template_page'	=> $this->pagination_tmpl,
+			'pagination'	=> $this->pagination_tmpl,
 			'uniqid'		=> $this->uniqid
 		);
 		
@@ -366,7 +352,7 @@ class EE_Table extends CI_Table {
 	 * @access	protected
 	 * @param	string	pagination html
 	 */
-	protected function _create_pagination($data)
+	protected function _create_pagination($data, $ajax_request = FALSE)
 	{
 		if ( ! isset($data['pagination']))
 		{
@@ -420,12 +406,48 @@ class EE_Table extends CI_Table {
 		$this->EE->load->library('pagination');
 		$this->EE->pagination->initialize($config);
 		
-		// @todo create the pagination template
-		$this->pagination_tmpl = '';
+		if ($ajax_request)
+		{
+			return $this->EE->pagination->create_link_array();
+		}
 		
-		$pagination_html = $this->EE->pagination->create_links();
+		$p = $this->EE->pagination;
 		
-		return $pagination_html;
+		
+		$temp = $p->full_tag_open;
+		
+		$temp .= '{{if first_page && first_page[0]}}';
+		$temp .= $p->first_tag_open.'<a '.$p->anchor_class.'href="${first_page[0].pagination_url}">{{html first_page[0].text}}</a>'.$p->first_tag_close;
+		$temp .= '{{/if}}';
+	
+		$temp .= '{{if previous_page && previous_page[0]}}';
+		$temp .= $p->prev_tag_open.'<a '.$p->anchor_class.'href="${previous_page.pagination_url}">{{html previous_page[0].text}}</a>'.$p->prev_tag_close;
+		$temp .= '{{/if}}';
+	
+	
+		$temp .= '{{each(i, c_page) page}}';
+			$temp .= '{{if c_page.current_page}}';
+			$temp .= $p->cur_tag_open.'${c_page.pagination_page_number}'.$p->cur_tag_close;
+			$temp .= '{{else}}';
+			$temp .= $p->num_tag_open.'<a '.$p->anchor_class.'href="${c_page.pagination_url}">${c_page.pagination_page_number}</a>'.$p->num_tag_close;
+			$temp .= '{{/if}}';
+		$temp .= '{{/each}}';
+	
+	
+		$temp .= '{{if next_page && next_page[0]}}';
+		$temp .= $p->next_tag_open.'<a '.$p->anchor_class.'href="${next_page[0].pagination_url}">{{html next_page[0].text}}</a>'.$p->next_tag_close;
+		$temp .= '{{/if}}';
+	
+		$temp .= '{{if last_page && last_page[0]}}';
+		$temp .= $p->last_tag_open.'<a '.$p->anchor_class.'href="${last_page[0].pagination_url}">{{html last_page[0].text}}</a>'.$p->last_tag_close;
+		$temp .= '{{/if}}';
+		
+		$temp .= $p->full_tag_close;
+		
+		$this->pagination_tmpl = $temp;
+		unset($temp);
+		
+		return $this->EE->pagination->create_links();
 	}
 }
 
