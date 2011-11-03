@@ -327,6 +327,7 @@ EE.namespace = function(namespace_string)
 		parts = parts.slice(1);
 	}
 	
+	// @todo disallow 'prototype', duh
 	// create a property if it doesn't exist if (typeof parent[parts[i]] === "undefined") {
 	for (var i = 0, max = parts.length; i < max; i += 1) 
 	{
