@@ -2,10 +2,10 @@
 
 
 
-
-
-
 $.widget('ee.table', {
+		
+	_listening: [],			// form elements the filter is listening to
+	
 	options: {
 		uniqid: null,
 		
@@ -20,7 +20,7 @@ $.widget('ee.table', {
 		cache_limit: 5,
 		
 		page: 1,
-		filters: [],
+		filters: {},
 		sorting: [],		// [[column, desc], [column2, asc]]
 		
 		// events as callbacks
@@ -39,15 +39,11 @@ $.widget('ee.table', {
 		self.sorting = options.sorting;
 		
 		self.cache = new Cache(options.cache_limit);
-		self.pagination = self._setup_pagination(options.pagination);
+		self.pagination = new Pagination(options, self);
 		
 		// create unique template name and compile
-		self.template = options.uniqid + '_row_template';
-		$.template(self.template, options.template);		
-		
-		if (options.pagination !== null) {
-			self._setup_pagination();
-		}
+		self.template_id = options.uniqid + '_row_template';
+		$.template(self.template_id, options.template);
 		
 		// @todo @pk ideas -------------
 		
@@ -55,44 +51,56 @@ $.widget('ee.table', {
 		// bind events
 		self._trigger('create', null, self._ui(/* @todo args */));
 		self._trigger('update', null, self._ui(/* @todo args */));
-		
-		/*
-		this.element // current table
-		
-		// @todo map to form?
-		this.columns = this.element.find('th');
-		
-		if (options.form) {
-			// @todo bind to all fields
-			$(options.form).bind('submit', self._filter);
-			
-			// @todo pseudo code
-			$(options.form).find('input').bind('change', self._filter);
-			var fields = $(options.form).find(/* @todo * /);
-			
-		}
-		*/
-		// @todo timeout on some inputs (textareas)
 	},
 	
 	clear_filters: function() {
-		// if form connected, reset content
+		// @todo reset form content?
+		
+		self.filters = {};
+		self._listening.each(function() {
+			$(this).unbind('interact.ee_table');
+		});
 	},
 
-	add_filter: function(settings) {
-		
-		settings.source
-		
-		// object can be a form or a regular object
-		// 
-		
-				
+	/* Add a filter
+	 *
+	 * Can be a form or a regular object
+	 */
+	add_filter: function(obj) {
 		var self = this;
-		$(form).submit(function() {
-			self.filters = $(form).serialize();
-			self._request(this.action);
+			url = EE.BASE + '&C=content_edit'; // window.location.href
+		
+		// add to filters and update right away
+		// @todo do not hardcode url!
+		if ($.isPlainObject(obj)) {
+			self.filters = $.extend(self.filters, obj);
+			self._request(url);
+			return true;
+		}
+
+		// @todo timeout on some inputs (textareas)
+		
+		
+		var form = obj.closest('form');
+		
+		if (form) {
+			url = form.attr('action');
+		}
+		
+		// @todo bind to submit only if it's a form?
+		$(obj).bind('interact.ee_table', function() {
+			self._set_filter(obj);			
+			self._request(form.action);
 			return false;
-		})
+		});
+		
+		self._listening.push(obj);
+	},
+	
+	add_sort: function(settings) {
+		
+		;
+		
 	},
 
 	_request: function(url, callback) {
@@ -104,26 +112,16 @@ $.widget('ee.table', {
 			self._trigger('update', null, self._ui(/* @todo args */));
 			
 			// parse table rows
+			// @todo only remove those that are not in the result set
+			// don't need to reparse any others
+			body.empty();
+			
 			$.each(res.rows, function() {
-				var parsed = $.tmpl(self.template, this);
+				var parsed = $.tmpl(self.template_id, this);
 				body.append(parsed);
 			});
 			
-			var current = self.options.pagination.html();
-			
-			if (current && res.pagination_html == '')
-			{
-				self.options.pagination.fadeOut('fast');
-			}
-			else
-			{
-				self.options.pagination.html($(res.pagination_html).html());
-			}
-			
-			
-			if (res.pagination_html && self.options.pagination.is(':hidden')) {
-				self.options.pagination.fadeIn('fast');
-			}
+			self.pagination.update(res.pagination);
 		};
 		
 		// @todo normalize url with filter data
@@ -133,14 +131,17 @@ $.widget('ee.table', {
 			return success(data);
 		}
 		
-		// fire request start event (show progress indicator)
+		// Always dd the xid
+		self.filters['XID'] = EE.XID;
 		
+		// fire request start event (show progress indicator)
 		$.ajax(url, {
-			type: (self.filters.length) ? 'post' : 'get',
+			type: 'post',
 			data: self.filters,
 			success: function(data) {
 				// fire request done event (hide progress indicator)
-				self.cache.set(url, data);
+				// @todo caching
+				// self.cache.set(url, data);
 				success(data);
 			},
 			dataType: 'json'
@@ -152,31 +153,21 @@ $.widget('ee.table', {
 		// columns = self._trigger('beforerender', null, self._ui(/* @todo args */));
 	},
 	
-	_setup_pagination: function(config) {
-		if ( ! config) {
-			return false;
-		}
-		
-		if ('display_pages' in config && ! config.display_pages) {
-			return false;
-		}
-		
-		var self = this,
-			els = $('.' + self.uniqid);
-		
-		if ( ! els.length) {
-			return false;
-		}
-		
-		return new Pagination(page_els, config, self);
-	},
-	
 	_ui: function() {
 		return {
 			page: 0, // @todo current page
 			sort: [], // @todo sort order [[column, asc/desc], [column2, asc/desc]]
 			filter: [], // all applied filters
 		};
+	},
+	
+	_set_filter: function(obj) {
+		var els = obj.serializeArray(),
+			self = this;
+		
+		$.each(els, function() {
+			self.filters[this.name] = this.value;
+		});
 	}
 	
 });
@@ -214,7 +205,7 @@ Cache.prototype = {
 		}
 
 		// evict
-		if (this.cache.length >= limit) {
+		if (this.cache.length >= this.limit) {
 			el = this.cache.shift();
 			delete this.cache_map[ el[0] ];
 			delete el;
@@ -230,6 +221,9 @@ Cache.prototype = {
 		if ( ! page in this.cache_map) {
 			return null;
 		}
+		
+		// @todo finish caching
+		return null;
 
 		return this.cache[ this.cache_map[page] ][1];
 	},
@@ -238,235 +232,62 @@ Cache.prototype = {
 		this.cache = [];
 		this.cache_map = {};
 	}
-}
+};
 
-Cache.prototype = {
-	set: function(page, data) {
-		var el, len;
 
-		// updating existing?
-		if (page in this.cache_map) {
-			// detach
-			el = this.cache.splice(this.cache_map[page], 1);
 
-			// update
-			el[1] = data;
+// --------------------------------------------------------------------------
 
-			// push on top of the queue (newest element)
-			len = this.cache.push(el);
-			this.cache_map[page] = len - 1;
-
-			return this;
+/**
+ * Table pagination class
+ */
+function Pagination(options, plugin) {	
+	var els = $('p.' + options.uniqid),
+		template_id = options.uniqid + '_pag_template';
+	
+	// compile the template
+	$.template(template_id, options.pagination);
+	
+	// _request will grab the new page, and then call update
+	els.delegate('a', 'click', function() {
+		plugin._request(this.href);
+		return false;
+	});
+	
+	
+	// call with new pagination array to rebuild
+	// @todo should this be listening on an update event on the plugin?
+	// answer is no, unless it also does not receive the plugin to begin with (/is a standalone thing)
+	this.update = function(data) {
+		if ( ! data) {
+			els.html('');
+			return;
 		}
-
-		// evict
-		if (this.cache.length >= limit) {
-			el = this.cache.shift();
-			delete this.cache_map[ el[0] ];
-			delete el;
-		}
-
-		len = this.cache.push( [page, data] );
-		this.cache_map[page] = len - 1;
-
-		return this;
-	},
-
-	get: function(page) {
-		if ( ! page in this.cache_map) {
-			return null;
-		}
-
-		return this.cache[ this.cache_map[page] ][1];
-	},
-
-	clear: function() {
-		this.cache = [];
-		this.cache_map = {};
-	}
+		
+		var res = $.tmpl(template_id, data);
+		els.html(res.html());
+	};
 }
 
 
 // --------------------------------------------------------------------------
 
-
-/**
- * Table pagination class
- */
-function Pagination(els, config, plugin) {
-	this.total_rows			= ''; // Total number of items (database results)
-	this.per_page			= 10; // Max number of items you want shown per page
-	this.num_links			=  2; // Number of "digit" links to show before/after the currently viewed page
-	this.cur_page			=  0; // The current page being viewed
-	this.first_link			= '&lsaquo; First';
-	this.next_link			= '&gt;';
-	this.prev_link			= '&lt;';
-	this.last_link			= 'Last &rsaquo;';
-	this.uri_segment		= 3;
-	this.full_tag_open		= '';
-	this.full_tag_close		= '';
-	this.first_tag_open		= '';
-	this.first_tag_close	= '&nbsp;';
-	this.last_tag_open		= '&nbsp;';
-	this.last_tag_close		= '';
-	this.first_url			= ''; // Alternative URL for the First Page.
-	this.cur_tag_open		= '&nbsp;<strong>';
-	this.cur_tag_close		= '</strong>';
-	this.next_tag_open		= '&nbsp;';
-	this.next_tag_close		= '&nbsp;';
-	this.prev_tag_open		= '&nbsp;';
-	this.prev_tag_close		= '';
-	this.num_tag_open		= '&nbsp;';
-	this.num_tag_close		= '';
-	this.page_query_string	= false;
-	this.query_string_segment = 'per_page';
-	this.display_pages		= true;
-	this.anchor_class		= '';
+// Go go go! Init all affected tables on the page
+$('table').each(function() {
+	var config;
 	
-	els.delegate('a', 'click', function() {
-		plugin._request(this.href);
-		return false;
-	});
-}
-
-function create_links() {
-
-	this.total_rows = 2014;
-	this.current_offset = 50;
-	this.per_page = 50;
-
-	var num_links = 5, /* @todo get from config */
-		total_pages = Math.ceil(this.total_rows / this.per_page),
-		current_page = Math.floor((this.offset/this.per_page) + 1),
-
-		start = current_page - num_links - 2,
-		end = this.current_page + num_links;
-
-	// if total_pages is 1, do nothing
-
-	// Adjust to fit our limits
-
-	if (current_page > this.total_rows) {
-		current_page = (total_pages - 1) * this.per_page;
+	if ($(this).data('table_config')) {
+		config = $(this).data('table_config');
+		$(this).table(config);
 	}
-
-	if (start < 0) {
-		start = 0;
-	}
-
-	if (end > total_pages) {
-		end = total_pages;
-	}
-
-	var base_url = this.base_url + '&amp' + this.query_string_segment + '=',
-		that = this,
-		create_url, tmp_data;
-
-	// create_url lookup table
-	tmp_data = {
-		'first':	{'tag_open': this.first_tag_open, 'tag_close': first_tag_close, 'text': this.first_link},
-		'prev':		{'tag_open': this.prev_tag_open, 'tag_close': prev_tag_close, 'text': this.prev_link},
-		'current':	{'tag_open': this.cur_tag_open, 'tag_close': cur_tag_close},
-		'others':	{'tag_open': this.num_tag_open, 'tag_close': num_tag_close},
-		'next':		{'tag_open': this.next_tag_open, 'tag_close': next_tag_close, 'text': this.next_link},
-		'last':		{'tag_open': this.last_tag_open, 'tag_close': last_tag_close, 'text': this.last_link}
-	};
-
-	// create_url link template
-	$.template(
-		'link_format',
-		'${tag_open}<a ' +this.anchor_class+ 'href="${url}">${text}<a/>${tag_close}'
-	);
-
-	// quick utility function
-	create_url = function(type, offset, text) {
-		var data = tmp_data[type],
-			url = that.first_url;
-
-		if (type == 'current') {
-			return data.tag_open + data.offset + data.tag_close;
-		}
-
-		if ( ! (offset == 0 && that.first_url)) {
-			url = base_url + that.prefix + offset + that.suffix;
-		}
-
-		data['url'] = url;
-
-		if (text) {
-			data['text'] = text;
-		}
-
-		return $.tmpl('link_format', data);
-	}
-
-
-	var inner_html = '',
-		i = this.offset - this.per_page;
-
-	// first link
-	if (this.first_link !== false && current_page > (num_links + 1)) {
-		inner_html += create_url('first', 0);
-	}
-
-	// prev link
-	if (this.prev_link !== false && current_page != 1) {
-		inner_html += create_url('prev', i);
-	}
-
-	while (start <= end) {
-		i = (start * this.per_page) - this.per_page;
-
-		if (i < 0) {
-			start++;
-			continue;
-		}
-
-		if (current_page == start) {
-			inner_html += create_url('current', start);
-		} else {
-			inner_html += create_url('others', i, start);
-		}
-
-		start++;
-	}
-
-	// next link
-	if (this.next_link !== false && current_page < total_pages) {
-		inner_html += create_url('next', (current_page * this.per_page) );
-	}
-
-	// last link
-	if (this.last_link !== false && (current_page + num_links) < total_pages) {
-		inner_html += create_url('last',  (num_pages * this.per_page) - this.per_page);
-	}
-
-	return inner_html;
-}
-
-
-
-
-
-
-
-
-
+});
 
 })(jQuery);
 
-$(function() {
-	$('table').each(function() {
-		var config;
-		
-		if ($(this).data('table_config')) {
-			$(this).table(config);
-		}
-	});
-});
 
 
 
+/*
 $.fn.table.add_sorter('numeric', {
 	
 });
