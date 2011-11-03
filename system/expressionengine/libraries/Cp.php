@@ -255,7 +255,7 @@ class Cp {
 		$js_scripts = array(
 						'effect'	=> 'core',
 						'ui'		=> array('core', 'widget', 'mouse', 'position', 'sortable', 'dialog'),
-						'plugin'	=> array('ee_focus', 'ee_notice', 'ee_txtarea', 'tablesorter'),
+						'plugin'	=> array('ee_focus', 'ee_interact.event', 'ee_notice', 'ee_txtarea', 'tablesorter'),
 						'file'		=> 'cp/global'
 		);
 		
