@@ -11,7 +11,6 @@
  */
 
 (function($) {
-
 	var file_manager_obj,
 		current_field = '',
 		display_type = 'list',

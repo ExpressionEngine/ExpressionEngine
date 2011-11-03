@@ -32,11 +32,37 @@ class File_browser {
 		
 		$this->_css();
 		$this->_javascript();
+		$this->render();
 	}
 	
 	public function render($config = array())
 	{
-		
+		// Are we on the publish page? If so, go ahead and load up the publish
+		// page javascript files
+		if (empty($config) OR $config['publish'] === TRUE)
+		{
+			$this->EE->javascript->set_global(array(
+				'filebrowser' => array(
+					'publish' => TRUE
+				)
+			));
+			
+			$this->EE->cp->add_js_script(array(
+				'file' => array(
+					'files/publish_fields'
+				)
+			));
+		}
+		// No? Hmm, well this is an odd situation, we want our devs to have
+		// the control here, so we're going to need a few things from them
+		// - *Trigger*, obviously we need to know what we're listening for
+		// - Field Name, the field we're dicking with, but my assumption is we leave this the hell alone
+		// - *Settings*, if you need to restrict it to a particular directory or type
+		// - *Callback*, what to do when a file is selected
+		else
+		{
+			
+		}
 	}
 	
 	private function _css()
@@ -48,8 +74,10 @@ class File_browser {
 	{
 		// Include dependencies
 		$this->EE->cp->add_js_script(array(
-			'plugin'    => array(
-				'underscore',
+			'file'		=> array(
+				'underscore'
+			),
+			'plugin'	=> array(
 				'scrollable',
 				'scrollable.navigator',
 				'ee_filebrowser',
