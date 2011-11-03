@@ -29,40 +29,38 @@ class File_browser {
 	public function __construct()
 	{
 		$this->EE =& get_instance();
-		
-		$this->_css();
-		$this->_javascript();
-		$this->render();
 	}
 	
-	public function render($config = array())
+	public function render($config = array(), $endpoint_url = 'C=content_publish&M=filemanager_actions')
 	{
+		$this->_css();
+		
 		// Are we on the publish page? If so, go ahead and load up the publish
 		// page javascript files
-		if (empty($config) OR $config['publish'] === TRUE)
+		if (empty($config) OR (isset($config['publish']) AND $config['publish'] === TRUE))
 		{
 			$this->EE->javascript->set_global(array(
 				'filebrowser' => array(
 					'publish' => TRUE
 				)
 			));
-			
-			$this->EE->cp->add_js_script(array(
-				'file' => array(
-					'files/publish_fields'
-				)
-			));
 		}
 		// No? Hmm, well this is an odd situation, we want our devs to have
 		// the control here, so we're going to need a few things from them
 		// - *Trigger*, obviously we need to know what we're listening for
-		// - Field Name, the field we're dicking with, but my assumption is we leave this the hell alone
-		// - *Settings*, if you need to restrict it to a particular directory or type
+		// - Settings, if you need to restrict it to a particular directory or type
 		// - *Callback*, what to do when a file is selected
-		else
+		elseif (isset($config['trigger'], $config['callback']))
 		{
+			$field_name = (isset($config['field_name'])) ? $config['field_name'].', ' : '';
+			$settings = (isset($config['settings'])) ? $config['settings'].', ' : '';
 			
+			$this->EE->javascript->ready("
+				$.ee_filebrowser.add_trigger('{$config['trigger']}', {$field_name}{$settings}{$config['callback']});
+			");
 		}
+		
+		$this->_javascript($endpoint_url);
 	}
 	
 	private function _css()
@@ -70,12 +68,13 @@ class File_browser {
 		$this->EE->cp->add_to_head($this->EE->view->head_link('css/file_browser.css'));
 	}
 
-	private function _javascript($endpoint_url = 'C=content_publish&M=filemanager_actions')
+	private function _javascript($endpoint_url)
 	{
 		// Include dependencies
 		$this->EE->cp->add_js_script(array(
 			'file'		=> array(
-				'underscore'
+				'underscore',
+				'files/publish_fields'
 			),
 			'plugin'	=> array(
 				'scrollable',
