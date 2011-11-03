@@ -87,7 +87,7 @@ class EE_Output extends CI_Output {
 
 		// Content Type Headers
 		// Also need to do some extra work for feeds
-
+		
 		switch ($this->out_type)
 		{
 			case 'webpage':	$this->set_header("Content-Type: text/html; charset=".$EE->config->item('charset'));
@@ -104,6 +104,15 @@ class EE_Output extends CI_Output {
 							$output = trim($output);
 				break;
 			case 'feed':	$this->_send_feed($output);
+				break;
+			default: // Likely a custom template type
+				$template_types = $EE->extensions->call('template_types');
+				
+				if (isset($template_types[$this->out_type]))
+				{
+					$this->set_header(sprintf("Content-Type: %s", $template_types[$this->out_type]['template_content_type']));
+					//$this->set_header('Content-Disposition: attachment; filename="test.ics"');
+				}
 				break;
 		}
 		
