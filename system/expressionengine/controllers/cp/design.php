@@ -1210,14 +1210,11 @@ class Design extends CI_Controller {
 		$vars['template_prefs'] = array();
 
 		$template_type_options = array(
-			'null'		=> lang('do_not_change'),
-			'css'		=> lang('css_stylesheet'),
-			'js'		=> lang('js'),
-			'feed'		=> lang('rss'),
-			'static'	=> lang('static'),
-			'webpage'	=> lang('webpage'),
-			'xml'		=> lang('xml')
+			'null'		=> lang('do_not_change')
 		);
+		
+		// Append standard template types to the end of the Do Not Change item
+		$template_type_options = array_merge($template_type_options, $this->_get_template_types());
 
 		$vars['template_prefs']['template_type'] = form_dropdown('template_type', $template_type_options, 'null', 'id="template_type"');
 
@@ -1943,6 +1940,8 @@ class Design extends CI_Controller {
 		}
 		
 		$vars['warnings'] = $warnings;
+		
+		$vars['template_types'] = $this->_get_template_types();
 
 		$this->javascript->compile();
 
@@ -3482,6 +3481,7 @@ class Design extends CI_Controller {
 
 		}
 
+		$vars['template_types'] = $this->_get_template_types();
 
 		$this->cp->set_right_nav($this->sub_breadcrumbs);
 

@@ -123,14 +123,9 @@ if ($EE_view_disable !== TRUE)
 						</tr>
 						<tr>
 							<td><input name="template_name" class="template_name" type="text" size="15" value="<?=$template_name?>" <?=($template_name == 'index') ? 'readonly="readonly"' : ''?>/></td>
-							<td><select class="template_type" name="template_type" id="template_type">
-								<option value="css" <?=($prefs['template_type'] == 'css') ? 'selected="selected"':''?>><?=lang('css_stylesheet')?></option>
-								<option value="js" <?=($prefs['template_type'] == 'js') ? 'selected="selected"':''?>><?=lang('js')?></option>
-								<option value="feed" <?=($prefs['template_type'] == 'feed') ? 'selected="selected"':''?>><?=lang('rss')?></option>
-								<option value="static" <?=($prefs['template_type'] == 'static') ? 'selected="selected"':''?>><?=lang('static')?></option>
-								<option value="webpage" <?=($prefs['template_type'] == 'webpage') ? 'selected="selected"':''?>><?=lang('webpage')?></option>
-								<option value="xml" <?=($prefs['template_type'] == 'xml') ? 'selected="selected"':''?>><?=lang('xml')?></option>
-							</select></td>
+							<td>
+								<?=form_dropdown('template_type', $template_types, $prefs['template_type'])?>
+							</td>
 							<td>
 								<?=form_dropdown('cache', array('y' => lang('yes'), 'n' => lang('no')), $prefs['cache'])?>
 							</td>
