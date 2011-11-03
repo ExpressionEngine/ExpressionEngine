@@ -354,6 +354,7 @@ class Content_edit extends CI_Controller {
 	 */	
 	public function index()
 	{
+		// sleep(2);
 		// @todo use the cp version - figure out how to best do that (func in cp? move to table?)
 		$cp_table_template = array(
 				'table_open'		=> '<table class="mainTable" border="0" cellspacing="0" cellpadding="0">',
@@ -405,6 +406,7 @@ class Content_edit extends CI_Controller {
 		$this->load->library('table');
 		
 		$columns = array(
+			/*
 			'entry_id'		=> array('filter' => TRUE),
 			'title'			=> array('filter' => TRUE),
 			'view'			=> FALSE,
@@ -414,8 +416,8 @@ class Content_edit extends CI_Controller {
 			'channel_name'	=> array('filter' => TRUE),
 			'status'		=> array('filter' => TRUE),
 			'_check'		=> FALSE
-/*
-			'entry_id'		=> array('sort' => TRUE, 'html' => FALSE, 'sort_by' => 'numeric'),
+*/
+			'entry_id'		=> array('sort' => TRUE, 'html' => FALSE, 'sort' => 'numeric'),
 			'title'			=> array('sort' => TRUE, 'html' => TRUE),
 			'view'			=> array('sort' => FALSE, 'html' => TRUE),
 			'comment_total'	=> array('sort' => TRUE, 'html' => TRUE),
@@ -424,7 +426,7 @@ class Content_edit extends CI_Controller {
 			'channel_name'	=> TRUE,
 			'status'		=> array('sort' => TRUE, 'html' => TRUE),
 			'_check'		=> array('sort' => FALSE, 'html' => TRUE)
-*/
+
 		);
 		
 		// table headings
@@ -760,63 +762,6 @@ class Content_edit extends CI_Controller {
 		$vars['pagination'] = $this->pagination->create_links();
 		$vars['heading'] = 'edit_channel_entries';
 */
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Edit ajax filter - MUST BE PUBLIC
-	 */
-	public function _edit_ajax_filter()
-	{
-		$this->output->enable_profiler(FALSE);
-
-		$filter_data['validate'] = ($this->input->get_post('validate') == 'true') ? TRUE : FALSE;
-		$validate = $filter_data['validate'];
-
-
-		$perpage = $this->input->get_post('iDisplayLength');
-		$offset = ($this->input->get_post('iDisplayStart')) ? $this->input->get_post('iDisplayStart') : 0; // Display start point		
-		
-		$filter_data['perpage'] = $perpage;
-		$filter_data['rownum'] = $offset;
-
-		$sEcho = $this->input->get_post('sEcho');	
-		
-		if (isset($this->installed_modules['comment']))
-		{
-			$col_map = array('exp_channel_titles.entry_id', 'title', 'view', 'comment_total', 'screen_name', 'entry_date', 'channel_name', 'status', '');
-		}
-		else
-		{
-			$col_map = array('exp_channel_titles.entry_id', 'title', 'view', 'screen_name', 'entry_date', 'channel_name', 'status', '');
-		}
-
-		/* Ordering */
-		$order = array();
-		
-		if ($this->input->get('iSortCol_0') !== FALSE)
-		{
-			for ( $i=0; $i < $this->input->get('iSortingCols'); $i++ )
-			{
-				if (isset($col_map[$this->input->get('iSortCol_'.$i)]))
-				{
-					$order[$col_map[$this->input->get('iSortCol_'.$i)]] = ($this->input->get('sSortDir_'.$i) == 'asc') ? 'asc' : 'desc';
-				}
-			}
-		}
-		
-		$filtered_entries = $this->search_model->get_filtered_entries($filter_data, $order);
-		
-		// No result?  Show the "no results" message
-		$total = $filtered_entries['total_count'];
-		$query_results = $filtered_entries['results'];
-
-		$j_response['sEcho'] = $sEcho;
-		$j_response['iTotalRecords'] = $this->db->count_all('channel_titles');
-		$j_response['iTotalDisplayRecords'] = $total;
-
-		$this->output->send_ajax_response($j_response);
 	}
 	
 
