@@ -150,7 +150,16 @@ $(document).ready(function() {
 	});
 	
 	// Keyword filter
-	$('table').table('add_filter', $('#keywords').closest('form'));
+	var indicator = $('.searchIndicator');
+	
+	$('table')
+	.table('add_filter', $('#keywords').closest('form'))
+	.bind('tableload', function() {
+		indicator.css('visibility', '');
+	})
+	.bind('tableupdate', function() {
+		indicator.css('visibility', 'hidden');
+	});
 });
 
 /*
