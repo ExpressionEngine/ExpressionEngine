@@ -4660,11 +4660,11 @@ class Design extends CI_Controller {
 		// 'template_types' hook.
 		//  - Provide information for custom template types.
 		//
-		$custom_templates = $this->extensions->call('template_types');
+		$custom_templates = $this->extensions->call('template_types', array());
 		//
 		// -------------------------------------------
 		
-		if (count($custom_templates) > 0)
+		if ($custom_templates != NULL)
 		{
 			// Instead of just merging the arrays, we need to get the
 			// template_name value out of the associative array for

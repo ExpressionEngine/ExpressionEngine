@@ -110,7 +110,7 @@ class EE_Output extends CI_Output {
 				// 'template_types' hook.
 				//  - Provide information for custom template types.
 				//
-				$template_types = $EE->extensions->call('template_types');
+				$template_types = $EE->extensions->call('template_types', array());
 				//
 				// -------------------------------------------
 				
