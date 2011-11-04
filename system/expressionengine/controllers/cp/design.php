@@ -1369,7 +1369,7 @@ class Design extends CI_Controller {
 
 		$data = array();
 
-		if (in_array($_POST['template_type'], array('css', 'js', 'feed', 'static', 'webpage', 'xml')))
+		if ($_POST['template_type'] != '')
 		{
 			$data['template_type'] = $_POST['template_type'];
 		}
