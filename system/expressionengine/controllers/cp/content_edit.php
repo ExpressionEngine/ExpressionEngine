@@ -27,10 +27,6 @@ class Content_edit extends CI_Controller {
 	private $nest_categories	= 'y';
 	private $installed_modules	= FALSE;
 	
-	private $pipe_length			= 3;
-	private $comment_chars			= 25;
-	private $comment_leave_breaks	= 'n';
-
 	/**
 	 * Constructor
 	 */
@@ -475,8 +471,6 @@ class Content_edit extends CI_Controller {
 		{
 			$perpage = $this->input->cookie('perpage');
 		}
-		
-		
 		
 		
 		
