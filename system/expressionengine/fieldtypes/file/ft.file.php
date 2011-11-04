@@ -165,67 +165,17 @@ class File_ft extends EE_Fieldtype {
 	 */
 	function display_field($data)
 	{
-		$vars					= array(
-			'filedir'	=> '',
-			'filename'	=> ''
-		);
-		$upload_dirs			= array();
 		$allowed_file_dirs		= (isset($this->settings['allowed_directories']) && $this->settings['allowed_directories'] != 'all') ? $this->settings['allowed_directories'] : '';
-		$specified_directory	= ($allowed_file_dirs == '') ? 'all' : $allowed_file_dirs;
 		$content_type			= (isset($this->settings['field_content_type'])) ? $this->settings['field_content_type'] : 'all';
 
-		// Figure out the directory and name of the file from the data 
-		// (e.g. {filedir_1}filename.jpg)
-		if (preg_match('/{filedir_([0-9]+)}/', $data, $matches))
-		{
-			$vars['filedir'] = $matches[1];
-			$vars['filename'] = str_replace($matches[0], '', $data);
-		}
+		$this->EE->load->library('file_browser');
 		
-		// Retrieve all directories that are both allowed for this user and
-		// for this field
-		$upload_directories = $this->EE->file_upload_preferences_model->get_upload_preferences(
-			$this->EE->session->userdata('group_id'),
-			$allowed_file_dirs
+		return $this->EE->file_browser->field(
+			$data,
+			$this->field_name,
+			$allowed_file_dirs,
+			$content_type
 		);
-
-		// Create the list of directories
-		$upload_dirs[''] = lang('directory');
-		foreach($upload_directories->result() as $row)
-		{
-			$upload_dirs[$row->id] = $row->name;
-		}
-		
-		// Get the thumbnail
-		$this->EE->load->library('filemanager');
-		$this->EE->load->helper('html');
-		$thumb_info = $this->EE->filemanager->get_thumb($vars['filename'], $vars['filedir']);
-		$vars['thumb'] = img(array(
-			'src' => $thumb_info['thumb'],
-			'alt' => $vars['filename']
-		));
-		
-		// Create the hidden fields for the file and directory
-		$vars['hidden']	  = form_hidden($this->field_name.'_hidden', $vars['filename']);
-		$vars['hidden']	 .= form_hidden($this->field_name.'_hidden_dir', $vars['filedir']);
-		
-		// Create a standard file upload field and dropdown for folks 
-		// without javascript
-		$vars['upload'] = form_upload(array(
-			'name'				=> $this->field_name,
-			'value'				=> $vars['filename'],
-			'data-content-type'	=> $content_type,
-			'data-directory'	=> $specified_directory
-		));
-		$vars['dropdown'] = form_dropdown($this->field_name.'_directory', $upload_dirs, $vars['filedir']);
-
-		// Check to see if they have access to any directories to create an upload link
-		$vars['upload_link'] = (count($upload_dirs) > 1) ? '<a href="#" class="choose_file" data-directory="'.$specified_directory.'">'.lang('add_file').'</a>' : lang('directory_no_access');
-
-		// If we have a file, show the thumbnail, filename and remove link
-		$vars['set_class'] = $vars['filename'] ? '' : 'js_hide';
-
-		return $this->EE->load->ee_view('_shared/file/field', $vars, TRUE);
 	}
 
 	// --------------------------------------------------------------------
