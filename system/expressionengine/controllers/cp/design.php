@@ -380,7 +380,9 @@ class Design extends CI_Controller {
 			$vars['templates'][$template->group_name][$template->template_id] = $template->template_name;
 		}
 
-		$vars['form_hidden']['group_id'] = $group_id; 
+		$vars['form_hidden']['group_id'] = $group_id;
+		
+		$vars['template_types'] = $this->_get_template_types();
 
 		//create_new_template
 
@@ -1208,14 +1210,11 @@ class Design extends CI_Controller {
 		$vars['template_prefs'] = array();
 
 		$template_type_options = array(
-			'null'		=> lang('do_not_change'),
-			'css'		=> lang('css_stylesheet'),
-			'js'		=> lang('js'),
-			'feed'		=> lang('rss'),
-			'static'	=> lang('static'),
-			'webpage'	=> lang('webpage'),
-			'xml'		=> lang('xml')
+			'null'		=> lang('do_not_change')
 		);
+		
+		// Append standard template types to the end of the Do Not Change item
+		$template_type_options = array_merge($template_type_options, $this->_get_template_types());
 
 		$vars['template_prefs']['template_type'] = form_dropdown('template_type', $template_type_options, 'null', 'id="template_type"');
 
@@ -1370,7 +1369,7 @@ class Design extends CI_Controller {
 
 		$data = array();
 
-		if (in_array($_POST['template_type'], array('css', 'js', 'feed', 'static', 'webpage', 'xml')))
+		if ($_POST['template_type'] != '')
 		{
 			$data['template_type'] = $_POST['template_type'];
 		}
@@ -1941,6 +1940,8 @@ class Design extends CI_Controller {
 		}
 		
 		$vars['warnings'] = $warnings;
+		
+		$vars['template_types'] = $this->_get_template_types();
 
 		$this->javascript->compile();
 
@@ -3480,6 +3481,7 @@ class Design extends CI_Controller {
 
 		}
 
+		$vars['template_types'] = $this->_get_template_types();
 
 		$this->cp->set_right_nav($this->sub_breadcrumbs);
 
@@ -3506,6 +3508,8 @@ class Design extends CI_Controller {
 
 		// Load the design model
 		$this->load->model('design_model');
+		
+		$this->api->instantiate('template_structure');
 
 		$templates = $this->design_model->export_tmpl_group($this->input->get_post('group_id'));
 
@@ -3514,24 +3518,8 @@ class Design extends CI_Controller {
 
 		foreach ($templates as $template)
 		{
-			// Create appropriate file extensions for each template
-			switch ($template['template_type'])
-			{
-				case 'xml':
-					$tmpl_ext = '.xml';
-					break;
-				case 'feed':
-					$tmpl_ext = '.xml';
-					break;
-				case 'css':
-					$tmpl_ext = '.css';
-					break;
-				case 'js':
-					$tmpl_ext = '.js';
-					break;
-				default:
-					$tmpl_ext = '.html';
-			}
+			// Get file extension for template type to construct template file name
+			$tmpl_ext = $this->api_template_structure->file_extensions($template['template_type']);
 			
 			$template_name = $site_name.'/'.$template['group_name'].'.group'.'/'.$template['template_name'].$tmpl_ext;
 			
@@ -4631,6 +4619,49 @@ class Design extends CI_Controller {
 				unset($existing[$group]);
 			}
 		}
+	}
+	
+	/**
+	 * Get template types
+	 *
+	 * Returns a list of the standard EE template types to be used in
+	 * template type selection dropdowns, optionally merged with
+	 * user-defined template types via the template_types hook.
+	 *
+	 * @access private
+	 * @return array Array of available template types
+	 */
+	function _get_template_types()
+	{
+		$template_types = array(
+			'webpage'	=> lang('webpage'),
+			'feed'		=> lang('rss'),
+			'css'		=> lang('css_stylesheet'),
+			'js'		=> lang('js'),
+			'static'	=> lang('static'),
+			'xml'		=> lang('xml')
+		);
+		
+		// -------------------------------------------
+		// 'template_types' hook.
+		//  - Provide information for custom template types.
+		//
+		$custom_templates = $this->extensions->call('template_types', array());
+		//
+		// -------------------------------------------
+		
+		if ($custom_templates != NULL)
+		{
+			// Instead of just merging the arrays, we need to get the
+			// template_name value out of the associative array for
+			// easy use of the form_dropdown helper
+			foreach ($custom_templates as $key => $value)
+			{
+				$template_types[$key] = $value['template_name'];
+			}
+		}
+		
+		return $template_types;
 	}
 }
 
