@@ -4656,8 +4656,13 @@ class Design extends CI_Controller {
 			'xml'		=> lang('xml')
 		);
 		
-		// Get custom template types if set
+		// -------------------------------------------
+		// 'template_types' hook.
+		//  - Provide information for custom template types.
+		//
 		$custom_templates = $this->extensions->call('template_types');
+		//
+		// -------------------------------------------
 		
 		if (count($custom_templates) > 0)
 		{

@@ -106,7 +106,13 @@ class EE_Output extends CI_Output {
 			case 'feed':	$this->_send_feed($output);
 				break;
 			default: // Likely a custom template type
+				// -------------------------------------------
+				// 'template_types' hook.
+				//  - Provide information for custom template types.
+				//
 				$template_types = $EE->extensions->call('template_types');
+				//
+				// -------------------------------------------
 				
 				if (isset($template_types[$this->out_type]))
 				{
