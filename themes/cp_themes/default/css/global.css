@@ -3322,7 +3322,85 @@ div.contentWrap {
 
 /* File Manager Edit  ====================================================== */
 
+.edit_controls {
+	color: #5f6c74;
+	float: left;
+	font-size: 11px;
+	margin-top: -7px;
+	width: 14.5%;
+}
 
+.edit_controls h3 {
+	margin: 7px 0 0;
+}
+
+.edit_controls .ui-accordion-content {
+	border: 1px solid #D0D7DF;
+	border-width: 0 1px 1px;
+	margin: 0 0 10px;
+	padding: 5px 8px 8px;
+}
+
+.edit_controls label {
+	margin: 0 0 0;
+}
+
+.edit_controls .ui-accordion-content input {
+	margin: 0 0 5px;
+	width: 92%;
+}
+
+.edit_controls ul {
+	margin: 0;
+}
+
+.edit_controls legend {
+	font-size: 14px;
+}
+
+.edit_controls  p.submit_button {
+	margin: 10px 0 0;
+	text-align: right;
+}
+
+.edit_controls  p.submit_button a {
+	clear: right;
+	display: inline-block;
+	float: right;
+	font-size: 12px;
+	line-height: 12px;
+	margin: 0 0 5px;
+}
+
+.edit_controls  p.submit_button input {
+	clear: right;
+	display: block;
+	float: right;
+	margin-bottom: 5px;
+	width: auto;
+}
+
+.edit_controls .notice {
+	margin: 0 0 10px;
+}
+
+#rotate_fieldset li {
+	margin: 4px 0;
+}
+
+#rotate_fieldset.ui-accordion-content li input {
+	width: auto;
+}
+
+.edit_controls .oversized {
+	border: 2px solid #c6220a;
+}
+
+#file_manager_edit_file {
+	float: right;
+	overflow: auto;
+	width: 84%;
+}
 
 /* Comments Index */
 
