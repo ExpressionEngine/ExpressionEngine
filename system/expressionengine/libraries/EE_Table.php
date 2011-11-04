@@ -86,10 +86,9 @@
  *
  * 5. Tying into the javascript:
  *
- * @todo The setup can be done automatically by grabbing all tables and
+ * The table setup is done automatically by grabbing all tables and
  * looking for the data-table_config property. That property contains a json
  * array that is passed to the plugin.
- * So I'll just touch on the jquery events in here. JS specific planning will go into the plugin file.
  *
  * The table plugin will modify the table as users interact with it. If your javascript
  * modifies the table or listens for events on its elements, you will need to observe
@@ -98,19 +97,20 @@
  * WIP list:
  *
  * $('table').bind('tablecreate')	// initial automatic setup
- * $('table').bind('tableupdate')	// changes (pagination/sorting/filtering)
+ * $('table').bind('tableload')		// beginning of (potentially) long process: show indicator
+ * $('table').bind('tableupdate')	// results returned and changes applied (pagination/sorting/filtering)
  *
  * If you want to filter, you will need to connect the filtering plugin. You can
  * either give it a serializable set of form elements (form, or multiple inputs).
  * These will automatically be observed for changes.
  *
- * $('table').table('set_filter', $('form'));
+ * $('table').table('add_filter', $('form'));
  *
  * Or you can apply filters yourself, by passing a json object:
  *
  * $('table').table('add_filter', {'foo': 'bar'});
  *
- * multiple calls to add_filter stack, set_filter overrides all
+ * multiple calls to add_filter stack
  *
  * You can also remove filters:
  * $('table').table('remove_filter', 'key'/object/serializable);
@@ -177,8 +177,8 @@ class EE_Table extends CI_Table {
 			}
 		}
 		
-		// override settings from GET
-		if (isset($_GET['tbl_offset']) && is_numeric($_GET['tbl_offset']))
+		// override settings from GET (must be get for pagination to work)
+		if (is_numeric($this->EE->input->get('tbl_offset')))
 		{
 			$settings['offset'] = $_GET['tbl_offset'];
 		}
@@ -218,7 +218,6 @@ class EE_Table extends CI_Table {
 			$this->EE->output->send_ajax_response(array(
 				'rows'		 => $data['rows'],
 				'total_rows' => $data['total_rows'],
-				'page'		 => $settings['offset'] ? ceil($data['total_rows'] / $settings['offset']) : 1,
 				'pagination' => $this->_create_pagination($data, TRUE)
 			));
 		}
@@ -421,7 +420,7 @@ class EE_Table extends CI_Table {
 		$temp .= '{{/if}}';
 	
 		$temp .= '{{if previous_page && previous_page[0]}}';
-		$temp .= $p->prev_tag_open.'<a '.$p->anchor_class.'href="${previous_page.pagination_url}">{{html previous_page[0].text}}</a>'.$p->prev_tag_close;
+		$temp .= $p->prev_tag_open.'<a '.$p->anchor_class.'href="${previous_page[0].pagination_url}">{{html previous_page[0].text}}</a>'.$p->prev_tag_close;
 		$temp .= '{{/if}}';
 	
 	
