@@ -3516,24 +3516,8 @@ class Design extends CI_Controller {
 
 		foreach ($templates as $template)
 		{
-			// Create appropriate file extensions for each template
-			switch ($template['template_type'])
-			{
-				case 'xml':
-					$tmpl_ext = '.xml';
-					break;
-				case 'feed':
-					$tmpl_ext = '.xml';
-					break;
-				case 'css':
-					$tmpl_ext = '.css';
-					break;
-				case 'js':
-					$tmpl_ext = '.js';
-					break;
-				default:
-					$tmpl_ext = '.html';
-			}
+			// Get file extension for template type to construct template file name
+			$tmpl_ext = $this->api_template_structure->file_extensions($template['template_type']);
 			
 			$template_name = $site_name.'/'.$template['group_name'].'.group'.'/'.$template['template_name'].$tmpl_ext;
 			
