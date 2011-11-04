@@ -117,7 +117,7 @@ EE.publish.file_browser.file_field = function() {
 	 * @param {Object} field jQuery object of the field
 	 */
 	function file_field_changed(file, field) {
-		var container = $("input[name="+field+"]").closest(".publish_field");
+		var container = $("input[name="+field+"]").parent().parent().parent();
 
 		if (file.is_image == false) {
 			container.find(".file_set").show().find(".filename").html("<img src=\""+EE.PATH_CP_GBL_IMG+"default.png\" alt=\""+EE.PATH_CP_GBL_IMG+"default.png\" /><br />"+file.file_name);
@@ -131,8 +131,8 @@ EE.publish.file_browser.file_field = function() {
 
 	// Look for every file input on the publish form and establish the 
 	// file browser trigger. Also establishes the remove file handler.
-	$("input[type=file]", "#publishForm").each(function() {
-		var container = $(this).closest(".publish_field"),
+	$("input[type=file]", "#publishForm, .pageContents").each(function() {
+		var container = $(this).parent().parent().parent(),
 			trigger = container.find(".choose_file"),
 			content_type = $(this).data('content-type'),
 			directory = $(this).data('directory'),
@@ -140,7 +140,7 @@ EE.publish.file_browser.file_field = function() {
 				"content_type": content_type,
 				"directory": directory
 			};
-
+		
 		$.ee_filebrowser.add_trigger(trigger, $(this).attr("name"), settings, file_field_changed);
 
 		container.find(".remove_file").click(function() {
