@@ -34,11 +34,10 @@ if ($EE_view_disable !== TRUE)
 			<?=form_textarea(array('id'=>'cat_description','name'=>'cat_description','class'=>'fullfield','rows'=>'10','value'=>set_value('cat_description', $cat_description)))?>
 		</p>
 
-		<p>
+		<div class="category_field">
 			<?=form_label(lang('category_image'), 'cat_image')?><br /><?=lang('category_img_blurb')?>
-			<?=form_input(array('id'=>'cat_image','name'=>'cat_image','class'=>'fullfield','value'=>set_value('cat_image', $cat_image)))?>
-			<a href="#" class="upload">Upload</a>
-		</p>
+			<?=$cat_image?>
+		</div>
 
 		<p>
 			<?=form_label(lang('category_parent'), 'parent_id')?><br />

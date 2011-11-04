@@ -1918,31 +1918,28 @@ class Admin_content extends CI_Controller {
 		{	
 			// Pipe in necessary globals
 			$this->javascript->set_global(array(
-				'publish.word_separator'   => $this->config->item('word_separator') != "dash" ? '_' : '-',
-				'publish.foreignChars'				=> $foreign_characters,
+				'publish.word_separator'	=> $this->config->item('word_separator') != "dash" ? '_' : '-',
+				'publish.foreignChars'		=> $foreign_characters,
 			));
 			
 			// Load in necessary js files
 			$this->cp->add_js_script(array(
-				'file' => array('cp/global'),
-				'plugin' => array('ee_url_title'),
+				'file'		=> array('cp/global'),
+				'plugin'	=> array('ee_url_title'),
 			));
 			
 			$this->javascript->keyup('#cat_name', '$("#cat_name").ee_url_title($("#cat_url_title"));');
 		}
-
-		// Setup file browser for category image
-		$this->load->library('file_browser');
 		
-		// Callback adds {filedir_x}filename.ext to the category image url
-		$this->file_browser->init(array(
-			'trigger' => 'a.upload',
-			'field_name' => 'cat_image',
-			'settings' => '{"content_type": "image", "directory": "all"}',
-			'callback' => 'function(file, field) {
-				$(field).val("{filedir_" + file.upload_location_id + "}" + file.file_name);
-			}'
-		));
+		// Setup category image
+		$this->load->library('file_browser');
+		$this->file_browser->init();
+		$vars['cat_image'] = $this->file_browser->field(
+			$vars['cat_image'],
+			'cat_image',
+			'all',
+			'image'
+		);
 
 		$vars['form_hidden']['group_id'] = $group_id;
 
@@ -2039,7 +2036,7 @@ class Admin_content extends CI_Controller {
 		$this->javascript->compile();
 		$this->load->view('admin/category_edit', $vars);
 	}
-
+	
 	// --------------------------------------------------------------------
 
 	/**
