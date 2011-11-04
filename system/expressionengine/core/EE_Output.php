@@ -116,8 +116,15 @@ class EE_Output extends CI_Output {
 				
 				if (isset($template_types[$this->out_type]))
 				{
-					$this->set_header(sprintf("Content-Type: %s", $template_types[$this->out_type]['template_content_type']));
-					//$this->set_header('Content-Disposition: attachment; filename="test.ics"');
+					// Set custom headers as defined by the template_headers key,
+					// and replace any headers as necessary
+					if (isset($template_types[$this->out_type]['template_headers']))
+					{
+						foreach ($template_types[$this->out_type]['template_headers'] as $header)
+						{
+							$this->set_header($header, TRUE);
+						}
+					}
 				}
 				break;
 		}
