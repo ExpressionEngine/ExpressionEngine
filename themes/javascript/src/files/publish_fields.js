@@ -111,7 +111,11 @@ EE.publish.file_browser.textarea = function() {
  * Fire up the file browser for file fields
  */
 EE.publish.file_browser.file_field = function() {
-	// File fields
+	/**
+	 * Changes the hidden inputs, thumbnail and file name when a file is selected
+	 * @param {Object} file File object with information about the file upload
+	 * @param {Object} field jQuery object of the field
+	 */
 	function file_field_changed(file, field) {
 		var container = $("input[name="+field+"]").closest(".publish_field");
 
@@ -125,6 +129,8 @@ EE.publish.file_browser.file_field = function() {
 		$("select[name="+field+"_directory]").val(file.upload_location_id);
 	}
 
+	// Look for every file input on the publish form and establish the 
+	// file browser trigger. Also establishes the remove file handler.
 	$("input[type=file]", "#publishForm").each(function() {
 		var container = $(this).closest(".publish_field"),
 			trigger = container.find(".choose_file"),

@@ -31,10 +31,27 @@ class File_browser {
 		$this->EE =& get_instance();
 	}
 	
-	public function render($config = array(), $endpoint_url = 'C=content_publish&M=filemanager_actions')
+	// ------------------------------------------------------------------------
+	
+	/**
+	 * Initialize the file browser given a configuration array and an endpoint url
+	 * @param array $config Associative array containing five different keys and values:
+	 * 		- publish: set to TRUE if you're on the publish page, optionally
+	 * 			just pass an empty array or none at all for the same behavior
+	 * 		- trigger: the selector to pass to jQuery to create a trigger for
+	 * 			the file browser
+	 * 		- field_name: the field you're operating on. If undefined, it will
+	 * 			assume the name is userfile
+	 * 		- settings: JSON object defining the content type and directory
+	 * 			e.g. {"content_type": "all/image", "directory": "all/<directory_id>"}
+	 * 		- callback: Javascript function that will be called when an image
+	 * 			is selected. e.g. function (file, field) { console.log(file, field); }
+	 * 			file is an object of the selected file's data, and field is a
+	 * 			jQuery object representing the field from the field_name given
+	 * @param string $endpoint_url The URL the file browser will hit
+	 */
+	public function init($config = array(), $endpoint_url = 'C=content_publish&M=filemanager_actions')
 	{
-		$this->_css();
-		
 		// Are we on the publish page? If so, go ahead and load up the publish
 		// page javascript files
 		if (empty($config) OR (isset($config['publish']) AND $config['publish'] === TRUE))
@@ -45,11 +62,7 @@ class File_browser {
 				)
 			));
 		}
-		// No? Hmm, well this is an odd situation, we want our devs to have
-		// the control here, so we're going to need a few things from them
-		// - *Trigger*, obviously we need to know what we're listening for
-		// - Settings, if you need to restrict it to a particular directory or type
-		// - *Callback*, what to do when a file is selected
+		// No? Make sure we at least have a trigger and a callback
 		elseif (isset($config['trigger'], $config['callback']))
 		{
 			$field_name = (isset($config['field_name'])) ? $config['field_name'].', ' : '';
@@ -59,15 +72,31 @@ class File_browser {
 				$.ee_filebrowser.add_trigger('{$config['trigger']}', {$field_name}{$settings}{$config['callback']});
 			");
 		}
-		
+		else
+		{
+			return;
+		}
+
+		$this->_css();
 		$this->_javascript($endpoint_url);
 	}
 	
+	// ------------------------------------------------------------------------
+	
+	/**
+	 * Add the file browser CSS to the head
+	 */
 	private function _css()
 	{
 		$this->EE->cp->add_to_head($this->EE->view->head_link('css/file_browser.css'));
 	}
 
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Loads up javascript dependencies and global variables for the file 
+	 * browser and file uploader
+	 */
 	private function _javascript($endpoint_url)
 	{
 		// Include dependencies

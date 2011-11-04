@@ -1935,7 +1935,7 @@ class Admin_content extends CI_Controller {
 		$this->load->library('file_browser');
 		
 		// Callback adds {filedir_x}filename.ext to the category image url
-		$this->file_browser->render(array(
+		$this->file_browser->init(array(
 			'trigger' => 'a.upload',
 			'field_name' => 'cat_image',
 			'settings' => '{"content_type": "image", "directory": "all"}',
