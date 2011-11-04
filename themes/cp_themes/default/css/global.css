@@ -1975,6 +1975,7 @@ a.less_important_link:hover {
 	opacity: 			1.0;	
 }
 
+.templateTable td.templateName,
 .templateTable td.webpage {
 	background:			url('../images/design_sprite.png') 0 -88px no-repeat;
 }
@@ -1983,6 +1984,7 @@ a.less_important_link:hover {
 	background:		#ECF1F4	url('../images/design_sprite.png') -500px -88px no-repeat;
 }
 
+.templateTable tr.highlightRow td.templateName,
 .templateTable tr.highlightRow td.webpage {
 	background:		#8FA1AD url('../images/design_sprite.png') 0 -170px no-repeat;
 }
