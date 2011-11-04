@@ -37,6 +37,7 @@ if ($EE_view_disable !== TRUE)
 		<p>
 			<?=form_label(lang('category_image'), 'cat_image')?><br /><?=lang('category_img_blurb')?>
 			<?=form_input(array('id'=>'cat_image','name'=>'cat_image','class'=>'fullfield','value'=>set_value('cat_image', $cat_image)))?>
+			<a href="#" class="upload">Upload</a>
 		</p>
 
 		<p>
