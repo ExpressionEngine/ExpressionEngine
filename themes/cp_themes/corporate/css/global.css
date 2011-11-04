@@ -1191,25 +1191,25 @@ h2.innerHeading{
 	margin-top: -6px;
 }
 
-#fileChooser {
+#file_browser {
 	font-size: 12px;
 }
 
-#fileChooser #filterMenu {
+#file_browser #filterMenu {
 	margin: 12px 0;
 }
 
-#fileChooser table.mainTable, #mainContent table.mainTable {
+#file_browser table.mainTable, #mainContent table.mainTable {
 	width: 100%;
 	text-align: left;
 	line-height: 13px;
 }
 
-#fileChooser table.mainTable td {
+#file_browser table.mainTable td {
 	padding: 7px 10px;
 }
 
-#file_chooser_body {
+#file_browser_body {
 	border:				1px solid #ccc;
 	border-width: 		0 0 1px;
 	display:			block;
@@ -1220,16 +1220,16 @@ h2.innerHeading{
 	width:				100%;
 }
 
-#fileChooser #dir_choice_form, #mainContent #dir_choice_form {
+#file_browser #dir_choice_form, #mainContent #dir_choice_form {
 	float: left;
 }
 
-#fileChooser .tableSubmit, #mainContent .tableSubmit {
+#file_browser .tableSubmit, #mainContent .tableSubmit {
 	float: right;
 	margin-top: 0;
 }
 
-#fileChooser #pagination_meta, #mainContent #paginationCount {
+#file_browser #pagination_meta, #mainContent #paginationCount {
 	margin: 0 0 10px;
 }
 

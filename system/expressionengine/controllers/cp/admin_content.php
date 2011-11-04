@@ -1931,6 +1931,19 @@ class Admin_content extends CI_Controller {
 			$this->javascript->keyup('#cat_name', '$("#cat_name").ee_url_title($("#cat_url_title"));');
 		}
 
+		// Setup file browser for category image
+		$this->load->library('file_browser');
+		
+		// Callback adds {filedir_x}filename.ext to the category image url
+		$this->file_browser->init(array(
+			'trigger' => 'a.upload',
+			'field_name' => 'cat_image',
+			'settings' => '{"content_type": "image", "directory": "all"}',
+			'callback' => 'function(file, field) {
+				$(field).val("{filedir_" + file.upload_location_id + "}" + file.file_name);
+			}'
+		));
+
 		$vars['form_hidden']['group_id'] = $group_id;
 
 		$this->load->library('api');
