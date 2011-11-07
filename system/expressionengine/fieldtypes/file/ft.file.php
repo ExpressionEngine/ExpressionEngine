@@ -39,7 +39,7 @@ class File_ft extends EE_Fieldtype {
 	function __construct()
 	{
 		parent::__construct();
-		$this->EE->load->model('file_upload_preferences_model');
+		$this->EE->load->library('file_field');
 	}
 	
 	// --------------------------------------------------------------------
@@ -51,17 +51,8 @@ class File_ft extends EE_Fieldtype {
 	 */
 	function save($data)
 	{
-		if ($data != '')
-		{
-			$directory = $this->EE->input->post('field_id_'.$this->field_id.'_directory');
-
-			if ( ! empty($directory))
-			{
-			     return '{filedir_'.$directory.'}'.$data;
-			}
-
-			return $data;
-		}
+		$directory = $this->EE->input->post('field_id_'.$this->field_id.'_directory');
+		return $this->EE->file_field->format_data($data, $directory);
 	}
 	
 	// --------------------------------------------------------------------
@@ -73,8 +64,7 @@ class File_ft extends EE_Fieldtype {
 	 */
 	function validate($data)
 	{
-		$this->EE->load->library('file_field');
-		return $this->EE->file_field->validate($data);
+		return $this->EE->file_field->validate($data, $this->field_name);
 	}
 	
 	// --------------------------------------------------------------------
@@ -88,8 +78,6 @@ class File_ft extends EE_Fieldtype {
 	{
 		$allowed_file_dirs		= (isset($this->settings['allowed_directories']) && $this->settings['allowed_directories'] != 'all') ? $this->settings['allowed_directories'] : '';
 		$content_type			= (isset($this->settings['field_content_type'])) ? $this->settings['field_content_type'] : 'all';
-
-		$this->EE->load->library('file_field');
 		
 		return $this->EE->file_field->field(
 			$data,

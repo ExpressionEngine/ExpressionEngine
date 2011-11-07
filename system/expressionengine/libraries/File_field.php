@@ -162,15 +162,30 @@ class File_field {
 		$this->_browser_javascript($endpoint_url);
 	}
 	
-	public function validate()
+	public function format_data($data, $directory = 0)
 	{
-		$dir_field		= $this->field_name.'_directory';
-		$hidden_field	= $this->field_name.'_hidden';
-		$hidden_dir		= ($this->EE->input->post($this->field_name.'_hidden_dir')) ? $this->EE->input->post($this->field_name.'_hidden_dir') : '';
+		if ($data != '')
+		{
+			if ( ! empty($directory))
+			{
+			     return '{filedir_'.$directory.'}'.$data;
+			}
+
+			return $data;
+		}
+	}
+	
+	public function validate($data, $field_name)
+	{
+		$this->EE->load->model('file_upload_preferences_model');
+		
+		$dir_field		= $field_name.'_directory';
+		$hidden_field	= $field_name.'_hidden';
+		$hidden_dir		= ($this->EE->input->post($field_name.'_hidden_dir')) ? $this->EE->input->post($field_name.'_hidden_dir') : '';
 		$allowed_dirs	= array();
 		
 		// Default to blank - allows us to remove files
-		$_POST[$this->field_name] = '';
+		$_POST[$field_name] = '';
 		
 		// Default directory
 		$upload_directories = $this->EE->file_upload_preferences_model->get_upload_preferences($this->EE->session->userdata('group_id'));
@@ -184,9 +199,9 @@ class File_field {
 		}		
 
 		// Upload or maybe just a path in the hidden field?
-		if (isset($_FILES[$this->field_name]) && $_FILES[$this->field_name]['size'] > 0)
+		if (isset($_FILES[$field_name]) && $_FILES[$field_name]['size'] > 0)
 		{
-			$data = $this->EE->filemanager_actions('upload_file', array($filedir, $this->field_name));
+			$data = $this->EE->filemanager_actions('upload_file', array($filedir, $field_name));
 			
 			if (array_key_exists('error', $data))
 			{
@@ -194,12 +209,12 @@ class File_field {
 			}
 			else
 			{
-				$_POST[$this->field_name] = $data['name'];
+				$_POST[$field_name] = $data['name'];
 			}
 		}
 		elseif ($this->EE->input->post($hidden_field))
 		{
-			$_POST[$this->field_name] = $_POST[$hidden_field];
+			$_POST[$field_name] = $_POST[$hidden_field];
 		}
 		
 		$_POST[$dir_field] = $filedir;
@@ -209,11 +224,11 @@ class File_field {
 		// If the current file directory is not one the user has access to
 		// make sure it is an edit and value hasn't changed
 		
-		if ($_POST[$this->field_name] && ! in_array($filedir, $allowed_dirs))
+		if ($_POST[$field_name] && ! in_array($filedir, $allowed_dirs))
 		{
 			if ($filedir != '' OR ( ! $this->EE->input->post('entry_id') OR $this->EE->input->post('entry_id') == ''))
 			{
-				return $this->EE->lang->line('directory_no_access');
+				return lang('directory_no_access');
 			}
 			
 			// The existing directory couldn't be selected because they didn't have permission to upload
@@ -221,30 +236,30 @@ class File_field {
 			
 			$eid = (int) $this->EE->input->post('entry_id');
 			
-			$this->EE->db->select($this->field_name);
+			$this->EE->db->select($field_name);
 			$query = $this->EE->db->get_where('channel_data', array('entry_id'=>$eid));	
 
 			if ($query->num_rows() == 0)
 			{
-				return $this->EE->lang->line('directory_no_access');
+				return lang('directory_no_access');
 			}
 			
-			if ('{filedir_'.$hidden_dir.'}'.$_POST[$this->field_name] != $query->row($this->field_name))
+			if ('{filedir_'.$hidden_dir.'}'.$_POST[$field_name] != $query->row($field_name))
 			{
-				return $this->EE->lang->line('directory_no_access');
+				return lang('directory_no_access');
 			}
 			
 			// Replace the empty directory with the existing directory
-			$_POST[$this->field_name.'_directory'] = $hidden_dir;
+			$_POST[$field_name.'_directory'] = $hidden_dir;
 		}
 		
-		if ($this->settings['field_required'] == 'y' && ! $_POST[$this->field_name])
+		if ($this->settings['field_required'] == 'y' && ! $_POST[$field_name])
 		{
-			return $this->EE->lang->line('required');
+			return lang('required');
 		}
 		
-		unset($_POST[$this->field_name.'_hidden_dir']);
-		return array('value' => $_POST[$this->field_name]);
+		unset($_POST[$field_name.'_hidden_dir']);
+		return array('value' => $_POST[$field_name]);
 	}
 	
 	// ------------------------------------------------------------------------
@@ -284,9 +299,9 @@ class File_field {
 		
 		$this->EE->javascript->set_global(array(
 			'lang' => array(
-				'resize_image'		=> $this->EE->lang->line('resize_image'),
-				'or'				=> $this->EE->lang->line('or'),
-				'return_to_publish'	=> $this->EE->lang->line('return_to_publish')
+				'resize_image'		=> lang('resize_image'),
+				'or'				=> lang('or'),
+				'return_to_publish'	=> lang('return_to_publish')
 			),
 			'filebrowser' => array(
 				'endpoint_url'		=> $endpoint_url,
