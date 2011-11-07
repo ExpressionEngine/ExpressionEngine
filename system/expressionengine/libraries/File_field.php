@@ -287,6 +287,35 @@ class File_field {
 	}
 
 	// ------------------------------------------------------------------------
+
+	/**
+	 * Parse {filedir_n} from a given string to it's actual values
+	 *
+	 * @access	private
+	 * @param	string $data The string to parse {filedir_n} in
+	 * @return	string The original string with all {filedir_n}'s parsed
+	 */	
+	public function parse($data)
+	{
+		// Find each instance of {filedir_n}
+		if (preg_match_all('/{filedir_(\d+)}/', $data, $matches, PREG_SET_ORDER))
+		{
+			$file_dirs = $this->EE->functions->fetch_file_paths();
+			
+			// Replace each match
+			foreach ($matches as $match)
+			{
+				if (isset($file_dirs[$match[1]]))
+				{
+					$data = str_replace('{filedir_'.$match[1].'}', $file_dirs[$match[1]], $data);
+				}
+			}
+		}
+
+		return $data;
+	}
+	
+	// ------------------------------------------------------------------------
 	
 	/**
 	 * Add the file browser CSS to the head
