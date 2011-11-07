@@ -19,66 +19,16 @@
  *
  * @package		ExpressionEngine
  * @subpackage	Core
- * @category	File_browser
+ * @category	File_field
  * @author		ExpressionEngine Dev Team
  * @link		http://expressionengine.com
  */
 
-class File_browser {
+class File_field {
 	
 	public function __construct()
 	{
 		$this->EE =& get_instance();
-	}
-	
-	// ------------------------------------------------------------------------
-	
-	/**
-	 * Initialize the file browser given a configuration array and an endpoint url
-	 * @param array $config Associative array containing five different keys and values:
-	 * 		- publish: set to TRUE if you're on the publish page, optionally
-	 * 			just pass an empty array or none at all for the same behavior
-	 * 		- trigger: the selector to pass to jQuery to create a trigger for
-	 * 			the file browser
-	 * 		- field_name: the field you're operating on. If undefined, it will
-	 * 			assume the name is userfile
-	 * 		- settings: JSON object defining the content type and directory
-	 * 			e.g. {"content_type": "all/image", "directory": "all/<directory_id>"}
-	 * 		- callback: Javascript function that will be called when an image
-	 * 			is selected. e.g. function (file, field) { console.log(file, field); }
-	 * 			file is an object of the selected file's data, and field is a
-	 * 			jQuery object representing the field from the field_name given
-	 * @param string $endpoint_url The URL the file browser will hit
-	 */
-	public function init($config = array(), $endpoint_url = 'C=content_publish&M=filemanager_actions')
-	{
-		// Are we on the publish page? If so, go ahead and load up the publish
-		// page javascript files
-		if (empty($config) OR (isset($config['publish']) AND $config['publish'] === TRUE))
-		{
-			$this->EE->javascript->set_global(array(
-				'filebrowser' => array(
-					'publish' => TRUE
-				)
-			));
-		}
-		// No? Make sure we at least have a trigger and a callback
-		elseif (isset($config['trigger'], $config['callback']))
-		{
-			$field_name = (isset($config['field_name'])) ? $config['field_name'].', ' : '';
-			$settings = (isset($config['settings'])) ? $config['settings'].', ' : '';
-			
-			$this->EE->javascript->ready("
-				$.ee_filebrowser.add_trigger('{$config['trigger']}', {$field_name}{$settings}{$config['callback']});
-			");
-		}
-		else
-		{
-			return;
-		}
-
-		$this->_css();
-		$this->_javascript($endpoint_url);
 	}
 	
 	// ------------------------------------------------------------------------
@@ -165,9 +115,144 @@ class File_browser {
 	// ------------------------------------------------------------------------
 	
 	/**
+	 * Initialize the file browser given a configuration array and an endpoint url
+	 * @param array $config Associative array containing five different keys and values:
+	 * 		- publish: set to TRUE if you're on the publish page, optionally
+	 * 			just pass an empty array or none at all for the same behavior
+	 * 		- trigger: the selector to pass to jQuery to create a trigger for
+	 * 			the file browser
+	 * 		- field_name: the field you're operating on. If undefined, it will
+	 * 			assume the name is userfile
+	 * 		- settings: JSON object defining the content type and directory
+	 * 			e.g. {"content_type": "all/image", "directory": "all/<directory_id>"}
+	 * 		- callback: Javascript function that will be called when an image
+	 * 			is selected. e.g. function (file, field) { console.log(file, field); }
+	 * 			file is an object of the selected file's data, and field is a
+	 * 			jQuery object representing the field from the field_name given
+	 * @param string $endpoint_url The URL the file browser will hit
+	 */
+	public function browser($config = array(), $endpoint_url = 'C=content_publish&M=filemanager_actions')
+	{
+		// Are we on the publish page? If so, go ahead and load up the publish
+		// page javascript files
+		if (empty($config) OR (isset($config['publish']) AND $config['publish'] === TRUE))
+		{
+			$this->EE->javascript->set_global(array(
+				'filebrowser' => array(
+					'publish' => TRUE
+				)
+			));
+		}
+		// No? Make sure we at least have a trigger and a callback
+		elseif (isset($config['trigger'], $config['callback']))
+		{
+			$field_name = (isset($config['field_name'])) ? $config['field_name'].', ' : '';
+			$settings = (isset($config['settings'])) ? $config['settings'].', ' : '';
+			
+			$this->EE->javascript->ready("
+				$.ee_filebrowser.add_trigger('{$config['trigger']}', {$field_name}{$settings}{$config['callback']});
+			");
+		}
+		else
+		{
+			return;
+		}
+
+		$this->_browser_css();
+		$this->_browser_javascript($endpoint_url);
+	}
+	
+	public function validate()
+	{
+		$dir_field		= $this->field_name.'_directory';
+		$hidden_field	= $this->field_name.'_hidden';
+		$hidden_dir		= ($this->EE->input->post($this->field_name.'_hidden_dir')) ? $this->EE->input->post($this->field_name.'_hidden_dir') : '';
+		$allowed_dirs	= array();
+		
+		// Default to blank - allows us to remove files
+		$_POST[$this->field_name] = '';
+		
+		// Default directory
+		$upload_directories = $this->EE->file_upload_preferences_model->get_upload_preferences($this->EE->session->userdata('group_id'));
+		
+		// Directory selected - switch
+		$filedir = ($this->EE->input->post($dir_field)) ? $this->EE->input->post($dir_field) : '';
+		
+		foreach($upload_directories->result() as $row)
+		{
+			$allowed_dirs[] = $row->id;
+		}		
+
+		// Upload or maybe just a path in the hidden field?
+		if (isset($_FILES[$this->field_name]) && $_FILES[$this->field_name]['size'] > 0)
+		{
+			$data = $this->EE->filemanager_actions('upload_file', array($filedir, $this->field_name));
+			
+			if (array_key_exists('error', $data))
+			{
+				return $data['error'];
+			}
+			else
+			{
+				$_POST[$this->field_name] = $data['name'];
+			}
+		}
+		elseif ($this->EE->input->post($hidden_field))
+		{
+			$_POST[$this->field_name] = $_POST[$hidden_field];
+		}
+		
+		$_POST[$dir_field] = $filedir;
+		
+		unset($_POST[$hidden_field]);
+		
+		// If the current file directory is not one the user has access to
+		// make sure it is an edit and value hasn't changed
+		
+		if ($_POST[$this->field_name] && ! in_array($filedir, $allowed_dirs))
+		{
+			if ($filedir != '' OR ( ! $this->EE->input->post('entry_id') OR $this->EE->input->post('entry_id') == ''))
+			{
+				return $this->EE->lang->line('directory_no_access');
+			}
+			
+			// The existing directory couldn't be selected because they didn't have permission to upload
+			// Let's make sure that the existing file in that directory is the one that's going back in
+			
+			$eid = (int) $this->EE->input->post('entry_id');
+			
+			$this->EE->db->select($this->field_name);
+			$query = $this->EE->db->get_where('channel_data', array('entry_id'=>$eid));	
+
+			if ($query->num_rows() == 0)
+			{
+				return $this->EE->lang->line('directory_no_access');
+			}
+			
+			if ('{filedir_'.$hidden_dir.'}'.$_POST[$this->field_name] != $query->row($this->field_name))
+			{
+				return $this->EE->lang->line('directory_no_access');
+			}
+			
+			// Replace the empty directory with the existing directory
+			$_POST[$this->field_name.'_directory'] = $hidden_dir;
+		}
+		
+		if ($this->settings['field_required'] == 'y' && ! $_POST[$this->field_name])
+		{
+			return $this->EE->lang->line('required');
+		}
+		
+		unset($_POST[$this->field_name.'_hidden_dir']);
+		return array('value' => $_POST[$this->field_name]);
+	}
+	
+	// ------------------------------------------------------------------------
+	
+	/**
 	 * Add the file browser CSS to the head
 	 */
-	private function _css()
+	private function _browser_css()
 	{
 		$this->EE->cp->add_to_head($this->EE->view->head_link('css/file_browser.css'));
 	}
@@ -178,7 +263,7 @@ class File_browser {
 	 * Loads up javascript dependencies and global variables for the file 
 	 * browser and file uploader
 	 */
-	private function _javascript($endpoint_url)
+	private function _browser_javascript($endpoint_url)
 	{
 		// Include dependencies
 		$this->EE->cp->add_js_script(array(
@@ -244,7 +329,7 @@ class File_browser {
 
 }
 
-// END File_browser class
+// END File_field class
 
-/* End of file File_browser.php */
-/* Location: ./system/expressionengine/libraries/File_browser.php */
+/* End of file File_field.php */
+/* Location: ./system/expressionengine/libraries/File_field.php */

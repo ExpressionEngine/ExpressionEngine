@@ -73,87 +73,8 @@ class File_ft extends EE_Fieldtype {
 	 */
 	function validate($data)
 	{
-		$dir_field		= $this->field_name.'_directory';
-		$hidden_field	= $this->field_name.'_hidden';
-		$hidden_dir		= ($this->EE->input->post($this->field_name.'_hidden_dir')) ? $this->EE->input->post($this->field_name.'_hidden_dir') : '';
-		$allowed_dirs	= array();
-		
-		// Default to blank - allows us to remove files
-		$_POST[$this->field_name] = '';
-		
-		// Default directory
-		$upload_directories = $this->EE->file_upload_preferences_model->get_upload_preferences($this->EE->session->userdata('group_id'));
-		
-		// Directory selected - switch
-		$filedir = ($this->EE->input->post($dir_field)) ? $this->EE->input->post($dir_field) : '';
-
-		foreach($upload_directories->result() as $row)
-		{
-			$allowed_dirs[] = $row->id;
-		}		
-
-		// Upload or maybe just a path in the hidden field?
-		if (isset($_FILES[$this->field_name]) && $_FILES[$this->field_name]['size'] > 0)
-		{
-			$data = $this->EE->filemanager_actions('upload_file', array($filedir, $this->field_name));
-			
-			if (array_key_exists('error', $data))
-			{
-				return $data['error'];
-			}
-			else
-			{
-				$_POST[$this->field_name] = $data['name'];
-			}
-		}
-		elseif ($this->EE->input->post($hidden_field))
-		{
-			$_POST[$this->field_name] = $_POST[$hidden_field];
-		}
-		
-		$_POST[$dir_field] = $filedir;
-		
-		unset($_POST[$hidden_field]);
-		
-		// If the current file directory is not one the user has access to
-		// make sure it is an edit and value hasn't changed
-		
-		if ($_POST[$this->field_name] && ! in_array($filedir, $allowed_dirs))
-		{
-			if ($filedir != '' OR ( ! $this->EE->input->post('entry_id') OR $this->EE->input->post('entry_id') == ''))
-			{
-				return $this->EE->lang->line('directory_no_access');
-			}
-			
-			// The existing directory couldn't be selected because they didn't have permission to upload
-			// Let's make sure that the existing file in that directory is the one that's going back in
-			
-			$eid = (int) $this->EE->input->post('entry_id');
-			
-			$this->EE->db->select($this->field_name);
-			$query = $this->EE->db->get_where('channel_data', array('entry_id'=>$eid));	
-
-			if ($query->num_rows() == 0)
-			{
-				return $this->EE->lang->line('directory_no_access');
-			}
-			
-			if ('{filedir_'.$hidden_dir.'}'.$_POST[$this->field_name] != $query->row($this->field_name))
-			{
-				return $this->EE->lang->line('directory_no_access');
-			}
-			
-			// Replace the empty directory with the existing directory
-			$_POST[$this->field_name.'_directory'] = $hidden_dir;
-		}
-		
-		if ($this->settings['field_required'] == 'y' && ! $_POST[$this->field_name])
-		{
-			return $this->EE->lang->line('required');
-		}
-		
-		unset($_POST[$this->field_name.'_hidden_dir']);
-		return array('value' => $_POST[$this->field_name]);
+		$this->EE->load->library('file_field');
+		return $this->EE->file_field->validate($data);
 	}
 	
 	// --------------------------------------------------------------------
@@ -168,9 +89,9 @@ class File_ft extends EE_Fieldtype {
 		$allowed_file_dirs		= (isset($this->settings['allowed_directories']) && $this->settings['allowed_directories'] != 'all') ? $this->settings['allowed_directories'] : '';
 		$content_type			= (isset($this->settings['field_content_type'])) ? $this->settings['field_content_type'] : 'all';
 
-		$this->EE->load->library('file_browser');
+		$this->EE->load->library('file_field');
 		
-		return $this->EE->file_browser->field(
+		return $this->EE->file_field->field(
 			$data,
 			$this->field_name,
 			$allowed_file_dirs,
