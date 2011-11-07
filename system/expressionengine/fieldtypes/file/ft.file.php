@@ -87,9 +87,9 @@ class File_ft extends EE_Fieldtype {
 		// Directory selected - switch
 		$filedir = ($this->EE->input->post($dir_field)) ? $this->EE->input->post($dir_field) : '';
 
-		foreach($upload_directories->result() as $row)
+		foreach($upload_directories as $row)
 		{
-			$allowed_dirs[] = $row->id;
+			$allowed_dirs[] = $row['id'];
 		}		
 
 		// Upload or maybe just a path in the hidden field?
@@ -191,9 +191,9 @@ class File_ft extends EE_Fieldtype {
 
 		// Create the list of directories
 		$upload_dirs[''] = lang('directory');
-		foreach($upload_directories->result() as $row)
+		foreach($upload_directories as $row)
 		{
-			$upload_dirs[$row->id] = $row->name;
+			$upload_dirs[$row['id']] = $row['name'];
 		}
 		
 		// Get the thumbnail

@@ -187,18 +187,15 @@ class Filemanager {
 		$this->EE->load->model(array('file_model', 'file_upload_preferences_model'));
 
 		// Figure out if the directory actually exists
-		$qry = $this->EE->file_upload_preferences_model->get_upload_preferences(
+		$prefs = $this->EE->file_upload_preferences_model->get_upload_preferences(
 			'1', // Overriding the group ID to get all IDs
 			$dir_id
 		);
 		
-		if ( ! $qry->num_rows())
+		if (count($prefs) == 0)
 		{
 			return FALSE;
 		}
-		
-		$prefs = $qry->row_array();
-		$qry->free_result();
 		
 		// Add dimensions to prefs
 		$prefs['dimensions'] = array();
@@ -1582,9 +1579,9 @@ class Filemanager {
 		$dirs = array();
 		$this->EE->load->model('file_upload_preferences_model');
 		
-		$query = $this->EE->file_upload_preferences_model->get_upload_preferences($this->EE->session->userdata('group_id'));
+		$directories = $this->EE->file_upload_preferences_model->get_upload_preferences($this->EE->session->userdata('group_id'));
 		
-		foreach($query->result_array() as $dir)
+		foreach($directories as $dir)
 		{
 			$dirs[$dir['id']] = $dir;
 		}

@@ -29,26 +29,13 @@ class File_upload_preferences_model extends CI_Model {
 	 *
 	 * @access	public
 	 * @param	int
-	 * @return	mixed
+	 * @return	array	Result array of DB object, possibly merged with custom
+	 * 					file upload settings
 	 */
 	function get_upload_preferences($group_id = NULL, $id = NULL)
 	{
 		// for admins, no specific filtering, just give them everything
-		if ($group_id == 1)
-		{
-			// there a specific upload location we're looking for?
-			if ($id != '')
-			{
-				$this->db->where('id', $id);
-			}
-
-			$this->db->from('upload_prefs');
-			$this->db->where('site_id', $this->config->item('site_id'));
-			$this->db->order_by('name');
-
-			$upload_info = $this->db->get();
-		}
-		else
+		if ($group_id != 1)
 		{
 			// non admins need to first be checked for restrictions
 			// we'll add these into a where_not_in() check below
@@ -64,21 +51,43 @@ class File_upload_preferences_model extends CI_Model {
 				}
 				$this->db->where_not_in('id', $denied);
 			}
-
-			// there a specific upload location we're looking for?
-			if ($id)
-			{
-				$this->db->where('id', $id);
-			}
-
-			$this->db->from('upload_prefs');
-			$this->db->where('site_id', $this->config->item('site_id'));
-			$this->db->order_by('name');
-
-			$upload_info = $this->db->get();
 		}
-
-		return $upload_info;
+		
+		// there a specific upload location we're looking for?
+		if ( ! empty($id))
+		{
+			$this->db->where('id', $id);
+		}
+		
+		$this->db->from('upload_prefs');
+		$this->db->where('site_id', $this->config->item('site_id'));
+		$this->db->order_by('name');
+		
+		$result_array = ( ! empty($id)) ? $this->db->get()->row_array() : $this->db->get()->result_array();
+		
+		// Has the user set overrides in the upload_preferences config variable?
+		if ($this->config->item('upload_preferences') !== FALSE)
+		{
+			$upload_preferences = $this->config->item('upload_preferences');
+			
+			// Loop through our results and see if any items need to be overridden
+			$i = 0;
+			foreach ($result_array as $upload_dir)
+			{
+				if (isset($upload_preferences[$upload_dir['id']]))
+				{
+					$custom_preferences = $upload_preferences[$upload_dir['id']];
+					
+					// Merge the database result with the custom result, custom keys
+					// overwriting database keys
+					$result_array[$i] = array_merge($upload_dir, $custom_preferences);
+				}
+				
+				$i++;
+			}
+		}
+		
+		return $result_array;
 	}
 	
 	// --------------------------------------------------------------------
