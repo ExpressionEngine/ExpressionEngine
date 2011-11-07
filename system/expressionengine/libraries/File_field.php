@@ -301,7 +301,7 @@ class File_field {
 		// Find each instance of {filedir_n}
 		if (preg_match_all('/{filedir_(\d+)}/', $data, $matches, PREG_SET_ORDER))
 		{
-			$file_dirs = $this->EE->functions->fetch_file_paths();
+			$file_dirs = $this->_file_dirs();
 			
 			// Replace each match
 			foreach ($matches as $match)
@@ -314,6 +314,27 @@ class File_field {
 		}
 
 		return $data;
+	}
+	
+	// ------------------------------------------------------------------------
+	
+	/**
+	 * Get the file directory data and keep it stored in the cache
+	 * 
+	 * @return array Array of file directories
+	 */
+	private function _file_dirs()
+	{
+		if ( ! $this->EE->session->cache(__CLASS__, 'file_dirs'))
+		{
+			$this->EE->session->set_cache(
+				__CLASS__,
+				'file_dirs',
+				$this->EE->functions->fetch_file_paths()
+			);
+		}
+		
+		return $this->EE->session->cache(__CLASS__, 'file_dirs');
 	}
 	
 	// ------------------------------------------------------------------------
