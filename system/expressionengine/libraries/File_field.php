@@ -161,21 +161,22 @@ class File_field {
 		$this->_browser_css();
 		$this->_browser_javascript($endpoint_url);
 	}
-	
-	public function format_data($data, $directory = 0)
-	{
-		if ($data != '')
-		{
-			if ( ! empty($directory))
-			{
-			     return '{filedir_'.$directory.'}'.$data;
-			}
 
-			return $data;
-		}
-	}
+	// ------------------------------------------------------------------------
 	
-	public function validate($data, $field_name)
+	/**
+	 * Validate's the data by checking to see if they used the normal file 
+	 * field or the file browser
+	 * 
+	 * USE THIS BEFORE format_data()
+	 * 
+	 * @param string $data The data in the field we're validating
+	 * @param string $field_name The name of the field we're validating
+	 * @param string $required Set to 'y' if the field is required
+	 * @return array Associative array containing ONLY the name of the 
+	 * 		file uploaded
+	 */
+	public function validate($data, $field_name, $required = 'n')
 	{
 		$this->EE->load->model('file_upload_preferences_model');
 		
@@ -253,7 +254,7 @@ class File_field {
 			$_POST[$field_name.'_directory'] = $hidden_dir;
 		}
 		
-		if ($this->settings['field_required'] == 'y' && ! $_POST[$field_name])
+		if ($required == 'y' && ! $_POST[$field_name])
 		{
 			return lang('required');
 		}
@@ -262,6 +263,29 @@ class File_field {
 		return array('value' => $_POST[$field_name]);
 	}
 	
+	// ------------------------------------------------------------------------
+	
+	/**
+	 * Format's the data of a file field given the name of the file and 
+	 * the directory_id
+	 * 
+	 * @param string $data The name of the file
+	 * @param integer $directory_id The directory ID
+	 * @return string The formatted field data e.g. {filedir_1}file.ext
+	 */
+	public function format_data($data, $directory_id = 0)
+	{
+		if ($data != '')
+		{
+			if ( ! empty($directory_id))
+			{
+			     return '{filedir_'.$directory_id.'}'.$data;
+			}
+
+			return $data;
+		}
+	}
+
 	// ------------------------------------------------------------------------
 	
 	/**

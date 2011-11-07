@@ -2201,11 +2201,20 @@ class Admin_content extends CI_Controller {
 
 		$this->form_validation->set_rules('cat_name',		'lang:category_name',		'required');
 		$this->form_validation->set_rules('cat_url_title',	'lang:cat_url_title',	'callback__cat_url_title');
-
 		$this->form_validation->set_rules('cat_description', '', '');
-		$this->form_validation->set_rules('cat_image', '', '');
-
-
+		
+		// Get the Category Image
+		$this->load->library('file_field');
+		$cat_image = $this->file_field->validate(
+			$this->input->post('cat_image'), 
+			'cat_image'
+		);
+		// var_dump($cat_image);
+		$_POST['cat_image'] = $this->file_field->format_data(
+			$cat_image['value'],
+			$this->input->post('cat_image_directory')
+		);
+		
 		// Finish data prep for insertion
 		if ($this->config->item('auto_convert_high_ascii') == 'y')
 		{

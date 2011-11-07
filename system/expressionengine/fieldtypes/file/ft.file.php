@@ -64,7 +64,11 @@ class File_ft extends EE_Fieldtype {
 	 */
 	function validate($data)
 	{
-		return $this->EE->file_field->validate($data, $this->field_name);
+		return $this->EE->file_field->validate(
+			$data, 
+			$this->field_name,
+			$this->settings['field_required']
+		);
 	}
 	
 	// --------------------------------------------------------------------
