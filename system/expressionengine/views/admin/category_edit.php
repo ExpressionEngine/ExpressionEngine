@@ -15,7 +15,7 @@ if ($EE_view_disable !== TRUE)
 		<div class="heading"><h2 class="edit"><?=$cp_page_title?></h2></div>
 		<div class="pageContents">
 
-		<?=form_open('C=admin_content'.AMP.'M=category_update', '', $form_hidden)?>
+		<?=form_open_multipart('C=admin_content'.AMP.'M=category_update', '', $form_hidden)?>
 
 			<p>
 				<?=form_label(lang('category_name'), 'cat_name')?>
