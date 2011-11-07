@@ -227,6 +227,17 @@ class EE_Template {
 		$this->log_item("Template Type: ".$this->template_type);
 		
 		$this->parse($this->template, $sub, $site_id);
+		
+		// -------------------------------------------
+		// 'template_post_parse' hook.
+		//  - Modify template after tag parsing
+		//
+		if ($this->EE->extensions->active_hook('template_post_parse') === TRUE)
+		{
+			$this->final_template = $this->EE->extensions->call('template_post_parse', $this->final_template, $sub, $site_id);
+		}
+		//
+		// -------------------------------------------
 	}
 
 	// --------------------------------------------------------------------
