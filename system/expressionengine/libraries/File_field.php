@@ -197,12 +197,13 @@ class File_field {
 		foreach($upload_directories->result() as $row)
 		{
 			$allowed_dirs[] = $row->id;
-		}		
-
+		}
+		
 		// Upload or maybe just a path in the hidden field?
-		if (isset($_FILES[$field_name]) && $_FILES[$field_name]['size'] > 0)
+		if (isset($_FILES[$field_name]) && $_FILES[$field_name]['size'] > 0 AND in_array($filedir, $allowed_dirs))
 		{
-			$data = $this->EE->filemanager_actions('upload_file', array($filedir, $field_name));
+			$this->EE->load->library('filemanager');
+			$data = $this->EE->filemanager->upload_file($filedir, $field_name);
 			
 			if (array_key_exists('error', $data))
 			{
@@ -210,7 +211,7 @@ class File_field {
 			}
 			else
 			{
-				$_POST[$field_name] = $data['name'];
+				$_POST[$field_name] = $data['file_name'];
 			}
 		}
 		elseif ($this->EE->input->post($hidden_field))
