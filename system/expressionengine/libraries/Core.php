@@ -68,7 +68,14 @@ class EE_Core {
 		define('PATH_EXT',		APPPATH.'extensions/');
 		define('PATH_ACC',		APPPATH.'accessories/');
 		define('PATH_FT',		APPPATH.'fieldtypes/');
-		define('PATH_THIRD',	APPPATH.'third_party/');
+		if ($this->EE->config->item('third_party_path'))
+		{
+			define('PATH_THIRD',    rtrim($this->EE->config->item('third_party_path'), '/').'/');
+		}
+		else
+		{
+			define('PATH_THIRD',	APPPATH.'third_party/');
+		}
 		
 		// application constants
 		define('IS_FREELANCER',	FALSE);
@@ -535,6 +542,21 @@ class EE_Core {
 			$this->EE->output->set_output($member->manager());
 			return;
 		}
+		
+		// -------------------------------------------
+		// 'core_template_route' hook.
+		//  - Reassign the template group and template loaded for parsing
+		//
+			if ($this->EE->extensions->active_hook('core_template_route') === TRUE)
+			{
+				$edata = $this->EE->extensions->call('core_template_route', $this->EE->uri->uri_string);
+				if (is_array($edata) && count($edata) == 2)
+				{
+					list($template_group, $template) = $edata;
+				}
+			}
+		//
+		// -------------------------------------------
 
 		// Look for a page in the pages module
 		if ($template_group == '' && $template == '')
