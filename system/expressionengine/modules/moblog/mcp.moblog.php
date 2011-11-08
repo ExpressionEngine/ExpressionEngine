@@ -231,14 +231,14 @@ EOT;
 		$upload_array = array('0' => $this->EE->lang->line('none'));
 		
 		$this->EE->load->model('tools_model');
-		$query = $this->EE->tools_model->get_upload_preferences($this->EE->session->userdata['group_id']);
+		$upload_prefs = $this->EE->tools_model->get_upload_preferences($this->EE->session->userdata['group_id']);
 		
 		
 		$this->EE->load->model('file_model');
 		$sizes_q = $this->EE->file_model->get_dimensions_by_dir_id(1);
 		$sizes = array();
 		
-		foreach ($query->result_array() as $row)
+		foreach ($upload_prefs as $row)
 		{
 			$sizes[$row['id']] = array('0' => '----');
 			$upload_array[$row['id']] = $row['name'];
@@ -888,7 +888,7 @@ MAGIC;
 		
 		$upload_q = $this->EE->tools_model->get_upload_preferences($this->EE->session->userdata['group_id']);
 		
-		foreach ($upload_q->result_array() as $row)
+		foreach ($upload_q as $row)
 		{
 			$this->image_dim_array[$row['id']] = array('0' => $this->lang->line('none'));
 			$this->upload_loc_array[$row['id']] = $row['name'];

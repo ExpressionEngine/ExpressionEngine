@@ -721,7 +721,6 @@ class File_model extends CI_Model {
 			$this->session->userdata('group_id'),
 			$directory_id
 		);
-		$upload_dir = $upload_dir->row();
 		
 		// Delete the thumb
 		$thumb_information = $this->filemanager->get_thumb($file_name, $directory_id);

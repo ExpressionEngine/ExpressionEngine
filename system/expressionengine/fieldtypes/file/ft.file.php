@@ -325,7 +325,7 @@ class File_ft extends EE_Fieldtype {
 		
 		$dirs = $this->EE->file_upload_preferences_model->get_upload_preferences(1);
 
-		foreach($dirs->result_array() as $dir)
+		foreach($dirs as $dir)
 		{
 			$directory_options[$dir['id']] = $dir['name'];
 		}

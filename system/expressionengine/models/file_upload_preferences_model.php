@@ -71,8 +71,7 @@ class File_upload_preferences_model extends CI_Model {
 			$upload_preferences = $this->config->item('upload_preferences');
 			
 			// Loop through our results and see if any items need to be overridden
-			$i = 0;
-			foreach ($result_array as $upload_dir)
+			foreach ($result_array as &$upload_dir)
 			{
 				if (isset($upload_preferences[$upload_dir['id']]))
 				{
@@ -80,10 +79,8 @@ class File_upload_preferences_model extends CI_Model {
 					
 					// Merge the database result with the custom result, custom keys
 					// overwriting database keys
-					$result_array[$i] = array_merge($upload_dir, $custom_preferences);
+					$upload_dir = array_merge($upload_dir, $custom_preferences);
 				}
-				
-				$i++;
 			}
 		}
 		
@@ -105,9 +102,9 @@ class File_upload_preferences_model extends CI_Model {
 		
 		$prefs_array = array();
 		
-		foreach ($prefs->result() as $pref)
+		foreach ($prefs as $pref)
 		{
-			$prefs_array[$pref->id] = $pref->name;
+			$prefs_array[$pref['id']] = $pref['name'];
 		}
 		
 		return $prefs_array;

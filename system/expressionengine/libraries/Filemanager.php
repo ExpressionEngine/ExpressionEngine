@@ -1465,16 +1465,14 @@ class Filemanager {
 			$db_files[$row['file_id']] = $row['file_name'];
 		}
 		
-		$query = $this->EE->file_upload_preferences_model->get_upload_preferences(1, $dir_id);
+		$upload_prefs = $this->EE->file_upload_preferences_model->get_upload_preferences(1, $dir_id);
 		
-		if ($query->num_rows() == 0)
+		if (count($upload_prefs) == 0)
 		{
 			return FALSE;
 		}
 		
-   		$d_row = $query->row();
-		
-		$server_files = $this->directory_files_map($d_row->server_path, 0, FALSE, $d_row->allowed_types);
+		$server_files = $this->directory_files_map($upload_prefs['server_path'], 0, FALSE, $upload_prefs['allowed_types']);
 		
 		// get file names in db that are not on server
 		$delete = array_diff($db_files, $server_files);
@@ -1711,8 +1709,8 @@ class Filemanager {
 
 		$this->EE->load->model(array('file_upload_preferences_model', 'category_model'));
 
-		$category_group_ids = $this->EE->file_upload_preferences_model->get_upload_preferences($dir['id']);
-		$category_group_ids = explode('|', $category_group_ids->row('cat_group'));
+		$category_group_ids = $this->EE->file_upload_preferences_model->get_upload_preferences(NULL, $dir['id']);
+		$category_group_ids = explode('|', $category_group_ids['cat_group']);
 
 		if (count($category_group_ids) > 0 AND $category_group_ids[0] != '')
 		{
@@ -2418,15 +2416,15 @@ class Filemanager {
 		$dirs = new stdclass();
 		$dirs->files = array();
 		
-		foreach ($upload_dirs->result() as $dir)
+		foreach ($upload_dirs as $dir)
 		{
-			$dirs->files[$dir->id] = array();
+			$dirs->files[$dir['id']] = array();
 			
-			$files = $this->EE->file_model->get_raw_files($dir->server_path, $dir->allowed_types, '', false, $get_dimensions, $files);
+			$files = $this->EE->file_model->get_raw_files($dir['server_path'], $dir['allowed_types'], '', false, $get_dimensions, $files);
 			
 			foreach ($files as $file)
 			{
-				$dirs->files[$dir->id] = $files;
+				$dirs->files[$dir['id']] = $files;
 			}
 		}
 	
