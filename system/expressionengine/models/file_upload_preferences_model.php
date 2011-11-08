@@ -63,23 +63,34 @@ class File_upload_preferences_model extends CI_Model {
 		$this->db->where('site_id', $this->config->item('site_id'));
 		$this->db->order_by('name');
 		
+		// If we were passed an ID, just return the row
 		$result_array = ( ! empty($id)) ? $this->db->get()->row_array() : $this->db->get()->result_array();
 		
 		// Has the user set overrides in the upload_preferences config variable?
-		if ($this->config->item('upload_preferences') !== FALSE)
+		if ($this->config->item('upload_preferences') !== FALSE && count($result_array) > 0)
 		{
 			$upload_preferences = $this->config->item('upload_preferences');
 			
-			// Loop through our results and see if any items need to be overridden
-			foreach ($result_array as &$upload_dir)
+			// If we are dealing with a single row
+			if (isset($result_array['id']))
 			{
-				if (isset($upload_preferences[$upload_dir['id']]))
+				// If there is an override preference set for this row
+				if (isset($upload_preferences[$result_array['id']]))
 				{
-					$custom_preferences = $upload_preferences[$upload_dir['id']];
-					
-					// Merge the database result with the custom result, custom keys
-					// overwriting database keys
-					$upload_dir = array_merge($upload_dir, $custom_preferences);
+					$result_array = array_merge($result_array, $upload_preferences[$result_array['id']]);
+				}
+			}
+			else // Multiple upload preference rows returned
+			{
+				// Loop through our results and see if any items need to be overridden
+				foreach ($result_array as &$upload_dir)
+				{
+					if (isset($upload_preferences[$upload_dir['id']]))
+					{
+						// Merge the database result with the custom result, custom keys
+						// overwriting database keys
+						$upload_dir = array_merge($upload_dir, $upload_preferences[$upload_dir['id']]);
+					}
 				}
 			}
 		}
