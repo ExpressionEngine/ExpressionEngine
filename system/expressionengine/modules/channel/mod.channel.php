@@ -4036,7 +4036,14 @@ class Channel {
 							{
 								$cats = substr($cats, 0, - $catval[1]['backspace']);
 							}
-
+							
+							// Check to see if we need to parse {filedir_n}
+							if (strpos($cats, '{filedir_') !== FALSE)
+							{
+								$this->EE->load->library('file_field');
+								$cats = $this->EE->file_field->parse($cats);
+							}
+							
 							$tagdata = str_replace($catval[2], $cats, $tagdata);
 						}
 					}
@@ -4961,42 +4968,6 @@ class Channel {
 	// ------------------------------------------------------------------------
 	
 	/**
-	 * Get File Field Contents
-	 * 
-	 * Creates a proper array from the file field data
-	 *
-	 * @access	private
-	 * @param	string	field data
-	 * @return	array
-	 */
-	function _parse_file_field($data)
-	{
-		$file_info['path'] = '';
-		
-		if (preg_match('/^{filedir_(\d+)}/', $data, $matches))
-		{
-			// only replace it once
-			$path = substr($data, 0, 10 + strlen($matches[1]));
-
-			$file_dirs = $this->EE->functions->fetch_file_paths();
-
-			if (isset($file_dirs[$matches[1]]))
-			{
-				$file_info['path'] = str_replace($matches[0], 
-												 $file_dirs[$matches[1]], $path);
-				$data = str_replace($matches[0], '', $data);				
-			}
-		}
-
-		$parts = explode('.', $data);
-		$file_info['extension'] = array_pop($parts);
-		$file_info['filename'] = implode('.', $parts);
-		return $file_info;
-	}
-
-	// ------------------------------------------------------------------------
-	
-	/**
 	  *  Channel Info Tag
 	  */
 	function info()
@@ -5565,6 +5536,12 @@ class Channel {
 			}
 		}
 
+		if (strpos($str, '{filedir_') !== FALSE)
+		{
+			$this->EE->load->library('file_field');
+			$str = $this->EE->file_field->parse($str);
+		}
+		
 		return $str;
 	}
 
@@ -5956,10 +5933,17 @@ class Channel {
 							}
 						}
 
+						// Check to see if we need to parse {filedir_n}
+						if (strpos($chunk, '{filedir_') !== FALSE)
+						{
+							$this->EE->load->library('file_field');
+							$chunk = $this->EE->file_field->parse($chunk);
+						}
+						
 						$str .= $chunk;
 						$used[$row['cat_name']] = TRUE;
 					}
-
+					
 					foreach($result->result_array() as $trow)
 					{
 						if ($trow['cat_id'] == $row['cat_id'])
@@ -6840,8 +6824,14 @@ class Channel {
 											$query->row('parent_id')),
 							  		  $this->EE->TMPL->tagdata);
 
+		// Check to see if we need to parse {filedir_n}
+		if (strpos($this->EE->TMPL->tagdata, '{filedir_') !== FALSE)
+		{
+			$this->EE->load->library('file_field');
+			$this->EE->TMPL->tagdata = $this->EE->file_field->parse($this->EE->TMPL->tagdata);
+		}
+		
 		// parse custom fields
-
 		$this->EE->load->library('typography');
 		$this->EE->typography->initialize(array(
 				'convert_curly'	=> FALSE)

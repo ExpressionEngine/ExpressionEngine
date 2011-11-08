@@ -51,9 +51,15 @@ EE.publish.category_editor = function() {
 		modal: true,
 		resizable: false,
 		open: function(event, ui) {
+			// Remove the js_show class since we aren't removing it otherwise
+			$('.js_show').show();
+
 			$('.ui-dialog-content').css('overflow', 'hidden');
 			$('.ui-dialog-titlebar').focus(); // doing this first to fix IE7 scrolling past the dialog's close button
-			$('#cat_name').focus();				
+			$('#cat_name').focus();	
+			
+			// Create listener for file field
+			EE.publish.file_browser.category_edit_modal();
 		}
 	});
 
@@ -204,14 +210,15 @@ EE.publish.category_editor = function() {
 			url: $(this).attr('href') + "&timestamp="+now() + resp_filter,
 			dataType: "html",
 			success: function(response) {
-				var res, filtered_res = '';
+				var res,
+					filtered_res = '';
 			
 				response = $.trim(response);
-
+				
 				if (response.charAt(0) == '<') {
 					res = $(response).find(resp_filter);
+					
 					filtered_res = $('<div />').append(res).html();
-
 					if (res.find('form').length == 0) {
 						cat_groups_containers[gid].html(filtered_res);
 					}
@@ -230,9 +237,9 @@ EE.publish.category_editor = function() {
 	// Hijack edit category links to get it off the ground
 	$(".edit_categories_link").click(reload);
 	
-	// Hijack internal links
-	$('.cat_group_container a:not(.cats_done)').live('click', reload);
-
+	// Hijack internal links (except for done and adding filename)
+	$('.cat_group_container a:not(.cats_done, .choose_file)').live('click', reload);
+	
 	// Last but not least - update the checkboxes
 	$(".cats_done").live("click", function() {
 		var that = $(this).closest(".cat_group_container"),

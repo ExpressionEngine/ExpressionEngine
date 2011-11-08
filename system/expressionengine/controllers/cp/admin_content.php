@@ -1918,31 +1918,28 @@ class Admin_content extends CI_Controller {
 		{	
 			// Pipe in necessary globals
 			$this->javascript->set_global(array(
-				'publish.word_separator'   => $this->config->item('word_separator') != "dash" ? '_' : '-',
-				'publish.foreignChars'				=> $foreign_characters,
+				'publish.word_separator'	=> $this->config->item('word_separator') != "dash" ? '_' : '-',
+				'publish.foreignChars'		=> $foreign_characters,
 			));
 			
 			// Load in necessary js files
 			$this->cp->add_js_script(array(
-				'file' => array('cp/global'),
-				'plugin' => array('ee_url_title'),
+				'file'		=> array('cp/global'),
+				'plugin'	=> array('ee_url_title'),
 			));
 			
 			$this->javascript->keyup('#cat_name', '$("#cat_name").ee_url_title($("#cat_url_title"));');
 		}
-
-		// Setup file browser for category image
-		$this->load->library('file_browser');
 		
-		// Callback adds {filedir_x}filename.ext to the category image url
-		$this->file_browser->init(array(
-			'trigger' => 'a.upload',
-			'field_name' => 'cat_image',
-			'settings' => '{"content_type": "image", "directory": "all"}',
-			'callback' => 'function(file, field) {
-				$(field).val("{filedir_" + file.upload_location_id + "}" + file.file_name);
-			}'
-		));
+		// Setup category image
+		$this->load->library('file_field');
+		$this->file_field->browser();
+		$vars['cat_image'] = $this->file_field->field(
+			$vars['cat_image'],
+			'cat_image',
+			'all',
+			'image'
+		);
 
 		$vars['form_hidden']['group_id'] = $group_id;
 
@@ -2039,7 +2036,7 @@ class Admin_content extends CI_Controller {
 		$this->javascript->compile();
 		$this->load->view('admin/category_edit', $vars);
 	}
-
+	
 	// --------------------------------------------------------------------
 
 	/**
@@ -2204,11 +2201,20 @@ class Admin_content extends CI_Controller {
 
 		$this->form_validation->set_rules('cat_name',		'lang:category_name',		'required');
 		$this->form_validation->set_rules('cat_url_title',	'lang:cat_url_title',	'callback__cat_url_title');
-
 		$this->form_validation->set_rules('cat_description', '', '');
-		$this->form_validation->set_rules('cat_image', '', '');
-
-
+		
+		// Get the Category Image
+		$this->load->library('file_field');
+		$cat_image = $this->file_field->validate(
+			$this->input->post('cat_image'), 
+			'cat_image'
+		);
+		// var_dump($cat_image);
+		$_POST['cat_image'] = $this->file_field->format_data(
+			$cat_image['value'],
+			$this->input->post('cat_image_directory')
+		);
+		
 		// Finish data prep for insertion
 		if ($this->config->item('auto_convert_high_ascii') == 'y')
 		{
