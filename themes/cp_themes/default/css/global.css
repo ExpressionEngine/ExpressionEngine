@@ -3559,6 +3559,20 @@ color: #5f6c74;
 	color:				#ccc;
 }
 
+/* Categories */
+
+#mainContent .category_field {
+	margin-bottom: 11px;
+}
+
+#mainContent .category_field p.filename {
+	margin: 6px 0 0;
+}
+
+#mainContent .category_field p {
+	margin-bottom: 6px;
+}
+
 /* -------------------------------------
 /*  jQuery plugins
 /* -------------------------------------*/

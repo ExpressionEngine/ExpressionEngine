@@ -35,7 +35,7 @@ if ($EE_view_disable !== TRUE)
 		</p>
 
 		<div class="category_field">
-			<?=form_label(lang('category_image'), 'cat_image')?><br /><?=lang('category_img_blurb')?>
+			<?=form_label(lang('category_image'), 'cat_image')?>
 			<?=$cat_image?>
 		</div>
 
