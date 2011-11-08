@@ -1368,55 +1368,71 @@ class Design extends CI_Controller {
 		// Template Preferences
 
 		$data = array();
+		
+		// Assigning the output to local vars so we're not calling the
+		// input class over and over
+		$template_type = $this->input->post('template_type');
+		$cache = $this->input->post('cache');
+		$hits = $this->input->post('hits');
+		$enable_http_auth = $this->input->post('enable_http_auth');
+		$no_auth_bounce = $this->input->post('no_auth_bounce');
 
-		if ($_POST['template_type'] != '')
+		if ($template_type !== FALSE && $template_type != 'null')
 		{
-			$data['template_type'] = $_POST['template_type'];
+			$data['template_type'] = $template_type;
 		}
 
-		if ($_POST['cache'] == 'y' OR $_POST['cache'] == 'n')
+		if (in_array($cache, array('y', 'n')))
 		{
-			$data['cache'] = $_POST['cache'];
-
-			if ($_POST['refresh'] != '' && is_numeric($_POST['refresh']))
+			$data['cache'] = $cache;
+			
+			$refresh = $this->input->post('refresh');
+			
+			if ($refresh != '' && is_numeric($refresh))
 			{
-				$data['refresh'] = $_POST['refresh'];
+				$data['refresh'] = $refresh;
 			}
 		}
 
 		if ($this->session->userdata['group_id'] == 1)
 		{
-			if ($_POST['allow_php'] == 'y' OR $_POST['allow_php'] == 'n')
+			$allow_php = $this->input->post('allow_php');
+			
+			if (in_array($allow_php, array('y', 'n')))
 			{
-				$data['allow_php'] = $_POST['allow_php'];
-
-				if ($_POST['php_parse_location'] == 'i' OR $_POST['php_parse_location'] == 'o')
+				$data['allow_php'] = $allow_php;
+				
+				$php_parse_location = $this->input->post('php_parse_location');
+				
+				if (in_array($php_parse_location, array('i', 'o')))
 				{
-					$data['php_parse_location'] = $_POST['php_parse_location'];
+					$data['php_parse_location'] = $php_parse_location;
 				}
 			}
 		}
 
-		if ($_POST['hits'] != '' && is_numeric($_POST['hits']))
+		if ($hits != '' && is_numeric($hits))
 		{
-			$data['hits'] = $_POST['hits'];
+			$data['hits'] = $hits;
 		}
 
-		if ($_POST['enable_http_auth'] == 'y' OR $_POST['enable_http_auth'] == 'n')
+		if (in_array($enable_http_auth, array('y', 'n')))
 		{
-			$data['enable_http_auth'] = $_POST['enable_http_auth'];
+			$data['enable_http_auth'] = $enable_http_auth;
 		}
 
-		if ($_POST['no_auth_bounce'] != 'null')
+		if ($no_auth_bounce != 'null')
 		{
-			$data['no_auth_bounce'] = $_POST['no_auth_bounce'];
+			$data['no_auth_bounce'] = $no_auth_bounce;
 		}
 
 		if ($this->config->item('save_tmpl_files') == 'y' AND $this->config->item('tmpl_file_basepath') != '')
 		{
-			if ($this->input->post('save_template_file') != FALSE && $this->input->post('save_template_file') != 'null')
+			$save_template_file = $this->input->post('save_template_file');
+			
+			if ($save_template_file != FALSE && $save_template_file != 'null')
 			{
-				$data['save_template_file'] = $this->input->post('save_template_file');
+				$data['save_template_file'] = $save_template_file;
 			}
 		}
 
