@@ -3831,11 +3831,10 @@ class Admin_content extends CI_Controller {
 		if ($type == 'new')
 		{
 			$vars['edit_format_link'] = '';
-			$vars['field_fmt_options'] = array(
-				'none'		=> lang('none'),
-				'br'		=> lang('auto_br'),
-				'xhtml'		=> lang('xhtml')
-			);
+			
+			$this->load->model('addons_model');
+			
+			$vars['field_fmt_options'] = $this->addons_model->get_plugin_formatting(TRUE);
 		}
 		else
 		{
@@ -3866,7 +3865,7 @@ class Admin_content extends CI_Controller {
 			}
 		}
 
-		$vars['field_fmt'] = (isset($field_fmt) && $field_fmt != '') ? $field_fmt : 'xhtml';
+		$vars['field_fmt'] = (isset($field_fmt) && $field_fmt != '') ? $field_fmt : 'none';
 
 		// Prep our own fields
 		
@@ -4299,7 +4298,15 @@ class Admin_content extends CI_Controller {
 
 			$this->db->update('channel_data', array('field_ft_'.$insert_id => $native_settings['field_fmt'])); 
 
-			foreach (array('none', 'br', 'xhtml') as $val)
+			$field_formatting = array('none', 'br', 'xhtml');
+			
+			//if the selected field formatting is not one of the native formats, make sure it gets added to exp_field_formatting for this field
+			if ( ! in_array($native_settings['field_fmt'], $field_formatting))
+			{
+				$field_formatting[] = $native_settings['field_fmt'];
+			}
+
+			foreach ($field_formatting as $val)
 			{
 				$f_data = array('field_id' => $insert_id, 'field_fmt' => $val);
 				$this->db->insert('field_formatting', $f_data); 
