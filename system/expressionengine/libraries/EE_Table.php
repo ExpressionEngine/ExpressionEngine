@@ -183,9 +183,9 @@ class EE_Table extends CI_Table {
 			$settings['offset'] = $_GET['tbl_offset'];
 		}
 
-		if (isset($_GET['tbl_sorting']))
+		if ($this->EE->input->post('tbl_sort'))
 		{
-			$settings['sorting'] = $_GET['tbl_sorting'];
+			$settings['sort'] = $this->EE->input->post('tbl_sort');
 		}
 		
 		
@@ -300,6 +300,19 @@ class EE_Table extends CI_Table {
 			$$var = $temp;
 		}
 		
+		// add data to our headings for the sort mechanism
+		$column_k = array_keys($this->column_config);
+		
+		foreach ($this->heading as $k => &$heading)
+		{
+			if ( ! is_array($heading))
+			{
+				$heading = array('data' => $heading);
+			}
+			
+			$heading['data-table_column'] = $column_k[$k];
+		}
+		
 		
 		$jq_config = array(
 			'columns'		=> $this->column_config,
@@ -317,7 +330,7 @@ class EE_Table extends CI_Table {
 			'<table '.$table_config_data,
 			$open_bak
 		);
-		
+				
 		$table = parent::generate($table_data);
 		
 		$this->template['table_open'] = $open_bak;

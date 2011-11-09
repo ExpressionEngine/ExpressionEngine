@@ -1,5 +1,6 @@
 (function($) {
 
+"use strict";
 
 		
 		// @todo @pk ideas -------------
@@ -10,7 +11,7 @@
 		// bind to table headers for sort (another object like pag?)
 		
 		
- 		// edit specific:
+		// edit specific:
 		
 		// add base64 thing to "add" tab link to "save" the search
 		// clear search link (redirect to base path)
@@ -20,8 +21,10 @@
 
 
 $.widget('ee.table', {
-	
+
 	_listening: $(),		// form elements the filter is listening to
+	_sorting: [],			// set to initial sort
+	_headers: {},
 	
 	options: {
 		uniqid: null,		// uniqid of related elements
@@ -40,18 +43,30 @@ $.widget('ee.table', {
 	},
 	
 	_create: function() {
-		this.forms = $();
 		
 		var self = this,
 			options = self.options;
-		
+
 		// set defaults
 		self.filters = options.filters;
-		self.sorting = options.sorting;
+		self.sorting = self._sorting = options.sorting;
 		
 		// setup dependencies
 		self.cache = new Cache(options.cache_limit);
 		self.pagination = new Pagination(options, self);
+		
+		
+		self.element.find('th').each(function() {
+			var el = $(this);
+			
+			self._headers[ el.data('table_column') ] = el;
+		});
+		
+		self.element.find('thead').delegate('th', 'click', function() {
+			// @todo if holding shift add
+			self.set_sorting( $(this).data('table_column'), 'ASC' );
+		});
+		
 		
 		// create unique template name and compile
 		self.template_id = options.uniqid + '_row_template';
@@ -61,18 +76,37 @@ $.widget('ee.table', {
 		self._trigger('create', null, self._ui(/* @todo args */));
 	},
 	
+	
+	// Public util
+	
+	get_header: function(col_name) {
+		return this._headers.col_name || null;
+	},	
+	
 	clear_cache: function() {
 		this.cache.clear();
+		return this;
 	},
 	
 	clear_filters: function() {
 		// @todo reset form content?
 		
-		self.filters = {};
-		self._listening.each(function() {
+		this.filters = {};
+		this._listening.each(function() {
 			$(this).unbind('interact.ee_table');
 		});
+		return this;
 	},
+	
+	clear_sorting: function() {
+		this.sorting = this._sorting;
+		this.refresh();
+		return this;
+	},
+
+
+	// Filtering
+	
 
 	/**
 	 * Add a filter
@@ -81,7 +115,7 @@ $.widget('ee.table', {
 	 */
 	add_filter: function(obj) {
 		var self = this,
-			url = EE.BASE + '&C=content_edit'; // window.location.href
+			url = EE.BASE + '&C=content_edit'; // @todo window.location.href
 		
 		// add to filters and update right away
 		// @todo do not hardcode url!
@@ -89,7 +123,7 @@ $.widget('ee.table', {
 			self._set_filter(self._listening);
 			self.filters = $.extend(self.filters, obj);
 			self._request(url);
-			return true;
+			return this;
 		}
 		
 		var form = obj.closest('form'),
@@ -119,17 +153,63 @@ $.widget('ee.table', {
 		});
 		
 		self._listening = self._listening.add(obj);
+		return this;
 	},
 	
-	add_sort: function(sort) {
+	
+	// Sorting
+	
+	
+	set_sorting: function(column, dir) {
+		var l = this.sorting.length;
 		
-		;
+		// fire removeSort events
+		while (l--) {
+			this._trigger('nosort', null, this._ui(/* @todo args this.sorting[l] */));
+		}
 		
+		this.sorting = [];
+		this.add_sorting(column, dir);
+		return this;
+	},
+	
+	add_sorting: function(column, dir) {
+		var sort = column, l;
+		
+		if (dir) {
+			sort = [[column, dir]];
+		}
+		
+		// fire addSort events
+		
+		l = sort.length;
+		while (l--) {
+			this.sorting.push(sort[l]);
+			this._trigger('sort', null, this._ui(/* @todo args sort[l] */));
+		}
+		
+		// @todo addSort events
+		
+		console.log(this.sorting);
+		
+		this.refresh();
+		return this;
+	},
+	
+	
+	// Requests
+	
+	
+	refresh: function() {
+		var url = EE.BASE + '&C=content_edit'; // @todo window.location.href?
+		
+		this._request(url);
+		return this;
 	},
 
-	_request: function(url, callback) {
+	_request: function(url) {
 		var self = this,
-			body = self.element.find('tbody'),
+			body = self.element.find('tbody'),	// @todo cache
 			data, success;
 		
 		self._trigger('load', null, self._ui(/* @todo args */));
@@ -179,13 +259,20 @@ $.widget('ee.table', {
 		// The pagination library reads from get, so we need
 		// to move tbl_offset. Doing it down here allows it
 		// to be in the cache key without dark magic.
-		if (self.filters['tbl_offset']) {
-			url += '&tbl_offset=' + self.filters['tbl_offset'];
-			delete self.filters['tbl_offset'];
+		if (self.filters.tbl_offset) {
+			url += '&tbl_offset=' + self.filters.tbl_offset;
+			delete self.filters.tbl_offset;
 		}
 		
+		
+		// @todo on the backend make sure the key name actually exists
+		// or it'll throw a sql exception in the search model
+		self.filters.tbl_sort = {};
+		self.filters.tbl_sort['title'] = 'ASC';
+		self.filters.tbl_sort['screen_name'] = 'ASC';
+		
 		// Always send an XID
-		self.filters['XID'] = EE.XID;
+		self.filters.XID = EE.XID;
 		
 		// fire request start event (show progress indicator)
 		$.ajax(url, {
@@ -205,6 +292,10 @@ $.widget('ee.table', {
 		});
 	},
 	
+	
+	// Private util
+	
+	
 	_set_filter: function(obj) {
 		var els = obj.serializeArray(),
 			self = this;
@@ -217,7 +308,7 @@ $.widget('ee.table', {
 	_ui: function() {
 		return {
 			sorting: [], // @todo sort order [[column, asc/desc], [column2, asc/desc]]
-			filters: self.filters, // all applied filters
+			filters: this.filters // all applied filters
 		};
 	}
 	
@@ -296,7 +387,7 @@ Cache.prototype = {
 		
 		if (loc > -1) {
 			
-			// detach and ush on top of the queue (newest element)
+			// detach and push on top of the queue (newest element)
 			el = this.cache.splice(loc, 1)[0];
 			this.cache.push(el);
 
@@ -317,7 +408,7 @@ Cache.prototype = {
 	/**
 	 * Delete a cached item
 	 */
-	delete: function(id) {
+	'delete': function(id) {
 		var el, loc = this._find(id);
 		
 		if (loc > -1) {
@@ -356,8 +447,8 @@ Cache.prototype = {
 				i = 0;
 			
 			for (; i < len; i++) {
-				if (tmp[k] == id) {
-					return k;
+				if (tmp[i] == id) {
+					return i;
 				}
 			}
 			return -1;
@@ -378,7 +469,7 @@ Cache.prototype = {
 function Pagination(options, plugin) {	
 	var self = this;
 	
-	this.els = $('p.' + options.uniqid),
+	this.els = $('p.' + options.uniqid);
 	this.template_id = options.uniqid + '_pag_template';
 	
 	// compile the template
@@ -435,15 +526,16 @@ Pagination.prototype = {
 	 */
 	_qs_splitter: new RegExp('([^&=]+)=?([^&]*)', 'g'),
 	_extract_qs: function(url) {
-		var seg, idx, res = {};
+		var seg,
+			idx = url.indexOf('?'),
+			res = {};
 		
-		// only qs
-		idx = url.indexOf('?')
+		// only work through the qs
 		if (idx > 0) {
 			url = url.slice(idx + 1);
 		}
 		
-		while (seg = this._qs_splitter.exec(url)) {
+		while ( (seg = this._qs_splitter.exec(url)) ) {
 			res[ decodeURIComponent(seg[1]) ] = decodeURIComponent(seg[2]);
 		}
 		
@@ -469,7 +561,7 @@ $('table').each(function() {
 
 
 
-/*
+
 
 /**
  * Brainstorming:
