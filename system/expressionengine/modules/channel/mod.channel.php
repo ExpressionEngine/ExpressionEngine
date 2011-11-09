@@ -64,7 +64,7 @@ class Channel {
 	var $temp_array				= array();
 	var $category_count			= 0;
 
-	var $pagination;
+	var $pagination_obj;
 
 	// SQL Caching
 	var $sql_cache_dir			= 'sql_cache/';
@@ -81,11 +81,11 @@ class Channel {
 		$this->EE =& get_instance();
 
 		$this->EE->load->library('pagination');
-		$this->pagination = new Pagination_object(__CLASS__);
-		// $this->pagination->per_page = $this->limit;
+		$this->pagination_obj = new Pagination_object();
+		// $this->pagination_obj->per_page = $this->limit;
 		
 		// Used by pagination to determine whether we're coming from the cache
-		$this->pagination->dynamic_sql = FALSE;
+		$this->pagination_obj->dynamic_sql = FALSE;
 
 		$this->query_string = ($this->EE->uri->page_query_string != '') ? $this->EE->uri->page_query_string : $this->EE->uri->query_string;
 
@@ -227,7 +227,7 @@ class Channel {
 
 		if ($this->enable['pagination'] == TRUE)
 		{
-			$this->fetch_pagination_data($this->pagination);
+			$this->EE->pagination->get_template($this->pagination_obj);
 		}
 
 		$save_cache = FALSE;
@@ -255,14 +255,14 @@ class Channel {
 				{
 					if (FALSE !== ($pg_query = $this->fetch_cache('pagination_query')))
 					{
-						$this->pagination->paginate = TRUE;
-						$this->pagination->field_pagination = TRUE;
-						$this->create_pagination($this->pagination, trim($cache), $this->EE->db->query(trim($pg_query)));
+						$this->pagination_obj->paginate = TRUE;
+						$this->pagination_obj->field_pagination = TRUE;
+						$this->EE->pagination->build($this->pagination_obj, trim($cache), $this->sql, $this->EE->db->query(trim($pg_query)));
 					}
 				}
 				else
 				{
-					$this->create_pagination($this->pagination, trim($cache));
+					$this->EE->pagination->build($this->pagination_obj, trim($cache), $this->sql);
 				}
 			}
 		}
@@ -322,7 +322,7 @@ class Channel {
 
 		if ($this->enable['pagination'] == TRUE)
 		{
-			$this->return_data = $this->add_pagination_data($this->pagination, $this->return_data);
+			$this->return_data = $this->EE->pagination->render($this->pagination_obj, $this->return_data);
 		}
 
 		// Does the tag contain "related entries" that we need to parse out?
@@ -818,7 +818,7 @@ class Channel {
 			return;
 		}
 
-		if ($this->pagination->field_pagination == TRUE AND $this->pagination->offset > 0)
+		if ($this->pagination_obj->field_pagination == TRUE AND $this->pagination_obj->offset > 0)
 		{
 			return;
 		}
@@ -1026,7 +1026,7 @@ class Channel {
 		$page_marker	= FALSE;
 		$dynamic		= TRUE;
 
-		$this->pagination->dynamic_sql = TRUE;
+		$this->pagination_obj->dynamic_sql = TRUE;
 
 		/**------
 		/**  Is dynamic='off' set?
@@ -1069,7 +1069,7 @@ class Channel {
 			$qstring = $this->query_string;
 		}
 		
-		$this->pagination->basepath = $this->EE->functions->create_url($this->uristr);
+		$this->pagination_obj->basepath = $this->EE->functions->create_url($this->uristr);
 
 		if ($qstring == '')
 		{
@@ -1143,9 +1143,9 @@ class Channel {
 
 				if (($dynamic OR $this->EE->TMPL->fetch_param('paginate')) && preg_match("#^P(\d+)|/P(\d+)#", $qstring, $match)) 
 				{
-					$this->pagination->offset = (isset($match[2])) ? $match[2] : $match[1];
+					$this->pagination_obj->offset = (isset($match[2])) ? $match[2] : $match[1];
 
-					$this->pagination->basepath = $this->EE->functions->remove_double_slashes(str_replace($match[0], '', $this->pagination->basepath));
+					$this->pagination_obj->basepath = $this->EE->functions->remove_double_slashes(str_replace($match[0], '', $this->pagination_obj->basepath));
 
 					$this->uristr  = $this->EE->functions->remove_double_slashes(str_replace($match[0], '', $this->uristr));
 
@@ -1540,7 +1540,7 @@ class Channel {
 
 		$sql_b = ($this->EE->TMPL->fetch_param('category') OR $this->EE->TMPL->fetch_param('category_group') OR $cat_id != '' OR $order_array[0] == 'random') ? "DISTINCT(t.entry_id) " : "t.entry_id ";
 
-		if ($this->pagination->field_pagination == TRUE)
+		if ($this->pagination_obj->field_pagination == TRUE)
 		{
 			$sql_b .= ",wd.* ";
 		}
@@ -1550,7 +1550,7 @@ class Channel {
 		$sql = "FROM exp_channel_titles AS t
 				LEFT JOIN exp_channels ON t.channel_id = exp_channels.channel_id ";
 
-		if ($this->pagination->field_pagination == TRUE)
+		if ($this->pagination_obj->field_pagination == TRUE)
 		{
 			$sql .= "LEFT JOIN exp_channel_data AS wd ON t.entry_id = wd.entry_id ";
 		}
@@ -1851,9 +1851,9 @@ class Channel {
 							$distinct = array_reverse($distinct);
 						}
 
-						$this->pagination->total_rows = count($distinct);
+						$this->pagination_obj->total_rows = count($distinct);
 
-						$cur = ($this->pagination->offset == '') ? 0 : $this->pagination->offset;
+						$cur = ($this->pagination_obj->offset == '') ? 0 : $this->pagination_obj->offset;
 
 						$distinct = array_slice($distinct, $cur, $lim);
 
@@ -1924,9 +1924,9 @@ class Channel {
 							$distinct = array_reverse($distinct);
 						}
 
-						$this->pagination->total_rows = count($distinct);
+						$this->pagination_obj->total_rows = count($distinct);
 
-						$cur = ($this->pagination->offset == '') ? 0 : $this->pagination->offset;
+						$cur = ($this->pagination_obj->offset == '') ? 0 : $this->pagination_obj->offset;
 
 						$distinct = array_slice($distinct, $cur, $lim);
 
@@ -2026,15 +2026,15 @@ class Channel {
 						*
 						*/
 
-						$this->pagination->total_rows = count($distinct);
-						$cur = ($this->pagination->offset == '') ? 0 : $this->pagination->offset;
+						$this->pagination_obj->total_rows = count($distinct);
+						$cur = ($this->pagination_obj->offset == '') ? 0 : $this->pagination_obj->offset;
 
 						/** ---------------------------------
 						/*	 If no pagination, then the Current Week is shown by default with
 						/*	 all pagination correctly set and ready to roll, if used.
 						/*  ---------------------------------*/
 
-						if ($this->EE->TMPL->fetch_param('show_current_week') === 'yes' && $this->pagination->offset == '')
+						if ($this->EE->TMPL->fetch_param('show_current_week') === 'yes' && $this->pagination_obj->offset == '')
 						{
 							if ($this->EE->TMPL->fetch_param('start_day') === 'Monday')
 							{
@@ -2050,7 +2050,7 @@ class Channel {
 								if ($week == $query->row('thisWeek') )
 								{
 									$cur = $key;
-									$this->pagination->offset = $key;
+									$this->pagination_obj->offset = $key;
 									break;
 								}
 							}
@@ -2554,15 +2554,15 @@ class Channel {
 
 		if ($cat_id  != '' AND is_numeric($this->EE->TMPL->fetch_param('cat_limit')))
 		{
-			$this->pagination->per_page = $this->EE->TMPL->fetch_param('cat_limit');
+			$this->pagination_obj->per_page = $this->EE->TMPL->fetch_param('cat_limit');
 		}
 		elseif ($month != '' AND is_numeric($this->EE->TMPL->fetch_param('month_limit')))
 		{
-			$this->pagination->per_page = $this->EE->TMPL->fetch_param('month_limit');
+			$this->pagination_obj->per_page = $this->EE->TMPL->fetch_param('month_limit');
 		}
 		else
 		{
-			$this->pagination->per_page  = ( ! is_numeric($this->EE->TMPL->fetch_param('limit')))  ? $this->limit : $this->EE->TMPL->fetch_param('limit');
+			$this->pagination_obj->per_page  = ( ! is_numeric($this->EE->TMPL->fetch_param('limit')))  ? $this->limit : $this->EE->TMPL->fetch_param('limit');
 		}
 
 		/**------
@@ -2574,11 +2574,11 @@ class Channel {
 		//  Do we need pagination?
 		// We'll run the query to find out
 
-		if ($this->pagination->paginate == TRUE)
+		if ($this->pagination_obj->paginate == TRUE)
 		{
 			$pager_sql = '';
 			
-			if ($this->pagination->field_pagination == FALSE)
+			if ($this->pagination_obj->field_pagination == FALSE)
 			{
 				$pager_sql = $sql_a.$sql_b.$sql;
 				$query = $this->EE->db->query($pager_sql);
@@ -2587,9 +2587,11 @@ class Channel {
 
 				// Adjust for offset
 				if ($total >= $offset)
+				{
 					$total = $total - $offset;
+				}
 
-				$this->create_pagination($this->pagination, $total);
+				$this->EE->pagination->build($this->pagination_obj, $total, $this->sql);
 			}
 			else
 			{
@@ -2600,7 +2602,7 @@ class Channel {
 				$total = $query->num_rows;
 				$this->absolute_results = $total;
 
-				$this->create_pagination($this->pagination, $total, $query);
+				$this->EE->pagination->build($this->pagination_obj, $total, $this->sql, $query);
 
 				if ($this->EE->config->item('enable_sql_caching') == 'y')
 				{
@@ -2621,30 +2623,30 @@ class Channel {
 
 		$sql .= $end;
 
-		if ($this->pagination->paginate == FALSE)
+		if ($this->pagination_obj->paginate == FALSE)
 		{
-			$this->pagination->offset = 0;
+			$this->pagination_obj->offset = 0;
 		}
 
 		// Adjust for offset
-		$this->pagination->offset += $offset;
+		$this->pagination_obj->offset += $offset;
 
 		if ($this->display_by == '')
 		{
-			if (($page_marker == FALSE AND $this->pagination->per_page != '') OR ($page_marker == TRUE AND $this->pagination->field_pagination != TRUE))
+			if (($page_marker == FALSE AND $this->pagination_obj->per_page != '') OR ($page_marker == TRUE AND $this->pagination_obj->field_pagination != TRUE))
 			{
-				$sql .= ($this->pagination->offset == '') ? " LIMIT ".$offset.', '.$this->pagination->per_page : " LIMIT ".$this->pagination->offset.', '.$this->pagination->per_page;
+				$sql .= ($this->pagination_obj->offset == '') ? " LIMIT ".$offset.', '.$this->pagination_obj->per_page : " LIMIT ".$this->pagination_obj->offset.', '.$this->pagination_obj->per_page;
 			}
 			elseif ($entry_id == '' AND $qtitle == '')
 			{
-				$sql .= ($this->pagination->offset == '') ? " LIMIT ".$this->limit : " LIMIT ".$this->pagination->offset.', '.$this->limit;
+				$sql .= ($this->pagination_obj->offset == '') ? " LIMIT ".$this->limit : " LIMIT ".$this->pagination_obj->offset.', '.$this->limit;
 			}
 		}
 		else
 		{
 			if ($offset != 0)
 			{
-				$sql .= ($this->pagination->offset == '') ? " LIMIT ".$offset.', '.$this->pagination->per_page : " LIMIT ".$this->pagination->offset.', '.$this->pagination->per_page;
+				$sql .= ($this->pagination_obj->offset == '') ? " LIMIT ".$offset.', '.$this->pagination_obj->per_page : " LIMIT ".$this->pagination_obj->offset.', '.$this->pagination_obj->per_page;
 			}
 		}
 
@@ -2734,429 +2736,6 @@ class Channel {
 		$this->sql .= $end;
 	}
 
-
-	// ------------------------------------------------------------------------
-
-	/**
-	 * Step 1 of Pagination: fetch_pagination_data()
-	 * 
-	 * Fetch pagination data
-	 * Determines if {paginate} is in the tagdata, if so flags that. Also 
-	 * checks to see if paginate_type is field, if it is, then we look for 
-	 * {multi_field="..."} and flag that.
-	 * 
-	 * The whole goal of this method is to see if we need to paginate and if 
-	 * we do, extract the tags within pagination and put them in another variable
-	 */
-	function fetch_pagination_data(&$pagination)
-	{
-		if ( ! is_object($pagination) OR empty($pagination))
-		{
-			$pagination = new Pagination_object();
-		}
-		
-		// Quick check to see if {paginate} even exists
-		if (strpos($this->EE->TMPL->tagdata, LD.'paginate'.RD) === FALSE) return;
-
-		if (preg_match("/".LD."paginate".RD."(.+?)".LD.'\/'."paginate".RD."/s", $this->EE->TMPL->tagdata, $paginate_match))
-		{
-			if ($this->EE->TMPL->fetch_param('paginate_type') == 'field')
-			{
-				// If we're supposed to paginate over fields, check to see if
-				// {multi_field="..."} exists. If it does capture the conetents
-				// and flag this as field_pagination.
-				if (preg_match("/".LD."multi_field\=[\"'](.+?)[\"']".RD."/s", $this->EE->TMPL->tagdata, $multi_field_match))
-				{
-					$pagination->multi_fields		= $this->EE->functions->fetch_simple_conditions($multi_field_match[1]);
-					$pagination->field_pagination	= TRUE;
-				}
-			}
-
-			// -------------------------------------------
-			// 'channel_module_fetch_pagination_data' hook.
-			//  - Works with the 'channel_module_create_pagination' hook
-			//  - Developers, if you want to modify the $this object remember
-			//	to use a reference on function call.
-			//
-				if ($this->EE->extensions->active_hook('channel_module_fetch_pagination_data') === TRUE)
-				{
-					$edata = $this->EE->extensions->universal_call('channel_module_fetch_pagination_data', $this);
-					if ($this->EE->extensions->end_script === TRUE) return;
-				}
-			//
-			// -------------------------------------------
-			
-			// If {paginate} exists, flag for pagination and store the tags
-			// within {paginate}
-			$pagination->paginate		= TRUE;
-			$pagination->paginate_data	= $paginate_match[1];
-			
-			// Remove pagination tags from template since we'll just 
-			// append/prepend it later
-			$this->EE->TMPL->tagdata = preg_replace(
-				"/".LD."paginate".RD.".+?".LD.'\/'."paginate".RD."/s",
-				"",
-				$this->EE->TMPL->tagdata
-			);
-		}
-	}
-
-	// ------------------------------------------------------------------------
-
-	/**
-	 * Step 2 of Pagination: create_pagination()
-	 * 
-	 * Create pagination
-	 */
-	function create_pagination(&$pagination, $count = 0, $query = '')
-	{
-		if (is_object($query))
-		{
-			$row = $query->row_array();
-		}
-		else
-		{
-			$row = '';
-		}
-
-		// -------------------------------------------
-		// 'channel_module_create_pagination' hook.
-		//  - Rewrite the pagination function in the Channel module
-		//  - Could be used to expand the kind of pagination available
-		//  - Paginate via field length, for example
-		//
-			if ($this->EE->extensions->active_hook('channel_module_create_pagination') === TRUE)
-			{
-				$edata = $this->EE->extensions->universal_call('channel_module_create_pagination', $this);
-				if ($this->EE->extensions->end_script === TRUE) return;
-			}
-		//
-		// -------------------------------------------
-		
-		// Check again to see if we need to paginate
-		if ($pagination->paginate == TRUE)
-		{
-			// If template_group and template are being specified in the 
-			// index.php and there's no other URI string, specify the basepath
-			if (($this->EE->uri->uri_string == '' OR $this->EE->uri->uri_string == '/') 
-				&& $this->EE->config->item('template_group') != '' 
-				&& $this->EE->config->item('template') != '')
-			{
-				$pagination->basepath = $this->EE->functions->create_url(
-					$this->EE->config->slash_item('template_group').'/'.$this->EE->config->item('template')
-				);
-			}
-			
-			// If basepath is still nothing, create the url from the uri_string
-			if ($pagination->basepath == '')
-			{
-				$pagination->basepath = $this->EE->functions->create_url($this->EE->uri->uri_string);
-				$query_string = ($this->EE->uri->page_query_string != '') ? $this->EE->uri->page_query_string : $this->EE->uri->query_string;
-				
-				if (preg_match("#^P(\d+)|/P(\d+)#", $query_string, $match))
-				{
-					$pagination->offset = (isset($match[2])) ? $match[2] : $match[1];
-					$pagination->basepath = $this->EE->functions->remove_double_slashes(
-						str_replace($match[0], '', $pagination->basepath)
-					);
-				}
-			}
-
-			// Standard pagination, not field_pagination
-			if ($pagination->field_pagination == FALSE)
-			{
-				// If we're not displaying by something, then we'll need 
-				// something to paginate, otherwise if we're displaying by
-				// something (week, day) it's okay for it to be empty
-				if ($this->EE->TMPL->fetch_param('display_by') == '')
-				{
-					if ($count == 0)
-					{
-						$this->sql = '';
-						return;
-					}
-
-					$pagination->total_rows = $count;
-				}
-				
-				// We need to establish the per_page limits if we're using 
-				// cached SQL because limits are normally created when building
-				// the SQL query
-				if ($pagination->dynamic_sql == FALSE)
-				{
-					// Check to see if we can actually deal with cat_limit. Has
-					// to have dynamic != 'no' and channel set with a category
-					// in the uri_string somewhere
-					$cat_limit = FALSE;
-					if (
-						(
-							in_array($this->EE->config->item("reserved_category_word"), explode("/", $this->EE->uri->uri_string)) 
-							OR preg_match("#(^|\/)C(\d+)#", $this->EE->uri->uri_string, $match)
-						)
-						AND $this->EE->TMPL->fetch_param('dynamic') != 'no'
-						AND $this->EE->TMPL->fetch_param('channel')
-					)
-					{
-						$cat_limit = TRUE;
-					}
-
-					if ($cat_limit AND is_numeric($this->EE->TMPL->fetch_param('cat_limit')))
-					{
-						$pagination->per_page = $this->EE->TMPL->fetch_param('cat_limit');
-					}
-					else
-					{
-						$pagination->per_page  = ( ! is_numeric($this->EE->TMPL->fetch_param('limit')))  ? '100' : $this->EE->TMPL->fetch_param('limit');
-					}
-				}
-				
-				$pagination->offset = ($pagination->offset == '' OR ($pagination->per_page > 1 AND $pagination->offset == 1)) ? 0 : $pagination->offset;
-
-				// If we're far beyond where we should be, reset us back to 
-				// the first page
-				if ($pagination->offset > $pagination->total_rows)
-				{
-					$pagination->offset = 0;
-				}
-				
-				$pagination->current_page	= floor(($pagination->offset / $pagination->per_page) + 1);
-				$pagination->total_pages	= intval(floor($pagination->total_rows / $pagination->per_page));
-			}
-			else
-			{
-				//  Field pagination - base values
-
-				if ($count == 0)
-				{
-					$this->sql = '';
-					return;
-				}
-
-				$m_fields = array();
-
-				foreach ($pagination->multi_fields as $val)
-				{
-					foreach($this->cfields as $site_id => $cfields)
-					{
-						if (isset($cfields[$val]))
-						{
-							if (isset($row['field_id_'.$cfields[$val]]) AND $row['field_id_'.$cfields[$val]] != '')
-							{
-								$m_fields[] = $val;
-							}
-						}
-					}
-				}
-
-				$pagination->per_page = 1;
-
-				$pagination->total_rows = count($m_fields);
-
-				$pagination->total_pages = $pagination->total_rows;
-
-				if ($pagination->total_pages == 0)
-				{
-					$pagination->total_pages = 1;
-				}
-
-				$pagination->offset = ($pagination->offset == '') ? 0 : $pagination->offset;
-
-				if ($pagination->offset > $pagination->total_rows)
-				{
-					$pagination->offset = 0;
-				}
-				
-				$pagination->current_page = floor(($pagination->offset / $pagination->per_page) + 1);
-
-				if (isset($m_fields[$pagination->offset]))
-				{
-					$this->EE->TMPL->tagdata = preg_replace("/".LD."multi_field\=[\"'].+?[\"']".RD."/s", LD.$m_fields[$pagination->offset].RD, $this->EE->TMPL->tagdata);
-					$this->EE->TMPL->var_single[$m_fields[$pagination->offset]] = $m_fields[$pagination->offset];
-				}
-			}
-
-			//  Create the pagination
-			if ($pagination->total_rows > 0 && $pagination->per_page > 0)
-			{
-				if ($pagination->total_rows % $pagination->per_page)
-				{
-					$pagination->total_pages++;
-				}
-			}
-			
-			// Last check to make sure we actually need to paginate
-			if ($pagination->total_rows > $pagination->per_page)
-			{
-				// TODO: remove library declaration...
-				$this->EE->load->library('pagination');
-
-				if (strpos($pagination->basepath, SELF) === FALSE && $this->EE->config->item('site_index') != '')
-				{
-					$pagination->basepath .= SELF;
-				}
-				
-				// Check to see if a paginate_base was provided
-				if ($this->EE->TMPL->fetch_param('paginate_base'))
-				{
-					$this->EE->load->helper('string');
-
-					$pagination->basepath = $this->EE->functions->create_url(
-						trim_slashes($this->EE->TMPL->fetch_param('paginate_base'))
-					);
-				}
-				
-				$config['first_url'] 	= rtrim($pagination->basepath, '/');
-				$config['base_url']		= $pagination->basepath;
-				$config['prefix']		= 'P';
-				$config['total_rows'] 	= $pagination->total_rows;
-				$config['per_page']		= $pagination->per_page;
-				// cur_page uses the offset because P45 (or similar) is a page
-				$config['cur_page']		= $pagination->offset;
-				$config['first_link'] 	= lang('pag_first_link');
-				$config['last_link'] 	= lang('pag_last_link');
-				$config['uri_segment']	= 0; // Allows $config['cur_page'] to override
-
-				$this->EE->pagination->initialize($config);
-				$pagination->pagination_links = $this->EE->pagination->create_links();
-				$this->EE->pagination->initialize($config); // Re-initialize to reset config
-				$pagination->pagination_array = $this->EE->pagination->create_link_array();
-
-				// If a page_next should exist, create it
-				if ((($pagination->total_pages * $pagination->per_page) - $pagination->per_page) > $pagination->offset)
-				{
-					$pagination->page_next = reduce_double_slashes($pagination->basepath.'/P'.($pagination->offset + $pagination->per_page));
-				}
-
-				// If a page_previous should exist, create it
-				if (($pagination->offset - $pagination->per_page ) >= 0)
-				{
-					$pagination->page_previous = reduce_double_slashes($pagination->basepath.'/P'.($pagination->offset - $pagination->per_page));
-				}
-			}
-			else
-			{
-				$pagination->offset = '';
-			}
-		}
-	}
-	
-	// ------------------------------------------------------------------------
-
-	/**
-	 * Step 3 of Pagination: add_pagination_data()
-	 * 
-	 * This method takes the formed pagination_links and other sundry 
-	 * pagination data and places it into the template
-	 * - pagination_links
-	 * - current_page
-	 * - total_pages
-	 * Conditionals
-	 * - total_pages
-	 * - previous_page
-	 * - next_page
-	 * Also determines if pagination goes at the top or the bottom, for this,
-	 * we need the content to sandwich
-	 */
-	function add_pagination_data(&$pagination, $return_data)
-	{
-		if ($pagination->pagination_links == '')
-		{
-			return;
-		}
-		
-		if ($pagination->paginate == TRUE)
-		{
-			$parse_array = array();
-			
-			// Check to see if pagination_links is being used as a single 
-			// variable or as a variable pair
-			if (strpos($pagination->paginate_data, LD.'/pagination_links'.RD) !== FALSE)
-			{
-				$parse_array['pagination_links'] = array($pagination->pagination_array);
-			}
-			else
-			{
-				$parse_array['pagination_links'] = $pagination->pagination_links;
-			}
-			
-			// ----------------------------------------------------------------
-			
-			// Parse current_page and total_pages by default
-			$parse_array['current_page']	= $pagination->current_page;
-			$parse_array['total_pages']		= $pagination->total_pages;
-			
-			// Parse current_page and total_pages
-			$pagination->paginate_data = $this->EE->TMPL->parse_variables(
-				$pagination->paginate_data,
-				array($parse_array)
-			);
-			
-			// ----------------------------------------------------------------
-			
-			// Parse {if previous_page} and {if next_page}
-			$this->_parse_pagination_conditional($pagination, 'previous', $pagination->page_previous);
-			$this->_parse_pagination_conditional($pagination, 'next', $pagination->page_next);
-			
-			// ----------------------------------------------------------------
-			
-			// Parse if total_pages conditionals
-			$pagination->paginate_data = $this->EE->functions->prep_conditionals(
-				$pagination->paginate_data, 
-				array('total_pages' => $pagination->total_pages)
-			);
-			
-			// ----------------------------------------------------------------
-			
-			// Determine if pagination needs to go at the top and/or bottom
-			$position = ( ! $this->EE->TMPL->fetch_param('paginate')) ? '' : $this->EE->TMPL->fetch_param('paginate');
-			
-			switch ($position)
-			{
-				case "top":
-					return $pagination->paginate_data.$return_data;
-					break;
-				case "both":
-					return $pagination->paginate_data.$return_data.$pagination->paginate_data;
-					break;
-				case "bottom":
-				default:
-					return $return_data.$pagination->paginate_data;
-					break;
-			}
-		}
-	}
-	
-	// ------------------------------------------------------------------------
-	
-	/**
-	 * Parse {if previous_page} and {if next_page}
-	 * 
-	 * @param string $type Either 'next' or 'previous' depending on the 
-	 * 		conditional you're looking for
-	 * @param string $replacement What to replace $type_page with
-	 */
-	private function _parse_pagination_conditional(&$pagination, $type, $replacement)
-	{
-		if (preg_match_all("/".LD."if {$type}_page".RD."(.+?)".LD.'\/'."if".RD."/s", $pagination->paginate_data, $matches))
-		{
-			if ($replacement == '')
-			{
-				 $pagination->paginate_data = preg_replace("/".LD."if {$type}_page".RD.".+?".LD.'\/'."if".RD."/s", '', $pagination->paginate_data);
-			}
-			else
-			{
-				foreach($matches[1] as $count => $match)
-				{
-					$match = preg_replace("/".LD.'path.*?'.RD."/", $replacement, $match);
-					$match = preg_replace("/".LD.'auto_path'.RD."/", $replacement, $match);
-
-					$pagination->paginate_data = str_replace($matches[0][$count], $match, $pagination->paginate_data);
-				}
-			}
-		}
-	}
-	
-
 	// ------------------------------------------------------------------------
 
 	/**
@@ -3207,7 +2786,7 @@ class Channel {
 		{
 			//$row['count']			= $count+1;
 			//$row['total_results']	= $total_results;
-			$row['absolute_count']	= $this->pagination->offset + $count + 1;
+			$row['absolute_count']	= $this->pagination_obj->offset + $count + 1;
 
 			$row['page_uri']		= '';
 			$row['page_url']		= '';
@@ -3787,7 +3366,7 @@ class Channel {
 			$row['page_uri']			= '';
 			$row['page_url']			= '';
 			$row['total_results']		= $total_results;
-			$row['absolute_count']		= $this->pagination->offset + $row['count'];
+			$row['absolute_count']		= $this->pagination_obj->offset + $row['count'];
 			$row['absolute_results']	= ($this->absolute_results === NULL) ? $total_results : $this->absolute_results;
 			
 			if ($site_pages !== FALSE && isset($site_pages[$row['site_id']]['uris'][$row['entry_id']]))
