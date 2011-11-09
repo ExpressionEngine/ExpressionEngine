@@ -237,14 +237,7 @@ class Safecracker_file_ft extends File_ft
 		
 		$this->EE->load->model(array('file_upload_preferences_model', 'field_model'));
 		
-		$upload_paths = array();
-		
-		$upload_prefs = $this->EE->file_upload_preferences_model->get_upload_preferences($this->EE->session->userdata('group_id'));
-		
-		foreach ($upload_prefs as $row)
-		{
-			$upload_paths[$row['id']] = $row['name'];
-		}
+		$upload_paths = $this->EE->file_upload_preferences_model->get_dropdown_array($this->EE->session->userdata('group_id'));
 		
 		$defaults = array(
 			'field_content_options_file' => array(),

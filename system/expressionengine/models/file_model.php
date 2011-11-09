@@ -731,13 +731,13 @@ class File_model extends CI_Model {
 		
 		foreach ($file_dimensions->result() as $file_dimension)
 		{
-			@unlink($upload_dir->server_path . '_' . $file_dimension->short_name . '/' . $file_name);
+			@unlink($upload_dir['server_path'] . '_' . $file_dimension->short_name . '/' . $file_name);
 		}
 		
 		if ( ! $only_thumbs)
 		{
 			// Finally, delete the original
-			if ( ! @unlink($upload_dir->server_path . $file_name))
+			if ( ! @unlink($upload_dir['server_path'] . $file_name))
 			{
 				return FALSE;
 			}

@@ -105,13 +105,17 @@ class File_upload_preferences_model extends CI_Model {
 	 * 
 	 * @param integer $group_id The group id to get file preferences for
 	 * @param integer $id Specific upload directory ID if you just want settings for that
+	 * @param array $prefs_array Optional existing array to add the preferences to
 	 * @return array Associative array with ids as the keys and names as the values
 	 */
-	public function get_dropdown_array($group_id = NULL, $id = NULL)
+	public function get_dropdown_array($group_id = NULL, $id = NULL, $prefs_array = array())
 	{
 		$prefs = $this->get_upload_preferences($group_id, $id);
 		
-		$prefs_array = array();
+		if (isset($prefs['id']))
+		{
+			$prefs = array($prefs);
+		}
 		
 		foreach ($prefs as $pref)
 		{

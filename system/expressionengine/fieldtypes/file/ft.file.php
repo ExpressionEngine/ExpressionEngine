@@ -184,17 +184,12 @@ class File_ft extends EE_Fieldtype {
 		
 		// Retrieve all directories that are both allowed for this user and
 		// for this field
-		$upload_directories = $this->EE->file_upload_preferences_model->get_upload_preferences(
-			$this->EE->session->userdata('group_id'),
-			$allowed_file_dirs
-		);
-
-		// Create the list of directories
 		$upload_dirs[''] = lang('directory');
-		foreach($upload_directories as $row)
-		{
-			$upload_dirs[$row['id']] = $row['name'];
-		}
+		$upload_dirs = $this->EE->file_upload_preferences_model->get_dropdown_array(
+			$this->EE->session->userdata('group_id'),
+			$allowed_file_dirs,
+			$upload_dirs
+		);
 		
 		// Get the thumbnail
 		$this->EE->load->library('filemanager');
