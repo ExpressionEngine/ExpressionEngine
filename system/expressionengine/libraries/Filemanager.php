@@ -2416,6 +2416,13 @@ class Filemanager {
 		$dirs = new stdclass();
 		$dirs->files = array();
 		
+		// Nest the array one level deep if single row is
+		// returned so the loop can do the same work
+		if ($file_dir_id != NULL)
+		{
+			$upload_dirs = array($upload_dirs);
+		}
+		
 		foreach ($upload_dirs as $dir)
 		{
 			$dirs->files[$dir['id']] = array();
