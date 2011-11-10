@@ -2466,13 +2466,12 @@ class Content_files extends CI_Controller {
 		);
 
 		// Grab all upload locations with this id
-		$this->db->where('id', $id);
-		$items = $this->db->get('upload_prefs');
+		$items = $this->file_upload_preferences_model->get_upload_preferences(NULL, $id);
 		$data['items'] = array();
 
-		foreach($items->result() as $item)
+		if (isset($items['name']))
 		{
-			$data['items'][] = $item->name;
+			$data['items'][] = $item['name'];
 		}
 
 		$this->javascript->compile();
