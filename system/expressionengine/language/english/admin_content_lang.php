@@ -632,7 +632,7 @@ $lang = array(
 'Category Name',
 
 'category_image' =>
-'Category Image URL',
+'Category Image',
 
 'category_img_blurb' =>
 'This is an optional field that enables you to assign an image to your categories.',
