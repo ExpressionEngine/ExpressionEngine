@@ -869,10 +869,10 @@ class Wiki {
 		}
 		else
 		{
-			$results = $this->EE->db->query("SELECT url FROM exp_upload_prefs 
-									WHERE id = '".$this->EE->db->escape_str($this->upload_dir)."'");
+			$this->EE->load->model('file_upload_preferences_model');
+			$upload_prefs = $this->EE->file_upload_preferences_model->get_upload_preferences(1, $this->upload_dir);
 							 
-			$file_url  = (substr($results->row('url') , -1) == '/') ? $results->row('url')  : $results->row('url') .'/';
+			$file_url  = (substr($upload_prefs['url'], -1) == '/') ? $upload_prefs['url']  : $upload_prefs['url'] .'/';
 			$file_url .= $query->row('file_name') ;
 		}
 		
@@ -5242,8 +5242,8 @@ class Wiki {
 			return;
 		}
 		
-		$this->EE->db->where('id', $this->upload_dir);
-		$query = $this->EE->db->get('upload_prefs');
+		$this->EE->load->model('file_upload_preferences_model');
+		$upload_prefs = $this->EE->file_upload_preferences_model->get_upload_preferences(1, $this->upload_dir);
 				
 		/** -------------------------------------
 		/**  Uploading
@@ -5294,18 +5294,18 @@ class Wiki {
 				$new_name = $this->valid_title($this->EE->security->sanitize_filename(strip_tags($_FILES['userfile']['name'])));
 			}
 						
-			$server_path = $query->row('server_path');
+			$server_path = $upload_prefs['server_path'];
 
 
 
-			switch($query->row('allowed_types'))
+			switch($upload_prefs['allowed_types'])
 			{
 				case 'all' : $allowed_types = '*';
 					break;
 				case 'img' : $allowed_types = 'jpg|jpeg|png|gif';
 					break;
 				default :
-					$allowed_types = $query->row('allowed_types');
+					$allowed_types = $upload_prefs['allowed_types'];
 			}
 
 			// Upload the image
@@ -5313,9 +5313,9 @@ class Wiki {
 					'file_name'		=> $new_name,
 					'upload_path'	=> $server_path,
 					'allowed_types'	=> $allowed_types,
-					'max_size'		=> round($query->row('max_size')/1024, 2),
-					'max_width'		=> $query->row('max_width'),
-					'max_height'	=> $query->row('max_height'),
+					'max_size'		=> round($upload_prefs['max_size']/1024, 2),
+					'max_width'		=> $upload_prefs['max_width'],
+					'max_height'	=> $upload_prefs['max_height'],
 				);
 			
 			if ($this->EE->config->item('xss_clean_uploads') == 'n')
@@ -5415,7 +5415,7 @@ class Wiki {
 		
 		$file_types = 'images';
 		
-		if ($query->row('allowed_types')  == 'all')
+		if ($upload_prefs['allowed_types']  == 'all')
 		{
 			include(APPPATH.'config/mimes.php');			
 	
@@ -5670,10 +5670,10 @@ class Wiki {
 		/**  Create Our URL
 		/** ----------------------------------------*/
 		
-		$results = $this->EE->db->query("SELECT server_path FROM exp_upload_prefs 
-								WHERE id = '".$this->EE->db->escape_str($this->upload_dir)."'");
-							 
-		$filepath  = (substr($results->row('server_path') , -1) == '/') ? $results->row('server_path')  : $results->row('server_path') .'/';
+		$this->EE->load->model('file_upload_preferences_model');
+		$upload_prefs = $this->EE->file_upload_preferences_model->get_upload_preferences(1, $this->upload_dir);
+		
+		$filepath  = (substr($upload_prefs['server_path'] , -1) == '/') ? $upload_prefs['server_path']  : $upload_prefs['server_path'] .'/';
 		$filepath .= $query->row('file_name') ;
 			
 		if ( ! file_exists($filepath))

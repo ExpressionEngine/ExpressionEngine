@@ -356,13 +356,11 @@ EOT;
 		
 			if ( ! isset($upload_array[$row['moblog_upload_directory']]))
 			{
-				$this->EE->db->select('name');
-				$this->EE->db->where('id', $row['moblog_upload_directory']);
-				$results = $this->EE->db->get('upload_prefs');
+				$upload_prefs = $this->EE->tools_model->get_upload_preferences(1, $row['moblog_upload_directory']);
 				
-				if ($results->num_rows() > 0)
+				if (count($upload_prefs) > 0)
 				{
-					$upload_array[$row['moblog_upload_directory']] = $results->row('name') ;
+					$upload_array[$row['moblog_upload_directory']] = $upload_prefs['name'];
 					$form_data['moblog_upload_directory'] = array($upload_array, $row['moblog_upload_directory']);
 				}
 			}
