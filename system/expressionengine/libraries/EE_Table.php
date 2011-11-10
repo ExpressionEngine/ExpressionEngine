@@ -136,6 +136,7 @@ class EE_Table extends CI_Table {
 	protected $no_results = '';
 	protected $pagination_tmpl = '';
 	protected $jq_template = FALSE;
+	protected $sort = array();
 	protected $column_config = array();
 
 	/**
@@ -233,6 +234,13 @@ class EE_Table extends CI_Table {
 		// make sure we add a jq template
 		$this->jq_template = TRUE;
 		
+		// set our initial sort
+		$this->sort = array();
+		foreach ($settings['sort'] as $k => $v)
+		{
+			$this->sort[] = array($k, $v);
+		}
+		
 		// remove the key information from the row data to make it usable
 		// by the CI generate function. Unfortunately that means reordering
 		// to match our columns. Easy enough, simply overwrite the booleans.
@@ -329,7 +337,8 @@ class EE_Table extends CI_Table {
 			'empty_cells'	=> $this->empty_cells,
 			'no_results'	=> $this->no_results,
 			'pagination'	=> $this->pagination_tmpl,
-			'uniqid'		=> $this->uniqid
+			'uniqid'		=> $this->uniqid,
+			'sort'			=> $this->sort
 		);
 		
 		$table_config_data = 'data-table_config="'.form_prep($this->EE->javascript->generate_json($jq_config, TRUE)).'"';
@@ -338,7 +347,7 @@ class EE_Table extends CI_Table {
 			'<table '.$table_config_data,
 			$open_bak
 		);
-				
+		
 		$table = parent::generate($table_data);
 		
 		$this->template['table_open'] = $open_bak;
@@ -358,6 +367,7 @@ class EE_Table extends CI_Table {
 		$this->uniqid = '';
 		$this->no_result = '';
 		$this->pagination_tmpl = '';
+		$this->sort = array();
 		$this->column_config = array();
 		$this->jq_template = FALSE;
 		
