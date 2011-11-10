@@ -6,25 +6,29 @@
 		// @todo @pk ideas -------------
 		
 		// ensure copyright notice on all files (I always forget ...)
-		
-		// first page currently isn't cached until you return to it
-		// bind to table headers for sort (another object like pag?)
-		
+		// first page currently isn't cached until you return to it		
+		// first page doesn't list initial sort
 		
 		// edit specific:
 		
 		// add base64 thing to "add" tab link to "save" the search
 		// clear search link (redirect to base path)
+		// "return to filtered entries" currently does not support sort / pagination
+		//		- pagination isn't helpful, but adding sort makes sense I think
 		
 		
-		// /@todo @pk ideas -------------
+		// TODO:
+		
+		// remove EE.BASE content_edit occurences
+		// flip headerSortUp and down in the css, is silly
+		// events!
+		
+		// /@todo @pk todo/ideas -------------
 
 
 $.widget('ee.table', {
 
 	_listening: $(),		// form elements the filter is listening to
-	_sorting: [],			// set to initial sort
-	_headers: {},
 	
 	options: {
 		uniqid: null,		// uniqid of related elements
@@ -34,12 +38,12 @@ $.widget('ee.table', {
 		template: null,		// table template
 		pag_template: null,	// pagination template
 		
+		sort: [],			// [[column, desc], [column2, asc]]
 		columns: [],		// column names to match_data / search, filter on the spot
 		
 		cache_limit: 600,	// number of items, not pages!
 		
 		filters: {},
-		sorting: [],		// [[column, desc], [column2, asc]]
 		
 		cssAsc: 'headerSortUp',
 		cssDesc: 'headerSortDown'
@@ -52,40 +56,13 @@ $.widget('ee.table', {
 
 		// set defaults
 		self.filters = options.filters;
-		self.sorting = self._sorting = options.sorting;
+		
+		console.log(options);
 		
 		// setup dependencies
+		self.sort = new Sort(options, self);
 		self.cache = new Cache(options.cache_limit);
 		self.pagination = new Pagination(options, self);
-		
-		
-		var headers = self.element.find('th').each(function() {
-			var el = $(this),
-				short_name = el.data('table_column');
-			
-			el.data('sortable', self.options.columns[short_name].sort);
-			self._headers[ short_name ] = el;
-		});
-		
-		self.element.find('thead')
-			.delegate('th', 'selectstart', function() { return false; })
-			.delegate('th', 'click', function(e) {
-				var el = $(this);
-			
-				// if holding shift key: add
-				if ( ! el.data('sortable')) {
-					return false;
-				}
-				
-				var fn = e.shiftKey ? 'add_sorting' : 'set_sorting';
-				self[fn](
-					$(this).data('table_column'),
-					$(this).hasClass(self.options.cssAsc) ? 'desc' : 'asc'
-				);
-			
-				return false;
-		});
-		
 		
 		// create unique template name and compile
 		self.template_id = options.uniqid + '_row_template';
@@ -97,10 +74,6 @@ $.widget('ee.table', {
 	
 	
 	// Public util
-	
-	get_header: function(col_name) {
-		return this._headers[col_name] || null;
-	},	
 	
 	clear_cache: function() {
 		this.cache.clear();
@@ -117,10 +90,9 @@ $.widget('ee.table', {
 		return this;
 	},
 	
-	clear_sorting: function() {
+	clear_sort: function() {
 		// @todo fire sort events
-		
-		this.sorting = this._sorting;
+		this.sort.reset();
 		this.refresh();
 		return this;
 	},
@@ -180,45 +152,18 @@ $.widget('ee.table', {
 	
 	// Sorting
 	
-	
-	set_sorting: function(column, dir) {
-		var l = this.sorting.length;
-		
-		// fire removeSort events
-		while (l--) {
-			this.get_header(this.sorting[l][0]).removeClass(
-				this.options.cssAsc + ' ' + this.options.cssDesc
-			);
-			this._trigger('nosort', null, this._ui(/* @todo args this.sorting[l] */));
-		}
-		
-		this.sorting = [];
-		this.add_sorting(column, dir);
+	set_sort: function(column, dir) {
+		this.sort.set(column, dir);
 		return this;
 	},
 	
-	add_sorting: function(column, dir) {
-		var sort = column, l;
-		
-		if (dir) {
-			sort = [[column, dir]];
-		}
-		
-		// @todo fire addSort events
-		
-		l = sort.length;
-		while (l--) {
-			this.sorting.push(sort[l]);
-			this.get_header(sort[l][0])
-				.toggleClass(this.options.cssAsc, (sort[l][1] === 'asc'))
-				.toggleClass(this.options.cssDesc, (sort[l][1] === 'desc'));
-			
-			this._trigger('sort', null, this._ui(/* @todo args sort[l] */));
-		}
-		
-		// @todo addSort events
-				
-		this.refresh();
+	add_sort: function(column, dir) {
+		this.sort.add(column, dir);
+		return this;
+	},
+	
+	reset_sort: function() {
+		this.sort.reset();
 		return this;
 	},
 	
@@ -255,7 +200,7 @@ $.widget('ee.table', {
 		
 		// @todo on the backend make sure the key name actually exists
 		// or it'll throw a sql exception in the search model
-		self.filters.tbl_sort = this.sorting;
+		self.filters.tbl_sort = this.sort.get();
 		
 		
 		// Weed out the stuff we don't want in there, like XIDs and
@@ -331,7 +276,7 @@ $.widget('ee.table', {
 	
 	_ui: function() {
 		return {
-			sorting: [], // @todo sort order [[column, asc/desc], [column2, asc/desc]]
+			sort: this.sort.get(),// sort order [[column, asc/desc], [column2, asc/desc]]
 			filters: this.filters // all applied filters
 		};
 	}
@@ -562,6 +507,146 @@ Pagination.prototype = {
 
 // --------------------------------------------------------------------------
 
+/**
+ * Table sorting class
+ */
+function Sort(options, plugin) {
+	var self = this;
+	
+	this.sort = [];
+	this.plugin = plugin;
+	this.headers = plugin.element.find('th');
+	this.css = {
+		'asc': options.cssAsc,
+		'desc': options.cssDesc
+	};
+	
+	// helpers
+	this.header_map = {};
+	this._initial_sort = options.sort;
+	
+	
+	// cache all headers and check if we want
+	// them to be sortable
+	this.headers.each(function() {
+		var el = $(this),
+			short_name = el.data('table_column');
+		
+		self.header_map[ short_name ] = el;
+		
+		// sortable?
+		el.data('sortable', options.columns[short_name].sort);
+	});
+	
+	// setup events
+	plugin.element.find('thead')
+		.delegate('th', 'selectstart', function() { return false; }) // don't select with shift
+		.delegate('th', 'click', function(e) {
+			var el = $(this);
+		
+			// if holding shift key: add
+			if ( ! el.data('sortable')) {
+				return false;
+			}
+			
+			var fn = e.shiftKey ? 'add' : 'set';
+			self[fn](
+				el.data('table_column'),
+				el.hasClass(options.cssAsc) ? 'desc' : 'asc'
+			);
+		
+			return false;
+	});
+		
+	// setup initial sort without making a request
+	// @todo, this could be better
+	var l = this._initial_sort.length;
+	while (l--) {
+		this.sort.push(this._initial_sort[l]);
+		this.header_map[ this._initial_sort[l][0] ]
+			.toggleClass(this.css.asc, (this._initial_sort[l][1] === 'asc'))
+			.toggleClass(this.css.desc, (this._initial_sort[l][1] === 'desc'));
+	}
+}
+
+Sort.prototype = {
+	get: function(column) {
+		if (column) {
+			var l = this.sort.length;
+			
+			while (l--) {
+				if (this.sort[l][0] == column) {
+					return this.sort[l][1];
+				}
+			}
+			
+			return null;
+		}
+		
+		return this.sort;
+	},
+	
+	add: function(column, dir) {
+		var sort = column, l;
+		
+		if (dir) {
+			sort = [[column, dir]];
+		}
+		
+		// @todo fire addSort events
+		
+		l = sort.length;
+		while (l--) {
+			this.sort.push(sort[l]);
+			this.header_map[ sort[l][0] ]
+				.toggleClass(this.css.asc, (sort[l][1] === 'asc'))
+				.toggleClass(this.css.desc, (sort[l][1] === 'desc'));
+			
+			// @todo event
+			//this._trigger('sort', null, this._ui(/* @todo args sort[l] */));
+		}
+		
+		this.plugin.refresh();
+		return this;
+	},
+	
+	set: function(column, dir) {
+		
+		// clear and add
+		this.clear();
+		this.add(column, dir);
+		
+		this.plugin.refresh();
+		return this;
+	},
+	
+	reset: function() {
+		this.clear();
+		this.set(this._initial_sort);
+		
+		this.plugin.refresh();
+		return this;
+	},
+	
+	clear: function() {
+		var l = this.sort.length;
+
+		while (l--) {
+			this.header_map[ this.sort[l][0] ].removeClass(
+				this.css.asc + ' ' + this.css.desc
+			);
+			// @todo event
+			// this._trigger('nosort', null, this._ui(/* @todo args this.sort[l] */));
+		}
+				
+		this.sort = [];
+		return this;
+	}
+}
+
+
+// --------------------------------------------------------------------------
+
 // Go go go! Init all affected tables on the page
 $('table').each(function() {
 	var config;
@@ -573,61 +658,3 @@ $('table').each(function() {
 });
 
 })(jQuery);
-
-
-
-
-
-
-/**
- * Brainstorming:
- *
- * As a third party I want to add a column, and in JS I want to
- * a) apply filtering
- * b) apply custom sorting to match my php sort
-
-
-// Sorting:
-
-// these sorting callbacks can be passed to native Array.sort(),
-$.fn.ee_table.add_sorter('numeric', function(a, b) {
-	return a-b;
-});
-
-// if you need to prep the value:
-$.fn.ee_table.add_sorter('numeric', {
-	format: function(el) { },
-	compare: function(a, b) { return a-b; }
-});
-
-$('table').ee_table('sort_column', 'column', {
-	format: function(el) {},
-	compare: sorter_name/func
-});
-
-if both column and sorter have "format", column format result is passed to sorter format
-$('table').ee_table('sort_column', column, sorter_name/function);
-
-
-// Filtering:
-
-$('table').ee_table('bind_filter', column, form_element);
-$('table').ee_table('bind_filter', column, form_element2); // when one changes, so should the other
-
-
-$('table').ee_table('auto_bind_filter', form);
-$('table').ee_table('bind_filter', form, {
-	'column': 'serialized_key',
-	'column2': 'serialized_key2'
-});
-
-current_sort = $('table').ee_table('sort');
-$('table').ee_table('sort', [[column, asc], [column2, desc]);
-
-current_filters = $('table').ee_table('filter');
-$('table').ee_table('filter', {'key': 'value', 'key2': 'value2'});
-
-
-$('table').ee_table('sort_column', column, asc);
-
- */
