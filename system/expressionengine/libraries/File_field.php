@@ -70,17 +70,11 @@ class File_field {
 		
 		// Retrieve all directories that are both allowed for this user and
 		// for this field
-		$upload_directories = $this->EE->file_upload_preferences_model->get_upload_preferences(
+		$upload_dirs[''] = lang('directory');
+		$upload_dirs = $this->EE->file_upload_preferences_model->get_dropdown_array(
 			$this->EE->session->userdata('group_id'),
 			$allowed_file_dirs
 		);
-
-		// Create the list of directories
-		$upload_dirs = array('' => lang('directory'));
-		foreach($upload_directories->result() as $row)
-		{
-			$upload_dirs[$row->id] = $row->name;
-		}
 		
 		// Get the thumbnail
 		$thumb_info = $this->EE->filemanager->get_thumb($vars['filename'], $vars['filedir']);
@@ -194,9 +188,9 @@ class File_field {
 		// Directory selected - switch
 		$filedir = ($this->EE->input->post($dir_field)) ? $this->EE->input->post($dir_field) : '';
 		
-		foreach($upload_directories->result() as $row)
+		foreach($upload_directories as $row)
 		{
-			$allowed_dirs[] = $row->id;
+			$allowed_dirs[] = $row['id'];
 		}
 		
 		// Upload or maybe just a path in the hidden field?
