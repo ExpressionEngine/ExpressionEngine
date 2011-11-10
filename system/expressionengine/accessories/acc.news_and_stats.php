@@ -120,9 +120,12 @@ class News_and_stats_acc {
 				$title = $feed->items[$i]['title'];
 
 				$date = $feed->items[$i]['pubdate'];
-				$date = $this->EE->localize->set_human_time($this->EE->localize->set_gmt(strtotime(preg_replace("/(20[10][0-9]\-[0-9]{2}\-[0-9]{2})T([0-9]{2}:[0-9]{2}:[0-9]{2})Z/", 
-																				 '\\1 \\2 UTC',
-																				 $date))));
+				$date = $this->EE->localize->set_human_time(strtotime(preg_replace(
+					"/(20[10][0-9]\-[0-9]{2}\-[0-9]{2})T([0-9]{2}:[0-9]{2}:[0-9]{2})Z/", 
+					'\\1 \\2 UTC',
+					$date
+				)));
+				
 				$content = $feed->items[$i]['description'];
 				$link = $feed->items[$i]['link'];
 

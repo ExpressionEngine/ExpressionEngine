@@ -54,7 +54,6 @@ class Filemanager {
 		$this->EE->load->library('security');
 		$this->EE->lang->loadfile('filemanager');
 		
-		
 		$this->theme_url = $this->EE->config->item('theme_folder_url').'cp_themes/'.$this->EE->config->item('cp_theme').'/';
 	}
 
@@ -620,71 +619,6 @@ class Filemanager {
 			$key		=> $message
 		);
 	}
-
-	// --------------------------------------------------------------------
-	
-	/**
-	 * Filebrowser
-	 *
-	 * Includes the javascript that is needed to dynamically bootstrap the filebrowser
-	 *
-	 * @access	public
-	 * @param	string	the endpoint url
-	 * @return	void
-	 */	
-	function filebrowser($endpoint_url)
-	{
-		// Include dependencies
-		$this->EE->cp->add_js_script(array(
-			'plugin'    => array('scrollable', 'scrollable.navigator', 'ee_filebrowser', 'ee_fileuploader', 'tmpl')
-		));
-		
-		$this->EE->load->helper('html');
-		
-		$this->EE->javascript->set_global(array(
-			'lang' => array(
-				'resize_image'		=> $this->EE->lang->line('resize_image'),
-				'or'				=> $this->EE->lang->line('or'),
-				'return_to_publish'	=> $this->EE->lang->line('return_to_publish')
-			),
-			'filebrowser' => array(
-				'endpoint_url'		=> $endpoint_url,
-				'window_title'		=> lang('file_manager'),
-				'next'				=> anchor(
-					'#', 
-					img(
-						$this->EE->cp->cp_theme_url . 'images/pagination_next_button.gif',
-						array(
-							'alt' => lang('next'),
-							'width' => 13,
-							'height' => 13
-						)
-					),
-					array(
-						'class' => 'next'
-					)
-				),
-				'previous'			=> anchor(
-					'#', 
-					img(
-						$this->EE->cp->cp_theme_url . 'images/pagination_prev_button.gif',
-						array(
-							'alt' => lang('previous'),
-							'width' => 13,
-							'height' => 13
-						)
-					),
-					array(
-						'class' => 'previous'
-					)
-				)
-			),
-			'fileuploader' => array(
-				'window_title'		=> lang('file_upload'),
-				'delete_url'		=> 'C=content_files&M=delete_files'
-			)
-		));
-	}
 	
 	// --------------------------------------------------------------------
 	
@@ -873,8 +807,10 @@ class Filemanager {
 	
 	public function setup_upload()
 	{
+		$base = (defined('BASE')) ? BASE : $this->EE->functions->fetch_site_index(0,0).QUERY_MARKER; 
+		
 		$vars = array(
-			'base_url'	=> BASE.AMP.'C=content_files_modal'
+			'base_url'	=> $base.AMP.'C=content_files_modal'
 		);
 		
 		$this->EE->output->send_ajax_response(array(
@@ -1295,14 +1231,36 @@ class Filemanager {
 			}
 			elseif (isset($size['resize_type']) AND $size['resize_type'] == 'crop')
 			{
+				// Scale the larger dimension up so only one dimension of our 
+				// image fits within the desired dimension
+				if ($prefs['width'] > $prefs['height'])
+				{
+					$config['width'] = round($prefs['width'] * $size['height'] / $prefs['height']);
+				}
+				elseif ($prefs['height'] > $prefs['width'])
+				{
+					$config['height'] = round($pref['height'] * $size['width'] / $prefs['width']);
+				}
 				
-				// This may need to change if we let them manually set crop
-				// For now, let's crop from center for Wes
-
-				$config['x_axis'] = (($prefs['width'] / 2) - ($config['width'] / 2));
-				$config['y_axis'] = (($prefs['height'] / 2) - ($config['height'] / 2));
+				// First resize down to smallest possible size (greater of height and width)
+				$this->EE->image_lib->initialize($config);
+				
+				if ( ! $this->EE->image_lib->resize())
+				{
+					return FALSE;
+				}
+				
+				// Next set crop accordingly
+				$resized_image_dimensions = $this->get_image_dimensions($resized_path.$prefs['file_name']);
+				$config['source_image'] = $resized_path.$prefs['file_name'];
+				$config['x_axis'] = (($resized_image_dimensions['width'] / 2) - ($config['width'] / 2));
+				$config['y_axis'] = (($resized_image_dimensions['height'] / 2) - ($config['height'] / 2));
 				$config['maintain_ratio'] = FALSE;
-
+				
+				// Change height and width back to the desired size
+				$config['width'] = $size['width'];
+				$config['height'] = $size['height'];
+				
 				$this->EE->image_lib->initialize($config);
 
 				if ( ! @$this->EE->image_lib->crop())
@@ -1681,6 +1639,12 @@ class Filemanager {
 				'offset' => $offset
 			)
 		);
+
+		if ($files['results'] === FALSE)
+		{
+			return array();
+		}
+
 		$files = $files['results']->result_array();
 
 		foreach ($files as &$file)
@@ -1978,8 +1942,8 @@ class Filemanager {
 					array(
 						'file_name'		=> $file['file_name'],
 						'directory_id'	=> $dir['id']
-						)
-					);
+					)
+				);
 			}
 		}		
 		

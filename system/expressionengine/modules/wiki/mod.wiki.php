@@ -5965,12 +5965,12 @@ class Wiki {
 	
 	function update_module($current='')
 	{
-		if ($current == '' OR $current == $this->version)
+		if ($current == '' OR version_compare($current, $this->version, '=='))
 		{
 			return FALSE;
 		}
 		
-		if ($current < '1.1')
+		if (version_compare($current, '1.1', '<'))
 		{
 			$this->EE->db->query("ALTER TABLE `exp_wikis` DROP `wiki_namespaces_list`");
 			$this->EE->db->query("CREATE TABLE `exp_wiki_namespaces` (
@@ -5997,7 +5997,7 @@ class Wiki {
 			$this->EE->db->query("UPDATE exp_wiki_page SET page_namespace = 'category' WHERE page_namespace = '".$this->EE->db->escape_str($this->category_ns)."'");
 		}
 		
-		if ($current < '1.2')
+		if (version_compare($current, '1.2', '<'))
 		{
 			$this->EE->db->query("ALTER TABLE `exp_wiki_page` ADD `last_revision_id` INT(10) NOT NULL AFTER `last_updated`");
 			

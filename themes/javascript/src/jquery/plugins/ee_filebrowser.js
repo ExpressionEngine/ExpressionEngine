@@ -10,16 +10,7 @@
  * @filesource
  */
 
-Array.max = function(array) {
-    return Math.max.apply(Math, array);
-};
-
-Array.min = function(array) {
-    return Math.min.apply(Math, array);
-};
-
 (function($) {
-
 	var file_manager_obj,
 		current_field = '',
 		display_type = 'list',
@@ -67,12 +58,12 @@ Array.min = function(array) {
 						// Make sure the button bar is showing the correct items
 						$('#file_uploader').removeClass('upload_step_2').addClass('upload_step_1');
 
-						if ($('#fileChooser').size()) {
+						if ($('#file_browser').size()) {
 							// Reload the contents for the current directory
 							$.ee_filebrowser.reload_directory($('#dir_choice').val());
 						}
 					},
-					trigger: '#fileChooser #upload_form input'
+					trigger: '#file_browser #upload_form input'
 				});
 			};
 		});
@@ -102,6 +93,7 @@ Array.min = function(array) {
 			type: 'GET',
 			dataType: 'json',
 			data: data,
+			cache: false,
 			success: function(data, textStatus, xhr) {
 				if (typeof callback == 'function') {
 					callback.call(this, data);
@@ -262,10 +254,10 @@ Array.min = function(array) {
 
 					// Keep cache small-ish
 					if (cache_pages > 3) {
-						if (page_offset < Array.min(page_indexes)) {
-							delete dir_files[directory_id][Array.max(page_indexes)];
-						} else if (page_offset > Array.max(page_indexes)) {
-							delete dir_files[directory_id][Array.min(page_indexes)];
+						if (page_offset < _.min(page_indexes)) {
+							delete dir_files[directory_id][_.max(page_indexes)];
+						} else if (page_offset > _.max(page_indexes)) {
+							delete dir_files[directory_id][_.min(page_indexes)];
 						};
 					};
 					
@@ -307,18 +299,18 @@ Array.min = function(array) {
 		
 		// Clear everything
 		table_view.find('tbody').empty();
-		$('#file_chooser_body').empty().append(table_view);
-		$("#file_chooser_footer").empty().append(viewSelectors);
+		$('#file_browser_body').empty().append(table_view);
+		$("#file_browser_footer").empty().append(viewSelectors);
 		
 		// Display the data
 		if (display_type != 'list') {
 			$("#tableView").hide();
-			$.tmpl("thumb", files).appendTo("#file_chooser_body");
+			$.tmpl("thumb", files).appendTo("#file_browser_body");
 			
 			// Add a last class to the 7th thumbnail
-			$('a.file_chooser_thumbnail:nth-child(9n+2)').addClass('first');
-			$('a.file_chooser_thumbnail:nth-child(9n+1)').addClass('last');
-			$('a.file_chooser_thumbnail:gt(26)').addClass('last_row');
+			$('a.file_browser_thumbnail:nth-child(9n+2)').addClass('first');
+			$('a.file_browser_thumbnail:nth-child(9n+1)').addClass('last');
+			$('a.file_browser_thumbnail:gt(26)').addClass('last_row');
 		}
 		else {
 			$("#tableView").show();
@@ -412,13 +404,13 @@ Array.min = function(array) {
 		// Remove existing pagination
 		$('#paginationLinks, #pagination_meta').remove();
 		
-		$.tmpl("pagination", pagination).appendTo("#file_chooser_footer")
+		$.tmpl("pagination", pagination).appendTo("#file_browser_footer")
 			// Create an event handler for changes to the dropdown
 			.find('#view_type')
 				.val(display_type) // Make sure the dropdown is using the right value
 				.change(function() {
 					// Add class to file chooser body
-					$('#file_chooser_body').removeClass('list thumb').addClass(this.value);
+					$('#file_browser_body').removeClass('list thumb').addClass(this.value);
 					
 					// Reset dir_files cache
 					dir_files = {};
@@ -490,12 +482,12 @@ Array.min = function(array) {
 	 * @param {Number} total_pages The total number of pages
 	 */
 	function show_next_previous (total_pages) {
-		$('#file_chooser_footer #paginationLinks a').removeClass('visualEscapism');
+		$('#file_browser_footer #paginationLinks a').removeClass('visualEscapism');
 		
 		if ($('#current_page').val() == 0) {
-			$('#file_chooser_footer #paginationLinks .previous').addClass('visualEscapism');
+			$('#file_browser_footer #paginationLinks .previous').addClass('visualEscapism');
 		} else if ($('#current_page').val() == (total_pages - 1)) {
-			$('#file_chooser_footer #paginationLinks .next').addClass('visualEscapism');
+			$('#file_browser_footer #paginationLinks .next').addClass('visualEscapism');
 		};
 	}
 
@@ -536,8 +528,8 @@ Array.min = function(array) {
 		// Bind the upload submit event
 		$("#upload_form", file_manager_obj).submit($.ee_filebrowser.upload_start);
 		
-		// Add the display type as a class to file_chooser_body
-		$('#file_chooser_body', file_manager_obj).addClass(display_type);
+		// Add the display type as a class to file_browser_body
+		$('#file_browser_body', file_manager_obj).addClass(display_type);
 	}
 	
 	// --------------------------------------------------------------------

@@ -296,6 +296,8 @@ class Member_register extends Member {
 		{
 			require APPPATH.'libraries/Validate.php';
 		}
+		
+		$this->EE->load->helper('string');
 
 		$VAL = new EE_Validate(array(
 			'member_id'			=> '',
@@ -303,9 +305,9 @@ class Member_register extends Member {
 			'fetch_lang' 		=> TRUE,
 			'require_cpw' 		=> FALSE,
 		 	'enable_log'		=> FALSE,
-			'username'			=> trim($_POST['username']),
+			'username'			=> trim_nbs($_POST['username']),
 			'cur_username'		=> '',
-			'screen_name'		=> trim($_POST['screen_name']),
+			'screen_name'		=> trim_nbs($_POST['screen_name']),
 			'cur_screen_name'	=> '',
 			'password'			=> $_POST['password'],
 		 	'password_confirm'	=> $_POST['password_confirm'],
@@ -320,7 +322,7 @@ class Member_register extends Member {
 		$VAL->validate_email();
 
 		// Do we have any custom fields?
-		$query = $this->EE->db->select('m_field_id, m_field_name, m_field_label, m_field_required')
+		$query = $this->EE->db->select('m_field_id, m_field_name, m_field_label, m_field_type, m_field_list_items, m_field_required')
 							  ->where('m_field_reg', 'y')
 							  ->get('member_fields');
 
@@ -331,15 +333,31 @@ class Member_register extends Member {
 		{
 			foreach ($query->result_array() as $row)
 			{
-				if ($row['m_field_required'] == 'y' && 
-					( ! isset($_POST['m_field_id_'.$row['m_field_id']]) OR 
-						$_POST['m_field_id_'.$row['m_field_id']] == ''))
+				$field_name = 'm_field_id_'.$row['m_field_id'];
+
+				// Assume we're going to save this data, unless it's empty to begin with
+				$valid = isset($_POST[$field_name]) && $_POST[$field_name] != '';
+
+				// Basic validations
+				if ($row['m_field_required'] == 'y' && ! $valid)
 				{
 					$cust_errors[] = lang('mbr_field_required').'&nbsp;'.$row['m_field_label'];
-				}
-				elseif (isset($_POST['m_field_id_'.$row['m_field_id']]))
+				}				
+				elseif ($row['m_field_type'] == 'select' && $valid)
 				{
-					$cust_fields['m_field_id_'.$row['m_field_id']] = $this->EE->security->xss_clean($_POST['m_field_id_'.$row['m_field_id']]);
+					// Ensure their selection is actually a valid choice
+					$options = explode("\n", $row['m_field_list_items']);
+					
+					if (! in_array($_POST[$field_name], $options))
+					{
+						$valid = FALSE;
+						$cust_errors[] = lang('mbr_field_invalid').'&nbsp;'.$row['m_field_label'];
+					}
+				}				
+				
+				if ($valid)
+				{
+					$cust_fields[$field_name] = $this->EE->security->xss_clean($_POST[$field_name]);
 				}
 			}
 		}
@@ -398,16 +416,16 @@ class Member_register extends Member {
 
 			$this->EE->db->query("DELETE FROM exp_security_hashes WHERE (hash='".$this->EE->db->escape_str($_POST['XID'])."' AND ip_address = '".$this->EE->input->ip_address()."') OR date < UNIX_TIMESTAMP()-7200");
 		}
-
+		
 		// Assign the base query data
 		$data = array(
-			'username'		=> trim($this->EE->input->post('username')),
+			'username'		=> trim_nbs($this->EE->input->post('username')),
 			'password'		=> $this->EE->functions->hash($_POST['password']),
 			'ip_address'	=> $this->EE->input->ip_address(),
 			'unique_id'		=> $this->EE->functions->random('encrypt'),
 			'join_date'		=> $this->EE->localize->now,
-			'email'			=> trim($this->EE->input->post('email')),
-			'screen_name'	=> trim($this->EE->input->post('screen_name')),
+			'email'			=> trim_nbs($this->EE->input->post('email')),
+			'screen_name'	=> trim_nbs($this->EE->input->post('screen_name')),
 			'url'			=> prep_url($this->EE->input->post('url')),
 			'location'		=> $this->EE->input->post('location'),
 

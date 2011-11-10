@@ -28,7 +28,7 @@ class EE_Output extends CI_Output {
 	var $refresh_msg	= TRUE;			// TRUE/FALSE - whether to show the "You will be redirected in 5 seconds" message.
 	var $refresh_time	= 1;			// Number of seconds for redirects
 	
-	var $remove_unparsed_variables = TRUE; // whether to remove left-over variables that had bad syntax
+	var $remove_unparsed_variables = FALSE; // whether to remove left-over variables that had bad syntax
 	
 	// --------------------------------------------------------------------
 
@@ -87,7 +87,7 @@ class EE_Output extends CI_Output {
 
 		// Content Type Headers
 		// Also need to do some extra work for feeds
-
+		
 		switch ($this->out_type)
 		{
 			case 'webpage':	$this->set_header("Content-Type: text/html; charset=".$EE->config->item('charset'));
@@ -104,6 +104,28 @@ class EE_Output extends CI_Output {
 							$output = trim($output);
 				break;
 			case 'feed':	$this->_send_feed($output);
+				break;
+			default: // Likely a custom template type
+				// -------------------------------------------
+				// 'template_types' hook.
+				//  - Provide information for custom template types.
+				//
+				$template_types = $EE->extensions->call('template_types', array());
+				//
+				// -------------------------------------------
+				
+				if (isset($template_types[$this->out_type]))
+				{
+					// Set custom headers as defined by the template_headers key,
+					// and replace any headers as necessary
+					if (isset($template_types[$this->out_type]['template_headers']))
+					{
+						foreach ($template_types[$this->out_type]['template_headers'] as $header)
+						{
+							$this->set_header($header, TRUE);
+						}
+					}
+				}
 				break;
 		}
 		
@@ -148,7 +170,7 @@ class EE_Output extends CI_Output {
 		}
 		else
 		{
-			$last_update = $EE->localize->set_gmt();					
+			$last_update = $EE->localize->now;
 		}
 		
 		$output = trim($output);

@@ -99,10 +99,9 @@ class Member_model extends CI_Model {
 	 */
 	function get_members($group_id = '', $limit = '', $offset = '', $search_value = '', $order = array(), $column = 'all')
 	{
-		if ($group_id !== '')
-		{
-			$this->db->where("members.group_id", $group_id);
-		}
+		$this->db->select("members.username, members.member_id, members.screen_name, members.email, members.join_date, members.last_visit, members.group_id, members.member_id, members.in_authorlist");
+
+		$this->_prep_search_query($group_id, $search_value, $column);
 
 		if ($limit != '')
 		{
@@ -112,18 +111,6 @@ class Member_model extends CI_Model {
 		if ($offset != '')
 		{
 			$this->db->offset($offset);
-		}
-
-		if ($search_value != '')
-		{
-			if ($column == 'all')
-			{
-				$this->db->where("(`exp_members`.`screen_name` LIKE '%".$this->db->escape_like_str($search_value)."%' OR `exp_members`.`username` LIKE '%".$this->db->escape_like_str($search_value)."%' OR `exp_members`.`email` LIKE '%".$this->db->escape_like_str($search_value)."%')", NULL, TRUE);		
-			}
-			else
-			{
-				$this->db->like('members.'.$column, $search_value);
-			}
 		}
 
 		if (is_array($order) && count($order) > 0)
@@ -138,11 +125,7 @@ class Member_model extends CI_Model {
 			$this->db->order_by('join_date');
 		}
 
-		$this->db->select("members.username, members.member_id, members.screen_name, members.email, members.join_date, members.last_visit, members.group_id, members.member_id, members.in_authorlist");
-		$this->db->from("members");
-
-
-		$members = $this->db->get();
+		$members = $this->db->get('members');
 
 		if ($members->num_rows() == 0)
 		{
@@ -653,9 +636,9 @@ class Member_model extends CI_Model {
 	function get_authors($author_id = FALSE, $limit = FALSE, $offset = FALSE)
 	{
 		$this->db->select('members.member_id, members.group_id, 
-						members.username, members.screen_name, members.in_authorlist, member_groups.*');
+						members.username, members.screen_name, members.in_authorlist');
 		$this->db->from('members');
-		$this->db->join("member_groups", "members.group_id = members.group_id", 'left');
+		$this->db->join('member_groups', 'member_groups.group_id = members.group_id');
 		
 		if ($author_id)
 		{
@@ -679,62 +662,22 @@ class Member_model extends CI_Model {
 	}
 	
 	// --------------------------------------------------------------------
-
+	
 	/**
 	 * Get Authors Simple
 	 *
 	 * This function returns a set of members who are authors in a set channel- member group data is omitted
 	 *
+	 * @deprecated	Use member_model->get_authors instead
 	 * @access	public
 	 * @param	integer
 	 * @return	mixed
 	 */
 	function get_authors_simple($author_id = FALSE, $limit = FALSE, $offset = FALSE)
 	{
-		$group_ids = array();
-			
-		$this->db->select('group_id');
-		$this->db->where('include_in_authorlist', 'y');
-		$this->db->where('site_id', $this->config->item('site_id'));
-		$group_query = $this->db->get('member_groups');
-			
-		if ($group_query->num_rows() > 0)
-		{
-			foreach($group_query->result() as $group)
-			{
-				$group_ids[] = $group->group_id;
-			}
-		}
-			
-		$this->db->select('members.member_id, members.group_id, 
-							members.username, members.screen_name, members.in_authorlist');
-		$this->db->from('members');
-		
-		if ($author_id)
-		{
-			$this->db->where('members.member_id !=', $author_id);
-		}
-		
-		$this->db->where('in_authorlist', "y");
-		
-		if (count($group_ids) > 0)
-		{
-			$this->db->or_where_in('group_id', $group_ids);	
-		}		
-	
-		$this->db->order_by('members.screen_name', 'ASC');
-		$this->db->order_by('members.username', 'ASC');
-		
-		if ($limit)
-		{
-			$this->db->limit($limit, $offset);
-		}
-		
-		return $this->db->get();
+		return $this->get_authors($author_id, $limit, $offset);
 	}
-
-
-
+	
 	// --------------------------------------------------------------------
 
 	/**
@@ -840,34 +783,9 @@ class Member_model extends CI_Model {
 	 */
 	function count_members($group_id = '', $search_value = '', $search_field = '')
 	{
-		$valid_fields = array('all', 'screen_name', 'username', 'email');
-		$search_in = 'screen_name';
-		
-		if ($group_id !== '')
-		{
-			$this->db->where("members.group_id", $group_id);
-		}
-
-		if ($search_value != '')
-		{
-			if (in_array($search_field, $valid_fields))
-			{
-				$search_in = $search_field;
-			}
-
-			if ($search_in == 'all')
-			{
-				$this->db->where("(`exp_members`.`screen_name` LIKE '%".$this->db->escape_like_str($search_value)."%' OR `exp_members`.`username` LIKE '%".$this->db->escape_like_str($search_value)."%' OR `exp_members`.`email` LIKE '%".$this->db->escape_like_str($search_value)."%')", NULL, TRUE);			
-			}
-			else
-			{			
-				$this->db->like($search_in, $search_value);
-			}
-		}
-
+		$this->_prep_search_query($group_id, $search_value, $search_field);
 		return $this->db->count_all_results('members');
 	}
-
 
 	// --------------------------------------------------------------------
 
@@ -1349,7 +1267,7 @@ class Member_model extends CI_Model {
 	function can_access_module($module, $group_id = '')
 	{	
 		// Superadmin sees all		
-		if ($this->session->userdata('group_id') === 1)
+		if ($this->session->userdata('group_id') == 1)
 		{
 			return TRUE;
 		}
@@ -1369,6 +1287,55 @@ class Member_model extends CI_Model {
 		return ($query->num_rows() === 0) ? FALSE : TRUE;
 	}
 	
+	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Set up the search query which is used by get_members and
+	 * count_members. Be sure to *run* the query after calling this.
+	 *
+	 * @access	private
+	 * @param	int
+	 * @return	int
+	 */
+	private function _prep_search_query($group_id = '', $search_value = '', $search_field = '')
+	{
+		$no_search = array('password', 'salt', 'crypt_key');
+
+		if ($group_id !== '')
+		{
+			$this->db->where("members.group_id", $group_id);
+		}
+
+		if (is_array($search_value))
+		{
+			foreach ($search_value as $token_name => $token_value)
+			{
+				// Check to see if the token is ID
+				$token_name = ($token_name === 'id') ? 'member_id' : $token_name;
+
+				$this->db->like('members.'.$token_name, $token_value);
+			}
+		}
+		elseif ($search_value != '')
+		{
+			$search_in = 'screen_name';
+
+			if ( ! in_array($search_field, $no_search))
+			{
+				$search_in = $search_field;
+			}
+
+			if ($search_in == 'all')
+			{
+				$this->db->where("(`exp_members`.`screen_name` LIKE '%".$this->db->escape_like_str($search_value)."%' OR `exp_members`.`username` LIKE '%".$this->db->escape_like_str($search_value)."%' OR `exp_members`.`email` LIKE '%".$this->db->escape_like_str($search_value)."%')", NULL, TRUE);			
+			}
+			else
+			{			
+				$this->db->like('members.'.$search_in, $search_value);
+			}
+		}
+	}
 }
 
 /* End of file member_model.php */

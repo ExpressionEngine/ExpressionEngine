@@ -8,7 +8,6 @@ class EE_Schema {
 	var $year;
 	var $month;
 	var $day;
-	var $full_install	= FALSE;
 	var $default_entry	= '';
 	var $theme_path		= '';
 
@@ -62,7 +61,6 @@ class EE_Schema {
 		
 		$Q[] = "CREATE TABLE exp_sessions (
 			  session_id varchar(40) default '0' NOT NULL,
-			  site_id INT(4) UNSIGNED NOT NULL DEFAULT 1,
 			  member_id int(10) default '0' NOT NULL,
 			  admin_sess tinyint(1) default '0' NOT NULL,
 			  ip_address varchar(16) default '0' NOT NULL,
@@ -70,7 +68,6 @@ class EE_Schema {
 			  last_activity int(10) unsigned DEFAULT '0' NOT NULL,
 			  PRIMARY KEY `session_id` (`session_id`),
 			  KEY `member_id` (`member_id`),
-			  KEY `site_id` (`site_id`),
 			  KEY `last_activity_idx` (`last_activity`)
 			)";
 		
@@ -552,7 +549,7 @@ class EE_Schema {
 			 channel_max_chars int(5) unsigned NULL DEFAULT NULL,
 			 channel_html_formatting char(4) NOT NULL default 'all',
 			 channel_allow_img_urls char(1) NOT NULL default 'y',
-			 channel_auto_link_urls char(1) NOT NULL default 'y', 
+			 channel_auto_link_urls char(1) NOT NULL default 'n', 
 			 channel_notify char(1) NOT NULL default 'n',
 			 channel_notify_emails varchar(255) NULL DEFAULT NULL,
 			 comment_url varchar(80) NULL DEFAULT NULL,

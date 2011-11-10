@@ -40,7 +40,7 @@ class EE_Typography extends CI_Typography {
 	var $parse_smileys				= TRUE;
 	var $highlight_code				= TRUE;
 	var $convert_curly				= TRUE;		// Convert Curly Brackets Into Entities
-	var $emoticon_path  			= '';
+	var $emoticon_url				= '';
 	var $site_index					= '';
 	var $word_censor				= FALSE;
 	var $censored_words 			= array();
@@ -52,7 +52,8 @@ class EE_Typography extends CI_Typography {
 	var $code_chunks				= array();
 	var $code_counter				= 0;
 	var $http_hidden 				= NULL; // hash to protect URLs in [url] BBCode
-	
+	var $safe_img_src_end			= NULL; // hash to mark end of image URLs during sanitizing of image tags
+
 	// Allowed tags  Note: Specified in initialize()
 	var $safe_encode = array();
 	var $safe_decode = array();
@@ -115,7 +116,7 @@ class EE_Typography extends CI_Typography {
 		$this->parse_smileys		= TRUE;
 		$this->highlight_code		= TRUE;
 		$this->convert_curly		= TRUE;		// Convert Curly Brackets Into Entities
-		$this->emoticon_path  		= '';
+		$this->emoticon_url  		= '';
 		$this->site_index			= '';
 		$this->word_censor			= FALSE;
 		$this->censored_words 		= array();
@@ -130,6 +131,7 @@ class EE_Typography extends CI_Typography {
 		$this->EE->load->helper('string');
 		
 		$this->http_hidden 			= unique_marker('typography_url_protect'); // hash to protect URLs in [url] BBCode
+		$this->safe_img_src_end		= unique_marker('typography_img_src_end'); // hash to mark end of image URLs during sanitizing of image tags
 
 		foreach ($config as $key => $val)
 		{
@@ -219,7 +221,7 @@ class EE_Typography extends CI_Typography {
 		{
 			return $str;
 		}
-		
+
 		foreach ($this->EE->functions->fetch_file_paths() as $key => $val)
 		{
 			$str = str_replace(array("{filedir_{$key}}", "&#123;filedir_{$key}&#125;"), $val, $str);
@@ -608,7 +610,7 @@ class EE_Typography extends CI_Typography {
 		
 		if (stristr($str, '<img') !== FALSE)
 		{
-			$str = preg_replace("#<img(.*?)src=\s*[\"'](.+?)[\"'](.*?)\s*\>#si", "[img]\\2\\3\\1[/img]", $str);
+			$str = preg_replace("#<img(.*?)src=\s*[\"'](.+?)[\"'](.*?)\s*\>#si", "[img]\${2}{$this->safe_img_src_end}\\3\\1[/img]", $str);
 		}
 		
 		if (stristr($str, '://') !== FALSE)
@@ -739,7 +741,7 @@ class EE_Typography extends CI_Typography {
         /**  Remap some deprecated tags with valid counterparts
         /** -------------------------------------*/
 		
-		$str = str_replace(array('[strike]', '[/strike]', '[u]', '[/u]'), array('[del]', '[/del]', '[em]', '[/em]'), $str);
+		$str = str_ireplace(array('[strike]', '[/strike]', '[u]', '[/u]'), array('[del]', '[/del]', '[em]', '[/em]'), $str);
 		
 		/** -------------------------------------
 		/**  Decode BBCode array map 
@@ -747,7 +749,7 @@ class EE_Typography extends CI_Typography {
 				
 		foreach($this->safe_decode as $key => $val)
 		{
-			$str = str_replace(array('['.$key.']', '[/'.$key.']'),	array('<'.$val.'>', '</'.$val.'>'),	$str);
+			$str = str_ireplace(array('['.$key.']', '[/'.$key.']'),	array('<'.$val.'>', '</'.$val.'>'),	$str);
 		}
 		
 		/** -------------------------------------
@@ -798,7 +800,7 @@ class EE_Typography extends CI_Typography {
 		/**  Convert [url] tags to links 
 		/** -------------------------------------*/
 		
-		if (strpos($str, '[url') !== FALSE)
+		if (stripos($str, '[url') !== FALSE)
 		{			
 			$bounce	= ((REQ == 'CP' && $this->EE->input->get('M') != 'send_email') OR $this->EE->config->item('redirect_submitted_links') == 'y') ? $this->EE->functions->fetch_site_index().QUERY_MARKER.'URL=' : '';
 
@@ -900,7 +902,7 @@ class EE_Typography extends CI_Typography {
 		/** -------------------------------------*/
 		// [img] and [/img]
 		
-		if (strpos($str, '[img]') !== FALSE)
+		if (stripos($str, '[img]') !== FALSE)
 		{
 			$bad_things	 = array("'",'"', ';', '[', '(', ')', '!', '*', '>', '<', "\t", "\r", "\n", 'document.cookie');
 
@@ -949,7 +951,7 @@ class EE_Typography extends CI_Typography {
 
 		// [quote author="Brett" date="11231189803874"]...[/quote]
 		
-		if (strpos($str, '[quote') !== FALSE)
+		if (stripos($str, '[quote') !== FALSE)
 		{
 			$str = preg_replace('/\[quote\s+(author=".*?"\s+date=".*?")\]/si', '<blockquote \\1>', $str);
 		}
@@ -960,62 +962,42 @@ class EE_Typography extends CI_Typography {
 	// --------------------------------------------------------------------	
 	
 	/**
-	 * Make images safe
+	 * Make images safe, limited what attributes are carried through
 	 *
-	 * This simply removes parenthesis so that javascript event handlers
+	 * This also removes parenthesis so that javascript event handlers
 	 * can't be invoked. 
 	 */
 	public function image_sanitize($matches)
 	{
-		$url = str_replace(array('(', ')'), '', $matches['1']);
-
-		$width = '';
-		$height = '';
-
-		if (preg_match("/\s+width=(\"|\')([^\\1]*?)\\1/", $matches[1], $width_match))
+		if (strpos($matches[1], $this->safe_img_src_end))
 		{
-			$url = trim(str_replace($width_match[0], '', $url));
-			$width = $width_match[0];
-		}
-
-		if (preg_match("/\s+height=(\"|\')([^\\1]*?)\\1/", $matches[1], $height_match))
-		{	
-			$url = trim(str_replace($height_match[0], '', $url));
-			$height = $height_match[0];
-		}
-
-		if (preg_match_all("/\s+alt=(\"|\')([^\\1]*?)\\1/", $matches[1], $alt_match))
-		{
-			// If there's more than one match for alt, use the first and remove the second
-			if (is_array($alt_match[0]))
-			{
-				$alt_tag = $alt_match[0][0];
-				$alt_value = $alt_match[2][0];
-				
-				$url = trim(str_replace($alt_match[0][1], '', $url));
-			}
-			else
-			{
-				$alt_tag = $alt_match[0];
-				$alt_value = $alt_match[2];
-			}
-
-			$url = trim(str_replace($alt_tag, '', $url));
-			$alt = str_replace(array('"', "'"), '', $alt_value);
+			list($url, $extra) = explode($this->safe_img_src_end, $matches[1]);			
 		}
 		else
 		{
-			$alt = str_replace(array('"', "'"), '', $url);
-			
-			if (substr($alt, -1) == '/')
-			{
-				$alt = substr($alt, 0, -1);
-			}
-			
-			$alt = substr($alt, strrpos($alt, '/')+1);
+			$url = $matches[1];
+			$extra = '';
 		}
 		
-		return "<img src=\"{$url}\" alt=\"{$alt}\"{$width}{$height} />";
+		$url = str_replace(array('(', ')'), '', $url);
+
+		$alt	= '';
+		$width	= '';
+		$height	= '';
+
+		foreach (array('width', 'height', 'alt') as $attr)
+		{
+			if (preg_match("/\s+{$attr}=(\"|\')([^\\1]*?)\\1/", $extra, $attr_match))
+			{
+				${$attr} = $attr_match[0];
+			}
+			elseif ($attr == 'alt')	// always make sure there's some alt text
+			{
+				$alt = 'alt="" ';
+			}
+		}
+		
+		return "<img src=\"{$url}\" {$alt}{$width}{$height} />";
 	}
 
 	// --------------------------------------------------------------------	
@@ -1145,7 +1127,7 @@ class EE_Typography extends CI_Typography {
 		{
 			if (strpos($str, $key) !== FALSE)
 			{
-				$img = "<img src=\"".$this->emoticon_path.$this->smiley_array[$key]['0']."\" width=\"".$this->smiley_array[$key]['1']."\" height=\"".$this->smiley_array[$key]['2']."\" alt=\"".$this->smiley_array[$key]['3']."\" style=\"border:0;\" />";
+				$img = "<img src=\"".$this->emoticon_url.$this->smiley_array[$key]['0']."\" width=\"".$this->smiley_array[$key]['1']."\" height=\"".$this->smiley_array[$key]['2']."\" alt=\"".$this->smiley_array[$key]['3']."\" style=\"border:0;\" />";
 			
 				foreach(array(' ', "\t", "\n", "\r", '.', ',', '>') as $char)
 				{
@@ -1311,7 +1293,7 @@ class EE_Typography extends CI_Typography {
 			$bit[] .= " ".ord(substr($email, $i, 1));
 		}
 		
-		$temp	= array();
+		$temp = array();
 		
 		if ($anchor == TRUE)
 		{		
@@ -1349,36 +1331,40 @@ class EE_Typography extends CI_Typography {
 		}
 		
 		$bit = array_reverse($bit);
-		$span_id = 'eeEncEmail_'.$this->EE->functions->random('alpha', 10);
+		$span_marker = 'eeEncEmail_'.$this->EE->functions->random('alpha', 10);
 
 		ob_start();
-		
-?>
-<span id='<?php echo $span_id; ?>'>.<?php echo $this->EE->lang->line('encoded_email'); ?></span><script type="text/javascript">
-/*<![CDATA[*/
-var l=new Array();
-var output = '';
-<?php
-	
-	$i = 0;
-	foreach ($bit as $val)
-	{
-?>l[<?php echo $i++; ?>]='<?php echo $val; ?>';<?php
-	}
-?>
 
-for (var i = l.length-1; i >= 0; i=i-1){ 
-if (l[i].substring(0, 1) == ' ') output += "&#"+unescape(l[i].substring(1))+";"; 
-else output += unescape(l[i]);
-}
-document.getElementById('<?php echo $span_id; ?>').innerHTML = output;
+/* CAREFUL
+ *
+ * This javascript currently breaks in the forum if
+ * it outputs curly brackets. Test if you change it.
+ *
+ * Regex speed hat tip: http://blog.stevenlevithan.com/archives/faster-trim-javascript
+*/ ?>
+
+<span <?php echo $span_marker; ?>='1'>.<?php echo lang('encoded_email'); ?></span><script type="text/javascript">
+/*<![CDATA[*/
+var out = '',
+	el = document.getElementsByTagName('span'),
+	l = ['<?php echo implode("','", $bit)?>'],
+	i = l.length,
+	j = el.length;
+
+while (--i)
+	out += unescape(l[i].replace(/^\s\s*/, '&#'));
+
+while (--j)
+	if (el[j].getAttribute('<?php echo $span_marker ?>'))
+		el[j].innerHTML = out;
+		
 /*]]>*/
 </script><?php
 
 		$buffer = ob_get_contents();
 		ob_end_clean(); 
 
-		return str_replace("\n", '', $buffer);		
+		return str_replace(array("\n", "\t"), '', $buffer);		
 	}
 	
 	// --------------------------------------------------------------------
@@ -1395,7 +1381,7 @@ document.getElementById('<?php echo $span_id; ?>').innerHTML = output;
 			if (is_array($smileys))
 			{
 				$this->smiley_array = $smileys;
-				$this->emoticon_path = $this->EE->config->slash_item('emoticon_path');
+				$this->emoticon_url = $this->EE->config->slash_item('emoticon_url');
 			}
 		}
 	}

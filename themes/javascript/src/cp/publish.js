@@ -32,6 +32,13 @@ EE.publish.category_editor = function() {
 		refresh_cats, setup_page, reload, i,
 		selected_cats = {};
 
+	// categories with a lot of custom fields need to scroll
+	cat_modal_container.css({
+		height: '100%',
+		padding: '0 10px',	// account for vert scrollbar
+		overflow: 'auto'
+	});
+
 	// IE caches $.load requests, so we need a unique number
 	function now() {
 		return +new Date();
@@ -44,9 +51,15 @@ EE.publish.category_editor = function() {
 		modal: true,
 		resizable: false,
 		open: function(event, ui) {
+			// Remove the js_show class since we aren't removing it otherwise
+			$('.js_show').show();
+
 			$('.ui-dialog-content').css('overflow', 'hidden');
 			$('.ui-dialog-titlebar').focus(); // doing this first to fix IE7 scrolling past the dialog's close button
-			$('#cat_name').focus();				
+			$('#cat_name').focus();	
+			
+			// Create listener for file field
+			EE.publish.file_browser.category_edit_modal();
 		}
 	});
 
@@ -183,10 +196,13 @@ EE.publish.category_editor = function() {
 			gid = $(this).closest(".cat_group_container").data("gid");
 		}
 		
-		// grab selection
-		selected_cats[gid] = cat_groups_containers[gid].find('input:checked').map(function() {
-			return this.value;
-		}).toArray();
+		// Grab selection if checkboxes are available
+		if ($(this).hasClass("edit_categories_link"))
+		{
+			selected_cats[gid] = cat_groups_containers[gid].find('input:checked').map(function() {
+				return this.value;
+			}).toArray();
+		}
 		
 		cat_groups_containers[gid].text(EE.lang.loading);
 
@@ -194,14 +210,15 @@ EE.publish.category_editor = function() {
 			url: $(this).attr('href') + "&timestamp="+now() + resp_filter,
 			dataType: "html",
 			success: function(response) {
-				var res, filtered_res = '';
+				var res,
+					filtered_res = '';
 			
 				response = $.trim(response);
-
+				
 				if (response.charAt(0) == '<') {
 					res = $(response).find(resp_filter);
+					
 					filtered_res = $('<div />').append(res).html();
-
 					if (res.find('form').length == 0) {
 						cat_groups_containers[gid].html(filtered_res);
 					}
@@ -220,9 +237,9 @@ EE.publish.category_editor = function() {
 	// Hijack edit category links to get it off the ground
 	$(".edit_categories_link").click(reload);
 	
-	// Hijack internal links
-	$('.cat_group_container a:not(.cats_done)').live('click', reload);
-
+	// Hijack internal links (except for done and adding filename)
+	$('.cat_group_container a:not(.cats_done, .choose_file)').live('click', reload);
+	
 	// Last but not least - update the checkboxes
 	$(".cats_done").live("click", function() {
 		var that = $(this).closest(".cat_group_container"),
@@ -401,7 +418,7 @@ EE.publish.save_layout = function() {
 			type: "POST",
 			dataType: 	'json',
 			url: EE.BASE+"&C=content_publish&M=save_layout",
-			data: "XID="+EE.XID+"&json_tab_layout="+JSON.stringify(layout_object)+"&"+$("#layout_groups_holder input").serialize()+"&channel_id="+EE.publish.channel_id,
+			data: "XID="+EE.XID+"&json_tab_layout="+encodeURIComponent(JSON.stringify(layout_object))+"&"+$("#layout_groups_holder input").serialize()+"&channel_id="+EE.publish.channel_id,
 			success: function(result){
 				if (result.messageType === 'success') {
 					$.ee_notice(result.message, {type: "success"});
@@ -475,7 +492,11 @@ EE.date_obj_time = (function() {
 		    date_obj_hours = ((date_obj_hours + 11) % 12) + 1;
 		}
 	}
-		
+	
+	if (date_obj_hours < 10) {
+		date_obj_hours = "0" + date_obj_hours;
+	}
+	
 	return " '" + date_obj_hours + ":" + date_obj_mins + date_obj_am_pm + "'";
 }());
 
@@ -703,9 +724,18 @@ $(document).ready(function() {
 				// recreate the old cursor position
 				wm_txt.focus();
 				wm_txt.createSelection(source_sel.start, source_sel.end);
+				
+ 				// monkey patching the closers so that we can
+				// standardize srcElement for all browsers
+				// (looking at you FireFox)
+				var that = this;
+				that.getClosers().unbind('click').click(function(e) {
+					e.srcElement = this;
+					that.close(e);
+				});
 			},
 			
-			onClose: function(evt) {
+			onBeforeClose: function(evt) {
 				var closer = $(evt.srcElement).closest('.close'),	// evt.target is overriden by the custom event trigger =(
 					isSave = closer.hasClass('publish_to_field');
 
@@ -724,7 +754,6 @@ $(document).ready(function() {
 	if (EE.publish.show_write_mode === true) { 
 		EE.publish.setup_writemode();
 	}
-
 	
 	// @todo rewrite dependencies and remove
 	
@@ -761,140 +790,6 @@ $(document).ready(function() {
 		}
 		return "";
 	}
-
-
-	$.ee_filebrowser();
-	
-	// Bind the image html buttons
-	$.ee_filebrowser.add_trigger(".btn_img a, .file_manipulate", function(file) {
-				
-		var textarea, replace = '', props = '',
-			open = '', close = '';
-		
-		// A bit of working around various textareas, text inputs, tec
-		
-		if ($(this).closest("#markItUpWrite_mode_textarea").length) {
-			textareaId = "write_mode_textarea";
-		}
-		else {
-			textareaId = $(this).closest(".publish_field").attr("id").replace("hold_field_", "field_id_");
-		}
-		
-		if (textareaId != undefined) {
-			textarea = $("#"+textareaId);
-			textarea.focus();		
-		}
-		
-		// We also need to allow file insertion into text inputs (vs textareas) but markitup
-		// will not accommodate this, so we need to detect if this request is coming from a 
-		// markitup button or another field type.
-		
-		// Fact is - markitup is actually pretty crappy for anything that doesn't specifically
-		// use markitup. So currently the image button only works correctly on markitup textareas.
-
-		if ( ! file.is_image)
-		{
-			props = EE.upload_directories[file.upload_location_id].file_properties;
-			
-			open = EE.upload_directories[file.upload_location_id].file_pre_format;
-			open += "<a href=\"{filedir_"+file.upload_location_id+"}"+file.file_name+'" '+props+" >";
-			
-			close = "</a>";
-			close += EE.upload_directories[file.upload_location_id].file_post_format;
-		}
-		else
-		{
-			props = EE.upload_directories[file.upload_location_id].properties;
-			
-			open = EE.upload_directories[file.upload_location_id].pre_format;
-			close = EE.upload_directories[file.upload_location_id].post_format;
-
-			// Include any user additions before or after the image link
-			replace = EE.filebrowser.image_tag.replace(/src="(.*)\[!\[Link:!:http:\/\/\]!\](.*)"/, 'src="$1{filedir_'+file.upload_location_id+'}'+file.file_name+'$2"');
-			
-			// Figure out dimensions
-			dimensions = '';
-			if (typeof file.file_hw_original != "undefined" && file.file_hw_original != '') {
-				dimensions = file.file_hw_original.split(' ');
-				dimensions = 'height="'+dimensions[0]+'" width="'+dimensions[1]+'"';
-			};
-			
-			replace = replace.replace(/\/?>$/, dimensions+' '+props+' />');
-			
-			replace = open + replace + close;
-		}
-
-
-		if (textarea.is("textarea"))
-		{
-			if ( ! textarea.is('.markItUpEditor')) {
-				textarea.markItUp(myNobuttonSettings);
-				textarea.closest('.markItUpContainer').find('.markItUpHeader').hide();
-				textarea.focus();
-			}
-			
-			// Handle images and non-images differently
-			if ( ! file.is_image)
-			{
-				$.markItUp({
-					key:"L",
-					name:"Link",
-					openWith: open,
-					closeWith: close,
-					placeHolder:file.file_name
-				});
-			}
-			else
-			{
-				$.markItUp({
-					replaceWith: replace
-				});
-			}
-		}
-		else
-		{
-			textarea.val(function(i, v) {
-				v += open + replace + close;
-				return magicMarkups(v);
-			});
-			
-		}
-	});
-
-	// File fields
-	function file_field_changed(file, field) {
-		var container = $("input[name="+field+"]").closest(".publish_field");
-
-		if (file.is_image == false) {
-			container.find(".file_set").show().find(".filename").html("<img src=\""+EE.PATH_CP_GBL_IMG+"default.png\" alt=\""+EE.PATH_CP_GBL_IMG+"default.png\" /><br />"+file.file_name);
-		}
-		else
-		{
-			container.find(".file_set").show().find(".filename").html("<img src=\""+file.thumb+"\" /><br />"+file.file_name);
-		}
-
-		$("input[name="+field+"_hidden]").val(file.file_name);
-		$("select[name="+field+"_directory]").val(file.upload_location_id);
-	}
-
-	$("input[type=file]", "#publishForm").each(function() {
-		var container = $(this).closest(".publish_field"),
-			trigger = container.find(".choose_file"),
-			content_type = $(this).data('content-type'),
-			directory = $(this).data('directory'),
-			settings = {
-				"content_type": content_type,
-				"directory": directory
-			};
-
-		$.ee_filebrowser.add_trigger(trigger, $(this).attr("name"), settings, file_field_changed);
-
-		container.find(".remove_file").click(function() {
-			container.find("input[type=hidden]").val("");
-			container.find(".file_set").hide();
-			return false;
-		});
-	});
 
 	// toggle can not be used here, since it may or may not be visible
 	// depending on admin customization

@@ -1429,39 +1429,36 @@ class Forum_Core extends Forum {
 			return $this->trigger_error('no_feed_specified');
 		}		
 		
-		// Fetch the topics		
-		$idx = implode(',', $ids);		
-		
 		$qry = $this->EE->db->select('t.topic_id, t.author_id, t.title, 
-									  t.body, t.topic_date, t.thread_total, 
-									  t.last_post_author_id,  t.last_post_date, 
-									  t.topic_edit_date, t.parse_smileys,
-									  f.forum_text_formatting, f.forum_html_formatting, 
-									  f.forum_auto_link_urls, f.forum_allow_img_urls,
-									  m.screen_name AS last_post_author,
-									  m.screen_name AS author, m.email, m.url')
-							->from(array('forum_topics t', 'forums f', 'members m'))
-							->where('t.last_post_author_id = m.member_id', '', FALSE)
-							->where('f.forum_id = t.forum_id', '', FALSE)
-							->where('m.member_id = t.author_id', '', FALSE)
-							->where('t.announcement', 'n', '', FALSE)
-							->where_in('t.forum_id', $idx)
-							->or_where_in('t.moved_forum_id', $idx)
-							->where('t.board_id', $this->fetch_pref('board_id'))
-							->order_by('t.last_post_date', 'DESC')
-							->order_by('t.topic_date', "DESC")
-							->limit(10)
-							->get();
-								
+				t.body, t.topic_date, t.thread_total, 
+				t.last_post_author_id,  t.last_post_date, 
+				t.topic_edit_date, t.parse_smileys,
+				f.forum_text_formatting, f.forum_html_formatting, 
+				f.forum_auto_link_urls, f.forum_allow_img_urls,
+				lp.screen_name AS last_post_author,
+				m.screen_name AS author, m.email, m.url'
+			)
+			->from('forum_topics t')
+			->join('forums f', 'f.forum_id = t.forum_id', 'left')
+			->join('members m', 'm.member_id = t.author_id', 'left')
+			->join('members lp', 'lp.member_id = t.last_post_author_id', 'left')
+			->where('t.announcement', 'n', '', FALSE)
+			->where_in('t.forum_id', $ids)
+			->or_where_in('t.moved_forum_id', $ids)
+			->where('t.board_id', $this->fetch_pref('board_id'))
+			->order_by('t.topic_date', "DESC")
+			->limit(10)
+			->get();
+		
 		if ($qry->num_rows() == 0)
 		{
 			return $this->trigger_error('no_feed_results');
 		}
 
 		// Set the output type
-		$this->EE->output->out_type = 'rss';
+		$this->EE->output->out_type = 'feed';
 		$this->EE->config->core_ini['send_headers'] = 'y';
-		$this->EE->TMPL->template_type = 'rss';
+		$this->EE->TMPL->template_type = 'feed';
 		
 		// Load the requested theme file	
 		// What RSS type are they requesting?  Can be "rss" or "atom"
@@ -1516,7 +1513,7 @@ class Forum_Core extends Forum {
 		{	
 			for ($j = 0; $j < count($matches['0']); $j++)
 			{				
-				$template = preg_replace("/".$matches['0'][$j]."/", $this->EE->localize->decode_date($matches['1'][$j], $qry->row('last_post_date') ), $template, 1);				
+				$template = preg_replace("/".$matches['0'][$j]."/", $this->EE->localize->decode_date($matches['1'][$j], $qry->row('last_post_date'), FALSE), $template, 1);				
 			}
 		}  		
 
@@ -1525,11 +1522,11 @@ class Forum_Core extends Forum {
 		{	
 			for ($j = 0; $j < count($matches['0']); $j++)
 			{				
-				$template = preg_replace("/".$matches['0'][$j]."/", $this->EE->localize->decode_date($matches['1'][$j], $qry->row('topic_edit_date') ), $template, 1);				
+				$template = preg_replace("/".$matches['0'][$j]."/", $this->EE->localize->decode_date($matches['1'][$j], $qry->row('topic_edit_date'), FALSE ), $template, 1);				
 			}
 		}
 		
-		// {gmt_edit_date format="%Y %m %d %H:%i:%s"}
+		// {gmt_post_date format="%Y %m %d %H:%i:%s"}
 		if ( ! preg_match_all("/".LD."gmt_post_date\s+format=[\"\'](.+?)[\"\']".RD."/", $row_chunk, $gmt_post_date))
 		{	
 			$gmt_post_date = array();
@@ -1603,7 +1600,7 @@ class Forum_Core extends Forum {
 			{
 				for ($j = 0; $j < count($gmt_post_date['0']); $j++)
 				{				
-					$temp = preg_replace("/".$gmt_post_date['0'][$j]."/", $this->EE->localize->decode_date($gmt_post_date['1'][$j], $row['topic_date']), $temp, 1);				
+					$temp = preg_replace("/".$gmt_post_date['0'][$j]."/", $this->EE->localize->decode_date($gmt_post_date['1'][$j], $row['topic_date'], FALSE), $temp, 1);				
 				}
 			}
 			
@@ -1611,7 +1608,7 @@ class Forum_Core extends Forum {
 			{
 				for ($j = 0; $j < count($gmt_edit_date['0']); $j++)
 				{				
-					$temp = preg_replace("/".$gmt_edit_date['0'][$j]."/", $this->EE->localize->decode_date($gmt_edit_date['1'][$j], $row['topic_edit_date']), $temp, 1);				
+					$temp = preg_replace("/".$gmt_edit_date['0'][$j]."/", $this->EE->localize->decode_date($gmt_edit_date['1'][$j], $row['topic_edit_date'], FALSE), $temp, 1);				
 				}
 			}			
 		
@@ -3846,9 +3843,9 @@ class Forum_Core extends Forum {
 			}
 
 			// Parse the "Delete" Button		
-			if (($this->EE->session->userdata('group_id') == 1) OR 
-					$this->_mod_permission('can_delete', $row['forum_id']) && 
-				! in_array($row['author_id'], $super_admins))
+			if ($this->EE->session->userdata('group_id') == 1 OR 
+				($this->_mod_permission('can_delete', $row['forum_id']) && 
+				! in_array($row['author_id'], $super_admins)))
 			{
 				$temp = $this->allow_if('can_delete', $temp);
 			}
@@ -4152,15 +4149,19 @@ class Forum_Core extends Forum {
 						'path:member_profile'		=> $this->profile_path($row['author_id']),
 						'path:send_private_message'	=> $this->profile_path('messages/pm/'.$row['author_id']),
 						'path:send_pm'				=> $this->profile_path($row['author_id']),
-						'body'						=> $this->_quote_decode($this->EE->typography->parse_type($row['body'], 
-		 								  array(
-												'text_format'	=> $formatting['text_format'],
-												'html_format'	=> $formatting['html_format'],
-												'auto_links'	=> $formatting['auto_links'],
-												'allow_img_url' => $formatting['allow_img_url']
-												)
-										  )
-						)
+						'body'						=> $this->EE->functions->encode_ee_tags(
+														$this->_quote_decode(
+															$this->EE->typography->parse_type(
+																$row['body'],
+							 									array(
+																	'text_format'	=> $formatting['text_format'],
+																	'html_format'	=> $formatting['html_format'],
+																	'auto_links'	=> $formatting['auto_links'],
+																	'allow_img_url' => $formatting['allow_img_url']
+																)
+										  					)
+														),
+														TRUE)
 					)
 				);
 				
@@ -5779,9 +5780,9 @@ class Forum_Core extends Forum {
 		{
 			if (FALSE === ($meta = $this->_fetch_topic_metadata($this->current_id)))
 			{
-				return $this->trigger_error();
+				return $this->trigger_error('topic_no_exists');
 			}
-						
+			
 			if ($meta[$this->current_id]['forum_is_cat'] == 'y' OR ($meta[$this->current_id]['status'] == 'c' AND $this->EE->session->userdata('group_id') != 1) OR $meta[$this->current_id]['forum_status'] == 'a')
 			{
 				return $this->trigger_error('not_authorized');
@@ -7636,7 +7637,9 @@ class Forum_Core extends Forum {
 				$member_ids[] = $row['member_id'];
 			}
 			
-			$this->EE->db->query("DELETE FROM exp_forum_subscriptions WHERE topic_id = '{$merge_id}' AND member_id IN (".implode(',', $member_ids).")");
+			$this->EE->db->where('topic_id', $merge_id);
+			$this->EE->db->where_in('member_id', $member_ids);
+			$this->EE->db->delete('forum_subscriptions');
 		}
 		
 		$this->EE->db->query("UPDATE exp_forum_subscriptions SET topic_id = '{$topic_id}' WHERE topic_id = '{$merge_id}'");
@@ -7783,7 +7786,10 @@ class Forum_Core extends Forum {
 		// The earliest ID will become the topic so just to be
 		// safe we'll fetch the post_ids based on date
 	
-		$query = $this->EE->db->query("SELECT post_id, post_date, author_id FROM exp_forum_posts WHERE post_id IN (".implode(', ', $_POST['post_id']).") ORDER BY post_date ASC");
+		$query = $this->EE->db->select('post_id, post_date, author_id')
+			->where_in('post_id', $_POST['post_id'])
+			->order_by('post_date', 'asc')
+			->get('forum_posts');
 
 		if ($query->num_rows() == 0)
 		{
@@ -8383,35 +8389,35 @@ class Forum_Core extends Forum {
 		{
 			// Delete the user and kill all posts
 			// first fetch affected forum topics for stat updating later
-			$tquery = $this->EE->db->query("SELECT topic_id FROM exp_forum_topics WHERE author_id ='{$this->current_id}'");
-			$pquery = $this->EE->db->query("SELECT topic_id FROM exp_forum_posts WHERE author_id = '{$this->current_id}'");
-			$topics = array();
-			$ids	= array();
+			$forum_topics_query	= $this->EE->db->query("SELECT topic_id FROM exp_forum_topics WHERE author_id ='{$this->current_id}'");
+			$forum_posts_query 	= $this->EE->db->query("SELECT topic_id FROM exp_forum_posts WHERE author_id = '{$this->current_id}'");
+			$topics 			= array();
+			$topic_ids			= array();
 			
-			if ($tquery->num_rows() > 0)
+			if ($forum_topics_query->num_rows() > 0)
 			{
-				foreach ($tquery->result_array() as $row)
+				foreach ($forum_topics_query->result_array() as $row)
 				{
 					$topics[] = $row['topic_id'];
-					$ids[] = "topic_id = '".$row['topic_id']."'";
+					$topic_ids[] = $row['topic_id'];
 				}
 			}
 
-			if ($pquery->num_rows() > 0)
+			if ($forum_posts_query->num_rows() > 0)
 			{
-				foreach ($pquery->result_array() as $row)
+				foreach ($forum_posts_query->result_array() as $row)
 				{
 					$topics[] = $row['topic_id'];
 				}
 			}
 			
-			$topics = array_unique($topics);			
-			$IDS = implode(" OR ", $ids);
+			$topics = array_unique($topics);
 			
 			// Delete any posts from other users that belong to topics that we will be decimating shortly
-			if ($IDS != '')
+			if ( ! empty($topic_ids))
 			{
-				$this->EE->db->query("DELETE FROM exp_forum_posts WHERE ".$IDS);				
+				$this->EE->db->where_in('topic_id', $topic_ids)
+					->delete('forum_posts');
 			}
 			
 			// Now we can zap the rest
@@ -9919,7 +9925,7 @@ class Forum_Core extends Forum {
 							->order_by('last_post_date','DESC')
 							->get();
 			
-		if ($query->num_rows() == 0)
+		if ($qry->num_rows() == 0)
 		{
 			return $this->EE->output->show_user_error('off', array(lang('search_no_result')), lang('search_result_heading'));		
 		}
@@ -10730,7 +10736,7 @@ class Forum_Core extends Forum {
 		}
 		
 		
-		$path = $this->EE->config->slash_item('emoticon_path');
+		$path = $this->EE->config->slash_item('emoticon_url');
 				
 		ob_start();
 		?>			 
@@ -10920,9 +10926,10 @@ class Forum_Core extends Forum {
 		
 		if ($fetch_replies)
 		{
-			$rquery = $this->EE->select('topic_id, body as last_reply, parse_smileys')
-								->where_in('post_id', $post_ids)
-								->get('forum_posts');
+			$rquery = $this->EE->db->select('topic_id, body as last_reply, parse_smileys')
+									->where_in('post_id', $post_ids)
+									->get('forum_posts');
+
 
 			if ($rquery->num_rows() > 0)
 			{
@@ -11009,7 +11016,7 @@ class Forum_Core extends Forum {
 			$cond['views'] = $row['thread_views'];
 						
 			$tagdata = $this->EE->functions->prep_conditionals($tagdata, $cond);
-			
+						
 			if (isset($replies[$row['topic_id']]))
 			{
 				$tagdata = $this->EE->functions->prep_conditionals($tagdata, $replies[$row['topic_id']]);				
@@ -11162,7 +11169,7 @@ class Forum_Core extends Forum {
 				// Parse 1:1 fields
 				if (isset($row[$val]))
 				{					
-					$tagdata = $this->EE->TMPL->swap_var_single($val, $row[$val], $tagdata);
+					$tagdata = $this->EE->TMPL->swap_var_single($val, $this->_convert_special_chars($row[$val]), $tagdata);
 				}
 				
 			}

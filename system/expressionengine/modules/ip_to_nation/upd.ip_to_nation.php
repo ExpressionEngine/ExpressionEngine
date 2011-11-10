@@ -169,12 +169,12 @@ class Ip_to_nation_upd {
 	 */
 	function update($current='')
 	{
-		if ($current == '' OR $current == $this->version)
+		if ($current == '' OR version_compare($current, $this->version, '=='))
 		{
 			return FALSE;
 		}
 
-		if ($current < 2.0)
+		if (version_compare($current, '2.0', '<'))
 		{
 			// can't use this column as a Primary Key because the ip2nation db has duplicate values in the ip column ::sigh::
 //			$this->EE->db->query("ALTER TABLE `exp_ip2nation` DROP KEY `ip`");
@@ -184,7 +184,7 @@ class Ip_to_nation_upd {
 		}
 
 		// Version 2.2 user data based on 02/27/2010 sql from ip2nation.com
-		if ($current < 2.2)
+		if (version_compare($current, '2.2', '<'))
 		{
 			if ( ! include_once($this->_ee_path.'modules/ip_to_nation/iptonation.php'))
 			{
@@ -222,7 +222,7 @@ class Ip_to_nation_upd {
 		
 		// Version 2.3 user data based on 11/19/2010 sql from ip2nation.com
 		// Add dl date to config via $this->EE->localize->now which is 1290177198
-		if ($current < 2.3)
+		if (version_compare($current, '2.3', '<'))
 		{
 			if ( ! include_once($this->_ee_path.'modules/ip_to_nation/iptonation.php'))
 			{

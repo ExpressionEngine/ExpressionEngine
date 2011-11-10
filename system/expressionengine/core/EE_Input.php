@@ -108,14 +108,14 @@ class EE_Input extends CI_Input {
 						
 						if ((int) config_item('debug') == 2)
 						{
-							$data = '<br>' . print_r($data, TRUE);
+							$data = '<br>'.htmlentities(print_r($data, TRUE));
 						}
 						
 						exit(sprintf("Invalid GET Data - Array %s", $data));
 					}
 					elseif (preg_match("#(;|\?|exec\s*\(|system\s*\(|passthru\s*\(|cmd\s*\(|[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})#i", $val))
 					{
-						$data = ((int) config_item('debug') == 2) ? "<br>{$val}" : '';
+						$data = ((int) config_item('debug') == 2) ? '<br>'.htmlentities($val) : '';
 						
 						exit(sprintf("Invalid GET Data %s", $data));
 					}   
@@ -141,6 +141,28 @@ class EE_Input extends CI_Input {
 	}
 
 	// --------------------------------------------------------------------
+	
+	/**
+	 * Extend _sanitize_globals to allow css
+	 *
+	 * For action requests we need to fully allow GET variables, so we set
+	 * an exception in EE_Config. For css, we only need that one and it's a
+	 * path, so we'll do some stricter cleaning.
+	 *
+	 * @param	string
+	 * @return	string
+	 */
+	function _sanitize_globals()
+	{
+		$_css = $this->get('css');
+		
+		parent::_sanitize_globals();
+		
+		if ($_css)
+		{
+			$_GET['css'] = remove_invisible_characters($_css);
+		}
+	}
 	
 }
 // END CLASS

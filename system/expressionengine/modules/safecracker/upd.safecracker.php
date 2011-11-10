@@ -104,7 +104,7 @@ class Safecracker_upd
 		
 		if ($this->EE->config->item('allow_extensions') != 'y')
 		{
-			//$this->EE->output->show_user_error('general', $this->EE->lang->line('safecracker_extensions_disabled'));
+			//$this->EE->output->show_user_error('general', lang('safecracker_extensions_disabled'));
 		}
 		
 		//  Added to core with 2.1.5
@@ -150,12 +150,12 @@ class Safecracker_upd
 	 */
 	public function update($current = '')
 	{
-		if ($current == $this->version)
+		if (version_compare($current, $this->version, '=='))
 		{
 			return FALSE;
 		}
 		
-		if ($current < '1.0.3')
+		if (version_compare($current, '1.0.3', '<'))
 		{
 			$this->EE->db->insert(
 				'actions',
@@ -166,7 +166,7 @@ class Safecracker_upd
 			);
 		}
 		
-		if ($current < '2.1')
+		if (version_compare($current, '2.1', '<'))
 		{
 			// Update extension version number
 			$this->EE->db->update('extensions', array('version' => $this->version), array('class' => 'Safecracker_ext'));

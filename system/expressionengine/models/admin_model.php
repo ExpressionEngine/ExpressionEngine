@@ -52,9 +52,9 @@ class Admin_model extends CI_Model {
 				'license_number'			=> array('i', ''),
 				'site_name'					=> array('i', '', 'required'),
 				'site_index'				=> array('i', ''),
-				'site_url'					=> array('i', '', 'required|prep_url'),
-				'cp_url'					=> array('i', '', 'required|prep_url'),
-				'theme_folder_url'			=> array('i', '', 'required|prep_url'),
+				'site_url'					=> array('i', '', 'required'),
+				'cp_url'					=> array('i', '', 'required'),
+				'theme_folder_url'			=> array('i', '', 'required'),
 				'theme_folder_path'			=> array('i', '', 'required'),
 				'cp_theme'					=> array('f', 'theme_menu'),
 				'deft_lang'					=> array('f', 'language_menu'),											
@@ -193,7 +193,7 @@ class Admin_model extends CI_Model {
 										 ),
 			'emoticon_cfg'		=>	array(												
 											'enable_emoticons'			=> array('r', array('y' => 'yes', 'n' => 'no')),
-											'emoticon_path'				=> array('i', '')
+											'emoticon_url'				=> array('i', '')
 										 ),									
 			'tracking_cfg'		=>	array(
 											'enable_online_user_tracking'	=> array('r', array('y' => 'yes', 'n' => 'no'), 'y'),

@@ -24,10 +24,9 @@
  */
 class Wizard extends CI_Controller {
 
-	var $version			= '2.2.2';	// The version being installed
+	var $version			= '2.3.1';	// The version being installed
 	var $installed_version	= ''; 		// The version the user is currently running (assuming they are running EE)
 	var $minimum_php		= '5.1.6';	// Minimum version required to run EE
-	var $full_install		= FALSE;	// Set dynamically.  Determines which version is being installed  (full or core)
 	var $schema				= NULL;		// This will contain the schema object with our queries	
 	var $languages			= array(); 	// Available languages the installer supports (set dynamically based on what is in the "languages" folder)
 	var $mylang				= 'english';// Set dynamically by the user when they run the installer
@@ -167,7 +166,14 @@ class Wizard extends CI_Controller {
 		parent::__construct();
 		
 		// Third party constants
-		define('PATH_THIRD',	EE_APPPATH.'third_party/');
+		if ($this->config->item('third_party_path'))
+		{
+			define('PATH_THIRD',    rtrim($this->EE->config->item('third_party_path'), '/').'/');
+		}
+		else
+		{
+			define('PATH_THIRD',	EE_APPPATH.'third_party/');
+		}
 		
 		$req_source = $this->input->server('HTTP_X_REQUESTED_WITH');
 		define('AJAX_REQUEST',	($req_source == 'XMLHttpRequest') ? TRUE : FALSE);		
@@ -282,9 +288,6 @@ class Wizard extends CI_Controller {
 			$this->_set_output('unsupported', array('required_ver' => $this->minimum_php));
 			return FALSE;
 		}
-		
-		// Set the installation type (core or full)
-		$this->full_install = $this->_is_full_install();
 
 		// Is the config file readable?
 		if ( ! @include($this->config->config_path))
@@ -1020,7 +1023,6 @@ PAPAYA;
 		unset($_POST['password_confirm']);
 		
 		// We assign some values to the Schema class
-		$this->schema->full_install = $this->full_install;
 		$this->schema->default_entry = $this->_default_channel_entry();
 		
 		// Encrypt the password and unique ID
@@ -1303,6 +1305,10 @@ PAPAYA;
 			));
 		}
 		
+		// Set a liberal execution time limit, some of these
+		// updates are pretty big.
+		@set_time_limit(0);
+		
 		// Instantiate the updater class
 		$UD = new Updater;
 		$method = 'do_update';
@@ -1367,7 +1373,14 @@ PAPAYA;
 		
 		if (($status = $UD->{$method}()) === FALSE)
 		{
-			$this->_set_output('error', array('error' => $this->lang->line('update_error')));
+			$error_msg = $this->lang->line('update_error');
+			
+			if ( ! empty($UD->errors))
+			{
+				$error_msg .= "</p>\n\n<ul>\n\t<li>" . implode("</li>\n\t<li>", $UD->errors) . "</li>\n</ul>\n\n<p>";
+			}
+
+			$this->_set_output('error', array('error' => $error_msg));
 			return FALSE;
 		}
 
@@ -1707,7 +1720,7 @@ PAPAYA;
 		$this->load->helper('directory');
 		$ext_len = strlen(EXT);
 		
-		if (($map = directory_map(EE_APPPATH.'/third_party/')) !== FALSE)
+		if (($map = directory_map(PATH_THIRD)) !== FALSE)
 		{
 			foreach ($map as $pkg_name => $files)
 			{
@@ -1731,7 +1744,7 @@ PAPAYA;
 
 						if ($file == $pkg_name)
 						{
-							$this->lang->load($file.'_lang', '', FALSE, FALSE, EE_APPPATH.'/third_party/'.$pkg_name.'/');
+							$this->lang->load($file.'_lang', '', FALSE, FALSE, PATH_THIRD.$pkg_name.'/');
 							$name = ($this->lang->line(strtolower($file).'_module_name') != FALSE) ? $this->lang->line(strtolower($file).'_module_name') : $file;			
 							$modules[$file] = array('name' => ucfirst($name), 'checked' => FALSE);
 						}
@@ -1806,34 +1819,6 @@ PAPAYA;
 		}
 		
 		$this->userdata['databases'] = $dbs;
-	}
-	
-	// --------------------------------------------------------------------
-
-	/**
-	 * Set the installation type (core or full)
-	 *
-	 * @access	private
-	 * @return	array
-	 */
-	function _is_full_install()
-	{
-		if ($fp = @opendir(EE_APPPATH.'/modules/')) 
-		{ 
-			while (false !== ($file = readdir($fp))) 
-			{ 
-				if (strpos($file, '.') === FALSE)
-				{
-					if ($file == 'mailinglist')
-					{
-						return TRUE;
-					}
-				}
-			} 
-			closedir($fp); 
-		} 
-	
-		return FALSE;
 	}
 	
 	// --------------------------------------------------------------------
@@ -2190,7 +2175,7 @@ PAPAYA;
 
 		foreach($modules as $module)
 		{
-			$path = EE_APPPATH.'/third_party/'.$module.'/';
+			$path = PATH_THIRD.$module.'/';
 			
 			if (file_exists($path.'upd.'.$module.EXT))
 			{
@@ -2450,12 +2435,12 @@ PAPAYA;
 						'ban_message'           		=>  'This site is currently unavailable',
 						'ban_destination'       		=>  'http://www.yahoo.com/',
 						'enable_emoticons'      		=>  'y',
-						'emoticon_path'         		=>  $this->userdata['site_url'].'images/smileys/',
+						'emoticon_url'					=>  $this->userdata['site_url'].'images/smileys/',
 						'recount_batch_total'   		=>  '1000',
 						'image_resize_protocol'			=>	'gd2',
 						'image_library_path'			=>	'',
 						'thumbnail_prefix'				=>	'thumb',
-						'word_separator'				=>	'underscore',
+						'word_separator'				=>	'dash',
 						'use_category_name'				=>	'n',
 						'reserved_category_word'		=>	'category',
 						'auto_convert_high_ascii'		=>	'n',
@@ -2563,7 +2548,7 @@ PAPAYA;
 								'ban_message',
 								'ban_destination',
 								'enable_emoticons',
-								'emoticon_path',
+								'emoticon_url',
 								'recount_batch_total',
 // deprecated					'remap_pm_urls',  		// Get out of Channel Prefs
 // deprecated					'remap_pm_dest',		// Get out of Channel Prefs
@@ -2956,7 +2941,7 @@ PAPAYA;
 			}
 			else
 			{
-				$path = EE_APPPATH.'/third_party/'.$module.'/';
+				$path = PATH_THIRD.$module.'/';
 			}
 			
 			if (file_exists($path.'upd.'.$module.EXT))

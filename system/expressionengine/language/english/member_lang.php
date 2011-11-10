@@ -565,6 +565,9 @@ content associated with your account will also be deleted.',
 'mbr_field_required' =>
 'The following field is required:',
 
+'mbr_field_invalid' =>
+'The following field contains an invalid selection:',
+
 'mbr_username_length' =>
 'Usernames must be at least %x characters long',
 

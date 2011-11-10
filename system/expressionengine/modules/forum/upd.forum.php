@@ -26,7 +26,7 @@
 
 class Forum_upd {
 
-	var $version			= '3.1.5';
+	var $version			= '3.1.6';
 	
 	function Forum_upd()
 	{
@@ -555,12 +555,12 @@ class Forum_upd {
 	
 	function update($current='')
 	{
-		if ($current == $this->version)
+		if (version_compare($current, $this->version, '=='))
 		{
 			return FALSE;
 		}
 	
-		if ($current < 1.3)
+		if (version_compare($current, '1.3', '<'))
 		{
 			$this->EE->db->query("ALTER TABLE exp_forum_moderators ADD COLUMN mod_can_split char(1) NOT NULL default 'n'");
 			$this->EE->db->query("ALTER TABLE exp_forum_moderators ADD COLUMN mod_can_merge char(1) NOT NULL default 'n'");
@@ -571,7 +571,7 @@ class Forum_upd {
 			$this->EE->db->query("CREATE TABLE exp_forum_read_topics (member_id int(10) unsigned NOT NULL, topics text NOT NULL, last_visit int(10) NOT NULL, KEY `member_id` (`member_id`))");		
 		}
 	
-		if ($current < '1.3.1')
+		if (version_compare($current, '1.3.1', '<'))
 		{
 			$this->EE->db->query("INSERT INTO exp_actions (class, method) VALUES ('Forum', 'set_theme')");
 
@@ -597,7 +597,7 @@ class Forum_upd {
 			}
 		}
 		
-		if ($current < '1.3.2')
+		if (version_compare($current, '1.3.2', '<'))
 		{
 			$this->EE->db->query("ALTER TABLE `exp_forums` ADD `forum_display_edit_date` CHAR(1) NOT NULL DEFAULT 'n' AFTER `forum_post_timelock`");
 			$this->EE->db->query("ALTER TABLE `exp_forums` CHANGE `forum_notify_moderators` `forum_notify_moderators_topics` CHAR(1) NOT NULL DEFAULT 'n'");
@@ -685,7 +685,7 @@ class Forum_upd {
 		/**  Version 2.0 Update Code
 		/** -------------------------------------------*/
 		
-		if ($current < 2.0)
+		if (version_compare($current, '2.0', '<'))
 		{
 			$this->EE->db->query("CREATE TABLE exp_forum_boards (
 						board_id int(5) unsigned NOT NULL auto_increment,
@@ -796,17 +796,17 @@ class Forum_upd {
 			$this->EE->db->query("DROP TABLE exp_forum_prefs");
 		}
 		
-		if ($current < 2.1)
+		if (version_compare($current, '2.1', '<'))
 		{
 			// nothing to see here
 		}
 
-		if ($current < "2.1.1")
+		if (version_compare($current, '2.1.1', '<'))
 		{
 			// nothing to see here either
 		}
 				
-		if ($current < 3.0)
+		if (version_compare($current, '3.0', '<'))
 		{
 			// the forum subscription table now uses a primary key of topic_id-member_id, so there may be
 			// multiple identical rows if a member was subscribed to two or more threads that were later merged.
@@ -868,7 +868,7 @@ class Forum_upd {
 			$this->EE->db->query("ALTER TABLE `exp_forum_moderators` CHANGE `mod_member_name` `mod_member_name` VARCHAR(50) NULL DEFAULT NULL");
 		}
 		
-		if ($current < "3.0.1")
+		if (version_compare($current, '3.0.1', '<'))
 		{
 			$Q = array();
 			
@@ -894,7 +894,7 @@ class Forum_upd {
 		}
 		
 
-		if ($current < 3.1)
+		if (version_compare($current, '3.1', '<'))
 		{
 			// this ALTER appears in 3.0 update as well, but did not in the initial release of the Public Beta.  So let's do it again in 3.1
 			// to ensure everyone's tables are fine.  At that point, the code in forum_update_moderator() of mcp.forum.php can remove the
@@ -902,7 +902,7 @@ class Forum_upd {
 			$this->EE->db->query("ALTER TABLE `exp_forum_moderators` CHANGE `mod_member_name` `mod_member_name` VARCHAR(50) NULL DEFAULT NULL");
 		}
 		
-		if ($current < '3.1.1')
+		if (version_compare($current, '3.1.1', '<'))
 		{
 			// Add the publish tab.  wootage!
 			$data = array('has_publish_fields' => 'y');
@@ -910,16 +910,18 @@ class Forum_upd {
 			$this->EE->db->update('modules', $data);
 		}
 		
-		if ($current < '3.1.2')
+		if (version_compare($current, '3.1.2', '<'))
 		{
 			$this->_do_312_update();
 		}
 
-		if ($current < '3.1.3') { }
+		if (version_compare($current, '3.1.3', '<')) { }
 
-		if ($current < '3.1.4') { }
+		if (version_compare($current, '3.1.4', '<')) { }
 
-		if ($current < '3.1.5') { }
+		if (version_compare($current, '3.1.5', '<')) { }
+		
+		if (version_compare($current, '3.1.6', '<')) { }
 		
 		return TRUE;		
 		

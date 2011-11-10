@@ -1351,7 +1351,12 @@ class Member {
 		// Check password lockout status
 		if ($this->EE->session->check_password_lockout($this->EE->session->userdata('username')) === TRUE)
 		{
-			return $this->EE->output->show_user_error('general', str_replace("%x", $this->EE->config->item('password_lockout_interval'), $this->EE->lang->line('password_lockout_in_effect')));
+			$this->EE->lang->loadfile('login');
+			
+			return $this->EE->output->show_user_error(
+				'general', 
+				sprintf(lang('password_lockout_in_effect'), $this->EE->config->item('password_lockout_interval'))
+			);
 		}
 
 		// Are you who you say you are, or someone sitting at someone
@@ -1655,6 +1660,11 @@ class Member {
 			preg_match("#^[a-zA-Z0-9_\-]+$#i", $this->EE->TMPL->fetch_param('name'), $match))
 		{
 			$data['name'] = $this->EE->TMPL->fetch_param('name');
+			$this->EE->TMPL->log_item('Member Login Form:  The \'name\' parameter has been deprecated.  Please use form_name');
+		}
+		elseif ($this->EE->TMPL->fetch_param('form_name') && $this->EE->TMPL->fetch_param('form_name') != "")
+		{
+			$data['name'] = $this->EE->TMPL->fetch_param('form_name');
 		}
 
 		if ($this->EE->TMPL->fetch_param('id') !== FALSE && 
@@ -1902,7 +1912,7 @@ class Member {
 			return;
 		}
 
-		$path = $this->EE->config->slash_item('emoticon_path');
+		$path = $this->EE->config->slash_item('emoticon_url');
 
 		ob_start();
 		?>

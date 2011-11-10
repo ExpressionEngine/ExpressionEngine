@@ -28,7 +28,7 @@ class Moblog {
 	var $url_title_word = 'moblog';				// If duplicate url title, this is added along with number
 	var $message_array  = array();				// Array of return messages
 	var $return_data 	= ''; 					// When silent mode is off
-	var $silent			= ''; 					// true/false (string) - Returns error information
+	var $silent			= ''; 					// yes/no (string) - Returns error information
 	var $moblog_array	= array(); 				// Row information for moblog being processed
 
 	var $fp				= ''; 					// fopen resource
@@ -111,12 +111,15 @@ class Moblog {
 	 */
 	function check()
 	{
-		$which 			= ( ! $this->EE->TMPL->fetch_param('which'))	? '' : $this->EE->TMPL->fetch_param('which');
-		$this->silent	= ( ! $this->EE->TMPL->fetch_param('silent'))	? 'true' : $this->EE->TMPL->fetch_param('silent');
+		$which 	= $this->EE->TMPL->fetch_param('which', '');
+		$silent	= $this->EE->TMPL->fetch_param('silent', 'yes');
+
+		// Backwards compatible with previously documented "true/false" parameters (now "yes/no")
+		$this->silent = ($silent == 'true' OR $silent == 'yes') ? 'yes' : 'no'; 
 
 		if ($which == '')
 		{
-			$this->return_data = ($this->silent == 'true') ? '' : 'No Moblog Indicated';
+			$this->return_data = ($this->silent == 'yes') ? '' : 'No Moblog Indicated';
 			return $this->return_data ;
 		}
 
@@ -128,7 +131,7 @@ class Moblog {
 
 		if ($query->num_rows() == 0)
 		{
-			$this->return_data = ($this->silent == 'true') ? '' : $this->EE->lang->line('no_moblogs');
+			$this->return_data = ($this->silent == 'yes') ? '' : $this->EE->lang->line('no_moblogs');
 			return $this->return_data;
 		}
 
@@ -138,7 +141,7 @@ class Moblog {
 		{
 			if ( ! @mkdir(APPPATH.'cache/'.$this->cache_name, DIR_WRITE_MODE))
 			{
-				$this->return_data = ($this->silent == 'true') ? '' : $this->EE->lang->line('no_cache');
+				$this->return_data = ($this->silent == 'yes') ? '' : $this->EE->lang->line('no_cache');
 				return $this->return_data;
 			}
 		}
@@ -160,7 +163,7 @@ class Moblog {
 			}
 			elseif ( ! $fp = @fopen($cache_file, FOPEN_READ_WRITE))
 			{
-				if ($this->silent == 'false')
+				if ($this->silent == 'no')
 				{
 					$this->return_data .= '<p><strong>'.$row['moblog_full_name'].'</strong><br />'.
 									$this->EE->lang->line('no_cache')."\n</p>";
@@ -170,7 +173,7 @@ class Moblog {
 
 		if (count($expired) == 0)
 		{
-			$this->return_data = ($this->silent == 'true') ? '' : $this->EE->lang->line('moblog_current');
+			$this->return_data = ($this->silent == 'yes') ? '' : $this->EE->lang->line('moblog_current');
 			return $this->return_data;
 		}
 
@@ -188,7 +191,7 @@ class Moblog {
 				{
 					if ( ! $this->check_imap_moblog())
 					{
-						if ($this->silent == 'false' && count($this->message_array) > 0)
+						if ($this->silent == 'no' && count($this->message_array) > 0)
 						{
 							$this->return_data .= '<p><strong>'.$this->moblog_array['moblog_full_name'].'</strong><br />'.
 										$this->errors()."\n</p>";
@@ -199,7 +202,7 @@ class Moblog {
 				{
 					if ( ! $this->check_pop_moblog())
 					{
-						if ($this->silent == 'false' && count($this->message_array) > 0)
+						if ($this->silent == 'no' && count($this->message_array) > 0)
 						{
 							$this->return_data .= '<p><strong>'.$this->moblog_array['moblog_full_name'].'</strong><br />'.
 										$this->errors()."\n</p>";
@@ -211,7 +214,7 @@ class Moblog {
 			}
 		}
 
-		if ($this->silent == 'false')
+		if ($this->silent == 'no')
 		{
 			$this->return_data .= $this->EE->lang->line('moblog_successful_check')."<br />\n";
 			$this->return_data .= $this->EE->lang->line('emails_done')." {$this->emails_done}<br />\n";
@@ -252,7 +255,7 @@ class Moblog {
 	{
 		$message = '';
 
-		if (count($this->message_array) == 0 OR $this->silent == 'true')
+		if (count($this->message_array) == 0 OR $this->silent == 'yes')
 		{
 			return $message;
 		}
@@ -1515,10 +1518,10 @@ class Moblog {
 						
 							$thumb_replace		= '';	
 							$thumb_dimensions	= FALSE;
-							$thumb_rel_path		= $thumb_data['dir'].$file;
 							
 							if ( ! empty($thumb_data))
 							{
+								$thumb_rel_path		= $thumb_data['dir'].$file;
 								$thumb_replace		= $this->upload_dir_code.$thumb_rel_path;
 								$thumb_dimensions	= @getimagesize($dir_server_path.$thumb_rel_path);
 							}
@@ -1558,13 +1561,13 @@ class Moblog {
 						$file_rel_path		= empty($image_data) ? $file : $image_data['dir'].$file;
 						$file_dimensions	= @getimagesize($dir_server_path.$file_rel_path);
 						$filename			= $this->upload_dir_code.$file_rel_path;
-					
+						
 						$thumb_replace		= '';	
 						$thumb_dimensions	= FALSE;
-						$thumb_rel_path		= $thumb_data['dir'].$file;
 						
 						if ( ! empty($thumb_data))
 						{
+							$thumb_rel_path		= $thumb_data['dir'].$file;
 							$thumb_replace		= $this->upload_dir_code.$thumb_rel_path;
 							$thumb_dimensions	= @getimagesize($dir_server_path.$thumb_rel_path);
 						}
@@ -1931,15 +1934,15 @@ class Moblog {
 				$ext = trim(strrchr($filename, '.'), '.');
 				$is_image = FALSE; // This is needed for XSS cleaning
 				
-				if (in_array($ext, $this->movie)) // Movies
+				if (in_array(strtolower($ext), $this->movie)) // Movies
 				{
 					$this->post_data['movie'][] = $filename;
 				}
-				elseif (in_array($ext, $this->audio)) // Audio
+				elseif (in_array(strtolower($ext), $this->audio)) // Audio
 				{
 					$this->post_data['audio'][] = $filename;
 				}
-				elseif (in_array($ext, $this->image)) // Images
+				elseif (in_array(strtolower($ext), $this->image)) // Images
 				{
 					$this->post_data['images'][] = $filename;
 
@@ -1949,7 +1952,7 @@ class Moblog {
 					
 					$is_image = TRUE;
 				}
-				elseif (in_array($ext, $this->files)) // Files
+				elseif (in_array(strtolower($ext), $this->files)) // Files
 				{
 					$this->post_data['files'][] = $filename;
 				}

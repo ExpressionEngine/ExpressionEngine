@@ -89,14 +89,9 @@ if ($EE_view_disable !== TRUE)
 							</tr>
 							<tr>
 								<td><input name="template_name" class="template_name" type="text" size="15" value="" /></td>
-								<td><select class="template_type" name="template_type" id="template_type_">
-									<option value="css"><?=lang('css_stylesheet')?></option>
-									<option value="js"><?=lang('js')?></option>
-									<option value="feed"><?=lang('rss')?></option>
-									<option value="static"><?=lang('static')?></option>
-									<option value="webpage"><?=lang('webpage')?></option>
-									<option value="xml"><?=lang('xml')?></option>
-								</select></td>
+								<td>
+									<?=form_dropdown('template_type', $template_types, NULL, 'class="template_type"')?>
+								</td>
 								<td>
 								    <?=form_dropdown('cache', array('y' => lang('yes'), 'n' => lang('no')))?>
 								</td>

@@ -35,7 +35,7 @@ class EE_Lang extends CI_Lang {
 	 * @param	string
 	 * @return	void
 	 */
-	function loadfile($which = '', $package = '')
+	function loadfile($which = '', $package = '', $show_errors = TRUE)
 	{
 		if ($which == '')
 		{
@@ -64,7 +64,7 @@ class EE_Lang extends CI_Lang {
 			}
 		}
 
-		$deft_lang = ( ! isset($config['language'])) ? 'english' : $config['language'];
+		$deft_lang = ( ! $EE->config->item('language')) ? 'english' : $EE->config->item('language');
 		
 		// Sec.ur.ity code.  ::sigh::
 		$package = ($package == '') ? $EE->security->sanitize_filename(str_replace(array('lang.', '.php'), '', $which)) : $EE->security->sanitize_filename($package);
@@ -90,7 +90,7 @@ class EE_Lang extends CI_Lang {
 			oIk11bHRpcGxlIFNpdGUgTWFuYWdlciBFcnJvciAtIFNpdGUgTGltaXQgUmVhY2hlZCIpOyB9IH0="))); return;
 		}
 
-		$this->load($which, $this->user_lang, FALSE, TRUE, PATH_THIRD.$package.'/');
+		$this->load($which, $this->user_lang, FALSE, TRUE, PATH_THIRD.$package.'/', $show_errors);
 	}
 	
 	// --------------------------------------------------------------------
@@ -106,7 +106,7 @@ class EE_Lang extends CI_Lang {
 	 * @param	string	the language (english, etc.)
 	 * @return	mixed
 	 */
-	function load($langfile = '', $idiom = '', $return = FALSE, $add_suffix = TRUE, $alt_path = '')
+	function load($langfile = '', $idiom = '', $return = FALSE, $add_suffix = TRUE, $alt_path = '', $show_errors = TRUE)
 	{
 		static $deft_lang;
 		
@@ -171,7 +171,7 @@ class EE_Lang extends CI_Lang {
 			}
 		}
 		
-		if ($success !== TRUE)
+		if ($show_errors && $success !== TRUE)
 		{
 			show_error('Unable to load the requested language file: language/'.$idiom.'/'.$langfile);			
 		}

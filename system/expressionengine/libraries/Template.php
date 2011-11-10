@@ -227,6 +227,17 @@ class EE_Template {
 		$this->log_item("Template Type: ".$this->template_type);
 		
 		$this->parse($this->template, $sub, $site_id);
+		
+		// -------------------------------------------
+		// 'template_post_parse' hook.
+		//  - Modify template after tag parsing
+		//
+		if ($this->EE->extensions->active_hook('template_post_parse') === TRUE)
+		{
+			$this->final_template = $this->EE->extensions->call('template_post_parse', $this->final_template, $sub, $site_id);
+		}
+		//
+		// -------------------------------------------
 	}
 
 	// --------------------------------------------------------------------
@@ -337,7 +348,7 @@ class EE_Template {
 		// don't worry with undeclared embed: vars in conditionals as the conditionals processor will handle that adequately
 		if (strpos($this->template, LD.'embed:') !== FALSE)
 		{
-			$this->template = preg_replace('/'.LD.'embed:(.+?)'.RD.'/', '', $this->template);
+			$this->template = preg_replace('/'.LD.'embed:([^!]+?)'.RD.'/', '', $this->template);
 		}		
 	
 		// Parse date format string "constants"		
@@ -930,7 +941,8 @@ class EE_Template {
 
 						if ($this->EE->config->item('debug') >= 1)
 						{
-							if ($this->tag_data[$i]['tagparts'][0] == $this->tag_data[$i]['tagparts'][1] &&
+							if (isset($this->tag_data[$i]['tagparts'][1]) &&
+								$this->tag_data[$i]['tagparts'][0] == $this->tag_data[$i]['tagparts'][1] &&
 								! isset($this->tag_data[$i]['tagparts'][2]))
 							{
 								unset($this->tag_data[$i]['tagparts'][1]);
@@ -1620,6 +1632,7 @@ class EE_Template {
 		else
 		{
 			// Timestamp valid - read rest of file
+			$this->cache_timestamp = (int) $timestamp;
 			$status = 'CURRENT';
 			$cache = @fread($fp, filesize($file));
 		}
@@ -2230,6 +2243,19 @@ class EE_Template {
 			
 			if ($this->cache_status == 'CURRENT')
 			{
+				$row['template_data'] = $cache_contents;
+				
+				// -------------------------------------------
+				// 'template_fetch_template' hook.
+				//  - Access template data prior to template parsing
+				//
+					if ($this->EE->extensions->active_hook('template_fetch_template') === TRUE)
+					{
+						$this->EE->extensions->call('template_fetch_template', $row);
+					}
+				//
+				// -------------------------------------------
+				
 				return $this->convert_xml_declaration($cache_contents);				
 			}
 		}
@@ -2278,6 +2304,17 @@ class EE_Template {
 		
 		// standardize newlines
 		$row['template_data'] =  str_replace(array("\r\n", "\r"), "\n", $row['template_data']);
+		
+		// -------------------------------------------
+		// 'template_fetch_template' hook.
+		//  - Access template data prior to template parsing
+		//
+			if ($this->EE->extensions->active_hook('template_fetch_template') === TRUE)
+			{
+				$this->EE->extensions->call('template_fetch_template', $row);
+			}
+		//
+		// -------------------------------------------
 
 		return $this->convert_xml_declaration($this->remove_ee_comments($row['template_data']));
 	}

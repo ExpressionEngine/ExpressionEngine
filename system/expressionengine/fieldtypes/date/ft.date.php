@@ -39,7 +39,26 @@ class Date_ft extends EE_Fieldtype {
 	
 	// --------------------------------------------------------------------
 
-	function validate($data) { }
+	/**
+	 * Validate Field
+	 *
+	 * @param 	string
+	 * @return	mixed
+	 */
+	function validate($data)
+	{
+		if ( ! is_numeric($data))
+		{
+			$data = $this->EE->localize->convert_human_date_to_gmt($data);
+		}
+		
+		if ( ! is_numeric($data) && $data != '')
+		{
+			return lang('invalid_date');
+		}
+
+		return TRUE;
+	}
 	
 	// --------------------------------------------------------------------
 	
@@ -67,6 +86,12 @@ class Date_ft extends EE_Fieldtype {
 				// human readable data - convert cal date back to gmt
 				$custom_date = $_POST[$date_field];
 				$date = $this->EE->localize->convert_human_date_to_gmt($custom_date);
+			}
+
+			if ( ! is_numeric($date))
+			{
+				// don't output JS that tries to do math with the English error from convert_human_date_to_gmt()
+				$date = 0;
 			}
 		}
 		else
@@ -123,7 +148,7 @@ class Date_ft extends EE_Fieldtype {
 			var jsCurrentUTC = d.getTimezoneOffset()*60;
 			var adjustedDefault = 1000*('.$date.'+jsCurrentUTC);
 		
-			$("#'.$this->field_name.'").datepicker({dateFormat: $.datepicker.W3C + EE.date_obj_time, defaultDate: ('.$cal_date.' == 0) ? new Date() : new Date(adjustedDefault)});
+			$("#'.$this->field_name.'").datepicker({constrainInput: false, dateFormat: $.datepicker.W3C + EE.date_obj_time, defaultDate: ('.$cal_date.' == 0) ? new Date() : new Date(adjustedDefault)});
 		');
 
 		$r = form_input(array(

@@ -4,8 +4,9 @@
 	<meta charset="utf-8">
 
 	<?=$this->view->head_title($cp_page_title)?>
-	<?=$this->view->head_link('css/jquery-ui-1.7.2.custom.css'); ?>
+	<?=$this->view->head_link('css/jquery-ui-1.8.16.custom.css'); ?>
 	<?=$this->view->head_link('css/global.css'); ?>
+	<?=$this->view->head_link('css/file_browser.css'); ?>
 	<?=$this->view->head_link('css/override.css'); ?>
 
 	<?php if ($this->extensions->active_hook('cp_css_end') === TRUE):?>

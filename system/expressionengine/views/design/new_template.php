@@ -40,19 +40,9 @@ if ($EE_view_disable !== TRUE)
 			)
 		);
 
-		// Template Type
-		$template_type = array(
-			'webpage'	=> lang('webpage'),
-			'feed'		=> lang('rss'),
-			'css'		=> lang('css_stylesheet'),
-			'js'		=> lang('js'),
-			'static'	=> lang('static'),
-			'xml'		=> lang('xml'),
-		);
-
 		$this->table->add_row(array(
 				lang('template_type', 'template_type'),
-				form_dropdown('template_type', $template_type)
+				form_dropdown('template_type', $template_types)
 			)
 		);
 

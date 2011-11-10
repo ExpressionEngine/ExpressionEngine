@@ -226,8 +226,10 @@ class Auth {
 		// Check password lockout status
 		if ($this->EE->session->check_password_lockout($username) === TRUE)
 		{
+			$this->EE->lang->loadfile('login');
+			
 			$line = lang('password_lockout_in_effect');
-			$line = str_replace("%x", $this->EE->config->item('password_lockout_interval'), $line);
+			$line = sprintf($line, $this->EE->config->item('password_lockout_interval'));
 
 			if (AJAX_REQUEST)
 			{
@@ -262,7 +264,7 @@ class Auth {
 		}
 
 		// No cp access
-		if ( ! $incoming->has_permission('can_access_cp'))
+		if (REQ == 'CP' && ! $incoming->has_permission('can_access_cp'))
 		{
 			$this->errors[] = 'not_authorized';
 			return FALSE;
@@ -520,7 +522,7 @@ class Auth {
 		{
 			if ( isset($_SERVER['HTTP_AUTHORIZATION']) && substr($_SERVER['HTTP_AUTHORIZATION'], 0, 6) == 'Basic ')
 			{
-				list($user, $pass) = explode(':', base64_decode(substr($HTTP_AUTHORIZATION, 6)));
+				list($user, $pass) = explode(':', base64_decode(substr($_SERVER['HTTP_AUTHORIZATION'], 6)));
 			}
 			elseif ( ! empty($_ENV) && isset($_ENV['HTTP_AUTHORIZATION']) && substr($_ENV['HTTP_AUTHORIZATION'], 0, 6) == 'Basic ')
 			{
@@ -756,6 +758,8 @@ class Auth_result {
 				$this->session_id,
 				$this->EE->session->session_length
 			);
+
+			$this->EE->session->userdata['session_id'] = $this->session_id;
 		}
 		else
 		{

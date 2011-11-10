@@ -31,7 +31,7 @@ class Login extends CI_Controller {
 	 */
 	function __construct()
 	{
-		parent::__construct();	
+		parent::__construct();
 
 		$this->load->library('auth');
 		$this->lang->loadfile('login');
@@ -301,6 +301,8 @@ class Login extends CI_Controller {
 			)
 		);
 		
+		$un_exists = FALSE;
+		
 		if ($new_un !== '')
 		{
 			$un_exists = ($this->input->post('username') === $new_un) ? FALSE : TRUE;
@@ -553,8 +555,29 @@ class Login extends CI_Controller {
 		
 		$address  = $query->row('email');
 		$username = $query->row('username');
-				
-		$rand = $this->functions->random('alnum', 8);
+		
+		
+		$len = $this->config->item('pw_min_len');
+		
+		if ($len < 8)
+		{
+			$len = 8;
+		}
+		
+		$rand = $this->functions->random('alnum', $len);
+		
+		// add one of each character we require
+		if ($this->config->item('require_secure_passwords') == 'y')
+		{
+			$alpha = range('a', 'z');
+			$number = rand(0, 9);
+			
+			shuffle($alpha);
+			
+			$rand .= $number.$alpha[0].strtoupper($alpha[1]);
+		}
+		
+		
 		
 		// Update member's password
 		$update = $this->auth->update_password($member_id, $rand);

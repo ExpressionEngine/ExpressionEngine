@@ -35,7 +35,7 @@ class Safecracker_file_ft extends File_ft
 	{
 		if ( ! $this->settings['safecracker_upload_dir'])
 		{
-			return $this->EE->lang->line('no_upload_dir');
+			return lang('no_upload_dir');
 		}
 		
 		$this->EE->load->library('filemanager');
@@ -76,7 +76,7 @@ class Safecracker_file_ft extends File_ft
 			'hidden' => form_hidden($this->field_name.'_hidden', $data),
 			'upload' => form_upload($form_upload),
 			'placeholder_input' => form_hidden($this->field_name, 'NULL'),
-			'remove' => form_label(form_checkbox($this->field_name.'_remove', 1).' '.$this->EE->lang->line('remove_file')),
+			'remove' => form_label(form_checkbox($this->field_name.'_remove', 1).' '.lang('remove_file')),
 			'existing_input_name' => $this->field_name.'_existing',
 			'existing_files' => $this->existing_files($this->settings['safecracker_upload_dir']),
 			'settings' => $this->settings,
@@ -138,7 +138,7 @@ class Safecracker_file_ft extends File_ft
 			{
 				$this->EE->lang->loadfile('safecracker_file');
 				
-				$valid = $this->EE->lang->line(trim(strip_tags($data['error'])));
+				$valid = lang(trim(strip_tags($data['error'])));
 				
 				if (REQ != 'CP')
 				{
@@ -171,7 +171,7 @@ class Safecracker_file_ft extends File_ft
 		
 		if ($valid === TRUE && @$this->settings['field_required'] == 'y' && ! $this->EE->input->post($field_name))
 		{
-			$valid = (REQ == 'CP') ? $this->EE->lang->line('required') : array('value' => '', 'error' => $this->EE->lang->line('required'));
+			$valid = (REQ == 'CP') ? lang('required') : array('value' => '', 'error' => lang('required'));
 		}
 		
 		return $valid;
@@ -261,11 +261,11 @@ class Safecracker_file_ft extends File_ft
 		{
 			$content_types = $this->EE->field_model->get_field_content_types('file');
 			
-			$data['field_content_options_file']['any'] = $this->EE->lang->line('any');
+			$data['field_content_options_file']['any'] = lang('any');
 			
 			foreach($content_types as $content_type)
 			{
-				$data['field_content_options_file'][$content_type] = $this->EE->lang->line('type_'.$content_type);
+				$data['field_content_options_file'][$content_type] = lang('type_'.$content_type);
 			}
 		}
 		
@@ -601,7 +601,7 @@ class Safecracker_file_ft extends File_ft
 			'hidden' => ($data) ? form_hidden(preg_replace('/\]$/', '_hidden]', $this->cell_name), $data) : '',
 			'upload' => form_upload($form_upload),//form_upload(str_replace(array('][', '[', ']'), array('_', '_', ''), $this->cell_name)),
 			'placeholder_input' => form_hidden($this->cell_name, $this->cell_name),
-			'remove' => form_label(form_checkbox(preg_replace('/\]$/', '_remove]', $this->cell_name), 1).' '.$this->EE->lang->line('remove_file')),
+			'remove' => form_label(form_checkbox(preg_replace('/\]$/', '_remove]', $this->cell_name), 1).' '.lang('remove_file')),
 			'existing_input_name' => preg_replace('/\]$/', '_existing]', $this->cell_name),
 			'existing_files' => $this->existing_files($this->settings['safecracker_upload_dir']),
 			'settings' => $this->settings,
@@ -637,6 +637,13 @@ class Safecracker_file_ft extends File_ft
 			return array();
 		}
 		
+		// Check to make sure the directory exists
+		$directory_info = $this->EE->file_upload_preferences_model->get_upload_preferences($directory_id);
+		if ($directory_info->num_rows() <= 0)
+		{
+			show_error(lang('upload_destination_does_not_exist'));
+		}
+		
 		// Check to see if there's an imposed limit
 		if ( ! is_numeric($this->settings('safecracker_num_existing')))
 		{
@@ -644,7 +651,7 @@ class Safecracker_file_ft extends File_ft
 		}
 		
 		$files = array(
-			'' => $this->EE->lang->line('choose_existing')
+			'' => lang('choose_existing')
 		);
 		
 		// Load files in from database

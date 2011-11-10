@@ -38,6 +38,8 @@ class Members extends CI_Controller {
 	{
 		parent::__construct();
 		
+		$this->perpage = $this->config->item('memberlist_row_limit');
+		
 		if ( ! $this->cp->allowed_group('can_access_members'))
 		{
 			show_error(lang('unauthorized_access'));
@@ -120,6 +122,7 @@ class Members extends CI_Controller {
 
 		$vars['column_filter_options'] = array(
 			'all'				=> lang('all'),
+			'member_id'			=> lang('id'),
 			'screen_name'		=> lang('screen_name'),
 			'username'			=> lang('username'),
 			'email'				=> lang('email')
@@ -148,7 +151,7 @@ class Members extends CI_Controller {
 			$vars['member_groups_dropdown'][$group->group_id] = $group->group_title;
 		}
 
-		$vars['member_list'] = $this->member_model->get_members($group_id, $this->config->item('memberlist_row_limit'), $per_page, $member_name);
+		$vars['member_list'] = $this->member_model->get_members($group_id, $this->config->item('memberlist_row_limit'), $per_page, $member_name, array('member_id' => 'asc'));
 
 		if ($vars['member_list'] === FALSE)
 		{
@@ -361,7 +364,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			"fnServerData": fnDataTablesPipeline
 	} );
 
-		$("#member_name").bind("keyup blur paste", function (e) {
+		$("#member_name").bind("keydown blur paste", function (e) {
 		/* Filter on the column (the index) of this element */
     	setTimeout(function(){oTable.fnDraw();}, 1);
 		});
@@ -411,7 +414,9 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		
 		$search_value = ($this->input->get_post('k_search')) ? $this->input->get_post('k_search') : '';
 		$group_id = ($this->input->get_post('group')) ? $this->input->get_post('group') : '';		
-
+		
+		// Check for search tokens within the search_value
+		$search_value = $this->_check_search_tokens($search_value);
 		
 		// Note- we pipeline the js, so pull more data than are displayed on the page		
 		$perpage = $this->input->get_post('iDisplayLength');
@@ -484,6 +489,51 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		exit($sOutput);
 	}
 
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Looks through the member search string for search tokens (e.g. id:3
+	 * or username:john)
+	 * 
+	 * @param string $search_string The string to look through for tokens
+	 * @return string/array String if there are no tokens within the 
+	 * 	string, otherwise it's an associative array with the tokens as 
+	 * 	the keys
+	 */
+	private function _check_search_tokens($search_string = '')
+	{
+		if (strpos($search_string, ':') !== FALSE)
+		{
+			$search_array = array();
+			$tokens = array('id', 'member_id', 'username', 'screen_name', 'email');
+			
+			foreach ($tokens as $token)
+			{
+				// This regular expression looks for a token immediately 
+				// followed by one of three things:
+				// - a value within double quotes
+				// - a value within single quotes
+				// - a value without spaces
+				
+				if (preg_match('/'.$token.'\:((?:"(.*?)")|(?:\'(.*?)\')|(?:[^\s:]+?))(?:\s|$)/i', $search_string, $matches))
+				{
+					// The last item within matches is what we want
+					$search_array[$token] = end($matches);
+				}
+			}
+			
+			// If both ID and Member_ID are set, unset ID
+			if (isset($search_array['id']) AND isset($search_array['member_id']))
+			{
+				unset($search_array['id']);
+			}
+			
+			return $search_array;
+		}
+		
+		return $search_string;
+	}
+	
 	// --------------------------------------------------------------------
 
 	/**
@@ -1380,15 +1430,20 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 					isset($preferences[$site->site_id])
 				)
 				{
+					// We'll conditionally set the language for the preference below
+					$group_name_lang = '';
+					
 					switch ($group_name)
 					{
 						case 'cp_channel_post_privs':
 							$current_permissions = $channel_perms[$site->site_id];
 							$current_names = $channel_names;
+							$group_name_lang = lang('can_post_in');
 							break;
 						case 'cp_template_access_privs':
 							$current_permissions = $preferences[$site->site_id];
 							$current_names = $template_names;
+							$group_name_lang = lang('can_access_tg');
 							break;
 						default:
 							continue;
@@ -1398,7 +1453,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 					foreach ($current_permissions as $current_id => $preference_value) 
 					{
 						$form[$site->site_id][$group_name][] = array(
-							'label' => lang('can_post_in') . NBS . NBS . $this->_build_group_data_label(
+							'label' => $group_name_lang . NBS . NBS . $this->_build_group_data_label(
 								$current_names[$current_id],
 								TRUE
 							),
@@ -2161,8 +2216,8 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 						switch ($val['1'])
 						{
 							case 'member_groups' :	
-								$groups = $this->member_model->get_member_groups('', array('group_id !='=>'1'));
-								
+								$groups = $this->member_model->get_member_groups();
+
 								$options = array();
 
 								foreach ($groups->result() as $group)
@@ -2170,8 +2225,8 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 									$options[$group->group_id] = $group->group_title;
 								}
 
-								// Remove the Pending group as it makes no sense for members to go from Pending to Pending
-								unset($options[4]);
+								// Remove the Super Admin, Guests and Pending groups as they are not sensible choices
+								unset($options[1], $options[3], $options[4]);
 		
 								$preference_controls['type'] = "dropdown";
 								$preference_controls['id'] = 'default_member_group';
@@ -2302,7 +2357,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		}
 
 		// No group name
-		if ( ! $this->input->post('group_title'))
+		if ( ! $group_title = $this->input->post('group_title'))
 		{
 			show_error(lang('missing_group_title'));
 		}
@@ -2318,9 +2373,19 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			
 			$query = $this->db->query("SELECT MAX(group_id) as max_group FROM exp_member_groups");
 			
-			$group_id = $query->row('max_group')  + 1;
+			$group_id = $query->row('max_group') + 1;
 		}
 		
+		// Group Title already exists?
+		$this->db->from('member_groups')
+					->where('group_title', $group_title)
+					->where('group_id !=', $group_id);
+		
+		if ($this->db->count_all_results())
+		{
+			show_error(lang('group_title_exists'));
+		}
+
 		// get existing category privileges if necessary
 		
 		if ($edit == TRUE)
@@ -2358,10 +2423,16 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			
 			$data = array('group_title' 		=> $this->input->post('group_title'),
 						  'group_description'	=> $this->input->post('group_description'),
-						  'is_locked'			=> $this->input->post('is_locked'),
 						  'site_id'				=> $site_id,
 						  'group_id'			=> $group_id);
-							
+			
+			// If editing Super Admin group, the is_locked field doesn't exist, so make sure we
+			// got a value from the form before writing 0 to the database
+			if ($this->input->post('is_locked') !== FALSE)
+			{
+				$data['is_locked'] = $this->input->post('is_locked');
+			}
+			
 			foreach ($_POST as $key => $val)
 			{
 				if (substr($key, 0, strlen($site_id.'_channel_id_')) == $site_id.'_channel_id_')
@@ -2694,53 +2765,67 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		if ( ! $this->cp->allowed_group('can_access_members') OR ! $this->cp->allowed_group('can_admin_members'))
 		{
 			show_error(lang('unauthorized_access'));
-		}		
+		}
 		
-		$this->load->library('form_validation');
-		$this->load->helper(array('form', 'string', 'snippets'));
 		$this->lang->loadfile('myaccount');
-		$this->load->library('table');
+		$this->cp->set_variable('cp_page_title', lang('register_member'));
+		
+		// Find out if the user has access to any member groups
+		$is_locked = ($this->session->userdata['group_id'] == 1) ? array() : array('is_locked' => 'n');
+		$member_groups = $this->member_model->get_member_groups('', $is_locked);
+		
+		// If the user does not have access to any member groups, don't show the form
+		// and explain the situation
+		$vars['notice'] = ( ! count($member_groups->result()));
+		if ($vars['notice'])
+		{
+			$vars['sys_admin_email'] = $this->config->item('webmaster_email');
+			return $this->load->view('members/register', $vars);
+		}
+		
+		$this->load->library(array('form_validation', 'table'));
+		$this->load->helper(array('form', 'string', 'snippets'));
 		$this->load->language('calendar');
 		
 		$vars['custom_profile_fields'] = array();
 		
 		$config = array(
-						array(
-							'field'  => 'username', 
-							'label'  => 'lang:username', 
-							'rules'  => 'required|trim|valid_username[new]'
-						),
-						array(
-							'field'  => 'screen_name',
-							'label'  => 'lang:screen_name',
-							'rules'  => 'trim|valid_screen_name[new]'
-						),
-						array(
-							'field'  => 'password', 
-							'label'  => 'lang:password', 
-							'rules'  => 'required|valid_password[username]'
-						),
-						array(
-							'field'  => 'password_confirm', 
-							'label'  => 'lang:password_confirm', 
-							'rules'  => 'required|matches[password]'
-						),
-						array(
-			   				'field'  => 'email', 
-			   				'label'  => 'lang:email', 
-			   				'rules'  => 'trim|required|valid_user_email[new]'
-						),
-						array(
-			   				'field'  => 'group_id', 
-			   				'label'  => 'lang:member_group_assignment', 
-			   				'rules'  => 'required|integer'
-						)
-		            );
+			array(
+				'field'  => 'username', 
+				'label'  => 'lang:username', 
+				'rules'  => 'required|trim|valid_username[new]'
+			),
+			array(
+				'field'  => 'screen_name',
+				'label'  => 'lang:screen_name',
+				'rules'  => 'trim|valid_screen_name[new]'
+			),
+			array(
+				'field'  => 'password', 
+				'label'  => 'lang:password', 
+				'rules'  => 'required|valid_password[username]'
+			),
+			array(
+				'field'  => 'password_confirm', 
+				'label'  => 'lang:password_confirm', 
+				'rules'  => 'required|matches[password]'
+			),
+			array(
+				'field'  => 'email', 
+				'label'  => 'lang:email', 
+				'rules'  => 'trim|required|valid_user_email[new]'
+			),
+			array(
+				'field'  => 'group_id', 
+				'label'  => 'lang:member_group_assignment', 
+				'rules'  => 'required|integer'
+			)
+		);
 
 		$stock_member_fields = array(
-				'url', 'location', 'occupation', 'interests', 'aol_im', 
-				'yahoo_im', 'msn_im', 'icq', 'bio', 'bday_y', 'bday_m', 'bday_d'
-			);
+			'url', 'location', 'occupation', 'interests', 'aol_im', 
+			'yahoo_im', 'msn_im', 'icq', 'bio', 'bday_y', 'bday_m', 'bday_d'
+		);
 		
 		foreach ($stock_member_fields as $fname)
 		{
@@ -2760,24 +2845,24 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		
 		for ($i = date('Y', $this->localize->now); $i > 1904; $i--)
 		{
-		  $vars['bday_y_options'][$i] = $i;
+			$vars['bday_y_options'][$i] = $i;
 		}
 
 		$vars['bday_m_options'] = array(
-							''	 => lang('month'),
-							'01' => lang('cal_january'),
-							'02' => lang('cal_february'),
-							'03' => lang('cal_march'),
-							'04' => lang('cal_april'),
-							'05' => lang('cal_mayl'),
-							'06' => lang('cal_june'),
-							'07' => lang('cal_july'),
-							'08' => lang('cal_august'),
-							'09' => lang('cal_september'),
-							'10' => lang('cal_october'),
-							'11' => lang('cal_november'),
-							'12' => lang('cal_december')
-						);
+			''	 => lang('month'),
+			'01' => lang('cal_january'),
+			'02' => lang('cal_february'),
+			'03' => lang('cal_march'),
+			'04' => lang('cal_april'),
+			'05' => lang('cal_mayl'),
+			'06' => lang('cal_june'),
+			'07' => lang('cal_july'),
+			'08' => lang('cal_august'),
+			'09' => lang('cal_september'),
+			'10' => lang('cal_october'),
+			'11' => lang('cal_november'),
+			'12' => lang('cal_december')
+		);
 
 		$vars['bday_d_options'][''] = lang('day');
 		
@@ -2794,7 +2879,6 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		// Extended profile fields
 		$query = $this->member_model->get_all_member_fields(array(array('m_field_cp_reg' => 'y')), FALSE);
 		
-		
 		if ($query->num_rows() > 0)
 		{
 			$vars['custom_profile_fields'] = $query->result_array();
@@ -2804,27 +2888,21 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			{
 				$required  = ($row['m_field_required'] == 'n') ? '' : 'required';
 				$c_config[] = array(
-							'field'  => 'm_field_id_'.$row['m_field_id'], 
-							'label'  => $row['m_field_label'], 
-							'rules'  => $required
-						);
+					'field'  => 'm_field_id_'.$row['m_field_id'], 
+					'label'  => $row['m_field_label'], 
+					'rules'  => $required
+				);
 			}
 			
 			$config = array_merge($config, $c_config);
 		}
 
-
 		$this->form_validation->set_rules($config);
 		$this->form_validation->set_error_delimiters('<br /><span class="notice">', '</span>');
-		
-		$this->cp->set_variable('cp_page_title', lang('register_member'));
 
 		if ($this->form_validation->run() === FALSE)
 		{
 			$this->javascript->compile();
-
-			$is_locked = ($this->session->userdata['group_id'] == 1) ? array() : array('is_locked' => 'n');
-			$member_groups = $this->member_model->get_member_groups('', $is_locked);
 
 			$vars['member_groups'] = array();
 
@@ -2841,7 +2919,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			$this->_register_member();
 		}
 	}
-
+	
 	// --------------------------------------------------------------------
 
 	/**

@@ -127,7 +127,7 @@ class Content_files extends CI_Controller {
 		
 		$no_files_message = sprintf(
 			lang('no_uploaded_files'), 
-			'http://expressionengine.com/user_guide/cp/content/files/sync_files.html',
+			$this->cp->masked_url('http://expressionengine.com/user_guide/cp/content/files/sync_files.html'),
 			BASE.AMP.'C=content_files'.AMP.'M=file_upload_preferences'
 		);
 
@@ -174,10 +174,10 @@ class Content_files extends CI_Controller {
 		}
 		
 		$selected_dir = ($selected_dir = $this->input->get_post('dir_id')) ? $selected_dir : NULL;
-
+		
 		// We need this for the filter, so grab it now
 		$cat_form_array = $this->api_channel_categories->category_form_tree($this->nest_categories);
-
+		
 		// If we have directories we'll write the JavaScript menu switching code
 		if (count($allowed_dirs) > 0)
 		{
@@ -205,7 +205,7 @@ class Content_files extends CI_Controller {
 			'1'				=> lang('file_type'),
 			'all'			=> lang('all'),
 			'image'			=> lang('image'),
-			'non-image'		=> lang('non-image')
+			'non-image'		=> lang('non_image')
 		);
 
 		$search_select_options = array(
@@ -600,7 +600,6 @@ class Content_files extends CI_Controller {
 		}
 
 		$category_select_options['none'] = lang('none');
-
 		if ($cat_group != '')
 		{
 			foreach($cat_form_array as $key => $val)
@@ -616,19 +615,19 @@ class Content_files extends CI_Controller {
 
 			foreach ($cat_form_array as $ckey => $cat)
 			{
-		    	if ($ckey - 1 < 0 OR ! isset($cat_form_array[$ckey - 1]))
-    		   	{
+				if ($ckey - 1 < 0 OR ! isset($cat_form_array[$ckey - 1]))
+				{
 					$category_select_options['NULL_'.$i] = '-------';
-            	}
+				}
 
 				$category_select_options[$cat[1]] = (str_replace("!-!","&nbsp;", $cat[2]));
 
-            	if (isset($cat_form_array[$ckey + 1]) && $cat_form_array[$ckey + 1][0] != $cat[0])
-	        	{
+				if (isset($cat_form_array[$ckey + 1]) && $cat_form_array[$ckey + 1][0] != $cat[0])
+				{
 					$category_select_options['NULL_'.$i] = '-------';
-       			}
+				}
 
-       			$i++;
+				$i++;
 			}
 		}
 
@@ -1403,7 +1402,7 @@ class Content_files extends CI_Controller {
 							'dimensions'	=> $replace_sizes,
 							'mime_type'		=> $file['mime']
 						),
-						FALSE
+						FALSE	// Don't create thumb
 					);
 					
 					if ( ! $thumb_created)
@@ -1414,15 +1413,15 @@ class Content_files extends CI_Controller {
 
 				// Now for anything that wasn't forcably replaced- we make sure an image exists
 				$thumb_created = $this->filemanager->create_thumb(
-						$this->_upload_dirs[$id]['server_path'].$file['name'],
-						array(
-							'server_path'	=> $this->_upload_dirs[$id]['server_path'],
-							'file_name'		=> $file['name'],
-							'dimensions'	=> $missing_only_sizes,
-							'mime_type'		=> $file['mime']
-						),
-						TRUE,
-						TRUE
+					$this->_upload_dirs[$id]['server_path'].$file['name'],
+					array(
+						'server_path'	=> $this->_upload_dirs[$id]['server_path'],
+						'file_name'		=> $file['name'],
+						'dimensions'	=> $missing_only_sizes,
+						'mime_type'		=> $file['mime']
+					),
+					TRUE, 	// Create thumb
+					FALSE 	// Overwrite existing thumbs
 				);
 				
 				// Update dimensions
@@ -1458,7 +1457,9 @@ class Content_files extends CI_Controller {
 				'file_size'				=> $file['size'],
 				'uploaded_by_member_id'	=> $this->session->userdata('member_id'),
 				'modified_by_member_id' => $this->session->userdata('member_id'),
-				'file_hw_original'		=> $image_dimensions['height'] . ' ' . $image_dimensions['width']
+				'file_hw_original'		=> $image_dimensions['height'] . ' ' . $image_dimensions['width'],
+				'upload_date'			=> $file['date'],
+				'modified_date'			=> $file['date']
 			);
 			
 			
@@ -2451,7 +2452,8 @@ class Content_files extends CI_Controller {
 		$this->load->helper('form');
 
 		$this->cp->set_variable('cp_page_title', lang('delete_upload_preference'));
-		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=file_upload_preferences',
+		$this->cp->set_breadcrumb(BASE.AMP.'C=content_files', lang('file_manager'));
+		$this->cp->set_breadcrumb(BASE.AMP.'C=content_files'.AMP.'M=file_upload_preferences',
 								lang('file_upload_preferences'));
 
 		$data = array(

@@ -851,7 +851,7 @@ class Tools_data extends CI_Controller {
 				$member_comments_count = $this->db->query('SELECT COUNT(*) AS count, author_id FROM exp_comments GROUP BY author_id ORDER BY count DESC');					
 			}				
 
-			$member_message_count = $this->db->query('SELECT COUNT(*) AS count, recipient_id FROM exp_message_copies GROUP BY recipient_id ORDER BY count DESC');
+			$member_message_count = $this->db->query('SELECT COUNT(*) AS count, recipient_id FROM exp_message_copies WHERE message_read = "n" GROUP BY recipient_id ORDER BY count DESC');
 
 			$member_data = array();
 			
@@ -907,8 +907,8 @@ class Tools_data extends CI_Controller {
 						$member_entries[$row->recipient_id]['total_comments'] = 0;
 						$member_entries[$row->recipient_id]['private_messages'] = $row->count;
 						
-						$member_entries[$row->author_id]['total_forum_posts'] = 0;
-						$member_entries[$row->author_id]['total_forum_topics'] = 0;
+						$member_entries[$row->recipient_id]['total_forum_posts'] = 0;
+						$member_entries[$row->recipient_id]['total_forum_topics'] = 0;
 					}
 				}
 			}
@@ -944,7 +944,7 @@ class Tools_data extends CI_Controller {
 					{
 						if (isset($member_entries[$row->author_id]['member_id']))
 						{
-							$member_entries[$row->author_id]['total_forum_topics'] = $row->count;							
+							$member_entries[$row->author_id]['total_forum_posts'] = $row->count;							
 						}
 						else
 						{

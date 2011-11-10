@@ -632,7 +632,7 @@ $lang = array(
 'Category Name',
 
 'category_image' =>
-'Category Image URL',
+'Category Image',
 
 'category_img_blurb' =>
 'This is an optional field that enables you to assign an image to your categories.',
@@ -695,7 +695,7 @@ $lang = array(
 'Can Delete Categories',
 
 'exclude_from_channels_or_publish' =>
-'Exclude from Channel or Field Category Assignment?',
+'Exclude from Channel or File Category Assignment?',
 'exclude_from_publish' 		=> 'Channel Assignment',
 'exclude_from_files'		=> 'File Assignment',
 

@@ -524,6 +524,9 @@ $lang = array(
 'ip_addresses_banned' =>
 'The following IP addresses were banned:',
 
+'topic_no_exists' =>
+'Sorry, that forum topic no longer exists',
+
 'thread_no_exists' =>
 'The specified thread does not exist',
 

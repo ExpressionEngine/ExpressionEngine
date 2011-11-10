@@ -1918,18 +1918,28 @@ class Admin_content extends CI_Controller {
 		{	
 			// Pipe in necessary globals
 			$this->javascript->set_global(array(
-				'publish.word_separator'   => $this->config->item('word_separator') != "dash" ? '_' : '-',
-				'publish.foreignChars'				=> $foreign_characters,
+				'publish.word_separator'	=> $this->config->item('word_separator') != "dash" ? '_' : '-',
+				'publish.foreignChars'		=> $foreign_characters,
 			));
 			
 			// Load in necessary js files
 			$this->cp->add_js_script(array(
-				'file' => array('cp/global'),
-				'plugin' => array('ee_url_title'),
+				'file'		=> array('cp/global'),
+				'plugin'	=> array('ee_url_title'),
 			));
 			
 			$this->javascript->keyup('#cat_name', '$("#cat_name").ee_url_title($("#cat_url_title"));');
 		}
+		
+		// Setup category image
+		$this->load->library('file_field');
+		$this->file_field->browser();
+		$vars['cat_image'] = $this->file_field->field(
+			$vars['cat_image'],
+			'cat_image',
+			'all',
+			'image'
+		);
 
 		$vars['form_hidden']['group_id'] = $group_id;
 
@@ -2026,7 +2036,7 @@ class Admin_content extends CI_Controller {
 		$this->javascript->compile();
 		$this->load->view('admin/category_edit', $vars);
 	}
-
+	
 	// --------------------------------------------------------------------
 
 	/**
@@ -2191,11 +2201,20 @@ class Admin_content extends CI_Controller {
 
 		$this->form_validation->set_rules('cat_name',		'lang:category_name',		'required');
 		$this->form_validation->set_rules('cat_url_title',	'lang:cat_url_title',	'callback__cat_url_title');
-
 		$this->form_validation->set_rules('cat_description', '', '');
-		$this->form_validation->set_rules('cat_image', '', '');
-
-
+		
+		// Get the Category Image
+		$this->load->library('file_field');
+		$cat_image = $this->file_field->validate(
+			$this->input->post('cat_image'), 
+			'cat_image'
+		);
+		// var_dump($cat_image);
+		$_POST['cat_image'] = $this->file_field->format_data(
+			$cat_image['value'],
+			$this->input->post('cat_image_directory')
+		);
+		
 		// Finish data prep for insertion
 		if ($this->config->item('auto_convert_high_ascii') == 'y')
 		{
@@ -2259,82 +2278,27 @@ class Admin_content extends CI_Controller {
 		if ($edit == FALSE)
 		{
 			$category_data = array(
-							'group_id' => $this->input->post('group_id'),
-							'cat_name'  => $this->input->post('cat_name'),
-							'cat_url_title' => $this->input->post('cat_url_title'),
-							'cat_description' => $this->input->post('cat_description'),
-							'cat_image' => $this->input->post('cat_image'),
-							'parent_id' => $this->input->post('parent_id'),
-							'cat_order' => $this->input->post('cat_order'),
-							'site_id' => $this->input->post('site_id')
+							'group_id'			=> $group_id,
+							'cat_name'			=> $this->input->post('cat_name'),
+							'cat_url_title'		=> $this->input->post('cat_url_title'),
+							'cat_description'	=> $this->input->post('cat_description'),
+							'cat_image'			=> $this->input->post('cat_image'),
+							'parent_id'			=> $this->input->post('parent_id'),
+							'cat_order'			=> 1, // Default to the new category appearing first
+							'site_id'			=> $this->input->post('site_id')
 			);
 
 			$this->db->insert('categories', $category_data);
+			$cat_id = $this->db->insert_id();
 
 			$update = FALSE;
 
-			// need this later for custom fields
-			$field_cat_id = $this->db->insert_id();
-
-			// Re-order categories
-
-			// When a new category is inserted we need to assign it an order.
-			// Since the list of categories might have a custom order, all we
-			// can really do is position the new category alphabetically.
-
-			// First we'll fetch all the categories alphabetically and assign
-			// the position of our new category
-
-			$this->db->select('cat_id, cat_name');
-			$this->db->where('group_id', $group_id);
-			$this->db->where('parent_id', $_POST['parent_id']);
-			$this->db->order_by('cat_name', 'ASC');
-			$query = $this->db->get('categories');
-
-			$position = 0;
-			$cat_id = '';
-
-			foreach ($query->result_array() as $row)
-			{
-				if ($_POST['cat_name'] == $row['cat_name'])
-				{
-					$cat_id = $row['cat_id'];
-					break;
-				}
-
-				$position++;
-			}
-
-			// Next we'll fetch the list of categories ordered by the custom order
-			// and create an array with the category ID numbers
-
-			$this->db->select('cat_id, cat_name');
-			$this->db->where('group_id', $group_id);
-			$this->db->where('parent_id', $_POST['parent_id']);
+			// Increment each pre-existing category's sort order to make room for the n00b
+			$this->db->set('cat_order', 'cat_order + 1', FALSE);
 			$this->db->where('cat_id !=', $cat_id);
-			$this->db->order_by('cat_order');
-			$query = $this->db->get('categories');
-
-			$cat_array = array();
-
-			foreach ($query->result_array() as $row)
-			{
-				$cat_array[] = $row['cat_id'];
-			}
-
-			// Now we'll splice in our new category to the array.
-			// Thus, we now have an array in the proper order, with the new
-			// category added in alphabetically
-			array_splice($cat_array, $position, 0, $cat_id);
-
-			// Lastly, update the whole list
-
-			$i = 1;
-			foreach ($cat_array as $val)
-			{
-				$this->db->query("UPDATE exp_categories SET cat_order = '$i' WHERE cat_id = '$val'");
-				$i++;
-			}
+			$this->db->where('group_id', $group_id);
+			$this->db->where('parent_id', $_POST['parent_id']);
+			$this->db->update('categories');
 		}
 		else
 		{
@@ -2432,22 +2396,30 @@ class Admin_content extends CI_Controller {
 			$update = TRUE;
 
 			// need this later for custom fields
-			$field_cat_id = $this->input->post('cat_id');
+			$cat_id = $this->input->post('cat_id');
+		}
+
+		// Need to re-sort alphabetically now?
+		$this->db->select('sort_order');
+		$query = $this->db->get_where('category_groups', array('group_id' => $group_id));
+
+		if ($query->num_rows() == 1 && $query->row()->sort_order == 'a')
+		{
+			$this->_reorder_cats_alphabetically($group_id);
 		}
 
 		// Insert / Update Custom Field Data
-
 		if ($edit == FALSE)
 		{
 			$fields['site_id'] = $this->config->item('site_id');
-			$fields['cat_id'] = $field_cat_id;
+			$fields['cat_id'] = $cat_id;
 			$fields['group_id'] = $group_id;
 
 			$this->db->insert('category_field_data', $fields);
 		}
 		elseif ( ! empty($fields))
 		{
-			$this->db->query($this->db->update_string('exp_category_field_data', $fields, array('cat_id' => $field_cat_id)));
+			$this->db->query($this->db->update_string('exp_category_field_data', $fields, array('cat_id' => $cat_id)));
 		}
 
 		$this->functions->clear_caching('relationships');
@@ -2516,9 +2488,6 @@ class Admin_content extends CI_Controller {
 		
 		$order = ($_POST['sort_order'] == 'a') ? 'a' : 'c';
 		
-		$this->db->select('sort_order');
-		$query = $this->db->get_where('category_groups', array('group_id' => $group_id));
-		
 		if ($order == 'a')
 		{
 			if ( ! isset($_POST['override']))
@@ -2527,7 +2496,7 @@ class Admin_content extends CI_Controller {
 			}
 			else
 			{
-				$this->reorder_cats_alphabetically();
+				$this->_reorder_cats_alphabetically($group_id);
 			}
 		}
 
@@ -2593,25 +2562,13 @@ class Admin_content extends CI_Controller {
 	/**  Re-order Categories Alphabetically
 	/** --------------------------------*/
 
-	function reorder_cats_alphabetically()
+	private function _reorder_cats_alphabetically($group_id)
 	{
-		if (AJAX_REQUEST)
-		{
-			if ( ! $this->cp->allowed_group('can_edit_categories'))
-			{
-				show_error(lang('unauthorized_access'));
-			}
-		}
-		else
-		{
-			$this->_restrict_prefs_access();
-		}
-
-		if (($group_id = $this->input->get_post('group_id')) === FALSE OR ! is_numeric($group_id))
+		if ( ! isset($group_id) OR ! is_numeric($group_id))
 		{
 			return FALSE;
 		}
-				
+		
 		$data = $this->process_category_group($group_id);
 		
 		if (count($data) == 0)
@@ -3689,8 +3646,8 @@ class Admin_content extends CI_Controller {
 		}
 
 		$this->cp->set_right_nav(array(
-					'create_new_custom_field' =>
-					BASE.AMP.'C=admin_content'.AMP.'M=field_edit'.AMP.'group_id='.$vars['group_id']
+			'create_new_custom_field' =>
+			BASE.AMP.'C=admin_content'.AMP.'M=field_edit'.AMP.'group_id='.$vars['group_id']
 		));
 
 		$vars['message'] = $message; //lang('preferences_updated')
@@ -3730,6 +3687,8 @@ class Admin_content extends CI_Controller {
 			headers: {4: {sorter: false}},
 			widgets: ["zebra"]
 		}');
+		
+		$this->cp->add_js_script('file', 'cp/custom_fields');
 
 		$this->javascript->compile();
 		$this->load->view('admin/field_management', $vars);

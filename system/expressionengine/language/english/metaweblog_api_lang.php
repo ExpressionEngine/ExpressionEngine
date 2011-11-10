@@ -77,7 +77,7 @@ password for a member account with permissions to post to at least one channel.'
 'New Configuration',
 
 'modify_config' =>
-'Modify Configuration',
+'Edit Configuration',
 
 'configuration_options' =>
 'Configuration Options',

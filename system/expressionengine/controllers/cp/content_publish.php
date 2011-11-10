@@ -263,7 +263,8 @@ class Content_publish extends CI_Controller {
 		$this->load->library('filemanager');
 		$this->load->helper('snippets');
 		
-		$this->filemanager->filebrowser('C=content_publish&M=filemanager_actions');
+		$this->load->library('file_field');
+		$this->file_field->browser();
 		
 		$this->cp->add_js_script(array(
 			'ui'		=> array('datepicker', 'resizable', 'draggable', 'droppable'),
@@ -2034,7 +2035,7 @@ class Content_publish extends CI_Controller {
 		$menu_author_options[$author_id] = $author;
 		
 		// Next we'll gather all the authors that are allowed to be in this list
-		$author_list = $this->member_model->get_authors_simple();
+		$author_list = $this->member_model->get_authors();
 
 		$channel_id = (isset($entry_data['channel_id'])) ? $entry_data['channel_id'] : $this->input->get('channel_id');
 
@@ -2169,7 +2170,9 @@ class Content_publish extends CI_Controller {
 				// if there is no status group assigned, 
 				// only Super Admins can create 'open' entries
 				$menu_status_options['open'] = lang('open');
-			}	
+			}
+			
+			$menu_status_options['closed'] = lang('closed');
 		}
 		else
 		{
@@ -2200,7 +2203,6 @@ class Content_publish extends CI_Controller {
 
 				// Were there no statuses?
 				// If the current user is not allowed to submit any statuses we'll set the default to closed
-
 				if ($no_status_flag === TRUE)
 				{
 					$menu_status_options['closed'] = lang('closed');
@@ -2302,7 +2304,7 @@ class Content_publish extends CI_Controller {
 		);
 		
 		// comment expiry here.
-		if (isset($this->cp->installed_modules['comment']))
+		if (isset($this->cp->installed_modules['comment']) && $this->_channel_data['comment_system_enabled'] == 'y')
 		{
 			$deft_fields['comment_expiration_date'] = array(
 				'field_id'				=> 'comment_expiration_date',
@@ -2456,7 +2458,7 @@ class Content_publish extends CI_Controller {
 				'<table style="text-align: center; margin-top: 5px;" class="mainTable padTable smileyTable">'
 		));
 
-		$image_array = get_clickable_smileys($this->config->slash_item('emoticon_path'), 
+		$image_array = get_clickable_smileys($this->config->slash_item('emoticon_url'), 
 											 $field_name);
 		$col_array = $this->table->make_columns($image_array, 8);
 		$smilies = '<div class="smileyContent" style="display: none;">';
@@ -2507,6 +2509,7 @@ class Content_publish extends CI_Controller {
 		
 		$html_buttons = $this->admin_model->get_html_buttons($this->session->userdata('member_id'));
 		$button_js = array();
+		$has_image = FALSE;
 		
 		foreach ($html_buttons->result() as $button)
 		{
@@ -2514,6 +2517,8 @@ class Content_publish extends CI_Controller {
 			{
 				// images are handled differently because of the file browser
 				// at least one image must be available for this to work
+				$has_image = TRUE;
+				
 				if (count($this->_file_manager['file_list']))
 				{
 					$button_js[] = array('name' => $button->tag_name, 'key' => $button->accesskey, 'replaceWith' => '', 'className' => $button->classname);
@@ -2530,6 +2535,14 @@ class Content_publish extends CI_Controller {
 				$button_js[] = array('name' => $button->tag_name, 'key' => strtoupper($button->accesskey), 'openWith' => $button->tag_open, 'closeWith' => $button->tag_close, 'className' => $button->classname);
 			}
 		}
+		
+		// We force an image button if it doesn't already exist
+		if ($has_image == FALSE && count($this->_file_manager['file_list']))
+		{
+					$button_js[] = array('name' => 'img', 'key' => '', 'replaceWith' => '', 'className' => 'btn_img');
+					$this->javascript->set_global('filebrowser.image_tag', '<img src="[![Link:!:http://]!]" alt="[![Alternative text]!]" />');			
+		}
+		
 		$this->javascript->set_global('p.image_tag', 'foo you!');
 
 		$markItUp = $markItUp_writemode = array(
