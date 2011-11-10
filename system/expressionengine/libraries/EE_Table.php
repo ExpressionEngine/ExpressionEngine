@@ -177,17 +177,25 @@ class EE_Table extends CI_Table {
 			}
 		}
 		
-		// override settings from GET (must be get for pagination to work)
+		// override pagination settings from GET (must be get for pagination to work)
 		if (is_numeric($this->EE->input->get('tbl_offset')))
 		{
 			$settings['offset'] = $_GET['tbl_offset'];
 		}
 
+		// override sort settings from POST (EE does not allow for arrays in GET)
 		if ($this->EE->input->post('tbl_sort'))
 		{
-			$settings['sort'] = $this->EE->input->post('tbl_sort');
+			$settings['sort'] = array();
+			
+			$sort = $this->EE->input->post('tbl_sort');
+			
+			// sort: [ [field, dir], [dleif, rid] ]
+			foreach ($sort as $s)
+			{
+				$settings['sort'][ $s[0] ] = $s[1];
+			}
 		}
-		
 		
 		// datasource returns PHP array (shown in js syntax for brevity):
 		/*

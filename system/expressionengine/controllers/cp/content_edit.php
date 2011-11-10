@@ -43,11 +43,387 @@ class Content_edit extends CI_Controller {
 		));
 	}
 	
-	
+	// --------------------------------------------------------------------
+
 	/**
-	 * Filter function
+	 * Index function
+	 *
+	 * @return	void
+	 */	
+	public function index()
+	{
+		// @todo use the cp version - figure out how to best do that (func in cp? move to table?)
+		$cp_table_template = array(
+				'table_open'		=> '<table class="mainTable" border="0" cellspacing="0" cellpadding="0">',
+				'row_start'			=> '<tr class="even">',
+				'row_alt_start'		=> '<tr class="odd">'
+		);
+		// @todo end
+		
+		
+		if ( ! $this->cp->allowed_group('can_access_content'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+		
+		// Fetch channel ID numbers assigned to the current user
+		$allowed_channels = $this->functions->fetch_assigned_channels();
+
+		if (empty($allowed_channels))
+		{
+			show_error(lang('no_channels'));
+		}
+		
+		
+		
+		// Fetch channels
+		// ----------------------------------------------------------------
+		
+		$where = array();
+		$fields = array('channel_title', 'channel_id', 'cat_group');
+
+		if ($this->session->userdata['group_id'] != 1)
+		{
+			$where[] = array('channel_id' => $allowed_channels);
+		}
+		
+		$query = $this->channel_model->get_channels($this->config->item('site_id'), $fields, $where);
+		
+		$channels = array();
+		
+		foreach($query->result() as $c_row)
+		{
+			$channels[$c_row->channel_id] = $c_row;
+		}
+
+		
+		// Table
+		// ----------------------------------------------------------------
+		
+		$this->load->library('table');
+		
+		$columns = array(
+			'entry_id'		=> array('sort' => TRUE, 'html' => FALSE),
+			'title'			=> array('sort' => TRUE, 'html' => TRUE),
+			'view'			=> array('sort' => FALSE, 'html' => TRUE),
+			'comment_total'	=> array('sort' => TRUE, 'html' => TRUE),
+			'screen_name'	=> array('sort' => TRUE, 'html' => TRUE),
+			'entry_date'	=> array('sort' => TRUE),
+			'channel_name'	=> array('sort' => TRUE),
+			'status'		=> array('sort' => TRUE, 'html' => TRUE),
+			'_check'		=> array('sort' => FALSE, 'html' => TRUE)
+
+		);
+		
+		// table headings
+		$headings = array(
+			'#',
+			lang('title'),
+			lang('view'),
+			lang('comments'),
+			lang('author'),
+			lang('date'),
+			lang('channel'),
+			lang('status'),
+			form_checkbox('select_all', 'true', FALSE, 'class="toggle_all"')
+		);
+		
+		if ( ! isset($this->installed_modules['comment']))
+		{
+			unset($columns['comment_total']);
+			array_splice($headings, 3, 1);
+		}
+		
+		
+		$this->table->set_template($cp_table_template);
+		$this->table->set_heading($headings);
+		$this->table->set_columns($columns);
+		
+		$defaults = array(
+			'perpage'	=> 50,
+			'channels'	=> $channels,
+			'tbl_sort'	=> array('entry_date' => 'asc')
+		);
+		
+		$vars = $this->table->datasource('_table_datasource', $defaults);
+		
+		$filter_data = $vars['filter_data'];
+		unset($vars['filter_data']);
+		
+		
+		// Set up Pagination
+		// ----------------------------------------------------------------
+		
+		$this->load->library('pagination');
+		
+		// Results per page pull-down menu
+		if ( ! ($perpage = $this->input->get_post('perpage')))
+		{
+			$perpage = $this->input->cookie('perpage');
+		}
+		
+		
+		
+		// Category Filtering Menus
+		// ----------------------------------------------------------------
+				
+		// We need this for the filter, so grab it now
+		$this->api->instantiate('channel_categories');
+		$cat_form_array = $this->api_channel_categories->category_form_tree($this->nest_categories);
+		
+		$total_channels = count($allowed_channels);
+		
+		// If we have channels we'll write the JavaScript menu switching code
+		if ($total_channels > 0)
+		{
+			$this->filtering_menus($cat_form_array);
+		}
+		
+		
+		
+		// Channel selection pull-down menu
+		// ----------------------------------------------------------------
+
+		$c_row = FALSE;
+		$cat_group = '';
+		$channel_id = $this->input->get_post('channel_id');
+		
+		if (count($channels) == 1)
+		{
+			$c_row = current($channels);
+		}
+		elseif (isset($channels[$filter_data['channel_id']]))
+		{
+			$c_row = $channels[$filter_data['channel_id']];
+		}
+		
+		if ($c_row)
+		{
+			$channel_id = $c_row->channel_id;
+			$cat_group = $c_row->cat_group;
+		}
+
+		$vars['channel_selected'] = $this->input->get_post('channel_id');
+		$vars['channel_select_options'] = array('null' => lang('filter_by_channel'));
+
+		if (count($channels) > 1)
+		{
+			$vars['channel_select_options']['all'] = lang('all');
+		}
+
+		foreach ($channels as $id => $row)
+		{
+			$vars['channel_select_options'][$id] = $row->channel_title;
+		}
+		
+		
+		
+		// Category pull-down menu
+		// ----------------------------------------------------------------
+		
+		$vars['category_selected'] = $filter_data['cat_id'];
+		$vars['category_select_options'][''] = lang('filter_by_category');
+
+		if ($total_channels > 1)
+		{				
+			$vars['category_select_options']['all'] = lang('all');
+		}
+
+		$vars['category_select_options']['none'] = lang('none');
+
+		if ($cat_group != '')
+		{
+			foreach($cat_form_array as $key => $val)
+			{
+				if ( ! in_array($val['0'], explode('|',$cat_group)))
+				{
+					unset($cat_form_array[$key]);
+				}
+			}
+
+			$i = 1;
+			$new_array = array();
+
+			foreach ($cat_form_array as $ckey => $cat)
+			{
+		    	if ($ckey-1 < 0 OR ! isset($cat_form_array[$ckey-1]))
+			   	{
+					$vars['category_select_options']['NULL_'.$i] = '-------';
+	        	}
+	        	
+				$vars['category_select_options'][$cat['1']] = (str_replace("!-!","&nbsp;", $cat['2']));
+
+	        	if (isset($cat_form_array[$ckey+1]) && $cat_form_array[$ckey+1]['0'] != $cat['0'])
+	        	{
+					$vars['category_select_options']['NULL_'.$i] = '-------';
+	   			}
+
+	   			$i++;
+			}
+		}
+		
+		
+		// Status pull-down menu
+		// ----------------------------------------------------------------
+		
+		$vars['status'] = $filter_data['status'];
+		$vars['status_selected'] = $filter_data['status'];
+
+		$vars['status_select_options'][''] = lang('filter_by_status');
+		$vars['status_select_options']['all'] = lang('all');
+		
+		$sel_1 = '';
+		$sel_2 = '';
+
+		if ($cat_group != '')
+		{				
+			  $sel_1 = ($filter_data['status'] == 'open')	? 1 : '';
+			  $sel_2 = ($filter_data['status'] == 'closed') ? 1 : '';
+		}
+
+		if ($cat_group != '')
+		{
+			$rez = $this->db->query("SELECT status_group FROM exp_channels WHERE channel_id = '$channel_id'");									
+
+			$query = $this->db->query("SELECT status FROM exp_statuses WHERE group_id = '".$this->db->escape_str($rez->row('status_group') )."' ORDER BY status_order");							
+
+			if ($query->num_rows() > 0)
+			{
+				foreach ($query->result_array() as $row)
+				{
+					$status_name = ($row['status'] == 'closed' OR $row['status'] == 'open') ?  lang($row['status']) : $row['status'];
+					$vars['status_select_options'][$row['status']] = $status_name;
+				}
+			}
+		} 
+		else
+		{
+			 $vars['status_select_options']['open'] = lang('open');
+			 $vars['status_select_options']['closed'] = lang('closed');
+		}
+		
+		
+		// Other pull-down menus
+		// ----------------------------------------------------------------
+		
+		// Date range pull-down menu
+		$vars['date_selected'] = $filter_data['date_range'];
+
+		$vars['date_select_options'][''] = lang('date_range');
+		$vars['date_select_options']['1'] = lang('past_day');
+		$vars['date_select_options']['7'] = lang('past_week');
+		$vars['date_select_options']['31'] = lang('past_month');
+		$vars['date_select_options']['182'] = lang('past_six_months');
+		$vars['date_select_options']['365'] = lang('past_year');
+		$vars['date_select_options']['custom_date'] = lang('any_date');
+
+		// Display order pull-down menu
+		$vars['order_selected'] = $filter_data['order'];
+
+		$vars['order_select_options'][''] = lang('order');
+		$vars['order_select_options']['asc'] = lang('ascending');
+		$vars['order_select_options']['desc'] = lang('descending');
+		$vars['order_select_options']['alpha'] = lang('alpha');
+		
+		// Per page pull-down menu
+		$vars['perpage_selected'] = $filter_data['perpage'];
+		
+		$this->functions->set_cookie('perpage' , $perpage, 60*60*24*182);
+
+		$vars['perpage_select_options']['10'] = '10 '.lang('results');
+		$vars['perpage_select_options']['25'] = '25 '.lang('results');
+		$vars['perpage_select_options']['50'] = '50 '.lang('results');
+		$vars['perpage_select_options']['75'] = '75 '.lang('results');
+		$vars['perpage_select_options']['100'] = '100 '.lang('results');
+		$vars['perpage_select_options']['150'] = '150 '.lang('results');
+		
+		// Search-in pull-down menu
+		$vars['search_in_selected'] = $filter_data['search_in'];
+		
+		$vars['search_in_options'] = array(
+			'title'			=> lang('title_only'),
+			'body'			=> lang('title_and_body'),
+			'everywhere'	=> lang('title_body_comments')
+		);
+
+		if ( ! isset($this->installed_modules['comment']))
+		{
+			unset($vars['search_in_options']['everywhere']);
+		}
+		
+		// Keywords and exact match
+		$vars['exact_match'] = $filter_data['exact_match'];
+		$vars['keywords'] = array(
+			'name' 		=> 'keywords',
+			'value'		=> stripslashes($filter_data['keywords']),
+			'id'		=> 'keywords',
+			'maxlength'	=> 200
+		);
+		
+		
+		
+		
+		$vars['autosave_show'] = FALSE;
+		
+		
+		// Action Options!
+		// ----------------------------------------------------------------
+		
+		$vars['action_options'] = array();
+
+		if ( ! $this->input->post('toggle'))
+		{
+			$vars['action_options'] = array(
+				'edit'				=> lang('edit_selected'),
+				'delete'			=> lang('delete_selected'),
+				'------'			=> '------',
+				'add_categories'	=> lang('add_categories'),
+				'remove_categories'	=> lang('remove_categories')
+			);
+		}
+		
+		
+		// Assemble!
+		// ----------------------------------------------------------------
+		
+		// Do we have a message to show?
+		// Note: a message is displayed on this page after editing or submitting a new entry
+
+		if ($this->input->get_post("U") == 'mu')
+		{
+			$vars['message'] = lang('multi_entries_updated');
+		}
+		
+		// Declare the "filtering" form
+
+		$vars['heading'] = 'edit_channel_entries';		
+		
+		$vars['form_hidden']	= array();
+		$vars['search_form']	= 'C=content_edit';
+		$vars['entries_form']	= 'C=content_edit'.AMP.'M=multi_edit_form';
+		
+		$this->cp->set_variable('cp_page_title', lang('edit'));
+		
+		$this->cp->add_js_script(array(
+			'ui'		=> 'datepicker',
+			'file'		=> 'cp/content_edit',
+			'plugin'	=> array('tmpl', 'ee_table')
+		));
+
+		$this->javascript->set_global('autosave_map', $vars['autosave_array']);
+		$this->javascript->compile();
+		$this->load->view('content/edit', $vars);
+	}
+	
+	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Edit table datasource
+	 *
+	 * @return	void
 	 */
-	function _pk_edit_ajax($tbl_settings, $defaults)
+	function _table_datasource($tbl_settings, $defaults)
 	{
 		// $this->output->enable_profiler(FALSE);
 		
@@ -248,7 +624,6 @@ class Content_edit extends CI_Controller {
 			$row['title'] = anchor(BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.$row['channel_id'].AMP.'entry_id='.$row['entry_id'].$filter_url, $row['title']);
 			$row['title'] .= (in_array($row['entry_id'], $autosave_array)) ? NBS.required() : '';
 			
-			$row['status'] = $row['status']; /* @todo grab name and color */
 			$row['view'] = '---';
 			$row['channel_name'] = $channels[$row['channel_id']]->channel_title;
 			$row['entry_date'] = $this->localize->decode_date($datestr, $row['entry_date'], TRUE);
@@ -340,424 +715,6 @@ class Content_edit extends CI_Controller {
 			'autosave_array'	=> $autosave_array
 		);
 	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Index function
-	 *
-	 * @return	void
-	 */	
-	public function index()
-	{
-		// sleep(2);
-		// @todo use the cp version - figure out how to best do that (func in cp? move to table?)
-		$cp_table_template = array(
-				'table_open'		=> '<table class="mainTable" border="0" cellspacing="0" cellpadding="0">',
-				'row_start'			=> '<tr class="even">',
-				'row_alt_start'		=> '<tr class="odd">'
-		);
-		// @todo end
-		
-		
-		if ( ! $this->cp->allowed_group('can_access_content'))
-		{
-			show_error(lang('unauthorized_access'));
-		}
-		
-		// Fetch channel ID numbers assigned to the current user
-		$allowed_channels = $this->functions->fetch_assigned_channels();
-
-		if (empty($allowed_channels))
-		{
-			show_error(lang('no_channels'));
-		}
-		
-		
-		
-		// Fetch channels
-		// ----------------------------------------------------------------
-		
-		$where = array();
-		$fields = array('channel_title', 'channel_id', 'cat_group');
-
-		if ($this->session->userdata['group_id'] != 1)
-		{
-			$where[] = array('channel_id' => $allowed_channels);
-		}
-		
-		$query = $this->channel_model->get_channels($this->config->item('site_id'), $fields, $where);
-		
-		$channels = array();
-		
-		foreach($query->result() as $c_row)
-		{
-			$channels[$c_row->channel_id] = $c_row;
-		}
-
-		
-		// Table
-		// ----------------------------------------------------------------
-		
-		$this->load->library('table');
-		
-		$columns = array(
-			/*
-			'entry_id'		=> array('filter' => TRUE),
-			'title'			=> array('filter' => TRUE),
-			'view'			=> FALSE,
-			'comment_total'	=> array('filter' => TRUE),
-			'screen_name'	=> array('filter' => TRUE),
-			'entry_date'	=> array('filter' => TRUE),
-			'channel_name'	=> array('filter' => TRUE),
-			'status'		=> array('filter' => TRUE),
-			'_check'		=> FALSE
-*/
-			'entry_id'		=> array('sort' => TRUE, 'html' => FALSE, 'sort' => 'numeric'),
-			'title'			=> array('sort' => TRUE, 'html' => TRUE),
-			'view'			=> array('sort' => FALSE, 'html' => TRUE),
-			'comment_total'	=> array('sort' => TRUE, 'html' => TRUE),
-			'screen_name'	=> array('sort' => TRUE, 'html' => TRUE),
-			'entry_date'	=> TRUE,
-			'channel_name'	=> TRUE,
-			'status'		=> array('sort' => TRUE, 'html' => TRUE),
-			'_check'		=> array('sort' => FALSE, 'html' => TRUE)
-
-		);
-		
-		// table headings
-		$headings = array(
-			'#',
-			lang('title'),
-			lang('view'),
-			lang('comments'),
-			lang('author'),
-			lang('date'),
-			lang('channel'),
-			lang('status'),
-			form_checkbox('select_all', 'true', FALSE, 'class="toggle_all"')
-		);
-		
-		if ( ! isset($this->installed_modules['comment']))
-		{
-			unset($columns['comment_total']);
-			array_splice($headings, 3, 1);
-		}
-		
-		
-		$this->table->set_template($cp_table_template);
-		$this->table->set_heading($headings);
-		$this->table->set_columns($columns);
-		
-		$defaults = array(
-			'perpage'	=> 50,
-			'channels'	=> $channels,
-			'tbl_sort'	=> array('entry_date' => 'asc')
-		);
-		
-		$vars = $this->table->datasource('_pk_edit_ajax', $defaults);
-		
-		$filter_data = $vars['filter_data'];
-		unset($vars['filter_data']);
-		
-		
-		// Set up Pagination
-		// ----------------------------------------------------------------
-		
-		$this->load->library('pagination');
-		
-		// Results per page pull-down menu
-		if ( ! ($perpage = $this->input->get_post('perpage')))
-		{
-			$perpage = $this->input->cookie('perpage');
-		}
-		
-		
-		
-		// Category Filtering Menus
-		// ----------------------------------------------------------------
-				
-		// We need this for the filter, so grab it now
-		$this->api->instantiate('channel_categories');
-		$cat_form_array = $this->api_channel_categories->category_form_tree($this->nest_categories);
-		
-		$total_channels = count($allowed_channels);
-		
-		// If we have channels we'll write the JavaScript menu switching code
-		if ($total_channels > 0)
-		{
-			$this->filtering_menus($cat_form_array);
-		}
-		
-		
-		
-		// Channel selection pull-down menu
-		// ----------------------------------------------------------------
-
-		$c_row = FALSE;
-		$cat_group = '';
-		$channel_id = $this->input->get_post('channel_id');
-		
-		if (count($channels) == 1)
-		{
-			$c_row = current($channels);
-		}
-		elseif (isset($channels[$filter_data['channel_id']]))
-		{
-			$c_row = $channels[$filter_data['channel_id']];
-		}
-		
-		if ($c_row)
-		{
-			$channel_id = $c_row->channel_id;
-			$cat_group = $c_row->cat_group;
-		}
-
-		$vars['channel_selected'] = $this->input->get_post('channel_id');
-		$vars['channel_select_options'] = array('null' => lang('filter_by_channel'));
-
-		if (count($channels) > 1)
-		{
-			$vars['channel_select_options']['all'] = lang('all');
-		}
-
-		foreach ($channels as $id => $row)
-		{
-			$vars['channel_select_options'][$id] = $row->channel_title;
-		}
-		
-		
-		
-		// Category pull-down menu
-		// ----------------------------------------------------------------
-		
-		$vars['category_selected'] = $filter_data['cat_id'];
-		$vars['category_select_options'][''] = lang('filter_by_category');
-
-		if ($total_channels > 1)
-		{				
-			$vars['category_select_options']['all'] = lang('all');
-		}
-
-		$vars['category_select_options']['none'] = lang('none');
-
-		if ($cat_group != '')
-		{
-			foreach($cat_form_array as $key => $val)
-			{
-				if ( ! in_array($val['0'], explode('|',$cat_group)))
-				{
-					unset($cat_form_array[$key]);
-				}
-			}
-
-			$i = 1;
-			$new_array = array();
-
-			foreach ($cat_form_array as $ckey => $cat)
-			{
-		    	if ($ckey-1 < 0 OR ! isset($cat_form_array[$ckey-1]))
-			   	{
-					$vars['category_select_options']['NULL_'.$i] = '-------';
-	        	}
-	        	
-				$vars['category_select_options'][$cat['1']] = (str_replace("!-!","&nbsp;", $cat['2']));
-
-	        	if (isset($cat_form_array[$ckey+1]) && $cat_form_array[$ckey+1]['0'] != $cat['0'])
-	        	{
-					$vars['category_select_options']['NULL_'.$i] = '-------';
-	   			}
-
-	   			$i++;
-			}
-		}
-		
-		
-		// Status pull-down menu
-		// ----------------------------------------------------------------
-		
-		$vars['status'] = $filter_data['status']; // @todo needed?
-		$vars['status_selected'] = $filter_data['status'];
-
-		$vars['status_select_options'][''] = lang('filter_by_status');
-		$vars['status_select_options']['all'] = lang('all');
-		
-		$sel_1 = '';
-		$sel_2 = '';
-
-		if ($cat_group != '')
-		{				
-			  $sel_1 = ($filter_data['status'] == 'open')	? 1 : '';
-			  $sel_2 = ($filter_data['status'] == 'closed') ? 1 : '';
-		}
-
-		if ($cat_group != '')
-		{
-			$rez = $this->db->query("SELECT status_group FROM exp_channels WHERE channel_id = '$channel_id'");									
-
-			$query = $this->db->query("SELECT status FROM exp_statuses WHERE group_id = '".$this->db->escape_str($rez->row('status_group') )."' ORDER BY status_order");							
-
-			if ($query->num_rows() > 0)
-			{
-				foreach ($query->result_array() as $row)
-				{
-					$status_name = ($row['status'] == 'closed' OR $row['status'] == 'open') ?  lang($row['status']) : $row['status'];
-					$vars['status_select_options'][$row['status']] = $status_name;
-				}
-			}
-		} 
-		else
-		{
-			 $vars['status_select_options']['open'] = lang('open');
-			 $vars['status_select_options']['closed'] = lang('closed');
-		}
-		
-		
-		// Other pull-down menus
-		// ----------------------------------------------------------------
-		
-		// Date range pull-down menu
-		$vars['date_selected'] = $filter_data['date_range'];
-
-		$vars['date_select_options'][''] = lang('date_range');
-		$vars['date_select_options']['1'] = lang('past_day');
-		$vars['date_select_options']['7'] = lang('past_week');
-		$vars['date_select_options']['31'] = lang('past_month');
-		$vars['date_select_options']['182'] = lang('past_six_months');
-		$vars['date_select_options']['365'] = lang('past_year');
-		$vars['date_select_options']['custom_date'] = lang('any_date');
-
-		// Display order pull-down menu
-		$vars['order_selected'] = $filter_data['order'];
-
-		$vars['order_select_options'][''] = lang('order');
-		$vars['order_select_options']['asc'] = lang('ascending');
-		$vars['order_select_options']['desc'] = lang('descending');
-		$vars['order_select_options']['alpha'] = lang('alpha');
-		
-		// Per page pull-down menu
-		$vars['perpage_selected'] = $filter_data['perpage'];
-		
-		$this->functions->set_cookie('perpage' , $perpage, 60*60*24*182);
-
-		$vars['perpage_select_options']['10'] = '10 '.lang('results');
-		$vars['perpage_select_options']['25'] = '25 '.lang('results');
-		$vars['perpage_select_options']['50'] = '50 '.lang('results');
-		$vars['perpage_select_options']['75'] = '75 '.lang('results');
-		$vars['perpage_select_options']['100'] = '100 '.lang('results');
-		$vars['perpage_select_options']['150'] = '150 '.lang('results');
-		
-		// Search-in pull-down menu
-		$vars['search_in_selected'] = $filter_data['search_in'];
-		
-		$vars['search_in_options'] = array(
-			'title'			=> lang('title_only'),
-			'body'			=> lang('title_and_body'),
-			'everywhere'	=> lang('title_body_comments')
-		);
-
-		if ( ! isset($this->installed_modules['comment']))
-		{
-			unset($vars['search_in_options']['everywhere']);
-		}
-		
-		// Keywords and exact match
-		$vars['exact_match'] = $filter_data['exact_match'];
-		$vars['keywords'] = array(
-			'name' 		=> 'keywords',
-			'value'		=> stripslashes($filter_data['keywords']),
-			'id'		=> 'keywords',
-			'maxlength'	=> 200
-		);
-		
-		
-		
-		
-		$vars['autosave_show'] = FALSE;
-		
-		
-		// Action Options!	@todo what is toggle?
-		// ----------------------------------------------------------------
-		
-		$vars['action_options'] = array();
-
-		if ( ! $this->input->post('toggle'))
-		{
-			$vars['action_options'] = array(
-				'edit'				=> lang('edit_selected'),
-				'delete'			=> lang('delete_selected'),
-				'------'			=> '------',
-				'add_categories'	=> lang('add_categories'),
-				'remove_categories'	=> lang('remove_categories')
-			);
-		}
-		
-		
-		// Assemble!
-		// ----------------------------------------------------------------
-		
-		// Do we have a message to show?
-		// Note: a message is displayed on this page after editing or submitting a new entry
-
-		if ($this->input->get_post("U") == 'mu')
-		{
-			$vars['message'] = lang('multi_entries_updated');
-		}
-		
-		
-		// Declare the "filtering" form
-
-		$vars['heading'] = 'edit_channel_entries';		
-		
-		$vars['form_hidden']	= array();
-		$vars['search_form']	= 'C=content_edit';
-		$vars['entries_form']	= 'C=content_edit'.AMP.'M=multi_edit_form';
-		
-		$this->cp->set_variable('cp_page_title', lang('edit'));
-		
-		$this->cp->add_js_script(array(
-			'ui'		=> 'datepicker',
-			'file'		=> 'cp/content_edit',
-			'plugin'	=> array('tmpl', 'ee_table')
-		));
-
-		$this->javascript->set_global('autosave_map', $vars['autosave_array']);
-		$this->javascript->compile();
-		$this->load->view('content/edit', $vars);
-
-
-		/* @todo comment url redirect
-		// If we're filtering using ajax, we redirect comment only searches
-		// So- pass along the filter in the url
-		if (isset($this->installed_modules['comment']))
-		{
-			$comment_url = '&ajax=true';
-
-			$comment_url .= ($filter_data['channel_id'] != '') ? '&channel_id='.$filter_data['channel_id'] : '';
-			$comment_url .= ($filter_data['keywords'] != '') ? '&keywords='.base64_encode($filter_data['keywords']) : '';
-		}
-		*/
-		/*
-		// Pass the relevant data to the paginate class
-		$config['base_url'] = $pageurl;
-		$config['total_rows'] = $vars['total_count'];
-		$config['per_page'] = $perpage;
-		$config['page_query_string'] = TRUE;
-		$config['query_string_segment'] = 'rownum';
-		$config['full_tag_open'] = '<p id="paginationLinks">';
-		$config['full_tag_close'] = '</p>';
-		$config['prev_link'] = '<img src="'.$this->cp->cp_theme_url.'images/pagination_prev_button.gif" width="13" height="13" alt="&lt;" />';
-		$config['next_link'] = '<img src="'.$this->cp->cp_theme_url.'images/pagination_next_button.gif" width="13" height="13" alt="&gt;" />';
-		$config['first_link'] = '<img src="'.$this->cp->cp_theme_url.'images/pagination_first_button.gif" width="13" height="13" alt="&lt; &lt;" />';
-		$config['last_link'] = '<img src="'.$this->cp->cp_theme_url.'images/pagination_last_button.gif" width="13" height="13" alt="&gt; &gt;" />';
-
-		$this->pagination->initialize($config);
-
-		$vars['pagination'] = $this->pagination->create_links();
-		$vars['heading'] = 'edit_channel_entries';
-*/
-	}
-	
 
 	// --------------------------------------------------------------------
 	

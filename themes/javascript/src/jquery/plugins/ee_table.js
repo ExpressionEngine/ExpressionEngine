@@ -39,7 +39,10 @@ $.widget('ee.table', {
 		cache_limit: 600,	// number of items, not pages!
 		
 		filters: {},
-		sorting: []			// [[column, desc], [column2, asc]]
+		sorting: [],		// [[column, desc], [column2, asc]]
+		
+		cssAsc: 'headerSortUp',
+		cssDesc: 'headerSortDown'
 	},
 	
 	_create: function() {
@@ -56,15 +59,31 @@ $.widget('ee.table', {
 		self.pagination = new Pagination(options, self);
 		
 		
-		self.element.find('th').each(function() {
-			var el = $(this);
+		var headers = self.element.find('th').each(function() {
+			var el = $(this),
+				short_name = el.data('table_column');
 			
-			self._headers[ el.data('table_column') ] = el;
+			el.data('sortable', self.options.columns[short_name].sort);
+			self._headers[ short_name ] = el;
 		});
 		
-		self.element.find('thead').delegate('th', 'click', function() {
-			// @todo if holding shift add
-			self.set_sorting( $(this).data('table_column'), 'ASC' );
+		self.element.find('thead')
+			.delegate('th', 'selectstart', function() { return false; })
+			.delegate('th', 'click', function(e) {
+				var el = $(this);
+			
+				// if holding shift key: add
+				if ( ! el.data('sortable')) {
+					return false;
+				}
+				
+				var fn = e.shiftKey ? 'add_sorting' : 'set_sorting';
+				self[fn](
+					$(this).data('table_column'),
+					$(this).hasClass(self.options.cssAsc) ? 'desc' : 'asc'
+				);
+			
+				return false;
 		});
 		
 		
@@ -80,7 +99,7 @@ $.widget('ee.table', {
 	// Public util
 	
 	get_header: function(col_name) {
-		return this._headers.col_name || null;
+		return this._headers[col_name] || null;
 	},	
 	
 	clear_cache: function() {
@@ -99,6 +118,8 @@ $.widget('ee.table', {
 	},
 	
 	clear_sorting: function() {
+		// @todo fire sort events
+		
 		this.sorting = this._sorting;
 		this.refresh();
 		return this;
@@ -165,6 +186,9 @@ $.widget('ee.table', {
 		
 		// fire removeSort events
 		while (l--) {
+			this.get_header(this.sorting[l][0]).removeClass(
+				this.options.cssAsc + ' ' + this.options.cssDesc
+			);
 			this._trigger('nosort', null, this._ui(/* @todo args this.sorting[l] */));
 		}
 		
@@ -180,18 +204,20 @@ $.widget('ee.table', {
 			sort = [[column, dir]];
 		}
 		
-		// fire addSort events
+		// @todo fire addSort events
 		
 		l = sort.length;
 		while (l--) {
 			this.sorting.push(sort[l]);
+			this.get_header(sort[l][0])
+				.toggleClass(this.options.cssAsc, (sort[l][1] === 'asc'))
+				.toggleClass(this.options.cssDesc, (sort[l][1] === 'desc'));
+			
 			this._trigger('sort', null, this._ui(/* @todo args sort[l] */));
 		}
 		
 		// @todo addSort events
-		
-		console.log(this.sorting);
-		
+				
 		this.refresh();
 		return this;
 	},
@@ -225,6 +251,11 @@ $.widget('ee.table', {
 			body.html(res.rows);
 			self.pagination.update(res.pagination);			
 		};
+		
+		
+		// @todo on the backend make sure the key name actually exists
+		// or it'll throw a sql exception in the search model
+		self.filters.tbl_sort = this.sorting;
 		
 		
 		// Weed out the stuff we don't want in there, like XIDs and
@@ -263,13 +294,6 @@ $.widget('ee.table', {
 			url += '&tbl_offset=' + self.filters.tbl_offset;
 			delete self.filters.tbl_offset;
 		}
-		
-		
-		// @todo on the backend make sure the key name actually exists
-		// or it'll throw a sql exception in the search model
-		self.filters.tbl_sort = {};
-		self.filters.tbl_sort['title'] = 'ASC';
-		self.filters.tbl_sort['screen_name'] = 'ASC';
 		
 		// Always send an XID
 		self.filters.XID = EE.XID;
@@ -360,11 +384,7 @@ Cache.prototype = {
 			this.cache_map.shift();
 			
 			this.size -= evicted[2];
-			
-			console.log('cache:evict:'+evicted[0]);
 		}
-
-		console.log('cache:set: '+id);
 
 		this.cache.push( [id, data, penalty] );
 		this.cache_map.push(id);
@@ -395,13 +415,9 @@ Cache.prototype = {
 			this.cache_map.splice(loc, 1);
 			this.cache_map.push(el[0]);
 
-			console.log('cache:get: '+id);
-
 			return el[1];
 		}
-		
-		console.log('cache:miss: '+id);			
-		
+				
 		return null;
 	},
 	
