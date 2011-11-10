@@ -2399,6 +2399,24 @@ class Content_files extends CI_Controller {
 			$cp_message = lang('new_file_upload_created');
 		}
 		
+		// Update upload_preferences config item if it exists
+		if (($upload_prefs_config = $this->config->item('upload_preferences')) !== FALSE)
+		{
+			// We'll go through each key we have in the $data array and see
+			// if the user has a custom value set for it
+			foreach ($data as $key => $value)
+			{
+				// If the key exists in custom preferences, set the new value
+				if (isset($upload_prefs_config[$id][$key]))
+				{
+					$upload_prefs_config[$id][$key] = $value;
+				}
+			}
+			
+			// Update config with new values
+			$this->config->_update_config(array('upload_preferences' => $upload_prefs_config));
+		}
+		
 		if (isset($size_data))
 		{
 			// Set upload location id in size data 
@@ -2471,7 +2489,7 @@ class Content_files extends CI_Controller {
 
 		if (isset($items['name']))
 		{
-			$data['items'][] = $item['name'];
+			$data['items'][] = $items['name'];
 		}
 
 		$this->javascript->compile();
