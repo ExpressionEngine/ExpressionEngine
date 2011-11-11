@@ -872,7 +872,8 @@ class Wiki {
 			$this->EE->load->model('file_upload_preferences_model');
 			$upload_prefs = $this->EE->file_upload_preferences_model->get_upload_preferences(1, $this->upload_dir);
 							 
-			$file_url  = (substr($upload_prefs['url'], -1) == '/') ? $upload_prefs['url']  : $upload_prefs['url'] .'/';
+			// Make sure we have a trailing slash on the path, then append file name
+			$file_url = rtrim($upload_prefs['url'], '/').'/';
 			$file_url .= $query->row('file_name') ;
 		}
 		
