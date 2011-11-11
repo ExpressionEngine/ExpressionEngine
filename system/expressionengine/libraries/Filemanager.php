@@ -2516,12 +2516,13 @@ class Filemanager {
 		if (count($files) === 1)
 		{
 			// Get the file Location:
-			$qry = $this->EE->db->select('rel_path, file_name')
+			$qry = $this->EE->db->select('rel_path, file_name, 	server_path')
 								->from('files')
+								->join('upload_prefs', 'upload_prefs.id = files.upload_location_id')
 								->where('file_id', $files[0])
 								->get();
 			
-			$file_path = $this->EE->functions->remove_double_slashes($qry->row('rel_path'));
+			$file_path = $this->EE->functions->remove_double_slashes($qry->row('server_path').DIRECTORY_SEPARATOR.$qry->row('file_name'));
 			
 			if ( ! file_exists($file_path))
 			{
@@ -2540,8 +2541,9 @@ class Filemanager {
 		// Zip up a bunch of files for download
 		$this->EE->load->library('zip');
 
-		$qry = $this->EE->db->select('rel_path, file_name')
+		$qry = $this->EE->db->select('rel_path, file_name, 	server_path')
 								->from('files')
+								->join('upload_prefs', 'upload_prefs.id = files.upload_location_id')
 								->where_in('file_id', $files)
 								->get();
 		
@@ -2554,7 +2556,7 @@ class Filemanager {
 		
 		foreach ($qry->result() as $row)
 		{
-			$file_path = $this->EE->functions->remove_double_slashes($row->rel_path);
+			$file_path = $this->EE->functions->remove_double_slashes($row->server_path.DIRECTORY_SEPARATOR.$row->file_name);
 			$this->EE->zip->read_file($file_path);
 		}
 
