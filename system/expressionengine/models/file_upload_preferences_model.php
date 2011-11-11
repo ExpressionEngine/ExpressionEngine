@@ -95,6 +95,12 @@ class File_upload_preferences_model extends CI_Model {
 			}
 		}
 		
+		// Use upload destination ID as key for row for easy traversing
+		foreach ($result_array as $row)
+		{
+			$result_array[$row['id']] = $row;
+		}
+		
 		return $result_array;
 	}
 	

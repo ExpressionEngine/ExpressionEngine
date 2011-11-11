@@ -2512,17 +2512,21 @@ class Filemanager {
 	 */
 	public function download_files($files, $zip_name='downloaded_files.zip')
 	{
+		$this->EE->load->helper('string');
+		$this->EE->load->model('file_upload_preferences_model');
+		
+		$upload_prefs = $this->EE->file_upload_preferences_model->get_upload_preferences(1);
 		
 		if (count($files) === 1)
 		{
 			// Get the file Location:
-			$qry = $this->EE->db->select('rel_path, file_name, 	server_path')
-								->from('files')
-								->join('upload_prefs', 'upload_prefs.id = files.upload_location_id')
-								->where('file_id', $files[0])
-								->get();
+			$file_data = $this->EE->db->select('upload_location_id, rel_path, file_name')
+										->from('files')
+										->where('file_id', $files[0])
+										->get()
+										->row();
 			
-			$file_path = $this->EE->functions->remove_double_slashes($qry->row('server_path').DIRECTORY_SEPARATOR.$qry->row('file_name'));
+			$file_path = reduce_double_slashes($upload_prefs[$file_data->upload_location_id]['server_path'].'/'.$file_data->file_name);
 			
 			if ( ! file_exists($file_path))
 			{
@@ -2530,7 +2534,7 @@ class Filemanager {
 			}
 
 			$file = file_get_contents($file_path);
-			$file_name = $qry->row('file_name');
+			$file_name = $file_data->file_name;
 
 			$this->EE->load->helper('download');
 			force_download($file_name, $file);
@@ -2541,22 +2545,19 @@ class Filemanager {
 		// Zip up a bunch of files for download
 		$this->EE->load->library('zip');
 
-		$qry = $this->EE->db->select('rel_path, file_name, 	server_path')
-								->from('files')
-								->join('upload_prefs', 'upload_prefs.id = files.upload_location_id')
-								->where_in('file_id', $files)
-								->get();
+		$files_data = $this->EE->db->select('upload_location_id, rel_path, file_name')
+									->from('files')
+									->where_in('file_id', $files)
+									->get();
 		
-		
-		if ($qry->num_rows() === 0)
+		if ($files_data->num_rows() === 0)
 		{
 			return FALSE;
 		}
-
 		
-		foreach ($qry->result() as $row)
+		foreach ($files_data->result() as $row)
 		{
-			$file_path = $this->EE->functions->remove_double_slashes($row->server_path.DIRECTORY_SEPARATOR.$row->file_name);
+			$file_path = reduce_double_slashes($upload_prefs[$row->upload_location_id]['server_path'].'/'.$row->file_name);
 			$this->EE->zip->read_file($file_path);
 		}
 
