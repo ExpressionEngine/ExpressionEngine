@@ -98,7 +98,7 @@ class File_field {
 		$vars['dropdown'] = form_dropdown($field_name.'_directory', $upload_dirs, $vars['filedir']);
 
 		// Check to see if they have access to any directories to create an upload link
-		$vars['upload_link'] = (count($upload_dirs) > 1) ? '<a href="#" class="choose_file" data-directory="'.$specified_directory.'">'.lang('add_file').'</a>' : lang('directory_no_access');
+		$vars['upload_link'] = (count($upload_dirs) > 0) ? '<a href="#" class="choose_file" data-directory="'.$specified_directory.'">'.lang('add_file').'</a>' : lang('directory_no_access');
 
 		// If we have a file, show the thumbnail, filename and remove link
 		$vars['set_class'] = $vars['filename'] ? '' : 'js_hide';
