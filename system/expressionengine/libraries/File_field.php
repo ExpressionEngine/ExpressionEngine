@@ -73,7 +73,8 @@ class File_field {
 		$upload_dirs[''] = lang('directory');
 		$upload_dirs = $this->EE->file_upload_preferences_model->get_dropdown_array(
 			$this->EE->session->userdata('group_id'),
-			$allowed_file_dirs
+			$allowed_file_dirs,
+			$upload_dirs
 		);
 		
 		// Get the thumbnail
