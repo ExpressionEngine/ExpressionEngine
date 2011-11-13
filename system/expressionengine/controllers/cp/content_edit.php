@@ -24,8 +24,10 @@
  */
 class Content_edit extends CI_Controller {
 
+	private $base_url;
 	private $nest_categories	= 'y';
 	private $installed_modules	= FALSE;
+	private $allowed_channels	= array();
 	
 	/**
 	 * Constructor
@@ -33,14 +35,14 @@ class Content_edit extends CI_Controller {
 	public function __construct()
 	{
 		parent::__construct();
-
+		
 		$this->installed_modules = $this->cp->get_installed_modules();
+		$this->allowed_channels = $this->functions->fetch_assigned_channels();
+		
+		$this->base_url = 'C=content_publish';
 		
 		$this->load->library('api');
-
-		$this->load->model(array(
-			'channel_model', 'channel_entries_model', 'category_model', 'status_model'
-		));
+		$this->load->model('channel_model');
 	}
 	
 	// --------------------------------------------------------------------
@@ -67,31 +69,21 @@ class Content_edit extends CI_Controller {
 		}
 		
 		// Fetch channel ID numbers assigned to the current user
-		$allowed_channels = $this->functions->fetch_assigned_channels();
-
-		if (empty($allowed_channels))
+		if (empty($this->allowed_channels))
 		{
 			show_error(lang('no_channels'));
 		}
 		
 		
-		
 		// Fetch channels
 		// ----------------------------------------------------------------
 		
-		$where = array();
-		$fields = array('channel_title', 'channel_id', 'cat_group');
+		$this->api->instantiate('channel_structure');
+		$channel_q = $this->api_channel_structure->get_channels();
 
-		if ($this->session->userdata['group_id'] != 1)
-		{
-			$where[] = array('channel_id' => $allowed_channels);
-		}
-		
-		$query = $this->channel_model->get_channels($this->config->item('site_id'), $fields, $where);
-		
 		$channels = array();
 		
-		foreach($query->result() as $c_row)
+		foreach($channel_q->result() as $c_row)
 		{
 			$channels[$c_row->channel_id] = $c_row;
 		}
@@ -150,7 +142,6 @@ class Content_edit extends CI_Controller {
 		$filter_data = $vars['filter_data'];
 		unset($vars['filter_data']);
 		
-		
 		// Set up Pagination
 		// ----------------------------------------------------------------
 		
@@ -162,207 +153,16 @@ class Content_edit extends CI_Controller {
 			$perpage = $this->input->cookie('perpage');
 		}
 		
-		
-		
-		// Category Filtering Menus
-		// ----------------------------------------------------------------
-				
-		// We need this for the filter, so grab it now
-		$this->api->instantiate('channel_categories');
-		$cat_form_array = $this->api_channel_categories->category_form_tree($this->nest_categories);
-		
-		$total_channels = count($allowed_channels);
-		
-		// If we have channels we'll write the JavaScript menu switching code
-		if ($total_channels > 0)
-		{
-			$this->filtering_menus($cat_form_array);
-		}
-		
-		
-		
-		// Channel selection pull-down menu
-		// ----------------------------------------------------------------
-
-		$c_row = FALSE;
-		$cat_group = '';
-		$channel_id = $this->input->get_post('channel_id');
-		
-		if (count($channels) == 1)
-		{
-			$c_row = current($channels);
-		}
-		elseif (isset($channels[$filter_data['channel_id']]))
-		{
-			$c_row = $channels[$filter_data['channel_id']];
-		}
-		
-		if ($c_row)
-		{
-			$channel_id = $c_row->channel_id;
-			$cat_group = $c_row->cat_group;
-		}
-
-		$vars['channel_selected'] = $this->input->get_post('channel_id');
-		$vars['channel_select_options'] = array('null' => lang('filter_by_channel'));
-
-		if (count($channels) > 1)
-		{
-			$vars['channel_select_options']['all'] = lang('all');
-		}
-
-		foreach ($channels as $id => $row)
-		{
-			$vars['channel_select_options'][$id] = $row->channel_title;
-		}
-		
-		
-		
-		// Category pull-down menu
-		// ----------------------------------------------------------------
-		
-		$vars['category_selected'] = $filter_data['cat_id'];
-		$vars['category_select_options'][''] = lang('filter_by_category');
-
-		if ($total_channels > 1)
-		{				
-			$vars['category_select_options']['all'] = lang('all');
-		}
-
-		$vars['category_select_options']['none'] = lang('none');
-
-		if ($cat_group != '')
-		{
-			foreach($cat_form_array as $key => $val)
-			{
-				if ( ! in_array($val['0'], explode('|',$cat_group)))
-				{
-					unset($cat_form_array[$key]);
-				}
-			}
-
-			$i = 1;
-			$new_array = array();
-
-			foreach ($cat_form_array as $ckey => $cat)
-			{
-		    	if ($ckey-1 < 0 OR ! isset($cat_form_array[$ckey-1]))
-			   	{
-					$vars['category_select_options']['NULL_'.$i] = '-------';
-	        	}
-	        	
-				$vars['category_select_options'][$cat['1']] = (str_replace("!-!","&nbsp;", $cat['2']));
-
-	        	if (isset($cat_form_array[$ckey+1]) && $cat_form_array[$ckey+1]['0'] != $cat['0'])
-	        	{
-					$vars['category_select_options']['NULL_'.$i] = '-------';
-	   			}
-
-	   			$i++;
-			}
-		}
-		
-		
-		// Status pull-down menu
-		// ----------------------------------------------------------------
-		
-		$vars['status'] = $filter_data['status'];
-		$vars['status_selected'] = $filter_data['status'];
-
-		$vars['status_select_options'][''] = lang('filter_by_status');
-		$vars['status_select_options']['all'] = lang('all');
-		
-		$sel_1 = '';
-		$sel_2 = '';
-
-		if ($cat_group != '')
-		{				
-			  $sel_1 = ($filter_data['status'] == 'open')	? 1 : '';
-			  $sel_2 = ($filter_data['status'] == 'closed') ? 1 : '';
-		}
-
-		if ($cat_group != '')
-		{
-			$rez = $this->db->query("SELECT status_group FROM exp_channels WHERE channel_id = '$channel_id'");									
-
-			$query = $this->db->query("SELECT status FROM exp_statuses WHERE group_id = '".$this->db->escape_str($rez->row('status_group') )."' ORDER BY status_order");							
-
-			if ($query->num_rows() > 0)
-			{
-				foreach ($query->result_array() as $row)
-				{
-					$status_name = ($row['status'] == 'closed' OR $row['status'] == 'open') ?  lang($row['status']) : $row['status'];
-					$vars['status_select_options'][$row['status']] = $status_name;
-				}
-			}
-		} 
-		else
-		{
-			 $vars['status_select_options']['open'] = lang('open');
-			 $vars['status_select_options']['closed'] = lang('closed');
-		}
-		
-		
-		// Other pull-down menus
-		// ----------------------------------------------------------------
-		
-		// Date range pull-down menu
-		$vars['date_selected'] = $filter_data['date_range'];
-
-		$vars['date_select_options'][''] = lang('date_range');
-		$vars['date_select_options']['1'] = lang('past_day');
-		$vars['date_select_options']['7'] = lang('past_week');
-		$vars['date_select_options']['31'] = lang('past_month');
-		$vars['date_select_options']['182'] = lang('past_six_months');
-		$vars['date_select_options']['365'] = lang('past_year');
-		$vars['date_select_options']['custom_date'] = lang('any_date');
-
-		// Display order pull-down menu
-		$vars['order_selected'] = $filter_data['order'];
-
-		$vars['order_select_options'][''] = lang('order');
-		$vars['order_select_options']['asc'] = lang('ascending');
-		$vars['order_select_options']['desc'] = lang('descending');
-		$vars['order_select_options']['alpha'] = lang('alpha');
-		
-		// Per page pull-down menu
-		$vars['perpage_selected'] = $filter_data['perpage'];
-		
 		$this->functions->set_cookie('perpage' , $perpage, 60*60*24*182);
+		
+		
+		// Setup the form!
+		// ----------------------------------------------------------------
+		
+		$form_fields = $this->_edit_form($filter_data, $channels);
+		$vars = array_merge($vars, $form_fields);
 
-		$vars['perpage_select_options']['10'] = '10 '.lang('results');
-		$vars['perpage_select_options']['25'] = '25 '.lang('results');
-		$vars['perpage_select_options']['50'] = '50 '.lang('results');
-		$vars['perpage_select_options']['75'] = '75 '.lang('results');
-		$vars['perpage_select_options']['100'] = '100 '.lang('results');
-		$vars['perpage_select_options']['150'] = '150 '.lang('results');
-		
-		// Search-in pull-down menu
-		$vars['search_in_selected'] = $filter_data['search_in'];
-		
-		$vars['search_in_options'] = array(
-			'title'			=> lang('title_only'),
-			'body'			=> lang('title_and_body'),
-			'everywhere'	=> lang('title_body_comments')
-		);
-
-		if ( ! isset($this->installed_modules['comment']))
-		{
-			unset($vars['search_in_options']['everywhere']);
-		}
-		
-		// Keywords and exact match
-		$vars['exact_match'] = $filter_data['exact_match'];
-		$vars['keywords'] = array(
-			'name' 		=> 'keywords',
-			'value'		=> stripslashes($filter_data['keywords']),
-			'id'		=> 'keywords',
-			'maxlength'	=> 200
-		);
-		
-		
-		
-		
+		// @todo what?
 		$vars['autosave_show'] = FALSE;
 		
 		
@@ -421,9 +221,12 @@ class Content_edit extends CI_Controller {
 	/**
 	 * Edit table datasource
 	 *
-	 * @return	void
+	 * Must remain public so that it can be called from the
+	 * table library!
+	 *
+	 * @access	public
 	 */
-	function _table_datasource($tbl_settings, $defaults)
+	public function _table_datasource($tbl_settings, $defaults)
 	{
 		// $this->output->enable_profiler(FALSE);
 		
@@ -488,15 +291,16 @@ class Content_edit extends CI_Controller {
 		
 		$order = $tbl_settings['sort'];
 		$columns = $tbl_settings['columns'];
-		
+				
 		$this->load->model('search_model');
 		$filter_result = $this->search_model->get_filtered_entries($filter_data, $order);
 		
 		$rows = $filter_result['results'];
 		$total = $filter_result['total_count'];
 		
-		$filter_url = $this->create_return_filter($filter_data);
-		
+		unset($filter_result);		
+				
+		$filter_url = $this->_create_return_filter($filter_data);
 		
 		// Gather up ids for a single quick query down the line
 		$entry_ids = array();
@@ -505,8 +309,7 @@ class Content_edit extends CI_Controller {
 			$entry_ids[] = $row['entry_id'];
 		}
 		
-		
-		
+				
 		// Load the site's templates
 		// ----------------------------------------------------------------
 
@@ -517,12 +320,9 @@ class Content_edit extends CI_Controller {
 							WHERE exp_template_groups.group_id = exp_templates.group_id
 							AND exp_templates.site_id = '".$this->db->escape_str($this->config->item('site_id'))."'");
 
-		if ($tquery->num_rows() > 0)
+		foreach ($tquery->result_array() as $row)
 		{
-			foreach ($tquery->result_array() as $row)
-			{
-				$templates[$row['template_id']] = $row['group_name'].'/'.$row['template_name'];
-			}
+			$templates[$row['template_id']] = $row['group_name'].'/'.$row['template_name'];
 		}
 		
 		
@@ -534,9 +334,11 @@ class Content_edit extends CI_Controller {
 		
 		if (count($entry_ids))
 		{
-			$id_in = implode(',', $entry_ids);
-			$comment_qry = $this->db->query("SELECT entry_id, COUNT(*) as count FROM exp_comments WHERE entry_id IN($id_in) GROUP BY entry_id");
-
+			$comment_qry = $this->db->select('entry_id, COUNT(*) as count')
+				->where_in('entry_id', $entry_ids)
+				->group_by('entry_id')
+				->get('comments');
+			
 			foreach ($comment_qry->result() as $row)
 			{
 				$comment_counts[$row->entry_id] = $row->count;
@@ -554,7 +356,6 @@ class Content_edit extends CI_Controller {
 		{
 			$datestr = '%Y-%m-%d %H:%i';
 		}
-				
 		
 		// Autosave - Grab all autosaved entries
 		// ----------------------------------------------------------------
@@ -577,82 +378,76 @@ class Content_edit extends CI_Controller {
 		// Status Highlight Colors
 		// ----------------------------------------------------------------
 
-		$cql = "SELECT exp_channels.channel_id, exp_channels.channel_name, exp_statuses.status, exp_statuses.highlight
-				 FROM  exp_channels, exp_statuses, exp_status_groups
-				 WHERE exp_status_groups.group_id = exp_channels.status_group
-				 AND   exp_status_groups.group_id = exp_statuses.group_id
-				 AND	exp_statuses.highlight != ''
-				 AND	exp_status_groups.site_id = '".$this->db->escape_str($this->config->item('site_id'))."' ";
+		$status_color_q = $this->db->from('channels AS c, statuses AS s, status_groups AS sg')
+			->select('c.channel_id, c.channel_name, s.status, s.highlight')
+			->where('sg.group_id = c.status_group', NULL, FALSE)
+			->where('sg.group_id = s.group_id', NULL, FALSE)
+			->where('sg.site_id', $this->config->item('site_id'))
+			->where('s.highlight !=', '')
+			->where_in('c.channel_id', array_keys($channels))
+			->get();
 		
-		
-		// Limit to channels assigned to user
-		$cql .= " AND exp_channels.channel_id IN (";
-
-		foreach ($channels as $id => $info)
-		{
-			$cql .= "'".$id."',";
-		}
-		
-		$cql = substr($cql, 0, -1).')';
-		
-		$result = $this->db->query($cql);
-
 		$c_array = array();
 
-		if ($result->num_rows() > 0)
+		foreach ($status_color_q->result_array() as $rez)
 		{			
-			foreach ($result->result_array() as $rez)
-			{			
-				$c_array[$rez['channel_id'].'_'.$rez['status']] = str_replace('#', '', $rez['highlight']);
-			}
+			$c_array[$rez['channel_id'].'_'.$rez['status']] = str_replace('#', '', $rez['highlight']);
 		}
 		
-		$colors = '';
+		$colors = array();
 
 		//  Fetch Color Library
 		if (file_exists(APPPATH.'config/colors.php'))
 		{
 			include (APPPATH.'config/colors.php');
-		}
-		
+		}		
 		
 		// Generate row data
 		// ----------------------------------------------------------------
-				
+		
 		foreach ($rows as &$row)
 		{
-			$row['title'] = anchor(BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.$row['channel_id'].AMP.'entry_id='.$row['entry_id'].$filter_url, $row['title']);
-			$row['title'] .= (in_array($row['entry_id'], $autosave_array)) ? NBS.required() : '';
+			$url = $this->base_url."M=entry_form".AMP."channel_id={$row['channel_id']}".AMP."entry_id={$row['entry_id']}";
 			
+			$row['title'] = anchor(BASE.AMP.$url, $row['title']);
 			$row['view'] = '---';
 			$row['channel_name'] = $channels[$row['channel_id']]->channel_title;
 			$row['entry_date'] = $this->localize->decode_date($datestr, $row['entry_date'], TRUE);
 			$row['_check'] = form_checkbox('toggle[]', $row['entry_id'], '', ' class="toggle" id="delete_box_'.$row['entry_id'].'"');
 
+			// autosave indicator
+			if (in_array($row['entry_id'], $autosave_array))
+			{
+				$row['title'] .= NBS.required();
+			}
 			
 			// screen name email link
-			$name = ($row['screen_name'] != '') ? $row['screen_name'] : $row['username'];
-			$row['screen_name'] = mailto($row['email'], $name);
+			if ( ! $row['screen_name'])
+			{
+				$row['screen_name'] = $row['username'];
+			}
+
+			$row['screen_name'] = mailto($row['email'], $row['screen_name']);
 			
 			
 			// live look template
 			$llt = $row['live_look_template'];
 			if ($llt && isset($templates[$llt]))
 			{
-				$qm = ($this->config->item('force_query_string') == 'y') ? '' : '?';
 				$url = $this->functions->create_url($templates[$row['live_look_template']].'/'.$row['entry_id']);
-				$row['view'] = anchor($this->functions->fetch_site_index().$qm.'URL='.$url, lang('view'));
+				$row['view'] = anchor($this->cp->masked_url($url), lang('view'));
 			}
 			
 			
 			// Status
 			$color_info = '';
+			$color_key = $row['channel_id'].'_'.$row['status'];
 			$status_name = ($row['status'] == 'open' OR $row['status'] == 'closed') ? lang($row['status']) : $row['status'];
 
-			if (isset($c_array[$row['channel_id'].'_'.$row['status']]) AND $c_array[$row['channel_id'].'_'.$row['status']] != '')
+			if (isset($c_array[$color_key]) AND $c_array[$color_key] != '')
 			{			
-				$color = $c_array[$row['channel_id'].'_'.$row['status']];
-				$prefix = (is_array($colors) AND ! array_key_exists(strtolower($color), $colors)) ? '#' : '';
+				$color = strtolower($c_array[$color_key]);
+				$prefix = isset($colors[$color]) ? '' : '#';
 
 				// There are custom colours, override the class above
 				$color_info = 'style="color:'.$prefix.$color.';"';
@@ -664,50 +459,39 @@ class Content_edit extends CI_Controller {
 			// comment_total link
 			if (isset($this->installed_modules['comment']))
 			{
-				$show_link = TRUE;
+				$all_or_own = 'all';
 				
 				if ($row['author_id'] == $this->session->userdata('member_id'))
 				{
-					// do not move these to the new allowed_group style - they are ANDs not ORs
-					if ( ! $this->cp->allowed_group('can_edit_own_comments') AND 
-						 ! $this->cp->allowed_group('can_delete_own_comments') AND 
-						 ! $this->cp->allowed_group('can_moderate_comments'))
-					{
-						$show_link = FALSE;
-					}
-				}
-				else
-				{
-					if ( ! $this->cp->allowed_group('can_edit_all_comments') AND 
-						 ! $this->cp->allowed_group('can_delete_all_comments') AND 
-						 ! $this->cp->allowed_group('can_moderate_comments'))
-					{
-						$show_link = FALSE;
-					}
+					$all_or_own = 'own';
 				}
 				
-				if ($show_link)
+				// do not move these to the new allowed_group style - they are ANDs not ORs
+				if ( ! $this->cp->allowed_group('can_edit_'.$all_or_own.'_comments') AND 
+					 ! $this->cp->allowed_group('can_delete_'.$all_or_own.'_comments') AND 
+					 ! $this->cp->allowed_group('can_moderate_comments'))
+				{
+					$row['comment_total'] = '<div class="lightLinks">--</div>';
+				}
+				else
 				{
 					$comment_count = isset($comment_counts[$row['entry_id']]) ? $comment_counts[$row['entry_id']] : 0;
 					$view_url = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=comment'.AMP.'method=index'.AMP.'entry_id='.$row['entry_id'];
+					
 					$row['comment_total'] = '<div class="lightLinks">('.$comment_count.')'.NBS.anchor($view_url, lang('view')).'</div>';
-				}
-				else
-				{
-					$row['comment_total'] = '<div class="lightLinks">--</div>';
 				}
 			}
 			
 			$row = array_intersect_key($row, $columns);
 		}
-		
+				
 		return array(
 			'rows'				=> $rows,
 			'total_rows'		=> $total,
 			'no_results'		=> lang('no_entries_matching_that_criteria'),
 			'pagination'		=> array(
 				'per_page' => $filter_data['perpage'],
-				'base_url' => BASE.AMP.'C=content_edit'
+				'base_url' => $this->base_url
 			),
 			
 			// used by index on non-ajax requests
@@ -723,14 +507,14 @@ class Content_edit extends CI_Controller {
 	 *
 	 * Creates a properly format variable to pass in the url indicating the filter state
 	 *
+	 * @access	protected
 	 * @param	array
 	 * @return	string
 	 */
-	public function create_return_filter($filter_data)
+	protected function _create_return_filter($filter_data)
 	{
-		
-		$filters = array();
 		$filter = '';
+		$filters = array();
 		$filter_keys = array('channel_id', 'cat_id', 'status', 'date_range', 'keywords', 'exact_match', 'search_in');
 		
 		foreach($filter_keys as $k)
@@ -821,11 +605,10 @@ class Content_edit extends CI_Controller {
 		// to edit an entry authored by someone else they are allowed to
 		// -----------------------------
 		$disallowed_ids = array();
-		$assigned_channels = $this->functions->fetch_assigned_channels();
 
 		foreach ($query->result_array() as $row)
 		{
-			if ( ! in_array($row['channel_id'], $assigned_channels))
+			if ( ! in_array($row['channel_id'], $this->assigned_channels))
 			{
 				$disallowed_ids = $row['entry_id'];
 			}
@@ -890,10 +673,9 @@ class Content_edit extends CI_Controller {
 		}
 		
 		$this->db->select('channel_id, status_group, deft_status');
-		$this->db->from('exp_channels');
 		$this->db->where_in('channel_id', $channel_ids);
 
-		$channel_query = $this->db->get();
+		$channel_query = $this->db->get('channels');
 
 		// Fetch disallowed statuses
 		$no_status_access = array();
@@ -906,12 +688,9 @@ class Content_edit extends CI_Controller {
 
 			$result = $this->db->get();
 			
-			if ($result->num_rows() > 0)
+			foreach ($result->result_array() as $row)
 			{
-				foreach ($result->result_array() as $row)
-				{
-					$no_status_access[] = $row['status_id'];
-				}
+				$no_status_access[] = $row['status_id'];
 			}
 		}
 
@@ -1053,8 +832,8 @@ class Content_edit extends CI_Controller {
 		
 		$this->load->library('table');
 		
+		$data['entries'] = array();
 		$data['cp_page_title'] = lang('autosaved_entries');
-		
 		$data['table_headings'] = array(
 			lang('autosaved'),
 			lang('original'),
@@ -1062,33 +841,28 @@ class Content_edit extends CI_Controller {
 			lang('discard_autosave')
 		);
 		
-		$this->cp->set_breadcrumb(BASE.AMP.'C=content_edit', lang('edit'));
-		
-		$allowed_channels = $this->functions->fetch_assigned_channels();
-		
-		$data['entries'] = array();
-		
-		$qry = $this->db->select('cea.channel_id, cea.entry_id, cea.original_entry_id, cea.title, c.channel_title')
-						->from('channel_entries_autosave as cea')
-						->order_by('cea.original_entry_id', 'ASC')
-						->where_in('cea.channel_id', $allowed_channels)
-						->join('channels c', 'cea.channel_id = c.channel_id')
-						->get();
+		$autosave_q = $this->db->select('cea.channel_id, cea.entry_id, cea.original_entry_id, cea.title, c.channel_title')
+			->from('channel_entries_autosave as cea')
+			->order_by('cea.original_entry_id', 'ASC')
+			->where_in('cea.channel_id', $this->allowed_channels)
+			->join('channels c', 'cea.channel_id = c.channel_id')
+			->get();
 
-		foreach($qry->result() as $row)
+		foreach($autosave_q->result() as $row)
 		{
 			$channel = $row->channel_id;
 			$save_id = $row->entry_id;
 			$orig_id = $row->original_entry_id;
 			
 			$data['entries'][] = array(
-				anchor(BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.$channel.AMP.'entry_id='.$save_id.AMP.'use_autosave=y', $row->title),
-				$orig_id ? anchor(BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.$channel.AMP.'entry_id='.$orig_id, $row->title) : '--',
+				anchor($this->url('entry_form/channel_id/'.$channel.'/entry_id/'.$save_id.'/use_autosave/y'), $row->title),
+				$orig_id ? anchor($this->url('entry_form/channel_id/'.$channel.'/entry_id/'.$orig_id), $row->title) : '--',
 				$row->channel_title,
-				anchor(BASE.AMP.'C=content_edit'.AMP.'M=autosaved_discard'.AMP.'id='.$save_id, lang('delete'))
+				anchor($this->url('autosaved_discard/id/'.$save_id), lang('delete'))
 			);
 		}
 		
+		$this->cp->set_breadcrumb($this->base_url, lang('edit'));
 		$this->load->view('content/autosave', $data);
 	}
 	
@@ -1102,10 +876,9 @@ class Content_edit extends CI_Controller {
 	function autosaved_discard()
 	{
 		$id = $this->input->get_post('id');
-		
 		$qry = $this->db->select('author_id, channel_id')
-						->order_by('original_entry_id', 'ASC')
-						->get_where('channel_entries_autosave', array('entry_id' => $id));
+			->order_by('original_entry_id', 'ASC')
+			->get_where('channel_entries_autosave', array('entry_id' => $id));
 		
 		
 		if ($qry->num_rows() != 1)
@@ -1117,11 +890,10 @@ class Content_edit extends CI_Controller {
 		$can_delete = TRUE;
 		
 		// Check permissions
-		$allowed_channels = $this->functions->fetch_assigned_channels();
 		
 		if ($this->session->userdata('group_id') != 1)
 		{
-			if ( ! in_array($row['channel_id'], $allowed_channels))
+			if ( ! in_array($row['channel_id'], $this->allowed_channels))
 			{
 				$can_delete = FALSE;
 			}
@@ -1148,7 +920,7 @@ class Content_edit extends CI_Controller {
 		}
 		
 		$this->db->where('entry_id', $id)->delete('channel_entries_autosave');
-		$this->functions->redirect(BASE.AMP.'C=content_edit'.AMP.'M=autosaved');
+		$this->functions->redirect($this->base_url.AMP.'M=autosaved');
 	}
 	
 	// --------------------------------------------------------------------
@@ -1384,7 +1156,7 @@ class Content_edit extends CI_Controller {
 		}
 		else
 		{
-			$this->functions->redirect(BASE.AMP.'C=content_edit');
+			$this->functions->redirect($this->base_url);
 		}
 	}
 
@@ -1490,7 +1262,7 @@ class Content_edit extends CI_Controller {
 
 		$vars['edit_categories_link'] = $links;
 
-		$this->cp->set_breadcrumb(BASE.AMP.'C=content_edit', lang('edit'));
+		$this->cp->set_breadcrumb($this->base_url, lang('edit'));
 
 		$vars['form_hidden'] = array();
 		$vars['form_hidden']['entry_ids'] = implode('|', $entry_ids);
@@ -1602,13 +1374,10 @@ class Content_edit extends CI_Controller {
 							 WHERE group_id IN ('".implode("','", $valid_cats)."')
 							 AND cat_id IN ('".implode("','", $this->api_channel_categories->cat_parents)."')");
 
-		if ($query->num_rows() > 0)
+		foreach($query->result_array() as $row)
 		{
-			foreach($query->result_array() as $row)
-			{
-				$this->db->query("DELETE FROM exp_category_posts WHERE cat_id = ".$row['cat_id']." AND entry_id IN ('".$entries_string."')");
-				$valid_cat_ids[] = $row['cat_id'];
-			}
+			$this->db->query("DELETE FROM exp_category_posts WHERE cat_id = ".$row['cat_id']." AND entry_id IN ('".$entries_string."')");
+			$valid_cat_ids[] = $row['cat_id'];
 		}
 		
 		if ($this->input->get_post('type') == 'add')
@@ -1639,7 +1408,7 @@ class Content_edit extends CI_Controller {
 		}
 		
 		$this->session->set_flashdata('message_success', lang('multi_entries_updated'));
-		$this->functions->redirect(BASE.AMP.'C=content_edit');
+		$this->functions->redirect($this->base_url);
 	}
 
 	// --------------------------------------------------------------------
@@ -1729,7 +1498,7 @@ class Content_edit extends CI_Controller {
 		if ( ! $this->input->post('delete'))
 		{
 			$this->session->set_flashdata('message_failure', lang('no_valid_selections'));
-			$this->functions->redirect(BASE.AMP.'C=content_edit'.AMP.'M=index');
+			$this->functions->redirect($this->base_url);
 		}
 
 		/* -------------------------------------------
@@ -1747,12 +1516,12 @@ class Content_edit extends CI_Controller {
 		if ($res === FALSE)
 		{
 			$this->session->set_flashdata('message_failure', lang('no_valid_selections'));
-			$this->functions->redirect(BASE.AMP.'C=content_edit'.AMP.'M=index');
+			$this->functions->redirect($this->base_url);
 		}
 		
 		// Return success message
 		$this->session->set_flashdata('message_success', lang('entries_deleted'));
-		$this->functions->redirect(BASE.AMP.'C=content_edit');
+		$this->functions->redirect($this->base_url);
 	}
 
 	// --------------------------------------------------------------------
@@ -1763,14 +1532,11 @@ class Content_edit extends CI_Controller {
 	 * This function writes some JavaScript functions that
 	 * are used to switch the various pull-down menus in the
 	 * EDIT page
+	 *
+	 * @access	protected
 	 */
-	public function filtering_menus($cat_form_array)
+	protected function _filtering_menus($cat_form_array)
 	{
-		if ( ! $this->cp->allowed_group('can_access_content'))
-		{
-			show_error(lang('unauthorized_access'));
-		}
-
 		// In order to build our filtering options we need to gather 
 		// all the channels, categories and custom statuses
 
@@ -1779,19 +1545,13 @@ class Content_edit extends CI_Controller {
 		
 		$this->api->instantiate('channel_categories');
 
-		$allowed_channels = $this->functions->fetch_assigned_channels(TRUE);
-
-		if (count($allowed_channels) > 0)
+		if (count($this->allowed_channels) > 0)
 		{
 			// Fetch channel titles
-			$this->db->select('channel_title, channel_id, cat_group, status_group, field_group');
-			$this->db->where_in('channel_id', $allowed_channels);
-			$this->db->where('site_id', $this->config->item('site_id'));
-			
-			$this->db->order_by('channel_title');
-			$query = $this->db->get('channels');
+			$this->api->instantiate('channel_structure');
+			$channel_q = $this->api_channel_structure->get_channels();
 
-			foreach ($query->result_array() as $row)
+			foreach ($channel_q->result_array() as $row)
 			{
 				$channel_array[$row['channel_id']] = array(str_replace('"','',$row['channel_title']), $row['cat_group'], $row['status_group'], $row['field_group']);
 			}		
@@ -1806,12 +1566,9 @@ class Content_edit extends CI_Controller {
 		$this->db->order_by('status_order');
 		$query = $this->db->get('statuses');
 		
-		if ($query->num_rows() > 0)
+		foreach ($query->result_array() as $row)
 		{
-			foreach ($query->result_array() as $row)
-			{
-				$status_array[]  = array($row['group_id'], $row['status']);
-			}
+			$status_array[]  = array($row['group_id'], $row['status']);
 		}
 
 		$default_cats[] = array('', lang('filter_by_category'));
@@ -1949,6 +1706,198 @@ class Content_edit extends CI_Controller {
 		
 		$this->javascript->compile();
 		$this->load->view('content/recent_list', $vars);
+	}
+	
+	/**
+	 * Edit Form Elements
+	 *
+	 * @access	protected
+	 */
+	protected function _edit_form($filter_data, $channels)
+	{
+		// Category Filtering Menus
+		// ----------------------------------------------------------------
+				
+		// We need this for the filter, so grab it now
+		$this->api->instantiate('channel_categories');
+		$cat_form_array = $this->api_channel_categories->category_form_tree($this->nest_categories);
+		
+		$total_channels = count($this->allowed_channels);
+		
+		// If we have channels we'll write the JavaScript menu switching code
+		if ($total_channels > 0)
+		{
+			$this->_filtering_menus($cat_form_array);
+		}
+		
+		// Channel selection pull-down menu
+		// ----------------------------------------------------------------
+
+		$c_row = FALSE;
+		$cat_group = '';
+		$channel_id = $this->input->get_post('channel_id');
+
+		if (count($channels) == 1)
+		{
+			$c_row = current($channels);
+		}
+		elseif (isset($channels[$filter_data['channel_id']]))
+		{
+			$c_row = $channels[$filter_data['channel_id']];
+		}
+
+		if ($c_row)
+		{
+			$channel_id = $c_row->channel_id;
+			$cat_group = $c_row->cat_group;
+		}
+		
+		$vars['channel_selected'] = $this->input->get_post('channel_id');
+		$vars['channel_select_options'] = array('null' => lang('filter_by_channel'));
+
+		if (count($channels) > 1)
+		{
+			$vars['channel_select_options']['all'] = lang('all');
+		}
+
+		foreach ($channels as $id => $row)
+		{
+			$vars['channel_select_options'][$id] = $row->channel_title;
+		}
+
+		// Category pull-down menu
+		// ----------------------------------------------------------------
+
+		$vars['category_selected'] = $filter_data['cat_id'];
+		$vars['category_select_options'][''] = lang('filter_by_category');
+
+		if ($total_channels > 1)
+		{				
+			$vars['category_select_options']['all'] = lang('all');
+		}
+
+		$vars['category_select_options']['none'] = lang('none');
+
+		if ($cat_group != '')
+		{
+			foreach($cat_form_array as $key => $val)
+			{
+				if ( ! in_array($val['0'], explode('|',$cat_group)))
+				{
+					unset($cat_form_array[$key]);
+				}
+			}
+
+			$i = 1;
+			$new_array = array();
+
+			foreach ($cat_form_array as $ckey => $cat)
+			{
+		    	if ($ckey-1 < 0 OR ! isset($cat_form_array[$ckey-1]))
+			   	{
+					$vars['category_select_options']['NULL_'.$i] = '-------';
+		    	}
+
+				$vars['category_select_options'][$cat['1']] = (str_replace("!-!","&nbsp;", $cat['2']));
+
+		    	if (isset($cat_form_array[$ckey+1]) && $cat_form_array[$ckey+1]['0'] != $cat['0'])
+		    	{
+					$vars['category_select_options']['NULL_'.$i] = '-------';
+				}
+
+				$i++;
+			}
+		}
+
+
+		// Status pull-down menu
+		// ----------------------------------------------------------------
+
+		$vars['status'] = $filter_data['status'];
+		$vars['status_selected'] = $filter_data['status'];
+
+		$vars['status_select_options'][''] = lang('filter_by_status');
+		$vars['status_select_options']['all'] = lang('all');
+
+		if ($cat_group != '')
+		{
+			$c_status = $this->channel_model->get_channel_info($channel_id, array('status_group'));
+			
+			$status_q = $this->db->select('status')
+				->where('group_id', $c_status->row('status_group'))
+				->order_by('status_order')
+				->get('statuses');				
+
+			$c_status->free_result();
+
+			foreach ($status_q->result_array() as $row)
+			{
+				$status_name = ($row['status'] == 'closed' OR $row['status'] == 'open') ?  lang($row['status']) : $row['status'];
+				$vars['status_select_options'][$row['status']] = $status_name;
+			}
+		} 
+		else
+		{
+			 $vars['status_select_options']['open'] = lang('open');
+			 $vars['status_select_options']['closed'] = lang('closed');
+		}
+
+
+		// Date range pull-down menu
+		$vars['date_selected'] = $filter_data['date_range'];
+		$vars['date_select_options'] = array(
+			''		=> lang('date_range'),
+			'1'		=> lang('past_day'),
+			'7'		=> lang('past_week'),
+			'31'	=> lang('past_month'),
+			'182'	=> lang('past_six_months'),
+			'365'	=> lang('past_year'),
+			'custom_date'	=> lang('any_date')
+		);
+
+		// Display order pull-down menu
+		$vars['order_selected']	= $filter_data['order'];
+		$vars['order_select_options'] = array(
+			''		=> lang('order'),
+			'asc'	=> lang('ascending'),
+			'desc'	=> lang('descending'),
+			'alpha'	=> lang('alpha')
+		);
+
+		// Per page pull-down menu
+		$vars['perpage_selected'] = $filter_data['perpage'];
+		$vars['perpage_select_options'] = array(
+			'10'	=> '10 '.lang('results'),
+			'25'	=> '25 '.lang('results'),
+			'50'	=> '50 '.lang('results'),
+			'75'	=> '75 '.lang('results'),
+			'100'	=> '100 '.lang('results'),
+			'150'	=> '150 '.lang('results')
+		);
+
+		// Search-in pull-down menu
+		$vars['search_in_selected'] = $filter_data['search_in'];
+		$vars['search_in_options'] = array(
+			'title'			=> lang('title_only'),
+			'body'			=> lang('title_and_body'),
+			'everywhere'	=> lang('title_body_comments')
+		);
+
+		if ( ! isset($this->installed_modules['comment']))
+		{
+			unset($vars['search_in_options']['everywhere']);
+		}
+
+		// Keywords and exact match
+		$vars['exact_match'] = $filter_data['exact_match'];
+		$vars['keywords'] = array(
+			'name' 		=> 'keywords',
+			'value'		=> stripslashes($filter_data['keywords']),
+			'id'		=> 'keywords',
+			'maxlength'	=> 200
+		);
+		
+		return $vars;
 	}
 }
 // END CLASS
