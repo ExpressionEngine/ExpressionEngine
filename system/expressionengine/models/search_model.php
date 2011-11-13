@@ -63,7 +63,7 @@ class Search_model extends CI_Model {
 		// some private db methods for now. -pk
 		
 		// $base_results = array_slice($base_results['result_obj']->result_array(), $data['rownum'], $data['perpage']);
-		
+				
 		$base_results = array();
 		$perpage = $data['perpage'];
 		
@@ -74,6 +74,8 @@ class Search_model extends CI_Model {
 			$perpage--;
 			$base_results[] = $row;
 		}
+
+		$base_qry_obj->free_result();
 
 		if ($data['search_in'] == 'comments')
 		{
@@ -94,6 +96,7 @@ class Search_model extends CI_Model {
 		$results = $this->get_full_cp_query($data, $ids, $order);
 
 		$return_data['results'] = $results->result_array();
+		$results->free_result();
 		
 		return $return_data;
 	}
@@ -427,9 +430,9 @@ class Search_model extends CI_Model {
 		// ------------------------------
 
 		$this->db->distinct();
+		
 		return array('pageurl' => $pageurl, 'result_obj' => $this->db->get());
 	}
-
 
 	// --------------------------------------------------------------------
 
@@ -444,8 +447,6 @@ class Search_model extends CI_Model {
 	 * @param	mixed	order
 	 * @return	object
 	 */
-
-
 	function get_full_cp_query($data, $ids = array(), $order = array())
 	{
 		$select = ($data['cat_id'] == 'none' OR $data['cat_id'] != "") ? "DISTINCT(exp_channel_titles.entry_id), " : "exp_channel_titles.entry_id, ";
