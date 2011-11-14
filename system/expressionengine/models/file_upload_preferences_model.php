@@ -28,11 +28,14 @@ class File_upload_preferences_model extends CI_Model {
 	 * Get Upload Preferences
 	 *
 	 * @access	public
-	 * @param	int
+	 * @param	int $group_id Member group ID specified when returning allowed upload
+	 *						  directories only for that member group
+	 * @param	int $id Specific ID of upload destination to return
+	 * @param	bool $ignore_site_id If TRUE, returns upload destinations for all sites
 	 * @return	array	Result array of DB object, possibly merged with custom
 	 * 					file upload settings
 	 */
-	function get_upload_preferences($group_id = NULL, $id = NULL)
+	function get_upload_preferences($group_id = NULL, $id = NULL, $ignore_site_id = FALSE)
 	{
 		// for admins, no specific filtering, just give them everything
 		if ($group_id != 1)
@@ -53,14 +56,21 @@ class File_upload_preferences_model extends CI_Model {
 			}
 		}
 		
-		// there a specific upload location we're looking for?
+		// Is there a specific upload location we're looking for?
 		if ( ! empty($id))
 		{
 			$this->db->where('id', $id);
 		}
 		
 		$this->db->from('upload_prefs');
-		$this->db->where('site_id', $this->config->item('site_id'));
+		
+		// By default, we will return upload destinations for the current site
+		// unless we are to ignore the site ID and return all
+		if ( ! $ignore_site_id)
+		{
+			$this->db->where('site_id', $this->config->item('site_id'));
+		}
+		
 		$this->db->order_by('name');
 		
 		// If we were passed an ID, just return the row
