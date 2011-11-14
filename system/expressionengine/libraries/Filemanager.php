@@ -1236,7 +1236,7 @@ class Filemanager {
 				}
 				elseif ($prefs['height'] > $prefs['width'])
 				{
-					$config['height'] = round($pref['height'] * $size['width'] / $prefs['width']);
+					$config['height'] = round($prefs['height'] * $size['width'] / $prefs['width']);
 				}
 				
 				// First resize down to smallest possible size (greater of height and width)
