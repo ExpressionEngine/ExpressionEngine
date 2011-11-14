@@ -81,7 +81,7 @@ class Channel {
 		$this->EE =& get_instance();
 
 		$this->EE->load->library('pagination');
-		$this->pagination_obj = new Pagination_object();
+		$this->pagination_obj = new Pagination_object(__CLASS__);
 		// $this->pagination_obj->per_page = $this->limit;
 		
 		// Used by pagination to determine whether we're coming from the cache
@@ -257,11 +257,13 @@ class Channel {
 					{
 						$this->pagination_obj->paginate = TRUE;
 						$this->pagination_obj->field_pagination = TRUE;
+						$this->pagination_obj->cfields = $this->cfields;
 						$this->EE->pagination->build($this->pagination_obj, trim($cache), $this->sql, $this->EE->db->query(trim($pg_query)));
 					}
 				}
 				else
 				{
+					$this->pagination_obj->cfields = $this->cfields;
 					$this->EE->pagination->build($this->pagination_obj, trim($cache), $this->sql);
 				}
 			}
@@ -2590,7 +2592,8 @@ class Channel {
 				{
 					$total = $total - $offset;
 				}
-
+				
+				$this->pagination_obj->cfields = $this->cfields;
 				$this->EE->pagination->build($this->pagination_obj, $total, $this->sql);
 			}
 			else
@@ -2602,6 +2605,7 @@ class Channel {
 				$total = $query->num_rows;
 				$this->absolute_results = $total;
 
+				$this->pagination_obj->cfields = $this->cfields;
 				$this->EE->pagination->build($this->pagination_obj, $total, $this->sql, $query);
 
 				if ($this->EE->config->item('enable_sql_caching') == 'y')

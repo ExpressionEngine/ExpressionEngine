@@ -237,10 +237,10 @@ class EE_Pagination extends CI_Pagination {
 				}
 
 				$m_fields = array();
-
+				
 				foreach ($pagination->multi_fields as $val)
 				{
-					foreach($this->cfields as $site_id => $cfields)
+					foreach($pagination->cfields as $site_id => $cfields)
 					{
 						if (isset($cfields[$val]))
 						{
@@ -369,7 +369,7 @@ class EE_Pagination extends CI_Pagination {
 	{
 		if ($pagination->pagination_links == '')
 		{
-			return;
+			return $return_data;
 		}
 		
 		if ($pagination->paginate == TRUE)
@@ -432,6 +432,8 @@ class EE_Pagination extends CI_Pagination {
 					break;
 			}
 		}
+		
+		return $return_data;
 	}
 	
 	// ------------------------------------------------------------------------
@@ -485,6 +487,13 @@ class Pagination_object {
 	public $total_rows			= 0;
 	public $per_page			= 0;
 	public $basepath			= '';
+	public $cfields				= array();
+	public $type				= '';
+	
+	public function __construct($classname)
+	{
+		$this->type = $classname;
+	}
 }
 
 // END Pagination class
