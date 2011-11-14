@@ -173,10 +173,10 @@ class Wiki_model extends CI_Model {
 	 */
 	function fetch_upload_options($value = '')
 	{
-		$this->EE->load->model('file_upload_preferences_model');
+		$this->load->model('file_upload_preferences_model');
 		
 		$options[0] = $this->lang->line('none');
-		$options = $this->EE->file_upload_preferences_model->get_dropdown_array(NULL, NULL, $options);
+		$options = $this->file_upload_preferences_model->get_dropdown_array(NULL, NULL, $options);
 		
 		return $options;
 	}
