@@ -70,17 +70,12 @@ class File_field {
 		
 		// Retrieve all directories that are both allowed for this user and
 		// for this field
-		$upload_directories = $this->EE->file_upload_preferences_model->get_upload_preferences(
+		$upload_dirs[''] = lang('directory');
+		$upload_dirs = $this->EE->file_upload_preferences_model->get_dropdown_array(
 			$this->EE->session->userdata('group_id'),
-			$allowed_file_dirs
+			$allowed_file_dirs,
+			$upload_dirs
 		);
-
-		// Create the list of directories
-		$upload_dirs = array('' => lang('directory'));
-		foreach($upload_directories->result() as $row)
-		{
-			$upload_dirs[$row->id] = $row->name;
-		}
 		
 		// Get the thumbnail
 		$thumb_info = $this->EE->filemanager->get_thumb($vars['filename'], $vars['filedir']);
@@ -104,7 +99,7 @@ class File_field {
 		$vars['dropdown'] = form_dropdown($field_name.'_directory', $upload_dirs, $vars['filedir']);
 
 		// Check to see if they have access to any directories to create an upload link
-		$vars['upload_link'] = (count($upload_dirs) > 1) ? '<a href="#" class="choose_file" data-directory="'.$specified_directory.'">'.lang('add_file').'</a>' : lang('directory_no_access');
+		$vars['upload_link'] = (count($upload_dirs) > 0) ? '<a href="#" class="choose_file" data-directory="'.$specified_directory.'">'.lang('add_file').'</a>' : lang('directory_no_access');
 
 		// If we have a file, show the thumbnail, filename and remove link
 		$vars['set_class'] = $vars['filename'] ? '' : 'js_hide';
@@ -194,9 +189,9 @@ class File_field {
 		// Directory selected - switch
 		$filedir = ($this->EE->input->post($dir_field)) ? $this->EE->input->post($dir_field) : '';
 		
-		foreach($upload_directories->result() as $row)
+		foreach($upload_directories as $row)
 		{
-			$allowed_dirs[] = $row->id;
+			$allowed_dirs[] = $row['id'];
 		}
 		
 		// Upload or maybe just a path in the hidden field?

@@ -4086,7 +4086,7 @@ class Admin_content extends CI_Controller {
 			$upload_dir_prefs = $this->tools_model->get_upload_preferences();
 			
 			// count upload dirs
-			if ($upload_dir_prefs->num_rows() == 0)
+			if (count($upload_dir_prefs) == 0)
 			{
 				$this->lang->loadfile('filemanager');
 				$error[] = lang('please_add_upload');

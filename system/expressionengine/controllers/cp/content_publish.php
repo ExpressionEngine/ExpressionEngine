@@ -2608,13 +2608,13 @@ class Content_publish extends CI_Controller {
 							'file_properties'
 						);
 	
-		foreach($upload_directories->result() as $row)
+		foreach($upload_directories as $row)
 		{
-			$this->_file_manager['upload_directories'][$row->id] = $row->name;
+			$this->_file_manager['upload_directories'][$row['id']] = $row['name'];
 
 			foreach($fm_opts as $prop)
 			{
-				$this->_file_manager['file_list'][$row->id][$prop] = $row->$prop;
+				$this->_file_manager['file_list'][$row['id']][$prop] = $row[$prop];
 			}
 		}
 	}

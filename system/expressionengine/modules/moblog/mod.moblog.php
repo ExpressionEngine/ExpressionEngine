@@ -1423,7 +1423,7 @@ class Moblog {
 		$prefs_q = $this->EE->file_upload_preferences_model->get_upload_preferences(1, $dir_id);
 		$sizes_q = $this->EE->file_model->get_dimensions_by_dir_id($dir_id);
 		
-		$dir_server_path = $prefs_q->row('server_path');
+		$dir_server_path = $prefs_q['server_path'];
 		
 		// @todo if 0 skip!!
 		$thumb_data = array();
