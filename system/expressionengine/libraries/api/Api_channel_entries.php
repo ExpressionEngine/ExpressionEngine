@@ -1500,7 +1500,7 @@ class Api_channel_entries extends Api {
 	 * @param	mixed
 	 * @return	void
 	 */
-	function _prepare_data(&$data, &$mod_data, $autosave = false)
+	function _prepare_data(&$data, &$mod_data, $autosave = FALSE)
 	{
 		$this->instantiate('channel_categories');
 
