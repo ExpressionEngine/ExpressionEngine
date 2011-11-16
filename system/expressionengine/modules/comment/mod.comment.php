@@ -89,7 +89,7 @@ class Comment {
 
 		// Pagination variables
 		$this->EE->load->library('pagination');
-		$pagination_obj = new Pagination_object(__CLASS__);
+		$pagination = new Pagination_object(__CLASS__);
 		
 		if ($this->EE->TMPL->fetch_param('dynamic') == 'no')
 		{
@@ -140,7 +140,7 @@ class Comment {
 		{
 			if (preg_match("#(^|/)N(\d+)(/|$)#i", $qstring, $match))
 			{
-				$pagination_obj->current_page = $match['2'];
+				$pagination->current_page = $match['2'];
 				$uristr  = trim($this->EE->functions->remove_double_slashes(str_replace($match['0'], '/', $uristr)), '/');
 			}
 		}
@@ -148,7 +148,7 @@ class Comment {
 		{
 			if (preg_match("#(^|/)P(\d+)(/|$)#", $qstring, $match))
 			{
-				$pagination_obj->current_page = $match['2'];
+				$pagination->current_page = $match['2'];
 				$uristr  = $this->EE->functions->remove_double_slashes(str_replace($match['0'], '/', $uristr));
 				$qstring = trim($this->EE->functions->remove_double_slashes(str_replace($match['0'], '/', $qstring)), '/');
 			}
@@ -307,19 +307,19 @@ class Comment {
 		//  Set sorting and limiting
 		if ( ! $dynamic)
 		{
-			$pagination_obj->per_page = $this->EE->TMPL->fetch_param('limit', 100);
+			$pagination->per_page = $this->EE->TMPL->fetch_param('limit', 100);
 			$sort = $this->EE->TMPL->fetch_param('sort', 'desc');
 		}
 		else
 		{
-			$pagination_obj->per_page = $this->EE->TMPL->fetch_param('limit', $this->limit);
+			$pagination->per_page = $this->EE->TMPL->fetch_param('limit', $this->limit);
 			$sort = $this->EE->TMPL->fetch_param('sort', 'asc');
 		}
 
 		$allowed_sorts = array('date', 'email', 'location', 'name', 'url');
 
 		// Capture the pagination template
-		$this->EE->pagination->get_template($pagination_obj);
+		$pagination->get_template();
 
 		/** ----------------------------------------
 		/**  Fetch comment ID numbers
@@ -439,20 +439,20 @@ class Comment {
 			}
 		}
 		
-		if ($pagination_obj->paginate === TRUE)
+		if ($pagination->paginate === TRUE)
 		{
 			// When we are only showing comments and it is 
 			// not based on an entry id or url title
 			// in the URL, we can make the query much 
 			// more efficient and save some work.
-			$pagination_obj->total_rows = $this->EE->db->count_all_results();
+			$pagination->total_rows = $this->EE->db->count_all_results();
 		}
 		
 		$this_sort = ($random) ? 'random' : strtolower($sort);
-		$this_page = ($pagination_obj->current_page == '' OR ($pagination_obj->per_page > 1 AND $pagination_obj->current_page == 1)) ? 0 : $pagination_obj->current_page;
+		$this_page = ($pagination->current_page == '' OR ($pagination->per_page > 1 AND $pagination->current_page == 1)) ? 0 : $pagination->current_page;
 
 		$this->EE->db->order_by($order_by, $this_sort);
-		$this->EE->db->limit($pagination_obj->per_page, $this_page);
+		$this->EE->db->limit($pagination->per_page, $this_page);
 		
 		$this->EE->db->stop_cache();
 		$query = $this->EE->db->get();
@@ -474,7 +474,7 @@ class Comment {
 		}
 		
 		// Build pagination
-		$this->EE->pagination->build($pagination_obj, $pagination_obj->per_page);
+		$pagination->build($pagination->per_page);
 		
 		/** -----------------------------------
 		/**  Fetch Comments if necessary
@@ -611,7 +611,7 @@ class Comment {
 		$item_count = 0;
 
 		$relative_count = 0;
-		$absolute_count = ($pagination_obj->current_page == '') ? 0 : $pagination_obj->current_page;
+		$absolute_count = ($pagination->current_page == '') ? 0 : $pagination->current_page;
 
 		foreach ($results as $id => $row)
 		{
@@ -625,7 +625,7 @@ class Comment {
 
 			$row['count']			= $relative_count;
 			$row['absolute_count']	= $absolute_count;
-			$row['total_comments']	= $pagination_obj->total_rows;
+			$row['total_comments']	= $pagination->total_rows;
 			$row['total_results']	= $total_results;
 
 			// This lets the {if location} variable work
@@ -1110,10 +1110,10 @@ class Comment {
 					$return_val = (isset($row['m_field_id_'.$mfields[$val]])) ? $row['m_field_id_'.$mfields[$val]] : '';
 
 					$tagdata = $this->EE->TMPL->swap_var_single(
-														$val,
-														$return_val,
-														$tagdata
-													  );
+						$val,
+						$return_val,
+						$tagdata
+					);
 				}
 
 				/** ----------------------------------------
@@ -1146,7 +1146,7 @@ class Comment {
 		/**  Add pagination to result
 		/** ----------------------------------------*/
 
-		return $this->EE->pagination->render($pagination_obj, $return);
+		return $pagination->render($return);
 	}
 
 
