@@ -4013,10 +4013,19 @@ class Admin_content extends CI_Controller {
 		
 		$this->load->library('api');
 		$this->api->instantiate('channel_fields');
+		
+		// If the $field_id variable has data we are editing an
+	  	// existing group, otherwise we are creating a new one
+		
+		$edit = ( ! isset($_POST['field_id']) OR $_POST['field_id'] == '') ? FALSE : TRUE;
+		
+		// We need this as a variable as we'll unset the array index
+		
+		$group_id = $this->input->post('group_id');
+
+		//perform the field update
 
 		$this->api_channel_fields->update_field($_POST);
-
-		$group_id = $this->input->post('group_id');
 
 		// Are there errors to display?
 
@@ -4032,7 +4041,7 @@ class Admin_content extends CI_Controller {
 			show_error($str);
 		}
 
-		$cp_message = ( ! isset($_POST['field_id']) OR $_POST['field_id'] == '') ? lang('custom_field_created') : lang('custom_field_edited');
+		$cp_message = ($edit) ? lang('custom_field_edited') : lang('custom_field_created');
 
 		$strlen = strlen($this->input->post('field_name'));
 
