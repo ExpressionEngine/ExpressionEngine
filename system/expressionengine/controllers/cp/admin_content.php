@@ -4020,11 +4020,11 @@ class Admin_content extends CI_Controller {
 
 		// Are there errors to display?
 
-		if (count($this->api_channel_fields->errors()) > 0)
+		if ($this->api_channel_fields->error_count() > 0)
 		{
 			$str = '';
 
-			foreach ($this->api_channel_fields->errors() as $msg)
+			foreach ($this->api_channel_fields->errors as $msg)
 			{
 				$str .= $msg.BR;
 			}

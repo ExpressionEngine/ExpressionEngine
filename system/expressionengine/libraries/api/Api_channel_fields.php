@@ -10,8 +10,6 @@ class Api_channel_fields extends Api {
 	var $ee_base_ft			= FALSE;
 	var $global_settings;
 	
-	protected $errors		= array();
-	
 	// --------------------------------------------------------------------
 	
 	/**
@@ -1123,17 +1121,17 @@ class Api_channel_fields extends Api {
 	 * 
 	 * @param array   $field_data
 	 * 
-	 * @return bool    whether or not the field update/add succeeded
+	 * @return int|string|FALSE    the field_id or FALSE if the process failed
 	 */
 	public function update_field(array $field_data)
 	{
-		$this->reset_errors();
+		$this->errors = array();
 		
 		$this->EE->load->helper('array');
 		
 		if ( ! isset($field_data['group_id']))
 		{
-			$this->add_error(lang('unauthorized_access'));
+			$this->_set_error('unauthorized_access');
 			
 			return FALSE;
 		}
@@ -1158,30 +1156,30 @@ class Api_channel_fields extends Api {
 		// otherwise the landing page will be extremely confusing
 		if ( ! isset($field_data['site_id']) OR $field_data['site_id'] != $this->EE->config->item('site_id'))
 		{
-			$error[] = lang('site_id_mismatch');
+			$this->_set_error('site_id_mismatch');
 		}
 
 		// Was a field name supplied?
 		if ($field_data['field_name'] == '')
 		{
-			$error[] = lang('no_field_name');
+			$this->_set_error('no_field_name');
 		}
 		// Is the field one of the reserved words?
 		else if (in_array($field_data['field_name'], $this->EE->cp->invalid_custom_field_names()))
 		{
-			$error[] = lang('reserved_word');
+			$this->_set_error('reserved_word');
 		}
 
 		// Was a field label supplied?
 		if ($field_data['field_label'] == '')
 		{
-			$error[] = lang('no_field_label');
+			$this->_set_error('no_field_label');
 		}
 
 		// Does field name contain invalid characters?
 		if (preg_match('/[^a-z0-9\_\-]/i', $field_data['field_name']))
 		{
-			$error[] = lang('invalid_characters').': '.$field_data['field_name'];
+			$this->errors[] = lang('invalid_characters').': '.$field_data['field_name'];
 		}
 
 		// Is the field name taken?
@@ -1198,7 +1196,7 @@ class Api_channel_fields extends Api {
 
 		if ($query->row('count')  > 0)
 		{
-			$error[] = lang('duplicate_field_name');
+			$this->_set_error('duplicate_field_name');
 		}
 
 		$field_type = $field_data['field_type'];
@@ -1213,16 +1211,14 @@ class Api_channel_fields extends Api {
 			if ($upload_dir_prefs->num_rows() == 0)
 			{
 				$this->EE->lang->loadfile('filemanager');
-				$error[] = lang('please_add_upload');
+				$this->_set_error('please_add_upload');
 			}
 		}
 
 		// Are there errors to display?
 
-		if (count($error) > 0)
+		if ($this->error_count() > 0)
 		{
-			$this->add_error($error);
-			
 			return FALSE;
 		}
 		
@@ -1468,7 +1464,7 @@ class Api_channel_fields extends Api {
 
 		$this->EE->functions->clear_caching('all', '', TRUE);
 		
-		return TRUE;
+		return $native_settings['field_id'];
 	}
 	
 	private function _get_ft_data($field_type, $key, $field_data)
