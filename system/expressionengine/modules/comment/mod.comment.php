@@ -82,23 +82,14 @@ class Comment {
 	function entries()
 	{
 		$return 		= '';
-		$current_page	= '';
 		$qstring		= $this->EE->uri->query_string;
 		$uristr			= $this->EE->uri->uri_string;
 		$switch 		= array();
 		$search_link	= '';
 
 		// Pagination variables
-
-		$paginate			= FALSE;
-		$paginate_data		= '';
-		$pagination_links	= '';
-		$pagination_array	= '';
-		$page_next			= '';
-		$page_previous		= '';
-		$current_page		= 0;
-		$t_current_page		= '';
-		$total_pages		= 1;
+		$this->EE->load->library('pagination');
+		$pagination_obj = new Pagination_object(__CLASS__);
 		
 		if ($this->EE->TMPL->fetch_param('dynamic') == 'no')
 		{
@@ -148,8 +139,8 @@ class Comment {
 		if ( ! $dynamic)
 		{
 			if (preg_match("#(^|/)N(\d+)(/|$)#i", $qstring, $match))
-			{				
-				$current_page = $match['2'];
+			{
+				$pagination_obj->current_page = $match['2'];
 				$uristr  = trim($this->EE->functions->remove_double_slashes(str_replace($match['0'], '/', $uristr)), '/');
 			}
 		}
@@ -157,7 +148,7 @@ class Comment {
 		{
 			if (preg_match("#(^|/)P(\d+)(/|$)#", $qstring, $match))
 			{
-				$current_page = $match['2'];
+				$pagination_obj->current_page = $match['2'];
 				$uristr  = $this->EE->functions->remove_double_slashes(str_replace($match['0'], '/', $uristr));
 				$qstring = trim($this->EE->functions->remove_double_slashes(str_replace($match['0'], '/', $qstring)), '/');
 			}
@@ -316,24 +307,19 @@ class Comment {
 		//  Set sorting and limiting
 		if ( ! $dynamic)
 		{
-			$limit = $this->EE->TMPL->fetch_param('limit', 100);
+			$pagination_obj->per_page = $this->EE->TMPL->fetch_param('limit', 100);
 			$sort = $this->EE->TMPL->fetch_param('sort', 'desc');
 		}
 		else
 		{
-			$limit = $this->EE->TMPL->fetch_param('limit', $this->limit);
+			$pagination_obj->per_page = $this->EE->TMPL->fetch_param('limit', $this->limit);
 			$sort = $this->EE->TMPL->fetch_param('sort', 'asc');
 		}
 
 		$allowed_sorts = array('date', 'email', 'location', 'name', 'url');
 
-		// We can skip the count in non-dynamic if we already know this
-		if (preg_match("/".LD."paginate(.*?)".RD."(.+?)".LD.'\/'."paginate".RD."/s", 
-			$this->EE->TMPL->tagdata, $match))
-		{
-			$paginate = TRUE;
-			$paginate_data	= $match[2];
-		}
+		// Capture the pagination template
+		$this->EE->pagination->get_template($pagination_obj);
 
 		/** ----------------------------------------
 		/**  Fetch comment ID numbers
@@ -390,9 +376,9 @@ class Comment {
 		
 		// Note if it's not dynamic and the entry isn't forced?  We don't check on the entry criteria,
 		// so this point, dynamic and forced entry will have 'valid' entry ids, dynamic off may not
-
+		
 		if ( ! $dynamic && ! $force_entry)
-		{			
+		{
 			//  Limit to/exclude specific channels
 			if (count($channel_ids) == 1)
 			{
@@ -434,21 +420,6 @@ class Comment {
 				.$this->EE->db->protect_identifiers('ct.expiration_date')." > {$timestamp})";
 				$this->EE->db->where($date_where);
 			}
-
-			if ($paginate === TRUE)
-			{
-				// When we are only showing comments and it is 
-				// not based on an entry id or url title
-				// in the URL, we can make the query much 
-				// more efficient and save some work.
-				$total_rows = $this->EE->db->count_all_results();
-			}
-			
-			$this_sort = ($random) ? 'random' : strtolower($sort);
-			$this_page = ($current_page == '' OR ($limit > 1 AND $current_page == 1)) ? 0 : $current_page;
-
-			$this->EE->db->order_by($order_by, $this_sort);
-			$this->EE->db->limit($limit, $this_page);
 		}
 		else
 		{
@@ -466,18 +437,28 @@ class Comment {
 			{
 				$this->EE->functions->ar_andor_string($comment_id_param, 'comment_id');
 			}
-			
-			$this_sort = ($random) ? 'random' : strtolower($sort);
-
-			$this->EE->db->order_by($order_by, $this_sort);
 		}
+		
+		if ($pagination_obj->paginate === TRUE)
+		{
+			// When we are only showing comments and it is 
+			// not based on an entry id or url title
+			// in the URL, we can make the query much 
+			// more efficient and save some work.
+			$pagination_obj->total_rows = $this->EE->db->count_all_results();
+		}
+		
+		$this_sort = ($random) ? 'random' : strtolower($sort);
+		$this_page = ($pagination_obj->current_page == '' OR ($pagination_obj->per_page > 1 AND $pagination_obj->current_page == 1)) ? 0 : $pagination_obj->current_page;
 
+		$this->EE->db->order_by($order_by, $this_sort);
+		$this->EE->db->limit($pagination_obj->per_page, $this_page);
+		
 		$this->EE->db->stop_cache();
 		$query = $this->EE->db->get();
-		// var_dump($this->EE->db->last_query()); exit;
 		$this->EE->db->flush_cache();
 		$result_ids = array();
-
+		
 		if ($query->num_rows() > 0)
 		{
 			foreach ($query->result() as $row)
@@ -485,134 +466,15 @@ class Comment {
 				$result_ids[] = $row->comment_id;
 			}
 		}
-
+		
 		//  No results?  No reason to continue...
 		if (count($result_ids) == 0)
 		{
 			return $this->EE->TMPL->no_results();
 		}
-
-		//  Pagination bits if required
 		
-		// If we had entry ids or no pagination?  We don't have the count yet
-		if ($dynamic OR $force_entry OR $paginate == FALSE)
-		{
-			$total_rows = count($result_ids);
-		}
-
-		if ($paginate == TRUE)
-		{
-			$anchor = '';
-
-			if ($match['1'] != '')
-			{
-				if (preg_match("/anchor.*?=[\"|\'](.+?)[\"|\']/", $match['1'], $amatch))
-				{
-					$anchor = '#'.$amatch['1'];
-				}
-			}
-
-			$this->EE->TMPL->tagdata = preg_replace("/".LD."paginate.*?".RD.".+?".LD.'\/'."paginate".RD."/s", "", $this->EE->TMPL->tagdata);
-
-			$current_page = ($current_page == '' OR ($limit > 1 AND $current_page == 1)) ? 0 : $current_page;
-
-			if ($current_page > $total_rows)
-			{
-				$current_page = 0;
-			}
-
-			$t_current_page = floor(($current_page / $limit) + 1);
-			$total_pages	= intval(floor($total_rows / $limit));
-
-			if ($total_rows % $limit)
-				$total_pages++;
-
-			if ($total_rows > $limit)
-			{
-				$this->EE->load->library('pagination');
-
-				$deft_tmpl = '';
-
-				if ($uristr == '')
-				{
-					if ($this->EE->config->item('template_group') == '')
-					{
-						$this->EE->db->select('group_name');
-						$query = $this->EE->db->get_where('template_groups', array('is_site_default' => 'y'));
-						
-						$deft_tmpl = $query->row('group_name') .'/index';
-					}
-					else
-					{
-						$deft_tmpl  = $this->EE->config->item('template_group').'/';
-						$deft_tmpl .= ($this->EE->config->item('template') == '') ? 'index' : $this->EE->config->item('template');
-					}
-				}
-
-				$basepath = $this->EE->functions->remove_double_slashes($this->EE->functions->create_url($uristr, FALSE).'/'.$deft_tmpl);
-
-				if ($this->EE->TMPL->fetch_param('paginate_base'))
-				{
-					// Load the string helper
-					$this->EE->load->helper('string');
-
-					$pbase = trim_slashes($this->EE->TMPL->fetch_param('paginate_base'));
-
-					$pbase = str_replace("/index", "/", $pbase);
-
-					if ( ! strstr($basepath, $pbase))
-					{
-						$basepath = $this->EE->functions->remove_double_slashes($basepath.'/'.$pbase);
-					}
-				}
-
-				$config['first_url'] 	= rtrim($basepath, '/').$anchor;
-				$config['base_url']		= $basepath;
-				$config['prefix']		= ( ! $dynamic) ? 'N' : 'P';
-				$config['total_rows'] 	= $total_rows;
-				$config['per_page']		= $limit;
-				$config['cur_page']		= $current_page;
-				$config['suffix']		= $anchor;
-				$config['first_link'] 	= $this->EE->lang->line('pag_first_link');
-				$config['last_link'] 	= $this->EE->lang->line('pag_last_link');
-				
-				// Allows $config['cur_page'] to override
-				$config['uri_segment'] = 0;
-
-				$this->EE->pagination->initialize($config);
-				$pagination_links = $this->EE->pagination->create_links();
-				$this->EE->pagination->initialize($config); // Re-initialize to reset config
-				$pagination_array = $this->EE->pagination->create_link_array();
-
-				if ((($total_pages * $limit) - $limit) > $current_page)
-				{
-					$page_next = $basepath.$config['prefix'].($current_page + $limit).'/';
-				}
-
-				if (($current_page - $limit ) >= 0)
-				{
-					$page_previous = $basepath.$config['prefix'].($current_page - $limit).'/';
-				}
-			}
-			else
-			{
-				$current_page = '';
-			}
-		}
-
-		// When only non-dynamic comments are shown, all results are valid as the
-		// query is restricted with a LIMIT clause
-		if ($dynamic OR $force_entry)
-		{
-			if ($current_page == '')
-			{
-				$result_ids = array_slice($result_ids, 0, $limit);
-			}
-			else
-			{
-				$result_ids = array_slice($result_ids, $current_page, $limit);
-			}
-		}
+		// Build pagination
+		$this->EE->pagination->build($pagination_obj, $pagination_obj->per_page);
 		
 		/** -----------------------------------
 		/**  Fetch Comments if necessary
@@ -633,17 +495,17 @@ class Comment {
 		$search_link = $this->EE->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$this->EE->functions->fetch_action_id('Search', 'do_search').'&amp;result_path='.$result_path.'&amp;mbr=';
 
 		$this->EE->db->select('comments.comment_id, comments.entry_id, comments.channel_id, comments.author_id, comments.name, comments.email, comments.url, comments.location AS c_location, comments.ip_address, comments.comment_date, comments.edit_date, comments.comment, comments.site_id AS comment_site_id,
-										members.username, members.group_id, members.location, members.occupation, members.interests, members.aol_im, members.yahoo_im, members.msn_im, members.icq, members.group_id, members.member_id, members.signature, members.sig_img_filename, members.sig_img_width, members.sig_img_height, members.avatar_filename, members.avatar_width, members.avatar_height, members.photo_filename, members.photo_width, members.photo_height,
-										member_data.*,
-										channel_titles.title, channel_titles.url_title, channel_titles.author_id AS entry_author_id,
-										channels.comment_text_formatting, channels.comment_html_formatting, channels.comment_allow_img_urls, channels.comment_auto_link_urls, channels.channel_url, channels.comment_url, channels.channel_title'
-				);
-				
+			members.username, members.group_id, members.location, members.occupation, members.interests, members.aol_im, members.yahoo_im, members.msn_im, members.icq, members.group_id, members.member_id, members.signature, members.sig_img_filename, members.sig_img_width, members.sig_img_height, members.avatar_filename, members.avatar_width, members.avatar_height, members.photo_filename, members.photo_width, members.photo_height,
+			member_data.*,
+			channel_titles.title, channel_titles.url_title, channel_titles.author_id AS entry_author_id,
+			channels.comment_text_formatting, channels.comment_html_formatting, channels.comment_allow_img_urls, channels.comment_auto_link_urls, channels.channel_url, channels.comment_url, channels.channel_title'
+		);
+		
 		$this->EE->db->join('channels',			'comments.channel_id = channels.channel_id',	'left');
 		$this->EE->db->join('channel_titles',	'comments.entry_id = channel_titles.entry_id',	'left');
 		$this->EE->db->join('members',			'members.member_id = comments.author_id',		'left');
 		$this->EE->db->join('member_data',		'member_data.member_id = members.member_id',	'left');
-				
+		
 		$this->EE->db->where_in('comments.comment_id', $result_ids);
 		$this->EE->db->order_by($order_by, $this_sort);
 				
@@ -681,10 +543,10 @@ class Comment {
 
 		$this->EE->load->library('typography');
 		$this->EE->typography->initialize(array(
-				'parse_images'		=> FALSE,
-				'allow_headings'	=> FALSE,
-				'word_censor'		=> ($this->EE->config->item('comment_word_censoring') == 'y') ? TRUE : FALSE)
-				);
+			'parse_images'		=> FALSE,
+			'allow_headings'	=> FALSE,
+			'word_censor'		=> ($this->EE->config->item('comment_word_censoring') == 'y') ? TRUE : FALSE)
+		);
 
 		/** ----------------------------------------
 		/**  Fetch all the date-related variables
@@ -730,9 +592,9 @@ class Comment {
 		// member related variables that should be removed.
 
 		$member_vars = array('location', 'occupation', 'interests', 'aol_im', 'yahoo_im', 'msn_im', 'icq',
-							 'signature', 'sig_img_filename', 'sig_img_width', 'sig_img_height',
-							 'avatar_filename', 'avatar_width', 'avatar_height',
-							 'photo_filename', 'photo_width', 'photo_height');
+			'signature', 'sig_img_filename', 'sig_img_width', 'sig_img_height',
+			'avatar_filename', 'avatar_width', 'avatar_height',
+			'photo_filename', 'photo_width', 'photo_height');
 
 		$member_cond_vars = array();
 
@@ -749,13 +611,13 @@ class Comment {
 		$item_count = 0;
 
 		$relative_count = 0;
-		$absolute_count = ($current_page == '') ? 0 : $current_page;
+		$absolute_count = ($pagination_obj->current_page == '') ? 0 : $pagination_obj->current_page;
 
 		foreach ($results as $id => $row)
 		{
 			if ( ! is_array($row))
 			{
-				continue;				
+				continue;
 			}
 
 			$relative_count++;
@@ -763,7 +625,7 @@ class Comment {
 
 			$row['count']			= $relative_count;
 			$row['absolute_count']	= $absolute_count;
-			$row['total_comments']	= $total_rows;
+			$row['total_comments']	= $pagination_obj->total_rows;
 			$row['total_results']	= $total_results;
 
 			// This lets the {if location} variable work
@@ -1283,84 +1145,8 @@ class Comment {
 		/** ----------------------------------------
 		/**  Add pagination to result
 		/** ----------------------------------------*/
-		if ($paginate == TRUE)
-		{
-			// Check to see if pagination_links is being used as a single 
-			// variable or as a variable pair
-			if (preg_match_all("/".LD."pagination_links".RD."(.+?)".LD.'\/'."pagination_links".RD."/s", $paginate_data, $matches))
-			{
-				$pagination_links = array($pagination_array);
-			}
-			else
-			{
-				$pagination_links = $pagination_links;
-			}
 
-			// Parse current_page and total_pages by default
-			$parse_array = array(
-				'current_page' => $t_current_page,
-				'total_pages' => $total_pages,
-			);
-
-			// Check to see if pagination_links is being used as a single 
-			// variable or as a variable pair
-			if (preg_match_all("/".LD."pagination_links".RD."(.+?)".LD.'\/'."pagination_links".RD."/s", $paginate_data, $matches))
-			{
-				$parse_array['pagination_links'] = array($pagination_array);
-			}
-			else
-			{
-				$parse_array['pagination_links'] = $pagination_links;
-			}
-			
-			// Parse current_page and total_pages
-			$paginate_data = $this->EE->TMPL->parse_variables(
-				$paginate_data,
-				array($parse_array)
-			);
-			
-			if (preg_match("/".LD."if previous_page".RD."(.+?)".LD.'\/'."if".RD."/s", $paginate_data, $match))
-			{
-				if ($page_previous == '')
-				{
-					 $paginate_data = preg_replace("/".LD."if previous_page".RD.".+?".LD.'\/'."if".RD."/s", '', $paginate_data);
-				}
-				else
-				{
-					$match['1'] = str_replace(array(LD.'path'.RD, LD.'auto_path'.RD), $page_previous, $match['1']);
-
-					$paginate_data = str_replace($match['0'], $match['1'], $paginate_data);
-				}
-			}
-
-			if (preg_match("/".LD."if next_page".RD."(.+?)".LD.'\/'."if".RD."/s", $paginate_data, $match))
-			{
-				if ($page_next == '')
-				{
-					 $paginate_data = preg_replace("/".LD."if next_page".RD.".+?".LD.'\/'."if".RD."/s", '', $paginate_data);
-				}
-				else
-				{
-					$match['1'] = str_replace(array(LD.'path'.RD, LD.'auto_path'.RD), $page_next, $match['1']);
-
-					$paginate_data = str_replace($match['0'], $match['1'], $paginate_data);
-				}
-			}
-
-			$position = ( ! $this->EE->TMPL->fetch_param('paginate')) ? '' : $this->EE->TMPL->fetch_param('paginate');
-
-			switch ($position)
-			{
-				case "top"	: $return  = $paginate_data.$return;
-					break;
-				case "both"	: $return  = $paginate_data.$return.$paginate_data;
-					break;
-				default		: $return .= $paginate_data;
-					break;
-			}
-		}
-
-		return $return;
+		return $this->EE->pagination->render($pagination_obj, $return);
 	}
 
 

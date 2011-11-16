@@ -2594,6 +2594,7 @@ class Channel {
 				}
 				
 				$this->pagination_obj->cfields = $this->cfields;
+				
 				$this->EE->pagination->build($this->pagination_obj, $total, $this->sql);
 			}
 			else

@@ -108,7 +108,7 @@ class EE_Pagination extends CI_Pagination {
 	 * @param integer $count Number of rows we're paginating over
 	 * @param object $query Query object of the post you're field paginating over
 	 */
-	function build(&$pagination, $count = 0, &$main_query, $query = '')
+	function build(&$pagination, $count = 0, &$main_query = '', $query = '')
 	{
 		if (is_object($query))
 		{
@@ -168,7 +168,7 @@ class EE_Pagination extends CI_Pagination {
 				// If we're not displaying by something, then we'll need 
 				// something to paginate, otherwise if we're displaying by
 				// something (week, day) it's okay for it to be empty
-				if ($this->EE->TMPL->fetch_param('display_by') == '')
+				if ($pagination->type === "Channel" AND $this->EE->TMPL->fetch_param('display_by') == '')
 				{
 					// If we're doing standard pagination and not using 
 					// display_by, clear out the query and get out of here
@@ -177,7 +177,7 @@ class EE_Pagination extends CI_Pagination {
 						$main_query = '';
 						return;
 					}
-
+					
 					$pagination->total_rows = $count;
 				}
 				
@@ -253,7 +253,7 @@ class EE_Pagination extends CI_Pagination {
 				}
 
 				$pagination->per_page = 1;
-
+				
 				$pagination->total_rows = count($m_fields);
 
 				$pagination->total_pages = $pagination->total_rows;
@@ -489,6 +489,7 @@ class Pagination_object {
 	public $basepath			= '';
 	public $cfields				= array();
 	public $type				= '';
+	public $dynamic_sql			= TRUE;
 	
 	public function __construct($classname)
 	{
