@@ -3712,247 +3712,32 @@ class Admin_content extends CI_Controller {
 
 		$this->load->library('api');
 		$this->load->helper(array('snippets_helper', 'form'));
-		$this->load->model('field_model');
 		
 		$this->api->instantiate('channel_fields');
 		$this->lang->loadfile('admin_content');
 
 		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=field_group_management', lang('field_management'));
 
-		$vars = array(
-			'group_id' => $this->input->get_post('group_id'),
-			'field_id' => $this->input->get_post('field_id')
-		);
-		
-		$this->db->select('f.*');
-		$this->db->from('channel_fields AS f, field_groups AS g');
-		$this->db->where('f.group_id = g.group_id');
-		$this->db->where('g.site_id', $this->config->item('site_id'));
-		$this->db->where('f.field_id', $vars['field_id']);
-		
-		$field_query = $this->db->get();
+		$group_id = $this->input->get_post('group_id');
+		$field_id = $this->input->get_post('field_id');
 
-		if ($vars['field_id'] == '')
+		if ($field_id == '')
 		{
 			$type = 'new';
 			$this->cp->set_variable('cp_page_title', lang('create_new_custom_field'));
-
-			foreach ($field_query->list_fields() as $f)
-			{
-				if ( ! isset($vars[$f]))
-				{
-					$vars[$f] = '';
-				}
-			}
-
-			$this->db->select('group_id');
-			$this->db->where('group_id', $vars['group_id']);
-			$this->db->where('site_id', $this->config->item('site_id'));
-			$query = $this->db->get('channel_fields');
-
-			$vars['field_order'] = $query->num_rows() + 1;
-
-			if ($query->num_rows() > 0)
-			{
-				$vars['group_id'] = $query->row('group_id');
-			}
-			else
-			{
-				// if there are no existing fields yet for this group, this allows us to still validate the group_id
-				$this->db->where('group_id', $vars['group_id']);
-				$this->db->where('site_id', $this->config->item('site_id'));
-
-				if ($this->db->count_all_results('field_groups') != 1)
-				{
-					show_error(lang('unauthorized_access'));
-				}
-			}
 		}
 		else
 		{
 			$type = 'edit';
 			$this->cp->set_variable('cp_page_title', lang('edit_field'));
-			
-			// No valid edit id?  No access
-			if ($field_query->num_rows() == 0)
-			{
-				show_error(lang('unauthorized_access'));
-			}
-
-			foreach ($field_query->row_array() as $key => $val)
-			{
-				if ($key == 'field_settings' && $val)
-				{
-					$ft_settings = unserialize(base64_decode($val));
-					$vars = array_merge($vars, $ft_settings);
-				}
-				else
-				{
-					$vars[$key] = $val;
-				}
-			}
-			
-			$vars['update_formatting']	= FALSE;
 		}
 		
-		extract($vars);
+		$vars = $this->api_channel_fields->field_edit_vars($group_id, $field_id);
 		
-		// Fetch the name of the group
-		$query = $this->field_model->get_field_group($group_id);
-		
-		$vars['group_name']			= $query->row('group_name');
-		$vars['submit_lang_key']	= ($type == 'new') ? 'submit' : 'update';
-
-		// Fetch the channel names
-
-		$this->db->select('channel_id, channel_title, field_group');
-		$this->db->where('site_id', $this->config->item('site_id'));
-		$this->db->order_by('channel_title', 'asc');
-		$query = $this->db->get('channels');
-
-		$vars['field_pre_populate_id_options'] = array();
-
-		foreach ($query->result_array() as $row)
+		if ($vars === FALSE)
 		{
-			// Fetch the field names
-			$this->db->select('field_id, field_label');
-			$this->db->where('group_id', $row['field_group']);
-			$this->db->order_by('field_label','ASC');
-			$rez = $this->db->get('channel_fields');
-
-			if ($rez->num_rows() > 0)
-			{
-				$vars['field_pre_populate_id_options'][$row['channel_title']] = array();
-				
-				foreach ($rez->result_array() as $frow)
-				{
-					$vars['field_pre_populate_id_options'][$row['channel_title']][$row['channel_id'].'_'.$frow['field_id']] = $frow['field_label'];
-				}
-			}
+			show_error(lang('unauthorized_access'));
 		}
-
-		$vars['field_pre_populate_id_select'] = $field_pre_channel_id.'_'.$field_pre_field_id;
-
-		// build list of formatting options
-		if ($type == 'new')
-		{
-			$vars['edit_format_link'] = '';
-			
-			$this->load->model('addons_model');
-			
-			$vars['field_fmt_options'] = $this->addons_model->get_plugin_formatting(TRUE);
-		}
-		else
-		{
-			$confirm = "onclick=\"if( !confirm('".lang('list_edit_warning')."')) return false;\"";
-			$vars['edit_format_link'] = '<strong><a '.$confirm.' href="'.BASE.AMP.'C=admin_content'.AMP.'M=edit_formatting_options'.AMP.'id='.$field_id.'" title="'.lang('edit_list').'">'.lang('edit_list').'</a></strong>';
-
-			$this->db->select('field_fmt');
-			$this->db->where('field_id', $field_id);
-			$this->db->order_by('field_fmt');
-			$query = $this->db->get('field_formatting');
-
-			if ($query->num_rows() > 0)
-			{
-				foreach ($query->result_array() as $row)
-				{
-					$name = ucwords(str_replace('_', ' ', $row['field_fmt']));
-				
-					if ($name == 'Br')
-					{
-						$name = lang('auto_br');
-					}
-					elseif ($name == 'Xhtml')
-					{
-						$name = lang('xhtml');
-					}
-					$vars['field_fmt_options'][$row['field_fmt']] = $name;
-				}
-			}
-		}
-
-		$vars['field_fmt'] = (isset($field_fmt) && $field_fmt != '') ? $field_fmt : 'none';
-
-		// Prep our own fields
-		
-		$fts = $this->api_channel_fields->fetch_installed_fieldtypes();
-		
-		$default_values = array(
-			'field_type'					=> isset($fts['text']) ? 'text' : key($fts),
-			'field_show_fmt'				=> 'n',
-			'field_required'				=> 'n',
-			'field_search'					=> 'n',
-			'field_is_hidden'				=> 'n',
-			'field_pre_populate'			=> 'n',
-			'field_show_spellcheck'			=> 'n',
-			'field_show_smileys'			=> 'n',
-			'field_show_glossary'			=> 'n',
-			'field_show_formatting_btns'	=> 'n',
-			'field_show_writemode'			=> 'n',
-			'field_show_file_selector'		=> 'n',
-			'field_text_direction'			=> 'ltr'
-		);
-
-		foreach($default_values as $key => $val)
-		{
-			$vars[$key] = ( ! isset($vars[$key]) OR $vars[$key] == '') ? $val : $vars[$key];
-		}
-		
-		foreach(array('field_pre_populate', 'field_required', 'field_search', 'field_show_fmt') as $key)
-		{
-			$current = ($vars[$key] == 'y') ? 'y' : 'n';
-			$other = ($current == 'y') ? 'n' : 'y';
-			
-			$vars[$key.'_'.$current] = TRUE;
-			$vars[$key.'_'.$other] = FALSE;
-		}
-		
-		// Text Direction
-		$current = $vars['field_text_direction'];
-		$other = ($current == 'rtl') ? 'ltr' : 'rtl';
-		
-		$vars['field_text_direction_'.$current] = TRUE;
-		$vars['field_text_direction_'.$other] = FALSE;
-		
-		// Grab Field Type Settings
-		
-		$vars['field_type_table']	= array();
-		$vars['field_type_options']	= array();
-
-		$created = FALSE;
-
-		foreach($fts as $key => $attr)
-		{
-			// Global settings
-			$settings = unserialize(base64_decode($fts[$key]['settings']));
-			
-			$settings['field_type'] = $key;
-			
-			$this->table->clear();
-			
-			$this->api_channel_fields->set_settings($key, $settings);
-			$this->api_channel_fields->setup_handler($key);
-			
-			$str = $this->api_channel_fields->apply('display_settings', array($vars));
-
-			$vars['field_type_tables'][$key]	= $str;
-			$vars['field_type_options'][$key]	= $attr['name'];
-			
-			if (count($this->table->rows))
-			{
-				$vars['field_type_tables'][$key] = $this->table->rows;
-			}
-		}
-
-		asort($vars['field_type_options']);	// sort by title
-
-		$vars['form_hidden'] = array(
-			'group_id'		=> $group_id,
-			'field_id'		=> $field_id,
-			'site_id'		=> $this->config->item('site_id')
-		);
-
-		$ft_selector = "#ft_".implode(", #ft_", array_keys($fts));
 
 		if ($type == 'new') {
 			$this->cp->add_js_script('plugin', 'ee_url_title');
@@ -3966,7 +3751,7 @@ class Admin_content extends CI_Controller {
 		}
 
 		$this->javascript->output('
-			var ft_divs = $("'.$ft_selector.'"),
+			var ft_divs = $("'.$vars['ft_selector'].'"),
 				ft_dropdown = $("#field_type");
 		
 			ft_dropdown.change(function() {
