@@ -302,7 +302,7 @@ class Cp {
 	{
 		if ( ! is_array($script))
 		{
-			if ( ! is_string($in_footer))
+			if (is_bool($in_footer))
 			{
 				return FALSE;
 			}
