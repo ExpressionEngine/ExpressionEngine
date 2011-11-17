@@ -93,51 +93,43 @@ class Content_edit extends CI_Controller {
 		// ----------------------------------------------------------------
 		
 		$this->load->library('table');
-		
-		$columns = array(
-			'entry_id'		=> array('sort' => TRUE, 'html' => FALSE),
-			'title'			=> array('sort' => TRUE, 'html' => TRUE),
-			'view'			=> array('sort' => FALSE, 'html' => TRUE),
-			'comment_total'	=> array('sort' => TRUE, 'html' => TRUE),
-			'screen_name'	=> array('sort' => TRUE, 'html' => TRUE),
-			'entry_date'	=> array('sort' => TRUE),
-			'channel_name'	=> array('sort' => TRUE),
-			'status'		=> array('sort' => TRUE, 'html' => TRUE),
-			'_check'		=> array('sort' => FALSE, 'html' => TRUE)
 
-		);
-		
-		// table headings
-		$headings = array(
-			'#',
-			lang('title'),
-			lang('view'),
-			lang('comments'),
-			lang('author'),
-			lang('date'),
-			lang('channel'),
-			lang('status'),
-			form_checkbox('select_all', 'true', FALSE, 'class="toggle_all"')
+		$columns = array(
+			'entry_id'		=> array('header' => '#', 'html' => FALSE),
+			'title'			=> array('header' => lang('title')),
+			'view'			=> array('header' => lang('view'), 'sort' => FALSE),
+			'comment_total'	=> array('header' => lang('comments')),
+			'screen_name'	=> array('header' => lang('author')),
+			'entry_date'	=> array('header' => lang('date')),
+			'channel_name'	=> array('header' => lang('channel')),
+			'status'		=> array('header' => lang('status')),
+			'_check'		=> array(
+				'header' => form_checkbox('select_all', 'true', FALSE, 'class="toggle_all"'),
+				'sort' => FALSE
+			)
 		);
 		
 		if ( ! isset($this->installed_modules['comment']))
 		{
 			unset($columns['comment_total']);
-			array_splice($headings, 3, 1);
 		}
 		
 		
+		$this->table->set_base_url('C=content_edit');
 		$this->table->set_template($cp_table_template);
-		$this->table->set_heading($headings);
 		$this->table->set_columns($columns);
 		
-		$defaults = array(
-			'perpage'	=> 50,
-			'channels'	=> $channels,
-			'tbl_sort'	=> array('entry_date' => 'asc')
+		$initial_state = array(
+		//	'offset' => 100,
+			'sort'	=> array('entry_date' => 'asc')
 		);
 		
-		$vars = $this->table->datasource('_table_datasource', $defaults);
+		$params = array(
+			'perpage'	=> 50,
+			'channels'	=> $channels,
+		);
+				
+		$vars = $this->table->datasource('_table_datasource', $initial_state, $params);
 		
 		$filter_data = $vars['filter_data'];
 		unset($vars['filter_data']);
@@ -206,8 +198,7 @@ class Content_edit extends CI_Controller {
 		
 		$this->cp->add_js_script(array(
 			'ui'		=> 'datepicker',
-			'file'		=> 'cp/content_edit',
-			'plugin'	=> array('tmpl', 'ee_table')
+			'file'		=> 'cp/content_edit'
 		));
 
 		$this->javascript->set_global('autosave_map', $vars['autosave_array']);
@@ -484,14 +475,17 @@ class Content_edit extends CI_Controller {
 			
 			$row = array_intersect_key($row, $columns);
 		}
-				
+		
+		// comes out with an added:
+		// table_html
+		// pagination_html
+		
 		return array(
 			'rows'				=> $rows,
-			'total_rows'		=> $total,
 			'no_results'		=> lang('no_entries_matching_that_criteria'),
 			'pagination'		=> array(
 				'per_page' => $filter_data['perpage'],
-				'base_url' => $this->base_url
+				'total_rows' => $total
 			),
 			
 			// used by index on non-ajax requests

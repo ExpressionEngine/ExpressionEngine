@@ -74,8 +74,8 @@
  * for the page (reg. default = 1) and sorting configuration, by prefixing them with tbl_
  *
  * array(
- *     'tbl_offset' => 4,
- *	   'tbl_sort' => array('entry_date' => 'desc')
+ *     'offset' => 400,
+ *	   'sort' => array('entry_date' => 'desc')
  * )
  *
  *
@@ -133,10 +133,14 @@ class EE_Table extends CI_Table {
 
 	protected $EE;
 	protected $uniqid = '';
+	protected $base_url = '';
 	protected $no_results = '';
 	protected $pagination_tmpl = '';
+	
 	protected $jq_template = FALSE;
+	
 	protected $sort = array();
+	protected $page_offset = array();
 	protected $column_config = array();
 
 	/**
@@ -144,11 +148,27 @@ class EE_Table extends CI_Table {
 	 *
 	 * @access	public
 	 */
-	function __construct($config = array())
+	function __construct()
 	{
-		parent::__construct($config);
+		parent::__construct();
 		
 		$this->EE =& get_instance();
+	}
+	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Set the base url
+	 *
+	 * If not set, the cp safe refresh url will be used, which may not
+	 * be correct if the page is loaded with a POST request.
+	 *
+	 * @access	public
+	 * @param	string	base url	do not include BASE.AMP
+	 */
+	function set_base_url($url)
+	{
+		$this->base_url = $url;
 	}
 	
 	// --------------------------------------------------------------------
@@ -160,7 +180,7 @@ class EE_Table extends CI_Table {
 	 * @param	string	data callback function
 	 * @param	mixed	default data that will later be passed in the get array
 	 */
-	function datasource($func, $options = array())
+	function datasource($func, $options = array(), $params = array())
 	{
 		$settings = array(
 			'offset'		=> 0,
@@ -168,20 +188,27 @@ class EE_Table extends CI_Table {
 			'columns'		=> $this->column_config
 		);
 		
-		// override settings on non-ajax load
+		// override initial settings
 		foreach (array_keys($settings) as $key)
 		{
-			if (isset($options['tbl_'.$key]))
+			if (isset($options[$key]))
 			{
-				$settings[$key] = $options['tbl_'.$key];
-				unset($options['tbl_'.$key]);
+				$settings[$key] = $options[$key];
 			}
 		}
 		
-		// override pagination settings from GET (must be get for pagination to work)
-		if (is_numeric($this->EE->input->get('tbl_offset')))
+		// override initial settings from AJAX request
+		
+		// pagination reads from GET, so must be in GET
+		$tbl_offset = $this->EE->input->get('tbl_offset');
+		
+		if (AJAX_REQUEST && $tbl_offset === FALSE)
 		{
-			$settings['offset'] = $_GET['tbl_offset'];
+			$settings['offset'] = 0; // js removes blank keys, so we need to be explicit for page 1
+		}
+		elseif (is_numeric($tbl_offset))
+		{
+			$settings['offset'] = $tbl_offset;
 		}
 
 		// override sort settings from POST (EE does not allow for arrays in GET)
@@ -197,8 +224,8 @@ class EE_Table extends CI_Table {
 				$settings['sort'][ $s[0] ] = $s[1];
 			}
 		}
-		
-		// datasource returns PHP array (shown in js syntax for brevity):
+
+		// datasource should return a PHP array (shown in js syntax for brevity):
 		/*
 		{
 			no_results: 'something',
@@ -208,13 +235,14 @@ class EE_Table extends CI_Table {
 				{key: eulav, key2: eulav2, key3: eulav3},
 			],
 			pagination: [
-				base_url: 
+				per_page: 5
 			]
 		*/
-		$data = $this->EE->$func($settings, $options);
+		$controller = isset($this->EE->_mcp_reference) ? $this->EE->_mcp_reference : $this->EE;
+		$data = $controller->$func($settings, $params);
 		
 		$this->uniqid = uniqid('tbl_');
-		$this->no_results = $data['no_results'];
+		$this->no_results = isset($data['no_results']) ? $data['no_results'] : '';
 		
 		if (AJAX_REQUEST)
 		{
@@ -226,13 +254,9 @@ class EE_Table extends CI_Table {
 			
 			$this->EE->output->send_ajax_response(array(
 				'rows'		 => $data['rows'],
-				'total_rows' => $data['total_rows'],
 				'pagination' => $this->_create_pagination($data, TRUE)
 			));
 		}
-		
-		// make sure we add a jq template
-		$this->jq_template = TRUE;
 		
 		// set our initial sort
 		$this->sort = array();
@@ -241,16 +265,13 @@ class EE_Table extends CI_Table {
 			$this->sort[] = array($k, $v);
 		}
 		
-		// remove the key information from the row data to make it usable
-		// by the CI generate function. Unfortunately that means reordering
-		// to match our columns. Easy enough, simply overwrite the booleans.
-		foreach ($data['rows'] as &$row)
-		{
-			$row = array_values(array_merge($this->column_config, $row));
-		}
+		// set our initial offset
+		$this->page_offset = $settings['offset'];
 		
+		$this->set_data($data['rows']);
+
 		$data['pagination_html'] = $this->_create_pagination($data);
-		$data['table_html'] = $this->generate($data['rows']);
+		$data['table_html'] = $this->generate();
 		
 		return $data;
 	}
@@ -266,7 +287,71 @@ class EE_Table extends CI_Table {
 	public function set_columns($cols = array())
 	{
 		// @todo hook to register column?
+		$headers = array();
+		$defaults = array(
+			'sort' => TRUE,
+			'html' => TRUE
+		);
+		
+		foreach ($cols as $key => &$col)
+		{
+			// asking for trouble
+			if ( ! is_array($col))
+			{
+				$col = array();
+			}
+			
+			// if no header, pass key to lang()
+			if (isset($col['header']))
+			{
+				$headers[] = $col['header'];
+				unset($col['header']);
+			}
+			else
+			{
+				$headers[] = lang($key);
+			}
+			
+			// set defaults
+			$col = array_merge($defaults, $col);
+		}
+		
+		$this->set_heading($headers);
 		$this->column_config = $cols;
+	}
+	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Set data
+	 *
+	 * @access	public
+	 * @param	mixed	rows of data in the new format
+	 */
+	public function set_data($table_data = NULL)
+	{
+		if ( ! $this->jq_template)
+		{
+			$this->jq_template = TRUE;
+			$this->EE->cp->add_js_script('plugin', array('tmpl', 'ee_table'));
+		}
+		
+		if (empty($table_data))
+		{
+			return;
+		}
+		
+		// remove the key information from the row data to make it usable
+		// by the CI generate function. Unfortunately that means we need to
+		// reorder it to match our columns. Easy enough, simply overwrite
+		// the column config. @todo check performance
+		foreach ($table_data as &$row)
+		{
+			$row = array_values(array_merge($this->column_config, $row));
+			$row = $this->_prep_args($row);
+		}
+		
+		$this->rows = $table_data;
 	}
 	
 	// --------------------------------------------------------------------
@@ -279,12 +364,12 @@ class EE_Table extends CI_Table {
 	 */
 	public function generate($table_data = NULL)
 	{
-		$this->_compile_template();
-		
 		if ( ! $this->jq_template)
 		{
 			return parent::generate($table_data);
 		}
+		
+		$this->_compile_template();
 		
 		$open_bak = $this->template['table_open'];
 		$templates = array(
@@ -292,8 +377,7 @@ class EE_Table extends CI_Table {
 			'template_alt' => 'alt_'
 		);
 		
-		// two templates for alternating rows
-		// this may prove to be annoying with dynamic filtering
+		// two templates for alternating rows - ick
 		foreach ($templates as $var => $k)
 		{
 			$temp = $this->template['row_'.$k.'start'];
@@ -330,7 +414,13 @@ class EE_Table extends CI_Table {
 		}
 		
 		
+		if ( ! $this->base_url)
+		{
+			$this->base_url = $this->EE->cp->get_safe_refresh();
+		}
+		
 		$jq_config = array(
+			'base_url'		=> $this->base_url,
 			'columns'		=> $this->column_config,
 			'template'		=> $template,
 			'template_alt'	=> $template_alt,
@@ -348,7 +438,7 @@ class EE_Table extends CI_Table {
 			$open_bak
 		);
 		
-		$table = parent::generate($table_data);
+		$table = parent::generate();
 		
 		$this->template['table_open'] = $open_bak;
 		return $table;
@@ -365,10 +455,13 @@ class EE_Table extends CI_Table {
 	public function clear()
 	{
 		$this->uniqid = '';
+		$this->base_url = '';
 		$this->no_result = '';
 		$this->pagination_tmpl = '';
+		
 		$this->sort = array();
 		$this->column_config = array();
+		
 		$this->jq_template = FALSE;
 		
 		parent::clear();
@@ -389,20 +482,21 @@ class EE_Table extends CI_Table {
 			return '';
 		}
 		
-		if ( ! isset($data['pagination']['base_url']))
+		if ( ! isset($data['pagination']['total_rows']))
 		{
 			return '';
 		}
 		
 		// sensible CP defaults
 		$config = array(
+			'base_url'				=> $this->base_url,
 			'per_page'				=> 50,
-			'total_rows'			=> $data['total_rows'],
+			'cur_page'				=> $this->page_offset,
 			
 			'page_query_string'		=> TRUE,
 			'query_string_segment'	=> 'tbl_offset',
 			
-			'full_tag_open'			=> '<p id="paginationLinks">', // having an id here is nonsense, you can have more than one!
+			'full_tag_open'			=> '<p id="paginationLinks">', // @todo having an id here is nonsense, you can have more than one!
 			'full_tag_close'		=> '</p>',
 			
 			'prev_link'				=> '<img src="'.$this->EE->cp->cp_theme_url.'images/pagination_prev_button.gif" width="13" height="13" alt="&lt;" />',

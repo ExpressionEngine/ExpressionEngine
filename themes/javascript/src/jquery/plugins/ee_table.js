@@ -7,11 +7,11 @@
 		
 		// ensure copyright notice on all files (I always forget ...)
 		// first page currently isn't cached until you return to it		
-		// first page doesn't list initial sort
 		
 		// edit specific:
 		
 		// add base64 thing to "add" tab link to "save" the search
+		//		- need global method to manipulate it first
 		// clear search link (redirect to base path)
 		// "return to filtered entries" currently does not support sort / pagination
 		//		- pagination isn't helpful, but adding sort makes sense I think
@@ -19,12 +19,15 @@
 		
 		// TODO:
 		
-		// remove EE.BASE content_edit occurences
+		// as with callbacks in form validation - move the callback object
+		// sorting on single page, should just need to set up with add_data
+		// no result handling, especially on first page
+		// make sure that all of this works with multiple tables on the page (it should)
+		// make keyup timeout configurable
 		// flip headerSortUp and down in the css, is silly
-		// events!
+		// events!? (ask devs)
 		
 		// /@todo @pk todo/ideas -------------
-
 
 $.widget('ee.table', {
 
@@ -32,6 +35,7 @@ $.widget('ee.table', {
 	
 	options: {
 		uniqid: null,		// uniqid of related elements
+		base_url: null,		// url for requests
 		
 		pagination: null,	// element(s)
 		
@@ -43,22 +47,24 @@ $.widget('ee.table', {
 		
 		cache_limit: 600,	// number of items, not pages!
 		
-		filters: {},
+		filters: {},		// map of active filters {"field": "bar"}, usually updated right before request is made
 		
 		cssAsc: 'headerSortUp',
 		cssDesc: 'headerSortDown'
 	},
 	
+	// jQuery ui widget constructor
 	_create: function() {
 		
 		var self = this,
 			options = self.options;
 
+		// cache content parent
+		self.tbody = self.element.find('tbody');
+
 		// set defaults
 		self.filters = options.filters;
-		
-		console.log(options);
-		
+				
 		// setup dependencies
 		self.sort = new Sort(options, self);
 		self.cache = new Cache(options.cache_limit);
@@ -72,14 +78,17 @@ $.widget('ee.table', {
 		self._trigger('create', null, self._ui(/* @todo args */));
 	},
 	
-	
-	// Public util
-	
+	/**
+	 * Clear all caches
+	 */
 	clear_cache: function() {
 		this.cache.clear();
 		return this;
 	},
 	
+	/**
+	 * Unbind all filters
+	 */
 	clear_filters: function() {
 		// @todo reset form content?
 		
@@ -90,16 +99,14 @@ $.widget('ee.table', {
 		return this;
 	},
 	
+	/**
+	 * Reset sort to initial conditions
+	 */
 	clear_sort: function() {
 		// @todo fire sort events
 		this.sort.reset();
-		this.refresh();
 		return this;
-	},
-
-
-	// Filtering
-	
+	},	
 
 	/**
 	 * Add a filter
@@ -108,7 +115,7 @@ $.widget('ee.table', {
 	 */
 	add_filter: function(obj) {
 		var self = this,
-			url = EE.BASE + '&C=content_edit'; // @todo window.location.href
+			url = EE.BASE + '&' + self.options.base_url;
 		
 		// add to filters and update right away
 		// @todo do not hardcode url!
@@ -150,37 +157,40 @@ $.widget('ee.table', {
 	},
 	
 	
-	// Sorting
-	
+	/**
+	 * Set sort (see sort::set for info)
+	 */
 	set_sort: function(column, dir) {
 		this.sort.set(column, dir);
 		return this;
 	},
 	
+	/**
+	 * Add sort (see sort::add for info)
+	 */
 	add_sort: function(column, dir) {
 		this.sort.add(column, dir);
 		return this;
 	},
 	
-	reset_sort: function() {
-		this.sort.reset();
-		return this;
-	},
-	
-	
-	// Requests
-	
-	
+	/**
+	 * Refresh with current filters and sort intact
+	 */
 	refresh: function() {
-		var url = EE.BASE + '&C=content_edit'; // @todo window.location.href?
+		var url = EE.BASE + '&' + this.options.base_url;
 		
 		this._request(url);
 		return this;
 	},
 
+	/**
+	 * Make a request with the current filters and sort
+	 *
+	 * Updates the main table, pagination, caches, and triggers
+	 * the load and update events.
+	 */
 	_request: function(url) {
 		var self = this,
-			body = self.element.find('tbody'),	// @todo cache
 			data, success;
 		
 		self._trigger('load', null, self._ui(/* @todo args */));
@@ -193,7 +203,7 @@ $.widget('ee.table', {
 			
 			// @todo only remove those that are not in the result set?
 			
-			body.html(res.rows);
+			self.tbody.html(res.rows);
 			self.pagination.update(res.pagination);			
 		};
 		
@@ -203,8 +213,8 @@ $.widget('ee.table', {
 		self.filters.tbl_sort = this.sort.get();
 		
 		
-		// Weed out the stuff we don't want in there, like XIDs and
-		// session ids.
+		// Weed out the stuff we don't want in there, like XIDs,
+		// session ids, and blank values
 		
 		// Also take this opportunity to create a stable cache key, as
 		// some browsers sort objects and some do not =( . To get consistency
@@ -239,7 +249,7 @@ $.widget('ee.table', {
 			url += '&tbl_offset=' + self.filters.tbl_offset;
 			delete self.filters.tbl_offset;
 		}
-		
+				
 		// Always send an XID
 		self.filters.XID = EE.XID;
 		
@@ -261,10 +271,10 @@ $.widget('ee.table', {
 		});
 	},
 	
-	
-	// Private util
-	
-	
+	/**
+	 * Helper method to set the filter object
+	 * from form elements.
+	 */
 	_set_filter: function(obj) {
 		var els = obj.serializeArray(),
 			self = this;
@@ -274,6 +284,11 @@ $.widget('ee.table', {
 		});
 	},
 	
+	/**
+	 * Event data helper
+	 *
+	 * Should reflect the state most hooks might care about
+	 */
 	_ui: function() {
 		return {
 			sort: this.sort.get(),// sort order [[column, asc/desc], [column2, asc/desc]]
@@ -299,12 +314,16 @@ function Cache(limit) {
 
 Cache.prototype = {
 	
-	// Limit getter
+	/*
+	 * Get the cache limit
+	 */
 	limit: function() {
 		return this.limit;
 	},
 	
-	// Size getter
+	/*
+	 * Get current cache size
+	 */
 	size: function() {
 		return this.cache.length;
 	},
@@ -526,6 +545,13 @@ function Sort(options, plugin) {
 	this._initial_sort = options.sort;
 	
 	
+	// @todo pass css and sort prefs configs (initial + allowed columns)
+	// @todo make our own based on the php example sort?
+	if ( ! options.pagination) {
+		$(plugin.element).tablesorter();
+		return;
+	}
+	
 	// cache all headers and check if we want
 	// them to be sortable
 	this.headers.each(function() {
@@ -561,6 +587,7 @@ function Sort(options, plugin) {
 	// setup initial sort without making a request
 	// @todo, this could be better
 	var l = this._initial_sort.length;
+	
 	while (l--) {
 		this.sort.push(this._initial_sort[l]);
 		this.header_map[ this._initial_sort[l][0] ]
@@ -570,6 +597,13 @@ function Sort(options, plugin) {
 }
 
 Sort.prototype = {
+	
+	/**
+	 * Get current sort
+	 *
+	 * @param	string	column name for sort to return [optional]
+	 * @return	mixed	full sort array | sort direction of column | null
+	 */
 	get: function(column) {
 		if (column) {
 			var l = this.sort.length;
@@ -586,6 +620,12 @@ Sort.prototype = {
 		return this.sort;
 	},
 	
+	/**
+	 * Add sort to column
+	 *
+	 * @param	string	column name (or full sort array, see set)
+	 * @param	string	sort direction [asc|desc]
+	 */
 	add: function(column, dir) {
 		var sort = column, l;
 		
@@ -610,6 +650,11 @@ Sort.prototype = {
 		return this;
 	},
 	
+	/**
+	 * Set sort
+	 *
+	 * @param	mixed	sort array ([[field, dir], [field2, dir]])
+	 */
 	set: function(column, dir) {
 		
 		// clear and add
@@ -620,6 +665,9 @@ Sort.prototype = {
 		return this;
 	},
 	
+	/**
+	 * Reset sort to initial conditions
+	 */
 	reset: function() {
 		this.clear();
 		this.set(this._initial_sort);
@@ -628,6 +676,9 @@ Sort.prototype = {
 		return this;
 	},
 	
+	/**
+	 * Clear sort entirely, does not reset
+	 */
 	clear: function() {
 		var l = this.sort.length;
 

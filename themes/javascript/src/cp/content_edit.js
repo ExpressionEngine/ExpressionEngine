@@ -149,6 +149,7 @@ $(document).ready(function() {
 		}
 	});
 	
+	
 	// Keyword filter
 	var indicator = $('.searchIndicator');
 	
@@ -160,6 +161,7 @@ $(document).ready(function() {
 	.bind('tableupdate', function() {
 		indicator.css('visibility', 'hidden');
 	});
+	
 });
 
 /*
