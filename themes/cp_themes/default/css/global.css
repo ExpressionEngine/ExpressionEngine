@@ -1337,15 +1337,15 @@ table.mainTable thead {
 }
 
 table.mainTable .headerSortUp {
-	background:			transparent url('../images/table_sort_desc.gif') bottom right no-repeat;
+	background:			transparent url('../images/table_sort_desc.gif') center right no-repeat;
 	border-left:		1px solid #C60047;
-
+	padding-right:		20px;
 }
 
 table.mainTable th.headerSortDown {
-	background:			transparent url('../images/table_sort_asc.gif') bottom right no-repeat;
+	background:			transparent url('../images/table_sort_asc.gif') center right no-repeat;
 	border-left:		1px solid #C60047;
-
+	padding-right:		20px;
 }
 
 table.mainTable td.highlight {
