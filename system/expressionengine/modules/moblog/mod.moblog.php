@@ -780,8 +780,8 @@ class Moblog {
 			/** -----------------------------*/
 
 			if ($allow_overrides == 'y' &&
-				(preg_match("/\{file_archive\}(.*)\{\/file_archive\}/", $this->body, $matches) OR
-				 preg_match("/\<file_archive\>(.*)\<\/file_archive\>/", $this->body, $matches)))
+				(preg_match("/\{file_archive\}(.*)\{\/file_archive\}/s", $this->body, $matches) OR
+				 preg_match("/\<file_archive\>(.*)\<\/file_archive\>/s", $this->body, $matches)))
 			{
 				$matches['1'] = trim($matches['1']);
 
@@ -801,8 +801,8 @@ class Moblog {
 			/**  Categories set in email?
 			/** -----------------------------*/
 
-			if ($allow_overrides == 'n' OR ( ! preg_match("/\{category\}(.*)\{\/category\}/", $this->body, $cats) &&
-											 ! preg_match("/\<category\>(.*)\<\/category\>/", $this->body, $cats)))
+			if ($allow_overrides == 'n' OR ( ! preg_match("/\{category\}(.*)\{\/category\}/s", $this->body, $cats) &&
+											 ! preg_match("/\<category\>(.*)\<\/category\>/s", $this->body, $cats)))
 			{
 				$this->post_data['categories'] = trim($this->moblog_array['moblog_categories']);
 			}
@@ -810,7 +810,7 @@ class Moblog {
 			{
 				$cats['1'] = str_replace(':','|',$cats['1']);
 				$cats['1'] = str_replace(',','|',$cats['1']);
-				$this->post_data['categories'] = $cats['1'];
+				$this->post_data['categories'] = trim($cats['1']);
 				$this->body = str_replace($cats['0'],'',$this->body);
 			}
 
@@ -818,14 +818,14 @@ class Moblog {
 			/**  Status set in email
 			/** -----------------------------*/
 
-			if ($allow_overrides == 'n' OR ( ! preg_match("/\{status\}(.*)\{\/status\}/", $this->body, $cats) &&
-											 ! preg_match("/\<status\>(.*)\<\/status\>/", $this->body, $cats)))
+			if ($allow_overrides == 'n' OR ( ! preg_match("/\{status\}(.*)\{\/status\}/s", $this->body, $cats) &&
+											 ! preg_match("/\<status\>(.*)\<\/status\>/s", $this->body, $cats)))
 			{
 				$this->post_data['status'] = trim($this->moblog_array['moblog_status']);
 			}
 			else
 			{
-				$this->post_data['status'] = $cats['1'];
+				$this->post_data['status'] = trim($cats['1']);
 				$this->body = str_replace($cats['0'],'',$this->body);
 			}
 
@@ -833,8 +833,8 @@ class Moblog {
 			/**  Sticky Set in Email
 			/** -----------------------------*/
 
-			if ($allow_overrides == 'n' OR ( ! preg_match("/\{sticky\}(.*)\{\/sticky\}/", $this->body, $mayo) &&
-											 ! preg_match("/\<sticky\>(.*)\<\/sticky\>/", $this->body, $mayo)))
+			if ($allow_overrides == 'n' OR ( ! preg_match("/\{sticky\}(.*)\{\/sticky\}/s", $this->body, $mayo) &&
+											 ! preg_match("/\<sticky\>(.*)\<\/sticky\>/s", $this->body, $mayo)))
 			{
 				$this->post_data['sticky'] = ( ! isset($this->moblog_array['moblog_sticky_entry'])) ? $this->sticky : $this->moblog_array['moblog_sticky_entry'];
 			}
@@ -850,9 +850,11 @@ class Moblog {
 			/**  Default Field set in email?
 			/** -----------------------------*/
 
-			if ($allow_overrides == 'y' && (preg_match("/\{field\}(.*)\{\/field\}/", $this->body, $matches) OR
-											preg_match("/\<field\>(.*)\<\/field\>/", $this->body, $matches)))
+			if ($allow_overrides == 'y' && (preg_match("/\{field\}(.*)\{\/field\}/s", $this->body, $matches) OR
+											preg_match("/\<field\>(.*)\<\/field\>/s", $this->body, $matches)))
 			{
+				$matches[1] = trim($matches[1]);
+
 				$this->EE->db->select('field_id');
 				$this->EE->db->from('channel_fields, channels');
 				$this->EE->db->where('channels.field_group', 'channel_fields.group_id');
