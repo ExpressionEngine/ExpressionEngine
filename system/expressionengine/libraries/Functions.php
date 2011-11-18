@@ -243,7 +243,7 @@ class EE_Functions {
 	 */
 	function encode_ee_tags($str, $convert_curly = FALSE)
 	{
-		if ($str != '')
+		if ($str != '' && strpos($str, '{') !== FALSE)
 		{
 			if ($convert_curly === TRUE)
 			{
