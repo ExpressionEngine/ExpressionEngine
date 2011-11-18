@@ -45,7 +45,7 @@ class Addons_installer {
 	 * @param	string
 	 * @return	void
 	 */
-	function install($addon, $type = 'module', $check_package = TRUE)
+	function install($addon, $type = 'module')
 	{
 		$is_package = $this->EE->addons->is_package($addon);
 
@@ -53,36 +53,29 @@ class Addons_installer {
 		{
 			foreach($type as $component)
 			{
-				$this->install($addon, $component, $check_package);
+				$this->install($addon, $component);
 				
 			}
-		}
-		elseif ($check_package && $is_package != FALSE)
-		{
-			if (count($this->EE->addons->_packages[$addon]) > 1)
-			{
-				
-			$this->EE->functions->redirect(BASE.AMP.'C=addons'.AMP.'M=package_settings'.AMP.'package='.$addon.AMP.'return='.$_GET['C']);
-			}
-			
-			$this->install($addon, key($this->EE->addons->_packages[$addon]), FALSE);
 		}
 		else
 		{
-			$method = 'install_'.$type;
-
-			if (method_exists($this, $method))
+			foreach($this->EE->addons->_packages[$addon] as $type => $settings)
 			{
-				if ($is_package)
+				$method = 'install_'.$type;
+
+				if (method_exists($this, $method))
 				{
-					$this->EE->load->add_package_path($this->EE->addons->_packages[$addon][$type]['path'], FALSE);
-				}
-				
-				$this->$method($addon);
-				
-				if ($is_package)
-				{
-					$this->EE->load->remove_package_path($this->EE->addons->_packages[$addon][$type]['path']);
+					if ($is_package)
+					{
+						$this->EE->load->add_package_path($settings['path'], FALSE);
+					}
+					
+					$this->$method($addon);
+					
+					if ($is_package)
+					{
+						$this->EE->load->remove_package_path($settings['path']);
+					}
 				}
 			}
 		}
@@ -101,44 +94,36 @@ class Addons_installer {
 	 * @param	string
 	 * @return	void
 	 */
-	function uninstall($addon, $type = 'module', $check_package = TRUE)
+	function uninstall($addon, $type = 'module')
 	{
-		$third_party = $this->EE->addons->is_package($addon);
 		$is_package = $this->EE->addons->is_package($addon);
 		
 		if (is_array($type))
 		{
 			foreach($type as $component)
 			{
-				$this->uninstall($addon, $component, $check_package);
+				$this->uninstall($addon, $component);
 			}
-		}
-		elseif ($check_package && $is_package)
-		{
-			if (count($this->EE->addons->_packages[$addon]) > 1)
-			{
-				$this->EE->functions->redirect(BASE.AMP.'C=addons'.AMP.'M=package_settings'.AMP.'package='.$addon.AMP.'return='.$_GET['C']);
-			}
-			
-			$this->uninstall($addon, key($this->EE->addons->_packages[$addon]), FALSE);
 		}
 		else
 		{
-
-			$method = 'uninstall_'.$type;
-
-			if (method_exists($this, $method))
+			foreach($this->EE->addons->_packages[$addon] as $type => $settings)
 			{
-				if ($is_package)
+				$method = 'uninstall_'.$type;
+	
+				if (method_exists($this, $method))
 				{
-					$this->EE->load->add_package_path($this->EE->addons->_packages[$addon][$type]['path'], FALSE);
-				}
-
-				$this->$method($addon);
-
-				if ($is_package)
-				{
-					$this->EE->load->remove_package_path($this->EE->addons->_packages[$addon][$type]['path']);
+					if ($is_package)
+					{
+						$this->EE->load->add_package_path($settings['path'], FALSE);
+					}
+	
+					$this->$method($addon);
+	
+					if ($is_package)
+					{
+						$this->EE->load->remove_package_path($settings['path']);
+					}
 				}
 			}
 		}
