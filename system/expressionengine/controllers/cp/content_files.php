@@ -2359,15 +2359,19 @@ class Content_files extends CI_Controller {
 					
 					if (trim($val) == '') continue;
 					
-					if ( ! isset($_POST[$name]) OR ! preg_match("/^\w+$/", $_POST[$name]) OR
-						in_array($_POST[$name], $names))
+					$short_name = $this->input->post($name);
+					
+					if ($short_name === FALSE OR
+						preg_match('/[^a-z0-9\_\-]/i', $short_name) OR
+						in_array(strtolower($short_name), $names) OR
+						strtolower($short_name) == 'thumbs')
 					{
 						return $this->output->show_user_error('submission', array(lang('invalid_short_name')));
 					}
 					
 					$size_data = array(
 						'upload_location_id' => $id,
-						'short_name' => $_POST[$name],
+						'short_name' => $short_name,
 						'title' => $_POST['size_short_name_'.$number],
 						'resize_type' => $_POST['size_resize_type_'.$number],
 						'height' => ($_POST['size_height_'.$number] == '') ? 0 : $_POST['size_height_'.$number],
