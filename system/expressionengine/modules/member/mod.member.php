@@ -3008,7 +3008,7 @@ class Member {
 		$query = $this->EE->db->query("SELECT m.member_id, m.group_id, m.username, m.screen_name, m.email, m.ip_address, m.location, m.total_entries, m.total_comments, m.private_messages, m.total_forum_topics, m.total_forum_posts AS total_forum_replies, m.total_forum_topics + m.total_forum_posts AS total_forum_posts,
 							g.group_title AS group_description FROM exp_members AS m, exp_member_groups AS g
 							WHERE g.group_id = m.group_id
-							g.site_id = '".$this->EE->db->escape_str($this->EE->config->item('site_id'))."'
+							AND g.site_id = '".$this->EE->db->escape_str($this->EE->config->item('site_id'))."'
 							AND m.member_id IN ('".implode("', '", $ignored)."')");
 
 		if ($query->num_rows() == 0)
