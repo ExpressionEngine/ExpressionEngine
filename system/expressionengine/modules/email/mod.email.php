@@ -184,7 +184,7 @@ class Email {
 		}
 
 		// Recipient Email Checking
-		$this->_user_recipients = 'true';  // By default
+		$this->_user_recipients = 'yes';  // By default
 
 		$recipients	= $this->EE->TMPL->fetch_param('recipients', '');
 		$charset	= $this->EE->TMPL->fetch_param('charset', '');
