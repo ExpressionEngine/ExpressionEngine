@@ -847,9 +847,13 @@ class File {
 		$default_variables = array('caption', 'title');
 		$custom_fields = array('1' => 'one', '2' => 'two', '3' => 'three', '4' => 'four', '5' => 'five', '6' => 'six');
 
+		$this->EE->load->model('file_upload_preferences_model');
+		$upload_prefs = $this->EE->file_upload_preferences_model->get_upload_preferences(1);
 
 		foreach ($this->query->result_array() as $count => $row)
 		{
+			$row_prefs = $upload_prefs[$row['upload_location_id']];
+			
 			$row['absolute_count']	= $this->p_page + $count + 1;
 
 			//  More Variables, Mostly for Conditionals
@@ -860,7 +864,7 @@ class File {
 			$row['directory_id']	= $row['id'];
 			$row['directory_title']	= $row['name'];
 			$row['entry_id']		= $row['file_id'];
-			$row['file_url']		= reduce_double_slashes($row['url'].'/'.$row['file_name']);
+			$row['file_url']		= reduce_double_slashes($row_prefs['url'].'/'.$row['file_name']);
 			$row['filename'] 		= $row['file_name'];
 			$row['viewable_image'] = $this->is_viewable_image($row['file_name']);
 
@@ -882,7 +886,7 @@ class File {
 						);
 			
 			// Get File Size/H/W data
-			$size_data = $this->get_file_sizes(reduce_double_slashes($row['server_path'].'/'.$row['filename']));
+			$size_data = $this->get_file_sizes(reduce_double_slashes($row_prefs['server_path'].'/'.$row['filename']));
 
 			
 			foreach($size_data as $k => $v)
@@ -900,9 +904,9 @@ class File {
 				{
 					$size_data = array();
 					
-					$row[$data['name'].'_file_url'] = reduce_double_slashes($row['url'].'/_'.$data['name'].'/'.$row['file_name']);
+					$row[$data['name'].'_file_url'] = reduce_double_slashes($row_prefs['url'].'/_'.$data['name'].'/'.$row['file_name']);
 					
-					$size_data = $this->get_file_sizes(reduce_double_slashes($row['server_path'].'/_'.$data['name'].'/'.$row['file_name']));
+					$size_data = $this->get_file_sizes(reduce_double_slashes($row_prefs['server_path'].'/_'.$data['name'].'/'.$row['file_name']));
 						
 					foreach($size_data as $k => $v)
 					{

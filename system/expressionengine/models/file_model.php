@@ -721,7 +721,6 @@ class File_model extends CI_Model {
 			$this->session->userdata('group_id'),
 			$directory_id
 		);
-		$upload_dir = $upload_dir->row();
 		
 		// Delete the thumb
 		$thumb_information = $this->filemanager->get_thumb($file_name, $directory_id);
@@ -732,13 +731,13 @@ class File_model extends CI_Model {
 		
 		foreach ($file_dimensions->result() as $file_dimension)
 		{
-			@unlink($upload_dir->server_path . '_' . $file_dimension->short_name . '/' . $file_name);
+			@unlink($upload_dir['server_path'] . '_' . $file_dimension->short_name . '/' . $file_name);
 		}
 		
 		if ( ! $only_thumbs)
 		{
 			// Finally, delete the original
-			if ( ! @unlink($upload_dir->server_path . $file_name))
+			if ( ! @unlink($upload_dir['server_path'] . $file_name))
 			{
 				return FALSE;
 			}

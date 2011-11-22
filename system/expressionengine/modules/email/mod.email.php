@@ -879,7 +879,7 @@ class Email {
 				'RET'	=> $this->EE->TMPL->fetch_param('return', ''),
 				'URI'	=> ($this->EE->uri->uri_string == '') ? 'index' : $this->EE->uri->uri_string,
 				'recipients'		=> base64_encode($recipients),
-				'user_recipients'	=> ($this->_user_recipients == 'true') ? md5($this->EE->db->username.$this->EE->db->password.'y') : md5($this->EE->db->username.$this->EE->db->password.'n'),
+				'user_recipients'	=> ($this->_user_recipients == 'yes') ? md5($this->EE->db->username.$this->EE->db->password.'y') : md5($this->EE->db->username.$this->EE->db->password.'n'),
 				'charset'			=> $charset,
 				'redirect'			=> $this->EE->TMPL->fetch_param('redirect', ''),
 				'replyto'			=> $this->EE->TMPL->fetch_param('replyto', '')

@@ -2476,9 +2476,9 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 				
 				if ($uploads->num_rows() > 0)
 				{
-					foreach($uploads->result_array() as $yeeha)
+					foreach($uploads->result_array() as $upload)
 					{
-						$this->db->query("INSERT INTO exp_upload_no_access (upload_id, upload_loc, member_group) VALUES ('".$this->db->escape_str($yeeha['id'])."', 'cp', '{$group_id}')");
+						$this->db->query("INSERT INTO exp_upload_no_access (upload_id, upload_loc, member_group) VALUES ('".$this->db->escape_str($upload['id'])."', 'cp', '{$group_id}')");
 					}
 				}
 				

@@ -253,6 +253,7 @@ class Sites extends CI_Controller {
 		$this->cp->set_variable('cp_page_title', $title);
 		
 		$this->load->model('site_model');
+		$this->load->model('file_upload_preferences_model');
 		$this->load->helper(array('form', 'snippets'));
 		$this->lang->loadfile('filemanager');
 		
@@ -293,6 +294,9 @@ class Sites extends CI_Controller {
 				$vars['upload_directories'] = 	$this->db->query("SELECT name, id, site_label FROM exp_upload_prefs, exp_sites
 										 						WHERE exp_sites.site_id = exp_upload_prefs.site_id
 										 						ORDER by site_label, exp_upload_prefs.name");
+				
+				// Bring in overridden upload directory values to show on Add Site screen
+				$vars['upload_directories_override'] = $this->file_upload_preferences_model->get_upload_preferences(1, NULL, TRUE);
 
 				$vars['upload_directory_options'] = array(
 												'nothing'		=> lang('do_nothing'),

@@ -2359,15 +2359,19 @@ class Content_files extends CI_Controller {
 					
 					if (trim($val) == '') continue;
 					
-					if ( ! isset($_POST[$name]) OR ! preg_match("/^\w+$/", $_POST[$name]) OR
-						in_array($_POST[$name], $names))
+					$short_name = $this->input->post($name);
+					
+					if ($short_name === FALSE OR
+						preg_match('/[^a-z0-9\_\-]/i', $short_name) OR
+						in_array(strtolower($short_name), $names) OR
+						strtolower($short_name) == 'thumbs')
 					{
 						return $this->output->show_user_error('submission', array(lang('invalid_short_name')));
 					}
 					
 					$size_data = array(
 						'upload_location_id' => $id,
-						'short_name' => $_POST[$name],
+						'short_name' => $short_name,
 						'title' => $_POST['size_short_name_'.$number],
 						'resize_type' => $_POST['size_resize_type_'.$number],
 						'height' => ($_POST['size_height_'.$number] == '') ? 0 : $_POST['size_height_'.$number],
@@ -2397,6 +2401,24 @@ class Content_files extends CI_Controller {
 			$this->db->insert('upload_prefs', $data);
 			$id = $this->db->insert_id();
 			$cp_message = lang('new_file_upload_created');
+		}
+		
+		// Update upload_preferences config item if it exists
+		if (($upload_prefs_config = $this->config->item('upload_preferences')) !== FALSE)
+		{
+			// We'll go through each key we have in the $data array and see
+			// if the user has a custom value set for it
+			foreach ($data as $key => $value)
+			{
+				// If the key exists in custom preferences, set the new value
+				if (isset($upload_prefs_config[$id][$key]))
+				{
+					$upload_prefs_config[$id][$key] = $value;
+				}
+			}
+			
+			// Update config with new values
+			$this->config->_update_config(array('upload_preferences' => $upload_prefs_config));
 		}
 		
 		if (isset($size_data))
@@ -2466,13 +2488,12 @@ class Content_files extends CI_Controller {
 		);
 
 		// Grab all upload locations with this id
-		$this->db->where('id', $id);
-		$items = $this->db->get('upload_prefs');
+		$items = $this->file_upload_preferences_model->get_upload_preferences(NULL, $id);
 		$data['items'] = array();
 
-		foreach($items->result() as $item)
+		if (isset($items['name']))
 		{
-			$data['items'][] = $item->name;
+			$data['items'][] = $items['name'];
 		}
 
 		$this->javascript->compile();
