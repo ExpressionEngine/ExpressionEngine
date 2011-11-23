@@ -4095,13 +4095,16 @@ class Channel {
 							$data = $this->EE->api_channel_fields->apply('pre_process', array($row['field_id_'.$this->cfields[$row['site_id']][$key_name]]));
 
 							// Blast through all the chunks
-							foreach($pfield_chunk[$row['site_id']][$key_name] as $chk_data)
+							if (isset($pfield_chunk[$row['site_id']][$key_name]))
 							{
-								// $chk_data = array(chunk_contents, parameters, chunk_with_tag);
-								$tpl_chunk = $this->EE->api_channel_fields->apply('replace_tag', array($data, $chk_data[1], $chk_data[0]));
+								foreach($pfield_chunk[$row['site_id']][$key_name] as $chk_data)
+								{
+									// $chk_data = array(chunk_contents, parameters, chunk_with_tag);
+									$tpl_chunk = $this->EE->api_channel_fields->apply('replace_tag', array($data, $chk_data[1], $chk_data[0]));
 
-								// Replace the chunk
-								$tagdata = str_replace($chk_data[2], $tpl_chunk, $tagdata);
+									// Replace the chunk
+									$tagdata = str_replace($chk_data[2], $tpl_chunk, $tagdata);
+								}
 							}
 						}
 						else
