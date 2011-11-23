@@ -4956,7 +4956,7 @@ class Admin_content extends CI_Controller {
 			$status_order = $this->status_model->get_next_status_order($this->input->get_post('group_id'));
 			$vars['status']			= '';
 			$vars['status_order']	= $status_order;
-			$vars['highlight']	 	= '';
+			$vars['highlight']	 	= '000000';
 		}
 
 		$vars['form_hidden']['status_id'] = $status_id;
