@@ -211,7 +211,7 @@ class Wizard extends CI_Controller {
 		else
 		{
 			// must be in a public system folder so try one level back from current folder
-			$this->theme_path = str_replace(SYSDIR, '', $this->theme_path).'themes/';
+			$this->theme_path = preg_replace('/\b'.preg_quote(SYSDIR).'\b/', '', $this->theme_path).'themes/';
 		}
 
 		$this->root_theme_path = $this->theme_path;
