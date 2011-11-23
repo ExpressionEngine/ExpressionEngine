@@ -449,10 +449,19 @@ class Comment {
 		}
 		
 		$this_sort = ($random) ? 'random' : strtolower($sort);
-		$this_page = ($pagination->current_page == '' OR ($pagination->per_page > 1 AND $pagination->current_page == 1)) ? 0 : $pagination->current_page;
+		
+		// Figure out of we need a pagination offset
+		if (preg_match('/P(\d+)(?:\/|$)/', $this->EE->uri->uri_string, $matches))
+		{
+			$pagination->offset = $matches[1];
+		}
+		else
+		{
+			$pagination->offset = 0;
+		}
 
 		$this->EE->db->order_by($order_by, $this_sort);
-		$this->EE->db->limit($pagination->per_page, $this_page);
+		$this->EE->db->limit($pagination->per_page, $pagination->offset);
 		
 		$this->EE->db->stop_cache();
 		$query = $this->EE->db->get();
