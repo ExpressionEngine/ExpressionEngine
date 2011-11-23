@@ -1602,7 +1602,7 @@ class Forum {
 	 */
 	protected function _build_crumbs($title, $crumbs, $str)
 	{		
-		$this->set_page_title(($title == '') ? 'Powered By ExpressionEngine' : $title);
+		$this->set_page_title(($title == '') ? lang('home') : $title);
 	
 		$crumbs .= str_replace('{crumb_title}', $this->_convert_special_chars($str, TRUE), $this->load_element('breadcrumb_current_page'));		
 	
