@@ -40,7 +40,7 @@ class Comment {
 	// 0 -	Comments only expire if the comment expiration field in the PUBLISH page contains a value.
 	// 1 -	If the comment expiration field is blank, comments will still expire if the global preference
 	// 		is set in the Channel Preferences page.  Use this option only if you used EE prior to
-	//		version 1.1 and you want your old comments to expire.	
+	//		version 1.1 and you want your old comments to expire.
 
 	var $comment_expiration_mode = 0;
 
@@ -105,7 +105,7 @@ class Comment {
 		if ($this->EE->TMPL->fetch_param('author_id') !== FALSE OR $this->EE->TMPL->fetch_param('entry_id') !== FALSE OR $this->EE->TMPL->fetch_param('url_title') !== FALSE OR $this->EE->TMPL->fetch_param('comment_id') !== FALSE)
 		{
 			$force_entry = TRUE;
-		}			
+		}
 
 		// A note on returns!
 		// If dynamic is off - ANY no results triggers no_result template
@@ -168,7 +168,7 @@ class Comment {
 			}
 
 			$channels = $this->EE->db->get('channels');
-				
+			
 			if ($channels->num_rows() == 0)
 			{
 				if ( ! $dynamic)
@@ -459,7 +459,7 @@ class Comment {
 		{
 			$pagination->offset = 0;
 		}
-
+		
 		$this->EE->db->order_by($order_by, $this_sort);
 		$this->EE->db->limit($pagination->per_page, $pagination->offset);
 		
@@ -525,7 +525,7 @@ class Comment {
 		if ($query->num_rows() > 0)
 		{
 			$results = $query->result_array();
-					
+			
 			// Potentially a lot of information
 			$query->free_result();
 		}
@@ -580,11 +580,14 @@ class Comment {
 
 					switch ($val)
 					{
-						case 'comment_date' 	: $comment_date[$matches['0'][$j]] = $this->EE->localize->fetch_date_params($matches['1'][$j]);
+						case 'comment_date':
+							$comment_date[$matches['0'][$j]] = $this->EE->localize->fetch_date_params($matches['1'][$j]);
 							break;
-						case 'gmt_comment_date' : $gmt_comment_date[$matches['0'][$j]] = $this->EE->localize->fetch_date_params($matches['1'][$j]);
+						case 'gmt_comment_date':
+							$gmt_comment_date[$matches['0'][$j]] = $this->EE->localize->fetch_date_params($matches['1'][$j]);
 							break;
-						case 'edit_date'		: $edit_date[$matches['0'][$j]] = $this->EE->localize->fetch_date_params($matches['1'][$j]);
+						case 'edit_date':
+							$edit_date[$matches['0'][$j]] = $this->EE->localize->fetch_date_params($matches['1'][$j]);
 							break;
 					}
 				}
@@ -642,7 +645,9 @@ class Comment {
 			if (isset($row['author_id']))
 			{
 				if ($row['author_id'] == 0)
+				{
 					$row['location'] = $row['c_location'];
+				}
 			}
 
 			$tagdata = $this->EE->TMPL->tagdata;
@@ -681,19 +686,21 @@ class Comment {
 				)
 			{
 				$cond['editable'] = TRUE;
-				$cond['can_moderate_comment'] = TRUE;								
+				$cond['can_moderate_comment'] = TRUE;
 			}
 			elseif ($this->EE->session->userdata['member_id'] != '0'  && $row['author_id'] == $this->EE->session->userdata['member_id'])
 			{
 				$cond['editable'] = TRUE;
-			}			
+			}
 
 			if ( isset($mfields) && is_array($mfields) && count($mfields) > 0)
 			{
 				foreach($mfields as $key => $value)
 				{
 					if (isset($row['m_field_id_'.$value]))
+					{
 						$cond[$key] = $row['m_field_id_'.$value];
+					}
 				}
 			}
 
@@ -725,19 +732,17 @@ class Comment {
 					$tagdata = $this->EE->TMPL->swap_var_single($key, $sw, $tagdata);
 				}
 
-
-
 				/** ----------------------------------------
 				/**  parse permalink
 				/** ----------------------------------------*/
 
 				if ($key == 'permalink' && isset($row['comment_id']))
 				{
-						$tagdata = $this->EE->TMPL->swap_var_single(
-															$key,
-															$this->EE->functions->create_url($uristr.'#'.$row['comment_id'], FALSE),
-															$tagdata
-														 );
+					$tagdata = $this->EE->TMPL->swap_var_single(
+						$key,
+						$this->EE->functions->create_url($uristr.'#'.$row['comment_id'], FALSE),
+						$tagdata
+					);
 				}
 
 				/** ----------------------------------------
@@ -747,10 +752,10 @@ class Comment {
 				if (strncmp($key, 'comment_path', 12) == 0 OR strncmp($key, 'entry_id_path', 13) == 0)
 				{
 					$tagdata = $this->EE->TMPL->swap_var_single(
-														$key,
-														$this->EE->functions->create_url($this->EE->functions->extract_path($key).'/'.$row['entry_id']),
-														$tagdata
-													 );
+						$key,
+						$this->EE->functions->create_url($this->EE->functions->extract_path($key).'/'.$row['entry_id']),
+						$tagdata
+					);
 				}
 
 
@@ -763,10 +768,10 @@ class Comment {
 					$path = ($this->EE->functions->extract_path($key) != '' AND $this->EE->functions->extract_path($key) != 'SITE_INDEX') ? $this->EE->functions->extract_path($key).'/'.$row['url_title'] : $row['url_title'];
 
 					$tagdata = $this->EE->TMPL->swap_var_single(
-														$key,
-														$this->EE->functions->create_url($path, FALSE),
-														$tagdata
-													 );
+						$key,
+						$this->EE->functions->create_url($path, FALSE),
+						$tagdata
+					);
 				}
 
 				/** ----------------------------------------
@@ -806,7 +811,17 @@ class Comment {
 					if (isset($row['edit_date']))
 					{
 						foreach ($edit_date[$key] as $dvar)
-							$val = str_replace($dvar, $this->EE->localize->convert_timestamp($dvar, $this->EE->localize->timestamp_to_gmt($row['edit_date']), TRUE), $val);
+						{
+							$val = str_replace(
+								$dvar, 
+								$this->EE->localize->convert_timestamp(
+									$dvar, 
+									$this->EE->localize->timestamp_to_gmt($row['edit_date']), 
+									TRUE
+								), 
+								$val
+							);
+						}
 
 						$tagdata = $this->EE->TMPL->swap_var_single($key, $val, $tagdata);
 					}
@@ -943,10 +958,10 @@ class Comment {
 					$path = ($row['comment_url'] == '') ? $row['channel_url'] : $row['comment_url'];
 
 					$tagdata = $this->EE->TMPL->swap_var_single(
-															$key,
-															$path.'/'.$row['url_title'],
-															$tagdata
-														 );
+						$key,
+						$path.'/'.$row['url_title'],
+						$tagdata
+					);
 				}
 
 				/** ----------------------------------------
@@ -958,10 +973,10 @@ class Comment {
 					$path = ($row['comment_url'] == '') ? $row['channel_url'] : $row['comment_url'];
 
 					$tagdata = $this->EE->TMPL->swap_var_single(
-															$key,
-															$path.'/'.$row['entry_id'],
-															$tagdata
-														 );
+						$key,
+						$path.'/'.$row['entry_id'],
+						$tagdata
+					);
 				}
 
 
@@ -973,10 +988,10 @@ class Comment {
 				{
 
 					$tagdata = $this->EE->TMPL->swap_var_single(
-															$key,
-															$this->EE->functions->encode_ee_tags($row['comment'], TRUE),
-															$tagdata
-														 );
+						$key,
+						$this->EE->functions->encode_ee_tags($row['comment'], TRUE),
+						$tagdata
+					);
 				}
 
 				/** ----------------------------------------
@@ -997,14 +1012,15 @@ class Comment {
 						}
 						else
 						{
-							$comment = $this->EE->typography->parse_type( $row['comment'],
-															array(
-																	'text_format'	=> $row['comment_text_formatting'],
-																	'html_format'	=> $row['comment_html_formatting'],
-																	'auto_links'	=> $row['comment_auto_link_urls'],
-																	'allow_img_url' => $row['comment_allow_img_urls']
-																)
-														);
+							$comment = $this->EE->typography->parse_type(
+								$row['comment'],
+								array(
+									'text_format'	=> $row['comment_text_formatting'],
+									'html_format'	=> $row['comment_html_formatting'],
+									'auto_links'	=> $row['comment_auto_link_urls'],
+									'allow_img_url' => $row['comment_allow_img_urls']
+								)
+							);
 						}
 
 					$tagdata = $this->EE->TMPL->swap_var_single($key, $comment, $tagdata);
@@ -1030,14 +1046,19 @@ class Comment {
 					}
 					else
 					{
-						$tagdata = $this->EE->TMPL->swap_var_single($key,
-														$this->EE->typography->parse_type($row['signature'], array(
-																					'text_format'	=> 'xhtml',
-																					'html_format'	=> 'safe',
-																					'auto_links'	=> 'y',
-																					'allow_img_url' => $this->EE->config->item('sig_allow_img_hotlink')
-																				)
-																			), $tagdata);
+						$tagdata = $this->EE->TMPL->swap_var_single(
+							$key,
+							$this->EE->typography->parse_type(
+								$row['signature'], 
+								array(
+									'text_format'	=> 'xhtml',
+									'html_format'	=> 'safe',
+									'auto_links'	=> 'y',
+									'allow_img_url' => $this->EE->config->item('sig_allow_img_hotlink')
+								)
+							), 
+							$tagdata
+						);
 					}
 				}
 
@@ -1061,7 +1082,9 @@ class Comment {
 				if ($key == "avatar_url")
 				{
 					if ( ! isset($row['avatar_filename']))
+					{
 						$row['avatar_filename'] = '';
+					}
 
 					if ($this->EE->session->userdata('display_avatars') == 'n' OR $row['avatar_filename'] == ''  OR $this->EE->session->userdata('display_avatars') == 'n')
 					{
@@ -1080,7 +1103,9 @@ class Comment {
 				if ($key == "photo_url")
 				{
 					if ( ! isset($row['photo_filename']))
+					{
 						$row['photo_filename'] = '';
+					}
 
 					if ($this->EE->session->userdata('display_photos') == 'n' OR $row['photo_filename'] == ''  OR $this->EE->session->userdata('display_photos') == 'n')
 					{
@@ -1208,7 +1233,7 @@ class Comment {
 		if (preg_match("#(^|/)P(\d+)(/|$)#", $qstring, $match))
 		{
 			$qstring = trim($this->EE->functions->remove_double_slashes(str_replace($match['0'], '/', $qstring)), '/');
-		}		
+		}
 
 		// Figure out the right entry ID
 		// Order of precedence: POST, entry_id=, url_title=, $qstring
@@ -1404,20 +1429,20 @@ class Comment {
 					if (isset($val['3']) && $val['3'] == 'comments_expired')
 					{
 						return $val['2'];
-					}					
+					}
 				}
 				elseif ($halt_processing == 'disabled')
 				{
 					if (isset($val['3']) && $val['3'] == 'comments_disabled')
 					{
 						return $val['2'];
-					}					
+					}
 				}
 			}
 
 			// If there is no conditional- just return the message
 			$this->EE->lang->loadfile('comment');
-			return $this->EE->lang->line('cmt_commenting_has_expired');				
+			return $this->EE->lang->line('cmt_commenting_has_expired');
 		}
 
 
@@ -1438,8 +1463,8 @@ class Comment {
 		/** ----------------------------------------*/
 
 		$cond = array();
-		$cond['logged_in']			= ($this->EE->session->userdata('member_id') == 0) ? 'FALSE' : 'TRUE';
-		$cond['logged_out']			= ($this->EE->session->userdata('member_id') != 0) ? 'FALSE' : 'TRUE';
+		$cond['logged_in']	= ($this->EE->session->userdata('member_id') == 0) ? 'FALSE' : 'TRUE';
+		$cond['logged_out']	= ($this->EE->session->userdata('member_id') != 0) ? 'FALSE' : 'TRUE';
 
 		if ($query->row('comment_use_captcha')  == 'n')
 		{
@@ -1496,7 +1521,7 @@ class Comment {
 
 				if ($url == '')
 				{
-					$url = 'http://';					
+					$url = 'http://';
 				}
 
 				$tagdata = $this->EE->TMPL->swap_var_single($key, form_prep($url), $tagdata);
@@ -1597,13 +1622,13 @@ class Comment {
 		$XID = (isset($_POST['XID'])) ? $_POST['XID'] : '';
 
 		$hidden_fields = array(
-								'ACT'	  	=> $this->EE->functions->fetch_action_id('Comment', 'insert_new_comment'),
-								'RET'	  	=> $RET,
-								'URI'	  	=> ($this->EE->uri->uri_string == '') ? 'index' : $this->EE->uri->uri_string,
-								'PRV'	  	=> $PRV,
-								'XID'	  	=> $XID,
-								'entry_id' 	=> $query->row('entry_id')
-							  );
+			'ACT'	  	=> $this->EE->functions->fetch_action_id('Comment', 'insert_new_comment'),
+			'RET'	  	=> $RET,
+			'URI'	  	=> ($this->EE->uri->uri_string == '') ? 'index' : $this->EE->uri->uri_string,
+			'PRV'	  	=> $PRV,
+			'XID'	  	=> $XID,
+			'entry_id' 	=> $query->row('entry_id')
+		);
 
 		if ($query->row('comment_use_captcha')  == 'y')
 		{
@@ -1629,11 +1654,11 @@ class Comment {
 		$url = $this->EE->functions->fetch_site_index(0,0).'/'.$uri_string;
 
 		$data = array(
-						'action'		=> $this->EE->functions->remove_double_slashes($url),
-						'hidden_fields'	=> $hidden_fields,
-						'id'			=> ( ! isset($this->EE->TMPL->tagparams['id'])) ? 'comment_form' : $this->EE->TMPL->tagparams['id'],
-						'class'			=> ( ! isset($this->EE->TMPL->tagparams['class'])) ? NULL : $this->EE->TMPL->tagparams['class']
-					);
+			'action'		=> $this->EE->functions->remove_double_slashes($url),
+			'hidden_fields'	=> $hidden_fields,
+			'id'			=> ( ! isset($this->EE->TMPL->tagparams['id'])) ? 'comment_form' : $this->EE->TMPL->tagparams['id'],
+			'class'			=> ( ! isset($this->EE->TMPL->tagparams['class'])) ? NULL : $this->EE->TMPL->tagparams['class']
+		);
 
 		if ($this->EE->TMPL->fetch_param('name') !== FALSE &&
 			preg_match("#^[a-zA-Z0-9_\-]+$#i", $this->EE->TMPL->fetch_param('name'), $match))
@@ -1683,13 +1708,13 @@ class Comment {
 		/**  Instantiate Typography class
 		/** ----------------------------------------*/
 
-		$this->EE->load->library('typography');		
+		$this->EE->load->library('typography');
 		$this->EE->typography->initialize(array(
-				'parse_images'		=> FALSE,
-				'allow_headings'	=> FALSE,
-				'encode_email'		=> FALSE,
-				'word_censor'		=> ($this->EE->config->item('comment_word_censoring') == 'y') ? TRUE : FALSE)
-				);
+			'parse_images'		=> FALSE,
+			'allow_headings'	=> FALSE,
+			'encode_email'		=> FALSE,
+			'word_censor'		=> ($this->EE->config->item('comment_word_censoring') == 'y') ? TRUE : FALSE)
+		);
 
 		$this->EE->db->select('channels.comment_text_formatting, channels.comment_html_formatting, channels.comment_allow_img_urls, channels.comment_auto_link_urls, channels.comment_max_chars');
 		$this->EE->db->where('channel_titles.channel_id = '.$this->EE->db->dbprefix('channels').'.channel_id');
@@ -1759,7 +1784,7 @@ class Comment {
 
         /** ----------------------------------------
         /**  Set defaults based on member data as needed
-        /** ----------------------------------------*/		
+        /** ----------------------------------------*/
 		
 		$name		= $this->EE->input->post('name', TRUE);
 		$email		= $this->EE->input->post('email', TRUE); // this is just for preview, actual submission will validate the email address
@@ -1779,12 +1804,12 @@ class Comment {
 		/** ----------------------------------------*/
 
 		$cond = $_POST; // Sanitized on input and also in prep_conditionals, so no real worries here
-		$cond['logged_in']			= ($this->EE->session->userdata('member_id') == 0) ? 'FALSE' : 'TRUE';
-		$cond['logged_out']			= ($this->EE->session->userdata('member_id') != 0) ? 'FALSE' : 'TRUE';
-		$cond['name']				= $name;	
-		$cond['email']				= $email;		
-		$cond['url']				= ($url == 'http://') ? '' : $url;
-		$cond['location']			= $location;
+		$cond['logged_in']	= ($this->EE->session->userdata('member_id') == 0) ? 'FALSE' : 'TRUE';
+		$cond['logged_out']	= ($this->EE->session->userdata('member_id') != 0) ? 'FALSE' : 'TRUE';
+		$cond['name']		= $name;
+		$cond['email']		= $email;
+		$cond['url']		= ($url == 'http://') ? '' : $url;
+		$cond['location']	= $location;
 		
 		$tagdata = $this->EE->functions->prep_conditionals($tagdata, $cond);
 
@@ -2028,7 +2053,7 @@ class Comment {
 		{
 			$error = $this->EE->lang->line('cmt_missing_comment');
 			return $this->EE->output->show_user_error('submission', $error);
-		}		
+		}
 
 		/** ----------------------------------------
 		/**  Is the user banned?
@@ -2114,32 +2139,32 @@ class Comment {
 		$this->EE->db->where('channel_titles.status', 'closed');
 */
 		$sql = "SELECT exp_channel_titles.title,
-						exp_channel_titles.url_title,
-						exp_channel_titles.entry_id,
-						exp_channel_titles.channel_id,
-						exp_channel_titles.author_id,
-						exp_channel_titles.comment_total,
-						exp_channel_titles.allow_comments,
-						exp_channel_titles.entry_date,
-						exp_channel_titles.comment_expiration_date,
-						exp_channels.channel_title,
-						exp_channels.comment_system_enabled,
-						exp_channels.comment_max_chars,
-						exp_channels.comment_use_captcha,
-						exp_channels.comment_timelock,
-						exp_channels.comment_require_membership,
-						exp_channels.comment_moderate,
-						exp_channels.comment_require_email,
-						exp_channels.comment_notify,
-						exp_channels.comment_notify_authors,
-						exp_channels.comment_notify_emails,
-						exp_channels.comment_expiration, 
-						exp_channels.channel_url, 
-						exp_channels.comment_url,
-						exp_channels.site_id  
-				FROM	exp_channel_titles, exp_channels
-				WHERE	exp_channel_titles.channel_id = exp_channels.channel_id
-				AND	exp_channel_titles.entry_id = '".$this->EE->db->escape_str($_POST['entry_id'])."'";
+				exp_channel_titles.url_title,
+				exp_channel_titles.entry_id,
+				exp_channel_titles.channel_id,
+				exp_channel_titles.author_id,
+				exp_channel_titles.comment_total,
+				exp_channel_titles.allow_comments,
+				exp_channel_titles.entry_date,
+				exp_channel_titles.comment_expiration_date,
+				exp_channels.channel_title,
+				exp_channels.comment_system_enabled,
+				exp_channels.comment_max_chars,
+				exp_channels.comment_use_captcha,
+				exp_channels.comment_timelock,
+				exp_channels.comment_require_membership,
+				exp_channels.comment_moderate,
+				exp_channels.comment_require_email,
+				exp_channels.comment_notify,
+				exp_channels.comment_notify_authors,
+				exp_channels.comment_notify_emails,
+				exp_channels.comment_expiration, 
+				exp_channels.channel_url, 
+				exp_channels.comment_url,
+				exp_channels.site_id  
+			FROM	exp_channel_titles, exp_channels
+			WHERE	exp_channel_titles.channel_id = exp_channels.channel_id
+			AND	exp_channel_titles.entry_id = '".$this->EE->db->escape_str($_POST['entry_id'])."'";
 				
 				//  Added entry_status param, so it is possible to post to closed title
 				//AND	exp_channel_titles.status != 'closed' ";
@@ -2338,7 +2363,7 @@ class Comment {
 			}
 			
 			// Let's make sure they aren't putting in funky html to bork our screens
-			$_POST['name'] = str_replace(array('<', '>'), array('&lt;', '&gt;'), $_POST['name']);			
+			$_POST['name'] = str_replace(array('<', '>'), array('&lt;', '&gt;'), $_POST['name']);
 
 			/** ----------------------------------------
 			/**  Missing or invalid email address
@@ -2442,19 +2467,19 @@ class Comment {
 		$cmtr_url	= prep_url($cmtr_url);
 
 		$data = array(
-						'channel_id'	=> $channel_id,
-						'entry_id'		=> $_POST['entry_id'],
-						'author_id'		=> $this->EE->session->userdata('member_id'),
-						'name'			=> $cmtr_name,
-						'email'			=> $cmtr_email,
-						'url'			=> $cmtr_url,
-						'location'		=> $cmtr_loc,
-						'comment'		=> $this->EE->security->xss_clean($_POST['comment']),
-						'comment_date'	=> $this->EE->localize->now,
-						'ip_address'	=> $this->EE->input->ip_address(),
-						'status'		=> ($comment_moderate == 'y') ? 'p' : 'o',
-						'site_id'		=> $comment_site_id
-					 );
+			'channel_id'	=> $channel_id,
+			'entry_id'		=> $_POST['entry_id'],
+			'author_id'		=> $this->EE->session->userdata('member_id'),
+			'name'			=> $cmtr_name,
+			'email'			=> $cmtr_email,
+			'url'			=> $cmtr_url,
+			'location'		=> $cmtr_loc,
+			'comment'		=> $this->EE->security->xss_clean($_POST['comment']),
+			'comment_date'	=> $this->EE->localize->now,
+			'ip_address'	=> $this->EE->input->ip_address(),
+			'status'		=> ($comment_moderate == 'y') ? 'p' : 'o',
+			'site_id'		=> $comment_site_id
+		);
 
 		// -------------------------------------------
 		// 'insert_comment_insert_array' hook.
@@ -2480,7 +2505,7 @@ class Comment {
 		//  Insert data
 		$sql = $this->EE->db->insert_string('exp_comments', $data);
 		$this->EE->db->query($sql);
-		$comment_id = $this->EE->db->insert_id();			
+		$comment_id = $this->EE->db->insert_id();
 		
 		if ($notify == 'y')
 		{
@@ -2570,21 +2595,22 @@ class Comment {
 
 		$this->EE->load->library('typography');
 		$this->EE->typography->initialize(array(
-				'parse_images'		=> FALSE,
-				'allow_headings'	=> FALSE,
-				'smileys'			=> FALSE,
-				'word_censor'		=> ($this->EE->config->item('comment_word_censoring') == 'y') ? TRUE : FALSE)
-				);
+			'parse_images'		=> FALSE,
+			'allow_headings'	=> FALSE,
+			'smileys'			=> FALSE,
+			'word_censor'		=> ($this->EE->config->item('comment_word_censoring') == 'y') ? TRUE : FALSE)
+		);
 
 		$comment = $this->EE->security->xss_clean($_POST['comment']);
-		$comment = $this->EE->typography->parse_type( $comment,
-										array(
-												'text_format'	=> 'none',
-												'html_format'	=> 'none',
-												'auto_links'	=> 'n',
-												'allow_img_url' => 'n'
-											)
-									);
+		$comment = $this->EE->typography->parse_type(
+			$comment,
+			array(
+				'text_format'	=> 'none',
+				'html_format'	=> 'none',
+				'auto_links'	=> 'n',
+				'allow_img_url' => 'n'
+			)
+		);
 
 		$path = ($comment_url == '') ? $channel_url : $comment_url;
 		
@@ -2597,28 +2623,26 @@ class Comment {
 		if ($notify_address != '')
 		{
 			$cp_url = $this->EE->config->item('cp_url').'?S=0&D=cp&C=addons_modules&M=show_module_cp&module=comment';
-
-
 			
 			$swap = array(
-							'name'				=> $cmtr_name,
-							'name_of_commenter'	=> $cmtr_name,
-							'email'				=> $cmtr_email,
-							'url'				=> $cmtr_url,
-							'location'			=> $cmtr_loc,
-							'channel_name'		=> $channel_title,
-							'entry_title'		=> $entry_title,
-							'comment_id'		=> $comment_id,
-							'comment'			=> $comment,
-							'comment_url'		=> $this->EE->functions->remove_double_slashes($this->EE->input->remove_session_id($this->EE->functions->fetch_site_index().'/'.$_POST['URI'])),
-							'delete_link'		=> $cp_url.'&method=delete_comment_confirm&comment_id='.$comment_id, 
-							'approve_link'		=> $cp_url.'&method=change_comment_status&comment_id='.$comment_id.'&status=o', 
-							'close_link'		=> $cp_url.'&method=change_comment_status&comment_id='.$comment_id.'&status=c', 
-							'channel_id'		=> $channel_id,
-							'entry_id'			=> $entry_id,
-							'url_title'			=> $url_title,
-							'comment_url_title_auto_path' => $comment_url_title_auto_path
-						 );
+				'name'				=> $cmtr_name,
+				'name_of_commenter'	=> $cmtr_name,
+				'email'				=> $cmtr_email,
+				'url'				=> $cmtr_url,
+				'location'			=> $cmtr_loc,
+				'channel_name'		=> $channel_title,
+				'entry_title'		=> $entry_title,
+				'comment_id'		=> $comment_id,
+				'comment'			=> $comment,
+				'comment_url'		=> $this->EE->functions->remove_double_slashes($this->EE->input->remove_session_id($this->EE->functions->fetch_site_index().'/'.$_POST['URI'])),
+				'delete_link'		=> $cp_url.'&method=delete_comment_confirm&comment_id='.$comment_id, 
+				'approve_link'		=> $cp_url.'&method=change_comment_status&comment_id='.$comment_id.'&status=o', 
+				'close_link'		=> $cp_url.'&method=change_comment_status&comment_id='.$comment_id.'&status=c', 
+				'channel_id'		=> $channel_id,
+				'entry_id'			=> $entry_id,
+				'url_title'			=> $url_title,
+				'comment_url_title_auto_path' => $comment_url_title_auto_path
+			);
 
 			$template = $this->EE->functions->fetch_email_template('admin_notify_comment');
 
@@ -2657,7 +2681,10 @@ class Comment {
 
 				foreach (explode(',', $notify_address) as $addy)
 				{
-					if (in_array($addy, $sent)) continue;
+					if (in_array($addy, $sent))
+					{
+						continue;
+					}
 
 					$this->EE->email->EE_initialize();
 					$this->EE->email->wordwrap = false;
@@ -2687,19 +2714,19 @@ class Comment {
 				$action_id  = $this->EE->functions->fetch_action_id('Comment_mcp', 'delete_comment_notification');
 
 				$swap = array(
-								'name_of_commenter'	=> $cmtr_name,
-								'channel_name'		=> $channel_title,
-								'entry_title'		=> $entry_title,
-								'site_name'			=> stripslashes($this->EE->config->item('site_name')),
-								'site_url'			=> $this->EE->config->item('site_url'),
-								'comment_url'		=> $this->EE->functions->remove_double_slashes($this->EE->input->remove_session_id($this->EE->functions->fetch_site_index().'/'.$_POST['URI'])),
-								'comment_id'		=> $comment_id,
-								'comment'			=> $comment,
-								'channel_id'		=> $channel_id,
-								'entry_id'			=> $entry_id,
-								'url_title'			=> $url_title,
-								'comment_url_title_auto_path' => $comment_url_title_auto_path 
-							 );
+					'name_of_commenter'	=> $cmtr_name,
+					'channel_name'		=> $channel_title,
+					'entry_title'		=> $entry_title,
+					'site_name'			=> stripslashes($this->EE->config->item('site_name')),
+					'site_url'			=> $this->EE->config->item('site_url'),
+					'comment_url'		=> $this->EE->functions->remove_double_slashes($this->EE->input->remove_session_id($this->EE->functions->fetch_site_index().'/'.$_POST['URI'])),
+					'comment_id'		=> $comment_id,
+					'comment'			=> $comment,
+					'channel_id'		=> $channel_id,
+					'entry_id'			=> $entry_id,
+					'url_title'			=> $url_title,
+					'comment_url_title_auto_path' => $comment_url_title_auto_path 
+				);
 
 
 				$template = $this->EE->functions->fetch_email_template('comment_notification');
@@ -2817,13 +2844,14 @@ class Comment {
 
 		if ($comment_moderate == 'y')
 		{
-			$data = array(	'title' 	=> $this->EE->lang->line('cmt_comment_accepted'),
-							'heading'	=> $this->EE->lang->line('thank_you'),
-							'content'	=> $this->EE->lang->line('cmt_will_be_reviewed'),
-							'redirect'	=> $return_link,
-							'link'		=> array($return_link, $this->EE->lang->line('cmt_return_to_comments')),
-							'rate'		=> 3
-						 );
+			$data = array(
+				'title' 	=> $this->EE->lang->line('cmt_comment_accepted'),
+				'heading'	=> $this->EE->lang->line('thank_you'),
+				'content'	=> $this->EE->lang->line('cmt_will_be_reviewed'),
+				'redirect'	=> $return_link,
+				'link'		=> array($return_link, $this->EE->lang->line('cmt_return_to_comments')),
+				'rate'		=> 3
+			);
 
 			$this->EE->output->show_message($data);
 		}
@@ -2902,8 +2930,7 @@ class Comment {
 		$data[] = array('subscribe_link' => $sub_link, 'unsubscribe_link' => $unsub_link, 'subscribed' => $subscribed);
 		
 		$tagdata = $this->EE->TMPL->tagdata;
-		return $this->EE->TMPL->parse_variables($tagdata, $data); 		
-		
+		return $this->EE->TMPL->parse_variables($tagdata, $data);
 	}
 
 	// --------------------------------------------------------------------
@@ -2951,12 +2978,12 @@ class Comment {
 		
 		$this->EE->load->library('subscription');
 		$this->EE->subscription->init('comment', array('entry_id' => $id), TRUE);
-		$subscribed = $this->EE->subscription->is_subscribed(FALSE);	
+		$subscribed = $this->EE->subscription->is_subscribed(FALSE);
 		
 		if ($type == 'subscribe' && $subscribed == TRUE)
 		{
 			return $this->EE->output->show_user_error('submission', $this->EE->lang->line('already_subscribed'));
-		}	
+		}
 		
 		if ($type == 'unsubscribe' && $subscribed == FALSE)
 		{
@@ -2973,21 +3000,19 @@ class Comment {
 		$title = ($type == 'unsubscribe') ? 'cmt_unsubscribe' : 'cmt_subscribe';
 		$content = ($type == 'unsubscribe') ? 'you_have_been_unsubscribed' : 'you_have_been_subscribed';
 		
-		
 		$return_link = $this->EE->functions->create_url($ret);
 		
+		$data = array(
+			'title' 	=> $this->EE->lang->line($title),
+			'heading'	=> $this->EE->lang->line('thank_you'),
+			'content'	=> $this->EE->lang->line($content).' '.$entry_title,
+			'redirect'	=> $return_link,
+			'link'		=> array($return_link, $this->EE->lang->line('cmt_return_to_comments')),
+			'rate'		=> 3
+		);
 
-		$data = array(	'title' 	=> $this->EE->lang->line($title),
-						'heading'	=> $this->EE->lang->line('thank_you'),
-						'content'	=> $this->EE->lang->line($content).' '.$entry_title,
-						'redirect'	=> $return_link,
-						'link'		=> array($return_link, $this->EE->lang->line('cmt_return_to_comments')),
-						'rate'		=> 3
-					 );		
-
-			$this->EE->output->show_message($data);
-		
-	}	
+		$this->EE->output->show_message($data);
+	}
 	
 	// --------------------------------------------------------------------
 
@@ -3046,7 +3071,7 @@ class Comment {
 				($this->EE->session->userdata['can_edit_own_comments'] == 'y' && $query->row('entry_author_id') == $this->EE->session->userdata['member_id']))
 				{
 					$can_edit = TRUE;
-					$can_moderate = TRUE;								
+					$can_moderate = TRUE;
 				}
 				elseif ($this->EE->session->userdata['member_id'] != '0'  && $query->row('author_id') == $this->EE->session->userdata['member_id'])
 				{
@@ -3070,11 +3095,11 @@ class Comment {
 			{
 				$data['status'] = 'c';
 			}
-				
+			
 			if ($edited_comment != FALSE & $can_edit != FALSE)
 			{
 				$data['comment'] = $edited_comment;
-			}				
+			}
 			
 			if (count($data) > 0)
 			{
@@ -3083,26 +3108,27 @@ class Comment {
 
 				$this->EE->db->where('comment_id', $this->EE->input->get_post('comment_id'));
 				$this->EE->db->update('comments', $data); 
-					
+				
 				if ($edited_status != FALSE & $can_moderate != FALSE)
 				{
 					// create new security hash and send it back with updated comment.
 				
 					$new_hash = $this->_new_hash();
-
 					$this->EE->output->send_ajax_response(array('moderated' => $this->EE->lang->line('closed'), 'XID' => $new_hash));
-				}				
+				}
 
 				$this->EE->load->library('typography'); 
 				
-				$f_comment = $this->EE->typography->parse_type(stripslashes($this->EE->input->get_post('comment')), 
-										   array(
-													'text_format'   => $query->row('comment_text_formatting'),
-													'html_format'   => $query->row('comment_html_formatting'),
-													'auto_links'    => $query->row('comment_auto_link_urls'),
-													'allow_img_url' => $query->row('comment_allow_img_urls')
-												));
-												
+				$f_comment = $this->EE->typography->parse_type(
+					stripslashes($this->EE->input->get_post('comment')),
+					array(
+						'text_format'   => $query->row('comment_text_formatting'),
+						'html_format'   => $query->row('comment_html_formatting'),
+						'auto_links'    => $query->row('comment_auto_link_urls'),
+						'allow_img_url' => $query->row('comment_allow_img_urls')
+					)
+				);
+				
 				// create new security hash and send it back with updated comment.
 				
 				$new_hash = $this->_new_hash();
@@ -3112,7 +3138,7 @@ class Comment {
 		}
 
 		$this->EE->output->send_ajax_response(array('error' => $unauthorized));
-	}	
+	}
 
 	// --------------------------------------------------------------------
 
@@ -3223,7 +3249,7 @@ CMT_EDIT_SCR;
 		$script = $this->EE->functions->add_form_security_hash($script);
 		$script = $this->EE->functions->insert_action_ids($script);
 		
-		$this->EE->output->enable_profiler(FALSE);		
+		$this->EE->output->enable_profiler(FALSE);
 		$this->EE->output->set_header("Content-Type: text/javascript");
 
 		if ($this->EE->config->item('send_headers') == 'y')
@@ -3280,7 +3306,7 @@ CMT_EDIT_SCR;
 				
 		if ($db_reset == TRUE)
 		{
-			$this->EE->db->cache_on();			
+			$this->EE->db->cache_on();
 		}
 		
 		return $hash;
