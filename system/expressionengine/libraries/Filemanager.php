@@ -1499,7 +1499,11 @@ class Filemanager {
 				$data = array_merge($data, $qry);
 			}
 			
-			$wm_prefs = array('source_image', 'padding', 'wm_vrt_alignment', 'wm_hor_alignment', 
+			// Renaming settings for Image_Lib
+			$data['wm_hor_offset'] = $data['wm_x_offset'];
+			$data['wm_vrt_offset'] = $data['wm_y_offset'];
+			
+			$wm_prefs = array('source_image', 'wm_padding', 'wm_vrt_alignment', 'wm_hor_alignment', 
 				'wm_hor_offset', 'wm_vrt_offset');
 
 			$i_type_prefs = array('wm_overlay_path', 'wm_opacity', 'wm_x_transp', 'wm_y_transp');
