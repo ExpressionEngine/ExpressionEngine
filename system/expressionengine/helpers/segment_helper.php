@@ -124,9 +124,17 @@
 		
 		return array('uristr' => $uristr, 'qstring' => $qstring);		
 	}	
-		
-		
-		
+
+	/**
+	 * Parse category ID from query string
+	 *
+	 * @param	string	$qstring Query string
+	 * @return	int		Category ID parsed from query string or FALSE if none found
+	 */
+	function parse_category_id($qstring = '')
+	{
+		return (preg_match("#(^|\/)C(\d+)#", $qstring, $match)) ? $match[2] : FALSE;
+	}
 
 
 /* End of file snippets_helper.php */
