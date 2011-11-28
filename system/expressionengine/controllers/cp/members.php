@@ -3847,6 +3847,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		$this->db->from('members');
 		$this->db->like('ip_address', $ip);
 		$total = $this->db->count_all_results(); // for paging
+		$grand_total += $total;
 
 		$config['base_url'] = BASE.AMP.'C=members'.AMP.'M=do_ip_search'.AMP.'ip_address='.$url_ip;
 		$config['per_page'] = '10';
