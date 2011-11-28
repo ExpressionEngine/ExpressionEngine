@@ -2103,12 +2103,9 @@ class Safecracker_lib
 	 */
 	public function fetch_statuses()
 	{
-		echo "load statuses\n";
-		
 		//exit if already loaded, or if there is no status group
 		if ($this->statuses || ! $this->channel('status_group'))
 		{
-			echo "EXIT\n";
 			return;
 		}
 		

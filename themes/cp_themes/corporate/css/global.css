@@ -3096,7 +3096,7 @@ label.hide_field {
 }
 
 /* Show Entry */
-div#view_content_entry_links {
+#view_content_entry_links {
   margin-top:   15px;
   padding:      10px;
   font-weight:  bold;

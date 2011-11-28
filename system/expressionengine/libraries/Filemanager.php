@@ -1046,7 +1046,8 @@ class Filemanager {
 		$image_info['channels'] = ( ! isset($image_info['channels'])) ? 4 : $image_info['channels'];
 
 		$memory_needed = round(($image_info[0] * $image_info[1]
-											* $image_info['bits']
+											  // bits may not always be present
+											* (isset($image_info['bits']) ? $image_info['bits'] : 8)
 											* $image_info['channels'] / 8
 											+ $k64
 								) * $this->_memory_tweak_factor
