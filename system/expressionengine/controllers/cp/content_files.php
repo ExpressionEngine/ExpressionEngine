@@ -1186,8 +1186,8 @@ class Content_files extends CI_Controller {
 					$js_size[$row->upload_location_id][$row->id]['wm_hor_alignment'] = $row->wm_hor_alignment;
 					$js_size[$row->upload_location_id][$row->id]['wm_padding'] = $row->wm_padding;
 					$js_size[$row->upload_location_id][$row->id]['wm_opacity'] = $row->wm_opacity;
-					$js_size[$row->upload_location_id][$row->id]['wm_x_offset'] = $row->wm_x_offset;
-					$js_size[$row->upload_location_id][$row->id]['wm_y_offset'] = $row->wm_y_offset;
+					$js_size[$row->upload_location_id][$row->id]['wm_hor_offset'] = $row->wm_hor_offset;
+					$js_size[$row->upload_location_id][$row->id]['wm_vrt_offset'] = $row->wm_vrt_offset;
 					$js_size[$row->upload_location_id][$row->id]['wm_x_transp'] = $row->wm_x_transp;
 					$js_size[$row->upload_location_id][$row->id]['wm_y_transp'] = $row->wm_y_transp;
 					$js_size[$row->upload_location_id][$row->id]['wm_font_color'] =	$row->wm_font_color;
@@ -1595,8 +1595,8 @@ class Content_files extends CI_Controller {
 			'wm_vrt_alignment'		=> 'top',
 			'wm_hor_alignment'		=> 'left',
 			'wm_padding'			=> 10,
-			'wm_x_offset'			=> 0,
-			'wm_y_offset'			=> 0,
+			'wm_hor_offset'			=> 0,
+			'wm_vrt_offset'			=> 0,
 			'wm_x_transp'			=> 2,
 			'wm_y_transp'			=> 2,
 			'wm_font_color'			=> '#ffff00',
@@ -1682,13 +1682,13 @@ class Content_files extends CI_Controller {
 				'rules' => 'integer'
 			),
 			array(
-				'field' => 'wm_x_offset',
-				'label' => 'lang:wm_x_offset',
+				'field' => 'wm_hor_offset',
+				'label' => 'lang:wm_hor_offset',
 				'rules' => 'integer'
 			),
 			array(
-				'field' => 'wm_y_offset',
-				'label' => 'lang:wm_y_offset',
+				'field' => 'wm_vrt_offset',
+				'label' => 'lang:wm_vrt_offset',
 				'rules' => 'integer'
 			),
 			array(
@@ -1782,8 +1782,8 @@ class Content_files extends CI_Controller {
 						'wm_vrt_alignment'				=> 'T',
 						'wm_hor_alignment'				=> 'L',
 						'wm_padding'					=> 10,
-						'wm_x_offset'					=> 0,
-						'wm_y_offset'					=> 0,
+						'wm_hor_offset'					=> 0,
+						'wm_vrt_offset'					=> 0,
 						'wm_x_transp'					=> 2,
 						'wm_y_transp'					=> 2,
 						'wm_font_color'					=> '#ffff00',

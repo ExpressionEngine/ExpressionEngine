@@ -347,10 +347,10 @@ $lang = array(
 "wm_offset" =>
 "Watermark Offset",
 
-"wm_x_offset" =>
+"wm_hor_offset" =>
 "Horizontal Offset",
 
-"wm_y_offset" =>
+"wm_vrt_offset" =>
 "Vertical Offset",
 
 "wm_font_color" =>

@@ -1500,10 +1500,6 @@ class Filemanager {
 				$data = array_merge($data, $qry);
 			}
 			
-			// Renaming settings for Image_Lib
-			$data['wm_hor_offset'] = $data['wm_x_offset'];
-			$data['wm_vrt_offset'] = $data['wm_y_offset'];
-			
 			$wm_prefs = array('source_image', 'wm_padding', 'wm_vrt_alignment', 'wm_hor_alignment', 
 				'wm_hor_offset', 'wm_vrt_offset');
 
