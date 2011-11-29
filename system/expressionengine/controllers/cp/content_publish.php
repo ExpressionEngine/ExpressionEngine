@@ -680,11 +680,12 @@ class Content_publish extends CI_Controller {
 			}
 		}
 		
+		$publish_another_link = BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.$channel_id;
 		
 		// Ugh, we just overwrite? Strong typing please!!
 		if ($show_edit_link)
 		{
-			$show_edit_link = BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.$channel_id.AMP.'entry_id='.$entry_id;
+			$show_edit_link = $publish_another_link.AMP.'entry_id='.$entry_id;
 		}
 		
 		
@@ -742,6 +743,7 @@ class Content_publish extends CI_Controller {
 			'filter_link'			=> $filter_link,
 			'live_look_link'		=> $live_look_link,
 			'show_edit_link'		=> $show_edit_link,
+			'publish_another_link'	=> $publish_another_link,
 			'comment_count'			=> $comment_count,
 			'show_comments_link'	=> $show_comments_link,
 			

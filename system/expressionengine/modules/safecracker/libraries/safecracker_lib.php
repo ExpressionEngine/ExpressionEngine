@@ -745,6 +745,9 @@ class Safecracker_lib
 			unset($conditional_errors['field_errors']);
 		}
 		
+		//load member data for logged out member
+		$this->fetch_logged_out_member($this->EE->TMPL->fetch_param('logged_out_member_id'));
+
 		// Parse captcha conditional
 		$captcha_conditional = array(
 			'captcha' => ($this->channel('channel_id') && $this->logged_out_member_id && ! empty($this->settings['require_captcha'][$this->EE->config->item('site_id')][$this->channel('channel_id')]))
@@ -773,10 +776,7 @@ class Safecracker_lib
 		{
 			$this->EE->session->cache['safecracker']['enctype'] = 'enctype="multipart/form-data"';
 		}
-		
-		//load member data for logged out member
-		$this->fetch_logged_out_member($this->EE->TMPL->fetch_param('logged_out_member_id'));
-		
+				
 		//add encrypted member_id to form
 		if ($this->EE->TMPL->fetch_param('logged_out_member_id') && $this->logged_out_member_id)
 		{

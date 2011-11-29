@@ -300,7 +300,7 @@ class Addons_installer {
 			$this->EE->db->insert('fieldtypes', array(
 					'name'					=> $fieldtype,
 					'version'				=> $FT->info['version'],
-					'settings'				=> base64_encode(serialize($default_settings)),
+					'settings'				=> base64_encode(serialize((array)$default_settings)),
 					'has_global_settings'	=> method_exists($FT, 'display_global_settings') ? 'y' : 'n'
 			));
 		}

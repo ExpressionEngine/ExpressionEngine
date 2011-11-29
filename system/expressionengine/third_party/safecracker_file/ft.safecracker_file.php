@@ -659,9 +659,12 @@ class Safecracker_file_ft extends File_ft
 		);
 		
 		// Put database files into list
-		foreach ($files_from_db['results']->result() as $file)
+		if ($files_from_db['results'] !== FALSE)
 		{
-			$files[$file->file_name] = $file->file_name;
+			foreach ($files_from_db['results']->result() as $file)
+			{
+				$files[$file->file_name] = $file->file_name;
+			}
 		}
 		
 		return $files;

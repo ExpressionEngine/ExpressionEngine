@@ -184,7 +184,7 @@ class Email {
 		}
 
 		// Recipient Email Checking
-		$this->_user_recipients = 'true';  // By default
+		$this->_user_recipients = 'yes';  // By default
 
 		$recipients	= $this->EE->TMPL->fetch_param('recipients', '');
 		$charset	= $this->EE->TMPL->fetch_param('charset', '');
@@ -209,7 +209,9 @@ class Email {
 		// 1. So we can create pagination links
 		// 2. So it won't confuse the query with an improper proper ID
 
-		$qstring = $this->EE->uri->query_string;
+		// Conditionally get query string based on whether or not the page
+		// was accessed through the Pages module
+		$qstring = (empty($this->EE->uri->page_query_string)) ? $this->EE->uri->query_string : $this->EE->uri->page_query_string;
 
 		if (preg_match("#/P(\d+)#", $qstring, $match))
 		{
