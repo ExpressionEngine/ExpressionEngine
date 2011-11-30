@@ -1189,7 +1189,6 @@ class Tools_utilities extends CI_Controller {
 			show_error(lang('unauthorized_access'));
 		}		
 		
-		$this->load->helper('form');
 		$this->lang->loadfile('admin_content');
 		$this->lang->loadfile('members');	
 		$this->lang->loadfile('member_import');
@@ -1300,8 +1299,6 @@ class Tools_utilities extends CI_Controller {
 	 */	
 	private function _convert_from_delimited_form()
 	{
-		$this->load->helper('form');
-		
 		$this->cp->set_variable('cp_page_title', lang('convert_from_delimited'));
 		$this->cp->set_breadcrumb(BASE.AMP.'C=tools_utilities'.AMP.'M=member_import', lang('member_import_utility'));
 
@@ -1437,7 +1434,6 @@ class Tools_utilities extends CI_Controller {
 		}
 
 		$this->lang->loadfile('member_import');
-		$this->load->helper('form');
 		
 		$this->_convert_from_delimited_validation();
 		
@@ -1615,7 +1611,6 @@ class Tools_utilities extends CI_Controller {
 		}
 
 		$this->lang->loadfile('member_import');
-		$this->load->helper('form');
 		$this->load->library('table');
 
 		//  Snag POST data
@@ -1932,7 +1927,6 @@ class Tools_utilities extends CI_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->load->helper('form');
 		$this->load->library('table');
 		$this->load->model('tools_model');
 		$language_file = $this->input->get_post('language_file');

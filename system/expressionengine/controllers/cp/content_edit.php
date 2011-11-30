@@ -550,8 +550,6 @@ class Content_edit extends CI_Controller {
 		{
 			return $this->delete_entries_confirm();
 		}
-
-		$this->load->helper('form');
 		
 		$this->cp->add_js_script(array('ui' => 'datepicker'));
 
@@ -1159,8 +1157,6 @@ class Content_edit extends CI_Controller {
         {
             show_error(lang('unauthorized_to_edit'));
         }
-
-		$this->load->helper('form');
         
 		/** -----------------------------
 		/**  Fetch the cat_group
@@ -1416,8 +1412,6 @@ class Content_edit extends CI_Controller {
 		{
 			redirect(BASE.'content_edit');
 		}
-
-		$this->load->helper('form');
 
 		$damned = array();
 

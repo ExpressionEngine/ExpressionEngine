@@ -513,7 +513,6 @@ class Tools_logs extends CI_Controller {
 		}
 		
 		$this->load->library('table');
-		$this->load->helper('form');
 		$this->lang->loadfile('members');
 
 		$this->cp->set_variable('cp_page_title', lang('view_email_logs'));

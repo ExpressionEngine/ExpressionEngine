@@ -54,7 +54,6 @@ class Addons_plugins extends CI_Controller {
 	function index()
 	{
 		$this->load->library('table');
-		$this->load->helper('form');
 
 		$this->cp->set_variable('cp_page_title', lang('plugins'));
 		$this->cp->set_breadcrumb(BASE.AMP.'C=addons', lang('addons'));

@@ -1152,7 +1152,6 @@ var time = new Date().getTime();
 								);
 
 		$this->load->library('table');
-		$this->load->helper('form');
 		$this->cp->set_variable('cp_page_title', lang('view_email_cache'));
 
 		// a bit of a breadcrumb override is needed
@@ -1318,8 +1317,6 @@ var time = new Date().getTime();
 			$vars['hidden']['email['.$i++.']'] = $row->cache_id;
 		}
 		
-		$this->load->helper('form');
-
 		$this->cp->set_variable('cp_page_title', lang('delete_emails'));
 		$this->cp->set_breadcrumb(BASE.AMP.'C=tools_communicate'.AMP.'M=view_cache', lang('view_email_cache'));
 		

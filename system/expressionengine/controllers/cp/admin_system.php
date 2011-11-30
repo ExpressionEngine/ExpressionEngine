@@ -113,7 +113,6 @@ class Admin_system extends CI_Controller {
 
 		$this->cp->set_variable('cp_page_title', lang($type));
 
-		$this->load->helper('form');
 		$this->load->library('table');
 		$this->load->library('form_validation');
 		$this->load->model('admin_model');

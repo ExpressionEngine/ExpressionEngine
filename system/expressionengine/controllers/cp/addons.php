@@ -73,7 +73,6 @@ class Addons extends CI_Controller {
 	{
 		$this->load->library('addons');
 		$this->load->library('table');
-		$this->load->helper('form');
 		
 		$this->load->model('addons_model');
 		$this->lang->loadfile('modules');

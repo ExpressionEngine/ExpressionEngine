@@ -1846,8 +1846,6 @@ class Content_files extends CI_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->load->helper('form');
-
 		$this->cp->set_variable('cp_page_title', lang('delete_wm_preference'));
 
 
@@ -2449,8 +2447,6 @@ class Content_files extends CI_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->load->helper('form');
-
 		$this->cp->set_variable('cp_page_title', lang('delete_upload_preference'));
 		$this->cp->set_breadcrumb(BASE.AMP.'C=content_files', lang('file_manager'));
 		$this->cp->set_breadcrumb(BASE.AMP.'C=content_files'.AMP.'M=file_upload_preferences',
@@ -2596,7 +2592,6 @@ class Content_files extends CI_Controller {
 		$this->api->instantiate('channel_categories');
 
 		$this->load->model('category_model');
-		$this->load->helper('form');
 
 		$qry = $this->db->select('group_id, group_name, sort_order')
 						->where('group_id', $group_id)

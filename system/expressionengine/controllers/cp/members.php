@@ -90,7 +90,6 @@ class Members extends CI_Controller {
 		
 		$this->load->library('table');
 		$this->load->library('pagination');
-		$this->load->helper('form');
 	
 		$this->cp->set_variable('cp_page_title', lang('view_members'));
 
@@ -659,8 +658,6 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->load->helper('form');
-
 		$from_myaccount = FALSE;
 
 		if ($this->input->get('mid') != '')
@@ -765,7 +762,6 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->load->helper('form');
 		$this->cp->set_variable('cp_page_title', lang('login_as_member'));
 
 		// Fetch member data
@@ -1248,7 +1244,6 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 
 		$this->load->library('table');
 		$this->load->library('pagination');
-		$this->load->helper('form');
 
 		$row_limit = $this->perpage;
 		$offset = ($this->input->get('per_page') != '') ? $this->input->get('per_page') : 0;
@@ -1325,7 +1320,6 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		}
 
 		$this->load->library(array('addons', 'table'));
-		$this->load->helper('form');
 		$this->load->model(array(
 			'channel_model', 'template_model', 'addons_model'
 		));
@@ -2054,7 +2048,6 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 
 		$this->lang->loadfile('admin');
 		$this->load->library('table');
-		$this->load->helper('form');
 
 		$f_data =  array(
 
@@ -2672,7 +2665,6 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		}
 		
 		$this->load->model('member_model');
-		$this->load->helper('form');
 		
 		// Are there any members that are assigned to this group?
 		$vars['member_count'] = $this->member_model->count_members($group_id);
@@ -3123,8 +3115,6 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 
 		$this->cp->set_variable('cp_page_title', lang('user_banning'));
 
-		$this->load->helper('form');
-
 		$this->load->view('members/member_banning', $vars);
 	}
 
@@ -3237,7 +3227,6 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 
 		$this->load->library('form_validation');
 		$this->load->model('member_model');
-		$this->load->helper('form');
         $this->load->library('table');
 
 		// Fetch language file
@@ -3645,7 +3634,6 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		}
 		
 		$this->lang->loadfile('admin_content');
-		$this->load->helper('form');
 
 		$this->db->select('m_field_label');
 		$this->db->from('member_fields');
@@ -3710,7 +3698,6 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		$this->load->model('member_model');
 		$this->lang->loadfile('admin_content');
 		$this->load->library('table');
-		$this->load->helper('form');
 
 		$custom_fields = $this->member_model->get_custom_member_fields();
 		
@@ -3789,7 +3776,6 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			$message = lang('ip_search_too_short');
 		}
 		
-		$this->load->helper('form');
         $this->load->library('table');
 
 		$this->cp->set_variable('cp_page_title', lang('ip_search'));

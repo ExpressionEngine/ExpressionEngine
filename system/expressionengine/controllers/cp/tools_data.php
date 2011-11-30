@@ -94,8 +94,6 @@ class Tools_data extends CI_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->load->helper('form');
-
 		$vars['cleared'] = FALSE;
 
 		if (isset($_POST['type']))
@@ -193,8 +191,6 @@ class Tools_data extends CI_Controller {
 			BASE.AMP.'C=tools_data'.AMP.'M=sql_manager' => lang('sql_manager')
 		));
 
-		$this->load->helper('form');
-
 		$this->load->view('tools/sql_query_form');
 	}
 
@@ -216,7 +212,6 @@ class Tools_data extends CI_Controller {
 		}
 
 		$this->load->library('table');
-		$this->load->helper('form');
 
 		$this->jquery->tablesorter('.mainTable', '{
 			headers: {
@@ -558,8 +553,6 @@ class Tools_data extends CI_Controller {
 		{
 			show_error(lang('unauthorized_access'));
 		}
-
-		$this->load->helper('form');
 
 		// get the submitted details
 		$search  = $this->input->get_post('search_term');
