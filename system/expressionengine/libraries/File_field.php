@@ -36,16 +36,16 @@ class File_field {
 	/**
 	 * Creates a file field
 	 * 
+	 * @param string $field_name The name of the field
 	 * @param string $data The data stored in the file field 
 	 * 		e.g. {filedir_x}filename.ext
-	 * @param string $field_name The name of the field
 	 * @param string $allowed_file_dirs The allowed file directory 
 	 * 		Either 'all' or ONE directory ID
 	 * @param string $content_type The content type allowed. 
 	 * 		Either 'all' or 'image'
 	 * @return string Fully rendered file field
 	 */
-	public function field($data, $field_name, $allowed_file_dirs = 'all', $content_type = 'all')
+	public function field($field_name, $data = '', $allowed_file_dirs = 'all', $content_type = 'all')
 	{
 		// Load necessary library, helper, model and langfile
 		$this->EE->load->library('filemanager');
@@ -269,16 +269,16 @@ class File_field {
 	 * @param integer $directory_id The directory ID
 	 * @return string The formatted field data e.g. {filedir_1}file.ext
 	 */
-	public function format_data($data, $directory_id = 0)
+	public function format_data($file_name, $directory_id = 0)
 	{
-		if ($data != '')
+		if ($file_name != '')
 		{
 			if ( ! empty($directory_id))
 			{
-			     return '{filedir_'.$directory_id.'}'.$data;
+			     return '{filedir_'.$directory_id.'}'.$file_name;
 			}
 
-			return $data;
+			return $file_name;
 		}
 	}
 

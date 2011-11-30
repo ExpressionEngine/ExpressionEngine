@@ -1935,8 +1935,8 @@ class Admin_content extends CI_Controller {
 		$this->load->library('file_field');
 		$this->file_field->browser();
 		$vars['cat_image'] = $this->file_field->field(
-			$vars['cat_image'],
 			'cat_image',
+			$vars['cat_image'],
 			'all',
 			'image'
 		);

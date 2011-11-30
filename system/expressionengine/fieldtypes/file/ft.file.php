@@ -84,8 +84,8 @@ class File_ft extends EE_Fieldtype {
 		$content_type			= (isset($this->settings['field_content_type'])) ? $this->settings['field_content_type'] : 'all';
 		
 		return $this->EE->file_field->field(
-			$data,
 			$this->field_name,
+			$data,
 			$allowed_file_dirs,
 			$content_type
 		);
