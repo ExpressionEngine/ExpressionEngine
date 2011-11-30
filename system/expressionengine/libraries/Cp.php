@@ -161,6 +161,10 @@ class Cp {
 					'maincontent_state'		=> '',
 		);
 		
+		// global table data
+		$this->EE->session->set_cache('table', 'cp_template', $cp_table_template);
+		$this->EE->session->set_cache('table', 'cp_pad_template', $cp_pad_table_template);
+		
 		// we need these paths again in my account, so we'll keep track of them
 		// kind of hacky, but before it was accessing _ci_cache_vars, which is worse
 		

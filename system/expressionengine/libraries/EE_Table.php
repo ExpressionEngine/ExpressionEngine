@@ -153,6 +153,11 @@ class EE_Table extends CI_Table {
 		parent::__construct();
 		
 		$this->EE =& get_instance();
+		
+		if (REQ == 'CP')
+		{
+			$this->set_template($this->EE->session->cache('table', 'cp_template'));
+		}
 	}
 	
 	// --------------------------------------------------------------------
