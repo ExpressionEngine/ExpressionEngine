@@ -3,7 +3,6 @@
 	<?=form_open('C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=moblog'.AMP.'method=delete_confirm')?>
 
 	<?php
-		$this->table->set_template($cp_table_template);
 		$this->table->set_heading(
 			lang('moblog_view'),
 			lang('check_moblog'),

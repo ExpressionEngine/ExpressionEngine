@@ -9,7 +9,6 @@
 
 <?php
 
-		$this->table->set_template($cp_table_template);
 		$this->table->set_heading(
 			lang('item_purchased'),
 			lang('purchaser_screen_name'),

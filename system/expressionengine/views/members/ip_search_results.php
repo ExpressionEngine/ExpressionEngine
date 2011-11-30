@@ -22,11 +22,6 @@ if ($EE_view_disable !== TRUE)
 		<?php else:?>
 		
 		<?php
-			// set table template used by all results
-			$this->table->set_template($cp_table_template);
-		?>
-
-		<?php
 			//  Find Member Accounts with IP
 			if ($members_accounts->num_rows() > 0):
 

@@ -1,7 +1,6 @@
 <?php if (count($admins)): ?>
 	
 	<?php
-	$this->table->set_template($cp_table_template);
 	$this->table->set_heading(
 		lang('forum_admins'),
 		lang('forum_admin_type'),

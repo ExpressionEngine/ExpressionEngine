@@ -31,7 +31,6 @@ if ($EE_view_disable !== TRUE)
 					$heading[] = form_checkbox('select_all', 'true', FALSE, 'class="toggle_all"');
 				}
 
-				$this->table->set_template($cp_table_template);
 				$this->table->set_heading($heading);
 
 

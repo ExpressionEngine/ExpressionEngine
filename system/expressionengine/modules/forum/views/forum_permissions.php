@@ -8,7 +8,6 @@
 
 
 <?php
-$this->table->set_template($cp_table_template);
 if ($is_category === TRUE)
 {
 	$this->table->set_heading(

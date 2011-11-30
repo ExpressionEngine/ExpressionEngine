@@ -9,8 +9,6 @@
 <?=form_open($action_url, '', $form_hidden)?>
 
 <?php
-
-		$this->table->set_template($cp_table_template);
 		$this->table->set_heading(
 			lang('template_name'),
 			form_checkbox('select_all', 'true', FALSE, 'class="toggle_all" id="select_all"'));

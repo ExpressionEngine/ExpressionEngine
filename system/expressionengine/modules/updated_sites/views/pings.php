@@ -5,7 +5,6 @@
 	<?=form_open('C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=updated_sites'.AMP.'method=delete_confirm', '', $form_hidden)?>
 
 	<?php
-		$this->table->set_template($cp_table_template);
 		$this->table->set_heading(
 									lang('ping_name'),
 									lang('ping_url'),

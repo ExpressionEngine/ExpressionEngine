@@ -23,7 +23,6 @@ if ($EE_view_disable !== TRUE)
 		<div class="clear_left"></div>
 
 		<?php
-			$this->table->set_template($cp_table_template);
 			$this->table->set_heading(
 				array('data' => lang('file_directory_id'), 'width' => '5%'),
 				lang('current_upload_prefs'),

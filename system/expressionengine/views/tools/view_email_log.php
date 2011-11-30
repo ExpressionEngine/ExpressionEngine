@@ -22,7 +22,6 @@ if ($EE_view_disable !== TRUE)
 		<?php
 		
 		if ($emails_count > 0):
-			$this->table->set_template($cp_table_template);
 			$this->table->set_heading(
 				lang('email_title'),
 				lang('from'),

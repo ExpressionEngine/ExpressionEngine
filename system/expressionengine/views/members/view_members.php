@@ -52,7 +52,6 @@ if ($EE_view_disable !== TRUE)
 <?php
 	if ($member_list != FALSE):
 	
-	$this->table->set_template($cp_table_template);
 	$this->table->set_heading(
 		array('data' => lang('id'), 'width' => '4%'),
 		lang('username'), 

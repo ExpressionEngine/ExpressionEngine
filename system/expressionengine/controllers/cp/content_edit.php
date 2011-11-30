@@ -54,15 +54,6 @@ class Content_edit extends CI_Controller {
 	 */	
 	public function index()
 	{
-		// @todo use the cp version - figure out how to best do that (func in cp? move to table?)
-		$cp_table_template = array(
-				'table_open'		=> '<table class="mainTable" border="0" cellspacing="0" cellpadding="0">',
-				'row_start'			=> '<tr class="even">',
-				'row_alt_start'		=> '<tr class="odd">'
-		);
-		// @todo end
-		
-		
 		if ( ! $this->cp->allowed_group('can_access_content'))
 		{
 			show_error(lang('unauthorized_access'));
@@ -116,11 +107,9 @@ class Content_edit extends CI_Controller {
 		
 		
 		$this->table->set_base_url('C=content_edit');
-		$this->table->set_template($cp_table_template);
 		$this->table->set_columns($columns);
 		
 		$initial_state = array(
-		//	'offset' => 100,
 			'sort'	=> array('entry_date' => 'asc')
 		);
 		
