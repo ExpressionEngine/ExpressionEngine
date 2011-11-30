@@ -1298,7 +1298,7 @@ class Member_model extends CI_Model {
 	 * @param	int
 	 * @return	int
 	 */
-	private function _prep_search_query($group_id = '', $search_value = '', $search_field = '')
+	private function _prep_search_query($group_id = '', $search_value = '', $search_in = '')
 	{
 		$no_search = array('password', 'salt', 'crypt_key');
 
@@ -1319,9 +1319,9 @@ class Member_model extends CI_Model {
 		}
 		elseif ($search_value != '')
 		{
-			$search_in = 'screen_name';
+			$search_field = 'all';
 
-			if ( ! in_array($search_field, $no_search))
+			if ( ! in_array($search_in, $no_search))
 			{
 				$search_in = $search_field;
 			}

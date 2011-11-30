@@ -49,8 +49,8 @@ $.widget('ee.table', {
 		
 		filters: {},		// map of active filters {"field": "bar"}, usually updated right before request is made
 		
-		cssAsc: 'headerSortUp',
-		cssDesc: 'headerSortDown'
+		cssAsc: 'headerSortDown',
+		cssDesc: 'headerSortUp'
 	},
 	
 	// jQuery ui widget constructor
@@ -64,7 +64,10 @@ $.widget('ee.table', {
 
 		// set defaults
 		self.filters = options.filters;
-				
+		
+		// fix ampersands
+		options.base_url = options.base_url.replace('&amp;', '&');
+		
 		// setup dependencies
 		self.sort = new Sort(options, self);
 		self.cache = new Cache(options.cache_limit);
@@ -131,7 +134,6 @@ $.widget('ee.table', {
 			_timeout;
 		
 		if (form) {
-			url = form.attr('action');
 			
 			// bind to submit only if it's a form
 			if (obj.is(form)) {

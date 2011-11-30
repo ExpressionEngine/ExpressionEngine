@@ -110,7 +110,7 @@ class Content_edit extends CI_Controller {
 		$this->table->set_columns($columns);
 		
 		$initial_state = array(
-			'sort'	=> array('entry_date' => 'asc')
+			'sort'	=> array('entry_date' => 'desc')
 		);
 		
 		$params = array(
@@ -123,11 +123,10 @@ class Content_edit extends CI_Controller {
 		$filter_data = $vars['filter_data'];
 		unset($vars['filter_data']);
 		
-		// Set up Pagination
+		
+		// Set up Per page data
 		// ----------------------------------------------------------------
-		
-		$this->load->library('pagination');
-		
+				
 		// Results per page pull-down menu
 		if ( ! ($perpage = $this->input->get_post('perpage')))
 		{
@@ -208,8 +207,6 @@ class Content_edit extends CI_Controller {
 	 */
 	public function _table_datasource($tbl_settings, $defaults)
 	{
-		// $this->output->enable_profiler(FALSE);
-		
 		// Get filter information
 		// ----------------------------------------------------------------
 		
@@ -551,7 +548,7 @@ class Content_edit extends CI_Controller {
 			return $this->delete_entries_confirm();
 		}
 		
-		$this->cp->add_js_script(array('ui' => 'datepicker'));
+		$this->cp->add_js_script('ui', 'datepicker');
 
 		// -----------------------------
 		// Fetch the entry IDs 

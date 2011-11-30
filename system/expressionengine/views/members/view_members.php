@@ -42,71 +42,30 @@ if ($EE_view_disable !== TRUE)
 					
 								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
-
-								<?=form_submit('submit', lang('search'), 'id="filter_member_submit" class="submit"')?>
+								<?=form_submit('submit', lang('search'), 'id="filter_member_submit" class="submit js_hide"')?>
+								
+								<img src="<?=$cp_theme_url?>images/indicator.gif" class="searchIndicator" alt="Edit Search Indicator" style="margin-bottom: -5px; visibility: hidden;" width="16" height="16" />
+								
 							</p>
 						</fieldset>
 					</div>
 	            <?=form_close()?>
 	
 <?php
-	if ($member_list != FALSE):
-	
-	$this->table->set_heading(
-		array('data' => lang('id'), 'width' => '4%'),
-		lang('username'), 
-		lang('screen_name'), 
-		lang('email_address'), 
-		lang('join_date'), 
-		lang('last_visit'), 
-		lang('member_group'), 
-		form_checkbox('select_all', 'true', FALSE, 'class="toggle_all"')
-	);
-
-		foreach ($member_list->result() as $member)
-		{
-			$this->table->add_row(
-				$member->member_id,
-				array('class' => 'username', 'data' => '<a href="'.BASE.AMP.'C=myaccount'.AMP.'id='. $member->member_id .'">'.$member->username.'</a>'),
-				array('class' => 'screen_name', 'data' => $member->screen_name),
-				'<a href="mailto:'.$member->email.'">'.$member->email.'</a>',
-				// localized date
-				$this->localize->convert_timestamp('%Y', $member->join_date).'-'.
-				$this->localize->convert_timestamp('%m', $member->join_date).'-'.
-				$this->localize->convert_timestamp('%d', $member->join_date),
-				($member->last_visit == 0) ? ' - ' : $this->localize->set_human_time($member->last_visit),
-				array('class' => 'group_'.$member->group_id, 'data' => $member_groups_dropdown[$member->group_id]),
-				'<input class="toggle" type="checkbox" name="toggle[]" value="'.$member->member_id.'" />'
-			);					
-		}		
-		
-	?>
-		
-
-		
-		<?=form_open('C=members'.AMP.'M=member_confirm')?>
-
-		<?=$this->table->generate()?>
-
-
-			<div class="tableSubmit">
- 			<?php
-			if (count($member_action_options) > 0):?>
-				<?=form_dropdown('action', $member_action_options).NBS.NBS?>
- 			<?php endif;?>
-
-				<?=form_submit('effect_members', $delete_button_label, 'class="submit"'); ?>
-			</div>		
-			
-			<span class="js_hide"><?=$pagination?></span>
-			<span class="pagination" id="filter_pagination"></span>
-
-			<?=form_close()?>
-
-	<?php else:?>
-		<p class="notice"><?=lang('no_members_matching_that_criteria')?></p>
+	echo form_open('C=members'.AMP.'M=member_confirm');
+	echo $pagination_html;
+	echo $table_html;	
+?>
+	<div class="tableSubmit">
+	<?php
+	if (count($member_action_options) > 0):?>
+		<?=form_dropdown('action', $member_action_options).NBS.NBS?>
 	<?php endif;?>
 
+		<?=form_submit('effect_members', $delete_button_label, 'class="submit"'); ?>
+	</div>	
+	<?=$pagination_html?>
+<?=form_close()?>
 
 	</div> <!-- pageContents -->
 	</div> <!-- contents -->

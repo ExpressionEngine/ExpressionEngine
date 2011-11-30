@@ -545,11 +545,11 @@ class EE_Table extends CI_Table {
 		
 		$temp = $p->full_tag_open;
 		
-		$temp .= '{{if first_page && first_page[0]}}';
+		$temp .= '{{if first_page && first_page[0] && first_page[0].text}}';
 		$temp .= $p->first_tag_open.'<a '.$p->anchor_class.'href="${first_page[0].pagination_url}">{{html first_page[0].text}}</a>'.$p->first_tag_close;
 		$temp .= '{{/if}}';
 	
-		$temp .= '{{if previous_page && previous_page[0]}}';
+		$temp .= '{{if previous_page && previous_page[0] && previous_page[0].text}}';
 		$temp .= $p->prev_tag_open.'<a '.$p->anchor_class.'href="${previous_page[0].pagination_url}">{{html previous_page[0].text}}</a>'.$p->prev_tag_close;
 		$temp .= '{{/if}}';
 	
@@ -563,11 +563,11 @@ class EE_Table extends CI_Table {
 		$temp .= '{{/each}}';
 	
 	
-		$temp .= '{{if next_page && next_page[0]}}';
+		$temp .= '{{if next_page && next_page[0] && next_page[0].text}}';
 		$temp .= $p->next_tag_open.'<a '.$p->anchor_class.'href="${next_page[0].pagination_url}">{{html next_page[0].text}}</a>'.$p->next_tag_close;
 		$temp .= '{{/if}}';
 	
-		$temp .= '{{if last_page && last_page[0]}}';
+		$temp .= '{{if last_page && last_page[0] && last_page[0].text}}';
 		$temp .= $p->last_tag_open.'<a '.$p->anchor_class.'href="${last_page[0].pagination_url}">{{html last_page[0].text}}</a>'.$p->last_tag_close;
 		$temp .= '{{/if}}';
 		
