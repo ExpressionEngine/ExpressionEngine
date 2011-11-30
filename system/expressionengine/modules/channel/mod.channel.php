@@ -3898,7 +3898,7 @@ class Channel {
 					{
 						// Get category ID from URL for {if active} conditional
 						$this->EE->load->helper('segment');
-						$active_cat = ($this->dynamic_sql && $this->cat_request) ? parse_category_id($this->query_string) : FALSE;
+						$active_cat = ($this->dynamic_sql && $this->cat_request) ? parse_category($this->query_string) : FALSE;
 						
 						foreach ($cat_chunk as $catkey => $catval)
 						{
@@ -3979,7 +3979,7 @@ class Channel {
 												  'category_image'			=> $v[3],
 												  'category_id'				=> $v[0],
 												  'parent_id'				=> $v[1],
-												  'active'					=> ($active_cat == $v[0]));
+												  'active'					=> ($active_cat == $v[0] || $active_cat == $v[6]));
 
 								// add custom fields for conditionals prep
 								foreach ($this->catfields as $cv)
@@ -5447,7 +5447,7 @@ class Channel {
 
 			// Get category ID from URL for {if active} conditional
 			$this->EE->load->helper('segment');
-			$active_cat = parse_category_id($this->query_string);
+			$active_cat = parse_category($this->query_string);
 			
 			foreach ($this->cat_array as $key => $val)
 			{
@@ -5459,7 +5459,7 @@ class Channel {
 								  'category_image'			=> $val[5],
 								  'category_id'				=> $val[0],
 								  'parent_id'				=> $val[1],
-								  'active'					=> ($active_cat == $val[0])
+								  'active'					=> ($active_cat == $val[0] || $active_cat == $val[6])
 								);
 
 				// add custom fields for conditionals prep
@@ -5884,7 +5884,7 @@ class Channel {
 				
 				// Get category ID from URL for {if active} conditional
 				$this->EE->load->helper('segment');
-				$active_cat = parse_category_id($this->query_string);
+				$active_cat = parse_category($this->query_string);
 
 				foreach($query->result_array() as $row)
 				{
@@ -5898,7 +5898,8 @@ class Channel {
 										  'category_image'			=> $row['cat_image'],
 										  'category_id'				=> $row['cat_id'],
 										  'parent_id'				=> $row['parent_id'],
-										  'active'					=> ($active_cat == $row['cat_id'])
+										  'active'					=> ($active_cat == $row['cat_id'] ||
+																		$active_cat == $row['cat_url_title'])
 										);
 
 						foreach ($this->catfields as $v)
@@ -6282,7 +6283,7 @@ class Channel {
 		
 		// Get category ID from URL for {if active} conditional
 		$this->EE->load->helper('segment');
-		$active_cat = parse_category_id($this->query_string);
+		$active_cat = parse_category($this->query_string);
 
 		foreach($this->cat_array as $key => $val)
 		{
@@ -6303,7 +6304,7 @@ class Channel {
 								  'category_image'			=> $val[2],
 								  'category_id'				=> $key,
 								  'parent_id'				=> $val[0],
-								  'active'					=> ($active_cat == $key)
+								  'active'					=> ($active_cat == $key || $active_cat == $val[4])
 								);
 
 				// add custom fields for conditionals prep
@@ -6463,7 +6464,7 @@ class Channel {
 		
 		// Get category ID from URL for {if active} conditional
 		$this->EE->load->helper('segment');
-		$active_cat = parse_category_id($this->query_string);
+		$active_cat = parse_category($this->query_string);
 
 		foreach($this->cat_array as $key => $val)
 		{
@@ -6483,7 +6484,7 @@ class Channel {
 								  'category_image'			=> $val[2],
 								  'category_id'				=> $key,
 								  'parent_id'				=> $val[0],
-								  'active'					=> ($active_cat == $key));
+								  'active'					=> ($active_cat == $key || $active_cat == $val[4]));
 
 				// add custom fields for conditionals prep
 				foreach ($this->catfields as $v)

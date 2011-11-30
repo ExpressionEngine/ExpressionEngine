@@ -83,29 +83,29 @@ if ($EE_view_disable !== TRUE)
 						<td><?=form_dropdown('wm_padding', $options, $wm_padding); ?></td>
 					</tr>
 					<tr class="even">
-						<td><?=form_label(lang('wm_x_offset'), 'wm_x_offset'); ?></td>
+						<td><?=form_label(lang('wm_hor_offset'), 'wm_hor_offset'); ?></td>
 						<td>
 							<?=
-							form_error('wm_x_offset').
+							form_error('wm_hor_offset').
 							form_input(array(
-								'id'	=> 'wm_x_offset',
-								'name'	=> 'wm_x_offset',
+								'id'	=> 'wm_hor_offset',
+								'name'	=> 'wm_hor_offset',
 								'class'	=> 'field',
-								'value' => set_value('wm_x_offset', $wm_x_offset)
+								'value' => set_value('wm_hor_offset', $wm_hor_offset)
 							)); 
 							?>
 						</td>
 					</tr>
 					<tr class="odd">
-						<td><?=form_label(lang('wm_y_offset'), 'wm_y_offset'); ?></td>
+						<td><?=form_label(lang('wm_vrt_offset'), 'wm_vrt_offset'); ?></td>
 						<td>
 							<?=
-							form_error('wm_y_offset').
+							form_error('wm_vrt_offset').
 							form_input(array(
-								'id'	=> 'wm_y_offset',
-								'name'	=> 'wm_y_offset',
+								'id'	=> 'wm_vrt_offset',
+								'name'	=> 'wm_vrt_offset',
 								'class'	=> 'field',
-								'value' => set_value('wm_y_offset', $wm_y_offset)
+								'value' => set_value('wm_vrt_offset', $wm_vrt_offset)
 							));
 							?>
 						</td>
