@@ -2301,6 +2301,7 @@ class Content_files extends CI_Controller {
 					}
 					
 					$updatedata = array(
+						'site_id' => $this->config->item('site_id'),
 						'short_name' => $_POST['size_short_name_'.$row['id']],
 						'title'	=> $_POST['size_short_name_'.$row['id']],
 						'resize_type' => $_POST['size_resize_type_'.$row['id']],
@@ -2370,6 +2371,7 @@ class Content_files extends CI_Controller {
 					}
 					
 					$size_data = array(
+						'site_id' => $this->config->item('site_id'),
 						'upload_location_id' => $id,
 						'short_name' => $short_name,
 						'title' => $_POST['size_short_name_'.$number],

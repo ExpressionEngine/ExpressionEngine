@@ -43,7 +43,10 @@ class Updater {
 	 */
 	public function do_update()
 	{
+		$this->EE->load->dbforge();
+		
 		$this->_update_watermarks_table();
+		$this->_update_file_dimensions_table();
 		
 		return TRUE;
 	}
@@ -57,8 +60,6 @@ class Updater {
 	 */
 	private function _update_watermarks_table()
 	{
-		$this->EE->load->dbforge();
-		
 		// Rename offset columns
 		$this->EE->dbforge->modify_column('file_watermarks',
 			array(
@@ -72,6 +73,28 @@ class Updater {
 				)
 			)
 		);
+	}
+	
+	/**
+	 * Update File Dimensions Table
+	 *
+	 * Adds a site_id column to file_dimensions table
+	 *
+	 * @return	void
+	 */
+	private function _update_file_dimensions_table()
+	{
+		$column = array(
+			'site_id'			=> array(
+				'type'			=> 'int',
+				'constraint'	=> 4,
+				'unsigned'		=> TRUE,
+				'default'		=> '1',
+				'null'			=> FALSE
+			)
+		);
+
+		$this->EE->dbforge->add_column('file_dimensions', $column);
 	}
 }	
 /* END CLASS */
