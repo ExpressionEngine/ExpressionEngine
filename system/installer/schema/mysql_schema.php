@@ -1273,6 +1273,7 @@ class EE_Schema {
 		
 		$Q[] = "CREATE TABLE `exp_file_dimensions` (
 				`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+				`site_id` int(4) unsigned DEFAULT '1',
 				`upload_location_id` int(4) unsigned DEFAULT NULL,
   				`title` varchar(255) DEFAULT '',
 				`short_name` varchar(255) DEFAULT '',
