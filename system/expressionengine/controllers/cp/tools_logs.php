@@ -286,7 +286,24 @@ class Tools_logs extends CI_Controller {
 		}
 				
 		$this->load->library('table');
-
+		
+		$this->table->set_base_url('C=tools_logs'.AMP.'M=view_throttle_log');
+		$this->table->set_columns(array(
+			'ip_address'	=> array('html' => FALSE),
+			'hits'			=> array('html' => FALSE),
+			'last_activity'	=> array('html' => FALSE)
+		));
+		
+		$initial_state = array(
+			'sort'	=> array('ip_address' => 'desc')
+		);
+		
+		$params = array(
+			'perpage'	=> $this->perpage
+		);
+		
+		$data = $this->table->datasource('_throttle_log_filter', $initial_state, $params);
+		
 		$this->cp->set_variable('cp_page_title', lang('view_throttle_log'));
 
 		// a bit of a breadcrumb override is needed
@@ -294,44 +311,15 @@ class Tools_logs extends CI_Controller {
 			BASE.AMP.'C=tools' => lang('tools'),
 			BASE.AMP.'C=tools_logs'=> lang('tools_logs')
 		));
-
-		$this->cp->add_js_script(array('plugin' => 'dataTables'));
-		
-		$this->javascript->output($this->ajax_filters('view_throttle_ajax_filter', 3));
-
-		$this->javascript->compile();
-		
-		$this->db->where('(hits >= "'.$max_page_loads.'" OR (locked_out = "y" AND last_activity > "'.$lockout_time.'"))', NULL, FALSE);
-		$this->db->from('throttle');
-		$total = $this->db->count_all_results();		
-		
-		$row = ( ! $this->input->get_post('per_page')) ? 0 : $this->input->get_post('per_page');
-		$vars['pagination'] = FALSE;
-
-		if ($total > $this->perpage)
-		{
-			$this->load->library('pagination');
-			
-			$config['base_url'] = BASE.AMP.'C=tools_logs'.AMP.'M=view_throttle_log';
-			$config['total_rows'] = $total;
-			$config['per_page'] = $this->perpage;
-			$config['page_query_string'] = TRUE;
-			$config['first_link'] = lang('pag_first_link');
-			$config['last_link'] = lang('pag_last_link');
-						
-			$this->pagination->initialize($config);	
-			$vars['pagination'] = $this->pagination->create_links();
-		}
 		
 		// Blacklist Installed?
 		$this->db->where('module_name', 'Blacklist');
 		$count = $this->db->count_all_results('modules');
 
-		$vars['blacklist_installed'] = ($count > 0);
+		$data['blacklist_installed'] = ($count > 0);
 
-		$vars['throttle_data'] = $this->tools_model->get_throttle_log($max_page_loads, $lockout_time, $this->perpage, $row);
-
-		$this->load->view('tools/view_throttle_log', $vars);
+		$this->javascript->compile();
+		$this->load->view('tools/view_throttle_log', $data);
 	}
 
 	// --------------------------------------------------------------------
@@ -344,17 +332,8 @@ class Tools_logs extends CI_Controller {
 	 * @access	public
 	 * @return	void
 	 */
-	function view_throttle_ajax_filter()
-	{
-		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_logs'))
-		{
-			show_error(lang('unauthorized_access'));
-		}
-
-		$this->output->enable_profiler(FALSE);
-		
-		$col_map = array('ip_address', 'hits', 'last_activity');
-		
+	function _throttle_log_filter($state, $params)
+	{		
 		$max_page_loads = 10;
 		$lockout_time	= 30;
 		
@@ -368,55 +347,35 @@ class Tools_logs extends CI_Controller {
 			$lockout_time = $this->config->item('lockout_time');
 		}
 		
-		// Note- we pipeline the js, so pull more data than are displayed on the page		
-		$perpage = $this->input->get_post('iDisplayLength');
-		$offset = ($this->input->get_post('iDisplayStart')) ? $this->input->get_post('iDisplayStart') : 0; // Display start point
-		$sEcho = $this->input->get_post('sEcho');	
-
-		/* Ordering */
-		$order = array();
+		$throttle_q = $this->tools_model->get_throttle_log(
+			$max_page_loads, $lockout_time, $params['perpage'], $state['offset'], $state['sort']
+		);
 		
-		if ($this->input->get('iSortCol_0') !== FALSE)
+		$throttled = $throttle_q->result_array();
+		
+		$rows = array();
+		
+		while ($log = array_shift($throttled))
 		{
-			for ( $i=0; $i < $this->input->get('iSortingCols'); $i++ )
-			{
-				if (isset($col_map[$this->input->get('iSortCol_'.$i)]))
-				{
-					$order[$col_map[$this->input->get('iSortCol_'.$i)]] = ($this->input->get('sSortDir_'.$i) == 'asc') ? 'asc' : 'desc';
-				}
-			}
+			$rows[] = array(
+				'ip_address'	=> $log['ip_address'],
+				'hits'			=> $log['hits'],
+				'last_activity'	=> $this->localize->set_human_time($log['last_activity'])
+			);
 		}
-		
-		$query = $this->tools_model->get_throttle_log($max_page_loads, $lockout_time, $perpage, $offset, $order);
 		
 		$this->db->where('(hits >= "'.$max_page_loads.'" OR (locked_out = "y" AND last_activity > "'.$lockout_time.'"))', NULL, FALSE);
 		$this->db->from('throttle');
 		$total = $this->db->count_all_results();
 
-
-		$j_response['sEcho'] = $sEcho;
-		$j_response['iTotalRecords'] = $total;
-		$j_response['iTotalDisplayRecords'] = $total;
-		
-		$tdata = array();
-		$i = 0;
-		
-		foreach ($query->result_array() as $log)
-		{
-		
-			$m[] = $log['ip_address'];
-			$m[] = $log['hits'];
-			$m[] = $this->localize->set_human_time($log['last_activity']);
-
-			$tdata[$i] = $m;
-			$i++;
-			unset($m);
-		}		
-
-		$j_response['aaData'] = $tdata;	
-		$sOutput = $this->javascript->generate_json($j_response, TRUE);
-	
-		exit($sOutput);
+		return array(
+			'rows' => $rows,
+			'no_results' => '<p>'.lang('no_throttle_logs').'</p>',
+			'pagination' => array(
+				'per_page' => $params['perpage'],
+				'total_rows' => $total
+			)
+		);
 	}
 
 	// --------------------------------------------------------------------
