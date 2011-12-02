@@ -49,7 +49,7 @@ class Content_files extends CI_Controller {
 		}
 
 		$this->lang->loadfile('filemanager');
-		$this->load->library(array('filemanager'));
+		$this->load->library('filemanager');
 		$this->load->model('file_model');
 		$this->load->model('file_upload_preferences_model');
 
@@ -88,7 +88,7 @@ class Content_files extends CI_Controller {
 	 */
 	public function index()
 	{
-		$this->load->library(array('pagination'));
+		$this->load->library('pagination');
 		$this->load->helper(array('string', 'search'));
 		$this->api->instantiate('channel_categories');
 
