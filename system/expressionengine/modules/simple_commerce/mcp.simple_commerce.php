@@ -66,12 +66,10 @@ class Simple_commerce_mcp {
 	function index($message = '')
 	{
 		$this->EE->load->library('table');
-		$this->EE->load->library('javascript');
-		$this->EE->load->helper('form');
 
 		$vars = array(
 			'message' => $message,
-			'cp_page_title'	=> $this->EE->lang->line('simple_commerce_module_name'),
+			'cp_page_title'	=> lang('simple_commerce_module_name'),
 			'api_url'		=> 
 				$this->EE->functions->fetch_site_index(0,0).QUERY_MARKER.'ACT='.$this->EE->cp->fetch_action_id('Simple_commerce', 'incoming_ipn'),
 			'action_url'	=> 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce'.AMP.'method=various_settings',
@@ -134,12 +132,12 @@ class Simple_commerce_mcp {
 					{
 						if ( ! file_exists($_POST['sc_'.$val]))
 						{
-							show_error(str_replace('%pref%', $this->EE->lang->line($val), $this->EE->lang->line('file_does_not_exist')));
+							show_error(str_replace('%pref%', lang($val), lang('file_does_not_exist')));
 						}
 
 						if ($val == 'temp_path' && ! is_really_writable($_POST['sc_'.$val]))
 						{
-							show_error($this->EE->lang->line('temporary_directory_unwritable'));
+							show_error(lang('temporary_directory_unwritable'));
 						}
 					}
 
@@ -162,7 +160,7 @@ class Simple_commerce_mcp {
 
 		//$this->EE->config->core_ini = array_merge($this->EE->config->core_ini, $insert);
 
-		$this->EE->session->set_flashdata('message_success', $this->EE->lang->line('settings_updated'));
+		$this->EE->session->set_flashdata('message_success', lang('settings_updated'));
 
 		$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP
 		.'M=show_module_cp'.AMP.'module=simple_commerce'.AMP.'method=index');
@@ -183,7 +181,7 @@ class Simple_commerce_mcp {
 		//  Must be Assigned to Channels
 		if (count($this->EE->session->userdata['assigned_channels']) == 0)
 		{
-			show_error($this->EE->lang->line('no_entries_matching_that_criteria').BR.BR.$this->EE->lang->line('site_specific_data'));
+			show_error(lang('no_entries_matching_that_criteria').BR.BR.lang('site_specific_data'));
 		}
 
 		//  Either Show Search Form or Process Entries
@@ -272,12 +270,12 @@ class Simple_commerce_mcp {
 
 		if (count($safe_ids) == 0)
 		{
-			$this->EE->session->set_flashdata('message_failure', $this->EE->lang->line('invalid_entries'));
+			$this->EE->session->set_flashdata('message_failure', lang('invalid_entries'));
 			$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP
 				.'M=show_module_cp'.AMP.'module=simple_commerce'.AMP.'method=edit_items');
 		}
 
-		$vars['email_templates_dropdown'] = array(0 => $this->EE->lang->line('send_no_email'));
+		$vars['email_templates_dropdown'] = array(0 => lang('send_no_email'));
 
 		$this->EE->db->select('email_id, email_name');
 		$query = $this->EE->db->get('simple_commerce_emails');
@@ -291,7 +289,7 @@ class Simple_commerce_mcp {
 		$member_groups = $this->EE->member_model->get_member_groups();
 
 		// first dropdown item is "all"
-		$vars['member_groups_dropdown'] = array(0 => $this->EE->lang->line('no_change'));
+		$vars['member_groups_dropdown'] = array(0 => lang('no_change'));
 
 		foreach($member_groups->result() as $group)
 		{
@@ -299,10 +297,10 @@ class Simple_commerce_mcp {
 		}
 
 		// get subsubscription frequency options
-		$vars['subscription_frequency_unit']['day'] = $this->EE->lang->line('days');
-		$vars['subscription_frequency_unit']['week'] = $this->EE->lang->line('weeks');
-		$vars['subscription_frequency_unit']['month'] = $this->EE->lang->line('months');
-		$vars['subscription_frequency_unit']['year'] = $this->EE->lang->line('years');
+		$vars['subscription_frequency_unit']['day'] = lang('days');
+		$vars['subscription_frequency_unit']['week'] = lang('weeks');
+		$vars['subscription_frequency_unit']['month'] = lang('months');
+		$vars['subscription_frequency_unit']['year'] = lang('years');
 
 		if ($new == 'y')
 		{
@@ -346,7 +344,7 @@ class Simple_commerce_mcp {
 
 			if ($query->num_rows() == 0)
 			{
-				$this->EE->session->set_flashdata('message_failure', $this->EE->lang->line('invalid_entries'));
+				$this->EE->session->set_flashdata('message_failure', lang('invalid_entries'));
 				$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP
 				.'M=show_module_cp'.AMP.'module=simple_commerce'.AMP.'method=edit_items');
 			}
@@ -373,8 +371,8 @@ class Simple_commerce_mcp {
 			}
 		}
 
-		$vars['cp_page_title']  = $this->EE->lang->line($type);
-		$this->EE->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce', $this->EE->lang->line('simple_commerce_module_name'));
+		$vars['cp_page_title']  = lang($type);
+		$this->EE->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce', lang('simple_commerce_module_name'));
 
 		$this->EE->javascript->compile();
 
@@ -437,7 +435,7 @@ class Simple_commerce_mcp {
 
 		if (count($safe_ids) == 0)
 		{
-			$this->EE->session->set_flashdata('message_failure', $this->EE->lang->line('invalid_entries'));
+			$this->EE->session->set_flashdata('message_failure', lang('invalid_entries'));
 			$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP
 				.'M=show_module_cp'.AMP.'module=simple_commerce'.AMP.'method=edit_items');
 		}
@@ -473,12 +471,12 @@ class Simple_commerce_mcp {
 			if ($new == 'y')
 			{
 				$this->EE->db->query($this->EE->db->insert_string('exp_simple_commerce_items', $data));
-				$cp_message = $this->EE->lang->line('item_added');
+				$cp_message = lang('item_added');
 			}
 			else
 			{
 				$this->EE->db->query($this->EE->db->update_string('exp_simple_commerce_items', $data, "entry_id = '$id'"));
-				$cp_message = $this->EE->lang->line('updated');
+				$cp_message = lang('updated');
 			}
 		}
 
@@ -499,9 +497,6 @@ class Simple_commerce_mcp {
 	/** -------------------------------------------*/
 	function edit_items()
 	{
-		$this->EE->load->library('javascript');
-		$this->EE->load->helper('form');
-
 		//  Either Show Form or Process Entries
 
 		if ($this->EE->input->post('toggle') !== FALSE OR $this->EE->input->get_post('entry_id') !== FALSE)
@@ -567,9 +562,9 @@ class Simple_commerce_mcp {
 		
 		$data['form_hidden'] = NULL;
 		
-		$data['cp_page_title']  = $this->EE->lang->line('edit_items');
+		$data['cp_page_title']  = lang('edit_items');
 		$this->EE->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.
-		AMP.'M=show_module_cp'.AMP.'module=simple_commerce', $this->EE->lang->line('simple_commerce_module_name'));
+		AMP.'M=show_module_cp'.AMP.'module=simple_commerce', lang('simple_commerce_module_name'));
 
 		$data['action_url'] = 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce'.AMP.'method=edit_items';
 
@@ -651,8 +646,8 @@ class Simple_commerce_mcp {
 	{
 		$required = array('method', 'heading', 'message', 'hidden');
 
-		$vars['cp_page_title']  = $this->EE->lang->line($data['heading']);
-		$this->EE->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce', $this->EE->lang->line('simple_commerce_module_name'));
+		$vars['cp_page_title']  = lang($data['heading']);
+		$this->EE->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce', lang('simple_commerce_module_name'));
 		$vars['damned'] = $data['hidden'];
 
 		$vars['action_url'] = 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce'.AMP.'method='.$data['method'];
@@ -682,7 +677,7 @@ class Simple_commerce_mcp {
 						WHERE entry_id IN ('".implode("','", $entry_ids)."')");
 		}
 
-		return $this->edit_items($this->EE->lang->line('items_deleted'));
+		return $this->edit_items(lang('items_deleted'));
 	}
 
 	// --------------------------------------------------------------------
@@ -701,7 +696,6 @@ class Simple_commerce_mcp {
 	{
 		$this->EE->load->library('table');
 
-		$this->EE->load->helper('form');
 		$type = 'add_email';
 
 		$this->EE->jquery->plugin(BASE.AMP.'C=javascript'.AMP.'M=load'.AMP.'file=ee_txtarea', TRUE);
@@ -731,8 +725,8 @@ class Simple_commerce_mcp {
 			$vars['email_template']['0']['email_body'] = '';
 			$vars['email_template']['0']['possible_post'] = TRUE;
 
-			$vars['cp_page_title']  = $this->EE->lang->line('add_emails');
-			$this->EE->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce', $this->EE->lang->line('simple_commerce_module_name'));
+			$vars['cp_page_title']  = lang('add_emails');
+			$this->EE->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce', lang('simple_commerce_module_name'));
 
 			$vars['form_hidden']['email_id']['0'] = '';
 
@@ -755,15 +749,15 @@ class Simple_commerce_mcp {
 				$vars['email_template'][$row['email_id']]['possible_post'] = ($key == 0) ? TRUE : FALSE;
 			}
 
-			$vars['cp_page_title']  = $this->EE->lang->line($type);
-			$this->EE->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce', $this->EE->lang->line('simple_commerce_module_name'));
+			$vars['cp_page_title']  = lang($type);
+			$this->EE->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce', lang('simple_commerce_module_name'));
 
 
 			$vars['action_url'] = 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce'.AMP.'method=update_emails';
 		}
 
 
-		$vars['type'] = $this->EE->lang->line($type);
+		$vars['type'] = lang($type);
 		$this->EE->javascript->compile();
 		return $this->EE->load->view('email_template', $vars, TRUE);
 
@@ -821,7 +815,7 @@ class Simple_commerce_mcp {
 			if (count($email_ids) == 0)
 			{
 				unset($_POST['email_id']);
-				$this->EE->session->set_flashdata('message_failure', $this->EE->lang->line('invalid_emails'));
+				$this->EE->session->set_flashdata('message_failure', lang('invalid_emails'));
 
 				$this->EE->functions->redirect(
 					BASE.AMP.'C=addons_modules'.AMP
@@ -863,7 +857,7 @@ class Simple_commerce_mcp {
 			}
 		}
 
-		$this->EE->session->set_flashdata('message_success', $this->EE->lang->line($cp_message));
+		$this->EE->session->set_flashdata('message_success', lang($cp_message));
 
 		$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'
 		.AMP.'module=simple_commerce'.AMP.'method=edit_emails');
@@ -883,7 +877,7 @@ class Simple_commerce_mcp {
 			$this->EE->db->where_in('email_id', $email_ids);
 			$this->EE->db->delete('simple_commerce_emails');
 
-			$this->EE->session->set_flashdata('message_success', $this->EE->lang->line('emails_deleted'));
+			$this->EE->session->set_flashdata('message_success', lang('emails_deleted'));
 		}
 
 		$this->EE->functions->redirect(
@@ -898,11 +892,8 @@ class Simple_commerce_mcp {
 	/** -------------------------------------------*/
 	function edit_emails()
 	{
-		$this->EE->load->library('javascript');
-		$this->EE->load->helper('form');
-
-		$vars['email_templates'] = array();
-		$vars['form_hidden'] = NULL;
+		$data['email_templates'] = array();
+		$data['form_hidden'] = NULL;
 
 		/** -------------------------------------------
 		/**  Either Show Search Form or Process Entries
@@ -935,32 +926,27 @@ class Simple_commerce_mcp {
 			if ($this->EE->input->get_post('action') == 'delete')
 			{
 				return $this->_delete_confirmation_forms(
-												array(
-														'method'	=> 'delete_emails',
-														'heading'	=> 'delete_emails_confirm',
-														'message'	=> 'delete_emails_confirm',
-														'hidden'	=> array('email_ids' => implode('|', $email_ids))
-													)
-												);
+					array(
+						'method'	=> 'delete_emails',
+						'heading'	=> 'delete_emails_confirm',
+						'message'	=> 'delete_emails_confirm',
+						'hidden'	=> array('email_ids' => implode('|', $email_ids))
+					)
+				);
 			}
-			else
-			{
-				return $this->_emails_form($email_ids, 'n');
-			}
+			
+			return $this->_emails_form($email_ids, 'n');
 		}
 		else
 		{
 			$this->EE->load->library('table');
-			$vars['cp_page_title']  = $this->EE->lang->line('edit_email_templates');
-			$this->EE->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'
-			.AMP.'module=simple_commerce', $this->EE->lang->line('simple_commerce_module_name'));
+			$data['cp_page_title']  = lang('edit_email_templates');
+			$this->EE->cp->set_breadcrumb(
+				BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce',
+				lang('simple_commerce_module_name')
+			);
 
 			// Add javascript
-
-			$this->EE->cp->add_js_script(array('plugin' => 'dataTables'));
-
-			$this->EE->javascript->output($this->ajax_filters('edit_emails_ajax_filter', 2));
-
 			$this->EE->javascript->output(array(
 					'$(".toggle_all").toggle(
 						function(){
@@ -998,21 +984,21 @@ class Simple_commerce_mcp {
 			$this->EE->db->limit($this->perpage, $rownum);
 			$query = $this->EE->db->get('simple_commerce_emails');
 
-			$vars['action_url'] = 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce'.AMP.'method=edit_emails';
+			$data['action_url'] = 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce'.AMP.'method=edit_emails';
 
 			$i = 0;
 
 			foreach($query->result_array() as $row)
 			{
-   				$vars['email_templates'][$row['email_id']]['email_name'] = $row['email_name'];
-   				$vars['email_templates'][$row['email_id']]['edit_link'] = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce'.AMP.'method=edit_emails'.AMP.'email_id='.$row['email_id'];
+   				$data['email_templates'][$row['email_id']]['email_name'] = $row['email_name'];
+   				$data['email_templates'][$row['email_id']]['edit_link'] = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce'.AMP.'method=edit_emails'.AMP.'email_id='.$row['email_id'];
 				// Toggle checkbox
-				$vars['email_templates'][$row['email_id']]['toggle'] = array(
-																			'name'		=> 'toggle[]',
-																			'id'		=> 'edit_box_'.$row['email_id'],
-																			'value'		=> $row['email_id'],
-																			'class'		=>'toggle'
-																	);
+				$data['email_templates'][$row['email_id']]['toggle'] = array(
+					'name'		=> 'toggle[]',
+					'id'		=> 'edit_box_'.$row['email_id'],
+					'value'		=> $row['email_id'],
+					'class'		=>'toggle'
+				);
 
 			}
 
@@ -1022,9 +1008,9 @@ class Simple_commerce_mcp {
 
 			$this->EE->pagination->initialize($p_config);
 
-			$vars['pagination'] = $this->EE->pagination->create_links();
+			$data['pagination'] = $this->EE->pagination->create_links();
 
-			return $this->EE->load->view('edit_templates', $vars, TRUE);
+			return $this->EE->load->view('edit_templates', $data, TRUE);
 		}
 	}
 
@@ -1159,7 +1145,7 @@ class Simple_commerce_mcp {
 
 		$items_list = $this->EE->db->get();
 
-		$vars['items_dropdown'] = array('' => $this->EE->lang->line('choose_item'));
+		$vars['items_dropdown'] = array('' => lang('choose_item'));
 
 		foreach($items_list->result() as $item)
 		{
@@ -1220,9 +1206,9 @@ class Simple_commerce_mcp {
 			}
 		}
 
-		$vars['cp_page_title']  = $this->EE->lang->line($type);
-		$vars['type'] = $this->EE->lang->line($type);
-		$this->EE->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce', $this->EE->lang->line('simple_commerce_module_name'));
+		$vars['cp_page_title']  = lang($type);
+		$vars['type'] = lang($type);
+		$this->EE->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce', lang('simple_commerce_module_name'));
 
 		$this->EE->javascript->compile();
 
@@ -1343,7 +1329,7 @@ class Simple_commerce_mcp {
 			if (count($purchase_ids) == 0)
 			{
 				unset($_POST['purchase_id']);
-				return $this->add_purchase($this->EE->lang->line('invalid_purchases'));
+				return $this->add_purchase(lang('invalid_purchases'));
 			}
 		}
 
@@ -1384,7 +1370,7 @@ class Simple_commerce_mcp {
 			}
 		}
 
-		$this->EE->session->set_flashdata('message_success', $this->EE->lang->line('updated'));
+		$this->EE->session->set_flashdata('message_success', lang('updated'));
 
 		$this->EE->functions->redirect(
 			BASE.AMP.'C=addons_modules'.AMP
@@ -1435,7 +1421,7 @@ class Simple_commerce_mcp {
 				}
 			}
 
-			$this->EE->session->set_flashdata('message_success', $this->EE->lang->line('purchases_deleted'));
+			$this->EE->session->set_flashdata('message_success', lang('purchases_deleted'));
 		}
 
 		$this->EE->functions->redirect(
@@ -1451,9 +1437,6 @@ class Simple_commerce_mcp {
 	/** -------------------------------------------*/
 	function edit_purchases()
 	{
-		$this->EE->load->library('javascript');
-		$this->EE->load->helper('form');
-
 		$vars['purchases'] = array();
 		$vars['form_hidden'] = NULL;
 
@@ -1498,9 +1481,9 @@ class Simple_commerce_mcp {
 		else
 		{
 			$this->EE->load->library('table');
-			$vars['cp_page_title']  = $this->EE->lang->line('edit_purchases');
+			$vars['cp_page_title']  = lang('edit_purchases');
 			$this->EE->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'
-			.AMP.'module=simple_commerce', $this->EE->lang->line('simple_commerce_module_name'));
+			.AMP.'module=simple_commerce', lang('simple_commerce_module_name'));
 
 			// Add javascript
 			$this->EE->cp->add_js_script(array('plugin' => 'dataTables'));
@@ -1562,7 +1545,7 @@ class Simple_commerce_mcp {
 
 
 			$i = 0;
-			$recurring = $this->EE->lang->line('recurring');
+			$recurring = lang('recurring');
 
 			foreach($query->result_array() as $row)
 			{
@@ -1673,7 +1656,7 @@ $vars['purchases'][$row['purchase_id']]['subscription_end_date'] = $this->EE->lo
 
 		$i = 0;
 
-		$recurring = $this->EE->lang->line('recurring');
+		$recurring = lang('recurring');
 
 		foreach ($query->result_array() as $purchase)
 		{
@@ -1938,7 +1921,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			'.$col_defs.'
 
 		"oLanguage": {
-			"sZeroRecords": "'.$this->EE->lang->line('invalid_entries').'",
+			"sZeroRecords": "'.lang('invalid_entries').'",
 
 			"oPaginate": {
 				"sFirst": "<img src=\"'.$this->EE->cp->cp_theme_url.'images/pagination_first_button.gif\" width=\"13\" height=\"13\" alt=\"&lt; &lt;\" />",
@@ -2051,13 +2034,13 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			}
 		}
 
-		$default_cats[] = array('', $this->EE->lang->line('filter_by_category'));
-		$default_cats[] = array('all', $this->EE->lang->line('all'));
-		$default_cats[] = array('none', $this->EE->lang->line('none'));
+		$default_cats[] = array('', lang('filter_by_category'));
+		$default_cats[] = array('all', lang('all'));
+		$default_cats[] = array('none', lang('none'));
 
-		$dstatuses[] = array('', $this->EE->lang->line('filter_by_status'));
-		$dstatuses[] = array('open', $this->EE->lang->line('open'));
-		$dstatuses[] = array('closed', $this->EE->lang->line('closed'));
+		$dstatuses[] = array('', lang('filter_by_status'));
+		$dstatuses[] = array('open', lang('open'));
+		$dstatuses[] = array('closed', lang('closed'));
 
 		$channel_info['0']['categories'] = $default_cats;
 		$channel_info['0']['statuses'] = $dstatuses;
@@ -2089,7 +2072,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			$channel_info[$key]['categories'] = $cats;
 
 			$statuses = array();
-			$statuses[] = array('', $this->EE->lang->line('filter_by_status'));
+			$statuses[] = array('', lang('filter_by_status'));
 
 			if (count($status_array) > 0)
 			{
@@ -2097,15 +2080,15 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 				{
 					if ($v['0'] == $val['2'])
 					{
-						$status_name = ($v['1'] == 'closed' OR $v['1'] == 'open') ?  $this->EE->lang->line($v['1']) : $v['1'];
+						$status_name = ($v['1'] == 'closed' OR $v['1'] == 'open') ?  lang($v['1']) : $v['1'];
 						$statuses[] = array($v['1'], $status_name);
 					}
 				}
 			}
 			else
 			{
-				$statuses[] = array($v['1'], $this->EE->lang->line('open'));
-				$statuses[] = array($v['1'], $this->EE->lang->line('closed'));
+				$statuses[] = array($v['1'], lang('open'));
+				$statuses[] = array($v['1'], lang('closed'));
 			}
 
 			$channel_info[$key]['statuses'] = $statuses;
@@ -2201,7 +2184,7 @@ MAGIC;
 		// Security check
 		if ( ! $this->EE->cp->allowed_group('can_access_edit'))
 		{
-			show_error($this->EE->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->EE->load->library('pagination');
@@ -2217,7 +2200,7 @@ MAGIC;
 		// Load the search helper so we can filter the keywords
 		$this->EE->load->helper('search');
 
-		$this->EE->cp->set_variable('cp_page_title', $this->EE->lang->line('edit'));
+		$this->EE->cp->set_variable('cp_page_title', lang('edit'));
 
 		$this->EE->cp->add_js_script('ui', 'datepicker');
 
@@ -2410,7 +2393,7 @@ MAGIC;
 
 		if (empty($allowed_channels))
 		{
-			show_error($this->EE->lang->line('no_channels'));
+			show_error(lang('no_channels'));
 		}
 
 		//  Fetch Color Library - We use this to assist with our status colors
@@ -2454,7 +2437,7 @@ MAGIC;
 
 		if ($this->EE->input->get_post("U") == 'mu')
 		{
-			$vars['message'] = $this->EE->lang->line('multi_entries_updated');
+			$vars['message'] = lang('multi_entries_updated');
 		}
 
 		// Declare the "filtering" form
@@ -2506,11 +2489,11 @@ MAGIC;
 
 		$vars['channel_selected'] = $this->EE->input->get_post('channel_id');
 
-		$vars['channel_select_options'] = array('null' => $this->EE->lang->line('filter_by_channel'));
+		$vars['channel_select_options'] = array('null' => lang('filter_by_channel'));
 
 		if ($query->num_rows() > 1)
 		{
-			$vars['channel_select_options']['all'] = $this->EE->lang->line('all');
+			$vars['channel_select_options']['all'] = lang('all');
 		}
 
 		foreach ($query->result_array() as $row)
@@ -2521,14 +2504,14 @@ MAGIC;
 		// Category pull-down menu
 		$vars['category_selected'] = $cat_id;
 
-		$vars['category_select_options'][''] = $this->EE->lang->line('filter_by_category');
+		$vars['category_select_options'][''] = lang('filter_by_category');
 
 		if ($total_channels > 1)
 		{
-			$vars['category_select_options']['all'] = $this->EE->lang->line('all');
+			$vars['category_select_options']['all'] = lang('all');
 		}
 
-		$vars['category_select_options']['none'] = $this->EE->lang->line('none');
+		$vars['category_select_options']['none'] = lang('none');
 
 		if ($cat_group != '')
 		{
@@ -2565,7 +2548,7 @@ MAGIC;
 		$vars['author_selected'] = $this->EE->input->get_post('author_id');
 
 		$query = $this->EE->member_model->get_authors();
-		$vars['author_select_options'][''] = $this->EE->lang->line('filter_by_author');
+		$vars['author_select_options'][''] = lang('filter_by_author');
 
 		foreach ($query->result_array() as $row)
 		{
@@ -2575,8 +2558,8 @@ MAGIC;
 		// Status pull-down menu
 		$vars['status_selected'] = $status;
 
-		$vars['status_select_options'][''] = $this->EE->lang->line('filter_by_status');
-		$vars['status_select_options']['all'] = $this->EE->lang->line('all');
+		$vars['status_select_options'][''] = lang('filter_by_status');
+		$vars['status_select_options']['all'] = lang('all');
 
 		$sel_1 = '';
 		$sel_2 = '';
@@ -2597,35 +2580,35 @@ MAGIC;
 			{
 				foreach ($query->result_array() as $row)
 				{
-					$status_name = ($row['status'] == 'closed' OR $row['status'] == 'open') ?  $this->EE->lang->line($row['status']) : $row['status'];
+					$status_name = ($row['status'] == 'closed' OR $row['status'] == 'open') ?  lang($row['status']) : $row['status'];
 					$vars['status_select_options'][$row['status']] = $status_name;
 				}
 			}
 		}
 		else
 		{
-			 $vars['status_select_options']['open'] = $this->EE->lang->line('open');
-			 $vars['status_select_options']['closed'] = $this->EE->lang->line('closed');
+			 $vars['status_select_options']['open'] = lang('open');
+			 $vars['status_select_options']['closed'] = lang('closed');
 		}
 
 		// Date range pull-down menu
 		$vars['date_selected'] = $date_range;
 
-		$vars['date_select_options'][''] = $this->EE->lang->line('date_range');
-		$vars['date_select_options']['1'] = $this->EE->lang->line('today');
-		$vars['date_select_options']['7'] = $this->EE->lang->line('past_week');
-		$vars['date_select_options']['31'] = $this->EE->lang->line('past_month');
-		$vars['date_select_options']['182'] = $this->EE->lang->line('past_six_months');
-		$vars['date_select_options']['365'] = $this->EE->lang->line('past_year');
-		$vars['date_select_options']['custom_date'] = $this->EE->lang->line('any_date');
+		$vars['date_select_options'][''] = lang('date_range');
+		$vars['date_select_options']['1'] = lang('today');
+		$vars['date_select_options']['7'] = lang('past_week');
+		$vars['date_select_options']['31'] = lang('past_month');
+		$vars['date_select_options']['182'] = lang('past_six_months');
+		$vars['date_select_options']['365'] = lang('past_year');
+		$vars['date_select_options']['custom_date'] = lang('any_date');
 
 		// Display order pull-down menu
 		$vars['order_selected'] = $order;
 
-		$vars['order_select_options'][''] = $this->EE->lang->line('order');
-		$vars['order_select_options']['asc'] = $this->EE->lang->line('ascending');
-		$vars['order_select_options']['desc'] = $this->EE->lang->line('descending');
-		$vars['order_select_options']['alpha'] = $this->EE->lang->line('alpha');
+		$vars['order_select_options'][''] = lang('order');
+		$vars['order_select_options']['asc'] = lang('ascending');
+		$vars['order_select_options']['desc'] = lang('descending');
+		$vars['order_select_options']['alpha'] = lang('alpha');
 
 		// Results per page pull-down menu
 		if ( ! ($perpage = $this->EE->input->get_post('perpage')))
@@ -2641,12 +2624,12 @@ MAGIC;
 
 		$vars['perpage_selected'] = $perpage;
 
-		$vars['perpage_select_options']['10'] = '10 '.$this->EE->lang->line('results');
-		$vars['perpage_select_options']['25'] = '25 '.$this->EE->lang->line('results');
-		$vars['perpage_select_options']['50'] = '50 '.$this->EE->lang->line('results');
-		$vars['perpage_select_options']['75'] = '75 '.$this->EE->lang->line('results');
-		$vars['perpage_select_options']['100'] = '100 '.$this->EE->lang->line('results');
-		$vars['perpage_select_options']['150'] = '150 '.$this->EE->lang->line('results');
+		$vars['perpage_select_options']['10'] = '10 '.lang('results');
+		$vars['perpage_select_options']['25'] = '25 '.lang('results');
+		$vars['perpage_select_options']['50'] = '50 '.lang('results');
+		$vars['perpage_select_options']['75'] = '75 '.lang('results');
+		$vars['perpage_select_options']['100'] = '100 '.lang('results');
+		$vars['perpage_select_options']['150'] = '150 '.lang('results');
 
 		if (isset($_POST['keywords']))
 		{
@@ -2683,12 +2666,12 @@ MAGIC;
 
 		$vars['search_in_selected'] = $search_in;
 
-		$vars['search_in_options']['title'] =  $this->EE->lang->line('title_only');
-		$vars['search_in_options']['body'] =  $this->EE->lang->line('title_and_body');
+		$vars['search_in_options']['title'] =  lang('title_only');
+		$vars['search_in_options']['body'] =  lang('title_and_body');
 
 		if (isset($this->EE->installed_modules['comment']))
 		{
-			$vars['search_in_options']['everywhere'] =  $this->EE->lang->line('title_body_comments');
+			$vars['search_in_options']['everywhere'] =  lang('title_body_comments');
 			$vars['search_in_options']['comments'] =  $this->lang->line('comments');
 		}
 
@@ -3054,7 +3037,7 @@ MAGIC;
 
 		// comments module installed?  If so, add it to the list of headings.
 		if (isset($this->EE->installed_modules['comment'])){
-			$table_headings[] .= $this->EE->lang->line('comments');
+			$table_headings[] .= lang('comments');
 		}
 
 		$table_headings = array_merge($table_headings, array(lang('author'), lang('date'), lang('channel'), lang('status'), form_checkbox('select_all', 'true', FALSE, 'class="toggle_all"')));
@@ -3142,7 +3125,7 @@ MAGIC;
 
 				$view_link = anchor($this->EE->functions->fetch_site_index().$qm.'URL='.
 									$this->EE->functions->create_url($templates[$row['live_look_template']].'/'.$row['entry_id']),
-									$this->EE->lang->line('view'), '', TRUE);
+									lang('view'), '', TRUE);
 			}
 			else
 			{
@@ -3183,7 +3166,7 @@ MAGIC;
 					$view_url = BASE.AMP.'C=content_edit'.AMP.'M=view_comments'.AMP.'channel_id='.$row['channel_id'].AMP.'entry_id='.$row['entry_id'];
 				}
 
-				$view_link = ($show_link == FALSE) ? '<div class="lightLinks">--</div>' : '<div class="lightLinks">('.($res->row('count') ).')'.NBS.anchor($view_url, $this->EE->lang->line('view')).'</div>';
+				$view_link = ($show_link == FALSE) ? '<div class="lightLinks">--</div>' : '<div class="lightLinks">('.($res->row('count') ).')'.NBS.anchor($view_url, lang('view')).'</div>';
 
 				$vars['entries'][$row['entry_id']][] = $view_link;
 			}
@@ -3210,7 +3193,7 @@ MAGIC;
 			$vars['entries'][$row['entry_id']][] = (isset($w_array[$row['channel_id']])) ? '<div class="smallNoWrap">'. $w_array[$row['channel_id']].'</div>' : '';
 
 			// Status
-			$status_name = ($row['status'] == 'open' OR $row['status'] == 'closed') ? $this->EE->lang->line($row['status']) : $row['status'];
+			$status_name = ($row['status'] == 'open' OR $row['status'] == 'closed') ? lang($row['status']) : $row['status'];
 
 			$color_info = '';
 
@@ -3252,7 +3235,7 @@ MAGIC;
 		if ($action == '')
 		{
 			$vars['action_options'] = array(
-												'add'	=> $this->EE->lang->line('add_items')
+												'add'	=> lang('add_items')
 											);
 		}
 		elseif (is_array($action))
