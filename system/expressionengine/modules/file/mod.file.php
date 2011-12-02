@@ -844,7 +844,8 @@ class File {
 // dates still need localizing!
 
 		$parse_data = array();
-		$default_variables = array('caption', 'title');
+		
+		$default_variables = array('description', 'caption', 'title');
 		$custom_fields = array('1' => 'one', '2' => 'two', '3' => 'three', '4' => 'four', '5' => 'five', '6' => 'six');
 
 		$this->EE->load->model('file_upload_preferences_model');
@@ -875,19 +876,21 @@ class File {
 			$row['title']			= $this->EE->typography->format_characters($row['title']);
 			
 			// typography on caption
-			$this->EE->typography->parse_type(
-					$row['caption'],
-						array(
-							'text_format'	=> 'xhtml',
-							'html_format'	=> 'safe',
-							'auto_links'	=> 'y',
-							'allow_img_url' => 'y'
-							)
-						);
+			$this->EE->typography->parse_type($row['description'],
+				array(
+					'text_format'	=> 'xhtml',
+					'html_format'	=> 'safe',
+					'auto_links'	=> 'y',
+					'allow_img_url' => 'y'
+				)
+			);
+			
+			// Caption is now called Description, but keep supporting
+			// caption so it doesn't break on upgrade
+			$row['caption'] = $row['description'];
 			
 			// Get File Size/H/W data
 			$size_data = $this->get_file_sizes(reduce_double_slashes($row_prefs['server_path'].'/'.$row['filename']));
-
 			
 			foreach($size_data as $k => $v)
 			{
@@ -895,8 +898,6 @@ class File {
 			}
 			
 			// Thumbnail data
-			
-
 			foreach ($this->valid_thumbs as $data)
 			{
 				

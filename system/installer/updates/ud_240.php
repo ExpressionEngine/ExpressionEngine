@@ -47,6 +47,7 @@ class Updater {
 		
 		$this->_update_watermarks_table();
 		$this->_update_file_dimensions_table();
+		$this->_update_files_table();
 		
 		return TRUE;
 	}
@@ -84,17 +85,50 @@ class Updater {
 	 */
 	private function _update_file_dimensions_table()
 	{
-		$column = array(
-			'site_id'			=> array(
-				'type'			=> 'int',
-				'constraint'	=> 4,
-				'unsigned'		=> TRUE,
-				'default'		=> '1',
-				'null'			=> FALSE
+		$this->EE->dbforge->add_column('file_dimensions',
+			array(
+				'site_id' => array(
+					'type'			=> 'int',
+					'constraint'	=> 4,
+					'unsigned'		=> TRUE,
+					'default'		=> '1',
+					'null'			=> FALSE
+				)
 			)
 		);
-
-		$this->EE->dbforge->add_column('file_dimensions', $column);
+	}
+	
+	/**
+	 * Update Files Table
+	 *
+	 * Adds extra metadata fields to file table
+	 *
+	 * @return	void
+	 */
+	private function _update_files_table()
+	{
+		$this->EE->dbforge->add_column('files',
+			array(
+				'credit' => array(
+					'type'			=> 'varchar',
+					'constraint'	=> 255
+				),
+				'location' => array(
+					'type'			=> 'varchar',
+					'constraint'	=> 255
+				)
+			)
+		);
+		
+		// Rename "caption" field to "description"
+		$this->EE->dbforge->modify_column('files',
+			array(
+				'caption' => array(
+					'name' => 'description',
+					'type' => 'text'
+				),
+			)
+		);
 	}
 }	
 /* END CLASS */

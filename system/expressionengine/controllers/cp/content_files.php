@@ -902,13 +902,31 @@ class Content_files extends CI_Controller {
 				'field' => '<span class="fake_input">' . $data['file_name'] . '</span>',
 				'type' => 'text'
 			),
-			'caption' => array(
+			'description' => array(
 				'field' => form_textarea(array(
-					'name'	=> 'caption',
-					'id'	=> 'caption',
-					'value'	=> $data['caption']
+					'name'	=> 'description',
+					'id'	=> 'description',
+					'value'	=> $data['description']
 				)),
 				'type' => 'textarea'
+			),
+			'credit' => array(
+				'field' => form_input(array(
+					'name'	=> 'credit',
+					'id'	=> 'credit',
+					'value'	=> $data['credit'],
+					'size' 	=> 255
+				)),
+				'type' => 'text'
+			),
+			'location' => array(
+				'field' => form_input(array(
+					'name'	=> 'location',
+					'id'	=> 'location',
+					'value'	=> $data['location'],
+					'size' 	=> 255
+				)),
+				'type' => 'text'
 			)
 		);
 		
@@ -935,14 +953,13 @@ class Content_files extends CI_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 		
-		$updated_title   = $this->input->post('file_title');
-		$updated_caption = $this->input->post('caption');
-		
 		// Update the file
 		$this->file_model->save_file(array(
-			'file_id'	=> $file_id,
-			'title'		=> $updated_title,
-			'caption'	=> $updated_caption
+			'file_id'		=> $file_id,
+			'title'			=> $this->input->post('file_title'),
+			'description'	=> $this->input->post('description'),
+			'credit'		=> $this->input->post('credit'),
+			'location'		=> $this->input->post('location')
 		));
 		
 		$this->load->model('file_category_model');
