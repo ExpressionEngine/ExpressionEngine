@@ -93,7 +93,6 @@ class Cp {
 		$this->EE->load->library('menu');
 		$this->EE->load->library('accessories');
 		$this->EE->load->library('javascript', array('autoload' => FALSE));
- 		$this->EE->load->helper('url');
 
 		$this->EE->load->model('member_model'); // for screen_name, quicklinks
 		
