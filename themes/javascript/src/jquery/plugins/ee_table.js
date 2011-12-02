@@ -73,7 +73,7 @@ $.widget('ee.table', {
 		self.filters = options.filters;
 		
 		// fix ampersands
-		options.base_url = options.base_url.replace('&amp;', '&');
+		options.base_url = options.base_url.replace(new RegExp('&amp;', 'g'), '&');
 		
 		// setup dependencies
 		self.sort = new Sort(options, self);
