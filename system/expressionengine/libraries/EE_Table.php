@@ -1,134 +1,27 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		ExpressionEngine Dev Team
+ * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @license		http://expressionengine.com/user_guide/license.html
+ * @link		http://expressionengine.com
+ * @since		Version 2.0
+ * @filesource
+ */
+ 
+// ------------------------------------------------------------------------
 
 /**
- * Use the table library as usual, but with added steps to setup the datatable:
+ * ExpressionEngine Core Table Class
  *
- * 1. Name your columns and set their sorting properties:
- *
- * $this->table->set_columns(array('id' => FALSE, 'name' => TRUE));
- *
- * @todo sorting datatype? (bit of a pain to let them pick, must work in js and mysql, maybe just ask them what sql will sort on)
- * @todo if you just need non-ajax sorting, should be done here.
- * @todo allow Wes's tokens? 	'entry_id' => array('filter' => TRUE, 'token' => TRUE, 'alias' => 'id')
- * 
- * 
- * 2. Define a function in your controller that will act as the datasource.
- *
- * The function should return an array containing the following data:
- *
- * rows - an array of table rows. Each row is an array similar
- * to the normal add_row() parameter, but with a key equal to the column name.
- *
- * no_results - html to display if filtering results in no results
- *
- * Pagination settings:
- *
- * total_rows - number of rows without php
- * per_page - number of rows per page
- * *_link - link styles as per pagination
- * full_tag_* - as per pagination
- *
- * Using names from the previous example:
- * return array(
- *	   array('id' => 5, 'name' => 'pascal'),
- *	   array('id' => 3, 'name' => 'wes')
- * );
- *
- * Hint: This matches the db->result_array() output [db->result() will work as well].
- *
- * 
- * 3. Connect the datasource to your table:
- * $table_data = $this->table->datasource('somefunc');
- *
- * Your datasource will receive an parameter that contains the current row offset
- * and sorting requirements in this format [columns specified to be non-
- * sortable will be removed from the sort array.]:
- * 
- * array(
- *     'offset' => 2,
- *     'sort' 	=> array('name' => 'asc/desc'),
- *	   'columns' => array('id' => FALSE, 'name' => TRUE)
- * );
- *
- *
- * If this is a filtering/pagination/sorting call, the request will stop here
- * the table will automatically be updated using the data returned from the
- * datasource. As a result, you should try to call this function as soon as
- * possible to avoid filtering delays.
- *
- * On a regular (non-ajax) load this call will return a slightly modified version
- * of your datasource return array:
- * 
- * 1. The 'row' and 'pagination' keys will be removed.
- * 2. Two keys will be added: table_html and pagination_html
- *
- * table_html is generated using your existing table configuration, make sure your
- * table headers and template are set before returning from your datasource.
- *
- * If you did not provide pagination configuration, in your return pagination_html
- * will be blank.
- *
- * Note: If you need to provide additional data to your datasource, you can do so by adding
- * an array as a second parameter to table->datasource(). This will be passed to your
- * datasource method as the second parameter. Additionally, it can be used to set defaults
- * for the page (reg. default = 1) and sorting configuration, by prefixing them with tbl_
- *
- * array(
- *     'offset' => 400,
- *	   'sort' => array('entry_date' => 'desc')
- * )
- *
- *
- * 4. Include the javascript (tmpl and table plugins):
- * 
- * $this->cp->add_js_script('plugin' => array('tmpl', 'table'))
- *
- *
- * 5. Tying into the javascript:
- *
- * The table setup is done automatically by grabbing all tables and
- * looking for the data-table_config property. That property contains a json
- * array that is passed to the plugin.
- *
- * The table plugin will modify the table as users interact with it. If your javascript
- * modifies the table or listens for events on its elements, you will need to observe
- * table updates to ensure that your code continues to function: (@todo crappy paragraph, pascal)
- * 
- * WIP list:
- *
- * $('table').bind('tablecreate')	// initial automatic setup
- * $('table').bind('tableload')		// beginning of (potentially) long process: show indicator
- * $('table').bind('tableupdate')	// results returned and changes applied (pagination/sorting/filtering)
- *
- * If you want to filter, you will need to connect the filtering plugin. You can
- * either give it a serializable set of form elements (form, or multiple inputs).
- * These will automatically be observed for changes.
- *
- * $('table').table('add_filter', $('form'));
- *
- * Or you can apply filters yourself, by passing a json object:
- *
- * $('table').table('add_filter', {'foo': 'bar'});
- *
- * multiple calls to add_filter stack
- *
- * You can also remove filters:
- * $('table').table('remove_filter', 'key'/object/serializable);
- *
- * Or clear them:
- * $('table').table('clear_filter');
- *
+ * @package		ExpressionEngine
+ * @subpackage	Core
+ * @category	Core
+ * @author		ExpressionEngine Dev Team
+ * @link		http://expressionengine.com
  */
-
-/**
- * Notes:
- *
- * Protected column names: data
- *
- * @todo need to support array/data syntax for table cells (on js end):
- *
- */
-
 class EE_Table extends CI_Table {
 
 	protected $EE;
