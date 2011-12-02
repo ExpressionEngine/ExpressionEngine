@@ -1326,8 +1326,6 @@ class Content_files extends CI_Controller {
 
 		$files = $this->filemanager->fetch_files($id, $current_files, TRUE);
 		
-		$this->load->library('localize');
-
 		// Setup data for batch insert
 		foreach ($files->files[$id] as $file)
 		{
