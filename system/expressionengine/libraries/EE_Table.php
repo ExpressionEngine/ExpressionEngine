@@ -140,7 +140,11 @@ class EE_Table extends CI_Table {
 		$data = $controller->$func($settings, $params);
 		
 		$this->uniqid = uniqid('tbl_');
-		$this->no_results = isset($data['no_results']) ? $data['no_results'] : '';
+		
+		if (isset($data['no_results']))
+		{
+			$this->no_results = $data['no_results'];
+		}
 		
 		if (AJAX_REQUEST)
 		{

@@ -59,8 +59,15 @@ $.widget('ee.table', {
 		var self = this,
 			options = self.options;
 
-		// cache content parent
+		// cache content parent and no results
 		self.tbody = self.element.find('tbody');
+		self.no_results = $('<div />').html(options.no_results);
+		
+		// check if we need no results to begin with
+		if ( ! self.tbody.children().length) {
+			self.element.hide();
+			self.element.after(self.no_results);
+		}
 
 		// set defaults
 		self.filters = options.filters;
@@ -204,17 +211,21 @@ $.widget('ee.table', {
 			self._trigger('update', null, self._ui(/* @todo args */));
 			
 			// @todo only remove those that are not in the result set?
+			if ( ! res.rows.length) {
+				self.element.hide();
+				self.element.after(self.no_results);
+			} else {
+				self.element.show();
+				self.tbody.html(res.rows);
+				self.no_results.remove();
+			}
 			
-			self.tbody.html(res.rows);
-			self.pagination.update(res.pagination);			
+			self.pagination.update(res.pagination);
 		};
 		
-		
-		// @todo on the backend make sure the key name actually exists
-		// or it'll throw a sql exception in the search model
+
 		self.filters.tbl_sort = this.sort.get();
-		
-		
+				
 		// Weed out the stuff we don't want in there, like XIDs,
 		// session ids, and blank values
 		
