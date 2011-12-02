@@ -273,8 +273,19 @@ class Content_files_modal extends CI_Controller {
 	
 	// ------------------------------------------------------------------------
 	
-	public function edit_image()
+	public function edit_file()
 	{
+		// TODO: Gut accordions and replace with tabs (Metadata, Resize, Rotate)
+		// Metadata section will have:
+		// - Title
+		// - Description
+		// - Credit
+		// - Location
+		// Would probably be worth showing file name somewhere...
+		// For the image manipulations, definitely show thumbnail, float right
+		// TODO: Revise wording for Use Uploaded File when on the edit page
+		// 	such that use also mentions saving?
+		
 		$parameters = array();
 		
 		// The form posts to this method, so if POST data is present
@@ -295,7 +306,7 @@ class Content_files_modal extends CI_Controller {
 		);
 		
 		// This isn't in the file_data variable because of a bug that
-		// wouldn't properly encode the smae json object paseed twice
+		// wouldn't properly encode the same json object paseed twice
 		// to form_open()
 		
 		$vars['file_json_input'] = form_hidden('file_json', $vars['file_json']);
