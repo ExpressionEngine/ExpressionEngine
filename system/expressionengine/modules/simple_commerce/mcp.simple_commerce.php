@@ -885,19 +885,16 @@ class Simple_commerce_mcp {
 			.AMP.'module=simple_commerce'.AMP.'method=edit_emails');
 	}
 
+	// --------------------------------------------------------------------
 
-
-	/** -------------------------------------------
-	/**  Edit Email Templates
-	/** -------------------------------------------*/
+	/**
+	 * Edit Email Templates
+	 *
+	 * @access public
+	*/
 	function edit_emails()
 	{
-		$data['email_templates'] = array();
-		$data['form_hidden'] = NULL;
-
-		/** -------------------------------------------
-		/**  Either Show Search Form or Process Entries
-		/** -------------------------------------------*/
+		// Either Show Search Form or Process Entries
 
 		if ($this->EE->input->post('toggle') !== FALSE OR $this->EE->input->get_post('email_id') !== FALSE)
 		{
@@ -937,158 +934,86 @@ class Simple_commerce_mcp {
 			
 			return $this->_emails_form($email_ids, 'n');
 		}
-		else
-		{
-			$this->EE->load->library('table');
-			$data['cp_page_title']  = lang('edit_email_templates');
-			$this->EE->cp->set_breadcrumb(
-				BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce',
-				lang('simple_commerce_module_name')
-			);
 
-			// Add javascript
-			$this->EE->javascript->output(array(
-					'$(".toggle_all").toggle(
-						function(){
-							$("input.toggle").each(function() {
-								this.checked = true;
-							});
-						}, function (){
-							var checked_status = this.checked;
-							$("input.toggle").each(function() {
-								this.checked = false;
-							});
-						}
-					);'
-				)
-			);
+		$this->EE->load->library('table');
+		
+		$this->EE->table->set_columns(array(
+			'email_name' => array('header' => lang('template_name')),
+			'_check'	 => array(
+				'sort' => FALSE,
+				'header' => form_checkbox('select_all', 'true', FALSE, 'class="toggle_all" id="select_all"')
+			)
+		));
+		
+		$params = array('perpage' => $this->perpage);
+		$default = array('sort' => array('email_name' => 'asc'));
+		
+		$data = $this->EE->table->datasource('_edit_emails_filter', $default, $params);
+		
+		$data['form_hidden'] = NULL;
+		$data['email_templates'] = array();
+		$data['cp_page_title']  = lang('edit_email_templates');
+		
+		$this->EE->cp->set_breadcrumb(
+			BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce',
+			lang('simple_commerce_module_name')
+		);
 
-			$this->EE->javascript->compile();
+		// Add javascript
+		$this->EE->javascript->output(array(
+				'$(".toggle_all").toggle(
+					function(){
+						$("input.toggle").each(function() {
+							this.checked = true;
+						});
+					}, function (){
+						var checked_status = this.checked;
+						$("input.toggle").each(function() {
+							this.checked = false;
+						});
+					}
+				);'
+			)
+		);
 
-			//  Check for pagination
+		$this->EE->javascript->compile();
 
-			$total = $this->EE->db->count_all('simple_commerce_emails');
+		$data['action_url'] = 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce'.AMP.'method=edit_emails';
 
-			if ($total == 0)
-			{
-				return $this->EE->load->view('edit_templates', $vars, TRUE);
-			}
-
-			if ( ! $rownum = $this->EE->input->get_post('rownum'))
-			{
-				$rownum = 0;
-			}
-
-			$this->EE->db->select('email_id, email_name');
-			$this->EE->db->order_by("email_name", "desc");
-			$this->EE->db->limit($this->perpage, $rownum);
-			$query = $this->EE->db->get('simple_commerce_emails');
-
-			$data['action_url'] = 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce'.AMP.'method=edit_emails';
-
-			$i = 0;
-
-			foreach($query->result_array() as $row)
-			{
-   				$data['email_templates'][$row['email_id']]['email_name'] = $row['email_name'];
-   				$data['email_templates'][$row['email_id']]['edit_link'] = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce'.AMP.'method=edit_emails'.AMP.'email_id='.$row['email_id'];
-				// Toggle checkbox
-				$data['email_templates'][$row['email_id']]['toggle'] = array(
-					'name'		=> 'toggle[]',
-					'id'		=> 'edit_box_'.$row['email_id'],
-					'value'		=> $row['email_id'],
-					'class'		=>'toggle'
-				);
-
-			}
-
-			// Pass the relevant data to the paginate class so it can display the "next page" links
-			$this->EE->load->library('pagination');
-			$p_config = $this->pagination_config('edit_emails', $total);
-
-			$this->EE->pagination->initialize($p_config);
-
-			$data['pagination'] = $this->EE->pagination->create_links();
-
-			return $this->EE->load->view('edit_templates', $data, TRUE);
-		}
+		return $this->EE->load->view('edit_templates', $data, TRUE);
 	}
 
-	function edit_emails_ajax_filter()
+	function _edit_emails_filter($state, $params)
 	{
-
-		$this->EE->output->enable_profiler(FALSE);
-
-		$col_map = array('email_name');
-
-		$id = ($this->EE->input->get_post('id')) ? $this->EE->input->get_post('id') : '';
-
-
-		// Note- we pipeline the js, so pull more data than are displayed on the page
-		$perpage = $this->EE->input->get_post('iDisplayLength');
-		$offset = ($this->EE->input->get_post('iDisplayStart')) ? $this->EE->input->get_post('iDisplayStart') : 0; // Display start point
-		$sEcho = $this->EE->input->get_post('sEcho');
-
-
-		/* Ordering */
-		$order = array();
-		
-		if ($this->EE->input->get('iSortCol_0') !== FALSE)
+		if (count($state['sort']) > 0)
 		{
-			for ( $i=0; $i < $this->EE->input->get('iSortingCols'); $i++ )
+			foreach ($state['sort'] as $k => $v)
 			{
-				if (isset($col_map[$this->EE->input->get('iSortCol_'.$i)]))
-				{
-					$order[$col_map[$this->EE->input->get('iSortCol_'.$i)]] = ($this->EE->input->get('sSortDir_'.$i) == 'asc') ? 'asc' : 'desc';
-				}
+				$this->EE->db->order_by($k, $v);
 			}
 		}
-		
-		$total = $this->EE->db->count_all('simple_commerce_emails');
 
-		$j_response['sEcho'] = $sEcho;
-		$j_response['iTotalRecords'] = $total;
-		$j_response['iTotalDisplayRecords'] = $total;
+		$emails = $this->EE->db->select('email_id, email_name')
+			->limit($params['perpage'], $state['offset'])
+			->get('simple_commerce_emails')
+			->result_array();
 
-		$tdata = array();
-		$i = 0;
-
-			$this->EE->db->select('email_id, email_name');
-
-			if (count($order) > 0)
-			{
-				foreach ($order as $k => $v)
-				{
-					$this->EE->db->order_by($k, $v);
-				}
-			}
-			else
-			{
-				$this->EE->db->order_by("email_name", "desc");
-			}
-
-			$this->EE->db->limit($perpage, $offset);
-			$query = $this->EE->db->get('simple_commerce_emails');
-
-			$vars['action_url'] = 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce'.AMP.'method=edit_emails';
-
-			$i = 0;
-
-
-		foreach ($query->result_array() as $email)
+		while ($email = array_shift($emails))
 		{
-			$m[] = '<a href="'.BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce'.AMP.'method=edit_emails'.AMP.'email_id='.$email['email_id'].'">'.$email['email_name'].'</a>';
-			$m[] = '<input class="toggle" id="edit_box_'.$email['email_id'].'" type="checkbox" name="toggle[]" value="'.$email['email_id'].'" />';
-
-			$tdata[$i] = $m;
-			$i++;
-			unset($m);
+			$rows[] = array(
+				'email_name'	=> '<a href="'.BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce'.AMP.'method=edit_emails'.AMP.'email_id='.$email['email_id'].'">'.$email['email_name'].'</a>',
+				'_check'		=> '<input class="toggle" id="edit_box_'.$email['email_id'].'" type="checkbox" name="toggle[]" value="'.$email['email_id'].'" />'
+			);
 		}
 
-		$j_response['aaData'] = $tdata;
-		$sOutput = $this->EE->javascript->generate_json($j_response, TRUE);
-
-		die($sOutput);
+		return array(
+			'rows' => $rows,
+			'no_results' => lang('invalid_entries'),
+			'pagination' => array(
+				'per_page' => $params['perpage'],
+				'total_rows' => $this->EE->db->count_all('simple_commerce_emails')
+			)
+		);
 	}
 
 
