@@ -80,7 +80,7 @@ class Simple_commerce_mcp {
 
 		$base = $this->EE->functions->remove_double_slashes(str_replace('/public_html', '', substr(BASEPATH, 0, - strlen(SYSDIR.'/'))).'/encryption/');
 
-		foreach(array('certificate_id', 'public_certificate', 'private_key', 'paypal_certificate', 'temp_path') as $val)
+		foreach (array('certificate_id', 'public_certificate', 'private_key', 'paypal_certificate', 'temp_path') as $val)
 		{
 
 			if ($val == 'certificate_id')
@@ -502,10 +502,7 @@ class Simple_commerce_mcp {
 		$this->EE->load->library('javascript');
 		$this->EE->load->helper('form');
 
-		$vars['form_hidden'] = NULL;
-		$vars['items'] = array();
-
-		//  Either Show Search Form or Process Entries
+		//  Either Show Form or Process Entries
 
 		if ($this->EE->input->post('toggle') !== FALSE OR $this->EE->input->get_post('entry_id') !== FALSE)
 		{
@@ -527,197 +524,125 @@ class Simple_commerce_mcp {
 			}
 
 
-
 			if ($this->EE->input->get_post('action') == 'delete')
 			{
-					return $this->_delete_confirmation_forms(
-												array(
-														'method'	=> 'delete_items',
-														'heading'	=> 'delete_items_confirm',
-														'message'	=> 'delete_items_confirm',
-														'hidden'	=> array('entry_ids' => implode('|', $entry_ids))
-													)
-												);
+					return $this->_delete_confirmation_forms(array(
+							'method'	=> 'delete_items',
+							'heading'	=> 'delete_items_confirm',
+							'message'	=> 'delete_items_confirm',
+							'hidden'	=> array('entry_ids' => implode('|', $entry_ids))
+					));
 			}
-			else
-			{
-				return $this->_items_form($entry_ids, 'n');
-
-			}
+			
+			return $this->_items_form($entry_ids, 'n');
 		}
-		else
-		{
-			$this->EE->load->library('table');
-			$vars['cp_page_title']  = $this->EE->lang->line('edit_items');
-			$this->EE->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.
-			AMP.'M=show_module_cp'.AMP.'module=simple_commerce', $this->EE->lang->line('simple_commerce_module_name'));
 
-			$vars['action_url'] = 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce'.AMP.'method=edit_items';
+		$this->EE->load->library('table');
+		
+		$this->EE->table->set_base_url('C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce'.AMP.'method=edit_items');
+		$this->EE->table->set_columns(array(
+			'title'						=> array('header' => lang('entry_title')),
+			'item_regular_price'		=> array('header' => lang('regular_price')),
+			'item_sale_price'			=> array('header' => lang('sale_price')),
+			'item_use_sale'				=> array('header' => lang('use_sale_price')),
+			'subscription_frequency'	=> array(),
+			'current_subscriptions'		=> array(),
+			'item_purchases'			=> array(),
+			'_check'					=> array(
+				'sort' => FALSE,
+				'header' => form_checkbox('select_all', 'true', FALSE, 'class="toggle_all" id="select_all"')
+			)
+		));
+		
+		$initial_state = array(
+			'sort'	=> array('title' => 'asc')
+		);
+		
+		$params = array(
+			'perpage'	=> $this->perpage
+		);
+		
+		$data = $this->EE->table->datasource('_edit_items_filter', $initial_state, $params);		
+		
+		
+		$data['form_hidden'] = NULL;
+		
+		$data['cp_page_title']  = $this->EE->lang->line('edit_items');
+		$this->EE->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.
+		AMP.'M=show_module_cp'.AMP.'module=simple_commerce', $this->EE->lang->line('simple_commerce_module_name'));
 
-			// Add javascript
+		$data['action_url'] = 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce'.AMP.'method=edit_items';
 
-			$this->EE->cp->add_js_script(array('plugin' => 'dataTables'));
+		// Add javascript
+		$this->EE->javascript->output(array(
+				'$(".toggle_all").toggle(
+					function(){
+						$("input.toggle").each(function() {
+							this.checked = true;
+						});
+					}, function (){
+						$("input.toggle").each(function() {
+							this.checked = false;
+						});
+					}
+				);'
+			)
+		);
 
-			$this->EE->javascript->output($this->ajax_filters('edit_items_ajax_filter', 8));
+		$this->EE->javascript->compile();
 
-
-			$this->EE->javascript->output(array(
-					'$(".toggle_all").toggle(
-						function(){
-							$("input.toggle").each(function() {
-								this.checked = true;
-							});
-						}, function (){
-							var checked_status = this.checked;
-							$("input.toggle").each(function() {
-								this.checked = false;
-							});
-						}
-					);'
-				)
-			);
-
-			$this->EE->javascript->compile();
-
-			//  Check for pagination
-
-			$total = $this->EE->db->count_all('simple_commerce_items');
-			// crap- should only be ones they have access to....
-
-			if ($total == 0)
-			{
-				return $this->EE->load->view('edit_items', $vars, TRUE);
-			}
-
-			if ( ! $rownum = $this->EE->input->get_post('rownum'))
-			{
-				$rownum = 0;
-			}
-
-			/*
-			$this->EE->db->order_by("item_id", "desc");
-			$this->EE->db->limit($this->perpage, $rownum);
-			$query = $this->EE->db->get('simple_commerce_items');
-			*/
-
-			$query = $this->EE->db->query("SELECT sc.*, wt.title FROM exp_simple_commerce_items sc, exp_channel_titles wt
-				 WHERE sc.entry_id = wt.entry_id
-				 ORDER BY item_id desc LIMIT $rownum, $this->perpage");
-
-			$i = 0;
-
-			//$entry_ids = $this->weed_items($entry_ids);
-
-			foreach($query->result_array() as $row)
-			{
-				$subscription_period = ($row['subscription_frequency'] != '') ? $row['subscription_frequency'].' x '.$row['subscription_frequency_unit'] : '--';
-
-   				$vars['items'][$row['entry_id']]['entry_title'] = $row['title'];
-   				$vars['items'][$row['entry_id']]['edit_link'] = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce'.AMP.'method=edit_items'.AMP.'entry_id='.$row['entry_id'];
-
-   				$vars['items'][$row['entry_id']]['regular_price'] = $row['item_regular_price'];
-   				$vars['items'][$row['entry_id']]['sale_price'] = $row['item_sale_price'];
-   				$vars['items'][$row['entry_id']]['use_sale_price'] = $row['item_use_sale'];
-   				$vars['items'][$row['entry_id']]['item_purchases'] = $row['item_purchases'];
-  				$vars['items'][$row['entry_id']]['subscription_frequency_unit'] = $row['subscription_frequency_unit'];
-   				$vars['items'][$row['entry_id']]['subscription_frequency'] = $row['subscription_frequency_unit'];
-   				$vars['items'][$row['entry_id']]['subscription_period'] = $subscription_period;
-  				$vars['items'][$row['entry_id']]['current_subscriptions'] = $row['current_subscriptions'];
-
-				// Toggle checkbox
-				$vars['items'][$row['entry_id']]['toggle'] = array(
-																		'name'		=> 'toggle[]',
-																		'id'		=> 'edit_box_'.$row['entry_id'],
-																		'value'		=> $row['entry_id'],
-																		'class'		=>'toggle'
-																	);
-
-
-			}
-
-			// Pass the relevant data to the paginate class so it can display the "next page" links
-			$this->EE->load->library('pagination');
-			$p_config = $this->pagination_config('edit_items', $total);
-
-			$this->EE->pagination->initialize($p_config);
-
-			$vars['pagination'] = $this->EE->pagination->create_links();
-
-			return $this->EE->load->view('edit_items', $vars, TRUE);
-		}
+		return $this->EE->load->view('edit_items', $data, TRUE);
 	}
 	
 	// --------------------------------------------------------------------
 	
-	function edit_items_ajax_filter()
+	function _edit_items_filter($state, $params)
 	{
-		$this->EE->output->enable_profiler(FALSE);
 		$this->EE->load->helper('text');
-
-		$col_map = array('title', 'item_regular_price', 'item_sale_price', 'item_use_sale', 'subscription_frequency', 'current_subscriptions', 'item_purchases');
 
 		$id = ($this->EE->input->get_post('id')) ? $this->EE->input->get_post('id') : '';
 
-
-		// Note- we pipeline the js, so pull more data than are displayed on the page
-		$perpage = $this->EE->input->get_post('iDisplayLength');
-		$offset = ($this->EE->input->get_post('iDisplayStart')) ? $this->EE->input->get_post('iDisplayStart') : 0; // Display start point
-		$sEcho = $this->EE->input->get_post('sEcho');
-
-
-		/* Ordering */
-		$order_by = 'item_id desc';
-
-		if ($this->EE->input->get('iSortCol_0') !== FALSE)
+		if (is_array($state['sort']) && count($state['sort']))
 		{
-			for ( $i=0; $i < $this->EE->input->get('iSortingCols'); $i++ )
+			foreach ($state['sort'] as $key => $val)
 			{
-				if (isset($col_map[$this->EE->input->get('iSortCol_'.$i)]))
-				{
-					$o = ($this->EE->input->get('sSortDir_'.$i) == 'asc') ? 'asc' : 'desc';
-					$order[] = $col_map[$this->EE->input->get('iSortCol_'.$i)].' '.$o;
-				}
+				$this->EE->db->order_by($key, $val);
 			}
-			
-			$order_by = implode(', ', $order);
-		}		
-		
-
-		$total = $this->EE->db->count_all('simple_commerce_items');
-
-		$j_response['sEcho'] = $sEcho;
-		$j_response['iTotalRecords'] = $total;
-		$j_response['iTotalDisplayRecords'] = $total;
-
-		$tdata = array();
-		$i = 0;
-
-		$query = $this->EE->db->query("SELECT sc.*, wt.title FROM exp_simple_commerce_items sc, exp_channel_titles wt
-				 WHERE sc.entry_id = wt.entry_id
-				 ORDER BY {$order_by} LIMIT $offset, $perpage");
-
-		// Note- empty string added because otherwise it will throw a js error
-		foreach ($query->result_array() as $item)
-		{
-			$subscription_period = ($item['subscription_frequency'] != '') ? $item['subscription_frequency'].' x '.$item['subscription_frequency_unit'] : '--';
-			$m[] = '<a href="'.BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce'.AMP.'method=edit_items'.AMP.'entry_id='.$item['entry_id'].'">'.$item['title'].'</a>';
-			$m[] = $item['item_regular_price'];
-			$m[] = $item['item_sale_price'];
-			$m[] = $item['item_use_sale'];
-			$m[] = $subscription_period;
-			$m[] = $item['current_subscriptions'];
-			$m[] = $item['item_purchases'];
-			$m[] = '<input class="toggle" id="edit_box_'.$item['entry_id'].'" type="checkbox" name="toggle[]" value="'.$item['entry_id'].'" />';
-
-			$tdata[$i] = $m;
-			$i++;
-			unset($m);
 		}
 
-		$j_response['aaData'] = $tdata;
-		$sOutput = $this->EE->javascript->generate_json($j_response, TRUE);
+		$items = $this->EE->db->from('simple_commerce_items sc, channel_titles wt')
+			->select('sc.*, wt.title')
+			->where('sc.entry_id = wt.entry_id', NULL, FALSE)
+			->limit($params['perpage'], $state['offset'])
+			->get()
+			->result_array();
+		
+		$rows = array();
+		
+		while ($item = array_shift($items))
+		{
+			$subscription_period = ($item['subscription_frequency'] != '') ? $item['subscription_frequency'].' x '.$item['subscription_frequency_unit'] : '--';
+			
+			$rows[] = array(
+				'title'					 => '<a href="'.BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce'.AMP.'method=edit_items'.AMP.'entry_id='.$item['entry_id'].'">'.$item['title'].'</a>',
+				'item_regular_price'	 => $item['item_regular_price'],
+				'item_sale_price'		 => $item['item_sale_price'],
+				'item_use_sale'			 => $item['item_use_sale'],
+				'subscription_frequency' => $subscription_period,
+				'current_subscriptions'	 => $item['current_subscriptions'],
+				'item_purchases'		 => $item['item_purchases'],
+				'_check'				 => '<input class="toggle" id="edit_box_'.$item['entry_id'].'" type="checkbox" name="toggle[]" value="'.$item['entry_id'].'" />'
+			);
+		}
 
-		die($sOutput);
+		return array(
+			'rows' => $rows,
+			'no_results' => lang('invalid_entries'),
+			'pagination' => array(
+				'per_page' => $params['perpage'],
+				'total_rows' => $this->EE->db->count_all('simple_commerce_items')
+			)
+		);
 	}
 
 	// --------------------------------------------------------------------
