@@ -597,7 +597,7 @@ class Simple_commerce_mcp {
 
 		$id = ($this->EE->input->get_post('id')) ? $this->EE->input->get_post('id') : '';
 
-		if (is_array($state['sort']) && count($state['sort']))
+		if (count($state['sort']))
 		{
 			foreach ($state['sort'] as $key => $val)
 			{
@@ -1362,10 +1362,6 @@ class Simple_commerce_mcp {
 	/** -------------------------------------------*/
 	function edit_purchases()
 	{
-		$vars['purchases'] = array();
-		$vars['form_hidden'] = NULL;
-
-
 		//  Either Show Search Form or Process Entries
 		if ($this->EE->input->post('toggle') !== FALSE OR $this->EE->input->get_post('purchase_id') !== FALSE)
 		{
@@ -1389,232 +1385,128 @@ class Simple_commerce_mcp {
 			if ($this->EE->input->get_post('action') == 'delete')
 			{
 				return $this->_delete_confirmation_forms(
-												array(
-														'method'	=> 'delete_purchases',
-														'heading'	=> 'delete_purchases_confirm',
-														'message'	=> 'delete_purchases_confirm',
-														'hidden'	=> array('purchase_ids' => implode('|', $purchase_ids))
-													)
-												);
+					array(
+						'method'	=> 'delete_purchases',
+						'heading'	=> 'delete_purchases_confirm',
+						'message'	=> 'delete_purchases_confirm',
+						'hidden'	=> array('purchase_ids' => implode('|', $purchase_ids))
+					)
+				);
 			}
-			else
-			{
-				//  Finally!  We can do something!
-				return $this->_purchases_form($purchase_ids, 'n');
-			}
+		
+			//  Finally!  We can do something!
+			return $this->_purchases_form($purchase_ids, 'n');
 		}
-		else
-		{
-			$this->EE->load->library('table');
-			$vars['cp_page_title']  = lang('edit_purchases');
-			$this->EE->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'
-			.AMP.'module=simple_commerce', lang('simple_commerce_module_name'));
+	
+		$this->EE->load->library('table');
+		
+		$this->EE->table->set_base_url('C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce'.AMP.'method=edit_purchases');
+		$this->EE->table->set_columns(array(
+			'title'					=> array('header' => lang('item_purchased')),
+			'screen_name'			=> array('header' => lang('purchaser_screen_name')),
+			'purchase_date'			=> array('header' => lang('date_purchased')),
+			'subscription_end_date'	=> array('header' => lang('subscription_end_date')),
+			'item_cost'				=> array('header' => lang('item_cost')),
+			'_check'				=> array(
+				'sort' => FALSE,
+				'header' => form_checkbox('select_all', 'true', FALSE, 'class="toggle_all" id="select_all"')
+			)
+		));
+		
+		
+		$params = array('perpage' => $this->perpage);
+		$initial_state = array('sort' => array('purchase_date' => 'desc'));
 
-			// Add javascript
-			$this->EE->cp->add_js_script(array('plugin' => 'dataTables'));
+		$data = $this->EE->table->datasource('_edit_purchases_filter', $initial_state, $params);
+		
+		
+		$data['cp_page_title']  = lang('edit_purchases');
+		$this->EE->cp->set_breadcrumb(
+			BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce',
+			lang('simple_commerce_module_name')
+		);
 
-			$this->EE->javascript->output($this->ajax_filters('edit_purchases_ajax_filter', 6));
-
-			$this->EE->javascript->output(array(
-					'$(".toggle_all").toggle(
-						function(){
-							$("input.toggle").each(function() {
-								this.checked = true;
-							});
-						}, function (){
-							var checked_status = this.checked;
-							$("input.toggle").each(function() {
-								this.checked = false;
-							});
-						}
-					);'
-				)
-			);
-
-
-			$this->EE->javascript->compile();
-
-			//  Check for pagination
-
-			$vars['show_add_button'] = TRUE;
-			$vars['items'] = array();
-			$vars['action_url'] = 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce'.AMP.'method=edit_purchases';
-
-			$total = $this->EE->db->count_all('simple_commerce_purchases');
-
-			if ($total == 0)
-			{
-				return $this->EE->load->view('edit_purchases', $vars, TRUE);
-			}
-
-			if ( ! $rownum = $this->EE->input->get_post('rownum'))
-			{
-				$rownum = 0;
-			}
-
-			$query = $this->EE->db->query("SELECT scp.*, m.screen_name, wt.title, recurring
-								 FROM exp_simple_commerce_purchases scp, exp_simple_commerce_items sci, exp_members m, exp_channel_titles wt
-								 WHERE scp.item_id = sci.item_id
-								 AND sci.entry_id = wt.entry_id
-								 AND scp.member_id = m.member_id
-								 ORDER BY scp.purchase_date desc LIMIT $rownum, $this->perpage");
+		// Add javascript
+		$this->EE->javascript->output(array(
+				'$(".toggle_all").toggle(
+					function(){
+						$("input.toggle").each(function() {
+							this.checked = true;
+						});
+					}, function (){
+						var checked_status = this.checked;
+						$("input.toggle").each(function() {
+							this.checked = false;
+						});
+					}
+				);'
+			)
+		);
 
 
-/*
+		$this->EE->javascript->compile();
 
-			$this->EE->db->select('scp.*, m.screen_name, wt.title');
-			$this->EE->db->order_by("scp.purchase_date", "desc");
-			$this->EE->db->limit($this->perpage, $rownum);
-			$query = $this->EE->db->get('simple_commerce_emails');
-*/
+		//  Check for pagination
+		
+		$data['form_hidden'] = NULL;
+		$data['show_add_button'] = TRUE;
+		$data['action_url'] = 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce'.AMP.'method=edit_purchases';
 
-
-			$i = 0;
-			$recurring = lang('recurring');
-
-			foreach($query->result_array() as $row)
-			{
-   				$vars['purchases'][$row['purchase_id']]['entry_title'] = $row['title'];
-   				$vars['purchases'][$row['purchase_id']]['edit_link'] = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce'.AMP.'method=edit_purchases'.AMP.'purchase_id='.$row['purchase_id'];
-
-   				$vars['purchases'][$row['purchase_id']]['item_cost'] = $row['item_cost'];
-   				$vars['purchases'][$row['purchase_id']]['purchaser_screen_name'] = $row['screen_name'];
-   				$vars['purchases'][$row['purchase_id']]['date_purchased'] = $this->EE->localize->set_human_time($row['purchase_date']);
-
-				if ($row['subscription_end_date'] != 0)
-				{
-$vars['purchases'][$row['purchase_id']]['subscription_end_date'] = $this->EE->localize->set_human_time($row['subscription_end_date']);				
-				}
-   				elseif ($row['recurring'] == 'y')
-				{
-					$vars['purchases'][$row['purchase_id']]['subscription_end_date'] = $recurring;
-				}
-				else
-				{
-					$vars['purchases'][$row['purchase_id']]['subscription_end_date'] =  ' -- ';
-				}
-
-				// Toggle checkbox
-				$vars['purchases'][$row['purchase_id']]['toggle'] = array(
-																			'name'		=> 'toggle[]',
-																			'id'		=> 'edit_box_'.$row['purchase_id'],
-																			'value'		=> $row['purchase_id'],
-																			'class'		=>'toggle'
-																	);
-
-
-			}
-
-			// Pass the relevant data to the paginate class so it can display the "next page" links
-			$this->EE->load->library('pagination');
-			$p_config = $this->pagination_config('edit_purchases', $total);
-
-			$this->EE->pagination->initialize($p_config);
-
-			$vars['pagination'] = $this->EE->pagination->create_links();
-
-			return $this->EE->load->view('edit_purchases', $vars, TRUE);
-		}
+		return $this->EE->load->view('edit_purchases', $data, TRUE);
 	}
 
-	function edit_purchases_ajax_filter()
+	function _edit_purchases_filter($state, $params)
 	{
-		$this->EE->output->enable_profiler(FALSE);
-
-		$col_map = array('title', 'screen_name', 'purchase_date', 'subscription_end_date', 'item_cost');
-
-		$id = ($this->EE->input->get_post('id')) ? $this->EE->input->get_post('id') : '';
-
-
-		// Note- we pipeline the js, so pull more data than are displayed on the page
-		$perpage = $this->EE->input->get_post('iDisplayLength');
-		$offset = ($this->EE->input->get_post('iDisplayStart')) ? $this->EE->input->get_post('iDisplayStart') : 0; // Display start point
-		$sEcho = $this->EE->input->get_post('sEcho');
-
-
-		/* Ordering */
-		$order = array();
-		
-		if ($this->EE->input->get('iSortCol_0') !== FALSE)
+		if (count($state['sort']))
 		{
-			for ( $i=0; $i < $this->EE->input->get('iSortingCols'); $i++ )
+			foreach ($state['sort'] as $key => $val)
 			{
-				if (isset($col_map[$this->EE->input->get('iSortCol_'.$i)]))
-				{
-					$order[$col_map[$this->EE->input->get('iSortCol_'.$i)]] = ($this->EE->input->get('sSortDir_'.$i) == 'asc') ? 'asc' : 'desc';
-				}
+				$this->EE->db->order_by($key, $val);
 			}
 		}
 		
-		$total = $this->EE->db->count_all('simple_commerce_emails');
+		$purchases = $this->EE->db->from('simple_commerce_purchases scp, simple_commerce_items sci, members m, channel_titles wt')
+			->select('scp.*, m.screen_name, wt.title, recurring')
+			->where('scp.item_id = sci.item_id', NULL, FALSE)
+			->where('sci.entry_id = wt.entry_id', NULL, FALSE)
+			->where('scp.member_id = m.member_id', NULL, FALSE)
+			->limit($params['perpage'], $state['offset'])
+			->get()->result_array();
 
-		$j_response['sEcho'] = $sEcho;
-		$j_response['iTotalRecords'] = $total;
-		$j_response['iTotalDisplayRecords'] = $total;
+		$rows = array();
 
-		$tdata = array();
-		$i = 0;
-
-		$this->EE->db->select('email_id, email_name');
-
-		if (count($order) > 0)
+		while ($purchase = array_shift($purchases))
 		{
-			foreach ($order as $k => $v)
-			{
-				$order_by[] = $k.' '.$v;
-			}
-
-			$order_by = implode(',', $order_by);
-		}
-		else
-		{
-			$order_by = 'scp.purchase_date desc';
-		}
-
-		$query = $this->EE->db->query("SELECT scp.*, m.screen_name, wt.title, recurring
-								 FROM exp_simple_commerce_purchases scp, exp_simple_commerce_items sci, exp_members m, exp_channel_titles wt
-								 WHERE scp.item_id = sci.item_id
-								 AND sci.entry_id = wt.entry_id
-								 AND scp.member_id = m.member_id
-								 ORDER BY {$order_by} LIMIT $offset, $perpage");
-
-
-		$i = 0;
-
-		$recurring = lang('recurring');
-
-		foreach ($query->result_array() as $purchase)
-		{
+			$subscription_end_date =  ' -- ';
+			
 			if ($purchase['subscription_end_date'] != 0)
 			{
 				$subscription_end_date = $this->EE->localize->set_human_time($purchase['subscription_end_date']);
 			}
 			elseif ($purchase['recurring'] == 'y')
 			{
-				$subscription_end_date = $recurring;
+				$subscription_end_date = lang('recurring');
 			}
-			else
-			{
-				$subscription_end_date =  ' -- ';
-			}
-
-			$m[] = '<a href="'.BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce'.
-			AMP.'method=edit_purchases'.AMP.'purchase_id='.$purchase['purchase_id'].'">'.$purchase['title'].'</a>';
-			$m[] = $purchase['screen_name'];
-			$m[] = $this->EE->localize->set_human_time($purchase['purchase_date']);
-			$m[] = $subscription_end_date;
-			$m[] = $purchase['item_cost'];
-			$m[] = '<input class="toggle" id="edit_box_'.$purchase['purchase_id'].'" type="checkbox" name="toggle[]" value="'.$purchase['purchase_id'].'" />';
-
-			$tdata[$i] = $m;
-			$i++;
-			unset($m);
+			
+			$rows[] = array(
+				'title'					=> '<a href="'.BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce'.
+					AMP.'method=edit_purchases'.AMP.'purchase_id='.$purchase['purchase_id'].'">'.$purchase['title'].'</a>',
+				'screen_name'			=> $purchase['screen_name'],
+				'purchase_date'			=> $this->EE->localize->set_human_time($purchase['purchase_date']),
+				'subscription_end_date'	=> $subscription_end_date,
+				'item_cost'				=> $purchase['item_cost'],
+				'_check'				=> '<input class="toggle" id="edit_box_'.$purchase['purchase_id'].'" type="checkbox" name="toggle[]" value="'.$purchase['purchase_id'].'" />',
+			);
 		}
 
-		$j_response['aaData'] = $tdata;
-		$sOutput = $this->EE->javascript->generate_json($j_response, TRUE);
-
-		die($sOutput);
+		return array(
+			'rows' => $rows,
+			'no_results' => lang('invalid_entries'),
+			'pagination' => array(
+				'per_page' => $params['perpage'],
+				'total_rows' => $this->EE->db->count_all('simple_commerce_purchases')
+			)
+		);
 	}
 
 	/** -------------------------------------------
