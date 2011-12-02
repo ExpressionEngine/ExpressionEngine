@@ -27,7 +27,6 @@ class Tools_communicate extends CI_Controller {
 	var $mailinglist_exists	= FALSE;
 	var $attachments		= array();
 	var $perpage			= 50;
-	var $pipe_length		= 5;
 
 	/**
 	 * Constructor
