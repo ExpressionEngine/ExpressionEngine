@@ -252,7 +252,7 @@ class Tools_utilities extends CI_Controller {
 
 		$this->lang->loadfile('member_import');
 
-		$this->load->library(array('table', 'javascript'));
+		$this->load->library('table');
 		$this->load->helper('date');
 		$this->lang->loadfile('member_import');
 		$this->load->model('member_model');
@@ -373,7 +373,6 @@ class Tools_utilities extends CI_Controller {
 		$this->load->helper('date');
 		$this->lang->loadfile('member_import');
 		$this->load->model('member_model');
-		$this->load->library('javascript');
 
 		
 		$this->db->select('group_title');

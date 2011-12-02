@@ -1131,7 +1131,6 @@ class Content_files extends CI_Controller {
 		$file_dir  = $this->input->get('id');
 		$cid = $file_dir;
 		$var['sizes'] = array();
-		$this->load->library('javascript');
 
 		$resize_existing = FALSE;
 		
