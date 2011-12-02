@@ -92,10 +92,10 @@ class Members extends CI_Controller {
 			'member_id'		=> array('header' => array('data' => lang('id'), 'width' => '4%')),
 			'username'		=> array(),
 			'screen_name'	=> array('html' => FALSE),
-			'email_address'	=> array(),
+			'email'			=> array(),
 			'join_date'		=> array('html' => FALSE),
 			'last_visit'	=> array('html' => FALSE),
-			'member_group'	=> array(),
+			'group_id'		=> array('header' => lang('member_group')),
 			'_check'		=> array(
 				'header' => form_checkbox('select_all', 'true', FALSE, 'class="toggle_all"'),
 				'sort' => FALSE
@@ -243,10 +243,10 @@ class Members extends CI_Controller {
 				'member_id'		=> $member['member_id'],
 				'username'		=> '<a href="'.BASE.AMP.'C=myaccount'.AMP.'id='.$member['member_id'].'">'.$member['username'].'</a>',
 				'screen_name'	=> $member['screen_name'],
-				'email_address'	=> '<a href="mailto:'.$member['email'].'">'.$member['email'].'</a>',
+				'email'			=> '<a href="mailto:'.$member['email'].'">'.$member['email'].'</a>',
 				'join_date'		=> $this->localize->decode_date('%Y-%m-%d', $member['join_date']),
 				'last_visit'	=> ($member['last_visit'] == 0) ? ' - ' : $this->localize->set_human_time($member['last_visit']),
-				'member_group'	=> $groups[$member['group_id']],		
+				'group_id'		=> $groups[$member['group_id']],		
 				'_check'		=> '<input class="toggle" type="checkbox" name="toggle[]" value="'.$member['member_id'].'" />'
 			);
 		}
