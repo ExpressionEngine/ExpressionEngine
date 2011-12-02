@@ -231,7 +231,7 @@ class Addons_plugins extends CI_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->load->helper(array('file', 'form'));
+		$this->load->helper('file');
 
 		$this->cp->set_variable('cp_page_title', lang('plugin_delete_confirm'));
 		$this->cp->set_breadcrumb(BASE.AMP.'C=addons', lang('addons'));

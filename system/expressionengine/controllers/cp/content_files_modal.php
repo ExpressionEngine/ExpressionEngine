@@ -39,7 +39,6 @@ class Content_files_modal extends CI_Controller {
 		}
 
 		$this->load->library(array('filemanager'));
-		$this->load->helper(array('form'));
 		$this->load->model(array('file_model', 'file_upload_preferences_model'));
 
 		// Get upload dirs

@@ -253,7 +253,7 @@ class Sites extends CI_Controller {
 		$this->cp->set_variable('cp_page_title', $title);
 		
 		$this->load->model('site_model');
-		$this->load->helper(array('form', 'snippets'));
+		$this->load->helper('snippets');
 		$this->lang->loadfile('filemanager');
 		
 		$values = array('site_id'					=> '',

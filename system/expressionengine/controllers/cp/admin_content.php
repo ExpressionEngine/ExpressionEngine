@@ -135,7 +135,7 @@ class Admin_content extends CI_Controller {
 		}
 
 		$this->lang->loadfile('admin_content');
-		$this->load->helper(array('form', 'snippets'));
+		$this->load->helper('snippets');
 		$this->load->model('channel_model');
 		$this->load->model('category_model');
 
@@ -272,7 +272,7 @@ class Admin_content extends CI_Controller {
 
 		$this->lang->loadfile('admin_content');
 		$this->load->library('table');
-		$this->load->helper(array('form', 'snippets'));
+		$this->load->helper('snippets');
 		$this->load->model('channel_model');
 		$this->load->model('template_model');
 		$this->load->model('status_model');
@@ -2881,7 +2881,7 @@ class Admin_content extends CI_Controller {
 		}
 
 		$this->load->model('addons_model');
-		$this->load->helper(array('snippets_helper', 'form'));
+		$this->load->helper('snippets_helper');
 		$this->lang->loadfile('admin_content');
 		$this->load->library('table');
 
@@ -3700,7 +3700,7 @@ class Admin_content extends CI_Controller {
 		$this->load->library('table');
 
 		$this->load->library('api');
-		$this->load->helper(array('snippets_helper', 'form'));
+		$this->load->helper('snippets_helper');
 		$this->load->model('field_model');
 		
 		$this->api->instantiate('channel_fields');
@@ -5235,7 +5235,6 @@ class Admin_content extends CI_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->load->helper(array('form', 'url'));
 		$this->load->library('table');
 		$this->lang->loadfile('admin_content');
 		$this->load->model('admin_model');
@@ -5405,7 +5404,6 @@ class Admin_content extends CI_Controller {
 	{
 		$this->_restrict_prefs_access();
 
-		$this->load->helper(array('form', 'url'));
 		$this->load->library('table');
 		$this->lang->loadfile('admin_content');
 		$this->load->model('admin_model');

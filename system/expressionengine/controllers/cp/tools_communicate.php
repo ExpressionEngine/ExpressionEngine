@@ -63,7 +63,6 @@ class Tools_communicate extends CI_Controller {
 	{
 		$this->load->library('spellcheck');
 		$this->load->library('table');
-		$this->load->helper(array('form'));
 		$this->load->model('member_model');
 		$this->load->model('addons_model');
 		$this->load->model('tools_model');

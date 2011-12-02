@@ -154,7 +154,7 @@ class Tools_utilities extends CI_Controller {
 	 */	
 	private function _import_xml_form()
 	{
-		$this->load->helper(array('form', 'date'));
+		$this->load->helper('date');
 		$this->lang->loadfile('member_import');
 		$this->load->model('member_model');
 
@@ -253,7 +253,7 @@ class Tools_utilities extends CI_Controller {
 		$this->lang->loadfile('member_import');
 
 		$this->load->library(array('table', 'javascript'));
-		$this->load->helper(array('form', 'date'));
+		$this->load->helper('date');
 		$this->lang->loadfile('member_import');
 		$this->load->model('member_model');
 		
@@ -334,7 +334,7 @@ class Tools_utilities extends CI_Controller {
 		}
 
 		$this->load->library('table');
-		$this->load->helper(array('form', 'date'));
+		$this->load->helper('date');
 
 		$this->cp->set_variable('cp_page_title', lang('confirm_details'));
 		$this->cp->set_breadcrumb(BASE.AMP.'C=tools_utilities'.AMP.'M=member_import', lang('member_import_utility'));
@@ -370,7 +370,7 @@ class Tools_utilities extends CI_Controller {
 		
 		$this->lang->loadfile('member_import');
 		$this->load->library('table');
-		$this->load->helper(array('form', 'date'));
+		$this->load->helper('date');
 		$this->lang->loadfile('member_import');
 		$this->load->model('member_model');
 		$this->load->library('javascript');
@@ -420,7 +420,7 @@ class Tools_utilities extends CI_Controller {
 		$vars['xml_fields']	= $this->input->post('xml_custom_fields');
 		
 		$this->load->library('table');
-		$this->load->helper(array('form', 'date'));
+		$this->load->helper('date');
 
 		$this->cp->set_variable('cp_page_title', lang('confirm_details'));
 		$this->cp->set_breadcrumb(BASE.AMP.'C=tools_utilities'.AMP.'M=member_import', lang('member_import_utility'));
@@ -448,7 +448,7 @@ class Tools_utilities extends CI_Controller {
 	{
 		$this->load->library('table');
 		
-		$this->load->helper(array('form', 'date'));
+		$this->load->helper('date');
 		$this->lang->loadfile('member_import');
 		
 		$this->javascript->output(array(

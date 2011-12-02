@@ -606,7 +606,7 @@ class Admin_system extends CI_Controller {
 	{
 		$this->_restrict_prefs_access();
 
-		$this->load->helper(array('form', 'string'));
+		$this->load->helper('string');
 		$this->cp->set_variable('cp_page_title', lang('config_editor'));
 
 		$vars['config_items'] = $this->config->default_ini;

@@ -2553,7 +2553,7 @@ class Members extends CI_Controller {
 		}
 		
 		$this->load->library(array('form_validation', 'table'));
-		$this->load->helper(array('form', 'string', 'snippets'));
+		$this->load->helper(array('string', 'snippets'));
 		$this->load->language('calendar');
 		
 		$vars['custom_profile_fields'] = array();
@@ -3583,7 +3583,6 @@ class Members extends CI_Controller {
 		$this->lang->loadfile('members');
 		$this->load->library('table');
 		$this->load->library('pagination');
-		$this->load->helper(array('form', 'url'));
 		$this->load->model('member_model');
 
 		$grand_total = 0;
@@ -3779,7 +3778,6 @@ class Members extends CI_Controller {
 		}
 				
 		$this->load->library('table');
-		$this->load->helper(array('form', 'url'));
 		$vars['message'] = FALSE;
 
 		$this->cp->set_variable('cp_page_title', lang('member_validation'));

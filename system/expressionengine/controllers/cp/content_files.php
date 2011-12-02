@@ -50,7 +50,6 @@ class Content_files extends CI_Controller {
 
 		$this->lang->loadfile('filemanager');
 		$this->load->library(array('filemanager'));
-		$this->load->helper(array('form'));
 		$this->load->model('file_model');
 		$this->load->model('file_upload_preferences_model');
 
