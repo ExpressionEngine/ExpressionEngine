@@ -25,7 +25,6 @@
 class Tools_logs extends CI_Controller {
 	
 	var $perpage		= 50;
-	var $pipe_length	= 3;
 
 	/**
 	 * Constructor
@@ -397,7 +396,34 @@ class Tools_logs extends CI_Controller {
 		
 		$this->load->library('table');
 		$this->lang->loadfile('members');
+		
 
+		$this->table->set_base_url('C=tools_logs'.AMP.'M=view_email_log');
+		$this->table->set_columns(array(
+			'subject'		=> array('header' => lang('email_title')),
+			'member_name'	=> array('header' => lang('from')),
+			'recipient_name'=> array('header' => lang('to'), 'html' => FALSE),
+			'cache_date'	=> array('header' => lang('date')),
+			'_check'		=> array(
+				'header' => '<label>'.form_checkbox(array(
+					'id'	=>'toggle_all',
+					'name'	=>'toggle_all',
+					'value'	=>'toggle_all',
+					'checked' =>FALSE
+				)).'</label>'
+			)
+		));
+		
+		$initial_state = array(
+			'sort'	=> array('cache_date' => 'desc')
+		);
+		
+		$params = array(
+			'perpage'	=> $this->perpage
+		);
+		
+		$data = $this->table->datasource('_email_log_filter', $initial_state, $params);
+		
 		$this->cp->set_variable('cp_page_title', lang('view_email_logs'));
 
 		// a bit of a breadcrumb override is needed
@@ -405,8 +431,6 @@ class Tools_logs extends CI_Controller {
 			BASE.AMP.'C=tools' => lang('tools'),
 			BASE.AMP.'C=tools_logs'=> lang('tools_logs')
 		));
-
-		$this->cp->add_js_script(array('plugin' => 'dataTables'));
 
 		$this->javascript->output('
 			$("#toggle_all").toggle(
@@ -422,41 +446,15 @@ class Tools_logs extends CI_Controller {
 			);
 		');
 
-		$this->javascript->output($this->ajax_filters('view_email_ajax_filter', 4, TRUE));
-
-		$this->javascript->compile();
-		
-		$total = $this->db->count_all('email_console_cache');
-		
-		$row = ( ! $this->input->get_post('per_page')) ? 0 : $this->input->get_post('per_page');
-		$vars['pagination'] = FALSE;
-
-		if ($total > $this->perpage)
+		if (count($data['rows']))
 		{
-			$this->load->library('pagination');
-			
-			$config['base_url'] = BASE.AMP.'C=tools_logs'.AMP.'M=view_email_log';
-			$config['total_rows'] = $total;
-			$config['per_page'] = $this->perpage;
-			$config['page_query_string'] = TRUE;
-			$config['first_link'] = lang('pag_first_link');
-			$config['last_link'] = lang('pag_last_link');
-			
-			$this->pagination->initialize($config);	
-			$vars['pagination'] = $this->pagination->create_links();
+			$this->cp->set_right_nav(array(
+				'clear_logs' => BASE.AMP.'C=tools_logs'.AMP.'M=clear_log_files'.AMP.'type=email'
+			));
 		}
-
-
-		$vars['emails']	= $this->tools_model->get_email_logs(FALSE, $this->perpage, $row);
-		$vars['emails_count'] = $total;
-
-        if ($vars['emails_count'] != 0)
-        {
-            $this->cp->set_right_nav(array(
-                    'clear_logs' => BASE.AMP.'C=tools_logs'.AMP.'M=clear_log_files'.AMP.'type=email'));
-        }
-
-		$this->load->view('tools/view_email_log', $vars);
+		
+		$this->javascript->compile();
+		$this->load->view('tools/view_email_log', $data);
 	}
 
 	// --------------------------------------------------------------------
@@ -469,65 +467,41 @@ class Tools_logs extends CI_Controller {
 	 * @access	public
 	 * @return	void
 	 */
-	function view_email_ajax_filter()
-	{
-		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_logs'))
+	function _email_log_filter($state, $params)
+	{	
+		$email_q = $this->tools_model->get_email_logs(
+			FALSE, $params['perpage'], $state['offset'], $state['sort']
+		);
+		
+		$emails = $email_q->result_array();
+		
+		$rows = array();
+		
+		while ($log = array_shift($emails))
 		{
-			show_error(lang('unauthorized_access'));
+			$rows[] = array(
+				'subject'		 => '<a href="'.BASE.AMP.'C=tools_logs'.AMP.'M=view_email'.AMP.'id='.$log['cache_id'].'">'.$log['subject'].'</a>',
+				'member_name'	 => '<a href="'.BASE.AMP.'C=myaccount'.AMP.'id='. $log['member_id'].'">'.$log['member_name'].'</a>',
+				'recipient_name' => $log['recipient_name'],
+				'cache_date'	 => $this->localize->set_human_time($log['cache_date']),
+				'_check'		 => form_checkbox(array(
+					'id'	=>'delete_box_'.$log['cache_id'],
+					'name'	=>'toggle[]',
+					'value'	=>$log['cache_id'],
+					'class'	=>'toggle_email', 
+					'checked' =>FALSE
+				))
+			);
 		}
 
-		$this->output->enable_profiler(FALSE);
-		
-		$col_map = array('subject', 'member_name', 'recipient_name', 'cache_date');
-		
-		// Note- we pipeline the js, so pull more data than are displayed on the page		
-		$perpage = $this->input->get_post('iDisplayLength');
-		$offset = ($this->input->get_post('iDisplayStart')) ? $this->input->get_post('iDisplayStart') : 0; // Display start point
-		$sEcho = $this->input->get_post('sEcho');	
-
-		/* Ordering */
-		$order = array();
-		
-		if ($this->input->get('iSortCol_0') !== FALSE)
-		{
-			for ( $i=0; $i < $this->input->get('iSortingCols'); $i++ )
-			{
-				if (isset($col_map[$this->input->get('iSortCol_'.$i)]))
-				{
-					$order[$col_map[$this->input->get('iSortCol_'.$i)]] = ($this->input->get('sSortDir_'.$i) == 'asc') ? 'asc' : 'desc';
-				}
-			}
-		}		
-		
-		$query = $this->tools_model->get_email_logs(FALSE, $perpage, $offset, $order);
-		
-		$total = $this->db->count_all('email_console_cache');
-
-
-		$j_response['sEcho'] = $sEcho;
-		$j_response['iTotalRecords'] = $total;
-		$j_response['iTotalDisplayRecords'] = $total;
-		
-		$tdata = array();
-		$i = 0;
-		
-		foreach ($query->result_array() as $log)
-		{
-			$m[] = '<a href="'.BASE.AMP.'C=tools_logs'.AMP.'M=view_email'.AMP.'id='.$log['cache_id'].'">'.$log['subject'].'</a>';
-			$m[] = '<a href="'.BASE.AMP.'C=myaccount'.AMP.'id='. $log['member_id'].'">'.$log['member_name'].'</a>';
-			$m[] = $log['recipient_name'];
-			$m[] = $this->localize->set_human_time($log['cache_date']);
-			$m[] = form_checkbox(array('id'=>'delete_box_'.$log['cache_id'],'name'=>'toggle[]','value'=>$log['cache_id'], 'class'=>'toggle_email', 'checked'=>FALSE));
-			
-			$tdata[$i] = $m;
-			$i++;
-			unset($m);
-		}		
-
-		$j_response['aaData'] = $tdata;	
-		$sOutput = $this->javascript->generate_json($j_response, TRUE);
-	
-		exit($sOutput);
+		return array(
+			'rows' => $rows,
+			'no_results' => '<p>'.lang('no_cached_email').'</p>',
+			'pagination' => array(
+				'per_page' => $params['perpage'],
+				'total_rows' => $this->db->count_all('email_console_cache')
+			)
+		);
 	}
 
 	// --------------------------------------------------------------------
@@ -704,180 +678,6 @@ class Tools_logs extends CI_Controller {
 		$this->session->set_flashdata('message_success', lang('blacklist_updated'));
 		$this->functions->redirect(BASE.AMP.'C=tools_logs'.AMP.'M=view_throttle_log');
 	}
-	
-	function ajax_filters($ajax_method = '', $cols = '', $final_check = FALSE)
-	{
-		if ($ajax_method == '')
-		{
-			return;
-		}
-		
-		$col_defs = '';
-		if ($cols != '')
-		{
-			$col_defs .= '"aoColumns": [ ';
-			$i = 1;
-			
-			while ($i <= $cols)
-			{
-				$col_defs .= 'null, ';
-				$i++;
-			}
-			
-			$col_defs = rtrim($col_defs, ', '); // IE chokes on trailing commas in JSON
-			
-			if ($final_check == TRUE)
-			{
-				$col_defs .= '{ "bSortable" : false } ],';
-			}
-			else
-			{
-				$col_defs .= ' ],';
-			}
-		}
-		
-		$js = '
-var oCache = {
-	iCacheLower: -1
-};
-
-function fnSetKey( aoData, sKey, mValue )
-{
-	for ( var i=0, iLen=aoData.length ; i<iLen ; i++ )
-	{
-		if ( aoData[i].name == sKey )
-		{
-			aoData[i].value = mValue;
-		}
-	}
-}
-
-function fnGetKey( aoData, sKey )
-{
-	for ( var i=0, iLen=aoData.length ; i<iLen ; i++ )
-	{
-		if ( aoData[i].name == sKey )
-		{
-			return aoData[i].value;
-		}
-	}
-	return null;
-}
-
-function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
-	var iPipe = '.$this->pipe_length.';  /* Ajust the pipe size */
-	
-	var bNeedServer = false;
-	var sEcho = fnGetKey(aoData, "sEcho");
-	var iRequestStart = fnGetKey(aoData, "iDisplayStart");
-	var iRequestLength = fnGetKey(aoData, "iDisplayLength");
-	var iRequestEnd = iRequestStart + iRequestLength;
-	oCache.iDisplayStart = iRequestStart;
-	
-	/* outside pipeline? */
-	if ( oCache.iCacheLower < 0 || iRequestStart < oCache.iCacheLower || iRequestEnd > oCache.iCacheUpper )
-	{
-		bNeedServer = true;
-	}
-	
-	/* sorting etc changed? */
-	if ( oCache.lastRequest && !bNeedServer )
-	{
-		for( var i=0, iLen=aoData.length ; i<iLen ; i++ )
-		{
-			if ( aoData[i].name != "iDisplayStart" && aoData[i].name != "iDisplayLength" && aoData[i].name != "sEcho" )
-			{
-				if ( aoData[i].value != oCache.lastRequest[i].value )
-				{
-					bNeedServer = true;
-					break;
-				}
-			}
-		}
-	}
-	
-	/* Store the request for checking next time around */
-	oCache.lastRequest = aoData.slice();
-	
-	if ( bNeedServer )
-	{
-		if ( iRequestStart < oCache.iCacheLower )
-		{
-			iRequestStart = iRequestStart - (iRequestLength*(iPipe-1));
-			if ( iRequestStart < 0 )
-			{
-				iRequestStart = 0;
-			}
-		}
-		
-		oCache.iCacheLower = iRequestStart;
-		oCache.iCacheUpper = iRequestStart + (iRequestLength * iPipe);
-		oCache.iDisplayLength = fnGetKey( aoData, "iDisplayLength" );
-		fnSetKey( aoData, "iDisplayStart", iRequestStart );
-		fnSetKey( aoData, "iDisplayLength", iRequestLength*iPipe );
-		
-		$.getJSON( sSource, aoData, function (json) { 
-			/* Callback processing */
-			oCache.lastJson = jQuery.extend(true, {}, json);
-			
-			if ( oCache.iCacheLower != oCache.iDisplayStart )
-			{
-				json.aaData.splice( 0, oCache.iDisplayStart-oCache.iCacheLower );
-			}
-			json.aaData.splice( oCache.iDisplayLength, json.aaData.length );
-			
-			fnCallback(json)
-		} );
-	}
-	else
-	{
-		json = jQuery.extend(true, {}, oCache.lastJson);
-		json.sEcho = sEcho; /* Update the echo for each response */
-		json.aaData.splice( 0, iRequestStart-oCache.iCacheLower );
-		json.aaData.splice( iRequestLength, json.aaData.length );
-		fnCallback(json);
-		return;
-	}
-}
-
-	var time = new Date().getTime();
-
-	oTable = $(".mainTable").dataTable( {	
-			"sPaginationType": "full_numbers",
-			"bLengthChange": false,
-			"aaSorting": [],
-			"bFilter": false,
-			"sWrapper": false,
-			"sInfo": false,
-			"bAutoWidth": false,
-			"iDisplayLength": '.$this->perpage.', 
-			
-			'.$col_defs.'
-					
-		"oLanguage": {
-			"sZeroRecords": "'.lang('invalid_entries').'",
-			
-			"oPaginate": {
-				"sFirst": "<img src=\"'.$this->cp->cp_theme_url.'images/pagination_first_button.gif\" width=\"13\" height=\"13\" alt=\"&lt; &lt;\" />",
-				"sPrevious": "<img src=\"'.$this->cp->cp_theme_url.'images/pagination_prev_button.gif\" width=\"13\" height=\"13\" alt=\"&lt; &lt;\" />",
-				"sNext": "<img src=\"'.$this->cp->cp_theme_url.'images/pagination_next_button.gif\" width=\"13\" height=\"13\" alt=\"&lt; &lt;\" />", 
-				"sLast": "<img src=\"'.$this->cp->cp_theme_url.'images/pagination_last_button.gif\" width=\"13\" height=\"13\" alt=\"&lt; &lt;\" />"
-			}
-		},
-		
-			"bProcessing": true,
-			"bServerSide": true,
-			"sAjaxSource": EE.BASE+"&C=tools_logs&M='.$ajax_method.'&time=" + time,
-			"fnServerData": fnDataTablesPipeline
-
-	} );';
-
-		return $js;
-		
-	}
-	
-	
-	
 }
 // END CLASS
 
