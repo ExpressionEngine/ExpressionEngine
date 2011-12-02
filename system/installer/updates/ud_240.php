@@ -62,7 +62,8 @@ class Updater {
 	private function _update_watermarks_table()
 	{
 		// Rename offset columns
-		$this->EE->dbforge->modify_column('file_watermarks',
+		$this->EE->dbforge->modify_column(
+			'file_watermarks',
 			array(
 				'wm_x_offset' => array(
 					'name' => 'wm_hor_offset',
@@ -85,7 +86,8 @@ class Updater {
 	 */
 	private function _update_file_dimensions_table()
 	{
-		$this->EE->dbforge->add_column('file_dimensions',
+		$this->EE->dbforge->add_column(
+			'file_dimensions',
 			array(
 				'site_id' => array(
 					'type'			=> 'int',
@@ -107,7 +109,8 @@ class Updater {
 	 */
 	private function _update_files_table()
 	{
-		$this->EE->dbforge->add_column('files',
+		$this->EE->dbforge->add_column(
+			'files',
 			array(
 				'credit' => array(
 					'type'			=> 'varchar',
@@ -121,7 +124,8 @@ class Updater {
 		);
 		
 		// Rename "caption" field to "description"
-		$this->EE->dbforge->modify_column('files',
+		$this->EE->dbforge->modify_column(
+			'files',
 			array(
 				'caption' => array(
 					'name' => 'description',
