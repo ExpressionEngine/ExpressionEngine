@@ -86,7 +86,28 @@ class Tools_logs extends CI_Controller {
 		}
 		
 		$this->load->library('table');
-
+		
+		$this->table->set_base_url('C=tools_logs'.AMP.'M=view_cp_log');
+		$this->table->set_columns(array(
+			'member_id'		=> array('html' => FALSE),
+			'username'		=> array(),
+			'ip_address'	=> array('html' => FALSE),
+			'act_date'		=> array('html' => FALSE, 'header' => lang('date')),
+			'site_label'	=> array('html' => FALSE, 'header' => lang('site_search')),
+			'action'		=> array('html' => FALSE)
+		));
+		
+				
+		$initial_state = array(
+			'sort'	=> array('act_date' => 'desc')
+		);
+		
+		$params = array(
+			'perpage'	=> $this->perpage
+		);
+				
+		$vars = $this->table->datasource('_cp_log_filter', $initial_state, $params);
+				
 		$this->cp->set_variable('cp_page_title', lang('view_cp_log'));
 
 		// a bit of a breadcrumb override is needed
@@ -94,34 +115,8 @@ class Tools_logs extends CI_Controller {
 			BASE.AMP.'C=tools' => lang('tools'),
 			BASE.AMP.'C=tools_logs'=> lang('tools_logs')
 		));
-
-		$this->cp->add_js_script(array('plugin' => 'dataTables'));
 		
-		$this->javascript->output($this->ajax_filters('view_cp_ajax_filter', 6));
-
 		$this->javascript->compile();
-		
-		$total = $this->db->count_all('cp_log');
-		
-		$row = ( ! $this->input->get_post('per_page')) ? 0 : $this->input->get_post('per_page');
-		$vars['pagination'] = FALSE;
-
-		if ($total > $this->perpage)
-		{
-			$this->load->library('pagination');
-			
-			$config['base_url'] = BASE.AMP.'C=tools_logs'.AMP.'M=view_cp_log';
-			$config['total_rows'] = $total;
-			$config['per_page'] = $this->perpage;
-			$config['page_query_string'] = TRUE;
-			$config['first_link'] = lang('pag_first_link');
-			$config['last_link'] = lang('pag_last_link');
-						
-			$this->pagination->initialize($config);	
-			$vars['pagination'] = $this->pagination->create_links();
-		}
-
-		$vars['cp_data'] = $this->tools_model->get_cp_log($this->perpage, $row);
 		
 		$this->load->view('tools/view_cp_log', $vars);
 	}
@@ -136,66 +131,33 @@ class Tools_logs extends CI_Controller {
 	 * @access	public
 	 * @return	void
 	 */
-	function view_cp_ajax_filter()
+	function _cp_log_filter($state, $params)
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_logs'))
+		$log_q = $this->tools_model->get_cp_log($params['perpage'], $state['offset'], $state['sort']);
+		
+		$rows = array();
+		$logs = $log_q->result_array();
+		
+		while ($log = array_shift($logs))
 		{
-			show_error(lang('unauthorized_access'));
+			$rows[] = array(
+				'member_id'	 => $log['member_id'],
+				'username'	 => "<strong><a href='".BASE.AMP.'C=myaccount'.AMP.'id='.$log['member_id']."'>{$log['username']}</a></strong>",
+				'ip_address' => $log['ip_address'],
+				'act_date'	 => $this->localize->set_human_time($log['act_date']),
+				'site_label' => $log['site_label'],
+				'action'	 => $log['action']
+			);
 		}
-
-		$this->output->enable_profiler(FALSE);
-		
-		$col_map = array('member_id', 'username', 'ip_address', 'act_date', 'site_label', 'action');
-		
-		// Note- we pipeline the js, so pull more data than are displayed on the page		
-		$perpage = $this->input->get_post('iDisplayLength');
-		$offset = ($this->input->get_post('iDisplayStart')) ? $this->input->get_post('iDisplayStart') : 0; // Display start point
-		$sEcho = $this->input->get_post('sEcho');	
-
-		/* Ordering */
-		$order = array();
-		
-		if ($this->input->get('iSortCol_0') !== FALSE)
-		{
-			for ( $i=0; $i < $this->input->get('iSortingCols'); $i++ )
-			{
-				if (isset($col_map[$this->input->get('iSortCol_'.$i)]))
-				{
-					$order[$col_map[$this->input->get('iSortCol_'.$i)]] = ($this->input->get('sSortDir_'.$i) == 'asc') ? 'asc' : 'desc';
-				}
-			}
-		}
-		
-		$query = $this->tools_model->get_cp_log($perpage, $offset, $order);
-		
-		$total = $this->db->count_all('cp_log');
-
-
-		$j_response['sEcho'] = $sEcho;
-		$j_response['iTotalRecords'] = $total;
-		$j_response['iTotalDisplayRecords'] = $total;
-		
-		$tdata = array();
-		$i = 0;
-		
-		foreach ($query->result_array() as $log)
-		{
-			$m[] = $log['member_id'];
-			$m[] = "<strong><a href='".BASE.AMP.'C=myaccount'.AMP.'id='.$log['member_id']."'>{$log['username']}</a></strong>";
-			$m[] = $log['ip_address'];
-			$m[] = $this->localize->set_human_time($log['act_date']);
-			$m[] = $log['site_label'];	
-			$m[] = $log['action'];	
-
-			$tdata[$i] = $m;
-			$i++;
-			unset($m);
-		}		
-
-		$j_response['aaData'] = $tdata;	
-		$sOutput = $this->javascript->generate_json($j_response, TRUE);
-	
-		exit($sOutput);
+				
+		return array(
+			'rows' => $rows,
+			'no_results' => '<p>'.lang('no_search_results').'</p>',
+			'pagination' => array(
+				'per_page' => $params['perpage'],
+				'total_rows' => $this->db->count_all('cp_log')
+			)
+		);
 	}
 
 	// --------------------------------------------------------------------
