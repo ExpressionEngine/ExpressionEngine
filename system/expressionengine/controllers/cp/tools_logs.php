@@ -179,6 +179,26 @@ class Tools_logs extends CI_Controller {
 		}
 		
 		$this->load->library('table');
+		
+		$this->table->set_base_url('C=tools_logs'.AMP.'M=view_search_log');
+		$this->table->set_columns(array(
+			'screen_name'	=> array(),
+			'ip_address'	=> array(),
+			'search_date'	=> array('html' => FALSE, 'header' => lang('date')),
+			'site_label'	=> array('html' => FALSE, 'header' => lang('site')),
+			'search_type'	=> array('html' => FALSE, 'header' => lang('searched_in')),
+			'search_terms'	=> array('html' => FALSE, 'header' => lang('search_terms'))
+		));
+		
+		$initial_state = array(
+			'sort'	=> array('search_date' => 'desc')
+		);
+		
+		$params = array(
+			'perpage'	=> $this->perpage
+		);
+		
+		$vars = $this->table->datasource('_search_log_filter', $initial_state, $params);
 
 		$this->cp->set_variable('cp_page_title', lang('view_search_log'));
 
@@ -188,34 +208,7 @@ class Tools_logs extends CI_Controller {
 			BASE.AMP.'C=tools_logs'=> lang('tools_logs')
 		));
 
-		$this->cp->add_js_script(array('plugin' => 'dataTables'));
-		
-		$this->javascript->output($this->ajax_filters('view_search_ajax_filter', 6));
-
 		$this->javascript->compile();
-		
-		$total = $this->db->count_all('search_log');
-		
-		$row = ( ! $this->input->get_post('per_page')) ? 0 : $this->input->get_post('per_page');
-		$vars['pagination'] = FALSE;
-
-		if ($total > $this->perpage)
-		{
-			$this->load->library('pagination');
-			
-			$config['base_url'] = BASE.AMP.'C=tools_logs'.AMP.'M=view_search_log';
-			$config['total_rows'] = $total;
-			$config['per_page'] = $this->perpage;
-			$config['page_query_string'] = TRUE;
-			$config['first_link'] = lang('pag_first_link');
-			$config['last_link'] = lang('pag_last_link');
-			
-			$this->pagination->initialize($config);	
-			$vars['pagination'] = $this->pagination->create_links();
-		}
-
-		$vars['search_data'] = $this->tools_model->get_search_log($this->perpage, $row);
-
 		$this->load->view('tools/view_search_log', $vars);
 	}
 
@@ -229,68 +222,37 @@ class Tools_logs extends CI_Controller {
 	 * @access	public
 	 * @return	void
 	 */
-	function view_search_ajax_filter()
+	function _search_log_filter($state, $params)
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_logs'))
-		{
-			show_error(lang('unauthorized_access'));
-		}
-
-		$this->output->enable_profiler(FALSE);
+		$search_q = $this->tools_model->get_search_log(
+			$params['perpage'], $state['offset'], $state['sort']
+		);
+		$searches = $search_q->result_array();
 		
-		$col_map = array('screen_name', 'ip_address', 'search_date', 'site_label', 'search_type', 'search_terms');
+		$rows = array();
 		
-		// Note- we pipeline the js, so pull more data than are displayed on the page		
-		$perpage = $this->input->get_post('iDisplayLength');
-		$offset = ($this->input->get_post('iDisplayStart')) ? $this->input->get_post('iDisplayStart') : 0; // Display start point
-		$sEcho = $this->input->get_post('sEcho');	
-
-		/* Ordering */
-		$order = array();
-		
-		if ($this->input->get('iSortCol_0') !== FALSE)
-		{
-			for ( $i=0; $i < $this->input->get('iSortingCols'); $i++ )
-			{
-				if (isset($col_map[$this->input->get('iSortCol_'.$i)]))
-				{
-					$order[$col_map[$this->input->get('iSortCol_'.$i)]] = ($this->input->get('sSortDir_'.$i) == 'asc') ? 'asc' : 'desc';
-				}
-			}
-		}
-		
-		$query = $this->tools_model->get_search_log($perpage, $offset, $order);
-		
-		$total = $this->db->count_all('search_log');
-
-
-		$j_response['sEcho'] = $sEcho;
-		$j_response['iTotalRecords'] = $total;
-		$j_response['iTotalDisplayRecords'] = $total;
-		
-		$tdata = array();
-		$i = 0;
-		
-		foreach ($query->result_array() as $log)
+		while ($log = array_shift($searches))
 		{
 			$screen_name = ($log['screen_name'] != '') ? '<a href="'.BASE.AMP.'C=myaccount'.AMP.'id='. $log['member_id'].'">'.$log['screen_name'].'</a>' : ' -- ';
 			
-			$m[] = $screen_name;
-			$m[] = $log['ip_address'];
-			$m[] = $this->localize->set_human_time($log['search_date']);
-			$m[] = $log['site_label'];	
-			$m[] = $log['search_type'];	
-			$m[] = $log['search_terms'];	
-			
-			$tdata[$i] = $m;
-			$i++;
-			unset($m);
-		}		
+			$rows[] = array(
+				'screen_name'	=> $screen_name,
+				'ip_address'	=> $log['ip_address'],
+				'search_date'	=> $this->localize->set_human_time($log['search_date']),
+				'site_label'	=> $log['site_label'],
+				'search_type'	=> $log['search_type'],
+				'search_terms'	=> $log['search_terms']
+			);
+		}
 
-		$j_response['aaData'] = $tdata;	
-		$sOutput = $this->javascript->generate_json($j_response, TRUE);
-	
-		exit($sOutput);
+		return array(
+			'rows' => $rows,
+			'no_results' => '<p>'.lang('no_search_results').'</p>',
+			'pagination' => array(
+				'per_page' => $params['perpage'],
+				'total_rows' => $this->db->count_all('search_log')
+			)
+		);
 	}
 
 	// --------------------------------------------------------------------
