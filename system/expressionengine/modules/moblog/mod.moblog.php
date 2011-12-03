@@ -50,7 +50,6 @@ class Moblog {
 	var $email_files	= array();				// Array containing filenames of uploads for this email
 	var $emails_done	= 0;					// Number of emails processed
 	var $entries_added	= 0;					// Number of entries added
-	var $pings_sent		= 0;					// Number of servers pinged
 	var $upload_dir_code = '';					// {filedir_2} for entry's
 	var $upload_path	= '';					// Server path for upload directory
 	var $entry_data		= array();				// Data for entry's custom fields
@@ -220,7 +219,6 @@ class Moblog {
 			$this->return_data .= $this->EE->lang->line('emails_done')." {$this->emails_done}<br />\n";
 			$this->return_data .= $this->EE->lang->line('entries_added')." {$this->entries_added}<br />\n";
 			$this->return_data .= $this->EE->lang->line('attachments_uploaded')." {$this->uploads}<br />\n";
-			$this->return_data .= $this->EE->lang->line('pings_sent')." {$this->pings_sent}<br />\n";
 		}
 
 		return $this->return_data ;
@@ -933,19 +931,6 @@ class Moblog {
 			}
 
 
-			/** -------------------------
-			/**  Send Pings
-			/** -------------------------*/
-
-			if (isset($this->moblog_array['moblog_ping_servers']) && $this->moblog_array['moblog_ping_servers'] != '')
-			{
-				if($pings_sent = $this->send_pings($this->moblog_array['channel_title'], $this->moblog_array['channel_url'], $this->moblog_array['rss_url']))
-				{
-					$this->pings_sent = $this->pings_sent + count($pings_sent);
-				}
-			}
-
-
 			$this->emails_done++;
 		}
 
@@ -987,7 +972,7 @@ class Moblog {
 
 		$channel_id = $this->moblog_array['moblog_channel_id'];
 		
-		$this->EE->db->select('site_id, channel_title, channel_url, rss_url, ping_return_url, comment_url, deft_comments, cat_group, field_group, channel_notify, channel_notify_emails');
+		$this->EE->db->select('site_id, channel_title, channel_url, rss_url, comment_url, deft_comments, cat_group, field_group, channel_notify, channel_notify_emails');
 		$query = $this->EE->db->get_where('channels', array('channel_id' => $channel_id));
 
 		if ($query->num_rows() == 0)
@@ -1029,8 +1014,7 @@ class Moblog {
 						'day'				=> gmdate('d', $entry_date),
 						'sticky'			=> (isset($this->post_data['sticky'])) ? $this->post_data['sticky'] : $this->sticky,
 						'status'			=> ($this->post_data['status'] == 'none') ? 'open' : $this->post_data['status'],
-						'allow_comments'	=> $query->row('deft_comments'),
-						'ping_servers'		=> FALSE   // Pings are already sent above.  Should probably be hooked into API CHannel Entries as well.
+						'allow_comments'	=> $query->row('deft_comments')
 					 );
 
 		// Remove ignore text
@@ -1246,50 +1230,6 @@ class Moblog {
 		$this->EE->session->userdata['can_assign_post_authors'] = $orig_can_assign;
 		$this->EE->session->userdata['group_id'] = $orig_group_id;
 		$this->EE->session->userdata['can_edit_other_entries'] = $orig_can_edit;
-	}
-
-	// ------------------------------------------------------------------------
-	
-	/**
-	 * 	Send Pings
-	 *
-	 * 	@param string	title
-	 * 	@param string	url
-	 * 
-	 */
-	function send_pings($title, $url)
-	{
-		$ping_servers = explode('|', $this->moblog_array['moblog_ping_servers']);
-
-		$sql = "SELECT server_name, server_url, port FROM exp_ping_servers WHERE id IN (";
-
-		foreach ($ping_servers as $id)
-		{
-			$sql .= "'$id',";
-		}
-
-		$sql = substr($sql, 0, -1).') ';
-
-		$query = $this->EE->db->query($sql);
-
-		if ($query->num_rows() == 0)
-		{
-			return FALSE;
-		}
-
-		$this->EE->load->library('xmlrpc');
-		
-		$result = array();
-
-		foreach ($query->result_array() as $row)
-		{
-			if ($this->EE->xmlrpc->weblogs_com_ping($row['server_url'], $row['port'], $title, $url))
-			{
-				$result[] = $row['server_name'];
-			}
-		}
-
-		return $result;
 	}
 
 	// ------------------------------------------------------------------------

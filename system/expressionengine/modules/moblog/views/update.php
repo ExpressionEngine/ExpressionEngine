@@ -242,27 +242,6 @@
 	</tbody>	
 </table>
 
-<?php if(isset($ping_servers)): ?>
-<table class="mainTable solo channel_fields" border="0" cellspacing="0" cellpadding="0">
-	<thead>
-		<tr>
-			<th colspan="2"><?=lang('ping_servers')?></th>
-		</tr>
-	</thead>
-	<tbody>
-		<tr>
-			<td style="width: 50%;"><?=lang('ping_sites')?></td>
-			<td>
-				<?php foreach($ping_servers as $id => $opts):?>
-					<?=form_checkbox('ping[]', $id, set_value('ping['.$id.']', $opts[1])).NBS.NBS.NBS.form_label($opts[0], $id)?><br />
-				<?php endforeach;?>
-				<?=form_error('ping[]')?>
-			</td>
-		</tr>
-	</tbody>
-</table>
-<?php endif;?>
-
 <p>
 	<?=form_submit(array('name' => 'submit', 'value' => lang($submit_text), 'class' => 'submit'))?>
 </p>
