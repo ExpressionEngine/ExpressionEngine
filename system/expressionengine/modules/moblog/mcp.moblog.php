@@ -70,81 +70,100 @@ EOT;
 	 */
 	function index()
 	{
-		$vars['cp_page_title'] = $this->EE->lang->line('moblog');
-		
-		$this->EE->load->helper('form');
 		$this->EE->load->library('table');
-		$this->EE->load->library('javascript');
-		
-		$this->EE->javascript->output(array(
-				'// Za Toggles, zey do nuffink!
 
-				$(".toggle_all").toggle(
-					function(){
-						$("input[class=toggle_moblog]").each(function() {
-							this.checked = true;
-						});
-					}, function (){
-						$("input[class=toggle_moblog]").each(function() {
-							this.checked = false;
-						});
-					}
-				);
-
-				var loading = $("<span><img src=\''.$this->EE->config->slash_item('theme_folder_url').'cp_global_images/loader.gif\' />&nbsp;</span>");
-				
-				$(".notification_link").click(function() {
-					var that = $(this).before(loading);
-
-					$.getJSON($(this).attr("href"), function(data) {	
-						loading.remove();
-						
-						if (data.error === undefined) {
-							$.ee_notice(data.message);
-						}
-						else {
-							type = (data.error == true) ? "error" : "success";
-							$.ee_notice(data.message, {"type": type});
-						}
+		$this->EE->javascript->output('
+			$(".toggle_all").toggle(
+				function(){		
+					$("input.toggle").each(function() {
+						this.checked = true;
 					});
-					return false;
-				});
-			
-				'
-			)
-		);
-		
-		$this->EE->javascript->compile();
-		
-		if ( ! $rownum = $this->EE->input->get_post('rownum'))
-		{		
-			$rownum = 0;
-		}
-		
-		$perpage = 100;
-		
-		$total = $this->EE->db->count_all('moblogs');
+				}, function (){
+					var checked_status = this.checked;
+					$("input.toggle").each(function() {
+						this.checked = false;
+					});
+				}
+			);
+		');
 
-		if ($total > 0)
-		{
-			$this->EE->db->select('moblog_full_name, moblog_id, moblog_enabled');
-			$this->EE->db->order_by('moblog_full_name', 'ASC');
-			
-			$query = $this->EE->db->get('moblogs', $perpage, $rownum);
-			
-			if ($query->num_rows() > 0)
-			{
-				$vars['moblogs'] = $query->result();
-			}
-		}
+		$this->EE->javascript->compile();
+
+		$this->EE->table->set_columns(array(
+			'moblog_id'			=> array('header' => array('data' => lang('id'), 'width' => '4%')),
+		    'moblog_full_name'  => array('header' => lang('moblog_view')),
+		    'check_moblog'  	=> array('header' => lang('check_moblog'), 'sort' => FALSE),
+			'_check'			=> array(
+				'header' => form_checkbox('select_all', 'true', FALSE, 'class="toggle_all"'),
+				'sort' => FALSE
+			)
+		));
+
+		$defaults = array(
+			'sort'	=> array('moblog_id' => 'asc')
+		);
+
+		$params = array(
+			'per_page'	=> 100
+		);
+
+		$data = $this->EE->table->datasource('_table_datasource', $defaults, $params);
+
+		$vars = array(
+			'table_html' 		=> $data['table_html'],
+			'pagination_html' 	=> $data['pagination_html'],
+			'total_rows'		=> $data['pagination']['total_rows'],
+			'cp_page_title' 	=> $this->EE->lang->line('moblog')
+		);
 
 		$this->EE->cp->set_right_nav(array(
-											'create_moblog' => BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=moblog'.AMP.'method=create_modify'
-											)
-									);
+			'create_moblog' => BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=moblog'.AMP.'method=create_modify'
+			)
+		);
 
 		return $this->EE->load->view('index', $vars, TRUE);
 	}
+
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Moblog table datasource
+	 *
+	 * Must remain public so that it can be called from the
+	 * table library!
+	 *
+	 * @access	public
+	 */
+	public function _table_datasource($state, $params)
+	{
+		$this->EE->db->select('moblog_full_name, moblog_id, moblog_enabled');
+
+		foreach($state['sort'] as $col => $dir)
+		{
+			$this->EE->db->order_by($col, $dir);
+		}
+
+		$data = $this->EE->db->get('moblogs', $params['per_page'], $state['offset'])->result_array();
+
+		foreach($data as &$row)
+		{
+			$row['moblog_full_name'] = '<a href="'.BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=moblog'.AMP.'method=create_modify'.AMP.'id='.$row['moblog_id'].'">'.$row['moblog_full_name'].'</a>';
+			$row['check_moblog'] = ($row['moblog_enabled'] == 'y') ? '<a href="'.BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=moblog'.AMP.'method=check_moblog'.AMP.'moblog_id='.$row['moblog_id'].'" class="notification_link">'.lang('check_moblog').'</a>' : lang('check_moblog');
+			$row['_check'] = '<input class="toggle" type="checkbox" name="toggle[]" value="'.$row['moblog_id'].'">';
+
+			unset($row['moblog_enabled']); // don't care about this any more
+		}
+
+		return array(
+		    'rows'		 => $data,
+		    'pagination' => array(
+		        'per_page'   => $params['per_page'],
+		        'total_rows' => $this->EE->db->count_all_results('moblogs'),
+		    ),
+		);
+	}
+
 
 
 	// --------------------------------------------------------------------
@@ -231,14 +250,14 @@ EOT;
 		$upload_array = array('0' => $this->EE->lang->line('none'));
 		
 		$this->EE->load->model('tools_model');
-		$query = $this->EE->tools_model->get_upload_preferences($this->EE->session->userdata['group_id']);
+		$upload_prefs = $this->EE->tools_model->get_upload_preferences($this->EE->session->userdata['group_id']);
 		
 		
 		$this->EE->load->model('file_model');
 		$sizes_q = $this->EE->file_model->get_dimensions_by_dir_id(1);
 		$sizes = array();
 		
-		foreach ($query->result_array() as $row)
+		foreach ($upload_prefs as $row)
 		{
 			$sizes[$row['id']] = array('0' => '----');
 			$upload_array[$row['id']] = $row['name'];
@@ -356,13 +375,11 @@ EOT;
 		
 			if ( ! isset($upload_array[$row['moblog_upload_directory']]))
 			{
-				$this->EE->db->select('name');
-				$this->EE->db->where('id', $row['moblog_upload_directory']);
-				$results = $this->EE->db->get('upload_prefs');
+				$upload_prefs = $this->EE->tools_model->get_upload_preferences(1, $row['moblog_upload_directory']);
 				
-				if ($results->num_rows() > 0)
+				if (count($upload_prefs) > 0)
 				{
-					$upload_array[$row['moblog_upload_directory']] = $results->row('name') ;
+					$upload_array[$row['moblog_upload_directory']] = $upload_prefs['name'];
 					$form_data['moblog_upload_directory'] = array($upload_array, $row['moblog_upload_directory']);
 				}
 			}
@@ -888,7 +905,7 @@ MAGIC;
 		
 		$upload_q = $this->EE->tools_model->get_upload_preferences($this->EE->session->userdata['group_id']);
 		
-		foreach ($upload_q->result_array() as $row)
+		foreach ($upload_q as $row)
 		{
 			$this->image_dim_array[$row['id']] = array('0' => $this->lang->line('none'));
 			$this->upload_loc_array[$row['id']] = $row['name'];
