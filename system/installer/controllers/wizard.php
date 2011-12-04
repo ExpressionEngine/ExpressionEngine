@@ -878,13 +878,6 @@ PAPAYA;
 			}
 		}
 		
-		// MySQL passwords can not contain a dollar sign
-		if (strpos($this->userdata['db_password'], '$') !== FALSE)
-		{
-			$errors[] = $this->lang->line('password_no_dollar');
-
-		}
-		
 		// Is email valid?
 		if ($this->userdata['email_address'] != '' AND ! valid_email($this->userdata['email_address']))
 		{
@@ -2872,12 +2865,12 @@ PAPAYA;
 					if (is_bool($v))
 					{
 						$v = ($v == TRUE) ? 'TRUE' : 'FALSE';
-					
+
 						$str .= "\$db['".$key."']['".$k."'] = ".$v.";\n";
 					}
 					else
 					{
-						$str .= "\$db['".$key."']['".$k."'] = \"".addslashes($v)."\";\n";
+						$str .= "\$db['".$active_group."']['".$k."'] = '".$v."';\n";
 					}
 				}
 			}
@@ -2891,7 +2884,7 @@ PAPAYA;
 				}
 				else
 				{
-					$str .= "\$db['".$active_group."']['".$key."'] = \"".$val."\";\n";
+					$str .= "\$db['".$active_group."']['".$key."'] = '".$val."';\n";
 				}
 			}		
 		} 
