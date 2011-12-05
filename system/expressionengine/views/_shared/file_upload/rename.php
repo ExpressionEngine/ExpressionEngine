@@ -5,7 +5,7 @@
 	
 	<p><?= lang('upload_rename_message') ?></p>
 	<?= form_open('C=content_files_modal'.AMP.'M=update_file', '', array('file_id' => $file['file_id'], 'file_json' => $file_json, 'file_ext' => $file_ext, 'directory_id' => $file['upload_location_id'], 'temp_filename' => $temp_filename)) ?>
-	<p><input type="text" name="new_file_name" value="<?= $orig_name ?>" class="text" /><span class="extension">.<?= $file_ext ?></span></p>
+		<p><input type="text" name="new_file_name" value="<?= $orig_name ?>" class="text" /><span class="extension">.<?= $file_ext ?></span></p>
 	<?= form_close() ?>
 </div> <!-- .upload_rename -->
 

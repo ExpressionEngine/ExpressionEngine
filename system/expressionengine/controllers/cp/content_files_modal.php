@@ -242,12 +242,13 @@ class Content_files_modal extends CI_Controller {
 			$file['file_id'] = $rename_file['file_id'];
 			$file['upload_location_id'] = $this->input->post('directory_id');
 				
-			$vars = array('file_json' => $this->input->post('file_json'),
-						'file_ext' => $this->input->post('file_ext'),
-						'temp_filename' => $rename_file['replace_filename'],
-						'orig_name' => $new_file_base,
-						'file' => array('file_id' => $rename_file['file_id'], 'upload_location_id' => $this->input->post('directory_id'))
-						);
+			$vars = array(
+				'file_json' => $this->input->post('file_json'),
+				'file_ext' => $this->input->post('file_ext'),
+				'temp_filename' => $rename_file['replace_filename'],
+				'orig_name' => $new_file_base,
+				'file' => array('file_id' => $rename_file['file_id'], 'upload_location_id' => $this->input->post('directory_id'))
+			);
 
 			return $this->load->view('_shared/file_upload/rename', $vars);
 		}
@@ -286,6 +287,12 @@ class Content_files_modal extends CI_Controller {
 		// TODO: Revise wording for Use Uploaded File when on the edit page
 		// 	such that use also mentions saving?
 		
+		// TODO: load js
+		// Load javascript libraries
+		$this->cp->add_js_script(array(
+			'file'		=> 'files/file_edit'
+		));
+		
 		$parameters = array();
 		
 		// The form posts to this method, so if POST data is present
@@ -297,6 +304,20 @@ class Content_files_modal extends CI_Controller {
 		}
 		
 		$vars = $this->_get_file_from_json($parameters);
+		
+		$vars['tabs'] = array('file_metadata', 'image_tools');
+		
+		// Create a list of metadata fields
+		$vars['metadata_fields'] = array(
+			'title' => form_input('title', $vars['file']['title']),
+			'description' => form_textarea(array(
+				'name'	=> 'description',
+				'value'	=> $vars['file']['description'],
+				'rows'	=> 3
+			)),
+			'credit' => form_input('credit', $vars['file']['credit']),
+			'location' => form_input('location', $vars['file']['location'])
+		);
 		
 		$vars['file_data'] = array(
 			'upload_dir'	=> $vars['file']['upload_location_id'], 
@@ -318,15 +339,6 @@ class Content_files_modal extends CI_Controller {
 				'resize_over_confirmation' 	=> lang('resize_over_confirmation')
 			),
 		));
-		
-		// Load javascript libraries
-		$this->cp->add_js_script(array(
-			'file'		=> 'cp/files/file_manager_edit',
-			'ui'		=> array('core', 'widget', 'accordion')
-		));	
-
-		// Yup, more accordions
-		$this->javascript->output('$(".edit_controls").accordion({autoHeight: false, header: "h3"});');
 		
 		$this->javascript->compile();
 		$this->load->view('_shared/file_upload/edit', $vars);
@@ -353,7 +365,8 @@ class Content_files_modal extends CI_Controller {
 		}
 		
 		// Get the JSON and decode it
-		$file_json = $this->input->post('file_json');
+		// $file_json = $this->input->post('file_json');
+		$file_json = '{"upload_location_id":"2","site_id":"1","file_name":"70689_3772.jpg","orig_name":"70689_3772.jpg","is_image":true,"mime_type":"image\/jpeg","rel_path":"\/Users\/wes\/Development\/expressionengine2\/themes\/site_themes\/agile_records\/images\/uploads\/70689_3772_1.jpg","file_thumb":"http:\/\/expressionengine2\/themes\/site_themes\/agile_records\/images\/uploads\/_thumbs\/70689_3772_1.jpg","thumb_class":"image","modified_by_member_id":"1","uploaded_by_member_id":"1","file_size":"653.2 KB","file_height":1200,"file_width":1600,"file_hw_original":"1200 1600","max_width":"","max_height":"","height":1200,"width":1600,"file_id":"75","title":"70689_3772_1.jpg","status":"o","description":null,"field_1":null,"field_1_fmt":"xhtml","field_2":null,"field_2_fmt":"xhtml","field_3":null,"field_3_fmt":"xhtml","field_4":null,"field_4_fmt":"xhtml","field_5":null,"field_5_fmt":"xhtml","field_6":null,"field_6_fmt":"xhtml","metadata":null,"upload_date":"1323119987","modified_date":"1323119987","credit":null,"location":null,"thumb":"http:\/\/expressionengine2\/themes\/site_themes\/agile_records\/images\/uploads\/_thumbs\/70689_3772.jpg","upload_directory_prefs":{"id":"2","site_id":"1","name":"About","server_path":"\/Users\/wes\/Development\/expressionengine2\/themes\/site_themes\/agile_records\/images\/uploads\/","url":"http:\/\/expressionengine2\/themes\/site_themes\/agile_records\/images\/uploads\/","allowed_types":"img","max_size":"","max_height":"","max_width":"","properties":"","pre_format":"","post_format":"","file_properties":"","file_pre_format":"","file_post_format":"","cat_group":"","batch_location":null},"directory":"2","name":"70689_3772.jpg","replace":true}';
 		$file = (array) json_decode($file_json);
 		$file['upload_directory_prefs'] = (array) $file['upload_directory_prefs'];
 		

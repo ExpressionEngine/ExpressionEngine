@@ -1,5 +1,5 @@
 <div id="file_uploader" class="pageContents">
-	<iframe name="upload_iframe" src="<?= $base_url ?>" frameBorder="0"></iframe>
+	<iframe name="upload_iframe" src="<?= $base_url ?>" frameBorder="0" class="group"></iframe>
 	<div class="button_bar ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix upload_step_1">
 		<img src="<?=PATH_CP_GBL_IMG?>/indicator_upload.gif" alt="<?=lang('loading')?>..." class="before_upload visualEscapism loading" />
 		<input type="submit" class="before_upload disabled-btn" name="upload_file" value="<?= lang('upload_file') ?>" id="upload_file" />

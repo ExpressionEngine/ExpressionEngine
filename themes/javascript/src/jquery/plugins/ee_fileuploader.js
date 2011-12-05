@@ -308,7 +308,7 @@
 			
 			$('#file_uploader .button_bar #edit_file_modal').unbind().show().one('click', function(event) {
 				event.preventDefault();
-				$('#file_uploader iframe').contents().find('form#resize_rotate').submit();
+				$('#file_uploader iframe').contents().find('form#edit_file').submit();
 				$(this).hide();
 			});
 		};

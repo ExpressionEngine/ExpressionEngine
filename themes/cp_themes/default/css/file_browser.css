@@ -32,12 +32,6 @@
 	margin: 0 0 10px;
 }
 
-#file_browser #filterMenu {
-	background-color: #ECF1F4;
-	color: #5f6c74;
-	font-size: 12px;
-}
-
 #file_browser #dir_choice_form {
 	float: left;
 }
@@ -227,7 +221,7 @@ a.file_browser_thumbnail.last_row {
 #file_uploader iframe,
 html#file_upload_iframe,
 html#file_upload_iframe body {
-	background: #ecf1f4;
+	background: #DDE2E5;
 }
 
 html#file_upload_iframe body {
@@ -298,4 +292,36 @@ html#file_upload_iframe p {
 #file_upload_iframe .edit_controls {
 	overflow: hidden;
 	height: 265px;
+}
+
+.panels {
+	padding-top: 4px;
+	padding-right: 0;
+}
+
+.panels > div {
+	border-top: 1px solid #D1D5DE;
+	display: none;
+}
+
+.panels .current {
+	display: block;
+}
+
+.panels input[type=text],
+.panels textarea {
+	display: block;
+}
+
+.panels li {
+	margin: 7px 0;
+}
+
+.panels #image_tools .image {
+	float: right;
+	margin: 10px;
+}
+
+.panels #image_tools input[type=text] {
+	width: 50%;
 }

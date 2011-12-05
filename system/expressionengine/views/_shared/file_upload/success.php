@@ -2,11 +2,8 @@
 
 <div class="upload_success">
 	<h2><?= lang('upload_success') ?></h2>
-	
 	<div class="image">
 		<img src="<?= $file['thumb'] ?>" alt="<?= $file['file_name'] ?>" />
-		<?= form_open('C=content_files_modal'.AMP.'M=edit_file', array('id' => "edit_file"), array('file_json' => $file_json)) ?>
-		<?= form_close() ?>
 	</div> <!-- .image -->
 	<table>
 		<tr class="odd">
@@ -37,6 +34,9 @@
 		<?php endif ?>
 	</table>	
 </div> <!-- .success -->
+
+<?= form_open('C=content_files_modal'.AMP.'M=edit_file', array('id' => "edit_file"), array('file_json' => $file_json)) ?>
+<?= form_close() ?>
 
 <script>
 	var file = <?= $file_json ?>;
