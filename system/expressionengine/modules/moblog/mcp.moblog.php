@@ -321,7 +321,6 @@ EOT;
 		$this->EE->form_validation->set_rules('moblog_subject_prefix',		'lang:moblog_subject_prefix',	'');
 		$this->EE->form_validation->set_rules('moblog_ignore_text',			'lang:moblog_ignore_text',		'');
 		$this->EE->form_validation->set_rules('moblog_template',			'lang:moblog_template',			'');
-		$this->EE->form_validation->set_rules('ping[]',						'lang:ping',					'');
 		$this->EE->form_validation->set_rules('moblog_allow_overrides',		'lang:moblog_allow_overrides',	'enum[y,n]');
 		$this->EE->form_validation->set_rules('moblog_sticky_entry',		'lang:moblog_sticky_entry',		'enum[y,n]');
 		
@@ -531,16 +530,6 @@ EOT;
 
 		$vars['submit_text'] = ($id != '' && is_numeric($id)) ? 'update' : 'submit';
 		
-		$ping_servers = $query->row_array();
-		$ping_servers = ( ! isset($ping_servers['moblog_ping_servers'])) ? '' : $ping_servers['moblog_ping_servers'];
-
-		if ($ping_servers = $this->fetch_ping_servers($ping_servers))
-		{
-			$this->EE->lang->line('ping_servers');
-			$vars['ping_servers'] = $ping_servers;
-		}
-		
-
 		// Set the default types
 		foreach($form_data as $key => $var)
 		{
@@ -1064,8 +1053,6 @@ MAGIC;
 						'moblog_enabled'			=> $_POST['moblog_enabled'],
 						'moblog_file_archive'		=> $_POST['moblog_file_archive'],
 						
-						'moblog_ping_servers'		=> ( ! isset($_POST['ping'])) ? '' : implode('|',$_POST['ping']),
-						
 						'moblog_allow_overrides'	=> ( ! isset($_POST['moblog_allow_overrides'])) ? 'y' : $_POST['moblog_allow_overrides'],
 						'moblog_sticky_entry'		=> ( ! isset($_POST['moblog_sticky_entry'])) ? 'n' : $_POST['moblog_sticky_entry']
 						);						
@@ -1210,7 +1197,6 @@ MAGIC;
 				$message .= $this->EE->lang->line('emails_done').NBS.NBS.$MP->emails_done.'<br />';
 				$message .= $this->EE->lang->line('entries_added').NBS.NBS.$MP->entries_added.'<br />';
 				$message .= $this->EE->lang->line('attachments_uploaded').NBS.NBS.$MP->uploads.'<br />';
-				$message .= $this->EE->lang->line('pings_sent').NBS.NBS.$MP->pings_sent.'<br />';
 				
 				if (count($MP->message_array) > 0)
 				{
@@ -1242,7 +1228,6 @@ MAGIC;
 				$message .= $this->EE->lang->line('emails_done').NBS.NBS.$MP->emails_done.'<br />';
 				$message .= $this->EE->lang->line('entries_added').NBS.NBS.$MP->entries_added.'<br />';
 				$message .= $this->EE->lang->line('attachments_uploaded').NBS.NBS.$MP->uploads.'<br />';
-				$message .= $this->EE->lang->line('pings_sent').NBS.NBS.$MP->pings_sent.'<br />';
 
 				if (count($MP->message_array) > 0)
 				{
@@ -1257,71 +1242,7 @@ MAGIC;
 
 		$this->EE->session->set_flashdata(array('message' => $MP->errors(), 'error' => TRUE));
 		$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=moblog');
-	}
-
-	
-	/** ---------------------------------------------------------------
-	/**  Fetch ping servers
-	/** ---------------------------------------------------------------*/
-	// This function displays the ping server checkboxes
-	//---------------------------------------------------------------
-		
-	function fetch_ping_servers($selected = '', $type = 'update')
-	{
-		$sent_pings = array();
-
-		if ($selected != '')
-		{
-			$sent_pings = explode('|', $selected);
-		}
-		
-		$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
-		$this->EE->db->where('member_id', $this->EE->session->userdata('member_id'));
-		$count = $this->EE->db->count_all_results('ping_servers');
-
-		$member_id = ($count  == 0) ? 0 : $this->EE->session->userdata('member_id');
-		
-		$this->EE->db->select('id, server_name, is_default, server_url');
-		$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
-		$this->EE->db->where('member_id', $member_id);
-		$this->EE->db->order_by('server_order');
-		
-		$query = $this->EE->db->get('ping_servers');
-
-		if ($query->num_rows() == 0)
-		{
-			return FALSE;
-		}
-
-		$r = array();
-		$done = array();
-		
-		foreach($query->result_array() as $row)
-		{
-			// Because of multiple sites a member might have multiple Ping Servers with the same
-			// URL.  The moblog is a module and does not recognize Sites like that, so we simply
-			// show all Ping Servers from all Sites, but remove duplicate ones based on the Server URL
-			if (in_array($row['server_url'], $done))
-			{
-				continue;
-			}
-			
-			$done[] = $row['server_url'];
-		
-			if (count($sent_pings) > 0)
-			{
-				$selected = (in_array($row['id'], $sent_pings)) ? 1 : '';
-			}
-			elseif($type == 'submit')
-			{
-				$selected = ($row['is_default'] == 'y') ? TRUE : FALSE;
-			}
-			
-			$r[$row['id']] = array($row['server_name'], $selected);
-		}
-
-		return $r;
-	}
+	}	
 }
 // END CLASS
 
