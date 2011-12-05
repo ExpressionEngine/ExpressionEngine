@@ -192,7 +192,7 @@ EOT;
 			{
 				$options[$row['moblog_id']] = $row['moblog_full_name'];
 			}
-			
+
 			return $this->EE->load->view('choose', array('options' => $options), TRUE);
 		}
 		
@@ -283,9 +283,9 @@ EOT;
 						'moblog_ignore_text'		=> '',	// textarea
 						
 						// moblog_image_settings
-						'moblog_upload_directory'	=> array(array('none'=> $this->EE->lang->line('none')), '0'),
-						'moblog_image_size'			=> array(array('none'=> $this->EE->lang->line('none')), '0'),
-						'moblog_thumb_size'			=> array(array('none'=> $this->EE->lang->line('none')), '0')
+						'moblog_upload_directory'	=> array(array('0'=> $this->EE->lang->line('none')), '0'),
+						'moblog_image_size'			=> array(array('0'=> $this->EE->lang->line('none')), '0'),
+						'moblog_thumb_size'			=> array(array('0'=> $this->EE->lang->line('none')), '0')
 						);
 
 
@@ -540,7 +540,7 @@ EOT;
 		}
 
 		$vars['values'] = $form_data;
-	
+
 		if ($this->EE->form_validation->run() === FALSE)
 		{
 			// If the "basis_flag" $_POST is set, it means they have come from the form 
