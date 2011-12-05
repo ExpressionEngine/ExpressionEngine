@@ -228,14 +228,14 @@
 		<tr>
 			<td style="width: 50%;"><?=form_label(lang('moblog_image_size'), 'moblog_image_size')?></td>
 			<td>
-				<?=form_dropdown('moblog_image_size', $values['moblog_image_size'][0], set_value('moblog_image_size',  $values['moblog_image_size'][1]), array('id'=>'moblog_image_size','class'=>'field'))?>
+				<?=form_dropdown('moblog_image_size', $values['moblog_image_size'][0], set_value('moblog_image_size',  $values['moblog_image_size'][1]), 'id="moblog_image_size"')?>
 				<?=form_error('moblog_image_size')?>
 			</td>
 		</tr>
 		<tr>
 			<td style="width: 50%;"><?=form_label(lang('moblog_thumb_size'), 'moblog_thumb_size')?></td>
 			<td>
-				<?=form_dropdown('moblog_thumb_size', $values['moblog_thumb_size'][0], set_value('moblog_thumb_size',  $values['moblog_thumb_size'][1]), array('id'=>'moblog_thumb_size','class'=>'field'))?>
+				<?=form_dropdown('moblog_thumb_size', $values['moblog_thumb_size'][0], set_value('moblog_thumb_size',  $values['moblog_thumb_size'][1]), 'id="moblog_thumb_size"')?>
 				<?=form_error('moblog_thumb_size')?>
 			</td>
 		</tr>
