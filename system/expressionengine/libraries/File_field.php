@@ -68,7 +68,7 @@ class File_field {
 			$vars['filename'] = str_replace($matches[0], '', $data);
 		}
 		// Figure out directory and name based on file ID
-		else if (is_numeric($data))
+		else if (is_numeric($data) && ! empty($data))
 		{
 			$file = $this->EE->file_model->get_files_by_id($data)->row_array();
 			$vars['filedir'] = $file['upload_location_id'];
