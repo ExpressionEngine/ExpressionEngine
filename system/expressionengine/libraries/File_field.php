@@ -323,6 +323,7 @@ class File_field {
 		$file_data['path'] = (isset($file_dirs[$this_dir_id])) ? $file_dirs[$this_dir_id] : '';
 		$file_data['extension'] = substr(strrchr($data, '.'), 1);
 		$file_data['filename'] = basename($data, '.'.$file_data['extension']);
+		$file_data['url'] = $file_data['path'].$data;
 		
 		return $file_data;
 	}

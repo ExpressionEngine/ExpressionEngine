@@ -3971,12 +3971,15 @@ class Channel {
 								{
 									$temp = preg_replace("#".LD."path=.+?".RD."#", $this->EE->functions->create_url("SITE_INDEX"), $temp);
 								}
-
+								
+								$this->EE->load->library('file_field');
+								$cat_image = $this->EE->file_field->parse($v[3]);
+								
 								$cat_vars = array('category_name'			=> $v[2],
 												  'category_url_title'		=> $v[6],
 												  'category_description'	=> (isset($v[4])) ? $v[4] : '',
 												  'category_group'			=> (isset($v[5])) ? $v[5] : '',
-												  'category_image'			=> $v[3],
+												  'category_image'			=> $cat_image['url'],
 												  'category_id'				=> $v[0],
 												  'parent_id'				=> $v[1],
 												  'active'					=> ($active_cat == $v[0] || $active_cat == $v[6]));
@@ -3999,7 +4002,7 @@ class Channel {
 													array($v[0],
 														  $v[2],
 														  $v[6],
-														  $v[3],
+														  $cat_image['url'],
 														  (isset($v[5])) ? $v[5] : '',
 														  (isset($v[4])) ? $v[4] : '',
 														  $v[1]
@@ -5452,11 +5455,14 @@ class Channel {
 			foreach ($this->cat_array as $key => $val)
 			{
 				$chunk = $this->EE->TMPL->tagdata;
-
+				
+				$this->EE->load->library('file_field');
+				$cat_image = $this->EE->file_field->parse($val[5]);
+				
 				$cat_vars = array('category_name'			=> $val[3],
 								  'category_url_title'		=> $val[6],
 								  'category_description'	=> $val[4],
-								  'category_image'			=> $val[5],
+								  'category_image'			=> $cat_image['url'],
 								  'category_id'				=> $val[0],
 								  'parent_id'				=> $val[1],
 								  'active'					=> ($active_cat == $val[0] || $active_cat == $val[6])
@@ -5483,7 +5489,7 @@ class Channel {
 									 array($val[3],
 											$val[6],
 									 		$val[4],
-									 		$val[5],
+									 		$cat_image['url'],
 									 		$val[0],
 											$val[1]),
 									$chunk);
@@ -5891,11 +5897,14 @@ class Channel {
 					if ( ! isset($used[$row['cat_name']]))
 					{
 						$chunk = $cat_chunk;
-
+						
+						$this->EE->load->library('file_field');
+						$cat_image = $this->EE->file_field->parse($row['cat_image']);
+						
 						$cat_vars = array('category_name'			=> $row['cat_name'],
 										  'category_url_title'		=> $row['cat_url_title'],
 										  'category_description'	=> $row['cat_description'],
-										  'category_image'			=> $row['cat_image'],
+										  'category_image'			=> $cat_image['url'],
 										  'category_id'				=> $row['cat_id'],
 										  'parent_id'				=> $row['parent_id'],
 										  'active'					=> ($active_cat == $row['cat_id'] ||
@@ -5918,7 +5927,7 @@ class Channel {
 											  array($row['cat_id'],
 											  		$row['cat_name'],
 													$row['cat_url_title'],
-											  		$row['cat_image'],
+											  		$cat_image['url'],
 											  		$row['cat_description'],
 													$row['parent_id']),
 											  $chunk);
@@ -6297,11 +6306,14 @@ class Channel {
 				}
 
 				$chunk = $template;
-
+				
+				$this->EE->load->library('file_field');
+				$cat_image = $this->EE->file_field->parse($val[2]);
+				
 				$cat_vars = array('category_name'			=> $val[1],
 								  'category_url_title'		=> $val[4],
 								  'category_description'	=> $val[3],
-								  'category_image'			=> $val[2],
+								  'category_image'			=> $cat_image['url'],
 								  'category_id'				=> $key,
 								  'parent_id'				=> $val[0],
 								  'active'					=> ($active_cat == $key || $active_cat == $val[4])
@@ -6328,10 +6340,10 @@ class Channel {
 									  array($key,
 									  		$val[1],
 											$val[4],
-									  		$val[2],
+									  		$cat_image['url'],
 									  		$val[3],
 											$val[0]),
-									  $chunk);
+								 			$chunk);
 
 				foreach($path as $pkey => $pval)
 				{
@@ -6477,11 +6489,14 @@ class Channel {
 				}
 
 				$chunk = $template;
-
+				
+				$this->EE->load->library('file_field');
+				$cat_image = $this->EE->file_field->parse($val[2]);
+				
 				$cat_vars = array('category_name'			=> $val[1],
 								  'category_url_title'		=> $val[4],
 								  'category_description'	=> $val[3],
-								  'category_image'			=> $val[2],
+								  'category_image'			=> $cat_image['url'],
 								  'category_id'				=> $key,
 								  'parent_id'				=> $val[0],
 								  'active'					=> ($active_cat == $key || $active_cat == $val[4]));
@@ -6506,7 +6521,7 @@ class Channel {
 									  array($key,
 									  		$val[1],
 											$val[4],
-									  		$val[2],
+									  		$cat_image['url'],
 									  		$val[3],
 											$val[0]),
 									  $chunk);
@@ -6825,9 +6840,12 @@ class Channel {
 
 		$row = $query->row_array();
 
-		$cat_vars = array('category_name'			=> $query->row('cat_name') ,
-						  'category_description'	=> $query->row('cat_description') ,
-						  'category_image'			=> $query->row('cat_image') ,
+		$this->EE->load->library('file_field');
+		$cat_image = $this->EE->file_field->parse($query->row('cat_image'));
+		
+		$cat_vars = array('category_name'			=> $query->row('cat_name'),
+						  'category_description'	=> $query->row('cat_description'),
+						  'category_image'			=> $cat_image['url'],
 						  'category_id'				=> $match[2],
 						  'parent_id'				=> $query->row('parent_id'));
 
@@ -6838,7 +6856,7 @@ class Channel {
 		}
 
 		$this->EE->TMPL->tagdata = $this->EE->functions->prep_conditionals($this->EE->TMPL->tagdata, $cat_vars);
-
+		
 		$this->EE->TMPL->tagdata = str_replace( array(LD.'category_id'.RD,
 											LD.'category_name'.RD,
 											LD.'category_url_title'.RD,
@@ -6848,7 +6866,7 @@ class Channel {
 							 	 	  array($match[2],
 											$query->row('cat_name'),
 											$query->row('cat_url_title'),
-											$query->row('cat_image'),
+											$cat_image['url'],
 											$query->row('cat_description'),
 											$query->row('parent_id')),
 							  		  $this->EE->TMPL->tagdata);

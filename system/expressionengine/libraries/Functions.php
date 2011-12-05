@@ -2847,9 +2847,9 @@ class EE_Functions {
 			$this->file_paths = FALSE;
 			return array();
 		}
-				
+		
 		foreach ($upload_prefs as $row)
-		{			
+		{
 			$this->file_paths[$row['id']] = $row['url'];
 		}
 		
