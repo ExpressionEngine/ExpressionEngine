@@ -50,7 +50,7 @@ class File_field {
 		// Load necessary library, helper, model and langfile
 		$this->EE->load->library('filemanager');
 		$this->EE->load->helper('html');
-		$this->EE->load->model('file_upload_preferences_model');
+		$this->EE->load->model(array('file_model', 'file_upload_preferences_model'));
 		$this->EE->lang->loadfile('fieldtypes');
 		
 		$vars = array(
@@ -66,6 +66,13 @@ class File_field {
 		{
 			$vars['filedir'] = $matches[1];
 			$vars['filename'] = str_replace($matches[0], '', $data);
+		}
+		// Figure out directory and name based on file ID
+		else if (is_numeric($data) && ! empty($data))
+		{
+			$file = $this->EE->file_model->get_files_by_id($data)->row_array();
+			$vars['filedir'] = $file['upload_location_id'];
+			$vars['filename'] = $file['file_name'];
 		}
 		
 		// Retrieve all directories that are both allowed for this user and
