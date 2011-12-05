@@ -49,7 +49,7 @@ class File_field {
 	{
 		// Load necessary library, helper, model and langfile
 		$this->EE->load->library('filemanager');
-		$this->EE->load->helper('html');
+		$this->EE->load->helper(array('html', 'form'));
 		$this->EE->load->model(array('file_model', 'file_upload_preferences_model'));
 		$this->EE->lang->loadfile('fieldtypes');
 		
@@ -59,20 +59,12 @@ class File_field {
 		);
 		$allowed_file_dirs = ($allowed_file_dirs == 'all') ? '' : $allowed_file_dirs;
 		$specified_directory = ($allowed_file_dirs == '') ? 'all' : $allowed_file_dirs;
-
-		// Figure out the directory and name of the file from the data 
-		// (e.g. {filedir_1}filename.jpg)
-		if (preg_match('/{filedir_([0-9]+)}/', $data, $matches))
+		
+		// Parse field data
+		if ( ! empty($data))
 		{
-			$vars['filedir'] = $matches[1];
-			$vars['filename'] = str_replace($matches[0], '', $data);
-		}
-		// Figure out directory and name based on file ID
-		else if (is_numeric($data) && ! empty($data))
-		{
-			$file = $this->EE->file_model->get_files_by_id($data)->row_array();
-			$vars['filedir'] = $file['upload_location_id'];
-			$vars['filename'] = $file['file_name'];
+			$vars = $this->parse($data);
+			$vars['filename'] = $vars['filename'].'.'.$vars['extension'];
 		}
 		
 		// Retrieve all directories that are both allowed for this user and
@@ -288,17 +280,64 @@ class File_field {
 			return $file_name;
 		}
 	}
-
+	
 	// ------------------------------------------------------------------------
-
+	
 	/**
-	 * Parse {filedir_n} from a given string to it's actual values
+	 * Parse field contents, which may be in the {filedir_n} format for may be
+	 * a file ID.
 	 *
-	 * @access	private
+	 * @access	public
+	 * @param	string $data Field contents
+	 * @return	array Information about file and upload directory
+	 */
+	public function parse($data)
+	{
+		$file_dirs = $this->_file_dirs();
+		
+		$this_dir_id = 0;
+		
+		// If the file field is in the "{filedir_n}image.jpg" format
+		if (preg_match('/^{filedir_(\d+)}/', $data, $matches))
+		{
+			// Only replace it once
+			$path = substr($data, 0, 10 + strlen($matches[1]));
+			
+			// Set upload directory ID and file name
+			$this_dir_id = $matches[1];
+			$data = str_replace($matches[0], '', $data);
+		}
+		// If file field is just a file ID
+		else if (is_numeric($data) && ! empty($data))
+		{
+			// Query file model on file ID
+			$this->EE->load->model('file_model');
+			$file = $this->EE->file_model->get_files_by_id($data)->row_array();
+			
+			$this_dir_id = $file['upload_location_id'];
+			$data = $file['file_name'];
+		}
+		
+		// Set other data based on what we've gathered
+		$file_data['filedir'] = $this_dir_id;
+		$file_data['path'] = (isset($file_dirs[$this_dir_id])) ? $file_dirs[$this_dir_id] : '';
+		$file_data['extension'] = substr(strrchr($data, '.'), 1);
+		$file_data['filename'] = basename($data, '.'.$file_data['extension']);
+		
+		return $file_data;
+	}
+	
+	// ------------------------------------------------------------------------
+	
+	/**
+	 * Unlike parse(), this parses all occurances of {filedir_n} from a given
+	 * string to their actual values and returns the processed string.
+	 *
+	 * @access	public
 	 * @param	string $data The string to parse {filedir_n} in
 	 * @return	string The original string with all {filedir_n}'s parsed
 	 */	
-	public function parse($data)
+	public function parse_string($data)
 	{
 		// Find each instance of {filedir_n}
 		if (preg_match_all('/{filedir_(\d+)}/', $data, $matches, PREG_SET_ORDER))
@@ -314,7 +353,7 @@ class File_field {
 				}
 			}
 		}
-
+		
 		return $data;
 	}
 	

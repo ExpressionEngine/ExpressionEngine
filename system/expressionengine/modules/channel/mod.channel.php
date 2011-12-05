@@ -4046,7 +4046,7 @@ class Channel {
 							if (strpos($cats, '{filedir_') !== FALSE)
 							{
 								$this->EE->load->library('file_field');
-								$cats = $this->EE->file_field->parse($cats);
+								$cats = $this->EE->file_field->parse_string($cats);
 							}
 							
 							$tagdata = str_replace($catval[2], $cats, $tagdata);
@@ -5552,7 +5552,7 @@ class Channel {
 		if (strpos($str, '{filedir_') !== FALSE)
 		{
 			$this->EE->load->library('file_field');
-			$str = $this->EE->file_field->parse($str);
+			$str = $this->EE->file_field->parse_string($str);
 		}
 		
 		return $str;
@@ -5956,7 +5956,7 @@ class Channel {
 						if (strpos($chunk, '{filedir_') !== FALSE)
 						{
 							$this->EE->load->library('file_field');
-							$chunk = $this->EE->file_field->parse($chunk);
+							$chunk = $this->EE->file_field->parse_string($chunk);
 						}
 						
 						$str .= $chunk;
@@ -6857,7 +6857,7 @@ class Channel {
 		if (strpos($this->EE->TMPL->tagdata, '{filedir_') !== FALSE)
 		{
 			$this->EE->load->library('file_field');
-			$this->EE->TMPL->tagdata = $this->EE->file_field->parse($this->EE->TMPL->tagdata);
+			$this->EE->TMPL->tagdata = $this->EE->file_field->parse_string($this->EE->TMPL->tagdata);
 		}
 		
 		// parse custom fields
