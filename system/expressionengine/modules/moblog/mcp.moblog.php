@@ -242,18 +242,15 @@ EOT;
 		}
 
 		// Fetch Upload Directories
-		// @pk marker - remove
-		
 		$this->upload_loc_array = array('0' => $this->EE->lang->line('none'));
 		$this->image_dim_array = array('0' => $this->EE->lang->line('none'));
 		
 		$upload_array = array('0' => $this->EE->lang->line('none'));
 		
-		$this->EE->load->model('tools_model');
-		$upload_prefs = $this->EE->tools_model->get_upload_preferences($this->EE->session->userdata['group_id']);
+		$this->EE->load->model(array('file_model', 'file_upload_preferences_model'));
+
+		$upload_prefs = $this->EE->file_upload_preferences_model->get_upload_preferences($this->EE->session->userdata['group_id']);
 		
-		
-		$this->EE->load->model('file_model');
 		$sizes_q = $this->EE->file_model->get_dimensions_by_dir_id(1);
 		$sizes = array();
 		
@@ -374,7 +371,7 @@ EOT;
 		
 			if ( ! isset($upload_array[$row['moblog_upload_directory']]))
 			{
-				$upload_prefs = $this->EE->tools_model->get_upload_preferences(1, $row['moblog_upload_directory']);
+				$upload_prefs = $this->EE->file_upload_preferences_model->get_upload_preferences(1, $row['moblog_upload_directory']);
 				
 				if (count($upload_prefs) > 0)
 				{
@@ -879,10 +876,8 @@ MAGIC;
 		$this->upload_loc_array = array('0' => $this->EE->lang->line('none'));
 		$this->image_dim_array = array('0' => $this->upload_loc_array);
 		
-		// Fetch Upload Directories
-		
-		$this->EE->load->model('tools_model');
-		$this->EE->load->model('file_model');
+		// Fetch Upload Directories		
+		$this->EE->load->model(array('file_model', 'file_upload_preferences_model'));
 		
 		$sizes_q = $this->EE->file_model->get_dimensions_by_dir_id();
 		$sizes_array = array();
@@ -892,7 +887,7 @@ MAGIC;
 			$sizes_array[$row['upload_location_id']][$row['id']] = $row['title'];
 		}
 		
-		$upload_q = $this->EE->tools_model->get_upload_preferences($this->EE->session->userdata['group_id']);
+		$upload_q = $this->EE->file_upload_preferences_model->get_upload_preferences($this->EE->session->userdata['group_id']);
 		
 		foreach ($upload_q as $row)
 		{
