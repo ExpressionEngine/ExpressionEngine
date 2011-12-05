@@ -1941,9 +1941,7 @@ class Filemanager {
 					)
 				);
 			}
-		}		
-		
-		
+		}
 		
 		// Save file to database
 		$saved = $this->save_file($file['full_path'], $dir['id'], $file_data);
@@ -1960,15 +1958,12 @@ class Filemanager {
 			);
 		}
 		
-		// Set file id in return data
-		$file_data['file_id'] = $saved['file_id'];
+		// Merge in information from database
+		$file_data = array_merge($file_data, $this->_file_info($saved['file_id']));
 		
 		// Stash upload directory prefs in case
 		$file_data['upload_directory_prefs'] = $dir;
 		$file_data['directory'] = $dir['id'];
-		
-		// Manually create a modified date
-		$file_data['modified_date'] = $this->EE->localize->set_human_time();
 		
 		// Change file size to human readable
 		$this->EE->load->helper('number');
