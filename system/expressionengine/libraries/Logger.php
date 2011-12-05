@@ -69,6 +69,36 @@ class EE_Logger {
 			)
 		);
 	}
+	
+	/**
+	 * Log a function as deprecated
+	 *
+	 * @param string $version Version function was deprecated
+	 * @return void
+	 */
+	function deprecated($version = NULL)
+	{
+		// debug_backtrace() will tell us what method is deprecated and what called it
+		$backtrace = debug_backtrace();
+		
+		// Explaination of below array indicies:
+		// Index 0: deprecated function (this one)
+		// Index 1: function that called deprecated(), i.e. the function that is deprecated
+		// Index 2: function that called the function that is deprecated
+		
+		$deprecated = array(
+			'function'	=> $backtrace[1]['function'],
+			'called_by'	=> $backtrace[2]['function'],
+			'line'		=> $backtrace[1]['line'], // Line where 'function' was called
+			'file'		=> $backtrace[1]['file'], // File where 'function' was called 
+			'since'		=> $version
+		);
+		
+		echo 'Deprecated method "'.$deprecated['function']
+			.'" called by function "'.$deprecated['called_by']
+			.'" on line '.$deprecated['line']
+			.' of '.$deprecated['file'] . '<br />';
+	}
 }
 // END CLASS
 
