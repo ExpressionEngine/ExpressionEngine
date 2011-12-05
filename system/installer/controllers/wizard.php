@@ -2870,6 +2870,7 @@ PAPAYA;
 					}
 					else
 					{
+						$v = str_replace(array('\\', "'"), array('\\\\', "\\'"), $v);
 						$str .= "\$db['".$active_group."']['".$k."'] = '".$v."';\n";
 					}
 				}
@@ -2884,6 +2885,7 @@ PAPAYA;
 				}
 				else
 				{
+					$val = str_replace(array('\\', "'"), array('\\\\', "\\'"), $val);
 					$str .= "\$db['".$active_group."']['".$key."'] = '".$val."';\n";
 				}
 			}		
