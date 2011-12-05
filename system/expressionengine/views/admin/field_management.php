@@ -49,7 +49,7 @@ if ($EE_view_disable !== TRUE)
 			}
 			else
 			{
-				$this->table->add_row(array('data' => lang('no_field_groups'), 'colspan' => 5));
+				$this->table->add_row(array('data' => lang('no_field_groups'), 'colspan' => 6));
 			}
 			
 			echo $this->table->generate();

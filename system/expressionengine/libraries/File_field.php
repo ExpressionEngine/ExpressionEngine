@@ -36,21 +36,21 @@ class File_field {
 	/**
 	 * Creates a file field
 	 * 
+	 * @param string $field_name The name of the field
 	 * @param string $data The data stored in the file field 
 	 * 		e.g. {filedir_x}filename.ext
-	 * @param string $field_name The name of the field
 	 * @param string $allowed_file_dirs The allowed file directory 
 	 * 		Either 'all' or ONE directory ID
 	 * @param string $content_type The content type allowed. 
 	 * 		Either 'all' or 'image'
 	 * @return string Fully rendered file field
 	 */
-	public function field($data, $field_name, $allowed_file_dirs = 'all', $content_type = 'all')
+	public function field($field_name, $data = '', $allowed_file_dirs = 'all', $content_type = 'all')
 	{
 		// Load necessary library, helper, model and langfile
 		$this->EE->load->library('filemanager');
 		$this->EE->load->helper('html');
-		$this->EE->load->model('file_upload_preferences_model');
+		$this->EE->load->model(array('file_model', 'file_upload_preferences_model'));
 		$this->EE->lang->loadfile('fieldtypes');
 		
 		$vars = array(
@@ -67,20 +67,22 @@ class File_field {
 			$vars['filedir'] = $matches[1];
 			$vars['filename'] = str_replace($matches[0], '', $data);
 		}
+		// Figure out directory and name based on file ID
+		else if (is_numeric($data) && ! empty($data))
+		{
+			$file = $this->EE->file_model->get_files_by_id($data)->row_array();
+			$vars['filedir'] = $file['upload_location_id'];
+			$vars['filename'] = $file['file_name'];
+		}
 		
 		// Retrieve all directories that are both allowed for this user and
 		// for this field
-		$upload_directories = $this->EE->file_upload_preferences_model->get_upload_preferences(
+		$upload_dirs[''] = lang('directory');
+		$upload_dirs = $this->EE->file_upload_preferences_model->get_dropdown_array(
 			$this->EE->session->userdata('group_id'),
-			$allowed_file_dirs
+			$allowed_file_dirs,
+			$upload_dirs
 		);
-
-		// Create the list of directories
-		$upload_dirs = array('' => lang('directory'));
-		foreach($upload_directories->result() as $row)
-		{
-			$upload_dirs[$row->id] = $row->name;
-		}
 		
 		// Get the thumbnail
 		$thumb_info = $this->EE->filemanager->get_thumb($vars['filename'], $vars['filedir']);
@@ -104,7 +106,7 @@ class File_field {
 		$vars['dropdown'] = form_dropdown($field_name.'_directory', $upload_dirs, $vars['filedir']);
 
 		// Check to see if they have access to any directories to create an upload link
-		$vars['upload_link'] = (count($upload_dirs) > 1) ? '<a href="#" class="choose_file" data-directory="'.$specified_directory.'">'.lang('add_file').'</a>' : lang('directory_no_access');
+		$vars['upload_link'] = (count($upload_dirs) > 0) ? '<a href="#" class="choose_file" data-directory="'.$specified_directory.'">'.lang('add_file').'</a>' : lang('directory_no_access');
 
 		// If we have a file, show the thumbnail, filename and remove link
 		$vars['set_class'] = $vars['filename'] ? '' : 'js_hide';
@@ -194,9 +196,9 @@ class File_field {
 		// Directory selected - switch
 		$filedir = ($this->EE->input->post($dir_field)) ? $this->EE->input->post($dir_field) : '';
 		
-		foreach($upload_directories->result() as $row)
+		foreach($upload_directories as $row)
 		{
-			$allowed_dirs[] = $row->id;
+			$allowed_dirs[] = $row['id'];
 		}
 		
 		// Upload or maybe just a path in the hidden field?
@@ -274,16 +276,16 @@ class File_field {
 	 * @param integer $directory_id The directory ID
 	 * @return string The formatted field data e.g. {filedir_1}file.ext
 	 */
-	public function format_data($data, $directory_id = 0)
+	public function format_data($file_name, $directory_id = 0)
 	{
-		if ($data != '')
+		if ($file_name != '')
 		{
 			if ( ! empty($directory_id))
 			{
-			     return '{filedir_'.$directory_id.'}'.$data;
+			     return '{filedir_'.$directory_id.'}'.$file_name;
 			}
 
-			return $data;
+			return $file_name;
 		}
 	}
 

@@ -1263,6 +1263,17 @@ class Members extends CI_Controller {
 					}
 				}
 			}
+
+			// Don't show any CP-related preferences for Banned, Guests, or Pending.
+			// May want to strip these down even further.
+			if ($group_id == 2 OR $group_id == 3 OR $group_id == 4)
+			{
+				unset($form[$site->site_id]['global_cp_access']);
+				unset($form[$site->site_id]['cp_admin_privs']);
+				unset($form[$site->site_id]['cp_email_privs']);
+				unset($form[$site->site_id]['cp_template_access_privs']);
+				unset($form[$site->site_id]['cp_email_privs']);
+			}
 		}
 
 		return $form;
@@ -1279,6 +1290,12 @@ class Members extends CI_Controller {
 	 */
 	private function _setup_module_data($group_id)
 	{
+		// Don't show any Module-related preferences for Banned, Guests, or Pending.
+		if ($group_id == 2 OR $group_id == 3 OR $group_id == 4)
+		{
+			return;
+		}
+
 		list($module_names, $module_perms) = $this->_setup_module_names($group_id);
 
 		$module_data = array();
@@ -2245,9 +2262,9 @@ class Members extends CI_Controller {
 				
 				if ($uploads->num_rows() > 0)
 				{
-					foreach($uploads->result_array() as $yeeha)
+					foreach($uploads->result_array() as $upload)
 					{
-						$this->db->query("INSERT INTO exp_upload_no_access (upload_id, upload_loc, member_group) VALUES ('".$this->db->escape_str($yeeha['id'])."', 'cp', '{$group_id}')");
+						$this->db->query("INSERT INTO exp_upload_no_access (upload_id, upload_loc, member_group) VALUES ('".$this->db->escape_str($upload['id'])."', 'cp', '{$group_id}')");
 					}
 				}
 				
@@ -3609,6 +3626,7 @@ class Members extends CI_Controller {
 		$this->db->from('members');
 		$this->db->like('ip_address', $ip);
 		$total = $this->db->count_all_results(); // for paging
+		$grand_total += $total;
 
 		$config['base_url'] = BASE.AMP.'C=members'.AMP.'M=do_ip_search'.AMP.'ip_address='.$url_ip;
 		$config['per_page'] = '10';

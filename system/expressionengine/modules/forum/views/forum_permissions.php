@@ -26,8 +26,8 @@ else
 		array('data' => lang('forum_can_view_topics'),		'style'	=> 'width: 9%'),
 		array('data' => lang('forum_can_post_topic'),		'style'	=> 'width: 9%'),
 		array('data' => lang('forum_can_post_reply'),		'style'	=> 'width: 9%'),
-		array('data' => lang('forum_can_report'),			'style'	=> 'width: 9%'),
 		array('data' => lang('forum_can_upload'),			'style'	=> 'width: 9%'),
+		array('data' => lang('forum_can_report'),			'style'	=> 'width: 9%'),
 		array('data' => lang('forum_can_search'),			'style'	=> 'width: 9%')
 //		array('data' => NBS,								'style' => 'width: 5%')
 	);

@@ -214,9 +214,6 @@ class Tools_communicate extends CI_Controller {
 					'5'  => lang('lowest')
 				);
 
-		// will be used to determine if attachments are available
-		$vars['upload_dir_result'] = $this->tools_model->get_upload_preferences($this->session->userdata('member_group'));
-
 		if ( ! $this->cp->allowed_group('can_email_mailinglist') OR ! isset($this->mailinglist_exists) OR $this->mailinglist_exists == FALSE)
 		{
 			$vars['mailing_lists'] = FALSE;

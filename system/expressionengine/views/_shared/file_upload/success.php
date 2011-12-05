@@ -12,28 +12,28 @@
 	</div> <!-- .image -->
 	<table>
 		<tr class="odd">
-			<th>File Name</th>
+			<th><?=lang('file_name')?></th>
 			<td><?= $file['file_name'] ?></td>
 		</tr>
 		<tr>
-			<th>Upload Directory</th>
+			<th><?=lang('dir_name')?></th>
 			<td><?= $file['upload_directory_prefs']['name'] ?></td>
 		</tr>
 		<tr class="odd">
-			<th>Kind</th>
+			<th><?=lang('kind')?></th>
 			<td><?= $file['mime_type'] ?></td>
 		</tr>
 		<tr>
-			<th>File Size</th>
+			<th><?=lang('file_size')?></th>
 			<td><?= $file['file_size'] ?></td>
 		</tr>
 		<?php if ($file['is_image']): ?>
 			<tr class="odd">
-				<th>Height</th>
+				<th><?=lang('height')?></th>
 				<td><?= $file['file_height'] ?>px</td>
 			</tr>
 			<tr>
-				<th>Width</th>
+				<th><?=lang('width')?></th>
 				<td><?= $file['file_width'] ?>px</td>
 			</tr>
 		<?php endif ?>

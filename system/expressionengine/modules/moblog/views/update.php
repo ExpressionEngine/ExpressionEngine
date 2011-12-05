@@ -228,40 +228,19 @@
 		<tr>
 			<td style="width: 50%;"><?=form_label(lang('moblog_image_size'), 'moblog_image_size')?></td>
 			<td>
-				<?=form_dropdown('moblog_image_size', $values['moblog_image_size'][0], set_value('moblog_image_size',  $values['moblog_image_size'][1]), array('id'=>'moblog_image_size','class'=>'field'))?>
+				<?=form_dropdown('moblog_image_size', $values['moblog_image_size'][0], set_value('moblog_image_size',  $values['moblog_image_size'][1]), 'id="moblog_image_size"')?>
 				<?=form_error('moblog_image_size')?>
 			</td>
 		</tr>
 		<tr>
 			<td style="width: 50%;"><?=form_label(lang('moblog_thumb_size'), 'moblog_thumb_size')?></td>
 			<td>
-				<?=form_dropdown('moblog_thumb_size', $values['moblog_thumb_size'][0], set_value('moblog_thumb_size',  $values['moblog_thumb_size'][1]), array('id'=>'moblog_thumb_size','class'=>'field'))?>
+				<?=form_dropdown('moblog_thumb_size', $values['moblog_thumb_size'][0], set_value('moblog_thumb_size',  $values['moblog_thumb_size'][1]), 'id="moblog_thumb_size"')?>
 				<?=form_error('moblog_thumb_size')?>
 			</td>
 		</tr>
 	</tbody>	
 </table>
-
-<?php if(isset($ping_servers)): ?>
-<table class="mainTable solo channel_fields" border="0" cellspacing="0" cellpadding="0">
-	<thead>
-		<tr>
-			<th colspan="2"><?=lang('ping_servers')?></th>
-		</tr>
-	</thead>
-	<tbody>
-		<tr>
-			<td style="width: 50%;"><?=lang('ping_sites')?></td>
-			<td>
-				<?php foreach($ping_servers as $id => $opts):?>
-					<?=form_checkbox('ping[]', $id, set_value('ping['.$id.']', $opts[1])).NBS.NBS.NBS.form_label($opts[0], $id)?><br />
-				<?php endforeach;?>
-				<?=form_error('ping[]')?>
-			</td>
-		</tr>
-	</tbody>
-</table>
-<?php endif;?>
 
 <p>
 	<?=form_submit(array('name' => 'submit', 'value' => lang($submit_text), 'class' => 'submit'))?>
