@@ -1,5 +1,5 @@
 
-<?=form_open('C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=comment')?>
+<?=form_open('C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=comment', 'id="comment_filter"')?>
 	<fieldset class="shun">
 		<legend><?=lang('filter_comments')?></legend>
 		<div class="group">

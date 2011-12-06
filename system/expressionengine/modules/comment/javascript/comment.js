@@ -19,6 +19,7 @@ var Comment_cp = {
 		this.toggles();
 		this.table_data();
 		this.table_events();
+		this.ajax_filter();
 	},
 	
 	toggles: function() {
@@ -57,6 +58,10 @@ var Comment_cp = {
 			
 			return false;
 		});
+	},
+	
+	ajax_filter: function() {
+		this.table.table('add_filter', $('#comment_filter'));
 	},
 	
 	_collapse: function(el, current_row) {
