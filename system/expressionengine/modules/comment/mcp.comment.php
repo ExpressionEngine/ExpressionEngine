@@ -962,7 +962,9 @@ class Comment_mcp {
 							'status'	=> $status
 						 );
 		}
-		
+
+		$data['edit_date'] = $this->EE->localize->now;
+
 		$this->EE->db->query($this->EE->db->update_string('exp_comments', $data, "comment_id = '$comment_id'"));
 
 		if ($status != $current_status)

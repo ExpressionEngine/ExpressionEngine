@@ -3283,6 +3283,8 @@ class Comment {
 			
 			if (count($data) > 0)
 			{
+				$data['edit_date'] = $this->EE->localize->now;
+
 				//  Clear security hash
 				$this->EE->security->delete_xid($xid);
 

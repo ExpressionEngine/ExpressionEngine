@@ -27,14 +27,14 @@ if ($EE_view_disable !== TRUE)
 										array('data' => '', 'width' => '5%')
 									);
 									
-			if ($upload_locations->num_rows() > 0)
+			if (count($upload_locations) > 0)
 			{
-				foreach ($upload_locations->result() as $upload_location)
+				foreach ($upload_locations as $upload_location)
 				{
 					$this->table->add_row(
-						'<strong>'.$upload_location->id.' '.$upload_location->name.'</strong>',
-						'<a href="'.BASE.AMP.'C=admin_content'.AMP.'M=edit_upload_preferences'.AMP.'id='.$upload_location->id.'" title="'.lang('edit').'"><img src="'.$cp_theme_url.'images/icon-edit.png" alt="'.lang('edit').'"</a>',
-						'<a href="'.BASE.AMP.'C=admin_content'.AMP.'M=delete_upload_preferences_conf'.AMP.'id='.$upload_location->id.'" title="'.lang('delete').'"><img src="'.$cp_theme_url.'images/icon-delete.png" alt="'.lang('delete').'" /></a>'
+						'<strong>'.$upload_location['id'].' '.$upload_location['name'].'</strong>',
+						'<a href="'.BASE.AMP.'C=admin_content'.AMP.'M=edit_upload_preferences'.AMP.'id='.$upload_location['id'].'" title="'.lang('edit').'"><img src="'.$cp_theme_url.'images/icon-edit.png" alt="'.lang('edit').'"</a>',
+						'<a href="'.BASE.AMP.'C=admin_content'.AMP.'M=delete_upload_preferences_conf'.AMP.'id='.$upload_location['id'].'" title="'.lang('delete').'"><img src="'.$cp_theme_url.'images/icon-delete.png" alt="'.lang('delete').'" /></a>'
 					);
 				}
 			}

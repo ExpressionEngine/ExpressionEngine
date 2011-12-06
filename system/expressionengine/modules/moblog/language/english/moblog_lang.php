@@ -174,7 +174,7 @@ $lang = array(
 'Ignore Email Text',
 
 'moblog_valid_from' =>
-'Valid \'From\ Emails for Moblog',
+'Valid \'From\' Emails for Moblog',
 
 'valid_from_subtext' =>
 'Email addresses from which you will be sending these moblog emails.  Leave blank to accept from any email address.  Separate each email address with a space or a newline.',
