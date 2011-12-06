@@ -221,7 +221,7 @@ a.file_browser_thumbnail.last_row {
 #file_uploader iframe,
 html#file_upload_iframe,
 html#file_upload_iframe body {
-	background: #DDE2E5;
+	background: #ECF1F4;
 }
 
 html#file_upload_iframe body {
@@ -294,9 +294,14 @@ html#file_upload_iframe p {
 	height: 265px;
 }
 
-.panels {
+#mainContent .tab_menu li.current {
+}
+
+#holder {
+	border-right: 0;
+	margin-right: 0;
 	padding-top: 4px;
-	padding-right: 0;
+	height: 240px;
 }
 
 .panels > div {
@@ -311,6 +316,8 @@ html#file_upload_iframe p {
 .panels input[type=text],
 .panels textarea {
 	display: block;
+	margin: 0;
+	width: 550px;
 }
 
 .panels li {
@@ -319,9 +326,22 @@ html#file_upload_iframe p {
 
 .panels #image_tools .image {
 	float: right;
-	margin: 10px;
+	margin: 10px 0 10px 10px;
+	width: auto;
 }
 
 .panels #image_tools input[type=text] {
-	width: 50%;
+	width: 380px;
+}
+
+.panels #image_tools li {
+	margin-left: 5px;
+}
+
+.panels #image_tools li div {
+	border: 1px solid #D0D7DF;
+	display: none;
+	padding: 0px 8px;
+	margin: 6px 0 6px 16px;
+	width: 400px;
 }

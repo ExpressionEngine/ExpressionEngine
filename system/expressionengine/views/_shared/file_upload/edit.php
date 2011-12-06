@@ -22,58 +22,60 @@
 				</ul>
 			</div>
 			<div id="image_tools" class="group">
-				<div class="image">
+				<div class="image group">
 					<img src="<?= $file['thumb'] ?>" alt="<?= $file['file_name'] ?>" />
 				</div> <!-- .image -->
-				<div><label><input type="radio" name="image_tool" value="" checked /> <?=lang('no_selection')?></label></div>
-				<div>
-					<label><input type="radio" name="image_tool" value="resize" /> <?=lang('resize')?></label>
-					<div class="group">
-						<ul>
-							<li>
-								<?=lang('resize_width', 'resize_width')?>
-								<?=form_input('resize_width', $file['file_width'], 'id="resize_width"')?>
-							</li>
-							<li>
-								<?=lang('resize_height', 'resize_height')?>
-								<?=form_input('resize_height', $file['file_height'], 'id="resize_height"')?>
-							</li>
-						</ul>
-					</div>
-				</div>
-				<div>
-					<label><input type="radio" name="image_tool" value="rotate" /> <?=lang('rotate')?></label>
-					<div class="group">
-						<ul>
-							<li class="rotate_90">
-								<label>
-									<?php // Rotate 90 degrees right is 270 because 
-										  // the image lib rotates counter-clockwise ?>
-									<?=form_radio('rotate', '270', TRUE)?>
-									<?=lang('rotate_90r')?>
-								</label>
-							</li>
-							<li class="rotate_270">
-								<label>
-									<?=form_radio('rotate', '90', TRUE)?>
-									<?=lang('rotate_90l')?>
-								</label>
-							</li>
-							<li class="rotate_vrt">
-								<label>
-									<?=form_radio('rotate', 'vrt', TRUE)?>
-									<?=lang('rotate_flip_vert')?>
-								</label>
-							</li>
-							<li class="rotate_hor">
-								<label>
-									<?=form_radio('rotate', 'hor', TRUE)?>
-									<?=lang('rotate_flip_hor')?>
-								</label>
-							</li>
-						</ul>
-					</div>
-				</div>
+				<ul>
+					<li><label><input type="radio" name="image_tool" value="" checked /> <?=lang('no_change')?></label></li>
+					<li>
+						<label><input type="radio" name="image_tool" value="resize" /> <?=lang('resize')?></label>
+						<div class="group">
+							<ul>
+								<li>
+									<?=lang('resize_width', 'resize_width')?>
+									<?=form_input('resize_width', $file['file_width'], 'id="resize_width"')?>
+								</li>
+								<li>
+									<?=lang('resize_height', 'resize_height')?>
+									<?=form_input('resize_height', $file['file_height'], 'id="resize_height"')?>
+								</li>
+							</ul>
+						</div>
+					</li>
+					<li>
+						<label><input type="radio" name="image_tool" value="rotate" /> <?=lang('rotate')?></label>
+						<div class="group">
+							<ul>
+								<li class="rotate_90">
+									<label>
+										<?php // Rotate 90 degrees right is 270 because 
+											  // the image lib rotates counter-clockwise ?>
+										<?=form_radio('rotate', '270', TRUE)?>
+										<?=lang('rotate_90r')?>
+									</label>
+								</li>
+								<li class="rotate_270">
+									<label>
+										<?=form_radio('rotate', '90', TRUE)?>
+										<?=lang('rotate_90l')?>
+									</label>
+								</li>
+								<li class="rotate_vrt">
+									<label>
+										<?=form_radio('rotate', 'vrt', TRUE)?>
+										<?=lang('rotate_flip_vert')?>
+									</label>
+								</li>
+								<li class="rotate_hor">
+									<label>
+										<?=form_radio('rotate', 'hor', TRUE)?>
+										<?=lang('rotate_flip_hor')?>
+									</label>
+								</li>
+							</ul>
+						</div>
+					</li>
+				</ul>
 			</div>
 		</div>
 	<?=form_close()?>
