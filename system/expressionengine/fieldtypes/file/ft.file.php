@@ -144,7 +144,24 @@ class File_ft extends EE_Fieldtype {
 			return $full_path;
 		}
 	}
+
+	// --------------------------------------------------------------------
 	
+	/**
+	 * Replace frontend tag (with a modifier catchall)
+	 *
+	 * Here, the modifier is the short name of the image manipulation,
+	 * e.g. "small" in {about_image:small}
+	 *
+	 * @access	public
+	 */
+	function replace_tag_catchall($file_info, $params = array(), $tagdata = FALSE, $modifier)
+	{
+		$file_info['path'] .= '_'.$modifier.'/';
+
+		return $this->replace_tag($file_info, $params, $tagdata);
+	}
+
 	// --------------------------------------------------------------------
 	
 	/**
