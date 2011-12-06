@@ -324,7 +324,7 @@ class File_field {
 		// Set additional data based on what we've gathered
 		$file['path'] 		= (isset($file_dirs[$file['upload_location_id']])) ? $file_dirs[$file['upload_location_id']] : '';
 		$file['extension'] 	= substr(strrchr($file['file_name'], '.'), 1);
-		$file['filename'] 	= $file['file_name']; // backwards compatibility
+		$file['filename'] 	= basename($data, '.'.$file_data['extension']); // backwards compatibility
 		$file['url'] 		= $file['path'].$file['file_name'];
 
 		$dimensions = explode(" ", $file['file_hw_original']);
