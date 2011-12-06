@@ -13,11 +13,23 @@
 // Make sure we can create these methods without issues
 var EE = EE || {};
 EE.publish = EE.publish || {};
-EE.publish.file_edit = EE.publish.file_edit || {};
+EE.publish.edit_file = EE.publish.edit_file || {};
 
 (function($) {
+	// Reset to default visible tabs
+	EE.publish.edit_file.reset_tabs = function() {
+		// Setup default visible tabs
+		$('.panel-menu li').removeClass('current')
+			.filter(':first').addClass('current');
+		
+		$('.panels > div').removeClass('current')
+			.filter(':first').addClass('current');
+	};
+	
 	// Changes tabs in the modal
-	EE.publish.file_edit.change_tabs = function() {
+	EE.publish.edit_file.change_tabs = function() {
+		EE.publish.edit_file.reset_tabs();
+		
 		// Show the clicked tab
 		$('.panel-menu li a').click(function(event) {
 			var id = $(this).data('panel');
@@ -34,10 +46,10 @@ EE.publish.file_edit = EE.publish.file_edit || {};
 		});
 	};
 	
-	EE.publish.file_edit.change_tabs();
+	EE.publish.edit_file.change_tabs();
 	
 	// Hides and shows image tools, so only one tool is showing at a time
-	EE.publish.file_edit.image_tool_select = function() {
+	EE.publish.edit_file.image_tool_select = function() {
 		$('#image_tools input[name=image_tool]').click(function(event) {
 			// Hide existing exposed image tools
 			$(this).parent().parent().siblings().find('div').slideUp();
@@ -45,9 +57,10 @@ EE.publish.file_edit = EE.publish.file_edit || {};
 			// Show image tool
 			$(this).parent().siblings('div').slideDown();
 			
-			// TODO: Change a hidden field so we know which image tool to use
+			// Change the value of action hidden input
+			$('input[name=action]').val($(this).val());
 		});
 	};
 	
-	EE.publish.file_edit.image_tool_select();
+	EE.publish.edit_file.image_tool_select();
 })(jQuery);

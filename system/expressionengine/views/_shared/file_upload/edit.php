@@ -3,20 +3,21 @@
 <div class="upload_edit">
 	<?=form_open('C=content_files_modal'.AMP.'M=edit_file', array('id' => 'edit_file_metadata'), $file_data)?>
 		<?= $file_json_input ?>
-		<ul class="panel-menu tab_menu">
+		<ul class="panel-menu group">
 			<?php foreach ($tabs as $index => $tab): ?>
-				<li class="content_tab <?=($index == 0) ? 'current' : ''?>">
+				<li class="<?=($index == 0) ? 'current' : ''?>">
 					<a href="#" data-panel="<?=$tab?>"><?=lang($tab)?></a>&nbsp;
 				</li>
 			<?php endforeach ?>
 		</ul>
-		<div id="holder" class="panels group">
+		<div class="panels group">
 			<div id="file_metadata" class="group current">
 				<ul>
 					<?php foreach ($metadata_fields as $field_name => $field): ?>
 						<li>
 							<?=lang($field_name, $field_name)?>
 							<?=$field?>
+							<?=form_error($field_name)?>
 						</li>
 					<?php endforeach ?>
 				</ul>
