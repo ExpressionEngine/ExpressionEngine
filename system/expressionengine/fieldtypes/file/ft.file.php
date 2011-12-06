@@ -210,7 +210,10 @@ class File_ft extends EE_Fieldtype {
 	 */
 	function replace_tag_catchall($file_info, $params = array(), $tagdata = FALSE, $modifier)
 	{
-		$file_info['path'] .= '_'.$modifier.'/';
+		if ($modifier)
+		{
+			$file_info['path'] .= '_'.$modifier.'/';	
+		}
 
 		return $this->replace_tag($file_info, $params, $tagdata);
 	}
