@@ -293,9 +293,9 @@ class File_field {
 	 */
 	public function parse($data)
 	{
+		$this->EE->load->model('file_model');
+
 		$file_dirs = $this->_file_dirs();
-		
-		$this_dir_id = 0;
 		
 		// If the file field is in the "{filedir_n}image.jpg" format
 		if (preg_match('/^{filedir_(\d+)}/', $data, $matches))
@@ -304,28 +304,34 @@ class File_field {
 			$path = substr($data, 0, 10 + strlen($matches[1]));
 			
 			// Set upload directory ID and file name
-			$this_dir_id = $matches[1];
-			$data = str_replace($matches[0], '', $data);
+			$dir_id = $matches[1];
+			$file_name = str_replace($matches[0], '', $data);
+			
+			$file = $this->EE->file_model->get_files_by_name($file_name, $dir_id)->row_array();
 		}
 		// If file field is just a file ID
 		else if (is_numeric($data) && ! empty($data))
 		{
 			// Query file model on file ID
-			$this->EE->load->model('file_model');
 			$file = $this->EE->file_model->get_files_by_id($data)->row_array();
-			
-			$this_dir_id = $file['upload_location_id'];
-			$data = $file['file_name'];
 		}
-		
-		// Set other data based on what we've gathered
-		$file_data['filedir'] = $this_dir_id;
-		$file_data['path'] = (isset($file_dirs[$this_dir_id])) ? $file_dirs[$this_dir_id] : '';
-		$file_data['extension'] = substr(strrchr($data, '.'), 1);
-		$file_data['filename'] = basename($data, '.'.$file_data['extension']);
-		$file_data['url'] = $file_data['path'].$data;
-		
-		return $file_data;
+
+		if (empty($file))
+		{
+			return array();
+		}
+
+		// Set additional data based on what we've gathered
+		$file['path'] 		= (isset($file_dirs[$file['upload_location_id']])) ? $file_dirs[$file['upload_location_id']] : '';
+		$file['extension'] 	= substr(strrchr($file['file_name'], '.'), 1);
+		$file['filename'] 	= $file['file_name']; // backwards compatibility
+		$file['url'] 		= $file['path'].$file['file_name'];
+
+		$dimensions = explode(" ", $file['file_hw_original']);
+		$file['width'] 	= $dimensions[1];
+		$file['height'] = $dimensions[0];
+
+		return $file;
 	}
 	
 	// ------------------------------------------------------------------------
