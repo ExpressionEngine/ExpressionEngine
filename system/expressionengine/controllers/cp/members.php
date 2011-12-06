@@ -29,7 +29,6 @@ class Members extends CI_Controller {
 	private $english		= array('Guests', 'Banned', 'Members', 'Pending', 'Super Admins');
 	private $no_delete		= array('1', '2', '3', '4'); // Member groups that can not be deleted
 	private $perpage		= 50;  // Number of results on the "View all member" page	
-	private $pipe_length	= 5;
 	
 	/**
 	 * Constructor
@@ -130,7 +129,6 @@ class Members extends CI_Controller {
 						this.checked = true;
 					});
 				}, function (){
-					var checked_status = this.checked;
 					$("input.toggle").each(function() {
 						this.checked = false;
 					});
