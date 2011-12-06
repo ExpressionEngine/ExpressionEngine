@@ -331,6 +331,15 @@ class File_field {
 		$file['width'] 	= $dimensions[1];
 		$file['height'] = $dimensions[0];
 
+		// Make the URLs of any manipulated versions available via e.g. {url:small}
+		$manipulations = $this->EE->file_model->get_dimensions_by_dir_id($file['upload_location_id'])->result_array();
+
+		foreach($manipulations as $m)
+		{
+			$file['url:'.$m['short_name']] = $file['path'].'_'.$m['short_name'].'/'.$file['file_name'];
+
+		}
+
 		return $file;
 	}
 	
