@@ -100,7 +100,7 @@ class File_ft extends EE_Fieldtype {
 	 */
 	function pre_process($data)
 	{
-		return $this->EE->file_field->parse($data);
+		return $this->EE->file_field->parse_field($data);
 	}
 	
 	// --------------------------------------------------------------------

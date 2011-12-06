@@ -63,7 +63,7 @@ class File_field {
 		// Parse field data
 		if ( ! empty($data))
 		{
-			$vars = $this->parse($data);
+			$vars = $this->parse_field($data);
 			$vars['filename'] = $vars['filename'].'.'.$vars['extension'];
 		}
 		
@@ -291,7 +291,7 @@ class File_field {
 	 * @param	string $data Field contents
 	 * @return	array Information about file and upload directory
 	 */
-	public function parse($data)
+	public function parse_field($data)
 	{
 		$file_dirs = $this->_file_dirs();
 		
@@ -308,7 +308,7 @@ class File_field {
 			$data = str_replace($matches[0], '', $data);
 		}
 		// If file field is just a file ID
-		else if (is_numeric($data) && ! empty($data))
+		else if (! empty($data) && is_numeric($data))
 		{
 			// Query file model on file ID
 			$this->EE->load->model('file_model');
