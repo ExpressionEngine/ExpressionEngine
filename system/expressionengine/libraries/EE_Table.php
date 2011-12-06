@@ -170,6 +170,7 @@ class EE_Table extends CI_Table {
 		// set our initial offset
 		$this->page_offset = $settings['offset'];
 		
+		$this->raw_data = $data['rows'];
 		$this->set_data($data['rows']);
 
 		$data['pagination_html'] = $this->_create_pagination($data);
@@ -247,10 +248,18 @@ class EE_Table extends CI_Table {
 		// by the CI generate function. Unfortunately that means we need to
 		// reorder it to match our columns. Easy enough, simply overwrite
 		// the column config. @todo check performance
+		$ordered_columns = array_keys($this->column_config);
+		
 		foreach ($table_data as &$row)
 		{
-			$row = array_values(array_merge($this->column_config, $row));
-			$row = $this->_prep_args($row);
+			$new_row = array();
+			
+			foreach ($ordered_columns as $key)
+			{
+				$new_row[] = (isset($row[$key])) ? $row[$key] : '';
+			}
+			
+			$row = $this->_prep_args($new_row);
 		}
 		
 		$this->rows = $table_data;
@@ -293,12 +302,23 @@ class EE_Table extends CI_Table {
 					$html = (isset($config['html'])) ? (bool) $config['html'] : FALSE;
 				}
 				
-				$temp .= $this->template['cell_'.$k.'start'];
-				$temp .= $html ? '{{html '.$column.'}}' : '${'.$column.'}';
-				$temp .= $this->template['cell_'.$k.'end'];
+				// handle data of array('data' => 'content', 'attr' => 'value')
+				$temp .= '{{if $.isPlainObject('.$column.')}}';
+					$temp .= substr($this->template['cell_'.$k.'start'], 0, -1);
+					$temp .= '{{each '.$column.'}}';
+						$temp .= '{{if $index != "data"}} ${$index}="${$value}" {{/if}}';
+					$temp .= '{{/each}}';
+					$temp .= '>';
+					$temp .= $html ? '{{html '.$column.'.data}}' : '${'.$column.'.data}';
+				$temp .= '{{else}}';
+					$temp .= $this->template['cell_'.$k.'start'];
+					$temp .= $html ? '{{html '.$column.'}}' : '${'.$column.'}';
+				$temp .= '{{/if}}';
+				
+				$temp .= $this->template['cell_'.$k.'end']."\n";
 			}
 
-			$temp .= $this->template['row_'.$k.'end'];
+			$temp .= $this->template['row_'.$k.'end'];			
 			$$var = $temp;
 		}
 		
@@ -330,7 +350,8 @@ class EE_Table extends CI_Table {
 			'no_results'	=> $this->no_results,
 			'pagination'	=> $this->pagination_tmpl,
 			'uniqid'		=> $this->uniqid,
-			'sort'			=> $this->sort
+			'sort'			=> $this->sort,
+			'rows'			=> $this->raw_data
 		);
 		
 		$table_config_data = 'data-table_config="'.form_prep($this->EE->javascript->generate_json($jq_config, TRUE)).'"';
