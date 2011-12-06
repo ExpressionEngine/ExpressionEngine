@@ -70,8 +70,20 @@ class EE_Logger {
 		);
 	}
 	
+	// --------------------------------------------------------------------
+	
 	/**
 	 * Log a function as deprecated
+	 *
+	 * This function is to be called from a function that we plan to
+	 * deprecate. The only parameter passed is the version number the
+	 * function was deprecated in order to pass that along to the user.
+	 * Other information, such as the actual name of the function and
+	 * where it was called from is determined by PHP's debug_backtrace
+	 * function.
+	 *
+	 * From there, the use of the deprecated method is logged in the
+	 * developer log for Super Admin review.
 	 *
 	 * @param string $version Version function was deprecated
 	 * @return void
@@ -86,14 +98,16 @@ class EE_Logger {
 		// Index 1: function that called deprecated(), i.e. the function that is deprecated
 		// Index 2: function that called the function that is deprecated
 		
+		// Information we are capturing from the incident
 		$deprecated = array(
-			'function'	=> $backtrace[1]['function'],
-			'called_by'	=> $backtrace[2]['function'],
-			'line'		=> $backtrace[1]['line'], // Line where 'function' was called
-			'file'		=> $backtrace[1]['file'], // File where 'function' was called 
-			'since'		=> $version
+			'function'	=> $backtrace[1]['function'],	// Name of deprecated function
+			'called_by'	=> $backtrace[2]['function'],	// Name of function where 'function' was called
+			'line'		=> $backtrace[1]['line'],		// Line where 'function' was called
+			'file'		=> $backtrace[1]['file'],		// File where 'function' was called 
+			'since'		=> $version						// Version function was deprecated
 		);
 		
+		// Just recklessly output the data we've gathered
 		echo 'Deprecated method "'.$deprecated['function']
 			.'" called by function "'.$deprecated['called_by']
 			.'" on line '.$deprecated['line']
