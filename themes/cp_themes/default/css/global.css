@@ -3435,8 +3435,7 @@ table.mainTable tr.comment-row-expanded td:last-child
 	border-left: 0px; 
 }
 
-table.mainTable tr.comment-row-main a:link {
-color: #5f6c74;
+table.mainTable a.less_important_link:link {
 	text-decoration: underline;
 }
 
