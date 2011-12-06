@@ -11,7 +11,7 @@ $.fn.toggle_all = function() {
 		var $table = $(this);
 		
 		// Loop through each selected header with a checkbox
-		$.each($table.find('th:has(input[type=checkbox])'), function(index, val) {
+		$table.find('th:has(input[type=checkbox])').each(function(index, val) {
 			
 			// Name the table header, figure out it's index, get the header
 			// checkbox, and select all the data
@@ -22,17 +22,17 @@ $.fn.toggle_all = function() {
 
 			// Listen for clicks to the header checkbox
 			$header_checkbox.click(function(event) {
-				var checked = $(this).is(':checked');
-				$table_data.attr('checked', checked);
+				var checked = $(this).prop('checked');
+				$table_data.prop('checked', checked);
 			});
 
 			// Also listen to checks on the normal checkboxes, to see if all of
 			// them have been (un)checked
 			$table_data.click(function(event) {
 				if ($table_data.size() == $table.find('td:nth-child('+ (column + 1) +') input[type=checkbox]:checked').size()) {
-					$header_checkbox.attr('checked', true);
+					$header_checkbox.prop('checked', true);
 				} else if ($table.find('td:nth-child('+ (column + 1) +') input[type=checkbox]:checked').size() == 0) {
-					$header_checkbox.attr('checked', false);
+					$header_checkbox.prop('checked', false);
 				};
 			});
 		});
