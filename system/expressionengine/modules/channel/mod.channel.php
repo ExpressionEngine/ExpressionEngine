@@ -3973,7 +3973,7 @@ class Channel {
 								}
 								
 								$this->EE->load->library('file_field');
-								$cat_image = $this->EE->file_field->parse($v[3]);
+								$cat_image = $this->EE->file_field->parse_field($v[3]);
 								
 								$cat_vars = array('category_name'			=> $v[2],
 												  'category_url_title'		=> $v[6],
@@ -5463,7 +5463,7 @@ class Channel {
 				$chunk = $this->EE->TMPL->tagdata;
 				
 				$this->EE->load->library('file_field');
-				$cat_image = $this->EE->file_field->parse($val[5]);
+				$cat_image = $this->EE->file_field->parse_field($val[5]);
 				
 				$cat_vars = array('category_name'			=> $val[3],
 								  'category_url_title'		=> $val[6],
@@ -5905,7 +5905,7 @@ class Channel {
 						$chunk = $cat_chunk;
 						
 						$this->EE->load->library('file_field');
-						$cat_image = $this->EE->file_field->parse($row['cat_image']);
+						$cat_image = $this->EE->file_field->parse_field($row['cat_image']);
 						
 						$cat_vars = array('category_name'			=> $row['cat_name'],
 										  'category_url_title'		=> $row['cat_url_title'],
@@ -6314,7 +6314,7 @@ class Channel {
 				$chunk = $template;
 				
 				$this->EE->load->library('file_field');
-				$cat_image = $this->EE->file_field->parse($val[2]);
+				$cat_image = $this->EE->file_field->parse_field($val[2]);
 				
 				$cat_vars = array('category_name'			=> $val[1],
 								  'category_url_title'		=> $val[4],
@@ -6497,7 +6497,7 @@ class Channel {
 				$chunk = $template;
 				
 				$this->EE->load->library('file_field');
-				$cat_image = $this->EE->file_field->parse($val[2]);
+				$cat_image = $this->EE->file_field->parse_field($val[2]);
 				
 				$cat_vars = array('category_name'			=> $val[1],
 								  'category_url_title'		=> $val[4],
@@ -6847,7 +6847,7 @@ class Channel {
 		$row = $query->row_array();
 
 		$this->EE->load->library('file_field');
-		$cat_image = $this->EE->file_field->parse($query->row('cat_image'));
+		$cat_image = $this->EE->file_field->parse_field($query->row('cat_image'));
 		
 		$cat_vars = array('category_name'			=> $query->row('cat_name'),
 						  'category_description'	=> $query->row('cat_description'),
