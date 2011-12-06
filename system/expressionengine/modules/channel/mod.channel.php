@@ -4840,6 +4840,7 @@ class Channel {
 
 				$params = array();
 				$parse_fnc = 'replace_tag';
+				$parse_fnc_catchall = 'replace_tag_catchall';
 				$replace = $key;
 
 				if (($spc = strpos($key, ' ')) !== FALSE)
@@ -4850,7 +4851,9 @@ class Channel {
 				
 				if (($cln = strpos($key, ':')) !== FALSE)
 				{
-					$parse_fnc = 'replace_'.substr($key, $cln + 1);
+					$modifier = substr($key, $cln + 1);
+
+					$parse_fnc = 'replace_'.$modifier;
 					$val = $key = substr($key, 0, $cln);
 				}
 
@@ -4871,11 +4874,14 @@ class Channel {
 						{
 							$this->EE->api_channel_fields->apply('_init', array(array('row' => $row)));
 							$data = $this->EE->api_channel_fields->apply('pre_process', array($row['field_id_'.$field_id]));
-							
-							
+
 							if ($this->EE->api_channel_fields->check_method_exists($parse_fnc))
 							{
 								$entry = $this->EE->api_channel_fields->apply($parse_fnc, array($data, $params, FALSE));
+							}
+							elseif ($this->EE->api_channel_fields->check_method_exists($parse_fnc_catchall))
+							{
+								$entry = $this->EE->api_channel_fields->apply($parse_fnc_catchall, array($data, $params, FALSE, $modifier));
 							}
 							else
 							{							
