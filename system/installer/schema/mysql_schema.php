@@ -1309,7 +1309,22 @@ class EE_Schema {
 				`wm_shadow_distance` int(3) unsigned DEFAULT NULL,
 				`wm_shadow_color` varchar(7) DEFAULT NULL,
 				PRIMARY KEY (`wm_id`)
-		)";	
+		)";
+		
+		// Developer log table
+		$Q[] = "CREATE TABLE `exp_developer_log` (
+				`log_id` int(4) unsigned NOT NULL AUTO_INCREMENT,
+				`timestamp` int(10) unsigned NOT NULL,
+				`triggered_by_member_id` int(10) unsigned NOT NULL default 0,
+				`viewed` char(1) NOT NULL DEFAULT 'n',
+				`description` text,
+				`function` varchar(100) NULL,
+				`called_by` varchar(100) NULL,
+				`line` int(10) unsigned NULL,
+				`file` varchar(255) NULL,
+				`deprecated_since` varchar(10) NULL,
+				PRIMARY KEY (`log_id`)
+		)";
 		
 		// --------------------------------------------------------------------
 		// --------------------------------------------------------------------
