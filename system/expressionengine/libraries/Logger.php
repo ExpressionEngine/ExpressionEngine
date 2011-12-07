@@ -100,18 +100,71 @@ class EE_Logger {
 		
 		// Information we are capturing from the incident
 		$deprecated = array(
-			'function'	=> $backtrace[1]['function'],	// Name of deprecated function
-			'called_by'	=> $backtrace[2]['function'],	// Name of function where 'function' was called
-			'line'		=> $backtrace[1]['line'],		// Line where 'function' was called
-			'file'		=> $backtrace[1]['file'],		// File where 'function' was called 
-			'since'		=> $version						// Version function was deprecated
+			'function'			=> $backtrace[1]['function'],	// Name of deprecated function
+			'called_by'			=> $backtrace[2]['function'],	// Name of function where 'function' was called
+			'line'				=> $backtrace[1]['line'],		// Line where 'function' was called
+			'file'				=> $backtrace[1]['file'],		// File where 'function' was called 
+			'deprecated_since'	=> $version						// Version function was deprecated
 		);
 		
-		// Just recklessly output the data we've gathered
-		echo 'Deprecated method "'.$deprecated['function']
-			.'" called by function "'.$deprecated['called_by']
-			.'" on line '.$deprecated['line']
-			.' of '.$deprecated['file'] . '<br />';
+		$this->developer($deprecated, TRUE);
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Log an item in the Developer Log
+	 *
+	 * @param	mixed $data String containing log message, or array of data
+	 *		such as information for a deprecation warning.
+	 * @param	bool $update If set to TRUE, function will not add the log
+	 *		item if one like it already exists. It will instead set the
+	 *		viewed status to unviewed and update the timestamp on the
+	 *		existing log item.
+	 * @return	int ID of inserted or updated record
+	 */
+	public function developer($data, $update = FALSE)
+	{
+		$log_data = array();
+		
+		// If we were passed an array, add its contents to $log_data
+		if (is_array($data))
+		{
+			$log_data = array_merge($log_data, $data);
+		}
+		// Otherwise it's probably a string, stick it in the 'description' field
+		else
+		{
+			$log_data['description'] = $data;
+		}
+		
+		// If this log is not to be duplicated
+		if ($update)
+		{
+			// Look to see if this exact log data is already in the database
+			$this->EE->db->where($log_data);
+			$this->EE->db->order_by('log_id', 'desc');
+			$duplicates = $this->EE->db->get('developer_log')->row_array();
+			
+			if (count($duplicates))
+			{
+				// Set log item as unviewed and update the timestamp
+				$duplicates['viewed'] = 'n';
+				$duplicates['timestamp'] = $this->EE->localize->now;
+				
+				$this->EE->db->where('log_id', $duplicates['log_id']);
+				$this->EE->db->update('developer_log', $duplicates);
+				
+				return $duplicates['log_id'];
+			}
+		}
+		
+		// If we got here, we're inserting a new item into the log
+		$log_data['timestamp'] = $this->EE->localize->now;
+		
+		$this->EE->db->insert('developer_log', $log_data);
+		
+		return $this->EE->db->insert_id();
 	}
 }
 // END CLASS
