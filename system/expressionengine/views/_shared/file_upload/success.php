@@ -25,11 +25,11 @@
 		<?php if ($file['is_image']): ?>
 			<tr class="odd">
 				<th><?=lang('height')?></th>
-				<td><?= $file['file_height'] ?>px</td>
+				<td><?= $file['dimensions'][0] ?>px</td>
 			</tr>
 			<tr>
 				<th><?=lang('width')?></th>
-				<td><?= $file['file_width'] ?>px</td>
+				<td><?= $file['dimensions'][1] ?>px</td>
 			</tr>
 		<?php endif ?>
 	</table>	

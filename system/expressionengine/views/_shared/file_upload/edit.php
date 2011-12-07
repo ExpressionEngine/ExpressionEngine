@@ -21,10 +21,10 @@
 					<?php endforeach ?>
 				</ul>
 			</div> <!-- #file_metadata -->
-			<?php if ($is_image): ?>
+			<?php if ($file['is_image']): ?>
 				<div id="image_tools" class="group">
 					<div class="image group">
-						<img src="<?= $thumb ?>" alt="<?= $file['file_name'] ?>" />
+						<img src="<?= $file['thumb'] ?>" alt="<?= $file['file_name'] ?>" />
 					</div> <!-- .image -->
 					<ul>
 						<li><label><input type="radio" name="image_tool" value="" checked /> <?=lang('no_change')?></label></li>
@@ -34,11 +34,11 @@
 								<ul>
 									<li>
 										<?=lang('resize_height', 'resize_height')?>
-										<?=form_input('resize_height', $dimensions[0], 'id="resize_height"')?>
+										<?=form_input('resize_height', $file['dimensions'][0], 'id="resize_height"')?>
 									</li>
 									<li>
 										<?=lang('resize_width', 'resize_width')?>
-										<?=form_input('resize_width', $dimensions[1], 'id="resize_width"')?>
+										<?=form_input('resize_width', $file['dimensions'][1], 'id="resize_width"')?>
 									</li>
 								</ul>
 							</div>
