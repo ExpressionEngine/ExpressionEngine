@@ -73,46 +73,6 @@ class EE_Logger {
 	// --------------------------------------------------------------------
 	
 	/**
-	 * Log a function as deprecated
-	 *
-	 * This function is to be called from a function that we plan to
-	 * deprecate. The only parameter passed is the version number the
-	 * function was deprecated in order to pass that along to the user.
-	 * Other information, such as the actual name of the function and
-	 * where it was called from is determined by PHP's debug_backtrace
-	 * function.
-	 *
-	 * From there, the use of the deprecated method is logged in the
-	 * developer log for Super Admin review.
-	 *
-	 * @param string $version Version function was deprecated
-	 * @return void
-	 */
-	function deprecated($version = NULL)
-	{
-		// debug_backtrace() will tell us what method is deprecated and what called it
-		$backtrace = debug_backtrace();
-		
-		// Explaination of below array indicies:
-		// Index 0: deprecated function (this one)
-		// Index 1: function that called deprecated(), i.e. the function that is deprecated
-		// Index 2: function that called the function that is deprecated
-		
-		// Information we are capturing from the incident
-		$deprecated = array(
-			'function'			=> $backtrace[1]['function'],	// Name of deprecated function
-			'called_by'			=> $backtrace[2]['function'],	// Name of function where 'function' was called
-			'line'				=> $backtrace[1]['line'],		// Line where 'function' was called
-			'file'				=> $backtrace[1]['file'],		// File where 'function' was called 
-			'deprecated_since'	=> $version						// Version function was deprecated
-		);
-		
-		$this->developer($deprecated, TRUE);
-	}
-	
-	// --------------------------------------------------------------------
-	
-	/**
 	 * Log an item in the Developer Log
 	 *
 	 * @param	mixed $data String containing log message, or array of data
@@ -165,6 +125,48 @@ class EE_Logger {
 		$this->EE->db->insert('developer_log', $log_data);
 		
 		return $this->EE->db->insert_id();
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Log a function as deprecated
+	 *
+	 * This function is to be called from a function that we plan to
+	 * deprecate. The only parameter passed is the version number the
+	 * function was deprecated in order to pass that along to the user.
+	 * Other information, such as the actual name of the function and
+	 * where it was called from is determined by PHP's debug_backtrace
+	 * function.
+	 *
+	 * From there, the use of the deprecated method is logged in the
+	 * developer log for Super Admin review.
+	 *
+	 * This not public to third-party developers.
+	 *
+	 * @param	string $version Version function was deprecated
+	 * @return	void
+	 */
+	function _deprecated($version = NULL)
+	{
+		// debug_backtrace() will tell us what method is deprecated and what called it
+		$backtrace = debug_backtrace();
+		
+		// Explaination of below array indicies:
+		// Index 0: deprecated function (this one)
+		// Index 1: function that called deprecated(), i.e. the function that is deprecated
+		// Index 2: function that called the function that is deprecated
+		
+		// Information we are capturing from the incident
+		$deprecated = array(
+			'function'			=> $backtrace[1]['function'],	// Name of deprecated function
+			'called_by'			=> $backtrace[2]['function'],	// Name of function where 'function' was called
+			'line'				=> $backtrace[1]['line'],		// Line where 'function' was called
+			'file'				=> $backtrace[1]['file'],		// File where 'function' was called 
+			'deprecated_since'	=> $version						// Version function was deprecated
+		);
+		
+		$this->developer($deprecated, TRUE);
 	}
 }
 // END CLASS
