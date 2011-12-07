@@ -180,15 +180,6 @@ class Content_files_modal extends CI_Controller {
 		// Check to see if they want to increment or replace
 		$file_name_source =  ($this->config->item('filename_increment') == 'y') ? 'file_name' : 'orig_name';
 		
-		$orig_name = explode('.' , $upload_response[$file_name_source]);
-		$vars = array(
-			'file'		=> $upload_response,
-			'file_json'	=> $this->javascript->generate_json($upload_response, TRUE),
-			'file_ext'	=> array_pop($orig_name),
-			'orig_name'	=> implode('.', $orig_name),
-			'date'		=> date('M d Y - H:ia')
-		);
-		
 		// Check to see if the file needs to be renamed
 		// It needs to be renamed if the file names are different and the 
 		// length of the names are different too because clean_filename
@@ -201,9 +192,27 @@ class Content_files_modal extends CI_Controller {
 			$upload_response['file_name'] != $upload_response['orig_name']
 		)
 		{
-			$vars['temp_filename'] = $upload_response['orig_name'];
+			// Explode the original name so we have something to work with if they
+			// need to rename the file later
+			$original_name	= explode('.' , $upload_response[$file_name_source]);
+			$file_extension	= array_pop($original_name);
+			$original_name	= implode('.', $original_name);
+			
+			$vars = array(
+				'file_id'			=> $upload_response['file_id'],
+				'file_json'			=> $this->javascript->generate_json($upload_response, TRUE),
+				'file_extension'	=> $file_extension,
+				'original_name'		=> $original_name,
+			);
+			
 			return $this->load->view('_shared/file_upload/rename', $vars);
  		}
+		
+		$vars = array(
+			'file'		=> $upload_response,
+			'file_id'	=> $upload_response['file_id'],
+			'file_json'	=> $this->javascript->generate_json($upload_response, TRUE)
+		);
 		
 		return $this->load->view('_shared/file_upload/success', $vars);
 	}
@@ -212,7 +221,7 @@ class Content_files_modal extends CI_Controller {
 	
 	/**
 	 * Attempts to rename the file, goes back to rename if it couldn't, sends
-	 * the user to succes if everything went to plan.
+	 * the user to success if everything went to plan.
 	 * 
 	 * Called via content_files::upload_file if the file already exists
 	 */
@@ -226,7 +235,7 @@ class Content_files_modal extends CI_Controller {
 		$new_file_base = substr($new_file_name, 0, -strlen('.'.$this->input->post('file_ext')));
 		
 		$temp_filename = basename($this->filemanager->clean_filename(
-			$this->input->post('temp_filename'),
+			$this->input->post('original_name'),
 			$this->input->post('directory_id')
 		));
 		
@@ -237,17 +246,21 @@ class Content_files_modal extends CI_Controller {
 			$temp_filename
 		);
 		
+		// If renaming the file was unsuccessful try again
 		if ($rename_file['success'] === FALSE && $rename_file['error'] == 'retry')
 		{
 			$file['file_id'] = $rename_file['file_id'];
 			$file['upload_location_id'] = $this->input->post('directory_id');
 				
 			$vars = array(
-				'file_json' => $this->input->post('file_json'),
-				'file_ext' => $this->input->post('file_ext'),
+				'file_json'		=> $this->input->post('file_json'),
+				'file_ext'		=> $this->input->post('file_ext'),
 				'temp_filename' => $rename_file['replace_filename'],
-				'orig_name' => $new_file_base,
-				'file' => array('file_id' => $rename_file['file_id'], 'upload_location_id' => $this->input->post('directory_id'))
+				'orig_name'		=> $new_file_base,
+				'file'			=> array(
+					'file_id' => $rename_file['file_id'], 
+					'upload_location_id' => $this->input->post('directory_id')
+				)
 			);
 
 			return $this->load->view('_shared/file_upload/rename', $vars);
@@ -267,43 +280,62 @@ class Content_files_modal extends CI_Controller {
 		// If it's a different type of error, show it
 		else
 		{
-			
 			return $this->load->view('_shared/file_upload/rename', $rename_file['error']);
 		}
 	}
-	
+		
 	// ------------------------------------------------------------------------
 	
 	public function edit_file()
 	{
-		$this->load->library('form_validation');
-		$this->form_validation->set_error_delimiters('<div class="notice">', '</div>');
-		$this->form_validation->set_rules('title', 'lang:title', 'trim|required'); 
+		$file_id = $this->input->post('file_id');
 		
-		// Get the updated data from the input
-		$updated_data = array(
-			'description' 	=> $this->input->post('description', ''),
-			'credit'		=> $this->input->post('credit', ''),
-			'location'		=> $this->input->post('location', '')
+		// Attempt to save the file
+		$this->_save_file();
+		
+		// Retrieve the file data
+		$vars['file'] = $this->file_model->get_files_by_id($file_id)->row_array();
+		
+		// Determine if we're working with an image or not
+		$vars['is_image'] = $this->filemanager->is_image($vars['file']['mime_type']);
+		
+		// Create array of hidden inputs
+		$vars['hidden'] = array(
+			'file_id'		=> $file_id,
+			'file_name'		=> $vars['file']['file_name'],
+			'upload_dir'	=> $vars['file']['upload_location_id'],
+			'action'		=> ''
 		);
 		
-		// Only add title if it's not blank
-		if (($title = $this->input->post('title', '')) != '')
+		// Get thumbnail
+		$thumb_info = $this->filemanager->get_thumb(
+			$vars['file']['file_name'], 
+			$vars['file']['upload_location_id']
+		);
+		$vars['thumb'] = $thumb_info['thumb'];
+		
+		// Add dimensions if we're dealing with an image
+		if ($vars['is_image'])
 		{
-			$updated_data['title'] = $this->input->post('title');
+			$vars['dimensions']	= explode(' ', $vars['file']['file_hw_original']);
+			
+			$this->javascript->set_global(array(
+				'filemanager'	=> array(
+					'image_height'				=> $vars['dimensions'][0],
+					'image_width'				=> $vars['dimensions'][1],
+					'resize_over_confirmation' 	=> lang('resize_over_confirmation')
+				),
+			));
 		}
 		
-		// Save the file
-		if ($this->input->post('title') !== FALSE AND $this->form_validation->run())
-		{
-			$vars = $this->_save_file($updated_data);
-		}
-		else
-		{
-			$vars = $this->_get_file_from_json(array(), $updated_data);
-		}
+		// List out the tabs
+		$vars['tabs'] = array('file_metadata');
 		
-		$vars['tabs'] = array('file_metadata', 'image_tools');
+		// Add image tools if we're dealing with an image
+		if ($vars['is_image'])
+		{
+			array_push($vars['tabs'], 'image_tools');
+		}
 		
 		// Create a list of metadata fields
 		$vars['metadata_fields'] = array(
@@ -317,31 +349,9 @@ class Content_files_modal extends CI_Controller {
 			'location'		=> form_input('location', $vars['file']['location'])
 		);
 		
-		$vars['file_data'] = array(
-			'upload_dir'	=> $vars['file']['upload_location_id'], 
-			'file'			=> $vars['file']['file_name'],
-			'file_name'		=> $vars['file']['file_name'],
-			'file_id'		=> $vars['file']['file_id'],
-			'action'		=> ''
-		);
-		
-		// This isn't in the file_data variable because of a bug that
-		// wouldn't properly encode the same json object paseed twice
-		// to form_open()
-		
-		$vars['file_json_input'] = form_hidden('file_json', $vars['file_json']);
-		
 		// Load javascript libraries
 		$this->cp->add_js_script(array(
 			'file'		=> 'files/edit_file'
-		));
-		
-		$this->javascript->set_global(array(
-			'filemanager'	=> array(
-				'image_width'				=> $vars['file']['file_width'],
-				'image_height'				=> $vars['file']['file_height'],
-				'resize_over_confirmation' 	=> lang('resize_over_confirmation')
-			),
 		));
 		
 		$this->javascript->compile();
@@ -351,34 +361,40 @@ class Content_files_modal extends CI_Controller {
 	// ------------------------------------------------------------------------
 	
 	/**
-	 * Save the file metadata to the db and do the image processing if needed
-	 * 
-	 * @return array Associative array containing file data, json_encoded file 
-	 * 		data, and the current date/time
+	 * Saves the file if we've submitted the edit form and validation passes
 	 */
-	private function _save_file($file_data)
+	private function _save_file()
 	{
-		$parameters = array();
+		$this->load->library('form_validation');
+		$this->form_validation->set_error_delimiters('<div class="notice">', '</div>');
+		$this->form_validation->set_rules('title', 'lang:title', 'trim|required'); 
 		
-		// Merge in file data
-		$updated_data = array_merge(
-			$file_data,
-			array('file_id' => $this->input->post('file_id'))
-		);
-		
-		$this->file_model->save_file($updated_data);
-		
-		// The form posts to this method, so if POST data is present
-		// send to _do_image_processing to, well, do the image processing
-		if ( ! empty($_POST['action']))
+		// Save the file if title has been posted (success form doesn't have 
+		// title, so it wouldn't even bother saving data)
+		if ($this->input->post('title') !== FALSE AND $this->form_validation->run())
 		{
-			$response = $this->filemanager->_do_image_processing(FALSE);
-			$parameters['dimensions'] = $response['dimensions'];
+			$updated_data = array(
+				'file_id'		=> $this->input->post('file_id'),
+				'description' 	=> $this->input->post('description', ''),
+				'credit'		=> $this->input->post('credit', ''),
+				'location'		=> $this->input->post('location', '')
+			);
+			
+			// Only add title if it's not blank
+			if (($title = $this->input->post('title', '')) != '')
+			{
+				$updated_data['title'] = $this->input->post('title');
+			}
+			
+			$this->file_model->save_file($updated_data);
+
+			// The form posts to this method, so if POST data is present
+			// send to _do_image_processing to, well, do the image processing
+			if ( ! empty($_POST['action']))
+			{
+				$this->filemanager->_do_image_processing(FALSE);
+			}
 		}
-		
-		$vars = $this->_get_file_from_json($parameters, $updated_data);
-		
-		return $vars;
 	}
 	
 	// ------------------------------------------------------------------------
@@ -398,53 +414,53 @@ class Content_files_modal extends CI_Controller {
 	 */
 	private function _get_file_from_json($parameters = array(), $overrides = array())
 	{
-		if ( ! function_exists('json_decode'))
-		{
-			$this->load->library('Services_json');
-		}
-		
-		// Get the JSON and decode it
-		$file_json = $this->input->post('file_json');
-		$file = (array) json_decode($file_json);
-		$file['upload_directory_prefs'] = (array) $file['upload_directory_prefs'];
-		
-		// Check for overrides
-		if (! empty($overrides) AND is_array($overrides))
-		{
-			$file = array_merge($file, $overrides);
-		}
-		
-		// If the file is being renamed, use the new file name and responze
-		// from rename_file to update the data
-		if (isset($parameters['new_file_name']) AND isset($parameters['rename_file_response']))
-		{
-			// Replace the filename and thumb (everything else should have stayed the same)
-			$thumb_info = $this->filemanager->get_thumb(
-				$parameters['new_file_name'], 
-				$file['upload_location_id']
-			);
-
-			$file['file_id']	= $parameters['rename_file_response']['file_id'];
-			$file['file_name'] 	= $parameters['new_file_name'];
-			$file['name'] 		= $parameters['new_file_name'];
-			$file['thumb'] 		= $thumb_info['thumb'];
-			$file['replace']	= $parameters['rename_file_response']['replace'];
-		}
-		
-		// If dimensions are passed in, update the height and width
-		if (isset($parameters['dimensions']))
-		{
-			$file['file_height'] = $parameters['dimensions']['height'];
-			$file['file_width'] = $parameters['dimensions']['width'];
-			$file['file_hw_original'] = $parameters['dimensions']['height'] . ' ' . $parameters['dimensions']['width'];
-		}
-		
-		// Prep the vars for the success and failure pages
-		return array(
-			'file'		=> $file,
-			'file_json'	=> $this->javascript->generate_json($file, TRUE),
-			'date'		=> date('M d Y - H:ia')
-		);
+		// if ( ! function_exists('json_decode'))
+		// {
+		// 	$this->load->library('Services_json');
+		// }
+		// 
+		// // Get the JSON and decode it
+		// $file_json = $this->input->post('file_json');
+		// $file = (array) json_decode($file_json);
+		// $file['upload_directory_prefs'] = (array) $file['upload_directory_prefs'];
+		// 
+		// // Check for overrides
+		// if (! empty($overrides) AND is_array($overrides))
+		// {
+		// 	$file = array_merge($file, $overrides);
+		// }
+		// 
+		// // If the file is being renamed, use the new file name and responze
+		// // from rename_file to update the data
+		// if (isset($parameters['new_file_name']) AND isset($parameters['rename_file_response']))
+		// {
+		// 	// Replace the filename and thumb (everything else should have stayed the same)
+		// 	$thumb_info = $this->filemanager->get_thumb(
+		// 		$parameters['new_file_name'], 
+		// 		$file['upload_location_id']
+		// 	);
+		// 
+		// 	$file['file_id']	= $parameters['rename_file_response']['file_id'];
+		// 	$file['file_name'] 	= $parameters['new_file_name'];
+		// 	$file['name'] 		= $parameters['new_file_name'];
+		// 	$file['thumb'] 		= $thumb_info['thumb'];
+		// 	$file['replace']	= $parameters['rename_file_response']['replace'];
+		// }
+		// 
+		// // If dimensions are passed in, update the height and width
+		// if (isset($parameters['dimensions']))
+		// {
+		// 	$file['file_height'] = $parameters['dimensions']['height'];
+		// 	$file['file_width'] = $parameters['dimensions']['width'];
+		// 	$file['file_hw_original'] = $parameters['dimensions']['height'] . ' ' . $parameters['dimensions']['width'];
+		// }
+		// 
+		// // Prep the vars for the success and failure pages
+		// return array(
+		// 	'file'		=> $file,
+		// 	'file_json'	=> $this->javascript->generate_json($file, TRUE),
+		// 	'date'		=> date('M d Y - H:ia')
+		// );
 	}	
 }
 /* End File: content_files_modal.php */

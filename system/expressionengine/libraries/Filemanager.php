@@ -2661,6 +2661,11 @@ class Filemanager {
 	 *
 	 * Figures out the full path to the file, and sends it to the appropriate
 	 * method to process the image.
+	 * 
+	 * Needs a few POST variables:
+	 * 	- file_id: ID of the file
+	 * 	- file_name: name of the file without full path
+	 * 	- upload_dir: Directory ID
 	 */
 	public function _do_image_processing($redirect = TRUE)
 	{
