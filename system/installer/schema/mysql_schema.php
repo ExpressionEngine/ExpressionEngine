@@ -1313,10 +1313,10 @@ class EE_Schema {
 		
 		// Developer log table
 		$Q[] = "CREATE TABLE `exp_developer_log` (
-				`log_id` int(4) unsigned NOT NULL AUTO_INCREMENT,
+				`log_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 				`timestamp` int(10) unsigned NOT NULL,
 				`viewed` char(1) NOT NULL DEFAULT 'n',
-				`description` text,
+				`description` text NULL,
 				`function` varchar(100) NULL,
 				`called_by` varchar(100) NULL,
 				`line` int(10) unsigned NULL,

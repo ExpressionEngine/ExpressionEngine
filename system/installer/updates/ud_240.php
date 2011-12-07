@@ -48,6 +48,7 @@ class Updater {
 		$this->_update_watermarks_table();
 		$this->_update_file_dimensions_table();
 		$this->_update_files_table();
+		$this->_add_developer_log_table();
 		
 		return TRUE;
 	}
@@ -133,6 +134,73 @@ class Updater {
 				),
 			)
 		);
+	}
+	
+	/**
+	 * Add Developer Log table
+	 *
+	 * @return	void
+	 */
+	private function _add_developer_log_table()
+	{
+		$this->EE->dbforge->add_field(
+			array(
+				'log_id' => array(
+					'type'				=> 'int',
+					'constraint'		=> 10,
+					'unsigned'			=> TRUE,
+					'auto_increment'	=> TRUE
+				),
+				'timestamp' => array(
+					'type'				=> 'int',
+					'constraint'		=> 10,
+					'unsigned'			=> TRUE
+				),
+				'viewed' => array(
+					'type'				=> 'char',
+					'constraint'		=> 1,
+					'default'			=> 'n'
+				),
+				'description' => array(
+					'type'				=> 'text',
+					'null'				=> TRUE
+				),
+				'function' => array(
+					'type'				=> 'varchar',
+					'constraint'		=> 100,
+					'null'				=> TRUE
+				),
+				'called_by' => array(
+					'type'				=> 'varchar',
+					'constraint'		=> 100,
+					'null'				=> TRUE
+				),
+				'line' => array(
+					'type'				=> 'int',
+					'constraint'		=> 10,
+					'unsigned'			=> TRUE,
+					'null'				=> TRUE
+				),
+				'file' => array(
+					'type'				=> 'varchar',
+					'constraint'		=> 255,
+					'null'				=> TRUE
+				),
+				'deprecated_since' => array(
+					'type'				=> 'varchar',
+					'constraint'		=> 10,
+					'null'				=> TRUE
+				),
+				'use_instead' => array(
+					'type'				=> 'varchar',
+					'constraint'		=> 100,
+					'null'				=> TRUE
+				)
+			)
+		);
+		
+		$this->EE->dbforge->add_key('log_id', TRUE);
+		$this->EE->dbforge->create_table('developer_log');
 	}
 }	
 /* END CLASS */
