@@ -145,9 +145,10 @@ class EE_Logger {
 	 * This not public to third-party developers.
 	 *
 	 * @param	string $version Version function was deprecated
+	 * @param	string $use_instead Function to use instead, if applicable
 	 * @return	void
 	 */
-	function _deprecated($version = NULL)
+	function _deprecated($version = NULL, $use_instead = NULL)
 	{
 		// debug_backtrace() will tell us what method is deprecated and what called it
 		$backtrace = debug_backtrace();
@@ -163,7 +164,8 @@ class EE_Logger {
 			'called_by'			=> $backtrace[2]['function'],	// Name of function where 'function' was called
 			'line'				=> $backtrace[1]['line'],		// Line where 'function' was called
 			'file'				=> $backtrace[1]['file'],		// File where 'function' was called 
-			'deprecated_since'	=> $version						// Version function was deprecated
+			'deprecated_since'	=> $version,					// Version function was deprecated
+			'use_instead'		=> $use_instead					// Function to use instead
 		);
 		
 		$this->developer($deprecated, TRUE);

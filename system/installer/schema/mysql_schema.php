@@ -1322,6 +1322,7 @@ class EE_Schema {
 				`line` int(10) unsigned NULL,
 				`file` varchar(255) NULL,
 				`deprecated_since` varchar(10) NULL,
+				`use_instead` varchar(100) NULL,
 				PRIMARY KEY (`log_id`)
 		)";
 		
