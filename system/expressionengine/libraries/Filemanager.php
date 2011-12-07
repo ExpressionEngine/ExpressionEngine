@@ -1841,7 +1841,7 @@ class Filemanager {
 		$clean_filename = basename($this->clean_filename(
 			$_FILES[$field]['name'],
 			$dir['id'], 
-			array('ignore_dupes' => FALSE)
+			array('ignore_dupes' => TRUE)
 		));
 		
 		$config = array(
@@ -1905,7 +1905,8 @@ class Filemanager {
 			'site_id'				=> $this->EE->config->item('site_id'),
 			
 			'file_name'				=> $file['file_name'],
-			'orig_name'				=> $original_filename,
+			'orig_name'				=> $original_filename, // name before any upload library processing
+			'file_data_orig_name'	=> $file['orig_name'], // name after upload lib but before duplicate checks
 			
 			'is_image'				=> $file['is_image'],
 			'mime_type'				=> $file['file_type'],
