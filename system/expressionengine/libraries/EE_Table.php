@@ -218,7 +218,7 @@ class EE_Table extends CI_Table {
 			// set defaults
 			$col = array_merge($defaults, $col);
 		}
-		
+
 		$this->set_heading($headers);
 		$this->column_config = $cols;
 	}
@@ -330,6 +330,11 @@ class EE_Table extends CI_Table {
 			if ( ! is_array($heading))
 			{
 				$heading = array('data' => $heading);
+			}
+
+			if ( ! $this->column_config[$column_k[$k]]['sort'])
+			{
+				$heading['class'] = 'no-sort';
 			}
 			
 			$heading['data-table_column'] = $column_k[$k];

@@ -776,17 +776,4 @@ Sort.prototype = {
 	}
 }
 
-
-// --------------------------------------------------------------------------
-
-// Go go go! Init all affected tables on the page
-$('table').each(function() {
-	var config;
-	
-	if ($(this).data('table_config')) {
-		config = $(this).data('table_config');
-		$(this).table(config);
-	}
-});
-
 })(jQuery);
