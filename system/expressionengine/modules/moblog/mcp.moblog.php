@@ -72,29 +72,12 @@ EOT;
 	{
 		$this->EE->load->library('table');
 
-		$this->EE->javascript->output('
-			$(".toggle_all").toggle(
-				function(){		
-					$("input.toggle").each(function() {
-						this.checked = true;
-					});
-				}, function (){
-					var checked_status = this.checked;
-					$("input.toggle").each(function() {
-						this.checked = false;
-					});
-				}
-			);
-		');
-
-		$this->EE->javascript->compile();
-
 		$this->EE->table->set_columns(array(
 			'moblog_id'			=> array('header' => array('data' => lang('id'), 'width' => '4%')),
 		    'moblog_full_name'  => array('header' => lang('moblog_view')),
 		    'check_moblog'  	=> array('header' => lang('check_moblog'), 'sort' => FALSE),
 			'_check'			=> array(
-				'header' => form_checkbox('select_all', 'true', FALSE, 'class="toggle_all"'),
+				'header' => form_checkbox('toggle_all', 'true', FALSE),
 				'sort' => FALSE
 			)
 		));
