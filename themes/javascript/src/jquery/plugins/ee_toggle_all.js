@@ -63,8 +63,7 @@ $.fn.toggle_all = function() {
 			
 			// Listen for clicks to the header checkbox
 			$(this).click(function(event) {
-				var table_data = $table.table('get_current_data'),
-					checked = $header_checkbox.prop('checked');
+				var checked = $header_checkbox.prop('checked');
 				
 				if (event.target != $header_checkbox.get(0)) {
 					checked = ! checked;
