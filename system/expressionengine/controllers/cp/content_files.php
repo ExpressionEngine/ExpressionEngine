@@ -1040,7 +1040,7 @@ class Content_files extends CI_Controller {
 		
 		$this->cp->add_js_script(array(
 			'file'		=> 'cp/files/file_manager_edit',
-			'plugin'	=> 'jcrop',
+			'plugin'	=> array('jcrop', 'ee_resize_scale'),
 			'ui'		=> 'accordion'
 		));
 		
