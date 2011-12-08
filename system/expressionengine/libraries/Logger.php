@@ -170,13 +170,47 @@ class EE_Logger {
 		$this->developer($deprecated, TRUE);
 	}
 	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Builds deprecation notice language based on data given
+	 *
+	 * @param	array $deprecated Data array of deprecated function details
+	 * @return	string Message constructed from language keys describing function deprecation
+	 */
 	function build_deprecation_language($deprecated)
 	{
-		return "Deprecated function ".$deprecated['function']."
-				called in ".$deprecated['file']."
-				on line ".$deprecated['line'].".<br />
-				Deprecated since ".$deprecated['deprecated_since'].".
-				Use ".$deprecated['use_instead']." instead.";
+		$this->EE->lang->loadfile('tools');
+		
+		// "Deprecated function %s called"
+		$message = sprintf(lang('deprecated_function'), $deprecated['function']);
+		
+		// "in %s on line %d."
+		if (isset($deprecated['file']) && isset($deprecated['line']))
+		{
+			$message .= NBS.sprintf(lang('deprecated_on_line'), $deprecated['file'], $deprecated['line']);
+		}
+		
+		if (isset($deprecated['deprecated_since']) 
+			|| isset($deprecated['deprecated_use_instead']))
+		{
+			// Add a line break if there is additional information
+			$message .= '<br />';
+			
+			// "Deprecated since %s."
+			if (isset($deprecated['deprecated_since']))
+			{
+				$message .= sprintf(lang('deprecated_since'), $deprecated['deprecated_since']);
+			}
+			
+			// "Use %s instead."
+			if (isset($deprecated['use_instead']))
+			{
+				$message .= NBS.sprintf(lang('deprecated_use_instead'), $deprecated['use_instead']);
+			}
+		}
+		
+		return $message;
 	}
 }
 // END CLASS

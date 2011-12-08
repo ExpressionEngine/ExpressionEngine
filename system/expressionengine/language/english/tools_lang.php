@@ -22,9 +22,6 @@ $lang = array(
 'view_cp_log' 			=> 'View Control Panel Log',
 'view_developer_log'	=> 'View Developer Log',
 
-'log_id'				=> 'Log ID',
-'log_message'			=> 'Message',
-
 'import_utilities' 		=> 'Import Utilities',
 'translation_tool' 		=> 'Translation Utility',
 'english'				=> 'English',
@@ -83,6 +80,14 @@ $lang = array(
 /* Translation */
 'translation_dir_unwritable' => 
 'Warning: Your translation directory is not writable.',
+
+/* Developer Log */
+'log_id'				=> 'Log ID',
+'log_message'			=> 'Message',
+'deprecated_function'	=> 'Deprecated function %s called',
+'deprecated_on_line'	=> 'in %s on line %d.',
+'deprecated_since'		=> 'Deprecated since %s.',
+'deprecated_use_instead'	=> 'Use %s instead.',
 
 
 'screen_name' =>
