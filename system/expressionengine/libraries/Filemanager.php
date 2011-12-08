@@ -1190,10 +1190,10 @@ class Filemanager {
 				@unlink($resized_path.$prefs['file_name']);
 			}		
 
-			// In the event that the size doesn't have a valid height and width, move on
+			// If the size doesn't have a valid height and width, skip resize
 			if ($size['width'] <= 0 && $size['height'] <= 0)
 			{
-				continue;
+				$size['resize_type'] = 'none';
 			}
 			
 			// If either h/w unspecified, calculate the other here
@@ -1223,7 +1223,8 @@ class Filemanager {
 			if (($force_master_dim == 'height' && $prefs['height'] < $size['height']) OR 
 				($force_master_dim == 'width' && $prefs['width'] < $size['width']) OR
 				($force_master_dim == FALSE && $prefs['width'] < $size['width']) OR 
-				($force_master_dim == FALSE && $prefs['height'] < $size['height']))
+				($force_master_dim == FALSE && $prefs['height'] < $size['height']) OR
+				$size['resize_type'] == 'none')
 			{
 				copy($config['source_image'],$config['new_image']);
 			}
@@ -2861,7 +2862,7 @@ class Filemanager {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Do image rotation.
+	 * Do image resizing.
 	 */
 	private function _do_resize($file_path)
 	{

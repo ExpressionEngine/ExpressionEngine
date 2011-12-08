@@ -2010,7 +2010,7 @@ class Content_files extends CI_Controller {
 		$fields = array(
 			'id', 'site_id', 'name', 'server_path',
 			'url', 'allowed_types', 'max_size',
-			'max_height', 'max_width', 'max_image_action', 'properties',
+			'max_width', 'max_height', 'max_image_action', 'properties',
 			'pre_format', 'post_format', 'file_properties',
 			'file_pre_format', 'file_post_format', 'batch_location',
 			'cat_group'
@@ -2128,7 +2128,7 @@ class Content_files extends CI_Controller {
 								  lang('file_upload_preferences'));
 
 		$data['upload_pref_fields1'] = array(
-							'max_size', 'max_height', 'max_width');
+							'max_size', 'max_width', 'max_height');
 
 		$data['upload_pref_fields2'] = array(
 							'properties', 'pre_format', 'post_format', 'file_properties',
@@ -2179,13 +2179,13 @@ class Content_files extends CI_Controller {
 							 'rules'   => 'numeric'
 						  ),
 					   array(
-							 'field'   => 'max_height',
-							 'label'   => 'lang:max_height',
+							 'field'   => 'max_width',
+							 'label'   => 'lang:max_width',
 							 'rules'   => 'numeric'
 						  ),
 					   array(
-							 'field'   => 'max_width',
-							 'label'   => 'lang:max_width',
+							 'field'   => 'max_height',
+							 'label'   => 'lang:max_height',
 							 'rules'   => 'numeric'
 						  ),
 					   array(
