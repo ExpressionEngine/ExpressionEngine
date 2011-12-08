@@ -1,3 +1,15 @@
+/*!
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		ExpressionEngine Dev Team
+ * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @license		http://expressionengine.com/user_guide/license.html
+ * @link		http://expressionengine.com
+ * @since		Version 2.3
+ * @filesource
+ */
+
 (function($) {
 
 "use strict";
@@ -30,6 +42,7 @@ $.widget('ee.table', {
 
 	_listening: $(),		// form elements the filter is listening to
 	_template_string: '',	// raw template
+	_current_data: {},		// current_data
 	
 	options: {
 		uniqid: null,		// uniqid of related elements
@@ -88,6 +101,7 @@ $.widget('ee.table', {
 			};
 		
 		self.cache.set(cache_id, cache_data);
+		self._current_data = cache_data;
 		
 		// create unique template name and compile
 		self.template_id = options.uniqid + '_row_template';
@@ -116,8 +130,7 @@ $.widget('ee.table', {
 	 * Get current cache
 	 */
 	get_current_data: function() {
-		var cache_id = this._prep_for_cache();
-		return this.cache.get(cache_id);
+		return this._current_data;
 	},
 	
 	/**
@@ -240,6 +253,8 @@ $.widget('ee.table', {
 		// considered successes and will call this with
 		// the correct data =)
 		success = function(res) {
+			self._current_data = res;
+			
 			// @todo only remove those that are not in the result set?
 			if ( ! res.rows.length) {
 				self.element.hide();
@@ -632,7 +647,7 @@ function Sort(options, plugin) {
 			var el = $(this);
 			
 			// allow things like checkboxes inside table headers
-			if ($(e.target).is('input')) {
+			if (el.has('input').length) {
 				return true;
 			}
 		
