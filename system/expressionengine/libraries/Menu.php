@@ -169,6 +169,13 @@ class EE_Menu {
 			)
 		);
 		
+		$this->EE->load->library('logger');
+		$this->EE->logger->_deprecated('2.1.5', 'auto_typography()');
+		
+		if ($this->EE->session->userdata('group_id') == 1)
+		{
+			$menu['tools']['tools_logs']['view_developer_log'] = BASE.AMP.'C=tools_logs'.AMP.'M=view_developer_log';
+		}
 		
 		// Add channels
 

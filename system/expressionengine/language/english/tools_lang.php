@@ -20,6 +20,10 @@ $lang = array(
 'view_search_log' 		=> 'View Search Log',
 'view_email_logs' 		=> 'View Email Console Log',
 'view_cp_log' 			=> 'View Control Panel Log',
+'view_developer_log'	=> 'View Developer Log',
+
+'log_id'				=> 'Log ID',
+'log_message'			=> 'Message',
 
 'import_utilities' 		=> 'Import Utilities',
 'translation_tool' 		=> 'Translation Utility',

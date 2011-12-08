@@ -647,7 +647,24 @@ class Tools_logs extends CI_Controller {
 	
 		exit($sOutput);
 	}
-
+	
+	// --------------------------------------------------------------------
+	
+	function view_developer_log()
+	{
+		if ($this->session->userdata('group_id') != 1)
+		{
+			show_error(lang('unauthorized_access'));
+		}
+		
+		$this->load->library('table');
+		$this->load->library('logger');
+		
+		$vars['logs'] = $this->tools_model->get_developer_log();
+		
+		$this->load->view('tools/view_developer_log', $vars);
+	}
+	
 	// --------------------------------------------------------------------
 
 	/**
