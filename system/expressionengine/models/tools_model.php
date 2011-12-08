@@ -211,7 +211,39 @@ class Tools_model extends CI_Model {
 	}
 	
 	// --------------------------------------------------------------------
+	
+	/**
+	 * Get items in the Developer Log
+	 *
+	 * @param	int $limit Query limit
+	 * @param	int $offset Query offset
+	 * @param	array $order Array of fields to order by
+	 *		e.g. 'field1' => 'asc', 'field2' => 'desc'
+	 * @return	DB result object
+	 */
+	public function get_developer_log($limit = 50, $offset = 0, $order = array())
+	{
+		// Apply custom ordering if it is set
+		if (is_array($order) && count($order) > 0)
+		{
+			foreach ($order as $key => $val)
+			{
+				$this->db->order_by($key, $val);
+			}
+		}
+		// Otherwise, order by latest log item
+		else
+		{
+			$this->db->order_by('timestamp', 'desc');			
+		}
 
+		$this->db->limit($limit, $offset);
+		
+		return $this->db->get('developer_log');
+	}
+	
+	// --------------------------------------------------------------------
+	
 	/**
 	 * Blacklist IP addresses
 	 *
