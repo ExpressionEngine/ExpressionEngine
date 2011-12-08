@@ -115,6 +115,59 @@ class File_ft extends EE_Fieldtype {
 		if ($tagdata !== FALSE)
 		{
 			$tagdata = $this->EE->functions->prep_conditionals($tagdata, $file_info);
+
+			// -----------------------------
+			// Any date variables to format?
+			// -----------------------------
+			$upload_date		= array();
+			$modified_date		= array();
+
+			$date_vars = array('upload_date', 'modified_date');
+
+			foreach ($date_vars as $val)
+			{
+				if (preg_match_all("/".LD.$val."\s+format=[\"'](.*?)[\"']".RD."/s", $this->EE->TMPL->tagdata, $matches))
+				{
+					for ($j = 0; $j < count($matches['0']); $j++)
+					{
+						$matches['0'][$j] = str_replace(LD, '', $matches['0'][$j]);
+						$matches['0'][$j] = str_replace(RD, '', $matches['0'][$j]);
+
+						switch ($val)
+						{
+							case 'upload_date' 	: $upload_date[$matches['0'][$j]] = $this->EE->localize->fetch_date_params($matches['1'][$j]);
+								break;
+							case 'modified_date' : $modified_date[$matches['0'][$j]] = $this->EE->localize->fetch_date_params($matches['1'][$j]);
+								break;
+						}
+					}
+				}
+			}
+
+			foreach ($this->EE->TMPL->var_single as $key => $val)
+			{
+				// Format {upload_date}
+				if (isset($upload_date[$key]))
+				{
+					foreach ($upload_date[$key] as $dvar)
+						$val = str_replace($dvar, $this->EE->localize->convert_timestamp($dvar, $file_info['upload_date'], TRUE), $val);					
+
+					$tagdata = $this->EE->TMPL->swap_var_single($key, $val, $tagdata);
+				}
+
+				// Format {modified_date}
+				if (isset($modified_date[$key]))
+				{
+					foreach ($modified_date[$key] as $dvar)
+						$val = str_replace($dvar, $this->EE->localize->convert_timestamp($dvar, $file_info['modified_date'], TRUE), $val);					
+
+					$tagdata = $this->EE->TMPL->swap_var_single($key, $val, $tagdata);
+				}
+			}
+
+			// ---------------
+			// Parse the rest!
+			// ---------------
 			$tagdata = $this->EE->functions->var_swap($tagdata, $file_info);
 			
 			// More an example than anything else - not particularly useful in this context
@@ -122,7 +175,7 @@ class File_ft extends EE_Fieldtype {
 			{
 				$tagdata = substr($tagdata, 0, - $params['backspace']);
 			}
-		
+
 			return $tagdata;
 		}
 		else if ($file_info['path'] != '' AND $file_info['filename'] != '' AND $file_info['extension'] !== FALSE)
@@ -157,7 +210,10 @@ class File_ft extends EE_Fieldtype {
 	 */
 	function replace_tag_catchall($file_info, $params = array(), $tagdata = FALSE, $modifier)
 	{
-		$file_info['path'] .= '_'.$modifier.'/';
+		if ($modifier)
+		{
+			$file_info['path'] .= '_'.$modifier.'/';	
+		}
 
 		return $this->replace_tag($file_info, $params, $tagdata);
 	}

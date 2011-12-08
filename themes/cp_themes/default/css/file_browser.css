@@ -32,12 +32,6 @@
 	margin: 0 0 10px;
 }
 
-#file_browser #filterMenu {
-	background-color: #ECF1F4;
-	color: #5f6c74;
-	font-size: 12px;
-}
-
 #file_browser #dir_choice_form {
 	float: left;
 }
@@ -188,23 +182,17 @@ a.file_browser_thumbnail.last_row {
 	top: 3px;
 }
 
-.button_bar .loading.visualEscapism {
-	right: -9999px;
-}
-
-#file_uploader.before_upload .after_upload,
-#file_uploader.before_upload .file_exists {
+.button_bar img,
+.button_bar a,
+.button_bar input {
 	display: none;
 }
 
-#file_uploader.file_exists .after_upload,
-#file_uploader.file_exists .before_upload {
-	display: none;
-}
-
-#file_uploader.after_upload .before_upload,
-#file_uploader.after_upload .file_exists {
-	display: none;
+#file_uploader.before_upload .before_upload,
+#file_uploader.file_exists .file_exists,
+#file_uploader.after_upload .after_upload,
+#file_uploader.edit_modal .edit_modal {
+	display: inline;
 }
 
 #file_uploader .cancel:link,
@@ -227,7 +215,7 @@ a.file_browser_thumbnail.last_row {
 #file_uploader iframe,
 html#file_upload_iframe,
 html#file_upload_iframe body {
-	background: #ecf1f4;
+	background: #ECF1F4;
 }
 
 html#file_upload_iframe body {
@@ -299,3 +287,96 @@ html#file_upload_iframe p {
 	overflow: hidden;
 	height: 265px;
 }
+
+.panel-menu {
+	padding-left: 3px;
+}
+
+.panel-menu li {
+	background: #3a4850 url('../images/backgrounds_sprite.png') repeat-x 0 -217px;
+	border-left: 1px solid #2d383e;
+	border-right: 1px solid #505f66;
+	border-top: 1px solid #4f5e65;
+	display: inline;
+	float: left;
+	padding-bottom: 3px;
+}
+
+.panel-menu li a:link,
+.panel-menu li a:visited,
+.panel-menu li a:hover {
+	color: #ffffff;
+	display: block;
+	float: left;
+	font-size: 13px;
+	font-weight: bold;
+	padding: 7px 12px 4px 12px;
+	text-decoration: none;
+}
+
+.panel-menu li.current {
+	background: #ECF1F4;
+	border-bottom: 1px solid #ECF1F4;
+	border-left: 1px solid #30383b;
+	border-right: 1px solid #30383b;
+	border-top: 1px solid #30383b;	
+	margin-bottom: -3px; /* needed to pull the current tab down over the 1px white border of the toolbar */	
+}
+
+.panel-menu li.current a:link,
+.panel-menu li.current a:visited,
+.panel-menu li.current a:hover {
+	color: #445058;
+}
+
+.panels {
+	height: 230px;
+}
+
+.panels > div {
+	border-top: 1px solid #30383b;
+	display: none;
+}
+
+.panels .current {
+	display: block;
+}
+
+.panels input[type=text],
+.panels textarea {
+	display: block;
+	margin: 0;
+	width: 550px;
+}
+
+.panels li {
+	margin: 7px 0;
+}
+
+.panels #image_tools .image {
+	float: right;
+	margin: 10px 0 10px 10px;
+	width: auto;
+}
+
+.panels #image_tools input[type=text] {
+	width: 380px;
+}
+
+.panels #image_tools p,
+.panels #image_tools li {
+	margin-left: 5px;
+}
+
+.panels #image_tools li div {
+	border: 1px solid #D0D7DF;
+	display: none;
+	padding: 0px 4px 4px;
+	margin: 6px 0 6px 16px;
+	width: 400px;
+}
+
+.panels #image_tools .oversized {
+	border: 2px solid #c6220a;
+}
+

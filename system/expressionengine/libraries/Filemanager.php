@@ -1190,10 +1190,10 @@ class Filemanager {
 				@unlink($resized_path.$prefs['file_name']);
 			}		
 
-			// In the event that the size doesn't have a valid height and width, move on
+			// If the size doesn't have a valid height and width, skip resize
 			if ($size['width'] <= 0 && $size['height'] <= 0)
 			{
-				continue;
+				$size['resize_type'] = 'none';
 			}
 			
 			// If either h/w unspecified, calculate the other here
@@ -1223,7 +1223,8 @@ class Filemanager {
 			if (($force_master_dim == 'height' && $prefs['height'] < $size['height']) OR 
 				($force_master_dim == 'width' && $prefs['width'] < $size['width']) OR
 				($force_master_dim == FALSE && $prefs['width'] < $size['width']) OR 
-				($force_master_dim == FALSE && $prefs['height'] < $size['height']))
+				($force_master_dim == FALSE && $prefs['height'] < $size['height']) OR
+				$size['resize_type'] == 'none')
 			{
 				copy($config['source_image'],$config['new_image']);
 			}
@@ -1841,7 +1842,7 @@ class Filemanager {
 		$clean_filename = basename($this->clean_filename(
 			$_FILES[$field]['name'],
 			$dir['id'], 
-			array('ignore_dupes' => FALSE)
+			array('ignore_dupes' => TRUE)
 		));
 		
 		$config = array(
@@ -1905,7 +1906,8 @@ class Filemanager {
 			'site_id'				=> $this->EE->config->item('site_id'),
 			
 			'file_name'				=> $file['file_name'],
-			'orig_name'				=> $original_filename,
+			'orig_name'				=> $original_filename, // name before any upload library processing
+			'file_data_orig_name'	=> $file['orig_name'], // name after upload lib but before duplicate checks
 			
 			'is_image'				=> $file['is_image'],
 			'mime_type'				=> $file['file_type'],
@@ -1941,9 +1943,7 @@ class Filemanager {
 					)
 				);
 			}
-		}		
-		
-		
+		}
 		
 		// Save file to database
 		$saved = $this->save_file($file['full_path'], $dir['id'], $file_data);
@@ -1960,15 +1960,12 @@ class Filemanager {
 			);
 		}
 		
-		// Set file id in return data
-		$file_data['file_id'] = $saved['file_id'];
+		// Merge in information from database
+		$file_data = array_merge($file_data, $this->_file_info($saved['file_id']));
 		
 		// Stash upload directory prefs in case
 		$file_data['upload_directory_prefs'] = $dir;
 		$file_data['directory'] = $dir['id'];
-		
-		// Manually create a modified date
-		$file_data['modified_date'] = $this->EE->localize->set_human_time();
 		
 		// Change file size to human readable
 		$this->EE->load->helper('number');
@@ -2666,6 +2663,11 @@ class Filemanager {
 	 *
 	 * Figures out the full path to the file, and sends it to the appropriate
 	 * method to process the image.
+	 * 
+	 * Needs a few POST variables:
+	 * 	- file_id: ID of the file
+	 * 	- file_name: name of the file without full path
+	 * 	- upload_dir: Directory ID
 	 */
 	public function _do_image_processing($redirect = TRUE)
 	{
@@ -2860,7 +2862,7 @@ class Filemanager {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Do image rotation.
+	 * Do image resizing.
 	 */
 	private function _do_resize($file_path)
 	{
