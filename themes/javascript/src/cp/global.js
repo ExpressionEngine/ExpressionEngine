@@ -309,6 +309,17 @@ jQuery(document).ready(function () {
 
 	$(".js_show").show();
 	
+	// Apply ee_table and ee_toggle_all to any tables that want it
+	$('table').each(function() {
+		var config;
+
+		if ($(this).data('table_config')) {
+			config = $(this).data('table_config');
+			$(this).table(config);
+		}
+
+		$(this).toggle_all();
+	});
 }); // ready
 
 /**
