@@ -153,22 +153,30 @@ class EE_Logger {
 		// debug_backtrace() will tell us what method is deprecated and what called it
 		$backtrace = debug_backtrace();
 		
-		// Explaination of below array indicies:
-		// Index 0: deprecated function (this one)
-		// Index 1: function that called deprecated(), i.e. the function that is deprecated
-		// Index 2: function that called the function that is deprecated
+		// Make sure the keys exist
+		$function = (isset($backtrace[1]['function'])) ? $backtrace[1]['function'] : '';
+		$line = (isset($backtrace[1]['line'])) ? $backtrace[1]['line'] : 0;
+		$file = (isset($backtrace[1]['file'])) ? $backtrace[1]['file'] : '';
 		
 		// Information we are capturing from the incident
 		$deprecated = array(
-			'function'			=> $backtrace[1]['function'],	// Name of deprecated function
-			'called_by'			=> $backtrace[2]['function'],	// Name of function where 'function' was called
-			'line'				=> $backtrace[1]['line'],		// Line where 'function' was called
-			'file'				=> $backtrace[1]['file'],		// File where 'function' was called 
-			'deprecated_since'	=> $version,					// Version function was deprecated
-			'use_instead'		=> $use_instead					// Function to use instead
+			'function'			=> $function.'()',	// Name of deprecated function
+			'line'				=> $line,			// Line where 'function' was called
+			'file'				=> $file,			// File where 'function' was called 
+			'deprecated_since'	=> $version,		// Version function was deprecated
+			'use_instead'		=> $use_instead		// Function to use instead
 		);
 		
 		$this->developer($deprecated, TRUE);
+	}
+	
+	function build_deprecation_language($deprecated)
+	{
+		return "Deprecated function ".$deprecated['function']."
+				called in ".$deprecated['file']."
+				on line ".$deprecated['line'].".<br />
+				Deprecated since ".$deprecated['deprecated_since'].".
+				Use ".$deprecated['use_instead']." instead.";
 	}
 }
 // END CLASS

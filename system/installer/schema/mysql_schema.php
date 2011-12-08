@@ -1318,7 +1318,6 @@ class EE_Schema {
 				`viewed` char(1) NOT NULL DEFAULT 'n',
 				`description` text NULL,
 				`function` varchar(100) NULL,
-				`called_by` varchar(100) NULL,
 				`line` int(10) unsigned NULL,
 				`file` varchar(255) NULL,
 				`deprecated_since` varchar(10) NULL,

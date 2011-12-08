@@ -170,11 +170,6 @@ class Updater {
 					'constraint'		=> 100,
 					'null'				=> TRUE
 				),
-				'called_by' => array(
-					'type'				=> 'varchar',
-					'constraint'		=> 100,
-					'null'				=> TRUE
-				),
 				'line' => array(
 					'type'				=> 'int',
 					'constraint'		=> 10,
