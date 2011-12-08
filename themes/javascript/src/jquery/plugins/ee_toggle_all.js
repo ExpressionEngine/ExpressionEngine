@@ -25,9 +25,11 @@ $.fn.toggle_all = function() {
 	function Cache($table) {
 		var rows = $table.find('tbody tr').get();
 		
+		// bind to table events
 		if ($table.data('table_config')) {
 			$table.bind('tableupdate', function() {
 				rows = $table.table('get_current_data').html_rows;
+				$table.find('th input:checkbox').prop('checked', false);
 			});
 		}
 
