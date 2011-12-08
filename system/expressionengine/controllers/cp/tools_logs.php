@@ -650,6 +650,12 @@ class Tools_logs extends CI_Controller {
 	
 	// --------------------------------------------------------------------
 	
+	/**
+	 * Shows Developer Log page
+	 *
+	 * @access public
+	 * @return void
+	 */
 	function view_developer_log()
 	{
 		if ($this->session->userdata('group_id') != 1)
@@ -661,6 +667,12 @@ class Tools_logs extends CI_Controller {
 		$this->load->library('logger');
 		
 		$vars['logs'] = $this->tools_model->get_developer_log();
+		
+		// Now that we've gotten the logs we're going to show, mark them as viewed;
+		// note since we already have the logs array, this change won't be visible on
+		// this particular page load, which is what we want. Next time the page loads,
+		// the logs will appear as viewed.
+		$this->tools_model->mark_developer_logs_as_viewed($vars['logs']->result_array());
 		
 		$this->load->view('tools/view_developer_log', $vars);
 	}

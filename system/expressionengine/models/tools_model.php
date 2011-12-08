@@ -245,6 +245,39 @@ class Tools_model extends CI_Model {
 	// --------------------------------------------------------------------
 	
 	/**
+	 * Marks developer logs as viewed
+	 *
+	 * Given an array of logs, updates each record with associated log_id
+	 * and sets its 'viewed' field to 'y'
+	 *
+	 * @param	array $logs Array of existing logs to mark as viewed
+	 * @return	void
+	 */
+	public function mark_developer_logs_as_viewed($logs)
+	{
+		$log_ids = array();
+		
+		// Build an array of log IDs
+		foreach ($logs as $log)
+		{
+			// Don't take on any more logs than we have to
+			if ($log['viewed'] == 'n')
+			{
+				$log_ids[] = $log['log_id'];
+			}
+		}
+		
+		// Set 'viewed' to 'y' where the ID exists in the $log_ids array
+		if (count($log_ids))
+		{
+			$this->db->where_in('log_id', $log_ids);
+			$this->db->update('developer_log', array('viewed' => 'y'));
+		}
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
 	 * Blacklist IP addresses
 	 *
 	 * @param	mixed	list of ips
