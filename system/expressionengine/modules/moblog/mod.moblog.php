@@ -130,7 +130,7 @@ class Moblog {
 
 		if ($query->num_rows() == 0)
 		{
-			$this->return_data = ($this->silent == 'yes') ? '' : $this->EE->lang->line('no_moblogs');
+			$this->return_data = ($this->silent == 'yes') ? '' : lang('no_moblogs');
 			return $this->return_data;
 		}
 
@@ -140,7 +140,7 @@ class Moblog {
 		{
 			if ( ! @mkdir(APPPATH.'cache/'.$this->cache_name, DIR_WRITE_MODE))
 			{
-				$this->return_data = ($this->silent == 'yes') ? '' : $this->EE->lang->line('no_cache');
+				$this->return_data = ($this->silent == 'yes') ? '' : lang('no_cache');
 				return $this->return_data;
 			}
 		}
@@ -165,14 +165,14 @@ class Moblog {
 				if ($this->silent == 'no')
 				{
 					$this->return_data .= '<p><strong>'.$row['moblog_full_name'].'</strong><br />'.
-									$this->EE->lang->line('no_cache')."\n</p>";
+									lang('no_cache')."\n</p>";
 				}
 			}
 		}
 
 		if (count($expired) == 0)
 		{
-			$this->return_data = ($this->silent == 'yes') ? '' : $this->EE->lang->line('moblog_current');
+			$this->return_data = ($this->silent == 'yes') ? '' : lang('moblog_current');
 			return $this->return_data;
 		}
 
@@ -215,10 +215,10 @@ class Moblog {
 
 		if ($this->silent == 'no')
 		{
-			$this->return_data .= $this->EE->lang->line('moblog_successful_check')."<br />\n";
-			$this->return_data .= $this->EE->lang->line('emails_done')." {$this->emails_done}<br />\n";
-			$this->return_data .= $this->EE->lang->line('entries_added')." {$this->entries_added}<br />\n";
-			$this->return_data .= $this->EE->lang->line('attachments_uploaded')." {$this->uploads}<br />\n";
+			$this->return_data .= lang('moblog_successful_check')."<br />\n";
+			$this->return_data .= lang('emails_done')." {$this->emails_done}<br />\n";
+			$this->return_data .= lang('entries_added')." {$this->entries_added}<br />\n";
+			$this->return_data .= lang('attachments_uploaded')." {$this->uploads}<br />\n";
 		}
 
 		return $this->return_data ;
@@ -261,7 +261,7 @@ class Moblog {
 		foreach($this->message_array as $row)
 		{
 			$message .= ($message == '') ? '' : "<br />\n";
-			$message .= ( ! $this->EE->lang->line($row)) ? $row : $this->EE->lang->line($row);
+			$message .= ( ! lang($row)) ? $row : lang($row);
 		}
 
 		return $message;
