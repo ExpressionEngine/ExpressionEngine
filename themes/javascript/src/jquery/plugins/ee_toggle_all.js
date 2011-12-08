@@ -29,7 +29,7 @@ $.fn.toggle_all = function() {
 		if ($table.data('table_config')) {
 			$table.bind('tableupdate', function() {
 				rows = $table.table('get_current_data').html_rows;
-				$table.find('th input:checkbox').prop('checked', false);
+				$table.find('input:checkbox').prop('checked', false);
 			});
 		}
 
