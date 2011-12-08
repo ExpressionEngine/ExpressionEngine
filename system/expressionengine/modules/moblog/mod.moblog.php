@@ -1222,7 +1222,7 @@ class Moblog {
 		
 		$result = $this->EE->api_channel_entries->submit_new_entry($data['channel_id'], $data);
 
-		if ( ! $result)
+		if ($result)
 		{
 			$this->entries_added++;
 		}
