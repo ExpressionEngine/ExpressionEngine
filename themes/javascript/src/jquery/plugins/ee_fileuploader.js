@@ -288,25 +288,29 @@
 		// Change the step to step 2
 		change_class('after_upload');
 		
-		// Create listener for the place file button
 		if (settings.type == "filemanager") {
-			$('#file_uploader .button_bar').on('click', '#edit_file', function(event) {
-				// Get edit action
-				var edit_url = $('.mainTable tr.new:first td:has(img) a[href*=edit_image]').attr('href');
-				$(this).attr('href', edit_url);
-			});
+			// Create listeners for the edit_file and edit_image links (not buttons)
+			var pages = ['edit_file', 'edit_image'];
+			
+			for (var i = 0, size = pages.length; i < size; i++) {
+				var edit_url = $('.mainTable tr.new:first td:has(img) a[href*='+pages[i]+']').attr('href');
+				$('#'+pages[i], '#file_uploader .button_bar').attr('href', edit_url);
+			}
 		} else if (settings.type == "filebrowser") {
+			// Create listener for the choose_file button
 			$('#file_uploader .button_bar').on('click', '#choose_file', function(event) {
 				clean_up();
 				event.preventDefault();
 			});
 			
+			// Create listener for edit file button
 			$('#file_uploader .button_bar').on('click', '#edit_file_modal', function(event) {
 				$('#file_uploader iframe').contents().find('form#edit_file').trigger('submit');
 				change_class('edit_modal');
 				event.preventDefault();
 			});
 			
+			// Create listener for the save file button (independant of choose file)
 			$('#file_uploader .button_bar').on('click', '#save_file', function(event) {
 				$('#file_uploader iframe').contents().find('form#edit_file_metadata').trigger('submit');
 				event.preventDefault();

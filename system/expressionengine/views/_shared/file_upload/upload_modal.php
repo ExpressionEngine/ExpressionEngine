@@ -6,6 +6,7 @@
 		<input type="submit" class="file_exists submit" name="rename_file" value="<?= lang('rename_file') ?>" id="rename_file" />
 		<a href="#" class="after_upload filemanager cancel" id="browse_files"><?= lang('browse_files') ?></a>
 		<a href="#" class="after_upload filemanager submit" id="edit_file"><?= lang('edit_file') ?></a>
+		<a href="#" class="after_upload filemanager submit" id="edit_image"><?= lang('edit_image') ?></a>
 		<input type="submit" class="after_upload filebrowser submit" name="edit_file_modal" value="<?= lang('edit_file') ?>" id="edit_file_modal" />
 		<input type="submit" class="edit_modal filebrowser submit" name="save_file" value="<?= lang('save_file') ?>" id="save_file" />
 		<input type="submit" class="after_upload edit_modal filebrowser submit" name="choose_file" value="<?= lang('use_file') ?>" id="choose_file" />

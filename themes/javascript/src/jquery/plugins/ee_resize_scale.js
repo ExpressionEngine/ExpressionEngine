@@ -7,8 +7,8 @@
  *		"resize_height": 	"#resize_height",
  *		"submit_resize": 	"#submit_resize",
  *		"cancel_resize": 	"#cancel_resize",
- *		"default_height": 	options.default_height,
- *		"default_width": 	options.default_width
+ *		"default_height": 	$image_height,
+ *		"default_width": 	$image_width
  *  });
  */
 
