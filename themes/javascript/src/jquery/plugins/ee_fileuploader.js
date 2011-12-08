@@ -142,7 +142,7 @@
 	var upload_listen = function() {
 		$('#file_uploader .button_bar #rename_file').click(function(event) {
 			event.preventDefault();
-			$('#file_uploader iframe').contents().find('form').submit();
+			$('#file_uploader iframe').contents().find('form').trigger('submit');
 		});
 		
 		$('#file_uploader .button_bar .cancel').live('click', function(event) {
@@ -188,7 +188,7 @@
 			.click(function(event) {
 				event.preventDefault();
 				$('#file_uploader .button_bar .loading').removeClass('visualEscapism');
-				$('#file_uploader iframe').contents().find('form').submit();
+				$('#file_uploader iframe').contents().find('form').trigger('submit');
 			});
 	};
 	
@@ -204,9 +204,6 @@
 		// Hide the dialog
 		file_uploader.dialog('close');
 		
-		// Clean up edit page tabs
-		EE.publish.edit_file.reset_tabs();
-
 		// Close filebrowser
 		$.ee_filebrowser.clean_up(current_file, '');
 	};
@@ -293,26 +290,26 @@
 		
 		// Create listener for the place file button
 		if (settings.type == "filemanager") {
-			if (file.is_image) {
-				$('#file_uploader .button_bar #edit_file').unbind().show().click(function(event) {
-					// Get edit action
-					var edit_url = $('.mainTable tr.new:first td:has(img) a[href*=edit_image]').attr('href');
-					$(this).attr('href', edit_url);
-				});
-			} else {
-				// Hide the edit file button if it's not an image.
-				$('#file_uploader .button_bar #edit_file').hide();
-			}
+			$('#file_uploader .button_bar').on('click', '#edit_file', function(event) {
+				// Get edit action
+				var edit_url = $('.mainTable tr.new:first td:has(img) a[href*=edit_image]').attr('href');
+				$(this).attr('href', edit_url);
+			});
 		} else if (settings.type == "filebrowser") {
-			$('#file_uploader .button_bar #choose_file').unbind().one('click', function(event) {
-				event.preventDefault();
+			$('#file_uploader .button_bar').on('click', '#choose_file', function(event) {
 				clean_up();
+				event.preventDefault();
 			});
 			
-			$('#file_uploader .button_bar #edit_file_modal').unbind().show().one('click', function(event) {
-				event.preventDefault();
-				$('#file_uploader iframe').contents().find('form#edit_file').submit();
+			$('#file_uploader .button_bar').on('click', '#edit_file_modal', function(event) {
+				$('#file_uploader iframe').contents().find('form#edit_file').trigger('submit');
 				change_class('edit_modal');
+				event.preventDefault();
+			});
+			
+			$('#file_uploader .button_bar').on('click', '#save_file', function(event) {
+				$('#file_uploader iframe').contents().find('form#edit_file_metadata').trigger('submit');
+				event.preventDefault();
 			});
 		}
 	};
@@ -338,7 +335,7 @@
 	 */	
 	var change_class = function (class_name) {
 		$('#file_uploader')
-			.removeClass('before_upload after_upload file_exists')
+			.removeClass('before_upload after_upload file_exists edit_modal')
 			.addClass(class_name);
 	};
 })(jQuery);

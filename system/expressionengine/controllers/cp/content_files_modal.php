@@ -275,7 +275,8 @@ class Content_files_modal extends CI_Controller {
 		
 		// Load javascript libraries
 		$this->cp->add_js_script(array(
-			'file' => 'files/edit_file'
+			'plugin'	=> 'ee_resize_scale',
+			'file'		=> 'files/edit_file'
 		));
 		
 		$this->javascript->compile();

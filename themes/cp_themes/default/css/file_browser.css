@@ -363,6 +363,7 @@ html#file_upload_iframe p {
 	width: 380px;
 }
 
+.panels #image_tools p,
 .panels #image_tools li {
 	margin-left: 5px;
 }
@@ -374,3 +375,8 @@ html#file_upload_iframe p {
 	margin: 6px 0 6px 16px;
 	width: 400px;
 }
+
+.panels #image_tools .oversized {
+	border: 2px solid #c6220a;
+}
+

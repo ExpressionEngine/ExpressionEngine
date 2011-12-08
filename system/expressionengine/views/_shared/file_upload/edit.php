@@ -41,6 +41,7 @@
 										<?=form_input('resize_width', $file['dimensions'][1], 'id="resize_width"')?>
 									</li>
 								</ul>
+								<p><?=anchor('#', lang('cancel_changes'), 'id="cancel_resize" style="display: none"')?></p>
 							</div>
 						</li>
 						<li>
@@ -80,7 +81,6 @@
 				</div> <!-- #image_tools -->
 			<?php endif ?>
 		</div> <!-- .panels -->
-		<p><input type="submit" name="submit" value="Submit" id="submit" /></p>
 	<?=form_close()?>
 </div> <!-- .upload_edit -->
 

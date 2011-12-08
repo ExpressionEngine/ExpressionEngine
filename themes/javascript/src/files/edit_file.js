@@ -57,10 +57,23 @@ EE.publish.edit_file = EE.publish.edit_file || {};
 			// Show image tool
 			$(this).parent().siblings('div').slideDown();
 			
+			// Reset resize
+			if ($(this).val() != 'resize') {
+				$('#resize_height').val(EE.filemanager.image_height);
+				$('#resize_width').val(EE.filemanager.image_width);
+			}
+			
 			// Change the value of action hidden input
 			$('input[name=action]').val($(this).val());
 		});
 	};
 	
 	EE.publish.edit_file.image_tool_select();
+	
+	// Submit listener doesn't work here, I assume due to iframe
+	$('form#edit_file_metadata').resize_scale({
+		"cancel_resize": 	'#cancel_resize',
+		"default_height": 	EE.filemanager.image_height,
+		"default_width": 	EE.filemanager.image_width
+	});
 })(jQuery);
