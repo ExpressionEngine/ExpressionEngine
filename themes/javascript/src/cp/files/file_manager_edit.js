@@ -92,84 +92,12 @@ $(document).ready(function () {
 		$('#cancel_crop').show();
 	});
 
-	EE.filemanager.resize_listener();
+	// Listen for changes to the resize form and scale the measurements
+	$('form#image_resize_form').resize_scale({
+		"submit_resize": 	'#submit_resize',
+		"cancel_resize": 	'#cancel_resize',
+		"default_height": 	EE.filemanager.image_height,
+		"default_width": 	EE.filemanager.image_width,
+		"resize_confirm": 	EE.filemanager.resize_over_confirmation
+	});
 });
-
-EE.filemanager.resize_listener = function() {
-	var $resize_width = $('#resize_width'),
-		$resize_height = $('#resize_height'),
-		$submit_button = $('#submit_resize'),
-		$cancel_button = $('#cancel_resize');
-	
-	$resize_width.add($resize_height).keyup(function(event) {
-		// Enable cancel button
-		$cancel_button.show();
-		
-		// Need to maintain proportions and resize image
-		// In order to do this, I need to figure out ratio and adhere to it
-		var $element = $(this),
-			id = $element.attr('id'),
-			$other_element = (id === "resize_height") ? $resize_width : $resize_height,
-			image_ratio;
-		
-		// Determine ratio
-		if (id === "resize_width") 
-		{
-			image_ratio = EE.filemanager.image_height / EE.filemanager.image_width;
-			
-		}
-		else
-		{
-			image_ratio = EE.filemanager.image_width / EE.filemanager.image_height;
-		}
-		
-		// Change other element's value
-		$other_element.val(Math.round(image_ratio * $element.val()));
-		
-		if ($resize_width.val() > EE.filemanager.image_width) 
-		{
-			$resize_width.addClass(oversized_class);
-		}
-		else
-		{
-			$resize_width.removeClass(oversized_class);
-		}
-		
-		if ($resize_height.val() > EE.filemanager.image_height) 
-		{
-			$resize_height.addClass(oversized_class);
-		}
-		else
-		{
-			$resize_height.removeClass(oversized_class);
-		}
-		
-		// Resize image
-		$image.attr({
-			'width': $resize_width.val(),
-			'height': $resize_height.val()
-		});
-	});
-	
-	$submit_button.click(function(event) {
-		if ($('.'+oversized_class).size()) {
-			if (confirm(EE.filemanager.resize_over_confirmation) == false) {
-				event.preventDefault();
-			};
-		};
-	});
-	
-	$cancel_button.click(function(event) {
-		event.preventDefault();
-		
-		$resize_width.val(EE.filemanager.image_width).removeClass(oversized_class);
-		$resize_height.val(EE.filemanager.image_height).removeClass(oversized_class);
-		
-		$image.attr({
-			'width': EE.filemanager.image_width,
-			'height': EE.filemanager.image_height
-		});
-		
-		$cancel_button.hide();
-	});
-};
