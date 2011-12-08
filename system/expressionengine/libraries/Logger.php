@@ -148,7 +148,7 @@ class EE_Logger {
 	 * @param	string $use_instead Function to use instead, if applicable
 	 * @return	void
 	 */
-	function _deprecated($version = NULL, $use_instead = NULL)
+	function deprecated($version = NULL, $use_instead = NULL)
 	{
 		// debug_backtrace() will tell us what method is deprecated and what called it
 		$backtrace = debug_backtrace();
