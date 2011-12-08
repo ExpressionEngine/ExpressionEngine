@@ -136,7 +136,7 @@ $lang = array(
 'Maximum Image Height (in pixels)',
 
 'max_width' =>
-'Maximum Image Width',
+'Maximum Image Width (in pixels)',
 
 'properties' =>
 'Image Properties',
