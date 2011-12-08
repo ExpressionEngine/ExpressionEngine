@@ -80,7 +80,7 @@ $.fn.toggle_all = function() {
 			header_checkboxes[column] = $header_checkbox;
 		});
 		
-		// STEP 1:
+		// STEP 2:
 		// Listens to clicks on any checkbox in one of the
 		// checkbox columns and update the header checkbox's
 		// state to reflect the overall column.
