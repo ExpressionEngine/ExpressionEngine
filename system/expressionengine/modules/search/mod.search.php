@@ -54,13 +54,7 @@ class Search {
 	function do_search()
 	{
 		$this->EE->lang->loadfile('search');
-
-		// We make an exception for "view all posts by member" - it's a link
-		if ( ! isset($_GET['mbr']) && ! $this->EE->security->secure_forms_check($this->EE->input->post('XID')))
-		{
-			return $this->EE->output->show_user_error('general', array(lang('invalid_action')));
-		}
-
+		
 		// Get hidden meta vars 
 		if (isset($_POST['meta']))
 		{
