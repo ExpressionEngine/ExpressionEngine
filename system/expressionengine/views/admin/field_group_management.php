@@ -19,7 +19,6 @@ if ($EE_view_disable !== TRUE)
 		<div class="clear_left"></div>
 		
 		<?php
-			$this->table->set_template($cp_table_template);
 			$this->table->set_heading(
 										lang('group_name'),
 										'',

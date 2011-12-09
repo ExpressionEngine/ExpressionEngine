@@ -17,7 +17,6 @@ if ($EE_view_disable !== TRUE)
 
 		<?=form_open('C=admin_content'.AMP.'M=update_custom_category_fields', '', $form_hidden)?>
 		<?php
-			$this->table->set_template($cp_table_template);
 			$this->table->set_heading(
 										array('data' => lang('preference'), 'style' => 'width:50%;'),
 										lang('setting')

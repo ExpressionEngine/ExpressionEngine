@@ -93,7 +93,6 @@ class Cp {
 		$this->EE->load->library('menu');
 		$this->EE->load->library('accessories');
 		$this->EE->load->library('javascript', array('autoload' => FALSE));
- 		$this->EE->load->helper('url');
 
 		$this->EE->load->model('member_model'); // for screen_name, quicklinks
 		
@@ -160,6 +159,10 @@ class Cp {
 					'sidebar_state'			=> '',
 					'maincontent_state'		=> '',
 		);
+		
+		// global table data
+		$this->EE->session->set_cache('table', 'cp_template', $cp_table_template);
+		$this->EE->session->set_cache('table', 'cp_pad_template', $cp_pad_table_template);
 		
 		// we need these paths again in my account, so we'll keep track of them
 		// kind of hacky, but before it was accessing _ci_cache_vars, which is worse
@@ -255,7 +258,7 @@ class Cp {
 		$js_scripts = array(
 						'effect'	=> 'core',
 						'ui'		=> array('core', 'widget', 'mouse', 'position', 'sortable', 'dialog'),
-						'plugin'	=> array('ee_focus', 'ee_notice', 'ee_txtarea', 'tablesorter'),
+						'plugin'	=> array('ee_focus', 'ee_interact.event', 'ee_notice', 'ee_txtarea', 'tablesorter', 'ee_toggle_all'),
 						'file'		=> 'cp/global'
 		);
 		
@@ -302,7 +305,7 @@ class Cp {
 	{
 		if ( ! is_array($script))
 		{
-			if ( ! is_string($in_footer))
+			if (is_bool($in_footer))
 			{
 				return FALSE;
 			}

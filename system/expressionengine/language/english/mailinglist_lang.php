@@ -14,6 +14,9 @@ $lang = array(
 
 //----------------------------------------
 
+'email' =>
+'Email Address',
+
 'mailinglist_disabled' =>
 'This mailing list is not currently accepting new subscriptions.',
 

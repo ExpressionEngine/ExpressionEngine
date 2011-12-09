@@ -226,7 +226,6 @@ class Design extends CI_Controller {
 		}
 
 		$this->load->model('template_model');
-		$this->load->helper('form');
 
 		$query = $this->template_model->get_group_info($group_id);
 
@@ -368,7 +367,6 @@ class Design extends CI_Controller {
 		}
 
 		$this->load->model('template_model');
-		$this->load->helper('form');
 		$this->load->library('table');
 
 		$templates = $this->template_model->get_templates($this->config->item('site_id'));
@@ -410,8 +408,6 @@ class Design extends CI_Controller {
 		{
 			show_error(lang('unauthorized_access'));
 		}
-
-		$this->load->helper('form');
 		
 		$this->cp->set_variable('cp_page_title', lang('create_new_template_group'));
 		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager', lang('template_manager'));
@@ -479,7 +475,6 @@ class Design extends CI_Controller {
 		
 		$this->load->model('template_model');
 		$this->load->model('admin_model');
-		$this->load->helper('form');
 		$this->load->library('table');
 
 		$this->jquery->tablesorter('.mainTable', '{
@@ -588,7 +583,6 @@ class Design extends CI_Controller {
 		}
 
 		$this->load->model('template_model');
-		$this->load->helper('form');
 		$this->load->library('table');
 
 		$this->jquery->tablesorter('.mainTable', '{
@@ -631,7 +625,6 @@ class Design extends CI_Controller {
 		}
 		
 		$this->load->model('template_model');
-		$this->load->helper('form');
 		
 		// form defaults
 		$vars = array(
@@ -790,7 +783,6 @@ class Design extends CI_Controller {
 		}
 
 		$this->load->model('template_model');
-		$this->load->helper('form');
 	
 		if (($snippet_id = $this->input->get_post('snippet_id')) === FALSE)
 		{
@@ -836,7 +828,6 @@ class Design extends CI_Controller {
 		}
 
 		$this->load->model('template_model');
-		$this->load->helper('form');
 		$this->load->library('table');
 	
 		$this->cp->set_variable('cp_page_title', lang('global_variables'));
@@ -920,8 +911,6 @@ class Design extends CI_Controller {
 				// They shouldn't be this far
 				show_error('variable_does_not_exist'); 
 			}
-
-			$this->load->helper('form');
 	
 			$global_variable_info = $global_variable->row(); // PHP 5 can do this in one step...
 			
@@ -994,8 +983,6 @@ class Design extends CI_Controller {
 		}
 		else
 		{		
-			$this->load->helper('form');
-	
 			$this->cp->set_variable('cp_page_title', lang('create_new_global_variable'));
 
 			$this->javascript->compile();
@@ -1020,9 +1007,7 @@ class Design extends CI_Controller {
 
 		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager', lang('template_manager'));
 		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=global_variables', lang('global_variables'));
-		
-		$this->load->helper('form');
-	
+			
 		$variable_id = $this->input->get_post('variable_id');
 
 		if ($variable_id == '')
@@ -1092,7 +1077,6 @@ class Design extends CI_Controller {
 			return $this->load->view('design/template_preferences_manager', $vars);
 		}
 
-		$this->load->helper('form');
 		$this->load->library('table');
 	
 		$this->javascript->output('		
@@ -1718,7 +1702,6 @@ class Design extends CI_Controller {
 		$this->load->model('design_model');
 		
 		$this->load->helper('file');
-		$this->load->helper('form');
 
 		$vars['can_admin_templates'] = $this->cp->allowed_group('can_admin_templates');
 		
@@ -2418,7 +2401,6 @@ class Design extends CI_Controller {
 
         $item_id = $this->input->get_post('template');
 		
-		$this->load->helper('form');
 		$this->load->library('api');
 		$this->api->instantiate('template_structure');
 
@@ -2558,7 +2540,6 @@ class Design extends CI_Controller {
 			show_error(lang('template_id_not_found'));
 		}
 
-		$this->load->helper('form');
 		$this->load->library('api');
 		$this->api->instantiate('template_structure');
 
@@ -2799,7 +2780,6 @@ class Design extends CI_Controller {
 		}
 		else
 		{
-			$this->load->helper('form');
 			$this->lang->loadfile('specialty_tmp');
 				
 			$this->cp->set_variable('cp_page_title', lang('user_message'));
@@ -2871,7 +2851,6 @@ class Design extends CI_Controller {
 		}
 		else
 		{
-			$this->load->helper('form');
 			$this->lang->loadfile('specialty_tmp');
 	
 			$this->cp->set_variable('cp_page_title', lang('offline_template'));
@@ -2942,9 +2921,7 @@ class Design extends CI_Controller {
 
 		$this->cp->set_variable('cp_page_title', lang('edit_template'));
 		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=email_notification', lang('email_notification_template'));
-		
-		$this->load->helper('form');
-		
+				
 		$this->cp->add_js_script(array('plugin' => 'markitup'));
 
 		$markItUp = array(
@@ -3140,9 +3117,7 @@ class Design extends CI_Controller {
 		$vars['not_writable']		= ! is_really_writable($path);
 		$vars['message']			= ($update === TRUE) ? lang('template_updated') : '';
 		$vars['type']				= 'profile';
-		
-		$this->load->helper('form');
-		
+				
 		$this->cp->set_variable('cp_page_title', lang('member_profile_templates'));
 		
 		$this->jquery->plugin(BASE.AMP.'C=javascript'.AMP.'M=load'.AMP.'plugin=markitup', TRUE);
@@ -3765,7 +3740,6 @@ class Design extends CI_Controller {
 	//		$this->manager();
 		}
 
-		$this->load->helper('form');
 		$this->load->library('form_validation');
 		$this->load->library('table');
 		
@@ -3973,8 +3947,6 @@ class Design extends CI_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->load->helper('form');
-
 		$this->cp->set_variable('cp_page_title', lang('edit_template_group_order'));
 
 		$this->javascript->output('
@@ -4064,7 +4036,6 @@ class Design extends CI_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 		
-		$this->load->helper('form');
 		$this->load->library('table');
 		
 		if ($this->config->item('save_tmpl_files') != 'y' OR $this->config->item('tmpl_file_basepath') == '')

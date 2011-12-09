@@ -15,10 +15,6 @@ if ($EE_view_disable !== TRUE)
 	<?php if ($grand_total == 0):?>
 	<div class="container pad"><?=lang('no_members_matching_that_criteria')?></div>
 	<?php else:?>
-		<?php
-			// set table template used by all results
-			$this->table->set_template($cp_table_template);
-		?>
 
 		<?php
 			//  Find Member Accounts with IP

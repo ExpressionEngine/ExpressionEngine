@@ -6,7 +6,6 @@
 		<?=form_open('C=myaccount'.AMP.'M=unsubscribe', '', $form_hidden)?>
 
 		<?php
-			$this->table->set_template($cp_table_template);
 			$this->table->set_heading(
 				lang('title'), 
 				lang('type'), 

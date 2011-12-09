@@ -12,7 +12,6 @@
 	<p class="pad"><?=lang('quicklinks_delete_instructions')?></p>
 
 	<?php
-		$this->table->set_template($cp_table_template);
 		$this->table->set_heading(
 			lang('tab_title'), 
 			lang('tab_order')

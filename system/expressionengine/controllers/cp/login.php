@@ -53,8 +53,6 @@ class Login extends CI_Controller {
 			$this->output->set_status_header(401);
 			die('C=login');
 		}
-
-		$this->load->helper('form');
 		
 		$username = $this->session->flashdata('username');
 
@@ -403,7 +401,6 @@ class Login extends CI_Controller {
 	 */
 	function forgotten_password_form()
 	{
-		$this->load->helper('form');
 		$message = $this->session->flashdata('message');
 		
 		$variables = array(

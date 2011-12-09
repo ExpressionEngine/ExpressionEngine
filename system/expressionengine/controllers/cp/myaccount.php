@@ -218,7 +218,6 @@ class MyAccount extends CI_Controller {
 	 */
 	function edit_profile()
 	{
-		$this->load->helper('form');
 		$this->load->language('calendar');
 
 		$vars['cp_page_title'] = lang('edit_profile');
@@ -433,7 +432,7 @@ class MyAccount extends CI_Controller {
 	  */
 	function email_settings()
 	{
-		$this->load->helper(array('form', 'snippets'));
+		$this->load->helper('snippets');
 
 		$vars['cp_page_title'] = lang('email_settings');
 
@@ -546,7 +545,7 @@ class MyAccount extends CI_Controller {
 	  */
 	function edit_preferences()
 	{
-		$this->load->helper(array('form', 'snippets'));
+		$this->load->helper('snippets');
 
 		$vars['cp_page_title'] = lang('edit_preferences');
 
@@ -604,8 +603,6 @@ class MyAccount extends CI_Controller {
 	  */
 	function username_password()
 	{
-		$this->load->helper('form');
-
 		$vars['cp_page_title'] = lang('username_and_password');
 
 		$this->javascript->output('');
@@ -782,7 +779,6 @@ class MyAccount extends CI_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->load->helper('form');
 		$this->load->library('table');
 		$this->lang->loadfile('admin_content');
 		$this->load->model('admin_model');
@@ -961,7 +957,6 @@ class MyAccount extends CI_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 		
-		$this->load->helper(array('form', 'url'));
 		$this->load->library('table');
 		$this->lang->loadfile('admin');
 		$this->lang->loadfile('admin_content');
@@ -1127,7 +1122,7 @@ class MyAccount extends CI_Controller {
 	  */
 	function cp_theme()
 	{
-		$this->load->helper(array('form', 'date'));
+		$this->load->helper('date');
 		$this->load->model('admin_model');
 
 		$vars['cp_page_title'] = lang('cp_theme');
@@ -1184,7 +1179,7 @@ class MyAccount extends CI_Controller {
 	  */
 	function subscriptions()
 	{
-		$this->load->helper(array('form', 'snippets', 'url', 'string'));
+		$this->load->helper(array('snippets', 'string'));
 		$this->load->library('table');
 		$this->load->library('pagination');
 		$this->load->library('members');
@@ -1311,7 +1306,7 @@ class MyAccount extends CI_Controller {
 			show_error(lang('localization_disallowed'));
 		}
 
-		$this->load->helper(array('form', 'date'));
+		$this->load->helper('date');
 		$this->load->model('language_model');
 
 		$vars['cp_page_title'] = lang('localization_settings');
@@ -1429,8 +1424,6 @@ class MyAccount extends CI_Controller {
 	  */
 	function edit_signature()
 	{
-		$this->load->helper('form');
-
 		$vars['cp_page_title'] = lang('edit_signature');
 
 		$this->javascript->output('');
@@ -1516,7 +1509,6 @@ class MyAccount extends CI_Controller {
 			show_error(lang('avatars_not_enabled'));
 		}
 
-		$this->load->helper('form');
 		$this->load->language('number');
 
 		$vars['cp_page_title'] = lang('edit_avatar');
@@ -1616,7 +1608,6 @@ class MyAccount extends CI_Controller {
 			show_error(lang('photos_not_enabled'));
 		}
 
-		$this->load->helper('form');
 		$this->load->language('number');
 
 		$vars['cp_page_title'] = lang('edit_photo');
@@ -1674,7 +1665,6 @@ class MyAccount extends CI_Controller {
 			show_error(lang('avatars_not_enabled'));
 		}
 
-		$this->load->helper('form');
 		$this->load->library('table');
 		$this->load->library('pagination');
 
@@ -1930,7 +1920,6 @@ class MyAccount extends CI_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->load->helper('form');
 		$vars['cp_page_title'] = lang('administrative_options');
 
 		$this->javascript->output('');
@@ -2079,7 +2068,6 @@ class MyAccount extends CI_Controller {
 		}
 
 		$this->load->library('table');
-		$this->load->helper('form');
 
 		$vars['cp_page_title'] = lang('quicklinks_manager');
 		$vars['form_hidden']['id'] = $this->id;
@@ -2202,7 +2190,6 @@ class MyAccount extends CI_Controller {
 	function main_menu_manager()
 	{
 		$this->load->library('table');
-		$this->load->helper(array('form'));
 
 		$vars['cp_page_title'] = lang('main_menu_manager');
 
@@ -2269,7 +2256,6 @@ class MyAccount extends CI_Controller {
 		}
 
 		$this->load->library('table');
-		$this->load->helper(array('form'));
 
 		$vars = array();
 
@@ -2431,7 +2417,6 @@ class MyAccount extends CI_Controller {
 		}
 
 		$this->load->library('table');
-		$this->load->helper(array('form'));
 		$this->load->model('channel_model');
 
 		$vars['cp_page_title'] = lang('bookmarklet');
@@ -2531,7 +2516,7 @@ class MyAccount extends CI_Controller {
 	  */
 	function ignore_list()
 	{
-		$this->load->helper(array('form', 'snippets', 'url', 'string'));
+		$this->load->helper(array('snippets', 'string'));
 		$this->load->library('table');
 
 		$vars['cp_page_title'] = lang('ignore_list');

@@ -437,7 +437,7 @@ class EE_Core {
 		}
 		
 		// Load common helper files
-		$this->EE->load->helper(array('form', 'quicktab'));
+		$this->EE->load->helper(array('url', 'form', 'quicktab'));
 
 		// Secure forms stuff
 		$this->EE->cp->secure_forms();

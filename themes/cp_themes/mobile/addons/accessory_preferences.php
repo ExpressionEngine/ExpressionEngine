@@ -17,7 +17,6 @@ if ($EE_view_disable !== TRUE)
 	<?=form_open('C=addons_accessories'.AMP.'M=update_prefs', '', array('accessory' => $name))?>
 	
 		<?php			
-			$this->table->set_template($cp_table_template);
 			$this->table->set_heading(
 									array('data' => lang('member_group_assignment'), 'style' => 'width:95%;'),
 									array('data' => form_checkbox('toggle_groups', 'true', FALSE, 'class="toggle_groups"'), 'style' => '5%;')

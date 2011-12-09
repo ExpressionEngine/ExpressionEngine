@@ -406,7 +406,6 @@ class Addons_modules extends CI_Controller {
 		}
 
 		$this->lang->loadfile($module);
-		$this->load->helper('form');
 		
 		$vars['form_action'] = 'C=addons_modules'.AMP.'M=module_uninstaller';
 		$vars['form_hidden'] = array('module' => $module, 'confirm' => 'delete');

@@ -27,7 +27,6 @@ if ($EE_view_disable !== TRUE)
 			<?=form_open('C=admin_content'.AMP.'M=save_ping_servers', array('id' => 'ping_server_form'), $form_hidden)?>
 
 			<?php 
-			$this->table->set_template($cp_table_template);
 			$this->table->set_heading(
 									lang('server_name'),
 									lang('server_url'),
