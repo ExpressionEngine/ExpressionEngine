@@ -12,9 +12,13 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 		<div class="contents">
 			
-			<div class="heading"><h2 class="edit">
-			<span id="filter_ajax_indicator" style="visibility:hidden; float:right;"><img src="<?=$cp_theme_url?>images/indicator2.gif" style="padding-right:20px;" /></span>			
-			<?=$cp_page_title?></h2></div>
+			<div class="heading">
+				<h2 class="edit">
+					<span id="filter_ajax_indicator" style="visibility:hidden; float:right;">
+						<img src="<?=$cp_theme_url?>images/indicator2.gif" style="padding-right:20px;" /></span>
+					<?=$cp_page_title?>
+				</h2>
+			</div>
 			<div class="pageContents">
 			<?php $this->load->view('_shared/message');?>
 				

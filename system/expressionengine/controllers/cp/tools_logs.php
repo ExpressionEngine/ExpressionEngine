@@ -601,7 +601,7 @@ class Tools_logs extends CI_Controller {
 
 		return array(
 			'rows' => $rows,
-			'no_results' => '<p>'.lang('no_cached_email').'</p>',
+			'no_results' => '<p>'.lang('no_search_results').'</p>',
 			'pagination' => array(
 				'per_page' => $params['perpage'],
 				'total_rows' => $this->db->count_all('developer_log')
@@ -631,13 +631,16 @@ class Tools_logs extends CI_Controller {
 		switch($type)
 		{
 			case 'cp':
-					$table = 'cp_log';
+				$table = 'cp_log';
 				break;
 			case 'search':
-					$table = 'search_log';
+				$table = 'search_log';
 				break;
 			case 'email':
-					$table = 'email_console_cache';
+				$table = 'email_console_cache';
+				break;
+			case 'developer':
+				$table = 'developer_log';
 				break;
 			default: //nothing
 		}
