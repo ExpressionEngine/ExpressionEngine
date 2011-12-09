@@ -520,17 +520,93 @@ class Tools_logs extends CI_Controller {
 		}
 		
 		$this->load->library('table');
-		$this->load->library('logger');
 		
-		$vars['logs'] = $this->tools_model->get_developer_log();
+		$this->table->set_base_url('C=tools_logs'.AMP.'M=view_developer_log');
+		$this->table->set_columns(array(
+			'log_id'		=> array('header' => lang('log_id')),
+			'timestamp'		=> array('header' => lang('date')),
+			'description'	=> array('header' => lang('log_message')),
+		));
+		
+		$initial_state = array(
+			'sort'	=> array('timestamp' => 'desc')
+		);
+		
+		$params = array(
+			'perpage'	=> $this->perpage
+		);
+		
+		$vars = $this->table->datasource('_developer_log_filter', $initial_state, $params);
+
+		$this->cp->set_variable('cp_page_title', lang('view_developer_log'));
+
+		// a bit of a breadcrumb override is needed
+		$this->cp->set_variable('cp_breadcrumbs', array(
+			BASE.AMP.'C=tools' => lang('tools'),
+			BASE.AMP.'C=tools_logs'=> lang('tools_logs')
+		));
+		
+		$this->load->library('logger');
 		
 		// Now that we've gotten the logs we're going to show, mark them as viewed;
 		// note since we already have the logs array, this change won't be visible on
 		// this particular page load, which is what we want. Next time the page loads,
 		// the logs will appear as viewed.
-		$this->tools_model->mark_developer_logs_as_viewed($vars['logs']->result_array());
+		$this->tools_model->mark_developer_logs_as_viewed($vars['rows']);
 		
+		$this->javascript->compile();
 		$this->load->view('tools/view_developer_log', $vars);
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Ajax filter for Email log
+	 *
+	 * Filters Email log data
+	 *
+	 * @access	public
+	 * @return	void
+	 */
+	function _developer_log_filter($state, $params)
+	{	
+		$dev_logs_query = $this->tools_model->get_developer_log(
+			$params['perpage'], $state['offset'], $state['sort']
+		);
+		
+		$dev_logs = $dev_logs_query->result_array();
+		
+		$rows = array();
+		
+		while ($log = array_shift($dev_logs))
+		{
+			$new = ($log['viewed'] == 'n') ? 'new' : '';
+			
+			$rows[] = array(
+				'log_id' => array(
+					'data' 	=> $log['log_id'],
+					'class'	=> $new
+				),
+				'timestamp' => array(
+					'data'	=> date('Y-m-d h:i A', $log['timestamp']),
+					'class'	=> $new
+				),
+				'description' => array(
+					'data'	=> (isset($log['function'])) ? $this->logger->build_deprecation_language($log) : $data['description'],
+					'class'	=> $new
+				),
+				'viewed' => $log['viewed']
+			);
+		}
+
+		return array(
+			'rows' => $rows,
+			'no_results' => '<p>'.lang('no_cached_email').'</p>',
+			'pagination' => array(
+				'per_page' => $params['perpage'],
+				'total_rows' => $this->db->count_all('developer_log')
+			)
+		);
 	}
 	
 	// --------------------------------------------------------------------

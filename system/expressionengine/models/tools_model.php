@@ -247,8 +247,8 @@ class Tools_model extends CI_Model {
 	/**
 	 * Marks developer logs as viewed
 	 *
-	 * Given an array of logs, updates each record with associated log_id
-	 * and sets its 'viewed' field to 'y'
+	 * Given an array of logs formatted for datatables, updates each record
+	 * with associated log_id and sets its 'viewed' field to 'y'
 	 *
 	 * @param	array $logs Array of existing logs to mark as viewed
 	 * @return	void
@@ -263,7 +263,7 @@ class Tools_model extends CI_Model {
 			// Don't take on any more logs than we have to
 			if ($log['viewed'] == 'n')
 			{
-				$log_ids[] = $log['log_id'];
+				$log_ids[] = $log['log_id']['data'];
 			}
 		}
 		

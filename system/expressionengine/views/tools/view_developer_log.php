@@ -13,53 +13,18 @@ if ($EE_view_disable !== TRUE)
 		<div class="contents">
 			
 			<div class="heading"><h2 class="edit">
-			<span id="filter_ajax_indicator" style="visibility:hidden; float:right;"><img src="<?=$cp_theme_url?>images/indicator2.gif" style="padding-right:20px;" /></span>
-			<?=lang('view_developer_log')?></h2></div>
+			<span id="filter_ajax_indicator" style="visibility:hidden; float:right;"><img src="<?=$cp_theme_url?>images/indicator2.gif" style="padding-right:20px;" /></span>			
+			<?=$cp_page_title?></h2></div>
 			<div class="pageContents">
 			<?php $this->load->view('_shared/message');?>
-			
-			<?php
-			$this->table->set_template($cp_pad_table_template);
-			$this->table->set_heading(
-				lang('log_id'),
-				lang('date'),
-				lang('log_message')
-			);
-		
-			if ($logs->num_rows() > 0):
-			
-				foreach ($logs->result_array() as $data)
-				{
-					$new = ($data['viewed'] == 'n') ? 'new' : '';
-					
-					$log_id = array(
-						'data'	=> $data['log_id'],
-						'class'	=> $new
-					);
-					$date = array(
-						'data'	=> date('Y-m-d h:i A', $data['timestamp']),
-						'class'	=> $new
-					);
-					$message = array(
-						'data'	=> (isset($data['function'])) ? $this->logger->build_deprecation_language($data) : $data['description'],
-						'class'	=> $new
-					);
-					
-					$this->table->add_row($log_id, $date, $message);
-				}
-			?>
-			
-				<div class="cp_button"><a href="<?=BASE.AMP.'C=tools_logs'.AMP.'M=clear_log_files'.AMP.'type=cp'?>"><?=lang('clear_logs')?></a></div>
+				
+				<div class="cp_button"><a href="<?=BASE.AMP.'C=tools_logs'.AMP.'M=clear_log_files'.AMP.'type=developer'?>"><?=lang('clear_logs')?></a></div>
 				<div class="clear_left"></div>
 					
-				<?=$this->table->generate()?>
-				
-			<?php else:?>
-
-				<p><?=lang('no_search_results')?></p>
-
-			<?php endif;?>
-		
+				<?php
+				echo $table_html;
+				echo $pagination_html;
+				?>
 			</div>
 
 	</div> <!-- contents -->
