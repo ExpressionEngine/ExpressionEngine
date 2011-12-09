@@ -186,7 +186,7 @@ class EE_Extensions {
 				$name = $this->EE->security->sanitize_filename(strtolower(substr($class, 0, -4))); // remove '_ext' suffix
 				
 				$path = $this->EE->addons->_packages[$name]['extension']['path'];
-				$extension_path = $path.'/ext.'.$name.'.php';
+				$extension_path = $this->EE->functions->remove_double_slashes($path.'/ext.'.$name.'.php');
 
 				if (file_exists($extension_path))
 				{

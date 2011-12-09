@@ -1273,6 +1273,7 @@ class EE_Schema {
 		
 		$Q[] = "CREATE TABLE `exp_file_dimensions` (
 				`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+				`site_id` int(4) unsigned DEFAULT '1',
 				`upload_location_id` int(4) unsigned DEFAULT NULL,
   				`title` varchar(255) DEFAULT '',
 				`short_name` varchar(255) DEFAULT '',
@@ -1299,8 +1300,8 @@ class EE_Schema {
 				`wm_hor_alignment` varchar(10) DEFAULT 'left',
 				`wm_padding` int(3) unsigned DEFAULT NULL,
 				`wm_opacity` int(3) unsigned DEFAULT NULL,
-				`wm_x_offset` int(4) unsigned DEFAULT NULL,
-				`wm_y_offset` int(4) unsigned DEFAULT NULL,
+				`wm_hor_offset` int(4) unsigned DEFAULT NULL,
+				`wm_vrt_offset` int(4) unsigned DEFAULT NULL,
 				`wm_x_transp` int(4) DEFAULT NULL,
 				`wm_y_transp` int(4) DEFAULT NULL,
 				`wm_font_color` varchar(7) DEFAULT NULL,

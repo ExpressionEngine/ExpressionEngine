@@ -19,7 +19,6 @@ if ($EE_view_disable !== TRUE)
 				<p class="notice"><?=lang('no_autosave_data')?></p>
 			<?php else:
 				
-				$this->table->set_template($cp_table_template);
 				$this->table->set_heading($table_headings);
 
 				foreach ($entries as $row)

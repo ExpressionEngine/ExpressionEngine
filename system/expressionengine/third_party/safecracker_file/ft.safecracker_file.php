@@ -237,14 +237,7 @@ class Safecracker_file_ft extends File_ft
 		
 		$this->EE->load->model(array('file_upload_preferences_model', 'field_model'));
 		
-		$upload_paths = array();
-		
-		$query = $this->EE->file_upload_preferences_model->get_upload_preferences($this->EE->session->userdata('group_id'));
-		
-		foreach ($query->result() as $row)
-		{
-			$upload_paths[$row->id] = $row->name;
-		}
+		$upload_paths = $this->EE->file_upload_preferences_model->get_dropdown_array($this->EE->session->userdata('group_id'));
 		
 		$defaults = array(
 			'field_content_options_file' => array(),
@@ -638,8 +631,8 @@ class Safecracker_file_ft extends File_ft
 		}
 		
 		// Check to make sure the directory exists
-		$directory_info = $this->EE->file_upload_preferences_model->get_upload_preferences($directory_id);
-		if ($directory_info->num_rows() <= 0)
+		$directory_info = $this->EE->file_upload_preferences_model->get_upload_preferences(NULL, $directory_id);
+		if (count($directory_info) == 0)
 		{
 			show_error(lang('upload_destination_does_not_exist'));
 		}
@@ -666,9 +659,12 @@ class Safecracker_file_ft extends File_ft
 		);
 		
 		// Put database files into list
-		foreach ($files_from_db['results']->result() as $file)
+		if ($files_from_db['results'] !== FALSE)
 		{
-			$files[$file->file_name] = $file->file_name;
+			foreach ($files_from_db['results']->result() as $file)
+			{
+				$files[$file->file_name] = $file->file_name;
+			}
 		}
 		
 		return $files;

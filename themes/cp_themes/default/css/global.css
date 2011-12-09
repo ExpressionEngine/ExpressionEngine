@@ -1319,12 +1319,16 @@ table.padTable td:last-child {
 	border-right: 		1px solid #d0d7df!important;
 }
 
-table.mainTable th {
+.mainTable th {
 	background:		#2a3940 url('../images/backgrounds_sprite.png') repeat-x 0 -540px;
 	color:				#fff;
 	padding:			9px 8px 10px 8px;
 	border-left:		1px solid #45555f;
 	cursor:				pointer;
+}
+
+th.no-sort {
+	cursor: default;
 }
 
 #toggle_all, td.file_select {
@@ -2920,7 +2924,6 @@ html.js .publish_hidden {
 /* Show Entry */
 #view_content_entry_links {
 	margin-top:			15px;
-	width:				125px;
 	padding:			10px;
 	font-weight:		bold;
 }
@@ -3435,8 +3438,7 @@ table.mainTable tr.comment-row-expanded td:last-child
 	border-left: 0px; 
 }
 
-table.mainTable tr.comment-row-main a:link {
-color: #5f6c74;
+table.mainTable a.less_important_link:link {
 	text-decoration: underline;
 }
 

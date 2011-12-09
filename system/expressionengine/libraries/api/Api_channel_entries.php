@@ -119,7 +119,7 @@ class Api_channel_entries extends Api {
 			return ($this->autosave) ? $this->errors : FALSE;
 		}
 		
-		$this->_prepare_data($data, $mod_data);
+		$this->_prepare_data($data, $mod_data, $autosave);
 		$this->_build_relationships($data);
 
 		$meta = array(
@@ -254,7 +254,7 @@ class Api_channel_entries extends Api {
 			return ($this->autosave) ? $this->errors : FALSE;
 		}
 		
-		$this->_prepare_data($data, $mod_data);
+		$this->_prepare_data($data, $mod_data, $autosave);
 		
 		$this->_build_relationships($data);
 		
@@ -1500,7 +1500,7 @@ class Api_channel_entries extends Api {
 	 * @param	mixed
 	 * @return	void
 	 */
-	function _prepare_data(&$data, &$mod_data)
+	function _prepare_data(&$data, &$mod_data, $autosave = FALSE)
 	{
 		$this->instantiate('channel_categories');
 
@@ -1586,7 +1586,10 @@ class Api_channel_entries extends Api {
 					// Break out module fields here
 					if (isset($data[$field_name]))
 					{
-						$data[$field_name] = $this->EE->api_channel_fields->apply('save', array($data[$field_name]));
+						if ( ! $autosave)
+						{
+							$data[$field_name] = $this->EE->api_channel_fields->apply('save', array($data[$field_name]));
+						}
 						
 						if (isset($data['revision_post'][$field_name]))
 						{
@@ -1596,7 +1599,10 @@ class Api_channel_entries extends Api {
 					}
 					elseif (isset($mod_data[$field_name]))
 					{
-						$mod_data[$field_name] = $this->EE->api_channel_fields->apply('save', array($mod_data[$field_name]));
+						if ( ! $autosave)
+						{
+							$mod_data[$field_name] = $this->EE->api_channel_fields->apply('save', array($mod_data[$field_name]));
+						}
 
 						if (isset($data['revision_post'][$field_name]))
 						{

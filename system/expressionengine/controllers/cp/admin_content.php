@@ -135,7 +135,7 @@ class Admin_content extends CI_Controller {
 		}
 
 		$this->lang->loadfile('admin_content');
-		$this->load->helper(array('form', 'snippets'));
+		$this->load->helper('snippets');
 		$this->load->model('channel_model');
 		$this->load->model('category_model');
 
@@ -272,7 +272,7 @@ class Admin_content extends CI_Controller {
 
 		$this->lang->loadfile('admin_content');
 		$this->load->library('table');
-		$this->load->helper(array('form', 'snippets'));
+		$this->load->helper('snippets');
 		$this->load->model('channel_model');
 		$this->load->model('template_model');
 		$this->load->model('status_model');
@@ -1082,7 +1082,6 @@ class Admin_content extends CI_Controller {
 		}
 
 		$this->lang->loadfile('admin_content');
-		$this->load->helper('form');
 		$this->load->model(array(
  			'channel_model', 'category_model', 'status_model', 'field_model'
 		));
@@ -1181,7 +1180,6 @@ class Admin_content extends CI_Controller {
 			show_error(lang('not_authorized'));
 		}
 
-		$this->load->helper('form');
 		$this->lang->loadfile('admin_content');
 		$this->load->model('channel_model');
 
@@ -1362,7 +1360,6 @@ class Admin_content extends CI_Controller {
 
 		$this->load->model('admin_model');
 		$this->load->model('category_model');
-		$this->load->helper('form');
 		$this->lang->loadfile('admin_content');
 		$this->load->library('table');
 
@@ -1598,7 +1595,6 @@ class Admin_content extends CI_Controller {
 			show_error(lang('not_authorized'));
 		}
 
-		$this->load->helper('form');
 		$this->lang->loadfile('admin_content');
 		$this->load->model('category_model');
 
@@ -1699,7 +1695,6 @@ class Admin_content extends CI_Controller {
 		$this->load->model('category_model');
 		$this->load->library('table');
 		$this->load->library('api');
-		$this->load->helper('form');
 		
 		$this->api->instantiate('channel_categories');
 		
@@ -1820,7 +1815,6 @@ class Admin_content extends CI_Controller {
 
 		$this->load->model('category_model');
 		$this->lang->loadfile('admin_content');
-		$this->load->helper('form');
 		$this->load->helper('string');
 		$this->load->library('form_validation');
 
@@ -1935,8 +1929,8 @@ class Admin_content extends CI_Controller {
 		$this->load->library('file_field');
 		$this->file_field->browser();
 		$vars['cat_image'] = $this->file_field->field(
-			$vars['cat_image'],
 			'cat_image',
+			$vars['cat_image'],
 			'all',
 			'image'
 		);
@@ -2074,7 +2068,6 @@ class Admin_content extends CI_Controller {
 		$zurl .= ($this->input->get_post('cat_group') !== FALSE) ? AMP.'cat_group='.$this->input->get_post('cat_group') : '';
 		$zurl .= ($this->input->get_post('integrated') !== FALSE) ? AMP.'integrated='.$this->input->get_post('integrated') : '';
 
-		$this->load->helper('form');
 		$this->lang->loadfile('admin_content');
 		$this->load->model('category_model');
 
@@ -2542,7 +2535,6 @@ class Admin_content extends CI_Controller {
 			return FALSE;
 		}
 		
-		$this->load->helper('form');
 		$this->lang->loadfile('admin_content');
 		
 		$this->cp->set_variable('cp_page_title', lang('global_sort_order'));
@@ -2889,7 +2881,7 @@ class Admin_content extends CI_Controller {
 		}
 
 		$this->load->model('addons_model');
-		$this->load->helper(array('snippets_helper', 'form'));
+		$this->load->helper('snippets_helper');
 		$this->lang->loadfile('admin_content');
 		$this->load->library('table');
 
@@ -3263,7 +3255,6 @@ class Admin_content extends CI_Controller {
 			show_error(lang('not_authorized'));
 		}
 
-		$this->load->helper('form');
 		$this->lang->loadfile('admin_content');
 		$this->load->model('category_model');
 
@@ -3386,7 +3377,6 @@ class Admin_content extends CI_Controller {
 	{
 		$this->_restrict_prefs_access();
 
-		$this->load->helper('form');
 		$this->load->model('status_model');
 		$this->lang->loadfile('admin_content');
 		$this->load->model('field_model');
@@ -3452,7 +3442,6 @@ class Admin_content extends CI_Controller {
 			show_error(lang('not_authorized'));
 		}
 
-		$this->load->helper('form');
 		$this->lang->loadfile('admin_content');
 		$this->load->model('field_model');
 
@@ -3711,7 +3700,7 @@ class Admin_content extends CI_Controller {
 		$this->load->library('table');
 
 		$this->load->library('api');
-		$this->load->helper(array('snippets_helper', 'form'));
+		$this->load->helper('snippets_helper');
 		$this->load->model('field_model');
 		
 		$this->api->instantiate('channel_fields');
@@ -3837,11 +3826,10 @@ class Admin_content extends CI_Controller {
 		if ($type == 'new')
 		{
 			$vars['edit_format_link'] = '';
-			$vars['field_fmt_options'] = array(
-				'none'		=> lang('none'),
-				'br'		=> lang('auto_br'),
-				'xhtml'		=> lang('xhtml')
-			);
+			
+			$this->load->model('addons_model');
+			
+			$vars['field_fmt_options'] = $this->addons_model->get_plugin_formatting(TRUE);
 		}
 		else
 		{
@@ -3872,7 +3860,7 @@ class Admin_content extends CI_Controller {
 			}
 		}
 
-		$vars['field_fmt'] = (isset($field_fmt) && $field_fmt != '') ? $field_fmt : 'xhtml';
+		$vars['field_fmt'] = (isset($field_fmt) && $field_fmt != '') ? $field_fmt : 'none';
 
 		// Prep our own fields
 		
@@ -4086,7 +4074,7 @@ class Admin_content extends CI_Controller {
 			$upload_dir_prefs = $this->tools_model->get_upload_preferences();
 			
 			// count upload dirs
-			if ($upload_dir_prefs->num_rows() == 0)
+			if (count($upload_dir_prefs) == 0)
 			{
 				$this->lang->loadfile('filemanager');
 				$error[] = lang('please_add_upload');
@@ -4305,7 +4293,15 @@ class Admin_content extends CI_Controller {
 
 			$this->db->update('channel_data', array('field_ft_'.$insert_id => $native_settings['field_fmt'])); 
 
-			foreach (array('none', 'br', 'xhtml') as $val)
+			$field_formatting = array('none', 'br', 'xhtml');
+			
+			//if the selected field formatting is not one of the native formats, make sure it gets added to exp_field_formatting for this field
+			if ( ! in_array($native_settings['field_fmt'], $field_formatting))
+			{
+				$field_formatting[] = $native_settings['field_fmt'];
+			}
+
+			foreach ($field_formatting as $val)
 			{
 				$f_data = array('field_id' => $insert_id, 'field_fmt' => $val);
 				$this->db->insert('field_formatting', $f_data); 
@@ -4398,7 +4394,6 @@ class Admin_content extends CI_Controller {
 			show_error(lang('not_authorized'));
 		}
 
-		$this->load->helper('form');
 		$this->lang->loadfile('admin_content');
 		$this->load->model('field_model');
 
@@ -4504,7 +4499,6 @@ class Admin_content extends CI_Controller {
 		
 		$group_id = $query->row('group_id');		
 
-		$this->load->helper('form');
 		$this->load->library('table');
 		$this->load->model('addons_model');
 		$this->lang->loadfile('admin_content');
@@ -4635,7 +4629,6 @@ class Admin_content extends CI_Controller {
 	{
 		$this->_restrict_prefs_access();
 
-		$this->load->helper('form');
 		$this->load->model('status_model');
 		$this->lang->loadfile('admin_content');
 		$this->load->model('status_model');
@@ -4702,7 +4695,6 @@ class Admin_content extends CI_Controller {
 			show_error(lang('not_authorized'));
 		}
 
-		$this->load->helper('form');
 		$this->lang->loadfile('admin_content');
 		$this->load->model('status_model');
 
@@ -4927,7 +4919,6 @@ class Admin_content extends CI_Controller {
 		));
 
 		$this->load->library('table');
-		$this->load->helper('form');
 		$this->lang->loadfile('admin_content');
 		$this->load->model('status_model');
 
@@ -4949,7 +4940,7 @@ class Admin_content extends CI_Controller {
 			$status_order = $this->status_model->get_next_status_order($this->input->get_post('group_id'));
 			$vars['status']			= '';
 			$vars['status_order']	= $status_order;
-			$vars['highlight']	 	= '';
+			$vars['highlight']	 	= '000000';
 		}
 
 		$vars['form_hidden']['status_id'] = $status_id;
@@ -5144,7 +5135,6 @@ class Admin_content extends CI_Controller {
 			show_error(lang('not_authorized'));
 		}
 
-		$this->load->helper('form');
 		$this->lang->loadfile('admin_content');
 		$this->load->model('status_model');
 
@@ -5252,7 +5242,6 @@ class Admin_content extends CI_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->load->helper(array('form', 'url'));
 		$this->load->library('table');
 		$this->lang->loadfile('admin_content');
 		$this->load->model('admin_model');
@@ -5422,7 +5411,6 @@ class Admin_content extends CI_Controller {
 	{
 		$this->_restrict_prefs_access();
 
-		$this->load->helper(array('form', 'url'));
 		$this->load->library('table');
 		$this->lang->loadfile('admin_content');
 		$this->load->model('admin_model');
@@ -5585,7 +5573,6 @@ class Admin_content extends CI_Controller {
 			}
 		}');
 
-		$this->load->helper('form');
 		$this->load->library('table');
 		$this->load->model('admin_model');
 

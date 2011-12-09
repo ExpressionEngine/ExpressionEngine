@@ -1,3 +1,15 @@
+/*!
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		ExpressionEngine Dev Team
+ * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @license		http://expressionengine.com/user_guide/license.html
+ * @link		http://expressionengine.com
+ * @since		Version 2.3
+ * @filesource
+ */
+
 (function($) {
 
 "use strict";
@@ -6,7 +18,6 @@
 		// @todo @pk ideas -------------
 		
 		// ensure copyright notice on all files (I always forget ...)
-		// first page currently isn't cached until you return to it		
 		
 		// edit specific:
 		
@@ -19,9 +30,7 @@
 		
 		// TODO:
 		
-		// as with callbacks in form validation - move the callback object
 		// sorting on single page, should just need to set up with add_data
-		// no result handling, especially on first page
 		// make sure that all of this works with multiple tables on the page (it should)
 		// make keyup timeout configurable
 		// flip headerSortUp and down in the css, is silly
@@ -32,6 +41,8 @@
 $.widget('ee.table', {
 
 	_listening: $(),		// form elements the filter is listening to
+	_template_string: '',	// raw template
+	_current_data: {},		// current_data
 	
 	options: {
 		uniqid: null,		// uniqid of related elements
@@ -42,6 +53,7 @@ $.widget('ee.table', {
 		template: null,		// table template
 		pag_template: null,	// pagination template
 		
+		rows: [],			// initial row data
 		sort: [],			// [[column, desc], [column2, asc]]
 		columns: [],		// column names to match_data / search, filter on the spot
 		
@@ -49,8 +61,8 @@ $.widget('ee.table', {
 		
 		filters: {},		// map of active filters {"field": "bar"}, usually updated right before request is made
 		
-		cssAsc: 'headerSortUp',
-		cssDesc: 'headerSortDown'
+		cssAsc: 'headerSortDown',	// matches tablesorter.js
+		cssDesc: 'headerSortUp'
 	},
 	
 	// jQuery ui widget constructor
@@ -59,23 +71,66 @@ $.widget('ee.table', {
 		var self = this,
 			options = self.options;
 
-		// cache content parent
+		// cache content parent and no results
 		self.tbody = self.element.find('tbody');
+		self.no_results = $('<div />').html(options.no_results);
+		
+		// check if we need no results to begin with
+		if ( ! self.tbody.children().length) {
+			self.element.hide();
+			self.element.after(self.no_results);
+		}
 
 		// set defaults
 		self.filters = options.filters;
-				
+		
+		// fix ampersands
+		options.base_url = options.base_url.replace(new RegExp('&amp;', 'g'), '&');
+		
 		// setup dependencies
 		self.sort = new Sort(options, self);
 		self.cache = new Cache(options.cache_limit);
 		self.pagination = new Pagination(options, self);
 		
+		// cache initial data
+		var cache_id = self._prep_for_cache(),
+			cache_data = {
+				'html_rows': self.tbody.find('tr'),
+				'pagination': self.pagination.html(),
+				'rows': options.rows
+			};
+		
+		self.cache.set(cache_id, cache_data);
+		self._current_data = cache_data;
+		
 		// create unique template name and compile
 		self.template_id = options.uniqid + '_row_template';
-		$.template(self.template_id, options.template);
+		self.set_template(options.template);
 		
-		// bind events
-		self._trigger('create', null, self._ui(/* @todo args */));
+		// bind create event (@todo consider ditching, pretty much impossible to bind on)
+		self._trigger('create', null, self._ui( { data: cache_data } ));
+	},
+	
+	/**
+	 * Get raw template string
+	 */
+	get_template: function() {
+		return this._template_string;
+	},
+	
+	/**
+	 * Use a different template
+	 */
+	set_template: function(template) {
+		this._template_string = template;
+		$.template(this.template_id, template);
+	},
+	
+	/**
+	 * Get current cache
+	 */
+	get_current_data: function() {
+		return this._current_data;
 	},
 	
 	/**
@@ -131,7 +186,6 @@ $.widget('ee.table', {
 			_timeout;
 		
 		if (form) {
-			url = form.attr('action');
 			
 			// bind to submit only if it's a form
 			if (obj.is(form)) {
@@ -199,43 +253,24 @@ $.widget('ee.table', {
 		// considered successes and will call this with
 		// the correct data =)
 		success = function(res) {
-			self._trigger('update', null, self._ui(/* @todo args */));
+			self._current_data = res;
 			
 			// @todo only remove those that are not in the result set?
+			if ( ! res.rows.length) {
+				self.element.hide();
+				self.element.after(self.no_results);
+			} else {
+				self.element.show();
+				self.tbody.html(res.html_rows);
+				self.no_results.remove();
+			}
 			
-			self.tbody.html(res.rows);
-			self.pagination.update(res.pagination);			
+			self.pagination.update(res.pagination);
+			self._trigger('update', null, self._ui( {data: res} ));
 		};
 		
-		
-		// @todo on the backend make sure the key name actually exists
-		// or it'll throw a sql exception in the search model
-		self.filters.tbl_sort = this.sort.get();
-		
-		
-		// Weed out the stuff we don't want in there, like XIDs,
-		// session ids, and blank values
-		
-		// Also take this opportunity to create a stable cache key, as
-		// some browsers sort objects and some do not =( . To get consistency
-		// for those that don't sort, we push keys and values into an array,
-		// sort the array, and concat to get a string. -pk
-		
-		var key, regex = /^(XID|S|D|C|M)$/,
-			cache_key_relevant = [];
-		
-		for (key in self.filters) {
-			if (self.filters[key] == '' || regex.exec(key) !== null) {
-				delete self.filters[key];
-			} else {
-				cache_key_relevant.push(key, self.filters[key]);
-			}
-		}
+		var cache_id = self._prep_for_cache();
 
-		cache_key_relevant.sort();
-
-		var cache_id = cache_key_relevant.join(''); // debug $.param(self.filters);
-		
 		// Do we have this page cached?
 		data = self.cache.get(cache_id);
 		if (data !== null) {
@@ -260,7 +295,7 @@ $.widget('ee.table', {
 			success: function(data) {
 				
 				// parse data
-				data.rows = $.tmpl(self.template_id, data.rows);
+				data.html_rows = $.tmpl(self.template_id, data.rows);
 				data.pagination = self.pagination.parse(data.pagination);
 
 				// add to cache
@@ -272,13 +307,41 @@ $.widget('ee.table', {
 	},
 	
 	/**
+	 * Weed out the stuff we don't want in there, like XIDs,
+	 * session ids, and blank values
+	
+	 * Also take this opportunity to create a stable cache key, as
+	 * some browsers sort objects and some do not =( . To get consistency
+	 * for those that don't sort, we push keys and values into an array,
+	 * sort the array, and concat to get a string. -pk
+	*/
+	_prep_for_cache: function() {
+		this.filters.tbl_sort = this.sort.get();
+		
+		var key, regex = /^(XID|S|D|C|M)$/,
+			cache_key_relevant = [];
+		
+		for (key in this.filters) {
+			if (this.filters[key] == '' || regex.exec(key) !== null) {
+				delete this.filters[key];
+			} else {
+				cache_key_relevant.push(key, this.filters[key]);
+			}
+		}
+
+		cache_key_relevant.sort();
+
+		return cache_key_relevant.join(''); // debug $.param(this.filters);
+	},
+	
+	/**
 	 * Helper method to set the filter object
 	 * from form elements.
 	 */
 	_set_filter: function(obj) {
 		var els = obj.serializeArray(),
 			self = this;
-		
+				
 		$.each(els, function() {
 			self.filters[this.name] = this.value;
 		});
@@ -289,11 +352,13 @@ $.widget('ee.table', {
 	 *
 	 * Should reflect the state most hooks might care about
 	 */
-	_ui: function() {
-		return {
+	_ui: function(add) {
+		add = add || {};
+				
+		return $.extend({
 			sort: this.sort.get(),// sort order [[column, asc/desc], [column2, asc/desc]]
 			filters: this.filters // all applied filters
-		};
+		}, add);
 	}
 	
 });
@@ -341,7 +406,7 @@ Cache.prototype = {
 	 */
 	set: function(id, data, cache_weight) {
 		var penalty = cache_weight || 1;
-		
+				
 		// evict data until this item fits
 		while (this.size + penalty > this.limit) {
 			var evicted = this.cache.shift();
@@ -370,7 +435,6 @@ Cache.prototype = {
 		var el, loc = this._find(id);
 		
 		if (loc > -1) {
-			
 			// detach and push on top of the queue (newest element)
 			el = this.cache.splice(loc, 1)[0];
 			this.cache.push(el);
@@ -381,7 +445,7 @@ Cache.prototype = {
 
 			return el[1];
 		}
-				
+			
 		return null;
 	},
 	
@@ -458,7 +522,7 @@ function Pagination(options, plugin) {
 	
 	// _request will grab the new page, and then call update	
 	this.els.delegate('a', 'click', function() {
-		var filters = self._extract_qs(this.href);
+		var filters = self._extract_qs(this.href, plugin.options.base_url);
 
 		plugin.add_filter(filters);
 		return false;
@@ -495,6 +559,15 @@ Pagination.prototype = {
 		this.els.html(data);
 	},
 	
+	/**
+	 * Get the pagination html
+	 *
+	 * Used to fill the initial cache
+	 */
+	html: function() {
+		return this.els.html();
+	},
+	
 	// Private methods //
 	
 	/**
@@ -505,7 +578,9 @@ Pagination.prototype = {
 	 * to manually apply them to the next page.
 	 */
 	_qs_splitter: new RegExp('([^&=]+)=?([^&]*)', 'g'),
-	_extract_qs: function(url) {
+	_extract_qs: function(url, base) {
+		url = url.replace(base, '');
+		
 		var seg,
 			idx = url.indexOf('?'),
 			res = {};
@@ -565,10 +640,16 @@ function Sort(options, plugin) {
 	});
 	
 	// setup events
+	
 	plugin.element.find('thead')
 		.delegate('th', 'selectstart', function() { return false; }) // don't select with shift
 		.delegate('th', 'click', function(e) {
 			var el = $(this);
+			
+			// allow things like checkboxes inside table headers
+			if (el.has('input').length) {
+				return true;
+			}
 		
 			// if holding shift key: add
 			if ( ! el.data('sortable')) {
@@ -694,18 +775,5 @@ Sort.prototype = {
 		return this;
 	}
 }
-
-
-// --------------------------------------------------------------------------
-
-// Go go go! Init all affected tables on the page
-$('table').each(function() {
-	var config;
-	
-	if ($(this).data('table_config')) {
-		config = $(this).data('table_config');
-		$(this).table(config);
-	}
-});
 
 })(jQuery);

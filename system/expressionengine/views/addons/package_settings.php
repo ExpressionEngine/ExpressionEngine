@@ -20,7 +20,6 @@ if ($EE_view_disable !== TRUE)
 				<?=form_open($form_action)?>
 				
 				<?php
-				$this->table->set_template($cp_table_template);
 				$this->table->set_heading(
 										array('data' => lang('component'), 'style' => 'width:40%;'),
 										array('data' => lang('status')),

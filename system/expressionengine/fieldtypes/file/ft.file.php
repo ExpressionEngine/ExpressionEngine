@@ -84,8 +84,8 @@ class File_ft extends EE_Fieldtype {
 		$content_type			= (isset($this->settings['field_content_type'])) ? $this->settings['field_content_type'] : 'all';
 		
 		return $this->EE->file_field->field(
-			$data,
 			$this->field_name,
+			$data,
 			$allowed_file_dirs,
 			$content_type
 		);
@@ -103,12 +103,13 @@ class File_ft extends EE_Fieldtype {
 		// Parse out the file info
 		$file_info['path'] = '';
 		
+		$file_dirs = $this->EE->functions->fetch_file_paths();
+		
+		// If the file field is in the "{filedir_x}image.jpg" format
 		if (preg_match('/^{filedir_(\d+)}/', $data, $matches))
 		{
 			// only replace it once
 			$path = substr($data, 0, 10 + strlen($matches[1]));
-
-			$file_dirs = $this->EE->functions->fetch_file_paths();
 			
 			if (isset($file_dirs[$matches[1]]))
 			{
@@ -116,6 +117,16 @@ class File_ft extends EE_Fieldtype {
 												 $file_dirs[$matches[1]], $path);
 				$data = str_replace($matches[0], '', $data);				
 			}
+		}
+		// If file field is just a file ID
+		else if (is_numeric($data))
+		{
+			// Query file model on file ID
+			$this->EE->load->model('file_model');
+			$file = $this->EE->file_model->get_files_by_id($data)->row_array();
+			
+			$file_info['path'] = $file_dirs[$file['upload_location_id']];
+			$data = $file['file_name'];
 		}
 
 		$file_info['extension'] = substr(strrchr($data, '.'), 1);
@@ -188,7 +199,7 @@ class File_ft extends EE_Fieldtype {
 		
 		$dirs = $this->EE->file_upload_preferences_model->get_upload_preferences(1);
 
-		foreach($dirs->result_array() as $dir)
+		foreach($dirs as $dir)
 		{
 			$directory_options[$dir['id']] = $dir['name'];
 		}

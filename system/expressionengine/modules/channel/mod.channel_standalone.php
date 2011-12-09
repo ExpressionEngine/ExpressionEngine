@@ -395,13 +395,13 @@ class Channel_standalone extends Channel {
 		$file_list = array();
 		$directories = array();
 
-		foreach($upload_directories->result() as $row)
+		foreach($upload_directories as $row)
 		{
-			$directories[$row->id] = $row->name;
+			$directories[$row['id']] = $row['name'];
 
-			$file_list[$row->id]['id'] = $row->id;
-			$file_list[$row->id]['name'] = $row->name;
-			$file_list[$row->id]['url'] = $row->url;
+			$file_list[$row['id']]['id'] = $row['id'];
+			$file_list[$row['id']]['name'] = $row['name'];
+			$file_list[$row['id']]['url'] = $row['url'];
 		}
 
 		// Fetch Custom Fields

@@ -57,7 +57,7 @@ $lang = array(
 'In order to update, you must first put the unzipped file containing the ip2nation sql data on your server, and then submit the location of the file.',
 
 'ip2nation_file_loc' => 
-'SQL File Location', 
+'Server Path to SQL File', 
 
 'unable_to_read_file' =>
 'Unable to read file.',

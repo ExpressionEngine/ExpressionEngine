@@ -27,7 +27,7 @@ if ( ! $EE_view_disable)
 						<tr>
 							<th><?=lang('thumbnail')?></th>
 							<th><?=lang('title')?></th>
-							<th><?=lang('caption')?></th>
+							<th><?=lang('description')?></th>
 							<th style="width:10%"><?=lang('include')?> <?=form_checkbox('include')?></th>
 						</tr>
 					</thead>

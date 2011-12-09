@@ -38,8 +38,7 @@ class Content_files_modal extends CI_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->load->library(array('filemanager'));
-		$this->load->helper(array('form'));
+		$this->load->library('filemanager');
 		$this->load->model(array('file_model', 'file_upload_preferences_model'));
 
 		// Get upload dirs

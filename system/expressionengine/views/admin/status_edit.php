@@ -39,7 +39,6 @@ if ($EE_view_disable !== TRUE)
 		<?php if ($this->session->userdata('group_id') == 1):?>
 		<h3><?=lang('restrict_status_to_group')?></h3>
 		<?php
-		$this->table->set_template($cp_table_template);
 		$this->table->set_heading(
 									lang('member_group'),
 									lang('can_edit_status')

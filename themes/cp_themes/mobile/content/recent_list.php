@@ -17,7 +17,6 @@ if ($EE_view_disable !== TRUE)
 			<p class="notice"><?=$no_result?></p>
 		<?php else:
 			
-			$this->table->set_template($cp_table_template);
 			$this->table->set_heading($left_column, $right_column);
 
 			foreach ($entries as $left => $right)
