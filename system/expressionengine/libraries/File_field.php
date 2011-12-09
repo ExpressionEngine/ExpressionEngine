@@ -54,16 +54,17 @@ class File_field {
 		$this->EE->lang->loadfile('fieldtypes');
 		
 		$vars = array(
-			'filedir'	=> '',
-			'filename'	=> ''
+			'filedir'				=> '',
+			'filename'				=> '',
+			'upload_location_id'	=> ''
 		);
 		$allowed_file_dirs = ($allowed_file_dirs == 'all') ? '' : $allowed_file_dirs;
 		$specified_directory = ($allowed_file_dirs == '') ? 'all' : $allowed_file_dirs;
 		
 		// Parse field data
-		if ( ! empty($data))
+		if ( ! empty($data) AND ($parsed_field = $this->parse_field($data)) !== FALSE)
 		{
-			$vars = $this->parse_field($data);
+			$vars = $parsed_field;
 			$vars['filename'] = $vars['filename'].'.'.$vars['extension'];
 		}
 		
