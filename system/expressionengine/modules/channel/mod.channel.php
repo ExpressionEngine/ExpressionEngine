@@ -5485,7 +5485,7 @@ class Channel {
 				$cat_vars['total_results'] = $total_results;
 
 				$chunk = $this->EE->functions->prep_conditionals($chunk, $cat_vars);
-
+				
 				$chunk = str_replace(array(LD.'category_name'.RD,
 											LD.'category_url_title'.RD,
 											LD.'category_description'.RD,
