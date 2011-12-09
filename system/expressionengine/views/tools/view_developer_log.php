@@ -20,15 +20,32 @@ if ($EE_view_disable !== TRUE)
 				</h2>
 			</div>
 			<div class="pageContents">
-			<?php $this->load->view('_shared/message');?>
+				<?php $this->load->view('_shared/message');?>
 				
-				<div class="cp_button"><a href="<?=BASE.AMP.'C=tools_logs'.AMP.'M=clear_log_files'.AMP.'type=developer'?>"><?=lang('clear_logs')?></a></div>
-				<div class="clear_left"></div>
+				<? if ( ! empty($rows)): ?>
+					<div class="cp_button">
+						<a href="<?=BASE.AMP.'C=tools_logs'.AMP.'M=clear_log_files'.AMP.'type=developer'?>">
+							<?=lang('clear_logs')?>
+						</a>
+					</div>
+					<div class="clear_left"></div>
+				<? endif ?>
+				
+				<?=form_open('C=tools_logs'.AMP.'M=clear_log_files'.AMP.'type=developer')?>
+
+					<?=$table_html?>
 					
-				<?php
-				echo $table_html;
-				echo $pagination_html;
-				?>
+					<? if ( ! empty($rows)): ?>
+						<div class="tableFooter">
+							<div class="tableSubmit">
+								<?=form_submit('email_logs', lang('delete'), 'class="submit"')?>
+							</div>		
+                    	
+							<?=$pagination_html?>
+						</div> <!-- tableFooter -->
+					<? endif ?>
+
+				<?=form_close()?>
 			</div>
 
 	</div> <!-- contents -->

@@ -278,6 +278,40 @@ class Tools_model extends CI_Model {
 	// --------------------------------------------------------------------
 	
 	/**
+	 * Delete logs
+	 *
+	 * Given a table name, clears out its contents. Given a table name and
+	 * array of log IDs, deletes only those rows from table.
+	 *
+	 * @param	string $table Table name
+	 * @param	string $id_field Name of ID field in table
+	 * @param	array $log_ids IDs of rows to delete
+	 * @return	void
+	 */
+	public function delete_logs($table = NULL, $id_field = NULL, $log_ids = array())
+	{
+		// Can't do anything without the table name
+		if (empty($table))
+		{
+			return FALSE;
+		}
+		
+		// If no log IDs were passed, clear out the table
+		if (empty($log_ids))
+		{
+			$this->db->empty_table($table);
+		}
+		// Otherwise, delete WHERE IN the array of log IDs
+		else
+		{
+			$this->db->where_in($id_field, $log_ids);
+			$this->db->delete($table);
+		}
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
 	 * Blacklist IP addresses
 	 *
 	 * @param	mixed	list of ips
