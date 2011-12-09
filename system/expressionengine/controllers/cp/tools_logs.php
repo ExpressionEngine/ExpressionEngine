@@ -592,7 +592,7 @@ class Tools_logs extends CI_Controller {
 					'class'	=> $new
 				),
 				'description' => array(
-					'data'	=> (isset($log['function'])) ? $this->logger->build_deprecation_language($log) : $data['description'],
+					'data'	=> (isset($log['function'])) ? $this->logger->build_deprecation_language($log) : $log['description'],
 					'class'	=> $new
 				),
 				'viewed' => $log['viewed']
