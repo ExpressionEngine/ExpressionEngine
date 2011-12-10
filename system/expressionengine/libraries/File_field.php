@@ -54,16 +54,17 @@ class File_field {
 		$this->EE->lang->loadfile('fieldtypes');
 		
 		$vars = array(
-			'filedir'	=> '',
-			'filename'	=> ''
+			'filedir'				=> '',
+			'filename'				=> '',
+			'upload_location_id'	=> ''
 		);
 		$allowed_file_dirs = ($allowed_file_dirs == 'all') ? '' : $allowed_file_dirs;
 		$specified_directory = ($allowed_file_dirs == '') ? 'all' : $allowed_file_dirs;
 		
 		// Parse field data
-		if ( ! empty($data))
+		if ( ! empty($data) AND ($parsed_field = $this->parse_field($data)) !== FALSE)
 		{
-			$vars = $this->parse_field($data);
+			$vars = $parsed_field;
 			$vars['filename'] = $vars['filename'].'.'.$vars['extension'];
 		}
 		
@@ -77,7 +78,7 @@ class File_field {
 		);
 		
 		// Get the thumbnail
-		$thumb_info = $this->EE->filemanager->get_thumb($vars['filename'], $vars['filedir']);
+		$thumb_info = $this->EE->filemanager->get_thumb($vars['filename'], $vars['upload_location_id']);
 		$vars['thumb'] = img(array(
 			'src' => $thumb_info['thumb'],
 			'alt' => $vars['filename']
@@ -85,7 +86,7 @@ class File_field {
 		
 		// Create the hidden fields for the file and directory
 		$vars['hidden']	  = form_hidden($field_name.'_hidden', $vars['filename']);
-		$vars['hidden']	 .= form_hidden($field_name.'_hidden_dir', $vars['filedir']);
+		$vars['hidden']	 .= form_hidden($field_name.'_hidden_dir', $vars['upload_location_id']);
 		
 		// Create a standard file upload field and dropdown for folks 
 		// without javascript
@@ -95,7 +96,7 @@ class File_field {
 			'data-content-type'	=> $content_type,
 			'data-directory'	=> $specified_directory
 		));
-		$vars['dropdown'] = form_dropdown($field_name.'_directory', $upload_dirs, $vars['filedir']);
+		$vars['dropdown'] = form_dropdown($field_name.'_directory', $upload_dirs, $vars['upload_location_id']);
 
 		// Check to see if they have access to any directories to create an upload link
 		$vars['upload_link'] = (count($upload_dirs) > 0) ? '<a href="#" class="choose_file" data-directory="'.$specified_directory.'">'.lang('add_file').'</a>' : lang('directory_no_access');
@@ -289,7 +290,8 @@ class File_field {
 	 *
 	 * @access	public
 	 * @param	string $data Field contents
-	 * @return	array Information about file and upload directory
+	 * @return	array|boolean Information about file and upload directory, false 
+	 * 		if there is no file
 	 */
 	public function parse_field($data)
 	{
@@ -316,9 +318,10 @@ class File_field {
 			$file = $this->EE->file_model->get_files_by_id($data)->row_array();
 		}
 
+		// If there is no file, get out of here
 		if (empty($file))
 		{
-			return array();
+			return FALSE;
 		}
 
 		// Set additional data based on what we've gathered

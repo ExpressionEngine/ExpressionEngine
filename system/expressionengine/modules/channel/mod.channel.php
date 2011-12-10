@@ -5448,8 +5448,8 @@ class Channel {
 
 			$this->EE->load->library('typography');
 			$this->EE->typography->initialize(array(
-						'convert_curly'	=> FALSE)
-						);
+				'convert_curly'	=> FALSE
+			));
 
 			$this->category_count = 0;
 			$total_results = count($this->cat_array);
@@ -5465,14 +5465,15 @@ class Channel {
 				$this->EE->load->library('file_field');
 				$cat_image = $this->EE->file_field->parse_field($val[5]);
 				
-				$cat_vars = array('category_name'			=> $val[3],
-								  'category_url_title'		=> $val[6],
-								  'category_description'	=> $val[4],
-								  'category_image'			=> $cat_image['url'],
-								  'category_id'				=> $val[0],
-								  'parent_id'				=> $val[1],
-								  'active'					=> ($active_cat == $val[0] || $active_cat == $val[6])
-								);
+				$cat_vars = array(
+					'category_name'			=> $val[3],
+					'category_url_title'	=> $val[6],
+					'category_description'	=> $val[4],
+					'category_image'		=> $cat_image['url'],
+					'category_id'			=> $val[0],
+					'parent_id'				=> $val[1],
+					'active'				=> ($active_cat == $val[0] || $active_cat == $val[6])
+				);
 
 				// add custom fields for conditionals prep
 
@@ -5485,20 +5486,26 @@ class Channel {
 				$cat_vars['total_results'] = $total_results;
 
 				$chunk = $this->EE->functions->prep_conditionals($chunk, $cat_vars);
-
-				$chunk = str_replace(array(LD.'category_name'.RD,
-											LD.'category_url_title'.RD,
-											LD.'category_description'.RD,
-											LD.'category_image'.RD,
-											LD.'category_id'.RD,
-											LD.'parent_id'.RD),
-									 array($val[3],
-											$val[6],
-									 		$val[4],
-									 		$cat_image['url'],
-									 		$val[0],
-											$val[1]),
-									$chunk);
+				
+				$chunk = str_replace(
+					array(
+						LD.'category_name'.RD,
+						LD.'category_url_title'.RD,
+						LD.'category_description'.RD,
+						LD.'category_image'.RD,
+						LD.'category_id'.RD,
+						LD.'parent_id'.RD
+					),
+					array(
+						$val[3],
+						$val[6],
+						$val[4],
+						$cat_image['url'],
+						$val[0],
+						$val[1]
+					),
+					$chunk
+				);
 
 				foreach($path as $k => $v)
 				{
@@ -5517,14 +5524,15 @@ class Channel {
 				{
 					if (isset($val['field_id_'.$cv['field_id']]) AND $val['field_id_'.$cv['field_id']] != '')
 					{
-						$field_content = $this->EE->typography->parse_type($val['field_id_'.$cv['field_id']],
-																	array(
-																		  'text_format'		=> $val['field_ft_'.$cv['field_id']],
-																		  'html_format'		=> $val['field_html_formatting'],
-																		  'auto_links'		=> 'n',
-																		  'allow_img_url'	=> 'y'
-																		)
-																);
+						$field_content = $this->EE->typography->parse_type(
+							$val['field_id_'.$cv['field_id']],
+							array(
+								'text_format'		=> $val['field_ft_'.$cv['field_id']],
+								'html_format'		=> $val['field_html_formatting'],
+								'auto_links'		=> 'n',
+								'allow_img_url'	=> 'y'
+							)
+						);
 						$chunk = str_replace(LD.$cv['field_name'].RD, $field_content, $chunk);
 					}
 					else
@@ -5653,17 +5661,23 @@ class Channel {
 
 		switch ($orderby)
 		{
-			case 'date'					: $sql .= "ORDER BY exp_channel_titles.entry_date";
+			case 'date':
+				$sql .= "ORDER BY exp_channel_titles.entry_date";
 				break;
-			case 'expiration_date'		: $sql .= "ORDER BY exp_channel_titles.expiration_date";
+			case 'expiration_date':
+				$sql .= "ORDER BY exp_channel_titles.expiration_date";
 				break;
-			case 'title'				: $sql .= "ORDER BY exp_channel_titles.title";
+			case 'title':
+				$sql .= "ORDER BY exp_channel_titles.title";
 				break;
-			case 'comment_total'		: $sql .= "ORDER BY exp_channel_titles.entry_date";
+			case 'comment_total':
+				$sql .= "ORDER BY exp_channel_titles.entry_date";
 				break;
-			case 'most_recent_comment'	: $sql .= "ORDER BY exp_channel_titles.recent_comment_date desc, exp_channel_titles.entry_date";
+			case 'most_recent_comment':
+				$sql .= "ORDER BY exp_channel_titles.recent_comment_date desc, exp_channel_titles.entry_date";
 				break;
-			default						: $sql .= "ORDER BY exp_channel_titles.title";
+			default:
+				$sql .= "ORDER BY exp_channel_titles.title";
 				break;
 		}
 
@@ -5671,11 +5685,14 @@ class Channel {
 
 		switch ($sort)
 		{
-			case 'asc'	: $sql .= " asc";
+			case 'asc':
+				$sql .= " asc";
 				break;
-			case 'desc'	: $sql .= " desc";
+			case 'desc':
+				$sql .= " desc";
 				break;
-			default		: $sql .= " asc";
+			default:
+				$sql .= " asc";
 				break;
 		}
 
@@ -5767,18 +5784,16 @@ class Channel {
 				}
 			}
 
-			$this->category_tree(
-									array(
-											'group_id'		=> $group_id,
-											'channel_id'		=> $channel_id,
-											'path'			=> $c_path,
-											'template'		=> $cat_chunk,
-											'channel_array' 	=> $channel_array,
-											'parent_only'	=> $parent_only,
-											'show_empty'	=> $this->EE->TMPL->fetch_param('show_empty'),
-											'strict_empty'	=> 'yes'										
-										  )
-								);
+			$this->category_tree(array(
+				'group_id'		=> $group_id,
+				'channel_id'	=> $channel_id,
+				'path'			=> $c_path,
+				'template'		=> $cat_chunk,
+				'channel_array' => $channel_array,
+				'parent_only'	=> $parent_only,
+				'show_empty'	=> $this->EE->TMPL->fetch_param('show_empty'),
+				'strict_empty'	=> 'yes'
+			));
 
 			if (count($this->category_list) > 0)
 			{
