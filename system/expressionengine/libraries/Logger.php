@@ -168,6 +168,11 @@ class EE_Logger {
 		);
 		
 		$this->developer($deprecated, TRUE);
+		
+		if (REQ == 'CP')
+		{
+			$this->EE->session->set_flashdata('message_error', $this->build_deprecation_language($deprecated));
+		}
 	}
 	
 	// --------------------------------------------------------------------
