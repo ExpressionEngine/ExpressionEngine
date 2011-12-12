@@ -522,7 +522,7 @@ class Auth {
 		{
 			if ( isset($_SERVER['HTTP_AUTHORIZATION']) && substr($_SERVER['HTTP_AUTHORIZATION'], 0, 6) == 'Basic ')
 			{
-				list($user, $pass) = explode(':', base64_decode(substr($HTTP_AUTHORIZATION, 6)));
+				list($user, $pass) = explode(':', base64_decode(substr($_SERVER['HTTP_AUTHORIZATION'], 6)));
 			}
 			elseif ( ! empty($_ENV) && isset($_ENV['HTTP_AUTHORIZATION']) && substr($_ENV['HTTP_AUTHORIZATION'], 0, 6) == 'Basic ')
 			{
@@ -572,6 +572,7 @@ class Auth_result {
 	private $member;
 	private $session_id;
 	private $remember_me = 0;
+	private $anon = FALSE;
 	private $EE;
 	
 	/**
@@ -702,6 +703,19 @@ class Auth_result {
 	{
 		$this->remember_me = $expire;
 	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Anon setter
+	 *
+	 * @access	public
+	 */
+	function anon($anon)
+	{
+		$this->anon = $anon;
+	}
+
 	
 	// --------------------------------------------------------------------
 	
@@ -722,9 +736,18 @@ class Auth_result {
 		{
 			$expire = $this->remember_me;
 			
-			$this->EE->functions->set_cookie(
-				$this->EE->session->c_anon, 1, $expire
-			);
+			if ($this->anon)
+			{
+				$this->EE->functions->set_cookie(
+					$this->EE->session->c_anon, 1, $expire
+				);				
+			}
+			else
+			{
+				// Unset the anon cookie
+				$this->EE->functions->set_cookie($this->EE->session->c_anon);				
+			}
+
 			$this->EE->functions->set_cookie(
 				$this->EE->session->c_expire, time()+$expire, $expire
 			);

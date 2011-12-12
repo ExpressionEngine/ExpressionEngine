@@ -166,7 +166,14 @@ class Wizard extends CI_Controller {
 		parent::__construct();
 		
 		// Third party constants
-		define('PATH_THIRD',	EE_APPPATH.'third_party/');
+		if ($this->config->item('third_party_path'))
+		{
+			define('PATH_THIRD',    rtrim($this->EE->config->item('third_party_path'), '/').'/');
+		}
+		else
+		{
+			define('PATH_THIRD',	EE_APPPATH.'third_party/');
+		}
 		
 		$req_source = $this->input->server('HTTP_X_REQUESTED_WITH');
 		define('AJAX_REQUEST',	($req_source == 'XMLHttpRequest') ? TRUE : FALSE);		
@@ -204,7 +211,7 @@ class Wizard extends CI_Controller {
 		else
 		{
 			// must be in a public system folder so try one level back from current folder
-			$this->theme_path = str_replace(SYSDIR, '', $this->theme_path).'themes/';
+			$this->theme_path = preg_replace('/\b'.preg_quote(SYSDIR).'\b/', '', $this->theme_path).'themes/';
 		}
 
 		$this->root_theme_path = $this->theme_path;
@@ -871,13 +878,6 @@ PAPAYA;
 			}
 		}
 		
-		// MySQL passwords can not contain a dollar sign
-		if (strpos($this->userdata['db_password'], '$') !== FALSE)
-		{
-			$errors[] = $this->lang->line('password_no_dollar');
-
-		}
-		
 		// Is email valid?
 		if ($this->userdata['email_address'] != '' AND ! valid_email($this->userdata['email_address']))
 		{
@@ -1175,6 +1175,12 @@ PAPAYA;
 				else
 				{
 					$this->userdata[$key] = $this->input->post($key);					
+
+					// Be a bit more friendly by trimming most inputs, but leave passwords as-is
+					if (! in_array($key, array('db_password', 'password', 'password_confirm')))
+					{
+						$this->userdata[$key] = trim($this->userdata[$key]);
+					}
 				}
 			}
 		}
@@ -1713,7 +1719,7 @@ PAPAYA;
 		$this->load->helper('directory');
 		$ext_len = strlen(EXT);
 		
-		if (($map = directory_map(EE_APPPATH.'/third_party/')) !== FALSE)
+		if (($map = directory_map(PATH_THIRD)) !== FALSE)
 		{
 			foreach ($map as $pkg_name => $files)
 			{
@@ -1737,7 +1743,7 @@ PAPAYA;
 
 						if ($file == $pkg_name)
 						{
-							$this->lang->load($file.'_lang', '', FALSE, FALSE, EE_APPPATH.'/third_party/'.$pkg_name.'/');
+							$this->lang->load($file.'_lang', '', FALSE, FALSE, PATH_THIRD.$pkg_name.'/');
 							$name = ($this->lang->line(strtolower($file).'_module_name') != FALSE) ? $this->lang->line(strtolower($file).'_module_name') : $file;			
 							$modules[$file] = array('name' => ucfirst($name), 'checked' => FALSE);
 						}
@@ -2168,7 +2174,7 @@ PAPAYA;
 
 		foreach($modules as $module)
 		{
-			$path = EE_APPPATH.'/third_party/'.$module.'/';
+			$path = PATH_THIRD.$module.'/';
 			
 			if (file_exists($path.'upd.'.$module.EXT))
 			{
@@ -2865,12 +2871,13 @@ PAPAYA;
 					if (is_bool($v))
 					{
 						$v = ($v == TRUE) ? 'TRUE' : 'FALSE';
-					
+
 						$str .= "\$db['".$key."']['".$k."'] = ".$v.";\n";
 					}
 					else
 					{
-						$str .= "\$db['".$key."']['".$k."'] = \"".addslashes($v)."\";\n";
+						$v = str_replace(array('\\', "'"), array('\\\\', "\\'"), $v);
+						$str .= "\$db['".$active_group."']['".$k."'] = '".$v."';\n";
 					}
 				}
 			}
@@ -2884,7 +2891,8 @@ PAPAYA;
 				}
 				else
 				{
-					$str .= "\$db['".$active_group."']['".$key."'] = \"".$val."\";\n";
+					$val = str_replace(array('\\', "'"), array('\\\\', "\\'"), $val);
+					$str .= "\$db['".$active_group."']['".$key."'] = '".$val."';\n";
 				}
 			}		
 		} 
@@ -2934,7 +2942,7 @@ PAPAYA;
 			}
 			else
 			{
-				$path = EE_APPPATH.'/third_party/'.$module.'/';
+				$path = PATH_THIRD.$module.'/';
 			}
 			
 			if (file_exists($path.'upd.'.$module.EXT))

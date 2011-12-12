@@ -186,7 +186,9 @@ class File_model extends CI_Model {
 			'mime_type' => '',
 			'file_name' => '',
 			'file_size' => '',
-			'caption' => '',
+			'description' => '',
+			'credit' => '',
+			'location' => '',
 			'metadata' => '',
 			'uploaded_by_member_id' => '',
 			'upload_date' => '',
@@ -207,8 +209,16 @@ class File_model extends CI_Model {
 		$data = array_intersect_key($data, $valid_keys);
 		
 		// Set some defaults if missing
-		$data['modified_by_member_id'] = $this->session->userdata('member_id');
-		$data['modified_date'] = $this->localize->now;
+		if ( ! isset($data['modified_by_member_id']))
+		{
+			$data['modified_by_member_id'] = $this->session->userdata('member_id');
+		}
+		
+		if ( ! isset($data['modified_date']))
+		{
+			$data['modified_date'] = $this->localize->now;
+		}
+			
 		$data['status'] = ( ! isset($data['status'])) ? 'o' : $data['status'];
 		
 		if (isset($data['file_name']) OR isset($data['title']))
@@ -713,7 +723,6 @@ class File_model extends CI_Model {
 			$this->session->userdata('group_id'),
 			$directory_id
 		);
-		$upload_dir = $upload_dir->row();
 		
 		// Delete the thumb
 		$thumb_information = $this->filemanager->get_thumb($file_name, $directory_id);
@@ -724,13 +733,13 @@ class File_model extends CI_Model {
 		
 		foreach ($file_dimensions->result() as $file_dimension)
 		{
-			@unlink($upload_dir->server_path . '_' . $file_dimension->short_name . '/' . $file_name);
+			@unlink($upload_dir['server_path'] . '_' . $file_dimension->short_name . '/' . $file_name);
 		}
 		
 		if ( ! $only_thumbs)
 		{
 			// Finally, delete the original
-			if ( ! @unlink($upload_dir->server_path . $file_name))
+			if ( ! @unlink($upload_dir['server_path'] . $file_name))
 			{
 				return FALSE;
 			}

@@ -61,7 +61,6 @@ class EE_Schema {
 		
 		$Q[] = "CREATE TABLE exp_sessions (
 			  session_id varchar(40) default '0' NOT NULL,
-			  site_id INT(4) UNSIGNED NOT NULL DEFAULT 1,
 			  member_id int(10) default '0' NOT NULL,
 			  admin_sess tinyint(1) default '0' NOT NULL,
 			  ip_address varchar(16) default '0' NOT NULL,
@@ -69,7 +68,6 @@ class EE_Schema {
 			  last_activity int(10) unsigned DEFAULT '0' NOT NULL,
 			  PRIMARY KEY `session_id` (`session_id`),
 			  KEY `member_id` (`member_id`),
-			  KEY `site_id` (`site_id`),
 			  KEY `last_activity_idx` (`last_activity`)
 			)";
 		
@@ -1239,7 +1237,9 @@ class EE_Schema {
 				`mime_type` varchar(255) DEFAULT NULL,
 				`file_name` varchar(255) DEFAULT NULL,
 				`file_size` int(10) DEFAULT '0',
-				`caption` text,
+				`description` text,
+				`credit` varchar(255) DEFAULT NULL,
+				`location` varchar(255) DEFAULT NULL,
 				`field_1` text,
   				`field_1_fmt` tinytext,
 				`field_2` text,
@@ -1275,6 +1275,7 @@ class EE_Schema {
 		
 		$Q[] = "CREATE TABLE `exp_file_dimensions` (
 				`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+				`site_id` int(4) unsigned DEFAULT '1',
 				`upload_location_id` int(4) unsigned DEFAULT NULL,
   				`title` varchar(255) DEFAULT '',
 				`short_name` varchar(255) DEFAULT '',
@@ -1301,8 +1302,8 @@ class EE_Schema {
 				`wm_hor_alignment` varchar(10) DEFAULT 'left',
 				`wm_padding` int(3) unsigned DEFAULT NULL,
 				`wm_opacity` int(3) unsigned DEFAULT NULL,
-				`wm_x_offset` int(4) unsigned DEFAULT NULL,
-				`wm_y_offset` int(4) unsigned DEFAULT NULL,
+				`wm_hor_offset` int(4) unsigned DEFAULT NULL,
+				`wm_vrt_offset` int(4) unsigned DEFAULT NULL,
 				`wm_x_transp` int(4) DEFAULT NULL,
 				`wm_y_transp` int(4) DEFAULT NULL,
 				`wm_font_color` varchar(7) DEFAULT NULL,

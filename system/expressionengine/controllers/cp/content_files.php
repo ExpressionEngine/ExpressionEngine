@@ -53,6 +53,7 @@ class Content_files extends CI_Controller {
 		$this->load->helper(array('form'));
 		$this->load->model('file_model');
 		$this->load->model('file_upload_preferences_model');
+		$this->cp->add_to_head($this->view->head_link('css/file_browser.css'));
 
 		// Get upload dirs
 		$upload_dirs = $this->filemanager->fetch_upload_dirs();
@@ -170,6 +171,7 @@ class Content_files extends CI_Controller {
 		foreach ($this->_upload_dirs as $k => $dir)
 		{
 			$upload_dirs_options[$dir['id']] = $dir['name'];
+			$allowed_dirs[] = $k;
 		}
 		
 		$selected_dir = ($selected_dir = $this->input->get_post('dir_id')) ? $selected_dir : NULL;
@@ -177,18 +179,15 @@ class Content_files extends CI_Controller {
 		// We need this for the filter, so grab it now
 		$cat_form_array = $this->api_channel_categories->category_form_tree($this->nest_categories);
 		
-		// Figure out default category groups
-		$category_groups = $this->file_upload_preferences_model->get_category_groups($allowed_dirs);
-
-		// Cat filter
-		$cat_group = (isset($get_post['cat_id']) AND ! empty($get_post['cat_id'])) ? $get_post['cat_id'] : implode('|', $category_groups);
-		$category_options = $this->category_filter_options($cat_group, $cat_form_array, $allowed_dirs);
-		
 		// If we have directories we'll write the JavaScript menu switching code
 		if (count($allowed_dirs) > 0)
 		{
-			$this->filtering_menus($cat_form_array, $category_options);
+			$this->filtering_menus($cat_form_array);
 		}
+
+		// Cat filter
+		$cat_group = isset($get_post['cat_id']) ? $get_post['cat_id'] : NULL;
+		$category_options = $this->category_filter_options($cat_group, $cat_form_array, count($allowed_dirs));
 
 		// Date range pull-down menu
 		$date_selected = $get_post['date_range'];
@@ -592,20 +591,16 @@ class Content_files extends CI_Controller {
 	 *
 	 * @param
 	 */
-	function category_filter_options($cat_group, $cat_form_array, $allowed_dirs)
+	function category_filter_options($cat_group, $cat_form_array, $total_dirs)
 	{
 		$category_select_options[''] = lang('filter_by_category');
 
-		// If there's more than one directory, make sure all categories is an option
-		if (count($allowed_dirs) > 1)
+		if ($total_dirs > 1)
 		{
 			$category_select_options['all'] = lang('all');
 		}
 
-		// Also make sure none is an option as well
 		$category_select_options['none'] = lang('none');
-		
-		// Check and see if we're filtering on a category group
 		if ($cat_group != '')
 		{
 			foreach($cat_form_array as $key => $val)
@@ -617,6 +612,7 @@ class Content_files extends CI_Controller {
 			}
 
 			$i = 1;
+			$new_array = array();
 
 			foreach ($cat_form_array as $ckey => $cat)
 			{
@@ -648,7 +644,7 @@ class Content_files extends CI_Controller {
 	 * are used to switch the various pull-down menus in the
 	 * EDIT page
 	 */
-	public function filtering_menus($cat_form_array, $category_options)
+	public function filtering_menus($cat_form_array)
 	{
 		if ( ! $this->cp->allowed_group('can_access_content'))
 		{
@@ -664,18 +660,13 @@ class Content_files extends CI_Controller {
 			$dir_array[$id] = array(str_replace('"','',$this->_upload_dirs[$id]['name']), $this->_upload_dirs[$id]['cat_group']);
 		}
 
-
-		$no_directory_categories = array();
-		foreach ($category_options as $cat_id => $cat_name)
-		{
-			$no_directory_categories[] = array($cat_id, $cat_name);
-		}
-		$file_info[0]['categories'] = $no_directory_categories;
-		
 		$default_cats[] = array('', lang('filter_by_category'));
 		$default_cats[] = array('all', lang('all'));
 		$default_cats[] = array('none', lang('none'));
-		
+
+
+		$file_info[0]['categories'] = $default_cats;
+
 		foreach ($dir_array as $key => $val)
 		{
 			$any = 0;
@@ -912,13 +903,31 @@ class Content_files extends CI_Controller {
 				'field' => '<span class="fake_input">' . $data['file_name'] . '</span>',
 				'type' => 'text'
 			),
-			'caption' => array(
+			'description' => array(
 				'field' => form_textarea(array(
-					'name'	=> 'caption',
-					'id'	=> 'caption',
-					'value'	=> $data['caption']
+					'name'	=> 'description',
+					'id'	=> 'description',
+					'value'	=> $data['description']
 				)),
 				'type' => 'textarea'
+			),
+			'credit' => array(
+				'field' => form_input(array(
+					'name'	=> 'credit',
+					'id'	=> 'credit',
+					'value'	=> $data['credit'],
+					'size' 	=> 255
+				)),
+				'type' => 'text'
+			),
+			'location' => array(
+				'field' => form_input(array(
+					'name'	=> 'location',
+					'id'	=> 'location',
+					'value'	=> $data['location'],
+					'size' 	=> 255
+				)),
+				'type' => 'text'
 			)
 		);
 		
@@ -945,14 +954,13 @@ class Content_files extends CI_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 		
-		$updated_title   = $this->input->post('file_title');
-		$updated_caption = $this->input->post('caption');
-		
 		// Update the file
 		$this->file_model->save_file(array(
-			'file_id'	=> $file_id,
-			'title'		=> $updated_title,
-			'caption'	=> $updated_caption
+			'file_id'		=> $file_id,
+			'title'			=> $this->input->post('file_title'),
+			'description'	=> $this->input->post('description'),
+			'credit'		=> $this->input->post('credit'),
+			'location'		=> $this->input->post('location')
 		));
 		
 		$this->load->model('file_category_model');
@@ -1032,7 +1040,7 @@ class Content_files extends CI_Controller {
 		
 		$this->cp->add_js_script(array(
 			'file'		=> 'cp/files/file_manager_edit',
-			'plugin'	=> 'jcrop',
+			'plugin'	=> array('jcrop', 'ee_resize_scale'),
 			'ui'		=> 'accordion'
 		));
 		
@@ -1196,8 +1204,8 @@ class Content_files extends CI_Controller {
 					$js_size[$row->upload_location_id][$row->id]['wm_hor_alignment'] = $row->wm_hor_alignment;
 					$js_size[$row->upload_location_id][$row->id]['wm_padding'] = $row->wm_padding;
 					$js_size[$row->upload_location_id][$row->id]['wm_opacity'] = $row->wm_opacity;
-					$js_size[$row->upload_location_id][$row->id]['wm_x_offset'] = $row->wm_x_offset;
-					$js_size[$row->upload_location_id][$row->id]['wm_y_offset'] = $row->wm_y_offset;
+					$js_size[$row->upload_location_id][$row->id]['wm_hor_offset'] = $row->wm_hor_offset;
+					$js_size[$row->upload_location_id][$row->id]['wm_vrt_offset'] = $row->wm_vrt_offset;
 					$js_size[$row->upload_location_id][$row->id]['wm_x_transp'] = $row->wm_x_transp;
 					$js_size[$row->upload_location_id][$row->id]['wm_y_transp'] = $row->wm_y_transp;
 					$js_size[$row->upload_location_id][$row->id]['wm_font_color'] =	$row->wm_font_color;
@@ -1431,7 +1439,7 @@ class Content_files extends CI_Controller {
 						'mime_type'		=> $file['mime']
 					),
 					TRUE, 	// Create thumb
-					TRUE 	// Missing sizes only
+					FALSE 	// Overwrite existing thumbs
 				);
 				
 				// Update dimensions
@@ -1467,7 +1475,9 @@ class Content_files extends CI_Controller {
 				'file_size'				=> $file['size'],
 				'uploaded_by_member_id'	=> $this->session->userdata('member_id'),
 				'modified_by_member_id' => $this->session->userdata('member_id'),
-				'file_hw_original'		=> $image_dimensions['height'] . ' ' . $image_dimensions['width']
+				'file_hw_original'		=> $image_dimensions['height'] . ' ' . $image_dimensions['width'],
+				'upload_date'			=> $file['date'],
+				'modified_date'			=> $file['date']
 			);
 			
 			
@@ -1603,8 +1613,8 @@ class Content_files extends CI_Controller {
 			'wm_vrt_alignment'		=> 'top',
 			'wm_hor_alignment'		=> 'left',
 			'wm_padding'			=> 10,
-			'wm_x_offset'			=> 0,
-			'wm_y_offset'			=> 0,
+			'wm_hor_offset'			=> 0,
+			'wm_vrt_offset'			=> 0,
 			'wm_x_transp'			=> 2,
 			'wm_y_transp'			=> 2,
 			'wm_font_color'			=> '#ffff00',
@@ -1690,13 +1700,13 @@ class Content_files extends CI_Controller {
 				'rules' => 'integer'
 			),
 			array(
-				'field' => 'wm_x_offset',
-				'label' => 'lang:wm_x_offset',
+				'field' => 'wm_hor_offset',
+				'label' => 'lang:wm_hor_offset',
 				'rules' => 'integer'
 			),
 			array(
-				'field' => 'wm_y_offset',
-				'label' => 'lang:wm_y_offset',
+				'field' => 'wm_vrt_offset',
+				'label' => 'lang:wm_vrt_offset',
 				'rules' => 'integer'
 			),
 			array(
@@ -1790,8 +1800,8 @@ class Content_files extends CI_Controller {
 						'wm_vrt_alignment'				=> 'T',
 						'wm_hor_alignment'				=> 'L',
 						'wm_padding'					=> 10,
-						'wm_x_offset'					=> 0,
-						'wm_y_offset'					=> 0,
+						'wm_hor_offset'					=> 0,
+						'wm_vrt_offset'					=> 0,
 						'wm_x_transp'					=> 2,
 						'wm_y_transp'					=> 2,
 						'wm_font_color'					=> '#ffff00',
@@ -2000,7 +2010,7 @@ class Content_files extends CI_Controller {
 		$fields = array(
 			'id', 'site_id', 'name', 'server_path',
 			'url', 'allowed_types', 'max_size',
-			'max_height', 'max_width', 'max_image_action', 'properties',
+			'max_width', 'max_height', 'max_image_action', 'properties',
 			'pre_format', 'post_format', 'file_properties',
 			'file_pre_format', 'file_post_format', 'batch_location',
 			'cat_group'
@@ -2118,7 +2128,7 @@ class Content_files extends CI_Controller {
 								  lang('file_upload_preferences'));
 
 		$data['upload_pref_fields1'] = array(
-							'max_size', 'max_height', 'max_width');
+							'max_size', 'max_width', 'max_height');
 
 		$data['upload_pref_fields2'] = array(
 							'properties', 'pre_format', 'post_format', 'file_properties',
@@ -2169,13 +2179,13 @@ class Content_files extends CI_Controller {
 							 'rules'   => 'numeric'
 						  ),
 					   array(
-							 'field'   => 'max_height',
-							 'label'   => 'lang:max_height',
+							 'field'   => 'max_width',
+							 'label'   => 'lang:max_width',
 							 'rules'   => 'numeric'
 						  ),
 					   array(
-							 'field'   => 'max_width',
-							 'label'   => 'lang:max_width',
+							 'field'   => 'max_height',
+							 'label'   => 'lang:max_height',
 							 'rules'   => 'numeric'
 						  ),
 					   array(
@@ -2309,6 +2319,7 @@ class Content_files extends CI_Controller {
 					}
 					
 					$updatedata = array(
+						'site_id' => $this->config->item('site_id'),
 						'short_name' => $_POST['size_short_name_'.$row['id']],
 						'title'	=> $_POST['size_short_name_'.$row['id']],
 						'resize_type' => $_POST['size_resize_type_'.$row['id']],
@@ -2367,15 +2378,20 @@ class Content_files extends CI_Controller {
 					
 					if (trim($val) == '') continue;
 					
-					if ( ! isset($_POST[$name]) OR ! preg_match("/^\w+$/", $_POST[$name]) OR
-						in_array($_POST[$name], $names))
+					$short_name = $this->input->post($name);
+					
+					if ($short_name === FALSE OR
+						preg_match('/[^a-z0-9\_\-]/i', $short_name) OR
+						in_array(strtolower($short_name), $names) OR
+						strtolower($short_name) == 'thumbs')
 					{
 						return $this->output->show_user_error('submission', array(lang('invalid_short_name')));
 					}
 					
 					$size_data = array(
+						'site_id' => $this->config->item('site_id'),
 						'upload_location_id' => $id,
-						'short_name' => $_POST[$name],
+						'short_name' => $short_name,
 						'title' => $_POST['size_short_name_'.$number],
 						'resize_type' => $_POST['size_resize_type_'.$number],
 						'height' => ($_POST['size_height_'.$number] == '') ? 0 : $_POST['size_height_'.$number],
@@ -2405,6 +2421,24 @@ class Content_files extends CI_Controller {
 			$this->db->insert('upload_prefs', $data);
 			$id = $this->db->insert_id();
 			$cp_message = lang('new_file_upload_created');
+		}
+		
+		// Update upload_preferences config item if it exists
+		if (($upload_prefs_config = $this->config->item('upload_preferences')) !== FALSE)
+		{
+			// We'll go through each key we have in the $data array and see
+			// if the user has a custom value set for it
+			foreach ($data as $key => $value)
+			{
+				// If the key exists in custom preferences, set the new value
+				if (isset($upload_prefs_config[$id][$key]))
+				{
+					$upload_prefs_config[$id][$key] = $value;
+				}
+			}
+			
+			// Update config with new values
+			$this->config->_update_config(array('upload_preferences' => $upload_prefs_config));
 		}
 		
 		if (isset($size_data))
@@ -2474,13 +2508,12 @@ class Content_files extends CI_Controller {
 		);
 
 		// Grab all upload locations with this id
-		$this->db->where('id', $id);
-		$items = $this->db->get('upload_prefs');
+		$items = $this->file_upload_preferences_model->get_upload_preferences(NULL, $id);
 		$data['items'] = array();
 
-		foreach($items->result() as $item)
+		if (isset($items['name']))
 		{
-			$data['items'][] = $item->name;
+			$data['items'][] = $items['name'];
 		}
 
 		$this->javascript->compile();

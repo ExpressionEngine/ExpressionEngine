@@ -38,7 +38,7 @@ class Multi_select_ft extends EE_Fieldtype {
 		$values = decode_multi_field($data);
 		$field_options = $this->_get_field_options($data);
 
-		return form_multiselect($this->field_name.'[]', $field_options, $values, 'dir="'.$this->settings['field_text_direction'].'" id="'.$this->field_id.'"');
+		return form_multiselect($this->field_name.'[]', $field_options, $values, 'dir="'.$this->settings['field_text_direction'].'" id="field_id_'.$this->field_id.'"');
 	}
 	
 	// --------------------------------------------------------------------

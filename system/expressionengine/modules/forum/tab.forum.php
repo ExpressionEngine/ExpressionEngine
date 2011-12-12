@@ -48,11 +48,11 @@ class Forum_tab {
 
 		// Get forum boards
 		$forumsq = $this->EE->db->select('f.forum_id, f.forum_name, b.board_label')
-					   			->from('forums f, forum_boards b')
-								->where('f.forum_is_cat', 'n')
-								->where('b.board_id = f.board_id', NULL, FALSE)
-								->order_by('b.board_label asc, forum_order asc')
-								->get();
+			->from('forums f, forum_boards b')
+			->where('f.forum_is_cat', 'n')
+			->where('b.board_id = f.board_id', NULL, FALSE)
+			->order_by('b.board_label asc, forum_order asc')
+			->get();
 		
 		$forum_title 			= '';
 		$forum_body 			= '';
@@ -75,7 +75,7 @@ class Forum_tab {
 		}
 		
 		$query = $this->EE->db->select('forum_topic_id')
-							  ->get_where('channel_titles', array('entry_id' => (int) $entry_id));
+			->get_where('channel_titles', array('entry_id' => (int) $entry_id));
 		
 		if ($query->num_rows() > 0)
 		{
@@ -83,15 +83,15 @@ class Forum_tab {
 			
 			
 			$frm_q = $this->EE->db->select('forum_id, title, body')
-								  ->where('topic_id', (int) $forum_topic_id)
-								  ->get('forum_topics');
+				  ->where('topic_id', (int) $forum_topic_id)
+				  ->get('forum_topics');
 			
 			if ($frm_q->num_rows() > 0)
 			{
 				$forum_title 			= $frm_q->row('title');
 				$forum_body  			= $frm_q->row('body');
-				$forum_id['selected'] 	= $frm_q->row('forum_id');				
-			}			
+				$forum_id['selected'] 	= $frm_q->row('forum_id');
+			}
 		}
 		
 		$settings = array(
@@ -213,13 +213,13 @@ class Forum_tab {
 			if ( ! in_array($params['forum_id'], $allowed))
 			{
 				$errors = array(lang('invalid_forum_id') => 'forum_id');
-			}			
+			}
 		}
 		elseif( ! empty($params['forum_topic_id']))
 		{
 			$frm_q = $this->EE->db->select('forum_id')
-								  ->where('topic_id', (int) $params['forum_topic_id'])
-								  ->get('forum_topics');
+				->where('topic_id', (int) $params['forum_topic_id'])
+				->get('forum_topics');
 			
 			if ($frm_q->num_rows() > 0)
 			{
@@ -231,8 +231,8 @@ class Forum_tab {
 			else
 			{
 				$errors = array(lang('invalid_topic_id') => 'forum_topic_id');
-			}			
-		}		
+			}
+		}
 		
 
 		return $errors;
@@ -257,36 +257,27 @@ class Forum_tab {
 			&& $params['mod_data']['forum_title'] !== '' && $params['mod_data']['forum_body'] !== ''))
 		{
 			$query = $this->EE->db->select('board_id')
-								->get_where('forums', 
-											array('forum_id' => (int) $params['mod_data']['forum_id']));
-
+				->get_where(
+					'forums',
+					array('forum_id' => (int) $params['mod_data']['forum_id'])
+				);
+			
 			if ($query->num_rows() > 0)
 			{
 				$this->EE->load->library('security');
 				
 				$title 	= $this->_convert_forum_tags($params['mod_data']['forum_title']);
-				$body 	= str_replace('{permalink}',
-									 $c_prefs['comment_url'].'/'.$params['meta']['url_title'].'/',
-									 $params['mod_data']['forum_body']);
+				$body 	= str_replace(
+					'{permalink}',
+					 $c_prefs['comment_url'].'/'.$params['meta']['url_title'].'/',
+					 $params['mod_data']['forum_body']
+				);
 				
 				$body 	= $this->_convert_forum_tags($this->EE->functions->remove_double_slashes($body));
 				
 				$data = array(
-					'forum_id'				=> $params['mod_data']['forum_id'],
-					'board_id'				=> $query->row('board_id'),
-					'topic_date'			=> $this->EE->localize->now,
 					'title'					=> $this->EE->security->xss_clean($title),
 					'body'					=> $this->EE->security->xss_clean($body),
-	          		'author_id'         	=> $params['meta']['author_id'],
-					'ip_address'			=> $this->EE->input->ip_address(),
-					'last_post_date'		=> $this->EE->localize->now,
-					'last_post_author_id'	=> $params['meta']['author_id'],
-					'sticky'				=> 'n',
-					'status'				=> 'o',
-					'announcement'			=> 'n',
-					'poll'					=> 'n',
-					'parse_smileys'			=> 'y',
-					'thread_total'			=> 1
 				);
 				
 				// This allows them to overwrite existing forum data- 1.x did not allow this
@@ -294,11 +285,29 @@ class Forum_tab {
 				{
 					$topic_id = $params['mod_data']['forum_topic_id'];
 					$this->EE->db->where('topic_id', (int) $topic_id)
-								 ->update('forum_topics', $data);
-					
+						 ->update('forum_topics', $data);
 				}
 				else
 				{
+					// If we're not overwriting, add in new forum topic parameters
+					$new_forum_topic_data = array(
+						'forum_id'				=> $params['mod_data']['forum_id'],
+						'board_id'				=> $query->row('board_id'),
+						'topic_date'			=> $this->EE->localize->now,
+						'author_id'         	=> $params['meta']['author_id'],
+						'ip_address'			=> $this->EE->input->ip_address(),
+						'last_post_date'		=> $this->EE->localize->now,
+						'last_post_author_id'	=> $params['meta']['author_id'],
+						'sticky'				=> 'n',
+						'status'				=> 'o',
+						'announcement'			=> 'n',
+						'poll'					=> 'n',
+						'parse_smileys'			=> 'y',
+						'thread_total'			=> 1	
+					);
+					
+					$data = array_merge($data, $new_forum_topic_data);
+					
 					$this->EE->db->insert('forum_topics', $data);
 					$topic_id = $this->EE->db->insert_id();
 
@@ -311,12 +320,14 @@ class Forum_tab {
 
 					// Update member post total
 					$this->EE->db->where('member_id', $params['meta']['author_id'])
-								 ->update('members', 
-											array('last_forum_post_date' => $this->EE->localize->now));
+						->update(
+							'members', 
+							array('last_forum_post_date' => $this->EE->localize->now)
+						);
 				}
-
+				
 				$this->EE->db->where('entry_id', (int) $params['entry_id'])
-							 ->update('channel_titles', array('forum_topic_id' => (int) $topic_id));
+					 ->update('channel_titles', array('forum_topic_id' => (int) $topic_id));
 
 				// Update the forum stats
 				if ( ! class_exists('Forum'))

@@ -216,7 +216,7 @@ class MyAccount extends CI_Controller {
 	/**
 	 * Edit Profile Form
 	 */
-	function edit_profile($message = '')
+	function edit_profile()
 	{
 		$this->load->helper('form');
 		$this->load->language('calendar');
@@ -431,7 +431,7 @@ class MyAccount extends CI_Controller {
 	/**
 	  *	 Email preferences form
 	  */
-	function email_settings($message = '')
+	function email_settings()
 	{
 		$this->load->helper(array('form', 'snippets'));
 
@@ -602,12 +602,11 @@ class MyAccount extends CI_Controller {
 	/**
 	  *	 Username/Password form
 	  */
-	function username_password($message = '')
+	function username_password()
 	{
 		$this->load->helper('form');
 
 		$vars['cp_page_title'] = lang('username_and_password');
-		$vars['cp_messages'] = array($message);
 
 		$this->javascript->output('');
 
@@ -766,9 +765,7 @@ class MyAccount extends CI_Controller {
 		// Write log file
 		$this->logger->log_action($this->VAL->log_msg);
 
-		$message = lang('settings_updated');
-		
-		$this->session->set_flashdata('message_success', $message);
+		$this->session->set_flashdata('message_success', lang('settings_updated'));
 		$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=username_password'.AMP.'id='.$this->id);
 	}
 
@@ -955,7 +952,7 @@ class MyAccount extends CI_Controller {
 	/**
 	  *	 HTML buttons
 	  */
-	function html_buttons($message = '')
+	function html_buttons()
 	{
 		// Is the user authorized to access the publish page? And does the user have
 		// at least one channel assigned? If not, show the no access message
@@ -977,8 +974,6 @@ class MyAccount extends CI_Controller {
 								'id'			=>	$this->id);
 
 		$vars = array_merge($this->_account_menu_setup(), $vars);
-
-		$vars['cp_messages'] = array($message);
 		
 		$this->cp->add_js_script(array('file' => 'cp/account_html_buttons'));
 		$this->javascript->compile();
@@ -1187,7 +1182,7 @@ class MyAccount extends CI_Controller {
 	/**
 	  *	 Subscriptions
 	  */
-	function subscriptions($message = '')
+	function subscriptions()
 	{
 		$this->load->helper(array('form', 'snippets', 'url', 'string'));
 		$this->load->library('table');
@@ -1196,7 +1191,6 @@ class MyAccount extends CI_Controller {
 		$this->cp->get_installed_modules();
 
 		$vars['cp_page_title'] = lang('subscriptions');
-		$vars['cp_messages'] = array($message);
 
 		$this->jquery->tablesorter('.mainTable', '{
 			headers: {3: {sorter: false}},
@@ -1310,7 +1304,7 @@ class MyAccount extends CI_Controller {
 	/**
 	  *	 Localization settings
 	  */
-	function localization($message = '')
+	function localization()
 	{
 		if ($this->config->item('allow_member_localization') == 'n' AND $this->session->userdata('group_id') != 1)
 		{
@@ -1614,7 +1608,7 @@ class MyAccount extends CI_Controller {
 	/**
 	  * Edit Photo Form
 	  */
-	function edit_photo($message = '')
+	function edit_photo()
 	{
 		// Are avatars enabled?
 		if ($this->config->item('enable_photos') == 'n')
@@ -1626,7 +1620,6 @@ class MyAccount extends CI_Controller {
 		$this->load->language('number');
 
 		$vars['cp_page_title'] = lang('edit_photo');
-		$vars['cp_messages'] = array($message);
 
 		$this->javascript->output('');
 
@@ -2078,7 +2071,7 @@ class MyAccount extends CI_Controller {
 	/** 
 	  * Quick links
 	  */
-	function quicklinks($message = '')
+	function quicklinks()
 	{
 		if ($this->session->userdata['group_id'] != 1 AND ($this->id != $this->session->userdata('member_id')))
 		{
@@ -2089,7 +2082,6 @@ class MyAccount extends CI_Controller {
 		$this->load->helper('form');
 
 		$vars['cp_page_title'] = lang('quicklinks_manager');
-		$vars['cp_messages'] = array($message);
 		$vars['form_hidden']['id'] = $this->id;
 
 		$this->jquery->tablesorter('.mainTable', '{widgets: ["zebra"]}');
@@ -2198,6 +2190,7 @@ class MyAccount extends CI_Controller {
 		}
 
 		$this->member_model->update_member($this->id, array('quick_links' => trim($str)));
+		$this->session->set_flashdata('message_success', lang('quicklinks_updated'));
 		$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=quicklinks'.AMP.'id='.$this->id.AMP.'U=1');
 	}
 
@@ -2536,7 +2529,7 @@ class MyAccount extends CI_Controller {
 	/**
 	  *	 Ignore List
 	  */
-	function ignore_list($message = '')
+	function ignore_list()
 	{
 		$this->load->helper(array('form', 'snippets', 'url', 'string'));
 		$this->load->library('table');

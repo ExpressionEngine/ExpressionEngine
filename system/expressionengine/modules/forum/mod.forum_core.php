@@ -9062,8 +9062,6 @@ class Forum_Core extends Forum {
 		  	}  		
 	  	}
 
-		$terms = array();
-
 		// Fetch allowed forums
 		// Before doing anything else we'll fetch the forum IDs 
 		// that the user is allowed to search in.
@@ -9494,7 +9492,7 @@ class Forum_Core extends Forum {
 				// If we don't have multiple keywords we'll
 				// do a simple string search
 			
-				if (count($terms) == 0)
+				if (count($terms_like) == 0)
 				{
 					if ($search_in == 'titles')
 					{
@@ -9716,7 +9714,7 @@ class Forum_Core extends Forum {
 			{
 				// "Any" or "All" Search				
 				// If we don't have multiple keywords we'll do a simple string search
-				if (count($terms) == 0)
+				if (count($terms_like) == 0)
 				{
 					if ($search_in != 'titles')
 					{
@@ -11015,7 +11013,7 @@ class Forum_Core extends Forum {
 			$cond['views'] = $row['thread_views'];
 						
 			$tagdata = $this->EE->functions->prep_conditionals($tagdata, $cond);
-			
+						
 			if (isset($replies[$row['topic_id']]))
 			{
 				$tagdata = $this->EE->functions->prep_conditionals($tagdata, $replies[$row['topic_id']]);				
@@ -11168,7 +11166,7 @@ class Forum_Core extends Forum {
 				// Parse 1:1 fields
 				if (isset($row[$val]))
 				{					
-					$tagdata = $this->EE->TMPL->swap_var_single($val, $row[$val], $tagdata);
+					$tagdata = $this->EE->TMPL->swap_var_single($val, $this->_convert_special_chars($row[$val]), $tagdata);
 				}
 				
 			}

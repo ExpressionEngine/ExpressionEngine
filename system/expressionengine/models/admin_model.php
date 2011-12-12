@@ -69,7 +69,7 @@ class Admin_model extends CI_Model {
 				'db_debug'					=> array('r', array('y' => 'yes', 'n' => 'no')),
 				'pconnect'					=> array('r', array('y' => 'yes', 'n' => 'no')),
 				// 'cache_on'					=> array('r', array('y' => 'yes', 'n' => 'no')),
-				'enable_db_caching'			=> array('r', array('y' => 'yes', 'n' => 'no')),
+				// 'enable_db_caching'			=> array('r', array('y' => 'yes', 'n' => 'no')),
 			),
 											
 			'output_cfg'		=>	array(

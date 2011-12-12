@@ -470,7 +470,7 @@ class Tools_data extends CI_Controller {
 					$new_sql = $sql." LIMIT ".$row.", ".$row_limit;
 
 					// magically delicious SQL_CALC_FOUND_ROWS method for MySQL 4 and above
-					$new_sql = preg_replace("/^(\s*SELECT)/", "\\1 SQL_CALC_FOUND_ROWS ", $new_sql);
+					$new_sql = preg_replace("/^(\s*SELECT)/", "\\1 SQL_CALC_FOUND_ROWS ", strtoupper($new_sql));
 
 					if ( ! $query = $this->db->query($new_sql))
 					{
@@ -851,7 +851,7 @@ class Tools_data extends CI_Controller {
 				$member_comments_count = $this->db->query('SELECT COUNT(*) AS count, author_id FROM exp_comments GROUP BY author_id ORDER BY count DESC');					
 			}				
 
-			$member_message_count = $this->db->query('SELECT COUNT(*) AS count, recipient_id FROM exp_message_copies GROUP BY recipient_id ORDER BY count DESC');
+			$member_message_count = $this->db->query('SELECT COUNT(*) AS count, recipient_id FROM exp_message_copies WHERE message_read = "n" GROUP BY recipient_id ORDER BY count DESC');
 
 			$member_data = array();
 			
@@ -944,7 +944,7 @@ class Tools_data extends CI_Controller {
 					{
 						if (isset($member_entries[$row->author_id]['member_id']))
 						{
-							$member_entries[$row->author_id]['total_forum_topics'] = $row->count;							
+							$member_entries[$row->author_id]['total_forum_posts'] = $row->count;							
 						}
 						else
 						{

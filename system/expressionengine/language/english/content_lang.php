@@ -592,6 +592,9 @@ $lang = array(
 'view_filtered' => 
 'Return to Filtered Entries',
 
+'publish_another_entry' =>
+'Publish Another Entry',
+
 'autosaved_entries' =>
 'Autosaved Entries',
 

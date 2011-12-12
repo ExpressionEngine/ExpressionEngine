@@ -148,7 +148,7 @@ class Date_ft extends EE_Fieldtype {
 			var jsCurrentUTC = d.getTimezoneOffset()*60;
 			var adjustedDefault = 1000*('.$date.'+jsCurrentUTC);
 		
-			$("#'.$this->field_name.'").datepicker({dateFormat: $.datepicker.W3C + EE.date_obj_time, defaultDate: ('.$cal_date.' == 0) ? new Date() : new Date(adjustedDefault)});
+			$("#'.$this->field_name.'").datepicker({constrainInput: false, dateFormat: $.datepicker.W3C + EE.date_obj_time, defaultDate: ('.$cal_date.' == 0) ? new Date() : new Date(adjustedDefault)});
 		');
 
 		$r = form_input(array(

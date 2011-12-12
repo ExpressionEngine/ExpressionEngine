@@ -143,17 +143,16 @@ if ($EE_view_disable !== TRUE)
 				<div class="clear_left"></div>
 
 				<?php
-				$this->table->set_template($cp_table_template);
 				$this->table->set_heading(
 					lang('short_name'),
-					lang('height'),
-					lang('width'),
 					lang('resize_type'),
+					lang('width'),
+					lang('height'),
 					lang('wm_watermark'),
 					''
 					);
 
-				$resize_options = array('constrain' => lang('constrain'), 'crop' => lang('crop'));
+				$resize_options = array('none' => lang('none'), 'constrain' => lang('constrain'), 'crop' => lang('crop'));
 				
 				if (count($image_sizes) > 0)
 				{
@@ -161,9 +160,9 @@ if ($EE_view_disable !== TRUE)
 					{
 						$this->table->add_row(
 								form_input('size_short_name_'.$size['id'], $size['short_name']),
-								form_input('size_height_'.$size['id'], $size['height']),
-								form_input('size_width_'.$size['id'], $size['width']),
 								form_dropdown('size_resize_type_'.$size['id'], $resize_options, $size['resize_type']),
+								form_input('size_width_'.$size['id'], $size['width']),
+								form_input('size_height_'.$size['id'], $size['height']),
 								form_dropdown('size_watermark_id_'.$size['id'], $watermark_options, $size['watermark_id']),
 								form_submit(array('name' => 'add_size', 'value' => '+', 'class' => 'submit')).' '.form_submit(array('name' => 'remove_size_'.$size['id'], 'value' => '-', 'class' => 'submit remove_size'))
 								);
@@ -173,9 +172,9 @@ if ($EE_view_disable !== TRUE)
 				// blank row for new values
 				$this->table->add_row(
 							form_input('size_short_name_'.$next_size_id, ''),
-							form_input('size_height_'.$next_size_id, ''),
-							form_input('size_width_'.$next_size_id, ''),
 							form_dropdown('size_resize_type_'.$next_size_id, $resize_options, ''),
+							form_input('size_width_'.$next_size_id, ''),
+							form_input('size_height_'.$next_size_id, ''),
 							form_dropdown('size_watermark_id_'.$next_size_id, $watermark_options, ''),
 							form_submit(array('name' => 'add_image_size', 'value' => '+', 'class' => 'submit'))
 							);

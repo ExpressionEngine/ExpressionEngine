@@ -1430,15 +1430,20 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 					isset($preferences[$site->site_id])
 				)
 				{
+					// We'll conditionally set the language for the preference below
+					$group_name_lang = '';
+					
 					switch ($group_name)
 					{
 						case 'cp_channel_post_privs':
 							$current_permissions = $channel_perms[$site->site_id];
 							$current_names = $channel_names;
+							$group_name_lang = lang('can_post_in');
 							break;
 						case 'cp_template_access_privs':
 							$current_permissions = $preferences[$site->site_id];
 							$current_names = $template_names;
+							$group_name_lang = lang('can_access_tg');
 							break;
 						default:
 							continue;
@@ -1448,7 +1453,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 					foreach ($current_permissions as $current_id => $preference_value) 
 					{
 						$form[$site->site_id][$group_name][] = array(
-							'label' => lang('can_post_in') . NBS . NBS . $this->_build_group_data_label(
+							'label' => $group_name_lang . NBS . NBS . $this->_build_group_data_label(
 								$current_names[$current_id],
 								TRUE
 							),
@@ -1488,6 +1493,17 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 					}
 				}
 			}
+
+			// Don't show any CP-related preferences for Banned, Guests, or Pending.
+			// May want to strip these down even further.
+			if ($group_id == 2 OR $group_id == 3 OR $group_id == 4)
+			{
+				unset($form[$site->site_id]['global_cp_access']);
+				unset($form[$site->site_id]['cp_admin_privs']);
+				unset($form[$site->site_id]['cp_email_privs']);
+				unset($form[$site->site_id]['cp_template_access_privs']);
+				unset($form[$site->site_id]['cp_email_privs']);
+			}
 		}
 
 		return $form;
@@ -1504,6 +1520,12 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 	 */
 	private function _setup_module_data($group_id)
 	{
+		// Don't show any Module-related preferences for Banned, Guests, or Pending.
+		if ($group_id == 2 OR $group_id == 3 OR $group_id == 4)
+		{
+			return;
+		}
+
 		list($module_names, $module_perms) = $this->_setup_module_names($group_id);
 
 		$module_data = array();
@@ -2211,8 +2233,8 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 						switch ($val['1'])
 						{
 							case 'member_groups' :	
-								$groups = $this->member_model->get_member_groups('', array('group_id !='=>'1'));
-								
+								$groups = $this->member_model->get_member_groups();
+
 								$options = array();
 
 								foreach ($groups->result() as $group)
@@ -2220,8 +2242,8 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 									$options[$group->group_id] = $group->group_title;
 								}
 
-								// Remove the Pending group as it makes no sense for members to go from Pending to Pending
-								unset($options[4]);
+								// Remove the Super Admin, Guests and Pending groups as they are not sensible choices
+								unset($options[1], $options[3], $options[4]);
 		
 								$preference_controls['type'] = "dropdown";
 								$preference_controls['id'] = 'default_member_group';
@@ -2352,7 +2374,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		}
 
 		// No group name
-		if ( ! $this->input->post('group_title'))
+		if ( ! $group_title = $this->input->post('group_title'))
 		{
 			show_error(lang('missing_group_title'));
 		}
@@ -2368,9 +2390,19 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			
 			$query = $this->db->query("SELECT MAX(group_id) as max_group FROM exp_member_groups");
 			
-			$group_id = $query->row('max_group')  + 1;
+			$group_id = $query->row('max_group') + 1;
 		}
 		
+		// Group Title already exists?
+		$this->db->from('member_groups')
+					->where('group_title', $group_title)
+					->where('group_id !=', $group_id);
+		
+		if ($this->db->count_all_results())
+		{
+			show_error(lang('group_title_exists'));
+		}
+
 		// get existing category privileges if necessary
 		
 		if ($edit == TRUE)
@@ -2408,10 +2440,16 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			
 			$data = array('group_title' 		=> $this->input->post('group_title'),
 						  'group_description'	=> $this->input->post('group_description'),
-						  'is_locked'			=> $this->input->post('is_locked'),
 						  'site_id'				=> $site_id,
 						  'group_id'			=> $group_id);
-							
+			
+			// If editing Super Admin group, the is_locked field doesn't exist, so make sure we
+			// got a value from the form before writing 0 to the database
+			if ($this->input->post('is_locked') !== FALSE)
+			{
+				$data['is_locked'] = $this->input->post('is_locked');
+			}
+			
 			foreach ($_POST as $key => $val)
 			{
 				if (substr($key, 0, strlen($site_id.'_channel_id_')) == $site_id.'_channel_id_')
@@ -2455,9 +2493,9 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 				
 				if ($uploads->num_rows() > 0)
 				{
-					foreach($uploads->result_array() as $yeeha)
+					foreach($uploads->result_array() as $upload)
 					{
-						$this->db->query("INSERT INTO exp_upload_no_access (upload_id, upload_loc, member_group) VALUES ('".$this->db->escape_str($yeeha['id'])."', 'cp', '{$group_id}')");
+						$this->db->query("INSERT INTO exp_upload_no_access (upload_id, upload_loc, member_group) VALUES ('".$this->db->escape_str($upload['id'])."', 'cp', '{$group_id}')");
 					}
 				}
 				
@@ -2744,11 +2782,26 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		if ( ! $this->cp->allowed_group('can_access_members') OR ! $this->cp->allowed_group('can_admin_members'))
 		{
 			show_error(lang('unauthorized_access'));
-		}		
+		}
+		
+		$this->lang->loadfile('myaccount');
+		$this->cp->set_variable('cp_page_title', lang('register_member'));
+		
+		// Find out if the user has access to any member groups
+		$is_locked = ($this->session->userdata['group_id'] == 1) ? array() : array('is_locked' => 'n');
+		$member_groups = $this->member_model->get_member_groups('', $is_locked);
+		
+		// If the user does not have access to any member groups, don't show the form
+		// and explain the situation
+		$vars['notice'] = ( ! count($member_groups->result()));
+		if ($vars['notice'])
+		{
+			$vars['sys_admin_email'] = $this->config->item('webmaster_email');
+			return $this->load->view('members/register', $vars);
+		}
 		
 		$this->load->library(array('form_validation', 'table'));
 		$this->load->helper(array('form', 'string', 'snippets'));
-		$this->lang->loadfile('myaccount');
 		$this->load->language('calendar');
 		
 		$vars['custom_profile_fields'] = array();
@@ -2863,15 +2916,10 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 
 		$this->form_validation->set_rules($config);
 		$this->form_validation->set_error_delimiters('<br /><span class="notice">', '</span>');
-		
-		$this->cp->set_variable('cp_page_title', lang('register_member'));
 
 		if ($this->form_validation->run() === FALSE)
 		{
 			$this->javascript->compile();
-
-			$is_locked = ($this->session->userdata['group_id'] == 1) ? array() : array('is_locked' => 'n');
-			$member_groups = $this->member_model->get_member_groups('', $is_locked);
 
 			$vars['member_groups'] = array();
 
@@ -3816,6 +3864,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		$this->db->from('members');
 		$this->db->like('ip_address', $ip);
 		$total = $this->db->count_all_results(); // for paging
+		$grand_total += $total;
 
 		$config['base_url'] = BASE.AMP.'C=members'.AMP.'M=do_ip_search'.AMP.'ip_address='.$url_ip;
 		$config['per_page'] = '10';

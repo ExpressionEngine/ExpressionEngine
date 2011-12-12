@@ -50,7 +50,6 @@ class Moblog {
 	var $email_files	= array();				// Array containing filenames of uploads for this email
 	var $emails_done	= 0;					// Number of emails processed
 	var $entries_added	= 0;					// Number of entries added
-	var $pings_sent		= 0;					// Number of servers pinged
 	var $upload_dir_code = '';					// {filedir_2} for entry's
 	var $upload_path	= '';					// Server path for upload directory
 	var $entry_data		= array();				// Data for entry's custom fields
@@ -220,7 +219,6 @@ class Moblog {
 			$this->return_data .= $this->EE->lang->line('emails_done')." {$this->emails_done}<br />\n";
 			$this->return_data .= $this->EE->lang->line('entries_added')." {$this->entries_added}<br />\n";
 			$this->return_data .= $this->EE->lang->line('attachments_uploaded')." {$this->uploads}<br />\n";
-			$this->return_data .= $this->EE->lang->line('pings_sent')." {$this->pings_sent}<br />\n";
 		}
 
 		return $this->return_data ;
@@ -780,8 +778,8 @@ class Moblog {
 			/** -----------------------------*/
 
 			if ($allow_overrides == 'y' &&
-				(preg_match("/\{file_archive\}(.*)\{\/file_archive\}/", $this->body, $matches) OR
-				 preg_match("/\<file_archive\>(.*)\<\/file_archive\>/", $this->body, $matches)))
+				(preg_match("/\{file_archive\}(.*)\{\/file_archive\}/s", $this->body, $matches) OR
+				 preg_match("/\<file_archive\>(.*)\<\/file_archive\>/s", $this->body, $matches)))
 			{
 				$matches['1'] = trim($matches['1']);
 
@@ -801,8 +799,8 @@ class Moblog {
 			/**  Categories set in email?
 			/** -----------------------------*/
 
-			if ($allow_overrides == 'n' OR ( ! preg_match("/\{category\}(.*)\{\/category\}/", $this->body, $cats) &&
-											 ! preg_match("/\<category\>(.*)\<\/category\>/", $this->body, $cats)))
+			if ($allow_overrides == 'n' OR ( ! preg_match("/\{category\}(.*)\{\/category\}/s", $this->body, $cats) &&
+											 ! preg_match("/\<category\>(.*)\<\/category\>/s", $this->body, $cats)))
 			{
 				$this->post_data['categories'] = trim($this->moblog_array['moblog_categories']);
 			}
@@ -810,7 +808,7 @@ class Moblog {
 			{
 				$cats['1'] = str_replace(':','|',$cats['1']);
 				$cats['1'] = str_replace(',','|',$cats['1']);
-				$this->post_data['categories'] = $cats['1'];
+				$this->post_data['categories'] = trim($cats['1']);
 				$this->body = str_replace($cats['0'],'',$this->body);
 			}
 
@@ -818,14 +816,14 @@ class Moblog {
 			/**  Status set in email
 			/** -----------------------------*/
 
-			if ($allow_overrides == 'n' OR ( ! preg_match("/\{status\}(.*)\{\/status\}/", $this->body, $cats) &&
-											 ! preg_match("/\<status\>(.*)\<\/status\>/", $this->body, $cats)))
+			if ($allow_overrides == 'n' OR ( ! preg_match("/\{status\}(.*)\{\/status\}/s", $this->body, $cats) &&
+											 ! preg_match("/\<status\>(.*)\<\/status\>/s", $this->body, $cats)))
 			{
 				$this->post_data['status'] = trim($this->moblog_array['moblog_status']);
 			}
 			else
 			{
-				$this->post_data['status'] = $cats['1'];
+				$this->post_data['status'] = trim($cats['1']);
 				$this->body = str_replace($cats['0'],'',$this->body);
 			}
 
@@ -833,8 +831,8 @@ class Moblog {
 			/**  Sticky Set in Email
 			/** -----------------------------*/
 
-			if ($allow_overrides == 'n' OR ( ! preg_match("/\{sticky\}(.*)\{\/sticky\}/", $this->body, $mayo) &&
-											 ! preg_match("/\<sticky\>(.*)\<\/sticky\>/", $this->body, $mayo)))
+			if ($allow_overrides == 'n' OR ( ! preg_match("/\{sticky\}(.*)\{\/sticky\}/s", $this->body, $mayo) &&
+											 ! preg_match("/\<sticky\>(.*)\<\/sticky\>/s", $this->body, $mayo)))
 			{
 				$this->post_data['sticky'] = ( ! isset($this->moblog_array['moblog_sticky_entry'])) ? $this->sticky : $this->moblog_array['moblog_sticky_entry'];
 			}
@@ -850,9 +848,11 @@ class Moblog {
 			/**  Default Field set in email?
 			/** -----------------------------*/
 
-			if ($allow_overrides == 'y' && (preg_match("/\{field\}(.*)\{\/field\}/", $this->body, $matches) OR
-											preg_match("/\<field\>(.*)\<\/field\>/", $this->body, $matches)))
+			if ($allow_overrides == 'y' && (preg_match("/\{field\}(.*)\{\/field\}/s", $this->body, $matches) OR
+											preg_match("/\<field\>(.*)\<\/field\>/s", $this->body, $matches)))
 			{
+				$matches[1] = trim($matches[1]);
+
 				$this->EE->db->select('field_id');
 				$this->EE->db->from('channel_fields, channels');
 				$this->EE->db->where('channels.field_group', 'channel_fields.group_id');
@@ -931,19 +931,6 @@ class Moblog {
 			}
 
 
-			/** -------------------------
-			/**  Send Pings
-			/** -------------------------*/
-
-			if (isset($this->moblog_array['moblog_ping_servers']) && $this->moblog_array['moblog_ping_servers'] != '')
-			{
-				if($pings_sent = $this->send_pings($this->moblog_array['channel_title'], $this->moblog_array['channel_url'], $this->moblog_array['rss_url']))
-				{
-					$this->pings_sent = $this->pings_sent + count($pings_sent);
-				}
-			}
-
-
 			$this->emails_done++;
 		}
 
@@ -985,7 +972,7 @@ class Moblog {
 
 		$channel_id = $this->moblog_array['moblog_channel_id'];
 		
-		$this->EE->db->select('site_id, channel_title, channel_url, rss_url, ping_return_url, comment_url, deft_comments, cat_group, field_group, channel_notify, channel_notify_emails');
+		$this->EE->db->select('site_id, channel_title, channel_url, rss_url, comment_url, deft_comments, cat_group, field_group, channel_notify, channel_notify_emails');
 		$query = $this->EE->db->get_where('channels', array('channel_id' => $channel_id));
 
 		if ($query->num_rows() == 0)
@@ -1027,8 +1014,7 @@ class Moblog {
 						'day'				=> gmdate('d', $entry_date),
 						'sticky'			=> (isset($this->post_data['sticky'])) ? $this->post_data['sticky'] : $this->sticky,
 						'status'			=> ($this->post_data['status'] == 'none') ? 'open' : $this->post_data['status'],
-						'allow_comments'	=> $query->row('deft_comments'),
-						'ping_servers'		=> FALSE   // Pings are already sent above.  Should probably be hooked into API CHannel Entries as well.
+						'allow_comments'	=> $query->row('deft_comments')
 					 );
 
 		// Remove ignore text
@@ -1236,7 +1222,7 @@ class Moblog {
 		
 		$result = $this->EE->api_channel_entries->submit_new_entry($data['channel_id'], $data);
 
-		if ( ! $result)
+		if ($result)
 		{
 			$this->entries_added++;
 		}
@@ -1244,50 +1230,6 @@ class Moblog {
 		$this->EE->session->userdata['can_assign_post_authors'] = $orig_can_assign;
 		$this->EE->session->userdata['group_id'] = $orig_group_id;
 		$this->EE->session->userdata['can_edit_other_entries'] = $orig_can_edit;
-	}
-
-	// ------------------------------------------------------------------------
-	
-	/**
-	 * 	Send Pings
-	 *
-	 * 	@param string	title
-	 * 	@param string	url
-	 * 
-	 */
-	function send_pings($title, $url)
-	{
-		$ping_servers = explode('|', $this->moblog_array['moblog_ping_servers']);
-
-		$sql = "SELECT server_name, server_url, port FROM exp_ping_servers WHERE id IN (";
-
-		foreach ($ping_servers as $id)
-		{
-			$sql .= "'$id',";
-		}
-
-		$sql = substr($sql, 0, -1).') ';
-
-		$query = $this->EE->db->query($sql);
-
-		if ($query->num_rows() == 0)
-		{
-			return FALSE;
-		}
-
-		$this->EE->load->library('xmlrpc');
-		
-		$result = array();
-
-		foreach ($query->result_array() as $row)
-		{
-			if ($this->EE->xmlrpc->weblogs_com_ping($row['server_url'], $row['port'], $title, $url))
-			{
-				$result[] = $row['server_name'];
-			}
-		}
-
-		return $result;
 	}
 
 	// ------------------------------------------------------------------------
@@ -1423,7 +1365,7 @@ class Moblog {
 		$prefs_q = $this->EE->file_upload_preferences_model->get_upload_preferences(1, $dir_id);
 		$sizes_q = $this->EE->file_model->get_dimensions_by_dir_id($dir_id);
 		
-		$dir_server_path = $prefs_q->row('server_path');
+		$dir_server_path = $prefs_q['server_path'];
 		
 		// @todo if 0 skip!!
 		$thumb_data = array();

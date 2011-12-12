@@ -898,11 +898,11 @@ class Simple_commerce {
 		$this->EE->db->where('paypal_subscriber_id', $this->post['subscr_id']);
 		$query = $this->EE->db->get('exp_simple_commerce_purchases');
 
-// what if multiple subscriptions?  item_number viable??? -rob1
-// http://articles.techrepublic.com.com/5100-10878_11-5331883.html
-// k- 0 is still subscribed.  If it has a date?  They were unsubscribed then.  So- null if not subscription type.
-     
+		// What if multiple subscriptions?  
+		// Note that paypal_subscriber_id is unique to each subscription despite the way it sounds
 
+		// k- 0 is still subscribed.  If it has a date?  
+		// They were unsubscribed then.  So- null if not subscription type.
      
         if ($query->num_rows() == 0)
         {
@@ -994,9 +994,10 @@ class Simple_commerce {
 		$this->EE->db->where('paypal_subscriber_id', $this->post['subscr_id']);
 		$query = $this->EE->db->get('exp_simple_commerce_purchases');
 
-// what if multiple subscriptions?  item_number viable??? -rob1
-// http://articles.techrepublic.com.com/5100-10878_11-5331883.html
-// k- 0 is still subscribed.  If it has a date?  They were unsubscribed then.  So- null if not subscription type.
+		// What if multiple subscriptions?  
+		// Note that paypal_subscriber_id is unique to each subscription despite the way it sounds
+		// k- 0 is still subscribed.  If it has a date?  
+		// They were unsubscribed then.  So- null if not subscription type.
         					 
         if ($query->num_rows() == 0)
         {

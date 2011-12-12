@@ -243,7 +243,7 @@ class EE_Functions {
 	 */
 	function encode_ee_tags($str, $convert_curly = FALSE)
 	{
-		if ($str != '')
+		if ($str != '' && strpos($str, '{') !== FALSE)
 		{
 			if ($convert_curly === TRUE)
 			{
@@ -2836,10 +2836,10 @@ class EE_Functions {
 			return array();	
 		}
 
-		$qry = $this->EE->db->select('id, url')
-							->get('upload_prefs');
+		$this->EE->load->model('file_upload_preferences_model');
+		$upload_prefs = $this->EE->file_upload_preferences_model->get_upload_preferences();
 
-		if ($qry->num_rows() === 0)
+		if (count($upload_prefs) == 0)
 		{
 			// Set $this->file_paths to FALSE so we check for it
 			// the next time through a coupla lines up.
@@ -2847,10 +2847,10 @@ class EE_Functions {
 			$this->file_paths = FALSE;
 			return array();
 		}
-				
-		foreach ($qry->result() as $row)
-		{			
-			$this->file_paths[$row->id] = $row->url;
+		
+		foreach ($upload_prefs as $row)
+		{
+			$this->file_paths[$row['id']] = $row['url'];
 		}
 		
 		return $this->file_paths;

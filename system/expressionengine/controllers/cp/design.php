@@ -380,7 +380,9 @@ class Design extends CI_Controller {
 			$vars['templates'][$template->group_name][$template->template_id] = $template->template_name;
 		}
 
-		$vars['form_hidden']['group_id'] = $group_id; 
+		$vars['form_hidden']['group_id'] = $group_id;
+		
+		$vars['template_types'] = $this->_get_template_types();
 
 		//create_new_template
 
@@ -1208,14 +1210,11 @@ class Design extends CI_Controller {
 		$vars['template_prefs'] = array();
 
 		$template_type_options = array(
-			'null'		=> lang('do_not_change'),
-			'css'		=> lang('css_stylesheet'),
-			'js'		=> lang('js'),
-			'feed'		=> lang('rss'),
-			'static'	=> lang('static'),
-			'webpage'	=> lang('webpage'),
-			'xml'		=> lang('xml')
+			'null'		=> lang('do_not_change')
 		);
+		
+		// Append standard template types to the end of the Do Not Change item
+		$template_type_options = array_merge($template_type_options, $this->_get_template_types());
 
 		$vars['template_prefs']['template_type'] = form_dropdown('template_type', $template_type_options, 'null', 'id="template_type"');
 
@@ -1369,55 +1368,71 @@ class Design extends CI_Controller {
 		// Template Preferences
 
 		$data = array();
+		
+		// Assigning the output to local vars so we're not calling the
+		// input class over and over
+		$template_type = $this->input->post('template_type');
+		$cache = $this->input->post('cache');
+		$hits = $this->input->post('hits');
+		$enable_http_auth = $this->input->post('enable_http_auth');
+		$no_auth_bounce = $this->input->post('no_auth_bounce');
 
-		if (in_array($_POST['template_type'], array('css', 'js', 'feed', 'static', 'webpage', 'xml')))
+		if ($template_type !== FALSE && $template_type != 'null')
 		{
-			$data['template_type'] = $_POST['template_type'];
+			$data['template_type'] = $template_type;
 		}
 
-		if ($_POST['cache'] == 'y' OR $_POST['cache'] == 'n')
+		if (in_array($cache, array('y', 'n')))
 		{
-			$data['cache'] = $_POST['cache'];
-
-			if ($_POST['refresh'] != '' && is_numeric($_POST['refresh']))
+			$data['cache'] = $cache;
+			
+			$refresh = $this->input->post('refresh');
+			
+			if ($refresh != '' && is_numeric($refresh))
 			{
-				$data['refresh'] = $_POST['refresh'];
+				$data['refresh'] = $refresh;
 			}
 		}
 
 		if ($this->session->userdata['group_id'] == 1)
 		{
-			if ($_POST['allow_php'] == 'y' OR $_POST['allow_php'] == 'n')
+			$allow_php = $this->input->post('allow_php');
+			
+			if (in_array($allow_php, array('y', 'n')))
 			{
-				$data['allow_php'] = $_POST['allow_php'];
-
-				if ($_POST['php_parse_location'] == 'i' OR $_POST['php_parse_location'] == 'o')
+				$data['allow_php'] = $allow_php;
+				
+				$php_parse_location = $this->input->post('php_parse_location');
+				
+				if (in_array($php_parse_location, array('i', 'o')))
 				{
-					$data['php_parse_location'] = $_POST['php_parse_location'];
+					$data['php_parse_location'] = $php_parse_location;
 				}
 			}
 		}
 
-		if ($_POST['hits'] != '' && is_numeric($_POST['hits']))
+		if ($hits != '' && is_numeric($hits))
 		{
-			$data['hits'] = $_POST['hits'];
+			$data['hits'] = $hits;
 		}
 
-		if ($_POST['enable_http_auth'] == 'y' OR $_POST['enable_http_auth'] == 'n')
+		if (in_array($enable_http_auth, array('y', 'n')))
 		{
-			$data['enable_http_auth'] = $_POST['enable_http_auth'];
+			$data['enable_http_auth'] = $enable_http_auth;
 		}
 
-		if ($_POST['no_auth_bounce'] != 'null')
+		if ($no_auth_bounce != 'null')
 		{
-			$data['no_auth_bounce'] = $_POST['no_auth_bounce'];
+			$data['no_auth_bounce'] = $no_auth_bounce;
 		}
 
 		if ($this->config->item('save_tmpl_files') == 'y' AND $this->config->item('tmpl_file_basepath') != '')
 		{
-			if ($this->input->post('save_template_file') != FALSE && $this->input->post('save_template_file') != 'null')
+			$save_template_file = $this->input->post('save_template_file');
+			
+			if ($save_template_file != FALSE && $save_template_file != 'null')
 			{
-				$data['save_template_file'] = $this->input->post('save_template_file');
+				$data['save_template_file'] = $save_template_file;
 			}
 		}
 
@@ -1941,6 +1956,8 @@ class Design extends CI_Controller {
 		}
 		
 		$vars['warnings'] = $warnings;
+		
+		$vars['template_types'] = $this->_get_template_types();
 
 		$this->javascript->compile();
 
@@ -3480,6 +3497,7 @@ class Design extends CI_Controller {
 
 		}
 
+		$vars['template_types'] = $this->_get_template_types();
 
 		$this->cp->set_right_nav($this->sub_breadcrumbs);
 
@@ -3506,6 +3524,8 @@ class Design extends CI_Controller {
 
 		// Load the design model
 		$this->load->model('design_model');
+		
+		$this->api->instantiate('template_structure');
 
 		$templates = $this->design_model->export_tmpl_group($this->input->get_post('group_id'));
 
@@ -3514,24 +3534,8 @@ class Design extends CI_Controller {
 
 		foreach ($templates as $template)
 		{
-			// Create appropriate file extensions for each template
-			switch ($template['template_type'])
-			{
-				case 'xml':
-					$tmpl_ext = '.xml';
-					break;
-				case 'feed':
-					$tmpl_ext = '.xml';
-					break;
-				case 'css':
-					$tmpl_ext = '.css';
-					break;
-				case 'js':
-					$tmpl_ext = '.js';
-					break;
-				default:
-					$tmpl_ext = '.html';
-			}
+			// Get file extension for template type to construct template file name
+			$tmpl_ext = $this->api_template_structure->file_extensions($template['template_type']);
 			
 			$template_name = $site_name.'/'.$template['group_name'].'.group'.'/'.$template['template_name'].$tmpl_ext;
 			
@@ -3802,6 +3806,7 @@ class Design extends CI_Controller {
 	{
 		if ( ! preg_match("#^[a-zA-Z0-9_\-/]+$#i", $str))
 		{
+			$this->lang->loadfile('admin');
 			$this->form_validation->set_message('_group_name_checks', lang('illegal_characters'));
 			return FALSE;			
 		}
@@ -4630,6 +4635,49 @@ class Design extends CI_Controller {
 				unset($existing[$group]);
 			}
 		}
+	}
+	
+	/**
+	 * Get template types
+	 *
+	 * Returns a list of the standard EE template types to be used in
+	 * template type selection dropdowns, optionally merged with
+	 * user-defined template types via the template_types hook.
+	 *
+	 * @access private
+	 * @return array Array of available template types
+	 */
+	function _get_template_types()
+	{
+		$template_types = array(
+			'webpage'	=> lang('webpage'),
+			'feed'		=> lang('rss'),
+			'css'		=> lang('css_stylesheet'),
+			'js'		=> lang('js'),
+			'static'	=> lang('static'),
+			'xml'		=> lang('xml')
+		);
+		
+		// -------------------------------------------
+		// 'template_types' hook.
+		//  - Provide information for custom template types.
+		//
+		$custom_templates = $this->extensions->call('template_types', array());
+		//
+		// -------------------------------------------
+		
+		if ($custom_templates != NULL)
+		{
+			// Instead of just merging the arrays, we need to get the
+			// template_name value out of the associative array for
+			// easy use of the form_dropdown helper
+			foreach ($custom_templates as $key => $value)
+			{
+				$template_types[$key] = $value['template_name'];
+			}
+		}
+		
+		return $template_types;
 	}
 }
 

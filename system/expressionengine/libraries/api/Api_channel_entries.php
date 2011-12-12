@@ -119,7 +119,7 @@ class Api_channel_entries extends Api {
 			return ($this->autosave) ? $this->errors : FALSE;
 		}
 		
-		$this->_prepare_data($data, $mod_data);
+		$this->_prepare_data($data, $mod_data, $autosave);
 		$this->_build_relationships($data);
 
 		$meta = array(
@@ -254,7 +254,7 @@ class Api_channel_entries extends Api {
 			return ($this->autosave) ? $this->errors : FALSE;
 		}
 		
-		$this->_prepare_data($data, $mod_data);
+		$this->_prepare_data($data, $mod_data, $autosave);
 		
 		$this->_build_relationships($data);
 		
@@ -1260,7 +1260,7 @@ class Api_channel_entries extends Api {
 					$allowed_authors = array();
 					
 					$this->EE->load->model('member_model');
-					$query = $this->EE->member_model->get_authors_simple();
+					$query = $this->EE->member_model->get_authors();
 
 					if ($query->num_rows() > 0)
 					{
@@ -1500,7 +1500,7 @@ class Api_channel_entries extends Api {
 	 * @param	mixed
 	 * @return	void
 	 */
-	function _prepare_data(&$data, &$mod_data)
+	function _prepare_data(&$data, &$mod_data, $autosave = FALSE)
 	{
 		$this->instantiate('channel_categories');
 
@@ -1586,7 +1586,10 @@ class Api_channel_entries extends Api {
 					// Break out module fields here
 					if (isset($data[$field_name]))
 					{
-						$data[$field_name] = $this->EE->api_channel_fields->apply('save', array($data[$field_name]));
+						if ( ! $autosave)
+						{
+							$data[$field_name] = $this->EE->api_channel_fields->apply('save', array($data[$field_name]));
+						}
 						
 						if (isset($data['revision_post'][$field_name]))
 						{
@@ -1596,7 +1599,10 @@ class Api_channel_entries extends Api {
 					}
 					elseif (isset($mod_data[$field_name]))
 					{
-						$mod_data[$field_name] = $this->EE->api_channel_fields->apply('save', array($mod_data[$field_name]));
+						if ( ! $autosave)
+						{
+							$mod_data[$field_name] = $this->EE->api_channel_fields->apply('save', array($mod_data[$field_name]));
+						}
 
 						if (isset($data['revision_post'][$field_name]))
 						{
@@ -2094,6 +2100,11 @@ class Api_channel_entries extends Api {
 		
 		if ($this->c_prefs['enable_versioning'] == 'y')
 		{
+			// If a revision was saved before a submit new entry had ever occured?
+			// $data['revision_post'] will not have a correct entry_id at this point
+			// so let's overwrite it now
+			$data['revision_post']['entry_id'] = $this->entry_id;
+			
 			$this->EE->db->insert('entry_versioning', array(
 				'entry_id'		=> $this->entry_id,
 				'channel_id'	=> $this->channel_id,
