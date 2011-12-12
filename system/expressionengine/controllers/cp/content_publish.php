@@ -1157,6 +1157,9 @@ class Content_publish extends CI_Controller {
 				{
 					$vdata = unserialize($vquery->row('version_data'));
 					
+					// Legacy fix for revisions where the entry_id in the array was saved as 0
+					$vdata['entry_id'] = $entry_id;
+					
 					$result = array_merge($result, $vdata);
 				}
 			}
