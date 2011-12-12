@@ -405,12 +405,14 @@ class Tools_logs extends CI_Controller {
 			'recipient_name'=> array('header' => lang('to'), 'html' => FALSE),
 			'cache_date'	=> array('header' => lang('date')),
 			'_check'		=> array(
-				'header' => '<label>'.form_checkbox(array(
-					'id'	=>'toggle_all',
-					'name'	=>'toggle_all',
-					'value'	=>'toggle_all',
-					'checked' =>FALSE
-				)).'</label>'
+				'header' => form_checkbox(
+					array(
+						'id'		=>'toggle_all',
+						'name'		=>'toggle_all',
+						'value'		=>'toggle_all',
+						'checked'	=> FALSE
+					)
+				)
 			)
 		));
 		
@@ -527,12 +529,14 @@ class Tools_logs extends CI_Controller {
 			'timestamp'		=> array('header' => lang('date')),
 			'description'	=> array('header' => lang('log_message')),
 			'_check'		=> array(
-				'header' => '<label>'.form_checkbox(array(
-					'id'	=>'toggle_all',
-					'name'	=>'toggle_all',
-					'value'	=>'toggle_all',
-					'checked' =>FALSE
-				)).'</label>'
+				'header' => form_checkbox(
+					array(
+						'id'		=>'toggle_all',
+						'name'		=>'toggle_all',
+						'value'		=>'toggle_all',
+						'checked'	=> FALSE
+					)
+				)
 			)
 		));
 		
