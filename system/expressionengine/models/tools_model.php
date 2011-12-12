@@ -245,6 +245,21 @@ class Tools_model extends CI_Model {
 	// --------------------------------------------------------------------
 	
 	/**
+	 * Returns number of unviewed items in the developer log to display in
+	 * a notice on the CP home screen
+	 *
+	 * @return	int Number of unviewed developer logs
+	 */
+	public function count_unviewed_developer_logs()
+	{
+		$this->db->where('viewed', 'n');
+		
+		return $this->db->get('developer_log')->num_rows();
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
 	 * Marks developer logs as viewed
 	 *
 	 * Given an array of logs formatted for datatables, updates each record
