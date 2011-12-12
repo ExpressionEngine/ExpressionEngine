@@ -177,6 +177,8 @@ $lang = array(
 	'nav_view_throttle_log_short_desc'	=> 'View and clear the Throttle Log',
 	'nav_view_email_log'			=> 'Email Console Log',
 	'nav_view_email_log_short_desc'	=> 'View and clear the Email Log',
+	'nav_view_developer_log'		=> 'Developer Log',
+	'nav_view_developer_log_short_desc'	=> 'View and manage the Developer Log',
 
 'nav_help'			   			=> 'Help',
 'nav_overview'					=> 'Overview',

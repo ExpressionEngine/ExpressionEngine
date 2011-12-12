@@ -23,7 +23,6 @@ if ($EE_view_disable !== TRUE)
 		<?php $this->load->view('_shared/message');?>
 
 		<?php
-			$this->table->set_template($cp_table_template);
 			$this->table->set_heading(
 										lang('field_label'),
 										lang('field_name'),

@@ -1,5 +1,4 @@
 <?php
-$this->table->set_template($cp_table_template);
 $this->table->set_heading(
 	array('data' => lang('forum_rank_title'),			'style' => 'width: 35%'),
 	array('data' => lang('forum_rank_min_posts'),		'style'	=> 'width: 15%'),

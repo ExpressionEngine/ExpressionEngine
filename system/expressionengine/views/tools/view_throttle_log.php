@@ -19,45 +19,17 @@ if ($EE_view_disable !== TRUE)
 				
 			<?php $this->load->view('_shared/message'); ?>
 
-			<?php
-			$this->table->set_template($cp_table_template);
-			$this->table->set_heading(
-									lang('ip_address'),
-									lang('hits'),
-									lang('last_activity')
-								);
-
-			
-			if ($this->config->item('enable_throttling') == 'n'):?>
-				<p><?=lang('throttling_disabled')?></p>
-			<?php
-			elseif ($throttle_data->num_rows() > 0):
-			
-				foreach ($throttle_data->result() as $data)
-				{
-					$this->table->add_row(
-										$data->ip_address,
-										$data->hits,
-										date("Y-m-d h:i A", $data->last_activity)
-									);
-				}
-			?>
-
 				<?php if($blacklist_installed): ?>
 				<div class="cp_button"><a href="<?=BASE.AMP.'C=tools_logs'.AMP.'M=blacklist_throttled_ips'?>"><?=lang('blacklist_all_ips')?></a></div>
 				<div class="clear_left"></div>
 				<?php endif;?>
 				
-				<?=$this->table->generate()?>
-
-				<span class="js_hide"><?=$pagination?></span>
-				<span class="pagination" id="filter_pagination"></span>
-
-			<?php else:?>
-				
-				<p><?=lang('no_throttle_logs')?></p>
-
-			<?php endif;?>
+			<?php if ($this->config->item('enable_throttling') == 'n'):?>
+					<p><?=lang('throttling_disabled')?></p>
+			<?php else:
+				echo $table_html;
+				echo $pagination_html;
+			endif;?>
 
 			</div>
 

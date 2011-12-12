@@ -19,8 +19,6 @@ if ($EE_view_disable !== TRUE)
 			<p class="notice"><?=$message?></p>
 		<?php
 		else:
-
-			$this->table->set_template($cp_table_template);
 			$this->table->set_heading(
 				'',
 				form_checkbox(array('class'=>'toggle_all','id'=>'toggle_all', 'name'=>'toggle_all','value'=>'toggle_all','checked'=>FALSE)),

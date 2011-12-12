@@ -169,6 +169,10 @@ class EE_Menu {
 			)
 		);
 		
+		if ($this->EE->session->userdata('group_id') == 1)
+		{
+			$menu['tools']['tools_logs']['view_developer_log'] = BASE.AMP.'C=tools_logs'.AMP.'M=view_developer_log';
+		}
 		
 		// Add channels
 

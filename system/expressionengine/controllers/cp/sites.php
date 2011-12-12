@@ -1635,9 +1635,7 @@ class Sites extends CI_Controller {
 		{
 			return FALSE;
 		}
-		
-		$this->load->helper('form');
-		
+				
 		$this->db->select('site_label');
 		$query = $this->db->get_where('sites', array('site_id' => $site_id));
 		
