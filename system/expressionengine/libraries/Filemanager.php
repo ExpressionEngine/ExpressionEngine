@@ -1133,7 +1133,8 @@ class Filemanager {
 				'short_name'	=> 'thumbs',
 				'width'			=> 73,
 				'height'		=> 60,
-				'watermark_id'	=> 0
+				'watermark_id'	=> 0,
+				'resize_type'	=> 'crop'
 			);
 		}
 			
@@ -1208,8 +1209,7 @@ class Filemanager {
 				$size['height'] = ($prefs['height']/$prefs['width'])*$size['width'];
 				$force_master_dim = 'width';
 			}
-
-
+			
 			// Resize
 			$config['source_image']		= $source;
 			$config['new_image']		= $resized_path.$prefs['file_name'];
