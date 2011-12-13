@@ -1254,7 +1254,7 @@ class EE_Typography extends CI_Typography {
     function xhtml_typography($str)
     {
 		$this->EE->load->library('logger');
-		$this->EE->logger->_deprecated('2.1.5', 'auto_typography()');
+		$this->EE->logger->deprecated('2.1.5', 'auto_typography()');
 		
 		return $this->auto_typography($str);
     }

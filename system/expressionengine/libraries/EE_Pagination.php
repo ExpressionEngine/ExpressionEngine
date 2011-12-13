@@ -360,7 +360,7 @@ class Pagination_object {
 			}
 			else
 			{
-				$this->offset = '';
+				$this->offset = 0;
 			}
 		}
 	}
