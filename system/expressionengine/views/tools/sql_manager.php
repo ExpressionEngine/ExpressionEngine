@@ -15,7 +15,6 @@ if ($EE_view_disable !== TRUE)
 			<div class="heading"><h2 class="edit"><?=lang('sql_manager')?></h2></div>
 	        <div class="pageContents">
 			<?php
-				$this->table->set_template($cp_table_template);
 				$this->table->set_heading(array('data' => lang('sql_info'), 'width' => '50%'), lang('value'));
 
 				foreach ($sql_info as $name => $value)

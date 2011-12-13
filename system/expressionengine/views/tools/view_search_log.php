@@ -18,46 +18,13 @@ if ($EE_view_disable !== TRUE)
 			<div class="pageContents">
 			<?php $this->load->view('_shared/message');?>
 
-			<?php
-			$this->table->set_template($cp_table_template);
-			$this->table->set_heading(
-									lang('screen_name'),
-									lang('ip_address'),
-									lang('date'),
-									lang('site'),
-									lang('searched_in'),
-									lang('search_terms')
-								);
-
-			if ($search_data->num_rows() > 0):
-			
-				foreach ($search_data->result() as $data)
-				{
-					$screen_name = ($data->screen_name != '') ? '<a href="'.BASE.AMP.'C=myaccount'.AMP.'id='. $data->member_id .'">'.$data->screen_name.'</a>' : '';
-					$this->table->add_row(
-										$screen_name,
-										$data->ip_address,
-										date('Y-m-d h:i A', $data->search_date),
-										$data->site_label,
-										$data->search_type,
-										$data->search_terms
-									);
-				}
-			?>
-			
 				<div class="cp_button"><a href="<?=BASE.AMP.'C=tools_logs'.AMP.'M=clear_log_files'.AMP.'type=search'?>"><?=lang('clear_logs')?></a></div>
 				<div class="clear_left"></div>
 
-				<?=$this->table->generate()?>
-				
-				<span class="js_hide"><?=$pagination?></span>
-				<span class="pagination" id="filter_pagination"></span>
-
-			<?php else:?>
-
-				<p><?=lang('no_search_results')?></p>
-
-			<?php endif;?>
+				<?php
+				echo $table_html;
+				echo $pagination_html;
+				?>
 			</div>
 
 	</div> <!-- contents -->

@@ -8,7 +8,6 @@
 <?=form_open('C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=metaweblog_api'.AMP.'method=delete_confirm')?>
 
 <?php
-	$this->table->set_template($cp_table_template);
 	$this->table->set_heading(
 		lang('metaweblog_config_name').'/'.lang('edit'),
 		lang('metaweblog_config_url'),

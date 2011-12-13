@@ -18,7 +18,6 @@ if ($EE_view_disable !== TRUE)
 		<div class="pageContents">
 
 			<?php
-				$this->table->set_template($cp_table_template);
 				$this->table->set_heading(lang('plugin_information'), '');
 
 				foreach($plugin as $key => $data)

@@ -18,7 +18,6 @@ if ($EE_view_disable !== TRUE)
 			<?=form_open($form_action, '', $form_hidden)?>
 
 	<?php
-		$this->table->set_template($cp_table_template);
 		$this->table->set_heading(
 			lang('formatting_options'),
 			''

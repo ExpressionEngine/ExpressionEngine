@@ -17,7 +17,6 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/message');?>	
 
 		<?php
-			$this->table->set_template($cp_table_template);
 			$this->table->set_heading(array('data' => lang('accessory_name'), 'width' => '50%'), lang('available_to_member_groups'), lang('specific_page'), lang('status'));
 			
 			foreach ($accessories as $accessory)

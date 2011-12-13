@@ -44,16 +44,38 @@ class Search_model extends CI_Model {
 		$ids = array();
 
 		$base_results = $this->build_main_query($data, $order);
+		$base_qry_obj = $base_results['result_obj'];
 
+		$return_data['results'] = array();
 		$return_data['pageurl'] = $base_results['pageurl'];
-		$return_data['total_count'] = count($base_results['result_obj']->result_array());
-	
-		if ($return_data['total_count'] == 0)
+		$return_data['total_count'] = $base_qry_obj->num_rows();
+		
+		if ($return_data['total_count'] == 0 OR
+			$return_data['total_count'] <= $data['rownum'])
 		{
 			return $return_data;
-		}		
+		}
 
-		$base_results = array_slice($base_results['result_obj']->result_array(), $data['rownum'], $data['perpage']);
+		// This code will return every row in the selected channels if there is
+		// no filter. Potentially hundreds of thousands of rows. That's no good.
+		// We need the total rows, but a complicated search can be quite slow and
+		// we don't want to double up on a slow query. So getting around it with
+		// some private db methods for now. -pk
+		
+		// $base_results = array_slice($base_results['result_obj']->result_array(), $data['rownum'], $data['perpage']);
+				
+		$base_results = array();
+		$perpage = $data['perpage'];
+		
+		$base_qry_obj->_data_seek($data['rownum']);
+
+		while ($perpage && ($row = $base_qry_obj->_fetch_assoc()))
+		{
+			$perpage--;
+			$base_results[] = $row;
+		}
+
+		$base_qry_obj->free_result();
 
 		if ($data['search_in'] == 'comments')
 		{
@@ -65,7 +87,6 @@ class Search_model extends CI_Model {
 			$return_data['ids'] = $ids;
 			return $return_data;			
 		}
-		
 
 		foreach ($base_results as $id)
 		{
@@ -75,7 +96,8 @@ class Search_model extends CI_Model {
 		$results = $this->get_full_cp_query($data, $ids, $order);
 
 		$return_data['results'] = $results->result_array();
-
+		$results->free_result();
+		
 		return $return_data;
 	}
 
@@ -408,9 +430,9 @@ class Search_model extends CI_Model {
 		// ------------------------------
 
 		$this->db->distinct();
+		
 		return array('pageurl' => $pageurl, 'result_obj' => $this->db->get());
 	}
-
 
 	// --------------------------------------------------------------------
 
@@ -425,8 +447,6 @@ class Search_model extends CI_Model {
 	 * @param	mixed	order
 	 * @return	object
 	 */
-
-
 	function get_full_cp_query($data, $ids = array(), $order = array())
 	{
 		$select = ($data['cat_id'] == 'none' OR $data['cat_id'] != "") ? "DISTINCT(exp_channel_titles.entry_id), " : "exp_channel_titles.entry_id, ";

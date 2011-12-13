@@ -30,24 +30,35 @@ class Homepage extends CI_Controller {
 	 * @access	public
 	 * @return	void
 	 */	
-	function index($message = '')
+	function index()
 	{
 		$this->cp->get_installed_modules();
 		$this->cp->set_variable('cp_page_title', lang('main_menu'));
 
-		$version			= FALSE;
+		$message			= FALSE;
 		$show_notice		= $this->_checksum_bootstrap_files();
 		$allowed_templates	= $this->session->userdata('assigned_template_groups');
+		
+		$this->load->model('tools_model');
+		$unviewed_developer_logs = $this->tools_model->count_unviewed_developer_logs();
 
 		// Notices only show for super admins
-		if ($this->session->userdata['group_id'] == 1 AND $this->config->item('new_version_check') == 'y')
+		if ($this->session->userdata['group_id'] == 1)
 		{
-			$version		= $this->_version_check();
-			$show_notice	= ($show_notice OR $version);
+			if ($this->config->item('new_version_check') == 'y')
+			{
+				$message = $this->_version_check();
+			}
+			
+			if ($unviewed_developer_logs > 0 AND $message === FALSE)
+			{
+				$message = sprintf(lang('developer_logs'), $unviewed_developer_logs, BASE.AMP.'C=tools_logs'.AMP.'M=view_developer_log');
+			}
+			
+			$show_notice = ($show_notice OR $message);
 		}
 		
 		$vars = array(
-			'version'			=> $version,
 			'message'			=> $message,
 			'instructions'		=> lang('select_channel_to_post_in'),
 			'show_page_option'	=> (isset($this->cp->installed_modules['pages'])) ? TRUE : FALSE,

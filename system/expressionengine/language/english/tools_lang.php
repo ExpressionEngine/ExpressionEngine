@@ -20,6 +20,7 @@ $lang = array(
 'view_search_log' 		=> 'View Search Log',
 'view_email_logs' 		=> 'View Email Console Log',
 'view_cp_log' 			=> 'View Control Panel Log',
+'view_developer_log'	=> 'View Developer Log',
 
 'import_utilities' 		=> 'Import Utilities',
 'translation_tool' 		=> 'Translation Utility',
@@ -58,6 +59,7 @@ $lang = array(
 'invalid_path' 			=> 'The path you submitted is not valid:',
 'file_saved'			=> 'The translation file has been saved to system/expressionengine/translations/',
 'trans_file_not_writable'=> 'Translation file is not writeable.',
+'logs_deleted'			=> 'Logs deleted',
 
 'import_from_mt' 		=> 'Movable Type Import Utility',
 'member_import' 		=> 'Member Import Utility',
@@ -79,6 +81,14 @@ $lang = array(
 /* Translation */
 'translation_dir_unwritable' => 
 'Warning: Your translation directory is not writable.',
+
+/* Developer Log */
+'log_id'				=> 'Log ID',
+'log_message'			=> 'Message',
+'deprecated_function'	=> 'Deprecated function %s called',
+'deprecated_on_line'	=> 'in %s on line %d.',
+'deprecated_since'		=> 'Deprecated since %s.',
+'deprecated_use_instead'	=> 'Use %s instead.',
 
 
 'screen_name' =>

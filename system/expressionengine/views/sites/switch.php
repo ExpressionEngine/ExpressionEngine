@@ -20,7 +20,6 @@ if ($EE_view_disable !== TRUE)
 			
 	
 			<?php
-				$this->table->set_template($cp_table_template);
 				$this->table->set_heading(lang('choose_site'));
 			
 				foreach ($sites as $site_id => $site_name)

@@ -126,7 +126,6 @@ class Content_publish extends CI_Controller {
 	public function entry_form()
 	{
 		$this->load->library('form_validation');
-		$this->load->helper('form');
 		
 		$entry_id	= (int) $this->input->get_post('entry_id');
 		$channel_id	= (int) $this->input->get_post('channel_id');
@@ -813,7 +812,6 @@ class Content_publish extends CI_Controller {
 		$this->api->instantiate('channel_categories');
 		
 		$this->load->model('category_model');
-		$this->load->helper('form');
 		
 		$query = $this->category_model->get_categories($group_id, FALSE);
 		$this->api_channel_categories->category_tree($group_id, '', $query->row('sort_order'));

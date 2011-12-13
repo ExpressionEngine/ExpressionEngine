@@ -49,8 +49,7 @@ class Content_files extends CI_Controller {
 		}
 
 		$this->lang->loadfile('filemanager');
-		$this->load->library(array('filemanager'));
-		$this->load->helper(array('form'));
+		$this->load->library('filemanager');
 		$this->load->model('file_model');
 		$this->load->model('file_upload_preferences_model');
 		$this->cp->add_to_head($this->view->head_link('css/file_browser.css'));
@@ -90,7 +89,7 @@ class Content_files extends CI_Controller {
 	 */
 	public function index()
 	{
-		$this->load->library(array('pagination'));
+		$this->load->library('pagination');
 		$this->load->helper(array('string', 'search'));
 		$this->api->instantiate('channel_categories');
 
@@ -1150,7 +1149,6 @@ class Content_files extends CI_Controller {
 		$file_dir  = $this->input->get('id');
 		$cid = $file_dir;
 		$var['sizes'] = array();
-		$this->load->library('javascript');
 
 		$resize_existing = FALSE;
 		
@@ -1346,8 +1344,6 @@ class Content_files extends CI_Controller {
 
 		$files = $this->filemanager->fetch_files($id, $current_files, TRUE);
 		
-		$this->load->library('localize');
-
 		// Setup data for batch insert
 		foreach ($files->files[$id] as $file)
 		{
@@ -1863,8 +1859,6 @@ class Content_files extends CI_Controller {
 		{
 			show_error(lang('unauthorized_access'));
 		}
-
-		$this->load->helper('form');
 
 		$this->cp->set_variable('cp_page_title', lang('delete_wm_preference'));
 
@@ -2491,8 +2485,6 @@ class Content_files extends CI_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->load->helper('form');
-
 		$this->cp->set_variable('cp_page_title', lang('delete_upload_preference'));
 		$this->cp->set_breadcrumb(BASE.AMP.'C=content_files', lang('file_manager'));
 		$this->cp->set_breadcrumb(BASE.AMP.'C=content_files'.AMP.'M=file_upload_preferences',
@@ -2637,7 +2629,6 @@ class Content_files extends CI_Controller {
 		$this->api->instantiate('channel_categories');
 
 		$this->load->model('category_model');
-		$this->load->helper('form');
 
 		$qry = $this->db->select('group_id, group_name, sort_order')
 						->where('group_id', $group_id)

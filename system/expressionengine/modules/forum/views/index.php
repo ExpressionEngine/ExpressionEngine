@@ -5,7 +5,6 @@
 
 <?php
 if (count($forums)):
-	$this->table->set_template($cp_table_template);
 	$this->table->set_heading(
 		lang('forum_id'),
 		lang('forum_name'),
