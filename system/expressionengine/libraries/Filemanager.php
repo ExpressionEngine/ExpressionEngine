@@ -51,7 +51,6 @@ class Filemanager {
 	{
 		$this->EE =& get_instance();
 		$this->EE->load->library('javascript');
-		$this->EE->load->library('security');
 		$this->EE->lang->loadfile('filemanager');
 		
 		$this->theme_url = $this->EE->config->item('theme_folder_url').'cp_themes/'.$this->EE->config->item('cp_theme').'/';

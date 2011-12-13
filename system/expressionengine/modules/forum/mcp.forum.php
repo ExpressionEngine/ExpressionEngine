@@ -3030,8 +3030,6 @@ class Forum_mcp {
 	 */
 	function _create_template_breadcrumb($abs_base_path, $rel_path)
 	{
-		$this->EE->load->library('security');
-		
 		$crumb = array();		
 		$abs_base_path = rtrim($abs_base_path, ' /');
 		$rel_path = trim($rel_path, ' /');

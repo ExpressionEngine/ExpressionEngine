@@ -151,7 +151,6 @@ class EE_Extensions {
 		if ($this->in_progress == $which) return;
 		
 		$this->in_progress = $which;
-		$this->EE->load->library('security');
 		$this->EE->load->library('addons');
 		$this->EE->addons->is_package('');
 		

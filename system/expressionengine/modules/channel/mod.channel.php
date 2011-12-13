@@ -4781,7 +4781,6 @@ class Channel {
 							$localize = TRUE;
 							if ($row['field_dt_'.$dval] != '')
 							{
-								$temp_val = $this->EE->localize->offset_entry_dst($temp_val, $row['dst_enabled']);
 								$temp_val = $this->EE->localize->simpl_offset($temp_val, $row['field_dt_'.$dval]);
 								$localize = FALSE;
 							}

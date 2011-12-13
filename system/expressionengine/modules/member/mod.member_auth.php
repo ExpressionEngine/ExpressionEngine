@@ -803,8 +803,9 @@ class Member_auth extends Member {
 		}
 
 		// Update member's password
-
-		$this->EE->db->set('password', $this->EE->functions->hash($rand))
+		
+		$this->EE->load->helper('security');
+		$this->EE->db->set('password', do_hash($rand))
 					 ->where('member_id', $member_id)
 					 ->update('members');
 

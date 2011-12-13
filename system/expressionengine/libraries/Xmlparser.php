@@ -119,7 +119,10 @@ class EE_XMLparser {
 	/** -------------------------------------*/
 	
 	function data2xml($data, $structure, $root = "root", $element = "element", $delimiter = "\t", $enclosure = '')
-	{	
+	{
+		$this->EE->load->library('logger');
+		$this->EE->logger->deprecated();
+		
 		if ( ! is_string($data) OR ! is_array($structure) OR count($structure) == 0)
 		{
 			$this->errors[] = "Data or structure improperly defined";

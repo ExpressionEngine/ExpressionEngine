@@ -2658,8 +2658,6 @@ class Safecracker_lib
 		}
 		
 		$this->temp_session = $this->EE->session;
-
-		//$this->temp_session = $this->EE->functions->clone_object($this->EE->session);
 		
 		if ( ! class_exists('SC_Session'))
 		{

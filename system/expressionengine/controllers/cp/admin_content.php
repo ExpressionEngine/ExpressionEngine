@@ -209,24 +209,9 @@ class Admin_content extends CI_Controller {
 			}
 		}
 
-		$data = $this->functions->create_directory_map(PATH_THEMES.'site_themes/', TRUE);
-		
 		// New themes may contain more than one group, thus naming collisions will happen
 		// unless this is revamped.
 		$vars['themes'] = array();
-
-		//if (count($data) > 0)
-		//{
-		//	foreach ($data as $val)
-		//	{
-		//		if ($val == 'rss.php')
-		//		{
-		//			continue;
-		//		}
-
-		//		$vars['themes'][$val] = ucwords(str_replace("_", " ", $val));
-		//	}
-		//}
 
 		$this->db->select('group_id, group_name, s.site_label');
 		$this->db->from('template_groups tg, sites s');
@@ -277,6 +262,7 @@ class Admin_content extends CI_Controller {
 		$this->load->model('template_model');
 		$this->load->model('status_model');
 		$this->load->model('field_model');
+		$this->load->model('admin_model');
 
 		$channel_id = $this->input->get_post('channel_id');
 
@@ -395,6 +381,8 @@ class Admin_content extends CI_Controller {
 				'all'	=> lang('allow_all_html_not_recommended')
 			);		
 		}
+		
+		$vars['languages'] = $this->admin_model->get_xml_encodings();
 
 		$this->javascript->compile();
 

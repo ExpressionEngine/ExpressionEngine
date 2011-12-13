@@ -2060,10 +2060,12 @@ class Moblog {
 		/** --------------------------------------
 		/**  Check Username and Password, First
 		/** --------------------------------------*/
-
+		
+		$this->EE->load->helper('security');
+		
 		$this->EE->db->select('member_id, group_id');
 		$this->EE->db->where('username', $username);
-		$this->EE->db->where('password', $this->EE->functions->hash(stripslashes($password)));
+		$this->EE->db->where('password', do_hash(stripslashes($password)));
 		$query = $this->EE->db->get('members');
 
 		if ($query->num_rows() == 0)

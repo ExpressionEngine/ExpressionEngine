@@ -68,7 +68,8 @@ class EE_Localize {
 	 */	
 	function set_gmt($now = '')
 	{
-		// TODO: Add deprecation notice
+		$this->EE->load->library('logger');
+		$this->EE->logger->deprecated('2.3');
 		
 		if ($now == '')
 		{
@@ -500,6 +501,9 @@ class EE_Localize {
 	 */
 	function offset_entry_dst($time = '', $dst_enabled = '', $add_time = TRUE)
 	{
+		$this->EE->load->library('logger');
+		$this->EE->logger->deprecated();
+		
 		return $time;
 	}
 	

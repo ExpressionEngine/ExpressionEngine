@@ -190,6 +190,9 @@ class Api_channel_categories extends Api {
 	 */
 	public function category_edit_subtree($cat_id, $categories, $depth)
 	{
+		$this->EE->load->library('logger');
+		$this->EE->logger->deprecated();
+		
 		$spcr = '!-!';
 
 		$indent = $spcr.$spcr.$spcr.$spcr;

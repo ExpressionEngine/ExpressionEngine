@@ -2936,8 +2936,6 @@ class EE_Template {
 		
 		if (preg_match_all("#{NOCACHE_(\S+)_FORM=\"(.*?)\"}(.+?){/NOCACHE_FORM}#s", $str, $match))
 		{
-			$this->EE->load->library('security');
-			
 			for($i=0, $s=count($match[0]); $i < $s; $i++)
 			{
 				$class = $this->EE->security->sanitize_filename(strtolower($match[1][$i]));
@@ -3363,6 +3361,9 @@ class EE_Template {
 	 */
 	function template_authentication_basic()
 	{
+		$this->EE->load->library('logger');
+		$this->EE->logger->deprecated('2.2', 'Auth Library');
+		
 		@header('WWW-Authenticate: Basic realm="'.$this->realm.'"');
 		$this->EE->output->set_status_header(401);
 		@header("Date: ".gmdate("D, d M Y H:i:s")." GMT");
@@ -3384,6 +3385,9 @@ class EE_Template {
 	 */
 	function template_authentication_check_basic($not_allowed_groups = array())
 	{
+		$this->EE->load->library('logger');
+		$this->EE->logger->deprecated('2.2', 'Auth Library');
+		
 		$this->EE->load->library('auth');
 		return $this->EE->auth->authenticate_http_basic($not_allowed_groups,
 														$this->realm);

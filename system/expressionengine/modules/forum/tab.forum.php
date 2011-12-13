@@ -264,8 +264,6 @@ class Forum_tab {
 			
 			if ($query->num_rows() > 0)
 			{
-				$this->EE->load->library('security');
-				
 				$title 	= $this->_convert_forum_tags($params['mod_data']['forum_title']);
 				$body 	= str_replace(
 					'{permalink}',
