@@ -1232,14 +1232,7 @@ class Search {
 		if ($old_pagination)
 		{
 			$this->EE->load->library('logger');
-			
-			$deprecated = array(
-				'function'			=> '{if paginate}',
-				'deprecated_since'	=> '2.4',
-				'use_instead'		=> 'the Channel style of pagination'
-			);
-			
-			$this->EE->logger->developer($deprecated, TRUE);
+			$this->EE->logger->developer('Deprecated template tag {if paginate}. Old style pagination in the Search Module has been deprecated in 2.4 and will be removed soon. Switch to the new Channel style pagination.', TRUE);
 		}
 		
 		// Check search ID number
