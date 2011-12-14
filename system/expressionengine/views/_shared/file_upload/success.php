@@ -2,13 +2,8 @@
 
 <div class="upload_success">
 	<h2><?= lang('upload_success') ?></h2>
-	
 	<div class="image">
 		<img src="<?= $file['thumb'] ?>" alt="<?= $file['file_name'] ?>" />
-		<?php if ($file['is_image']): ?>
-			<?= form_open('C=content_files_modal'.AMP.'M=edit_image', array('id' => "resize_rotate"), array('file_json' => $file_json)) ?>
-			<?= form_close() ?>
-		<?php endif ?>
 	</div> <!-- .image -->
 	<table>
 		<tr class="odd">
@@ -30,15 +25,18 @@
 		<?php if ($file['is_image']): ?>
 			<tr class="odd">
 				<th><?=lang('height')?></th>
-				<td><?= $file['file_height'] ?>px</td>
+				<td><?= $file['dimensions'][0] ?>px</td>
 			</tr>
 			<tr>
 				<th><?=lang('width')?></th>
-				<td><?= $file['file_width'] ?>px</td>
+				<td><?= $file['dimensions'][1] ?>px</td>
 			</tr>
 		<?php endif ?>
 	</table>	
 </div> <!-- .success -->
+
+<?= form_open('C=content_files_modal'.AMP.'M=edit_file', array('id' => "edit_file"), array('file_id' => $file_id)) ?>
+<?= form_close() ?>
 
 <script>
 	var file = <?= $file_json ?>;

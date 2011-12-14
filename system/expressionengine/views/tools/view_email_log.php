@@ -19,17 +19,19 @@ if ($EE_view_disable !== TRUE)
 			
 		<?php $this->load->view('_shared/message'); ?>
 
-		<?=form_open('C=tools_logs'.AMP.'M=delete_email')?>
+		<?=form_open('C=tools_logs'.AMP.'M=clear_log_files'.AMP.'type=email')?>
 			
 			<?=$table_html?>
 			
-			<div class="tableFooter">
-				<div class="tableSubmit">
-					<?=form_submit('email_logs', lang('delete'), 'class="submit"')?>
-				</div>		
-			
-				<?=$pagination_html?>
-			</div> <!-- tableFooter -->
+			<? if ( ! empty($rows)): ?>
+				<div class="tableFooter">
+					<div class="tableSubmit">
+						<?=form_submit('email_logs', lang('delete'), 'class="submit"')?>
+					</div>		
+				
+					<?=$pagination_html?>
+				</div> <!-- tableFooter -->
+			<? endif ?>
 			
 		<?=form_close()?>
 

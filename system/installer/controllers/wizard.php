@@ -1175,6 +1175,12 @@ PAPAYA;
 				else
 				{
 					$this->userdata[$key] = $this->input->post($key);					
+
+					// Be a bit more friendly by trimming most inputs, but leave passwords as-is
+					if (! in_array($key, array('db_password', 'password', 'password_confirm')))
+					{
+						$this->userdata[$key] = trim($this->userdata[$key]);
+					}
 				}
 			}
 		}

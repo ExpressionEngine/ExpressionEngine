@@ -44,6 +44,8 @@ $lang = array(
 // Upload modal
 'use_file'				=> 'Use Uploaded File',
 'browse_files'			=> 'Browse Files',
+'image_tools'			=> 'Image Tools',
+'no_change'				=> 'No change',
 
 'edit_modes'			=> 'Edit Modes',
 'resize'				=> 'Resize',
@@ -136,7 +138,7 @@ $lang = array(
 'Maximum Image Height (in pixels)',
 
 'max_width' =>
-'Maximum Image Width',
+'Maximum Image Width (in pixels)',
 
 'properties' =>
 'Image Properties',

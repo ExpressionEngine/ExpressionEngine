@@ -1373,7 +1373,8 @@ table.mainTable tr.odd td {
 	background-color:	#f4f6f6;
 }
 
-table.mainTable tr.new td {
+table.mainTable tr.new td,
+#mainContent table.mainTable td.new {
 	background-color: #fcfcdc;
 	font-weight: bold;
 }

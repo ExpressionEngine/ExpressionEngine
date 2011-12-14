@@ -1157,6 +1157,9 @@ class Content_publish extends CI_Controller {
 				{
 					$vdata = unserialize($vquery->row('version_data'));
 					
+					// Legacy fix for revisions where the entry_id in the array was saved as 0
+					$vdata['entry_id'] = $entry_id;
+					
 					$result = array_merge($result, $vdata);
 				}
 			}
@@ -2593,9 +2596,9 @@ class Content_publish extends CI_Controller {
 	 */
 	private function _setup_file_list()
 	{
-		$this->load->model('tools_model');
+		$this->load->model('file_upload_preferences_model');
 		
-		$upload_directories = $this->tools_model->get_upload_preferences($this->session->userdata('group_id'));
+		$upload_directories = $this->file_upload_preferences_model->get_upload_preferences($this->session->userdata('group_id'));
 	
 		$this->_file_manager = array(
 			'file_list'						=> array(),

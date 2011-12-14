@@ -405,12 +405,14 @@ class Tools_logs extends CI_Controller {
 			'recipient_name'=> array('header' => lang('to'), 'html' => FALSE),
 			'cache_date'	=> array('header' => lang('date')),
 			'_check'		=> array(
-				'header' => '<label>'.form_checkbox(array(
-					'id'	=>'toggle_all',
-					'name'	=>'toggle_all',
-					'value'	=>'toggle_all',
-					'checked' =>FALSE
-				)).'</label>'
+				'header' => form_checkbox(
+					array(
+						'id'		=>'toggle_all',
+						'name'		=>'toggle_all',
+						'value'		=>'toggle_all',
+						'checked'	=> FALSE
+					)
+				)
 			)
 		));
 		
@@ -503,11 +505,138 @@ class Tools_logs extends CI_Controller {
 			)
 		);
 	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Shows Developer Log page
+	 *
+	 * @access public
+	 * @return void
+	 */
+	function view_developer_log()
+	{
+		if ($this->session->userdata('group_id') != 1)
+		{
+			show_error(lang('unauthorized_access'));
+		}
+		
+		$this->load->library('table');
+		
+		$this->table->set_base_url('C=tools_logs'.AMP.'M=view_developer_log');
+		$this->table->set_columns(array(
+			'log_id'		=> array('header' => lang('log_id')),
+			'timestamp'		=> array('header' => lang('date')),
+			'description'	=> array('header' => lang('log_message')),
+			'_check'		=> array(
+				'header' => form_checkbox(
+					array(
+						'id'		=>'toggle_all',
+						'name'		=>'toggle_all',
+						'value'		=>'toggle_all',
+						'checked'	=> FALSE
+					)
+				)
+			)
+		));
+		
+		$initial_state = array(
+			'sort'	=> array('timestamp' => 'desc')
+		);
+		
+		$params = array(
+			'perpage'	=> $this->perpage
+		);
+		
+		$vars = $this->table->datasource('_developer_log_filter', $initial_state, $params);
 
+		$this->cp->set_variable('cp_page_title', lang('view_developer_log'));
+
+		// a bit of a breadcrumb override is needed
+		$this->cp->set_variable('cp_breadcrumbs', array(
+			BASE.AMP.'C=tools' => lang('tools'),
+			BASE.AMP.'C=tools_logs'=> lang('tools_logs')
+		));
+		
+		$this->load->library('logger');
+		
+		// Now that we've gotten the logs we're going to show, mark them as viewed;
+		// note since we already have the logs array, this change won't be visible on
+		// this particular page load, which is what we want. Next time the page loads,
+		// the logs will appear as viewed.
+		$this->tools_model->mark_developer_logs_as_viewed($vars['rows']);
+		
+		$this->javascript->compile();
+		$this->load->view('tools/view_developer_log', $vars);
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Ajax filter for Email log
+	 *
+	 * Filters Email log data
+	 *
+	 * @access	public
+	 * @return	void
+	 */
+	function _developer_log_filter($state, $params)
+	{	
+		$dev_logs_query = $this->tools_model->get_developer_log(
+			$params['perpage'], $state['offset'], $state['sort']
+		);
+		
+		$dev_logs = $dev_logs_query->result_array();
+		
+		$rows = array();
+		
+		while ($log = array_shift($dev_logs))
+		{
+			$new = ($log['viewed'] == 'n') ? 'new' : '';
+			
+			$rows[] = array(
+				'log_id' => array(
+					'data' 	=> $log['log_id'],
+					'class'	=> $new
+				),
+				'timestamp' => array(
+					'data'	=> date('Y-m-d h:i A', $log['timestamp']),
+					'class'	=> $new
+				),
+				'description' => array(
+					'data'	=> (isset($log['function'])) ? $this->logger->build_deprecation_language($log) : $log['description'],
+					'class'	=> $new
+				),
+				'viewed' => $log['viewed'],
+				'_check' => array(
+					'data' => form_checkbox(
+						array(
+							'id'		=>'delete_box_'.$log['log_id'],
+							'name'		=>'toggle[]',
+							'value'		=>$log['log_id'],
+							'class'		=>'toggle_email', 
+							'checked'	=> FALSE
+						)
+					),
+					'class'	=> $new
+				)
+			);
+		}
+
+		return array(
+			'rows' => $rows,
+			'no_results' => '<p>'.lang('no_search_results').'</p>',
+			'pagination' => array(
+				'per_page' => $params['perpage'],
+				'total_rows' => $this->db->count_all('developer_log')
+			)
+		);
+	}
+	
 	// --------------------------------------------------------------------
 
 	/**
-	 * Clear Logs Files
+	 * Clear Logs Files, or deletes individual logs if given log IDs
 	 *
 	 * @access	public
 	 * @return	mixed
@@ -520,31 +649,55 @@ class Tools_logs extends CI_Controller {
 		}
 		
 		$type = $this->input->get_post('type');
+		$toggle = $this->input->get_post('toggle');
 		
 		$table = FALSE;
+		$id_field = FALSE;
 		
 		switch($type)
 		{
 			case 'cp':
-					$table = 'cp_log';
+				$table = 'cp_log';
+				$id_field = 'id';
 				break;
 			case 'search':
-					$table = 'search_log';
+				$table = 'search_log';
+				$id_field = 'id';
 				break;
 			case 'email':
-					$table = 'email_console_cache';
+				$table = 'email_console_cache';
+				$id_field = 'cache_id';
+				break;
+			case 'developer':
+				$table = 'developer_log';
+				$id_field = 'log_id';
 				break;
 			default: //nothing
 		}
 		
 		if ($table)
 		{
-			$this->db->empty_table($table);
+			$success_flashdata = lang('cleared_logs');
+			$log_ids = array();
+			
+			// If we were passed any log IDs, create an array of those
+			if ( ! empty($toggle))
+			{
+				foreach ($_POST['toggle'] as $key => $val)
+				{
+					$log_ids[] = $this->db->escape_str($val);
+				}
+				
+				$success_flashdata = lang('logs_deleted');
+			}
+			
+			// Clear logs, or delete logs if $log_ids is populated
+			$this->tools_model->delete_logs($table, $id_field, $log_ids);
 			
 			// Redirect to where we came from
 			$view_page = 'view_'.$type.'_log';
 			
-			$this->session->set_flashdata('message_success', lang('cleared_logs'));
+			$this->session->set_flashdata('message_success', $success_flashdata);
 			$this->functions->redirect(BASE.AMP.'C=tools_logs'.AMP.'M='.$view_page);
 		}
 
@@ -578,41 +731,6 @@ class Tools_logs extends CI_Controller {
 		}
 		
 		$this->load->view('tools/view_email', $query->row_array());
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Delete Specific Emails
-	 *
-	 * @access	public
-	 * @return	mixed
-	 */
-	function delete_email()
-	{
-		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_logs'))
-		{
-			show_error(lang('unauthorized_access'));
-		}
-		
-		if ( ! $this->input->post('toggle'))
-		{
-			$this->functions->redirect(BASE.AMP.'C=tools_logs'.AMP.'M=email_console_logs');
-		}
-
-		$ids = array();
-				
-		foreach ($_POST['toggle'] as $key => $val)
-		{		
-			$ids[] = "cache_id = '".$this->db->escape_str($val)."'";
-		}
-		
-		$IDS = implode(" OR ", $ids);
-		
-		$this->db->query("DELETE FROM exp_email_console_cache WHERE ".$IDS);
-	
-		$this->session->set_flashdata('message_success', lang('email_deleted'));
-		$this->functions->redirect(BASE.AMP.'C=tools_logs'.AMP.'M=view_email_log');
 	}
 	
 	// --------------------------------------------------------------------

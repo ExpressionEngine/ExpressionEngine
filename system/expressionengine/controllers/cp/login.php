@@ -89,6 +89,9 @@ class Login extends CI_Controller {
 	 */	
 	public function login_form()
 	{
+		$this->load->library('logger');
+		$this->logger->deprecated();
+		
 		$this->index();
 	}  
 	

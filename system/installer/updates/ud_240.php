@@ -48,6 +48,7 @@ class Updater {
 		$this->_update_watermarks_table();
 		$this->_update_file_dimensions_table();
 		$this->_update_files_table();
+		$this->_add_developer_log_table();
 		
 		return TRUE;
 	}
@@ -103,7 +104,7 @@ class Updater {
 	/**
 	 * Update Files Table
 	 *
-	 * Adds extra metadata fields to file table
+	 * Adds extra metadata fields to file table, and deletes old custom fields
 	 *
 	 * @return	void
 	 */
@@ -133,6 +134,79 @@ class Updater {
 				),
 			)
 		);
+		
+		// Drop the 6 custom fields
+		for ($i = 1; $i < 7; $i++)
+		{ 
+			$this->EE->dbforge->drop_column('files', 'field_'.$i);
+			$this->EE->dbforge->drop_column('files', 'field_'.$i.'_fmt');
+		}
+		
+		// Drop 'metadata' and 'status' fields
+		$this->EE->dbforge->drop_column('files', 'metadata');
+		$this->EE->dbforge->drop_column('files', 'status');
+	}
+	
+	/**
+	 * Add Developer Log table
+	 *
+	 * @return	void
+	 */
+	private function _add_developer_log_table()
+	{
+		$this->EE->dbforge->add_field(
+			array(
+				'log_id' => array(
+					'type'				=> 'int',
+					'constraint'		=> 10,
+					'unsigned'			=> TRUE,
+					'auto_increment'	=> TRUE
+				),
+				'timestamp' => array(
+					'type'				=> 'int',
+					'constraint'		=> 10,
+					'unsigned'			=> TRUE
+				),
+				'viewed' => array(
+					'type'				=> 'char',
+					'constraint'		=> 1,
+					'default'			=> 'n'
+				),
+				'description' => array(
+					'type'				=> 'text',
+					'null'				=> TRUE
+				),
+				'function' => array(
+					'type'				=> 'varchar',
+					'constraint'		=> 100,
+					'null'				=> TRUE
+				),
+				'line' => array(
+					'type'				=> 'int',
+					'constraint'		=> 10,
+					'unsigned'			=> TRUE,
+					'null'				=> TRUE
+				),
+				'file' => array(
+					'type'				=> 'varchar',
+					'constraint'		=> 255,
+					'null'				=> TRUE
+				),
+				'deprecated_since' => array(
+					'type'				=> 'varchar',
+					'constraint'		=> 10,
+					'null'				=> TRUE
+				),
+				'use_instead' => array(
+					'type'				=> 'varchar',
+					'constraint'		=> 100,
+					'null'				=> TRUE
+				)
+			)
+		);
+		
+		$this->EE->dbforge->add_key('log_id', TRUE);
+		$this->EE->dbforge->create_table('developer_log');
 	}
 }	
 /* END CLASS */

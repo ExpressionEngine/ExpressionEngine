@@ -1233,24 +1233,12 @@ class EE_Schema {
 				`title` varchar(255) DEFAULT NULL,
 				`upload_location_id` int(4) unsigned DEFAULT '0',
 				`rel_path` varchar(255) DEFAULT NULL,
-				`status` char(1) DEFAULT 'o',
 				`mime_type` varchar(255) DEFAULT NULL,
 				`file_name` varchar(255) DEFAULT NULL,
 				`file_size` int(10) DEFAULT '0',
-				`caption` text,
-				`field_1` text,
-  				`field_1_fmt` tinytext,
-				`field_2` text,
-				`field_2_fmt` tinytext,
-				`field_3` text,
-				`field_3_fmt` tinytext,
-				`field_4` text,
-				`field_4_fmt` tinytext,
-				`field_5` text,
-				`field_5_fmt` tinytext,
-				`field_6` text,
-				`field_6_fmt` tinytext,
-				`metadata` mediumtext,
+				`description` text,
+				`credit` varchar(255) DEFAULT NULL,
+				`location` varchar(255) DEFAULT NULL,
 				`uploaded_by_member_id` int(10) unsigned DEFAULT '0',
 				`upload_date` int(10) DEFAULT NULL,
 				`modified_by_member_id` int(10) unsigned DEFAULT '0',
@@ -1309,7 +1297,21 @@ class EE_Schema {
 				`wm_shadow_distance` int(3) unsigned DEFAULT NULL,
 				`wm_shadow_color` varchar(7) DEFAULT NULL,
 				PRIMARY KEY (`wm_id`)
-		)";	
+		)";
+		
+		// Developer log table
+		$Q[] = "CREATE TABLE `exp_developer_log` (
+				`log_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+				`timestamp` int(10) unsigned NOT NULL,
+				`viewed` char(1) NOT NULL DEFAULT 'n',
+				`description` text NULL,
+				`function` varchar(100) NULL,
+				`line` int(10) unsigned NULL,
+				`file` varchar(255) NULL,
+				`deprecated_since` varchar(10) NULL,
+				`use_instead` varchar(100) NULL,
+				PRIMARY KEY (`log_id`)
+		)";
 		
 		// --------------------------------------------------------------------
 		// --------------------------------------------------------------------
