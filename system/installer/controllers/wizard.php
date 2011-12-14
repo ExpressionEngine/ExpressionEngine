@@ -211,7 +211,7 @@ class Wizard extends CI_Controller {
 		else
 		{
 			// must be in a public system folder so try one level back from current folder
-			$this->theme_path = str_replace(SYSDIR, '', $this->theme_path).'themes/';
+			$this->theme_path = preg_replace('/\b'.preg_quote(SYSDIR).'\b/', '', $this->theme_path).'themes/';
 		}
 
 		$this->root_theme_path = $this->theme_path;
@@ -878,13 +878,6 @@ PAPAYA;
 			}
 		}
 		
-		// MySQL passwords can not contain a dollar sign
-		if (strpos($this->userdata['db_password'], '$') !== FALSE)
-		{
-			$errors[] = $this->lang->line('password_no_dollar');
-
-		}
-		
 		// Is email valid?
 		if ($this->userdata['email_address'] != '' AND ! valid_email($this->userdata['email_address']))
 		{
@@ -1182,6 +1175,12 @@ PAPAYA;
 				else
 				{
 					$this->userdata[$key] = $this->input->post($key);					
+
+					// Be a bit more friendly by trimming most inputs, but leave passwords as-is
+					if (! in_array($key, array('db_password', 'password', 'password_confirm')))
+					{
+						$this->userdata[$key] = trim($this->userdata[$key]);
+					}
 				}
 			}
 		}
@@ -2872,12 +2871,13 @@ PAPAYA;
 					if (is_bool($v))
 					{
 						$v = ($v == TRUE) ? 'TRUE' : 'FALSE';
-					
+
 						$str .= "\$db['".$key."']['".$k."'] = ".$v.";\n";
 					}
 					else
 					{
-						$str .= "\$db['".$key."']['".$k."'] = \"".addslashes($v)."\";\n";
+						$v = str_replace(array('\\', "'"), array('\\\\', "\\'"), $v);
+						$str .= "\$db['".$active_group."']['".$k."'] = '".$v."';\n";
 					}
 				}
 			}
@@ -2891,7 +2891,8 @@ PAPAYA;
 				}
 				else
 				{
-					$str .= "\$db['".$active_group."']['".$key."'] = \"".$val."\";\n";
+					$val = str_replace(array('\\', "'"), array('\\\\', "\\'"), $val);
+					$str .= "\$db['".$active_group."']['".$key."'] = '".$val."';\n";
 				}
 			}		
 		} 

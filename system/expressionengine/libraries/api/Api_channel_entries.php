@@ -2100,6 +2100,11 @@ class Api_channel_entries extends Api {
 		
 		if ($this->c_prefs['enable_versioning'] == 'y')
 		{
+			// If a revision was saved before a submit new entry had ever occured?
+			// $data['revision_post'] will not have a correct entry_id at this point
+			// so let's overwrite it now
+			$data['revision_post']['entry_id'] = $this->entry_id;
+			
 			$this->EE->db->insert('entry_versioning', array(
 				'entry_id'		=> $this->entry_id,
 				'channel_id'	=> $this->channel_id,

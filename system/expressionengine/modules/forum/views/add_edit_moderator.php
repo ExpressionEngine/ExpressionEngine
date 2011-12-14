@@ -39,7 +39,6 @@
 
 <?php
 
-$this->table->set_template($cp_table_template);
 $this->table->set_heading(
 	array('data' => lang('forum_permission'),	'style' => 'width="50%"'),
 	array('data' => lang('forum_value'),		'style' => 'width="50%"')

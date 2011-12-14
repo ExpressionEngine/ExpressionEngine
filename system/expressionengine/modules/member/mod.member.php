@@ -281,7 +281,26 @@ class Member {
 		// Prep the request
 		if ( ! $this->_prep_request())
 		{
-			exit("Invalid Page Request");
+			// 404 it
+			$this->EE->load->library('template', NULL, 'TMPL');
+			
+			$template = explode('/', $this->EE->config->item('site_404'));
+
+			if (isset($template[1]))
+			{
+				$this->EE->TMPL->template_type = "404";
+				$this->EE->TMPL->fetch_and_parse($template[0], $template[1]);
+				$out = $this->EE->TMPL->parse_globals($this->EE->TMPL->final_template);
+			}
+			else
+			{
+				$out = $this->EE->TMPL->_404();
+			}
+			
+			$this->EE->output->out_type = '404';
+			$this->EE->output->set_output($out);
+			$this->EE->output->_display();
+			exit;
 		}
 
 		// -------------------------------------------
@@ -1364,8 +1383,9 @@ class Member {
 		$query = $this->EE->db->select('password')
 							  ->where('member_id', $this->EE->session->userdata('member_id'))
 							  ->get('members');
-
-		$password = $this->EE->functions->hash(stripslashes($this->EE->input->post('password')));
+						
+		$this->EE->load->helper('security');
+		$password = do_hash(stripslashes($this->EE->input->post('password')));
 
 		if ($query->row('password') != $password)
 		{
@@ -3008,7 +3028,7 @@ class Member {
 		$query = $this->EE->db->query("SELECT m.member_id, m.group_id, m.username, m.screen_name, m.email, m.ip_address, m.location, m.total_entries, m.total_comments, m.private_messages, m.total_forum_topics, m.total_forum_posts AS total_forum_replies, m.total_forum_topics + m.total_forum_posts AS total_forum_posts,
 							g.group_title AS group_description FROM exp_members AS m, exp_member_groups AS g
 							WHERE g.group_id = m.group_id
-							g.site_id = '".$this->EE->db->escape_str($this->EE->config->item('site_id'))."'
+							AND g.site_id = '".$this->EE->db->escape_str($this->EE->config->item('site_id'))."'
 							AND m.member_id IN ('".implode("', '", $ignored)."')");
 
 		if ($query->num_rows() == 0)

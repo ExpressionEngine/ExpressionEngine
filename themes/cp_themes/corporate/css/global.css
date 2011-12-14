@@ -1333,7 +1333,7 @@ input.submit,input.delete, a.submit {
 }
 
 
-table.mainTable th {
+.mainTable th {
 	background:			#617280 url('../images/table_column_heading_bg.jpg') top left repeat-x;
 	color:				#fff;
 	padding:			7px 8px 8px 11px;
@@ -1342,6 +1342,10 @@ table.mainTable th {
 	white-space:		nowrap;
 	text-align:			left;
 	text-shadow:		0 1px 1px #617280;
+}
+
+th.no-sort {
+	cursor: default;
 }
 
 table.mainTable tr.new td {
@@ -3096,7 +3100,7 @@ label.hide_field {
 }
 
 /* Show Entry */
-div#view_content_entry_links {
+#view_content_entry_links {
   margin-top:   15px;
   padding:      10px;
   font-weight:  bold;

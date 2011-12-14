@@ -24,7 +24,6 @@ if ($EE_view_disable !== TRUE)
 			<div class="clear_left"></div>
 
 			<?php
-				$this->table->set_template($cp_table_template);
 				$this->table->set_heading(
 					lang('wm_name'),
 					array('data' => lang('wm_type'), 'width' => '10%'),

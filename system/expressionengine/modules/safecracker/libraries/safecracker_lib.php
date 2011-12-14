@@ -208,7 +208,7 @@ class Safecracker_lib
 				'error_handling' => ($this->EE->TMPL->fetch_param('error_handling')) ? $this->EE->TMPL->fetch_param('error_handling') : FALSE,
 				'preserve_checkboxes' => ($this->EE->TMPL->fetch_param('preserve_checkboxes')) ? $this->EE->TMPL->fetch_param('preserve_checkboxes') : FALSE,
 				'secure_return' => $this->bool_string($this->EE->TMPL->fetch_param('secure_return')) ? 1 : FALSE,
-				'allow_comments' => $this->bool_string($this->EE->TMPL->fetch_param('allow_comments')) ? 'y' : 'n',
+				'allow_comments' => $this->bool_string($this->EE->TMPL->fetch_param('allow_comments'), $this->channel['comment_system_enabled']) == 'y' ? 'y' : 'n'
 			)
 		);
 		
@@ -745,6 +745,9 @@ class Safecracker_lib
 			unset($conditional_errors['field_errors']);
 		}
 		
+		//load member data for logged out member
+		$this->fetch_logged_out_member($this->EE->TMPL->fetch_param('logged_out_member_id'));
+
 		// Parse captcha conditional
 		$captcha_conditional = array(
 			'captcha' => ($this->channel('channel_id') && $this->logged_out_member_id && ! empty($this->settings['require_captcha'][$this->EE->config->item('site_id')][$this->channel('channel_id')]))
@@ -773,10 +776,7 @@ class Safecracker_lib
 		{
 			$this->EE->session->cache['safecracker']['enctype'] = 'enctype="multipart/form-data"';
 		}
-		
-		//load member data for logged out member
-		$this->fetch_logged_out_member($this->EE->TMPL->fetch_param('logged_out_member_id'));
-		
+				
 		//add encrypted member_id to form
 		if ($this->EE->TMPL->fetch_param('logged_out_member_id') && $this->logged_out_member_id)
 		{
@@ -1841,10 +1841,6 @@ class Safecracker_lib
 			return;
 		}
 		
-		//get field group and 
-		$this->EE->db->where('channels.site_id', $this->site_id);
-		$this->EE->db->limit(1);
-		
 		if ($channel_id)
 		{
 			$this->EE->db->where('exp_channels.channel_id', $this->EE->security->xss_clean($channel_id));
@@ -1868,6 +1864,10 @@ class Safecracker_lib
 			return;
 		}
 		
+		//get field group and limit
+		$this->EE->db->where('channels.site_id', $this->site_id);
+		$this->EE->db->limit(1);
+
 		$query = $this->EE->db->get('channels');
 		
 		if ( ! $query->num_rows())
@@ -2658,8 +2658,6 @@ class Safecracker_lib
 		}
 		
 		$this->temp_session = $this->EE->session;
-
-		//$this->temp_session = $this->EE->functions->clone_object($this->EE->session);
 		
 		if ( ! class_exists('SC_Session'))
 		{

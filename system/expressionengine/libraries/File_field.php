@@ -36,54 +36,49 @@ class File_field {
 	/**
 	 * Creates a file field
 	 * 
+	 * @param string $field_name The name of the field
 	 * @param string $data The data stored in the file field 
 	 * 		e.g. {filedir_x}filename.ext
-	 * @param string $field_name The name of the field
 	 * @param string $allowed_file_dirs The allowed file directory 
 	 * 		Either 'all' or ONE directory ID
 	 * @param string $content_type The content type allowed. 
 	 * 		Either 'all' or 'image'
 	 * @return string Fully rendered file field
 	 */
-	public function field($data, $field_name, $allowed_file_dirs = 'all', $content_type = 'all')
+	public function field($field_name, $data = '', $allowed_file_dirs = 'all', $content_type = 'all')
 	{
 		// Load necessary library, helper, model and langfile
 		$this->EE->load->library('filemanager');
-		$this->EE->load->helper('html');
-		$this->EE->load->model('file_upload_preferences_model');
+		$this->EE->load->helper(array('html', 'form'));
+		$this->EE->load->model(array('file_model', 'file_upload_preferences_model'));
 		$this->EE->lang->loadfile('fieldtypes');
 		
 		$vars = array(
-			'filedir'	=> '',
-			'filename'	=> ''
+			'filedir'				=> '',
+			'filename'				=> '',
+			'upload_location_id'	=> ''
 		);
 		$allowed_file_dirs = ($allowed_file_dirs == 'all') ? '' : $allowed_file_dirs;
 		$specified_directory = ($allowed_file_dirs == '') ? 'all' : $allowed_file_dirs;
-
-		// Figure out the directory and name of the file from the data 
-		// (e.g. {filedir_1}filename.jpg)
-		if (preg_match('/{filedir_([0-9]+)}/', $data, $matches))
+		
+		// Parse field data
+		if ( ! empty($data) AND ($parsed_field = $this->parse_field($data)) !== FALSE)
 		{
-			$vars['filedir'] = $matches[1];
-			$vars['filename'] = str_replace($matches[0], '', $data);
+			$vars = $parsed_field;
+			$vars['filename'] = $vars['filename'].'.'.$vars['extension'];
 		}
 		
 		// Retrieve all directories that are both allowed for this user and
 		// for this field
-		$upload_directories = $this->EE->file_upload_preferences_model->get_upload_preferences(
+		$upload_dirs[''] = lang('directory');
+		$upload_dirs = $this->EE->file_upload_preferences_model->get_dropdown_array(
 			$this->EE->session->userdata('group_id'),
-			$allowed_file_dirs
+			$allowed_file_dirs,
+			$upload_dirs
 		);
-
-		// Create the list of directories
-		$upload_dirs = array('' => lang('directory'));
-		foreach($upload_directories->result() as $row)
-		{
-			$upload_dirs[$row->id] = $row->name;
-		}
 		
 		// Get the thumbnail
-		$thumb_info = $this->EE->filemanager->get_thumb($vars['filename'], $vars['filedir']);
+		$thumb_info = $this->EE->filemanager->get_thumb($vars['filename'], $vars['upload_location_id']);
 		$vars['thumb'] = img(array(
 			'src' => $thumb_info['thumb'],
 			'alt' => $vars['filename']
@@ -91,7 +86,7 @@ class File_field {
 		
 		// Create the hidden fields for the file and directory
 		$vars['hidden']	  = form_hidden($field_name.'_hidden', $vars['filename']);
-		$vars['hidden']	 .= form_hidden($field_name.'_hidden_dir', $vars['filedir']);
+		$vars['hidden']	 .= form_hidden($field_name.'_hidden_dir', $vars['upload_location_id']);
 		
 		// Create a standard file upload field and dropdown for folks 
 		// without javascript
@@ -101,10 +96,10 @@ class File_field {
 			'data-content-type'	=> $content_type,
 			'data-directory'	=> $specified_directory
 		));
-		$vars['dropdown'] = form_dropdown($field_name.'_directory', $upload_dirs, $vars['filedir']);
+		$vars['dropdown'] = form_dropdown($field_name.'_directory', $upload_dirs, $vars['upload_location_id']);
 
 		// Check to see if they have access to any directories to create an upload link
-		$vars['upload_link'] = (count($upload_dirs) > 1) ? '<a href="#" class="choose_file" data-directory="'.$specified_directory.'">'.lang('add_file').'</a>' : lang('directory_no_access');
+		$vars['upload_link'] = (count($upload_dirs) > 0) ? '<a href="#" class="choose_file" data-directory="'.$specified_directory.'">'.lang('add_file').'</a>' : lang('directory_no_access');
 
 		// If we have a file, show the thumbnail, filename and remove link
 		$vars['set_class'] = $vars['filename'] ? '' : 'js_hide';
@@ -194,9 +189,9 @@ class File_field {
 		// Directory selected - switch
 		$filedir = ($this->EE->input->post($dir_field)) ? $this->EE->input->post($dir_field) : '';
 		
-		foreach($upload_directories->result() as $row)
+		foreach($upload_directories as $row)
 		{
-			$allowed_dirs[] = $row->id;
+			$allowed_dirs[] = $row['id'];
 		}
 		
 		// Upload or maybe just a path in the hidden field?
@@ -274,29 +269,95 @@ class File_field {
 	 * @param integer $directory_id The directory ID
 	 * @return string The formatted field data e.g. {filedir_1}file.ext
 	 */
-	public function format_data($data, $directory_id = 0)
+	public function format_data($file_name, $directory_id = 0)
 	{
-		if ($data != '')
+		if ($file_name != '')
 		{
 			if ( ! empty($directory_id))
 			{
-			     return '{filedir_'.$directory_id.'}'.$data;
+			     return '{filedir_'.$directory_id.'}'.$file_name;
 			}
 
-			return $data;
+			return $file_name;
 		}
 	}
-
+	
 	// ------------------------------------------------------------------------
-
+	
 	/**
-	 * Parse {filedir_n} from a given string to it's actual values
+	 * Parse field contents, which may be in the {filedir_n} format for may be
+	 * a file ID.
 	 *
-	 * @access	private
+	 * @access	public
+	 * @param	string $data Field contents
+	 * @return	array|boolean Information about file and upload directory, false 
+	 * 		if there is no file
+	 */
+	public function parse_field($data)
+	{
+		$this->EE->load->model('file_model');
+
+		$file_dirs = $this->_file_dirs();
+		
+		// If the file field is in the "{filedir_n}image.jpg" format
+		if (preg_match('/^{filedir_(\d+)}/', $data, $matches))
+		{
+			// Only replace it once
+			$path = substr($data, 0, 10 + strlen($matches[1]));
+			
+			// Set upload directory ID and file name
+			$dir_id = $matches[1];
+			$file_name = str_replace($matches[0], '', $data);
+			
+			$file = $this->EE->file_model->get_files_by_name($file_name, $dir_id)->row_array();
+		}
+		// If file field is just a file ID
+		else if (! empty($data) && is_numeric($data))
+		{
+			// Query file model on file ID
+			$file = $this->EE->file_model->get_files_by_id($data)->row_array();
+		}
+
+		// If there is no file, get out of here
+		if (empty($file))
+		{
+			return FALSE;
+		}
+
+		// Set additional data based on what we've gathered
+		$file['path'] 		= (isset($file_dirs[$file['upload_location_id']])) ? $file_dirs[$file['upload_location_id']] : '';
+		$file['extension'] 	= substr(strrchr($file['file_name'], '.'), 1);
+		$file['filename'] 	= basename($file['file_name'], '.'.$file['extension']); // backwards compatibility
+		$file['url'] 		= $file['path'].$file['file_name'];
+
+		$dimensions = explode(" ", $file['file_hw_original']);
+
+		$file['width'] 	= isset($dimensions[1]) ? $dimensions[1] : '';
+		$file['height'] = isset($dimensions[0]) ? $dimensions[0] : '';
+
+		// Make the URLs of any manipulated versions available via e.g. {url:small}
+		$manipulations = $this->EE->file_model->get_dimensions_by_dir_id($file['upload_location_id'])->result_array();
+
+		foreach($manipulations as $m)
+		{
+			$file['url:'.$m['short_name']] = $file['path'].'_'.$m['short_name'].'/'.$file['file_name'];
+
+		}
+
+		return $file;
+	}
+	
+	// ------------------------------------------------------------------------
+	
+	/**
+	 * Unlike parse(), this parses all occurances of {filedir_n} from a given
+	 * string to their actual values and returns the processed string.
+	 *
+	 * @access	public
 	 * @param	string $data The string to parse {filedir_n} in
 	 * @return	string The original string with all {filedir_n}'s parsed
 	 */	
-	public function parse($data)
+	public function parse_string($data)
 	{
 		// Find each instance of {filedir_n}
 		if (preg_match_all('/{filedir_(\d+)}/', $data, $matches, PREG_SET_ORDER))
@@ -312,7 +373,7 @@ class File_field {
 				}
 			}
 		}
-
+		
 		return $data;
 	}
 	

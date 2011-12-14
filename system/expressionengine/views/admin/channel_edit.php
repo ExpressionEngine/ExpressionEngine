@@ -42,8 +42,7 @@ if ($EE_view_disable !== TRUE)
 				$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
 
 				$preference = lang('channel_lang', 'channel_lang');
-				$controls = $this->functions->encoding_menu('channel_lang', $channel_lang);
-				$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
+				$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>form_dropdown('channel_lang', $languages, $channel_lang)));
 
 				echo $this->table->generate();
 				$this->table->clear(); // Clear out for the next one

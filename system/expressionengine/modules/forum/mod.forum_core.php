@@ -43,6 +43,7 @@ class Forum_Core extends Forum {
 	 */
 	public function display_forum($function = '')
 	{
+	
 		// Determine the function call
 		// The function is based on the 2nd segment of the URI
 		if ($function == '')
@@ -9062,8 +9063,6 @@ class Forum_Core extends Forum {
 		  	}  		
 	  	}
 
-		$terms = array();
-
 		// Fetch allowed forums
 		// Before doing anything else we'll fetch the forum IDs 
 		// that the user is allowed to search in.
@@ -9494,7 +9493,7 @@ class Forum_Core extends Forum {
 				// If we don't have multiple keywords we'll
 				// do a simple string search
 			
-				if (count($terms) == 0)
+				if (count($terms_like) == 0)
 				{
 					if ($search_in == 'titles')
 					{
@@ -9716,7 +9715,7 @@ class Forum_Core extends Forum {
 			{
 				// "Any" or "All" Search				
 				// If we don't have multiple keywords we'll do a simple string search
-				if (count($terms) == 0)
+				if (count($terms_like) == 0)
 				{
 					if ($search_in != 'titles')
 					{

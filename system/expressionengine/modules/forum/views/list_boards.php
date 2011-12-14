@@ -1,5 +1,4 @@
 <?php
-$this->table->set_template($cp_table_template);
 $this->table->set_heading(
 	array('data' => lang('board_id'),				'style' => 'width: 8%'),
 	array('data' => lang('board_label'),			'style'	=> 'width: 30%'),

@@ -243,7 +243,7 @@ class EE_Functions {
 	 */
 	function encode_ee_tags($str, $convert_curly = FALSE)
 	{
-		if ($str != '')
+		if ($str != '' && strpos($str, '{') !== FALSE)
 		{
 			if ($convert_curly === TRUE)
 			{
@@ -410,6 +410,9 @@ class EE_Functions {
 	 */
 	function hash($str)
 	{
+		$this->EE->load->library('logger');
+		$this->EE->logger->deprecated('2.0', 'Security_helper::do_hash');
+		
 		$this->EE->load->helper('security');
 		return do_hash($str);
 	}
@@ -874,8 +877,6 @@ class EE_Functions {
 			return array('title' => $query->row('data_title') , 'data' => $query->row('template_data') );
 		}
 		
-		$this->EE->load->library('security');
-		
 		if ($this->EE->session->userdata['language'] != '')
 		{
 			$user_lang = $this->EE->session->userdata['language'];
@@ -939,6 +940,9 @@ class EE_Functions {
 	 */
 	function encoding_menu($name, $selected = '')
 	{
+		$this->EE->load->library('logger');
+		$this->EE->logger->deprecated('2.0');
+		
 		$file = APPPATH.'config/languages.php';	
 
 		if ( ! file_exists($file)) 
@@ -969,6 +973,9 @@ class EE_Functions {
 	 */
 	function create_directory_map($source_dir, $top_level_only = FALSE)
 	{
+		$this->EE->load->library('logger');
+		$this->EE->logger->deprecated('2.2');
+		
 		if ( ! isset($filedata))
 			$filedata = array();
 		
@@ -2836,10 +2843,10 @@ class EE_Functions {
 			return array();	
 		}
 
-		$qry = $this->EE->db->select('id, url')
-							->get('upload_prefs');
+		$this->EE->load->model('file_upload_preferences_model');
+		$upload_prefs = $this->EE->file_upload_preferences_model->get_upload_preferences();
 
-		if ($qry->num_rows() === 0)
+		if (count($upload_prefs) == 0)
 		{
 			// Set $this->file_paths to FALSE so we check for it
 			// the next time through a coupla lines up.
@@ -2847,10 +2854,10 @@ class EE_Functions {
 			$this->file_paths = FALSE;
 			return array();
 		}
-				
-		foreach ($qry->result() as $row)
-		{			
-			$this->file_paths[$row->id] = $row->url;
+		
+		foreach ($upload_prefs as $row)
+		{
+			$this->file_paths[$row['id']] = $row['url'];
 		}
 		
 		return $this->file_paths;
@@ -2870,6 +2877,9 @@ class EE_Functions {
 	 */
 	function clone_object($object)
 	{
+		$this->EE->load->library('logger');
+		$this->EE->logger->deprecated('2.1.2');
+		
 		return clone $object;
 	}
 	

@@ -24,17 +24,13 @@
  */
 class Comment_mcp {
 
-	protected $pipe_length			= '2';
 	protected $comment_chars		= "20";
 	protected $comment_leave_breaks = 'n';
-	protected $perpage 				= 50;
 	protected $base_url 			= '';
 	protected $search_url;
 
-	protected $_dir; 
 	protected $_limit;
 	protected $_offset;
-	protected $_order_by;
 	protected $_entry_id;
 
 	/**
@@ -44,7 +40,7 @@ class Comment_mcp {
 	{
 		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();
-				
+		
 		if (REQ == 'CP')
 		{
 			$this->base_url = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=comment';
@@ -53,12 +49,16 @@ class Comment_mcp {
 				$this->EE->cp->allowed_group('can_edit_all_comments') && 
 				$this->EE->cp->allowed_group('can_delete_all_comments'))
 			{
-				$this->EE->cp->set_right_nav(
-					array(
-						'settings'	=> $this->base_url.AMP.'method=settings',
-						'comments'	=> $this->base_url)
-					);	
+				$this->EE->cp->set_right_nav(array(
+					'settings'	=> $this->base_url.AMP.'method=settings',
+					'comments'	=> $this->base_url
+				));	
 			}
+			
+			$this->EE->cp->add_js_script(array(
+				'plugin'	=> 'toggle_all',
+				'fp_module'	=> 'comment'
+			));
 		}
 	}
 
@@ -80,37 +80,44 @@ class Comment_mcp {
 	{
 		$this->_permissions_check();
 
-		$this->EE->load->helper(array('text', 'form'));
-		$this->EE->load->library('javascript');
+		$this->EE->load->library('table');
+		$this->EE->load->helper('text');
 
-		$this->EE->javascript->set_global('lang.selection_required', lang('selection_required'));
 
+		$columns = array(
+			'_expand'		=> array(
+				'header' => array('data' => '+/-', 'class' => 'expand'),
+				'sort'	 => FALSE
+			),
+			'comment_edit_link' => array('header' => lang('comment')),
+			'entry_title'	=> array(),
+			'name'			=> array(),
+			'email'			=> array(),
+			'comment_date'	=> array('header' => lang('date')),
+			'ip_address'	=> array(),
+			'status'		=> array(),
+			'_check'		=> array(
+				'header' => form_checkbox('toggle_comments', 'true', FALSE, 'class="toggle_comments"'),
+				'sort' => FALSE
+			)
+		);
+		
+		$this->EE->table->set_base_url('C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=comment');
+		$this->EE->table->set_columns($columns);
+		
+		$params = array('perpage' => 50);
+		$defaults = array('sort' => array('comment_date' => 'desc'));
+
+		$data = $this->EE->table->datasource('_comment_data', $defaults, $params);
+		
+		$this->EE->javascript->set_global(array(
+			'comment.run_script' => 'setup_index',
+			'lang.selection_required' => lang('selection_required')
+		));
+		
 		$this->EE->cp->set_variable('cp_page_title', lang('comments'));
 
-		$this->_setup_query_filters();
-
-		list($total_count, $qry) = $this->_setup_index_query();
-
-		if ( ! $qry->num_rows())
-		{
-			$comments = FALSE;
-		}
-		else
-		{
-			$comment = $this->_get_comments($qry->result());
-			$channel = $this->_get_channel_info($comment->result());
-			$author = $this->_get_author_info($comment->result());
-
-			$comments = $this->_merge_comment_data($comment->result(), $channel, $author);
-
-			$comment->free_result();
-			$channel->free_result();
-			$author->free_result();
-		}
-
-		$data = array(
-			'comments'				=> $comments,
-			'pagination'			=> $this->_setup_pagination($total_count),
+		$data = array_merge(array(
 			'channel_select_opts' 	=> $this->_channel_select_opts(),
 			'channel_selected'		=> $this->_channel,
 			'status_select_opts'	=> $this->_status_select_opts(),
@@ -118,15 +125,53 @@ class Comment_mcp {
 			'date_select_opts'		=> $this->_date_select_opts(),
 			'date_selected'			=> $this->_date_range,
 			'form_options'			=> array(
-							'close' 	=> lang('close_selected'),
-							'open' 		=> lang('open_selected'),
-							'pending' 	=> lang('pending_selected'),
-							'null'		=> '------',
-							'delete'	=> lang('delete_selected')
+				'close' 	=> lang('close_selected'),
+				'open' 		=> lang('open_selected'),
+				'pending' 	=> lang('pending_selected'),
+				'null'		=> '------',
+				'delete'	=> lang('delete_selected')
 			)
-		);
+		), $data);
 
 		return $this->EE->load->view('index', $data, TRUE);
+	}
+	
+	// --------------------------------------------------------------------
+	
+	public function _comment_data($state, $params)
+	{
+		$this->_setup_query_filters($state, $params);
+
+		list($total_count, $comment) = $this->_setup_index_query();
+
+		$comments = array();
+
+		if ($comment->num_rows())
+		{
+			$channel = $this->_get_channel_info($comment->result());
+			$author = $this->_get_author_info($comment->result());
+			$comments = $this->_merge_comment_data($comment->result(), $channel, $author);
+
+			$comment->free_result();
+			$channel->free_result();
+			$author->free_result();
+		}
+		
+		$rows = array();
+		
+		while ($c = array_shift($comments))
+		{
+			$rows[] = (array) $c;
+		}
+		
+		return array(
+			'rows' => (array) $rows,
+			'no_results' => lang('no_results'),
+			'pagination' => array(
+				'per_page' => $params['perpage'],
+				'total_rows' => $total_count
+			)
+		);
 	}
 
 	// --------------------------------------------------------------------
@@ -247,15 +292,14 @@ class Comment_mcp {
 		// There a result for authors here, or are they all anon?
 		$authors = ( ! $authors->num_rows()) ? array() : $authors->result();
 
-		foreach ($comments as $k => $v)
+		foreach ($comments as &$comment)
 		{
 			// Drop the entry title into the comment object
 			foreach ($channels->result() as $row)
 			{
-				if ($v->entry_id == $row->entry_id)
+				if ($comment->entry_id == $row->entry_id)
 				{
-					$comments[$k]->entry_title = $row->title;
-
+					$comment->entry_title = $row->title;
 					break;
 				}
 			}
@@ -263,43 +307,68 @@ class Comment_mcp {
 			// Get member info as well.
 			foreach ($authors as $row)
 			{
-				if ($v->author_id == $row->member_id)
+				if ($comment->author_id == $row->member_id)
 				{
-					$comments[$k]->author_screen_name = $row->screen_name;
+					$comment->author_screen_name = $row->screen_name;
 					break;
 				}
 			}
 
-			if ( ! isset($comments[$k]->author_screen_name))
+			if ( ! isset($comment->author_screen_name))
 			{
-				$comments[$k]->author_screen_name = '';
+				$comment->author_screen_name = '';
 			}
 
 			// Convert stati to human readable form
-			switch ($comments[$k]->status)
+			switch ($comment->status)
 			{
 				case 'o':
-					$comments[$k]->status = lang('open');
+					$comment->status = lang('open');
 					break;
 				case 'c':
-					$comments[$k]->status = lang('closed');
+					$comment->status = lang('closed');
 					break;
 				default:
-					$comments[$k]->status = lang("pending");
+					$comment->status = lang("pending");
 			}
-
+			
+			// Add the expand arrow
+			$comment->_expand = array(
+				'data' => '<img src="'.$this->EE->cp->cp_theme_url.'images/field_collapse.png" alt="'.lang('expand').'" />',
+				'class' => 'expand'
+			);
+			
+			// Add the toggle checkbox
+			$comment->_check = form_checkbox(
+				'toggle[]', $comment->comment_id, FALSE, 'class="comment_toggle"'
+			);
+			
 			// Alter the email var
-			$comments[$k]->email = mailto($comments[$k]->email);
+			$comment->email = mailto(
+				$comment->email, '', 'class="less_important_link"'
+			);
+			
+			$comment->comment_date = $this->EE->localize->set_human_time(
+				$comment->comment_date
+			);
 
 			// Create comment_edit_link
-			$comments[$k]->comment_edit_link = sprintf(
-					"<a class=\"less_important_link\" href=\"%s\" title=\"%s\">%s</a>",
-					$this->base_url.AMP.'method=edit_comment_form'.AMP.'comment_id='.$comments[$k]->comment_id,
-					'edit',
-					ellipsize($comments[$k]->comment, 50)
-				);
+			$comment->comment_edit_link = sprintf(
+				"<a class=\"less_important_link\" href=\"%s\" title=\"%s\">%s</a>",
+				$this->base_url.AMP.'method=edit_comment_form'.AMP.'comment_id='.$comment->comment_id,
+				'edit',
+				ellipsize($comment->comment, 50)
+			);
 			
-			$comments[$k]->comment = $this->EE->typography->parse_type($comments[$k]->comment);
+			$comment->comment = array(
+				'data' => '<div>'.$this->EE->typography->parse_type($comment->comment).'</div>',
+				'colspan' => 7
+			);
+			
+			$comment->details_link = array(
+				'data' => anchor(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=comment'.AMP.'method=edit_comment_form'.AMP.'comment_id='.$comment->comment_id, 'EDIT', 'class="submit"'),
+				'colspan' => 2
+			);
 		}
 
 		// flip the array
@@ -450,19 +519,27 @@ class Comment_mcp {
 
 		// get total number of comments
 		$count = (int) $this->EE->db->select('COUNT(*) as count')
-									->get_where('comments', array(
-							  		'site_id' => (int) $this->EE->config->item('site_id')
-								   ))->row('count');
+			->get_where('comments', array(
+				'site_id' => (int) $this->EE->config->item('site_id')
+			))->row('count');
 
 		// get filters
 		$this->_query_filters();
+		
+		foreach ($this->_sort as $col => $dir)
+		{
+			if ($col == 'comment_edit_link')
+			{
+				$col = 'comment';
+			}
+			
+			$this->EE->db->order_by($col, $dir);
+		}
 
-		$qry = $this->EE->db->select('comment_id')
-							->where('site_id', (int) $this->EE->config->item('site_id'))
-							->order_by('comment_date', $this->_dir)
-							->get('comments', $this->_limit, $this->_offset);
+		$comment_q = $this->EE->db->where('site_id', (int) $this->EE->config->item('site_id'))
+			->get('comments', $this->_limit, $this->_offset);
 
-		return array($count, $qry);
+		return array($count, $comment_q);
 	}
 
 	// --------------------------------------------------------------------	
@@ -504,30 +581,6 @@ class Comment_mcp {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Get Comments
-	 *
-	 * This method takes an array of comment ids and performs the query
-	 * based on the filtering that previously happened.  
-	 *
-	 * @param 	array 	ids of comments to retrieve
-	 * @return 	object 	db object
-	 */
-	protected function _get_comments($ids)
-	{
-		$comment_ids = array();
-
-		foreach ($ids as $id)
-		{
-			$comment_ids[] = (int) $id->comment_id;
-		}
-
-		return $this->EE->db->where_in('comment_id', $comment_ids)
-							->get('comments');
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Setup Query Filters
 	 *
 	 * This method Sets up a few class properties based on query strings to 
@@ -535,17 +588,17 @@ class Comment_mcp {
 	 *
 	 * @return void
 	 */
-	protected function _setup_query_filters()
+	protected function _setup_query_filters($state, $params)
 	{
+		$this->_entry_id = $this->EE->input->get('entry_id');
 		$this->_channel = $this->EE->input->get_post('channel_id');
 		$this->_status = $this->EE->input->get_post('status');
 		$this->_date_range = $this->EE->input->get_post('date_range');
 
-		$this->_limit = ($per_page = $this->EE->input->get('per_page')) ? $per_page : 50;
-		$this->_offset = ($offset = $this->EE->input->get('offset')) ? $offset : 0;
-		$this->_dir = ($dir = $this->EE->input->get('dir')) ? $dir : 'desc'; 
-		$this->_order_by = ($ob = $this->EE->input->get('order_by')) ? $ob : 'comment_date';
-		$this->_entry_id = $this->EE->input->get('entry_id');
+		$this->_sort = $state['sort'];
+		$this->_offset = $state['offset'];
+		
+		$this->_limit = ($per_page = $this->EE->input->get('per_page')) ? $per_page : $params['perpage'];
 	}
 
 	// --------------------------------------------------------------------
@@ -599,33 +652,7 @@ class Comment_mcp {
 		$can_edit = FALSE;
 
 		$this->EE->load->library('table');
-		$this->EE->load->library('javascript');	
 
-		$this->EE->javascript->output('		
-
-		// If validation fails- want to be sure to show the move field if populated
-		if ($("#move_to").val() != "")
-		{
-			$("#move_link").hide();
-			$("#move_field").show();
-		}
-		
-		$("#move_link").click(function() {
-			$("#move_link").hide();
-			$("#move_field").show();
-			return false;
-		});
-		
-		$("#cancel_link").click(function() {
-			$("input#move_to").val("");
-			$("#move_link").show();
-			$("#move_field").hide();
-			return false;
-		});		
-		');
-
-
-		$this->EE->javascript->compile();
 		$comment_id	= ( ! $comment_id) ? $this->EE->input->get_post('comment_id') : $comment_id;
 
 
@@ -634,7 +661,7 @@ class Comment_mcp {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->EE->load->helper(array('form', 'snippets'));
+		$this->EE->load->helper('snippets');
 
 
 		$this->EE->db->select('channel_titles.author_id as entry_author, title, channel_title, comment_require_email, comment, comment_id, comments.author_id, comments.status, name, email, url, location, comments.ip_address, comment_date, channels.comment_text_formatting, channels.comment_html_formatting, channels.comment_allow_img_urls, channels.comment_auto_link_urls');
@@ -686,22 +713,25 @@ class Comment_mcp {
 		
 		$this->EE->load->library('typography');
 		$this->EE->typography->initialize(array(
-				'parse_images'	=> FALSE)
-				);
+			'parse_images'	=> FALSE
+		));
 
-		$vars['display_comment'] = $this->EE->typography->parse_type($vars['comment'],
-										array(
-												'text_format'	=> $vars['comment_text_formatting'],
-												'html_format'	=> $vars['comment_html_formatting'],
-												'auto_links'	=> $vars['comment_auto_link_urls'],
-												'allow_img_url' => $vars['comment_allow_img_urls']
-											)
-									);
+		$vars['display_comment'] = $this->EE->typography->parse_type(
+			$vars['comment'],
+			array(
+				'text_format'	=> $vars['comment_text_formatting'],
+				'html_format'	=> $vars['comment_html_formatting'],
+				'auto_links'	=> $vars['comment_auto_link_urls'],
+				'allow_img_url' => $vars['comment_allow_img_urls']
+			)
+		);
 		
 		$hidden = array(
-						'comment_id'	=> $comment_id,
-						'email'			=> $query->row('email')
-						);
+			'comment_id'	=> $comment_id,
+			'email'			=> $query->row('email')
+		);
+
+		$this->EE->javascript->set_global('comment.run_script', 'setup_edit');
 
 		$this->EE->cp->set_variable('cp_page_title', lang('edit_comment'));
 
@@ -710,8 +740,6 @@ class Comment_mcp {
 			$this->base_url => lang('comments')));
 
 		$vars['hidden'] = $hidden;
-
-		$this->EE->javascript->compile();
 		
 		return $this->EE->load->view('edit', $vars, TRUE);
 	}
@@ -934,7 +962,9 @@ class Comment_mcp {
 							'status'	=> $status
 						 );
 		}
-		
+
+		$data['edit_date'] = $this->EE->localize->now;
+
 		$this->EE->db->query($this->EE->db->update_string('exp_comments', $data, "comment_id = '$comment_id'"));
 
 		if ($status != $current_status)
@@ -1154,7 +1184,6 @@ class Comment_mcp {
 			$this->EE->functions->redirect($this->base_url);
 		}
 
-		$this->EE->load->helper('form');
 		$this->EE->cp->set_variable('cp_page_title', lang('delete_confirm'));
 
 		$this->EE->cp->set_variable('cp_breadcrumbs', array(
@@ -1642,8 +1671,6 @@ class Comment_mcp {
 		$this->_permissions_check();
 
 		$this->EE->load->library('table');
-		$this->EE->load->library('javascript');
-		$this->EE->load->helper('form');
 
 		$vars = array('action_url' => 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=comment'.AMP.'method=save_settings'
 		);

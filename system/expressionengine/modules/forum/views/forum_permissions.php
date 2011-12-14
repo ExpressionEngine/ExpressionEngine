@@ -8,7 +8,6 @@
 
 
 <?php
-$this->table->set_template($cp_table_template);
 if ($is_category === TRUE)
 {
 	$this->table->set_heading(
@@ -27,8 +26,8 @@ else
 		array('data' => lang('forum_can_view_topics'),		'style'	=> 'width: 9%'),
 		array('data' => lang('forum_can_post_topic'),		'style'	=> 'width: 9%'),
 		array('data' => lang('forum_can_post_reply'),		'style'	=> 'width: 9%'),
-		array('data' => lang('forum_can_report'),			'style'	=> 'width: 9%'),
 		array('data' => lang('forum_can_upload'),			'style'	=> 'width: 9%'),
+		array('data' => lang('forum_can_report'),			'style'	=> 'width: 9%'),
 		array('data' => lang('forum_can_search'),			'style'	=> 'width: 9%')
 //		array('data' => NBS,								'style' => 'width: 5%')
 	);

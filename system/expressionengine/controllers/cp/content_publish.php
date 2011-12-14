@@ -126,7 +126,6 @@ class Content_publish extends CI_Controller {
 	public function entry_form()
 	{
 		$this->load->library('form_validation');
-		$this->load->helper('form');
 		
 		$entry_id	= (int) $this->input->get_post('entry_id');
 		$channel_id	= (int) $this->input->get_post('channel_id');
@@ -680,11 +679,12 @@ class Content_publish extends CI_Controller {
 			}
 		}
 		
+		$publish_another_link = BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.$channel_id;
 		
 		// Ugh, we just overwrite? Strong typing please!!
 		if ($show_edit_link)
 		{
-			$show_edit_link = BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.$channel_id.AMP.'entry_id='.$entry_id;
+			$show_edit_link = $publish_another_link.AMP.'entry_id='.$entry_id;
 		}
 		
 		
@@ -742,6 +742,7 @@ class Content_publish extends CI_Controller {
 			'filter_link'			=> $filter_link,
 			'live_look_link'		=> $live_look_link,
 			'show_edit_link'		=> $show_edit_link,
+			'publish_another_link'	=> $publish_another_link,
 			'comment_count'			=> $comment_count,
 			'show_comments_link'	=> $show_comments_link,
 			
@@ -811,7 +812,6 @@ class Content_publish extends CI_Controller {
 		$this->api->instantiate('channel_categories');
 		
 		$this->load->model('category_model');
-		$this->load->helper('form');
 		
 		$query = $this->category_model->get_categories($group_id, FALSE);
 		$this->api_channel_categories->category_tree($group_id, '', $query->row('sort_order'));
@@ -1156,6 +1156,9 @@ class Content_publish extends CI_Controller {
 				if ($vquery->num_rows() === 1)
 				{
 					$vdata = unserialize($vquery->row('version_data'));
+					
+					// Legacy fix for revisions where the entry_id in the array was saved as 0
+					$vdata['entry_id'] = $entry_id;
 					
 					$result = array_merge($result, $vdata);
 				}
@@ -2593,9 +2596,9 @@ class Content_publish extends CI_Controller {
 	 */
 	private function _setup_file_list()
 	{
-		$this->load->model('tools_model');
+		$this->load->model('file_upload_preferences_model');
 		
-		$upload_directories = $this->tools_model->get_upload_preferences($this->session->userdata('group_id'));
+		$upload_directories = $this->file_upload_preferences_model->get_upload_preferences($this->session->userdata('group_id'));
 	
 		$this->_file_manager = array(
 			'file_list'						=> array(),
@@ -2608,13 +2611,13 @@ class Content_publish extends CI_Controller {
 							'file_properties'
 						);
 	
-		foreach($upload_directories->result() as $row)
+		foreach($upload_directories as $row)
 		{
-			$this->_file_manager['upload_directories'][$row->id] = $row->name;
+			$this->_file_manager['upload_directories'][$row['id']] = $row['name'];
 
 			foreach($fm_opts as $prop)
 			{
-				$this->_file_manager['file_list'][$row->id][$prop] = $row->$prop;
+				$this->_file_manager['file_list'][$row['id']][$prop] = $row[$prop];
 			}
 		}
 	}

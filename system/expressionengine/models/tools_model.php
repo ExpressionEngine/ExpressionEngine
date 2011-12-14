@@ -211,7 +211,121 @@ class Tools_model extends CI_Model {
 	}
 	
 	// --------------------------------------------------------------------
+	
+	/**
+	 * Get items in the Developer Log
+	 *
+	 * @param	int $limit Query limit
+	 * @param	int $offset Query offset
+	 * @param	array $order Array of fields to order by
+	 *		e.g. 'field1' => 'asc', 'field2' => 'desc'
+	 * @return	DB result object
+	 */
+	public function get_developer_log($limit = 50, $offset = 0, $order = array())
+	{
+		// Apply custom ordering if it is set
+		if (is_array($order) && count($order) > 0)
+		{
+			foreach ($order as $key => $val)
+			{
+				$this->db->order_by($key, $val);
+			}
+		}
+		// Otherwise, order by latest log item
+		else
+		{
+			$this->db->order_by('timestamp', 'desc');			
+		}
 
+		$this->db->limit($limit, $offset);
+		
+		return $this->db->get('developer_log');
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Returns number of unviewed items in the developer log to display in
+	 * a notice on the CP home screen
+	 *
+	 * @return	int Number of unviewed developer logs
+	 */
+	public function count_unviewed_developer_logs()
+	{
+		$this->db->where('viewed', 'n');
+		
+		return $this->db->count_all_results('developer_log');
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Marks developer logs as viewed
+	 *
+	 * Given an array of logs formatted for datatables, updates each record
+	 * with associated log_id and sets its 'viewed' field to 'y'
+	 *
+	 * @param	array $logs Array of existing logs to mark as viewed
+	 * @return	void
+	 */
+	public function mark_developer_logs_as_viewed($logs)
+	{
+		$log_ids = array();
+		
+		// Build an array of log IDs
+		foreach ($logs as $log)
+		{
+			// Don't take on any more logs than we have to
+			if ($log['viewed'] == 'n')
+			{
+				$log_ids[] = $log['log_id']['data'];
+			}
+		}
+		
+		// Set 'viewed' to 'y' where the ID exists in the $log_ids array
+		if (count($log_ids))
+		{
+			$this->db->where_in('log_id', $log_ids);
+			$this->db->update('developer_log', array('viewed' => 'y'));
+		}
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Delete logs
+	 *
+	 * Given a table name, clears out its contents. Given a table name and
+	 * array of log IDs, deletes only those rows from table.
+	 *
+	 * @param	string $table Table name
+	 * @param	string $id_field Name of ID field in table
+	 * @param	array $log_ids IDs of rows to delete
+	 * @return	void
+	 */
+	public function delete_logs($table = NULL, $id_field = NULL, $log_ids = array())
+	{
+		// Can't do anything without the table name
+		if (empty($table))
+		{
+			return FALSE;
+		}
+		
+		// If no log IDs were passed, clear out the table
+		if (empty($log_ids))
+		{
+			$this->db->empty_table($table);
+		}
+		// Otherwise, delete WHERE IN the array of log IDs
+		else
+		{
+			$this->db->where_in($id_field, $log_ids);
+			$this->db->delete($table);
+		}
+	}
+	
+	// --------------------------------------------------------------------
+	
 	/**
 	 * Blacklist IP addresses
 	 *
@@ -382,6 +496,9 @@ class Tools_model extends CI_Model {
 	 */
 	public function delete_upload_preferences($id = '')
 	{
+		$this->load->library('logger');
+		$this->logger->deprecated('2.2', 'File_upload_preferences_model::delete_upload_preferences()');
+		
 		$this->load->model('file_upload_preferences_model');
 
 		return $this->file_upload_preferences_model->delete_upload_preferences($id);
@@ -398,6 +515,9 @@ class Tools_model extends CI_Model {
 	 */
 	public function get_upload_preferences($group_id = NULL, $id = NULL)
 	{
+		$this->load->library('logger');
+		$this->logger->deprecated('2.2', 'File_upload_preferences_model::get_upload_preferences()');
+		
 		$this->load->model('file_upload_preferences_model');
 		
 		return $this->file_upload_preferences_model->get_upload_preferences($group_id, $id);
@@ -414,6 +534,9 @@ class Tools_model extends CI_Model {
 	 */
 	public function get_files($directories = array(), $allowed_types = array(), $full_server_path = '', $hide_sensitive_data = FALSE, $get_dimensions = FALSE, $files_array = array())
 	{
+		$this->load->library('logger');
+		$this->logger->deprecated('2.2', 'File_model::get_raw_files()');
+		
 		$this->load->model('file_model');
 		
 		return $this->file_model->get_raw_files($directories, $allowed_types, $full_server_path, $hide_sensitive_data, $get_dimensions, $files_array);

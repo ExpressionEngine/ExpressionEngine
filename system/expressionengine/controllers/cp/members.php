@@ -29,7 +29,6 @@ class Members extends CI_Controller {
 	private $english		= array('Guests', 'Banned', 'Members', 'Pending', 'Super Admins');
 	private $no_delete		= array('1', '2', '3', '4'); // Member groups that can not be deleted
 	private $perpage		= 50;  // Number of results on the "View all member" page	
-	private $pipe_length	= 5;
 	
 	/**
 	 * Constructor
@@ -67,7 +66,7 @@ class Members extends CI_Controller {
 
 		$this->javascript->compile();
 
-		$this->load->vars(array('controller'=>'members'));
+		$this->load->vars(array('controller' => 'members'));
 
 		$this->load->view('_shared/overview');
 	}
@@ -86,32 +85,67 @@ class Members extends CI_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 		
-		$message = $this->session->flashdata('message');
-		
 		$this->load->library('table');
-		$this->load->library('pagination');
-		$this->load->helper('form');
-	
-		$this->cp->set_variable('cp_page_title', lang('view_members'));
-
-		$this->cp->add_js_script(array('plugin' => 'dataTables'));
-
+		
+		$columns = array(
+			'member_id'		=> array('header' => array('data' => lang('id'), 'width' => '4%')),
+			'username'		=> array(),
+			'screen_name'	=> array('html' => FALSE),
+			'email'			=> array(),
+			'join_date'		=> array('html' => FALSE),
+			'last_visit'	=> array('html' => FALSE),
+			'group_id'		=> array('header' => lang('member_group')),
+			'_check'		=> array(
+				'header' => form_checkbox('select_all', 'true', FALSE, 'class="toggle_all"'),
+				'sort' => FALSE
+			)
+		);
+		
+		$this->table->set_base_url('C=members'.AMP.'M=view_all_members');
+		$this->table->set_columns($columns);
+				
+		// creating a member automatically fills the search box
+		if ( ! ($member_name = $this->input->get_post('member_name')) &&
+			 ! ($member_name = $this->session->flashdata('username')))
+		{
+			$member_name = '';
+		}
+		
+		$initial_state = array(
+			'sort'	=> array('member_id' => 'asc')
+		);
+		
+		$params = array(
+			'member_name' => $member_name,
+			'perpage'	=> $this->config->item('memberlist_row_limit')
+		);
+				
+		$vars = $this->table->datasource('_member_search', $initial_state, $params);
+		
 		$this->javascript->output('
-		
-			$("#filter_member_submit").hide();
-		
 			$(".toggle_all").toggle(
 				function(){		
 					$("input.toggle").each(function() {
 						this.checked = true;
 					});
 				}, function (){
-					var checked_status = this.checked;
 					$("input.toggle").each(function() {
 						this.checked = false;
 					});
 				}
 			);
+			
+			// Keyword filter
+			var indicator = $(".searchIndicator");
+
+			$(".mainTable")
+			.table("add_filter", $("#member_form"))
+			.bind("tableload", function() {
+				indicator.css("visibility", "");
+			})
+			.bind("tableupdate", function() {
+				indicator.css("visibility", "hidden");
+			});
 		');
 
 		// These variables are only set when one of the pull-down menus is used
@@ -121,24 +155,20 @@ class Members extends CI_Controller {
 		$order	  = $this->input->get_post('order');		
 
 		$vars['column_filter_options'] = array(
-			'all'				=> lang('all'),
-			'member_id'			=> lang('id'),
-			'screen_name'		=> lang('screen_name'),
-			'username'			=> lang('username'),
-			'email'				=> lang('email')
+			'all'			=> lang('all'),
+			'member_id'		=> lang('id'),
+			'screen_name'	=> lang('screen_name'),
+			'username'		=> lang('username'),
+			'email'			=> lang('email')
 		);
 
 		$vars['column_filter_selected'] = ($this->input->get_post('column_filter')) ? $this->input->get_post('column_filter') : 'all';
 
-		// Repopulate Search Box ?
-		$member_name = $this->input->get_post('member_name') ? $this->input->get_post('member_name') : '';	
-		$per_page = ($this->input->get('per_page') != '') ? $this->input->get('per_page') : '0';
-
 		// remember previously selected values
 		$vars['selected_group'] = $group_id;
 
-		// start blank, and add any we need as we go
-		$vars['message'] = $message;
+		// message if we have one
+		$vars['message'] = $this->session->flashdata('message');;
 
 		// get all member groups for the dropdown list
 		$member_groups = $this->member_model->get_member_groups();
@@ -151,17 +181,8 @@ class Members extends CI_Controller {
 			$vars['member_groups_dropdown'][$group->group_id] = $group->group_title;
 		}
 
-		$vars['member_list'] = $this->member_model->get_members($group_id, $this->config->item('memberlist_row_limit'), $per_page, $member_name, array('member_id' => 'asc'));
-
-		if ($vars['member_list'] === FALSE)
-		{
-			$vars['total_members'] = 0;
-		}
-		else
-		{
-			$vars['total_members'] = $this->member_model->count_members($group_id, $member_name);
-		}
-		
+		$vars['total_members'] = $this->member_model->count_members();
+				
 		// if we're looking at group 4 (pending), and require email activation, let's also give the option to resend their activation emails
 		if ($group_id == '4' && $this->config->item('req_mbr_activation') == 'email' && $this->cp->allowed_group('can_admin_members'))
 		{
@@ -175,222 +196,8 @@ class Members extends CI_Controller {
 			$vars['delete_button_label'] = lang('delete_selected');
 		}
 		
-		// creating a member automatically fills the search box
-		if ( ! $member_name && ! $member_name = $this->session->flashdata('username'))
-		{
-			$member_name = '';
-		}
-		
-		$vars['member_name'] = $member_name;
-
-		// Pagination stuff
-		$group_pagination = ($this->input->get_post('group_id')) ? AMP.'group_id='.$group_id : '';
-		$member_pagination = ($this->input->get_post('member_name')) ? AMP.'member_name='.$group_id : '';
-		$config['base_url'] = BASE.AMP.'C=members'.AMP.'M=view_all_members'.$group_pagination.$member_pagination;
-		$config['total_rows'] = $vars['total_members'];
-		$config['per_page'] = $this->config->item('memberlist_row_limit');
-		$config['page_query_string'] = TRUE;
-		$config['full_tag_open'] = '<p id="paginationLinks">';
-		$config['full_tag_close'] = '</p>';
-		$config['prev_link'] = '<img src="'.$this->cp->cp_theme_url.'images/pagination_prev_button.gif" width="13" height="13" alt="&lt;" />';
-		$config['next_link'] = '<img src="'.$this->cp->cp_theme_url.'images/pagination_next_button.gif" width="13" height="13" alt="&gt;" />';
-		$config['first_link'] = '<img src="'.$this->cp->cp_theme_url.'images/pagination_first_button.gif" width="13" height="13" alt="&lt; &lt;" />';
-		$config['last_link'] = '<img src="'.$this->cp->cp_theme_url.'images/pagination_last_button.gif" width="13" height="13" alt="&gt; &gt;" />';
-
-		$this->pagination->initialize($config);
-		$vars['pagination'] = $this->pagination->create_links();
-		
-		
-		//$this->jquery->dataTables('.mainTable');
-		
-
-	$this->javascript->output('
-var oCache = {
-	iCacheLower: -1
-};
-
-function fnSetKey( aoData, sKey, mValue )
-{
-	for ( var i=0, iLen=aoData.length ; i<iLen ; i++ )
-	{
-		if ( aoData[i].name == sKey )
-		{
-			aoData[i].value = mValue;
-		}
-	}
-}
-
-function fnGetKey( aoData, sKey )
-{
-	for ( var i=0, iLen=aoData.length ; i<iLen ; i++ )
-	{
-		if ( aoData[i].name == sKey )
-		{
-			return aoData[i].value;
-		}
-	}
-	return null;
-}
-
-function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
-	var iPipe = '.$this->pipe_length.',
-		bNeedServer = false,
-		sEcho = fnGetKey(aoData, "sEcho"),
-		iRequestStart = fnGetKey(aoData, "iDisplayStart"),
-		iRequestLength = fnGetKey(aoData, "iDisplayLength"),
-		iRequestEnd = iRequestStart + iRequestLength,
-		k_search    = document.getElementById("member_name"),
-		group       = document.getElementById("group_id"),
-		column_filter       = document.getElementById("column_filter");
-
-	// for browsers that don\'t support the placeholder
-	// attribute. See global.js :: insert_placeholders()
-	// for more info. -pk
-	function k_search_value() {
-		if ($(k_search).data("user_data") == "n") {
-			return "";
-		}
-		
-		return k_search.value;
-	}
-
-	aoData.push( 
-		{ "name": "k_search", "value": k_search_value() },
-		{ "name": "group", "value": group.value },
-		{ "name": "column_filter", "value": column_filter.value }
-	 );
-	
-	oCache.iDisplayStart = iRequestStart;
-	
-	/* outside pipeline? */
-	if ( oCache.iCacheLower < 0 || iRequestStart < oCache.iCacheLower || iRequestEnd > oCache.iCacheUpper )
-	{
-		bNeedServer = true;
-	}
-	
-	/* sorting etc changed? */
-	if ( oCache.lastRequest && !bNeedServer )
-	{
-		for( var i=0, iLen=aoData.length ; i<iLen ; i++ )
-		{
-			if ( aoData[i].name != "iDisplayStart" && aoData[i].name != "iDisplayLength" && aoData[i].name != "sEcho" )
-			{
-				if ( aoData[i].value != oCache.lastRequest[i].value )
-				{
-					bNeedServer = true;
-					break;
-				}
-			}
-		}
-	}
-	
-	/* Store the request for checking next time around */
-	oCache.lastRequest = aoData.slice();
-	
-	if ( bNeedServer )
-	{
-		if ( iRequestStart < oCache.iCacheLower )
-		{
-			iRequestStart = iRequestStart - (iRequestLength*(iPipe-1));
-			if ( iRequestStart < 0 )
-			{
-				iRequestStart = 0;
-			}
-		}
-		
-		oCache.iCacheLower = iRequestStart;
-		oCache.iCacheUpper = iRequestStart + (iRequestLength * iPipe);
-		oCache.iDisplayLength = fnGetKey( aoData, "iDisplayLength" );
-		fnSetKey( aoData, "iDisplayStart", iRequestStart );
-		fnSetKey( aoData, "iDisplayLength", iRequestLength*iPipe );
-		
-			aoData.push( 
-				{ "name": "k_search", "value": k_search_value() },
-				{ "name": "group", "value": group.value },
-				{ "name": "column_filter", "value": column_filter.value }
-			 );
-
-		$.getJSON( sSource, aoData, function (json) { 
-			/* Callback processing */
-			oCache.lastJson = jQuery.extend(true, {}, json);
- 			
-			if ( oCache.iCacheLower != oCache.iDisplayStart )
-			{
-				json.aaData.splice( 0, oCache.iDisplayStart-oCache.iCacheLower );
-			}
-			json.aaData.splice( oCache.iDisplayLength, json.aaData.length );
-			
-			fnCallback(json)
-		} );
-	}
-	else
-	{
-		json = jQuery.extend(true, {}, oCache.lastJson);
-		json.sEcho = sEcho; /* Update the echo for each response */
-		json.aaData.splice( 0, iRequestStart-oCache.iCacheLower );
-		json.aaData.splice( iRequestLength, json.aaData.length );
-		fnCallback(json);
-		return;
-	}
-}
-	var time = new Date().getTime();
-
-	oTable = $(".mainTable").dataTable( {	
-			"sPaginationType": "full_numbers",
-			"bLengthChange": false,
-			"bFilter": false,
-			"sWrapper": false,
-			"sInfo": false,
-			"bAutoWidth": false,
-			"iDisplayLength": '.$this->perpage.',  
-
-		"aoColumns": [null, null, null, null, null, null, { "bSortable" : false }, { "bSortable" : false } ],
-			
-			
-		"oLanguage": {
-			"sZeroRecords": "'.lang('no_members_matching_that_criteria').'",
-			
-			"oPaginate": {
-				"sFirst": "<img src=\"'.$this->cp->cp_theme_url.'images/pagination_first_button.gif\" width=\"13\" height=\"13\" alt=\"&lt; &lt;\" />",
-				"sPrevious": "<img src=\"'.$this->cp->cp_theme_url.'images/pagination_prev_button.gif\" width=\"13\" height=\"13\" alt=\"&lt; &lt;\" />",
-				"sNext": "<img src=\"'.$this->cp->cp_theme_url.'images/pagination_next_button.gif\" width=\"13\" height=\"13\" alt=\"&lt; &lt;\" />", 
-				"sLast": "<img src=\"'.$this->cp->cp_theme_url.'images/pagination_last_button.gif\" width=\"13\" height=\"13\" alt=\"&lt; &lt;\" />"
-			}
-		},
-		
-			"bProcessing": true,
-			"bServerSide": true,
-			"sAjaxSource": EE.BASE+"&C=members&M=member_search&time=" + time,
-			"fnServerData": fnDataTablesPipeline
-	} );
-
-		$("#member_name").bind("keydown blur paste", function (e) {
-		/* Filter on the column (the index) of this element */
-    	setTimeout(function(){oTable.fnDraw();}, 1);
-		});
-
-		$("#member_form").submit(function() {
-			oTable.fnDraw();
-  			return false;
-		});
-	
-		$("select#group_id").change(function () {
-				oTable.fnDraw();
-				
-				if ($(this).val() == 4)
-				{
-					$("#member_action_options").show();
-				}
-			});		
-		
-		$("select#column_filter").change(function () {
-				oTable.fnDraw();
-
-			});		
-		');
-		
 		$this->javascript->compile();
-
+		$this->cp->set_variable('cp_page_title', lang('view_members'));
 		$this->load->view('members/view_members', $vars);
 	}
 
@@ -401,55 +208,23 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 	 *
 	 * @return void
 	 */
-	public function member_search()
+	public function _member_search($state, $params)
 	{
-		if ( ! $this->cp->allowed_group('can_access_members'))
-		{
-			show_error(lang('unauthorized_access'));
-		}
-
-		$this->output->enable_profiler(FALSE);
-		
 		$col_map = array('member_id', 'username', 'screen_name', 'email', 'join_date', 'last_visit');
 		
-		$search_value = ($this->input->get_post('k_search')) ? $this->input->get_post('k_search') : '';
-		$group_id = ($this->input->get_post('group')) ? $this->input->get_post('group') : '';		
+		$search_value = $params['member_name'];
+		$group_id = ($this->input->get_post('group_id')) ? $this->input->get_post('group_id') : '';
+		$column_filter = ($this->input->get_post('column_filter')) ? $this->input->get_post('column_filter') : 'all';
 		
 		// Check for search tokens within the search_value
 		$search_value = $this->_check_search_tokens($search_value);
 		
-		// Note- we pipeline the js, so pull more data than are displayed on the page		
-		$perpage = $this->input->get_post('iDisplayLength');
-		$offset = ($this->input->get_post('iDisplayStart')) ? $this->input->get_post('iDisplayStart') : 0; // Display start point
-		$sEcho = $this->input->get_post('sEcho');	
-		
-		/* Ordering */
-		$order = array();
-		
-		if ($this->input->get('iSortCol_0') !== FALSE)
-		{
-			for ( $i=0; $i < $this->input->get('iSortingCols'); $i++ )
-			{
-				if (isset($col_map[$this->input->get('iSortCol_'.$i)]))
-				{
-					$order[$col_map[$this->input->get('iSortCol_'.$i)]] = ($this->input->get('sSortDir_'.$i) == 'asc') ? 'asc' : 'desc';
-				}
-			}
-		}
-		
-		$column_filter = ($this->input->get_post('column_filter')) ? $this->input->get_post('column_filter') : 'all';
+		$perpage = $this->input->get_post('perpage');
+		$perpage = $perpage ? $perpage : $params['perpage'];
 
-		$members = $this->member_model->get_members($group_id, $perpage, $offset, $search_value, $order, $column_filter);
-
-		$total = $this->member_model->count_members();
-		$f_total = $this->member_model->count_members($group_id, $search_value, $column_filter);
-
-		$j_response['sEcho'] = $sEcho;
-		$j_response['iTotalRecords'] = $total;
-		$j_response['iTotalDisplayRecords'] = $f_total;
+		$members = $this->member_model->get_members($group_id, $perpage, $state['offset'], $search_value, $state['sort'], $column_filter);
+		$members = $members ? $members->result_array() : array();
 		
-		// Get the group titles- we need this in the display
-
 		$member_groups = $this->member_model->get_member_groups();
 		$groups = array();
 		
@@ -458,35 +233,33 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			$groups[$group->group_id] = $group->group_title;
 		}
 		
-		$tdata = array();
-		$i = 0;
-
-		if ($members !== FALSE)
-		{
-			foreach ($members->result_array() as $k => $member)
-			{
+		$rows = array();
 		
-				$m[] = $member['member_id'];
-				$m[] = '<a href="'.BASE.AMP.'C=myaccount'.AMP.'id='.$member['member_id'].'">'.$member['username'].'</a>';
-				$m[] = $member['screen_name'];
-				$m[] = '<a href="mailto:'.$member['email'].'">'.$member['email'].'</a>';
-				$m[] = $this->localize->convert_timestamp('%Y', $member['join_date']).'-'.
-										$this->localize->convert_timestamp('%m', $member['join_date']).'-'.
-										$this->localize->convert_timestamp('%d', $member['join_date']);
-				$m[] = ($member['last_visit'] == 0) ? ' - ' : $this->localize->set_human_time($member['last_visit']);
-				$m[] = $groups[$member['group_id']];		
-				$m[] = '<input class="toggle" type="checkbox" name="toggle[]" value="'.$member['member_id'].'" />';
-
-				$tdata[$i] = $m;
-				$i++;
-				unset($m);
-			}
+		while ($member = array_shift($members))
+		{
+			$rows[] = array(
+				'member_id'		=> $member['member_id'],
+				'username'		=> '<a href="'.BASE.AMP.'C=myaccount'.AMP.'id='.$member['member_id'].'">'.$member['username'].'</a>',
+				'screen_name'	=> $member['screen_name'],
+				'email'			=> '<a href="mailto:'.$member['email'].'">'.$member['email'].'</a>',
+				'join_date'		=> $this->localize->decode_date('%Y-%m-%d', $member['join_date']),
+				'last_visit'	=> ($member['last_visit'] == 0) ? ' - ' : $this->localize->set_human_time($member['last_visit']),
+				'group_id'		=> $groups[$member['group_id']],		
+				'_check'		=> '<input class="toggle" type="checkbox" name="toggle[]" value="'.$member['member_id'].'" />'
+			);
 		}
-
-		$j_response['aaData'] = $tdata;	
-		$sOutput = $this->javascript->generate_json($j_response, TRUE);
-	
-		exit($sOutput);
+		
+		return array(
+			'rows' => $rows,
+			'no_results' => '<p class="notice">'.lang('no_members_matching_that_criteria').'</p>',
+			'pagination' => array(
+				'per_page' => $perpage,
+				'total_rows' => $this->member_model->count_members($group_id, $search_value, $column_filter)
+			),
+			
+			'member_name' => $params['member_name'],
+			'member_groups' => $member_groups
+		);
 	}
 
 	// --------------------------------------------------------------------
@@ -659,8 +432,6 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->load->helper('form');
-
 		$from_myaccount = FALSE;
 
 		if ($this->input->get('mid') != '')
@@ -765,7 +536,6 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->load->helper('form');
 		$this->cp->set_variable('cp_page_title', lang('login_as_member'));
 
 		// Fetch member data
@@ -1248,7 +1018,6 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 
 		$this->load->library('table');
 		$this->load->library('pagination');
-		$this->load->helper('form');
 
 		$row_limit = $this->perpage;
 		$offset = ($this->input->get('per_page') != '') ? $this->input->get('per_page') : 0;
@@ -1325,7 +1094,6 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		}
 
 		$this->load->library(array('addons', 'table'));
-		$this->load->helper('form');
 		$this->load->model(array(
 			'channel_model', 'template_model', 'addons_model'
 		));
@@ -1493,6 +1261,17 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 					}
 				}
 			}
+
+			// Don't show any CP-related preferences for Banned, Guests, or Pending.
+			// May want to strip these down even further.
+			if ($group_id == 2 OR $group_id == 3 OR $group_id == 4)
+			{
+				unset($form[$site->site_id]['global_cp_access']);
+				unset($form[$site->site_id]['cp_admin_privs']);
+				unset($form[$site->site_id]['cp_email_privs']);
+				unset($form[$site->site_id]['cp_template_access_privs']);
+				unset($form[$site->site_id]['cp_email_privs']);
+			}
 		}
 
 		return $form;
@@ -1509,6 +1288,12 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 	 */
 	private function _setup_module_data($group_id)
 	{
+		// Don't show any Module-related preferences for Banned, Guests, or Pending.
+		if ($group_id == 2 OR $group_id == 3 OR $group_id == 4)
+		{
+			return;
+		}
+
 		list($module_names, $module_perms) = $this->_setup_module_names($group_id);
 
 		$module_data = array();
@@ -2054,7 +1839,6 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 
 		$this->lang->loadfile('admin');
 		$this->load->library('table');
-		$this->load->helper('form');
 
 		$f_data =  array(
 
@@ -2476,9 +2260,9 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 				
 				if ($uploads->num_rows() > 0)
 				{
-					foreach($uploads->result_array() as $yeeha)
+					foreach($uploads->result_array() as $upload)
 					{
-						$this->db->query("INSERT INTO exp_upload_no_access (upload_id, upload_loc, member_group) VALUES ('".$this->db->escape_str($yeeha['id'])."', 'cp', '{$group_id}')");
+						$this->db->query("INSERT INTO exp_upload_no_access (upload_id, upload_loc, member_group) VALUES ('".$this->db->escape_str($upload['id'])."', 'cp', '{$group_id}')");
 					}
 				}
 				
@@ -2672,7 +2456,6 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		}
 		
 		$this->load->model('member_model');
-		$this->load->helper('form');
 		
 		// Are there any members that are assigned to this group?
 		$vars['member_count'] = $this->member_model->count_members($group_id);
@@ -2777,14 +2560,15 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		// If the user does not have access to any member groups, don't show the form
 		// and explain the situation
 		$vars['notice'] = ( ! count($member_groups->result()));
+		$vars['sys_admin_email'] = $this->config->item('webmaster_email');
+		
 		if ($vars['notice'])
 		{
-			$vars['sys_admin_email'] = $this->config->item('webmaster_email');
 			return $this->load->view('members/register', $vars);
 		}
 		
 		$this->load->library(array('form_validation', 'table'));
-		$this->load->helper(array('form', 'string', 'snippets'));
+		$this->load->helper(array('string', 'snippets'));
 		$this->load->language('calendar');
 		
 		$vars['custom_profile_fields'] = array();
@@ -3123,8 +2907,6 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 
 		$this->cp->set_variable('cp_page_title', lang('user_banning'));
 
-		$this->load->helper('form');
-
 		$this->load->view('members/member_banning', $vars);
 	}
 
@@ -3237,7 +3019,6 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 
 		$this->load->library('form_validation');
 		$this->load->model('member_model');
-		$this->load->helper('form');
         $this->load->library('table');
 
 		// Fetch language file
@@ -3645,7 +3426,6 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		}
 		
 		$this->lang->loadfile('admin_content');
-		$this->load->helper('form');
 
 		$this->db->select('m_field_label');
 		$this->db->from('member_fields');
@@ -3710,7 +3490,6 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		$this->load->model('member_model');
 		$this->lang->loadfile('admin_content');
 		$this->load->library('table');
-		$this->load->helper('form');
 
 		$custom_fields = $this->member_model->get_custom_member_fields();
 		
@@ -3789,7 +3568,6 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			$message = lang('ip_search_too_short');
 		}
 		
-		$this->load->helper('form');
         $this->load->library('table');
 
 		$this->cp->set_variable('cp_page_title', lang('ip_search'));
@@ -3820,7 +3598,6 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		$this->lang->loadfile('members');
 		$this->load->library('table');
 		$this->load->library('pagination');
-		$this->load->helper(array('form', 'url'));
 		$this->load->model('member_model');
 
 		$grand_total = 0;
@@ -3847,6 +3624,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		$this->db->from('members');
 		$this->db->like('ip_address', $ip);
 		$total = $this->db->count_all_results(); // for paging
+		$grand_total += $total;
 
 		$config['base_url'] = BASE.AMP.'C=members'.AMP.'M=do_ip_search'.AMP.'ip_address='.$url_ip;
 		$config['per_page'] = '10';
@@ -4016,7 +3794,6 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		}
 				
 		$this->load->library('table');
-		$this->load->helper(array('form', 'url'));
 		$vars['message'] = FALSE;
 
 		$this->cp->set_variable('cp_page_title', lang('member_validation'));

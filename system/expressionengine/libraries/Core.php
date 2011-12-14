@@ -80,7 +80,7 @@ class EE_Core {
 		// application constants
 		define('IS_FREELANCER',	FALSE);
 		define('APP_NAME',		'ExpressionEngine'.(IS_FREELANCER ? ' Freelancer' : ''));
-		define('APP_BUILD',		'20110801');
+		define('APP_BUILD',		'20111017');
 		define('APP_VER',		substr($this->EE->config->item('app_version'), 0, 1).'.'.substr($this->EE->config->item('app_version'), 1, 1).'.'.substr($this->EE->config->item('app_version'), 2));
 		define('SLASH',			'&#47;');
 		define('LD',			'{');
@@ -437,7 +437,7 @@ class EE_Core {
 		}
 		
 		// Load common helper files
-		$this->EE->load->helper(array('form', 'quicktab'));
+		$this->EE->load->helper(array('url', 'form', 'quicktab'));
 
 		// Secure forms stuff
 		$this->EE->cp->secure_forms();

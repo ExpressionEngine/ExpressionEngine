@@ -80,7 +80,7 @@ if ($EE_view_disable !== TRUE)
 			<?php foreach($upload_directories->result() as $upload):?>
 			<tr>
 				<td>
-					<?=$upload->site_label.NBS.'-'.NBS.$upload->name?>
+					<?=$upload->site_label.NBS.'-'.NBS.$upload_directories_override[$upload->id]['name']?>
 				</td>
 				<td>
 					<?=form_dropdown('upload_'.$upload->id, $upload_directory_options)?>
