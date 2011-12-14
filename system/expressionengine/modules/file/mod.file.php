@@ -846,7 +846,6 @@ class File {
 		$parse_data = array();
 		
 		$default_variables = array('description', 'caption', 'title');
-		$custom_fields = array('1' => 'one', '2' => 'two', '3' => 'three', '4' => 'four', '5' => 'five', '6' => 'six');
 
 		$this->EE->load->model('file_upload_preferences_model');
 		$upload_prefs = $this->EE->file_upload_preferences_model->get_upload_preferences(1);
@@ -925,21 +924,6 @@ class File {
 			
 			// Category variables
 			$row['categories'] = (isset($this->categories[$row['file_id']])) ? $this->categories[$row['file_id']] : array();
-			
-			
-			// 6 custom fields
-			foreach ($custom_fields as $field_id => $tag)
-			{
-				$row['custom_field_'.$tag] = $this->EE->typography->parse_type(
-					$row['field_'.$field_id],
-						array(
-							'text_format'	=> $row['field_'.$field_id.'_fmt'],
-							'html_format'	=> 'safe',
-							'auto_links'	=> 'y',
-							'allow_img_url' => 'y'
-							)
-						);
-			}
 			
 			$parse_data[] = $row;
 		}
