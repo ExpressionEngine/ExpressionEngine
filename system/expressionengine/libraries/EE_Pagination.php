@@ -44,7 +44,7 @@ class Pagination_object {
 	public $multi_fields		= '';
 	public $total_pages			= 1;
 	public $current_page		= 1;
-	public $offset				= '';
+	public $offset				= 0;
 	public $page_next			= '';
 	public $page_previous		= '';
 	public $page_links			= '';
@@ -80,7 +80,7 @@ class Pagination_object {
 	{
 		// Quick check to see if {paginate} even exists
 		if (strpos($this->EE->TMPL->tagdata, LD.'paginate'.RD) === FALSE) return;
-
+		
 		if (preg_match("/".LD."paginate".RD."(.+?)".LD.'\/'."paginate".RD."/s", $this->EE->TMPL->tagdata, $paginate_match))
 		{
 			if ($this->EE->TMPL->fetch_param('paginate_type') == 'field')
@@ -185,7 +185,7 @@ class Pagination_object {
 					);
 				}
 			}
-
+			
 			// Standard pagination, not field_pagination
 			if ($this->field_pagination == FALSE)
 			{
@@ -360,7 +360,7 @@ class Pagination_object {
 			}
 			else
 			{
-				$this->offset = '';
+				$this->offset = 0;
 			}
 		}
 	}

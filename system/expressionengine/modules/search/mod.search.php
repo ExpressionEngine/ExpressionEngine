@@ -1216,32 +1216,67 @@ class Search {
 		// Fetch the search language file
 		$this->EE->lang->loadfile('search');
 		
+		// Load Pagination Object
+		$this->EE->load->library('pagination');
+		$pagination = new Pagination_object(__CLASS__);
+		
+		// Capture Pagination Template
+		$pagination->get_template();
+		
+		// Check to see if we're using old style pagination
+		// TODO: Remove once old pagination is phased out
+		$old_pagination = (strpos($this->EE->TMPL->template, LD.'if paginate'.RD) !== FALSE) ? TRUE : FALSE;
+		
+		// If we are using old pagination, log it as deprecated
+		// TODO: Remove once old pagination is phased out
+		if ($old_pagination)
+		{
+			$this->EE->load->library('logger');
+			
+			$deprecated = array(
+				'function'			=> '{if paginate}',
+				'deprecated_since'	=> '2.4',
+				'use_instead'		=> 'the Channel style of pagination'
+			);
+			
+			$this->EE->logger->developer($deprecated, TRUE);
+		}
+		
 		// Check search ID number
 		// If the QSTR variable is less than 32 characters long we
 		// don't have a valid search ID number
 		
 		if (strlen($this->EE->uri->query_string) < 32)
 		{
-			return $this->EE->output->show_user_error('off', array(lang('search_no_result')), lang('search_result_heading'));		
-		}		
-				
-		// Clear old search results
-		$expire = time() - ($this->cache_expire * 3600);
+			return $this->EE->output->show_user_error(
+				'off', 
+				array(lang('search_no_result')),
+				lang('search_result_heading')
+			);
+		}
 		
-		$this->EE->db->query("DELETE FROM exp_search WHERE site_id = '".$this->EE->db->escape_str($this->EE->config->item('site_id'))."' AND search_date < '$expire'");
+		// Clear old search results
+		$this->EE->db->delete(
+			'search',
+			array(
+				'site_id' => $this->EE->config->item('site_id'),
+				'search_date <' => $this->EE->localize->now - ($this->cache_expire * 3600)
+			)
+		);
 		
 		// Fetch ID number and page number
-		$cur_page = 0;
+		$pagination->offset = 0;
 		$qstring = $this->EE->uri->query_string;
 
 		// Parse page number
 		if (preg_match("#^P(\d+)|/P(\d+)#", $qstring, $match))
 		{
-			$cur_page = (isset($match[2])) ? $match[2] : $match[1];
+			$pagination->offset = (isset($match[2])) ? $match[2] : $match[1];
 			$search_id = trim_slashes(str_replace($match[0], '', $qstring));
 		}
 		else
 		{
+			$pagination->offset = 0;
 			$search_id = $qstring;
 		}
 		
@@ -1261,7 +1296,7 @@ class Search {
 		$sql 	= unserialize(stripslashes($query->row('query')));
 		$sql	= str_replace('MDBMPREFIX', 'exp_', $sql);
 		
-		$per_page = $query->row('per_page');
+		$pagination->per_page = (int) $query->row('per_page');
 		$res_page = $query->row('result_page');
 		
 		// Run the search query
@@ -1272,41 +1307,55 @@ class Search {
 			return $this->EE->output->show_user_error('off', array(lang('search_no_result')), lang('search_result_heading'));
 		}
 		
-		// Calculate total number of pages
-		$current_page =  ($cur_page / $per_page) + 1;
+		// Calculate total number of pages and add total rows
+		$pagination->current_page 	= ($pagination->offset / $pagination->per_page) + 1;
+		$pagination->total_rows 	= $query->row('count');
 		
-		$total_pages = intval($query->row('count')  / $per_page);
-		
-		if ($query->row('count')  % $per_page)
+		// Figure out total number of pages for old style pagination
+		// TODO: Remove once old pagination is phased out
+		if ($old_pagination)
 		{
-			$total_pages++;
+			$total_pages = intval($pagination->total_rows / $pagination->per_page);
+
+			if ($pagination->total_rows  % $pagination->per_page)
+			{
+				$total_pages++;
+			}
+
+			$page_count = lang('page').' '.$pagination->current_page.' '.lang('of').' '.$total_pages;
+			
+			$pager = '';
+			
+			if ($pagination->total_rows > $pagination->per_page)
+			{
+				$this->EE->load->library('pagination');
+
+				$config = array(
+					'base_url' 		=> $this->EE->functions->create_url($res_page.'/'.$search_id, 0, 0),
+					'prefix'		=> 'P',
+					'total_rows'	=> $pagination->total_rows,
+					'per_page'		=> $pagination->per_page,
+					'cur_page'		=> $pagination->offset,
+					'first_link'	=> lang('pag_first_link'),
+					'last_link'		=> lang('pag_last_link'),
+					'uri_segment'	=> 0 // Allows $config['cur_page'] to override
+				);
+
+				$this->EE->pagination->initialize($config);
+				$pager = $this->EE->pagination->create_links();
+			}
 		}
 		
-		$page_count = lang('page').' '.$current_page.' '.lang('of').' '.$total_pages;
-		
-		//  Do we need pagination?
-		// If so, we'll add the LIMIT clause to the SQL statement and run the query again
-		$pager = '';
-		
-		if ($query->row('count')  > $per_page)
+		// Build pagination if enabled
+		if ($pagination->paginate === TRUE)
 		{
-			$this->EE->load->library('pagination');
-
-			$config = array(
-				'base_url' 		=> $this->EE->functions->create_url($res_page.'/'.$search_id, 0, 0),
-				'prefix'		=> 'P',
-				'total_rows'	=> $query->row('count'),
-				'per_page'		=> $per_page,
-				'cur_page'		=> $cur_page,
-				'first_link'	=> lang('pag_first_link'),
-				'last_link'		=> lang('pag_last_link'),
-				'uri_segment'	=> 0 // Allows $config['cur_page'] to override
-			);
-
-			$this->EE->pagination->initialize($config);
-			$pager = $this->EE->pagination->create_links();
-			 
-			$sql .= " LIMIT ".$cur_page.", ".$per_page;	
+			$pagination->build($pagination->total_rows);
+		}
+		
+		// If we're paginating, old or new, limit the query and do it again
+		if ($pagination->paginate === TRUE OR $old_pagination)
+		{
+			$sql .= " LIMIT ".$pagination->offset.", ".$pagination->per_page;
 		}
 		
 		$query = $this->EE->db->query($sql);
@@ -1335,7 +1384,7 @@ class Search {
 		$channel = new Channel;
 
 		// This allows the channel {absolute_count} variable to work
-		$channel->p_page = ($per_page * $current_page) - $per_page;
+		$channel->p_page = ($pagination->per_page * $pagination->current_page) - $pagination->per_page;
 
 		$channel->fetch_custom_channel_fields();
 		$channel->fetch_custom_member_fields();
@@ -1470,13 +1519,12 @@ class Search {
 		
 		}
 		
-		
 		$this->EE->TMPL->tagdata = $output;
 		
-		/** ----------------------------------------
-		/**  Parse variables
-		/** ----------------------------------------*/
+		// Add new pagination
+		$this->EE->TMPL->tagdata = $pagination->render($this->EE->TMPL->tagdata);
 		
+		// Parse lang variables
 		$swap = array(
 			'lang:total_search_results'	=>	lang('search_total_results'),
 			'lang:search_engine'		=>	lang('search_engine'),
@@ -1491,40 +1539,41 @@ class Search {
 			'lang:recent_comments'		=>	lang('search_recent_comment_date'),
 			'lang:keywords'				=>	lang('search_keywords')
 		);
-	
 		$this->EE->TMPL->template = $this->EE->functions->var_swap($this->EE->TMPL->template, $swap);
 
-		/** ----------------------------------------
-		/**  Add Pagination
-		/** ----------------------------------------*/
-		if ($pager == '')
+		// Add Old Style Pagination
+		// TODO: Remove once old pagination is phased out
+		if ($old_pagination)
 		{
-			$this->EE->TMPL->template = preg_replace(
-				"#".LD."if paginate".RD.".*?".LD."/if".RD."#s",
-				'',
-				$this->EE->TMPL->template
-			);
-		}
-		else
-		{
-			$this->EE->TMPL->template = preg_replace(
-				"#".LD."if paginate".RD."(.*?)".LD."/if".RD."#s",
-				"\\1",
-				$this->EE->TMPL->template
-			);
-		}
+			if ($pager == '')
+			{
+				$this->EE->TMPL->template = preg_replace(
+					"#".LD."if paginate".RD.".*?".LD."/if".RD."#s",
+					'',
+					$this->EE->TMPL->template
+				);
+			}
+			else
+			{
+				$this->EE->TMPL->template = preg_replace(
+					"#".LD."if paginate".RD."(.*?)".LD."/if".RD."#s",
+					"\\1",
+					$this->EE->TMPL->template
+				);
+			}
 
-		$this->EE->TMPL->template = str_replace(
-			LD.'paginate'.RD,
-			$pager,
-			$this->EE->TMPL->template
-		);
-		
-		$this->EE->TMPL->template = str_replace(
-			LD.'page_count'.RD,
-			$page_count,
-			$this->EE->TMPL->template
-		);
+			$this->EE->TMPL->template = str_replace(
+				LD.'paginate'.RD,
+				$pager,
+				$this->EE->TMPL->template
+			);
+
+			$this->EE->TMPL->template = str_replace(
+				LD.'page_count'.RD,
+				$page_count,
+				$this->EE->TMPL->template
+			);
+		}
 		
 		return stripslashes($this->EE->TMPL->tagdata);
 	}
