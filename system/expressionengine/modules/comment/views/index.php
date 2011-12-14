@@ -3,6 +3,8 @@
 	<fieldset class="shun">
 		<legend><?=lang('filter_comments')?></legend>
 		<div class="group">
+			<label for="keywords" class="js_hide"><?=lang('keywords')?> </label><?=form_input('keywords', $keywords, 'class="field shun" placeholder="'.lang('keywords').'"')?><br />
+			
 			<?=form_dropdown('channel_id', $channel_select_opts, $channel_selected, 'id="f_channel_id"').NBS.NBS?>
 			<?=form_dropdown('status', $status_select_opts, $status_selected, 'id="f_status"').NBS.NBS?>
 			<?=form_dropdown('date_range', $date_select_opts, $date_selected, 'id="date_range"').NBS.NBS?>

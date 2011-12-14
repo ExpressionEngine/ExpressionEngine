@@ -32,6 +32,7 @@ class Comment_mcp {
 	protected $_limit;
 	protected $_offset;
 	protected $_entry_id;
+	protected $_keywords;
 
 	/**
 	 * Constructor
@@ -90,7 +91,7 @@ class Comment_mcp {
 				'sort'	 => FALSE
 			),
 			'comment_edit_link' => array('header' => lang('comment')),
-			'entry_title'	=> array(),
+			'entry_title'	=> array('sort' => FALSE),
 			'name'			=> array(),
 			'email'			=> array(),
 			'comment_date'	=> array('header' => lang('date')),
@@ -105,7 +106,7 @@ class Comment_mcp {
 		$this->EE->table->set_base_url('C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=comment');
 		$this->EE->table->set_columns($columns);
 		
-		$params = array('perpage' => 50);
+		$params = array('perpage' => 3);
 		$defaults = array('sort' => array('comment_date' => 'desc'));
 
 		$data = $this->EE->table->datasource('_comment_data', $defaults, $params);
@@ -124,6 +125,7 @@ class Comment_mcp {
 			'status_selected'		=> $this->_status,
 			'date_select_opts'		=> $this->_date_select_opts(),
 			'date_selected'			=> $this->_date_range,
+			'keywords'				=> $this->_keywords,
 			'form_options'			=> array(
 				'close' 	=> lang('close_selected'),
 				'open' 		=> lang('open_selected'),
@@ -138,6 +140,11 @@ class Comment_mcp {
 	
 	// --------------------------------------------------------------------
 	
+	/**
+	 * Comment Index Datasource
+	 *
+	 * @access public
+	 */
 	public function _comment_data($state, $params)
 	{
 		$this->_setup_query_filters($state, $params);
@@ -441,63 +448,8 @@ class Comment_mcp {
 		}
 
 		return $this->EE->db->select('title, entry_id')
-							->where_in('entry_id', $ids)
-							->get('channel_titles');
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Setup pagination for the module index page.
-	 *
-	 * @param 	int 	total number of items
-	 * @return 	string 	rendered pagination links to display in the view
-	 */
-	protected function _setup_pagination($total)
-	{
-		$this->EE->load->library('pagination');
-
-		$url = $this->base_url.AMP.'method=index';
-
-		if ($this->_channel)
-		{
-			$url .= AMP.'channel_id='.$this->_channel;
-		}
-
-		if ($this->_status && $this->_status != 'all')
-		{
-			$url .= AMP.'status='.$this->_status;
-		}
-
-		if ($this->_date_range)
-		{
-			$url .= AMP.'status='.$this->_date_range;
-		}
-
-		if ($this->_entry_id)
-		{
-			$url .= AMP.'entry_id='.$this->_entry_id;
-		}
-
-		$p_button = "<img src=\"{$this->EE->cp->cp_theme_url}images/pagination_%s_button.gif\" width=\"13\" height=\"13\" alt=\"%s\" />";
-
-		$config = array(
-			'base_url'				=> $url,
-			'total_rows'			=> $total,
-			'per_page'				=> $this->_limit,
-			'page_query_string'		=> TRUE,
-			'query_string_segment'	=> 'offset',
-			'full_tag_open'			=> '<p id="paginationLinks">',
-			'full_tag_close'		=> '</p>',
-			'prev_link'				=> sprintf($p_button, 'prev', '&lt;'),
-			'next_link'				=> sprintf($p_button, 'next', '&gt;'),
-			'first_link'			=> sprintf($p_button, 'first', '&lt; &lt;'),
-			'last_link'				=> sprintf($p_button, 'last', '&gt; &gt;')
-		);
-
-		$this->EE->pagination->initialize($config);
-
-		return $this->EE->pagination->create_links();
+			->where_in('entry_id', $ids)
+			->get('channel_titles');
 	}
 
 	// --------------------------------------------------------------------
@@ -536,6 +488,8 @@ class Comment_mcp {
 			$this->EE->db->order_by($col, $dir);
 		}
 
+		$this->EE->db->where("(`exp_comments`.`name` LIKE '%".$this->EE->db->escape_like_str($this->_keywords)."%' OR `exp_comments`.`email` LIKE '%".$this->EE->db->escape_like_str($this->_keywords)."%' OR `exp_comments`.`comment` LIKE '%".$this->EE->db->escape_like_str($this->_keywords)."%')", NULL, TRUE);			
+		
 		$comment_q = $this->EE->db->where('site_id', (int) $this->EE->config->item('site_id'))
 			->get('comments', $this->_limit, $this->_offset);
 
@@ -594,6 +548,7 @@ class Comment_mcp {
 		$this->_channel = $this->EE->input->get_post('channel_id');
 		$this->_status = $this->EE->input->get_post('status');
 		$this->_date_range = $this->EE->input->get_post('date_range');
+		$this->_keywords = $this->EE->input->get_post('keywords');
 
 		$this->_sort = $state['sort'];
 		$this->_offset = $state['offset'];

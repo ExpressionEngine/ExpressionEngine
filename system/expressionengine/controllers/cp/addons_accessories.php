@@ -74,7 +74,7 @@ class Addons_accessories extends CI_Controller {
 		
 		$accessories = $this->addons->get_files('accessories');
 		$installed = $this->addons->get_installed('accessories');
-	
+
 		$data = $this->human_names;
 		$num_all_member_groups = count($data['member_groups']);
 		$num_all_controllers = count($data['controllers']);
@@ -103,10 +103,10 @@ class Addons_accessories extends CI_Controller {
 			if (isset($installed[$name]))
 			{				
 				$accessories[$name]['acc_pref_url'] = BASE.AMP.'C=addons_accessories'.AMP.'M=edit_prefs'.AMP.'accessory='.$name;
-				$accessories[$name]['acc_install'] = array(
-														'href' => BASE.AMP.'C=addons_accessories'.AMP.'M=uninstall'.AMP.'accessory='.$name,
-														'title' => lang('uninstall')
-														);
+				$accessories[$name]['acc_install'] = anchor(
+					BASE.AMP.'C=addons_accessories'.AMP.'M=uninstall'.AMP.'accessory='.$name,
+					lang('uninstall')
+				);
 
 				// Work out the human names (if needed)
 				$installed[$name]['member_groups'] = explode('|', $installed[$name]['member_groups']);
@@ -171,10 +171,10 @@ class Addons_accessories extends CI_Controller {
 			else
 			{
 				$accessories[$name]['acc_pref_url'] = '';
-				$accessories[$name]['acc_install'] = array(
-														'href' => BASE.AMP.'C=addons_accessories'.AMP.'M=install'.AMP.'accessory='.$name,
-														'title' => lang('install')
-														);
+				$accessories[$name]['acc_install'] = anchor(
+					BASE.AMP.'C=addons_accessories'.AMP.'M=install'.AMP.'accessory='.$name,
+					lang('install')
+				);
 				$accessories[$name]['acc_member_groups'] = '--';
 				$accessories[$name]['acc_controller'] = '--';
 			}
