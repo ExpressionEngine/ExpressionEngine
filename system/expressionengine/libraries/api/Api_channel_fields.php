@@ -1164,7 +1164,7 @@ class Api_channel_fields extends Api {
 			$upload_dir_prefs = $this->EE->file_upload_preferences_model->get_upload_preferences();
 			
 			// count upload dirs
-			if (count($upload_dir_prefs)->num_rows() == 0)
+			if (count($upload_dir_prefs) === 0)
 			{
 				$this->EE->lang->loadfile('filemanager');
 				$this->_set_error('please_add_upload');
