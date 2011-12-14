@@ -3642,6 +3642,10 @@ html.js #revealSidebarLink {
 	display: none;
 }
 
+html.js .js_show {
+	display: block;
+}
+
 /* -------------------------------------------------------------------
 // markItUp! Universal MarkUp Engine, JQuery plugin
 // By Jay Salvat - http://markitup.jaysalvat.com/
