@@ -207,6 +207,9 @@ class Channel_model extends CI_Model {
 	 */
 	function get_channel_categories($cat_group, $additional_fields = array(), $additional_where = array())
 	{
+		$this->load->library('logger');
+		$this->logger->deprecated('2.3', 'Category_model::get_channel_categories()');
+		
 		$this->load->model('category_model');
 		return $this->category_model->get_channel_categories($cat_group, $additional_fields, $additional_where);
 	}

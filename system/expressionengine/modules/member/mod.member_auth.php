@@ -260,6 +260,10 @@ class Member_auth extends Member {
 			$sess->remember_me(60*60*24*365);
 		}
 
+		$anon = ($this->EE->input->post('anon') == 1) ? FALSE : TRUE;
+
+		$sess->anon($anon);
+
 		$sess->start_session();
 		$this->_update_online_user_stats();
 		
@@ -485,7 +489,7 @@ class Member_auth extends Member {
 
 		// Update stats
 		$cutoff = $this->EE->localize->now - (15 * 60);
-		$anon = ($this->EE->input->post('anon') == 1) ? 'n' : 'y';
+		$anon = ($this->EE->input->post('anon') == 1) ? '' : 'y';
 
 		$in_forum = ($this->EE->input->get_post('FROM') == 'forum') ? 'y' : 'n';
 
@@ -799,8 +803,9 @@ class Member_auth extends Member {
 		}
 
 		// Update member's password
-
-		$this->EE->db->set('password', $this->EE->functions->hash($rand))
+		
+		$this->EE->load->helper('security');
+		$this->EE->db->set('password', do_hash($rand))
 					 ->where('member_id', $member_id)
 					 ->update('members');
 

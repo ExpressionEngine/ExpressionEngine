@@ -126,7 +126,6 @@ class Content_publish extends CI_Controller {
 	public function entry_form()
 	{
 		$this->load->library('form_validation');
-		$this->load->helper('form');
 		
 		$entry_id	= (int) $this->input->get_post('entry_id');
 		$channel_id	= (int) $this->input->get_post('channel_id');
@@ -813,7 +812,6 @@ class Content_publish extends CI_Controller {
 		$this->api->instantiate('channel_categories');
 		
 		$this->load->model('category_model');
-		$this->load->helper('form');
 		
 		$query = $this->category_model->get_categories($group_id, FALSE);
 		$this->api_channel_categories->category_tree($group_id, '', $query->row('sort_order'));
@@ -1158,6 +1156,9 @@ class Content_publish extends CI_Controller {
 				if ($vquery->num_rows() === 1)
 				{
 					$vdata = unserialize($vquery->row('version_data'));
+					
+					// Legacy fix for revisions where the entry_id in the array was saved as 0
+					$vdata['entry_id'] = $entry_id;
 					
 					$result = array_merge($result, $vdata);
 				}
@@ -2595,9 +2596,9 @@ class Content_publish extends CI_Controller {
 	 */
 	private function _setup_file_list()
 	{
-		$this->load->model('tools_model');
+		$this->load->model('file_upload_preferences_model');
 		
-		$upload_directories = $this->tools_model->get_upload_preferences($this->session->userdata('group_id'));
+		$upload_directories = $this->file_upload_preferences_model->get_upload_preferences($this->session->userdata('group_id'));
 	
 		$this->_file_manager = array(
 			'file_list'						=> array(),

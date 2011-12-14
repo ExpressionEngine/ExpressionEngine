@@ -384,13 +384,13 @@ class Channel_standalone extends Channel {
 		$this->EE->load->library('filemanager');
 		$this->EE->load->library('javascript');
 		$this->EE->load->model('admin_model');
-		$this->EE->load->model('tools_model');
+		$this->EE->load->model('file_upload_preferences_model');
 		$this->EE->load->model('channel_model');
 		
 		// Onward...
 		$which = ($this->EE->input->post('preview')) ? 'preview' : 'new';
 		
-		$upload_directories = $this->EE->tools_model->get_upload_preferences($this->EE->session->userdata('group_id'));
+		$upload_directories = $this->EE->file_upload_preferences_model->get_upload_preferences($this->EE->session->userdata('group_id'));
 
 		$file_list = array();
 		$directories = array();

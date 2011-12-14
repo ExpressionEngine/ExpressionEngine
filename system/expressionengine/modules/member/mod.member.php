@@ -1383,8 +1383,9 @@ class Member {
 		$query = $this->EE->db->select('password')
 							  ->where('member_id', $this->EE->session->userdata('member_id'))
 							  ->get('members');
-
-		$password = $this->EE->functions->hash(stripslashes($this->EE->input->post('password')));
+						
+		$this->EE->load->helper('security');
+		$password = do_hash(stripslashes($this->EE->input->post('password')));
 
 		if ($query->row('password') != $password)
 		{

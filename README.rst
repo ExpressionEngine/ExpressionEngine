@@ -42,7 +42,11 @@ Setting Up Your Local Fork
 	git submodule init
 	git submodule update
 
-6. Finally you'll need to add teams to your fork. Go to your fork in GitHub, click Admin at the top right, choose Teams from the left menu and make sure that Owners, Admins, EllisLab Engineers, and ExpressionEngine Reactor are in that list.
+6. Add teams to your fork. Go to your fork in GitHub, click Admin at the top right, choose Teams from the left menu and make sure that Owners, Admins, EllisLab Engineers, and ExpressionEngine Reactor are in that list.
+
+7. After installing, add the following line to your config.php to make sure you're using the uncompressed javascript::
+
+	$config['use_compressed_js'] = 'n';
 
 If you cloned using ``--recursive`` or initialized the submodule before changing the url, you will have to synchronize the submodule url before updating the submodule::
 

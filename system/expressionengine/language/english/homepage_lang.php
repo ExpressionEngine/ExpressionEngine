@@ -170,6 +170,9 @@ Please download <a href="%s" title="Download Here">here</a> and follow the <a hr
 'close' =>
 'Close',
 
+'developer_logs' =>
+'You have %d unviewed items in the <a href="%s">Developer Log</a>.',
+
 ''=>''
 );
 

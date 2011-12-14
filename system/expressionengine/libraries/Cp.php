@@ -93,7 +93,6 @@ class Cp {
 		$this->EE->load->library('menu');
 		$this->EE->load->library('accessories');
 		$this->EE->load->library('javascript', array('autoload' => FALSE));
- 		$this->EE->load->helper('url');
 
 		$this->EE->load->model('member_model'); // for screen_name, quicklinks
 		
@@ -160,6 +159,10 @@ class Cp {
 					'sidebar_state'			=> '',
 					'maincontent_state'		=> '',
 		);
+		
+		// global table data
+		$this->EE->session->set_cache('table', 'cp_template', $cp_table_template);
+		$this->EE->session->set_cache('table', 'cp_pad_template', $cp_pad_table_template);
 		
 		// we need these paths again in my account, so we'll keep track of them
 		// kind of hacky, but before it was accessing _ci_cache_vars, which is worse
@@ -253,10 +256,10 @@ class Cp {
 		// Combo-load the javascript files we need for every request
 
 		$js_scripts = array(
-						'effect'	=> 'core',
-						'ui'		=> array('core', 'widget', 'mouse', 'position', 'sortable', 'dialog'),
-						'plugin'	=> array('ee_focus', 'ee_notice', 'ee_txtarea', 'tablesorter'),
-						'file'		=> 'cp/global'
+			'effect'	=> 'core',
+			'ui'		=> array('core', 'widget', 'mouse', 'position', 'sortable', 'dialog'),
+			'plugin'	=> array('ee_focus', 'ee_interact.event', 'ee_notice', 'ee_txtarea', 'tablesorter', 'ee_toggle_all'),
+			'file'		=> 'cp/global'
 		);
 		
 		if ($this->cp_theme != 'mobile')
@@ -302,7 +305,7 @@ class Cp {
 	{
 		if ( ! is_array($script))
 		{
-			if ( ! is_string($in_footer))
+			if (is_bool($in_footer))
 			{
 				return FALSE;
 			}
@@ -511,6 +514,9 @@ class Cp {
 	 */
 	function add_layout_tabs($tabs = array(), $namespace = '', $channel_id = array())
 	{
+		$this->EE->load->library('logger');
+		$this->EE->logger->deprecated(NULL, 'Layout::add_layout_tabs()');
+		
 		$this->EE->load->library('layout');
 		$this->EE->layout->add_layout_tabs($tabs, $namespace, $channel_id);
 	}
@@ -527,6 +533,9 @@ class Cp {
 	 */
 	function add_layout_fields($tabs = array(), $channel_id = array())
 	{
+		$this->EE->load->library('logger');
+		$this->EE->logger->deprecated(NULL, 'Layout::add_layout_fields()');
+		
 		$this->EE->load->library('layout');
 		return $this->EE->layout->add_layout_fields($tabs, $channel_id);
 	}

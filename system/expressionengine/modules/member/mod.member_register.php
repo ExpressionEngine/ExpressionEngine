@@ -417,10 +417,12 @@ class Member_register extends Member {
 			$this->EE->db->query("DELETE FROM exp_security_hashes WHERE (hash='".$this->EE->db->escape_str($_POST['XID'])."' AND ip_address = '".$this->EE->input->ip_address()."') OR date < UNIX_TIMESTAMP()-7200");
 		}
 		
+		$this->EE->load->helper('security');
+		
 		// Assign the base query data
 		$data = array(
 			'username'		=> trim_nbs($this->EE->input->post('username')),
-			'password'		=> $this->EE->functions->hash($_POST['password']),
+			'password'		=> do_hash($_POST['password']),
 			'ip_address'	=> $this->EE->input->ip_address(),
 			'unique_id'		=> $this->EE->functions->random('encrypt'),
 			'join_date'		=> $this->EE->localize->now,

@@ -169,6 +169,10 @@ class EE_Menu {
 			)
 		);
 		
+		if ($this->EE->session->userdata('group_id') == 1)
+		{
+			$menu['tools']['tools_logs']['view_developer_log'] = BASE.AMP.'C=tools_logs'.AMP.'M=view_developer_log';
+		}
 		
 		// Add channels
 
@@ -1033,8 +1037,6 @@ class EE_Menu {
 			}
 			else
 			{
-				$this->EE->load->library('security');
-				
 				$module = $this->EE->security->sanitize_filename($module);
 
 				if (file_exists(PATH_THIRD.$module.'/config/help_menu.php'))

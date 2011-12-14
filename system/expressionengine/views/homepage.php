@@ -10,7 +10,7 @@ if ($EE_view_disable !== TRUE)
 <div class="shun" id="mainContent"<?=$maincontent_state?>>
 	<?php $this->load->view('_shared/right_nav')?>
 
-	<?php if ($version OR isset($new_checksums)):?>
+	<?php if ($message OR isset($new_checksums)):?>
 		<div id="ee_important_message" class="<?=( ! $info_message_open) ? 'closed' : 'open'?>">
 			<div class="contents" id="ee_homepage_notice">
 				<div class="heading">
@@ -18,8 +18,8 @@ if ($EE_view_disable !== TRUE)
 		        </div>
 				<div class="pageContents open" id="noticeContents">
 					<?php // New Version Notice
-					if ($version):?>
-					<p id="newVersionNotice"><?=$version?></p>
+					if ($message):?>
+					<p id="newVersionNotice"><?=$message?></p>
 					<?php endif; ?>
 					<?php // Bootstrap Checksum Failure Notice?>
 					<?php if (isset($new_checksums)):?>

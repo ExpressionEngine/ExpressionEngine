@@ -84,8 +84,8 @@ class File_ft extends EE_Fieldtype {
 		$content_type			= (isset($this->settings['field_content_type'])) ? $this->settings['field_content_type'] : 'all';
 		
 		return $this->EE->file_field->field(
-			$data,
 			$this->field_name,
+			$data,
 			$allowed_file_dirs,
 			$content_type
 		);
@@ -100,28 +100,7 @@ class File_ft extends EE_Fieldtype {
 	 */
 	function pre_process($data)
 	{
-		// Parse out the file info
-		$file_info['path'] = '';
-		
-		if (preg_match('/^{filedir_(\d+)}/', $data, $matches))
-		{
-			// only replace it once
-			$path = substr($data, 0, 10 + strlen($matches[1]));
-
-			$file_dirs = $this->EE->functions->fetch_file_paths();
-			
-			if (isset($file_dirs[$matches[1]]))
-			{
-				$file_info['path'] = str_replace($matches[0], 
-												 $file_dirs[$matches[1]], $path);
-				$data = str_replace($matches[0], '', $data);				
-			}
-		}
-
-		$file_info['extension'] = substr(strrchr($data, '.'), 1);
-		$file_info['filename'] = basename($data, '.'.$file_info['extension']);
-
-		return $file_info;
+		return $this->EE->file_field->parse_field($data);
 	}
 	
 	// --------------------------------------------------------------------
@@ -136,6 +115,59 @@ class File_ft extends EE_Fieldtype {
 		if ($tagdata !== FALSE)
 		{
 			$tagdata = $this->EE->functions->prep_conditionals($tagdata, $file_info);
+
+			// -----------------------------
+			// Any date variables to format?
+			// -----------------------------
+			$upload_date		= array();
+			$modified_date		= array();
+
+			$date_vars = array('upload_date', 'modified_date');
+
+			foreach ($date_vars as $val)
+			{
+				if (preg_match_all("/".LD.$val."\s+format=[\"'](.*?)[\"']".RD."/s", $this->EE->TMPL->tagdata, $matches))
+				{
+					for ($j = 0; $j < count($matches['0']); $j++)
+					{
+						$matches['0'][$j] = str_replace(LD, '', $matches['0'][$j]);
+						$matches['0'][$j] = str_replace(RD, '', $matches['0'][$j]);
+
+						switch ($val)
+						{
+							case 'upload_date' 	: $upload_date[$matches['0'][$j]] = $this->EE->localize->fetch_date_params($matches['1'][$j]);
+								break;
+							case 'modified_date' : $modified_date[$matches['0'][$j]] = $this->EE->localize->fetch_date_params($matches['1'][$j]);
+								break;
+						}
+					}
+				}
+			}
+
+			foreach ($this->EE->TMPL->var_single as $key => $val)
+			{
+				// Format {upload_date}
+				if (isset($upload_date[$key]))
+				{
+					foreach ($upload_date[$key] as $dvar)
+						$val = str_replace($dvar, $this->EE->localize->convert_timestamp($dvar, $file_info['upload_date'], TRUE), $val);					
+
+					$tagdata = $this->EE->TMPL->swap_var_single($key, $val, $tagdata);
+				}
+
+				// Format {modified_date}
+				if (isset($modified_date[$key]))
+				{
+					foreach ($modified_date[$key] as $dvar)
+						$val = str_replace($dvar, $this->EE->localize->convert_timestamp($dvar, $file_info['modified_date'], TRUE), $val);					
+
+					$tagdata = $this->EE->TMPL->swap_var_single($key, $val, $tagdata);
+				}
+			}
+
+			// ---------------
+			// Parse the rest!
+			// ---------------
 			$tagdata = $this->EE->functions->var_swap($tagdata, $file_info);
 			
 			// More an example than anything else - not particularly useful in this context
@@ -143,7 +175,7 @@ class File_ft extends EE_Fieldtype {
 			{
 				$tagdata = substr($tagdata, 0, - $params['backspace']);
 			}
-		
+
 			return $tagdata;
 		}
 		else if ($file_info['path'] != '' AND $file_info['filename'] != '' AND $file_info['extension'] !== FALSE)
@@ -165,7 +197,27 @@ class File_ft extends EE_Fieldtype {
 			return $full_path;
 		}
 	}
+
+	// --------------------------------------------------------------------
 	
+	/**
+	 * Replace frontend tag (with a modifier catchall)
+	 *
+	 * Here, the modifier is the short name of the image manipulation,
+	 * e.g. "small" in {about_image:small}
+	 *
+	 * @access	public
+	 */
+	function replace_tag_catchall($file_info, $params = array(), $tagdata = FALSE, $modifier)
+	{
+		if ($modifier)
+		{
+			$file_info['path'] .= '_'.$modifier.'/';	
+		}
+
+		return $this->replace_tag($file_info, $params, $tagdata);
+	}
+
 	// --------------------------------------------------------------------
 	
 	/**

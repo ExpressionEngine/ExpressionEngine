@@ -18,7 +18,6 @@ if ($EE_view_disable !== TRUE)
 		<?php $this->load->view('_shared/message');?>
 
 		<?php
-			$this->table->set_template($cp_table_template);
 			$this->table->set_heading(
 				array('data' => lang('id'), 'width' => '4%'),
 				lang('field_label'),
@@ -50,7 +49,7 @@ if ($EE_view_disable !== TRUE)
 			}
 			else
 			{
-				$this->table->add_row(array('data' => lang('no_field_groups'), 'colspan' => 5));
+				$this->table->add_row(array('data' => lang('no_field_groups'), 'colspan' => 6));
 			}
 			
 			echo $this->table->generate();

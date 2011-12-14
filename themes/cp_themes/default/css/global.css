@@ -3,6 +3,23 @@
 /**
  * ExpressionEngine Default Theme 
  */
+
+/* For modern browsers */
+.cf:before,
+.cf:after {
+    content:"";
+    display:table;
+}
+
+.cf:after {
+    clear:both;
+}
+
+/* For IE 6/7 (trigger hasLayout) */
+.cf {
+    zoom:1;
+}
+
 html, body, p, img, div, h1, h2, h3, h4, h5, h6, ol, ul, li, form, input, select, option, fieldset {
 	margin:					0;
 	padding:				0;
@@ -1302,12 +1319,16 @@ table.padTable td:last-child {
 	border-right: 		1px solid #d0d7df!important;
 }
 
-table.mainTable th {
+.mainTable th {
 	background:		#2a3940 url('../images/backgrounds_sprite.png') repeat-x 0 -540px;
 	color:				#fff;
 	padding:			9px 8px 10px 8px;
 	border-left:		1px solid #45555f;
 	cursor:				pointer;
+}
+
+th.no-sort {
+	cursor: default;
 }
 
 #toggle_all, td.file_select {
@@ -1320,15 +1341,15 @@ table.mainTable thead {
 }
 
 table.mainTable .headerSortUp {
-	background:			transparent url('../images/table_sort_desc.gif') bottom right no-repeat;
+	background:			transparent url('../images/table_sort_desc.gif') center right no-repeat;
 	border-left:		1px solid #C60047;
-
+	padding-right:		20px;
 }
 
 table.mainTable th.headerSortDown {
-	background:			transparent url('../images/table_sort_asc.gif') bottom right no-repeat;
+	background:			transparent url('../images/table_sort_asc.gif') center right no-repeat;
 	border-left:		1px solid #C60047;
-
+	padding-right:		20px;
 }
 
 table.mainTable td.highlight {
@@ -1352,7 +1373,8 @@ table.mainTable tr.odd td {
 	background-color:	#f4f6f6;
 }
 
-table.mainTable tr.new td {
+table.mainTable tr.new td,
+#mainContent table.mainTable td.new {
 	background-color: #fcfcdc;
 	font-weight: bold;
 }
@@ -3417,8 +3439,7 @@ table.mainTable tr.comment-row-expanded td:last-child
 	border-left: 0px; 
 }
 
-table.mainTable tr.comment-row-main a:link {
-color: #5f6c74;
+table.mainTable a.less_important_link:link {
 	text-decoration: underline;
 }
 

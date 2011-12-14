@@ -327,7 +327,6 @@ class Addons_accessories extends CI_Controller {
 
 		$this->load->library('table');
 		$this->load->model('member_model');
-		$this->load->helper('form');
 
 		$this->jquery->plugin(BASE.AMP.'C=javascript'.AMP.'M=load'.AMP.'plugin=tablesorter', TRUE);
 

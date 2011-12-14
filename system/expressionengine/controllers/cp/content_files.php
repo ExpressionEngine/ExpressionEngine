@@ -49,10 +49,10 @@ class Content_files extends CI_Controller {
 		}
 
 		$this->lang->loadfile('filemanager');
-		$this->load->library(array('filemanager'));
-		$this->load->helper(array('form'));
+		$this->load->library('filemanager');
 		$this->load->model('file_model');
 		$this->load->model('file_upload_preferences_model');
+		$this->cp->add_to_head($this->view->head_link('css/file_browser.css'));
 
 		// Get upload dirs
 		$upload_dirs = $this->filemanager->fetch_upload_dirs();
@@ -89,7 +89,7 @@ class Content_files extends CI_Controller {
 	 */
 	public function index()
 	{
-		$this->load->library(array('pagination'));
+		$this->load->library('pagination');
 		$this->load->helper(array('string', 'search'));
 		$this->api->instantiate('channel_categories');
 
@@ -902,13 +902,31 @@ class Content_files extends CI_Controller {
 				'field' => '<span class="fake_input">' . $data['file_name'] . '</span>',
 				'type' => 'text'
 			),
-			'caption' => array(
+			'description' => array(
 				'field' => form_textarea(array(
-					'name'	=> 'caption',
-					'id'	=> 'caption',
-					'value'	=> $data['caption']
+					'name'	=> 'description',
+					'id'	=> 'description',
+					'value'	=> $data['description']
 				)),
 				'type' => 'textarea'
+			),
+			'credit' => array(
+				'field' => form_input(array(
+					'name'	=> 'credit',
+					'id'	=> 'credit',
+					'value'	=> $data['credit'],
+					'size' 	=> 255
+				)),
+				'type' => 'text'
+			),
+			'location' => array(
+				'field' => form_input(array(
+					'name'	=> 'location',
+					'id'	=> 'location',
+					'value'	=> $data['location'],
+					'size' 	=> 255
+				)),
+				'type' => 'text'
 			)
 		);
 		
@@ -935,14 +953,13 @@ class Content_files extends CI_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 		
-		$updated_title   = $this->input->post('file_title');
-		$updated_caption = $this->input->post('caption');
-		
 		// Update the file
 		$this->file_model->save_file(array(
-			'file_id'	=> $file_id,
-			'title'		=> $updated_title,
-			'caption'	=> $updated_caption
+			'file_id'		=> $file_id,
+			'title'			=> $this->input->post('file_title'),
+			'description'	=> $this->input->post('description'),
+			'credit'		=> $this->input->post('credit'),
+			'location'		=> $this->input->post('location')
 		));
 		
 		$this->load->model('file_category_model');
@@ -1022,7 +1039,7 @@ class Content_files extends CI_Controller {
 		
 		$this->cp->add_js_script(array(
 			'file'		=> 'cp/files/file_manager_edit',
-			'plugin'	=> 'jcrop',
+			'plugin'	=> array('jcrop', 'ee_resize_scale'),
 			'ui'		=> 'accordion'
 		));
 		
@@ -1132,7 +1149,6 @@ class Content_files extends CI_Controller {
 		$file_dir  = $this->input->get('id');
 		$cid = $file_dir;
 		$var['sizes'] = array();
-		$this->load->library('javascript');
 
 		$resize_existing = FALSE;
 		
@@ -1328,8 +1344,6 @@ class Content_files extends CI_Controller {
 
 		$files = $this->filemanager->fetch_files($id, $current_files, TRUE);
 		
-		$this->load->library('localize');
-
 		// Setup data for batch insert
 		foreach ($files->files[$id] as $file)
 		{
@@ -1846,8 +1860,6 @@ class Content_files extends CI_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->load->helper('form');
-
 		$this->cp->set_variable('cp_page_title', lang('delete_wm_preference'));
 
 
@@ -1992,7 +2004,7 @@ class Content_files extends CI_Controller {
 		$fields = array(
 			'id', 'site_id', 'name', 'server_path',
 			'url', 'allowed_types', 'max_size',
-			'max_height', 'max_width', 'max_image_action', 'properties',
+			'max_width', 'max_height', 'max_image_action', 'properties',
 			'pre_format', 'post_format', 'file_properties',
 			'file_pre_format', 'file_post_format', 'batch_location',
 			'cat_group'
@@ -2110,7 +2122,7 @@ class Content_files extends CI_Controller {
 								  lang('file_upload_preferences'));
 
 		$data['upload_pref_fields1'] = array(
-							'max_size', 'max_height', 'max_width');
+							'max_size', 'max_width', 'max_height');
 
 		$data['upload_pref_fields2'] = array(
 							'properties', 'pre_format', 'post_format', 'file_properties',
@@ -2161,13 +2173,13 @@ class Content_files extends CI_Controller {
 							 'rules'   => 'numeric'
 						  ),
 					   array(
-							 'field'   => 'max_height',
-							 'label'   => 'lang:max_height',
+							 'field'   => 'max_width',
+							 'label'   => 'lang:max_width',
 							 'rules'   => 'numeric'
 						  ),
 					   array(
-							 'field'   => 'max_width',
-							 'label'   => 'lang:max_width',
+							 'field'   => 'max_height',
+							 'label'   => 'lang:max_height',
 							 'rules'   => 'numeric'
 						  ),
 					   array(
@@ -2301,6 +2313,7 @@ class Content_files extends CI_Controller {
 					}
 					
 					$updatedata = array(
+						'site_id' => $this->config->item('site_id'),
 						'short_name' => $_POST['size_short_name_'.$row['id']],
 						'title'	=> $_POST['size_short_name_'.$row['id']],
 						'resize_type' => $_POST['size_resize_type_'.$row['id']],
@@ -2370,6 +2383,7 @@ class Content_files extends CI_Controller {
 					}
 					
 					$size_data = array(
+						'site_id' => $this->config->item('site_id'),
 						'upload_location_id' => $id,
 						'short_name' => $short_name,
 						'title' => $_POST['size_short_name_'.$number],
@@ -2470,8 +2484,6 @@ class Content_files extends CI_Controller {
 		{
 			show_error(lang('unauthorized_access'));
 		}
-
-		$this->load->helper('form');
 
 		$this->cp->set_variable('cp_page_title', lang('delete_upload_preference'));
 		$this->cp->set_breadcrumb(BASE.AMP.'C=content_files', lang('file_manager'));
@@ -2617,7 +2629,6 @@ class Content_files extends CI_Controller {
 		$this->api->instantiate('channel_categories');
 
 		$this->load->model('category_model');
-		$this->load->helper('form');
 
 		$qry = $this->db->select('group_id, group_name, sort_order')
 						->where('group_id', $group_id)

@@ -1841,10 +1841,6 @@ class Safecracker_lib
 			return;
 		}
 		
-		//get field group and 
-		$this->EE->db->where('channels.site_id', $this->site_id);
-		$this->EE->db->limit(1);
-		
 		if ($channel_id)
 		{
 			$this->EE->db->where('exp_channels.channel_id', $this->EE->security->xss_clean($channel_id));
@@ -1868,6 +1864,10 @@ class Safecracker_lib
 			return;
 		}
 		
+		//get field group and limit
+		$this->EE->db->where('channels.site_id', $this->site_id);
+		$this->EE->db->limit(1);
+
 		$query = $this->EE->db->get('channels');
 		
 		if ( ! $query->num_rows())
@@ -2658,8 +2658,6 @@ class Safecracker_lib
 		}
 		
 		$this->temp_session = $this->EE->session;
-
-		//$this->temp_session = $this->EE->functions->clone_object($this->EE->session);
 		
 		if ( ! class_exists('SC_Session'))
 		{

@@ -32,11 +32,11 @@ class Api {
 	protected $EE;
 	
 	private $apis	= array(	// apis available to initialize when loading the parent Api class
-							'channel_structure', 'channel_entries', 'channel_fields',
-							'channel_categories', 'channel_statuses', 'channel_uploads',
-							'template_structure',
-							'members'
-						);
+		'channel_structure', 'channel_entries', 'channel_fields',
+		'channel_categories', 'channel_statuses', 'channel_uploads',
+		'template_structure',
+		'members'
+	);
 	
 	/**
 	 * Constructor
@@ -185,9 +185,17 @@ class Api {
 	
 		switch($type)
 		{
-			case 'category'	: $table = 'categories';		$url_title_field = 'cat_url_title';	$type_field = 'group_id';	$self_field = 'category_id';
+			case 'category':
+				$table = 'categories';
+				$url_title_field = 'cat_url_title';
+				$type_field = 'group_id';
+				$self_field = 'category_id';
 				break;
-			default			: $table = 'channel_titles';	$url_title_field = 'url_title';		$type_field = 'channel_id'; $self_field = 'entry_id';
+			default:
+				$table = 'channel_titles';
+				$url_title_field = 'url_title';
+				$type_field = 'channel_id';
+				$self_field = 'entry_id';
 				break;
 		}
 	

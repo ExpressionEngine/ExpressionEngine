@@ -406,7 +406,7 @@ class EE_Typography extends CI_Typography {
 		{
 			case 'none';
 				break;
-			case 'xhtml'	: $str = $this->xhtml_typography($str);
+			case 'xhtml'	: $str = $this->auto_typography($str);
 				break;
 			case 'lite'		: $str = $this->format_characters($str);  // Used with channel entry titles
 				break;
@@ -1252,7 +1252,10 @@ class EE_Typography extends CI_Typography {
 	 * @deprecated in 2.1.5 and will be removed at a later date.
 	 */
     function xhtml_typography($str)
-    {  		
+    {
+		$this->EE->load->library('logger');
+		$this->EE->logger->deprecated('2.1.5', 'EE_Typography::auto_typography()');
+		
 		return $this->auto_typography($str);
     }
 
