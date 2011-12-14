@@ -104,7 +104,7 @@ class Updater {
 	/**
 	 * Update Files Table
 	 *
-	 * Adds extra metadata fields to file table
+	 * Adds extra metadata fields to file table, and deletes old custom fields
 	 *
 	 * @return	void
 	 */
@@ -134,6 +134,17 @@ class Updater {
 				),
 			)
 		);
+		
+		// Drop the 6 custom fields
+		for ($i = 1; $i < 7; $i++)
+		{ 
+			$this->EE->dbforge->drop_column('files', 'field_'.$i);
+			$this->EE->dbforge->drop_column('files', 'field_'.$i.'_fmt');
+		}
+		
+		// Drop 'metadata' and 'status' fields
+		$this->EE->dbforge->drop_column('files', 'metadata');
+		$this->EE->dbforge->drop_column('files', 'status');
 	}
 	
 	/**

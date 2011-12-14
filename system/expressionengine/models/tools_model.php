@@ -254,7 +254,7 @@ class Tools_model extends CI_Model {
 	{
 		$this->db->where('viewed', 'n');
 		
-		return $this->db->get('developer_log')->num_rows();
+		return $this->db->count_all_results('developer_log');
 	}
 	
 	// --------------------------------------------------------------------
@@ -496,6 +496,9 @@ class Tools_model extends CI_Model {
 	 */
 	public function delete_upload_preferences($id = '')
 	{
+		$this->load->library('logger');
+		$this->logger->deprecated('2.2', 'File_upload_preferences_model::delete_upload_preferences()');
+		
 		$this->load->model('file_upload_preferences_model');
 
 		return $this->file_upload_preferences_model->delete_upload_preferences($id);
@@ -512,6 +515,9 @@ class Tools_model extends CI_Model {
 	 */
 	public function get_upload_preferences($group_id = NULL, $id = NULL)
 	{
+		$this->load->library('logger');
+		$this->logger->deprecated('2.2', 'File_upload_preferences_model::get_upload_preferences()');
+		
 		$this->load->model('file_upload_preferences_model');
 		
 		return $this->file_upload_preferences_model->get_upload_preferences($group_id, $id);
@@ -528,6 +534,9 @@ class Tools_model extends CI_Model {
 	 */
 	public function get_files($directories = array(), $allowed_types = array(), $full_server_path = '', $hide_sensitive_data = FALSE, $get_dimensions = FALSE, $files_array = array())
 	{
+		$this->load->library('logger');
+		$this->logger->deprecated('2.2', 'File_model::get_raw_files()');
+		
 		$this->load->model('file_model');
 		
 		return $this->file_model->get_raw_files($directories, $allowed_types, $full_server_path, $hide_sensitive_data, $get_dimensions, $files_array);
