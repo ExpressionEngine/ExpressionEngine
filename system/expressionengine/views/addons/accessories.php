@@ -24,11 +24,11 @@ if ($EE_view_disable !== TRUE)
 				$title = ($accessory['acc_pref_url']) ? "<a href='{$accessory['acc_pref_url']}'>{$accessory['name']}</a>" : $accessory['name'];
 
 				$this->table->add_row(
-										"<strong>{$title}</strong> ({$accessory['version']})<br />{$accessory['description']}",
-										(count($accessory['acc_member_groups']) > 0) ? ul($accessory['acc_member_groups'], array('style'=>'list-style:disc!important; margin-left: 15px;')) : '',
-										(count($accessory['acc_controller']) > 0) ? ul($accessory['acc_controller'], array('style'=>'list-style:disc!important; margin-left: 15px;')) : '',
-										"<a href='{$accessory['acc_install']['href']}'>{$accessory['acc_install']['title']}</a>"
-									);
+					"<strong>{$title}</strong> ({$accessory['version']})<br />{$accessory['description']}",
+					(count($accessory['acc_member_groups']) > 0) ? ul($accessory['acc_member_groups'], array('style'=>'list-style:disc!important; margin-left: 15px;')) : '',
+					(count($accessory['acc_controller']) > 0) ? ul($accessory['acc_controller'], array('style'=>'list-style:disc!important; margin-left: 15px;')) : '',
+					$accessory['acc_install']
+				);
 		
 			}
 			
