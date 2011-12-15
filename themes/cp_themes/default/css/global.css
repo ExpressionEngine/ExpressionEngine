@@ -3959,12 +3959,16 @@ html.js .js_show {
 	z-index: 1002;
 }
 
+#notice_container p a:link,
+#notice_container p a:visited {
+	color: #E11842;
+}
+
 #notice_texts_container {
 	background: #1F2B33;
+	border: 1px solid #303F4A;
 	color: #fff;
 	display: none;
-	
-	border: 1px solid #303F4A;
 }
 
 #notice_counts {
@@ -4010,4 +4014,15 @@ html.js .js_show {
 	padding: 3px 10px;
 	color: white;
 	float: right;
+}
+
+/* Alert Modal */
+
+div.alert p {
+	margin: 10px 0;
+}
+
+div.alert li {
+	list-style: disc;
+	margin-left: 20px;
 }

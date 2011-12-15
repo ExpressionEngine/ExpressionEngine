@@ -566,6 +566,16 @@ class Tools_logs extends CI_Controller {
 		// the logs will appear as viewed.
 		$this->tools_model->mark_developer_logs_as_viewed($vars['rows']);
 		
+		// Set JS globals for "What does this mean?" modal
+		$this->javascript->set_global(
+			array(
+				'developer_log' => array(
+					'dev_log_help'			=> lang('dev_log_help'),
+					'deprecation_meaning'	=> lang('deprecated_meaning')
+				)
+			)
+		);
+		
 		$this->javascript->compile();
 		$this->load->view('tools/view_developer_log', $vars);
 	}
