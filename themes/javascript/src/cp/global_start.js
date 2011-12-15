@@ -47,6 +47,7 @@ jQuery(document).ready(function () {
 		
 	EE.cp.show_hide_sidebar();
 	EE.cp.display_notices();
+	EE.cp.deprecation_meaning();
 	
 
 	// Setup Notepad
@@ -427,3 +428,21 @@ EE.cp.logout_confirm = function() {
 		});
 	});
 };
+
+// Modal for "What does this mean?" link on deprecation notices
+EE.cp.deprecation_meaning = function()
+{
+	$('.deprecation_meaning').click(function(event)
+	{
+		event.preventDefault();
+		
+		var deprecation_meaning_modal = $('<div class="alert">' + EE.developer_log.deprecation_meaning + ' </div>');
+		
+		deprecation_meaning_modal.dialog({
+			height: 260,
+			modal: true,
+			title: EE.developer_log.dev_log_help,
+			width: 460
+		});
+	});
+}

@@ -4015,3 +4015,14 @@ html.js .js_show {
 	color: white;
 	float: right;
 }
+
+/* Alert Modal */
+
+div.alert p {
+	margin: 10px 0;
+}
+
+div.alert li {
+	list-style: disc;
+	margin-left: 20px;
+}

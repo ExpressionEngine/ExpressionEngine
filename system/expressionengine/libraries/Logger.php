@@ -174,10 +174,21 @@ class EE_Logger {
 		{
 			$this->EE->lang->loadfile('tools');
 			
+			// Set JS globals for "What does this mean?" modal
+			$this->EE->javascript->set_global(
+				array(
+					'developer_log' => array(
+						'dev_log_help'			=> lang('dev_log_help'),
+						'deprecation_meaning'	=> lang('deprecated_meaning')
+					)
+				)
+			);
+			
 			$this->EE->session->set_flashdata(
 				'message_error',
-				lang('deprecation_detected').NBS.
-					'<a href="'.BASE.AMP.'C=tools_logs'.AMP.'M=view_developer_log">'.lang('dev_log_view_report').'</a>'
+				lang('deprecation_detected').NBS.NBS.
+					'<a href="'.BASE.AMP.'C=tools_logs'.AMP.'M=view_developer_log">'.lang('dev_log_view_report').'</a>'.NBS.NBS.
+					'<a href="#" class="deprecation_meaning">'.lang('dev_log_help').'</a>'
 			);
 		}
 	}
@@ -195,7 +206,7 @@ class EE_Logger {
 		$this->EE->lang->loadfile('tools');
 		
 		// "The system has detected an add-on that is using outdated code..." and "What does this mean?" link
-		$message = lang('deprecation_detected').NBS.'(<a href="#">'.lang('dev_log_help').'</a>)<br />';
+		$message = lang('deprecation_detected').NBS.'<a href="#" class="deprecation_meaning">'.lang('dev_log_help').'</a><br />';
 		
 		// "Deprecated function %s called"
 		$message .= sprintf(lang('deprecated_function'), $deprecated['function']);

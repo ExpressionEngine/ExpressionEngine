@@ -92,6 +92,14 @@ $lang = array(
 'deprecation_detected'	=> 'The system has detected an add-on that is using outdated code that may stop working or cause issues with the system.',
 'dev_log_view_report'	=> 'View report',
 'dev_log_help'			=> 'What does this mean?',
+'deprecated_meaning'	=>
+'<p>The system has detected an add-on that is using outdated code that may stop working or cause issues with the system. This means an add-on in your installation is accessing a part of ExpressionEngine\'s core code which EllisLab plans to remove in the future in order to improve the quality of the product.</p>
+<p>To remedy this notice, you may need to do any of the following:</p>
+<ul>
+	<li>Contact the developer who manages your ExpressionEngine installation for help</li>
+	<li>Make sure you have the latest version of all your installed add-ons</li>
+	<li>Contact the developer of the offending add-on to make sure they\'re aware of the problem and plans to issue an update</li>
+</ul>',
 
 
 'screen_name' =>

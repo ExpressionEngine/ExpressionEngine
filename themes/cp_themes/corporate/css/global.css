@@ -4197,6 +4197,11 @@ td .markItUp{
 	z-index: 1002;
 }
 
+#notice_container p a:link,
+#notice_container p a:visited {
+	color: #CED7DE;
+}
+
 #notice_texts_container {
 	background: #1F2B33;
 	color: #fff;
@@ -4398,3 +4403,13 @@ html#file_upload_iframe p {
 
 /* @end */
 
+/* Alert Modal */
+
+div.alert p {
+	margin: 10px 0;
+}
+
+div.alert li {
+	list-style: disc;
+	margin-left: 20px;
+}
