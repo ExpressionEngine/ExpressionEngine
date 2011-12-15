@@ -169,9 +169,16 @@ class EE_Logger {
 		
 		$this->developer($deprecated, TRUE);
 		
-		if (REQ == 'CP')
+		// Show and store flashdata only if we're in the CP, and only to Super Admins
+		if (REQ == 'CP' AND $this->EE->session->userdata('group_id') == 1)
 		{
-			$this->EE->session->set_flashdata('message_error', $this->build_deprecation_language($deprecated));
+			$this->EE->lang->loadfile('tools');
+			
+			$this->EE->session->set_flashdata(
+				'message_error',
+				lang('deprecation_detected').NBS.
+					'<a href="'.BASE.AMP.'C=tools_logs'.AMP.'M=view_developer_log">'.lang('dev_log_view_report').'</a>'
+			);
 		}
 	}
 	
@@ -187,8 +194,11 @@ class EE_Logger {
 	{
 		$this->EE->lang->loadfile('tools');
 		
+		// "The system has detected an add-on that is using outdated code..." and "What does this mean?" link
+		$message = lang('deprecation_detected').NBS.'(<a href="#">'.lang('dev_log_help').'</a>)<br />';
+		
 		// "Deprecated function %s called"
-		$message = sprintf(lang('deprecated_function'), $deprecated['function']);
+		$message .= sprintf(lang('deprecated_function'), $deprecated['function']);
 		
 		// "in %s on line %d."
 		if (isset($deprecated['file']) && isset($deprecated['line']))

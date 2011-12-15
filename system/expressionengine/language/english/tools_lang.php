@@ -89,6 +89,9 @@ $lang = array(
 'deprecated_on_line'	=> 'in %s on line %d.',
 'deprecated_since'		=> 'Deprecated since %s.',
 'deprecated_use_instead'	=> 'Use %s instead.',
+'deprecation_detected'	=> 'The system has detected an add-on that is using outdated code that may stop working or cause issues with the system.',
+'dev_log_view_report'	=> 'View report',
+'dev_log_help'			=> 'What does this mean?',
 
 
 'screen_name' =>
