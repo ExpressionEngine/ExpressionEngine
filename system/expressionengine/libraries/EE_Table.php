@@ -46,11 +46,6 @@ class EE_Table extends CI_Table {
 		parent::__construct();
 		
 		$this->EE =& get_instance();
-		
-		if (REQ == 'CP')
-		{
-			$this->set_template($this->EE->session->cache('table', 'cp_template'));
-		}
 	}
 	
 	// --------------------------------------------------------------------
@@ -280,6 +275,11 @@ class EE_Table extends CI_Table {
 			return parent::generate($table_data);
 		}
 		
+		
+		// @todo should only need to happen once, but we have a
+		// code order issue with accessories. That CP code needs
+		// to change in the near future, but for now we work around it.
+		$this->set_template($this->EE->session->cache('table', 'cp_template'));
 		$this->_compile_template();
 		
 		$open_bak = $this->template['table_open'];
