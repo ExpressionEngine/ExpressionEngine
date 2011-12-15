@@ -259,7 +259,7 @@ class Cp {
 			'effect'	=> 'core',
 			'ui'		=> array('core', 'widget', 'mouse', 'position', 'sortable', 'dialog'),
 			'plugin'	=> array('ee_focus', 'ee_interact.event', 'ee_notice', 'ee_txtarea', 'tablesorter', 'ee_toggle_all'),
-			'file'		=> 'cp/global'
+			'file'		=> 'cp/global_start'
 		);
 		
 		if ($this->cp_theme != 'mobile')
@@ -349,6 +349,9 @@ class Cp {
 	 */
 	function render_footer_js()
 	{
+		// add global end file
+		$this->add_js_script('file', 'cp/global_end');
+		
 		$str = '';
 		$requests = $this->_seal_combo_loader();
 		
