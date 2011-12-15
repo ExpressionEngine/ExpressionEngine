@@ -51,9 +51,6 @@ EE.publish.category_editor = function() {
 		modal: true,
 		resizable: false,
 		open: function(event, ui) {
-			// Remove the js_show class since we aren't removing it otherwise
-			$('.js_show').show();
-
 			$('.ui-dialog-content').css('overflow', 'hidden');
 			$('.ui-dialog-titlebar').focus(); // doing this first to fix IE7 scrolling past the dialog's close button
 			$('#cat_name').focus();	

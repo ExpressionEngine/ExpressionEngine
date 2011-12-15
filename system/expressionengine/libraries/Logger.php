@@ -169,9 +169,27 @@ class EE_Logger {
 		
 		$this->developer($deprecated, TRUE);
 		
-		if (REQ == 'CP')
+		// Show and store flashdata only if we're in the CP, and only to Super Admins
+		if (REQ == 'CP' AND $this->EE->session->userdata('group_id') == 1)
 		{
-			$this->EE->session->set_flashdata('message_error', $this->build_deprecation_language($deprecated));
+			$this->EE->lang->loadfile('tools');
+			
+			// Set JS globals for "What does this mean?" modal
+			$this->EE->javascript->set_global(
+				array(
+					'developer_log' => array(
+						'dev_log_help'			=> lang('dev_log_help'),
+						'deprecation_meaning'	=> lang('deprecated_meaning')
+					)
+				)
+			);
+			
+			$this->EE->session->set_flashdata(
+				'message_error',
+				lang('deprecation_detected').'<br />'.
+					'<a href="'.BASE.AMP.'C=tools_logs'.AMP.'M=view_developer_log">'.lang('dev_log_view_report').'</a> or
+					<a href="#" class="deprecation_meaning">'.lang('dev_log_help').'</a>'
+			);
 		}
 	}
 	
@@ -187,8 +205,11 @@ class EE_Logger {
 	{
 		$this->EE->lang->loadfile('tools');
 		
+		// "The system has detected an add-on that is using outdated code..." and "What does this mean?" link
+		$message = lang('deprecation_detected').NBS.'<a href="#" class="deprecation_meaning">'.lang('dev_log_help').'</a><br />';
+		
 		// "Deprecated function %s called"
-		$message = sprintf(lang('deprecated_function'), $deprecated['function']);
+		$message .= sprintf(lang('deprecated_function'), $deprecated['function']);
 		
 		// "in %s on line %d."
 		if (isset($deprecated['file']) && isset($deprecated['line']))

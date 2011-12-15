@@ -44,179 +44,11 @@ jQuery(document).ready(function () {
 		return false;
 	});
 
-
-	function logOutCheck() {
-	
-	    var timeOutTimer			= EE.SESS_TIMEOUT - 60000, //Fire one Minute before the session times out.  
-			xidTimeOutTimer			= EE.XID_TIMEOUT - 60000,
-			pageExpirationTimeout	= (timeOutTimer < xidTimeOutTimer) ? timeOutTimer : xidTimeOutTimer,
-			loginHit				= false,
-			isPageAboutToExpire, xidRefresh;
-	
-		xidRefresh = function () {
-			$.ajax({
-				type:		'POST',
-				dataType:	'json',
-				url:		EE.BASE + '&C=login&M=refresh_xid',
-				success: function (result) {
-					$("input[name='XID']").val(result.xid);
-					EE.XID = result.xid;
-					setTimeout(xidRefresh, xidTimeOutTimer);
-				}
-			});	
-		};
-	
-		isPageAboutToExpire = function () {
-			var logInForm = '<form><div id="logOutWarning" style="text-align:center"><p>' + EE.lang.session_expiring + '</p><label for="username">' + EE.lang.username + '</label>: <input type="text" id="log_backin_username" name="username" value="" style="width:100px" size="35" dir="ltr" id="username" maxlength="32"  />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label for="password">' + EE.lang.password + '</label>: <input class="field" id="log_backin_password" type="password" name="password" value="" style="width:100px" size="32" dir="ltr" id="password" maxlength="32"  />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="submit" id="submit" name="submit" value="' + EE.lang.login + '" class="submit" /><span id="logInSpinner"></span></div></form>',
-				logOutWarning;
-
-			if (loginHit === true) {
-				finalLogOutTimer(loginHit);
-				return false;
-			} else {
-				setTimeout(finalLogOutTimer, pageExpirationTimeout);
-			}
-
-			$.ee_notice(logInForm, {type: "custom", open: true, close_on_click: false});
-
-			logOutWarning = $('#logOutWarning');
-			logOutWarning.find('#log_backin_username').focus();
-			logOutWarning.find("input#submit").click(function () {
-
-				var username        = logOutWarning.find('input#log_backin_username').val(),
-					password        = logOutWarning.find('input#log_backin_password').val(),
-					submitBtn       = $(this),
-					logInSpinner    = logOutWarning.find('span#logInSpinner');
-
-				submitBtn.hide();
-				logInSpinner.html('<img src="' + EE.PATH_CP_GBL_IMG + 'loader_blackbg.gif" />');		
-
-				$.ajax({
-					type:		"POST",
-					dataType:	'json',
-					url:		EE.BASE + "&C=login&M=authenticate&is_ajax=true",
-					data:		{'username' : username, 'password' : password, 'XID' : EE.XID},
-					success: function (result) {
-					
-						loginHit = true;
-					
-						if (result.messageType === 'success') {
-							// Regenerate XID
-							$("input[name='XID']").val(result.xid);
-
-							logOutWarning.slideUp('fast');
-							$.ee_notice(result.message, {type : "custom", open: true});
-							
-							setTimeout($.ee_notice.destroy, 1600);
-						
-							EE.XID = result.xid;
-
-							loginHit = true;
-
-							// Reset Timeout
-							clearTimeout(isPageAboutToExpire);
-							setTimeout(isPageAboutToExpire, pageExpirationTimeout);
-					
-						} else if (result.messageType === 'failure') {
-							logOutWarning.before('<div id="loginCheckFailure">'  +  result.message  +  '</div>');                        
-							logInSpinner.hide('fast');
-							submitBtn.css('display', 'inline');
-						} else if (result.messageType === 'logout') {
-							window.location.href = EE.BASE + '&C=login&M=logout&auto_expire=true';
-						}
-					}
-				});
-				return false;
-			});
-		};
-		
-		if (EE.SESS_TYPE === 'c') {
-			setTimeout(xidRefresh, xidTimeOutTimer);
-		} else { 
-			setTimeout(isPageAboutToExpire, pageExpirationTimeout);
-		}
-	}
-
-	// This is largely ripped off from pascal below. -- greg
-	var finalLogOutTimer = function (loginHit) {
-
-		var logoutModal = $('<div id="logOutConfirm">' + EE.lang.session_timeout + ' </div>'),
-			ttl = 30,
-			orig_ttl = ttl,
-			logoutCountdown, buttons,
-			logOut, delayLogout;
-	
-		logOut = function () {
-			window.location = EE.BASE + "&C=login&M=logout&auto_expire=true";
-		};
-
-		delayLogout = function () {
-			if (ttl < 1) {
-				return setTimeout(logOut, 0);
-			}
-			else if (ttl === orig_ttl) {
-				$(window).bind("unload.logout", logOut);
-			}
-
-			logoutModal.dialog("option", "title", EE.lang.logout + " (" +  (ttl-- || "...")  + ")");
-			logoutCountdown = setTimeout(delayLogout, 1000);
-		};
-
-		function cancelLogout() {
-			clearTimeout(logoutCountdown);
-			$(window).unbind("unload.logout");
-			ttl = orig_ttl;
-		
-			$.ajax({
-				type:		'POST',
-				dataType:	'json',
-				url:		EE.BASE + '&C=login&M=refresh_xid',
-				success: function (result) {
-					$("input[name='XID']").val(result.xid);
-					EE.XID = result.xid;
-					$('#logOutWarning').slideUp('fast');
-					logOutCheck();
-				}
-			});
-			loginHit = false;
-		}
-
-		buttons = { 
-			Cancel: function () { 
-				$(this).dialog("close"); 
-			}
-		};
-		
-		buttons[EE.lang.logout] = logOut;
-
-		logoutModal.dialog({
-			autoOpen: false,
-			resizable: false,
-			modal: true,
-			title: EE.lang.logout,
-			position: "center",
-			minHeight: "0",
-			buttons: buttons,
-			beforeClose: cancelLogout
-		});
-
-		$("#logOutConfirm").dialog("open");
-		$(".ui-dialog-buttonpane button:eq(2)").focus(); //focus on Log-out so pressing return logs out
-
-		delayLogout();
-		return false;
-	};
-
-	if (EE.SESS_TIMEOUT) {
-		logOutCheck();	
-	}
 		
 	EE.cp.show_hide_sidebar();
-
-
-//	if (EE.flashdata !== undefined) {
-		EE.cp.display_notices();
-//	}
+	EE.cp.display_notices();
+	EE.cp.deprecation_meaning();
+	
 
 	// Setup Notepad
 	EE.notepad = (function () {
@@ -225,7 +57,7 @@ jQuery(document).ready(function () {
 			notepad_form = $("#notepad_form"),
 			notepad_txtarea = $('#notePadTextEdit'),
 			notepad_controls = $('#notePadControls'),
-			notepad_text = $('#notePadText').removeClass('js_show'),	// .show() was really slow on this - not sure why
+			notepad_text = $('#notePadText');
 			notepad_empty = notepad_text.text(),
 			current_content = notepad_txtarea.val();
 	
@@ -306,20 +138,6 @@ jQuery(document).ready(function () {
 	.css('cursor', 'pointer');
 
 	EE.cp.logout_confirm();	
-
-	$(".js_show").show();
-	
-	// Apply ee_table and ee_toggle_all to any tables that want it
-	$('table').each(function() {
-		var config;
-
-		if ($(this).data('table_config')) {
-			config = $(this).data('table_config');
-			$(this).table(config);
-		}
-
-		$(this).toggle_all();
-	});
 }); // ready
 
 /**
@@ -333,7 +151,7 @@ EE.namespace = function(namespace_string)
 		parent = EE;
 	
 	// strip redundant leading global 
-	if (parts[0] === "EE") 
+	if (parts[0] === "EE")
 	{
 		parts = parts.slice(1);
 	}
@@ -610,3 +428,21 @@ EE.cp.logout_confirm = function() {
 		});
 	});
 };
+
+// Modal for "What does this mean?" link on deprecation notices
+EE.cp.deprecation_meaning = function()
+{
+	$('.deprecation_meaning').click(function(event)
+	{
+		event.preventDefault();
+		
+		var deprecation_meaning_modal = $('<div class="alert">' + EE.developer_log.deprecation_meaning + ' </div>');
+		
+		deprecation_meaning_modal.dialog({
+			height: 260,
+			modal: true,
+			title: EE.developer_log.dev_log_help,
+			width: 460
+		});
+	});
+}
