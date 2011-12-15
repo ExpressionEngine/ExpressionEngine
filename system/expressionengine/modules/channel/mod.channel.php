@@ -6640,28 +6640,39 @@ class Channel {
 			/** ---------------------------------------
 			/**  Query for the entry id and date
 			/** ---------------------------------------*/
-
-			$sql = 'SELECT t.entry_id, t.entry_date
-					FROM (exp_channel_titles AS t)
-					LEFT JOIN exp_channels AS w ON w.channel_id = t.channel_id ';
-
-	        if (is_numeric($qstring))
-	        {
-				$sql .= " WHERE t.entry_id = '".$this->EE->db->escape_str($qstring)."' ";
-	        }
-	        else
-	        {
-				$sql .= " WHERE t.url_title = '".$this->EE->db->escape_str($qstring)."' ";
-	        }
-
-			$sql .= " AND w.site_id IN ('".implode("','", $this->EE->TMPL->site_ids)."') ";
-
+			
+			$this->EE->db->select('t.entry_id, t.entry_date');
+			$this->EE->db->from('channel_titles AS t');
+			$this->EE->db->join('channels AS w', 'w.channel_id = t.channel_id', 'left');
+			
+			// url_title parameter
+			if ($url_title = $this->EE->TMPL->fetch_param('url_title'))
+			{
+				$this->EE->db->where('t.url_title', $url_title);
+			}
+			else
+			{
+				// Found entry ID in query string
+				if (is_numeric($qstring))
+				{
+					$this->EE->db->where('t.entry_id', $this->EE->db->escape_str($qstring));
+				}
+				// Found URL title in query string
+				else
+				{
+					$this->EE->db->where('t.url_title', $this->EE->db->escape_str($qstring));
+				}
+			}
+			
+			$this->EE->db->where_in('w.site_id', $this->EE->TMPL->site_ids);
+			
+			// Channel paremter
 			if ($channel_name = $this->EE->TMPL->fetch_param('channel'))
 			{
-				$sql .= $this->EE->functions->sql_andor_string($channel_name, 'channel_name', 'w');
+				$this->EE->functions->ar_andor_string($channel_name, 'channel_name', 'w');
 			}
-
-			$query = $this->EE->db->query($sql);
+			
+			$query = $this->EE->db->get();
 
 
 			// no results or more than one result?  Buh bye!
