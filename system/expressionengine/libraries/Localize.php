@@ -57,6 +57,38 @@ class EE_Localize {
 	// --------------------------------------------------------------------
 
 	/**
+	 * String to Timestamp
+	 *
+	 * Converts a human-readble date (and possibly time) to a UNIX timestamp
+	 *
+	 * @access	public
+	 * @param	string	human-readable datetime
+	 * @return	mixed	int if successful, otherwise FALSE
+	 */
+	function string_to_timestamp($human_string)
+	{
+		// Get the user's locale so that we have a baseline for converting their
+		// written datetime to UTC. Fall back on server locale if necessary.
+		$timezone = $this->EE->session->userdata['timezone'];
+
+		if ( ! $timezone)
+		{
+			$timezone = $this->EE->config->item('server_timezone');
+		}
+
+		// Tell PHP about our baseline
+		date_default_timezone_set($this->get_php_timezone($timezone));
+
+		// Convert to timestamp; we'll get FALSE if this fails
+		$timestamp = strtotime($human_string);
+
+		// No DST offset or "server" offset applied
+		return $timestamp;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 *  Set GMT time
 	 *
 	 * Takes a Unix timestamp as input and returns it as GMT
@@ -957,6 +989,71 @@ class EE_Localize {
 			);
 	}
 	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Get PHP Timezone
+	 *
+	 * Returns the PHP timezone for a given EE-format timezone.
+	 * For example, given "UM5" it returns "America/New_York"
+	 *
+	 * @access	public
+	 * @param	string
+	 * @return	string
+	 */
+	function get_php_timezone($zone = '')
+	{
+		$zones = array(
+			'UM12'		=> 'Kwajalein', 					// -12
+			'UM11'		=> 'Pacific/Midway', 				// -11
+			'UM10'		=> 'Pacific/Honolulu', 				// -10
+			'UM95'		=> '', 								// -9.5 (who knows?)
+			'UM9'		=> 'America/Anchorage', 			// -9
+			'UM8'		=> 'America/Los_Angeles', 			// -8
+			'UM7'		=> 'America/Denver', 				// -7
+			'UM6'		=> 'America/Tegucigalpa', 			// -6
+			'UM5'		=> 'America/New_York', 				// -5
+			'UM45'		=> '', 								// -4.5 (who knows?)
+			'UM4'		=> 'America/Halifax', 				// -4
+			'UM35'		=> 'America/St_Johns', 				// -3.5
+			'UM3'		=> 'America/Argentina/Buenos_Aires',// -3
+			'UM2'		=> 'Atlantic/South_Georgia', 		// -2
+			'UM1'		=> 'Atlantic/Azores', 				// -1
+			'UTC'		=> 'Europe/Dublin', 				// 0
+			'UP1'		=> 'Europe/Belgrade', 				// +1
+			'UP2'		=> 'Europe/Minsk', 					// +2
+			'UP3'		=> 'Asia/Kuwait', 					// +3
+			'UP35'		=> 'Asia/Tehran', 					// +3.5
+			'UP4'		=> 'Asia/Muscat', 					// +4
+			'UP45'		=> 'Asia/Kabul', 					// +4.5
+			'UP5'		=> 'Asia/Yekaterinburg', 			// +5
+			'UP55'		=> 'Asia/Kolkata',		 			// +5.5
+			'UP575'		=> 'Asia/Katmandu', 				// +5.75
+			'UP6'		=> 'Asia/Dhaka', 					// +6
+			'UP65'		=> 'Asia/Rangoon', 					// +6.5
+			'UP7'		=> 'Asia/Krasnoyarsk', 				// +7
+			'UP8'		=> 'Asia/Brunei', 					// 8
+			'UP875'		=> '', 								// +8.75 (who knows?)
+			'UP9'		=> 'Asia/Seoul', 					// +9
+			'UP95'		=> 'Australia/Darwin', 				// +9.5
+			'UP10'		=> 'Australia/Canberra', 			// +10
+			'UP105'		=> '', 								// +10.5 (who knows?)
+			'UP11'		=> 'Asia/Magadan', 					// +11
+			'UP115'		=> '', 								// +11.5 (who knows?)
+			'UP12'		=> 'Pacific/Fiji', 					// +12
+			'UP1275'	=> '', 								// +12.75 (who knows?)
+			'UP13'		=> 'Pacific/Tongatapu', 			// +13
+			'UP14'		=> '' 								// +14 (who knows?)
+		);
+
+		if ( ! isset($zones[$zone]))
+		{
+			return '';
+		}
+
+		return $zones[$zone];
+	}
+
 	// --------------------------------------------------------------------
 
 	/**
