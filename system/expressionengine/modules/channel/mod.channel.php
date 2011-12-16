@@ -6655,12 +6655,12 @@ class Channel {
 				// Found entry ID in query string
 				if (is_numeric($qstring))
 				{
-					$this->EE->db->where('t.entry_id', $this->EE->db->escape_str($qstring));
+					$this->EE->db->where('t.entry_id', $qstring);
 				}
 				// Found URL title in query string
 				else
 				{
-					$this->EE->db->where('t.url_title', $this->EE->db->escape_str($qstring));
+					$this->EE->db->where('t.url_title', $qstring);
 				}
 			}
 			
