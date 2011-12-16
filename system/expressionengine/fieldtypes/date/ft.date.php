@@ -52,7 +52,7 @@ class Date_ft extends EE_Fieldtype {
 	 */
 	function validate($data)
 	{
-		if ( ! is_numeric($data))
+		if ( ! is_numeric($data) && $data != '')
 		{
 			$data = $this->EE->localize->string_to_timestamp($data, TRUE);
 		}
@@ -124,7 +124,7 @@ class Date_ft extends EE_Fieldtype {
 					$localize = FALSE;
 					$field_data = $date + $offset;
 				}
-				
+
 				// doing it in here so that if we don't have field_data
 				// the field doesn't get populated, but the calendar still
 				// shows the correct default.
@@ -137,9 +137,6 @@ class Date_ft extends EE_Fieldtype {
 			$date = $this->EE->localize->set_localized_time($field_data);
 		}
 		
-		// 1 second = 1000 milliseconds
-		$cal_date = $date * 1000;
-
 		// Note- the JS will automatically localize the default date- but not necessarily in a way we want
 		// Hence we adjust default date to compensate for the coming localization
 		$this->EE->javascript->output('
@@ -150,7 +147,7 @@ class Date_ft extends EE_Fieldtype {
 			$("#'.$this->field_name.'").datepicker({
 				constrainInput: false,
 				dateFormat: $.datepicker.W3C + EE.date_obj_time,
-				defaultDate: ('.$cal_date.' == 0) ? new Date() : new Date(adjustedDefault)
+				defaultDate: new Date(adjustedDefault)
 			});
 		');
 
