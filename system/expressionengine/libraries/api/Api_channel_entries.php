@@ -1140,7 +1140,7 @@ class Api_channel_entries extends Api {
 		{
 			if ( ! is_numeric($data[$date]))
 			{
-				$data[$date] = $this->EE->localize->string_to_timestamp($data[$date]);
+				$data[$date] = $this->EE->localize->string_to_timestamp($data[$date], TRUE);
 			}
 			
 			if ($data[$date] === FALSE)
@@ -1422,7 +1422,7 @@ class Api_channel_entries extends Api {
 		//  Date might already be numeric format- so we check
 		if ( ! is_numeric($data['field_id_'.$row['field_id']]))
 		{
-			$data['field_id_'.$row['field_id']] = $this->EE->localize->string_to_timestamp($data['field_id_'.$row['field_id']]);
+			$data['field_id_'.$row['field_id']] = $this->EE->localize->string_to_timestamp($data['field_id_'.$row['field_id']], TRUE);
 		}
 
 		if ($data['field_id_'.$row['field_id']] === FALSE)

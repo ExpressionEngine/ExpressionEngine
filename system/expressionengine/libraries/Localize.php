@@ -52,6 +52,9 @@ class EE_Localize {
 		// Fetch the current local server time and convert it to GMT
 		$this->now			= time();
 		$this->zones		= $this->zones();
+
+		// Align PHP's default timezone with EE's server timezone setting
+		date_default_timezone_set($this->get_php_timezone($this->EE->config->item('server_timezone')));
 	}
 	
 	// --------------------------------------------------------------------
@@ -59,30 +62,43 @@ class EE_Localize {
 	/**
 	 * String to Timestamp
 	 *
-	 * Converts a human-readble date (and possibly time) to a UNIX timestamp
+	 * Converts a human-readble date (and possibly time) to a UNIX timestamp.
+	 * Can optionally apply a DST offset if the user has DST enabled (this
+	 * enables behavior consistent with EE 2.3 until we can rely on PHP 5.2)
 	 *
 	 * @access	public
 	 * @param	string	human-readable datetime
+	 * @param	bool	whether to consider DST - will likely go away!
 	 * @return	mixed	int if successful, otherwise FALSE
 	 */
-	function string_to_timestamp($human_string)
+	function string_to_timestamp($human_string, $dst_offset = FALSE)
 	{
 		// Get the user's locale so that we have a baseline for converting their
-		// written datetime to UTC. Fall back on server locale if necessary.
-		$timezone = $this->EE->session->userdata['timezone'];
-
-		if ( ! $timezone)
+		// written datetime to UTC, and temporarily tell PHP to use it for this
+		// conversion only. If the user hasn't specified a timezone the EE server
+		// settings will be used instead.
+		if ($timezone = $this->EE->session->userdata['timezone'])
 		{
-			$timezone = $this->EE->config->item('server_timezone');
+			date_default_timezone_set($this->get_php_timezone($timezone));
+			$dst = ($this->EE->session->userdata('daylight_savings')  == 'y' && $dst_offset) ? TRUE : FALSE;
 		}
-
-		// Tell PHP about our baseline
-		date_default_timezone_set($this->get_php_timezone($timezone));
+		else
+		{
+			$dst = ($this->EE->config->item('daylight_savings')  == 'y' && $dst_offset) ? TRUE : FALSE;
+		}
 
 		// Convert to timestamp; we'll get FALSE if this fails
 		$timestamp = strtotime($human_string);
 
-		// No DST offset or "server" offset applied
+		// Appply DST offset?
+		if ($dst && $timestamp !== FALSE)
+		{
+			$timestamp -= 3600;
+		}
+
+		// Back to EE server setting
+		date_default_timezone_set($this->get_php_timezone($this->EE->config->item('server_timezone')));
+
 		return $timestamp;
 	}
 
@@ -1046,9 +1062,10 @@ class EE_Localize {
 			'UP14'		=> '' 								// +14 (who knows?)
 		);
 
+		// Fall back to UTC if something went wrong
 		if ( ! isset($zones[$zone]))
 		{
-			return '';
+			return 'UTC';
 		}
 
 		return $zones[$zone];

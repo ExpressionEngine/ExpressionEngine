@@ -36,7 +36,7 @@ class Date_ft extends EE_Fieldtype {
 	{
 		if ( ! is_numeric($data))
 		{
-			$data = $this->EE->localize->string_to_timestamp($data);
+			$data = $this->EE->localize->string_to_timestamp($data, TRUE);
 		}
 
 		return $data;
@@ -54,7 +54,7 @@ class Date_ft extends EE_Fieldtype {
 	{
 		if ( ! is_numeric($data))
 		{
-			$data = $this->EE->localize->string_to_timestamp($data);
+			$data = $this->EE->localize->string_to_timestamp($data, TRUE);
 		}
 
 		if ($data === FALSE)
