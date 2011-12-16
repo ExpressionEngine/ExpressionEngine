@@ -652,7 +652,7 @@ class Content_publish extends CI_Controller {
 
 				if (isset($resrow['field_dt_'.$expl['1']]))
 				{
-					if ($resrow[$key] > 0)
+					if ($resrow[$key] != 0)
 					{
 						$localize = TRUE;
 						$date = $resrow[$key];
