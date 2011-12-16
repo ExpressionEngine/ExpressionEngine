@@ -1120,7 +1120,7 @@ class Api_channel_entries extends Api {
 		}
 		
 		
-		//	Convert dates to unix timestamps
+		//	Convert built-in date fields to UNIX timestamps
 
 		$dates = array('entry_date');
 
@@ -1140,19 +1140,12 @@ class Api_channel_entries extends Api {
 		{
 			if ( ! is_numeric($data[$date]))
 			{
-				$data[$date] = $this->EE->localize->convert_human_date_to_gmt($data[$date]);
+				$data[$date] = $this->EE->localize->string_to_timestamp($data[$date]);
 			}
 			
-			if ( ! is_numeric($data[$date]))
+			if ($data[$date] === FALSE)
 			{
-				if ($data[$date] !== FALSE)
-				{
-					$this->_set_error('invalid_date', $date);
-				}
-				else
-				{
-					$this->_set_error('invalid_date_formatting', $date);
-				}
+				$this->_set_error('invalid_date', $date);
 			}
 
 			if (isset($data['revision_post'][$date]))
@@ -1429,19 +1422,12 @@ class Api_channel_entries extends Api {
 		//  Date might already be numeric format- so we check
 		if ( ! is_numeric($data['field_id_'.$row['field_id']]))
 		{
-			$data['field_id_'.$row['field_id']] = $this->EE->localize->convert_human_date_to_gmt($data['field_id_'.$row['field_id']]);
+			$data['field_id_'.$row['field_id']] = $this->EE->localize->string_to_timestamp($data['field_id_'.$row['field_id']]);
 		}
 
-		if ( ! is_numeric($data['field_id_'.$row['field_id']]))
+		if ($data['field_id_'.$row['field_id']] === FALSE)
 		{
-			if ($data['field_id_'.$row['field_id']] !== FALSE)
-			{
-				$this->_set_error('invalid_date', $row['field_label']);
-			}
-			else
-			{
-				$this->_set_error('invalid_date_formatting', $row['field_label']);
-			}
+			$this->_set_error('invalid_date', $row['field_label']);
 		}
 		else
 		{
