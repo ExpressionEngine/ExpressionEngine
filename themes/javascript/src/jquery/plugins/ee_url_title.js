@@ -20,7 +20,7 @@
 (function ($) {
 	
 	EE.namespace('EE.publish');
-	$.fn.ee_url_title = function (url_title) {
+	$.fn.ee_url_title = function (url_title, remove_periods) {
 		
 		return this.each(function () {
 			var defaultTitle  = (EE.publish.default_entry_title) ? EE.publish.default_entry_title : '',
@@ -33,6 +33,11 @@
 				prefix        = (EE.publish.url_title_prefix) ? EE.publish.url_title_prefix : '',
 				pos, 
 				c;
+
+			// Make sure remove_periods has a default
+			if (typeof remove_periods !== 'boolean') {
+				remove_periods = false;
+			};
 			
 			if (defaultTitle !== '' && $(this).attr('id') === "title") {
 				if (newText.substr(0, defaultTitle.length) === defaultTitle) {
@@ -66,6 +71,10 @@
 			newText = newText.replace(multiReg, separator);
 			newText = newText.replace(/^[\-\_]|[\-\_]$/g, '');
 			newText = newText.replace(/\.+$/g, '');
+
+			if (remove_periods) {
+				newText = newText.replace(/\./g, '');
+			};
 			
 			if (url_title) {
 				$(url_title).val(newText.substring(0, 75));
