@@ -187,8 +187,8 @@ class EE_Logger {
 			$this->EE->session->set_flashdata(
 				'message_error',
 				lang('deprecation_detected').'<br />'.
-					'<a href="'.BASE.AMP.'C=tools_logs'.AMP.'M=view_developer_log">'.lang('dev_log_view_report').'</a> or
-					<a href="#" class="deprecation_meaning">'.lang('dev_log_help').'</a>'
+					'<a href="'.BASE.AMP.'C=tools_logs'.AMP.'M=view_developer_log">'.lang('dev_log_view_report').'</a>
+					'.lang('or').' <a href="#" class="deprecation_meaning">'.lang('dev_log_help').'</a>'
 			);
 		}
 	}
