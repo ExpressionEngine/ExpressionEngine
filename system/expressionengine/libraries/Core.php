@@ -92,13 +92,13 @@ class EE_Core {
 		define('PATH_DICT', 	APPPATH.'config/');
 		define('AJAX_REQUEST',	$this->EE->input->is_ajax_request());
 
-
 		$this->native_plugins = array('magpie', 'xml_encode');
 		$this->native_modules = array(
-			'blacklist', 'channel', 'comment', 'commerce', 'email', 'emoticon', 'file', 			
-			'forum', 'ip_to_nation', 'jquery', 'mailinglist', 'member', 'metaweblog_api',
-			'moblog', 'pages', 'query', 'referrer', 'rss', 'safecracker', 'search',
-			'simple_commerce', 'stats', 'updated_sites', 'wiki'
+			'blacklist', 'channel', 'comment', 'commerce', 'email', 'emoticon',
+			'file', 'forum', 'ip_to_nation', 'jquery', 'mailinglist', 'member',
+			'metaweblog_api', 'moblog', 'pages', 'query', 'referrer', 'rss',
+			'safecracker', 'search', 'simple_commerce', 'stats',
+			'updated_sites', 'wiki'
 		);
 		
 		
@@ -146,7 +146,6 @@ class EE_Core {
 			@chmod(APPPATH.'cache/db_cache_'.$this->EE->config->item('site_id'), DIR_WRITE_MODE);
 		}
 		
-
 		// this look backwards, but QUERY_MARKER is only used where we MUST 
 		// have a ?, and do not want to double up
 		// question marks on sites who are forcing query strings
@@ -203,7 +202,11 @@ class EE_Core {
 		define('PATH_MBR_THEMES',	PATH_THEMES.'profile_themes/'); 
 		define('PATH_CP_GBL_IMG', 	$this->EE->config->slash_item('theme_folder_url').'cp_global_images/');
 		unset($theme_path);
-
+		
+		// Define Third Party Theme Path and URL
+		define('PATH_THIRD_THEMES',	PATH_THEMES.'third_party/');
+		define('URL_THIRD_THEMES',	$this->EE->config->slash_item('theme_folder_url').'third_party/');
+		
 		// Is this a stylesheet request?  If so, we're done.
 		if (isset($_GET['css']) OR (isset($_GET['ACT']) && $_GET['ACT'] == 'css')) 
 		{
@@ -237,7 +240,6 @@ class EE_Core {
 		$this->EE->load->library('localize');
 		$this->EE->load->library('session');
 
-
 		// Load the "core" language file - must happen after the session is loaded
 		$this->EE->lang->loadfile('core');
 
@@ -265,7 +267,7 @@ class EE_Core {
 		
 		// Update system stats
 		$this->EE->load->library('stats');
-	 		
+	 	
 		if (REQ == 'PAGE' && $this->EE->config->item('enable_online_user_tracking') != 'n')
 		{
 			$this->EE->stats->update_stats();
@@ -288,7 +290,6 @@ class EE_Core {
 					$snippets[$var->snippet_name] = $var->snippet_contents;
 				}
 
-
 				// Thanks to @litzinger for the code suggestion to parse 
 				// global vars in snippets...here we go.
 
@@ -306,9 +307,9 @@ class EE_Core {
 				unset($snippets);
 				unset($fresh);
 				unset($var_keys);
-			}				
+			}
 		}
-			
+		
 		// If it's a CP request we will initialize it
 		if (REQ == 'CP')
 		{
@@ -373,7 +374,7 @@ class EE_Core {
 			if (count($theme_options) >= 2)
 			{
 				if ( ! $theme_options[0])
-				{	
+				{
 					unset($theme_options[0]);
 				}
 			}
@@ -393,7 +394,7 @@ class EE_Core {
 		$this->EE->load->library('view');
 		$this->EE->view->set_cp_theme($cp_theme);
 		
-		// Fetch control panel language file	
+		// Fetch control panel language file
 		$this->EE->lang->loadfile('cp');
 		
 		// Prevent CodeIgniter Pseudo Output variables from being parsed
@@ -407,9 +408,9 @@ class EE_Core {
 		$this->EE->load->library('cp');
 
 		// Does an admin session exist?
-		// Only the "login" class can be accessed when there isn't an admin session		
-		if ($this->EE->session->userdata('admin_sess') == 0 && 
-			$this->EE->router->fetch_class() != 'login' && 
+		// Only the "login" class can be accessed when there isn't an admin session
+		if ($this->EE->session->userdata('admin_sess') == 0 &&
+			$this->EE->router->fetch_class() != 'login' &&
 			$this->EE->router->fetch_class() != 'css')
 		{
 			// has their session Timed out and they are requesting a page?
@@ -469,7 +470,7 @@ class EE_Core {
 	{
 		$this->EE->db->db_debug = TRUE;
 		error_reporting(E_ALL);
-		@ini_set('display_errors', 1);	
+		@ini_set('display_errors', 1);
 	}
 	
 	// ------------------------------------------------------------------------
@@ -482,7 +483,7 @@ class EE_Core {
 	 */	
 	final public function generate_action($can_view_system = FALSE)
 	{
-		require APPPATH.'libraries/Actions.php';    
+		require APPPATH.'libraries/Actions.php';
 		$ACT = new EE_Actions($can_view_system);
 	}	
 	
@@ -504,7 +505,7 @@ class EE_Core {
 		
 		if ($this->EE->uri->uri_string == '' OR $this->EE->uri->uri_string == '/')
 		{
-			$template = (string)$this->EE->config->item('template');
+			$template = (string) $this->EE->config->item('template');
 			$template_group = (string) $this->EE->config->item('template_group');
 		}
 		
@@ -523,7 +524,7 @@ class EE_Core {
 			require PATH_MOD.'forum/mod.forum.php';
 			$FRM = new Forum();
 			return;
-		}			
+		}
 		
 		if ( ! IS_FREELANCER && $profile_trigger && $profile_trigger == $this->EE->uri->segment(1))
 		{
@@ -583,12 +584,11 @@ class EE_Core {
 			if ($entry_id)
 			{
 				$qry = $this->EE->db->select('t.template_name, tg.group_name')
-									->from(array('templates t', 'template_groups tg'))
-									->where('t.group_id', 'tg.group_id', FALSE)
-									->where('t.template_id',
-										$pages[$site_id]['templates'][$entry_id])
-									->get();
-
+					->from(array('templates t', 'template_groups tg'))
+					->where('t.group_id', 'tg.group_id', FALSE)
+					->where('t.template_id', $pages[$site_id]['templates'][$entry_id])
+					->get();
+				
 				if ($qry->num_rows() > 0)
 				{
 					/* 
@@ -645,18 +645,18 @@ class EE_Core {
 
 			$last_clear = $query->row('last_cache_clear') ;
 		}
-			
+		
 		if (isset($last_clear) && $this->EE->localize->now > $last_clear)
 		{
 			$data = array(
-					'last_cache_clear'	=> $this->EE->localize->now + (60*60*24*7)
-				);
+				'last_cache_clear'	=> $this->EE->localize->now + (60*60*24*7)
+			);
 
 			$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
 			$this->EE->db->update('stats', $data);
-						
+			
 			if ($this->EE->config->item('enable_throttling') == 'y')
-			{		
+			{
 				$expire = time() - 180;
 				
 				$this->EE->db->where('last_activity <', $expire);
