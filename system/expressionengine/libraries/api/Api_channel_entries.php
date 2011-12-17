@@ -1138,7 +1138,7 @@ class Api_channel_entries extends Api {
 		
 		foreach($dates as $date)
 		{
-			if ( ! is_numeric($data[$date]) && trim($data[$date]) != '')
+			if ( ! is_numeric($data[$date]) && trim($data[$date]))
 			{
 				$data[$date] = $this->EE->localize->string_to_timestamp($data[$date]);
 			}
