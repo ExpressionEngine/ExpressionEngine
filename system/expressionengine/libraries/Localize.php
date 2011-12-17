@@ -62,29 +62,27 @@ class EE_Localize {
 	/**
 	 * String to Timestamp
 	 *
-	 * Converts a human-readble date (and possibly time) to a UNIX timestamp.
-	 * Can optionally apply a DST offset if the user has DST enabled (this
-	 * enables behavior consistent with EE 2.3 until we can rely on PHP 5.2)
+	 * Converts a human-readble date (and possibly time) to a UNIX timestamp
+	 * using the current user's locale
 	 *
 	 * @access	public
 	 * @param	string	human-readable datetime
-	 * @param	bool	whether to consider DST - will likely go away!
 	 * @return	mixed	int if successful, otherwise FALSE
 	 */
-	function string_to_timestamp($human_string, $dst_offset = FALSE)
+	function string_to_timestamp($human_string)
 	{
 		// Get the user's locale so that we have a baseline for converting their
 		// written datetime to UTC, and temporarily tell PHP to use it for this
-		// conversion only. If the user hasn't specified a timezone the EE server
+		// conversion only. If the user hasn't specified a timezone, the EE server
 		// settings will be used instead.
-		if ($timezone = $this->EE->session->userdata['timezone'])
+		if ($timezone = $this->EE->session->userdata('timezone'))
 		{
 			date_default_timezone_set($this->get_php_timezone($timezone));
-			$dst = ($this->EE->session->userdata('daylight_savings')  == 'y' && $dst_offset) ? TRUE : FALSE;
+			$dst = ($this->EE->session->userdata('daylight_savings')  == 'y') ? TRUE : FALSE;
 		}
 		else
 		{
-			$dst = ($this->EE->config->item('daylight_savings')  == 'y' && $dst_offset) ? TRUE : FALSE;
+			$dst = ($this->EE->config->item('daylight_savings')  == 'y') ? TRUE : FALSE;
 		}
 
 		// Convert to timestamp; we'll get FALSE if this fails
