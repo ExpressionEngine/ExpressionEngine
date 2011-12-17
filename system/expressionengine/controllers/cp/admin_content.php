@@ -3722,7 +3722,7 @@ class Admin_content extends CI_Controller {
 			$this->javascript->output('
 				$("#edit_group_prefs").hide();
 				$("#field_label").bind("keyup keydown", function() {
-					$(this).ee_url_title("#field_name");
+					$(this).ee_url_title("#field_name", true);
 				});
 			');
 		}
