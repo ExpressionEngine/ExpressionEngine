@@ -36,7 +36,7 @@ class Date_ft extends EE_Fieldtype {
 	{
 		if ( ! is_numeric($data))
 		{
-			$data = $this->EE->localize->string_to_timestamp($data, TRUE);
+			$data = $this->EE->localize->string_to_timestamp($data);
 		}
 
 		return $data;
@@ -52,9 +52,9 @@ class Date_ft extends EE_Fieldtype {
 	 */
 	function validate($data)
 	{
-		if ( ! is_numeric($data) && $data != '')
+		if ( ! is_numeric($data) && trim($data) != '')
 		{
-			$data = $this->EE->localize->string_to_timestamp($data, TRUE);
+			$data = $this->EE->localize->string_to_timestamp($data);
 		}
 
 		if ($data === FALSE)
@@ -84,14 +84,10 @@ class Date_ft extends EE_Fieldtype {
 
 		$localize = FALSE;
 		
-		if (isset($_POST[$date_field]) && ! is_numeric($_POST[$date_field])) // string in $_POST, probably had a validation error
+		if (isset($_POST[$date_field]) && ! is_numeric($_POST[$date_field]))
 		{
-			if ($_POST[$date_field])
-			{
-				// human readable date; convert to timestamp
-				$custom_date = $_POST[$date_field];
-				$date = $this->EE->localize->string_to_timestamp($custom_date);
-			}
+			// probably had a validation error so repopulate as-is
+			$custom_date = $_POST[$date_field];
 		}
 		else
 		{
@@ -100,7 +96,7 @@ class Date_ft extends EE_Fieldtype {
 			if ( ! $field_data && ! $offset)
 			{
 				$field_data = $date;
-				
+
 				if (isset($this->settings['always_show_date']) && $this->settings['always_show_date'] == 'y')
 				{
 					$custom_date = $this->EE->localize->set_human_time($field_data, $localize);

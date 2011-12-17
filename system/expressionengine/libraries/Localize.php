@@ -85,8 +85,9 @@ class EE_Localize {
 			$dst = ($this->EE->config->item('daylight_savings')  == 'y') ? TRUE : FALSE;
 		}
 
-		// Convert to timestamp; we'll get FALSE if this fails
-		$timestamp = strtotime($human_string);
+		// Convert to timestamp. Strangely, given a string of whitespace it returns the
+		// current time rather than FALSE, so we trim here.
+		$timestamp = strtotime(trim($human_string));
 
 		// Appply DST offset?
 		if ($dst && $timestamp !== FALSE)
