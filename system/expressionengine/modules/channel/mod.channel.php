@@ -4796,29 +4796,37 @@ class Channel {
 			$sql .= $this->EE->functions->sql_andor_string($this->EE->TMPL->fetch_param('channel'), 'channel_name');
 		}
 
-		$query = $this->EE->db->query($sql);
-
-		if ($query->num_rows() != 1)
+		$cat_groups = $this->EE->db->query($sql);
+		
+		if ($cat_groups->num_rows() == 0)
 		{
-			return '';
+			return;
 		}
-
-		$group_id = $query->row('cat_group');
-		$channel_id = $query->row('channel_id');
-
+		
+		$channel_ids = array();
+		$group_ids = array();
+		foreach ($cat_groups->result_array() as $group)
+		{
+			$channel_ids[] = $group['channel_id'];
+			$group_ids[] = $group['cat_group'];
+		}
+		
+		// Combine the group IDs from multiple channels into a string
+		$group_ids = implode('|', $group_ids);
+		
 		if ($category_group = $this->EE->TMPL->fetch_param('category_group'))
 		{
 			if (substr($category_group, 0, 4) == 'not ')
 			{
 				$x = explode('|', substr($category_group, 4));
 
-				$groups = array_diff(explode('|', $group_id), $x);
+				$groups = array_diff(explode('|', $group_ids), $x);
 			}
 			else
 			{
 				$x = explode('|', $category_group);
 
-				$groups = array_intersect(explode('|', $group_id), $x);
+				$groups = array_intersect(explode('|', $group_ids), $x);
 			}
 
 			if (count($groups) == 0)
@@ -4827,7 +4835,7 @@ class Channel {
 			}
 			else
 			{
-				$group_id = implode('|', $groups);
+				$group_ids = implode('|', $groups);
 			}
 		}
 
@@ -4853,11 +4861,11 @@ class Channel {
 		{
 			$this->category_tree(
 									array(
-											'group_id'		=> $group_id,
-											'channel_id'		=> $channel_id,											
+											'group_id'		=> $group_ids,
+											'channel_ids'	=> $channel_ids,											
 											'template'		=> $this->EE->TMPL->tagdata,
 											'path'			=> $path,
-											'channel_array' 	=> '',
+											'channel_array'	=> '',
 											'parent_only'	=> $parent_only,
 											'show_empty'	=> $this->EE->TMPL->fetch_param('show_empty'),
 											'strict_empty'	=> $strict_empty
@@ -4888,7 +4896,7 @@ class Channel {
 			{
 				$query = $this->EE->db->query("SELECT field_id, field_name FROM exp_category_fields
 									WHERE site_id IN ('".implode("','", $this->EE->TMPL->site_ids)."')
-									AND group_id IN ('".str_replace('|', "','", $this->EE->db->escape_str($group_id))."')");
+									AND group_id IN ('".str_replace('|', "','", $this->EE->db->escape_str($group_ids))."')");
 
 				if ($query->num_rows() > 0)
 				{
@@ -4916,7 +4924,7 @@ class Channel {
 
 				$query = $this->EE->db->query("SELECT cat_id, parent_id
 									 FROM exp_categories
-									 WHERE group_id IN ('".str_replace('|', "','", $this->EE->db->escape_str($group_id))."')
+									 WHERE group_id IN ('".str_replace('|', "','", $this->EE->db->escape_str($group_ids))."')
 									 ORDER BY group_id, parent_id, cat_order");
 
 				$all = array();
@@ -4937,14 +4945,14 @@ class Channel {
 				$sql = "SELECT DISTINCT(exp_categories.cat_id), parent_id FROM exp_categories
 						LEFT JOIN exp_category_posts ON exp_categories.cat_id = exp_category_posts.cat_id
 						LEFT JOIN exp_channel_titles ON exp_category_posts.entry_id = exp_channel_titles.entry_id
-						WHERE group_id IN ('".str_replace('|', "','", $this->EE->db->escape_str($group_id))."') ";
+						WHERE group_id IN ('".str_replace('|', "','", $this->EE->db->escape_str($group_ids))."') ";
 		        
 
 				$sql .= "AND exp_category_posts.cat_id IS NOT NULL ";
 
 				if ($strict_empty == 'yes')
 				{
-					$sql .= "AND exp_channel_titles.channel_id = '".$channel_id."' ";
+					$sql .= "AND exp_channel_titles.channel_id IN ('".implode("','", $channel_ids)."') ";
 				}
 				else
 				{
@@ -5031,7 +5039,7 @@ class Channel {
 				$sql = "SELECT c.cat_name, c.cat_url_title, c.cat_image, c.cat_description, c.cat_id, c.parent_id {$field_sqla}
 						FROM exp_categories AS c
 						{$field_sqlb}
-						WHERE c.group_id IN ('".str_replace('|', "','", $this->EE->db->escape_str($group_id))."') ";
+						WHERE c.group_id IN ('".str_replace('|', "','", $this->EE->db->escape_str($group_ids))."') ";
 
 				if ($parent_only === TRUE)
 				{
@@ -5262,21 +5270,30 @@ class Channel {
 		{
 			$sql .= $this->EE->functions->sql_andor_string($this->EE->TMPL->fetch_param('channel'), 'channel_name');
 		}
-
-		$query = $this->EE->db->query($sql);
-
-		if ($query->num_rows() != 1)
+		
+		$cat_groups = $this->EE->db->query($sql);
+		
+		if ($cat_groups->num_rows() == 0)
 		{
-			return '';
+			return;
 		}
-
-		$group_id = $query->row('cat_group') ;
-		$channel_id = $query->row('channel_id') ;
-
-
+		
+		$group_ids = $cat_groups->row('cat_group');
+		
+		$channel_ids = array();
+		$group_ids = array();
+		foreach ($cat_groups->result_array() as $group)
+		{
+			$channel_ids[] = $group['channel_id'];
+			$group_ids[] = $group['cat_group'];
+		}
+		
+		// Combine the group IDs from multiple channels into a string
+		$group_ids = implode('|', $group_ids);
+		
 		$sql = "SELECT exp_category_posts.cat_id, exp_channel_titles.entry_id, exp_channel_titles.title, exp_channel_titles.url_title, exp_channel_titles.entry_date
 				FROM exp_channel_titles, exp_category_posts
-				WHERE channel_id = '$channel_id'
+				WHERE channel_id IN ('".implode("','", $channel_ids)."')
 				AND exp_channel_titles.entry_id = exp_category_posts.entry_id ";
 
 		$timestamp = ($this->EE->TMPL->cache_timestamp != '') ? $this->EE->TMPL->cache_timestamp : $this->EE->localize->now;
@@ -5439,8 +5456,8 @@ class Channel {
 			}
 
 			$this->category_tree(array(
-				'group_id'		=> $group_id,
-				'channel_id'	=> $channel_id,
+				'group_id'		=> $group_ids,
+				'channel_id'	=> $channel_ids,
 				'path'			=> $c_path,
 				'template'		=> $cat_chunk,
 				'channel_array' => $channel_array,
@@ -5470,7 +5487,7 @@ class Channel {
 			{
 				$query = $this->EE->db->query("SELECT field_id, field_name FROM exp_category_fields
 									WHERE site_id IN ('".implode("','", $this->EE->TMPL->site_ids)."')
-									AND group_id IN ('".str_replace('|', "','", $this->EE->db->escape_str($group_id))."')");
+									AND group_id IN ('".str_replace('|', "','", $this->EE->db->escape_str($group_ids))."')");
 
 				if ($query->num_rows() > 0)
 				{
@@ -5493,7 +5510,7 @@ class Channel {
 			$sql = "SELECT DISTINCT (c.cat_id), c.cat_name, c.cat_url_title, c.cat_description, c.cat_image, c.parent_id {$field_sqla}
 					FROM (exp_categories AS c";
 
-			if ($this->EE->TMPL->fetch_param('show_empty') != 'no' AND $channel_id != '')
+			if ($this->EE->TMPL->fetch_param('show_empty') != 'no' AND count($channel_ids))
 			{
 				$sql .= ", exp_category_posts ";
 			}
@@ -5504,19 +5521,19 @@ class Channel {
 			{
 				$sql .= " LEFT JOIN exp_category_posts ON c.cat_id = exp_category_posts.cat_id ";
 
-				if ($channel_id != '')
+				if (count($channel_ids))
 				{
 					$sql .= " LEFT JOIN exp_channel_titles ON exp_category_posts.entry_id = exp_channel_titles.entry_id ";
 				}
 			}
 
-			$sql .= " WHERE c.group_id IN ('".str_replace('|', "','", $this->EE->db->escape_str($group_id))."') ";
+			$sql .= " WHERE c.group_id IN ('".str_replace('|', "','", $this->EE->db->escape_str($group_ids))."') ";
 
 			if ($this->EE->TMPL->fetch_param('show_empty') == 'no')
 			{
-				if ($channel_id != '')
+				if (count($channel_ids))
 				{
-					$sql .= "AND exp_channel_titles.channel_id = '".$channel_id."' ";
+					$sql .= "AND exp_channel_titles.channel_id IN ('".implode("','", $channel_id)."') ";
 				}
 				else
 				{
@@ -5806,9 +5823,9 @@ class Channel {
 
 			$sql .= "AND exp_category_posts.cat_id IS NOT NULL ";
 
-			if ($channel_id != '' && $strict_empty == 'yes')
+			if (count($channel_ids) && $strict_empty == 'yes')
 			{
-				$sql .= "AND exp_channel_titles.channel_id = '".$channel_id."' ";
+				$sql .= "AND exp_channel_titles.channel_id IN ('".implode("','", $channel_id)."') ";
 			}
 			else
 			{
@@ -6673,8 +6690,7 @@ class Channel {
 			}
 			
 			$query = $this->EE->db->get();
-
-
+			
 			// no results or more than one result?  Buh bye!
 			if ($query->num_rows() != 1)
 			{
