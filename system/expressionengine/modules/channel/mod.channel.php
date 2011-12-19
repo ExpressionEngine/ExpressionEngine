@@ -726,33 +726,29 @@ class Channel {
 					}
 				}
 				
+				// Shuffle if random
 				if ($random === TRUE)
 				{
 					shuffle($new);
 				}
-				elseif ($sort == 'asc') // 1 to 10, A to Z
-				{
-					if (in_array($order, $str_sort))
-					{
-						ksort($new, $sort_flags);
-					}
-					else
-					{
-						uksort($new, 'strnatcasecmp'); 
-					}
-				}
 				else
 				{
+					// Sort keys by string comparison
 					if (in_array($order, $str_sort))
-					{
-						ksort($new, $sort_flags);
-					}
-					else
 					{
 						uksort($new, 'strnatcasecmp'); 
 					}
+					// Sort keys based on set sort flags
+					else
+					{
+						ksort($new, $sort_flags);
+					}
 					
-					$new = array_reverse($new, TRUE);
+					// Reverse sorted array if we're sorting descending
+					if ($sort != 'asc')
+					{
+						$new = array_reverse($new, TRUE);
+					}
 				}
 				
 				$output_data[$entry_id] = array_slice($new, $offset, $limit);
