@@ -1,4 +1,5 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -81,7 +82,7 @@ class EE_Core {
 		define('IS_FREELANCER',	FALSE);
 		define('APP_NAME',		'ExpressionEngine'.(IS_FREELANCER ? ' Freelancer' : ''));
 		define('APP_BUILD',		'20111017');
-		define('APP_VER',		substr($this->EE->config->item('app_version'), 0, 1).'.'.substr($this->EE->config->item('app_version'), 1, 1).'.'.substr($this->EE->config->item('app_version'), 2));
+		define('APP_VER',		'2.3.1');
 		define('SLASH',			'&#47;');
 		define('LD',			'{');
 		define('RD',			'}');

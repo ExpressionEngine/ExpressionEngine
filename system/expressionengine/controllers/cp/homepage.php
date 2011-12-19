@@ -35,31 +35,39 @@ class Homepage extends CI_Controller {
 		$this->cp->get_installed_modules();
 		$this->cp->set_variable('cp_page_title', lang('main_menu'));
 
-		$message			= FALSE;
+		$message			= array();
 		$show_notice		= $this->_checksum_bootstrap_files();
 		$allowed_templates	= $this->session->userdata('assigned_template_groups');
 		
-		$this->load->model('tools_model');
-		$unviewed_developer_logs = $this->tools_model->count_unviewed_developer_logs();
-
 		// Notices only show for super admins
 		if ($this->session->userdata['group_id'] == 1)
 		{
 			if ($this->config->item('new_version_check') == 'y')
 			{
-				$message = $this->_version_check();
+				$message[] = $this->_version_check();
 			}
+			
+			// Check to see if the config file matches the Core version constant
+			if (str_replace('.', '', APP_VER) !== $this->config->item('app_version'))
+			{
+				$config_version = 	substr($this->config->item('app_version'), 0, 1).'.'.substr($this->config->item('app_version'), 1, 1).'.'.substr($this->config->item('app_version'), 2);
+				$message[] = sprintf(lang('version_mismatch'), $config_version, APP_VER);
+			}
+			
+			// Check to see if there are any items in the developer log
+			$this->load->model('tools_model');
+			$unviewed_developer_logs = $this->tools_model->count_unviewed_developer_logs();
 			
 			if ($unviewed_developer_logs > 0 AND $message === FALSE)
 			{
-				$message = sprintf(lang('developer_logs'), $unviewed_developer_logs, BASE.AMP.'C=tools_logs'.AMP.'M=view_developer_log');
+				$message[] = sprintf(lang('developer_logs'), $unviewed_developer_logs, BASE.AMP.'C=tools_logs'.AMP.'M=view_developer_log');
 			}
 			
-			$show_notice = ($show_notice OR $message);
+			$show_notice = ($show_notice OR ! empty($message));
 		}
 		
 		$vars = array(
-			'message'			=> $message,
+			'message'			=> implode($message, "\n\n"),
 			'instructions'		=> lang('select_channel_to_post_in'),
 			'show_page_option'	=> (isset($this->cp->installed_modules['pages'])) ? TRUE : FALSE,
 			'info_message_open'	=> ($this->input->cookie('home_msg_state') != 'closed' && $show_notice) ? TRUE : FALSE,
@@ -280,12 +288,14 @@ class Homepage extends CI_Controller {
 		
 		$this->load->helper('version_helper');
 			
-		$version_file = get_version_info();	
+		$version_file = get_version_info();
 		
 		if ( ! $version_file)
 		{
-			return sprintf(lang('new_version_error'),
-							$download_url);			
+			return sprintf(
+				lang('new_version_error'),
+				$download_url
+			);
 		}
 
 		$new_release = FALSE;
