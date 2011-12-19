@@ -122,47 +122,60 @@ class Cp {
 		$cp_pad_table_template['table_open'] = '<table class="mainTable padTable" border="0" cellspacing="0" cellpadding="0">';
 
 		$user_q = $this->EE->member_model->get_member_data(
-							$this->EE->session->userdata('member_id'), 
-							array(
-								'avatar_filename', 'avatar_width', 
-								'avatar_height', 'screen_name', 'notepad', 'quick_links'));
+			$this->EE->session->userdata('member_id'), 
+			array(
+				'screen_name', 'notepad', 'quick_links',
+				'avatar_filename', 'avatar_width', 'avatar_height'
+			)
+		);
 
 		$notepad_content = ($user_q->row('notepad')) ? $user_q->row('notepad') : '';
 
 		// Global view variables
 
 		$vars =	array(
-					'cp_page_onload'		=> '',
-					'cp_page_title'			=> '',
-					'cp_breadcrumbs'		=> array(),
-					'cp_right_nav'			=> array(),
-					'cp_messages'			=> $cp_messages,
-					'cp_notepad_content'	=> $notepad_content,
-					'cp_table_template'		=> $cp_table_template,
-					'cp_pad_table_template'	=> $cp_pad_table_template,
-					'cp_theme_url'			=> $this->cp_theme_url,
-					'cp_current_site_label'	=> $this->EE->config->item('site_name'),
-					'cp_screen_name'		=> $user_q->row('screen_name'),
-					'cp_avatar_path'		=> $user_q->row('avatar_filename') ? $this->EE->config->slash_item('avatar_url').$user_q->row('avatar_filename') : '',
-					'cp_avatar_width'		=> $user_q->row('avatar_filename') ? $user_q->row('avatar_width') : '',
-					'cp_avatar_height'		=> $user_q->row('avatar_filename') ? $user_q->row('avatar_height') : '',
-					'cp_quicklinks'			=> $this->_get_quicklinks($user_q->row('quick_links')),
-					
-					'EE_view_disable'		=> FALSE,
-					'is_super_admin'		=> ($this->EE->session->userdata['group_id'] == 1) ? TRUE : FALSE,	// for conditional use in view files
-										
-					// Menu
-					'cp_menu_items'			=> $this->EE->menu->generate_menu(),
-					'cp_accessories'		=> $this->EE->accessories->generate_accessories(),
-					
-					// Sidebar state (overwritten below if needed)
-					'sidebar_state'			=> '',
-					'maincontent_state'		=> '',
+			'cp_page_onload'		=> '',
+			'cp_page_title'			=> '',
+			'cp_breadcrumbs'		=> array(),
+			'cp_right_nav'			=> array(),
+			'cp_messages'			=> $cp_messages,
+			'cp_notepad_content'	=> $notepad_content,
+			'cp_table_template'		=> $cp_table_template,
+			'cp_pad_table_template'	=> $cp_pad_table_template,
+			'cp_theme_url'			=> $this->cp_theme_url,
+			'cp_current_site_label'	=> $this->EE->config->item('site_name'),
+			'cp_screen_name'		=> $user_q->row('screen_name'),
+			'cp_avatar_path'		=> $user_q->row('avatar_filename') ? $this->EE->config->slash_item('avatar_url').$user_q->row('avatar_filename') : '',
+			'cp_avatar_width'		=> $user_q->row('avatar_filename') ? $user_q->row('avatar_width') : '',
+			'cp_avatar_height'		=> $user_q->row('avatar_filename') ? $user_q->row('avatar_height') : '',
+			'cp_quicklinks'			=> $this->_get_quicklinks($user_q->row('quick_links')),
+			
+			'EE_view_disable'		=> FALSE,
+			'is_super_admin'		=> ($this->EE->session->userdata['group_id'] == 1) ? TRUE : FALSE,	// for conditional use in view files
+								
+			// Menu
+			'cp_menu_items'			=> $this->EE->menu->generate_menu(),
+			'cp_accessories'		=> $this->EE->accessories->generate_accessories(),
+			
+			// Sidebar state (overwritten below if needed)
+			'sidebar_state'			=> '',
+			'maincontent_state'		=> '',
 		);
+		
 		
 		// global table data
 		$this->EE->session->set_cache('table', 'cp_template', $cp_table_template);
 		$this->EE->session->set_cache('table', 'cp_pad_template', $cp_pad_table_template);
+		
+		if (isset($this->EE->table))
+		{
+			// @todo We have a code order issue with accessories.
+			// If an accessory changed the table template (this happens
+			// a lot due to differences in design), we set up the CP
+			// template. Otherwise this is set in the table lib constructor.
+			$this->EE->table->set_template($cp_table_template);
+		}
+		
 		
 		// we need these paths again in my account, so we'll keep track of them
 		// kind of hacky, but before it was accessing _ci_cache_vars, which is worse
