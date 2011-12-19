@@ -319,10 +319,12 @@ class Design extends CI_Controller {
 			$this->db->query($sql.$sqlb);
 
 			$this->db->query("DELETE FROM exp_template_no_access WHERE ".str_replace('item_id', 'template_id', $sqlb));
-			$this->db->query("DELETE FROM exp_templates WHERE group_id = '$group_id'");
+			
+			$this->db->delete('exp_templates', array('group_id' => $group_id)); 
 		}
-
-		$this->db->query("DELETE FROM exp_template_groups WHERE group_id = '$group_id'");
+		
+		$this->db->delete('exp_template_groups', array('group_id' => $group_id)); 
+		$this->db->delete('exp_template_member_groups', array('template_group_id' => $group_id)); 
 
 		$this->session->set_flashdata('message_success', lang('template_group_deleted'));
 		$this->functions->redirect(BASE.AMP.'C=design'.AMP.'M=manager');
@@ -3376,7 +3378,7 @@ class Design extends CI_Controller {
 		
 		$vars['templates'] = array();
 		$displayed_groups = array();
-
+		
 		foreach ($query->result_array() as $row)
 		{
 			$displayed_groups[$row['group_id']] = $row['group_id'];
