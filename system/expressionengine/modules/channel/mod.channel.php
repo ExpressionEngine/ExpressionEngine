@@ -3549,7 +3549,7 @@ class Channel {
 					{
 						// Get category ID from URL for {if active} conditional
 						$this->EE->load->helper('segment');
-						$active_cat = ($this->dynamic_sql && $this->cat_request) ? parse_category($this->query_string) : FALSE;
+						$active_cat = ($this->pagination->dynamic_sql && $this->cat_request) ? parse_category($this->query_string) : FALSE;
 						
 						foreach ($cat_chunk as $catkey => $catval)
 						{
