@@ -248,8 +248,16 @@ class Channel_model extends CI_Model {
 			$this->db->where('author_id', $this->session->userdata['member_id']);
 		}
 		
-		// Only return an entry from a channel the user has access to
-		$this->db->where_in('channel_id', array_keys($this->session->userdata['assigned_channels']));
+		if ($allowed_channels = $this->session->userdata('assigned_channels'))
+		{
+			// Only return an entry from a channel the user has access to
+			$this->db->where_in('channel_id', array_keys($allowed_channels));
+		}
+		// Return FALSE if user does not have access to any channels
+		else
+		{
+			return FALSE;
+		}
 		
 		$entry = $this->db->get($table, 1);
 		
