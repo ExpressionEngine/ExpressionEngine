@@ -247,15 +247,18 @@ class Channel_model extends CI_Model {
 		{
 			$this->db->where('author_id', $this->session->userdata['member_id']);
 		}
-
-		$q = $this->db->get($table, 1);
-
+		
+		// Only return an entry from a channel the user has access to
+		$this->db->where_in('channel_id', array_keys($this->session->userdata['assigned_channels']));
+		
+		$entry = $this->db->get($table, 1);
+		
 		// Return the result if we found anything
-		if ($q->num_rows() > 0)
+		if ($entry->num_rows() > 0)
 		{
 			reset($fields);  // Needed due to a 5.2.1 bug (#40705)
 
-			return (count($fields) > 1) ? $q->row_array() : $q->row(current($fields));
+			return (count($fields) > 1) ? $entry->row_array() : $entry->row(current($fields));
 		}
 		
 		return FALSE;
