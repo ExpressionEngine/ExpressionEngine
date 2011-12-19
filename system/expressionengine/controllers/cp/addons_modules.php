@@ -273,7 +273,7 @@ class Addons_modules extends CI_Controller {
 		{
 			if ( ! isset($installed[$module]))
 			{
-				show_error(lang('requested_module_not_installed'));
+				show_error(lang('requested_module_not_installed').NBS.$module);
 			}
 		}
 
