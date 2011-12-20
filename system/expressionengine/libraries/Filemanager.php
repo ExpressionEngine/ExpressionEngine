@@ -789,7 +789,14 @@ class Filemanager {
 		// Generate the filters
 		// $vars['selected_filters'] = form_dropdown('selected', array('all' => lang('all'), 'selected' => lang('selected'), 'unselected' => lang('unselected')), 'all');
 		// $vars['category_filters'] = form_dropdown('category', array());
-		$vars['view_filters']     = form_dropdown('view_type', array('list' => lang('list'), 'thumb' => lang('thumbnails')), 'list', 'id="view_type"');
+		$vars['view_filters'] = form_dropdown(
+			'view_type',
+			array(
+				'list' => lang('list'),
+				'thumb' => lang('thumbnails')
+			),
+			'list', 'id="view_type"'
+		);
 
 		$filebrowser_html = $this->EE->load->ee_view('_shared/file/browser', $vars, TRUE);
 		
@@ -1221,8 +1228,9 @@ class Filemanager {
 			// If the original is smaller than the thumb hxw, we'll make a copy rather than upsize
 			if (($force_master_dim == 'height' && $prefs['height'] < $size['height']) OR 
 				($force_master_dim == 'width' && $prefs['width'] < $size['width']) OR
-				($force_master_dim == FALSE && $prefs['width'] < $size['width']) OR 
-				($force_master_dim == FALSE && $prefs['height'] < $size['height']) OR
+				($force_master_dim == FALSE && (
+					$prefs['width'] < $size['width'] && $prefs['height'] < $size['height']
+				) OR
 				$size['resize_type'] == 'none')
 			{
 				copy($config['source_image'],$config['new_image']);
