@@ -46,7 +46,6 @@ class File_model extends CI_Model {
 	 */
 	function get_files($dir_id = array(), $parameters = array())
 	{
-		
 		// Setup default parameters
 		$parameters = array_merge(array(
 			'type' => 'all',
@@ -182,28 +181,18 @@ class File_model extends CI_Model {
 			'title' => '',
 			'upload_location_id' => '',
 			'rel_path' => '',
-			'status' => '',
 			'mime_type' => '',
 			'file_name' => '',
 			'file_size' => '',
 			'description' => '',
 			'credit' => '',
 			'location' => '',
-			'metadata' => '',
 			'uploaded_by_member_id' => '',
 			'upload_date' => '',
 			'modified_by_member_id' => '',
 			'modified_date' => '',
 			'file_hw_original' => ''
 		);
-
-		// Add 6 custom fields
-		for ($i = 1; $i <= 6; $i++)
-		{
-			$valid_keys["field_{$i}"] = '';
-			$valid_keys["field_{$i}_fmt"] = '';
-			$data["field_{$i}_fmt"] = (isset($data["field_{$i}_fmt"]) && $data["field_{$i}_fmt"] != '') ? $data["field_{$i}_fmt"] : 'xhtml';
-		}
 		
 		// Remove data that can't exist in the database
 		$data = array_intersect_key($data, $valid_keys);
@@ -218,9 +207,7 @@ class File_model extends CI_Model {
 		{
 			$data['modified_date'] = $this->localize->now;
 		}
-			
-		$data['status'] = ( ! isset($data['status'])) ? 'o' : $data['status'];
-		
+				
 		if (isset($data['file_name']) OR isset($data['title']))
 		{
 			$data['title'] = ( ! isset($data['title'])) ? $data['file_name'] : $data['title'];
