@@ -1228,8 +1228,8 @@ class Filemanager {
 			// If the original is smaller than the thumb hxw, we'll make a copy rather than upsize
 			if (($force_master_dim == 'height' && $prefs['height'] < $size['height']) OR 
 				($force_master_dim == 'width' && $prefs['width'] < $size['width']) OR
-				($force_master_dim == FALSE && (
-					$prefs['width'] < $size['width'] && $prefs['height'] < $size['height']
+				($force_master_dim == FALSE &&
+					($prefs['width'] < $size['width'] && $prefs['height'] < $size['height'])
 				) OR
 				$size['resize_type'] == 'none')
 			{
