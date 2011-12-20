@@ -158,7 +158,15 @@ class EE_Core {
 			is_numeric($last_site_id) && 
 			$last_site_id != $this->EE->config->item('site_id'))
 		{
+			// If they are already setting cookies with a specified domain, keep using it in this backend
+			$current_cookie_domain = $this->EE->config->item('cookie_domain');
+
 			$this->EE->config->site_prefs('', $last_site_id);
+
+			if ($current_cookie_domain != FALSE && $current_cookie_domain != '')
+			{
+				$this->EE->config->cp_cookie_domain = $current_cookie_domain;
+			}
 		}
 		
 		// This allows CI compatibility		 

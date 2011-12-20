@@ -62,7 +62,21 @@ class Template_model extends CI_Model {
 		}
 
 		$this->db->insert('template_groups', $data);
-		return $this->db->insert_id();
+		
+		$template_group_id = $this->db->insert_id();
+		
+		// If a user other than Super Admin is creating a template group, give them
+		// access to the group they just created
+		if ($this->session->userdata['group_id'] != 1)
+		{
+			$data = array();
+			$data['group_id'] = $this->session->userdata['group_id'];
+			$data['template_group_id'] = $template_group_id;
+			
+			$this->db->insert('template_member_groups', $data);
+		}
+		
+		return $template_group_id;
 	}
 
 	// --------------------------------------------------------------------
