@@ -160,7 +160,16 @@ class Sites extends CI_Controller {
 		
 		// This is just way too simple.
 		
+		// If they are already setting cookies with a specified domain, keep using it in this backend
+		$current_cookie_domain = $this->config->item('cookie_domain');
+		
 		$this->config->site_prefs('', $site_id);
+		
+		if ($current_cookie_domain != FALSE && $current_cookie_domain != '')
+		{
+			$this->config->cp_cookie_domain = $current_cookie_domain;
+		}
+		
 		$this->functions->set_cookie('cp_last_site_id', $site_id, 0);
 		
 		$this->functions->redirect($page);
