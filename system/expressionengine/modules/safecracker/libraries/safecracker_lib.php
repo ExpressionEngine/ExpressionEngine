@@ -355,7 +355,12 @@ class Safecracker_lib
 				if ($this->datepicker)
 				{
 					$default_date = (($this->entry($field_name)) ? $this->entry($field_name) : $this->EE->localize->now) * 1000;
-					$this->EE->javascript->output('$(\'input[name="'.$field_name.'"]\').datepicker({defaultDate: new Date('.$default_date.')});');
+					$this->EE->javascript->output('
+						$(\'input[name="'.$field_name.'"]\').datepicker({
+							constrainInput: false,
+							defaultDate: new Date('.$default_date.')
+						});
+					');
 				}
 				
 				//$custom_field_variables_row['field_data'] = $this->EE->localize->set_human_time($this->EE->localize->offset_entry_dst($this->entry($field_name), $this->entry('dst_enabled'), FALSE));
@@ -1486,7 +1491,7 @@ class Safecracker_lib
 				if ($this->entry($field) && ! is_numeric($this->entry($field)))
 				{
 					//$this->entry[$field] = $this->EE->localize->offset_entry_dst($this->EE->localize->convert_human_date_to_gmt($this->entry($field)), $this->entry('dst_enabled'), FALSE);
-					$this->entry[$field] = $this->EE->localize->convert_human_date_to_gmt($this->entry($field));
+					$this->entry[$field] = $this->EE->localize->string_to_timestamp($this->entry($field));
 				}
 			}
 			
@@ -2872,7 +2877,7 @@ class Safecracker_lib
 	
 	public function valid_ee_date($data)
 	{
-		return (is_numeric($this->EE->localize->convert_human_date_to_gmt($data)));
+		return (strtotime($data) !== FALSE);
 	}
 	
 	// --------------------------------------------------------------------
