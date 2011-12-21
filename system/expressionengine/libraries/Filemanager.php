@@ -757,8 +757,6 @@ class Filemanager {
 	 */
 	function setup()
 	{
-		$vars = array();
-		
 		if (REQ != 'CP')
 		{
 			$this->EE->load->helper('form');
@@ -797,13 +795,76 @@ class Filemanager {
 			),
 			'list', 'id="view_type"'
 		);
-
+		
+		$data = $this->datatables(key($vars['filemanager_directories']));
+		$vars = array_merge($vars, $data);
+		
 		$filebrowser_html = $this->EE->load->ee_view('_shared/file/browser', $vars, TRUE);
 		
 		die($this->EE->javascript->generate_json(array(
 			'manager'		=> str_replace(array("\n", "\t"), '', $filebrowser_html),	// reduces transfer size
 			'directories'	=> $vars['filemanager_directories']
 		)));
+	}
+	
+	public function datatables($first_dir = NULL)
+	{
+		$this->EE->load->model('file_model');
+		
+		// Argh
+		$this->EE->_mcp_reference = $this;
+		
+		$this->EE->load->library('table');
+		// @todo put .AMP. back ...
+		$this->EE->table->set_base_url('C=content_publish&M=filemanager_actions&action=directory_contents');
+		$this->EE->table->set_columns(array(
+			'file_name' => array('header' => lang('name')),
+			'file_size'	=> array('header' => lang('size')),
+			'mime_type'	=> array('header' => lang('kind')),
+			'date'		=> array('header' => lang('date'))
+		));
+		
+		$per_page = $this->EE->input->get_post('per_page');
+		$dir_id = $this->EE->input->get_post('dir_choice');
+		
+		
+		$state = array('sort' => array('file_name' => 'desc'));
+		$params = array(
+			'per_page' => $per_page ? $per_page : 15,
+			'dir_id' => $dir_id
+		);
+		
+		if ($first_dir)
+		{
+			// @todo rename
+			$this->EE->table->force_initial_load();
+			
+			$params['dir_id'] = $first_dir;
+		}
+		
+		$data = $this->EE->table->datasource('_file_datasource', $state, $params);		
+		
+		// End Argh
+		$this->EE->_mcp_reference = $this->EE;
+		
+		return $data;
+	}
+	
+	public function _file_datasource($state, $params)
+	{
+		$per_page = $params['per_page'];
+
+		$dirs = $this->directories(FALSE, TRUE);
+		$dir = $dirs[$params['dir_id']];		
+
+		return array(
+			'rows' => $this->_get_files($dir, $per_page, $state['offset']),
+			'no_results' => lang('no_uploaded_files'),
+			'pagination' => array(
+				'per_page' => $per_page,
+				'total_rows' => $this->EE->file_model->count_files($params['dir_id'])
+			)
+		);
 	}
 
 	// --------------------------------------------------------------------
@@ -909,6 +970,8 @@ class Filemanager {
 	 */
 	function directory_contents()
 	{
+		$this->datatables();
+		
 		$dir_id = $this->EE->input->get('directory_id');
 		$dir = $this->directory($dir_id, FALSE, TRUE);
 		
@@ -1592,7 +1655,7 @@ class Filemanager {
 		{
 			$dirs[$dir['id']] = $dir;
 		}
-		
+				
 		return $dirs;
 	}
 	

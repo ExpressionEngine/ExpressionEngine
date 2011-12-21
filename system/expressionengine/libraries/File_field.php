@@ -416,6 +416,8 @@ class File_field {
 	 */
 	private function _browser_javascript($endpoint_url)
 	{
+		$this->EE->cp->add_js_script('plugin', array('tmpl', 'ee_table'));
+		
 		// Include dependencies
 		$this->EE->cp->add_js_script(array(
 			'file'		=> array(

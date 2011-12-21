@@ -14,27 +14,7 @@
 	
 	<div id="file_browser_body" class="">
 	
-		<table class="mainTable padTable" id="tableView" border="0" cellspacing="0" cellpadding="0">
-			<thead>
-				<tr>
-					<th><?=lang('name')?></th>
-					<th><?=lang('size')?></th>
-					<th><?=lang('kind')?></th>
-					<th><?=lang('date')?></th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr id="noFilesRowTmpl">
-					<td colspan="4"><?=lang('no_uploaded_files')?></td>
-				</tr>
-				<tr id="rowTmpl">
-					<td><a href="#" title="${file_name}" onclick="$.ee_filebrowser.placeImage('${file_id}'); return false;">${file_name}</a></td>
-					<td>${file_size}</td>
-					<td>${mime_type}</td>
-					<td>${date}</td>
-				</tr>
-			</tbody>
-		</table>
+		<?=$table_html?>
 		
 		<script type="text/x-jquery-tmpl" id="thumbTmpl">
 			<a title="${file_name}" href="#" onclick="$.ee_filebrowser.placeImage('${file_id}'); return false;" class="file_browser_thumbnail">
@@ -45,20 +25,8 @@
 	</div>
 	
 	<div id="file_browser_footer">
-		<div id="paginationTmpl">
-			<p id="pagination_meta">
-				<?=sprintf(lang('pagination_filter_text'), $view_filters).NBS;?>
-				<br /><?=sprintf(lang('pagination_count_text'), '${pages_from}', '${pages_to}', '${pages_total}');?>
-			</p>
-			<p id="paginationLinks">
-				{{if pagination_needed}}
-					{{html previous}}
-					{{html dropdown}}
-					{{html next}}
-				{{/if}}
-			</p>
-			
-		</div>
+		<?=sprintf(lang('pagination_filter_text'), $view_filters).NBS?>
+		<?=$pagination_html?>
 	</div>
 </div>
 

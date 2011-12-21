@@ -205,7 +205,7 @@
 		file_uploader.dialog('close');
 		
 		// Close filebrowser
-		$.ee_filebrowser.clean_up(current_file, '');
+		$.ee_filebrowser.clean_up(current_file);
 	};
 	
 	// --------------------------------------------------------------------
