@@ -60,7 +60,7 @@ $lang = array(
 'This page lets you manage your custom main navigation buttons.  The buttons you add are viewable only by you.',
 
 'main_menu_manager_description_more' =>
-'Note: You can not make buttons for top-level pages since tabs already exist for them.',
+'Note: You cannot make buttons for top-level pages since tabs already exist for them.',
 
 'main_menu_manager_instructions' =>
 'To add a new main menu button, first visit the destination page, then click the \'+ Add\' link at the top right of the main navigation.',
@@ -87,7 +87,7 @@ $lang = array(
 'Tab URL',
 
 'can_not_edit' =>
-'(can not be altered)',
+'(cannot be altered)',
 
 'new_tab_url' =>
 'New Tab URL',
@@ -204,7 +204,7 @@ $lang = array(
 'Date of Most Recent Comment',
 
 'can_not_view_superadmin_profile' =>
-'You can not view the profile of a Super Admin',
+'You cannot view the profile of a Super Admin',
 
 'only_self_notpad_access' =>
 'You are not allowed to access another member\'s notepad',
@@ -438,7 +438,7 @@ $lang = array(
 'The password you submitted must be at least %x characters long',
 
 'username_password_too_long' =>
-'Usernames and passwords can not be over 32 characters in length',
+'Usernames and passwords cannot be over 32 characters in length',
 
 'username_taken' =>
 'The username you chose is not available',
@@ -453,7 +453,7 @@ $lang = array(
 'The email you chose is not valid',
 
 'password_based_on_username' =>
-'The password can not be based on the username',
+'The password cannot be based on the username',
 
 'username_changed' =>
 'Username was changed to:',

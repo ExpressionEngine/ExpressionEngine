@@ -1441,7 +1441,7 @@ class Member_settings extends Member {
 		}
 
 		/** -------------------------------------
-		/**  Display error is there are any
+		/**  Display errors if there are any
 		/** -------------------------------------*/
 
 		if (count($VAL->errors) > 0)

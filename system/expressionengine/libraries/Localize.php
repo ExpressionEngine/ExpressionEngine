@@ -54,7 +54,7 @@ class EE_Localize {
 		$this->zones		= $this->zones();
 
 		// Align PHP's default timezone with EE's server timezone setting
-		date_default_timezone_set($this->get_php_timezone($this->EE->config->item('server_timezone')));
+		date_default_timezone_set($this->_get_php_timezone($this->EE->config->item('server_timezone')));
 	}
 	
 	// --------------------------------------------------------------------
@@ -77,7 +77,7 @@ class EE_Localize {
 		// settings will be used instead.
 		if ($timezone = $this->EE->session->userdata('timezone'))
 		{
-			date_default_timezone_set($this->get_php_timezone($timezone));
+			date_default_timezone_set($this->_get_php_timezone($timezone));
 			$dst = ($this->EE->session->userdata('daylight_savings')  == 'y') ? TRUE : FALSE;
 		}
 		else
@@ -96,7 +96,7 @@ class EE_Localize {
 		}
 
 		// Back to EE server setting
-		date_default_timezone_set($this->get_php_timezone($this->EE->config->item('server_timezone')));
+		date_default_timezone_set($this->_get_php_timezone($this->EE->config->item('server_timezone')));
 
 		return $timestamp;
 	}
@@ -1012,23 +1012,23 @@ class EE_Localize {
 	 * Returns the PHP timezone for a given EE-format timezone.
 	 * For example, given "UM5" it returns "America/New_York"
 	 *
-	 * @access	public
+	 * @access	private
 	 * @param	string
 	 * @return	string
 	 */
-	function get_php_timezone($zone = '')
+	private function _get_php_timezone($zone)
 	{
 		$zones = array(
 			'UM12'		=> 'Kwajalein', 					// -12
 			'UM11'		=> 'Pacific/Midway', 				// -11
 			'UM10'		=> 'Pacific/Honolulu', 				// -10
-			'UM95'		=> '', 								// -9.5 (who knows?)
+			'UM95'		=> 'Pacific/Marquesas',				// -9.5
 			'UM9'		=> 'America/Anchorage', 			// -9
 			'UM8'		=> 'America/Los_Angeles', 			// -8
 			'UM7'		=> 'America/Denver', 				// -7
 			'UM6'		=> 'America/Tegucigalpa', 			// -6
 			'UM5'		=> 'America/New_York', 				// -5
-			'UM45'		=> '', 								// -4.5 (who knows?)
+			'UM45'		=> 'America/Caracas',				// -4.5
 			'UM4'		=> 'America/Halifax', 				// -4
 			'UM35'		=> 'America/St_Johns', 				// -3.5
 			'UM3'		=> 'America/Argentina/Buenos_Aires',// -3
@@ -1048,17 +1048,17 @@ class EE_Localize {
 			'UP65'		=> 'Asia/Rangoon', 					// +6.5
 			'UP7'		=> 'Asia/Krasnoyarsk', 				// +7
 			'UP8'		=> 'Asia/Brunei', 					// 8
-			'UP875'		=> '', 								// +8.75 (who knows?)
+			'UP875'		=> 'Australia/Eucla',				// +8.75
 			'UP9'		=> 'Asia/Seoul', 					// +9
 			'UP95'		=> 'Australia/Darwin', 				// +9.5
 			'UP10'		=> 'Australia/Canberra', 			// +10
-			'UP105'		=> '', 								// +10.5 (who knows?)
+			'UP105'		=> 'Australia/Lord_Howe',			// +10.5
 			'UP11'		=> 'Asia/Magadan', 					// +11
-			'UP115'		=> '', 								// +11.5 (who knows?)
+			'UP115'		=> 'Pacific/Norfolk',				// +11.5
 			'UP12'		=> 'Pacific/Fiji', 					// +12
-			'UP1275'	=> '', 								// +12.75 (who knows?)
+			'UP1275'	=> 'Pacific/Chatham',				// +12.75
 			'UP13'		=> 'Pacific/Tongatapu', 			// +13
-			'UP14'		=> '' 								// +14 (who knows?)
+			'UP14'		=> 'Pacific/Kiritimati'				// +14
 		);
 
 		// Fall back to UTC if something went wrong

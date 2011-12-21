@@ -1380,14 +1380,10 @@ class Member {
 
 		// Are you who you say you are, or someone sitting at someone
 		// else's computer being mean?!
-		$query = $this->EE->db->select('password')
-							  ->where('member_id', $this->EE->session->userdata('member_id'))
-							  ->get('members');
-						
-		$this->EE->load->helper('security');
-		$password = do_hash(stripslashes($this->EE->input->post('password')));
+		$this->EE->load->library('auth');
 
-		if ($query->row('password') != $password)
+		if ( ! $this->EE->auth->authenticate_id($this->EE->session->userdata('member_id'),
+											 	$this->EE->input->post('password')))
 		{
 			$this->EE->session->save_password_lockout($this->EE->session->userdata('username'));
 

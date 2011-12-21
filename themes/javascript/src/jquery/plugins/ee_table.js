@@ -67,12 +67,18 @@ $.widget('ee.table', {
 	
 	// jQuery ui widget constructor
 	_create: function() {
-		
+				
 		var self = this,
 			options = self.options;
 
 		// cache content parent and no results
 		self.tbody = self.element.find('tbody');
+		
+		if ( ! self.tbody.size()) {
+			self.tbody = $('<tbody/>');
+			self.element.append(self.tbody);
+		}
+		
 		self.no_results = $('<div />').html(options.no_results);
 		
 		// check if we need no results to begin with
@@ -109,6 +115,20 @@ $.widget('ee.table', {
 		
 		// bind create event (@todo consider ditching, pretty much impossible to bind on)
 		self._trigger('create', null, self._ui( { data: cache_data } ));
+	},
+	
+	/**
+	 * Get container (tbody)
+	 */
+	get_container: function() {
+		return this.tbody;
+	},
+	
+	/**
+	 * Set container
+	 */
+	set_container: function(el) {
+		this.tbody = $(el);
 	},
 	
 	/**
@@ -254,11 +274,15 @@ $.widget('ee.table', {
 		// the correct data =)
 		success = function(res) {
 			self._current_data = res;
-			
+						
 			// @todo only remove those that are not in the result set?
 			if ( ! res.rows.length) {
-				self.element.hide();
-				self.element.after(self.no_results);
+				if (self.tbody.is('tbody')) {
+					self.element.hide();
+					self.element.after(self.no_results);	
+				} else {
+					self.tbody.html(self.no_results);
+				}
 			} else {
 				self.element.show();
 				self.tbody.html(res.html_rows);
@@ -556,7 +580,7 @@ Pagination.prototype = {
 			return;
 		}
 		
-		this.els.html(data);
+		this.els.html(data).show();
 	},
 	
 	/**
@@ -629,13 +653,12 @@ function Sort(options, plugin) {
 	
 	// cache all headers and check if we want
 	// them to be sortable
+	
 	this.headers.each(function() {
 		var el = $(this),
 			short_name = el.data('table_column');
-		
 		self.header_map[ short_name ] = el;
 		
-		// sortable?
 		el.data('sortable', options.columns[short_name].sort);
 	});
 	

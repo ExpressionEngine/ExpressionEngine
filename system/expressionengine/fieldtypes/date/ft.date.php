@@ -87,7 +87,7 @@ class Date_ft extends EE_Fieldtype {
 		if (isset($_POST[$date_field]) && ! is_numeric($_POST[$date_field]))
 		{
 			// probably had a validation error so repopulate as-is
-			$custom_date = $_POST[$date_field];
+			$custom_date = $this->EE->input->post($date_field, TRUE);
 		}
 		else
 		{
@@ -156,7 +156,7 @@ class Date_ft extends EE_Fieldtype {
 
 		if ( ! in_array($this->field_name, $special))
 		{
-			$localized = ( ! isset($_POST[$date_local])) ? (($localize == FALSE) ? 'n' : 'y') : $_POST[$date_local];
+			$localized = ( ! isset($_POST[$date_local])) ? (($localize == FALSE) ? 'n' : 'y') : $this->EE->input->post($date_local, TRUE);
 
 			$localized_opts	= array(
 				'y' => $this->EE->lang->line('localized_date'),

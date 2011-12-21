@@ -32,6 +32,7 @@ class EE_Table extends CI_Table {
 	
 	protected $jq_template = FALSE;
 	
+	protected $no_ajax = FALSE;
 	protected $sort = array();
 	protected $page_offset = array();
 	protected $column_config = array();
@@ -70,6 +71,11 @@ class EE_Table extends CI_Table {
 	function set_base_url($url)
 	{
 		$this->base_url = $url;
+	}
+	
+	function force_initial_load()
+	{
+		$this->no_ajax = TRUE;
 	}
 	
 	// --------------------------------------------------------------------
@@ -149,7 +155,7 @@ class EE_Table extends CI_Table {
 			$this->no_results = $data['no_results'];
 		}
 		
-		if (AJAX_REQUEST)
+		if ( ! $this->no_ajax && AJAX_REQUEST)
 		{
 			// do we need to apply a cell function?
 			if ($this->function)
@@ -169,7 +175,7 @@ class EE_Table extends CI_Table {
 		{
 			$this->sort[] = array($k, $v);
 		}
-		
+				
 		// set our initial offset
 		$this->page_offset = $settings['offset'];
 		
@@ -502,7 +508,19 @@ class EE_Table extends CI_Table {
 		$this->pagination_tmpl = $temp;
 		unset($temp);
 		
-		return $this->EE->pagination->create_links();
+		$initial = $this->EE->pagination->create_links();
+		
+		if ($initial == '')
+		{
+			$initial = str_replace(
+				$this->uniqid,
+				$this->uniqid.' js_hide',
+				$p->full_tag_open
+			);
+			$initial .= $p->full_tag_close;
+		}
+		
+		return $initial;
 	}
 }
 
