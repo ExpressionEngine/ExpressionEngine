@@ -625,11 +625,12 @@ class Member_model extends CI_Model {
 				$this->db->update('channel_titles', array('author_id' => $heir_id));
 				
 				// Get new member stats for updating
-				$this->db->select('count(entry_id) AS count, MAX(entry_date)');
+				$this->db->select('count(entry_id) AS count, MAX(entry_date) as entry_date');
 				$this->db->where('author_id', $heir_id);
 				$new_stats = $this->db->get('channel_titles')->row_array();
 				
 				// Update member stats
+				$this->db->where('member_id', $heir_id);
 				$this->db->update('members', array(
 					'total_entries' => $new_stats['count'],
 					'last_entry_date' => $new_stats['entry_date']
