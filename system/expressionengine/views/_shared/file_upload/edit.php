@@ -2,6 +2,7 @@
 
 <div class="upload_edit">
 	<?=form_open('C=content_files_modal'.AMP.'M=edit_file', array('id' => 'edit_file_metadata'), $hidden)?>
+		<p><input type="submit" name="Submit" value="Submit" id="Submit" /></p>
 		<ul class="panel-menu group">
 			<?php foreach ($tabs as $index => $tab): ?>
 				<li class="<?=($index == 0) ? 'current' : ''?>">
@@ -37,6 +38,7 @@
 									'id'			=> 'resize_height',
 									'data-default'	=> $file['dimensions'][0]
 								))?>
+								<?=form_hidden('resize_height_default', $file['dimensions'][0])?>
 							</li>
 							<li>
 								<?=lang('resize_width', 'resize_width')?>
@@ -46,6 +48,7 @@
 									'id'			=> 'resize_width',
 									'data-default'	=> $file['dimensions'][1]
 								))?>
+								<?=form_hidden('resize_width_default', $file['dimensions'][1])?>
 							</li>
 						</ul>
 					</fieldset>
@@ -58,7 +61,7 @@
 										  // the image lib rotates counter-clockwise ?>
 									<?=form_radio(array(
 										'name'	=> 'rotate',
-										'value'	=> '270'
+										'value'	=> 270
 									))?>
 									<?=lang('rotate_90r')?>
 								</label>
@@ -67,7 +70,7 @@
 								<label>
 									<?=form_radio(array(
 										'name'	=> 'rotate',
-										'value'	=> '90'
+										'value'	=> 90
 									))?>
 									<?=lang('rotate_90l')?>
 								</label>
