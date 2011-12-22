@@ -7,7 +7,7 @@ $lang = array(
 //----------------------------
 
 'url_title_is_index' =>
-'The URL Title can not be called \'index\'',
+'The URL Title cannot be called \'index\'',
 
 'no_related_entries' =>
 'No entries exist for this related channel',
@@ -258,7 +258,7 @@ $lang = array(
 'Entry Date',
 
 'url_title_is_numeric' =>
-'Numbers can not be used as URL Titles',
+'Numbers cannot be used as URL Titles',
 
 'unable_to_create_url_title' =>
 'Unable to create valid URL Title for your entry',

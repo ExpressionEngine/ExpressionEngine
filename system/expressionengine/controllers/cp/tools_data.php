@@ -465,7 +465,7 @@ class Tools_data extends CI_Controller {
 					$new_sql = $sql." LIMIT ".$row.", ".$row_limit;
 
 					// magically delicious SQL_CALC_FOUND_ROWS method for MySQL 4 and above
-					$new_sql = preg_replace("/^(\s*SELECT)/", "\\1 SQL_CALC_FOUND_ROWS ", strtoupper($new_sql));
+					$new_sql = preg_replace("/^(\s*SELECT)/", "\\1 SQL_CALC_FOUND_ROWS ", $new_sql);
 
 					if ( ! $query = $this->db->query($new_sql))
 					{
