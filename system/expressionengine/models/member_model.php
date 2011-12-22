@@ -549,7 +549,8 @@ class Member_model extends CI_Model {
 			'message_data'			=> 'sender_id',
 			'message_folders'		=> 'member_id',
 			'message_listed'		=> 'member_id',
-			'message_listed'		=> 'listed_member'
+			'message_listed'		=> 'listed_member',
+			'message_copies'		=> 'recipient_id'
 		);
 		
 		// Loop through tables array and clear out based on member ID
@@ -570,6 +571,10 @@ class Member_model extends CI_Model {
 		$this->db->where_in('sender_id', $member_ids);
 		$messages = $this->db->get('message_copies');
 		
+		// Now that we know which recipients are affected, we can delete the
+		// member-to-be-deleted's messages...
+		$this->db->where_in('sender_id', $member_ids)->delete('message_copies');
+		
 		if ($messages->num_rows())
 		{
 			// Build recipient IDs array
@@ -578,27 +583,26 @@ class Member_model extends CI_Model {
 				$recipient_ids[] = $message['recipient_id'];
 			}
 			
-			// Now we can delete the member's private messages...
-			$this->db->where_in('sender_id', $member_ids)->delete('message_copies');
-			
 			// ...and get the new unread count for the affected users
 			$this->db->select('count(*) as count, recipient_id');
 			$this->db->where('message_read', 'n');
-			$this->db->where_in('recipient_id', $member_ids);
+			$this->db->where_in('recipient_id', $recipient_ids);
 			$this->db->group_by('recipient_id');
 			$unread_messages = $this->db->get('message_copies');
+			
+			// Set everyone's unread message count to zero first, because if a user
+			// has zero messages now, they won't have shown up in the above query
+			$this->db->where_in('member_id', $recipient_ids);
+			$this->db->update('members', array('private_messages' => 0));
 			
 			// For each user, update their private messages unread count with
 			// what we gathered above
 			foreach ($unread_messages->result_array() as $message)
 			{
-				$this->db->where('recipient_id', $message['recipient_id']);
+				$this->db->where('member_id', $message['recipient_id']);
 				$this->db->update('members', array('private_messages' => $message['count']));
 			}
 		}
-		
-		// Finally, delete private messages
-		$this->db->where_in('sender_id', $member_ids)->delete('message_copies');
 		
 		// ---------------------------------------------------------------
 		// Get member's channel entries, reassign them to the entries heir
