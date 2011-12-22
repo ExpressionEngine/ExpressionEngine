@@ -740,6 +740,8 @@ class Members extends CI_Controller {
 		}
 		
 		// If we got this far we're clear to delete the members
+		$this->load->model('member_model');
+		$this->member_model->delete_member($mids, $this->input->post('heir'));
 		
 		/** ----------------------------------
 		/**  Email notification recipients
@@ -795,9 +797,6 @@ class Members extends CI_Controller {
 				}
 			}
 		}
-		
-		$this->load->model('member_model');
-		$this->member_model->delete_member($mids, $this->input->post('heir'));
 		
 		/* -------------------------------------------
 		/* 'cp_members_member_delete_end' hook.

@@ -547,8 +547,9 @@ class Member_model extends CI_Model {
 			'member_data'			=> 'member_id',
 			'member_homepage'		=> 'member_id',
 			'message_data'			=> 'sender_id',
-			'message_folders'		=> 'sender_id',
-			'message_listed'		=> 'sender_id'
+			'message_folders'		=> 'member_id',
+			'message_listed'		=> 'member_id',
+			'message_listed'		=> 'listed_member'
 		);
 		
 		// Loop through tables array and clear out based on member ID
@@ -584,7 +585,7 @@ class Member_model extends CI_Model {
 			$this->db->select('count(*) as count, recipient_id');
 			$this->db->where('message_read', 'n');
 			$this->db->where_in('recipient_id', $member_ids);
-			$this->gb->group_by('recipient_id');
+			$this->db->group_by('recipient_id');
 			$unread_messages = $this->db->get('message_copies');
 			
 			// For each user, update their private messages unread count with
@@ -608,6 +609,8 @@ class Member_model extends CI_Model {
 		$this->db->select('entry_id, channel_id');
 		$this->db->where_in('author_id', $member_ids);
 		$entries = $this->db->get('channel_titles');
+		
+		$channel_ids = array();
 		
 		if ($entries->num_rows())
 		{
@@ -655,7 +658,7 @@ class Member_model extends CI_Model {
 		$entries = $this->db->get('comments');
 		
 		$entry_ids = array();
-		foreach ($query->result_array() as $row)
+		foreach ($entries->result_array() as $row)
 		{
 			// Entries to update
 			$entry_ids[] = $row['entry_id'];
@@ -679,7 +682,7 @@ class Member_model extends CI_Model {
 		// Forum Clean-Up
 		// ---------------------------------------------------------------
 		
-		if ($this->EE->config->item('forum_is_installed') == "y")
+		if ($this->config->item('forum_is_installed') == "y")
 		{
 			// Forum tables to clean up
 			$forum_tables_fields = array(
