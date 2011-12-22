@@ -1016,7 +1016,7 @@ class EE_Localize {
 	 * @param	string
 	 * @return	string
 	 */
-	private function _get_php_timezone($zone)
+	private function _get_php_timezone($zone = 'UTC')
 	{
 		$zones = array(
 			'UM12'		=> 'Kwajalein', 					// -12
