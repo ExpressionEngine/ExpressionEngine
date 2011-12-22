@@ -151,11 +151,16 @@ class EE_Core {
 		// have a ?, and do not want to double up
 		// question marks on sites who are forcing query strings
 		define('QUERY_MARKER', ($this->EE->config->item('force_query_string') == 'y') ? '' : '?');
-
+		
+		// Load the settings of the site you're logged into, however use the 
+		// cookie settings from the site that corresponds to the URL
+		// e.g. site1.com/system/ viewing site2
+		// $last_site_id = the site that you're viewing
+		// config->item('site_id') = the site who's URL is being used
+		
 		$last_site_id = $this->EE->input->cookie('cp_last_site_id');
-
-		if (REQ == 'CP' && ! empty($last_site_id) && 
-			is_numeric($last_site_id) && 
+		
+		if (REQ == 'CP' && ! empty($last_site_id) && is_numeric($last_site_id) &&
 			$last_site_id != $this->EE->config->item('site_id'))
 		{
 			// If they are already setting cookies with a specified domain, keep using it in this backend
@@ -169,7 +174,7 @@ class EE_Core {
 			}
 		}
 		
-		// This allows CI compatibility		 
+		// This allows CI compatibility
 		if ($this->EE->config->item('base_url') == FALSE)
 		{
 			$this->EE->config->set_item('base_url', $this->EE->config->item('site_url'));
