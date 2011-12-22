@@ -147,7 +147,23 @@
 		
 		$('#file_uploader .button_bar .cancel').live('click', function(event) {
 			event.preventDefault();
-			file_uploader.dialog('close');
+			
+			$iframe = $('#file_uploader iframe').contents();
+			
+			// If we're editing file metadata, clear out content
+			if ($iframe.find('#edit_file_metadata').size()) {
+				// Change both resize dimensions back to default
+				$iframe.find('#resize input').each(function(index) {
+					$(this).val($(this).data('default')).removeClass('oversized');
+				});
+				
+				// Clear the radio buttons
+				$iframe.find("#rotate input").prop('checked', false);
+			} 
+			// Otherwise close the dialog
+			else {
+				file_uploader.dialog('close');
+			}
 		});
 	};
 	

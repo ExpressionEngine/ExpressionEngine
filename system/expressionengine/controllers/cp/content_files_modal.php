@@ -222,20 +222,20 @@ class Content_files_modal extends CI_Controller {
 	
 	public function edit_file()
 	{
-		$file_id = $this->input->post('file_id');
+		// Retrieve the file ID
+		$file_id = $this->input->get_post('file_id');
 		
 		// Attempt to save the file
 		$this->_save_file();
 		
-		// Retrieve the file data
+		// Retrieve the (possibly updated) file data
 		$vars['file'] = $this->_get_file($file_id);
 		
 		// Create array of hidden inputs
 		$vars['hidden'] = array(
 			'file_id'		=> $file_id,
 			'file_name'		=> $vars['file']['file_name'],
-			'upload_dir'	=> $vars['file']['upload_location_id'],
-			'action'		=> ''
+			'upload_dir'	=> $vars['file']['upload_location_id']
 		);
 		
 		// List out the tabs
@@ -434,11 +434,29 @@ class Content_files_modal extends CI_Controller {
 			}
 			
 			$this->file_model->save_file($updated_data);
+			
 
-			// The form posts to this method, so if POST data is present
-			// send to _do_image_processing to, well, do the image processing
-			if ( ! empty($_POST['action']))
+			// Check and see if we actually need to do image processing. Height
+			// or width needs to be different from the default or rotate needs
+			// to be set.
+			$actions = array();
+			
+			if ($this->input->post('resize_height_default') !== $this->input->post('resize_height')
+				OR $this->input->post('resize_width_default') !== $this->input->post('resize_width'))
 			{
+				// Resize MUST come first, the original values only make sense 
+				// in the context of resize first
+				$actions[] = 'resize';
+			}
+			
+			if ($this->input->post('rotate') !== FALSE)
+			{
+				$actions[] = 'rotate';
+			}
+			
+			if (count($actions))
+			{
+				$_POST['action'] = $actions;
 				$this->filemanager->_do_image_processing(FALSE);
 			}
 		}
