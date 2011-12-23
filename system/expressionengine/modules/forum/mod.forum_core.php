@@ -5636,15 +5636,32 @@ class Forum_Core extends Forum {
 
 	/**
 	 * Remove post attachment
+	 *
+	 * @param	int		Attachment ID to delete
+	 * @param	int		Board ID attachment resides in
+	 * @param	bool	Whether or not to force the delete and ignore whether
+	 *		or not the user has permission to remove attchments; this is
+	 *		mainly reserved for member deletion where attachments should be
+	 *		deleted no matter what
 	 */	
-	function _remove_attachment($id, $forum_id)
+	function _remove_attachment($id, $forum_id, $force = FALSE)
 	{
+		// Load preferences if they're not already there
+		if ( ! count($this->preferences))
+		{
+			$this->_load_preferences();
+		}
+		
 		$this->EE->db->select('filehash, extension, member_id');
 		$this->EE->db->where(array('attachment_id' => $id));
 		$query = $this->EE->db->get('forum_attachments');
 
 		// make sure the attachment exists and the user is allowed to remove it
-		if ($query->num_rows() == 0 OR ($this->EE->session->userdata('member_id') != $query->row('member_id') && $this->_mod_permission('can_edit', $forum_id) === FALSE))
+		if ($query->num_rows() == 0
+			OR ($this->EE->session->userdata('member_id') != $query->row('member_id')
+				AND $this->_mod_permission('can_edit', $forum_id) === FALSE
+				AND $force === FALSE)
+			)
 		{
 			return;
 		}

@@ -758,9 +758,9 @@ class Member_model extends CI_Model {
 			$this->db->where_in('member_id', $member_ids);
 			$attachments = $this->db->get('forum_attachments');
 			
-			foreach ($attachments as $attachment)
+			foreach ($attachments->result_array() as $attachment)
 			{
-				$forum_core->_remove_attachment($attachment['attachment_id'], $attachment['board_id']);
+				$forum_core->_remove_attachment($attachment['attachment_id'], $attachment['board_id'], TRUE);
 			}
 		}
 		
