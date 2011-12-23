@@ -259,6 +259,7 @@
 		$table.table(config);
 
 		$table.table('add_filter', $('#dir_choice'));
+		$table.table('add_filter', $('#keywords'));
 		
 		var table_template = $table.table('get_template');
 			thumb_template = $('#thumbTmpl').remove().html(),
@@ -302,10 +303,10 @@
 	function hide_directories() {
 		if (settings[current_field].directory != 'all') {
 			$('#dir_choice', file_manager_obj).val(settings[current_field].directory);
-			$('#dir_choice_form', file_manager_obj).hide();
+			$('#dir_choice_form .dir_choice_container', file_manager_obj).hide();
 		} else {
 			$('#dir_choice', file_manager_obj).val();
-			$('#dir_choice_form', file_manager_obj).show();
+			$('#dir_choice_form .dir_choice_container', file_manager_obj).show();
 		};
 	}
 

@@ -36,6 +36,16 @@
 	float: left;
 }
 
+#file_browser #dir_choice_form .dir_choice_container {
+	margin-right: 12px;
+}
+
+#file_browser #dir_choice_form #keywords {
+	height: 8px;
+	font-size: 12px;
+	width: 200px;
+}
+
 #file_browser #upload_form {
 	margin: -4px 0 10px;
 }

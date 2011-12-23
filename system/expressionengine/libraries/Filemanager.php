@@ -826,12 +826,13 @@ class Filemanager {
 		
 		$per_page = $this->EE->input->get_post('per_page');
 		$dir_id = $this->EE->input->get_post('dir_choice');
-		
+		$keywords = $this->EE->input->get_post('keywords');
 		
 		$state = array('sort' => array('file_name' => 'asc'));
 		$params = array(
 			'per_page' => $per_page ? $per_page : 15,
-			'dir_id' => $dir_id
+			'dir_id' => $dir_id,
+			'keywords' => $keywords
 		);
 		
 		if ($first_dir)
@@ -863,9 +864,24 @@ class Filemanager {
 			$state['sort']['modified_date'] = $state['sort']['date'];
 			unset($state['sort']['date']);
 		}
-
+		
+		$file_params = array(
+			'type' => $dir['allowed_types'],
+			'order' => array(
+				'file_name' => 'asc'
+			),
+			'limit' => $per_page,
+			'offset' => $state['offset']
+		);
+		
+		if (isset($params['keywords']))
+		{
+			$file_params['search_value']	= $params['keywords'];
+			$file_params['search_in']		= 'all';
+		}
+		
 		return array(
-			'rows' => $this->_get_files($dir, $per_page, $state['offset'], $state['sort']),
+			'rows' => $this->_get_files($dir, $file_params),
 			'no_results' => lang('no_uploaded_files'),
 			'pagination' => array(
 				'per_page' => $per_page,
@@ -1699,26 +1715,30 @@ class Filemanager {
 	 * @access private
 	 * @return array	List of files
 	 */
-	private function _get_files($dir, $limit = 15, $offset = 0, $sort = array())
+	private function _get_files($dir, $limit = 15, $offset = 0)
 	{
-		if (empty($sort))
-		{
-			$sort = array(
-				'file_name' => 'asc'
-			);
-		}
-		
 		$this->EE->load->model('file_model');
 		$this->EE->load->helper(array('text', 'number'));
 		
-		$files = $this->EE->file_model->get_files(
-			$dir['id'], 
-			array(
+		if (is_array($limit))
+		{
+			$params = $limit;
+		}
+		else
+		{
+			$params = array(
 				'type' => $dir['allowed_types'],
-				'order' => $sort,
+				'order' => array(
+					'file_name' => 'asc'
+				),
 				'limit' => $limit,
 				'offset' => $offset
-			)
+			);
+		}
+		
+		$files = $this->EE->file_model->get_files(
+			$dir['id'], 
+			$params
 		);
 
 		if ($files['results'] === FALSE)
