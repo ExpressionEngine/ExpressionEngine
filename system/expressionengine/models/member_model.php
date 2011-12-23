@@ -636,7 +636,7 @@ class Member_model extends CI_Model {
 					'last_entry_date' => $new_stats['entry_date']
 				));
 			}
-			// Otherwise, delete them, likely happens when member delete's own account
+			// Otherwise, delete them, likely happens when member deletes own account
 			else
 			{
 				foreach ($entries->result_array() as $entry)
@@ -672,10 +672,14 @@ class Member_model extends CI_Model {
 			$channel_ids[]  = $row['channel_id'];
 		}
 		
+		// Delete comments
+		$this->db->where_in('author_id', $member_ids)->delete('comments');
+		
+		// Update individual entry comment counts
 		$this->load->model('comment_model');
 		$this->comment_model->recount_entry_comments($entry_ids);
 		
-		// Update channel stats
+		// Update channel and comment stats
 		$channel_ids = array_unique($channel_ids);
 		foreach ($channel_ids as $channel_id)
 		{
