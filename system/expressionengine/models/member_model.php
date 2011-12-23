@@ -726,14 +726,14 @@ class Member_model extends CI_Model {
 			$this->db->where_in('author_id', $member_ids);
 			$topics = $this->db->get('forum_posts');
 			
+			// Now delete those posts
+			$this->db->where_in('author_id', $member_ids)->delete('forum_posts');
+			
 			// Update topic stats
 			foreach ($topics->result_array() as $row)
 			{
 				$forum_core->_update_topic_stats($row['topic_id']);
 			}
-			
-			// Now delete those posts
-			$this->db->where_in('author_id', $member_ids)->delete('forum_posts');
 			
 			// -----------------------------------------------------------
 			// Update forum stats
