@@ -828,7 +828,7 @@ class Filemanager {
 		$dir_id = $this->EE->input->get_post('dir_choice');
 		
 		
-		$state = array('sort' => array('file_name' => 'desc'));
+		$state = array('sort' => array('file_name' => 'asc'));
 		$params = array(
 			'per_page' => $per_page ? $per_page : 15,
 			'dir_id' => $dir_id
@@ -842,7 +842,7 @@ class Filemanager {
 			$params['dir_id'] = $first_dir;
 		}
 		
-		$data = $this->EE->table->datasource('_file_datasource', $state, $params);		
+		$data = $this->EE->table->datasource('_file_datasource', $state, $params);
 		
 		// End Argh
 		$this->EE->_mcp_reference = $this->EE;
@@ -855,10 +855,17 @@ class Filemanager {
 		$per_page = $params['per_page'];
 
 		$dirs = $this->directories(FALSE, TRUE);
-		$dir = $dirs[$params['dir_id']];		
+		$dir = $dirs[$params['dir_id']];
+		
+		// Check to see if we're sorting on date, if so, change the key to sort on
+		if (isset($state['sort']['date']))
+		{
+			$state['sort']['modified_date'] = $state['sort']['date'];
+			unset($state['sort']['date']);
+		}
 
 		return array(
-			'rows' => $this->_get_files($dir, $per_page, $state['offset']),
+			'rows' => $this->_get_files($dir, $per_page, $state['offset'], $state['sort']),
 			'no_results' => lang('no_uploaded_files'),
 			'pagination' => array(
 				'per_page' => $per_page,
@@ -1649,13 +1656,15 @@ class Filemanager {
 		$dirs = array();
 		$this->EE->load->model('file_upload_preferences_model');
 		
-		$directories = $this->EE->file_upload_preferences_model->get_upload_preferences($this->EE->session->userdata('group_id'));
+		$directories = $this->EE->file_upload_preferences_model->get_upload_preferences(
+			$this->EE->session->userdata('group_id')
+		);
 		
 		foreach($directories as $dir)
 		{
 			$dirs[$dir['id']] = $dir;
 		}
-				
+		
 		return $dirs;
 	}
 	
@@ -1690,8 +1699,15 @@ class Filemanager {
 	 * @access private
 	 * @return array	List of files
 	 */
-	private function _get_files($dir, $limit = 15, $offset = 0)
+	private function _get_files($dir, $limit = 15, $offset = 0, $sort = array())
 	{
+		if (empty($sort))
+		{
+			$sort = array(
+				'file_name' => 'asc'
+			);
+		}
+		
 		$this->EE->load->model('file_model');
 		$this->EE->load->helper(array('text', 'number'));
 		
@@ -1699,9 +1715,7 @@ class Filemanager {
 			$dir['id'], 
 			array(
 				'type' => $dir['allowed_types'],
-				'order' => array(
-					'file_name' => 'asc'
-				),
+				'order' => $sort,
 				'limit' => $limit,
 				'offset' => $offset
 			)
