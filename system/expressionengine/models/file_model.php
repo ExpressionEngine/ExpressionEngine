@@ -93,8 +93,8 @@ class File_model extends CI_Model {
 					$this->db->like('title', $parameters['search_value']);
 					break;
 				default:
-					$this->db->like('title', $parameters['search_value'])
-						->or_like('file_name', $parameters['search_value']);
+					$this->db->where('(`title` LIKE "%'.$this->db->escape_like_str($parameters['search_value']).'%"
+						OR `file_name` LIKE "%'.$this->db->escape_like_str($parameters['search_value']).'%")');
 			}
 		}
 
@@ -145,7 +145,7 @@ class File_model extends CI_Model {
 		}
 		
 		$return_data['results'] = $this->db->get('files');
-
+		
 		$this->db->flush_cache();
 		
 		return $return_data;
