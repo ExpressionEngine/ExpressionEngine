@@ -545,6 +545,26 @@ class Member_model extends CI_Model {
 		}
 		
 		// ---------------------------------------------------------------
+		// 'member_delete' hook.
+		// - Provides an opportunity for extra code to be executed upon
+		// member deletion, and also gives the opportunity to skip
+		// deletion for some members all together by altering the array of
+		// member IDs we pass to the hook.
+		//
+		if ($this->extensions->active_hook('member_delete'))
+		{
+			$member_ids = $this->extensions->call('member_delete', $member_ids);
+		}
+		//
+		// ---------------------------------------------------------------
+		
+		// No member IDs? Bail out
+		if ($member_ids == NULL OR ! count($member_ids))
+		{
+			return FALSE;
+		}
+		
+		// ---------------------------------------------------------------
 		// Remove traces of member from base member tables
 		// ---------------------------------------------------------------
 		$tables_fields = array(
