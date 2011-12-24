@@ -536,12 +536,7 @@ class Member_model extends CI_Model {
 		// Make sure $member_ids is an array
 		if ( ! is_array($member_ids))
 		{
-			// Assign member ID to a new variable
-			$member_id = (int)$member_ids;
-			// Re-cast member_ids as an array
-			$member_ids = array();
-			// Add member ID to array
-			$member_ids[] = $member_id;
+			$member_id = array((int) $member_ids);
 		}
 		
 		// ---------------------------------------------------------------
