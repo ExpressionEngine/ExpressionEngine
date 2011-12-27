@@ -460,24 +460,19 @@ class Tools_data extends CI_Controller {
 				if ( ! preg_match("/LIMIT\s+[0-9]/i", $sql))
 				{
 					// Modify the query so we get the total sans LIMIT
-
 					$row  = ( ! $this->input->get_post('per_page')) ? 0 : $this->input->get_post('per_page');
 					$new_sql = $sql." LIMIT ".$row.", ".$row_limit;
-
-					// magically delicious SQL_CALC_FOUND_ROWS method for MySQL 4 and above
-					$new_sql = preg_replace("/^(\s*SELECT)/", "\\1 SQL_CALC_FOUND_ROWS ", $new_sql);
-
+					
 					if ( ! $query = $this->db->query($new_sql))
 					{
 						$vars['no_results'] = lang('sql_no_result');
 						$this->load->view('tools/sql_results', $vars);
 						return;
 					}
-
-					$result = $this->db->query("SELECT FOUND_ROWS() AS total_rows");
-
-					$total_results = $result->row('total_rows') ;
-
+					
+					// Get total results
+					$total_results = $this->db->query($sql)->num_rows();
+					
 					if ($total_results > $row_limit)
 					{
 						$config['base_url'] = BASE.AMP.'C=tools_data'.AMP.'M=sql_run_query'.AMP.'thequery='.rawurlencode(base64_encode($sql));
