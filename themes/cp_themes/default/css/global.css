@@ -3337,11 +3337,18 @@ div.contentWrap {
 	text-decoration: underline;
 }
 
-#file_manager .mainTable td {
+#file_manager .mainTable td,
+#file_browser_body .mainTable td {
 	max-width: 200px;
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
+
+#file_browser_body .mainTable td {
+	max-width: 500px;
+}
+
+#file_browser_body
 
 /* File Manager Edit  ====================================================== */
 
