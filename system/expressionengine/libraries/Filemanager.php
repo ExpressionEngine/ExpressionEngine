@@ -827,8 +827,11 @@ class Filemanager {
 		$per_page = $this->EE->input->get_post('per_page');
 		$dir_id = $this->EE->input->get_post('dir_choice');
 		$keywords = $this->EE->input->get_post('keywords');
+		$tbl_sort = $this->EE->input->get_post('tbl_sort');
 		
-		$state = array('sort' => array('file_name' => 'asc'));
+		// Default to file_name sorting if tbl_sort isn't set
+		$state = (is_array($tbl_sort)) ? $tbl_sort : array('sort' => array('file_name' => 'asc'));
+		
 		$params = array(
 			'per_page' => $per_page ? $per_page : 15,
 			'dir_id' => $dir_id,
@@ -867,9 +870,7 @@ class Filemanager {
 		
 		$file_params = array(
 			'type' => $dir['allowed_types'],
-			'order' => array(
-				'file_name' => 'asc'
-			),
+			'order' => $state['sort'],
 			'limit' => $per_page,
 			'offset' => $state['offset']
 		);
