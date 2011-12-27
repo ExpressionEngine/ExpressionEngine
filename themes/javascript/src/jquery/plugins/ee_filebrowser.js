@@ -262,8 +262,14 @@
 		
 		var config = $table.data('table_config');
 		$table.table(config);
-
-		$table.table('add_filter', $('#dir_choice'));
+		
+		var $dir_choice = $('#dir_choice');
+		
+		// Set directory in case filter happens before input has changed (because the
+		// filter is only set on certain interaction events)
+		$table.table('add_filter', { 'dir_choice': $dir_choice.val() });
+		
+		$table.table('add_filter', $dir_choice);
 		$table.table('add_filter', $('#keywords'));
 		
 		var table_template = $table.table('get_template');
