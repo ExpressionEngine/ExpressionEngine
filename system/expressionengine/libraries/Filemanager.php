@@ -826,12 +826,13 @@ class Filemanager {
 		
 		$per_page = $this->EE->input->get_post('per_page');
 		$dir_id = $this->EE->input->get_post('dir_choice');
+		$keywords = $this->EE->input->get_post('keywords');
 		
-		
-		$state = array('sort' => array('file_name' => 'desc'));
+		$state = array('sort' => array('file_name' => 'asc'));
 		$params = array(
 			'per_page' => $per_page ? $per_page : 15,
-			'dir_id' => $dir_id
+			'dir_id' => $dir_id,
+			'keywords' => $keywords
 		);
 		
 		if ($first_dir)
@@ -842,7 +843,7 @@ class Filemanager {
 			$params['dir_id'] = $first_dir;
 		}
 		
-		$data = $this->EE->table->datasource('_file_datasource', $state, $params);		
+		$data = $this->EE->table->datasource('_file_datasource', $state, $params);
 		
 		// End Argh
 		$this->EE->_mcp_reference = $this->EE;
@@ -855,10 +856,32 @@ class Filemanager {
 		$per_page = $params['per_page'];
 
 		$dirs = $this->directories(FALSE, TRUE);
-		$dir = $dirs[$params['dir_id']];		
-
+		$dir = $dirs[$params['dir_id']];
+		
+		// Check to see if we're sorting on date, if so, change the key to sort on
+		if (isset($state['sort']['date']))
+		{
+			$state['sort']['modified_date'] = $state['sort']['date'];
+			unset($state['sort']['date']);
+		}
+		
+		$file_params = array(
+			'type' => $dir['allowed_types'],
+			'order' => array(
+				'file_name' => 'asc'
+			),
+			'limit' => $per_page,
+			'offset' => $state['offset']
+		);
+		
+		if (isset($params['keywords']))
+		{
+			$file_params['search_value']	= $params['keywords'];
+			$file_params['search_in']		= 'all';
+		}
+		
 		return array(
-			'rows' => $this->_get_files($dir, $per_page, $state['offset']),
+			'rows' => $this->_get_files($dir, $file_params),
 			'no_results' => lang('no_uploaded_files'),
 			'pagination' => array(
 				'per_page' => $per_page,
@@ -1649,13 +1672,15 @@ class Filemanager {
 		$dirs = array();
 		$this->EE->load->model('file_upload_preferences_model');
 		
-		$directories = $this->EE->file_upload_preferences_model->get_upload_preferences($this->EE->session->userdata('group_id'));
+		$directories = $this->EE->file_upload_preferences_model->get_upload_preferences(
+			$this->EE->session->userdata('group_id')
+		);
 		
 		foreach($directories as $dir)
 		{
 			$dirs[$dir['id']] = $dir;
 		}
-				
+		
 		return $dirs;
 	}
 	
@@ -1695,16 +1720,25 @@ class Filemanager {
 		$this->EE->load->model('file_model');
 		$this->EE->load->helper(array('text', 'number'));
 		
-		$files = $this->EE->file_model->get_files(
-			$dir['id'], 
-			array(
+		if (is_array($limit))
+		{
+			$params = $limit;
+		}
+		else
+		{
+			$params = array(
 				'type' => $dir['allowed_types'],
 				'order' => array(
 					'file_name' => 'asc'
 				),
 				'limit' => $limit,
 				'offset' => $offset
-			)
+			);
+		}
+		
+		$files = $this->EE->file_model->get_files(
+			$dir['id'], 
+			$params
 		);
 
 		if ($files['results'] === FALSE)

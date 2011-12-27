@@ -289,6 +289,14 @@ ul.bullets li {
 	clear:				right;
 }
 
+.group:after {
+	clear: 				both;
+	content: 			".";
+	display: 			block;
+	height: 			0px;
+	visibility: 		hidden;
+}
+
 .align_right {
 	text-align:			right;
 }
@@ -3891,6 +3899,9 @@ html.js #revealSidebarLink {
 	display: none;
 }
 
+html.js .js_show {
+	display: block;
+}
 
 /* -------------------------------------------------------------------
 // markItUp! Universal MarkUp Engine, JQuery plugin

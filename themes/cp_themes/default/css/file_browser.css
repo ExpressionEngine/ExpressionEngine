@@ -1,3 +1,11 @@
+.group:after {
+	clear: 				both;
+	content: 			".";
+	display: 			block;
+	height: 			0px;
+	visibility: 		hidden;
+}
+
 /* File Chooser ============================================================ */
 
 #file_browser .pageContents p {
@@ -34,6 +42,16 @@
 
 #file_browser #dir_choice_form {
 	float: left;
+}
+
+#file_browser #dir_choice_form .dir_choice_container {
+	margin-right: 12px;
+}
+
+#file_browser #dir_choice_form #keywords {
+	height: 8px;
+	font-size: 12px;
+	width: 200px;
 }
 
 #file_browser #upload_form {
@@ -220,6 +238,7 @@ html#file_upload_iframe body {
 }
 
 html#file_upload_iframe body {
+	margin-top: 0;
 	min-width: 0;
 	padding: 0;
 	width: auto;
@@ -289,8 +308,9 @@ html#file_upload_iframe p {
 	height: 265px;
 }
 
-.panel-menu {
+ul.panel-menu {
 	padding-left: 3px;
+	margin: 0;
 }
 
 .panel-menu li {
@@ -350,6 +370,10 @@ html#file_upload_iframe p {
 	width: 550px;
 }
 
+.panels ul {
+	margin: 0;
+}
+
 .panels li {
 	margin: 7px 0;
 }
@@ -386,7 +410,6 @@ html#file_upload_iframe p {
 
 .panels #image_tools fieldset#rotate ul {
 	float: left;
-	overflow: auto;
 	width: 182px;
 }
 

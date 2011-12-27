@@ -395,6 +395,7 @@ class Content_edit extends CI_Controller {
 			// autosave indicator
 			if (in_array($row['entry_id'], $autosave_array))
 			{
+				$this->load->helper('snippets');
 				$row['title'] .= NBS.required();
 			}
 			
