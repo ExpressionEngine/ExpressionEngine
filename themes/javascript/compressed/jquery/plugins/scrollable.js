@@ -1,15 +1,3 @@
-/**
- * @license 
- * jQuery Tools 1.2.0 Scrollable - New wave UI design
- * 
- * NO COPYRIGHTS OR LICENSES. DO WHAT YOU LIKE.
- * 
- * http://flowplayer.org/tools/scrollable.html
- *
- * Since: March 2008
- * Date:    Tue Apr 20 19:26:58 2010 +0000 
- */
-
 /*
  
  jQuery Tools 1.2.0 Scrollable - New wave UI design

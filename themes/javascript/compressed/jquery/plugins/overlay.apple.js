@@ -1,15 +1,3 @@
-/**
- * @license 
- * jQuery Tools 1.2.3 / Overlay Apple effect. 
- * 
- * NO COPYRIGHTS OR LICENSES. DO WHAT YOU LIKE.
- * 
- * http://flowplayer.org/tools/overlay/apple.html
- *
- * Since: July 2009
- * Date:    Mon Jun 7 13:43:53 2010 +0000 
- */
-
 /*
  
  jQuery Tools 1.2.3 / Overlay Apple effect. 

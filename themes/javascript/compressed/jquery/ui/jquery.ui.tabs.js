@@ -1,17 +1,3 @@
-/*
- * jQuery UI Tabs 1.8.16
- *
- * Copyright 2011, AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT or GPL Version 2 licenses.
- * http://jquery.org/license
- *
- * http://docs.jquery.com/UI/Tabs
- *
- * Depends:
- *	jquery.ui.core.js
- *	jquery.ui.widget.js
- */
-
 (function(d,l){var o=0,p=0;d.widget("ui.tabs",{options:{add:null,ajaxOptions:null,cache:!1,cookie:null,collapsible:!1,disable:null,disabled:[],enable:null,event:"click",fx:null,idPrefix:"ui-tabs-",load:null,panelTemplate:"<div></div>",remove:null,select:null,show:null,spinner:"<em>Loading&#8230;</em>",tabTemplate:"<li><a href='#{href}'><span>#{label}</span></a></li>"},_create:function(){this._tabify(!0)},_setOption:function(a,d){a=="selected"?this.options.collapsible&&d==this.options.selected||this.select(d):
 (this.options[a]=d,this._tabify())},_tabId:function(a){return a.title&&a.title.replace(/\s/g,"_").replace(/[^\w\u00c0-\uFFFF-]/g,"")||this.options.idPrefix+ ++o},_sanitizeSelector:function(a){return a.replace(/:/g,"\\:")},_cookie:function(){var a=this.cookie||(this.cookie=this.options.cookie.name||"ui-tabs-"+ ++p);return d.cookie.apply(null,[a].concat(d.makeArray(arguments)))},_ui:function(a,d){return{tab:a,panel:d,index:this.anchors.index(a)}},_cleanup:function(){this.lis.filter(".ui-state-processing").removeClass("ui-state-processing").find("span:data(label.tabs)").each(function(){var a=
 d(this);a.html(a.data("label.tabs")).removeData("label.tabs")})},_tabify:function(a){function e(b,a){b.css("display","");!d.support.opacity&&a.opacity&&b[0].style.removeAttribute("filter")}var b=this,c=this.options,g=/^#.+/;this.list=this.element.find("ol,ul").eq(0);this.lis=d(" > li:has(a[href])",this.list);this.anchors=this.lis.map(function(){return d("a",this)[0]});this.panels=d([]);this.anchors.each(function(a,e){var h=d(e).attr("href"),f=h.split("#")[0],k;if(f&&(f===location.toString().split("#")[0]||

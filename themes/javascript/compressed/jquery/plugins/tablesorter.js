@@ -1,17 +1,3 @@
-/*!
- * 
- * TableSorter 2.0 - Client-side table sorting with ease!
- * Version 2.0.3
- * @requires jQuery v1.2.3
- * 
- * Copyright (c) 2007 Christian Bach
- * Examples and docs at: http://tablesorter.com
- * Dual licensed under the MIT and GPL licenses:
- * http://www.opensource.org/licenses/mit-license.php
- * http://www.gnu.org/licenses/gpl.html
- * 
- */
-
 (function(b){b.extend({tablesorter:new function(){function a(c,a){o(c+","+((new Date).getTime()-a.getTime())+"ms")}function o(c){typeof console!="undefined"&&typeof console.debug!="undefined"?console.log(c):alert(c)}function d(c,a){if(c.config.debug)var e="";var h=c.tBodies[0].rows;if(c.tBodies[0].rows[0])for(var g=[],h=h[0].cells,A=h.length,k=0;k<A;k++){var l=!1;b.metadata&&b(a[k]).metadata()&&b(a[k]).metadata().sorter?l=q(b(a[k]).metadata().sorter):c.config.headers[k]&&c.config.headers[k].sorter&&
 (l=q(c.config.headers[k].sorter));if(!l)a:{for(var l=c,j=h[k],n=m.length,s=1;s<n;s++)if(m[s].is(b.trim(w(l.config,j)),l,j)){l=m[s];break a}l=m[0]}c.config.debug&&(e+="column:"+k+" parser:"+l.id+"\n");g.push(l)}c.config.debug&&o(e);return g}function q(c){for(var a=m.length,b=0;b<a;b++)if(m[b].id.toLowerCase()==c.toLowerCase())return m[b];return!1}function r(c){if(c.config.debug)var f=new Date;for(var e=c.tBodies[0]&&c.tBodies[0].rows.length||0,h=c.tBodies[0].rows[0]&&c.tBodies[0].rows[0].cells.length||
 0,g=c.config.parsers,d={row:[],normalized:[]},k=0;k<e;++k){var l=c.tBodies[0].rows[k],j=[];d.row.push(b(l));for(var n=0;n<h;++n)j.push(g[n].format(w(c.config,l.cells[n]),c,l.cells[n]));j.push(k);d.normalized.push(j)}c.config.debug&&a("Building cache for "+e+" rows:",f);return d}function w(c,a){if(!a)return"";var e="";return e=c.textExtraction=="simple"?a.childNodes[0]&&a.childNodes[0].hasChildNodes()?a.childNodes[0].innerHTML:a.innerHTML:typeof c.textExtraction=="function"?c.textExtraction(a):b(a).text()}

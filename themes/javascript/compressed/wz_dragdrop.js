@@ -1,42 +1,5 @@
-/*! This notice must be untouched at all times.
-
-wz_dragdrop.js	v. 4.55
-The latest version is available at
-http://www.walterzorn.com
-or http://www.devira.com
-or http://www.walterzorn.de
-
-Copyright (c) 2002-2003 Walter Zorn. All rights reserved.
-Created 26. 8. 2002 by Walter Zorn (Web: http://www.walterzorn.com )
-Last modified: 29. 9. 2004
-
-This DHTML & Drag&Drop Library adds Drag&Drop functionality
-to the following types of html-elements:
-- images, even if not positioned via layers,
-  nor via stylesheets or any other kind of "hard-coding"
-- relatively and absolutely positioned layers (DIV elements).
-Moreover, it provides extended DHTML abilities.
-
-LICENSE: LGPL
-
-This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Lesser General Public
-License (LGPL) as published by the Free Software Foundation; either
-version 2.1 of the License, or (at your option) any later version.
-
-This library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public
-License along with this library; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA,
-or see http://www.gnu.org/copyleft/lesser.html 
-*/
-
-for(var spacer="transparentpixel.gif",CLONE="C10nE",COPY="C0pY",DETACH_CHILDREN="d37aCH",HORIZONTAL="H0r1Z",MAXHEIGHT="m7x8I",MAXOFFBOTTOM="m7xd0wN",MAXOFFLEFT="m7x23Ft",MAXOFFRIGHT="m7x0Ff8",MAXOFFTOP="m7xu9",MAXWIDTH="m7xW1",MINWIDTH="m1nw1",MINHEIGHT="m1n8I",NO_ALT="no81T",NO_DRAG="N0d4Ag",RESET_Z="r35E7z",RESIZABLE="r5IZbl",SCALABLE="SCLbl",SCROLL="sC8lL",VERTICAL="V3Rt1C",dd_cursors="c:default,c:crosshair,c:e-resize,c:hand,c:help,c:move,c:n-resize,c:ne-resize,c:nw-resize,c:s-resize,c:se-resize,c:sw-resize,c:text,c:w-resize,c:wait".split(","),
-dd_i=dd_cursors.length;dd_i--;)eval("var CURSOR_"+dd_cursors[dd_i].substring(2).toUpperCase().replace("-","_")+' = "'+dd_cursors[dd_i]+'";');
+for(var spacer="transparentpixel.gif",CLONE="C10nE",COPY="C0pY",DETACH_CHILDREN="d37aCH",HORIZONTAL="H0r1Z",MAXHEIGHT="m7x8I",MAXOFFBOTTOM="m7xd0wN",MAXOFFLEFT="m7x23Ft",MAXOFFRIGHT="m7x0Ff8",MAXOFFTOP="m7xu9",MAXWIDTH="m7xW1",MINWIDTH="m1nw1",MINHEIGHT="m1n8I",NO_ALT="no81T",NO_DRAG="N0d4Ag",RESET_Z="r35E7z",RESIZABLE="r5IZbl",SCALABLE="SCLbl",SCROLL="sC8lL",VERTICAL="V3Rt1C",dd_cursors=["c:default","c:crosshair","c:e-resize","c:hand","c:help","c:move","c:n-resize","c:ne-resize","c:nw-resize","c:s-resize",
+"c:se-resize","c:sw-resize","c:text","c:w-resize","c:wait"],dd_i=dd_cursors.length;dd_i--;)eval("var CURSOR_"+dd_cursors[dd_i].substring(2).toUpperCase().replace("-","_")+' = "'+dd_cursors[dd_i]+'";');
 function WZDD(){this.n=navigator.userAgent.toLowerCase();this.db=document.compatMode&&document.compatMode.toLowerCase()!="backcompat"?document.documentElement:document.body||null;this.op=!(!window.opera||!document.getElementById);this.op6=!(!this.op||this.db&&this.db.innerHTML);if(this.op&&!this.op6)document.onmousedown=new Function("e",'if (((e = e || window.event).target || e.srcElement).tagName == "IMAGE") return false;');this.ie=!!(this.n.indexOf("msie")>=0&&document.all&&this.db&&!this.op);this.iemac=
 !!(this.ie&&this.n.indexOf("mac")>=0);this.ie4=!(!this.ie||document.getElementById);this.n4=!!(document.layers&&typeof document.classes!="undefined");this.n6=!!(typeof window.getComputedStyle!="undefined"&&typeof document.createRange!="undefined");this.w3c=!(this.op||this.ie||this.n6||!document.getElementById);this.ce=!(!document.captureEvents||!document.releaseEvents);this.px=this.n4||this.op6?"":"px"}var dd=new WZDD;dd.Int=function(a,b){return isNaN(b=parseInt(a))?0:b};
 dd.getWndW=function(){return dd.Int(dd.db&&!dd.op&&!dd.w3c&&dd.db.clientWidth?dd.db.clientWidth:window.innerWidth||0)};dd.getWndH=function(){return dd.Int(dd.db&&!dd.op&&!dd.w3c&&dd.db.clientHeight?dd.db.clientHeight:window.innerHeight||0)};dd.getScrollX=function(){return dd.Int(window.pageXOffset||(dd.db?dd.db.scrollLeft:0))};dd.getScrollY=function(){return dd.Int(window.pageYOffset||(dd.db?dd.db.scrollTop:0))};

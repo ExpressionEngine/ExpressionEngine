@@ -1,15 +1,3 @@
-/**
- * @license 
- * jQuery Tools 1.2.0 Tooltip - UI essentials
- * 
- * NO COPYRIGHTS OR LICENSES. DO WHAT YOU LIKE.
- * 
- * http://flowplayer.org/tools/tooltip/
- *
- * Since: November 2008
- * Date:    Tue Apr 20 19:26:58 2010 +0000 
- */
-
 /*
  
  jQuery Tools 1.2.0 Tooltip - UI essentials
