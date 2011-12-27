@@ -5636,15 +5636,32 @@ class Forum_Core extends Forum {
 
 	/**
 	 * Remove post attachment
+	 *
+	 * @param	int		Attachment ID to delete
+	 * @param	int		Board ID attachment resides in
+	 * @param	bool	Whether or not to force the delete and ignore whether
+	 *		or not the user has permission to remove attchments; this is
+	 *		mainly reserved for member deletion where attachments should be
+	 *		deleted no matter what
 	 */	
-	function _remove_attachment($id, $forum_id)
+	function _remove_attachment($id, $forum_id, $force = FALSE)
 	{
+		// Load preferences if they're not already there
+		if ( ! count($this->preferences))
+		{
+			$this->_load_preferences();
+		}
+		
 		$this->EE->db->select('filehash, extension, member_id');
 		$this->EE->db->where(array('attachment_id' => $id));
 		$query = $this->EE->db->get('forum_attachments');
 
 		// make sure the attachment exists and the user is allowed to remove it
-		if ($query->num_rows() == 0 OR ($this->EE->session->userdata('member_id') != $query->row('member_id') && $this->_mod_permission('can_edit', $forum_id) === FALSE))
+		if ($query->num_rows() == 0
+			OR ($this->EE->session->userdata('member_id') != $query->row('member_id')
+				AND $this->_mod_permission('can_edit', $forum_id) === FALSE
+				AND $force === FALSE)
+			)
 		{
 			return;
 		}
@@ -8387,129 +8404,8 @@ class Forum_Core extends Forum {
 		}
 		else
 		{
-			// Delete the user and kill all posts
-			// first fetch affected forum topics for stat updating later
-			$forum_topics_query	= $this->EE->db->query("SELECT topic_id FROM exp_forum_topics WHERE author_id ='{$this->current_id}'");
-			$forum_posts_query 	= $this->EE->db->query("SELECT topic_id FROM exp_forum_posts WHERE author_id = '{$this->current_id}'");
-			$topics 			= array();
-			$topic_ids			= array();
-			
-			if ($forum_topics_query->num_rows() > 0)
-			{
-				foreach ($forum_topics_query->result_array() as $row)
-				{
-					$topics[] = $row['topic_id'];
-					$topic_ids[] = $row['topic_id'];
-				}
-			}
-
-			if ($forum_posts_query->num_rows() > 0)
-			{
-				foreach ($forum_posts_query->result_array() as $row)
-				{
-					$topics[] = $row['topic_id'];
-				}
-			}
-			
-			$topics = array_unique($topics);
-			
-			// Delete any posts from other users that belong to topics that we will be decimating shortly
-			if ( ! empty($topic_ids))
-			{
-				$this->EE->db->where_in('topic_id', $topic_ids)
-					->delete('forum_posts');
-			}
-			
-			// Now we can zap the rest
-			$this->EE->db->query("DELETE FROM exp_members WHERE member_id = '{$this->current_id}'");
-			$this->EE->db->query("DELETE FROM exp_member_data WHERE member_id = '{$this->current_id}'");
-			$this->EE->db->query("DELETE FROM exp_member_homepage WHERE member_id = '{$this->current_id}'");
-			$this->EE->db->query("DELETE FROM exp_forum_topics WHERE author_id = '{$this->current_id}'");
-			$this->EE->db->query("DELETE FROM exp_forum_posts  WHERE author_id = '{$this->current_id}'");
-			$this->EE->db->query("DELETE FROM exp_forum_subscriptions  WHERE member_id = '{$this->current_id}'");
-			$this->EE->db->query("DELETE FROM exp_forum_polls  WHERE author_id = '{$this->current_id}'");
-			$this->EE->db->query("DELETE FROM exp_forum_pollvotes  WHERE member_id = '{$this->current_id}'");
-			$this->EE->db->query("DELETE FROM exp_forum_moderators  WHERE mod_member_id = '{$this->current_id}'");
-			$this->EE->db->query("DELETE FROM exp_forum_administrators  WHERE admin_member_id = '{$this->current_id}'");
-			$this->EE->db->query("DELETE FROM exp_comments WHERE author_id = '{$this->current_id}'");
-			
-			$message_query = $this->EE->db->query("SELECT DISTINCT recipient_id FROM exp_message_copies WHERE sender_id = '$this->current_id' AND message_read = 'n'");
-			$this->EE->db->query("DELETE FROM exp_message_copies WHERE sender_id = '$this->current_id'");
-			$this->EE->db->query("DELETE FROM exp_message_data WHERE sender_id = '$this->current_id'");
-			$this->EE->db->query("DELETE FROM exp_message_folders WHERE member_id = '$this->current_id'");
-			$this->EE->db->query("DELETE FROM exp_message_listed WHERE member_id = '$this->current_id'");
-			
-			if ($message_query->num_rows() > 0)
-			{
-				foreach($message_query->result_array() as $row)
-				{
-					$count_query = $this->EE->db->query("SELECT COUNT(*) AS count FROM exp_message_copies WHERE recipient_id = '".$row['recipient_id']."' AND message_read = 'n'");
-					$this->EE->db->query($this->EE->db->update_string('exp_members', array('private_messages' => $count_query->row('count') ), "member_id = '".$row['recipient_id']."'"));
-				}
-			}
-			
-			// Kill any attachments
-			$query = $this->EE->db->query("SELECT attachment_id, filehash, extension, board_id FROM exp_forum_attachments WHERE member_id = '{$this->current_id}'");
-			
-			if ($query->num_rows() > 0)
-			{
-				// Grab the upload path
-				$res = $this->EE->db->query('SELECT board_id, board_upload_path FROM exp_forum_boards');
-			
-				$paths = array();
-				foreach ($res->result_array() as $row)
-				{
-					$paths[$row['board_id']] = $row['board_upload_path'];
-				}
-			
-				foreach ($query->result_array() as $row)
-				{
-					if ( ! isset($paths[$row['board_id']]))
-					{
-						continue;
-					}
-					
-					$file  = $paths[$row['board_id']].$row['filehash'].$row['extension'];
-					$thumb = $paths[$row['board_id']].$row['filehash'].'_t'.$row['extension'];
-				
-					@unlink($file);
-					@unlink($thumb);					
-			
-					$this->EE->db->query("DELETE FROM exp_forum_attachments WHERE attachment_id = '{$row['attachment_id']}'");
-				}				
-			}
-						
-			// Update the Channel Stats because comments deleted
-			if ($this->EE->db->affected_rows() > 0)
-			{		
-				$query = $this->EE->db->query("SELECT channel_id FROM exp_channels");
-			
-				foreach ($query->result_array() as $row)
-				{
-					$this->EE->stats->update_channel_stats($row['channel_id']);
-					$this->EE->stats->update_comment_stats($row['channel_id']);
-				}
-			}
-			
-			// Update the forum stats - order is very important.  Topics must be updated first			
-			if (count($topics) > 0)
-			{
-				foreach ($topics as $topic_id)
-				{	
-					$this->_update_topic_stats($topic_id);
-				}
-			}
-			
-			$query = $this->EE->db->query("SELECT forum_id FROM exp_forums WHERE board_id = '".$this->fetch_pref('board_id')."' AND forum_is_cat = 'n'");
-			
-			foreach ($query->result_array() as $row)
-			{
-				$this->_update_post_stats($row['forum_id']);
-			}
-			
-			$this->_update_global_stats();
-			
-			$this->EE->stats->update_member_stats();
+			$this->EE->load->model('member_model');
+			$this->EE->member_model->delete_member($this->current_id);
 			
 			$ban_msg = lang('user_account_deleted');
 		}
