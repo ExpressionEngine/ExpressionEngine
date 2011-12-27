@@ -1742,6 +1742,10 @@ class EE_Template {
 	public function parse_template_uri()
 	{
 		$this->log_item("Parsing Template URI");
+		
+		// Does the first segment exist?  No?  Show the default template   
+		if ($this->EE->uri->segment(1) === FALSE)
+		{
 			return $this->fetch_template('', 'index', TRUE);
         }
         // Is only the pagination showing in the URI?
