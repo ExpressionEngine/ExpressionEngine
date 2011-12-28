@@ -913,7 +913,7 @@ $lang = array(
 "Enable Membership CAPTCHA",
 
 "new_member_notification" =>
-"Notify administrators of new registrations?",
+"Send new member notifications?",
 
 "mbr_notification_emails" =>
 "Email Address for Notification",
