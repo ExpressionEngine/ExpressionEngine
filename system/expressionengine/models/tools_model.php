@@ -518,9 +518,52 @@ class Tools_model extends CI_Model {
 		$this->load->library('logger');
 		$this->logger->deprecated('2.2', 'File_upload_preferences_model::get_upload_preferences()');
 		
-		$this->load->model('file_upload_preferences_model');
-		
-		return $this->file_upload_preferences_model->get_upload_preferences($group_id, $id);
+		// for admins, no specific filtering, just give them everything
+		if ($group_id == 1)
+		{
+			// there a specific upload location we're looking for?
+			if ($id != '')
+			{
+				$this->db->where('id', $id);
+			}
+
+			$this->db->from('upload_prefs');
+			$this->db->where('site_id', $this->config->item('site_id'));
+			$this->db->order_by('name');
+
+			$upload_info = $this->db->get();
+		}
+		else
+		{
+			// non admins need to first be checked for restrictions
+			// we'll add these into a where_not_in() check below
+			$this->db->select('upload_id');
+			$no_access = $this->db->get_where('upload_no_access', array('member_group'=>$group_id));
+
+			if ($no_access->num_rows() > 0)
+			{
+				$denied = array();
+				foreach($no_access->result() as $result)
+				{
+					$denied[] = $result->upload_id;
+				}
+				$this->db->where_not_in('id', $denied);
+			}
+
+			// there a specific upload location we're looking for?
+			if ($id)
+			{
+				$this->db->where('id', $id);
+			}
+
+			$this->db->from('upload_prefs');
+			$this->db->where('site_id', $this->config->item('site_id'));
+			$this->db->order_by('name');
+
+			$upload_info = $this->db->get();
+		}
+
+		return $upload_info;
 	}
 	
 	// --------------------------------------------------------------------
