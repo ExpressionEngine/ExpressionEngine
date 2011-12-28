@@ -382,7 +382,7 @@ Confirm the fieldtype file is located in the expressionengine/third_party/ direc
 
 
 'UM12'		=>	'(UTC -12:00) Baker/Howland Island',
-'UM11'		=>	'(UTC -11:00) Samoa Time Zone, Niue',
+'UM11'		=>	'(UTC -11:00) Niue',
 'UM10'		=>	'(UTC -10:00) Hawaii-Aleutian Standard Time, Cook Islands, Tahiti',
 'UM95'		=>	'(UTC -9:30) Marquesas Islands',
 'UM9'		=>	'(UTC -9:00) Alaska Standard Time, Gambier Islands',
@@ -419,7 +419,7 @@ Confirm the fieldtype file is located in the expressionengine/third_party/ direc
 'UP115'		=>	'(UTC +11:30) Norfolk Island',
 'UP12'		=>	'(UTC +12:00) Fiji, Gilbert Islands, Kamchatka Time, New Zealand Standard Time',
 'UP1275'	=>	'(UTC +12:45) Chatham Islands Standard Time',
-'UP13'		=>	'(UTC +13:00) Phoenix Islands Time, Tonga',
+'UP13'		=>	'(UTC +13:00) Samoa Time Zone, Phoenix Islands Time, Tonga',
 'UP14'		=>	'(UTC +14:00) Line Islands',
 
 
