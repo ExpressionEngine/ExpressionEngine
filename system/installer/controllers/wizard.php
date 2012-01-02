@@ -71,8 +71,8 @@ class Wizard extends CI_Controller {
 	var $native_modules = array('blacklist', 'channel', 'comment', 'commerce', 
 		'email', 'emoticon', 'file', 'forum', 'gallery', 'ip_to_nation', 
 		'jquery', 'mailinglist', 'member', 'metaweblog_api', 'moblog', 'pages',
-		'query', 'referrer', 'rss', 'safecracker', 'search', 'simple_commerce',
-		'stats', 'updated_sites', 'wiki');
+		'query', 'referrer', 'rss', 'rte', 'safecracker', 'search',
+		'simple_commerce', 'stats', 'updated_sites', 'wiki');
 
 	// Third Party Modules may send error messages if something goes wrong.
 	var $module_install_errors = array(); // array that collects all error messages
