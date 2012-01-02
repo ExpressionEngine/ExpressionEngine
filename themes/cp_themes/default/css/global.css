@@ -2839,6 +2839,15 @@ html.js .publish_hidden {
 	display: 			inline;
 }
 
+#cat_modal_container p,
+#cat_modal_container .category_field {
+	margin: 4px 0 12px;
+}
+
+#cat_modal_container .category_field p {
+	margin: 0;
+}
+
 /* Write Mode */
 
 #write_mode_footer,
