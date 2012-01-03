@@ -666,7 +666,7 @@ class Member_model extends CI_Model {
 					$entry_ids[] = $entry['entry_id'];
 					
 					// Gather channel IDs to update stats later
-					$channel_ids[]  = $row['channel_id'];
+					$channel_ids[]  = $entry['channel_id'];
 				}
 				
 				$this->db->where_in('author_id', $member_ids)->delete('channel_titles');
