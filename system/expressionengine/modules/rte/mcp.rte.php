@@ -57,13 +57,15 @@ class Rte_mcp {
 		$this->_permissions_check();
 		
 		$this->EE->load->library(array('table','javascript'));
-		
 		$this->EE->load->model(array('rte_toolset_model','rte_tool_model'));
 
-		$this->EE->cp->set_right_nav(array('create_new_rte_toolset' => $this->_base_url.AMP.'method=create_toolset'));
-
+		$this->EE->cp->add_js_script(array(
+			'plugin' => array( 'overlay', 'toolbox.expose', 'rte' )
+		));
+		
+		$this->EE->cp->set_right_nav(array('create_new_rte_toolset' => $this->_base_url.AMP.'method=edit_toolset'));
 		$vars = array(
-			'cp_page_title'				=> $this->EE->lang->line('rte_module_name'),
+			'cp_page_title'				=> lang('rte_module_name'),
 			'module_base'				=> $this->_base_url,
 			'form_base'					=> $this->_form_base,
 			'rte_enabled'				=> $this->EE->config->item('rte_enabled'),
@@ -74,10 +76,103 @@ class Rte_mcp {
 			'tools'						=> $this->EE->rte_tool_model->get_all()
 		);
 		
+		$this->EE->javascript->compile();
+		$this->EE->cp->add_to_head($this->EE->view->head_link('css/rte.css'));
 		return $this->EE->load->view('index', $vars, TRUE);
 	}
 	
 	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Provides Edit Toolset Screen HTML
+	 *
+	 * @access	public
+	 */
+	public function edit_toolset( $toolset_id=FALSE )
+	{
+		$this->_permissions_check();
+		$this->EE->load->library(array('table','javascript'));
+		$this->EE->load->model(array('rte_toolset_model','rte_tool_model'));
+		
+		# get the toolset
+		if ( ! is_numeric( $toolset_id ) ) $toolset_id = $this->EE->input->get_post('rte_toolset_id');	
+
+		# make sure the user can access this toolset
+		$failure	= FALSE;
+		$is_private	= FALSE;
+		$toolset	= FALSE;
+		if ( is_numeric( $toolset_id ) )
+		{
+			# make sure it exists
+			if ( ! $this->EE->rte_toolset_model->exists($toolset_id) )
+			{
+				$failure = lang('toolset_not_found');
+			}
+			# make sure the user can access it
+			elseif ( ! $this->EE->rte_toolset_model->member_can_access($toolset_id) )
+			{
+				$failure = lang('cannot_edit_toolset');
+			}
+			# bow out if the user can’t
+			if ( !! $failure )
+			{
+				$this->EE->session->set_flashdata('message_failure', $failure);
+				$this->EE->functions->redirect($this->_base_url);
+			}
+
+			# grab the toolset
+			$toolset	= $this->EE->rte_toolset_model->get($toolset_id);
+			$is_private	= ( $toolset->member_id != 0 );
+		}
+		else
+		{
+			$is_new		= TRUE;
+			$is_private = $this->EE->input->get_post('private');
+			$is_private	= ( $is_private == 'true' );
+		}
+		
+		# JS stuff
+		$this->EE->cp->add_js_script(array(
+			'ui' => 'sortable',
+			'plugin' => 'rte'
+		));
+		
+		# get the tools list (can only include active tools)
+		$available_tools	= $this->EE->rte_tool_model->get_available(TRUE);
+		$toolset_tool_ids	= $this->EE->rte_toolset_model->get_tools($toolset_id);
+		$unused_tools = $toolset_tools = array();
+		foreach ( $available_tools as $tool_id => $tool_name )
+		{
+			if ( in_array( $tool_id, $toolset_tool_ids ) )
+			{
+				$toolset_tools[] = $tool_id;
+			}
+			else
+			{
+				$unused_tools[] = $tool_id;
+			}
+		}
+		
+		$this->EE->cp->set_breadcrumb( $this->_base_url, lang('rte_module_name') );
+		$title = $is_private ? lang('define_my_toolset') : lang('define_toolset');
+		$vars = array(
+			'cp_page_title'		=> $title,
+			'module_base'		=> $this->_base_url,
+			'action'			=> $this->_form_base.AMP.'method=save_toolset'.( !! $toolset_id ? AMP.'rte_toolset_id='.$toolset_id : '' ),
+			'is_private'		=> $is_private,
+			'toolset_name'		=> ( ! $toolset || $is_private ? '' : $toolset->name ),
+			'available_tools'	=> $available_tools,
+			'unused_tools'		=> $unused_tools,
+			'toolset_tools'		=> $toolset_tools
+		);
+		
+		$this->EE->javascript->compile();
+		$this->EE->cp->add_to_head($this->EE->view->head_link('css/rte.css'));
+		return $this->EE->load->view('edit_toolset', $vars, TRUE);
+		
+	}
+
 	// --------------------------------------------------------------------
 	
 	/**
@@ -130,139 +225,6 @@ class Rte_mcp {
 	// --------------------------------------------------------------------
 	
 	/**
-	 * Provides Edit Toolset Screen HTML
-	 *
-	 * @access	public
-	 */
-	public function edit_toolset( $toolset_id=FALSE )
-	{
-		$this->_permissions_check();
-		$this->EE->load->model(array('rte_toolset_model','rte_tool_model'));
-		
-		# get the toolset
-		if ( ! is_numeric( $toolset_id ) ) $toolset_id = $this->EE->input->get_post('rte_toolset_id');	
-
-		# make sure the user can access this toolset
-		$failure	= FALSE;
-		$is_private	= FALSE;
-		if ( is_numeric( $toolset_id ) )
-		{
-			# make sure it exists
-			if ( ! $this->EE->rte_toolset_model->exists($toolset_id) )
-			{
-				$failure = lang('toolset_not_found');
-			}
-			# make sure the user can access it
-			elseif ( ! $this->EE->rte_toolset_model->member_can_access($toolset_id) )
-			{
-				$failure = lang('cannot_edit_toolset');
-			}
-			# bow out if the user can’t
-			if ( !! $failure )
-			{
-				$this->EE->session->set_flashdata('message_failure', $failure);
-				$this->EE->functions->redirect($this->_base_url);
-			}
-			# one last thing: is this a private toolset?
-			$is_private = $this->EE->rte_toolset_model->is_private($toolset_id);
-		}
-		
-		# JS stuff
-		$this->EE->cp->add_js_script('ui', 'sortable');
-		$this->EE->javascript->output('
-			var
-			$selected	= $("#null"),
-			$used		= $("#rte-tools-selected").bind( "sortupdate", update_rte_toolset ),
-			$unused		= $("#rte-tools-unused");
-			
-			$used.add($unused).sortable({
-				connectWith:	".rte-tools-connected",
-				containment:	".rte-toolset-builder",
-				cursor:			"pointer",
-				items:			"li:not(.rte-tool-placeholder)",
-				opacity:		0.6,
-				revert:			.25,
-				tolerance:		"pointer"
-			});
-			
-			$("li[data-tool-id]")
-				.hover(
-					function(){
-						$(this).addClass("rte-tool-hover");
-					},
-					function(){
-						$(this).removeClass("rte-tool-hover");
-					}
-				)
-				.click(function(){
-					$selected = $selected.add(
-						$(this).addClass("rte-tool-active")
-					);
-				});
-			
-			$("#rte-tools-select").click(function(){
-				$unused.find("li.rte-tool-active").appendTo($used);
-				update_rte_toolset();
-			});
-			$("#rte-tools-deselect").click(function(){
-				$used.find("li.rte-tool-active").appendTo($unused);
-				update_rte_toolset();
-			});
-			
-			function update_rte_toolset()
-			{
-				var ids = [];
-				$used.find("li[data-tool-id]").each(function(){
-					ids.push( $(this).data("tool-id") );
-				});
-				$("#rte-toolset-tools").val( ids.join("|") );
-				$selected.removeClass("rte-tool-active");
-				$selected = $("#noyourenevergonnagetit");
-			}
-		');
-		$this->EE->javascript->compile();
-		
-		# get the tools list (can only include active tools)
-		$available_tools	= $this->EE->rte_tool_model->get_available(TRUE);
-		$toolset_tool_ids	= $this->EE->rte_toolset_model->get_tools($toolset_id);
-		$unused_tools = $toolset_tools = array();
-		foreach ( $available_tools as $tool_id => $tool_name )
-		{
-			if ( in_array( $tool_id, $toolset_tool_ids ) )
-			{
-				$toolset_tools[] = $tool_id;
-			}
-			else
-			{
-				$unused_tools[] = $tool_id;
-			}
-		}
-		
-		if ( $is_private )
-		{
-			$title = lang('define_my_toolset');
-		}
-		else
-		{
-			$title = ( !! $toolset_id ? lang('define_toolset') : lang('new_toolset') );
-		}
-		
-		$vars = array(
-			'cp_page_title'		=> $title,
-			'module_base'		=> $this->_base_url,
-			'action'			=> $this->_form_base.AMP.'method=save_toolset'.( !! $toolset_id ? AMP.'rte_toolset_id='.$toolset_id : '' ),
-			'available_tools'	=> $available_tools,
-			'unused_tools'		=> $unused_tools,
-			'toolset_tools'	=> $toolset_tools
-		);
-		
-		return $this->EE->load->view('edit_toolset', $vars, TRUE);
-		
-	}
-
-	// --------------------------------------------------------------------
-	
-	/**
 	 * Update prefs form action
 	 *
 	 * @access	public
@@ -271,16 +233,34 @@ class Rte_mcp {
 	{
 		$this->_permissions_check();
 		
-		$this->_update_toolset(
-			$this->EE->input->get_post('rte_toolset_id'),
-			array( 'rte_tools' => $this->EE->input->get_post('rte_selected_tools') ),
-			lang('toolset_updated'),
-			lang('toolset_update_failed')
+		$toolset_id = $this->EE->input->get_post('rte_toolset_id');
+		$toolset	= array(
+			'name'		=> $this->EE->input->get_post('rte_toolset_name'),
+			'rte_tools' => $this->EE->input->get_post('rte_selected_tools'),
+			'member_id'	=> ( $this->EE->input->get_post('private') == 'true' ? $this->EE->session->userdata('member_id') : 0 )
 		);
+
+		if ( $toolset_id )
+		{
+			$this->_update_toolset(
+				$this->EE->input->get_post('rte_toolset_id'),
+				$toolset,
+				lang('toolset_updated'),
+				lang('toolset_update_failed')
+			);
+		}
+		else
+		{
+			$this->_update_toolset(
+				FALSE,
+				$toolset,
+				lang('toolset_saved'),
+				lang('toolset_not_saved')
+			);
+		}
+		
 	}
 
-	// --------------------------------------------------------------------
-	
 	// --------------------------------------------------------------------
 	
 	/**
@@ -326,11 +306,11 @@ class Rte_mcp {
 	 *
 	 * @access	private
 	 */
-	private function _update_toolset( $toolset_id=0, $change=array(), $success_msg, $fail_msg )
+	private function _update_toolset( $toolset_id=FALSE, $change=array(), $success_msg, $fail_msg )
 	{
 		$this->EE->load->model('rte_toolset_model');
 		
-		if ( $this->EE->rte_toolset_model->update( $toolset_id, $change ) )
+		if ( $this->EE->rte_toolset_model->save( $change, $toolset_id ) )
 		{
 			$this->EE->session->set_flashdata('message_success', $success_msg);
 		}
@@ -393,7 +373,7 @@ class Rte_mcp {
 	{
 		$this->EE->load->model('rte_tool_model');
 		
-		if ( $this->EE->rte_tool_model->update( $tool_id, $change ) )
+		if ( $this->EE->rte_tool_model->save( $change, $tool_id ) )
 		{
 			$this->EE->session->set_flashdata('message_success', $success_msg);
 		}

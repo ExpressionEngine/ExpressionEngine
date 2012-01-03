@@ -1,0 +1,16 @@
+.rte-toolset-settings { margin-bottom: 10px; }
+.rte-toolset-settings td { white-space: nowrap; }
+.rte-toolset-builder table { width: 100%; margin-bottom: 10px; }
+.rte-toolset-builder-pane {	width: 50%; }
+.rte-toolset-builder-pane strong { display: block; margin-bottom: 3px; }
+.rte-toolset-builder-buttons { width: 40px; }
+.rte-toolset-builder-buttons ul { padding: 0 10px; }
+.rte-toolset-builder-buttons li { margin: 5px 0; }
+.rte-toolset-builder-scrollpane { background: #fff; border: 1px solid #B6C0C2; -moz-border-radius: 3px; -o-border-radius: 3px; -webkit-border-radius: 3px; border-radius: 3px; height: 200px; overflow-x: hidden; overflow-y: auto; }
+.rte-toolset-builder-scrollpane ul { min-height: 200px; }
+.rte-tool { cursor: pointer; padding: 5px; border-bottom: 1px solid #ccc; }
+.rte-tool-hover { background: #F5F8F9; }
+.rte-tool-active { background: #F5F8F9; border-color: #27343C; }
+.rte-toolset-builder-scrollpane .ui-sortable-helper { background: #ECF1F4; border: 1px solid #27343C; cursor: move; }
+#rte_toolset_editor_modal { display: none; width: 600px; top: 1px; }
+#rte_toolset_editor_modal .contents { padding: 0; }

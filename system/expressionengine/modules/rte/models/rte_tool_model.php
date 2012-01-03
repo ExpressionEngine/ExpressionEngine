@@ -38,16 +38,10 @@ class Rte_tool_model extends CI_Model {
 		return $list ? $this->_make_list( $results ) : $results;
 	}
 	
-	public function update( $tool_id=0, $change=array() )
+	public function save( $tool=array(), $tool_id=FALSE )
 	{
-		$this->db->query(
-			$this->db->update_string(
-				'rte_tools',
-				$change,
-				array( 'rte_tool_id' => $tool_id )
-			)
-		);
-		
+		$sql = $toolset_id	? $this->db->update_string( 'rte_tools', $tool, array( 'rte_tool_id' => $tool_id ) )
+							: $this->db->insert_string( 'rte_tools', $tool );
 		return $this->db->affected_rows();
 	}
 

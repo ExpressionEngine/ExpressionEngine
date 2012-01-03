@@ -10,6 +10,8 @@ $lang = array(
 'rte_toolsets' => 'Rich Text Editor Toolsets',
 'rte_tools' => 'Rich Text Editor Tools',
 'create_new_rte_toolset' => 'Create a New Toolset',
+'define_toolset' => 'Define Custom Rich Text Editor Toolset',
+'define_my_toolset' => 'Define My Custom Rich Text Editor Toolset',
 
 # Snippets
 'no' => 'No',
@@ -38,9 +40,8 @@ $lang = array(
 'enable_rte_in_forum' => 'Enable the Rich Text Editor for use in the Forums?',
 'choose_default_toolset' => 'Choose the Default Toolset',
 'default_toolset_details' => 'Toolset for all users with access to Textarea fields using the Rich Text Editor.',
-'define_toolset' => 'Define Custom Rich Text Editor Toolset',
-'define_my_toolset' => 'Define My Custom Rich Text Editor Toolset',
-'available_tools' => 'Available Tools',
+'toolset_name' => 'Toolset Name',
+'available_tools' => 'Available Tools (not being used)',
 'tools_in_toolset' => 'In This Toolset',
 'toolset_builder_label' => 'Which tools should be availble in this Toolset?',
 'toolset_builder_instructions' => 'You may drag individual tools into your toolset or move a few at a time by selecting them and clicking one of the arrow buttons. You may also drag the tools in your toolset around to reorder them.',

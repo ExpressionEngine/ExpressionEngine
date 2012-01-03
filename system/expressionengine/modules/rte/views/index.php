@@ -71,6 +71,7 @@
 		<p><?=NBS?></p>
 		
 <?php	$this->table->set_template($cp_pad_table_template);
+		$this->table->template['thead_open'] = '<thead class="visualEscapism">';
 		$this->table->set_caption(lang('rte_toolsets'));
 		$this->table->set_heading(
 			lang('toolset'),
@@ -93,23 +94,24 @@
 			}
 			
 			$this->table->add_row(
-				'<a href="'.$module_base.AMP.'method=edit_toolset'.AMP.'rte_toolset_id='.$toolset['rte_toolset_id'].'">'.$toolset['name'].'</a>',
+				array(
+					'style' => 'width:34%',
+					'data'	=> '<a href="'.$module_base.AMP.'method=edit_toolset'.AMP.'rte_toolset_id='.$toolset['rte_toolset_id'].'">'.$toolset['name'].'</a>'
+				),
 				array( 'style' => 'width:33%', 'data' => $active.NBS."({$action})" ),
-				'<a href="'.$module_base.AMP.'method=delete_toolset'.AMP.'rte_toolset_id='.$toolset['rte_toolset_id'].'">'.lang('delete').'</a>'
+				array(
+					'style'	=> 'width:33%',
+					'data'	=> '<a href="'.$module_base.AMP.'method=delete_toolset'.AMP.'rte_toolset_id='.$toolset['rte_toolset_id'].'">'.lang('delete').'</a>'
+				)
 			);
 		}
-		#$this->table->add_row(
-		#	array(
-		#		'colspan'	=> '3',
-		#		'data'		=> '<span class="button"><a class="submit" href="#new">'.lang('new_toolset').'</a></span>'
-		#	)
-		#);
 		echo $this->table->generate(); ?>
 
 
 		<p><?=NBS?></p>
 
 <?php	$this->table->set_template($cp_pad_table_template);
+		$this->table->template['thead_open'] = '<thead class="visualEscapism">';
 		$this->table->set_caption(lang('rte_tools'));
 		$this->table->set_heading(
 			lang('tool'),
@@ -135,10 +137,4 @@
 				array( 'style' => 'width:66%', 'data' => $active.NBS."({$action})" )
 			);
 		}
-		#$this->table->add_row(
-		#	array(
-		#		'colspan'	=> '3',
-		#		'data'		=> '<span class="button"><a class="submit" href="#new">'.lang('new_toolset').'</a></span>'
-		#	)
-		#);
 		echo $this->table->generate(); ?>

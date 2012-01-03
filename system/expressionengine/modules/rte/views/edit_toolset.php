@@ -1,16 +1,29 @@
-	<?=form_open( $action )?>
+	<?=form_open( $action . ( $is_private ? AMP.'private=true' : '' ) )?>
 
+<?php	if ( ! $is_private ): ?>
+	<table class="rte-toolset-settings" cellspacing="0" cellpadding="0" border="0">
+		<tr>
+			<td width="50%"><label for="rte-toolset-name"><?=lang('toolset_name')?></label></td>
+			<td width="50%"><?=
+				form_input(array(
+					'name'		=> 'rte_toolset_name',
+					'id'		=> 'rte-toolset-name',
+					'value'		=> $toolset_name
+				)); ?></td>
+		</tr>
+	</table>
+<?php 	endif; ?>
 
 	<div class="rte-toolset-builder ui-widget">
 		<label for="rte-toolset-tools"><?=lang('toolset_builder_label')?></label><br/>
 		<?=lang('toolset_builder_instructions')?><br/><br/>
 		<input type="hidden" id="rte-toolset-tools" name="rte_selected_tools" value="<?=implode('|',$toolset_tools)?>"/>
-		<table cellspacing="0" cellpadding="0" border="0" width="100%">
+		<table cellspacing="0" cellpadding="0" border="0">
 			<tr>
-				<td class="rte-toolset-builder-pane" width="50%">
+				<td class="rte-toolset-builder-pane">
 					<strong><?=lang('available_tools')?></strong>
-					<div class="rte-toolset-builder-scrollpane" tabindex="0" style="overflow-x: hidden; overflow-y: auto; height: 200px; border:1px solid;">
-						<ul id="rte-tools-unused" class="rte-tools-connected" style="height: 200px;">
+					<div class="rte-toolset-builder-scrollpane" tabindex="0">
+						<ul id="rte-tools-unused" class="rte-tools-connected">
 <?php	foreach ( $unused_tools as $tool_id ): ?>
 							<li class="rte-tool" data-tool-id="<?=$tool_id?>"><?=$available_tools[$tool_id]?></li>
 <?php	endforeach; ?>
@@ -18,9 +31,9 @@
 					</div>
 				</td>
 
-				<td class="rte-toolset-builder-buttons" width="40">
-					<ul style="padding: 0 10px">
-						<li class="ui-state-default ui-corner-all" style="margin: 5px 0">
+				<td class="rte-toolset-builder-buttons">
+					<ul>
+						<li class="ui-state-default ui-corner-all">
 							<a role="button" aria-disabled="true" class="ui-icon ui-icon-arrowthick-1-e" id="rte-tools-select" title="<?=lang('select_tool')?>"></a>
 						</li>
 						<li class="ui-state-default ui-corner-all">
@@ -29,10 +42,10 @@
 					</ul>
 				</td>
 
-				<td class="rte-toolset-builder-pane" width="50%">
+				<td class="rte-toolset-builder-pane">
 					<strong><?=lang('tools_in_toolset')?></strong>
-					<div class="rte-toolset-builder-scrollpane" tabindex="0" style="overflow-x: hidden; overflow-y: auto; height: 200px; border:1px solid;">
-						<ul id="rte-tools-selected" class="rte-tools-connected ui-sortable" style="height: 200px;">
+					<div class="rte-toolset-builder-scrollpane" tabindex="0">
+						<ul id="rte-tools-selected" class="rte-tools-connected ui-sortable">
 <?php	foreach ( $toolset_tools as $tool_id ): ?>
 							<li class="rte-tool" data-tool-id="<?=$tool_id?>"><?=$available_tools[$tool_id]?></li>
 <?php	endforeach; ?>
@@ -44,6 +57,6 @@
 	</div>
 
 	<p><?=form_submit(array('name' => 'submit', 'value' => lang('submit'), 'class' => 'submit'));?> or
-	   <a href="<?=$module_base?>"><?=lang('cancel')?></a></p>
+	   <a id="rte-builder-closer" href="<?=$module_base?>"><?=lang('cancel')?></a></p>
 	
 	<?=form_close();?>

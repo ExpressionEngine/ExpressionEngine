@@ -112,6 +112,17 @@ class Rte_toolset_model extends CI_Model {
 				 ( $toolset->member_id == 0 && $admin ) );
 	}
 	
+	public function get( $toolset_id = FALSE )
+	{
+		return $this->db
+					->get_where(
+						'rte_toolsets',
+						array( 'rte_toolset_id' => $toolset_id ),
+						1
+					  )
+					->row();
+	}
+	
 	public function is_private( $toolset_id = FALSE )
 	{
 		return $this->db
@@ -136,16 +147,12 @@ class Rte_toolset_model extends CI_Model {
 		)->row();
 	}
 	
-	public function update( $toolset_id=0, $change=array() )
+	public function save( $toolset=array(), $toolset_id=FALSE )
 	{
-		$this->db->query(
-			$this->db->update_string(
-				'rte_toolsets',
-				$change,
-				array( 'rte_toolset_id' => $toolset_id )
-			)
-		);
-		
+		$toolset['site_id'] =  $this->config->item('site_id');
+		$sql = $toolset_id	? $this->db->update_string( 'rte_toolsets', $toolset, array( 'rte_toolset_id' => $toolset_id ) )
+							: $this->db->insert_string( 'rte_toolsets', $toolset );
+		$this->db->query( $sql );
 		return $this->db->affected_rows();
 	}
 
