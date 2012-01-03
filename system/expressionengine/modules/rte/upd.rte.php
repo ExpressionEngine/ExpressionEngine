@@ -129,10 +129,6 @@ class Rte_upd {
 				'type'				=> 'varchar',
 				'constraint'		=> '75'
 				),
-			'version'		=> array(
-				'type'				=> 'varchar',
-				'constraint'		=> '10'
-				),
 			'enabled'		=> array(
 				'type'				=> 'char',
 				'constraint'		=> '1',
@@ -144,9 +140,17 @@ class Rte_upd {
 		$this->EE->dbforge->add_key(array('enabled'));
 		$this->EE->dbforge->create_table('rte_tools');
 		
-		// TODO: Update the tools table
+		// TODO: Load the tools and get back the ids of the ones we want for the default definition
 		
 		// TODO: Insert the default toolset
+		$data = array(
+			'site_id'	=> $this->EE->config->item('site_id'),
+			'name'		=> 'Default',
+			'rte_tools'	=> '1', // for now
+			'enabled'	=> 'y'
+		);
+		$this->EE->db->insert('rte_toolsets', $data);
+		
 				
 		//  Update the config
 		$this->EE->config->_update_config(

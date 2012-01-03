@@ -25,7 +25,7 @@ $rte_tool_info = array(
 	'rte_author'		=> 'Aaron Gustafson',
 	'rte_author_url'	=> 'http://easy-designs.net/',
 	'rte_description'	=> 'Triggers the RTE to switch to and from view source mode',
-	'rte_definition'	=> Rte_view_source::definition()
+	'rte_definition'	=> View_source_rte::definition()
 );
 
 Class View_source_rte {
@@ -33,7 +33,7 @@ Class View_source_rte {
 	/** -------------------------------------
 	/**  Constructor
 	/** -------------------------------------*/
-	function View_source_rte()
+	function __construct()
 	{
 		// Make a local reference of the ExpressionEngine super object
 		$this->EE =& get_instance();

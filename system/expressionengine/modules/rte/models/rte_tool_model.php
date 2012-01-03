@@ -32,12 +32,25 @@ class Rte_tool_model extends CI_Model {
 		return $list ? $this->_make_list( $results ) : $results;
 	}
 	
-	public function get_active($list=FALSE)
+	public function get_available($list=FALSE)
 	{
-		$query = $this->db->get_where('rte_tools', array('enabled' => 'y'))->result_array();
+		$results = $this->db->get_where('rte_tools', array('enabled' => 'y'))->result_array();
 		return $list ? $this->_make_list( $results ) : $results;
 	}
 	
+	public function update( $tool_id=0, $change=array() )
+	{
+		$this->db->query(
+			$this->db->update_string(
+				'rte_tools',
+				$change,
+				array( 'rte_tool_id' => $tool_id )
+			)
+		);
+		
+		return $this->db->affected_rows();
+	}
+
 	private function _make_list( $result )
 	{
 		$return = array();
