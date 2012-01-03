@@ -2007,9 +2007,6 @@ class EE_Template {
 		$template_group_404 = '';
 		$template_404 = '';
 		
-		// Start caching in case we need to create a template from file
-		$this->EE->db->start_cache();
-		
 		/* -------------------------------------------
 		/*	Hidden Configuration Variable
 		/*	- hidden_template_indicator => '.' 
@@ -2077,26 +2074,10 @@ class EE_Template {
 			}	
 		}
 		
-		$this->EE->db->select('templates.template_name,
-				templates.template_id,
-				templates.template_data,
-				templates.template_type,
-				templates.edit_date,
-				templates.save_template_file,
-				templates.cache,
-				templates.refresh,
-				templates.no_auth_bounce,
-				templates.enable_http_auth,
-				templates.allow_php,
-				templates.php_parse_location,
-				templates.hits,
-				template_groups.group_name')
+		$this->EE->db->select('templates.*, template_groups.group_name')
 			->from('templates')
 			->join('template_groups', 'template_groups.group_id = templates.group_id')
 			->where('template_groups.site_id', $site_id);
-		
-		// Alright, stop caching active record, we have what we need for now
-		$this->EE->db->stop_cache();
 		
 		// If we're not dealing with a 404, what template and group do we need?
 		if ($sql_404 === '')
@@ -2128,33 +2109,27 @@ class EE_Template {
 			{
 				$t_group = ($sql_404 != '') ? $template_group_404 : $template_group;
 				$t_template = ($sql_404 != '') ? $template_404 : $template;
-				
-				if ($this->_create_from_file($t_group, $t_template, TRUE))
+
+				if ($t_new_id = $this->_create_from_file($t_group, $t_template, TRUE))
 				{
 					// run the query again, as we just successfully created it
-					$this->EE->db->where(array(
-						'templates.template_name'	=> $t_template,
-						'templates.template_group'	=> $t_group
-					));
-					$query = $this->EE->db->get();
+					$query = $this->EE->db->select('templates.*, template_groups.group_name')
+						->join('template_groups', 'template_groups.group_id = templates.group_id')
+						->where('templates.template_id', $t_new_id)
+						->get('templates');
 				}
 				else
 				{
 					$this->log_item("Template Not Found");
-					$this->EE->db->flush_cache();
 					return FALSE;
 				}
 			}
 			else
 			{
 				$this->log_item("Template Not Found");
-				$this->EE->db->flush_cache();
 				return FALSE;
 			}
 		}
-		
-		// Clear out the AR cache, we're done with it
-		$this->EE->db->flush_cache();
 		
 		$this->log_item("Template Found");
 		
@@ -2476,32 +2451,32 @@ class EE_Template {
 			}
 			
 			$data = array(
-							'group_name'		=> $template_group,
-							'group_order'		=> $this->EE->db->count_all('template_groups') + 1,
-							'is_site_default'	=> 'n',
-							'site_id'			=> $this->EE->config->item('site_id')
-						);
+				'group_name'		=> $template_group,
+				'group_order'		=> $this->EE->db->count_all('template_groups') + 1,
+				'is_site_default'	=> 'n',
+				'site_id'			=> $this->EE->config->item('site_id')
+			);
 			
 			$group_id = $this->EE->template_model->create_group($data);
 		}
 
 		$data = array(
-						'group_id'				=> $group_id,
-						'template_name'			=> $template,
-						'template_type'			=> $template_type,
-						'template_data'			=> file_get_contents($basepath.'/'.$filename),
-						'edit_date'				=> $this->EE->localize->now,
-						'save_template_file'	=> 'y',
-						'last_author_id'		=> '1',	// assume a super admin
-						'site_id'				=> $this->EE->config->item('site_id')
-					 );
+			'group_id'				=> $group_id,
+			'template_name'			=> $template,
+			'template_type'			=> $template_type,
+			'template_data'			=> file_get_contents($basepath.'/'.$filename),
+			'edit_date'				=> $this->EE->localize->now,
+			'save_template_file'	=> 'y',
+			'last_author_id'		=> '1',	// assume a super admin
+			'site_id'				=> $this->EE->config->item('site_id')
+		 );
 
-		$this->EE->template_model->create_template($data);
+		$template_id = $this->EE->template_model->create_template($data);
 		
 		// Clear db cache or it will create a new template record each page load!
 		$this->EE->functions->clear_caching('db');
 
-		return TRUE;
+		return $template_id;
 	}
 
 	// --------------------------------------------------------------------
