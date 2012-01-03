@@ -281,26 +281,7 @@ class Member {
 		// Prep the request
 		if ( ! $this->_prep_request())
 		{
-			// 404 it
-			$this->EE->load->library('template', NULL, 'TMPL');
-			
-			$template = explode('/', $this->EE->config->item('site_404'));
-
-			if (isset($template[1]))
-			{
-				$this->EE->TMPL->template_type = "404";
-				$this->EE->TMPL->fetch_and_parse($template[0], $template[1]);
-				$out = $this->EE->TMPL->parse_globals($this->EE->TMPL->final_template);
-			}
-			else
-			{
-				$out = $this->EE->TMPL->_404();
-			}
-			
-			$this->EE->output->out_type = '404';
-			$this->EE->output->set_output($out);
-			$this->EE->output->_display();
-			exit;
+			$this->_show_404_template();
 		}
 
 		// -------------------------------------------
@@ -329,54 +310,54 @@ class Member {
 
 		// Validate the request
 		$methods = array(
-							'public_profile',
-							'memberlist',
-							'member_search',
-							'do_member_search',
-							'login',
-							'unpw_update',
-							'register',
-							'profile',
-							'edit_preferences',
-							'update_preferences',
-							'edit_profile',
-							'update_profile',
-							'edit_email',
-							'update_email',
-							'edit_userpass',
-							'update_userpass',
-							'edit_localization',
-							'update_localization',
-							'edit_notepad',
-							'update_notepad',
-							'edit_signature',
-							'update_signature',
-							'edit_avatar',
-							'browse_avatars',
-							'select_avatar',
-							'upload_avatar',
-							'edit_photo',
-							'upload_photo',
-							'edit_subscriptions',
-							'update_subscriptions',
-							'edit_ignore_list',
-							'update_ignore_list',
-							'member_mini_search',
-							'do_member_mini_search',
-							'email_console',
-							'aim_console',
-							'icq_console',
-							'send_email',
-							'forgot_password',
-							'smileys',
-							'messages',
-							'delete'
-						);
+			'public_profile',
+			'memberlist',
+			'member_search',
+			'do_member_search',
+			'login',
+			'unpw_update',
+			'register',
+			'profile',
+			'edit_preferences',
+			'update_preferences',
+			'edit_profile',
+			'update_profile',
+			'edit_email',
+			'update_email',
+			'edit_userpass',
+			'update_userpass',
+			'edit_localization',
+			'update_localization',
+			'edit_notepad',
+			'update_notepad',
+			'edit_signature',
+			'update_signature',
+			'edit_avatar',
+			'browse_avatars',
+			'select_avatar',
+			'upload_avatar',
+			'edit_photo',
+			'upload_photo',
+			'edit_subscriptions',
+			'update_subscriptions',
+			'edit_ignore_list',
+			'update_ignore_list',
+			'member_mini_search',
+			'do_member_mini_search',
+			'email_console',
+			'aim_console',
+			'icq_console',
+			'send_email',
+			'forgot_password',
+			'smileys',
+			'messages',
+			'delete'
+		);
 
 
 		if ( ! in_array($this->request, $methods))
 		{
-			return $this->EE->output->show_user_error('general', array($this->EE->lang->line('invalid_action')));
+			$this->_show_404_template();
 		}
 
 		// Call the requested function
@@ -2467,6 +2448,40 @@ class Member {
 	function _var_swap_single($search, $replace, $source)
 	{
 		return str_replace(LD.$search.RD, $replace, $source);
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Show 404 Template
+	 *
+	 * Show the real 404 template instead of an ACT error when we cannot
+	 * find the page that was requested.
+	 *
+	 * @access protected
+	 */
+	protected function _show_404_template()
+	{
+		// 404 it
+		$this->EE->load->library('template', NULL, 'TMPL');
+		
+		$template = explode('/', $this->EE->config->item('site_404'));
+
+		if (isset($template[1]))
+		{
+			$this->EE->TMPL->template_type = "404";
+			$this->EE->TMPL->fetch_and_parse($template[0], $template[1]);
+			$out = $this->EE->TMPL->parse_globals($this->EE->TMPL->final_template);
+		}
+		else
+		{
+			$out = $this->EE->TMPL->_404();
+		}
+		
+		$this->EE->output->out_type = '404';
+		$this->EE->output->set_output($out);
+		$this->EE->output->_display();
+		exit;
 	}
 
 	// --------------------------------------------------------------------
