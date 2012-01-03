@@ -227,6 +227,7 @@
 	 * Sets up all filebrowser events
 	 */
 	function createBrowser() {
+		var $dir_choice = $('#dir_choice');
 
 		// Set up modal dialog
 		file_manager_obj.dialog({
@@ -240,6 +241,14 @@
 			autoOpen: false,
 			zIndex: 99999,
 			open: function(event, ui) {
+				var field_dir = settings[current_field].directory;
+				
+				if ( ! isNaN(field_dir)) {
+					$dir_choice.val(field_dir);
+				}
+				
+				// force a trigger check
+				$dir_choice.trigger('interact');
 				var current_directory = $('#dir_choice').val();
 			},
 			close: function(event, ui) {
@@ -263,11 +272,10 @@
 		var config = $table.data('table_config');
 		$table.table(config);
 		
-		var $dir_choice = $('#dir_choice');
 		
 		// Set directory in case filter happens before input has changed (because the
 		// filter is only set on certain interaction events)
-		$table.table('add_filter', { 'dir_choice': $dir_choice.val() });
+		// $table.table('add_filter', { 'dir_choice': $dir_choice.val() });
 		
 		$table.table('add_filter', $dir_choice);
 		$table.table('add_filter', $('#keywords'));
