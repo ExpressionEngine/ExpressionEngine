@@ -1913,8 +1913,19 @@ class Admin_content extends CI_Controller {
 			$this->javascript->keyup('#cat_name', '$("#cat_name").ee_url_title($("#cat_url_title"));');
 		}
 		
-		// Setup category image
 		$this->load->library('file_field');
+		
+		// If there is data in the category image field but the file field library
+		// can't parse it, it's likely legacy data from when a URL was entered in a
+		// text field for the category image. Let's prompt the user to update the
+		// field before they save, otherwise the image will be cleared out.
+		if ( ! empty($vars['cat_image']) &&
+			$this->file_field->parse_field($vars['cat_image']) === FALSE)
+		{
+			$vars['cat_image_error'] = lang('update_category_image');
+		}
+		
+		// Setup category image
 		$this->file_field->browser();
 		$vars['cat_image'] = $this->file_field->field(
 			'cat_image',
