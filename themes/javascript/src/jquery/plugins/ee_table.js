@@ -132,6 +132,15 @@ $.widget('ee.table', {
 	},
 	
 	/**
+	 * Get header element by short name
+	 */
+	get_header: function(name) {
+		self.element.find('th').filter(function() {
+			return ($(this).data('table_column') == name);
+		});
+	},
+	
+	/**
 	 * Get raw template string
 	 */
 	get_template: function() {
