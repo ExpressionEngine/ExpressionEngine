@@ -2839,6 +2839,15 @@ html.js .publish_hidden {
 	display: 			inline;
 }
 
+#cat_modal_container p,
+#cat_modal_container .category_field {
+	margin: 4px 0 12px;
+}
+
+#cat_modal_container .category_field p {
+	margin: 0;
+}
+
 /* Write Mode */
 
 #write_mode_footer,
@@ -3337,11 +3346,18 @@ div.contentWrap {
 	text-decoration: underline;
 }
 
-#file_manager .mainTable td {
+#file_manager .mainTable td,
+#file_browser_body .mainTable td {
 	max-width: 200px;
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
+
+#file_browser_body .mainTable td {
+	max-width: 500px;
+}
+
+#file_browser_body
 
 /* File Manager Edit  ====================================================== */
 

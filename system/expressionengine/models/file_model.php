@@ -92,19 +92,9 @@ class File_model extends CI_Model {
 				case ('file_title'):
 					$this->db->like('title', $parameters['search_value']);
 					break;
-				case ('custom_field'):
-					$this->db->like('field_1', $parameters['search_value']);
-
-					// there are a total of 6 custom fields, so cycle through the rest of them
-					for ($i = 2; $i < 6; $i++)
-					{
-						$this->db->or_like(sprintf('field_%s', $i), $parameters['search_value']);
-					}
-
-					break;
 				default:
-					$this->db->like('title', $parameters['search_value'])
-							 ->or_like('file_name', $parameters['search_value']);
+					$this->db->where('(`title` LIKE "%'.$this->db->escape_like_str($parameters['search_value']).'%"
+						OR `file_name` LIKE "%'.$this->db->escape_like_str($parameters['search_value']).'%")');
 			}
 		}
 
@@ -155,7 +145,7 @@ class File_model extends CI_Model {
 		}
 		
 		$return_data['results'] = $this->db->get('files');
-
+		
 		$this->db->flush_cache();
 		
 		return $return_data;

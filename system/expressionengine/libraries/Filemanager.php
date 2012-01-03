@@ -826,12 +826,16 @@ class Filemanager {
 		
 		$per_page = $this->EE->input->get_post('per_page');
 		$dir_id = $this->EE->input->get_post('dir_choice');
+		$keywords = $this->EE->input->get_post('keywords');
+		$tbl_sort = $this->EE->input->get_post('tbl_sort');
 		
+		// Default to file_name sorting if tbl_sort isn't set
+		$state = (is_array($tbl_sort)) ? $tbl_sort : array('sort' => array('file_name' => 'asc'));
 		
-		$state = array('sort' => array('file_name' => 'desc'));
 		$params = array(
 			'per_page' => $per_page ? $per_page : 15,
-			'dir_id' => $dir_id
+			'dir_id' => $dir_id,
+			'keywords' => $keywords
 		);
 		
 		if ($first_dir)
@@ -842,7 +846,7 @@ class Filemanager {
 			$params['dir_id'] = $first_dir;
 		}
 		
-		$data = $this->EE->table->datasource('_file_datasource', $state, $params);		
+		$data = $this->EE->table->datasource('_file_datasource', $state, $params);
 		
 		// End Argh
 		$this->EE->_mcp_reference = $this->EE;
@@ -855,10 +859,30 @@ class Filemanager {
 		$per_page = $params['per_page'];
 
 		$dirs = $this->directories(FALSE, TRUE);
-		$dir = $dirs[$params['dir_id']];		
-
+		$dir = $dirs[$params['dir_id']];
+		
+		// Check to see if we're sorting on date, if so, change the key to sort on
+		if (isset($state['sort']['date']))
+		{
+			$state['sort']['modified_date'] = $state['sort']['date'];
+			unset($state['sort']['date']);
+		}
+		
+		$file_params = array(
+			'type' => $dir['allowed_types'],
+			'order' => $state['sort'],
+			'limit' => $per_page,
+			'offset' => $state['offset']
+		);
+		
+		if (isset($params['keywords']))
+		{
+			$file_params['search_value']	= $params['keywords'];
+			$file_params['search_in']		= 'all';
+		}
+		
 		return array(
-			'rows' => $this->_get_files($dir, $per_page, $state['offset']),
+			'rows' => $this->_get_files($dir, $file_params),
 			'no_results' => lang('no_uploaded_files'),
 			'pagination' => array(
 				'per_page' => $per_page,
@@ -1649,13 +1673,15 @@ class Filemanager {
 		$dirs = array();
 		$this->EE->load->model('file_upload_preferences_model');
 		
-		$directories = $this->EE->file_upload_preferences_model->get_upload_preferences($this->EE->session->userdata('group_id'));
+		$directories = $this->EE->file_upload_preferences_model->get_upload_preferences(
+			$this->EE->session->userdata('group_id')
+		);
 		
 		foreach($directories as $dir)
 		{
 			$dirs[$dir['id']] = $dir;
 		}
-				
+		
 		return $dirs;
 	}
 	
@@ -1695,16 +1721,25 @@ class Filemanager {
 		$this->EE->load->model('file_model');
 		$this->EE->load->helper(array('text', 'number'));
 		
-		$files = $this->EE->file_model->get_files(
-			$dir['id'], 
-			array(
+		if (is_array($limit))
+		{
+			$params = $limit;
+		}
+		else
+		{
+			$params = array(
 				'type' => $dir['allowed_types'],
 				'order' => array(
 					'file_name' => 'asc'
 				),
 				'limit' => $limit,
 				'offset' => $offset
-			)
+			);
+		}
+		
+		$files = $this->EE->file_model->get_files(
+			$dir['id'], 
+			$params
 		);
 
 		if ($files['results'] === FALSE)
@@ -2589,12 +2624,14 @@ class Filemanager {
 		{
 			// Get the file Location:
 			$file_data = $this->EE->db->select('upload_location_id, rel_path, file_name')
-										->from('files')
-										->where('file_id', $files[0])
-										->get()
-										->row();
+				->from('files')
+				->where('file_id', $files[0])
+				->get()
+				->row();
 			
-			$file_path = reduce_double_slashes($upload_prefs[$file_data->upload_location_id]['server_path'].'/'.$file_data->file_name);
+			$file_path = reduce_double_slashes(
+				$upload_prefs[$file_data->upload_location_id]['server_path'].'/'.$file_data->file_name
+			);
 			
 			if ( ! file_exists($file_path))
 			{
@@ -2614,9 +2651,9 @@ class Filemanager {
 		$this->EE->load->library('zip');
 
 		$files_data = $this->EE->db->select('upload_location_id, rel_path, file_name')
-									->from('files')
-									->where_in('file_id', $files)
-									->get();
+			->from('files')
+			->where_in('file_id', $files)
+			->get();
 		
 		if ($files_data->num_rows() === 0)
 		{
@@ -2625,7 +2662,9 @@ class Filemanager {
 		
 		foreach ($files_data->result() as $row)
 		{
-			$file_path = reduce_double_slashes($upload_prefs[$row->upload_location_id]['server_path'].'/'.$row->file_name);
+			$file_path = reduce_double_slashes(
+				$upload_prefs[$row->upload_location_id]['server_path'].'/'.$row->file_name
+			);
 			$this->EE->zip->read_file($file_path);
 		}
 
@@ -2683,10 +2722,10 @@ class Filemanager {
 		}
 
 		$img_mimes = array(
-							'image/gif',
-							'image/jpeg',
-							'image/png',
-						);
+			'image/gif',
+			'image/jpeg',
+			'image/png',
+		);
 
 		return (in_array($mime, $img_mimes, TRUE)) ? TRUE : FALSE;
 	}
@@ -2707,21 +2746,21 @@ class Filemanager {
 		
 		$font_files = array();
 
-        if ($fp = @opendir($path))
-        { 
-            while (false !== ($file = readdir($fp)))
-            {
+		if ($fp = @opendir($path))
+		{ 
+			while (false !== ($file = readdir($fp)))
+			{
 				if (stripos(substr($file, -4), '.ttf') !== FALSE)
-                {
+				{
 					$name = substr($file, 0, -4);
 					$name = ucwords(str_replace("_", " ", $name));
 					
 					$font_files[$file] = $name;
-                }
-            }         
+				}
+			}
  
-			closedir($fp); 
-        } 
+			closedir($fp);
+		}
 
 		return $font_files;
 	}
@@ -2743,6 +2782,12 @@ class Filemanager {
 	{
 		$file_id = $this->EE->input->post('file_id');
 		
+		$actions = $this->EE->input->post('action');
+		if ( ! is_array($actions))
+		{
+			$actions = array($actions);
+		}
+		
 		// Check to see if a file was actually sent...
 		if ( ! ($file_name = $this->EE->input->post('file_name')))
 		{
@@ -2759,37 +2804,40 @@ class Filemanager {
 		$file_path = $this->EE->functions->remove_double_slashes(
 			$upload_prefs['server_path'].DIRECTORY_SEPARATOR.$file_name
 		);
-		
-		// Where are we going with this?
-		switch ($this->EE->input->post('action'))
-		{
-			case 'rotate':
-				$response = $this->_do_rotate($file_path);
-				break;
-			case 'crop':
-				$response = $this->_do_crop($file_path);
-				break;
-			case 'resize':
-				$response = $this->_do_resize($file_path);
-				break;
-			default:
-				return ''; // todo, error
-		}
-		
-		// Alright, what did we break?
-		if (isset($response['errors']))
-		{
-			if (AJAX_REQUEST)
-			{
-				$this->EE->output->send_ajax_response($response['errors'], TRUE);
-			}
 
-			show_error($response['errors']);
+		// Loop over the actions
+		foreach ($actions as $action)
+		{
+			// Where are we going with this?
+			switch ($action)
+			{
+				case 'rotate':
+					$response = $this->_do_rotate($file_path);
+					break;
+				case 'crop':
+					$response = $this->_do_crop($file_path);
+					break;
+				case 'resize':
+					$response = $this->_do_resize($file_path);
+					break;
+				default:
+					return ''; // todo, error
+			}
+			
+			// Did we break anything?
+			if (isset($response['errors']))
+			{
+				if (AJAX_REQUEST)
+				{
+					$this->EE->output->send_ajax_response($response['errors'], TRUE);
+				}
+
+				show_error($response['errors']);
+			}
 		}
 		
 		$this->EE->load->model('file_model');
 		
-		// die(var_dump($response));
 		// Update database
 		$this->EE->file_model->save_file(array(
 			'file_id' => $file_id,
@@ -2860,8 +2908,10 @@ class Filemanager {
 			'new_image'			=> $file_path
 		);
 
-		$this->EE->load->library('image_lib', $config);
-
+		// Must initialize seperately in case image_lib was loaded previously
+		$this->EE->load->library('image_lib');
+		$this->EE->image_lib->initialize($config);
+	
 		if ( ! $this->EE->image_lib->crop())
 		{
 	    	$errors = $this->EE->image_lib->display_errors();
@@ -2902,7 +2952,9 @@ class Filemanager {
 			'new_image'			=> $file_path
 		);
 
-		$this->EE->load->library('image_lib', $config);
+		// Must initialize seperately in case image_lib was loaded previously
+		$this->EE->load->library('image_lib');
+		$this->EE->image_lib->initialize($config);
 
 		if ( ! $this->EE->image_lib->rotate())
 		{
@@ -2954,8 +3006,10 @@ class Filemanager {
 			$config['master_dim'] = 'width';
 		}
 
-		$this->EE->load->library('image_lib', $config);
-
+		// Must initialize seperately in case image_lib was loaded previously
+		$this->EE->load->library('image_lib');
+		$this->EE->image_lib->initialize($config);
+		
 		if ( ! $this->EE->image_lib->resize())
 		{
 	    	$errors = $this->EE->image_lib->display_errors();

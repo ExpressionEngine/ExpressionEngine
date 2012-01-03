@@ -280,7 +280,7 @@ $lang = array(
 'BE CAREFUL!',
 
 'action_can_not_be_undone' =>
-'THIS ACTION CAN NOT BE UNDONE',
+'THIS ACTION CANNOT BE UNDONE',
 
 'captcha_explanation' =>
 'A CAPTCHA is an image containing a security code that users have to submit.  Please consult the user guide for more info.',

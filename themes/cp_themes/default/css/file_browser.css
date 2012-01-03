@@ -1,3 +1,11 @@
+.group:after {
+	clear: 				both;
+	content: 			".";
+	display: 			block;
+	height: 			0px;
+	visibility: 		hidden;
+}
+
 /* File Chooser ============================================================ */
 
 #file_browser .pageContents p {
@@ -34,6 +42,16 @@
 
 #file_browser #dir_choice_form {
 	float: left;
+}
+
+#file_browser #dir_choice_form .dir_choice_container {
+	margin-right: 12px;
+}
+
+#file_browser #dir_choice_form #keywords {
+	height: 8px;
+	font-size: 12px;
+	width: 200px;
 }
 
 #file_browser #upload_form {
@@ -200,6 +218,7 @@ a.file_browser_thumbnail.last_row {
 	color: #e0e5e6;
 	color: rgba(255, 255, 255, 0.7);
 	line-height: 1.9;
+	float: left;
 }
 
 #file_uploader .cancel:hover {
@@ -219,6 +238,7 @@ html#file_upload_iframe body {
 }
 
 html#file_upload_iframe body {
+	margin-top: 0;
 	min-width: 0;
 	padding: 0;
 	width: auto;
@@ -288,8 +308,9 @@ html#file_upload_iframe p {
 	height: 265px;
 }
 
-.panel-menu {
+ul.panel-menu {
 	padding-left: 3px;
+	margin: 0;
 }
 
 .panel-menu li {
@@ -349,6 +370,10 @@ html#file_upload_iframe p {
 	width: 550px;
 }
 
+.panels ul {
+	margin: 0;
+}
+
 .panels li {
 	margin: 7px 0;
 }
@@ -360,23 +385,48 @@ html#file_upload_iframe p {
 }
 
 .panels #image_tools input[type=text] {
-	width: 380px;
+	width: 160px;
 }
 
-.panels #image_tools p,
-.panels #image_tools li {
-	margin-left: 5px;
-}
-
-.panels #image_tools li div {
-	border: 1px solid #D0D7DF;
-	display: none;
-	padding: 0px 4px 4px;
-	margin: 6px 0 6px 16px;
+.panels #image_tools fieldset {
+	border: 0 none;
+	padding: 12px 0 0;
+	margin: 10px 0;
 	width: 400px;
+}
+
+.panels #image_tools fieldset legend {
+	font-weight: bold;
+	font-size: 1.16em;
+	margin: 0;
+	padding: 0;
+}
+
+.panels #image_tools fieldset li {
+	float: left;
+	margin: 0 0 7px;
+	width: 180px;
+}
+
+.panels #image_tools fieldset#rotate ul {
+	float: left;
+	width: 182px;
+}
+
+.panels #image_tools fieldset#rotate li {
+	padding-left: 1px;
 }
 
 .panels #image_tools .oversized {
 	border: 2px solid #c6220a;
 }
 
+.panels #image_tools #rotate label {
+	background: no-repeat 100% 50%;
+	display: inline;
+	padding-right: 12px;
+}
+
+.panels #image_tools #rotate .rotate_hor label {
+	padding-right: 18px;
+}

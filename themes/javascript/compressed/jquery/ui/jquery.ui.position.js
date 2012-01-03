@@ -1,13 +1,3 @@
-/*
- * jQuery UI Position 1.8.16
- *
- * Copyright 2011, AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT or GPL Version 2 licenses.
- * http://jquery.org/license
- *
- * http://docs.jquery.com/UI/Position
- */
-
 (function(d){d.ui=d.ui||{};var k=/left|center|right/,l=/top|center|bottom/,n=d.fn.position,o=d.fn.offset;d.fn.position=function(b){if(!b||!b.of)return n.apply(this,arguments);var b=d.extend({},b),a=d(b.of),c=a[0],f=(b.collision||"flip").split(" "),e=b.offset?b.offset.split(" "):[0,0],g,j,h;c.nodeType===9?(g=a.width(),j=a.height(),h={top:0,left:0}):c.setTimeout?(g=a.width(),j=a.height(),h={top:a.scrollTop(),left:a.scrollLeft()}):c.preventDefault?(b.at="left top",g=j=0,h={top:b.of.pageY,left:b.of.pageX}):
 (g=a.outerWidth(),j=a.outerHeight(),h=a.offset());d.each(["my","at"],function(){var a=(b[this]||"").split(" ");a.length===1&&(a=k.test(a[0])?a.concat(["center"]):l.test(a[0])?["center"].concat(a):["center","center"]);a[0]=k.test(a[0])?a[0]:"center";a[1]=l.test(a[1])?a[1]:"center";b[this]=a});f.length===1&&(f[1]=f[0]);e[0]=parseInt(e[0],10)||0;e.length===1&&(e[1]=e[0]);e[1]=parseInt(e[1],10)||0;b.at[0]==="right"?h.left+=g:b.at[0]==="center"&&(h.left+=g/2);b.at[1]==="bottom"?h.top+=j:b.at[1]==="center"&&
 (h.top+=j/2);h.left+=e[0];h.top+=e[1];return this.each(function(){var a=d(this),c=a.outerWidth(),m=a.outerHeight(),k=parseInt(d.curCSS(this,"marginLeft",!0))||0,l=parseInt(d.curCSS(this,"marginTop",!0))||0,n=c+k+(parseInt(d.curCSS(this,"marginRight",!0))||0),o=m+l+(parseInt(d.curCSS(this,"marginBottom",!0))||0),i=d.extend({},h),p;b.my[0]==="right"?i.left-=c:b.my[0]==="center"&&(i.left-=c/2);b.my[1]==="bottom"?i.top-=m:b.my[1]==="center"&&(i.top-=m/2);i.left=Math.round(i.left);i.top=Math.round(i.top);

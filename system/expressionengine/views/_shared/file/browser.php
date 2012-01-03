@@ -2,8 +2,11 @@
 	<div id="filterMenu">
 		<?php if ( ! empty($filemanager_directories)):?>
 			<?=form_open('', array('id' => 'dir_choice_form'))?>
-				<?=form_label('Upload Directory:', 'dir_choice').NBS?>
-				<?=form_dropdown('dir_choice', $filemanager_directories, key($filemanager_directories), 'id="dir_choice"').NBS?>
+				<span class="dir_choice_container">
+					<?=form_label('Upload Directory:', 'dir_choice').NBS?>
+					<?=form_dropdown('dir_choice', $filemanager_directories, key($filemanager_directories), 'id="dir_choice"').NBS?>
+				</span>
+				<input type="text" name="keywords" value="" id="keywords" placeholder="<?= lang('keywords') ?>" />
 			<?=form_close()?>
 			<div class="tableSubmit" id="upload_form">
 				<input type="submit" class="submit" value="<?=lang('upload_file')?>">

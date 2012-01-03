@@ -190,6 +190,9 @@
 			trigger_callback(file);
 		}
 		
+		// Clear out keyword filter
+		$('#keywords', file_manager_obj).val('');
+		
 		file_manager_obj.dialog("close"); // clears caches
 	};
 	
@@ -203,10 +206,7 @@
 	 * @deprecated since 2.4, use reload()
 	 */
 	$.ee_filebrowser.reload_directory = function(directory_id) {
-		if ($table) {
-			$table.table('clear_cache');
-			$table.table('refresh');
-		}
+		$.ee_filebrowser.reload();
 	};
 	
 	// --------------------------------------------------------------------
@@ -215,8 +215,10 @@
 	 * Refreshes the file browser with the newly upload files
 	 */
 	$.ee_filebrowser.reload = function() {
-		$table.table('clear_cache');
-		$table.table('refresh');
+		if ($table) {
+			$table.table('clear_cache');
+			$table.table('refresh');
+		};
 	};
 
 	// --------------------------------------------------------------------
@@ -242,6 +244,9 @@
 			},
 			close: function(event, ui) {
 				$.ee_filebrowser.reload();
+				
+				// Clear out keyword filter
+				$('#keywords', file_manager_obj).val('');
 			}
 		});
 		
@@ -257,8 +262,15 @@
 		
 		var config = $table.data('table_config');
 		$table.table(config);
-
-		$table.table('add_filter', $('#dir_choice'));
+		
+		var $dir_choice = $('#dir_choice');
+		
+		// Set directory in case filter happens before input has changed (because the
+		// filter is only set on certain interaction events)
+		$table.table('add_filter', { 'dir_choice': $dir_choice.val() });
+		
+		$table.table('add_filter', $dir_choice);
+		$table.table('add_filter', $('#keywords'));
 		
 		var table_template = $table.table('get_template');
 			thumb_template = $('#thumbTmpl').remove().html(),
@@ -302,10 +314,10 @@
 	function hide_directories() {
 		if (settings[current_field].directory != 'all') {
 			$('#dir_choice', file_manager_obj).val(settings[current_field].directory);
-			$('#dir_choice_form', file_manager_obj).hide();
+			$('#dir_choice_form .dir_choice_container', file_manager_obj).hide();
 		} else {
 			$('#dir_choice', file_manager_obj).val();
-			$('#dir_choice_form', file_manager_obj).show();
+			$('#dir_choice_form .dir_choice_container', file_manager_obj).show();
 		};
 	}
 

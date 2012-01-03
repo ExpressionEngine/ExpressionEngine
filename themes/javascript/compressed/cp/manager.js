@@ -1,15 +1,3 @@
-/*!
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
- * @since		Version 2.0
- * @filesource
- */
-
 function _access_edit_ajax(a,b,d,c){var h="";switch(c){case "no_auth_bounce":h=jQuery.param({template_id:b,no_auth_bounce:a.val()});break;case "enable_http_auth":h=jQuery.param({template_id:b,enable_http_auth:a.val()});break;case "access":c=!$(a).closest(".accessTable").length?$(".no_auth_bounce").val():$(a).closest(".accessTable").find(".no_auth_bounce").val(),h=jQuery.param({template_id:b,member_group_id:d,new_status:a.val(),no_auth_bounce:c})}$.ajax({type:"POST",url:EE.access_edit_url,data:"is_ajax=TRUE&XID="+
 EE.XID+"&"+h,success:function(a){a!==""&&$.ee_notice(a,{duration:3E3,type:"success"})},error:function(a){a.responseText!==""&&$.ee_notice(a.responseText,{duration:3E3,type:"error"})}})}
 function access_edit_ajax(a){var b,d;a.attr("name").substr(0,14)==="no_auth_bounce"?(d=a.attr("name").substr(15)?a.attr("name").substr(15):$("input:hidden[name=template_id]").val(),_access_edit_ajax(a,d,"","no_auth_bounce")):a.attr("name").substr(0,16)==="enable_http_auth"?(d=a.attr("name").substr(17)?a.attr("name").substr(17):$("input:hidden[name=template_id]").val(),_access_edit_ajax(a,d,"","enable_http_auth")):(b=a.attr("name").replace("access_","").split("_"),d=b.length<2?$("input:hidden[name=template_id]").val():

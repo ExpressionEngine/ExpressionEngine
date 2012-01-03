@@ -289,6 +289,14 @@ ul.bullets li {
 	clear:				right;
 }
 
+.group:after {
+	clear: 				both;
+	content: 			".";
+	display: 			block;
+	height: 			0px;
+	visibility: 		hidden;
+}
+
 .align_right {
 	text-align:			right;
 }
@@ -1200,6 +1208,17 @@ h2.innerHeading{
 	float: right;
 	font-size: 12px;
 	margin-top: -6px;
+}
+
+#file_manager .mainTable td,
+#file_browser_body .mainTable td {
+	max-width: 200px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+#file_browser_body .mainTable td {
+	max-width: 500px;
 }
 
 #file_browser {
@@ -3891,6 +3910,9 @@ html.js #revealSidebarLink {
 	display: none;
 }
 
+html.js .js_show {
+	display: block;
+}
 
 /* -------------------------------------------------------------------
 // markItUp! Universal MarkUp Engine, JQuery plugin

@@ -1,15 +1,3 @@
-/*!
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
- * @since		Version 2.0
- * @filesource
- */
-
 var selField=!1,selMode="normal";function setFieldName(f){f!=selField&&(selField=f,clear_state(),tagarray=[],usedarray=[],running=0)}
 function taginsert(f,g,a){var d=eval("item.name");if(!selField)return $.ee_notice(no_cursor),!1;var c=!1,e=!1,b=document.getElementById("entryform")[selField];selMode=="guided"&&(data=prompt(enter_text,""),data!=null&&data!=""&&(e=g+data+a));if(document.selection)c=document.selection.createRange().text,b.focus(),c?document.selection.createRange().text=e==!1?g+c+a:e:document.selection.createRange().text=e==!1?g+a:e,b.blur(),b.focus();else if(isNaN(b.selectionEnd)){if(selMode=="guided")curField=document.submit_post[selfField],
 curField.value+=e;else{if(f=="other")eval("document.getElementById('entryform')."+selField+".value += tagOpen");else if(eval(d)==0)eval("document.getElementById('entryform')."+selField+".value += result"),eval(d+" = 1"),arraypush(tagarray,a),arraypush(usedarray,d),running++,styleswap(d);else{for(i=n=0;i<tagarray.length;i++)if(tagarray[i]==a){n=i;for(running--;tagarray[n];)closeTag=arraypop(tagarray),eval("document.getElementById('entryform')."+selField+".value += closeTag");for(;usedarray[n];)clearState=

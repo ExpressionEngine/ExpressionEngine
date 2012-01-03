@@ -527,22 +527,265 @@ class Member_model extends CI_Model {
 	 * stored on the system, and returns the id for further use
 	 *
 	 * @access	public
-	 * @param	int		member id
-	 * @return	int		memeber id
+	 * @param	mixed	Single member ID as int, or array of member IDs to delete
+	 * @param	int		Member ID to take over ownership of deleted members' entries
+	 * @return	void
 	 */
-	function delete_member($member_id = '')
+	function delete_member($member_ids = array(), $heir_id = NULL)
 	{
-		// member data
-		$this->db->delete('members', array('member_id' => $member_id));
-		$this->db->delete('member_data', array('member_id' => $member_id));
-		$this->db->delete('member_homepage', array('member_id' => $member_id));
-
-		// mail and communications
-		$this->db->delete('message_copies', array('sender_id' => $member_id));
-		$this->db->delete('message_folders', array('member_id' => $member_id));
-		$this->db->delete('message_listed', array('member_id' => $member_id));
-
-		return $member_id;
+		// Make sure $member_ids is an array
+		if ( ! is_array($member_ids))
+		{
+			$member_id = array((int) $member_ids);
+		}
+		
+		// ---------------------------------------------------------------
+		// 'member_delete' hook.
+		// - Provides an opportunity for extra code to be executed upon
+		// member deletion, and also gives the opportunity to skip
+		// deletion for some members all together by altering the array of
+		// member IDs we pass to the hook.
+		//
+		if ($this->extensions->active_hook('member_delete'))
+		{
+			$member_ids = $this->extensions->call('member_delete', $member_ids);
+		}
+		//
+		// ---------------------------------------------------------------
+		
+		// No member IDs? Bail out
+		if ($member_ids == NULL OR ! count($member_ids))
+		{
+			return FALSE;
+		}
+		
+		// ---------------------------------------------------------------
+		// Remove traces of member from base member tables
+		// ---------------------------------------------------------------
+		$tables_fields = array(
+			'comment_subscriptions' => 'member_id',
+			'members'				=> 'member_id',
+			'member_data'			=> 'member_id',
+			'member_homepage'		=> 'member_id',
+			'message_data'			=> 'sender_id',
+			'message_folders'		=> 'member_id',
+			'message_listed'		=> 'member_id',
+			'message_listed'		=> 'listed_member',
+			'message_copies'		=> 'recipient_id'
+		);
+		
+		// Loop through tables array and clear out based on member ID
+		foreach ($tables_fields as $table => $field)
+		{
+			$this->db->where_in($field, $member_ids)->delete($table);
+		}
+		
+		// ---------------------------------------------------------------
+		// Delete private messages and update members' unread count
+		// ---------------------------------------------------------------
+		
+		// First, we need to get a list of recipient IDs who will be affected
+		// by deleting the members we are deleting so that we can update the
+		// unread PM count for those users only
+		$this->db->select('count(*) as count, recipient_id');
+		$this->db->where('message_read', 'n');
+		$this->db->where_in('sender_id', $member_ids);
+		$messages = $this->db->get('message_copies');
+		
+		// Now that we know which recipients are affected, we can delete the
+		// member-to-be-deleted's messages...
+		$this->db->where_in('sender_id', $member_ids)->delete('message_copies');
+		
+		if ($messages->num_rows())
+		{
+			// Build recipient IDs array
+			foreach ($messages->result_array() as $message)
+			{
+				$recipient_ids[] = $message['recipient_id'];
+			}
+			
+			// ...and get the new unread count for the affected users
+			$this->db->select('count(*) as count, recipient_id');
+			$this->db->where('message_read', 'n');
+			$this->db->where_in('recipient_id', $recipient_ids);
+			$this->db->group_by('recipient_id');
+			$unread_messages = $this->db->get('message_copies');
+			
+			// Set everyone's unread message count to zero first, because if a user
+			// has zero messages now, they won't have shown up in the above query
+			$this->db->where_in('member_id', $recipient_ids);
+			$this->db->update('members', array('private_messages' => 0));
+			
+			// For each user, update their private messages unread count with
+			// what we gathered above
+			foreach ($unread_messages->result_array() as $message)
+			{
+				$this->db->where('member_id', $message['recipient_id']);
+				$this->db->update('members', array('private_messages' => $message['count']));
+			}
+		}
+		
+		// ---------------------------------------------------------------
+		// Get member's channel entries, reassign them to the entries heir
+		// or delete them all together if heir isn't specified
+		// ---------------------------------------------------------------
+		
+		// Get member's entries
+		$this->db->select('entry_id, channel_id');
+		$this->db->where_in('author_id', $member_ids);
+		$entries = $this->db->get('channel_titles');
+		
+		$channel_ids = array();
+		
+		if ($entries->num_rows())
+		{
+			// Reassign entries if heir ID is present
+			if ( ! empty($heir_id) && is_numeric($heir_id))
+			{
+				$this->db->where_in('author_id', $member_ids);
+				$this->db->update('channel_titles', array('author_id' => $heir_id));
+				
+				// Get new member stats for updating
+				$this->db->select('count(entry_id) AS count, MAX(entry_date) as entry_date');
+				$this->db->where('author_id', $heir_id);
+				$new_stats = $this->db->get('channel_titles')->row_array();
+				
+				// Update member stats
+				$this->db->where('member_id', $heir_id);
+				$this->db->update('members', array(
+					'total_entries' => $new_stats['count'],
+					'last_entry_date' => $new_stats['entry_date']
+				));
+			}
+			// Otherwise, delete them, likely happens when member deletes own account
+			else
+			{
+				foreach ($entries->result_array() as $entry)
+				{
+					// Entries to delete
+					$entry_ids[] = $entry['entry_id'];
+					
+					// Gather channel IDs to update stats later
+					$channel_ids[]  = $row['channel_id'];
+				}
+				
+				$this->db->where_in('author_id', $member_ids)->delete('channel_titles');
+				$this->db->where_in('entry_id', $entry_ids)->delete('channel_data');
+				$this->db->where_in('entry_id', $entry_ids)->delete('comments');
+			}
+		}
+		
+		// ---------------------------------------------------------------
+		// Find affected entries for members's comments and update totals
+		// ---------------------------------------------------------------
+		
+		$this->db->select('DISTINCT(entry_id), channel_id');
+		$this->db->where_in('author_id', $member_ids);
+		$entries = $this->db->get('comments');
+		
+		$entry_ids = array();
+		foreach ($entries->result_array() as $row)
+		{
+			// Entries to update
+			$entry_ids[] = $row['entry_id'];
+			
+			// Gather channel IDs to update stats later
+			$channel_ids[]  = $row['channel_id'];
+		}
+		
+		// Delete comments
+		$this->db->where_in('author_id', $member_ids)->delete('comments');
+		
+		// Update individual entry comment counts
+		$this->load->model('comment_model');
+		$this->comment_model->recount_entry_comments($entry_ids);
+		
+		// Update channel and comment stats
+		$channel_ids = array_unique($channel_ids);
+		foreach ($channel_ids as $channel_id)
+		{
+			$this->stats->update_channel_stats($channel_id);
+			$this->stats->update_comment_stats($channel_id);
+		}
+		
+		// ---------------------------------------------------------------
+		// Forum Clean-Up
+		// ---------------------------------------------------------------
+		
+		if ($this->config->item('forum_is_installed') == "y")
+		{
+			// Forum tables to clean up
+			$forum_tables_fields = array(
+				'forum_subscriptions'	=> 'member_id',
+				'forum_pollvotes'		=> 'member_id',
+				'forum_topics'			=> 'author_id',
+				'forum_administrators'	=> 'admin_member_id',
+				'forum_moderators'		=> 'mod_member_id',
+				'forum_polls'			=> 'author_id'
+			);
+			
+			// Clean out mentions of member in forum tables
+			foreach ($forum_tables_fields as $table => $field)
+			{
+				$this->db->where_in($field, $member_ids)->delete($table);
+			}
+			
+			// Load forum class
+			if ( ! class_exists('Forum'))
+			{
+				require PATH_MOD.'forum/mod.forum.php';
+				require PATH_MOD.'forum/mod.forum_core.php';
+			}
+			
+			$forum_core = new Forum_Core;
+			
+			// -----------------------------------------------------------
+			// Grab affected topic IDs before deleting the member so we can
+			// update stats
+			$this->db->select('topic_id');
+			$this->db->distinct();
+			$this->db->where_in('author_id', $member_ids);
+			$topics = $this->db->get('forum_posts');
+			
+			// Now delete those posts
+			$this->db->where_in('author_id', $member_ids)->delete('forum_posts');
+			
+			// Update topic stats
+			foreach ($topics->result_array() as $row)
+			{
+				$forum_core->_update_topic_stats($row['topic_id']);
+			}
+			
+			// -----------------------------------------------------------
+			// Update forum stats
+			$this->db->select('forum_id');
+			$this->db->where('forum_is_cat', 'n');
+			$forums = $this->db->get('exp_forums');
+			
+			foreach ($forums->result_array() as $row)
+			{
+				$forum_core->_update_post_stats($row['forum_id']);
+			}
+			
+			$forum_core->_update_global_stats();
+			
+			// -----------------------------------------------------------
+			// Delete from Online Users
+			$this->db->where_in('member_id', $member_ids)->delete('online_users');
+			
+			// -----------------------------------------------------------
+			// Remove attachments
+			$this->db->select('attachment_id, board_id');
+			$this->db->where_in('member_id', $member_ids);
+			$attachments = $this->db->get('forum_attachments');
+			
+			foreach ($attachments->result_array() as $attachment)
+			{
+				$forum_core->_remove_attachment($attachment['attachment_id'], $attachment['board_id'], TRUE);
+			}
+		}
+		
+		$this->stats->update_member_stats();
 	}
 
 	// --------------------------------------------------------------------

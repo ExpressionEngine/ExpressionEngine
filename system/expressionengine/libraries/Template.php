@@ -141,7 +141,7 @@ class EE_Template {
 		// Set the name of the cache folder for both tag and page caching
 		
 		if ($this->EE->uri->uri_string != '')
-		{		  
+		{
 			$this->t_cache_path .= md5($this->EE->functions->fetch_site_index().$this->EE->uri->uri_string).'/';
 			$this->p_cache_path .= md5($this->EE->functions->fetch_site_index().$this->EE->uri->uri_string).'/';		
 		}
@@ -169,8 +169,8 @@ class EE_Template {
 				if ($i > $max)
 				{
 					$this->EE->functions->clear_caching('page');
-				}			
-			}	
+				}
+			}
 		}
 		
 		$this->log_item("URI: ".$this->EE->uri->uri_string);
@@ -214,16 +214,18 @@ class EE_Template {
 		// add this template to our subtemplate tracker
 		$this->templates_sofar = $this->templates_sofar.'|'.$site_id.':'.$template_group.'/'.$template.'|';
 		
-		// Fetch the requested template		
+		// Fetch the requested template
 		// The template can either come from the DB or a cache file
 		// Do not use a reference!
 		
 		$this->cache_status = 'NO_CACHE';
 		
 		$this->log_item("Retrieving Template");
-								
-		$this->template = ($template_group != '' AND $template != '') ? $this->fetch_template($template_group, $template, FALSE, $site_id) : $this->parse_template_uri();
-			
+		
+		$this->template = ($template_group != '' AND $template != '') ? 
+			$this->fetch_template($template_group, $template, FALSE, $site_id) : 
+			$this->parse_template_uri();
+		
 		$this->log_item("Template Type: ".$this->template_type);
 		
 		$this->parse($this->template, $sub, $site_id);
@@ -234,7 +236,12 @@ class EE_Template {
 		//
 		if ($this->EE->extensions->active_hook('template_post_parse') === TRUE)
 		{
-			$this->final_template = $this->EE->extensions->call('template_post_parse', $this->final_template, $sub, $site_id);
+			$this->final_template = $this->EE->extensions->call(
+				'template_post_parse',
+				$this->final_template,
+				$sub,
+				$site_id
+			);
 		}
 		//
 		// -------------------------------------------
@@ -1732,13 +1739,13 @@ class EE_Template {
 	 *
 	 * @return	string
 	 */
-    public function parse_template_uri()
-    {
-        $this->log_item("Parsing Template URI");
-        
-        // Does the first segment exist?  No?  Show the default template   
-        if ($this->EE->uri->segment(1) === FALSE)
-        {     
+	public function parse_template_uri()
+	{
+		$this->log_item("Parsing Template URI");
+		
+		// Does the first segment exist?  No?  Show the default template   
+		if ($this->EE->uri->segment(1) === FALSE)
+		{
 			return $this->fetch_template('', 'index', TRUE);
         }
         // Is only the pagination showing in the URI?
@@ -1758,7 +1765,7 @@ class EE_Template {
 		// Load the string helper
 		$this->EE->load->helper('string');
 		
-        // At this point we know that we have at least one segment in the URI, so  
+		// At this point we know that we have at least one segment in the URI, so
 		// let's try to determine what template group/template we should show
 		
 		// Is the first segment the name of a template group?
@@ -1766,7 +1773,7 @@ class EE_Template {
 		$this->EE->db->where('group_name', $this->EE->uri->segment(1));
 		$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
 		$query = $this->EE->db->get('template_groups');
-	
+		
 		// Template group found!
 		if ($query->num_rows() == 1)
 		{
@@ -1807,7 +1814,7 @@ class EE_Template {
 						}
 					}
 					
-					// Set the template to index		
+					// Set the template to index
 					$template = 'index';
 				   
 					// Re-assign the query string variable in the Input class so the various tags can show the correct data
@@ -1848,17 +1855,22 @@ class EE_Template {
 			}
 			
 			// We we are not enforcing strict URLs, so Let's fetch the the name of the default template group
-			$this->EE->db->select('group_name, group_id');
-			$this->EE->db->where('is_site_default', 'y');
-			$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
-			$result = $this->EE->db->get('template_groups');
+			$result = $this->EE->db->select('group_name, group_id')
+				->get_where(
+					'template_groups',
+					array(
+						'is_site_default' => 'y',
+						'site_id' => $this->EE->config->item('site_id')
+					)
+				);
 
 			// No result?  Bail out...
-			// There's really nothing else to do here.  We don't have a valid template group in the URL
-			// and the admin doesn't have a template group defined as the site default.
+			// There's really nothing else to do here.  We don't have a valid
+			// template group in the URL and the admin doesn't have a template
+			// group defined as the site default.
 			if ($result->num_rows() == 0)
 			{
-				// Turn off caching 
+				// Turn off caching
 				$this->disable_caching = TRUE;
 
 				// Show the user-specified 404
@@ -1874,7 +1886,7 @@ class EE_Template {
 				}
 			}
 			
-			// Since the first URI segment isn't a template group name, 
+			// Since the first URI segment isn't a template group name,
 			// could it be the name of a template in the default group?
 			$this->EE->db->select('COUNT(*) as count');
 			$this->EE->db->where('group_id', $result->row('group_id'));
@@ -1884,37 +1896,49 @@ class EE_Template {
 			// We found a valid template!
 			if ($query->row('count') == 1)
 			{ 
-				// Set the template group name from the prior query result (we use the default template group name)
+				// Set the template group name from the prior query result (we
+				// use the default template group name)
 				$template_group	= $result->row('group_name');
 
 				$this->log_item("Template Group Using Default: ".$template_group);
 
 				// Set the template name
-				$template = $this->EE->uri->segment(1);				
+				$template = $this->EE->uri->segment(1);
 
-				// Re-assign the query string variable in the Input class so the various tags can show the correct data
+				// Re-assign the query string variable in the Input class so the
+				// various tags can show the correct data
 				if ($this->EE->uri->segment(2))
 				{
-					$this->EE->uri->query_string = trim_slashes(substr($this->EE->uri->uri_string, strlen('/'.$this->EE->uri->segment(1))));
-				}			
+					$this->EE->uri->query_string = trim_slashes(substr(
+						$this->EE->uri->uri_string,
+						strlen('/'.$this->EE->uri->segment(1))
+					));
+				}
 			}
-			// A valid template was not found.  At this point we do not have either a valid template group or a valid template name in the URL
+			// A valid template was not found. At this point we do not have
+			// either a valid template group or a valid template name in the URL
 			else
 			{
 				// is there a file we can automatically create this template from?
-				if ($this->EE->config->item('save_tmpl_files') == 'y' && $this->EE->config->item('tmpl_file_basepath') != '')
+				if ($this->EE->config->item('save_tmpl_files') == 'y' 
+					&& $this->EE->config->item('tmpl_file_basepath') != '')
 				{
 					if ($this->_create_from_file($this->EE->uri->segment(1), $this->EE->uri->segment(2)))
 					{
-						return $this->fetch_template($this->EE->uri->segment(1), $this->EE->uri->segment(2), FALSE);
+						return $this->fetch_template(
+							$this->EE->uri->segment(1),
+							$this->EE->uri->segment(2),
+							FALSE
+						);
 					}
 				}
 				
-				// Turn off caching 
+				// Turn off caching
 				$this->disable_caching = TRUE;
 
-				// is 404 preference set, we wet our group/template names as blank.
-				// The fetch_template() function below will fetch the 404 and show it
+				// is 404 preference set, we wet our group/template names as 
+				// blank. The fetch_template() function below will fetch the 404
+				// and show it
 				if ($this->EE->config->item('site_404'))
 				{
 					$template_group = '';
@@ -1922,14 +1946,17 @@ class EE_Template {
 					$this->log_item("Template group and template not found, showing 404 page");
 				}
 				else
-				// No 404 preference is set so we will show the index template from the default template group
+				// No 404 preference is set so we will show the index template
+				// from the default template group
 				{
-					$this->EE->uri->query_string = trim_slashes($this->EE->uri->uri_string);
+					$this->EE->uri->query_string = trim_slashes(
+						$this->EE->uri->uri_string
+					);
 					$template_group	= $result->row('group_name');
 					$template = 'index';
 					$this->log_item("Showing index. Template not found: ".$this->EE->uri->segment(1));
 				}
-			}		
+			}
 		}
 
 		// Fetch the template!
@@ -1979,7 +2006,10 @@ class EE_Template {
 		$sql_404 = '';
 		$template_group_404 = '';
 		$template_404 = '';
-
+		
+		// Start caching in case we need to create a template from file
+		$this->EE->db->start_cache();
+		
 		/* -------------------------------------------
 		/*	Hidden Configuration Variable
 		/*	- hidden_template_indicator => '.' 
@@ -1989,7 +2019,7 @@ class EE_Template {
 		$hidden_indicator = ($this->EE->config->item('hidden_template_indicator') === FALSE) ? '.' : $this->EE->config->item('hidden_template_indicator');			
 		
 		if ($this->depth == 0 AND substr($template, 0, 1) == $hidden_indicator)
-		{			
+		{
 			/* -------------------------------------------
 			/*	Hidden Configuration Variable
 			/*	- hidden_template_404 => y/n 
@@ -1999,7 +2029,7 @@ class EE_Template {
 			/* -------------------------------------------*/
 			
 			if ($this->EE->config->item('hidden_template_404') !== 'n')
-			{				
+			{
 				$x = explode("/", $this->EE->config->item('site_404'));
 				
 				if (isset($x[0]) AND isset($x[1]))
@@ -2010,7 +2040,10 @@ class EE_Template {
 					$template_group_404 = $this->EE->db->escape_str($x[0]);
 					$template_404 = $this->EE->db->escape_str($x[1]);
 					
-					$sql_404 = " AND exp_template_groups.group_name='".$this->EE->db->escape_str($x[0])."' AND exp_templates.template_name='".$this->EE->db->escape_str($x[1])."'";
+					$this->EE->db->where(array(
+						'template_groups.group_name'	=> $x[0],
+						'templates.template_name'		=> $x[1]
+					));
 				}
 				else
 				{
@@ -2028,7 +2061,7 @@ class EE_Template {
 			$treq = $this->EE->config->item('site_404');
 			
 			$x = explode("/", $treq);
-
+			
 			if (isset($x[0]) AND isset($x[1]))
 			{
 				$this->EE->output->out_type = '404';
@@ -2037,76 +2070,91 @@ class EE_Template {
 				$template_group_404 = $this->EE->db->escape_str($x[0]);
 				$template_404 = $this->EE->db->escape_str($x[1]);
 				
-				$sql_404 = " AND exp_template_groups.group_name='".$this->EE->db->escape_str($x[0])."' AND exp_templates.template_name='".$this->EE->db->escape_str($x[1])."'";
+				$this->EE->db->where(array(
+					'template_groups.group_name'	=> $x[0],
+					'templates.template_name'		=> $x[1]
+				));
 			}	
 		}
-		 
-		$sql = "SELECT exp_templates.template_name, 
-						exp_templates.template_id, 
-						exp_templates.template_data, 
-						exp_templates.template_type,
-						exp_templates.edit_date,
-						exp_templates.save_template_file,
-						exp_templates.cache, 
-						exp_templates.refresh, 
-						exp_templates.no_auth_bounce, 
-						exp_templates.enable_http_auth,
-						exp_templates.allow_php, 
-						exp_templates.php_parse_location,
-						exp_templates.hits,
-						exp_template_groups.group_name
-				FROM	exp_template_groups, exp_templates
-				WHERE  exp_template_groups.group_id = exp_templates.group_id
-				AND	exp_template_groups.site_id = '".$this->EE->db->escape_str($site_id)."' ";
-				
-		if ($sql_404 != '')
+		
+		$this->EE->db->select('templates.template_name,
+				templates.template_id,
+				templates.template_data,
+				templates.template_type,
+				templates.edit_date,
+				templates.save_template_file,
+				templates.cache,
+				templates.refresh,
+				templates.no_auth_bounce,
+				templates.enable_http_auth,
+				templates.allow_php,
+				templates.php_parse_location,
+				templates.hits,
+				template_groups.group_name')
+			->from('templates')
+			->join('template_groups', 'template_groups.group_id = templates.group_id')
+			->where('template_groups.site_id', $site_id);
+		
+		// Alright, stop caching active record, we have what we need for now
+		$this->EE->db->stop_cache();
+		
+		// If we're not dealing with a 404, what template and group do we need?
+		if ($sql_404 === '')
 		{
-			$sql .= $sql_404;
-		}
-		else
-		{
+			// Definitely need a template
 			if ($template != '')
 			{
-				$sql .= " AND exp_templates.template_name = '".$this->EE->db->escape_str($template)."' ";
+				$this->EE->db->where('templates.template_name', $template);
 			}
-		
+			
+			// But do we have a template group?
 			if ($show_default == TRUE)
 			{
-				$sql .= "AND exp_template_groups.is_site_default = 'y'";				
+				$this->EE->db->where('template_groups.is_site_default', 'y');
 			}
 			else
 			{
-				$sql .= "AND exp_template_groups.group_name = '".$this->EE->db->escape_str($template_group)."'";
+				$this->EE->db->where('template_groups.group_name', $template_group);
 			}
 		}
-				
-		$query = $this->EE->db->query($sql);
-
+		
+		$query = $this->EE->db->get();
+		
+		// Hmm, no template huh?
 		if ($query->num_rows() == 0)
 		{
 			// is there a file we can automatically create this template from?
 			if ($this->EE->config->item('save_tmpl_files') == 'y' && $this->EE->config->item('tmpl_file_basepath') != '')
 			{
 				$t_group = ($sql_404 != '') ? $template_group_404 : $template_group;
-				$t_template = ($sql_404 != '') ? $template_404 : $template;					
+				$t_template = ($sql_404 != '') ? $template_404 : $template;
 				
 				if ($this->_create_from_file($t_group, $t_template, TRUE))
 				{
 					// run the query again, as we just successfully created it
-					$query = $this->EE->db->query($sql);
+					$this->EE->db->where(array(
+						'templates.template_name'	=> $t_template,
+						'templates.template_group'	=> $t_group
+					));
+					$query = $this->EE->db->get();
 				}
 				else
 				{
 					$this->log_item("Template Not Found");
+					$this->EE->db->flush_cache();
 					return FALSE;
 				}
 			}
 			else
 			{
 				$this->log_item("Template Not Found");
+				$this->EE->db->flush_cache();
 				return FALSE;
 			}
 		}
+		
+		// Clear out the AR cache, we're done with it
+		$this->EE->db->flush_cache();
 		
 		$this->log_item("Template Found");
 		
@@ -2127,14 +2175,16 @@ class EE_Template {
 				{
 					$not_allowed_groups[] = $row['member_group'];
 				}
-			}		  
+			}
 
 			$this->EE->load->library('auth');
-			$this->EE->auth->authenticate_http_basic($not_allowed_groups,
-													 $this->realm);
+			$this->EE->auth->authenticate_http_basic(
+				$not_allowed_groups,
+				$this->realm
+			);
 		}
 
-		// Is the current user allowed to view this template?		
+		// Is the current user allowed to view this template?
 		if ($query->row('enable_http_auth') != 'y' && $query->row('no_auth_bounce')  != '')
 		{
 			$this->log_item("Determining Template Access Privileges");
@@ -2144,19 +2194,21 @@ class EE_Template {
 			$this->EE->db->where('member_group', $this->EE->session->userdata('group_id'));
 			$result = $this->EE->db->get('template_no_access');
 			
-			if ($result->row('count')  > 0)
+			if ($result->row('count') > 0)
 			{ 
 				if ($this->depth > 0)
 				{
 					return '';
 				}
 			
-				$sql = "SELECT	a.template_id, a.template_data, a.template_name, a.template_type, a.edit_date, a.save_template_file, a.cache, a.refresh, a.hits, a.allow_php, a.php_parse_location, b.group_name
-						FROM	exp_templates a, exp_template_groups b
-						WHERE	a.group_id = b.group_id
-						AND		template_id = '".$this->EE->db->escape_str($query->row('no_auth_bounce') )."'";
-		
-				$query = $this->EE->db->query($sql);
+				$query = $this->EE->db->select('a.template_id, a.template_data,
+					a.template_name, a.template_type, a.edit_date,
+					a.save_template_file, a.cache, a.refresh, a.hits,
+					a.allow_php, a.php_parse_location, b.group_name')
+					->from('templates a')
+					->join('template_groups b', 'a.group_id = b.group_id')
+					->where('template_id', 3)
+					->get();
 			}
 		}
 		
@@ -2167,7 +2219,7 @@ class EE_Template {
 		
 		$row = $query->row_array();
 		
-		// Is PHP allowed in this template?		
+		// Is PHP allowed in this template?
 		if ($row['allow_php'] == 'y')
 		{
 			$this->parse_php = TRUE;
@@ -2175,15 +2227,18 @@ class EE_Template {
 			$this->php_parse_location = ($row['php_parse_location'] == 'i') ? 'input' : 'output';
 		}
 		
-		// Increment hit counter		
+		// Increment hit counter
 		if (($this->hit_lock == FALSE OR $this->hit_lock_override == TRUE) && 
 			$this->EE->config->item('enable_hit_tracking') != 'n')
 		{
 			$this->template_hits = $row['hits'] + 1;
 			$this->hit_lock = TRUE;
 			
-			$this->EE->db->update('templates', array('hits' 		=> $this->template_hits),
-											   array('template_id'	=> $row['template_id']));
+			$this->EE->db->update(
+				'templates', 
+				array('hits' 		=> $this->template_hits),
+				array('template_id'	=> $row['template_id'])
+			);
 		}
 		
 		// Set template edit date
@@ -2195,7 +2250,7 @@ class EE_Template {
 			$this->template_type = $row['template_type'];
 			$this->EE->functions->template_type = $row['template_type'];
 			
-			// If JS or CSS request, reset Tracker Cookie			
+			// If JS or CSS request, reset Tracker Cookie
 			if ($this->template_type == 'js' OR $this->template_type == 'css')
 			{
 				if (count($this->EE->session->tracker) <= 1)
@@ -2234,7 +2289,7 @@ class EE_Template {
 			}
 		}
 		
-		// Retreive cache					  
+		// Retreive cache
 		$this->cache_hash = md5($site_id.'-'.$template_group.'-'.$template);
 
 		if ($row['cache'] == 'y')
@@ -2256,43 +2311,46 @@ class EE_Template {
 				//
 				// -------------------------------------------
 				
-				return $this->convert_xml_declaration($cache_contents);				
+				return $this->convert_xml_declaration($cache_contents);
 			}
 		}
 		
-		// Retrieve template file if necessary        
-        if ($row['save_template_file'] == 'y')
-        {
-        	$site_switch = FALSE;
-        	
-        	if ($this->EE->config->item('site_id') != $site_id)
-        	{
-        		$site_switch = $this->EE->config->config;
-        		
-        		if (isset($this->site_prefs_cache[$site_id]))
-        		{
-        			$this->EE->config->config = $this->site_prefs_cache[$site_id];
-        		}
-        		else
-        		{
-        			$this->EE->config->site_prefs('', $site_id);
+		// Retrieve template file if necessary
+		if ($row['save_template_file'] == 'y')
+		{
+			$site_switch = FALSE;
+			
+			if ($this->EE->config->item('site_id') != $site_id)
+			{
+				$site_switch = $this->EE->config->config;
+				
+				if (isset($this->site_prefs_cache[$site_id]))
+				{
+					$this->EE->config->config = $this->site_prefs_cache[$site_id];
+				}
+				else
+				{
+					$this->EE->config->site_prefs('', $site_id);
 					$this->site_prefs_cache[$site_id] = $this->EE->config->config;
-        		}
-        	}
+				}
+			}
 
-        	if ($this->EE->config->item('save_tmpl_files') == 'y' AND $this->EE->config->item('tmpl_file_basepath') != '')
-        	{
+			if ($this->EE->config->item('save_tmpl_files') == 'y' 
+				AND $this->EE->config->item('tmpl_file_basepath') != '')
+			{
 				$this->log_item("Retrieving Template from File");
 				$this->EE->load->library('api');
 				$this->EE->api->instantiate('template_structure');
 				
 				$basepath = rtrim($this->EE->config->item('tmpl_file_basepath'), '/').'/';
-										
-				$basepath .= $this->EE->config->item('site_short_name').'/'.$row['group_name'].'.group/'.$row['template_name'].$this->EE->api_template_structure->file_extensions($row['template_type']);
+				
+				$basepath .= $this->EE->config->item('site_short_name').'/'
+					.$row['group_name'].'.group/'.$row['template_name']
+					.$this->EE->api_template_structure->file_extensions($row['template_type']);
 				
 				if (file_exists($basepath))
 				{
-					$row['template_data'] = file_get_contents($basepath);	
+					$row['template_data'] = file_get_contents($basepath);
 				}
 			}
 			

@@ -997,7 +997,9 @@ class Simple_commerce_mcp {
 			->limit($params['perpage'], $state['offset'])
 			->get('simple_commerce_emails')
 			->result_array();
-
+		
+		$rows = array();
+		
 		while ($email = array_shift($emails))
 		{
 			$rows[] = array(
@@ -1643,7 +1645,7 @@ class Simple_commerce_mcp {
 					if (0 == $val['3'])
 					{
 						$this->EE->api_channel_categories->cat_array[] = array($val['0'], $val['1'], $val['2']);
-						$this->EE->api_channel_categories->category_edit_subtree($val['1'], $categories, $depth=1);
+						$this->EE->api_channel_categories->category_form_subtree($val['1'], $categories, $depth=1);
 					}
 				}
 			}

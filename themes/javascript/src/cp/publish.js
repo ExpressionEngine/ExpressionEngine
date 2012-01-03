@@ -35,7 +35,7 @@ EE.publish.category_editor = function() {
 	// categories with a lot of custom fields need to scroll
 	cat_modal_container.css({
 		height: '100%',
-		padding: '0 10px',	// account for vert scrollbar
+		padding: '0 20px 0 0',	// account for vert scrollbar
 		overflow: 'auto'
 	});
 
@@ -50,6 +50,7 @@ EE.publish.category_editor = function() {
 		width: 600,
 		modal: true,
 		resizable: false,
+		title: EE.publish.lang.edit_category,
 		open: function(event, ui) {
 			$('.ui-dialog-content').css('overflow', 'hidden');
 			$('.ui-dialog-titlebar').focus(); // doing this first to fix IE7 scrolling past the dialog's close button
@@ -159,8 +160,11 @@ EE.publish.category_editor = function() {
 			container_form.submit(handle_submit);
 			
 			var buttons = {};
-			buttons[submit_button.remove().attr('value')] = function() {
-				handle_submit(container_form);
+			buttons[submit_button.remove().attr('value')] = {
+				text: EE.publish.lang.update,
+				click: function() {
+					handle_submit(container_form);
+				}
 			};
 			
 			cat_modal.dialog("open");
