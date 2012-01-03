@@ -106,7 +106,7 @@ class Comment_mcp {
 		$this->EE->table->set_base_url('C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=comment');
 		$this->EE->table->set_columns($columns);
 		
-		$params = array('perpage' => 3);
+		$params = array('perpage' => 50);
 		$defaults = array('sort' => array('comment_date' => 'desc'));
 
 		$data = $this->EE->table->datasource('_comment_data', $defaults, $params);
