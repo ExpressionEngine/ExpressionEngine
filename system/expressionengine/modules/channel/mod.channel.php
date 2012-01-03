@@ -312,8 +312,8 @@ class Channel {
 
 		$this->EE->load->library('typography');
 		$this->EE->typography->initialize(array(
-				'convert_curly'	=> FALSE)
-				);
+			'convert_curly'	=> FALSE
+		));
 
 		if ($this->enable['categories'] == TRUE)
 		{
@@ -1218,8 +1218,8 @@ class Channel {
 						unset($arr);
 
 						$result = $this->EE->db->query("SELECT cat_id FROM exp_categories
-											  WHERE cat_url_title='".$this->EE->db->escape_str($cut_qstring)."'
-											  AND group_id IN ('".implode("','", $valid_cats)."')");
+							WHERE cat_url_title='".$this->EE->db->escape_str($cut_qstring)."'
+							AND group_id IN ('".implode("','", $valid_cats)."')");
 
 						if ($result->num_rows() == 1)
 						{
@@ -1229,8 +1229,8 @@ class Channel {
 						{
 							// give it one more try using the whole $qstring
 							$result = $this->EE->db->query("SELECT cat_id FROM exp_categories
-												  WHERE cat_url_title='".$this->EE->db->escape_str($qstring)."'
-												  AND group_id IN ('".implode("','", $valid_cats)."')");
+								WHERE cat_url_title='".$this->EE->db->escape_str($qstring)."'
+								AND group_id IN ('".implode("','", $valid_cats)."')");
 
 							if ($result->num_rows() == 1)
 							{
@@ -1239,15 +1239,19 @@ class Channel {
 						}
 					}
 				}
-
-				// Numeric version of the category
-
-				if ($dynamic && preg_match("#(^|\/)C(\d+)#", $qstring, $match))
+				
+				// Check to see if we're dealing with a category request
+				$numeric_category = preg_match("#(^|\/)C(\d+)#", $this->query_string, $match);
+				
+				if ($numeric_category OR in_array($this->reserved_cat_segment, explode("/", $this->query_string)))
 				{
 					$this->cat_request = TRUE;
+				}
 
+				// Numeric version of the category
+				if ($dynamic && $numeric_category)
+				{
 					$cat_id = $match[2];
-
 					$qstring = trim_slashes(str_replace($match[0], '', $qstring));
 				}
 
@@ -3626,14 +3630,16 @@ class Channel {
 								$this->EE->load->library('file_field');
 								$cat_image = $this->EE->file_field->parse_field($v[3]);
 								
-								$cat_vars = array('category_name'			=> $v[2],
-												  'category_url_title'		=> $v[6],
-												  'category_description'	=> (isset($v[4])) ? $v[4] : '',
-												  'category_group'			=> (isset($v[5])) ? $v[5] : '',
-												  'category_image'			=> $cat_image['url'],
-												  'category_id'				=> $v[0],
-												  'parent_id'				=> $v[1],
-												  'active'					=> ($active_cat == $v[0] || $active_cat == $v[6]));
+								$cat_vars = array(
+									'category_name'			=> $v[2],
+									'category_url_title'	=> $v[6],
+									'category_description'	=> (isset($v[4])) ? $v[4] : '',
+									'category_group'		=> (isset($v[5])) ? $v[5] : '',
+									'category_image'		=> $cat_image['url'],
+									'category_id'			=> $v[0],
+									'parent_id'				=> $v[1],
+									'active'				=> ($active_cat == $v[0] || $active_cat == $v[6])
+								);
 
 								// add custom fields for conditionals prep
 								foreach ($this->catfields as $cv)
@@ -3643,35 +3649,41 @@ class Channel {
 
 								$temp = $this->EE->functions->prep_conditionals($temp, $cat_vars);
 
-								$temp = str_replace(array(LD."category_id".RD,
-														  LD."category_name".RD,
-														  LD."category_url_title".RD,
-														  LD."category_image".RD,
-														  LD."category_group".RD,
-														  LD.'category_description'.RD,
-														  LD.'parent_id'.RD),
-													array($v[0],
-														  $v[2],
-														  $v[6],
-														  $cat_image['url'],
-														  (isset($v[5])) ? $v[5] : '',
-														  (isset($v[4])) ? $v[4] : '',
-														  $v[1]
-														  ),
-													$temp);
+								$temp = str_replace(
+									array(
+										LD."category_id".RD,
+										LD."category_name".RD,
+										LD."category_url_title".RD,
+										LD."category_image".RD,
+										LD."category_group".RD,
+										LD.'category_description'.RD,
+										LD.'parent_id'.RD
+									),
+									array($v[0],
+										$v[2],
+										$v[6],
+										$cat_image['url'],
+										(isset($v[5])) ? $v[5] : '',
+										(isset($v[4])) ? $v[4] : '',
+										$v[1]
+									),
+									$temp
+								);
 
 								foreach($this->catfields as $cv2)
 								{
 									if (isset($v['field_id_'.$cv2['field_id']]) AND $v['field_id_'.$cv2['field_id']] != '')
 									{
-										$field_content = $this->EE->typography->parse_type($v['field_id_'.$cv2['field_id']],
-																					array(
-																						  'text_format'		=> $v['field_ft_'.$cv2['field_id']],
-																						  'html_format'		=> $v['field_html_formatting'],
-																						  'auto_links'		=> 'n',
-																						  'allow_img_url'	=> 'y'
-																						)
-																				);
+										$field_content = $this->EE->typography->parse_type(
+											$v['field_id_'.$cv2['field_id']],
+											array(
+												'text_format'		=> $v['field_ft_'.$cv2['field_id']],
+												'html_format'		=> $v['field_html_formatting'],
+												'auto_links'		=> 'n',
+												'allow_img_url'	=> 'y'
+											)
+										);
+										
 										$temp = str_replace(LD.$cv2['field_name'].RD, $field_content, $temp);
 									}
 									else
@@ -4855,18 +4867,16 @@ class Channel {
 
 		if ($this->EE->TMPL->fetch_param('style') == '' OR $this->EE->TMPL->fetch_param('style') == 'nested')
 		{
-			$this->category_tree(
-									array(
-											'group_id'		=> $group_ids,
-											'channel_ids'	=> $channel_ids,											
-											'template'		=> $this->EE->TMPL->tagdata,
-											'path'			=> $path,
-											'channel_array'	=> '',
-											'parent_only'	=> $parent_only,
-											'show_empty'	=> $this->EE->TMPL->fetch_param('show_empty'),
-											'strict_empty'	=> $strict_empty
-										  )
-								);
+			$this->category_tree(array(
+				'group_id'		=> $group_ids,
+				'channel_ids'	=> $channel_ids,
+				'template'		=> $this->EE->TMPL->tagdata,
+				'path'			=> $path,
+				'channel_array'	=> '',
+				'parent_only'	=> $parent_only,
+				'show_empty'	=> $this->EE->TMPL->fetch_param('show_empty'),
+				'strict_empty'	=> $strict_empty
+			));
 
 
 			if (count($this->category_list) > 0)
