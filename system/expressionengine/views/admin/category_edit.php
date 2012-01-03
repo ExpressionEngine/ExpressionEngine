@@ -50,6 +50,10 @@ if ($EE_view_disable !== TRUE)
 				<div class="category_field">
 					<?=form_label(lang('category_image'), 'cat_image')?>
 					<?=$cat_image?>
+					<? if (isset($cat_image_error)): ?>
+						<span class="notice"><?=$cat_image_error?></span>
+						<br />
+					<? endif ?>
 				</div>
 
 				<p>
