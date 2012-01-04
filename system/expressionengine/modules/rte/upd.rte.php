@@ -45,38 +45,48 @@ class Rte_upd {
 	public function install()
 	{
 		// module
-		$data = array(
-			'module_name'		=> $this->name,
-			'module_version'	=> $this->version,
-			'has_cp_backend'	=> 'y'
+		$this->EE->db->insert(
+			'modules',
+			array(
+				'module_name'		=> $this->name,
+				'module_version'	=> $this->version,
+				'has_cp_backend'	=> 'y'
+			)
 		);
-		$this->EE->db->insert('modules', $data);
 
 		// enable/disable at user level - Ajax call from the Publish/Edit page
-		$data = array(
-			'class'		=> $this->name . '_mcp',
-			'method'	=> 'member_enable'
+		$this->EE->db->insert(
+			'actions',
+			array(
+				'class'		=> $this->name . '_mcp',
+				'method'	=> 'member_enable'
+			)
 		);
-		$this->EE->db->insert('actions', $data);
-		$data = array(
-			'class'		=> $this->name . '_mcp',
-			'method'	=> 'member_disable'
+		$this->EE->db->insert(
+			'actions',
+			array(
+				'class'		=> $this->name . '_mcp',
+				'method'	=> 'member_disable'
+			)
 		);
-		$this->EE->db->insert('actions', $data);
 		
 		// Settings
-		$data = array(
-			'class'		=> $this->name . '_mcp',
-			'method'	=> 'index'
+		$this->EE->db->insert(
+			'actions',
+			array(
+				'class'		=> $this->name . '_mcp',
+				'method'	=> 'index'
+			)
 		);
-		$this->EE->db->insert('actions', $data);
 		
-		// Toolsets
-		$data = array(
-			'class'		=> $this->name . '_mcp',
-			'method'	=> 'toolset_builder'
+		// Toolset Builder
+		$this->EE->db->insert(
+			'actions',
+			array(
+				'class'		=> $this->name . '_mcp',
+				'method'	=> 'edit_toolset'
+			)
 		);
-		$this->EE->db->insert('actions', $data);
 		
 		// RTE Toolsets Table
 		$fields = array(
@@ -140,31 +150,27 @@ class Rte_upd {
 		$this->EE->dbforge->add_key(array('enabled'));
 		$this->EE->dbforge->create_table('rte_tools');
 		
-		// TODO: Load the tools and get back the ids of the ones we want for the default definition
-		
-		// TODO: Insert the default toolset
-		$data = array(
-			'site_id'	=> $this->EE->config->item('site_id'),
-			'name'		=> 'Default',
-			'rte_tools'	=> '1', // for now
-			'enabled'	=> 'y'
-		);
-		$this->EE->db->insert('rte_toolsets', $data);
+		// Load the default toolset
+		$this->EE->load->model('rte_toolset_model');
+		$this->EE->rte_toolset_model->load_default_toolsets();
 		
 		// Install the extension
 		$this->EE->db->insert(
 			'extensions',
 			array(
-				'class'    => 'Rte_ext',
-				'hook'     => 'files_after_delete',
-				'method'   => 'files_after_delete',
+				'class'    => $this->name.'_ext',
+				'hook'     => 'myaccount_nav_setup',
+				'method'   => 'myaccount_nav_setup',
 				'settings' => '',
-				'priority' => 5,
+				'priority' => 10,
 				'version'  => $this->version,
 				'enabled'  => 'y'
 			)
 		);
 		
+		//  Add the member fields
+		$this->EE->db->query("ALTER TABLE `{$this->EE->db->dbprefix}members` ADD `rte_enabled` CHAR(1) NOT NULL DEFAULT 'y'");
+		$this->EE->db->query("ALTER TABLE `{$this->EE->db->dbprefix}members` ADD `rte_toolset_id` INT(10) NOT NULL DEFAULT '1'");
 				
 		//  Update the config
 		$this->EE->config->_update_config(
@@ -188,27 +194,42 @@ class Rte_upd {
 	 */
 	public function uninstall()
 	{
-		$this->EE->db->select('module_id');
-		$query = $this->EE->db->get_where('modules', array('module_name' => $this->name));
+		$module_id = $this->EE->db
+						->select('module_id')
+						->get_where('modules', array( 'module_name' => $this->name ))
+						->row('module_id');
 		
 		// Member access
-		$this->EE->db->where('module_id', $query->row('module_id'));
-		$this->EE->db->delete('module_member_groups');
+		$this->EE->db
+			->where('module_id', $module_id)
+			->delete('module_member_groups');
 		
 		// Module
-		$this->EE->db->where('module_name', $this->name);
-		$this->EE->db->delete('modules');
+		$this->EE->db
+			->where('module_name', $this->name)
+			->delete('modules');
 
 		// Actions
-		$this->EE->db->where('class', $this->name);
-		$this->EE->db->delete('actions');
-		$this->EE->db->where('class', $this->name . '_mcp');
-		$this->EE->db->delete('actions');
+		$this->EE->db
+			->where('class', $this->name)
+			->delete('actions');
+		$this->EE->db
+			->where('class', $this->name . '_mcp')
+			->delete('actions');
+		
+		// Extension
+		$this->EE->db
+			->where('class', $this->name.'_ext')
+			->delete('extensions');
 		
 		// Tables
 		$this->EE->dbforge->drop_table('rte_toolsets');
 		$this->EE->dbforge->drop_table('rte_tools');
 
+		//  Remove the member fields
+		$this->EE->db->query("ALTER TABLE `{$this->EE->db->dbprefix}members` DROP `rte_enabled`");
+		$this->EE->db->query("ALTER TABLE `{$this->EE->db->dbprefix}members` DROP `rte_toolset_id`");
+				
 		//  Update the config
 		$this->EE->config->_update_config(
 			array(),

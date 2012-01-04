@@ -66,7 +66,7 @@ class Rte_ext {
 	 */
 	function disable_extension()
 	{
-		show_error('This extension is automatically deleted with the wiki module');
+		//show_error('This extension is automatically deleted with the wiki module');
 	}
 	
 		// --------------------------------------------------------------------

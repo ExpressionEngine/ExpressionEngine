@@ -40,8 +40,6 @@ class Rte_mcp {
 		
 		$this->_base_url	= BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=rte';
 		$this->_form_base	= 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=rte';
-
-		$this->_load_tools_into_db();
 	}
 
 	// --------------------------------------------------------------------
@@ -182,6 +180,14 @@ class Rte_mcp {
 	 */
 	public function myaccount_settings( $vars )
 	{
+		$prefs = $this->EE->db
+					->select( array( 'rte_enabled','rte_toolset_id' ) )
+					->get_where(
+						'members',
+						array( 'member_id'=>$this->EE->session->userdata('member_id') )
+					  )
+					->result_array();
+				
 		return $this->EE->load->view('myaccount_settings', $vars, TRUE);
 	}
 
@@ -452,37 +458,6 @@ class Rte_mcp {
 		{
 			show_error(lang('unauthorized_access'));
 		}		
-	}
-	
-	// --------------------------------------------------------------------
-
-	/**
-	 * Makes sure the DB has the latest list of tools
-	 */
-	private function _load_tools_into_db()
-	{
-		$this->EE->load->library('addons');
-		
-		$files		= $this->EE->addons->get_files('rte_tools');
-		$installed	= $this->EE->addons->get_installed('rte_tools');
-
-		foreach ( $files as $package => $details )
-		{
-			if ( ! isset($installed[$package]) )
-			{
-				// make a record of the add-on in the DB
-				$this->EE->db->query(
-					$this->EE->db->insert_string(
-						'rte_tools',
-						array(
-							'name'		=> $details['name'],
-							'class'		=> $details['class'],
-							'enabled'	=> 'y'
-						)
-					)
-				);
-			}
-		}
 	}
 	
 }

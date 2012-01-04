@@ -26,6 +26,11 @@ class Rte_tool_model extends CI_Model {
 
 	private $tools;
 	
+	public function __construct()
+	{
+		$this->_load_tools_into_db();
+	}
+	
 	public function get_all($list=FALSE)
 	{
 		$results = $this->db->get('rte_tools')->result_array();
@@ -44,6 +49,29 @@ class Rte_tool_model extends CI_Model {
 							: $this->db->insert_string( 'rte_tools', $tool );
 		return $this->db->affected_rows();
 	}
+	
+	public function get_tool_ids( $tools=array() )
+	{
+		// make sure the class name is correct
+		foreach ( $tools as &$tool )
+		{
+			$tool = ucfirst( strtolower( $tool ) ).'_rte';
+		}
+		// get the tools
+		$results = $this->db
+						->select(array('rte_tool_id','class'))
+						->where_in('class', $tools)
+						->get('rte_tools')
+						->result_array();
+		// extract the ids
+		$tool_ids = array();
+		foreach ( $results as $row )
+		{
+			$tool_ids[array_search($row['class'],$tools)] = $row['rte_tool_id'];
+		}
+		ksort($tool_ids, SORT_NUMERIC);
+		return $tool_ids;
+	}
 
 	private function _make_list( $result )
 	{
@@ -56,6 +84,31 @@ class Rte_tool_model extends CI_Model {
 		
 		return $return;
 	}
+	
+	private function _load_tools_into_db()
+	{
+		$this->load->library('addons');
+		
+		$files		= $this->addons->get_files('rte_tools');
+		$installed	= $this->addons->get_installed('rte_tools');
+
+		foreach ( $files as $package => $details )
+		{
+			if ( ! isset($installed[$package]) )
+			{
+				// make a record of the add-on in the DB
+				$this->db->insert(
+					'rte_tools',
+					array(
+						'name'		=> $details['name'],
+						'class'		=> $details['class'],
+						'enabled'	=> 'y'
+					)
+				);
+			}
+		}
+	}
+	
 
 }
 // END CLASS
