@@ -151,6 +151,20 @@ class Rte_upd {
 		);
 		$this->EE->db->insert('rte_toolsets', $data);
 		
+		// Install the extension
+		$this->EE->db->insert(
+			'extensions',
+			array(
+				'class'    => 'Rte_ext',
+				'hook'     => 'files_after_delete',
+				'method'   => 'files_after_delete',
+				'settings' => '',
+				'priority' => 5,
+				'version'  => $this->version,
+				'enabled'  => 'y'
+			)
+		);
+		
 				
 		//  Update the config
 		$this->EE->config->_update_config(

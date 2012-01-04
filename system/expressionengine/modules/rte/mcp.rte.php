@@ -176,6 +176,19 @@ class Rte_mcp {
 	// --------------------------------------------------------------------
 	
 	/**
+	 * MyAccount Page
+	 *
+	 * @access	public
+	 */
+	public function myaccount_settings( $vars )
+	{
+		return $this->EE->load->view('myaccount_settings', $vars, TRUE);
+	}
+
+	
+	// --------------------------------------------------------------------
+	
+	/**
 	 * Update prefs form action
 	 *
 	 * @access	public

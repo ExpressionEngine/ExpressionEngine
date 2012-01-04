@@ -27,6 +27,7 @@ class MyAccount extends CI_Controller {
 	var $id			= '';
 	var $username	= '';
 	var $unique_dates = array();
+	var $module_paths = array();
 
 	/**
 	 * Constructor
@@ -166,6 +167,55 @@ class MyAccount extends CI_Controller {
 			$vars['allow_localization'] = ($this->config->item('allow_member_localization') == 'y' OR $this->session->userdata('group_id') == 1) ? TRUE : FALSE;
 			$vars['login_as_member'] = ($this->session->userdata('group_id') == 1 && $this->id != $this->session->userdata('member_id')) ? TRUE : FALSE;
 			$vars['can_delete_members'] = ($this->cp->allowed_group('can_delete_members') AND $this->id != $this->session->userdata('member_id')) ? TRUE : FALSE;
+		}
+		
+		// default additional_nav lists are empty
+		$additional_nav = array(
+			'personal_settings' => array(),
+			'utilities' => array(),
+			'private_messages' => array(),
+			'customize_cp' => array(),
+			'channel_preferences' => array(),
+			'administrative_options' => array()
+		);
+		
+		// -------------------------------------------
+		// 'myaccount_nav_setup' hook.
+		//  - Add items to the My Account nav
+		//  - return must be an associative array using a pre-defined key
+		//
+		if ($this->extensions->active_hook('myaccount_nav_setup') === TRUE)
+		{
+			$vars['additional_nav'] = array_merge( $additional_nav, $this->extensions->call('myaccount_nav_setup') );
+		}
+		//
+		// -------------------------------------------
+
+		// make sure we have usable URLs in additional_nav
+		$this->load->model('addons_model');
+		foreach ( $vars['additional_nav'] as $additional_nav_key => $additional_nav_links )
+		{
+			if ( count( $additional_nav_links ) )
+			{
+				foreach ( $additional_nav_links as $additional_nav_link_text => $additional_nav_link_link )
+				{
+					if ( is_array( $additional_nav_link_link ) )
+					{
+						// create the link
+						if ( $this->addons_model->module_installed($additional_nav_link_link['module']) )
+						{
+							$vars['additional_nav'][$additional_nav_key][$additional_nav_link_text] = BASE.AMP.'C=myaccount'.AMP.'M=custom_screen'.
+																										AMP.'module='.$additional_nav_link_link['module'].
+																										AMP.'method='.$additional_nav_link_link['method'];
+						}
+						// don’t create the link
+						else
+						{
+							unset( $vars['additional_nav'][$additional_nav_key][$additional_nav_link_text] );
+						}
+					}
+				}
+			}
 		}
 		
 		return $vars;
@@ -2649,6 +2699,69 @@ class MyAccount extends CI_Controller {
 		$this->output->send_ajax_response($resp); 
 
 	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Custom My Account Screens
+	 */
+	function custom_screen()
+	{
+		$vars = $this->_account_menu_setup();
+		
+		// get the module & method
+		$module = strtolower( $this->input->get_post('module') );
+		$method = strtolower( $this->input->get_post('method') );
+
+		$class_name = ucfirst($module).'_mcp';
+		
+		// Have we encountered this one before?
+		if ( ! isset($this->module_paths[$module]) )
+		{
+			// First or third party?
+			foreach ( array(APPPATH.'modules/', PATH_THIRD) as $tmp_path )
+			{
+				if ( file_exists($tmp_path.$module.'/mcp.'.$module.'.php') )
+				{
+					$this->module_paths[$module] = $tmp_path.$module.'/';
+					break;
+				}
+			}
+			
+			// Include file
+			if ( ! class_exists($class_name))
+			{
+				if ( ! isset( $this->module_paths[$module] ) )
+				{
+					show_error(sprintf($this->lang->line('unable_to_load_module'), 'mcp.'.$module.'.php'));
+				}
+			}
+		}
+		
+		# include the module
+		include_once( $this->module_paths[$module].'mcp.'.$module.'.php' );
+		
+		$this->load->add_package_path($this->module_paths[$module], FALSE);
+
+		$MODULE = new $class_name();
+		$this->lang->loadfile($module);
+		if ( method_exists($MODULE, $method) === TRUE )
+		{
+			// get the content back from the module
+			$vars['content'] = $MODULE->$method($vars);
+		}
+		else
+		{
+			show_error(sprintf(lang('unable_to_execute_method'), 'mcp.'.$module.'.php'));
+		}
+		
+		// restore our package and view paths
+		$this->load->remove_package_path($this->module_paths[$module]);
+		
+		// load the view wrapper
+		$this->load->view('account/custom_screen', $vars);
+	}
+
 }
 
 /* End of file myaccount.php */
