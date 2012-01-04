@@ -996,8 +996,8 @@ class Filemanager {
 	{
 		$this->datatables();
 		
-		$dir_id = $this->EE->input->get('directory_id');
-		$dir = $this->directory($dir_id, FALSE, TRUE);
+		$dir_id	= $this->EE->input->get('directory_id');
+		$dir	= $this->directory($dir_id, FALSE, TRUE);
 		
 		$offset	= $this->EE->input->get('offset');
 		$limit	= $this->EE->input->get('limit');

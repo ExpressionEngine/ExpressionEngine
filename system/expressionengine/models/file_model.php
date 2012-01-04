@@ -111,7 +111,7 @@ class File_model extends CI_Model {
 
 		if (isset($parameters['limit']))
 		{
-			$this->db->limit($parameters['limit']);
+			$this->db->limit(intval($parameters['limit']));
 		}
 		else
 		{
@@ -120,7 +120,7 @@ class File_model extends CI_Model {
 
 		if (isset($parameters['offset']))
 		{
-			$this->db->offset($parameters['offset']);
+			$this->db->offset(intval($parameters['offset']));
 		}
 
 		if (isset($parameters['order']) && is_array($parameters['order']) && count($parameters['order']) > 0)
