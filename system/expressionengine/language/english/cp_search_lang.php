@@ -93,9 +93,6 @@ $lang = array(
 'util_member_import' =>
 'Member Import',
 
-'util_import_from_mt' =>
-'Import From MT',
-
 'util_import_from_xml' =>
 'Import From XML',
 
