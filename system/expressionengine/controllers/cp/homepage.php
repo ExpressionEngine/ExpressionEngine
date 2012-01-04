@@ -58,7 +58,7 @@ class Homepage extends CI_Controller {
 			$this->load->model('tools_model');
 			$unviewed_developer_logs = $this->tools_model->count_unviewed_developer_logs();
 			
-			if ($unviewed_developer_logs > 0 AND $message === FALSE)
+			if ($unviewed_developer_logs > 0)
 			{
 				$message[] = sprintf(lang('developer_logs'), $unviewed_developer_logs, BASE.AMP.'C=tools_logs'.AMP.'M=view_developer_log');
 			}
