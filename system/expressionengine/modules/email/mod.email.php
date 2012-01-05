@@ -173,7 +173,7 @@ class Email {
 	 * Tell a friend form
 	 *
 	 * {exp:email:tell_a_friend charset="utf-8" allow_html='n'}
-	 *{exp:email:tell_a_friend charset="utf-8" allow_html='<p>,<a>' recipients='sales@expressionengine.com'}
+	 * {exp:email:tell_a_friend charset="utf-8" allow_html='<p>,<a>' recipients='sales@expressionengine.com'}
 	 * {member_email}, {member_name}, {current_time format="%Y %d %m"}
 	 */
 	public function tell_a_friend()
@@ -250,10 +250,10 @@ class Email {
 				$channel = $this->EE->TMPL->fetch_param('channel', '');
 
 				$this->EE->db->select('entry_id')
-							 ->from(array('channel_titles ct', 'channels c'))
-							 ->where('ct.channel_id = c.channel_id', '', FALSE)
-							 ->where('(ct.expiration_date = 0 OR expiration_date > '.$timestamp.')', '', FALSE)
-							 ->where('ct.status !=', 'closed');
+					 ->from(array('channel_titles ct', 'channels c'))
+					 ->where('ct.channel_id = c.channel_id', '', FALSE)
+					 ->where('(ct.expiration_date = 0 OR expiration_date > '.$timestamp.')', '', FALSE)
+					 ->where('ct.status !=', 'closed');
 				
 				$table = ( ! is_numeric($entry_id)) ? 'ct.url_title' : 'ct.entry_id';
 
@@ -298,9 +298,9 @@ class Email {
 
 				$this->EE->load->library('typography');
 				$this->EE->typography->initialize(array(
-								'encode_email'	=> FALSE,
-								'convert_curly'	=> FALSE)
-								);
+					'encode_email'	=> FALSE,
+					'convert_curly'	=> FALSE
+				));
 
 				$channel->fetch_categories();
 				$channel->parse_channel_entries();
@@ -391,7 +391,7 @@ class Email {
 		// Blacklist/Whitelist Check
 		if ($this->EE->blacklist->blacklisted == 'y' && $this->EE->blacklist->whitelisted == 'n')
 		{
-			return $this->EE->output->show_user_error('general', array($this->EE->lang->line('not_authorized')));
+			return $this->EE->output->show_user_error('general', array(lang('not_authorized')));
 		}
 
 		// Is the nation of the user banend?
@@ -399,9 +399,9 @@ class Email {
 		  
 		// Check and Set
 		$default = array(
-				'subject', 'message', 'from', 'user_recipients', 'to', 
-				'recipients', 'name', 'required'
-			);
+			'subject', 'message', 'from', 'user_recipients', 'to', 
+			'recipients', 'name', 'required'
+		);
 
 		foreach ($default as $val)
 		{
@@ -465,7 +465,7 @@ class Email {
 		if ($this->EE->session->userdata('ip_address') == '' OR 
 			$this->EE->session->userdata('user_agent') == '')
 		{
-			return $this->EE->output->show_user_error('general', array($this->EE->lang->line('em_unauthorized_request')));
+			return $this->EE->output->show_user_error('general', array(lang('em_unauthorized_request')));
 		}
 
 		// Return Variables
@@ -486,7 +486,7 @@ class Email {
 			}
 		}
 
-		$site_name = ($this->EE->config->item('site_name') == '') ? $this->EE->lang->line('back') : stripslashes($this->EE->config->item('site_name'));
+		$site_name = ($this->EE->config->item('site_name') == '') ? lang('back') : stripslashes($this->EE->config->item('site_name'));
 
 		$return_name = ( ! isset($x['1']) OR $x['1'] == '') ? $site_name : $x['1'];
 
@@ -494,7 +494,7 @@ class Email {
 		// If the message is empty, bounce them back
 		if ($_POST['message'] == '')
 		{
-			return $this->EE->output->show_user_error('general', array($this->EE->lang->line('message_required')));
+			return $this->EE->output->show_user_error('general', array(lang('message_required')));
 		}
 
 		// If the from field is empty, error
@@ -502,26 +502,26 @@ class Email {
 
 		if ($_POST['from'] == '' OR ! valid_email($_POST['from']))
 		{
-			return $this->EE->output->show_user_error('general', array($this->EE->lang->line('em_sender_required')));
+			return $this->EE->output->show_user_error('general', array(lang('em_sender_required')));
 		}
 
 		// If no recipients, bounce them back
 
 		if ($_POST['recipients'] == '' && $_POST['to'] == '')
 		{
-			return $this->EE->output->show_user_error('general', array($this->EE->lang->line('em_no_valid_recipients')));
+			return $this->EE->output->show_user_error('general', array(lang('em_no_valid_recipients')));
 		}
 
 		// Is the user banned?
 		if ($this->EE->session->userdata['is_banned'] == TRUE)
 		{
-			return $this->EE->output->show_user_error('general', array($this->EE->lang->line('not_authorized')));
+			return $this->EE->output->show_user_error('general', array(lang('not_authorized')));
 		}
 
 		// Check Form Hash
 		if ( ! $this->EE->security->check_xid($this->EE->input->post('XID')))
 		{
-			return $this->EE->output->show_user_error('general', array($this->EE->lang->line('not_authorized')));
+			return $this->EE->output->show_user_error('general', array(lang('not_authorized')));
 		}
 
 		// Check Tracking Class
@@ -531,17 +531,17 @@ class Email {
 		if ($this->EE->session->userdata['username'] === false OR $this->EE->session->userdata['username'] == '')
 		{
 			$query = $this->EE->db->query("SELECT *
-								FROM exp_email_tracker
-								WHERE sender_ip = '".$this->EE->input->ip_address()."'
-								ORDER BY email_date DESC");
+				FROM exp_email_tracker
+				WHERE sender_ip = '".$this->EE->input->ip_address()."'
+				ORDER BY email_date DESC");
 		}
 		else
 		{
 			$query = $this->EE->db->query("SELECT *
-								FROM exp_email_tracker
-								WHERE sender_username = '".$this->EE->db->escape_str($this->EE->session->userdata['username'])."'
-								OR sender_ip = '".$this->EE->input->ip_address()."'
-								ORDER BY email_date DESC");
+				FROM exp_email_tracker
+				WHERE sender_username = '".$this->EE->db->escape_str($this->EE->session->userdata['username'])."'
+				OR sender_ip = '".$this->EE->input->ip_address()."'
+				ORDER BY email_date DESC");
 		}
 
 		if ($query->num_rows() > 0)
@@ -549,7 +549,7 @@ class Email {
 			// Max Emails - Quick check
 			if ($query->num_rows() >= $this->email_max_emails)
 			{
-				return $this->EE->output->show_user_error('general', array($this->EE->lang->line('em_limit_exceeded')));
+				return $this->EE->output->show_user_error('general', array(lang('em_limit_exceeded')));
 			}
 
 			// Max Emails - Indepth check
@@ -562,13 +562,13 @@ class Email {
 
 			if ($total_sent >= $this->email_max_emails)
 			{
-				return $this->EE->output->show_user_error('general', array($this->EE->lang->line('em_limit_exceeded')));
+				return $this->EE->output->show_user_error('general', array(lang('em_limit_exceeded')));
 			}
 
 			// Interval check
 			if ($query->row('email_date')  > ($this->EE->localize->now - $this->email_time_interval))
 			{
-				$error[] = str_replace("%s", $this->email_time_interval, $this->EE->lang->line('em_interval_warning'));
+				$error[] = str_replace("%s", $this->email_time_interval, lang('em_interval_warning'));
 				return $this->EE->output->show_user_error('general', $error);
 			}
 		}
@@ -601,17 +601,17 @@ class Email {
 		// If we have no valid emails to send, back they go.
 		if ($_POST['user_recipients'] == 'y' && count($approved_tos) == 0)
 		{
-			$error[] = $this->EE->lang->line('em_no_valid_recipients');
+			$error[] = lang('em_no_valid_recipients');
 		}
 		elseif ( count($approved_recipients) == 0 && count($approved_tos) == 0)
 		{
-			$error[] = $this->EE->lang->line('em_no_valid_recipients');
+			$error[] = lang('em_no_valid_recipients');
 		}
 
 		// Is from email banned?
 		if ($this->EE->session->ban_check('email', $_POST['from']))
 		{
-			$error[] = $this->EE->lang->line('em_banned_from_email');
+			$error[] = lang('em_banned_from_email');
 		}
 
 		// Do we have errors to display?
@@ -625,23 +625,23 @@ class Email {
 		{
 			if ( ! isset($_POST['captcha']) OR $_POST['captcha'] == '')
 			{
-				return $this->EE->output->show_user_error('general', array($this->EE->lang->line('captcha_required')));
+				return $this->EE->output->show_user_error('general', array(lang('captcha_required')));
 			}
 
 			$query = $this->EE->db->query("SELECT COUNT(*) AS count FROM exp_captcha
-								 WHERE word='".$this->EE->db->escape_str($_POST['captcha'])."'
-								 AND ip_address = '".$this->EE->input->ip_address()."'
-								 AND date > UNIX_TIMESTAMP()-7200");
+				WHERE word='".$this->EE->db->escape_str($_POST['captcha'])."'
+				AND ip_address = '".$this->EE->input->ip_address()."'
+				AND date > UNIX_TIMESTAMP()-7200");
 
 			if ($query->row('count')  == 0)
 			{
-				return $this->EE->output->show_user_error('submission', array($this->EE->lang->line('captcha_incorrect')));
+				return $this->EE->output->show_user_error('submission', array(lang('captcha_incorrect')));
 			}
 
 			$this->EE->db->query("DELETE FROM exp_captcha
-						WHERE (word='".$this->EE->db->escape_str($_POST['captcha'])."'
-						AND ip_address = '".$this->EE->input->ip_address()."')
-						OR date < UNIX_TIMESTAMP()-7200");
+				WHERE (word='".$this->EE->db->escape_str($_POST['captcha'])."'
+				AND ip_address = '".$this->EE->input->ip_address()."')
+				OR date < UNIX_TIMESTAMP()-7200");
 		}
 
 		// Censored Word Checking
@@ -751,12 +751,13 @@ class Email {
 
 
 		// Store in tracking class
-		$data = array(	'email_date'		=> $this->EE->localize->now,
-						'sender_ip'			=> $this->EE->input->ip_address(),
-						'sender_email'		=> $_POST['from'],
-						'sender_username'	=> $this->EE->session->userdata['username'],
-						'number_recipients'	=> count($approved_tos) + count($approved_recipients)
-					);
+		$data = array(
+			'email_date'		=> $this->EE->localize->now,
+			'sender_ip'			=> $this->EE->input->ip_address(),
+			'sender_email'		=> $_POST['from'],
+			'sender_username'	=> $this->EE->session->userdata['username'],
+			'number_recipients'	=> count($approved_tos) + count($approved_recipients)
+		);
 
 		$this->EE->db->query($this->EE->db->insert_string('exp_email_tracker', $data));
 
@@ -780,12 +781,13 @@ class Email {
 		/* -------------------------------------*/
 
 		// Thank you message
-		$data = array(	'title' 	=> $this->EE->lang->line('email_module_name'),
-						'heading'	=> $this->EE->lang->line('thank_you'),
-						'content'	=> $this->EE->lang->line('em_email_sent'),
-						'redirect'	=> $return_link,
-						'link'		=> array($return_link, $return_name)
-					 );
+		$data = array(
+			'title' 	=> lang('email_module_name'),
+			'heading'	=> lang('thank_you'),
+			'content'	=> lang('em_email_sent'),
+			'redirect'	=> $return_link,
+			'link'		=> array($return_link, $return_name)
+		);
 
 		if ($this->EE->input->get_post('redirect') !== FALSE)
 		{
@@ -844,12 +846,12 @@ class Email {
 				  }
 				  else
 				  {
-						$error['ban_recp'] = $this->EE->lang->line('em_banned_recipient');
+						$error['ban_recp'] = lang('em_banned_recipient');
 				  }
 			 }
 			 else
 			 {
-			 	$error['bad_recp'] = $this->EE->lang->line('em_invalid_recipient');
+			 	$error['bad_recp'] = lang('em_invalid_recipient');
 			 }
 		}
 
