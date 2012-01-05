@@ -197,18 +197,23 @@ class Safecracker_lib
 			$this->entry['categories'] = $this->entry('category');
 		}
 		
+		// Figure out allow comments
+		$comment_default = ($this->channel['comment_system_enabled'] === 'y') ? 
+			$this->channel['deft_comments'] :
+			'n';
+		
 		//add hidden field data
 		$this->form_hidden(
 			array(
-				'ACT' => $this->EE->functions->fetch_action_id('Safecracker', 'submit_entry'),
-				'site_id' => $this->site_id,
-				'return' => ($this->EE->TMPL->fetch_param('return_'.$this->EE->session->userdata('group_id'))) ? $this->EE->TMPL->fetch_param('return_'.$this->EE->session->userdata('group_id')) : $this->EE->TMPL->fetch_param('return'),
-				'json' => $this->bool_string($this->EE->TMPL->fetch_param('json')) ? 1 : FALSE,
-				'dynamic_title' => ($this->EE->TMPL->fetch_param('dynamic_title')) ? base64_encode($this->EE->TMPL->fetch_param('dynamic_title')) : FALSE,
-				'error_handling' => ($this->EE->TMPL->fetch_param('error_handling')) ? $this->EE->TMPL->fetch_param('error_handling') : FALSE,
-				'preserve_checkboxes' => ($this->EE->TMPL->fetch_param('preserve_checkboxes')) ? $this->EE->TMPL->fetch_param('preserve_checkboxes') : FALSE,
-				'secure_return' => $this->bool_string($this->EE->TMPL->fetch_param('secure_return')) ? 1 : FALSE,
-				'allow_comments' => $this->bool_string($this->EE->TMPL->fetch_param('allow_comments'), $this->channel['comment_system_enabled']) == 'y' ? 'y' : 'n'
+				'ACT'					=> $this->EE->functions->fetch_action_id('Safecracker', 'submit_entry'),
+				'site_id'				=> $this->site_id,
+				'return'				=> ($this->EE->TMPL->fetch_param('return_'.$this->EE->session->userdata('group_id'))) ? $this->EE->TMPL->fetch_param('return_'.$this->EE->session->userdata('group_id')) : $this->EE->TMPL->fetch_param('return'),
+				'json'					=> $this->bool_string($this->EE->TMPL->fetch_param('json')) ? 1 : FALSE,
+				'dynamic_title'			=> ($this->EE->TMPL->fetch_param('dynamic_title')) ? base64_encode($this->EE->TMPL->fetch_param('dynamic_title')) : FALSE,
+				'error_handling'		=> ($this->EE->TMPL->fetch_param('error_handling')) ? $this->EE->TMPL->fetch_param('error_handling') : FALSE,
+				'preserve_checkboxes'	=> ($this->EE->TMPL->fetch_param('preserve_checkboxes')) ? $this->EE->TMPL->fetch_param('preserve_checkboxes') : FALSE,
+				'secure_return'			=> $this->bool_string($this->EE->TMPL->fetch_param('secure_return')) ? 1 : FALSE,
+				'allow_comments' 		=> $this->bool_string($this->EE->TMPL->fetch_param('allow_comments'), $comment_default) == 'y' ? 'y' : 'n'
 			)
 		);
 		
@@ -231,7 +236,12 @@ class Safecracker_lib
 		
 		if ($this->datepicker)
 		{
-			$this->EE->javascript->output('$.datepicker.setDefaults({dateFormat:$.datepicker.W3C+EE.date_obj_time});');
+			$this->EE->javascript->output('
+				$.datepicker.setDefaults({
+					constrainInput: false,
+					dateFormat:$.datepicker.W3C+EE.date_obj_time
+				});
+			');
 		}
 		
 		foreach ($this->EE->TMPL->tagparams as $key => $value)
@@ -1394,7 +1404,7 @@ class Safecracker_lib
 		
 		if ( ! $this->EE->security->check_xid($this->EE->input->post('XID')))
 		{
-			$this->EE->functions->redirect(stripslashes($this->EE->input->post('RET')));		
+			$this->EE->functions->redirect(stripslashes($this->EE->input->post('RET')));
 		}
 		
 		if (empty($this->field_errors) && empty($this->errors))
