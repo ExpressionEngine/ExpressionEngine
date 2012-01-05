@@ -2844,7 +2844,7 @@ class EE_Functions {
 		}
 
 		$this->EE->load->model('file_upload_preferences_model');
-		$upload_prefs = $this->EE->file_upload_preferences_model->get_upload_preferences();
+		$upload_prefs = $this->EE->file_upload_preferences_model->get_file_upload_preferences();
 
 		if (count($upload_prefs) == 0)
 		{

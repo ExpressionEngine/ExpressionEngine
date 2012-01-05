@@ -2598,7 +2598,7 @@ class Content_publish extends CI_Controller {
 	{
 		$this->load->model('file_upload_preferences_model');
 		
-		$upload_directories = $this->file_upload_preferences_model->get_upload_preferences($this->session->userdata('group_id'));
+		$upload_directories = $this->file_upload_preferences_model->get_file_upload_preferences($this->session->userdata('group_id'));
 	
 		$this->_file_manager = array(
 			'file_list'						=> array(),
