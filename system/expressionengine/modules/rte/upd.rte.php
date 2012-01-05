@@ -54,37 +54,28 @@ class Rte_upd {
 			)
 		);
 
-		// enable/disable at user level - Ajax call from the Publish/Edit page
-		$this->EE->db->insert(
+		$this->EE->db->insert_batch(
 			'actions',
 			array(
-				'class'		=> $this->name . '_mcp',
-				'method'	=> 'member_enable'
-			)
-		);
-		$this->EE->db->insert(
-			'actions',
-			array(
-				'class'		=> $this->name . '_mcp',
-				'method'	=> 'member_disable'
-			)
-		);
-		
-		// Settings
-		$this->EE->db->insert(
-			'actions',
-			array(
-				'class'		=> $this->name . '_mcp',
-				'method'	=> 'index'
-			)
-		);
-		
-		// Toolset Builder
-		$this->EE->db->insert(
-			'actions',
-			array(
-				'class'		=> $this->name . '_mcp',
-				'method'	=> 'edit_toolset'
+				// enable/disable at user level - Ajax call from the Publish/Edit page
+				array(
+					'class'		=> $this->name . '_mcp',
+					'method'	=> 'member_enable'
+				),
+				array(
+					'class'		=> $this->name . '_mcp',
+					'method'	=> 'member_disable'
+				),
+				// Settings
+				array(
+					'class'		=> $this->name . '_mcp',
+					'method'	=> 'index'
+				),
+				// Toolset Builder
+				array(
+					'class'		=> $this->name . '_mcp',
+					'method'	=> 'edit_toolset'
+				)
 			)
 		);
 		
@@ -155,22 +146,46 @@ class Rte_upd {
 		$this->EE->rte_toolset_model->load_default_toolsets();
 		
 		// Install the extension
-		$this->EE->db->insert(
+		$this->EE->db->insert_batch(
 			'extensions',
 			array(
-				'class'    => $this->name.'_ext',
-				'hook'     => 'myaccount_nav_setup',
-				'method'   => 'myaccount_nav_setup',
-				'settings' => '',
-				'priority' => 10,
-				'version'  => $this->version,
-				'enabled'  => 'y'
+				array(
+					'class'    => $this->name.'_ext',
+					'hook'     => 'myaccount_nav_setup',
+					'method'   => 'myaccount_nav_setup',
+					'settings' => '',
+					'priority' => 10,
+					'version'  => $this->version,
+					'enabled'  => 'y'
+				),
+				array(
+					'class'    => $this->name.'_ext',
+					'hook'     => 'cp_menu_array',
+					'method'   => 'cp_menu_array',
+					'settings' => '',
+					'priority' => 10,
+					'version'  => $this->version,
+					'enabled'  => 'y'
+				)
 			)
 		);
 		
 		//  Add the member fields
-		$this->EE->db->query("ALTER TABLE `{$this->EE->db->dbprefix}members` ADD `rte_enabled` CHAR(1) NOT NULL DEFAULT 'y'");
-		$this->EE->db->query("ALTER TABLE `{$this->EE->db->dbprefix}members` ADD `rte_toolset_id` INT(10) NOT NULL DEFAULT '1'");
+		$this->EE->dbforge->add_column(
+			'members',
+			array(
+				'rte_enabled'		=> array(
+					'type'		=> 'CHAR(1)',
+					'null'		=> FALSE,
+					'default'	=> 'y'
+				),
+				'rte_toolset_id'	=> array(
+					'type'		=> 'INT(10)',
+					'null'		=> FALSE,
+					'default'	=> '1'
+				)
+			)
+		);
 				
 		//  Update the config
 		$this->EE->config->_update_config(
@@ -212,9 +227,7 @@ class Rte_upd {
 		// Actions
 		$this->EE->db
 			->where('class', $this->name)
-			->delete('actions');
-		$this->EE->db
-			->where('class', $this->name . '_mcp')
+			->or_where('class', $this->name . '_mcp')
 			->delete('actions');
 		
 		// Extension
@@ -227,8 +240,8 @@ class Rte_upd {
 		$this->EE->dbforge->drop_table('rte_tools');
 
 		//  Remove the member fields
-		$this->EE->db->query("ALTER TABLE `{$this->EE->db->dbprefix}members` DROP `rte_enabled`");
-		$this->EE->db->query("ALTER TABLE `{$this->EE->db->dbprefix}members` DROP `rte_toolset_id`");
+		$this->EE->dbforge->drop_column( 'members', 'rte_enabled' );
+		$this->EE->dbforge->drop_column( 'members', 'rte_toolset_id' );
 				
 		//  Update the config
 		$this->EE->config->_update_config(

@@ -136,21 +136,25 @@ class Rte_mcp {
 			'plugin' => 'rte'
 		));
 		
-		# get the tools list (can only include active tools)
+		# get the tools lists (can only include active tools)
 		$available_tools	= $this->EE->rte_tool_model->get_available(TRUE);
 		$toolset_tool_ids	= $this->EE->rte_toolset_model->get_tools($toolset_id);
 		$unused_tools = $toolset_tools = array();
 		foreach ( $available_tools as $tool_id => $tool_name )
 		{
-			if ( in_array( $tool_id, $toolset_tool_ids ) )
+			$tool_index = array_search( $tool_id, $toolset_tool_ids );
+			if ( $tool_index !== FALSE )
 			{
-				$toolset_tools[] = $tool_id;
+				$toolset_tools[$tool_index] = $tool_id;
 			}
 			else
 			{
 				$unused_tools[] = $tool_id;
 			}
 		}
+		// ensure the proper order
+		ksort( $toolset_tools, SORT_NUMERIC );
+		sort( $unused_tools );
 		
 		$this->EE->cp->set_breadcrumb( $this->_base_url, lang('rte_module_name') );
 		$title = $is_private ? lang('define_my_toolset') : lang('define_toolset');

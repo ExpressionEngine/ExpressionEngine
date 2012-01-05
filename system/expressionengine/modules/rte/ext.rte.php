@@ -36,7 +36,17 @@ class Rte_ext {
 		);
 	}
 	
+	// --------------------------------------------------------------------
 
+	/**
+	 * Handle hook call
+	 */
+	function cp_menu_array( $menu )
+	{
+		$menu['admin']['admin_content']['rte_settings'] = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=rte';
+		return $menu;
+	}
+	 
 	// --------------------------------------------------------------------
 
 	/**
@@ -45,7 +55,7 @@ class Rte_ext {
 	function activate_extension()
 	{
 		return TRUE;
-		//show_error('This extension is automatically installed with the wiki module');
+		//show_error('This extension is automatically installed with the Rich Text Editor module');
 	}
 
 	// --------------------------------------------------------------------
@@ -56,7 +66,7 @@ class Rte_ext {
 	function update_extension($current = FALSE)
 	{
 		return TRUE;
-		//show_error('This extension is automatically updated with the wiki module');
+		//show_error('This extension is automatically updated with the Rich Text Editor module');
 	}
 
 	// --------------------------------------------------------------------
@@ -66,7 +76,8 @@ class Rte_ext {
 	 */
 	function disable_extension()
 	{
-		//show_error('This extension is automatically deleted with the wiki module');
+		return TRUE;
+		//show_error('This extension is automatically deleted with the Rich Text Editor module');
 	}
 	
 		// --------------------------------------------------------------------
@@ -77,7 +88,7 @@ class Rte_ext {
 	function uninstall_extension()
 	{
 		return TRUE;
-		//show_error('This extension is automatically deleted with the wiki module');
+		//show_error('This extension is automatically deleted with the Rich Text Editor module');
 	}
 	
 }

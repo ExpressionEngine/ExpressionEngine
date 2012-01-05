@@ -6,6 +6,7 @@ $lang = array(
 'rte_module_description' => 'Enables rich text editing in text areas.',
 
 # Headings
+'nav_rte_settings' => 'Rich Text Editor Settings',
 'rte_settings' => 'General Rich Text Editor Settings',
 'rte_prefs' => 'Rich Text Editor Preferences',
 'rte_toolsets' => 'Rich Text Editor Toolsets',
