@@ -1,15 +1,3 @@
-/*!
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
- * @since		Version 2.0
- * @filesource
- */
-
 (function(){function e(a){this.el=a;this.lastIdx=-2;this.currentIdx=0;if(document.selection)this.range=this.el.createTextRange()}function f(a){this.el=a;this.sel=new d(this.el)}e.prototype={createSelection:function(a,b){this.el.focus();if("selectionStart"in this.el)this.el.selectionStart=a,this.el.selectionEnd=b;else if(document.selection){var c=document.selection.createRange();c.moveStart("character",-this.el.value.length);c.collapse();c.moveStart("character",a);c.moveEnd("character",b-a);c.select()}return this},
 getSelectedText:function(){if("selectionStart"in this.el)return this.el.value.substr(this.el.selectionStart,this.el.selectionEnd-this.el.selectionStart);else if(document.selection)return this.el.focus(),document.selection.createRange().text},getSelectedRange:function(){if("selectionStart"in this.el)return{start:this.el.selectionStart,end:this.el.selectionEnd};else if(document.selection){var a=document.selection.createRange(),b=Math.abs(a.duplicate().moveEnd("character",-1E5));selectionStart=b-a.text.length;
 return{start:selectionStart,end:b}}},replaceWith:function(a){var b;this.el.focus();if("selectionStart"in this.el)b=this.el.selectionStart+a.length,this.el.value=this.el.value.substr(0,this.el.selectionStart)+a+this.el.value.substr(this.el.selectionEnd,this.el.value.length),this.el.setSelectionRange(b,b);else if(document.selection)document.selection.createRange().text=a;return this},selectNext:function(a){if("selectionStart"in this.el){var b=this.currentIdx;chunk=b>0?this.el.value.substring(this.currentIdx):

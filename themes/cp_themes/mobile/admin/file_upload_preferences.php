@@ -15,15 +15,15 @@ if ($EE_view_disable !== TRUE)
 	
 	<?php
 								
-		if ($upload_locations->num_rows() > 0)
+		if (count($upload_locations) > 0)
 		{
-			foreach ($upload_locations->result() as $upload_location):?>
+			foreach ($upload_locations as $upload_location):?>
 				<div class="label">
-					<label><?=$upload_location->id.' '.$upload_location->name?></label>
+					<label><?=$upload_location['id'].' '.$upload_location['name']?></label>
 				</div>
 				<ul>
-					<li><a href="<?=BASE.AMP.'C=admin_content'.AMP.'M=edit_upload_preferences'.AMP.'id='.$upload_location->id?>" title="<?=lang('edit')?>"><?=lang('edit')?></a></li>
-					<li><a href="<?=BASE.AMP.'C=admin_content'.AMP.'M=delete_upload_preferences_conf'.AMP.'id='.$upload_location->id?>" title="<?=lang('delete')?>"><?=lang('delete')?></a></li>
+					<li><a href="<?=BASE.AMP.'C=admin_content'.AMP.'M=edit_upload_preferences'.AMP.'id='.$upload_location['id']?>" title="<?=lang('edit')?>"><?=lang('edit')?></a></li>
+					<li><a href="<?=BASE.AMP.'C=admin_content'.AMP.'M=delete_upload_preferences_conf'.AMP.'id='.$upload_location['id']?>" title="<?=lang('delete')?>"><?=lang('delete')?></a></li>
 				</ul>
 			<?php endforeach;
 		}

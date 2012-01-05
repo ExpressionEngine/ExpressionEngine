@@ -281,7 +281,7 @@ class Member {
 		// Prep the request
 		if ( ! $this->_prep_request())
 		{
-			exit("Invalid Page Request");
+			$this->_show_404_template();
 		}
 
 		// -------------------------------------------
@@ -310,54 +310,54 @@ class Member {
 
 		// Validate the request
 		$methods = array(
-							'public_profile',
-							'memberlist',
-							'member_search',
-							'do_member_search',
-							'login',
-							'unpw_update',
-							'register',
-							'profile',
-							'edit_preferences',
-							'update_preferences',
-							'edit_profile',
-							'update_profile',
-							'edit_email',
-							'update_email',
-							'edit_userpass',
-							'update_userpass',
-							'edit_localization',
-							'update_localization',
-							'edit_notepad',
-							'update_notepad',
-							'edit_signature',
-							'update_signature',
-							'edit_avatar',
-							'browse_avatars',
-							'select_avatar',
-							'upload_avatar',
-							'edit_photo',
-							'upload_photo',
-							'edit_subscriptions',
-							'update_subscriptions',
-							'edit_ignore_list',
-							'update_ignore_list',
-							'member_mini_search',
-							'do_member_mini_search',
-							'email_console',
-							'aim_console',
-							'icq_console',
-							'send_email',
-							'forgot_password',
-							'smileys',
-							'messages',
-							'delete'
-						);
+			'public_profile',
+			'memberlist',
+			'member_search',
+			'do_member_search',
+			'login',
+			'unpw_update',
+			'register',
+			'profile',
+			'edit_preferences',
+			'update_preferences',
+			'edit_profile',
+			'update_profile',
+			'edit_email',
+			'update_email',
+			'edit_userpass',
+			'update_userpass',
+			'edit_localization',
+			'update_localization',
+			'edit_notepad',
+			'update_notepad',
+			'edit_signature',
+			'update_signature',
+			'edit_avatar',
+			'browse_avatars',
+			'select_avatar',
+			'upload_avatar',
+			'edit_photo',
+			'upload_photo',
+			'edit_subscriptions',
+			'update_subscriptions',
+			'edit_ignore_list',
+			'update_ignore_list',
+			'member_mini_search',
+			'do_member_mini_search',
+			'email_console',
+			'aim_console',
+			'icq_console',
+			'send_email',
+			'forgot_password',
+			'smileys',
+			'messages',
+			'delete'
+		);
 
 
 		if ( ! in_array($this->request, $methods))
 		{
-			return $this->EE->output->show_user_error('general', array($this->EE->lang->line('invalid_action')));
+			$this->_show_404_template();
 		}
 
 		// Call the requested function
@@ -1361,13 +1361,10 @@ class Member {
 
 		// Are you who you say you are, or someone sitting at someone
 		// else's computer being mean?!
-		$query = $this->EE->db->select('password')
-							  ->where('member_id', $this->EE->session->userdata('member_id'))
-							  ->get('members');
+		$this->EE->load->library('auth');
 
-		$password = $this->EE->functions->hash(stripslashes($this->EE->input->post('password')));
-
-		if ($query->row('password') != $password)
+		if ( ! $this->EE->auth->authenticate_id($this->EE->session->userdata('member_id'),
+											 	$this->EE->input->post('password')))
 		{
 			$this->EE->session->save_password_lockout($this->EE->session->userdata('username'));
 
@@ -1375,173 +1372,8 @@ class Member {
 		}
 
 		// No turning back, get to deletin'!
-		$id = $this->EE->session->userdata('member_id');
-
-		$this->EE->db->where('member_id', (int) $id)->delete('members');
-		$this->EE->db->where('member_id', (int) $id)->delete('member_data');
-		$this->EE->db->where('member_id', (int) $id)->delete('member_homepage');
-		$this->EE->db->where('sender_id', (int) $id)->delete('message_copies');
-		$this->EE->db->where('sender_id', (int) $id)->delete('message_data');
-		$this->EE->db->where('sender_id', (int) $id)->delete('message_folders');
-		$this->EE->db->where('sender_id', (int) $id)->delete('message_listed');
-
-		$message_query = $this->EE->db->query("SELECT DISTINCT recipient_id FROM exp_message_copies WHERE sender_id = '{$id}' AND message_read = 'n'");
-
-		if ($message_query->num_rows() > 0)
-		{
-			foreach($message_query->result_array() as $row)
-			{
-				$count_query = $this->EE->db->query("SELECT COUNT(*) AS count FROM exp_message_copies WHERE recipient_id = '".$row['recipient_id']."' AND message_read = 'n'");
-				$this->EE->db->query($this->EE->db->update_string('exp_members', array('private_messages' => $count_query->row('count') ), "member_id = '".$row['recipient_id']."'"));
-			}
-		}
-
-		// Delete Forum Posts
-		if ($this->EE->config->item('forum_is_installed') == "y")
-		{
-			$this->EE->db->where('member_id', (int) $id)->delete('forum_subscriptions');
-			$this->EE->db->where('member_id', (int) $id)->delete('forum_pollvotes');
-			$this->EE->db->where('author_id', (int) $id)->delete('forum_topics');
-			$this->EE->db->where('admin_member_id', (int) $id)->delete('forum_administrators');
-			$this->EE->db->where('mod_member_id', (int) $id)->delete('forum_moderators');
-
-			// Snag the affected topic id's before deleting the member for the update afterwards
-			$query = $this->EE->db->query("SELECT topic_id FROM exp_forum_posts WHERE author_id = '{$id}'");
-
-			if ($query->num_rows() > 0)
-			{
-				$topic_ids = array();
-
-				foreach ($query->result_array() as $row)
-				{
-					$topic_ids[] = $row['topic_id'];
-				}
-
-				$topic_ids = array_unique($topic_ids);
-			}
-
-			$this->EE->db->where('author_id', (int) $id)->delete('forum_posts');
-			$this->EE->db->where('author_id', (int) $id)->delete('forum_polls');
-
-			// Kill any attachments
-			$query = $this->EE->db->query("SELECT attachment_id, filehash, extension, board_id FROM exp_forum_attachments WHERE member_id = '{$id}'");
-
-			if ($query->num_rows() > 0)
-			{
-				// Grab the upload path
-				$res = $this->EE->db->query('SELECT board_id, board_upload_path FROM exp_forum_boards');
-
-				$paths = array();
-				foreach ($res->result_array() as $row)
-				{
-					$paths[$row['board_id']] = $row['board_upload_path'];
-				}
-
-				foreach ($query->result_array() as $row)
-				{
-					if ( ! isset($paths[$row['board_id']]))
-					{
-						continue;
-					}
-
-					$file  = $paths[$row['board_id']].$row['filehash'].$row['extension'];
-					$thumb = $paths[$row['board_id']].$row['filehash'].'_t'.$row['extension'];
-
-					@unlink($file);
-					@unlink($thumb);
-
-					$this->EE->db->where('attachment_id', (int) $row['attachment_id'])
-								 ->delete('forum_attachments');
-				}
-			}
-
-			// Update the forum stats
-			$query = $this->EE->db->query("SELECT forum_id FROM exp_forums WHERE forum_is_cat = 'n'");
-
-			if ( ! class_exists('Forum'))
-			{
-				require PATH_MOD.'forum/mod.forum.php';
-				require PATH_MOD.'forum/mod.forum_core.php';
-			}
-
-			$FRM = new Forum_Core;
-
-			foreach ($query->result_array() as $row)
-			{
-				$FRM->_update_post_stats($row['forum_id']);
-			}
-
-			if (isset($topic_ids))
-			{
-				foreach ($topic_ids as $topic_id)
-				{
-					$FRM->_update_topic_stats($topic_id);
-				}
-			}
-		}
-
-		// Va-poo-rize Channel Entries and Comments
-		$entry_ids			= array();
-		$channel_ids			= array();
-		$recount_ids		= array();
-
-		// Find Entry IDs and Channel IDs, then delete
-		$query = $this->EE->db->query("SELECT entry_id, channel_id FROM exp_channel_titles WHERE author_id = '{$id}'");
-
-		if ($query->num_rows() > 0)
-		{
-			foreach ($query->result_array() as $row)
-			{
-				$entry_ids[]	= $row['entry_id'];
-				$channel_ids[]	= $row['channel_id'];
-			}
-
-			$this->EE->db->query("DELETE FROM exp_channel_titles WHERE author_id = '{$id}'");
-			$this->EE->db->query("DELETE FROM exp_channel_data WHERE entry_id IN ('".implode("','", $entry_ids)."')");
-			$this->EE->db->query("DELETE FROM exp_comments WHERE entry_id IN ('".implode("','", $entry_ids)."')");
-		}
-
-		// Find the affected entries AND channel ids for author's comments
-		$query = $this->EE->db->query("SELECT DISTINCT(entry_id), channel_id FROM exp_comments WHERE author_id = '{$id}'");
-
-		if ($query->num_rows() > 0)
-		{
-			foreach ($query->result_array() as $row)
-			{
-				$recount_ids[] = $row['entry_id'];
-				$channel_ids[]  = $row['channel_id'];
-			}
-
-			$recount_ids = array_diff($recount_ids, $entry_ids);
-		}
-
-		// Delete comments by member
-		$this->EE->db->query("DELETE FROM exp_comments WHERE author_id = '{$id}'");
-
-		// Update stats on channel entries that were NOT deleted AND had comments by author
-
-		if (count($recount_ids) > 0)
-		{
-			foreach (array_unique($recount_ids) as $entry_id)
-			{
-				$query = $this->EE->db->query("SELECT MAX(comment_date) AS max_date FROM exp_comments WHERE status = 'o' AND entry_id = '".$this->EE->db->escape_str($entry_id)."'");
-
-				$comment_date = ($query->num_rows() == 0 OR ! is_numeric($query->row('max_date') )) ? 0 : $query->row('max_date') ;
-
-				$query = $this->EE->db->query("SELECT COUNT(*) AS count FROM exp_comments WHERE entry_id = '{$entry_id}' AND status = 'o'");
-
-				$this->EE->db->query("UPDATE exp_channel_titles SET comment_total = '".$this->EE->db->escape_str($query->row('count') )."', recent_comment_date = '$comment_date' WHERE entry_id = '{$entry_id}'");
-			}
-		}
-
-		if (count($channel_ids) > 0)
-		{
-			foreach (array_unique($channel_ids) as $channel_id)
-			{
-				$this->EE->stats->update_channel_stats($channel_id);
-				$this->EE->stats->update_comment_stats($channel_id);
-			}
-		}
+		$this->EE->load->model('member_model');
+		$this->EE->member_model->delete_member($this->EE->session->userdata('member_id'));
 		
 		// Email notification recipients
 		if ($this->EE->session->userdata('mbr_delete_notify_emails') != '')
@@ -1550,12 +1382,12 @@ class Member {
 			$notify_address = $this->EE->session->userdata('mbr_delete_notify_emails');
 
 			$swap = array(
-							'name'				=> $this->EE->session->userdata('screen_name'),
-							'email'				=> $this->EE->session->userdata('email'),
-							'site_name'			=> stripslashes($this->EE->config->item('site_name'))
-						 );
+				'name'		=> $this->EE->session->userdata('screen_name'),
+				'email'		=> $this->EE->session->userdata('email'),
+				'site_name'	=> stripslashes($this->EE->config->item('site_name'))
+			);
 
-			$email_tit = $this->EE->functions->var_swap($this->EE->lang->line('mbr_delete_notify_title'), $swap);
+			$email_subject = $this->EE->functions->var_swap($this->EE->lang->line('mbr_delete_notify_title'), $swap);
 			$email_msg = $this->EE->functions->var_swap($this->EE->lang->line('mbr_delete_notify_message'), $swap);
 
 			// No notification for the user themselves, if they're in the list
@@ -1583,18 +1415,12 @@ class Member {
 					$this->EE->email->from($this->EE->config->item('webmaster_email'), $this->EE->config->item('webmaster_name'));
 					$this->EE->email->to($addy);
 					$this->EE->email->reply_to($this->EE->config->item('webmaster_email'));
-					$this->EE->email->subject($email_tit);
+					$this->EE->email->subject($email_subject);
 					$this->EE->email->message(entities_to_ascii($email_msg));
 					$this->EE->email->send();
 				}
 			}
 		}
-
-		// Trash the Session and cookies
-		$this->EE->db->where('site_id', $this->EE->config->item('site_id'))
-					 ->where('ip_address', $this->EE->input->ip_address())
-					 ->where('member_id', (int) $id)
-					 ->delete('online_users');
 
 		$this->EE->db->where('session_id', $this->EE->session->userdata('session_id'))
 					 ->delete('sessions');
@@ -1604,9 +1430,6 @@ class Member {
 		$this->EE->functions->set_cookie($this->EE->session->c_anon);
 		$this->EE->functions->set_cookie('read_topics');
 		$this->EE->functions->set_cookie('tracker');
-
-		// Update
-		$this->EE->stats->update_member_stats();
 
 		// Build Success Message
 		$url	= $this->EE->config->item('site_url');
@@ -2628,6 +2451,40 @@ class Member {
 	}
 
 	// --------------------------------------------------------------------
+	
+	/**
+	 * Show 404 Template
+	 *
+	 * Show the real 404 template instead of an ACT error when we cannot
+	 * find the page that was requested.
+	 *
+	 * @access protected
+	 */
+	protected function _show_404_template()
+	{
+		// 404 it
+		$this->EE->load->library('template', NULL, 'TMPL');
+		
+		$template = explode('/', $this->EE->config->item('site_404'));
+
+		if (isset($template[1]))
+		{
+			$this->EE->TMPL->template_type = "404";
+			$this->EE->TMPL->fetch_and_parse($template[0], $template[1]);
+			$out = $this->EE->TMPL->parse_globals($this->EE->TMPL->final_template);
+		}
+		else
+		{
+			$out = $this->EE->TMPL->_404();
+		}
+		
+		$this->EE->output->out_type = '404';
+		$this->EE->output->set_output($out);
+		$this->EE->output->_display();
+		exit;
+	}
+
+	// --------------------------------------------------------------------
 
 	/**
 	 * Custom Member Profile Data
@@ -3008,7 +2865,7 @@ class Member {
 		$query = $this->EE->db->query("SELECT m.member_id, m.group_id, m.username, m.screen_name, m.email, m.ip_address, m.location, m.total_entries, m.total_comments, m.private_messages, m.total_forum_topics, m.total_forum_posts AS total_forum_replies, m.total_forum_topics + m.total_forum_posts AS total_forum_posts,
 							g.group_title AS group_description FROM exp_members AS m, exp_member_groups AS g
 							WHERE g.group_id = m.group_id
-							g.site_id = '".$this->EE->db->escape_str($this->EE->config->item('site_id'))."'
+							AND g.site_id = '".$this->EE->db->escape_str($this->EE->config->item('site_id'))."'
 							AND m.member_id IN ('".implode("', '", $ignored)."')");
 
 		if ($query->num_rows() == 0)

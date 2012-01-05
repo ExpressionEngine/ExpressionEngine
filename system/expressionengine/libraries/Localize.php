@@ -52,8 +52,55 @@ class EE_Localize {
 		// Fetch the current local server time and convert it to GMT
 		$this->now			= time();
 		$this->zones		= $this->zones();
+
+		// Align PHP's default timezone with EE's server timezone setting
+		date_default_timezone_set($this->_get_php_timezone($this->EE->config->item('server_timezone')));
 	}
 	
+	// --------------------------------------------------------------------
+
+	/**
+	 * String to Timestamp
+	 *
+	 * Converts a human-readble date (and possibly time) to a UNIX timestamp
+	 * using the current user's locale
+	 *
+	 * @access	public
+	 * @param	string	human-readable datetime
+	 * @return	mixed	int if successful, otherwise FALSE
+	 */
+	function string_to_timestamp($human_string)
+	{
+		// Get the user's locale so that we have a baseline for converting their
+		// written datetime to UTC, and temporarily tell PHP to use it for this
+		// conversion only. If the user hasn't specified a timezone, the EE server
+		// settings will be used instead.
+		if ($timezone = $this->EE->session->userdata('timezone'))
+		{
+			date_default_timezone_set($this->_get_php_timezone($timezone));
+			$dst = ($this->EE->session->userdata('daylight_savings')  == 'y') ? TRUE : FALSE;
+		}
+		else
+		{
+			$dst = ($this->EE->config->item('daylight_savings')  == 'y') ? TRUE : FALSE;
+		}
+
+		// Convert to timestamp. Strangely, given a string of whitespace it returns the
+		// current time rather than FALSE, so we trim here.
+		$timestamp = strtotime(trim($human_string));
+
+		// Appply DST offset?
+		if ($dst && $timestamp !== FALSE)
+		{
+			$timestamp -= 3600;
+		}
+
+		// Back to EE server setting
+		date_default_timezone_set($this->_get_php_timezone($this->EE->config->item('server_timezone')));
+
+		return $timestamp;
+	}
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -68,7 +115,8 @@ class EE_Localize {
 	 */	
 	function set_gmt($now = '')
 	{
-		// TODO: Add deprecation notice
+		$this->EE->load->library('logger');
+		$this->EE->logger->deprecated('2.3');
 		
 		if ($now == '')
 		{
@@ -500,6 +548,9 @@ class EE_Localize {
 	 */
 	function offset_entry_dst($time = '', $dst_enabled = '', $add_time = TRUE)
 	{
+		$this->EE->load->library('logger');
+		$this->EE->logger->deprecated();
+		
 		return $time;
 	}
 	
@@ -953,6 +1004,72 @@ class EE_Localize {
 			);
 	}
 	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Get PHP Timezone
+	 *
+	 * Returns the PHP timezone for a given EE-format timezone.
+	 * For example, given "UM5" it returns "America/New_York"
+	 *
+	 * @access	private
+	 * @param	string
+	 * @return	string
+	 */
+	private function _get_php_timezone($zone = 'UTC')
+	{
+		$zones = array(
+			'UM12'		=> 'Kwajalein', 					// -12
+			'UM11'		=> 'Pacific/Midway', 				// -11
+			'UM10'		=> 'Pacific/Honolulu', 				// -10
+			'UM95'		=> 'Pacific/Marquesas',				// -9.5
+			'UM9'		=> 'America/Anchorage', 			// -9
+			'UM8'		=> 'America/Los_Angeles', 			// -8
+			'UM7'		=> 'America/Denver', 				// -7
+			'UM6'		=> 'America/Tegucigalpa', 			// -6
+			'UM5'		=> 'America/New_York', 				// -5
+			'UM45'		=> 'America/Caracas',				// -4.5
+			'UM4'		=> 'America/Halifax', 				// -4
+			'UM35'		=> 'America/St_Johns', 				// -3.5
+			'UM3'		=> 'America/Argentina/Buenos_Aires',// -3
+			'UM2'		=> 'Atlantic/South_Georgia', 		// -2
+			'UM1'		=> 'Atlantic/Azores', 				// -1
+			'UTC'		=> 'Europe/Dublin', 				// 0
+			'UP1'		=> 'Europe/Belgrade', 				// +1
+			'UP2'		=> 'Europe/Minsk', 					// +2
+			'UP3'		=> 'Asia/Kuwait', 					// +3
+			'UP35'		=> 'Asia/Tehran', 					// +3.5
+			'UP4'		=> 'Asia/Muscat', 					// +4
+			'UP45'		=> 'Asia/Kabul', 					// +4.5
+			'UP5'		=> 'Asia/Yekaterinburg', 			// +5
+			'UP55'		=> 'Asia/Kolkata',		 			// +5.5
+			'UP575'		=> 'Asia/Katmandu', 				// +5.75
+			'UP6'		=> 'Asia/Dhaka', 					// +6
+			'UP65'		=> 'Asia/Rangoon', 					// +6.5
+			'UP7'		=> 'Asia/Krasnoyarsk', 				// +7
+			'UP8'		=> 'Asia/Brunei', 					// 8
+			'UP875'		=> 'Australia/Eucla',				// +8.75
+			'UP9'		=> 'Asia/Seoul', 					// +9
+			'UP95'		=> 'Australia/Darwin', 				// +9.5
+			'UP10'		=> 'Australia/Canberra', 			// +10
+			'UP105'		=> 'Australia/Lord_Howe',			// +10.5
+			'UP11'		=> 'Asia/Magadan', 					// +11
+			'UP115'		=> 'Pacific/Norfolk',				// +11.5
+			'UP12'		=> 'Pacific/Fiji', 					// +12
+			'UP1275'	=> 'Pacific/Chatham',				// +12.75
+			'UP13'		=> 'Pacific/Tongatapu', 			// +13
+			'UP14'		=> 'Pacific/Kiritimati'				// +14
+		);
+
+		// Fall back to UTC if something went wrong
+		if ( ! isset($zones[$zone]))
+		{
+			return 'UTC';
+		}
+
+		return $zones[$zone];
+	}
+
 	// --------------------------------------------------------------------
 
 	/**

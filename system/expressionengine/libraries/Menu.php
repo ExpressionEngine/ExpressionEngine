@@ -169,6 +169,10 @@ class EE_Menu {
 			)
 		);
 		
+		if ($this->EE->session->userdata('group_id') == 1)
+		{
+			$menu['tools']['tools_logs']['view_developer_log'] = BASE.AMP.'C=tools_logs'.AMP.'M=view_developer_log';
+		}
 		
 		// Add channels
 
@@ -178,15 +182,18 @@ class EE_Menu {
 		if ($channels != FALSE AND $channels->num_rows() > 0)
 		{
 			$menu['content']['publish'] = array();
+			$menu['content']['edit'] = array('PARENT_HREF' => BASE.AMP.'C=content_edit');
 			
 			foreach($channels->result() as $channel)
 			{
 				$menu['content']['publish'][$channel->channel_title] = BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.$channel->channel_id;
+				$menu['content']['edit'][$channel->channel_title] = BASE.AMP.'C=content_edit'.AMP.'channel_id='.$channel->channel_id;
 			}
 			
-			if (count($menu['content']['publish']) == 1)
+			if ($channels->num_rows() === 1)
 			{
 				$menu['content']['publish'] = current($menu['content']['publish']);
+				$menu['content']['edit'] = current($menu['content']['edit']);
 			}
 		}
 		
@@ -322,11 +329,14 @@ class EE_Menu {
 		foreach($m as $name => $data)
 		{
 			$label = ($use_lang_keys) ? lang('nav_'.$name) : $name;
-			$sub_use_lang = ( ! $use_lang_keys OR in_array($name, array('publish', 'edit_templates'))) ? FALSE : TRUE;
+			$sub_use_lang = ( ! $use_lang_keys OR in_array($name, array('publish', 'edit', 'edit_templates'))) ? FALSE : TRUE;
 			$link_class = $depth ? '' : 'first_level';
 			
 			if (is_array($data))
 			{
+				$parent_href = (isset($data['PARENT_HREF'])) ? $data['PARENT_HREF'] : '#';
+				unset($data['PARENT_HREF']);
+				
 				$menu .= str_replace(
 					array(
 						'{title}',
@@ -334,7 +344,8 @@ class EE_Menu {
 						'{li_class}',
 						'{subnav}',
 						'{ul_class}',
-						'{rel}'
+						'{rel}',
+						'{parent_href}',
 					),
 					array(
 						$label,
@@ -343,6 +354,7 @@ class EE_Menu {
 						$this->_process_menu($data, $depth + 1, $sub_use_lang, $li_class, $rel),
 						'',
 						($rel == '') ? '' : ' rel="'.$rel.'"',
+						$parent_href,
 					),
 					$this->menu_parent
 				);
@@ -1025,8 +1037,6 @@ class EE_Menu {
 			}
 			else
 			{
-				$this->EE->load->library('security');
-				
 				$module = $this->EE->security->sanitize_filename($module);
 
 				if (file_exists(PATH_THIRD.$module.'/config/help_menu.php'))

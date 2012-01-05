@@ -73,7 +73,7 @@ class Safecracker_mcp
 		$this->EE->load->library('javascript');
 		$this->EE->lang->loadfile('safecracker');
 		
-		$members = array('' => $this->EE->lang->line('safecracker_select_member'));
+		$members = array('' => lang('safecracker_select_member'));
 		
 		$group_id = ($this->EE->input->get_post('group_id')) ? $this->EE->input->get_post('group_id', TRUE) : '';
 		$offset = ($this->EE->input->get_post('offset')) ? $this->EE->input->get_post('offset', TRUE) : '';
@@ -105,7 +105,7 @@ class Safecracker_mcp
 			
 			if ($more)
 			{
-				$members['{NEXT}'] = $this->EE->lang->line('safecracker_more_members');
+				$members['{NEXT}'] = lang('safecracker_more_members');
 			}
 		}
 

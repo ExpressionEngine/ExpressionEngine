@@ -104,8 +104,7 @@ if ($EE_view_disable !== TRUE)
 		</tbody>
 		</table>
 
-		<?php $this->table->set_template($cp_table_template);
-
+		<?php
 		foreach($field_type_tables as $ft => $data):?>
 
 			<div id="ft_<?=$ft?>" class="js_hide">

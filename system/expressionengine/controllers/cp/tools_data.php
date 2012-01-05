@@ -94,8 +94,6 @@ class Tools_data extends CI_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->load->helper('form');
-
 		$vars['cleared'] = FALSE;
 
 		if (isset($_POST['type']))
@@ -193,8 +191,6 @@ class Tools_data extends CI_Controller {
 			BASE.AMP.'C=tools_data'.AMP.'M=sql_manager' => lang('sql_manager')
 		));
 
-		$this->load->helper('form');
-
 		$this->load->view('tools/sql_query_form');
 	}
 
@@ -216,7 +212,6 @@ class Tools_data extends CI_Controller {
 		}
 
 		$this->load->library('table');
-		$this->load->helper('form');
 
 		$this->jquery->tablesorter('.mainTable', '{
 			headers: {
@@ -465,24 +460,19 @@ class Tools_data extends CI_Controller {
 				if ( ! preg_match("/LIMIT\s+[0-9]/i", $sql))
 				{
 					// Modify the query so we get the total sans LIMIT
-
 					$row  = ( ! $this->input->get_post('per_page')) ? 0 : $this->input->get_post('per_page');
 					$new_sql = $sql." LIMIT ".$row.", ".$row_limit;
-
-					// magically delicious SQL_CALC_FOUND_ROWS method for MySQL 4 and above
-					$new_sql = preg_replace("/^(\s*SELECT)/", "\\1 SQL_CALC_FOUND_ROWS ", $new_sql);
-
+					
 					if ( ! $query = $this->db->query($new_sql))
 					{
 						$vars['no_results'] = lang('sql_no_result');
 						$this->load->view('tools/sql_results', $vars);
 						return;
 					}
-
-					$result = $this->db->query("SELECT FOUND_ROWS() AS total_rows");
-
-					$total_results = $result->row('total_rows') ;
-
+					
+					// Get total results
+					$total_results = $this->db->query($sql)->num_rows();
+					
 					if ($total_results > $row_limit)
 					{
 						$config['base_url'] = BASE.AMP.'C=tools_data'.AMP.'M=sql_run_query'.AMP.'thequery='.rawurlencode(base64_encode($sql));
@@ -558,8 +548,6 @@ class Tools_data extends CI_Controller {
 		{
 			show_error(lang('unauthorized_access'));
 		}
-
-		$this->load->helper('form');
 
 		// get the submitted details
 		$search  = $this->input->get_post('search_term');
@@ -851,7 +839,7 @@ class Tools_data extends CI_Controller {
 				$member_comments_count = $this->db->query('SELECT COUNT(*) AS count, author_id FROM exp_comments GROUP BY author_id ORDER BY count DESC');					
 			}				
 
-			$member_message_count = $this->db->query('SELECT COUNT(*) AS count, recipient_id FROM exp_message_copies GROUP BY recipient_id ORDER BY count DESC');
+			$member_message_count = $this->db->query('SELECT COUNT(*) AS count, recipient_id FROM exp_message_copies WHERE message_read = "n" GROUP BY recipient_id ORDER BY count DESC');
 
 			$member_data = array();
 			
@@ -944,7 +932,7 @@ class Tools_data extends CI_Controller {
 					{
 						if (isset($member_entries[$row->author_id]['member_id']))
 						{
-							$member_entries[$row->author_id]['total_forum_topics'] = $row->count;							
+							$member_entries[$row->author_id]['total_forum_posts'] = $row->count;							
 						}
 						else
 						{

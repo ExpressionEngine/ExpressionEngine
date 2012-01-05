@@ -216,9 +216,8 @@ class MyAccount extends CI_Controller {
 	/**
 	 * Edit Profile Form
 	 */
-	function edit_profile($message = '')
+	function edit_profile()
 	{
-		$this->load->helper('form');
 		$this->load->language('calendar');
 
 		$vars['cp_page_title'] = lang('edit_profile');
@@ -431,9 +430,9 @@ class MyAccount extends CI_Controller {
 	/**
 	  *	 Email preferences form
 	  */
-	function email_settings($message = '')
+	function email_settings()
 	{
-		$this->load->helper(array('form', 'snippets'));
+		$this->load->helper('snippets');
 
 		$vars['cp_page_title'] = lang('email_settings');
 
@@ -546,7 +545,7 @@ class MyAccount extends CI_Controller {
 	  */
 	function edit_preferences()
 	{
-		$this->load->helper(array('form', 'snippets'));
+		$this->load->helper('snippets');
 
 		$vars['cp_page_title'] = lang('edit_preferences');
 
@@ -602,12 +601,9 @@ class MyAccount extends CI_Controller {
 	/**
 	  *	 Username/Password form
 	  */
-	function username_password($message = '')
+	function username_password()
 	{
-		$this->load->helper('form');
-
 		$vars['cp_page_title'] = lang('username_and_password');
-		$vars['cp_messages'] = array($message);
 
 		$this->javascript->output('');
 
@@ -766,9 +762,7 @@ class MyAccount extends CI_Controller {
 		// Write log file
 		$this->logger->log_action($this->VAL->log_msg);
 
-		$message = lang('settings_updated');
-		
-		$this->session->set_flashdata('message_success', $message);
+		$this->session->set_flashdata('message_success', lang('settings_updated'));
 		$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=username_password'.AMP.'id='.$this->id);
 	}
 
@@ -785,7 +779,6 @@ class MyAccount extends CI_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->load->helper('form');
 		$this->load->library('table');
 		$this->lang->loadfile('admin_content');
 		$this->load->model('admin_model');
@@ -955,7 +948,7 @@ class MyAccount extends CI_Controller {
 	/**
 	  *	 HTML buttons
 	  */
-	function html_buttons($message = '')
+	function html_buttons()
 	{
 		// Is the user authorized to access the publish page? And does the user have
 		// at least one channel assigned? If not, show the no access message
@@ -964,7 +957,6 @@ class MyAccount extends CI_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 		
-		$this->load->helper(array('form', 'url'));
 		$this->load->library('table');
 		$this->lang->loadfile('admin');
 		$this->lang->loadfile('admin_content');
@@ -977,8 +969,6 @@ class MyAccount extends CI_Controller {
 								'id'			=>	$this->id);
 
 		$vars = array_merge($this->_account_menu_setup(), $vars);
-
-		$vars['cp_messages'] = array($message);
 		
 		$this->cp->add_js_script(array('file' => 'cp/account_html_buttons'));
 		$this->javascript->compile();
@@ -1132,7 +1122,7 @@ class MyAccount extends CI_Controller {
 	  */
 	function cp_theme()
 	{
-		$this->load->helper(array('form', 'date'));
+		$this->load->helper('date');
 		$this->load->model('admin_model');
 
 		$vars['cp_page_title'] = lang('cp_theme');
@@ -1187,16 +1177,15 @@ class MyAccount extends CI_Controller {
 	/**
 	  *	 Subscriptions
 	  */
-	function subscriptions($message = '')
+	function subscriptions()
 	{
-		$this->load->helper(array('form', 'snippets', 'url', 'string'));
+		$this->load->helper(array('snippets', 'string'));
 		$this->load->library('table');
 		$this->load->library('pagination');
 		$this->load->library('members');
 		$this->cp->get_installed_modules();
 
 		$vars['cp_page_title'] = lang('subscriptions');
-		$vars['cp_messages'] = array($message);
 
 		$this->jquery->tablesorter('.mainTable', '{
 			headers: {3: {sorter: false}},
@@ -1310,14 +1299,14 @@ class MyAccount extends CI_Controller {
 	/**
 	  *	 Localization settings
 	  */
-	function localization($message = '')
+	function localization()
 	{
 		if ($this->config->item('allow_member_localization') == 'n' AND $this->session->userdata('group_id') != 1)
 		{
 			show_error(lang('localization_disallowed'));
 		}
 
-		$this->load->helper(array('form', 'date'));
+		$this->load->helper('date');
 		$this->load->model('language_model');
 
 		$vars['cp_page_title'] = lang('localization_settings');
@@ -1435,8 +1424,6 @@ class MyAccount extends CI_Controller {
 	  */
 	function edit_signature()
 	{
-		$this->load->helper('form');
-
 		$vars['cp_page_title'] = lang('edit_signature');
 
 		$this->javascript->output('');
@@ -1522,7 +1509,6 @@ class MyAccount extends CI_Controller {
 			show_error(lang('avatars_not_enabled'));
 		}
 
-		$this->load->helper('form');
 		$this->load->language('number');
 
 		$vars['cp_page_title'] = lang('edit_avatar');
@@ -1614,7 +1600,7 @@ class MyAccount extends CI_Controller {
 	/**
 	  * Edit Photo Form
 	  */
-	function edit_photo($message = '')
+	function edit_photo()
 	{
 		// Are avatars enabled?
 		if ($this->config->item('enable_photos') == 'n')
@@ -1622,11 +1608,9 @@ class MyAccount extends CI_Controller {
 			show_error(lang('photos_not_enabled'));
 		}
 
-		$this->load->helper('form');
 		$this->load->language('number');
 
 		$vars['cp_page_title'] = lang('edit_photo');
-		$vars['cp_messages'] = array($message);
 
 		$this->javascript->output('');
 
@@ -1681,7 +1665,6 @@ class MyAccount extends CI_Controller {
 			show_error(lang('avatars_not_enabled'));
 		}
 
-		$this->load->helper('form');
 		$this->load->library('table');
 		$this->load->library('pagination');
 
@@ -1937,7 +1920,6 @@ class MyAccount extends CI_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->load->helper('form');
 		$vars['cp_page_title'] = lang('administrative_options');
 
 		$this->javascript->output('');
@@ -2078,7 +2060,7 @@ class MyAccount extends CI_Controller {
 	/** 
 	  * Quick links
 	  */
-	function quicklinks($message = '')
+	function quicklinks()
 	{
 		if ($this->session->userdata['group_id'] != 1 AND ($this->id != $this->session->userdata('member_id')))
 		{
@@ -2086,10 +2068,8 @@ class MyAccount extends CI_Controller {
 		}
 
 		$this->load->library('table');
-		$this->load->helper('form');
 
 		$vars['cp_page_title'] = lang('quicklinks_manager');
-		$vars['cp_messages'] = array($message);
 		$vars['form_hidden']['id'] = $this->id;
 
 		$this->jquery->tablesorter('.mainTable', '{widgets: ["zebra"]}');
@@ -2198,6 +2178,7 @@ class MyAccount extends CI_Controller {
 		}
 
 		$this->member_model->update_member($this->id, array('quick_links' => trim($str)));
+		$this->session->set_flashdata('message_success', lang('quicklinks_updated'));
 		$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=quicklinks'.AMP.'id='.$this->id.AMP.'U=1');
 	}
 
@@ -2209,7 +2190,6 @@ class MyAccount extends CI_Controller {
 	function main_menu_manager()
 	{
 		$this->load->library('table');
-		$this->load->helper(array('form'));
 
 		$vars['cp_page_title'] = lang('main_menu_manager');
 
@@ -2276,7 +2256,6 @@ class MyAccount extends CI_Controller {
 		}
 
 		$this->load->library('table');
-		$this->load->helper(array('form'));
 
 		$vars = array();
 
@@ -2438,7 +2417,6 @@ class MyAccount extends CI_Controller {
 		}
 
 		$this->load->library('table');
-		$this->load->helper(array('form'));
 		$this->load->model('channel_model');
 
 		$vars['cp_page_title'] = lang('bookmarklet');
@@ -2536,9 +2514,9 @@ class MyAccount extends CI_Controller {
 	/**
 	  *	 Ignore List
 	  */
-	function ignore_list($message = '')
+	function ignore_list()
 	{
-		$this->load->helper(array('form', 'snippets', 'url', 'string'));
+		$this->load->helper(array('snippets', 'string'));
 		$this->load->library('table');
 
 		$vars['cp_page_title'] = lang('ignore_list');

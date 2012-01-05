@@ -1,17 +1,3 @@
-/*
- * jQuery UI Button 1.8.16
- *
- * Copyright 2011, AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT or GPL Version 2 licenses.
- * http://jquery.org/license
- *
- * http://docs.jquery.com/UI/Button
- *
- * Depends:
- *	jquery.ui.core.js
- *	jquery.ui.widget.js
- */
-
 (function(b){var g,h,i,e,k=function(){var a=b(this).find(":ui-button");setTimeout(function(){a.button("refresh")},1)},j=function(a){var c=a.name,d=a.form,f=b([]);c&&(f=d?b(d).find("[name='"+c+"']"):b("[name='"+c+"']",a.ownerDocument).filter(function(){return!this.form}));return f};b.widget("ui.button",{options:{disabled:null,text:!0,label:null,icons:{primary:null,secondary:null}},_create:function(){this.element.closest("form").unbind("reset.button").bind("reset.button",k);if(typeof this.options.disabled!==
 "boolean")this.options.disabled=this.element.propAttr("disabled");this._determineButtonType();this.hasTitle=!!this.buttonElement.attr("title");var a=this,c=this.options,d=this.type==="checkbox"||this.type==="radio",f="ui-state-hover"+(!d?" ui-state-active":"");if(c.label===null)c.label=this.buttonElement.html();if(this.element.is(":disabled"))c.disabled=!0;this.buttonElement.addClass("ui-button ui-widget ui-state-default ui-corner-all").attr("role","button").bind("mouseenter.button",function(){c.disabled||
 (b(this).addClass("ui-state-hover"),this===g&&b(this).addClass("ui-state-active"))}).bind("mouseleave.button",function(){c.disabled||b(this).removeClass(f)}).bind("click.button",function(a){c.disabled&&(a.preventDefault(),a.stopImmediatePropagation())});this.element.bind("focus.button",function(){a.buttonElement.addClass("ui-state-focus")}).bind("blur.button",function(){a.buttonElement.removeClass("ui-state-focus")});d&&(this.element.bind("change.button",function(){e||a.refresh()}),this.buttonElement.bind("mousedown.button",

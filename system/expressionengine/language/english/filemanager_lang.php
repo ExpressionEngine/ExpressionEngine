@@ -44,6 +44,8 @@ $lang = array(
 // Upload modal
 'use_file'				=> 'Use Uploaded File',
 'browse_files'			=> 'Browse Files',
+'image_tools'			=> 'Image Tools',
+'no_change'				=> 'No change',
 
 'edit_modes'			=> 'Edit Modes',
 'resize'				=> 'Resize',
@@ -56,11 +58,11 @@ $lang = array(
 'crop_x'				=> 'X',
 'crop_y'				=> 'Y',
 'rotate'				=> 'Rotate',
-'rotate_90r'			=> '90&#176; Right',
-'rotate_90l'			=> '90&#176; Left',
+'rotate_90r'			=> '90 degrees, right',
+'rotate_90l'			=> '90 degrees, left',
 'rotate_180'			=> '180&#176',
-'rotate_flip_vert'		=> 'Flip Vertical',
-'rotate_flip_hor'		=> 'Flip Horizontal',
+'rotate_flip_vert'		=> 'Flip vertically',
+'rotate_flip_hor'		=> 'Flip horizontally',
 'maintain_ratio'		=> 'Maintain Aspect Ratio',
 'width_needed'			=> 'A width or width/height must be selected, or a rotate/flip direction selected.',
 'file_exists_replacement_error' => 'A file with this name exists but is not available in the database for overwriting.',
@@ -136,7 +138,7 @@ $lang = array(
 'Maximum Image Height (in pixels)',
 
 'max_width' =>
-'Maximum Image Width',
+'Maximum Image Width (in pixels)',
 
 'properties' =>
 'Image Properties',
@@ -347,10 +349,10 @@ $lang = array(
 "wm_offset" =>
 "Watermark Offset",
 
-"wm_x_offset" =>
+"wm_hor_offset" =>
 "Horizontal Offset",
 
-"wm_y_offset" =>
+"wm_vrt_offset" =>
 "Vertical Offset",
 
 "wm_font_color" =>
@@ -423,6 +425,15 @@ $lang = array(
 
 'file_not_added_to_db' =>
 'File could not be recorded in the database',
+
+'invalid_short_name' =>
+'The image manipulation short name may only contain alpha-numeric characters, dashes and underscores, and cannot be named "thumbs".',
+
+'description' =>
+'Description',
+
+'credit' =>
+'Credit',
 
 ''=>''
 );

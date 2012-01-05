@@ -9,7 +9,6 @@
 	<?=form_open('C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist'.AMP.'method=delete_mailinglist_confirm')?>
 
 	<?php
-		$this->table->set_template($cp_table_template);
 		$this->table->set_heading(
 			lang('ml_mailinglist_title'),
 			lang('ml_mailinglist_name'),

@@ -452,7 +452,7 @@ content associated with your account will also be deleted.',
 'You are not allowed to delete your own membership account.',
 
 'cannot_delete_super_admin' =>
-'You can not delete a Super Admin unless at least one other exists.',
+'You cannot delete a Super Admin unless at least one other exists.',
 
 'mbr_account_deleted' =>
 'You have successfully deleted your account and all associated content.',
@@ -867,7 +867,7 @@ We reserve the right to remove, edit, or move any messages for any reason.',
 'Invalid Screen Name',
 
 'can_not_ignore_self' =>
-'You can not ignore yourself',
+'You cannot ignore yourself',
 
 'invalid_screen_name_message' =>
 'The Screen Name you have submitted is invalid',

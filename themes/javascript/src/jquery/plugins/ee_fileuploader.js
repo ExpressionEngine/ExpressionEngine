@@ -22,13 +22,13 @@
 	 * Loads in the html needed and fires off the function to build the dialog
 	 *
 	 * Options you can pass in:
-	 *	- type: 		string		either 'filebrowser' or 'filemanager', this is 
+	 *	- type:			string		either 'filebrowser' or 'filemanager', this is
 	 *								used to determine what buttons to show
-	 *	- trigger: 		string		the jQuery selector to bind the upload dialog to
-	 *	- load: 		function	callback called when the modal is loaded
-	 *	- open: 		function	callback called when opening the modal
-	 *	- after_upload: function	callback called after the upload is complete
-	 *	- close: 		function	callback called when closing the modal
+	 *	- trigger:		string		the jQuery selector to bind the upload dialog to
+	 *	- load:			function	callback called when the modal is loaded
+	 *	- open:			function	callback called when opening the modal
+	 *	- after_upload:	function	callback called after the upload is complete
+	 *	- close:		function	callback called when closing the modal
 	 */
 	$.ee_fileuploader = function(options) {
 		var default_options = {};
@@ -45,7 +45,7 @@
 				file_uploader.find('.button_bar .filebrowser').remove();
 			} else if (settings.type == "filebrowser") {
 				file_uploader.find('.button_bar .filemanager').remove();
-			};
+			}
 			
 			$(document).ready(function() {
 				$.ee_fileuploader.build_dialog();
@@ -54,7 +54,7 @@
 			// Call load callback
 			if (typeof settings.load == 'function') {
 				settings.load.call(this, file_uploader);
-			};
+			}
 		});
 	};
 	
@@ -89,7 +89,7 @@
 				$.ee_fileuploader.reset_upload();
 				
 				// Save original contents for reset on close
-				if (original_upload_html == undefined) {
+				if (original_upload_html === undefined) {
 					original_upload_html = file_uploader.html();
 				}
 				// Call open callback
@@ -115,13 +115,13 @@
 								console.log(textStatus);
 							}
 						});
-					};
+					}
 					
 					// Call close callback, passing the file info
 					if (typeof settings.close == 'function') {
 						settings.close.call(this, file_uploader, current_file);
-					};
-				};
+					}
+				}
 
 				file_uploader.html(original_upload_html);
 			}
@@ -142,12 +142,28 @@
 	var upload_listen = function() {
 		$('#file_uploader .button_bar #rename_file').click(function(event) {
 			event.preventDefault();
-			$('#file_uploader iframe').contents().find('form').submit();
+			$('#file_uploader iframe').contents().find('form').trigger('submit');
 		});
 		
 		$('#file_uploader .button_bar .cancel').live('click', function(event) {
 			event.preventDefault();
-			file_uploader.dialog('close');
+			
+			$iframe = $('#file_uploader iframe').contents();
+			
+			// If we're editing file metadata, clear out content
+			if ($iframe.find('#edit_file_metadata').size()) {
+				// Change both resize dimensions back to default
+				$iframe.find('#resize input').each(function(index) {
+					$(this).val($(this).data('default')).removeClass('oversized');
+				});
+				
+				// Clear the radio buttons
+				$iframe.find("#rotate input").prop('checked', false);
+			} 
+			// Otherwise close the dialog
+			else {
+				file_uploader.dialog('close');
+			}
 		});
 	};
 	
@@ -161,18 +177,18 @@
 	$.ee_fileuploader.reset_upload = function(disable) {
 		if (typeof disable == "undefined") {
 			disable = true;
-		};
+		}
 
 		// Hide loading indicator
 		$('#file_uploader .button_bar .loading').addClass('visualEscapism');
 
 		// Disable the upload file button
-		if (disable == true) {
+		if (disable === true) {
 			$('#file_uploader .button_bar #upload_file')
 				.addClass('disabled-btn')
 				.removeClass('submit')
 				.unbind();
-		};
+		}
 	};
 	
 	// --------------------------------------------------------------------
@@ -188,7 +204,7 @@
 			.click(function(event) {
 				event.preventDefault();
 				$('#file_uploader .button_bar .loading').removeClass('visualEscapism');
-				$('#file_uploader iframe').contents().find('form').submit();
+				$('#file_uploader iframe').contents().find('form').trigger('submit');
 			});
 	};
 	
@@ -203,9 +219,9 @@
 	var clean_up = function() {
 		// Hide the dialog
 		file_uploader.dialog('close');
-
+		
 		// Close filebrowser
-		$.ee_filebrowser.clean_up(current_file, '');
+		$.ee_filebrowser.clean_up(current_file);
 	};
 	
 	// --------------------------------------------------------------------
@@ -227,7 +243,7 @@
 			// Check to see if the source already has directory_id and remove it
 			if (source_position > 0) {
 				source = source.substring(0, source_position);
-			};
+			}
 			
 			source = source + '&directory_id=' + directory_id;
 			
@@ -244,7 +260,7 @@
 			file_uploader.find('iframe').attr('src', source);
 			
 			return directory_id;
-		};
+		}
 		
 		return false;
 	};
@@ -283,35 +299,39 @@
 		// Call after upload callback
 		if (typeof settings.after_upload == "function") {
 			settings.after_upload.call(this, file_uploader, current_file);
-		};
+		}
 		
 		// Change the step to step 2
 		change_class('after_upload');
 		
-		// Create listener for the place file button
 		if (settings.type == "filemanager") {
-			if (file.is_image) {
-				$('#file_uploader .button_bar #edit_file').unbind().show().click(function(event) {
-					// Get edit action
-					var edit_url = $('.mainTable tr.new:first td:has(img) a[href*=edit_image]').attr('href');
-					$(this).attr('href', edit_url);
-				});
-			} else {
-				// Hide the edit file button if it's not an image.
-				$('#file_uploader .button_bar #edit_file').hide();
-			};
+			// Create listeners for the edit_file and edit_image links (not buttons)
+			var pages = ['edit_file', 'edit_image'];
+			
+			for (var i = 0, size = pages.length; i < size; i++) {
+				var edit_url = $('.mainTable tr.new:first td:has(img) a[href*='+pages[i]+']').attr('href');
+				$('#'+pages[i], '#file_uploader .button_bar').attr('href', edit_url);
+			}
 		} else if (settings.type == "filebrowser") {
-			$('#file_uploader .button_bar #choose_file').unbind().one('click', function(event) {
-				event.preventDefault();
+			// Create listener for the choose_file button
+			$('#file_uploader .button_bar').on('click', '#choose_file', function(event) {
 				clean_up();
+				event.preventDefault();
 			});
 			
-			$('#file_uploader .button_bar #edit_file_modal').unbind().show().one('click', function(event) {
+			// Create listener for edit file button
+			$('#file_uploader .button_bar').on('click', '#edit_file_modal', function(event) {
+				$('#file_uploader iframe').contents().find('form#edit_file').trigger('submit');
+				change_class('edit_modal');
 				event.preventDefault();
-				$('#file_uploader iframe').contents().find('form#resize_rotate').submit();
-				$(this).hide();
 			});
-		};
+			
+			// Create listener for the save file button (independant of choose file)
+			$('#file_uploader .button_bar').on('click', '#save_file', function(event) {
+				$('#file_uploader iframe').contents().find('form#edit_file_metadata').trigger('submit');
+				event.preventDefault();
+			});
+		}
 	};
 	
 	// --------------------------------------------------------------------
@@ -335,7 +355,7 @@
 	 */	
 	var change_class = function (class_name) {
 		$('#file_uploader')
-			.removeClass('before_upload after_upload file_exists')
+			.removeClass('before_upload after_upload file_exists edit_modal')
 			.addClass(class_name);
 	};
 })(jQuery);

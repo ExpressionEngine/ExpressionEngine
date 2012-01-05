@@ -185,7 +185,7 @@ class Auth {
 	 */
 	public function verify()
 	{
-		$username = $this->EE->input->post('username');
+		$username = (string) $this->EE->input->post('username');
 
 		// No username/password?  Bounce them...
 		if ( ! $username)
@@ -246,7 +246,7 @@ class Auth {
 		//  Check credentials
 		// ----------------------------------------------------------------
 
-		$password = $this->EE->input->post('password');
+		$password = (string) $this->EE->input->post('password');
 		$incoming = $this->EE->auth->authenticate_username($username, $password);
 
 		// Not even close
@@ -572,6 +572,7 @@ class Auth_result {
 	private $member;
 	private $session_id;
 	private $remember_me = 0;
+	private $anon = FALSE;
 	private $EE;
 	
 	/**
@@ -702,6 +703,19 @@ class Auth_result {
 	{
 		$this->remember_me = $expire;
 	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Anon setter
+	 *
+	 * @access	public
+	 */
+	function anon($anon)
+	{
+		$this->anon = $anon;
+	}
+
 	
 	// --------------------------------------------------------------------
 	
@@ -722,9 +736,18 @@ class Auth_result {
 		{
 			$expire = $this->remember_me;
 			
-			$this->EE->functions->set_cookie(
-				$this->EE->session->c_anon, 1, $expire
-			);
+			if ($this->anon)
+			{
+				$this->EE->functions->set_cookie(
+					$this->EE->session->c_anon, 1, $expire
+				);				
+			}
+			else
+			{
+				// Unset the anon cookie
+				$this->EE->functions->set_cookie($this->EE->session->c_anon);				
+			}
+
 			$this->EE->functions->set_cookie(
 				$this->EE->session->c_expire, time()+$expire, $expire
 			);

@@ -459,19 +459,19 @@ $lang = array(
 'Member Name:',
 
 'can_not_ban_super_admins' =>
-'Super Admins can not be banned',
+'Super Admins cannot be banned',
 
 'admins_can_not_be_banned' =>
 'Admins can only be banned by a Super Admin',
 
 'can_not_ban_yourself' =>
-'You can not ban your own account',
+'You cannot ban your own account',
 
 'ignore_member_confirmation' =>
 'Ignore Member Confirmation',
 
 'can_not_ignore_yourself' =>
-'You can not ignore yourself',
+'You cannot ignore yourself',
 
 'already_ignored' =>
 'Member is already being ignored',
@@ -510,7 +510,7 @@ $lang = array(
 'Ban all IP addresses associated with this account?',
 
 'ban_warning' =>
-'This option is permanent and can not be undone!',
+'This option is permanent and cannot be undone!',
 
 'user_account_suspended' =>
 'The following member account was suspended:',
@@ -555,7 +555,7 @@ $lang = array(
 'All posts in this thread will be permanently deleted!',
 
 'action_can_not_be_undone' =>
-'This action can not be undone',
+'This action cannot be undone',
 
 'edit' =>
 'Edit',

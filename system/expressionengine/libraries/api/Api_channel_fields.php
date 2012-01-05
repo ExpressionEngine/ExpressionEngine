@@ -1067,6 +1067,644 @@ class Api_channel_fields extends Api {
 
 
 	}
+	
+	/**
+	 * update/add field
+	 *
+	 * omit field_id in $field_data to create a new field
+	 * 
+	 * @param array $field_data the field settings;
+	 *                          uses the following keys: group_id, site_id, field_name, field_label, field_type, field_order,
+	 *                          and also fieldtype-specific settings, e.g. text_field_text_direction.
+	 *                          works in concert with data submitted using Api_channel_fields::field_edit_vars()
+	 * 
+	 * @return int|string|FALSE the field_id or FALSE if the process failed
+	 */
+	public function update_field(array $field_data)
+	{
+		$this->errors = array();
+		
+		$this->EE->load->helper('array');
+		
+		if ( ! isset($field_data['group_id']))
+		{
+			$this->_set_error('unauthorized_access');
+			
+			return FALSE;
+		}
+		
+		$this->EE->lang->loadfile('admin_content');
+
+		// If the $field_id variable has data we are editing an
+		// existing group, otherwise we are creating a new one
+
+		$edit = ( ! isset($field_data['field_id']) OR $field_data['field_id'] == '') ? FALSE : TRUE;
+
+		// We need this as a variable as we'll unset the array index
+
+		$group_id = element('group_id', $field_data);
+
+		// Check for required fields
+
+		$error = array();
+		$this->EE->load->model('field_model');
+
+		// little check in case they switched sites in MSM after leaving a window open.
+		// otherwise the landing page will be extremely confusing
+		if ( ! isset($field_data['site_id']) OR $field_data['site_id'] != $this->EE->config->item('site_id'))
+		{
+			$this->_set_error('site_id_mismatch');
+		}
+
+		// Was a field name supplied?
+		if ($field_data['field_name'] == '')
+		{
+			$this->_set_error('no_field_name');
+		}
+		// Is the field one of the reserved words?
+		else if (in_array($field_data['field_name'], $this->EE->cp->invalid_custom_field_names()))
+		{
+			$this->_set_error('reserved_word');
+		}
+
+		// Was a field label supplied?
+		if ($field_data['field_label'] == '')
+		{
+			$this->_set_error('no_field_label');
+		}
+
+		// Does field name contain invalid characters?
+		if (preg_match('/[^a-z0-9\_\-]/i', $field_data['field_name']))
+		{
+			$this->errors[] = lang('invalid_characters').': '.$field_data['field_name'];
+		}
+
+		// Is the field name taken?
+		$this->EE->db->where(array(
+			'site_id' => $this->EE->config->item('site_id'),
+			'field_name' => element('field_name', $field_data),
+		));
+
+		if ($edit == TRUE)
+		{
+			$this->EE->db->where('field_id !=', element('field_id', $field_data));
+		}
+
+		if ($this->EE->db->count_all_results('channel_fields') > 0)
+		{
+			$this->_set_error('duplicate_field_name');
+		}
+
+		$field_type = $field_data['field_type'];
+
+		// If they are setting a file type, ensure there is at least one upload directory available
+		if ($field_type == 'file')
+		{
+			$this->EE->load->model('file_upload_preferences_model');
+			$upload_dir_prefs = $this->EE->file_upload_preferences_model->get_upload_preferences();
+			
+			// count upload dirs
+			if (count($upload_dir_prefs) === 0)
+			{
+				$this->EE->lang->loadfile('filemanager');
+				$this->_set_error('please_add_upload');
+			}
+		}
+
+		// Are there errors to display?
+
+		if ($this->error_count() > 0)
+		{
+			return FALSE;
+		}
+		
+		$native = array(
+			'field_id', 'site_id', 'group_id',
+			'field_name', 'field_label', 'field_instructions',
+			'field_type', 'field_list_items', 'field_pre_populate',
+			'field_pre_channel_id', 'field_pre_field_id',
+			'field_related_id', 'field_related_orderby', 'field_related_sort', 'field_related_max',
+			'field_ta_rows', 'field_maxl', 'field_required',
+			'field_text_direction', 'field_search', 'field_is_hidden', 'field_fmt', 'field_show_fmt',
+			'field_order'
+		);
+		
+		$_posted = array();
+		$_field_posted = preg_grep('/^'.$field_type.'_.*/', array_keys($field_data));
+		$_keys = array_merge($native,  $_field_posted);
+
+		foreach($_keys as $key)
+		{
+			if (isset($field_data[$key]))
+			{
+				$_posted[$key] = $field_data[$key];
+			}
+		}
+
+		// Get the field type settings
+		$this->fetch_all_fieldtypes();
+		$this->setup_handler($field_type);
+		$ft_settings = $this->apply('save_settings', array($_posted));
+		
+		// Default display options
+		foreach(array('smileys', 'glossary', 'spellcheck', 'formatting_btns', 'file_selector', 'writemode') as $key)
+		{
+			$tmp = $this->_get_ft_data($field_type, 'field_show_'.$key, $field_data);
+			$ft_settings['field_show_'.$key] = $tmp ? $tmp : 'n';
+		}
+		
+		// Now that they've had a chance to mess with the POST array,
+		// grab post values for the native fields (and check namespaced fields)
+		foreach($native as $key)
+		{
+			$native_settings[$key] = $this->_get_ft_data($field_type, $key, $field_data);
+		}
+		
+		// Set some defaults
+		$native_settings['field_related_id']		= ($tmp = $this->_get_ft_data($field_type, 'field_related_channel_id', $field_data)) ? $tmp : '0';
+		$native_settings['field_list_items']		= ($tmp = $this->_get_ft_data($field_type, 'field_list_items', $field_data)) ? $tmp : '';
+				
+		$native_settings['field_text_direction']	= ($native_settings['field_text_direction'] !== FALSE) ? $native_settings['field_text_direction'] : 'ltr';
+		$native_settings['field_show_fmt']			= ($native_settings['field_show_fmt'] !== FALSE) ? $native_settings['field_show_fmt'] : 'n';
+		$native_settings['field_fmt']				= ($native_settings['field_fmt'] !== FALSE) ? $native_settings['field_fmt'] : 'xhtml';
+		
+		if ($native_settings['field_list_items'] != '')
+		{
+			// This results in double encoding later on
+			//$this->load->helper('string');
+			//$native_settings['field_list_items'] = quotes_to_entities($native_settings['field_list_items']);
+		}
+		
+		if ($native_settings['field_pre_populate'] == 'y')
+		{
+			$x = explode('_', $this->_get_ft_data($field_type, 'field_pre_populate_id', $field_data));
+
+			$native_settings['field_pre_channel_id']	= $x['0'];
+			$native_settings['field_pre_field_id'] = $x['1'];
+		}
+		
+		// If they returned a native field value as part of their settings instead of changing the post array,
+		// we'll merge those changes into our native settings
+		
+		foreach($ft_settings as $key => $val)
+		{
+			if (in_array($key, $native))
+			{
+				unset($ft_settings[$key]);
+				$native_settings[$key] = $val;
+			}
+		}
+
+		if ($field_data['field_order'] == 0 OR $field_data['field_order'] == '')
+		{
+			$query = $this->EE->db->select('MAX(field_order) as max')
+					      ->where('site_id', $this->config->item('site_id'))
+					      ->where('group_id', (int) $group_id)
+					      ->get('channel_fields');
+				
+			$native_settings['field_order'] = (int) $query->row('max') + 1;
+		}
+		
+		$native_settings['field_settings'] = base64_encode(serialize($ft_settings));
+		
+		// Construct the query based on whether we are updating or inserting
+		if ($edit === TRUE)
+		{
+			if ( ! is_numeric($native_settings['field_id']))
+			{
+				return FALSE;
+			}
+
+			// Update the formatting for all existing entries
+			if ($this->_get_ft_data($field_type, 'update_formatting', $field_data) == 'y')
+			{
+				$this->EE->db->update(
+					'channel_data',
+					array('field_ft_'.$native_settings['field_id'] => $native_settings['field_fmt'])
+				);
+			}
+
+				
+			// Send it over to drop old fields, add new ones, and modify as needed
+			$this->edit_datatype(
+				$native_settings['field_id'],
+				$field_type,
+				$native_settings
+			);
+			
+			unset($native_settings['group_id']);
+			
+			$this->EE->db->where('field_id', $native_settings['field_id']);
+			$this->EE->db->where('group_id', $group_id);
+			$this->EE->db->update('channel_fields', $native_settings);
+
+			// Update saved layouts if necessary
+			$collapse = ($native_settings['field_is_hidden'] == 'y') ? TRUE : FALSE;
+			$buttons = ($ft_settings['field_show_formatting_btns'] == 'y') ? TRUE : FALSE;
+			
+			// Add to any custom layouts
+			// First, figure out what channels are associated with this group
+			// Then using the list of channels, figure out the layouts associated with those channels
+			// Then update each layout individually
+			
+			$channels_for_group = $this->EE->field_model->get_assigned_channels($group_id);
+			
+			if ($channels_for_group->num_rows() > 0)
+			{
+				$this->EE->load->model('layout_model');
+				
+				foreach ($channels_for_group->result() as $channel)
+				{
+					$channel_ids[] = $channel->channel_id;
+				}
+				
+				$this->EE->db->select('layout_id');
+				$this->EE->db->where_in('channel_id', $channel_ids);
+				$layouts_for_group = $this->EE->db->get('layout_publish');
+				
+				foreach ($layouts_for_group->result() as $layout) 
+				{
+					// Figure out visibility for the field in the layout
+					$layout_settings = $this->EE->layout_model->get_layout_settings(array('layout_id' => $layout->layout_id), TRUE);
+					
+					$visibility = TRUE;
+					$width = '100%';
+					
+					if (array_key_exists('field_id_'.$native_settings['field_id'], $layout_settings)) 
+					{
+						$field_settings = $layout_settings['field_id_'.$native_settings['field_id']];
+						
+						$width = ($field_settings['width'] !== NULL) ? 
+							$field_settings['width'] : 
+							$width;
+						
+						$visibility = ($field_settings['visible'] !== NULL) ? 
+							$field_settings['visible'] : 
+							$visibility;
+					}
+					
+					$field_info[$native_settings['field_id']] = array(
+						'visible'     => $visibility,
+						'collapse'    => $collapse,
+						'htmlbuttons' => $buttons,
+						'width'       => $width
+					);
+					
+					$this->EE->layout_model->edit_layout_group_fields($field_info, $layout->layout_id);
+				}
+			}
+		}
+		else
+		{
+			if ( ! $native_settings['field_ta_rows'])
+			{
+				$native_settings['field_ta_rows'] = 0;
+			}
+
+			// as its new, there will be no field id, unset it to prevent an empty string from attempting to pass
+			unset($native_settings['field_id']);
+
+			$this->EE->db->insert('channel_fields', $native_settings);
+
+			$insert_id = $this->EE->db->insert_id();
+			$native_settings['field_id'] = $insert_id;
+
+			$this->add_datatype(
+				$insert_id, 
+				$native_settings
+			);
+
+			$this->EE->db->update('channel_data', array('field_ft_'.$insert_id => $native_settings['field_fmt'])); 
+
+			$field_formatting = array('none', 'br', 'xhtml');
+			
+			//if the selected field formatting is not one of the native formats, make sure it gets added to exp_field_formatting for this field
+			if ( ! in_array($native_settings['field_fmt'], $field_formatting))
+			{
+				$field_formatting[] = $native_settings['field_fmt'];
+			}
+
+			foreach ($field_formatting as $val)
+			{
+				$f_data = array('field_id' => $insert_id, 'field_fmt' => $val);
+				$this->EE->db->insert('field_formatting', $f_data); 
+			}
+			
+			$collapse = ($native_settings['field_is_hidden'] == 'y') ? TRUE : FALSE;
+			$buttons = ($ft_settings['field_show_formatting_btns'] == 'y') ? TRUE : FALSE;
+			
+			$field_info['publish'][$insert_id] = array(
+								'visible'		=> 'true',
+								'collapse'		=> $collapse,
+								'htmlbuttons'	=> $buttons,
+								'width'			=> '100%'
+			);
+			
+			// Add to any custom layouts
+			$query = $this->EE->field_model->get_assigned_channels($group_id);
+			
+			if ($query->num_rows() > 0)
+			{
+				foreach ($query->result() as $row)
+				{
+					$channel_ids[] = $row->channel_id;
+				}
+				
+				$this->EE->load->library('layout');
+				$this->EE->layout->add_layout_fields($field_info, $channel_ids);
+			}
+		}
+		
+		$_final_settings = array_merge($native_settings, $ft_settings);
+		unset($_final_settings['field_settings']);
+		
+		$this->set_settings($native_settings['field_id'], $_final_settings);
+		$this->setup_handler($native_settings['field_id']);
+		$this->apply('post_save_settings', array($_posted));
+
+		$this->EE->functions->clear_caching('all', '', TRUE);
+		
+		return $native_settings['field_id'];
+	}
+	
+	/**
+	 * A utility to get fieldtype-specific settings from the $field_data array
+	 * supplied by Api_channel_fields::update_field()
+	 * 
+	 * @param string $field_type the name of the field_type, e.g. text or select
+	 * @param string $key the key of the setting to retrieve, e.g. field_text_direction
+	 * @param array $field_data the full array of settings provided by the update_field() method
+	 * 
+	 * @return mixed the fieldtype setting requested
+	 */
+	protected function _get_ft_data($field_type, $key, $field_data)
+	{
+		if (isset($field_data[$key]))
+		{
+			return $field_data[$key];
+		}
+		
+		$key = $field_type.'_'.$key;
+		
+		return (isset($field_data[$key])) ? $field_data[$key] : FALSE;
+	}
+	
+	/**
+	 * gets variables to be passed to the admin/field_edit view
+	 * for new fields or existing fields
+	 * 
+	 * @param string|int $group_id
+	 * @param string|int $field_id optional if new field
+	 * 
+	 * @return array    the default fields needed to use the admin/field_edit view
+	 */
+	public function field_edit_vars($group_id, $field_id = FALSE)
+	{
+		$this->errors = array();
+		
+		$this->EE->load->library('table');
+
+		$this->EE->load->model('field_model');
+		
+		$vars = array(
+			'group_id' => $group_id,
+			'field_id' => $field_id,
+		);
+		
+		$this->EE->db->select('f.*');
+		$this->EE->db->from('channel_fields AS f, field_groups AS g');
+		$this->EE->db->where('f.group_id = g.group_id');
+		$this->EE->db->where('g.site_id', $this->EE->config->item('site_id'));
+		$this->EE->db->where('f.field_id', $vars['field_id']);
+		
+		$field_query = $this->EE->db->get();
+		
+		if ($field_id == '')
+		{
+			$type = 'new';
+
+			foreach ($field_query->list_fields() as $f)
+			{
+				if ( ! isset($vars[$f]))
+				{
+					$vars[$f] = '';
+				}
+			}
+
+			$this->EE->db->select('group_id');
+			$this->EE->db->where('group_id', $vars['group_id']);
+			$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
+			$query = $this->EE->db->get('channel_fields');
+
+			$vars['field_order'] = $query->num_rows() + 1;
+
+			if ($query->num_rows() > 0)
+			{
+				$vars['group_id'] = $query->row('group_id');
+			}
+			else
+			{
+				// if there are no existing fields yet for this group, this allows us to still validate the group_id
+				$this->EE->db->where('group_id', $vars['group_id']);
+				$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
+
+				if ($this->EE->db->count_all_results('field_groups') != 1)
+				{
+					$this->_set_error('unauthorized_access');
+					
+					return FALSE;
+				}
+			}
+		}
+		else
+		{
+			$type = 'edit';
+			
+			// No valid edit id?  No access
+			if ($field_query->num_rows() == 0)
+			{
+				$this->_set_error('unauthorized_access');
+				
+				return FALSE;
+			}
+
+			foreach ($field_query->row_array() as $key => $val)
+			{
+				if ($key == 'field_settings' && $val)
+				{
+					$ft_settings = unserialize(base64_decode($val));
+					$vars = array_merge($vars, $ft_settings);
+				}
+				else
+				{
+					$vars[$key] = $val;
+				}
+			}
+			
+			$vars['update_formatting']	= FALSE;
+		}
+		
+		extract($vars);
+		
+		// Fetch the name of the group
+		$query = $this->EE->field_model->get_field_group($group_id);
+		
+		$vars['group_name']			= $query->row('group_name');
+		$vars['submit_lang_key']	= ($type == 'new') ? 'submit' : 'update';
+
+		// Fetch the channel names
+
+		$this->EE->db->select('channel_id, channel_title, field_group');
+		$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
+		$this->EE->db->order_by('channel_title', 'asc');
+		$query = $this->EE->db->get('channels');
+
+		$vars['field_pre_populate_id_options'] = array();
+
+		foreach ($query->result_array() as $row)
+		{
+			// Fetch the field names
+			$this->EE->db->select('field_id, field_label');
+			$this->EE->db->where('group_id', $row['field_group']);
+			$this->EE->db->order_by('field_label','ASC');
+			$rez = $this->EE->db->get('channel_fields');
+
+			if ($rez->num_rows() > 0)
+			{
+				$vars['field_pre_populate_id_options'][$row['channel_title']] = array();
+				
+				foreach ($rez->result_array() as $frow)
+				{
+					$vars['field_pre_populate_id_options'][$row['channel_title']][$row['channel_id'].'_'.$frow['field_id']] = $frow['field_label'];
+				}
+			}
+		}
+
+		$vars['field_pre_populate_id_select'] = $field_pre_channel_id.'_'.$field_pre_field_id;
+
+		// build list of formatting options
+		if ($type == 'new')
+		{
+			$vars['edit_format_link'] = '';
+			
+			$this->EE->load->model('addons_model');
+			
+			$vars['field_fmt_options'] = $this->EE->addons_model->get_plugin_formatting(TRUE);
+		}
+		else
+		{
+			$confirm = "onclick=\"if( !confirm('".lang('list_edit_warning')."')) return false;\"";
+			$vars['edit_format_link'] = '<strong><a '.$confirm.' href="'.BASE.AMP.'C=admin_content'.AMP.'M=edit_formatting_options'.AMP.'id='.$field_id.'" title="'.lang('edit_list').'">'.lang('edit_list').'</a></strong>';
+
+			$this->EE->db->select('field_fmt');
+			$this->EE->db->where('field_id', $field_id);
+			$this->EE->db->order_by('field_fmt');
+			$query = $this->EE->db->get('field_formatting');
+
+			if ($query->num_rows() > 0)
+			{
+				foreach ($query->result_array() as $row)
+				{
+					$name = ucwords(str_replace('_', ' ', $row['field_fmt']));
+				
+					if ($name == 'Br')
+					{
+						$name = lang('auto_br');
+					}
+					elseif ($name == 'Xhtml')
+					{
+						$name = lang('xhtml');
+					}
+					$vars['field_fmt_options'][$row['field_fmt']] = $name;
+				}
+			}
+		}
+
+		$vars['field_fmt'] = (isset($field_fmt) && $field_fmt != '') ? $field_fmt : 'none';
+
+		// Prep our own fields
+		
+		$fts = $this->fetch_installed_fieldtypes();
+		
+		$default_values = array(
+			'field_type'					=> isset($fts['text']) ? 'text' : key($fts),
+			'field_show_fmt'				=> 'n',
+			'field_required'				=> 'n',
+			'field_search'					=> 'n',
+			'field_is_hidden'				=> 'n',
+			'field_pre_populate'			=> 'n',
+			'field_show_spellcheck'			=> 'n',
+			'field_show_smileys'			=> 'n',
+			'field_show_glossary'			=> 'n',
+			'field_show_formatting_btns'	=> 'n',
+			'field_show_writemode'			=> 'n',
+			'field_show_file_selector'		=> 'n',
+			'field_text_direction'			=> 'ltr'
+		);
+
+		foreach($default_values as $key => $val)
+		{
+			$vars[$key] = ( ! isset($vars[$key]) OR $vars[$key] == '') ? $val : $vars[$key];
+		}
+		
+		foreach(array('field_pre_populate', 'field_required', 'field_search', 'field_show_fmt') as $key)
+		{
+			$current = ($vars[$key] == 'y') ? 'y' : 'n';
+			$other = ($current == 'y') ? 'n' : 'y';
+			
+			$vars[$key.'_'.$current] = TRUE;
+			$vars[$key.'_'.$other] = FALSE;
+		}
+		
+		// Text Direction
+		$current = $vars['field_text_direction'];
+		$other = ($current == 'rtl') ? 'ltr' : 'rtl';
+		
+		$vars['field_text_direction_'.$current] = TRUE;
+		$vars['field_text_direction_'.$other] = FALSE;
+		
+		// Grab Field Type Settings
+		
+		$vars['field_type_table']	= array();
+		$vars['field_type_options']	= array();
+
+		$created = FALSE;
+
+		foreach($fts as $key => $attr)
+		{
+			// Global settings
+			$settings = unserialize(base64_decode($fts[$key]['settings']));
+			
+			$settings['field_type'] = $key;
+			
+			$this->EE->table->clear();
+			
+			$this->set_settings($key, $settings);
+			$this->setup_handler($key);
+			
+			$str = $this->apply('display_settings', array($vars));
+
+			$vars['field_type_tables'][$key]	= $str;
+			$vars['field_type_options'][$key]	= $attr['name'];
+			
+			if (count($this->EE->table->rows))
+			{
+				$vars['field_type_tables'][$key] = $this->EE->table->rows;
+			}
+		}
+
+		asort($vars['field_type_options']);	// sort by title
+
+		$vars['form_hidden'] = array(
+			'group_id'		=> $group_id,
+			'field_id'		=> $field_id,
+			'site_id'		=> $this->EE->config->item('site_id')
+		);
+
+		$vars['ft_selector'] = "#ft_".implode(", #ft_", array_keys($fts));
+		
+		return $vars;
+	}
 }
 
 // END Api_channel_fields class

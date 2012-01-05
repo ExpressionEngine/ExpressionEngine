@@ -3,6 +3,23 @@
 /**
  * ExpressionEngine Default Theme 
  */
+
+/* For modern browsers */
+.cf:before,
+.cf:after {
+    content:"";
+    display:table;
+}
+
+.cf:after {
+    clear:both;
+}
+
+/* For IE 6/7 (trigger hasLayout) */
+.cf {
+    zoom:1;
+}
+
 html, body, p, img, div, h1, h2, h3, h4, h5, h6, ol, ul, li, form, input, select, option, fieldset {
 	margin:					0;
 	padding:				0;
@@ -910,7 +927,6 @@ a#revealSidebarLink:link, a#revealSidebarLink:visited  {
 	border:				none;
 }
 
-#fileChooser .pageContents p,
 #mainContent .pageContents p,
 #mainContent .pageContents table {
 	margin-bottom:		11px;
@@ -1249,7 +1265,6 @@ input.submit {
 	padding-bottom:		.2em
 }	
 
-#fileChooser #filterMenu,
 #mainContent #filterMenu, 
 #mainContent #registerUser {
 	background-color:	#ECF1F4;
@@ -1269,7 +1284,6 @@ input.submit {
 	width:				95%;
 }
 
-#fileChooser #filterMenu .group,
 #mainContent #filterMenu .group {
 	margin-bottom:		12px;
 	padding-top:		5px; /* IE stupidity */
@@ -1290,7 +1304,6 @@ input.submit {
 	z-index:			10;
 }
 
-#fileChooser table.mainTable,
 #mainContent table.mainTable {
 	width:				100%;
 	text-align:			left;
@@ -1306,12 +1319,16 @@ table.padTable td:last-child {
 	border-right: 		1px solid #d0d7df!important;
 }
 
-table.mainTable th {
+.mainTable th {
 	background:		#2a3940 url('../images/backgrounds_sprite.png') repeat-x 0 -540px;
 	color:				#fff;
 	padding:			9px 8px 10px 8px;
 	border-left:		1px solid #45555f;
 	cursor:				pointer;
+}
+
+th.no-sort {
+	cursor: default;
 }
 
 #toggle_all, td.file_select {
@@ -1324,15 +1341,15 @@ table.mainTable thead {
 }
 
 table.mainTable .headerSortUp {
-	background:			transparent url('../images/table_sort_desc.gif') bottom right no-repeat;
+	background:			transparent url('../images/table_sort_desc.gif') center right no-repeat;
 	border-left:		1px solid #C60047;
-
+	padding-right:		20px;
 }
 
 table.mainTable th.headerSortDown {
-	background:			transparent url('../images/table_sort_asc.gif') bottom right no-repeat;
+	background:			transparent url('../images/table_sort_asc.gif') center right no-repeat;
 	border-left:		1px solid #C60047;
-
+	padding-right:		20px;
 }
 
 table.mainTable td.highlight {
@@ -1356,7 +1373,8 @@ table.mainTable tr.odd td {
 	background-color:	#f4f6f6;
 }
 
-table.mainTable tr.new td {
+table.mainTable tr.new td,
+#mainContent table.mainTable td.new {
 	background-color: #fcfcdc;
 	font-weight: bold;
 }
@@ -1391,7 +1409,6 @@ td.expand img:hover{ cursor: pointer; }
 	margin-bottom: 15px;
 }
 
-#fileChooser .tableSubmit,
 #mainContent .tableSubmit {
 	float:	right; 
 	margin-top: 0;
@@ -1975,6 +1992,7 @@ a.less_important_link:hover {
 	opacity: 			1.0;	
 }
 
+.templateTable td.templateName,
 .templateTable td.webpage {
 	background:			url('../images/design_sprite.png') 0 -88px no-repeat;
 }
@@ -1983,6 +2001,7 @@ a.less_important_link:hover {
 	background:		#ECF1F4	url('../images/design_sprite.png') -500px -88px no-repeat;
 }
 
+.templateTable tr.highlightRow td.templateName,
 .templateTable tr.highlightRow td.webpage {
 	background:		#8FA1AD url('../images/design_sprite.png') 0 -170px no-repeat;
 }
@@ -2512,15 +2531,6 @@ label.hide_field {
 	text-align:			left;
 }
 
-select#upload_dir {
-	margin:				8px 0 0 0;
-	width:				100%;
-}
-
-#file_manager_main select#upload_dir {
-	width:				auto; /* otherwise it extends outside the file chooser modal */
-}
-
 #mainContent #tools .submit_alt img, #mainContent #file_manager_tools .submit_alt img {
 	vertical-align: text-top;
 }
@@ -2829,6 +2839,15 @@ html.js .publish_hidden {
 	display: 			inline;
 }
 
+#cat_modal_container p,
+#cat_modal_container .category_field {
+	margin: 4px 0 12px;
+}
+
+#cat_modal_container .category_field p {
+	margin: 0;
+}
+
 /* Write Mode */
 
 #write_mode_footer,
@@ -2915,7 +2934,6 @@ html.js .publish_hidden {
 /* Show Entry */
 #view_content_entry_links {
 	margin-top:			15px;
-	width:				125px;
 	padding:			10px;
 	font-weight:		bold;
 }
@@ -2930,7 +2948,6 @@ html.js .publish_hidden {
 	margin-right:		5px;
 }
 
-#fileChooser #pagination_meta,
 #mainContent #paginationCount {
 	margin:				0 0 10px;
 }
@@ -3289,7 +3306,6 @@ div.contentWrap {
 	text-align:center;
 }
 
-#fileChooser #filterMenu,
 #mainContent #filterMenu {
 	background-color:	#ECF1F4;
 	color:				#5f6c74;
@@ -3324,87 +3340,66 @@ div.contentWrap {
 	width:				50%;
 }
 
-/* @group File Manager / Chooser */
-
-#mainContent #dir_choice_form,
-#mainContent #upload_form {
-	padding: 			0 0 4px;
-}
-
-#fileChooser #dir_choice_form,
-#mainContent #dir_choice_form {
-	float: 				left;
-}
-
-#fileChooser #upload_form,
-#mainContent #upload_form {
-	margin:		 		-4px 0 10px;
-}
-
-#fileChooser #upload_file.field,
-#upload_form #upload_file.field {
-	width:				196px;
-	margin:				0;
-	padding:			3px;
-}
-
-#progress {
-	display:			none;
-}
-
-#file_manager .tableSubmit {
-	margin-top: 		0;
-}
+/* File Manager ============================================================ */
 
 #file_manager a.overlay {
 	text-decoration: underline;
 }
 
-#fileChooser table.mainTable th {
-	cursor: default;
+#file_manager .mainTable td,
+#file_browser_body .mainTable td {
+	max-width: 200px;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
-/* @group Edit Controls */
+#file_browser_body .mainTable td {
+	max-width: 500px;
+}
+
+#file_browser_body
+
+/* File Manager Edit  ====================================================== */
 
 .edit_controls {
-	color:				#5f6c74;
-	float:				left;
-	font-size:			11px;
-	margin-top: 		-7px;
-	width:				14.5%;
+	color: #5f6c74;
+	float: left;
+	font-size: 11px;
+	margin-top: -7px;
+	width: 14.5%;
 }
 
 .edit_controls h3 {
-	margin: 			7px 0 0;
+	margin: 7px 0 0;
 }
 
 .edit_controls .ui-accordion-content {
-	border: 			1px solid #D0D7DF;
-	border-width: 		0 1px 1px;
-	margin: 			0 0 10px;
-	padding: 			5px 8px 8px;
+	border: 1px solid #D0D7DF;
+	border-width: 0 1px 1px;
+	margin: 0 0 10px;
+	padding: 5px 8px 8px;
 }
 
 .edit_controls label {
-	margin: 			0 0 0;
+	margin: 0 0 0;
 }
 
 .edit_controls .ui-accordion-content input {
-	margin: 			0 0 5px;
-	width: 				92%;
+	margin: 0 0 5px;
+	width: 92%;
 }
 
 .edit_controls ul {
-	margin: 			0;
+	margin: 0;
 }
 
 .edit_controls legend {
-	font-size: 			14px;
+	font-size: 14px;
 }
 
 .edit_controls  p.submit_button {
-	margin:				10px 0 0;
-	text-align:			right;
+	margin: 10px 0 0;
+	text-align: right;
 }
 
 .edit_controls  p.submit_button a {
@@ -3429,271 +3424,22 @@ div.contentWrap {
 }
 
 #rotate_fieldset li {
-	margin:				4px 0;
+	margin: 4px 0;
 }
 
 #rotate_fieldset.ui-accordion-content li input {
-	width: 				auto;
-}
-
-.edit_controls .oversized {
-	border:				2px solid #c6220a;
-}
-
-/* @end */
-
-#file_manager_edit_file {
-	float: 				right;
-	overflow: 			auto;
-	width: 				84%;
-}
-
-#fileChooser #upload_form input.submit {
-	margin-left: 10px;
-}
-
-#file_chooser_body {
-	border:				1px solid #ccc;
-	border-width: 		0 0 1px;
-	display:			block;
-	height: 			455px;
-	margin-bottom: 		10px;
-	padding-bottom: 	0px;
-	overflow:			auto;
-	width:				100%;
-}
-
-#fileChooser #filterMenu {
-	margin: 12px 0 7px;
-}
-
-#file_chooser_body #tableView {
-	margin-top: 3px;
-}
-
-/* Fix for long file names */
-#file_manager .mainTable td,
-#file_chooser_body #tableView td {
-	max-width: 200px;
-	overflow: hidden;
-	text-overflow: ellipsis;
-}
-
-#file_chooser_body #tableView td {
-	max-width: 500px;
-}
-
-a.file_chooser_thumbnail:link,
-a.file_chooser_thumbnail:visited {
-	border:				1px solid #ddd;
-	border-width:		1px 1px 1px;
-	color: 				#fff;
-	float:				left;
-	height:				70px;
-	overflow:			hidden;
-	padding: 10px 9px 24px;
-	position: 			relative;
-	text-align:			center;
-	width: 				80px;
-	margin: 6px 3px 0;
-}
-
-a.file_chooser_thumbnail img {
-	border: 			1px solid #fff;
-}
-
-a.file_chooser_thumbnail img.no_image {
-	border: 			0 none;
-}
-
-a.file_chooser_thumbnail p {
-	background:			#2a3940 url('../images/backgrounds_sprite.png') repeat-x 0 -540px;
-	position: 			absolute;
-	bottom: 			0;
-	font-size: 			11px;
-	left: 				0;
-	line-height: 		1.8;
-	height: 			1.8em;
-	width: 				100%;
-}
-
-a.file_chooser_thumbnail:hover {
-	background: 		#fff;
-}
-
-a.file_chooser_thumbnail.first {
-	margin-left: 0;
-}
-
-a.file_chooser_thumbnail.last {
-	margin-right: 0;
-}
-
-a.file_chooser_thumbnail.last_row {
-	border-bottom: 0 none;
-}
-
-#fileChooser #pagination_meta {
-	line-height:		1.9;
-	margin-bottom:		4px;
-}
-
-#file_chooser_footer #paginationLinks a {
-	display: inline-block;
-	margin-top: 2px;
-}
-
-#file_chooser_footer #paginationLinks select {
-	margin: 0 5px 0 0;
-}
-
-/* @end */
-
-/* @group File Uploader */
-
-#file_uploader {
-	padding: 			14px 14px 50px;
-	position: 			relative;
-	overflow: 			hidden;
-}
-
-#file_uploader .button_bar {
-	bottom:				0px;
-	left:				0;
-	min-height:			22px;
-	padding:			6px;
-	position:			absolute;
-	text-align:			right;
-	width:				586px;
-}
-
-.button_bar a.submit {
-	color: #fff;
-	font-weight: normal;
-	margin: 0 0 0 4px;
-	text-decoration: none;
-}
-
-.button_bar .loading {
-	position: relative;
-	right: 2px;
-	top: 3px;
-}
-
-.button_bar .loading.visualEscapism {
-	right: -9999px;
-}
-
-#file_uploader.before_upload .after_upload,
-#file_uploader.before_upload .file_exists {
-	display: none;
-}
-
-#file_uploader.file_exists .after_upload,
-#file_uploader.file_exists .before_upload {
-	display: none;
-}
-
-#file_uploader.after_upload .before_upload,
-#file_uploader.after_upload .file_exists {
-	display: none;
-}
-
-#file_uploader .cancel:link,
-#file_uploader .cancel:visited {
-	color: 				#e0e5e6;
-	color: 				rgba(255, 255, 255, 0.7);
-	line-height: 1.9;
-}
-
-#file_uploader .cancel:hover {
-	color: 				#fff;
-}
-
-#file_uploader iframe {
-	border:				0 none;
-	height:				290px;
-	width:				572px;
-}
-
-#file_uploader iframe,
-html#file_upload_iframe,
-html#file_upload_iframe body {
-	background:			#ecf1f4;
-}
-
-html#file_upload_iframe body {
-	min-width: 0;
-	padding: 0;
 	width: auto;
 }
 
-html#file_upload_iframe #upload_dir {
-	display:			block;
-	width:				auto;
+.edit_controls .oversized {
+	border: 2px solid #c6220a;
 }
 
-html#file_upload_iframe p {
-	margin:				11px 0;
-}
-
-#file_upload_iframe .upload_rename input.text {
-	margin-right: 5px;
-	padding-right: 30px;
-	width: 400px;
-}
-
-#file_upload_iframe .upload_rename span.extension {
-	color: #999;
-	margin-left: -40px;
-}
-
-#file_upload_iframe .image {
-	float: left;
-	width: 85px;
-}
-
-#file_upload_iframe .image img {
-	border: 1px solid #cdd7e0;
-	display: block;
-	margin: 0 auto 5px;
-	padding: 5px;
-}
-
-#file_upload_iframe h2 {
-	margin-bottom: 		10px;
-}
-
-#file_upload_iframe .upload_success table,
-#file_upload_iframe .edit_controls {
-	border-collapse: collapse;
+#file_manager_edit_file {
 	float: right;
-	width: 470px;
+	overflow: auto;
+	width: 84%;
 }
-
-#file_upload_iframe .upload_success th,
-#file_upload_iframe .upload_success td {
-	border-bottom: 		1px solid #cdd7e0;
-	padding: 			4px;
-}
-
-#file_upload_iframe .upload_success tr:last-child th,
-#file_upload_iframe .upload_success tr:last-child td {
-	border-bottom: 		0 none;
-}
-
-#file_upload_iframe .upload_success th {
-	padding-right: 		25px;
-	text-align: 		left;
-}
-
-#file_upload_iframe .edit_controls {
-	overflow: hidden;
-	height: 265px;
-}
-
-/* @end */
-
 
 /* Comments Index */
 
@@ -3705,12 +3451,11 @@ table.mainTable tr.comment-row-expanded td {
 }
 
 table.mainTable tr.comment-row-expanded td:last-child
- {
-border-left: 0px; 
+{
+	border-left: 0px; 
 }
 
-table.mainTable tr.comment-row-main a:link {
-color: #5f6c74;
+table.mainTable a.less_important_link:link {
 	text-decoration: underline;
 }
 
@@ -3852,6 +3597,20 @@ color: #5f6c74;
 	color:				#ccc;
 }
 
+/* Categories */
+
+#mainContent .category_field {
+	margin-bottom: 11px;
+}
+
+#mainContent .category_field p.filename {
+	margin: 6px 0 0;
+}
+
+#mainContent .category_field p {
+	margin-bottom: 6px;
+}
+
 /* -------------------------------------
 /*  jQuery plugins
 /* -------------------------------------*/
@@ -3897,6 +3656,10 @@ html.js #revealSidebarLink {
 
 .js_show {
 	display: none;
+}
+
+html.js .js_show {
+	display: block;
 }
 
 /* -------------------------------------------------------------------
@@ -4212,12 +3975,16 @@ html.js #revealSidebarLink {
 	z-index: 1002;
 }
 
+#notice_container p a:link,
+#notice_container p a:visited {
+	color: #E11842;
+}
+
 #notice_texts_container {
 	background: #1F2B33;
+	border: 1px solid #303F4A;
 	color: #fff;
 	display: none;
-	
-	border: 1px solid #303F4A;
 }
 
 #notice_counts {
@@ -4263,4 +4030,15 @@ html.js #revealSidebarLink {
 	padding: 3px 10px;
 	color: white;
 	float: right;
+}
+
+/* Alert Modal */
+
+div.alert p {
+	margin: 10px 0;
+}
+
+div.alert li {
+	list-style: disc;
+	margin-left: 20px;
 }

@@ -1441,7 +1441,7 @@ class Member_settings extends Member {
 		}
 
 		/** -------------------------------------
-		/**  Display error is there are any
+		/**  Display errors if there are any
 		/** -------------------------------------*/
 
 		if (count($VAL->errors) > 0)
@@ -1569,8 +1569,6 @@ class Member_settings extends Member {
 			return $this->EE->output->show_user_error('general', array($this->EE->lang->line('invalid_action')));
 		}
 
-		$this->EE->load->library('security');
-		
 		$data['language']	= $this->EE->security->sanitize_filename($_POST['deft_lang']);
 		$data['timezone']	= $_POST['server_timezone'];
 		$data['time_format'] = $_POST['time_format'];

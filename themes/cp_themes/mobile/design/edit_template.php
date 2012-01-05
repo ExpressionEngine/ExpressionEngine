@@ -21,14 +21,7 @@ if ($EE_view_disable !== TRUE)
 		<input type="radio" name="access_<?=$id?>" id="access_<?=$id?>_n" value="n" <?=$access[$id] ? '' : 'checked="checked"'?> />
 		<?php endforeach;?>
 		<input name="group_name" class="group_name" type="text" size="15" value="<?=$template_name?>" />
-		<select class="template_type" name="template_type" id="template_type">
-			<option value="css" <?=($prefs['template_type'] == 'css') ? 'selected="selected"':''?>><?=lang('css_stylesheet')?></option>
-			<option value="js" <?=($prefs['template_type'] == 'js') ? 'selected="selected"':''?>><?=lang('js')?></option>
-			<option value="rss" <?=($prefs['template_type'] == 'rss') ? 'selected="selected"':''?>><?=lang('rss')?></option>
-			<option value="static" <?=($prefs['template_type'] == 'static') ? 'selected="selected"':''?>><?=lang('static')?></option>
-			<option value="webpage" <?=($prefs['template_type'] == 'webpage') ? 'selected="selected"':''?>><?=lang('webpage')?></option>
-			<option value="xml" <?=($prefs['template_type'] == 'xml') ? 'selected="selected"':''?>><?=lang('xml')?></option>
-		</select>
+		<?=form_dropdown('template_type', $template_types, $prefs['template_type'], 'class="template_type" id="template_type"')?>
 		<?=form_dropdown('cache', array('y' => lang('yes'), 'n' => lang('no')), $prefs['cache'])?>
 		<input class="refresh" name="refresh" type="text" size="4" value="<?=$prefs['refresh']?>" />
 		<?=form_dropdown('allow_php', array('y' => lang('yes'), 'n' => lang('no')), $prefs['allow_php'])?>
@@ -96,14 +89,7 @@ if ($EE_view_disable !== TRUE)
 			<li><?=lang('name_of_template')?><br />
 				<input name="group_name" class="group_name" type="text" size="15" value="<?=$template_name?>" /></li>
 			<li><?=lang('type')?><br />
-				<select class="template_type" name="template_type" id="template_type">
-					<option value="css" <?=($prefs['template_type'] == 'css') ? 'selected="selected"':''?>><?=lang('css_stylesheet')?></option>
-					<option value="js" <?=($prefs['template_type'] == 'js') ? 'selected="selected"':''?>><?=lang('js')?></option>
-					<option value="rss" <?=($prefs['template_type'] == 'rss') ? 'selected="selected"':''?>><?=lang('rss')?></option>
-					<option value="static" <?=($prefs['template_type'] == 'static') ? 'selected="selected"':''?>><?=lang('static')?></option>
-					<option value="webpage" <?=($prefs['template_type'] == 'webpage') ? 'selected="selected"':''?>><?=lang('webpage')?></option>
-					<option value="xml" <?=($prefs['template_type'] == 'xml') ? 'selected="selected"':''?>><?=lang('xml')?></option>
-				</select>
+				<?=form_dropdown('template_type', $template_types, $prefs['template_type'], 'class="template_type" id="template_type"')?>
 			</li>
 			<li><?=lang('cache_enable')?><br />
 				<?=form_dropdown('cache', array('y' => lang('yes'), 'n' => lang('no')), $prefs['cache'])?>
@@ -153,14 +139,7 @@ if ($EE_view_disable !== TRUE)
 									'style' => 'border: 0;'
 							));?>		
 			<input name="group_name" class="group_name" type="text" size="15" value="<?=$template_name?>" />
-			<select class="template_type" name="template_type" id="template_type">
-				<option value="css" <?=($prefs['template_type'] == 'css') ? 'selected="selected"':''?>><?=lang('css_stylesheet')?></option>
-				<option value="js" <?=($prefs['template_type'] == 'js') ? 'selected="selected"':''?>><?=lang('js')?></option>
-				<option value="rss" <?=($prefs['template_type'] == 'rss') ? 'selected="selected"':''?>><?=lang('rss')?></option>
-				<option value="static" <?=($prefs['template_type'] == 'static') ? 'selected="selected"':''?>><?=lang('static')?></option>
-				<option value="webpage" <?=($prefs['template_type'] == 'webpage') ? 'selected="selected"':''?>><?=lang('webpage')?></option>
-				<option value="xml" <?=($prefs['template_type'] == 'xml') ? 'selected="selected"':''?>><?=lang('xml')?></option>
-			</select>
+			<?=form_dropdown('template_type', $template_types, $prefs['template_type'], 'class="template_type" id="template_type"')?>
 			<?=form_dropdown('cache', array('y' => lang('yes'), 'n' => lang('no')), $prefs['cache'])?>
 			<input class="refresh" name="refresh" type="text" size="4" value="<?=$prefs['refresh']?>" />
 			<?=form_dropdown('allow_php', array('y' => lang('yes'), 'n' => lang('no')), $prefs['allow_php'])?>
@@ -208,14 +187,7 @@ if ($EE_view_disable !== TRUE)
 		<input type="radio" name="access_<?=$id?>" id="access_<?=$id?>_n" value="n" <?=$access[$id] ? '' : 'checked="checked"'?> />
 		<?php endforeach;?>		
 		<input name="group_name" class="group_name" type="text" size="15" value="<?=$template_name?>" />
-		<select class="template_type" name="template_type" id="template_type">
-			<option value="css" <?=($prefs['template_type'] == 'css') ? 'selected="selected"':''?>><?=lang('css_stylesheet')?></option>
-			<option value="js" <?=($prefs['template_type'] == 'js') ? 'selected="selected"':''?>><?=lang('js')?></option>
-			<option value="feed" <?=($prefs['template_type'] == 'rss') ? 'selected="selected"':''?>><?=lang('rss')?></option>
-			<option value="static" <?=($prefs['template_type'] == 'static') ? 'selected="selected"':''?>><?=lang('static')?></option>
-			<option value="webpage" <?=($prefs['template_type'] == 'webpage') ? 'selected="selected"':''?>><?=lang('webpage')?></option>
-			<option value="xml" <?=($prefs['template_type'] == 'xml') ? 'selected="selected"':''?>><?=lang('xml')?></option>
-		</select>
+		<?=form_dropdown('template_type', $template_types, $prefs['template_type'], 'class="template_type" id="template_type"')?>
 		<?=form_dropdown('cache', array('y' => lang('yes'), 'n' => lang('no')), $prefs['cache'])?>
 		<input class="refresh" name="refresh" type="text" size="4" value="<?=$prefs['refresh']?>" />
 		<?=form_dropdown('allow_php', array('y' => lang('yes'), 'n' => lang('no')), $prefs['allow_php'])?>

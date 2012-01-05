@@ -27,7 +27,6 @@ class Tools_communicate extends CI_Controller {
 	var $mailinglist_exists	= FALSE;
 	var $attachments		= array();
 	var $perpage			= 50;
-	var $pipe_length		= 5;
 
 	/**
 	 * Constructor
@@ -41,7 +40,8 @@ class Tools_communicate extends CI_Controller {
 			show_error(lang('unauthorized_access'));
 		}		
 		
-		if (file_exists(PATH_MOD.'mailinglist/mod.mailinglist.php') && $this->db->table_exists($this->db->dbprefix.'mailing_lists') === TRUE)
+		if (file_exists(PATH_MOD.'mailinglist/mod.mailinglist.php') &&
+			$this->db->table_exists($this->db->dbprefix.'mailing_lists') === TRUE)
 		{
 			$this->mailinglist_exists = TRUE;
 		}
@@ -63,12 +63,10 @@ class Tools_communicate extends CI_Controller {
 	{
 		$this->load->library('spellcheck');
 		$this->load->library('table');
-		$this->load->helper(array('form'));
 		$this->load->model('member_model');
 		$this->load->model('addons_model');
 		$this->load->model('tools_model');
 		$this->lang->loadfile('tools');
-		$this->lang->loadfile('communicate');
 
 		$this->cp->set_variable('cp_page_title', lang('communicate'));
 
@@ -215,9 +213,6 @@ class Tools_communicate extends CI_Controller {
 					'4'  => lang('low'),
 					'5'  => lang('lowest')
 				);
-
-		// will be used to determine if attachments are available
-		$vars['upload_dir_result'] = $this->tools_model->get_upload_preferences($this->session->userdata('member_group'));
 
 		if ( ! $this->cp->allowed_group('can_email_mailinglist') OR ! isset($this->mailinglist_exists) OR $this->mailinglist_exists == FALSE)
 		{
@@ -990,169 +985,46 @@ class Tools_communicate extends CI_Controller {
 			show_error(lang('not_allowed_to_email_cache'));
 		}
 
+		$this->load->library('table');
 		$this->lang->loadfile('tools');
-		$this->lang->loadfile('communicate');
 
-		$this->cp->add_js_script(array('plugin' => 'dataTables'));
-
-
-	$this->javascript->output('
-var oCache = {
-	iCacheLower: -1
-};
-
-function fnSetKey( aoData, sKey, mValue )
-{
-	for ( var i=0, iLen=aoData.length ; i<iLen ; i++ )
-	{
-		if ( aoData[i].name == sKey )
-		{
-			aoData[i].value = mValue;
-		}
-	}
-}
-
-function fnGetKey( aoData, sKey )
-{
-	for ( var i=0, iLen=aoData.length ; i<iLen ; i++ )
-	{
-		if ( aoData[i].name == sKey )
-		{
-			return aoData[i].value;
-		}
-	}
-	return null;
-}
-
-function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
-	var iPipe = '.$this->pipe_length.';  /* Ajust the pipe size */
-	
-	var bNeedServer = false;
-	var sEcho = fnGetKey(aoData, "sEcho");
-	var iRequestStart = fnGetKey(aoData, "iDisplayStart");
-	var iRequestLength = fnGetKey(aoData, "iDisplayLength");
-	var iRequestEnd = iRequestStart + iRequestLength;
-
-	
-	oCache.iDisplayStart = iRequestStart;
-	
-	/* outside pipeline? */
-	if ( oCache.iCacheLower < 0 || iRequestStart < oCache.iCacheLower || iRequestEnd > oCache.iCacheUpper )
-	{
-		bNeedServer = true;
-	}
-	
-	/* sorting etc changed? */
-	if ( oCache.lastRequest && !bNeedServer )
-	{
-		for( var i=0, iLen=aoData.length ; i<iLen ; i++ )
-		{
-			if ( aoData[i].name != "iDisplayStart" && aoData[i].name != "iDisplayLength" && aoData[i].name != "sEcho" )
-			{
-				if ( aoData[i].value != oCache.lastRequest[i].value )
-				{
-					bNeedServer = true;
-					break;
-				}
-			}
-		}
-	}
-	
-	/* Store the request for checking next time around */
-	oCache.lastRequest = aoData.slice();
-	
-	if ( bNeedServer )
-	{
-		if ( iRequestStart < oCache.iCacheLower )
-		{
-			iRequestStart = iRequestStart - (iRequestLength*(iPipe-1));
-			if ( iRequestStart < 0 )
-			{
-				iRequestStart = 0;
-			}
-		}
+		$this->table->set_base_url('C=tools_communicate'.AMP.'M=view_cache');
+		$this->table->set_columns(array(
+			'subject'		=> array('header' => lang('email_title')),
+			'cache_date'	=> array('header' => lang('email_date')),
+			'total_sent'	=> array('header' => lang('total_recipients')),
+			'status' => array(),
+			'resend' => array('sort' => FALSE),
+			'_check' => array(
+				'sort' => FALSE,
+				'header' => form_checkbox('select_all', 'true', FALSE, 'class="toggle_all"')
+			)
+		));
 		
-		oCache.iCacheLower = iRequestStart;
-		oCache.iCacheUpper = iRequestStart + (iRequestLength * iPipe);
-		oCache.iDisplayLength = fnGetKey( aoData, "iDisplayLength" );
-		fnSetKey( aoData, "iDisplayStart", iRequestStart );
-		fnSetKey( aoData, "iDisplayLength", iRequestLength*iPipe );
+		$initial_state = array(
+			'sort'	=> array('cache_date' => 'desc')
+		);
 		
-		
-		$.getJSON( sSource, aoData, function (json) { 
-			/* Callback processing */
-			oCache.lastJson = jQuery.extend(true, {}, json);
- 			
-			if ( oCache.iCacheLower != oCache.iDisplayStart )
-			{
-				json.aaData.splice( 0, oCache.iDisplayStart-oCache.iCacheLower );
-			}
-			json.aaData.splice( oCache.iDisplayLength, json.aaData.length );
-			
-			fnCallback(json)
-		} );
-	}
-	else
-	{
-		json = jQuery.extend(true, {}, oCache.lastJson);
-		json.sEcho = sEcho; /* Update the echo for each response */
-		json.aaData.splice( 0, iRequestStart-oCache.iCacheLower );
-		json.aaData.splice( iRequestLength, json.aaData.length );
-		fnCallback(json);
-		return;
-	}
-}
-
-var time = new Date().getTime();
-		
-	oTable = $(".mainTable").dataTable( {	
-			"sPaginationType": "full_numbers",
-			"bLengthChange": false,
-			"bFilter": false,
-			"sWrapper": false,
-			"sInfo": false,
-			"bAutoWidth": false,
-			"iDisplayLength": '.$this->perpage.',  
-
-		"aoColumns": [null, null, null, null, { "bSortable" : false }, { "bSortable" : false } ],
-			
-		"oLanguage": {
-			"sZeroRecords": "'.lang('ml_no_results').'",
-			
-			"oPaginate": {
-				"sFirst": "<img src=\"'.$this->cp->cp_theme_url.'images/pagination_first_button.gif\" width=\"13\" height=\"13\" alt=\"&lt; &lt;\" />",
-				"sPrevious": "<img src=\"'.$this->cp->cp_theme_url.'images/pagination_prev_button.gif\" width=\"13\" height=\"13\" alt=\"&lt; &lt;\" />",
-				"sNext": "<img src=\"'.$this->cp->cp_theme_url.'images/pagination_next_button.gif\" width=\"13\" height=\"13\" alt=\"&lt; &lt;\" />", 
-				"sLast": "<img src=\"'.$this->cp->cp_theme_url.'images/pagination_last_button.gif\" width=\"13\" height=\"13\" alt=\"&lt; &lt;\" />"
-			}
-		},
-			
-			"bProcessing": true,
-			"bServerSide": true,
-			"sAjaxSource": EE.BASE+"&C=tools_communicate&M=view_cache_ajax_filter&time=" + time,
-			"fnServerData": fnDataTablesPipeline
-
-	} );
-
-	');	
+		$params = array(
+			'perpage'	=> $this->perpage,
+		);
+				
+		$vars = $this->table->datasource('_view_cache_data', $initial_state, $params);
 		
 		$this->javascript->output('
-									$(".toggle_all").toggle(
-										function(){		
-											$("input.toggle").each(function() {
-												this.checked = true;
-											});
-										}, function (){
-											var checked_status = this.checked;
-											$("input.toggle").each(function() {
-												this.checked = false;
-											});
-										}
-									);'
-								);
+			$(".toggle_all").toggle(
+				function(){		
+					$("input.toggle").each(function() {
+						this.checked = true;
+					});
+				}, function (){
+					$("input.toggle").each(function() {
+						this.checked = false;
+					});
+				}
+			);'
+		);
 
-		$this->load->library('table');
-		$this->load->helper('form');
 		$this->cp->set_variable('cp_page_title', lang('view_email_cache'));
 
 		// a bit of a breadcrumb override is needed
@@ -1160,48 +1032,6 @@ var time = new Date().getTime();
 			BASE.AMP.'C=tools' => lang('tools'),
 			BASE.AMP.'C=tools_communicate'=> lang('communicate')
 		));
-
-		// some defaults
-		$vars['cached_email'] = FALSE;
-		
-		$total = $this->db->count_all('email_cache');
-
-		if ($total == 0)
-		{
-			$this->load->view('tools/view_cached_email', $vars);
-			return;
-		}
-		
-		$row = ( ! $this->input->get_post('per_page')) ? 0 : $this->input->get_post('per_page');
-		$vars['pagination'] = FALSE;
-
-		if ($total > $this->perpage)
-		{
-			$this->load->library('pagination');
-			
-			$config['base_url'] = BASE.AMP.'C=tools_communicate'.AMP.'M=view_cache';
-			$config['total_rows'] = $total;
-			$config['per_page'] = $this->perpage;
-			$config['page_query_string'] = TRUE;
-			$config['first_link'] = lang('pag_first_link');
-			$config['last_link'] = lang('pag_last_link');
-			
-			$this->pagination->initialize($config);	
-			$vars['pagination'] = $this->pagination->create_links();
-		}
-
-		$query = $this->communicate_model->get_cached_email('', $this->perpage, $row);
-		
-		foreach ($query->result_array() as $row)
-		{
-			$vars['cached_email'][] = array(
-											'cache_id'		=> $row['cache_id'],
-											'email_title'	=> $row['subject'],
-											'email_date'	=> $this->localize->set_human_time($row['cache_date']),
-											'total_sent'	=> $row['total_sent'],
-											'status'		=> ($row['recipient_array'] == '') ? TRUE : FALSE
-										);
-		}
 		
 		$this->javascript->compile();
 		
@@ -1219,66 +1049,45 @@ var time = new Date().getTime();
 	 * @access	public
 	 * @return	void
 	 */
-	function view_cache_ajax_filter()
+	function _view_cache_data($state, $params)
 	{
-		$this->output->enable_profiler(FALSE);
+		$sort_col = $state['sort'];
 		
-		$col_map = array('subject', 'cache_date', 'total_sent', 'recipient_array', 'recipient_array');
-		
-		// Note- we pipeline the js, so pull more data than are displayed on the page		
-		$perpage = $this->input->get_post('iDisplayLength');
-		$offset = ($this->input->get_post('iDisplayStart')) ? $this->input->get_post('iDisplayStart') : 0; // Display start point
-		$sEcho = $this->input->get_post('sEcho');	
-
-		/* Ordering */
-		$order = array();
-		
-		if ($this->input->get('iSortCol_0') !== FALSE)
+		// we could simply name that column recipient_array, but
+		// that feels a little too magical to me.
+		if ($sort_col == 'status')
 		{
-			for ( $i=0; $i < $this->input->get('iSortingCols'); $i++ )
-			{
-				if (isset($col_map[$this->input->get('iSortCol_'.$i)]))
-				{
-					$order[$col_map[$this->input->get('iSortCol_'.$i)]] = ($this->input->get('sSortDir_'.$i) == 'asc') ? 'asc' : 'desc';
-				}
-			}
+			$sort_col == 'recipient_array';
 		}
 		
-		$query = $this->communicate_model->get_cached_email('', $perpage, $offset, $order);
-		
 		$total = $this->db->count_all('email_cache');
-
-
-		$j_response['sEcho'] = $sEcho;
-		$j_response['iTotalRecords'] = $total;
-		$j_response['iTotalDisplayRecords'] = $total;
-					
-
+		$cache_q = $this->communicate_model->get_cached_email('', $params['perpage'], $state['offset'], $sort_col);
 		
-		$tdata = array();
-		$i = 0;
-		
-		foreach ($query->result_array() as $email)
+		$rows = array();
+		$emails = $cache_q->result_array();
+						
+		while ($email = array_shift($emails))
 		{
-		
-			$m[] = "<strong><a href='".BASE.AMP.'C=tools_communicate'.AMP.'M=view_email'.AMP.'id='.$email['cache_id']."'>{$email['subject']}</a></strong>";
-			$m[] = $this->localize->set_human_time($email['cache_date']);
-			$m[] = $email['total_sent'];
-			$m[] = ($email['recipient_array'] == '') ? lang('complete') :
+			$rows[] = array(
+				'subject'		=> "<strong><a href='".BASE.AMP.'C=tools_communicate'.AMP.'M=view_email'.AMP.'id='.$email['cache_id']."'>{$email['subject']}</a></strong>",
+				'cache_date'	=> $this->localize->set_human_time($email['cache_date']),
+				'total_sent'	=> $email['total_sent'],
+				'status' => ($email['recipient_array'] == '') ? lang('complete') :
 					lang('incomplete').NBS.NBS.'<a href="'.BASE.AMP
-					.'C=tools_communicate'.AMP.'M=batch_send'.AMP.'id='.$email['cache_id'].'">Finish Sending</a>';
-			$m[] = '<a href="'.BASE.AMP.'C=tools_communicate'.AMP.'id='.$email['cache_id'].'">'.lang('resend').'</a>';
-			$m[] = '<input class="toggle" type="checkbox" name="email[]" value="'.$email['cache_id'].'" />';		
-
-			$tdata[$i] = $m;
-			$i++;
-			unset($m);
-		}		
-
-		$j_response['aaData'] = $tdata;	
-		$sOutput = $this->javascript->generate_json($j_response, TRUE);
-	
-		exit($sOutput);
+					.'C=tools_communicate'.AMP.'M=batch_send'.AMP.'id='.$email['cache_id'].'">Finish Sending</a>',
+				'resend' => '<a href="'.BASE.AMP.'C=tools_communicate'.AMP.'id='.$email['cache_id'].'">'.lang('resend').'</a>',
+				'_check' => '<input class="toggle" type="checkbox" name="email[]" value="'.$email['cache_id'].'" />'
+			);
+		}
+		
+		return array(
+			'rows' => $rows,
+			'no_results' => '<p class="notice">'.lang('no_cached_email').'</p>',
+			'pagination' => array(
+				'per_page' => $params['perpage'],
+				'total_rows' => $total
+			)
+		);
 	}
 
 	// --------------------------------------------------------------------
@@ -1318,8 +1127,6 @@ var time = new Date().getTime();
 			$vars['hidden']['email['.$i++.']'] = $row->cache_id;
 		}
 		
-		$this->load->helper('form');
-
 		$this->cp->set_variable('cp_page_title', lang('delete_emails'));
 		$this->cp->set_breadcrumb(BASE.AMP.'C=tools_communicate'.AMP.'M=view_cache', lang('view_email_cache'));
 		

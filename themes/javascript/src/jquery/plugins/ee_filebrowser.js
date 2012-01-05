@@ -10,27 +10,16 @@
  * @filesource
  */
 
-Array.max = function(array) {
-    return Math.max.apply(Math, array);
-};
-
-Array.min = function(array) {
-    return Math.min.apply(Math, array);
-};
-
 (function($) {
 
 	var file_manager_obj,
 		current_field = '',
 		display_type = 'list',
-		files_per_table = 15,
-		thumbs_per_page = 36,
-		backend_url,
 		
 		current_directory = 0,
-		dir_info = {},
-		dir_files = {},
 		settings = {},
+		
+		$table = null,
 		
 		trigger_callback;
 
@@ -67,12 +56,12 @@ Array.min = function(array) {
 						// Make sure the button bar is showing the correct items
 						$('#file_uploader').removeClass('upload_step_2').addClass('upload_step_1');
 
-						if ($('#fileChooser').size()) {
+						if ($('#file_browser').size()) {
 							// Reload the contents for the current directory
-							$.ee_filebrowser.reload_directory($('#dir_choice').val());
+							$.ee_filebrowser.reload();
 						}
 					},
-					trigger: '#fileChooser #upload_form input'
+					trigger: '#file_browser #upload_form input'
 				});
 			};
 		});
@@ -148,9 +137,6 @@ Array.min = function(array) {
 
 			// Restrict the upload directory options to the specified directory
 			hide_directories();
-			
-			// Rebuild pages since each upload directory can have different settings
-			build_page($('#dir_choice').val());
 
 			file_manager_obj.dialog("open");
 			
@@ -186,319 +172,54 @@ Array.min = function(array) {
 			'file_info',
 			{"file_id": file_id},
 			function(file) {
-				$.ee_filebrowser.clean_up(file, '');
+				trigger_callback(file);
+				file_manager_obj.dialog("close"); // close dialog & clean up
 			}
 		);
 		
 		return false;
 	};
-
+	
 	// --------------------------------------------------------------------
-
-	/*
-	 * Clean Up
-	 *
-	 * Takes care of restoring the file upload, closing the modal, and firing needed callbacks
+	
+	/**
+	 * Clear caches and close the file browser
 	 */
-	$.ee_filebrowser.clean_up = function(file, original_upload_html) {
-		// Clean up
-		$("#page_0 .items").html(original_upload_html); // Restore the upload form
-		file_manager_obj.dialog("close"); // close dialog
-		trigger_callback(file);
+	$.ee_filebrowser.clean_up = function(file) {
+		if (file) {
+			trigger_callback(file);
+		}
 		
-		// Clear caches
-		dir_info = {};
-		dir_files = {};
+		// Clear out keyword filter
+		$('#keywords', file_manager_obj).val('');
+		
+		file_manager_obj.dialog("close"); // clears caches
 	};
-
+	
+	
 	// --------------------------------------------------------------------
 	
 	/**
 	 * Refreshes the file browser with the newly upload files
 	 *
 	 * @param {Number} directory_id The directory ID to refresh
+	 * @deprecated since 2.4, use reload()
 	 */
 	$.ee_filebrowser.reload_directory = function(directory_id) {
-		// Force a refresh on the directory info and also rebuild the pages
-		$.ee_filebrowser.directory_info(directory_id, true, function(data) {
-			build_page(directory_id, 0);
-		});
+		$.ee_filebrowser.reload();
 	};
-	
-	// ------------------------------------------------------------------------ 
-	
-	function build_page(directory_id, page_offset) {
-		// Check if offset exists
-		if (isNaN(page_offset)) {
-			page_offset = 0;
-		}
-		
-		var per_page	= (display_type == 'list') ? files_per_table : thumbs_per_page,
-			offset		= page_offset * per_page,
-			images_only	= (display_type == 'list' && settings[current_field].content_type != 'image') ? false : true;
-		
-		// Setup dir_files
-		if (typeof dir_files[directory_id] == 'undefined') {
-			dir_files[directory_id] = {};
-		};
-		
-		if (typeof dir_files[directory_id][page_offset] == 'undefined') {
-			$.ee_filebrowser.endpoint_request(
-				'directory_contents',
-				{
-					'directory_id': directory_id,
-					'limit': 		per_page,
-					'offset': 		offset
-				},
-				function(data) {
-					var files = data.files,
-						cache_pages = 0,
-						page_indexes = [];
-					
-					// Count the number of pages
-					$.each(dir_files[directory_id], function(index, val) {
-						page_indexes[cache_pages] = index;
-						cache_pages = cache_pages + 1;
-					});
-
-					// Keep cache small-ish
-					if (cache_pages > 3) {
-						if (page_offset < Array.min(page_indexes)) {
-							delete dir_files[directory_id][Array.max(page_indexes)];
-						} else if (page_offset > Array.max(page_indexes)) {
-							delete dir_files[directory_id][Array.min(page_indexes)];
-						};
-					};
-					
-					// Cache the file information
-					if (typeof dir_files[directory_id][page_offset] == 'undefined') {
-						dir_files[directory_id][page_offset] = files;
-					};
-					
-					// Build pages
-					build_page_from_template(
-						dir_files[directory_id][page_offset],
-						directory_id,
-						offset,
-						per_page,
-						images_only
-					);
-				}
-			);
-		} else {
-			build_page_from_template(
-				dir_files[directory_id][page_offset],
-				directory_id,
-				offset,
-				per_page,
-				images_only
-			);
-		};
-	}
 	
 	// --------------------------------------------------------------------
-
-	/*
-	 * Builds the horizontal navigation.
-	 * Only fills in thumbnails for the first page, all others are loaded when they come into view
-	 */
-	function build_page_from_template(files, directory_id, offset, per_page, images_only) {
-		var table_view = $("#tableView").detach(),
-			viewSelectors = $("#viewSelectors").detach();
-		
-		// Clear everything
-		table_view.find('tbody').empty();
-		$('#file_chooser_body').empty().append(table_view);
-		$("#file_chooser_footer").empty().append(viewSelectors);
-		
-		// Display the data
-		if (display_type != 'list') {
-			$("#tableView").hide();
-			$.tmpl("thumb", files).appendTo("#file_chooser_body");
-			
-			// Add a last class to the 7th thumbnail
-			$('a.file_chooser_thumbnail:nth-child(9n+2)').addClass('first');
-			$('a.file_chooser_thumbnail:nth-child(9n+1)').addClass('last');
-			$('a.file_chooser_thumbnail:gt(26)').addClass('last_row');
-		}
-		else {
-			$("#tableView").show();
-			$.tmpl("fileRow", files).appendTo("#tableView tbody");
-		}
-
-		// Build the pagination
-		$.ee_filebrowser.directory_info(directory_id, false, function(data) {
-			build_footer(directory_id, offset, per_page, images_only);
-		});
-	}
-	
-	// ------------------------------------------------------------------------ 
 	
 	/**
-	 * Get's the directory's info for a particular directory
-	 *
-	 * @param {Number} directory_id ID of the directory you want a count for
-	 * @param {Boolean} refresh Override to get the latest info from the db
+	 * Refreshes the file browser with the newly upload files
 	 */
-	$.ee_filebrowser.directory_info = function(directory_id, refresh, callback) {
-		if (typeof refresh == 'undefined') {
-			refresh = false;
-		};
-		
-		if (typeof dir_info[directory_id] == 'undefined' || refresh == true) {
-			$.ee_filebrowser.endpoint_request(
-				'directory_info',
-				{"directory_id": directory_id},
-				function(data) {
-					dir_info[directory_id] = data;
-					
-					if (typeof callback == "function") {
-						callback.call(this, data);
-					};
-				}
-			);
-		} else if (typeof callback == "function") {
-			callback.call(this, dir_info[directory_id]);
+	$.ee_filebrowser.reload = function() {
+		if ($table) {
+			$table.table('clear_cache');
+			$table.table('refresh');
 		};
 	};
-	
-	// ------------------------------------------------------------------------ 
-	
-	/**
-	 * Build the footer for the file chooser
-	 *
-	 * @param {Object} directory The directory object from build_pages
-	 * @param {Number} offset The offset of files from build_pages
-	 * @param {Number} per_page The number of files to show per page
-	 * @param {Boolean} images_only TRUE if only images, FALSE otherwise
-	 */
-	function build_footer(directory_id, offset, per_page, images_only) {
-		// Set a default for images_only
-		if (typeof images_only == "undefined") {
-			images_only = false;
-		};
-		
-		var total_files = dir_info[directory_id].file_count,
-			page_count = Math.ceil(total_files / per_page);
-		
-		// Create the dropdown pagination
-		var $pagination_dropdown = $('<select />', {
-			"id": "current_page",
-			"name": "current_page"
-		});
-		
-		// Fill the pagination dropdown with page options
-		for (var i = 0, max = page_count; i < max; i++) {
-			$pagination_dropdown.append($('<option />', {
-				"value": i,
-				"text": "Page " + (i + 1)
-			}));
-		};
-		
-		// Figure out the information for the pagination block
-		var pagination = {
-			'pages_total': total_files,
-			'pages_from': offset + 1, // Bump up offset by one because of zero indexed arrays
-			'pages_to': (offset + per_page > total_files) ? total_files : offset + per_page,
-			
-			'pages_current': Math.floor(offset / per_page) + 1,
-			
-			'pagination_needed': (page_count > 1) ? true : false,
-			'dropdown': $pagination_dropdown.wrap('<div />').parent().html(),
-			
-			'previous': EE.filebrowser.previous,
-			'next': EE.filebrowser.next
-		};
-		
-		// Remove existing pagination
-		$('#paginationLinks, #pagination_meta').remove();
-		
-		$.tmpl("pagination", pagination).appendTo("#file_chooser_footer")
-			// Create an event handler for changes to the dropdown
-			.find('#view_type')
-				.val(display_type) // Make sure the dropdown is using the right value
-				.change(function() {
-					// Add class to file chooser body
-					$('#file_chooser_body').removeClass('list thumb').addClass(this.value);
-					
-					// Reset dir_files cache
-					dir_files = {};
-					
-					// Change display type
-					display_type = this.value;
-					
-					// Rebuild pages
-					build_page($('#dir_choice').val());
-				})
-			.end()
-			// Populate the categories dropdown
-			// .find('select[name=category]')
-			// 	.replaceWith(directory.categories)
-			// .end()
-			// Create a listener for the pagination dropdown
-			.find('select[name=current_page]')
-				.val(pagination.pages_current - 1)
-				.change(function() {
-					build_page($('#dir_choice').val(), $(this).val());
-				})
-			.end()
-			// Create a listener for the previous link
-			.find('a.previous')
-				.click(function(event) {
-					event.preventDefault();
-					change_page(-1);
-				})
-			.end()
-			// Create a listener for the next link
-			.find('a.next')
-				.click(function(event) {
-					event.preventDefault();
-					change_page(1);
-				})
-			.end();
-			
-		show_next_previous(page_count);
-	}
-	
-	// ------------------------------------------------------------------------ 
-	
-	/**
-	 * Change the page for the next/previous pagination, takes a modifier (either
-	 * 1 or -1) depending if we're going forward or backward, changes the dropdown
-	 * and rebuilds the pages
-	 *
-	 * @param {Number} modifier Either +1 if going to the next page or -1 if 
-	 *		going to the previous page
-	 */
-	function change_page (modifier) {
-		if (typeof modifier == "undefined") {
-			modifier = 0;
-		};
-		
-		var current_page = $('#current_page').val(),
-			new_page = parseInt(current_page, 10) + modifier;
-		
-		$('#current_page').val(new_page);
-		build_page($('#dir_choice').val(), new_page);
-	}
-	
-	// ------------------------------------------------------------------------ 
-	
-	/**
-	 * Shows the next or previous links depending on what page we're looking at
-	 * and how many pages there are
-	 *
-	 * @param {Number} total_pages The total number of pages
-	 */
-	function show_next_previous (total_pages) {
-		$('#file_chooser_footer #paginationLinks a').removeClass('visualEscapism');
-		
-		if ($('#current_page').val() == 0) {
-			$('#file_chooser_footer #paginationLinks .previous').addClass('visualEscapism');
-		} else if ($('#current_page').val() == (total_pages - 1)) {
-			$('#file_chooser_footer #paginationLinks .next').addClass('visualEscapism');
-		};
-	}
 
 	// --------------------------------------------------------------------
 
@@ -506,7 +227,8 @@ Array.min = function(array) {
 	 * Sets up all filebrowser events
 	 */
 	function createBrowser() {
-		
+		var $dir_choice = $('#dir_choice');
+
 		// Set up modal dialog
 		file_manager_obj.dialog({
 			width: 968,
@@ -519,26 +241,77 @@ Array.min = function(array) {
 			autoOpen: false,
 			zIndex: 99999,
 			open: function(event, ui) {
+				var field_dir = settings[current_field].directory;
+				
+				if ( ! isNaN(field_dir)) {
+					$dir_choice.val(field_dir);
+				}
+				
+				// force a trigger check
+				$dir_choice.trigger('interact');
 				var current_directory = $('#dir_choice').val();
+			},
+			close: function(event, ui) {
+				$.ee_filebrowser.reload();
+				
+				// Clear out keyword filter
+				$('#keywords', file_manager_obj).val('');
 			}
 		});
+		
+		var $table, $tables = $('#file_browser_body').find('table');
 
-		// Create listener for the dir choice
-		$('#dir_choice').change(function() {
-			build_page(this.value, 0);
+		$tables.each(function() {
+			$table = $(this);
+			
+			if ($table.data('table_config')) {
+				return false; //break
+			}
 		});
 		
-		// Get templates and remove code from view
-		$.template("fileRow", $('<tbody />').append($('#rowTmpl').remove().attr('id', false)));
-		$.template("noFilesRow", $('#noFilesRowTmpl').remove());
-		$.template("pagination", $('#paginationTmpl').remove());
-		$.template("thumb", $('#thumbTmpl').remove());
+		var config = $table.data('table_config');
+		$table.table(config);
+		
+		
+		// Set directory in case filter happens before input has changed (because the
+		// filter is only set on certain interaction events)
+		// $table.table('add_filter', { 'dir_choice': $dir_choice.val() });
+		
+		$table.table('add_filter', $dir_choice);
+		$table.table('add_filter', $('#keywords'));
+		
+		var table_template = $table.table('get_template');
+			thumb_template = $('#thumbTmpl').remove().html(),
+			table_container = $table.table('get_container'),
+			thumb_container = $('#file_browser_body'); //$('div').insertBefore($table);
+		
+		$('#view_type').change(function() {
+			if (this.value == 'thumb') {
+				$table.detach();
+				$table.table('set_container', thumb_container);
+				$table.table('set_template', thumb_template);
+				$table.table('add_filter', { 'per_page': 36 });
+			} else {
+				thumb_container.html($table);
+				$table.table('set_container', table_container);
+				$table.table('set_template', table_template);
+				$table.table('add_filter', { 'per_page': 15 });
+			}
+		});
+		
+		$table.bind('tableupdate', function() {
+			if ($('#view_type').val() == 'thumb') {
+				$('a.file_browser_thumbnail:nth-child(9n)').addClass('last');
+				$('a.file_browser_thumbnail:nth-child(9n+1)').addClass('first');
+				$('a.file_browser_thumbnail:gt(26)').addClass('last_row');
+			}
+		});
 		
 		// Bind the upload submit event
 		$("#upload_form", file_manager_obj).submit($.ee_filebrowser.upload_start);
 		
-		// Add the display type as a class to file_chooser_body
-		$('#file_chooser_body', file_manager_obj).addClass(display_type);
+		// Add the display type as a class to file_browser_body
+		$('#file_browser_body', file_manager_obj).addClass(display_type);
 	}
 	
 	// --------------------------------------------------------------------
@@ -549,10 +322,10 @@ Array.min = function(array) {
 	function hide_directories() {
 		if (settings[current_field].directory != 'all') {
 			$('#dir_choice', file_manager_obj).val(settings[current_field].directory);
-			$('#dir_choice_form', file_manager_obj).hide();
+			$('#dir_choice_form .dir_choice_container', file_manager_obj).hide();
 		} else {
 			$('#dir_choice', file_manager_obj).val();
-			$('#dir_choice_form', file_manager_obj).show();
+			$('#dir_choice_form .dir_choice_container', file_manager_obj).show();
 		};
 	}
 

@@ -151,7 +151,6 @@ class EE_Extensions {
 		if ($this->in_progress == $which) return;
 		
 		$this->in_progress = $which;
-		$this->EE->load->library('security');
 		$this->EE->load->library('addons');
 		$this->EE->addons->is_package('');
 		
@@ -186,7 +185,7 @@ class EE_Extensions {
 				$name = $this->EE->security->sanitize_filename(strtolower(substr($class, 0, -4))); // remove '_ext' suffix
 				
 				$path = $this->EE->addons->_packages[$name]['extension']['path'];
-				$extension_path = $path.'/ext.'.$name.'.php';
+				$extension_path = $this->EE->functions->remove_double_slashes($path.'/ext.'.$name.'.php');
 
 				if (file_exists($extension_path))
 				{

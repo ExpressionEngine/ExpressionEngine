@@ -170,6 +170,12 @@ Please download <a href="%s" title="Download Here">here</a> and follow the <a hr
 'close' =>
 'Close',
 
+'developer_logs' =>
+'You have %d unviewed items in the <a href="%s">Developer Log</a>.',
+
+'version_mismatch' =>
+'Your ExpressionEngine installation&rsquo;s version (%s) is not consistent with the reported version (%s). <a href="http://expressionengine.com/user_guide/installation/update.html">Please update your installation of ExpressionEngine again</a>.',
+
 ''=>''
 );
 

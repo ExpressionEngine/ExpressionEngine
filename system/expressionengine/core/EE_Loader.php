@@ -132,6 +132,10 @@ class EE_Loader extends CI_Loader {
 		
 		if (strtolower($library) == 'security')
 		{
+			$this->library('logger');
+			get_instance()->logger->developer('$this->load->library(\'security\') is deprecated as 
+				the CI_Security class has been moved to Core, so it is always loaded.', TRUE);
+			
 			return NULL;
 		}
 		

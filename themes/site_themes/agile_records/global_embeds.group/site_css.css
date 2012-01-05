@@ -292,3 +292,9 @@ div#content_sec.member_cp table tr.alt  { background:url({site_url}themes/site_t
 /* Private Messages: Move and Copy pop-up menu control */
 #movemenu {position: absolute !important; top: 410px !important; left: 390px !important; border: 0 !important;}
 #copymenu {position: absolute !important; top: 410px !important; left: 332px !important; border: 0 !important;}
+
+/* Search Results */
+.pagination ul { overflow: auto; }
+.pagination li { float: left; list-style: none; background: transparent url(http://expressionengine2/themes/site_themes/agile_records/images/green_40.png) repeat scroll 0 0; padding: 1px 7px; margin: 0 3px; }
+.pagination li.active { background: none; }
+.pagination li.active a { text-decoration: none; }

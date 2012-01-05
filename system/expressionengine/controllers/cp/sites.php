@@ -160,7 +160,16 @@ class Sites extends CI_Controller {
 		
 		// This is just way too simple.
 		
+		// If they are already setting cookies with a specified domain, keep using it in this backend
+		$current_cookie_domain = $this->config->item('cookie_domain');
+		
 		$this->config->site_prefs('', $site_id);
+		
+		if ($current_cookie_domain != FALSE && $current_cookie_domain != '')
+		{
+			$this->config->cp_cookie_domain = $current_cookie_domain;
+		}
+		
 		$this->functions->set_cookie('cp_last_site_id', $site_id, 0);
 		
 		$this->functions->redirect($page);
@@ -253,6 +262,7 @@ class Sites extends CI_Controller {
 		$this->cp->set_variable('cp_page_title', $title);
 		
 		$this->load->model('site_model');
+		$this->load->model('file_upload_preferences_model');
 		$this->load->helper(array('form', 'snippets'));
 		$this->lang->loadfile('filemanager');
 		
@@ -293,6 +303,9 @@ class Sites extends CI_Controller {
 				$vars['upload_directories'] = 	$this->db->query("SELECT name, id, site_label FROM exp_upload_prefs, exp_sites
 										 						WHERE exp_sites.site_id = exp_upload_prefs.site_id
 										 						ORDER by site_label, exp_upload_prefs.name");
+				
+				// Bring in overridden upload directory values to show on Add Site screen
+				$vars['upload_directories_override'] = $this->file_upload_preferences_model->get_upload_preferences(1, NULL, TRUE);
 
 				$vars['upload_directory_options'] = array(
 												'nothing'		=> lang('do_nothing'),
@@ -786,9 +799,13 @@ class Sites extends CI_Controller {
 					
 					if ($value == 'move')
 					{
-						$this->db->query($this->db->update_string('exp_upload_prefs', 
-													  array('site_id' => $site_id), 
-													  "id = '".$this->db->escape_str($upload_id)."'"));
+						$data = array('site_id' => $site_id);
+						
+						$this->db->where('id', $this->db->escape_str($upload_id));
+						$this->db->update('upload_prefs', $data);
+						
+						$this->db->where('upload_location_id', $this->db->escape_str($upload_id));
+						$this->db->update('file_dimensions', $data);
 					}
 					else
 					{
@@ -798,7 +815,7 @@ class Sites extends CI_Controller {
 						{
 							continue;
 						}
-
+						
 						$row = $query->row_array();
 						
 						// Uniqueness checks
@@ -832,6 +849,22 @@ class Sites extends CI_Controller {
 							{
 								$this->db->query($this->db->insert_string('exp_upload_no_access', array('upload_id' => $new_upload_id, 'upload_loc' => $row['upload_loc'], 'member_group' => $row['member_group'])));
 							}
+						}
+						
+						// Get image manipulations to duplicate
+						$this->db->where('upload_location_id', $this->db->escape_str($upload_id));
+						$image_manipulations = $this->db->get('file_dimensions')->result_array();
+						
+						// Duplicate image manipulations
+						foreach ($image_manipulations as $row)
+						{
+							unset($row['id']);
+							
+							// Set new site ID and upload location ID
+							$row['site_id'] = $site_id;
+							$row['upload_location_id'] = $new_upload_id;
+							
+							$this->db->insert('file_dimensions', $row);
 						}
 					}
 				}
@@ -1611,9 +1644,7 @@ class Sites extends CI_Controller {
 		{
 			return FALSE;
 		}
-		
-		$this->load->helper('form');
-		
+				
 		$this->db->select('site_label');
 		$query = $this->db->get_where('sites', array('site_id' => $site_id));
 		
@@ -1795,6 +1826,7 @@ class Sites extends CI_Controller {
 						'exp_comments',
 						'exp_cp_log',
 						'exp_field_groups',
+						'exp_file_dimensions',
 						'exp_global_variables',
 						'exp_html_buttons',
 						'exp_member_groups',

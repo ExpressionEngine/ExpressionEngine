@@ -1,9 +1,12 @@
-<div id="fileChooser" class="pageContents" style="padding: 0 10px">
+<div id="file_browser" class="pageContents" style="padding: 0 10px">
 	<div id="filterMenu">
 		<?php if ( ! empty($filemanager_directories)):?>
 			<?=form_open('', array('id' => 'dir_choice_form'))?>
-				<?=form_label('Upload Directory:', 'dir_choice').NBS?>
-				<?=form_dropdown('dir_choice', $filemanager_directories, key($filemanager_directories), 'id="dir_choice"').NBS?>
+				<span class="dir_choice_container">
+					<?=form_label('Upload Directory:', 'dir_choice').NBS?>
+					<?=form_dropdown('dir_choice', $filemanager_directories, key($filemanager_directories), 'id="dir_choice"').NBS?>
+				</span>
+				<input type="text" name="keywords" value="" id="keywords" placeholder="<?= lang('keywords') ?>" />
 			<?=form_close()?>
 			<div class="tableSubmit" id="upload_form">
 				<input type="submit" class="submit" value="<?=lang('upload_file')?>">
@@ -12,53 +15,21 @@
 		<div class="clear_left"></div>
 	</div>
 	
-	<div id="file_chooser_body" class="">
+	<div id="file_browser_body" class="">
 	
-		<table class="mainTable padTable" id="tableView" border="0" cellspacing="0" cellpadding="0">
-			<thead>
-				<tr>
-					<th><?=lang('name')?></th>
-					<th><?=lang('size')?></th>
-					<th><?=lang('kind')?></th>
-					<th><?=lang('date')?></th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr id="noFilesRowTmpl">
-					<td colspan="4"><?=lang('no_uploaded_files')?></td>
-				</tr>
-				<tr id="rowTmpl">
-					<td><a href="#" title="${file_name}" onclick="$.ee_filebrowser.placeImage('${file_id}'); return false;">${file_name}</a></td>
-					<td>${file_size}</td>
-					<td>${mime_type}</td>
-					<td>${date}</td>
-				</tr>
-			</tbody>
-		</table>
+		<?=$table_html?>
 		
 		<script type="text/x-jquery-tmpl" id="thumbTmpl">
-			<a title="${file_name}" href="#" onclick="$.ee_filebrowser.placeImage('${file_id}'); return false;" class="file_chooser_thumbnail">
+			<a title="${file_name}" href="#" onclick="$.ee_filebrowser.placeImage('${file_id}'); return false;" class="file_browser_thumbnail">
 				<img src="${thumb}?r=${modified_date}" class="${thumb_class}" data-dimensions="${file_hw_original}" />
 				<p>${short_name}</p>
 			</a>
 		</script>
 	</div>
 	
-	<div id="file_chooser_footer">
-		<div id="paginationTmpl">
-			<p id="pagination_meta">
-				<?=sprintf(lang('pagination_filter_text'), $view_filters).NBS;?>
-				<br /><?=sprintf(lang('pagination_count_text'), '${pages_from}', '${pages_to}', '${pages_total}');?>
-			</p>
-			<p id="paginationLinks">
-				{{if pagination_needed}}
-					{{html previous}}
-					{{html dropdown}}
-					{{html next}}
-				{{/if}}
-			</p>
-			
-		</div>
+	<div id="file_browser_footer">
+		<?=sprintf(lang('pagination_filter_text'), $view_filters).NBS?>
+		<?=$pagination_html?>
 	</div>
 </div>
 

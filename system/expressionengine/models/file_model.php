@@ -46,7 +46,6 @@ class File_model extends CI_Model {
 	 */
 	function get_files($dir_id = array(), $parameters = array())
 	{
-		
 		// Setup default parameters
 		$parameters = array_merge(array(
 			'type' => 'all',
@@ -93,19 +92,9 @@ class File_model extends CI_Model {
 				case ('file_title'):
 					$this->db->like('title', $parameters['search_value']);
 					break;
-				case ('custom_field'):
-					$this->db->like('field_1', $parameters['search_value']);
-
-					// there are a total of 6 custom fields, so cycle through the rest of them
-					for ($i = 2; $i < 6; $i++)
-					{
-						$this->db->or_like(sprintf('field_%s', $i), $parameters['search_value']);
-					}
-
-					break;
 				default:
-					$this->db->like('title', $parameters['search_value'])
-							 ->or_like('file_name', $parameters['search_value']);
+					$this->db->where('(`title` LIKE "%'.$this->db->escape_like_str($parameters['search_value']).'%"
+						OR `file_name` LIKE "%'.$this->db->escape_like_str($parameters['search_value']).'%")');
 			}
 		}
 
@@ -122,7 +111,7 @@ class File_model extends CI_Model {
 
 		if (isset($parameters['limit']))
 		{
-			$this->db->limit($parameters['limit']);
+			$this->db->limit(intval($parameters['limit']));
 		}
 		else
 		{
@@ -131,7 +120,7 @@ class File_model extends CI_Model {
 
 		if (isset($parameters['offset']))
 		{
-			$this->db->offset($parameters['offset']);
+			$this->db->offset(intval($parameters['offset']));
 		}
 
 		if (isset($parameters['order']) && is_array($parameters['order']) && count($parameters['order']) > 0)
@@ -156,7 +145,7 @@ class File_model extends CI_Model {
 		}
 		
 		$return_data['results'] = $this->db->get('files');
-
+		
 		$this->db->flush_cache();
 		
 		return $return_data;
@@ -182,26 +171,18 @@ class File_model extends CI_Model {
 			'title' => '',
 			'upload_location_id' => '',
 			'rel_path' => '',
-			'status' => '',
 			'mime_type' => '',
 			'file_name' => '',
 			'file_size' => '',
-			'caption' => '',
-			'metadata' => '',
+			'description' => '',
+			'credit' => '',
+			'location' => '',
 			'uploaded_by_member_id' => '',
 			'upload_date' => '',
 			'modified_by_member_id' => '',
 			'modified_date' => '',
 			'file_hw_original' => ''
 		);
-
-		// Add 6 custom fields
-		for ($i = 1; $i <= 6; $i++)
-		{
-			$valid_keys["field_{$i}"] = '';
-			$valid_keys["field_{$i}_fmt"] = '';
-			$data["field_{$i}_fmt"] = (isset($data["field_{$i}_fmt"]) && $data["field_{$i}_fmt"] != '') ? $data["field_{$i}_fmt"] : 'xhtml';
-		}
 		
 		// Remove data that can't exist in the database
 		$data = array_intersect_key($data, $valid_keys);
@@ -216,9 +197,7 @@ class File_model extends CI_Model {
 		{
 			$data['modified_date'] = $this->localize->now;
 		}
-			
-		$data['status'] = ( ! isset($data['status'])) ? 'o' : $data['status'];
-		
+				
 		if (isset($data['file_name']) OR isset($data['title']))
 		{
 			$data['title'] = ( ! isset($data['title'])) ? $data['file_name'] : $data['title'];
@@ -721,7 +700,6 @@ class File_model extends CI_Model {
 			$this->session->userdata('group_id'),
 			$directory_id
 		);
-		$upload_dir = $upload_dir->row();
 		
 		// Delete the thumb
 		$thumb_information = $this->filemanager->get_thumb($file_name, $directory_id);
@@ -732,13 +710,13 @@ class File_model extends CI_Model {
 		
 		foreach ($file_dimensions->result() as $file_dimension)
 		{
-			@unlink($upload_dir->server_path . '_' . $file_dimension->short_name . '/' . $file_name);
+			@unlink($upload_dir['server_path'] . '_' . $file_dimension->short_name . '/' . $file_name);
 		}
 		
 		if ( ! $only_thumbs)
 		{
 			// Finally, delete the original
-			if ( ! @unlink($upload_dir->server_path . $file_name))
+			if ( ! @unlink($upload_dir['server_path'] . $file_name))
 			{
 				return FALSE;
 			}

@@ -73,7 +73,7 @@ $lang = array(
 'Module removed:',
 
 'requested_module_not_installed' =>
-'The requested module is not installed.',
+'The requested module is not installed:',
 
 'requested_page_not_found' =>
 'The requested module page could not be found.',

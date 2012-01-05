@@ -406,7 +406,7 @@ class EE_Typography extends CI_Typography {
 		{
 			case 'none';
 				break;
-			case 'xhtml'	: $str = $this->xhtml_typography($str);
+			case 'xhtml'	: $str = $this->auto_typography($str);
 				break;
 			case 'lite'		: $str = $this->format_characters($str);  // Used with channel entry titles
 				break;
@@ -741,7 +741,7 @@ class EE_Typography extends CI_Typography {
         /**  Remap some deprecated tags with valid counterparts
         /** -------------------------------------*/
 		
-		$str = str_replace(array('[strike]', '[/strike]', '[u]', '[/u]'), array('[del]', '[/del]', '[em]', '[/em]'), $str);
+		$str = str_ireplace(array('[strike]', '[/strike]', '[u]', '[/u]'), array('[del]', '[/del]', '[em]', '[/em]'), $str);
 		
 		/** -------------------------------------
 		/**  Decode BBCode array map 
@@ -749,7 +749,7 @@ class EE_Typography extends CI_Typography {
 				
 		foreach($this->safe_decode as $key => $val)
 		{
-			$str = str_replace(array('['.$key.']', '[/'.$key.']'),	array('<'.$val.'>', '</'.$val.'>'),	$str);
+			$str = str_ireplace(array('['.$key.']', '[/'.$key.']'),	array('<'.$val.'>', '</'.$val.'>'),	$str);
 		}
 		
 		/** -------------------------------------
@@ -800,7 +800,7 @@ class EE_Typography extends CI_Typography {
 		/**  Convert [url] tags to links 
 		/** -------------------------------------*/
 		
-		if (strpos($str, '[url') !== FALSE)
+		if (stripos($str, '[url') !== FALSE)
 		{			
 			$bounce	= ((REQ == 'CP' && $this->EE->input->get('M') != 'send_email') OR $this->EE->config->item('redirect_submitted_links') == 'y') ? $this->EE->functions->fetch_site_index().QUERY_MARKER.'URL=' : '';
 
@@ -902,7 +902,7 @@ class EE_Typography extends CI_Typography {
 		/** -------------------------------------*/
 		// [img] and [/img]
 		
-		if (strpos($str, '[img]') !== FALSE)
+		if (stripos($str, '[img]') !== FALSE)
 		{
 			$bad_things	 = array("'",'"', ';', '[', '(', ')', '!', '*', '>', '<', "\t", "\r", "\n", 'document.cookie');
 
@@ -951,7 +951,7 @@ class EE_Typography extends CI_Typography {
 
 		// [quote author="Brett" date="11231189803874"]...[/quote]
 		
-		if (strpos($str, '[quote') !== FALSE)
+		if (stripos($str, '[quote') !== FALSE)
 		{
 			$str = preg_replace('/\[quote\s+(author=".*?"\s+date=".*?")\]/si', '<blockquote \\1>', $str);
 		}
@@ -1252,7 +1252,10 @@ class EE_Typography extends CI_Typography {
 	 * @deprecated in 2.1.5 and will be removed at a later date.
 	 */
     function xhtml_typography($str)
-    {  		
+    {
+		$this->EE->load->library('logger');
+		$this->EE->logger->deprecated('2.1.5', 'EE_Typography::auto_typography()');
+		
 		return $this->auto_typography($str);
     }
 

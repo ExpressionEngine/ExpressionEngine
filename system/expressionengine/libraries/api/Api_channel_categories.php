@@ -190,34 +190,10 @@ class Api_channel_categories extends Api {
 	 */
 	public function category_edit_subtree($cat_id, $categories, $depth)
 	{
-		$spcr = '!-!';
-
-		$indent = $spcr.$spcr.$spcr.$spcr;
-
-		if ($depth == 1)	
-		{
-			$depth = 4;
-		}
-		else 
-		{								
-			$indent = str_repeat($spcr, $depth).$indent;
-
-			$depth = $depth + 4;
-		}
-
-		$sel = '';
-
-		foreach ($categories as $key => $val) 
-		{
-			if ($cat_id == $val['3']) 
-			{
-				$pre = ($depth > 2) ? $spcr : '';
-
-				$this->cat_array[] = array($val['0'], $val['1'], $pre.$indent.$spcr.$val['2']);
-
-				$this->_category_form_subtree($val['1'], $categories, $depth);
-			}
-		}
+		$this->EE->load->library('logger');
+		$this->EE->logger->deprecated('2.0', 'Api_channel_categories::category_form_subtree()');
+		
+		$this->category_form_subtree($cat_id, $categories, $depth);
 	}
 
 	// --------------------------------------------------------------------
@@ -284,7 +260,7 @@ class Api_channel_categories extends Api {
 					if (0 == $val['3']) 
 					{
 						$this->cat_array[] = array($val['0'], $val['1'], $val['2']);
-						$this->_category_form_subtree($val['1'], $categories, $depth=1);
+						$this->category_form_subtree($val['1'], $categories, $depth=1);
 					}
 				}
 			}
@@ -307,7 +283,7 @@ class Api_channel_categories extends Api {
 	 * @param 	int		
 	 * @return 	void
 	 */
-	protected function _category_form_subtree($cat_id, $categories, $depth)
+	public function category_form_subtree($cat_id, $categories, $depth)
 	{
 		$spcr = '!-!';
 
@@ -334,7 +310,7 @@ class Api_channel_categories extends Api {
 
 				$this->cat_array[] = array($val['0'], $val['1'], $pre.$indent.$spcr.$val['2']);
 
-				$this->_category_form_subtree($val['1'], $categories, $depth);
+				$this->category_form_subtree($val['1'], $categories, $depth);
 			}
 		}
 	}

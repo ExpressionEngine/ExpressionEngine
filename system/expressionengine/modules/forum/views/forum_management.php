@@ -3,7 +3,6 @@
 <div class="shun clear_left"></div>
 
 <?php
-$this->table->set_template($cp_table_template);
 $parent_id = NULL;
 
 if (count($forums))
