@@ -892,12 +892,12 @@ class Email {
 		$recipients = $this->_encrypt_recipients($recipients);
 
 		$data = array(
-			'id'	=> ($this->EE->TMPL->form_id == '') ? 'contact_form' : $this->EE->TMPL->form_id,
-			'class'	=> $this->EE->TMPL->form_class,
+			'id'			=> ($this->EE->TMPL->form_id == '') ? 'contact_form' : $this->EE->TMPL->form_id,
+			'class'			=> $this->EE->TMPL->form_class,
 			'hidden_fields'	=> array(
-				'ACT'	=> $this->EE->functions->fetch_action_id('Email', 'send_email'),
-				'RET'	=> $this->EE->TMPL->fetch_param('return', ''),
-				'URI'	=> ($this->EE->uri->uri_string == '') ? 'index' : $this->EE->uri->uri_string,
+				'ACT'				=> $this->EE->functions->fetch_action_id('Email', 'send_email'),
+				'RET'				=> $this->EE->TMPL->fetch_param('return', ''),
+				'URI'				=> ($this->EE->uri->uri_string == '') ? 'index' : $this->EE->uri->uri_string,
 				'recipients'		=> base64_encode($recipients),
 				'user_recipients'	=> ($this->_user_recipients == 'yes') ? md5($this->EE->db->username.$this->EE->db->password.'y') : md5($this->EE->db->username.$this->EE->db->password.'n'),
 				'charset'			=> $charset,
@@ -934,11 +934,15 @@ class Email {
 		if (function_exists('mcrypt_encrypt'))
 		{
 			$init_size = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB);
-		$init_vect = mcrypt_create_iv($init_size, MCRYPT_RAND);
+			$init_vect = mcrypt_create_iv($init_size, MCRYPT_RAND);
 
-		return mcrypt_encrypt(MCRYPT_RIJNDAEL_256, 
-								md5($this->EE->db->username.$this->EE->db->password), 
-									$recipients, MCRYPT_MODE_ECB, $init_vect);
+			return mcrypt_encrypt(
+				MCRYPT_RIJNDAEL_256,
+				md5($this->EE->db->username.$this->EE->db->password),
+				$recipients,
+				MCRYPT_MODE_ECB,
+				$init_vect
+			);
 		}
 
 		return $recipients.md5($this->EE->db->username.$this->EE->db->password.$recipients);
