@@ -471,7 +471,7 @@ class Email {
 		// Return Variables
 		$x = explode('|',$_POST['RET']);
 		unset($_POST['RET']);
-
+		
 		if (is_numeric($x['0']))
 		{
 			$return_link = $this->EE->functions->form_backtrack($x['0']);
@@ -482,7 +482,7 @@ class Email {
 
 			if ($x[0] == '' OR ! preg_match('{^http(s)?:\/\/}i', $x[0]))
 			{
-				$return_link = $this->EE->functions->form_backtrack(2);
+				$return_link = $this->EE->functions->form_backtrack(1);
 			}
 		}
 
