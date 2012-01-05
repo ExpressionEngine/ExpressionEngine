@@ -390,7 +390,7 @@ class Channel_standalone extends Channel {
 		// Onward...
 		$which = ($this->EE->input->post('preview')) ? 'preview' : 'new';
 		
-		$upload_directories = $this->EE->file_upload_preferences_model->get_upload_preferences($this->EE->session->userdata('group_id'));
+		$upload_directories = $this->EE->file_upload_preferences_model->get_file_upload_preferences($this->EE->session->userdata('group_id'));
 
 		$file_list = array();
 		$directories = array();

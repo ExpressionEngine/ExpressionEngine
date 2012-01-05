@@ -305,7 +305,7 @@ class Sites extends CI_Controller {
 										 						ORDER by site_label, exp_upload_prefs.name");
 				
 				// Bring in overridden upload directory values to show on Add Site screen
-				$vars['upload_directories_override'] = $this->file_upload_preferences_model->get_upload_preferences(1, NULL, TRUE);
+				$vars['upload_directories_override'] = $this->file_upload_preferences_model->get_file_upload_preferences(1, NULL, TRUE);
 
 				$vars['upload_directory_options'] = array(
 												'nothing'		=> lang('do_nothing'),

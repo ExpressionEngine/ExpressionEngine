@@ -848,7 +848,7 @@ class File {
 		$default_variables = array('description', 'caption', 'title');
 
 		$this->EE->load->model('file_upload_preferences_model');
-		$upload_prefs = $this->EE->file_upload_preferences_model->get_upload_preferences(1);
+		$upload_prefs = $this->EE->file_upload_preferences_model->get_file_upload_preferences(1);
 
 		foreach ($this->query->result_array() as $count => $row)
 		{

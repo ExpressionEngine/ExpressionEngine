@@ -1851,7 +1851,7 @@ class Content_files extends CI_Controller {
 		}');
 
 		$vars['message'] = $message;
-		$vars['upload_locations'] = $this->file_upload_preferences_model->get_upload_preferences($this->session->userdata('group_id'));
+		$vars['upload_locations'] = $this->file_upload_preferences_model->get_file_upload_preferences($this->session->userdata('group_id'));
 
 		$this->javascript->compile();
 
@@ -2398,7 +2398,7 @@ class Content_files extends CI_Controller {
 		);
 
 		// Grab all upload locations with this id
-		$items = $this->file_upload_preferences_model->get_upload_preferences(NULL, $id);
+		$items = $this->file_upload_preferences_model->get_file_upload_preferences(NULL, $id);
 		$data['items'] = array();
 
 		if (isset($items['name']))

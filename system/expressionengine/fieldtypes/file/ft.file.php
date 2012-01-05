@@ -238,7 +238,7 @@ class File_ft extends EE_Fieldtype {
 		
 		$directory_options['all'] = lang('all');
 		
-		$dirs = $this->EE->file_upload_preferences_model->get_upload_preferences(1);
+		$dirs = $this->EE->file_upload_preferences_model->get_file_upload_preferences(1);
 
 		foreach($dirs as $dir)
 		{

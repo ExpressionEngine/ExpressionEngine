@@ -397,7 +397,7 @@ class Content_files_modal extends CI_Controller {
 		$file['file_size'] = byte_format($file['file_size']);
 		
 		// Blend in the upload directory preferences
-		$file['upload_directory_prefs'] = $this->file_upload_preferences_model->get_upload_preferences(
+		$file['upload_directory_prefs'] = $this->file_upload_preferences_model->get_file_upload_preferences(
 			$this->session->userdata('group_id'),
 			$file['upload_location_id']
 		);
