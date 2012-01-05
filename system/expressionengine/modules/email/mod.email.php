@@ -188,7 +188,11 @@ class Email {
 
 		$recipients	= $this->EE->TMPL->fetch_param('recipients', '');
 		$charset	= $this->EE->TMPL->fetch_param('charset', '');
-		$allow_html	= $this->EE->TMPL->fetch_param('allow_html', 'n');
+		$allow_html	= $this->EE->TMPL->fetch_param('allow_html');
+
+		// Equalize $allow_html value
+		$allow_html = (is_string($allow_html) AND in_array($allow_html, array('yes', 'y', 'true'))) ? TRUE : $allow_html;
+		$allow_html = (is_string($allow_html) AND in_array($allow_html, array('no', 'n', 'false'))) ? FALSE : $allow_html;
 
 		if ( ! $this->EE->TMPL->fetch_param('status'))
 		{
@@ -327,37 +331,55 @@ class Email {
 		// A little work on the form field's values
 
 		// Match values in input fields
-		preg_match_all("/<input(.*?)value=\"(.*?)\"/", $tagdata, $matches);
-		
-		if (count($matches) > 0 && $allow_html != 'y')
-		{
-			 foreach($matches['2'] as $value)
-			 {
-			 	if ($allow_html == 'n')
-			 	{
-			 		$new = strip_tags($value);
-			 	}
-			 	else
-			 	{
-			 		$new = strip_tags($value, $allow_html);
-			 	}
-			 
-			 	$tagdata = str_replace($value,$new, $tagdata);
-			 }
-		}
+		$tagdata = $this->_strip_field_html(
+			$tagdata,
+			"/<input(.*?)value=\"(.*?)\"/",
+			$allow_html
+		);
 
 		// Remove line breaks
 		$LB = 'snookums9loves4wookie';
 		$tagdata = str_replace(array("\r\n", "\r", "\n"), $LB, $tagdata);
 
 		// Match textarea content
-		preg_match_all("/<textarea(.*?)>(.*?)<\/textarea>/", $tagdata, $matches);
+		$tagdata = $this->_strip_field_html(
+			$tagdata,
+			"/<textarea(.*?)>(.*?)<\/textarea>/",
+			$allow_html
+		);
 
-		if (count($matches) > 0 && $allow_html != 'y')
+		$tagdata = str_replace($LB, "\n", $tagdata);
+
+		$recipients = $this->_encrypt_recipients($recipients);
+
+		$allow = ($allow_html !== FALSE) ? TRUE : FALSE;
+		
+		return $this->_setup_form($tagdata, $recipients, 'tellafriend_form', $allow);
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Strips fields of HTML based on $allow_html
+	 * 
+	 * @param string $template Template string to parse
+	 * @param string $field_regex Regular expression for the form field to 
+	 * 		search for
+	 * @param bool|string $allow_html Either boolean if completely allowing or
+	 * 		disallowing html or a comma delimited string of html elements to 
+	 * 		explicitly allow
+	 * 
+	 * @return string $template with html parsed out of it
+	 */
+	private function _strip_field_html($template, $field_regex, $allow_html)
+	{
+		// Make sure allow_html isn't true first, then run preg_match_all
+		if ($allow_html !== TRUE 
+			AND preg_match_all($field_regex, $template, $matches))
 		{
 			foreach($matches['2'] as $value)
 			{
-				if ($allow_html == 'n')
+				if ($allow_html === FALSE)
 			 	{
 			 		$new = strip_tags($value);
 			 	}
@@ -366,20 +388,14 @@ class Email {
 			 		$new = strip_tags($value, $allow_html);
 			 	}
 			 
-			 	$tagdata = str_replace($value, $new, $tagdata);
+			 	$template = str_replace($value, $new, $template);
 			}
 		}
-
-		$tagdata = str_replace($LB, "\n", $tagdata);
-
-		$recipients = $this->_encrypt_recipients($recipients);
-
-		$allow = ($allow_html == 'y') ? TRUE : FALSE;
-
-		return $this->_setup_form($tagdata, $recipients, 'tellafriend_form', $allow);
+		
+		return $template;
 	}
-
-	// --------------------------------------------------------------------
+	
+	// -------------------------------------------------------------------------
 
 	/**
 	 * Send Email
@@ -889,10 +905,10 @@ class Email {
 				'replyto'			=> $this->EE->TMPL->fetch_param('replyto', '')
 			)
 		);
-
+		
 		if ($allow_html)
 		{
-			$data['hidden_fields']['allow_html'] = $allow_html;
+			$data['hidden_fields']['allow_html'] = 'y';
 		}
 
 		$name = $this->EE->TMPL->fetch_param('name', FALSE);
