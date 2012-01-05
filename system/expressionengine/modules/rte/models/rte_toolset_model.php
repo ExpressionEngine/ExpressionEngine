@@ -29,6 +29,7 @@ class Rte_toolset_model extends CI_Model {
 		$results = $this->db->get_where(
 			'rte_toolsets',
 			array(
+				'member_id'	=> '0', // public only
 				'site_id'	=> $this->config->item('site_id')
 			)
 		)->result_array();
@@ -40,11 +41,50 @@ class Rte_toolset_model extends CI_Model {
 		$results = $this->db->get_where(
 			'rte_toolsets',
 			array(
-				'enabled' => 'y',
+				'member_id'	=> '0', // public only
+				'enabled' 	=> 'y',
 				'site_id'	=> $this->config->item('site_id')
 			)
 		)->result_array();
 		return $list ? $this->_make_list( $results ) : $results;
+	}
+	
+	public function get_member_options()
+	{
+		$results = $this->db
+						->where(array(
+							'member_id' => $this->session->userdata('member_id'),
+							'site_id'	=> $this->config->item('site_id')
+						  ))
+						->or_where(array(
+							'member_id'	=> '0', // public only
+							'enabled' 	=> 'y',
+							'site_id'	=> $this->config->item('site_id')
+						))
+						->get('rte_toolsets')
+						->result_array();
+		# has this user made a personal toolset?
+		$has_personal = FALSE;
+		foreach ( $results as $i => $toolset )
+		{
+			if ( $toolset['member_id'] != 0 )
+			{
+				$has_personal = TRUE;
+				// move the personal one to the end of the array & rename it
+				$tool = $toolset;
+				unset( $results[$i] );
+				$results[] = $tool;
+				break;
+			}
+		}
+		if ( ! $has_personal )
+		{
+			$results[] = array(
+				'rte_toolset_id'	=> 'new',
+				'name'				=> 'my_custom_toolset'
+			);
+		}
+		return $this->_make_list( $results );
 	}
 	
 	public function get_tools( $toolset_id = 0 )
@@ -102,11 +142,7 @@ class Rte_toolset_model extends CI_Model {
 		}
 		
 		// grab the toolset
-		$toolset = $this->db->get_where(
-			'rte_toolsets',
-			array( 'rte_toolset_id' => $toolset_id ),
-			1
-		)->row();
+		$toolset = $this->get( $toolset_id );
 		
 		return ( ( $toolset->member_id != 0 && $toolset->member_id == $this->session->userdata('member_id') ) ||
 				 ( $toolset->member_id == 0 && $admin ) );
@@ -133,18 +169,6 @@ class Rte_toolset_model extends CI_Model {
 						1
 					  )
 					->row('member_id') != 0;
-	}
-	
-	public function for_member( $member_id = FALSE )
-	{
-		return $this->db->get_where(
-			'rte_toolsets',
-			array(
-				'member_id' => $member_id,
-				'site_id'	=> $this->config->item('site_id')
-			),
-			1
-		)->row();
 	}
 	
 	public function save( $toolset=array(), $toolset_id=FALSE )

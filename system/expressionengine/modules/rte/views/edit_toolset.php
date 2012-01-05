@@ -3,8 +3,8 @@
 <?php	if ( ! $is_private ): ?>
 	<table class="rte-toolset-settings" cellspacing="0" cellpadding="0" border="0">
 		<tr>
-			<td width="50%"><label for="rte-toolset-name"><?=lang('toolset_name')?></label></td>
-			<td width="50%"><?=
+			<td><label for="rte-toolset-name"><?=lang('toolset_name')?></label></td>
+			<td><?=
 				form_input(array(
 					'name'		=> 'rte_toolset_name',
 					'id'		=> 'rte-toolset-name',
@@ -12,6 +12,9 @@
 				)); ?></td>
 		</tr>
 	</table>
+<?php 	else: ?>
+	<input type="hidden" name="private" value="true"/>
+	<input type="hidden" name="rte_toolset_name" value="<?=lang('my_custom_toolset')?>"/>
 <?php 	endif; ?>
 
 	<div class="rte-toolset-builder ui-widget">

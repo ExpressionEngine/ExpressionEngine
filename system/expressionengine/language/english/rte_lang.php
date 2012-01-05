@@ -29,6 +29,8 @@ $lang = array(
 # Flashes
 'settings_saved' => 'Your Rich Text Editor Settings have been saved.',
 'settings_not_saved' => 'Your Rich Text Editor Settings could not be saved. Please try again.',
+'settings_saved' => 'Your Rich Text Editor Preferences have been saved.',
+'settings_not_saved' => 'Your Rich Text Editor Preferences could not be saved. Please try again.',
 'toolset_enabled' => 'Toolset enabled successfully.',
 'toolset_disabled' => 'Toolset disabled successfully.',
 'toolset_updated' => 'Toolset updated successfully.',
@@ -47,6 +49,9 @@ $lang = array(
 'tools_in_toolset' => 'In This Toolset',
 'toolset_builder_label' => 'Which tools should be availble in this Toolset?',
 'toolset_builder_instructions' => 'You may drag individual tools into your toolset or move a few at a time by selecting them and clicking one of the arrow buttons. You may also drag the tools in your toolset around to reorder them.',
+'enable_rte_myaccount' => 'Enable Rich Text Editor?',
+'default_toolset' => 'Default Toolset',
+'my_custom_toolset' => 'My Custom Toolset',
 
 # IGNORE
 ''=>''

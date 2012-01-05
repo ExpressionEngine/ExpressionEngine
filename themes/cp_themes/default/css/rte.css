@@ -1,6 +1,8 @@
 .rte-toolset-settings { margin-bottom: 10px; }
-.rte-toolset-settings td { white-space: nowrap; }
+.rte-toolset-settings td { white-space: nowrap; padding-right: 10px; }
+.rte-toolset-settings input { width: 300px; }
 .rte-toolset-builder table { width: 100%; margin-bottom: 10px; }
+.rte-toolset-builder td { white-space: nowrap; padding: 0 0 10px; }
 .rte-toolset-builder-pane {	width: 50%; }
 .rte-toolset-builder-pane strong { display: block; margin-bottom: 3px; }
 .rte-toolset-builder-buttons { width: 40px; }

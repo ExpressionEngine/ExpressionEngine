@@ -1,33 +1,33 @@
 (function($){
 	
+	// make the modal
+	$modal = $('<div id="rte_toolset_editor_modal"><div class="contents"/></div>')
+				.appendTo('body')
+				.overlay({
+					// only exit by clicking an action
+					closeOnEsc: false,
+					closeOnClick: false,
+
+					top:	'center',
+					fixed:	false, 
+					close:	'#rte-builder-closer',
+
+					// Mask to create modal look
+					mask: {
+						color: '#262626',
+						loadSpeed: 200,
+						opacity: 0.85
+					},
+					
+					onLoad: function(){
+						setupToolsetBuilder();
+					}
+				});
+	
 	// Home Page
 	var $edit_toolset = $('a[href*=edit_toolset]:not(.addTab)'), $modal;
 	if ( $edit_toolset.length )
 	{
-		// make the modal
-		$modal = $('<div id="rte_toolset_editor_modal"><div class="contents"/></div>')
-					.appendTo('body')
-					.overlay({
-						// only exit by clicking an action
-						closeOnEsc: false,
-						closeOnClick: false,
-
-						top:	'center',
-						fixed:	false, 
-						close:	'#rte-builder-closer',
-
-						// Mask to create modal look
-						mask: {
-							color: '#262626',
-							loadSpeed: 200,
-							opacity: 0.85
-						},
-						
-						onLoad: function(){
-							setupToolsetBuilder();
-						}
-					});
-		
 		$edit_toolset.click(function(e){
 			e.preventDefault();
 			var $a = $(this).closest('a');
@@ -42,6 +42,32 @@
 			
 		});
 	}
+	
+	// MyAccount
+	$('#registerUser select#rte_toolset_id').change(function(e){
+		var
+		$this		= $(this),
+		builder_url	= rte_toolset_builder_url.replace(/&amp;/g,'&');
+		if ( $this.find('option:selected').text() == rte_custom_toolset_text )
+		{
+			e.preventDefault();
+			if ( $this.val() != 'new' )
+			{
+				builder_url += '&rte_toolset_id=' + $this.val();
+			}
+			console.log(builder_url);
+			$.get( builder_url, function(data){
+				console.log(data);
+				$modal
+					.find('.contents')
+						.html( $( '#mainContent .contents', data ).html() )
+						.end()
+					.overlay()
+						.load();
+			});
+		}
+	});
+	
 	
 	// Toolset Builder
 	var $selected	= $('#null'),

@@ -1,4 +1,4 @@
-	<?=form_open( $form_base.AMP.'method=update_prefs')?>
+	<?=form_open( $action )?>
 
 <?php	$this->table->set_template($cp_pad_table_template);
 		$this->table->template['thead_open'] = '<thead class="visualEscapism">';

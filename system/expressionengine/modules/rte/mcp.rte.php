@@ -38,8 +38,9 @@ class Rte_mcp {
 
 		$this->EE->load->helper('form');
 		
-		$this->_base_url	= BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=rte';
-		$this->_form_base	= 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=rte';
+		$this->_base_url		= BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=rte';
+		$this->_form_base		= 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=rte';
+		$this->_myaccount_url	= BASE.AMP.'C=myaccount'.AMP.'M=custom_screen'.AMP.'module=rte'.AMP.'method=myaccount_settings';
 	}
 
 	// --------------------------------------------------------------------
@@ -58,14 +59,15 @@ class Rte_mcp {
 		$this->EE->load->model(array('rte_toolset_model','rte_tool_model'));
 
 		$this->EE->cp->add_js_script(array(
-			'plugin' => array( 'overlay', 'toolbox.expose', 'rte' )
+			'file'		=> 'cp/rte',
+			'plugin'	=> array( 'overlay', 'toolbox.expose' )
 		));
 		
 		$this->EE->cp->set_right_nav(array('create_new_rte_toolset' => $this->_base_url.AMP.'method=edit_toolset'));
 		$vars = array(
 			'cp_page_title'				=> lang('rte_module_name'),
 			'module_base'				=> $this->_base_url,
-			'form_base'					=> $this->_form_base,
+			'action'					=> $this->_form_base.AMP.'method=prefs_update',
 			'rte_enabled'				=> $this->EE->config->item('rte_enabled'),
 			'rte_forum_enabled'			=> $this->EE->config->item('rte_forum_enabled'),
 			'rte_default_toolset_id'	=> $this->EE->config->item('rte_default_toolset_id'),
@@ -80,6 +82,55 @@ class Rte_mcp {
 	}
 	
 	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Update prefs form action
+	 *
+	 * @access	public
+	 */
+	public function prefs_update()
+	{
+		$this->_permissions_check();
+		
+		$this->EE->load->library('form_validation');
+		
+		$this->EE->form_validation->set_rules(
+			'rte_enabled',
+			lang('enabled_question'),
+			'required|enum[y,n]'
+		);
+		$this->EE->form_validation->set_rules(
+			'rte_forum_enabled',
+			lang('forum_enabled_question'),
+			'required|enum[y,n]'
+		);
+		$this->EE->form_validation->set_rules(
+			'rte_default_toolset_id',
+			lang('choose_default_toolset'),
+			'required|is_numeric'
+		);
+		
+		if ( $this->EE->form_validation->run() )
+		{
+			// update the prefs
+			$this->_do_update_prefs();
+			
+			// flash
+			$this->EE->session->set_flashdata('message_success', lang('settings_saved'));
+		}
+		// Fail!
+		else
+		{
+			// flash
+			$this->EE->session->set_flashdata('message_failure', lang('settings_not_saved'));
+		}
+
+		// buh-bye
+		$this->EE->functions->redirect($this->_base_url);
+
+	}
+
 	// --------------------------------------------------------------------
 	
 	/**
@@ -132,8 +183,8 @@ class Rte_mcp {
 		
 		# JS stuff
 		$this->EE->cp->add_js_script(array(
-			'ui' => 'sortable',
-			'plugin' => 'rte'
+			'ui' 	=> 'sortable',
+			'file'	=> 'cp/rte'
 		));
 		
 		# get the tools lists (can only include active tools)
@@ -173,76 +224,6 @@ class Rte_mcp {
 		$this->EE->cp->add_to_head($this->EE->view->head_link('css/rte.css'));
 		return $this->EE->load->view('edit_toolset', $vars, TRUE);
 		
-	}
-
-	// --------------------------------------------------------------------
-	
-	/**
-	 * MyAccount Page
-	 *
-	 * @access	public
-	 */
-	public function myaccount_settings( $vars )
-	{
-		$prefs = $this->EE->db
-					->select( array( 'rte_enabled','rte_toolset_id' ) )
-					->get_where(
-						'members',
-						array( 'member_id'=>$this->EE->session->userdata('member_id') )
-					  )
-					->result_array();
-				
-		return $this->EE->load->view('myaccount_settings', $vars, TRUE);
-	}
-
-	
-	// --------------------------------------------------------------------
-	
-	/**
-	 * Update prefs form action
-	 *
-	 * @access	public
-	 */
-	public function update_prefs()
-	{
-		$this->_permissions_check();
-		
-		$this->EE->load->library('form_validation');
-		
-		$this->EE->form_validation->set_rules(
-			'rte_enabled',
-			lang('enabled_question'),
-			'required|enum[y,n]'
-		);
-		$this->EE->form_validation->set_rules(
-			'rte_forum_enabled',
-			lang('forum_enabled_question'),
-			'required|enum[y,n]'
-		);
-		$this->EE->form_validation->set_rules(
-			'rte_default_toolset_id',
-			lang('choose_default_toolset'),
-			'required|is_numeric'
-		);
-		
-		if ( $this->EE->form_validation->run() )
-		{
-			// update the prefs
-			$this->_do_update_prefs();
-			
-			// flash
-			$this->EE->session->set_flashdata('message_success', lang('settings_saved'));
-		}
-		// Fail!
-		else
-		{
-			// flash
-			$this->EE->session->set_flashdata('message_failure', lang('settings_not_saved'));
-		}
-
-		// buh-bye
-		$this->EE->functions->redirect($this->_base_url);
-
 	}
 
 	// --------------------------------------------------------------------
@@ -327,31 +308,6 @@ class Rte_mcp {
 	/**
 	 * Update prefs form action
 	 *
-	 * @access	private
-	 */
-	private function _update_toolset( $toolset_id=FALSE, $change=array(), $success_msg, $fail_msg )
-	{
-		$this->EE->load->model('rte_toolset_model');
-		
-		if ( $this->EE->rte_toolset_model->save( $change, $toolset_id ) )
-		{
-			$this->EE->session->set_flashdata('message_success', $success_msg);
-		}
-		// Fail!
-		else
-		{
-			$this->EE->session->set_flashdata('message_failure', $fail_msg);
-		}
-
-		// buh-bye
-		$this->EE->functions->redirect($this->_base_url);
-	}
-
-	// --------------------------------------------------------------------
-	
-	/**
-	 * Update prefs form action
-	 *
 	 * @access	public
 	 */
 	public function enable_tool()
@@ -388,6 +344,163 @@ class Rte_mcp {
 	// --------------------------------------------------------------------
 	
 	/**
+	 * MyAccount Page
+	 *
+	 * @access	public
+	 */
+	public function myaccount_settings( $vars )
+	{
+		$this->EE->load->library('javascript');
+		$this->EE->load->model('rte_toolset_model');
+		
+		$prefs = $this->EE->db
+					->select( array( 'rte_enabled','rte_toolset_id' ) )
+					->get_where(
+						'members',
+						array( 'member_id'=>$this->EE->session->userdata('member_id') )
+					  )
+					->row();
+		
+		// get the toolset options
+		$toolset_opts = $this->EE->rte_toolset_model->get_member_options();
+		foreach ( $toolset_opts as $id => $name )
+		{
+			$toolset_opts[$id] = lang($name);
+		}
+		
+		$vars = array(
+			'cp_page_title'			=> lang('rte_prefs'),
+			'action'				=> $this->_form_base.AMP.'method=myaccount_settings_update',
+			'rte_enabled'			=> $prefs->rte_enabled,
+			'rte_toolset_id_opts'	=> $toolset_opts,
+			'rte_toolset_id'		=> $prefs->rte_toolset_id
+		);
+		
+		# JS stuff
+		$this->EE->javascript->output(array(
+			'
+			window.rte_toolset_builder_url = "'.$this->_base_url.AMP.'method=edit_toolset'.AMP.'private=true";
+			window.rte_custom_toolset_text = "'.lang('my_custom_toolset').'";
+			
+			'
+		));
+		$this->EE->javascript->compile();
+		$this->EE->cp->add_js_script(array(
+			'file'	 => 'cp/rte',
+			'plugin' => array( 'overlay', 'toolbox.expose' )
+		));
+		$this->EE->cp->add_to_head($this->EE->view->head_link('css/rte.css'));		
+		return $this->EE->load->view('myaccount_settings', $vars, TRUE);
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * MyAccount RTE settings form action
+	 *
+	 * @access	public
+	 */
+	public function myaccount_settings_update()
+	{
+		$this->EE->load->library('form_validation');
+		
+		$this->EE->form_validation->set_rules(
+			'rte_enabled',
+			lang('enabled_question'),
+			'required|enum[y,n]'
+		);
+		$this->EE->form_validation->set_rules(
+			'rte_toolset_id',
+			lang('choose_default_toolset'),
+			'required|is_numeric'
+		);
+		
+		if ( $this->EE->form_validation->run() )
+		{
+			// update the prefs
+			$this->EE->db
+				->where( 'member_id', $this->EE->session->userdata('member_id') )
+				->update(
+					'members',
+					array(
+						'rte_enabled'		=> $this->EE->input->get_post('rte_enabled'),
+						'rte_toolset_id'	=> $this->EE->input->get_post('rte_toolset_id')
+					)
+				  );
+			
+			// flash
+			$this->EE->session->set_flashdata('message_success', lang('preferences_saved'));
+		}
+		// Fail!
+		else
+		{
+			// flash
+			$this->EE->session->set_flashdata('message_failure', lang('preferences_not_saved'));
+		}
+
+		// buh-bye
+		$this->EE->functions->redirect($this->_myaccount_url);
+
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Actual preference-updating code
+	 */
+	private function _do_update_prefs()
+	{
+		// update the config
+		$this->EE->config->_update_config(
+			array(
+				'rte_enabled'				=> $this->EE->input->get_post('rte_enabled'),
+				'rte_forum_enabled'			=> $this->EE->input->get_post('rte_forum_enabled'),
+				'rte_default_toolset_id'	=> $this->EE->input->get_post('rte_default_toolset_id')
+			)
+		);
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Update prefs form action
+	 *
+	 * @access	private
+	 */
+	private function _update_toolset( $toolset_id=FALSE, $change=array(), $success_msg, $fail_msg )
+	{
+		$this->EE->load->model('rte_toolset_model');
+		
+		$is_members = !! ( $this->EE->input->get_post('private') == 'true' );
+		
+		if ( $this->EE->rte_toolset_model->save( $change, $toolset_id ) )
+		{
+			if ( ! $toolset_id &&
+				 $is_members )
+			{
+				$toolset_id = $this->EE->db->insert_id();
+				$this->EE->db
+					->where( array( 'member_id' => $this->EE->session->userdata('member_id') ) )
+					->update( 'members', array( 'rte_toolset_id' => $toolset_id ) );
+			}
+			
+			$this->EE->session->set_flashdata('message_success', $success_msg);
+		}
+		// Fail!
+		else
+		{
+			$this->EE->session->set_flashdata('message_failure', $fail_msg);
+		}
+
+		// buh-bye
+		$this->EE->functions->redirect(
+			( $is_members ? $this->_myaccount_url : $this->_base_url )
+		);
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
 	 * Update prefs form action
 	 *
 	 * @access	private
@@ -408,23 +521,6 @@ class Rte_mcp {
 
 		// buh-bye
 		$this->EE->functions->redirect($this->_base_url);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Actual preference-updating code
-	 */
-	private function _do_update_prefs()
-	{
-		// update the config
-		$this->EE->config->_update_config(
-			array(
-				'rte_enabled'				=> $this->EE->input->get_post('rte_enabled'),
-				'rte_forum_enabled'			=> $this->EE->input->get_post('rte_forum_enabled'),
-				'rte_default_toolset_id'	=> $this->EE->input->get_post('rte_default_toolset_id')
-			)
-		);
 	}
 
 	// --------------------------------------------------------------------
