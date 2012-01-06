@@ -149,6 +149,30 @@ class Remember {
 		$this->data = array();
 		$this->_delete_cookie();
 	}
+	
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Clear all remember me's except for the current one
+	 *
+	 * Used when changing passwords to disable old
+	 * remember me's that may have been created with
+	 * compromised credentials
+	 *
+	 * @return void
+	 */
+	public function delete_others()
+	{
+		$this->EE->db->where('member_id', $this->EE->session->userdata('member_id'));
+		
+		if ($this->cookie_value)
+		{
+			$this->EE->db->where('remember_me_id !=', $this->cookie_value);
+		}
+		
+		$this->EE->db->delete($this->table);
+	}
 
 	// --------------------------------------------------------------------
 	

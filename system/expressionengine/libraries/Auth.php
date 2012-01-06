@@ -399,6 +399,16 @@ class Auth {
 			return FALSE;
 		}
 		
+		// remove old remember me's and sessions, so that
+		// changing your password effectively logs out people
+		// using the old one.
+		$this->EE->remember->delete_others();
+		
+		$this->EE->db->where('member_id', (int) $member_id);
+		$this->EE->db->where('session_id !=', $this->EE->session->userdata('session_id'));
+		$this->EE->db->delete('sessions');
+		
+		// update password in db
 		$this->EE->db->where('member_id', (int) $member_id);
 		$this->EE->db->update('members', $hashed_pair);
 		
