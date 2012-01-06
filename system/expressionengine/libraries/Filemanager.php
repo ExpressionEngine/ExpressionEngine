@@ -824,18 +824,18 @@ class Filemanager {
 			'date'		=> array('header' => lang('date'))
 		));
 		
-		$per_page = $this->EE->input->get_post('per_page');
-		$dir_id = $this->EE->input->get_post('dir_choice');
-		$keywords = $this->EE->input->get_post('keywords');
-		$tbl_sort = $this->EE->input->get_post('tbl_sort');
+		$per_page	= $this->EE->input->get_post('per_page');
+		$dir_id 	= $this->EE->input->get_post('dir_choice');
+		$keywords 	= $this->EE->input->get_post('keywords');
+		$tbl_sort	= $this->EE->input->get_post('tbl_sort');
 		
 		// Default to file_name sorting if tbl_sort isn't set
 		$state = (is_array($tbl_sort)) ? $tbl_sort : array('sort' => array('file_name' => 'asc'));
 		
 		$params = array(
-			'per_page' => $per_page ? $per_page : 15,
-			'dir_id' => $dir_id,
-			'keywords' => $keywords
+			'per_page'	=> $per_page ? $per_page : 15,
+			'dir_id'	=> $dir_id,
+			'keywords'	=> $keywords
 		);
 		
 		if ($first_dir)
@@ -869,10 +869,10 @@ class Filemanager {
 		}
 		
 		$file_params = array(
-			'type' => $dir['allowed_types'],
-			'order' => $state['sort'],
-			'limit' => $per_page,
-			'offset' => $state['offset']
+			'type'		=> $dir['allowed_types'],
+			'order'		=> $state['sort'],
+			'limit'		=> $per_page,
+			'offset'	=> $state['offset']
 		);
 		
 		if (isset($params['keywords']))
@@ -1728,12 +1728,12 @@ class Filemanager {
 		else
 		{
 			$params = array(
-				'type' => $dir['allowed_types'],
-				'order' => array(
+				'type'		=> $dir['allowed_types'],
+				'order'		=> array(
 					'file_name' => 'asc'
 				),
-				'limit' => $limit,
-				'offset' => $offset
+				'limit'		=> $limit,
+				'offset'	=> $offset
 			);
 		}
 		
@@ -1767,9 +1767,9 @@ class Filemanager {
 			// Copying file_name to name for addons
 			$file['name'] = $file['file_name'];
 			
-			$thumb_info = $this->get_thumb($file, $dir['id']);
-			$file['thumb'] = $thumb_info['thumb'];
-			$file['thumb_class'] = $thumb_info['thumb_class'];
+			$thumb_info				= $this->get_thumb($file, $dir['id']);
+			$file['thumb'] 			= $thumb_info['thumb'];
+			$file['thumb_class']	= $thumb_info['thumb_class'];
 		}
 
 		return $files;
