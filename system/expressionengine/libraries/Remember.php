@@ -23,13 +23,12 @@
  * @author		ExpressionEngine Dev Team
  * @link		http://expressionengine.com
  */
-
 class Remember {
 
 	private $max_per_site = 5;			// remembers per site per user
 	private $gc_probability = 10;		// percentage of logins that gc
 	
-	private $table = 'remember_me';
+	protected $table = 'remember_me';
 
 	protected $data = NULL;
 	protected $cookie = 'remember';
@@ -66,8 +65,8 @@ class Remember {
 		$active = $this->EE->db
 			->order_by('last_refresh', 'ASC')
 			->get_where($this->table, array(
-				'member_id'			=> $this->EE->session->userdata('member_id'),
-				'site_id'			=> $this->EE->config->item('site_id')
+				'member_id'		=> $this->EE->session->userdata('member_id'),
+				'site_id'		=> $this->EE->config->item('site_id')
 			))
 			->result();
 		
@@ -99,7 +98,7 @@ class Remember {
 			$this->_garbage_collect();
 		}
 		
-		$this->_set_cookie($expiration);
+		$this->_set_cookie($this->data['remember_me_id'], $expiration);
 	}
 	
 	// --------------------------------------------------------------------
@@ -182,11 +181,9 @@ class Remember {
 			$this->EE->db->where('remember_me_id', $this->cookie_value)
 				->set($data)
 				->update($this->table);
-			
-			$this->cookie_value = $id;
-			
+						
 			$expiration = $this->data['expiration'] - $this->EE->localize->now;
-			$this->_set_cookie($expiration);
+			$this->_set_cookie($id, $expiration);
 		}
 	}
 	
@@ -270,9 +267,10 @@ class Remember {
 	 *
 	 * @return void
 	 */
-	protected function _set_cookie($expiration)
+	protected function _set_cookie($value, $expiration)
 	{
-		$this->EE->functions->set_cookie($this->cookie, $this->cookie_value, $expiration);
+		$this->cookie_value = $value;
+		$this->EE->functions->set_cookie($this->cookie, $value, $expiration);
 	}
 	
 	// --------------------------------------------------------------------
