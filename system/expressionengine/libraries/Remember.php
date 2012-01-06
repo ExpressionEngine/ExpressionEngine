@@ -36,6 +36,8 @@ class Remember {
 	
 	protected $ip_address = '';
 	protected $user_agent = '';
+	
+	protected $EE;
 
 	/**
 	 * Constructor
@@ -216,7 +218,7 @@ class Remember {
 	/**
 	 * Get the remember me data in the db and validate it
 	 *
-	 * @return void
+	 * @return bool
 	 */
 	protected function _validate_db()
 	{
@@ -264,7 +266,7 @@ class Remember {
 	/**
 	 * Generates a unique id
 	 *
-	 * @return void
+	 * @return string	random 40 character string
 	 */
 	protected function _generate_id()
 	{

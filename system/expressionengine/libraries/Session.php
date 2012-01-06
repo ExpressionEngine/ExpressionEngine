@@ -36,41 +36,37 @@ There are three validation types, set in the config file:
  
   1. User cookies AND session ID (cs)
 		
-	This is the most secure way to run a site.  Three cookies are set:
-	1. Session ID - This is a unique hash that is randomly generated when 
-					someone logs in.
-	2. Password hash - The encrypted password of the current user
-	3. Unique ID - The permanent unique ID hash associated with the account.
-	
-	All three cookies expire when you close your browser OR when you have been 
-	inactive longer than two hours (one hour in the control panel).
+	This is the most secure way to run a site. A session cookie is set
+	with a random ID, which is also appended to the url.
+
+	The cookie expires when you have been inactive longer than two
+	hours (one hour in the control panel). The ID in the url will be
+	lost when you close the browser.
 	
 	Using this setting does NOT allow 'stay logged-in' capability, as each 
 	session has a finite lifespan.
 
   2. Cookies only - no session ID (c)
 	
-	With this validation type, a session is not generated, therefore
-	users can remain permanently logged in.
+	With this validation type, a session ID string is not added to the url.
+	Therefore users can remain permanently logged in if they choose the
+	remember me option. This will set a second cookie that expires in a year.
 	
-	This setting is obviously less secure because it does not provide a safety net
-	if you share your computer or access your site from a public computer.
-	It relies solely on the password/unique_id cookies.
+	This setting is obviously less secure because it does not provide a safety
+	net if you share your computer or access your site from a public computer.
+	It relies solely on the session_id/remember_me cookies. You must log out.
 
   3. Session ID only (s).  
 	
-	Most compatible as it does not rely on cookies at all.  Instead, a URL 
-	query string ID is used.
+	Most compatible as it does not rely on cookies at all. Instead, only the
+	URL query string ID is used.
 	
-	No stay-logged in capability.  The session will expire after one hour of 
+	No stay-logged in capability. The session will expire after one hour of 
 	inactivity, so in terms of security, it is preferable to number 2.
 	
-	NOTE: The control panel and public pages can each have their own session preference.
+	NOTE: The control panel and public pages can each have their own
+	      session preference.
 */
-
-
-
-
 
 class EE_Session {
 	
@@ -204,7 +200,7 @@ class EE_Session {
 		
 		// Fetch Session Data		
 		// IMPORTANT: The session data must be fetched before the member data so don't move this.
-		if ($session_id  === TRUE)
+		if ($session_id === TRUE)
 		{
 			if ($this->fetch_session_data() === TRUE) 
 			{
@@ -213,9 +209,9 @@ class EE_Session {
 		}
 
 		// Fetch Member Data
-		$member_data_exists = ($this->fetch_member_data() === TRUE) ? TRUE : FALSE;
+		$member_data_exists = (bool) $this->fetch_member_data();
 		
-		// Update/Create Session						
+		// Update/Create Session
 		if ($session_id === FALSE OR $member_data_exists === FALSE)
 		{ 
 			$this->fetch_guest_data();
@@ -503,11 +499,12 @@ class EE_Session {
 	 */
 	public function fetch_guest_data()
 	{
-		$qry = $this->EE->db->where('site_id', $this->EE->config->item('site_id'))
-							->where('group_id', (int) 3)
-							->get('member_groups');
+		$guest_q = $this->EE->db
+			->where('site_id', $this->EE->config->item('site_id'))
+			->where('group_id', (int) 3)
+			->get('member_groups');
 			
-		foreach ($qry->row_array() as $key => $val)
+		foreach ($guest_q->row_array() as $key => $val)
 		{			
 			$this->userdata[$key] = $val;				 
 		}
@@ -550,7 +547,7 @@ class EE_Session {
 
 		// If the user has been inactive longer than the session length we'll
 		// set the "last_visit" cooke with the "last_activity" date.
-				
+		
 		if (($this->sdata['last_activity'] + $this->session_length) < $this->EE->localize->now) 
 		{
 			$this->userdata['last_visit'] = $this->sdata['last_activity'];

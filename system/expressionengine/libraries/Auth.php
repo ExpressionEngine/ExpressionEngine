@@ -755,7 +755,8 @@ class Auth_result {
 		{
 			// Create a new session
 			$this->session_id = $this->EE->session->create_new_session(
-				$this->member('member_id'), $cp_sess
+				$this->member('member_id'),
+				$cp_sess
 			);
 		}
 		
