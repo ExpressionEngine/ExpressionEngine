@@ -169,8 +169,17 @@ class Rte_upd {
 				),
 				array(
 					'class'    => $this->name.'_ext',
-					'hook'     => 'admin_content_field_edit',
-					'method'   => 'admin_content_field_edit',
+					'hook'     => 'api_channel_fields_field_edit_vars',
+					'method'   => 'api_channel_fields_field_edit_vars',
+					'settings' => '',
+					'priority' => 10,
+					'version'  => $this->version,
+					'enabled'  => 'y'
+				),
+				array(
+					'class'    => $this->name.'_ext',
+					'hook'     => 'api_channel_fields_update_field',
+					'method'   => 'api_channel_fields_update_field',
 					'settings' => '',
 					'priority' => 10,
 					'version'  => $this->version,

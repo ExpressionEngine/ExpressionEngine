@@ -52,7 +52,7 @@ class Rte_ext {
 	/**
 	 * Handle hook call
 	 */
-	function admin_content_field_edit( $vars )
+	function api_channel_fields_field_edit_vars( $vars )
 	{
 		$this->EE->lang->loadfile('rte');
 		$this->EE->load->helper('form');
@@ -81,6 +81,18 @@ class Rte_ext {
 		}
 		array_splice( $vars['field_type_tables']['textarea'], $index+1, 0, $new_field );
 		return $vars;
+	}
+	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Handle hook call
+	 */
+	function api_channel_fields_update_field()
+	{
+		return array(
+			'field_enable_rte'
+		);
 	}
 	
 	// --------------------------------------------------------------------

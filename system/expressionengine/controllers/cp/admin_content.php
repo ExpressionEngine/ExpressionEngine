@@ -3711,18 +3711,6 @@ class Admin_content extends CI_Controller {
 		
 		$vars = $this->api_channel_fields->field_edit_vars($group_id, $field_id);
 
-		// -------------------------------------------
-		// 'admin_content_field_edit' hook.
-		//  - Add items to edit_field page
-		//  - return must be an associative array
-		//
-		if ($this->extensions->active_hook('admin_content_field_edit') === TRUE)
-		{
-			$vars = $this->extensions->call('admin_content_field_edit', $vars );
-		}
-		//
-		// -------------------------------------------
-		
 		if ($vars === FALSE)
 		{
 			show_error(lang('unauthorized_access'));

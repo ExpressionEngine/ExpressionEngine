@@ -1189,6 +1189,18 @@ class Api_channel_fields extends Api {
 			'field_order'
 		);
 		
+		// -------------------------------------------
+		// 'api_channel_fields_update_field' hook.
+		//  - Add items to the field definition
+		//  - return must be an array
+		//
+		if ($this->EE->extensions->active_hook('api_channel_fields_update_field') === TRUE)
+		{
+			$native = array_merge( $native, $this->EE->extensions->call('api_channel_fields_update_field' ) );
+		}
+		//
+		// -------------------------------------------
+		
 		$_posted = array();
 		$_field_posted = preg_grep('/^'.$field_type.'_.*/', array_keys($field_data));
 		$_keys = array_merge($native,  $_field_posted);
@@ -1702,6 +1714,18 @@ class Api_channel_fields extends Api {
 		);
 
 		$vars['ft_selector'] = "#ft_".implode(", #ft_", array_keys($fts));
+		
+		// -------------------------------------------
+		// 'api_channel_fields_field_edit_vars' hook.
+		//  - Add items to the field definition
+		//  - return must be an array
+		//
+		if ($this->EE->extensions->active_hook('api_channel_fields_field_edit_vars') === TRUE)
+		{
+			$vars = $this->EE->extensions->call('api_channel_fields_field_edit_vars', $vars );
+		}
+		//
+		// -------------------------------------------
 		
 		return $vars;
 	}
