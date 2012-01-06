@@ -70,31 +70,6 @@ There are three validation types, set in the config file:
 
 
 
-/*
-	Remember Me Addition:
-	- remember_me table:
-		- random_token (set as cookie), member_id, ip?, user agent, creation time, admin_sess, site_id (to aid in counting active remember_me's)
-	
-	- when user visits:
-		- if session expired and cookie set: check ip, ua, etc
-		- update the row's creation time and set new random token + cookie
-	
-	- pruning:
-		- anything older than a year
-		- members with more than 5 (configurable) remembered sessions (prune oldest | effect on msm)
-		- members that don't exist / banned / etc
-		- on password change (also clear non-current sessions)
-	
-	- clear all remember me's on password change
-	- clear all sessions that are not current on password change
-	
-	- thoughts/ideas
-		- user logs in and immediately clears cookies - we're left with row for a year
-		- maybe query for duplicate member_id+ip+ua in pruning?
-*/
-
-
-
 
 
 class EE_Session {
@@ -104,7 +79,6 @@ class EE_Session {
 
 	public $c_session			= 'sessionid';
 	public $c_expire			= 'expiration';
-	public $c_remember			= 'remember';
 	public $c_anon				= 'anon';
 	public $c_prefix			= '';
 	
@@ -121,7 +95,7 @@ class EE_Session {
 	public $access_cp			= FALSE;
 	public $cookies_exist		= FALSE;
 	public $session_exists		= FALSE;
-	
+		
 	// Garbage collection probability. Used to kill expired sessions.
 	public $gc_probability		= 5;
 	
@@ -201,8 +175,8 @@ class EE_Session {
 			}			
 		}
 		
-		// Fetch remember me cookie
-		if ($this->EE->input->cookie($this->c_remember))
+		// Check remember me
+		if ($this->EE->remember->exists())
 		{
 			$this->cookies_exist = TRUE;
 		}
@@ -268,6 +242,7 @@ class EE_Session {
 		// Update cookies
 		$this->update_cookies();
 		$this->_prep_flashdata();
+		$this->EE->remember->refresh();
 		
 		// Fetch "tracker" cookie
 		if (REQ != 'CP')
@@ -444,7 +419,8 @@ class EE_Session {
 		$this->userdata['session_id']	= $this->sdata['session_id'];
 		$this->userdata['site_id']		= $this->EE->config->item('site_id');
 		
-		$this->EE->functions->set_cookie($this->c_session , $this->sdata['session_id'], $this->session_length);	
+		$this->EE->functions->set_cookie($this->c_session, $this->sdata['session_id'], $this->session_length);	
+		$this->EE->functions->set_cookie($this->c_expire, time()+$this->session_length, $this->session_length);
 		
 		$this->EE->db->query($this->EE->db->insert_string('exp_sessions', $this->sdata));	
 
@@ -505,7 +481,7 @@ class EE_Session {
 	 * Destroy session. Essentially logging a user off.
 	 */
 	public function destroy()
-	{
+	{		
 		$this->EE->db->where('session_id', $this->userdata['session_id']);
 		$this->EE->db->delete('sessions');
 		
@@ -513,8 +489,8 @@ class EE_Session {
 		// method, but if someone doesn't - we're safe
 		$this->fetch_guest_data();
 		
+		$this->EE->remember->delete();
 		$this->EE->functions->set_cookie($this->c_session);
-		$this->EE->functions->set_cookie($this->c_remember);
 		$this->EE->functions->set_cookie($this->c_expire);	
 		$this->EE->functions->set_cookie($this->c_anon);
 		$this->EE->functions->set_cookie('tracker'); 
@@ -619,8 +595,11 @@ class EE_Session {
 				{
 					// not set yet, so let's create one and udpate it for this user
 					$this->sess_crypt_key = $this->EE->functions->random('encrypt', 16);
-					$this->EE->db->update('members', array('crypt_key' => $this->sess_crypt_key), 
-													 array('member_id' => (int) $member_query->row('member_id')));
+					$this->EE->db->update(
+						'members',
+						array('crypt_key' => $this->sess_crypt_key), 
+						array('member_id' => (int) $member_query->row('member_id'))
+					);
 				}
 				else
 				{
@@ -650,11 +629,8 @@ class EE_Session {
 		if (REQ == 'CP')
 		{
 			$this->_setup_channel_privs();
-
 			$this->_setup_module_privs();
-
 			$this->_setup_template_privs();
-			
 			$this->_setup_assigned_sites();
 		}
 		
@@ -687,8 +663,10 @@ class EE_Session {
 			$last_act = ($member_query->row('last_activity') > 0) ? $member_query->row('last_activity')  : $this->EE->localize->now;
 		
 			$this->EE->db->where('member_id', (int) $this->sdata['member_id']);
-			$this->EE->db->update('members', array('last_visit' 	=> $last_act,
-													'last_activity' => $this->EE->localize->now));
+			$this->EE->db->update('members', array(
+				'last_visit' 	=> $last_act,
+				'last_activity' => $this->EE->localize->now
+			));
 		
 			$this->userdata['last_visit'] = $member_query->row('last_activity') ;
 		}		
@@ -700,7 +678,9 @@ class EE_Session {
 		if (($member_query->row('last_activity')  + 300) < $this->EE->localize->now)	 
 		{
 			$this->EE->db->where('member_id', (int) $this->sdata['member_id']);
-			$this->EE->db->update('members', array('last_activity' => $this->EE->localize->now));
+			$this->EE->db->update('members', array(
+				'last_activity' => $this->EE->localize->now
+			));
 		}
 
 		$member_query->free_result();
@@ -724,9 +704,9 @@ class EE_Session {
 	{
 		// Look for session.  Match the user's IP address and browser for added security.
 		$this->EE->db->select('member_id, admin_sess, last_activity')
-					 ->where('session_id', (string) $this->sdata['session_id'])
-					 ->where('ip_address', $this->sdata['ip_address'])
-					 ->where('user_agent', $this->sdata['user_agent']);
+			->where('session_id', (string) $this->sdata['session_id'])
+			->where('ip_address', $this->sdata['ip_address'])
+			->where('user_agent', $this->sdata['user_agent']);
 
 		$query = $this->EE->db->get('sessions');
 		
@@ -792,12 +772,12 @@ class EE_Session {
 				
 		if ($query->num_rows() == 1)
 		{
-			$res = $this->EE->db->select("COUNT(*) as count")
-								->where('code', $query->row('country'))
-								->where('banned', 'y')
-								->get('ip2nation_countries');
+			$this->EE->db->where(array(
+				'code' => $query->row('country'),
+				'banned' => 'y'
+			));
 			
-			if ($res->row('count')  > 0)
+			if ($this->EE->db->count_all_results('ip2nation_countries'))
 			{
 				if ($show_error == TRUE)
 				{
@@ -822,11 +802,11 @@ class EE_Session {
 		} 
 
 		$data = array(
-						'login_date'	=> time(),
-						'ip_address'	=> $this->EE->input->ip_address(),
-						'user_agent'	=> $this->userdata['user_agent'],
-						'username'		=> $username
-					);
+			'login_date'	=> time(),
+			'ip_address'	=> $this->EE->input->ip_address(),
+			'user_agent'	=> $this->userdata['user_agent'],
+			'username'		=> $username
+		);
 					
 		$this->EE->db->insert('password_lockout', $data);
 	}
@@ -1101,20 +1081,20 @@ class EE_Session {
 		// either use the cookie data or the member ID gathered with the session query.
 		
 		$this->EE->db->from(array('members m', 'member_groups g'))
-					 ->where('g.site_id', (int) $this->EE->config->item('site_id'))
-					 ->where('m.group_id', ' g.group_id', FALSE);
+			->where('g.site_id', (int) $this->EE->config->item('site_id'))
+			->where('m.group_id', ' g.group_id', FALSE);
+		
+		$member_id = $this->sdata['member_id'];
 		
 		// remember me
 		if ($this->sdata['member_id'] == 0 &&
 			$this->validation == 'c' &&
-			$this->EE->input->cookie($this->c_remember))
+			$this->EE->remember->data('member_id'))
 		{
-			$this->EE->db->where('remember_me', $this->EE->input->cookie($this->c_remember));
+			$member_id = $this->EE->remember->data('member_id');
 		}
-		else
-		{
-			$this->EE->db->where('member_id', (int) $this->sdata['member_id']);
-		}
+
+		$this->EE->db->where('member_id', (int) $member_id);
 				
 		return $this->EE->db->get();
 	}
@@ -1350,8 +1330,6 @@ class EE_Session {
 		
 		$qry->free_result();	
 	}
-
-	// --------------------------------------------------------------------	
 
 }
 // END CLASS

@@ -728,50 +728,8 @@ class Auth_result {
 	 */
 	public function start_session($cp_sess = FALSE)
 	{
-		$remember = '';
 		$multi = $this->session_id ? TRUE : FALSE;
 		$sess_type = $cp_sess ? 'admin_session_type' : 'user_session_type';
-		
-		if ($this->EE->config->item($sess_type) != 's')
-		{
-			$expire = $this->remember_me;
-			
-			if ($this->anon)
-			{
-				$this->EE->functions->set_cookie(
-					$this->EE->session->c_anon, 1, $expire
-				);				
-			}
-			else
-			{
-				// Unset the anon cookie
-				$this->EE->functions->set_cookie($this->EE->session->c_anon);				
-			}
-
-			$this->EE->functions->set_cookie(
-				$this->EE->session->c_expire, time()+$expire, $expire
-			);
-			
-			// (un)set remember me
-			if ($expire)
-			{
-				$remember = $this->EE->functions->random('unique', 32);
-				
-				$this->EE->functions->set_cookie(
-					$this->EE->session->c_remember, $remember, $expire
-				);
-			}
-			else
-			{
-				$this->EE->functions->set_cookie($this->EE->session->c_remember);
-			}
-		}		
-		
-		// update the remember me column
-		$this->EE->db->where('member_id', $this->member('member_id'));
-		$this->EE->db->update('members', array(
-			'remember_me' => $remember
-		));
 		
 		if ($multi)
 		{
@@ -790,6 +748,32 @@ class Auth_result {
 			$this->session_id = $this->EE->session->create_new_session(
 				$this->member('member_id'), $cp_sess
 			);
+		}
+		
+		
+		if ($this->EE->config->item($sess_type) != 's')
+		{
+			$expire = $this->remember_me;
+			
+			if ($this->anon)
+			{
+				$this->EE->functions->set_cookie($this->EE->session->c_anon, 1, $expire);
+			}
+			else
+			{
+				// Unset the anon cookie
+				$this->EE->functions->set_cookie($this->EE->session->c_anon);				
+			}
+			
+			// (un)set remember me
+			if ($expire)
+			{
+				$this->EE->remember->create($expire);
+			}
+			else
+			{
+				$this->EE->remember->delete();
+			}
 		}
 		
 		if ($cp_sess === TRUE)

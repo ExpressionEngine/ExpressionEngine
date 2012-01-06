@@ -251,6 +251,7 @@ class EE_Core {
 			date_default_timezone_set(date_default_timezone_get());
 		}
 		
+		$this->EE->load->library('remember');
 		$this->EE->load->library('localize');
 		$this->EE->load->library('session');
 
