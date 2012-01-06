@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -397,7 +397,7 @@ class Content_files_modal extends CI_Controller {
 		$file['file_size'] = byte_format($file['file_size']);
 		
 		// Blend in the upload directory preferences
-		$file['upload_directory_prefs'] = $this->file_upload_preferences_model->get_upload_preferences(
+		$file['upload_directory_prefs'] = $this->file_upload_preferences_model->get_file_upload_preferences(
 			$this->session->userdata('group_id'),
 			$file['upload_location_id']
 		);

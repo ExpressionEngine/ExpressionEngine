@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -305,7 +305,7 @@ class Sites extends CI_Controller {
 										 						ORDER by site_label, exp_upload_prefs.name");
 				
 				// Bring in overridden upload directory values to show on Add Site screen
-				$vars['upload_directories_override'] = $this->file_upload_preferences_model->get_upload_preferences(1, NULL, TRUE);
+				$vars['upload_directories_override'] = $this->file_upload_preferences_model->get_file_upload_preferences(1, NULL, TRUE);
 
 				$vars['upload_directory_options'] = array(
 												'nothing'		=> lang('do_nothing'),

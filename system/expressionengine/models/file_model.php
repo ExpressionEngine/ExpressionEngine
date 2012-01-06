@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -696,7 +696,7 @@ class File_model extends CI_Model {
 		$this->load->library('filemanager');
 		
 		// Get the directory's information
-		$upload_dir = $this->file_upload_preferences_model->get_upload_preferences(
+		$upload_dir = $this->file_upload_preferences_model->get_file_upload_preferences(
 			$this->session->userdata('group_id'),
 			$directory_id
 		);

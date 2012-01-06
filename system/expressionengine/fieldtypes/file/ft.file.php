@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -238,7 +238,7 @@ class File_ft extends EE_Fieldtype {
 		
 		$directory_options['all'] = lang('all');
 		
-		$dirs = $this->EE->file_upload_preferences_model->get_upload_preferences(1);
+		$dirs = $this->EE->file_upload_preferences_model->get_file_upload_preferences(1);
 
 		foreach($dirs as $dir)
 		{
