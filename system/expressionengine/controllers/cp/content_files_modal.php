@@ -147,10 +147,15 @@ class Content_files_modal extends CI_Controller {
 		// the original AFTER clean_filename and upload library's prep done
 		// but before duplicate checking
 		
-		$original_name = $upload_response['orig_name'];
-		$file = $this->_get_file($upload_response['file_id']);
+		$file			= $this->_get_file($upload_response['file_id']);
+		$original_name	= $upload_response['orig_name'];
+		$cleaned_name	= basename($this->filemanager->clean_filename(
+			$original_name, 
+			$file_dir
+		));
 		
-		if ($file['file_name'] != $original_name)
+		if ($file['file_name'] != $original_name
+			AND $file['file_name'] != $cleaned_name)
 		{
 			// At this point, orig_name contains the extension
 			$vars = $this->_vars_rename($file, $original_name);
