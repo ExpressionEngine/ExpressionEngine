@@ -71,7 +71,10 @@ class EE_Core {
 		define('PATH_FT',		APPPATH.'fieldtypes/');
 		if ($this->EE->config->item('third_party_path'))
 		{
-			define('PATH_THIRD',    rtrim($this->EE->config->item('third_party_path'), '/').'/');
+			define(
+				'PATH_THIRD',
+				rtrim(realpath($this->EE->config->item('third_party_path')), '/').'/'
+			);
 		}
 		else
 		{
