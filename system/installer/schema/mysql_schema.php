@@ -284,7 +284,6 @@ class EE_Schema {
 			  password varchar(128) NOT NULL,
 			  salt varchar(128) NOT NULL DEFAULT '',
 			  unique_id varchar(40) NOT NULL,
-			  remember_me varchar(32) NOT NULL DEFAULT '',
 			  crypt_key varchar(40) NULL DEFAULT NULL,
 			  authcode varchar(10) NULL DEFAULT NULL,
 			  email varchar(72) NOT NULL,
@@ -1311,6 +1310,20 @@ class EE_Schema {
 				`deprecated_since` varchar(10) NULL,
 				`use_instead` varchar(100) NULL,
 				PRIMARY KEY (`log_id`)
+		)";
+		
+		// Remember me table
+		$Q[] = "CREATE TABLE `exp_remember_me` (
+				`remember_me_id` varchar(40) NOT NULL DEFAULT '0',
+				`member_id` int(10) DEFAULT '0',
+				`ip_address` varchar(16) DEFAULT '0',
+				`user_agent` varchar(120) DEFAULT '',
+				`admin_sess` tinyint(1) DEFAULT '0',
+				`site_id` int(4) DEFAULT '1',
+				`expiration` int(10) DEFAULT '0',
+				`last_refresh` int(10) DEFAULT '0',
+				PRIMARY KEY (`remember_me_id`),
+				KEY `member_id` (`member_id`)
 		)";
 		
 		// --------------------------------------------------------------------
