@@ -46,7 +46,43 @@ class Rte_ext {
 		$menu['admin']['admin_content']['rte_settings'] = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=rte';
 		return $menu;
 	}
-	 
+	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Handle hook call
+	 */
+	function admin_content_field_edit( $vars )
+	{
+		$this->EE->lang->loadfile('rte');
+		$this->EE->load->helper('form');
+		$new_field = array(
+			// yup, it needs to be nested in a second array
+			array(
+				array(
+					'data'	=> '<strong>'.lang('enable_rte_for_field').'</strong>'
+				),
+				array(
+					'data'	=> form_radio('field_enable_rte', 'y', ($vars['field_enable_rte']=='y'), 'id="textarea_field_enable_rte_y"').
+					           NBS.lang('yes','textarea_field_enable_rte_y').
+							   NBS.NBS.NBS.NBS.NBS.
+							   form_radio('field_enable_rte', 'n', (empty($vars['field_enable_rte'])||$vars['field_enable_rte']=='n'), 'id="textarea_field_enable_rte_n"').
+							   NBS.lang('no','textarea_field_enable_rte_n')
+				)
+			)
+		);
+		# find the field we need to drop it in after
+		foreach ( $vars['field_type_tables']['textarea'] as $index => $field )
+		{
+			if ( strpos( $field[0]['data'], 'textarea_field_fmt' ) !== FALSE  )
+			{
+				break;
+			}
+		}
+		array_splice( $vars['field_type_tables']['textarea'], $index+1, 0, $new_field );
+		return $vars;
+	}
+	
 	// --------------------------------------------------------------------
 
 	/**

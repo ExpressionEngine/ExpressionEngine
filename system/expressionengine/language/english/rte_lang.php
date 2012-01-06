@@ -52,6 +52,7 @@ $lang = array(
 'enable_rte_myaccount' => 'Enable Rich Text Editor?',
 'default_toolset' => 'Default Toolset',
 'my_custom_toolset' => 'My Custom Toolset',
+'enable_rte_for_field' => 'Enable the Rich Text Editor for This Field',
 
 # IGNORE
 ''=>''
