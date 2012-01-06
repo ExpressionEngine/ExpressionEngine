@@ -882,11 +882,11 @@ class Filemanager {
 		}
 		
 		return array(
-			'rows' => $this->_get_files($dir, $file_params),
-			'no_results' => lang('no_uploaded_files'),
-			'pagination' => array(
-				'per_page' => $per_page,
-				'total_rows' => $this->EE->file_model->count_files($params['dir_id'])
+			'rows'			=> $this->_browser_get_files($dir, $file_params),
+			'no_results' 	=> lang('no_uploaded_files'),
+			'pagination' 	=> array(
+				'per_page' 		=> $per_page,
+				'total_rows'	=> $this->EE->file_model->count_files($params['dir_id'])
 			)
 		);
 	}
@@ -1698,7 +1698,7 @@ class Filemanager {
 	function _directory_contents($dir, $limit, $offset)
 	{
 		return array(
-			'files' => $this->_get_files($dir, $limit, $offset)
+			'files' => $this->_browser_get_files($dir, $limit, $offset)
 		);
 	}
 	
@@ -1716,7 +1716,7 @@ class Filemanager {
 	 * @access private
 	 * @return array	List of files
 	 */
-	private function _get_files($dir, $limit = 15, $offset = 0)
+	private function _browser_get_files($dir, $limit = 15, $offset = 0)
 	{
 		$this->EE->load->model('file_model');
 		$this->EE->load->helper(array('text', 'number'));
@@ -1751,9 +1751,18 @@ class Filemanager {
 
 		foreach ($files as &$file)
 		{
-			$file['short_name'] = ellipsize($file['title'], 13, 0.5);
-			$file['file_size'] = byte_format($file['file_size']);
-			$file['date'] = date('F j, Y g:i a', $file['modified_date']);
+			// Setup the link
+			$file['file_name'] = '
+				<a href="#"
+					title="'.$file['file_name'].'" 
+					onclick="$.ee_filebrowser.placeImage('.$file['file_id'].'); return false;"
+				>
+					'.$file['file_name'].'
+				</a>';
+			
+			$file['short_name']	= ellipsize($file['title'], 13, 0.5);
+			$file['file_size']	= byte_format($file['file_size']);
+			$file['date']		= date('F j, Y g:i a', $file['modified_date']);
 			
 			// Copying file_name to name for addons
 			$file['name'] = $file['file_name'];
