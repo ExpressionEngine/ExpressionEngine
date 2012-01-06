@@ -186,7 +186,7 @@ class Filemanager {
 		$this->EE->load->model(array('file_model', 'file_upload_preferences_model'));
 
 		// Figure out if the directory actually exists
-		$prefs = $this->EE->file_upload_preferences_model->get_upload_preferences(
+		$prefs = $this->EE->file_upload_preferences_model->get_file_upload_preferences(
 			'1', // Overriding the group ID to get all IDs
 			$dir_id
 		);
@@ -996,8 +996,8 @@ class Filemanager {
 	{
 		$this->datatables();
 		
-		$dir_id = $this->EE->input->get('directory_id');
-		$dir = $this->directory($dir_id, FALSE, TRUE);
+		$dir_id	= $this->EE->input->get('directory_id');
+		$dir	= $this->directory($dir_id, FALSE, TRUE);
 		
 		$offset	= $this->EE->input->get('offset');
 		$limit	= $this->EE->input->get('limit');
@@ -1561,7 +1561,7 @@ class Filemanager {
 			$db_files[$row['file_id']] = $row['file_name'];
 		}
 		
-		$upload_prefs = $this->EE->file_upload_preferences_model->get_upload_preferences(1, $dir_id);
+		$upload_prefs = $this->EE->file_upload_preferences_model->get_file_upload_preferences(1, $dir_id);
 		
 		if (count($upload_prefs) == 0)
 		{
@@ -1673,7 +1673,7 @@ class Filemanager {
 		$dirs = array();
 		$this->EE->load->model('file_upload_preferences_model');
 		
-		$directories = $this->EE->file_upload_preferences_model->get_upload_preferences(
+		$directories = $this->EE->file_upload_preferences_model->get_file_upload_preferences(
 			$this->EE->session->userdata('group_id')
 		);
 		
@@ -1816,7 +1816,7 @@ class Filemanager {
 
 		$this->EE->load->model(array('file_upload_preferences_model', 'category_model'));
 
-		$category_group_ids = $this->EE->file_upload_preferences_model->get_upload_preferences(NULL, $dir['id']);
+		$category_group_ids = $this->EE->file_upload_preferences_model->get_file_upload_preferences(NULL, $dir['id']);
 		$category_group_ids = explode('|', $category_group_ids['cat_group']);
 
 		if (count($category_group_ids) > 0 AND $category_group_ids[0] != '')
@@ -2512,7 +2512,7 @@ class Filemanager {
 	{
 		$this->EE->load->model('file_upload_preferences_model');
 
-		$upload_dirs = $this->EE->file_upload_preferences_model->get_upload_preferences(
+		$upload_dirs = $this->EE->file_upload_preferences_model->get_file_upload_preferences(
 										$this->EE->session->userdata('group_id'),
 										$file_dir_id);
 		
@@ -2618,7 +2618,7 @@ class Filemanager {
 		$this->EE->load->helper('string');
 		$this->EE->load->model('file_upload_preferences_model');
 		
-		$upload_prefs = $this->EE->file_upload_preferences_model->get_upload_preferences(1);
+		$upload_prefs = $this->EE->file_upload_preferences_model->get_file_upload_preferences(1);
 		
 		if (count($files) === 1)
 		{

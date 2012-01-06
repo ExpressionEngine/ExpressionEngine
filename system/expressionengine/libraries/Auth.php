@@ -185,7 +185,7 @@ class Auth {
 	 */
 	public function verify()
 	{
-		$username = $this->EE->input->post('username');
+		$username = (string) $this->EE->input->post('username');
 
 		// No username/password?  Bounce them...
 		if ( ! $username)
@@ -246,7 +246,7 @@ class Auth {
 		//  Check credentials
 		// ----------------------------------------------------------------
 
-		$password = $this->EE->input->post('password');
+		$password = (string) $this->EE->input->post('password');
 		$incoming = $this->EE->auth->authenticate_username($username, $password);
 
 		// Not even close

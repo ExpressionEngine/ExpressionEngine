@@ -28,17 +28,19 @@ class Mailinglist {
 	var $email_confirm	= TRUE;  // TRUE/FALSE - whether to send an email confirmation when users sign up
 	var $return_data	= '';
 
-	/** -------------------------------------
-	/**  Constructor
-	/** -------------------------------------*/
+	/**
+	 * Constructor
+	 */
 	function Mailinglist()
 	{
 		$this->EE =& get_instance();
 	}
+	
+	// -------------------------------------------------------------------------
 
-	/** ----------------------------------------
-	/**  Mailing List Submission Form
-	/** ----------------------------------------*/
+	/**
+	 * Mailing List Submission Form
+	 */
 	function form()
 	{
 		$tagdata = $this->EE->TMPL->tagdata;
@@ -80,14 +82,14 @@ class Mailinglist {
 			$data['name'] = $this->EE->TMPL->fetch_param('name');
 		}
 
-		$data['id']				= ($this->EE->TMPL->form_id == '') ? 'mailinglist_form' : $this->EE->TMPL->form_id;
-		$data['class']			= $this->EE->TMPL->form_class;
+		$data['id']		= ($this->EE->TMPL->form_id == '') ? 'mailinglist_form' : $this->EE->TMPL->form_id;
+		$data['class']	= $this->EE->TMPL->form_class;
 		
-		$data['hidden_fields']	= array(
-										'ACT'	=> $this->EE->functions->fetch_action_id('Mailinglist', 'insert_new_email'),
-										'RET'	=> $this->EE->functions->fetch_current_uri(),
-										'list'	=> $list
-									  );
+		$data['hidden_fields'] = array(
+			'ACT'	=> $this->EE->functions->fetch_action_id('Mailinglist', 'insert_new_email'),
+			'RET'	=> $this->EE->functions->fetch_current_uri(),
+			'list'	=> $list
+		);
 
 		$res  = $this->EE->functions->form_declaration($data);
 
@@ -98,8 +100,7 @@ class Mailinglist {
 		return $res;
 	}
 
-
-
+	// -------------------------------------------------------------------------
 
 	/** ----------------------------------------
 	/**  Insert new email
@@ -116,7 +117,7 @@ class Mailinglist {
 
 		if ($this->EE->config->item('mailinglist_enabled') == 'n')
 		{
-			return $this->EE->output->show_user_error('general', $this->EE->lang->line('mailinglist_disabled'));
+			return $this->EE->output->show_user_error('general', lang('mailinglist_disabled'));
 		}
 
 		 /** ----------------------------------------
@@ -125,7 +126,7 @@ class Mailinglist {
 
 		if ($this->EE->blacklist->blacklisted == 'y' && $this->EE->blacklist->whitelisted == 'n')
 		{
-			return $this->EE->output->show_user_error('general', $this->EE->lang->line('not_authorized'));
+			return $this->EE->output->show_user_error('general', lang('not_authorized'));
 		}
 
 		if ( ! isset($_POST['RET']))
@@ -146,14 +147,14 @@ class Mailinglist {
 
 		if ($email == '')
 		{
-			$errors[] = $this->EE->lang->line('ml_missing_email');
+			$errors[] = lang('ml_missing_email');
 		}
 
 		$this->EE->load->helper('email');
 
 		if ( ! valid_email($email))
 		{
-			$errors[] = $this->EE->lang->line('ml_invalid_email');
+			$errors[] = lang('ml_invalid_email');
 		}
 
 		if (count($errors) == 0)
@@ -177,7 +178,7 @@ class Mailinglist {
 
 				if ($query->row('count')  != 1)
 				{
-					$errors[] = $this->EE->lang->line('ml_no_list_id');
+					$errors[] = lang('ml_no_list_id');
 				}
 				else
 				{
@@ -190,7 +191,7 @@ class Mailinglist {
 
 				if ($query->num_rows() != 1)
 				{
-					$errors[] = $this->EE->lang->line('ml_no_list_id');
+					$errors[] = lang('ml_no_list_id');
 				}
 				else
 				{
@@ -213,7 +214,7 @@ class Mailinglist {
 
 				if ($query->row('count')  > 0)
 				{
-					$errors[] = $this->EE->lang->line('ml_email_already_in_list');
+					$errors[] = lang('ml_email_already_in_list');
 				}
 			}
 		}
@@ -242,7 +243,7 @@ class Mailinglist {
 			$this->EE->db->query("INSERT INTO exp_mailing_list (list_id, authcode, email, ip_address)
 								  VALUES ('".$this->EE->db->escape_str($list_id)."', '".$code."', '".$this->EE->db->escape_str($email)."', '".$this->EE->db->escape_str($this->EE->input->ip_address())."')");
 
-			$content  = $this->EE->lang->line('ml_email_accepted');
+			$content  = lang('ml_email_accepted');
 
 			$return = $_POST['RET'];
 		}
@@ -252,29 +253,30 @@ class Mailinglist {
 
 			$this->send_email_confirmation($email, $code, $list_id);
 
-			$content  = $this->EE->lang->line('ml_email_confirmation_sent')."\n\n";
-			$content .= $this->EE->lang->line('ml_click_confirmation_link');
+			$content  = lang('ml_email_confirmation_sent')."\n\n";
+			$content .= lang('ml_click_confirmation_link');
 		}
 
 		//  Clear security hash
 		$this->EE->security->delete_xid($this->EE->input->post('XID'));
 
-		$site_name = ($this->EE->config->item('site_name') == '') ? $this->EE->lang->line('back') : stripslashes($this->EE->config->item('site_name'));
+		$site_name = ($this->EE->config->item('site_name') == '') ? lang('back') : stripslashes($this->EE->config->item('site_name'));
 
-		$data = array(	'title' 	=> $this->EE->lang->line('ml_mailinglist'),
-						'heading'	=> $this->EE->lang->line('thank_you'),
-						'content'	=> $content,
-						'link'		=> array($_POST['RET'], $site_name)
-					 );
+		$data = array(
+			'title' 	=> lang('ml_mailinglist'),
+			'heading'	=> lang('thank_you'),
+			'content'	=> $content,
+			'link'		=> array($_POST['RET'], $site_name)
+		);
 
 		$this->EE->output->show_message($data);
 	}
 
+	// -------------------------------------------------------------------------
 
-
-	/** ----------------------------------------
-	/**  Send confirmation email
-	/** ----------------------------------------*/
+	/**
+	 * Send Confirmation Email
+	 */
 	function send_email_confirmation($email, $code, $list_id)
 	{
 		$query = $this->EE->db->query("SELECT list_title FROM exp_mailing_lists WHERE list_id = '".$this->EE->db->escape_str($list_id)."'");
@@ -282,11 +284,11 @@ class Mailinglist {
 		$action_id  = $this->EE->functions->fetch_action_id('Mailinglist', 'authorize_email');
 
 		$swap = array(
-						'activation_url'	=> $this->EE->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$action_id.'&id='.$code,
-						'site_name'			=> stripslashes($this->EE->config->item('site_name')),
-						'site_url'			=> $this->EE->config->item('site_url'),
-						'mailing_list'		=> $query->row('list_title')
-					 );
+			'activation_url'	=> $this->EE->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$action_id.'&id='.$code,
+			'site_name'			=> stripslashes($this->EE->config->item('site_name')),
+			'site_url'			=> $this->EE->config->item('site_url'),
+			'mailing_list'		=> $query->row('list_title')
+		);
 
 		$template = $this->EE->functions->fetch_email_template('mailinglist_activation_instructions');
 		$email_tit = $this->EE->functions->var_swap($template['title'], $swap);
@@ -309,13 +311,11 @@ class Mailinglist {
 		$this->EE->email->send();
 	}
 
+	// -------------------------------------------------------------------------
 
-
-
-
-	/** ------------------------------
-	/**  Authorize email submission
-	/** ------------------------------*/
+	/**
+	 * Authorize email submission
+	 */
 	function authorize_email()
 	{
 		/** ----------------------------------------
@@ -328,14 +328,14 @@ class Mailinglist {
 
 		if ($this->EE->config->item('mailinglist_enabled') == 'n')
 		{
-			return $this->EE->output->show_user_error('general', $this->EE->lang->line('mailinglist_disabled'));
+			return $this->EE->output->show_user_error('general', lang('mailinglist_disabled'));
 		}
 
 		/** ----------------------------------------
 		/**  Fetch the name of the site
 		/** ----------------------------------------*/
 
-		$site_name = ($this->EE->config->item('site_name') == '') ? $this->EE->lang->line('back') : stripslashes($this->EE->config->item('site_name'));
+		$site_name = ($this->EE->config->item('site_name') == '') ? lang('back') : stripslashes($this->EE->config->item('site_name'));
 
 
 		/** ----------------------------------------
@@ -347,11 +347,12 @@ class Mailinglist {
 		if ($id == FALSE)
 		{
 
-			$data = array(	'title' 	=> $this->EE->lang->line('ml_mailinglist'),
-							'heading'	=> $this->EE->lang->line('error'),
-							'content'	=> $this->EE->lang->line('invalid_url'),
-							'link'		=> array($this->EE->functions->fetch_site_index(), $site_name)
-						 );
+			$data = array(
+				'title' 	=> lang('ml_mailinglist'),
+				'heading'	=> lang('error'),
+				'content'	=> lang('invalid_url'),
+				'link'		=> array($this->EE->functions->fetch_site_index(), $site_name)
+			);
 
 			$this->EE->output->show_message($data);
 		}
@@ -368,13 +369,14 @@ class Mailinglist {
 
 		if ($query->num_rows() == 0)
 		{
-			$data = array(	'title' 	=> $this->EE->lang->line('ml_mailinglist'),
-							'heading'	=> $this->EE->lang->line('error'),
-							'content'	=> $this->EE->lang->line('ml_expired_date'),
-							'link'		=> array($this->EE->functions->fetch_site_index(), $site_name)
-						 );
+			$data = array(
+				'title' 	=> lang('ml_mailinglist'),
+				'heading'	=> lang('error'),
+				'content'	=> lang('ml_expired_date'),
+				'link'		=> array($this->EE->functions->fetch_site_index(), $site_name)
+			);
 
-			echo  $this->EE->output->show_message($data);
+			echo $this->EE->output->show_message($data);
 			exit;
 		}
 
@@ -391,7 +393,7 @@ class Mailinglist {
 
 			if ($query->row('count')  != 1)
 			{
-				return $this->EE->output->show_user_error('general', $this->EE->lang->line('ml_no_list_id'));
+				return $this->EE->output->show_user_error('general', lang('ml_no_list_id'));
 			}
 			else
 			{
@@ -409,12 +411,16 @@ class Mailinglist {
 		/** ----------------------------------------*/
 		if ($this->EE->config->item('mailinglist_notify') == 'y' AND $this->EE->config->item('mailinglist_notify_emails') != '')
 		{
-			$query = $this->EE->db->query("SELECT list_title FROM exp_mailing_lists WHERE list_id = '".$this->EE->db->escape_str($list_id)."'");
+			$query = $this->EE->db->select('list_title')
+				->get_where(
+					'mailing_lists',
+					array('list_id' => $list_id)
+				);
 
 			$swap = array(
-							'email'	=> $email,
-							'mailing_list' => $query->row('list_title')
-						 );
+				'email'			=> $email,
+				'mailing_list'	=> $query->row('list_title')
+			);
 
 			$template = $this->EE->functions->fetch_email_template('admin_notify_mailinglist');
 			$email_tit = $this->EE->functions->var_swap($template['title'], $swap);
@@ -425,15 +431,13 @@ class Mailinglist {
 			/** ----------------------------*/
 
 			$this->EE->load->helper('string');
+			
 			// Remove multiple commas
 			$notify_address = reduce_multiples($this->EE->config->item('mailinglist_notify_emails'), ',', TRUE);
 
 			if ($notify_address != '')
 			{
-				/** ----------------------------
-				/**  Send email
-				/** ----------------------------*/
-
+				// Send email
 				$this->EE->load->library('email');
 
 				// Load the text helper
@@ -456,75 +460,68 @@ class Mailinglist {
 		/** ------------------------------
 		/**  Success Message
 		/** ------------------------------*/
-		$data = array(	'title' 	=> $this->EE->lang->line('ml_mailinglist'),
-						'heading'	=> $this->EE->lang->line('thank_you'),
-						'content'	=> $this->EE->lang->line('ml_account_confirmed'),
-						'link'		=> array($this->EE->functions->fetch_site_index(), $site_name)
-					 );
+		$data = array(
+			'title' 	=> lang('ml_mailinglist'),
+			'heading'	=> lang('thank_you'),
+			'content'	=> lang('ml_account_confirmed'),
+			'link'		=> array($this->EE->functions->fetch_site_index(), $site_name)
+		);
 
 		$this->EE->output->show_message($data);
 	}
 
 
+	// -------------------------------------------------------------------------
 
-
-	/** ------------------------------
-	/**  Unsubscribe a user
-	/** ------------------------------*/
+	/**
+	 * Unsubscribe a user
+	 */
 	function unsubscribe()
 	{
-
-		/** ----------------------------------------
-		/**  Fetch the mailinglist language pack
-		/** ----------------------------------------*/
-
 		$this->EE->lang->loadfile('mailinglist');
-
-
-		$site_name = ($this->EE->config->item('site_name') == '') ? $this->EE->lang->line('back') : stripslashes($this->EE->config->item('site_name'));
-
-		/** ----------------------------------------
-		/**  No ID?  Tisk tisk...
-		/** ----------------------------------------*/
-
-		$id  = $this->EE->input->get_post('id');
-
-		if ($id == FALSE)
+		
+		$site_name = ($this->EE->config->item('site_name') == '') ?
+			lang('back') : stripslashes($this->EE->config->item('site_name'));
+		
+		$id = $this->EE->input->get_post('id');
+		
+		// If $id is invalid, deal with it now
+		// $id will be 0 if no id is passed or if it's invalid
+		if ($id === 0)
 		{
-			$data = array(	'title' 	=> $this->EE->lang->line('ml_mailinglist'),
-							'heading'	=> $this->EE->lang->line('error'),
-							'content'	=> $this->EE->lang->line('invalid_url'),
-							'link'		=> array($this->EE->functions->fetch_site_index(), $site_name)
-						 );
-
+			$data = array(
+				'title' 	=> lang('ml_mailinglist'),
+				'heading'	=> lang('error'),
+				'content'	=> lang('invalid_url'),
+				'link'		=> array($this->EE->functions->fetch_site_index(), $site_name)
+			);
+		
 			$this->EE->output->show_message($data);
 		}
 
-		/** ----------------------------------------
-		/**  Fetch email associated with auth-code
-		/** ----------------------------------------*/
-
+		// Fetch email associated with auth-code
 		$expire = time() - (60*60*48);
 
-		$this->EE->db->query("DELETE FROM exp_mailing_list WHERE authcode = '$id' ");
-
+		$this->EE->db->delete('mailing_list', array('authcode' => $id));
+		
 		if ($this->EE->db->affected_rows() == 0)
 		{
-			$data = array(	'title' 	=> $this->EE->lang->line('ml_mailinglist'),
-							'heading'	=> $this->EE->lang->line('error'),
-							'content'	=> $this->EE->lang->line('ml_unsubscribe_failed'),
-							'link'		=> array($this->EE->functions->fetch_site_index(), $site_name)
-						 );
-
+			$data = array(
+				'title' 	=> lang('ml_mailinglist'),
+				'heading'	=> lang('error'),
+				'content'	=> lang('ml_unsubscribe_failed'),
+				'link'		=> array($this->EE->functions->fetch_site_index(), $site_name)
+			);
+			
 			$this->EE->output->show_message($data);
 		}
 
-
-		$data = array(	'title' 	=> $this->EE->lang->line('ml_mailinglist'),
-						'heading'	=> $this->EE->lang->line('thank_you'),
-						'content'	=> $this->EE->lang->line('ml_unsubscribe'),
-						'link'		=> array($this->EE->functions->fetch_site_index(), $site_name)
-					 );
+		$data = array(
+			'title' 	=> lang('ml_mailinglist'),
+			'heading'	=> lang('thank_you'),
+			'content'	=> lang('ml_unsubscribe'),
+			'link'		=> array($this->EE->functions->fetch_site_index(), $site_name)
+		);
 
 		$this->EE->output->show_message($data);
 	}

@@ -516,7 +516,7 @@ class Tools_model extends CI_Model {
 	public function get_upload_preferences($group_id = NULL, $id = NULL)
 	{
 		$this->load->library('logger');
-		$this->logger->deprecated('2.2', 'File_upload_preferences_model::get_upload_preferences()');
+		$this->logger->deprecated('2.2', 'File_upload_preferences_model::get_file_upload_preferences()');
 		
 		// for admins, no specific filtering, just give them everything
 		if ($group_id == 1)

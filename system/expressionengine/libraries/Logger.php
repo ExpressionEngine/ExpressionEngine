@@ -81,9 +81,18 @@ class EE_Logger {
 	 *		item if one like it already exists. It will instead set the
 	 *		viewed status to unviewed and update the timestamp on the
 	 *		existing log item.
+	 * @param	int $expires If $update set to TRUE, $expires is the amount
+	 *		of time in seconds to have elapsed from the initial logging to
+	 *		mark as unread and alert Super Admin again. For example, an item
+	 *		is logged with an expires of 3600 seconds. If the developer
+	 *		function is called with the same data within that 3600 seconds,
+	 *		it will hold off displaying a notice to the Super Admin until
+	 *		the developer function is called again after the 3600 seconds
+	 *		are up. This is designed to make log item alerts less annoying
+	 *		to the user.
 	 * @return	int ID of inserted or updated record
 	 */
-	public function developer($data, $update = FALSE)
+	public function developer($data, $update = FALSE, $expires = 0)
 	{
 		$log_data = array();
 		
@@ -104,18 +113,24 @@ class EE_Logger {
 			// Look to see if this exact log data is already in the database
 			$this->EE->db->where($log_data);
 			$this->EE->db->order_by('log_id', 'desc');
-			$duplicates = $this->EE->db->get('developer_log')->row_array();
+			$duplicate = $this->EE->db->get('developer_log')->row_array();
 			
-			if (count($duplicates))
+			if (count($duplicate))
 			{
-				// Set log item as unviewed and update the timestamp
-				$duplicates['viewed'] = 'n';
-				$duplicates['timestamp'] = $this->EE->localize->now;
+				// If $expires is set, only update item if the duplicate is old enough
+				if ($this->EE->localize->now - $expires > $duplicate['timestamp'])
+				{
+					// Set log item as unviewed and update the timestamp
+					$duplicate['viewed'] = 'n';
+					$duplicate['timestamp'] = $this->EE->localize->now;
+					
+					$this->EE->db->where('log_id', $duplicate['log_id']);
+					$this->EE->db->update('developer_log', $duplicate);
+					
+					$duplicate['updated'] = TRUE;
+				}
 				
-				$this->EE->db->where('log_id', $duplicates['log_id']);
-				$this->EE->db->update('developer_log', $duplicates);
-				
-				return $duplicates['log_id'];
+				return $duplicate;
 			}
 		}
 		
@@ -124,7 +139,7 @@ class EE_Logger {
 		
 		$this->EE->db->insert('developer_log', $log_data);
 		
-		return $this->EE->db->insert_id();
+		return $log_data;
 	}
 	
 	// --------------------------------------------------------------------
@@ -167,7 +182,8 @@ class EE_Logger {
 			'use_instead'		=> $use_instead		// Function to use instead
 		);
 		
-		$this->developer($deprecated, TRUE);
+		// Only bug the user about this again after a week, or 604800 seconds
+		$deprecation_log = $this->developer($deprecated, TRUE, 604800);
 		
 		// Show and store flashdata only if we're in the CP, and only to Super Admins
 		if (REQ == 'CP' AND $this->EE->session->userdata('group_id') == 1)
@@ -184,12 +200,15 @@ class EE_Logger {
 				)
 			);
 			
-			$this->EE->session->set_flashdata(
-				'message_error',
-				lang('deprecation_detected').'<br />'.
-					'<a href="'.BASE.AMP.'C=tools_logs'.AMP.'M=view_developer_log">'.lang('dev_log_view_report').'</a>
-					'.lang('or').' <a href="#" class="deprecation_meaning">'.lang('dev_log_help').'</a>'
-			);
+			if (isset($deprecation_log['updated']))
+			{
+				$this->EE->session->set_flashdata(
+					'message_error',
+					lang('deprecation_detected').'<br />'.
+						'<a href="'.BASE.AMP.'C=tools_logs'.AMP.'M=view_developer_log">'.lang('dev_log_view_report').'</a>
+						'.lang('or').' <a href="#" class="deprecation_meaning">'.lang('dev_log_help').'</a>'
+				);
+			}
 		}
 	}
 	

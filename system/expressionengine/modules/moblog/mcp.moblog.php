@@ -232,7 +232,7 @@ EOT;
 		
 		$this->EE->load->model(array('file_model', 'file_upload_preferences_model'));
 
-		$upload_prefs = $this->EE->file_upload_preferences_model->get_upload_preferences($this->EE->session->userdata['group_id']);
+		$upload_prefs = $this->EE->file_upload_preferences_model->get_file_upload_preferences($this->EE->session->userdata['group_id']);
 		
 		$sizes_q = $this->EE->file_model->get_dimensions_by_dir_id(1);
 		$sizes = array();
@@ -354,7 +354,7 @@ EOT;
 		
 			if ( ! isset($upload_array[$row['moblog_upload_directory']]))
 			{
-				$upload_prefs = $this->EE->file_upload_preferences_model->get_upload_preferences(1, $row['moblog_upload_directory']);
+				$upload_prefs = $this->EE->file_upload_preferences_model->get_file_upload_preferences(1, $row['moblog_upload_directory']);
 				
 				if (count($upload_prefs) > 0)
 				{
@@ -870,7 +870,7 @@ MAGIC;
 			$sizes_array[$row['upload_location_id']][$row['id']] = $row['title'];
 		}
 		
-		$upload_q = $this->EE->file_upload_preferences_model->get_upload_preferences($this->EE->session->userdata['group_id']);
+		$upload_q = $this->EE->file_upload_preferences_model->get_file_upload_preferences($this->EE->session->userdata['group_id']);
 		
 		foreach ($upload_q as $row)
 		{

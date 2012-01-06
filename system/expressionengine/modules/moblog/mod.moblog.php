@@ -1362,7 +1362,7 @@ class Moblog {
 		$this->EE->load->model('file_model');
 		$this->EE->load->model('file_upload_preferences_model');
 		
-		$prefs_q = $this->EE->file_upload_preferences_model->get_upload_preferences(1, $dir_id);
+		$prefs_q = $this->EE->file_upload_preferences_model->get_file_upload_preferences(1, $dir_id);
 		$sizes_q = $this->EE->file_model->get_dimensions_by_dir_id($dir_id);
 		
 		$dir_server_path = $prefs_q['server_path'];

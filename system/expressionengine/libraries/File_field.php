@@ -184,7 +184,7 @@ class File_field {
 		$_POST[$field_name] = '';
 		
 		// Default directory
-		$upload_directories = $this->EE->file_upload_preferences_model->get_upload_preferences($this->EE->session->userdata('group_id'));
+		$upload_directories = $this->EE->file_upload_preferences_model->get_file_upload_preferences($this->EE->session->userdata('group_id'));
 		
 		// Directory selected - switch
 		$filedir = ($this->EE->input->post($dir_field)) ? $this->EE->input->post($dir_field) : '';
