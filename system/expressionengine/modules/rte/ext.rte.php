@@ -9,6 +9,7 @@ class Rte_ext {
 	var $required_by = array('module');
 
 	private $EE;
+	private $module = 'rte';
 	
 	/**
 	 * Constructor
@@ -25,11 +26,11 @@ class Rte_ext {
 	 */
 	function myaccount_nav_setup()
 	{
-		$this->EE->lang->loadfile('rte');
+		$this->EE->lang->loadfile($this->module);
 		return array(
 			'customize_cp' => array(
 				lang('rte_prefs')	=> array(
-					'module'	=> 'rte',
+					'module'	=> $this->module,
 					'method'	=> 'myaccount_settings'
 				)
 			)
@@ -43,7 +44,7 @@ class Rte_ext {
 	 */
 	function cp_menu_array( $menu )
 	{
-		$menu['admin']['admin_content']['rte_settings'] = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=rte';
+		$menu['admin']['admin_content']['rte_settings'] = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module='.$this->module;
 		return $menu;
 	}
 	
@@ -52,47 +53,23 @@ class Rte_ext {
 	/**
 	 * Handle hook call
 	 */
-	function api_channel_fields_field_edit_vars( $vars )
+	function content_publish_edit_form_data( $data )
 	{
-		$this->EE->lang->loadfile('rte');
-		$this->EE->load->helper('form');
-		$new_field = array(
-			// yup, it needs to be nested in a second array
-			array(
-				array(
-					'data'	=> '<strong>'.lang('enable_rte_for_field').'</strong>'
-				),
-				array(
-					'data'	=> form_radio('field_enable_rte', 'y', ($vars['field_enable_rte']=='y'), 'id="textarea_field_enable_rte_y"').
-					           NBS.lang('yes','textarea_field_enable_rte_y').
-							   NBS.NBS.NBS.NBS.NBS.
-							   form_radio('field_enable_rte', 'n', (empty($vars['field_enable_rte'])||$vars['field_enable_rte']=='n'), 'id="textarea_field_enable_rte_n"').
-							   NBS.lang('no','textarea_field_enable_rte_n')
-				)
-			)
+		
+		include_once( APPPATH.'modules/'.$this->module.'/'.'mcp.'.$this->module.'.php' );
+		$class_name	= ucfirst($this->module).'_mcp';
+		$RTE		= new $class_name();
+		
+		# WysiHat
+		$this->EE->cp->add_to_head($this->EE->view->head_link('css/rte.css'));
+		$this->EE->cp->add_js_script(array('plugin' => 'wysihat'));
+		
+		# Toolset JS
+		$this->EE->javascript->output(
+			$RTE->build_toolset_js()
 		);
-		# find the field we need to drop it in after
-		foreach ( $vars['field_type_tables']['textarea'] as $index => $field )
-		{
-			if ( strpos( $field[0]['data'], 'textarea_field_fmt' ) !== FALSE  )
-			{
-				break;
-			}
-		}
-		array_splice( $vars['field_type_tables']['textarea'], $index+1, 0, $new_field );
-		return $vars;
-	}
-	
-	// --------------------------------------------------------------------
 
-	/**
-	 * Handle hook call
-	 */
-	function api_channel_fields_update_field()
-	{
-		return array(
-			'field_enable_rte'
-		);
+		return $data;
 	}
 	
 	// --------------------------------------------------------------------

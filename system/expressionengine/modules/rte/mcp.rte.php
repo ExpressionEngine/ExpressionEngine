@@ -389,7 +389,7 @@ class Rte_mcp {
 			'file'	 => 'cp/rte',
 			'plugin' => array( 'overlay', 'toolbox.expose' )
 		));
-		$this->EE->cp->add_to_head($this->EE->view->head_link('css/rte.css'));		
+		$this->EE->cp->add_to_head($this->EE->view->head_link('css/rte.css'));
 		return $this->EE->load->view('myaccount_settings', $vars, TRUE);
 	}
 
@@ -441,6 +441,48 @@ class Rte_mcp {
 		// buh-bye
 		$this->EE->functions->redirect($this->_myaccount_url);
 
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Build the toolset JS
+	 *
+	 * @access	public
+	 */
+	public function build_toolset_js()
+	{
+		# setup the framework
+		$js = '
+			$(".rte").each(function(){
+				var
+				$field	= $(this),
+				$parent	= $field.parent(),
+
+				// set up the editor
+				$editor	= WysiHat.Editor.attach($field),
+
+				// establish the toolbar
+				toolbar	= new WysiHat.Toolbar();
+				
+				toolbar.initialize($editor);
+				
+		';
+		
+		# load the tools
+		$this->EE->load->model(array('rte_toolset_model','rte_tool_model'));
+		$tools = $this->EE->rte_toolset_model->get_member_toolset_tools();
+		foreach ( $tools as $tool_id )
+		{
+			$js .= $this->EE->rte_tool_model->get_tool_js($tool_id);
+		}
+		
+		$js .= '
+
+			});
+		';
+
+		return array($js);
 	}
 
 	// --------------------------------------------------------------------

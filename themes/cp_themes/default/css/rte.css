@@ -16,3 +16,9 @@
 .rte-toolset-builder-scrollpane .ui-sortable-helper { background: #ECF1F4; border: 1px solid #27343C; cursor: move; }
 #rte_toolset_editor_modal { display: none; width: 600px; top: 1px; }
 #rte_toolset_editor_modal .contents { padding: 0; }
+
+/* editor */
+.WysiHat-editor-toolbar .button { float: none; }
+.WysiHat-editor { background: #fff; border: 1px solid #8195A0; -moz-border-radius: 3px; -o-border-radius: 3px; -webkit-border-radius: 3px; border-radius: 3px; clear: both; color: #5F6C74; font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif; font-size: 110%;  min-height: 100px; margin: 7px 0 0; padding: 4px; outline: none; overflow: auto; resize: both; width: 98.5%; }
+.WysiHat-editor:focus { border: 2px solid #8195A0; padding: 3px; }
+.WysiHat-editor p { margin: 0 0 1em; }

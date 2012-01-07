@@ -72,6 +72,37 @@ class Rte_tool_model extends CI_Model {
 		ksort($tool_ids, SORT_NUMERIC);
 		return $tool_ids;
 	}
+	
+	public function get_tool_js( $tool_id = FALSE )
+	{
+		$js = '';
+		$results = $this->db->get_where(
+			'rte_tools',
+			array(
+				'rte_tool_id'	=> $tool_id,
+				'enabled'		=> 'y'
+			)
+		);
+		if ( $results->num_rows() > 0 )
+		{
+			$tool		= $results->row();
+			$tool_name	= strtolower( str_replace( ' ', '_', $tool->name ) );
+			$tool_class	= ucfirst( $tool_name ).'_rte';
+			foreach ( array(PATH_RTE, PATH_THIRD) as $tmp_path )
+			{
+				$file = $tmp_path.$tool_name.'/rte.'.$tool_name.'.php';
+				if ( file_exists($file) )
+				{
+					//print_r($file); exit;
+					include_once( $file );
+					$TOOL = new $tool_class();
+					$js = $TOOL->definition();
+					break;
+				}
+			}
+		}
+		return $js;
+	}
 
 	private function _make_list( $result )
 	{

@@ -169,17 +169,8 @@ class Rte_upd {
 				),
 				array(
 					'class'    => $this->name.'_ext',
-					'hook'     => 'api_channel_fields_field_edit_vars',
-					'method'   => 'api_channel_fields_field_edit_vars',
-					'settings' => '',
-					'priority' => 10,
-					'version'  => $this->version,
-					'enabled'  => 'y'
-				),
-				array(
-					'class'    => $this->name.'_ext',
-					'hook'     => 'api_channel_fields_update_field',
-					'method'   => 'api_channel_fields_update_field',
+					'hook'     => 'content_publish_edit_form_data',
+					'method'   => 'content_publish_edit_form_data',
 					'settings' => '',
 					'priority' => 10,
 					'version'  => $this->version,
@@ -201,18 +192,6 @@ class Rte_upd {
 					'type'		=> 'INT(10)',
 					'null'		=> FALSE,
 					'default'	=> '1'
-				)
-			)
-		);
-				
-		//  Add the channel field column
-		$this->EE->dbforge->add_column(
-			'channel_fields',
-			array(
-				'field_enable_rte'	=> array(
-					'type'		=> 'CHAR(1)',
-					'null'		=> FALSE,
-					'default'	=> 'n'
 				)
 			)
 		);
@@ -272,9 +251,6 @@ class Rte_upd {
 		//  Remove the member columns
 		$this->EE->dbforge->drop_column( 'members', 'rte_enabled' );
 		$this->EE->dbforge->drop_column( 'members', 'rte_toolset_id' );
-				
-		//  Remove the channel field column
-		$this->EE->dbforge->drop_column( 'channel_fields', 'field_enable_rte' );
 				
 		//  Update the config
 		$this->EE->config->_update_config(
