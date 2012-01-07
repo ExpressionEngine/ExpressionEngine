@@ -29,7 +29,9 @@ $rte_tool_info = array(
 );
 
 Class View_source_rte {
-
+	
+	private $EE;
+	
 	/** -------------------------------------
 	/**  Constructor
 	/** -------------------------------------*/
@@ -38,12 +40,15 @@ Class View_source_rte {
 		// Make a local reference of the ExpressionEngine super object
 		$this->EE =& get_instance();
 		
-		// any other initialization stuff can go here and can be made available in the definition
+		// Make sure resize is added
+		$this->EE->load->library('cp');
+		$this->EE->cp->add_js_script(array('plugin' => 'ba-resize'));
 	}
 
 	function definition()
 	{
 		ob_start(); ?>
+		
 		toolbar.addButton({
 			name:	'switch',
 			label:	'HTML',
@@ -52,6 +57,28 @@ Class View_source_rte {
 				$editor.toggleHTML( e );
 			}
 		});
+		
+		function syncSizes()
+		{
+			var $this = $(this);
+			if ( $this.is('.WysiHat-editor') &&
+				 $this.is(':visible') )
+			{
+				$this.data('field')
+					.width($this.outerWidth())
+					.height($this.outerHeight());
+			}
+			else if ( $this.is('.rte') &&
+					  $this.is(':visible') )
+			{
+				$this.data('editor')
+					.width($this.outerWidth())
+					.height($this.outerHeight());
+			}
+		}
+		$editor.add($field)
+			.bind('resize',syncSizes);
+		
 <?php	$buffer = ob_get_contents();
 		ob_end_clean(); 
 		return $buffer;
