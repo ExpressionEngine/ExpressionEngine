@@ -2719,7 +2719,7 @@ class MyAccount extends CI_Controller {
 		if ( ! isset($this->module_paths[$module]) )
 		{
 			// First or third party?
-			foreach ( array(APPPATH.'modules/', PATH_THIRD) as $tmp_path )
+			foreach ( array(PATH_MOD, PATH_THIRD) as $tmp_path )
 			{
 				if ( file_exists($tmp_path.$module.'/mcp.'.$module.'.php') )
 				{
