@@ -42,13 +42,25 @@ class Textarea_ft extends EE_Fieldtype {
 
 	function display_field($data)
 	{		
-		return form_textarea(array(
+		$field = array(
 			'name'	=> $this->field_name,
 			'id'	=> $this->field_name,
 			'value'	=> $data,
 			'rows'	=> $this->settings['field_ta_rows'],
 			'dir'	=> $this->settings['field_text_direction']
-		));
+		);
+		
+		// RTE?
+		if ( ! isset( $this->settings['field_enable_rte'] ) )
+		{
+			$this->settings['field_enable_rte'] = 'n';
+		}
+		if ( $this->settings['field_enable_rte'] == 'y' )
+		{
+			$field['class']	= 'rte';
+		}
+				
+		return form_textarea($field);
 	}
 
 	// --------------------------------------------------------------------
@@ -71,7 +83,14 @@ class Textarea_ft extends EE_Fieldtype {
 	function display_settings($data)
 	{
 		$prefix = 'textarea';
-
+		
+		// RTE setup
+		$this->EE->load->model('addons_model');
+		if ( ! isset( $data['field_enable_rte'] ) )
+		{
+			$data['field_enable_rte'] = 'n';
+		}
+		
 		$field_rows	= ($data['field_ta_rows'] == '') ? 6 : $data['field_ta_rows'];
 		
 		$this->EE->table->add_row(
@@ -80,6 +99,11 @@ class Textarea_ft extends EE_Fieldtype {
 		);
 		
 		$this->field_formatting_row($data, $prefix);
+		if ( $this->EE->addons_model->module_installed('rte') )
+		{
+			$this->EE->lang->loadfile('rte');
+			$this->_yes_no_row($data, 'enable_rte_for_field', 'field_enable_rte', $prefix);
+		}
 		$this->text_direction_row($data, $prefix);
 		$this->field_show_formatting_btns_row($data, $prefix);
 		$this->field_show_smileys_row($data, $prefix);
@@ -88,6 +112,15 @@ class Textarea_ft extends EE_Fieldtype {
 		$this->field_show_writemode_row($data, $prefix);
 		$this->field_show_file_selector_row($data, $prefix);
 	}
+	
+	// --------------------------------------------------------------------
+
+	function save_settings($data)
+	{		
+		return array(
+			'field_enable_rte'	=> $this->EE->input->post('textarea_field_enable_rte')
+		);
+	}	
 }
 
 // END Textarea_ft class
