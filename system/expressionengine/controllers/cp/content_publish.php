@@ -332,6 +332,17 @@ class Content_publish extends CI_Controller {
 			'preview_url' => $preview_url
 		);
 
+		// -------------------------------------------
+		// 'content_publish_edit_form_data' hook.
+		//  - Modify the data going into the publish/edit page
+		//
+		if ($this->extensions->active_hook('content_publish_edit_form_data') === TRUE)
+		{
+			$data = $this->extensions->call('content_publish_edit_form_data', $data );
+		}
+		//
+		// -------------------------------------------
+		
 		$this->cp->set_breadcrumb(BASE.AMP.'C=content_publish', lang('publish'));
 		
 		$this->javascript->compile();
