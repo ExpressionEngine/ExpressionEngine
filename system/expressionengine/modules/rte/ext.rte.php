@@ -44,6 +44,7 @@ class Rte_ext {
 	 */
 	function cp_menu_array( $menu )
 	{
+		$this->EE->lang->loadfile($this->module);
 		$menu['admin']['admin_content']['rte_settings'] = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module='.$this->module;
 		return $menu;
 	}
