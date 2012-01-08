@@ -19,6 +19,9 @@
 
 /* editor */
 .WysiHat-editor-toolbar .button { float: none; }
-.WysiHat-editor { background: #fff; border: 1px solid #8195A0; -moz-border-radius: 3px; -o-border-radius: 3px; -webkit-border-radius: 3px; border-radius: 3px; clear: both; color: #5F6C74; font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif; font-size: 110%;  min-height: 100px; margin: 7px 0 0; padding: 4px; outline: none; overflow: auto; resize: both; width: 98.5%; }
+.WysiHat-editor { background: #fff; border: 1px solid #8195A0; -moz-border-radius: 3px; -o-border-radius: 3px; -webkit-border-radius: 3px; border-radius: 3px; clear: both; color: #5F6C74; font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif !important; font-size: 110%;  min-height: 100px; margin: 7px 0 0; padding: 4px; outline: none; overflow: auto; resize: both; width: 98.5%; }
 .WysiHat-editor:focus { border: 2px solid #8195A0; padding: 3px; }
-.WysiHat-editor p { margin: 0 0 1em; }
+.WysiHat-editor h1, .WysiHat-editor h2, .WysiHat-editor h3, .WysiHat-editor h4, .WysiHat-editor h5, .WysiHat-editor h6, .WysiHat-editor p, .WysiHat-editor ul, .WysiHat-editor ol, .WysiHat-editor dl, .WysiHat-editor figure { margin: 0 0 10px; }
+.WysiHat-editor ul { list-style: disc; padding-left: 2em; }
+.WysiHat-editor ol { list-style: decimal; padding-left: 2em; }
+.WysiHat-editor a { color: #F72A58 !important; }
