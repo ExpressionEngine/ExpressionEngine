@@ -12,23 +12,23 @@
  PLEASE READ THE LICENSE AGREEMENT
  http://expressionengine.com/user_guide/license.html
 =====================================================
- File: rte.view_source.php
+ File: rte.strip_tags.php
 -----------------------------------------------------
- Purpose: View Source RTE Tool
+ Purpose: Strip Tags RTE Tool
 =====================================================
 
 */
 
 $rte_tool_info = array(
-	'rte_name'			=> 'View Source',
+	'rte_name'			=> 'Strip Tags',
 	'rte_version'		=> '1.0',
 	'rte_author'		=> 'Aaron Gustafson',
 	'rte_author_url'	=> 'http://easy-designs.net/',
-	'rte_description'	=> 'Triggers the RTE to switch to and from view source mode',
-	'rte_definition'	=> View_source_rte::definition()
+	'rte_description'	=> 'Triggers the RTE to strip all block and phrase-level formatting elements',
+	'rte_definition'	=> Strip_tags_rte::definition()
 );
 
-Class View_source_rte {
+Class Strip_tags_rte {
 	
 	private $EE;
 	
@@ -40,9 +40,7 @@ Class View_source_rte {
 		// Make a local reference of the ExpressionEngine super object
 		$this->EE =& get_instance();
 		
-		// Make sure resize is added
-		$this->EE->load->library('cp');
-		$this->EE->cp->add_js_script(array('plugin' => 'ba-resize'));
+		// Anything else we need?
 	}
 
 	function definition()
@@ -50,41 +48,19 @@ Class View_source_rte {
 		ob_start(); ?>
 		
 		toolbar.addButton({
-			name:	'switch',
-			label:	'HTML',
-			'toggle-text': 'Content',
-			handler: function( $editor, e ){
-				$editor.toggleHTML( e );
+			label: "X",
+			handler: function( $ed ){
+				$ed.stripFormattingElements();
+				$ed.unformatContentBlock();
 			}
 		});
-		
-		function syncSizes()
-		{
-			var $this = $(this);
-			if ( $this.is('.WysiHat-editor') &&
-				 $this.is(':visible') )
-			{
-				$this.data('field')
-					.width($this.outerWidth())
-					.height($this.outerHeight());
-			}
-			else if ( $this.is('.rte') &&
-					  $this.is(':visible') )
-			{
-				$this.data('editor')
-					.width($this.outerWidth())
-					.height($this.outerHeight());
-			}
-		}
-		$editor.add($field)
-			.bind('resize',syncSizes);
 		
 <?php	$buffer = ob_get_contents();
 		ob_end_clean(); 
 		return $buffer;
 	}
 
-} // END View_source_rte
+} // END Strip_tags_rte
 
-/* End of file rte.view_source.php */
-/* Location: ./system/expressionengine/rte_tools/view_source/rte.view_source.php */
+/* End of file rte.strip_tags.php */
+/* Location: ./system/expressionengine/rte_tools/strip_tags/rte.strip_tags.php */
