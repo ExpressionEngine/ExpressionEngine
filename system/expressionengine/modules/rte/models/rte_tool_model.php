@@ -122,9 +122,12 @@ class Rte_tool_model extends CI_Model {
 		
 		$files		= $this->addons->get_files('rte_tools');
 		$installed	= $this->addons->get_installed('rte_tools');
-
+		$classes	= array();
+		
+		// add new tools
 		foreach ( $files as $package => $details )
 		{
+			$classes[] = $details['class'];
 			if ( ! isset($installed[$package]) )
 			{
 				// make a record of the add-on in the DB
@@ -138,6 +141,11 @@ class Rte_tool_model extends CI_Model {
 				);
 			}
 		}
+		
+		// cleanup removed tools
+		$this->db
+			->where_not_in( 'class', $classes )
+			->delete('rte_tools');
 	}
 	
 
