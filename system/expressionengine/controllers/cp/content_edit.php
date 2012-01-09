@@ -274,7 +274,19 @@ class Content_edit extends CI_Controller {
 		
 		$order = $tbl_settings['sort'];
 		$columns = $tbl_settings['columns'];
-				
+		
+		// -------------------------------------------
+		// 'edit_entries_additional_where' hook.
+		//  - Add additional where, where_in, where_not_in
+		//
+			$_hook_wheres = $this->extensions->call('edit_entries_additional_where', $filter_data);
+			if ($this->extensions->end_script === TRUE) return;
+		//
+		// -------------------------------------------
+		
+		$filter_data['_hook_wheres'] = is_array($_hook_wheres) ? $_hook_wheres : array();
+		
+		
 		$this->load->model('search_model');
 		$filter_result = $this->search_model->get_filtered_entries($filter_data, $order);
 		

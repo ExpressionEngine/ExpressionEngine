@@ -398,6 +398,35 @@ class Search_model extends CI_Model {
 		}
 
 		$this->db->where($where_clause, NULL, FALSE);
+		
+		
+		// Process hook data
+		if (is_array($data['_hook_wheres']) && is_array($data['_hook_wheres']))
+		{
+			foreach($data['_hook_wheres'] as $field => $value)
+			{
+				$func = 'where';
+				
+				if (is_array($value))
+				{
+					if ( ! count($value))
+					{
+						continue;
+					}
+					
+					$func = 'where_in';
+					
+					// allow for where_not_in
+					if (strpos($field, '!=') !== FALSE)
+					{
+						$field = str_replace('!=', '', $field);
+						$func = 'where_not_in';
+					}
+				}
+				
+				$this->db->$func(trim($field), $value);
+			}
+		}
 
 
 		if (is_array($order) && count($order) > 0)
@@ -430,7 +459,7 @@ class Search_model extends CI_Model {
 		// ------------------------------
 
 		$this->db->distinct();
-		
+
 		return array('pageurl' => $pageurl, 'result_obj' => $this->db->get());
 	}
 
