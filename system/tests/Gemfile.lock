@@ -1,0 +1,25 @@
+GEM
+  remote: http://rubygems.org/
+  specs:
+    childprocess (0.2.7)
+      ffi (~> 1.0.6)
+    ffi (1.0.11)
+    multi_json (1.0.4)
+    rb-appscript (0.6.1)
+    rubyzip (0.9.5)
+    safariwatir (0.4.0)
+      rb-appscript
+    selenium-webdriver (2.16.0)
+      childprocess (>= 0.2.5)
+      ffi (~> 1.0.9)
+      multi_json (~> 1.0.4)
+      rubyzip
+    watir-webdriver (0.4.1)
+      selenium-webdriver (>= 2.12.0)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  safariwatir
+  watir-webdriver
