@@ -75,6 +75,9 @@ Class View_source_rte {
 					.width($this.outerWidth())
 					.height($this.outerHeight());
 			}
+			
+			//$this.parent('.holder').find('.WysiHat-editor-toolbar')
+			//	.width($this.outerWidth());
 		}
 		$editor.add($field)
 			.bind('resize',syncSizes);
