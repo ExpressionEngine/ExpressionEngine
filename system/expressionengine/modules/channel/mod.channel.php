@@ -4546,23 +4546,23 @@ class Channel {
 								$entry = $this->EE->api_channel_fields->apply($parse_fnc_catchall, array($data, $params, FALSE, $modifier));
 							}
 							else
-							{							
+							{
 								$entry = '';
 								$this->EE->TMPL->log_item('Unable to find parse type for custom field: '.$parse_fnc);
-							}							
+							}
 						}
 						else
 						{
 							// Couldn't find a fieldtype
 							$entry = $this->EE->typography->parse_type(
-																$this->EE->functions->encode_ee_tags($row['field_id_'.$this->cfields[$row['site_id']][$val]]),
-																array(
-																		'text_format'	=> $row['field_ft_'.$this->cfields[$row['site_id']][$val]],
-																		'html_format'	=> $row['channel_html_formatting'],
-																		'auto_links'	=> $row['channel_auto_link_urls'],
-																		'allow_img_url' => $row['channel_allow_img_urls']
-																	  )
-															  );
+								$this->EE->functions->encode_ee_tags($row['field_id_'.$this->cfields[$row['site_id']][$val]]),
+								array(
+									'text_format'	=> $row['field_ft_'.$this->cfields[$row['site_id']][$val]],
+									'html_format'	=> $row['channel_html_formatting'],
+									'auto_links'	=> $row['channel_auto_link_urls'],
+									'allow_img_url' => $row['channel_allow_img_urls']
+								)
+							);
 						}
 					 }
 
@@ -4585,20 +4585,22 @@ class Channel {
 					{
 						$processed_member_fields[$row['member_id']]['m_field_id_'.$this->mfields[$val][0]] =
 
-												$this->EE->typography->parse_type(
-																				$row['m_field_id_'.$this->mfields[$val][0]],
-																				array(
-																						'text_format'	=> $this->mfields[$val][1],
-																						'html_format'	=> 'safe',
-																						'auto_links'	=> 'y',
-																						'allow_img_url' => 'n'
-																					  )
-																			  );
+						$this->EE->typography->parse_type(
+							$row['m_field_id_'.$this->mfields[$val][0]],
+							array(
+								'text_format'	=> $this->mfields[$val][1],
+								'html_format'	=> 'safe',
+								'auto_links'	=> 'y',
+								'allow_img_url' => 'n'
+							)
+						);
 					}
 
-					$tagdata = $this->EE->TMPL->swap_var_single($val,
-																$processed_member_fields[$row['member_id']]['m_field_id_'.$this->mfields[$val][0]],
-																$tagdata);
+					$tagdata = $this->EE->TMPL->swap_var_single(
+						$val,
+						$processed_member_fields[$row['member_id']]['m_field_id_'.$this->mfields[$val][0]],
+						$tagdata
+					);
 				}
 
 

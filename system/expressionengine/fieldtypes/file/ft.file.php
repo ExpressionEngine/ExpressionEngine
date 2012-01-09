@@ -140,9 +140,11 @@ class File_ft extends EE_Fieldtype {
 
 						switch ($val)
 						{
-							case 'upload_date' 	: $upload_date[$matches['0'][$j]] = $this->EE->localize->fetch_date_params($matches['1'][$j]);
+							case 'upload_date':
+								$upload_date[$matches['0'][$j]] = $this->EE->localize->fetch_date_params($matches['1'][$j]);
 								break;
-							case 'modified_date' : $modified_date[$matches['0'][$j]] = $this->EE->localize->fetch_date_params($matches['1'][$j]);
+							case 'modified_date':
+								$modified_date[$matches['0'][$j]] = $this->EE->localize->fetch_date_params($matches['1'][$j]);
 								break;
 						}
 					}
@@ -155,7 +157,17 @@ class File_ft extends EE_Fieldtype {
 				if (isset($upload_date[$key]))
 				{
 					foreach ($upload_date[$key] as $dvar)
-						$val = str_replace($dvar, $this->EE->localize->convert_timestamp($dvar, $file_info['upload_date'], TRUE), $val);					
+					{
+						$val = str_replace(
+							$dvar, 
+							$this->EE->localize->convert_timestamp(
+								$dvar, 
+								$file_info['upload_date'], 
+								TRUE
+							), 
+							$val
+						);
+					}
 
 					$tagdata = $this->EE->TMPL->swap_var_single($key, $val, $tagdata);
 				}
@@ -164,7 +176,17 @@ class File_ft extends EE_Fieldtype {
 				if (isset($modified_date[$key]))
 				{
 					foreach ($modified_date[$key] as $dvar)
-						$val = str_replace($dvar, $this->EE->localize->convert_timestamp($dvar, $file_info['modified_date'], TRUE), $val);					
+					{
+						$val = str_replace(
+							$dvar, 
+							$this->EE->localize->convert_timestamp(
+								$dvar, 
+								$file_info['modified_date'], 
+								TRUE
+							),
+							$val
+						);
+					}
 
 					$tagdata = $this->EE->TMPL->swap_var_single($key, $val, $tagdata);
 				}
@@ -217,7 +239,7 @@ class File_ft extends EE_Fieldtype {
 	{
 		if ($modifier)
 		{
-			$file_info['path'] .= '_'.$modifier.'/';	
+			$file_info['path'] .= '_'.$modifier.'/';
 		}
 
 		return $this->replace_tag($file_info, $params, $tagdata);
