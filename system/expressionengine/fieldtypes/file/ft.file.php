@@ -112,7 +112,12 @@ class File_ft extends EE_Fieldtype {
 	 */
 	function replace_tag($file_info, $params = array(), $tagdata = FALSE)
 	{
-		if ($tagdata !== FALSE)
+		// Make sure we have file_info to work with
+		if ($tagdata !== FALSE AND $file_info === FALSE)
+		{
+			$tagdata = $this->EE->functions->prep_conditionals($tagdata, array());
+		}
+		else if ($tagdata !== FALSE)
 		{
 			$tagdata = $this->EE->functions->prep_conditionals($tagdata, $file_info);
 
