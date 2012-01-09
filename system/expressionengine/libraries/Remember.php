@@ -205,7 +205,7 @@ class Remember {
 			$this->data['expiration'] += $adjust_expire;
 			
 			$this->EE->db->where('remember_me_id', $this->cookie_value)
-				->set($data)
+				->set($this->data)
 				->update($this->table);
 						
 			$expiration = $this->data['expiration'] - $this->EE->localize->now;
