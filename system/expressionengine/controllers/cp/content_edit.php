@@ -147,9 +147,6 @@ class Content_edit extends CI_Controller {
 		
 		$form_fields = $this->_edit_form($filter_data, $channels);
 		$vars = array_merge($vars, $form_fields);
-
-		// @todo what?
-		$vars['autosave_show'] = FALSE;
 		
 		
 		// Action Options!
@@ -360,6 +357,13 @@ class Content_edit extends CI_Controller {
 		$autosave = $this->db->get('channel_entries_autosave');
 		
 		$autosave_array = array();
+		$autosave_show = FALSE;
+		
+		if ($autosave->num_rows())
+		{
+			$this->load->helper('snippets');
+			$autosave_show = TRUE;
+		}
 		
 		foreach ($autosave->result() as $entry)
 		{
@@ -413,7 +417,6 @@ class Content_edit extends CI_Controller {
 			// autosave indicator
 			if (in_array($row['entry_id'], $autosave_array))
 			{
-				$this->load->helper('snippets');
 				$row['title'] .= NBS.required();
 			}
 			
@@ -495,6 +498,7 @@ class Content_edit extends CI_Controller {
 			
 			// used by index on non-ajax requests
 			'filter_data'		=> $filter_data,
+			'autosave_show'		=> $autosave_show,
 			'autosave_array'	=> $autosave_array
 		);
 	}
@@ -852,10 +856,13 @@ class Content_edit extends CI_Controller {
 			$orig_id = $row->original_entry_id;
 			
 			$data['entries'][] = array(
-				anchor($this->url('entry_form/channel_id/'.$channel.'/entry_id/'.$save_id.'/use_autosave/y'), $row->title),
-				$orig_id ? anchor($this->url('entry_form/channel_id/'.$channel.'/entry_id/'.$orig_id), $row->title) : '--',
+				anchor(
+					BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.$channel.AMP.'entry_id='.$save_id.AMP.'use_autosave=y',
+					$row->title
+				),
+				$orig_id ? anchor(BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.$channel.AMP.'entry_id='.$orig_id, $row->title) : '--',
 				$row->channel_title,
-				anchor($this->url('autosaved_discard/id/'.$save_id), lang('delete'))
+				anchor(BASE.AMP.'C=content_edit'.AMP.'M=autosaved_discard'.AMP.'id='.$save_id, lang('delete'))
 			);
 		}
 		
