@@ -73,6 +73,18 @@ class EE_Table extends CI_Table {
 		$this->base_url = $url;
 	}
 	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Force non-ajax behvavior
+	 *
+	 * Workaround for the edit page modal until we figure out a neater
+	 * way to get around the first load issues on that page.
+	 *
+	 * @third parties: do not touch this, it will definitely change
+	 *
+	 * @access	public
+	 */
 	function force_initial_load()
 	{
 		$this->no_ajax = TRUE;
