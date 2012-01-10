@@ -54,7 +54,7 @@ class Rte_ext {
 	/**
 	 * Handle hook call
 	 */
-	function content_publish_edit_form_data( $data )
+	function publish_form_entry_data( $results )
 	{
 		
 		include_once( APPPATH.'modules/'.$this->module.'/'.'mcp.'.$this->module.'.php' );
@@ -70,7 +70,7 @@ class Rte_ext {
 			$RTE->build_toolset_js()
 		);
 
-		return $data;
+		return $results;
 	}
 	
 	// --------------------------------------------------------------------

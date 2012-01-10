@@ -377,14 +377,8 @@ class Rte_mcp {
 		);
 		
 		# JS stuff
-		$this->EE->javascript->output(array(
-			'
-			window.rte_toolset_builder_url = "'.$this->_base_url.AMP.'method=edit_toolset'.AMP.'private=true";
-			window.rte_custom_toolset_text = "'.lang('my_custom_toolset').'";
-			
-			'
-		));
-		$this->EE->javascript->compile();
+		$this->EE->javascript->set_global('rte.toolset_builder_url', $this->_base_url.AMP.'method=edit_toolset'.AMP.'private=true');
+		$this->EE->javascript->set_global('rte.custom_toolset_text', lang('my_custom_toolset') );
 		$this->EE->cp->add_js_script(array(
 			'file'	 => 'cp/rte',
 			'plugin' => array( 'overlay', 'toolbox.expose' )
