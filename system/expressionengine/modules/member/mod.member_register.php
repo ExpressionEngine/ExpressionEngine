@@ -35,7 +35,7 @@ class Member_register extends Member {
 		if ($this->EE->config->item('allow_member_registration') == 'n')
 		{
 
-			$data = array(	'title' 	=> lang('mbr_registration'),
+			$data = array(	'title' 	=> lang('member_registration'),
 							'heading'	=> lang('notice'),
 							'content'	=> lang('mbr_registration_not_allowed'),
 							'link'		=> array($this->EE->functions->fetch_site_index(), stripslashes($this->EE->config->item('site_name')))
