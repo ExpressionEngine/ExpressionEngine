@@ -48,7 +48,7 @@ Class Image_rte {
 		ob_start(); ?>
 		
 		toolbar.addButton({
-			name: 'img',
+			name: 'image',
 	        label: "❏",
 	        handler: function( $ed ){
 				$ed.insertImage( prompt('What image do you want to insert?') );

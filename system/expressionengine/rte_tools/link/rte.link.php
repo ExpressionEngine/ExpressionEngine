@@ -48,7 +48,7 @@ Class Link_rte {
 		ob_start(); ?>
 		
 		toolbar.addButton({
-			name: 'createLink',
+			name: 'link',
 	        label: "∞",
 	        handler: function( $ed ){
 				$ed.linkSelection( prompt('Where should this link go?') );

@@ -48,13 +48,14 @@ Class Blockquote_rte {
 		ob_start(); ?>
 		
 		toolbar.addButton({
-			name: 'indent',
-			label: "→“",
+			name: 		'blockquote',
+			label:		 "→“",
 			handler: 	function( $ed ){
 				return $ed.quoteSelection();
 			}
 		});
 		toolbar.addButton({
+			name: 		'unblockquote',
 			label:		"←“",
 			handler: 	function( $ed ){
 				return $ed.unquoteSelection();
