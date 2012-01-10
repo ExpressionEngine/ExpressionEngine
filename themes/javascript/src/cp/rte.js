@@ -47,8 +47,8 @@
 	$('#registerUser select#rte_toolset_id').change(function(e){
 		var
 		$this		= $(this),
-		builder_url	= rte_toolset_builder_url.replace(/&amp;/g,'&');
-		if ( $this.find('option:selected').text() == rte_custom_toolset_text )
+		builder_url	= EE.rte.toolset_builder_url.replace(/&amp;/g,'&');
+		if ( $this.find('option:selected').text() == EE.rte.custom_toolset_text )
 		{
 			e.preventDefault();
 			if ( $this.val() != 'new' )

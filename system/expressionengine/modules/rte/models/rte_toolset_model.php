@@ -199,27 +199,15 @@ class Rte_toolset_model extends CI_Model {
 
 		// default toolset
 		$tool_ids = $this->rte_tool_model->get_tool_ids(array(
-			'view_source'
+			'headings', 'bold', 'italic',
+			'blockquote', 'unordered_list', 'ordered_list',
+			'link', 'image', 'view_source'
 		));
 		$this->db->insert(
 			'rte_toolsets',
 			array(
 				'site_id'	=> $this->config->item('site_id'),
 				'name'		=> 'Default',
-				'rte_tools'	=> implode( '|', $tool_ids ),
-				'enabled'	=> 'y'
-			)
-		);
-		
-		// another toolset
-		$tool_ids = $this->rte_tool_model->get_tool_ids(array(
-			'testing_another', 'view_source', 'test_tool'
-		));
-		$this->db->insert(
-			'rte_toolsets',
-			array(
-				'site_id'	=> $this->config->item('site_id'),
-				'name'		=> 'Another Toolset',
 				'rte_tools'	=> implode( '|', $tool_ids ),
 				'enabled'	=> 'y'
 			)
