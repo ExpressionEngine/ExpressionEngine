@@ -965,7 +965,7 @@ class Admin_content extends CI_Controller {
 
 		if (isset($_POST['cat_group']) && is_array($_POST['cat_group']))
 		{
-			$data['cat_group'] = implode('|', $_POST['cat_group']);
+			$data['cat_group'] = ltrim(implode('|', $_POST['cat_group']), '|');
 		}
 		
 		if ( ! isset($data['cat_group']) OR $data['cat_group'] == '')
