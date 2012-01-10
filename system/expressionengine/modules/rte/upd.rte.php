@@ -169,8 +169,8 @@ class Rte_upd {
 				),
 				array(
 					'class'    => $this->name.'_ext',
-					'hook'     => 'content_publish_edit_form_data',
-					'method'   => 'content_publish_edit_form_data',
+					'hook'     => 'publish_form_entry_data',
+					'method'   => 'publish_form_entry_data',
 					'settings' => '',
 					'priority' => 10,
 					'version'  => $this->version,
