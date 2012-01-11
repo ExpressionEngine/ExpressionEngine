@@ -93,8 +93,10 @@ textarea.rte:focus,
 .WysiHat-editor p,
 .WysiHat-editor ul,
 .WysiHat-editor ol,
-.WysiHat-editor dl,
-.WysiHat-editor figure{ margin: 0 0 10px; }
+.WysiHat-editor dl{ margin: 0 0 10px; }
+.WysiHat-editor figure{ margin: 0 20px 10px; text-align: center; }
+.WysiHat-editor figure image { display: inline; }
+.WysiHat-editor figcaption{ display: block; font-style: italic; }
 .WysiHat-editor ul{ list-style: disc; padding-left: 2em; }
 .WysiHat-editor ol{ list-style: decimal; padding-left: 2em; }
 .WysiHat-editor a{ color: #F72A58 !important; }

@@ -53,6 +53,8 @@ $lang = array(
 'default_toolset' => 'Default Toolset',
 'my_custom_toolset' => 'My Custom Toolset',
 'enable_rte_for_field' => 'Enable the Rich Text Editor for This Field',
+'rte_image_caption'	=> 'Does this Image Need a Caption?',
+'rte_center_error' => 'You can’t center an element that is being wrapped',
 
 # IGNORE
 ''=>''

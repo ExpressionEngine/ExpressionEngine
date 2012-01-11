@@ -41,19 +41,178 @@ Class Image_rte {
 		$this->EE =& get_instance();
 		
 		// Anything else we need?
+		$this->EE->load->library(array('cp','javascript'));
+		$this->EE->javascript->set_global( 'rte.image.caption_text', lang('rte_image_caption') );
+		$this->EE->javascript->set_global( 'rte.image.center_error', lang('rte_center_error') );
+		$this->EE->cp->add_js_script(array('plugin' => 'ee_filebrowser'));
+		$this->EE->cp->add_to_head(
+			'
+			<style>
+				#rte_image_caption { width:300px; margin-left: 10px; }
+				#rte_image_figure_overlay { position: absolute; background: #999; background: rgba( 0, 0, 0, .5); }
+			</style>
+			'
+		);
 	}
 
 	function definition()
 	{
 		ob_start(); ?>
 		
-		toolbar.addButton({
+		var
+		$file_browser	= null,
+		$caption		= $('<p><strong>' + EE.rte.image.caption_text + '</strong> <input type="text" id="rte_image_caption"/></p>'),
+		$caption_field	= $caption.find('#rte_image_caption'),
+		$figure_overlay = $('<p id="rte_image_figure_overlay"></p>').hide().appendTo('body'),
+		$curr_figure	= null,
+		$image_button	= toolbar.addButton({
 			name: 'image',
-	        label: "❏",
+	        label: "Insert Image",
 	        handler: function( $ed ){
-				$ed.insertImage( prompt('What image do you want to insert?') );
+				// nothing (we observe from elsewhere)
 			}
 	    });
+		
+		$image_button.click(function(){
+			// make sure we have a ref to the file browser
+			if ( ! $file_browser )
+			{
+				$file_browser = $('#file_browser');
+			}
+			$file_browser
+				// switch the view
+				.find('#view_type')
+					.val('thumb')
+					.change()
+				// hide the view_type field to not allow it to change
+					.parent()
+						.hide()
+				// append the caption field
+						.parent()
+						.append( $caption );
+		});
+		
+		$parent.append('<input type="hidden" id="rte_image_' + $field.attr('name') + '"/>');
+		$.ee_filebrowser.add_trigger(
+			$image_button,
+			'userfile_' + $field.attr('name'),
+			function( image_object, file_field, editor_field ){
+				
+				var
+				$img		= $('<figure/>').css('text-align','center'),
+				selection	= window.getSelection(),
+				range, $els;
+				if ( selection.rangeCount )
+				{
+					range	= selection.getRangeAt(0);
+					$els	= $editor.getRangeElements( range, WysiHat.Element.getBlocks().join(',') );
+					range.setStartBefore( $els.get(0) );
+					range.setEndBefore( $els.get(0) );
+					range.collapse();
+				}
+				else
+				{
+					range = document.createRange();
+					range.selectNode( $editor.get(0).firstChild );
+				}
+				
+				$img.append(
+					$('<img alt=""/>')
+						.attr( 'src', image_object.thumb.replace( /_thumbs\//, '' ) )
+						.attr( 'data-ee_img_path', "{filedir_" + image_object.upload_location_id + "}/" + image_object.file_name )
+				);
+				
+				if ( $caption_field.val() != '' )
+				{
+					$img.append(
+						$('<figcaption/>').text( $caption_field.val() )
+					);
+					$caption_field.val('');
+				}
+				$caption.remove();
+				
+				range.insertNode( $img.get(0) );
+				
+				$file_browser
+					// switch the view back
+					.find('#view_type')
+						.val('list')
+						.change()
+						// show the footer again
+						.parent()
+							.show();
+			}	
+		);
+		
+		// figure overlay setup
+		function hideFigureOverlay()
+		{
+			$figure_overlay.hide();
+			$curr_figure = null;
+		}
+		function alignFigureContent( direction )
+		{
+			var css = {'text-align':direction};
+			if ( $curr_figure.data('floating') )
+			{
+				css.float = direction;
+			}
+			$curr_figure.css(css);
+			hideFigureOverlay();
+		}
+		$figure_overlay
+			.mouseleave(hideFigureOverlay)
+			.append(
+				$('<button class="button align-left">Align Left</button>').click(function(){ alignFigureContent('left'); })
+			 )
+			.append(
+				$('<button class="button align-center">Align Center</button>').click(function(){
+					if ( $curr_figure.data('floating') )
+					{
+						alert(EE.rte.image.center_error);
+					}
+					else
+					{
+						$curr_figure.css('text-align','center');
+						hideFigureOverlay();
+					}
+				})
+			 )
+			.append(
+				$('<button class="button align-right">Align Right</button>').click(function(){ alignFigureContent('right'); })
+			 )
+			.append(
+				$('<button class="button separate">Separate Text</button>').click(function(){
+					$curr_figure
+						.css('float','none')
+						.data('floating',false);
+					hideFigureOverlay();
+				}) 
+			 )
+			.append(
+				$('<button class="button wrap">Wrap Text</button>').click(function(){
+					var alignment = $curr_figure.css('text-align');
+					$curr_figure
+						.css( 'float', ( alignment == 'right' ? 'right' : 'left' ) )
+						.data('floating',true);
+					hideFigureOverlay();
+				})
+			 );
+		$editor
+			.focus(hideFigureOverlay)
+			.delegate('figure','mouseover',function(){
+				$curr_figure = $(this).closest('figure');
+				$curr_figure.data( 'floating', ( $curr_figure.css('float') != 'none' ) );
+				var offsets = $curr_figure.offset();
+				$figure_overlay
+					.css({
+						left:	offsets.left,
+						top:	offsets.top,
+						height:	$curr_figure.outerHeight(),
+						width:	$curr_figure.outerWidth()
+					 })
+					.show();
+			 });
 		
 <?php	$buffer = ob_get_contents();
 		ob_end_clean(); 

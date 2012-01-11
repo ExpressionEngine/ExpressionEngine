@@ -2325,6 +2325,8 @@ WysiHat.Formatting = (function($){
 
 			handler = buttonStateHandler( name, options );
 			observeStateChanges( $button, name, handler );
+			
+			return $button;
 		}
 
 		function createButtonElement( $toolbar, options )
