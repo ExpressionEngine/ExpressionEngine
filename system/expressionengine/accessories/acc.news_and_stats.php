@@ -127,27 +127,37 @@ class News_and_stats_acc {
 				)));
 				
 				$content = $feed->items[$i]['description'];
-				$link = $feed->items[$i]['link'];
+				$link = $this->EE->cp->masked_url($feed->items[$i]['link']);
 
-				$content = $this->EE->typography->parse_type($content, 
-												  		array(
-																'text_format'   => 'xhtml',
-																'html_format'   => 'all',
-																'auto_links'    => 'y',
-																'allow_img_url' => 'y'
-																)
-								 			);
-				$ret .= "<div class='entry'>
-							<a class='entryLink' href='{$link}'>{$title}</a>
-							<div class='entryDate'>{$date}</div>
-							<div class='fullEntry'>
-								{$content}
-							</div>
-						</div>";
+				$content = $this->EE->security->xss_clean(
+					$this->EE->typography->parse_type(
+						$content, 
+						array(
+							'text_format'   => 'xhtml',
+							'html_format'   => 'all',
+							'auto_links'    => 'y',
+							'allow_img_url' => 'n' // Disable images for security
+						)
+					)
+				);
+				
+				$ret .= "
+					<div class='entry'>
+						<a class='entryLink' href='{$link}'>{$title}</a>
+						<div class='entryDate'>{$date}</div>
+						<div class='fullEntry'>
+							{$content}
+						</div>
+					</div>
+				";
 			}
-	
-			$qm = ($this->EE->config->item('force_query_string') == 'y') ? '' : '?';			
-			$ret .= '<div><a onclick="window.open(this.href); return false;" href="'.$this->EE->functions->fetch_site_index().$qm.'URL=http://expressionengine.com/blog/'.'">'.$this->EE->lang->line('more_news').'</a></div>';
+			
+			$ret .= '
+				<div>
+					<a onclick="window.open(this.href); return false;" href="'.
+						$this->EE->cp->masked_url('http://expressionengine.com/blog/').
+					'">'.lang('more_news').'</a>
+				</div>';
 			
 			return $ret;
 		}
