@@ -52,7 +52,7 @@ class News_and_stats_acc {
 	function set_sections()
 	{
 		$this->sections['News'] = $this->_fetch_news();
-		$this->sections[$this->EE->lang->line('site_statistics')] = $this->_fetch_stats();
+		$this->sections[lang('site_statistics')] = $this->_fetch_stats();
 		
 		$this->EE->javascript->output('
 			$("#newsAndStats").find("a.entryLink").click(function() {
@@ -81,12 +81,12 @@ class News_and_stats_acc {
 		
 		if ( ! defined('MAGPIE_CACHE_AGE'))
 		{
-			define('MAGPIE_CACHE_AGE', 60*60*24*3); // set cache to 3 days			
+			define('MAGPIE_CACHE_AGE', 60*60*24*3); // set cache to 3 days
 		}
 		
 		if ( ! defined('MAGPIE_CACHE_DIR'))
 		{
-			define('MAGPIE_CACHE_DIR', APPPATH.'cache/magpie_cache/');			
+			define('MAGPIE_CACHE_DIR', APPPATH.'cache/magpie_cache/');
 		}
 		
 		if ( ! defined('MAGPIE_DEBUG'))
@@ -179,22 +179,22 @@ class News_and_stats_acc {
 		
 		$this->EE->load->library('table');
 		$this->EE->load->helper(array('url', 'snippets'));
-//		$this->EE->table->set_heading($this->EE->lang->line('site_statistics'), array('data' => $this->EE->lang->line('value'), 'class' => 'values'));
+//		$this->EE->table->set_heading(lang('site_statistics'), array('data' => lang('value'), 'class' => 'values'));
 		
 		if ($this->EE->session->userdata['group_id'] == 1)
 		{
-			$values['data'] = ($this->EE->config->item('is_system_on') == 'y') ? '<strong>'.$this->EE->lang->line('online').'</strong>' : '<strong>'.$this->EE->lang->line('offline').'</strong>';
-			$this->EE->table->add_row($this->EE->lang->line('system_status'), $values);
+			$values['data'] = ($this->EE->config->item('is_system_on') == 'y') ? '<strong>'.lang('online').'</strong>' : '<strong>'.lang('offline').'</strong>';
+			$this->EE->table->add_row(lang('system_status'), $values);
 
 			if ($this->EE->config->item('multiple_sites_enabled') == 'y')
 			{
-				$values['data'] = ($this->EE->config->item('is_site_on') == 'y' && $this->EE->config->item('is_system_on') == 'y') ? '<strong>'.$this->EE->lang->line('online').'</strong>' : '<strong>'.$this->EE->lang->line('offline').'</strong>';
-				$this->EE->table->add_row($this->EE->lang->line('site_status'), $values);
+				$values['data'] = ($this->EE->config->item('is_site_on') == 'y' && $this->EE->config->item('is_system_on') == 'y') ? '<strong>'.lang('online').'</strong>' : '<strong>'.lang('offline').'</strong>';
+				$this->EE->table->add_row(lang('site_status'), $values);
 			}
 			
 			$this->EE->lang->loadfile('modules');
 			$values['data'] = APP_VER;
-			$this->EE->table->add_row($this->EE->lang->line('module_version'), $values);
+			$this->EE->table->add_row(lang('module_version'), $values);
 		}
 		
 		// total entries and comments
@@ -204,10 +204,10 @@ class News_and_stats_acc {
 		$row = $query->row();
 		
 		$values['data'] = $row->total_entries;
-		$this->EE->table->add_row($this->EE->lang->line('total_entries'), $values);
+		$this->EE->table->add_row(lang('total_entries'), $values);
 
 		$values['data'] = $row->total_comments;
-		$this->EE->table->add_row($this->EE->lang->line('total_comments'), $values);
+		$this->EE->table->add_row(lang('total_comments'), $values);
 		
 		// total template hits
 		$this->EE->db->select_sum('templates.hits', 'total');
@@ -216,14 +216,14 @@ class News_and_stats_acc {
 		
 		$row = $query->row();
 		$values['data'] = $row->total;
-		$this->EE->table->add_row($this->EE->lang->line('total_hits'), $values);
+		$this->EE->table->add_row(lang('total_hits'), $values);
 
 		// member stats
 		if ($this->EE->session->userdata('group_id') == 1)
 		{
 			// total members
 			$values['data'] = $this->EE->db->count_all_results('members');
-			$this->EE->table->add_row($this->EE->lang->line('total_members'), $values);
+			$this->EE->table->add_row(lang('total_members'), $values);
 
 			// total members waiting validation
 			$values['data'] = 0;
@@ -236,13 +236,14 @@ class News_and_stats_acc {
 			
 			$this->EE->load->helper(array('url', 'snippets'));
 			
-			$l = anchor(BASE.AMP.'C=members&M=member_validation',
-				   required(
-						$this->EE->lang->line('total_validating_members')
-					)
-				);
+			$l = anchor(
+				BASE.AMP.'C=members&M=member_validation',
+				required(
+					lang('total_validating_members')
+				)
+			);
 			
-			$link = ($values['data'] > 0) ? $l : $this->EE->lang->line('total_validating_members');
+			$link = ($values['data'] > 0) ? $l : lang('total_validating_members');
 
 			$this->EE->table->add_row($link, $values);
 		}
@@ -260,21 +261,22 @@ class News_and_stats_acc {
 				$this->EE->db->where(array('status' => 'p', 'site_id' => $this->EE->config->item('site_id')));
 				$values['data'] = $this->EE->db->count_all_results('comments');
 				
-				$l = anchor(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=comment'.AMP.'method=index'.AMP.'status=p',
-					   required(
-							$this->EE->lang->line('total_validating_comments')
-						)
-					);
+				$l = anchor(
+					BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=comment'.AMP.'method=index'.AMP.'status=p',
+					required(
+						lang('total_validating_comments')
+					)
+				);
 
-				$link = ($values['data'] > 0) ? $l : $this->EE->lang->line('total_validating_comments');
+				$link = ($values['data'] > 0) ? $l : lang('total_validating_comments');
 				$this->EE->table->add_row($link, $values);
 			}
 		}
 		
 		$tmpl = array(
-						'table_open'		=> '<table border="0" cellpadding="0" cellspacing="0">',
-						);
-						
+			'table_open' => '<table border="0" cellpadding="0" cellspacing="0">',
+		);
+		
 		$this->EE->table->set_template($tmpl);
 		$ret = $this->EE->table->generate();
 		$this->EE->table->clear();
