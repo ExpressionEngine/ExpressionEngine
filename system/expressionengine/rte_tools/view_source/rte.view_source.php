@@ -51,8 +51,8 @@ Class View_source_rte {
 		
 		toolbar.addButton({
 			name:	'switch',
-			label:	'HTML',
-			'toggle-text': 'Content',
+			label:	'Code View',
+			'toggle-text': 'Content View',
 			handler: function( $editor, e ){
 				$editor.toggleHTML( e );
 			}
@@ -78,6 +78,7 @@ Class View_source_rte {
 		}
 		$editor.add($field)
 			.bind('resize',syncSizes);
+		$editor.resize();
 		
 <?php	$buffer = ob_get_contents();
 		ob_end_clean(); 

@@ -47,18 +47,18 @@ Class Headings_rte {
 	{
 		ob_start(); ?>
 		
-		toolbar.addButton({
-			label: "H1",
-			handler: function( $ed ){
-				$ed.changeContentBlock( 'h1' );
-			}
-		});
-		toolbar.addButton({
-			label: "H2",
-			handler: function( $ed ){
-				$ed.changeContentBlock( 'h2' );
-			}
-		});
+		$('<select class="button picker"/>')
+			.append('<option value="p">Paragraph</option>')
+			.append('<option value="h1">Heading 1</option>')
+			.append('<option value="h2">Heading 2</option>')
+			.append('<option value="h3">Heading 3</option>')
+			.append('<option value="h4">Heading 4</option>')
+			.append('<option value="h5">Heading 5</option>')
+			.append('<option value="h6">Heading 6</option>')
+			.change(function(){
+				$editor.changeContentBlock( $(this).val() );
+			})
+			.appendTo( $parent.find('.WysiHat-editor-toolbar') );
 		
 <?php	$buffer = ob_get_contents();
 		ob_end_clean(); 

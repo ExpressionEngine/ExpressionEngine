@@ -48,7 +48,7 @@ Class Ordered_list_rte {
 		ob_start(); ?>
 		
 		toolbar.addButton({
-	    	label: "#",
+	    	label: "ordered_list",
 	    	handler: function( $ed ){
 		 		return $ed.toggleOrderedList();
 			}

@@ -48,7 +48,7 @@ Class Unordered_list_rte {
 		ob_start(); ?>
 		
 		toolbar.addButton({
-			label: "•",
+			label: "unordered_list",
 			handler: function( $ed ){
 				return $ed.toggleUnorderedList();
 			}

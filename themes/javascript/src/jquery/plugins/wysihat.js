@@ -61,6 +61,17 @@ var WysiHat = {
 
 				$.extend( $editor, WysiHat.Commands );
 
+				function updateField()
+				{
+					$field.val( WysiHat.Formatting.getApplicationMarkupFrom( $editor ) );
+					this.fTimer = null;
+				}
+				function updateEditor()
+				{
+					$editor.html( WysiHat.Formatting.getBrowserMarkupFrom( $field ) );
+					this.eTimer = null;
+				}
+
 				$field
 					.data( 'editor', $editor )
 					.bind( F_EVT, function(){
@@ -84,16 +95,6 @@ var WysiHat = {
 							.bind( E_EVT + IMMEDIATE, updateField )
 					 );
 
-				function updateField()
-				{
-					$field.val( WysiHat.Formatting.getApplicationMarkupFrom( $editor ) );
-					this.fTimer = null;
-				}
-				function updateEditor()
-				{
-					$editor.html( WysiHat.Formatting.getBrowserMarkupFrom( $field ) );
-					this.eTimer = null;
-				}
 			}
 
 
@@ -1736,7 +1737,9 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 	}
 	function selectionIsWithin( tagNames )
 	{
-		return !! $( WIN.getSelection().getNode() ).closest( tagNames ).length;
+		var selection = WIN.getSelection();
+		return !! ( $( selection.anchorNode ).closest( tagNames ).length ||
+					$( selection.focusNode ).closest( tagNames ).length );
 	}
 
 

@@ -49,16 +49,9 @@ Class Blockquote_rte {
 		
 		toolbar.addButton({
 			name: 		'blockquote',
-			label:		 "→“",
+			label:		 "“",
 			handler: 	function( $ed ){
-				return $ed.quoteSelection();
-			}
-		});
-		toolbar.addButton({
-			name: 		'unblockquote',
-			label:		"←“",
-			handler: 	function( $ed ){
-				return $ed.unquoteSelection();
+				return $ed.toggleIndentation();
 			}
 		});
 		
