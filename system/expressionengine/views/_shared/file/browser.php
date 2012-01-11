@@ -28,7 +28,7 @@
 	</div>
 	
 	<div id="file_browser_footer">
-		<?=sprintf(lang('pagination_filter_text'), $view_filters).NBS?>
+		<p><?=sprintf(lang('pagination_filter_text'), $view_filters).NBS?></p>
 		<?=$pagination_html?>
 	</div>
 </div>
