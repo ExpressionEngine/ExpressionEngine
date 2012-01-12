@@ -1727,6 +1727,22 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 
 		return $els;
 	}
+	function getRanges()
+	{
+		var
+		selection	= WIN.getSelection(),
+		i			= selection.rangeCount,
+		ranges		= [],
+		range;
+
+		while ( i-- )
+		{
+			range	= selection.getRangeAt( i );
+			ranges.push( range );
+		}
+
+		return ranges;
+	}
 	function restoreRanges( ranges )
 	{
 		var
@@ -1802,6 +1818,7 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 		getDefaultShortcut:			getDefaultShortcut,
 		manipulateSelection:		manipulateSelection,
 		getRangeElements:			getRangeElements,
+		getRanges:					getRanges,
 		restoreRanges:				restoreRanges,
 		selectionIsWithin:			selectionIsWithin,
 

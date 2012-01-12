@@ -55,6 +55,11 @@ $lang = array(
 'enable_rte_for_field' => 'Enable the Rich Text Editor for This Field',
 'rte_image_caption'	=> 'Does this Image Need a Caption?',
 'rte_center_error' => 'You can’t center an element that is being wrapped',
+'rte_link_preferences' => 'Create a Hyperlink',
+'url' => 'URL',
+'title' => 'Title',
+'relationship' => 'Relationship',
+'selection_error' => 'You must select some text in order to do something with it',
 
 # IGNORE
 ''=>''
