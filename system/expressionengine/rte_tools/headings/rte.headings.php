@@ -63,8 +63,9 @@ Class Headings_rte {
 			.appendTo( $parent.find('.WysiHat-editor-toolbar') );
 		
 		// update the selector as the user clicks around
-		$editor
-			.mouseup(function(){
+		$editor.bind(
+			'keyup mouseup',
+			function(){
 				var
 				selection	= window.getSelection(),
 				hasRange	= !! selection.rangeCount,
@@ -82,7 +83,7 @@ Class Headings_rte {
 				{
 					$formatting_selector.val(el.nodeName.toLowerCase());
 				}
-			 });
+			});
 		
 <?php	$buffer = ob_get_contents();
 		ob_end_clean(); 
