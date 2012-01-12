@@ -1190,9 +1190,15 @@ class Filemanager {
 	 * @access	public
 	 * @param	string	file path
 	 * @param	array	file and directory information
+	 * @param	bool	Whether or not to create a thumbnail; will do so
+	 *		regardless of missing_only setting because directory syncing
+	 *		needs to update thumbnails even if no image manipulations are
+	 *		updated.
+	 * @param	bool	Whether or not to replace missing image
+	 *		manipulations only (TRUE) or replace them all (FALSE).
 	 * @return	bool	success / failure
 	 */
-	function create_thumb($file_path, $prefs, $thumb = TRUE, $missing_only = FALSE)
+	function create_thumb($file_path, $prefs, $thumb = TRUE, $missing_only = TRUE)
 	{
 		$this->EE->load->library('image_lib');
 		$this->EE->load->helper('file');
@@ -1273,14 +1279,18 @@ class Filemanager {
 		
 			$resized_dir = rtrim(realpath($resized_path), DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
 			
-			// Does the thumb image exist - nuke it!
+			// Does the thumb image exist
 			if (file_exists($resized_path.$prefs['file_name']))
 			{
-				if ($missing_only)
+				// Only skip images that are custom image manipulations and when missing_only
+				// has been set to TRUE, but always make sure we update normal thumbnails
+				if (($missing_only AND $size['short_name'] != 'thumbs') OR
+					($size['short_name'] == 'thumbs' AND $thumb == FALSE))
 				{
 					continue;
 				}
 				
+				// Delete the image to make way for a new one
 				@unlink($resized_path.$prefs['file_name']);
 			}		
 
