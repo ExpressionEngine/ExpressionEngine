@@ -161,7 +161,7 @@ Class Link_rte {
 				{
 					el = el.parentNode;
 				}
-				console.log(el);
+				
 				if ( el.nodeName.toLowerCase() == 'a' )
 				{
 					linkable = true;
