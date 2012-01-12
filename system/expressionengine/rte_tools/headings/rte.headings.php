@@ -47,7 +47,9 @@ Class Headings_rte {
 	{
 		ob_start(); ?>
 		
-		$('<select class="button picker"/>')
+		var $formatting_selector = $('<select class="button picker"/>');
+		
+		$formatting_selector
 			.append('<option value="p">Paragraph</option>')
 			.append('<option value="h1">Heading 1</option>')
 			.append('<option value="h2">Heading 2</option>')
@@ -59,6 +61,28 @@ Class Headings_rte {
 				$editor.changeContentBlock( $(this).val() );
 			})
 			.appendTo( $parent.find('.WysiHat-editor-toolbar') );
+		
+		// update the selector as the user clicks around
+		$editor
+			.mouseup(function(){
+				var
+				selection	= window.getSelection(),
+				hasRange	= !! selection.rangeCount,
+				el			= selection.anchorNode;
+
+				if ( hasRange )
+				{
+					while ( el.nodeType != "1" )
+					{
+						el = el.parentNode;
+					}
+				}
+				
+				if ( $(el).is('p,h1,h2,h3,h4,h5,h6') )
+				{
+					$formatting_selector.val(el.nodeName.toLowerCase());
+				}
+			 });
 		
 <?php	$buffer = ob_get_contents();
 		ob_end_clean(); 

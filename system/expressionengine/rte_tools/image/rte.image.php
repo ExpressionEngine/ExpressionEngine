@@ -82,7 +82,6 @@ Class Image_rte {
 	    });
 		
 		function getTheRange(){
-			//if ( $editor.data('still_hovering') ){ return; }
 			var
 			selection	= window.getSelection(),
 			hasRange	= !! selection.rangeCount,
