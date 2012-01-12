@@ -48,8 +48,11 @@
 	margin-right: 12px;
 }
 
+#file_browser select {
+	padding: 1px;
+}
+
 #file_browser #dir_choice_form #keywords {
-	height: 8px;
 	font-size: 12px;
 	width: 200px;
 }
