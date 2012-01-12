@@ -55,7 +55,8 @@ Class Image_rte {
 				#rte_image_figure_overlay { display:table; position: absolute; background: #999; background: rgba( 0, 0, 0, .5); }
 				#rte_image_figure_overlay p { display: table-cell; vertical-align: middle; text-align:center; }
 				#rte_image_figure_overlay .button { float: none; margin: 5px; }
-				#rte_image_figure_overlay .delete { margin: 50px 0 0; }
+				#rte_image_figure_overlay .align-left b, #rte_image_figure_overlay .align-center b, #rte_image_figure_overlay .align-right b,
+				#rte_image_figure_overlay .wrap b, #rte_image_figure_overlay .separate b, #rte_image_figure_overlay .delete b { text-indent: 0; }
 			</style>
 			'
 		);
@@ -66,6 +67,7 @@ Class Image_rte {
 		ob_start(); ?>
 		
 		var
+		range			= null,
 		$file_browser	= null,
 		$caption		= $('<p class="rte_image_caption"><strong>' + EE.rte.image.caption_text + '</strong> <input type="text" id="rte_image_caption"/></p>'),
 		$caption_field	= $caption.find('#rte_image_caption'),
@@ -78,6 +80,36 @@ Class Image_rte {
 				// nothing (we observe from elsewhere)
 			}
 	    });
+		
+		var i = 0;
+		$editor.mouseleave(function(){
+			var
+			selection	= window.getSelection(),
+			el;
+			
+			if ( selection.rangeCount )
+			{
+				range	= selection.getRangeAt(0);
+				
+				el	= $editor.getRangeElements( range, WysiHat.Element.getBlocks().join(',') ).get(0);
+				if ( $(el).is('li,dt,dd,td') )
+				{
+					range.setStart( el, 0 );
+					range.setEnd( el, 0 );
+				}
+				else
+				{
+					range.setStartBefore( el );
+					range.setEndBefore( el );
+				}
+				range.collapse();
+			}
+			else
+			{
+				range = document.createRange();
+				range.selectNode( $editor.get(0).firstChild );
+			}
+		});
 		
 		$image_button.click(function(){
 			// make sure we have a ref to the file browser
@@ -104,25 +136,9 @@ Class Image_rte {
 		$.ee_filebrowser.add_trigger(
 			$image_button,
 			'userfile_' + $field.attr('name'),
-			function( image_object, file_field, editor_field ){
-				
-				var
-				$img		= $('<figure/>').css('text-align','center'),
-				selection	= window.getSelection(),
-				range, $els;
-				if ( selection.rangeCount )
-				{
-					range	= selection.getRangeAt(0);
-					$els	= $editor.getRangeElements( range, WysiHat.Element.getBlocks().join(',') );
-					range.setStartBefore( $els.get(0) );
-					range.setEndBefore( $els.get(0) );
-					range.collapse();
-				}
-				else
-				{
-					range = document.createRange();
-					range.selectNode( $editor.get(0).firstChild );
-				}
+			function( image_object, file_field, editor_field )
+			{
+				var	$img = $('<figure/>').css('text-align','center');
 				
 				$img.append(
 					$('<img alt=""/>')
@@ -172,10 +188,10 @@ Class Image_rte {
 			.mouseleave(hideFigureOverlay)
 			.find('p')
 				.append(
-					$('<button class="button align-left">Align Left</button>').click(function(){ alignFigureContent('left'); })
+					$('<button class="button align-left"><b>Align Left</b></button>').click(function(){ alignFigureContent('left'); })
 				 )
 				.append(
-					$('<button class="button align-center">Align Center</button>').click(function(){
+					$('<button class="button align-center"><b>Align Center</b></button>').click(function(){
 						if ( $curr_figure.data('floating') )
 						{
 							alert(EE.rte.image.center_error);
@@ -188,11 +204,11 @@ Class Image_rte {
 					})
 				 )
 				.append(
-					$('<button class="button align-right">Align Right</button>').click(function(){ alignFigureContent('right'); })
+					$('<button class="button align-right"><b>Align Right</b></button>').click(function(){ alignFigureContent('right'); })
 				 )
 				.append( $('<br/>') )
 				.append(
-					$('<button class="button separate">Separate Text</button>').click(function(){
+					$('<button class="button separate"><b>Separate Text</b></button>').click(function(){
 						$curr_figure
 							.css('float','none')
 							.data('floating',false);
@@ -200,7 +216,7 @@ Class Image_rte {
 					}) 
 				 )
 				.append(
-					$('<button class="button wrap">Wrap Text</button>').click(function(){
+					$('<button class="button wrap"><b>Wrap Text</b></button>').click(function(){
 						var alignment = $curr_figure.css('text-align');
 						$curr_figure
 							.css( 'float', ( alignment == 'right' ? 'right' : 'left' ) )
@@ -208,9 +224,9 @@ Class Image_rte {
 						hideFigureOverlay();
 					})
 				 )
-				.append( $('<br/>') )
+				.append( $('<br/>') ).append( $('<br/>') ).append( $('<br/>') )
 				.append(
-					$('<button class="button delete">Delete Image</button>').click(function(){
+					$('<button class="button delete"><b>Delete Image</b></button>').click(function(){
 						$curr_figure.remove();
 						hideFigureOverlay();
 					})
