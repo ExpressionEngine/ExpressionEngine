@@ -72,7 +72,7 @@
 }
 
 #file_browser table.mainTable th {
-	cursor: default;
+	cursor: pointer;
 }
 
 #file_browser #upload_form input.submit {
