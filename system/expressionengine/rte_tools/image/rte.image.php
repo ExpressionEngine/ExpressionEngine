@@ -82,7 +82,7 @@ Class Image_rte {
 	    });
 		
 		function getTheRange(){
-			if ( $editor.data('still_hovering') ){ return; }
+			//if ( $editor.data('still_hovering') ){ return; }
 			var
 			selection	= window.getSelection(),
 			hasRange	= !! selection.rangeCount,
@@ -124,11 +124,7 @@ Class Image_rte {
 				range.selectNode( $editor.get(0).firstChild );
 			}
 		}
-		
-		$editor.mouseleave(function(){
-			getTheRange();
-			$editor.data('still_hovering',false);
-		});
+		$editor.mouseup(getTheRange);
 		
 		$image_button.click(function(){
 			// make sure we have a ref to the file browser
@@ -181,6 +177,9 @@ Class Image_rte {
 				
 				range.insertNode( $img.get(0) );
 				
+				// trigger the update
+				$editor.trigger( EE.rte.update_event );
+				
 				$file_browser
 					// switch the view back
 					.find('#view_type')
@@ -197,7 +196,9 @@ Class Image_rte {
 		{
 			$figure_overlay.hide();
 			$curr_figure = null;
-			$editor.data('still_hovering',false);
+
+			// trigger the update
+			$editor.trigger( EE.rte.update_event );
 		}
 		function alignFigureContent( direction )
 		{
@@ -258,7 +259,6 @@ Class Image_rte {
 				 );
 		$editor
 			.delegate('figure','mouseover',function(){
-				$editor.data('still_hovering',true);
 				$curr_figure = $(this).closest('figure');
 				$curr_figure.data( 'floating', ( $curr_figure.css('float') != 'none' ) );
 				var offsets = $curr_figure.offset();

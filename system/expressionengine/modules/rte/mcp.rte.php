@@ -446,6 +446,9 @@ class Rte_mcp {
 	 */
 	public function build_toolset_js()
 	{
+		# load in the event information so buttons can trigger 
+		$this->EE->javascript->set_global( 'rte.update_event', 'WysiHat-editor:change' );
+		
 		# setup the framework
 		$js = '
 			$(".rte").each(function(){
