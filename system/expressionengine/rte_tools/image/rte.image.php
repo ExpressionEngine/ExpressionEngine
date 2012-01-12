@@ -50,6 +50,7 @@ Class Image_rte {
 		$this->EE->cp->add_to_head(
 			'
 			<style>
+				.rte_image_caption { border-bottom: 1px solid #ccc; margin-bottom: 15px; padding-bottom: 15px; }
 				#rte_image_caption { width:300px; margin-left: 10px; }
 				#rte_image_figure_overlay { display:table; position: absolute; background: #999; background: rgba( 0, 0, 0, .5); }
 				#rte_image_figure_overlay p { display: table-cell; vertical-align: middle; text-align:center; }
@@ -66,7 +67,7 @@ Class Image_rte {
 		
 		var
 		$file_browser	= null,
-		$caption		= $('<p><strong>' + EE.rte.image.caption_text + '</strong> <input type="text" id="rte_image_caption"/></p>'),
+		$caption		= $('<p class="rte_image_caption"><strong>' + EE.rte.image.caption_text + '</strong> <input type="text" id="rte_image_caption"/></p>'),
 		$caption_field	= $caption.find('#rte_image_caption'),
 		$figure_overlay = $('<div id="rte_image_figure_overlay" class="WysiHat-ui-control"><p></p></div>').hide().appendTo('body'),
 		$curr_figure	= null,
@@ -92,9 +93,11 @@ Class Image_rte {
 				// hide the view_type field to not allow it to change
 					.parent()
 						.hide()
+						.end()
+					.end()
 				// append the caption field
-						.parent()
-						.append( $caption );
+				.find('#filterMenu')
+					.prepend( $caption );
 		});
 		
 		$parent.append('<input type="hidden" id="rte_image_' + $field.attr('name') + '"/>');
