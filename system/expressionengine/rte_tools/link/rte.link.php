@@ -42,12 +42,15 @@ Class Link_rte {
 		
 		// Anything else we need?
 		$this->EE->load->library(array('cp','javascript'));
-		$this->EE->javascript->set_global( 'rte.link_dialog.title', lang('rte_link_preferences') );
-		$this->EE->javascript->set_global( 'rte.link_dialog.url_field_label', lang('url') );
-		$this->EE->javascript->set_global( 'rte.link_dialog.title_field_label', lang('title') );
-		$this->EE->javascript->set_global( 'rte.link_dialog.rel_field_label', lang('relationship') );
-		$this->EE->javascript->set_global( 'rte.link_dialog.submit_button', lang('submit') );
-		$this->EE->javascript->set_global( 'rte.link_dialog.selection_error', lang('selection_error') );
+		$this->EE->javascript->set_global(array(
+			'rte.link_dialog.title'				=> lang('rte_link_preferences'),
+			'rte.link_dialog.url_field_label'	=> lang('url'),
+			'rte.link_dialog.title_field_label'	=> lang('title'),
+			'rte.link_dialog.rel_field_label'	=> lang('relationship'),
+			'rte.link_dialog.submit_button'		=> lang('submit'),
+			'rte.link_dialog.selection_error'	=> lang('selection_error')
+		));
+		$this->EE->javascript->compile();
 		$this->EE->cp->add_to_head(
 			'
 			<style>

@@ -12,26 +12,24 @@
  PLEASE READ THE LICENSE AGREEMENT
  http://expressionengine.com/user_guide/license.html
 =====================================================
- File: rte.strip_tags.php
+ File: rte.underline.php
 -----------------------------------------------------
- Purpose: Strip Tags RTE Tool
+ Purpose: Underline RTE Tool
 =====================================================
 
 */
 
 $rte_tool_info = array(
-	'rte_name'			=> 'Strip Tags',
+	'rte_name'			=> 'Underline',
 	'rte_version'		=> '1.0',
 	'rte_author'		=> 'Aaron Gustafson',
 	'rte_author_url'	=> 'http://easy-designs.net/',
-	'rte_description'	=> 'Triggers the RTE to strip all block and phrase-level formatting elements',
-	'rte_definition'	=> Strip_tags_rte::definition()
+	'rte_description'	=> 'Underlines and de-underlines text',
+	'rte_definition'	=> Underline_rte::definition()
 );
 
-Class Strip_tags_rte {
-	
-	private $EE;
-	
+Class Underline_rte {
+
 	/** -------------------------------------
 	/**  Constructor
 	/** -------------------------------------*/
@@ -40,28 +38,21 @@ Class Strip_tags_rte {
 		// Make a local reference of the ExpressionEngine super object
 		$this->EE =& get_instance();
 		
-		// Anything else we need?
+		// any other initialization stuff can go here and can be made available in the definition
 	}
 
 	function definition()
 	{
 		ob_start(); ?>
 		
-		toolbar.addButton({
-			name:	"strip_tags",
-			label:	"Strip Tags",
-			handler: function( $ed ){
-				$ed.stripFormattingElements();
-				$ed.unformatContentBlock();
-			}
-		});
+		toolbar.addButton({ name: 'underline', label: "Underline" });
 		
 <?php	$buffer = ob_get_contents();
 		ob_end_clean(); 
 		return $buffer;
 	}
 
-} // END Strip_tags_rte
+} // END Underline_rte
 
-/* End of file rte.strip_tags.php */
-/* Location: ./system/expressionengine/rte_tools/strip_tags/rte.strip_tags.php */
+/* End of file rte.underline.php */
+/* Location: ./system/expressionengine/rte_tools/underline/rte.underline.php */

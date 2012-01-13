@@ -42,11 +42,14 @@ Class Image_rte {
 		
 		// Anything else we need?
 		$this->EE->load->library(array('cp','javascript'));
-		$this->EE->javascript->set_global( 'rte.image.caption_text', lang('rte_image_caption') );
-		$this->EE->javascript->set_global( 'rte.image.center_error', lang('rte_center_error') );
+		$this->EE->javascript->set_global(array(
+			'rte.image.caption_text'	=> lang('rte_image_caption'),
+			'rte.image.center_error'	=> lang('rte_center_error')
+		));
 		$this->EE->cp->add_js_script(array(
 			'plugin'	=> 'ee_filebrowser'
 		));
+		$this->EE->javascript->compile();
 		$this->EE->cp->add_to_head(
 			'
 			<style>
