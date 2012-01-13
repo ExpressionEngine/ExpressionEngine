@@ -20,12 +20,16 @@ $lang = array(
 'yes' => 'Yes',
 'enabled' => 'Enabled',
 'enable' => 'Enable',
+'enable_button' => 'Enable',
 'disabled' => 'Disabled',
 'disable' => 'Disable',
+'disable_button' => 'Disable',
 'delete' => 'Delete',
 'toolset' => 'Toolset',
 'tool' => 'Tool',
+'cancel' => 'Cancel',
 'enable_rte' => 'Enable the Rich Text Editor',
+'disable_rte' => 'Disable Rich Text Editor',
 
 # Flashes
 'settings_saved' => 'Your Rich Text Editor Settings have been saved.',
@@ -63,6 +67,26 @@ $lang = array(
 'title' => 'Title',
 'relationship' => 'Relationship',
 'selection_error' => 'You must select some text in order to do something with it',
+
+# Toggle Dialog
+'toggle_rte_dialog_title' => 'Rich Text Editor Preferences',
+'toggle_rte_dialog_headline_disable' => 'Are you sure you want to disable the Rich Text Editor for your account?',
+'toggle_rte_dialog_headline_enable' => 'Are you sure you want to enable the Rich Text Editor for your account?',
+'toggle_rte_dialog_text_disable' => 'This will disable the Rich Text Editor for all fields. You can re-enable the Rich Text Editor using the “Enable Rich Text Editor” link or by updating your settings in My Account.',
+'toggle_rte_dialog_text_enable' => 'This will enable the Rich Text Editor for all fields. You can disable the Rich Text Editor using the “Enable Rich Text Editor” link or by updating your settings in My Account.',
+'toggle_rte_dialog_disable' => '',
+'enable' => '',
+'disable' => '',
+
+# Tools
+'block_formats' => '-- Block Formats --',
+'paragraph' => 'Paragraph',
+'heading_1' => 'Heading 1',
+'heading_2' => 'Heading 2',
+'heading_3' => 'Heading 3',
+'heading_4' => 'Heading 4',
+'heading_5' => 'Heading 5',
+'heading_6' => 'Heading 6',
 
 # IGNORE
 ''=>''

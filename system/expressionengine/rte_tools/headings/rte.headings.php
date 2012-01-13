@@ -41,6 +41,18 @@ Class Headings_rte {
 		$this->EE =& get_instance();
 		
 		// Anything else we need?
+		$this->EE->load->library('javascript');
+		$this->EE->javascript->set_global(array(
+			'rte.headings.block_formats'	=> lang('block_formats'),
+			'rte.headings.paragraph'		=> lang('paragraph'),
+			'rte.headings.heading_1'		=> lang('heading_1'),
+			'rte.headings.heading_2'		=> lang('heading_2'),
+			'rte.headings.heading_3'		=> lang('heading_3'),
+			'rte.headings.heading_4'		=> lang('heading_4'),
+			'rte.headings.heading_5'		=> lang('heading_5'),
+			'rte.headings.heading_6'		=> lang('heading_6')
+		));
+		$this->EE->javascript->compile();
 	}
 
 	function definition()
@@ -50,15 +62,19 @@ Class Headings_rte {
 		var $formatting_selector = $('<select class="button picker"/>');
 		
 		$formatting_selector
-			.append('<option value="p">Paragraph</option>')
-			.append('<option value="h1">Heading 1</option>')
-			.append('<option value="h2">Heading 2</option>')
-			.append('<option value="h3">Heading 3</option>')
-			.append('<option value="h4">Heading 4</option>')
-			.append('<option value="h5">Heading 5</option>')
-			.append('<option value="h6">Heading 6</option>')
+			.append('<option value="">' + EE.rte.headings.block_formats + '</option>')
+			.append('<option value="p">' + EE.rte.headings.paragraph + '</option>')
+			.append('<option value="h1">' + EE.rte.headings.heading_1 + '</option>')
+			.append('<option value="h2">' + EE.rte.headings.heading_2 + '</option>')
+			.append('<option value="h3">' + EE.rte.headings.heading_3 + '</option>')
+			.append('<option value="h4">' + EE.rte.headings.heading_4 + '</option>')
+			.append('<option value="h5">' + EE.rte.headings.heading_5 + '</option>')
+			.append('<option value="h6">' + EE.rte.headings.heading_6 + '</option>')
 			.change(function(){
 				$editor.changeContentBlock( $(this).val() );
+				
+				// trigger the update
+				$editor.trigger( EE.rte.update_event );
 			})
 			.appendTo( $parent.find('.WysiHat-editor-toolbar') );
 		
@@ -69,7 +85,9 @@ Class Headings_rte {
 				var
 				selection	= window.getSelection(),
 				hasRange	= !! selection.rangeCount,
-				el			= selection.anchorNode;
+				el			= selection.anchorNode,
+				blocks	 	= 'p,h1,h2,h3,h4,h5,h6',
+				$el, $p;
 
 				if ( hasRange )
 				{
@@ -79,9 +97,19 @@ Class Headings_rte {
 					}
 				}
 				
-				if ( $(el).is('p,h1,h2,h3,h4,h5,h6') )
+				$el 	= $(el);
+				$parent	= $el.parents(blocks);
+				if ( $el.is(blocks) )
 				{
 					$formatting_selector.val(el.nodeName.toLowerCase());
+				}
+				else if ( $parent.length )
+				{
+					$formatting_selector.val($parent.get(0).nodeName.toLowerCase());
+				}
+				else
+				{
+					$formatting_selector.val('');
 				}
 			});
 		
