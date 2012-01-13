@@ -85,13 +85,13 @@
 			{
 				$active = '<strong>'.lang('enabled').'</strong>';
 				$action = '<a href="'.$module_base.AMP.'method=disable_toolset'.AMP.'rte_toolset_id='.$toolset['rte_toolset_id'].'">'.
-						  lang('disable').'</a>';
+						  lang('disable_button').'</a>';
 			}
 			else
 			{
 				$active = '<strong>'.lang('disabled').'</strong>';
 				$action = '<a href="'.$module_base.AMP.'method=enable_toolset'.AMP.'rte_toolset_id='.$toolset['rte_toolset_id'].'">'.
-						  lang('enable').'</a>';
+						  lang('enable_button').'</a>';
 			}
 			
 			$this->table->add_row(
@@ -124,13 +124,13 @@
 			{
 				$active = '<strong>'.lang('enabled').'</strong>';
 				$action = '<a href="'.$module_base.AMP.'method=disable_tool'.AMP.'rte_tool_id='.$tool['rte_tool_id'].'">'.
-						  lang('disable').'</a>';
+						  lang('disable_button').'</a>';
 			}
 			else
 			{
 				$active = '<strong>'.lang('disabled').'</strong>';
 				$action = '<a href="'.$module_base.AMP.'method=enable_tool'.AMP.'rte_tool_id='.$tool['rte_tool_id'].'">'.
-						  lang('enable').'</a>';
+						  lang('enable_button').'</a>';
 			}
 			
 			$this->table->add_row(
