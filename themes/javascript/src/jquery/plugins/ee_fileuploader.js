@@ -304,6 +304,9 @@
 		// Change the step to step 2
 		change_class('after_upload');
 		
+		// Show/Hide "Edit Image" link based on whether or not it's an image
+		$('#edit_image').toggle(file.is_image);
+		
 		if (settings.type == "filemanager") {
 			// Create listeners for the edit_file and edit_image links (not buttons)
 			var pages = ['edit_file', 'edit_image'];
