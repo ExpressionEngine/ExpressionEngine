@@ -25,6 +25,7 @@ $lang = array(
 'delete' => 'Delete',
 'toolset' => 'Toolset',
 'tool' => 'Tool',
+'enable_rte' => 'Enable the Rich Text Editor',
 
 # Flashes
 'settings_saved' => 'Your Rich Text Editor Settings have been saved.',
@@ -33,6 +34,8 @@ $lang = array(
 'settings_not_saved' => 'Your Rich Text Editor Preferences could not be saved. Please try again.',
 'toolset_enabled' => 'Toolset enabled successfully.',
 'toolset_disabled' => 'Toolset disabled successfully.',
+'toolset_deleted' => 'Toolset deleted successfully.',
+'toolset_not_deleted' => 'Toolset could not be deleted.',
 'toolset_updated' => 'Toolset updated successfully.',
 'toolset_update_failed' => 'Toolset update failed. Please try again.',
 'tool_enabled' => 'Tool enabled successfully.',

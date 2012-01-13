@@ -100,11 +100,12 @@ class Rte_mcp {
 			lang('enabled_question'),
 			'required|enum[y,n]'
 		);
-		$this->EE->form_validation->set_rules(
-			'rte_forum_enabled',
-			lang('forum_enabled_question'),
-			'required|enum[y,n]'
-		);
+		# forum is disabled right now
+		#$this->EE->form_validation->set_rules(
+		#	'rte_forum_enabled',
+		#	lang('forum_enabled_question'),
+		#	'required|enum[y,n]'
+		#);
 		$this->EE->form_validation->set_rules(
 			'rte_default_toolset_id',
 			lang('choose_default_toolset'),
@@ -409,12 +410,15 @@ class Rte_mcp {
 		);
 		
 		# JS stuff
-		$this->EE->javascript->set_global('rte.toolset_builder_url', $this->_base_url.AMP.'method=edit_toolset'.AMP.'private=true');
-		$this->EE->javascript->set_global('rte.custom_toolset_text', lang('my_custom_toolset') );
+		$this->EE->javascript->set_global(array(
+			'rte.toolset_builder_url'	=> $this->_base_url.AMP.'method=edit_toolset'.AMP.'private=true',
+			'rte.custom_toolset_text'	=> lang('my_custom_toolset')
+		));
 		$this->EE->cp->add_js_script(array(
 			'file'	 => 'cp/rte',
 			'plugin' => array( 'overlay', 'toolbox.expose' )
 		));
+		$this->EE->javascript->compile();
 		$this->EE->cp->add_to_head($this->EE->view->head_link('css/rte.css'));
 		return $this->EE->load->view('myaccount_settings', $vars, TRUE);
 	}
@@ -478,38 +482,72 @@ class Rte_mcp {
 	 */
 	public function build_toolset_js()
 	{
-		# load in the event information so buttons can trigger 
-		$this->EE->javascript->set_global( 'rte.update_event', 'WysiHat-editor:change' );
+		$js = '';
 		
-		# setup the framework
-		$js = '
-			$(".rte").each(function(){
-				var
-				$field	= $(this),
-				$parent	= $field.parent(),
-
-				// set up the editor
-				$editor	= WysiHat.Editor.attach($field),
-
-				// establish the toolbar
-				toolbar	= new WysiHat.Toolbar();
-				
-				toolbar.initialize($editor);
-				
-		';
-		
-		# load the tools
-		$this->EE->load->model(array('rte_toolset_model','rte_tool_model'));
-		$tools = $this->EE->rte_toolset_model->get_member_toolset_tools();
-		foreach ( $tools as $tool_id )
+		if ( $this->EE->config->item('rte_enabled') == 'y' &&
+		 	 $this->EE->session->userdata('rte_enabled') == 'y' )
 		{
-			$js .= $this->EE->rte_tool_model->get_tool_js($tool_id);
-		}
-		
-		$js .= '
+			# load in the event information so buttons can trigger 
+			$this->EE->javascript->set_global( 'rte.update_event', 'WysiHat-editor:change' );
+			$this->EE->javascript->compile();
 
-			});
-		';
+			# setup the framework
+			$js = '
+				$(".rte").each(function(){
+					var
+					$field	= $(this),
+					$parent	= $field.parent(),
+
+					// set up the editor
+					$editor	= WysiHat.Editor.attach($field),
+
+					// establish the toolbar
+					toolbar	= new WysiHat.Toolbar();
+
+					toolbar.initialize($editor);
+
+			';
+
+			# load the tools
+			$this->EE->load->model(array('rte_toolset_model','rte_tool_model'));
+			$tools = $this->EE->rte_toolset_model->get_member_toolset_tools();
+			foreach ( $tools as $tool_id )
+			{
+				$js .= $this->EE->rte_tool_model->get_tool_js($tool_id);
+			}
+
+			$js .= '
+
+				});
+			';
+		}
+		else if ( $this->EE->config->item('rte_enabled') == 'y' )
+		{
+			# add in the code that would enable the toolset
+			$js = '
+			
+				var $enable_rte = $("<a>' . lang('enable_rte') . '</a>")
+									.attr("href","' . $this->_base_url.AMP . 'method=enable_rte")
+									.click(function(e){
+										e.preventDefault();
+										if ( confirm( "' . lang('enable_rte') . '" ) )
+										{
+											$.get($(this.href),function(){
+												// reload the page
+												window.location = window.location;
+											});
+										}
+									 });
+				
+				$(".rte").each(function(){
+					$enable_rte
+						.clone(true)
+						.insertAfter($(this));
+				});
+			
+			';
+			
+		}
 
 		return array($js);
 	}
@@ -525,7 +563,8 @@ class Rte_mcp {
 		$this->EE->config->_update_config(
 			array(
 				'rte_enabled'				=> $this->EE->input->get_post('rte_enabled'),
-				'rte_forum_enabled'			=> $this->EE->input->get_post('rte_forum_enabled'),
+				# forum is disabled right now
+				#'rte_forum_enabled'			=> $this->EE->input->get_post('rte_forum_enabled'),
 				'rte_default_toolset_id'	=> $this->EE->input->get_post('rte_default_toolset_id')
 			)
 		);
