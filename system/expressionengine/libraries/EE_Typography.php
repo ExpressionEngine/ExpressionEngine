@@ -1354,10 +1354,10 @@ var out = '',
 	i = l.length,
 	j = el.length;
 
-while (--i)
+while (--i >= 0)
 	out += unescape(l[i].replace(/^\s\s*/, '&#'));
 
-while (--j)
+while (--j >= 0)
 	if (el[j].getAttribute('<?php echo $span_marker ?>'))
 		el[j].innerHTML = out;
 		
