@@ -13,7 +13,7 @@
 .rte-toolset-builder-scrollpane ul { min-height: 200px; }
 .rte-tool { cursor: pointer; padding: 5px; border-bottom: 1px solid #ccc; }
 .rte-tool-hover { background: #F5F8F9; }
-.rte-tool-active { background: #F5F8F9; border-color: #27343C; }
+.rte-tool-active { background: #ebebeb; border-color: #27343C; }
 .rte-toolset-builder-scrollpane .ui-sortable-helper { background: #ECF1F4; border: 1px solid #27343C; cursor: move; }
 #rte_toolset_editor_modal { display: none; width: 600px; top: 1px; }
 #rte_toolset_editor_modal .contents { padding: 0; }
@@ -68,12 +68,12 @@
 .WysiHat-editor-toolbar .ordered_list:focus b,
 .WysiHat-editor-toolbar .ordered_list:active b,
 .WysiHat-editor-toolbar .ordered_list[aria-pressed=true] b{ background-position: 0 -1018px; width: 13px; }
-.WysiHat-editor-toolbar .underline b{ background-position: 0 -1080px; width: 8px; }
-.WysiHat-editor-toolbar .underline:disabled b{ background-position: 0 -1141px; width: 8px; }
+.WysiHat-editor-toolbar .underline b{ background-position: 0 -1078px; width: 8px; }
+.WysiHat-editor-toolbar .underline:disabled b{ background-position: 0 -1139px; width: 8px; }
 .WysiHat-editor-toolbar .underline:hover b,
 .WysiHat-editor-toolbar .underline:focus b,
 .WysiHat-editor-toolbar .underline:active b,
-.WysiHat-editor-toolbar .underline[aria-pressed=true] b{ background-position: 0 -1202px; width: 8px; }
+.WysiHat-editor-toolbar .underline[aria-pressed=true] b{ background-position: 0 -1200px; width: 8px; }
 .WysiHat-editor-toolbar .unordered_list b{ background-position: 0 -1261px; width: 13px; }
 .WysiHat-editor-toolbar .unordered_list:disabled b{ background-position: 0 -1321px; width: 13px; }
 .WysiHat-editor-toolbar .unordered_list:hover b,
@@ -81,7 +81,7 @@
 .WysiHat-editor-toolbar .unordered_list:active b,
 .WysiHat-editor-toolbar .unordered_list[aria-pressed=true] b{ background-position: 0 -1381px; width: 13px; }
 .WysiHat-editor-toolbar .switch { float: right; }
-.WysiHat-editor-toolbar .switch b { background-image: none; text-indent: 0; padding-top: 1px; }
+.WysiHat-editor-toolbar .switch b, .WysiHat-editor-toolbar .strip_tags b { background-image: none; text-indent: 0; padding-top: 1px; }
 .WysiHat-editor-toolbar select.picker { -moz-appearance: none; -ms-appearance: none; -o-appearance: none; -webkit-appearance: none; appearance: none; text-transform: none; width: 100px; }
 
 /* Editor */
