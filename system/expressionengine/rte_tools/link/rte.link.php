@@ -132,6 +132,15 @@ Class Link_rte {
 					$('#rte_link_url,#rte_link_title').val('');
 				}
 			})
+			// setup the close on enter
+			.delegate('input','keypress',function( e ){
+				// enter
+				if ( e.which == 13 )
+				{
+					$link_dialog.dialog('close');
+				}
+			 })
+			// setup the submit button
 			.find('.submit')
 				.click(function(){
 					$link_dialog.dialog("close");
