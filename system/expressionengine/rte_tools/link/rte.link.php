@@ -52,6 +52,9 @@ Class Link_rte {
 			'rte.link_dialog.selection_error'	=> lang('selection_error')
 		));
 		$this->EE->javascript->compile();
+		$this->EE->cp->add_js_script(array(
+			'ui'		=> 'dialog'
+		));
 		$this->EE->cp->add_to_head(
 			'
 			<style>

@@ -48,7 +48,8 @@ Class Image_rte {
 			'rte.image.center_error'	=> lang('rte_center_error')
 		));
 		$this->EE->cp->add_js_script(array(
-			'plugin'	=> 'ee_filebrowser'
+			'plugin'	=> 'ee_filebrowser',
+			'ui'		=> 'dialog'
 		));
 		$this->EE->javascript->compile();
 		$this->EE->cp->add_to_head(
