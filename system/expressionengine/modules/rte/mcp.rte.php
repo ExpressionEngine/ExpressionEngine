@@ -220,7 +220,9 @@ class Rte_mcp {
 			'unused_tools'		=> $unused_tools,
 			'toolset_tools'		=> $toolset_tools
 		);
-		
+		$this->EE->javascript->set_global(array(
+			'rte.toolset_modal.title' => $title
+		));
 		$this->EE->javascript->compile();
 		$this->EE->cp->add_to_head($this->EE->view->head_link('css/rte.css'));
 		return $this->EE->load->view('edit_toolset', $vars, TRUE);
@@ -412,11 +414,11 @@ class Rte_mcp {
 		# JS stuff
 		$this->EE->javascript->set_global(array(
 			'rte.toolset_builder_url'	=> $this->_base_url.AMP.'method=edit_toolset'.AMP.'private=true',
-			'rte.custom_toolset_text'	=> lang('my_custom_toolset')
+			'rte.custom_toolset_text'	=> lang('my_custom_toolset'),
 		));
 		$this->EE->cp->add_js_script(array(
-			'file'	 => 'cp/rte',
-			'plugin' => array( 'overlay', 'toolbox.expose' )
+			'file'	=> 'cp/rte',
+			'ui'	=> 'dialog'
 		));
 		$this->EE->javascript->compile();
 		$this->EE->cp->add_to_head($this->EE->view->head_link('css/rte.css'));

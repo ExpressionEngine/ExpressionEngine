@@ -15,8 +15,8 @@
 .rte-tool-hover { background: #F5F8F9; }
 .rte-tool-active { background: #ebebeb; border-color: #27343C; }
 .rte-toolset-builder-scrollpane .ui-sortable-helper { background: #ECF1F4; border: 1px solid #27343C; cursor: move; }
-#rte_toolset_editor_modal { display: none; width: 600px; top: 1px; }
 #rte_toolset_editor_modal .contents { padding: 0; }
+#rte_toolset_editor_modal .rte-tools-connected { margin: 0; }
 
 /* Toolbar */
 .WysiHat-editor-toolbar { background: #ECF1F4 url('../images/publish_field_background.jpg') no-repeat -15px 0px; border: 1px solid #8195A0; -moz-border-radius: 3px 3px 0 0; -o-border-radius: 3px 3px 0 0; -webkit-border-radius: 3px 3px 0 0; border-radius: 3px 3px 0 0; margin-bottom: -1px; padding: 4px; overflow: hidden; width: 98.5%; }
