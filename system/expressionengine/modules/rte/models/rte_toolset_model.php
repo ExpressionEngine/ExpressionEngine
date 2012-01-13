@@ -52,15 +52,15 @@ class Rte_toolset_model extends CI_Model {
 	public function get_member_options()
 	{
 		$results = $this->db
-						->where(array(
-							'member_id' => $this->session->userdata('member_id'),
-							'site_id'	=> $this->config->item('site_id')
-						  ))
-						->or_where(array(
-							'member_id'	=> '0', // public only
-							'enabled' 	=> 'y',
-							'site_id'	=> $this->config->item('site_id')
-						))
+						->where(
+							"
+							`site_id` = '{$this->config->item('site_id')}'
+							AND
+							( `member_id` = '{$this->session->userdata('member_id')}'
+							  OR
+							  ( `member_id` = '0' AND `enabled` = 'y' ) )
+							",
+							NULL, FALSE )
 						->get('rte_toolsets')
 						->result_array();
 		# has this user made a personal toolset?
