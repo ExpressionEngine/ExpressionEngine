@@ -49,11 +49,12 @@ Class Blockquote_rte {
 		
 		toolbar.addButton({
 			name: 		'blockquote',
-			label:		 "“",
+			label:		 "Blockquote",
+			'toggle-text': "Remove Blockquote",
 			handler: 	function( $ed ){
 				return $ed.toggleIndentation();
 			},
-			query: function( $editor ){
+			query: function( $editor, $btn ){
 				var
 				selection	= window.getSelection(),
 				hasRange	= !! selection.rangeCount,
@@ -68,7 +69,6 @@ Class Blockquote_rte {
 				}
 				
 				$blockquote	= $(el).parents('blockquote');
-				
 				return  !! $blockquote.length;
 			}
 		});

@@ -45,7 +45,11 @@ Class Italic_rte {
 	{
 		ob_start(); ?>
 		
-		toolbar.addButton({ name: 'italic', label: "I" });
+		toolbar.addButton({
+			name: 'italic',
+			label: 'Italicize',
+			'toggle-text': 'Remove Italics'
+		});
 		
 <?php	$buffer = ob_get_contents();
 		ob_end_clean(); 
