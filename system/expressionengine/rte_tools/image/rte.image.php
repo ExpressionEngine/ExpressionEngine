@@ -260,17 +260,19 @@ Class Image_rte {
 					})
 				 );
 		$editor
-			.delegate('figure','mouseover',function(){
+			.delegate('figure img','mouseover',function(){
+				var
+				$this	= $(this),
+				offsets = $this.offset();
 				$curr_figure = $(this).closest('figure');
 				$curr_figure.data( 'floating', ( $curr_figure.css('float') != 'none' ) );
-				var offsets = $curr_figure.offset();
 				$figure_overlay
 					.css({
 						display:	'table',
 						left:		offsets.left,
 						top:		offsets.top,
-						height:		$curr_figure.outerHeight(),
-						width:		$curr_figure.outerWidth()
+						height:		$this.outerHeight(),
+						width:		$this.outerWidth()
 					 });
 			 });
 		
