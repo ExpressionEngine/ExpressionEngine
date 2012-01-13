@@ -476,12 +476,34 @@ class Rte_mcp {
 	// --------------------------------------------------------------------
 	
 	/**
+	 * MyAccount RTE settings form action
+	 *
+	 * @access	public
+	 */
+	public function toggle_member_rte()
+	{
+		$enabled = ( $this->EE->session->userdata('rte_enabled') == 'y' );
+		
+		// update the prefs
+		$this->EE->db
+			->where( 'member_id', $this->EE->session->userdata('member_id') )
+			->update( 'members', array( 'rte_enabled' => ($enabled?'n':'y') ) );
+		
+		// exit
+		die( $this->EE->db->affected_rows() );
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
 	 * Build the toolset JS
 	 *
 	 * @access	public
 	 */
 	public function build_toolset_js()
 	{
+		$this->EE->load->library('javascript');
+		
 		$js = '';
 		
 		if ( $this->EE->config->item('rte_enabled') == 'y' &&
@@ -492,21 +514,23 @@ class Rte_mcp {
 			$this->EE->javascript->compile();
 
 			# setup the framework
-			$js = '
-				$(".rte").each(function(){
-					var
-					$field	= $(this),
-					$parent	= $field.parent(),
+			ob_start(); ?>
 
-					// set up the editor
-					$editor	= WysiHat.Editor.attach($field),
+			$(".rte").each(function(){
+				var
+				$field	= $(this),
+				$parent	= $field.parent(),
 
-					// establish the toolbar
-					toolbar	= new WysiHat.Toolbar();
+				// set up the editor
+				$editor	= WysiHat.Editor.attach($field),
 
-					toolbar.initialize($editor);
+				// establish the toolbar
+				toolbar	= new WysiHat.Toolbar();
 
-			';
+				toolbar.initialize($editor);
+
+<?php		$js = ob_get_contents();
+			ob_end_clean(); 
 
 			# load the tools
 			$this->EE->load->model(array('rte_toolset_model','rte_tool_model'));
@@ -519,37 +543,164 @@ class Rte_mcp {
 			$js .= '
 
 				});
-			';
+				';
 		}
-		else if ( $this->EE->config->item('rte_enabled') == 'y' )
+		
+		$print = $this->EE->input->get_post('print');
+		if ( $print == 'yes' )
 		{
-			# add in the code that would enable the toolset
-			$js = '
+			header('Content-type: text/javascript; charset=utf-8');
+			header('Cache-Control: no-cache, must-revalidate');
+			header('Expires: Sat, 26 Jul 1997 05:00:00 GMT');
+			die('
+				(function(){
+					var EE = ' . $this->EE->javascript->generate_json($this->EE->javascript->global_vars) . ';' .
+				 	$js .
+				'})();
+				');
+		}
+		else
+		{
+			return $js;
+		}
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * RTE toggle JS
+	 *
+	 * @access	public
+	 */
+	public function build_rte_toggle_js()
+	{
+		$js = '';
+		
+		if ( $this->EE->config->item('rte_enabled') == 'y' )
+		{
+			$this->EE->cp->add_to_head(
+				'
+				<style>
+					.rte_toggle_link { display:block; float: right; margin: 5px 30px 5px 0; }
+					#rte_toggle_dialog p { margin: 10px 0; }
+					#rte_toggle_dialog .buttons { text-align: center; }
+				</style>
+				'
+			);
 			
-				var $enable_rte = $("<a>' . lang('enable_rte') . '</a>")
-									.attr("href","' . $this->_base_url.AMP . 'method=enable_rte")
-									.click(function(e){
-										e.preventDefault();
-										if ( confirm( "' . lang('enable_rte') . '" ) )
-										{
-											$.get($(this.href),function(){
-												// reload the page
-												window.location = window.location;
-											});
-										}
-									 });
+			$this->EE->javascript->set_global(array(
+				'rte.update_event'						=> 'WysiHat-editor:change',
+				'rte.toolset_src'						=> $this->_base_url.AMP.'method=build_toolset_js'.AMP.'print=yes',
+				'rte.toggle_rte_url'					=> $this->_base_url.AMP.'method=toggle_member_rte',
+				'rte.is_enabled'						=> ( $this->EE->session->userdata('rte_enabled') == 'y' ),
+				'rte.toggle_link.text_disable'			=> lang('disable_rte'),
+				'rte.toggle_link.text_enable'			=> lang('enable_rte'),
+				'rte.toggle_dialog.title'				=> lang('toggle_rte_dialog_title'),
+				'rte.toggle_dialog.headline_disable'	=> lang('toggle_rte_dialog_headline_disable'),
+				'rte.toggle_dialog.headline_enable'		=> lang('toggle_rte_dialog_headline_enable'),
+				'rte.toggle_dialog.text_disable'		=> lang('toggle_rte_dialog_text_disable'),
+				'rte.toggle_dialog.text_enable'			=> lang('toggle_rte_dialog_text_enable'),
+				'rte.toggle_dialog.disable'				=> lang('disable_button'),
+				'rte.toggle_dialog.enable'				=> lang('enable_button'),
+				'rte.toggle_dialog.cancel'				=> lang('cancel')
+			));
+			$this->EE->javascript->compile();
+			
+			# add in the code that would toggle the toolset
+			ob_start(); ?>
+			
+			var
+			$rte_toggle_link	= $( '<a class="rte_toggle_link" href="#rte_toggle_dialog"></a>' ),
+			$rte_toggle_dialog 	= $( '<div id="rte_toggle_dialog">' +
+										'<p class="headline"><strong></strong></p><p></p><p class="buttons">' +
+										'<button value="yes" class="submit"></button> or <a href="#cancel"></a></p>' +
+									 '</div>' );
+		
+			function setup_rte_toggle_dialog()
+			{
+				var
+				link	= EE.rte.is_enabled ? EE.rte.toggle_link.text_disable : EE.rte.toggle_link.text_enable,
+				head	= EE.rte.is_enabled ? EE.rte.toggle_dialog.headline_disable : EE.rte.toggle_dialog.headline_enable,
+				text	= EE.rte.is_enabled ? EE.rte.toggle_dialog.text_disable : EE.rte.toggle_dialog.text_enable,
+				yes		= EE.rte.is_enabled ? EE.rte.toggle_dialog.disable : EE.rte.toggle_dialog.enable;
+			
+				$('.rte_toggle_link')
+					.text(link);
+				$rte_toggle_dialog
+					.find('strong').text(head).end()
+					.find('p:not([class])').text(text).end()
+					.find('button').text(yes).end();
+			}
+		
+			function toggle_rte()
+			{
+				var re_amp = /&amp;/g;
+				$.get( EE.rte.toggle_rte_url.replace(re_amp,'&'), function(){
+					if ( EE.rte.is_enabled )
+					{
+						$('[class|=WysiHat]').remove();
+						$('.rte').show();
+					}
+					else
+					{
+						$.getScript( EE.rte.toolset_src.replace(re_amp,'&') );
+					}				
 				
-				$(".rte").each(function(){
-					$enable_rte
-						.clone(true)
-						.insertAfter($(this));
+					// toggle the status and the dialog
+					EE.rte.is_enabled = ! EE.rte.is_enabled;
+				
+					$rte_toggle_dialog.dialog('close');
+					setup_rte_toggle_dialog();
 				});
+			}
 			
-			';
-			
+			// set up the link
+			$rte_toggle_link
+				.click(function(e){
+					e.preventDefault();
+					$rte_toggle_dialog.dialog('open');
+				 });
+		
+			// insert it
+			$(".rte").each(function(){
+				$rte_toggle_link
+					.clone(true)
+					.insertAfter($(this));
+			});
+
+			// run setup once
+			setup_rte_toggle_dialog();
+
+			// set up the Dialog box
+			$rte_toggle_dialog
+				.dialog({
+					width: 400,
+					height: 180,
+					resizable: false,
+					position: ["center","center"],
+					modal: true,
+					draggable: true,
+					title: EE.rte.toggle_dialog.title,
+					autoOpen: false,
+					zIndex: 99999
+				 })
+				.find('.buttons button')
+					.click(toggle_rte)
+					.end()
+				.find('.buttons a')
+					.text( EE.rte.toggle_dialog.cancel )
+					.click(function(e){
+						e.preventDefault();
+						$rte_toggle_dialog.dialog('close');
+					});
+		
+<?php		$js = ob_get_contents();
+			ob_end_clean(); 
+
 		}
 
-		return array($js);
+		return $js;
+
 	}
 
 	// --------------------------------------------------------------------

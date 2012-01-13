@@ -66,9 +66,10 @@ class Rte_ext {
 		$this->EE->cp->add_js_script(array('plugin' => 'wysihat'));
 		
 		# Toolset JS
-		$this->EE->javascript->output(
-			$RTE->build_toolset_js()
-		);
+		$this->EE->javascript->output(array(
+			$RTE->build_toolset_js(),
+			$RTE->build_rte_toggle_js()
+		));
 
 		return $results;
 	}
