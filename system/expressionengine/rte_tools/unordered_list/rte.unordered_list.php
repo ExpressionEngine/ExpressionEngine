@@ -51,6 +51,9 @@ Class Unordered_list_rte {
 			label: "unordered_list",
 			handler: function( $ed ){
 				return $ed.toggleUnorderedList();
+			},
+			query: function( $editor ){
+				return $editor.queryCommandState('insertUnorderedList');
 			}
 		});
 		

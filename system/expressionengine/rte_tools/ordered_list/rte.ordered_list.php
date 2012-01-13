@@ -51,6 +51,9 @@ Class Ordered_list_rte {
 	    	label: "ordered_list",
 	    	handler: function( $ed ){
 		 		return $ed.toggleOrderedList();
+			},
+			query: function( $editor ){
+				return $editor.queryCommandState('insertOrderedList');
 			}
 	    });
 		

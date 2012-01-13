@@ -133,6 +133,9 @@ Class Link_rte {
 					}
 					
 					$('#rte_link_url,#rte_link_title').val('');
+					
+					// trigger the update
+					$editor.trigger( EE.rte.update_event );
 				}
 			})
 			// setup the close on enter
@@ -192,6 +195,9 @@ Class Link_rte {
 				{
 					alert( EE.rte.link_dialog.selection_error );
 				}
+			},
+			query: function( $editor ){
+				return $editor.queryCommandState('createLink');
 			}
 	    });
 		

@@ -52,6 +52,24 @@ Class Blockquote_rte {
 			label:		 "“",
 			handler: 	function( $ed ){
 				return $ed.toggleIndentation();
+			},
+			query: function( $editor ){
+				var
+				selection	= window.getSelection(),
+				hasRange	= !! selection.rangeCount,
+				el			= selection.anchorNode;
+
+				if ( hasRange )
+				{
+					while ( el.nodeType != "1" )
+					{
+						el = el.parentNode;
+					}
+				}
+				
+				$blockquote	= $(el).parents('blockquote');
+				
+				return  !! $blockquote.length;
 			}
 		});
 		
