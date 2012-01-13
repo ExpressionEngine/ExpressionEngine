@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -664,22 +664,20 @@ class MyAccount extends CI_Controller {
 		// Fetch member data
 		$query = $this->member_model->get_member_data($this->id, array('username', 'screen_name'));
 
-		$this->VAL = new EE_Validate(
-								array(
-										'member_id'			=> $this->id,
-										'val_type'			=> 'update', // new or update
-										'fetch_lang'		=> FALSE,
-										'require_cpw'		=> TRUE,
-										'enable_log'		=> TRUE,
-										'username'			=> $_POST['username'],
-										'cur_username'		=> $query->row('username'),
-										'screen_name'		=> $_POST['screen_name'],
-										'cur_screen_name'	=> $query->row('screen_name'),
-										'password'			=> $_POST['password'],
-										'password_confirm'	=> $_POST['password_confirm'],
-										'cur_password'		=> $this->input->post('current_password')
-									 )
-							);
+		$this->VAL = new EE_Validate(array(
+			'member_id'			=> $this->id,
+			'val_type'			=> 'update', // new or update
+			'fetch_lang'		=> FALSE,
+			'require_cpw'		=> TRUE,
+			'enable_log'		=> TRUE,
+			'username'			=> $_POST['username'],
+			'cur_username'		=> $query->row('username'),
+			'screen_name'		=> $_POST['screen_name'],
+			'cur_screen_name'	=> $query->row('screen_name'),
+			'password'			=> $_POST['password'],
+			'password_confirm'	=> $_POST['password_confirm'],
+			'cur_password'		=> $this->input->post('current_password')
+		));
 
 		$this->VAL->validate_screen_name();
 

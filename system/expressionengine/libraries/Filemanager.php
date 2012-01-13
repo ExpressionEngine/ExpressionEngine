@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -824,18 +824,18 @@ class Filemanager {
 			'date'		=> array('header' => lang('date'))
 		));
 		
-		$per_page = $this->EE->input->get_post('per_page');
-		$dir_id = $this->EE->input->get_post('dir_choice');
-		$keywords = $this->EE->input->get_post('keywords');
-		$tbl_sort = $this->EE->input->get_post('tbl_sort');
+		$per_page	= $this->EE->input->get_post('per_page');
+		$dir_id 	= $this->EE->input->get_post('dir_choice');
+		$keywords 	= $this->EE->input->get_post('keywords');
+		$tbl_sort	= $this->EE->input->get_post('tbl_sort');
 		
 		// Default to file_name sorting if tbl_sort isn't set
 		$state = (is_array($tbl_sort)) ? $tbl_sort : array('sort' => array('file_name' => 'asc'));
 		
 		$params = array(
-			'per_page' => $per_page ? $per_page : 15,
-			'dir_id' => $dir_id,
-			'keywords' => $keywords
+			'per_page'	=> $per_page ? $per_page : 15,
+			'dir_id'	=> $dir_id,
+			'keywords'	=> $keywords
 		);
 		
 		if ($first_dir)
@@ -869,10 +869,10 @@ class Filemanager {
 		}
 		
 		$file_params = array(
-			'type' => $dir['allowed_types'],
-			'order' => $state['sort'],
-			'limit' => $per_page,
-			'offset' => $state['offset']
+			'type'		=> $dir['allowed_types'],
+			'order'		=> $state['sort'],
+			'limit'		=> $per_page,
+			'offset'	=> $state['offset']
 		);
 		
 		if (isset($params['keywords']))
@@ -882,11 +882,11 @@ class Filemanager {
 		}
 		
 		return array(
-			'rows' => $this->_get_files($dir, $file_params),
-			'no_results' => lang('no_uploaded_files'),
-			'pagination' => array(
-				'per_page' => $per_page,
-				'total_rows' => $this->EE->file_model->count_files($params['dir_id'])
+			'rows'			=> $this->_browser_get_files($dir, $file_params),
+			'no_results' 	=> lang('no_uploaded_files'),
+			'pagination' 	=> array(
+				'per_page' 		=> $per_page,
+				'total_rows'	=> $this->EE->file_model->count_files($params['dir_id'])
 			)
 		);
 	}
@@ -1698,7 +1698,7 @@ class Filemanager {
 	function _directory_contents($dir, $limit, $offset)
 	{
 		return array(
-			'files' => $this->_get_files($dir, $limit, $offset)
+			'files' => $this->_browser_get_files($dir, $limit, $offset)
 		);
 	}
 	
@@ -1716,7 +1716,7 @@ class Filemanager {
 	 * @access private
 	 * @return array	List of files
 	 */
-	private function _get_files($dir, $limit = 15, $offset = 0)
+	private function _browser_get_files($dir, $limit = 15, $offset = 0)
 	{
 		$this->EE->load->model('file_model');
 		$this->EE->load->helper(array('text', 'number'));
@@ -1728,12 +1728,12 @@ class Filemanager {
 		else
 		{
 			$params = array(
-				'type' => $dir['allowed_types'],
-				'order' => array(
+				'type'		=> $dir['allowed_types'],
+				'order'		=> array(
 					'file_name' => 'asc'
 				),
-				'limit' => $limit,
-				'offset' => $offset
+				'limit'		=> $limit,
+				'offset'	=> $offset
 			);
 		}
 		
@@ -1751,16 +1751,25 @@ class Filemanager {
 
 		foreach ($files as &$file)
 		{
-			$file['short_name'] = ellipsize($file['title'], 13, 0.5);
-			$file['file_size'] = byte_format($file['file_size']);
-			$file['date'] = date('F j, Y g:i a', $file['modified_date']);
+			// Setup the link
+			$file['file_name'] = '
+				<a href="#"
+					title="'.$file['file_name'].'" 
+					onclick="$.ee_filebrowser.placeImage('.$file['file_id'].'); return false;"
+				>
+					'.$file['file_name'].'
+				</a>';
+			
+			$file['short_name']	= ellipsize($file['title'], 13, 0.5);
+			$file['file_size']	= byte_format($file['file_size']);
+			$file['date']		= date('F j, Y g:i a', $file['modified_date']);
 			
 			// Copying file_name to name for addons
 			$file['name'] = $file['file_name'];
 			
-			$thumb_info = $this->get_thumb($file, $dir['id']);
-			$file['thumb'] = $thumb_info['thumb'];
-			$file['thumb_class'] = $thumb_info['thumb_class'];
+			$thumb_info				= $this->get_thumb($file, $dir['id']);
+			$file['thumb'] 			= $thumb_info['thumb'];
+			$file['thumb_class']	= $thumb_info['thumb_class'];
 		}
 
 		return $files;

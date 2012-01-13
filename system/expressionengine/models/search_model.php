@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -398,6 +398,35 @@ class Search_model extends CI_Model {
 		}
 
 		$this->db->where($where_clause, NULL, FALSE);
+		
+		
+		// Process hook data
+		if (is_array($data['_hook_wheres']) && is_array($data['_hook_wheres']))
+		{
+			foreach($data['_hook_wheres'] as $field => $value)
+			{
+				$func = 'where';
+				
+				if (is_array($value))
+				{
+					if ( ! count($value))
+					{
+						continue;
+					}
+					
+					$func = 'where_in';
+					
+					// allow for where_not_in
+					if (strpos($field, '!=') !== FALSE)
+					{
+						$field = str_replace('!=', '', $field);
+						$func = 'where_not_in';
+					}
+				}
+				
+				$this->db->$func(trim($field), $value);
+			}
+		}
 
 
 		if (is_array($order) && count($order) > 0)
@@ -430,7 +459,7 @@ class Search_model extends CI_Model {
 		// ------------------------------
 
 		$this->db->distinct();
-		
+
 		return array('pageurl' => $pageurl, 'result_obj' => $this->db->get());
 	}
 

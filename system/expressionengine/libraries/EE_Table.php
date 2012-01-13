@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -73,6 +73,18 @@ class EE_Table extends CI_Table {
 		$this->base_url = $url;
 	}
 	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Force non-ajax behvavior
+	 *
+	 * Workaround for the edit page modal until we figure out a neater
+	 * way to get around the first load issues on that page.
+	 *
+	 * @third parties: do not touch this, it will definitely change
+	 *
+	 * @access	public
+	 */
 	function force_initial_load()
 	{
 		$this->no_ajax = TRUE;

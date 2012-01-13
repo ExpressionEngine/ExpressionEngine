@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -318,7 +318,7 @@ class Category_Order {
 		$str .= '-----------------------------------------------------'."\n";
 		$str .= ' http://expressionengine.com/'."\n";
 		$str .= '-----------------------------------------------------'."\n";
-		$str .= ' Copyright (c) 2003 - 2011, EllisLab, Inc.'."\n";
+		$str .= ' Copyright (c) 2003 - 2012, EllisLab, Inc.'."\n";
 		$str .= '====================================================='."\n";
 		$str .= ' THIS IS COPYRIGHTED SOFTWARE'."\n";
 		$str .= ' PLEASE READ THE LICENSE AGREEMENT'."\n";

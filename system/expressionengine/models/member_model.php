@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -571,7 +571,9 @@ class Member_model extends CI_Model {
 			'message_folders'		=> 'member_id',
 			'message_listed'		=> 'member_id',
 			'message_listed'		=> 'listed_member',
-			'message_copies'		=> 'recipient_id'
+			'message_copies'		=> 'recipient_id',
+			'remember_me'			=> 'member_id',
+			'sessions'				=> 'member_id'
 		);
 		
 		// Loop through tables array and clear out based on member ID
