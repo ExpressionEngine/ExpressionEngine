@@ -147,9 +147,10 @@ class Content_files_modal extends CI_Controller {
 		// the original AFTER clean_filename and upload library's prep done
 		// but before duplicate checking
 		
-		$file			= $this->_get_file($upload_response['file_id']);
-		$original_name	= $upload_response['orig_name'];
-		$cleaned_name	= basename($this->filemanager->clean_filename(
+		$file					= $this->_get_file($upload_response['file_id']);
+		$file['modified_date']	= $this->localize->set_human_time($file['modified_date']);
+		$original_name			= $upload_response['orig_name'];
+		$cleaned_name			= basename($this->filemanager->clean_filename(
 			$original_name, 
 			$file_dir
 		));
