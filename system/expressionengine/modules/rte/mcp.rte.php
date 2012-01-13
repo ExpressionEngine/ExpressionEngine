@@ -243,7 +243,12 @@ class Rte_mcp {
 			'rte_tools' => $this->EE->input->get_post('rte_selected_tools'),
 			'member_id'	=> ( $this->EE->input->get_post('private') == 'true' ? $this->EE->session->userdata('member_id') : 0 )
 		);
-
+		
+		if ( empty( $toolset['name'] ) )
+		{
+			$toolset['name'] = 'Unnamed Toolset';
+		}
+				
 		if ( $toolset_id )
 		{
 			$this->_update_toolset(
@@ -301,6 +306,33 @@ class Rte_mcp {
 			lang('toolset_disabled'),
 			lang('toolset_update_failed')
 		);
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Update prefs form action
+	 *
+	 * @access	public
+	 */
+	public function delete_toolset()
+	{
+		$this->_permissions_check();
+		
+		$this->EE->load->model('rte_toolset_model');
+		
+		if ( $this->EE->rte_toolset_model->delete( $this->EE->input->get_post('rte_toolset_id') ) )
+		{
+			$this->EE->session->set_flashdata('message_success', lang('toolset_deleted'));
+		}
+		// Fail!
+		else
+		{
+			$this->EE->session->set_flashdata('message_failure', lang('toolset_not_deleted'));
+		}
+		
+		// buh-bye
+		$this->EE->functions->redirect($this->_base_url);
 	}
 
 	// --------------------------------------------------------------------

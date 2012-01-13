@@ -193,6 +193,18 @@ class Rte_toolset_model extends CI_Model {
 		return $this->db->affected_rows();
 	}
 	
+	public function delete( $toolset_id=FALSE )
+	{
+		if ( $toolset_id )
+		{
+			$this->db
+				->where( array( 'rte_toolset_id' => $toolset_id ) )
+				->delete( 'rte_toolsets' );
+			return $this->db->affected_rows();
+		}
+		return FALSE;
+	}
+	
 	public function load_default_toolsets()
 	{
 		$this->load->model('rte_tool_model');
