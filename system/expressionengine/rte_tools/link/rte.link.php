@@ -43,6 +43,7 @@ Class Link_rte {
 		// Anything else we need?
 		$this->EE->load->library(array('cp','javascript'));
 		$this->EE->javascript->set_global(array(
+			'rte.link.add'						=> lang('make_link'),
 			'rte.link_dialog.title'				=> lang('rte_link_preferences'),
 			'rte.link_dialog.url_field_label'	=> lang('url'),
 			'rte.link_dialog.title_field_label'	=> lang('title'),
@@ -153,8 +154,8 @@ Class Link_rte {
 				 });
 		
 		toolbar.addButton({
-			name: 'link',
-	        label: "Insert Link",
+			name:	'link',
+	        label:	EE.rte.link.add,
 	        handler: function(){
 
 				link_ranges	= $editor.getRanges();

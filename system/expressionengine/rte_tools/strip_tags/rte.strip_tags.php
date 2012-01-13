@@ -41,6 +41,11 @@ Class Strip_tags_rte {
 		$this->EE =& get_instance();
 		
 		// Anything else we need?
+		$this->EE->load->library('javascript');
+		$this->EE->javascript->set_global(array(
+			'rte.strip_tags.label'	=> lang('strip_tags')
+		));
+		$this->EE->javascript->compile();
 	}
 
 	function definition()
@@ -49,7 +54,7 @@ Class Strip_tags_rte {
 		
 		toolbar.addButton({
 			name:	"strip_tags",
-			label:	"Strip Tags",
+			label:	EE.rte.strip_tags.label,
 			handler: function( $ed ){
 				$ed.stripFormattingElements();
 				$ed.unformatContentBlock();

@@ -39,13 +39,23 @@ Class Underline_rte {
 		$this->EE =& get_instance();
 		
 		// any other initialization stuff can go here and can be made available in the definition
+		$this->EE->load->library('javascript');
+		$this->EE->javascript->set_global(array(
+			'rte.underline.add'		=> lang('make_underline'),
+			'rte.underline.remove'	=> lang('remove_underline')
+		));
+		$this->EE->javascript->compile();
 	}
 
 	function definition()
 	{
 		ob_start(); ?>
 		
-		toolbar.addButton({ name: 'underline', label: "Underline" });
+		toolbar.addButton({
+			name:			'underline',
+			label:			EE.rte.underline.add,
+			'toggle-text':	EE.rte.underline.remove
+		});
 		
 <?php	$buffer = ob_get_contents();
 		ob_end_clean(); 

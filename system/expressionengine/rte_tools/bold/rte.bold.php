@@ -39,13 +39,23 @@ Class Bold_rte {
 		$this->EE =& get_instance();
 		
 		// any other initialization stuff can go here and can be made available in the definition
+		$this->EE->load->library('javascript');
+		$this->EE->javascript->set_global(array(
+			'rte.bold.add'		=> lang('make_bold'),
+			'rte.bold.remove'	=> lang('remove_bold')
+		));
+		$this->EE->javascript->compile();
 	}
 
 	function definition()
 	{
 		ob_start(); ?>
 		
-		toolbar.addButton({ name: 'bold', label: "B" });
+		toolbar.addButton({
+			name: 			'bold',
+			label: 			EE.rte.bold.add,
+			'toggle-text':	EE.rte.bold.remove
+		});
 		
 <?php	$buffer = ob_get_contents();
 		ob_end_clean(); 

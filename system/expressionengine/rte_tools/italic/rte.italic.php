@@ -39,6 +39,12 @@ Class Italic_rte {
 		$this->EE =& get_instance();
 		
 		// any other initialization stuff can go here and can be made available in the definition
+		$this->EE->load->library('javascript');
+		$this->EE->javascript->set_global(array(
+			'rte.italics.add'		=> lang('make_italics'),
+			'rte.italics.remove'	=> lang('remove_italics')
+		));
+		$this->EE->javascript->compile();
 	}
 
 	function definition()
@@ -46,9 +52,9 @@ Class Italic_rte {
 		ob_start(); ?>
 		
 		toolbar.addButton({
-			name: 'italic',
-			label: 'Italicize',
-			'toggle-text': 'Remove Italics'
+			name:			'italic',
+			label:			EE.rte.italics.add,
+			'toggle-text':	EE.rte.italics.remove
 		});
 		
 <?php	$buffer = ob_get_contents();

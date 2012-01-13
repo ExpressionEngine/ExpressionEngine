@@ -41,6 +41,12 @@ Class Blockquote_rte {
 		$this->EE =& get_instance();
 		
 		// Anything else we need?
+		$this->EE->load->library('javascript');
+		$this->EE->javascript->set_global(array(
+			'rte.blockquote.add'	=> lang('make_blockquote'),
+			'rte.blockquote.remove'	=> lang('remove_blockquote')
+		));
+		$this->EE->javascript->compile();
 	}
 
 	function definition()
@@ -48,9 +54,9 @@ Class Blockquote_rte {
 		ob_start(); ?>
 		
 		toolbar.addButton({
-			name: 		'blockquote',
-			label:		 "Blockquote",
-			'toggle-text': "Remove Blockquote",
+			name: 			'blockquote',
+			label:			EE.rte.blockquote.add,
+			'toggle-text': 	EE.rte.blockquote.remove,
 			handler: 	function( $ed ){
 				return $ed.toggleIndentation();
 			},

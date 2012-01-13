@@ -43,6 +43,7 @@ Class Image_rte {
 		// Anything else we need?
 		$this->EE->load->library(array('cp','javascript'));
 		$this->EE->javascript->set_global(array(
+			'rte.image.add'				=> lang('insert_img'),
 			'rte.image.caption_text'	=> lang('rte_image_caption'),
 			'rte.image.center_error'	=> lang('rte_center_error')
 		));
@@ -77,9 +78,9 @@ Class Image_rte {
 		$figure_overlay = $('<div id="rte_image_figure_overlay" class="WysiHat-ui-control"><p></p></div>').hide().appendTo('body'),
 		$curr_figure	= null,
 		$image_button	= toolbar.addButton({
-			name: 'image',
-	        label: "Insert Image",
-	        handler: function( $ed ){
+			name:		'image',
+	        label:		EE.rte.image.add,
+			handler: function( $ed ){
 				// nothing (we observe from elsewhere)
 			}
 	    });

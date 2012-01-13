@@ -41,6 +41,12 @@ Class Unordered_list_rte {
 		$this->EE =& get_instance();
 		
 		// Anything else we need?
+		$this->EE->load->library('javascript');
+		$this->EE->javascript->set_global(array(
+			'rte.unordered_list.add'	=> lang('make_ul'),
+			'rte.unordered_list.remove'	=> lang('remove_ul')
+		));
+		$this->EE->javascript->compile();
 	}
 
 	function definition()
@@ -48,7 +54,9 @@ Class Unordered_list_rte {
 		ob_start(); ?>
 		
 		toolbar.addButton({
-			label: "unordered_list",
+			name:			'unordered_list',
+			label:			EE.rte.unordered_list.add,
+			'toggle-text':	EE.rte.unordered_list.remove,
 			handler: function( $ed ){
 				return $ed.toggleUnorderedList();
 			},

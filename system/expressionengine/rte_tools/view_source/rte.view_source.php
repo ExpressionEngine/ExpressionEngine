@@ -40,8 +40,12 @@ Class View_source_rte {
 		// Make a local reference of the ExpressionEngine super object
 		$this->EE =& get_instance();
 		
-		// Make sure resize is added
-		$this->EE->load->library('cp');
+		$this->EE->load->library(array('cp','javascript'));
+		$this->EE->javascript->set_global(array(
+			'rte.view_source.code'		=> lang('view_code'),
+			'rte.view_source.content'	=> lang('view_content')
+		));
+		$this->EE->javascript->compile();
 		$this->EE->cp->add_js_script(array('plugin' => 'ba-resize'));
 	}
 
@@ -50,9 +54,9 @@ Class View_source_rte {
 		ob_start(); ?>
 		
 		toolbar.addButton({
-			name:	'switch',
-			label:	'Code View',
-			'toggle-text': 'Content View',
+			name:			'view_source',
+			label:			EE.rte.view_source.code,
+			'toggle-text':	EE.rte.view_source.content,
 			handler: function( $editor, e ){
 				$editor.toggleHTML( e );
 			}
