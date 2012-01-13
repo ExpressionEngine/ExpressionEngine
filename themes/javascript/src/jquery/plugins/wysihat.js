@@ -74,26 +74,33 @@ var WysiHat = {
 
 				$field
 					.data( 'editor', $editor )
+					.bind('keyup mouseup',function(){
+						$field.trigger(F_EVT);
+					 })
 					.bind( F_EVT, function(){
 						if ( this.fTimer )
 						{
 							clearTimeout( this.fTimer );
 						}
-						this.fTimer = setTimeout(updateEditor, 500 );
+						this.fTimer = setTimeout(updateEditor, 250 );
 					 })
 					.bind( F_EVT + IMMEDIATE, updateEditor )
 					.hide()
 					.before(
 						$editor
+							.bind('keyup mouseup',function(){
+								$editor.trigger(E_EVT);
+							 })
 							.bind( E_EVT, function(){
 								if ( this.eTimer )
 								{
 									clearTimeout( this.eTimer );
 								}
-								this.eTimer = setTimeout(updateField, 500 );
+								this.eTimer = setTimeout(updateField, 250 );
 							 })
 							.bind( E_EVT + IMMEDIATE, updateField )
-					 );
+					 )
+
 			}
 
 
