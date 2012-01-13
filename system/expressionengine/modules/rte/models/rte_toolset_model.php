@@ -187,10 +187,37 @@ class Rte_toolset_model extends CI_Model {
 	public function save( $toolset=array(), $toolset_id=FALSE )
 	{
 		$toolset['site_id'] =  $this->config->item('site_id');
-		$sql = $toolset_id	? $this->db->update_string( 'rte_toolsets', $toolset, array( 'rte_toolset_id' => $toolset_id ) )
-							: $this->db->insert_string( 'rte_toolsets', $toolset );
-		$this->db->query( $sql );
-		return $this->db->affected_rows();
+		
+		$sql = FALSE;
+		
+		if ( $toolset_id )
+		{
+			$existing	= $this->db
+							->get_where( 'rte_toolsets', array( 'rte_toolset_id' => $toolset_id ) )
+							->result_array();
+			foreach ( $toolset as $k => $v )
+			{
+				if ( $v != $existing[0][$k] )
+				{
+					$sql = $this->db->update_string( 'rte_toolsets', $toolset, array( 'rte_toolset_id' => $toolset_id ) );
+					break;
+				}
+			}
+		}
+		else
+		{
+			$sql = $this->db->insert_string( 'rte_toolsets', $toolset );
+		}
+		
+		if ( $sql )
+		{
+			$this->db->query( $sql );
+			return $this->db->affected_rows();
+		}
+		else
+		{
+			return TRUE;
+		}		
 	}
 	
 	public function delete( $toolset_id=FALSE )

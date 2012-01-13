@@ -736,10 +736,13 @@ class Rte_mcp {
 		
 		if ( $this->EE->rte_toolset_model->save( $change, $toolset_id ) )
 		{
-			if ( ! $toolset_id &&
-				 $is_members )
+			if ( ! $toolset_id )
 			{
 				$toolset_id = $this->EE->db->insert_id();
+			}
+			
+			if ( $is_members && $toolset_id )
+			{
 				$this->EE->db
 					->where( array( 'member_id' => $this->EE->session->userdata('member_id') ) )
 					->update( 'members', array( 'rte_toolset_id' => $toolset_id ) );
