@@ -71,10 +71,6 @@
 	display: none;
 }
 
-#file_browser table.mainTable th {
-	cursor: pointer;
-}
-
 #file_browser #upload_form input.submit {
 	margin-left: 10px;
 }
