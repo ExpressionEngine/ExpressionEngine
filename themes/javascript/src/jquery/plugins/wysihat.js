@@ -1080,12 +1080,16 @@ if ( typeof Selection == 'undefined' )
 			if ( val &&
 				 element.previousValue != val )
 			{
-				$element.trigger( evt );
+				$element.trigger( 'WysiHat-' + evt );
 				element.previousValue = val;
 			}
 		}
 
-		$('body').delegate('input,textarea,*[contenteditable],*[contenteditable=true]', 'keydown', fieldChangeHandler );
+		$('body')
+			.delegate('input,textarea,*[contenteditable],*[contenteditable=true]', 'keydown', fieldChangeHandler )
+			.delegate('.WysiHat-editor', 'input paste', function(){
+				WysiHat.Formatting.cleanup( $(this) );
+			});
 
 	});
 
@@ -1311,7 +1315,7 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 	}
 	function isLinked()
 	{
-		return selectionIsWithin('[href]');
+		return selectionIsWithin('a[href]');
 	}
 
 
@@ -1610,6 +1614,7 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 		}
 		else
 		{
+			noSpans();
 			try {
 				WIN.document.execCommand(command, ui, value);
 			}
@@ -1617,6 +1622,31 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 		}
 		$(DOC.activeElement).trigger( CHANGE_EVT );
 	}
+	function noSpans()
+	{
+		try {
+			WIN.document.execCommand('styleWithCSS', 0, FALSE);
+			noSpans = function(){
+				WIN.document.execCommand('styleWithCSS', 0, FALSE);
+			};
+		} catch (e) {
+			try {
+		    	WIN.document.execCommand('useCSS', 0, TRUE);
+				noSpans = function(){
+			    	WIN.document.execCommand('useCSS', 0, TRUE);
+				};
+			} catch (e) {
+				try {
+					WIN.document.execCommand('styleWithCSS', FALSE, FALSE);
+					noSpans = function(){
+						WIN.document.execCommand('styleWithCSS', FALSE, FALSE);
+					};
+				}
+		        catch (e) {}
+			}
+		}
+	}
+	noSpans();
 	function queryCommandState(state)
 	{
 		var handler = this.queryCommands[state];
@@ -1764,9 +1794,23 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 	}
 	function selectionIsWithin( tagNames )
 	{
-		var selection = WIN.getSelection();
-		return !! ( $( selection.anchorNode ).closest( tagNames ).length ||
-					$( selection.focusNode ).closest( tagNames ).length );
+		var
+		sel	= WIN.getSelection(),
+		a	= sel.anchorNode,
+		b	= sel.focusNode;
+		while ( a.nodeType != 1 &&
+			 	b.nodeType != 1 )
+		{
+			if ( a.nodeType != 1 )
+			{
+				a = a.parentNode;
+			}
+			if ( b.nodeType != 1 )
+			{
+				b = b.parentNode;
+			}
+		}
+		return !! ( $(a).add(b).closest( tagNames ).length );
 	}
 
 
@@ -1816,6 +1860,7 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 		stripFormattingElements:	stripFormattingElements,
 
 		execCommand:				execCommand,
+		noSpans:					noSpans,
 		queryCommandState:			queryCommandState,
 		getSelectedStyles:			getSelectedStyles,
 
@@ -2218,9 +2263,12 @@ WysiHat.Formatting = (function($){
 			var
 			replaceElement = WysiHat.Commands.replaceElement;
 			$el
-			   .find('span.Apple-style-span').each(function(){
+				.find('span').each(function(){
 					var $this = $(this);
-					$this.removeAttr('class');
+					if ( $this.is('.Apple-style-span') )
+					{
+						$this.removeClass('.Apple-style-span');
+					}
 					if ( $this.css('font-weight') == 'bold' &&
 					 	 $this.css('font-style') == 'italic' )
 					{
@@ -2235,34 +2283,34 @@ WysiHat.Formatting = (function($){
 					{
 						replaceElement( $this.removeAttr('style'), 'em' );
 					}
-				}).end()
-			   .children('div').each(function(){
-					var $this = $(this);
-					if ( ! $this.get(0).attributes.length )
-					{
-						replaceElement( $this, 'p' );
-					}
-			    }).end()
-			   .find('b').each(function(){
-					replaceElement($(this),'strong');
-			 	}).end()
-			   .find('i').each(function(){
-					replaceElement($(this),'em');
-				}).end()
-			   .find('p:empty').remove();
+				 }).end()
+				.children('div').each(function(){
+				 	var $this = $(this);
+				 	if ( ! $this.get(0).attributes.length )
+				 	{
+				 		replaceElement( $this, 'p' );
+				 	}
+				 }).end()
+				.find('b').each(function(){
+				 	replaceElement($(this),'strong');
+				 }).end()
+				.find('i').each(function(){
+				 	replaceElement($(this),'em');
+				 }).end()
+				.find('p:empty').remove();
 		},
 		format: function( $el )
 		{
 			var
+			re_blocks = new RegExp( '<\/(' + WysiHat.Element.getBlocks().join('|') + ')>', 'g' ),
 			html = $el.html()
 						.replace( /<\/?[\w]+/g, function(tag){
 							return tag.toLowerCase();
 						 })
 						.replace('<p>&nbsp;</p>','')
-							.replace(/<\/(p|hr|pre|ul|ol|dl|div|h[1-6]|hgroup|address|blockquote|object|map|noscript|section|nav|article|aside|header|footer|video|audio|figure|figcaption|table|thead|tfoot|tbody|tr|form|fieldset|menu|canvas|details|embed)>/,'</$1>\n')
+						.replace( re_blocks,'</$1>\n' )
 						.replace(/\n+/,'\n')
 						.replace(/<p>\n+<\/p>/,'');
-
 			$el.html( html );
 		},
 		getBrowserMarkupFrom: function( $el )
