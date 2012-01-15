@@ -76,7 +76,7 @@ Class Link_rte {
 		var
 		$link_dialog = $(
 							'<div id="rte_link_dialog">' +
-								'<p><label for="rte_link_url">' + EE.rte.link_dialog.url_field_label + '</label>' +
+								'<p><label for="rte_link_url">* ' + EE.rte.link_dialog.url_field_label + '</label>' +
 								'<input type="url" id="rte_link_url" required="required"/></p>' +
 								'<p><label for="rte_link_title">' + EE.rte.link_dialog.title_field_label + '</label>' +
 								'<input type="text" id="rte_link_title"/></p>' +
