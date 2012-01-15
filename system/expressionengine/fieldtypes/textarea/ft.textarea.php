@@ -103,6 +103,39 @@ class Textarea_ft extends EE_Fieldtype {
 		 	 $this->EE->config->item('rte_enabled') == 'y' )
 		{
 			$this->EE->lang->loadfile('rte');
+			
+			# RTE-related JavaScript
+			$this->EE->javascript->output('
+				// RTE adjustments
+				// Can’t have RTE alongside Formatting Buttons, Smileys or WriteMode
+				var
+				$dependent	= $("[name=textarea_field_enable_rte]," +
+								"[name=textarea_field_show_formatting_btns]," +
+								"[name=textarea_field_show_smileys]," +
+								"[name=textarea_field_show_writemode]")
+									.change(function(){
+										var
+										$this	= $(this),
+										name	= $this.attr("name"),
+										value	= $("[name=" + name + "]:checked").val();
+										if ( name == "textarea_field_enable_rte" &&
+										 	 value == "y" )
+										{
+											$dependent
+												.not("[name=" + name + "]")
+												.filter("[value=n]")
+												.attr("checked",true);
+										}
+										else if ( name != "textarea_field_enable_rte" &&
+										 	 	  value == "y" )
+										{
+											$("[name=textarea_field_enable_rte][value=n]")
+												.attr("checked",true);
+										}
+									 });
+			');
+			$this->EE->javascript->compile();
+						
 			$this->_yes_no_row($data, 'enable_rte_for_field', 'field_enable_rte', $prefix);
 		}
 		$this->text_direction_row($data, $prefix);
