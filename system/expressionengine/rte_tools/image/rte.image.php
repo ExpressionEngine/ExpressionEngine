@@ -88,6 +88,7 @@ Class Image_rte {
 		
 		function getTheRange(){
 			var
+			ranges		= $editor.getRanges(),
 			selection	= window.getSelection(),
 			hasRange	= !! selection.rangeCount,
 			el			= selection.anchorNode;
@@ -107,9 +108,8 @@ Class Image_rte {
 
 			if ( hasRange )
 			{
-				range	= selection.getRangeAt(0);
-				
-				el	= $editor.getRangeElements( range, WysiHat.Element.getBlocks().join(',') ).get(0);
+				range	= selection.getRangeAt(0).cloneRange();
+				el		= $editor.getRangeElements( range, WysiHat.Element.getBlocks().join(',') ).get(0);
 				if ( $(el).is('li,dt,dd,td') )
 				{
 					range.setStart( el, 0 );
@@ -120,7 +120,7 @@ Class Image_rte {
 					range.setStartBefore( el );
 					range.setEndBefore( el );
 				}
-				range.collapse();
+				range.collapse(true);
 			}
 			else
 			{
