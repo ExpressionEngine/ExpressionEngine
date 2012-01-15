@@ -1125,18 +1125,7 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 
 	function boldSelection()
 	{
-		if ( isBold )
-		{
-			this.manipulateSelection(function( range ){
-				this.getRangeElements( range, 'b,strong' ).each(this.clearElement);
-			});
-		}
-		else
-		{
-			this.manipulateSelection(function( range ){
-				range.surroundContents( 'strong' );
-			});
-		}
+		this.execCommand('bold', FALSE, NULL);
 	}
 	function isBold()
 	{
@@ -1144,18 +1133,7 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 	}
 	function underlineSelection()
 	{
-		if ( isUnderlined )
-		{
-			this.manipulateSelection(function( range ){
-				this.getRangeElements( range, 'u,ins' ).each(this.clearElement);
-			});
-		}
-		else
-		{
-			this.manipulateSelection(function( range ){
-				range.surroundContents( 'ins' );
-			});
-		}
+		this.execCommand('underline', FALSE, NULL);
 	}
 	function isUnderlined()
 	{
@@ -1163,18 +1141,7 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 	}
 	function italicizeSelection()
 	{
-		if ( isItalic )
-		{
-			this.manipulateSelection(function( range ){
-				this.getRangeElements( range, 'i,em' ).each(this.clearElement);
-			});
-		}
-		else
-		{
-			this.manipulateSelection(function( range ){
-				range.surroundContents( 'em' );
-			});
-		}
+		this.execCommand('italic', FALSE, NULL);
 	}
 	function isItalic()
 	{
@@ -1182,18 +1149,7 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 	}
 	function strikethroughSelection()
 	{
-		if ( isStruckthrough )
-		{
-			this.manipulateSelection(function( range ){
-				this.getRangeElements( range, 's,del' ).each(this.clearElement);
-			});
-		}
-		else
-		{
-			this.manipulateSelection(function( range ){
-				range.surroundContents( 'del' );
-			});
-		}
+		this.execCommand('strikethrough', FALSE, NULL);
 	}
 	function isStruckthrough()
 	{
@@ -1795,9 +1751,40 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 	function selectionIsWithin( tagNames )
 	{
 		var
-		sel	= WIN.getSelection(),
-		a	= sel.anchorNode,
-		b	= sel.focusNode;
+		phrases	= WysiHat.Element.getPhraseElements(),
+		phrase	= FALSE,
+		tags	= tagNames.split(','),
+		t		= tags.length,
+		sel		= WIN.getSelection(),
+		a		= sel.anchorNode,
+		b		= sel.focusNode;
+		if ( a.nodeType == 3 &&
+			 a.nodeValue == '' )
+		{
+			a = a.nextSibling;
+		}
+		while ( t-- )
+		{
+			if ( $.inArray( tags[t], phrases ) != -1 )
+			{
+				phrase = TRUE;
+				break;
+			}
+		}
+		if ( phrase &&
+			 a.nodeType == 1 &&
+			 $.inArray( a.nodeName.toLowerCase(), phrases ) == -1 )
+		{
+			t = a.firstChild;
+			if ( t.nodeValue == '' )
+			{
+				t = t.nextSibling;
+			}
+			if ( t.nodeType == 1 )
+			{
+				a = t;
+			}
+		}
 		while ( a.nodeType != 1 &&
 			 	b.nodeType != 1 )
 		{
@@ -1810,7 +1797,8 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 				b = b.parentNode;
 			}
 		}
-		return !! ( $(a).add(b).closest( tagNames ).length );
+		return !! ( $(a).closest( tagNames ).length ||
+		 			$(b).closest( tagNames ).length );
 	}
 
 
@@ -1938,7 +1926,7 @@ if ( typeof Node == "undefined" )
 			$bookmark = $( '<span id="WysiHat-bookmark">&nbsp;</span>' )
 							.appendTo( $parent );
 
-			range.collapse();
+			range.collapse(true);
 			range.pasteHTML( $parent.html() );
 		}
 
@@ -1954,7 +1942,7 @@ if ( typeof Node == "undefined" )
 			}
 
 			range.moveToElementText( $bookmark.get(0) );
-			range.collapse();
+			range.collapse(true);
 			range.select();
 
 			$bookmark.remove();
@@ -2018,7 +2006,7 @@ if ( typeof Node == "undefined" )
 		length	= allowedAttributes.length,
 		$copy	= $('<' + tagName + '></' + tagName + '>');
 
-		while ( lwngth-- )
+		while ( length-- )
 		{
 			attribute = allowedAttributes[i];
 			if ( $el.attr(attribute) )
@@ -2302,13 +2290,14 @@ WysiHat.Formatting = (function($){
 		format: function( $el )
 		{
 			var
-			re_blocks = new RegExp( '<\/(' + WysiHat.Element.getBlocks().join('|') + ')>', 'g' ),
+			re_blocks = new RegExp( '(<(?:ul|ol)>|<\/(?:' + WysiHat.Element.getBlocks().join('|') + ')>)[\r\n]*', 'g' ),
 			html = $el.html()
 						.replace( /<\/?[\w]+/g, function(tag){
 							return tag.toLowerCase();
 						 })
 						.replace('<p>&nbsp;</p>','')
-						.replace( re_blocks,'</$1>\n' )
+						.replace(/<br\/?><\/p>/,'</p>')
+						.replace( re_blocks,'$1\n' )
 						.replace(/\n+/,'\n')
 						.replace(/<p>\n+<\/p>/,'');
 			$el.html( html );
