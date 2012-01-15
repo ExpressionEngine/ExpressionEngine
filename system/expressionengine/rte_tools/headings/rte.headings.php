@@ -71,10 +71,14 @@ Class Headings_rte {
 			.append('<option value="h5">' + EE.rte.headings.heading_5 + '</option>')
 			.append('<option value="h6">' + EE.rte.headings.heading_6 + '</option>')
 			.change(function(){
-				$editor.changeContentBlock( $(this).val() );
-				
-				// trigger the update
-				$editor.trigger( EE.rte.update_event );
+				var val = $(this).val();
+				if ( val != '' )
+				{
+					$editor.changeContentBlock( $(this).val() );
+
+					// trigger the update
+					$editor.trigger( EE.rte.update_event );
+				}
 			})
 			.appendTo( $parent.find('.WysiHat-editor-toolbar') );
 		
