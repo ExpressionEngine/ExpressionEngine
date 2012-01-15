@@ -49,7 +49,8 @@ Class Link_rte {
 			'rte.link_dialog.title_field_label'	=> lang('title'),
 			'rte.link_dialog.rel_field_label'	=> lang('relationship'),
 			'rte.link_dialog.submit_button'		=> lang('submit'),
-			'rte.link_dialog.selection_error'	=> lang('selection_error')
+			'rte.link_dialog.selection_error'	=> lang('selection_error'),
+			'rte.link_dialog.url_required'		=> lang('valid_url_required')
 		));
 		$this->EE->javascript->compile();
 		$this->EE->cp->add_js_script(array(
@@ -59,9 +60,10 @@ Class Link_rte {
 			'
 			<style>
 				#rte_link_dialog p { margin-bottom:10px; }
-				#rte_link_dialog label { width: 25%; display: inline-block; }
+				#rte_link_dialog label { width: 90px; display: inline-block; }
 				#rte_link_dialog input, #rte_link_dialog select { width: 70%; margin-left: 10px; }
-				#rte_link_dialog .submit { margin-left: 30%; cursor: pointer; }
+				#rte_link_dialog .buttons { text-align: center; }
+				#rte_link_dialog button { cursor: pointer; }
 			</style>
 			'
 		);
@@ -74,11 +76,14 @@ Class Link_rte {
 		var
 		$link_dialog = $(
 							'<div id="rte_link_dialog">' +
-								'<p><label for="rte_link_url">' + EE.rte.link_dialog.url_field_label + '</label><input type="url" id="rte_link_url"/></p>' +
-								'<p><label for="rte_link_title">' + EE.rte.link_dialog.title_field_label + '</label><input type="text" id="rte_link_title"/></p>' +
+								'<p><label for="rte_link_url">' + EE.rte.link_dialog.url_field_label + '</label>' +
+								'<input type="url" id="rte_link_url" required="required"/></p>' +
+								'<p><label for="rte_link_title">' + EE.rte.link_dialog.title_field_label + '</label>' +
+								'<input type="text" id="rte_link_title"/></p>' +
 								//'<p><label for="rte_link_rel">' + EE.rte.link_dialog.rel_field_label + '</label>' +
 								// '<select id="rte_link_rel"></select></p>' +
-								'<p><button class="submit" type="submit">' + EE.rte.link_dialog.submit_button + '</button></p>' +
+								'<p class="buttons"><button class="submit" type="submit">' + EE.rte.link_dialog.submit_button +
+								'</button></p>' +
 							 '</div>'
 						),
 		link_ranges	= [];
@@ -87,7 +92,7 @@ Class Link_rte {
 			.appendTo('body')
 			.dialog({
 				width: 400,
-				height: 150,
+				height: 165,
 				resizable: false,
 				position: ["center","center"],
 				modal: true,
@@ -147,14 +152,34 @@ Class Link_rte {
 				// enter
 				if ( e.which == 13 )
 				{
-					$link_dialog.dialog('close');
+					validateLinkDialog();
 				}
 			 })
 			// setup the submit button
 			.find('.submit')
-				.click(function(){
-					$link_dialog.dialog("close");
-				 });
+				.click(validateLinkDialog);
+		
+		function validateLinkDialog()
+		{
+			var
+			pass	= false,
+			$url	= $('#rte_link_url'),
+			re_url	= new RegExp( '^(http:\/\/www.|https:\/\/www.|ftp:\/\/www.|www.){1}([0-9A-Za-z]+\.)' ),
+			$error	= $('<div class="notice"/>').text( EE.rte.link_dialog.url_required );
+			if ( $('#rte_link_url') != '' )
+			{
+				pass = re_url.test( $url.val() );
+			}
+			if ( pass )
+			{
+				$error.remove();
+				$link_dialog.dialog("close");
+			}
+			else
+			{
+				$error.appendTo( $url.parent() );
+			}
+		}
 		
 		toolbar.addButton({
 			name:	'link',
