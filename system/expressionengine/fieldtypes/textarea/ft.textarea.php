@@ -99,7 +99,8 @@ class Textarea_ft extends EE_Fieldtype {
 		);
 		
 		$this->field_formatting_row($data, $prefix);
-		if ( $this->EE->addons_model->module_installed('rte') )
+		if ( $this->EE->addons_model->module_installed('rte') &&
+		 	 $this->EE->config->item('rte_enabled') == 'y' )
 		{
 			$this->EE->lang->loadfile('rte');
 			$this->_yes_no_row($data, 'enable_rte_for_field', 'field_enable_rte', $prefix);
