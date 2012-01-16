@@ -253,7 +253,7 @@
 			source = source + '&directory_id=' + directory_id;
 			
 			// Add restrict_directory get variable if we need to restrict to a directory
-			if ($('#dir_choice_form:visible').size() <= 0) {
+			if ($('.dir_choice_container:visible').size() <= 0) {
 				source = source + '&restrict_directory=true';
 			}
 			

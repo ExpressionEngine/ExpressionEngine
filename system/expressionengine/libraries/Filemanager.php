@@ -924,7 +924,7 @@ class Filemanager {
 		$return_all = ($ajax) ? FALSE : $return_all;		// safety - ajax calls can never get all info!
 		
 		$dirs = $this->directories(FALSE, $return_all);
-
+		
 		$return = isset($dirs[$dir_id]) ? $dirs[$dir_id] : FALSE;
 		
 		if ($ajax)
@@ -1032,7 +1032,7 @@ class Filemanager {
 	{
 		$dir_id = $this->EE->input->get('directory_id');
 		$dir = $this->directory($dir_id, FALSE, TRUE);
-
+		
 		$data = $dir ? call_user_func($this->config['directory_info_callback'], $dir) : array();
 		
 		if (count($data) == 0)
@@ -1085,6 +1085,9 @@ class Filemanager {
 	function upload_file($dir_id = '', $field = FALSE, $image_only = FALSE)
 	{
 		$dir = $this->directory($dir_id, FALSE, TRUE);
+
+		// TODO: Check $image_only value to verify it's correct and then clarify
+		// with Kevin
 		
 		// Override the allowed types of the dir if we're restricting to images
 		if ($image_only)

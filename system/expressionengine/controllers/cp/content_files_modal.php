@@ -66,8 +66,7 @@ class Content_files_modal extends CI_Controller {
 	 */
 	public function index()
 	{
-		$vars = $this->_vars_index();
-		$this->load->view('_shared/file_upload/index', $vars);
+		$this->load->view('_shared/file_upload/index', $this->_vars_index());
 	}
 	
 	// ------------------------------------------------------------------------
@@ -296,8 +295,8 @@ class Content_files_modal extends CI_Controller {
 	private function _vars_index()
 	{
 		$selected_directory_id = ($this->input->get_post('directory_id')) ? $this->input->get_post('directory_id') : '';
-		$directory_override = ($this->input->get_post('restrict_directory') == 'true') ? $selected_directory_id : '';
-		$restrict_image = ($this->input->get_post('restrict_image') == 'true') ? TRUE : FALSE;
+		$directory_override = (in_array($this->input->get_post('restrict_directory'), array('true', 1))) ? $selected_directory_id : '';
+		$restrict_image = (in_array($this->input->get_post('restrict_image'), array('true', 1))) ? TRUE : FALSE;
 		
 		return array(
 			'upload_directories' => $this->file_upload_preferences_model->get_dropdown_array(
