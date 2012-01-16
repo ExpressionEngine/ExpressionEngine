@@ -24,24 +24,38 @@
  */
 class Rte_toolset_model extends CI_Model {
 	
-	public function get_all( $list = FALSE )
+	/**
+	 * Get all the Toolsets
+	 * 
+	 * @access	public
+	 * @param	bool
+	 * @return	array
+	 */
+	public function get_all( $list=FALSE )
 	{
 		$results = $this->db->get_where(
 			'rte_toolsets',
 			array(
-				'member_id'	=> '0', // public only
+				'member_id'	=> '0', # public only
 				'site_id'	=> $this->config->item('site_id')
 			)
 		)->result_array();
 		return $list ? $this->_make_list( $results ) : $results;
 	}
 	
-	public function get_active( $list = FALSE )
+	/**
+	 * Get enabled Toolsets
+	 * 
+	 * @access	public
+	 * @param	bool
+	 * @return	array
+	 */
+	public function get_active( $list=FALSE )
 	{
 		$results = $this->db->get_where(
 			'rte_toolsets',
 			array(
-				'member_id'	=> '0', // public only
+				'member_id'	=> '0', # public only
 				'enabled' 	=> 'y',
 				'site_id'	=> $this->config->item('site_id')
 			)
@@ -49,8 +63,15 @@ class Rte_toolset_model extends CI_Model {
 		return $list ? $this->_make_list( $results ) : $results;
 	}
 	
+	/**
+	 * Get the toolsets available to a given Member
+	 * 
+	 * @access	public
+	 * @return	array
+	 */
 	public function get_member_options()
 	{
+		# get the toolsets
 		$results = $this->db
 						->where(
 							"
@@ -70,13 +91,14 @@ class Rte_toolset_model extends CI_Model {
 			if ( $toolset['member_id'] != 0 )
 			{
 				$has_personal = TRUE;
-				// move the personal one to the end of the array & rename it
+				# move the personal one to the end of the array & rename it
 				$tool = $toolset;
 				unset( $results[$i] );
 				$results[] = $tool;
 				break;
 			}
 		}
+		# if no personal toolset, create one
 		if ( ! $has_personal )
 		{
 			$results[] = array(
@@ -87,6 +109,13 @@ class Rte_toolset_model extends CI_Model {
 		return $this->_make_list( $results );
 	}
 	
+	/**
+	 * Ge the tools for the member’s toolset
+	 * 
+	 * 
+	 * @param	bool
+	 * @return	array
+	 */
 	public function get_member_toolset_tools()
 	{
 		$toolset_id = $this->db
@@ -100,7 +129,13 @@ class Rte_toolset_model extends CI_Model {
 		return $this->get_tools( $toolset_id );
 	}
 	
-	public function get_tools( $toolset_id = 0 )
+	/**
+	 * Get the tools for a given toolset
+	 * 
+	 * @access	public
+	 * @return	array
+	 */
+	public function get_tools( $toolset_id=0 )
 	{
 		$result = $this->db
 					->select('rte_tools')
@@ -112,7 +147,14 @@ class Rte_toolset_model extends CI_Model {
 		return $result->num_rows() ? explode( '|', $result->row('rte_tools') ) : array();
 	}
 	
-	public function exists( $toolset_id = FALSE )
+	/**
+	 * Check to see if the toolset exists
+	 * 
+	 * @access	public
+	 * @param	int
+	 * @return	bool
+	 */
+	public function exists( $toolset_id=FALSE )
 	{
 		$ret = FALSE;
 		if ( !! $toolset_id )
@@ -128,7 +170,14 @@ class Rte_toolset_model extends CI_Model {
 		return $ret;
 	}
 	
-	public function member_can_access( $toolset_id = FALSE )
+	/**
+	 * Check to see if the current member can access the Toolset
+	 * 
+	 * @access	public
+	 * @param	int
+	 * @return	bool
+	 */
+	public function member_can_access( $toolset_id=FALSE )
 	{
 		// are you an admin?
 		$admin = ( $this->session->userdata('group_id') == '1' );
@@ -154,14 +203,21 @@ class Rte_toolset_model extends CI_Model {
 			}
 		}
 		
-		// grab the toolset
+		# grab the toolset
 		$toolset = $this->get( $toolset_id );
 		
 		return ( ( $toolset->member_id != 0 && $toolset->member_id == $this->session->userdata('member_id') ) ||
 				 ( $toolset->member_id == 0 && $admin ) );
 	}
 	
-	public function get( $toolset_id = FALSE )
+	/**
+	 * Get the toolset
+	 * 
+	 * @access	public
+	 * @param	int
+	 * @return	obj
+	 */
+	public function get( $toolset_id=FALSE )
 	{
 		return $this->db
 					->get_where(
@@ -172,7 +228,14 @@ class Rte_toolset_model extends CI_Model {
 					->row();
 	}
 	
-	public function is_private( $toolset_id = FALSE )
+	/**
+	 * Tells you if a toolset is private
+	 * 
+	 * @access	public
+	 * @param	int
+	 * @return	bool
+	 */
+	public function is_private( $toolset_id=FALSE )
 	{
 		return $this->db
 					->select('member_id')
@@ -184,12 +247,21 @@ class Rte_toolset_model extends CI_Model {
 					->row('member_id') != 0;
 	}
 	
+	/**
+	 * Save a toolset
+	 * 
+	 * @access	public
+	 * @param	array
+	 * @param	int
+	 * @return	mixed
+	 */
 	public function save( $toolset=array(), $toolset_id=FALSE )
 	{
 		$toolset['site_id'] =  $this->config->item('site_id');
 		
 		$sql = FALSE;
 		
+		# update
 		if ( $toolset_id )
 		{
 			$existing	= $this->db
@@ -204,22 +276,32 @@ class Rte_toolset_model extends CI_Model {
 				}
 			}
 		}
+		# insert
 		else
 		{
 			$sql = $this->db->insert_string( 'rte_toolsets', $toolset );
 		}
 		
+		# run the SQL
 		if ( $sql )
 		{
 			$this->db->query( $sql );
 			return $this->db->affected_rows();
 		}
+		# fail
 		else
 		{
-			return TRUE;
+			return FALSE;
 		}		
 	}
 	
+	/**
+	 * Delete a toolset
+	 * 
+	 * @access	public
+	 * @param	int
+	 * @return	mixed
+	 */
 	public function delete( $toolset_id=FALSE )
 	{
 		if ( $toolset_id )
@@ -232,11 +314,18 @@ class Rte_toolset_model extends CI_Model {
 		return FALSE;
 	}
 	
+	/**
+	 * Load the Default Toolsets into the DB
+	 * 
+	 * @access	public
+	 * @param	int
+	 * @return	mixed
+	 */
 	public function load_default_toolsets()
 	{
 		$this->load->model('rte_tool_model');
 
-		// default toolset
+		# default toolset
 		$tool_ids = $this->rte_tool_model->get_tool_ids(array(
 			'headings', 'bold', 'italic',
 			'blockquote', 'unordered_list', 'ordered_list',
@@ -253,6 +342,14 @@ class Rte_toolset_model extends CI_Model {
 		);
 	}
 	
+	/**
+	 * Check the name of the toolset for uniqueness
+	 * 
+	 * @access	public
+	 * @param	string
+	 * @param	int
+	 * @return	bool
+	 */
 	public function check_name( $name, $toolset_id=FALSE )
 	{
 		$where = array(
@@ -267,6 +364,13 @@ class Rte_toolset_model extends CI_Model {
 		return ! $query->num_rows();
 	}
 
+	/**
+	 * Make the results array into an <option>-compatible list
+	 * 
+	 * @access	private
+	 * @param	array
+	 * @return	array
+	 */
 	private function _make_list( $result )
 	{
 		$return = array();

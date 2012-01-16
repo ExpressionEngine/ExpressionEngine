@@ -22,7 +22,9 @@ class Rte_ext {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Handle hook call
+	 * Loads My RTE Prefs into heMy Account page
+	 * 
+	 * @return array
 	 */
 	function myaccount_nav_setup()
 	{
@@ -40,7 +42,10 @@ class Rte_ext {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Handle hook call
+	 * Add RTE prefs to the CP Menu
+	 * 
+	 * @param	array
+	 * @return	array
 	 */
 	function cp_menu_array( $menu )
 	{
@@ -52,11 +57,14 @@ class Rte_ext {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Handle hook call
+	 * Add RTE JS to the Publish/Edit page
+	 * 
+	 * @param	array
+	 * @return	array
 	 */
 	function publish_form_entry_data( $results )
 	{
-		
+		# get the Module
 		include_once( APPPATH.'modules/'.$this->module.'/'.'mcp.'.$this->module.'.php' );
 		$class_name	= ucfirst($this->module).'_mcp';
 		$RTE		= new $class_name();
@@ -82,7 +90,7 @@ class Rte_ext {
 	function activate_extension()
 	{
 		return TRUE;
-		//show_error('This extension is automatically installed with the Rich Text Editor module');
+		# show_error('This extension is automatically installed with the Rich Text Editor module');
 	}
 
 	// --------------------------------------------------------------------
@@ -93,7 +101,7 @@ class Rte_ext {
 	function update_extension($current = FALSE)
 	{
 		return TRUE;
-		//show_error('This extension is automatically updated with the Rich Text Editor module');
+		# show_error('This extension is automatically updated with the Rich Text Editor module');
 	}
 
 	// --------------------------------------------------------------------
@@ -104,7 +112,7 @@ class Rte_ext {
 	function disable_extension()
 	{
 		return TRUE;
-		//show_error('This extension is automatically deleted with the Rich Text Editor module');
+		# show_error('This extension is automatically deleted with the Rich Text Editor module');
 	}
 	
 		// --------------------------------------------------------------------
@@ -115,7 +123,7 @@ class Rte_ext {
 	function uninstall_extension()
 	{
 		return TRUE;
-		//show_error('This extension is automatically deleted with the Rich Text Editor module');
+		# show_error('This extension is automatically deleted with the Rich Text Editor module');
 	}
 	
 }

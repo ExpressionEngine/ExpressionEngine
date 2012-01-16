@@ -44,7 +44,7 @@ class Rte_upd {
 	 */
 	public function install()
 	{
-		// module
+		# module
 		$this->EE->db->insert(
 			'modules',
 			array(
@@ -53,7 +53,8 @@ class Rte_upd {
 				'has_cp_backend'	=> 'y'
 			)
 		);
-
+		
+		# Actions
 		$this->EE->db->insert_batch(
 			'actions',
 			array(
@@ -65,7 +66,7 @@ class Rte_upd {
 			)
 		);
 		
-		// RTE Toolsets Table
+		# RTE Toolsets Table
 		$fields = array(
 			'rte_toolset_id'	=> array(
 				'type'				=> 'int',
@@ -100,7 +101,7 @@ class Rte_upd {
 		$this->EE->dbforge->add_key(array('site_id','member_id','enabled'));
 		$this->EE->dbforge->create_table('rte_toolsets');
 		
-		// RTE Tools Table
+		# RTE Tools Table
 		$fields = array(
 			'rte_tool_id'	=> array(
 				'type'				=> 'int',
@@ -127,11 +128,11 @@ class Rte_upd {
 		$this->EE->dbforge->add_key(array('enabled'));
 		$this->EE->dbforge->create_table('rte_tools');
 		
-		// Load the default toolset
+		# Load the default toolsets
 		$this->EE->load->model('rte_toolset_model');
 		$this->EE->rte_toolset_model->load_default_toolsets();
 		
-		// Install the extension
+		# Install the extension
 		$this->EE->db->insert_batch(
 			'extensions',
 			array(
@@ -165,7 +166,7 @@ class Rte_upd {
 			)
 		);
 		
-		//  Add the member columns
+		#  Add the member columns
 		$this->EE->dbforge->add_column(
 			'members',
 			array(
@@ -182,7 +183,7 @@ class Rte_upd {
 			)
 		);
 				
-		//  Update the config
+		#  Update the config
 		$this->EE->config->_update_config(
 			array(
 				'rte_enabled' => 'y',
@@ -209,36 +210,36 @@ class Rte_upd {
 						->get_where('modules', array( 'module_name' => $this->name ))
 						->row('module_id');
 		
-		// Member access
+		# Member access
 		$this->EE->db
 			->where('module_id', $module_id)
 			->delete('module_member_groups');
 		
-		// Module
+		# Module
 		$this->EE->db
 			->where('module_name', $this->name)
 			->delete('modules');
 
-		// Actions
+		# Actions
 		$this->EE->db
 			->where('class', $this->name)
 			->or_where('class', $this->name . '_mcp')
 			->delete('actions');
 		
-		// Extension
+		# Extension
 		$this->EE->db
 			->where('class', $this->name.'_ext')
 			->delete('extensions');
 		
-		// Tables
+		# Tables
 		$this->EE->dbforge->drop_table('rte_toolsets');
 		$this->EE->dbforge->drop_table('rte_tools');
 
-		//  Remove the member columns
+		#  Remove the member columns
 		$this->EE->dbforge->drop_column( 'members', 'rte_enabled' );
 		$this->EE->dbforge->drop_column( 'members', 'rte_toolset_id' );
 				
-		//  Update the config
+		#  Update the config
 		$this->EE->config->_update_config(
 			array(),
 			array(
