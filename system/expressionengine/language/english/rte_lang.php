@@ -43,6 +43,8 @@ $lang = array(
 'tool_enabled' => 'Tool enabled successfully.',
 'tool_disabled' => 'Tool disabled successfully.',
 'tool_update_failed' => 'Tool update failed. Please try again.',
+'valid_url_required' => 'A valid URL is required.',
+'name_required' => 'A name is required and must be unique.',
 
 # Labels
 'enable_rte_globally' => 'Enable the Rich Text Editor globally on all Textarea fields?',

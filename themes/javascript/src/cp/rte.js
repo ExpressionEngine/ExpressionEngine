@@ -7,7 +7,7 @@
 	// make the modal
 	$modal.dialog({
 		width: 600,
-		height: 400,
+		height: 420,
 		resizable: false,
 		position: ["center","center"],
 		modal: true,
@@ -75,7 +75,8 @@
 	{
 		$selected	= $('#null');
 		$used		= $('#rte-tools-selected').bind( 'sortupdate', update_rte_toolset );
-		$unused		= $('#rte-tools-unused');
+		$unused		= $('#rte-tools-unused'),
+		$error		= $('<div class="notice"/>').text( EE.rte.name_required );
 		
 		// setup the sortables
 		$used.add($unused)
@@ -113,6 +114,39 @@
 			$used.find('li.rte-tool-active').appendTo($unused);
 			update_rte_toolset();
 		});
+		
+		$('#rte-toolset-name')
+			.parents('form')
+				.submit(function( e ){
+					$error.remove();
+					e.preventDefault();
+					
+					var
+					$this	= $(this),
+					$name	= $('#rte-toolset-name'),
+					value	= $name.val(),
+					URL		= EE.rte.validate_toolset_name_url.replace(/&amp;/g,'&'),
+					action	= $this.attr('action'),
+					
+					// figure out the toolset id (if we have one)
+					toolset = action.replace(/.*?rte_toolset_id=(\d+)/,'$1');
+					toolset = $.isNumeric( toolset ) ? '&rte_toolset_id=' + toolset : '';
+					
+					// validate the name
+					$.get( URL + '&name=' + value + toolset, function( data ){
+						if ( value == '' ||
+						     ! data.valid )
+						{
+							$error.appendTo( $name.parent() );
+						}
+						else
+						{
+							$.post( action + '&' + $this.serialize(), function( data ){
+								$modal.dialog('close');
+							});
+						}
+					},'json');
+				 });
 	}
 	
 	function update_rte_toolset()

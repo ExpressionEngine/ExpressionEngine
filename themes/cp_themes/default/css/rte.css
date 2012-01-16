@@ -1,6 +1,7 @@
 /* Settings */
 .rte-toolset-settings { margin-bottom: 10px; }
-.rte-toolset-settings td { white-space: nowrap; padding-right: 10px; }
+.rte-toolset-settings td { white-space: nowrap; padding-right: 10px; vertical-align: top; }
+.rte-toolset-settings label { line-height: 25px; }
 .rte-toolset-settings input { width: 300px; }
 .rte-toolset-builder table { width: 100%; margin-bottom: 10px; }
 .rte-toolset-builder td { white-space: nowrap; padding: 0 0 10px; }

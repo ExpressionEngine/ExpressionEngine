@@ -76,6 +76,10 @@ class Rte_mcp {
 			'tools'						=> $this->EE->rte_tool_model->get_all()
 		);
 		
+		$this->EE->javascript->set_global(array(
+			'rte.name_required'				=> lang('name_required'),
+			'rte.validate_toolset_name_url'	=> $this->_base_url.AMP.'method=validate_toolset_name'			
+		));
 		$this->EE->javascript->compile();
 		$this->EE->cp->add_to_head($this->EE->view->head_link('css/rte.css'));
 		return $this->EE->load->view('index', $vars, TRUE);
@@ -220,8 +224,11 @@ class Rte_mcp {
 			'unused_tools'		=> $unused_tools,
 			'toolset_tools'		=> $toolset_tools
 		);
+		
 		$this->EE->javascript->set_global(array(
-			'rte.toolset_modal.title' => $title
+			'rte.toolset_modal.title'		=> $title,
+			'rte.validate_toolset_name_url'	=> $this->_base_url.AMP.'method=validate_toolset_name',
+			'rte.name_required'				=> lang('name_required')
 		));
 		$this->EE->javascript->compile();
 		$this->EE->cp->add_to_head($this->EE->view->head_link('css/rte.css'));
@@ -336,6 +343,33 @@ class Rte_mcp {
 		
 		// buh-bye
 		$this->EE->functions->redirect($this->_base_url);
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Validates a toolset name for existance and uniqueness
+	 *
+	 * @access	public
+	 */
+	public function validate_toolset_name()
+	{
+		$this->EE->load->library('javascript');
+		$this->EE->load->model('rte_toolset_model');
+		
+		$valid = $this->EE->rte_toolset_model->check_name(
+					$this->EE->input->get_post('name'),
+					$this->EE->input->get_post('rte_toolset_id')
+				 );
+
+		if ( $this->EE->input->is_ajax_request() )
+		{
+			die( $this->EE->javascript->generate_json( array( 'valid' => $valid ) ) );
+		}
+		else
+		{
+			return $valid;
+		}
 	}
 
 	// --------------------------------------------------------------------
@@ -492,7 +526,15 @@ class Rte_mcp {
 			->update( 'members', array( 'rte_enabled' => ($enabled?'n':'y') ) );
 		
 		// exit
-		die( $this->EE->db->affected_rows() );
+		$affected_rows = $this->EE->db->affected_rows();
+		if ( $this->EE->input->is_ajax_request() )
+		{
+			die( $affected_rows );
+		}
+		else
+		{
+			return $affected_rows;
+		}
 	}
 
 	// --------------------------------------------------------------------

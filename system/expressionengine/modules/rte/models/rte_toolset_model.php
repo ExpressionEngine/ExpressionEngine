@@ -252,6 +252,20 @@ class Rte_toolset_model extends CI_Model {
 			)
 		);
 	}
+	
+	public function check_name( $name, $toolset_id=FALSE )
+	{
+		$where = array(
+			'name'		=> $name,
+			'site_id'	=> $this->config->item('site_id')
+	 	);
+		if ( $toolset_id !== FALSE )
+		{
+			$where['rte_toolset_id !='] = $toolset_id;
+		}
+		$query = $this->db->get_where( 'rte_toolsets', $where );
+		return ! $query->num_rows();
+	}
 
 	private function _make_list( $result )
 	{
