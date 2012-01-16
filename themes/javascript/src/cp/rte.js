@@ -19,51 +19,79 @@
 		}
 	});
 	
-	// Home Page
+	// Load the RTE Builder
+	function load_rte_builder( url )
+	{
+		$.get( url, function(data){
+			$modal
+				.find('.contents')
+					.html( $( '#mainContent .contents', data ).html() )
+					.find('div.heading')
+						.remove()
+						.end()
+					.end()
+				.dialog( 'option', 'title', $( '#mainContent .edit', data ).text() )
+				.dialog('open');
+		});
+	}
+	
+	// Home Page - Trigger Toolset overlay
 	if ( $edit_toolset.length )
 	{
 		$edit_toolset.click(function(e){
 			e.preventDefault();
 			var $a = $(this).closest('a');
-			$.get( $a.attr('href'), function(data){
-				$modal
-					.find('.contents')
-						.html( $( '#mainContent .contents', data ).html() )
-						.find('div.heading')
-							.remove()
-							.end()
-						.end()
-					.dialog( 'option', 'title', $( '#mainContent .edit', data ).text() )
-					.dialog('open');
-			});
-			
+			// Load the RTE Builder
+			load_rte_builder( $a.attr('href') );
 		});
 	}
 	
-	// MyAccount
-	$('#registerUser select#rte_toolset_id').change(function(e){
+	// MyAccount - Trigger Toolset overlay
+	var
+	$my_toolset_id		= $('#registerUser select#rte_toolset_id')
+							.change(toggle_rte_edit_link),
+	$edit_my_toolset	= $('<input type="button" class="submit"/>')
+							.val( EE.rte.edit_text )
+	// Get the builder
+	function get_rte_toolset_builder()
+	{
+		$modal.dialog('option', {height: 365});
 		var
-		$this		= $(this),
 		builder_url	= EE.rte.toolset_builder_url.replace(/&amp;/g,'&'); // damn AMPs
-		
-		// My Custom Toolset
-		if ( $this.find('option:selected').text() == EE.rte.custom_toolset_text )
+		// My Custom Toolset - trigger edit on My Custom Toolset
+		if ( $my_toolset_id.find('option:selected').text() == EE.rte.custom_toolset_text )
 		{
 			// pass the toolset id if we have it
-			if ( $this.val() != 'new' )
+			if ( $my_toolset_id.val() != 'new' )
 			{
-				builder_url += '&rte_toolset_id=' + $this.val();
+				builder_url += '&rte_toolset_id=' + $my_toolset_id.val();
 			}
-			// get the builder and fill it in
-			$.get( builder_url, function(data){
-				$modal
-					.find('.contents')
-						.html( $( '#mainContent .contents', data ).html() )
-						.end()
-					.dialog('open');
-			});
+			// Load the RTE Builder
+			load_rte_builder( builder_url );
 		}
-	});
+	}
+	// add & remove the edit link
+	function toggle_rte_edit_link()
+	{
+		if ( $my_toolset_id.find('option:selected').text() == EE.rte.custom_toolset_text )
+		{
+			$my_toolset_id.parent().append( $edit_my_toolset );
+			if ( $my_toolset_id.val() == 'new' )
+			{
+				get_rte_toolset_builder();
+			}
+		}
+		else
+		{
+			$edit_my_toolset.remove();
+		}
+	}
+	// Run once
+	toggle_rte_edit_link();
+	// Observe click
+	$my_toolset_id
+		.parent()
+			.delegate('input.submit','click',get_rte_toolset_builder);
 	
 	
 	// Toolset Builder
@@ -115,6 +143,7 @@
 			update_rte_toolset();
 		});
 		
+		// Ajax submission
 		$('#rte-toolset-name')
 			.parents('form')
 				.submit(function( e ){
