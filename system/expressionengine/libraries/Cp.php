@@ -113,13 +113,12 @@ class Cp {
 		}
 		
 		$cp_table_template = array(
-				'table_open'		=> '<table class="mainTable" border="0" cellspacing="0" cellpadding="0">',
-				'row_start'			=> '<tr class="even">',
-				'row_alt_start'		=> '<tr class="odd">'
+			'table_open' => '<table class="mainTable" border="0" cellspacing="0" cellpadding="0">'
 		);
-
-		$cp_pad_table_template = $cp_table_template;
-		$cp_pad_table_template['table_open'] = '<table class="mainTable padTable" border="0" cellspacing="0" cellpadding="0">';
+		
+		$cp_pad_table_template = array(
+			'table_open' => '<table class="mainTable padTable" border="0" cellspacing="0" cellpadding="0">'
+		);
 
 		$user_q = $this->EE->member_model->get_member_data(
 			$this->EE->session->userdata('member_id'), 
