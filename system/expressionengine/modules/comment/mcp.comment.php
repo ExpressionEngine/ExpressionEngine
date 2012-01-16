@@ -153,13 +153,12 @@ class Comment_mcp {
 
 		$comments = array();
 
-		if ($comment->num_rows())
+		if (count($comment))
 		{
-			$channel = $this->_get_channel_info($comment->result());
-			$author = $this->_get_author_info($comment->result());
-			$comments = $this->_merge_comment_data($comment->result(), $channel, $author);
+			$channel = $this->_get_channel_info($comment);
+			$author = $this->_get_author_info($comment);
+			$comments = $this->_merge_comment_data($comment, $channel, $author);
 
-			$comment->free_result();
 			$channel->free_result();
 			$author->free_result();
 		}
@@ -233,8 +232,9 @@ class Comment_mcp {
 			 ! $this->EE->cp->allowed_group('can_edit_all_comments'))
 		{
 			$query = $this->EE->channel_model->get_channels(
-									(int) $this->EE->config->item('site_id'), 
-									array('channel_title', 'channel_id', 'cat_group'));
+				(int) $this->EE->config->item('site_id'), 
+				array('channel_title', 'channel_id', 'cat_group')
+			);
 		}
 		else
 		{
@@ -412,8 +412,8 @@ class Comment_mcp {
 		}
 
 		return $this->EE->db->select('member_id, screen_name, username')
-							->where_in('member_id', $ids)
-							->get('members');
+			->where_in('member_id', $ids)
+			->get('members');
 	}
 
 	// --------------------------------------------------------------------
@@ -468,15 +468,6 @@ class Comment_mcp {
 	{
 		// get filters
 		$this->_query_filters();
-
-		// get total number of comments
-		$count = (int) $this->EE->db->select('COUNT(*) as count')
-			->get_where('comments', array(
-				'site_id' => (int) $this->EE->config->item('site_id')
-			))->row('count');
-
-		// get filters
-		$this->_query_filters();
 		
 		foreach ($this->_sort as $col => $dir)
 		{
@@ -490,10 +481,37 @@ class Comment_mcp {
 
 		$this->EE->db->where("(`exp_comments`.`name` LIKE '%".$this->EE->db->escape_like_str($this->_keywords)."%' OR `exp_comments`.`email` LIKE '%".$this->EE->db->escape_like_str($this->_keywords)."%' OR `exp_comments`.`comment` LIKE '%".$this->EE->db->escape_like_str($this->_keywords)."%')", NULL, TRUE);			
 		
-		$comment_q = $this->EE->db->where('site_id', (int) $this->EE->config->item('site_id'))
-			->get('comments', $this->_limit, $this->_offset);
+		$comment_q = $this->EE->db->get_where(
+			'comments',
+			array('site_id' => (int) $this->EE->config->item('site_id'))
+		);
 
-		return array($count, $comment_q);
+
+//		->get('comments', $this->_limit, $this->_offset);
+
+
+		// This code will return every row in the selected channels if there is
+		// no filter. Potentially hundreds of thousands of rows. That's no good.
+		// We need the total rows, but a complicated search can be quite slow and
+		// we don't want to double up on a slow query. So getting around it with
+		// some private db methods for now. -pk
+		
+		$base_results = array();
+		
+		$count = $comment_q->num_rows();
+		$perpage = $this->_limit;
+		
+		$comment_q->_data_seek($this->_offset);
+
+		while ($perpage && ($row = $comment_q->_fetch_object()))
+		{
+			$perpage--;
+			$base_results[] = $row;
+		}
+
+		$comment_q->free_result();
+
+		return array($count, $base_results);
 	}
 
 	// --------------------------------------------------------------------	
@@ -583,11 +601,14 @@ class Comment_mcp {
 		$this->EE->subscription->unsubscribe('', $hash);
 
 		$data = array(
-				'title' 	=> lang('cmt_notification_removal'),
-				'heading'	=> lang('thank_you'),
-				'content'	=> lang('cmt_you_have_been_removed'),
-				'redirect'	=> '',
-				'link'		=> array($this->EE->config->item('site_url'), stripslashes($this->EE->config->item('site_name')))
+			'title' 	=> lang('cmt_notification_removal'),
+			'heading'	=> lang('thank_you'),
+			'content'	=> lang('cmt_you_have_been_removed'),
+			'redirect'	=> '',
+			'link'		=> array(
+				$this->EE->config->item('site_url'),
+				stripslashes($this->EE->config->item('site_name'))
+			)
 		);
 
 		$this->EE->output->show_message($data);
@@ -898,24 +919,24 @@ class Comment_mcp {
 		if ($author_id == 0)
 		{
 			$data = array(
-							'entry_id' => $new_entry_id,
-							'channel_id' => $new_channel_id,
-							'name'		=> $this->EE->input->post('name'),
-							'email'		=> $this->EE->input->post('email'),
-							'url'		=> $this->EE->input->post('url'),
-							'location'	=> $this->EE->input->post('location'),
-							'comment'	=> $this->EE->input->post('comment'),
-							'status'	=> $status
-						 );
+				'entry_id' => $new_entry_id,
+				'channel_id' => $new_channel_id,
+				'name'		=> $this->EE->input->post('name'),
+				'email'		=> $this->EE->input->post('email'),
+				'url'		=> $this->EE->input->post('url'),
+				'location'	=> $this->EE->input->post('location'),
+				'comment'	=> $this->EE->input->post('comment'),
+				'status'	=> $status
+			 );
 		}
 		else
 		{
 			$data = array(
-							'entry_id' => $new_entry_id,
-							'channel_id' => $new_channel_id,
-							'comment'	=> $this->EE->input->post('comment'),
-							'status'	=> $status
-						 );
+				'entry_id' => $new_entry_id,
+				'channel_id' => $new_channel_id,
+				'comment'	=> $this->EE->input->post('comment'),
+				'status'	=> $status
+			 );
 		}
 
 		$data['edit_date'] = $this->EE->localize->now;
@@ -951,14 +972,14 @@ class Comment_mcp {
 		}
 		
 
-		/* -------------------------------------------
-		/* 'update_comment_additional' hook.
-		/*  - Add additional processing on comment update.
-		*/
+		// -------------------------------------------
+		// 'update_comment_additional' hook.
+		//  - Add additional processing on comment update.
+		//
 			$edata = $this->EE->extensions->call('update_comment_additional', $comment_id, $data);
 			if ($this->EE->extensions->end_script === TRUE) return;
-		/*
-		/* -------------------------------------------*/
+		//
+		// -------------------------------------------
 		
 		$this->EE->functions->clear_caching('all');
 
@@ -981,10 +1002,12 @@ class Comment_mcp {
 		// Is email missing?
 		if ($str == '')
 		{
-			$this->EE->form_validation->set_message('_email_check', 	
-												lang('missing_email'));
+			$this->EE->form_validation->set_message(
+				'_email_check', 	
+				lang('missing_email')
+			);
+			
 			return FALSE;
-
 		}
 
 		// Is email valid?
@@ -992,16 +1015,22 @@ class Comment_mcp {
 		
 		if ( ! valid_email($str))
 		{
-			$this->EE->form_validation->set_message('_email_check', 
-												lang('invalid_email_address'));
+			$this->EE->form_validation->set_message(
+				'_email_check', 
+				lang('invalid_email_address')
+			);
+			
 			return FALSE;
 		}
 
 		// Is email banned?
 		if ($this->EE->session->ban_check('email', $str))
 		{
-			$this->EE->form_validation->set_message('_email_check', 
-												lang('banned_email'));
+			$this->EE->form_validation->set_message(
+				'_email_check', 
+				lang('banned_email')
+			);
+			
 			return FALSE;
 		}
 		
@@ -1017,8 +1046,11 @@ class Comment_mcp {
 	public function _move_check($str)
 	{
 		// failed by definition
-		$this->EE->form_validation->set_message('_move_check', 
-												lang('invalid_entry_id'));
+		$this->EE->form_validation->set_message(
+			'_move_check', 
+			lang('invalid_entry_id')
+		);
+		
 		return FALSE;
 	}
 	
@@ -1149,7 +1181,8 @@ class Comment_mcp {
 		$vars = array();
 
 		$vars['hidden'] = array(
-					'comment_ids'	=> implode('|', array_keys($comments)));
+			'comment_ids'	=> implode('|', array_keys($comments))
+		);
 								
 		$vars['blacklist_installed'] = (isset($this->EE->cp->installed_modules['blacklist'])) ? TRUE : FALSE;
 								
@@ -1267,18 +1300,18 @@ class Comment_mcp {
 			
 			foreach ($qry->result_array() as $row)
 			{
-				/* -------------------------------------------
-				/* 'update_comment_additional' hook.
-				/*  - Add additional processing on comment update.
-				*/
+				// -------------------------------------------
+				// 'update_comment_additional' hook.
+				//  - Add additional processing on comment update.
+				//
 					$edata = $this->EE->extensions->call(
 													'update_comment_additional', 
 													$row['comment_id'], $row
 												);
 
 					if ($this->EE->extensions->end_script === TRUE) return;
-				/*
-				/* -------------------------------------------*/
+				//
+				// -------------------------------------------
 			}
 		}
 
@@ -1389,14 +1422,14 @@ class Comment_mcp {
 
 		$comment_ids = explode('|', $comment_id);
 
-		/* -------------------------------------------
-		/* 'delete_comment_additional' hook.
-		/*  - Add additional processing on comment delete
-		*/
+		// -------------------------------------------
+		// 'delete_comment_additional' hook.
+		//  - Add additional processing on comment delete
+		//
 			$edata = $this->EE->extensions->call('delete_comment_additional', $comment_ids);
 			if ($this->EE->extensions->end_script === TRUE) return;
-		/*
-		/* -------------------------------------------*/
+		//
+		// -------------------------------------------
 
 		$this->EE->db->where_in('comment_id', $comment_ids);
 		$this->EE->db->delete('comments');
@@ -1404,8 +1437,10 @@ class Comment_mcp {
 		$this->update_stats($entry_ids, $channel_ids, $author_ids);
 
 		$this->EE->functions->clear_caching('all');
-		$this->EE->session->set_flashdata('message_success', 
-										  lang('comment_deleted'));
+		$this->EE->session->set_flashdata(
+			'message_success', 
+			lang('comment_deleted')
+		);
 
 		$this->EE->functions->redirect($this->base_url);
 	}
@@ -1425,9 +1460,9 @@ class Comment_mcp {
 		// Instantiate Typography class
 		$this->EE->load->library('typography');
 		$this->EE->typography->initialize(array(
-				'parse_images'		=> FALSE,
-				'word_censor'		=> ($this->EE->config->item('comment_word_censoring') == 'y') ? TRUE : FALSE)
-				);
+			'parse_images'		=> FALSE,
+			'word_censor'		=> ($this->EE->config->item('comment_word_censoring') == 'y') ? TRUE : FALSE
+		));
 
 
 		// Grab the required comments
