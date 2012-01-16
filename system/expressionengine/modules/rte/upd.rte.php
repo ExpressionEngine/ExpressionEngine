@@ -57,24 +57,10 @@ class Rte_upd {
 		$this->EE->db->insert_batch(
 			'actions',
 			array(
-				// enable/disable at user level - Ajax call from the Publish/Edit page
+				// Build the Toolset JS
 				array(
 					'class'		=> $this->name . '_mcp',
-					'method'	=> 'member_enable'
-				),
-				array(
-					'class'		=> $this->name . '_mcp',
-					'method'	=> 'member_disable'
-				),
-				// Settings
-				array(
-					'class'		=> $this->name . '_mcp',
-					'method'	=> 'index'
-				),
-				// Toolset Builder
-				array(
-					'class'		=> $this->name . '_mcp',
-					'method'	=> 'edit_toolset'
+					'method'	=> 'build_toolset_js'
 				)
 			)
 		);
