@@ -51,6 +51,7 @@
 	$my_toolset_id		= $('#registerUser select#rte_toolset_id')
 							.change(toggle_rte_edit_link),
 	$edit_my_toolset	= $('<input type="button" class="submit"/>')
+							.css('margin-left','5px')
 							.val( EE.rte.edit_text )
 	// Get the builder
 	function get_rte_toolset_builder()
@@ -172,6 +173,7 @@
 						{
 							$.post( action + '&' + $this.serialize(), function( data ){
 								$modal.dialog('close');
+								window.location = window.location;
 							});
 						}
 					},'json');
