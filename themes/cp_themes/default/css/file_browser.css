@@ -209,7 +209,7 @@ a.file_browser_thumbnail.last_row {
 #file_uploader.file_exists .file_exists,
 #file_uploader.after_upload .after_upload,
 #file_uploader.edit_modal .edit_modal {
-	display: inline;
+	display: inline-block;
 }
 
 #file_uploader .cancel:link,

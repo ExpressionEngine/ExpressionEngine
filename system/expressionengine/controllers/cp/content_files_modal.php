@@ -198,6 +198,12 @@ class Content_files_modal extends CI_Controller {
 		// Get the file data of the renamed file
 		$file = $this->_get_file($rename_file['file_id']);
 		
+		// Humanize Unix timestamp
+		$file['modified_date']	= $this->localize->set_human_time($file['modified_date']);
+		
+		// Views need to know if the file was replaced
+		$file['replace'] = $rename_file['replace'];
+		
 		// If renaming the file was unsuccessful try again
 		if ($rename_file['success'] === FALSE && $rename_file['error'] == 'retry')
 		{
