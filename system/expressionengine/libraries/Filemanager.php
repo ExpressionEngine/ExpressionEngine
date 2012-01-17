@@ -2871,15 +2871,17 @@ class Filemanager {
 		// Get dimensions for thumbnail
 		$dimensions = $this->EE->file_model->get_dimensions_by_dir_id($upload_dir_id);
 		$dimensions = $dimensions->result_array();
-		
+
 		// Regenerate thumbnails
 		$this->create_thumb(
 			$file_path,
 			array(
-				'server_path' => $upload_prefs['server_path'],
-				'file_name'  => basename($file_name),
-				'dimensions' => $dimensions
-			)
+				'server_path'	=> $upload_prefs['server_path'],
+				'file_name'		=> basename($file_name),
+				'dimensions'	=> $dimensions
+			),
+			TRUE, // Regenerate thumbnails
+			FALSE // Regenerate all images
 		);
 		
 		// If we're redirecting send em on
