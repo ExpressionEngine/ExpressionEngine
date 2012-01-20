@@ -609,7 +609,7 @@ class Content_edit extends CI_Controller {
 
 		foreach ($query->result_array() as $row)
 		{
-			if ( ! in_array($row['channel_id'], $this->assigned_channels))
+			if ( ! in_array($row['channel_id'], $this->allowed_channels))
 			{
 				$disallowed_ids = $row['entry_id'];
 			}
