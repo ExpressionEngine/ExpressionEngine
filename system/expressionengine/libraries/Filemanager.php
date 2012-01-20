@@ -883,7 +883,11 @@ class Filemanager {
 		
 		return array(
 			'rows'			=> $this->_browser_get_files($dir, $file_params),
-			'no_results' 	=> lang('no_uploaded_files'),
+			'no_results' 	=> sprintf(
+				lang('no_uploaded_files'), 
+				$this->EE->cp->masked_url('http://expressionengine.com/user_guide/cp/content/files/sync_files.html'),
+				BASE.AMP.'C=content_files'.AMP.'M=file_upload_preferences'
+			),
 			'pagination' 	=> array(
 				'per_page' 		=> $per_page,
 				'total_rows'	=> $this->EE->file_model->count_files($params['dir_id'])
