@@ -1241,19 +1241,43 @@ class Channel {
 				}
 				
 				// Check to see if we're dealing with a category request
-				$numeric_category = preg_match("#(^|\/)C(\d+)#", $this->query_string, $match);
+				$numeric_category = preg_match(
+					"#(^|\/)C(\d+)#", 
+					$this->query_string, 
+					$match
+				);
+				$query_string_array = explode("/", $this->query_string);
+				$word_category = array_search(
+					$this->reserved_cat_segment, 
+					$query_string_array
+				);
 				
-				if ($numeric_category OR in_array($this->reserved_cat_segment, explode("/", $this->query_string)))
+				if ($numeric_category OR $word_category !== FALSE)
 				{
 					$this->cat_request = TRUE;
 				}
 
 				// Numeric version of the category
-				if ($dynamic && $numeric_category)
+				if ($dynamic AND $numeric_category)
 				{
 					$cat_id = $match[2];
-					$qstring = trim_slashes(str_replace($match[0], '', $qstring));
+					$qstring = trim_slashes(
+						str_replace($match[0], '', $qstring)
+					);
 				}
+				elseif ($dynamic AND $word_category !== FALSE)
+				{
+					$cat_id_query = $this->EE->db->select('cat_id')
+						->get_where(
+							'categories',
+							array(
+								'cat_url_title' => $query_string_array[$word_category + 1]
+							)
+						);
+
+					$cat_id = $cat_id_query->row('cat_id');
+				}
+			
 
 				/** --------------------------------------
 				/**  Remove "N"
