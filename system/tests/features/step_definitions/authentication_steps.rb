@@ -1,7 +1,7 @@
 # Conditions
 
 Given /^I .* on (?:the )control panel .*?$/ do
-  visit "http://expressionengine2/system/"
+  visit "/system/"
 end
 
 Given /^I am logged out$/ do
