@@ -94,18 +94,21 @@ class Updater {
 	 */
 	private function _update_file_dimensions_table()
 	{
-		$this->EE->dbforge->add_column(
-			'file_dimensions',
-			array(
-				'site_id' => array(
-					'type'			=> 'int',
-					'constraint'	=> 4,
-					'unsigned'		=> TRUE,
-					'default'		=> '1',
-					'null'			=> FALSE
+		if ( ! $this->EE->db->field_exists('site_id', 'file_dimensions'))
+		{
+			$this->EE->dbforge->add_column(
+				'file_dimensions',
+				array(
+					'site_id' => array(
+						'type'			=> 'int',
+						'constraint'	=> 4,
+						'unsigned'		=> TRUE,
+						'default'		=> '1',
+						'null'			=> FALSE
+					)
 				)
-			)
-		);
+			);	
+		}
 	}
 	
 	// --------------------------------------------------------------------
@@ -165,59 +168,62 @@ class Updater {
 	 */
 	private function _add_developer_log_table()
 	{
-		$this->EE->dbforge->add_field(
-			array(
-				'log_id' => array(
-					'type'				=> 'int',
-					'constraint'		=> 10,
-					'unsigned'			=> TRUE,
-					'auto_increment'	=> TRUE
-				),
-				'timestamp' => array(
-					'type'				=> 'int',
-					'constraint'		=> 10,
-					'unsigned'			=> TRUE
-				),
-				'viewed' => array(
-					'type'				=> 'char',
-					'constraint'		=> 1,
-					'default'			=> 'n'
-				),
-				'description' => array(
-					'type'				=> 'text',
-					'null'				=> TRUE
-				),
-				'function' => array(
-					'type'				=> 'varchar',
-					'constraint'		=> 100,
-					'null'				=> TRUE
-				),
-				'line' => array(
-					'type'				=> 'int',
-					'constraint'		=> 10,
-					'unsigned'			=> TRUE,
-					'null'				=> TRUE
-				),
-				'file' => array(
-					'type'				=> 'varchar',
-					'constraint'		=> 255,
-					'null'				=> TRUE
-				),
-				'deprecated_since' => array(
-					'type'				=> 'varchar',
-					'constraint'		=> 10,
-					'null'				=> TRUE
-				),
-				'use_instead' => array(
-					'type'				=> 'varchar',
-					'constraint'		=> 100,
-					'null'				=> TRUE
+		if ( ! $this->EE->db->table_exists('developer_log'))
+		{
+			$this->EE->dbforge->add_field(
+				array(
+					'log_id' => array(
+						'type'				=> 'int',
+						'constraint'		=> 10,
+						'unsigned'			=> TRUE,
+						'auto_increment'	=> TRUE
+					),
+					'timestamp' => array(
+						'type'				=> 'int',
+						'constraint'		=> 10,
+						'unsigned'			=> TRUE
+					),
+					'viewed' => array(
+						'type'				=> 'char',
+						'constraint'		=> 1,
+						'default'			=> 'n'
+					),
+					'description' => array(
+						'type'				=> 'text',
+						'null'				=> TRUE
+					),
+					'function' => array(
+						'type'				=> 'varchar',
+						'constraint'		=> 100,
+						'null'				=> TRUE
+					),
+					'line' => array(
+						'type'				=> 'int',
+						'constraint'		=> 10,
+						'unsigned'			=> TRUE,
+						'null'				=> TRUE
+					),
+					'file' => array(
+						'type'				=> 'varchar',
+						'constraint'		=> 255,
+						'null'				=> TRUE
+					),
+					'deprecated_since' => array(
+						'type'				=> 'varchar',
+						'constraint'		=> 10,
+						'null'				=> TRUE
+					),
+					'use_instead' => array(
+						'type'				=> 'varchar',
+						'constraint'		=> 100,
+						'null'				=> TRUE
+					)
 				)
-			)
-		);
-		
-		$this->EE->dbforge->add_key('log_id', TRUE);
-		$this->EE->dbforge->create_table('developer_log');
+			);
+			
+			$this->EE->dbforge->add_key('log_id', TRUE);
+			$this->EE->dbforge->create_table('developer_log');
+		}
 	}
 	
 	
@@ -231,61 +237,66 @@ class Updater {
 	 */
 	private function _create_remember_me()
 	{
-		// Hotness coming up, drop it!
-		$this->EE->dbforge->drop_column('members', 'remember_me');
-		
-		
-		// This has the same structure as sessions, except for the
-		// primary key and "last_activity" fields. Also added site_id back
-		// for this table so that we can count active remember me's per
-		// member per site
-		$this->EE->dbforge->add_field(array(
-			'remember_me_id'	=> array(
-				'type'				=> 'VARCHAR',
-				'constraint'		=> 40,
-				'default'			=> '0'
-			),
-			'member_id'			=> array(
-				'type'				=> 'INT',
-				'constraint'		=> 10,
-				'default'			=> '0'
-			),
-			'ip_address'		=> array(
-				'type'				=> 'VARCHAR',
-				'constraint'		=> 16,
-				'default'			=> '0'
-			),
-			'user_agent'		=> array(
-				'type'				=> 'VARCHAR',
-				'constraint'		=> 120,
-				'default'			=> ''
-			),
-			'admin_sess'		=> array(
-				'type'				=> 'TINYINT',
-				'constraint'		=> 1,
-				'default'			=> '0'
-			),
-			'site_id'			=> array(
-				'type'				=> 'INT',
-				'constraint'		=> 4,
-				'default'			=> '1'
-			),
-			'expiration'		=> array(
-				'type'				=> 'INT',
-				'constraint'		=> 10,
-				'default'			=> '0'
-			),
-			'last_refresh'		=> array(
-				'type'				=> 'INT',
-				'constraint'		=> 10,
-				'default'			=> '0'
-			)
-		));
-		
-		$this->EE->dbforge->add_key('remember_me_id', TRUE);
-		$this->EE->dbforge->add_key('member_id');
-		
-		$this->EE->dbforge->create_table('remember_me');
+		if ($this->EE->db->field_exists('members', 'remember_me'))
+		{
+			// Hotness coming up, drop it!
+			$this->EE->dbforge->drop_column('members', 'remember_me');	
+		}
+
+		if ( ! $this->EE->db->table_exists('remember_me'))
+		{
+			// This has the same structure as sessions, except for the
+			// primary key and "last_activity" fields. Also added site_id back
+			// for this table so that we can count active remember me's per
+			// member per site
+			$this->EE->dbforge->add_field(array(
+				'remember_me_id'	=> array(
+					'type'				=> 'VARCHAR',
+					'constraint'		=> 40,
+					'default'			=> '0'
+				),
+				'member_id'			=> array(
+					'type'				=> 'INT',
+					'constraint'		=> 10,
+					'default'			=> '0'
+				),
+				'ip_address'		=> array(
+					'type'				=> 'VARCHAR',
+					'constraint'		=> 16,
+					'default'			=> '0'
+				),
+				'user_agent'		=> array(
+					'type'				=> 'VARCHAR',
+					'constraint'		=> 120,
+					'default'			=> ''
+				),
+				'admin_sess'		=> array(
+					'type'				=> 'TINYINT',
+					'constraint'		=> 1,
+					'default'			=> '0'
+				),
+				'site_id'			=> array(
+					'type'				=> 'INT',
+					'constraint'		=> 4,
+					'default'			=> '1'
+				),
+				'expiration'		=> array(
+					'type'				=> 'INT',
+					'constraint'		=> 10,
+					'default'			=> '0'
+				),
+				'last_refresh'		=> array(
+					'type'				=> 'INT',
+					'constraint'		=> 10,
+					'default'			=> '0'
+				)
+			));
+			
+			$this->EE->dbforge->add_key('remember_me_id', TRUE);
+			$this->EE->dbforge->add_key('member_id');
+			
+			$this->EE->dbforge->create_table('remember_me');
+		}
 	}
 }	
 /* END CLASS */
