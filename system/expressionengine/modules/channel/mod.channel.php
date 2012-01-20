@@ -5463,7 +5463,7 @@ class Channel {
 
 			$this->category_tree(array(
 				'group_id'		=> $group_ids,
-				'channel_id'	=> $channel_ids,
+				'channel_ids'	=> $channel_ids,
 				'path'			=> $c_path,
 				'template'		=> $cat_chunk,
 				'channel_array' => $channel_array,
@@ -5746,7 +5746,7 @@ class Channel {
 	  */
 	function category_tree($cdata = array())
 	{
-		$default = array('group_id', 'channel_id', 'path', 'template', 'depth', 'channel_array', 'parent_only', 'show_empty', 'strict_empty');
+		$default = array('group_id', 'channel_ids', 'path', 'template', 'depth', 'channel_array', 'parent_only', 'show_empty', 'strict_empty');
 
 		foreach ($default as $val)
 		{
@@ -5831,7 +5831,7 @@ class Channel {
 
 			if (count($channel_ids) && $strict_empty == 'yes')
 			{
-				$sql .= "AND exp_channel_titles.channel_id IN ('".implode("','", $channel_id)."') ";
+				$sql .= "AND exp_channel_titles.channel_id IN ('".implode("','", $channel_ids)."') ";
 			}
 			else
 			{
