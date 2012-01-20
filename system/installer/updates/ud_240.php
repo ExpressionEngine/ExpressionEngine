@@ -237,7 +237,7 @@ class Updater {
 	 */
 	private function _create_remember_me()
 	{
-		if ($this->EE->db->field_exists('members', 'remember_me'))
+		if ($this->EE->db->field_exists('remember_me', 'members'))
 		{
 			// Hotness coming up, drop it!
 			$this->EE->dbforge->drop_column('members', 'remember_me');	
