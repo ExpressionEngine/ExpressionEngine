@@ -1340,8 +1340,11 @@ class EE_Typography extends CI_Typography {
 
 /* CAREFUL
  *
- * This javascript currently breaks in the forum if
- * it outputs curly brackets. Test if you change it.
+ * This javascript currently breaks in the forum if it outputs curly brackets. 
+ * Test if you change it.
+ * 
+ * Leave the comments in the where (--j >= 0) loop. They make sure that when 
+ * the line breaks are removed EE doesn't see {if...
  *
  * Regex speed hat tip: http://blog.stevenlevithan.com/archives/faster-trim-javascript
 */ ?>
@@ -1360,7 +1363,7 @@ while (--i >= 0)
 }
 
 while (--j >= 0)
-{
+{/**/
 	if (el[j].getAttribute('<?php echo $span_marker ?>'))
 	{
 		el[j].innerHTML = out;
