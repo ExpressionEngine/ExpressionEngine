@@ -363,7 +363,6 @@ class Safecracker_lib
 					');
 				}
 				
-				//$custom_field_variables_row['field_data'] = $this->EE->localize->set_human_time($this->EE->localize->offset_entry_dst($this->entry($field_name), $this->entry('dst_enabled'), FALSE));
 				$custom_field_variables_row['field_data'] = $this->EE->localize->set_human_time($this->entry($field_name));
 			}
 			
@@ -514,8 +513,6 @@ class Safecracker_lib
 			//not necessary for edit forms
 			$this->EE->TMPL->tagparams['use_live_url'] = 'no';
 			
-			//$expiration_date = ($this->entry('expiration_date')) ? $this->entry('expiration_date')*1000 : $this->EE->localize->offset_entry_dst($this->EE->localize->now, $this->entry('dst_enabled'), FALSE)*1000;
-			//$comment_expiration_date = ($this->entry('comment_expiration_date')) ? $this->entry('comment_expiration_date')*1000 : $this->EE->localize->offset_entry_dst($this->EE->localize->now, $this->entry('dst_enabled'), FALSE)*1000;
 			$expiration_date = ($this->entry('expiration_date')) ? $this->entry('expiration_date')*1000 : $this->EE->localize->now*1000;
 			$comment_expiration_date = ($this->entry('comment_expiration_date')) ? $this->entry('comment_expiration_date')*1000 : $this->EE->localize->now*1000;
 			
@@ -543,7 +540,6 @@ class Safecracker_lib
 				{
 					if (in_array($key, $this->date_fields) || $this->get_field_type($key) == 'date')
 					{
-						//$this->parse_variables[$key] = ($this->entry($key)) ? $this->EE->localize->set_human_time($this->EE->localize->offset_entry_dst($this->entry($key), $this->entry('dst_enabled'), FALSE)) : '';
 						$this->parse_variables[$key] = ($this->entry($key)) ? $this->EE->localize->set_human_time($this->entry($key)) : '';
 					}
 					elseif (in_array($key, $this->checkboxes))
@@ -620,7 +616,6 @@ class Safecracker_lib
 			
 			if ($this->datepicker)
 			{
-				//$this->EE->javascript->output('$.datepicker.setDefaults({defaultDate: new Date('.($this->EE->localize->offset_entry_dst($this->EE->localize->now, FALSE, FALSE)*1000).')});');
 				$this->EE->javascript->output('$.datepicker.setDefaults({defaultDate: new Date('.($this->EE->localize->now*1000).')});');
 
 				if (strpos($this->EE->TMPL->tagdata, 'entry_date') !== FALSE)
@@ -1222,7 +1217,6 @@ class Safecracker_lib
 			{
 				if ($field['field_type'] == 'date')
 				{
-					//$_POST['field_id_'.$field['field_id']] = $_POST[$field['field_name']] = $this->EE->localize->set_human_time($this->EE->localize->offset_entry_dst($this->entry($field['field_name']), $this->entry('dst_enabled'), FALSE));
 					$_POST['field_id_'.$field['field_id']] = $_POST[$field['field_name']] = $this->EE->localize->set_human_time($this->entry($field['field_name']));
 				}
 				else if ($field['field_required'] == 'y')
@@ -1307,12 +1301,10 @@ class Safecracker_lib
 				{
 					if ($this->entry($field))
 					{
-						//$_POST[$field] = $this->EE->localize->set_human_time($this->EE->localize->offset_entry_dst($this->entry($field), $this->entry('dst_enabled'), FALSE));
 						$_POST[$field] = $this->EE->localize->set_human_time($this->entry($field));
 					}
 					else
 					{
-						//$_POST[$field] = $this->EE->localize->set_human_time($this->EE->localize->offset_entry_dst($this->EE->localize->now, $this->EE->input->post('dst_enabled'), FALSE));
 						$_POST[$field] = $this->EE->localize->set_human_time($this->EE->localize->now);
 					}
 				}
@@ -1490,7 +1482,6 @@ class Safecracker_lib
 			{
 				if ($this->entry($field) && ! is_numeric($this->entry($field)))
 				{
-					//$this->entry[$field] = $this->EE->localize->offset_entry_dst($this->EE->localize->convert_human_date_to_gmt($this->entry($field)), $this->entry('dst_enabled'), FALSE);
 					$this->entry[$field] = $this->EE->localize->string_to_timestamp($this->entry($field));
 				}
 			}
@@ -1510,16 +1501,14 @@ class Safecracker_lib
 		if ($this->json)
 		{
 			return $this->send_ajax_response(
-				//$this->EE->javascript->generate_json(
-					array(
-						'success' => (empty($this->errors) && empty($this->field_errors)) ? 1 : 0,
-						'errors' => (empty($this->errors)) ? array() : $this->errors,
-						'field_errors' => (empty($this->field_errors)) ? array() : $this->field_errors,
-						'entry_id' => $this->entry('entry_id'),
-						'url_title' => $this->entry('url_title'),
-						'channel_id' => $this->entry('channel_id'),
-					)
-				//)
+				array(
+					'success' => (empty($this->errors) && empty($this->field_errors)) ? 1 : 0,
+					'errors' => (empty($this->errors)) ? array() : $this->errors,
+					'field_errors' => (empty($this->field_errors)) ? array() : $this->field_errors,
+					'entry_id' => $this->entry('entry_id'),
+					'url_title' => $this->entry('url_title'),
+					'channel_id' => $this->entry('channel_id'),
+				)
 			);
 		}
 		

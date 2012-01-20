@@ -20,7 +20,7 @@
 		<?=$table_html?>
 		
 		<script type="text/x-jquery-tmpl" id="thumbTmpl">
-			<a title="${file_name}" href="#" onclick="$.ee_filebrowser.placeImage('${file_id}'); return false;" class="file_browser_thumbnail">
+			<a title="${name}" href="#" onclick="$.ee_filebrowser.placeImage('${file_id}'); return false;" class="file_browser_thumbnail">
 				<img src="${thumb}?r=${modified_date}" class="${thumb_class}" data-dimensions="${file_hw_original}" />
 				<p>${short_name}</p>
 			</a>

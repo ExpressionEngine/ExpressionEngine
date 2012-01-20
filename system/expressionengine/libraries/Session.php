@@ -1221,20 +1221,20 @@ class EE_Session {
 		{
 			$this->EE->db->select('channel_id, channel_title');
 			$this->EE->db->order_by('channel_title');
-			$res = $this->EE->db->get_where('channels', 
-											array('site_id' => $this->EE->config->item('site_id')));
+			$res = $this->EE->db->get_where(
+				'channels', 
+				array('site_id' => $this->EE->config->item('site_id'))
+			);
 		}
 		else
 		{
 			$res = $this->EE->db->select('ec.channel_id, ec.channel_title')
-								->from(array('channel_member_groups ecmg', 'channels ec'))
-								->where('ecmg.channel_id', 'ec.channel_id',  FALSE)
-								->where('ecmg.group_id', $this->userdata['group_id'])
-								->where('site_id', $this->EE->config->item('site_id'))
-								->order_by('ec.channel_title')
-								->get();
-
-
+				->from(array('channel_member_groups ecmg', 'channels ec'))
+				->where('ecmg.channel_id', 'ec.channel_id',  FALSE)
+				->where('ecmg.group_id', $this->userdata['group_id'])
+				->where('site_id', $this->EE->config->item('site_id'))
+				->order_by('ec.channel_title')
+				->get();
 		}
 		
 		if ($res->num_rows() > 0)

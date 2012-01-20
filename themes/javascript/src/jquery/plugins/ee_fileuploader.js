@@ -121,6 +121,11 @@
 					if (typeof settings.close == 'function') {
 						settings.close.call(this, file_uploader, current_file);
 					}
+					
+					// Refresh the filebrowser if we're not deleting the file
+					if (delete_file === false) {
+						$.ee_filebrowser.reload();
+					}
 				}
 
 				file_uploader.html(original_upload_html);
@@ -248,7 +253,7 @@
 			source = source + '&directory_id=' + directory_id;
 			
 			// Add restrict_directory get variable if we need to restrict to a directory
-			if ($('#dir_choice_form:visible').size() <= 0) {
+			if ($('.dir_choice_container:visible').size() <= 0) {
 				source = source + '&restrict_directory=true';
 			}
 			
@@ -303,6 +308,9 @@
 		
 		// Change the step to step 2
 		change_class('after_upload');
+		
+		// Show/Hide "Edit Image" link based on whether or not it's an image
+		$('#edit_image').toggle(file.is_image);
 		
 		if (settings.type == "filemanager") {
 			// Create listeners for the edit_file and edit_image links (not buttons)

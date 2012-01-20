@@ -207,17 +207,19 @@ class Wizard extends CI_Controller {
 
 		// First try the current directory, if they are running the system with an admin.php file
 		$this->theme_path = substr($_SERVER['SCRIPT_FILENAME'], 0, -strlen(SELF));
-			
+
 		if (is_dir($this->theme_path.'themes'))
 		{
 			$this->theme_path .= 'themes/';
 		}
 		else
 		{
-			// must be in a public system folder so try one level back from current folder
-			$this->theme_path = preg_replace('/\b'.preg_quote(SYSDIR).'\b/', '', $this->theme_path).'themes/';
+			// Must be in a public system folder so try one level back from current folder.
+			// Replace only the LAST occurance of the system folder name with nil incase the
+			// system folder name appears more than once in the path.
+			$this->theme_path = preg_replace('/\b'.preg_quote(SYSDIR).'(?!.*'.preg_quote(SYSDIR).')\b/', '', $this->theme_path).'themes/';
 		}
-
+		
 		$this->root_theme_path = $this->theme_path;
 		$this->theme_path .= 'site_themes/';
 		$this->theme_path = str_replace('//', '/', $this->theme_path);

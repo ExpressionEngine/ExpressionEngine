@@ -151,7 +151,7 @@ class Pagination_object {
 		//
 			if ($this->EE->extensions->active_hook('channel_module_create_pagination') === TRUE)
 			{
-				$edata = $this->EE->extensions->universal_call('channel_module_create_pagination', $this);
+				$edata = $this->EE->extensions->universal_call('channel_module_create_pagination', $this, $count);
 				if ($this->EE->extensions->end_script === TRUE) return;
 			}
 		//

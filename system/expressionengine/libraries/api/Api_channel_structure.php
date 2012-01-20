@@ -446,6 +446,13 @@ class Api_channel_structure extends Api {
 			}
 		}
 		*/
+		
+		// for superadmins, assign it right away
+		if ($this->EE->session->userdata('group_id') == 1)
+		{
+			$this->EE->session->userdata['assigned_channels'][$channel_id] = $data['channel_title'];
+		}
+		
 		return $channel_id;
 	}
 

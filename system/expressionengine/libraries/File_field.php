@@ -128,6 +128,8 @@ class File_field {
 	 */
 	public function browser($config = array(), $endpoint_url = 'C=content_publish&M=filemanager_actions')
 	{
+		$this->EE->lang->loadfile('content');
+
 		// Are we on the publish page? If so, go ahead and load up the publish
 		// page javascript files
 		if (empty($config) OR (isset($config['publish']) AND $config['publish'] === TRUE))

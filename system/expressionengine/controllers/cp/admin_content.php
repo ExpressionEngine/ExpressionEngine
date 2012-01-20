@@ -1919,6 +1919,7 @@ class Admin_content extends CI_Controller {
 		// can't parse it, it's likely legacy data from when a URL was entered in a
 		// text field for the category image. Let's prompt the user to update the
 		// field before they save, otherwise the image will be cleared out.
+		$vars['cat_image_error'] = '';
 		if ( ! empty($vars['cat_image']) &&
 			$this->file_field->parse_field($vars['cat_image']) === FALSE)
 		{

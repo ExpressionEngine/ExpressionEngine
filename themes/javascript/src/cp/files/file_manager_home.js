@@ -48,9 +48,6 @@ $.ee_filemanager.file_uploader = function() {
 				$('.mainTable tbody tr:has(td:contains(' + file.file_id + ')):has(td:contains(' + file.file_name + '))').remove();
 			};
 			
-			// Clone the first valid row
-			var $first_row = $('.mainTable tbody tr:first').clone();
-			
 			// Build actions
 			file.actions = '';
 			$.each(EE.fileuploader.actions, function(index, val) {
