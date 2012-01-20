@@ -1,3 +1,5 @@
 source :rubygems
-gem "safariwatir"
-gem "watir-webdriver"
+gem "cucumber"
+gem "capybara"
+gem "capybara-webkit"
+gem "rspec"

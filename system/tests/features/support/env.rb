@@ -6,4 +6,4 @@ require 'rspec/expectations'
 Capybara.run_server = false 
 Capybara.app_host = 'http://myhost.com' 
 Capybara.default_selector = :css 
-Capybara.default_driver = :selenium 
+Capybara.default_driver = :webkit
