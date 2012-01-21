@@ -366,7 +366,7 @@ WysiHat.Element = (function( $ ){
  *  Modified by Joshua Peek
  */
 if (!window.getSelection) {
-	(function(){
+	(function($){
 
 		var
 		NULL = null,
@@ -464,7 +464,8 @@ if (!window.getSelection) {
 					{
 						var
 						container		= domRange[bStart ? 'startContainer' : 'endContainer'],
-						offset			= domRange[bStart ? 'startOffset' : 'endOffset'], textOffset = 0,
+						offset			= domRange[bStart ? 'startOffset' : 'endOffset'],
+						textOffset		= 0,
 						anchorNode		= DOMUtils.isDataNode(container) ? container : container.childNodes[offset],
 						anchorParent	= DOMUtils.isDataNode(container) ? container.parentNode : container,
 						cursorNode		= domRange._document.createElement('a'),
@@ -476,16 +477,6 @@ if (!window.getSelection) {
 							textOffset = offset;
 						}
 
-						if (anchorNode)
-						{
-							anchorParent.insertBefore( cursorNode, anchorNode );
-						}
-						else
-						{
-							anchorParent.appendChild(cursorNode);
-						}
-						cursor.moveToElementText(cursorNode);
-						cursorNode.parentNode.removeChild(cursorNode);
 
 						textRange.setEndPoint(bStart ? 'StartToStart' : 'EndToStart', cursor);
 						textRange[bStart ? 'moveStart' : 'moveEnd']('character', textOffset);
@@ -848,16 +839,50 @@ if (!window.getSelection) {
 				document.attachEvent('onselectionchange', function(){
 					selection._selectionChangeHandler();
 				});
+
+				setTimeout(function(){
+					selection._selectionChangeHandler();
+				},10);
 			}
 
 			Selection.prototype = {
 
 				rangeCount: 0,
-				_document: null,
+				_document:	null,
+				anchorNode:	null,
+				focusNode:	null,
 
 				_selectionChangeHandler: function()
 				{
-					this.rangeCount = this._selectionExists( this._document.selection.createRange() ) ? 1 : 0;
+					var
+					range	= this._document.selection.createRange(),
+					text	= range.text.split(/\r|\n/),
+					$parent	= $( range.parentElement() ),
+					a_re, $a, f_re, $f;
+
+					if ( text.length > 1 )
+					{
+						a_re	= new RegExp( text[0] + '$' );
+						f_re	= new RegExp( '^' + text[text.length-1] );
+
+						$parent.children().each(function(){
+							if ( $(this).text().match( a_re ) )
+							{
+								this.anchorNode = this;
+							}
+							if ( $(this).text().match( f_re ) )
+							{
+								this.focusNode = this;
+							}
+						});
+					}
+					else
+					{
+						this.anchorNode = $parent.get(0);
+						this.focusNode	= this.anchorNode;
+					}
+
+					this.rangeCount = this._selectionExists( range ) ? 1 : 0;
 				},
 				_selectionExists: function( textRange )
 				{
@@ -871,7 +896,9 @@ if (!window.getSelection) {
 					textRange	= range._toTextRange();
 					if ( ! this._selectionExists(selection) )
 					{
-						textRange.select();
+						try {
+ 							textRange.select();
+						} catch(e) {}
 					}
 					else
 					{
@@ -910,6 +937,16 @@ if (!window.getSelection) {
 				toString: function()
 				{
 					return this._document.selection.createRange().text;
+				},
+				isCollapsed: function()
+				{
+					var range = document.createRange();
+					return range.collapsed;
+				},
+				deleteFromDocument: function()
+				{
+					var textRange = this._document.selection.createRange();
+					textRange.pasteHTML('');
 				}
 			};
 
@@ -921,7 +958,7 @@ if (!window.getSelection) {
 			return function() { return selection; };
 		})();
 
-	})();
+	})(jQuery);
 }
 
 jQuery.extend(Range.prototype, (function(){
@@ -1086,11 +1123,7 @@ if ( typeof Selection == 'undefined' )
 		}
 
 		$('body')
-			.delegate('input,textarea,*[contenteditable],*[contenteditable=true]', 'keydown', fieldChangeHandler )
-			.delegate('.WysiHat-editor', 'input paste', function(){
-				WysiHat.Formatting.cleanup( $(this) );
-			});
-
+			.delegate('input,textarea,*[contenteditable],*[contenteditable=true]', 'keydown', fieldChangeHandler );
 	});
 
 })(jQuery);
@@ -1758,33 +1791,40 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 		sel		= WIN.getSelection(),
 		a		= sel.anchorNode,
 		b		= sel.focusNode;
-		if ( a.nodeType == 3 &&
+
+		if ( a.nodeType &&
+			 a.nodeType == 3 &&
 			 a.nodeValue == '' )
 		{
 			a = a.nextSibling;
 		}
-		while ( t-- )
+
+		if ( $.browser.mozilla )
 		{
-			if ( $.inArray( tags[t], phrases ) != -1 )
+			while ( t-- )
 			{
-				phrase = TRUE;
-				break;
+				if ( $.inArray( tags[t], phrases ) != -1 )
+				{
+					phrase = TRUE;
+					break;
+				}
+			}
+			if ( phrase &&
+				 a.nodeType == 1 &&
+				 $.inArray( a.nodeName.toLowerCase(), phrases ) == -1 )
+			{
+				t = a.firstChild;
+				if ( t.nodeValue == '' )
+				{
+					t = t.nextSibling;
+				}
+				if ( t.nodeType == 1 )
+				{
+					a = t;
+				}
 			}
 		}
-		if ( phrase &&
-			 a.nodeType == 1 &&
-			 $.inArray( a.nodeName.toLowerCase(), phrases ) == -1 )
-		{
-			t = a.firstChild;
-			if ( t.nodeValue == '' )
-			{
-				t = t.nextSibling;
-			}
-			if ( t.nodeType == 1 )
-			{
-				a = t;
-			}
-		}
+
 		while ( a.nodeType != 1 &&
 			 	b.nodeType != 1 )
 		{
@@ -2193,7 +2233,8 @@ jQuery(document).ready(function(){
 			var
 			range	= DOC.selection.createRange(),
 			element	= range.parentElement();
-			$(element).trigger( 'WysiHat-selection:change' );
+			$(element)
+				.trigger( 'WysiHat-selection:change' );
 		}
 
  		$doc.bind( 'selectionchange', selectionChangeHandler );
@@ -2211,7 +2252,6 @@ jQuery(document).ready(function(){
 				 elementTagName == 'input' )
 			{
 				previousRange = null;
-				$(element).trigger( 'WysiHat-selection:change' );
 			}
 			else
 			{
@@ -2227,9 +2267,10 @@ jQuery(document).ready(function(){
 				{
 					element = element.parentNode;
 				}
-
-				$(element).trigger( 'WysiHat-selection:change' );
 			}
+
+			$(element)
+				.trigger( 'WysiHat-selection:change' );
 		};
 
 		$doc.mouseup( selectionChangeHandler );
@@ -2237,6 +2278,132 @@ jQuery(document).ready(function(){
 	}
 
 });
+(function($){
+
+	if ( ! $.browser.msie )
+	{
+		$('body')
+			.delegate('.WysiHat-editor', 'contextmenu click doubleclick', function(){
+
+				var
+				$editor		= $(this),
+				$field		= $editor.data('field'),
+				selection	= window.getSelection(),
+				range		= selection.getRangeAt(0);
+
+				if ( range )
+				{
+					range = range.cloneRange();
+				}
+				else
+				{
+					range = document.createRange();
+					range.selectNode( $editor.get(0).firstChild );
+				}
+
+				$field.data(
+					'saved-range',
+					{
+						startContainer:	range.startContainer,
+						startOffset:	range.startOffset,
+						endContainer: 	range.endContainer,
+						endOffset:		range.endOffset
+					}
+				);
+			 })
+			.delegate('.WysiHat-editor', 'paste', function(e){
+				var
+				original_event	= e.originalEvent,
+				$editor			= $(this),
+				$field			= $editor.data('field');
+
+				$field.data( 'original-html', $editor.children().detach() );
+
+			    if ( original_event.clipboardData &&
+					 original_event.clipboardData.getData )
+				{
+			        if ( /text\/html/.test( original_event.clipboardData.types ) )
+					{
+			            $editor.html( original_event.clipboardData.getData('text/html') );
+			        }
+			        else if ( /text\/plain/.test( original_event.clipboardData.types ) )
+					{
+			            $editor.html( original_event.clipboardData.getData('text/plain') );
+			        }
+			        else
+					{
+			            $editor.html('');
+			        }
+			        waitforpastedata( $editor );
+			        original_event.stopPropagation();
+			        original_event.preventDefault();
+			        return false;
+			    }
+			    else
+				{
+			        $editor.html('');
+			        waitforpastedata( $editor );
+			        return true;
+			    }
+			 });
+
+			function waitforpastedata( $editor )
+			{
+				if ( $editor.contents().length )
+				{
+					processpaste( $editor );
+			    }
+			    else
+				{
+					setTimeout(function(){
+						waitforpastedata( $editor );
+					}, 20 );
+			    }
+			}
+
+			function processpaste( $editor )
+			{
+				$editor
+					.remove('script,noscript,style,:hidden')
+					.html( $editor.get(0).innerHTML.replace( /></g, '> <') );
+
+				var
+				$field			= $editor.data('field'),
+				$original_html	= $field.data('original-html'),
+				pasted_content	= document.createTextNode( $editor.text() ),
+				saved_range		= $field.data('saved-range'),
+				range			= document.createRange();
+
+				$editor
+					.empty()
+					.append( $original_html );
+
+				range.setStart( saved_range.startContainer, saved_range.startOffset );
+				range.setEnd( saved_range.endContainer, saved_range.endOffset );
+
+				if ( ! range.collapsed )
+				{
+					range.deleteContents();
+				}
+
+				range.isnsertNode( pasted_content );
+
+				WysiHat.Formatting.cleanup( $editor );
+
+				$editor.trigger( 'WysiHat-editor:change' );
+			}
+		}
+		else
+		{
+			$('body')
+				.delegate('.WysiHat-editor', 'paste', function(){
+					WysiHat.Formatting.cleanup( $(this) );
+
+					$editor.trigger( 'WysiHat-editor:change' );
+				 });
+		}
+
+})(jQuery);
 
 WysiHat.Formatting = (function($){
 
@@ -2285,6 +2452,12 @@ WysiHat.Formatting = (function($){
 				.find('i').each(function(){
 				 	replaceElement($(this),'em');
 				 }).end()
+				.find('strike').each(function(){
+				 	replaceElement($(this),'del');
+				 }).end()
+				.find('u').each(function(){
+				 	replaceElement($(this),'ins');
+				 }).end()
 				.find('p:empty').remove();
 		},
 		format: function( $el )
@@ -2292,9 +2465,6 @@ WysiHat.Formatting = (function($){
 			var
 			re_blocks = new RegExp( '(<(?:ul|ol)>|<\/(?:' + WysiHat.Element.getBlocks().join('|') + ')>)[\r\n]*', 'g' ),
 			html = $el.html()
-						.replace( /<\/?[\w]+/g, function(tag){
-							return tag.toLowerCase();
-						 })
 						.replace('<p>&nbsp;</p>','')
 						.replace(/<br\/?><\/p>/,'</p>')
 						.replace( re_blocks,'$1\n' )
@@ -2325,15 +2495,20 @@ WysiHat.Formatting = (function($){
 			$clone			= $el.clone(),
 			el_id			= $el.attr('id'),
 			replaceElement	= WysiHat.Commands.replaceElement,
-			$container;
+			$container, html;
 
 
-			$container = $('<div></div>').html($clone.html());
+			$container = $('<div/>').html($clone.html());
 			this.cleanup( $container );
 
 
 			this.format( $container );
-			return $container.html();
+
+			return $container
+					.html()
+					.replace( /<\/?[A-Z]+/g, function(tag){
+						return tag.toLowerCase();
+					 });
 		}
 
 	};
