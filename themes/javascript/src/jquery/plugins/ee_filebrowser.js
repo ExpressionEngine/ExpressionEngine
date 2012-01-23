@@ -259,7 +259,7 @@
 			}
 		});
 		
-		var $table, $tables = $('#file_browser_body').find('table');
+		var $tables = $('#file_browser_body').find('table');
 
 		$tables.each(function() {
 			$table = $(this);

@@ -3435,6 +3435,11 @@ div.contentWrap {
 	border: 2px solid #c6220a;
 }
 
+#file_manager_toolbar {
+	float: left;
+	width: 14.5%;
+}
+
 #file_manager_edit_file {
 	float: right;
 	overflow: auto;

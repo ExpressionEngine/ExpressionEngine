@@ -2003,7 +2003,7 @@ class EE_Template {
 		
 		$this->log_item("Retrieving Template from Database: ".$template_group.'/'.$template);
 		 
-		$sql_404 = '';
+		$show_404 = FALSE;
 		$template_group_404 = '';
 		$template_404 = '';
 		
@@ -2041,6 +2041,8 @@ class EE_Template {
 						'template_groups.group_name'	=> $x[0],
 						'templates.template_name'		=> $x[1]
 					));
+
+					$show_404 = TRUE;
 				}
 				else
 				{
@@ -2071,6 +2073,8 @@ class EE_Template {
 					'template_groups.group_name'	=> $x[0],
 					'templates.template_name'		=> $x[1]
 				));
+
+				$show_404 = TRUE;
 			}	
 		}
 		
@@ -2080,7 +2084,7 @@ class EE_Template {
 			->where('template_groups.site_id', $site_id);
 		
 		// If we're not dealing with a 404, what template and group do we need?
-		if ($sql_404 === '')
+		if ($show_404 === FALSE)
 		{
 			// Definitely need a template
 			if ($template != '')
@@ -2107,8 +2111,8 @@ class EE_Template {
 			// is there a file we can automatically create this template from?
 			if ($this->EE->config->item('save_tmpl_files') == 'y' && $this->EE->config->item('tmpl_file_basepath') != '')
 			{
-				$t_group = ($sql_404 != '') ? $template_group_404 : $template_group;
-				$t_template = ($sql_404 != '') ? $template_404 : $template;
+				$t_group = ($show_404) ? $template_group_404 : $template_group;
+				$t_template = ($show_404) ? $template_404 : $template;
 
 				if ($t_new_id = $this->_create_from_file($t_group, $t_template, TRUE))
 				{

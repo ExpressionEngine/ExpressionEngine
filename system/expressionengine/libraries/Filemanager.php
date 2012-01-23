@@ -883,7 +883,11 @@ class Filemanager {
 		
 		return array(
 			'rows'			=> $this->_browser_get_files($dir, $file_params),
-			'no_results' 	=> lang('no_uploaded_files'),
+			'no_results' 	=> sprintf(
+				lang('no_uploaded_files'), 
+				$this->EE->cp->masked_url('http://expressionengine.com/user_guide/cp/content/files/sync_files.html'),
+				BASE.AMP.'C=content_files'.AMP.'M=file_upload_preferences'
+			),
 			'pagination' 	=> array(
 				'per_page' 		=> $per_page,
 				'total_rows'	=> $this->EE->file_model->count_files($params['dir_id'])
@@ -924,7 +928,7 @@ class Filemanager {
 		$return_all = ($ajax) ? FALSE : $return_all;		// safety - ajax calls can never get all info!
 		
 		$dirs = $this->directories(FALSE, $return_all);
-
+		
 		$return = isset($dirs[$dir_id]) ? $dirs[$dir_id] : FALSE;
 		
 		if ($ajax)
@@ -1032,7 +1036,7 @@ class Filemanager {
 	{
 		$dir_id = $this->EE->input->get('directory_id');
 		$dir = $this->directory($dir_id, FALSE, TRUE);
-
+		
 		$data = $dir ? call_user_func($this->config['directory_info_callback'], $dir) : array();
 		
 		if (count($data) == 0)
@@ -1085,6 +1089,9 @@ class Filemanager {
 	function upload_file($dir_id = '', $field = FALSE, $image_only = FALSE)
 	{
 		$dir = $this->directory($dir_id, FALSE, TRUE);
+
+		// TODO: Check $image_only value to verify it's correct and then clarify
+		// with Kevin
 		
 		// Override the allowed types of the dir if we're restricting to images
 		if ($image_only)
@@ -1190,9 +1197,15 @@ class Filemanager {
 	 * @access	public
 	 * @param	string	file path
 	 * @param	array	file and directory information
+	 * @param	bool	Whether or not to create a thumbnail; will do so
+	 *		regardless of missing_only setting because directory syncing
+	 *		needs to update thumbnails even if no image manipulations are
+	 *		updated.
+	 * @param	bool	Whether or not to replace missing image
+	 *		manipulations only (TRUE) or replace them all (FALSE).
 	 * @return	bool	success / failure
 	 */
-	function create_thumb($file_path, $prefs, $thumb = TRUE, $missing_only = FALSE)
+	function create_thumb($file_path, $prefs, $thumb = TRUE, $missing_only = TRUE)
 	{
 		$this->EE->load->library('image_lib');
 		$this->EE->load->helper('file');
@@ -1273,14 +1286,18 @@ class Filemanager {
 		
 			$resized_dir = rtrim(realpath($resized_path), DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
 			
-			// Does the thumb image exist - nuke it!
+			// Does the thumb image exist
 			if (file_exists($resized_path.$prefs['file_name']))
 			{
-				if ($missing_only)
+				// Only skip images that are custom image manipulations and when missing_only
+				// has been set to TRUE, but always make sure we update normal thumbnails
+				if (($missing_only AND $size['short_name'] != 'thumbs') OR
+					($size['short_name'] == 'thumbs' AND $thumb == FALSE))
 				{
 					continue;
 				}
 				
+				// Delete the image to make way for a new one
 				@unlink($resized_path.$prefs['file_name']);
 			}		
 
@@ -1751,6 +1768,12 @@ class Filemanager {
 
 		foreach ($files as &$file)
 		{
+			// Get thumb information
+			$thumb_info = $this->get_thumb($file, $dir['id']);
+			
+			// Copying file_name to name for addons
+			$file['name'] = $file['file_name'];
+			
 			// Setup the link
 			$file['file_name'] = '
 				<a href="#"
@@ -1760,14 +1783,9 @@ class Filemanager {
 					'.$file['file_name'].'
 				</a>';
 			
-			$file['short_name']	= ellipsize($file['title'], 13, 0.5);
-			$file['file_size']	= byte_format($file['file_size']);
-			$file['date']		= date('F j, Y g:i a', $file['modified_date']);
-			
-			// Copying file_name to name for addons
-			$file['name'] = $file['file_name'];
-			
-			$thumb_info				= $this->get_thumb($file, $dir['id']);
+			$file['short_name']		= ellipsize($file['title'], 13, 0.5);
+			$file['file_size']		= byte_format($file['file_size']);
+			$file['date']			= date('F j, Y g:i a', $file['modified_date']);
 			$file['thumb'] 			= $thumb_info['thumb'];
 			$file['thumb_class']	= $thumb_info['thumb_class'];
 		}
@@ -2857,15 +2875,17 @@ class Filemanager {
 		// Get dimensions for thumbnail
 		$dimensions = $this->EE->file_model->get_dimensions_by_dir_id($upload_dir_id);
 		$dimensions = $dimensions->result_array();
-		
+
 		// Regenerate thumbnails
 		$this->create_thumb(
 			$file_path,
 			array(
-				'server_path' => $upload_prefs['server_path'],
-				'file_name'  => basename($file_name),
-				'dimensions' => $dimensions
-			)
+				'server_path'	=> $upload_prefs['server_path'],
+				'file_name'		=> basename($file_name),
+				'dimensions'	=> $dimensions
+			),
+			TRUE, // Regenerate thumbnails
+			FALSE // Regenerate all images
 		);
 		
 		// If we're redirecting send em on
