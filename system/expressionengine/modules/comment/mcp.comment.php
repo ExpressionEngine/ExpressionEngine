@@ -113,7 +113,7 @@ class Comment_mcp {
 		$this->EE->table->set_base_url($filter_base_url);
 		$this->EE->table->set_columns($columns);
 
-		$params = array('perpage' => 2);
+		$params = array('perpage' => 50);
 		$defaults = array('sort' => array('comment_date' => 'desc'));
 
 		$data = $this->EE->table->datasource('_comment_data', $defaults, $params);
