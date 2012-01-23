@@ -32,6 +32,10 @@ Class Headings_rte {
 	
 	private $EE;
 	
+	public $globals = array();
+	public $scripts	= array();
+	public $styles	= null;
+	
 	/** -------------------------------------
 	/**  Constructor
 	/** -------------------------------------*/
@@ -41,8 +45,8 @@ Class Headings_rte {
 		$this->EE =& get_instance();
 		
 		// Anything else we need?
-		$this->EE->load->library('javascript');
-		$this->EE->javascript->set_global(array(
+		$this->EE->lang->loadfile('rte');
+		$this->globals = array(
 			'rte.headings.block_formats'	=> lang('block_formats'),
 			'rte.headings.paragraph'		=> lang('paragraph'),
 			'rte.headings.heading_1'		=> lang('heading_1'),
@@ -51,8 +55,7 @@ Class Headings_rte {
 			'rte.headings.heading_4'		=> lang('heading_4'),
 			'rte.headings.heading_5'		=> lang('heading_5'),
 			'rte.headings.heading_6'		=> lang('heading_6')
-		));
-		$this->EE->javascript->compile();
+		);
 	}
 
 	function definition()

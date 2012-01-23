@@ -36,13 +36,16 @@ class Rte_mcp {
 		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();
 
-		# Helpers
-		$this->EE->load->helper('form');
-		
 		# set some properties
-		$this->_base_url		= BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=rte';
-		$this->_form_base		= 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=rte';
-		$this->_myaccount_url	= BASE.AMP.'C=myaccount'.AMP.'M=custom_screen'.AMP.'module=rte'.AMP.'method=myaccount_settings';
+		if ( defined('BASE') )
+		{
+			# Helpers
+			$this->EE->load->helper('form');
+
+			$this->_base_url		= BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=rte';
+			$this->_form_base		= 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=rte';
+			$this->_myaccount_url	= BASE.AMP.'C=myaccount'.AMP.'M=custom_screen'.AMP.'module=rte'.AMP.'method=myaccount_settings';
+		}
 	}
 
 	// --------------------------------------------------------------------
@@ -584,49 +587,12 @@ class Rte_mcp {
 	{
 		$this->EE->load->library('javascript');
 		
+		# load in the event information so buttons can trigger 
+		$this->EE->javascript->set_global( 'rte.update_event', 'WysiHat-editor:change' );
+		$this->EE->javascript->compile();
+
 		# start empty
-		$js = '';
-		
-		# make sure we should load the JS
-		if ( $this->EE->config->item('rte_enabled') == 'y' &&
-		 	 $this->EE->session->userdata('rte_enabled') == 'y' )
-		{
-			# load in the event information so buttons can trigger 
-			$this->EE->javascript->set_global( 'rte.update_event', 'WysiHat-editor:change' );
-			$this->EE->javascript->compile();
-
-			# setup the framework
-			ob_start(); ?>
-
-			$(".rte").each(function(){
-				var
-				$field	= $(this),
-				$parent	= $field.parent(),
-
-				// set up the editor
-				$editor	= WysiHat.Editor.attach($field),
-
-				// establish the toolbar
-				toolbar	= new WysiHat.Toolbar();
-
-				toolbar.initialize($editor);
-
-<?php		$js = ob_get_contents();
-			ob_end_clean(); 
-
-			# load the tools
-			$this->EE->load->model(array('rte_toolset_model','rte_tool_model'));
-			$tools = $this->EE->rte_toolset_model->get_member_toolset_tools();
-			foreach ( $tools as $tool_id )
-			{
-				$js .= $this->EE->rte_tool_model->get_tool_js($tool_id);
-			}
-
-			$js .= '
-
-				});
-				';
-		}
+		$js = $this->build_js();
 		
 		# return vs. print… is there a better CI way to do this?
 		$print = $this->EE->input->get_post('print');
@@ -650,6 +616,64 @@ class Rte_mcp {
 
 	// --------------------------------------------------------------------
 	
+	/**
+	 * Actual JS code
+	 * 
+	 * @access	public
+	 * @return	void
+	 */
+	public function build_js( $toolset_id=FALSE )
+	{
+		# start empty
+		$js = '';
+
+		# determine the toolset
+		$this->EE->load->model(array('rte_toolset_model','rte_tool_model'));
+		if ( ! $toolset_id )
+		{
+			$toolset_id = $this->EE->rte_toolset_model->get_member_toolset();
+		}
+		$tools = $this->EE->rte_toolset_model->get_tools( $toolset_id );
+
+		# make sure we should load the JS
+		if ( $toolset_id &&
+		     $this->EE->config->item('rte_enabled') == 'y' )
+		{
+			# setup the framework
+			ob_start(); ?>
+
+			$(".rte").each(function(){
+				var
+				$field	= $(this),
+				$parent	= $field.parent(),
+
+				// set up the editor
+				$editor	= WysiHat.Editor.attach($field),
+
+				// establish the toolbar
+				toolbar	= new WysiHat.Toolbar();
+
+				toolbar.initialize($editor);
+
+<?php		$js = ob_get_contents();
+			ob_end_clean(); 
+
+			# load the tools
+			foreach ( $tools as $tool_id )
+			{
+				$js .= $this->EE->rte_tool_model->get_tool_js($tool_id);
+			}
+
+			$js .= '
+
+				});
+				';
+		}
+		return $js;
+	}
+
+	// --------------------------------------------------------------------
+
 	/**
 	 * RTE toggle JS
 	 *

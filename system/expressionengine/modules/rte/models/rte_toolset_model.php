@@ -112,21 +112,29 @@ class Rte_toolset_model extends CI_Model {
 	/**
 	 * Ge the tools for the member’s toolset
 	 * 
-	 * 
 	 * @param	bool
-	 * @return	array
+	 * @return	int
 	 */
-	public function get_member_toolset_tools()
+	public function get_member_toolset()
 	{
-		$toolset_id = $this->db
-						->select('rte_toolset_id')
-						->get_where(
-							'members',
-							array( 'member_id' => $this->session->userdata('member_id') ),
-							1
-						  )
-						->row('rte_toolset_id');
-		return $this->get_tools( $toolset_id );
+		$result	= $this->db
+					->select('rte_toolset_id')
+					->get_where(
+						'members',
+						array( 'member_id' => $this->session->userdata('member_id') ),
+						1
+					  );
+		# member’s choice
+		if ( $result->num_rows() )
+		{
+			$toolset_id	= $result->row('rte_toolset_id');
+		}
+		# site default
+		else
+		{
+			$toolset_id	= $this->config->item('rte_default_toolset_id');
+		}
+		return $toolset_id;
 	}
 	
 	/**

@@ -32,6 +32,10 @@ Class Strip_tags_rte {
 	
 	private $EE;
 	
+	public $globals = array();
+	public $scripts	= array();
+	public $styles	= null;
+	
 	/** -------------------------------------
 	/**  Constructor
 	/** -------------------------------------*/
@@ -41,11 +45,10 @@ Class Strip_tags_rte {
 		$this->EE =& get_instance();
 		
 		// Anything else we need?
-		$this->EE->load->library('javascript');
-		$this->EE->javascript->set_global(array(
-			'rte.strip_tags.label'	=> lang('strip_tags')
-		));
-		$this->EE->javascript->compile();
+		$this->EE->lang->loadfile('rte');
+		$this->globals = array(
+			'rte.strip_tags.label' => lang('strip_tags')
+		);
 	}
 
 	function definition()

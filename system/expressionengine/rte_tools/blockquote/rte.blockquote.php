@@ -32,6 +32,10 @@ Class Blockquote_rte {
 	
 	private $EE;
 	
+	public $globals = array();
+	public $scripts	= array();
+	public $styles	= null;
+	
 	/** -------------------------------------
 	/**  Constructor
 	/** -------------------------------------*/
@@ -41,12 +45,11 @@ Class Blockquote_rte {
 		$this->EE =& get_instance();
 		
 		// Anything else we need?
-		$this->EE->load->library('javascript');
-		$this->EE->javascript->set_global(array(
+		$this->EE->lang->loadfile('rte');
+		$this->globals = array(
 			'rte.blockquote.add'	=> lang('make_blockquote'),
 			'rte.blockquote.remove'	=> lang('remove_blockquote')
-		));
-		$this->EE->javascript->compile();
+		);
 	}
 
 	function definition()

@@ -30,6 +30,12 @@ $rte_tool_info = array(
 
 Class Underline_rte {
 
+	private $EE;
+	
+	public $globals = array();
+	public $scripts	= array();
+	public $styles	= null;
+	
 	/** -------------------------------------
 	/**  Constructor
 	/** -------------------------------------*/
@@ -39,12 +45,11 @@ Class Underline_rte {
 		$this->EE =& get_instance();
 		
 		// any other initialization stuff can go here and can be made available in the definition
-		$this->EE->load->library('javascript');
-		$this->EE->javascript->set_global(array(
+		$this->EE->lang->loadfile('rte');
+		$this->globals = array(
 			'rte.underline.add'		=> lang('make_underline'),
 			'rte.underline.remove'	=> lang('remove_underline')
-		));
-		$this->EE->javascript->compile();
+		);
 	}
 
 	function definition()

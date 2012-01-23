@@ -32,6 +32,10 @@ Class Unordered_list_rte {
 	
 	private $EE;
 	
+	public $globals = array();
+	public $scripts	= array();
+	public $styles	= null;
+	
 	/** -------------------------------------
 	/**  Constructor
 	/** -------------------------------------*/
@@ -41,12 +45,11 @@ Class Unordered_list_rte {
 		$this->EE =& get_instance();
 		
 		// Anything else we need?
-		$this->EE->load->library('javascript');
-		$this->EE->javascript->set_global(array(
+		$this->EE->lang->loadfile('rte');
+		$this->globals = array(
 			'rte.unordered_list.add'	=> lang('make_ul'),
 			'rte.unordered_list.remove'	=> lang('remove_ul')
-		));
-		$this->EE->javascript->compile();
+		);
 	}
 
 	function definition()

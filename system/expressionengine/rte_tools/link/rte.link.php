@@ -32,6 +32,10 @@ Class Link_rte {
 	
 	private $EE;
 	
+	public $globals = array();
+	public $scripts	= array();
+	public $styles	= null;
+	
 	/** -------------------------------------
 	/**  Constructor
 	/** -------------------------------------*/
@@ -41,8 +45,8 @@ Class Link_rte {
 		$this->EE =& get_instance();
 		
 		// Anything else we need?
-		$this->EE->load->library(array('cp','javascript'));
-		$this->EE->javascript->set_global(array(
+		$this->EE->lang->loadfile('rte');
+		$this->globals = array(
 			'rte.link.add'						=> lang('make_link'),
 			'rte.link_dialog.title'				=> lang('rte_link_preferences'),
 			'rte.link_dialog.url_field_label'	=> lang('url'),
@@ -51,22 +55,17 @@ Class Link_rte {
 			'rte.link_dialog.submit_button'		=> lang('submit'),
 			'rte.link_dialog.selection_error'	=> lang('selection_error'),
 			'rte.link_dialog.url_required'		=> lang('valid_url_required')
-		));
-		$this->EE->javascript->compile();
-		$this->EE->cp->add_js_script(array(
+		);
+		$this->scripts = array(
 			'ui'		=> 'dialog'
-		));
-		$this->EE->cp->add_to_head(
-			'
-			<style>
+		);
+		$this->styles = '
 				#rte_link_dialog p { margin-bottom:10px; }
 				#rte_link_dialog label { width: 90px; display: inline-block; }
 				#rte_link_dialog input, #rte_link_dialog select { width: 70%; margin-left: 10px; }
 				#rte_link_dialog .buttons { text-align: center; }
 				#rte_link_dialog button { cursor: pointer; }
-			</style>
-			'
-		);
+			';
 	}
 
 	function definition()

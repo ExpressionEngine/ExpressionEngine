@@ -32,6 +32,10 @@ Class Image_rte {
 	
 	private $EE;
 	
+	public $globals = array();
+	public $scripts	= array();
+	public $styles	= null;
+	
 	/** -------------------------------------
 	/**  Constructor
 	/** -------------------------------------*/
@@ -41,20 +45,17 @@ Class Image_rte {
 		$this->EE =& get_instance();
 		
 		// Anything else we need?
-		$this->EE->load->library(array('cp','javascript'));
-		$this->EE->javascript->set_global(array(
+		$this->EE->lang->loadfile('rte');
+		$this->globals = array(
 			'rte.image.add'				=> lang('insert_img'),
 			'rte.image.caption_text'	=> lang('rte_image_caption'),
 			'rte.image.center_error'	=> lang('rte_center_error')
-		));
-		$this->EE->cp->add_js_script(array(
+		);
+		$this->scripts = array(
 			'plugin'	=> 'ee_filebrowser',
 			'ui'		=> 'dialog'
-		));
-		$this->EE->javascript->compile();
-		$this->EE->cp->add_to_head(
-			'
-			<style>
+		);
+		$this->styles = '
 				.rte_image_caption { border-bottom: 1px solid #ccc; margin-bottom: 15px; padding-bottom: 15px; }
 				#rte_image_caption { width:300px; margin-left: 10px; }
 				#rte_image_figure_overlay { display:table; position: absolute; background: #999; background: rgba( 0, 0, 0, .5); }
@@ -62,9 +63,7 @@ Class Image_rte {
 				#rte_image_figure_overlay .button { float: none; margin: 5px; }
 				#rte_image_figure_overlay .align-left b, #rte_image_figure_overlay .align-center b, #rte_image_figure_overlay .align-right b,
 				#rte_image_figure_overlay .wrap b, #rte_image_figure_overlay .separate b, #rte_image_figure_overlay .delete b { text-indent: 0; }
-			</style>
-			'
-		);
+			';
 	}
 
 	function definition()

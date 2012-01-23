@@ -116,9 +116,6 @@ class Rte_tool_model extends CI_Model {
 	 */
 	public function get_tool_js( $tool_id = FALSE )
 	{
-		# we gotta start somewhere
-		$js = '';
-		
 		# get the tool
 		$results = $this->db->get_where(
 			'rte_tools',
@@ -127,11 +124,18 @@ class Rte_tool_model extends CI_Model {
 				'enabled'		=> 'y'
 			)
 		);
+		
 		if ( $results->num_rows() > 0 )
 		{
 			$tool		= $results->row();
 			$tool_name	= strtolower( str_replace( ' ', '_', $tool->name ) );
 			$tool_class	= ucfirst( $tool_name ).'_rte';
+			
+			$globals	= array();
+			$styles		= '';
+			$scripts	= '';
+			$tools		= '';
+			
 			# find the RTE tool file
 			foreach ( array(PATH_RTE, PATH_THIRD) as $tmp_path )
 			{
@@ -139,13 +143,64 @@ class Rte_tool_model extends CI_Model {
 				if ( file_exists($file) )
 				{
 					# load it in, instantiate the tool & add the definition
-					include_once( $file );
+					require_once( $file );
 					$TOOL = new $tool_class();
-					$js = $TOOL->definition();
+					
+					# Styles?
+					if ( $TOOL->styles )
+					{
+						$styles .= $TOOL->styles;
+					}
+					
+					# Globals?
+					if ( count( $TOOL->globals ) )
+					{
+						$globals = array_merge( $globals, $TOOL->globals );
+					}
+					
+					# Scripts?
+					if ( count( $TOOL->scripts ) )
+					{
+						$scripts .= $this->_load_js_files( $TOOL->scripts );
+					}
+					
+					# get the tool definition
+					$tools .= $TOOL->definition();
+
 					break;
 				}
 			}
 		}
+		
+		# compile it all
+		$js	= '';
+		
+		if ( count( $globals ) )
+		{
+			$js .= 'if ( typeof EE === "undefined" ){ EE = {}; }';
+			foreach ( $globals as $key => $val )
+			{
+				$parts	= explode( '.', $key );
+				$i		= 0;
+				$length = count( $parts ) - 1;
+				while ( $i < $length )
+				{
+					# prefix
+					$j		= 0;
+					$prefix	= '';
+					while ( $j < $i ){ $prefix .= $parts[$j++]; }
+					$var = 'EE.' . ( ! empty($prefix) ? $prefix . '.' : '' ) . $parts[$i++];
+					$js .= 'if ( typeof ' . $var . ' === "undefined" ){ ' . $var . ' = {}; }';
+				}
+				$js .= "EE.{$key} = '{$val}';\r\n";
+			}
+		}
+		
+		$js .= '$("<style>' . preg_replace( '/\\s+/', ' ', $styles ) . '</style>").appendTo("head");';
+		
+		$js .= $scripts;
+		$js .= $tools;
+		
 		return $js;
 	}
 
@@ -227,6 +282,78 @@ class Rte_tool_model extends CI_Model {
 			->delete('rte_tools');
 	}
 	
+	/**
+	 * Loads JS library files
+	 * 
+	 * Note: This is partially borrowed from the combo loader
+	 * 
+	 * @access	private
+	 * @param	array
+	 * @return	array
+	 */
+	private function _load_js_files( $load=array() )
+	{
+		$folder = $this->config->item('use_compressed_js') == 'n' ? 'src' : 'compressed';
+		if ( ! defined('PATH_JQUERY'))
+		{
+			define('PATH_JQUERY', PATH_THEMES.'javascript/'.$folder.'/jquery/');
+		}
+		$types	= array(
+			'effect'	=> PATH_JQUERY.'ui/jquery.effects.',
+			'ui'		=> PATH_JQUERY.'ui/jquery.ui.',
+			'plugin'	=> PATH_JQUERY.'plugins/',
+			'file'		=> PATH_THEMES.'javascript/'.$folder.'/',
+			'package'	=> PATH_THIRD,
+			'fp_module'	=> PATH_MOD
+		);
+		
+		$contents = '';
+		
+		foreach ( $types as $type => $path )
+		{
+			if ( isset( $load[$type] ) )
+			{
+				$files = $load[$type];
+				if ( ! is_array( $files ) )
+				{
+					$files = array( $files );
+				}
+				foreach ( $files as $file )
+				{
+					if ( $type == 'package' OR $type == 'fp_module' )
+					{
+						$file = $file.'/javascript/'.$file;
+					}
+					elseif ( $type == 'file' )
+					{
+						$parts = explode('/', $file);
+						$file = array();
+
+						foreach ($parts as $part)
+						{
+							if ($part != '..')
+							{
+								$file[] = $this->security->sanitize_filename($part);
+							}
+						}
+
+						$file = implode('/', $file);
+					}
+					else
+					{
+						$file = $this->security->sanitize_filename($file);
+					}
+
+					$file = $path.$file.'.js';
+					if (file_exists($file))
+					{
+						$contents .= file_get_contents($file)."\n\n";
+					}
+				}
+			}
+		}
+		return $contents;
+	}
 
 }
 // END CLASS
