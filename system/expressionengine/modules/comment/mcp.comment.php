@@ -508,12 +508,15 @@ class Comment_mcp {
 		$count = $comment_q->num_rows();
 		$perpage = $this->_limit;
 
-		$comment_q->_data_seek($this->_offset);
-
-		while ($perpage && ($row = $comment_q->_fetch_object()))
+		if ($this->_offset < $count)
 		{
-			$perpage--;
-			$base_results[] = $row;
+			$comment_q->_data_seek($this->_offset);
+
+			while ($perpage && ($row = $comment_q->_fetch_object()))
+			{
+				$perpage--;
+				$base_results[] = $row;
+			}
 		}
 
 		$comment_q->free_result();
@@ -574,6 +577,11 @@ class Comment_mcp {
 		$this->_status = $this->EE->input->get_post('status');
 		$this->_date_range = $this->EE->input->get_post('date_range');
 		$this->_keywords = $this->EE->input->get_post('keywords');
+
+		if ($this->_channel == 'all')
+		{
+			$this->_channel = NULL;
+		}
 
 		$this->_sort = $state['sort'];
 		$this->_offset = $state['offset'];
