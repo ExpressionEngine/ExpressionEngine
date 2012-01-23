@@ -23,7 +23,7 @@ if ($EE_view_disable !== TRUE)
 			
 			<?=$table_html?>
 			
-			<? if ( ! empty($rows)): ?>
+			<?php if ( ! empty($rows)): ?>
 				<div class="tableFooter">
 					<div class="tableSubmit">
 						<?=form_submit('email_logs', lang('delete'), 'class="submit"')?>
@@ -31,7 +31,7 @@ if ($EE_view_disable !== TRUE)
 				
 					<?=$pagination_html?>
 				</div> <!-- tableFooter -->
-			<? endif ?>
+			<?php endif ?>
 			
 		<?=form_close()?>
 

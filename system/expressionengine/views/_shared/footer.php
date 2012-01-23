@@ -2,7 +2,7 @@
 
 <div id="footer">
 	<a rel="external" href="<?=$this->cp->masked_url('http://expressionengine.com/')?>"><img src="<?=$cp_theme_url?>images/ee_logo_footer.gif" alt="<?=APP_NAME?>" width="109" height="15" /></a>
-	<?=(IS_FREELANCER)?' Freelancer':''?> v<?=APP_VER?> <? echo ' - ';
+	<?=(IS_FREELANCER)?' Freelancer':''?> v<?=APP_VER?> <?php echo ' - ';
 	echo lang('build'). ' date&nbsp;&nbsp;'.APP_BUILD;?> - &copy; <?=lang('copyright')?> 2003 - <?= date('Y') ?> <a href="<?=$this->cp->masked_url('http://ellislab.com/')?>" rel="external">EllisLab, Inc.</a><br />
 	
 	<?php
