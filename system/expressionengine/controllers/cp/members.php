@@ -2376,10 +2376,10 @@ class Members extends CI_Controller {
 		
 		// If the user does not have access to any member groups, don't show the form
 		// and explain the situation
-		$vars['notice'] = ( ! count($member_groups->result()));
+		$vars['notice'] = ( ! $member_groups->num_rows());
 		$vars['sys_admin_email'] = $this->config->item('webmaster_email');
 		
-		if ($vars['notice'])
+		if ($vars['notice'] === TRUE)
 		{
 			return $this->load->view('members/register', $vars);
 		}

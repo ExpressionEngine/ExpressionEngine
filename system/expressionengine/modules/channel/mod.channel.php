@@ -1241,19 +1241,43 @@ class Channel {
 				}
 				
 				// Check to see if we're dealing with a category request
-				$numeric_category = preg_match("#(^|\/)C(\d+)#", $this->query_string, $match);
+				$numeric_category = preg_match(
+					"#(^|\/)C(\d+)#", 
+					$this->query_string, 
+					$match
+				);
+				$query_string_array = explode("/", $this->query_string);
+				$word_category = array_search(
+					$this->reserved_cat_segment, 
+					$query_string_array
+				);
 				
-				if ($numeric_category OR in_array($this->reserved_cat_segment, explode("/", $this->query_string)))
+				if ($numeric_category OR $word_category !== FALSE)
 				{
 					$this->cat_request = TRUE;
 				}
 
 				// Numeric version of the category
-				if ($dynamic && $numeric_category)
+				if ($dynamic AND $numeric_category)
 				{
 					$cat_id = $match[2];
-					$qstring = trim_slashes(str_replace($match[0], '', $qstring));
+					$qstring = trim_slashes(
+						str_replace($match[0], '', $qstring)
+					);
 				}
+				elseif ($dynamic AND $word_category !== FALSE)
+				{
+					$cat_id_query = $this->EE->db->select('cat_id')
+						->get_where(
+							'categories',
+							array(
+								'cat_url_title' => $query_string_array[$word_category + 1]
+							)
+						);
+
+					$cat_id = $cat_id_query->row('cat_id');
+				}
+			
 
 				/** --------------------------------------
 				/**  Remove "N"
@@ -5465,7 +5489,7 @@ class Channel {
 
 			$this->category_tree(array(
 				'group_id'		=> $group_ids,
-				'channel_id'	=> $channel_ids,
+				'channel_ids'	=> $channel_ids,
 				'path'			=> $c_path,
 				'template'		=> $cat_chunk,
 				'channel_array' => $channel_array,
@@ -5748,7 +5772,7 @@ class Channel {
 	  */
 	function category_tree($cdata = array())
 	{
-		$default = array('group_id', 'channel_id', 'path', 'template', 'depth', 'channel_array', 'parent_only', 'show_empty', 'strict_empty');
+		$default = array('group_id', 'channel_ids', 'path', 'template', 'depth', 'channel_array', 'parent_only', 'show_empty', 'strict_empty');
 
 		foreach ($default as $val)
 		{
@@ -5833,7 +5857,7 @@ class Channel {
 
 			if (count($channel_ids) && $strict_empty == 'yes')
 			{
-				$sql .= "AND exp_channel_titles.channel_id IN ('".implode("','", $channel_id)."') ";
+				$sql .= "AND exp_channel_titles.channel_id IN ('".implode("','", $channel_ids)."') ";
 			}
 			else
 			{
