@@ -1,4 +1,4 @@
-<?php
+<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 /*
 =====================================================
@@ -20,12 +20,12 @@
 */
 
 $rte_tool_info = array(
-	'rte_name'			=> 'Ordered List',
-	'rte_version'		=> '1.0',
-	'rte_author'		=> 'Aaron Gustafson',
-	'rte_author_url'	=> 'http://easy-designs.net/',
-	'rte_description'	=> 'Triggers the RTE to make the selected blocks into ordered list items',
-	'rte_definition'	=> Ordered_list_rte::definition()
+	'rte_tool_name'			=> 'Ordered List',
+	'rte_tool_version'		=> '1.0',
+	'rte_tool_author'		=> 'Aaron Gustafson',
+	'rte_tool_author_url'	=> 'http://easy-designs.net/',
+	'rte_tool_description'	=> 'Triggers the RTE to make the selected blocks into ordered list items',
+	'rte_tool_definition'	=> Ordered_list_rte::definition()
 );
 
 Class Ordered_list_rte {

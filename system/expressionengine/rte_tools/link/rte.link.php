@@ -20,12 +20,12 @@
 */
 
 $rte_tool_info = array(
-	'rte_name'			=> 'Link',
-	'rte_version'		=> '1.0',
-	'rte_author'		=> 'Aaron Gustafson',
-	'rte_author_url'	=> 'http://easy-designs.net/',
-	'rte_description'	=> 'Triggers the RTE to link the selected text',
-	'rte_definition'	=> Link_rte::definition()
+	'rte_tool_name'			=> 'Link',
+	'rte_tool_version'		=> '1.0',
+	'rte_tool_author'		=> 'Aaron Gustafson',
+	'rte_tool_author_url'	=> 'http://easy-designs.net/',
+	'rte_tool_description'	=> 'Triggers the RTE to link the selected text',
+	'rte_tool_definition'	=> Link_rte::definition()
 );
 
 Class Link_rte {

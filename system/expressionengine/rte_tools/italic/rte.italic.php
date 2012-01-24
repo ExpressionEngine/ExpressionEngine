@@ -1,4 +1,4 @@
-<?php
+<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 /*
 =====================================================
@@ -20,12 +20,12 @@
 */
 
 $rte_tool_info = array(
-	'rte_name'			=> 'Italic',
-	'rte_version'		=> '1.0',
-	'rte_author'		=> 'Aaron Gustafson',
-	'rte_author_url'	=> 'http://easy-designs.net/',
-	'rte_description'	=> 'Italicizes and de-italicizes text',
-	'rte_definition'	=> Italic_rte::definition()
+	'rte_tool_name'			=> 'Italic',
+	'rte_tool_version'		=> '1.0',
+	'rte_tool_author'		=> 'Aaron Gustafson',
+	'rte_tool_author_url'	=> 'http://easy-designs.net/',
+	'rte_tool_description'	=> 'Italicizes and de-italicizes text',
+	'rte_tool_definition'	=> Italic_rte::definition()
 );
 
 Class Italic_rte {

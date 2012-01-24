@@ -20,12 +20,12 @@
 */
 
 $rte_tool_info = array(
-	'rte_name'			=> 'Image',
-	'rte_version'		=> '1.0',
-	'rte_author'		=> 'Aaron Gustafson',
-	'rte_author_url'	=> 'http://easy-designs.net/',
-	'rte_description'	=> 'Inserts and manages image alignment in the RTE',
-	'rte_definition'	=> Image_rte::definition()
+	'rte_tool_name'			=> 'Image',
+	'rte_tool_version'		=> '1.0',
+	'rte_tool_author'		=> 'Aaron Gustafson',
+	'rte_tool_author_url'	=> 'http://easy-designs.net/',
+	'rte_tool_description'	=> 'Inserts and manages image alignment in the RTE',
+	'rte_tool_definition'	=> Image_rte::definition()
 );
 
 Class Image_rte {

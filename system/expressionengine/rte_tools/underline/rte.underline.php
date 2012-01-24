@@ -1,4 +1,4 @@
-<?php
+<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 /*
 =====================================================
@@ -20,12 +20,12 @@
 */
 
 $rte_tool_info = array(
-	'rte_name'			=> 'Underline',
-	'rte_version'		=> '1.0',
-	'rte_author'		=> 'Aaron Gustafson',
-	'rte_author_url'	=> 'http://easy-designs.net/',
-	'rte_description'	=> 'Underlines and de-underlines text',
-	'rte_definition'	=> Underline_rte::definition()
+	'rte_tool_name'			=> 'Underline',
+	'rte_tool_version'		=> '1.0',
+	'rte_tool_author'		=> 'Aaron Gustafson',
+	'rte_tool_author_url'	=> 'http://easy-designs.net/',
+	'rte_tool_description'	=> 'Underlines and de-underlines text',
+	'rte_tool_definition'	=> Underline_rte::definition()
 );
 
 Class Underline_rte {

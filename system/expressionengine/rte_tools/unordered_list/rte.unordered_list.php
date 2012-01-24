@@ -1,4 +1,4 @@
-<?php
+<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 /*
 =====================================================
@@ -20,12 +20,12 @@
 */
 
 $rte_tool_info = array(
-	'rte_name'			=> 'Unordered List',
-	'rte_version'		=> '1.0',
-	'rte_author'		=> 'Aaron Gustafson',
-	'rte_author_url'	=> 'http://easy-designs.net/',
-	'rte_description'	=> 'Triggers the RTE to make the selected blocks into unordered list items',
-	'rte_definition'	=> Unordered_list_rte::definition()
+	'rte_tool_name'			=> 'Unordered List',
+	'rte_tool_version'		=> '1.0',
+	'rte_tool_author'		=> 'Aaron Gustafson',
+	'rte_tool_author_url'	=> 'http://easy-designs.net/',
+	'rte_tool_description'	=> 'Triggers the RTE to make the selected blocks into unordered list items',
+	'rte_tool_definition'	=> Unordered_list_rte::definition()
 );
 
 Class Unordered_list_rte {
