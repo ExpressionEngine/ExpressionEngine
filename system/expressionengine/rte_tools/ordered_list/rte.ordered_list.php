@@ -32,10 +32,6 @@ Class Ordered_list_rte {
 	
 	private $EE;
 	
-	public $globals = array();
-	public $scripts	= array();
-	public $styles	= null;
-	
 	/** -------------------------------------
 	/**  Constructor
 	/** -------------------------------------*/
@@ -43,15 +39,23 @@ Class Ordered_list_rte {
 	{
 		// Make a local reference of the ExpressionEngine super object
 		$this->EE =& get_instance();
-		
-		// Anything else we need?
+	}
+
+	/** -------------------------------------
+	/**  Globals we need defined
+	/** -------------------------------------*/
+	function globals()
+	{
 		$this->EE->lang->loadfile('rte');
-		$this->globals = array(
+		return array(
 			'rte.ordered_list.add'		=> lang('make_ul'),
 			'rte.ordered_list.remove'	=> lang('remove_ul')
 		);
 	}
-
+	
+	/** -------------------------------------
+	/**  RTE Tool Definition
+	/** -------------------------------------*/
 	function definition()
 	{
 		ob_start(); ?>

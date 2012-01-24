@@ -32,10 +32,6 @@ Class Headings_rte {
 	
 	private $EE;
 	
-	public $globals = array();
-	public $scripts	= array();
-	public $styles	= null;
-	
 	/** -------------------------------------
 	/**  Constructor
 	/** -------------------------------------*/
@@ -43,10 +39,15 @@ Class Headings_rte {
 	{
 		// Make a local reference of the ExpressionEngine super object
 		$this->EE =& get_instance();
-		
-		// Anything else we need?
+	}
+
+	/** -------------------------------------
+	/**  Globals we need defined
+	/** -------------------------------------*/
+	function globals()
+	{
 		$this->EE->lang->loadfile('rte');
-		$this->globals = array(
+		return array(
 			'rte.headings.block_formats'	=> lang('block_formats'),
 			'rte.headings.paragraph'		=> lang('paragraph'),
 			'rte.headings.heading_1'		=> lang('heading_1'),
@@ -58,6 +59,9 @@ Class Headings_rte {
 		);
 	}
 
+	/** -------------------------------------
+	/**  RTE Tool Definition
+	/** -------------------------------------*/
 	function definition()
 	{
 		ob_start(); ?>

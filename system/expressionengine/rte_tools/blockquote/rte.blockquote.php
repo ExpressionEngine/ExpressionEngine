@@ -32,10 +32,6 @@ Class Blockquote_rte {
 	
 	private $EE;
 	
-	public $globals = array();
-	public $scripts	= array();
-	public $styles	= null;
-	
 	/** -------------------------------------
 	/**  Constructor
 	/** -------------------------------------*/
@@ -43,15 +39,23 @@ Class Blockquote_rte {
 	{
 		// Make a local reference of the ExpressionEngine super object
 		$this->EE =& get_instance();
-		
-		// Anything else we need?
+	}
+	
+	/** -------------------------------------
+	/**  Globals we need defined
+	/** -------------------------------------*/
+	function globals()
+	{
 		$this->EE->lang->loadfile('rte');
-		$this->globals = array(
+		return array(
 			'rte.blockquote.add'	=> lang('make_blockquote'),
 			'rte.blockquote.remove'	=> lang('remove_blockquote')
 		);
 	}
 
+	/** -------------------------------------
+	/**  RTE Tool Definition
+	/** -------------------------------------*/
 	function definition()
 	{
 		ob_start(); ?>

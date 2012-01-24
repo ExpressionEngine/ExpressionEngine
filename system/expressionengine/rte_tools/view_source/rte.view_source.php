@@ -32,10 +32,6 @@ Class View_source_rte {
 	
 	private $EE;
 	
-	public $globals = array();
-	public $scripts	= array();
-	public $styles	= null;
-	
 	/** -------------------------------------
 	/**  Constructor
 	/** -------------------------------------*/
@@ -43,18 +39,33 @@ Class View_source_rte {
 	{
 		// Make a local reference of the ExpressionEngine super object
 		$this->EE =& get_instance();
-		
-		// Anything else we need?
+	}
+
+	/** -------------------------------------
+	/**  Globals we need defined
+	/** -------------------------------------*/
+	function globals()
+	{
 		$this->EE->lang->loadfile('rte');
-		$this->globals = array(
+		return array(
 			'rte.view_source.code'		=> lang('view_code'),
 			'rte.view_source.content'	=> lang('view_content')
 		);
-		$this->scripts = array(
+	}
+	
+	/** -------------------------------------
+	/**  Libraries we need loaded
+	/** -------------------------------------*/
+	function libraries()
+	{
+		return array(
 			'plugin' => 'ba-resize'
 		);
 	}
-
+	
+	/** -------------------------------------
+	/**  RTE Tool Definition
+	/** -------------------------------------*/
 	function definition()
 	{
 		ob_start(); ?>

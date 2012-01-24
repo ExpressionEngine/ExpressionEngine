@@ -32,10 +32,6 @@ Class Italic_rte {
 
 	private $EE;
 	
-	public $globals = array();
-	public $scripts	= array();
-	public $styles	= null;
-	
 	/** -------------------------------------
 	/**  Constructor
 	/** -------------------------------------*/
@@ -43,15 +39,23 @@ Class Italic_rte {
 	{
 		// Make a local reference of the ExpressionEngine super object
 		$this->EE =& get_instance();
-		
-		// any other initialization stuff can go here and can be made available in the definition
+	}
+
+	/** -------------------------------------
+	/**  Globals we need defined
+	/** -------------------------------------*/
+	function globals()
+	{
 		$this->EE->lang->loadfile('rte');
-		$this->globals = array(
+		return array(
 			'rte.italics.add'		=> lang('make_italics'),
 			'rte.italics.remove'	=> lang('remove_italics')
 		);
 	}
-
+	
+	/** -------------------------------------
+	/**  RTE Tool Definition
+	/** -------------------------------------*/
 	function definition()
 	{
 		ob_start(); ?>

@@ -1,0 +1,32 @@
+.rte_image_caption {
+	border-bottom: 1px solid #ccc;
+	margin-bottom: 15px;
+	padding-bottom: 15px;
+}
+#rte_image_caption {
+	width:300px;
+	margin-left: 10px;
+}
+#rte_image_figure_overlay {
+	display:table;
+	position: absolute;
+	background: #999;
+	background: rgba( 0, 0, 0, .5);
+}
+#rte_image_figure_overlay p {
+	display: table-cell;
+	vertical-align: middle;
+	text-align:center;
+}
+#rte_image_figure_overlay .button {
+	float: none;
+	margin: 5px;
+}
+#rte_image_figure_overlay .align-left b,
+#rte_image_figure_overlay .align-center b,
+#rte_image_figure_overlay .align-right b,
+#rte_image_figure_overlay .wrap b,
+#rte_image_figure_overlay .separate b,
+#rte_image_figure_overlay .delete b {
+	text-indent: 0;
+}
