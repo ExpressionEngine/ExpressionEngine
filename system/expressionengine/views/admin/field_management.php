@@ -18,7 +18,6 @@ if ($EE_view_disable !== TRUE)
 		<?php $this->load->view('_shared/message');?>
 
 		<?php
-			$this->table->set_template($cp_table_template);
 			$this->table->set_heading(
 				array('data' => lang('id'), 'width' => '4%'),
 				lang('field_label'),
@@ -37,6 +36,7 @@ if ($EE_view_disable !== TRUE)
 						'<a href="'.BASE.AMP.'C=admin_content'.AMP.'M=field_edit'.AMP.'field_id='.$field['field_id'].AMP.'group_id='.$group_id.'">'.$field['field_label'].'</a>',
 						form_input(array(
 							'name'			=> 'field_name', 
+							'readonly'		=> 'readonly',
 							'value'			=> '{'.$field['field_name'].'}', 
 							'class'			=> 'input-copy',
 							'data-original'	=> '{'.$field['field_name'].'}'
@@ -49,7 +49,7 @@ if ($EE_view_disable !== TRUE)
 			}
 			else
 			{
-				$this->table->add_row(array('data' => lang('no_field_groups'), 'colspan' => 5));
+				$this->table->add_row(array('data' => lang('no_field_groups'), 'colspan' => 6));
 			}
 			
 			echo $this->table->generate();

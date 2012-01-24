@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -261,7 +261,31 @@ class Api_template_structure extends Api {
 	 */
 	function file_extensions($template_type)
 	{
-		return (isset($this->file_extensions[$template_type])) ? $this->file_extensions[$template_type] : '';
+		// Check our standard template types for a file extension
+		if (isset($this->file_extensions[$template_type]))
+		{
+			return $this->file_extensions[$template_type];
+		}
+		else // Check custom template types for a file extension
+		{
+			// -------------------------------------------
+			// 'template_types' hook.
+			//  - Provide information for custom template types.
+			//
+			$template_types = $this->EE->extensions->call('template_types', array());
+			//
+			// -------------------------------------------
+			
+			if ($template_types != NULL)
+			{
+				if (isset($template_types[$template_type]['template_file_extension']))
+				{
+					return $template_types[$template_type]['template_file_extension'];
+				}
+			}
+		}
+		
+		return '';
 	}
 
 	// --------------------------------------------------------------------	

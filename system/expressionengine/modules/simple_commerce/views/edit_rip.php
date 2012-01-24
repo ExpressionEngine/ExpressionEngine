@@ -44,7 +44,6 @@
 				<?=form_open($entries_form, '', $form_hidden)?>
 
 				<?php
-					$this->table->set_template($cp_table_template);
 					$this->table->set_heading($table_headings);
 
 					echo $this->table->generate($entries);

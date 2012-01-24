@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -74,6 +74,16 @@ class Pages_tab {
 		if ($pages_uri == '')
 		{
 			$this->EE->javascript->set_global('publish.pages.pagesUri', lang('example_uri'));
+			
+			$qry = $this->EE->db->select('configuration_value')
+								->where('configuration_name', 'template_channel_'.$channel_id)
+								->where('site_id', (int) $site_id)
+								->get('pages_configuration');
+			
+			if ($qry->num_rows() > 0)
+			{
+				$pages_template_id = (int) $qry->row('configuration_value');
+			}
 		}
 		else
 		{

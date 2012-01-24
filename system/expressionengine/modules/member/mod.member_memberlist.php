@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -72,29 +72,31 @@ class Member_memberlist extends Member {
 
 		if ($query->row('accept_user_email')  != 'y')
 		{
-			return $this->_var_swap($this->_load_element('email_user_message'),
-													array(
-															'lang:message'	=>	$this->EE->lang->line('mbr_email_not_accepted'),
-															'css_class'		=>	'highlight'
-														)
-													);
+			return $this->_var_swap(
+				$this->_load_element('email_user_message'),
+				array(
+					'lang:message'	=>	$this->EE->lang->line('mbr_email_not_accepted'),
+					'css_class'		=>	'highlight'
+				)
+			);
 		}
 
 		$data = array(
-						'hidden_fields' => array('MID' => $this->cur_id),
-						'action' 		=> $this->_member_path('send_email')
-					);
+			'hidden_fields' => array('MID' => $this->cur_id),
+			'action' 		=> $this->_member_path('send_email')
+		);
 
 		$data['id']		= 'email_console_form';
 
 		$this->_set_page_title($this->EE->lang->line('email_console'));
 
-		return $this->_var_swap($this->_load_element('email_form'),
-										 array(
-												'form_declaration'	=>	$this->EE->functions->form_declaration($data),
-												'name'				=>	$query->row('screen_name')
-											 )
-										);
+		return $this->_var_swap(
+			$this->_load_element('email_form'),
+			 array(
+				'form_declaration'	=>	$this->EE->functions->form_declaration($data),
+				'name'				=>	$query->row('screen_name')
+			)
+		);
 	}
 
 
@@ -160,13 +162,14 @@ class Member_memberlist extends Member {
 			{
 				if (($this->EE->session->userdata['last_email_date'] + ($lock*60)) > $this->EE->localize->now)
 				{
-					return $this->_var_swap($this->_load_element('email_user_message'),
-										array(
-												'lang:message'			=>	str_replace("%x", $lock, $this->EE->lang->line('mbr_email_timelock_not_expired')),
-												'css_class'				=>	'highlight',
-												'lang:close_window'		=>	$this->EE->lang->line('mbr_close_window')
-											)
-										);
+					return $this->_var_swap(
+						$this->_load_element('email_user_message'),
+						array(
+							'lang:message'			=>	str_replace("%x", $lock, $this->EE->lang->line('mbr_email_timelock_not_expired')),
+							'css_class'				=>	'highlight',
+							'lang:close_window'		=>	$this->EE->lang->line('mbr_close_window')
+						)
+					);
 				}
 			}
 		}
@@ -200,12 +203,13 @@ class Member_memberlist extends Member {
 
 		if ($query->row('accept_user_email')  != 'y')
 		{
-			return $this->_var_swap($this->_load_element('email_user_message'),
-									array(
-											'lang:message'	=>	$this->EE->lang->line('mbr_email_not_accepted'),
-											'css_class'		=>	'highlight'
-										)
-									);
+			return $this->_var_swap(
+				$this->_load_element('email_user_message'),
+				array(
+					'lang:message'	=>	$this->EE->lang->line('mbr_email_not_accepted'),
+					'css_class'		=>	'highlight'
+				)
+			);
 		}
 
 		$message  = stripslashes($_POST['message'])."\n\n";
@@ -271,15 +275,15 @@ class Member_memberlist extends Member {
 		if ($this->EE->config->item('log_email_console_msgs') == 'y')
 		{
 			$data = array(
-							'cache_date'		=> $this->EE->localize->now,
-							'member_id'			=> $this->EE->session->userdata('member_id'),
-							'member_name'		=> $this->EE->session->userdata['screen_name'],
-							'ip_address'		=> $this->EE->input->ip_address(),
-							'recipient'			=> $recipient,
-							'recipient_name'	=> $recipient_name,
-							'subject'			=> $subject,
-							'message'			=> $this->EE->security->xss_clean($message)
-						);
+				'cache_date'		=> $this->EE->localize->now,
+				'member_id'			=> $this->EE->session->userdata('member_id'),
+				'member_name'		=> $this->EE->session->userdata['screen_name'],
+				'ip_address'		=> $this->EE->input->ip_address(),
+				'recipient'			=> $recipient,
+				'recipient_name'	=> $recipient_name,
+				'subject'			=> $subject,
+				'message'			=> $this->EE->security->xss_clean($message)
+			);
 
 			$this->EE->db->query($this->EE->db->insert_string('exp_email_console_cache', $data));
 		}
@@ -302,12 +306,13 @@ class Member_memberlist extends Member {
 
 		$this->_set_page_title($this->EE->lang->line('mbr_aim_console'));
 
-		return $this->_var_swap($this->_load_element('aim_console'),
-										array(
-												'aol_im'			=>	$query->row('aol_im') ,
-												'lang:close_window'	=>	$this->EE->lang->line('mbr_close_window')
-											 )
-										);
+		return $this->_var_swap(
+			$this->_load_element('aim_console'),
+			array(
+				'aol_im'			=>	$query->row('aol_im') ,
+				'lang:close_window'	=>	$this->EE->lang->line('mbr_close_window')
+			 )
+		);
 	}
 
 
@@ -337,29 +342,30 @@ class Member_memberlist extends Member {
 		}
 
 		$data = array(
-						'hidden_fields' => array(
-													'to'		=> $query->row('icq') ,
-													'from'		=> $this->EE->session->userdata['screen_name'],
-													'fromemail'	=> ''
-												),
-						'action' 		=> 'http://wwp.icq.com/scripts/WWPMsg.dll',
-						'secure' 		=> FALSE
-					);
+			'hidden_fields' => array(
+				'to'		=> $query->row('icq') ,
+				'from'		=> $this->EE->session->userdata['screen_name'],
+				'fromemail'	=> ''
+			),
+			'action' 		=> 'http://wwp.icq.com/scripts/WWPMsg.dll',
+			'secure' 		=> FALSE
+		);
 
 
 		$this->_set_page_title($this->EE->lang->line('mbr_icq_console'));
 
-		return $this->_var_swap($this->_load_element('icq_console'),
-										array(
-												'form_declaration'	=>	$this->EE->functions->form_declaration($data),
-												'name'				=>	$query->row('screen_name') ,
-												'icq'				=>	$query->row('icq') ,
-												'icq_im'			=>	$query->row('icq') ,
-												'lang:recipient'	=>	$this->EE->lang->line('mbr_icq_recipient'),
-												'lang:subject'		=>	$this->EE->lang->line('mbr_icq_subject'),
-												'lang:message'		=>	$this->EE->lang->line('mbr_icq_message')
-											 )
-										);
+		return $this->_var_swap(
+			$this->_load_element('icq_console'),
+			array(
+				'form_declaration'	=>	$this->EE->functions->form_declaration($data),
+				'name'				=>	$query->row('screen_name') ,
+				'icq'				=>	$query->row('icq') ,
+				'icq_im'			=>	$query->row('icq') ,
+				'lang:recipient'	=>	$this->EE->lang->line('mbr_icq_recipient'),
+				'lang:subject'		=>	$this->EE->lang->line('mbr_icq_subject'),
+				'lang:message'		=>	$this->EE->lang->line('mbr_icq_message')
+			 )
+		);
 	}
 
 
@@ -495,7 +501,7 @@ class Member_memberlist extends Member {
 			$order_by 	= $x['1'];
 			$sort_order	= $x['2'];
 			$row_limit	= $x['3'];
-			$row_count	= $x['4'];			
+			$row_count	= $x['4'];
 			
 			// Which segment is this?  We need the NEXT segment to pass to pagination
 			$pag_uri_segment = array_search($this->cur_id, $this->EE->uri->segment_array()) + 1;
@@ -658,14 +664,15 @@ class Member_memberlist extends Member {
 					$row['url'] = "http://".$row['url'];
 				}
 
-				$temp = $this->_var_swap($temp,
-										array(
-												'aim_console'	=> "onclick=\"window.open('".$this->_member_path('aim_console/'.$row['member_id'])."', '_blank', 'width=240,height=360,scrollbars=yes,resizable=yes,status=yes,screenx=5,screeny=5');\"",
-												'icq_console'	=> "onclick=\"window.open('".$this->_member_path('icq_console/'.$row['member_id'])."', '_blank', 'width=650,height=580,scrollbars=yes,resizable=yes,status=yes,screenx=5,screeny=5');\"",
-												'yahoo_console'	=> "http://edit.yahoo.com/config/send_webmesg?.target=".$row['yahoo_im']."&amp;.src=pg",
-												'email_console'	=> "onclick=\"window.open('".$this->_member_path('email_console/'.$row['member_id'])."', '_blank', 'width=650,height=600,scrollbars=yes,resizable=yes,status=yes,screenx=5,screeny=5');\"",
-											)
-										);
+				$temp = $this->_var_swap(
+					$temp,
+					array(
+						'aim_console'	=> "onclick=\"window.open('".$this->_member_path('aim_console/'.$row['member_id'])."', '_blank', 'width=240,height=360,scrollbars=yes,resizable=yes,status=yes,screenx=5,screeny=5');\"",
+						'icq_console'	=> "onclick=\"window.open('".$this->_member_path('icq_console/'.$row['member_id'])."', '_blank', 'width=650,height=580,scrollbars=yes,resizable=yes,status=yes,screenx=5,screeny=5');\"",
+						'yahoo_console'	=> "http://edit.yahoo.com/config/send_webmesg?.target=".$row['yahoo_im']."&amp;.src=pg",
+						'email_console'	=> "onclick=\"window.open('".$this->_member_path('email_console/'.$row['member_id'])."', '_blank', 'width=650,height=600,scrollbars=yes,resizable=yes,status=yes,screenx=5,screeny=5');\"",
+					)
+				);
 
 				$avatar_path	= '';
 				$avatar_width	= '';
@@ -1153,10 +1160,9 @@ class Member_memberlist extends Member {
 		/**  Valid Fields for Searching
 		/** ----------------------------------------*/
 
-		$valid = array(	'screen_name', 'email', 'url',
-						'location', 'occupation', 'interests',
-						'aol_im', 'yahoo_im', 'msn_im', 'icq',
-						'bio', 'signature');
+		$valid = array('screen_name', 'email', 'url', 'location', 'occupation',
+			'interests', 'aol_im', 'yahoo_im', 'msn_im', 'icq', 'bio', 
+			'signature');
 
 		$custom_fields = FALSE;
 		$query = $this->EE->db->query("SELECT m_field_id, m_field_label FROM exp_member_fields WHERE m_field_public = 'y' ORDER BY m_field_order");
@@ -1262,16 +1268,16 @@ class Member_memberlist extends Member {
 		$hash = $this->EE->functions->random('md5');
 
 		$data = array(
-						'search_id'		=> $hash,
-						'search_date'	=> $this->EE->localize->now,
-						'member_id'		=> $this->EE->session->userdata('member_id'),
-						'keywords'		=> implode('|', $keywords),
-						'fields'		=> implode('|', $fields),
-						'ip_address'	=> $this->EE->input->ip_address(),
-						'total_results'	=> $query->num_rows,
-						'query'			=> $sql,
-						'site_id'		=> $this->EE->config->item('site_id')
-						);
+			'search_id'		=> $hash,
+			'search_date'	=> $this->EE->localize->now,
+			'member_id'		=> $this->EE->session->userdata('member_id'),
+			'keywords'		=> implode('|', $keywords),
+			'fields'		=> implode('|', $fields),
+			'ip_address'	=> $this->EE->input->ip_address(),
+			'total_results'	=> $query->num_rows,
+			'query'			=> $sql,
+			'site_id'		=> $this->EE->config->item('site_id')
+		);
 
 		$this->EE->db->query($this->EE->db->insert_string('exp_member_search', $data));
 

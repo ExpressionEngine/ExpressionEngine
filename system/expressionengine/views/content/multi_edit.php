@@ -18,8 +18,6 @@ if ($EE_view_disable !== TRUE)
 		<div class="pageContents">
 			<?=form_open('C=content_edit'.AMP.'M=update_multi_entries', '', $form_hidden)?>
 
-			<?php $this->table->set_template($cp_table_template) ?>
-
 <?php foreach ($entries->result() as $entry):?>
 
 	<?php 

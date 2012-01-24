@@ -245,7 +245,7 @@ $lang = array(
 'Order',
 
 'reserved_name' =>
-'The name you have chosen is a reserved word that can not be used.',
+'The name you have chosen is a reserved word that cannot be used.',
 
 'webpage' =>
 'Web Page',

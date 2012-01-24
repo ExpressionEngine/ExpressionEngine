@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -22,17 +22,21 @@
  * @author		ExpressionEngine Dev Team
  * @link		http://expressionengine.com
  */
-class File_upload_preferences_model extends CI_Model {
-
+class File_upload_preferences_model extends CI_Model
+{
 	/**
 	 * Get Upload Preferences
 	 *
-	 * @access	public
+	 * @deprecated 2.4, use get_file_upload_preferences() instead to support
+	 *		config variable overrides
 	 * @param	int
-	 * @return	mixed
+	 * @return	object
 	 */
 	function get_upload_preferences($group_id = NULL, $id = NULL)
 	{
+		$this->load->library('logger');
+		$this->logger->deprecated('2.4', 'File_upload_preferences_model::get_file_upload_preferences() to support config variable overrides');
+		
 		// for admins, no specific filtering, just give them everything
 		if ($group_id == 1)
 		{
@@ -81,6 +85,100 @@ class File_upload_preferences_model extends CI_Model {
 		return $upload_info;
 	}
 	
+	/**
+	 * Get Upload Preferences
+	 *
+	 * @access	public
+	 * @param	int $group_id Member group ID specified when returning allowed upload
+	 *		directories only for that member group
+	 * @param	int $id Specific ID of upload destination to return
+	 * @param	bool $ignore_site_id If TRUE, returns upload destinations for all sites
+	 * @return	array	Result array of DB object, possibly merged with custom
+	 * 		file upload settings
+	 */
+	function get_file_upload_preferences($group_id = NULL, $id = NULL, $ignore_site_id = FALSE)
+	{
+		// for admins, no specific filtering, just give them everything
+		if ($group_id != 1)
+		{
+			// non admins need to first be checked for restrictions
+			// we'll add these into a where_not_in() check below
+			$this->db->select('upload_id');
+			$no_access = $this->db->get_where('upload_no_access', array('member_group'=>$group_id));
+
+			if ($no_access->num_rows() > 0)
+			{
+				$denied = array();
+				foreach($no_access->result() as $result)
+				{
+					$denied[] = $result->upload_id;
+				}
+				$this->db->where_not_in('id', $denied);
+			}
+		}
+		
+		// Is there a specific upload location we're looking for?
+		if ( ! empty($id))
+		{
+			$this->db->where('id', $id);
+		}
+		
+		$this->db->from('upload_prefs');
+		
+		// By default, we will return upload destinations for the current site
+		// unless we are to ignore the site ID and return all
+		if ( ! $ignore_site_id)
+		{
+			$this->db->where('site_id', $this->config->item('site_id'));
+		}
+		
+		$this->db->order_by('name');
+		
+		// If we were passed an ID, just return the row
+		$result_array = ( ! empty($id)) ? $this->db->get()->row_array() : $this->db->get()->result_array();
+		
+		// Has the user set overrides in the upload_preferences config variable?
+		if ($this->config->item('upload_preferences') !== FALSE && count($result_array) > 0)
+		{
+			$upload_preferences = $this->config->item('upload_preferences');
+			
+			// If we are dealing with a single row
+			if (isset($result_array['id']))
+			{
+				// If there is an override preference set for this row
+				if (isset($upload_preferences[$result_array['id']]))
+				{
+					$result_array = array_merge($result_array, $upload_preferences[$result_array['id']]);
+				}
+			}
+			else // Multiple upload preference rows returned
+			{
+				// Loop through our results and see if any items need to be overridden
+				foreach ($result_array as &$upload_dir)
+				{
+					if (isset($upload_preferences[$upload_dir['id']]))
+					{
+						// Merge the database result with the custom result, custom keys
+						// overwriting database keys
+						$upload_dir = array_merge($upload_dir, $upload_preferences[$upload_dir['id']]);
+					}
+				}
+			}
+		}
+		
+		// Use upload destination ID as key for row for easy traversing
+		$return_array = ( ! empty($id)) ? $result_array : array();
+		if (empty($return_array))
+		{
+			foreach ($result_array as $row)
+			{
+				$return_array[$row['id']] = $row;
+			}
+		}
+		
+		return $return_array;
+	}
+	
 	// --------------------------------------------------------------------
 	
 	/**
@@ -88,17 +186,21 @@ class File_upload_preferences_model extends CI_Model {
 	 * 
 	 * @param integer $group_id The group id to get file preferences for
 	 * @param integer $id Specific upload directory ID if you just want settings for that
+	 * @param array $prefs_array Optional existing array to add the preferences to
 	 * @return array Associative array with ids as the keys and names as the values
 	 */
-	public function get_dropdown_array($group_id = NULL, $id = NULL)
+	public function get_dropdown_array($group_id = NULL, $id = NULL, $prefs_array = array())
 	{
-		$prefs = $this->get_upload_preferences($group_id, $id);
+		$prefs = $this->get_file_upload_preferences($group_id, $id);
 		
-		$prefs_array = array();
-		
-		foreach ($prefs->result() as $pref)
+		if (isset($prefs['id']))
 		{
-			$prefs_array[$pref->id] = $pref->name;
+			$prefs = array($prefs);
+		}
+		
+		foreach ($prefs as $pref)
+		{
+			$prefs_array[$pref['id']] = $pref['name'];
 		}
 		
 		return $prefs_array;

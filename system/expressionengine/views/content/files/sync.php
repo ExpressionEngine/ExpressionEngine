@@ -75,7 +75,8 @@ if ( ! $EE_view_disable)
 					<div id="progress_bar"></div>
 				</div>
 			</div>
-			
+			<?=form_close()?>
+
 			<script type="text/x-jquery-tmpl" id="sync_complete_template">
 				<div id="sync_complete">
 					<p><?=lang('sync_complete')?></p>

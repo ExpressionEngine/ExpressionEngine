@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -119,7 +119,7 @@ class Api_channel_entries extends Api {
 			return ($this->autosave) ? $this->errors : FALSE;
 		}
 		
-		$this->_prepare_data($data, $mod_data);
+		$this->_prepare_data($data, $mod_data, $autosave);
 		$this->_build_relationships($data);
 
 		$meta = array(
@@ -254,7 +254,7 @@ class Api_channel_entries extends Api {
 			return ($this->autosave) ? $this->errors : FALSE;
 		}
 		
-		$this->_prepare_data($data, $mod_data);
+		$this->_prepare_data($data, $mod_data, $autosave);
 		
 		$this->_build_relationships($data);
 		
@@ -920,9 +920,12 @@ class Api_channel_entries extends Api {
 		// Is this user allowed to post here?
 		$this->_cache['assigned_channels'] = $this->EE->functions->fetch_assigned_channels();
 		
-		if ( ! in_array($this->channel_id, $this->_cache['assigned_channels']))
+		if ($this->EE->session->userdata('group_id') != 1)
 		{
-			show_error($this->EE->lang->line('unauthorized_for_this_channel'));
+			if ( ! in_array($this->channel_id, $this->_cache['assigned_channels']))
+			{
+				show_error($this->EE->lang->line('unauthorized_for_this_channel'));
+			}
 		}
 		
 		// Make sure all the fields have a key in our data array even
@@ -1120,7 +1123,7 @@ class Api_channel_entries extends Api {
 		}
 		
 		
-		//	Convert dates to unix timestamps
+		//	Convert built-in date fields to UNIX timestamps
 
 		$dates = array('entry_date');
 
@@ -1138,21 +1141,14 @@ class Api_channel_entries extends Api {
 		
 		foreach($dates as $date)
 		{
-			if ( ! is_numeric($data[$date]))
+			if ( ! is_numeric($data[$date]) && trim($data[$date]))
 			{
-				$data[$date] = $this->EE->localize->convert_human_date_to_gmt($data[$date]);
+				$data[$date] = $this->EE->localize->string_to_timestamp($data[$date]);
 			}
 			
-			if ( ! is_numeric($data[$date]))
+			if ($data[$date] === FALSE)
 			{
-				if ($data[$date] !== FALSE)
-				{
-					$this->_set_error('invalid_date', $date);
-				}
-				else
-				{
-					$this->_set_error('invalid_date_formatting', $date);
-				}
+				$this->_set_error('invalid_date', $date);
 			}
 
 			if (isset($data['revision_post'][$date]))
@@ -1260,7 +1256,7 @@ class Api_channel_entries extends Api {
 					$allowed_authors = array();
 					
 					$this->EE->load->model('member_model');
-					$query = $this->EE->member_model->get_authors_simple();
+					$query = $this->EE->member_model->get_authors();
 
 					if ($query->num_rows() > 0)
 					{
@@ -1420,7 +1416,7 @@ class Api_channel_entries extends Api {
 
 		// Should prevent non-integers from going into the field
 		
-		if ( ! $data['field_id_'.$row['field_id']])
+		if ( ! trim($data['field_id_'.$row['field_id']]))
 		{
 			$data['field_id_'.$row['field_id']] = 0;
 			return;
@@ -1429,19 +1425,12 @@ class Api_channel_entries extends Api {
 		//  Date might already be numeric format- so we check
 		if ( ! is_numeric($data['field_id_'.$row['field_id']]))
 		{
-			$data['field_id_'.$row['field_id']] = $this->EE->localize->convert_human_date_to_gmt($data['field_id_'.$row['field_id']]);
+			$data['field_id_'.$row['field_id']] = $this->EE->localize->string_to_timestamp($data['field_id_'.$row['field_id']]);
 		}
 
-		if ( ! is_numeric($data['field_id_'.$row['field_id']]))
+		if ($data['field_id_'.$row['field_id']] === FALSE)
 		{
-			if ($data['field_id_'.$row['field_id']] !== FALSE)
-			{
-				$this->_set_error('invalid_date', $row['field_label']);
-			}
-			else
-			{
-				$this->_set_error('invalid_date_formatting', $row['field_label']);
-			}
+			$this->_set_error('invalid_date', $row['field_label']);
 		}
 		else
 		{
@@ -1500,7 +1489,7 @@ class Api_channel_entries extends Api {
 	 * @param	mixed
 	 * @return	void
 	 */
-	function _prepare_data(&$data, &$mod_data)
+	function _prepare_data(&$data, &$mod_data, $autosave = FALSE)
 	{
 		$this->instantiate('channel_categories');
 
@@ -1586,7 +1575,10 @@ class Api_channel_entries extends Api {
 					// Break out module fields here
 					if (isset($data[$field_name]))
 					{
-						$data[$field_name] = $this->EE->api_channel_fields->apply('save', array($data[$field_name]));
+						if ( ! $autosave)
+						{
+							$data[$field_name] = $this->EE->api_channel_fields->apply('save', array($data[$field_name]));
+						}
 						
 						if (isset($data['revision_post'][$field_name]))
 						{
@@ -1596,7 +1588,10 @@ class Api_channel_entries extends Api {
 					}
 					elseif (isset($mod_data[$field_name]))
 					{
-						$mod_data[$field_name] = $this->EE->api_channel_fields->apply('save', array($mod_data[$field_name]));
+						if ( ! $autosave)
+						{
+							$mod_data[$field_name] = $this->EE->api_channel_fields->apply('save', array($mod_data[$field_name]));
+						}
 
 						if (isset($data['revision_post'][$field_name]))
 						{
@@ -2094,6 +2089,11 @@ class Api_channel_entries extends Api {
 		
 		if ($this->c_prefs['enable_versioning'] == 'y')
 		{
+			// If a revision was saved before a submit new entry had ever occured?
+			// $data['revision_post'] will not have a correct entry_id at this point
+			// so let's overwrite it now
+			$data['revision_post']['entry_id'] = $this->entry_id;
+			
 			$this->EE->db->insert('entry_versioning', array(
 				'entry_id'		=> $this->entry_id,
 				'channel_id'	=> $this->channel_id,

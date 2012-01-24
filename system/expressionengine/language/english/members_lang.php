@@ -431,7 +431,7 @@ $lang = array(
 "Are you sure you want to delete these members?",
 
 "can_not_delete_superadmin" =>
-"You can not delete the primary member",
+"You cannot delete the primary member",
 
 "member_deleted" =>
 "Member Deleted",
@@ -510,6 +510,9 @@ $lang = array(
 
 "missing_group_title" =>
 "The member group must have a name",
+
+"group_title_exists" =>
+"There is already a Member Group with that name.",
 
 "site_access" =>
 "Site Access",
@@ -851,10 +854,10 @@ $lang = array(
 "Fill out at least one field.  You can submit partial or full words.",
 
 "can_not_delete_only_member" =>
-"You can not delete the only member in the database",
+"You cannot delete the only member in the database",
 
 "can_not_delete_super_admin" =>
-"You can not delete a Super Admin unless there exists at least one other",
+"You cannot delete a Super Admin unless there exists at least one other",
 
 "must_be_superadmin_to_delete_one" =>
 "You must be a Super Admin to delete a Super Admin",

@@ -3,7 +3,7 @@
 $lang = array(
 
 'reserved_word' =>
-'The field name you have chosen is a reserved word and can not be used.  Please see the user guide for more information.',
+'The field name you have chosen is a reserved word and cannot be used.  Please see the user guide for more information.',
 
 'list_edit_warning' =>
 'If you have unsaved changes in this page they will be lost when you are transfered to the formatting editor.',
@@ -426,7 +426,7 @@ $lang = array(
 'BE CAREFUL!',
 
 'action_can_not_be_undone' =>
-'THIS ACTION CAN NOT BE UNDONE',
+'THIS ACTION CANNOT BE UNDONE',
 
 'assign_group_to_channel' =>
 'Note: In order to use your new group, you must assign it to a channel.',
@@ -632,7 +632,7 @@ $lang = array(
 'Category Name',
 
 'category_image' =>
-'Category Image URL',
+'Category Image',
 
 'category_img_blurb' =>
 'This is an optional field that enables you to assign an image to your categories.',
@@ -710,6 +710,9 @@ $lang = array(
 
 'missing_required_fields' =>
 'You Are Missing Required Field(s):',
+
+'update_category_image' =>
+'Please update your category image to use the file field provided, or the old style image URL may be deleted upon saving.',
 
 //----------------------------
 // Custom field Administration

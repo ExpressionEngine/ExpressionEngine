@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -446,6 +446,13 @@ class Api_channel_structure extends Api {
 			}
 		}
 		*/
+		
+		// for superadmins, assign it right away
+		if ($this->EE->session->userdata('group_id') == 1)
+		{
+			$this->EE->session->userdata['assigned_channels'][$channel_id] = $data['channel_title'];
+		}
+		
 		return $channel_id;
 	}
 

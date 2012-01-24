@@ -42,7 +42,7 @@ if ($EE_view_disable !== TRUE)
 				<?=lang('channel_lang', 'channel_lang')?>
 			</div>
 			<ul class="rounded">
-				<li><?=$this->functions->encoding_menu('channel_lang', $channel_lang)?>
+				<li><?=form_dropdown('channel_lang', $languages, $channel_lang)?>
 			</ul>
 		</div>
 

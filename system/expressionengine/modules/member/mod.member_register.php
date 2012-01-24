@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -35,7 +35,7 @@ class Member_register extends Member {
 		if ($this->EE->config->item('allow_member_registration') == 'n')
 		{
 
-			$data = array(	'title' 	=> lang('mbr_registration'),
+			$data = array(	'title' 	=> lang('member_registration'),
 							'heading'	=> lang('notice'),
 							'content'	=> lang('mbr_registration_not_allowed'),
 							'link'		=> array($this->EE->functions->fetch_site_index(), stripslashes($this->EE->config->item('site_name')))
@@ -417,10 +417,12 @@ class Member_register extends Member {
 			$this->EE->db->query("DELETE FROM exp_security_hashes WHERE (hash='".$this->EE->db->escape_str($_POST['XID'])."' AND ip_address = '".$this->EE->input->ip_address()."') OR date < UNIX_TIMESTAMP()-7200");
 		}
 		
+		$this->EE->load->helper('security');
+		
 		// Assign the base query data
 		$data = array(
 			'username'		=> trim_nbs($this->EE->input->post('username')),
-			'password'		=> $this->EE->functions->hash($_POST['password']),
+			'password'		=> do_hash($_POST['password']),
 			'ip_address'	=> $this->EE->input->ip_address(),
 			'unique_id'		=> $this->EE->functions->random('encrypt'),
 			'join_date'		=> $this->EE->localize->now,

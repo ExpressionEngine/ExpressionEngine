@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -54,7 +54,6 @@ class Addons_plugins extends CI_Controller {
 	function index()
 	{
 		$this->load->library('table');
-		$this->load->helper('form');
 
 		$this->cp->set_variable('cp_page_title', lang('plugins'));
 		$this->cp->set_breadcrumb(BASE.AMP.'C=addons', lang('addons'));
@@ -232,7 +231,7 @@ class Addons_plugins extends CI_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->load->helper(array('file', 'form'));
+		$this->load->helper('file');
 
 		$this->cp->set_variable('cp_page_title', lang('plugin_delete_confirm'));
 		$this->cp->set_breadcrumb(BASE.AMP.'C=addons', lang('addons'));

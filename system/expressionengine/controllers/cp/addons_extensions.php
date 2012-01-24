@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -53,7 +53,6 @@ class Addons_extensions extends CI_Controller {
 		$this->lang->loadfile('admin'); 
 		$this->load->library('extensions');
 		$this->load->library('table');
-		$this->load->helper('form');
 
 		$this->cp->set_variable('cp_page_title', lang('extensions'));
 		$this->cp->set_breadcrumb(BASE.AMP.'C=addons', lang('addons'));
@@ -189,7 +188,6 @@ class Addons_extensions extends CI_Controller {
 	 */
 	function toggle_extension_confirm()
 	{
-		$this->load->helper('form');
 		$this->lang->loadfile('admin');
 		
 		$message = ($this->config->item('allow_extensions') == 'y') ? 'disable_extensions_conf' : 'enable_extensions_conf';
@@ -287,7 +285,6 @@ class Addons_extensions extends CI_Controller {
 		}
 
 		$this->lang->loadfile('admin');
-		$this->load->helper('form');
 		$this->load->library('table');
 				
 		$this->cp->set_variable('cp_page_title', lang('extension_settings'));
@@ -483,8 +480,6 @@ class Addons_extensions extends CI_Controller {
 		}
 		
 		$vars['hidden'] = array('file' => $vars['file']);
-
-		$this->load->helper('form');
 
 		$this->javascript->compile();
 

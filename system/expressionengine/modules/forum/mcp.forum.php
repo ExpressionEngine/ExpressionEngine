@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -3030,8 +3030,6 @@ class Forum_mcp {
 	 */
 	function _create_template_breadcrumb($abs_base_path, $rel_path)
 	{
-		$this->EE->load->library('security');
-		
 		$crumb = array();		
 		$abs_base_path = rtrim($abs_base_path, ' /');
 		$rel_path = trim($rel_path, ' /');

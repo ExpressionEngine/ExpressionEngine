@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -25,20 +25,19 @@
 class Mailinglist_mcp {
 
 	var $perpage = 100;
-	var $pipe_length = 5;
 
 	/**
 	  *  Constructor
 	  */
-	function Mailinglist_mcp( $switch = TRUE )
+	function Mailinglist_mcp($switch = TRUE)
 	{
 		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();
 		
 		$this->EE->cp->set_right_nav(array(
-		                'ml_create_new' => BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist'.AMP.'method=edit_mailing_list', 
-		                'mailinglist_preferences' => BASE.AMP.'C=admin_system'.AMP.'M=mailing_list_preferences'
-		                ));
+			'ml_create_new' => BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist'.AMP.'method=edit_mailing_list', 
+			'mailinglist_preferences' => BASE.AMP.'C=admin_system'.AMP.'M=mailing_list_preferences'
+		));
 	
 	}
 
@@ -186,10 +185,8 @@ EOF;
 			$this->EE->form_validation->set_message('_unique_short_name', $this->EE->lang->line('ml_short_name_taken'));
 			return FALSE;
 		}
-		else
-		{
-			return TRUE;
-		}
+		
+		return TRUE;
 	}
 
 	// --------------------------------------------------------------------
@@ -420,24 +417,22 @@ EOF;
 				$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist');
 			}
 		}
-		else
+		
+		$vars['cp_page_title'] = $this->EE->lang->line('ml_batch_subscribe');
+		$this->EE->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist', $this->EE->lang->line('ml_mailinglist'));
+
+		$vars['notice'] = '';
+
+		$vars['notice_import_del'] = ($subscribe == TRUE) ? 'ml_total_emails_imported' : 'ml_total_emails_deleted';
+
+		if (count($vars['bad_email']) > 0)
 		{
-			$vars['cp_page_title'] = $this->EE->lang->line('ml_batch_subscribe');
-			$this->EE->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist', $this->EE->lang->line('ml_mailinglist'));
-
-			$vars['notice'] = '';
-
-			$vars['notice_import_del'] = ($subscribe == TRUE) ? 'ml_total_emails_imported' : 'ml_total_emails_deleted';
-
-			if (count($vars['bad_email']) > 0)
-			{
-				sort($vars['bad_email']);
-				
-				$vars['notice_bad_email'] = ($subscribe == TRUE) ? 'ml_bad_email_heading' : 'ml_bad_email_del_heading';
-			}
-
-			return $this->EE->load->view('subscribe', $vars, TRUE);
+			sort($vars['bad_email']);
+			
+			$vars['notice_bad_email'] = ($subscribe == TRUE) ? 'ml_bad_email_heading' : 'ml_bad_email_del_heading';
 		}
+
+		return $this->EE->load->view('subscribe', $vars, TRUE);
 	}
 
 	// --------------------------------------------------------------------
@@ -447,98 +442,57 @@ EOF;
 	  */
 	function view()
 	{
-		$this->EE->load->library('pagination');
-		$this->EE->load->library('javascript');
-		$this->EE->load->library('table');
-		$this->EE->load->helper('form');
-
-		$this->EE->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist', $this->EE->lang->line('ml_mailinglist'));
-
-		$vars['cp_page_title'] = $this->EE->lang->line('ml_view_mailinglist');
-		$this->EE->cp->add_js_script(array('plugin' => 'dataTables',	
-											'fp_module' => 'mailinglist'));
-
-		$this->EE->javascript->set_global('datatables.enabled', 'true');
-		$this->EE->javascript->set_global('datatables.pipe_length', $this->pipe_length);
-		$this->EE->javascript->set_global('datatables.per_page', $this->perpage);
-		$this->EE->javascript->set_global('datatables.LANG.no_results', $this->EE->lang->line('ml_no_results'));
-
-
-// this worked when you cleared the field- but no delay
-		//	$("#email").keyup( function () {
-		/* Filter on the column (the index) of this element */
-		//oTable.fnDraw();
-		//} );	
-
 		$list_id = $this->EE->input->get_post('list_id');
-		$email = $this->EE->input->get_post('email');
-		$rownum = ($this->EE->input->get_post('rownum') != '') ? $this->EE->input->get_post('rownum') : 0;
+		
+		$this->EE->load->library('table');
+		
+		$this->EE->table->set_base_url('C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist'.AMP.'method=view'.AMP.'list_id='.$list_id);
+		$this->EE->table->set_columns(array(
+			'email'			=> array(),
+			'ip_address'	=> array('html' => FALSE, 'header' => lang('ip_address')),
+			'list_id'		=> array('html' => FALSE, 'header' => lang('ml_mailinglist'), 'sort' => FALSE), // @todo sort by name, not id
+			'_check'	=> array(
+				'sort' => FALSE,
+				'header' => form_checkbox('select_all', 'true', FALSE, 'class="toggle_all" id="select_all"')
+			)
+		));
+		
+		$initial_state = array(
+			'sort'	=> array('email' => 'asc')
+		);
+		
+		$params = array(
+			'perpage'	=> $this->perpage
+		);
+		
+		$data = $this->EE->table->datasource('_mailinglist_filter', $initial_state, $params);
+
+
+
+		$data['cp_page_title'] = $this->EE->lang->line('ml_view_mailinglist');
+
+		$this->EE->cp->set_breadcrumb(
+			BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist',
+			$this->EE->lang->line('ml_mailinglist'
+		));
+
+		$this->EE->cp->add_js_script(array(
+			'fp_module' => 'mailinglist'
+		));
 
 		// some page defaults
-		$vars['form_hidden'] = '';
+		$data['form_hidden'] = '';
 
 		if ($list_id != '')
 		{
-			$vars['form_hidden']['list_id'] = $list_id;
+			$data['form_hidden']['list_id'] = $list_id;
 		}
 
-		$this->EE->db->select('list_id, list_title');
-		$res = $this->EE->db->get('mailing_lists');
-
-		$vars['mailinglists'][''] = $this->EE->lang->line('all');
-
-		foreach ($res->result_array() as $row)
-		{
-			$lists[$row['list_id']] = $row['list_title'];
-			$vars['mailinglists'][$row['list_id']] = $row['list_title'];
-		}
-		
-		$vars['selected_list'] = $list_id;
-		$vars['email'] = $email;
-
-		$vars['subscribers'] = array();
-
-		$row_count = 1;
-		
-		$this->EE->load->model('mailinglist_model');
-		$query = $this->EE->mailinglist_model->mailinglist_search($list_id, $email, '', $rownum, $this->perpage);
-
-		foreach ($query->result() as $row)
-		{
-			$vars['subscribers'][$row->user_id]['row_count'] = $row_count;
-			$vars['subscribers'][$row->user_id]['ip_address'] = $row->ip_address;
-			$vars['subscribers'][$row->user_id]['toggle'] = array(
-																			'name'		=> 'toggle[]',
-																			'id'		=> 'delete_box_'.$row->user_id,
-																			'value'		=> $row->user_id,
-																			'class'		=>'toggle'
-																	);
-			$vars['subscribers'][$row->user_id]['email'] = $row->email;
-			$vars['subscribers'][$row->user_id]['list'] = isset($lists[$row->list_id]) ?  $lists[$row->list_id] : '';
-
-			$row_count++;
-		}
-
-		// Pass the relevant data to the paginate class
-		$config['base_url'] = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist'.AMP.'method=view';
-		$config['total_rows'] = $this->EE->db->count_all('mailing_list');
-		$config['per_page'] = $this->perpage;
-		$config['page_query_string'] = TRUE;
-		$config['query_string_segment'] = 'rownum';
-		$config['full_tag_open'] = '<p id="paginationLinks">';
-		$config['full_tag_close'] = '</p>';
-		$config['prev_link'] = '<img src="'.$this->EE->cp->cp_theme_url.'images/pagination_prev_button.gif" width="13" height="13" alt="&lt;" />';
-		$config['next_link'] = '<img src="'.$this->EE->cp->cp_theme_url.'images/pagination_next_button.gif" width="13" height="13" alt="&gt;" />';
-		$config['first_link'] = '<img src="'.$this->EE->cp->cp_theme_url.'images/pagination_first_button.gif" width="13" height="13" alt="&lt; &lt;" />';
-		$config['last_link'] = '<img src="'.$this->EE->cp->cp_theme_url.'images/pagination_last_button.gif" width="13" height="13" alt="&gt; &gt;" />';
-
-		$this->EE->pagination->initialize($config);
-
-		$vars['pagination'] = $this->EE->pagination->create_links();
+		$data['mailinglists'] = array('' => $this->EE->lang->line('all')) + $data['mailinglists'];
 
 		$this->EE->javascript->compile();
 
-		return $this->EE->load->view('view', $vars, TRUE);
+		return $this->EE->load->view('view', $data, TRUE);
 	}
 
 	// ------------------------------------------------------------------------
@@ -546,84 +500,63 @@ EOF;
 	/**
 	 * View Ajax Filter
 	 */
-	function view_ajax_filter()
+	function _mailinglist_filter($state, $params)
 	{
-		$this->EE->output->enable_profiler(FALSE);
-		
 		$this->EE->load->model('mailinglist_model');
 		
-		$col_map = array('email', 'ip_address', 'list_title');
-		
-		$email = ($this->EE->input->get_post('email')) ? $this->EE->input->get_post('email') : '';
-		$list_id = ($this->EE->input->get_post('list_id')) ? $this->EE->input->get_post('list_id') : '';		
-
-		
-		// Note- we pipeline the js, so pull more data than are displayed on the page		
-		$perpage = $this->EE->input->get_post('iDisplayLength');
-		$offset = ($this->EE->input->get_post('iDisplayStart')) ? $this->EE->input->get_post('iDisplayStart') : 0; // Display start point
-		$sEcho = $this->EE->input->get_post('sEcho');	
-		
-		/* Ordering */
-		$order = array();
-		
-		if ($this->EE->input->get('iSortCol_0') !== FALSE)
-		{
-			for ( $i=0; $i < $this->EE->input->get('iSortingCols'); $i++ )
-			{
-				if (isset($col_map[$this->EE->input->get('iSortCol_'.$i)]))
-				{
-					$order[$col_map[$this->EE->input->get('iSortCol_'.$i)]] = ($this->EE->input->get('sSortDir_'.$i) == 'asc') ? 'asc' : 'desc';
-				}
-			}
-		}
+		$email		= $this->EE->input->get_post('email');
+		$list_id	= $this->EE->input->get_post('list_id');
 		
 		$this->EE->db->select('list_id, list_title');
 		$res = $this->EE->db->get('mailing_lists');
+
+		$lists = array();
 
 		foreach ($res->result_array() as $row)
 		{
 			$lists[$row['list_id']] = $row['list_title'];
 		}
-		
-		$perpage = ($perpage == '') ? $this->perpage: $perpage;
 
-		$query = $this->EE->mailinglist_model->mailinglist_search($list_id, $email, $order, $offset, $perpage);
-		
-		// Note- we can just use $f_total for both if we choose not to show total records
-		// $f_total must be accurate for proper pagination
-		$total = $this->EE->db->count_all('mailing_list');
-		
 		if ($list_id != '')
 		{
 			$this->EE->db->where('list_id', $list_id);
-			$f_total = $this->EE->db->count_all_results('mailing_list');
+			$total = $this->EE->db->count_all_results('mailing_list');
 		}
 		else
 		{
-			$f_total = $total;
+			$total = $this->EE->db->count_all('mailing_list');
 		}
-
-		$j_response['sEcho'] = $sEcho;
-		$j_response['iTotalRecords'] = $total;
-		$j_response['iTotalDisplayRecords'] = $f_total;
-
-		$tdata = array();
-		$i = 0;
-
-		foreach ($query->result_array() as $subscriber)
+		
+		$mailing_q = $this->EE->mailinglist_model->mailinglist_search(
+			$list_id, $email, $state['sort'], $state['offset'], $params['perpage']
+		);
+		
+		$subscribers = $mailing_q->result_array();
+		
+		$rows = array();
+		
+		while ($subscriber = array_shift($subscribers))
 		{
-			$m[] = '<a href="mailto:'.$subscriber['email'].'">'.$subscriber['email'].'</a>';
-			$m[] =  $subscriber['ip_address'];
-			$m[] =	isset($lists[$subscriber['list_id']]) ?  $lists[$subscriber['list_id']] : '';
-			$m[] = '<input class="toggle" type="checkbox" name="toggle[]" value="'.$subscriber['user_id'].'" />';
-
-			$tdata[$i] = $m;
-			$i++;
-			unset($m);
+			$rows[] = array(
+				'email'		 => '<a href="mailto:'.$subscriber['email'].'">'.$subscriber['email'].'</a>',
+				'ip_address' => $subscriber['ip_address'],
+				'list_id'	 => isset($lists[$subscriber['list_id']]) ?  $lists[$subscriber['list_id']] : '',
+				'_check'	 => '<input class="toggle" type="checkbox" name="toggle[]" value="'.$subscriber['user_id'].'" />'
+			);
 		}
 
-		$j_response['aaData'] = $tdata;	
-		$sOutput = $this->EE->output->send_ajax_response($j_response);
+		return array(
+			'rows' => $rows,
+			'no_results' => '<p>'.lang('ml_no_results').'</p>',
+			'pagination' => array(
+				'per_page' => $params['perpage'],
+				'total_rows' => $total
+			),
+			
+			'email'			=> $email,
+			'selected_list'	=> $list_id,
+			'mailinglists'	=> $lists
+		);
 	}
 
 	// --------------------------------------------------------------------

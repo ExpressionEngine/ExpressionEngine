@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -35,7 +35,7 @@ class EE_Lang extends CI_Lang {
 	 * @param	string
 	 * @return	void
 	 */
-	function loadfile($which = '', $package = '')
+	function loadfile($which = '', $package = '', $show_errors = TRUE)
 	{
 		if ($which == '')
 		{
@@ -90,7 +90,7 @@ class EE_Lang extends CI_Lang {
 			oIk11bHRpcGxlIFNpdGUgTWFuYWdlciBFcnJvciAtIFNpdGUgTGltaXQgUmVhY2hlZCIpOyB9IH0="))); return;
 		}
 
-		$this->load($which, $this->user_lang, FALSE, TRUE, PATH_THIRD.$package.'/');
+		$this->load($which, $this->user_lang, FALSE, TRUE, PATH_THIRD.$package.'/', $show_errors);
 	}
 	
 	// --------------------------------------------------------------------
@@ -106,7 +106,7 @@ class EE_Lang extends CI_Lang {
 	 * @param	string	the language (english, etc.)
 	 * @return	mixed
 	 */
-	function load($langfile = '', $idiom = '', $return = FALSE, $add_suffix = TRUE, $alt_path = '')
+	function load($langfile = '', $idiom = '', $return = FALSE, $add_suffix = TRUE, $alt_path = '', $show_errors = TRUE)
 	{
 		static $deft_lang;
 		
@@ -171,7 +171,7 @@ class EE_Lang extends CI_Lang {
 			}
 		}
 		
-		if ($success !== TRUE)
+		if ($show_errors && $success !== TRUE)
 		{
 			show_error('Unable to load the requested language file: language/'.$idiom.'/'.$langfile);			
 		}

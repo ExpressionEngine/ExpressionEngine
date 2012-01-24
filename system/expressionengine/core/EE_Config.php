@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -848,10 +848,9 @@ class EE_Config Extends CI_Config {
 			{
 				if (is_array($val))
 				{
-					continue;
+					$val = var_export($val, TRUE);
 				}
-				
-				if (is_bool($val))
+				elseif (is_bool($val))
 				{
 					$val = ($val == TRUE) ? 'TRUE' : 'FALSE';
 				}
@@ -875,8 +874,20 @@ class EE_Config Extends CI_Config {
 				}
 				else
 				{
+					// Here we need to determine which regex to use for matching the config
+					// varable's value; if we're replacing an array, use regex that spans
+					// multiple lines until hitting a semicolon
+					if (is_array($new_values[$key]))
+					{
+						$regex_string = '(.*?;)#s';
+					}
+					else // Otherwise, use the one-liner match
+					{
+						$regex_string = "((['\"])[^\\4]*?\\4);#";
+					}
+					
 					// Update the value
-					$config_file = preg_replace('#(\$'."config\[(['\"])".$key."\\2\]\s*=\s*)((['\"])[^\\4]*?\\4);#", "\\1$val;", $config_file);						
+					$config_file = preg_replace('#(\$'."config\[(['\"])".$key."\\2\]\s*=\s*)".$regex_string, "\\1$val;", $config_file);
 				}
 			}
 		}

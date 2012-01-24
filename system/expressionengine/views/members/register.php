@@ -14,6 +14,14 @@ if ($EE_view_disable !== TRUE)
 
 		<div class="heading"><h2><?=lang('register_member')?></h2></div>
 		<div class="pageContents">
+			
+			<?php if ($notice === TRUE): ?>
+				<p align="center">
+					<strong>
+						<?=sprintf(lang('no_unlocked_member_groups'), 'mailto:'.$sys_admin_email)?>
+					</strong>
+				</p>
+			<?php else: ?>
 
 			<?=form_open('C=members'.AMP.'M=new_member_form')?>
 			<?php
@@ -263,7 +271,9 @@ if ($EE_view_disable !== TRUE)
 				<p><?=form_submit('members', lang('register_member'), 'class="submit"')?></p>
 
 				<?=form_close()?>
-
+				
+			<?php endif ?>
+			
 		</div>
 
 	</div> <!-- contents -->

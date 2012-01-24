@@ -7,7 +7,7 @@ $lang = array(
 //----------------------------
 
 'url_title_is_index' =>
-'The URL Title can not be called \'index\'',
+'The URL Title cannot be called \'index\'',
 
 'no_related_entries' =>
 'No entries exist for this related channel',
@@ -258,7 +258,7 @@ $lang = array(
 'Entry Date',
 
 'url_title_is_numeric' =>
-'Numbers can not be used as URL Titles',
+'Numbers cannot be used as URL Titles',
 
 'unable_to_create_url_title' =>
 'Unable to create valid URL Title for your entry',
@@ -591,6 +591,9 @@ $lang = array(
 
 'view_filtered' => 
 'Return to Filtered Entries',
+
+'publish_another_entry' =>
+'Publish Another Entry',
 
 'autosaved_entries' =>
 'Autosaved Entries',
@@ -939,11 +942,11 @@ $lang = array(
 'crop_x'				=> 'X',
 'crop_y'				=> 'Y',
 'rotate'				=> 'Rotate',
-'rotate_90r'			=> '90&#176; Right',
-'rotate_90l'			=> '90&#176; Left',
+'rotate_90r'			=> '90 degrees, right',
+'rotate_90l'			=> '90 degrees, left',
 'rotate_180'			=> '180&#176',
-'rotate_flip_vert'		=> 'Flip Vertical',
-'rotate_flip_hor'		=> 'Flip Horizontal',
+'rotate_flip_vert'		=> 'Flip vertically',
+'rotate_flip_hor'		=> 'Flip horizontally',
 'maintain_ratio'		=> 'Maintain Aspect Ratio',
 'width_needed'			=> 'A width or width/height must be selected',
 'edit_image'			=> 'Edit Image',

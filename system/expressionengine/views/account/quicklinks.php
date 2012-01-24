@@ -12,7 +12,6 @@
 		<div class="notice del_instructions"><?=lang('quicklinks_delete_instructions')?></div>
 
 		<?php 
-		$this->table->set_template($cp_table_template);
 		$this->table->set_heading(
 								lang('link_title'),
 								lang('link_url'),
