@@ -324,7 +324,7 @@ class Content_edit extends CI_Controller {
 		$show_link = TRUE;
 		$comment_counts = array();
 		
-		if (count($entry_ids))
+		if (count($entry_ids) AND $this->db->table_exists('comments'))
 		{
 			$comment_qry = $this->db->select('entry_id, COUNT(*) as count')
 				->where_in('entry_id', $entry_ids)
