@@ -25,10 +25,11 @@
 
 class Content_files extends CI_Controller {
 
-	private $_upload_dirs    = array();
-	private $_base_url       = '';
-	private $remove_spaces    = TRUE;
-	private $temp_prefix      = "temp_file_";
+	private $_upload_dirs	= array();
+	private $_allowed_dirs	= array();
+	private $_base_url		= '';
+	private $remove_spaces	= TRUE;
+	private $temp_prefix	= "temp_file_";
 
 	private $nest_categories = 'y';
 	private $per_page		 = 40;
