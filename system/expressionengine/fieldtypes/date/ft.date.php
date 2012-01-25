@@ -57,7 +57,7 @@ class Date_ft extends EE_Fieldtype {
 			$data = $this->EE->localize->string_to_timestamp($data);
 		}
 
-		if ($data === FALSE)
+		if ( ! is_numeric($data) && $data != '')
 		{
 			return lang('invalid_date');
 		}

@@ -24,8 +24,7 @@
 		// add base64 thing to "add" tab link to "save" the search
 		//		- need global method to manipulate it first
 		// clear search link (redirect to base path)
-		// "return to filtered entries" currently does not support sort / pagination
-		//		- pagination isn't helpful, but adding sort makes sense I think
+		// add sort to "return to filtered entries"? (feature)
 		
 		
 		// TODO:
@@ -34,7 +33,6 @@
 		// make sure that all of this works with multiple tables on the page (it should)
 		// make keyup timeout configurable
 		// flip headerSortUp and down in the css, is silly
-		// events!? (ask devs)
 		
 		// /@todo @pk todo/ideas -------------
 
@@ -236,6 +234,8 @@ $.widget('ee.table', {
 		});
 		
 		self._listening = self._listening.add(obj);
+		self._set_filter(self._listening);
+		
 		return this;
 	},
 	
@@ -296,6 +296,8 @@ $.widget('ee.table', {
 				self.element.show();
 				self.tbody.html(res.html_rows);
 				self.no_results.remove();
+				
+				EE.cp.zebra_tables(self.element);
 			}
 			
 			self.pagination.update(res.pagination);

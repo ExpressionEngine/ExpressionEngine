@@ -25,10 +25,11 @@
 
 class Content_files extends CI_Controller {
 
-	private $_upload_dirs    = array();
-	private $_base_url       = '';
-	private $remove_spaces    = TRUE;
-	private $temp_prefix      = "temp_file_";
+	private $_upload_dirs	= array();
+	private $_allowed_dirs	= array();
+	private $_base_url		= '';
+	private $remove_spaces	= TRUE;
+	private $temp_prefix	= "temp_file_";
 
 	private $nest_categories = 'y';
 	private $per_page		 = 40;
@@ -1234,7 +1235,7 @@ class Content_files extends CI_Controller {
 			foreach ($resize_ids as $resize_id)
 			{
 				$replace_sizes[$resize_id] = $sizes[$id][$resize_id];
-				unset($missing_only_sizes[$id][$resize_id]);
+				unset($missing_only_sizes[$resize_id]);
 			}
 		}
 
@@ -1304,8 +1305,6 @@ class Content_files extends CI_Controller {
 				// Note 'Regular' batch needs to check if file exists- and then do something if so
 				if ( ! empty($replace_sizes))
 				{
-					// Note- really no need to create system thumb in this case
-					
 					$thumb_created = $this->filemanager->create_thumb(
 						$this->_upload_dirs[$id]['server_path'].$file['name'],
 						array(
@@ -1314,7 +1313,8 @@ class Content_files extends CI_Controller {
 							'dimensions'	=> $replace_sizes,
 							'mime_type'		=> $file['mime']
 						),
-						FALSE	// Don't create thumb
+						TRUE,	// Create thumb
+						FALSE	// Overwrite existing thumbs
 					);
 					
 					if ( ! $thumb_created)
@@ -1333,7 +1333,7 @@ class Content_files extends CI_Controller {
 						'mime_type'		=> $file['mime']
 					),
 					TRUE, 	// Create thumb
-					FALSE 	// Overwrite existing thumbs
+					TRUE 	// Don't overwrite existing thumbs
 				);
 				
 				// Update dimensions

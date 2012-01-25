@@ -38,8 +38,12 @@ $('table').each(function() {
 		config = $(this).data('table_config');
 		$(this).table(config);
 	}
-
-	$(this).toggle_all();
+	
+	// Apply ee_toggle_all only if it's loaded
+	if (jQuery().toggle_all)
+	{
+		$(this).toggle_all();
+	}
 });
 
 

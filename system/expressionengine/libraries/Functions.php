@@ -2582,9 +2582,9 @@ class EE_Functions {
 			// aren't going to be available yet.  So this is a quick workaround
 			// to ensure advanced conditionals using embedded variables can do
 			// their thing in mod tags.
-			$vars = array_merge($vars, $this->EE->TMPL->embed_vars);			
+			$vars = array_merge($vars, $this->EE->TMPL->embed_vars);
 		}
-					
+		
 		if (count($vars) == 0) return $str;
 
 		$switch  = array();

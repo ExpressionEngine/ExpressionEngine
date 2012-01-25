@@ -473,6 +473,24 @@ class Admin_system extends CI_Controller {
 	 */
 	function mailing_list_preferences()
 	{
+		// this page is only linked to from the mailinglist module
+		// change the breadcrumb for better navigation
+		
+		$modules = $this->cp->get_installed_modules();
+		
+		if (isset($modules['mailinglist']))
+		{
+			$this->lang->loadfile('mailinglist');
+			$this->cp->set_variable(
+				'cp_breadcrumbs',
+				array(
+					BASE.AMP.'C=addons_modules' => lang('nav_modules'),
+					BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist' => lang('mailinglist_module_name')
+				)
+			);
+		}
+
+		
 		$this->_restrict_prefs_access();
 		$this->_config_manager('mailinglist_cfg', __FUNCTION__);
 	}
