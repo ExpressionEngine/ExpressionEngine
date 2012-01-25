@@ -104,7 +104,7 @@ class Rte {
 				}
 			}
 			
-			# kick off the JS
+			# required assets
 			$jquery = $this->EE->config->item('theme_folder_url') . 'javascript/' .
 					  ( $this->EE->config->item('use_compressed_js') == 'n' ? 'src' : 'compressed' ) .
 					  '/jquery/jquery.js';
@@ -112,6 +112,8 @@ class Rte {
 					  ( $this->EE->config->item('use_compressed_js') == 'n' ? 'src' : 'compressed' ) .
 					  '/jquery/themes/default/ui.all.css';
 			$rtecss	= $this->EE->config->item('theme_folder_url') . 'cp_themes/default/css/rte.css';
+			
+			# kick off the JS
 			$js .= '
 			<script>
 				(function(){
