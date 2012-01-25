@@ -1,44 +1,52 @@
 <?php
 
-class Config_test extends PHPUnit_Framework_TestCase
-{
-	static $cls;
-	protected $_loader;
-	
-	public static function setUpBeforeClass()
-	{
-		$CI = get_instance();
-		self::$cls = get_class($CI->config);
-	}
+class Config_test extends CI_TestCase {
 
-	// --------------------------------------------------------------------
-	
-	public function setUp()
+	public function set_up()
 	{
-		$cls = self::$cls;
-		$this->config = new $cls;
+		$cls =& $this->ci_core_class('cfg');
+				
+		// set predictable config values
+		$this->ci_set_config(array(
+			'index_page'		=> 'index.php',
+			'base_url'			=> 'http://example.com/',
+			'subclass_prefix'	=> 'MY_'
+		));
+
+		$this->config = new $cls;	
 	}
 	
 	// --------------------------------------------------------------------
 
-	public function testItem()
+	public function test_item()
 	{
 		$this->assertEquals('http://example.com/', $this->config->item('base_url'));
-		
+
 		// Bad Config value
-		$this->assertEquals(FALSE, $this->config->item('no_good_item'));
+		$this->assertFalse($this->config->item('no_good_item'));
 		
 		// Index
-		$this->assertEquals(FALSE, $this->config->item('no_good_item', 'bad_index'));
-		$this->assertEquals(FALSE, $this->config->item('no_good_item', 'default'));
+		$this->assertFalse($this->config->item('no_good_item', 'bad_index'));
+		$this->assertFalse($this->config->item('no_good_item', 'default'));
+	}
+	
+	// --------------------------------------------------------------------
+	
+	public function test_set_item()
+	{
+		$this->assertFalse($this->config->item('not_yet_set'));
+		
+		$this->config->set_item('not_yet_set', 'is set');
+		
+		$this->assertEquals('is set', $this->config->item('not_yet_set'));
 	}
 
 	// --------------------------------------------------------------------
 	
-	public function testSlashItem()
+	public function test_slash_item()
 	{
 		// Bad Config value
-		$this->assertEquals(FALSE, $this->config->slash_item('no_good_item'));
+		$this->assertFalse($this->config->slash_item('no_good_item'));
 		
 		$this->assertEquals('http://example.com/', $this->config->slash_item('base_url'));
 
@@ -47,7 +55,7 @@ class Config_test extends PHPUnit_Framework_TestCase
 
 	// --------------------------------------------------------------------
 
-	public function testSiteUrl()
+	public function test_site_url()
 	{
 		$this->assertEquals('http://example.com/index.php', $this->config->site_url());
 		
@@ -58,7 +66,7 @@ class Config_test extends PHPUnit_Framework_TestCase
 		$q_string = $this->config->item('enable_query_strings');
 		
 		$this->config->set_item('enable_query_strings', FALSE);
-		
+
 		$this->assertEquals('index.php/test', $this->config->site_url('test'));
 		$this->assertEquals('index.php/test/1', $this->config->site_url(array('test', '1')));
 		
@@ -77,7 +85,7 @@ class Config_test extends PHPUnit_Framework_TestCase
 
 	// --------------------------------------------------------------------
 	
-	public function testSystemUrl()
+	public function test_system_url()
 	{
 		$this->assertEquals('http://example.com/system/', $this->config->system_url());
 	}

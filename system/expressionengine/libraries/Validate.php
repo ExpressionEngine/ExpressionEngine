@@ -92,9 +92,9 @@ class EE_Validate {
 		
 		// Get the users current password
 		$pq = $this->EE->db->select('password, salt')
-							->get_where('members', array(
-								'member_id' => (int) $this->EE->session->userdata('member_id'))
-							);
+			->get_where('members', array(
+				'member_id' => (int) $this->EE->session->userdata('member_id')
+			));
 		
 		if ( ! $pq->num_rows())
 		{
