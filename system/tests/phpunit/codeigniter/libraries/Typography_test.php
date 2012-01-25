@@ -1,23 +1,18 @@
 <?php
 
-class Typography_test extends PHPUnit_Framework_TestCase
-{
-	static $cls;
-	protected $table;
-	
-	public static function setUpBeforeClass()
-	{
-		$CI = get_instance();
-		$CI->load->library('typography');
-		self::$cls = get_class($CI->typography);
-	}
+require BASEPATH.'libraries/Typography.php';
 
-	// --------------------------------------------------------------------
-	
-	public function setUp()
+class Typography_test extends CI_TestCase
+{
+
+	public function set_up()
 	{
-		$cls = self::$cls;
-		$this->type = new $cls;
+		$obj = new StdClass;
+		$obj->type = new CI_Typography();
+		
+		$this->ci_instance($obj);
+		
+		$this->type = $obj->type;
 	}
 
 	// --------------------------------------------------------------------
@@ -27,7 +22,7 @@ class Typography_test extends PHPUnit_Framework_TestCase
 	 *
 	 * this can and should grow.
 	 */
-	public function testFormatCharacters()
+	public function test_format_characters()
 	{
 		$strs = array(
 			'"double quotes"' 				=> '&#8220;double quotes&#8221;',
@@ -51,7 +46,7 @@ class Typography_test extends PHPUnit_Framework_TestCase
 
 	// --------------------------------------------------------------------
 
-	public function testNl2brExceptPre()
+	public function test_nl2br_except_pre()
 	{	
 		$str = <<<EOH
 Hello, I'm a happy string with some new lines.  
@@ -99,7 +94,7 @@ EOH;
 
 	// --------------------------------------------------------------------
 	
-	public function testAutoTypography()
+	public function test_auto_typography()
 	{
 		$this->_blank_string();
 		$this->_standardize_new_lines();
