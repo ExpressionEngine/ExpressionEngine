@@ -36,16 +36,13 @@ class Rte_mcp {
 		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();
 
-		# set some properties
-		if ( defined('BASE') )
-		{
-			# Helpers
-			$this->EE->load->helper('form');
+		# Helpers
+		$this->EE->load->helper('form');
 
-			$this->_base_url		= BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=rte';
-			$this->_form_base		= 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=rte';
-			$this->_myaccount_url	= BASE.AMP.'C=myaccount'.AMP.'M=custom_screen'.AMP.'module=rte'.AMP.'method=myaccount_settings';
-		}
+		# set some properties
+		$this->_base_url		= BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=rte';
+		$this->_form_base		= 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=rte';
+		$this->_myaccount_url	= BASE.AMP.'C=myaccount'.AMP.'M=custom_screen'.AMP.'module=rte'.AMP.'method=myaccount_settings';
 	}
 
 	// --------------------------------------------------------------------
@@ -583,47 +580,13 @@ class Rte_mcp {
 	 * @access	public
 	 * @return	string
 	 */
-	public function build_toolset_js()
+	public function build_toolset_js( $toolset_id=FALSE )
 	{
 		$this->EE->load->library('javascript');
 		
 		# load in the event information so buttons can trigger 
 		$this->EE->javascript->set_global( 'rte.update_event', 'WysiHat-editor:change' );
-		$this->EE->javascript->compile();
-
-		# start empty
-		$js = $this->build_js();
 		
-		# return vs. print… is there a better CI way to do this?
-		$print = $this->EE->input->get_post('print');
-		if ( $print == 'yes' )
-		{
-			header('Content-type: text/javascript; charset=utf-8');
-			header('Cache-Control: no-cache, must-revalidate');
-			header('Expires: Sat, 26 Jul 1997 05:00:00 GMT');
-			die('
-				(function(){
-					var EE = ' . $this->EE->javascript->generate_json($this->EE->javascript->global_vars) . ';' .
-				 	$js .
-				'})();
-				');
-		}
-		else
-		{
-			return $js;
-		}
-	}
-
-	// --------------------------------------------------------------------
-	
-	/**
-	 * Actual JS code
-	 * 
-	 * @access	public
-	 * @return	void
-	 */
-	public function build_js( $toolset_id=FALSE )
-	{
 		# start empty
 		$js = '';
 
@@ -661,7 +624,31 @@ class Rte_mcp {
 			# load the tools
 			foreach ( $tools as $tool_id )
 			{
-				$js .= $this->EE->rte_tool_model->get_tool_js($tool_id);
+				$tool = $this->EE->rte_tool_model->get_tool($tool_id);
+				
+				# load the globals
+				if ( count( $tool['globals'] ) )
+				{
+					$this->EE->javascript->set_global( $tool['globals'] );
+				}
+				
+				# load any libraries we need
+				if ( count( $tool['libraries'] ) )
+				{
+					$this->EE->cp->add_js_script( $tool['libraries'] );
+				}
+				
+				# add any styles we need
+				if ( ! empty( $tool['styles'] ) )
+				{
+					$this->EE->cp->add_to_head( '<style>' . $tool['styles'] . '</style>' );
+				}
+				
+				# load in the definition
+				if ( ! empty( $tool['definition'] ) )
+				{
+					$js .= $tool['definition'];
+				}
 			}
 
 			$js .= '
@@ -669,7 +656,28 @@ class Rte_mcp {
 				});
 				';
 		}
-		return $js;
+		
+		# compile the JS
+		$this->EE->javascript->compile();
+		
+		# return vs. print… is there a better CI way to do this?
+		$print = $this->EE->input->get_post('print');
+		if ( $print == 'yes' )
+		{
+			header('Content-type: text/javascript; charset=utf-8');
+			header('Cache-Control: no-cache, must-revalidate');
+			header('Expires: Sat, 26 Jul 1997 05:00:00 GMT');
+			die('
+				(function(){
+					var EE = ' . $this->EE->javascript->generate_json($this->EE->javascript->global_vars) . ';' .
+				 	$js .
+				'})();
+				');
+		}
+		else
+		{
+			return $js;
+		}
 	}
 
 	// --------------------------------------------------------------------

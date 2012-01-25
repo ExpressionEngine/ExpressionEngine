@@ -108,6 +108,71 @@ class Rte_tool_model extends CI_Model {
 	}
 	
 	/**
+	 * Gets the pieces required for a tool
+	 * 
+	 * @access	public
+	 * @param	number
+	 * @return	string
+	 */
+	public function get_tool( $tool_id = FALSE )
+	{
+		# build the tool array
+		$tool = array(
+			'globals'		=> array(),
+			'libraries'		=> array(),
+			'styles'		=> '',
+			'definition'	=> ''
+		);
+		
+		# get the tool
+		$results = $this->db->get_where(
+			'rte_tools',
+			array(
+				'rte_tool_id'	=> $tool_id,
+				'enabled'		=> 'y'
+			)
+		);
+		if ( $results->num_rows() > 0 )
+		{
+			$the_tool	= $results->row();
+			$tool_name	= strtolower( str_replace( ' ', '_', $the_tool->name ) );
+			$tool_class	= ucfirst( $tool_name ).'_rte';
+			
+			# find the RTE tool file
+			foreach ( array(PATH_RTE, PATH_THIRD) as $tmp_path )
+			{
+				$file = $tmp_path.$tool_name.'/rte.'.$tool_name.'.php';
+				if ( file_exists($file) )
+				{
+					# load it in, instantiate the tool & add the definition
+					require_once( $file );
+					$TOOL = new $tool_class();
+					
+					# loop through the pieces and pull them from the object
+					foreach ( $tool as $component => $default )
+					{
+						# make sure the method exists
+						if ( method_exists( $tool_class, $component ) )
+						{
+							$temp = $TOOL->$component();
+							# make sure the values are of the same type
+							if ( gettype( $default ) === gettype( $temp ) )
+							{
+								$tool[$component] = $temp;
+							}
+						}
+					}
+					
+					break;
+				}
+			}
+		}
+
+		# return the tool
+		return $tool;
+	}
+
+	/**
 	 * Gets the JS for a specific tool
 	 * 
 	 * @access	public
@@ -282,79 +347,6 @@ class Rte_tool_model extends CI_Model {
 			->delete('rte_tools');
 	}
 	
-	/**
-	 * Loads JS library files
-	 * 
-	 * Note: This is partially borrowed from the combo loader
-	 * 
-	 * @access	private
-	 * @param	array
-	 * @return	array
-	 */
-	private function _load_js_files( $load=array() )
-	{
-		$folder = $this->config->item('use_compressed_js') == 'n' ? 'src' : 'compressed';
-		if ( ! defined('PATH_JQUERY'))
-		{
-			define('PATH_JQUERY', PATH_THEMES.'javascript/'.$folder.'/jquery/');
-		}
-		$types	= array(
-			'effect'	=> PATH_JQUERY.'ui/jquery.effects.',
-			'ui'		=> PATH_JQUERY.'ui/jquery.ui.',
-			'plugin'	=> PATH_JQUERY.'plugins/',
-			'file'		=> PATH_THEMES.'javascript/'.$folder.'/',
-			'package'	=> PATH_THIRD,
-			'fp_module'	=> PATH_MOD
-		);
-		
-		$contents = '';
-		
-		foreach ( $types as $type => $path )
-		{
-			if ( isset( $load[$type] ) )
-			{
-				$files = $load[$type];
-				if ( ! is_array( $files ) )
-				{
-					$files = array( $files );
-				}
-				foreach ( $files as $file )
-				{
-					if ( $type == 'package' OR $type == 'fp_module' )
-					{
-						$file = $file.'/javascript/'.$file;
-					}
-					elseif ( $type == 'file' )
-					{
-						$parts = explode('/', $file);
-						$file = array();
-
-						foreach ($parts as $part)
-						{
-							if ($part != '..')
-							{
-								$file[] = $this->security->sanitize_filename($part);
-							}
-						}
-
-						$file = implode('/', $file);
-					}
-					else
-					{
-						$file = $this->security->sanitize_filename($file);
-					}
-
-					$file = $path.$file.'.js';
-					if (file_exists($file))
-					{
-						$contents .= file_get_contents($file)."\n\n";
-					}
-				}
-			}
-		}
-		return $contents;
-	}
-
 }
 // END CLASS
 

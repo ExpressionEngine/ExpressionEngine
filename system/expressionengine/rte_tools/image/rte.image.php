@@ -39,10 +39,6 @@ Class Image_rte {
 	{
 		// Make a local reference of the ExpressionEngine super object
 		$this->EE =& get_instance();
-		
-		// security helper
-		$this->EE->load->library('security');
-		$this->EE->load->helper('security');
 	}
 
 	/** -------------------------------------
