@@ -141,7 +141,7 @@ class MyAccount extends CI_Controller {
 		}
 
 		$vars['can_admin_members'] = $this->cp->allowed_group('can_admin_members');
-		$vars['allow_localization'] = FALSE;
+		$vars['allow_localization'] = ($this->config->item('allow_member_localization') == 'y' OR $this->session->userdata('group_id') == 1) ? TRUE : FALSE;
 		$vars['login_as_member'] = FALSE;
 		$vars['can_delete_members'] = FALSE;
 
@@ -163,7 +163,6 @@ class MyAccount extends CI_Controller {
 				}
 			}
 
-			$vars['allow_localization'] = ($this->config->item('allow_member_localization') == 'y' OR $this->session->userdata('group_id') == 1) ? TRUE : FALSE;
 			$vars['login_as_member'] = ($this->session->userdata('group_id') == 1 && $this->id != $this->session->userdata('member_id')) ? TRUE : FALSE;
 			$vars['can_delete_members'] = ($this->cp->allowed_group('can_delete_members') AND $this->id != $this->session->userdata('member_id')) ? TRUE : FALSE;
 		}
