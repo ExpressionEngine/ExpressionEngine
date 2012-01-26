@@ -3525,9 +3525,10 @@ class EE_Template {
 	 *
 	 * @param	string	- the tagdata / text to be parsed
 	 * @param	array	- the rows of variables and their data
+	 * @param	boolean	- Option to disable backspace parameter
 	 * @return	string
 	 */
-	public function parse_variables($tagdata, $variables)
+	public function parse_variables($tagdata, $variables, $enable_backspace = TRUE)
 	{	
 		if ($tagdata == '' OR ! is_array($variables) OR empty($variables) OR ! is_array($variables[0]))
 		{
@@ -3591,7 +3592,7 @@ class EE_Template {
 		
 		$backspace = $this->fetch_param('backspace', FALSE);
 		
-		if (is_numeric($backspace))
+		if (is_numeric($backspace) AND $enable_backspace)
 		{
 			$str = substr($str, 0, -$backspace);
 		}

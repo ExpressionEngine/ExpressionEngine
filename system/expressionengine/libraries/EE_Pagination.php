@@ -418,7 +418,8 @@ class Pagination_object {
 			// Parse current_page and total_pages
 			$this->template_data = $this->EE->TMPL->parse_variables(
 				$this->template_data,
-				array($parse_array)
+				array($parse_array),
+				FALSE // Disable backspace parameter so pagination markup is protected
 			);
 			
 			// ----------------------------------------------------------------
