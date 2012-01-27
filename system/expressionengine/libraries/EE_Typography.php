@@ -374,7 +374,7 @@ class EE_Typography extends CI_Typography {
 		$str = $this->format_html($str);
 
 		//  Auto-link URLs and email addresses
-		if ($this->auto_links == 'y' AND $this->html_format != 'none')
+		if ($this->auto_links == 'y')
 		{
 			$str = $this->auto_linker($str);
 		}
