@@ -563,9 +563,11 @@ class Rte_mcp {
 		$enabled = ($this->EE->session->userdata('rte_enabled') == 'y');
 		
 		# update the prefs
-		$this->EE->db
-			->where( 'member_id', $this->EE->session->userdata('member_id') )
-			->update( 'members', array( 'rte_enabled' => ($enabled?'n':'y') ) );
+		$this->EE->db->update(
+			'members',
+			array( 'rte_enabled'	=> ($enabled ? 'n' : 'y') )
+			array( 'member_id'		=> $this->EE->session->userdata('member_id') )
+		);
 		
 		# exit
 		$affected_rows = $this->EE->db->affected_rows();
