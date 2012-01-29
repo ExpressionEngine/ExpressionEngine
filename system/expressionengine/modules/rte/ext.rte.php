@@ -24,7 +24,7 @@ class Rte_ext {
 	/**
 	 * Loads My RTE Prefs into heMy Account page
 	 * 
-	 * @return array
+	 * @return	array	Hash of new items to add to the MyAccount Nav
 	 */
 	function myaccount_nav_setup()
 	{
@@ -44,8 +44,8 @@ class Rte_ext {
 	/**
 	 * Add RTE prefs to the CP Menu
 	 * 
-	 * @param	array
-	 * @return	array
+	 * @param	array	The CP menu array
+	 * @return	array	The updated CP menu array
 	 */
 	function cp_menu_array( $menu )
 	{
@@ -59,8 +59,8 @@ class Rte_ext {
 	/**
 	 * Add RTE JS to the Publish/Edit page
 	 * 
-	 * @param	array
-	 * @return	array
+	 * @param	array	$results	The row_array for the entry
+	 * @return	array	Modified result array
 	 */
 	function publish_form_entry_data( $results )
 	{
@@ -90,6 +90,7 @@ class Rte_ext {
 
 	/**
 	 * Activate Extension
+	 * This extension is automatically installed with the Rich Text Editor module
 	 */
 	function activate_extension()
 	{
@@ -101,6 +102,7 @@ class Rte_ext {
 
 	/**
 	 * Update Extension
+	 * This extension is automatically updated with the Rich Text Editor module
 	 */
 	function update_extension($current = FALSE)
 	{
@@ -112,6 +114,7 @@ class Rte_ext {
 
 	/**
 	 * Disable Extension
+	 * This extension is automatically disabled with the Rich Text Editor module
 	 */
 	function disable_extension()
 	{
@@ -122,7 +125,8 @@ class Rte_ext {
 		// --------------------------------------------------------------------
 
 	/**
-	 * Disable Extension
+	 * Uninstall Extension
+	 * This extension is automatically uninstalled with the Rich Text Editor module
 	 */
 	function uninstall_extension()
 	{
