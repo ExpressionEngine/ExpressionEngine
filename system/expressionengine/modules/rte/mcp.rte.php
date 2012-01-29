@@ -152,7 +152,7 @@ class Rte_mcp {
 	 * @param	int $toolset_id The Toolset ID to be edited (optional)
 	 * @return	string The page
 	 */
-	public function edit_toolset( $toolset_id=FALSE )
+	public function edit_toolset( $toolset_id = FALSE )
 	{
 		$this->_permissions_check();
 		$this->EE->load->library(array('table','javascript'));
@@ -582,7 +582,7 @@ class Rte_mcp {
 	 * @param	int $toolset_id The ID of the toolset to load
 	 * @return	string The JavaScript
 	 */
-	public function build_toolset_js( $toolset_id=FALSE )
+	public function build_toolset_js( $toolset_id = FALSE )
 	{
 		$this->EE->load->library('javascript');
 		
@@ -851,7 +851,7 @@ class Rte_mcp {
 	 * @access	private
 	 * @return	void
 	 */
-	private function _update_toolset( $toolset_id=FALSE, $change=array(), $success_msg, $fail_msg )
+	private function _update_toolset( $toolset_id = FALSE, $change = array(), $success_msg, $fail_msg )
 	{
 		$this->EE->load->model('rte_toolset_model');
 		
@@ -897,7 +897,7 @@ class Rte_mcp {
 	 * @access	private
 	 * @return	void
 	 */
-	private function _update_tool( $tool_id=0, $change=array(), $success_msg, $fail_msg )
+	private function _update_tool( $tool_id = 0, $change = array(), $success_msg, $fail_msg )
 	{
 		$this->EE->load->model('rte_tool_model');
 		

@@ -104,7 +104,7 @@ class Rte_ext {
 	 * Update Extension
 	 * This extension is automatically updated with the Rich Text Editor module
 	 */
-	function update_extension($current = FALSE)
+	function update_extension( $current = FALSE )
 	{
 		return TRUE;
 		# show_error('This extension is automatically updated with the Rich Text Editor module');

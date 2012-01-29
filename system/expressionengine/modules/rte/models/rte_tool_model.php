@@ -43,7 +43,7 @@ class Rte_tool_model extends CI_Model {
 	 * @param	bool $list Whether or not you want it to be a ID => name list
 	 * @return	array The tools
 	 */
-	public function get_all( $list=FALSE )
+	public function get_all( $list = FALSE )
 	{
 		# get the tools from the DB
 		$results = $this->db
@@ -60,7 +60,7 @@ class Rte_tool_model extends CI_Model {
 	 * @param	bool $list Whether or not you want it to be a ID => name list
 	 * @return	array The tools
 	 */
-	public function get_available( $list=FALSE )
+	public function get_available( $list = FALSE )
 	{
 		# get the tools from the DB
 		$results = $this->db
@@ -77,7 +77,7 @@ class Rte_tool_model extends CI_Model {
 	 * @param	array $tools An array of string tool names in the specific order you want them
 	 * @return	array The tool IDs
 	 */
-	public function get_tool_ids( $tools=array() )
+	public function get_tool_ids( $tools = array() )
 	{
 		$tool_ids = array();
 		# make sure we have tools
@@ -180,7 +180,7 @@ class Rte_tool_model extends CI_Model {
 	 * @param	int $tool_id The ID of the tool to update
 	 * @return	number
 	 */
-	public function save( $tool=array(), $tool_id=FALSE )
+	public function save( $tool = array(), $tool_id = FALSE )
 	{
 		# update or insert?
 		$sql = $tool_id	? $this->db->update_string( 'rte_tools', $tool, array( 'rte_tool_id' => $tool_id ) )

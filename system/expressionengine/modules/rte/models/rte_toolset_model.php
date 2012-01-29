@@ -31,7 +31,7 @@ class Rte_toolset_model extends CI_Model {
 	 * @param	bool $list Whether or not you want it to be a ID => name list
 	 * @return	array The tools
 	 */
-	public function get_all( $list=FALSE )
+	public function get_all( $list = FALSE )
 	{
 		$results = $this->db->get_where(
 			'rte_toolsets',
@@ -50,7 +50,7 @@ class Rte_toolset_model extends CI_Model {
 	 * @param	bool $list Whether or not you want it to be a ID => name list
 	 * @return	array The tools
 	 */
-	public function get_active( $list=FALSE )
+	public function get_active( $list = FALSE )
 	{
 		$results = $this->db->get_where(
 			'rte_toolsets',
@@ -144,7 +144,7 @@ class Rte_toolset_model extends CI_Model {
 	 * @param	int $toolset_id The Toolset ID
 	 * @return	array A collection of Tool IDs
 	 */
-	public function get_tools( $toolset_id=0 )
+	public function get_tools( $toolset_id = 0 )
 	{
 		$result = $this->db
 					->select('rte_tools')
@@ -163,7 +163,7 @@ class Rte_toolset_model extends CI_Model {
 	 * @param	int $toolset_id The Toolset ID
 	 * @return	bool
 	 */
-	public function exists( $toolset_id=FALSE )
+	public function exists( $toolset_id = FALSE )
 	{
 		$ret = FALSE;
 		if ( !! $toolset_id)
@@ -186,7 +186,7 @@ class Rte_toolset_model extends CI_Model {
 	 * @param	int $toolset_id The Toolset ID
 	 * @return	bool
 	 */
-	public function member_can_access( $toolset_id=FALSE )
+	public function member_can_access( $toolset_id = FALSE )
 	{
 		// are you an admin?
 		$admin = ( $this->session->userdata('group_id') == '1' );
@@ -226,7 +226,7 @@ class Rte_toolset_model extends CI_Model {
 	 * @param	int $toolset_id The Toolset ID
 	 * @return	obj The Toolset row object
 	 */
-	public function get( $toolset_id=FALSE )
+	public function get( $toolset_id = FALSE )
 	{
 		return $this->db
 					->get_where(
@@ -244,7 +244,7 @@ class Rte_toolset_model extends CI_Model {
 	 * @param	int $toolset_id The Toolset ID
 	 * @return	bool
 	 */
-	public function is_private( $toolset_id=FALSE )
+	public function is_private( $toolset_id = FALSE )
 	{
 		return $this->db
 					->select('member_id')
@@ -264,7 +264,7 @@ class Rte_toolset_model extends CI_Model {
 	 * @param	int $toolset_id The ID of the Toolset (so you can update)
 	 * @return	mixed
 	 */
-	public function save( $toolset=array(), $toolset_id=FALSE )
+	public function save( $toolset = array(), $toolset_id = FALSE )
 	{
 		$toolset['site_id'] =  $this->config->item('site_id');
 		
@@ -311,7 +311,7 @@ class Rte_toolset_model extends CI_Model {
 	 * @param	int $toolset_id The ID of the toolset to delete
 	 * @return	mixed
 	 */
-	public function delete( $toolset_id=FALSE )
+	public function delete( $toolset_id = FALSE )
 	{
 		if ($toolset_id)
 		{
@@ -358,7 +358,7 @@ class Rte_toolset_model extends CI_Model {
 	 * @param	int $toolset_id The ID of the toolset (optional)
 	 * @return	bool
 	 */
-	public function check_name( $name, $toolset_id=FALSE )
+	public function check_name( $name, $toolset_id = FALSE )
 	{
 		$where = array(
 			'name'		=> $name,

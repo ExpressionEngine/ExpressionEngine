@@ -44,7 +44,7 @@ class Rte {
 	 * @param	int $toolset_id The ID of the toolset you want to load
 	 * @return	string The JS needed to embed the RTE
 	 */
-	public function embed( $selector='.rte', $toolset_id=FALSE )
+	public function embed( $selector = '.rte', $toolset_id = FALSE )
 	{
 		$this->EE->load->library('javascript');
 		$this->EE->load->model(array('rte_toolset_model','rte_tool_model'));
@@ -195,7 +195,7 @@ class Rte {
 	 * @param	array $load A collection of JS libraries to load
 	 * @return	string The libraries
 	 */
-	private function _load_js_files( $load=array() )
+	private function _load_js_files( $load = array() )
 	{
 		$folder = $this->EE->config->item('use_compressed_js') == 'n' ? 'src' : 'compressed';
 		if ( ! defined('PATH_JQUERY'))
@@ -266,7 +266,7 @@ class Rte {
 	 * @param	array $globals The globals to load into JS
 	 * @return	string The JavaScript
 	 */
-	private function _set_globals( $globals=array() )
+	private function _set_globals( $globals = array() )
 	{
 		$js = '';
 		
