@@ -3,7 +3,7 @@
 class Rte_ext {
 
 	var $name			= 'Rich Text Editor';
-	var $version		= '1,0';
+	var $version		= '1.0';
 	var $settings_exist	= 'n';
 	var $docs_url		= 'http://expressionengine.com/user_guide/modules/rich-text-editor/index.html';
 	var $required_by	= array('module');
