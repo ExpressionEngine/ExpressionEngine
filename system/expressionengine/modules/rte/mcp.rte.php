@@ -127,7 +127,7 @@ class Rte_mcp {
 			'required|is_numeric'
 		);
 		
-		if ( $this->EE->form_validation->run() )
+		if ($this->EE->form_validation->run())
 		{
 			# update the prefs
 			$this->_do_update_prefs();
@@ -158,26 +158,26 @@ class Rte_mcp {
 		$this->EE->load->model(array('rte_toolset_model','rte_tool_model'));
 		
 		# get the toolset
-		if ( ! is_numeric( $toolset_id ) ) $toolset_id = $this->EE->input->get_post('rte_toolset_id');	
+		if ( ! is_numeric($toolset_id)) $toolset_id = $this->EE->input->get_post('rte_toolset_id');	
 
 		# make sure the user can access this toolset
 		$failure	= FALSE;
 		$is_private	= FALSE;
 		$toolset	= FALSE;
-		if ( is_numeric( $toolset_id ) )
+		if (is_numeric($toolset_id))
 		{
 			# make sure it exists
-			if ( ! $this->EE->rte_toolset_model->exists($toolset_id) )
+			if ( ! $this->EE->rte_toolset_model->exists($toolset_id))
 			{
 				$failure = lang('toolset_not_found');
 			}
 			# make sure the user can access it
-			elseif ( ! $this->EE->rte_toolset_model->member_can_access($toolset_id) )
+			elseif ( ! $this->EE->rte_toolset_model->member_can_access($toolset_id))
 			{
 				$failure = lang('cannot_edit_toolset');
 			}
 			# bow out if the user can’t
-			if ( !! $failure )
+			if ( !! $failure)
 			{
 				$this->EE->session->set_flashdata('message_failure', $failure);
 				$this->EE->functions->redirect($this->_base_url);
@@ -185,13 +185,13 @@ class Rte_mcp {
 
 			# grab the toolset
 			$toolset	= $this->EE->rte_toolset_model->get($toolset_id);
-			$is_private	= ( $toolset->member_id != 0 );
+			$is_private	= ($toolset->member_id != 0);
 		}
 		else
 		{
 			$is_new		= TRUE;
 			$is_private = $this->EE->input->get_post('private');
-			$is_private	= ( $is_private == 'true' );
+			$is_private	= ($is_private == 'true');
 		}
 		
 		# JS stuff
@@ -204,10 +204,10 @@ class Rte_mcp {
 		$available_tools	= $this->EE->rte_tool_model->get_available(TRUE);
 		$toolset_tool_ids	= $this->EE->rte_toolset_model->get_tools($toolset_id);
 		$unused_tools = $toolset_tools = array();
-		foreach ( $available_tools as $tool_id => $tool_name )
+		foreach ($available_tools as $tool_id => $tool_name)
 		{
-			$tool_index = array_search( $tool_id, $toolset_tool_ids );
-			if ( $tool_index !== FALSE )
+			$tool_index = array_search($tool_id, $toolset_tool_ids);
+			if ($tool_index !== FALSE)
 			{
 				$toolset_tools[$tool_index] = $tool_id;
 			}
@@ -221,7 +221,7 @@ class Rte_mcp {
 		sort( $unused_tools );
 		
 		# set up the page
-		$this->EE->cp->set_breadcrumb( $this->_base_url, lang('rte_module_name') );
+		$this->EE->cp->set_breadcrumb($this->_base_url, lang('rte_module_name'));
 		$title = $is_private ? lang('define_my_toolset') : lang('define_toolset');
 		$vars = array(
 			'cp_page_title'		=> $title,
@@ -266,17 +266,17 @@ class Rte_mcp {
 		$toolset	= array(
 			'name'		=> $this->EE->input->get_post('rte_toolset_name'),
 			'rte_tools' => $this->EE->input->get_post('rte_selected_tools'),
-			'member_id'	=> ( $this->EE->input->get_post('private') == 'true' ? $this->EE->session->userdata('member_id') : 0 )
+			'member_id'	=> ($this->EE->input->get_post('private') == 'true' ? $this->EE->session->userdata('member_id') : 0)
 		);
 		
 		# did an empty name sneak through?
-		if ( empty( $toolset['name'] ) )
+		if (empty($toolset['name']))
 		{
 			$toolset['name'] = 'Unnamed Toolset';
 		}
 				
 		# update
-		if ( $toolset_id )
+		if ($toolset_id)
 		{
 			$this->_update_toolset(
 				$this->EE->input->get_post('rte_toolset_id'),
@@ -353,7 +353,7 @@ class Rte_mcp {
 		$this->EE->load->model('rte_toolset_model');
 		
 		# delete
-		if ( $this->EE->rte_toolset_model->delete( $this->EE->input->get_post('rte_toolset_id') ) )
+		if ($this->EE->rte_toolset_model->delete($this->EE->input->get_post('rte_toolset_id')))
 		{
 			$this->EE->session->set_flashdata('message_success', lang('toolset_deleted'));
 		}
@@ -385,7 +385,7 @@ class Rte_mcp {
 					$this->EE->input->get_post('rte_toolset_id')
 				 );
 
-		if ( $this->EE->input->is_ajax_request() )
+		if ($this->EE->input->is_ajax_request())
 		{
 			die( $this->EE->javascript->generate_json( array( 'valid' => $valid ) ) );
 		}
@@ -459,7 +459,7 @@ class Rte_mcp {
 		
 		// get the toolset options
 		$toolset_opts = $this->EE->rte_toolset_model->get_member_options();
-		foreach ( $toolset_opts as $id => $name )
+		foreach ($toolset_opts as $id => $name)
 		{
 			$toolset_opts[$id] = lang($name);
 		}
@@ -516,7 +516,7 @@ class Rte_mcp {
 		);
 		
 		# success
-		if ( $this->EE->form_validation->run() )
+		if ($this->EE->form_validation->run())
 		{
 			# update the prefs
 			$this->EE->db
@@ -553,7 +553,7 @@ class Rte_mcp {
 	public function toggle_member_rte()
 	{
 		# get the current status
-		$enabled = ( $this->EE->session->userdata('rte_enabled') == 'y' );
+		$enabled = ($this->EE->session->userdata('rte_enabled') == 'y');
 		
 		# update the prefs
 		$this->EE->db
@@ -562,7 +562,7 @@ class Rte_mcp {
 		
 		# exit
 		$affected_rows = $this->EE->db->affected_rows();
-		if ( $this->EE->input->is_ajax_request() )
+		if ($this->EE->input->is_ajax_request())
 		{
 			die( $affected_rows );
 		}
@@ -592,15 +592,15 @@ class Rte_mcp {
 
 		# determine the toolset
 		$this->EE->load->model(array('rte_toolset_model','rte_tool_model'));
-		if ( ! $toolset_id )
+		if ( ! $toolset_id)
 		{
 			$toolset_id = $this->EE->rte_toolset_model->get_member_toolset();
 		}
-		$tools = $this->EE->rte_toolset_model->get_tools( $toolset_id );
+		$tools = $this->EE->rte_toolset_model->get_tools($toolset_id);
 
 		# make sure we should load the JS
-		if ( $toolset_id &&
-		     $this->EE->config->item('rte_enabled') == 'y' )
+		if ($toolset_id &&
+		    $this->EE->config->item('rte_enabled') == 'y')
 		{
 			# setup the framework
 			ob_start(); ?>
@@ -622,30 +622,30 @@ class Rte_mcp {
 			ob_end_clean(); 
 
 			# load the tools
-			foreach ( $tools as $tool_id )
+			foreach ($tools as $tool_id)
 			{
 				$tool = $this->EE->rte_tool_model->get_tool($tool_id);
 				
 				# load the globals
-				if ( count( $tool['globals'] ) )
+				if (count($tool['globals']))
 				{
 					$this->EE->javascript->set_global( $tool['globals'] );
 				}
 				
 				# load any libraries we need
-				if ( count( $tool['libraries'] ) )
+				if (count($tool['libraries']))
 				{
 					$this->EE->cp->add_js_script( $tool['libraries'] );
 				}
 				
 				# add any styles we need
-				if ( ! empty( $tool['styles'] ) )
+				if ( ! empty( $tool['styles']))
 				{
 					$this->EE->cp->add_to_head( '<style>' . $tool['styles'] . '</style>' );
 				}
 				
 				# load in the definition
-				if ( ! empty( $tool['definition'] ) )
+				if ( ! empty( $tool['definition']))
 				{
 					$js .= $tool['definition'];
 				}
@@ -662,7 +662,7 @@ class Rte_mcp {
 		
 		# return vs. print… is there a better CI way to do this?
 		$print = $this->EE->input->get_post('print');
-		if ( $print == 'yes' )
+		if ($print == 'yes')
 		{
 			header('Content-type: text/javascript; charset=utf-8');
 			header('Cache-Control: no-cache, must-revalidate');
@@ -693,7 +693,7 @@ class Rte_mcp {
 		$js = '';
 		
 		# make sure it’s on
-		if ( $this->EE->config->item('rte_enabled') == 'y' )
+		if ($this->EE->config->item('rte_enabled') == 'y')
 		{
 			# styles
 			$this->EE->cp->add_to_head(
@@ -711,7 +711,7 @@ class Rte_mcp {
 				'rte.update_event'						=> 'WysiHat-editor:change',
 				'rte.toolset_src'						=> $this->_base_url.AMP.'method=build_toolset_js'.AMP.'print=yes',
 				'rte.toggle_rte_url'					=> $this->_base_url.AMP.'method=toggle_member_rte',
-				'rte.is_enabled'						=> ( $this->EE->session->userdata('rte_enabled') == 'y' ),
+				'rte.is_enabled'						=> ($this->EE->session->userdata('rte_enabled') == 'y'),
 				'rte.toggle_link.text_disable'			=> lang('disable_rte'),
 				'rte.toggle_link.text_enable'			=> lang('enable_rte'),
 				'rte.toggle_dialog.title'				=> lang('toggle_rte_dialog_title'),
@@ -855,19 +855,19 @@ class Rte_mcp {
 		$this->EE->load->model('rte_toolset_model');
 		
 		# is this an individual’s private toolset?
-		$is_members = !! ( $this->EE->input->get_post('private') == 'true' );
+		$is_members = !! ($this->EE->input->get_post('private') == 'true');
 		
 		# save it
-		if ( $this->EE->rte_toolset_model->save( $change, $toolset_id ) )
+		if ($this->EE->rte_toolset_model->save($change, $toolset_id))
 		{
 			# if it’s new, get the ID
-			if ( ! $toolset_id )
+			if ( ! $toolset_id)
 			{
 				$toolset_id = $this->EE->db->insert_id();
 			}
 			
 			# update the member profile
-			if ( $is_members && $toolset_id )
+			if ($is_members && $toolset_id)
 			{
 				$this->EE->db
 					->where( array( 'member_id' => $this->EE->session->userdata('member_id') ) )
@@ -884,7 +884,7 @@ class Rte_mcp {
 
 		# buh-bye
 		$this->EE->functions->redirect(
-			( $is_members ? $this->_myaccount_url : $this->_base_url )
+			($is_members ? $this->_myaccount_url : $this->_base_url)
 		);
 	}
 
@@ -901,7 +901,7 @@ class Rte_mcp {
 		$this->EE->load->model('rte_tool_model');
 		
 		# save
-		if ( $this->EE->rte_tool_model->save( $change, $tool_id ) )
+		if ($this->EE->rte_tool_model->save($change, $tool_id))
 		{
 			$this->EE->session->set_flashdata('message_success', $success_msg);
 		}
@@ -926,9 +926,9 @@ class Rte_mcp {
 	private function _permissions_check()
 	{
 		# super admins always can
-		$can_access = ( $this->EE->session->userdata('group_id') == '1' );
+		$can_access = ($this->EE->session->userdata('group_id') == '1');
 		
-		if ( ! $can_access )
+		if ( ! $can_access)
 		{
 			# get the group_ids with access
 			$result = $this->EE->db
@@ -937,11 +937,11 @@ class Rte_mcp {
 						->join('modules', 'modules.module_id = module_member_groups.module_id')
 						->where('modules.module_name',$this->name)
 						->get();
-			if ( $result->num_rows() )
+			if ($result->num_rows())
 			{
-				foreach ( $result->result_array() as $r )
+				foreach ($result->result_array() as $r)
 				{
-					if ( $this->EE->session->userdata('group_id') == $r['group_id'] )
+					if ($this->EE->session->userdata('group_id') == $r['group_id'])
 					{
 						$can_access = TRUE;
 						break;
@@ -950,7 +950,7 @@ class Rte_mcp {
 			}
 		}
 		
-		if ( ! $can_access )
+		if ( ! $can_access)
 		{
 			show_error(lang('unauthorized_access'));
 		}		

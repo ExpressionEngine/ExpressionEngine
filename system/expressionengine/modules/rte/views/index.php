@@ -1,4 +1,4 @@
-	<?=form_open( $action )?>
+	<?=form_open($action)?>
 
 <?php	$this->table->set_template($cp_pad_table_template);
 		$this->table->template['thead_open'] = '<thead class="visualEscapism">';
@@ -81,7 +81,7 @@
 		);
 		foreach($toolsets as $toolset)
 		{
-			if ( $toolset['enabled'] == 'y' )
+			if ($toolset['enabled'] == 'y')
 			{
 				$active = '<strong>'.lang('enabled').'</strong>';
 				$action = '<a href="'.$module_base.AMP.'method=disable_toolset'.AMP.'rte_toolset_id='.$toolset['rte_toolset_id'].'">'.
@@ -120,7 +120,7 @@
 		);
 		foreach($tools as $tool)
 		{
-			if ( $tool['enabled'] == 'y' )
+			if ($tool['enabled'] == 'y')
 			{
 				$active = '<strong>'.lang('enabled').'</strong>';
 				$action = '<a href="'.$module_base.AMP.'method=disable_tool'.AMP.'rte_tool_id='.$tool['rte_tool_id'].'">'.

@@ -50,7 +50,7 @@ class Rte_tool_model extends CI_Model {
 						->get('rte_tools')
 						->result_array();
 		# decide what to return
-		return $list ? $this->_make_list( $results ) : $results;
+		return $list ? $this->_make_list($results) : $results;
 	}
 	
 	/**
@@ -67,7 +67,7 @@ class Rte_tool_model extends CI_Model {
 						->get_where( 'rte_tools', array('enabled' => 'y') )
 						->result_array();
 		# decide what to return
-		return $list ? $this->_make_list( $results ) : $results;
+		return $list ? $this->_make_list($results) : $results;
 	}
 	
 	/**
@@ -81,12 +81,12 @@ class Rte_tool_model extends CI_Model {
 	{
 		$tool_ids = array();
 		# make sure we have tools
-		if ( count( $tools ) )
+		if (count($tools))
 		{
 			# make sure the class name is correct
-			foreach ( $tools as &$tool )
+			foreach ($tools as &$tool)
 			{
-				$tool = ucfirst( strtolower( $tool ) ).'_rte';
+				$tool = ucfirst(strtolower($tool)).'_rte';
 			}
 			# get the tools
 			$results = $this->db
@@ -95,7 +95,7 @@ class Rte_tool_model extends CI_Model {
 							->get('rte_tools')
 							->result_array();
 			# extract the ids
-			foreach ( $results as $row )
+			foreach ($results as $row)
 			{
 				# set the indexes according to the original array
 				$tool_ids[array_search($row['class'],$tools)] = $row['rte_tool_id'];
@@ -132,31 +132,31 @@ class Rte_tool_model extends CI_Model {
 				'enabled'		=> 'y'
 			)
 		);
-		if ( $results->num_rows() > 0 )
+		if ($results->num_rows() > 0)
 		{
 			$the_tool	= $results->row();
-			$tool_name	= strtolower( str_replace( ' ', '_', $the_tool->name ) );
-			$tool_class	= ucfirst( $tool_name ).'_rte';
+			$tool_name	= strtolower(str_replace(' ', '_', $the_tool->name));
+			$tool_class	= ucfirst($tool_name).'_rte';
 			
 			# find the RTE tool file
-			foreach ( array(PATH_RTE, PATH_THIRD) as $tmp_path )
+			foreach (array(PATH_RTE, PATH_THIRD) as $tmp_path)
 			{
 				$file = $tmp_path.$tool_name.'/rte.'.$tool_name.'.php';
-				if ( file_exists($file) )
+				if (file_exists($file))
 				{
 					# load it in, instantiate the tool & add the definition
-					require_once( $file );
+					require_once($file);
 					$TOOL = new $tool_class();
 					
 					# loop through the pieces and pull them from the object
-					foreach ( $tool as $component => $default )
+					foreach ($tool as $component => $default)
 					{
 						# make sure the method exists
-						if ( method_exists( $tool_class, $component ) )
+						if (method_exists($tool_class, $component))
 						{
 							$temp = $TOOL->$component();
 							# make sure the values are of the same type
-							if ( gettype( $default ) === gettype( $temp ) )
+							if (gettype($default) === gettype($temp))
 							{
 								$tool[$component] = $temp;
 							}
@@ -173,104 +173,7 @@ class Rte_tool_model extends CI_Model {
 	}
 
 	/**
-	 * Gets the JS for a specific tool
-	 * 
-	 * @access	public
-	 * @param	number
-	 * @return	string
-	 */
-	public function get_tool_js( $tool_id = FALSE )
-	{
-		# get the tool
-		$results = $this->db->get_where(
-			'rte_tools',
-			array(
-				'rte_tool_id'	=> $tool_id,
-				'enabled'		=> 'y'
-			)
-		);
-		
-		if ( $results->num_rows() > 0 )
-		{
-			$tool		= $results->row();
-			$tool_name	= strtolower( str_replace( ' ', '_', $tool->name ) );
-			$tool_class	= ucfirst( $tool_name ).'_rte';
-			
-			$globals	= array();
-			$styles		= '';
-			$scripts	= '';
-			$tools		= '';
-			
-			# find the RTE tool file
-			foreach ( array(PATH_RTE, PATH_THIRD) as $tmp_path )
-			{
-				$file = $tmp_path.$tool_name.'/rte.'.$tool_name.'.php';
-				if ( file_exists($file) )
-				{
-					# load it in, instantiate the tool & add the definition
-					require_once( $file );
-					$TOOL = new $tool_class();
-					
-					# Styles?
-					if ( $TOOL->styles )
-					{
-						$styles .= $TOOL->styles;
-					}
-					
-					# Globals?
-					if ( count( $TOOL->globals ) )
-					{
-						$globals = array_merge( $globals, $TOOL->globals );
-					}
-					
-					# Scripts?
-					if ( count( $TOOL->scripts ) )
-					{
-						$scripts .= $this->_load_js_files( $TOOL->scripts );
-					}
-					
-					# get the tool definition
-					$tools .= $TOOL->definition();
-
-					break;
-				}
-			}
-		}
-		
-		# compile it all
-		$js	= '';
-		
-		if ( count( $globals ) )
-		{
-			$js .= 'if ( typeof EE === "undefined" ){ EE = {}; }';
-			foreach ( $globals as $key => $val )
-			{
-				$parts	= explode( '.', $key );
-				$i		= 0;
-				$length = count( $parts ) - 1;
-				while ( $i < $length )
-				{
-					# prefix
-					$j		= 0;
-					$prefix	= '';
-					while ( $j < $i ){ $prefix .= $parts[$j++]; }
-					$var = 'EE.' . ( ! empty($prefix) ? $prefix . '.' : '' ) . $parts[$i++];
-					$js .= 'if ( typeof ' . $var . ' === "undefined" ){ ' . $var . ' = {}; }';
-				}
-				$js .= "EE.{$key} = '{$val}';\r\n";
-			}
-		}
-		
-		$js .= '$("<style>' . preg_replace( '/\\s+/', ' ', $styles ) . '</style>").appendTo("head");';
-		
-		$js .= $scripts;
-		$js .= $tools;
-		
-		return $js;
-	}
-
-	/**
-	 * Gets the JS for a specific tool
+	 * Save a tool
 	 * 
 	 * @access	public
 	 * @param	array
@@ -283,7 +186,7 @@ class Rte_tool_model extends CI_Model {
 		$sql = $tool_id	? $this->db->update_string( 'rte_tools', $tool, array( 'rte_tool_id' => $tool_id ) )
 						: $this->db->insert_string( 'rte_tools', $tool );
 		# run it
-		$this->db->query( $sql );
+		$this->db->query($sql);
 		# return the affected rows
 		return $this->db->affected_rows();
 	}
@@ -299,7 +202,7 @@ class Rte_tool_model extends CI_Model {
 	{
 		$return = array();
 		
-		foreach ( $result as $r )
+		foreach ($result as $r)
 		{
 			$return[$r['rte_tool_id']] = $r['name'];
 		}
@@ -324,10 +227,10 @@ class Rte_tool_model extends CI_Model {
 		$classes	= array();
 		
 		# add new tools
-		foreach ( $files as $package => $details )
+		foreach ($files as $package => $details)
 		{
 			$classes[] = $details['class'];
-			if ( ! isset($installed[$package]) )
+			if ( ! isset($installed[$package]))
 			{
 				# make a record of the add-on in the DB
 				$this->db->insert(
@@ -343,7 +246,7 @@ class Rte_tool_model extends CI_Model {
 		
 		# cleanup removed tools
 		$this->db
-			->where_not_in( 'class', $classes )
+			->where_not_in('class', $classes)
 			->delete('rte_tools');
 	}
 	

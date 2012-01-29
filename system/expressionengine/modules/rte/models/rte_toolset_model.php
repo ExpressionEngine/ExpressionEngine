@@ -40,7 +40,7 @@ class Rte_toolset_model extends CI_Model {
 				'site_id'	=> $this->config->item('site_id')
 			)
 		)->result_array();
-		return $list ? $this->_make_list( $results ) : $results;
+		return $list ? $this->_make_list($results) : $results;
 	}
 	
 	/**
@@ -60,7 +60,7 @@ class Rte_toolset_model extends CI_Model {
 				'site_id'	=> $this->config->item('site_id')
 			)
 		)->result_array();
-		return $list ? $this->_make_list( $results ) : $results;
+		return $list ? $this->_make_list($results) : $results;
 	}
 	
 	/**
@@ -86,27 +86,27 @@ class Rte_toolset_model extends CI_Model {
 						->result_array();
 		# has this user made a personal toolset?
 		$has_personal = FALSE;
-		foreach ( $results as $i => $toolset )
+		foreach ($results as $i => $toolset)
 		{
-			if ( $toolset['member_id'] != 0 )
+			if ($toolset['member_id'] != 0)
 			{
 				$has_personal = TRUE;
 				# move the personal one to the end of the array & rename it
 				$tool = $toolset;
-				unset( $results[$i] );
+				unset($results[$i]);
 				$results[] = $tool;
 				break;
 			}
 		}
 		# if no personal toolset, create one
-		if ( ! $has_personal )
+		if ( ! $has_personal)
 		{
 			$results[] = array(
 				'rte_toolset_id'	=> 'new',
 				'name'				=> 'my_custom_toolset'
 			);
 		}
-		return $this->_make_list( $results );
+		return $this->_make_list($results);
 	}
 	
 	/**
@@ -125,7 +125,7 @@ class Rte_toolset_model extends CI_Model {
 						1
 					  );
 		# member’s choice
-		if ( $result->num_rows() )
+		if ($result->num_rows())
 		{
 			$toolset_id	= $result->row('rte_toolset_id');
 		}
@@ -152,7 +152,7 @@ class Rte_toolset_model extends CI_Model {
 						array( 'rte_toolset_id' => $toolset_id ),
 						1
 					  );
-		return $result->num_rows() ? explode( '|', $result->row('rte_tools') ) : array();
+		return $result->num_rows() ? explode('|', $result->row('rte_tools')) : array();
 	}
 	
 	/**
@@ -165,15 +165,15 @@ class Rte_toolset_model extends CI_Model {
 	public function exists( $toolset_id=FALSE )
 	{
 		$ret = FALSE;
-		if ( !! $toolset_id )
+		if ( !! $toolset_id)
 		{
-			$ret = ( $this->db
+			$ret = ($this->db
 						->get_where(
 							'rte_toolsets',
 							array( 'rte_toolset_id' => $toolset_id ),
 							1
 					 	  )
-						->num_rows() > 0 );
+						->num_rows() > 0);
 		}
 		return $ret;
 	}
@@ -189,7 +189,7 @@ class Rte_toolset_model extends CI_Model {
 	{
 		// are you an admin?
 		$admin = ( $this->session->userdata('group_id') == '1' );
-		if ( ! $admin )
+		if ( ! $admin)
 		{
 			# get the group_ids with access
 			$result = $this->EE->db
@@ -198,11 +198,11 @@ class Rte_toolset_model extends CI_Model {
 						->join('modules', 'modules.module_id = module_member_groups.module_id')
 						->where('modules.module_name',$this->name)
 						->get();
-			if ( $result->num_rows() )
+			if ($result->num_rows())
 			{
-				foreach ( $result->result_array() as $r )
+				foreach ($result->result_array() as $r)
 				{
-					if ( $this->EE->session->userdata('group_id') == $r['group_id'] )
+					if ($this->EE->session->userdata('group_id') == $r['group_id'])
 					{
 						$admin = TRUE;
 						break;
@@ -212,10 +212,10 @@ class Rte_toolset_model extends CI_Model {
 		}
 		
 		# grab the toolset
-		$toolset = $this->get( $toolset_id );
+		$toolset = $this->get($toolset_id);
 		
-		return ( ( $toolset->member_id != 0 && $toolset->member_id == $this->session->userdata('member_id') ) ||
-				 ( $toolset->member_id == 0 && $admin ) );
+		return (($toolset->member_id != 0 && $toolset->member_id == $this->session->userdata('member_id')) ||
+				($toolset->member_id == 0 && $admin));
 	}
 	
 	/**
@@ -270,14 +270,14 @@ class Rte_toolset_model extends CI_Model {
 		$sql = FALSE;
 		
 		# update
-		if ( $toolset_id )
+		if ($toolset_id)
 		{
 			$existing	= $this->db
 							->get_where( 'rte_toolsets', array( 'rte_toolset_id' => $toolset_id ) )
 							->result_array();
-			foreach ( $toolset as $k => $v )
+			foreach ($toolset as $k => $v)
 			{
-				if ( $v != $existing[0][$k] )
+				if ($v != $existing[0][$k])
 				{
 					$sql = $this->db->update_string( 'rte_toolsets', $toolset, array( 'rte_toolset_id' => $toolset_id ) );
 					break;
@@ -291,9 +291,9 @@ class Rte_toolset_model extends CI_Model {
 		}
 		
 		# run the SQL
-		if ( $sql )
+		if ($sql)
 		{
-			$this->db->query( $sql );
+			$this->db->query($sql);
 			return $this->db->affected_rows();
 		}
 		# fail
@@ -312,7 +312,7 @@ class Rte_toolset_model extends CI_Model {
 	 */
 	public function delete( $toolset_id=FALSE )
 	{
-		if ( $toolset_id )
+		if ($toolset_id)
 		{
 			$this->db
 				->where( array( 'rte_toolset_id' => $toolset_id ) )
@@ -344,7 +344,7 @@ class Rte_toolset_model extends CI_Model {
 			array(
 				'site_id'	=> $this->config->item('site_id'),
 				'name'		=> 'Default',
-				'rte_tools'	=> implode( '|', $tool_ids ),
+				'rte_tools'	=> implode('|', $tool_ids),
 				'enabled'	=> 'y'
 			)
 		);
@@ -364,11 +364,11 @@ class Rte_toolset_model extends CI_Model {
 			'name'		=> $name,
 			'site_id'	=> $this->config->item('site_id')
 	 	);
-		if ( $toolset_id !== FALSE )
+		if ($toolset_id !== FALSE)
 		{
 			$where['rte_toolset_id !='] = $toolset_id;
 		}
-		$query = $this->db->get_where( 'rte_toolsets', $where );
+		$query = $this->db->get_where('rte_toolsets', $where);
 		return ! $query->num_rows();
 	}
 
@@ -383,7 +383,7 @@ class Rte_toolset_model extends CI_Model {
 	{
 		$return = array();
 		
-		foreach ( $result as $r )
+		foreach ($result as $r)
 		{
 			$return[$r['rte_toolset_id']] = $r['name'];
 		}

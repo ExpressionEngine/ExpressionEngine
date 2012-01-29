@@ -2,11 +2,11 @@
 
 class Rte_ext {
 
-	var $name = 'Rich Text Editor';
-	var $version = '1,0';
-	var $settings_exist = 'n';
-	var $docs_url = 'http://expressionengine.com/user_guide/modules/rich-text-editor/index.html';
-	var $required_by = array('module');
+	var $name			= 'Rich Text Editor';
+	var $version		= '1,0';
+	var $settings_exist	= 'n';
+	var $docs_url		= 'http://expressionengine.com/user_guide/modules/rich-text-editor/index.html';
+	var $required_by	= array('module');
 
 	private $EE;
 	private $module = 'rte';
@@ -65,7 +65,7 @@ class Rte_ext {
 	function publish_form_entry_data( $results )
 	{
 		# get the Module
-		include_once( APPPATH.'modules/'.$this->module.'/'.'mcp.'.$this->module.'.php' );
+		include_once(APPPATH.'modules/'.$this->module.'/'.'mcp.'.$this->module.'.php');
 		$class_name	= ucfirst($this->module).'_mcp';
 		$RTE		= new $class_name();
 		
@@ -77,11 +77,11 @@ class Rte_ext {
 		$js = array(
 			$RTE->build_rte_toggle_js()
 		);
-		if ( $this->EE->session->userdata('rte_enabled') == 'y' )
+		if ($this->EE->session->userdata('rte_enabled') == 'y')
 		{
 			$js[] = $RTE->build_toolset_js();
 		}
-		$this->EE->javascript->output( $js );
+		$this->EE->javascript->output($js);
 
 		return $results;
 	}

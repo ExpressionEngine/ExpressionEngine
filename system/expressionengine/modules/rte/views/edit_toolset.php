@@ -1,6 +1,6 @@
-	<?=form_open( $action . ( $is_private ? AMP.'private=true' : '' ) )?>
+	<?=form_open($action.($is_private ? AMP.'private=true' : ''))?>
 
-<?php	if ( ! $is_private ): ?>
+<?php	if ( ! $is_private): ?>
 	<table class="rte-toolset-settings" cellspacing="0" cellpadding="0" border="0">
 		<tr>
 			<td><label for="rte-toolset-name"><?=lang('toolset_name')?></label></td>
@@ -27,7 +27,7 @@
 					<strong><?=lang('available_tools')?></strong>
 					<div class="rte-toolset-builder-scrollpane" tabindex="0">
 						<ul id="rte-tools-unused" class="rte-tools-connected">
-<?php	foreach ( $unused_tools as $tool_id ): ?>
+<?php	foreach ($unused_tools as $tool_id): ?>
 							<li class="rte-tool" data-tool-id="<?=$tool_id?>"><?=$available_tools[$tool_id]?></li>
 <?php	endforeach; ?>
 						</ul>
@@ -49,7 +49,7 @@
 					<strong><?=lang('tools_in_toolset')?></strong>
 					<div class="rte-toolset-builder-scrollpane" tabindex="0">
 						<ul id="rte-tools-selected" class="rte-tools-connected ui-sortable">
-<?php	foreach ( $toolset_tools as $tool_id ): ?>
+<?php	foreach ($toolset_tools as $tool_id): ?>
 							<li class="rte-tool" data-tool-id="<?=$tool_id?>"><?=$available_tools[$tool_id]?></li>
 <?php	endforeach; ?>
 						</ul>

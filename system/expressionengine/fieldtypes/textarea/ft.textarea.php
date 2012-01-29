@@ -51,11 +51,11 @@ class Textarea_ft extends EE_Fieldtype {
 		);
 		
 		// RTE?
-		if ( ! isset( $this->settings['field_enable_rte'] ) )
+		if ( ! isset($this->settings['field_enable_rte']))
 		{
 			$this->settings['field_enable_rte'] = 'n';
 		}
-		if ( $this->settings['field_enable_rte'] == 'y' )
+		if ($this->settings['field_enable_rte'] == 'y')
 		{
 			$field['class']	= 'rte';
 		}
@@ -86,7 +86,7 @@ class Textarea_ft extends EE_Fieldtype {
 		
 		// RTE setup
 		$this->EE->load->model('addons_model');
-		if ( ! isset( $data['field_enable_rte'] ) )
+		if ( ! isset($data['field_enable_rte']))
 		{
 			$data['field_enable_rte'] = 'n';
 		}
@@ -99,8 +99,8 @@ class Textarea_ft extends EE_Fieldtype {
 		);
 		
 		$this->field_formatting_row($data, $prefix);
-		if ( $this->EE->addons_model->module_installed('rte') &&
-		 	 $this->EE->config->item('rte_enabled') == 'y' )
+		if ($this->EE->addons_model->module_installed('rte') &&
+		 	$this->EE->config->item('rte_enabled') == 'y')
 		{
 			$this->EE->lang->loadfile('rte');
 			
