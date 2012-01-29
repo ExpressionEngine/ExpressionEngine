@@ -52,7 +52,7 @@
 							.change(toggle_rte_edit_link),
 	$edit_my_toolset	= $('<input type="button" class="submit"/>')
 							.css('margin-left','5px')
-							.val( EE.rte.edit_text )
+							.val( EE.rte.edit_text );
 	// Get the builder
 	function get_rte_toolset_builder()
 	{
@@ -96,9 +96,10 @@
 	
 	
 	// Toolset Builder
-	var $selected	= $('#null'),
-		$used		= $selected,
-		$unused		= $selected;
+	var
+	$selected	= $('#null'),
+	$used		= $selected,
+	$unused		= $selected;
 	
 	function setupToolsetBuilder()
 	{
