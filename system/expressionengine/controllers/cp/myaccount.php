@@ -204,9 +204,7 @@ class MyAccount extends CI_Controller {
 						// create the link
 						if ( $this->addons_model->module_installed($additional_nav_link_link['module']) )
 						{
-							$vars['additional_nav'][$additional_nav_key][$additional_nav_link_text] = BASE.AMP.'C=myaccount'.AMP.'M=custom_screen'.
-																										AMP.'module='.$additional_nav_link_link['module'].
-																										AMP.'method='.$additional_nav_link_link['method'];
+							$vars['additional_nav'][$additional_nav_key][$additional_nav_link_text] = BASE.AMP.'C=myaccount'.AMP.'M=custom_screen'.AMP.'module='.$additional_nav_link_link['module'].AMP.'method='.$additional_nav_link_link['method'];
 						}
 						// don’t create the link
 						else
