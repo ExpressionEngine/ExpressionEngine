@@ -40,8 +40,8 @@ class Rte_tool_model extends CI_Model {
 	 * Gets all RTE tools
 	 * 
 	 * @access	public
-	 * @param	bool
-	 * @return	array
+	 * @param	bool $list Whether or not you want it to be a ID => name list
+	 * @return	array The tools
 	 */
 	public function get_all( $list=FALSE )
 	{
@@ -57,8 +57,8 @@ class Rte_tool_model extends CI_Model {
 	 * Gets all enabled RTE tools
 	 * 
 	 * @access	public
-	 * @param	bool
-	 * @return	array
+	 * @param	bool $list Whether or not you want it to be a ID => name list
+	 * @return	array The tools
 	 */
 	public function get_available( $list=FALSE )
 	{
@@ -74,8 +74,8 @@ class Rte_tool_model extends CI_Model {
 	 * Gets the tool IDs for the supplied tools
 	 * 
 	 * @access	public
-	 * @param	array
-	 * @return	array
+	 * @param	array $tools An array of string tool names in the specific order you want them
+	 * @return	array The tool IDs
 	 */
 	public function get_tool_ids( $tools=array() )
 	{
@@ -111,8 +111,8 @@ class Rte_tool_model extends CI_Model {
 	 * Gets the pieces required for a tool
 	 * 
 	 * @access	public
-	 * @param	number
-	 * @return	string
+	 * @param	int $tool_id The ID of the tool you want to get the details for
+	 * @return	array A hash of tool details indexed to globals, libraries, styles, and definition
 	 */
 	public function get_tool( $tool_id = FALSE )
 	{
@@ -176,8 +176,8 @@ class Rte_tool_model extends CI_Model {
 	 * Save a tool
 	 * 
 	 * @access	public
-	 * @param	array
-	 * @param	number
+	 * @param	array $tool Tool row to update/insert
+	 * @param	int $tool_id The ID of the tool to update
 	 * @return	number
 	 */
 	public function save( $tool=array(), $tool_id=FALSE )
@@ -195,8 +195,8 @@ class Rte_tool_model extends CI_Model {
 	 * Make the results array into an <option>-compatible list
 	 * 
 	 * @access	private
-	 * @param	array
-	 * @return	array
+	 * @param	array $result The result array to convert
+	 * @return	array An ID => name array
 	 */
 	private function _make_list( $result )
 	{
@@ -214,8 +214,6 @@ class Rte_tool_model extends CI_Model {
 	 * Load tools into the DB
 	 * 
 	 * @access	private
-	 * @param	array
-	 * @return	array
 	 */
 	private function _load_tools_into_db()
 	{

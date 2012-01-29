@@ -44,8 +44,8 @@ class Rte_ext {
 	/**
 	 * Add RTE prefs to the CP Menu
 	 * 
-	 * @param	array	The CP menu array
-	 * @return	array	The updated CP menu array
+	 * @param	array $menu The CP menu array
+	 * @return	array The updated CP menu array
 	 */
 	function cp_menu_array( $menu )
 	{
@@ -59,8 +59,8 @@ class Rte_ext {
 	/**
 	 * Add RTE JS to the Publish/Edit page
 	 * 
-	 * @param	array	$results	The row_array for the entry
-	 * @return	array	Modified result array
+	 * @param	array $results The row_array for the entry
+	 * @return	array Modified result array
 	 */
 	function publish_form_entry_data( $results )
 	{

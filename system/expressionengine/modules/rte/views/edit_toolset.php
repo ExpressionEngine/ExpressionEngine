@@ -4,12 +4,7 @@
 	<table class="rte-toolset-settings" cellspacing="0" cellpadding="0" border="0">
 		<tr>
 			<td><label for="rte-toolset-name"><?=lang('toolset_name')?></label></td>
-			<td><?=
-				form_input(array(
-					'name'		=> 'rte_toolset_name',
-					'id'		=> 'rte-toolset-name',
-					'value'		=> $toolset_name
-				)); ?></td>
+			<td><?=form_input(array('name'=>'rte_toolset_name','id'=>'rte-toolset-name','value'=>$toolset_name))?></td>
 		</tr>
 	</table>
 <?php 	else: ?>

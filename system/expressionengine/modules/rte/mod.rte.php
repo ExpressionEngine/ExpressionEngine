@@ -36,6 +36,14 @@ class Rte {
 		$this->EE =& get_instance();
 	}
 	
+	/**
+	 * Embed the RTE in the front end
+	 * 
+	 * @access	public
+	 * @param	string $selector The selector that will match the Textareas you want to turn into an RTE
+	 * @param	int $toolset_id The ID of the toolset you want to load
+	 * @return	string The JS needed to embed the RTE
+	 */
 	public function embed( $selector='.rte', $toolset_id=FALSE )
 	{
 		$this->EE->load->library('javascript');
@@ -184,8 +192,8 @@ class Rte {
 	 * Note: This is partially borrowed from the combo loader
 	 * 
 	 * @access	private
-	 * @param	array
-	 * @return	string
+	 * @param	array $load A collection of JS libraries to load
+	 * @return	string The libraries
 	 */
 	private function _load_js_files( $load=array() )
 	{
@@ -255,8 +263,8 @@ class Rte {
 	 * Manage the assignment of global JS
 	 * 
 	 * @access	private
-	 * @param	array
-	 * @return	string
+	 * @param	array $globals The globals to load into JS
+	 * @return	string The JavaScript
 	 */
 	private function _set_globals( $globals=array() )
 	{

@@ -51,7 +51,7 @@ class Rte_mcp {
 	 * Homepage
 	 *
 	 * @access	public
-	 * @return	string
+	 * @return	string The page
 	 */
 	public function index()
 	{
@@ -149,7 +149,8 @@ class Rte_mcp {
 	 * Provides Edit Toolset Screen HTML
 	 *
 	 * @access	public
-	 * @return	string
+	 * @param	int $toolset_id The Toolset ID to be edited (optional)
+	 * @return	string The page
 	 */
 	public function edit_toolset( $toolset_id=FALSE )
 	{
@@ -226,7 +227,7 @@ class Rte_mcp {
 		$vars = array(
 			'cp_page_title'		=> $title,
 			'module_base'		=> $this->_base_url,
-			'action'			=> $this->_form_base.AMP.'method=save_toolset'.( !! $toolset_id ? AMP.'rte_toolset_id='.$toolset_id : '' ),
+			'action'			=> $this->_form_base.AMP.'method=save_toolset'.( !! $toolset_id ? AMP.'rte_toolset_id='.$toolset_id : ''),
 			'is_private'		=> $is_private,
 			'toolset_name'		=> ( ! $toolset || $is_private ? '' : $toolset->name ),
 			'available_tools'	=> $available_tools,
@@ -373,7 +374,7 @@ class Rte_mcp {
 	 * Validates a toolset name for existance and uniqueness
 	 *
 	 * @access	public
-	 * @return	mixed
+	 * @return	mixed JSON or Boolean for validity
 	 */
 	public function validate_toolset_name()
 	{
@@ -441,7 +442,8 @@ class Rte_mcp {
 	 * MyAccount Rich Text Editor Preferences Page
 	 *
 	 * @access	public
-	 * @return	string
+	 * @param	array $vars Hash of page vars
+	 * @return	string The page contents
 	 */
 	public function myaccount_settings( $vars )
 	{
@@ -539,7 +541,6 @@ class Rte_mcp {
 
 		# buh-bye
 		$this->EE->functions->redirect($this->_myaccount_url);
-
 	}
 
 	// --------------------------------------------------------------------
@@ -548,7 +549,7 @@ class Rte_mcp {
 	 * MyAccount RTE settings form action
 	 *
 	 * @access	public
-	 * @return	mixed
+	 * @return	int The number of affected rows (should be 1 or 0)
 	 */
 	public function toggle_member_rte()
 	{
@@ -578,7 +579,8 @@ class Rte_mcp {
 	 * Build the toolset JS
 	 *
 	 * @access	public
-	 * @return	string
+	 * @param	int $toolset_id The ID of the toolset to load
+	 * @return	string The JavaScript
 	 */
 	public function build_toolset_js( $toolset_id=FALSE )
 	{
@@ -686,7 +688,7 @@ class Rte_mcp {
 	 * RTE toggle JS
 	 *
 	 * @access	public
-	 * @return	string
+	 * @return	string The JavaScript
 	 */
 	public function build_rte_toggle_js()
 	{
@@ -815,7 +817,6 @@ class Rte_mcp {
 		
 <?php		$js = ob_get_contents();
 			ob_end_clean(); 
-
 		}
 
 		return $js;

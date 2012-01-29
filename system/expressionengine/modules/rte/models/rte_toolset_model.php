@@ -28,8 +28,8 @@ class Rte_toolset_model extends CI_Model {
 	 * Get all the Toolsets
 	 * 
 	 * @access	public
-	 * @param	bool
-	 * @return	array
+	 * @param	bool $list Whether or not you want it to be a ID => name list
+	 * @return	array The tools
 	 */
 	public function get_all( $list=FALSE )
 	{
@@ -47,8 +47,8 @@ class Rte_toolset_model extends CI_Model {
 	 * Get enabled Toolsets
 	 * 
 	 * @access	public
-	 * @param	bool
-	 * @return	array
+	 * @param	bool $list Whether or not you want it to be a ID => name list
+	 * @return	array The tools
 	 */
 	public function get_active( $list=FALSE )
 	{
@@ -67,7 +67,7 @@ class Rte_toolset_model extends CI_Model {
 	 * Get the toolsets available to a given Member
 	 * 
 	 * @access	public
-	 * @return	array
+	 * @return	array The tools in ID => name format
 	 */
 	public function get_member_options()
 	{
@@ -113,7 +113,7 @@ class Rte_toolset_model extends CI_Model {
 	 * Ge the tools for the member’s toolset
 	 * 
 	 * @param	bool
-	 * @return	int
+	 * @return	int The ID of the current member’s toolset
 	 */
 	public function get_member_toolset()
 	{
@@ -141,7 +141,8 @@ class Rte_toolset_model extends CI_Model {
 	 * Get the tools for a given toolset
 	 * 
 	 * @access	public
-	 * @return	array
+	 * @param	int $toolset_id The Toolset ID
+	 * @return	array A collection of Tool IDs
 	 */
 	public function get_tools( $toolset_id=0 )
 	{
@@ -159,7 +160,7 @@ class Rte_toolset_model extends CI_Model {
 	 * Check to see if the toolset exists
 	 * 
 	 * @access	public
-	 * @param	int
+	 * @param	int $toolset_id The Toolset ID
 	 * @return	bool
 	 */
 	public function exists( $toolset_id=FALSE )
@@ -182,7 +183,7 @@ class Rte_toolset_model extends CI_Model {
 	 * Check to see if the current member can access the Toolset
 	 * 
 	 * @access	public
-	 * @param	int
+	 * @param	int $toolset_id The Toolset ID
 	 * @return	bool
 	 */
 	public function member_can_access( $toolset_id=FALSE )
@@ -222,8 +223,8 @@ class Rte_toolset_model extends CI_Model {
 	 * Get the toolset
 	 * 
 	 * @access	public
-	 * @param	int
-	 * @return	obj
+	 * @param	int $toolset_id The Toolset ID
+	 * @return	obj The Toolset row object
 	 */
 	public function get( $toolset_id=FALSE )
 	{
@@ -240,7 +241,7 @@ class Rte_toolset_model extends CI_Model {
 	 * Tells you if a toolset is private
 	 * 
 	 * @access	public
-	 * @param	int
+	 * @param	int $toolset_id The Toolset ID
 	 * @return	bool
 	 */
 	public function is_private( $toolset_id=FALSE )
@@ -259,8 +260,8 @@ class Rte_toolset_model extends CI_Model {
 	 * Save a toolset
 	 * 
 	 * @access	public
-	 * @param	array
-	 * @param	int
+	 * @param	array $toolset The toolset details
+	 * @param	int $toolset_id The ID of the Toolset (so you can update)
 	 * @return	mixed
 	 */
 	public function save( $toolset=array(), $toolset_id=FALSE )
@@ -307,7 +308,7 @@ class Rte_toolset_model extends CI_Model {
 	 * Delete a toolset
 	 * 
 	 * @access	public
-	 * @param	int
+	 * @param	int $toolset_id The ID of the toolset to delete
 	 * @return	mixed
 	 */
 	public function delete( $toolset_id=FALSE )
@@ -326,8 +327,7 @@ class Rte_toolset_model extends CI_Model {
 	 * Load the Default Toolsets into the DB
 	 * 
 	 * @access	public
-	 * @param	int
-	 * @return	mixed
+	 * @return	void
 	 */
 	public function load_default_toolsets()
 	{
@@ -354,8 +354,8 @@ class Rte_toolset_model extends CI_Model {
 	 * Check the name of the toolset for uniqueness
 	 * 
 	 * @access	public
-	 * @param	string
-	 * @param	int
+	 * @param	string $name The Toolset name
+	 * @param	int $toolset_id The ID of the toolset (optional)
 	 * @return	bool
 	 */
 	public function check_name( $name, $toolset_id=FALSE )
@@ -376,8 +376,8 @@ class Rte_toolset_model extends CI_Model {
 	 * Make the results array into an <option>-compatible list
 	 * 
 	 * @access	private
-	 * @param	array
-	 * @return	array
+	 * @param	array $result The result array to convert
+	 * @return	array An ID => name array
 	 */
 	private function _make_list( $result )
 	{
