@@ -83,8 +83,10 @@ class Rte_mcp {
 			'plugin'	=> array( 'overlay', 'toolbox.expose' )
 		));
 		$this->EE->javascript->set_global(array(
-			'rte.name_required'				=> lang('name_required'),
-			'rte.validate_toolset_name_url'	=> $this->_base_url.AMP.'method=validate_toolset_name'			
+			'rte'	=> array(
+				'name_required'				=> lang('name_required'),
+				'validate_toolset_name_url'	=> $this->_base_url.AMP.'method=validate_toolset_name'			
+			)
 		));
 		$this->EE->javascript->compile();
 		
@@ -237,9 +239,11 @@ class Rte_mcp {
 		
 		# JS
 		$this->EE->javascript->set_global(array(
-			'rte.toolset_modal.title'		=> $title,
-			'rte.validate_toolset_name_url'	=> $this->_base_url.AMP.'method=validate_toolset_name',
-			'rte.name_required'				=> lang('name_required')
+			'rte'	=> array(
+				'toolset_modal.title'		=> $title,
+				'validate_toolset_name_url'	=> $this->_base_url.AMP.'method=validate_toolset_name',
+				'name_required'				=> lang('name_required')
+			)
 		));
 		$this->EE->javascript->compile();
 		
@@ -477,9 +481,11 @@ class Rte_mcp {
 		
 		# JS stuff
 		$this->EE->javascript->set_global(array(
-			'rte.toolset_builder_url'	=> $this->_base_url.AMP.'method=edit_toolset'.AMP.'private=true',
-			'rte.custom_toolset_text'	=> lang('my_custom_toolset'),
-			'rte.edit_text'				=> lang('edit')
+			'rte'	=> array(
+				'toolset_builder_url'	=> $this->_base_url.AMP.'method=edit_toolset'.AMP.'private=true',
+				'custom_toolset_text'	=> lang('my_custom_toolset'),
+				'edit_text'				=> lang('edit')
+			)
 		));
 		$this->EE->cp->add_js_script(array(
 			'file'	=> 'cp/rte',
@@ -710,20 +716,26 @@ class Rte_mcp {
 			
 			# JS config
 			$this->EE->javascript->set_global(array(
-				'rte.update_event'						=> 'WysiHat-editor:change',
-				'rte.toolset_src'						=> $this->_base_url.AMP.'method=build_toolset_js'.AMP.'print=yes',
-				'rte.toggle_rte_url'					=> $this->_base_url.AMP.'method=toggle_member_rte',
-				'rte.is_enabled'						=> ($this->EE->session->userdata('rte_enabled') == 'y'),
-				'rte.toggle_link.text_disable'			=> lang('disable_rte'),
-				'rte.toggle_link.text_enable'			=> lang('enable_rte'),
-				'rte.toggle_dialog.title'				=> lang('toggle_rte_dialog_title'),
-				'rte.toggle_dialog.headline_disable'	=> lang('toggle_rte_dialog_headline_disable'),
-				'rte.toggle_dialog.headline_enable'		=> lang('toggle_rte_dialog_headline_enable'),
-				'rte.toggle_dialog.text_disable'		=> lang('toggle_rte_dialog_text_disable'),
-				'rte.toggle_dialog.text_enable'			=> lang('toggle_rte_dialog_text_enable'),
-				'rte.toggle_dialog.disable'				=> lang('disable_button'),
-				'rte.toggle_dialog.enable'				=> lang('enable_button'),
-				'rte.toggle_dialog.cancel'				=> lang('cancel')
+				'rte'	=> array(
+					'update_event'		=> 'WysiHat-editor:change',
+					'toolset_src'		=> $this->_base_url.AMP.'method=build_toolset_js'.AMP.'print=yes',
+					'toggle_rte_url'	=> $this->_base_url.AMP.'method=toggle_member_rte',
+					'is_enabled'		=> ($this->EE->session->userdata('rte_enabled') == 'y'),
+					'toggle_link'		=> array(
+						'text_disable'	=> lang('disable_rte'),
+						'text_enable'	=> lang('enable_rte')
+					),
+					'toggle_dialog'		=> array(
+						'title'				=> lang('toggle_rte_dialog_title'),
+						'headline_disable'	=> lang('toggle_rte_dialog_headline_disable'),
+						'headline_enable'	=> lang('toggle_rte_dialog_headline_enable'),
+						'text_disable'		=> lang('toggle_rte_dialog_text_disable'),
+						'text_enable'		=> lang('toggle_rte_dialog_text_enable'),
+						'disable'			=> lang('disable_button'),
+						'enable'			=> lang('enable_button'),
+						'cancel'			=> lang('cancel')
+					)
+				)
 			));
 			$this->EE->javascript->compile();
 			
