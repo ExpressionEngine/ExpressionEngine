@@ -760,12 +760,16 @@ class EE_Session {
 	 */
 	public function nation_ban_check($show_error = TRUE)
 	{
-		if ($this->EE->config->item('require_ip_for_posting') != 'y' OR $this->EE->config->item('ip2nation') != 'y')
+		if ($this->EE->config->item('require_ip_for_posting') != 'y' OR 
+			$this->EE->config->item('ip2nation') != 'y')
 		{
 			return FALSE;
 		}
 
-		$query = $this->EE->db->query("SELECT country FROM exp_ip2nation WHERE ip < INET_ATON('".$this->EE->db->escape_str($this->EE->input->ip_address())."') ORDER BY ip DESC LIMIT 0,1");
+		$query = $this->EE->db->select("country")
+							  ->where('ip <', ip2long($this->EE->input->ip_address()))
+							  ->order_by('ip', 'desc')
+							  ->get('ip2nation', 1); 
 				
 		if ($query->num_rows() == 1)
 		{
@@ -778,12 +782,19 @@ class EE_Session {
 			{
 				if ($show_error == TRUE)
 				{
-					return $this->EE->output->fatal_error($this->EE->config->item('ban_message'), 0);					
+					return $this->EE->output->fatal_error(
+						$this->EE->config->item('ban_message'), 
+						0
+					);					
 				}
-
-				return FALSE;
+				else
+				{
+					return TRUE;
+				}
 			}
 		}
+
+		return FALSE;
 	}
 
 	// --------------------------------------------------------------------	
