@@ -2186,7 +2186,7 @@ class EE_Template {
 					a.allow_php, a.php_parse_location, b.group_name')
 					->from('templates a')
 					->join('template_groups b', 'a.group_id = b.group_id')
-					->where('template_id', 3)
+					->where('template_id', $query->row('no_auth_bounce'))
 					->get();
 			}
 		}
