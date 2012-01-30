@@ -802,7 +802,7 @@ class Members extends CI_Controller {
 		/* 'cp_members_member_delete_end' hook.
 		/*  - Additional processing when a member is deleted through the CP
 		*/
-			$edata = $this->extensions->call('cp_members_member_delete_end');
+			$edata = $this->extensions->call('cp_members_member_delete_end', $mids);
 			if ($this->extensions->end_script === TRUE) return;
 		/*
 		/* -------------------------------------------*/
