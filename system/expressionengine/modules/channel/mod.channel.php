@@ -5573,7 +5573,7 @@ class Channel {
 			{
 				if (count($channel_ids))
 				{
-					$sql .= "AND exp_channel_titles.channel_id IN ('".implode("','", $channel_id)."') ";
+					$sql .= "AND exp_channel_titles.channel_id IN ('".implode("','", $channel_ids)."') ";
 				}
 				else
 				{
