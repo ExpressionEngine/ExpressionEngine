@@ -240,6 +240,7 @@ class Content_edit extends CI_Controller {
 		
 		// Because of the auto convert we prepare a specific variable with the converted ascii
 		// characters while leaving the $keywords variable intact for display and URL purposes
+		$this->load->helper('text');
 		$search_keywords = ($this->config->item('auto_convert_high_ascii') == 'y') ? ascii_to_entities($keywords) : $keywords;				
 		
 		$perpage = $this->input->get_post('perpage');
