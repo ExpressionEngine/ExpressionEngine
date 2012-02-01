@@ -20,7 +20,7 @@
 #rte_toolset_editor_modal .rte-tools-connected { margin: 0; }
 
 /* Toolbar */
-.WysiHat-editor-toolbar { background: #ECF1F4 url('../images/publish_field_background.jpg') no-repeat -15px 0px; border: 1px solid #8195A0; -moz-border-radius: 3px 3px 0 0; -o-border-radius: 3px 3px 0 0; -webkit-border-radius: 3px 3px 0 0; border-radius: 3px 3px 0 0; margin-bottom: -1px; padding: 4px; overflow: hidden; width: 98.5%; }
+.WysiHat-editor-toolbar { background: #ECF1F4 url(../images/publish_field_background.jpg) no-repeat -15px 0px; border: 1px solid #8195A0; -moz-border-radius: 3px 3px 0 0; -o-border-radius: 3px 3px 0 0; -webkit-border-radius: 3px 3px 0 0; border-radius: 3px 3px 0 0; margin-bottom: -1px; padding: 4px; overflow: hidden; width: 98.5%; }
 .WysiHat-editor-toolbar .button,
 .WysiHat-ui-control .button { background: #fff; border: 1px solid #dce4e8; -moz-border-radius: 3px; -o-border-radius: 3px; -webkit-border-radius: 3px; border-radius: 3px; cursor: pointer; float: none; font: 11px/13px Helvetica, sans-serif; color: #969ea3; padding: 4px 8px; margin: 0 5px 0 0; text-transform: uppercase; vertical-align: middle; }
 .WysiHat-editor-toolbar .button:hover,
@@ -32,7 +32,7 @@
 .WysiHat-ui-control .button:active,
 .WysiHat-ui-control .button[aria-pressed=true]{ border-color: #a4b7c3; color: #445762; }
  { border-color: #a4b7c3; color: #445762; }
-.WysiHat-editor-toolbar .button b { background: url(/themes/cp_themes/default/images/rte_images/button-sprite.png) center center no-repeat; display: inline-block; text-indent: -999em; overflow: hidden; height: 13px; }
+.WysiHat-editor-toolbar .button b { background: url(../images/rte_images/button-sprite.png) center center no-repeat; display: inline-block; text-indent: -999em; overflow: hidden; height: 13px; }
 .WysiHat-editor-toolbar .blockquote b{ background-position: 0 3px; width: 12px; }
 .WysiHat-editor-toolbar .blockquote:disabled b{ background-position: 0 -56px; width: 12px; }
 .WysiHat-editor-toolbar .blockquote:hover b,
