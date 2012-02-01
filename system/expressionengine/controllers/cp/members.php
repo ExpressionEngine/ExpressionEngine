@@ -917,7 +917,7 @@ class Members extends CI_Controller {
 
 		$this->javascript->output('
 			$(".site_prefs").hide();
-			$(".site_prefs:first").show();
+			$("#site_options_'.$this->config->item('site_id').'").show();
 			
 			$("#site_list_pulldown").change(function() {
 				id = $("#site_list_pulldown").val();
@@ -972,7 +972,8 @@ class Members extends CI_Controller {
 			'page_title'		=> sprintf(lang($page_title_lang), $group_title),
 			'group_title'		=> ($is_clone) ? '' : $group_title,
 			'sites_dropdown'	=> $sites_dropdown,
-			'module_data'		=> $this->_setup_module_data($id)
+			'module_data'		=> $this->_setup_module_data($id),
+			'site_id'		=> $this->config->item('site_id'),
 		);
 
 		$this->load->view('members/edit_member_group', $data);
