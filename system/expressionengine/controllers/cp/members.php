@@ -692,14 +692,14 @@ class Members extends CI_Controller {
 		//  Fetch member ID numbers and build the query
 
 		$ids = array();
-		$mids = array();
+		$member_ids = array();
 		
 		foreach ($this->input->post('delete') as $key => $val)
 		{		
 			if ($val != '')
 			{
 				$ids[] = "member_id = '".$this->db->escape_str($val)."'";
-				$mids[] = $this->db->escape_str($val);
+				$member_ids[] = $this->db->escape_str($val);
 			}		
 		}
 		
@@ -741,7 +741,7 @@ class Members extends CI_Controller {
 		
 		// If we got this far we're clear to delete the members
 		$this->load->model('member_model');
-		$this->member_model->delete_member($mids, $this->input->post('heir'));
+		$this->member_model->delete_member($member_ids, $this->input->post('heir'));
 		
 		/** ----------------------------------
 		/**  Email notification recipients
@@ -749,7 +749,7 @@ class Members extends CI_Controller {
 		$this->db->select('DISTINCT(member_id), screen_name, email, mbr_delete_notify_emails');
 		$this->db->join('member_groups', 'members.group_id = member_groups.group_id', 'left');
 		$this->db->where('mbr_delete_notify_emails !=', '');
-		$this->db->where_in('member_id', $mids);
+		$this->db->where_in('member_id', $member_ids);
 		$group_query = $this->db->get('members');
 		
 		foreach ($group_query->result() as $member) 
@@ -802,7 +802,7 @@ class Members extends CI_Controller {
 		/* 'cp_members_member_delete_end' hook.
 		/*  - Additional processing when a member is deleted through the CP
 		*/
-			$edata = $this->extensions->call('cp_members_member_delete_end');
+			$edata = $this->extensions->call('cp_members_member_delete_end', $member_ids);
 			if ($this->extensions->end_script === TRUE) return;
 		/*
 		/* -------------------------------------------*/
