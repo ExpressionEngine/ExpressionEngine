@@ -386,13 +386,15 @@ class Rte_mcp {
 		$this->EE->load->model('rte_toolset_model');
 		
 		$valid = $this->EE->rte_toolset_model->check_name(
-					$this->EE->input->get_post('name'),
-					$this->EE->input->get_post('rte_toolset_id')
-				 );
+			$this->EE->input->get_post('name'),
+			$this->EE->input->get_post('rte_toolset_id')
+		);
 
 		if ($this->EE->input->is_ajax_request())
 		{
-			die( $this->EE->javascript->generate_json( array( 'valid' => $valid ) ) );
+			$this->output->send_ajax_response(array(
+				'valid' => $valid
+			));
 		}
 		else
 		{
@@ -565,7 +567,7 @@ class Rte_mcp {
 		# update the prefs
 		$this->EE->db->update(
 			'members',
-			array( 'rte_enabled'	=> ($enabled ? 'n' : 'y') )
+			array( 'rte_enabled'	=> ($enabled ? 'n' : 'y') ),
 			array( 'member_id'		=> $this->EE->session->userdata('member_id') )
 		);
 		
@@ -723,10 +725,6 @@ class Rte_mcp {
 					'toolset_src'		=> $this->_base_url.AMP.'method=build_toolset_js'.AMP.'print=yes',
 					'toggle_rte_url'	=> $this->_base_url.AMP.'method=toggle_member_rte',
 					'is_enabled'		=> ($this->EE->session->userdata('rte_enabled') == 'y'),
-					'toggle_link'		=> array(
-						'text_disable'	=> lang('disable_rte'),
-						'text_enable'	=> lang('enable_rte')
-					),
 					'toggle_dialog'		=> array(
 						'title'				=> lang('toggle_rte_dialog_title'),
 						'headline_disable'	=> lang('toggle_rte_dialog_headline_disable'),
@@ -736,6 +734,10 @@ class Rte_mcp {
 						'disable'			=> lang('disable_button'),
 						'enable'			=> lang('enable_button'),
 						'cancel'			=> lang('cancel')
+					),
+					'toggle_link'		=> array(
+						'text_disable'	=> lang('disable_rte'),
+						'text_enable'	=> lang('enable_rte')
 					)
 				)
 			));
