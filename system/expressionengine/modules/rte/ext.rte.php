@@ -81,8 +81,9 @@ class Rte_ext {
 		{
 			$js[] = $RTE->build_toolset_js();
 		}
+		$this->EE->javascript->compile();
 		$this->EE->javascript->output($js);
-
+		
 		return $results;
 	}
 	

@@ -669,9 +669,6 @@ class Rte_mcp {
 				';
 		}
 		
-		# compile the JS
-		$this->EE->javascript->compile();
-		
 		# return vs. print… is there a better CI way to do this?
 		$print = $this->EE->input->get_post('print');
 		if ($print == 'yes')
@@ -679,6 +676,10 @@ class Rte_mcp {
 			header('Content-type: text/javascript; charset=utf-8');
 			header('Cache-Control: no-cache, must-revalidate');
 			header('Expires: Sat, 26 Jul 1997 05:00:00 GMT');
+			
+			# compile the JS
+			$this->EE->javascript->compile();
+
 			die('
 				(function(){
 					var EE = ' . $this->EE->javascript->generate_json($this->EE->javascript->global_vars) . ';' .
@@ -741,7 +742,6 @@ class Rte_mcp {
 					)
 				)
 			));
-			$this->EE->javascript->compile();
 			
 			# add in the code that would toggle the toolset
 			ob_start(); ?>

@@ -118,6 +118,7 @@ class Rte_tool_model extends CI_Model {
 	{
 		# build the tool array
 		$tool = array(
+			'frontend'		=> 'y',
 			'globals'		=> array(),
 			'libraries'		=> array(),
 			'styles'		=> '',
@@ -130,7 +131,8 @@ class Rte_tool_model extends CI_Model {
 			array(
 				'rte_tool_id'	=> $tool_id,
 				'enabled'		=> 'y'
-			)
+			),
+			1
 		);
 		if ($results->num_rows() > 0)
 		{
@@ -145,7 +147,7 @@ class Rte_tool_model extends CI_Model {
 				if (file_exists($file))
 				{
 					# load it in, instantiate the tool & add the definition
-					require_once($file);
+					include_once($file);
 					$TOOL = new $tool_class();
 					
 					# loop through the pieces and pull them from the object
@@ -161,8 +163,11 @@ class Rte_tool_model extends CI_Model {
 								$tool[$component] = $temp;
 							}
 						}
+						elseif (property_exists($tool_class, $component))
+						{
+							$tool[$component] = $TOOL->$component;
+						}
 					}
-					
 					break;
 				}
 			}

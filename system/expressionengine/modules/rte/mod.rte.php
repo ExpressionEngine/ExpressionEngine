@@ -46,7 +46,6 @@ class Rte {
 	 */
 	public function embed( $selector = '.rte', $toolset_id = FALSE )
 	{
-		$this->EE->load->library('javascript');
 		$this->EE->load->model(array('rte_toolset_model','rte_tool_model'));
 		
 		# get the selector
@@ -69,7 +68,9 @@ class Rte {
 			# load the tools
 			$bits	= array(
 				'globals'		=> array(
-					'rte.update_event' => 'WysiHat-editor:change'
+					'rte'	=> array(
+						'update_event' => 'WysiHat-editor:change'
+					)
 				),
 				'libraries'		=> array(
 					'ui'		=> array(
@@ -87,10 +88,17 @@ class Rte {
 			{
 				$tool = $this->EE->rte_tool_model->get_tool($tool_id);
 				
+				# skip tools that are not available to the front-end
+				if ( $tool['frontend'] != 'y' )
+				{
+					continue;
+				}
+				
 				# load the globals
 				if (count($tool['globals']))
 				{
-					$bits['globals'] = array_merge( $bits['globals'], $tool['globals'] );
+					$tool['globals'] = $this->_prep_globals($tool['globals']);
+					$bits['globals'] = array_merge_recursive( $bits['globals'], $tool['globals'] );
 				}
 				
 				# load any libraries we need
@@ -260,6 +268,35 @@ class Rte {
 	}
 
 	/**
+	 * Prep global variables for JS
+	 * 
+	 * @access	private
+	 * @param	array $globals The globals to load into JS
+	 * @return	array the revised $globals array
+	 */
+	private function _prep_globals( $globals = array() )
+	{
+		$temp = array();
+		foreach ($globals as $key => $val)
+		{
+			if (strpos($key,'.') !== FALSE)
+			{
+				$parts	= explode('.', $key);
+				$parent	= array_shift($parts);
+				$key	= implode('.', $parts);
+				$temp[$parent] = $this->_prep_globals(array(
+					$key	=> $val
+				));
+			}
+			else
+			{
+				$temp[$key] = $val;
+			}
+		}
+		return $temp;
+	}
+	
+	/**
 	 * Manage the assignment of global JS
 	 * 
 	 * @access	private
@@ -268,31 +305,15 @@ class Rte {
 	 */
 	private function _set_globals( $globals = array() )
 	{
+		$this->EE->load->library('javascript');
+		
 		$js = '';
 		
 		if (count($globals))
 		{
-			$js .= 'if ( typeof EE === "undefined" ){ EE = {}; }';
-			foreach ($globals as $key => $val)
-			{
-				$parts	= explode('.', $key);
-				$i		= 0;
-				$length = count($parts) - 1;
-				while ($i < $length)
-				{
-					# prefix
-					$j		= 0;
-					$prefix	= '';
-					while ($j < $i)
-					{
-						$prefix .= $parts[$j++];
-					}
-					$var = 'EE.' . ( ! empty($prefix) ? $prefix . '.' : '') . $parts[$i++];
-					$js .= 'if ( typeof ' . $var . ' === "undefined" ){ ' . $var . ' = {}; }';
-				}
-				$js .= "EE.{$key} = '{$val}';\r\n";
-			}
+			$js .= 'var EE = ' . $this->EE->javascript->generate_json($globals) . ';';
 		}
+		
 		return $js;
 	}
 
