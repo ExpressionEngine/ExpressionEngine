@@ -1,13 +1,13 @@
 var
 $link_dialog = $(
 					'<div id="rte_link_dialog">' +
-						'<p><label for="rte_link_url">* ' + EE.rte.link_dialog.url_field_label + '</label>' +
+						'<p><label for="rte_link_url">* ' + EE.rte.link.dialog.url_field_label + '</label>' +
 						'<input type="url" id="rte_link_url" required="required"/></p>' +
-						'<p><label for="rte_link_title">' + EE.rte.link_dialog.title_field_label + '</label>' +
+						'<p><label for="rte_link_title">' + EE.rte.link.dialog.title_field_label + '</label>' +
 						'<input type="text" id="rte_link_title"/></p>' +
-						//'<p><label for="rte_link_rel">' + EE.rte.link_dialog.rel_field_label + '</label>' +
+						//'<p><label for="rte_link_rel">' + EE.rte.link.dialog.rel_field_label + '</label>' +
 						// '<select id="rte_link_rel"></select></p>' +
-						'<p class="buttons"><button class="submit" type="submit">' + EE.rte.link_dialog.submit_button +
+						'<p class="buttons"><button class="submit" type="submit">' + EE.rte.link.dialog.submit_button +
 						'</button></p>' +
 					 '</div>'
 				),
@@ -22,7 +22,7 @@ $link_dialog
 		position: ["center","center"],
 		modal: true,
 		draggable: true,
-		title: EE.rte.link_dialog.title,
+		title: EE.rte.link.dialog.title,
 		autoOpen: false,
 		zIndex: 99999,
 		open: function(e, ui) {
@@ -95,7 +95,7 @@ function validateLinkDialog()
 	pass	= false,
 	$url	= $('#rte_link_url'),
 	re_url	= /^(https?|ftp):\/\/(((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:)*@)?(((\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?)(:\d*)?)(\/((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)+(\/(([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)*)*)?)?(\?((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|[\uE000-\uF8FF]|\/|\?)*)?(\#((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|\/|\?)*)?$/i,
-	$error	= $('<div class="notice"/>').text( EE.rte.link_dialog.url_required );
+	$error	= $('<div class="notice"/>').text( EE.rte.link.dialog.url_required );
 	if ( $('#rte_link_url') != '' )
 	{
 		pass = re_url.test( $url.val() );
@@ -160,7 +160,7 @@ toolbar.addButton({
 		}
 		else
 		{
-			alert( EE.rte.link_dialog.selection_error );
+			alert( EE.rte.link.dialog.selection_error );
 		}
 	},
 	query: function( $editor ){

@@ -51,16 +51,16 @@ Class Link_rte {
 	{
 		$this->EE->lang->loadfile('rte');
 		return array(
-			'rte'	=> array(
-				'link.add'		=> lang('make_link'),
-				'link_dialog'	=> array(
-					'title'				=> lang('rte_link_preferences'),
-					'url_field_label'	=> lang('url'),
-					'title_field_label'	=> lang('title'),
-					'rel_field_label'	=> lang('relationship'),
-					'submit_button'		=> lang('submit'),
-					'selection_error'	=> lang('selection_error'),
-					'url_required'		=> lang('valid_url_required')
+			'rte.link'	=> array(
+				'add'		=> lang('make_link'),
+				'dialog'	=> array(
+						'title'				=> lang('rte_link_preferences'),
+						'url_field_label'	=> lang('url'),
+						'title_field_label'	=> lang('title'),
+						'rel_field_label'	=> lang('relationship'),
+						'submit_button'		=> lang('submit'),
+						'selection_error'	=> lang('selection_error'),
+						'url_required'		=> lang('valid_url_required')
 				)
 			)
 		);
