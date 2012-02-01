@@ -51,7 +51,7 @@ Class Underline_rte {
 	{
 		$this->EE->lang->loadfile('rte');
 		return array(
-			'rte.unordered_list'	=> array(
+			'rte.underline'	=> array(
 				'add'		=> lang('make_underline'),
 				'remove'	=> lang('remove_underline')
 			)

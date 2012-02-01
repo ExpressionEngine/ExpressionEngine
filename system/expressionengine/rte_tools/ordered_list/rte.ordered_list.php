@@ -51,7 +51,7 @@ Class Ordered_list_rte {
 	{
 		$this->EE->lang->loadfile('rte');
 		return array(
-			'rte.unordered_list'	=> array(
+			'rte.ordered_list'	=> array(
 				'add'		=> lang('make_ul'),
 				'remove'	=> lang('remove_ul')
 			)
