@@ -20,17 +20,20 @@
 */
 
 $rte_tool_info = array(
-	'rte_tool_name'			=> 'Bold',
-	'rte_tool_version'		=> '1.0',
-	'rte_tool_author'		=> 'Aaron Gustafson',
-	'rte_tool_author_url'	=> 'http://easy-designs.net/',
-	'rte_tool_description'	=> 'Bolds and un-bolds selected text',
-	'rte_tool_definition'	=> Bold_rte::definition()
+	'rte_tool_name'				=> 'Bold',
+	'rte_tool_version'			=> '1.0',
+	'rte_tool_author'			=> 'Aaron Gustafson',
+	'rte_tool_author_url'		=> 'http://easy-designs.net/',
+	'rte_tool_description'		=> 'Bolds and un-bolds selected text',
+	'rte_tool_definition'		=> Bold_rte::definition()
 );
 
 Class Bold_rte {
 
 	private $EE;
+	
+	# should this be shown on the frontend?
+	public	$frontend = 'y';
 	
 	/** -------------------------------------
 	/**  Constructor
@@ -48,8 +51,10 @@ Class Bold_rte {
 	{
 		$this->EE->lang->loadfile('rte');
 		return array(
-			'rte.bold.add'		=> lang('make_bold'),
-			'rte.bold.remove'	=> lang('remove_bold')
+			'rte.bold'	=> array(
+				'add'		=> lang('make_bold'),
+				'remove'	=> lang('remove_bold')
+			)
 		);
 	}
 

@@ -20,17 +20,20 @@
 */
 
 $rte_tool_info = array(
-	'rte_tool_name'			=> 'Underline',
-	'rte_tool_version'		=> '1.0',
-	'rte_tool_author'		=> 'Aaron Gustafson',
-	'rte_tool_author_url'	=> 'http://easy-designs.net/',
-	'rte_tool_description'	=> 'Underlines and de-underlines text',
-	'rte_tool_definition'	=> Underline_rte::definition()
+	'rte_tool_name'				=> 'Underline',
+	'rte_tool_version'			=> '1.0',
+	'rte_tool_author'			=> 'Aaron Gustafson',
+	'rte_tool_author_url'		=> 'http://easy-designs.net/',
+	'rte_tool_description'		=> 'Underlines and de-underlines text',
+	'rte_tool_definition'		=> Underline_rte::definition()
 );
 
 Class Underline_rte {
 
 	private $EE;
+	
+	# should this be shown on the frontend?
+	public	$frontend = 'y';
 	
 	/** -------------------------------------
 	/**  Constructor
@@ -48,8 +51,10 @@ Class Underline_rte {
 	{
 		$this->EE->lang->loadfile('rte');
 		return array(
-			'rte.underline.add'		=> lang('make_underline'),
-			'rte.underline.remove'	=> lang('remove_underline')
+			'rte.unordered_list'	=> array(
+				'add'		=> lang('make_underline'),
+				'remove'	=> lang('remove_underline')
+			)
 		);
 	}
 	

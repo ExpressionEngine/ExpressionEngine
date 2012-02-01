@@ -20,17 +20,20 @@
 */
 
 $rte_tool_info = array(
-	'rte_tool_name'			=> 'Blockquote',
-	'rte_tool_version'		=> '1.0',
-	'rte_tool_author'		=> 'Aaron Gustafson',
-	'rte_tool_author_url'	=> 'http://easy-designs.net/',
-	'rte_tool_description'	=> 'Triggers the RTE to block quote or un-quote the selected block of text',
-	'rte_tool_definition'	=> Blockquote_rte::definition()
+	'rte_tool_name'				=> 'Blockquote',
+	'rte_tool_version'			=> '1.0',
+	'rte_tool_author'			=> 'Aaron Gustafson',
+	'rte_tool_author_url'		=> 'http://easy-designs.net/',
+	'rte_tool_description'		=> 'Triggers the RTE to block quote or un-quote the selected block of text',
+	'rte_tool_definition'		=> Blockquote_rte::definition()
 );
 
 Class Blockquote_rte {
 	
 	private $EE;
+	
+	# should this be shown on the frontend?
+	public	$frontend = 'y';
 	
 	/** -------------------------------------
 	/**  Constructor
@@ -48,8 +51,10 @@ Class Blockquote_rte {
 	{
 		$this->EE->lang->loadfile('rte');
 		return array(
-			'rte.blockquote.add'	=> lang('make_blockquote'),
-			'rte.blockquote.remove'	=> lang('remove_blockquote')
+			'rte.blockquote'	=> array(
+				'add'		=> lang('make_blockquote'),
+				'remove'	=> lang('remove_blockquote')
+			)
 		);
 	}
 

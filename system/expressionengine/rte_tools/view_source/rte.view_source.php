@@ -20,17 +20,20 @@
 */
 
 $rte_tool_info = array(
-	'rte_tool_name'			=> 'View Source',
-	'rte_tool_version'		=> '1.0',
-	'rte_tool_author'		=> 'Aaron Gustafson',
-	'rte_tool_author_url'	=> 'http://easy-designs.net/',
-	'rte_tool_description'	=> 'Triggers the RTE to switch to and from view source mode',
-	'rte_tool_definition'	=> View_source_rte::definition()
+	'rte_tool_name'				=> 'View Source',
+	'rte_tool_version'			=> '1.0',
+	'rte_tool_author'			=> 'Aaron Gustafson',
+	'rte_tool_author_url'		=> 'http://easy-designs.net/',
+	'rte_tool_description'		=> 'Triggers the RTE to switch to and from view source mode',
+	'rte_tool_definition'		=> View_source_rte::definition()
 );
 
 Class View_source_rte {
 	
 	private $EE;
+	
+	# should this be shown on the frontend?
+	public	$frontend = 'y';
 	
 	/** -------------------------------------
 	/**  Constructor
@@ -48,8 +51,10 @@ Class View_source_rte {
 	{
 		$this->EE->lang->loadfile('rte');
 		return array(
-			'rte.view_source.code'		=> lang('view_code'),
-			'rte.view_source.content'	=> lang('view_content')
+			'rte.view_source'	=> array(
+				'code'		=> lang('view_code'),
+				'content'	=> lang('view_content')
+			)
 		);
 	}
 	

@@ -20,17 +20,20 @@
 */
 
 $rte_tool_info = array(
-	'rte_tool_name'			=> 'Strip Tags',
-	'rte_tool_version'		=> '1.0',
-	'rte_tool_author'		=> 'Aaron Gustafson',
-	'rte_tool_author_url'	=> 'http://easy-designs.net/',
-	'rte_tool_description'	=> 'Triggers the RTE to strip all block and phrase-level formatting elements',
-	'rte_tool_definition'	=> Strip_tags_rte::definition()
+	'rte_tool_name'				=> 'Strip Tags',
+	'rte_tool_version'			=> '1.0',
+	'rte_tool_author'			=> 'Aaron Gustafson',
+	'rte_tool_author_url'		=> 'http://easy-designs.net/',
+	'rte_tool_description'		=> 'Triggers the RTE to strip all block and phrase-level formatting elements',
+	'rte_tool_definition'		=> Strip_tags_rte::definition()
 );
 
 Class Strip_tags_rte {
 	
 	private $EE;
+	
+	# should this be shown on the frontend?
+	public	$frontend = 'y';
 	
 	/** -------------------------------------
 	/**  Constructor

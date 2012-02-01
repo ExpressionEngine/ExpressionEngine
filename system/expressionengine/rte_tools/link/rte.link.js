@@ -125,13 +125,20 @@ toolbar.addButton({
 		el			= selection.anchorNode,
 		range		= document.createRange();
 		
+		// bow out if there are no elements
+		if ( el == null && 
+			 selection.focusNode == null )
+		{
+			return;
+		}
+		
 		if ( linkable &&
 			 el == selection.focusNode &&
 			 selection.anchorOffset == selection.focusOffset )
 		{
 			linkable = false;
 		}
-
+		
 		while ( el.nodeType != 1 )
 		{
 			el = el.parentNode;

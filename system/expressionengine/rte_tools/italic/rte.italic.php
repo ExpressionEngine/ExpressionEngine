@@ -20,17 +20,20 @@
 */
 
 $rte_tool_info = array(
-	'rte_tool_name'			=> 'Italic',
-	'rte_tool_version'		=> '1.0',
-	'rte_tool_author'		=> 'Aaron Gustafson',
-	'rte_tool_author_url'	=> 'http://easy-designs.net/',
-	'rte_tool_description'	=> 'Italicizes and de-italicizes text',
-	'rte_tool_definition'	=> Italic_rte::definition()
+	'rte_tool_name'				=> 'Italic',
+	'rte_tool_version'			=> '1.0',
+	'rte_tool_author'			=> 'Aaron Gustafson',
+	'rte_tool_author_url'		=> 'http://easy-designs.net/',
+	'rte_tool_description'		=> 'Italicizes and de-italicizes text',
+	'rte_tool_definition'		=> Italic_rte::definition()
 );
 
 Class Italic_rte {
 
 	private $EE;
+	
+	# should this be shown on the frontend?
+	public	$frontend = 'y';
 	
 	/** -------------------------------------
 	/**  Constructor
@@ -48,8 +51,10 @@ Class Italic_rte {
 	{
 		$this->EE->lang->loadfile('rte');
 		return array(
-			'rte.italics.add'		=> lang('make_italics'),
-			'rte.italics.remove'	=> lang('remove_italics')
+			'rte.italics'	=> array(
+				'add'		=> lang('make_italics'),
+				'remove'	=> lang('remove_italics')
+			)
 		);
 	}
 	

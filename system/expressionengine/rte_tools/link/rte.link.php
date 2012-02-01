@@ -20,18 +20,21 @@
 */
 
 $rte_tool_info = array(
-	'rte_tool_name'			=> 'Link',
-	'rte_tool_version'		=> '1.0',
-	'rte_tool_author'		=> 'Aaron Gustafson',
-	'rte_tool_author_url'	=> 'http://easy-designs.net/',
-	'rte_tool_description'	=> 'Triggers the RTE to link the selected text',
-	'rte_tool_definition'	=> Link_rte::definition()
+	'rte_tool_name'				=> 'Link',
+	'rte_tool_version'			=> '1.0',
+	'rte_tool_author'			=> 'Aaron Gustafson',
+	'rte_tool_author_url'		=> 'http://easy-designs.net/',
+	'rte_tool_description'		=> 'Triggers the RTE to link the selected text',
+	'rte_tool_definition'		=> Link_rte::definition()
 );
 
 Class Link_rte {
 	
 	private $EE;
 	
+	# should this be shown on the frontend?
+	public	$frontend = 'y';
+		
 	/** -------------------------------------
 	/**  Constructor
 	/** -------------------------------------*/
@@ -48,14 +51,18 @@ Class Link_rte {
 	{
 		$this->EE->lang->loadfile('rte');
 		return array(
-			'rte.link.add'						=> lang('make_link'),
-			'rte.link_dialog.title'				=> lang('rte_link_preferences'),
-			'rte.link_dialog.url_field_label'	=> lang('url'),
-			'rte.link_dialog.title_field_label'	=> lang('title'),
-			'rte.link_dialog.rel_field_label'	=> lang('relationship'),
-			'rte.link_dialog.submit_button'		=> lang('submit'),
-			'rte.link_dialog.selection_error'	=> lang('selection_error'),
-			'rte.link_dialog.url_required'		=> lang('valid_url_required')
+			'rte'	=> array(
+				'link.add'		=> lang('make_link'),
+				'link_dialog'	=> array(
+					'title'				=> lang('rte_link_preferences'),
+					'url_field_label'	=> lang('url'),
+					'title_field_label'	=> lang('title'),
+					'rel_field_label'	=> lang('relationship'),
+					'submit_button'		=> lang('submit'),
+					'selection_error'	=> lang('selection_error'),
+					'url_required'		=> lang('valid_url_required')
+				)
+			)
 		);
 	}
 	

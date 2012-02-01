@@ -1,24 +1,22 @@
-var
-range			= null,
-$file_browser	= null,
-$caption		= $('<p class="rte_image_caption"><strong>' + EE.rte.image.caption_text + '</strong> <input type="text" id="rte_image_caption"/></p>'),
-$caption_field	= $caption.find('#rte_image_caption'),
-$figure_overlay = $('<div id="rte_image_figure_overlay" class="WysiHat-ui-control"><p></p></div>').hide().appendTo('body'),
-$curr_figure	= null,
-$image_button	= toolbar.addButton({
-	name:		'image',
-    label:		EE.rte.image.add,
-	handler: function( $ed ){
-		// nothing (we observe from elsewhere)
-	}
-});
+var	range			= null,
+	$file_browser	= null,
+	$caption		= $('<p class="rte_image_caption"><strong>' + EE.rte.image.caption_text + '</strong> <input type="text" id="rte_image_caption"/></p>'),
+	$caption_field	= $caption.find('#rte_image_caption'),
+	$figure_overlay = $('<div id="rte_image_figure_overlay" class="WysiHat-ui-control"><p></p></div>').hide().appendTo('body'),
+	$curr_figure	= null,
+	$image_button	= toolbar.addButton({
+		name:		'image',
+	    label:		EE.rte.image.add,
+		handler: function( $ed ){
+			// nothing (we observe from elsewhere)
+		}
+	});
 
 function getTheRange(){
-	var
-	ranges		= $editor.getRanges(),
-	selection	= window.getSelection(),
-	hasRange	= !! selection.rangeCount,
-	el			= selection.anchorNode;
+	var	ranges		= $editor.getRanges(),
+		selection	= window.getSelection(),
+		hasRange	= !! selection.rangeCount,
+		el			= selection.anchorNode;
 
 	if ( hasRange )
 	{
@@ -37,15 +35,18 @@ function getTheRange(){
 	{
 		range	= selection.getRangeAt(0).cloneRange();
 		el		= $editor.getRangeElements( range, WysiHat.Element.getBlocks().join(',') ).get(0);
-		if ( $(el).is('li,dt,dd,td') )
+		if ( el != null )
 		{
-			range.setStart( el, 0 );
-			range.setEnd( el, 0 );
-		}
-		else
-		{
-			range.setStartBefore( el );
-			range.setEndBefore( el );
+			if ( $(el).is('li,dt,dd,td') )
+			{
+				range.setStart( el, 0 );
+				range.setEnd( el, 0 );
+			}
+			else
+			{
+				range.setStartBefore( el );
+				range.setEndBefore( el );
+			}
 		}
 		range.collapse(true);
 	}
@@ -89,13 +90,13 @@ $.ee_filebrowser.add_trigger(
 			getTheRange();
 		}
 		
-		var	$img = $('<figure/>').css('text-align','center');
-		
-		$img.append(
-			$('<img alt=""/>')
-				.attr( 'src', image_object.thumb.replace( /_thumbs\//, '' ) )
-				.attr( 'data-ee_img_path', "{filedir_" + image_object.upload_location_id + "}/" + image_object.file_name )
-		);
+		var	$img = $('<figure/>')
+						.css('text-align','center')
+						.append(
+							$('<img alt=""/>')
+								.attr( 'src', image_object.thumb.replace( /_thumbs\//, '' ) )
+								.attr( 'data-ee_img_path', "{filedir_" + image_object.upload_location_id + "}/" + image_object.file_name )
+						 );
 		
 		if ( $caption_field.val() != '' )
 		{
@@ -190,11 +191,10 @@ $figure_overlay
 		 );
 $editor
 	.delegate('figure img','mouseover',function(){
-		var
-		$this	= $(this),
-		offsets = $this.offset();
-		$curr_figure = $(this).closest('figure');
-		$curr_figure.data( 'floating', ( $curr_figure.css('float') != 'none' ) );
+		var	$this	= $(this),
+			offsets = $this.offset();
+			$curr_figure = $(this).closest('figure');
+			$curr_figure.data( 'floating', ( $curr_figure.css('float') != 'none' ) );
 		$figure_overlay
 			.css({
 				display:	'table',

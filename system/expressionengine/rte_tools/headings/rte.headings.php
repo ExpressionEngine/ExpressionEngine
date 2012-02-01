@@ -20,17 +20,20 @@
 */
 
 $rte_tool_info = array(
-	'rte_tool_name'			=> 'Headings',
-	'rte_tool_version'		=> '1.0',
-	'rte_tool_author'		=> 'Aaron Gustafson',
-	'rte_tool_author_url'	=> 'http://easy-designs.net/',
-	'rte_tool_description'	=> 'Adds or swaps heading levels in the RTE. Can also revert text to a paragraph.',
-	'rte_tool_definition'	=> Headings_rte::definition()
+	'rte_tool_name'				=> 'Headings',
+	'rte_tool_version'			=> '1.0',
+	'rte_tool_author'			=> 'Aaron Gustafson',
+	'rte_tool_author_url'		=> 'http://easy-designs.net/',
+	'rte_tool_description'		=> 'Adds or swaps heading levels in the RTE. Can also revert text to a paragraph.',
+	'rte_tool_definition'		=> Headings_rte::definition()
 );
 
 Class Headings_rte {
 	
 	private $EE;
+	
+	# should this be shown on the frontend?
+	public	$frontend = 'y';
 	
 	/** -------------------------------------
 	/**  Constructor
@@ -48,14 +51,16 @@ Class Headings_rte {
 	{
 		$this->EE->lang->loadfile('rte');
 		return array(
-			'rte.headings.block_formats'	=> lang('block_formats'),
-			'rte.headings.paragraph'		=> lang('paragraph'),
-			'rte.headings.heading_1'		=> lang('heading_1'),
-			'rte.headings.heading_2'		=> lang('heading_2'),
-			'rte.headings.heading_3'		=> lang('heading_3'),
-			'rte.headings.heading_4'		=> lang('heading_4'),
-			'rte.headings.heading_5'		=> lang('heading_5'),
-			'rte.headings.heading_6'		=> lang('heading_6')
+			'rte.headings'	=> array(
+				'block_formats'	=> lang('block_formats'),
+				'paragraph'		=> lang('paragraph'),
+				'heading_1'		=> lang('heading_1'),
+				'heading_2'		=> lang('heading_2'),
+				'heading_3'		=> lang('heading_3'),
+				'heading_4'		=> lang('heading_4'),
+				'heading_5'		=> lang('heading_5'),
+				'heading_6'		=> lang('heading_6')
+			)
 		);
 	}
 

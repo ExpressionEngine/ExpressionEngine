@@ -20,17 +20,20 @@
 */
 
 $rte_tool_info = array(
-	'rte_tool_name'			=> 'Unordered List',
-	'rte_tool_version'		=> '1.0',
-	'rte_tool_author'		=> 'Aaron Gustafson',
-	'rte_tool_author_url'	=> 'http://easy-designs.net/',
-	'rte_tool_description'	=> 'Triggers the RTE to make the selected blocks into unordered list items',
-	'rte_tool_definition'	=> Unordered_list_rte::definition()
+	'rte_tool_name'				=> 'Unordered List',
+	'rte_tool_version'			=> '1.0',
+	'rte_tool_author'			=> 'Aaron Gustafson',
+	'rte_tool_author_url'		=> 'http://easy-designs.net/',
+	'rte_tool_description'		=> 'Triggers the RTE to make the selected blocks into unordered list items',
+	'rte_tool_definition'		=> Unordered_list_rte::definition()
 );
 
 Class Unordered_list_rte {
 	
 	private $EE;
+	
+	# should this be shown on the frontend?
+	public	$frontend = 'y';
 	
 	/** -------------------------------------
 	/**  Constructor
@@ -48,8 +51,10 @@ Class Unordered_list_rte {
 	{
 		$this->EE->lang->loadfile('rte');
 		return array(
-			'rte.unordered_list.add'	=> lang('make_ul'),
-			'rte.unordered_list.remove'	=> lang('remove_ul')
+			'rte.unordered_list'	=> array(
+				'add'		=> lang('make_ul'),
+				'remove'	=> lang('remove_ul')
+			)
 		);
 	}
 	

@@ -20,18 +20,21 @@
 */
 
 $rte_tool_info = array(
-	'rte_tool_name'			=> 'Image',
-	'rte_tool_version'		=> '1.0',
-	'rte_tool_author'		=> 'Aaron Gustafson',
-	'rte_tool_author_url'	=> 'http://easy-designs.net/',
-	'rte_tool_description'	=> 'Inserts and manages image alignment in the RTE',
-	'rte_tool_definition'	=> Image_rte::definition()
+	'rte_tool_name'				=> 'Image',
+	'rte_tool_version'			=> '1.0',
+	'rte_tool_author'			=> 'Aaron Gustafson',
+	'rte_tool_author_url'		=> 'http://easy-designs.net/',
+	'rte_tool_description'		=> 'Inserts and manages image alignment in the RTE',
+	'rte_tool_definition'		=> Image_rte::definition()
 );
 
 Class Image_rte {
 	
 	private $EE;
-
+	
+	# should this be shown on the frontend?
+	public	$frontend = 'n';
+	
 	/** -------------------------------------
 	/**  Constructor
 	/** -------------------------------------*/
@@ -48,9 +51,11 @@ Class Image_rte {
 	{
 		$this->EE->lang->loadfile('rte');
 		return array(
-			'rte.image.add'				=> lang('insert_img'),
-			'rte.image.caption_text'	=> lang('rte_image_caption'),
-			'rte.image.center_error'	=> lang('rte_center_error')
+			'rte.image'	=> array(
+				'add'			=> lang('insert_img'),
+				'caption_text'	=> lang('rte_image_caption'),
+				'center_error'	=> lang('rte_center_error')
+			)
 		);
 	}
 	
