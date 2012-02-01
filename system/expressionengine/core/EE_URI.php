@@ -168,7 +168,7 @@ class EE_URI extends CI_URI {
 		foreach($segs as $val)
 		{
 			// Filter segments for security
-			$val = trim($this->_filter_uri($val));
+			$val = trim($this->_filter_uri(urldecode($val)));
 			
 			if ($val != '')
 			{
