@@ -17,7 +17,6 @@ $link_dialog
 	.appendTo('body')
 	.dialog({
 		width: 400,
-		height: 170,
 		resizable: false,
 		position: ["center","center"],
 		modal: true,
