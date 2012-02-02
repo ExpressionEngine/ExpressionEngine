@@ -880,12 +880,17 @@ class Filemanager {
 			$file_params['search_value']	= $params['keywords'];
 			$file_params['search_in']		= 'all';
 		}
-		
+
+		// Mask the URL if we're coming from the CP
+		$sync_files_url = (REQ == "CP") ?
+			$this->EE->cp->masked_url('http://expressionengine.com/user_guide/cp/content/files/sync_files.html') :
+			'http://expressionengine.com/user_guide/cp/content/files/sync_files.html';
+
 		return array(
 			'rows'			=> $this->_browser_get_files($dir, $file_params),
-			'no_results' 	=> sprintf(
+			'no_results'	=> sprintf(
 				lang('no_uploaded_files'), 
-				$this->EE->cp->masked_url('http://expressionengine.com/user_guide/cp/content/files/sync_files.html'),
+				$sync_files_url,
 				BASE.AMP.'C=content_files'.AMP.'M=file_upload_preferences'
 			),
 			'pagination' 	=> array(

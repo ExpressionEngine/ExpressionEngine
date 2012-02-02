@@ -849,7 +849,7 @@ class Safecracker_lib
 		
 		$js_defaults = array(
 			'ui' => array('core', 'widget', 'button', 'dialog'),
-			'plugin' => array('scrollable', 'scrollable.navigator', 'ee_filebrowser', 'ee_fileuploader', 'markitup', 'thickbox'),
+			'plugin' => array('scrollable', 'scrollable.navigator', 'markitup', 'thickbox'),
 		);
 		
 		if (version_compare(APP_VER, '2.1.3', '>'))
