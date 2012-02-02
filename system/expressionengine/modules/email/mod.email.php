@@ -350,8 +350,6 @@ class Email {
 
 		$tagdata = str_replace($LB, "\n", $tagdata);
 
-		$recipients = $this->_encrypt_recipients($recipients);
-
 		$allow = ($allow_html !== FALSE) ? TRUE : FALSE;
 		
 		return $this->_setup_form($tagdata, $recipients, 'tellafriend_form', $allow);
