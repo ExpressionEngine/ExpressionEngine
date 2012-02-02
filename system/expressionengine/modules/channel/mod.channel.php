@@ -1265,7 +1265,9 @@ class Channel {
 						str_replace($match[0], '', $qstring)
 					);
 				}
-				elseif ($dynamic AND $word_category !== FALSE)
+				elseif ($dynamic AND
+						$word_category !== FALSE AND
+						count($query_string_array) > ($word_category + 1))
 				{
 					$cat_id_query = $this->EE->db->select('cat_id')
 						->get_where(
