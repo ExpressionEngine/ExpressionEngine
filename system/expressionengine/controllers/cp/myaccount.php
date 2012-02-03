@@ -1057,6 +1057,7 @@ class MyAccount extends CI_Controller {
 			$vars['html_buttons'] = $this->admin_model->get_html_buttons(0);
 		}
 
+		$vars['member_id'] = $this->id;
 		$vars['i'] = 1;
 
 		$this->load->view('account/html_buttons', $vars);
