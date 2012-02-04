@@ -1,16 +1,47 @@
-var	range			= null,
+var	img_range		= null,
+	img_timer		= false,
+	EE_rte_image	= EE.rte.image,
 	$file_browser	= null,
-	$caption		= $('<p class="rte_image_caption"><strong>' + EE.rte.image.caption_text + '</strong> <input type="text" id="rte_image_caption"/></p>'),
+	$caption		= $('<p class="rte_image_caption"><strong>' + EE_rte_image.caption_text + '</strong> <input type="text" id="rte_image_caption"/></p>'),
 	$caption_field	= $caption.find('#rte_image_caption'),
 	$figure_overlay = $('<div id="rte_image_figure_overlay" class="WysiHat-ui-control"><p></p></div>').hide().appendTo('body'),
 	$curr_figure	= null,
 	$image_button	= toolbar.addButton({
 		name:		'image',
-	    label:		EE.rte.image.add,
+	    label:		EE_rte_image.add,
 		handler: function( $ed ){
 			// nothing (we observe from elsewhere)
 		}
 	});
+
+(function(){
+	var filedirs	= EE_rte_image.filedirs,
+		html		= $editor.html(),
+		path, path_re;
+	for ( path in filedirs )
+	{
+		path_re = new RegExp(path, 'g');
+		html = html.replace( path_re, filedirs[path] );
+	}
+	$editor.html(html);
+})();
+
+$editor
+	.parents('form')
+		.submit(function(){
+			var folders = EE_rte_image.folders;
+			$('.rte').each(function(){
+				var	$field	= $(this),
+					val		= $field.val(),
+					path, path_re;
+				for ( path in folders )
+				{
+					path_re = new RegExp(path, 'g');
+					val = val.replace( path_re, folders[path] );
+				}
+				$field.val(val);
+			});
+		 });
 
 function getTheRange(){
 	var	ranges		= $editor.getRanges(),
@@ -33,27 +64,27 @@ function getTheRange(){
 
 	if ( hasRange )
 	{
-		range	= selection.getRangeAt(0).cloneRange();
-		el		= $editor.getRangeElements( range, WysiHat.Element.getBlocks().join(',') ).get(0);
+		img_range	= selection.getRangeAt(0).cloneRange();
+		el			= $editor.getRangeElements( img_range, WysiHat.Element.getBlocks().join(',') ).get(0);
 		if ( el != null )
 		{
 			if ( $(el).is('li,dt,dd,td') )
 			{
-				range.setStart( el, 0 );
-				range.setEnd( el, 0 );
+				img_range.setStart( el, 0 );
+				img_range.setEnd( el, 0 );
 			}
 			else
 			{
-				range.setStartBefore( el );
-				range.setEndBefore( el );
+				img_range.setStartBefore( el );
+				img_range.setEndBefore( el );
 			}
 		}
-		range.collapse(true);
+		img_range.collapse(true);
 	}
 	else
 	{
-		range = document.createRange();
-		range.selectNode( $editor.get(0).firstChild );
+		img_range = document.createRange();
+		img_range.selectNode( $editor.get(0).firstChild );
 	}
 }
 $editor.mouseup(getTheRange);
@@ -85,7 +116,7 @@ $.ee_filebrowser.add_trigger(
 	'userfile_' + $field.attr('name'),
 	function( image_object, file_field, editor_field )
 	{
-		if ( ! range )
+		if ( ! img_range )
 		{
 			getTheRange();
 		}
@@ -95,7 +126,6 @@ $.ee_filebrowser.add_trigger(
 						.append(
 							$('<img alt=""/>')
 								.attr( 'src', image_object.thumb.replace( /_thumbs\//, '' ) )
-								.attr( 'data-ee_img_path', "{filedir_" + image_object.upload_location_id + "}/" + image_object.file_name )
 						 );
 		
 		if ( $caption_field.val() != '' )
@@ -107,7 +137,7 @@ $.ee_filebrowser.add_trigger(
 		}
 		$caption.remove();
 		
-		range.insertNode( $img.get(0) );
+		img_range.insertNode( $img.get(0) );
 		
 		// trigger the update
 		$editor.trigger( EE.rte.update_event );
@@ -146,10 +176,10 @@ $figure_overlay
 	.mouseleave(hideFigureOverlay)
 	.find('p')
 		.append(
-			$('<button class="button align-left"><b>Align Left</b></button>').click(function(){ alignFigureContent('left'); })
+			$('<button class="button align-left"><b>'+EE_rte_image.align_left+'</b></button>').click(function(){ alignFigureContent('left'); })
 		 )
 		.append(
-			$('<button class="button align-center"><b>Align Center</b></button>').click(function(){
+			$('<button class="button align-center"><b>'+EE_rte_image.align_center+'</b></button>').click(function(){
 				if ( $curr_figure.data('floating') )
 				{
 					alert(EE.rte.image.center_error);
@@ -162,11 +192,20 @@ $figure_overlay
 			})
 		 )
 		.append(
-			$('<button class="button align-right"><b>Align Right</b></button>').click(function(){ alignFigureContent('right'); })
+			$('<button class="button align-right"><b>'+EE_rte_image.align_right+'</b></button>').click(function(){ alignFigureContent('right'); })
 		 )
 		.append( $('<br/>') )
 		.append(
-			$('<button class="button separate"><b>Separate Text</b></button>').click(function(){
+			$('<button class="button wrap-left"><b>'+EE_rte_image.wrap_left+'</b></button>').click(function(){
+				var alignment = $curr_figure.css('text-align');
+				$curr_figure
+					.css('float','left')
+					.data('floating',true);
+				hideFigureOverlay();
+			})
+		 )
+		.append(
+			$('<button class="button wrap-none"><b>'+EE_rte_image.wrap_none+'</b></button>').click(function(){
 				$curr_figure
 					.css('float','none')
 					.data('floating',false);
@@ -174,21 +213,26 @@ $figure_overlay
 			}) 
 		 )
 		.append(
-			$('<button class="button wrap"><b>Wrap Text</b></button>').click(function(){
+			$('<button class="button wrap-right"><b>'+EE_rte_image.wrap_right+'</b></button>').click(function(){
 				var alignment = $curr_figure.css('text-align');
 				$curr_figure
-					.css( 'float', ( alignment == 'right' ? 'right' : 'left' ) )
+					.css('float','right')
 					.data('floating',true);
 				hideFigureOverlay();
 			})
 		 )
-		.append( $('<br/>') ).append( $('<br/>') ).append( $('<br/>') )
+		.append( $('<br/>') )
 		.append(
-			$('<button class="button delete"><b>Delete Image</b></button>').click(function(){
+			$('<button class="button delete"><b>'+EE_rte_image.delete+'</b></button>').click(function(){
 				$curr_figure.remove();
 				hideFigureOverlay();
 			})
-		 );
+		 )
+	.find('button').each(function(){
+		var $this = $(this);
+		$this.attr('title',$this.find('b').text());
+	 });
+	
 $editor
 	.delegate('figure img','mouseover',function(){
 		var	$this	= $(this),

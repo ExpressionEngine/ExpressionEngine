@@ -31,6 +31,8 @@ $rte_tool_info = array(
 Class Image_rte {
 	
 	private $EE;
+	private $folders	= array();
+	private $filedirs	= array();
 	
 	# should this be shown on the frontend?
 	public	$frontend = 'n';
@@ -42,6 +44,9 @@ Class Image_rte {
 	{
 		// Make a local reference of the ExpressionEngine super object
 		$this->EE =& get_instance();
+		
+		// load in the file locations
+		$this->_get_file_locations();
 	}
 
 	/** -------------------------------------
@@ -52,9 +57,18 @@ Class Image_rte {
 		$this->EE->lang->loadfile('rte');
 		return array(
 			'rte.image'	=> array(
-				'add'			=> lang('insert_img'),
+				'add'			=> lang('img_add'),
+				'delete'		=> lang('img_delete'),
+				'align_left'	=> lang('img_align_left'),
+				'align_center'	=> lang('img_align_center'),
+				'align_right'	=> lang('img_align_right'),
+				'wrap_left'		=> lang('img_wrap_left'),
+				'wrap_none'		=> lang('img_wrap_none'),
+				'wrap_right'	=> lang('img_wrap_right'),
 				'caption_text'	=> lang('rte_image_caption'),
-				'center_error'	=> lang('rte_center_error')
+				'center_error'	=> lang('rte_center_error'),
+				'folders'		=> $this->folders,
+				'filedirs'		=> $this->filedirs
 			)
 		);
 	}
@@ -76,7 +90,10 @@ Class Image_rte {
 	function styles()
 	{
 		# load the external file
-		return file_get_contents( 'rte.image.css', TRUE );
+		$styles	= file_get_contents( 'rte.image.css', TRUE );
+		$theme	= $this->EE->session->userdata('cp_theme');
+		$theme	= $this->EE->config->item('theme_folder_url').'cp_themes/'.($theme ? $theme : 'default').'/';
+		return str_replace('{theme_folder_url}', $theme, $styles);
 	}
 
 	/** -------------------------------------
@@ -86,6 +103,25 @@ Class Image_rte {
 	{
 		# load the external file
 		return file_get_contents( 'rte.image.js', TRUE );
+	}
+	
+	/** -------------------------------------
+	/**  Collect the folders
+	/** -------------------------------------*/
+	private function _get_file_locations()
+	{
+		$this->EE->load->model('file_upload_preferences_model');
+		$dirs = $this->EE->file_upload_preferences_model->get_upload_preferences($this->EE->session->userdata('group_id'));
+		
+		$domain = $this->EE->config->item('site_url');
+		
+		foreach( $dirs as $d )
+		{
+			# create the filedir reference
+			$filedir	= '{filedir_'.$d['id'].'}';
+			$this->folders[$d['url']]	= $filedir;
+			$this->filedirs[$filedir]	= $d['url'];
+		}
 	}
 
 } // END Image_rte

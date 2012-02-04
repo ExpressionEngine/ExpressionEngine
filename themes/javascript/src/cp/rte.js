@@ -1,8 +1,7 @@
 (function($){
 	
-	var
-	$edit_toolset	= $('a[href*=edit_toolset]:not(.addTab)'),
-	$modal			= $('<div id="rte_toolset_editor_modal"><div class="contents"/></div>');
+	var	$edit_toolset	= $('a[href*=edit_toolset]:not(.addTab)'),
+		$modal			= $('<div id="rte_toolset_editor_modal"><div class="contents"/></div>');
 	
 	// make the modal
 	$modal.dialog({
@@ -47,12 +46,11 @@
 	}
 	
 	// MyAccount - Trigger Toolset overlay
-	var
-	$my_toolset_id		= $('#registerUser select#rte_toolset_id')
-							.change(toggle_rte_edit_link),
-	$edit_my_toolset	= $('<input type="button" class="submit"/>')
-							.css('margin-left','5px')
-							.val( EE.rte.edit_text );
+	var	$my_toolset_id		= $('#registerUser select#rte_toolset_id')
+								.change(toggle_rte_edit_link),
+		$edit_my_toolset	= $('<input type="button" class="submit"/>')
+								.css('margin-left','5px')
+								.val( EE.rte.edit_text );
 	// Get the builder
 	function get_rte_toolset_builder()
 	{
@@ -96,10 +94,9 @@
 	
 	
 	// Toolset Builder
-	var
-	$selected	= $('#null'),
-	$used		= $selected,
-	$unused		= $selected;
+	var	$selected	= $('#null'),
+		$used		= $selected,
+		$unused		= $selected;
 	
 	function setupToolsetBuilder()
 	{
@@ -152,12 +149,11 @@
 					$error.remove();
 					e.preventDefault();
 					
-					var
-					$this	= $(this),
-					$name	= $('#rte-toolset-name'),
-					value	= $name.val(),
-					URL		= EE.rte.validate_toolset_name_url.replace(/&amp;/g,'&'),
-					action	= $this.attr('action'),
+					var	$this	= $(this),
+						$name	= $('#rte-toolset-name'),
+						value	= $name.val(),
+						URL		= EE.rte.validate_toolset_name_url.replace(/&amp;/g,'&'),
+						action	= $this.attr('action'),
 					
 					// figure out the toolset id (if we have one)
 					toolset = action.replace(/.*?rte_toolset_id=(\d+)/,'$1');

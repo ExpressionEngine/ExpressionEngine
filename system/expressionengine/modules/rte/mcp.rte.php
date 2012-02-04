@@ -392,7 +392,7 @@ class Rte_mcp {
 
 		if ($this->EE->input->is_ajax_request())
 		{
-			$this->output->send_ajax_response(array(
+			$this->EE->output->send_ajax_response(array(
 				'valid' => $valid
 			));
 		}

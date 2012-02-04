@@ -92,7 +92,6 @@ $lang = array(
 'make_blockquote' => 'Blockquote',
 'remove_blockquote' => 'Remove Blockquote',
 'make_link' => 'Link Text',
-'insert_img' => 'Insert Image',
 'view_code' => 'View Code',
 'view_content' => 'View Content',
 'strip_tags' => 'Strip Formatting Tags',
@@ -104,6 +103,14 @@ $lang = array(
 'heading_4' => 'Heading 4',
 'heading_5' => 'Heading 5',
 'heading_6' => 'Heading 6',
+'img_add' => 'Insert Image',
+'img_delete' => 'Delete Image',
+'img_align_left' => 'Align Left',
+'img_align_center' => 'Align Center',
+'img_align_right' => 'Align Right',
+'img_wrap_left' => 'Wrap Left',
+'img_wrap_none' => 'Separate Text',
+'img_wrap_right' => 'Wrap Right',
 
 # IGNORE
 ''=>''
