@@ -74,7 +74,7 @@
 .WysiHat-editor-toolbar .ordered_list:focus b,
 .WysiHat-editor-toolbar .ordered_list:active b,
 .WysiHat-editor-toolbar .ordered_list[aria-pressed=true] b{ background-position: 0 -1215px; }
-.WysiHat-editor-toolbar .underline b{ background-position: 0 -1274px; width: 8px; }
+.WysiHat-editor-toolbar .underline b{ background-position: 0 -1274px; width: 8px; border-bottom: 1px solid; }
 .WysiHat-editor-toolbar .underline:disabled b{ background-position: 0 -1335px; width: 8px; }
 .WysiHat-editor-toolbar .underline:hover b,
 .WysiHat-editor-toolbar .underline:focus b,

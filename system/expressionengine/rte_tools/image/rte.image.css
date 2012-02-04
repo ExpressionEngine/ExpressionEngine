@@ -21,7 +21,7 @@
 #rte_image_figure_overlay .button {
 	float: none;
 	padding: 5px;
-	margin: 5px;
+	margin: 1%;
 }
 #rte_image_figure_overlay .button b {
 	background: url({theme_folder_url}images/rte_images/button-sprite-images.png) center center no-repeat;
