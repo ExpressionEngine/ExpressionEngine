@@ -26,6 +26,8 @@
 
 class File_field {
 	
+	var $_manipulations = array();
+	
 	public function __construct()
 	{
 		$this->EE =& get_instance();
@@ -336,9 +338,8 @@ class File_field {
 
 		$file['width'] 	= isset($dimensions[1]) ? $dimensions[1] : '';
 		$file['height'] = isset($dimensions[0]) ? $dimensions[0] : '';
-
-		// Make the URLs of any manipulated versions available via e.g. {url:small}
-		$manipulations = $this->EE->file_model->get_dimensions_by_dir_id($file['upload_location_id'])->result_array();
+		
+		$manipulations = $this->_get_dimensions_by_dir_id($file['upload_location_id']);
 
 		foreach($manipulations as $m)
 		{
@@ -403,15 +404,33 @@ class File_field {
 	// ------------------------------------------------------------------------
 	
 	/**
+	 * Gets dimensions for an upload directory and caches them
+	 *
+	 * @param int $dir_id	ID of upload directory
+	 * @return array		Array of image manipulation settings
+ 	 */
+	private function _get_dimensions_by_dir_id($dir_id)
+	{
+		if ( ! isset($this->_manipulations[$dir_id]))
+		{
+			$this->_manipulations[$dir_id] = $this->EE->file_model->get_dimensions_by_dir_id($dir_id)->result_array();
+		}
+		
+		return $this->_manipulations[$dir_id];
+	}
+	
+	// ------------------------------------------------------------------------
+	
+	/**
 	 * Add the file browser CSS to the head
 	 */
 	private function _browser_css()
 	{
 		$this->EE->cp->add_to_head($this->EE->view->head_link('css/file_browser.css'));
 	}
-
+	
 	// ------------------------------------------------------------------------
-
+	
 	/**
 	 * Loads up javascript dependencies and global variables for the file 
 	 * browser and file uploader
