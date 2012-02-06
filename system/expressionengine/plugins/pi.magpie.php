@@ -20,13 +20,13 @@
 */
 
 $plugin_info = array(
-						'pi_name'			=> 'Magpie RSS Parser',
-						'pi_version'		=> '1.3.5',
-						'pi_author'			=> 'Paul Burdick',
-						'pi_author_url'		=> 'http://expressionengine.com/',
-						'pi_description'	=> 'Retrieves and Parses RSS/Atom Feeds',
-						'pi_usage'			=> Magpie::usage()
-					);
+	'pi_name'			=> 'Magpie RSS Parser',
+	'pi_version'		=> '1.3.5',
+	'pi_author'			=> 'Paul Burdick',
+	'pi_author_url'		=> 'http://expressionengine.com/',
+	'pi_description'	=> 'Retrieves and Parses RSS/Atom Feeds',
+	'pi_usage'			=> Magpie::usage()
+);
 					
 
 Class Magpie {
@@ -70,7 +70,7 @@ Class Magpie {
 	 	
 	 	if ($this->EE->config->item('debug') == 2 OR ($this->EE->config->item('debug') == 1 && $this->EE->session->userdata['group_id'] == 1))
 		{
-			if( ! defined('MAGPIE_DEBUG'))
+			if ( ! defined('MAGPIE_DEBUG'))
 			{
 				define('MAGPIE_DEBUG', 1);
 			}
@@ -90,16 +90,16 @@ Class Magpie {
 	 	/** -------------------------------*/
 	 	
 	 	if ( ! defined('MAGPIE_CACHE_DIR'))
-		  {
-		  	define('MAGPIE_CACHE_DIR', APPPATH.'cache/'.$this->cache_name.'/');
-		  }
-		  
-		  if ( ! defined('MAGPIE_CACHE_AGE'))
-		  {
-		  	define('MAGPIE_CACHE_AGE',	$this->cache_refresh * 60);
-		  }
-		  
-		  $this->RSS = fetch_rss($this->page_url);
+		{
+			define('MAGPIE_CACHE_DIR', APPPATH.'cache/'.$this->cache_name.'/');
+		}
+		
+		if ( ! defined('MAGPIE_CACHE_AGE'))
+		{
+			define('MAGPIE_CACHE_AGE',	$this->cache_refresh * 60);
+		}
+		
+		$this->RSS = fetch_rss($this->page_url);
 		
 		if (count($this->RSS->items) == 0)
 		{
@@ -204,7 +204,7 @@ Class Magpie {
 		
 		
 		foreach ($this->EE->TMPL->var_single as $key => $val)
-		  {		  			
+		{		  			
 			
 			/** ----------------------------------------
 			/**  {feed_version} - Version of RSS/Atom Feed
@@ -605,7 +605,8 @@ class MagpieRSS {
 	 * echo $rss->channel['title'];
 	 *
 	 * // print the title of each item
-	 * foreach ($rss->items as $item ) {
+	 * foreach ($rss->items as $item )
+	 * {
 	 *	  echo $item[title];
 	 * }
 	 *
@@ -615,7 +616,7 @@ class MagpieRSS {
 	var $parser;
 	
 	var $current_item	= array();	// item currently being parsed
-	 var $items			= array();	// collection of parsed items
+	var $items			= array();	// collection of parsed items
 	var $channel		= array();	// hash of channel fields
 	var $textinput		= array();
 	var $image			= array();
@@ -646,14 +647,16 @@ class MagpieRSS {
 	Input:	  String containing the RSS to be parsed
 \*======================================================================*/
 	function MagpieRSS ($source, $output_encoding='ISO-8859-1', 
-								$input_encoding=null, $detect_encoding=true) {
+								$input_encoding=null, $detect_encoding=true)
+	{
 
 		// Make a local reference of the ExpressionEngine super object
 		$this->EE =& get_instance();
 		
 		# if PHP xml isn't compiled in, die
 		#
-		if ( ! function_exists('xml_parser_create')) {
+		if ( ! function_exists('xml_parser_create'))
+		{
 			$this->error( "Failed to load PHP's XML Extension. " . 
 						  "http://www.php.net/manual/en/ref.xml.php",
 							E_USER_ERROR );
@@ -681,9 +684,11 @@ class MagpieRSS {
 	
 		$status = @xml_parse($parser, $source);
 		
-		if ( ! $status ) {
+		if ( ! $status )
+		{
 			$errorcode = xml_get_error_code( $parser );
-			if ( $errorcode != XML_ERROR_NONE ) {
+			if ( $errorcode != XML_ERROR_NONE )
+			{
 				$xml_error = xml_error_string( $errorcode );
 				$error_line = xml_get_current_line_number($parser);
 				$error_col = xml_get_current_column_number($parser);
@@ -712,7 +717,8 @@ class MagpieRSS {
 		return $new_array;
 	}
 	
-	function feed_start_element($p, $element, &$attrs) {
+	function feed_start_element($p, $element, &$attrs)
+	{
 		$el = $element = strtolower($element);
 		
 		if ( ! function_exists('array_change_key_case'))
@@ -726,26 +732,33 @@ class MagpieRSS {
 		
 		// check for a namespace, and split if found
 		$ns	= false;
-		if ( strpos( $element, ':' ) ) {
+		if ( strpos( $element, ':' ) )
+		{
 			list($ns, $el) = explode( ':', $element, 2); 
 		}
-		if ( $ns and $ns != 'rdf' ) {
+		
+		if ( $ns and $ns != 'rdf' )
+		{
 			$this->current_namespace = $ns;
 		}
 			
 		# if feed type isn't set, then this is first element of feed
 		# identify feed from root element
 		#
-		if ( ! isset($this->feed_type) ) {
-			if ( $el == 'rdf' ) {
+		if ( ! isset($this->feed_type) )
+		{
+			if ( $el == 'rdf' )
+			{
 				$this->feed_type = RSS;
 				$this->feed_version = '1.0';
 			}
-			elseif ( $el == 'rss' ) {
+			elseif ( $el == 'rss' )
+			{
 				$this->feed_type = RSS;
 				$this->feed_version = $attrs['version'];
 			}
-			elseif ( $el == 'feed' ) {
+			elseif ( $el == 'feed' )
+			{
 				$this->feed_type = ATOM;
 				$this->feed_version = $attrs['version'];
 				$this->inchannel = true;
@@ -760,7 +773,8 @@ class MagpieRSS {
 		elseif ($el == 'item' or $el == 'entry' ) 
 		{
 			$this->initem = true;
-			if ( isset($attrs['rdf:about']) ) {
+			if ( isset($attrs['rdf:about']) )
+			{
 				$this->current_item['about'] = $attrs['rdf:about'];	
 			}
 		}
@@ -787,7 +801,8 @@ class MagpieRSS {
 		elseif ( $this->feed_type == ATOM and in_array($el, $this->_CONTENT_CONSTRUCTS) )
 		{
 			// avoid clashing w/ RSS mod_content
-			if ($el == 'content' ) {
+			if ($el == 'content' )
+			{
 				$el = 'atom_content';
 			}
 			
@@ -820,33 +835,38 @@ class MagpieRSS {
 			{
 				$link_el = 'link';
 			}
-			else {
+			else
+			{
 				$link_el = 'link_' . $attrs['rel'];
 			}
 			
 			$this->append($link_el, $attrs['href']);
 		}
 		// set stack[0] to current element
-		else {
+		else
+		{
 			array_unshift($this->stack, $el);
 		}
 	}
 	
 
 	
-	function feed_cdata ($p, $text) {
+	function feed_cdata ($p, $text)
+	{
 		
 		if ($this->feed_type == ATOM and $this->incontent) 
 		{
 			$this->append_content( $text );
 		}
-		else {
+		else
+		{
 			$current_el = join('_', array_reverse($this->stack));
 			$this->append($current_el, $text);
 		}
 	}
 	
-	function feed_end_element ($p, $el) {
+	function feed_end_element ($p, $el)
+	{
 		$el = strtolower($el);
 		
 		if ( $el == 'item' or $el == 'entry' ) 
@@ -871,28 +891,33 @@ class MagpieRSS {
 		{
 			$this->inchannel = false;
 		}
-		elseif ($this->feed_type == ATOM and $this->incontent  ) {
+		elseif ($this->feed_type == ATOM and $this->incontent  )
+		{
 			// balance tags properly
 			// note:  i don't think this is actually neccessary
 			if ( $this->stack[0] == $el ) 
 			{
 				$this->append_content("</$el>");
 			}
-			else {
+			else
+			{
 				$this->append_content("<$el />");
 			}
 
 			array_shift( $this->stack );
 		}
-		else {
+		else
+		{
 			array_shift( $this->stack );
 		}
 		
 		$this->current_namespace = false;
 	}
 	
-	function concat (&$str1, $str2="") {
-		if ( ! isset($str1) ) {
+	function concat (&$str1, $str2="")
+	{
+		if ( ! isset($str1) )
+		{
 			$str1="";
 		}
 		$str1 .= $str2;
@@ -900,89 +925,111 @@ class MagpieRSS {
 	
 	
 	
-	function append_content($text) {
-		if ( $this->initem ) {
+	function append_content($text)
+	{
+		if ( $this->initem )
+		{
 			$this->concat( $this->current_item[ $this->incontent ], $text );
 		}
-		elseif ( $this->inchannel ) {
+		elseif ( $this->inchannel )
+		{
 			$this->concat( $this->channel[ $this->incontent ], $text );
 		}
 	}
 	
 	// smart append - field and namespace aware
-	function append($el, $text) {
-		if ( ! $el) {
+	function append($el, $text)
+	{
+		if ( ! $el)
+		{
 			return;
 		}
 		if ( $this->current_namespace ) 
 		{
-			if ( $this->initem ) {
-				$this->concat(
-					$this->current_item[ $this->current_namespace ][ $el ], $text);
+			if ( $this->initem )
+			{
+				$this->concat($this->current_item[ $this->current_namespace ][ $el ], $text);
 			}
-			elseif ($this->inchannel) {
-				$this->concat(
-					$this->channel[ $this->current_namespace][ $el ], $text );
+			elseif ($this->inchannel)
+			{
+				$this->concat($this->channel[ $this->current_namespace][ $el ], $text );
 			}
-			elseif ($this->intextinput) {
-				$this->concat(
-					$this->textinput[ $this->current_namespace][ $el ], $text );
+			elseif ($this->intextinput)
+			{
+				$this->concat($this->textinput[ $this->current_namespace][ $el ], $text );
 			}
-			elseif ($this->inimage) {
-				$this->concat(
-					$this->image[ $this->current_namespace ][ $el ], $text );
+			elseif ($this->inimage)
+			{
+				$this->concat($this->image[ $this->current_namespace ][ $el ], $text );
 			}
 		}
-		else {
-			if ( $this->initem ) {
-				$this->concat(
-					$this->current_item[ $el ], $text);
+		else
+		{
+			if ( $this->initem )
+			{
+				$this->concat($this->current_item[ $el ], $text);
 			}
-			elseif ($this->intextinput) {
-				$this->concat(
-					$this->textinput[ $el ], $text );
+			elseif ($this->intextinput)
+			{
+				$this->concat($this->textinput[ $el ], $text );
 			}
-			elseif ($this->inimage) {
-				$this->concat(
-					$this->image[ $el ], $text );
+			elseif ($this->inimage)
+			{
+				$this->concat($this->image[ $el ], $text );
 			}
-			elseif ($this->inchannel) {
-				$this->concat(
-					$this->channel[ $el ], $text );
+			elseif ($this->inchannel)
+			{
+				$this->concat($this->channel[ $el ], $text );
 			}
 			
 		}
 	}
 	
-	function normalize () {
+	function normalize ()
+	{
 		// if atom populate rss fields
-		if ( $this->is_atom() ) {
+		if ( $this->is_atom() )
+		{
 			$this->channel['descripton'] = ( ! isset($this->channel['tagline'])) ? '' : $this->channel['tagline'];
-			for ( $i = 0; $i < count($this->items); $i++) {
+			for ( $i = 0; $i < count($this->items); $i++)
+			{
 				$item = $this->items[$i];
 				if ( isset($item['summary']) )
-					$item['description'] = $item['summary'];
+				{
+					$item['description'] = $item['summary'];	
+				}
+
 				if ( isset($item['atom_content']))
+				{
 					$item['content']['encoded'] = $item['atom_content'];
+				}
 				
 				$this->items[$i] = $item;
 			}		
 		}
-		elseif ( $this->is_rss() ) {
+		elseif ( $this->is_rss() )
+		{
 			$this->channel['tagline'] = ( ! isset($this->channel['description'])) ? '' : $this->channel['description'];
-			for ( $i = 0; $i < count($this->items); $i++) {
+			for ( $i = 0; $i < count($this->items); $i++)
+			{
 				$item = $this->items[$i];
 				if ( isset($item['description']))
+				{
 					$item['summary'] = $item['description'];
+				}	
+
 				if ( isset($item['content']['encoded'] ) )
+				{
 					$item['atom_content'] = $item['content']['encoded'];
+				}
 			
 				$this->items[$i] = $item;
 			}
 		}
 	}
 	
-	function error ($errormsg, $lvl=E_USER_WARNING) {
+	function error ($errormsg, $lvl=E_USER_WARNING)
+	{
 	
 		// append PHP's error message if track_errors enabled
 		if ( isset($php_errormsg) )
@@ -1002,48 +1049,56 @@ class MagpieRSS {
 		}
 	}
 	
-	function is_rss () {
-		if ( $this->feed_type == RSS ) {
+	function is_rss ()
+	{
+		if ( $this->feed_type == RSS )
+		{
 			return $this->feed_version;	
 		}
-		else {
+		else
+		{
 			return false;
 		}
 	}
 	
-	function is_atom() {
-		if ( $this->feed_type == ATOM ) {
+	function is_atom()
+	{
+		if ( $this->feed_type == ATOM )
+		{
 			return $this->feed_version;
 		}
-		else {
+		else
+		{
 			return false;
 		}
 	}
 	
 	
-		 /**
+	/**
 	 * return XML parser, and possibly re-encoded source
 	 *
 	 */
-	 function create_parser($source, $out_enc, $in_enc, $detect)
-	 {	 	
-		  if ( substr(phpversion(),0,1) == 5) {
-				$parser = $this->php5_create_parser($in_enc, $detect);
-		  }
-		  else {
-				list($parser, $source) = $this->php4_create_parser($source, $in_enc, $detect);
-		  }
+	function create_parser($source, $out_enc, $in_enc, $detect)
+	{	 	
+		if ( substr(phpversion(),0,1) == 5)
+		{
+			$parser = $this->php5_create_parser($in_enc, $detect);
+		}
+		else
+		{
+			list($parser, $source) = $this->php4_create_parser($source, $in_enc, $detect);
+		}
 		  
-		  $this->encoding = $this->EE->config->item('charset');
+		$this->encoding = $this->EE->config->item('charset');
 		  
 		  
-		  if (in_array(strtolower($this->encoding), array('iso-8859-1', 'us-ascii', 'utf-8')))
-		  {
-		  	xml_parser_set_option($parser, XML_OPTION_TARGET_ENCODING, $this->encoding);
-		  }
+		if (in_array(strtolower($this->encoding), array('iso-8859-1', 'us-ascii', 'utf-8')))
+		{
+			xml_parser_set_option($parser, XML_OPTION_TARGET_ENCODING, $this->encoding);
+		}
 		  
-		  return array($parser, $source);
-	 }
+		return array($parser, $source);
+	}
 	 
 	 /**
 	 * Instantiate an XML parser under PHP5
@@ -1054,12 +1109,15 @@ class MagpieRSS {
 	 * All hail libxml2!
 	 *
 	 */
-	 function php5_create_parser($in_enc, $detect) {
+	 function php5_create_parser($in_enc, $detect)
+	 {
 		  // by default php5 does a fine job of detecting input encodings
-		  if( ! $detect && $in_enc) {
+		  if ( ! $detect && $in_enc)
+		  {
 				return xml_parser_create($in_enc);
 		  }
-		  else {
+		  else
+		  {
 				return xml_parser_create('');
 		  }
 	 }
@@ -1079,63 +1137,76 @@ class MagpieRSS {
 	 * @see http://minutillo.com/steve/channel/2004/6/17/php-xml-and-character-encodings-a-tale-of-sadness-rage-and-data-loss
 	 *
 	 */
-	 function php4_create_parser($source, $in_enc, $detect) {
-		  if ( ! $detect ) {
-				return array(xml_parser_create($in_enc), $source);
-		  }
+	 function php4_create_parser($source, $in_enc, $detect)
+	 {
+		if ( ! $detect )
+		{
+			return array(xml_parser_create($in_enc), $source);
+		}
 		  
-		  if ( ! $in_enc) {
-				if (preg_match('/<?xml.*encoding=[\'"](.*?)[\'"].*?>/m', $source, $m)) {
-					 $in_enc = strtoupper($m[1]);
-					 $this->source_encoding = $in_enc;
-				}
-				else {
-					 $in_enc = 'UTF-8';
-				}
-		  }
+		if ( ! $in_enc)
+		{
+			if (preg_match('/<?xml.*encoding=[\'"](.*?)[\'"].*?>/m', $source, $m))
+			{
+				$in_enc = strtoupper($m[1]);
+				$this->source_encoding = $in_enc;
+			}
+			else
+			{
+				$in_enc = 'UTF-8';
+			}
+		}
 		  
-		  if ($this->known_encoding($in_enc)) {
-				return array(xml_parser_create($in_enc), $source);
-		  }
+		if ($this->known_encoding($in_enc))
+		{
+			return array(xml_parser_create($in_enc), $source);
+		}
 		  
-		  // the dectected encoding is not one of the simple encodings PHP knows
-		  
-		  // attempt to use the iconv extension to
-		  // cast the XML to a known encoding
-		  // @see http://php.net/iconv
+		// the dectected encoding is not one of the simple encodings PHP knows
+		// attempt to use the iconv extension to
+		// cast the XML to a known encoding
+		// @see http://php.net/iconv
 		 
-		  if (function_exists('iconv'))  {
-				$encoded_source = iconv($in_enc,'UTF-8', $source);
-				if ($encoded_source) {
-					 return array(xml_parser_create('UTF-8'), $encoded_source);
-				}
-		  }
+		if (function_exists('iconv'))
+		{
+			$encoded_source = iconv($in_enc,'UTF-8', $source);
+			if ($encoded_source)
+			{
+				 return array(xml_parser_create('UTF-8'), $encoded_source);
+			}
+		}
 		  
-		  // iconv didn't work, try mb_convert_encoding
-		  // @see http://php.net/mbstring
-		  if(function_exists('mb_convert_encoding')) {
-				$encoded_source = mb_convert_encoding($source, 'UTF-8', $in_enc );
-				if ($encoded_source) {
-					 return array(xml_parser_create('UTF-8'), $encoded_source);
-				}
-		  }
+		// iconv didn't work, try mb_convert_encoding
+		// @see http://php.net/mbstring
+		if (function_exists('mb_convert_encoding'))
+		{
+			$encoded_source = mb_convert_encoding($source, 'UTF-8', $in_enc );
+			if ($encoded_source)
+			{
+				return array(xml_parser_create('UTF-8'), $encoded_source);
+			}
+		}
 		  
-		  // else 
-		  $this->error("Feed is in an unsupported character encoding. ($in_enc) " .
-							"You may see strange artifacts, and mangled characters.",
-							E_USER_NOTICE);
+		// else 
+		$this->error("Feed is in an unsupported character encoding. ($in_enc) " .
+			"You may see strange artifacts, and mangled characters.",
+			E_USER_NOTICE
+		);
 				
-		  return array(xml_parser_create(), $source);
-	 }
+		return array(xml_parser_create(), $source);
+	}
 	 
-	 function known_encoding($enc) {
-		  $enc = strtoupper($enc);
-		  if ( in_array($enc, $this->_KNOWN_ENCODINGS) ) {
-				return $enc;
-		  }
-		  else {
-				return false;
-		  }
+	function known_encoding($enc)
+	{
+		$enc = strtoupper($enc);
+		if ( in_array($enc, $this->_KNOWN_ENCODINGS) )
+		{
+			return $enc;
+		}
+		else
+		{
+			return false;
+		}
 	 }
 	
 	
@@ -1143,36 +1214,45 @@ class MagpieRSS {
 /*======================================================================*\
 	EVERYTHING BELOW HERE IS FOR DEBUGGING PURPOSES
 \*======================================================================*/
-	function show_list () {
+	function show_list ()
+	{
 		echo "<ol>\n";
-		foreach ($this->items as $item) {
+		foreach ($this->items as $item)
+		{
 			echo "<li>", $this->show_item( $item );
 		}
 		echo "</ol>";
 	}
 	
-	function show_channel () {
+	function show_channel ()
+	{
 		echo "channel:<br>";
 		echo "<ul>";
-		while ( list($key, $value) = each( $this->channel ) ) {
+		while ( list($key, $value) = each( $this->channel ) )
+		{
 			echo "<li> $key: $value";
 		}
 		echo "</ul>";
 	}
 	
-	function show_item ($item) {
+	function show_item ($item)
+	{
 		echo "item: $item[title]";
 		echo "<ul>";
-		while ( list($key, $value) = each($item) ) {
-			if ( is_array($value) ) {
+		while ( list($key, $value) = each($item) )
+		{
+			if ( is_array($value) )
+			{
 				echo "<br><b>$key</b>";
 				echo "<ul>";
-				while ( list( $ns_key, $ns_value) = each( $value ) ) {
+				while ( list( $ns_key, $ns_value) = each( $value ) )
+				{
 					echo "<li>$ns_key: $ns_value";
 				}
 				echo "</ul>";
 			}
-			else {
+			else
+			{
 				echo "<li> $key: $value";
 			}
 		}
@@ -1185,7 +1265,8 @@ class MagpieRSS {
 	
 } # end class RSS
 
-function map_attrs($k, $v) {
+function map_attrs($k, $v)
+{
 	return "$k=\"$v\"";
 }
 
@@ -1210,12 +1291,14 @@ function map_attrs($k, $v) {
 // Setup MAGPIE_DIR for use on hosts that don't include
 // the current path in include_path.
 // with thanks to rajiv and smarty
-if ( ! defined('DIR_SEP')) {
+if ( ! defined('DIR_SEP'))
+{
 	define('DIR_SEP', DIRECTORY_SEPARATOR);
 }
 
-if ( ! defined('MAGPIE_DIR')) {
-	 define('MAGPIE_DIR', dirname(__FILE__) . DIR_SEP);
+if ( ! defined('MAGPIE_DIR'))
+{
+	define('MAGPIE_DIR', dirname(__FILE__) . DIR_SEP);
 }
 
 
@@ -1267,29 +1350,35 @@ define('MAGPIE_VERSION', '0.61');
 
 $MAGPIE_ERROR = "";
 
-function fetch_rss ($url, $cache_age = '') {
+function fetch_rss ($url, $cache_age = '')
+{
 	// initialize constants
 	init();
 	
-	if ( ! isset($url) ) {
+	if ( ! isset($url) )
+	{
 		error("fetch_rss called without a url");
 		return false;
 	}
 	
 	// if cache is disabled
-	if ( !MAGPIE_CACHE_ON ) {
+	if ( !MAGPIE_CACHE_ON )
+	{
 		// fetch file, and parse it
 		$resp = _fetch_remote_file( $url );
-		if ( is_success( $resp->status ) ) {
+		if ( is_success( $resp->status ) )
+		{
 			return _response_to_rss( $resp );
 		}
-		else {
+		else
+		{
 			error("Failed to fetch $url and cache is off");
 			return false;
 		}
 	} 
 	// else cache is ON
-	else {
+	else
+	{
 		// Flow
 		// 1. check cache
 		// 2. if there is a hit, make sure its fresh
@@ -1298,7 +1387,8 @@ function fetch_rss ($url, $cache_age = '') {
 		
 		$cache = new RSSCache( MAGPIE_CACHE_DIR, ($cache_age != '') ? $cache_age : MAGPIE_CACHE_AGE );
 		
-		if (MAGPIE_DEBUG and $cache->ERROR) {
+		if (MAGPIE_DEBUG and $cache->ERROR)
+		{
 			debug($cache->ERROR, E_USER_WARNING);
 		}
 		
@@ -1308,19 +1398,25 @@ function fetch_rss ($url, $cache_age = '') {
 		$rss 			 = 0;		// parsed RSS object
 		$errormsg		 = 0;		// errors, if any
 		
-		if ( ! $cache->ERROR) {
+		if ( ! $cache->ERROR)
+		{
 			// return cache HIT, MISS, or STALE
 			$cache_status = $cache->check_cache( $url );
 		}
 		
 		// if object cached, and cache is fresh, return cached obj
-		if ( $cache_status == 'HIT' ) {
+		if ( $cache_status == 'HIT' )
+		{
 			$rss = $cache->get( $url );
-			if ( isset($rss) and $rss ) {
+			if ( isset($rss) and $rss )
+			{
 				$rss->from_cache = 1;
-				if ( MAGPIE_DEBUG > 1) {
-				debug("MagpieRSS: Cache HIT", E_USER_NOTICE);
-			}
+				
+				if ( MAGPIE_DEBUG > 1)
+				{
+					debug("MagpieRSS: Cache HIT", E_USER_NOTICE);
+				}
+
 				return $rss;
 			}
 		}
@@ -1328,9 +1424,11 @@ function fetch_rss ($url, $cache_age = '') {
 		// else attempt a conditional get
 		
 		// setup headers
-		if ( $cache_status == 'STALE' ) {
+		if ( $cache_status == 'STALE' )
+		{
 			$rss = $cache->get( $url );
-			if (isset($rss->etag) && isset($rss->last_modified)) {
+			if (isset($rss->etag) && isset($rss->last_modified))
+			{
 				$request_headers['If-None-Match'] = $rss->etag;
 				$request_headers['If-Last-Modified'] = $rss->last_modified;
 			}
@@ -1338,20 +1436,26 @@ function fetch_rss ($url, $cache_age = '') {
 		
 		$resp = _fetch_remote_file( $url, $request_headers );
 		
-		if (isset($resp) and $resp) {
-			if ($resp->status == '304' ) {
+		if (isset($resp) and $resp)
+		{
+			if ($resp->status == '304' )
+			{
 				// we have the most current copy
-				if ( MAGPIE_DEBUG > 1) {
+				if ( MAGPIE_DEBUG > 1)
+				{
 					debug("Got 304 for $url");
 				}
 				// reset cache on 304 (at minutillo insistent prodding)
 				$cache->set($url, $rss);
 				return $rss;
 			}
-			elseif ( is_success( $resp->status ) ) {
+			elseif ( is_success( $resp->status ) )
+			{
 				$rss = _response_to_rss( $resp );
-				if ( $rss ) {
-					if (MAGPIE_DEBUG > 1) {
+				if ( $rss )
+				{
+					if (MAGPIE_DEBUG > 1)
+					{
 						debug("Fetch successful");
 					}
 					// add object to cache
@@ -1359,28 +1463,34 @@ function fetch_rss ($url, $cache_age = '') {
 					return $rss;
 				}
 			}
-			else {
+			else
+			{
 				$errormsg = "Failed to fetch $url. ";
-				if ( $resp->error ) {
+				if ( $resp->error )
+				{
 					# compensate for Snoopy's annoying habbit to tacking
 					# on '\n'
 					$http_error = substr($resp->error, 0, -2); 
 					$errormsg .= "(HTTP Error: $http_error)";
 				}
-				else {
+				else
+				{
 					$errormsg .=  "(HTTP Response: " . $resp->response_code .')';
 				}
 			}
 		}
-		else {
+		else
+		{
 			$errormsg = "Unable to retrieve RSS file for unknown reasons.";
 		}
 		
 		// else fetch failed
 		
 		// attempt to return cached object
-		if ($rss) {
-			if ( MAGPIE_DEBUG ) {
+		if ($rss)
+		{
+			if ( MAGPIE_DEBUG )
+			{
 				//debug("Returning STALE object for $url");
 			}
 			return $rss;
@@ -1391,21 +1501,24 @@ function fetch_rss ($url, $cache_age = '') {
 		
 		return false;
 		
-	} // end if ( !MAGPIE_CACHE_ON ) {
+	} // end if ( !MAGPIE_CACHE_ON )
 } // end fetch_rss()
 
 /*=======================================================================*\
 	Function:	error
 	Purpose:	set MAGPIE_ERROR, and trigger error
 \*=======================================================================*/
-function error ($errormsg, $lvl=E_USER_WARNING) {
+function error ($errormsg, $lvl=E_USER_WARNING)
+{
 		global $MAGPIE_ERROR;
 		
 		// append PHP's error message if track_errors enabled
-		if ( isset($php_errormsg) ) { 
+		if ( isset($php_errormsg) )
+		{ 
 			$errormsg .= " ($php_errormsg)";
 		}
-		if ( $errormsg ) {
+		if ( $errormsg )
+		{
 			$errormsg = "MagpieRSS: $errormsg";
 			$MAGPIE_ERROR = $errormsg;
 			
@@ -1420,7 +1533,8 @@ function error ($errormsg, $lvl=E_USER_WARNING) {
 		}
 }
 
-function debug ($debugmsg, $lvl=E_USER_NOTICE) {
+function debug ($debugmsg, $lvl=E_USER_NOTICE)
+{
 	trigger_error("MagpieRSS [debug] $debugmsg", $lvl);
 }
 			
@@ -1428,10 +1542,12 @@ function debug ($debugmsg, $lvl=E_USER_NOTICE) {
 	Function:	magpie_error
 	Purpose:	accessor for the magpie error variable
 \*=======================================================================*/
-function magpie_error ($errormsg="") {
+function magpie_error ($errormsg="")
+{
 	global $MAGPIE_ERROR;
 	
-	if ( isset($errormsg) and $errormsg ) { 
+	if ( isset($errormsg) and $errormsg )
+	{ 
 		$MAGPIE_ERROR = $errormsg;
 	}
 	
@@ -1445,13 +1561,16 @@ function magpie_error ($errormsg="") {
 				headers to send along with the request (optional)
 	Output:		an HTTP response object (see Snoopy.class.inc)	
 \*=======================================================================*/
-function _fetch_remote_file ($url, $headers = "" ) {
+function _fetch_remote_file ($url, $headers = "" )
+{
 	// Snoopy is an HTTP client in PHP
 	$client = new M_Snoopy();
 	$client->agent = MAGPIE_USER_AGENT;
 	$client->read_timeout = MAGPIE_FETCH_TIME_OUT;
 	$client->use_gzip = MAGPIE_USE_GZIP;
-	if (is_array($headers) ) {
+
+	if (is_array($headers) )
+	{
 		$client->rawheaders = $headers;
 	}
 	
@@ -1466,38 +1585,47 @@ function _fetch_remote_file ($url, $headers = "" ) {
 	Input:		an HTTP response object (see Snoopy)
 	Output:		parsed RSS object (see rss_parse)
 \*=======================================================================*/
-function _response_to_rss ($resp) {
+function _response_to_rss ($resp)
+{
 	$rss = new MagpieRSS( $resp->results );
 	
 	// if RSS parsed successfully		
-	if ( $rss and ! $rss->ERROR) {
+	if ( $rss and ! $rss->ERROR)
+	{
 		
 		// find Etag, and Last-Modified
-		foreach($resp->headers as $h) {
+		foreach($resp->headers as $h)
+		{
 			// 2003-03-02 - Nicola Asuni (www.tecnick.com) - fixed bug "Undefined offset: 1"
-			if (strpos($h, ": ")) {
+			if (strpos($h, ": "))
+			{
 				list($field, $val) = explode(": ", $h, 2);
 			}
-			else {
+			else
+			{
 				$field = $h;
 				$val = "";
 			}
 			
-			if ( $field == 'ETag' ) {
+			if ( $field == 'ETag' )
+			{
 				$rss->etag = $val;
 			}
 			
-			if ( $field == 'Last-Modified' ) {
+			if ( $field == 'Last-Modified' )
+			{
 				$rss->last_modified = $val;
 			}
 		}
 		
 		return $rss;	
 	} // else construct error message
-	else {
+	else
+	{
 		$errormsg = "Failed to parse RSS file.";
 		
-		if ($rss) {
+		if ($rss)
+		{
 			$errormsg .= " (" . $rss->ERROR . ")";
 		}
 		error($errormsg);
@@ -1511,53 +1639,66 @@ function _response_to_rss ($resp) {
 	Purpose:	setup constants with default values
 				check for user overrides
 \*=======================================================================*/
-function init () {
-	if ( defined('MAGPIE_INITALIZED') ) {
+function init ()
+{
+	if ( defined('MAGPIE_INITALIZED') )
+	{
 		return;
 	}
-	else {
+	else
+	{
 		define('MAGPIE_INITALIZED', 1);
 	}
 	
-	if ( ! defined('MAGPIE_CACHE_ON') ) {
+	if ( ! defined('MAGPIE_CACHE_ON') )
+	{
 		define('MAGPIE_CACHE_ON', 1);
 	}
 
-	if ( ! defined('MAGPIE_CACHE_DIR') ) {
+	if ( ! defined('MAGPIE_CACHE_DIR') )
+	{
 		define('MAGPIE_CACHE_DIR', './cache');
 	}
 
-	if ( ! defined('MAGPIE_CACHE_AGE') ) {
+	if ( ! defined('MAGPIE_CACHE_AGE') )
+	{
 		define('MAGPIE_CACHE_AGE', 60*60); // one hour
 	}
 
-	if ( ! defined('MAGPIE_CACHE_FRESH_ONLY') ) {
+	if ( ! defined('MAGPIE_CACHE_FRESH_ONLY') )
+	{
 		define('MAGPIE_CACHE_FRESH_ONLY', 0);
 	}
 
-	if ( ! defined('MAGPIE_DEBUG') ) {
+	if ( ! defined('MAGPIE_DEBUG') )
+	{
 		define('MAGPIE_DEBUG', 0);
 	}
 	
-	if ( ! defined('MAGPIE_USER_AGENT') ) {
+	if ( ! defined('MAGPIE_USER_AGENT') )
+	{
 		$ua = 'MagpieRSS/'. MAGPIE_VERSION . ' (+http://magpierss.sf.net';
 		
-		if ( MAGPIE_CACHE_ON ) {
+		if ( MAGPIE_CACHE_ON )
+		{
 			$ua = $ua . ')';
 		}
-		else {
+		else
+		{
 			$ua = $ua . '; No cache)';
 		}
 		
 		define('MAGPIE_USER_AGENT', $ua);
 	}
 	
-	if ( ! defined('MAGPIE_FETCH_TIME_OUT') ) {
+	if ( ! defined('MAGPIE_FETCH_TIME_OUT') )
+	{
 		define('MAGPIE_FETCH_TIME_OUT', 5);	// 5 second timeout
 	}
 	
 	// use gzip encoding to fetch rss files if supported?
-	if ( ! defined('MAGPIE_USE_GZIP') ) {
+	if ( ! defined('MAGPIE_USE_GZIP') )
+	{
 		define('MAGPIE_USE_GZIP', true);	
 	}
 }
@@ -1579,7 +1720,8 @@ function init () {
 	Function:	is_info
 	Purpose:	return true if Informational status code
 \*=======================================================================*/
-function is_info ($sc) { 
+function is_info ($sc)
+{ 
 	return $sc >= 100 && $sc < 200; 
 }
 
@@ -1587,7 +1729,8 @@ function is_info ($sc) {
 	Function:	is_success
 	Purpose:	return true if Successful status code
 \*=======================================================================*/
-function is_success ($sc) { 
+function is_success ($sc)
+{ 
 	return $sc >= 200 && $sc < 300; 
 }
 
@@ -1595,7 +1738,8 @@ function is_success ($sc) {
 	Function:	is_redirect
 	Purpose:	return true if Redirection status code
 \*=======================================================================*/
-function is_redirect ($sc) { 
+function is_redirect ($sc)
+{ 
 	return $sc >= 300 && $sc < 400; 
 }
 
@@ -1603,7 +1747,8 @@ function is_redirect ($sc) {
 	Function:	is_error
 	Purpose:	return true if Error status code
 \*=======================================================================*/
-function is_error ($sc) { 
+function is_error ($sc)
+{ 
 	return $sc >= 400 && $sc < 600; 
 }
 
@@ -1611,7 +1756,8 @@ function is_error ($sc) {
 	Function:	is_client_error
 	Purpose:	return true if Error status code, and its a client error
 \*=======================================================================*/
-function is_client_error ($sc) { 
+function is_client_error ($sc)
+{ 
 	return $sc >= 400 && $sc < 500; 
 }
 
@@ -1619,7 +1765,8 @@ function is_client_error ($sc) {
 	Function:	is_client_error
 	Purpose:	return true if Error status code, and its a server error
 \*=======================================================================*/
-function is_server_error ($sc) { 
+function is_server_error ($sc)
+{ 
 	return $sc >= 500 && $sc < 600; 
 }
 
@@ -1655,25 +1802,30 @@ class RSSCache {
 	var $MAX_AGE	= 3600;  		// when are files stale, default one hour
 	var $ERROR 		= "";			// accumulate error messages
 	
-	function RSSCache ($base='', $age='') {
+	function RSSCache ($base='', $age='')
+	{
 	
 		// Make a local reference of the ExpressionEngine super object
 		$this->EE =& get_instance();
 
-		if ( $base ) {
+		if ( $base )
+		{
 			$this->BASE_CACHE = $base;
 		}
-		if ( $age ) {
+		if ( $age )
+		{
 			$this->MAX_AGE = $age;
 		}
 		
 		// attempt to make the cache directory
-		if ( ! file_exists( $this->BASE_CACHE ) ) {
+		if ( ! file_exists( $this->BASE_CACHE ) )
+		{
 			$status = @mkdir( $this->BASE_CACHE, DIR_READ_MODE );
 			@chmod($this->BASE_CACHE, DIR_WRITE_MODE);
 			
 			// if make failed 
-			if ( ! $status ) {
+			if ( ! $status )
+			{
 				$this->error(
 					"Cache couldn't make dir '" . $this->BASE_CACHE . "'."
 				);
@@ -1692,12 +1844,14 @@ class RSSCache {
 	Input:		url from wich the rss file was fetched
 	Output:		true on sucess	
 \*=======================================================================*/
-	function set ($url, $rss) {
+	function set ($url, $rss)
+	{
 		$this->ERROR = "";
 		$cache_file = $this->file_name( $url );
 		$fp = @fopen( $cache_file, 'w' );
 		
-		if ( ! $fp ) {
+		if ( ! $fp )
+		{
 			$this->error(
 				"Cache unable to open file for writing: $cache_file"
 			);
@@ -1720,11 +1874,13 @@ class RSSCache {
 	Input:		url from wich the rss file was fetched
 	Output:		cached object on HIT, false on MISS	
 \*=======================================================================*/	
-	function get ($url) {
+	function get ($url)
+	{
 		$this->ERROR = "";
 		$cache_file = $this->file_name( $url );
 		
-		if ( ! file_exists( $cache_file ) ) {
+		if ( ! file_exists( $cache_file ) )
+		{
 			$this->debug( 
 				"Cache doesn't contain: $url (cache file: $cache_file)"
 			);
@@ -1732,7 +1888,8 @@ class RSSCache {
 		}
 		
 		$fp = @fopen($cache_file, 'r');
-		if ( ! $fp ) {
+		if ( ! $fp )
+		{
 			$this->error(
 				"Failed to open cache file for reading: $cache_file"
 			);
@@ -1759,25 +1916,30 @@ class RSSCache {
 	Input:		url from wich the rss file was fetched
 	Output:		cached object on HIT, false on MISS	
 \*=======================================================================*/		
-	function check_cache ( $url ) {
+	function check_cache ( $url )
+	{
 		$this->ERROR = "";
 		$filename = $this->file_name( $url );
 		
-		if ( file_exists( $filename ) ) {
+		if ( file_exists( $filename ) )
+		{
 			// find how long ago the file was added to the cache
 			// and whether that is longer then MAX_AGE
 			$mtime = filemtime( $filename );
 			$age = time() - $mtime;
-			if ( $this->MAX_AGE > $age ) {
+			if ( $this->MAX_AGE > $age )
+			{
 				// object exists and is current
 				return 'HIT';
 			}
-			else {
+			else
+			{
 				// object exists but is old
 				return 'STALE';
 			}
 		}
-		else {
+		else
+		{
 			// object does not exist
 			return 'MISS';
 		}
@@ -1801,22 +1963,28 @@ class RSSCache {
 	Function:	error
 	Purpose:	register error
 \*=======================================================================*/			
-	function error ($errormsg, $lvl=E_USER_WARNING) {
+	function error ($errormsg, $lvl=E_USER_WARNING)
+	{
 		// append PHP's error message if track_errors enabled
-		if ( isset($php_errormsg) ) { 
+		if ( isset($php_errormsg) )
+		{ 
 			$errormsg .= " ($php_errormsg)";
 		}
 		$this->ERROR = $errormsg;
-		if ( MAGPIE_DEBUG ) {
+		if ( MAGPIE_DEBUG )
+		{
 			trigger_error( $errormsg, $lvl);
 		}
-		else {
+		else
+		{
 			error_log( $errormsg, 0);
 		}
 	}
 	
-	function debug ($debugmsg, $lvl=E_USER_NOTICE) {
-		if ( MAGPIE_DEBUG ) {
+	function debug ($debugmsg, $lvl=E_USER_NOTICE)
+	{
+		if ( MAGPIE_DEBUG )
+		{
 			$this->error("MagpieRSS [debug] $debugmsg", $lvl);
 		}
 	}
@@ -1961,14 +2129,25 @@ class M_Snoopy
 	
 		//preg_match("|^([^:]+)://([^:/]+)(:[\d]+)*(.*)|",$URI,$URI_PARTS);
 		$URI_PARTS = parse_url($URI);
-		if (!empty($URI_PARTS["user"]))
+		if ( ! empty($URI_PARTS["user"]))
+		{
 			$this->user = $URI_PARTS["user"];
-		if (!empty($URI_PARTS["pass"]))
+		}
+
+		if ( ! empty($URI_PARTS["pass"]))
+		{
 			$this->pass = $URI_PARTS["pass"];
+		}
+
 		if (empty($URI_PARTS["query"]))
+		{
 			$URI_PARTS["query"] = '';
+		}
+
 		if (empty($URI_PARTS["path"]))
+		{
 			$URI_PARTS["path"] = '';
+		}
 				
 		switch(strtolower($URI_PARTS["scheme"]))
 		{
@@ -1978,18 +2157,18 @@ class M_Snoopy
 				// Default to 80, cannot connect without a port
 				$this->port = empty($URI_PARTS["port"]) ? 80 : $URI_PARTS["port"];
 				
-				if($this->_connect($fp))
+				if ($this->_connect($fp))
 				{
 					// We needed port 80 to connect, but we can now switch to empty
 					// for the Host header. Some servers will try to redirect if the
 					// host header contains a port, which would previously create a loop.
 					
-					if(empty($URI_PARTS["port"]))
+					if (empty($URI_PARTS["port"]))
 					{
 						$this->port = '';
 					}
 					
-					if($this->_isproxy)
+					if ($this->_isproxy)
 					{
 						// using proxy, send entire URI
 						$this->_httprequest($URI,$fp,$URI,$this->_httpmethod);
@@ -2003,13 +2182,13 @@ class M_Snoopy
 					
 					$this->_disconnect($fp);
 
-					if($this->_redirectaddr)
+					if ($this->_redirectaddr)
 					{
 						/* url was redirected, check if we've hit the max depth */
-						if($this->maxredirs > $this->_redirectdepth)
+						if ($this->maxredirs > $this->_redirectdepth)
 						{
 							// only follow redirect if it's on this site, or offsiteok is true
-							if(preg_match("|^http://".preg_quote($this->host)."|i",$this->_redirectaddr) || $this->offsiteok)
+							if (preg_match("|^http://".preg_quote($this->host)."|i",$this->_redirectaddr) || $this->offsiteok)
 							{
 								/* follow the redirect */
 								$this->_redirectdepth++;
@@ -2019,20 +2198,22 @@ class M_Snoopy
 						}
 					}
 
-					if($this->_framedepth < $this->maxframes && count($this->_frameurls) > 0)
+					if ($this->_framedepth < $this->maxframes && count($this->_frameurls) > 0)
 					{
 						$frameurls = $this->_frameurls;
 						$this->_frameurls = array();
 						
 						while(list(,$frameurl) = each($frameurls))
 						{
-							if($this->_framedepth < $this->maxframes)
+							if ($this->_framedepth < $this->maxframes)
 							{
 								$this->fetch($frameurl);
 								$this->_framedepth++;
 							}
 							else
-								break;
+							{
+								break;	
+							}
 						}
 					}					
 				}
@@ -2040,18 +2221,28 @@ class M_Snoopy
 				{
 					return false;
 				}
+
 				return true;					
 				break;
 			case "https":
-				if(!$this->curl_path)
-					return false;
-				if(function_exists("is_executable"))
-				    if (!is_executable($this->curl_path))
-				        return false;
+				if ( ! $this->curl_path)
+				{
+					return false;	
+				}
+
+				if (function_exists("is_executable") AND ! is_executable($this->curl_path))
+				{
+					return false;	
+				}
+				
 				$this->host = $URI_PARTS["host"];
-				if(!empty($URI_PARTS["port"]))
-					$this->port = $URI_PARTS["port"];
-				if($this->_isproxy)
+
+				if ( ! empty($URI_PARTS["port"]))
+				{
+					$this->port = $URI_PARTS["port"];	
+				}
+
+				if ($this->_isproxy)
 				{
 					// using proxy, send entire URI
 					$this->_httpsrequest($URI,$URI,$this->_httpmethod);
@@ -2063,13 +2254,13 @@ class M_Snoopy
 					$this->_httpsrequest($path, $URI, $this->_httpmethod);
 				}
 
-				if($this->_redirectaddr)
+				if ($this->_redirectaddr)
 				{
 					/* url was redirected, check if we've hit the max depth */
-					if($this->maxredirs > $this->_redirectdepth)
+					if ($this->maxredirs > $this->_redirectdepth)
 					{
 						// only follow redirect if it's on this site, or offsiteok is true
-						if(preg_match("|^http://".preg_quote($this->host)."|i",$this->_redirectaddr) || $this->offsiteok)
+						if (preg_match("|^http://".preg_quote($this->host)."|i",$this->_redirectaddr) || $this->offsiteok)
 						{
 							/* follow the redirect */
 							$this->_redirectdepth++;
@@ -2079,22 +2270,25 @@ class M_Snoopy
 					}
 				}
 
-				if($this->_framedepth < $this->maxframes && count($this->_frameurls) > 0)
+				if ($this->_framedepth < $this->maxframes && count($this->_frameurls) > 0)
 				{
 					$frameurls = $this->_frameurls;
 					$this->_frameurls = array();
 
-					while(list(,$frameurl) = each($frameurls))
+					while (list(,$frameurl) = each($frameurls))
 					{
-						if($this->_framedepth < $this->maxframes)
+						if ($this->_framedepth < $this->maxframes)
 						{
 							$this->fetch($frameurl);
 							$this->_framedepth++;
 						}
 						else
+						{
 							break;
+						}
 					}
 				}					
+
 				return true;					
 				break;
 			default:
@@ -2120,25 +2314,34 @@ class M_Snoopy
 
 	function _striplinks($document)
 	{	
-		preg_match_all("'<\s*a\s.*?href\s*=\s*			# find <a href=
-						([\"\'])?					# find single or double quote
-						(?(1) (.*?)\\1 | ([^\s\>]+))		# if quote found, match up to next matching
-													# quote, otherwise match up to next space
-						'isx",$document,$links);
-						
+		/*  1. find <a href=
+			2. find single or double quote
+			3. if quote found, match up to next matching quote, otherwise match 
+			  up to next space
+	    */
+
+		preg_match_all(
+			"'<\s*a\s.*?href\s*=\s*([\"\'])?(?(1) (.*?)\\1 | ([^\s\>]+))'isx",
+			$document,
+			$links
+		);
 
 		// catenate the non-empty matches from the conditional subpattern
 
-		while(list($key,$val) = each($links[2]))
+		while (list($key,$val) = each($links[2]))
 		{
-			if(!empty($val))
-				$match[] = $val;
+			if ( ! empty($val))
+			{
+				$match[] = $val;	
+			}
 		}				
 		
-		while(list($key,$val) = each($links[3]))
+		while (list($key,$val) = each($links[3]))
 		{
-			if(!empty($val))
-				$match[] = $val;
+			if ( ! empty($val))
+			{
+				$match[] = $val;				
+			}
 		}		
 		
 		// return the links
@@ -2179,56 +2382,59 @@ class M_Snoopy
 		// so, list your entities one by one here. I included some of the
 		// more common ones.
 								
-		$search = array("'<script[^>]*?>.*?</script>'si",	// strip out javascript
-						"'<[\/\!]*?[^<>]*?>'si",			// strip out html tags
-						"'([\r\n])[\s]+'",					// strip out white space
-						"'&(quot|#34|#034|#x22);'i",		// replace html entities
-						"'&(amp|#38|#038|#x26);'i",			// added hexadecimal values
-						"'&(lt|#60|#060|#x3c);'i",
-						"'&(gt|#62|#062|#x3e);'i",
-						"'&(nbsp|#160|#xa0);'i",
-						"'&(iexcl|#161);'i",
-						"'&(cent|#162);'i",
-						"'&(pound|#163);'i",
-						"'&(copy|#169);'i",
-						"'&(reg|#174);'i",
-						"'&(deg|#176);'i",
-						"'&(#39|#039|#x27);'",
-						"'&(euro|#8364);'i",				// europe
-						"'&a(uml|UML);'",					// german
-						"'&o(uml|UML);'",
-						"'&u(uml|UML);'",
-						"'&A(uml|UML);'",
-						"'&O(uml|UML);'",
-						"'&U(uml|UML);'",
-						"'&szlig;'i",
-						);
-		$replace = array(	"",
-							"",
-							"\\1",
-							"\"",
-							"&",
-							"<",
-							">",
-							" ",
-							chr(161),
-							chr(162),
-							chr(163),
-							chr(169),
-							chr(174),
-							chr(176),
-							chr(39),
-							chr(128),
-							"ä",
-							"ö",
-							"ü",
-							"Ä",
-							"Ö",
-							"Ü",
-							"ß",
-						);
+		$search = array(
+			"'<script[^>]*?>.*?</script>'si",	// strip out javascript
+			"'<[\/\!]*?[^<>]*?>'si",			// strip out html tags
+			"'([\r\n])[\s]+'",					// strip out white space
+			"'&(quot|#34|#034|#x22);'i",		// replace html entities
+			"'&(amp|#38|#038|#x26);'i",			// added hexadecimal values
+			"'&(lt|#60|#060|#x3c);'i",
+			"'&(gt|#62|#062|#x3e);'i",
+			"'&(nbsp|#160|#xa0);'i",
+			"'&(iexcl|#161);'i",
+			"'&(cent|#162);'i",
+			"'&(pound|#163);'i",
+			"'&(copy|#169);'i",
+			"'&(reg|#174);'i",
+			"'&(deg|#176);'i",
+			"'&(#39|#039|#x27);'",
+			"'&(euro|#8364);'i",				// europe
+			"'&a(uml|UML);'",					// german
+			"'&o(uml|UML);'",
+			"'&u(uml|UML);'",
+			"'&A(uml|UML);'",
+			"'&O(uml|UML);'",
+			"'&U(uml|UML);'",
+			"'&szlig;'i",
+		);
+
+		$replace = array(
+			"",
+			"",
+			"\\1",
+			"\"",
+			"&",
+			"<",
+			">",
+			" ",
+			chr(161),
+			chr(162),
+			chr(163),
+			chr(169),
+			chr(174),
+			chr(176),
+			chr(39),
+			chr(128),
+			"ä",
+			"ö",
+			"ü",
+			"Ä",
+			"Ö",
+			"Ü",
+			"ß",
+		);
 					
-		$text = preg_replace($search,$replace,$document);
+		$text = preg_replace($search, $replace, $document);
 								
 		return $text;
 	}
@@ -2249,24 +2455,25 @@ class M_Snoopy
 		$match = preg_replace("|/[^\/\.]+\.[^\/\.]+$|","",$match[0]);
 		$match = preg_replace("|/$|","",$match);
 		$match_part = parse_url($match);
-		$match_root =
-		$match_part["scheme"]."://".$match_part["host"];
+		$match_root = $match_part["scheme"]."://".$match_part["host"];
 				
-		$search = array( 	"|^http://".preg_quote($this->host)."|i",
-							"|^(\/)|i",
-							"|^(?!http://)(?!mailto:)|i",
-							"|/\./|",
-							"|/[^\/]+/\.\./|"
-						);
+		$search = array(
+			"|^http://".preg_quote($this->host)."|i",
+			"|^(\/)|i",
+			"|^(?!http://)(?!mailto:)|i",
+			"|/\./|",
+			"|/[^\/]+/\.\./|"
+		);
 						
-		$replace = array(	"",
-							$match_root."/",
-							$match."/",
-							"/",
-							"/"
-						);			
+		$replace = array(
+			"",
+			$match_root."/",
+			$match."/",
+			"/",
+			"/"
+		);			
 				
-		$expandedLinks = preg_replace($search,$replace,$links);
+		$expandedLinks = preg_replace($search, $replace, $links);
 
 		return $expandedLinks;
 	}
@@ -2284,67 +2491,118 @@ class M_Snoopy
 	function _httprequest($url,$fp,$URI,$http_method,$content_type="",$body="")
 	{
 		$cookie_headers = '';
-		if($this->passcookies && $this->_redirectaddr)
-			$this->setcookies();
+		if ($this->passcookies && $this->_redirectaddr)
+		{
+			$this->setcookies();	
+		}
 			
 		$URI_PARTS = parse_url($URI);
-		if(empty($url))
-			$url = "/";
+		if (empty($url))
+		{
+			$url = "/";	
+		}
+
 		$headers = $http_method." ".$url." ".$this->_httpversion."\r\n";		
-		if(!empty($this->agent))
-			$headers .= "User-Agent: ".$this->agent."\r\n";
-		if(!empty($this->host) && !isset($this->rawheaders['Host'])) {
+		
+		if ( ! empty($this->agent))
+		{
+			$headers .= "User-Agent: ".$this->agent."\r\n";			
+		}
+
+		if ( ! empty($this->host) && !isset($this->rawheaders['Host']))
+		{
 			$headers .= "Host: ".$this->host;
-			if(!empty($this->port))
-				$headers .= ":".$this->port;
+		
+			if ( ! empty($this->port))
+			{
+				$headers .= ":".$this->port;	
+			}
+		
 			$headers .= "\r\n";
 		}
-		if(!empty($this->accept))
-			$headers .= "Accept: ".$this->accept."\r\n";
-		if(!empty($this->referer))
-			$headers .= "Referer: ".$this->referer."\r\n";
-		if(!empty($this->cookies))
+
+		if ( ! empty($this->accept))
+		{
+			$headers .= "Accept: ".$this->accept."\r\n";			
+		}
+
+		if ( ! empty($this->referer))
+		{
+			$headers .= "Referer: ".$this->referer."\r\n";	
+		}
+		
+		if ( ! empty($this->cookies))
 		{			
-			if(!is_array($this->cookies))
-				$this->cookies = (array)$this->cookies;
+			if ( ! is_array($this->cookies))
+			{
+				$this->cookies = (array)$this->cookies;	
+			}
 	
 			reset($this->cookies);
-			if ( count($this->cookies) > 0 ) {
+
+			if (count($this->cookies) > 0)
+			{
+			
 				$cookie_headers .= 'Cookie: ';
-				foreach ( $this->cookies as $cookieKey => $cookieVal ) {
-				$cookie_headers .= $cookieKey."=".urlencode($cookieVal)."; ";
+			
+				foreach ($this->cookies as $cookieKey => $cookieVal)
+				{
+					$cookie_headers .= $cookieKey."=".urlencode($cookieVal)."; ";
 				}
+			
 				$headers .= substr($cookie_headers,0,-2) . "\r\n";
 			} 
 		}
-		if(!empty($this->rawheaders))
+		
+		if ( ! empty($this->rawheaders))
 		{
-			if(!is_array($this->rawheaders))
-				$this->rawheaders = (array)$this->rawheaders;
-			while(list($headerKey,$headerVal) = each($this->rawheaders))
-				$headers .= $headerKey.": ".$headerVal."\r\n";
+			if ( ! is_array($this->rawheaders))
+			{
+				$this->rawheaders = (array)$this->rawheaders;	
+			}
+
+			while (list($headerKey,$headerVal) = each($this->rawheaders))
+			{
+				$headers .= $headerKey.": ".$headerVal."\r\n";	
+			}
 		}
-		if(!empty($content_type)) {
+		
+		if ( ! empty($content_type))
+		{
 			$headers .= "Content-type: $content_type";
+
 			if ($content_type == "multipart/form-data")
-				$headers .= "; boundary=".$this->_mime_boundary;
+			{
+				$headers .= "; boundary=".$this->_mime_boundary;	
+			}
+
 			$headers .= "\r\n";
 		}
-		if(!empty($body))	
-			$headers .= "Content-length: ".strlen($body)."\r\n";
-		if(!empty($this->user) || !empty($this->pass))	
+
+		if ( ! empty($body))
+		{
+			$headers .= "Content-length: ".strlen($body)."\r\n";	
+		}
+		
+		if ( ! empty($this->user) || !empty($this->pass))
+		{
 			$headers .= "Authorization: Basic ".base64_encode($this->user.":".$this->pass)."\r\n";
+		}
 		
 		//add proxy auth headers
-		if(!empty($this->proxy_user))	
+		if ( ! empty($this->proxy_user))
+		{
 			$headers .= 'Proxy-Authorization: ' . 'Basic ' . base64_encode($this->proxy_user . ':' . $this->proxy_pass)."\r\n";
-
+		}
 
 		$headers .= "\r\n";
 		
 		// set the read timeout if needed
 		if ($this->read_timeout > 0)
-			socket_set_timeout($fp, $this->read_timeout);
+		{
+			socket_set_timeout($fp, $this->read_timeout);	
+		}
+		
 		$this->timed_out = false;
 		
 		fwrite($fp,$headers.$body,strlen($headers.$body));
@@ -2360,32 +2618,40 @@ class M_Snoopy
 				return false;
 			}
 				
-			if($currentHeader == "\r\n")
+			if ($currentHeader == "\r\n")
+			{
 				break;
+			}
 						
 			// if a header begins with Location: or URI:, set the redirect
-			if(preg_match("/^(Location:|URI:)/i",$currentHeader))
+			if (preg_match("/^(Location:|URI:)/i",$currentHeader))
 			{
 				// get URL portion of the redirect
 				preg_match("/^(Location:|URI:)[ ]+(.*)/i",chop($currentHeader),$matches);
 				// look for :// in the Location header to see if hostname is included
-				if(!preg_match("|\:\/\/|",$matches[2]))
+				if ( ! preg_match("|\:\/\/|",$matches[2]))
 				{
 					// no host in the path, so prepend
 					$this->_redirectaddr = $URI_PARTS["scheme"]."://".$this->host.":".$this->port;
 					// eliminate double slash
-					if(!preg_match("|^/|",$matches[2]))
-							$this->_redirectaddr .= "/".$matches[2];
+					if ( ! preg_match("|^/|",$matches[2]))
+					{
+						$this->_redirectaddr .= "/".$matches[2];
+					}
 					else
-							$this->_redirectaddr .= $matches[2];
+					{
+						$this->_redirectaddr .= $matches[2];						
+					}
 				}
 				else
-					$this->_redirectaddr = $matches[2];
+				{
+					$this->_redirectaddr = $matches[2];	
+				}
 			}
 		
-			if(preg_match("|^HTTP/|",$currentHeader))
+			if (preg_match("|^HTTP/|",$currentHeader))
 			{
-                if(preg_match("|^HTTP/[^\s]*\s(.*?)\s|",$currentHeader, $status))
+                if (preg_match("|^HTTP/[^\s]*\s(.*?)\s|",$currentHeader, $status))
 				{
 					$this->status= $status[1];
                 }				
@@ -2396,11 +2662,15 @@ class M_Snoopy
 		}
 
 		$results = '';
+
 		do {
     		$_data = fread($fp, $this->maxlength);
-    		if (strlen($_data) == 0) {
+    	
+    		if (strlen($_data) == 0)
+    		{
         		break;
     		}
+    	
     		$results .= $_data;
 		} while(true);
 
@@ -2412,25 +2682,31 @@ class M_Snoopy
 		
 		// check if there is a a redirect meta tag
 		
-		if(preg_match("'<meta[\s]*http-equiv[^>]*?content[\s]*=[\s]*[\"\']?\d+;[\s]*URL[\s]*=[\s]*([^\"\']*?)[\"\']?>'i",$results,$match))
+		if (preg_match("'<meta[\s]*http-equiv[^>]*?content[\s]*=[\s]*[\"\']?\d+;[\s]*URL[\s]*=[\s]*([^\"\']*?)[\"\']?>'i",$results,$match))
 
 		{
 			$this->_redirectaddr = $this->_expandlinks($match[1],$URI);	
 		}
 
 		// have we hit our frame depth and is there frame src to fetch?
-		if(($this->_framedepth < $this->maxframes) && preg_match_all("'<frame\s+.*src[\s]*=[\'\"]?([^\'\"\>]+)'i",$results,$match))
+		if (($this->_framedepth < $this->maxframes) && preg_match_all("'<frame\s+.*src[\s]*=[\'\"]?([^\'\"\>]+)'i",$results,$match))
 		{
 			$this->results[] = $results;
 			for($x=0; $x<count($match[1]); $x++)
-				$this->_frameurls[] = $this->_expandlinks($match[1][$x],$URI_PARTS["scheme"]."://".$this->host);
+			{
+				$this->_frameurls[] = $this->_expandlinks($match[1][$x],$URI_PARTS["scheme"]."://".$this->host);	
+			}
 		}
 		// have we already fetched framed content?
-		elseif(is_array($this->results))
-			$this->results[] = $results;
+		elseif (is_array($this->results))
+		{
+			$this->results[] = $results;	
+		}
 		// no framed content
 		else
-			$this->results = $results;
+		{
+			$this->results = $results;	
+		}
 		
 		return true;
 	}
@@ -2446,80 +2722,129 @@ class M_Snoopy
 	
 	function _httpsrequest($url,$URI,$http_method,$content_type="",$body="")
 	{  
-		if($this->passcookies && $this->_redirectaddr)
-			$this->setcookies();
+		if ($this->passcookies && $this->_redirectaddr)
+		{
+			$this->setcookies();	
+		}
 
 		$headers = array();		
 					
 		$URI_PARTS = parse_url($URI);
-		if(empty($url))
-			$url = "/";
+
+		if (empty($url))
+		{
+			$url = "/";	
+		}
+
 		// GET ... header not needed for curl
 		//$headers[] = $http_method." ".$url." ".$this->_httpversion;		
-		if(!empty($this->agent))
-			$headers[] = "User-Agent: ".$this->agent;
-		if(!empty($this->host))
-			if(!empty($this->port))
+		if ( ! empty($this->agent))
+		{
+			$headers[] = "User-Agent: ".$this->agent;	
+		}
+
+		if ( ! empty($this->host))
+		{
+			if ( ! empty($this->port))
+			{
 				$headers[] = "Host: ".$this->host.":".$this->port;
+			}
 			else
+			{
 				$headers[] = "Host: ".$this->host;
-		if(!empty($this->accept))
+			}	
+		}
+
+		if ( ! empty($this->accept))
+		{
 			$headers[] = "Accept: ".$this->accept;
-		if(!empty($this->referer))
+		}
+		if ( ! empty($this->referer))
+		{
 			$headers[] = "Referer: ".$this->referer;
-		if(!empty($this->cookies))
+		}
+		if ( ! empty($this->cookies))
 		{			
-			if(!is_array($this->cookies))
+			if ( ! is_array($this->cookies))
+			{
 				$this->cookies = (array)$this->cookies;
+			}
 	
 			reset($this->cookies);
-			if ( count($this->cookies) > 0 ) {
+
+			if (count($this->cookies) > 0)
+			{
 				$cookie_str = 'Cookie: ';
-				foreach ( $this->cookies as $cookieKey => $cookieVal ) {
-				$cookie_str .= $cookieKey."=".urlencode($cookieVal)."; ";
+
+				foreach ( $this->cookies as $cookieKey => $cookieVal )
+				{
+					$cookie_str .= $cookieKey."=".urlencode($cookieVal)."; ";
 				}
+
 				$headers[] = substr($cookie_str,0,-2);
 			}
 		}
-		if(!empty($this->rawheaders))
+
+		if ( ! empty($this->rawheaders))
 		{
-			if(!is_array($this->rawheaders))
+			if ( ! is_array($this->rawheaders))
+			{
 				$this->rawheaders = (array)$this->rawheaders;
-			while(list($headerKey,$headerVal) = each($this->rawheaders))
+			}
+
+			while (list($headerKey,$headerVal) = each($this->rawheaders))
+			{
 				$headers[] = $headerKey.": ".$headerVal;
+			}
 		}
-		if(!empty($content_type)) {
+		if ( ! empty($content_type))
+		{
 			if ($content_type == "multipart/form-data")
+			{
 				$headers[] = "Content-type: $content_type; boundary=".$this->_mime_boundary;
+			}
 			else
+			{
 				$headers[] = "Content-type: $content_type";
+			}
 		}
-		if(!empty($body))	
+
+		if ( ! empty($body))	
+		{
 			$headers[] = "Content-length: ".strlen($body);
-		if(!empty($this->user) || !empty($this->pass))	
+		}
+
+		if ( ! empty($this->user) || !empty($this->pass))	
+		{
 			$headers[] = "Authorization: BASIC ".base64_encode($this->user.":".$this->pass);
+		}
 			
-		for($curr_header = 0; $curr_header < count($headers); $curr_header++) {
+		for($curr_header = 0; $curr_header < count($headers); $curr_header++)
+		{
 			$safer_header = strtr( $headers[$curr_header], "\"", " " );
 			$cmdline_params .= " -H \"".$safer_header."\"";
 		}
 		
-		if(!empty($body))
+		if ( ! empty($body))
+		{
 			$cmdline_params .= " -d \"$body\"";
+		}
 		
-		if($this->read_timeout > 0)
+		if ($this->read_timeout > 0)
+		{
 			$cmdline_params .= " -m ".$this->read_timeout;
+		}
 		
 		$headerfile = tempnam($temp_dir, "sno");
 
+
 		exec($this->curl_path." -k -D \"$headerfile\"".$cmdline_params." \"".escapeshellcmd($URI)."\"",$results,$return);
 		
-		if($return)
+		if ($return)
 		{
 			$this->error = "Error: cURL could not retrieve the document, error $return.";
 			return false;
 		}
-			
 			
 		$results = implode("\r\n",$results);
 		
@@ -2530,53 +2855,66 @@ class M_Snoopy
 						
 		for($currentHeader = 0; $currentHeader < count($result_headers); $currentHeader++)
 		{
-			
 			// if a header begins with Location: or URI:, set the redirect
-			if(preg_match("/^(Location: |URI: )/i",$result_headers[$currentHeader]))
+			if (preg_match("/^(Location: |URI: )/i",$result_headers[$currentHeader]))
 			{
 				// get URL portion of the redirect
 				preg_match("/^(Location: |URI:)\s+(.*)/",chop($result_headers[$currentHeader]),$matches);
 				// look for :// in the Location header to see if hostname is included
-				if(!preg_match("|\:\/\/|",$matches[2]))
+				if ( ! preg_match("|\:\/\/|",$matches[2]))
 				{
 					// no host in the path, so prepend
 					$this->_redirectaddr = $URI_PARTS["scheme"]."://".$this->host.":".$this->port;
 					// eliminate double slash
-					if(!preg_match("|^/|",$matches[2]))
-							$this->_redirectaddr .= "/".$matches[2];
+					if ( ! preg_match("|^/|",$matches[2]))
+					{
+						$this->_redirectaddr .= "/".$matches[2];
+					}
 					else
-							$this->_redirectaddr .= $matches[2];
+					{
+						$this->_redirectaddr .= $matches[2];
+					}
 				}
 				else
+				{
 					$this->_redirectaddr = $matches[2];
+				}
 			}
 		
-			if(preg_match("|^HTTP/|",$result_headers[$currentHeader]))
+			if (preg_match("|^HTTP/|",$result_headers[$currentHeader]))
+			{
 				$this->response_code = $result_headers[$currentHeader];
+			}
 
 			$this->headers[] = $result_headers[$currentHeader];
 		}
 
 		// check if there is a a redirect meta tag
 		
-		if(preg_match("'<meta[\s]*http-equiv[^>]*?content[\s]*=[\s]*[\"\']?\d+;[\s]*URL[\s]*=[\s]*([^\"\']*?)[\"\']?>'i",$results,$match))
+		if (preg_match("'<meta[\s]*http-equiv[^>]*?content[\s]*=[\s]*[\"\']?\d+;[\s]*URL[\s]*=[\s]*([^\"\']*?)[\"\']?>'i",$results,$match))
 		{
 			$this->_redirectaddr = $this->_expandlinks($match[1],$URI);	
 		}
 
 		// have we hit our frame depth and is there frame src to fetch?
-		if(($this->_framedepth < $this->maxframes) && preg_match_all("'<frame\s+.*src[\s]*=[\'\"]?([^\'\"\>]+)'i",$results,$match))
+		if (($this->_framedepth < $this->maxframes) && preg_match_all("'<frame\s+.*src[\s]*=[\'\"]?([^\'\"\>]+)'i",$results,$match))
 		{
 			$this->results[] = $results;
 			for($x=0; $x<count($match[1]); $x++)
+			{
 				$this->_frameurls[] = $this->_expandlinks($match[1][$x],$URI_PARTS["scheme"]."://".$this->host);
+			}
 		}
 		// have we already fetched framed content?
-		elseif(is_array($this->results))
+		elseif (is_array($this->results))
+		{
 			$this->results[] = $results;
+		}
 		// no framed content
 		else
+		{
 			$this->results = $results;
+		}
 
 		unlink("$headerfile");
 		
@@ -2590,10 +2928,12 @@ class M_Snoopy
 	
 	function setcookies()
 	{
-		for($x=0; $x<count($this->headers); $x++)
+		for ($x=0; $x<count($this->headers); $x++)
 		{
-		if(preg_match('/^set-cookie:[\s]+([^=]+)=([^;]+)/i', $this->headers[$x],$match))
-			$this->cookies[$match[1]] = urldecode($match[2]);
+			if (preg_match('/^set-cookie:[\s]+([^=]+)=([^;]+)/i', $this->headers[$x],$match))
+			{
+				$this->cookies[$match[1]] = urldecode($match[2]);
+			}
 		}
 	}
 
@@ -2606,9 +2946,12 @@ class M_Snoopy
 
 	function _check_timeout($fp)
 	{
-		if ($this->read_timeout > 0) {
+		if ($this->read_timeout > 0)
+		{
 			$fp_status = socket_get_status($fp);
-			if ($fp_status["timed_out"]) {
+			
+			if ($fp_status["timed_out"])
+			{
 				$this->timed_out = true;
 				return true;
 			}
@@ -2624,13 +2967,13 @@ class M_Snoopy
 	
 	function _connect(&$fp)
 	{
-		if(!empty($this->proxy_host) && !empty($this->proxy_port))
-			{
-				$this->_isproxy = true;
-				
-				$host = $this->proxy_host;
-				$port = $this->proxy_port;
-			}
+		if ( ! empty($this->proxy_host) && !empty($this->proxy_port))
+		{
+			$this->_isproxy = true;
+			
+			$host = $this->proxy_host;
+			$port = $this->proxy_port;
+		}
 		else
 		{
 			$host = $this->host;
@@ -2639,13 +2982,9 @@ class M_Snoopy
 	
 		$this->status = 0;
 		
-		if($fp = fsockopen(
-					$host,
-					$port,
-					$errno,
-					$errstr,
-					$this->_fp_timeout
-					))
+		$fp = fsockopen($host, $port, $errno, $errstr, $this->_fp_timeout);
+
+		if ($fp)
 		{
 			// socket connection succeeded
 
@@ -2696,18 +3035,26 @@ class M_Snoopy
 		$postdata = '';
 
 		if (count($formvars) == 0 && count($formfiles) == 0)
+		{
 			return;
+		}
 		
-		switch ($this->_submit_type) {
+		switch ($this->_submit_type)
+		{
 			case "application/x-www-form-urlencoded":
 				reset($formvars);
-				while(list($key,$val) = each($formvars)) {
-					if (is_array($val) || is_object($val)) {
-						while (list($cur_key, $cur_val) = each($val)) {
+				while(list($key,$val) = each($formvars))
+				{
+					if (is_array($val) || is_object($val))
+					{
+						while (list($cur_key, $cur_val) = each($val))
+						{
 							$postdata .= urlencode($key)."[]=".urlencode($cur_val)."&";
 						}
 					} else
+					{
 						$postdata .= urlencode($key)."=".urlencode($val)."&";
+					}
 				}
 				break;
 
@@ -2715,14 +3062,19 @@ class M_Snoopy
 				$this->_mime_boundary = "Snoopy".md5(uniqid(microtime()));
 				
 				reset($formvars);
-				while(list($key,$val) = each($formvars)) {
-					if (is_array($val) || is_object($val)) {
-						while (list($cur_key, $cur_val) = each($val)) {
+				while(list($key,$val) = each($formvars))
+				{
+					if (is_array($val) || is_object($val))
+					{
+						while (list($cur_key, $cur_val) = each($val))
+						{
 							$postdata .= "--".$this->_mime_boundary."\r\n";
 							$postdata .= "Content-Disposition: form-data; name=\"$key\[\]\"\r\n\r\n";
 							$postdata .= "$cur_val\r\n";
 						}
-					} else {
+					}
+					else
+					{
 						$postdata .= "--".$this->_mime_boundary."\r\n";
 						$postdata .= "Content-Disposition: form-data; name=\"$key\"\r\n\r\n";
 						$postdata .= "$val\r\n";
@@ -2730,10 +3082,16 @@ class M_Snoopy
 				}
 				
 				reset($formfiles);
-				while (list($field_name, $file_names) = each($formfiles)) {
+
+				while (list($field_name, $file_names) = each($formfiles))
+				{
 					settype($file_names, "array");
-					while (list(, $file_name) = each($file_names)) {
-						if (!is_readable($file_name)) continue;
+					while (list(, $file_name) = each($file_names))
+					{
+						if ( ! is_readable($file_name))
+						{
+							continue;
+						}
 
 						$fp = fopen($file_name, "r");
 						$file_content = fread($fp, filesize($file_name));
@@ -2745,6 +3103,7 @@ class M_Snoopy
 						$postdata .= "$file_content\r\n";
 					}
 				}
+
 				$postdata .= "--".$this->_mime_boundary."--\r\n";
 				break;
 		}
