@@ -389,7 +389,7 @@ class Category_model extends CI_Model {
 
 		if ($cat_id != '')
 		{
-			$this->db->where('cat_id != '.$cat_id);
+			$this->db->where('cat_id !=', $cat_id);
 		}
 
 		$count = $this->db->count_all_results();
@@ -414,7 +414,7 @@ class Category_model extends CI_Model {
 
 		if ($group_id != '')
 		{
-			$this->db->where('group_id != '.$group_id);
+			$this->db->where('group_id !=', $group_id);
 		}
 
 		$count = $this->db->count_all_results();

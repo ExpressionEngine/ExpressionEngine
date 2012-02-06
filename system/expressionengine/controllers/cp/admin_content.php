@@ -2342,7 +2342,11 @@ class Admin_content extends CI_Controller {
 				{
 					if (($key = array_search($this->input->get_post('parent_id'), $children)) !== FALSE)
 					{
-						$this->db->query($this->db->update_string('exp_categories', array('parent_id' => $query->row('parent_id') ), "cat_id = '".$children[$key]."'"));
+						$this->db->update(
+							'categories',
+							array('parent_id' => $query->row('parent_id')),
+							array('cat_id' => $children[$key])
+						);
 					}
 					else	// Find All Descendants
 					{
@@ -2356,7 +2360,11 @@ class Admin_content extends CI_Controller {
 								{
 									if ($key == $this->input->get_post('parent_id'))
 									{
-										$this->db->query($this->db->update_string('exp_categories', array('parent_id' => $query->row('parent_id') ), "cat_id = '".$key."'"));
+										$this->db->update(
+											'categories',
+											array('parent_id' => $query->row('parent_id')),
+											array('cat_id' => $key)
+										);
 										break 2;
 									}
 
@@ -2369,21 +2377,19 @@ class Admin_content extends CI_Controller {
 			}
 
 			$sql = $this->db->update_string(
-										'exp_categories',
-
-										array(
-												'cat_name'  		=> $this->input->post('cat_name'),
-												'cat_url_title'		=> $this->input->post('cat_url_title'),
-												'cat_description'	=> $this->input->post('cat_description'),
-												'cat_image' 		=> $this->input->post('cat_image'),
-												'parent_id' 		=> $this->input->post('parent_id')
-											 ),
-
-										array(
-												'cat_id'	=> $this->input->post('cat_id'),
-												'group_id'  => $this->input->post('group_id')
-											  )
-									 );
+				'exp_categories',
+				array(
+					'cat_name'  		=> $this->input->post('cat_name'),
+					'cat_url_title'		=> $this->input->post('cat_url_title'),
+					'cat_description'	=> $this->input->post('cat_description'),
+					'cat_image' 		=> $this->input->post('cat_image'),
+					'parent_id' 		=> $this->input->post('parent_id')
+				),
+				array(
+					'cat_id'	=> $this->input->post('cat_id'),
+					'group_id'  => $this->input->post('group_id')
+				)
+			);
 
 			$this->db->query($sql);
 			$update = TRUE;
