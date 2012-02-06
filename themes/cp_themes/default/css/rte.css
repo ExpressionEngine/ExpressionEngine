@@ -86,8 +86,8 @@
 .WysiHat-editor-toolbar .unordered_list:focus b,
 .WysiHat-editor-toolbar .unordered_list:active b,
 .WysiHat-editor-toolbar .unordered_list[aria-pressed=true] b{ background-position: 0 -1579px; width: 13px; }
-.WysiHat-editor-toolbar .view_source { float: right; }
-.WysiHat-editor-toolbar .view_source b, .WysiHat-editor-toolbar .strip_tags b { background-image: none; text-indent: 0; padding-top: 2px; }
+.WysiHat-editor-toolbar .view_source { float: right; margin: 0 0 0 5px; }
+.WysiHat-editor-toolbar .view_source b, .WysiHat-editor-toolbar .strip_tags b { background-image: none; text-indent: 0; padding-top: 1px; }
 .WysiHat-editor-toolbar select.picker { -moz-appearance: none; -ms-appearance: none; -o-appearance: none; -webkit-appearance: none; appearance: none; text-transform: none; width: 120px; }
 
 
