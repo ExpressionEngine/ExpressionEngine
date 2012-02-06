@@ -313,6 +313,12 @@
 		$('#edit_image').toggle(file.is_image);
 		
 		if (settings.type == "filemanager") {
+			// Create listener for the browse_files button
+			$('#file_uploader .button_bar').on('click', '#browse_files', function(event) {
+				clean_up();
+				event.preventDefault();
+			});
+
 			// Create listeners for the edit_file and edit_image links (not buttons)
 			var pages = ['edit_file', 'edit_image'];
 			
@@ -334,7 +340,7 @@
 				event.preventDefault();
 			});
 			
-			// Create listener for the save file button (independant of choose file)
+			// Create listener for the save file button (independent of choose file)
 			$('#file_uploader .button_bar').on('click', '#save_file', function(event) {
 				$('#file_uploader iframe').contents().find('form#edit_file_metadata').trigger('submit');
 				event.preventDefault();
