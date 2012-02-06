@@ -258,7 +258,7 @@
 			}
 			
 			// Add restrict_image get variable if we need to restrict to images
-			if (field_settings.content_type == "image") {
+			if (field_settings && field_settings.content_type == "image") {
 				source = source + '&restrict_image=true';
 			}
 			
