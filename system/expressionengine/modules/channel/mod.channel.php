@@ -1224,6 +1224,7 @@ class Channel {
 						if ($result->num_rows() == 1)
 						{
 							$qstring = str_replace($cut_qstring, 'C'.$result->row('cat_id') , $qstring);
+							$cat_id = $result->row('cat_id');
 						}
 						else
 						{
@@ -1235,49 +1236,21 @@ class Channel {
 							if ($result->num_rows() == 1)
 							{
 								$qstring = 'C'.$result->row('cat_id') ;
+								$cat_id = $result->row('cat_id');
 							}
 						}
 					}
 				}
 				
-				// Check to see if we're dealing with a category request
-				$numeric_category = preg_match(
-					"#(^|\/)C(\d+)#", 
-					$this->query_string, 
-					$match
-				);
-				$query_string_array = explode("/", $this->query_string);
-				$word_category = array_search(
-					$this->reserved_cat_segment, 
-					$query_string_array
-				);
+				if (empty($cat_id))
+				{
+					$this->EE->load->helper('segment');
+					$cat_id = parse_category($this->query_string);
+				}
 				
-				if ($numeric_category OR $word_category !== FALSE)
+				if (is_numeric($cat_id) AND $cat_id !== FALSE)
 				{
 					$this->cat_request = TRUE;
-				}
-
-				// Numeric version of the category
-				if ($dynamic AND $numeric_category)
-				{
-					$cat_id = $match[2];
-					$qstring = trim_slashes(
-						str_replace($match[0], '', $qstring)
-					);
-				}
-				elseif ($dynamic AND
-						$word_category !== FALSE AND
-						count($query_string_array) > ($word_category + 1))
-				{
-					$cat_id_query = $this->EE->db->select('cat_id')
-						->get_where(
-							'categories',
-							array(
-								'cat_url_title' => $query_string_array[$word_category + 1]
-							)
-						);
-
-					$cat_id = $cat_id_query->row('cat_id');
 				}
 			
 
