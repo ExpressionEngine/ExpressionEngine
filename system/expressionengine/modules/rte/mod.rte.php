@@ -89,7 +89,7 @@ class Rte {
 				$tool = $this->EE->rte_tool_model->get_tool($tool_id);
 				
 				# skip tools that are not available to the front-end
-				if ( $tool['frontend'] != 'y' )
+				if ( $tool['info']['cp_only'] == 'y' )
 				{
 					continue;
 				}

@@ -19,21 +19,16 @@
 
 */
 
-$rte_tool_info = array(
-	'rte_tool_name'				=> 'Headings',
-	'rte_tool_version'			=> '1.0',
-	'rte_tool_author'			=> 'Aaron Gustafson',
-	'rte_tool_author_url'		=> 'http://easy-designs.net/',
-	'rte_tool_description'		=> 'Adds or swaps heading levels in the RTE. Can also revert text to a paragraph.',
-	'rte_tool_definition'		=> Headings_rte::definition()
-);
-
 Class Headings_rte {
 	
-	private $EE;
+	public $info = array(
+		'name'			=> 'Headings',
+		'version'		=> '1.0',
+		'description'	=> 'Adds or swaps heading levels in the RTE. Can also revert text to a paragraph',
+		'cp_only'		=> 'n'
+	);
 	
-	# should this be shown on the frontend?
-	public	$frontend = 'y';
+	private $EE;
 	
 	/** -------------------------------------
 	/**  Constructor

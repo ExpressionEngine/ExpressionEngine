@@ -19,21 +19,16 @@
 
 */
 
-$rte_tool_info = array(
-	'rte_tool_name'				=> 'Unordered List',
-	'rte_tool_version'			=> '1.0',
-	'rte_tool_author'			=> 'Aaron Gustafson',
-	'rte_tool_author_url'		=> 'http://easy-designs.net/',
-	'rte_tool_description'		=> 'Triggers the RTE to make the selected blocks into unordered list items',
-	'rte_tool_definition'		=> Unordered_list_rte::definition()
-);
-
 Class Unordered_list_rte {
 	
-	private $EE;
+	public $info = array(
+		'name'			=> 'Unordered List',
+		'version'		=> '1.0',
+		'description'	=> 'Triggers the RTE to make the selected blocks into unordered list items',
+		'cp_only'		=> 'n'
+	);
 	
-	# should this be shown on the frontend?
-	public	$frontend = 'y';
+	private $EE;
 	
 	/** -------------------------------------
 	/**  Constructor

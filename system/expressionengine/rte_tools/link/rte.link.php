@@ -19,22 +19,17 @@
 
 */
 
-$rte_tool_info = array(
-	'rte_tool_name'				=> 'Link',
-	'rte_tool_version'			=> '1.0',
-	'rte_tool_author'			=> 'Aaron Gustafson',
-	'rte_tool_author_url'		=> 'http://easy-designs.net/',
-	'rte_tool_description'		=> 'Triggers the RTE to link the selected text',
-	'rte_tool_definition'		=> Link_rte::definition()
-);
-
 Class Link_rte {
+	
+	public $info = array(
+		'name'			=> 'Link',
+		'version'		=> '1.0',
+		'description'	=> 'Triggers the RTE to link the selected text',
+		'cp_only'		=> 'n'
+	);
 	
 	private $EE;
 	
-	# should this be shown on the frontend?
-	public	$frontend = 'y';
-		
 	/** -------------------------------------
 	/**  Constructor
 	/** -------------------------------------*/

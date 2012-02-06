@@ -19,21 +19,16 @@
 
 */
 
-$rte_tool_info = array(
-	'rte_tool_name'				=> 'Italic',
-	'rte_tool_version'			=> '1.0',
-	'rte_tool_author'			=> 'Aaron Gustafson',
-	'rte_tool_author_url'		=> 'http://easy-designs.net/',
-	'rte_tool_description'		=> 'Italicizes and de-italicizes text',
-	'rte_tool_definition'		=> Italic_rte::definition()
-);
-
 Class Italic_rte {
 
-	private $EE;
+	public $info = array(
+		'name'			=> 'Italic',
+		'version'		=> '1.0',
+		'description'	=> 'Italicizes and de-italicizes text',
+		'cp_only'		=> 'n'
+	);
 	
-	# should this be shown on the frontend?
-	public	$frontend = 'y';
+	private $EE;
 	
 	/** -------------------------------------
 	/**  Constructor

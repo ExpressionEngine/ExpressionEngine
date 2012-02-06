@@ -118,7 +118,7 @@ class Rte_tool_model extends CI_Model {
 	{
 		# build the tool array
 		$tool = array(
-			'frontend'		=> 'y',
+			'info'			=> array(),
 			'globals'		=> array(),
 			'libraries'		=> array(),
 			'styles'		=> '',

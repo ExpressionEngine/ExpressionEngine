@@ -19,21 +19,16 @@
 
 */
 
-$rte_tool_info = array(
-	'rte_tool_name'				=> 'View Source',
-	'rte_tool_version'			=> '1.0',
-	'rte_tool_author'			=> 'Aaron Gustafson',
-	'rte_tool_author_url'		=> 'http://easy-designs.net/',
-	'rte_tool_description'		=> 'Triggers the RTE to switch to and from view source mode',
-	'rte_tool_definition'		=> View_source_rte::definition()
-);
-
 Class View_source_rte {
 	
-	private $EE;
+	public $info = array(
+		'name'			=> 'View Source',
+		'version'		=> '1.0',
+		'description'	=> 'Triggers the RTE to switch to and from view source mode',
+		'cp_only'		=> 'n'
+	);
 	
-	# should this be shown on the frontend?
-	public	$frontend = 'y';
+	private $EE;
 	
 	/** -------------------------------------
 	/**  Constructor

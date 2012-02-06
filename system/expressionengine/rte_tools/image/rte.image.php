@@ -19,23 +19,18 @@
 
 */
 
-$rte_tool_info = array(
-	'rte_tool_name'				=> 'Image',
-	'rte_tool_version'			=> '1.0',
-	'rte_tool_author'			=> 'Aaron Gustafson',
-	'rte_tool_author_url'		=> 'http://easy-designs.net/',
-	'rte_tool_description'		=> 'Inserts and manages image alignment in the RTE',
-	'rte_tool_definition'		=> Image_rte::definition()
-);
-
 Class Image_rte {
+	
+	public $info = array(
+		'name'			=> 'Image',
+		'version'		=> '1.0',
+		'description'	=> 'Inserts and manages image alignment in the RTE',
+		'cp_only'		=> 'y'
+	);
 	
 	private $EE;
 	private $folders	= array();
 	private $filedirs	= array();
-	
-	# should this be shown on the frontend?
-	public	$frontend = 'n';
 	
 	/** -------------------------------------
 	/**  Constructor
