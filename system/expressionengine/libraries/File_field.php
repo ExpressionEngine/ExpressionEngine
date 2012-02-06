@@ -26,6 +26,7 @@
 
 class File_field {
 	
+	var $_files = array();
 	var $_manipulations = array();
 	
 	public function __construct()
@@ -289,6 +290,93 @@ class File_field {
 	// ------------------------------------------------------------------------
 	
 	/**
+	 * Caches file data about to be parsed by the channel module. Instead of querying
+	 * for individual files inside the entries loop, we'll query for everything we need
+	 * before the loop starts, significantly reducing queries.
+	 *
+	 * @param array $data	Array of file field data we're going to query for
+	 * @return void
+	 */
+	public function cache_data($data = array())
+	{
+		if (empty($data))
+		{
+			return FALSE;
+		}
+		
+		$this->EE->load->model('file_model');
+		
+		// We'll keep track of file names and file IDs collected
+		$file_names = array();
+		$file_ids = array();
+		$dir_id = FALSE;
+		
+		foreach ($data as $field_data)
+		{
+			// If the file field is in the "{filedir_n}image.jpg" format
+			if (preg_match('/^{filedir_(\d+)}/', $field_data, $matches))
+			{
+				$file_names[] = str_replace($matches[0], '', $field_data);
+				$dir_id = $matches[1];
+			}
+			// If file field is just a file ID
+			else if (! empty($field_data) && is_numeric($field_data))
+			{
+				$file_ids[] = $field_data;
+			}
+		}
+		
+		// Query for files based on file names and directory ID
+		if ( ! empty($file_names))
+		{
+			$file_names = $this->EE->file_model->get_files_by_name($file_names, $dir_id)->result_array();
+		}
+		
+		// Query for files based on file ID
+		if ( ! empty($file_ids))
+		{
+			$file_ids = $this->EE->file_model->get_files_by_id($data)->result_array();
+		}
+		
+		// Merge our results into our cached array
+		$this->_files = array_merge(
+			$this->_files, // Merge itself in case more than one file field is processed
+			$file_names,
+			$file_ids
+		);
+	}
+	
+	// ------------------------------------------------------------------------
+	
+	/**
+	 * Searches the local _files array for a particular file based on a specified key and value.
+	 *
+	 * @param string $key	Key to search
+	 * @param string $value	Value of key to look for
+	 * @return array		File information
+	 */
+	public function search_files_array($key = NULL, $value = NULL)
+	{
+		// Loop through cached files
+		foreach ($this->_files as $file)
+		{
+			// See if key exists
+			if (isset($file[$key]))
+			{
+				// If value exists, return the file and stop the search
+				if ($file[$key] == $value)
+				{
+					return $file;
+				}
+			}
+		}
+		
+		return FALSE;
+	}
+	
+	// ------------------------------------------------------------------------
+	
+	/**
 	 * Parse field contents, which may be in the {filedir_n} format for may be
 	 * a file ID.
 	 *
@@ -313,13 +401,20 @@ class File_field {
 			$dir_id = $matches[1];
 			$file_name = str_replace($matches[0], '', $data);
 			
-			$file = $this->EE->file_model->get_files_by_name($file_name, $dir_id)->row_array();
+			// Check cache for file, query for it if it's not there
+			if (($file = $this->search_files_array('file_name', $file_name)) === FALSE)
+			{
+				$file = $this->EE->file_model->get_files_by_name($file_name, $dir_id)->row_array();
+			}
 		}
 		// If file field is just a file ID
 		else if (! empty($data) && is_numeric($data))
 		{
-			// Query file model on file ID
-			$file = $this->EE->file_model->get_files_by_id($data)->row_array();
+			if (($file = $this->search_files_array('file_id', $data)) === FALSE)
+			{
+				// Query file model on file ID
+				$file = $this->EE->file_model->get_files_by_id($data)->row_array();
+			}
 		}
 
 		// If there is no file, get out of here
