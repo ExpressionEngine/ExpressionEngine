@@ -309,7 +309,7 @@ class File_field {
 		// We'll keep track of file names and file IDs collected
 		$file_names = array();
 		$file_ids = array();
-		$dir_id = FALSE;
+		$dir_ids = array();
 		
 		// Don't deal with duplicate data, files are the same from entry to entry
 		$data = array_unique($data);
@@ -319,10 +319,8 @@ class File_field {
 			// If the file field is in the "{filedir_n}image.jpg" format
 			if (preg_match('/^{filedir_(\d+)}/', $field_data, $matches))
 			{
-				// To account for files that have the same name but are in different directories,
-				// separate the file names out by directory ID ($matches[1]) and we'll query
-				// each directory separately
-				$file_names_in_dirs[$matches[1]][] = str_replace($matches[0], '', $field_data);
+				$dir_ids[] = $matches[1];
+				$file_names[] = str_replace($matches[0], '', $field_data);
 			}
 			// If file field is just a file ID, much simpler
 			else if (! empty($field_data) && is_numeric($field_data))
@@ -331,17 +329,10 @@ class File_field {
 			}
 		}
 		
-		// File results searched by file name will eventually go in here once
-		// they're queried for by directory
-		$file_names = array();
-		
 		// Query for files based on file names and directory ID
-		foreach ($file_names_in_dirs as $dir_id => $files)
+		if ( ! empty($file_names))
 		{
-			$file_names = array_merge(
-				$file_names,
-				$this->EE->file_model->get_files_by_name($files, $dir_id)->result_array()
-			);
+			$file_names = $this->EE->file_model->get_files_by_name($file_names, $dir_ids)->result_array();
 		}
 		
 		// Query for files based on file ID
