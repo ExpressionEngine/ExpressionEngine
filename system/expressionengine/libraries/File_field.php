@@ -311,6 +311,9 @@ class File_field {
 		$file_ids = array();
 		$dir_id = FALSE;
 		
+		// Don't deal with duplicate data, files are the same from entry to entry
+		$data = array_unique($data);
+		
 		foreach ($data as $field_data)
 		{
 			// If the file field is in the "{filedir_n}image.jpg" format
@@ -427,32 +430,32 @@ class File_field {
 		{
 			$file = $this->get_file($data);
 		}
-
+		
 		// If there is no file, get out of here
 		if (empty($file))
 		{
 			return FALSE;
 		}
-
+		
 		// Set additional data based on what we've gathered
 		$file['path'] 		= (isset($file_dirs[$file['upload_location_id']])) ? $file_dirs[$file['upload_location_id']] : '';
 		$file['extension'] 	= substr(strrchr($file['file_name'], '.'), 1);
 		$file['filename'] 	= basename($file['file_name'], '.'.$file['extension']); // backwards compatibility
 		$file['url'] 		= $file['path'].$file['file_name'];
-
+		
 		$dimensions = explode(" ", $file['file_hw_original']);
-
+		
 		$file['width'] 	= isset($dimensions[1]) ? $dimensions[1] : '';
 		$file['height'] = isset($dimensions[0]) ? $dimensions[0] : '';
 		
 		$manipulations = $this->_get_dimensions_by_dir_id($file['upload_location_id']);
-
+		
 		foreach($manipulations as $m)
 		{
 			$file['url:'.$m['short_name']] = $file['path'].'_'.$m['short_name'].'/'.$file['file_name'];
-
+			
 		}
-
+		
 		return $file;
 	}
 	
