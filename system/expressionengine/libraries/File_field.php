@@ -319,20 +319,29 @@ class File_field {
 			// If the file field is in the "{filedir_n}image.jpg" format
 			if (preg_match('/^{filedir_(\d+)}/', $field_data, $matches))
 			{
-				$file_names[] = str_replace($matches[0], '', $field_data);
-				$dir_id = $matches[1];
+				// To account for files that have the same name but are in different directories,
+				// separate the file names out by directory ID ($matches[1]) and we'll query
+				// each directory separately
+				$file_names_in_dirs[$matches[1]][] = str_replace($matches[0], '', $field_data);
 			}
-			// If file field is just a file ID
+			// If file field is just a file ID, much simpler
 			else if (! empty($field_data) && is_numeric($field_data))
 			{
 				$file_ids[] = $field_data;
 			}
 		}
 		
+		// File results searched by file name will eventually go in here once
+		// they're queried for by directory
+		$file_names = array();
+		
 		// Query for files based on file names and directory ID
-		if ( ! empty($file_names))
+		foreach ($file_names_in_dirs as $dir_id => $files)
 		{
-			$file_names = $this->EE->file_model->get_files_by_name($file_names, $dir_id)->result_array();
+			$file_names = array_merge(
+				$file_names,
+				$this->EE->file_model->get_files_by_name($files, $dir_id)->result_array()
+			);
 		}
 		
 		// Query for files based on file ID
@@ -375,7 +384,12 @@ class File_field {
 				if (isset($file[$key]))
 				{
 					// If value exists, return the file and stop the search
-					if ($file[$key] == $value)
+					if (($key == 'file_id' AND $file[$key] == $value) OR
+						// If we're searching by file name, make sure we're grabbing the
+						// correct file in the case that we cached two files with the same
+						// name but in different upload directories.
+						($key == 'file_name' AND $file[$key] == $value
+							AND $file['upload_location_id'] == $dir_id))
 					{
 						return $file;
 					}
