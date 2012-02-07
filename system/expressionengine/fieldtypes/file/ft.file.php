@@ -104,7 +104,20 @@ class File_ft extends EE_Fieldtype {
 	}
 	
 	// --------------------------------------------------------------------
-
+	
+	/**
+	 * Runs before the channel entries loop on the front end
+	 *
+	 * @param array $data	All custom field data about to be processed for the front end
+	 * @return void
+	 */
+	function pre_loop($data)
+	{
+		$this->EE->file_field->cache_data($data);
+	}
+	
+	// --------------------------------------------------------------------
+	
 	/**
 	 * Replace frontend tag
 	 *

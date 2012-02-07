@@ -3367,7 +3367,13 @@ class Channel {
 		$total_results = count($query_result);
 
 		$site_pages = $this->EE->config->item('site_pages');
-
+		
+		// If custom fields are enabled, notify them of the data we're about to send
+		if ( ! empty($this->cfields))
+		{
+			$this->_send_custom_field_data_to_fieldtypes($query_result);
+		}
+		
 		foreach ($query_result as $count => $row)
 		{
 			// Fetch the tag block containing the variables that need to be parsed
@@ -4649,6 +4655,61 @@ class Channel {
 			if (is_numeric($back))
 			{
 				$this->return_data = substr($this->return_data, 0, - $back);
+			}
+		}
+	}
+	
+	/**
+	 * Sends custom field data to fieldtypes before the entries loop runs.
+	 * This is particularly helpful to fieldtypes that need to query the database
+	 * based on what they're passed, like the File field. This allows them to run
+	 * potentially a single query to gather needed data instead of a query for
+	 * each row.
+	 *
+	 * @param string $entries_data 
+	 * @return void
+	 */
+	private function _send_custom_field_data_to_fieldtypes($entries_data)
+	{
+		// We'll stick custom field data into this array in the form of:
+		//   field_id => array('data1', 'data2', ...);
+		$custom_field_data = array();
+		
+		// Loop through channel entry data
+		foreach ($entries_data as $row)
+		{
+			// Get array of custom fields for the row's current site
+			$custom_fields = $this->cfields[$row['site_id']];
+			
+			foreach ($custom_fields as $field_name => $field_id)
+			{
+				// If the field exists and isn't empty
+				if (isset($row['field_id_'.$field_id]))
+				{
+					if ( ! empty($row['field_id_'.$field_id]))
+					{
+						// Add the data to our custom field data array
+						$custom_field_data[$field_id][] = $row['field_id_'.$field_id];
+					}
+				}
+			}
+		}
+		
+		if ( ! empty($custom_field_data))
+		{
+			$this->EE->load->library('api');
+			$this->EE->api->instantiate('channel_fields');
+			
+			// For each custom field, notify its fieldtype class of the data we collected
+			foreach ($custom_field_data as $field_id => $data)
+			{
+				if ($this->EE->api_channel_fields->setup_handler($field_id))
+				{
+					if ($this->EE->api_channel_fields->check_method_exists('pre_loop'))
+					{
+						$this->EE->api_channel_fields->apply('pre_loop', array($data));
+					}
+				}
 			}
 		}
 	}
