@@ -349,25 +349,48 @@ class File_field {
 	// ------------------------------------------------------------------------
 	
 	/**
-	 * Searches the local _files array for a particular file based on a specified key and value.
+	 * Searches the local _files array for a particular file based on a specific
+	 * key and value, and queries the database for the file if it doesn't exist.
 	 *
-	 * @param string $key	Key to search
-	 * @param string $value	Value of key to look for
+	 * @param string $file_id	File ID of file to return
+	 * @param string $file_name	File name of file to return
+	 * @param string $dir_id	Directory ID file is in, if searching by file name
 	 * @return array		File information
 	 */
-	public function search_files_array($key = NULL, $value = NULL)
+	public function get_file($file_id = NULL, $file_name = NULL, $dir_id = NULL)
 	{
-		// Loop through cached files
-		foreach ($this->_files as $file)
+		if ($file_id != NULL OR $file_name != NULL)
 		{
-			// See if key exists
-			if (isset($file[$key]))
+			// Assign the key (field) and value we'll be searching by
+			$key = ($file_id == NULL) ? 'file_name' : 'file_id';
+			$value = ($file_id == NULL) ? $file_name : $file_id;
+			
+			// Loop through cached files
+			foreach ($this->_files as $file)
 			{
-				// If value exists, return the file and stop the search
-				if ($file[$key] == $value)
+				// See if key exists
+				if (isset($file[$key]))
 				{
-					return $file;
+					// If value exists, return the file and stop the search
+					if ($file[$key] == $value)
+					{
+						return $file;
+					}
 				}
+			}
+			
+			// If we got here, we need to query for the file
+			$this->EE->load->model('file_model');
+			
+			// Query based on file ID
+			if ($file_id != NULL)
+			{
+				$file = $this->EE->file_model->get_files_by_id($file_id)->row_array();
+			}
+			// Query based on file name and directory ID
+			elseif ($file_name != NULL)
+			{
+				return $this->EE->file_model->get_files_by_name($file_name, $dir_id)->row_array();
 			}
 		}
 		
@@ -387,34 +410,22 @@ class File_field {
 	 */
 	public function parse_field($data)
 	{
-		$this->EE->load->model('file_model');
-
+		// Get cached upload directories
 		$file_dirs = $this->_file_dirs();
 		
 		// If the file field is in the "{filedir_n}image.jpg" format
 		if (preg_match('/^{filedir_(\d+)}/', $data, $matches))
 		{
-			// Only replace it once
-			$path = substr($data, 0, 10 + strlen($matches[1]));
-			
 			// Set upload directory ID and file name
 			$dir_id = $matches[1];
 			$file_name = str_replace($matches[0], '', $data);
 			
-			// Check cache for file, query for it if it's not there
-			if (($file = $this->search_files_array('file_name', $file_name)) === FALSE)
-			{
-				$file = $this->EE->file_model->get_files_by_name($file_name, $dir_id)->row_array();
-			}
+			$file = $this->get_file(NULL, $file_name, $dir_id);
 		}
 		// If file field is just a file ID
 		else if (! empty($data) && is_numeric($data))
 		{
-			if (($file = $this->search_files_array('file_id', $data)) === FALSE)
-			{
-				// Query file model on file ID
-				$file = $this->EE->file_model->get_files_by_id($data)->row_array();
-			}
+			$file = $this->get_file($data);
 		}
 
 		// If there is no file, get out of here
@@ -508,6 +519,8 @@ class File_field {
 	{
 		if ( ! isset($this->_manipulations[$dir_id]))
 		{
+			$this->EE->load->model('file_model');
+			
 			$this->_manipulations[$dir_id] = $this->EE->file_model->get_dimensions_by_dir_id($dir_id)->result_array();
 		}
 		
