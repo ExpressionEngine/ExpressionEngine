@@ -329,6 +329,8 @@ class File_field {
 			}
 		}
 		
+		$dir_ids = array_unique($dir_ids);
+		
 		// Query for files based on file names and directory ID
 		if ( ! empty($file_names))
 		{
