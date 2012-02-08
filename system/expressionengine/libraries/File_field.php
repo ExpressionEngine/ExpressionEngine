@@ -27,6 +27,11 @@
 class File_field {
 	
 	var $_files = array();
+	
+	var $_file_names = array();
+	var $_file_ids = array();
+	var $_dir_ids = array();
+	
 	var $_manipulations = array();
 	
 	public function __construct()
@@ -331,11 +336,17 @@ class File_field {
 		
 		$dir_ids = array_unique($dir_ids);
 		
+		$file_names = array_diff($file_names, $this->_file_names);
+		$this->_file_names = array_merge($this->_file_names, $file_names);
+		
 		// Query for files based on file names and directory ID
 		if ( ! empty($file_names))
 		{
 			$file_names = $this->EE->file_model->get_files_by_name($file_names, $dir_ids)->result_array();
 		}
+		
+		$file_ids = array_diff($file_ids, $this->_file_ids);
+		$this->_file_ids = array_merge($this->_file_ids, $file_ids);
 		
 		// Query for files based on file ID
 		if ( ! empty($file_ids))
