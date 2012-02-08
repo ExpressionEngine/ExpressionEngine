@@ -355,18 +355,20 @@ class File_field {
 	 * Searches the local _files array for a particular file based on a specific
 	 * key and value, and queries the database for the file if it doesn't exist.
 	 *
-	 * @param string $file_id	File ID of file to return
-	 * @param string $file_name	File name of file to return
-	 * @param string $dir_id	Directory ID file is in, if searching by file name
-	 * @return array		File information
+	 * @param mixed $file_reference	File ID or file name of file to return
+	 * @param string $dir_id		Directory ID file is in, if searching by file name
+	 * @return array				File information
 	 */
-	public function get_file($file_id = NULL, $file_name = NULL, $dir_id = NULL)
+	public function get_file($file_reference = NULL, $dir_id = NULL)
 	{
-		if ($file_id != NULL OR $file_name != NULL)
+		// This is what we're returning, we'll be overwriting it by the end of
+		// the function if all goes well
+		$file = FALSE;
+		
+		if ($file_reference != NULL)
 		{
 			// Assign the key (field) and value we'll be searching by
-			$key = ($file_id == NULL) ? 'file_name' : 'file_id';
-			$value = ($file_id == NULL) ? $file_name : $file_id;
+			$key = (is_numeric($file_reference)) ? 'file_id' : 'file_name';
 			
 			// Loop through cached files
 			foreach ($this->_files as $file)
@@ -375,11 +377,11 @@ class File_field {
 				if (isset($file[$key]))
 				{
 					// If value exists, return the file and stop the search
-					if (($key == 'file_id' AND $file[$key] == $value) OR
+					if (($key == 'file_id' AND $file[$key] == $file_reference) OR
 						// If we're searching by file name, make sure we're grabbing the
 						// correct file in the case that we cached two files with the same
 						// name but in different upload directories.
-						($key == 'file_name' AND $file[$key] == $value
+						($key == 'file_name' AND $file[$key] == $file_reference
 							AND $file['upload_location_id'] == $dir_id))
 					{
 						return $file;
@@ -393,16 +395,18 @@ class File_field {
 			// Query based on file ID
 			if ($file_id != NULL)
 			{
-				$file = $this->EE->file_model->get_files_by_id($file_id)->row_array();
+				$file = $this->EE->file_model->get_files_by_id($file_reference)->row_array();
 			}
 			// Query based on file name and directory ID
 			elseif ($file_name != NULL)
 			{
-				return $this->EE->file_model->get_files_by_name($file_name, $dir_id)->row_array();
+				$file = $this->EE->file_model->get_files_by_name($file_reference, $dir_id)->row_array();
 			}
+			
+			$this->_files[] = $file;
 		}
 		
-		return FALSE;
+		return $file;
 	}
 	
 	// ------------------------------------------------------------------------
@@ -428,7 +432,7 @@ class File_field {
 			$dir_id = $matches[1];
 			$file_name = str_replace($matches[0], '', $data);
 			
-			$file = $this->get_file(NULL, $file_name, $dir_id);
+			$file = $this->get_file($file_name, $dir_id);
 		}
 		// If file field is just a file ID
 		else if (! empty($data) && is_numeric($data))
