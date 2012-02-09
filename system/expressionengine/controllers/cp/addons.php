@@ -142,12 +142,16 @@ class Addons extends CI_Controller {
 				include_once($info['path'].$info['file']);
 				$class = $info['class'];
 				
+				$this->load->add_package_path($info['path']);
+
 				$out = new $class;
 				
 				if (isset($out->required_by) && is_array($out->required_by))
 				{			
 					$required[$type] = $out->required_by;
 				}
+
+				$this->load->remove_package_path($info['path']);
 			}
 		}
 		

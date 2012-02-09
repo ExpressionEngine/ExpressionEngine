@@ -184,6 +184,8 @@ class Addons_modules extends CI_Controller {
 				$class = ucfirst($module).'_upd';
 				$version = $this->installed_modules[$module]['module_version'];
 
+				$this->load->add_package_path($this->installed_modules[$module]['path']);
+
 				$UPD = new $class;
 				$UPD->_ee_path = APPPATH;
 		
@@ -192,6 +194,8 @@ class Addons_modules extends CI_Controller {
 					$this->db->update('modules', array('module_version' => $UPD->version), array('module_name' => ucfirst($module)));
 					$updated[] = $name.': '.lang('updated_to_version').' '.$UPD->version;
 				}
+
+				$this->load->remove_package_path($this->installed_modules[$module]['path']);
 			}
 		}
 
