@@ -1242,15 +1242,22 @@ class Channel {
 					}
 				}
 				
+				// If we got here, category may be numeric
 				if (empty($cat_id))
 				{
 					$this->EE->load->helper('segment');
 					$cat_id = parse_category($this->query_string);
 				}
 				
+				// If we were able to get a numeric category ID
 				if (is_numeric($cat_id) AND $cat_id !== FALSE)
 				{
 					$this->cat_request = TRUE;
+				}
+				// parse_category did not return a numberic ID, blow away $cat_id
+				else
+				{
+					$cat_id = FALSE;
 				}
 			
 
