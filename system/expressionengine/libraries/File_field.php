@@ -406,12 +406,12 @@ class File_field {
 			$this->EE->load->model('file_model');
 			
 			// Query based on file ID
-			if ($file_id != NULL)
+			if (is_numeric($file_reference))
 			{
 				$file = $this->EE->file_model->get_files_by_id($file_reference)->row_array();
 			}
 			// Query based on file name and directory ID
-			elseif ($file_name != NULL)
+			else
 			{
 				$file = $this->EE->file_model->get_files_by_name($file_reference, $dir_id)->row_array();
 			}
