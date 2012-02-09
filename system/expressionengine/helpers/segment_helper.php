@@ -138,15 +138,20 @@
 		$reserved_category_word = $EE->config->item("reserved_category_word");
 		
 		// Parse out URL title from query string
-		if ($EE->config->item("use_category_name") == 'y' && $reserved_category_word != '')
+		if (strpos($qstring, $reserved_category_word) !== FALSE 
+			&& $EE->config->item("use_category_name") == 'y' 
+			&& $reserved_category_word != ''
+		)
 		{
 			return preg_replace("/(.*?)\/".preg_quote($reserved_category_word)."\//i", '', '/'.$qstring);
 		}
 		// Parse out category ID in the format of CXX
-		else
+		else if (preg_match("#(^|\/)C(\d+)#", $qstring, $match))
 		{
-			return (preg_match("#(^|\/)C(\d+)#", $qstring, $match)) ? $match[2] : FALSE;
+			return $match[2];
 		}
+
+		return '';
 	}
 
 
