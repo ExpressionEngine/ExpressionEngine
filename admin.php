@@ -26,7 +26,6 @@
  */
 	$system_path = './system';
 
-
 /*
  * --------------------------------------------------------------------
  *  Multiple Site Manager
@@ -130,21 +129,21 @@
  *  EE Control Panel Constants
  * -------------------------------------------------------------------
  *
- * If the "installer" folder exists the $config['install_lock'] is off
- * we will load the installation wizard.  Otherwise we load the CP
+ * If the "installer" folder exists and $config['install_lock'] is off
+ * we'll load the installation wizard. Otherwise, we'll load the CP.
  *
  */ 
  	// Is the installation folder present?
 	if (is_dir($system_path.'installer/'))
 	{
-		// We need a different subclass prefix when we run the installer.
-		// The reason is because the installer has it's on Config class extension
-		// containing some specific functions needed by the installer.  By 
-		// setting a unique prefix we can also load the main Config class extension
-		// without a naming conflict
+		// We need a different subclass prefix when we run the installer,
+		// because it has its own Config class extension with some
+		// specific functions. Setting a unique prefix lets us load the
+		// main Config class extension without a naming conflict.
 		$assign_to_config['subclass_prefix']	= 'Installer_';
 		
-		// This allows the installer application to be inside our normal EE application directory
+		// This allows the installer application to be inside our normal
+		// EE application directory.
 		define('APPPATH', $system_path.'installer/');
 		define('EE_APPPATH', $system_path.'expressionengine/');
 	}
@@ -153,7 +152,7 @@
 		define('APPPATH', $system_path.'expressionengine/');
 	}
 
- 	// The control panel access constant.  Without this, the CP will not be invoked
+ 	// The control panel access constant ensures the CP will be invoked.
 	define('REQ', 'CP');
 
 /*
