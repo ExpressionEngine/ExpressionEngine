@@ -287,6 +287,7 @@ $.widget('ee.table', {
 			// @todo only remove those that are not in the result set?
 			if ( ! res.rows.length) {
 				if (self.tbody.is('tbody')) {
+					self.tbody.empty();
 					self.element.hide();
 					self.element.after(self.no_results);	
 				} else {

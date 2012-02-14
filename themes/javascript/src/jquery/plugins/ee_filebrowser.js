@@ -186,6 +186,11 @@
 	 * Clear caches and close the file browser
 	 */
 	$.ee_filebrowser.clean_up = function(file) {
+
+		if (file_manager_obj == 'undefined') {
+			return;
+		}
+
 		if (file) {
 			trigger_callback(file);
 		}
