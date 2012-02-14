@@ -2386,7 +2386,7 @@ jQuery(document).ready(function(){
 					range.deleteContents();
 				}
 
-				range.isnsertNode( pasted_content );
+				range.insertNode( pasted_content );
 
 				WysiHat.Formatting.cleanup( $editor );
 
