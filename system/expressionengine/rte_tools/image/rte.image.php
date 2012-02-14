@@ -106,7 +106,7 @@ Class Image_rte {
 	private function _get_file_locations()
 	{
 		$this->EE->load->model('file_upload_preferences_model');
-		$dirs = $this->EE->file_upload_preferences_model->get_upload_preferences($this->EE->session->userdata('group_id'));
+		$dirs = $this->EE->file_upload_preferences_model->get_file_upload_preferences($this->EE->session->userdata('group_id'));
 		
 		$domain = $this->EE->config->item('site_url');
 		
