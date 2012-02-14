@@ -13,7 +13,7 @@ if ($EE_view_disable !== TRUE)
 	<div class="contents">
 
 	<div class="heading">
-			<h2><?=lang('new_template_form')?></h2>
+			<h2><?=lang('create_new_template')?></h2>
 	</div>
 
 	<div class="pageContents">
@@ -48,7 +48,7 @@ if ($EE_view_disable !== TRUE)
 
 		// Default Template Data
 		$this->table->add_row(array(
-				lang('choose_default_data', 'choose_default_data'),
+				lang('duplicate_existing_template', 'duplicate_existing_template'),
 				form_dropdown('existing_template', $templates)
 			)
 		);

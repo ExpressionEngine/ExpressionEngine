@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.4
@@ -25,6 +25,14 @@
  */
 
 class File_field {
+	
+	var $_files = array();
+	
+	var $_file_names = array();
+	var $_file_ids = array();
+	var $_dir_ids = array();
+	
+	var $_manipulations = array();
 	
 	public function __construct()
 	{
@@ -128,6 +136,8 @@ class File_field {
 	 */
 	public function browser($config = array(), $endpoint_url = 'C=content_publish&M=filemanager_actions')
 	{
+		$this->EE->lang->loadfile('content');
+
 		// Are we on the publish page? If so, go ahead and load up the publish
 		// page javascript files
 		if (empty($config) OR (isset($config['publish']) AND $config['publish'] === TRUE))
@@ -184,7 +194,7 @@ class File_field {
 		$_POST[$field_name] = '';
 		
 		// Default directory
-		$upload_directories = $this->EE->file_upload_preferences_model->get_upload_preferences($this->EE->session->userdata('group_id'));
+		$upload_directories = $this->EE->file_upload_preferences_model->get_file_upload_preferences($this->EE->session->userdata('group_id'));
 		
 		// Directory selected - switch
 		$filedir = ($this->EE->input->post($dir_field)) ? $this->EE->input->post($dir_field) : '';
@@ -285,6 +295,136 @@ class File_field {
 	// ------------------------------------------------------------------------
 	
 	/**
+	 * Caches file data about to be parsed by the channel module. Instead of querying
+	 * for individual files inside the entries loop, we'll query for everything we need
+	 * before the loop starts, significantly reducing queries.
+	 *
+	 * @param array $data	Array of file field data we're going to query for
+	 * @return void
+	 */
+	public function cache_data($data = array())
+	{
+		if (empty($data))
+		{
+			return FALSE;
+		}
+		
+		$this->EE->load->model('file_model');
+		
+		// We'll keep track of file names and file IDs collected
+		$file_names = array();
+		$file_ids = array();
+		$dir_ids = array();
+		
+		// Don't deal with duplicate data, files are the same from entry to entry
+		$data = array_unique($data);
+		
+		foreach ($data as $field_data)
+		{
+			// If the file field is in the "{filedir_n}image.jpg" format
+			if (preg_match('/^{filedir_(\d+)}/', $field_data, $matches))
+			{
+				$dir_ids[] = $matches[1];
+				$file_names[] = str_replace($matches[0], '', $field_data);
+			}
+			// If file field is just a file ID, much simpler
+			else if (! empty($field_data) && is_numeric($field_data))
+			{
+				$file_ids[] = $field_data;
+			}
+		}
+		
+		$dir_ids = array_unique($dir_ids);
+		
+		$file_names = array_diff($file_names, $this->_file_names);
+		$this->_file_names = array_merge($this->_file_names, $file_names);
+		
+		// Query for files based on file names and directory ID
+		if ( ! empty($file_names))
+		{
+			$file_names = $this->EE->file_model->get_files_by_name($file_names, $dir_ids)->result_array();
+		}
+		
+		$file_ids = array_diff($file_ids, $this->_file_ids);
+		$this->_file_ids = array_merge($this->_file_ids, $file_ids);
+		
+		// Query for files based on file ID
+		if ( ! empty($file_ids))
+		{
+			$file_ids = $this->EE->file_model->get_files_by_id($data)->result_array();
+		}
+		
+		// Merge our results into our cached array
+		$this->_files = array_merge(
+			$this->_files, // Merge itself in case more than one file field is processed
+			$file_names,
+			$file_ids
+		);
+	}
+	
+	// ------------------------------------------------------------------------
+	
+	/**
+	 * Searches the local _files array for a particular file based on a specific
+	 * key and value, and queries the database for the file if it doesn't exist.
+	 *
+	 * @param mixed $file_reference	File ID or file name of file to return
+	 * @param string $dir_id		Directory ID file is in, if searching by file name
+	 * @return array				File information
+	 */
+	public function get_file($file_reference = NULL, $dir_id = NULL)
+	{
+		// This is what we're returning, we'll be overwriting it by the end of
+		// the function if all goes well
+		$file = FALSE;
+		
+		if ($file_reference != NULL)
+		{
+			// Assign the key (field) and value we'll be searching by
+			$key = (is_numeric($file_reference)) ? 'file_id' : 'file_name';
+			
+			// Loop through cached files
+			foreach ($this->_files as $file)
+			{
+				// See if key exists
+				if (isset($file[$key]))
+				{
+					// If value exists, return the file and stop the search
+					if (($key == 'file_id' AND $file[$key] == $file_reference) OR
+						// If we're searching by file name, make sure we're grabbing the
+						// correct file in the case that we cached two files with the same
+						// name but in different upload directories.
+						($key == 'file_name' AND $file[$key] == $file_reference
+							AND $file['upload_location_id'] == $dir_id))
+					{
+						return $file;
+					}
+				}
+			}
+			
+			// If we got here, we need to query for the file
+			$this->EE->load->model('file_model');
+			
+			// Query based on file ID
+			if (is_numeric($file_reference))
+			{
+				$file = $this->EE->file_model->get_files_by_id($file_reference)->row_array();
+			}
+			// Query based on file name and directory ID
+			else
+			{
+				$file = $this->EE->file_model->get_files_by_name($file_reference, $dir_id)->row_array();
+			}
+			
+			$this->_files[] = $file;
+		}
+		
+		return $file;
+	}
+	
+	// ------------------------------------------------------------------------
+	
+	/**
 	 * Parse field contents, which may be in the {filedir_n} format for may be
 	 * a file ID.
 	 *
@@ -295,55 +435,49 @@ class File_field {
 	 */
 	public function parse_field($data)
 	{
-		$this->EE->load->model('file_model');
-
+		// Get cached upload directories
 		$file_dirs = $this->_file_dirs();
 		
 		// If the file field is in the "{filedir_n}image.jpg" format
 		if (preg_match('/^{filedir_(\d+)}/', $data, $matches))
 		{
-			// Only replace it once
-			$path = substr($data, 0, 10 + strlen($matches[1]));
-			
 			// Set upload directory ID and file name
 			$dir_id = $matches[1];
 			$file_name = str_replace($matches[0], '', $data);
 			
-			$file = $this->EE->file_model->get_files_by_name($file_name, $dir_id)->row_array();
+			$file = $this->get_file($file_name, $dir_id);
 		}
 		// If file field is just a file ID
 		else if (! empty($data) && is_numeric($data))
 		{
-			// Query file model on file ID
-			$file = $this->EE->file_model->get_files_by_id($data)->row_array();
+			$file = $this->get_file($data);
 		}
-
+		
 		// If there is no file, get out of here
 		if (empty($file))
 		{
 			return FALSE;
 		}
-
+		
 		// Set additional data based on what we've gathered
 		$file['path'] 		= (isset($file_dirs[$file['upload_location_id']])) ? $file_dirs[$file['upload_location_id']] : '';
 		$file['extension'] 	= substr(strrchr($file['file_name'], '.'), 1);
 		$file['filename'] 	= basename($file['file_name'], '.'.$file['extension']); // backwards compatibility
 		$file['url'] 		= $file['path'].$file['file_name'];
-
+		
 		$dimensions = explode(" ", $file['file_hw_original']);
-
+		
 		$file['width'] 	= isset($dimensions[1]) ? $dimensions[1] : '';
 		$file['height'] = isset($dimensions[0]) ? $dimensions[0] : '';
-
-		// Make the URLs of any manipulated versions available via e.g. {url:small}
-		$manipulations = $this->EE->file_model->get_dimensions_by_dir_id($file['upload_location_id'])->result_array();
-
+		
+		$manipulations = $this->_get_dimensions_by_dir_id($file['upload_location_id']);
+		
 		foreach($manipulations as $m)
 		{
 			$file['url:'.$m['short_name']] = $file['path'].'_'.$m['short_name'].'/'.$file['file_name'];
-
+			
 		}
-
+		
 		return $file;
 	}
 	
@@ -401,15 +535,35 @@ class File_field {
 	// ------------------------------------------------------------------------
 	
 	/**
+	 * Gets dimensions for an upload directory and caches them
+	 *
+	 * @param int $dir_id	ID of upload directory
+	 * @return array		Array of image manipulation settings
+ 	 */
+	private function _get_dimensions_by_dir_id($dir_id)
+	{
+		if ( ! isset($this->_manipulations[$dir_id]))
+		{
+			$this->EE->load->model('file_model');
+			
+			$this->_manipulations[$dir_id] = $this->EE->file_model->get_dimensions_by_dir_id($dir_id)->result_array();
+		}
+		
+		return $this->_manipulations[$dir_id];
+	}
+	
+	// ------------------------------------------------------------------------
+	
+	/**
 	 * Add the file browser CSS to the head
 	 */
 	private function _browser_css()
 	{
 		$this->EE->cp->add_to_head($this->EE->view->head_link('css/file_browser.css'));
 	}
-
+	
 	// ------------------------------------------------------------------------
-
+	
 	/**
 	 * Loads up javascript dependencies and global variables for the file 
 	 * browser and file uploader

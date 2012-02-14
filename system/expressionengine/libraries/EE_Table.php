@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -73,6 +73,18 @@ class EE_Table extends CI_Table {
 		$this->base_url = $url;
 	}
 	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Force non-ajax behvavior
+	 *
+	 * Workaround for the edit page modal until we figure out a neater
+	 * way to get around the first load issues on that page.
+	 *
+	 * @third parties: do not touch this, it will definitely change
+	 *
+	 * @access	public
+	 */
 	function force_initial_load()
 	{
 		$this->no_ajax = TRUE;
@@ -292,44 +304,37 @@ class EE_Table extends CI_Table {
 		$this->_compile_template();
 		
 		$open_bak = $this->template['table_open'];
-		$templates = array(
-			'template' => '',
-			'template_alt' => 'alt_'
-		);
-		
-		// two templates for alternating rows - ick
-		foreach ($templates as $var => $k)
+
+		// prep the jquery template
+		$temp = $this->template['row_start'];
+
+		foreach($this->column_config as $column => $config)
 		{
-			$temp = $this->template['row_'.$k.'start'];
-
-			foreach($this->column_config as $column => $config)
+			$html = FALSE;
+			
+			if (is_array($config))
 			{
-				$html = FALSE;
-				
-				if (is_array($config))
-				{
-					$html = (isset($config['html'])) ? (bool) $config['html'] : FALSE;
-				}
-				
-				// handle data of array('data' => 'content', 'attr' => 'value')
-				$temp .= '{{if $.isPlainObject('.$column.')}}';
-					$temp .= substr($this->template['cell_'.$k.'start'], 0, -1);
-					$temp .= '{{each '.$column.'}}';
-						$temp .= '{{if $index != "data"}} ${$index}="${$value}" {{/if}}';
-					$temp .= '{{/each}}';
-					$temp .= '>';
-					$temp .= $html ? '{{html '.$column.'.data}}' : '${'.$column.'.data}';
-				$temp .= '{{else}}';
-					$temp .= $this->template['cell_'.$k.'start'];
-					$temp .= $html ? '{{html '.$column.'}}' : '${'.$column.'}';
-				$temp .= '{{/if}}';
-				
-				$temp .= $this->template['cell_'.$k.'end']."\n";
+				$html = (isset($config['html'])) ? (bool) $config['html'] : FALSE;
 			}
-
-			$temp .= $this->template['row_'.$k.'end'];			
-			$$var = $temp;
+			
+			// handle data of array('data' => 'content', 'attr' => 'value')
+			$temp .= '{{if $.isPlainObject('.$column.')}}';
+				$temp .= substr($this->template['cell_start'], 0, -1);
+				$temp .= '{{each '.$column.'}}';
+					$temp .= '{{if $index != "data"}} ${$index}="${$value}" {{/if}}';
+				$temp .= '{{/each}}';
+				$temp .= '>';
+				$temp .= $html ? '{{html '.$column.'.data}}' : '${'.$column.'.data}';
+			$temp .= '{{else}}';
+				$temp .= $this->template['cell_start'];
+				$temp .= $html ? '{{html '.$column.'}}' : '${'.$column.'}';
+			$temp .= '{{/if}}';
+			
+			$temp .= $this->template['cell_end']."\n";
 		}
+
+		$temp .= $this->template['row_end'];			
+		$template = $temp;
 		
 		// add data to our headings for the sort mechanism
 		$column_k = array_keys($this->column_config);
@@ -359,7 +364,6 @@ class EE_Table extends CI_Table {
 			'base_url'		=> $this->base_url,
 			'columns'		=> $this->column_config,
 			'template'		=> $template,
-			'template_alt'	=> $template_alt,
 			'empty_cells'	=> $this->empty_cells,
 			'no_results'	=> $this->no_results,
 			'pagination'	=> $this->pagination_tmpl,

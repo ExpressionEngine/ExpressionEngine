@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -104,7 +104,20 @@ class File_ft extends EE_Fieldtype {
 	}
 	
 	// --------------------------------------------------------------------
-
+	
+	/**
+	 * Runs before the channel entries loop on the front end
+	 *
+	 * @param array $data	All custom field data about to be processed for the front end
+	 * @return void
+	 */
+	function pre_loop($data)
+	{
+		$this->EE->file_field->cache_data($data);
+	}
+	
+	// --------------------------------------------------------------------
+	
 	/**
 	 * Replace frontend tag
 	 *
@@ -112,7 +125,12 @@ class File_ft extends EE_Fieldtype {
 	 */
 	function replace_tag($file_info, $params = array(), $tagdata = FALSE)
 	{
-		if ($tagdata !== FALSE)
+		// Make sure we have file_info to work with
+		if ($tagdata !== FALSE AND $file_info === FALSE)
+		{
+			$tagdata = $this->EE->functions->prep_conditionals($tagdata, array());
+		}
+		else if ($tagdata !== FALSE)
 		{
 			$tagdata = $this->EE->functions->prep_conditionals($tagdata, $file_info);
 
@@ -135,9 +153,11 @@ class File_ft extends EE_Fieldtype {
 
 						switch ($val)
 						{
-							case 'upload_date' 	: $upload_date[$matches['0'][$j]] = $this->EE->localize->fetch_date_params($matches['1'][$j]);
+							case 'upload_date':
+								$upload_date[$matches['0'][$j]] = $this->EE->localize->fetch_date_params($matches['1'][$j]);
 								break;
-							case 'modified_date' : $modified_date[$matches['0'][$j]] = $this->EE->localize->fetch_date_params($matches['1'][$j]);
+							case 'modified_date':
+								$modified_date[$matches['0'][$j]] = $this->EE->localize->fetch_date_params($matches['1'][$j]);
 								break;
 						}
 					}
@@ -150,7 +170,17 @@ class File_ft extends EE_Fieldtype {
 				if (isset($upload_date[$key]))
 				{
 					foreach ($upload_date[$key] as $dvar)
-						$val = str_replace($dvar, $this->EE->localize->convert_timestamp($dvar, $file_info['upload_date'], TRUE), $val);					
+					{
+						$val = str_replace(
+							$dvar, 
+							$this->EE->localize->convert_timestamp(
+								$dvar, 
+								$file_info['upload_date'], 
+								TRUE
+							), 
+							$val
+						);
+					}
 
 					$tagdata = $this->EE->TMPL->swap_var_single($key, $val, $tagdata);
 				}
@@ -159,7 +189,17 @@ class File_ft extends EE_Fieldtype {
 				if (isset($modified_date[$key]))
 				{
 					foreach ($modified_date[$key] as $dvar)
-						$val = str_replace($dvar, $this->EE->localize->convert_timestamp($dvar, $file_info['modified_date'], TRUE), $val);					
+					{
+						$val = str_replace(
+							$dvar, 
+							$this->EE->localize->convert_timestamp(
+								$dvar, 
+								$file_info['modified_date'], 
+								TRUE
+							),
+							$val
+						);
+					}
 
 					$tagdata = $this->EE->TMPL->swap_var_single($key, $val, $tagdata);
 				}
@@ -212,7 +252,7 @@ class File_ft extends EE_Fieldtype {
 	{
 		if ($modifier)
 		{
-			$file_info['path'] .= '_'.$modifier.'/';	
+			$file_info['path'] .= '_'.$modifier.'/';
 		}
 
 		return $this->replace_tag($file_info, $params, $tagdata);
@@ -238,7 +278,7 @@ class File_ft extends EE_Fieldtype {
 		
 		$directory_options['all'] = lang('all');
 		
-		$dirs = $this->EE->file_upload_preferences_model->get_upload_preferences(1);
+		$dirs = $this->EE->file_upload_preferences_model->get_file_upload_preferences(1);
 
 		foreach($dirs as $dir)
 		{

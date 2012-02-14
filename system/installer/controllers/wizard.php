@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -44,7 +44,7 @@ class Wizard extends CI_Controller {
 	var $content			= '';
 	var $title				= 'ExpressionEngine Installation and Update Wizard';
 	var $heading			= 'ExpressionEngine Installation and Update Wizard';
-	var $copyright			= 'Copyright 2003 - 2011 EllisLab, Inc. - All Rights Reserved';
+	var $copyright			= 'Copyright 2003 - 2012 EllisLab, Inc. - All Rights Reserved';
 	
 	var $now;
 	var $year;
@@ -172,7 +172,7 @@ class Wizard extends CI_Controller {
 		// Third party constants
 		if ($this->config->item('third_party_path'))
 		{
-			define('PATH_THIRD',    rtrim($this->EE->config->item('third_party_path'), '/').'/');
+			define('PATH_THIRD',    rtrim($this->config->item('third_party_path'), '/').'/');
 		}
 		else
 		{
@@ -207,17 +207,19 @@ class Wizard extends CI_Controller {
 
 		// First try the current directory, if they are running the system with an admin.php file
 		$this->theme_path = substr($_SERVER['SCRIPT_FILENAME'], 0, -strlen(SELF));
-			
+
 		if (is_dir($this->theme_path.'themes'))
 		{
 			$this->theme_path .= 'themes/';
 		}
 		else
 		{
-			// must be in a public system folder so try one level back from current folder
-			$this->theme_path = preg_replace('/\b'.preg_quote(SYSDIR).'\b/', '', $this->theme_path).'themes/';
+			// Must be in a public system folder so try one level back from current folder.
+			// Replace only the LAST occurance of the system folder name with nil incase the
+			// system folder name appears more than once in the path.
+			$this->theme_path = preg_replace('/\b'.preg_quote(SYSDIR).'(?!.*'.preg_quote(SYSDIR).')\b/', '', $this->theme_path).'themes/';
 		}
-
+		
 		$this->root_theme_path = $this->theme_path;
 		$this->theme_path .= 'site_themes/';
 		$this->theme_path = str_replace('//', '/', $this->theme_path);

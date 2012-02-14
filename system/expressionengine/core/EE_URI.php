@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -168,7 +168,7 @@ class EE_URI extends CI_URI {
 		foreach($segs as $val)
 		{
 			// Filter segments for security
-			$val = trim($this->_filter_uri($val));
+			$val = trim($this->_filter_uri(urldecode($val)));
 			
 			if ($val != '')
 			{

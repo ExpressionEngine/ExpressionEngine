@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -389,7 +389,7 @@ class Category_model extends CI_Model {
 
 		if ($cat_id != '')
 		{
-			$this->db->where('cat_id != '.$cat_id);
+			$this->db->where('cat_id !=', $cat_id);
 		}
 
 		$count = $this->db->count_all_results();
@@ -414,7 +414,7 @@ class Category_model extends CI_Model {
 
 		if ($group_id != '')
 		{
-			$this->db->where('group_id != '.$group_id);
+			$this->db->where('group_id !=', $group_id);
 		}
 
 		$count = $this->db->count_all_results();

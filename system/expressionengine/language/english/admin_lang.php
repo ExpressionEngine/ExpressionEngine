@@ -1626,9 +1626,6 @@ $lang = array(
 "add_new_html_button" => 
 "Add new HTML button",
 
-"import_from_mt" =>
-"Movable Type Import Utility",
-
 "member_import" =>
 "Member Import Utility",
 

@@ -4,13 +4,13 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -23,9 +23,9 @@
  * @link		http://expressionengine.com
  */
 class EE_Localize {
-  
+
 	var $server_now			= '';	// Local server time
-	var $now				= '';  // Local server time as GMT  
+	var $now				= '';  // Local server time as GMT
 	var $ctz				=  0;  // Current user's timezone setting
 	var $zones				= array();
  	var $cached				= array();
@@ -40,10 +40,10 @@ class EE_Localize {
 									'DATE_RSS'		=>	'%D, %d %M %Y %H:%i:%s %O',
 									'DATE_W3C'		=>	'%Y-%m-%dT%H:%i:%s%Q'
 									);
-  
+
 	/**
 	 * Constructor
-	 */	  
+	 */
 	function __construct()
 	{
 		// Make a local reference to the ExpressionEngine super object
@@ -54,9 +54,10 @@ class EE_Localize {
 		$this->zones		= $this->zones();
 
 		// Align PHP's default timezone with EE's server timezone setting
-		date_default_timezone_set($this->_get_php_timezone($this->EE->config->item('server_timezone')));
+		// EXPERIMENTAL - Not stable. Don't uncomment.
+		//date_default_timezone_set($this->_get_php_timezone($this->EE->config->item('server_timezone')));
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -71,6 +72,10 @@ class EE_Localize {
 	 */
 	function string_to_timestamp($human_string)
 	{
+		// THIS METHOD IS EXPERIMENTAL. Not stable for 2.4 release.
+
+		return $this->convert_human_date_to_gmt($human_string);
+
 		// Get the user's locale so that we have a baseline for converting their
 		// written datetime to UTC, and temporarily tell PHP to use it for this
 		// conversion only. If the user hasn't specified a timezone, the EE server
@@ -112,24 +117,24 @@ class EE_Localize {
 	 * @access	public
 	 * @param	string
 	 * @return	string
-	 */	
+	 */
 	function set_gmt($now = '')
 	{
 		$this->EE->load->library('logger');
 		$this->EE->logger->deprecated('2.3');
-		
+
 		if ($now == '')
 		{
-			$now = time(); 
+			$now = time();
 		}
-		
+
 		if ( ! is_numeric($now))
 		{
 			$now = strtotime($now);
 		}
-		
+
 		return $now;
-	}	
+	}
 
 	// --------------------------------------------------------------------
 
@@ -139,17 +144,17 @@ class EE_Localize {
 	 * @access	public
 	 * @param	string
 	 * @return	string
-	 */	
+	 */
 	function timestamp_to_gmt($str = '')
-	{		
+	{
 		// We'll remove certain characters for backward compatibility
 		// since the formatting changed with MySQL 4.1
 		// YYYY-MM-DD HH:MM:SS
-		
+
 		$str = str_replace('-', '', $str);
 		$str = str_replace(':', '', $str);
 		$str = str_replace(' ', '', $str);
-		
+
 		// YYYYMMDDHHMMSS
 
 		return gmmktime(
@@ -161,8 +166,8 @@ class EE_Localize {
 			substr($str,0,4)
 		);
 	}
-	
-	
+
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -182,11 +187,11 @@ class EE_Localize {
 		{
 			$now = $this->now;
 		}
-				
+
 		// This lets us use a different timezone then the logged in user to calculate a time.
 		// Right now we only use this to show the local time of other users
 		if ($timezone == '')
-		{	
+		{
 			$timezone = $this->EE->session->userdata['timezone'];
 		}
 
@@ -204,15 +209,15 @@ class EE_Localize {
 		{
 			$dst = $this->EE->session->userdata('daylight_savings');
 		}
-		
+
 		if ($dst == 'y')
 		{
 			$now += 3600;
 		}
-		
+
 		return $this->set_server_offset($now);
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -230,28 +235,28 @@ class EE_Localize {
 		{
 			$now = $this->now;
 		}
-		
+
 		if ($tz = $this->EE->config->item('server_timezone'))
 		{
 			$now += $this->zones[$tz] * 3600;
 		}
-		
+
 		if ($this->EE->config->item('daylight_savings') == 'y')
 		{
 			$now += 3600;
 		}
-		
+
 		$now = $this->set_server_offset($now);
-				
+
 		return $now;
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
 	 *   Set server offset
 	 *
-	 * Takes a Unix timestamp as input and adds/subtracts the number of 
+	 * Takes a Unix timestamp as input and adds/subtracts the number of
 	 * minutes specified in the master server time offset preference
 	 *
 	 * The optional second parameter lets us reverse the offset (positive number becomes negative)
@@ -264,19 +269,19 @@ class EE_Localize {
 	function set_server_offset($time, $reverse = 0)
 	{
 		$offset = ( ! $this->EE->config->item('server_offset')) ? 0 : $this->EE->config->item('server_offset') * 60;
-		
+
 		if ($offset == 0)
 		{
 			return $time;
 		}
-		
+
 		if ($reverse == 1)
 		{
 			$offset = $offset * -1;
 		}
-		
+
 		$time += $offset;
-		
+
 		return $time;
 	}
 
@@ -290,59 +295,59 @@ class EE_Localize {
 	 * the site.  It solves a dilemma we face when using functions like mktime()
 	 * which base their output on the server's timezone.  When a channel entry is
 	 * submitted, the entry date is converted to a Unix timestamp.  But since
-	 * the user submitting the entry might not be in the same timezone as the 
+	 * the user submitting the entry might not be in the same timezone as the
 	 * server we need to offset the timestamp to reflect this difference.
 	 *
 	 * @access	public
 	 * @return	void
-	 */	
+	 */
 	function set_localized_offset()
 	{
 		$offset = 0;
-				
+
 		if ($this->EE->session->userdata['timezone'] == '')
 		{
 			if ($tz = $this->EE->config->item('server_timezone'))
 			{
 				$offset += $this->zones[$tz];
 			}
-			
+
 			if ($this->EE->config->item('daylight_savings') == 'y')
 			{
 				$offset += 1;
 			}
 		}
 		else
-		{			 
-			$offset += $this->zones[$this->EE->session->userdata['timezone']];  
-			 
+		{
+			$offset += $this->zones[$this->EE->session->userdata['timezone']];
+
 			if ($this->EE->session->userdata['daylight_savings'] == 'y')
 			{
 				$offset += 1;
 			}
-		} 
-		
+		}
+
 		// Offset this number based on the server offset (if it exists)
 		$time = $this->set_server_offset(0, 1);
-		
+
 		// Divide by 3600, making our offset into hours
 		$time = $time/3600;
-		
+
 		// add or subtract it from our timezone offset
 		$offset -= $time;
-		
+
 		// Multiply by -1 to invert the value (positive becomes negative and vice versa)
 		$offset = $offset * -1;
-		
+
 		// Convert it to seconds
 		if ($offset != 0)
 		{
 			$offset = $offset * (60 * 60);
 		}
-		
+
 		return $offset;
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -363,22 +368,22 @@ class EE_Localize {
 		/* -------------------------------------------
 		/*	Hidden Configuration Variables
 		/*	- include_seconds => Determines whether to include seconds in our human time.
-		/* -------------------------------------------*/		
-		
+		/* -------------------------------------------*/
+
 		if (func_num_args() != 3 && $this->EE->config->item('include_seconds') == 'y')
 		{
 			$seconds = TRUE;
 		}
-		
+
 		$fmt = ($this->EE->session->userdata['time_format'] != '') ? $this->EE->session->userdata['time_format'] : $this->EE->config->item('time_format');
-	
+
 		if ($localize)
 		{
 			$now = $this->set_localized_time($now);
 		}
-			
+
 		$r  = gmdate('Y', $now).'-'.gmdate('m', $now).'-'.gmdate('d', $now).' ';
-			
+
 		if ($fmt == 'us')
 		{
 			$r .= gmdate('h', $now).':'.gmdate('i', $now);
@@ -387,26 +392,26 @@ class EE_Localize {
 		{
 			$r .= gmdate('H', $now).':'.gmdate('i', $now);
 		}
-		
+
 		if ($seconds)
 		{
 			$r .= ':'.gmdate('s', $now);
 		}
-		
+
 		if ($fmt == 'us')
 		{
 			$r .= ' '.gmdate('A', $now);
 		}
-			
+
 		return $r;
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
 	 * Convert "human" date to GMT
 	 *
-	 * Converts the human-readable date used in the channel entry 
+	 * Converts the human-readable date used in the channel entry
 	 * submission page back to Unix/GMT
 	 *
 	 * @access	public
@@ -419,32 +424,32 @@ class EE_Localize {
 		{
 			return FALSE;
 		}
-		
+
 		$datestr = trim($datestr);
-		
+
 		$datestr = preg_replace('/\040+/', ' ', $datestr);
-		
+
 		if ( ! preg_match('/^[0-9]{2,4}\-[0-9]{1,2}\-[0-9]{1,2}\s[0-9]{1,2}:[0-9]{1,2}(?::[0-9]{1,2})?(?:\s[AP]M)?$/i', $datestr))
 		{
 			return $this->EE->lang->line('invalid_date_formatting');
 		}
-		
+
 		$split	= explode(' ', $datestr);
 
 		$ex		= explode("-", $split[0]);
-		
+
 		$year	= (strlen($ex[0]) == 2) ? '20'.$ex[0] : $ex[0];
 		$month	= (strlen($ex[1]) == 1) ? '0'.$ex[1]  : $ex[1];
 		$day	= (strlen($ex[2]) == 1) ? '0'.$ex[2]  : $ex[2];
 
-		$ex		= explode(":", $split[1]); 
-		
+		$ex		= explode(":", $split[1]);
+
 		$hour	= (strlen($ex[0]) == 1) ? '0'.$ex[0] : $ex[0];
 		$min	= (strlen($ex[1]) == 1) ? '0'.$ex[1] : $ex[1];
 
 		// I'll explain later
 		$fib_seconds = FALSE;
-		
+
 		if (isset($ex[2]) && preg_match('/[0-9]{1,2}/', $ex[2]))
 		{
 			$sec = sprintf('%02d', $ex[2]);
@@ -452,7 +457,7 @@ class EE_Localize {
 		else
 		{
         	// Unless specified, seconds get set to zero.
-			// $sec = '00'; 
+			// $sec = '00';
 			// The above doesn't make sense to me, and can cause entries submitted within the same
 			// minute to have identical timestamps, so I'm reverting to an older behavior - D'Jones
 			// *********************************************************************************************
@@ -466,21 +471,21 @@ class EE_Localize {
 			$sec = date('s', $this->now);
 			$fib_seconds = TRUE;
 		}
-		
+
 		if (isset($split[2]))
 		{
 			$ampm = strtolower($split[2]);
-			
+
 			if (substr($ampm, 0, 1) == 'p' AND $hour < 12)
 			{
 				$hour = $hour + 12;
 			}
-			
+
 			if (substr($ampm, 0, 1) == 'a' AND $hour == 12)
 			{
 				$hour =  '00';
 			}
-			
+
 			if (strlen($hour) == 1)
 			{
 				$hour = '0'.$hour;
@@ -499,12 +504,12 @@ class EE_Localize {
 		{
 			$time = $time - 1;
 		}
-		
+
 		$time += $this->set_localized_offset();
-		
+
 		return $time;
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -526,10 +531,10 @@ class EE_Localize {
 		{
 			$time += 3600;
 		}
-	
+
 		return $time;
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -550,10 +555,10 @@ class EE_Localize {
 	{
 		$this->EE->load->library('logger');
 		$this->EE->logger->deprecated();
-		
+
 		return $time;
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -566,95 +571,95 @@ class EE_Localize {
 	 * @return	string
 	 */
 	function format_timespan($seconds = '')
-	{		
+	{
 		// things can get really screwy if a negative number is passed, which can happen
 		// in very rare load-balanced environments when the web servers' are not in
 		// perfect sync with one another
 		$seconds = abs($seconds);
-		
+
 		$seconds = ($seconds == '') ? 1 : $seconds;
 
 		$str = '';
-		
+
 		$years = floor($seconds / 31536000);
-		
+
 		if ($years > 0)
-		{		
+		{
 			$str .= $years.' '.$this->EE->lang->line(($years	> 1) ? 'years' : 'year').', ';
-		}	
-		
+		}
+
 		$seconds -= $years * 31536000;
-		
+
 		$months = floor($seconds / 2628000);
-		
+
 		if ($years > 0 OR $months > 0)
 		{
 			if ($months > 0)
-			{		
+			{
 				$str .= $months.' '.$this->EE->lang->line(($months	> 1) ? 'months'	: 'month').', ';
-			}	
-		
+			}
+
 			$seconds -= $months * 2628000;
 		}
 
 		$weeks = floor($seconds / 604800);
-		
+
 		if ($years > 0 OR $months > 0 OR $weeks > 0)
 		{
 			if ($weeks > 0)
-			{				
+			{
 				$str .= $weeks.' '.$this->EE->lang->line(($weeks > 1) ? 'weeks' : 'week').', ';
 			}
-			
+
 			$seconds -= $weeks * 604800;
-		}			
+		}
 
 		$days = floor($seconds / 86400);
-		
+
 		if ($months > 0 OR $weeks > 0 OR $days > 0)
 		{
 			if ($days > 0)
-			{			
+			{
 				$str .= $days.' '.$this->EE->lang->line(($days > 1) ? 'days' : 'day').', ';
 			}
-		
+
 			$seconds -= $days * 86400;
 		}
-		
+
 		$hours = floor($seconds / 3600);
-		
+
 		if ($days > 0 OR $hours > 0)
 		{
 			if ($hours > 0)
 			{
 				$str .= $hours.' '.$this->EE->lang->line(($hours > 1) ? 'hours' : 'hour').', ';
 			}
-			
+
 			$seconds -= $hours * 3600;
 		}
-		
+
 		$minutes = floor($seconds / 60);
-		
+
 		if ($days > 0 OR $hours > 0 OR $minutes > 0)
 		{
 			if ($minutes > 0)
-			{		
+			{
 				$str .= $minutes.' '.$this->EE->lang->line(($minutes	> 1) ? 'minutes' : 'minute').', ';
 			}
-			
+
 			$seconds -= $minutes * 60;
 		}
-		
+
 		if ($str == '')
 		{
 			$str .= $seconds.' '.$this->EE->lang->line(($seconds	> 1) ? 'seconds' : 'second').', ';
 		}
-				
+
 		$str = substr(trim($str), 0, -1);
-					
+
 		return $str;
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -671,10 +676,10 @@ class EE_Localize {
 
 		if ( ! preg_match_all("/(%\S)/", $datestr, $matches))
 				return;
-				 
+
 		return $matches[1];
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -682,7 +687,7 @@ class EE_Localize {
 	 *
 	 * This function takes a string containing text and
 	 * date codes and extracts only the codes.  Then,
-	 * the codes are converted to their actual timestamp 
+	 * the codes are converted to their actual timestamp
 	 * values and the string is reassembled.
 	 *
 	 * @access	public
@@ -694,24 +699,24 @@ class EE_Localize {
 	function decode_date($datestr = '', $unixtime = '', $localize = TRUE)
 	{
 		$prelocalized = FALSE;
-		
+
 		if ($datestr == '')
 		{
-			return (int) 0;			
+			return (int) 0;
 		}
-			
+
 		if ($unixtime == 0)
 		{
-			return (int) 0;			
+			return (int) 0;
 		}
-	 
+
 		if ( ! preg_match_all("/(%\S)/", $datestr, $matches))
 		{
-			return $unixtime;			
+			return $unixtime;
 		}
-		
+
 		$gmt_tz_offsets = FALSE;
-		
+
 		if ($localize === TRUE)
 		{
 			$unixtime = $this->set_localized_time($unixtime);
@@ -722,10 +727,10 @@ class EE_Localize {
 		{
 			$datestr = str_replace($val, $this->convert_timestamp($val, $unixtime, FALSE, $prelocalized), $datestr);
 		}
-			
+
 		return $datestr;
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -738,7 +743,7 @@ class EE_Localize {
 	 * @return	string
 	 */
 	function localize_month($month = '')
-	{	
+	{
 		$months = array(
 							'01' => array('Jan', 'January'),
 							'02' => array('Feb', 'February'),
@@ -753,7 +758,7 @@ class EE_Localize {
 							'11' => array('Nov', 'November'),
 							'12' => array('Dec', 'December')
 						);
-						
+
 		if (isset($months[$month]))
 		{
 			return $months[$month];
@@ -774,28 +779,28 @@ class EE_Localize {
 	 * @return	mixed
 	 */
 	function convert_timestamp($format = '', $time = '', $localize = TRUE, $prelocalized = FALSE)
-	{	
+	{
 		$return_str = FALSE;
-		
+
 		if ( ! is_array($format))
 		{
 			$format = array($format);
 			$return_str = TRUE;
 		}
-		
+
 		$localized_tz = ($prelocalized == TRUE) ? TRUE : $localize;
-		
+
 		$translate = (isset($this->EE->TMPL) && is_object($this->EE->TMPL) && $this->EE->TMPL->template_type == 'feed') ? FALSE : TRUE;
-			
+
 		if ($this->ctz == 0)
 		{
 			$this->ctz = $this->set_localized_timezone();
 		}
 
 		$time = ($localize == TRUE) ? $this->set_localized_time($time) : $time;
-		
+
 		$return = array();
-				
+
 		foreach($format as $which)
 		{
 			if (isset($this->cached[$time][$which]))
@@ -803,7 +808,7 @@ class EE_Localize {
 				$return[] = $this->cached[$time][$which];
 				continue;
 			}
-	  
+
 			switch ($which)
 			{
 				case '%a': 	$var = ($translate === FALSE) ? gmdate('a', $time) : $this->EE->lang->line(gmdate('a', $time)); // am/pm
@@ -835,9 +840,9 @@ class EE_Localize {
 					break;
 				case '%l': 	$var = ($translate === FALSE) ? gmdate('l', $time) : $this->EE->lang->line(gmdate('l', $time)); // Monday, Tuesday
 					break;
-				case '%L': 	$var = gmdate('L', $time); 
+				case '%L': 	$var = gmdate('L', $time);
 					break;
-				case '%m': 	$var = gmdate('m', $time);	
+				case '%m': 	$var = gmdate('m', $time);
 					break;
 				case '%M': 	$var = ($translate === FALSE) ? gmdate('M', $time) : $this->EE->lang->line(gmdate('M', $time)); // Jan, Feb
 					break;
@@ -874,12 +879,12 @@ class EE_Localize {
 				default  :  $var = '';
 					break;
 			}
-			
+
 			$this->cached[$time][$which] = $var;
-			
+
 			$return[] = $var;
 		}
-		
+
 		return ($return_str == TRUE) ? array_pop($return) : $return;
 	}
 
@@ -897,28 +902,28 @@ class EE_Localize {
 		if ($tz == '')
 		{
 			return '+00:00';
-		}	
-			
+		}
+
 		$zone = trim($this->zones[$tz]);
-		
+
 		if ( ! strstr($zone, '.'))
 		{
 			$zone .= ':00';
 		}
-		
+
 		$zone = str_replace(".5", ':30', $zone);
-		
+
 		if (substr($zone, 0, 1) != '-')
 		{
 			$zone = '+'.$zone;
 		}
-				
+
 		$zone = preg_replace("/^(.{1})([0-9]{1}):(\d+)$/", "\\1D\\2:\\3", $zone);
 		$zone = str_replace("D", '0', $zone);
-	 
-		return $zone;		
+
+		return $zone;
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -929,10 +934,10 @@ class EE_Localize {
 	 * @return	string
 	 */
 	function timezone_menu($default = '')
-	{		
+	{
 		$r  = "<div class='default'>";
 		$r .= "<select name='server_timezone' class='select'>";
-		
+
 		foreach ($this->zones as $key => $val)
 		{
 			$selected = ($default == $key) ? " selected='selected'" : '';
@@ -945,9 +950,9 @@ class EE_Localize {
 
 		return $r;
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Timezones
 	 *
@@ -958,9 +963,9 @@ class EE_Localize {
 	 */
 	function zones()
 	{
-		// Note: Don't change the order of these even though 
+		// Note: Don't change the order of these even though
 		// some items appear to be in the wrong order
-		return array( 
+		return array(
 					'UM12'		=> -12,
 					'UM11'		=> -11,
 					'UM10'		=> -10,
@@ -1003,7 +1008,7 @@ class EE_Localize {
 					'UP14'		=> +14
 			);
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -1085,7 +1090,7 @@ class EE_Localize {
 						'UM11'	=> array('SST',	'SST'),
 						'UM10'	=> array('HST',	'HST'),
 						'UM95'	=> array('MART','MART'),
-						'UM9'	=> array('AKST','AKDT'),					
+						'UM9'	=> array('AKST','AKDT'),
 						'UM8'	=> array('PST',	'PDT'),
 						'UM7'	=> array('MST',	'MDT'),
 						'UM6'	=> array('CST',	'CDT'),
@@ -1122,7 +1127,7 @@ class EE_Localize {
 						'UP13'	=> array('PHOT','PHOT'),
 						'UP14'	=> array('LINT','LINT')
                      );
-				
+
 		if ($this->EE->session->userdata['timezone'] == '')
 		{
 			$zone = $this->EE->config->item('server_timezone');
@@ -1133,22 +1138,22 @@ class EE_Localize {
 			$zone = $this->EE->session->userdata['timezone'];
 			$dst = ($this->EE->session->userdata['daylight_savings'] == 'y') ? TRUE : FALSE;
 		}
-		
+
 		if (isset($zones[$zone]))
 		{
 			if ($dst == FALSE)
 			{
-				return $zones[$zone][0];		
+				return $zones[$zone][0];
 			}
 			else
 			{
-				return $zones[$zone][1];		
+				return $zones[$zone][1];
 			}
 		}
-		
-		return 'GMT';	
-	} 
-	
+
+		return 'GMT';
+	}
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -1165,30 +1170,30 @@ class EE_Localize {
 	function fetch_days_in_month($month, $year)
 	{
 		$days_in_month	= array(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
-	
+
 		if ($month < 1 OR $month > 12)
 		{
 			return 0;
 		}
-		
+
 		if ($month == 2)
-		{		
+		{
 			if ($year % 400 == 0 OR ($year % 4 == 0 AND $year % 100 != 0))
 			{
 				return 29;
 			}
 		}
-	
+
 		return $days_in_month[$month - 1];
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
 	 * Adjust Date
 	 *
 	 * This function is used by the calendar.  It verifies that
-	 * the month/day are within the correct range and adjusts 
+	 * the month/day are within the correct range and adjusts
 	 * if necessary.  For example:  Day 34 in Feburary would
 	 * be adjusted to March 6th.
 	 *
@@ -1200,28 +1205,28 @@ class EE_Localize {
 	 */
 	function adjust_date($month, $year, $pad = FALSE)
 	{
-		$date = array(); 
-		
+		$date = array();
+
 		$date['month']	= $month;
 		$date['year']	= $year;
-		
+
 		while ($date['month'] > 12)
 		{
 			$date['month'] -= 12;
 			$date['year']++;
 		}
-		
+
 		while ($date['month'] <= 0)
 		{
 			$date['month'] += 12;
 			$date['year']--;
 		}
-		
+
 		if ($pad == TRUE AND strlen($date['month']) == 1)
 		{
 			$date['month'] = '0'.$date['month'];
 		}
-		
+
 		return $date;
 	}
 

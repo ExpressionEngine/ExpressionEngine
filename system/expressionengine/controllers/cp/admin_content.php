@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -965,7 +965,7 @@ class Admin_content extends CI_Controller {
 
 		if (isset($_POST['cat_group']) && is_array($_POST['cat_group']))
 		{
-			$data['cat_group'] = implode('|', $_POST['cat_group']);
+			$data['cat_group'] = ltrim(implode('|', $_POST['cat_group']), '|');
 		}
 		
 		if ( ! isset($data['cat_group']) OR $data['cat_group'] == '')
@@ -1913,8 +1913,20 @@ class Admin_content extends CI_Controller {
 			$this->javascript->keyup('#cat_name', '$("#cat_name").ee_url_title($("#cat_url_title"));');
 		}
 		
-		// Setup category image
 		$this->load->library('file_field');
+		
+		// If there is data in the category image field but the file field library
+		// can't parse it, it's likely legacy data from when a URL was entered in a
+		// text field for the category image. Let's prompt the user to update the
+		// field before they save, otherwise the image will be cleared out.
+		$vars['cat_image_error'] = '';
+		if ( ! empty($vars['cat_image']) &&
+			$this->file_field->parse_field($vars['cat_image']) === FALSE)
+		{
+			$vars['cat_image_error'] = lang('update_category_image');
+		}
+		
+		// Setup category image
 		$this->file_field->browser();
 		$vars['cat_image'] = $this->file_field->field(
 			'cat_image',
@@ -2330,7 +2342,11 @@ class Admin_content extends CI_Controller {
 				{
 					if (($key = array_search($this->input->get_post('parent_id'), $children)) !== FALSE)
 					{
-						$this->db->query($this->db->update_string('exp_categories', array('parent_id' => $query->row('parent_id') ), "cat_id = '".$children[$key]."'"));
+						$this->db->update(
+							'categories',
+							array('parent_id' => $query->row('parent_id')),
+							array('cat_id' => $children[$key])
+						);
 					}
 					else	// Find All Descendants
 					{
@@ -2344,7 +2360,11 @@ class Admin_content extends CI_Controller {
 								{
 									if ($key == $this->input->get_post('parent_id'))
 									{
-										$this->db->query($this->db->update_string('exp_categories', array('parent_id' => $query->row('parent_id') ), "cat_id = '".$key."'"));
+										$this->db->update(
+											'categories',
+											array('parent_id' => $query->row('parent_id')),
+											array('cat_id' => $key)
+										);
 										break 2;
 									}
 
@@ -2357,21 +2377,19 @@ class Admin_content extends CI_Controller {
 			}
 
 			$sql = $this->db->update_string(
-										'exp_categories',
-
-										array(
-												'cat_name'  		=> $this->input->post('cat_name'),
-												'cat_url_title'		=> $this->input->post('cat_url_title'),
-												'cat_description'	=> $this->input->post('cat_description'),
-												'cat_image' 		=> $this->input->post('cat_image'),
-												'parent_id' 		=> $this->input->post('parent_id')
-											 ),
-
-										array(
-												'cat_id'	=> $this->input->post('cat_id'),
-												'group_id'  => $this->input->post('group_id')
-											  )
-									 );
+				'exp_categories',
+				array(
+					'cat_name'  		=> $this->input->post('cat_name'),
+					'cat_url_title'		=> $this->input->post('cat_url_title'),
+					'cat_description'	=> $this->input->post('cat_description'),
+					'cat_image' 		=> $this->input->post('cat_image'),
+					'parent_id' 		=> $this->input->post('parent_id')
+				),
+				array(
+					'cat_id'	=> $this->input->post('cat_id'),
+					'group_id'  => $this->input->post('group_id')
+				)
+			);
 
 			$this->db->query($sql);
 			$update = TRUE;

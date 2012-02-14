@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -45,9 +45,9 @@ class Addons_installer {
 	 * @param	string
 	 * @return	void
 	 */
-	function install($addon, $type = 'module')
+	function install($addon, $type = 'module', $show_package = TRUE)
 	{
-		$this->_update_addon($addon, $type, 'install');
+		$this->_update_addon($addon, $type, 'install', $show_package);
 		return TRUE;
 	}
 	
@@ -62,9 +62,9 @@ class Addons_installer {
 	 * @param	string
 	 * @return	void
 	 */
-	function uninstall($addon, $type = 'module')
+	function uninstall($addon, $type = 'module', $show_package = TRUE)
 	{
-		$this->_update_addon($addon, $type, 'uninstall');
+		$this->_update_addon($addon, $type, 'uninstall', $show_package);
 		return TRUE;
 	}
 	
@@ -433,14 +433,14 @@ class Addons_installer {
 	 * @param	string
 	 * @return	void
 	 */
-	private function _update_addon($addon, $type, $action)
+	private function _update_addon($addon, $type, $action, $show_package)
 	{
 		// accepts arrays
 		if (is_array($type))
 		{
 			foreach($type as $component)
 			{
-				$this->_update_addon($addon, $component, $action);				
+				$this->_update_addon($addon, $component, $action, $show_package);
 			}
 			
 			return;
@@ -453,17 +453,21 @@ class Addons_installer {
 		}
 		
 		// third party - do entire package
-		foreach ($this->EE->addons->_packages[$addon] as $type => $settings)
+		if ($show_package && count($this->EE->addons->_packages[$addon]) > 1) 
+		{
+			$this->EE->functions->redirect(BASE.AMP.'C=addons'.AMP.'M=package_settings'.AMP.'package='.$addon.AMP.'return='.$_GET['C']);
+		}
+		else
 		{
 			$method = $action.'_'.$type;
 
 			if (method_exists($this, $method))
 			{
-				$this->EE->load->add_package_path($settings['path'], FALSE);
+				$this->EE->load->add_package_path($this->EE->addons->_packages[$addon][$type]['path'], FALSE);
 				
 				$this->$method($addon);
 				
-				$this->EE->load->remove_package_path($settings['path']);
+				$this->EE->load->remove_package_path($this->EE->addons->_packages[$addon][$type]['path']);
 			}
 		}
 	}

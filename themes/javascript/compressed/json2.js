@@ -1,3 +1,11 @@
+/*!
+ * http://www.JSON.org/json2.js
+ * Public Domain
+ *
+ * JSON.stringify(value, [replacer, [space]])
+ * JSON.parse(text, reviver)
+ */
+
 if(!this.JSON)this.JSON={};
 (function(){function k(b){return b<10?"0"+b:b}function o(b){p.lastIndex=0;return p.test(b)?'"'+b.replace(p,function(b){var c=r[b];return typeof c==="string"?c:"\\u"+("0000"+b.charCodeAt(0).toString(16)).slice(-4)})+'"':'"'+b+'"'}function l(b,i){var c,d,h,m,g=e,f,a=i[b];a&&typeof a==="object"&&typeof a.toJSON==="function"&&(a=a.toJSON(b));typeof j==="function"&&(a=j.call(i,b,a));switch(typeof a){case "string":return o(a);case "number":return isFinite(a)?String(a):"null";case "boolean":case "null":return String(a);
 case "object":if(!a)return"null";e+=n;f=[];if(Object.prototype.toString.apply(a)==="[object Array]"){m=a.length;for(c=0;c<m;c+=1)f[c]=l(c,a)||"null";h=f.length===0?"[]":e?"[\n"+e+f.join(",\n"+e)+"\n"+g+"]":"["+f.join(",")+"]";e=g;return h}if(j&&typeof j==="object"){m=j.length;for(c=0;c<m;c+=1)d=j[c],typeof d==="string"&&(h=l(d,a))&&f.push(o(d)+(e?": ":":")+h)}else for(d in a)Object.hasOwnProperty.call(a,d)&&(h=l(d,a))&&f.push(o(d)+(e?": ":":")+h);h=f.length===0?"{}":e?"{\n"+e+f.join(",\n"+e)+"\n"+

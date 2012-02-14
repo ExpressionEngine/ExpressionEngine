@@ -9,7 +9,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -44,7 +44,7 @@ jQuery(document).ready(function () {
 		return false;
 	});
 
-		
+	EE.cp.zebra_tables();
 	EE.cp.show_hide_sidebar();
 	EE.cp.display_notices();
 	EE.cp.deprecation_meaning();
@@ -445,4 +445,19 @@ EE.cp.deprecation_meaning = function()
 			width: 460
 		});
 	});
+}
+
+EE.cp.zebra_tables = function(table) {
+	table = table || $('table');
+	
+	if ( ! table.jquery) {
+		table = $(table);
+	}
+		
+	$(table)
+		.find('tr')
+		.removeClass('even odd')
+		.filter(':even').addClass('even')
+		.end()
+		.filter(':odd').addClass('odd');
 }

@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -27,8 +27,8 @@
 class Forum {
 
 
-	public $version				= '3.1.5';
-	public $build				= '20110621';
+	public $version				= '3.1.7';
+	public $build				= '20120123';
 	public $use_site_profile	= FALSE;
 	public $search_limit		= 250; // Maximum number of search results (x2 since it can include this number of topics + this number of posts)
 	public $return_data 		= '';
@@ -1361,6 +1361,7 @@ class Forum {
 				'forum_quick_search_form'		=> 'forum_search',
 				'reply_results'					=> 'forum_search',
 				'result_rows'					=> 'forum_search',
+				'thread_result_rows'			=> 'forum_search',
 				'no_search_result'				=> 'forum_search',
 			// --------------------------------------------------------
 				'login_required_page'			=> 'forum_login',

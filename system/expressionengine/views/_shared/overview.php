@@ -61,7 +61,7 @@ if ($EE_view_disable !== TRUE)
 							if ($item_value !== '----' AND ! is_array($item_value)):
 					?>
 						<tr class="<?=alternator('even', 'odd')?>">
-						<?php if ($this->input->get('C') == 'content' && $menu_key == 'publish'):?>
+						<?php if ($this->input->get('C') == 'content' && ($menu_key == 'publish' OR $menu_key == 'edit')):?>
 							<td class="overviewItemName"><a href="<?=$item_value?>"><?=lang($item_key)?></a></td>
 							<td class="overviewItemDesc">&nbsp;</td>
 							<td class="overviewItemHelp"><a rel="external" href="<?=$this->cp->masked_url($this->menu->generate_help_link($controller, $item_key, $controller))?>"><img src="<?=$cp_theme_url?>images/external_link.png"/></a></td>

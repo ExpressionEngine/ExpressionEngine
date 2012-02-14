@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -218,8 +218,8 @@ class EE_Config Extends CI_Config {
 				$this->site_prefs('', 1);
 				return;
 			}
-
-			exit("Site Error:  Unable to Load Site Preferences; No Preferences Found");
+			
+			show_error("Site Error:  Unable to Load Site Preferences; No Preferences Found");
 		}
 		
 		// Reset Core Preferences back to their Pre-Database State
@@ -242,7 +242,7 @@ class EE_Config Extends CI_Config {
 
 				if ( ! is_string($data) OR substr($data, 0, 2) != 'a:')
 				{
-					exit("Site Error:  Unable to Load Site Preferences; Invalid Preference Data");
+					show_error("Site Error:  Unable to Load Site Preferences; Invalid Preference Data");
 				}			
 				// Any values in config.php take precedence over those in the database, so it goes second in array_merge()
 				$this->config = array_merge(unserialize($data), $this->config);

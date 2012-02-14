@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -58,7 +58,7 @@ class Homepage extends CI_Controller {
 			$this->load->model('tools_model');
 			$unviewed_developer_logs = $this->tools_model->count_unviewed_developer_logs();
 			
-			if ($unviewed_developer_logs > 0 AND $message === FALSE)
+			if ($unviewed_developer_logs > 0)
 			{
 				$message[] = sprintf(lang('developer_logs'), $unviewed_developer_logs, BASE.AMP.'C=tools_logs'.AMP.'M=view_developer_log');
 			}

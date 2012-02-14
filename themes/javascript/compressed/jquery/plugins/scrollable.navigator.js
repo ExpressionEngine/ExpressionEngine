@@ -1,3 +1,15 @@
+/**
+ * @license 
+ * jQuery Tools 1.2.2 / Scrollable Navigator
+ * 
+ * NO COPYRIGHTS OR LICENSES. DO WHAT YOU LIKE.
+ *
+ * http://flowplayer.org/tools/scrollable/navigator.html
+ *
+ * Since: September 2009
+ * Date:    Wed May 19 06:53:17 2010 +0000 
+ */
+
 /*
  
  jQuery Tools 1.2.2 / Scrollable Navigator

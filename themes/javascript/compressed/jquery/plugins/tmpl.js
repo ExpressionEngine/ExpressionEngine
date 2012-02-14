@@ -1,3 +1,13 @@
+/*!
+ * jQuery Templates Plugin 1.0.0pre
+ * http://github.com/jquery/jquery-tmpl
+ * Requires jQuery 1.4.2
+ *
+ * Copyright Software Freedom Conservancy, Inc.
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
+ */
+
 (function(d){function n(a,b,e,c){c={data:c||c===0||c===!1?c:b?b.data:{},_wrap:b?b._wrap:null,tmpl:null,parent:b||null,nodes:[],calls:B,nest:C,wrap:D,html:E,update:F};a&&d.extend(c,a,{nodes:[],parent:b});if(e)c.tmpl=e,c._ctnt=c._ctnt||c.tmpl(d,c),c.key=++o,(t.length?p:j)[o]=c;return c}function q(a,b,e){var c,e=e?d.map(e,function(b){return typeof b==="string"?a.key?b.replace(/(<\w+)(?=[\s>])(?![^>]*_tmplitem)([^>]*)/g,"$1 "+m+'="'+a.key+'" $2'):b:q(b,a,b._ctnt)}):a;if(b)return e;e=e.join("");e.replace(/^\s*([^<\s][^<]*)?(<[\w\W]+>)([^>]*[^>\s])?\s*$/,
 function(b,a,e,i){c=d(e).get();v(c);a&&(c=u(a).concat(c));i&&(c=c.concat(u(i)))});return c?c:u(e)}function u(a){var b=document.createElement("div");b.innerHTML=a;return d.makeArray(b.childNodes)}function w(a){return new Function("jQuery","$item","var $=jQuery,call,__=[],$data=$item.data;with($data){__.push('"+d.trim(a).replace(/([\\'])/g,"\\$1").replace(/[\r\t\n]/g," ").replace(/\$\{([^\}]*)\}/g,"{{= $1}}").replace(/\{\{(\/?)(\w+|.)(?:\(((?:[^\}]|\}(?!\}))*?)?\))?(?:\s+(.*?)?)?(\(((?:[^\}]|\}(?!\}))*?)\))?\s*\}\}/g,
 function(a,e,c,g,h,f,i){a=d.tmpl.tag[c];if(!a)throw"Unknown template tag: "+c;c=a._default||[];f&&!/\w$/.test(h)&&(h+=f,f="");h?(h=r(h),i=i?","+r(i)+")":f?")":"",i=f?h.indexOf(".")>-1?h+r(f):"("+h+").call($item"+i:h,f=f?i:"(typeof("+h+")==='function'?("+h+").call($item):("+h+"))"):f=i=c.$1||"null";g=r(g);return"');"+a[e?"close":"open"].split("$notnull_1").join(h?"typeof("+h+")!=='undefined' && ("+h+")!=null":"true").split("$1a").join(f).split("$1").join(i).split("$2").join(g||c.$2||"")+"__.push('"})+

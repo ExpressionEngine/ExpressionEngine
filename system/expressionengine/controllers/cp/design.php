@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -373,7 +373,7 @@ class Design extends CI_Controller {
 
 		$templates = $this->template_model->get_templates($this->config->item('site_id'));
 
-		$vars['templates'][0] = lang('blank_template');
+		$vars['templates'][0] = lang('do_not_duplicate_template');
 		
 		foreach($templates->result() as $template)
 		{
@@ -386,7 +386,7 @@ class Design extends CI_Controller {
 
 		//create_new_template
 
-		$this->cp->set_variable('cp_page_title', lang('new_template_form'));
+		$this->cp->set_variable('cp_page_title', lang('create_new_template'));
 		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager'.AMP.'tgpref='.$group_id, lang('template_manager'));		
 
 

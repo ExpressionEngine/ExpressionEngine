@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -25,10 +25,11 @@
 
 class Content_files extends CI_Controller {
 
-	private $_upload_dirs    = array();
-	private $_base_url       = '';
-	private $remove_spaces    = TRUE;
-	private $temp_prefix      = "temp_file_";
+	private $_upload_dirs	= array();
+	private $_allowed_dirs	= array();
+	private $_base_url		= '';
+	private $remove_spaces	= TRUE;
+	private $temp_prefix	= "temp_file_";
 
 	private $nest_categories = 'y';
 	private $per_page		 = 40;
@@ -1234,7 +1235,7 @@ class Content_files extends CI_Controller {
 			foreach ($resize_ids as $resize_id)
 			{
 				$replace_sizes[$resize_id] = $sizes[$id][$resize_id];
-				unset($missing_only_sizes[$id][$resize_id]);
+				unset($missing_only_sizes[$resize_id]);
 			}
 		}
 
@@ -1304,8 +1305,6 @@ class Content_files extends CI_Controller {
 				// Note 'Regular' batch needs to check if file exists- and then do something if so
 				if ( ! empty($replace_sizes))
 				{
-					// Note- really no need to create system thumb in this case
-					
 					$thumb_created = $this->filemanager->create_thumb(
 						$this->_upload_dirs[$id]['server_path'].$file['name'],
 						array(
@@ -1314,7 +1313,8 @@ class Content_files extends CI_Controller {
 							'dimensions'	=> $replace_sizes,
 							'mime_type'		=> $file['mime']
 						),
-						FALSE	// Don't create thumb
+						TRUE,	// Create thumb
+						FALSE	// Overwrite existing thumbs
 					);
 					
 					if ( ! $thumb_created)
@@ -1333,7 +1333,7 @@ class Content_files extends CI_Controller {
 						'mime_type'		=> $file['mime']
 					),
 					TRUE, 	// Create thumb
-					FALSE 	// Overwrite existing thumbs
+					TRUE 	// Don't overwrite existing thumbs
 				);
 				
 				// Update dimensions
@@ -1851,7 +1851,7 @@ class Content_files extends CI_Controller {
 		}');
 
 		$vars['message'] = $message;
-		$vars['upload_locations'] = $this->file_upload_preferences_model->get_upload_preferences($this->session->userdata('group_id'));
+		$vars['upload_locations'] = $this->file_upload_preferences_model->get_file_upload_preferences($this->session->userdata('group_id'));
 
 		$this->javascript->compile();
 
@@ -2315,24 +2315,6 @@ class Content_files extends CI_Controller {
 			$cp_message = lang('new_file_upload_created');
 		}
 		
-		// Update upload_preferences config item if it exists
-		if (($upload_prefs_config = $this->config->item('upload_preferences')) !== FALSE)
-		{
-			// We'll go through each key we have in the $data array and see
-			// if the user has a custom value set for it
-			foreach ($data as $key => $value)
-			{
-				// If the key exists in custom preferences, set the new value
-				if (isset($upload_prefs_config[$id][$key]))
-				{
-					$upload_prefs_config[$id][$key] = $value;
-				}
-			}
-			
-			// Update config with new values
-			$this->config->_update_config(array('upload_preferences' => $upload_prefs_config));
-		}
-		
 		if (isset($size_data))
 		{
 			// Set upload location id in size data 
@@ -2398,7 +2380,7 @@ class Content_files extends CI_Controller {
 		);
 
 		// Grab all upload locations with this id
-		$items = $this->file_upload_preferences_model->get_upload_preferences(NULL, $id);
+		$items = $this->file_upload_preferences_model->get_file_upload_preferences(NULL, $id);
 		$data['items'] = array();
 
 		if (isset($items['name']))

@@ -1,3 +1,18 @@
+/*
+ * jQuery UI Autocomplete 1.8.16
+ *
+ * Copyright 2011, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
+ *
+ * http://docs.jquery.com/UI/Autocomplete
+ *
+ * Depends:
+ *	jquery.ui.core.js
+ *	jquery.ui.widget.js
+ *	jquery.ui.position.js
+ */
+
 (function(d){var c=0;d.widget("ui.autocomplete",{options:{appendTo:"body",autoFocus:!1,delay:300,minLength:1,position:{my:"left top",at:"left bottom",collision:"none"},source:null},pending:0,_create:function(){var a=this,b=this.element[0].ownerDocument,c;this.element.addClass("ui-autocomplete-input").attr("autocomplete","off").attr({role:"textbox","aria-autocomplete":"list","aria-haspopup":"true"}).bind("keydown.autocomplete",function(b){if(!a.options.disabled&&!a.element.propAttr("readOnly")){c=
 !1;var f=d.ui.keyCode;switch(b.keyCode){case f.PAGE_UP:a._move("previousPage",b);break;case f.PAGE_DOWN:a._move("nextPage",b);break;case f.UP:a._move("previous",b);b.preventDefault();break;case f.DOWN:a._move("next",b);b.preventDefault();break;case f.ENTER:case f.NUMPAD_ENTER:a.menu.active&&(c=!0,b.preventDefault());case f.TAB:if(!a.menu.active)break;a.menu.select(b);break;case f.ESCAPE:a.element.val(a.term);a.close(b);break;default:clearTimeout(a.searching),a.searching=setTimeout(function(){if(a.term!=
 a.element.val())a.selectedItem=null,a.search(null,b)},a.options.delay)}}}).bind("keypress.autocomplete",function(a){c&&(c=!1,a.preventDefault())}).bind("focus.autocomplete",function(){if(!a.options.disabled)a.selectedItem=null,a.previous=a.element.val()}).bind("blur.autocomplete",function(b){if(!a.options.disabled)clearTimeout(a.searching),a.closing=setTimeout(function(){a.close(b);a._change(b)},150)});this._initSource();this.response=function(){return a._response.apply(a,arguments)};this.menu=d("<ul></ul>").addClass("ui-autocomplete").appendTo(d(this.options.appendTo||

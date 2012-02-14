@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -920,9 +920,12 @@ class Api_channel_entries extends Api {
 		// Is this user allowed to post here?
 		$this->_cache['assigned_channels'] = $this->EE->functions->fetch_assigned_channels();
 		
-		if ( ! in_array($this->channel_id, $this->_cache['assigned_channels']))
+		if ($this->EE->session->userdata('group_id') != 1)
 		{
-			show_error($this->EE->lang->line('unauthorized_for_this_channel'));
+			if ( ! in_array($this->channel_id, $this->_cache['assigned_channels']))
+			{
+				show_error($this->EE->lang->line('unauthorized_for_this_channel'));
+			}
 		}
 		
 		// Make sure all the fields have a key in our data array even

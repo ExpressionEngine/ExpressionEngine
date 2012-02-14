@@ -3,7 +3,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -35,7 +35,7 @@ EE.publish.category_editor = function() {
 	// categories with a lot of custom fields need to scroll
 	cat_modal_container.css({
 		height: '100%',
-		padding: '0 10px',	// account for vert scrollbar
+		padding: '0 20px 0 0',	// account for vert scrollbar
 		overflow: 'auto'
 	});
 
@@ -50,6 +50,7 @@ EE.publish.category_editor = function() {
 		width: 600,
 		modal: true,
 		resizable: false,
+		title: EE.publish.lang.edit_category,
 		open: function(event, ui) {
 			$('.ui-dialog-content').css('overflow', 'hidden');
 			$('.ui-dialog-titlebar').focus(); // doing this first to fix IE7 scrolling past the dialog's close button
@@ -159,8 +160,11 @@ EE.publish.category_editor = function() {
 			container_form.submit(handle_submit);
 			
 			var buttons = {};
-			buttons[submit_button.remove().attr('value')] = function() {
-				handle_submit(container_form);
+			buttons[submit_button.remove().attr('value')] = {
+				text: EE.publish.lang.update,
+				click: function() {
+					handle_submit(container_form);
+				}
 			};
 			
 			cat_modal.dialog("open");
@@ -750,42 +754,6 @@ $(document).ready(function() {
 	
 	if (EE.publish.show_write_mode === true) { 
 		EE.publish.setup_writemode();
-	}
-	
-	// @todo rewrite dependencies and remove
-	
-	var abort = false;
-	
-	function magicMarkups(string) {
-		if (string) {
-			string = string.toString();
-			string = string.replace(/\(\!\(([\s\S]*?)\)\!\)/g,
-				function(x, a) {
-					var b = a.split('|!|');
-					if (altKey === true) {
-						return (b[1] !== undefined) ? b[1] : b[0];
-					} else {
-						return (b[1] === undefined) ? "" : b[0];
-					}
-				}
-			);
-			// [![prompt]!], [![prompt:!:value]!]
-			string = string.replace(/\[\!\[([\s\S]*?)\]\!\]/g,
-				function(x, a) {
-					var b = a.split(':!:');
-					if (abort === true) {
-						return false;
-					}
-					value = prompt(b[0], (b[1]) ? b[1] : '');
-					if (value === null) {
-						abort = true;
-					}
-					return value;
-				}
-			);
-			return string;
-		}
-		return "";
 	}
 
 	// toggle can not be used here, since it may or may not be visible

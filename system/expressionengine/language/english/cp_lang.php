@@ -14,6 +14,7 @@ $lang = array(
 'nav_content'	   				=> 'Content',
 'nav_publish'	   				=> 'Publish',
 'nav_edit'						=> 'Edit',
+'nav_edit_all'					=> 'All Channels',
 'nav_files'	   					=> 'Files',
 	'nav_file_manager'				=> 'File Manager',
 	'nav_batch_upload'				=> 'Batch Upload',
@@ -481,7 +482,6 @@ $lang = array(
 'ee_insider'					=> 'EE Insider',
 'devot_ee'						=> 'Devot-EE',
 'ee_podcast'					=> 'EE Podcast',
-
 
 ''=>''
 );

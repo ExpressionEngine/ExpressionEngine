@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -312,8 +312,8 @@ class Channel {
 
 		$this->EE->load->library('typography');
 		$this->EE->typography->initialize(array(
-				'convert_curly'	=> FALSE)
-				);
+			'convert_curly'	=> FALSE
+		));
 
 		if ($this->enable['categories'] == TRUE)
 		{
@@ -1218,38 +1218,48 @@ class Channel {
 						unset($arr);
 
 						$result = $this->EE->db->query("SELECT cat_id FROM exp_categories
-											  WHERE cat_url_title='".$this->EE->db->escape_str($cut_qstring)."'
-											  AND group_id IN ('".implode("','", $valid_cats)."')");
+							WHERE cat_url_title='".$this->EE->db->escape_str($cut_qstring)."'
+							AND group_id IN ('".implode("','", $valid_cats)."')");
 
 						if ($result->num_rows() == 1)
 						{
 							$qstring = str_replace($cut_qstring, 'C'.$result->row('cat_id') , $qstring);
+							$cat_id = $result->row('cat_id');
 						}
 						else
 						{
 							// give it one more try using the whole $qstring
 							$result = $this->EE->db->query("SELECT cat_id FROM exp_categories
-												  WHERE cat_url_title='".$this->EE->db->escape_str($qstring)."'
-												  AND group_id IN ('".implode("','", $valid_cats)."')");
+								WHERE cat_url_title='".$this->EE->db->escape_str($qstring)."'
+								AND group_id IN ('".implode("','", $valid_cats)."')");
 
 							if ($result->num_rows() == 1)
 							{
 								$qstring = 'C'.$result->row('cat_id') ;
+								$cat_id = $result->row('cat_id');
 							}
 						}
 					}
 				}
-
-				// Numeric version of the category
-
-				if ($dynamic && preg_match("#(^|\/)C(\d+)#", $qstring, $match))
+				
+				// If we got here, category may be numeric
+				if (empty($cat_id))
+				{
+					$this->EE->load->helper('segment');
+					$cat_id = parse_category($this->query_string);
+				}
+				
+				// If we were able to get a numeric category ID
+				if (is_numeric($cat_id) AND $cat_id !== FALSE)
 				{
 					$this->cat_request = TRUE;
-
-					$cat_id = $match[2];
-
-					$qstring = trim_slashes(str_replace($match[0], '', $qstring));
 				}
+				// parse_category did not return a numberic ID, blow away $cat_id
+				else
+				{
+					$cat_id = FALSE;
+				}
+			
 
 				/** --------------------------------------
 				/**  Remove "N"
@@ -3145,21 +3155,29 @@ class Channel {
 
 					switch ($val)
 					{
-						case 'entry_date' 			: $entry_date[$matches[0][$j]] = $this->EE->localize->fetch_date_params($matches[2][$j]);
+						case 'entry_date': 
+							$entry_date[$matches[0][$j]] = $this->EE->localize->fetch_date_params($matches[2][$j]);
 							break;
-						case 'gmt_date'				: $gmt_date[$matches[0][$j]] = $this->EE->localize->fetch_date_params($matches[2][$j]);
+						case 'gmt_date':
+							$gmt_date[$matches[0][$j]] = $this->EE->localize->fetch_date_params($matches[2][$j]);
 							break;
-						case 'gmt_entry_date'		: $gmt_entry_date[$matches[0][$j]] = $this->EE->localize->fetch_date_params($matches[2][$j]);
+						case 'gmt_entry_date':
+							$gmt_entry_date[$matches[0][$j]] = $this->EE->localize->fetch_date_params($matches[2][$j]);
 							break;
-						case 'edit_date' 			: $edit_date[$matches[0][$j]] = $this->EE->localize->fetch_date_params($matches[2][$j]);
+						case 'edit_date':
+							$edit_date[$matches[0][$j]] = $this->EE->localize->fetch_date_params($matches[2][$j]);
 							break;
-						case 'gmt_edit_date'		: $gmt_edit_date[$matches[0][$j]] = $this->EE->localize->fetch_date_params($matches[2][$j]);
+						case 'gmt_edit_date':
+							$gmt_edit_date[$matches[0][$j]] = $this->EE->localize->fetch_date_params($matches[2][$j]);
 							break;
-						case 'expiration_date' 		: $expiration_date[$matches[0][$j]] = $this->EE->localize->fetch_date_params($matches[2][$j]);
+						case 'expiration_date':
+							$expiration_date[$matches[0][$j]] = $this->EE->localize->fetch_date_params($matches[2][$j]);
 							break;
-						case 'recent_comment_date' 	: $recent_comment_date[$matches[0][$j]] = $this->EE->localize->fetch_date_params($matches[2][$j]);
+						case 'recent_comment_date':
+							$recent_comment_date[$matches[0][$j]] = $this->EE->localize->fetch_date_params($matches[2][$j]);
 							break;
-						case 'week_date'			: $week_date[$matches[0][$j]] = $this->EE->localize->fetch_date_params($matches[2][$j]);
+						case 'week_date':
+							$week_date[$matches[0][$j]] = $this->EE->localize->fetch_date_params($matches[2][$j]);
 							break;
 					}
 				}
@@ -3356,7 +3374,13 @@ class Channel {
 		$total_results = count($query_result);
 
 		$site_pages = $this->EE->config->item('site_pages');
-
+		
+		// If custom fields are enabled, notify them of the data we're about to send
+		if ( ! empty($this->cfields))
+		{
+			$this->_send_custom_field_data_to_fieldtypes($query_result);
+		}
+		
 		foreach ($query_result as $count => $row)
 		{
 			// Fetch the tag block containing the variables that need to be parsed
@@ -3626,14 +3650,16 @@ class Channel {
 								$this->EE->load->library('file_field');
 								$cat_image = $this->EE->file_field->parse_field($v[3]);
 								
-								$cat_vars = array('category_name'			=> $v[2],
-												  'category_url_title'		=> $v[6],
-												  'category_description'	=> (isset($v[4])) ? $v[4] : '',
-												  'category_group'			=> (isset($v[5])) ? $v[5] : '',
-												  'category_image'			=> $cat_image['url'],
-												  'category_id'				=> $v[0],
-												  'parent_id'				=> $v[1],
-												  'active'					=> ($active_cat == $v[0] || $active_cat == $v[6]));
+								$cat_vars = array(
+									'category_name'			=> $v[2],
+									'category_url_title'	=> $v[6],
+									'category_description'	=> (isset($v[4])) ? $v[4] : '',
+									'category_group'		=> (isset($v[5])) ? $v[5] : '',
+									'category_image'		=> $cat_image['url'],
+									'category_id'			=> $v[0],
+									'parent_id'				=> $v[1],
+									'active'				=> ($active_cat == $v[0] || $active_cat == $v[6])
+								);
 
 								// add custom fields for conditionals prep
 								foreach ($this->catfields as $cv)
@@ -3643,35 +3669,41 @@ class Channel {
 
 								$temp = $this->EE->functions->prep_conditionals($temp, $cat_vars);
 
-								$temp = str_replace(array(LD."category_id".RD,
-														  LD."category_name".RD,
-														  LD."category_url_title".RD,
-														  LD."category_image".RD,
-														  LD."category_group".RD,
-														  LD.'category_description'.RD,
-														  LD.'parent_id'.RD),
-													array($v[0],
-														  $v[2],
-														  $v[6],
-														  $cat_image['url'],
-														  (isset($v[5])) ? $v[5] : '',
-														  (isset($v[4])) ? $v[4] : '',
-														  $v[1]
-														  ),
-													$temp);
+								$temp = str_replace(
+									array(
+										LD."category_id".RD,
+										LD."category_name".RD,
+										LD."category_url_title".RD,
+										LD."category_image".RD,
+										LD."category_group".RD,
+										LD.'category_description'.RD,
+										LD.'parent_id'.RD
+									),
+									array($v[0],
+										$v[2],
+										$v[6],
+										$cat_image['url'],
+										(isset($v[5])) ? $v[5] : '',
+										(isset($v[4])) ? $v[4] : '',
+										$v[1]
+									),
+									$temp
+								);
 
 								foreach($this->catfields as $cv2)
 								{
 									if (isset($v['field_id_'.$cv2['field_id']]) AND $v['field_id_'.$cv2['field_id']] != '')
 									{
-										$field_content = $this->EE->typography->parse_type($v['field_id_'.$cv2['field_id']],
-																					array(
-																						  'text_format'		=> $v['field_ft_'.$cv2['field_id']],
-																						  'html_format'		=> $v['field_html_formatting'],
-																						  'auto_links'		=> 'n',
-																						  'allow_img_url'	=> 'y'
-																						)
-																				);
+										$field_content = $this->EE->typography->parse_type(
+											$v['field_id_'.$cv2['field_id']],
+											array(
+												'text_format'		=> $v['field_ft_'.$cv2['field_id']],
+												'html_format'		=> $v['field_html_formatting'],
+												'auto_links'		=> 'n',
+												'allow_img_url'	=> 'y'
+											)
+										);
+										
 										$temp = str_replace(LD.$cv2['field_name'].RD, $field_content, $temp);
 									}
 									else
@@ -4534,23 +4566,23 @@ class Channel {
 								$entry = $this->EE->api_channel_fields->apply($parse_fnc_catchall, array($data, $params, FALSE, $modifier));
 							}
 							else
-							{							
+							{
 								$entry = '';
 								$this->EE->TMPL->log_item('Unable to find parse type for custom field: '.$parse_fnc);
-							}							
+							}
 						}
 						else
 						{
 							// Couldn't find a fieldtype
 							$entry = $this->EE->typography->parse_type(
-																$this->EE->functions->encode_ee_tags($row['field_id_'.$this->cfields[$row['site_id']][$val]]),
-																array(
-																		'text_format'	=> $row['field_ft_'.$this->cfields[$row['site_id']][$val]],
-																		'html_format'	=> $row['channel_html_formatting'],
-																		'auto_links'	=> $row['channel_auto_link_urls'],
-																		'allow_img_url' => $row['channel_allow_img_urls']
-																	  )
-															  );
+								$this->EE->functions->encode_ee_tags($row['field_id_'.$this->cfields[$row['site_id']][$val]]),
+								array(
+									'text_format'	=> $row['field_ft_'.$this->cfields[$row['site_id']][$val]],
+									'html_format'	=> $row['channel_html_formatting'],
+									'auto_links'	=> $row['channel_auto_link_urls'],
+									'allow_img_url' => $row['channel_allow_img_urls']
+								)
+							);
 						}
 					 }
 
@@ -4573,20 +4605,22 @@ class Channel {
 					{
 						$processed_member_fields[$row['member_id']]['m_field_id_'.$this->mfields[$val][0]] =
 
-												$this->EE->typography->parse_type(
-																				$row['m_field_id_'.$this->mfields[$val][0]],
-																				array(
-																						'text_format'	=> $this->mfields[$val][1],
-																						'html_format'	=> 'safe',
-																						'auto_links'	=> 'y',
-																						'allow_img_url' => 'n'
-																					  )
-																			  );
+						$this->EE->typography->parse_type(
+							$row['m_field_id_'.$this->mfields[$val][0]],
+							array(
+								'text_format'	=> $this->mfields[$val][1],
+								'html_format'	=> 'safe',
+								'auto_links'	=> 'y',
+								'allow_img_url' => 'n'
+							)
+						);
 					}
 
-					$tagdata = $this->EE->TMPL->swap_var_single($val,
-																$processed_member_fields[$row['member_id']]['m_field_id_'.$this->mfields[$val][0]],
-																$tagdata);
+					$tagdata = $this->EE->TMPL->swap_var_single(
+						$val,
+						$processed_member_fields[$row['member_id']]['m_field_id_'.$this->mfields[$val][0]],
+						$tagdata
+					);
 				}
 
 
@@ -4628,6 +4662,61 @@ class Channel {
 			if (is_numeric($back))
 			{
 				$this->return_data = substr($this->return_data, 0, - $back);
+			}
+		}
+	}
+	
+	/**
+	 * Sends custom field data to fieldtypes before the entries loop runs.
+	 * This is particularly helpful to fieldtypes that need to query the database
+	 * based on what they're passed, like the File field. This allows them to run
+	 * potentially a single query to gather needed data instead of a query for
+	 * each row.
+	 *
+	 * @param string $entries_data 
+	 * @return void
+	 */
+	private function _send_custom_field_data_to_fieldtypes($entries_data)
+	{
+		// We'll stick custom field data into this array in the form of:
+		//   field_id => array('data1', 'data2', ...);
+		$custom_field_data = array();
+		
+		// Loop through channel entry data
+		foreach ($entries_data as $row)
+		{
+			// Get array of custom fields for the row's current site
+			$custom_fields = $this->cfields[$row['site_id']];
+			
+			foreach ($custom_fields as $field_name => $field_id)
+			{
+				// If the field exists and isn't empty
+				if (isset($row['field_id_'.$field_id]))
+				{
+					if ( ! empty($row['field_id_'.$field_id]))
+					{
+						// Add the data to our custom field data array
+						$custom_field_data[$field_id][] = $row['field_id_'.$field_id];
+					}
+				}
+			}
+		}
+		
+		if ( ! empty($custom_field_data))
+		{
+			$this->EE->load->library('api');
+			$this->EE->api->instantiate('channel_fields');
+			
+			// For each custom field, notify its fieldtype class of the data we collected
+			foreach ($custom_field_data as $field_id => $data)
+			{
+				if ($this->EE->api_channel_fields->setup_handler($field_id))
+				{
+					if ($this->EE->api_channel_fields->check_method_exists('pre_loop'))
+					{
+						$this->EE->api_channel_fields->apply('pre_loop', array($data));
+					}
+				}
 			}
 		}
 	}
@@ -4855,18 +4944,16 @@ class Channel {
 
 		if ($this->EE->TMPL->fetch_param('style') == '' OR $this->EE->TMPL->fetch_param('style') == 'nested')
 		{
-			$this->category_tree(
-									array(
-											'group_id'		=> $group_ids,
-											'channel_ids'	=> $channel_ids,											
-											'template'		=> $this->EE->TMPL->tagdata,
-											'path'			=> $path,
-											'channel_array'	=> '',
-											'parent_only'	=> $parent_only,
-											'show_empty'	=> $this->EE->TMPL->fetch_param('show_empty'),
-											'strict_empty'	=> $strict_empty
-										  )
-								);
+			$this->category_tree(array(
+				'group_id'		=> $group_ids,
+				'channel_ids'	=> $channel_ids,
+				'template'		=> $this->EE->TMPL->tagdata,
+				'path'			=> $path,
+				'channel_array'	=> '',
+				'parent_only'	=> $parent_only,
+				'show_empty'	=> $this->EE->TMPL->fetch_param('show_empty'),
+				'strict_empty'	=> $strict_empty
+			));
 
 
 			if (count($this->category_list) > 0)
@@ -5453,7 +5540,7 @@ class Channel {
 
 			$this->category_tree(array(
 				'group_id'		=> $group_ids,
-				'channel_id'	=> $channel_ids,
+				'channel_ids'	=> $channel_ids,
 				'path'			=> $c_path,
 				'template'		=> $cat_chunk,
 				'channel_array' => $channel_array,
@@ -5529,7 +5616,7 @@ class Channel {
 			{
 				if (count($channel_ids))
 				{
-					$sql .= "AND exp_channel_titles.channel_id IN ('".implode("','", $channel_id)."') ";
+					$sql .= "AND exp_channel_titles.channel_id IN ('".implode("','", $channel_ids)."') ";
 				}
 				else
 				{
@@ -5736,7 +5823,7 @@ class Channel {
 	  */
 	function category_tree($cdata = array())
 	{
-		$default = array('group_id', 'channel_id', 'path', 'template', 'depth', 'channel_array', 'parent_only', 'show_empty', 'strict_empty');
+		$default = array('group_id', 'channel_ids', 'path', 'template', 'depth', 'channel_array', 'parent_only', 'show_empty', 'strict_empty');
 
 		foreach ($default as $val)
 		{
@@ -5821,7 +5908,7 @@ class Channel {
 
 			if (count($channel_ids) && $strict_empty == 'yes')
 			{
-				$sql .= "AND exp_channel_titles.channel_id IN ('".implode("','", $channel_id)."') ";
+				$sql .= "AND exp_channel_titles.channel_id IN ('".implode("','", $channel_ids)."') ";
 			}
 			else
 			{

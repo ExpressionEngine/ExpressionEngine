@@ -1,3 +1,11 @@
+/*
+ * SimpleModal 1.3.5 - jQuery Plugin
+ * http://www.ericmmartin.com/projects/simplemodal/
+ * Copyright (c) 2010 Eric Martin (http://twitter.com/EricMMartin)
+ * Dual licensed under the MIT and GPL licenses
+ * Revision: $Id: jquery.simplemodal.js 245 2010-03-25 20:41:15Z emartin24 $
+ */
+
 (function(b){var i=b.browser.msie&&parseInt(b.browser.version)==6&&typeof window.XMLHttpRequest!="object",j=null,c=[];b.modal=function(a,g){return b.modal.impl.init(a,g)};b.modal.close=function(){b.modal.impl.close()};b.fn.modal=function(a){return b.modal.impl.init(this,a)};b.modal.defaults={appendTo:"body",focus:!0,opacity:50,overlayId:"simplemodal-overlay",overlayCss:{},containerId:"simplemodal-container",containerCss:{},dataId:"simplemodal-data",dataCss:{},minHeight:null,minWidth:null,maxHeight:null,
 maxWidth:null,autoResize:!1,autoPosition:!0,zIndex:1E3,close:!0,closeHTML:'<a class="modalCloseImg" title="Close"></a>',closeClass:"simplemodal-close",escClose:!0,overlayClose:!1,position:null,persist:!1,modal:!0,onOpen:null,onShow:null,onClose:null};b.modal.impl={o:null,d:{},init:function(a,g){if(this.d.data)return!1;j=b.browser.msie&&!b.boxModel;this.o=b.extend({},b.modal.defaults,g);this.zIndex=this.o.zIndex;this.occb=!1;if(typeof a=="object"){if(a=a instanceof jQuery?a:b(a),this.d.placeholder=
 !1,a.parent().parent().size()>0&&(a.before(b("<span></span>").attr("id","simplemodal-placeholder").css({display:"none"})),this.d.placeholder=!0,this.display=a.css("display"),!this.o.persist))this.d.orig=a.clone(!0)}else if(typeof a=="string"||typeof a=="number")a=b("<div></div>").html(a);else return alert("SimpleModal Error: Unsupported data type: "+typeof a),this;this.create(a);this.open();b.isFunction(this.o.onShow)&&this.o.onShow.apply(this,[this.d]);return this},create:function(a){c=this.getDimensions();

@@ -711,6 +711,9 @@ $lang = array(
 'missing_required_fields' =>
 'You Are Missing Required Field(s):',
 
+'update_category_image' =>
+'Please update your category image to use the file field provided, or the old style image URL may be deleted upon saving.',
+
 //----------------------------
 // Custom field Administration
 //----------------------------

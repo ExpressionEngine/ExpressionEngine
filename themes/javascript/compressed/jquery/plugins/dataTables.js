@@ -1,3 +1,28 @@
+/*
+ * File:        jquery.dataTables.js
+ * Version:     1.6.2
+ * CVS:         $Id$
+ * Description: Paginate, search and sort HTML tables
+ * Author:      Allan Jardine (www.sprymedia.co.uk)
+ * Created:     28/3/2008
+ * Modified:    $Date$ by $Author$
+ * Language:    Javascript
+ * License:     GPL v2 or BSD 3 point style
+ * Project:     Mtaala
+ * Contact:     allan.jardine@sprymedia.co.uk
+ * 
+ * Copyright 2008-2010 Allan Jardine, all rights reserved.
+ *
+ * This source file is free software, under either the GPL v2 license or a
+ * BSD style license, as supplied with this software.
+ * 
+ * This source file is distributed in the hope that it will be useful, but 
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the license files for details.
+ * 
+ * For details pleease refer to: http://www.datatables.net
+ */
+
 (function(g){g.fn.dataTableSettings=[];var w=g.fn.dataTableSettings;g.fn.dataTableExt={};var i=g.fn.dataTableExt;i.sVersion="1.6.2";i.iApiIndex=0;i.oApi={};i.afnFiltering=[];i.aoFeatures=[];i.ofnSearch={};i.afnSortData=[];i.oStdClasses={sPagePrevEnabled:"paginate_enabled_previous",sPagePrevDisabled:"paginate_disabled_previous",sPageNextEnabled:"paginate_enabled_next",sPageNextDisabled:"paginate_disabled_next",sPageJUINext:"",sPageJUIPrev:"",sPageButton:"paginate_button",sPageButtonActive:"paginate_active",
 sPageButtonStaticDisabled:"paginate_button",sPageFirst:"first",sPagePrevious:"previous",sPageNext:"next",sPageLast:"last",sStripOdd:"odd",sStripEven:"even",sRowEmpty:"dataTables_empty",sWrapper:"dataTables_wrapper",sFilter:"dataTables_filter",sInfo:"dataTables_info",sPaging:"dataTables_paginate paging_",sLength:"dataTables_length",sProcessing:"dataTables_processing",sSortAsc:"sorting_asc",sSortDesc:"sorting_desc",sSortable:"sorting",sSortableAsc:"sorting_asc_disabled",sSortableDesc:"sorting_desc_disabled",
 sSortableNone:"sorting_disabled",sSortColumn:"sorting_",sSortJUIAsc:"",sSortJUIDesc:"",sSortJUI:"",sSortJUIAscAllowed:"",sSortJUIDescAllowed:""};i.oJUIClasses={sPagePrevEnabled:"fg-button ui-state-default ui-corner-left",sPagePrevDisabled:"fg-button ui-state-default ui-corner-left ui-state-disabled",sPageNextEnabled:"fg-button ui-state-default ui-corner-right",sPageNextDisabled:"fg-button ui-state-default ui-corner-right ui-state-disabled",sPageJUINext:"ui-icon ui-icon-circle-arrow-e",sPageJUIPrev:"ui-icon ui-icon-circle-arrow-w",

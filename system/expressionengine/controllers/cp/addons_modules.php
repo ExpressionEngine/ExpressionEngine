@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -184,6 +184,8 @@ class Addons_modules extends CI_Controller {
 				$class = ucfirst($module).'_upd';
 				$version = $this->installed_modules[$module]['module_version'];
 
+				$this->load->add_package_path($this->installed_modules[$module]['path']);
+
 				$UPD = new $class;
 				$UPD->_ee_path = APPPATH;
 		
@@ -192,6 +194,8 @@ class Addons_modules extends CI_Controller {
 					$this->db->update('modules', array('module_version' => $UPD->version), array('module_name' => ucfirst($module)));
 					$updated[] = $name.': '.lang('updated_to_version').' '.$UPD->version;
 				}
+
+				$this->load->remove_package_path($this->installed_modules[$module]['path']);
 			}
 		}
 

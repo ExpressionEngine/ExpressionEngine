@@ -1,3 +1,19 @@
+/*
+ * FancyBox - jQuery Plugin
+ * Simple and fancy lightbox alternative
+ *
+ * Examples and documentation at: http://fancybox.net
+ * 
+ * Copyright (c) 2008 - 2010 Janis Skarnelis
+ *
+ * Version: 1.3.1 (05/03/2010)
+ * Requires: jQuery v1.3+
+ *
+ * Dual licensed under the MIT and GPL licenses:
+ *   http://www.opensource.org/licenses/mit-license.php
+ *   http://www.gnu.org/licenses/gpl.html
+ */
+
 (function(a){var l,q,s,e,y,i,u,v,w,n=0,d={},o=[],m=0,b={},f=[],z=null,p=new Image,C=/\.(jpg|gif|png|bmp|jpeg)(.*)?$/i,N=/[^\.]\.(swf)\s*$/i,D,E=1,j,k,h=!1,t=a.extend(a("<div/>")[0],{prop:0}),r=0,K=!a.support.opacity&&!window.XMLHttpRequest,F=function(){q.hide();p.onerror=p.onload=null;z&&z.abort();l.empty()},L=function(){a.fancybox('<p id="fancybox_error">The requested content cannot be loaded.<br />Please try again later.</p>',{scrolling:"no",padding:20,transitionIn:"none",transitionOut:"none"})},
 G=function(){return[a(window).width(),a(window).height(),a(document).scrollLeft(),a(document).scrollTop()]},O=function(){var c=G(),a={},A=b.margin,e=b.autoScale,h=(20+A)*2,i=(20+A)*2,f=b.padding*2;b.width.toString().indexOf("%")>-1?(a.width=c[0]*parseFloat(b.width)/100-40,e=!1):a.width=b.width+f;b.height.toString().indexOf("%")>-1?(a.height=c[1]*parseFloat(b.height)/100-40,e=!1):a.height=b.height+f;if(e&&(a.width>c[0]-h||a.height>c[1]-i))d.type=="image"||d.type=="swf"?(h+=f,i+=f,e=Math.min(Math.min(c[0]-
 h,b.width)/b.width,Math.min(c[1]-i,b.height)/b.height),a.width=Math.round(e*(a.width-f))+f,a.height=Math.round(e*(a.height-f))+f):(a.width=Math.min(a.width,c[0]-h),a.height=Math.min(a.height,c[1]-i));a.top=c[3]+(c[1]-(a.height+40))*0.5;a.left=c[2]+(c[0]-(a.width+40))*0.5;if(b.autoScale===!1)a.top=Math.max(c[3]+A,a.top),a.left=Math.max(c[2]+A,a.left);return a},P=function(a){if(a&&a.length)switch(b.titlePosition){case "inside":return a;case "over":return'<span id="fancybox-title-over">'+a+"</span>";

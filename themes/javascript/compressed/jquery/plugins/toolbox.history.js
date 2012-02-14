@@ -1,3 +1,15 @@
+/**
+ * @license 
+ * jQuery Tools 1.2.0 History "Back button for AJAX apps"
+ * 
+ * NO COPYRIGHTS OR LICENSES. DO WHAT YOU LIKE.
+ * 
+ * http://flowplayer.org/tools/toolbox/history.html
+ * 
+ * Since: Mar 2010
+ * Date:    Tue Apr 20 19:26:58 2010 +0000 
+ */
+
 /*
  
  jQuery Tools 1.2.0 History "Back button for AJAX apps"

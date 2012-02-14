@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -66,8 +66,7 @@ class Content_files_modal extends CI_Controller {
 	 */
 	public function index()
 	{
-		$vars = $this->_vars_index();
-		$this->load->view('_shared/file_upload/index', $vars);
+		$this->load->view('_shared/file_upload/index', $this->_vars_index());
 	}
 	
 	// ------------------------------------------------------------------------
@@ -147,10 +146,16 @@ class Content_files_modal extends CI_Controller {
 		// the original AFTER clean_filename and upload library's prep done
 		// but before duplicate checking
 		
-		$original_name = $upload_response['orig_name'];
-		$file = $this->_get_file($upload_response['file_id']);
+		$file					= $this->_get_file($upload_response['file_id']);
+		$file['modified_date']	= $this->localize->set_human_time($file['modified_date']);
+		$original_name			= $upload_response['orig_name'];
+		$cleaned_name			= basename($this->filemanager->clean_filename(
+			$original_name, 
+			$file_dir
+		));
 		
-		if ($file['file_name'] != $original_name)
+		if ($file['file_name'] != $original_name
+			AND $file['file_name'] != $cleaned_name)
 		{
 			// At this point, orig_name contains the extension
 			$vars = $this->_vars_rename($file, $original_name);
@@ -192,6 +197,12 @@ class Content_files_modal extends CI_Controller {
 		
 		// Get the file data of the renamed file
 		$file = $this->_get_file($rename_file['file_id']);
+		
+		// Humanize Unix timestamp
+		$file['modified_date']	= $this->localize->set_human_time($file['modified_date']);
+		
+		// Views need to know if the file was replaced
+		$file['replace'] = $rename_file['replace'];
 		
 		// If renaming the file was unsuccessful try again
 		if ($rename_file['success'] === FALSE && $rename_file['error'] == 'retry')
@@ -290,8 +301,8 @@ class Content_files_modal extends CI_Controller {
 	private function _vars_index()
 	{
 		$selected_directory_id = ($this->input->get_post('directory_id')) ? $this->input->get_post('directory_id') : '';
-		$directory_override = ($this->input->get_post('restrict_directory') == 'true') ? $selected_directory_id : '';
-		$restrict_image = ($this->input->get_post('restrict_image') == 'true') ? TRUE : FALSE;
+		$directory_override = (in_array($this->input->get_post('restrict_directory'), array('true', 1))) ? $selected_directory_id : '';
+		$restrict_image = (in_array($this->input->get_post('restrict_image'), array('true', 1))) ? TRUE : FALSE;
 		
 		return array(
 			'upload_directories' => $this->file_upload_preferences_model->get_dropdown_array(
@@ -397,7 +408,7 @@ class Content_files_modal extends CI_Controller {
 		$file['file_size'] = byte_format($file['file_size']);
 		
 		// Blend in the upload directory preferences
-		$file['upload_directory_prefs'] = $this->file_upload_preferences_model->get_upload_preferences(
+		$file['upload_directory_prefs'] = $this->file_upload_preferences_model->get_file_upload_preferences(
 			$this->session->userdata('group_id'),
 			$file['upload_location_id']
 		);

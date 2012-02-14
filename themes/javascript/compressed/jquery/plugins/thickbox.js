@@ -1,3 +1,13 @@
+/*!
+ * Thickbox 3.1 - One Box To Rule Them All.
+ * By Cody Lindley (http://www.codylindley.com)
+ * Copyright (c) 2007 cody lindley
+ * Licensed under the MIT License: http://www.opensource.org/licenses/mit-license.php
+ *
+ * Modifications made to allow for declaration of windows in percentage terms
+ * Most of the credit for this belongs to Dave Miller (Dave-Miller.com) - thanks Dave!
+ */
+
 var tb_pathToImage=EE.PATH_CP_GBL_IMG+"loadingAnimation.gif",TB_ajaxCache=[],TB_WIDTH=0,TB_HEIGHT=0,TB_WIDTH_PARAM=0,TB_HEIGHT_PARAM=0,TB_PAGESIZE=[0,0],TB_SCROLL=[0,0],TB_HTML_OVERFLOW="auto",TB_BODY_OVERFLOW="auto",TB_MARGIN_LEFT=0,TB_MARGIN_TOP=0;$(document).ready(function(){tb_init("a.thickbox, area.thickbox, input.thickbox");imgLoader=new Image;imgLoader.src=tb_pathToImage});
 function tb_init(a){$(a).click(function(){tb_show(this.title||this.name||null,this.href||this.alt,this.rel||!1);this.blur();return!1})}
 function tb_show(a,b,d){try{typeof document.body.style.maxHeight==="undefined"?($("body","html").css({height:"100%",width:"100%"}),$("html").css("overflow","hidden"),document.getElementById("TB_HideSelect")===null&&($("body").append("<iframe id='TB_HideSelect'></iframe><div id='TB_overlay'></div><div id='TB_window'></div>"),$("#TB_overlay").fadeIn("slow"),$("#TB_overlay").click(tb_remove))):document.getElementById("TB_overlay")===null&&($("body").fadeIn("slow"),$("body").append("<div id='TB_overlay'></div><div id='TB_window'></div>"),

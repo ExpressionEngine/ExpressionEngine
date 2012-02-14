@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -24,7 +24,10 @@
  */
 class Content_edit extends CI_Controller {
 
-	private $base_url;
+	private $publish_base_uri;
+	private $publish_base_url;
+	private $edit_base_uri;
+	private $edit_base_url;
 	private $nest_categories	= 'y';
 	private $installed_modules	= FALSE;
 	private $allowed_channels	= array();
@@ -39,7 +42,10 @@ class Content_edit extends CI_Controller {
 		$this->installed_modules = $this->cp->get_installed_modules();
 		$this->allowed_channels = $this->functions->fetch_assigned_channels();
 		
-		$this->base_url = 'C=content_publish';
+		$this->publish_base_uri = 'C=content_publish';
+		$this->publish_base_url = BASE.AMP.$this->publish_base_uri;
+		$this->edit_base_uri	= 'C=content_edit';
+		$this->edit_base_url	= BASE.AMP.$this->edit_base_uri;
 		
 		$this->load->library('api');
 		$this->load->model('channel_model');
@@ -106,7 +112,7 @@ class Content_edit extends CI_Controller {
 		}
 		
 		
-		$this->table->set_base_url('C=content_edit');
+		$this->table->set_base_url($this->edit_base_uri);
 		$this->table->set_columns($columns);
 		
 		$initial_state = array(
@@ -141,9 +147,6 @@ class Content_edit extends CI_Controller {
 		
 		$form_fields = $this->_edit_form($filter_data, $channels);
 		$vars = array_merge($vars, $form_fields);
-
-		// @todo what?
-		$vars['autosave_show'] = FALSE;
 		
 		
 		// Action Options!
@@ -237,6 +240,7 @@ class Content_edit extends CI_Controller {
 		
 		// Because of the auto convert we prepare a specific variable with the converted ascii
 		// characters while leaving the $keywords variable intact for display and URL purposes
+		$this->load->helper('text');
 		$search_keywords = ($this->config->item('auto_convert_high_ascii') == 'y') ? ascii_to_entities($keywords) : $keywords;				
 		
 		$perpage = $this->input->get_post('perpage');
@@ -268,7 +272,19 @@ class Content_edit extends CI_Controller {
 		
 		$order = $tbl_settings['sort'];
 		$columns = $tbl_settings['columns'];
-				
+		
+		// -------------------------------------------
+		// 'edit_entries_additional_where' hook.
+		//  - Add additional where, where_in, where_not_in
+		//
+			$_hook_wheres = $this->extensions->call('edit_entries_additional_where', $filter_data);
+			if ($this->extensions->end_script === TRUE) return;
+		//
+		// -------------------------------------------
+		
+		$filter_data['_hook_wheres'] = is_array($_hook_wheres) ? $_hook_wheres : array();
+		
+		
 		$this->load->model('search_model');
 		$filter_result = $this->search_model->get_filtered_entries($filter_data, $order);
 		
@@ -309,7 +325,7 @@ class Content_edit extends CI_Controller {
 		$show_link = TRUE;
 		$comment_counts = array();
 		
-		if (count($entry_ids))
+		if (count($entry_ids) AND $this->db->table_exists('comments'))
 		{
 			$comment_qry = $this->db->select('entry_id, COUNT(*) as count')
 				->where_in('entry_id', $entry_ids)
@@ -342,6 +358,13 @@ class Content_edit extends CI_Controller {
 		$autosave = $this->db->get('channel_entries_autosave');
 		
 		$autosave_array = array();
+		$autosave_show = FALSE;
+		
+		if ($autosave->num_rows())
+		{
+			$this->load->helper('snippets');
+			$autosave_show = TRUE;
+		}
 		
 		foreach ($autosave->result() as $entry)
 		{
@@ -384,7 +407,7 @@ class Content_edit extends CI_Controller {
 		
 		foreach ($rows as &$row)
 		{
-			$url = $this->base_url.AMP."M=entry_form".AMP."channel_id={$row['channel_id']}".AMP."entry_id={$row['entry_id']}";
+			$url = $this->publish_base_uri.AMP."M=entry_form".AMP."channel_id={$row['channel_id']}".AMP."entry_id={$row['entry_id']}";
 			
 			$row['title'] = anchor(BASE.AMP.$url, $row['title']);
 			$row['view'] = '---';
@@ -395,7 +418,6 @@ class Content_edit extends CI_Controller {
 			// autosave indicator
 			if (in_array($row['entry_id'], $autosave_array))
 			{
-				$this->load->helper('snippets');
 				$row['title'] .= NBS.required();
 			}
 			
@@ -477,6 +499,7 @@ class Content_edit extends CI_Controller {
 			
 			// used by index on non-ajax requests
 			'filter_data'		=> $filter_data,
+			'autosave_show'		=> $autosave_show,
 			'autosave_array'	=> $autosave_array
 		);
 	}
@@ -587,7 +610,7 @@ class Content_edit extends CI_Controller {
 
 		foreach ($query->result_array() as $row)
 		{
-			if ( ! in_array($row['channel_id'], $this->assigned_channels))
+			if ( ! in_array($row['channel_id'], $this->allowed_channels))
 			{
 				$disallowed_ids = $row['entry_id'];
 			}
@@ -834,14 +857,17 @@ class Content_edit extends CI_Controller {
 			$orig_id = $row->original_entry_id;
 			
 			$data['entries'][] = array(
-				anchor($this->url('entry_form/channel_id/'.$channel.'/entry_id/'.$save_id.'/use_autosave/y'), $row->title),
-				$orig_id ? anchor($this->url('entry_form/channel_id/'.$channel.'/entry_id/'.$orig_id), $row->title) : '--',
+				anchor(
+					BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.$channel.AMP.'entry_id='.$save_id.AMP.'use_autosave=y',
+					$row->title
+				),
+				$orig_id ? anchor(BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.$channel.AMP.'entry_id='.$orig_id, $row->title) : '--',
 				$row->channel_title,
-				anchor($this->url('autosaved_discard/id/'.$save_id), lang('delete'))
+				anchor(BASE.AMP.'C=content_edit'.AMP.'M=autosaved_discard'.AMP.'id='.$save_id, lang('delete'))
 			);
 		}
 		
-		$this->cp->set_breadcrumb($this->base_url, lang('edit'));
+		$this->cp->set_breadcrumb($this->edit_base_url, lang('edit'));
 		$this->load->view('content/autosave', $data);
 	}
 	
@@ -899,7 +925,7 @@ class Content_edit extends CI_Controller {
 		}
 		
 		$this->db->where('entry_id', $id)->delete('channel_entries_autosave');
-		$this->functions->redirect($this->base_url.AMP.'M=autosaved');
+		$this->functions->redirect($this->edit_base_url.AMP.'M=autosaved');
 	}
 	
 	// --------------------------------------------------------------------
@@ -1123,7 +1149,7 @@ class Content_edit extends CI_Controller {
 		// to accept an array so we can avoid looping here.
 		foreach(array_unique($channel_ids) as $id)
 		{
-			$this->stats->update_channel_stats($id);			
+			$this->stats->update_channel_stats($id);
 		}
 
 
@@ -1135,7 +1161,7 @@ class Content_edit extends CI_Controller {
 		}
 		else
 		{
-			$this->functions->redirect($this->base_url);
+			$this->functions->redirect($this->edit_base_url);
 		}
 	}
 
@@ -1233,13 +1259,13 @@ class Content_edit extends CI_Controller {
 			foreach ($link_info as $val)
 			{
 				$links[] = array('url' => BASE.AMP.'C=admin_content'.AMP.'M=category_editor'.AMP.'group_id='.$val['group_id'],
-					'group_name' => $val['group_name']); 	
+					'group_name' => $val['group_name']);
 			}
 		}
 
 		$vars['edit_categories_link'] = $links;
 
-		$this->cp->set_breadcrumb($this->base_url, lang('edit'));
+		$this->cp->set_breadcrumb($this->edit_base_url, lang('edit'));
 
 		$vars['form_hidden'] = array();
 		$vars['form_hidden']['entry_ids'] = implode('|', $entry_ids);
@@ -1385,7 +1411,7 @@ class Content_edit extends CI_Controller {
 		}
 		
 		$this->session->set_flashdata('message_success', lang('multi_entries_updated'));
-		$this->functions->redirect($this->base_url);
+		$this->functions->redirect($this->edit_base_url);
 	}
 
 	// --------------------------------------------------------------------
@@ -1473,7 +1499,7 @@ class Content_edit extends CI_Controller {
 		if ( ! $this->input->post('delete'))
 		{
 			$this->session->set_flashdata('message_failure', lang('no_valid_selections'));
-			$this->functions->redirect($this->base_url);
+			$this->functions->redirect($this->edit_base_url);
 		}
 
 		/* -------------------------------------------
@@ -1491,12 +1517,12 @@ class Content_edit extends CI_Controller {
 		if ($res === FALSE)
 		{
 			$this->session->set_flashdata('message_failure', lang('no_valid_selections'));
-			$this->functions->redirect($this->base_url);
+			$this->functions->redirect($this->edit_base_url);
 		}
 		
 		// Return success message
 		$this->session->set_flashdata('message_success', lang('entries_deleted'));
-		$this->functions->redirect($this->base_url);
+		$this->functions->redirect($this->edit_base_url);
 	}
 
 	// --------------------------------------------------------------------

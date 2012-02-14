@@ -1,3 +1,15 @@
+/**
+ * @license 
+ * jQuery Tools 1.2.1 / Mask - Dim the lights
+ * 
+ * NO COPYRIGHTS OR LICENSES. DO WHAT YOU LIKE.
+ * 
+ * http://flowplayer.org/tools/toolbox/mask.html
+ *
+ * Since: Mar 2010
+ * Date:    Tue May 11 09:22:32 2010 +0000 
+ */
+
 /*
  
  jQuery Tools 1.2.1 / Mask - Dim the lights

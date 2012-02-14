@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -57,7 +57,7 @@ class Date_ft extends EE_Fieldtype {
 			$data = $this->EE->localize->string_to_timestamp($data);
 		}
 
-		if ($data === FALSE)
+		if ( ! is_numeric($data) && $data != '')
 		{
 			return lang('invalid_date');
 		}

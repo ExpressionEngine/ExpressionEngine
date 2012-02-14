@@ -9,7 +9,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -38,8 +38,12 @@ $('table').each(function() {
 		config = $(this).data('table_config');
 		$(this).table(config);
 	}
-
-	$(this).toggle_all();
+	
+	// Apply ee_toggle_all only if it's loaded
+	if (jQuery().toggle_all)
+	{
+		$(this).toggle_all();
+	}
 });
 
 

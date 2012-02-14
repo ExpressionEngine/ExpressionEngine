@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -2582,9 +2582,9 @@ class EE_Functions {
 			// aren't going to be available yet.  So this is a quick workaround
 			// to ensure advanced conditionals using embedded variables can do
 			// their thing in mod tags.
-			$vars = array_merge($vars, $this->EE->TMPL->embed_vars);			
+			$vars = array_merge($vars, $this->EE->TMPL->embed_vars);
 		}
-					
+		
 		if (count($vars) == 0) return $str;
 
 		$switch  = array();
@@ -2844,7 +2844,7 @@ class EE_Functions {
 		}
 
 		$this->EE->load->model('file_upload_preferences_model');
-		$upload_prefs = $this->EE->file_upload_preferences_model->get_upload_preferences();
+		$upload_prefs = $this->EE->file_upload_preferences_model->get_file_upload_preferences(NULL, NULL, TRUE);
 
 		if (count($upload_prefs) == 0)
 		{

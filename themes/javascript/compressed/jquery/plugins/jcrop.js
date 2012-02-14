@@ -1,3 +1,33 @@
+/**
+ * jquery.Jcrop.js v0.9.8
+ * jQuery Image Cropping Plugin
+ * @author Kelly Hallman <khallman@gmail.com>
+ * Copyright (c) 2008-2009 Kelly Hallman - released under MIT License {{{
+ *
+ * Permission is hereby granted, free of charge, to any person
+ * obtaining a copy of this software and associated documentation
+ * files (the "Software"), to deal in the Software without
+ * restriction, including without limitation the rights to use,
+ * copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following
+ * conditions:
+
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+
+ * }}}
+ */
+
 (function(f){f.Jcrop=function(v,r){function d(a){return""+parseInt(a)+"px"}function N(a){a=f(a).offset();return[a.left,a.top]}function B(a){return[a.pageX-L[0],a.pageY-L[1]]}function ca(a,l){return function(k){if(b.aspectRatio)switch(a){case "e":k[1]=l.y+1;break;case "w":k[1]=l.y+1;break;case "n":k[0]=l.x+1;break;case "s":k[0]=l.x+1}else switch(a){case "e":k[1]=l.y2;break;case "w":k[1]=l.y2;break;case "n":k[0]=l.x2;break;case "s":k[0]=l.x2}j.setCurrent(k);m.update()}}function da(a){var b=a;O.watchKeys();
 return function(a){j.moveOffset([a[0]-b[0],a[1]-b[1]]);b=a;m.update()}}function U(a){switch(a){case "n":return"sw";case "s":return"nw";case "e":return"nw";case "w":return"ne";case "ne":return"sw";case "nw":return"se";case "se":return"nw";case "sw":return"ne"}}function V(a){return function(l){if(b.disabled)return!1;if(a=="move"&&!b.allowMove)return!1;F=!0;var k=B(l);L=N(s);A.setCursor(a=="move"?a:a+"-resize");if(a=="move")A.activateHandlers(da(k),P);else{var k=j.getFixed(),t=U(a),c=j.getCorner(U(t));
 j.setPressed(j.getCorner(t));j.setCurrent(c);A.activateHandlers(ca(a,k),P)}l.stopPropagation();l.preventDefault();return!1}}function Q(a){return{x:parseInt(a.x*u),y:parseInt(a.y*y),x2:parseInt(a.x2*u),y2:parseInt(a.y2*y),w:parseInt(a.w*u),h:parseInt(a.h*y)}}function P(){var a=j.getFixed();a.w>b.minSelect[0]&&a.h>b.minSelect[1]?(m.enableHandles(),m.done()):m.release();A.setCursor(b.allowSelect?"crosshair":"default")}function ea(a){j.setCurrent(a);m.update()}function W(){var a=f("<div></div>").addClass(b.baseClass+

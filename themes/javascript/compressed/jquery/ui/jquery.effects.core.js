@@ -1,3 +1,13 @@
+/*
+ * jQuery UI Effects 1.8.16
+ *
+ * Copyright 2011, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
+ *
+ * http://docs.jquery.com/UI/Effects/
+ */
+
 jQuery.effects||function(f,i){function l(c){var a;return c&&c.constructor==Array&&c.length==3?c:(a=/rgb\(\s*([0-9]{1,3})\s*,\s*([0-9]{1,3})\s*,\s*([0-9]{1,3})\s*\)/.exec(c))?[parseInt(a[1],10),parseInt(a[2],10),parseInt(a[3],10)]:(a=/rgb\(\s*([0-9]+(?:\.[0-9]+)?)\%\s*,\s*([0-9]+(?:\.[0-9]+)?)\%\s*,\s*([0-9]+(?:\.[0-9]+)?)\%\s*\)/.exec(c))?[parseFloat(a[1])*2.55,parseFloat(a[2])*2.55,parseFloat(a[3])*2.55]:(a=/#([a-fA-F0-9]{2})([a-fA-F0-9]{2})([a-fA-F0-9]{2})/.exec(c))?[parseInt(a[1],16),parseInt(a[2],
 16),parseInt(a[3],16)]:(a=/#([a-fA-F0-9])([a-fA-F0-9])([a-fA-F0-9])/.exec(c))?[parseInt(a[1]+a[1],16),parseInt(a[2]+a[2],16),parseInt(a[3]+a[3],16)]:/rgba\(0, 0, 0, 0\)/.exec(c)?m.transparent:m[f.trim(c).toLowerCase()]}function n(){var c=document.defaultView?document.defaultView.getComputedStyle(this,null):this.currentStyle,a={},b,d;if(c&&c.length&&c[0]&&c[c[0]])for(var e=c.length;e--;)b=c[e],typeof c[b]=="string"&&(d=b.replace(/\-(\w)/g,function(a,b){return b.toUpperCase()}),a[d]=c[b]);else for(b in c)typeof c[b]===
 "string"&&(a[b]=c[b]);return a}function o(c){var a,b;for(a in c)b=c[a],(b==null||f.isFunction(b)||a in q||/scrollbar/.test(a)||!/color/i.test(a)&&isNaN(parseFloat(b)))&&delete c[a];return c}function r(c,a){var b={_:0},d;for(d in a)c[d]!=a[d]&&(b[d]=a[d]);return b}function j(c,a,b,d){if(typeof c=="object")d=a,b=null,a=c,c=a.effect;f.isFunction(a)&&(d=a,b=null,a={});if(typeof a=="number"||f.fx.speeds[a])d=b,b=a,a={};f.isFunction(b)&&(d=b,b=null);a=a||{};b=b||a.duration;b=f.fx.off?0:typeof b=="number"?

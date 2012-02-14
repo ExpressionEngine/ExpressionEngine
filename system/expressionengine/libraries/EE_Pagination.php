@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.4
@@ -151,7 +151,7 @@ class Pagination_object {
 		//
 			if ($this->EE->extensions->active_hook('channel_module_create_pagination') === TRUE)
 			{
-				$edata = $this->EE->extensions->universal_call('channel_module_create_pagination', $this);
+				$edata = $this->EE->extensions->universal_call('channel_module_create_pagination', $this, $count);
 				if ($this->EE->extensions->end_script === TRUE) return;
 			}
 		//
@@ -418,7 +418,8 @@ class Pagination_object {
 			// Parse current_page and total_pages
 			$this->template_data = $this->EE->TMPL->parse_variables(
 				$this->template_data,
-				array($parse_array)
+				array($parse_array),
+				FALSE // Disable backspace parameter so pagination markup is protected
 			);
 			
 			// ----------------------------------------------------------------

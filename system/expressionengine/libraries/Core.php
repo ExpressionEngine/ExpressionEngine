@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -72,7 +72,10 @@ class EE_Core {
 		define('PATH_RTE',		APPPATH.'rte_tools/');
 		if ($this->EE->config->item('third_party_path'))
 		{
-			define('PATH_THIRD',    rtrim($this->EE->config->item('third_party_path'), '/').'/');
+			define(
+				'PATH_THIRD',
+				rtrim(realpath($this->EE->config->item('third_party_path')), '/').'/'
+			);
 		}
 		else
 		{
@@ -252,6 +255,7 @@ class EE_Core {
 			date_default_timezone_set(date_default_timezone_get());
 		}
 		
+		$this->EE->load->library('remember');
 		$this->EE->load->library('localize');
 		$this->EE->load->library('session');
 

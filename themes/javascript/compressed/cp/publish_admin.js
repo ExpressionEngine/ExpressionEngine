@@ -1,3 +1,15 @@
+/*!
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		ExpressionEngine Dev Team
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @license		http://expressionengine.com/user_guide/license.html
+ * @link		http://expressionengine.com
+ * @since		Version 2.0
+ * @filesource
+ */
+
 $("#showToolbarLink").find("a").one("click",function(){$(".publish_field").resizable({handles:"e",minHeight:49,stop:function(){var a=Math.round($(this).outerWidth()/$(this).parent().width()*10)*10;a<10&&(a=10);a>99&&(a=100);$(this).css("width",a+"%")}});$("#tools ul li a.field_selector").draggable({revert:!0,zIndex:33,helper:"clone"}).click(function(){return!1});var a={};a[EE.lang.add_tab]=add_publish_tab;$("#new_tab_dialog").dialog({autoOpen:!1,open:function(){$("#tab_name").focus()},resizable:!1,
 modal:!0,position:"center",minHeight:0,buttons:a});$(".add_tab_link").click(function(){$("#tab_name").val("");$("#add_tab label").text(EE.lang.tab_name+": ");$("#new_tab_dialog").dialog("open");setup_tabs();return!1})}).toggle(function(){disable_fields(!0);$(".tab_menu").sortable({axis:"x",tolerance:"pointer",placeholder:"publishTabSortPlaceholder",items:"li:not(.addTabButton)"});$(EE._hidden_fields).closest(".publish_field").show();$("a span","#showToolbarLink").text(EE.lang.hide_toolbar);$("#showToolbarLink").animate({marginRight:"210"});
 $("#holder").animate({marginRight:"196"},function(){$("#tools").show();$("#showToolbarImg").hide();$("#hideToolbarImg").css("display","inline")});$(".publish_field").animate({backgroundPosition:"0 0"},"slow");$(".handle").css("display","block");$(".ui-resizable-e").show(500);$(".addTabButton").css("display","inline")},function(){disable_fields(!1);$("#tools").hide();$(".tab_menu").sortable("destroy");$("a span","#showToolbarLink").text(EE.lang.show_toolbar);$("#showToolbarLink").animate({marginRight:"20"});

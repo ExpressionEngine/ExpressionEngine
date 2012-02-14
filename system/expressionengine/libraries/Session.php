@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -36,36 +36,36 @@ There are three validation types, set in the config file:
  
   1. User cookies AND session ID (cs)
 		
-	This is the most secure way to run a site.  Three cookies are set:
-	1. Session ID - This is a unique hash that is randomly generated when 
-					someone logs in.
-	2. Password hash - The encrypted password of the current user
-	3. Unique ID - The permanent unique ID hash associated with the account.
-	
-	All three cookies expire when you close your browser OR when you have been 
-	inactive longer than two hours (one hour in the control panel).
+	This is the most secure way to run a site. A session cookie is set
+	with a random ID, which is also appended to the url.
+
+	The cookie expires when you have been inactive longer than two
+	hours (one hour in the control panel). The ID in the url will be
+	lost when you close the browser.
 	
 	Using this setting does NOT allow 'stay logged-in' capability, as each 
 	session has a finite lifespan.
 
   2. Cookies only - no session ID (c)
 	
-	With this validation type, a session is not generated, therefore
-	users can remain permanently logged in.
+	With this validation type, a session ID string is not added to the url.
+	Therefore users can remain permanently logged in if they choose the
+	remember me option. This will set a second cookie that expires in a year.
 	
-	This setting is obviously less secure because it does not provide a safety net
-	if you share your computer or access your site from a public computer.
-	It relies solely on the password/unique_id cookies.
+	This setting is obviously less secure because it does not provide a safety
+	net if you share your computer or access your site from a public computer.
+	It relies solely on the session_id/remember_me cookies. You must log out.
 
   3. Session ID only (s).  
 	
-	Most compatible as it does not rely on cookies at all.  Instead, a URL 
-	query string ID is used.
+	Most compatible as it does not rely on cookies at all. Instead, only the
+	URL query string ID is used.
 	
-	No stay-logged in capability.  The session will expire after one hour of 
+	No stay-logged in capability. The session will expire after one hour of 
 	inactivity, so in terms of security, it is preferable to number 2.
 	
-	NOTE: The control panel and public pages can each have their own session preference.
+	NOTE: The control panel and public pages can each have their own
+	      session preference.
 */
 
 class EE_Session {
@@ -75,7 +75,6 @@ class EE_Session {
 
 	public $c_session			= 'sessionid';
 	public $c_expire			= 'expiration';
-	public $c_remember			= 'remember';
 	public $c_anon				= 'anon';
 	public $c_prefix			= '';
 	
@@ -92,7 +91,7 @@ class EE_Session {
 	public $access_cp			= FALSE;
 	public $cookies_exist		= FALSE;
 	public $session_exists		= FALSE;
-	
+		
 	// Garbage collection probability. Used to kill expired sessions.
 	public $gc_probability		= 5;
 	
@@ -172,8 +171,8 @@ class EE_Session {
 			}			
 		}
 		
-		// Fetch remember me cookie
-		if ($this->EE->input->cookie($this->c_remember))
+		// Check remember me
+		if ($this->EE->remember->exists())
 		{
 			$this->cookies_exist = TRUE;
 		}
@@ -201,7 +200,7 @@ class EE_Session {
 		
 		// Fetch Session Data		
 		// IMPORTANT: The session data must be fetched before the member data so don't move this.
-		if ($session_id  === TRUE)
+		if ($session_id === TRUE)
 		{
 			if ($this->fetch_session_data() === TRUE) 
 			{
@@ -210,9 +209,9 @@ class EE_Session {
 		}
 
 		// Fetch Member Data
-		$member_data_exists = ($this->fetch_member_data() === TRUE) ? TRUE : FALSE;
+		$member_data_exists = (bool) $this->fetch_member_data();
 		
-		// Update/Create Session						
+		// Update/Create Session
 		if ($session_id === FALSE OR $member_data_exists === FALSE)
 		{ 
 			$this->fetch_guest_data();
@@ -239,6 +238,7 @@ class EE_Session {
 		// Update cookies
 		$this->update_cookies();
 		$this->_prep_flashdata();
+		$this->EE->remember->refresh();
 		
 		// Fetch "tracker" cookie
 		if (REQ != 'CP')
@@ -292,14 +292,18 @@ class EE_Session {
 	{
 		switch ($type)
 		{
-			case 'ip'			: $ban = $this->EE->config->item('banned_ips');
-								  $match = $this->EE->input->ip_address();
+			case 'ip':
+				$ban = $this->EE->config->item('banned_ips');
+				$match = $this->EE->input->ip_address();
 				break;
-			case 'email'		: $ban = $this->EE->config->item('banned_emails');
+			case 'email':
+				$ban = $this->EE->config->item('banned_emails');
 				break;
-			case 'username'		: $ban = $this->EE->config->item('banned_usernames');
+			case 'username':
+				$ban = $this->EE->config->item('banned_usernames');
 				break;
-			case 'screen_name'	: $ban = $this->EE->config->item('banned_screen_names');
+			case 'screen_name':
+				$ban = $this->EE->config->item('banned_screen_names');
 				break;
 		}
 		
@@ -376,12 +380,10 @@ class EE_Session {
 		$p_where = "(user_agent ='{$this->EE->db->escape_str($this->userdata['user_agent'])}' OR username='{$this->EE->db->escape_str($username)}')";
 
 		$lockout = $this->EE->db->select("COUNT(*) as count")
-								->where('login_date > ', $expire)
-								->where('ip_address', $this->EE->input->ip_address())
-								->where($p_where)
-								->get('password_lockout');
-		
-								
+			->where('login_date > ', $expire)
+			->where('ip_address', $this->EE->input->ip_address())
+			->where($p_where)
+			->get('password_lockout');
 		
 		return ($lockout->row('count') >= 4) ? TRUE : FALSE;
 	}
@@ -415,7 +417,8 @@ class EE_Session {
 		$this->userdata['session_id']	= $this->sdata['session_id'];
 		$this->userdata['site_id']		= $this->EE->config->item('site_id');
 		
-		$this->EE->functions->set_cookie($this->c_session , $this->sdata['session_id'], $this->session_length);	
+		$this->EE->functions->set_cookie($this->c_session, $this->sdata['session_id'], $this->session_length);	
+		$this->EE->functions->set_cookie($this->c_expire, time()+$this->session_length, $this->session_length);
 		
 		$this->EE->db->query($this->EE->db->insert_string('exp_sessions', $this->sdata));	
 
@@ -476,7 +479,7 @@ class EE_Session {
 	 * Destroy session. Essentially logging a user off.
 	 */
 	public function destroy()
-	{
+	{		
 		$this->EE->db->where('session_id', $this->userdata['session_id']);
 		$this->EE->db->delete('sessions');
 		
@@ -484,8 +487,8 @@ class EE_Session {
 		// method, but if someone doesn't - we're safe
 		$this->fetch_guest_data();
 		
+		$this->EE->remember->delete();
 		$this->EE->functions->set_cookie($this->c_session);
-		$this->EE->functions->set_cookie($this->c_remember);
 		$this->EE->functions->set_cookie($this->c_expire);	
 		$this->EE->functions->set_cookie($this->c_anon);
 		$this->EE->functions->set_cookie('tracker'); 
@@ -498,11 +501,12 @@ class EE_Session {
 	 */
 	public function fetch_guest_data()
 	{
-		$qry = $this->EE->db->where('site_id', $this->EE->config->item('site_id'))
-							->where('group_id', (int) 3)
-							->get('member_groups');
+		$guest_q = $this->EE->db
+			->where('site_id', $this->EE->config->item('site_id'))
+			->where('group_id', (int) 3)
+			->get('member_groups');
 			
-		foreach ($qry->row_array() as $key => $val)
+		foreach ($guest_q->row_array() as $key => $val)
 		{			
 			$this->userdata[$key] = $val;				 
 		}
@@ -545,7 +549,7 @@ class EE_Session {
 
 		// If the user has been inactive longer than the session length we'll
 		// set the "last_visit" cooke with the "last_activity" date.
-				
+		
 		if (($this->sdata['last_activity'] + $this->session_length) < $this->EE->localize->now) 
 		{
 			$this->userdata['last_visit'] = $this->sdata['last_activity'];
@@ -590,8 +594,11 @@ class EE_Session {
 				{
 					// not set yet, so let's create one and udpate it for this user
 					$this->sess_crypt_key = $this->EE->functions->random('encrypt', 16);
-					$this->EE->db->update('members', array('crypt_key' => $this->sess_crypt_key), 
-													 array('member_id' => (int) $member_query->row('member_id')));
+					$this->EE->db->update(
+						'members',
+						array('crypt_key' => $this->sess_crypt_key), 
+						array('member_id' => (int) $member_query->row('member_id'))
+					);
 				}
 				else
 				{
@@ -621,11 +628,8 @@ class EE_Session {
 		if (REQ == 'CP')
 		{
 			$this->_setup_channel_privs();
-
 			$this->_setup_module_privs();
-
 			$this->_setup_template_privs();
-			
 			$this->_setup_assigned_sites();
 		}
 		
@@ -658,8 +662,10 @@ class EE_Session {
 			$last_act = ($member_query->row('last_activity') > 0) ? $member_query->row('last_activity')  : $this->EE->localize->now;
 		
 			$this->EE->db->where('member_id', (int) $this->sdata['member_id']);
-			$this->EE->db->update('members', array('last_visit' 	=> $last_act,
-													'last_activity' => $this->EE->localize->now));
+			$this->EE->db->update('members', array(
+				'last_visit' 	=> $last_act,
+				'last_activity' => $this->EE->localize->now
+			));
 		
 			$this->userdata['last_visit'] = $member_query->row('last_activity') ;
 		}		
@@ -671,7 +677,9 @@ class EE_Session {
 		if (($member_query->row('last_activity')  + 300) < $this->EE->localize->now)	 
 		{
 			$this->EE->db->where('member_id', (int) $this->sdata['member_id']);
-			$this->EE->db->update('members', array('last_activity' => $this->EE->localize->now));
+			$this->EE->db->update('members', array(
+				'last_activity' => $this->EE->localize->now
+			));
 		}
 
 		$member_query->free_result();
@@ -695,9 +703,32 @@ class EE_Session {
 	{
 		// Look for session.  Match the user's IP address and browser for added security.
 		$this->EE->db->select('member_id, admin_sess, last_activity')
-					 ->where('session_id', (string) $this->sdata['session_id'])
-					 ->where('ip_address', $this->sdata['ip_address'])
-					 ->where('user_agent', $this->sdata['user_agent']);
+			->where('session_id', (string) $this->sdata['session_id'])
+			->where('user_agent', $this->sdata['user_agent']);
+		
+		// Determine the ip accuracy we're looking for
+		$accuracy = (is_numeric($this->EE->config->item('session_ip_accuracy'))) ? 
+			(int) $this->EE->config->item('session_ip_accuracy') : 
+			4;
+
+		// If full accuracy, do a where
+		if ($accuracy === 4)
+		{
+			$this->EE->db->where('ip_address', $this->sdata['ip_address']);	
+		}
+		// If more than 0 accuracy, do a like
+		else if ($accuracy !== 0)
+		{
+			$current_ip = explode('.', $this->sdata['ip_address']);
+			$like_ip = array();
+			
+			for ($octet = 0; $octet < $accuracy; $octet++)
+			{ 
+				$like_ip[] = $current_ip[$octet];
+			}
+
+			$this->EE->db->like('ip_address', implode('.', $like_ip), 'after');
+		}
 
 		$query = $this->EE->db->get('sessions');
 		
@@ -763,12 +794,12 @@ class EE_Session {
 				
 		if ($query->num_rows() == 1)
 		{
-			$res = $this->EE->db->select("COUNT(*) as count")
-								->where('code', $query->row('country'))
-								->where('banned', 'y')
-								->get('ip2nation_countries');
+			$this->EE->db->where(array(
+				'code' => $query->row('country'),
+				'banned' => 'y'
+			));
 			
-			if ($res->row('count')  > 0)
+			if ($this->EE->db->count_all_results('ip2nation_countries'))
 			{
 				if ($show_error == TRUE)
 				{
@@ -793,11 +824,11 @@ class EE_Session {
 		} 
 
 		$data = array(
-						'login_date'	=> time(),
-						'ip_address'	=> $this->EE->input->ip_address(),
-						'user_agent'	=> $this->userdata['user_agent'],
-						'username'		=> $username
-					);
+			'login_date'	=> time(),
+			'ip_address'	=> $this->EE->input->ip_address(),
+			'user_agent'	=> $this->userdata['user_agent'],
+			'username'		=> $username
+		);
 					
 		$this->EE->db->insert('password_lockout', $data);
 	}
@@ -1072,20 +1103,20 @@ class EE_Session {
 		// either use the cookie data or the member ID gathered with the session query.
 		
 		$this->EE->db->from(array('members m', 'member_groups g'))
-					 ->where('g.site_id', (int) $this->EE->config->item('site_id'))
-					 ->where('m.group_id', ' g.group_id', FALSE);
+			->where('g.site_id', (int) $this->EE->config->item('site_id'))
+			->where('m.group_id', ' g.group_id', FALSE);
+		
+		$member_id = $this->sdata['member_id'];
 		
 		// remember me
 		if ($this->sdata['member_id'] == 0 &&
 			$this->validation == 'c' &&
-			$this->EE->input->cookie($this->c_remember))
+			$this->EE->remember->data('member_id'))
 		{
-			$this->EE->db->where('remember_me', $this->EE->input->cookie($this->c_remember));
+			$member_id = $this->EE->remember->data('member_id');
 		}
-		else
-		{
-			$this->EE->db->where('member_id', (int) $this->sdata['member_id']);
-		}
+
+		$this->EE->db->where('member_id', (int) $member_id);
 				
 		return $this->EE->db->get();
 	}
@@ -1215,20 +1246,20 @@ class EE_Session {
 		{
 			$this->EE->db->select('channel_id, channel_title');
 			$this->EE->db->order_by('channel_title');
-			$res = $this->EE->db->get_where('channels', 
-											array('site_id' => $this->EE->config->item('site_id')));
+			$res = $this->EE->db->get_where(
+				'channels', 
+				array('site_id' => $this->EE->config->item('site_id'))
+			);
 		}
 		else
 		{
 			$res = $this->EE->db->select('ec.channel_id, ec.channel_title')
-								->from(array('channel_member_groups ecmg', 'channels ec'))
-								->where('ecmg.channel_id', 'ec.channel_id',  FALSE)
-								->where('ecmg.group_id', $this->userdata['group_id'])
-								->where('site_id', $this->EE->config->item('site_id'))
-								->order_by('ec.channel_title')
-								->get();
-
-
+				->from(array('channel_member_groups ecmg', 'channels ec'))
+				->where('ecmg.channel_id', 'ec.channel_id',  FALSE)
+				->where('ecmg.group_id', $this->userdata['group_id'])
+				->where('site_id', $this->EE->config->item('site_id'))
+				->order_by('ec.channel_title')
+				->get();
 		}
 		
 		if ($res->num_rows() > 0)
@@ -1321,8 +1352,6 @@ class EE_Session {
 		
 		$qry->free_result();	
 	}
-
-	// --------------------------------------------------------------------	
 
 }
 // END CLASS

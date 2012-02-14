@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -1349,6 +1349,14 @@ class Search {
 		if ($pagination->paginate === TRUE OR $old_pagination)
 		{
 			$sql .= " LIMIT ".$pagination->offset.", ".$pagination->per_page;
+		}
+		else if ($pagination->per_page > 0)
+		{
+			$sql .= " LIMIT 0, ".$pagination->per_page;
+		}
+		else
+		{
+			$sql .= " LIMIT 0, 100";
 		}
 		
 		$query = $this->EE->db->query($sql);

@@ -2839,6 +2839,15 @@ html.js .publish_hidden {
 	display: 			inline;
 }
 
+#cat_modal_container p,
+#cat_modal_container .category_field {
+	margin: 4px 0 12px;
+}
+
+#cat_modal_container .category_field p {
+	margin: 0;
+}
+
 /* Write Mode */
 
 #write_mode_footer,
@@ -3424,6 +3433,11 @@ div.contentWrap {
 
 .edit_controls .oversized {
 	border: 2px solid #c6220a;
+}
+
+#file_manager_toolbar {
+	float: left;
+	width: 14.5%;
 }
 
 #file_manager_edit_file {

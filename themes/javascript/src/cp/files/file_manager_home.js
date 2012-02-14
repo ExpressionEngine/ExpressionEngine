@@ -3,7 +3,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -48,9 +48,6 @@ $.ee_filemanager.file_uploader = function() {
 				$('.mainTable tbody tr:has(td:contains(' + file.file_id + ')):has(td:contains(' + file.file_name + '))').remove();
 			};
 			
-			// Clone the first valid row
-			var $first_row = $('.mainTable tbody tr:first').clone();
-			
 			// Build actions
 			file.actions = '';
 			$.each(EE.fileuploader.actions, function(index, val) {
@@ -80,8 +77,8 @@ $.ee_filemanager.file_uploader = function() {
 				});
 				
 				// I realize how foolish this looks, but in order to pass the html
-				// to jQuery templates, we need the html and jQuery in it's infinite
-				// wisodom has no method to get the full html of an object, it only
+				// to jQuery templates, we need the html and jQuery in its infinite
+				// wisdom has no method to get the full html of an object, it only
 				// has a method to get the inner html, completely missing the actual
 				// anchor link, seems worthless to me too.
 
@@ -101,6 +98,9 @@ $.ee_filemanager.file_uploader = function() {
 				// Change modal's top
 				$('#file_uploader').dialog('option', 'position', 'center');
 			};
+
+			// If there were no files previously, the table might be hidden
+			$('.mainTable').show();
 		},
 		trigger: '#action_nav a.upload_file'
 	});

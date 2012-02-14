@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -182,7 +182,7 @@ class EE_Menu {
 		if ($channels != FALSE AND $channels->num_rows() > 0)
 		{
 			$menu['content']['publish'] = array();
-			$menu['content']['edit'] = array('PARENT_HREF' => BASE.AMP.'C=content_edit');
+			$menu['content']['edit'] = array('nav_edit_all' => BASE.AMP.'C=content_edit');
 			
 			foreach($channels->result() as $channel)
 			{
@@ -334,8 +334,8 @@ class EE_Menu {
 			
 			if (is_array($data))
 			{
-				$parent_href = (isset($data['PARENT_HREF'])) ? $data['PARENT_HREF'] : '#';
-				unset($data['PARENT_HREF']);
+				$parent_href = (isset($data['nav_edit_all'])) ? $data['nav_edit_all'] : '#';
+				unset($data['nav_edit_all']);
 				
 				$menu .= str_replace(
 					array(

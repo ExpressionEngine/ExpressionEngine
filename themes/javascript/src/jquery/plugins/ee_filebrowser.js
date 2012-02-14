@@ -3,7 +3,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -186,6 +186,11 @@
 	 * Clear caches and close the file browser
 	 */
 	$.ee_filebrowser.clean_up = function(file) {
+
+		if (file_manager_obj == undefined) {
+			return;
+		}
+
 		if (file) {
 			trigger_callback(file);
 		}
@@ -227,6 +232,7 @@
 	 * Sets up all filebrowser events
 	 */
 	function createBrowser() {
+		var $dir_choice = $('#dir_choice');
 
 		// Set up modal dialog
 		file_manager_obj.dialog({
@@ -240,6 +246,14 @@
 			autoOpen: false,
 			zIndex: 99999,
 			open: function(event, ui) {
+				var field_dir = settings[current_field].directory;
+				
+				if ( ! isNaN(field_dir)) {
+					$dir_choice.val(field_dir);
+				}
+				
+				// force a trigger check
+				$dir_choice.trigger('interact');
 				var current_directory = $('#dir_choice').val();
 			},
 			close: function(event, ui) {
@@ -250,7 +264,7 @@
 			}
 		});
 		
-		var $table, $tables = $('#file_browser_body').find('table');
+		var $tables = $('#file_browser_body').find('table');
 
 		$tables.each(function() {
 			$table = $(this);
@@ -263,11 +277,10 @@
 		var config = $table.data('table_config');
 		$table.table(config);
 		
-		var $dir_choice = $('#dir_choice');
 		
 		// Set directory in case filter happens before input has changed (because the
 		// filter is only set on certain interaction events)
-		$table.table('add_filter', { 'dir_choice': $dir_choice.val() });
+		// $table.table('add_filter', { 'dir_choice': $dir_choice.val() });
 		
 		$table.table('add_filter', $dir_choice);
 		$table.table('add_filter', $('#keywords'));

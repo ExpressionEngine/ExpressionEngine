@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -186,7 +186,7 @@ class Filemanager {
 		$this->EE->load->model(array('file_model', 'file_upload_preferences_model'));
 
 		// Figure out if the directory actually exists
-		$prefs = $this->EE->file_upload_preferences_model->get_upload_preferences(
+		$prefs = $this->EE->file_upload_preferences_model->get_file_upload_preferences(
 			'1', // Overriding the group ID to get all IDs
 			$dir_id
 		);
@@ -824,18 +824,18 @@ class Filemanager {
 			'date'		=> array('header' => lang('date'))
 		));
 		
-		$per_page = $this->EE->input->get_post('per_page');
-		$dir_id = $this->EE->input->get_post('dir_choice');
-		$keywords = $this->EE->input->get_post('keywords');
-		$tbl_sort = $this->EE->input->get_post('tbl_sort');
+		$per_page	= $this->EE->input->get_post('per_page');
+		$dir_id 	= $this->EE->input->get_post('dir_choice');
+		$keywords 	= $this->EE->input->get_post('keywords');
+		$tbl_sort	= $this->EE->input->get_post('tbl_sort');
 		
 		// Default to file_name sorting if tbl_sort isn't set
 		$state = (is_array($tbl_sort)) ? $tbl_sort : array('sort' => array('file_name' => 'asc'));
 		
 		$params = array(
-			'per_page' => $per_page ? $per_page : 15,
-			'dir_id' => $dir_id,
-			'keywords' => $keywords
+			'per_page'	=> $per_page ? $per_page : 15,
+			'dir_id'	=> $dir_id,
+			'keywords'	=> $keywords
 		);
 		
 		if ($first_dir)
@@ -869,10 +869,10 @@ class Filemanager {
 		}
 		
 		$file_params = array(
-			'type' => $dir['allowed_types'],
-			'order' => $state['sort'],
-			'limit' => $per_page,
-			'offset' => $state['offset']
+			'type'		=> $dir['allowed_types'],
+			'order'		=> $state['sort'],
+			'limit'		=> $per_page,
+			'offset'	=> $state['offset']
 		);
 		
 		if (isset($params['keywords']))
@@ -880,13 +880,22 @@ class Filemanager {
 			$file_params['search_value']	= $params['keywords'];
 			$file_params['search_in']		= 'all';
 		}
-		
+
+		// Mask the URL if we're coming from the CP
+		$sync_files_url = (REQ == "CP") ?
+			$this->EE->cp->masked_url('http://expressionengine.com/user_guide/cp/content/files/sync_files.html') :
+			'http://expressionengine.com/user_guide/cp/content/files/sync_files.html';
+
 		return array(
-			'rows' => $this->_get_files($dir, $file_params),
-			'no_results' => lang('no_uploaded_files'),
-			'pagination' => array(
-				'per_page' => $per_page,
-				'total_rows' => $this->EE->file_model->count_files($params['dir_id'])
+			'rows'			=> $this->_browser_get_files($dir, $file_params),
+			'no_results'	=> sprintf(
+				lang('no_uploaded_files'), 
+				$sync_files_url,
+				BASE.AMP.'C=content_files'.AMP.'M=file_upload_preferences'
+			),
+			'pagination' 	=> array(
+				'per_page' 		=> $per_page,
+				'total_rows'	=> $this->EE->file_model->count_files($params['dir_id'])
 			)
 		);
 	}
@@ -924,7 +933,7 @@ class Filemanager {
 		$return_all = ($ajax) ? FALSE : $return_all;		// safety - ajax calls can never get all info!
 		
 		$dirs = $this->directories(FALSE, $return_all);
-
+		
 		$return = isset($dirs[$dir_id]) ? $dirs[$dir_id] : FALSE;
 		
 		if ($ajax)
@@ -996,8 +1005,8 @@ class Filemanager {
 	{
 		$this->datatables();
 		
-		$dir_id = $this->EE->input->get('directory_id');
-		$dir = $this->directory($dir_id, FALSE, TRUE);
+		$dir_id	= $this->EE->input->get('directory_id');
+		$dir	= $this->directory($dir_id, FALSE, TRUE);
 		
 		$offset	= $this->EE->input->get('offset');
 		$limit	= $this->EE->input->get('limit');
@@ -1032,7 +1041,7 @@ class Filemanager {
 	{
 		$dir_id = $this->EE->input->get('directory_id');
 		$dir = $this->directory($dir_id, FALSE, TRUE);
-
+		
 		$data = $dir ? call_user_func($this->config['directory_info_callback'], $dir) : array();
 		
 		if (count($data) == 0)
@@ -1085,6 +1094,9 @@ class Filemanager {
 	function upload_file($dir_id = '', $field = FALSE, $image_only = FALSE)
 	{
 		$dir = $this->directory($dir_id, FALSE, TRUE);
+
+		// TODO: Check $image_only value to verify it's correct and then clarify
+		// with Kevin
 		
 		// Override the allowed types of the dir if we're restricting to images
 		if ($image_only)
@@ -1190,9 +1202,15 @@ class Filemanager {
 	 * @access	public
 	 * @param	string	file path
 	 * @param	array	file and directory information
+	 * @param	bool	Whether or not to create a thumbnail; will do so
+	 *		regardless of missing_only setting because directory syncing
+	 *		needs to update thumbnails even if no image manipulations are
+	 *		updated.
+	 * @param	bool	Whether or not to replace missing image
+	 *		manipulations only (TRUE) or replace them all (FALSE).
 	 * @return	bool	success / failure
 	 */
-	function create_thumb($file_path, $prefs, $thumb = TRUE, $missing_only = FALSE)
+	function create_thumb($file_path, $prefs, $thumb = TRUE, $missing_only = TRUE)
 	{
 		$this->EE->load->library('image_lib');
 		$this->EE->load->helper('file');
@@ -1273,14 +1291,18 @@ class Filemanager {
 		
 			$resized_dir = rtrim(realpath($resized_path), DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
 			
-			// Does the thumb image exist - nuke it!
+			// Does the thumb image exist
 			if (file_exists($resized_path.$prefs['file_name']))
 			{
-				if ($missing_only)
+				// Only skip images that are custom image manipulations and when missing_only
+				// has been set to TRUE, but always make sure we update normal thumbnails
+				if (($missing_only AND $size['short_name'] != 'thumbs') OR
+					($size['short_name'] == 'thumbs' AND $thumb == FALSE))
 				{
 					continue;
 				}
 				
+				// Delete the image to make way for a new one
 				@unlink($resized_path.$prefs['file_name']);
 			}		
 
@@ -1561,7 +1583,7 @@ class Filemanager {
 			$db_files[$row['file_id']] = $row['file_name'];
 		}
 		
-		$upload_prefs = $this->EE->file_upload_preferences_model->get_upload_preferences(1, $dir_id);
+		$upload_prefs = $this->EE->file_upload_preferences_model->get_file_upload_preferences(1, $dir_id);
 		
 		if (count($upload_prefs) == 0)
 		{
@@ -1673,7 +1695,7 @@ class Filemanager {
 		$dirs = array();
 		$this->EE->load->model('file_upload_preferences_model');
 		
-		$directories = $this->EE->file_upload_preferences_model->get_upload_preferences(
+		$directories = $this->EE->file_upload_preferences_model->get_file_upload_preferences(
 			$this->EE->session->userdata('group_id')
 		);
 		
@@ -1698,7 +1720,7 @@ class Filemanager {
 	function _directory_contents($dir, $limit, $offset)
 	{
 		return array(
-			'files' => $this->_get_files($dir, $limit, $offset)
+			'files' => $this->_browser_get_files($dir, $limit, $offset)
 		);
 	}
 	
@@ -1716,7 +1738,7 @@ class Filemanager {
 	 * @access private
 	 * @return array	List of files
 	 */
-	private function _get_files($dir, $limit = 15, $offset = 0)
+	private function _browser_get_files($dir, $limit = 15, $offset = 0)
 	{
 		$this->EE->load->model('file_model');
 		$this->EE->load->helper(array('text', 'number'));
@@ -1728,12 +1750,12 @@ class Filemanager {
 		else
 		{
 			$params = array(
-				'type' => $dir['allowed_types'],
-				'order' => array(
+				'type'		=> $dir['allowed_types'],
+				'order'		=> array(
 					'file_name' => 'asc'
 				),
-				'limit' => $limit,
-				'offset' => $offset
+				'limit'		=> $limit,
+				'offset'	=> $offset
 			);
 		}
 		
@@ -1751,16 +1773,26 @@ class Filemanager {
 
 		foreach ($files as &$file)
 		{
-			$file['short_name'] = ellipsize($file['title'], 13, 0.5);
-			$file['file_size'] = byte_format($file['file_size']);
-			$file['date'] = date('F j, Y g:i a', $file['modified_date']);
+			// Get thumb information
+			$thumb_info = $this->get_thumb($file, $dir['id']);
 			
 			// Copying file_name to name for addons
 			$file['name'] = $file['file_name'];
 			
-			$thumb_info = $this->get_thumb($file, $dir['id']);
-			$file['thumb'] = $thumb_info['thumb'];
-			$file['thumb_class'] = $thumb_info['thumb_class'];
+			// Setup the link
+			$file['file_name'] = '
+				<a href="#"
+					title="'.$file['file_name'].'" 
+					onclick="$.ee_filebrowser.placeImage('.$file['file_id'].'); return false;"
+				>
+					'.$file['file_name'].'
+				</a>';
+			
+			$file['short_name']		= ellipsize($file['title'], 13, 0.5);
+			$file['file_size']		= byte_format($file['file_size']);
+			$file['date']			= date('F j, Y g:i a', $file['modified_date']);
+			$file['thumb'] 			= $thumb_info['thumb'];
+			$file['thumb_class']	= $thumb_info['thumb_class'];
 		}
 
 		return $files;
@@ -1816,7 +1848,7 @@ class Filemanager {
 
 		$this->EE->load->model(array('file_upload_preferences_model', 'category_model'));
 
-		$category_group_ids = $this->EE->file_upload_preferences_model->get_upload_preferences(NULL, $dir['id']);
+		$category_group_ids = $this->EE->file_upload_preferences_model->get_file_upload_preferences(NULL, $dir['id']);
 		$category_group_ids = explode('|', $category_group_ids['cat_group']);
 
 		if (count($category_group_ids) > 0 AND $category_group_ids[0] != '')
@@ -2512,7 +2544,7 @@ class Filemanager {
 	{
 		$this->EE->load->model('file_upload_preferences_model');
 
-		$upload_dirs = $this->EE->file_upload_preferences_model->get_upload_preferences(
+		$upload_dirs = $this->EE->file_upload_preferences_model->get_file_upload_preferences(
 										$this->EE->session->userdata('group_id'),
 										$file_dir_id);
 		
@@ -2618,7 +2650,7 @@ class Filemanager {
 		$this->EE->load->helper('string');
 		$this->EE->load->model('file_upload_preferences_model');
 		
-		$upload_prefs = $this->EE->file_upload_preferences_model->get_upload_preferences(1);
+		$upload_prefs = $this->EE->file_upload_preferences_model->get_file_upload_preferences(1);
 		
 		if (count($files) === 1)
 		{
@@ -2848,15 +2880,17 @@ class Filemanager {
 		// Get dimensions for thumbnail
 		$dimensions = $this->EE->file_model->get_dimensions_by_dir_id($upload_dir_id);
 		$dimensions = $dimensions->result_array();
-		
+
 		// Regenerate thumbnails
 		$this->create_thumb(
 			$file_path,
 			array(
-				'server_path' => $upload_prefs['server_path'],
-				'file_name'  => basename($file_name),
-				'dimensions' => $dimensions
-			)
+				'server_path'	=> $upload_prefs['server_path'],
+				'file_name'		=> basename($file_name),
+				'dimensions'	=> $dimensions
+			),
+			TRUE, // Regenerate thumbnails
+			FALSE // Regenerate all images
 		);
 		
 		// If we're redirecting send em on

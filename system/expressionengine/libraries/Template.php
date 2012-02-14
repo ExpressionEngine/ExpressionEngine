@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -2003,12 +2003,9 @@ class EE_Template {
 		
 		$this->log_item("Retrieving Template from Database: ".$template_group.'/'.$template);
 		 
-		$sql_404 = '';
+		$show_404 = FALSE;
 		$template_group_404 = '';
 		$template_404 = '';
-		
-		// Start caching in case we need to create a template from file
-		$this->EE->db->start_cache();
 		
 		/* -------------------------------------------
 		/*	Hidden Configuration Variable
@@ -2044,6 +2041,8 @@ class EE_Template {
 						'template_groups.group_name'	=> $x[0],
 						'templates.template_name'		=> $x[1]
 					));
+
+					$show_404 = TRUE;
 				}
 				else
 				{
@@ -2074,32 +2073,18 @@ class EE_Template {
 					'template_groups.group_name'	=> $x[0],
 					'templates.template_name'		=> $x[1]
 				));
+
+				$show_404 = TRUE;
 			}	
 		}
 		
-		$this->EE->db->select('templates.template_name,
-				templates.template_id,
-				templates.template_data,
-				templates.template_type,
-				templates.edit_date,
-				templates.save_template_file,
-				templates.cache,
-				templates.refresh,
-				templates.no_auth_bounce,
-				templates.enable_http_auth,
-				templates.allow_php,
-				templates.php_parse_location,
-				templates.hits,
-				template_groups.group_name')
+		$this->EE->db->select('templates.*, template_groups.group_name')
 			->from('templates')
 			->join('template_groups', 'template_groups.group_id = templates.group_id')
 			->where('template_groups.site_id', $site_id);
 		
-		// Alright, stop caching active record, we have what we need for now
-		$this->EE->db->stop_cache();
-		
 		// If we're not dealing with a 404, what template and group do we need?
-		if ($sql_404 === '')
+		if ($show_404 === FALSE)
 		{
 			// Definitely need a template
 			if ($template != '')
@@ -2126,35 +2111,29 @@ class EE_Template {
 			// is there a file we can automatically create this template from?
 			if ($this->EE->config->item('save_tmpl_files') == 'y' && $this->EE->config->item('tmpl_file_basepath') != '')
 			{
-				$t_group = ($sql_404 != '') ? $template_group_404 : $template_group;
-				$t_template = ($sql_404 != '') ? $template_404 : $template;
-				
-				if ($this->_create_from_file($t_group, $t_template, TRUE))
+				$t_group = ($show_404) ? $template_group_404 : $template_group;
+				$t_template = ($show_404) ? $template_404 : $template;
+
+				if ($t_new_id = $this->_create_from_file($t_group, $t_template, TRUE))
 				{
 					// run the query again, as we just successfully created it
-					$this->EE->db->where(array(
-						'templates.template_name'	=> $t_template,
-						'templates.template_group'	=> $t_group
-					));
-					$query = $this->EE->db->get();
+					$query = $this->EE->db->select('templates.*, template_groups.group_name')
+						->join('template_groups', 'template_groups.group_id = templates.group_id')
+						->where('templates.template_id', $t_new_id)
+						->get('templates');
 				}
 				else
 				{
 					$this->log_item("Template Not Found");
-					$this->EE->db->flush_cache();
 					return FALSE;
 				}
 			}
 			else
 			{
 				$this->log_item("Template Not Found");
-				$this->EE->db->flush_cache();
 				return FALSE;
 			}
 		}
-		
-		// Clear out the AR cache, we're done with it
-		$this->EE->db->flush_cache();
 		
 		$this->log_item("Template Found");
 		
@@ -2207,7 +2186,7 @@ class EE_Template {
 					a.allow_php, a.php_parse_location, b.group_name')
 					->from('templates a')
 					->join('template_groups b', 'a.group_id = b.group_id')
-					->where('template_id', 3)
+					->where('template_id', $query->row('no_auth_bounce'))
 					->get();
 			}
 		}
@@ -2429,7 +2408,7 @@ class EE_Template {
 
 		foreach ($this->EE->api_template_structure->file_extensions as $type => $temp_ext)
 		{
-			if (file_exists($basepath.'/'.$template.$temp_ext) &&is_really_writable($basepath.'/'.$template.$temp_ext))
+			if (file_exists($basepath.'/'.$template.$temp_ext) && is_really_writable($basepath.'/'.$template.$temp_ext))
 			{
 				// found it with an extension
 				$filename = $template.$temp_ext;
@@ -2476,32 +2455,32 @@ class EE_Template {
 			}
 			
 			$data = array(
-							'group_name'		=> $template_group,
-							'group_order'		=> $this->EE->db->count_all('template_groups') + 1,
-							'is_site_default'	=> 'n',
-							'site_id'			=> $this->EE->config->item('site_id')
-						);
+				'group_name'		=> $template_group,
+				'group_order'		=> $this->EE->db->count_all('template_groups') + 1,
+				'is_site_default'	=> 'n',
+				'site_id'			=> $this->EE->config->item('site_id')
+			);
 			
 			$group_id = $this->EE->template_model->create_group($data);
 		}
 
 		$data = array(
-						'group_id'				=> $group_id,
-						'template_name'			=> $template,
-						'template_type'			=> $template_type,
-						'template_data'			=> file_get_contents($basepath.'/'.$filename),
-						'edit_date'				=> $this->EE->localize->now,
-						'save_template_file'	=> 'y',
-						'last_author_id'		=> '1',	// assume a super admin
-						'site_id'				=> $this->EE->config->item('site_id')
-					 );
+			'group_id'				=> $group_id,
+			'template_name'			=> $template,
+			'template_type'			=> $template_type,
+			'template_data'			=> file_get_contents($basepath.'/'.$filename),
+			'edit_date'				=> $this->EE->localize->now,
+			'save_template_file'	=> 'y',
+			'last_author_id'		=> '1',	// assume a super admin
+			'site_id'				=> $this->EE->config->item('site_id')
+		 );
 
-		$this->EE->template_model->create_template($data);
+		$template_id = $this->EE->template_model->create_template($data);
 		
 		// Clear db cache or it will create a new template record each page load!
 		$this->EE->functions->clear_caching('db');
 
-		return TRUE;
+		return $template_id;
 	}
 
 	// --------------------------------------------------------------------
@@ -3546,9 +3525,10 @@ class EE_Template {
 	 *
 	 * @param	string	- the tagdata / text to be parsed
 	 * @param	array	- the rows of variables and their data
+	 * @param	boolean	- Option to disable backspace parameter
 	 * @return	string
 	 */
-	public function parse_variables($tagdata, $variables)
+	public function parse_variables($tagdata, $variables, $enable_backspace = TRUE)
 	{	
 		if ($tagdata == '' OR ! is_array($variables) OR empty($variables) OR ! is_array($variables[0]))
 		{
@@ -3612,7 +3592,7 @@ class EE_Template {
 		
 		$backspace = $this->fetch_param('backspace', FALSE);
 		
-		if (is_numeric($backspace))
+		if (is_numeric($backspace) AND $enable_backspace)
 		{
 			$str = substr($str, 0, -$backspace);
 		}
