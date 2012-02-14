@@ -187,7 +187,7 @@
 	 */
 	$.ee_filebrowser.clean_up = function(file) {
 
-		if (file_manager_obj == 'undefined') {
+		if (file_manager_obj == undefined) {
 			return;
 		}
 
