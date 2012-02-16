@@ -83,7 +83,7 @@ class Addons_plugins extends CI_Controller {
 
 		// Grab the data
 		$plugins = $this->_get_installed_plugins();
-		
+
 		// Remote Plugins Disabled - no 2.0 feed
 //		$remote = $this->_get_available_plugins($plugins);
 		$remote = array();

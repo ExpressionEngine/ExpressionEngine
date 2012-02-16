@@ -1,61 +1,4 @@
 <?php
-
-/*
-=====================================================
- ExpressionEngine - by EllisLab
------------------------------------------------------
- http://expressionengine.com/
------------------------------------------------------
- Copyright (c) 2004 - 2012 EllisLab, Inc.
-=====================================================
- THIS IS COPYRIGHTED SOFTWARE
- PLEASE READ THE LICENSE AGREEMENT
- http://expressionengine.com/user_guide/license.html
-=====================================================
- File: pi.simplepie.php
------------------------------------------------------
- Purpose: Simplepie RSS plugin
-=====================================================
-
-*/
-
-$plugin_info = array(
-	'pi_name'			=> 'Simplepie RSS Parser',
-	'pi_version'		=> '1.0',
-	'pi_author'			=> 'Wes Baker',
-	'pi_author_url'		=> 'http://expressionengine.com/',
-	'pi_description'	=> 'Retrieves and Parses RSS/Atom Feeds',
-	'pi_usage'			=> Simplepie::usage()
-);
-					
-
-Class Simplepie {	
-
-	function Simplepie()
-	{
-	 	
-	}
-
-	function usage()
-	{
-	ob_start(); 
-	?>
-
-	<?php
-	$buffer = ob_get_contents();
-	
-	ob_end_clean(); 
-
-	return $buffer;
-	}
-
-	
-
-} 
-// END Plugin
-
-
-
 /**
  * SimplePie
  *
@@ -15353,5 +15296,4 @@ class SimplePie_Sanitize
 	}
 }
 
-/* End of file pi.simplepie.php */
-/* Location: ./system/expressionengine/plugins/pi.simplepie.php */
+?>
