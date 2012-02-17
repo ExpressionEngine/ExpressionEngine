@@ -178,7 +178,7 @@ class Rte_upd {
 				'rte_toolset_id'	=> array(
 					'type'		=> 'INT(10)',
 					'null'		=> FALSE,
-					'default'	=> '1'
+					'default'	=> '0'
 				)
 			)
 		);
