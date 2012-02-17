@@ -81,20 +81,21 @@ Class View_source_rte {
 		
 		function syncSizes()
 		{
-			var $this = $(this);
+			var $this	= $(this);
+			
 			if ( $this.is('.WysiHat-editor') &&
 				 $this.is(':visible') )
 			{
 				$this.data('field')
-					.width($this.outerWidth())
-					.height($this.outerHeight());
+					.height($this.outerHeight())
+					.width($this.outerWidth());
 			}
 			else if ( $this.is('.rte') &&
 					  $this.is(':visible') )
 			{
 				$this.data('editor')
-					.width($this.outerWidth())
-					.height($this.outerHeight());
+					.height($this.height())
+					.width($this.width());
 			}
 		}
 		$editor.add($field)
