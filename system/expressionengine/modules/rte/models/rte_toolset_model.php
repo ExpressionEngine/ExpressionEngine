@@ -130,7 +130,7 @@ class Rte_toolset_model extends CI_Model {
 			$toolset_id	= $result->row('rte_toolset_id');
 		}
 		# site default
-		else
+		if ( ! $toolset_id )
 		{
 			$toolset_id	= $this->config->item('rte_default_toolset_id');
 		}
