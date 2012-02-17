@@ -1096,34 +1096,70 @@ if ( typeof Selection == 'undefined' )
 
 	$(document).ready(function(){
 
+		var timer	= null,
+			empty	= '<p>&nbsp;</p>',
+			$element;
+
 		function fieldChangeHandler( e )
 		{
-			var
-			$element	= $(this),
-			element		= $element.get(0),
-			val, evt;
-
-			if ( $element.is('*[contenteditable=""],*[contenteditable=true]') )
+			if ( timer )
 			{
-				val	= $element.html();
-				evt	= 'editor:change';
-			}
-			else
-			{
-				val	= $element.val();
-				evt	= 'field:change';
+				clearTimeout(timer);
 			}
 
-			if ( val &&
-				 element.previousValue != val )
+			$element = $(this);
+
+			timer = setTimeout(function(){
+				var
+				element		= $element.get(0),
+				val, evt;
+
+				if ( $element.is('*[contenteditable=""],*[contenteditable=true]') )
+				{
+					val	= $element.html();
+
+					if ( val == '' ||
+					 	 val == '<br>' ||
+					 	 val == '<br/>' )
+					{
+						val = empty;
+						$element.html(val);
+						selectEmptyParagraph($element);
+					}
+
+					evt	= 'editor:change';
+				}
+				else
+				{
+					val	= $element.val();
+					evt	= 'field:change';
+				}
+
+				if ( val &&
+					 element.previousValue != val )
+				{
+					$element.trigger( 'WysiHat-' + evt );
+					element.previousValue = val;
+				}
+			}, 100);
+		}
+
+		function selectEmptyParagraph( $el )
+		{
+			var $el	= $element || $(this),
+				s	= window.getSelection(),
+				r	= document.createRange();
+			if ( $el.html() == empty )
 			{
-				$element.trigger( 'WysiHat-' + evt );
-				element.previousValue = val;
+				s.removeAllRanges();
+				r.selectNodeContents( $el.find('p').get(0) );
+				s.addRange(r);
 			}
 		}
 
 		$('body')
-			.delegate('input,textarea,*[contenteditable],*[contenteditable=true]', 'keydown', fieldChangeHandler );
+			.delegate('input,textarea,*[contenteditable],*[contenteditable=true]', 'keydown', fieldChangeHandler )
+			.delegate('*[contenteditable],*[contenteditable=true]', 'focus', selectEmptyParagraph );
 	});
 
 })(jQuery);
@@ -2413,52 +2449,65 @@ WysiHat.Formatting = (function($){
 	ACCUMULATING_LIST_ITEM = {};
 
 	return {
-		cleanup: function( $el )
+		cleanup: function( $element )
 		{
 			var
 			replaceElement = WysiHat.Commands.replaceElement;
-			$el
-				.find('span').each(function(){
-					var $this = $(this);
-					if ( $this.is('.Apple-style-span') )
-					{
-						$this.removeClass('.Apple-style-span');
-					}
-					if ( $this.css('font-weight') == 'bold' &&
-					 	 $this.css('font-style') == 'italic' )
-					{
-						$this.removeAttr('style').wrap('<strong>');
-						replaceElement( $this, 'em' );
-					}
-					else if ( $this.css('font-weight') == 'bold' )
-					{
-						replaceElement( $this.removeAttr('style'), 'strong' );
-					}
-					else if ( $this.css('font-style') == 'italic' )
-					{
-						replaceElement( $this.removeAttr('style'), 'em' );
-					}
-				 }).end()
-				.children('div').each(function(){
-				 	var $this = $(this);
-				 	if ( ! $this.get(0).attributes.length )
-				 	{
-				 		replaceElement( $this, 'p' );
-				 	}
-				 }).end()
-				.find('b').each(function(){
-				 	replaceElement($(this),'strong');
-				 }).end()
-				.find('i').each(function(){
-				 	replaceElement($(this),'em');
-				 }).end()
-				.find('strike').each(function(){
-				 	replaceElement($(this),'del');
-				 }).end()
-				.find('u').each(function(){
-				 	replaceElement($(this),'ins');
-				 }).end()
-				.find('p:empty').remove();
+			$element
+				.find('span')
+					.each(function(){
+						var $this = $(this);
+						if ( $this.is('.Apple-style-span') )
+						{
+							$this.removeClass('.Apple-style-span');
+						}
+						if ( $this.css('font-weight') == 'bold' &&
+						 	 $this.css('font-style') == 'italic' )
+						{
+							$this.removeAttr('style').wrap('<strong>');
+							replaceElement( $this, 'em' );
+						}
+						else if ( $this.css('font-weight') == 'bold' )
+						{
+							replaceElement( $this.removeAttr('style'), 'strong' );
+						}
+						else if ( $this.css('font-style') == 'italic' )
+						{
+							replaceElement( $this.removeAttr('style'), 'em' );
+						}
+					 })
+					.end()
+				.children('div')
+					.each(function(){
+					 	var $this = $(this);
+					 	if ( ! $this.get(0).attributes.length )
+					 	{
+					 		replaceElement( $this, 'p' );
+					 	}
+					 })
+					.end()
+				.find('b')
+					.each(function(){
+					 	replaceElement($(this),'strong');
+					 })
+					.end()
+				.find('i')
+					.each(function(){
+					 	replaceElement($(this),'em');
+					 })
+					.end()
+				.find('strike')
+					.each(function(){
+					 	replaceElement($(this),'del');
+					 })
+					.end()
+				.find('u')
+					.each(function(){
+					 	replaceElement($(this),'ins');
+					 })
+					.end()
+				.find('p:empty')
+					.remove();
 		},
 		format: function( $el )
 		{
@@ -2480,9 +2529,11 @@ WysiHat.Formatting = (function($){
 			this.cleanup( $container );
 
 
-			if ( $container.html() == '' )
+			if ( $container.html() == '' ||
+			 	 $container.html() == '<br>' ||
+			 	 $container.html() == '<br/>' )
 			{
-				$container.html('<p><br/></p>');
+				$container.html('<p>&nbsp;</p>');
 			}
 
 			return $container.html();
@@ -2499,6 +2550,14 @@ WysiHat.Formatting = (function($){
 
 
 			$container = $('<div/>').html($clone.html());
+
+			if ( $container.html() == '' ||
+			 	 $container.html() == '<br>' ||
+			 	 $container.html() == '<br/>' )
+			{
+				$container.html('<p>&nbsp;</p>');
+			}
+
 			this.cleanup( $container );
 
 
