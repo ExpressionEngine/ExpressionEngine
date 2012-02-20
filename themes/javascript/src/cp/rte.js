@@ -6,7 +6,7 @@
 	// make the modal
 	$modal.dialog({
 		width: 600,
-		height: 420,
+		height: 430,
 		resizable: false,
 		position: ["center","center"],
 		modal: true,
@@ -100,47 +100,51 @@
 	
 	function setupToolsetBuilder()
 	{
-		$selected	= $('#null');
-		$used		= $('#rte-tools-selected').bind( 'sortupdate', update_rte_toolset );
-		$unused		= $('#rte-tools-unused'),
 		$error		= $('<div class="notice"/>').text( EE.rte.name_required );
-		
-		// setup the sortables
-		$used.add($unused)
-			.sortable({
-				connectWith:	'.rte-tools-connected',
-				containment:	'.rte-toolset-builder',
-				items:			'li:not(.rte-tool-placeholder)',
-				opacity:		0.6,
-				revert:			.25,
-				tolerance:		'pointer'
-			 });
-		
-		// tools behaviors
-		$('li[data-tool-id]')
-			.hover(
-				function(){
-					$(this).addClass('rte-tool-hover');
-				},
-				function(){
-					$(this).removeClass('rte-tool-hover');
-				}
-			)
-			.click(function(){
-				$selected = $selected.add(
-					$(this).addClass('rte-tool-active')
-				);
-			});
 
-		// arrow behaviors
-		$('#rte-tools-select').click(function(){
-			$unused.find('li.rte-tool-active').appendTo($used);
-			update_rte_toolset();
+		// Enable selection/de-selection
+		$('body').on('click', '.rte-tool', function(e) {
+			$(this).toggleClass('rte-tool-active');
 		});
-		$('#rte-tools-deselect').click(function(){
-			$used.find('li.rte-tool-active').appendTo($unused);
-			update_rte_toolset();
+	
+	    $("#rte-tools-selected, #rte-tools-unused").sortable({
+			connectWith: '.rte-tools-connected',
+			containment: '.rte-toolset-builder',
+			revert: 200,
+			tolerance:	'pointer',
+			beforeStop: function(e, ui) {
+				// Reaplce the destination item with the item(s) in our helper container
+				$(ui.item).replaceWith(ui.helper.children().removeClass('rte-tool-active'));
+			},
+			helper: function(e, ui) {
+				// jQuery UI doesn't (yet) provide a way to move multiple items, but
+				// we can achieve it by wrapping selected items as the helper
+				var $selected = $('.rte-tool-active');
+	
+				if ( ! $selected.length) {
+					// shouldn't the below use ui.item? May be a UI bug.
+					$selected = $(ui).addClass('rte-tool-active'); 
+				}
+	
+				return $('<div/>').attr('id', 'draggingContainer').append($selected.clone());
+		    },
+			receive: function(e, ui) {
+				$(ui.sender).parent().find('.rte-tool-active').addClass('rte-tool-remove');
+			},
+			start: function(e, ui) {
+				// We don't want the placeholder to inherit this class
+				$(this).children('.ui-sortable-placeholder').removeClass('rte-tool-active');
+	
+				// We use the helper during the drag operation, so hide the original
+				// selected elements and 'mark' them for removal
+				$(this).children('.rte-tool-active').hide().addClass('rte-tool-remove');
+			},
+			stop: function() {
+				// Remove items that are marked for removal
+				$('.rte-tool-remove').remove();
+			}
 		});
+
 		
 		// Ajax submission
 		$('#rte-toolset-name')
@@ -148,6 +152,8 @@
 				.submit(function( e ){
 					$error.remove();
 					e.preventDefault();
+					
+					update_rte_toolset();
 					
 					var	$this	= $(this),
 						$name	= $('#rte-toolset-name'),
@@ -160,15 +166,12 @@
 					toolset = $.isNumeric( toolset ) ? '&rte_toolset_id=' + toolset : '';
 					
 					// validate the name
-					$.get( URL + '&name=' + value + toolset, function( data ){
-						if ( value == '' ||
-						     ! data.valid )
-						{
-							$error.appendTo( $name.parent() );
+					$.get( URL + '&name=' + value + toolset, function(data) {
+						if (value == '' || ! data.valid) {
+							$error.appendTo($name.parent());
 						}
-						else
-						{
-							$.post( action + '&' + $this.serialize(), function( data ){
+						else {
+							$.post(action + '&' + $this.serialize(), function(data) {
 								$modal.dialog('close');
 								window.location = window.location;
 							});
@@ -180,16 +183,13 @@
 	function update_rte_toolset()
 	{
 		var ids = [];
-		// grab the ids
-		$used.find('li[data-tool-id]').each(function(){
-			ids.push( $(this).data('tool-id') );
+
+		$('#rte-tools-selected li').each(function() {
+			ids.push($(this).data('tool-id'));
 		});
+
 		// update the field
 		$('#rte-toolset-tools').val( ids.join('|') );
-		// remove active classes
-		$selected.removeClass('rte-tool-active');
-		// make selected an empty jQuery set
-		$selected = $('#noyourenevergonnagetit');
 	}
 	
 	// in the toolset builder page
