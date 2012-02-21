@@ -208,9 +208,9 @@ WysiHat.Element = (function( $ ){
 
 	sections		= [ 'article', 'aside', 'header', 'footer', 'nav', 'section' ],
 
-	containers		= [ 'col', 'colgroup', 'dl', 'menu', 'ol', 'table', 'tbody', 'thead', 'tfoot', 'tr', 'ul' ],
+	containers		= [ 'blockquote', 'details', 'dl', 'ol', 'table', 'ul' ],
 
-	sub_containers	= [ 'command', 'dd', 'dt', 'li', 'td', 'th' ],
+	sub_containers	= [ 'dd', 'dt', 'li', 'summary', 'td', 'th' ],
 
 	content			= [ 'address', 'caption', 'dd', 'div', 'dt', 'figcaption', 'figure', 'h1', 'h2', 'h3',
 						'h4', 'h5', 'h6', 'hgroup', 'hr', 'p', 'pre', 'summary', 'small' ],
@@ -1198,7 +1198,7 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 	}
 	function isBold()
 	{
-		return selectionIsWithin('b,strong');
+		return ( selectionIsWithin('b,strong') || document.queryCommandState('bold') );
 	}
 	function underlineSelection()
 	{
@@ -1206,7 +1206,7 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 	}
 	function isUnderlined()
 	{
-		return selectionIsWithin('u,ins');
+		return ( selectionIsWithin('u,ins') || document.queryCommandState('underline') );
 	}
 	function italicizeSelection()
 	{
@@ -1214,7 +1214,7 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 	}
 	function isItalic()
 	{
-		return selectionIsWithin('i,em');
+		return ( selectionIsWithin('i,em') || document.queryCommandState('italic') );
 	}
 	function strikethroughSelection()
 	{
@@ -1222,7 +1222,7 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 	}
 	function isStruckthrough()
 	{
-		return selectionIsWithin('s,del');
+		return ( selectionIsWithin('s,del') || document.queryCommandState('strikethrough') );
 	}
 
 
@@ -1230,33 +1230,44 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 	{
 		var $quote = $('<blockquote/>');
 		this.manipulateSelection(function( range, $quote ){
-			var $q = $quote.clone();
-			this.getRangeElements( range, block_els ).each(function(i){
+			var $q		= $quote.clone(),
+				$els	= this.getRangeElements( range, block_els ),
+				last	= $els.length - 1,
+				$coll	= $();
+			$els.each(function(i){
 				var
 				$this	= $(this),
-				list	= false,
+				sub		= false,
 				$el;
-				if ( $this.is('li') )
+
+				if ( WysiHat.Element.isSubContainer( $this ) )
 				{
-					list = true;
+					sub = true;
+				}
+
+				if ( ! i &&
+					 sub &&
+					 i == last )
+				{
 					$el = $('<p/>').html( $this.html() );
-					$this.replaceWith( $el );
-					$this = $el;
+					$this.html('').append( $el );
+					$coll = $coll.add($el);
 				}
-				if ( ! i )
+				else if ( sub )
 				{
-					if ( list )
-					{
-						$q.wrap('<li/>');
-						$el = $q.parent();
-						$this.replaceWith( $el );
-					}
-					else
-					{
-						$this.replaceWith( $q );
-					}
+					$coll = $coll.add(
+								$this.closest( WysiHat.Element.getContainers().join(",") )
+							);
 				}
-				$this.appendTo( $q );
+				else
+				{
+					$coll = $coll.add($this);
+				}
+
+				if ( i == last )
+				{
+					$coll.wrapAll( $q );
+				}
 			});
 		}, $quote);
 	}
@@ -1264,13 +1275,38 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 	{
 		this.manipulateSelection(function( range ){
 			this.getRangeElements( range, 'blockquote > *' ).each(function(){
-				var
-				$this	= $(this).unwrap('blockquote'),
-				$parent	= $this.parent();
-				if ( $parent.is('li') &&
+				var el		= this,
+					$el		= $(el),
+					$parent	= $el.closest('blockquote'),
+					$bq		= $parent.clone().html(''),
+					$sibs	= $parent.children(),
+					last	= $sibs.length - 1,
+					$coll	= $();
+
+				$el.unwrap('blockquote');
+
+				if ( last > 0 )
+				{
+					$sibs.each(function(i){
+						if ( this != el )
+						{
+							$coll = $coll.add(this);
+						}
+
+						if ( i == last ||
+							 this == el )
+						{
+							$coll.wrapAll($bq.clone());
+							$coll = $();
+						}
+					});
+				}
+
+				$parent = $el.parent();
+				if ( WysiHat.Element.isSubContainer( $parent ) &&
 				 	 $parent.children().length == 1 )
 				{
-					$parent.html( $this.html() );
+					$parent.html($el.html());
 				}
 			});
 		});
@@ -1402,7 +1438,7 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 	}
 	function isOrderedList()
 	{
-		return selectionIsWithin('ol');
+		return ( selectionIsWithin('ol') || document.queryCommandState('insertOrderedList') );
 	}
 	function toggleUnorderedList()
 	{
@@ -1462,7 +1498,7 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 	}
 	function isUnorderedList()
 	{
-		return selectionIsWithin('ul');
+		return ( selectionIsWithin('ul') || document.queryCommandState('insertUnorderedList') );
 	}
 
 
@@ -1850,13 +1886,16 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 				 $.inArray( a.nodeName.toLowerCase(), phrases ) == -1 )
 			{
 				t = a.firstChild;
-				if ( t.nodeValue == '' )
+				if ( t )
 				{
-					t = t.nextSibling;
-				}
-				if ( t.nodeType == 1 )
-				{
-					a = t;
+					if ( t.nodeValue == '' )
+					{
+						t = t.nextSibling;
+					}
+					if ( t.nodeType == 1 )
+					{
+						a = t;
+					}
 				}
 			}
 		}
@@ -2319,7 +2358,7 @@ jQuery(document).ready(function(){
 	if ( ! $.browser.msie )
 	{
 		$('body')
-			.delegate('.WysiHat-editor', 'contextmenu click doubleclick', function(){
+			.delegate('.WysiHat-editor', 'contextmenu click doubleclick keypress', function(){
 
 				var
 				$editor		= $(this),
@@ -2684,7 +2723,7 @@ WysiHat.Formatting = (function($){
 		{
 			$button.click(function(e){
 				handler( $editor, e );
-				$( document.activeElement ).trigger( 'WysiHat-selection:change' );
+				$editor.trigger( 'WysiHat-selection:change' );
 				return false;
 			});
 		}
