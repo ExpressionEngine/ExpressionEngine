@@ -193,17 +193,18 @@ class Rte_toolset_model extends CI_Model {
 		if ( ! $admin)
 		{
 			# get the group_ids with access
-			$result = $this->EE->db
+			$result = $this->db
 						->select('module_member_groups.group_id')
 						->from('module_member_groups')
 						->join('modules', 'modules.module_id = module_member_groups.module_id')
-						->where('modules.module_name',$this->name)
+						->where('modules.module_name', 'Rte')
 						->get();
+
 			if ($result->num_rows())
 			{
 				foreach ($result->result_array() as $r)
 				{
-					if ($this->EE->session->userdata('group_id') == $r['group_id'])
+					if ($this->session->userdata('group_id') == $r['group_id'])
 					{
 						$admin = TRUE;
 						break;

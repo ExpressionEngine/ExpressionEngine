@@ -13,8 +13,6 @@
 <?php 	endif; ?>
 
 	<div class="rte-toolset-builder ui-widget">
-		<label for="rte-toolset-tools"><?=lang('toolset_builder_label')?></label><br/>
-		<?=lang('toolset_builder_instructions')?><br/><br/>
 		<input type="hidden" id="rte-toolset-tools" name="rte_selected_tools" value="<?=implode('|',$toolset_tools)?>"/>
 		<table cellspacing="0" cellpadding="0" border="0">
 			<tr>
@@ -31,12 +29,6 @@
 
 				<td class="rte-toolset-builder-buttons">
 					<ul>
-						<li class="ui-state-default ui-corner-all">
-							<a role="button" aria-disabled="true" class="ui-icon ui-icon-arrowthick-1-e" id="rte-tools-select" title="<?=lang('select_tool')?>"></a>
-						</li>
-						<li class="ui-state-default ui-corner-all">
-							<a role="button" aria-disabled="true" class="ui-icon ui-icon-arrowthick-1-w" id="rte-tools-deselect" title="<?=lang('deselect_tool')?>"></a>
-						</li>
 					</ul>
 				</td>
 
