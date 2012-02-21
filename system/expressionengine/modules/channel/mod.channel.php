@@ -1265,7 +1265,9 @@ class Channel {
 						str_replace($match[0], '', $qstring)
 					);
 				}
-				elseif ($dynamic AND $word_category !== FALSE)
+				elseif ($dynamic AND
+						$word_category !== FALSE AND
+						count($query_string_array) > ($word_category + 1))
 				{
 					$cat_id_query = $this->EE->db->select('cat_id')
 						->get_where(
@@ -3173,21 +3175,29 @@ class Channel {
 
 					switch ($val)
 					{
-						case 'entry_date' 			: $entry_date[$matches[0][$j]] = $this->EE->localize->fetch_date_params($matches[2][$j]);
+						case 'entry_date': 
+							$entry_date[$matches[0][$j]] = $this->EE->localize->fetch_date_params($matches[2][$j]);
 							break;
-						case 'gmt_date'				: $gmt_date[$matches[0][$j]] = $this->EE->localize->fetch_date_params($matches[2][$j]);
+						case 'gmt_date':
+							$gmt_date[$matches[0][$j]] = $this->EE->localize->fetch_date_params($matches[2][$j]);
 							break;
-						case 'gmt_entry_date'		: $gmt_entry_date[$matches[0][$j]] = $this->EE->localize->fetch_date_params($matches[2][$j]);
+						case 'gmt_entry_date':
+							$gmt_entry_date[$matches[0][$j]] = $this->EE->localize->fetch_date_params($matches[2][$j]);
 							break;
-						case 'edit_date' 			: $edit_date[$matches[0][$j]] = $this->EE->localize->fetch_date_params($matches[2][$j]);
+						case 'edit_date':
+							$edit_date[$matches[0][$j]] = $this->EE->localize->fetch_date_params($matches[2][$j]);
 							break;
-						case 'gmt_edit_date'		: $gmt_edit_date[$matches[0][$j]] = $this->EE->localize->fetch_date_params($matches[2][$j]);
+						case 'gmt_edit_date':
+							$gmt_edit_date[$matches[0][$j]] = $this->EE->localize->fetch_date_params($matches[2][$j]);
 							break;
-						case 'expiration_date' 		: $expiration_date[$matches[0][$j]] = $this->EE->localize->fetch_date_params($matches[2][$j]);
+						case 'expiration_date':
+							$expiration_date[$matches[0][$j]] = $this->EE->localize->fetch_date_params($matches[2][$j]);
 							break;
-						case 'recent_comment_date' 	: $recent_comment_date[$matches[0][$j]] = $this->EE->localize->fetch_date_params($matches[2][$j]);
+						case 'recent_comment_date':
+							$recent_comment_date[$matches[0][$j]] = $this->EE->localize->fetch_date_params($matches[2][$j]);
 							break;
-						case 'week_date'			: $week_date[$matches[0][$j]] = $this->EE->localize->fetch_date_params($matches[2][$j]);
+						case 'week_date':
+							$week_date[$matches[0][$j]] = $this->EE->localize->fetch_date_params($matches[2][$j]);
 							break;
 					}
 				}
@@ -5565,7 +5575,7 @@ class Channel {
 			{
 				if (count($channel_ids))
 				{
-					$sql .= "AND exp_channel_titles.channel_id IN ('".implode("','", $channel_id)."') ";
+					$sql .= "AND exp_channel_titles.channel_id IN ('".implode("','", $channel_ids)."') ";
 				}
 				else
 				{

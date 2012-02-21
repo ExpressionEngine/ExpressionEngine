@@ -1361,6 +1361,7 @@ class Forum {
 				'forum_quick_search_form'		=> 'forum_search',
 				'reply_results'					=> 'forum_search',
 				'result_rows'					=> 'forum_search',
+				'thread_result_rows'			=> 'forum_search',
 				'no_search_result'				=> 'forum_search',
 			// --------------------------------------------------------
 				'login_required_page'			=> 'forum_login',

@@ -172,7 +172,7 @@ class Wizard extends CI_Controller {
 		// Third party constants
 		if ($this->config->item('third_party_path'))
 		{
-			define('PATH_THIRD',    rtrim($this->EE->config->item('third_party_path'), '/').'/');
+			define('PATH_THIRD',    rtrim($this->config->item('third_party_path'), '/').'/');
 		}
 		else
 		{
