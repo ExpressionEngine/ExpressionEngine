@@ -6,7 +6,7 @@
 	// make the modal
 	$modal.dialog({
 		width: 600,
-		height: 430,
+		height: 435,
 		resizable: false,
 		position: ["center","center"],
 		modal: true,
@@ -110,6 +110,7 @@
 	    $("#rte-tools-selected, #rte-tools-unused").sortable({
 			connectWith: '.rte-tools-connected',
 			containment: '.rte-toolset-builder',
+			placeholder: 'rte-tool-placeholder',
 			revert: 200,
 			tolerance:	'pointer',
 			beforeStop: function(e, ui) {
@@ -126,7 +127,10 @@
 					$selected = $(ui).addClass('rte-tool-active'); 
 				}
 	
-				return $('<div/>').attr('id', 'draggingContainer').append($selected.clone());
+				return $('<div/>')
+					.attr('id', 'rte-drag-helper')
+					.css('opacity', .7)
+					.append($selected.clone());
 		    },
 			receive: function(e, ui) {
 				$(ui.sender).parent().find('.rte-tool-active').addClass('rte-tool-remove');
