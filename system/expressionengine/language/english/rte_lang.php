@@ -47,7 +47,7 @@ $lang = array(
 'name_required' => 'A name is required and must be unique.',
 
 # Labels
-'enable_rte_globally' => 'Enable the Rich Text Editor globally on all Textarea fields?',
+'enable_rte_globally' => 'Enable the Rich Text Editor?',
 'enable_rte_in_forum' => 'Enable the Rich Text Editor for use in the Forums?',
 'choose_default_toolset' => 'Choose the Default Toolset',
 'default_toolset_details' => 'Toolset for all users with access to Textarea fields using the Rich Text Editor.',
