@@ -1,168 +1,214 @@
-var
-$link_dialog = $(
-					'<div id="rte_link_dialog">' +
-						'<p><label for="rte_link_url">* ' + EE.rte.link.dialog.url_field_label + '</label>' +
-						'<input type="url" id="rte_link_url" required="required"/></p>' +
-						'<p><label for="rte_link_title">' + EE.rte.link.dialog.title_field_label + '</label>' +
-						'<input type="text" id="rte_link_title"/></p>' +
-						//'<p><label for="rte_link_rel">' + EE.rte.link.dialog.rel_field_label + '</label>' +
-						// '<select id="rte_link_rel"></select></p>' +
-						'<p class="buttons"><button class="submit" type="submit">' + EE.rte.link.dialog.submit_button +
-						'</button></p>' +
-					 '</div>'
-				),
-link_ranges	= [];
-
-$link_dialog
-	.appendTo('body')
-	.dialog({
-		width: 400,
-		resizable: false,
-		position: ["center","center"],
-		modal: true,
-		draggable: true,
-		title: EE.rte.link.dialog.title,
-		autoOpen: false,
-		zIndex: 99999,
-		open: function(e, ui) {
-			$editor.restoreRanges( link_ranges );
-			
-			// remove existing notices
-			$('#rte_link_dialog .notice').remove();
-			
-			var
-			selection	= window.getSelection(),
-			el			= selection.anchorNode;
-			if ( el )
-			{
-				while ( el.nodeType != 1 )
-				{
-					el = el.parentNode;
-				}
-				el = $(el);
-				if ( el.is('a') )
-				{
-					$('#rte_link_url').val( el.attr('href') );
-					$('#rte_link_title').val( el.attr('title') );
-				}
-			}
-		},
-		close: function(e, ui) {
-			$editor.restoreRanges( link_ranges );
-			
-			var
-			selection	= window.getSelection(),
-			el			= selection.anchorNode,
-			title		= $('#rte_link_title').val();
-			if ( el )
-			{
-				while ( el.nodeType != 1 )
-				{
-					el = el.parentNode;
-				}
-				el = $(el);
-				if ( el.is('a') )
-				{
-					el.attr('title',title);
-				}
-			}
-			
-			$('#rte_link_url,#rte_link_title').val('');
-			
-			// trigger the update
-			$editor.trigger( EE.rte.update_event );
-		}
-	})
-	// setup the close on enter
-	.delegate('input','keypress',function( e ){
-		// enter
-		if ( e.which == 13 )
-		{
-			validateLinkDialog();
-		}
-	 })
-	// setup the submit button
-	.find('.submit')
-		.click(validateLinkDialog);
-
-function validateLinkDialog()
-{
-	// remove existing notices
-	$('#rte_link_dialog .notice').remove();
+(function(){
 	
-	var
-	pass	= false,
-	$url	= $('#rte_link_url'),
-	re_url	= /^(https?|ftp):\/\/(((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:)*@)?(((\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?)(:\d*)?)(\/((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)+(\/(([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)*)*)?)?(\?((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|[\uE000-\uF8FF]|\/|\?)*)?(\#((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|\/|\?)*)?$/i,
-	$error	= $('<div class="notice"/>').text( EE.rte.link.dialog.url_required );
-	if ( $('#rte_link_url') != '' )
-	{
-		pass = re_url.test( $url.val() );
-	}
-	if ( pass )
-	{
-		$error.remove();
-		$editor.linkSelection( $url.val() );
-		$link_dialog.dialog("close");
-	}
-	else
-	{
-		$error.appendTo( $url.parent() );
-	}
-}
+	var	$link_dialog	= $('<div>' +
+							'<p><label>* ' + EE.rte.link.dialog.url_field_label + '</label>' +
+							'<input type="url" required="required"/></p>' +
+							'<p><label>' + EE.rte.link.dialog.title_field_label + '</label>' +
+							'<input type="text"/></p>' +
+							//'<p><label>' + EE.rte.link.dialog.rel_field_label + '</label>' +
+							// '<select></select></p>' +
+							'<p class="buttons"><button class="submit" type="submit">' + 
+							EE.rte.link.dialog.submit_button +
+							'</button></p>' +
+							'</div>'),
+		$url			= $link_dialog.find('input[type=url]'),
+		$title			= $link_dialog.find('input[type=text]'),
+		//$rel			= $link_dialog.find('select'),
+		uuid			= $editor.attr('id');
 
-toolbar.addButton({
-	name:	'link',
-    label:	EE.rte.link.add,
-    handler: function(){
+	// assign the UUIDs to make the fields and labels associate
+	$url
+		.attr('id','rte_link_url-'+uuid)
+		.prev('label')
+			.attr('for','rte_link_url-'+uuid);
+	$title
+		.attr('id','rte_link_title-'+uuid)
+		.prev('label')
+			.attr('for','rte_link_title-'+uuid);
+	//		$rel
+	//			.attr('id','rte_link_rel-'+uuid)
+	//			.prev('label')
+	//				.attr('for','rte_link_rel-'+uuid);
 
-		link_ranges	= $editor.getRanges();
+	function reSelect()
+	{
+		// the paste handler collects selection data as part of the field. Hooray!
+		var	$field	= $editor.data('field'),
+			o_range	= $field.data('saved-range'),
+			sel		= window.getSelection(),
+			range	= document.createRange();
 
-		var
-		selection	= window.getSelection(),
-		linkable	= !! selection.rangeCount,
-		el			= selection.anchorNode,
-		range		= document.createRange();
-		
-		// bow out if there are no elements
-		if ( el == null && 
-			 selection.focusNode == null )
+		// if the DOM changes this will fail
+		try {
+			// recreate the Range
+			range.setStart( o_range.startContainer, o_range.startOffset );
+			range.setEnd( o_range.endContainer, o_range.endOffset );
+
+			// select the range
+			sel.removeAllRanges();
+			sel.addRange( range );
+		} catch(e) {}
+
+		return sel;
+	}
+
+	$link_dialog
+		.appendTo('body')
+		.dialog({
+			width: 400,
+			resizable: false,
+			position: ["center","center"],
+			modal: true,
+			draggable: true,
+			title: EE.rte.link.dialog.title,
+			autoOpen: false,
+			zIndex: 99999,
+			open: function(e, ui) {
+				// remove existing notices
+				$link_dialog.find('.notice').remove();
+
+				var	sel		= reSelect(),
+					el		= sel.anchorNode;
+
+				if ( el )
+				{
+					while ( el.nodeType != 1 )
+					{
+						el = el.parentNode;
+					}
+					el = $(el);
+					if ( el.is('a') )
+					{
+						$url.val( el.attr('href') );
+						$title.val( el.attr('title') );
+					}
+				}
+			},
+			close: function(e, ui) {
+				var	sel		= reSelect(),
+					title	= $('#rte_link_title-'+uuid).val(),
+					el		= sel.anchorNode;
+
+				// link it
+				//$editor.linkSelection($url.val());
+
+				if ( el )
+				{
+					while ( el.nodeType != 1 )
+					{
+						el = el.parentNode;
+					}
+					el = $(el);
+					if ( el.is('a') &&
+					 	 title != '' )
+					{
+						el.attr('title',title);
+					}
+				}
+
+				// empty the fields
+				$link_dialog.find('input,select').val('');
+
+				// trigger the update
+				$editor.trigger( EE.rte.update_event );
+			}
+		})
+		// setup the close on enter
+		.delegate('input','keypress',function( e ){
+			// enter
+			if ( e.which == 13 )
+			{
+				validateLinkDialog();
+			}
+		 })
+		// setup the submit button
+		.find('.submit')
+			.click(validateLinkDialog);
+
+	function validateLinkDialog()
+	{
+		// remove existing notices
+		$link_dialog.find('.notice').remove();
+
+		// re-establish the selection
+		reSelect();
+
+		var	pass	= false,
+			re_url	= /^(https?|ftp):\/\/(((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:)*@)?(((\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?)(:\d*)?)(\/((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)+(\/(([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)*)*)?)?(\?((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|[\uE000-\uF8FF]|\/|\?)*)?(\#((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|\/|\?)*)?$/i,
+			$error	= $('<div class="notice"/>').text( EE.rte.link.dialog.url_required );
+
+		if ( $url.val() != '' )
 		{
-			return;
+			pass = re_url.test( $url.val() );
 		}
-		
-		if ( linkable &&
-			 el == selection.focusNode &&
-			 selection.anchorOffset == selection.focusOffset )
+		if ( pass )
 		{
-			linkable = false;
-		}
-		
-		while ( el.nodeType != 1 )
-		{
-			el = el.parentNode;
-		}
-		
-		if ( el.nodeName.toLowerCase() == 'a' )
-		{
-			linkable = true;
-			// select the whole <a>
-			range.selectNode( el );
-			selection.removeAllRanges();
-			selection.addRange( range );
-			link_ranges	= $editor.getRanges();
-		}
-		
-		if ( linkable )
-		{
-			$link_dialog.dialog("open");
+			$error.remove();
+
+			// link!
+			$editor.linkSelection( $url.val() );
+
+			// close
+			$link_dialog.dialog('close');
 		}
 		else
 		{
-			alert( EE.rte.link.dialog.selection_error );
+			$error.appendTo( $url.parent() );
 		}
-	},
-	query: function( $editor ){
-		return $editor.queryCommandState('createLink');
 	}
-});
+
+	toolbar.addButton({
+		name:	'link',
+	    label:	EE.rte.link.add,
+	    handler: function(){
+			var sel		= reSelect(),
+				range	= document.createRange(),
+				link	= true,
+				s_el, e_el;
+
+			// get the elements
+			s_el = sel.anchorNode;
+			e_el = sel.focusNode;
+
+			if ( s_el == e_el &&
+				 sel.anchorOffset == sel.focusOffset )
+			{
+				link = false;
+			}
+
+			// Can I get an A?
+			while ( s_el.nodeType != 1 )
+			{
+				s_el = s_el.parentNode;
+			}
+			if ( s_el.nodeName.toLowerCase() == 'a' )
+			{
+				link = true;
+				// select the whole <a>
+				range.selectNode( s_el );
+				$field.data(
+					'saved-range',
+					{
+						startContainer:	range.startContainer,
+						startOffset:	range.startOffset,
+						endContainer: 	range.endContainer,
+						endOffset:		range.endOffset
+					}
+				);
+			}
+
+			if ( link )
+			{
+				$link_dialog.dialog('open');
+			}
+			else
+			{
+				alert( EE.rte.link.dialog.selection_error );
+			}
+		},
+		query: function( $editor ){
+			return $editor.queryCommandState('createLink');
+		}
+	});
+	
+})();
