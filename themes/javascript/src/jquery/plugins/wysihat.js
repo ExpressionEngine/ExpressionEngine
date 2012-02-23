@@ -1864,7 +1864,8 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 		a		= sel.anchorNode,
 		b		= sel.focusNode;
 
-		if ( a.nodeType &&
+		if ( a &&
+			 a.nodeType &&
 			 a.nodeType == 3 &&
 			 a.nodeValue == '' )
 		{
@@ -1900,7 +1901,14 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 			}
 		}
 
-		while ( a.nodeType != 1 &&
+		if ( ! a )
+		{
+			return false;
+		}
+
+		while ( a &&
+				b &&
+				a.nodeType != 1 &&
 			 	b.nodeType != 1 )
 		{
 			if ( a.nodeType != 1 )
@@ -2358,7 +2366,7 @@ jQuery(document).ready(function(){
 	if ( ! $.browser.msie )
 	{
 		$('body')
-			.delegate('.WysiHat-editor', 'contextmenu click doubleclick keypress', function(){
+			.delegate('.WysiHat-editor', 'contextmenu click doubleclick keydown', function(){
 
 				var
 				$editor		= $(this),
@@ -2445,9 +2453,37 @@ jQuery(document).ready(function(){
 				var
 				$field			= $editor.data('field'),
 				$original_html	= $field.data('original-html'),
-				pasted_content	= document.createTextNode( $editor.text() ),
 				saved_range		= $field.data('saved-range'),
-				range			= document.createRange();
+				range			= document.createRange(),
+
+				pasted_content	= document.createDocumentFragment(),
+				pasted_text		= $editor.text().split( /\n([ \t]*\n)+/g ),
+				len				= pasted_text.length,
+				p				= document.createElement('p'),
+				p_clone			= null,
+				empty			= /[\s\r\n]/g,
+				first			= true;
+
+				while ( len-- )
+				{
+					if ( pasted_text[len].replace( empty,'') == '' )
+					{
+						continue;
+					}
+
+					p_clone = p.cloneNode();
+					p_clone.appendChild( document.createTextNode( pasted_text[len] ) );
+
+					if ( first )
+					{
+						pasted_content.appendChild( p_clone );
+						first = false;
+					}
+					else
+					{
+						pasted_content.insertBefore( p_clone, pasted_content.firstChild );
+					}
+				}
 
 				$editor
 					.empty()
