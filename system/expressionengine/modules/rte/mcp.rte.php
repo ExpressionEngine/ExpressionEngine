@@ -277,7 +277,11 @@ class Rte_mcp {
 		# did an empty name sneak through?
 		if (empty($toolset['name']))
 		{
-			$toolset['name'] = 'Unnamed Toolset';
+			$this->EE->output->send_ajax_response(array(
+				'error' => lang('name_required')
+			));
+
+			return;
 		}
 				
 		# update
