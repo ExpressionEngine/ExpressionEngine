@@ -151,37 +151,36 @@
 
 		
 		// Ajax submission
-		$('#rte-toolset-name')
-			.parents('form')
-				.submit(function( e ){
-					$error.remove();
-					e.preventDefault();
-					
-					update_rte_toolset();
-					
-					var	$this	= $(this),
-						$name	= $('#rte-toolset-name'),
-						value	= $name.val(),
-						URL		= EE.rte.validate_toolset_name_url.replace(/&amp;/g,'&'),
-						action	= $this.attr('action'),
-					
-					// figure out the toolset id (if we have one)
-					toolset = action.replace(/.*?rte_toolset_id=(\d+)/,'$1');
-					toolset = $.isNumeric( toolset ) ? '&rte_toolset_id=' + toolset : '';
-					
-					// validate the name
-					$.get( URL + '&name=' + value + toolset, function(data) {
-						if (value == '' || ! data.valid) {
-							$error.appendTo($name.parent());
-						}
-						else {
-							$.post(action + '&' + $this.serialize(), function(data) {
-								$modal.dialog('close');
-								window.location = window.location;
-							});
-						}
-					},'json');
-				 });
+		$('#rte_toolset_editor_modal form').submit(function( e ){
+			
+			$error.remove();
+			e.preventDefault();
+			
+			update_rte_toolset();
+			
+			var	$this	= $(this),
+				$name	= $('#rte-toolset-name'),
+				value	= $name.val(),
+				URL		= EE.rte.validate_toolset_name_url.replace(/&amp;/g,'&'),
+				action	= $this.attr('action'),
+			
+			// figure out the toolset id (if we have one)
+			toolset = action.replace(/.*?rte_toolset_id=(\d+)/,'$1');
+			toolset = $.isNumeric( toolset ) ? '&rte_toolset_id=' + toolset : '';
+			
+			// validate the name
+			$.get( URL + '&name=' + value + toolset, function(data) {
+				if (value == '' || ! data.valid) {
+					$error.appendTo($name.parent());
+				}
+				else {
+					$.post(action + '&' + $this.serialize(), function(data) {
+						$modal.dialog('close');
+						window.location = window.location;
+					});
+				}
+			},'json');
+		 });
 	}
 	
 	function update_rte_toolset()
