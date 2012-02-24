@@ -265,6 +265,7 @@ class Rte_mcp {
 	public function save_toolset()
 	{
 		$this->_permissions_check();
+		$this->EE->load->model('rte_toolset_model');
 		
 		# get the toolset
 		$toolset_id = $this->EE->input->get_post('rte_toolset_id');
@@ -280,29 +281,48 @@ class Rte_mcp {
 			$this->EE->output->send_ajax_response(array(
 				'error' => lang('name_required')
 			));
-
-			return;
 		}
 				
-		# update
+		// Updating? Make sure the toolset exists and they aren't trying any
+		// funny business...
 		if ($toolset_id)
 		{
-			$this->_update_toolset(
-				$this->EE->input->get_post('rte_toolset_id'),
-				$toolset,
-				lang('toolset_updated'),
-				lang('toolset_update_failed')
-			);
+			$orig = $this->EE->rte_toolset_model->get($toolset_id);
+			
+			// @todo
 		}
-		# new
+
+		# is this an individual’s private toolset?
+		$is_members = !! ($this->EE->input->get_post('private') == 'true');
+		
+		# save it
+		if ($this->EE->rte_toolset_model->save($toolset, $toolset_id))
+		{
+			# if it’s new, get the ID
+			if ( ! $toolset_id)
+			{
+				$toolset_id = $this->EE->db->insert_id();
+			}
+			
+			# update the member profile
+			if ($is_members && $toolset_id)
+			{
+				$this->EE->db
+					->where( array( 'member_id' => $this->EE->session->userdata('member_id') ) )
+					->update( 'members', array( 'rte_toolset_id' => $toolset_id ) );
+			}
+			
+			$this->EE->output->send_ajax_response(array(
+				'success' 		=> lang('toolset_updated'),
+				'force_refresh' => ! $is_members
+			));
+		}
+		# Fail!
 		else
 		{
-			$this->_update_toolset(
-				FALSE,
-				$toolset,
-				lang('toolset_saved'),
-				lang('toolset_not_saved')
-			);
+			$this->EE->output->send_ajax_response(array(
+				'error' => lang('toolset_update_failed')
+			));
 		}
 	}
 
@@ -860,52 +880,6 @@ class Rte_mcp {
 				#'rte_forum_enabled'			=> $this->EE->input->get_post('rte_forum_enabled'),
 				'rte_default_toolset_id'	=> $this->EE->input->get_post('rte_default_toolset_id')
 			)
-		);
-	}
-
-	// --------------------------------------------------------------------
-	
-	/**
-	 * Update toolset form action
-	 * 
-	 * @access	private
-	 * @return	void
-	 */
-	private function _update_toolset( $toolset_id = FALSE, $change = array(), $success_msg, $fail_msg )
-	{
-		$this->EE->load->model('rte_toolset_model');
-		
-		# is this an individual’s private toolset?
-		$is_members = !! ($this->EE->input->get_post('private') == 'true');
-		
-		# save it
-		if ($this->EE->rte_toolset_model->save($change, $toolset_id))
-		{
-			# if it’s new, get the ID
-			if ( ! $toolset_id)
-			{
-				$toolset_id = $this->EE->db->insert_id();
-			}
-			
-			# update the member profile
-			if ($is_members && $toolset_id)
-			{
-				$this->EE->db
-					->where( array( 'member_id' => $this->EE->session->userdata('member_id') ) )
-					->update( 'members', array( 'rte_toolset_id' => $toolset_id ) );
-			}
-			
-			$this->EE->session->set_flashdata('message_success', $success_msg);
-		}
-		# Fail!
-		else
-		{
-			$this->EE->session->set_flashdata('message_failure', $fail_msg);
-		}
-
-		# buh-bye
-		$this->EE->functions->redirect(
-			($is_members ? $this->_myaccount_url : $this->_base_url)
 		);
 	}
 

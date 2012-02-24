@@ -168,8 +168,13 @@
 					return;
 				}
 
+				$.ee_notice(data.success, {type: 'success'});
+
 				$modal.dialog('close');
-				window.location = window.location;
+
+				if (data.force_refresh) {
+					window.location = window.location;
+				}
 			},'json');
 		});
 	}
