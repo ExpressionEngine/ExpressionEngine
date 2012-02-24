@@ -6,7 +6,6 @@
 	// make the modal
 	$modal.dialog({
 		width: 600,
-		height: 435,
 		resizable: false,
 		position: ["center","center"],
 		modal: true,
@@ -54,9 +53,10 @@
 	// Get the builder
 	function get_rte_toolset_builder()
 	{
-		$modal.dialog('option', {height: 365});
-		var
-		builder_url	= EE.rte.toolset_builder_url.replace(/&amp;/g,'&'); // damn AMPs
+		$modal.dialog();
+
+		var builder_url	= EE.rte.toolset_builder_url.replace(/&amp;/g,'&'); // damn AMPs
+
 		// My Custom Toolset - trigger edit on My Custom Toolset
 		if ( $my_toolset_id.find('option:selected').text() == EE.rte.custom_toolset_text )
 		{
@@ -94,10 +94,6 @@
 	
 	
 	// Toolset Builder
-	var	$selected	= $('#null'),
-		$used		= $selected,
-		$unused		= $selected;
-	
 	function setupToolsetBuilder()
 	{
 		// Cancel link
@@ -118,7 +114,7 @@
 			revert: 200,
 			tolerance:	'pointer',
 			beforeStop: function(e, ui) {
-				// Reaplce the destination item with the item(s) in our helper container
+				// Replace the destination item with the item(s) in our helper container
 				$(ui.item).replaceWith(ui.helper.children().removeClass('rte-tool-active'));
 			},
 			helper: function(e, ui) {
@@ -134,6 +130,7 @@
 				return $('<div/>')
 					.attr('id', 'rte-drag-helper')
 					.css('opacity', .7)
+					.width($(ui).outerWidth())  // match our li widths (including padding)
 					.append($selected.clone());
 		    },
 			receive: function(e, ui) {
@@ -162,8 +159,7 @@
 			
 			$.post($(this).attr('action'), $(this).serialize(), function(data) {
 				if (data.error) {
-					$('<div class="notice"/>').text(data.error)
-						.appendTo($('#rte-toolset-name').parent());
+					$('#rte_toolset_editor_modal .notice').text(data.error);
 
 					return;
 				}

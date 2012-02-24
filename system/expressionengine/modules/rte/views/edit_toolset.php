@@ -14,6 +14,9 @@
 
 	<div class="rte-toolset-builder ui-widget">
 		<input type="hidden" id="rte-toolset-tools" name="rte_selected_tools" value="<?=implode('|',$toolset_tools)?>"/>
+
+		<div class="notice"></div>	
+
 		<table cellspacing="0" cellpadding="0" border="0">
 			<tr>
 				<td class="rte-toolset-builder-pane">
@@ -27,9 +30,7 @@
 					</div>
 				</td>
 
-				<td class="rte-toolset-builder-buttons">
-					<ul>
-					</ul>
+				<td class="rte-toolset-builder-divider">
 				</td>
 
 				<td class="rte-toolset-builder-pane">
@@ -46,7 +47,10 @@
 		</table>
 	</div>
 
-	<p><?=form_submit(array('name' => 'submit', 'value' => lang('submit'), 'class' => 'submit'));?> or
-	   <a id="rte-builder-closer" href="<?=$module_base?>"><?=lang('cancel')?></a></p>
+	<p>
+		<?=form_submit(array('name' => 'submit', 'value' => lang('submit'), 'class' => 'submit'));?>
+		&nbsp; or
+		<a id="rte-builder-closer" href="<?=$module_base?>"><?=lang('cancel')?></a>
+	</p>
 	
 	<?=form_close();?>
