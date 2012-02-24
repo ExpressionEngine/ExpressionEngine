@@ -70,7 +70,7 @@
 						$version_file[] = explode('|', $d);
 					}
 
-					// 1 => 
+					// 0 => 
 					//   array
 					//     0 => string '2.1.0' (length=5)
 					//     1 => string '20100805' (length=8)
@@ -99,6 +99,12 @@
 			$version_file = $cached;
 		}
 		
+		// one final check for good measure
+		if ( ! _is_valid_version_file($version_file))
+		{
+			$version_file['error'] = TRUE;
+		}
+
 		if (isset($version_file['error']) &&  $version_file['error'] == TRUE)
 		{
 			return FALSE;
@@ -109,6 +115,46 @@
 	
 	// --------------------------------------------------------------------
 
+	/**
+	 * Validate version file
+	 * Prototype:
+	 *  0 => 
+	 *    array
+	 *      0 => string '2.1.0' (length=5)
+	 *      1 => string '20100805' (length=8)
+	 *      2 => string 'normal' (length=6)
+	 * 
+	 * @access	private
+	 * @return	bool
+	 */
+	function _is_valid_version_file($version_file)
+	{
+		if ( ! is_array($version_file))
+		{
+			return FALSE;
+		}
+		
+		foreach ($version_file as $version)
+		{
+			if ( ! is_array($version) OR count($version) != 3)
+			{
+				return FALSE;
+			}
+			
+			foreach ($version as $val)
+			{
+				if ( ! is_string($val))
+				{
+					return FALSE;
+				}
+			}
+		}
+		
+		return TRUE;
+	}
+	
+	// --------------------------------------------------------------------
+	
 	/**
 	 * Check EE Version Cache.
 	 *
@@ -126,9 +172,9 @@
 
 		if ($contents !== FALSE)
 		{
-			$details = unserialize($contents);
+			$details = @unserialize($contents);
 
-			if (($details['timestamp'] + $cache_expire) > $EE->localize->now)
+			if (isset($details['timestamp']) && ($details['timestamp'] + $cache_expire) > $EE->localize->now)
 			{
 				return $details['data'];
 			}
