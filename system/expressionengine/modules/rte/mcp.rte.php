@@ -275,6 +275,9 @@ class Rte_mcp {
 			'member_id'	=> ($this->EE->input->get_post('private') == 'true' ? $this->EE->session->userdata('member_id') : 0)
 		);
 		
+		# is this an individual’s private toolset?
+		$is_members = ($this->EE->input->get_post('private') == 'true');
+
 		# did an empty name sneak through?
 		if (empty($toolset['name']))
 		{
@@ -289,11 +292,13 @@ class Rte_mcp {
 		{
 			$orig = $this->EE->rte_toolset_model->get($toolset_id);
 			
-			// @todo
+			if ( ! $orig || $is_members && $orig->member_id != $this->EE->session->userdata('member_id'))
+			{
+				$this->EE->output->send_ajax_response(array(
+					'error' => lang('toolset_update_failed')
+				));
+			}
 		}
-
-		# is this an individual’s private toolset?
-		$is_members = !! ($this->EE->input->get_post('private') == 'true');
 		
 		# save it
 		if ($this->EE->rte_toolset_model->save($toolset, $toolset_id))
