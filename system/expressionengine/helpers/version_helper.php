@@ -102,7 +102,7 @@
 		// one final check for good measure
 		if ( ! _is_valid_version_file($version_file))
 		{
-			$version_file['error'] = TRUE;
+			return FALSE;
 		}
 
 		if (isset($version_file['error']) &&  $version_file['error'] == TRUE)
