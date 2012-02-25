@@ -106,7 +106,7 @@
 		$('body').on('click', '.rte-tool', function(e) {
 			$(this).toggleClass('rte-tool-active');
 		});
-	
+
 	    $("#rte-tools-selected, #rte-tools-unused").sortable({
 			connectWith: '.rte-tools-connected',
 			containment: '.rte-toolset-builder',
@@ -147,10 +147,20 @@
 			stop: function() {
 				// Remove items that are marked for removal
 				$('.rte-tool-remove').remove();
+				
+				// Remove placeholder fix element and re-add at end of both lists*
+				$('.rte-placeholder-fix').remove();
+				$('.rte-tools-connected').append('<li class="rte-placeholder-fix"/>');
 			}
 		});
 
-		
+		// *So, there's a frustratingly common edge case where the drag placeholder
+		// appears *above* the last element in a list, but should appear *below* it
+		// because your pointer is clearly at the end of the list. Forcing a dummy
+		// li at the end of each list corrects this. Hacky, but so is Droppable.
+		$('.rte-tools-connected').append('<li class="placeholder-fix"/>');
+
+
 		// Ajax submission
 		$('#rte_toolset_editor_modal form').submit(function(e) {
 			e.preventDefault();
@@ -179,7 +189,7 @@
 	{
 		var ids = [];
 
-		$('#rte-tools-selected li').each(function() {
+		$('#rte-tools-selected .rte-tool').each(function() {
 			ids.push($(this).data('tool-id'));
 		});
 
