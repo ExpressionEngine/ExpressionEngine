@@ -44,7 +44,7 @@ class EE_Referrer {
 	function log_referrer()
 	{  
 		// Is the nation of the user banend?
-		if ($this->EE->session->nation_ban_check(FALSE) === TRUE)
+		if ($this->EE->session->nation_ban_check(FALSE) === FALSE)
 		{
 			return;
 		}
