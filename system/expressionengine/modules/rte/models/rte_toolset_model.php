@@ -110,7 +110,7 @@ class Rte_toolset_model extends CI_Model {
 	}
 	
 	/**
-	 * Ge the tools for the member’s toolset
+	 * Get the tools for the member’s toolset
 	 * 
 	 * @param	bool
 	 * @return	int The ID of the current member’s toolset
@@ -124,16 +124,17 @@ class Rte_toolset_model extends CI_Model {
 						array( 'member_id' => $this->session->userdata('member_id') ),
 						1
 					  );
+
 		# member’s choice
 		if ($result->num_rows())
 		{
 			$toolset_id	= $result->row('rte_toolset_id');
 		}
-		# site default
-		if ( ! $toolset_id )
+		else
 		{
 			$toolset_id	= $this->config->item('rte_default_toolset_id');
 		}
+
 		return $toolset_id;
 	}
 	
