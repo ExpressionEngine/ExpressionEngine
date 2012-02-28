@@ -439,13 +439,15 @@ class Comment {
 			}
 		}
 		
+		$total_rows = $this->EE->db->count_all_results();
+		
 		if ($pagination->paginate === TRUE)
 		{
 			// When we are only showing comments and it is 
 			// not based on an entry id or url title
 			// in the URL, we can make the query much 
 			// more efficient and save some work.
-			$pagination->total_rows = $this->EE->db->count_all_results();
+			$pagination->total_rows = $total_rows;
 		}
 		
 		$this_sort = ($random) ? 'random' : strtolower($sort);
@@ -637,7 +639,7 @@ class Comment {
 
 			$row['count']			= $relative_count;
 			$row['absolute_count']	= $absolute_count;
-			$row['total_comments']	= $pagination->total_rows;
+			$row['total_comments']	= $total_rows;
 			$row['total_results']	= $total_results;
 
 			// This lets the {if location} variable work
