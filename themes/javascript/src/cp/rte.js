@@ -93,6 +93,11 @@
 			.delegate('input.submit','click',get_rte_toolset_builder);
 	
 	
+	// Enable toolset item selection/de-selection
+	$('#rte_toolset_editor_modal').on('click', '.rte-tool', function(e) {
+		$(this).toggleClass('rte-tool-active');
+	});
+
 	// Toolset Builder
 	function setupToolsetBuilder()
 	{
@@ -100,11 +105,6 @@
 		$('#rte-builder-closer').click(function(e) {
 			e.preventDefault();
 			$modal.dialog('close');
-		});
-
-		// Enable toolset item selection/de-selection
-		$('body').on('click', '.rte-tool', function(e) {
-			$(this).toggleClass('rte-tool-active');
 		});
 
 	    $("#rte-tools-selected, #rte-tools-unused").sortable({
@@ -157,7 +157,7 @@
 		// *So, there's a frustratingly common edge case where the drag placeholder
 		// appears *above* the last element in a list, but should appear *below* it
 		// because your pointer is clearly at the end of the list. Forcing a dummy
-		// li at the end of each list corrects this. Hacky, but so is Droppable.
+		// li at the end of each list corrects this. Hacky, but... so is Droppable.
 		$('.rte-tools-connected').append('<li class="placeholder-fix"/>');
 
 
