@@ -589,7 +589,7 @@ class Member_model extends CI_Model {
 		// First, we need to get a list of recipient IDs who will be affected
 		// by deleting the members we are deleting so that we can update the
 		// unread PM count for those users only
-		$this->db->select('count(*) as count, recipient_id');
+		$this->db->distinct('recipient_id');
 		$this->db->where('message_read', 'n');
 		$this->db->where_in('sender_id', $member_ids);
 		$messages = $this->db->get('message_copies');

@@ -1258,7 +1258,7 @@ class Api_channel_fields extends Api {
 		if ($field_data['field_order'] == 0 OR $field_data['field_order'] == '')
 		{
 			$query = $this->EE->db->select('MAX(field_order) as max')
-					      ->where('site_id', $this->config->item('site_id'))
+					      ->where('site_id', $this->EE->config->item('site_id'))
 					      ->where('group_id', (int) $group_id)
 					      ->get('channel_fields');
 				

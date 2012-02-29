@@ -233,10 +233,18 @@
 	 */
 	function createBrowser() {
 		var $dir_choice = $('#dir_choice');
-
+		
+		// Make the file manager 95% as wide as the browser window,
+		// but no more than 974px
+		var file_manager_width = $(window).width() * 0.95;
+		if (file_manager_width > 974)
+		{
+			file_manager_width = 974;
+		}
+		
 		// Set up modal dialog
 		file_manager_obj.dialog({
-			width: 968,
+			width: file_manager_width,
 			height: 615,
 			resizable: false,
 			position: ["center","center"],
@@ -301,14 +309,6 @@
 				$table.table('set_container', table_container);
 				$table.table('set_template', table_template);
 				$table.table('add_filter', { 'per_page': 15 });
-			}
-		});
-		
-		$table.bind('tableupdate', function() {
-			if ($('#view_type').val() == 'thumb') {
-				$('a.file_browser_thumbnail:nth-child(9n)').addClass('last');
-				$('a.file_browser_thumbnail:nth-child(9n+1)').addClass('first');
-				$('a.file_browser_thumbnail:gt(26)').addClass('last_row');
 			}
 		});
 		
