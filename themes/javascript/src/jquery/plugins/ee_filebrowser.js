@@ -233,10 +233,18 @@
 	 */
 	function createBrowser() {
 		var $dir_choice = $('#dir_choice');
-
+		
+		// Make the file manager 90% as wide as the browser window,
+		// but no more than 968px
+		var file_manager_width = $(window).width() * 0.9;
+		if (file_manager_width > 968)
+		{
+			file_manager_width = 968;
+		}
+		
 		// Set up modal dialog
 		file_manager_obj.dialog({
-			width: 968,
+			width: file_manager_width,
 			height: 615,
 			resizable: false,
 			position: ["center","center"],
