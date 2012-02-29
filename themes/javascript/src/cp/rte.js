@@ -115,16 +115,23 @@
 			tolerance:	'pointer',
 			beforeStop: function(e, ui) {
 				// Replace the destination item with the item(s) in our helper container
-				$(ui.item).replaceWith(ui.helper.children().removeClass('rte-tool-active'));
+				ui.item.replaceWith(ui.helper.children().removeClass('rte-tool-active'));
 			},
 			helper: function(e, ui) {
+				// Make sure only items in *this* ul are highlighted
+				$('.rte-tools-connected').not($(this)).children().removeClass('rte-tool-active');
+				
+				// Then make sure the item being dragged is actually highlighted
+				// Shouldn't this use ui.item? May be a bug.
+				ui.addClass('rte-tool-active');
+
 				// jQuery UI doesn't (yet) provide a way to move multiple items, but
-				// we can achieve it by wrapping selected items as the helper
+				// we can achieve it by wrapping highlighted items as the helper
 				var $selected = $('.rte-tool-active');
 	
 				if ( ! $selected.length) {
-					// shouldn't the below use ui.item? May be a UI bug.
-					$selected = $(ui).addClass('rte-tool-active'); 
+					// Shouldn't this use ui.item? May be a bug.
+					$selected = ui.addClass('rte-tool-active'); 
 				}
 	
 				return $('<div/>')
@@ -133,16 +140,13 @@
 					.width($(ui).outerWidth())  // match our li widths (including padding)
 					.append($selected.clone());
 		    },
-			receive: function(e, ui) {
-				$(ui.sender).parent().find('.rte-tool-active').addClass('rte-tool-remove');
-			},
 			start: function(e, ui) {
+				// We use the helper during the drag operation, so hide the original
+				// highlighted elements and 'mark' them for removal
+				$(this).children('.rte-tool-active').hide().addClass('rte-tool-remove');
+
 				// We don't want the placeholder to inherit this class
 				$(this).children('.ui-sortable-placeholder').removeClass('rte-tool-active');
-	
-				// We use the helper during the drag operation, so hide the original
-				// selected elements and 'mark' them for removal
-				$(this).children('.rte-tool-active').hide().addClass('rte-tool-remove');
 			},
 			stop: function() {
 				// Remove items that are marked for removal
@@ -158,7 +162,7 @@
 		// appears *above* the last element in a list, but should appear *below* it
 		// because your pointer is clearly at the end of the list. Forcing a dummy
 		// li at the end of each list corrects this. Hacky, but... so is Droppable.
-		$('.rte-tools-connected').append('<li class="placeholder-fix"/>');
+		$('.rte-tools-connected').append('<li class="rte-placeholder-fix"/>');
 
 
 		// Ajax submission
