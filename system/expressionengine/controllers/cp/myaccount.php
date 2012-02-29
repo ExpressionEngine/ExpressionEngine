@@ -169,7 +169,7 @@ class MyAccount extends CI_Controller {
 		}
 		
 		// default additional_nav lists are empty
-		$additional_nav = array(
+		$vars['additional_nav'] = array(
 			'personal_settings' => array(),
 			'utilities' => array(),
 			'private_messages' => array(),
@@ -185,30 +185,33 @@ class MyAccount extends CI_Controller {
 		//
 		if ($this->extensions->active_hook('myaccount_nav_setup') === TRUE)
 		{
-			$vars['additional_nav'] = array_merge( $additional_nav, $this->extensions->call('myaccount_nav_setup') );
+			$vars['additional_nav'] = array_merge_recursive(
+				$vars['additional_nav'], 
+				$this->extensions->call('myaccount_nav_setup')
+			);
 		}
 		//
 		// -------------------------------------------
 
 		// make sure we have usable URLs in additional_nav
 		$this->load->model('addons_model');
-		foreach ( $vars['additional_nav'] as $additional_nav_key => $additional_nav_links )
+		foreach ($vars['additional_nav'] as $additional_nav_key => $additional_nav_links)
 		{
-			if ( count( $additional_nav_links ) )
+			if (count($additional_nav_links))
 			{
-				foreach ( $additional_nav_links as $additional_nav_link_text => $additional_nav_link_link )
+				foreach ($additional_nav_links as $additional_nav_link_text => $additional_nav_link_link)
 				{
-					if ( is_array( $additional_nav_link_link ) )
+					if (is_array($additional_nav_link_link))
 					{
 						// create the link
-						if ( $this->addons_model->module_installed($additional_nav_link_link['module']) )
+						if ($this->addons_model->module_installed($additional_nav_link_link['module']))
 						{
 							$vars['additional_nav'][$additional_nav_key][$additional_nav_link_text] = BASE.AMP.'C=myaccount'.AMP.'M=custom_screen'.AMP.'module='.$additional_nav_link_link['module'].AMP.'method='.$additional_nav_link_link['method'];
 						}
-						// don’t create the link
+						// don’t create the link if the module doesn't exist
 						else
 						{
-							unset( $vars['additional_nav'][$additional_nav_key][$additional_nav_link_text] );
+							unset($vars['additional_nav'][$additional_nav_key][$additional_nav_link_text]);
 						}
 					}
 				}

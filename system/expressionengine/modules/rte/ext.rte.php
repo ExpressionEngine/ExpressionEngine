@@ -28,12 +28,20 @@ class Rte_ext {
 	 */
 	function myaccount_nav_setup()
 	{
+		// Check for the last_call
+		$additional_nav = ($this->EE->extensions->last_call) ? 
+			$this->EE->extensions->last_call :
+			array();
+
 		$this->EE->lang->loadfile($this->module);
-		return array(
-			'customize_cp' => array(
-				lang('rte_prefs')	=> array(
-					'module'	=> $this->module,
-					'method'	=> 'myaccount_settings'
+		return array_merge_recursive(
+			$additional_nav,
+			array(
+				'customize_cp' => array(
+					lang('rte_prefs')	=> array(
+						'module'	=> $this->module,
+						'method'	=> 'myaccount_settings'
+					)
 				)
 			)
 		);
