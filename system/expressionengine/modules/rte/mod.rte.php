@@ -168,9 +168,17 @@ class Rte {
 						// globals
 						' . $this->_set_globals($bits['globals']) . '
 
-						$("' . $selector . '").each(function(){
+						$("' . $selector . '").each(function(index)
+						{
+							var $field = $(this);
+							
+							// Add ID attributes to textareas missing them
+							if ($field.attr("id") == undefined)
+							{
+								$field.attr("id", "rte-"+index);
+							}
+							
 							var
-							$field	= $(this),
 							$parent	= $field.parent(),
 
 							// set up the editor
