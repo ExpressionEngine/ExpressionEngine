@@ -947,7 +947,7 @@ class Content_edit extends CI_Controller {
 		
 		$cutoff_date = time();
 		$cutoff_date -= $autosave_prune;
-		$cutoff_date = gmdate("YmdHis", $cutoff_date);
+		$cutoff_date = date("YmdHis", $cutoff_date);
 		
 		$this->db->where('edit_date <', $cutoff_date)->delete('channel_entries_autosave');
 	}
