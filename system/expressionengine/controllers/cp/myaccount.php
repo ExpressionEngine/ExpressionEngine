@@ -27,7 +27,7 @@ class MyAccount extends CI_Controller {
 	var $id			= '';
 	var $username	= '';
 	var $unique_dates = array();
-	var $module_paths = array();
+	var $extension_paths = array();
 
 	/**
 	 * Constructor
@@ -204,11 +204,11 @@ class MyAccount extends CI_Controller {
 					if (is_array($additional_nav_link_link))
 					{
 						// create the link
-						if ($this->addons_model->module_installed($additional_nav_link_link['module']))
+						if ($this->addons_model->extension_installed($additional_nav_link_link['extension']))
 						{
-							$vars['additional_nav'][$additional_nav_key][$additional_nav_link_text] = BASE.AMP.'C=myaccount'.AMP.'M=custom_screen'.AMP.'module='.$additional_nav_link_link['module'].AMP.'method='.$additional_nav_link_link['method'];
+							$vars['additional_nav'][$additional_nav_key][$additional_nav_link_text] = BASE.AMP.'C=myaccount'.AMP.'M=custom_screen'.AMP.'extension='.$additional_nav_link_link['extension'].AMP.'method='.$additional_nav_link_link['method'];
 						}
-						// don’t create the link if the module doesn't exist
+						// don’t create the link if the extension doesn't exist
 						else
 						{
 							unset($vars['additional_nav'][$additional_nav_key][$additional_nav_link_text]);
@@ -2709,56 +2709,110 @@ class MyAccount extends CI_Controller {
 		$vars = $this->_account_menu_setup();
 		
 		// get the module & method
-		$module = strtolower( $this->input->get_post('module') );
-		$method = strtolower( $this->input->get_post('method') );
-
-		$class_name = ucfirst($module).'_mcp';
+		$extension 	= strtolower($this->input->get_post('extension'));
+		$method 	= strtolower($this->input->get_post('method'));
+		$class_name = ucfirst($extension).'_ext';
+		$file_name	= 'ext.'.$extension.'.php';
 		
+		$this->_load_extension_paths($extension);
+		
+		// Include the Extension
+		include_once($this->extension_paths[$extension].$file_name);
+		
+		$this->load->add_package_path($this->extension_paths[$extension], FALSE);
+
+		$EXTENSION = new $class_name();
+		$this->lang->loadfile($extension, '', FALSE); // Don't show errors
+		if (method_exists($EXTENSION, $method) === TRUE)
+		{
+			// get the content back from the extension
+			$vars['content'] = $EXTENSION->$method($vars);
+		}
+		else
+		{
+			show_error(sprintf(lang('unable_to_execute_method'), $file_name));
+		}
+		
+		// restore our package and view paths
+		$this->load->remove_package_path($this->extension_paths[$extension]);
+		
+		// load the view wrapper
+		// TODO: Automatically wrap everything in a form tag with the correct
+		// 	action
+		$this->load->view('account/custom_screen', $vars);
+	}
+
+	// -------------------------------------------------------------------------
+
+	public function custom_screen_save()
+	{
+		// TODO: Abstract out logic
+
+		// get the module & method
+		$extension 	= strtolower($this->input->get_post('extension'));
+		$method 	= strtolower($this->input->get_post('method'));
+		$class_name = ucfirst($extension).'_ext';
+		$file_name	= 'ext.'.$extension.'.php';
+		
+		$this->_load_extension_paths($extension);
+		
+		// Include the Extension
+		include_once($this->extension_paths[$extension].$file_name);
+		
+		$this->load->add_package_path($this->extension_paths[$extension], FALSE);
+
+		$EXTENSION = new $class_name();
+		$this->lang->loadfile($extension, '', FALSE); // Don't show errors
+		if (method_exists($EXTENSION, $method) === TRUE)
+		{
+			// get the content back from the extension
+			$EXTENSION->$method($vars);
+		}
+		else
+		{
+			show_error(sprintf(lang('unable_to_execute_method'), $file_name));
+		}
+		
+		// restore our package and view paths
+		$this->load->remove_package_path($this->extension_paths[$extension]);
+
+		// TODO: Redirect automatically?
+		// $this->EE->functions->redirect($this->_myaccount_url);
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Make sure the extension paths have been cached
+	 * 
+	 * @param  string $extension The name of the extension to load the path of
+	 * @return void
+	 */
+	private function _load_extension_paths($extension)
+	{
 		// Have we encountered this one before?
-		if ( ! isset($this->module_paths[$module]) )
+		if ( ! isset($this->extension_paths[$extension]))
 		{
 			// First or third party?
-			foreach ( array(PATH_MOD, PATH_THIRD) as $tmp_path )
+			foreach (array(PATH_MOD, PATH_THIRD) as $tmp_path)
 			{
-				if ( file_exists($tmp_path.$module.'/mcp.'.$module.'.php') )
+				if (file_exists($tmp_path.$extension.'/ext.'.$extension.'.php'))
 				{
-					$this->module_paths[$module] = $tmp_path.$module.'/';
+
+					$this->extension_paths[$extension] = $tmp_path.$extension.'/';
 					break;
 				}
 			}
 			
 			// Include file
-			if ( ! class_exists($class_name))
+			if ( ! class_exists($extension.'_ext'))
 			{
-				if ( ! isset( $this->module_paths[$module] ) )
+				if ( ! isset($this->extension_paths[$extension]))
 				{
-					show_error(sprintf($this->lang->line('unable_to_load_module'), 'mcp.'.$module.'.php'));
+					show_error(sprintf(lang('unable_to_load_module'), 'ext.'.$extension.'.php'));
 				}
 			}
 		}
-		
-		# include the module
-		include_once( $this->module_paths[$module].'mcp.'.$module.'.php' );
-		
-		$this->load->add_package_path($this->module_paths[$module], FALSE);
-
-		$MODULE = new $class_name();
-		$this->lang->loadfile($module);
-		if ( method_exists($MODULE, $method) === TRUE )
-		{
-			// get the content back from the module
-			$vars['content'] = $MODULE->$method($vars);
-		}
-		else
-		{
-			show_error(sprintf(lang('unable_to_execute_method'), 'mcp.'.$module.'.php'));
-		}
-		
-		// restore our package and view paths
-		$this->load->remove_package_path($this->module_paths[$module]);
-		
-		// load the view wrapper
-		$this->load->view('account/custom_screen', $vars);
 	}
 
 }

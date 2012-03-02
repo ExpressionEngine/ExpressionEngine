@@ -36,10 +36,10 @@ class Rte_mcp {
 		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();
 
-		# Helpers
+		// Helpers
 		$this->EE->load->helper('form');
 
-		# set some properties
+		// set some properties
 		$this->_base_url		= BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=rte';
 		$this->_form_base		= 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=rte';
 		$this->_myaccount_url	= BASE.AMP.'C=myaccount'.AMP.'M=custom_screen'.AMP.'module=rte'.AMP.'method=myaccount_settings';
@@ -57,11 +57,11 @@ class Rte_mcp {
 	{
 		$this->_permissions_check();
 		
-		# dependencies
+		// dependencies
 		$this->EE->load->library(array('table','javascript'));
 		$this->EE->load->model(array('rte_toolset_model','rte_tool_model'));
 
-		# set upt the page
+		// set upt the page
 		$this->EE->cp->set_right_nav(array(
 			'create_new_rte_toolset' => $this->_base_url.AMP.'method=edit_toolset'
 		));
@@ -77,7 +77,7 @@ class Rte_mcp {
 			'tools'						=> $this->EE->rte_tool_model->get_all()
 		);
 		
-		# JS
+		// JS
 		$this->EE->cp->add_js_script(array(
 			'file'		=> 'cp/rte',
 			'plugin'	=> array( 'overlay', 'toolbox.expose' )
@@ -90,10 +90,10 @@ class Rte_mcp {
 		));
 		$this->EE->javascript->compile();
 		
-		# CSS
+		// CSS
 		$this->EE->cp->add_to_head($this->EE->view->head_link('css/rte.css'));
 		
-		# return the page
+		// return the page
 		return $this->EE->load->view('index', $vars, TRUE);
 	}
 	
@@ -110,19 +110,21 @@ class Rte_mcp {
 	{
 		$this->_permissions_check();
 		
-		# set up the validation
+		// set up the validation
 		$this->EE->load->library('form_validation');
 		$this->EE->form_validation->set_rules(
 			'rte_enabled',
 			lang('enabled_question'),
 			'required|enum[y,n]'
 		);
-		# forum is disabled right now
-		#$this->EE->form_validation->set_rules(
-		#	'rte_forum_enabled',
-		#	lang('forum_enabled_question'),
-		#	'required|enum[y,n]'
-		#);
+
+		// forum is disabled right now
+		// $this->EE->form_validation->set_rules(
+		// 	'rte_forum_enabled',
+		// 	lang('forum_enabled_question'),
+		// 	'required|enum[y,n]'
+		// );
+
 		$this->EE->form_validation->set_rules(
 			'rte_default_toolset_id',
 			lang('choose_default_toolset'),
@@ -131,17 +133,15 @@ class Rte_mcp {
 		
 		if ($this->EE->form_validation->run())
 		{
-			# update the prefs
+			// update the prefs
 			$this->_do_update_prefs();
 			$this->EE->session->set_flashdata('message_success', lang('settings_saved'));
 		}
-		# Fail!
 		else
 		{
 			$this->EE->session->set_flashdata('message_failure', lang('settings_not_saved'));
 		}
 		
-		# buh-bye
 		$this->EE->functions->redirect($this->_base_url);
 	}
 
@@ -160,33 +160,33 @@ class Rte_mcp {
 		$this->EE->load->library(array('table','javascript'));
 		$this->EE->load->model(array('rte_toolset_model','rte_tool_model'));
 		
-		# get the toolset
+		// get the toolset
 		if ( ! is_numeric($toolset_id)) $toolset_id = $this->EE->input->get_post('rte_toolset_id');	
 
-		# make sure the user can access this toolset
+		// make sure the user can access this toolset
 		$failure	= FALSE;
 		$is_private	= FALSE;
 		$toolset	= FALSE;
 		if (is_numeric($toolset_id))
 		{
-			# make sure it exists
+			// make sure it exists
 			if ( ! $this->EE->rte_toolset_model->exists($toolset_id))
 			{
 				$failure = lang('toolset_not_found');
 			}
-			# make sure the user can access it
+			// make sure the user can access it
 			elseif ( ! $this->EE->rte_toolset_model->member_can_access($toolset_id))
 			{
 				$failure = lang('cannot_edit_toolset');
 			}
-			# bow out if the user can’t
+			// bow out if the user can’t
 			if ( !! $failure)
 			{
 				$this->EE->session->set_flashdata('message_failure', $failure);
 				$this->EE->functions->redirect($this->_base_url);
 			}
 
-			# grab the toolset
+			// grab the toolset
 			$toolset	= $this->EE->rte_toolset_model->get($toolset_id);
 			$is_private	= ($toolset->member_id != 0);
 		}
@@ -197,13 +197,13 @@ class Rte_mcp {
 			$is_private	= ($is_private == 'true');
 		}
 		
-		# JS stuff
+		// JS stuff
 		$this->EE->cp->add_js_script(array(
 			'ui' 	=> 'sortable',
 			'file'	=> 'cp/rte'
 		));
 		
-		# get the tools lists (can only include active tools)
+		// get the tools lists (can only include active tools)
 		$available_tools	= $this->EE->rte_tool_model->get_available(TRUE);
 		$toolset_tool_ids	= $this->EE->rte_toolset_model->get_tools($toolset_id);
 		$unused_tools = $toolset_tools = array();
@@ -219,11 +219,11 @@ class Rte_mcp {
 				$unused_tools[] = $tool_id;
 			}
 		}
-		# ensure the proper order
+		// ensure the proper order
 		ksort( $toolset_tools, SORT_NUMERIC );
 		sort( $unused_tools );
 		
-		# set up the page
+		// set up the page
 		$this->EE->cp->set_breadcrumb($this->_base_url, lang('rte_module_name'));
 		$title = $is_private ? lang('define_my_toolset') : lang('define_toolset');
 		$vars = array(
@@ -237,7 +237,7 @@ class Rte_mcp {
 			'toolset_tools'		=> $toolset_tools
 		);
 		
-		# JS
+		// JS
 		$this->EE->javascript->set_global(array(
 			'rte'	=> array(
 				'toolset_modal.title'		=> $title,
@@ -247,10 +247,10 @@ class Rte_mcp {
 		));
 		$this->EE->javascript->compile();
 		
-		# CSS
+		// CSS
 		$this->EE->cp->add_to_head($this->EE->view->head_link('css/rte.css'));
 		
-		# page
+		// page
 		return $this->EE->load->view('edit_toolset', $vars, TRUE);
 	}
 
@@ -267,7 +267,7 @@ class Rte_mcp {
 		$this->_permissions_check();
 		$this->EE->load->model('rte_toolset_model');
 		
-		# get the toolset
+		// get the toolset
 		$toolset_id = $this->EE->input->get_post('rte_toolset_id');
 		$toolset	= array(
 			'name'		=> $this->EE->input->get_post('rte_toolset_name'),
@@ -275,10 +275,10 @@ class Rte_mcp {
 			'member_id'	=> ($this->EE->input->get_post('private') == 'true' ? $this->EE->session->userdata('member_id') : 0)
 		);
 		
-		# is this an individual’s private toolset?
+		// is this an individual’s private toolset?
 		$is_members = ($this->EE->input->get_post('private') == 'true');
 
-		# did an empty name sneak through?
+		// did an empty name sneak through?
 		if (empty($toolset['name']))
 		{
 			$this->EE->output->send_ajax_response(array(
@@ -300,16 +300,16 @@ class Rte_mcp {
 			}
 		}
 		
-		# save it
+		// save it
 		if ($this->EE->rte_toolset_model->save($toolset, $toolset_id))
 		{
-			# if it’s new, get the ID
+			// if it’s new, get the ID
 			if ( ! $toolset_id)
 			{
 				$toolset_id = $this->EE->db->insert_id();
 			}
 			
-			# update the member profile
+			// update the member profile
 			if ($is_members && $toolset_id)
 			{
 				$this->EE->db
@@ -322,7 +322,6 @@ class Rte_mcp {
 				'force_refresh' => ! $is_members
 			));
 		}
-		# Fail!
 		else
 		{
 			$this->EE->output->send_ajax_response(array(
@@ -381,23 +380,21 @@ class Rte_mcp {
 	 */
 	public function delete_toolset()
 	{
-		# make sure the user has permissions
+		// make sure the user has permissions
 		$this->_permissions_check();
 		
 		$this->EE->load->model('rte_toolset_model');
 		
-		# delete
+		// delete
 		if ($this->EE->rte_toolset_model->delete($this->EE->input->get_post('rte_toolset_id')))
 		{
 			$this->EE->session->set_flashdata('message_success', lang('toolset_deleted'));
 		}
-		# Fail!
 		else
 		{
 			$this->EE->session->set_flashdata('message_failure', lang('toolset_not_deleted'));
 		}
 		
-		# buh-bye
 		$this->EE->functions->redirect($this->_base_url);
 	}
 
@@ -474,115 +471,6 @@ class Rte_mcp {
 	// --------------------------------------------------------------------
 	
 	/**
-	 * MyAccount Rich Text Editor Preferences Page
-	 *
-	 * @access	public
-	 * @param	array $vars Hash of page vars
-	 * @return	string The page contents
-	 */
-	public function myaccount_settings( $vars )
-	{
-		$this->EE->load->library('javascript');
-		$this->EE->load->model('rte_toolset_model');
-		
-		# get the member prefs
-		$prefs = $this->EE->db
-					->select( array( 'rte_enabled','rte_toolset_id' ) )
-					->get_where(
-						'members',
-						array( 'member_id'=>$this->EE->session->userdata('member_id') )
-					  )
-					->row();
-		
-		// get the toolset options
-		$toolset_opts = $this->EE->rte_toolset_model->get_member_options();
-		foreach ($toolset_opts as $id => $name)
-		{
-			$toolset_opts[$id] = lang($name);
-		}
-		
-		# setup the page
-		$vars = array(
-			'cp_page_title'			=> lang('rte_prefs'),
-			'action'				=> $this->_form_base.AMP.'method=myaccount_settings_update',
-			'rte_enabled'			=> $prefs->rte_enabled,
-			'rte_toolset_id_opts'	=> $toolset_opts,
-			'rte_toolset_id'		=> $prefs->rte_toolset_id
-		);
-		
-		# JS stuff
-		$this->EE->javascript->set_global(array(
-			'rte'	=> array(
-				'toolset_builder_url'	=> $this->_base_url.AMP.'method=edit_toolset'.AMP.'private=true',
-				'custom_toolset_text'	=> lang('my_custom_toolset'),
-				'edit_text'				=> lang('edit')
-			)
-		));
-		$this->EE->cp->add_js_script(array(
-			'file'	=> 'cp/rte',
-			'ui'	=> 'dialog'
-		));
-		$this->EE->javascript->compile();
-		
-		# add the CSS
-		$this->EE->cp->add_to_head($this->EE->view->head_link('css/rte.css'));
-		
-		# return the page
-		return $this->EE->load->view('myaccount_settings', $vars, TRUE);
-	}
-
-	// --------------------------------------------------------------------
-	
-	/**
-	 * MyAccount RTE settings form action
-	 *
-	 * @access	public
-	 * @return	void
-	 */
-	public function myaccount_settings_update()
-	{
-		# set up the validation
-		$this->EE->load->library('form_validation');
-		$this->EE->form_validation->set_rules(
-			'rte_enabled',
-			lang('enabled_question'),
-			'required|enum[y,n]'
-		);
-		$this->EE->form_validation->set_rules(
-			'rte_toolset_id',
-			lang('choose_default_toolset'),
-			'required|is_numeric'
-		);
-		
-		# success
-		if ($this->EE->form_validation->run())
-		{
-			# update the prefs
-			$this->EE->db
-				->where( 'member_id', $this->EE->session->userdata('member_id') )
-				->update(
-					'members',
-					array(
-						'rte_enabled'		=> $this->EE->input->get_post('rte_enabled'),
-						'rte_toolset_id'	=> $this->EE->input->get_post('rte_toolset_id')
-					)
-				  );
-			
-			$this->EE->session->set_flashdata('message_success', lang('preferences_saved'));
-		}
-		# Fail!
-		else
-		{
-			$this->EE->session->set_flashdata('message_failure', lang('preferences_not_saved'));
-		}
-
-		# buh-bye
-		$this->EE->functions->redirect($this->_myaccount_url);
-	}
-
-	// --------------------------------------------------------------------
-	
-	/**
 	 * MyAccount RTE settings form action
 	 *
 	 * @access	public
@@ -590,17 +478,17 @@ class Rte_mcp {
 	 */
 	public function toggle_member_rte()
 	{
-		# get the current status
+		// get the current status
 		$enabled = ($this->EE->session->userdata('rte_enabled') == 'y');
 		
-		# update the prefs
+		// update the prefs
 		$this->EE->db->update(
 			'members',
 			array( 'rte_enabled'	=> ($enabled ? 'n' : 'y') ),
 			array( 'member_id'		=> $this->EE->session->userdata('member_id') )
 		);
 		
-		# exit
+		// exit
 		$affected_rows = $this->EE->db->affected_rows();
 		if ($this->EE->input->is_ajax_request())
 		{
@@ -625,13 +513,13 @@ class Rte_mcp {
 	{
 		$this->EE->load->library('javascript');
 		
-		# load in the event information so buttons can trigger 
+		// load in the event information so buttons can trigger 
 		$this->EE->javascript->set_global( 'rte.update_event', 'WysiHat-editor:change' );
 		
-		# start empty
+		// start empty
 		$js = '';
 
-		# determine the toolset
+		// determine the toolset
 		$this->EE->load->model(array('rte_toolset_model','rte_tool_model'));
 		if ( ! $toolset_id)
 		{
@@ -639,11 +527,11 @@ class Rte_mcp {
 		}
 		$tools = $this->EE->rte_toolset_model->get_tools($toolset_id);
 
-		# make sure we should load the JS
+		// make sure we should load the JS
 		if ($toolset_id &&
 		    $this->EE->config->item('rte_enabled') == 'y')
 		{
-			# setup the framework
+			// setup the framework
 			ob_start(); ?>
 
 			$(".rte").each(function(){
@@ -662,30 +550,30 @@ class Rte_mcp {
 <?php		$js = ob_get_contents();
 			ob_end_clean(); 
 
-			# load the tools
+			// load the tools
 			foreach ($tools as $tool_id)
 			{
 				$tool = $this->EE->rte_tool_model->get_tool($tool_id);
 				
-				# load the globals
+				// load the globals
 				if (count($tool['globals']))
 				{
 					$this->EE->javascript->set_global( $tool['globals'] );
 				}
 				
-				# load any libraries we need
+				// load any libraries we need
 				if (count($tool['libraries']))
 				{
 					$this->EE->cp->add_js_script( $tool['libraries'] );
 				}
 				
-				# add any styles we need
+				// add any styles we need
 				if ( ! empty( $tool['styles']))
 				{
 					$this->EE->cp->add_to_head( '<style>' . $tool['styles'] . '</style>' );
 				}
 				
-				# load in the definition
+				// load in the definition
 				if ( ! empty( $tool['definition']))
 				{
 					$js .= $tool['definition'];
@@ -698,7 +586,7 @@ class Rte_mcp {
 				';
 		}
 		
-		# return vs. print… is there a better CI way to do this?
+		// return vs. print… is there a better CI way to do this?
 		$print = $this->EE->input->get_post('print');
 		if ($print == 'yes')
 		{
@@ -706,7 +594,7 @@ class Rte_mcp {
 			header('Cache-Control: no-cache, must-revalidate');
 			header('Expires: Sat, 26 Jul 1997 05:00:00 GMT');
 			
-			# compile the JS
+			// compile the JS
 			$this->EE->javascript->compile();
 
 			die('
@@ -734,10 +622,10 @@ class Rte_mcp {
 	{
 		$js = '';
 		
-		# make sure it’s on
+		// make sure it’s on
 		if ($this->EE->config->item('rte_enabled') == 'y')
 		{
-			# styles
+			// styles
 			$this->EE->cp->add_to_head(
 				'
 				<style>
@@ -748,7 +636,7 @@ class Rte_mcp {
 				'
 			);
 			
-			# JS config
+			// JS config
 			$this->EE->javascript->set_global(array(
 				'rte'	=> array(
 					'update_event'		=> 'WysiHat-editor:change',
@@ -772,7 +660,7 @@ class Rte_mcp {
 				)
 			));
 			
-			# add in the code that would toggle the toolset
+			// add in the code that would toggle the toolset
 			ob_start(); ?>
 			
 			var
@@ -878,14 +766,12 @@ class Rte_mcp {
 	private function _do_update_prefs()
 	{
 		// update the config
-		$this->EE->config->_update_config(
-			array(
-				'rte_enabled'				=> $this->EE->input->get_post('rte_enabled'),
-				# forum is disabled right now
-				#'rte_forum_enabled'			=> $this->EE->input->get_post('rte_forum_enabled'),
-				'rte_default_toolset_id'	=> $this->EE->input->get_post('rte_default_toolset_id')
-			)
-		);
+		$this->EE->config->_update_config(array(
+			'rte_enabled'				=> $this->EE->input->get_post('rte_enabled'),
+			// forum is disabled right now
+			// 'rte_forum_enabled'			=> $this->EE->input->get_post('rte_forum_enabled'),
+			'rte_default_toolset_id'	=> $this->EE->input->get_post('rte_default_toolset_id')
+		));
 	}
 
 	// --------------------------------------------------------------------
@@ -900,18 +786,16 @@ class Rte_mcp {
 	{
 		$this->EE->load->model('rte_tool_model');
 		
-		# save
+		// save
 		if ($this->EE->rte_tool_model->save($change, $tool_id))
 		{
 			$this->EE->session->set_flashdata('message_success', $success_msg);
 		}
-		# fail
 		else
 		{
 			$this->EE->session->set_flashdata('message_failure', $fail_msg);
 		}
 
-		# buh-bye
 		$this->EE->functions->redirect($this->_base_url);
 	}
 
@@ -925,18 +809,18 @@ class Rte_mcp {
 	 */
 	private function _permissions_check()
 	{
-		# super admins always can
+		// super admins always can
 		$can_access = ($this->EE->session->userdata('group_id') == '1');
 		
 		if ( ! $can_access)
 		{
-			# get the group_ids with access
-			$result = $this->EE->db
-						->select('module_member_groups.group_id')
-						->from('module_member_groups')
-						->join('modules', 'modules.module_id = module_member_groups.module_id')
-						->where('modules.module_name',$this->name)
-						->get();
+			// get the group_ids with access
+			$result = $this->EE->db->select('module_member_groups.group_id')
+				->from('module_member_groups')
+				->join('modules', 'modules.module_id = module_member_groups.module_id')
+				->where('modules.module_name',$this->name)
+				->get();
+
 			if ($result->num_rows())
 			{
 				foreach ($result->result_array() as $r)

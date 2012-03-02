@@ -17,12 +17,16 @@ class Rte_ext {
 	function __construct()
 	{
 		$this->EE =& get_instance();
+
+		$this->_base_url		= BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=rte';
+		$this->_form_base		= 'C=myaccount'.AMP.'M=custom_screen_save'.AMP.'extension=rte'.AMP.'method=myaccount_settings_update';
+		$this->_myaccount_url	= BASE.AMP.'C=myaccount'.AMP.'M=custom_screen'.AMP.'extension=rte'.AMP.'method=myaccount_settings';
 	}
 
 	// --------------------------------------------------------------------
 
 	/**
-	 * Loads My RTE Prefs into heMy Account page
+	 * Loads My RTE Prefs into the My Account page
 	 * 
 	 * @return	array	Hash of new items to add to the MyAccount Nav
 	 */
@@ -39,7 +43,7 @@ class Rte_ext {
 			array(
 				'customize_cp' => array(
 					lang('rte_prefs')	=> array(
-						'module'	=> $this->module,
+						'extension'	=> 'rte',
 						'method'	=> 'myaccount_settings'
 					)
 				)
@@ -47,6 +51,111 @@ class Rte_ext {
 		);
 	}
 	
+	// --------------------------------------------------------------------
+
+	/**
+	 * MyAccount Rich Text Editor Preferences Page
+	 *
+	 * @access	public
+	 * @param	array $vars Hash of page vars
+	 * @return	string The page contents
+	 */
+	public function myaccount_settings($vars)
+	{
+		$this->EE->load->library('javascript');
+		$this->EE->load->model('rte_toolset_model');
+		
+		// get the member prefs
+		$prefs = $this->EE->db->select( array( 'rte_enabled','rte_toolset_id' ))
+			->get_where(
+				'members',
+				array('member_id'=>$this->EE->session->userdata('member_id'))
+			)
+			->row();
+		
+		// get the toolset options
+		$toolset_opts = $this->EE->rte_toolset_model->get_member_options();
+		foreach ($toolset_opts as $id => $name)
+		{
+			$toolset_opts[$id] = lang($name);
+		}
+		
+		// setup the page
+		$vars = array(
+			'cp_page_title'			=> lang('rte_prefs'),
+			'action'				=> $this->_form_base.AMP.'method=myaccount_settings_update',
+			'rte_enabled'			=> $prefs->rte_enabled,
+			'rte_toolset_id_opts'	=> $toolset_opts,
+			'rte_toolset_id'		=> $prefs->rte_toolset_id
+		);
+		
+		// JS stuff
+		$this->EE->javascript->set_global(array(
+			'rte'	=> array(
+				'toolset_builder_url'	=> $this->_base_url.AMP.'method=edit_toolset'.AMP.'private=true',
+				'custom_toolset_text'	=> lang('my_custom_toolset'),
+				'edit_text'				=> lang('edit')
+			)
+		));
+		$this->EE->cp->add_js_script(array(
+			'file'	=> 'cp/rte',
+			'ui'	=> 'dialog'
+		));
+		$this->EE->javascript->compile();
+		
+		// add the CSS
+		$this->EE->cp->add_to_head($this->EE->view->head_link('css/rte.css'));
+		
+		// return the page
+		return $this->EE->load->view('myaccount_settings', $vars, TRUE);
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * MyAccount RTE settings form action
+	 *
+	 * @access	public
+	 * @return	void
+	 */
+	public function myaccount_settings_update()
+	{
+		// set up the validation
+		$this->EE->load->library('form_validation');
+		$this->EE->form_validation->set_rules(
+			'rte_enabled',
+			lang('enabled_question'),
+			'required|enum[y,n]'
+		);
+		$this->EE->form_validation->set_rules(
+			'rte_toolset_id',
+			lang('choose_default_toolset'),
+			'required|is_numeric'
+		);
+		
+		// success
+		if ($this->EE->form_validation->run())
+		{
+			// update the prefs
+			$this->EE->db->update(
+				'members',
+				array(
+					'rte_enabled'		=> $this->EE->input->get_post('rte_enabled'),
+					'rte_toolset_id'	=> $this->EE->input->get_post('rte_toolset_id')
+				),
+				array('member_id' => $this->EE->session->userdata('member_id'))
+			);
+			
+			$this->EE->session->set_flashdata('message_success', lang('preferences_saved'));
+		}
+		else
+		{
+			$this->EE->session->set_flashdata('message_failure', lang('preferences_not_saved'));
+		}
+
+		$this->EE->functions->redirect($this->_myaccount_url);
+	}
+
 	// --------------------------------------------------------------------
 
 	/**
