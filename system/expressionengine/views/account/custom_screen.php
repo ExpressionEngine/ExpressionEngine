@@ -1,7 +1,9 @@
 <?php $this->load->view('account/_account_header');?>
 
 	<div>
-		<?=$content?>
+		<?=form_open($action)?>
+			<?=$content?>
+		<?=form_close()?>
 	</div>
 
 <?php $this->load->view('account/_account_footer');

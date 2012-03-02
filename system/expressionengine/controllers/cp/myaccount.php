@@ -2707,12 +2707,20 @@ class MyAccount extends CI_Controller {
 	function custom_screen()
 	{
 		$vars = $this->_account_menu_setup();
-		
+
 		// get the module & method
-		$extension 	= strtolower($this->input->get_post('extension'));
-		$method 	= strtolower($this->input->get_post('method'));
-		$class_name = ucfirst($extension).'_ext';
-		$file_name	= 'ext.'.$extension.'.php';
+		$extension 		= strtolower($this->input->get_post('extension'));
+		$method 		= strtolower($this->input->get_post('method'));
+		
+		// Check for a method_save get variable, if it doesn't exist, send it
+		// back to the original method
+		$method_save	= ($this->input->get_post('method_save')) ? 
+			strtolower($this->input->get_post('method_save')) :
+			$method.'_save';
+
+		// Alright, these two are obvious now
+		$class_name 	= ucfirst($extension).'_ext';
+		$file_name		= 'ext.'.$extension.'.php';
 		
 		$this->_load_extension_paths($extension);
 		
@@ -2735,10 +2743,11 @@ class MyAccount extends CI_Controller {
 		
 		// restore our package and view paths
 		$this->load->remove_package_path($this->extension_paths[$extension]);
-		
+
+		// Automatically push to the $method+'_save' method
+		$vars['action'] = 'C=myaccount'.AMP.'M=custom_screen_save'.AMP.'extension='.$extension.AMP.'method='.$method.AMP.'method_save='.$method_save;
+
 		// load the view wrapper
-		// TODO: Automatically wrap everything in a form tag with the correct
-		// 	action
 		$this->load->view('account/custom_screen', $vars);
 	}
 
@@ -2747,10 +2756,18 @@ class MyAccount extends CI_Controller {
 	public function custom_screen_save()
 	{
 		// TODO: Abstract out logic
+		$vars = $this->_account_menu_setup();
 
 		// get the module & method
 		$extension 	= strtolower($this->input->get_post('extension'));
 		$method 	= strtolower($this->input->get_post('method'));
+
+		// Check for a method_save get variable, if it doesn't exist, send it
+		// back to the original method
+		$method_save	= ($this->input->get_post('method_save')) ? 
+			strtolower($this->input->get_post('method_save')) :
+			$method.'_save';
+
 		$class_name = ucfirst($extension).'_ext';
 		$file_name	= 'ext.'.$extension.'.php';
 		
@@ -2763,21 +2780,20 @@ class MyAccount extends CI_Controller {
 
 		$EXTENSION = new $class_name();
 		$this->lang->loadfile($extension, '', FALSE); // Don't show errors
-		if (method_exists($EXTENSION, $method) === TRUE)
+		if (method_exists($EXTENSION, $method_save) === TRUE)
 		{
 			// get the content back from the extension
-			$EXTENSION->$method($vars);
+			$EXTENSION->$method_save($vars);
 		}
 		else
 		{
 			show_error(sprintf(lang('unable_to_execute_method'), $file_name));
 		}
-		
-		// restore our package and view paths
+
 		$this->load->remove_package_path($this->extension_paths[$extension]);
 
-		// TODO: Redirect automatically?
-		// $this->EE->functions->redirect($this->_myaccount_url);
+		// Redirect back
+		$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=custom_screen'.AMP.'extension='.$extension.AMP.'method='.$method.AMP.'method_save='.$method_save);
 	}
 
 	// -------------------------------------------------------------------------

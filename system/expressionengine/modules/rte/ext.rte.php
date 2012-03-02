@@ -19,8 +19,7 @@ class Rte_ext {
 		$this->EE =& get_instance();
 
 		$this->_base_url		= BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=rte';
-		$this->_form_base		= 'C=myaccount'.AMP.'M=custom_screen_save'.AMP.'extension=rte'.AMP.'method=myaccount_settings_update';
-		$this->_myaccount_url	= BASE.AMP.'C=myaccount'.AMP.'M=custom_screen'.AMP.'extension=rte'.AMP.'method=myaccount_settings';
+		$this->_myaccount_url	= BASE.AMP.'C=myaccount'.AMP.'M=custom_screen'.AMP.'extension=rte'.AMP.'method=myaccount_settings'.AMP.'method_save=myaccount_settings_save';
 	}
 
 	// --------------------------------------------------------------------
@@ -83,7 +82,6 @@ class Rte_ext {
 		// setup the page
 		$vars = array(
 			'cp_page_title'			=> lang('rte_prefs'),
-			'action'				=> $this->_form_base.AMP.'method=myaccount_settings_update',
 			'rte_enabled'			=> $prefs->rte_enabled,
 			'rte_toolset_id_opts'	=> $toolset_opts,
 			'rte_toolset_id'		=> $prefs->rte_toolset_id
@@ -118,7 +116,7 @@ class Rte_ext {
 	 * @access	public
 	 * @return	void
 	 */
-	public function myaccount_settings_update()
+	public function myaccount_settings_save()
 	{
 		// set up the validation
 		$this->EE->load->library('form_validation');
@@ -152,8 +150,6 @@ class Rte_ext {
 		{
 			$this->EE->session->set_flashdata('message_failure', lang('preferences_not_saved'));
 		}
-
-		$this->EE->functions->redirect($this->_myaccount_url);
 	}
 
 	// --------------------------------------------------------------------
