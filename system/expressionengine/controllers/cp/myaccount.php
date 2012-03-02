@@ -2706,43 +2706,7 @@ class MyAccount extends CI_Controller {
 	 */
 	function custom_screen()
 	{
-		$vars = $this->_account_menu_setup();
-
-		// get the module & method
-		$extension 		= strtolower($this->input->get_post('extension'));
-		$method 		= strtolower($this->input->get_post('method'));
-		
-		// Check for a method_save get variable, if it doesn't exist, send it
-		// back to the original method
-		$method_save	= ($this->input->get_post('method_save')) ? 
-			strtolower($this->input->get_post('method_save')) :
-			$method.'_save';
-
-		// Alright, these two are obvious now
-		$class_name 	= ucfirst($extension).'_ext';
-		$file_name		= 'ext.'.$extension.'.php';
-		
-		$this->_load_extension_paths($extension);
-		
-		// Include the Extension
-		include_once($this->extension_paths[$extension].$file_name);
-		
-		$this->load->add_package_path($this->extension_paths[$extension], FALSE);
-
-		$EXTENSION = new $class_name();
-		$this->lang->loadfile($extension, '', FALSE); // Don't show errors
-		if (method_exists($EXTENSION, $method) === TRUE)
-		{
-			// get the content back from the extension
-			$vars['content'] = $EXTENSION->$method($vars);
-		}
-		else
-		{
-			show_error(sprintf(lang('unable_to_execute_method'), $file_name));
-		}
-		
-		// restore our package and view paths
-		$this->load->remove_package_path($this->extension_paths[$extension]);
+		list($vars, $extension, $method, $method_save) = $this->_custom_screen_load();
 
 		// Automatically push to the $method+'_save' method
 		$vars['action'] = 'C=myaccount'.AMP.'M=custom_screen_save'.AMP.'extension='.$extension.AMP.'method='.$method.AMP.'method_save='.$method_save;
@@ -2753,9 +2717,35 @@ class MyAccount extends CI_Controller {
 
 	// -------------------------------------------------------------------------
 
+	/**
+	 * Method called when a custom screen added with the myaccount_nav_setup 
+	 * hook is called
+	 */
 	public function custom_screen_save()
 	{
-		// TODO: Abstract out logic
+		list($vars, $extension, $method, $method_save) = $this->_custom_screen_load('method_save');
+
+		// Redirect back
+		$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=custom_screen'.AMP.'extension='.$extension.AMP.'method='.$method.AMP.'method_save='.$method_save);
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Abstraction of the custom screen page that takes care of figuring out the
+	 * name of the extension, the methods that should be called, what files to
+	 * load, and what method to call
+	 * 
+	 * @param  string $method_choice The method to call, 
+	 * either 'method' or 'method_save'
+	 * @return Array containing four items: 
+	 *		$vars: Variables to pass to view
+	 *		$extension: Extension name (should not include '_ext' or 'ext.')
+	 *		$method: Extension's method called to display settings
+	 *		$method_save: Extension's method called when the form is submit
+	 */
+	private function _custom_screen_load($method_choice = 'method')
+	{
 		$vars = $this->_account_menu_setup();
 
 		// get the module & method
@@ -2780,10 +2770,10 @@ class MyAccount extends CI_Controller {
 
 		$EXTENSION = new $class_name();
 		$this->lang->loadfile($extension, '', FALSE); // Don't show errors
-		if (method_exists($EXTENSION, $method_save) === TRUE)
+		if (method_exists($EXTENSION, $$method_choice) === TRUE)
 		{
 			// get the content back from the extension
-			$EXTENSION->$method_save($vars);
+			$vars['content'] = $EXTENSION->$$method_choice($vars);
 		}
 		else
 		{
@@ -2792,8 +2782,7 @@ class MyAccount extends CI_Controller {
 
 		$this->load->remove_package_path($this->extension_paths[$extension]);
 
-		// Redirect back
-		$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=custom_screen'.AMP.'extension='.$extension.AMP.'method='.$method.AMP.'method_save='.$method_save);
+		return array($vars, $extension, $method, $method_save);
 	}
 
 	// -------------------------------------------------------------------------

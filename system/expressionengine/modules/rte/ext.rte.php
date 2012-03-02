@@ -150,6 +150,8 @@ class Rte_ext {
 		{
 			$this->EE->session->set_flashdata('message_failure', lang('preferences_not_saved'));
 		}
+
+		return TRUE;
 	}
 
 	// --------------------------------------------------------------------
@@ -160,7 +162,7 @@ class Rte_ext {
 	 * @param	array $menu The CP menu array
 	 * @return	array The updated CP menu array
 	 */
-	function cp_menu_array( $menu )
+	function cp_menu_array($menu)
 	{
 		$this->EE->lang->loadfile($this->module);
 		$menu['admin']['admin_content']['rte_settings'] = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module='.$this->module;
