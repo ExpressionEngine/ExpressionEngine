@@ -235,7 +235,7 @@ $figure_overlay
 		 )
 		.append( $('<br/>') )
 		.append(
-			$('<button class="button delete"><b>'+EE_rte_image.delete+'</b></button>').click(function(){
+			$('<button class="button remove"><b>'+EE_rte_image.remove+'</b></button>').click(function(){
 				$curr_figure.remove();
 				hideFigureOverlay();
 			})

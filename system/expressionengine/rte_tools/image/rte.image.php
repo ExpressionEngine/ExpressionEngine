@@ -53,7 +53,7 @@ Class Image_rte {
 		return array(
 			'rte.image'	=> array(
 				'add'			=> lang('img_add'),
-				'delete'		=> lang('img_delete'),
+				'remove'		=> lang('img_remove'),
 				'align_left'	=> lang('img_align_left'),
 				'align_center'	=> lang('img_align_center'),
 				'align_right'	=> lang('img_align_right'),
