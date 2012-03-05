@@ -83,24 +83,20 @@ Class View_source_rte {
 		{
 			var $this	= $(this);
 			
-			if ( $this.is('.WysiHat-editor') &&
-				 $this.is(':visible') )
-			{
+			if ($this.is('.WysiHat-editor') && $this.is(':visible')) {
 				$this.data('field')
-					.height($this.outerHeight())
-					.width($this.outerWidth());
-			}
-			else if ( $this.is('.rte') &&
-					  $this.is(':visible') )
-			{
+					.height($this.height())
+					.width($this.width());
+			} else if ($this.is('.rte') && $this.is(':visible')) {
 				$this.data('editor')
 					.height($this.height())
 					.width($this.width());
 			}
 		}
+
 		$editor.add($field)
-			.bind('resize',syncSizes);
-		$editor.resize();
+			.bind('resize',syncSizes)
+			.resize();
 		
 <?php	$buffer = ob_get_contents();
 		ob_end_clean(); 
