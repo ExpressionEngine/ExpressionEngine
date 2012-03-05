@@ -83,6 +83,8 @@
 						$title.val( el.attr('title') );
 					}
 				}
+				
+				$url.focus();
 			},
 			close: function(e, ui) {
 				var	sel		= reSelect(),
