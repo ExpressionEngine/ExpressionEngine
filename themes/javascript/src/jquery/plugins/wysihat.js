@@ -2457,15 +2457,22 @@ jQuery(document).ready(function(){
 				range			= document.createRange(),
 
 				pasted_content	= document.createDocumentFragment(),
+				
+				// Separates the pasted text into sections defined by two linebreaks
+				// for conversion to paragraphs
 				pasted_text		= $editor.text().split( /\n([ \t]*\n)+/g ),
 				len				= pasted_text.length,
 				p				= document.createElement('p'),
 				p_clone			= null,
 				empty			= /[\s\r\n]/g,
 				first			= true;
+				comments		= /<!--[^>]*-->/g;
 
 				while ( len-- )
 				{
+					// Remove HTML comments, Word may insert these
+					pasted_text[len] = pasted_text[len].replace(comments, '');
+					
 					if ( pasted_text[len].replace( empty,'') == '' )
 					{
 						continue;
