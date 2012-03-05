@@ -2737,7 +2737,7 @@ class MyAccount extends CI_Controller {
 	 * load, and what method to call
 	 * 
 	 * @param  string $method_choice The method to call, 
-	 * either 'method' or 'method_save'
+	 *		either 'method' or 'method_save'
 	 * @return Array containing four items: 
 	 *		$vars: Variables to pass to view
 	 *		$extension: Extension name (should not include '_ext' or 'ext.')
@@ -2767,6 +2767,11 @@ class MyAccount extends CI_Controller {
 		include_once($this->extension_paths[$extension].$file_name);
 		
 		$this->load->add_package_path($this->extension_paths[$extension], FALSE);
+
+		// Validate method choice parameter
+		$method_choice = (in_array($method_choice, array('method', 'method_save'))) ?
+			$method_choice :
+			'method';
 
 		$EXTENSION = new $class_name();
 		$this->lang->loadfile($extension, '', FALSE); // Don't show errors
@@ -2808,7 +2813,7 @@ class MyAccount extends CI_Controller {
 					break;
 				}
 			}
-			
+
 			// Include file
 			if ( ! class_exists($extension.'_ext'))
 			{
