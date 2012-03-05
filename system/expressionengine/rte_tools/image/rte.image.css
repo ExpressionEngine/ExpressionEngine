@@ -50,12 +50,12 @@
 #rte_image_figure_overlay .align-right:focus b,
 #rte_image_figure_overlay .align-right:active b,
 #rte_image_figure_overlay .align-right[aria-pressed=true] b{ background-position: 0 -315px; }
-#rte_image_figure_overlay .delete { padding: 10px; }
-#rte_image_figure_overlay .delete b{ background-position: 0 -378px; width: 14px; }
-#rte_image_figure_overlay .delete:hover b,
-#rte_image_figure_overlay .delete:focus b,
-#rte_image_figure_overlay .delete:active b,
-#rte_image_figure_overlay .delete[aria-pressed=true] b{ background-position: 0 -441px; }
+#rte_image_figure_overlay .remove { padding: 10px; }
+#rte_image_figure_overlay .remove b{ background-position: 0 -378px; width: 14px; }
+#rte_image_figure_overlay .remove:hover b,
+#rte_image_figure_overlay .remove:focus b,
+#rte_image_figure_overlay .remove:active b,
+#rte_image_figure_overlay .remove[aria-pressed=true] b{ background-position: 0 -441px; }
 #rte_image_figure_overlay .wrap-left{ float: left; margin-left: 2%; }
 #rte_image_figure_overlay .wrap-left b{ background-position: 0 -567px; height: 23px; }
 #rte_image_figure_overlay .wrap-left:hover b,

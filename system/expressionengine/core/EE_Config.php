@@ -249,28 +249,7 @@ class EE_Config Extends CI_Config {
 			}
 			elseif ($name == 'site_pages')
 			{
-				$data =  base64_decode($data);
-
-				if ( ! is_string($data) OR substr($data, 0, 2) != 'a:')
-				{
-					$this->config['site_pages'][$row['site_id']] = array('uris' => array(), 'templates' => array());
-					//$this->config['site_pages']['uris'][1] = '/evil/';
-					//$this->config['site_pages']['templates'][1] = 16;
-					continue;
-				}
-
-				$this->config['site_pages'] = unserialize($data);
-				
-				// Double check that the variables are set.
-				if ( ! isset($this->config['site_pages'][$row['site_id']]['uris']))
-				{
-					$this->config['site_pages'][$row['site_id']]['uris'] = ( ! isset($this->config['site_pages']['uris'])) ? array() : $this->config['site_pages']['uris'];
-				}
-			
-				if ( ! isset($this->config['site_pages'][$row['site_id']]['templates']))
-				{
-					$this->config['site_pages'][$row['site_id']]['templates'] = ( ! isset($this->config['site_pages']['templates'])) ? array() : $this->config['site_pages']['templates'];
-				}				
+				$this->config['site_pages'] = $this->site_pages($row['site_id'], $data);
 			}
 			elseif ($name == 'site_bootstrap_checksums')
 			{
@@ -393,7 +372,74 @@ class EE_Config Extends CI_Config {
 			$EE->db->cache_off();
 		}
 	}
-
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Decodes and returns Pages information for sites
+	 *
+	 * @param int $site_id	Site ID of to get Pages data for; if left blank,
+	 *		Pages data from all sites will be returned
+	 * @param string $data	Base64-encoded Pages data; if left blank, this
+	 *		information will be queried from the database
+	 * @return array	Pages information
+	 */
+	public function site_pages($site_id = NULL, $data = NULL)
+	{
+		$EE =& get_instance();
+		
+		$sites = array();
+		
+		// If no site ID is specified, get ALL sites data
+		if (empty($site_id))
+		{
+			$sites = $EE->db->get('sites')->result_array();
+		}
+		// If the site ID is set but no data passed in to decode, get it from the database
+		else if (empty($data))
+		{
+			$sites = $EE->db->get_where('sites', array('site_id' => $site_id))->result_array();
+		}
+		// Otherwise, we have both parameters, create an array for processing
+		else
+		{
+			$sites[] = array(
+				'site_id'		=> $site_id,
+				'site_pages'	=> $data
+			);
+		}
+		
+		// This is where we'll put everything to return
+		$site_pages = array();
+		
+		// Loop through each site and decode Pages information
+		foreach ($sites as $site)
+		{
+			$data = base64_decode($site['site_pages']);
+			
+			if ( ! is_string($data) OR substr($data, 0, 2) != 'a:')
+			{
+				$site_pages[$site['site_id']] = array('uris' => array(), 'templates' => array());
+			}
+			
+			$data = unserialize($data);
+			
+			$site_pages[$site['site_id']] = $data[$site['site_id']];
+			
+			if ( ! isset($site_pages[$site['site_id']]['uris']))
+			{
+				$site_pages[$site['site_id']]['uris'] = ( ! isset($site_pages['uris'])) ? array() : $site_pages['uris'];
+			}
+			
+			if ( ! isset($site_pages[$site['site_id']]['templates']))
+			{
+				$site_pages[$site['site_id']]['templates'] = ( ! isset($site_pages['templates'])) ? array() : $site_pages['templates'];
+			}
+		}
+		
+		return $site_pages;
+	}
+	
 	// --------------------------------------------------------------------
 	
 	/**

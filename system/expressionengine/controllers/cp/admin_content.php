@@ -157,7 +157,7 @@ class Admin_content extends CI_Controller {
 
 		$vars['duplicate_channel_prefs_options'][''] = lang('do_not_duplicate');
 
-		if ($channels->num_rows() > 0)
+		if ($channels != FALSE && $channels->num_rows() > 0)
 		{
 			foreach($channels->result() as $channel)
 			{
@@ -512,7 +512,7 @@ class Admin_content extends CI_Controller {
 
 		if ($edit == FALSE)
 		{
-			$create_templates	= $this->input->get_post('create_templates');
+			$create_templates	= ($this->input->get_post('create_templates') == FALSE OR $this->input->get_post('create_templates') == 'no') ? 'no' : $this->input->get_post('create_templates');
 			$old_group_id		= $this->input->get_post('old_group_id');
 			$group_name			= $this->input->post('group_name');
 
@@ -733,6 +733,9 @@ class Admin_content extends CI_Controller {
 			$insert_id = $this->db->insert_id();
 			$channel_id = $insert_id;
 			
+			// If they made the channel?  Give access to that channel to the member group?
+
+
 			if ($dupe_id !== FALSE AND is_numeric($dupe_id) && $edit_group_prefs == FALSE)
 			{
 				// Duplicate layouts

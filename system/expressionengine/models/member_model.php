@@ -589,7 +589,7 @@ class Member_model extends CI_Model {
 		// First, we need to get a list of recipient IDs who will be affected
 		// by deleting the members we are deleting so that we can update the
 		// unread PM count for those users only
-		$this->db->select('count(*) as count, recipient_id');
+		$this->db->distinct('recipient_id');
 		$this->db->where('message_read', 'n');
 		$this->db->where_in('sender_id', $member_ids);
 		$messages = $this->db->get('message_copies');
@@ -647,17 +647,7 @@ class Member_model extends CI_Model {
 				$this->db->where_in('author_id', $member_ids);
 				$this->db->update('channel_titles', array('author_id' => $heir_id));
 				
-				// Get new member stats for updating
-				$this->db->select('count(entry_id) AS count, MAX(entry_date) as entry_date');
-				$this->db->where('author_id', $heir_id);
-				$new_stats = $this->db->get('channel_titles')->row_array();
-				
-				// Update member stats
-				$this->db->where('member_id', $heir_id);
-				$this->db->update('members', array(
-					'total_entries' => $new_stats['count'],
-					'last_entry_date' => $new_stats['entry_date']
-				));
+				$this->update_member_entry_stats($heir_id);
 			}
 			// Otherwise, delete them, likely happens when member deletes own account
 			else
@@ -788,6 +778,38 @@ class Member_model extends CI_Model {
 		}
 		
 		$this->stats->update_member_stats();
+	}
+	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Update entry stats for members, specifically total_entries and last_entry_date
+	 *
+	 * @param array	Array of member IDs to update stats for
+	 * @return	void
+	 */
+	public function update_member_entry_stats($member_ids = array())
+	{
+		// Make $member_ids an array if we need to
+		if ( ! is_array($member_ids))
+		{
+			$member_ids = array($member_ids);
+		}
+		
+		foreach ($member_ids as $member_id)
+		{
+			// Get the number of entries and latest entry date for the member
+			$this->db->select('count(entry_id) AS count, MAX(entry_date) as entry_date');
+			$this->db->where('author_id', $member_id);
+			$new_stats = $this->db->get('channel_titles')->row_array();
+			
+			// Update member stats
+			$this->db->where('member_id', $member_id);
+			$this->db->update('members', array(
+				'total_entries' => $new_stats['count'],
+				'last_entry_date' => $new_stats['entry_date']
+			));
+		}
 	}
 
 	// --------------------------------------------------------------------

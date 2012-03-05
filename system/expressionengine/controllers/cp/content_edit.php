@@ -407,7 +407,7 @@ class Content_edit extends CI_Controller {
 		
 		foreach ($rows as &$row)
 		{
-			$url = $this->publish_base_uri.AMP."M=entry_form".AMP."channel_id={$row['channel_id']}".AMP."entry_id={$row['entry_id']}";
+			$url = $this->publish_base_uri.AMP."M=entry_form".AMP."channel_id={$row['channel_id']}".AMP."entry_id={$row['entry_id']}".AMP.$filter_url;
 			
 			$row['title'] = anchor(BASE.AMP.$url, $row['title']);
 			$row['view'] = '---';
@@ -947,7 +947,7 @@ class Content_edit extends CI_Controller {
 		
 		$cutoff_date = time();
 		$cutoff_date -= $autosave_prune;
-		$cutoff_date = gmdate("YmdHis", $cutoff_date);
+		$cutoff_date = date("YmdHis", $cutoff_date);
 		
 		$this->db->where('edit_date <', $cutoff_date)->delete('channel_entries_autosave');
 	}

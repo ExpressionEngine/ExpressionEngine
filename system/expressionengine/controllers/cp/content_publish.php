@@ -2358,6 +2358,13 @@ class Content_publish extends CI_Controller {
 				foreach ($v as $val)
 				{
 					$settings[$val['field_id']] = $val;
+
+					// So 3rd party module tab fields get their data on autosave
+					if (isset($entry_data[$val['field_id']]))
+					{
+						$settings[$val['field_id']]['field_data'] = $entry_data[$val['field_id']];
+					}
+					
 					$this->_tab_labels[$tab]	= lang($tab);
 					$this->_module_tabs[$tab][] = array(
 													'id' 	=> $val['field_id'],
@@ -2546,8 +2553,6 @@ class Content_publish extends CI_Controller {
 					$this->javascript->set_global('filebrowser.image_tag', '<img src="[![Link:!:http://]!]" alt="[![Alternative text]!]" />');			
 		}
 		
-		$this->javascript->set_global('p.image_tag', 'foo you!');
-
 		$markItUp = $markItUp_writemode = array(
 			'nameSpace'		=> "html",
 			'onShiftEnter'	=> array('keepDefault' => FALSE, 'replaceWith' => "<br />\n"),
