@@ -101,6 +101,9 @@ $.ee_filemanager.file_uploader = function() {
 
 			// If there were no files previously, the table might be hidden
 			$('.mainTable').show();
+
+			// Ensure new file appears on subsequent filtering
+			$(".mainTable").table('clear_cache');
 		},
 		trigger: '#action_nav a.upload_file'
 	});

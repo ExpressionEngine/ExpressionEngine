@@ -1879,27 +1879,11 @@ class Api_channel_entries extends Api {
 	{
 		$meta['dst_enabled'] =  $this->_cache['dst_enabled'];
 		
-		// Check if the author changed
+		// See if the author changed and store the old author ID for updating stats later
 		$this->EE->db->select('author_id');
 		$query = $this->EE->db->get_where('channel_titles', array('entry_id' => $this->entry_id));
-		$old_author = $query->row('author_id') ;
-
-		// autosave doesn't impact these stats
+		$old_author = $query->row('author_id');
 		
-		if ( ! $this->autosave && $old_author != $meta['author_id'])
-		{
-			// Decremenet the counter on the old author
-
-			$this->EE->db->where('member_id', $old_author);
-			$this->EE->db->set('total_entries', 'total_entries-1', FALSE);
-			$this->EE->db->update('members');
-
-
-			$this->EE->db->where('member_id', $meta['author_id']);
-			$this->EE->db->set('total_entries', 'total_entries+1', FALSE);
-			$this->EE->db->update('members');
-		}
-
 		// Update the entry data
 		
 		unset($meta['entry_id']);
@@ -2011,6 +1995,19 @@ class Api_channel_entries extends Api {
 		if ($this->autosave)
 		{
 			return $autosave_entry_id;
+		}
+		
+		// If the original auther changed, update member entry stats
+		// for old author and new author
+		if ( ! $this->autosave && $old_author != $meta['author_id'])
+		{
+			$this->EE->load->model('member_model');
+			$this->EE->member_model->update_member_entry_stats(
+				array(
+					$old_author,
+					$meta['author_id']
+				)
+			);
 		}
 
 		// Remove any autosaved data

@@ -453,8 +453,23 @@ class File_field {
 			$file = $this->get_file($data);
 		}
 		
-		// If there is no file, get out of here
-		if (empty($file))
+		// If there is no file, but data was passed in, create a dummy file
+		// array to pass back the data we were given. This is likely to
+		// happen when the old style of category_image is passed in and we
+		// don't recognize it because it's in a URL format. So, we'll return
+		// the URL so that people's category images continue to work.
+		if (empty($file) AND ! empty($data))
+		{
+			$file = array(
+				'url'					=> $data,
+				'file_name'				=> $data,
+				'extension'				=> '',
+				'path'					=> '',
+				'upload_location_id'	=> '',
+				'file_hw_original'		=> ''
+			);
+		}
+		else if (empty($file) AND empty($data))
 		{
 			return FALSE;
 		}
