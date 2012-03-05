@@ -40,6 +40,19 @@
 
 		// if the DOM changes this will fail
 		try {
+			
+			if (sel != '')
+			{
+				// If the selection isn't empty, but startOffset and endOffset
+				// are the same, the user likely selected all text in the editor;
+				// instead of claiming no text was selected to the user, we'll
+				// edit the range so link-creation still works
+				if (o_range.startOffset == o_range.endOffset)
+				{
+					o_range.startOffset = 0;
+				}
+			}
+			
 			// recreate the Range
 			range.setStart( o_range.startContainer, o_range.startOffset );
 			range.setEnd( o_range.endContainer, o_range.endOffset );
@@ -83,6 +96,8 @@
 						$title.val( el.attr('title') );
 					}
 				}
+				
+				$url.focus();
 			},
 			close: function(e, ui) {
 				var	sel		= reSelect(),
