@@ -282,39 +282,30 @@ class Tools_communicate extends CI_Controller {
 	/**
 	 * Attachment Handler
 	 * 
-	 * Used to manage and validate attachments
+	 * Used to manage and validate attachments. Must remain public,
+	 * it's a form validation callback.
 	 *
-	 * @access	private
+	 * @access	public
 	 * @return	bool
 	 */
 	function _attachment_handler()
 	{
-		// File Attachments?
-		if ($_FILES['attachment']['name'] != '')
+		$this->load->library('upload');
+		$this->upload->initialize(array(
+			'allowed_types'	=> '*',
+			'use_temp_dir'	=> TRUE
+		));
+
+		if ( ! $this->upload->do_upload('attachment'))
 		{
-			$temp_attachment = $_FILES['attachment']['tmp_name'];
-
-			if ( ! is_uploaded_file($temp_attachment))
-			{
-				$this->form_validation->set_message('_attachment_handler', lang('attachment_problem'));
-				return FALSE;
-			}
-
-			$temp_path = substr($temp_attachment, 0, strrpos($temp_attachment, DIRECTORY_SEPARATOR)+1);
-			$attachment = $temp_path.$_FILES['attachment']['name'];
-
-			// Try to give it a humane name. This should happen so quickly that multiple users
-			// won't be able to collide, but check for that first
-			if ( ! file_exists($attachment) AND ! rename($temp_attachment, $attachment))
-			{
-				// If we aren't able to rename this for any reason, then just attach
-				// the file with the temp name instead.
-				$attachment = $temp_attachment;
-			}
-
-			$this->attachments[] = $attachment;
-			$this->email->attach($attachment);
+			$this->form_validation->set_message('_attachment_handler', lang('attachment_problem'));
+			return FALSE;
 		}
+
+		$data = $this->upload->data();
+
+		$this->attachments[] = $data['full_path'];
+		$this->email->attach($data['full_path']);
 
 		return TRUE;
 	}
