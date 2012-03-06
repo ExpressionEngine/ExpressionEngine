@@ -112,7 +112,10 @@ class Textarea_ft extends EE_Fieldtype {
 				$dependent	= $("[name=textarea_field_enable_rte]," +
 								"[name=textarea_field_show_formatting_btns]," +
 								"[name=textarea_field_show_smileys]," +
-								"[name=textarea_field_show_writemode]")
+								"[name=textarea_field_show_writemode]," +
+								"[name=textarea_field_show_fmt]," +
+								"[name=textarea_field_show_glossary]," +
+								"[name=textarea_field_show_file_selector]")
 									.change(function(){
 										var
 										$this	= $(this),
