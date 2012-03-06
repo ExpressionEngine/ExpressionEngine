@@ -2478,7 +2478,7 @@ jQuery(document).ready(function(){
 						continue;
 					}
 
-					p_clone = p.cloneNode();
+					p_clone = p.cloneNode(false);
 					p_clone.appendChild( document.createTextNode( pasted_text[len] ) );
 
 					if ( first )
