@@ -1054,19 +1054,20 @@ class Member_settings extends Member {
 			$_POST['url'] = '';
 		}
 
-		$fields = array(	'bday_y',
-							'bday_m',
-							'bday_d',
-							'url',
-							'location',
-							'occupation',
-							'interests',
-							'aol_im',
-							'icq',
-							'yahoo_im',
-							'msn_im',
-							'bio'
-						);
+		$fields = array(
+			'bday_y',
+			'bday_m',
+			'bday_d',
+			'url',
+			'location',
+			'occupation',
+			'interests',
+			'aol_im',
+			'icq',
+			'yahoo_im',
+			'msn_im',
+			'bio'
+		);
 
 		$data = array();
 
@@ -1075,6 +1076,10 @@ class Member_settings extends Member {
 			$data[$val] = (isset($_POST[$val])) ? $this->EE->security->xss_clean($_POST[$val]) : '';
 			unset($_POST[$val]);
 		}
+
+		$this->EE->load->helper('url');
+		$data['url'] = preg_replace('/[\'"]/is', '', $data['url']);
+		$data['url'] = prep_url($data['url']);
 
 		if (is_numeric($data['bday_d']) AND is_numeric($data['bday_m']))
 		{
