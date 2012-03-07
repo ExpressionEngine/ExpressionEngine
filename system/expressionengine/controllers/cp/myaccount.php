@@ -217,7 +217,7 @@ class MyAccount extends CI_Controller {
 				}
 			}
 		}
-		
+
 		return $vars;
 	}
 
@@ -2760,6 +2760,8 @@ class MyAccount extends CI_Controller {
 
 		$class_name = ucfirst($extension).'_ext';
 		$file_name	= 'ext.'.$extension.'.php';
+
+		$member_id 	= $this->input->get_post('id');
 		
 		$this->_load_extension_paths($extension);
 		
@@ -2778,7 +2780,7 @@ class MyAccount extends CI_Controller {
 		if (method_exists($EXTENSION, $$method_choice) === TRUE)
 		{
 			// get the content back from the extension
-			$vars['content'] = $EXTENSION->$$method_choice($vars);
+			$vars['content'] = $EXTENSION->$$method_choice($vars, $member_id);
 		}
 		else
 		{
