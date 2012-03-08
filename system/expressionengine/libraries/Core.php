@@ -96,7 +96,7 @@ class EE_Core {
 		define('PATH_DICT', 	APPPATH.'config/');
 		define('AJAX_REQUEST',	$this->EE->input->is_ajax_request());
 
-		$this->native_plugins = array('magpie', 'rss_parser', 'xml_encode');
+		$this->native_plugins = array('magpie', 'xml_encode');
 		$this->native_modules = array(
 			'blacklist', 'channel', 'comment', 'commerce', 'email', 'emoticon',
 			'file', 'forum', 'ip_to_nation', 'jquery', 'mailinglist', 'member',
