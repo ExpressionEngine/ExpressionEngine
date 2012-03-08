@@ -15,7 +15,7 @@
 			<li><a href="<?=BASE.AMP.'C=myaccount'.AMP.'M=edit_preferences'.AMP.'id='.$id?>"><?=lang('edit_preferences')?></a></li>
 			<?php if ( count( $additional_nav['personal_settings'] ) ):?>
 				<?php foreach ( $additional_nav['personal_settings'] as $additional_nav_text => $additional_nav_link ):?>
-					<li><a href="<?=$additional_nav_link?>"><?=$additional_nav_text?></a></li>
+					<li><a href="<?=$additional_nav_link.AMP.'id='.$id?>"><?=$additional_nav_text?></a></li>
 				<?php endforeach;?>
 			<?php endif; ?>
 		</ul>
@@ -26,7 +26,7 @@
 			<li><a href="<?=BASE.AMP.'C=myaccount'.AMP.'M=ignore_list'.AMP.'id='.$id?>"><?=lang('ignore_list')?></a></li>
 			<?php if ( count( $additional_nav['utilities'] ) ):?>
 				<?php foreach ( $additional_nav['utilities'] as $additional_nav_text => $additional_nav_link ):?>
-					<li><a href="<?=$additional_nav_link?>"><?=$additional_nav_text?></a></li>
+					<li><a href="<?=$additional_nav_link.AMP.'id='.$id?>"><?=$additional_nav_text?></a></li>
 				<?php endforeach;?>
 			<?php endif; ?>
 		</ul>
@@ -44,7 +44,7 @@
 			<?php endforeach;?>
 			<?php if ( count( $additional_nav['private_messages'] ) ):?>
 				<?php foreach ( $additional_nav['private_messages'] as $additional_nav_text => $additional_nav_link ):?>
-					<li><a href="<?=$additional_nav_link?>"><?=$additional_nav_text?></a></li>
+					<li><a href="<?=$additional_nav_link.AMP.'id='.$id?>"><?=$additional_nav_text?></a></li>
 				<?php endforeach;?>
 			<?php endif; ?>
 		</ul>
@@ -58,7 +58,7 @@
 			<li><a href="<?=BASE.AMP.'C=myaccount'.AMP.'M=quicklinks'.AMP.'id='.$id?>"><?=lang('quicklinks_manager')?></a></li>
 			<?php if ( count( $additional_nav['customize_cp'] ) ):?>
 				<?php foreach ( $additional_nav['customize_cp'] as $additional_nav_text => $additional_nav_link ):?>
-					<li><a href="<?=$additional_nav_link?>"><?=$additional_nav_text?></a></li>
+					<li><a href="<?=$additional_nav_link.AMP.'id='.$id?>"><?=$additional_nav_text?></a></li>
 				<?php endforeach;?>
 			<?php endif; ?>
 		</ul>
@@ -70,7 +70,7 @@
 			<li><a href="<?=BASE.AMP.'C=myaccount'.AMP.'M=bookmarklet'.AMP.'id='.$id?>"><?=lang('bookmarklet')?></a></li>
 			<?php if ( count( $additional_nav['channel_preferences'] ) ):?>
 				<?php foreach ( $additional_nav['channel_preferences'] as $additional_nav_text => $additional_nav_link ):?>
-					<li><a href="<?=$additional_nav_link?>"><?=$additional_nav_text?></a></li>
+					<li><a href="<?=$additional_nav_link.AMP.'id='.$id?>"><?=$additional_nav_text?></a></li>
 				<?php endforeach;?>
 			<?php endif; ?>
 		</ul>
@@ -86,7 +86,7 @@
 			<?php if ($can_delete_members):?><li><a href="<?=BASE.AMP.'C=members'.AMP.'M=member_delete_confirm'.AMP.'mid='.$id?>"><?=lang('delete')?></a></li><?php endif?>
 			<?php if ( count( $additional_nav['administrative_options'] ) ):?>
 				<?php foreach ( $additional_nav['administrative_options'] as $additional_nav_text => $additional_nav_link ):?>
-					<li><a href="<?=$additional_nav_link?>"><?=$additional_nav_text?></a></li>
+					<li><a href="<?=$additional_nav_link.AMP.'id='.$id?>"><?=$additional_nav_text?></a></li>
 				<?php endforeach;?>
 			<?php endif; ?>
 		</ul>

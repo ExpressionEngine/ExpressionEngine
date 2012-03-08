@@ -59,7 +59,7 @@ class Rte_ext {
 	 * @param	array $vars Hash of page vars
 	 * @return	string The page contents
 	 */
-	public function myaccount_settings($vars)
+	public function myaccount_settings($vars, $member_id)
 	{
 		$this->EE->load->library('javascript');
 		$this->EE->load->model('rte_toolset_model');
@@ -68,7 +68,7 @@ class Rte_ext {
 		$prefs = $this->EE->db->select( array( 'rte_enabled','rte_toolset_id' ))
 			->get_where(
 				'members',
-				array('member_id'=>$this->EE->session->userdata('member_id'))
+				array('member_id' => $member_id)
 			)
 			->row();
 		
@@ -116,7 +116,7 @@ class Rte_ext {
 	 * @access	public
 	 * @return	void
 	 */
-	public function myaccount_settings_save()
+	public function myaccount_settings_save($vars, $member_id)
 	{
 		// set up the validation
 		$this->EE->load->library('form_validation');
@@ -141,7 +141,7 @@ class Rte_ext {
 					'rte_enabled'		=> $this->EE->input->get_post('rte_enabled'),
 					'rte_toolset_id'	=> $this->EE->input->get_post('rte_toolset_id')
 				),
-				array('member_id' => $this->EE->session->userdata('member_id'))
+				array('member_id' => $member_id)
 			);
 			
 			$this->EE->session->set_flashdata('message_success', lang('preferences_saved'));
