@@ -2361,6 +2361,7 @@ jQuery(document).ready(function(){
 	}
 
 });
+
 (function($){
 
 	if ( ! $.browser.msie )
@@ -2460,7 +2461,7 @@ jQuery(document).ready(function(){
 				
 				// Separates the pasted text into sections defined by two linebreaks
 				// for conversion to paragraphs
-				pasted_text		= $editor.text().split( /\n([ \t]*\n)+/g ),
+				pasted_text		= $editor.getPreText().split( /\n([ \t]*\n)+/g ),
 				len				= pasted_text.length,
 				p				= document.createElement('p'),
 				p_clone			= null,
@@ -2510,6 +2511,34 @@ jQuery(document).ready(function(){
 
 				$editor.trigger( 'WysiHat-editor:change' );
 			}
+			
+			// Getting text from contentEditable DIVs and retaining linebreaks
+			// can be tricky cross-browser, so we'll use this to handle them all
+			$.fn.getPreText = function()
+			{
+				var preText = $("<pre />").html(this.html());
+				
+				if ($.browser.webkit)
+				{
+					preText.find("div").replaceWith(function()
+					{
+						return "\n" + this.innerHTML;
+					});
+				}
+				else if ($.browser.msie)
+				{
+					preText.find("p").replaceWith(function()
+					{
+						return this.innerHTML + "<br>";
+					});
+				}
+				else if ($.browser.mozilla || $.browser.opera || $.browser.msie)
+				{
+					preText.find("br").replaceWith("\n");
+				}
+				
+				return preText.text();
+			};
 		}
 		else
 		{
