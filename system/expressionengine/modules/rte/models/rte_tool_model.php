@@ -108,15 +108,32 @@ class Rte_tool_model extends CI_Model {
 	}
 	
 	/**
-	 * Gets the pieces required for a tool
+	 * Gets all tools in a given toolset
 	 * 
 	 * @access	public
-	 * @param	int $tool_id The ID of the tool you want to get the details for
-	 * @return	array A hash of tool details indexed to globals, libraries, styles, and definition
+	 * @param	int		The ID of the toolset
+	 * @return	array 	An array of tools, each indexed to globals, libraries, styles, and definition
 	 */
-	public function get_tool( $tool_id = FALSE )
+	public function get_tools($toolset_id = FALSE)
 	{
-		# build the tool array
+		// Get the tool ids used by this toolset
+		$query = $this->db->where('rte_toolset_id', $toolset_id)
+			->get('rte_toolsets');
+
+		$tool_ids = $query->num_rows() ? explode('|', $query->row('rte_tools')) : FALSE;
+
+		if ( ! $tool_ids)
+		{
+			return FALSE;
+		}
+
+		// Grab each tool's info
+		$query = $this->db->where_in('rte_tool_id', $tool_ids)
+			->where('enabled', 'y')
+			->get('rte_tools');
+
+
+		// build the tool definition
 		$tool = array(
 			'info'			=> array(),
 			'globals'		=> array(),
@@ -125,57 +142,56 @@ class Rte_tool_model extends CI_Model {
 			'definition'	=> ''
 		);
 		
-		# get the tool
-		$results = $this->db->get_where(
-			'rte_tools',
-			array(
-				'rte_tool_id'	=> $tool_id,
-				'enabled'		=> 'y'
-			),
-			1
-		);
-		if ($results->num_rows() > 0)
+		$tools = array();
+
+		foreach ($query->result() as $row)
 		{
-			$the_tool	= $results->row();
-			$tool_name	= strtolower(str_replace(' ', '_', $the_tool->name));
+			$tool_name	= strtolower(str_replace(' ', '_', $row->name));
 			$tool_class	= ucfirst($tool_name).'_rte';
 			
-			# find the RTE tool file
+			// find the tool file
 			foreach (array(PATH_RTE, PATH_THIRD) as $tmp_path)
 			{
 				$file = $tmp_path.$tool_name.'/rte.'.$tool_name.'.php';
-				if (file_exists($file))
+
+				if ( ! file_exists($file))
 				{
-					# load it in, instantiate the tool & add the definition
-					include_once($file);
-					$TOOL = new $tool_class();
-					
-					# loop through the pieces and pull them from the object
-					foreach ($tool as $component => $default)
+					continue;
+				}
+				
+				// load it in, instantiate the tool & add the definition
+				include_once($file);
+				$TOOL = new $tool_class();
+				
+				// loop through the pieces and pull them from the object
+				foreach ($tool as $component => $default)
+				{
+					# make sure the method exists
+					if (method_exists($tool_class, $component))
 					{
-						# make sure the method exists
-						if (method_exists($tool_class, $component))
+						$temp = $TOOL->$component();
+
+						// make sure the values are of the same type
+						if (gettype($default) === gettype($temp))
 						{
-							$temp = $TOOL->$component();
-							# make sure the values are of the same type
-							if (gettype($default) === gettype($temp))
-							{
-								$tool[$component] = $temp;
-							}
-						}
-						elseif (property_exists($tool_class, $component))
-						{
-							$tool[$component] = $TOOL->$component;
+							$tool[$component] = $temp;
 						}
 					}
-					break;
+					elseif (property_exists($tool_class, $component))
+					{
+						$tool[$component] = $TOOL->$component;
+					}
 				}
+
+				break;
 			}
+
+			$tools[] = $tool;
 		}
 
-		# return the tool
-		return $tool;
+		return $tools;
 	}
+
 
 	/**
 	 * Save a tool

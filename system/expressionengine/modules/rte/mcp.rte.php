@@ -154,7 +154,7 @@ class Rte_mcp {
 	 * @param	int $toolset_id The Toolset ID to be edited (optional)
 	 * @return	string The page
 	 */
-	public function edit_toolset( $toolset_id = FALSE )
+	public function edit_toolset($toolset_id = FALSE)
 	{
 		$this->_permissions_check();
 		$this->EE->load->library(array('table','javascript'));
@@ -167,6 +167,7 @@ class Rte_mcp {
 		$failure	= FALSE;
 		$is_private	= FALSE;
 		$toolset	= FALSE;
+
 		if (is_numeric($toolset_id))
 		{
 			// make sure it exists
@@ -193,8 +194,7 @@ class Rte_mcp {
 		else
 		{
 			$is_new		= TRUE;
-			$is_private = $this->EE->input->get_post('private');
-			$is_private	= ($is_private == 'true');
+			$is_private = ($this->EE->input->get_post('private') == 'true');
 		}
 		
 		// JS stuff
@@ -204,12 +204,19 @@ class Rte_mcp {
 		));
 		
 		// get the tools lists (can only include active tools)
+		$unused_tools 		= $toolset_tools = array();
 		$available_tools	= $this->EE->rte_tool_model->get_available(TRUE);
-		$toolset_tool_ids	= $this->EE->rte_toolset_model->get_tools($toolset_id);
-		$unused_tools = $toolset_tools = array();
+		$toolset_tool_ids	= array();
+
+		if ( ! $is_new && $toolset = $this->EE->rte_toolset_model->get($toolset_id))
+		{
+			$toolset_tool_ids = $toolset->rte_tools;
+		}
+
 		foreach ($available_tools as $tool_id => $tool_name)
 		{
 			$tool_index = array_search($tool_id, $toolset_tool_ids);
+
 			if ($tool_index !== FALSE)
 			{
 				$toolset_tools[$tool_index] = $tool_id;
@@ -219,6 +226,7 @@ class Rte_mcp {
 				$unused_tools[] = $tool_id;
 			}
 		}
+
 		// ensure the proper order
 		ksort( $toolset_tools, SORT_NUMERIC );
 		sort( $unused_tools );
@@ -521,73 +529,75 @@ class Rte_mcp {
 
 		// determine the toolset
 		$this->EE->load->model(array('rte_toolset_model','rte_tool_model'));
+
 		if ( ! $toolset_id)
 		{
 			$toolset_id = $this->EE->rte_toolset_model->get_member_toolset();
 		}
-		$tools = $this->EE->rte_toolset_model->get_tools($toolset_id);
+
+		$tools = $this->EE->rte_tool_model->get_tools($toolset_id);
 
 		// make sure we should load the JS
-		if ($toolset_id &&
-		    $this->EE->config->item('rte_enabled') == 'y')
+		if ( ! $tools OR $this->EE->config->item('rte_enabled') != 'y')
 		{
-			// setup the framework
-			ob_start(); ?>
-
-			$(".rte").each(function(){
-				var
-				$field	= $(this),
-				$parent	= $field.parent(),
-
-				// set up the editor
-				$editor	= WysiHat.Editor.attach($field),
-
-				// establish the toolbar
-				toolbar	= new WysiHat.Toolbar();
-
-				toolbar.initialize($editor);
-
-<?php		$js = ob_get_contents();
-			ob_end_clean(); 
-
-			// load the tools
-			foreach ($tools as $tool_id)
-			{
-				$tool = $this->EE->rte_tool_model->get_tool($tool_id);
-				
-				// load the globals
-				if (count($tool['globals']))
-				{
-					$this->EE->javascript->set_global( $tool['globals'] );
-				}
-				
-				// load any libraries we need
-				if (count($tool['libraries']))
-				{
-					$this->EE->cp->add_js_script( $tool['libraries'] );
-				}
-				
-				// add any styles we need
-				if ( ! empty( $tool['styles']))
-				{
-					$this->EE->cp->add_to_head( '<style>' . $tool['styles'] . '</style>' );
-				}
-				
-				// load in the definition
-				if ( ! empty( $tool['definition']))
-				{
-					$js .= $tool['definition'];
-				}
-			}
-
-			$js .= '
-
-				});
-				';
+			return;
 		}
+		
+		// setup the framework
+		ob_start(); ?>
+
+		$(".rte").each(function(){
+			var
+			$field	= $(this),
+			$parent	= $field.parent(),
+
+			// set up the editor
+			$editor	= WysiHat.Editor.attach($field),
+
+			// establish the toolbar
+			toolbar	= new WysiHat.Toolbar();
+
+			toolbar.initialize($editor);
+
+<?php	$js = ob_get_contents();
+		ob_end_clean(); 
+
+		// load the tools
+		foreach ($tools as $tool)
+		{
+			// load the globals
+			if (count($tool['globals']))
+			{
+				$this->EE->javascript->set_global( $tool['globals'] );
+			}
+			
+			// load any libraries we need
+			if (count($tool['libraries']))
+			{
+				$this->EE->cp->add_js_script( $tool['libraries'] );
+			}
+			
+			// add any styles we need
+			if ( ! empty( $tool['styles']))
+			{
+				$this->EE->cp->add_to_head( '<style>' . $tool['styles'] . '</style>' );
+			}
+			
+			// load in the definition
+			if ( ! empty( $tool['definition']))
+			{
+				$js .= $tool['definition'];
+			}
+		}
+
+		$js .= '
+
+			});
+			';
 		
 		// return vs. print… is there a better CI way to do this?
 		$print = $this->EE->input->get_post('print');
+
 		if ($print == 'yes')
 		{
 			header('Content-type: text/javascript; charset=utf-8');
