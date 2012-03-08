@@ -27,29 +27,19 @@ class Rte_tool_model extends CI_Model {
 	private $tools;
 	
 	/**
-	 * Constructor
-	 * 
-	 * @access	public
-	 */
-	public function __construct()
-	{
-		$this->_load_tools_into_db();
-	}
-	
-	/**
 	 * Gets all RTE tools
 	 * 
 	 * @access	public
 	 * @param	bool $list Whether or not you want it to be a ID => name list
 	 * @return	array The tools
 	 */
-	public function get_all( $list = FALSE )
+	public function get_all($list = FALSE)
 	{
-		# get the tools from the DB
-		$results = $this->db
-						->get('rte_tools')
-						->result_array();
-		# decide what to return
+		// get the tools from the DB
+		$results = $this->db->get('rte_tools')
+			->result_array();
+
+		// decide what to return
 		return $list ? $this->_make_list($results) : $results;
 	}
 	
@@ -60,13 +50,12 @@ class Rte_tool_model extends CI_Model {
 	 * @param	bool $list Whether or not you want it to be a ID => name list
 	 * @return	array The tools
 	 */
-	public function get_available( $list = FALSE )
+	public function get_available($list = FALSE)
 	{
-		# get the tools from the DB
-		$results = $this->db
-						->get_where( 'rte_tools', array('enabled' => 'y') )
-						->result_array();
-		# decide what to return
+		// get the tools from the DB
+		$results = $this->db->get_where('rte_tools', array('enabled' => 'y'))
+			->result_array();
+		// decide what to return
 		return $list ? $this->_make_list($results) : $results;
 	}
 	
@@ -77,33 +66,35 @@ class Rte_tool_model extends CI_Model {
 	 * @param	array $tools An array of string tool names in the specific order you want them
 	 * @return	array The tool IDs
 	 */
-	public function get_tool_ids( $tools = array() )
+	public function get_tool_ids($tools = array())
 	{
 		$tool_ids = array();
-		# make sure we have tools
+		// make sure we have tools
 		if (count($tools))
 		{
-			# make sure the class name is correct
+			// make sure the class name is correct
 			foreach ($tools as &$tool)
 			{
 				$tool = ucfirst(strtolower($tool)).'_rte';
 			}
-			# get the tools
-			$results = $this->db
-							->select(array('rte_tool_id','class'))
-							->where_in('class', $tools)
-							->get('rte_tools')
-							->result_array();
-			# extract the ids
+
+			// get the tools
+			$results = $this->db->select(array('rte_tool_id','class'))
+				->where_in('class', $tools)
+				->get('rte_tools')
+				->result_array();
+
+			// extract the ids
 			foreach ($results as $row)
 			{
-				# set the indexes according to the original array
+				// set the indexes according to the original array
 				$tool_ids[array_search($row['class'],$tools)] = $row['rte_tool_id'];
 			}
-			# sort them appropriately
+
+			// sort them appropriately
 			ksort($tool_ids, SORT_NUMERIC);
 		}
-		# return the IDs
+		// return the IDs
 		return $tool_ids;
 	}
 	
@@ -166,7 +157,7 @@ class Rte_tool_model extends CI_Model {
 				// loop through the pieces and pull them from the object
 				foreach ($tool as $component => $default)
 				{
-					# make sure the method exists
+					// make sure the method exists
 					if (method_exists($tool_class, $component))
 					{
 						$temp = $TOOL->$component();
@@ -201,14 +192,16 @@ class Rte_tool_model extends CI_Model {
 	 * @param	int $tool_id The ID of the tool to update
 	 * @return	number
 	 */
-	public function save( $tool = array(), $tool_id = FALSE )
+	public function save($tool = array(), $tool_id = FALSE)
 	{
-		# update or insert?
-		$sql = $tool_id	? $this->db->update_string( 'rte_tools', $tool, array( 'rte_tool_id' => $tool_id ) )
-						: $this->db->insert_string( 'rte_tools', $tool );
-		# run it
+		// update or insert?
+		$sql = $tool_id	? 
+			$this->db->update_string('rte_tools', $tool, array( 'rte_tool_id' => $tool_id)) : 
+			$this->db->insert_string('rte_tools', $tool);
+
 		$this->db->query($sql);
-		# return the affected rows
+
+		// return the affected rows
 		return $this->db->affected_rows();
 	}
 	
@@ -219,7 +212,7 @@ class Rte_tool_model extends CI_Model {
 	 * @param	array $result The result array to convert
 	 * @return	array An ID => name array
 	 */
-	private function _make_list( $result )
+	private function _make_list($result)
 	{
 		$return = array();
 		
@@ -233,25 +226,23 @@ class Rte_tool_model extends CI_Model {
 	
 	/**
 	 * Load tools into the DB
-	 * 
-	 * @access	private
 	 */
-	private function _load_tools_into_db()
+	public function load_tools_into_db()
 	{
 		$this->load->library('addons');
 		
-		# get the file list and the installed tools list
+		// get the file list and the installed tools list
 		$files		= $this->addons->get_files('rte_tools');
 		$installed	= $this->addons->get_installed('rte_tools');
 		$classes	= array();
 		
-		# add new tools
+		// add new tools
 		foreach ($files as $package => $details)
 		{
 			$classes[] = $details['class'];
 			if ( ! isset($installed[$package]))
 			{
-				# make a record of the add-on in the DB
+				// make a record of the add-on in the DB
 				$this->db->insert(
 					'rte_tools',
 					array(
@@ -263,9 +254,8 @@ class Rte_tool_model extends CI_Model {
 			}
 		}
 		
-		# cleanup removed tools
-		$this->db
-			->where_not_in('class', $classes)
+		// cleanup removed tools
+		$this->db->where_not_in('class', $classes)
 			->delete('rte_tools');
 	}
 	

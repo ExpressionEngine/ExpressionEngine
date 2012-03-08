@@ -43,6 +43,9 @@ class Rte_mcp {
 		$this->_base_url		= BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=rte';
 		$this->_form_base		= 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=rte';
 		$this->_myaccount_url	= BASE.AMP.'C=myaccount'.AMP.'M=custom_screen'.AMP.'module=rte'.AMP.'method=myaccount_settings';
+
+		$this->EE->load->model('rte_tool_model');
+		$this->EE->rte_tool_model->load_tools_into_db();
 	}
 
 	// --------------------------------------------------------------------
@@ -59,7 +62,7 @@ class Rte_mcp {
 		
 		// dependencies
 		$this->EE->load->library(array('table','javascript'));
-		$this->EE->load->model(array('rte_toolset_model','rte_tool_model'));
+		$this->EE->load->model('rte_toolset_model');
 
 		// set upt the page
 		$this->EE->cp->set_right_nav(array(
