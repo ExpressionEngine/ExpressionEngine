@@ -2747,6 +2747,7 @@ class MyAccount extends CI_Controller {
 	private function _custom_screen_load($method_choice = 'method')
 	{
 		$vars = $this->_account_menu_setup();
+		$vars['form_hidden']['id'] = $this->id;
 
 		// get the module & method
 		$extension 	= strtolower($this->input->get_post('extension'));
@@ -2761,10 +2762,8 @@ class MyAccount extends CI_Controller {
 		$class_name = ucfirst($extension).'_ext';
 		$file_name	= 'ext.'.$extension.'.php';
 
-		$member_id 	= $this->input->get_post('id');
-		
 		$this->_load_extension_paths($extension);
-		
+	
 		// Include the Extension
 		include_once($this->extension_paths[$extension].$file_name);
 		
@@ -2780,7 +2779,7 @@ class MyAccount extends CI_Controller {
 		if (method_exists($EXTENSION, $$method_choice) === TRUE)
 		{
 			// get the content back from the extension
-			$vars['content'] = $EXTENSION->$$method_choice($vars, $member_id);
+			$vars['content'] = $EXTENSION->$$method_choice($vars, $this->id);
 		}
 		else
 		{
