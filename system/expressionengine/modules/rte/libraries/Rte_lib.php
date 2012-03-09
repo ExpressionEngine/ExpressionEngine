@@ -54,7 +54,6 @@ class Rte_lib
 	 */
 	public function edit_toolset($toolset_id = FALSE)
 	{
-		$this->permissions_check();
 		$this->EE->load->library(array('table','javascript'));
 		$this->EE->load->model(array('rte_toolset_model','rte_tool_model'));
 		
@@ -175,7 +174,6 @@ class Rte_lib
 	 */
 	public function save_toolset()
 	{
-		$this->permissions_check();
 		$this->EE->load->model('rte_toolset_model');
 		
 		// get the toolset
@@ -269,47 +267,6 @@ class Rte_lib
 		{
 			return $valid;
 		}
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Makes sure users can access a given method
-	 * 
-	 * @access	private
-	 * @return	void
-	 */
-	public function permissions_check()
-	{
-		// super admins always can
-		$can_access = ($this->EE->session->userdata('group_id') == '1');
-		
-		if ( ! $can_access)
-		{
-			// get the group_ids with access
-			$result = $this->EE->db->select('module_member_groups.group_id')
-				->from('module_member_groups')
-				->join('modules', 'modules.module_id = module_member_groups.module_id')
-				->where('modules.module_name',$this->name)
-				->get();
-
-			if ($result->num_rows())
-			{
-				foreach ($result->result_array() as $r)
-				{
-					if ($this->EE->session->userdata('group_id') == $r['group_id'])
-					{
-						$can_access = TRUE;
-						break;
-					}
-				}
-			}
-		}
-		
-		if ( ! $can_access)
-		{
-			show_error(lang('unauthorized_access'));
-		}		
 	}
 }
 

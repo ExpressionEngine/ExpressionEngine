@@ -36,6 +36,9 @@ class Rte_mcp {
 		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();
 
+		// Let's make sure they're allowed...
+		$this->_permissions_check();
+
 		// Load it all
 		$this->EE->load->helper('form');
 		$this->EE->load->library('rte_lib');
@@ -61,8 +64,6 @@ class Rte_mcp {
 	 */
 	public function index()
 	{
-		$this->EE->rte_lib->permissions_check();
-		
 		// dependencies
 		$this->EE->load->library(array('table','javascript'));
 		$this->EE->load->model('rte_toolset_model');
@@ -114,8 +115,6 @@ class Rte_mcp {
 	 */
 	public function prefs_update()
 	{
-		$this->EE->rte_lib->permissions_check();
-		
 		// set up the validation
 		$this->EE->load->library('form_validation');
 		$this->EE->form_validation->set_rules(
@@ -188,8 +187,6 @@ class Rte_mcp {
 	 */
 	public function enable_toolset()
 	{
-		$this->EE->rte_lib->permissions_check();
-		
 		$this->_update_toolset(
 			$this->EE->input->get_post('rte_toolset_id'),
 			array( 'enabled' => 'y' ),
@@ -207,9 +204,7 @@ class Rte_mcp {
 	 * @return	void
 	 */
 	public function disable_toolset()
-	{
-		$this->EE->rte_lib->permissions_check();
-		
+	{		
 		$this->_update_toolset(
 			$this->EE->input->get_post('rte_toolset_id'),
 			array( 'enabled' => 'n' ),
@@ -228,9 +223,6 @@ class Rte_mcp {
 	 */
 	public function delete_toolset()
 	{
-		// make sure the user has permissions
-		$this->EE->rte_lib->permissions_check();
-		
 		$this->EE->load->model('rte_toolset_model');
 		
 		// delete
@@ -269,8 +261,6 @@ class Rte_mcp {
 	 */
 	public function enable_tool()
 	{
-		$this->EE->rte_lib->permissions_check();
-		
 		$this->_update_tool(
 			$this->EE->input->get_post('rte_tool_id'),
 			array( 'enabled' => 'y' ),
@@ -289,8 +279,6 @@ class Rte_mcp {
 	 */
 	public function disable_tool()
 	{
-		$this->EE->rte_lib->permissions_check();
-		
 		$this->_update_tool(
 			$this->EE->input->get_post('rte_tool_id'),
 			array( 'enabled' => 'n' ),
