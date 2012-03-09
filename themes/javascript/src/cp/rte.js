@@ -18,17 +18,29 @@
 	});
 	
 	// Load the RTE Builder
-	function load_rte_builder( url )
+	function load_rte_builder(url)
 	{
-		$.get( url, function(data){
+		$.get(url, function(data){
+
+			// Check to see what we're dealing with. The module returns the full
+			// view, whereas the extension returns the innards.
+			$contents = $('#mainContent .contents', data);
+			if ($contents.size()) {
+				modal_contents = $contents.html();
+				modal_title = $('#mainContent .edit', data).text();
+			} else {
+				modal_contents = data;
+				modal_title = EE.rte.toolset_modal.title;
+			}
+
 			$modal
 				.find('.contents')
-					.html( $( '#mainContent .contents', data ).html() )
+					.html(modal_contents)
 					.find('div.heading')
 						.remove()
 						.end()
 					.end()
-				.dialog( 'option', 'title', $( '#mainContent .edit', data ).text() )
+				.dialog('option', 'title', modal_title)
 				.dialog('open');
 		});
 	}
@@ -107,7 +119,7 @@
 			$modal.dialog('close');
 		});
 
-	    $("#rte-tools-selected, #rte-tools-unused").sortable({
+		$("#rte-tools-selected, #rte-tools-unused").sortable({
 			connectWith: '.rte-tools-connected',
 			containment: '.rte-toolset-builder',
 			placeholder: 'rte-tool-placeholder',
@@ -131,15 +143,15 @@
 	
 				if ( ! $selected.length) {
 					// Shouldn't this use ui.item? May be a bug.
-					$selected = ui.addClass('rte-tool-active'); 
+					$selected = ui.addClass('rte-tool-active');
 				}
 	
 				return $('<div/>')
 					.attr('id', 'rte-drag-helper')
-					.css('opacity', .7)
+					.css('opacity', 0.7)
 					.width($(ui).outerWidth())  // match our li widths (including padding)
 					.append($selected.clone());
-		    },
+			},
 			start: function(e, ui) {
 				// We use the helper during the drag operation, so hide the original
 				// highlighted elements and 'mark' them for removal

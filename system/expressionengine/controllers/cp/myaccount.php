@@ -2704,9 +2704,9 @@ class MyAccount extends CI_Controller {
 	/**
 	 * Custom My Account Screens
 	 */
-	function custom_screen()
+	public function custom_screen()
 	{
-		list($vars, $extension, $method, $method_save) = $this->_custom_screen_load();
+		list($vars, $extension, $method, $method_save) = $this->_custom_action();
 
 		// Automatically push to the $method+'_save' method
 		$vars['action'] = 'C=myaccount'.AMP.'M=custom_screen_save'.AMP.'extension='.$extension.AMP.'method='.$method.AMP.'method_save='.$method_save;
@@ -2723,10 +2723,27 @@ class MyAccount extends CI_Controller {
 	 */
 	public function custom_screen_save()
 	{
-		list($vars, $extension, $method, $method_save) = $this->_custom_screen_load('method_save');
+		list($vars, $extension, $method, $method_save) = $this->_custom_action('method_save');
 
 		// Redirect back
 		$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=custom_screen'.AMP.'extension='.$extension.AMP.'method='.$method.AMP.'method_save='.$method_save);
+	}
+
+	// -------------------------------------------------------------------------
+
+	public function custom_action()
+	{
+		list($vars, $extension, $method, $method_save) = $this->_custom_action();
+
+		if (AJAX_REQUEST)
+		{
+			// $this->output->send_ajax_response($vars['content']);
+			echo $vars['content'];
+		}
+		else
+		{
+			return $vars['content'];
+		}
 	}
 
 	// -------------------------------------------------------------------------
@@ -2744,7 +2761,7 @@ class MyAccount extends CI_Controller {
 	 *		$method: Extension's method called to display settings
 	 *		$method_save: Extension's method called when the form is submit
 	 */
-	private function _custom_screen_load($method_choice = 'method')
+	private function _custom_action($method_choice = 'method')
 	{
 		$vars = $this->_account_menu_setup();
 		$vars['form_hidden']['id'] = $this->id;
