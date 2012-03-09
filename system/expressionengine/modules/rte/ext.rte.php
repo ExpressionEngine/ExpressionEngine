@@ -18,8 +18,7 @@ class Rte_ext {
 	{
 		$this->EE =& get_instance();
 
-		$this->_base_url		= BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=rte';
-		$this->_myaccount_url	= BASE.AMP.'C=myaccount'.AMP.'M=custom_screen'.AMP.'extension=rte'.AMP.'method=myaccount_settings'.AMP.'method_save=myaccount_settings_save';
+		$this->EE->load->library('rte_lib');
 	}
 
 	// --------------------------------------------------------------------
@@ -90,7 +89,10 @@ class Rte_ext {
 		// JS stuff
 		$this->EE->javascript->set_global(array(
 			'rte'	=> array(
-				'toolset_builder_url'	=> $this->_base_url.AMP.'method=edit_toolset'.AMP.'private=true',
+				'toolset_modal' => array(
+					'title'	=> lang('define_my_toolset')
+				),
+				'toolset_builder_url'	=> BASE.AMP.'C=myaccount'.AMP.'M=custom_action'.AMP.'extension=rte'.AMP.'method=edit_toolset'.AMP.'private=true',
 				'custom_toolset_text'	=> lang('my_custom_toolset'),
 				'edit_text'				=> lang('edit')
 			)
@@ -109,7 +111,40 @@ class Rte_ext {
 	}
 
 	// --------------------------------------------------------------------
+
+	/**
+	 * Passthrough to the library's edit_toolset() method
+	 * @param	int $toolset_id The Toolset ID to be edited (optional)
+	 * @return	string The page
+	 */
+	public function edit_toolset($toolset_id = FALSE)
+	{
+		$this->EE->rte_lib->form_url = 'C=myaccount'.AMP.'M=custom_action'.AMP.'extension=rte'.AMP.'method=save_toolset';
+		return $this->EE->rte_lib->edit_toolset($toolset_id);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Passthrough to the library's save_toolset method
+	 */
+	public function save_toolset()
+	{
+		$this->EE->rte_lib->save_toolset();
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Passthrough to the library's validate_toolset_name() method
+	 */
+	public function validate_toolset_name()
+	{
+		return $this->EE->rte_lib->validate_toolset_name();
+	}
 	
+	// -------------------------------------------------------------------------
+
 	/**
 	 * MyAccount RTE settings form action
 	 *
@@ -120,6 +155,7 @@ class Rte_ext {
 	{
 		// set up the validation
 		$this->EE->load->library('form_validation');
+		$this->EE->lang->loadfile('rte');
 		$this->EE->form_validation->set_rules(
 			'rte_enabled',
 			lang('enabled_question'),
@@ -144,11 +180,11 @@ class Rte_ext {
 				array('member_id' => $member_id)
 			);
 			
-			$this->EE->session->set_flashdata('message_success', lang('preferences_saved'));
+			$this->EE->session->set_flashdata('message_success', lang('settings_saved'));
 		}
 		else
 		{
-			$this->EE->session->set_flashdata('message_failure', lang('preferences_not_saved'));
+			$this->EE->session->set_flashdata('message_failure', lang('settings_not_saved'));
 		}
 
 		return TRUE;
