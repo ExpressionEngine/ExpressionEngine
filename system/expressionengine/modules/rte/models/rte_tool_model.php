@@ -118,13 +118,22 @@ class Rte_tool_model extends CI_Model {
 			return FALSE;
 		}
 
-		// Grab each tool's info
+		// Grab each tool's row
 		$query = $this->db->where_in('rte_tool_id', $tool_ids)
 			->where('enabled', 'y')
 			->get('rte_tools');
 
-
-		// build the tool definition
+		// Index them by their position in $tool_ids
+		foreach ($query->result() as $row)
+		{
+			$i = array_search($row->rte_tool_id, $tool_ids);
+			$tools_sorted[$i] = $row;
+		}
+		
+		// Sort by index
+		ksort($tools_sorted);
+		
+		// Define the components of each tool
 		$tool = array(
 			'info'			=> array(),
 			'globals'		=> array(),
@@ -132,12 +141,10 @@ class Rte_tool_model extends CI_Model {
 			'styles'		=> '',
 			'definition'	=> ''
 		);
-		
-		$tools = array();
 
-		foreach ($query->result() as $row)
+		foreach ($tools_sorted as $t)
 		{
-			$tool_name	= strtolower(str_replace(' ', '_', $row->name));
+			$tool_name	= strtolower(str_replace(' ', '_', $t->name));
 			$tool_class	= ucfirst($tool_name).'_rte';
 			
 			// find the tool file
