@@ -2468,47 +2468,60 @@ jQuery(document).ready(function(){
 				empty			= /[\s\r\n]/g,
 				first			= true;
 				comments		= /<!--[^>]*-->/g;
-
-				while ( len-- )
-				{
+				
+				// Loop through paragraphs as defined by our above regex
+				$.each(pasted_text, function(index, paragraph)
+				{ 
 					// Remove HTML comments, Word may insert these
-					pasted_text[len] = pasted_text[len].replace(comments, '');
+					paragraph = paragraph.replace(comments, '');
 					
-					if ( pasted_text[len].replace( empty,'') == '' )
+					if ( paragraph.replace( empty,'') == '' )
 					{
-						continue;
+						return true;
 					}
-
-					p_clone = p.cloneNode(false);
-					p_clone.appendChild( document.createTextNode( pasted_text[len] ) );
-
-					if ( first )
+					
+					// If we are starting the paste outside an existing block element,
+					// OR have moved on to other paragraphs in the array, wrap pasted
+					// text in paragraph tags
+					if (saved_range.startContainer == 'p' || index != 0)
 					{
-						pasted_content.appendChild( p_clone );
-						first = false;
+						p_clone = p.cloneNode(false);
+						p_clone.appendChild( document.createTextNode(paragraph));
+						
+						if ( first )
+						{
+							pasted_content.appendChild(p_clone);
+							first = false;
+						}
+						else
+						{
+							pasted_content.insertBefore(p_clone, pasted_content.firstChild);
+						}
 					}
+					// Otherwise, we are probably pasting text in the middle
+					// of an existing block element, just pass the text along
 					else
 					{
-						pasted_content.insertBefore( p_clone, pasted_content.firstChild );
+						pasted_content.appendChild(document.createTextNode(paragraph));
 					}
-				}
-
+				});
+				
 				$editor
 					.empty()
 					.append( $original_html );
-
+					
 				range.setStart( saved_range.startContainer, saved_range.startOffset );
 				range.setEnd( saved_range.endContainer, saved_range.endOffset );
-
+				
 				if ( ! range.collapsed )
 				{
 					range.deleteContents();
 				}
-
+				
 				range.insertNode( pasted_content );
-
+				
 				WysiHat.Formatting.cleanup( $editor );
-
+				
 				$editor.trigger( 'WysiHat-editor:change' );
 			}
 			
