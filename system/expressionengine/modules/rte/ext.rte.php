@@ -55,10 +55,9 @@ class Rte_ext {
 	 * MyAccount Rich Text Editor Preferences Page
 	 *
 	 * @access	public
-	 * @param	array $vars Hash of page vars
 	 * @return	string The page contents
 	 */
-	public function myaccount_settings($vars, $member_id)
+	public function myaccount_settings($member_id)
 	{
 		$this->EE->load->library('javascript');
 		$this->EE->load->model('rte_toolset_model');
@@ -109,39 +108,6 @@ class Rte_ext {
 		// return the page
 		return $this->EE->load->view('myaccount_settings', $vars, TRUE);
 	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Passthrough to the library's edit_toolset() method
-	 * @param	int $toolset_id The Toolset ID to be edited (optional)
-	 * @return	string The page
-	 */
-	public function edit_toolset($toolset_id = FALSE)
-	{
-		$this->EE->rte_lib->form_url = 'C=myaccount'.AMP.'M=custom_action'.AMP.'extension=rte'.AMP.'method=save_toolset';
-		return $this->EE->rte_lib->edit_toolset($toolset_id);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Passthrough to the library's save_toolset method
-	 */
-	public function save_toolset()
-	{
-		$this->EE->rte_lib->save_toolset();
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Passthrough to the library's validate_toolset_name() method
-	 */
-	public function validate_toolset_name()
-	{
-		return $this->EE->rte_lib->validate_toolset_name();
-	}
 	
 	// -------------------------------------------------------------------------
 
@@ -151,7 +117,7 @@ class Rte_ext {
 	 * @access	public
 	 * @return	void
 	 */
-	public function myaccount_settings_save($vars, $member_id)
+	public function myaccount_settings_save($member_id)
 	{
 		// set up the validation
 		$this->EE->load->library('form_validation');
@@ -188,6 +154,39 @@ class Rte_ext {
 		}
 
 		return TRUE;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Passthrough to the library's edit_toolset() method
+	 * @param	int $toolset_id The Toolset ID to be edited (optional)
+	 * @return	string The page
+	 */
+	public function edit_toolset($toolset_id = FALSE)
+	{
+		$this->EE->rte_lib->form_url = 'C=myaccount'.AMP.'M=custom_action'.AMP.'extension=rte'.AMP.'method=save_toolset';
+		return $this->EE->rte_lib->edit_toolset($toolset_id);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Passthrough to the library's save_toolset method
+	 */
+	public function save_toolset()
+	{
+		$this->EE->rte_lib->save_toolset();
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Passthrough to the library's validate_toolset_name() method
+	 */
+	public function validate_toolset_name()
+	{
+		return $this->EE->rte_lib->validate_toolset_name();
 	}
 
 	// --------------------------------------------------------------------

@@ -2737,7 +2737,6 @@ class MyAccount extends CI_Controller {
 
 		if (AJAX_REQUEST)
 		{
-			// $this->output->send_ajax_response($vars['content']);
 			echo $vars['content'];
 		}
 		else
@@ -2770,8 +2769,8 @@ class MyAccount extends CI_Controller {
 		$extension 	= strtolower($this->input->get_post('extension'));
 		$method 	= strtolower($this->input->get_post('method'));
 
-		// Check for a method_save get variable, if it doesn't exist, send it
-		// back to the original method
+		// Check for a method_save get variable, if it doesn't exist, assume 
+		// it's the method name with _save at the end (e.g. method_save)
 		$method_save	= ($this->input->get_post('method_save')) ? 
 			strtolower($this->input->get_post('method_save')) :
 			$method.'_save';
@@ -2796,7 +2795,7 @@ class MyAccount extends CI_Controller {
 		if (method_exists($EXTENSION, $$method_choice) === TRUE)
 		{
 			// get the content back from the extension
-			$vars['content'] = $EXTENSION->$$method_choice($vars, $this->id);
+			$vars['content'] = $EXTENSION->$$method_choice($this->id);
 		}
 		else
 		{
