@@ -108,7 +108,23 @@ class Addons extends CI_Controller {
 					
 					if (method_exists($this->addons_model, $installed_f))
 					{
-						$is_installed = $this->addons_model->$installed_f($package);
+						if ($type === 'fieldtype')
+						{
+							//if even one fieldtype is not installed, we'll consider this not installed
+							$is_installed = FALSE;
+							
+							foreach ($info as $fieldtype_name => $fieldtype_info)
+							{
+								if ( ! $is_installed = $this->addons_model->$installed_f($package))
+								{
+									break;
+								}
+							}
+						}
+						else
+						{
+							$is_installed = $this->addons_model->$installed_f($package);
+						}
 						
 						if ($is_installed && ($new_state == 'uninstall'))
 						{
@@ -135,7 +151,24 @@ class Addons extends CI_Controller {
 		foreach($components as $type => $info)
 		{
 			$inst_func = $type.'_installed';
-			$components[$type]['installed'] = $this->addons_model->$inst_func($package);
+			
+			if ($type === 'fieldtype')
+			{
+				//if even one fieldtype is not installed, we'll consider this not installed
+				$components[$type]['installed'] = FALSE;
+
+				foreach ($info as $fieldtype_name => $fieldtype_info)
+				{
+					if ( ! $components[$type]['installed'] = $this->addons_model->$inst_func($package))
+					{
+						break;
+					}
+				}
+			}
+			else
+			{
+				$components[$type]['installed'] = $this->addons_model->$inst_func($package);
+			}
 
 			if ($type == 'extension')
 			{

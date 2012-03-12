@@ -204,6 +204,10 @@ class Api_channel_fields extends Api {
 			require_once APPPATH.'fieldtypes/EE_Fieldtype.php';
 			$this->ee_base_ft = TRUE;
 		}
+		
+		$this->EE->load->library('addons');
+		
+		$fts = $this->EE->addons->get_files('fieldtypes');
 
 		if ( ! isset($this->field_types[$field_type]))
 		{
@@ -212,9 +216,9 @@ class Api_channel_fields extends Api {
 			
 
 			
-			if ( ! file_exists($path.$file))
+			if ( ! file_exists($path.$file) && isset($fts[$field_type]))
 			{
-				$path = PATH_THIRD.$field_type.'/';
+				$path = PATH_THIRD.$fts[$field_type]['package'].'/';
 				
 				if ( ! file_exists($path.$file))
 				{
