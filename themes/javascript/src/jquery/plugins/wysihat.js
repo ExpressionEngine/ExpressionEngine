@@ -2466,7 +2466,6 @@ jQuery(document).ready(function(){
 				p				= document.createElement('p'),
 				p_clone			= null,
 				empty			= /[\s\r\n]/g,
-				first			= true;
 				comments		= /<!--[^>]*-->/g;
 				
 				// Loop through paragraphs as defined by our above regex
@@ -2486,17 +2485,9 @@ jQuery(document).ready(function(){
 					if (saved_range.startContainer == 'p' || index != 0)
 					{
 						p_clone = p.cloneNode(false);
-						p_clone.appendChild( document.createTextNode(paragraph));
+						p_clone.appendChild(document.createTextNode(paragraph));
 						
-						if ( first )
-						{
-							pasted_content.appendChild(p_clone);
-							first = false;
-						}
-						else
-						{
-							pasted_content.insertBefore(p_clone, pasted_content.firstChild);
-						}
+						pasted_content.appendChild(p_clone);
 					}
 					// Otherwise, we are probably pasting text in the middle
 					// of an existing block element, just pass the text along
