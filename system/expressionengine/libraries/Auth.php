@@ -242,17 +242,16 @@ class Auth {
 			$this->EE->functions->redirect(BASE.AMP.'C=login');
 		}
 
-
 		//  Check credentials
 		// ----------------------------------------------------------------
 		$password = $this->EE->input->post('password');
 
-        // Allow users to register with Username
-        // ----------------------------------------------------------------
-        $incoming = $this->EE->auth->authenticate_username($username, $password);
-        
-        // Allow users to register with Email
-        // ----------------------------------------------------------------
+		// Allow users to register with Username
+		// ----------------------------------------------------------------
+		$incoming = $this->EE->auth->authenticate_username($username, $password);
+
+		// Allow users to register with Email
+		 // ----------------------------------------------------------------
 		if( ! $incoming) {
 			$incoming = $this->EE->auth->authenticate_email($username, $password);
 		}
