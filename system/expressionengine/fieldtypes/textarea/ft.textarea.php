@@ -45,21 +45,52 @@ class Textarea_ft extends EE_Fieldtype {
 		$field = array(
 			'name'	=> $this->field_name,
 			'id'	=> $this->field_name,
-			'value'	=> $data,
+		//	'value'	=> $data, // set below
 			'rows'	=> $this->settings['field_ta_rows'],
 			'dir'	=> $this->settings['field_text_direction']
 		);
-		
+
+
+		// form prepped nonsense
+		$data = htmlspecialchars_decode($data);
+
+		if ($this->settings['field_fmt'] == 'xhtml')
+		{
+			$data = trim($data);
+
+			// Undo any existing newline formatting. Typography will change
+			// it anyways and the rtf will add its own. Having this here
+			// prevents growing-newline syndrome in the rtf and lets us switch
+			// between rtf and non-rtf.
+
+			$data = preg_replace("/<\/p>\n*<p>/is", "\n\n", $data);
+			$data = preg_replace("/<br( \/)?>\n/is", "\n", $data);
+		}
+
 		// RTE?
 		if ( ! isset($this->settings['field_enable_rte']))
 		{
 			$this->settings['field_enable_rte'] = 'n';
 		}
+
 		if ($this->settings['field_enable_rte'] == 'y')
 		{
 			$field['class']	= 'rte';
+
+			// xhtml vs br
+			if ($this->settings['field_fmt'] == 'xhtml')
+			{
+				$this->EE->load->library('typography');
+
+				$data = $this->EE->typography->_format_newlines($data);
+
+				// Remove double paragraph tags
+				$data = preg_replace("/(<\/?p>)\\1/is", "\\1", $data);
+			}
 		}
-				
+
+		$field['value'] = htmlspecialchars($data);
+		
 		return form_textarea($field);
 	}
 
