@@ -2464,13 +2464,14 @@ jQuery(document).ready(function(){
 				pasted_text		= $editor.getPreText().split( /\n([ \t]*\n)+/g ),
 				len				= pasted_text.length,
 				p				= document.createElement('p'),
+				br				= document.createElement('br'),
 				p_clone			= null,
 				empty			= /[\s\r\n]/g,
 				comments		= /<!--[^>]*-->/g;
 				
 				// Loop through paragraphs as defined by our above regex
 				$.each(pasted_text, function(index, paragraph)
-				{ 
+				{
 					// Remove HTML comments, Word may insert these
 					paragraph = paragraph.replace(comments, '');
 					
@@ -2479,13 +2480,16 @@ jQuery(document).ready(function(){
 						return true;
 					}
 					
+					p_node = document.createTextNode(paragraph);
+					
 					// If we are starting the paste outside an existing block element,
 					// OR have moved on to other paragraphs in the array, wrap pasted
 					// text in paragraph tags
 					if (saved_range.startContainer == 'p' || index != 0)
 					{
 						p_clone = p.cloneNode(false);
-						p_clone.appendChild(document.createTextNode(paragraph));
+						p_clone.appendChild(p_node);
+						p_clone.innerHTML = p_clone.innerHTML.replace(/[\r\n]/g, '<br>\n');
 						
 						pasted_content.appendChild(p_clone);
 					}
@@ -2493,27 +2497,36 @@ jQuery(document).ready(function(){
 					// of an existing block element, just pass the text along
 					else
 					{
-						pasted_content.appendChild(document.createTextNode(paragraph));
+						// When we're not creating a new block element, we cannot do a find
+						// and replace for linebreaks and replace them with a BR tag like
+						// we did above or else they'll get converted to entities
+						paragraphlinebreaks = paragraph.split(/[\r\n]/g);
+						
+						$.each(paragraphlinebreaks, function(index, para)
+						{
+							pasted_content.appendChild(document.createTextNode(para));
+							pasted_content.appendChild(br.cloneNode(false))
+						});
 					}
 				});
 				
 				$editor
 					.empty()
-					.append( $original_html );
-					
-				range.setStart( saved_range.startContainer, saved_range.startOffset );
-				range.setEnd( saved_range.endContainer, saved_range.endOffset );
+					.append($original_html);
 				
-				if ( ! range.collapsed )
+				range.setStart(saved_range.startContainer, saved_range.startOffset);
+				range.setEnd(saved_range.endContainer, saved_range.endOffset);
+				
+				if ( ! range.collapsed)
 				{
 					range.deleteContents();
 				}
 				
-				range.insertNode( pasted_content );
+				range.insertNode(pasted_content);
 				
-				WysiHat.Formatting.cleanup( $editor );
+				WysiHat.Formatting.cleanup($editor);
 				
-				$editor.trigger( 'WysiHat-editor:change' );
+				$editor.trigger('WysiHat-editor:change');
 			}
 			
 			// Getting text from contentEditable DIVs and retaining linebreaks
