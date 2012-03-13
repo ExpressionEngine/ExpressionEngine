@@ -178,7 +178,7 @@ class Auth {
 	 *	)
 	 * 
 	 * Your best option is to use:
-	 * 		list($username, $password, $incoming) = $this->_verify()
+	 * 		list($username, $password, $incoming) = $this->verify()
 	 * 
 	 * If an error results, the lang key will be added to $this->(auth->)errors[]
 	 * and this method will return FALSE
