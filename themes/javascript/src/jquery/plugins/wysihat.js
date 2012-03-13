@@ -2475,12 +2475,31 @@ jQuery(document).ready(function(){
 					// Remove HTML comments, Word may insert these
 					paragraph = paragraph.replace(comments, '');
 					
-					if ( paragraph.replace( empty,'') == '' )
+					// If the paragraph is empty, skip it
+					if (paragraph.replace(empty, '') == '')
 					{
 						return true;
 					}
 					
-					p_node = document.createTextNode(paragraph);
+					// Split paragraph into single linebreaks to add <br> tags
+					// to the end of the lines
+					paragraph = paragraph.split(/[\r\n]/g);
+					
+					// We'll append each line of the paragraph to this node
+					p_fragment = document.createDocumentFragment();
+					
+					$.each(paragraph, function(index, para)
+					{
+						// Add the current text line to the fragment
+						p_fragment.appendChild(document.createTextNode(para));
+						
+						// If this isn't the end of the paragraph, add a <br> element
+						// to the end
+						if (index != paragraph.length - 1)
+						{
+							p_fragment.appendChild(br.cloneNode(false));
+						}
+					});
 					
 					// If we are starting the paste outside an existing block element,
 					// OR have moved on to other paragraphs in the array, wrap pasted
@@ -2488,8 +2507,7 @@ jQuery(document).ready(function(){
 					if (saved_range.startContainer == 'p' || index != 0)
 					{
 						p_clone = p.cloneNode(false);
-						p_clone.appendChild(p_node);
-						p_clone.innerHTML = p_clone.innerHTML.replace(/[\r\n]/g, '<br>\n');
+						p_clone.appendChild(p_fragment);
 						
 						pasted_content.appendChild(p_clone);
 					}
@@ -2497,16 +2515,7 @@ jQuery(document).ready(function(){
 					// of an existing block element, just pass the text along
 					else
 					{
-						// When we're not creating a new block element, we cannot do a find
-						// and replace for linebreaks and replace them with a BR tag like
-						// we did above or else they'll get converted to entities
-						paragraphlinebreaks = paragraph.split(/[\r\n]/g);
-						
-						$.each(paragraphlinebreaks, function(index, para)
-						{
-							pasted_content.appendChild(document.createTextNode(para));
-							pasted_content.appendChild(br.cloneNode(false))
-						});
+						pasted_content.appendChild(p_fragment);
 					}
 				});
 				
