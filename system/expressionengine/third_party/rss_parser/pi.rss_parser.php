@@ -68,42 +68,118 @@ Class Rss_parser {
 		$success = $feed->init();
 		$feed->handle_content_type();
 
-		// Any errors?
-		if ($feed->error())
-		{
-			// $feed->error();
-		}
-
+		// Parse the variables
 		if ($success)
 		{
-			// var_dump($feed->get_items());
-			// TODO: Handle both feed_ and channel_
-			// $feed->get_title();
-			// $feed->get_link();
-			// $feed->get_copyright();
-			// $feed->get_description();
-			// $feed->get_language()
-			// TODO: For logo handle both image_ and logo_
+			$content = array(
+				'items' 			=> $this->_map_feed_items($feed, $limit, $offset),
 
-			foreach ($feed->get_items() as $index => $item)
+				// Feed Information
+				'feed_title'		=> $feed->get_title(),
+				'feed_link'			=> $feed->get_link(),
+				'feed_copyright'	=> $feed->get_copyright(),
+				'feed_description'	=> $feed->get_description(),
+				'feed_language'		=> $feed->get_language(),
+
+				// Feed Logo Information
+				'logo_url'			=> $feed->get_image_url(),
+				'logo_title'		=> $feed->get_image_title(),
+				'logo_link'			=> $feed->get_image_link(),
+				'logo_width'		=> $feed->get_image_width(),
+				'logo_height'		=> $feed->get_image_height()
+			);
+
+			$this->return_data = $this->EE->TMPL->parse_variables(
+				$this->EE->TMPL->tagdata, 
+				array($content)
+			);
+		}
+		// Feed couldn't be fetched, put the error into the Template log
+		else
+		{
+			$this->EE->TMPL->log_item("RSS Parser Error: ".$feed->error());
+			$this->return_data = $this->EE->TMPL->no_results();
+		}
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Map Feed Items to array
+	 * @param SimplePie $feed SimplePie feed object
+	 * @param int $limit Number of items to return
+	 * @param int $offset Number of items to skip
+	 * @return mapped associative array containing all feed items
+	 */
+	private function _map_feed_items($feed, $limit, $offset)
+	{
+		$items = array();
+
+		foreach ($feed->get_items($offset, $limit) as $index => $item)
+		{
+			// Get Categories
+			$categories = array();
+			$item_categories = $item->get_categories();
+			if ( ! empty($item_categories))
 			{
-				// $item->get_permalink();
-				// $item->get_title();
-				// $item->get_date('j M Y, g:i a');
-				// $item->get_content();
-				// $item->get_description();
-				// $item->get_local_date();
-				// $item->get_id()
-				
-				// $item->get_categories();
-					// $category->get_label();
-				// $item->get_authors();
-					// $authors->get_email();
-					// $authors->get_link();
-					// $authors->get_name();
+				foreach ($item_categories as $category)
+				{
+					$categories[] = array(
+						'category_name' => $category->get_term()
+					);
+				}					
+			}
+
+			// Get Authors
+			$authors = array();
+			$item_authors = $item->get_authors();
+			if ( ! empty($item_authors))
+			{
+				foreach ($item_authors as $author)
+				{
+					$authors[] = array(
+						'author_email'	=> $author->get_email(),
+						'author_link'	=> $author->get_link(),
+						'author_name'	=> $author->get_name()
+					);
+				}	
+			}
+
+			$items[] = array(
+				'item_title' 		=> $item->get_title(),
+				'item_link' 		=> $item->get_permalink(),
+				'item_date' 		=> $item->get_date('U'),
+				'item_content' 		=> $item->get_content(),
+				'item_description'	=> $item->get_description(),
+				'item_id' 			=> $item->get_id(),
+				'item_categories'	=> $categories,
+				'item_authors'		=> $authors
+			);
+		}
+
+		return $items;
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Check to make sure the cache exists and create it otherwise
+	 * @return void
+	 */
+	private function _check_cache()
+	{
+		// Make sure the cache directory exists and is writeable
+		if ( ! @is_dir(APPPATH.'cache/'.$this->cache_name))
+		{
+			if ( ! @mkdir(APPPATH.'cache/'.$this->cache_name, DIR_WRITE_MODE))
+			{
+				$this->EE->TMPL->log_item("RSS Parser Error: Cache directory unwritable.");
+				return $this->EE->TMPL->no_results();
 			}
 		}
 	}
+
+	// -------------------------------------------------------------------------
 
 	/**
 	 * Plugin Usage
@@ -158,10 +234,9 @@ The {items} variable contains all of the items found within the feed:
 
 - title
 - link
+- date: uses standard ExpressionEngine date formatting (e.g. {date format="%F %d %Y"})
 - description
 - content
-- date
-- local_date
 - id
 
 {authors}
@@ -180,17 +255,17 @@ particular item. Each author has three single variables associated with it:
 The {categories} variable contains all of the categories that a feed item has 
 been assigned. Each category has one useful variable:
 
-- label
+- category_name
 
 Example
 ===========================
 
 {exp:rss_parser url="http://expressionengine.com/feeds/rss/full/" limit="10" refresh="720"}
-<ul>
-{items}
-<li><a href="{link}">{title}</a></li>
-{/items}
-</ul>
+	<ul>
+		{items}
+			<li><a href="{link}">{title}</a></li>
+		{/items}
+	</ul>
 {/exp:rss_parser}
 
 
@@ -201,6 +276,8 @@ Changelog
 Version 1.0
 ---------------------------
 
+- Initial release and (mostly) feature parity with MagPie plugin
+
 	<?php
 	$buffer = ob_get_contents();
 	
@@ -208,26 +285,8 @@ Version 1.0
 
 	return $buffer;
 	}
-
-	/**
-	 * Check to make sure the cache exists and create it otherwise
-	 * @return void
-	 */
-	private function _check_cache()
-	{
-		// Make sure the cache directory exists and is writeable
-		if ( ! @is_dir(APPPATH.'cache/'.$this->cache_name))
-		{
-			if ( ! @mkdir(APPPATH.'cache/'.$this->cache_name, DIR_WRITE_MODE))
-			{
-				// TODO: Better failure
-				return $this->EE->TMPL->no_results();
-			}
-		}
-	}
-
-} // END Magpie class
+} // END RSS Parser class
 
 
-/* End of file pi.magpie.php */
-/* Location: ./system/expressionengine/plugins/pi.magpie.php */
+/* End of file pi.rss_parser.php */
+/* Location: ./system/expressionengine/third_party/rss_parser/pi.rss_parser.php */
