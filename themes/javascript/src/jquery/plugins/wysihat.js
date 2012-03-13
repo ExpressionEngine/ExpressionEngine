@@ -2535,7 +2535,8 @@ jQuery(document).ready(function(){
 				
 				WysiHat.Formatting.cleanup($editor);
 				
-				$editor.trigger('WysiHat-editor:change');
+				$editor.trigger('WysiHat-editor:change:immediate');
+				$field.trigger('WysiHat-field:change:immediate');
 			}
 			
 			// Getting text from contentEditable DIVs and retaining linebreaks
