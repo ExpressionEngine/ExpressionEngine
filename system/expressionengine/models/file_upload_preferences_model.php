@@ -163,7 +163,7 @@ class File_upload_preferences_model extends CI_Model {
 			$cat_groups = array_merge($cat_groups, explode('|', $upload_pref->cat_group));
 		}
 		
-		return $cat_groups;
+		return array_unique($cat_groups);
 	}
 }
 

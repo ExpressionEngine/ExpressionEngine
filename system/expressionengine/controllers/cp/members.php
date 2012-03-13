@@ -38,6 +38,8 @@ class Members extends CI_Controller {
 	{
 		parent::__construct();
 		
+		$this->perpage = $this->config->item('memberlist_row_limit');
+		
 		if ( ! $this->cp->allowed_group('can_access_members'))
 		{
 			show_error(lang('unauthorized_access'));
@@ -149,7 +151,7 @@ class Members extends CI_Controller {
 			$vars['member_groups_dropdown'][$group->group_id] = $group->group_title;
 		}
 
-		$vars['member_list'] = $this->member_model->get_members($group_id, $this->config->item('memberlist_row_limit'), $per_page, $member_name);
+		$vars['member_list'] = $this->member_model->get_members($group_id, $this->config->item('memberlist_row_limit'), $per_page, $member_name, array('member_id' => 'asc'));
 
 		if ($vars['member_list'] === FALSE)
 		{
@@ -362,7 +364,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			"fnServerData": fnDataTablesPipeline
 	} );
 
-		$("#member_name").bind("keyup blur paste", function (e) {
+		$("#member_name").bind("keydown blur paste", function (e) {
 		/* Filter on the column (the index) of this element */
     	setTimeout(function(){oTable.fnDraw();}, 1);
 		});
@@ -513,7 +515,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 				// - a value within single quotes
 				// - a value without spaces
 				
-				if (preg_match('/'.$token.'\:((?:"(.*?)")|(?:\'(.*?)\')|(?:[^\s:]+?))(?:\s|$)/', $search_string, $matches))
+				if (preg_match('/'.$token.'\:((?:"(.*?)")|(?:\'(.*?)\')|(?:[^\s:]+?))(?:\s|$)/i', $search_string, $matches))
 				{
 					// The last item within matches is what we want
 					$search_array[$token] = end($matches);
@@ -2744,51 +2746,50 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			show_error(lang('unauthorized_access'));
 		}		
 		
-		$this->load->library('form_validation');
+		$this->load->library(array('form_validation', 'table'));
 		$this->load->helper(array('form', 'string', 'snippets'));
 		$this->lang->loadfile('myaccount');
-		$this->load->library('table');
 		$this->load->language('calendar');
 		
 		$vars['custom_profile_fields'] = array();
 		
 		$config = array(
-						array(
-							'field'  => 'username', 
-							'label'  => 'lang:username', 
-							'rules'  => 'required|trim|valid_username[new]'
-						),
-						array(
-							'field'  => 'screen_name',
-							'label'  => 'lang:screen_name',
-							'rules'  => 'trim|valid_screen_name[new]'
-						),
-						array(
-							'field'  => 'password', 
-							'label'  => 'lang:password', 
-							'rules'  => 'required|valid_password[username]'
-						),
-						array(
-							'field'  => 'password_confirm', 
-							'label'  => 'lang:password_confirm', 
-							'rules'  => 'required|matches[password]'
-						),
-						array(
-			   				'field'  => 'email', 
-			   				'label'  => 'lang:email', 
-			   				'rules'  => 'trim|required|valid_user_email[new]'
-						),
-						array(
-			   				'field'  => 'group_id', 
-			   				'label'  => 'lang:member_group_assignment', 
-			   				'rules'  => 'required|integer'
-						)
-		            );
+			array(
+				'field'  => 'username', 
+				'label'  => 'lang:username', 
+				'rules'  => 'required|trim|valid_username[new]'
+			),
+			array(
+				'field'  => 'screen_name',
+				'label'  => 'lang:screen_name',
+				'rules'  => 'trim|valid_screen_name[new]'
+			),
+			array(
+				'field'  => 'password', 
+				'label'  => 'lang:password', 
+				'rules'  => 'required|valid_password[username]'
+			),
+			array(
+				'field'  => 'password_confirm', 
+				'label'  => 'lang:password_confirm', 
+				'rules'  => 'required|matches[password]'
+			),
+			array(
+				'field'  => 'email', 
+				'label'  => 'lang:email', 
+				'rules'  => 'trim|required|valid_user_email[new]'
+			),
+			array(
+				'field'  => 'group_id', 
+				'label'  => 'lang:member_group_assignment', 
+				'rules'  => 'required|integer'
+			)
+		);
 
 		$stock_member_fields = array(
-				'url', 'location', 'occupation', 'interests', 'aol_im', 
-				'yahoo_im', 'msn_im', 'icq', 'bio', 'bday_y', 'bday_m', 'bday_d'
-			);
+			'url', 'location', 'occupation', 'interests', 'aol_im', 
+			'yahoo_im', 'msn_im', 'icq', 'bio', 'bday_y', 'bday_m', 'bday_d'
+		);
 		
 		foreach ($stock_member_fields as $fname)
 		{
@@ -2808,24 +2809,24 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		
 		for ($i = date('Y', $this->localize->now); $i > 1904; $i--)
 		{
-		  $vars['bday_y_options'][$i] = $i;
+			$vars['bday_y_options'][$i] = $i;
 		}
 
 		$vars['bday_m_options'] = array(
-							''	 => lang('month'),
-							'01' => lang('cal_january'),
-							'02' => lang('cal_february'),
-							'03' => lang('cal_march'),
-							'04' => lang('cal_april'),
-							'05' => lang('cal_mayl'),
-							'06' => lang('cal_june'),
-							'07' => lang('cal_july'),
-							'08' => lang('cal_august'),
-							'09' => lang('cal_september'),
-							'10' => lang('cal_october'),
-							'11' => lang('cal_november'),
-							'12' => lang('cal_december')
-						);
+			''	 => lang('month'),
+			'01' => lang('cal_january'),
+			'02' => lang('cal_february'),
+			'03' => lang('cal_march'),
+			'04' => lang('cal_april'),
+			'05' => lang('cal_mayl'),
+			'06' => lang('cal_june'),
+			'07' => lang('cal_july'),
+			'08' => lang('cal_august'),
+			'09' => lang('cal_september'),
+			'10' => lang('cal_october'),
+			'11' => lang('cal_november'),
+			'12' => lang('cal_december')
+		);
 
 		$vars['bday_d_options'][''] = lang('day');
 		
@@ -2842,7 +2843,6 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		// Extended profile fields
 		$query = $this->member_model->get_all_member_fields(array(array('m_field_cp_reg' => 'y')), FALSE);
 		
-		
 		if ($query->num_rows() > 0)
 		{
 			$vars['custom_profile_fields'] = $query->result_array();
@@ -2852,15 +2852,14 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			{
 				$required  = ($row['m_field_required'] == 'n') ? '' : 'required';
 				$c_config[] = array(
-							'field'  => 'm_field_id_'.$row['m_field_id'], 
-							'label'  => $row['m_field_label'], 
-							'rules'  => $required
-						);
+					'field'  => 'm_field_id_'.$row['m_field_id'], 
+					'label'  => $row['m_field_label'], 
+					'rules'  => $required
+				);
 			}
 			
 			$config = array_merge($config, $c_config);
 		}
-
 
 		$this->form_validation->set_rules($config);
 		$this->form_validation->set_error_delimiters('<br /><span class="notice">', '</span>');
@@ -2889,7 +2888,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			$this->_register_member();
 		}
 	}
-
+	
 	// --------------------------------------------------------------------
 
 	/**

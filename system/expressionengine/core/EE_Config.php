@@ -79,11 +79,45 @@ class EE_Config Extends CI_Config {
 		{
 			$this->set_item($key, $val);
 		}
+				
 		unset($config);
 
 		// Set any config overrides.  These are the items that used to be in 
 		// the path.php file, which are now located in the main index file
 		global $assign_to_config;
+		
+		
+		// Override enable_query_strings to always be false on the frontend
+		// and true on the backend. We need this to get the pagination library
+		// to behave. ACT and CSS get special treatment (see EE_Input::_sanitize_global)
+		
+		$assign_to_config['enable_query_strings'] = FALSE;
+		
+		// CP?
+		if (defined('REQ') && REQ == 'CP')
+		{
+			$assign_to_config['enable_query_strings'] = TRUE;
+		}
+		
+		// ACT exception
+		if (isset($_GET['ACT']) && preg_match("/^(\w)+$/i", $_GET['ACT']))
+		{
+			$assign_to_config['enable_query_strings'] = TRUE;
+		}
+		
+		// URL exception
+		if (isset($_GET['URL']) && $_GET['URL'])
+		{
+			// no other get values allowed
+			$_url = $_GET['URL'];
+			$_GET = array();
+			$_GET['URL'] = $_url;
+			unset($_url);
+			
+			$assign_to_config['enable_query_strings'] = TRUE;
+		}
+
+		
 		$this->_set_overrides($assign_to_config);
 		
 		// Freelancer version?
@@ -468,7 +502,7 @@ class EE_Config Extends CI_Config {
 								'ban_message',
 								'ban_destination',
 								'enable_emoticons',
-								'emoticon_path',
+								'emoticon_url',
 								'recount_batch_total',
 								'new_version_check',
 								'enable_throttling',

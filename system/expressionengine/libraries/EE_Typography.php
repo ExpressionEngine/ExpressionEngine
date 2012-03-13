@@ -40,7 +40,7 @@ class EE_Typography extends CI_Typography {
 	var $parse_smileys				= TRUE;
 	var $highlight_code				= TRUE;
 	var $convert_curly				= TRUE;		// Convert Curly Brackets Into Entities
-	var $emoticon_path  			= '';
+	var $emoticon_url				= '';
 	var $site_index					= '';
 	var $word_censor				= FALSE;
 	var $censored_words 			= array();
@@ -116,7 +116,7 @@ class EE_Typography extends CI_Typography {
 		$this->parse_smileys		= TRUE;
 		$this->highlight_code		= TRUE;
 		$this->convert_curly		= TRUE;		// Convert Curly Brackets Into Entities
-		$this->emoticon_path  		= '';
+		$this->emoticon_url  		= '';
 		$this->site_index			= '';
 		$this->word_censor			= FALSE;
 		$this->censored_words 		= array();
@@ -1127,7 +1127,7 @@ class EE_Typography extends CI_Typography {
 		{
 			if (strpos($str, $key) !== FALSE)
 			{
-				$img = "<img src=\"".$this->emoticon_path.$this->smiley_array[$key]['0']."\" width=\"".$this->smiley_array[$key]['1']."\" height=\"".$this->smiley_array[$key]['2']."\" alt=\"".$this->smiley_array[$key]['3']."\" style=\"border:0;\" />";
+				$img = "<img src=\"".$this->emoticon_url.$this->smiley_array[$key]['0']."\" width=\"".$this->smiley_array[$key]['1']."\" height=\"".$this->smiley_array[$key]['2']."\" alt=\"".$this->smiley_array[$key]['3']."\" style=\"border:0;\" />";
 			
 				foreach(array(' ', "\t", "\n", "\r", '.', ',', '>') as $char)
 				{
@@ -1377,7 +1377,7 @@ document.getElementById('<?php echo $span_id; ?>').innerHTML = output;
 			if (is_array($smileys))
 			{
 				$this->smiley_array = $smileys;
-				$this->emoticon_path = $this->EE->config->slash_item('emoticon_path');
+				$this->emoticon_url = $this->EE->config->slash_item('emoticon_url');
 			}
 		}
 	}
