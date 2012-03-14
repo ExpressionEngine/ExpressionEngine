@@ -60,10 +60,6 @@ Class Rss_parser {
 		$feed->set_cache_location(APPPATH.'cache/'.$this->cache_name.'/');
 		$feed->set_cache_duration($refresh * 60); // Get parameter to seconds
 
-		// No offset function, so need to offset manually
-		// makes sure we get enough items
-		$feed->set_item_limit($limit + $offset); 
-
 		// Check to see if the feed was initialized, if so, deal with the type
 		$success = $feed->init();
 		$feed->handle_content_type();
@@ -71,8 +67,14 @@ Class Rss_parser {
 		// Parse the variables
 		if ($success)
 		{
+			// Make sure there's at least one item
+			if ($feed->get_item_quantity() <= 0)
+			{
+				$this->return_data = $this->EE->TMPL->no_results();
+			}
+
 			$content = array(
-				'items' 			=> $this->_map_feed_items($feed, $limit, $offset),
+				'feed_items' 		=> $this->_map_feed_items($feed, $limit, $offset),
 
 				// Feed Information
 				'feed_title'		=> $feed->get_title(),
@@ -151,7 +153,6 @@ Class Rss_parser {
 				'item_date' 		=> $item->get_date('U'),
 				'item_content' 		=> $item->get_content(),
 				'item_description'	=> $item->get_description(),
-				'item_id' 			=> $item->get_id(),
 				'item_categories'	=> $categories,
 				'item_authors'		=> $authors
 			);
@@ -188,8 +189,14 @@ Class Rss_parser {
 	 */
 	public function usage()
 	{
-	ob_start(); 
-	?>
+		ob_start(); 
+		?>
+RSS Parser
+===========================
+
+There is only one tag for the RSS Parser:
+
+{exp:rss_parser url="http://expressionengine.com/feeds/rss/full/" offset="5" limit="10" refresh="720"}
 
 Parameters
 ===========================
@@ -224,35 +231,35 @@ can be used to display the logo:
 Pair Variables
 ===========================
 
-There are three pair variables available: {items}, {categories}, and {authors}.
-Both {categories} and {authors}, are only available within {items}. 
+There are three pair variables available: {feed_items}, {item_categories}, and
+{item_authors}. Both {item_categories} and {item_authors}, are only available
+within {feed_items}.
 
-{items}
+{feed_items}
 ---------------------------
 
 The {items} variable contains all of the items found within the feed:
 
-- title
-- link
-- date: uses standard ExpressionEngine date formatting (e.g. {date format="%F %d %Y"})
-- description
-- content
-- id
+- item_title
+- item_link
+- item_date: uses standard ExpressionEngine date formatting (e.g. {date format="%F %d %Y"})
+- item_description
+- item_content
 
-{authors}
+{item_authors}
 ---------------------------
 
-The {authors} variable contains information about all of the authors of a 
+The {item_authors} variable contains information about all of the authors of a 
 particular item. Each author has three single variables associated with it:
 
-- email
-- link
-- name
+- author_email
+- author_link
+- author_name
 
-{categories}
+{item_categories}
 ---------------------------
 
-The {categories} variable contains all of the categories that a feed item has 
+The {item_categories} variable contains all of the categories that a feed item has 
 been assigned. Each category has one useful variable:
 
 - category_name
@@ -262,9 +269,9 @@ Example
 
 {exp:rss_parser url="http://expressionengine.com/feeds/rss/full/" limit="10" refresh="720"}
 	<ul>
-		{items}
-			<li><a href="{link}">{title}</a></li>
-		{/items}
+		{feed_items}
+			<li><a href="{item_link}">{item_title}</a></li>
+		{/feed_items}
 	</ul>
 {/exp:rss_parser}
 
@@ -278,12 +285,12 @@ Version 1.0
 
 - Initial release and (mostly) feature parity with MagPie plugin
 
-	<?php
-	$buffer = ob_get_contents();
-	
-	ob_end_clean(); 
+		<?php
+		$buffer = ob_get_contents();
+		
+		ob_end_clean(); 
 
-	return $buffer;
+		return $buffer;
 	}
 } // END RSS Parser class
 
