@@ -53,6 +53,9 @@ class Textarea_ft extends EE_Fieldtype {
 
 		// form prepped nonsense
 		$data = htmlspecialchars_decode($data);
+		$code_marker = unique_marker('code');
+		$code_chunks = array();
+
 
 		if ($this->settings['field_fmt'] == 'xhtml')
 		{
@@ -67,6 +70,16 @@ class Textarea_ft extends EE_Fieldtype {
 			$data = preg_replace("/<br( \/)?>\n/is", "\n", $data);
 		}
 
+		// remove code chunks
+		if (preg_match_all("/\[code\](.+?)\[\/code\]/si", $data, $matches))
+		{
+			foreach ($matches[1] as $i => $chunk)
+			{
+				$code_chunks[] = trim($chunk);
+				$data = str_replace($matches[0][$i], $code_marker.$i, $data);
+			}
+		}
+
 		// RTE?
 		if ( ! isset($this->settings['field_enable_rte']))
 		{
@@ -76,6 +89,12 @@ class Textarea_ft extends EE_Fieldtype {
 		if ($this->settings['field_enable_rte'] == 'y')
 		{
 			$field['class']	= 'rte';
+
+			foreach ($code_chunks as &$chunk)
+			{
+				$chunk = htmlentities($chunk, ENT_QUOTES, 'UTF-8');
+				$chunk = str_replace("\n", '<br>', $chunk);
+			}
 
 			// xhtml vs br
 			if ($this->settings['field_fmt'] == 'xhtml')
@@ -89,9 +108,43 @@ class Textarea_ft extends EE_Fieldtype {
 			}
 		}
 
-		$field['value'] = htmlspecialchars($data);
+		// put code chunks back
+		foreach ($code_chunks as $i => $chunk)
+		{
+			$data = str_replace($code_marker.$i, '[code]'.$chunk.'[/code]', $data);
+		}
 		
+		$data = htmlspecialchars($data);
+
+		$field['value'] = $data;
 		return form_textarea($field);
+	}
+
+	// --------------------------------------------------------------------
+
+	function save($data)
+	{
+		if ( ! isset($this->settings['field_enable_rte']) OR
+			$this->settings['field_enable_rte'] == 'n')
+		{
+			return $data;
+		}
+
+		$data = str_replace('<br>', "\n", $data); // must happen before the decode or we won't know which are ours
+		$data = htmlspecialchars_decode($data);
+
+		// decode double encoded code chunks
+		if (preg_match_all("/\[code\](.+?)\[\/code\]/si", $data, $matches))
+		{
+			foreach ($matches[1] as $chunk)
+			{
+				$chunk = trim($chunk);
+				$chunk = html_entity_decode($chunk, ENT_QUOTES, 'UTF-8');
+				$data = str_replace($matches[0][$i], '[code]'.$chunk.'[/code]', $data);
+			}
+		}
+
+		return $data;
 	}
 
 	// --------------------------------------------------------------------
