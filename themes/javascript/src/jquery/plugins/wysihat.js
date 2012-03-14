@@ -2299,6 +2299,8 @@ if ( typeof Node == "undefined" )
   jQuery.fn.observeFrameContentLoaded = observeFrameContentLoaded;
   jQuery.fn.onFrameLoaded = onFrameLoaded;
 })();
+
+
 jQuery(document).ready(function(){
 
 	var
@@ -2573,7 +2575,7 @@ jQuery(document).ready(function(){
 				.delegate('.WysiHat-editor', 'paste', function(){
 					WysiHat.Formatting.cleanup( $(this) );
 
-					$editor.trigger( 'WysiHat-editor:change' );
+					$(this).trigger( 'WysiHat-editor:change:immediate' );
 				 });
 		}
 
