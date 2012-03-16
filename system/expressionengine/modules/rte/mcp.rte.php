@@ -68,10 +68,11 @@ class Rte_mcp {
 		$this->EE->load->library(array('table','javascript'));
 		$this->EE->load->model('rte_toolset_model');
 
-		// set upt the page
+		// set up the page
 		$this->EE->cp->set_right_nav(array(
 			'create_new_rte_toolset' => $this->_base_url.AMP.'method=edit_toolset'
 		));
+
 		$vars = array(
 			'cp_page_title'				=> lang('rte_module_name'),
 			'module_base'				=> $this->_base_url,

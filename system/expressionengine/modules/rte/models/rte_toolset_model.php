@@ -246,14 +246,13 @@ class Rte_toolset_model extends CI_Model {
 	 */
 	public function is_private( $toolset_id = FALSE )
 	{
-		return $this->db
-					->select('member_id')
-					->get_where(
-						'rte_toolsets',
-						array( 'rte_toolset_id' => $toolset_id ),
-						1
-					  )
-					->row('member_id') != 0;
+		return $this->db->select('member_id')
+			->get_where(
+				'rte_toolsets',
+				array( 'rte_toolset_id' => $toolset_id ),
+				1
+			)
+			->row('member_id') != 0;
 	}
 	
 	/**
@@ -312,7 +311,7 @@ class Rte_toolset_model extends CI_Model {
 	{
 		$this->load->model('rte_tool_model');
 
-		# default toolset
+		// default toolset
 		$tool_ids = $this->rte_tool_model->get_tool_ids(array(
 			'headings', 'bold', 'italic',
 			'blockquote', 'unordered_list', 'ordered_list',
