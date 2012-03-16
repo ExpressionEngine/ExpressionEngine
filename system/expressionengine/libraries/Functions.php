@@ -725,39 +725,42 @@ class EE_Functions {
 	 */
 	function set_cookie($name = '', $value = '', $expire = '')
 	{
+
+		$data['name'] = $name;
+
 		if ( ! is_numeric($expire))
 		{
-			$expire = time() - 86500;
+			$data['expire'] = time() - 86500;
 		}
 		else
 		{
 			if ($expire > 0)
 			{
-				$expire = time() + $expire;
+				$data['expire'] = time() + $expire;
 			}
 			else
 			{
-				$expire = 0;
+				$data['expire'] = 0;
 			}
 		}
 					
-		$prefix = ( ! $this->EE->config->item('cookie_prefix')) ? 'exp_' : $this->EE->config->item('cookie_prefix').'_';
-		$path	= ( ! $this->EE->config->item('cookie_path'))	? '/'	: $this->EE->config->item('cookie_path');
+		$data['prefix'] = ( ! $this->EE->config->item('cookie_prefix')) ? 'exp_' : $this->EE->config->item('cookie_prefix').'_';
+		$data['path']	= ( ! $this->EE->config->item('cookie_path'))	? '/'	: $this->EE->config->item('cookie_path');
 		
 		if (REQ == 'CP' && $this->EE->config->item('multiple_sites_enabled') == 'y')
 		{
-			$domain = $this->EE->config->cp_cookie_domain;
+			$data['domain'] = $this->EE->config->cp_cookie_domain;
 		}
 		else
 		{
-			$domain = ( ! $this->EE->config->item('cookie_domain')) ? '' : $this->EE->config->item('cookie_domain');
+			$data['domain'] = ( ! $this->EE->config->item('cookie_domain')) ? '' : $this->EE->config->item('cookie_domain');
 		}
 		
-		$value = stripslashes($value);
+		$data['value'] = stripslashes($value);
 		
-		$secure_cookie = ($this->EE->config->item('cookie_secure') === TRUE) ? 1 : 0;
+		$data['secure_cookie'] = ($this->EE->config->item('cookie_secure') === TRUE) ? 1 : 0;
 
-		if ($secure_cookie)
+		if ($data['secure_cookie'])
 		{
 			$req = isset($_SERVER['HTTPS']) ? $_SERVER['HTTPS'] : FALSE;
 
@@ -766,8 +769,20 @@ class EE_Functions {
 				return FALSE;
 			}
 		}
+
+		/* -------------------------------------------
+		/* 'set_cookie_start' hook.
+		/*  - Take control of Cookie setting routine
+		/*  - Added EE 2.6
+		*/
+			$this->EE->extensions->call('set_cookie_start', $data);
+			if ($this->EE->extensions->end_script === TRUE) return;
+		/*
+		/* -------------------------------------------*/
+
 					
-		setcookie($prefix.$name, $value, $expire, $path, $domain, $secure_cookie);
+		setcookie($data['prefix'].$data['name'], $data['value'], $data['expire'], 
+			$data['path'], $data['domain'], $data['secure_cookie']);
 	}
 
 	// --------------------------------------------------------------------
