@@ -56,8 +56,9 @@ class Textarea_ft extends EE_Fieldtype {
 		$code_marker = unique_marker('code');
 		$code_chunks = array();
 
+		$field_ft = isset($this->settings['field_fmt']) ? $this->settings['field_fmt'] : '';
 
-		if ($this->settings['field_fmt'] == 'xhtml')
+		if ($field_ft == 'xhtml')
 		{
 			$data = trim($data);
 

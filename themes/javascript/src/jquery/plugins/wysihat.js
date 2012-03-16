@@ -2540,7 +2540,7 @@ jQuery(document).ready(function(){
 				$editor
 					.empty()
 					.append($original_html);
-				
+
 				range.setStart(saved_range.startContainer, saved_range.startOffset);
 				range.setEnd(saved_range.endContainer, saved_range.endOffset);
 				
@@ -2550,11 +2550,48 @@ jQuery(document).ready(function(){
 				}
 				
 				range.insertNode(pasted_content);
-				
+
 				WysiHat.Formatting.cleanup($editor);
-				
+
+				// The change event on $field triggers a full
+				// editor content replacement. So we grab the
+				// location of the cursor before that happens
+				range.setStart($editor.get(0));
+
+				var
+				lengthToCursor = range.toString().replace(/\n/g, '').length,
+				tNodeLoc;
+
 				$editor.trigger('WysiHat-editor:change:immediate');
 				$field.trigger('WysiHat-field:change:immediate');
+
+				tNodeLoc = getOffsetNode($editor.get(0), lengthToCursor);
+
+				range.setStart(tNodeLoc[0], tNodeLoc[1] + $(pasted_content).text().length);
+				range.collapse(true);
+				window.getSelection().addRange(range);
+			}
+
+			// Given a node and and an offset, find the correct
+			// textnode and offset that we can create a range with.
+			function getOffsetNode(startNode, offset) {
+				var curNode = startNode;
+
+				function getTextNodes(node) {
+					if (node.nodeType == 3) {
+						if (offset > 0) {
+							curNode = node;
+							offset -= node.nodeValue.replace(/\n/g, '').length;
+						}
+					} else {
+						for (var i = 0, len = node.childNodes.length; offset > 0 && i < len; ++i) {
+							getTextNodes(node.childNodes[i]);
+						}
+					}
+				}
+
+				getTextNodes(startNode);
+				return [curNode, curNode.nodeValue.length + offset];
 			}
 			
 			// Getting text from contentEditable DIVs and retaining linebreaks
