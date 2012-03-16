@@ -580,7 +580,7 @@ class Rte_mcp {
 	private function _do_update_prefs()
 	{
 		// update the config
-		$this->EE->config->_update_config(array(
+		$this->EE->config->update_site_prefs(array(
 			'rte_enabled'				=> $this->EE->input->get_post('rte_enabled'),
 			'rte_default_toolset_id'	=> $this->EE->input->get_post('rte_default_toolset_id')
 		));
