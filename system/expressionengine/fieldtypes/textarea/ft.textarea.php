@@ -45,22 +45,106 @@ class Textarea_ft extends EE_Fieldtype {
 		$field = array(
 			'name'	=> $this->field_name,
 			'id'	=> $this->field_name,
-			'value'	=> $data,
+		//	'value'	=> $data, // set below
 			'rows'	=> $this->settings['field_ta_rows'],
 			'dir'	=> $this->settings['field_text_direction']
 		);
-		
+
+
+		// form prepped nonsense
+		$data = htmlspecialchars_decode($data);
+		$code_marker = unique_marker('code');
+		$code_chunks = array();
+
+
+		if ($this->settings['field_fmt'] == 'xhtml')
+		{
+			$data = trim($data);
+
+			// Undo any existing newline formatting. Typography will change
+			// it anyways and the rtf will add its own. Having this here
+			// prevents growing-newline syndrome in the rtf and lets us switch
+			// between rtf and non-rtf.
+
+			$data = preg_replace("/<\/p>\n*<p>/is", "\n\n", $data);
+			$data = preg_replace("/<br( \/)?>\n/is", "\n", $data);
+		}
+
+		// remove code chunks
+		if (preg_match_all("/\[code\](.+?)\[\/code\]/si", $data, $matches))
+		{
+			foreach ($matches[1] as $i => $chunk)
+			{
+				$code_chunks[] = trim($chunk);
+				$data = str_replace($matches[0][$i], $code_marker.$i, $data);
+			}
+		}
+
 		// RTE?
 		if ( ! isset($this->settings['field_enable_rte']))
 		{
 			$this->settings['field_enable_rte'] = 'n';
 		}
+
 		if ($this->settings['field_enable_rte'] == 'y')
 		{
 			$field['class']	= 'rte';
+
+			foreach ($code_chunks as &$chunk)
+			{
+				$chunk = htmlentities($chunk, ENT_QUOTES, 'UTF-8');
+				$chunk = str_replace("\n", '<br>', $chunk);
+			}
+
+			// xhtml vs br
+			if ($this->settings['field_fmt'] == 'xhtml')
+			{
+				$this->EE->load->library('typography');
+
+				$data = $this->EE->typography->_format_newlines($data);
+
+				// Remove double paragraph tags
+				$data = preg_replace("/(<\/?p>)\\1/is", "\\1", $data);
+			}
 		}
-				
+
+		// put code chunks back
+		foreach ($code_chunks as $i => $chunk)
+		{
+			$data = str_replace($code_marker.$i, '[code]'.$chunk.'[/code]', $data);
+		}
+		
+		$data = htmlspecialchars($data);
+
+		$field['value'] = $data;
 		return form_textarea($field);
+	}
+
+	// --------------------------------------------------------------------
+
+	function save($data)
+	{
+		if ( ! isset($this->settings['field_enable_rte']) OR
+			$this->settings['field_enable_rte'] == 'n')
+		{
+			return $data;
+		}
+
+		$data = str_replace('<br>', "\n", $data); // must happen before the decode or we won't know which are ours
+		$data = htmlspecialchars_decode($data);
+
+		// decode double encoded code chunks
+		if (preg_match_all("/\[code\](.+?)\[\/code\]/si", $data, $matches))
+		{
+			foreach ($matches[1] as $chunk)
+			{
+				$chunk = trim($chunk);
+				$chunk = html_entity_decode($chunk, ENT_QUOTES, 'UTF-8');
+				$data = str_replace($matches[0][$i], '[code]'.$chunk.'[/code]', $data);
+			}
+		}
+
+		return $data;
 	}
 
 	// --------------------------------------------------------------------

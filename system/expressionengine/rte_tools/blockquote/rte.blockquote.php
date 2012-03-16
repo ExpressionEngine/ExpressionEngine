@@ -78,6 +78,11 @@ Class Blockquote_rte {
 					while ( el.nodeType != "1" )
 					{
 						el = el.parentNode;
+						
+						if (el == null)
+						{
+							break;
+						}
 					}
 				}
 				

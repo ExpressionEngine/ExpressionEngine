@@ -1097,7 +1097,13 @@ if ( typeof Selection == 'undefined' )
 	$(document).ready(function(){
 
 		var timer	= null,
-			empty	= '<p>&nbsp;</p>',
+			// &#x200b; is a zero-width character so we have something to select
+			// and place the cursor inside the paragraph tags, Webkit won't select
+			// an empty element due to a long-standing bug
+			// https://bugs.webkit.org/show_bug.cgi?id=15256
+			// <wbr> didn't seem to behave the same so I'm using the entity
+			// http://www.quirksmode.org/oddsandends/wbr.html
+			empty	= '<p>&#x200b;</p>',
 			$element;
 
 		function fieldChangeHandler( e )
@@ -1149,11 +1155,21 @@ if ( typeof Selection == 'undefined' )
 			var $el	= $element || $(this),
 				s	= window.getSelection(),
 				r	= document.createRange();
-			if ( $el.html() == empty )
+			// If the editor has our special zero-width character in it wrapped
+			// with paragraph tags, select it
+			if ( $el.html() == '<p>​</p>' )
 			{
 				s.removeAllRanges();
-				r.selectNodeContents( $el.find('p').get(0) );
+				r.selectNodeContents($el.find('p').get(0));
 				s.addRange(r);
+				
+				// Get Firefox's cursor behaving naturally by clearing out the
+				// zero-width character; if we run this for webkit too, then it
+				// breaks Webkit's cursor behavior
+				if ($.browser.mozilla)
+				{
+					$el.find('p').eq(0).html('');
+				}
 			}
 		}
 
@@ -2299,6 +2315,8 @@ if ( typeof Node == "undefined" )
   jQuery.fn.observeFrameContentLoaded = observeFrameContentLoaded;
   jQuery.fn.onFrameLoaded = onFrameLoaded;
 })();
+
+
 jQuery(document).ready(function(){
 
 	var
@@ -2464,21 +2482,42 @@ jQuery(document).ready(function(){
 				pasted_text		= $editor.getPreText().split( /\n([ \t]*\n)+/g ),
 				len				= pasted_text.length,
 				p				= document.createElement('p'),
+				br				= document.createElement('br'),
 				p_clone			= null,
 				empty			= /[\s\r\n]/g,
-				first			= true;
 				comments		= /<!--[^>]*-->/g;
 				
 				// Loop through paragraphs as defined by our above regex
 				$.each(pasted_text, function(index, paragraph)
-				{ 
+				{
 					// Remove HTML comments, Word may insert these
 					paragraph = paragraph.replace(comments, '');
 					
-					if ( paragraph.replace( empty,'') == '' )
+					// If the paragraph is empty, skip it
+					if (paragraph.replace(empty, '') == '')
 					{
 						return true;
 					}
+					
+					// Split paragraph into single linebreaks to add <br> tags
+					// to the end of the lines
+					paragraph = paragraph.split(/[\r\n]/g);
+					
+					// We'll append each line of the paragraph to this node
+					p_fragment = document.createDocumentFragment();
+					
+					$.each(paragraph, function(index, para)
+					{
+						// Add the current text line to the fragment
+						p_fragment.appendChild(document.createTextNode(para));
+						
+						// If this isn't the end of the paragraph, add a <br> element
+						// to the end
+						if (index != paragraph.length - 1)
+						{
+							p_fragment.appendChild(br.cloneNode(false));
+						}
+					});
 					
 					// If we are starting the paste outside an existing block element,
 					// OR have moved on to other paragraphs in the array, wrap pasted
@@ -2486,43 +2525,36 @@ jQuery(document).ready(function(){
 					if (saved_range.startContainer == 'p' || index != 0)
 					{
 						p_clone = p.cloneNode(false);
-						p_clone.appendChild( document.createTextNode(paragraph));
+						p_clone.appendChild(p_fragment);
 						
-						if ( first )
-						{
-							pasted_content.appendChild(p_clone);
-							first = false;
-						}
-						else
-						{
-							pasted_content.insertBefore(p_clone, pasted_content.firstChild);
-						}
+						pasted_content.appendChild(p_clone);
 					}
 					// Otherwise, we are probably pasting text in the middle
 					// of an existing block element, just pass the text along
 					else
 					{
-						pasted_content.appendChild(document.createTextNode(paragraph));
+						pasted_content.appendChild(p_fragment);
 					}
 				});
 				
 				$editor
 					.empty()
-					.append( $original_html );
-					
-				range.setStart( saved_range.startContainer, saved_range.startOffset );
-				range.setEnd( saved_range.endContainer, saved_range.endOffset );
+					.append($original_html);
 				
-				if ( ! range.collapsed )
+				range.setStart(saved_range.startContainer, saved_range.startOffset);
+				range.setEnd(saved_range.endContainer, saved_range.endOffset);
+				
+				if ( ! range.collapsed)
 				{
 					range.deleteContents();
 				}
 				
-				range.insertNode( pasted_content );
+				range.insertNode(pasted_content);
 				
-				WysiHat.Formatting.cleanup( $editor );
+				WysiHat.Formatting.cleanup($editor);
 				
-				$editor.trigger( 'WysiHat-editor:change' );
+				$editor.trigger('WysiHat-editor:change:immediate');
+				$field.trigger('WysiHat-field:change:immediate');
 			}
 			
 			// Getting text from contentEditable DIVs and retaining linebreaks
@@ -2559,7 +2591,7 @@ jQuery(document).ready(function(){
 				.delegate('.WysiHat-editor', 'paste', function(){
 					WysiHat.Formatting.cleanup( $(this) );
 
-					$editor.trigger( 'WysiHat-editor:change' );
+					$(this).trigger( 'WysiHat-editor:change:immediate' );
 				 });
 		}
 
@@ -2657,7 +2689,7 @@ WysiHat.Formatting = (function($){
 			 	 $container.html() == '<br>' ||
 			 	 $container.html() == '<br/>' )
 			{
-				$container.html('<p>&nbsp;</p>');
+				$container.html('<p>&#x200b;</p>');
 			}
 
 			return $container.html();
@@ -2679,7 +2711,7 @@ WysiHat.Formatting = (function($){
 			 	 $container.html() == '<br>' ||
 			 	 $container.html() == '<br/>' )
 			{
-				$container.html('<p>&nbsp;</p>');
+				$container.html('<p>&#x200b;</p>');
 			}
 
 			this.cleanup( $container );
