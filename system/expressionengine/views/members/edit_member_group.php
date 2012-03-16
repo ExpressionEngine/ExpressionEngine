@@ -14,7 +14,7 @@ if ($EE_view_disable !== TRUE)
 
 		<div class="heading"><h2 class="edit">
 			<?php if ($this->config->item('multiple_sites_enabled') == 'y'):?>
-				<?=form_dropdown('sites_list_pulldown', $sites_dropdown, '', 'id="site_list_pulldown"')?>
+				<?=form_dropdown('sites_list_pulldown', $sites_dropdown, $site_id, 'id="site_list_pulldown"')?>
 			<?php endif; ?>
 			<?=$page_title?></h2></div>
 		<div class="pageContents">

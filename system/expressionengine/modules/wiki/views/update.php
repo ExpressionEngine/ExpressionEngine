@@ -1,5 +1,4 @@
 <?php 
-	$this->table->set_template($cp_table_template);
 	$this->table->set_heading(array(
 			array('data' => lang('setting'), 'width' => '50%'),
 			lang('preference')
@@ -93,7 +92,6 @@
 	<h4><?=lang('namespaces_list')?></h4>
 
 	<?php
-		$this->table->set_template($cp_table_template);
 		$this->table->set_heading(
 			lang('namespace_label'),
 			lang('namespace_short_name'),

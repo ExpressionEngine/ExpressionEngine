@@ -60,48 +60,9 @@ if ( ! $EE_view_disable)
 				<div class="clear_left"></div>
 			</div> <!-- filterMenu -->			
 			<?=form_open('C=content_files'.AMP.'M=multi_edit_form', array('name'=>'file_form', 'id'=>'file_form'))?>
-				<table class="mainTable padTable" border="0" cellspacing="0" cellpadding="0">
-					<thead>
-						<tr>
-							<th>#</th>
-							<th><?=lang('title')?></th>
-							<th><?=lang('file_name')?></th>
-							<th><?=lang('kind')?></th>
-							<?php if ($comments_enabled):?>
-							<th><?=lang('comments')?></th>							
-							<?php endif;?>
-							<th><?=lang('dir_name')?></th>
-							<th><?=lang('date')?></th>
-							<th><?=lang('actions')?></th>
-							<th><?=lang('action_delete')?></th>
-							<th id="toggle_all"><?=form_checkbox('select_all', 'true', FALSE, 'class="toggle_all"')?></th>
-						</tr>
-					</thead>
-					<tbody>
-					<?php if ( ! isset($files) OR empty($files)):?>
-						<tr>
-							<td colspan="8"><?=$no_files_message?></td>
-						</tr>
-					<?php else: ?>
-						<?php foreach ($files as $file):?>
-						<tr class="<?=alternator('even', 'odd')?>">
-							<td><?=$file[0]?></td>
-							<td><?=$file[1]?></td>
-							<td><?=$file[2]?></td>
-							<td><?=$file[3]?></td>
-							<?php if ($comments_enabled):?>
-							<td>// Comment stuff here</td>
-							<?php endif;?>
-							<td><?=$file[4]?></td>
-							<td><?=$file[5]?></td>
-							<td><?=$file[6]?></td>
-							<td><?=$file[7]?></td>
-							<td class="file_select"><?=$file[8]?></td>
-						</tr>
-						<?php endforeach; ?>
-					<?php endif;?>
-					</tbody>
-				</table>
+			
+				<?=$table_html?>
+			
 				<div class="tableSubmit">
 					<?=form_hidden('upload_dir', $selected_dir)?>
 					<?=form_submit('submit', lang('submit'), 'class="submit"').NBS.NBS?>
@@ -116,9 +77,6 @@ if ( ! $EE_view_disable)
 						<td>${file_name}</td>
 						<td>{{html link}}</td>
 						<td>${mime_type}</td>
-						<?php if ($comments_enabled):?>
-							<td><!-- Comment stuff here --></td>
-						<?php endif;?>
 						<td>${upload_directory_prefs.name}</td>
 						<td>${modified_date}</td>
 						<td>{{html actions}}</td>
@@ -127,10 +85,7 @@ if ( ! $EE_view_disable)
 					</tr>
 				</script>
 				
-				<span class="js_hide"><?=$pagination_links?></span>
-				<span class="pagination" id="filter_pagination"></span>
-				
-				
+				<?=$pagination_html?>
 				
 			<?=form_close()?>
 			<?php endif;?>

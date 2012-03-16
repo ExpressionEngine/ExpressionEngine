@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -53,8 +53,6 @@ class Login extends CI_Controller {
 			$this->output->set_status_header(401);
 			die('C=login');
 		}
-
-		$this->load->helper('form');
 		
 		$username = $this->session->flashdata('username');
 
@@ -91,6 +89,9 @@ class Login extends CI_Controller {
 	 */	
 	public function login_form()
 	{
+		$this->load->library('logger');
+		$this->logger->deprecated();
+		
 		$this->index();
 	}  
 	
@@ -403,7 +404,6 @@ class Login extends CI_Controller {
 	 */
 	function forgotten_password_form()
 	{
-		$this->load->helper('form');
 		$message = $this->session->flashdata('message');
 		
 		$variables = array(

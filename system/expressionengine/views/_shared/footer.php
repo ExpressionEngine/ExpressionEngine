@@ -2,8 +2,8 @@
 
 <div id="footer">
 	<a rel="external" href="<?=$this->cp->masked_url('http://expressionengine.com/')?>"><img src="<?=$cp_theme_url?>images/ee_logo_footer.gif" alt="<?=APP_NAME?>" width="109" height="15" /></a>
-	<?=(IS_FREELANCER)?' Freelancer':''?> v<?=APP_VER?> <? echo ' - ';
-	echo lang('build'). ' date&nbsp;&nbsp;'.APP_BUILD;?> - &copy; <?=lang('copyright')?> 2003 - 2011 <a href="<?=$this->cp->masked_url('http://ellislab.com/')?>" rel="external">EllisLab, Inc.</a><br />
+	<?=(IS_FREELANCER)?' Freelancer':''?> v<?=APP_VER?> <?php echo ' - ';
+	echo lang('build'). ' date&nbsp;&nbsp;'.APP_BUILD;?> - &copy; <?=lang('copyright')?> 2003 - <?= date('Y') ?> <a href="<?=$this->cp->masked_url('http://ellislab.com/')?>" rel="external">EllisLab, Inc.</a><br />
 	
 	<?php
 		echo str_replace("%x", $this->benchmark->elapsed_time('total_execution_time_start', 'total_execution_time_end'), lang('page_rendered'));

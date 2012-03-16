@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -34,6 +34,11 @@ class Date_ft extends EE_Fieldtype {
 	
 	function save($data)
 	{
+		if ( ! is_numeric($data))
+		{
+			$data = $this->EE->localize->string_to_timestamp($data);
+		}
+
 		return $data;
 	}
 	
@@ -47,11 +52,11 @@ class Date_ft extends EE_Fieldtype {
 	 */
 	function validate($data)
 	{
-		if ( ! is_numeric($data))
+		if ( ! is_numeric($data) && trim($data))
 		{
-			$data = $this->EE->localize->convert_human_date_to_gmt($data);
+			$data = $this->EE->localize->string_to_timestamp($data);
 		}
-		
+
 		if ( ! is_numeric($data) && $data != '')
 		{
 			return lang('invalid_date');
@@ -79,20 +84,10 @@ class Date_ft extends EE_Fieldtype {
 
 		$localize = FALSE;
 		
-		if (isset($_POST[$date_field]) && ! is_numeric($_POST[$date_field])) // string in $_POST, probably had a validation error
+		if (isset($_POST[$date_field]) && ! is_numeric($_POST[$date_field]))
 		{
-			if ($_POST[$date_field])
-			{
-				// human readable data - convert cal date back to gmt
-				$custom_date = $_POST[$date_field];
-				$date = $this->EE->localize->convert_human_date_to_gmt($custom_date);
-			}
-
-			if ( ! is_numeric($date))
-			{
-				// don't output JS that tries to do math with the English error from convert_human_date_to_gmt()
-				$date = 0;
-			}
+			// probably had a validation error so repopulate as-is
+			$custom_date = $this->EE->input->post($date_field, TRUE);
 		}
 		else
 		{
@@ -101,7 +96,7 @@ class Date_ft extends EE_Fieldtype {
 			if ( ! $field_data && ! $offset)
 			{
 				$field_data = $date;
-				
+
 				if (isset($this->settings['always_show_date']) && $this->settings['always_show_date'] == 'y')
 				{
 					$custom_date = $this->EE->localize->set_human_time($field_data, $localize);
@@ -125,7 +120,7 @@ class Date_ft extends EE_Fieldtype {
 					$localize = FALSE;
 					$field_data = $date + $offset;
 				}
-				
+
 				// doing it in here so that if we don't have field_data
 				// the field doesn't get populated, but the calendar still
 				// shows the correct default.
@@ -138,9 +133,6 @@ class Date_ft extends EE_Fieldtype {
 			$date = $this->EE->localize->set_localized_time($field_data);
 		}
 		
-		// 1 second = 1000 milliseconds
-		$cal_date = $date * 1000;
-
 		// Note- the JS will automatically localize the default date- but not necessarily in a way we want
 		// Hence we adjust default date to compensate for the coming localization
 		$this->EE->javascript->output('
@@ -148,7 +140,11 @@ class Date_ft extends EE_Fieldtype {
 			var jsCurrentUTC = d.getTimezoneOffset()*60;
 			var adjustedDefault = 1000*('.$date.'+jsCurrentUTC);
 		
-			$("#'.$this->field_name.'").datepicker({dateFormat: $.datepicker.W3C + EE.date_obj_time, defaultDate: ('.$cal_date.' == 0) ? new Date() : new Date(adjustedDefault)});
+			$("#'.$this->field_name.'").datepicker({
+				constrainInput: false,
+				dateFormat: $.datepicker.W3C + EE.date_obj_time,
+				defaultDate: new Date(adjustedDefault)
+			});
 		');
 
 		$r = form_input(array(
@@ -160,7 +156,7 @@ class Date_ft extends EE_Fieldtype {
 
 		if ( ! in_array($this->field_name, $special))
 		{
-			$localized = ( ! isset($_POST[$date_local])) ? (($localize == FALSE) ? 'n' : 'y') : $_POST[$date_local];
+			$localized = ( ! isset($_POST[$date_local])) ? (($localize == FALSE) ? 'n' : 'y') : $this->EE->input->post($date_local, TRUE);
 
 			$localized_opts	= array(
 				'y' => $this->EE->lang->line('localized_date'),

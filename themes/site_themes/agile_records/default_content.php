@@ -107,17 +107,17 @@ $Q[] = "INSERT INTO `exp_upload_prefs` (`id`, `site_id`, `name`, `server_path`, 
 
 // Add files
 
-$Q[] = "INSERT INTO `exp_files` (`file_id`, `site_id`, `title`, `upload_location_id`, `rel_path`, `status`, `mime_type`, `file_name`, `file_size`, `field_1`, `field_1_fmt`, `field_2`, `field_2_fmt`, `field_3`, `field_3_fmt`, `field_4`, `field_4_fmt`, `field_5`, `field_5_fmt`, `field_6`, `field_6_fmt`, `metadata`, `uploaded_by_member_id`, `upload_date`, `modified_by_member_id`, `modified_date`, `file_hw_original`)
-VALUES(1, 1, 'staff_jane.png', 2, 'staff_jane.png', 'o', 'image/png', 'staff_jane.png', 51612, NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 1, 1302889304, 1, 1302889304, ''),
-(2, 1, 'staff_jason.png', 2, 'staff_jason.png', 'o', 'image/png', 'staff_jason.png', 51430, NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 1, 1302889304, 1, 1302889304, ''),
-(3, 1, 'staff_josh.png', 2, 'staff_josh.png', 'o', 'image/png', 'staff_josh.png', 50638, NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 1, 1302889304, 1, 1302889304, ''),
-(4, 1, 'staff_randell.png', 2, 'staff_randell.png', 'o', 'image/png', 'staff_randell.png', 51681, NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 1, 1302889304, 1, 1302889304, ''),
-(5, 1, 'ee_banner_120_240.gif', 2, 'ee_banner_120_240.gif', 'o', 'image/gif', 'ee_banner_120_240.gif', 9257, NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 1, 1302889304, 1, 1302889304, ''),
-(6, 1, 'testband300.jpg', 2, 'testband300.jpg', 'o', 'image/jpeg', 'testband300.jpg', 23986, NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 1, 1302889304, 1, 1302889304, ''),
-(7, 1, 'map.jpg', 2, 'map.jpg', 'o', 'image/jpeg', 'map.jpg', 71299, NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 1, 1302889304, 1, 1302889304, ''),
-(8, 1, 'map2.jpg', 2, 'map2.jpg', 'o', 'image/jpeg', 'map2.jpg', 49175, NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 1, 1302889304, 1, 1302889304, ''),
-(9, 1, 'staff_chloe.png', 2, 'staff_chloe.png', 'o', 'image/png', 'staff_chloe.png', 50262, NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 1, 1302889304, 1, 1302889304, ''),
-(10, 1, 'staff_howard.png', 2, 'staff_howard.png', 'o', 'image/png', 'staff_howard.png', 51488, NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 1, 1302889304, 1, 1302889304, '')";
+$Q[] = "INSERT INTO `exp_files` (`file_id`, `site_id`, `title`, `upload_location_id`, `rel_path`, `mime_type`, `file_name`, `file_size`, `uploaded_by_member_id`, `upload_date`, `modified_by_member_id`, `modified_date`, `file_hw_original`)
+VALUES(1, 1, 'staff_jane.png', 2, 'staff_jane.png', 'image/png', 'staff_jane.png', 51612, 1, 1302889304, 1, 1302889304, ''),
+(2, 1, 'staff_jason.png', 2, 'staff_jason.png', 'image/png', 'staff_jason.png', 51430, 1, 1302889304, 1, 1302889304, ''),
+(3, 1, 'staff_josh.png', 2, 'staff_josh.png', 'image/png', 'staff_josh.png', 50638, 1, 1302889304, 1, 1302889304, ''),
+(4, 1, 'staff_randell.png', 2, 'staff_randell.png', 'image/png', 'staff_randell.png', 51681, 1, 1302889304, 1, 1302889304, ''),
+(5, 1, 'ee_banner_120_240.gif', 2, 'ee_banner_120_240.gif', 'image/gif', 'ee_banner_120_240.gif', 9257, 1, 1302889304, 1, 1302889304, ''),
+(6, 1, 'testband300.jpg', 2, 'testband300.jpg', 'image/jpeg', 'testband300.jpg', 23986, 1, 1302889304, 1, 1302889304, ''),
+(7, 1, 'map.jpg', 2, 'map.jpg', 'image/jpeg', 'map.jpg', 71299, 1, 1302889304, 1, 1302889304, ''),
+(8, 1, 'map2.jpg', 2, 'map2.jpg', 'image/jpeg', 'map2.jpg', 49175, 1, 1302889304, 1, 1302889304, ''),
+(9, 1, 'staff_chloe.png', 2, 'staff_chloe.png', 'image/png', 'staff_chloe.png', 50262, 1, 1302889304, 1, 1302889304, ''),
+(10, 1, 'staff_howard.png', 2, 'staff_howard.png', 'image/png', 'staff_howard.png', 51488, 1, 1302889304, 1, 1302889304, '')";
 
 $Q[] = "UPDATE exp_members SET total_entries = '10', last_entry_date = '$this->now'";
 

@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -113,7 +113,6 @@ class Admin_system extends CI_Controller {
 
 		$this->cp->set_variable('cp_page_title', lang($type));
 
-		$this->load->helper('form');
 		$this->load->library('table');
 		$this->load->library('form_validation');
 		$this->load->model('admin_model');
@@ -474,6 +473,24 @@ class Admin_system extends CI_Controller {
 	 */
 	function mailing_list_preferences()
 	{
+		// this page is only linked to from the mailinglist module
+		// change the breadcrumb for better navigation
+		
+		$modules = $this->cp->get_installed_modules();
+		
+		if (isset($modules['mailinglist']))
+		{
+			$this->lang->loadfile('mailinglist');
+			$this->cp->set_variable(
+				'cp_breadcrumbs',
+				array(
+					BASE.AMP.'C=addons_modules' => lang('nav_modules'),
+					BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist' => lang('mailinglist_module_name')
+				)
+			);
+		}
+
+		
 		$this->_restrict_prefs_access();
 		$this->_config_manager('mailinglist_cfg', __FUNCTION__);
 	}
@@ -607,7 +624,7 @@ class Admin_system extends CI_Controller {
 	{
 		$this->_restrict_prefs_access();
 
-		$this->load->helper(array('form', 'string'));
+		$this->load->helper('string');
 		$this->cp->set_variable('cp_page_title', lang('config_editor'));
 
 		$vars['config_items'] = $this->config->default_ini;

@@ -3,13 +3,14 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
  * @filesource
  */
 $(document).ready(function() {
+
 	$(".paginationLinks .first").hide();
 	$(".paginationLinks .previous").hide();
 	
@@ -147,197 +148,19 @@ $(document).ready(function() {
 			return false;
 		}
 	});
-
-	var oCache = {
-		iCacheLower: -1
-	};
-
-	function fnSetKey( aoData, sKey, mValue ) {
-		for ( var i=0, iLen=aoData.length; i < iLen ; i++ ) {
-			if ( aoData[i].name == sKey ) {
-				aoData[i].value = mValue;
-			}
-		}
-	}
-
 	
-	function fnGetKey( aoData, sKey ) {
-		for ( var i=0, iLen=aoData.length; i < iLen ; i++ ) {
-			if ( aoData[i].name == sKey ) {
-				return aoData[i].value
-			}
-		}
-		return null;
-	}
-
-	function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
-		var iPipe 			= +EE.edit.pipe,  /* Ajust the pipe size */
-			bNeedServer 	= false,
-			sEcho 			= fnGetKey(aoData, "sEcho"),
-			iRequestStart 	= fnGetKey(aoData, "iDisplayStart"),
-			iRequestLength 	= fnGetKey(aoData, "iDisplayLength"),
-			iRequestEnd 	= iRequestStart + iRequestLength,
-			keywords		= document.getElementById("keywords"),
-	    	status			= document.getElementById("f_status"),
-			channel_id		= document.getElementById("f_channel_id"),
-	    	cat_id			= document.getElementById("f_cat_id"),
-	    	search_in		= document.getElementById("f_search_in"),
-	    	date_range		= document.getElementById("date_range"),
-	    	per_page		= document.getElementById("f_perpage"),
-			comment_url;
-
-		// for browsers that don't support the placeholder
-		// attribute. See global.js :: insert_placeholders()
-		// for more info. -pk
-		function keywords_value() {
-			if ($(keywords).data('user_data') == 'n') {
-				return '';
-			}
-			
-			return keywords.value;
-		}
-		
-		
-		comment_url = "&ajax=true&keywords="+keywords_value()+"&channel_id="+channel_id.value;
-
-		if (search_in.value == "comments") {
-			window.location = EE.BASE+"&C=content_edit&M=view_comments"+comment_url;
-		}
-
-		aoData.push( 
-			 { "name": "keywords", "value": keywords_value() },
-	         { "name": "status", "value": status.value },
-			 { "name": "channel_id", "value": channel_id.value },
-	         { "name": "cat_id", "value": cat_id.value },
-	         { "name": "search_in", "value": search_in.value },
-	         { "name": "date_range", "value": date_range.value },
-	         { "name": "per_page", "value": per_page.value }	
-		 );
-
-		oCache.iDisplayStart = iRequestStart;
-
-		/* outside pipeline? */
-		if ( oCache.iCacheLower < 0 || iRequestStart < oCache.iCacheLower || iRequestEnd > oCache.iCacheUpper ) {
-			bNeedServer = true;
-		}
-
-		/* sorting etc changed? */
-		if ( oCache.lastRequest && !bNeedServer ) {
-			for( var i=0, iLen=aoData.length ; i<iLen ; i++ ) {
-				if ( aoData[i].name != "iDisplayStart" && aoData[i].name != "iDisplayLength" && aoData[i].name != "sEcho" ) {
-					if ( aoData[i].value != oCache.lastRequest[i].value ) {
-						bNeedServer = true;
-						break;
-					}
-				}
-			}
-		}
-
-		/* Store the request for checking next time around */
-		oCache.lastRequest = aoData.slice();
-
-		if ( bNeedServer ) {
-			if ( iRequestStart < oCache.iCacheLower ) {
-				iRequestStart = iRequestStart - (iRequestLength*(iPipe-1));
-				if ( iRequestStart < 0 ) {
-					iRequestStart = 0;
-				}
-			}
-
-			oCache.iCacheLower = iRequestStart;
-			oCache.iCacheUpper = iRequestStart + (iRequestLength * iPipe);
-			oCache.iDisplayLength = fnGetKey( aoData, "iDisplayLength" );
-			fnSetKey( aoData, "iDisplayStart", iRequestStart );
-			fnSetKey( aoData, "iDisplayLength", iRequestLength * iPipe );
-
-					aoData.push(  
-			 			{ "name": "keywords", "value": keywords_value() },
-	         			{ "name": "status", "value": status.value },
-			 			{ "name": "channel_id", "value": channel_id.value },
-	         			{ "name": "cat_id", "value": cat_id.value },
-	         			{ "name": "search_in", "value": search_in.value },
-	         			{ "name": "date_range", "value": date_range.value },
-	         			{ "name": "per_page", "value": per_page.value }
-		 			);
-
-			$.getJSON( sSource, aoData, function (json) { 
-				/* Callback processing */
-				oCache.lastJson = jQuery.extend(true, {}, json);
-
-				if ( oCache.iCacheLower != oCache.iDisplayStart ) {
-					json.aaData.splice( 0, oCache.iDisplayStart-oCache.iCacheLower );
-				}
-				json.aaData.splice( oCache.iDisplayLength, json.aaData.length );
-
-				fnCallback(json)
-			});
-		} else {
-			json = jQuery.extend(true, {}, oCache.lastJson);
-			json.sEcho = sEcho; /* Update the echo for each response */
-			json.aaData.splice( 0, iRequestStart-oCache.iCacheLower );
-			json.aaData.splice( iRequestLength, json.aaData.length );
-			fnCallback(json);
-			return;
-		}
-	}
-
-		if (EE.edit.tableColumns == 9) {
-			MyCols = [null, null, { "bSortable" : false }, null, null, null, null, null, { "bSortable" : false } ];
-			MySortCol = 5;
-		} else {
-			MyCols = [null, null, { "bSortable" : false }, null, null, null, null, { "bSortable" : false } ];
-			MySortCol = 4;
-		}
 	
-		oTable = $("#entries_form .mainTable").dataTable( {	
-				"sPaginationType": "full_numbers",
-				"bLengthChange": false,
-				"aaSorting": [[ MySortCol, "desc" ]],
-				"bFilter": false,
-				"sWrapper": false,
-				"sInfo": false,
-				"bAutoWidth": false,
-				"iDisplayLength": +EE.edit.perPage,  
-				"aoColumns": MyCols,
-				"oLanguage": {
-					"sZeroRecords": EE.lang.noEntries,
-					"oPaginate": {
-						"sFirst": "<img src=\""+EE.edit.themeUrl+"images/pagination_first_button.gif\" width=\"13\" height=\"13\" alt=\"&lt; &lt;\" />",
-						"sPrevious": "<img src=\""+EE.edit.themeUrl+"images/pagination_prev_button.gif\" width=\"13\" height=\"13\" alt=\"&lt; &lt;\" />",
-						"sNext": "<img src=\""+EE.edit.themeUrl+"images/pagination_next_button.gif\" width=\"13\" height=\"13\" alt=\"&lt; &lt;\" />", 
-						"sLast": "<img src=\""+EE.edit.themeUrl+"images/pagination_last_button.gif\" width=\"13\" height=\"13\" alt=\"&lt; &lt;\" />"
-					}
-				},
-				"bProcessing": true,
-				"bServerSide": true,
-				"sAjaxSource": EE.BASE+"&C=content_edit&M=edit_ajax_filter&time=" + time,
-				"fnServerData": fnDataTablesPipeline
-			});
-
-			$("#keywords").keyup( function () {
-			/* Filter on the column (the index) of this element */
-				oTable.fnDraw();
-			});
-
-			$("select#f_channel_id").change(function () {
-				oTable.fnDraw();
-			});	
-
-			$("select#f_cat_id").change(function () {
-				oTable.fnDraw();
-			});	
-			$("select#f_status").change(function () {
-				oTable.fnDraw();
-			});
-			$("select#f_search_in").change(function () {
-				oTable.fnDraw();
-			});
-			$("select#date_range").change(function () {
-				oTable.fnDraw();
-			});
-			$("select#f_perpage").change(function () {
-				oTable.fnDraw();
-			});			
+	// Keyword filter
+	var indicator = $('.searchIndicator');
+	
+	$('table')
+	.table('add_filter', $('#keywords').closest('form'))
+	.bind('tableload', function() {
+		indicator.css('visibility', '');
+	})
+	.bind('tableupdate', function() {
+		indicator.css('visibility', 'hidden');
+	});
 	
 });
 
@@ -396,3 +219,6 @@ MB##MHHM@#ASr::;;;;;;;;rrr;;;;::::::;;;;s23XSsrr;ris;;;rsrrss;. .:;;;;;;;;;rrr;:
                     ,,,,............,rh@@BX5is;:;iX35sr;;siisr;;,,;i2S;,.;rrr;;;r;,..:;riSir;;sir,.,rir;rrss
                                     .:iA#Bh2Sirrri22SisssrsSSir;;;sSSs;::;ssrrrrsr;::;rsiSSsrsSSs;::rsssssiS
 */
+
+
+

@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -157,7 +157,7 @@ class Updater {
 			{
 				$res = $this->EE->db->query("SELECT member_id FROM exp_member_data WHERE member_id = '$member_id'");
 	
-				if ($resnum_rows() == 0)
+				if ($res->num_rows() == 0)
 				{
 					$this->EE->db->query("INSERT INTO exp_member_data (member_id) VALUES ('$member_id')");
 				}

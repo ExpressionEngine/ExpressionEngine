@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -57,7 +57,7 @@ class Updater {
 		$this->config =& $config;
 		
 		// truncate some tables
-		$trunc = array('captcha', 'sessions', 'security_hashes');
+		$trunc = array('captcha', 'sessions', 'security_hashes', 'search');
 
 		foreach ($trunc as $table_name)
 		{
@@ -191,11 +191,10 @@ class Updater {
 				$sites_with_templates[$site->site_name]['query'] = FALSE;
 			}
 
-			$sites_with_templates[$site->site_name] = 
-						array(
-							'site_id'		=> $site->site_id,
-							'site_name'		=> $site->site_name
-						);
+			$sites_with_templates[$site->site_name] = array(
+				'site_id'		=> $site->site_id,
+				'site_name'		=> $site->site_name
+			);
 		}
 
 		// This should be impossible?  If there aren't any, bail out!
@@ -220,8 +219,8 @@ class Updater {
 
 			if ( ! empty($must_remove))
 			{
-					//$removal_error = implode(', <br />', $must_remove);
-					show_error(sprintf($this->EE->lang->line('template_move_errors'), $retry));
+				//$removal_error = implode(', <br />', $must_remove);
+				show_error(sprintf($this->EE->lang->line('template_move_errors'), $retry));
 			}
 			else
 			{
@@ -412,7 +411,7 @@ class Updater {
 
 		$tables = $this->EE->db->list_tables(TRUE); // TRUE prefix limit, only operate on EE tables
 		$batch = 100;
-					
+		
 		foreach ($tables as $table)
 		{
 			$progress	= "Converting Database Table {$table}: %s";
@@ -443,14 +442,13 @@ class Updater {
 						{
 							// Wet the WHERE using all numeric fields to ensure accuracy
 							// since we have no clue what the keys for the current table are.
-							//
-							// Also check to see if this row contains any fields that have
-							// characters not shared between latin1 and utf8 (7-bit ASCII shared only).
-							// If it does, then we need to update this row.
 							if (is_numeric($value))
 							{
 								$where[$field] = $value;
 							}
+							// Also check to see if this row contains any fields that have
+							// characters not shared between latin1 and utf8 (7-bit ASCII shared only).
+							// If it does, then we need to update this row.
 							elseif (preg_match('/[^\x00-\x7F]/S', $value) > 0)
 							{
 								$update = TRUE;
@@ -460,21 +458,17 @@ class Updater {
 						if ($update === TRUE)
 						{
 							$this->EE->db->where($where);
-							
-							
 							$this->EE->db->update($table, $row, $where);
 						}
 					}
 
-					$offset = $offset + $batch;		 
+					$offset = $offset + $batch;
 				}
 			}
 
 			// finally, set the table's charset and collation in MySQL to utf8
-
 			$this->EE->db->query("ALTER TABLE `{$table}` CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci");
 		}
-		
 		
 		// And update the database to use utf8 in the future
 		$this->EE->db->query("ALTER DATABASE `{$this->EE->db->database}` CHARACTER SET utf8 COLLATE utf8_general_ci;");
@@ -628,14 +622,14 @@ BSH;
 		if ( ! is_dir(EE_APPPATH.'cache/installer'))
 		{
 			mkdir(EE_APPPATH.'cache/installer', DIR_WRITE_MODE);
-			@chmod(EE_APPPATH.'cache/installer', DIR_WRITE_MODE);	
+			@chmod(EE_APPPATH.'cache/installer', DIR_WRITE_MODE);
 		}
 
 		$filepath = EE_APPPATH.'cache/installer/update.sh';
 
 		if (file_put_contents($filepath, $data))
 		{
-			@chmod($filepath, FILE_WRITE_MODE);			
+			@chmod($filepath, FILE_WRITE_MODE);
 		}
 		
 		
@@ -1414,10 +1408,10 @@ BSH;
 				{
 					$this->EE->progress->update_state('Adding Snippet: '.$var['var_name']);
 					$data = array(
-									'site_id'			=> ($site_id == 'all') ? 0 : $site_id,
-									'snippet_name'		=> $var['var_name'],
-									'snippet_contents'	=> $var['var_value']
-								);
+						'site_id'			=> ($site_id == 'all') ? 0 : $site_id,
+						'snippet_name'		=> $var['var_name'],
+						'snippet_contents'	=> $var['var_value']
+					);
 
 					$this->EE->db->insert('snippets', $data);
 				}
@@ -1510,21 +1504,23 @@ BSH;
 
 		$now = time();
 
-		$new = gmmktime(gmdate("H", $now),
-						gmdate("i", $now),
-						gmdate("s", $now),
-						gmdate("m", $now),
-						gmdate("d", $now),
-						gmdate("Y", $now)
-						);
+		$new = gmmktime(
+			gmdate("H", $now),
+			gmdate("i", $now),
+			gmdate("s", $now),
+			gmdate("m", $now),
+			gmdate("d", $now),
+			gmdate("Y", $now)
+		);
 
-		$old = mktime(  gmdate("H", $now),
-						gmdate("i", $now),
-						gmdate("s", $now),
-						gmdate("m", $now),
-						gmdate("d", $now),
-						gmdate("Y", $now)
-						);
+		$old = mktime(
+			gmdate("H", $now),
+			gmdate("i", $now),
+			gmdate("s", $now),
+			gmdate("m", $now),
+			gmdate("d", $now),
+			gmdate("Y", $now)
+		);
 
 		$add_time = $new - $old;
 

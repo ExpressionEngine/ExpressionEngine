@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -384,24 +384,24 @@ class Channel_standalone extends Channel {
 		$this->EE->load->library('filemanager');
 		$this->EE->load->library('javascript');
 		$this->EE->load->model('admin_model');
-		$this->EE->load->model('tools_model');
+		$this->EE->load->model('file_upload_preferences_model');
 		$this->EE->load->model('channel_model');
 		
 		// Onward...
 		$which = ($this->EE->input->post('preview')) ? 'preview' : 'new';
 		
-		$upload_directories = $this->EE->tools_model->get_upload_preferences($this->EE->session->userdata('group_id'));
+		$upload_directories = $this->EE->file_upload_preferences_model->get_file_upload_preferences($this->EE->session->userdata('group_id'));
 
 		$file_list = array();
 		$directories = array();
 
-		foreach($upload_directories->result() as $row)
+		foreach($upload_directories as $row)
 		{
-			$directories[$row->id] = $row->name;
+			$directories[$row['id']] = $row['name'];
 
-			$file_list[$row->id]['id'] = $row->id;
-			$file_list[$row->id]['name'] = $row->name;
-			$file_list[$row->id]['url'] = $row->url;
+			$file_list[$row['id']]['id'] = $row['id'];
+			$file_list[$row['id']]['name'] = $row['name'];
+			$file_list[$row['id']]['url'] = $row['url'];
 		}
 
 		// Fetch Custom Fields

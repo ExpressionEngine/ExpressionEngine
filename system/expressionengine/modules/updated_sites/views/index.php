@@ -5,7 +5,6 @@
 <?=form_open('C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=updated_sites'.AMP.'method=delete_confirm')?>
 
 <?php
-	$this->table->set_template($cp_table_template);
 	$this->table->set_heading(
 		lang('updated_sites_config_name').'/'.lang('edit'),
 		lang('view_pings'),

@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -279,6 +279,8 @@ class Ip_to_nation_mcp {
 	function _datafile_to_array($file)
 	{
 		$contents = file($file);
+		
+		$master_array = array();
 
 		//  Parse file into array
 		foreach ($contents as $line)
@@ -321,7 +323,7 @@ class Ip_to_nation_mcp {
 			}
 		}
 		
-		return $master_array;
+		return ( ! empty($master_array)) ? $master_array : FALSE;
 	}
 
 	// --------------------------------------------------------------------
@@ -337,9 +339,10 @@ class Ip_to_nation_mcp {
 	 */
 	function _file_exists($file)
 	{
-		if ( ! file_exists($file))
+		if ( ! file_exists($file) || is_dir($file))
 		{
-			$this->form_validation->set_message('_file_exists', $this->lang->line('invalid_path').$file);
+			$this->EE->lang->loadfile('admin');
+			$this->EE->form_validation->set_message('_file_exists', $this->EE->lang->line('invalid_path').' '.$file);
 			return FALSE;
 		}
 		

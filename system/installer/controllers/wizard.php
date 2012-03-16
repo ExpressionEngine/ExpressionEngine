@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -24,7 +24,7 @@
  */
 class Wizard extends CI_Controller {
 
-	var $version			= '2.3.0';	// The version being installed
+	var $version			= '2.4.0';	// The version being installed
 	var $installed_version	= ''; 		// The version the user is currently running (assuming they are running EE)
 	var $minimum_php		= '5.1.6';	// Minimum version required to run EE
 	var $schema				= NULL;		// This will contain the schema object with our queries	
@@ -44,7 +44,7 @@ class Wizard extends CI_Controller {
 	var $content			= '';
 	var $title				= 'ExpressionEngine Installation and Update Wizard';
 	var $heading			= 'ExpressionEngine Installation and Update Wizard';
-	var $copyright			= 'Copyright 2003 - 2011 EllisLab, Inc. - All Rights Reserved';
+	var $copyright			= 'Copyright 2003 - 2012 EllisLab, Inc. - All Rights Reserved';
 	
 	var $now;
 	var $year;
@@ -54,7 +54,8 @@ class Wizard extends CI_Controller {
 	// These are the methods that are allowed to be called via $_GET['m']
 	// for either a new installation or an update. Note that the function names
 	// are prefixed but we don't include the prefix here.
-	var $allowed_methods = array('optionselect', 'license', 'install_form', 'do_install', 'trackback_form', 'do_update');
+	var $allowed_methods = array('optionselect', 'license', 'install_form',
+	 	'do_install', 'trackback_form', 'do_update');
 	
 	// Absolutely, positively must always be installed
 	var $required_modules = array('channel', 'member', 'stats');
@@ -62,95 +63,98 @@ class Wizard extends CI_Controller {
 	var $theme_required_modules = array();
 		
 	// Our default installed modules, if there is no "override"
-	var $default_installed_modules = array('comment', 'email', 'emoticon', 'jquery', 'member', 'query', 'rss', 'search', 'stats', 'channel', 'mailinglist', 'safecracker');
+	var $default_installed_modules = array('comment', 'email', 'emoticon',
+		'jquery', 'member', 'query', 'rss', 'search', 'stats', 'channel',
+		'mailinglist', 'safecracker');
 	
 	// Native First Party ExpressionEngine Modules (everything else is in third party folder)
-	var $native_modules = array('blacklist', 'channel', 'comment', 'commerce', 'email', 'emoticon', 'file', 'forum',
-								'gallery', 'ip_to_nation', 'jquery', 'mailinglist', 'member', 'metaweblog_api',
-								'moblog', 'pages', 'query', 'referrer', 'rss', 'safecracker', 'search', 
-								 'simple_commerce', 'stats', 'updated_sites', 'wiki');
+	var $native_modules = array('blacklist', 'channel', 'comment', 'commerce', 
+		'email', 'emoticon', 'file', 'forum', 'gallery', 'ip_to_nation', 
+		'jquery', 'mailinglist', 'member', 'metaweblog_api', 'moblog', 'pages',
+		'query', 'referrer', 'rss', 'safecracker', 'search', 'simple_commerce',
+		'stats', 'updated_sites', 'wiki');
 
 	// Third Party Modules may send error messages if something goes wrong.
 	var $module_install_errors = array(); // array that collects all error messages
 
 	// These are the values we need to set during a first time installation
 	var $userdata = array(
-						'app_version'			=> '',
-						'doc_url'				=> 'http://expressionengine.com/user_guide/',
-						'install_lock'			=> '1',
-						'ext'					=> '.php',
-						'ip'					=> '',
-						'database'				=> 'mysql',
-						'db_conntype'			=> '0',
-						'databases'				=> array(),
-						'dbdriver'				=> 'mysql',
-						'db_hostname'			=> 'localhost',
-						'db_username'			=> '',
-						'db_password'			=> '',
-						'db_name'				=> '',
-						'db_prefix'				=> 'exp',
-						'site_label'			=> '',
-						'site_name'				=> 'default_site',
-						'site_url'				=> '',
-						'site_index'			=> 'index.php',
-						'cp_url'				=> '',
-						'username'				=> '',
-						'password'				=> '',
-						'password_confirm'		=> '',
-						'screen_name'			=> '',
-						'email_address'			=> '',
-						'webmaster_email'		=> '',
-						'deft_lang'				=> 'english',
-						'theme'					=> '01',
-						'server_timezone'		=> 'UTC',
-						'daylight_savings'		=> '',
-						'redirect_method'		=> 'redirect',
-						'upload_folder'			=> 'uploads/',
-						'image_path'			=> '',
-						'javascript_path'		=> 'themes/javascript/compressed/',
-						'cp_images'				=> 'cp_images/',
-						'avatar_path'			=> '../images/avatars/',
-						'avatar_url'			=> 'images/avatars/',
-						'photo_path'			=> '../images/member_photos/',
-						'photo_url'				=> 'images/member_photos/',
-						'signature_img_path'	=> '../images/signature_attachments/',
-						'signature_img_url'		=> 'images/signature_attachments/',
-						'pm_path'				=> '../images/pm_attachments',
-						'captcha_path'			=> '../images/captchas/',
-						'theme_folder_path'		=> '../themes/',
-						'modules'				=> array()
-					);
+		'app_version'			=> '',
+		'doc_url'				=> 'http://expressionengine.com/user_guide/',
+		'install_lock'			=> '1',
+		'ext'					=> '.php',
+		'ip'					=> '',
+		'database'				=> 'mysql',
+		'db_conntype'			=> '0',
+		'databases'				=> array(),
+		'dbdriver'				=> 'mysql',
+		'db_hostname'			=> 'localhost',
+		'db_username'			=> '',
+		'db_password'			=> '',
+		'db_name'				=> '',
+		'db_prefix'				=> 'exp',
+		'site_label'			=> '',
+		'site_name'				=> 'default_site',
+		'site_url'				=> '',
+		'site_index'			=> 'index.php',
+		'cp_url'				=> '',
+		'username'				=> '',
+		'password'				=> '',
+		'password_confirm'		=> '',
+		'screen_name'			=> '',
+		'email_address'			=> '',
+		'webmaster_email'		=> '',
+		'deft_lang'				=> 'english',
+		'theme'					=> '01',
+		'server_timezone'		=> 'UTC',
+		'daylight_savings'		=> '',
+		'redirect_method'		=> 'redirect',
+		'upload_folder'			=> 'uploads/',
+		'image_path'			=> '',
+		'javascript_path'		=> 'themes/javascript/compressed/',
+		'cp_images'				=> 'cp_images/',
+		'avatar_path'			=> '../images/avatars/',
+		'avatar_url'			=> 'images/avatars/',
+		'photo_path'			=> '../images/member_photos/',
+		'photo_url'				=> 'images/member_photos/',
+		'signature_img_path'	=> '../images/signature_attachments/',
+		'signature_img_url'		=> 'images/signature_attachments/',
+		'pm_path'				=> '../images/pm_attachments',
+		'captcha_path'			=> '../images/captchas/',
+		'theme_folder_path'		=> '../themes/',
+		'modules'				=> array()
+	);
 
 
 	// These are the default values for the CodeIgniter config array.  Since the EE
 	// and CI config files are one in the same now we use this data when we write the
 	// initial config file using $this->_write_config_data()
-	var $ci_config = array(			
-							'base_url'				=> '',
-							'index_page' 			=> 'index.php',
-							'uri_protocol'			=> 'AUTO',
-							'url_suffix' 			=> '',
-							'language'				=> 'english',
-							'charset' 				=> 'UTF-8',
-							'enable_hooks' 			=> FALSE,
-							'subclass_prefix' 		=> 'EE_',
-							'permitted_uri_chars' 	=> 'a-z 0-9~%.:_\-',
-							'enable_query_strings'	=> FALSE,
-							'directory_trigger' 	=> 'D',
-							'controller_trigger' 	=> 'C',
-							'function_trigger' 		=> 'M',
-							'log_threshold' 		=> 0,
-							'log_path' 				=> '',
-							'log_date_format' 		=> 'Y-m-d H:i:s',
-							'cache_path' 			=> '',
-							'encryption_key' 		=> '',
-							'cookie_prefix'			=> '',
-							'global_xss_filtering'	=> FALSE,
-							'csrf_protection' 		=> FALSE,
-							'compress_output' 		=> FALSE,
-							'time_reference' 		=> 'local',
-							'rewrite_short_tags' 	=> TRUE			// Enabled for cleaner view files and compatibility	
-						);
+	var $ci_config = array(
+		'base_url'				=> '',
+		'index_page' 			=> 'index.php',
+		'uri_protocol'			=> 'AUTO',
+		'url_suffix' 			=> '',
+		'language'				=> 'english',
+		'charset' 				=> 'UTF-8',
+		'enable_hooks' 			=> FALSE,
+		'subclass_prefix' 		=> 'EE_',
+		'permitted_uri_chars' 	=> 'a-z 0-9~%.:_\-',
+		'enable_query_strings'	=> FALSE,
+		'directory_trigger' 	=> 'D',
+		'controller_trigger' 	=> 'C',
+		'function_trigger' 		=> 'M',
+		'log_threshold' 		=> 0,
+		'log_path' 				=> '',
+		'log_date_format' 		=> 'Y-m-d H:i:s',
+		'cache_path' 			=> '',
+		'encryption_key' 		=> '',
+		'cookie_prefix'			=> '',
+		'global_xss_filtering'	=> FALSE,
+		'csrf_protection' 		=> FALSE,
+		'compress_output' 		=> FALSE,
+		'time_reference' 		=> 'local',
+		'rewrite_short_tags' 	=> TRUE			// Enabled for cleaner view files and compatibility	
+	);
 		
 	// --------------------------------------------------------------------
 
@@ -166,12 +170,19 @@ class Wizard extends CI_Controller {
 		parent::__construct();
 		
 		// Third party constants
-		define('PATH_THIRD',	EE_APPPATH.'third_party/');
+		if ($this->config->item('third_party_path'))
+		{
+			define('PATH_THIRD',    rtrim($this->config->item('third_party_path'), '/').'/');
+		}
+		else
+		{
+			define('PATH_THIRD',	EE_APPPATH.'third_party/');
+		}
 		
 		$req_source = $this->input->server('HTTP_X_REQUESTED_WITH');
-		define('AJAX_REQUEST',	($req_source == 'XMLHttpRequest') ? TRUE : FALSE);		
+		define('AJAX_REQUEST',	($req_source == 'XMLHttpRequest') ? TRUE : FALSE);
 
-		$this->output->enable_profiler(FALSE); 		
+		$this->output->enable_profiler(FALSE);
 
 		$this->userdata['app_version'] = str_replace('.', '', $this->version);
 		
@@ -196,17 +207,19 @@ class Wizard extends CI_Controller {
 
 		// First try the current directory, if they are running the system with an admin.php file
 		$this->theme_path = substr($_SERVER['SCRIPT_FILENAME'], 0, -strlen(SELF));
-			
+
 		if (is_dir($this->theme_path.'themes'))
 		{
 			$this->theme_path .= 'themes/';
 		}
 		else
 		{
-			// must be in a public system folder so try one level back from current folder
-			$this->theme_path = str_replace(SYSDIR, '', $this->theme_path).'themes/';
+			// Must be in a public system folder so try one level back from current folder.
+			// Replace only the LAST occurance of the system folder name with nil incase the
+			// system folder name appears more than once in the path.
+			$this->theme_path = preg_replace('/\b'.preg_quote(SYSDIR).'(?!.*'.preg_quote(SYSDIR).')\b/', '', $this->theme_path).'themes/';
 		}
-
+		
 		$this->root_theme_path = $this->theme_path;
 		$this->theme_path .= 'site_themes/';
 		$this->theme_path = str_replace('//', '/', $this->theme_path);
@@ -381,7 +394,7 @@ class Wizard extends CI_Controller {
 						}
 						else
 						{
-							$this->userdata[$key] = trim($val);							
+							$this->userdata[$key] = trim($val);
 						}
 					}
 				}
@@ -398,7 +411,7 @@ class Wizard extends CI_Controller {
 		// config file, if they are running 2.0 or newer, the settings are found in the db file
 		if (isset($active_group))
 		{
-			$this->active_group = $active_group;			
+			$this->active_group = $active_group;
 		}
 
 		$move_db_data = FALSE;
@@ -406,20 +419,20 @@ class Wizard extends CI_Controller {
 		if ( ! isset($db) AND isset($config['db_hostname']))
 		{
 			$db[$this->active_group] = array(
-											'hostname'	=> $config['db_hostname'],
-											'username'	=> $config['db_username'],
-											'password'	=> $config['db_password'],
-											'database'	=> $config['db_name'],
-											'dbdriver'	=> $config['db_type'],
-											'dbprefix'	=> ($config['db_prefix'] == '') ? 'exp_' : preg_replace("#([^_])/*$#", "\\1_", $config['db_prefix']),
-											'pconnect'	=> ($config['db_conntype'] == 1) ? TRUE : FALSE,
-											'swap_pre'	=> 'exp_',
-											'db_debug'	=> TRUE, // We show our own errors
-											'cache_on'	=> FALSE,
-											'autoinit'	=> FALSE, // We'll initialize the DB manually
-											'char_set'	=> 'utf8',
-											'dbcollat'	=> 'utf8_general_ci'
-										  );
+				'hostname'	=> $config['db_hostname'],
+				'username'	=> $config['db_username'],
+				'password'	=> $config['db_password'],
+				'database'	=> $config['db_name'],
+				'dbdriver'	=> $config['db_type'],
+				'dbprefix'	=> ($config['db_prefix'] == '') ? 'exp_' : preg_replace("#([^_])/*$#", "\\1_", $config['db_prefix']),
+				'pconnect'	=> ($config['db_conntype'] == 1) ? TRUE : FALSE,
+				'swap_pre'	=> 'exp_',
+				'db_debug'	=> TRUE, // We show our own errors
+				'cache_on'	=> FALSE,
+				'autoinit'	=> FALSE, // We'll initialize the DB manually
+				'char_set'	=> 'utf8',
+				'dbcollat'	=> 'utf8_general_ci'
+			);
 			$move_db_data = TRUE;
 		}
 		
@@ -463,7 +476,7 @@ class Wizard extends CI_Controller {
 				$this->config->_append_config_1x(array('app_version' => 131));
 				
 				// Update the $config array
-				$config['app_version'] = 131; 
+				$config['app_version'] = 131;
 			}
 		}
 		
@@ -546,7 +559,7 @@ class Wizard extends CI_Controller {
 			$this->config->_append_config_1x(array(), $unset);
 		}
 
-		// Before moving on, let's load the update file to make sure it's readable		
+		// Before moving on, let's load the update file to make sure it's readable
 		if ( ! @include(APPPATH.'updates/ud_'.$this->next_update.EXT))
 		{
 			$this->_set_output('error', array('error' => $this->lang->line('unreadable_files')));
@@ -593,12 +606,12 @@ class Wizard extends CI_Controller {
 		}
 		else
 		{
-			$data['link'] = $this->set_qstr('license', str_replace('%s', $this->version, $this->lang->line('click_to_update')));			
+			$data['link'] = $this->set_qstr('license', str_replace('%s', $this->version, $this->lang->line('click_to_update')));
 		}
 		
 		$data['is_installed'] = $this->is_installed;
 
-		return $this->_set_output('optionselect', $data);	
+		return $this->_set_output('optionselect', $data);
 	}
 	
 	// --------------------------------------------------------------------
@@ -689,63 +702,59 @@ class Wizard extends CI_Controller {
 	{
 		return <<<PAPAYA
 			<script type="text/javascript">
+				$(document).ready(function(){
+					onSelectChange(); // initialize to correct values in case there was a form error
+					$("#theme_select").change(onSelectChange);
 
-						$(document).ready(function(){
-							onSelectChange(); // initialize to correct values in case there was a form error
-							$("#theme_select").change(onSelectChange);
+					$("#webmaster_email").blur( function() {
+						if ($("#email_address").val() == "")
+						{
+							$("#email_address").val($(this).val());
+						}
+					});
+				});
 
-							$("#webmaster_email").blur( function() {
-								if ($("#email_address").val() == "")
+				$.fn.setChecks = function(v, r){
+					return setChecks(this, v, (!r) ? [""] : r);
+				};
+
+				var setChecks = function(jq, v, r){	
+					jq.each(
+						function (lc){
+							if ($.inArray(this.value, v) > -1 || $.inArray(this.value, r) > -1)
+							{ 
+								this.checked = true; 
+								if ($.inArray(this.value, r) > -1)
 								{
-									$("#email_address").val($(this).val());
+									this.disabled = true;
+									$("label[for="+this.value+"] > span.req_module").show();
 								}
-							});
-						});
-
-						$.fn.setChecks = function(v, r){
-							return setChecks(this, v, (!r) ? [""] : r);
-						};
-
-
-						var setChecks = function(jq, v, r){	
-								jq.each(
-									function (lc){
-
-										if ($.inArray(this.value, v) > -1 || $.inArray(this.value, r) > -1)
-										{ 
-											this.checked = true; 
-											if ($.inArray(this.value, r) > -1)
-											{
-												this.disabled = true;
-												$("label[for="+this.value+"] > span.req_module").show();
-											}
-											else
-											{
-												this.disabled = false;
-												$("label[for="+this.value+"] > span.req_module").hide();						
-											}
-										}
-										else 
-										{
-											this.checked = false;
-											this.disabled = false;
-											$("label[for="+this.value+"] > span.req_module").hide();
-										}
-									}
-								);
-
-								return jq;
+								else
+								{
+									this.disabled = false;
+									$("label[for="+this.value+"] > span.req_module").hide();						
+								}
+							}
+							else 
+							{
+								this.checked = false;
+								this.disabled = false;
+								$("label[for="+this.value+"] > span.req_module").hide();
+							}
 						}
+					);
 
-						function onSelectChange(){
-							var selected = $("#theme_select").val();
-							var theme_modules_jason = {$theme_modules_jason}
-							var base_modules = new Array("comment", "email", "emoticon", "jquery", "rss", "search", "safecracker");
+					return jq;
+				}
 
-						   $("input[name='modules[]']").setChecks(base_modules, theme_modules_jason[selected]);
-						}
-					</script>
-		
+				function onSelectChange(){
+					var selected = $("#theme_select").val();
+					var theme_modules_jason = {$theme_modules_jason}
+					var base_modules = new Array("comment", "email", "emoticon", "jquery", "rss", "search", "safecracker");
+
+				   $("input[name='modules[]']").setChecks(base_modules, theme_modules_jason[selected]);
+				}
+			</script>
 PAPAYA;
 	}
 
@@ -871,13 +880,6 @@ PAPAYA;
 			}
 		}
 		
-		// MySQL passwords can not contain a dollar sign
-		if (strpos($this->userdata['db_password'], '$') !== FALSE)
-		{
-			$errors[] = $this->lang->line('password_no_dollar');
-
-		}
-		
 		// Is email valid?
 		if ($this->userdata['email_address'] != '' AND ! valid_email($this->userdata['email_address']))
 		{
@@ -900,20 +902,20 @@ PAPAYA;
 		// that's what is normally found in the database config file
 				
 		$db[$this->active_group] = array(
-										'hostname'	=> $this->userdata['db_hostname'],
-										'username'	=> $this->userdata['db_username'],
-										'password'	=> $this->userdata['db_password'],
-										'database'	=> $this->userdata['db_name'],
-										'dbdriver'	=> $this->userdata['dbdriver'],
-										'pconnect'	=> ($this->userdata['db_conntype'] == 1) ? TRUE : FALSE,
-										'dbprefix'	=> ($this->userdata['db_prefix'] == '') ? 'exp_' : preg_replace("#([^_])/*$#", "\\1_", $this->userdata['db_prefix']),
-										'swap_pre'	=> 'exp_',
-										'db_debug'	=> TRUE, // We show our own errors
-										'cache_on'	=> FALSE,
-										'autoinit'	=> FALSE, // We'll initialize the DB manually
-										'char_set'	=> 'utf8',
-										'dbcollat'	=> 'utf8_general_ci'
-									  );
+			'hostname'	=> $this->userdata['db_hostname'],
+			'username'	=> $this->userdata['db_username'],
+			'password'	=> $this->userdata['db_password'],
+			'database'	=> $this->userdata['db_name'],
+			'dbdriver'	=> $this->userdata['dbdriver'],
+			'pconnect'	=> ($this->userdata['db_conntype'] == 1) ? TRUE : FALSE,
+			'dbprefix'	=> ($this->userdata['db_prefix'] == '') ? 'exp_' : preg_replace("#([^_])/*$#", "\\1_", $this->userdata['db_prefix']),
+			'swap_pre'	=> 'exp_',
+			'db_debug'	=> TRUE, // We show our own errors
+			'cache_on'	=> FALSE,
+			'autoinit'	=> FALSE, // We'll initialize the DB manually
+			'char_set'	=> 'utf8',
+			'dbcollat'	=> 'utf8_general_ci'
+		);
 			
 		if ( ! $this->_db_connect($db, TRUE))
 		{
@@ -999,9 +1001,9 @@ PAPAYA;
 			}
 			
 			$stuff = array(
-							'hidden_fields' => $fields,
-							'action'		=> $this->set_qstr('do_install')
-						);
+				'hidden_fields' => $fields,
+				'action'		=> $this->set_qstr('do_install')
+			);
 
 			$this->_set_output('install_warning', $stuff);
 			return;
@@ -1175,6 +1177,12 @@ PAPAYA;
 				else
 				{
 					$this->userdata[$key] = $this->input->post($key);					
+
+					// Be a bit more friendly by trimming most inputs, but leave passwords as-is
+					if (! in_array($key, array('db_password', 'password', 'password_confirm')))
+					{
+						$this->userdata[$key] = trim($this->userdata[$key]);
+					}
 				}
 			}
 		}
@@ -1197,13 +1205,13 @@ PAPAYA;
 		
 		// Set the checkbox values
 		$prefs = array(
-						'db_conntype'		=> array(
-														'persistent' => array('persistent', 'nonpersistent')
-												),
-						'daylight_savings'	=> array(
-														'y' => array('dst1', 'dst2')
-												)
-					);
+			'db_conntype'		=> array(
+				'persistent' => array('persistent', 'nonpersistent')
+			),
+			'daylight_savings'	=> array(
+				'y' => array('dst1', 'dst2')
+			)
+		);
 		
 
 		foreach ($prefs as $name => $value)
@@ -1292,10 +1300,13 @@ PAPAYA;
 			// End URL
 			$this->refresh = TRUE;
 			$this->refresh_url = $this->set_qstr('do_update&agree=yes');
-			return $this->_set_output('update_msg', array(
-												'remaining_updates' => $this->remaining_updates,
-												'next_version'		=> $this->progress->prefix.$this->lang->line('version_update_text')
-			));
+			return $this->_set_output(
+				'update_msg', 
+				array(
+					'remaining_updates' => $this->remaining_updates,
+					'next_version'		=> $this->progress->prefix.$this->lang->line('version_update_text')
+				)
+			);
 		}
 		
 		// Set a liberal execution time limit, some of these
@@ -1424,17 +1435,20 @@ PAPAYA;
 		
 		// Prep the javascript
 		$progress_head = $this->progress->fetch_progress_header(array(
-				'process_url'			=> $this->refresh_url,
-				'progress_container'	=> '#js_progress',
-				'state_url'				=> $this->set_qstr('do_update&agree=yes&progress=yes'),
-				'end_url'				=> $this->set_qstr('do_update&agree=yes&progress=no&ajax_progress=yes')
+			'process_url'			=> $this->refresh_url,
+			'progress_container'	=> '#js_progress',
+			'state_url'				=> $this->set_qstr('do_update&agree=yes&progress=yes'),
+			'end_url'				=> $this->set_qstr('do_update&agree=yes&progress=no&ajax_progress=yes')
 		));
 		
-		$this->_set_output('update_msg', array(
-											'remaining_updates' => $this->remaining_updates,
-											'extra_header'		=> $progress_head,
-											'next_version'		=> $this->progress->prefix.$this->lang->line('version_update_text')
-		));
+		$this->_set_output(
+			'update_msg', 
+			array(
+				'remaining_updates' => $this->remaining_updates,
+				'extra_header'		=> $progress_head,
+				'next_version'		=> $this->progress->prefix.$this->lang->line('version_update_text')
+			)
+		);
 	}
 	
 	// --------------------------------------------------------------------
@@ -1575,18 +1589,18 @@ PAPAYA;
 	function _set_output($content = '', $array = array())
 	{
 		$data = array(
-						'heading'			=> $this->heading,
-						'title'				=> $this->title,
-						'refresh'			=> $this->refresh,
-						'refresh_url'		=> $this->refresh_url,
-						'image_path'		=> $this->image_path,
-						'copyright'			=> $this->copyright,
-						'version'			=> $this->version,
-						'next_version'		=> substr($this->next_update, 0, 1).'.'.substr($this->next_update, 1, 1).'.'.substr($this->next_update, 2, 1),
-						'installed_version'	=> $this->installed_version,
-						'languages'			=> $this->languages,
-						'javascript_path'	=> $this->javascript_path,
-					);
+			'heading'			=> $this->heading,
+			'title'				=> $this->title,
+			'refresh'			=> $this->refresh,
+			'refresh_url'		=> $this->refresh_url,
+			'image_path'		=> $this->image_path,
+			'copyright'			=> $this->copyright,
+			'version'			=> $this->version,
+			'next_version'		=> substr($this->next_update, 0, 1).'.'.substr($this->next_update, 1, 1).'.'.substr($this->next_update, 2, 1),
+			'installed_version'	=> $this->installed_version,
+			'languages'			=> $this->languages,
+			'javascript_path'	=> $this->javascript_path,
+		);
 
 		$data = array_merge($array, $data);
 		
@@ -1713,7 +1727,7 @@ PAPAYA;
 		$this->load->helper('directory');
 		$ext_len = strlen(EXT);
 		
-		if (($map = directory_map(EE_APPPATH.'/third_party/')) !== FALSE)
+		if (($map = directory_map(PATH_THIRD)) !== FALSE)
 		{
 			foreach ($map as $pkg_name => $files)
 			{
@@ -1737,7 +1751,7 @@ PAPAYA;
 
 						if ($file == $pkg_name)
 						{
-							$this->lang->load($file.'_lang', '', FALSE, FALSE, EE_APPPATH.'/third_party/'.$pkg_name.'/');
+							$this->lang->load($file.'_lang', '', FALSE, FALSE, PATH_THIRD.$pkg_name.'/');
 							$name = ($this->lang->line(strtolower($file).'_module_name') != FALSE) ? $this->lang->line(strtolower($file).'_module_name') : $file;			
 							$modules[$file] = array('name' => ucfirst($name), 'checked' => FALSE);
 						}
@@ -1840,16 +1854,19 @@ PAPAYA;
 		 
 		$default_group = 'site';
 		
-		$default_template_preferences = array('caching'			=> 'n',
-											  'cache_refresh'	=> 0,
-											  'php_parsing'		=> 'none', // none, input, output
-											  );
+		$default_template_preferences = array(
+			'caching'			=> 'n',
+			'cache_refresh'		=> 0,
+			'php_parsing'		=> 'none', // none, input, output
+		);
 		
 		// Uses the Labels of the default four groups, as it is easier than the Group IDs, let's be honest
-		$default_template_access = array('Banned' 	=> 'n',
-										 'Guests'	=> 'y',
-										 'Members'	=> 'y',
-										 'Pending'	=> 'y');
+		$default_template_access = array(
+			'Banned' 	=> 'n',
+			'Guests'	=> 'y',
+			'Members'	=> 'y',
+			'Pending'	=> 'y'
+		);
 		
 		$template_access = array();
 		$template_preferences = array();
@@ -1871,11 +1888,12 @@ PAPAYA;
 		 * Get the Default Preferences and Access Ready for Insert
 		 */
 		
-		$default_preferences = array('allow_php' 			=> (in_array($default_template_preferences['php_parsing'], array('input', 'output'))) ? 'y' : 'n',
-									 'php_parse_location'	=> ($default_template_preferences['php_parsing'] == 'input') ? 'i' : 'o',
-									 'cache'				=> ($default_template_preferences['caching'] == 'y') ? 'y' : 'n',
-									 'refresh'				=> (round((int) $default_template_preferences['cache_refresh']) > 0) ? round( (int) $default_template_preferences['cache_refresh']) : 0
-		 							);
+		$default_preferences = array(
+			'allow_php' 			=> (in_array($default_template_preferences['php_parsing'], array('input', 'output'))) ? 'y' : 'n',
+			'php_parse_location'	=> ($default_template_preferences['php_parsing'] == 'input') ? 'i' : 'o',
+			'cache'					=> ($default_template_preferences['caching'] == 'y') ? 'y' : 'n',
+			'refresh'				=> (round((int) $default_template_preferences['cache_refresh']) > 0) ? round( (int) $default_template_preferences['cache_refresh']) : 0
+		);
 		
 		$group_ids		= array();
 		$default_access	= array();
@@ -1907,12 +1925,13 @@ PAPAYA;
 		
 		$allowed_suffixes = array('html', 'webpage', 'php', 'css', 'xml', 'feed', 'rss', 'atom', 'static', 'txt', 'js');
 		
-		$template_type_conversions = array(	'txt'  => 'static',
-											'rss'  => 'feed',
-											'atom' => 'feed',
-											'html' => 'webpage',
-											'php'  => 'webpage',
-										  );
+		$template_type_conversions = array(
+			'txt'  => 'static',
+			'rss'  => 'feed',
+			'atom' => 'feed',
+			'html' => 'webpage',
+			'php'  => 'webpage',
+		);
 
 		if ($this->userdata['theme'] != '' && $this->userdata['theme'] != 'none' && ($fp = @opendir($this->theme_path.$this->userdata['theme'])))
 		{
@@ -1924,11 +1943,13 @@ PAPAYA;
 					
 					$group = preg_replace("#[^a-zA-Z0-9_\-/\.]#i", '', substr($folder, 0, -6));
 					
-					$data = array(	'group_id' 			=> $i,
-									'group_name'		=> $group,
-									'group_order'		=> $i,
-									'is_site_default'	=> ($default_group == $group) ? 'y' : 'n');
-									
+					$data = array(
+						'group_id' 			=> $i,
+						'group_name'		=> $group,
+						'group_order'		=> $i,
+						'is_site_default'	=> ($default_group == $group) ? 'y' : 'n'
+					);
+					
 					$this->db->insert('template_groups', $data);
 				
 					$template_groups[substr($folder, 0, -6)] = array();
@@ -1980,13 +2001,15 @@ PAPAYA;
 						
 						$done[] = $name;
 						
-						$data = array(	'group_id'			=> $i,
-										'template_name'		=> $name,
-										'template_type'		=> $type,
-										'template_data'		=> @file_get_contents($this->theme_path.$this->userdata['theme'].'/'.$folder.'/'.$file),
-										'edit_date'			=> $this->now,
-										'last_author_id'	=> 1);
-										
+						$data = array(
+							'group_id'			=> $i,
+							'template_name'		=> $name,
+							'template_type'		=> $type,
+							'template_data'		=> @file_get_contents($this->theme_path.$this->userdata['theme'].'/'.$folder.'/'.$file),
+							'edit_date'			=> $this->now,
+							'last_author_id'	=> 1
+						);
+						
 						$data = array_merge($data, $default_preferences);
 						
 						//
@@ -1999,29 +2022,33 @@ PAPAYA;
 							{
 								switch($type)
 								{
-									case 'caching'			:
+									case 'caching':
 										$data['cache'] = ($value == 'y') ? 'y' : 'n';
-									break;
-									case 'cache_refresh'	:
+										break;
+									case 'cache_refresh':
 										$data['refresh'] = round((int) $value);
-									break;
-									case 'php_parsing'		:
-										
+										break;
+									case 'php_parsing':
 										switch($value)
 										{
-											case 'input'  : $data['allow_php'] = 'y'; $data['php_parse_location'] = 'i';
-											break;
-											case 'output' : $data['allow_php'] = 'y'; $data['php_parse_location'] = 'o';
-											break;
-											case 'none'   : $data['allow_php'] = 'n'; $data['php_parse_location'] = 'o';
-											break;
+											case 'input': 
+												$data['allow_php'] = 'y'; 
+												$data['php_parse_location'] = 'i';
+												break;
+											case 'output':
+												$data['allow_php'] = 'y';
+												$data['php_parse_location'] = 'o';
+												break;
+											case 'none':
+												$data['allow_php'] = 'n';
+												$data['php_parse_location'] = 'o';
+												break;
 										}
-										
-									break;
+										break;
 								}
 							}
 						}
-										
+						
 						$this->db->insert('templates', $data);
 						
 						$template_id = $this->db->insert_id();
@@ -2093,8 +2120,8 @@ PAPAYA;
 						{
 							$this->db->insert('global_variables', array('variable_name' => $name, 'variable_data' => $contents, 'site_id' => 1));
 						}
-					}				
-				}				
+					}
+				}
 			}
 			
 			// Install any default structure and content that the theme may have
@@ -2168,7 +2195,7 @@ PAPAYA;
 
 		foreach($modules as $module)
 		{
-			$path = EE_APPPATH.'/third_party/'.$module.'/';
+			$path = PATH_THIRD.$module.'/';
 			
 			if (file_exists($path.'upd.'.$module.EXT))
 			{
@@ -2297,269 +2324,262 @@ PAPAYA;
 		}
 			
 		$config = array(
-						'app_version'					=>	$this->userdata['app_version'],
-						'license_number'				=>	trim($this->userdata['license_number']),
-						'debug'                 		=>  '1',
-						'cp_url'	            		=>  $this->userdata['cp_url'],
-						'site_index'            		=>  $this->userdata['site_index'],
-						'site_label'              		=>  $this->userdata['site_label'],
-						'site_url'              		=>  $this->userdata['site_url'],
-						'theme_folder_url'				=>  $this->userdata['site_url'].'themes/',
-						'doc_url'              			=>  $this->userdata['doc_url'],
-						'webmaster_email'       		=>  $this->userdata['webmaster_email'],
-						'webmaster_name'				=> '',
-						'channel_nomenclature'			=> 'channel',                    
-						'max_caches'					=> '150',                    
-						'captcha_url'					=>  $captcha_url,
-						'captcha_path'					=> $this->userdata['captcha_path'],
-						'captcha_font'					=>  'y',
-						'captcha_rand'					=> 'y',
-						'captcha_require_members'		=>	'n',
-						'enable_db_caching'				=>  'n',
-						'enable_sql_caching'			=>  'n',
-						'force_query_string'     		=>  'n',
-						'show_profiler'           		=>  'n',
-						'template_debugging'			=>	'n',
-						'include_seconds'				=>	'n',
-						'cookie_domain'         		=>  '',
-						'cookie_path'           		=>  '',
-						'cookie_prefix'         		=>  '',
-						'user_session_type'     		=>  'c', 
-						'admin_session_type'    		=>  'cs',
-						'allow_username_change' 		=>  'y',
-						'allow_multi_logins'    		=>  'y',
-						'password_lockout'				=>	'y',
-						'password_lockout_interval' 	=>  '1',
-						'require_ip_for_login'			=>  'y',
-						'require_ip_for_posting'		=>  'y',
-						'require_secure_passwords'		=>  'n',
-						'allow_dictionary_pw'			=>  'y',
-						'name_of_dictionary_file'		=>	'',
-						'xss_clean_uploads'				=>	'y',
-						'redirect_method'       		=>  $this->userdata['redirect_method'],
-						'deft_lang'             		=>  $this->userdata['deft_lang'],
-						'xml_lang'              		=>  'en',
-						'send_headers'          		=>  'y',
-						'gzip_output'           		=>  'n',
-						'log_referrers'         		=>  'n',
-						'max_referrers'					=>	'500',
-						'is_system_on'          		=>  'y',
-						'allow_extensions'				=>  'y',
-						'time_format'           		=>  'us',
-						'server_timezone'       		=>  $this->userdata['server_timezone'],
-						'server_offset'         		=>  '',
-						'daylight_savings'      		=>  $this->userdata['daylight_savings'],
-						'default_site_timezone'			=>  $this->userdata['server_timezone'],
-						'default_site_dst'      		=>  $this->userdata['daylight_savings'],
-						'honor_entry_dst'				=>	'y',
-						'mail_protocol'         		=>  'mail',
-						'smtp_server'           		=>  '',
-						'smtp_username'         		=>  '',
-						'smtp_password'         		=>  '',
-						'email_debug'       			=>  'n',
-						'email_charset'       			=>  'utf-8',
-						'email_batchmode'       		=>  'n',
-						'email_batch_size'      		=>  '',
-						'mail_format'           		=>  'plain',
-						'word_wrap'             		=>  'y',
-						'email_console_timelock'		=>	'5',
-						'log_email_console_msgs'		=>	'y',
-						'cp_theme'              		=>  'default',
-						'email_module_captchas'			=>	'n',
-						'log_search_terms'				=>	'y',
-						'un_min_len'            		=>  '4',
-						'pw_min_len'            		=>  '5',
-						'allow_member_registration' 	=>  'n',
-						'allow_member_localization' 	=>  'y',
-						'req_mbr_activation'    		=>  'email',
-						'new_member_notification'		=>	'n',
-						'mbr_notification_emails'		=>	'',
-						'require_terms_of_service'		=>	'y',
-						'use_membership_captcha'		=>	'n',
-						'default_member_group'  		=>  '5',
-						'profile_trigger'				=>  'member',
-						'member_theme'			  		=>  'default',
-						'enable_avatars' 				=> 'y',
-						'allow_avatar_uploads' 			=> 'n',
-						'avatar_url'					=> $this->userdata['site_url'].$this->userdata['avatar_url'],
-						'avatar_path'					=> $this->userdata['avatar_path'],
-						'avatar_max_width'				=> '100',
-						'avatar_max_height'				=> '100',
-						'avatar_max_kb'					=> '50',
-						'enable_photos' 				=> 'n',
-						'photo_url'						=> $this->userdata['site_url'].$this->userdata['photo_url'],
-						'photo_path'					=> $this->userdata['photo_path'],
-						'photo_max_width'				=> '100',
-						'photo_max_height'				=> '100',
-						'photo_max_kb'					=> '50',
-						'allow_signatures'          	=> 'y',
-						'sig_maxlength'        	  		=> '500',
-						'sig_allow_img_hotlink'        	=> 'n',
-						'sig_allow_img_upload' 			=> 'n',
-						'sig_img_url'					=> $this->userdata['site_url'].$this->userdata['signature_img_url'],
-						'sig_img_path'					=> $this->userdata['signature_img_path'],
-						'sig_img_max_width'				=> '480',
-						'sig_img_max_height'			=> '80',
-						'sig_img_max_kb'				=> '30',
-						'prv_msg_upload_path'			=> $this->userdata['pm_path'],
-						'prv_msg_max_attachments'		=> '3',
-						'prv_msg_attach_maxsize'		=> '250',
-						'prv_msg_attach_total'			=> '100',
-						'prv_msg_html_format'			=> 'safe',
-						'prv_msg_auto_links'			=> 'y',
-						'prv_msg_max_chars'				=> '6000',
-						'strict_urls'					=>	'n',
-						'site_404'						=>	'',
-						'save_tmpl_revisions'   		=>  'n',
-						'max_tmpl_revisions'			=>	'5',
-						'save_tmpl_files'   			=>  'n',
-						'tmpl_file_basepath'   			=>  realpath('./expressionengine/templates/').DIRECTORY_SEPARATOR,
-						'secure_forms'          		=>  'y',
-						'deny_duplicate_data'       	=>  'y',
-						'redirect_submitted_links'		=>  'n',
-						'enable_censoring'      		=>  'n',
-						'censored_words'       			=>  '',
-						'censor_replacement'			=>  '',
-						'banned_ips'            		=>  '',
-						'banned_emails'         		=>  '',
-						'banned_usernames'				=>	'',
-						'banned_screen_names'			=>	'',
-						'ban_action'            		=>  'restrict',
-						'ban_message'           		=>  'This site is currently unavailable',
-						'ban_destination'       		=>  'http://www.yahoo.com/',
-						'enable_emoticons'      		=>  'y',
-						'emoticon_url'					=>  $this->userdata['site_url'].'images/smileys/',
-						'recount_batch_total'   		=>  '1000',
-						'image_resize_protocol'			=>	'gd2',
-						'image_library_path'			=>	'',
-						'thumbnail_prefix'				=>	'thumb',
-						'word_separator'				=>	'dash',
-						'use_category_name'				=>	'n',
-						'reserved_category_word'		=>	'category',
-						'auto_convert_high_ascii'		=>	'n',
-						'new_posts_clear_caches'		=>	'y',
-						'auto_assign_cat_parents'		=>	'y',
-// deprecated			'remap_pm_urls'					=> 'n',
-// deprecated			'remap_pm_dest'					=> '',
-						'new_version_check' 			=> 'y',
-// deprecated			'publish_tab_behavior'			=> 'hover',
-// deprecated			'sites_tab_behavior'			=> 'hover',
-						'enable_throttling' 			=> 'n',
-						'banish_masked_ips'				=> 'y',
-						'max_page_loads' 				=> '10',
-						'time_interval' 				=> '8',
-						'lockout_time' 					=> '30',
-						'banishment_type'				=> 'message',
-						'banishment_url'				=> '',
-						'banishment_message'			=> 'You have exceeded the allowed page load frequency.',
-						'enable_search_log'				=> 'y',
-						'max_logged_searches'			=> '500',
-						'mailinglist_enabled'			=> 'y',
-						'mailinglist_notify'			=> 'n',
-						'mailinglist_notify_emails'		=> '',
-						'memberlist_order_by'			=> "total_posts",
-						'memberlist_sort_order'			=> "desc",
-						'memberlist_row_limit'			=> "20",
-						'is_site_on'          			=> 'y',
-						'theme_folder_path'				=> $this->userdata['theme_folder_path'],
-					  );
+			'app_version'					=>	$this->userdata['app_version'],
+			'license_number'				=>	trim($this->userdata['license_number']),
+			'debug'							=>	'1',
+			'cp_url'						=>	$this->userdata['cp_url'],
+			'site_index'					=>	$this->userdata['site_index'],
+			'site_label'					=>	$this->userdata['site_label'],
+			'site_url'						=>	$this->userdata['site_url'],
+			'theme_folder_url'				=>	$this->userdata['site_url'].'themes/',
+			'doc_url'						=>	$this->userdata['doc_url'],
+			'webmaster_email'				=>	$this->userdata['webmaster_email'],
+			'webmaster_name'				=> '',
+			'channel_nomenclature'			=> 'channel',					 
+			'max_caches'					=> '150',					 
+			'captcha_url'					=>	$captcha_url,
+			'captcha_path'					=> $this->userdata['captcha_path'],
+			'captcha_font'					=>	'y',
+			'captcha_rand'					=> 'y',
+			'captcha_require_members'		=>	'n',
+			'enable_db_caching'				=>	'n',
+			'enable_sql_caching'			=>	'n',
+			'force_query_string'			=>	'n',
+			'show_profiler'					=>	'n',
+			'template_debugging'			=>	'n',
+			'include_seconds'				=>	'n',
+			'cookie_domain'					=>	'',
+			'cookie_path'					=>	'',
+			'cookie_prefix'					=>	'',
+			'user_session_type'				=>	'c', 
+			'admin_session_type'			=>	'cs',
+			'allow_username_change'			=>	'y',
+			'allow_multi_logins'			=>	'y',
+			'password_lockout'				=>	'y',
+			'password_lockout_interval'		=>	'1',
+			'require_ip_for_login'			=>	'y',
+			'require_ip_for_posting'		=>	'y',
+			'require_secure_passwords'		=>	'n',
+			'allow_dictionary_pw'			=>	'y',
+			'name_of_dictionary_file'		=>	'',
+			'xss_clean_uploads'				=>	'y',
+			'redirect_method'				=>	$this->userdata['redirect_method'],
+			'deft_lang'						=>	$this->userdata['deft_lang'],
+			'xml_lang'						=>	'en',
+			'send_headers'					=>	'y',
+			'gzip_output'					=>	'n',
+			'log_referrers'					=>	'n',
+			'max_referrers'					=>	'500',
+			'is_system_on'					=>	'y',
+			'allow_extensions'				=>	'y',
+			'time_format'					=>	'us',
+			'server_timezone'				=>	$this->userdata['server_timezone'],
+			'server_offset'					=>	'',
+			'daylight_savings'				=>	$this->userdata['daylight_savings'],
+			'default_site_timezone'			=>	$this->userdata['server_timezone'],
+			'default_site_dst'				=>	$this->userdata['daylight_savings'],
+			'honor_entry_dst'				=>	'y',
+			'mail_protocol'					=>	'mail',
+			'smtp_server'					=>	'',
+			'smtp_username'					=>	'',
+			'smtp_password'					=>	'',
+			'email_debug'					=>	'n',
+			'email_charset'					=>	'utf-8',
+			'email_batchmode'				=>	'n',
+			'email_batch_size'				=>	'',
+			'mail_format'					=>	'plain',
+			'word_wrap'						=>	'y',
+			'email_console_timelock'		=>	'5',
+			'log_email_console_msgs'		=>	'y',
+			'cp_theme'						=>	'default',
+			'email_module_captchas'			=>	'n',
+			'log_search_terms'				=>	'y',
+			'un_min_len'					=>	'4',
+			'pw_min_len'					=>	'5',
+			'allow_member_registration'		=>	'n',
+			'allow_member_localization'		=>	'y',
+			'req_mbr_activation'			=>	'email',
+			'new_member_notification'		=>	'n',
+			'mbr_notification_emails'		=>	'',
+			'require_terms_of_service'		=>	'y',
+			'use_membership_captcha'		=>	'n',
+			'default_member_group'			=>	'5',
+			'profile_trigger'				=>	'member',
+			'member_theme'					=>	'default',
+			'enable_avatars'				=> 'y',
+			'allow_avatar_uploads'			=> 'n',
+			'avatar_url'					=> $this->userdata['site_url'].$this->userdata['avatar_url'],
+			'avatar_path'					=> $this->userdata['avatar_path'],
+			'avatar_max_width'				=> '100',
+			'avatar_max_height'				=> '100',
+			'avatar_max_kb'					=> '50',
+			'enable_photos'					=> 'n',
+			'photo_url'						=> $this->userdata['site_url'].$this->userdata['photo_url'],
+			'photo_path'					=> $this->userdata['photo_path'],
+			'photo_max_width'				=> '100',
+			'photo_max_height'				=> '100',
+			'photo_max_kb'					=> '50',
+			'allow_signatures'				=> 'y',
+			'sig_maxlength'					=> '500',
+			'sig_allow_img_hotlink'			=> 'n',
+			'sig_allow_img_upload'			=> 'n',
+			'sig_img_url'					=> $this->userdata['site_url'].$this->userdata['signature_img_url'],
+			'sig_img_path'					=> $this->userdata['signature_img_path'],
+			'sig_img_max_width'				=> '480',
+			'sig_img_max_height'			=> '80',
+			'sig_img_max_kb'				=> '30',
+			'prv_msg_upload_path'			=> $this->userdata['pm_path'],
+			'prv_msg_max_attachments'		=> '3',
+			'prv_msg_attach_maxsize'		=> '250',
+			'prv_msg_attach_total'			=> '100',
+			'prv_msg_html_format'			=> 'safe',
+			'prv_msg_auto_links'			=> 'y',
+			'prv_msg_max_chars'				=> '6000',
+			'strict_urls'					=>	'n',
+			'site_404'						=>	'',
+			'save_tmpl_revisions'			=>	'n',
+			'max_tmpl_revisions'			=>	'5',
+			'save_tmpl_files'				=>	'n',
+			'tmpl_file_basepath'			=>	realpath('./expressionengine/templates/').DIRECTORY_SEPARATOR,
+			'secure_forms'					=>	'y',
+			'deny_duplicate_data'			=>	'y',
+			'redirect_submitted_links'		=>	'n',
+			'enable_censoring'				=>	'n',
+			'censored_words'				=>	'',
+			'censor_replacement'			=>	'',
+			'banned_ips'					=>	'',
+			'banned_emails'					=>	'',
+			'banned_usernames'				=>	'',
+			'banned_screen_names'			=>	'',
+			'ban_action'					=>	'restrict',
+			'ban_message'					=>	'This site is currently unavailable',
+			'ban_destination'				=>	'http://www.yahoo.com/',
+			'enable_emoticons'				=>	'y',
+			'emoticon_url'					=>	$this->userdata['site_url'].'images/smileys/',
+			'recount_batch_total'			=>	'1000',
+			'image_resize_protocol'			=>	'gd2',
+			'image_library_path'			=>	'',
+			'thumbnail_prefix'				=>	'thumb',
+			'word_separator'				=>	'dash',
+			'use_category_name'				=>	'n',
+			'reserved_category_word'		=>	'category',
+			'auto_convert_high_ascii'		=>	'n',
+			'new_posts_clear_caches'		=>	'y',
+			'auto_assign_cat_parents'		=>	'y',
+			'new_version_check'				=> 'y',
+			'enable_throttling'				=> 'n',
+			'banish_masked_ips'				=> 'y',
+			'max_page_loads'				=> '10',
+			'time_interval'					=> '8',
+			'lockout_time'					=> '30',
+			'banishment_type'				=> 'message',
+			'banishment_url'				=> '',
+			'banishment_message'			=> 'You have exceeded the allowed page load frequency.',
+			'enable_search_log'				=> 'y',
+			'max_logged_searches'			=> '500',
+			'mailinglist_enabled'			=> 'y',
+			'mailinglist_notify'			=> 'n',
+			'mailinglist_notify_emails'		=> '',
+			'memberlist_order_by'			=> "total_posts",
+			'memberlist_sort_order'			=> "desc",
+			'memberlist_row_limit'			=> "20",
+			'is_site_on'					=> 'y',
+			'theme_folder_path'				=> $this->userdata['theme_folder_path'],
+		);
 	
-			// Default Administration Prefs
-			$admin_default = array(
-								'site_index',
-								'site_url',
-								'theme_folder_url',
-								'webmaster_email',
-								'webmaster_name',
-								'channel_nomenclature',
-								'max_caches',
-								'captcha_url',
-								'captcha_path',
-								'captcha_font',
-								'captcha_rand',
-								'captcha_require_members',
-								'enable_db_caching',
-								'enable_sql_caching',
-								'force_query_string',
-								'show_profiler',
-								'template_debugging',
-								'include_seconds',
-								'cookie_domain',
-								'cookie_path',
-								'user_session_type',
-								'admin_session_type',
-								'allow_username_change',
-								'allow_multi_logins',
-								'password_lockout',
-								'password_lockout_interval',
-								'require_ip_for_login',
-								'require_ip_for_posting',
-								'require_secure_passwords',
-								'allow_dictionary_pw',
-								'name_of_dictionary_file',
-								'xss_clean_uploads',
-								'redirect_method',
-								'deft_lang',
-								'xml_lang',
-								'send_headers',
-								'gzip_output',
-								'log_referrers',
-								'max_referrers',
-								'time_format',
-								'server_timezone',
-								'server_offset',
-								'daylight_savings',
-								'default_site_timezone',
-								'default_site_dst',
-								'honor_entry_dst',
-								'mail_protocol',
-								'smtp_server',
-								'smtp_username',
-								'smtp_password',
-								'email_debug',
-								'email_charset',
-								'email_batchmode',
-								'email_batch_size',
-								'mail_format',
-								'word_wrap',
-								'email_console_timelock',
-								'log_email_console_msgs',
-								'cp_theme',
-								'email_module_captchas',
-								'log_search_terms',
-								'secure_forms',
-								'deny_duplicate_data',
-								'redirect_submitted_links',
-								'enable_censoring',
-								'censored_words',
-								'censor_replacement',
-								'banned_ips',
-								'banned_emails',
-								'banned_usernames',
-								'banned_screen_names',
-								'ban_action',
-								'ban_message',
-								'ban_destination',
-								'enable_emoticons',
-								'emoticon_url',
-								'recount_batch_total',
-// deprecated					'remap_pm_urls',  		// Get out of Channel Prefs
-// deprecated					'remap_pm_dest',		// Get out of Channel Prefs
-								'new_version_check',
-// deprecated					'publish_tab_behavior',
-// deprecated					'sites_tab_behavior',
-								'enable_throttling',
-								'banish_masked_ips',
-								'max_page_loads',
-								'time_interval',
-								'lockout_time',
-								'banishment_type',
-								'banishment_url',
-								'banishment_message',
-								'enable_search_log',
-								'max_logged_searches',
-								'theme_folder_path',
-								'is_site_on');
+		// Default Administration Prefs
+		$admin_default = array(
+			'site_index',
+			'site_url',
+			'theme_folder_url',
+			'webmaster_email',
+			'webmaster_name',
+			'channel_nomenclature',
+			'max_caches',
+			'captcha_url',
+			'captcha_path',
+			'captcha_font',
+			'captcha_rand',
+			'captcha_require_members',
+			'enable_db_caching',
+			'enable_sql_caching',
+			'force_query_string',
+			'show_profiler',
+			'template_debugging',
+			'include_seconds',
+			'cookie_domain',
+			'cookie_path',
+			'user_session_type',
+			'admin_session_type',
+			'allow_username_change',
+			'allow_multi_logins',
+			'password_lockout',
+			'password_lockout_interval',
+			'require_ip_for_login',
+			'require_ip_for_posting',
+			'require_secure_passwords',
+			'allow_dictionary_pw',
+			'name_of_dictionary_file',
+			'xss_clean_uploads',
+			'redirect_method',
+			'deft_lang',
+			'xml_lang',
+			'send_headers',
+			'gzip_output',
+			'log_referrers',
+			'max_referrers',
+			'time_format',
+			'server_timezone',
+			'server_offset',
+			'daylight_savings',
+			'default_site_timezone',
+			'default_site_dst',
+			'honor_entry_dst',
+			'mail_protocol',
+			'smtp_server',
+			'smtp_username',
+			'smtp_password',
+			'email_debug',
+			'email_charset',
+			'email_batchmode',
+			'email_batch_size',
+			'mail_format',
+			'word_wrap',
+			'email_console_timelock',
+			'log_email_console_msgs',
+			'cp_theme',
+			'email_module_captchas',
+			'log_search_terms',
+			'secure_forms',
+			'deny_duplicate_data',
+			'redirect_submitted_links',
+			'enable_censoring',
+			'censored_words',
+			'censor_replacement',
+			'banned_ips',
+			'banned_emails',
+			'banned_usernames',
+			'banned_screen_names',
+			'ban_action',
+			'ban_message',
+			'ban_destination',
+			'enable_emoticons',
+			'emoticon_url',
+			'recount_batch_total',
+			'new_version_check',
+			'enable_throttling',
+			'banish_masked_ips',
+			'max_page_loads',
+			'time_interval',
+			'lockout_time',
+			'banishment_type',
+			'banishment_url',
+			'banishment_message',
+			'enable_search_log',
+			'max_logged_searches',
+			'theme_folder_path',
+			'is_site_on'
+		);
 		
 		$site_prefs = array();
 		
@@ -2585,50 +2605,52 @@ PAPAYA;
 		$this->db->update('sites', array('site_mailinglist_preferences' => base64_encode(serialize($site_prefs))));
 
 		// Default Members Prefs
-		$member_default = array('un_min_len',
-								'pw_min_len',
-								'allow_member_registration',
-								'allow_member_localization',
-								'req_mbr_activation',
-								'new_member_notification',
-								'mbr_notification_emails',
-								'require_terms_of_service',
-								'use_membership_captcha',
-								'default_member_group',
-								'profile_trigger',
-								'member_theme',
-								'enable_avatars',
-								'allow_avatar_uploads',
-								'avatar_url',
-								'avatar_path',
-								'avatar_max_width',
-								'avatar_max_height',
-								'avatar_max_kb',
-								'enable_photos',
-								'photo_url',
-								'photo_path',
-								'photo_max_width',
-								'photo_max_height',
-								'photo_max_kb',
-								'allow_signatures',
-								'sig_maxlength',
-								'sig_allow_img_hotlink',
-								'sig_allow_img_upload',
-								'sig_img_url',
-								'sig_img_path',
-								'sig_img_max_width',
-								'sig_img_max_height',
-								'sig_img_max_kb',
-								'prv_msg_upload_path',
-								'prv_msg_max_attachments',
-								'prv_msg_attach_maxsize',
-								'prv_msg_attach_total',
-								'prv_msg_html_format',
-								'prv_msg_auto_links',
-								'prv_msg_max_chars',
-								'memberlist_order_by',
-								'memberlist_sort_order',
-								'memberlist_row_limit');
+		$member_default = array(
+			'un_min_len',
+			'pw_min_len',
+			'allow_member_registration',
+			'allow_member_localization',
+			'req_mbr_activation',
+			'new_member_notification',
+			'mbr_notification_emails',
+			'require_terms_of_service',
+			'use_membership_captcha',
+			'default_member_group',
+			'profile_trigger',
+			'member_theme',
+			'enable_avatars',
+			'allow_avatar_uploads',
+			'avatar_url',
+			'avatar_path',
+			'avatar_max_width',
+			'avatar_max_height',
+			'avatar_max_kb',
+			'enable_photos',
+			'photo_url',
+			'photo_path',
+			'photo_max_width',
+			'photo_max_height',
+			'photo_max_kb',
+			'allow_signatures',
+			'sig_maxlength',
+			'sig_allow_img_hotlink',
+			'sig_allow_img_upload',
+			'sig_img_url',
+			'sig_img_path',
+			'sig_img_max_width',
+			'sig_img_max_height',
+			'sig_img_max_kb',
+			'prv_msg_upload_path',
+			'prv_msg_max_attachments',
+			'prv_msg_attach_maxsize',
+			'prv_msg_attach_total',
+			'prv_msg_html_format',
+			'prv_msg_auto_links',
+			'prv_msg_max_chars',
+			'memberlist_order_by',
+			'memberlist_sort_order',
+			'memberlist_row_limit'
+		);
 		
 		$site_prefs = array();
 		
@@ -2640,14 +2662,15 @@ PAPAYA;
 		$this->db->where('site_id', 1);
 		$this->db->update('sites', array('site_member_preferences' => base64_encode(serialize($site_prefs))));
 		
-		// Default Templates Prefs		
-		$template_default = array('strict_urls',
-								  'site_404',
-								  'save_tmpl_revisions',
-								  'max_tmpl_revisions',
-								  'save_tmpl_files',
-								  'tmpl_file_basepath'
-								);
+		// Default Templates Prefs
+		$template_default = array(
+			'strict_urls',
+			'site_404',
+			'save_tmpl_revisions',
+			'max_tmpl_revisions',
+			'save_tmpl_files',
+			'tmpl_file_basepath'
+		);
 		$site_prefs = array();
 		
 		foreach($template_default as $value)
@@ -2657,17 +2680,19 @@ PAPAYA;
 		
 		$this->db->where('site_id', 1);
 		$this->db->update('sites', array('site_template_preferences' => base64_encode(serialize($site_prefs))));
-										
+		
 		// Default Channels Prefs
-		$channel_default = array('image_resize_protocol',
-								'image_library_path',
-								'thumbnail_prefix',
-								'word_separator',
-								'use_category_name',
-								'reserved_category_word',
-								'auto_convert_high_ascii',
-								'new_posts_clear_caches',
-								'auto_assign_cat_parents');
+		$channel_default = array(
+			'image_resize_protocol',
+			'image_library_path',
+			'thumbnail_prefix',
+			'word_separator',
+			'use_category_name',
+			'reserved_category_word',
+			'auto_convert_high_ascii',
+			'new_posts_clear_caches',
+			'auto_assign_cat_parents'
+		);
 		
 		$site_prefs = array();
 		
@@ -2752,7 +2777,7 @@ PAPAYA;
 			else
 			{
 				$val = str_replace("\\\"", "\"", $val);
-				$val = str_replace("\\'", "'", $val);			
+				$val = str_replace("\\'", "'", $val);
 				$val = str_replace('\\\\', '\\', $val);
 			
 				$val = str_replace('\\', '\\\\', $val);
@@ -2811,21 +2836,21 @@ PAPAYA;
 	function _write_db_config($db = array(), $active_group = 'expressionengine')
 	{
 		$prototype = array(
-							'hostname'	=> 'localhost',
-							'username'	=> '',
-							'password'	=> '',
-							'database'	=> '',
-							'dbdriver'	=> 'mysql',
-							'dbprefix'	=> 'exp_',
-							'swap_pre'	=> 'exp_',
-							'pconnect'	=> FALSE,
-							'db_debug'	=> TRUE,
-							'cache_on'	=> FALSE,
-							'cachedir'	=> EE_APPPATH.'cache/db_cache/',
-							'autoinit'	=> TRUE,
-							'char_set'	=> 'utf8',
-							'dbcollat'	=> 'utf8_general_ci'
-						);
+			'hostname'	=> 'localhost',
+			'username'	=> '',
+			'password'	=> '',
+			'database'	=> '',
+			'dbdriver'	=> 'mysql',
+			'dbprefix'	=> 'exp_',
+			'swap_pre'	=> 'exp_',
+			'pconnect'	=> FALSE,
+			'db_debug'	=> TRUE,
+			'cache_on'	=> FALSE,
+			'cachedir'	=> EE_APPPATH.'cache/db_cache/',
+			'autoinit'	=> TRUE,
+			'char_set'	=> 'utf8',
+			'dbcollat'	=> 'utf8_general_ci'
+		);
 	
 		require $this->config->database_path;
 		
@@ -2865,12 +2890,13 @@ PAPAYA;
 					if (is_bool($v))
 					{
 						$v = ($v == TRUE) ? 'TRUE' : 'FALSE';
-					
+
 						$str .= "\$db['".$key."']['".$k."'] = ".$v.";\n";
 					}
 					else
 					{
-						$str .= "\$db['".$key."']['".$k."'] = \"".addslashes($v)."\";\n";
+						$v = str_replace(array('\\', "'"), array('\\\\', "\\'"), $v);
+						$str .= "\$db['".$active_group."']['".$k."'] = '".$v."';\n";
 					}
 				}
 			}
@@ -2884,7 +2910,8 @@ PAPAYA;
 				}
 				else
 				{
-					$str .= "\$db['".$active_group."']['".$key."'] = \"".$val."\";\n";
+					$val = str_replace(array('\\', "'"), array('\\\\', "\\'"), $val);
+					$str .= "\$db['".$active_group."']['".$key."'] = '".$val."';\n";
 				}
 			}		
 		} 
@@ -2934,7 +2961,7 @@ PAPAYA;
 			}
 			else
 			{
-				$path = EE_APPPATH.'/third_party/'.$module.'/';
+				$path = PATH_THIRD.$module.'/';
 			}
 			
 			if (file_exists($path.'upd.'.$module.EXT))

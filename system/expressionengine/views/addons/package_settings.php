@@ -20,7 +20,6 @@ if ($EE_view_disable !== TRUE)
 				<?=form_open($form_action)?>
 				
 				<?php
-				$this->table->set_template($cp_table_template);
 				$this->table->set_heading(
 										array('data' => lang('component'), 'style' => 'width:40%;'),
 										array('data' => lang('status')),
@@ -29,9 +28,11 @@ if ($EE_view_disable !== TRUE)
 
 				foreach ($components as $comp => $info)
 				{
-					$fields  = form_radio('install_'.$comp, 'install', $info['installed']).NBS.lang('install').
-											NBS.NBS.NBS.NBS.NBS.
-											form_radio('install_'.$comp, 'uninstall', ! $info['installed']).NBS.lang('uninstall');
+					$fields = form_radio('install_'.$comp, 'install', ! $info['installed'], 'id="install_'.$comp.'"').NBS.
+						form_label(lang('install'), 'install_'.$comp).
+						NBS.NBS.NBS.NBS.NBS.
+						form_radio('install_'.$comp, 'uninstall', $info['installed'], 'id="uninstall_'.$comp.'"').NBS.
+						form_label(lang('uninstall'), 'uninstall_'.$comp);
 					
 					if (isset($required[$comp]) && count($required[$comp]))
 					{

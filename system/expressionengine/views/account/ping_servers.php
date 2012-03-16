@@ -8,7 +8,6 @@
 		<p><?=lang('define_ping_servers')?></p>
 
 		<?php 
-		$this->table->set_template($cp_table_template);
 		$this->table->set_heading(
 								lang('server_name'),
 								lang('server_url'),

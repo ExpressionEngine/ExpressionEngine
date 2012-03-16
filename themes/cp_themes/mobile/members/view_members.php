@@ -48,7 +48,6 @@ if ($EE_view_disable !== TRUE)
 	<?php
 		if ($member_list != FALSE):
 
-		$this->table->set_template($cp_table_template);
 		$this->table->set_heading(
 			lang('username'), 
 			lang('screen_name'), 

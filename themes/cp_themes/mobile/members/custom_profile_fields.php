@@ -16,7 +16,6 @@ if ($EE_view_disable !== TRUE)
 
 	<?php if ($fields->num_rows() > 0):
 
-		$this->table->set_template($cp_table_template);
 		$this->table->set_heading(
 			lang('field_id'), 
 			lang('fieldlabel'), 

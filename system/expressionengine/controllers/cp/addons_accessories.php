@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -74,7 +74,7 @@ class Addons_accessories extends CI_Controller {
 		
 		$accessories = $this->addons->get_files('accessories');
 		$installed = $this->addons->get_installed('accessories');
-	
+
 		$data = $this->human_names;
 		$num_all_member_groups = count($data['member_groups']);
 		$num_all_controllers = count($data['controllers']);
@@ -103,10 +103,10 @@ class Addons_accessories extends CI_Controller {
 			if (isset($installed[$name]))
 			{				
 				$accessories[$name]['acc_pref_url'] = BASE.AMP.'C=addons_accessories'.AMP.'M=edit_prefs'.AMP.'accessory='.$name;
-				$accessories[$name]['acc_install'] = array(
-														'href' => BASE.AMP.'C=addons_accessories'.AMP.'M=uninstall'.AMP.'accessory='.$name,
-														'title' => lang('uninstall')
-														);
+				$accessories[$name]['acc_install'] = anchor(
+					BASE.AMP.'C=addons_accessories'.AMP.'M=uninstall'.AMP.'accessory='.$name,
+					lang('uninstall')
+				);
 
 				// Work out the human names (if needed)
 				$installed[$name]['member_groups'] = explode('|', $installed[$name]['member_groups']);
@@ -171,10 +171,10 @@ class Addons_accessories extends CI_Controller {
 			else
 			{
 				$accessories[$name]['acc_pref_url'] = '';
-				$accessories[$name]['acc_install'] = array(
-														'href' => BASE.AMP.'C=addons_accessories'.AMP.'M=install'.AMP.'accessory='.$name,
-														'title' => lang('install')
-														);
+				$accessories[$name]['acc_install'] = anchor(
+					BASE.AMP.'C=addons_accessories'.AMP.'M=install'.AMP.'accessory='.$name,
+					lang('install')
+				);
 				$accessories[$name]['acc_member_groups'] = '--';
 				$accessories[$name]['acc_controller'] = '--';
 			}
@@ -327,7 +327,6 @@ class Addons_accessories extends CI_Controller {
 
 		$this->load->library('table');
 		$this->load->model('member_model');
-		$this->load->helper('form');
 
 		$this->jquery->plugin(BASE.AMP.'C=javascript'.AMP.'M=load'.AMP.'plugin=tablesorter', TRUE);
 

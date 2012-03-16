@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -499,9 +499,6 @@ class Simple_commerce {
 
 				//  Is this a repeat, perhaps?
 				//  Note- subscription signups do not have a txn_id so we check only non-subscriptions
-			
-				$query = $this->EE->db->query("SELECT COUNT(*) AS count FROM exp_simple_commerce_purchases
-								 WHERE txn_id = '".$this->EE->db->escape_str($this->post['txn_id'])."'");
 								 
 				$this->EE->db->where('txn_id', $this->post['txn_id']); 
 				$this->EE->db->from('exp_simple_commerce_purchases');
@@ -898,11 +895,11 @@ class Simple_commerce {
 		$this->EE->db->where('paypal_subscriber_id', $this->post['subscr_id']);
 		$query = $this->EE->db->get('exp_simple_commerce_purchases');
 
-// what if multiple subscriptions?  item_number viable??? -rob1
-// http://articles.techrepublic.com.com/5100-10878_11-5331883.html
-// k- 0 is still subscribed.  If it has a date?  They were unsubscribed then.  So- null if not subscription type.
-     
+		// What if multiple subscriptions?  
+		// Note that paypal_subscriber_id is unique to each subscription despite the way it sounds
 
+		// k- 0 is still subscribed.  If it has a date?  
+		// They were unsubscribed then.  So- null if not subscription type.
      
         if ($query->num_rows() == 0)
         {
@@ -994,9 +991,10 @@ class Simple_commerce {
 		$this->EE->db->where('paypal_subscriber_id', $this->post['subscr_id']);
 		$query = $this->EE->db->get('exp_simple_commerce_purchases');
 
-// what if multiple subscriptions?  item_number viable??? -rob1
-// http://articles.techrepublic.com.com/5100-10878_11-5331883.html
-// k- 0 is still subscribed.  If it has a date?  They were unsubscribed then.  So- null if not subscription type.
+		// What if multiple subscriptions?  
+		// Note that paypal_subscriber_id is unique to each subscription despite the way it sounds
+		// k- 0 is still subscribed.  If it has a date?  
+		// They were unsubscribed then.  So- null if not subscription type.
         					 
         if ($query->num_rows() == 0)
         {

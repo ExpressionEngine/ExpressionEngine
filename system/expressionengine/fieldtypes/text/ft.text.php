@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -98,16 +98,21 @@ class Text_ft extends EE_Fieldtype {
 	{
 		$type = (isset($this->settings['field_content_type'])) ? $this->settings['field_content_type'] : 'all';
 		
-		$data = $this->_format_number($data, $type);
-		
-		return form_input(array(
+		$field = array(
 			'name'		=> $this->field_name,
 			'id'		=> $this->field_name,
-			'value'		=> $data,
+			'value'		=> $this->_format_number($data, $type),
 			'dir'		=> $this->settings['field_text_direction'],
-			'maxlength'	=> $this->settings['field_maxl'], 
 			'field_content_type' => $type
-		));
+		);
+
+		// maxlength attribute should only appear if its value is > 0
+		if ($this->settings['field_maxl'])
+		{
+			$field['maxlength'] = $this->settings['field_maxl'];
+		}
+
+		return form_input($field);
 	}
 	
 	// --------------------------------------------------------------------

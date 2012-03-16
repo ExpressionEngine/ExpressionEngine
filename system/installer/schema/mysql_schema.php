@@ -61,7 +61,6 @@ class EE_Schema {
 		
 		$Q[] = "CREATE TABLE exp_sessions (
 			  session_id varchar(40) default '0' NOT NULL,
-			  site_id INT(4) UNSIGNED NOT NULL DEFAULT 1,
 			  member_id int(10) default '0' NOT NULL,
 			  admin_sess tinyint(1) default '0' NOT NULL,
 			  ip_address varchar(16) default '0' NOT NULL,
@@ -69,7 +68,6 @@ class EE_Schema {
 			  last_activity int(10) unsigned DEFAULT '0' NOT NULL,
 			  PRIMARY KEY `session_id` (`session_id`),
 			  KEY `member_id` (`member_id`),
-			  KEY `site_id` (`site_id`),
 			  KEY `last_activity_idx` (`last_activity`)
 			)";
 		
@@ -286,7 +284,6 @@ class EE_Schema {
 			  password varchar(128) NOT NULL,
 			  salt varchar(128) NOT NULL DEFAULT '',
 			  unique_id varchar(40) NOT NULL,
-			  remember_me varchar(32) NOT NULL DEFAULT '',
 			  crypt_key varchar(40) NULL DEFAULT NULL,
 			  authcode varchar(10) NULL DEFAULT NULL,
 			  email varchar(72) NOT NULL,
@@ -1235,24 +1232,12 @@ class EE_Schema {
 				`title` varchar(255) DEFAULT NULL,
 				`upload_location_id` int(4) unsigned DEFAULT '0',
 				`rel_path` varchar(255) DEFAULT NULL,
-				`status` char(1) DEFAULT 'o',
 				`mime_type` varchar(255) DEFAULT NULL,
 				`file_name` varchar(255) DEFAULT NULL,
 				`file_size` int(10) DEFAULT '0',
-				`caption` text,
-				`field_1` text,
-  				`field_1_fmt` tinytext,
-				`field_2` text,
-				`field_2_fmt` tinytext,
-				`field_3` text,
-				`field_3_fmt` tinytext,
-				`field_4` text,
-				`field_4_fmt` tinytext,
-				`field_5` text,
-				`field_5_fmt` tinytext,
-				`field_6` text,
-				`field_6_fmt` tinytext,
-				`metadata` mediumtext,
+				`description` text,
+				`credit` varchar(255) DEFAULT NULL,
+				`location` varchar(255) DEFAULT NULL,
 				`uploaded_by_member_id` int(10) unsigned DEFAULT '0',
 				`upload_date` int(10) DEFAULT NULL,
 				`modified_by_member_id` int(10) unsigned DEFAULT '0',
@@ -1275,6 +1260,7 @@ class EE_Schema {
 		
 		$Q[] = "CREATE TABLE `exp_file_dimensions` (
 				`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+				`site_id` int(4) unsigned DEFAULT '1',
 				`upload_location_id` int(4) unsigned DEFAULT NULL,
   				`title` varchar(255) DEFAULT '',
 				`short_name` varchar(255) DEFAULT '',
@@ -1301,8 +1287,8 @@ class EE_Schema {
 				`wm_hor_alignment` varchar(10) DEFAULT 'left',
 				`wm_padding` int(3) unsigned DEFAULT NULL,
 				`wm_opacity` int(3) unsigned DEFAULT NULL,
-				`wm_x_offset` int(4) unsigned DEFAULT NULL,
-				`wm_y_offset` int(4) unsigned DEFAULT NULL,
+				`wm_hor_offset` int(4) unsigned DEFAULT NULL,
+				`wm_vrt_offset` int(4) unsigned DEFAULT NULL,
 				`wm_x_transp` int(4) DEFAULT NULL,
 				`wm_y_transp` int(4) DEFAULT NULL,
 				`wm_font_color` varchar(7) DEFAULT NULL,
@@ -1310,7 +1296,35 @@ class EE_Schema {
 				`wm_shadow_distance` int(3) unsigned DEFAULT NULL,
 				`wm_shadow_color` varchar(7) DEFAULT NULL,
 				PRIMARY KEY (`wm_id`)
-		)";	
+		)";
+		
+		// Developer log table
+		$Q[] = "CREATE TABLE `exp_developer_log` (
+				`log_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+				`timestamp` int(10) unsigned NOT NULL,
+				`viewed` char(1) NOT NULL DEFAULT 'n',
+				`description` text NULL,
+				`function` varchar(100) NULL,
+				`line` int(10) unsigned NULL,
+				`file` varchar(255) NULL,
+				`deprecated_since` varchar(10) NULL,
+				`use_instead` varchar(100) NULL,
+				PRIMARY KEY (`log_id`)
+		)";
+		
+		// Remember me table
+		$Q[] = "CREATE TABLE `exp_remember_me` (
+				`remember_me_id` varchar(40) NOT NULL DEFAULT '0',
+				`member_id` int(10) DEFAULT '0',
+				`ip_address` varchar(16) DEFAULT '0',
+				`user_agent` varchar(120) DEFAULT '',
+				`admin_sess` tinyint(1) DEFAULT '0',
+				`site_id` int(4) DEFAULT '1',
+				`expiration` int(10) DEFAULT '0',
+				`last_refresh` int(10) DEFAULT '0',
+				PRIMARY KEY (`remember_me_id`),
+				KEY `member_id` (`member_id`)
+		)";
 		
 		// --------------------------------------------------------------------
 		// --------------------------------------------------------------------

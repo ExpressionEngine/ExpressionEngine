@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -133,11 +133,11 @@ class EE_Addons {
 						$path = ($abbr == 'ext' OR $abbr == 'acc' OR $abbr == 'ft') ? constant('PATH_'.strtoupper($abbr)) : $root_path.$name.'/';
 						
 						$this->_map[$type][$name] = array(
-															'path'	=> $path,
-															'file'	=> $file,
-															'name'	=> ucwords(str_replace('_', ' ', $name)),
-															'class'	=> $class
-														);
+							'path'	=> $path,
+							'file'	=> $file,
+							'name'	=> ucwords(str_replace('_', ' ', $name)),
+							'class'	=> $class
+						);
 					}
 				}
 			}
@@ -176,11 +176,11 @@ class EE_Addons {
 		// so we need some inflection references
 			
 		$_plural_map = array(
-					'modules'		=> 'module',
-					'extensions'	=> 'extension',
-					'plugins'		=> 'plugin',
-					'accessories'	=> 'accessory',
-					'fieldtypes'	=> 'fieldtype'
+			'modules'		=> 'module',
+			'extensions'	=> 'extension',
+			'plugins'		=> 'plugin',
+			'accessories'	=> 'accessory',
+			'fieldtypes'	=> 'fieldtype'
 		); 
 
    		$type = ($type == '') ? '' : $type.'/';
@@ -210,13 +210,13 @@ class EE_Addons {
 						$author = ($native) ? 'native' : 'third_party';
 
 						$this->_map[$addon_type][$pkg_name] = array(
-														'path'	=> $path,
-														'file'	=> $file,
-														'name'	=> ucwords(str_replace('_', ' ', $pkg_name)),
-														'class'	=> $class,
-														'package' => $pkg_name,
-														'type' => $author
-														);
+							'path'	=> $path,
+							'file'	=> $file,
+							'name'	=> ucwords(str_replace('_', ' ', $pkg_name)),
+							'class'	=> $class,
+							'package' => $pkg_name,
+							'type' => $author
+						);
 
 						// Add cross-reference for package lookups - singular keys
 						$this->_packages[$pkg_name][$_plural_map[$addon_type]] =& $this->_map[$addon_type][$pkg_name];

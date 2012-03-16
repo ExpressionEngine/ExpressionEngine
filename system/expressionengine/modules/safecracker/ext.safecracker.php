@@ -6,7 +6,7 @@
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team, 
  * 		- Original Development by Barrett Newton -- http://barrettnewton.com
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -163,7 +163,7 @@ class Safecracker_ext
 		$this->EE->load->library('table');
 		$this->EE->load->helper('form');
 		
-		$this->EE->cp->set_variable('cp_page_title', $this->EE->lang->line('safecracker_module_name'));
+		$this->EE->cp->set_variable('cp_page_title', lang('safecracker_module_name'));
 		
 		$this->EE->cp->add_to_head('
 	<script type="text/javascript" charset="utf-8">
@@ -380,7 +380,7 @@ class Safecracker_ext
 			array_pop($result);
 		}
 		
-		$this->members[''] = $this->EE->lang->line('safecracker_select_member');
+		$this->members[''] = lang('safecracker_select_member');
 	
 		foreach ($result as $row)
 		{
@@ -389,7 +389,7 @@ class Safecracker_ext
 		
 		if ($more)
 		{
-			$this->members['{NEXT}'] = $this->EE->lang->line('safecracker_more_members');
+			$this->members['{NEXT}'] = lang('safecracker_more_members');
 		}
 		
 		unset($query);
@@ -413,7 +413,7 @@ class Safecracker_ext
 		
 		$query = $this->EE->member_model->get_member_groups();
 		
-		$this->member_groups[''] = $this->EE->lang->line('safecracker_select_member_group');
+		$this->member_groups[''] = lang('safecracker_select_member_group');
 		
 		if ($query)
 		{
@@ -457,7 +457,7 @@ class Safecracker_ext
 				
 				foreach ($query->result() as $row)
 				{
-					$this->statuses[$channel['channel_id']][$row->status] = (in_array($row->status, array('open', 'closed'))) ? $this->EE->lang->line($row->status) : $row->status;
+					$this->statuses[$channel['channel_id']][$row->status] = (in_array($row->status, array('open', 'closed'))) ? lang($row->status) : $row->status;
 				}
 				
 				unset($query);

@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -43,6 +43,7 @@ class Forum_Core extends Forum {
 	 */
 	public function display_forum($function = '')
 	{
+	
 		// Determine the function call
 		// The function is based on the 2nd segment of the URI
 		if ($function == '')
@@ -5635,15 +5636,32 @@ class Forum_Core extends Forum {
 
 	/**
 	 * Remove post attachment
+	 *
+	 * @param	int		Attachment ID to delete
+	 * @param	int		Board ID attachment resides in
+	 * @param	bool	Whether or not to force the delete and ignore whether
+	 *		or not the user has permission to remove attchments; this is
+	 *		mainly reserved for member deletion where attachments should be
+	 *		deleted no matter what
 	 */	
-	function _remove_attachment($id, $forum_id)
+	function _remove_attachment($id, $forum_id, $force = FALSE)
 	{
+		// Load preferences if they're not already there
+		if ( ! count($this->preferences))
+		{
+			$this->_load_preferences();
+		}
+		
 		$this->EE->db->select('filehash, extension, member_id');
 		$this->EE->db->where(array('attachment_id' => $id));
 		$query = $this->EE->db->get('forum_attachments');
 
 		// make sure the attachment exists and the user is allowed to remove it
-		if ($query->num_rows() == 0 OR ($this->EE->session->userdata('member_id') != $query->row('member_id') && $this->_mod_permission('can_edit', $forum_id) === FALSE))
+		if ($query->num_rows() == 0
+			OR ($this->EE->session->userdata('member_id') != $query->row('member_id')
+				AND $this->_mod_permission('can_edit', $forum_id) === FALSE
+				AND $force === FALSE)
+			)
 		{
 			return;
 		}
@@ -8386,129 +8404,8 @@ class Forum_Core extends Forum {
 		}
 		else
 		{
-			// Delete the user and kill all posts
-			// first fetch affected forum topics for stat updating later
-			$forum_topics_query	= $this->EE->db->query("SELECT topic_id FROM exp_forum_topics WHERE author_id ='{$this->current_id}'");
-			$forum_posts_query 	= $this->EE->db->query("SELECT topic_id FROM exp_forum_posts WHERE author_id = '{$this->current_id}'");
-			$topics 			= array();
-			$topic_ids			= array();
-			
-			if ($forum_topics_query->num_rows() > 0)
-			{
-				foreach ($forum_topics_query->result_array() as $row)
-				{
-					$topics[] = $row['topic_id'];
-					$topic_ids[] = $row['topic_id'];
-				}
-			}
-
-			if ($forum_posts_query->num_rows() > 0)
-			{
-				foreach ($forum_posts_query->result_array() as $row)
-				{
-					$topics[] = $row['topic_id'];
-				}
-			}
-			
-			$topics = array_unique($topics);
-			
-			// Delete any posts from other users that belong to topics that we will be decimating shortly
-			if ( ! empty($topic_ids))
-			{
-				$this->EE->db->where_in('topic_id', $topic_ids)
-					->delete('forum_posts');
-			}
-			
-			// Now we can zap the rest
-			$this->EE->db->query("DELETE FROM exp_members WHERE member_id = '{$this->current_id}'");
-			$this->EE->db->query("DELETE FROM exp_member_data WHERE member_id = '{$this->current_id}'");
-			$this->EE->db->query("DELETE FROM exp_member_homepage WHERE member_id = '{$this->current_id}'");
-			$this->EE->db->query("DELETE FROM exp_forum_topics WHERE author_id = '{$this->current_id}'");
-			$this->EE->db->query("DELETE FROM exp_forum_posts  WHERE author_id = '{$this->current_id}'");
-			$this->EE->db->query("DELETE FROM exp_forum_subscriptions  WHERE member_id = '{$this->current_id}'");
-			$this->EE->db->query("DELETE FROM exp_forum_polls  WHERE author_id = '{$this->current_id}'");
-			$this->EE->db->query("DELETE FROM exp_forum_pollvotes  WHERE member_id = '{$this->current_id}'");
-			$this->EE->db->query("DELETE FROM exp_forum_moderators  WHERE mod_member_id = '{$this->current_id}'");
-			$this->EE->db->query("DELETE FROM exp_forum_administrators  WHERE admin_member_id = '{$this->current_id}'");
-			$this->EE->db->query("DELETE FROM exp_comments WHERE author_id = '{$this->current_id}'");
-			
-			$message_query = $this->EE->db->query("SELECT DISTINCT recipient_id FROM exp_message_copies WHERE sender_id = '$this->current_id' AND message_read = 'n'");
-			$this->EE->db->query("DELETE FROM exp_message_copies WHERE sender_id = '$this->current_id'");
-			$this->EE->db->query("DELETE FROM exp_message_data WHERE sender_id = '$this->current_id'");
-			$this->EE->db->query("DELETE FROM exp_message_folders WHERE member_id = '$this->current_id'");
-			$this->EE->db->query("DELETE FROM exp_message_listed WHERE member_id = '$this->current_id'");
-			
-			if ($message_query->num_rows() > 0)
-			{
-				foreach($message_query->result_array() as $row)
-				{
-					$count_query = $this->EE->db->query("SELECT COUNT(*) AS count FROM exp_message_copies WHERE recipient_id = '".$row['recipient_id']."' AND message_read = 'n'");
-					$this->EE->db->query($this->EE->db->update_string('exp_members', array('private_messages' => $count_query->row('count') ), "member_id = '".$row['recipient_id']."'"));
-				}
-			}
-			
-			// Kill any attachments
-			$query = $this->EE->db->query("SELECT attachment_id, filehash, extension, board_id FROM exp_forum_attachments WHERE member_id = '{$this->current_id}'");
-			
-			if ($query->num_rows() > 0)
-			{
-				// Grab the upload path
-				$res = $this->EE->db->query('SELECT board_id, board_upload_path FROM exp_forum_boards');
-			
-				$paths = array();
-				foreach ($res->result_array() as $row)
-				{
-					$paths[$row['board_id']] = $row['board_upload_path'];
-				}
-			
-				foreach ($query->result_array() as $row)
-				{
-					if ( ! isset($paths[$row['board_id']]))
-					{
-						continue;
-					}
-					
-					$file  = $paths[$row['board_id']].$row['filehash'].$row['extension'];
-					$thumb = $paths[$row['board_id']].$row['filehash'].'_t'.$row['extension'];
-				
-					@unlink($file);
-					@unlink($thumb);					
-			
-					$this->EE->db->query("DELETE FROM exp_forum_attachments WHERE attachment_id = '{$row['attachment_id']}'");
-				}				
-			}
-						
-			// Update the Channel Stats because comments deleted
-			if ($this->EE->db->affected_rows() > 0)
-			{		
-				$query = $this->EE->db->query("SELECT channel_id FROM exp_channels");
-			
-				foreach ($query->result_array() as $row)
-				{
-					$this->EE->stats->update_channel_stats($row['channel_id']);
-					$this->EE->stats->update_comment_stats($row['channel_id']);
-				}
-			}
-			
-			// Update the forum stats - order is very important.  Topics must be updated first			
-			if (count($topics) > 0)
-			{
-				foreach ($topics as $topic_id)
-				{	
-					$this->_update_topic_stats($topic_id);
-				}
-			}
-			
-			$query = $this->EE->db->query("SELECT forum_id FROM exp_forums WHERE board_id = '".$this->fetch_pref('board_id')."' AND forum_is_cat = 'n'");
-			
-			foreach ($query->result_array() as $row)
-			{
-				$this->_update_post_stats($row['forum_id']);
-			}
-			
-			$this->_update_global_stats();
-			
-			$this->EE->stats->update_member_stats();
+			$this->EE->load->model('member_model');
+			$this->EE->member_model->delete_member($this->current_id);
 			
 			$ban_msg = lang('user_account_deleted');
 		}
@@ -9062,8 +8959,6 @@ class Forum_Core extends Forum {
 		  	}  		
 	  	}
 
-		$terms = array();
-
 		// Fetch allowed forums
 		// Before doing anything else we'll fetch the forum IDs 
 		// that the user is allowed to search in.
@@ -9494,7 +9389,7 @@ class Forum_Core extends Forum {
 				// If we don't have multiple keywords we'll
 				// do a simple string search
 			
-				if (count($terms) == 0)
+				if (count($terms_like) == 0)
 				{
 					if ($search_in == 'titles')
 					{
@@ -9716,7 +9611,7 @@ class Forum_Core extends Forum {
 			{
 				// "Any" or "All" Search				
 				// If we don't have multiple keywords we'll do a simple string search
-				if (count($terms) == 0)
+				if (count($terms_like) == 0)
 				{
 					if ($search_in != 'titles')
 					{
@@ -10223,14 +10118,22 @@ class Forum_Core extends Forum {
 
 		if ($query->num_rows() == 0)
 		{
-			return $this->EE->output->show_user_error('off', array(lang('search_no_result')), lang('search_result_heading'));		
+			return $this->EE->output->show_user_error(
+				'off', 
+				array(lang('search_no_result')),
+				lang('search_result_heading')
+			);		
 		}
 		
 		$post_ids  = unserialize(stripslashes($query->row('post_ids') ));
 		
 		if ( ! isset($post_ids[$topic_id]))
 		{
-			return $this->EE->output->show_user_error('off', array(lang('search_no_result')), lang('search_result_heading'));
+			return $this->EE->output->show_user_error(
+				'off', 
+				array(lang('search_no_result')), 
+				lang('search_result_heading')
+			);
 		}
 
 		// Load the XML Helper
@@ -10239,7 +10142,6 @@ class Forum_Core extends Forum {
 		// we are only concerned about posts for this topic
 		$post_ids	= $post_ids[$topic_id];
 		$keywords	= xml_convert($query->row('keywords') );
-
 
 		// Load the template		
 		$str = $this->load_element('thread_search_results');
@@ -10252,15 +10154,13 @@ class Forum_Core extends Forum {
 		
 		if ($total_rows > $post_limit)
 		{	
-			$pagination = $this->_create_pagination(
-					array(
-							'first_url'		=> $this->forum_path('/search_thread/'.$this->current_id.$topic_id.'/'),
-							'path'			=> $this->forum_path('/search_thread/'.$this->current_id.$topic_id.'/'),
-							'total_count'	=> $total_rows,
-							'per_page'		=> 20,
-							'cur_page'		=> $this->current_page
-						)
-					);
+			$pagination = $this->_create_pagination(array(
+				'first_url'		=> $this->forum_path('/search_thread/'.$this->current_id.$topic_id.'/'),
+				'path'			=> $this->forum_path('/search_thread/'.$this->current_id.$topic_id.'/'),
+				'total_count'	=> $total_rows,
+				'per_page'		=> 20,
+				'cur_page'		=> $this->current_page
+			));
 			
 			// Slice our array so we can limit the query properly
 		
@@ -10283,31 +10183,40 @@ class Forum_Core extends Forum {
 		}
 		
 		// Fetch the posts and topic title
-		$query = $this->EE->db->select('title')->where('topic_id', $topic_id)->get('forum_topics');
+		$query = $this->EE->db->select('title')
+			->where('topic_id', $topic_id)
+			->get('forum_topics');
 		
 		if ($query->num_rows() == 0)
 		{
-			return $this->EE->output->show_user_error('off', array(lang('search_no_result')), lang('search_result_heading'));		
+			return $this->EE->output->show_user_error(
+				'off',
+				array(lang('search_no_result')),
+				lang('search_result_heading')
+			);
 		}
 		
 		$topic_title = $query->row('title') ;
 		
 		$qry = $this->EE->db->select('p.forum_id, p.topic_id, p.post_id, 
-									  p.author_id, p.body, p.post_date,
-									  m.screen_name AS author')
-							->from(array('forum_posts p', 'members m'))
-							->where('p.topic_id', $topic_id)
-							->where('m.member_id', 'p.author_id')
-							->where_in('p.post_id', array_unique($post_ids))
-							->order_by('post_date', 'DESC')
-							->get();
-	
+				p.author_id, p.body, p.post_date, m.screen_name AS author')
+			->from('forum_posts p')
+			->join('members m', 'p.author_id = m.member_id')
+			->where('p.topic_id', $topic_id)
+			->where_in('p.post_id', array_unique($post_ids))
+			->order_by('post_date', 'DESC')
+			->get();
+		
 		// No results?  Something has gone terribly wrong!!		
 		if ($qry->num_rows() == 0)
 		{
-			return $this->EE->output->show_user_error('off', array(lang('search_no_result')), lang('search_result_heading'));		
+			return $this->EE->output->show_user_error(
+				'off',
+				array(lang('search_no_result')),
+				lang('search_result_heading')
+			);
 		}
-	
+		
 		// Fetch the "row" template
 		$template = $this->load_element('thread_result_rows');
 		
@@ -10330,7 +10239,7 @@ class Forum_Core extends Forum {
 		{
 			$switches = explode('|', $smatch['2']);
 		}
-						
+					
 		foreach ($qry->result_array() as $row)
 		{
 			$temp = $template;
@@ -10369,16 +10278,17 @@ class Forum_Core extends Forum {
 						
 			$snippet = substr($snippet, 0, 30);
 			
-			$temp = $this->var_swap($temp,
-							array(
-									'topic_marker'			=>	$topic_marker,
-									'topic_type'			=>  $topic_type,
-									'author'				=>	$row['author'],
-									'snippet'				=>  $this->EE->functions->encode_ee_tags($snippet, TRUE),
-									'path:member_profile'	=>	$this->profile_path($row['author_id']),
-									'path:viewreply'		=>	$this->forum_path('/viewreply/'.$row['post_id'].'/')
-								)
-							);
+			$temp = $this->var_swap(
+				$temp,
+				array(
+					'topic_marker'			=>	$topic_marker,
+					'topic_type'			=>  $topic_type,
+					'author'				=>	$row['author'],
+					'snippet'				=>  $this->EE->functions->encode_ee_tags($snippet, TRUE),
+					'path:member_profile'	=>	$this->profile_path($row['author_id']),
+					'path:viewreply'		=>	$this->forum_path('/viewreply/'.$row['post_id'].'/')
+				)
+			);
 
 			// Parse the post_date
 			if ($date !== FALSE AND $row['post_date'] != 0)
@@ -10405,19 +10315,22 @@ class Forum_Core extends Forum {
 		}
 
 		$str = str_replace('{include:thread_result_rows}', $topics, $str);
-			
+
 		// Parse the template
-		return $this->var_swap($this->load_element('search_thread_page'),
-							array(
-								'include:thread_search_results'	=> $str,
-								'pagination_links'			=> $pagination,
-								'current_page'				=> $current_page,
-								'total_pages'				=> $total_pages,								
-								'keywords'					=> $keywords,								
-								'total_results'				=> $total_rows,
-								'topic_title'				=> $this->EE->typography->filter_censored_words($this->_convert_special_chars($topic_title))
-								)
-							);
+		return $this->var_swap(
+			$this->load_element('search_thread_page'),
+			array(
+				'include:thread_search_results'	=> $str,
+				'pagination_links'			=> $pagination,
+				'current_page'				=> $current_page,
+				'total_pages'				=> $total_pages,								
+				'keywords'					=> $keywords,								
+				'total_results'				=> $total_rows,
+				'topic_title'				=> $this->EE->typography->filter_censored_words(
+					$this->_convert_special_chars($topic_title)
+				)
+			)
+		);
 	}
 
 	// ----------------------------------------------------------------------
@@ -11015,7 +10928,7 @@ class Forum_Core extends Forum {
 			$cond['views'] = $row['thread_views'];
 						
 			$tagdata = $this->EE->functions->prep_conditionals($tagdata, $cond);
-			
+						
 			if (isset($replies[$row['topic_id']]))
 			{
 				$tagdata = $this->EE->functions->prep_conditionals($tagdata, $replies[$row['topic_id']]);				
@@ -11168,7 +11081,7 @@ class Forum_Core extends Forum {
 				// Parse 1:1 fields
 				if (isset($row[$val]))
 				{					
-					$tagdata = $this->EE->TMPL->swap_var_single($val, $row[$val], $tagdata);
+					$tagdata = $this->EE->TMPL->swap_var_single($val, $this->_convert_special_chars($row[$val]), $tagdata);
 				}
 				
 			}

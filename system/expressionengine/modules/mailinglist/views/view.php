@@ -16,51 +16,25 @@
 
 		<?=form_submit(array('name' => 'submit', 'value' => lang('submit'), 'class' => 'submit'))?>
 
+		&nbsp;&nbsp;
+		
+		<img src="<?=$cp_theme_url?>images/indicator.gif" class="searchIndicator" alt="Edit Search Indicator" style="margin-bottom: -5px; visibility: hidden;" width="16" height="16" />
+
 	    <?=form_close()?>
 	</div>
 </div>
 	
 
-
-
-<?php if( ! empty($subscribers)):?>
-
 	<?=form_open('C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist'.AMP.'method=delete_confirm', '', $form_hidden)?>
 
-	<?php
-		$this->table->set_template($cp_table_template);
-		$this->table->set_heading(
-									lang('email'),
-									lang('ip'),
-									lang('ml_mailinglist'), 
-									form_checkbox('select_all', 'true', FALSE, 'class="toggle_all" id="select_all"').NBS.lang('delete', 'select_all')
-		);
+	<?=$table_html?>
 
-		foreach($subscribers as $subscriber)
-		{
-			$this->table->add_row(
-									'<a href="mailto:'.$subscriber['email'].'">'.$subscriber['email'].'</a>',
-									$subscriber['ip_address'],
-									$subscriber['list'],
-									form_checkbox($subscriber['toggle'])
-								);
-		}
-
-	?>
-			<?=$this->table->generate()?>
 
 <div class="tableFooter">
 	<div class="tableSubmit">
 		<?=form_submit(array('name' => 'submit', 'value' => lang('delete'), 'class' => 'submit'))?>
 	</div>
-<span class="js_hide"><?=$pagination?></span>	
-<span class="pagination" id="filter_pagination"></span>
+	<?=$pagination_html?>
 </div>	
 
 	<?=form_close()?>
-
-<?php else:?>
-
-	<p><?=lang('ml_no_results')?></p>
-
-<?php endif;?>

@@ -188,7 +188,7 @@ $lang = array(
 'Access',
 
 'create_new_template' =>
-'New Template',
+'Create a New Template',
 
 'security_warning' =>
 'Note: Allowing PHP in templates has security implications. Please consult the <a href=\'%s\' title=\'Documentation\'>documentation</a>.',
@@ -245,7 +245,7 @@ $lang = array(
 'Order',
 
 'reserved_name' =>
-'The name you have chosen is a reserved word that can not be used.',
+'The name you have chosen is a reserved word that cannot be used.',
 
 'webpage' =>
 'Web Page',
@@ -460,11 +460,11 @@ $lang = array(
 'preferences_updated' =>
 'Preferences Updated',
 
-'choose_default_data' =>
-'Default Template Data',
+'do_not_duplicate_template' =>
+'Do not duplicate a template',
 
-'blank_template' =>
-'None - create an empty template',
+'duplicate_existing_template' =>
+'Duplicate an Existing Template?',
 
 'template_from_library' =>
 'Use a template from your library',

@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -168,7 +168,7 @@ class EE_URI extends CI_URI {
 		foreach($segs as $val)
 		{
 			// Filter segments for security
-			$val = trim($this->_filter_uri($val));
+			$val = trim($this->_filter_uri(urldecode($val)));
 			
 			if ($val != '')
 			{
@@ -209,16 +209,11 @@ class EE_URI extends CI_URI {
 	 */
 	function _filter_uri($str)
 	{
-		if ($str != '' && $this->config->item('permitted_uri_chars') != '' && $this->config->item('enable_query_strings') == FALSE)
+		if ($str == '')
 		{
-			// preg_quote() in PHP 5.3 escapes -, so the str_replace() is to maintain backwards compatibility as
-			// many are unaware of how characters in the permitted_uri_chars will be parsed as a regex pattern
-			if ( ! preg_match("|^[".str_replace(array('\\-', '\-'), '-', preg_quote($this->config->item('permitted_uri_chars'), '-'))."]+$|i", $str))
-			{
-				show_error('The URI you submitted has disallowed characters.', 400);
-			}
+			return $str;
 		}
-
+		
 		$str = str_replace(array("\r", "\r\n", "\n", '%3A','%3a','%2F','%2f'), array('', '', '', ':', ':', '/', '/'), $str);
 		
 		if (preg_match("#(;|\?|{|}|<|>|http:\/\/|https:\/\/|\w+:/*[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})#i", $str)) 

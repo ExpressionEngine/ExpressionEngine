@@ -2,43 +2,41 @@
 
 <div class="upload_success">
 	<h2><?= lang('upload_success') ?></h2>
-	
 	<div class="image">
 		<img src="<?= $file['thumb'] ?>" alt="<?= $file['file_name'] ?>" />
-		<?php if ($file['is_image']): ?>
-			<?= form_open('C=content_files_modal'.AMP.'M=edit_image', array('id' => "resize_rotate"), array('file_json' => $file_json)) ?>
-			<?= form_close() ?>
-		<?php endif ?>
 	</div> <!-- .image -->
 	<table>
 		<tr class="odd">
-			<th>File Name</th>
+			<th><?=lang('file_name')?></th>
 			<td><?= $file['file_name'] ?></td>
 		</tr>
 		<tr>
-			<th>Upload Directory</th>
+			<th><?=lang('dir_name')?></th>
 			<td><?= $file['upload_directory_prefs']['name'] ?></td>
 		</tr>
 		<tr class="odd">
-			<th>Kind</th>
+			<th><?=lang('kind')?></th>
 			<td><?= $file['mime_type'] ?></td>
 		</tr>
 		<tr>
-			<th>File Size</th>
+			<th><?=lang('file_size')?></th>
 			<td><?= $file['file_size'] ?></td>
 		</tr>
 		<?php if ($file['is_image']): ?>
 			<tr class="odd">
-				<th>Height</th>
-				<td><?= $file['file_height'] ?>px</td>
+				<th><?=lang('height')?></th>
+				<td><?= $file['dimensions'][0] ?>px</td>
 			</tr>
 			<tr>
-				<th>Width</th>
-				<td><?= $file['file_width'] ?>px</td>
+				<th><?=lang('width')?></th>
+				<td><?= $file['dimensions'][1] ?>px</td>
 			</tr>
 		<?php endif ?>
 	</table>	
 </div> <!-- .success -->
+
+<?= form_open('C=content_files_modal'.AMP.'M=edit_file', array('id' => "edit_file"), array('file_id' => $file_id)) ?>
+<?= form_close() ?>
 
 <script>
 	var file = <?= $file_json ?>;

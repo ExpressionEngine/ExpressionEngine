@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -132,6 +132,10 @@ class EE_Loader extends CI_Loader {
 		
 		if (strtolower($library) == 'security')
 		{
+			$this->library('logger');
+			get_instance()->logger->developer('A third-party add-on is calling $this->load->library(\'security\'),
+				which is deprecated as the CI_Security class has been moved to Core, so it is always loaded.', TRUE, 604800);
+			
 			return NULL;
 		}
 		

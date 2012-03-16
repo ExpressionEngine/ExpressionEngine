@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -226,7 +226,6 @@ class Design extends CI_Controller {
 		}
 
 		$this->load->model('template_model');
-		$this->load->helper('form');
 
 		$query = $this->template_model->get_group_info($group_id);
 
@@ -320,10 +319,12 @@ class Design extends CI_Controller {
 			$this->db->query($sql.$sqlb);
 
 			$this->db->query("DELETE FROM exp_template_no_access WHERE ".str_replace('item_id', 'template_id', $sqlb));
-			$this->db->query("DELETE FROM exp_templates WHERE group_id = '$group_id'");
+			
+			$this->db->delete('exp_templates', array('group_id' => $group_id)); 
 		}
-
-		$this->db->query("DELETE FROM exp_template_groups WHERE group_id = '$group_id'");
+		
+		$this->db->delete('exp_template_groups', array('group_id' => $group_id)); 
+		$this->db->delete('exp_template_member_groups', array('template_group_id' => $group_id)); 
 
 		$this->session->set_flashdata('message_success', lang('template_group_deleted'));
 		$this->functions->redirect(BASE.AMP.'C=design'.AMP.'M=manager');
@@ -368,23 +369,24 @@ class Design extends CI_Controller {
 		}
 
 		$this->load->model('template_model');
-		$this->load->helper('form');
 		$this->load->library('table');
 
 		$templates = $this->template_model->get_templates($this->config->item('site_id'));
 
-		$vars['templates'][0] = lang('blank_template');
+		$vars['templates'][0] = lang('do_not_duplicate_template');
 		
 		foreach($templates->result() as $template)
 		{
 			$vars['templates'][$template->group_name][$template->template_id] = $template->template_name;
 		}
 
-		$vars['form_hidden']['group_id'] = $group_id; 
+		$vars['form_hidden']['group_id'] = $group_id;
+		
+		$vars['template_types'] = $this->_get_template_types();
 
 		//create_new_template
 
-		$this->cp->set_variable('cp_page_title', lang('new_template_form'));
+		$this->cp->set_variable('cp_page_title', lang('create_new_template'));
 		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager'.AMP.'tgpref='.$group_id, lang('template_manager'));		
 
 
@@ -408,8 +410,6 @@ class Design extends CI_Controller {
 		{
 			show_error(lang('unauthorized_access'));
 		}
-
-		$this->load->helper('form');
 		
 		$this->cp->set_variable('cp_page_title', lang('create_new_template_group'));
 		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager', lang('template_manager'));
@@ -477,7 +477,6 @@ class Design extends CI_Controller {
 		
 		$this->load->model('template_model');
 		$this->load->model('admin_model');
-		$this->load->helper('form');
 		$this->load->library('table');
 
 		$this->jquery->tablesorter('.mainTable', '{
@@ -586,7 +585,6 @@ class Design extends CI_Controller {
 		}
 
 		$this->load->model('template_model');
-		$this->load->helper('form');
 		$this->load->library('table');
 
 		$this->jquery->tablesorter('.mainTable', '{
@@ -629,7 +627,6 @@ class Design extends CI_Controller {
 		}
 		
 		$this->load->model('template_model');
-		$this->load->helper('form');
 		
 		// form defaults
 		$vars = array(
@@ -788,7 +785,6 @@ class Design extends CI_Controller {
 		}
 
 		$this->load->model('template_model');
-		$this->load->helper('form');
 	
 		if (($snippet_id = $this->input->get_post('snippet_id')) === FALSE)
 		{
@@ -834,7 +830,6 @@ class Design extends CI_Controller {
 		}
 
 		$this->load->model('template_model');
-		$this->load->helper('form');
 		$this->load->library('table');
 	
 		$this->cp->set_variable('cp_page_title', lang('global_variables'));
@@ -918,8 +913,6 @@ class Design extends CI_Controller {
 				// They shouldn't be this far
 				show_error('variable_does_not_exist'); 
 			}
-
-			$this->load->helper('form');
 	
 			$global_variable_info = $global_variable->row(); // PHP 5 can do this in one step...
 			
@@ -992,8 +985,6 @@ class Design extends CI_Controller {
 		}
 		else
 		{		
-			$this->load->helper('form');
-	
 			$this->cp->set_variable('cp_page_title', lang('create_new_global_variable'));
 
 			$this->javascript->compile();
@@ -1018,9 +1009,7 @@ class Design extends CI_Controller {
 
 		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager', lang('template_manager'));
 		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=global_variables', lang('global_variables'));
-		
-		$this->load->helper('form');
-	
+			
 		$variable_id = $this->input->get_post('variable_id');
 
 		if ($variable_id == '')
@@ -1090,7 +1079,6 @@ class Design extends CI_Controller {
 			return $this->load->view('design/template_preferences_manager', $vars);
 		}
 
-		$this->load->helper('form');
 		$this->load->library('table');
 	
 		$this->javascript->output('		
@@ -1208,14 +1196,11 @@ class Design extends CI_Controller {
 		$vars['template_prefs'] = array();
 
 		$template_type_options = array(
-			'null'		=> lang('do_not_change'),
-			'css'		=> lang('css_stylesheet'),
-			'js'		=> lang('js'),
-			'feed'		=> lang('rss'),
-			'static'	=> lang('static'),
-			'webpage'	=> lang('webpage'),
-			'xml'		=> lang('xml')
+			'null'		=> lang('do_not_change')
 		);
+		
+		// Append standard template types to the end of the Do Not Change item
+		$template_type_options = array_merge($template_type_options, $this->_get_template_types());
 
 		$vars['template_prefs']['template_type'] = form_dropdown('template_type', $template_type_options, 'null', 'id="template_type"');
 
@@ -1369,55 +1354,71 @@ class Design extends CI_Controller {
 		// Template Preferences
 
 		$data = array();
+		
+		// Assigning the output to local vars so we're not calling the
+		// input class over and over
+		$template_type = $this->input->post('template_type');
+		$cache = $this->input->post('cache');
+		$hits = $this->input->post('hits');
+		$enable_http_auth = $this->input->post('enable_http_auth');
+		$no_auth_bounce = $this->input->post('no_auth_bounce');
 
-		if (in_array($_POST['template_type'], array('css', 'js', 'feed', 'static', 'webpage', 'xml')))
+		if ($template_type !== FALSE && $template_type != 'null')
 		{
-			$data['template_type'] = $_POST['template_type'];
+			$data['template_type'] = $template_type;
 		}
 
-		if ($_POST['cache'] == 'y' OR $_POST['cache'] == 'n')
+		if (in_array($cache, array('y', 'n')))
 		{
-			$data['cache'] = $_POST['cache'];
-
-			if ($_POST['refresh'] != '' && is_numeric($_POST['refresh']))
+			$data['cache'] = $cache;
+			
+			$refresh = $this->input->post('refresh');
+			
+			if ($refresh != '' && is_numeric($refresh))
 			{
-				$data['refresh'] = $_POST['refresh'];
+				$data['refresh'] = $refresh;
 			}
 		}
 
 		if ($this->session->userdata['group_id'] == 1)
 		{
-			if ($_POST['allow_php'] == 'y' OR $_POST['allow_php'] == 'n')
+			$allow_php = $this->input->post('allow_php');
+			
+			if (in_array($allow_php, array('y', 'n')))
 			{
-				$data['allow_php'] = $_POST['allow_php'];
-
-				if ($_POST['php_parse_location'] == 'i' OR $_POST['php_parse_location'] == 'o')
+				$data['allow_php'] = $allow_php;
+				
+				$php_parse_location = $this->input->post('php_parse_location');
+				
+				if (in_array($php_parse_location, array('i', 'o')))
 				{
-					$data['php_parse_location'] = $_POST['php_parse_location'];
+					$data['php_parse_location'] = $php_parse_location;
 				}
 			}
 		}
 
-		if ($_POST['hits'] != '' && is_numeric($_POST['hits']))
+		if ($hits != '' && is_numeric($hits))
 		{
-			$data['hits'] = $_POST['hits'];
+			$data['hits'] = $hits;
 		}
 
-		if ($_POST['enable_http_auth'] == 'y' OR $_POST['enable_http_auth'] == 'n')
+		if (in_array($enable_http_auth, array('y', 'n')))
 		{
-			$data['enable_http_auth'] = $_POST['enable_http_auth'];
+			$data['enable_http_auth'] = $enable_http_auth;
 		}
 
-		if ($_POST['no_auth_bounce'] != 'null')
+		if ($no_auth_bounce != 'null')
 		{
-			$data['no_auth_bounce'] = $_POST['no_auth_bounce'];
+			$data['no_auth_bounce'] = $no_auth_bounce;
 		}
 
 		if ($this->config->item('save_tmpl_files') == 'y' AND $this->config->item('tmpl_file_basepath') != '')
 		{
-			if ($this->input->post('save_template_file') != FALSE && $this->input->post('save_template_file') != 'null')
+			$save_template_file = $this->input->post('save_template_file');
+			
+			if ($save_template_file != FALSE && $save_template_file != 'null')
 			{
-				$data['save_template_file'] = $this->input->post('save_template_file');
+				$data['save_template_file'] = $save_template_file;
 			}
 		}
 
@@ -1703,7 +1704,6 @@ class Design extends CI_Controller {
 		$this->load->model('design_model');
 		
 		$this->load->helper('file');
-		$this->load->helper('form');
 
 		$vars['can_admin_templates'] = $this->cp->allowed_group('can_admin_templates');
 		
@@ -1941,6 +1941,8 @@ class Design extends CI_Controller {
 		}
 		
 		$vars['warnings'] = $warnings;
+		
+		$vars['template_types'] = $this->_get_template_types();
 
 		$this->javascript->compile();
 
@@ -2401,7 +2403,6 @@ class Design extends CI_Controller {
 
         $item_id = $this->input->get_post('template');
 		
-		$this->load->helper('form');
 		$this->load->library('api');
 		$this->api->instantiate('template_structure');
 
@@ -2541,7 +2542,6 @@ class Design extends CI_Controller {
 			show_error(lang('template_id_not_found'));
 		}
 
-		$this->load->helper('form');
 		$this->load->library('api');
 		$this->api->instantiate('template_structure');
 
@@ -2782,7 +2782,6 @@ class Design extends CI_Controller {
 		}
 		else
 		{
-			$this->load->helper('form');
 			$this->lang->loadfile('specialty_tmp');
 				
 			$this->cp->set_variable('cp_page_title', lang('user_message'));
@@ -2854,7 +2853,6 @@ class Design extends CI_Controller {
 		}
 		else
 		{
-			$this->load->helper('form');
 			$this->lang->loadfile('specialty_tmp');
 	
 			$this->cp->set_variable('cp_page_title', lang('offline_template'));
@@ -2925,9 +2923,7 @@ class Design extends CI_Controller {
 
 		$this->cp->set_variable('cp_page_title', lang('edit_template'));
 		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=email_notification', lang('email_notification_template'));
-		
-		$this->load->helper('form');
-		
+				
 		$this->cp->add_js_script(array('plugin' => 'markitup'));
 
 		$markItUp = array(
@@ -3123,9 +3119,7 @@ class Design extends CI_Controller {
 		$vars['not_writable']		= ! is_really_writable($path);
 		$vars['message']			= ($update === TRUE) ? lang('template_updated') : '';
 		$vars['type']				= 'profile';
-		
-		$this->load->helper('form');
-		
+				
 		$this->cp->set_variable('cp_page_title', lang('member_profile_templates'));
 		
 		$this->jquery->plugin(BASE.AMP.'C=javascript'.AMP.'M=load'.AMP.'plugin=markitup', TRUE);
@@ -3384,7 +3378,7 @@ class Design extends CI_Controller {
 		
 		$vars['templates'] = array();
 		$displayed_groups = array();
-
+		
 		foreach ($query->result_array() as $row)
 		{
 			$displayed_groups[$row['group_id']] = $row['group_id'];
@@ -3480,6 +3474,7 @@ class Design extends CI_Controller {
 
 		}
 
+		$vars['template_types'] = $this->_get_template_types();
 
 		$this->cp->set_right_nav($this->sub_breadcrumbs);
 
@@ -3506,6 +3501,8 @@ class Design extends CI_Controller {
 
 		// Load the design model
 		$this->load->model('design_model');
+		
+		$this->api->instantiate('template_structure');
 
 		$templates = $this->design_model->export_tmpl_group($this->input->get_post('group_id'));
 
@@ -3514,24 +3511,8 @@ class Design extends CI_Controller {
 
 		foreach ($templates as $template)
 		{
-			// Create appropriate file extensions for each template
-			switch ($template['template_type'])
-			{
-				case 'xml':
-					$tmpl_ext = '.xml';
-					break;
-				case 'feed':
-					$tmpl_ext = '.xml';
-					break;
-				case 'css':
-					$tmpl_ext = '.css';
-					break;
-				case 'js':
-					$tmpl_ext = '.js';
-					break;
-				default:
-					$tmpl_ext = '.html';
-			}
+			// Get file extension for template type to construct template file name
+			$tmpl_ext = $this->api_template_structure->file_extensions($template['template_type']);
 			
 			$template_name = $site_name.'/'.$template['group_name'].'.group'.'/'.$template['template_name'].$tmpl_ext;
 			
@@ -3761,7 +3742,6 @@ class Design extends CI_Controller {
 	//		$this->manager();
 		}
 
-		$this->load->helper('form');
 		$this->load->library('form_validation');
 		$this->load->library('table');
 		
@@ -3802,6 +3782,7 @@ class Design extends CI_Controller {
 	{
 		if ( ! preg_match("#^[a-zA-Z0-9_\-/]+$#i", $str))
 		{
+			$this->lang->loadfile('admin');
 			$this->form_validation->set_message('_group_name_checks', lang('illegal_characters'));
 			return FALSE;			
 		}
@@ -3968,8 +3949,6 @@ class Design extends CI_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->load->helper('form');
-
 		$this->cp->set_variable('cp_page_title', lang('edit_template_group_order'));
 
 		$this->javascript->output('
@@ -4059,7 +4038,6 @@ class Design extends CI_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 		
-		$this->load->helper('form');
 		$this->load->library('table');
 		
 		if ($this->config->item('save_tmpl_files') != 'y' OR $this->config->item('tmpl_file_basepath') == '')
@@ -4630,6 +4608,49 @@ class Design extends CI_Controller {
 				unset($existing[$group]);
 			}
 		}
+	}
+	
+	/**
+	 * Get template types
+	 *
+	 * Returns a list of the standard EE template types to be used in
+	 * template type selection dropdowns, optionally merged with
+	 * user-defined template types via the template_types hook.
+	 *
+	 * @access private
+	 * @return array Array of available template types
+	 */
+	function _get_template_types()
+	{
+		$template_types = array(
+			'webpage'	=> lang('webpage'),
+			'feed'		=> lang('rss'),
+			'css'		=> lang('css_stylesheet'),
+			'js'		=> lang('js'),
+			'static'	=> lang('static'),
+			'xml'		=> lang('xml')
+		);
+		
+		// -------------------------------------------
+		// 'template_types' hook.
+		//  - Provide information for custom template types.
+		//
+		$custom_templates = $this->extensions->call('template_types', array());
+		//
+		// -------------------------------------------
+		
+		if ($custom_templates != NULL)
+		{
+			// Instead of just merging the arrays, we need to get the
+			// template_name value out of the associative array for
+			// easy use of the form_dropdown helper
+			foreach ($custom_templates as $key => $value)
+			{
+				$template_types[$key] = $value['template_name'];
+			}
+		}
+		
+		return $template_types;
 	}
 }
 

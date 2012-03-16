@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -30,25 +30,44 @@ class Homepage extends CI_Controller {
 	 * @access	public
 	 * @return	void
 	 */	
-	function index($message = '')
+	function index()
 	{
 		$this->cp->get_installed_modules();
 		$this->cp->set_variable('cp_page_title', lang('main_menu'));
 
-		$version			= FALSE;
+		$message			= array();
 		$show_notice		= $this->_checksum_bootstrap_files();
 		$allowed_templates	= $this->session->userdata('assigned_template_groups');
-
+		
 		// Notices only show for super admins
-		if ($this->session->userdata['group_id'] == 1 AND $this->config->item('new_version_check') == 'y')
+		if ($this->session->userdata['group_id'] == 1)
 		{
-			$version		= $this->_version_check();
-			$show_notice	= ($show_notice OR $version);
+			if ($this->config->item('new_version_check') == 'y')
+			{
+				$message[] = $this->_version_check();
+			}
+			
+			// Check to see if the config file matches the Core version constant
+			if (str_replace('.', '', APP_VER) !== $this->config->item('app_version'))
+			{
+				$config_version = 	substr($this->config->item('app_version'), 0, 1).'.'.substr($this->config->item('app_version'), 1, 1).'.'.substr($this->config->item('app_version'), 2);
+				$message[] = sprintf(lang('version_mismatch'), $config_version, APP_VER);
+			}
+			
+			// Check to see if there are any items in the developer log
+			$this->load->model('tools_model');
+			$unviewed_developer_logs = $this->tools_model->count_unviewed_developer_logs();
+			
+			if ($unviewed_developer_logs > 0)
+			{
+				$message[] = sprintf(lang('developer_logs'), $unviewed_developer_logs, BASE.AMP.'C=tools_logs'.AMP.'M=view_developer_log');
+			}
+			
+			$show_notice = ($show_notice OR ! empty($message));
 		}
 		
 		$vars = array(
-			'version'			=> $version,
-			'message'			=> $message,
+			'message'			=> implode($message, "\n\n"),
 			'instructions'		=> lang('select_channel_to_post_in'),
 			'show_page_option'	=> (isset($this->cp->installed_modules['pages'])) ? TRUE : FALSE,
 			'info_message_open'	=> ($this->input->cookie('home_msg_state') != 'closed' && $show_notice) ? TRUE : FALSE,
@@ -100,9 +119,16 @@ class Homepage extends CI_Controller {
 		$vars['cp_recent_ids'] = array(
 			'entry'		=> $this->channel_model->get_most_recent_id('entry')
 		);
+		
+		// 2.3.1 Patch
+		if (version_compare(APP_VER, '2.3.1', '<') && $this->session->userdata('group_id') == 1)
+		{
+			$show_notice = TRUE;
+			$vars['info_message_open'] = TRUE; // big mistakes cannot be hidden
+			$vars['version'] = $this->_check_patch();
+		}
 
 		// Prep js
-		
 		$this->javascript->set_global('lang.close', lang('close'));
 		
 		if ($show_notice)
@@ -244,6 +270,7 @@ class Homepage extends CI_Controller {
 		
 		return FALSE;
 	}
+	
 	// --------------------------------------------------------------------
 
 	/**
@@ -261,12 +288,14 @@ class Homepage extends CI_Controller {
 		
 		$this->load->helper('version_helper');
 			
-		$version_file = get_version_info();	
+		$version_file = get_version_info();
 		
 		if ( ! $version_file)
 		{
-			return sprintf(lang('new_version_error'),
-							$download_url);			
+			return sprintf(
+				lang('new_version_error'),
+				$download_url
+			);
 		}
 
 		$new_release = FALSE;
@@ -338,6 +367,41 @@ class Homepage extends CI_Controller {
 						   $download_url,
 						   $this->cp->masked_url($this->config->item('doc_url').'installation/update.html'));					
 		}
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * EE 2.3.1 Patch Check
+	 *
+	 * @access	private
+	 * @return	string
+	 */
+	private function _check_patch()
+	{
+		if (version_compare(APP_VER, '2.3.0', '<'))
+		{
+			$msg = '<span class="notice">Patch unsuccessful!</span><br><br>';
+			$msg .= 'This patch cannot be applied to ExpressionEngine versions older than 2.3.0.<br><br>Please do a full upgrade to version 2.3.1 or contact <a href="http://expressionengine.com/forums">tech support</a> for more information.';
+			return $msg;
+		}
+
+		$contents = file_get_contents(BASEPATH.'core/Security.php');
+		$checksum = substr_count($contents, 'replace');
+		
+		unset($contents);
+		
+		if ($checksum != 40)
+		{
+			$msg = '<span class="notice">Patch unsuccessful!</span><br><br>';
+			$msg .= 'Incorrect File: <kbd>system/codeigniter/core/Security.php</kbd>.<br><br>If you need assistance, please contact <a href="http://expressionengine.com/forums">tech support</a> for more information.';
+			return $msg;
+		}
+
+		$this->config->update_site_prefs(array('app_version' => '231'));
+		$msg = '<span class="go_notice">Patch successfully applied!</span><br><br>';
+		$msg .= 'You are now on ExpressionEngine 2.3.1.';
+		return $msg;
 	}
 
 }

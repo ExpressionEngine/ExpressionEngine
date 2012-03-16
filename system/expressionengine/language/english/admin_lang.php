@@ -547,7 +547,7 @@ $lang = array(
 "Profile Triggering Word",
 
 "profile_trigger_notes" =>
-"When this word is encountered your URL it will display your member profile area.  The word you choose can not be the name of an existing template group",
+"When this word is encountered your URL it will display your member profile area.  The word you choose cannot be the name of an existing template group",
 
 "signature_cfg" =>
 "Signature Preferences",
@@ -760,7 +760,7 @@ $lang = array(
 "Category URL Indicator",
 
 "reserved_category_word_exp" =>
-"If you set the above preference to \"yes\" you must choose a reserved word.  This word will be used in the URL to indicate to the channel display engine that you are showing a category.  Note: whatever word you chose CAN NOT be the name of a template group or a template.",
+"If you set the above preference to \"yes\" you must choose a reserved word.  This word will be used in the URL to indicate to the channel display engine that you are showing a category.  Note: whatever word you chose CANNOT be the name of a template group or a template.",
 
 "enable_sql_caching" =>
 "Cache Dynamic Channel Queries?",
@@ -913,7 +913,7 @@ $lang = array(
 "Enable Membership CAPTCHA",
 
 "new_member_notification" =>
-"Notify administrators of new registrations?",
+"Send new member notifications?",
 
 "mbr_notification_emails" =>
 "Email Address for Notification",
@@ -1625,9 +1625,6 @@ $lang = array(
 
 "add_new_html_button" => 
 "Add new HTML button",
-
-"import_from_mt" =>
-"Movable Type Import Utility",
 
 "member_import" =>
 "Member Import Utility",
