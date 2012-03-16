@@ -650,23 +650,39 @@ class EE_Config Extends CI_Config {
 	/**
 	 * Update the Site Preferences
 	 *
-	 * Parses through an array of values and sees if they are valid site preferences.  If so,
-	 * we update the preferences in the database for this site.   Anything left over is shipped
-	 * over to the _update_config() and _update_dbconfig() methods for storage in the config files
+	 * Parses through an array of values and sees if they are valid site 
+	 * preferences.  If so, we update the preferences in the database for this 
+	 * site. Anything left over is shipped over to the _update_config() and 
+	 * _update_dbconfig() methods for storage in the config files
 	 *
 	 * @access	private
 	 * @param	array
 	 * @param	array
 	 * @return	bool
 	 */		
-	function update_site_prefs($new_values = array(), $site_id = FALSE, $find = '', $replace = '')
+	function update_site_prefs($new_values = array(), $site_ids = array(), $find = '', $replace = '')
 	{
-		if ($site_id === FALSE)
-		{
-			$site_id = $this->item('site_id');
-		}	
+		// Establish EE super object as class level just for this method and the
+		// child methods called
+		$this->EE =& get_instance();
 
-		$EE =& get_instance();
+		if (empty($site_ids))
+		{
+			$site_ids = array($this->item('site_id'));
+		}
+		// If we want all sites, get the list
+		elseif ($site_ids === 'all')
+		{
+			$site_ids = array();
+
+			$site_ids_query = $this->EE->db->select('site_id')
+				->get('sites');
+
+			foreach ($site_ids_query->result() as $site)
+			{
+				$site_ids[] = $site->site_id;
+			}
+		}
 
 		// unset() exceptions for calls coming from POST data
 		unset($new_values['return_location']);
@@ -675,8 +691,8 @@ class EE_Config Extends CI_Config {
 		// Safety check for member profile trigger
 		if (isset($new_values['profile_trigger']) && $new_values['profile_trigger'] == '')
 		{
-			$EE->lang->loadfile('admin');
-			show_error($EE->lang->line('empty_profile_trigger'));
+			$this->EE->lang->loadfile('admin');
+			show_error(lang('empty_profile_trigger'));
 		}
 		
 		// We'll format censored words if they happen to cross our path
@@ -687,127 +703,30 @@ class EE_Config Extends CI_Config {
 			$new_values['censored_words'] = trim($new_values['censored_words'], '|');
 		}
 
-		// Category trigger matches template != biscuit	 (biscuits, Robin? Okay! --Derek)
-
-		if (isset($new_values['reserved_category_word']) AND $new_values['reserved_category_word'] != $this->item('reserved_category_word'))
-		{
-			$query = $EE->db->query("SELECT template_id, template_name, group_name
-								FROM exp_templates t
-								LEFT JOIN exp_template_groups g ON t.group_id = g.group_id
-								WHERE (template_name = '".$EE->db->escape_str($new_values['reserved_category_word'])."'
-								OR group_name = '".$EE->db->escape_str($new_values['reserved_category_word'])."')
-								AND t.site_id = '".$EE->db->escape_str($EE->config->item('site_id'))."' LIMIT 1");
-
-			if ($query->num_rows() > 0)
-			{
-				show_error($EE->lang->line('category_trigger_duplication').' ('.htmlentities($new_values['reserved_category_word']).')');
-			}
-		}
-
-		// Do path checks if needed
-		$paths = array('sig_img_path', 'avatar_path', 'photo_path', 'captcha_path', 'prv_msg_upload_path', 'theme_folder_path');
-
-		foreach ($paths as $val)
-		{
-			if (isset($new_values[$val]) AND $new_values[$val] != '')
-			{
-				if (substr($new_values[$val], -1) != '/' && substr($new_values[$val], -1) != '\\')
-				{
-					$new_values[$val] .= '/';
-				}
-
-				$fp = ($val == 'avatar_path') ? $new_values[$val].'uploads/' : $new_values[$val];
-				
-				if ( ! @is_dir($fp))
-				{
-					$this->_config_path_errors[$EE->lang->line('invalid_path')][$val] = $EE->lang->line($val) .': ' .$fp;
-				}
-
-				if (( ! is_really_writable($fp)) && ($val != 'theme_folder_path'))
-				{
-					if ( ! isset($this->_config_path_errors[$EE->lang->line('invalid_path')][$val]))
-					{
-
-						
-						$this->_config_path_errors[$EE->lang->line('not_writable_path')][$val] = $EE->lang->line($val) .': ' .$fp;
-					}
-				}
-			}
-		}
-
 		// To enable CI's helpers and native functions that deal with URLs
 		// to work correctly we make these CI config items identical
 		// to the EE counterparts
 		$ci_config = array();
-
 		if (isset($new_values['site_index']))
 		{
 			$ci_config['index_page'] = $new_values['site_index'];
 		}
-		
-		if ($this->item('multiple_sites_enabled') !== 'y' && isset($new_values['site_name']))
-		{	
-			$EE->db->query($EE->db->update_string('exp_sites', 
-					  array('site_label' => str_replace($find, $replace, $new_values['site_name'])),
-					  "site_id = '".$EE->db->escape_str($site_id)."'"));
-			unset($new_values['site_name']);
-		}
-		
-		$query = $EE->db->query("SELECT * FROM exp_sites WHERE site_id = '".$EE->db->escape_str($site_id)."'");
-			
-		
-		// Because Pages is a special snowflake
-		if ($EE->config->item('site_pages') !== FALSE)
+
+		// Verify paths are valid
+		$this->_check_paths($new_values);
+
+		// Let's get this shindig started
+		foreach ($site_ids as $site_id)
 		{
-			if (isset($new_values['site_url']) OR isset($new_values['site_index']))
-			{
-				$pages	= unserialize(base64_decode($query->row('site_pages')));
-				
-				$url = (isset($new_values['site_url'])) ? $new_values['site_url'].'/' : $this->config['site_url'].'/';
-				$url .= (isset($new_values['site_index'])) ? $new_values['site_index'].'/' : $this->config['site_index'].'/';
-				
-				$pages[$EE->config->item('site_id')]['url'] = preg_replace("#(^|[^:])//+#", "\\1/", $url);
+			$this->_category_trigger_check($site_id, $new_values);
+			$new_values = $this->_rename_non_msm_site($site_id, $new_values, $find, $replace);
 
-				$EE->db->query($EE->db->update_string('exp_sites', 
-							  array('site_pages' => base64_encode(serialize($pages))),
-								  "site_id = '".$EE->db->escape_str($site_id)."'"));
-			}
-		}
+			// Get site information
+			$query = $this->EE->db->get_where('sites', array('site_id' => $site_id));
 
-		foreach(array('system', 'channel', 'template', 'mailinglist', 'member') as $type)
-		{
-			$prefs	 = unserialize(base64_decode($query->row('site_'.$type.'_preferences')));			
-			$changes = 'n';
-			
-			foreach($this->divination($type) as $value)
-			{
-				if (isset($new_values[$value]))
-				{
-					$changes = 'y';
-					
-					$prefs[$value] = str_replace('\\', '/', $new_values[$value]);
-					unset($new_values[$value]);
-				}
-				
-				if ($find != '')
-				{
-					$changes = 'y';
-					
-					$prefs[$value] = str_replace($find, $replace, $prefs[$value]);
-				}
-			}
-			
-			if ($changes == 'y')
-			{
-				$EE->db->query($EE->db->update_string('exp_sites', 
-									  array('site_'.$type.'_preferences' => base64_encode(serialize($prefs))),
-									  "site_id = '".$EE->db->escape_str($site_id)."'"));
-			}
-		}
-
-		/** ----------------------------------------
-		/**	 Certain Preferences might remain in config.php
-		/** ----------------------------------------*/
+			$this->_update_pages($site_id, $new_values, $query);
+			$new_values = $this->_update_preferences($site_id, $new_values, $query, $find, $replace);
+		}		
 
 		// Add the CI pref items to the new values array if needed
 		if (count($ci_config) > 0)
@@ -818,33 +737,219 @@ class EE_Config Extends CI_Config {
 			}
 		}
 
-		// Is there anything to update?
-		if (count($new_values) > 0)
+		// Update config file with remaining values
+		$this->_remaining_config_values($new_values);
+		
+		return $this->_config_path_errors;
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Check that reserved_category_word isn't the same thing as a template_name
+	 * @param  int 		$site_id    ID of the site to upate
+	 * @param  Array 	$site_prefs Site preferences sent to update_site_prefs
+	 */
+	private function _category_trigger_check($site_id, $site_prefs)
+	{
+		// Category trigger matches template != biscuit	 (biscuits, Robin? Okay! --Derek)
+		if (isset($new_values['reserved_category_word']) AND $new_values['reserved_category_word'] != $this->item('reserved_category_word'))
 		{
-			foreach ($new_values as $key => $val)
+			$escaped_word = $this->EE->db->escape_str($new_values['reserved_category_word']);
+
+			$query = $this->EE->db->select('template_id, template_name, group_name')
+				->from('templates t')
+				->join('template_groups g', 't.group_id = g.group_id', 'left')
+				->where('t.site_id', $site_id)
+				->where('(template_name = "'.$escaped_word.'" OR group_name = "'.$escaped_word.'")')
+				->limit(1)
+				->get();
+
+			if ($query->num_rows() > 0)
+			{
+				show_error(lang('category_trigger_duplication').' ('.htmlentities($new_values['reserved_category_word']).')');
+			}
+		}
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Check paths in site preference array
+	 * @param  Array 	$site_prefs Site preferences sent to update_site_prefs
+	 */
+	private function _check_paths($site_prefs)
+	{
+		// Do path checks if needed
+		$paths = array('sig_img_path', 'avatar_path', 'photo_path', 'captcha_path', 'prv_msg_upload_path', 'theme_folder_path');
+
+		foreach ($paths as $val)
+		{
+			if (isset($site_prefs[$val]) AND $site_prefs[$val] != '')
+			{
+				if (substr($site_prefs[$val], -1) != '/' && substr($site_prefs[$val], -1) != '\\')
+				{
+					$site_prefs[$val] .= '/';
+				}
+
+				$fp = ($val == 'avatar_path') ? $site_prefs[$val].'uploads/' : $site_prefs[$val];
+				
+				if ( ! @is_dir($fp))
+				{
+					$this->_config_path_errors[lang('invalid_path')][$val] = lang($val) .': ' .$fp;
+				}
+
+				if (( ! is_really_writable($fp)) && ($val != 'theme_folder_path'))
+				{
+					if ( ! isset($this->_config_path_errors[lang('invalid_path')][$val]))
+					{
+						$this->_config_path_errors[lang('not_writable_path')][$val] = lang($val) .': ' .$fp;
+					}
+				}
+			}
+		}
+	}
+
+	// -------------------------------------------------------------------------
+	
+	/**
+	 * Rename the site if MSM is not on
+	 * @param  int 		$site_id    ID of the site to upate
+	 * @param  Array 	$site_prefs Site preferences sent to update_site_prefs
+	 * @param  String 	$find       String to find in site_name
+	 * @param  String 	$replace    String to replace with in site_name
+	 * @return Array of update site preferences
+	 */
+	private function _rename_non_msm_site($site_id, $site_prefs, $find, $replace)
+	{
+		// Rename the site_name ONLY IF MSM isn't installed
+		if ($this->item('multiple_sites_enabled') !== 'y' && isset($site_prefs['site_name']))
+		{
+			$this->EE->db->update(
+				'sites',
+				array('site_label' => str_replace($find, $replace, $site_prefs['site_name'])),
+				array('site_id' => $site_id)
+			);
+
+			unset($site_prefs['site_name']);
+		}
+
+		return $site_prefs;
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Update Pages for individual site
+	 * @param  int 		$site_id    ID of the site to update
+	 * @param  Array 	$site_prefs Site preferences sent to update_site_prefs
+	 * @param  Object 	$query      Query object of row in exp_sites
+	 * @return [type]
+	 */
+	private function _update_pages($site_id, $site_prefs, $query)
+	{
+		// Because Pages is a special snowflake
+		if ($this->EE->config->item('site_pages') !== FALSE)
+		{
+			if (isset($site_prefs['site_url']) OR isset($site_prefs['site_index']))
+			{
+				$pages	= unserialize(base64_decode($query->row('site_pages')));
+				
+				$url = (isset($site_prefs['site_url'])) ? $site_prefs['site_url'].'/' : $this->config['site_url'].'/';
+				$url .= (isset($site_prefs['site_index'])) ? $site_prefs['site_index'].'/' : $this->config['site_index'].'/';
+				
+				$pages[$site_id]['url'] = preg_replace("#(^|[^:])//+#", "\\1/", $url);
+
+				$this->EE->db->update(
+					'sites',
+					array('site_pages' => base64_encode(serialize($pages))),
+					array('site_id' => $site_id)
+				);
+			}
+		}
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Updates preference columns in exp_sites
+	 * @param  int 		$site_id    ID of the site to update
+	 * @param  Array 	$site_prefs Site preferences sent to update_site_prefs
+	 * @param  Object 	$query      Query object of row in exp_sites
+	 * @param  String 	$find       String to find in site_name
+	 * @param  String 	$replace    String to replace with in site_name
+ 	 * @return Array of update site preferences
+	 */
+	private function _update_preferences($site_id, $site_prefs, $query, $find, $replace)
+	{
+		foreach(array('system', 'channel', 'template', 'mailinglist', 'member') as $type)
+		{
+			$prefs	 = unserialize(base64_decode($query->row('site_'.$type.'_preferences')));			
+			$changes = 'n';
+			
+			foreach($this->divination($type) as $value)
+			{
+				if (isset($site_prefs[$value]))
+				{
+					$changes = 'y';
+					
+					$prefs[$value] = str_replace('\\', '/', $site_prefs[$value]);
+					unset($site_prefs[$value]);
+				}
+				
+				if ($find != '')
+				{
+					$changes = 'y';
+					
+					$prefs[$value] = str_replace($find, $replace, $prefs[$value]);
+				}
+			}
+
+			if ($changes == 'y')
+			{
+				$this->EE->db->update(
+					'sites',
+					array('site_'.$type.'_preferences' => base64_encode(serialize($prefs))),
+					array('site_id' => $site_id)
+				);
+			}
+		}
+
+		return $site_prefs;
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Validates config values when updating site preferences and adds them to 
+	 * the config file
+	 * @param  Array 	$site_prefs Site preferences sent to update_site_prefs
+	 */
+	private function _remaining_config_values($site_prefs)
+	{
+		if (count($site_prefs) > 0)
+		{
+			foreach ($site_prefs as $key => $val)
 			{
 				if (is_string($val))
 				{
-					$new_values[$key] = stripslashes(str_replace('\\', '/', $val));
+					$site_prefs[$key] = stripslashes(str_replace('\\', '/', $val));
 				}
 			}
 			
 			// Update the config file or database file
 
 			// If the "pconnect" item is found we know we're dealing with the DB file
-			if (isset($new_values['pconnect']))
+			if (isset($site_prefs['pconnect']))
 			{
-				$this->_update_dbconfig($new_values);
+				$this->_update_dbconfig($site_prefs);
 			}
 			else
 			{
-				$this->_update_config($new_values);
+				$this->_update_config($site_prefs);
 			}
 		}
-		
-		return $this->_config_path_errors;
 	}
-	
 	
 	// --------------------------------------------------------------------
 
