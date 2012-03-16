@@ -26,6 +26,8 @@
 
 class Member_register extends Member {
 
+	var $errors = array();
+
 	/**
 	 * Member Registration Form
 	 */
@@ -236,6 +238,17 @@ class Member_register extends Member {
 
 		$data['id']	= 'register_member_form';
 
+		// -------------------------------------------
+		// 'member_member_register_form_end' hook.
+		//  - Modify the member registration form output
+		//  - Added EE 2.5.0
+		//
+			$reg_form = $this->EE->extensions->call('member_member_register_form_end', $data, $reg_form);
+			if ($this->EE->extensions->end_script === TRUE) return;
+		//
+		// -------------------------------------------
+
+
 		// Return the final rendered form
 		return $this->EE->functions->form_declaration($data).$reg_form."\n"."</form>";
 	}
@@ -284,6 +297,7 @@ class Member_register extends Member {
 		//
 		// -------------------------------------------
 
+
 		// Set the default globals
 		$default = array(
 			'username', 'password', 'password_confirm', 'email', 
@@ -330,13 +344,13 @@ class Member_register extends Member {
 		$VAL->validate_password();
 		$VAL->validate_email();
 
+		$cust_errors = array();
+		$cust_fields = array();
+
 		// Do we have any custom fields?
 		$query = $this->EE->db->select('m_field_id, m_field_name, m_field_label, m_field_type, m_field_list_items, m_field_required')
 							  ->where('m_field_reg', 'y')
 							  ->get('member_fields');
-
-		$cust_errors = array();
-		$cust_fields = array();
 
 		if ($query->num_rows() > 0)
 		{
@@ -392,7 +406,18 @@ class Member_register extends Member {
 			}
 		}
 
-		$errors = array_merge($VAL->errors, $cust_errors);
+		$errors = array_merge($VAL->errors, $cust_errors, $this->errors);
+
+		// -------------------------------------------
+		// 'member_member_register_errors' hook.
+		//  - Additional error checking prior to submission
+		//  - Added EE 2.5.0
+		//
+			$errors = $this->EE->extensions->call('member_member_register_errors', $errors);
+			if ($this->EE->extensions->end_script === TRUE) return;
+		//
+		// -------------------------------------------
+
 
 		// Display error is there are any
 		if (count($errors) > 0)
