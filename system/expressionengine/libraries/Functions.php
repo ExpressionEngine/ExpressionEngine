@@ -480,20 +480,31 @@ class EE_Functions {
 			$data['hidden_fields'][$this->EE->security->get_csrf_token_name()] = $this->EE->security->get_csrf_hash();
 		}
 
+		// -------------------------------------------
 		// 'form_declaration_modify_data' hook.
 		//  - Modify the $data parameters before they are processed
+		//  - Added EE 1.4.0
+		//
 		if ($this->EE->extensions->active_hook('form_declaration_modify_data') === TRUE)
 		{
 			$data = $this->EE->extensions->call('form_declaration_modify_data', $data);
 		}
-		
+		//
+		// -------------------------------------------
+
+		// -------------------------------------------
 		// 'form_declaration_return' hook.
 		//  - Take control of the form_declaration function
+		//  - Added EE 1.4.0
+		//
 		if ($this->EE->extensions->active_hook('form_declaration_return') === TRUE)
 		{
 			$form = $this->EE->extensions->call('form_declaration_return', $data);
 			if ($this->EE->extensions->end_script === TRUE) return $form;
 		}
+		//
+		// -------------------------------------------		
+
 			
 		if ($data['action'] == '')
 		{
@@ -551,6 +562,41 @@ class EE_Functions {
 		return $form;
 	}
 	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Form finalize
+	 *
+	 * This function allows modification of the finalized form via hook
+	 *
+	 * @access	public
+	 * @param	array
+	 * @param	string
+	 * @return	string
+	 */	
+	function form_finalize($data, $form)
+	{
+		// Load the form helper
+		$this->EE->load->helper('form');
+			  
+		// -------------------------------------------
+		// 'form_finalize' hook.
+		//  - Final form processing
+		//  - Added EE 2.5.0
+		//
+		if ($this->EE->extensions->active_hook('form_finalize') === TRUE)
+		{
+			$form = $this->EE->extensions->call('form_finalize', $data, $form_content);
+			if ($this->EE->extensions->end_script === TRUE) return $form;
+		}
+		//
+		// -------------------------------------------		
+
+
+		return $form;
+	}	
+
+
 	// --------------------------------------------------------------------
 
 	/**

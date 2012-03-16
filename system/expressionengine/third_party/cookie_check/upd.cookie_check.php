@@ -123,6 +123,22 @@ class Cookie_check_upd {
 		));	
 
 
+
+	// Modify forms for login and registration
+	$this->EE->db->insert('extensions', array(
+			'class'    => 'Cookie_check_ext',
+			'hook'     => 'form_finalize',
+			'method'   => 'modify_module_forms',
+			'settings' => '',
+			'priority' => 5,
+			'version'  => $this->version,
+			'enabled'  => 'y'
+		));	
+
+
+/*
+
+Let's see if we can replace these two with a single new hook
 	// Frontend registration- modify form
 	$this->EE->db->insert('extensions', array(
 			'class'    => 'Cookie_check_ext',
@@ -144,6 +160,7 @@ class Cookie_check_upd {
 			'version'  => $this->version,
 			'enabled'  => 'y'
 		));	
+*/
 
 	// CP login- modify form
 /*	

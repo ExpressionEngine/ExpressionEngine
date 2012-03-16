@@ -80,6 +80,8 @@ class Member_auth extends Member {
 		$data['id']	  = 'member_login_form';
 
 
+/*
+moot- use form_declaration hooks?
 		// -------------------------------------------
 		// 'member_auth_login_form_end' hook.
 		//  - Modify the member login form output
@@ -90,10 +92,15 @@ class Member_auth extends Member {
 		//
 		// -------------------------------------------
 
+*/
 		$this->_set_page_title(lang('member_login'));
 
-		return $this->_var_swap($login_form, array(
+		$form =  $this->_var_swap($login_form, array(
 					$match['1'] => $this->EE->functions->form_declaration($data)));
+
+		$form = $this->EE->functions->form_finalize($data, $form);
+
+		return $form;
 	}
 
 	// --------------------------------------------------------------------

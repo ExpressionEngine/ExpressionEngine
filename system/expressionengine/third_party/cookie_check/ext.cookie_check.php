@@ -156,7 +156,6 @@ class Cookie_check_ext {
 	}
 
 
-
 	// --------------------------------------------------------------------
 
 	/**
@@ -217,6 +216,7 @@ class Cookie_check_ext {
 
 	/**
 	 * Add some variables to the frontend member registration form (member_member_register_form_end)
+	 * todo - can nuke this if we add form_finalize hook
 	 */
 	function modify_member_registration_form($data, $reg_form)
 	{
@@ -228,6 +228,7 @@ class Cookie_check_ext {
 
 	/**
 	 * Add some variables to the frontend member login form (member_member_register_form_end)
+	 * todo - can nuke this if we add form_finalize hook
 	 */
 	function modify_member_login_form($data, $login_form)
 	{
@@ -268,6 +269,38 @@ class Cookie_check_ext {
 		return $form;
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * Modify Frontend login and registration forms
+	 */
+	function modify_module_forms($data, $form)
+	{
+		$valid_forms = array('register_member', 'member_login');
+
+		$act_class = (isset($data['hidden_fields']['ACT'])) ? $data['hidden_fields']['ACT'] : FALSE;
+
+		if ( ! $act_class)
+		{
+			return $form;
+		}
+
+		foreach ($valid_forms as $method)
+		{
+			// Quick check
+			if (strpos($act_class, $method) !== FALSE)
+			{
+				// Strict check
+				$method_seg = array_pop(explode(':', $act_class));
+
+				if ($method_seg == $method.RD)
+				{
+					return $this->_parse_member_forms($form);
+				}
+			}
+		}
+		return $form;
+	}
 
 	// --------------------------------------------------------------------
 

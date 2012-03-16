@@ -238,6 +238,10 @@ class Member_register extends Member {
 
 		$data['id']	= 'register_member_form';
 
+
+/*
+
+moot- use form declaration hooks?
 		// -------------------------------------------
 		// 'member_member_register_form_end' hook.
 		//  - Modify the member registration form output
@@ -247,10 +251,12 @@ class Member_register extends Member {
 			if ($this->EE->extensions->end_script === TRUE) return;
 		//
 		// -------------------------------------------
+*/
 
+		$reg_form = $this->EE->functions->form_declaration($data, $reg_form)."\n"."</form>";
 
 		// Return the final rendered form
-		return $this->EE->functions->form_declaration($data).$reg_form."\n"."</form>";
+		return $this->EE->functions->form_finalize($data, $reg_form);
 	}
 
 	// --------------------------------------------------------------------
