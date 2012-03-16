@@ -1097,7 +1097,13 @@ if ( typeof Selection == 'undefined' )
 	$(document).ready(function(){
 
 		var timer	= null,
-			empty	= '<p>&nbsp;</p>',
+			// &#x200b; is a zero-width character so we have something to select
+			// and place the cursor inside the paragraph tags, Webkit won't select
+			// an empty element due to a long-standing bug
+			// https://bugs.webkit.org/show_bug.cgi?id=15256
+			// <wbr> didn't seem to behave the same so I'm using the entity
+			// http://www.quirksmode.org/oddsandends/wbr.html
+			empty	= '<p>&#x200b;</p>',
 			$element;
 
 		function fieldChangeHandler( e )
@@ -1149,11 +1155,21 @@ if ( typeof Selection == 'undefined' )
 			var $el	= $element || $(this),
 				s	= window.getSelection(),
 				r	= document.createRange();
-			if ( $el.html() == empty )
+			// If the editor has our special zero-width character in it wrapped
+			// with paragraph tags, select it
+			if ( $el.html() == '<p>​</p>' )
 			{
 				s.removeAllRanges();
-				r.selectNodeContents( $el.find('p').get(0) );
+				r.selectNodeContents($el.find('p').get(0));
 				s.addRange(r);
+				
+				// Get Firefox's cursor behaving naturally by clearing out the
+				// zero-width character; if we run this for webkit too, then it
+				// breaks Webkit's cursor behavior
+				if ($.browser.mozilla)
+				{
+					$el.find('p').eq(0).html('');
+				}
 			}
 		}
 
@@ -2710,7 +2726,7 @@ WysiHat.Formatting = (function($){
 			 	 $container.html() == '<br>' ||
 			 	 $container.html() == '<br/>' )
 			{
-				$container.html('<p>&nbsp;</p>');
+				$container.html('<p>&#x200b;</p>');
 			}
 
 			return $container.html();
@@ -2732,7 +2748,7 @@ WysiHat.Formatting = (function($){
 			 	 $container.html() == '<br>' ||
 			 	 $container.html() == '<br/>' )
 			{
-				$container.html('<p>&nbsp;</p>');
+				$container.html('<p>&#x200b;</p>');
 			}
 
 			this.cleanup( $container );
