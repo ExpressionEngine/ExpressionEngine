@@ -71,6 +71,7 @@ class Rte_toolset_model extends CI_Model {
 	 */
 	public function get_member_options()
 	{
+		// TODO: Get toolsets of sites member has access to?
 		# get the toolsets
 		$results = $this->db
 						->where(
@@ -304,10 +305,9 @@ class Rte_toolset_model extends CI_Model {
 	/**
 	 * Load the Default Toolsets into the DB
 	 * 
-	 * @access	public
-	 * @return	void
+	 * @param int/bool $site_id ID of the site you want to add a default toolset to
 	 */
-	public function load_default_toolsets()
+	public function load_default_toolsets($site_id = FALSE)
 	{
 		$this->load->model('rte_tool_model');
 
@@ -317,15 +317,37 @@ class Rte_toolset_model extends CI_Model {
 			'blockquote', 'unordered_list', 'ordered_list',
 			'link', 'image', 'view_source'
 		));
-		$this->db->insert(
-			'rte_toolsets',
-			array(
-				'site_id'	=> $this->config->item('site_id'),
-				'name'		=> 'Default',
-				'rte_tools'	=> implode('|', $tool_ids),
-				'enabled'	=> 'y'
-			)
-		);
+
+		if ( ! $site_id)
+		{
+			$site_ids_query = $this->EE->db->select('site_id')
+				->get('sites');
+
+			foreach ($site_ids_query->result() as $site)
+			{
+				$this->db->insert(
+					'rte_toolsets',
+					array(
+						'site_id'	=> $site->site_id,
+						'name'		=> 'Default',
+						'rte_tools'	=> implode('|', $tool_ids),
+						'enabled'	=> 'y'
+					)
+				);	
+			}	
+		}
+		else
+		{
+			$this->db->insert(
+				'rte_toolsets',
+				array(
+					'site_id'	=> $site_id,
+					'name'		=> 'Default',
+					'rte_tools'	=> implode('|', $tool_ids),
+					'enabled'	=> 'y'
+				)
+			);		
+		}
 	}
 	
 	/**
