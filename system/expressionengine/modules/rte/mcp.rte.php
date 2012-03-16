@@ -77,7 +77,6 @@ class Rte_mcp {
 			'module_base'				=> $this->_base_url,
 			'action'					=> $this->_form_base.AMP.'method=prefs_update',
 			'rte_enabled'				=> $this->EE->config->item('rte_enabled'),
-			'rte_forum_enabled'			=> $this->EE->config->item('rte_forum_enabled'),
 			'rte_default_toolset_id'	=> $this->EE->config->item('rte_default_toolset_id'),
 			'toolset_opts'				=> $this->EE->rte_toolset_model->get_active(TRUE),
 			'toolsets'					=> $this->EE->rte_toolset_model->get_all(),
@@ -122,13 +121,6 @@ class Rte_mcp {
 			lang('enabled_question'),
 			'required|enum[y,n]'
 		);
-
-		// forum is disabled right now
-		// $this->EE->form_validation->set_rules(
-		// 	'rte_forum_enabled',
-		// 	lang('forum_enabled_question'),
-		// 	'required|enum[y,n]'
-		// );
 
 		$this->EE->form_validation->set_rules(
 			'rte_default_toolset_id',
@@ -589,8 +581,6 @@ class Rte_mcp {
 		// update the config
 		$this->EE->config->_update_config(array(
 			'rte_enabled'				=> $this->EE->input->get_post('rte_enabled'),
-			// forum is disabled right now
-			// 'rte_forum_enabled'			=> $this->EE->input->get_post('rte_forum_enabled'),
 			'rte_default_toolset_id'	=> $this->EE->input->get_post('rte_default_toolset_id')
 		));
 	}

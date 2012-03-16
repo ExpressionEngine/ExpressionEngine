@@ -19,19 +19,6 @@
 					NBS.NBS.NBS.NBS.NBS
 			)
 		);
-		# We haven’t implemented in the forums yet
-		#$this->table->add_row(
-		#	'<strong>'.lang('enable_rte_in_forum').'</strong>',
-		#	array(
-		#		'style'	=> 'width:50%',
-		#		'data'	=> lang('yes','rte_forum_enabled_y').NBS.
-		#			form_radio(array('name'=>'rte_forum_enabled','id'=>'rte_forum_enabled_y','value'=>'y','checked'=>($rte_forum_enabled == 'y'))).
-		#			NBS.NBS.NBS.NBS.NBS.
-		#			lang('no', 'rte_forum_enabled_n').NBS.
-		#			form_radio(array('name'=>'rte_forum_enabled','id'=>'rte_forum_enabled_n','value'=>'n','checked'=>($rte_forum_enabled == 'n'))).
-		#			NBS.NBS.NBS.NBS.NBS
-		#	)
-		#);
 		$this->table->add_row(
 			'<strong>'.lang('choose_default_toolset').'</strong>'.BR.lang('default_toolset_details'),
 			array(
