@@ -199,8 +199,31 @@ class Rte_ext {
 	 */
 	function cp_menu_array($menu)
 	{
-		$this->EE->lang->loadfile($this->module);
-		$menu['admin']['admin_content']['rte_settings'] = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module='.$this->module;
+		// If this isn't a Super Admin, let's check to see if they can modify 
+		// the RTE module
+		if ($this->EE->session->userdata('group_id') != 1)
+		{
+			$access = (bool) $this->EE->db->select('COUNT(m.module_id) AS count')
+				->from('modules m')
+				->join('module_member_groups mmg', 'm.module_id = mmg.module_id')
+				->where(array(
+					'mmg.group_id' 	=> $this->EE->session->userdata('group_id'),
+					'm.module_name' => ucfirst($this->module)
+				))
+				->get()
+				->row('count');
+
+			$has_access = $access 
+				AND $this->EE->cp->allowed_group('can_access_addons') 
+				AND $this->EE->cp->allowed_group('can_access_modules');
+		}
+		
+		if ($this->EE->session->userdata('group_id') == 1 OR $has_access)
+		{
+			$this->EE->lang->loadfile($this->module);
+			$menu['admin']['admin_content']['rte_settings'] = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module='.$this->module;	
+		}
+		
 		return $menu;
 	}
 	
