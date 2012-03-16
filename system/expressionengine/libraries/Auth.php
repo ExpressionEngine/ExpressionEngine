@@ -190,7 +190,7 @@ class Auth {
 		// No username/password?  Bounce them...
 		if ( ! $username)
 		{
-			$this->errors[] = 'no_username';
+			$this->errors[] = 'no_username_email';
 			return FALSE;
 		}
 

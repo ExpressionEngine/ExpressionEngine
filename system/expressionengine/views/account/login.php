@@ -22,7 +22,7 @@
 		<?=form_open('C=login'.AMP.'M=authenticate', array(), array('return_path' => $return_path))?>
 
 		<dl>
-			<dt><?=lang('username', 'username')?>:</dt>
+			<dt><?=lang('username_email', 'username')?>:</dt>
 			<dd>
 				<?=form_input(array('style' => 'width:90%', 'size' => '35', 'dir' => 'ltr', 'name' => "username", 'id' => "username", 'value' => $username, 'maxlength' => 50))?>
 			</dd>
