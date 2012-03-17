@@ -25,7 +25,6 @@
 class Rte {
 
 	public $return_data	= '';
-	private $module 	= 'rte';
 	
 	/**
 	  * Constructor
@@ -36,170 +35,212 @@ class Rte {
 		$this->EE =& get_instance();
 	}
 	
+
 	/**
-	 * Embed the RTE in the front end
+	 * Get RTE JS for the front end
+	 *
+	 * This can be called via an ACT or template tag.
 	 * 
 	 * @access	public
-	 * @param	string $selector The selector that will match the Textareas you want to turn into an RTE
-	 * @param	int $toolset_id The ID of the toolset you want to load
-	 * @return	string The JS needed to embed the RTE
+	 * @return	mixed 	The rendered JS or the ACT URL to it 
 	 */
-	public function embed( $selector = '.rte', $toolset_id = FALSE )
+	public function get_js()
+	{
+		if ($this->EE->input->get('ACT'))
+		{
+			// Called from an action id
+			$selector 		= $this->EE->input->get('selector');
+			$toolset_id 	= (int)$this->EE->input->get('toolset_id');
+			$include_jquery = $this->EE->input->get('include_jquery') == 'n' ? FALSE : TRUE;
+
+			if ( ! $selector)
+			{
+				return;
+			}
+
+			// @todo Normalize quotes in $selector
+
+			$this->EE->output->enable_profiler(FALSE);
+			$this->EE->output->out_type = 'js';
+			$this->EE->output->set_header("Content-Type: text/javascript");
+			$this->EE->output->set_output($this->_build_js(urldecode($selector), $toolset_id, $include_jquery));
+		}
+		else
+		{
+			// Called from a template tag
+			$selector 		= $this->EE->TMPL->fetch_param('selector', '.rte');
+			$toolset_id 	= (int)$this->EE->TMPL->fetch_param('toolset_id', 0);
+			$include_jquery = $this->EE->TMPL->fetch_param('include_jquery') == 'no' ? 'n' : 'y';
+
+			return $this->EE->functions->fetch_site_index().QUERY_MARKER
+				.'ACT='.$this->EE->functions->fetch_action_id('Rte', 'get_js')
+				.'&selector='.$selector
+				.'&toolset_id='.$toolset_id
+				.'&include_jquery='.$include_jquery;
+		}
+	}
+
+
+	/**
+	 * Build RTE JS
+	 * 
+	 * @access	private
+	 * @param	string 	The selector that will match the elements to turn into an RTE
+	 * @param	int 	The ID of the toolset you want to load
+	 * @param	bool 	Whether to attempt to load jQuery
+	 * @return	string 	The JS needed to embed the RTE
+	 */
+	private function _build_js($selector, $toolset_id, $include_jquery)
 	{
 		$this->EE->load->model(array('rte_toolset_model','rte_tool_model'));
 		
-		# get the selector
-		if ($temp = $this->EE->TMPL->fetch_param('selector')) $selector = $temp;
-		# toolset id
-		if ($temp = $this->EE->TMPL->fetch_param('toolset_id')) $toolset_id = $temp;
-		
-		# get the tools
+		// get the tools
 		if ( ! $toolset_id)
 		{
 			$toolset_id = $this->EE->rte_toolset_model->get_member_toolset();
 		}
-		$js = '';
-		
-		# make sure we should load the JS
-		if ($toolset_id &&
-		    $this->EE->config->item('rte_enabled') == 'y')
+
+		$tools = $this->EE->rte_tool_model->get_tools($toolset_id);
+
+		if ( ! $tools OR $this->EE->config->item('rte_enabled') != 'y')
 		{
-			
-			# load the tools
-			$bits	= array(
-				'globals'		=> array(
-					'rte'	=> array(
-						'update_event' => 'WysiHat-editor:change'
-					)
-				),
-				'libraries'		=> array(
-					'ui'		=> array(
-						'core', 'widget'
-					),
-					'plugin'	=> array(
-						'wysihat'
-					)
-				),
-				'styles'		=> '',
-				'definitions'	=> ''
-			);
+			return;
+		}
 
-			$tools = $this->EE->rte_tool_model->get_tools($toolset_id);
+		// load the tools
+		$bits	= array(
+			'globals'		=> array(
+				'rte'	=> array(
+					'update_event' => 'WysiHat-editor:change'
+				)
+			),
+			'libraries'		=> array(
+				'ui'		=> array(
+					'core', 'widget'
+				),
+				'plugin'	=> array(
+					'wysihat'
+				)
+			),
+			'styles'		=> '',
+			'definitions'	=> ''
+		);
 
-			foreach ($tools as $tool)
+		foreach ($tools as $tool)
+		{
+			// skip tools that are not available to the front-end
+			if ($tool['info']['cp_only'] == 'y')
 			{
-				# skip tools that are not available to the front-end
-				if ( $tool['info']['cp_only'] == 'y' )
-				{
-					continue;
-				}
-				
-				# load the globals
-				if (count($tool['globals']))
-				{
-					$tool['globals'] = $this->_prep_globals($tool['globals']);
-					$bits['globals'] = array_merge_recursive( $bits['globals'], $tool['globals'] );
-				}
-				
-				# load any libraries we need
-				if (count($tool['libraries']))
-				{
-					$bits['libraries'] = array_merge_recursive( $bits['libraries'], $tool['libraries'] );
-				}
-				
-				# add any styles we need
-				if ( ! empty($tool['styles']))
-				{
-					$bits['styles'] .= $tool['styles'];
-				}
-				
-				# load in the definition
-				if ( ! empty($tool['definition']))
-				{
-					$bits['definitions'] .= $tool['definition'];
-				}
+				continue;
 			}
 			
-			# required assets
-			$jquery = $this->EE->config->item('theme_folder_url') . 'javascript/' .
-					  ($this->EE->config->item('use_compressed_js') == 'n' ? 'src' : 'compressed') .
-					  '/jquery/jquery.js';
-			$uicss	= $this->EE->config->item('theme_folder_url') . 'javascript/' .
-					  ($this->EE->config->item('use_compressed_js') == 'n' ? 'src' : 'compressed') .
-					  '/jquery/themes/default/ui.all.css';
-			$rtecss	= $this->EE->config->item('theme_folder_url') . 'cp_themes/default/css/rte.css';
+			// load the globals
+			if (count($tool['globals']))
+			{
+				$tool['globals'] = $this->_prep_globals($tool['globals']);
+				$bits['globals'] = array_merge_recursive($bits['globals'], $tool['globals']);
+			}
 			
-			# kick off the JS
-			$js .= '
-			<script>
-				(function(){
-					// make sure we have jQuery
-					var interval = null;
-					if ( typeof jQuery === "undefined" )
-					{
-						var j = document.createElement("script");
-						j.setAttribute("src","' . $jquery . '");
-						document.getElementsByTagName("head")[0].appendChild(j);
-						
-						interval = setInterval( loadRTE, 10);
-					}
-					else
-					{
-						loadRTE();
-					}
-					
-					function loadRTE()
-					{
-						// make sure jQuery is loaded
-						if ( typeof jQuery === "undefined" ){ return; }
-						clearInterval( interval );
-						
-						var $ = jQuery;
-						
-						// library code
-						' . $this->_load_js_files($bits['libraries']) . '
-
-						// load in the styles (including base jQuery UI and RTE)
-						$("<link rel=\"stylesheet\" href=\"' . $uicss . '\"/>")
-							.add( $("<link rel=\"stylesheet\" href=\"' . $rtecss . '\"/>") )
-							.add( $("<style>' . preg_replace( '/\\s+/', ' ', $bits['styles'] ) . '</style>") )
-							.appendTo("head");
-
-						// globals
-						' . $this->_set_globals($bits['globals']) . '
-
-						$("' . $selector . '").each(function(index)
-						{
-							var $field = $(this);
-							
-							// Add ID attributes to textareas missing them
-							if ($field.attr("id") == undefined)
-							{
-								$field.attr("id", "rte-"+index);
-							}
-							
-							var
-							$parent	= $field.parent(),
-
-							// set up the editor
-							$editor	= WysiHat.Editor.attach($field),
-
-							// establish the toolbar
-							toolbar	= new WysiHat.Toolbar();
-
-							toolbar.initialize($editor); 
-
-							// tools
-							' . $bits['definitions'] . '
-
-						});
-					}
-				})();
-			</script>';
+			// load any libraries we need
+			if (count($tool['libraries']))
+			{
+				$bits['libraries'] = array_merge_recursive($bits['libraries'], $tool['libraries']);
+			}
+			
+			// add any styles we need
+			if ( ! empty($tool['styles']))
+			{
+				$bits['styles'] .= $tool['styles'];
+			}
+			
+			// load the definition
+			if ( ! empty($tool['definition']))
+			{
+				$bits['definitions'] .= $tool['definition'];
+			}
 		}
 		
-		$this->return_data = $js;
-		return $this->return_data;
+		// required assets
+		$jquery = $this->EE->config->item('theme_folder_url') . 'javascript/' .
+				  ($this->EE->config->item('use_compressed_js') == 'n' ? 'src' : 'compressed') .
+				  '/jquery/jquery.js';
+		$uicss	= $this->EE->config->item('theme_folder_url') . 'javascript/' .
+				  ($this->EE->config->item('use_compressed_js') == 'n' ? 'src' : 'compressed') .
+				  '/jquery/themes/default/ui.all.css';
+		$rtecss	= $this->EE->config->item('theme_folder_url') . 'cp_themes/default/css/rte.css';
+		
+		// kick off the JS
+		$js = '
+		(function(){
+			// make sure we have jQuery
+			var interval = null;
+			if (typeof jQuery === "undefined") {';
+			
+		if ($include_jquery)
+		{
+			$js .= 'var j = document.createElement("script");
+				j.setAttribute("src","' . $jquery . '");
+				document.getElementsByTagName("head")[0].appendChild(j);';
+		}
+
+		// Even if we don't load jQuery above, we still need to wait for it
+		$js .= '
+				interval = setInterval( loadRTE, 10);
+			}
+			else
+			{
+				loadRTE();
+			}
+			
+			function loadRTE()
+			{
+				// make sure jQuery is loaded
+				if ( typeof jQuery === "undefined" ){ return; }
+				clearInterval( interval );
+				
+				var $ = jQuery;
+				
+				// library code
+				' . $this->_load_js_files($bits['libraries']) . '
+
+				// load in the styles (including base jQuery UI and RTE)
+				$("<link rel=\"stylesheet\" href=\"' . $uicss . '\"/>")
+					.add( $("<link rel=\"stylesheet\" href=\"' . $rtecss . '\"/>") )
+					.add( $("<style>' . preg_replace( '/\\s+/', ' ', $bits['styles'] ) . '</style>") )
+					.appendTo("head");
+
+				// globals
+				' . $this->_set_globals($bits['globals']) . '
+
+				$("' . $selector . '").each(function(index)
+				{
+					var $field = $(this);
+					
+					// Add ID attributes to textareas missing them
+					if ($field.attr("id") == undefined)
+					{
+						$field.attr("id", "rte-"+index);
+					}
+					
+					var
+					$parent	= $field.parent(),
+
+					// set up the editor
+					$editor	= WysiHat.Editor.attach($field),
+
+					// establish the toolbar
+					toolbar	= new WysiHat.Toolbar();
+
+					toolbar.initialize($editor); 
+
+					// tools
+					' . $bits['definitions'] . '
+
+				});
+			}
+		})();';
+
+		return $js;
 	}
 	
 	/**
@@ -214,10 +255,12 @@ class Rte {
 	private function _load_js_files( $load = array() )
 	{
 		$folder = $this->EE->config->item('use_compressed_js') == 'n' ? 'src' : 'compressed';
+
 		if ( ! defined('PATH_JQUERY'))
 		{
 			define('PATH_JQUERY', PATH_THEMES.'javascript/'.$folder.'/jquery/');
 		}
+
 		$types	= array(
 			'effect'	=> PATH_JQUERY.'ui/jquery.effects.',
 			'ui'		=> PATH_JQUERY.'ui/jquery.ui.',
@@ -234,10 +277,12 @@ class Rte {
 			if (isset($load[$type]))
 			{
 				$files = $load[$type];
+
 				if ( ! is_array($files))
 				{
 					$files = array( $files );
 				}
+
 				foreach ($files as $file)
 				{
 					if ($type == 'package' OR $type == 'fp_module')
@@ -265,6 +310,7 @@ class Rte {
 					}
 
 					$file = $path.$file.'.js';
+
 					if (file_exists($file))
 					{
 						$contents .= file_get_contents($file)."\n\n";
@@ -272,6 +318,7 @@ class Rte {
 				}
 			}
 		}
+
 		return $contents;
 	}
 
@@ -285,6 +332,7 @@ class Rte {
 	private function _prep_globals( $globals = array() )
 	{
 		$temp = array();
+
 		foreach ($globals as $key => $val)
 		{
 			if (strpos($key,'.') !== FALSE)
@@ -301,6 +349,7 @@ class Rte {
 				$temp[$key] = $val;
 			}
 		}
+
 		return $temp;
 	}
 	
@@ -311,7 +360,7 @@ class Rte {
 	 * @param	array $globals The globals to load into JS
 	 * @return	string The JavaScript
 	 */
-	private function _set_globals( $globals = array() )
+	private function _set_globals($globals = array())
 	{
 		$this->EE->load->library('javascript');
 		

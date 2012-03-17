@@ -71,21 +71,10 @@ class Rte_lib
 
 		if (is_numeric($toolset_id))
 		{
-			// make sure it exists
-			if ( ! $this->EE->rte_toolset_model->exists($toolset_id))
-			{
-				$failure = lang('toolset_not_found');
-			}
 			// make sure the user can access it
-			elseif ( ! $this->EE->rte_toolset_model->member_can_access($toolset_id))
+			if ( ! $this->EE->rte_toolset_model->member_can_access($toolset_id))
 			{
-				$failure = lang('cannot_edit_toolset');
-			}
-
-			// bow out if the user can’t
-			if ( !! $failure)
-			{
-				$this->EE->session->set_flashdata('message_failure', $failure);
+				$this->EE->session->set_flashdata('message_failure', lang('cannot_edit_toolset'));
 				$this->EE->functions->redirect($this->module_url);
 			}
 
