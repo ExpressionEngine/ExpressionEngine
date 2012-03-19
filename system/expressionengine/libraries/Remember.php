@@ -240,10 +240,27 @@ class Remember {
 		
 		$rem_data = $rem_q->row_array();
 		$rem_q->free_result();
+
+		// Determine the desired IP accuracy
+		$this->EE->load->helper('ip');
+		$accuracy = get_ip_accuracy();
+
+		// Check the IP addresses to see if they match
+		if ($accuracy == 4)
+		{
+			$ip_match = $this->ip_address == $rem_data['ip_address'];
+		}
+		else
+		{
+			$ip_match = ip_accuracy_check(
+				$this->ip_address, 
+				$rem_data['ip_address'], 
+				$accuracy
+			);
+		}
 		
 		// validate browser markers
-		if ($this->ip_address != $rem_data['ip_address'] OR
-			$this->user_agent != $rem_data['user_agent'])
+		if ( ! $ip_match OR $this->user_agent != $rem_data['user_agent'])
 		{
 			$this->_delete_cookie();
 			return FALSE;
