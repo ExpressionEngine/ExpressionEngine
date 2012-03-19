@@ -586,7 +586,7 @@ class EE_Functions {
 		//
 		if ($this->EE->extensions->active_hook('form_finalize') === TRUE)
 		{
-			$form = $this->EE->extensions->call('form_finalize', $data, $form_content);
+			$form = $this->EE->extensions->call('form_finalize', $data, $form);
 			if ($this->EE->extensions->end_script === TRUE) return $form;
 		}
 		//

@@ -253,7 +253,7 @@ moot- use form declaration hooks?
 		// -------------------------------------------
 */
 
-		$reg_form = $this->EE->functions->form_declaration($data, $reg_form)."\n"."</form>";
+		$reg_form = $this->EE->functions->form_declaration($data).$reg_form."\n"."</form>";
 
 		// Return the final rendered form
 		return $this->EE->functions->form_finalize($data, $reg_form);
