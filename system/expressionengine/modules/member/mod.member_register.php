@@ -238,25 +238,8 @@ class Member_register extends Member {
 
 		$data['id']	= 'register_member_form';
 
-
-/*
-
-moot- use form declaration hooks?
-		// -------------------------------------------
-		// 'member_member_register_form_end' hook.
-		//  - Modify the member registration form output
-		//  - Added EE 2.5.0
-		//
-			$reg_form = $this->EE->extensions->call('member_member_register_form_end', $data, $reg_form);
-			if ($this->EE->extensions->end_script === TRUE) return;
-		//
-		// -------------------------------------------
-*/
-
-		$reg_form = $this->EE->functions->form_declaration($data).$reg_form."\n"."</form>";
-
 		// Return the final rendered form
-		return $this->EE->functions->form_finalize($data, $reg_form);
+		return $this->EE->functions->form_declaration($data).$reg_form."\n"."</form>";
 	}
 
 	// --------------------------------------------------------------------
@@ -302,7 +285,6 @@ moot- use form declaration hooks?
 			if ($this->EE->extensions->end_script === TRUE) return;
 		//
 		// -------------------------------------------
-
 
 		// Set the default globals
 		$default = array(
@@ -350,13 +332,13 @@ moot- use form declaration hooks?
 		$VAL->validate_password();
 		$VAL->validate_email();
 
-		$cust_errors = array();
-		$cust_fields = array();
-
 		// Do we have any custom fields?
 		$query = $this->EE->db->select('m_field_id, m_field_name, m_field_label, m_field_type, m_field_list_items, m_field_required')
 							  ->where('m_field_reg', 'y')
 							  ->get('member_fields');
+
+		$cust_errors = array();
+		$cust_fields = array();
 
 		if ($query->num_rows() > 0)
 		{
@@ -412,18 +394,18 @@ moot- use form declaration hooks?
 			}
 		}
 
-		$errors = array_merge($VAL->errors, $cust_errors, $this->errors);
-
+ 
 		// -------------------------------------------
 		// 'member_member_register_errors' hook.
 		//  - Additional error checking prior to submission
 		//  - Added EE 2.5.0
 		//
-			$errors = $this->EE->extensions->call('member_member_register_errors', $errors);
+			$this->EE->extensions->call('member_member_register_errors', $this);
 			if ($this->EE->extensions->end_script === TRUE) return;
 		//
 		// -------------------------------------------
-
+ 
+		$errors = array_merge($VAL->errors, $cust_errors, $this->errors);
 
 		// Display error is there are any
 		if (count($errors) > 0)

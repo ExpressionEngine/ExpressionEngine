@@ -97,14 +97,14 @@ class Cookie_check_ext {
 	/**
 	 * Require cookie consent for Frontend registration
 	 */
-	function front_register_cookie_required($errors)
+	function front_register_cookie_required($obj)
 	{
 		if ($this->_form_submission_check() == FALSE)
 		{
-			$errors[] = lang('cookie_consent_required');
+			$obj->errors[] = lang('cookie_consent_required');
 		}
 
-		return $errors;		
+		return;		
 	}
 
 

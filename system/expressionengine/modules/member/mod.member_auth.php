@@ -79,28 +79,10 @@ class Member_auth extends Member {
 		$data['hidden_fields']['FROM'] = ($this->in_forum === TRUE) ? 'forum' : '';
 		$data['id']	  = 'member_login_form';
 
-
-/*
-moot- use form_declaration hooks?
-		// -------------------------------------------
-		// 'member_auth_login_form_end' hook.
-		//  - Modify the member login form output
-		//  - Added EE 2.5.0
-		//
-			$login_form = $this->EE->extensions->call('member_auth_login_form_end', $data, $login_form);
-			if ($this->EE->extensions->end_script === TRUE) return;
-		//
-		// -------------------------------------------
-
-*/
 		$this->_set_page_title(lang('member_login'));
 
-		$form =  $this->_var_swap($login_form, array(
+		return $this->_var_swap($login_form, array(
 					$match['1'] => $this->EE->functions->form_declaration($data)));
-
-		$form = $this->EE->functions->form_finalize($data, $form);
-
-		return $form;
 	}
 
 	// --------------------------------------------------------------------
