@@ -562,40 +562,6 @@ class EE_Functions {
 		return $form;
 	}
 	
-	// --------------------------------------------------------------------
-
-	/**
-	 * Form finalize
-	 *
-	 * This function allows modification of the finalized form via hook
-	 *
-	 * @access	public
-	 * @param	array
-	 * @param	string
-	 * @return	string
-	 */	
-	function form_finalize($data, $form)
-	{
-		// Load the form helper
-		$this->EE->load->helper('form');
-			  
-		// -------------------------------------------
-		// 'form_finalize' hook.
-		//  - Final form processing
-		//  - Added EE 2.5.0
-		//
-		if ($this->EE->extensions->active_hook('form_finalize') === TRUE)
-		{
-			$form = $this->EE->extensions->call('form_finalize', $data, $form);
-			if ($this->EE->extensions->end_script === TRUE) return $form;
-		}
-		//
-		// -------------------------------------------		
-
-
-		return $form;
-	}	
-
 
 	// --------------------------------------------------------------------
 

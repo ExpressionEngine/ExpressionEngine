@@ -75,18 +75,6 @@ class Cookie_check_upd {
 		));
 
 
-/*
-	$this->EE->db->insert('extensions', array(
-			'class'    => 'Cookie_check_ext',
-			'hook'     => 'member_manager',
-			'method'   => 'front_form_access_check',
-			'settings' => '',
-			'priority' => 5,
-			'version'  => $this->version,
-			'enabled'  => 'y'
-		));
-*/
-
 
 	// Frontend login- require cookies
 	$this->EE->db->insert('extensions', array(
@@ -122,45 +110,6 @@ class Cookie_check_upd {
 			'enabled'  => 'y'
 		));	
 
-
-
-	// Modify forms for login and registration
-	$this->EE->db->insert('extensions', array(
-			'class'    => 'Cookie_check_ext',
-			'hook'     => 'form_finalize',
-			'method'   => 'modify_module_forms',
-			'settings' => '',
-			'priority' => 5,
-			'version'  => $this->version,
-			'enabled'  => 'y'
-		));	
-
-
-/*
-
-Let's see if we can replace these two with a single new hook
-	// Frontend registration- modify form
-	$this->EE->db->insert('extensions', array(
-			'class'    => 'Cookie_check_ext',
-			'hook'     => 'member_member_register_form_end',
-			'method'   => 'modify_member_registration_form',
-			'settings' => '',
-			'priority' => 5,
-			'version'  => $this->version,
-			'enabled'  => 'y'
-		));	
-
-	// Frontend login- modify form
-	$this->EE->db->insert('extensions', array(
-			'class'    => 'Cookie_check_ext',
-			'hook'     => 'member_auth_login_form_end',
-			'method'   => 'modify_member_login_form',
-			'settings' => '',
-			'priority' => 5,
-			'version'  => $this->version,
-			'enabled'  => 'y'
-		));	
-*/
 
 	// CP login- modify form
 /*	
