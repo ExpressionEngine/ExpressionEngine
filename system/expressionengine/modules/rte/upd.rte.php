@@ -60,8 +60,8 @@ class Rte_upd {
 			array(
 				// Build the Toolset JS
 				array(
-					'class'		=> $this->name . '_mcp',
-					'method'	=> 'build_toolset_js'
+					'class'		=> $this->name,
+					'method'	=> 'get_js'
 				)
 			)
 		);

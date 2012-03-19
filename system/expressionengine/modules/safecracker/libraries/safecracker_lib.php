@@ -837,14 +837,6 @@ class Safecracker_lib
 			}
 
 			$this->head .= "\n".' // ]]>'."\n".'</script>';
-
-			//this is no longer necessary since adding the combo loader
-			/*
-			if ($this->bool_string($this->EE->TMPL->fetch_param('saef_javascript'), TRUE))
-			{
-				$this->head .= $this->EE->session->cache['safecracker']['channel_standalone_output_js']['str'];
-			}
-			*/
 		}
 		
 		$js_defaults = array(
@@ -951,9 +943,29 @@ class Safecracker_lib
 		$use_live_url = ($this->bool_string($this->EE->TMPL->fetch_param('use_live_url'), TRUE)) ? '&use_live_url=y' : '';
 		
 		$include_jquery = ($this->bool_string($include_jquery, TRUE)) ? '&include_jquery=y' : '';
-	
+
+		// RTE Selector parameter?
+		$rte_selector = $this->EE->TMPL->fetch_param('rte_selector');
+
+		if ($rte_selector)
+		{
+			// toolset id specified?
+			$rte_toolset_id = (int)$this->EE->TMPL->fetch_param('rte_toolset_id');
+
+			$rte_js_src = $this->EE->functions->fetch_site_index().QUERY_MARKER
+				.'ACT='.$this->EE->functions->fetch_action_id('Rte', 'get_js')
+				.'&selector='.urlencode($rte_selector)
+				.'&toolset_id='.$rte_toolset_id
+				.'&include_jquery=n';
+				
+			$this->head .= '<script type="text/javascript" src="'.$rte_js_src.'"></script>'."\n";
+
+			// Force loading jQuery here since we're disabling it for the RTE
+			$include_jquery = '&include_jquery=y';
+		}
+
 		$this->head .= '<script type="text/javascript" charset="utf-8" src="'.$this->EE->functions->fetch_site_index().QUERY_MARKER.'ACT='.$this->EE->functions->fetch_action_id('Safecracker', 'combo_loader').'&'.str_replace('%2C', ',', http_build_query($this->EE->cp->js_files)).'&v='.max($mtime).$use_live_url.$include_jquery.'"></script>'."\n";
-		
+
 		//add fieldtype styles
 		foreach ($this->EE->cp->its_all_in_your_head as $item)
 		{

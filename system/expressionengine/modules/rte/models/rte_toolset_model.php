@@ -113,50 +113,27 @@ class Rte_toolset_model extends CI_Model {
 	 */
 	public function get_member_toolset()
 	{
-		$result	= $this->db->select('rte_toolset_id')
-			->get_where(
-				'members',
-				array( 'member_id' => $this->session->userdata('member_id') ),
-				1
-			);
+		$result	= $this->db
+			->select('members.rte_toolset_id')
+			->from('members')
+			->where('members.member_id', $this->session->userdata('member_id'))
+			->join('rte_toolsets', 'members.rte_toolset_id = rte_toolsets.rte_toolset_id')
+			->get();
 
-		// member’s choice
+		// member’s choice?
 		if ($result->num_rows())
 		{
 			$toolset_id	= $result->row('rte_toolset_id');
 		}
 		else
 		{
+			// Fallback to default
 			$toolset_id	= $this->config->item('rte_default_toolset_id');
 		}
 
 		return $toolset_id;
 	}
 	
-	
-	/**
-	 * Check to see if the toolset exists
-	 * 
-	 * @access	public
-	 * @param	int $toolset_id The Toolset ID
-	 * @return	bool
-	 */
-	public function exists($toolset_id = FALSE)
-	{
-		$ret = FALSE;
-		if ( !! $toolset_id)
-		{
-			$row_count = $this->db->get_where(
-					'rte_toolsets',
-					array('rte_toolset_id' => $toolset_id),
-					1
-			 	)
-				->num_rows();
-
-			$ret = ($row_count > 0);
-		}
-		return $ret;
-	}
 	
 	/**
 	 * Check to see if the current member can access the Toolset
