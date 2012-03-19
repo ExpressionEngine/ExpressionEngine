@@ -139,6 +139,10 @@ class Status_model extends CI_Model {
 	{
 		$this->db->delete('status_groups', array('group_id' => $group_id));
 		$this->db->delete('statuses', array('group_id' => $group_id));
+
+		// Clear out any references in exp_channels
+		$this->db->where('status_group', $group_id);
+		$this->db->update('channels', array('status_group' => NULL));		
 	}
 
 	// --------------------------------------------------------------------
