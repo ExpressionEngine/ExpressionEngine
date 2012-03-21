@@ -1,6 +1,6 @@
 (function(){
 	
-	var	$link_dialog	= $('<div>' +
+	var	$link_dialog	= $('<div class="rte-link-dialog">' +
 							'<p><label>* ' + EE.rte.link.dialog.url_field_label + '</label>' +
 							'<input type="url" required="required"/></p>' +
 							'<p><label>' + EE.rte.link.dialog.title_field_label + '</label>' +
