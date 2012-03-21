@@ -74,10 +74,6 @@ class Rte_upd {
 				'unsigned'			=> TRUE,
 				'auto_increment'	=> TRUE
 			),
-			'site_id'			=> array(
-				'type'				=> 'int',
-				'constraint'		=> '4'
-			),
 			'member_id'			=> array(
 				'type'				=> 'int',
 				'constraint'		=> '10',
@@ -98,7 +94,7 @@ class Rte_upd {
 		);
 		$this->EE->dbforge->add_field($fields);
 		$this->EE->dbforge->add_key('rte_toolset_id', TRUE);
-		$this->EE->dbforge->add_key(array('site_id','member_id','enabled'));
+		$this->EE->dbforge->add_key(array('member_id','enabled'));
 		$this->EE->dbforge->create_table('rte_toolsets');
 		
 		// RTE Tools Table
