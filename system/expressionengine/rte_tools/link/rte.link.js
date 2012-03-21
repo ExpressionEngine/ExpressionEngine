@@ -103,10 +103,7 @@
 				var	sel		= reSelect(),
 					title	= $('#rte_link_title-'+uuid).val(),
 					el		= sel.anchorNode;
-
-				// link it
-				//$editor.linkSelection($url.val());
-
+				
 				if ( el )
 				{
 					while ( el.nodeType != 1 )

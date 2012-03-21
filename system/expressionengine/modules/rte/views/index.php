@@ -67,6 +67,8 @@
 		}
 		echo $this->table->generate(); ?>
 		
+		<p><a class="submit" style="display: inline-block"href="<?=$new_toolset_link?>"><?=lang('create_new_rte_toolset')?></a></p>
+		
 		<p><?=NBS?></p>
 
 <?php	$this->table->clear();

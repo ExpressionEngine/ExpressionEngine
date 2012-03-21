@@ -68,11 +68,6 @@ class Rte_mcp {
 		$this->EE->load->library(array('table','javascript'));
 		$this->EE->load->model('rte_toolset_model');
 
-		// set up the page
-		$this->EE->cp->set_right_nav(array(
-			'create_new_rte_toolset' => $this->_base_url.AMP.'method=edit_toolset'
-		));
-
 		$vars = array(
 			'cp_page_title'				=> lang('rte_module_name'),
 			'module_base'				=> $this->_base_url,
@@ -81,7 +76,8 @@ class Rte_mcp {
 			'rte_default_toolset_id'	=> $this->EE->config->item('rte_default_toolset_id'),
 			'toolset_opts'				=> $this->EE->rte_toolset_model->get_active(TRUE),
 			'toolsets'					=> $this->EE->rte_toolset_model->get_all(),
-			'tools'						=> $this->EE->rte_tool_model->get_all()
+			'tools'						=> $this->EE->rte_tool_model->get_all(),
+			'new_toolset_link'			=> $this->_base_url.AMP.'method=edit_toolset'
 		);
 		
 		// JS
