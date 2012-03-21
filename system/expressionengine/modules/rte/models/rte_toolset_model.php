@@ -231,25 +231,25 @@ class Rte_toolset_model extends CI_Model {
 	 * Save a toolset
 	 * 
 	 * @access	public
-	 * @param	array $toolset The toolset details
-	 * @param	int $toolset_id The ID of the Toolset (so you can update)
-	 * @return	mixed
+	 * @param	array	toolset row to update/insert
+	 * @param	int		ID of the toolset to update
+	 * @return	int
 	 */
-	public function save($toolset = array(), $toolset_id = FALSE)
+	public function save_toolset($toolset = array(), $toolset_id = FALSE)
 	{
-		// update
+		// update or insert?
 		if ($toolset_id)
 		{
 			$this->db->where('rte_toolset_id', $toolset_id)
 				->update('rte_toolsets', $toolset);
-		}
-		// insert
+		} 
 		else
 		{
-			$this->db->insert('rte_toolsets', $toolset);
+			$this->db->insert('rte_toolsets', $toolset);		
 		}
 
-		return TRUE;
+		// return the affected rows
+		return $this->db->affected_rows();
 	}
 	
 	/**

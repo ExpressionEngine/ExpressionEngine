@@ -199,7 +199,7 @@ class Rte_lib
 		}
 		
 		// save it
-		if ($this->EE->rte_toolset_model->save($toolset, $toolset_id))
+		if ($this->EE->rte_toolset_model->save_toolset($toolset, $toolset_id))
 		{
 			// if it’s new, get the ID
 			if ( ! $toolset_id)

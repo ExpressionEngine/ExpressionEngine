@@ -169,40 +169,30 @@ class Rte_mcp {
 	// --------------------------------------------------------------------
 	
 	/**
-	 * Enables a toolset
+	 * Enables or disables a toolset
 	 *
 	 * @access	public
 	 * @return	void
 	 */
-	public function enable_toolset()
+	public function toggle_toolset()
 	{
-		$this->_update_tool(
-			$this->EE->input->get_post('rte_toolset_id'),
-			array( 'enabled' => 'y' ),
-			lang('toolset_enabled'),
-			lang('toolset_update_failed'),
-			TRUE
-		);
+		$this->EE->load->model('rte_toolset_model');
+		
+		$toolset_id = $this->EE->input->get_post('rte_toolset_id');
+		$enabled = $this->EE->input->get_post('enabled') != 'n' ? 'y' :'n';
+
+		if ($this->EE->rte_toolset_model->save_toolset(array('enabled' => $enabled), $toolset_id))
+		{
+			$this->EE->session->set_flashdata('message_success', lang('toolset_updated'));
+		}
+		else
+		{
+			$this->EE->session->set_flashdata('message_failure', lang('toolset_update_failed'));
+		}
+
+		$this->EE->functions->redirect($this->_base_url);
 	}
 
-	// --------------------------------------------------------------------
-	
-	/**
-	 * Disables a toolset
-	 *
-	 * @access	public
-	 * @return	void
-	 */
-	public function disable_toolset()
-	{		
-		$this->_update_tool(
-			$this->EE->input->get_post('rte_toolset_id'),
-			array( 'enabled' => 'n' ),
-			lang('toolset_disabled'),
-			lang('toolset_update_failed'),
-			TRUE
-		);
-	}
 
 	// --------------------------------------------------------------------
 	
@@ -243,40 +233,32 @@ class Rte_mcp {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
-	 * Enables a tool based on the rte_tool_id passed in
+	 * Enables or disables a tool
 	 *
 	 * @access	public
 	 * @return	void
 	 */
-	public function enable_tool()
+	public function toggle_tool()
 	{
-		$this->_update_tool(
-			$this->EE->input->get_post('rte_tool_id'),
-			array( 'enabled' => 'y' ),
-			lang('tool_enabled'),
-			lang('tool_update_failed')
-		);
+		$this->EE->load->model('rte_tool_model');
+		
+		$tool_id = $this->EE->input->get_post('rte_tool_id');
+		$enabled = $this->EE->input->get_post('enabled') != 'n' ? 'y' :'n';
+
+		if ($this->EE->rte_tool_model->save_tool(array('enabled' => $enabled), $tool_id))
+		{
+			$this->EE->session->set_flashdata('message_success', lang('tool_updated'));
+		}
+		else
+		{
+			$this->EE->session->set_flashdata('message_failure', lang('tool_update_failed'));
+		}
+
+		$this->EE->functions->redirect($this->_base_url);
 	}
 
-	// --------------------------------------------------------------------
-	
-	/**
-	 * 	Disables a tool based on the rte_tool_id passed in
-	 *
-	 * @access	public
-	 * @return	void
-	 */
-	public function disable_tool()
-	{
-		$this->_update_tool(
-			$this->EE->input->get_post('rte_tool_id'),
-			array( 'enabled' => 'n' ),
-			lang('tool_disabled'),
-			lang('tool_update_failed')
-		);
-	}
 
 	// --------------------------------------------------------------------
 	
@@ -584,32 +566,6 @@ class Rte_mcp {
 		));
 	}
 
-	// --------------------------------------------------------------------
-	
-	/**
-	 * Update the tool
-	 *
-	 * @access	private
-	 * @return	void
-	 */
-	private function _update_tool( $tool_id = 0, $change = array(), $success_msg, $fail_msg, $toolset = FALSE )
-	{
-		$model = ($toolset) ? 'rte_toolset_model' : 'rte_tool_model';
-		$this->EE->load->model($model);
-		
-		// save
-		if ($this->EE->$model->save($change, $tool_id))
-		{
-			$this->EE->session->set_flashdata('message_success', $success_msg);
-		}
-		else
-		{
-			$this->EE->session->set_flashdata('message_failure', $fail_msg);
-		}
-
-		$this->EE->functions->redirect($this->_base_url);
-	}
-	
 	// --------------------------------------------------------------------
 
 	/**

@@ -197,21 +197,26 @@ class Rte_tool_model extends CI_Model {
 	 * @access	public
 	 * @param	array $tool Tool row to update/insert
 	 * @param	int $tool_id The ID of the tool to update
-	 * @return	number
+	 * @return	int
 	 */
-	public function save($tool = array(), $tool_id = FALSE)
+	public function save_tool($tool = array(), $tool_id = FALSE)
 	{
 		// update or insert?
-		$sql = $tool_id	? 
-			$this->db->update_string('rte_tools', $tool, array( 'rte_tool_id' => $tool_id)) : 
-			$this->db->insert_string('rte_tools', $tool);
-
-		$this->db->query($sql);
+		if ($tool_id)
+		{
+			$this->db->where('rte_tool_id', $tool_id)
+				->update('rte_tools', $tool);
+		} 
+		else
+		{
+			$this->db->insert('rte_tools', $tool);		
+		}
 
 		// return the affected rows
 		return $this->db->affected_rows();
 	}
-	
+
+
 	/**
 	 * Make the results array into an <option>-compatible list
 	 * 

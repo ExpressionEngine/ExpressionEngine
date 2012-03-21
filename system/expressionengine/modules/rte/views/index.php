@@ -37,17 +37,18 @@
 		$this->table->template['thead_open'] = '<thead class="visualEscapism">';
 		$this->table->set_caption(lang('rte_toolsets'));
 		$this->table->set_heading(lang('toolset'), lang('status'), '');
+
 		foreach($toolsets as $toolset)
 		{
 			if ($toolset['enabled'] == 'y')
 			{
 				$active = '<strong>'.lang('enabled').'</strong>';
-				$action = '<a href="'.$module_base.AMP.'method=disable_toolset'.AMP.'rte_toolset_id='.$toolset['rte_toolset_id'].'">'.lang('disable_button').'</a>';
+				$action = '<a href="'.$module_base.AMP.'method=toggle_toolset'.AMP.'rte_toolset_id='.$toolset['rte_toolset_id'].AMP.'enabled=n">'.lang('disable_button').'</a>';
 			}
 			else
 			{
 				$active = '<strong>'.lang('disabled').'</strong>';
-				$action = '<a href="'.$module_base.AMP.'method=enable_toolset'.AMP.'rte_toolset_id='.$toolset['rte_toolset_id'].'">'.lang('enable_button').'</a>';
+				$action = '<a href="'.$module_base.AMP.'method=toggle_toolset'.AMP.'rte_toolset_id='.$toolset['rte_toolset_id'].AMP.'enabled=y">'.lang('enable_button').'</a>';
 			}
 	
 			$this->table->add_row(
@@ -65,6 +66,7 @@
 				)
 			);
 		}
+
 		echo $this->table->generate(); ?>
 		
 		<p><a class="submit" style="display: inline-block"href="<?=$new_toolset_link?>"><?=lang('create_new_rte_toolset')?></a></p>
@@ -79,17 +81,18 @@
 			lang('tool'),
 			lang('status')
 		);
+
 		foreach($tools as $tool)
 		{
 			if ($tool['enabled'] == 'y')
 			{
 				$active = '<strong>'.lang('enabled').'</strong>';
-				$action = '<a href="'.$module_base.AMP.'method=disable_tool'.AMP.'rte_tool_id='.$tool['rte_tool_id'].'">'.lang('disable_button').'</a>';
+				$action = '<a href="'.$module_base.AMP.'method=toggle_tool'.AMP.'rte_tool_id='.$tool['rte_tool_id'].AMP.'enabled=n">'.lang('disable_button').'</a>';
 			}
 			else
 			{
 				$active = '<strong>'.lang('disabled').'</strong>';
-				$action = '<a href="'.$module_base.AMP.'method=enable_tool'.AMP.'rte_tool_id='.$tool['rte_tool_id'].'">'.lang('enable_button').'</a>';
+				$action = '<a href="'.$module_base.AMP.'method=toggle_tool'.AMP.'rte_tool_id='.$tool['rte_tool_id'].AMP.'enabled=y">'.lang('enable_button').'</a>';
 			}
 	
 			$this->table->add_row(
@@ -97,4 +100,5 @@
 				array( 'style' => 'width:66%', 'data' => $active.NBS."({$action})" )
 			);
 		}
+
 		echo $this->table->generate(); ?>
