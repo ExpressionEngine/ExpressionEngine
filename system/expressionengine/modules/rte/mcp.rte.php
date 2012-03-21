@@ -176,11 +176,12 @@ class Rte_mcp {
 	 */
 	public function enable_toolset()
 	{
-		$this->_update_toolset(
+		$this->_update_tool(
 			$this->EE->input->get_post('rte_toolset_id'),
 			array( 'enabled' => 'y' ),
 			lang('toolset_enabled'),
-			lang('toolset_update_failed')
+			lang('toolset_update_failed'),
+			TRUE
 		);
 	}
 
@@ -194,11 +195,12 @@ class Rte_mcp {
 	 */
 	public function disable_toolset()
 	{		
-		$this->_update_toolset(
+		$this->_update_tool(
 			$this->EE->input->get_post('rte_toolset_id'),
 			array( 'enabled' => 'n' ),
 			lang('toolset_disabled'),
-			lang('toolset_update_failed')
+			lang('toolset_update_failed'),
+			TRUE
 		);
 	}
 
@@ -590,12 +592,13 @@ class Rte_mcp {
 	 * @access	private
 	 * @return	void
 	 */
-	private function _update_tool( $tool_id = 0, $change = array(), $success_msg, $fail_msg )
+	private function _update_tool( $tool_id = 0, $change = array(), $success_msg, $fail_msg, $toolset = FALSE )
 	{
-		$this->EE->load->model('rte_tool_model');
+		$model = ($toolset) ? 'rte_toolset_model' : 'rte_tool_model';
+		$this->EE->load->model($model);
 		
 		// save
-		if ($this->EE->rte_tool_model->save($change, $tool_id))
+		if ($this->EE->$model->save($change, $tool_id))
 		{
 			$this->EE->session->set_flashdata('message_success', $success_msg);
 		}
@@ -606,7 +609,7 @@ class Rte_mcp {
 
 		$this->EE->functions->redirect($this->_base_url);
 	}
-
+	
 	// --------------------------------------------------------------------
 
 	/**
