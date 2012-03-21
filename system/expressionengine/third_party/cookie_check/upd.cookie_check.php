@@ -76,6 +76,29 @@ class Cookie_check_upd {
 
 
 
+		$this->EE->db->insert('extensions', array(
+			'class'    => 'Cookie_check_ext',
+			'hook'     => 'forum_include_extras',
+			'method'   => 'parse_forum_template',
+			'settings' => '',
+			'priority' => 5,
+			'version'  => $this->version,
+			'enabled'  => 'y'
+		));
+
+
+
+		$this->EE->db->insert('extensions', array(
+			'class'    => 'Cookie_check_ext',
+			'hook'     => 'forum_add_template',
+			'method'   => 'forum_add_template',
+			'settings' => '',
+			'priority' => 5,
+			'version'  => $this->version,
+			'enabled'  => 'y'
+		));
+
+
 	// Frontend login- require cookies
 	$this->EE->db->insert('extensions', array(
 			'class'    => 'Cookie_check_ext',
@@ -110,20 +133,6 @@ class Cookie_check_upd {
 			'enabled'  => 'y'
 		));	
 
-
-	// CP login- modify form
-/*	
-	$this->EE->db->insert('extensions', array(
-			'class'    => 'Cookie_check_ext',
-			'hook'     => 'member_auth_login_form_end',
-			'method'   => 'modify_member_login_form',
-			'settings' => '',
-			'priority' => 5,
-			'version'  => $this->version,
-			'enabled'  => 'y'
-		));	
-*/
-				
 		return TRUE;
 	}
 	

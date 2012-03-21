@@ -146,66 +146,6 @@ class Forum_Core extends Forum {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Recursively Fetch Template Elements
-	 *
-	 * Note:  A "template element" refers to an HTML component used to 
-	 * build the forum (header, breadcrumb, footer, etc.). Each "template 
-	 * element" corresponds to a particular function in one of the theme files.
-	 *
-	 * This function allows any template element to be embedded within any other 
-	 * template element. Template elements can contain "include variables" which 
-	 * call other template elements.
-	 * The include variables look like this: {include:function_name}
-	 *
-	 * If an include is found, this function loads that element and recursively 
-	 * looks for additional includes.  
-	 *
-	 * In some cases, template elements need to be processed rather than simply 
-	 * returned.
-	 * If we need to process the include, THIS file will contain a function 
-	 * named exactly the same as the template element which will be called.  If 
-	 * the function does not exist we return the pure data.
-	 *
-	 * Right now there is no safety to prevent a run-away loop if an include is 
-	 * put within itself.
-	 *
-	 * @param
-	 */
-	function _include_recursive($function)
-	{ 
-		if ($this->return_data == '' AND $this->trigger_error_page === TRUE)
-		{
-			$function = 'error_page';
-		}
-			
-		$element = ( ! method_exists($this, $function)) ? $this->load_element($function) : $this->$function();
-
-		if ($this->return_data == '')
-		{
-			$this->return_data = $element;
-		}
-		else
-		{
-			$this->return_data = str_replace('{include:'.$function.'}', $element, $this->return_data);
-		}
-			
-			if (preg_match_all("/{include:(.+?)\}/i", $this->return_data, $matches))
-			{	
-			for ($j = 0; $j < count($matches['0']); $j++)
-			{	
-				if ( ! in_array($matches['1'][$j], $this->include_exceptions))
-				{
-					return $this->return_data = str_replace($matches['0'][$j], $this->_include_recursive($matches['1'][$j]), $this->return_data);
-				}
-			}
-		}		
-				
-		return $this->return_data;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Fetch Forum Moderators
 	 */
 	function _load_moderators()

@@ -72,6 +72,96 @@ class Cookie_check_ext {
 		return FALSE;
 	}
 
+	
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Make the module work in the forum
+	 */
+	function forum_add_template($which, $classname)
+	{
+		if ($which == 'cookie_check_message')
+		{
+			$classname = 'cookie_check';
+		}
+
+		return $classname;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Make the module work in the forum
+	 */
+	function parse_forum_template($obj, $function, $template)
+	{
+		// Check for tags
+		if ($function != 'cookie_check_message')
+		{
+			return $template;
+		}
+
+		$cookies_allowed = ($this->EE->input->cookie('cookies_allowed')) ? TRUE : FALSE;
+
+		if ($cookies_allowed)
+		{
+			$template = $obj->deny_if('cookies_not_allowed', $template);
+			$template = $obj->allow_if('cookies_allowed', $template);
+		}
+		else
+		{
+			$template = $obj->allow_if('cookies_not_allowed', $template);
+			$template = $obj->deny_if('cookies_allowed', $template);
+		}
+
+		$allowed_link = $this->cookies_allowed_link();
+		$clear_link = $this->clear_cookies_link('ee');
+
+		$vars = array('{cookies_allowed_link}', '{clear_cookies_link}');
+		$values = array($allowed_link, $clear_link);
+		$template = str_replace($vars, $values, $template);
+
+		return $template;
+	}
+
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Create cookies allowed link
+	 */
+	function cookies_allowed_link()
+	{
+		$link = $this->EE->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='
+			.$this->EE->functions->fetch_action_id('Cookie_check', 'set_cookies_allowed');
+
+		$link .= AMP.'RET='.$this->EE->uri->uri_string();	
+		
+		return $link;		
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Create the 'clear cookies' link
+	 */
+	function clear_cookies_link($clear_all)
+	{
+		$link = $this->EE->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='
+			.$this->EE->functions->fetch_action_id('Cookie_check', 'clear_ee_cookies');
+
+		$link .= AMP.'CLEAR='.$clear_all;			
+
+		$link .= AMP.'RET='.$this->EE->uri->uri_string();	
+		
+		return $link;		
+	}	
+
+// @todo nuke above 2 functions- move to lib???
+
+
+
 	// --------------------------------------------------------------------
 
 	/**
