@@ -1117,13 +1117,6 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 						'insertUnorderedList', 'justifyCenter', 'justifyFull', 'justifyLeft', 'justifyRight', 'outdent',
 						'copy', 'cut', 'paste', 'selectAll', 'styleWithCSS', 'useCSS' ],
 
-	dflt_shortcuts	= {
-						bold:		{ ctrl: true, keycode: 66 }, // b
-						createLink: { ctrl: true, keycode: 76 }, // l
-						italic:		{ ctrl: true, keycode: 73 }, // i
-						underline:	{ ctrl: true, keycode: 85 }  // u
-					  },
-
 	block_els		= WysiHat.Element.getContentElements().join(',').replace( ',div,', ',div:not(.' + WYSIHAT_EDITOR + '),' );
 
 	function boldSelection()
@@ -1596,10 +1589,6 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 	{
 		return ( $.inArray( cmd, valid_cmds ) > -1 );
 	}
-	function getDefaultShortcut( cmd )
-	{
-		return ( !! dflt_shortcuts[cmd] ) ? dflt_shortcuts[cmd] : false;
-	}
 	function execCommand( command, ui, value )
 	{
 		var handler = this.commands[command];
@@ -1913,7 +1902,6 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 		toggleHTML:					toggleHTML,
 
 		isValidCommand:				isValidCommand,
-		getDefaultShortcut:			getDefaultShortcut,
 		manipulateSelection:		manipulateSelection,
 		getRangeElements:			getRangeElements,
 		getRanges:					getRanges,
@@ -2652,7 +2640,7 @@ WysiHat.Formatting = (function($){
 
 		function addButton( options, handler )
 		{
-			var name, $button, shortcut;
+			var name, $button;
 
 			if ( ! options['name'] )
 			{
@@ -2791,63 +2779,6 @@ WysiHat.Formatting = (function($){
 			}
 		}
 
-		function shortcutTest( name, options )
-		{
-			var shortcut = options['shortcut'] || WysiHat.Commands.getDefaultShortcut( name ),
-			alt, ctrl, code;
-			if ( !! shortcut )
-			{
-				alt		= !! shortcut['alt'];
-				ctrl	= !! shortcut['ctrl'];
-				code	= shortcut['keycode'];
-				shortcut = function( e ){
-					return ( code == e.which &&
-							 alt == e.altKey &&
-							 ctrl == e.ctrlKey );
-				};
-			}
-			return shortcut;
-		}
-
-		function observeShortcut( test, handler )
-		{
-			$editor.keydown(function( e ){
-				if ( test( e ) )
-				{
-					handler();
-				}
-			});
-		}
-
-		function buttonKey( e )
-		{
-			var
-			$this	= $(this).closest( 'button,[role=button]' ),
-			key		= e.which,
-			$next;
-			switch ( key )
-			{
-				case 37:
-				case 38:
-					$next = $this.prev();
-					if ( ! $next.length )
-					{
-						$next = $( $this.parent().get(0).lastChild );
-					}
-					$next.focus();
-					break;
-				case 39:
-				case 40:
-					$next = $this.next();
-					if ( ! $next.length )
-					{
-						$next = $( $this.parent().get(0).firstChild );
-					}
-					$next.focus();
-					break;
-			}
-		}
-
 		return {
 			initialize:           initialize,
 			createToolbarElement: createToolbarElement,
@@ -2877,7 +2808,11 @@ WysiHat.Toolbar.ButtonSets.Standard = [
 	{ label: "Bold", cssClass: 'toolbar_button' },
 	{ label: "Italic", cssClass: 'toolbar_button' },
 	{ label: "Strikethrough", cssClass: 'toolbar_button' },
-	{ label: "Bullets", cssClass: 'toolbar_button', handler: function(editor) { return editor.toggleUnorderedList(); } }
+	{ label: "Bullets",
+	  cssClass: 'toolbar_button', handler: function(editor) {
+	    return editor.toggleUnorderedList();
+	  }
+	}
 ];
 jQuery.fn.wysihat = function(options) {
 	options = jQuery.extend({
