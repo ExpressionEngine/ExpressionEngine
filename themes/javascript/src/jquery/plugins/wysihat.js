@@ -54,55 +54,52 @@ var WysiHat = {
 				}
 				return $editor;
 			}
-			else
+
+			$editor = $('<div id="' + e_id + '" class="' + CLASS + '" contentEditable="true" role="application"></div>')
+								.html( WysiHat.Formatting.getBrowserMarkupFrom( $field ) )
+								.data( 'field', $field );
+
+			$.extend( $editor, WysiHat.Commands );
+
+			function updateField()
 			{
-				$editor = $('<div id="' + e_id + '" class="' + CLASS + '" contentEditable="true" role="application"></div>')
-									.html( WysiHat.Formatting.getBrowserMarkupFrom( $field ) )
-									.data( 'field', $field );
-
-				$.extend( $editor, WysiHat.Commands );
-
-				function updateField()
-				{
-					$field.val( WysiHat.Formatting.getApplicationMarkupFrom( $editor ) );
-					fTimer = null;
-				}
-				function updateEditor()
-				{
-					$editor.html( WysiHat.Formatting.getBrowserMarkupFrom( $field ) );
-					eTimer = null;
-				}
-
-				$field
-					.data( 'editor', $editor )
-					.bind('keyup mouseup',function(){
-						$field.trigger(F_EVT);
-					 })
-					.bind( F_EVT, function(){
-						if ( fTimer )
-						{
-							clearTimeout( fTimer );
-						}
-						fTimer = setTimeout(updateEditor, 250 );
-					 })
-					.bind( F_EVT + IMMEDIATE, updateEditor )
-					.hide()
-					.before(
-						$editor
-							.bind('keyup mouseup',function(){
-								$editor.trigger(E_EVT);
-							 })
-							.bind( E_EVT, function(){
-								if ( eTimer )
-								{
-									clearTimeout( eTimer );
-								}
-								eTimer = setTimeout(updateField, 250);
-							 })
-							.bind( E_EVT + IMMEDIATE, updateField )
-					 )
+				$field.val( WysiHat.Formatting.getApplicationMarkupFrom( $editor ) );
+				fTimer = null;
+			}
+			function updateEditor()
+			{
+				$editor.html( WysiHat.Formatting.getBrowserMarkupFrom( $field ) );
+				eTimer = null;
 			}
 
+			$field
+				.data( 'editor', $editor )
+				.bind('keyup mouseup',function(){
+					$field.trigger(F_EVT);
+				 })
+				.bind( F_EVT, function(){
+					if ( fTimer )
+					{
+						clearTimeout( fTimer );
+					}
+					fTimer = setTimeout(updateEditor, 250 );
+				 })
+				.bind( F_EVT + IMMEDIATE, updateEditor )
+				.hide()
+				.before(
+					$editor
+						.bind('keyup mouseup',function(){
+							$editor.trigger(E_EVT);
+						 })
+						.bind( E_EVT, function(){
+							if ( eTimer )
+							{
+								clearTimeout( eTimer );
+							}
+							eTimer = setTimeout(updateField, 250);
+						 })
+						.bind( E_EVT + IMMEDIATE, updateField )
+				 )
 
 			return $editor;
 		}
@@ -1522,25 +1519,19 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 
 		var
 		old		= $el.get(0),
-		$new	= $('<'+tagName+'/>')
-					.html( $el.html() ),
+		$new_el	= $('<'+tagName+'/>').html(old.innerHTML),
 
 		attrs	= old.attributes,
-		len		= attrs.length;
-		if ( len )
+		len		= attrs.length || 0;
+
+		while (len--)
 		{
-			while ( len-- )
-			{
-				$new.attr( attrs[len].name, attrs[len].value );
-			}
+			$new_el.attr( attrs[len].name, attrs[len].value );
 		}
 
-		$el.replaceWith( $new );
+		$el.replaceWith( $new_el );
 
-		//console.log('replaceElement');
-		//$(DOC.activeElement).trigger( CHANGE_EVT );
-
-		return $new;
+		return $new_el;
 	}
 
 	function deleteElement()
@@ -1639,13 +1630,11 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 		{
 			return handler();
 		}
-		else
-		{
-			try {
-				return WIN.document.queryCommandState(state);
-			}
-			catch(e) { return NULL; }
+		
+		try {
+			return WIN.document.queryCommandState(state);
 		}
+		catch(e) { return NULL; }
 	}
 
 	function getSelectedStyles()
@@ -2163,12 +2152,10 @@ jQuery(document).ready(function(){
 			        original_event.preventDefault();
 			        return false;
 			    }
-			    else
-				{
-			        $editor.html('');
-			        waitforpastedata( $editor );
-			        return true;
-			    }
+
+			    $editor.html('');
+				waitforpastedata( $editor );
+				return true;
 			 });
 
 			function waitforpastedata( $editor )
