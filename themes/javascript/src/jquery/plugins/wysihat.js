@@ -216,7 +216,7 @@ WysiHat.Element = (function( $ ){
 	}
 	function getContentElements()
 	{
-		return sub_containers.concat(  content );
+		return sub_containers.concat( content );
 	}
 	function getMediaElements()
 	{
@@ -331,7 +331,6 @@ if (!window.getSelection) {
 			function Range( document )
 			{
 				this._document = document;
-
 				this.startContainer = this.endContainer = document.body;
 				this.endOffset = DOMUtils.getNodeLength(document.body);
 			}
@@ -943,11 +942,11 @@ jQuery.extend(Range.prototype, (function(){
 	}
 
 	return {
-		beforeRange:  beforeRange,
-		afterRange:   afterRange,
-		betweenRange: betweenRange,
-		equalRange:   equalRange,
-		getNode:	  getNode
+		beforeRange:	beforeRange,
+		afterRange:		afterRange,
+		betweenRange:	betweenRange,
+		equalRange:		equalRange,
+		getNode:		getNode
 	};
 
 })());
@@ -958,49 +957,124 @@ if ( typeof Selection == 'undefined' )
 	Selection.prototype = window.getSelection().__proto__;
 }
 
-(function( DOC, $ ){
+(function( DOC, $ ) {
+
+	// functions we want to normalize
+	var
+	getNode,
+	selectNode,
+	setBookmark,
+	moveToBookmark;
 
 	if ( $.browser.msie )
 	{
-
-		function getNode()
+		getNode = function()
 		{
 			var range = this._document.selection.createRange();
 			return $(range.parentElement());
 		}
 
-		function selectNode(element)
+		selectNode = function(element)
 		{
 			var range = this._document.body.createTextRange();
 			range.moveToElementText(element);
 			range.select();
 		}
 
+		setBookmark = function()
+		{
+			var
+			$bookmark	= $('#WysiHat-bookmark'),
+			$parent		= $('<div/>'),
+			range		= this._document.selection.createRange();
+
+			if ( $bookmark.length > 0 )
+			{
+				$bookmark.remove();
+			}
+
+			$bookmark = $( '<span id="WysiHat-bookmark">&nbsp;</span>' )
+							.appendTo( $parent );
+
+			range.collapse(true);
+			range.pasteHTML( $parent.html() );
+		}
+
+		moveToBookmark = function(element)
+		{
+			var
+			$bookmark	= $('#WysiHat-bookmark'),
+			range		= this._document.selection.createRange();
+
+			if ( $bookmark.length > 0 )
+			{
+				$bookmark.remove();
+			}
+
+			range.moveToElementText( $bookmark.get(0) );
+			range.collapse(true);
+			range.select();
+
+			$bookmark.remove();
+		}
 	}
 	else
 	{
-
-		function getNode()
+		getNode = function()
 		{
 			return ( this.rangeCount > 0 ) ? this.getRangeAt(0).getNode() : null;
 		}
 
-		function selectNode(element)
+		selectNode = function(element)
 		{
-			var range = document.createRange();
+			var range = DOC.createRange();
 			range.selectNode(element[0]);
 			this.removeAllRanges();
 			this.addRange(range);
 		}
 
+		setBookmark = function()
+		{
+			var $bookmark	= $('#WysiHat-bookmark');
+
+			if ( $bookmark.length > 0 )
+			{
+				$bookmark.remove();
+			}
+
+			$bookmark = $( '<span id="WysiHat-bookmark">&nbsp;</span>' );
+
+			this.getRangeAt(0).insertNode( $bookmark.get(0) );
+		}
+
+		moveToBookmark = function(element)
+		{
+			var
+			$bookmark	= $('#WysiHat-bookmark'),
+			range		= DOC.createRange();
+
+			if ( $bookmark.length > 0 )
+			{
+				$bookmark.remove();
+			}
+
+			range.setStartBefore( $bookmark.get(0) );
+			this.removeAllRanges();
+			this.addRange(range);
+
+			$bookmark.remove();
+		}
 	}
 
 	$.extend(Selection.prototype, {
-		getNode:	getNode,
-		selectNode: selectNode
+		getNode: getNode,
+		selectNode: selectNode,
+		setBookmark: setBookmark,
+		moveToBookmark: moveToBookmark
 	});
 
-})( document, jQuery );
+})(document, jQuery);
+
 (function($){
 
 	$(document).ready(function(){
@@ -1092,9 +1166,6 @@ if ( typeof Selection == 'undefined' )
 WysiHat.Commands = (function( WIN, DOC, $ ){
 
 	var
-	UNDEFINED,
-	OL				= 'ol',
-	UL				= 'ul',
 	WYSIHAT_EDITOR	= 'WysiHat-editor',
 	CHANGE_EVT		= WYSIHAT_EDITOR + ':change',
 
@@ -1426,7 +1497,7 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 	{
 		if ( $.browser.msie )
 		{
-			var range = WIN.document.selection.createRange();
+			var range = DOC.selection.createRange();
 			range.pasteHTML(html);
 			range.collapse(false);
 			range.select();
@@ -1582,7 +1653,7 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 		{
 			noSpans();
 			try {
-				WIN.document.execCommand(command, ui, value);
+				DOC.execCommand(command, ui, value);
 			}
 			catch(e) { return null; }
 		}
@@ -1592,21 +1663,21 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 	function noSpans()
 	{	
 		try {
-			WIN.document.execCommand('styleWithCSS', 0, false);
+			DOC.execCommand('styleWithCSS', 0, false);
 			noSpans = function(){
-				WIN.document.execCommand('styleWithCSS', 0, false);
+				DOC.execCommand('styleWithCSS', 0, false);
 			};
 		} catch (e) {
 			try {
-				WIN.document.execCommand('useCSS', 0, true);
+				DOC.execCommand('useCSS', 0, true);
 				noSpans = function(){
-					WIN.document.execCommand('useCSS', 0, true);
+					DOC.execCommand('useCSS', 0, true);
 				};
 			} catch (e) {
 				try {
-					WIN.document.execCommand('styleWithCSS', false, false);
+					DOC.execCommand('styleWithCSS', false, false);
 					noSpans = function(){
-						WIN.document.execCommand('styleWithCSS', false, false);
+						DOC.execCommand('styleWithCSS', false, false);
 					};
 				}
 				catch (e) {}
@@ -1623,7 +1694,7 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 		}
 		
 		try {
-			return WIN.document.queryCommandState(state);
+			return DOC.queryCommandState(state);
 		}
 		catch(e) { return null; }
 	}
@@ -1651,7 +1722,7 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 		$field	= $editor.data('field'),
 		$tools	= $btn.siblings();
 
-		if ( $btn.data('toggle-text') == UNDEFINED )
+		if ( $btn.data('toggle-text') == undefined )
 		{
 			$btn.data('toggle-text','View Content');
 		}
@@ -1724,7 +1795,6 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 					$els = $from.prevUntil( $to ).andSelf().add( $to );
 				}
 			}
-
 		}
 
 		return $els;
@@ -1931,93 +2001,6 @@ if ( typeof Node == "undefined" )
 		window.Node = new Node();
 	})();
 }
-
-(function( DOC, $ ){
-
-	if ( $.browser.msie )
-	{
-
-		function setBookmark()
-		{
-			var
-			$bookmark	= $('#WysiHat-bookmark'),
-			$parent		= $('<div/>'),
-			range		= this._document.selection.createRange();
-
-			if ( $bookmark.length > 0 )
-			{
-				$bookmark.remove();
-			}
-
-			$bookmark = $( '<span id="WysiHat-bookmark">&nbsp;</span>' )
-							.appendTo( $parent );
-
-			range.collapse(true);
-			range.pasteHTML( $parent.html() );
-		}
-
-		function moveToBookmark(element)
-		{
-			var
-			$bookmark	= $('#WysiHat-bookmark'),
-			range		= this._document.selection.createRange();
-
-			if ( $bookmark.length > 0 )
-			{
-				$bookmark.remove();
-			}
-
-			range.moveToElementText( $bookmark.get(0) );
-			range.collapse(true);
-			range.select();
-
-			$bookmark.remove();
-		}
-
-	}
-	else
-	{
-
-		function setBookmark()
-		{
-			var $bookmark	= $('#WysiHat-bookmark');
-
-			if ( $bookmark.length > 0 )
-			{
-				$bookmark.remove();
-			}
-
-			$bookmark = $( '<span id="WysiHat-bookmark">&nbsp;</span>' );
-
-			this.getRangeAt(0).insertNode( $bookmark.get(0) );
-		}
-
-		function moveToBookmark(element)
-		{
-			var
-			$bookmark	= $('#WysiHat-bookmark'),
-			range		= DOC.createRange();
-
-			if ( $bookmark.length > 0 )
-			{
-				$bookmark.remove();
-			}
-
-			range.setStartBefore( $bookmark.get(0) );
-			this.removeAllRanges();
-			this.addRange(range);
-
-			$bookmark.remove();
-		}
-
-	}
-
-	$.extend( Selection.prototype, {
-		setBookmark:	setBookmark,
-		moveToBookmark: moveToBookmark
-	});
-
-})(document,jQuery);
 
 jQuery(document).ready(function(){
 
@@ -2629,16 +2612,16 @@ WysiHat.Formatting = (function($){
 		}
 
 		return {
-			initialize:		   initialize,
+			initialize:		initialize,
 			createToolbarElement: createToolbarElement,
-			addButtonSet:		 addButtonSet,
-			addButton:			addButton,
-			createButtonElement:  createButtonElement,
-			buttonHandler:		buttonHandler,
-			observeButtonClick:   observeButtonClick,
-			buttonStateHandler:   buttonStateHandler,
-			observeStateChanges:  observeStateChanges,
-			updateButtonState:	updateButtonState
+			addButtonSet:	addButtonSet,
+			addButton:		addButton,
+			createButtonElement: createButtonElement,
+			buttonHandler:		 buttonHandler,
+			observeButtonClick:	 observeButtonClick,
+			buttonStateHandler:	 buttonStateHandler,
+			observeStateChanges: observeStateChanges,
+			updateButtonState:	 updateButtonState
 		};
 	};
 
