@@ -1417,17 +1417,24 @@ if ( typeof Node == "undefined" )
 
 			// Given a node and and an offset, find the correct
 			// textnode and offset that we can create a range with.
-			function getOffsetNode(startNode, offset) {
+			function getOffsetNode(startNode, offset)
+			{
 				var curNode = startNode;
 
-				function getTextNodes(node) {
-					if (node.nodeType == 3) {
-						if (offset > 0) {
+				function getTextNodes(node)
+				{
+					if (node.nodeType == 3)
+					{
+						if (offset > 0)
+						{
 							curNode = node;
 							offset -= node.nodeValue.replace(/\n/g, '').length;
 						}
-					} else {
-						for (var i = 0, len = node.childNodes.length; offset > 0 && i < len; ++i) {
+					}
+					else
+					{
+						for (var i = 0, len = node.childNodes.length; offset > 0 && i < len; ++i)
+						{
 							getTextNodes(node.childNodes[i]);
 						}
 					}
