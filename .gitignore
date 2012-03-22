@@ -32,6 +32,7 @@ system/expressionengine/third_party/*
 !system/expressionengine/third_party/testage
 !system/expressionengine/third_party/safecracker_file
 !system/expressionengine/third_party/cookie_check
+!system/expressionengine/third_party/cookie_consent
 
 system/expressionengine/language/deutsch/*
 
