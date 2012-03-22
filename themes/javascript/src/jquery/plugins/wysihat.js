@@ -45,6 +45,7 @@ var WysiHat = {
 				$field.attr( ID, t_id );
 			}
 
+
 			if ( $editor.length )
 			{
 				if ( ! $editor.hasClass( CLASS ) )
@@ -64,12 +65,12 @@ var WysiHat = {
 				function updateField()
 				{
 					$field.val( WysiHat.Formatting.getApplicationMarkupFrom( $editor ) );
-					this.fTimer = null;
+					fTimer = null;
 				}
 				function updateEditor()
 				{
 					$editor.html( WysiHat.Formatting.getBrowserMarkupFrom( $field ) );
-					this.eTimer = null;
+					eTimer = null;
 				}
 
 				$field
@@ -78,11 +79,11 @@ var WysiHat = {
 						$field.trigger(F_EVT);
 					 })
 					.bind( F_EVT, function(){
-						if ( this.fTimer )
+						if ( fTimer )
 						{
-							clearTimeout( this.fTimer );
+							clearTimeout( fTimer );
 						}
-						this.fTimer = setTimeout(updateEditor, 250 );
+						fTimer = setTimeout(updateEditor, 250 );
 					 })
 					.bind( F_EVT + IMMEDIATE, updateEditor )
 					.hide()
@@ -92,15 +93,14 @@ var WysiHat = {
 								$editor.trigger(E_EVT);
 							 })
 							.bind( E_EVT, function(){
-								if ( this.eTimer )
+								if ( eTimer )
 								{
-									clearTimeout( this.eTimer );
+									clearTimeout( eTimer );
 								}
-								this.eTimer = setTimeout(updateField, 250 );
+								eTimer = setTimeout(updateField, 250);
 							 })
 							.bind( E_EVT + IMMEDIATE, updateField )
 					 )
-
 			}
 
 
@@ -109,96 +109,7 @@ var WysiHat = {
 	};
 
 })(jQuery);
-WysiHat.BrowserFeatures = (function($){
 
-	var features = {};
-
-	function createTmpIframe(callback)
-	{
-	    var
-		frameDocument,
-	    $frame	= $('<iframe></iframe>'),
-		frame	= $frame.get(0);
-
-	    $frame
-			.css({
-	      		position: 'absolute',
-	      		left: '-1000px'
-	    	 })
-			.load(function(){
-				if ( typeof frame.contentDocument !== 'undefined' )
-				{
-					frameDocument = frame.contentDocument;
-				}
-				else if ( typeof frame.contentWindow !== 'undefined' &&
-						  typeof frame.contentWindow.document !== 'undefined' )
-				{
-	        		frameDocument = frame.contentWindow.document;
-				}
-				frameDocument.designMode = 'on';
-				callback(frameDocument);
-				$frame.remove();
-			 });
-	    $('body').append($frame);
-	}
-
-  	function detectParagraphType(doc)
-	{
-		var tagName;
-
-    	doc.body.innerHTML = '';
-    	doc.execCommand('insertparagraph', false, null);
-
-    	element = doc.body.childNodes[0];
-    	if (element && element.tagName)
-		{
-	      tagName = element.tagName.toLowerCase();
-		}
-
-    	if (tagName == 'div')
-		{
-	    	features.paragraphType = "div";
-		}
-		else if (doc.body.innerHTML == "<p><br></p>")
-		{
-			features.paragraphType = "br";
-		}
-		else
-		{
-			features.paragraphType = "p";
-		}
-	}
-
-	function detectIndentType(doc)
-	{
-		var tagName;
-
-		doc.body.innerHTML = 'tab';
-		doc.execCommand('indent', false, null);
-
-		element = doc.body.childNodes[0];
-		if (element && element.tagName)
-		{
-			tagName = element.tagName.toLowerCase();
-		}
-
-		features.indentInsertsBlockquote = (tagName == 'blockquote');
-	}
-
-	features.run = function run()
-	{
-		if (features.finished) return;
-
-		createTmpIframe(function(document){
-			detectParagraphType(document);
-			detectIndentType(document);
-			features.finished = true;
-		});
-	};
-
-	return features;
-
-})(jQuery);
 WysiHat.Element = (function( $ ){
 
 	var
@@ -1006,6 +917,13 @@ jQuery.extend(Range.prototype, (function(){
 		{
 			return false;
 		}
+
+		// if both ranges are collapsed we just need to compare one point
+		if (this.collapsed && range.collapsed)
+		{
+			return (this.compareBoundaryPoints( this.START_TO_START, range ) == 0);
+		}	
+
 		return ( this.compareBoundaryPoints( this.START_TO_START, range ) == 0 &&
 				 this.compareBoundaryPoints( this.START_TO_END, range ) == 1 &&
 				 this.compareBoundaryPoints( this.END_TO_END, range ) == 0 &&
@@ -1240,7 +1158,6 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 	{
 		return ( selectionIsWithin('s,del') || document.queryCommandState('strikethrough') );
 	}
-
 
 	function quoteSelection()
 	{
@@ -1627,7 +1544,8 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 
 		$el.replaceWith( $new );
 
-		$(DOC.activeElement).trigger( CHANGE_EVT );
+		//console.log('replaceElement');
+		//$(DOC.activeElement).trigger( CHANGE_EVT );
 
 		return $new;
 	}
@@ -1697,6 +1615,7 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 			}
 			catch(e) { return NULL; }
 		}
+
 		$(DOC.activeElement).trigger( CHANGE_EVT );
 	}
 	function noSpans()
@@ -2254,67 +2173,6 @@ if ( typeof Node == "undefined" )
 	};
 
 })(jQuery);
-(function() {
-  function onReadyStateComplete(document, callback) {
-
-    function checkReadyState() {
-      if (document.readyState === 'complete') {
-        $(document).unbind('readystatechange', checkReadyState);
-        callback();
-        return true;
-      } else {
-        return false;
-      }
-    }
-
-    $(document).bind('readystatechange', checkReadyState);
-    checkReadyState();
-  }
-
-  function observeFrameContentLoaded(element) {
-    element = $(element);
-    var bare = element.get(0);
-
-    var loaded, contentLoadedHandler;
-
-    loaded = false;
-    function fireFrameLoaded() {
-      if (loaded) { return };
-
-      loaded = true;
-      if (contentLoadedHandler) { contentLoadedHandler.stop(); }
-      element.trigger('frame:loaded');
-    }
-
-    if (window.addEventListener) {
-      contentLoadedHandler = $(document).bind("DOMFrameContentLoaded", function(event) {
-        if (element == $(this))
-          fireFrameLoaded();
-      });
-    }
-
-    element.load(function() {
-      var frameDocument;
-      if (typeof element.contentDocument !== 'undefined') {
-        frameDocument = element.contentDocument;
-      } else if (typeof element.contentWindow !== 'undefined' && typeof element.contentWindow.document !== 'undefined') {
-        frameDocument = element.contentWindow.document;
-      }
-
-      onReadyStateComplete(frameDocument, fireFrameLoaded);
-    });
-
-    return element;
-  }
-
-  function onFrameLoaded($element, callback) {
-    $element.bind('frame:loaded', callback);
-    $element.observeFrameContentLoaded();
-  }
-
-  jQuery.fn.observeFrameContentLoaded = observeFrameContentLoaded;
-  jQuery.fn.onFrameLoaded = onFrameLoaded;
-})();
 
 
 jQuery(document).ready(function(){
@@ -2721,7 +2579,6 @@ WysiHat.Formatting = (function($){
 
 			this.cleanup( $container );
 
-
 			if ( $container.html() == '' ||
 			 	 $container.html() == '<br>' ||
 			 	 $container.html() == '<br/>' )
@@ -2738,7 +2595,6 @@ WysiHat.Formatting = (function($){
 			var
 			$clone			= $el.clone(),
 			el_id			= $el.attr('id'),
-			replaceElement	= WysiHat.Commands.replaceElement,
 			$container, html;
 
 
@@ -2779,7 +2635,6 @@ WysiHat.Formatting = (function($){
 		{
 			$editor	= $el;
 			createToolbarElement();
-
 		}
 
 		function createToolbarElement()
