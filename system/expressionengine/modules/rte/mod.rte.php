@@ -39,45 +39,48 @@ class Rte {
 	/**
 	 * Get RTE JS for the front end
 	 *
-	 * This can be called via an ACT or template tag.
+	 * Called via an ACT
 	 * 
 	 * @access	public
 	 * @return	mixed 	The rendered JS or the ACT URL to it 
 	 */
 	public function get_js()
 	{
-		if ($this->EE->input->get('ACT'))
+		$selector 		= $this->EE->input->get('selector');
+		$toolset_id 	= (int)$this->EE->input->get('toolset_id');
+		$include_jquery = $this->EE->input->get('include_jquery') == 'n' ? FALSE : TRUE;
+
+		if ( ! $this->EE->input->get('ACT') OR ! $selector)
 		{
-			// Called from an action id
-			$selector 		= $this->EE->input->get('selector');
-			$toolset_id 	= (int)$this->EE->input->get('toolset_id');
-			$include_jquery = $this->EE->input->get('include_jquery') == 'n' ? FALSE : TRUE;
-
-			if ( ! $selector)
-			{
-				return;
-			}
-
-			// @todo Normalize quotes in $selector
-
-			$this->EE->output->enable_profiler(FALSE);
-			$this->EE->output->out_type = 'js';
-			$this->EE->output->set_header("Content-Type: text/javascript");
-			$this->EE->output->set_output($this->_build_js(urldecode($selector), $toolset_id, $include_jquery));
+			exit();
 		}
-		else
-		{
-			// Called from a template tag
-			$selector 		= $this->EE->TMPL->fetch_param('selector', '.rte');
-			$toolset_id 	= (int)$this->EE->TMPL->fetch_param('toolset_id', 0);
-			$include_jquery = $this->EE->TMPL->fetch_param('include_jquery') == 'no' ? 'n' : 'y';
 
-			return $this->EE->functions->fetch_site_index().QUERY_MARKER
-				.'ACT='.$this->EE->functions->fetch_action_id('Rte', 'get_js')
-				.'&selector='.$selector
-				.'&toolset_id='.$toolset_id
-				.'&include_jquery='.$include_jquery;
-		}
+		// @todo Normalize quotes in $selector
+
+		$this->EE->output->enable_profiler(FALSE);
+		$this->EE->output->out_type = 'js';
+		$this->EE->output->set_header("Content-Type: text/javascript");
+		$this->EE->output->set_output($this->_build_js(urldecode($selector), $toolset_id, $include_jquery));
+	}
+
+
+	/**
+	 * Returns the action URL for the RTE JavaScript
+	 *
+	 * @access	public
+	 * @return	mixed 	The rendered JS or the ACT URL to it 
+	 */
+	public function script_url()
+	{
+		$selector 		= $this->EE->TMPL->fetch_param('selector', '.rte');
+		$toolset_id 	= (int)$this->EE->TMPL->fetch_param('toolset_id', 0);
+		$include_jquery = $this->EE->TMPL->fetch_param('include_jquery') == 'no' ? 'n' : 'y';
+
+		return $this->EE->functions->fetch_site_index().QUERY_MARKER
+			.'ACT='.$this->EE->functions->fetch_action_id('Rte', 'get_js')
+			.'&selector='.$selector
+			.'&toolset_id='.$toolset_id
+			.'&include_jquery='.$include_jquery;
 	}
 
 
