@@ -339,9 +339,7 @@ class Rte_mcp {
 			$editor	= WysiHat.Editor.attach($field),
 
 			// establish the toolbar
-			toolbar	= new WysiHat.Toolbar();
-
-			toolbar.initialize($editor);
+			toolbar	= new WysiHat.Toolbar($editor);
 
 <?php	$js = ob_get_contents();
 		ob_end_clean(); 

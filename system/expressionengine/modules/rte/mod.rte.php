@@ -232,9 +232,7 @@ class Rte {
 					$editor	= WysiHat.Editor.attach($field),
 
 					// establish the toolbar
-					toolbar	= new WysiHat.Toolbar();
-
-					toolbar.initialize($editor); 
+					toolbar	= new WysiHat.Toolbar($editor);
 
 					// tools
 					' . $bits['definitions'] . '

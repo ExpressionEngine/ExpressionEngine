@@ -145,949 +145,118 @@ WysiHat.Element = (function( $ ){
 		return ret;
 	}
 
-	function isRoot( $el )
-	{
-		return is( $el, roots );
-	}
-	function isSection( $el )
-	{
-		return is( $el, sections );
-	}
-	function isContainer( $el )
-	{
-		return is( $el, containers );
-	}
-	function isSubContainer( $el )
-	{
-		return is( $el, sub_containers );
-	}
-	function isBlock( $el )
-	{
-		return is( $el, roots, sections, containers, sub_containers, content );
-	}
-	function isHTML4Block( $el )
-	{
-		return is( $el, html4_blocks );
-	}
-	function isContentElement( $el )
-	{
-		return is( $el, sub_containers, content );
-	}
-	function isMediaElement( $el )
-	{
-		return is( $el, media );
-	}
-	function isPhraseElement( $el )
-	{
-		return is( $el, phrases );
-	}
-	function isFormatter( $el )
-	{
-		return is( $el, formatting );
-	}
-	function isFormComponent( $el )
-	{
-		return is( $el, forms );
-	}
-
-	function getRoots()
-	{
-		return roots;
-	}
-	function getSections( $el )
-	{
-		return sections;
-	}
-	function getContainers()
-	{
-		return containers;
-	}
-	function getSubContainers()
-	{
-		return sub_containers;
-	}
-	function getBlocks()
-	{
-		return roots.concat( sections, containers, sub_containers, content );
-	}
-	function getHTML4Blocks()
-	{
-		return html4_blocks;
-	}
-	function getContentElements()
-	{
-		return sub_containers.concat( content );
-	}
-	function getMediaElements()
-	{
-		return media;
-	}
-	function getPhraseElements()
-	{
-		return phrases;
-	}
-	function getFormatters()
-	{
-		return formatting;
-	}
-	function getFormComponents()
-	{
-		return forms;
-	}
-
 	return {
-		isRoot:				isRoot,
-		isSection:			isSection,
-		isContainer:		isContainer,
-		isSubContainer:		isSubContainer,
-		isBlock:			isBlock,
-		isHTML4Block:		isHTML4Block,
-		isContentElement:	isContentElement,
-		isMediaElement:		isMediaElement,
-		isPhraseElement:	isPhraseElement,
-		isFormatter:		isFormatter,
-		isFormComponent:	isFormComponent,
-		getRoots:			getRoots,
-		getSections:		getSections,
-		getContainers:		getContainers,
-		getSubContainers:	getSubContainers,
-		getBlocks:			getBlocks,
-		getHTML4Blocks:		getHTML4Blocks,
-		getContentElements:	getContentElements,
-		getMediaElements:	getMediaElements,
-		getPhraseElements:	getPhraseElements,
-		getFormatters:		getFormatters,
-		getFormComponents:	getFormComponents
+		isRoot: function( $el )
+		{
+			return is( $el, roots );
+		},
+		isSection: function( $el )
+		{
+			return is( $el, sections );
+		},
+		isContainer: function( $el )
+		{
+			return is( $el, containers );
+		},
+		isSubContainer: function( $el )
+		{
+			return is( $el, sub_containers );
+		},
+		isBlock: function( $el )
+		{
+			return is( $el, roots, sections, containers, sub_containers, content );
+		},
+		isHTML4Block: function( $el )
+		{
+			return is( $el, html4_blocks );
+		},
+		isContentElement: function( $el )
+		{
+			return is( $el, sub_containers, content );
+		},
+		isMediaElement: function( $el )
+		{
+			return is( $el, media );
+		},
+		isPhraseElement: function( $el )
+		{
+			return is( $el, phrases );
+		},
+		isFormatter: function( $el )
+		{
+			return is( $el, formatting );
+		},
+		isFormComponent: function( $el )
+		{
+			return is( $el, forms );
+		},
+
+		getRoots: function()
+		{
+			return roots;
+		},
+		getSections: function( $el )
+		{
+			return sections;
+		},
+		getContainers: function()
+		{
+			return containers;
+		},
+		getSubContainers: function()
+		{
+			return sub_containers;
+		},
+		getBlocks: function()
+		{
+			return roots.concat( sections, containers, sub_containers, content );
+		},
+		getHTML4Blocks: function()
+		{
+			return html4_blocks;
+		},
+		getContentElements: function()
+		{
+			return sub_containers.concat( content );
+		},
+		getMediaElements: function()
+		{
+			return media;
+		},
+		getPhraseElements: function()
+		{
+			return phrases;
+		},
+		getFormatters: function()
+		{
+			return formatting;
+		},
+		getFormComponents: function()
+		{
+			return forms;
+		}
 	};
 
 })( jQuery );
-/*  IE Selection and Range classes
- *
- *  Original created by Tim Cameron Ryan
- *	http://github.com/timcameronryan/IERange
- *  Copyright (c) 2009 Tim Cameron Ryan
- *  Released under the MIT/X License
- *
- *  Modified by Joshua Peek
- */
-if (!window.getSelection) {
-	(function($){
 
-		var
-		DOMUtils = {
-			isDataNode: function( node )
-			{
-				try {
-					return node && node.nodeValue !== null && node.data !== null;
-				} catch (e) {
-					return false;
-				}
-			},
-			isAncestorOf: function( parent, node )
-			{
-				if ( ! parent )
-				{
-					return false;
-				}
-				return ! DOMUtils.isDataNode(parent) &&
-					   ( node.parentNode == parent ||
-						 parent.contains( DOMUtils.isDataNode(node) ? node.parentNode : node ) );
-			},
-			isAncestorOrSelf: function( root, node )
-			{
-				return root == node ||
-				 	   DOMUtils.isAncestorOf( root, node );
-			},
-			findClosestAncestor: function( root, node )
-			{
-				if ( DOMUtils.isAncestorOf( root, node ) )
-				{
-					while ( node && node.parentNode != root )
-					{
-						node = node.parentNode;
-					}
-				}
-				return node;
-			},
-			getNodeLength: function(node)
-			{
-				return DOMUtils.isDataNode(node) ? node.length : node.childNodes.length;
-			},
-			splitDataNode: function( node, offset )
-			{
-				if ( ! DOMUtils.isDataNode( node ) )
-				{
-					return false;
-				}
-				var newNode = node.cloneNode(false);
-				node.deleteData(offset, node.length);
-				newNode.deleteData(0, offset);
-				node.parentNode.insertBefore( newNode, node.nextSibling );
-			}
-		};
 
-		window.Range = (function(){
-
-			function Range( document )
-			{
-				this._document = document;
-				this.startContainer = this.endContainer = document.body;
-				this.endOffset = DOMUtils.getNodeLength(document.body);
-			}
-
-			function findChildPosition( node )
-			{
-				for ( var i = 0; node = node.previousSibling; i++ )
-				{
-					continue;
-				}
-				return i;
-			}
-
-			Range.prototype = {
-
-				START_TO_START:	0,
-				START_TO_END:	1,
-				END_TO_END:		2,
-				END_TO_START:	3,
-
-				startContainer:	null,
-				startOffset:	0,
-				endContainer:	null,
-				endOffset:		0,
-				commonAncestorContainer: null,
-				collapsed:		false,
-				_document:		null,
-
-				_toTextRange: function()
-				{
-					function adoptEndPoint( textRange, domRange, bStart )
-					{
-						var
-						container		= domRange[bStart ? 'startContainer' : 'endContainer'],
-						offset			= domRange[bStart ? 'startOffset' : 'endOffset'],
-						textOffset		= 0,
-						anchorNode		= DOMUtils.isDataNode(container) ? container : container.childNodes[offset],
-						anchorParent	= DOMUtils.isDataNode(container) ? container.parentNode : container,
-						cursorNode		= domRange._document.createElement('a'),
-						cursor			= domRange._document.body.createTextRange();
-
-						if ( container.nodeType == 3 ||
-							 container.nodeType == 4 )
-						{
-							textOffset = offset;
-						}
-
-
-						textRange.setEndPoint(bStart ? 'StartToStart' : 'EndToStart', cursor);
-						textRange[bStart ? 'moveStart' : 'moveEnd']('character', textOffset);
-					}
-
-					var textRange = this._document.body.createTextRange();
-					adoptEndPoint(textRange, this, true);
-					adoptEndPoint(textRange, this, false);
-					return textRange;
-				},
-
-				_refreshProperties: function()
-				{
-					this.collapsed = (this.startContainer == this.endContainer && this.startOffset == this.endOffset);
-					var node = this.startContainer;
-					while ( node &&
-							node != this.endContainer &&
-							! DOMUtils.isAncestorOf(node, this.endContainer) )
-					{
-						node = node.parentNode;
-					}
-					this.commonAncestorContainer = node;
-				},
-
-				setStart: function( container, offset )
-				{
-					this.startContainer	= container;
-					this.startOffset	= offset;
-					this._refreshProperties();
-				},
-				setEnd: function( container, offset )
-				{
-					this.endContainer	= container;
-					this.endOffset		= offset;
-					this._refreshProperties();
-				},
-				setStartBefore: function( refNode )
-				{
-					this.setStart( refNode.parentNode, findChildPosition(refNode) );
-				},
-				setStartAfter: function(refNode)
-				{
-					this.setStart( refNode.parentNode, findChildPosition(refNode) + 1 );
-				},
-				setEndBefore: function( refNode )
-				{
-					this.setEnd(refNode.parentNode, findChildPosition(refNode));
-				},
-				setEndAfter: function( refNode )
-				{
-					this.setEnd( refNode.parentNode, findChildPosition(refNode) + 1 );
-				},
-				selectNode: function( refNode )
-				{
-					this.setStartBefore(refNode);
-					this.setEndAfter(refNode);
-				},
-				selectNodeContents: function( refNode )
-				{
-					this.setStart(refNode, 0);
-					this.setEnd(refNode, DOMUtils.getNodeLength(refNode));
-				},
-				collapse: function(toStart)
-				{
-					if (toStart)
-					{
-						this.setEnd(this.startContainer, this.startOffset);
-					}
-					else
-					{
-						this.setStart(this.endContainer, this.endOffset);
-					}
-				},
-				cloneContents: function()
-				{
-					return (function cloneSubtree( iterator ){
-						for ( var node, frag = document.createDocumentFragment(); node = iterator.next(); )
-						{
-							node = node.cloneNode( ! iterator.hasPartialSubtree() );
-							if ( iterator.hasPartialSubtree() )
-							{
-								node.appendChild( cloneSubtree( iterator.getSubtreeIterator() ) );
-							}
-							frag.appendChild( node );
-						}
-						return frag;
-					})( new RangeIterator(this) );
-				},
-				extractContents: function()
-				{
-					var range = this.cloneRange();
-					if (this.startContainer != this.commonAncestorContainer)
-					{
-						this.setStartAfter(DOMUtils.findClosestAncestor(this.commonAncestorContainer, this.startContainer));
-					}
-					this.collapse(true);
-					return (function extractSubtree( iterator ){
-						for ( var node, frag = document.createDocumentFragment(); node = iterator.next(); )
-						{
-							iterator.hasPartialSubtree() ? node = node.cloneNode(false) : iterator.remove();
-							if ( iterator.hasPartialSubtree() )
-							{
-								node.appendChild( extractSubtree( iterator.getSubtreeIterator() ) );
-							}
-							frag.appendChild( node );
-						}
-						return frag;
-					})( new RangeIterator(range) );
-				},
-				deleteContents: function()
-				{
-					var range = this.cloneRange();
-					if (this.startContainer != this.commonAncestorContainer)
-					{
-						this.setStartAfter( DOMUtils.findClosestAncestor( this.commonAncestorContainer, this.startContainer ) );
-					}
-					this.collapse(true);
-					(function deleteSubtree( iterator ){
-						while ( iterator.next() )
-						{
-							iterator.hasPartialSubtree() ? deleteSubtree( iterator.getSubtreeIterator() ) : iterator.remove();
-						}
-					})( new RangeIterator(range) );
-				},
-				insertNode: function(newNode)
-				{
-					if (DOMUtils.isDataNode(this.startContainer))
-					{
-						DOMUtils.splitDataNode( this.startContainer, this.startOffset );
-						this.startContainer.parentNode.insertBefore( newNode, this.startContainer.nextSibling );
-					}
-					else
-					{
-						var offsetNode = this.startContainer.childNodes[this.startOffset];
-						if (offsetNode)
-						{
-							this.startContainer.insertBefore( newNode, offsetNode );
-						}
-						else
-						{
-							this.startContainer.appendChild( newNode );
-						}
-					}
-					this.setStart(this.startContainer, this.startOffset);
-				},
-				surroundContents: function(newNode)
-				{
-					var content = this.extractContents();
-					this.insertNode(newNode);
-					newNode.appendChild(content);
-					this.selectNode(newNode);
-				},
-				compareBoundaryPoints: function(how, sourceRange)
-				{
-					var containerA, offsetA, containerB, offsetB;
-					switch ( how )
-					{
-						case this.START_TO_START:
-						case this.START_TO_END:
-							containerA = this.startContainer;
-							offsetA = this.startOffset;
-							break;
-						case this.END_TO_END:
-						case this.END_TO_START:
-							containerA = this.endContainer;
-							offsetA = this.endOffset;
-							break;
-					}
-					switch ( how )
-					{
-						case this.START_TO_START:
-						case this.END_TO_START:
-							containerB = sourceRange.startContainer;
-							offsetB = sourceRange.startOffset;
-							break;
-						case this.START_TO_END:
-						case this.END_TO_END:
-							containerB = sourceRange.endContainer;
-							offsetB = sourceRange.endOffset;
-							break;
-					}
-
-
-					return ( containerA.sourceIndex < containerB.sourceIndex
-								? -1
-								: ( containerA.sourceIndex == containerB.sourceIndex
-										? ( offsetA < offsetB
-												? -1
-												: ( offsetA == offsetB ? 0 : 1 )
-										  ) // offsetA < offsetB
-										: 1
-								  ) // containerA.sourceIndex == containerB.sourceIndex
-						   ); // containerA.sourceIndex < containerB.sourceIndex
-				},
-				cloneRange: function()
-				{
-					var range = new Range( this._document );
-					range.setStart( this.startContainer, this.startOffset );
-					range.setEnd( this.endContainer, this.endOffset );
-					return range;
-				},
-				detach: function()
-				{
-				},
-				toString: function()
-				{
-					return this._toTextRange().text;
-				},
-				createContextualFragment: function( tagString )
-				{
-					var
-					content		= ( DOMUtils.isDataNode(this.startContainer) ? this.startContainer.parentNode
-																			 : this.startContainer ).cloneNode(false),
-					fragment	= this._document.createDocumentFragment();
-
-					content.innerHTML = tagString;
-					for ( ; content.firstChild; )
-					{
-						fragment.appendChild(content.firstChild);
-					}
-					return fragment;
-				}
-			};
-
-			function RangeIterator(range)
-			{
-				this.range = range;
-				if ( range.collapsed )
-				{
-					return;
-				}
-
-				var root	= range.commonAncestorContainer;
-				this._next	= range.startContainer == root && ! DOMUtils.isDataNode( range.startContainer )
-								? range.startContainer.childNodes[range.startOffset]
-								: DOMUtils.findClosestAncestor( root, range.startContainer );
-				this._end	= range.endContainer == root && ! DOMUtils.isDataNode( range.endContainer )
-								? range.endContainer.childNodes[range.endOffset]
-								: DOMUtils.findClosestAncestor( root, range.endContainer ).nextSibling;
-			}
-
-			RangeIterator.prototype = {
-
-				range: null,
-				_current: null,
-				_next: null,
-				_end: null,
-
-				hasNext: function()
-				{
-					return !! this._next;
-				},
-				next: function()
-				{
-					var current	= this._current = this._next;
-					this._next	= this._current && this._current.nextSibling != this._end ? this._current.nextSibling : null;
-
-					if (DOMUtils.isDataNode(this._current))
-					{
-						if ( this.range.endContainer == this._current )
-						{
-							( current = current.cloneNode(true) ).deleteData( this.range.endOffset, current.length - this.range.endOffset );
-						}
-						if ( this.range.startContainer == this._current )
-						{
-							( current = current.cloneNode(true) ).deleteData( 0, this.range.startOffset );
-						}
-					}
-					return current;
-				},
-				remove: function()
-				{
-					if ( DOMUtils.isDataNode(this._current) &&
-						 ( this.range.startContainer == this._current ||
-						   this.range.endContainer == this._current ) )
-					{
-						var
-						start	= this.range.startContainer == this._current ? this.range.startOffset : 0,
-						end		= this.range.endContainer == this._current ? this.range.endOffset : this._current.length;
-						this._current.deleteData( start, end - start );
-					}
-					else
-					{
-						this._current.parentNode.removeChild( this._current );
-					}
-				},
-				hasPartialSubtree: function()
-				{
-					return ! DOMUtils.isDataNode(this._current) &&
-						   ( DOMUtils.isAncestorOrSelf( this._current, this.range.startContainer ) ||
-							 DOMUtils.isAncestorOrSelf( this._current, this.range.endContainer ) );
-				},
-				getSubtreeIterator: function()
-				{
-					var subRange = new Range(this.range._document);
-					subRange.selectNodeContents(this._current);
-					if ( DOMUtils.isAncestorOrSelf(this._current, this.range.startContainer) )
-					{
-						subRange.setStart( this.range.startContainer, this.range.startOffset );
-					}
-					if ( DOMUtils.isAncestorOrSelf( this._current, this.range.endContainer ) )
-					{
-						subRange.setEnd(this.range.endContainer, this.range.endOffset);
-					}
-					return new RangeIterator(subRange);
-				}
-			};
-
-			return Range;
-		})();
-
-		window.Range._fromTextRange = function( textRange, document )
-		{
-			function adoptBoundary(domRange, textRange, bStart)
-			{
-				var
-				cursorNode	= document.createElement('a'),
-				cursor		= textRange.duplicate(),
-				parent;
-
-				cursor.collapse(bStart);
-				parent = cursor.parentElement();
-
-				do {
-					parent.insertBefore( cursorNode, cursorNode.previousSibling );
-					cursor.moveToElementText( cursorNode );
-				} while ( cursorNode.previousSibling &&
-						  cursor.compareEndPoints( bStart ? 'StartToStart' : 'StartToEnd', textRange ) > 0 );
-
-				if ( cursorNode.nextSibling &&
-					 cursor.compareEndPoints(bStart ? 'StartToStart' : 'StartToEnd', textRange) == -1 )
-				{
-					cursor.setEndPoint( bStart ? 'EndToStart' : 'EndToEnd', textRange );
-					domRange[bStart ? 'setStart' : 'setEnd']( cursorNode.nextSibling, cursor.text.length );
-				}
-				else
-				{
-					domRange[bStart ? 'setStartBefore' : 'setEndBefore'](cursorNode);
-				}
-				cursorNode.parentNode.removeChild(cursorNode);
-			}
-
-			var domRange = new Range(document);
-			adoptBoundary(domRange, textRange, true);
-			adoptBoundary(domRange, textRange, false);
-			return domRange;
-		};
-
-		document.createRange = function()
-		{
-			return new Range(document);
-		};
-
-		window.Selection = (function(){
-			function Selection(document)
-			{
-				this._document = document;
-
-				var selection = this;
-				document.attachEvent('onselectionchange', function(){
-					selection._selectionChangeHandler();
-				});
-
-				setTimeout(function(){
-					selection._selectionChangeHandler();
-				},10);
-			}
-
-			Selection.prototype = {
-
-				rangeCount: 0,
-				_document:	null,
-				anchorNode:	null,
-				focusNode:	null,
-
-				_selectionChangeHandler: function()
-				{
-					var
-					range	= this._document.selection.createRange(),
-					text	= range.text.split(/\r|\n/),
-					$parent	= $( range.parentElement() ),
-					a_re, $a, f_re, $f;
-
-					if ( text.length > 1 )
-					{
-						a_re	= new RegExp( text[0] + '$' );
-						f_re	= new RegExp( '^' + text[text.length-1] );
-
-						$parent.children().each(function(){
-							if ( $(this).text().match( a_re ) )
-							{
-								this.anchorNode = this;
-							}
-							if ( $(this).text().match( f_re ) )
-							{
-								this.focusNode = this;
-							}
-						});
-					}
-					else
-					{
-						this.anchorNode = $parent.get(0);
-						this.focusNode	= this.anchorNode;
-					}
-
-					this.rangeCount = this._selectionExists( range ) ? 1 : 0;
-				},
-				_selectionExists: function( textRange )
-				{
-					return textRange.parentElement().isContentEditable ||
-						   textRange.compareEndPoints('StartToEnd', textRange) != 0;
-				},
-				addRange: function(range)
-				{
-					var
-					selection	= this._document.selection.createRange(),
-					textRange	= range._toTextRange();
-					if ( ! this._selectionExists(selection) )
-					{
-						try {
- 							textRange.select();
-						} catch(e) {}
-					}
-					else
-					{
-						if (textRange.compareEndPoints('StartToStart', selection) == -1)
-						{
-							if ( textRange.compareEndPoints('StartToEnd', selection) > -1 &&
-								 textRange.compareEndPoints('EndToEnd', selection) == -1 )
-							{
-								selection.setEndPoint('StartToStart', textRange);
-							}
-						}
-						else
-						{
-							if ( textRange.compareEndPoints('EndToStart', selection) < 1 &&
-								 textRange.compareEndPoints('EndToEnd', selection) > -1 )
-							{
-								selection.setEndPoint('EndToEnd', textRange);
-							}
-						}
-						selection.select();
-					}
-				},
-				removeAllRanges: function()
-				{
-					this._document.selection.empty();
-				},
-				getRangeAt: function(index)
-				{
-					var textRange = this._document.selection.createRange();
-					if ( this._selectionExists( textRange ) )
-					{
-						return Range._fromTextRange( textRange, this._document );
-					}
-					return null;
-				},
-				toString: function()
-				{
-					return this._document.selection.createRange().text;
-				},
-				isCollapsed: function()
-				{
-					var range = document.createRange();
-					return range.collapsed;
-				},
-				deleteFromDocument: function()
-				{
-					var textRange = this._document.selection.createRange();
-					textRange.pasteHTML('');
-				}
-			};
-
-			return Selection;
-		})();
-
-		window.getSelection = (function(){
-			var selection = new Selection(document);
-			return function() { return selection; };
-		})();
-
-	})(jQuery);
-}
-
-jQuery.extend(Range.prototype, (function(){
-
-	function beforeRange(range)
-	{
-		if ( ! range ||
-			 ! range.compareBoundaryPoints )
-		{
-			return false;
-		}
-		return ( this.compareBoundaryPoints( this.START_TO_START, range ) == -1 &&
-				 this.compareBoundaryPoints( this.START_TO_END, range ) == -1 &&
-				 this.compareBoundaryPoints( this.END_TO_END, range ) == -1 &&
-				 this.compareBoundaryPoints( this.END_TO_START, range ) == -1 );
-	}
-
-	function afterRange(range)
-	{
-		if ( ! range ||
-			 ! range.compareBoundaryPoints )
-		{
-			return false;
-		}
-		return ( this.compareBoundaryPoints( this.START_TO_START, range ) == 1 &&
-				 this.compareBoundaryPoints( this.START_TO_END, range ) == 1 &&
-				 this.compareBoundaryPoints( this.END_TO_END, range ) == 1 &&
-				 this.compareBoundaryPoints( this.END_TO_START, range ) == 1 );
-	}
-
-	function betweenRange(range)
-	{
-		if ( ! range ||
-			 ! range.compareBoundaryPoints )
-		{
-			return false;
-		}
-		return ! ( this.beforeRange(range) || this.afterRange(range) );
-	}
-
-	function equalRange(range)
-	{
-		if ( ! range ||
-			 ! range.compareBoundaryPoints )
-		{
-			return false;
-		}
-
-		// if both ranges are collapsed we just need to compare one point
-		if (this.collapsed && range.collapsed)
-		{
-			return (this.compareBoundaryPoints( this.START_TO_START, range ) == 0);
-		}	
-
-		return ( this.compareBoundaryPoints( this.START_TO_START, range ) == 0 &&
-				 this.compareBoundaryPoints( this.START_TO_END, range ) == 1 &&
-				 this.compareBoundaryPoints( this.END_TO_END, range ) == 0 &&
-				 this.compareBoundaryPoints( this.END_TO_START, range ) == -1 );
-	}
-
-	function getNode()
-	{
-		var
-		parent	= this.commonAncestorContainer,
-		that	= this,
-		child;
-
-		while (parent.nodeType == Node.TEXT_NODE)
-		{
-			parent = parent.parentNode;
-		}
-
-		jQuery(parent).children().each(function(){
-			var range = document.createRange();
-			range.selectNodeContents(this);
-			child = that.betweenRange(range);
-		});
-
-		return $(child || parent).get(0);
-	}
-
-	return {
-		beforeRange:	beforeRange,
-		afterRange:		afterRange,
-		betweenRange:	betweenRange,
-		equalRange:		equalRange,
-		getNode:		getNode
-	};
-
-})());
-
-if ( typeof Selection == 'undefined' )
-{
-	var Selection = {};
-	Selection.prototype = window.getSelection().__proto__;
-}
-
-(function( DOC, $ ) {
-
-	// functions we want to normalize
-	var
-	getNode,
-	selectNode,
-	setBookmark,
-	moveToBookmark;
-
-	if ( $.browser.msie )
-	{
-		getNode = function()
-		{
-			var range = this._document.selection.createRange();
-			return $(range.parentElement());
-		}
-
-		selectNode = function(element)
-		{
-			var range = this._document.body.createTextRange();
-			range.moveToElementText(element);
-			range.select();
-		}
-
-		setBookmark = function()
-		{
-			var
-			$bookmark	= $('#WysiHat-bookmark'),
-			$parent		= $('<div/>'),
-			range		= this._document.selection.createRange();
-
-			if ( $bookmark.length > 0 )
-			{
-				$bookmark.remove();
-			}
-
-			$bookmark = $( '<span id="WysiHat-bookmark">&nbsp;</span>' )
-							.appendTo( $parent );
-
-			range.collapse(true);
-			range.pasteHTML( $parent.html() );
-		}
-
-		moveToBookmark = function(element)
-		{
-			var
-			$bookmark	= $('#WysiHat-bookmark'),
-			range		= this._document.selection.createRange();
-
-			if ( $bookmark.length > 0 )
-			{
-				$bookmark.remove();
-			}
-
-			range.moveToElementText( $bookmark.get(0) );
-			range.collapse(true);
-			range.select();
-
-			$bookmark.remove();
-		}
-	}
-	else
-	{
-		getNode = function()
-		{
-			return ( this.rangeCount > 0 ) ? this.getRangeAt(0).getNode() : null;
-		}
-
-		selectNode = function(element)
-		{
-			var range = DOC.createRange();
-			range.selectNode(element[0]);
-			this.removeAllRanges();
-			this.addRange(range);
-		}
-
-		setBookmark = function()
-		{
-			var $bookmark	= $('#WysiHat-bookmark');
-
-			if ( $bookmark.length > 0 )
-			{
-				$bookmark.remove();
-			}
-
-			$bookmark = $( '<span id="WysiHat-bookmark">&nbsp;</span>' );
-
-			this.getRangeAt(0).insertNode( $bookmark.get(0) );
-		}
-
-		moveToBookmark = function(element)
-		{
-			var
-			$bookmark	= $('#WysiHat-bookmark'),
-			range		= DOC.createRange();
-
-			if ( $bookmark.length > 0 )
-			{
-				$bookmark.remove();
-			}
-
-			range.setStartBefore( $bookmark.get(0) );
-			this.removeAllRanges();
-			this.addRange(range);
-
-			$bookmark.remove();
-		}
-	}
-
-	$.extend(Selection.prototype, {
-		getNode: getNode,
-		selectNode: selectNode,
-		setBookmark: setBookmark,
-		moveToBookmark: moveToBookmark
-	});
-
-})(document, jQuery);
-
-(function($){
+(function($, DOC){
 
 	$(document).ready(function(){
 
-		var timer	= null,
-			// &#x200b; is a zero-width character so we have something to select
-			// and place the cursor inside the paragraph tags, Webkit won't select
-			// an empty element due to a long-standing bug
-			// https://bugs.webkit.org/show_bug.cgi?id=15256
-			// <wbr> didn't seem to behave the same so I'm using the entity
-			// http://www.quirksmode.org/oddsandends/wbr.html
-			empty	= '<p>&#x200b;</p>',
-			$element;
+		var
+		timer = null,
+		$doc = $(DOC),
+		// &#x200b; is a zero-width character so we have something to select
+		// and place the cursor inside the paragraph tags, Webkit won't select
+		// an empty element due to a long-standing bug
+		// https://bugs.webkit.org/show_bug.cgi?id=15256
+		// <wbr> didn't seem to behave the same so I'm using the entity
+		// http://www.quirksmode.org/oddsandends/wbr.html
+		empty	= '<p>&#x200b;</p>',
+		previousRange,
+		selectionChangeHandler,
+		$element;
 
 		function fieldChangeHandler( e )
 		{
@@ -1159,9 +328,62 @@ if ( typeof Selection == 'undefined' )
 		$('body')
 			.delegate('input,textarea,*[contenteditable],*[contenteditable=true]', 'keydown', fieldChangeHandler )
 			.delegate('*[contenteditable],*[contenteditable=true]', 'focus', selectEmptyParagraph );
+
+
+		if ( 'onselectionchange' in DOC &&
+			 'selection' in DOC )
+		{
+			selectionChangeHandler = function()
+			{
+				var
+				range	= DOC.selection.createRange(),
+				element	= range.parentElement();
+				$(element)
+					.trigger( 'WysiHat-selection:change' );
+			}
+
+	 		$doc.bind( 'selectionchange', selectionChangeHandler );
+		}
+		else
+		{
+			selectionChangeHandler = function()
+			{
+				var
+				element		= DOC.activeElement,
+				elementTagName = element.tagName.toLowerCase(),
+				selection, range;
+
+				if ( elementTagName == 'textarea' ||
+					 elementTagName == 'input' )
+				{
+					previousRange = null;
+				}
+				else
+				{
+					selection = window.getSelection();
+					if (selection.rangeCount < 1) { return };
+
+					range = selection.getRangeAt(0);
+					if ( range && range.equalRange(previousRange) ) { return; }
+
+					previousRange	= range;
+					element			= range.commonAncestorContainer;
+					while (element.nodeType == Node.TEXT_NODE)
+					{
+						element = element.parentNode;
+					}
+				}
+
+				$(element)
+					.trigger( 'WysiHat-selection:change' );
+			};
+
+			$doc.mouseup( selectionChangeHandler );
+			$doc.keyup( selectionChangeHandler );
+		}
 	});
 
-})(jQuery);
+})(jQuery, document);
 
 WysiHat.Commands = (function( WIN, DOC, $ ){
 
@@ -2002,68 +1224,6 @@ if ( typeof Node == "undefined" )
 	})();
 }
 
-jQuery(document).ready(function(){
-
-	var
-	$		= jQuery,
-	DOC		= document,
-	$doc	= $(DOC),
-	previousRange,
-	selectionChangeHandler;
-
-	if ( 'onselectionchange' in DOC &&
-		 'selection' in DOC )
-	{
-		selectionChangeHandler = function()
-		{
-			var
-			range	= DOC.selection.createRange(),
-			element	= range.parentElement();
-			$(element)
-				.trigger( 'WysiHat-selection:change' );
-		}
-
- 		$doc.bind( 'selectionchange', selectionChangeHandler );
-	}
-	else
-	{
-		selectionChangeHandler = function()
-		{
-			var
-			element		= DOC.activeElement,
-			elementTagName = element.tagName.toLowerCase(),
-			selection, range;
-
-			if ( elementTagName == 'textarea' ||
-				 elementTagName == 'input' )
-			{
-				previousRange = null;
-			}
-			else
-			{
-				selection = window.getSelection();
-				if (selection.rangeCount < 1) { return };
-
-				range = selection.getRangeAt(0);
-				if ( range && range.equalRange(previousRange) ) { return; }
-
-				previousRange	= range;
-				element			= range.commonAncestorContainer;
-				while (element.nodeType == Node.TEXT_NODE)
-				{
-					element = element.parentNode;
-				}
-			}
-
-			$(element)
-				.trigger( 'WysiHat-selection:change' );
-		};
-
-		$doc.mouseup( selectionChangeHandler );
-		$doc.keyup( selectionChangeHandler );
-	}
-
-});
 
 (function($){
 
@@ -2445,32 +1605,25 @@ WysiHat.Formatting = (function($){
 
 (function($){
 
-	WysiHat.Toolbar = function()
+	WysiHat.Toolbar = function($el)
 	{
-		var
-		$editor,
-		$toolbar;
+		this.$editor = $el;
+		this.$toolbar = $('<div class="' + WysiHat.name + '-editor-toolbar" role="presentation"></div>')
+						.insertBefore( $el );
+	}
 
-		function initialize( $el )
-		{
-			$editor	= $el;
-			createToolbarElement();
-		}
+	WysiHat.Toolbar.prototype = {
 
-		function createToolbarElement()
+		addButtonSet: function(options)
 		{
-			$toolbar = $('<div class="' + WysiHat.name + '-editor-toolbar" role="presentation"></div>')
-							.insertBefore( $editor );
-		}
+			var that = this;
 
-		function addButtonSet(options)
-		{
 			$(options.buttons).each(function(index, button){
-				addButton(button);
+				that.addButton(button);
 			});
-		}
+		},
 
-		function addButton( options, handler )
+		addButton: function( options, handler )
 		{
 			var name, $button;
 
@@ -2480,23 +1633,23 @@ WysiHat.Formatting = (function($){
 			}
 			name = options['name'];
 
-			$button = createButtonElement( $toolbar, options );
+			$button = this.createButtonElement( this.$toolbar, options );
 
 			if ( handler )
 			{
 				options['handler'] = handler;
 			}
-			handler = buttonHandler( name, options );
-			observeButtonClick( $button, handler );
+			handler = this.buttonHandler( name, options );
+			this.observeButtonClick( $button, handler );
 
 
-			handler = buttonStateHandler( name, options );
-			observeStateChanges( $button, name, handler );
+			handler = this.buttonStateHandler( name, options );
+			this.observeStateChanges( $button, name, handler );
 
 			return $button;
-		}
+		},
 
-		function createButtonElement( $toolbar, options )
+		createButtonElement: function( $toolbar, options )
 		{
 			var $btn = $('<button aria-pressed="false" tabindex="-1"><b>' + options['label'] + '</b></button>')
 							.addClass( 'button ' + options['name'] )
@@ -2528,10 +1681,9 @@ WysiHat.Formatting = (function($){
 			}
 
 			return $btn;
+		},
 
-		}
-
-		function buttonHandler( name, options )
+		buttonHandler: function( name, options )
 		{
 			var handler = function(){};
 			if ( options['handler'] )
@@ -2546,18 +1698,21 @@ WysiHat.Formatting = (function($){
 				};
 			}
 			return handler;
-		}
+		},
 
-		function observeButtonClick( $button, handler )
+		observeButtonClick: function( $button, handler )
 		{
+			var that = this;
+
 			$button.click(function(e){
-				handler( $editor, e );
-				$editor.trigger( 'WysiHat-selection:change' );
+				handler( that.$editor, e );
+				that.$editor.trigger( 'WysiHat-selection:change' );
+				that.$editor.focus();
 				return false;
 			});
-		}
+		},
 
-		function buttonStateHandler( name, options )
+		buttonStateHandler: function( name, options )
 		{
 			var handler = function(){};
 			if ( options['query'] )
@@ -2572,22 +1727,25 @@ WysiHat.Formatting = (function($){
 				};
 			}
 			return handler;
-		}
+		},
 
-		function observeStateChanges( $button, name, handler )
+		observeStateChanges: function( $button, name, handler )
 		{
-			var previousState;
-			$editor.bind( 'WysiHat-selection:change', function(){
-				var state = handler( $editor, $button );
+			var
+			that = this,
+			previousState;
+
+			that.$editor.bind( 'WysiHat-selection:change', function(){
+				var state = handler( that.$editor, $button );
 				if (state != previousState)
 				{
 					previousState = state;
-					updateButtonState( $button, name, state );
+					that.updateButtonState( $button, name, state );
 				}
 			});
-		}
+		},
 
-		function updateButtonState( $button, name, state )
+		updateButtonState: function( $button, name, state )
 		{
 			var
 			text	= $button.data('text'),
@@ -2610,19 +1768,6 @@ WysiHat.Formatting = (function($){
 						.text( text );
 			}
 		}
-
-		return {
-			initialize:		initialize,
-			createToolbarElement: createToolbarElement,
-			addButtonSet:	addButtonSet,
-			addButton:		addButton,
-			createButtonElement: createButtonElement,
-			buttonHandler:		 buttonHandler,
-			observeButtonClick:	 observeButtonClick,
-			buttonStateHandler:	 buttonStateHandler,
-			observeStateChanges: observeStateChanges,
-			updateButtonState:	 updateButtonState
-		};
 	};
 
 })(jQuery);
@@ -2655,7 +1800,858 @@ jQuery.fn.wysihat = function(options) {
 		var
 		editor	= WysiHat.Editor.attach( jQuery(this) ),
 		toolbar	= new WysiHat.Toolbar(editor);
-		toolbar.initialize(editor);
 		toolbar.addButtonSet(options);
 	});
 };
+
+
+
+
+
+
+
+
+
+//
+//
+//
+// WELCOME TO BROWSER COMPAT WORLD
+// Danger: IE lives down here!
+//
+//
+//
+
+
+
+
+/*  IE Selection and Range classes
+ *
+ *  Original created by Tim Cameron Ryan
+ *	http://github.com/timcameronryan/IERange
+ *  Copyright (c) 2009 Tim Cameron Ryan
+ *  Released under the MIT/X License
+ *
+ *  Modified by Joshua Peek
+ */
+if (!window.getSelection) {
+	(function($){
+
+		var
+		DOMUtils = {
+			isDataNode: function( node )
+			{
+				try {
+					return node && node.nodeValue !== null && node.data !== null;
+				} catch (e) {
+					return false;
+				}
+			},
+
+			isAncestorOf: function( parent, node )
+			{
+				if ( ! parent )
+				{
+					return false;
+				}
+				return ! DOMUtils.isDataNode(parent) &&
+					   ( node.parentNode == parent ||
+						 parent.contains( DOMUtils.isDataNode(node) ? node.parentNode : node ) );
+			},
+
+			isAncestorOrSelf: function( root, node )
+			{
+				return root == node ||
+				 	   DOMUtils.isAncestorOf( root, node );
+			},
+
+			findClosestAncestor: function( root, node )
+			{
+				if ( DOMUtils.isAncestorOf( root, node ) )
+				{
+					while ( node && node.parentNode != root )
+					{
+						node = node.parentNode;
+					}
+				}
+				return node;
+			},
+
+			getNodeLength: function(node)
+			{
+				return DOMUtils.isDataNode(node) ? node.length : node.childNodes.length;
+			},
+
+			splitDataNode: function( node, offset )
+			{
+				if ( ! DOMUtils.isDataNode( node ) )
+				{
+					return false;
+				}
+				var newNode = node.cloneNode(false);
+				node.deleteData(offset, node.length);
+				newNode.deleteData(0, offset);
+				node.parentNode.insertBefore( newNode, node.nextSibling );
+			}
+		};
+
+		window.Range = (function(){
+
+			function Range( document )
+			{
+				this._document = document;
+				this.startContainer = this.endContainer = document.body;
+				this.endOffset = DOMUtils.getNodeLength(document.body);
+			}
+
+			function findChildPosition( node )
+			{
+				for ( var i = 0; node = node.previousSibling; i++ )
+				{
+					continue;
+				}
+				return i;
+			}
+
+			Range.prototype = {
+
+				START_TO_START:	0,
+				START_TO_END:	1,
+				END_TO_END:		2,
+				END_TO_START:	3,
+
+				startContainer:	null,
+				startOffset:	0,
+				endContainer:	null,
+				endOffset:		0,
+				commonAncestorContainer: null,
+				collapsed:		false,
+				_document:		null,
+
+				_toTextRange: function()
+				{
+					function adoptEndPoint( textRange, domRange, bStart )
+					{
+						var
+						container		= domRange[bStart ? 'startContainer' : 'endContainer'],
+						offset			= domRange[bStart ? 'startOffset' : 'endOffset'],
+						textOffset		= 0,
+						anchorNode		= DOMUtils.isDataNode(container) ? container : container.childNodes[offset],
+						anchorParent	= DOMUtils.isDataNode(container) ? container.parentNode : container,
+						cursorNode		= domRange._document.createElement('a'),
+						cursor			= domRange._document.body.createTextRange();
+
+						if ( container.nodeType == 3 ||
+							 container.nodeType == 4 )
+						{
+							textOffset = offset;
+						}
+
+
+						textRange.setEndPoint(bStart ? 'StartToStart' : 'EndToStart', cursor);
+						textRange[bStart ? 'moveStart' : 'moveEnd']('character', textOffset);
+					}
+
+					var textRange = this._document.body.createTextRange();
+					adoptEndPoint(textRange, this, true);
+					adoptEndPoint(textRange, this, false);
+					return textRange;
+				},
+
+				_refreshProperties: function()
+				{
+					this.collapsed = (this.startContainer == this.endContainer && this.startOffset == this.endOffset);
+					var node = this.startContainer;
+					while ( node &&
+							node != this.endContainer &&
+							! DOMUtils.isAncestorOf(node, this.endContainer) )
+					{
+						node = node.parentNode;
+					}
+					this.commonAncestorContainer = node;
+				},
+
+				setStart: function( container, offset )
+				{
+					this.startContainer	= container;
+					this.startOffset	= offset;
+					this._refreshProperties();
+				},
+
+				setEnd: function( container, offset )
+				{
+					this.endContainer	= container;
+					this.endOffset		= offset;
+					this._refreshProperties();
+				},
+
+				setStartBefore: function( refNode )
+				{
+					this.setStart( refNode.parentNode, findChildPosition(refNode) );
+				},
+
+				setStartAfter: function(refNode)
+				{
+					this.setStart( refNode.parentNode, findChildPosition(refNode) + 1 );
+				},
+
+				setEndBefore: function( refNode )
+				{
+					this.setEnd(refNode.parentNode, findChildPosition(refNode));
+				},
+
+				setEndAfter: function( refNode )
+				{
+					this.setEnd( refNode.parentNode, findChildPosition(refNode) + 1 );
+				},
+
+				selectNode: function( refNode )
+				{
+					this.setStartBefore(refNode);
+					this.setEndAfter(refNode);
+				},
+
+				selectNodeContents: function( refNode )
+				{
+					this.setStart(refNode, 0);
+					this.setEnd(refNode, DOMUtils.getNodeLength(refNode));
+				},
+
+				collapse: function(toStart)
+				{
+					if (toStart)
+					{
+						this.setEnd(this.startContainer, this.startOffset);
+					}
+					else
+					{
+						this.setStart(this.endContainer, this.endOffset);
+					}
+				},
+
+				cloneContents: function()
+				{
+					return (function cloneSubtree( iterator ){
+						for ( var node, frag = document.createDocumentFragment(); node = iterator.next(); )
+						{
+							node = node.cloneNode( ! iterator.hasPartialSubtree() );
+							if ( iterator.hasPartialSubtree() )
+							{
+								node.appendChild( cloneSubtree( iterator.getSubtreeIterator() ) );
+							}
+							frag.appendChild( node );
+						}
+						return frag;
+					})( new RangeIterator(this) );
+				},
+
+				extractContents: function()
+				{
+					var range = this.cloneRange();
+					if (this.startContainer != this.commonAncestorContainer)
+					{
+						this.setStartAfter(DOMUtils.findClosestAncestor(this.commonAncestorContainer, this.startContainer));
+					}
+					this.collapse(true);
+					return (function extractSubtree( iterator ){
+						for ( var node, frag = document.createDocumentFragment(); node = iterator.next(); )
+						{
+							iterator.hasPartialSubtree() ? node = node.cloneNode(false) : iterator.remove();
+							if ( iterator.hasPartialSubtree() )
+							{
+								node.appendChild( extractSubtree( iterator.getSubtreeIterator() ) );
+							}
+							frag.appendChild( node );
+						}
+						return frag;
+					})( new RangeIterator(range) );
+				},
+
+				deleteContents: function()
+				{
+					var range = this.cloneRange();
+					if (this.startContainer != this.commonAncestorContainer)
+					{
+						this.setStartAfter( DOMUtils.findClosestAncestor( this.commonAncestorContainer, this.startContainer ) );
+					}
+					this.collapse(true);
+					(function deleteSubtree( iterator ){
+						while ( iterator.next() )
+						{
+							iterator.hasPartialSubtree() ? deleteSubtree( iterator.getSubtreeIterator() ) : iterator.remove();
+						}
+					})( new RangeIterator(range) );
+				},
+
+				insertNode: function(newNode)
+				{
+					if (DOMUtils.isDataNode(this.startContainer))
+					{
+						DOMUtils.splitDataNode( this.startContainer, this.startOffset );
+						this.startContainer.parentNode.insertBefore( newNode, this.startContainer.nextSibling );
+					}
+					else
+					{
+						var offsetNode = this.startContainer.childNodes[this.startOffset];
+						if (offsetNode)
+						{
+							this.startContainer.insertBefore( newNode, offsetNode );
+						}
+						else
+						{
+							this.startContainer.appendChild( newNode );
+						}
+					}
+					this.setStart(this.startContainer, this.startOffset);
+				},
+
+				surroundContents: function(newNode)
+				{
+					var content = this.extractContents();
+					this.insertNode(newNode);
+					newNode.appendChild(content);
+					this.selectNode(newNode);
+				},
+
+				compareBoundaryPoints: function(how, sourceRange)
+				{
+					var containerA, offsetA, containerB, offsetB;
+					switch ( how )
+					{
+						case this.START_TO_START:
+						case this.START_TO_END:
+							containerA = this.startContainer;
+							offsetA = this.startOffset;
+							break;
+						case this.END_TO_END:
+						case this.END_TO_START:
+							containerA = this.endContainer;
+							offsetA = this.endOffset;
+							break;
+					}
+					switch ( how )
+					{
+						case this.START_TO_START:
+						case this.END_TO_START:
+							containerB = sourceRange.startContainer;
+							offsetB = sourceRange.startOffset;
+							break;
+						case this.START_TO_END:
+						case this.END_TO_END:
+							containerB = sourceRange.endContainer;
+							offsetB = sourceRange.endOffset;
+							break;
+					}
+
+					return ( containerA.sourceIndex < containerB.sourceIndex
+								? -1
+								: ( containerA.sourceIndex == containerB.sourceIndex
+										? ( offsetA < offsetB
+												? -1
+												: ( offsetA == offsetB ? 0 : 1 )
+										  ) // offsetA < offsetB
+										: 1
+								  ) // containerA.sourceIndex == containerB.sourceIndex
+						   ); // containerA.sourceIndex < containerB.sourceIndex
+				},
+
+				cloneRange: function()
+				{
+					var range = new Range( this._document );
+					range.setStart( this.startContainer, this.startOffset );
+					range.setEnd( this.endContainer, this.endOffset );
+					return range;
+				},
+
+				detach: function()
+				{
+				},
+
+				toString: function()
+				{
+					return this._toTextRange().text;
+				},
+
+				createContextualFragment: function( tagString )
+				{
+					var
+					content		= ( DOMUtils.isDataNode(this.startContainer) ? this.startContainer.parentNode
+																			 : this.startContainer ).cloneNode(false),
+					fragment	= this._document.createDocumentFragment();
+
+					content.innerHTML = tagString;
+					for ( ; content.firstChild; )
+					{
+						fragment.appendChild(content.firstChild);
+					}
+					return fragment;
+				}
+			};
+
+			function RangeIterator(range)
+			{
+				this.range = range;
+				if ( range.collapsed )
+				{
+					return;
+				}
+
+				var root	= range.commonAncestorContainer;
+				this._next	= range.startContainer == root && ! DOMUtils.isDataNode( range.startContainer )
+								? range.startContainer.childNodes[range.startOffset]
+								: DOMUtils.findClosestAncestor( root, range.startContainer );
+				this._end	= range.endContainer == root && ! DOMUtils.isDataNode( range.endContainer )
+								? range.endContainer.childNodes[range.endOffset]
+								: DOMUtils.findClosestAncestor( root, range.endContainer ).nextSibling;
+			}
+
+			RangeIterator.prototype = {
+
+				range: null,
+				_current: null,
+				_next: null,
+				_end: null,
+
+				hasNext: function()
+				{
+					return !! this._next;
+				},
+
+				next: function()
+				{
+					var current	= this._current = this._next;
+					this._next	= this._current && this._current.nextSibling != this._end ? this._current.nextSibling : null;
+
+					if (DOMUtils.isDataNode(this._current))
+					{
+						if ( this.range.endContainer == this._current )
+						{
+							( current = current.cloneNode(true) ).deleteData( this.range.endOffset, current.length - this.range.endOffset );
+						}
+						if ( this.range.startContainer == this._current )
+						{
+							( current = current.cloneNode(true) ).deleteData( 0, this.range.startOffset );
+						}
+					}
+					return current;
+				},
+
+				remove: function()
+				{
+					if ( DOMUtils.isDataNode(this._current) &&
+						 ( this.range.startContainer == this._current ||
+						   this.range.endContainer == this._current ) )
+					{
+						var
+						start	= this.range.startContainer == this._current ? this.range.startOffset : 0,
+						end		= this.range.endContainer == this._current ? this.range.endOffset : this._current.length;
+						this._current.deleteData( start, end - start );
+					}
+					else
+					{
+						this._current.parentNode.removeChild( this._current );
+					}
+				},
+
+				hasPartialSubtree: function()
+				{
+					return ! DOMUtils.isDataNode(this._current) &&
+						   ( DOMUtils.isAncestorOrSelf( this._current, this.range.startContainer ) ||
+							 DOMUtils.isAncestorOrSelf( this._current, this.range.endContainer ) );
+				},
+
+				getSubtreeIterator: function()
+				{
+					var subRange = new Range(this.range._document);
+					subRange.selectNodeContents(this._current);
+					if ( DOMUtils.isAncestorOrSelf(this._current, this.range.startContainer) )
+					{
+						subRange.setStart( this.range.startContainer, this.range.startOffset );
+					}
+					if ( DOMUtils.isAncestorOrSelf( this._current, this.range.endContainer ) )
+					{
+						subRange.setEnd(this.range.endContainer, this.range.endOffset);
+					}
+					return new RangeIterator(subRange);
+				}
+			};
+
+			return Range;
+		})();
+
+		window.Range._fromTextRange = function( textRange, document )
+		{
+			function adoptBoundary(domRange, textRange, bStart)
+			{
+				var
+				cursorNode	= document.createElement('a'),
+				cursor		= textRange.duplicate(),
+				parent;
+
+				cursor.collapse(bStart);
+				parent = cursor.parentElement();
+
+				do {
+					parent.insertBefore( cursorNode, cursorNode.previousSibling );
+					cursor.moveToElementText( cursorNode );
+				} while ( cursorNode.previousSibling &&
+						  cursor.compareEndPoints( bStart ? 'StartToStart' : 'StartToEnd', textRange ) > 0 );
+
+				if ( cursorNode.nextSibling &&
+					 cursor.compareEndPoints(bStart ? 'StartToStart' : 'StartToEnd', textRange) == -1 )
+				{
+					cursor.setEndPoint( bStart ? 'EndToStart' : 'EndToEnd', textRange );
+					domRange[bStart ? 'setStart' : 'setEnd']( cursorNode.nextSibling, cursor.text.length );
+				}
+				else
+				{
+					domRange[bStart ? 'setStartBefore' : 'setEndBefore'](cursorNode);
+				}
+				cursorNode.parentNode.removeChild(cursorNode);
+			}
+
+			var domRange = new Range(document);
+			adoptBoundary(domRange, textRange, true);
+			adoptBoundary(domRange, textRange, false);
+			return domRange;
+		};
+
+		document.createRange = function()
+		{
+			return new Range(document);
+		};
+
+		window.Selection = (function(){
+			function Selection(document)
+			{
+				this._document = document;
+
+				var selection = this;
+				document.attachEvent('onselectionchange', function(){
+					selection._selectionChangeHandler();
+				});
+
+				setTimeout(function(){
+					selection._selectionChangeHandler();
+				},10);
+			}
+
+			Selection.prototype = {
+
+				rangeCount: 0,
+				_document:	null,
+				anchorNode:	null,
+				focusNode:	null,
+
+				_selectionChangeHandler: function()
+				{
+					var
+					range	= this._document.selection.createRange(),
+					text	= range.text.split(/\r|\n/),
+					$parent	= $( range.parentElement() ),
+					a_re, $a, f_re, $f;
+
+					if ( text.length > 1 )
+					{
+						a_re	= new RegExp( text[0] + '$' );
+						f_re	= new RegExp( '^' + text[text.length-1] );
+
+						$parent.children().each(function(){
+							if ( $(this).text().match( a_re ) )
+							{
+								this.anchorNode = this;
+							}
+							if ( $(this).text().match( f_re ) )
+							{
+								this.focusNode = this;
+							}
+						});
+					}
+					else
+					{
+						this.anchorNode = $parent.get(0);
+						this.focusNode	= this.anchorNode;
+					}
+
+					this.rangeCount = this._selectionExists( range ) ? 1 : 0;
+				},
+
+				_selectionExists: function( textRange )
+				{
+					return textRange.parentElement().isContentEditable ||
+						   textRange.compareEndPoints('StartToEnd', textRange) != 0;
+				},
+				addRange: function(range)
+				{
+					var
+					selection	= this._document.selection.createRange(),
+					textRange	= range._toTextRange();
+					if ( ! this._selectionExists(selection) )
+					{
+						try {
+ 							textRange.select();
+						} catch(e) {}
+					}
+					else
+					{
+						if (textRange.compareEndPoints('StartToStart', selection) == -1)
+						{
+							if ( textRange.compareEndPoints('StartToEnd', selection) > -1 &&
+								 textRange.compareEndPoints('EndToEnd', selection) == -1 )
+							{
+								selection.setEndPoint('StartToStart', textRange);
+							}
+						}
+						else
+						{
+							if ( textRange.compareEndPoints('EndToStart', selection) < 1 &&
+								 textRange.compareEndPoints('EndToEnd', selection) > -1 )
+							{
+								selection.setEndPoint('EndToEnd', textRange);
+							}
+						}
+						selection.select();
+					}
+				},
+				removeAllRanges: function()
+				{
+					this._document.selection.empty();
+				},
+				getRangeAt: function(index)
+				{
+					var textRange = this._document.selection.createRange();
+					if ( this._selectionExists( textRange ) )
+					{
+						return Range._fromTextRange( textRange, this._document );
+					}
+					return null;
+				},
+				toString: function()
+				{
+					return this._document.selection.createRange().text;
+				},
+				isCollapsed: function()
+				{
+					var range = document.createRange();
+					return range.collapsed;
+				},
+				deleteFromDocument: function()
+				{
+					var textRange = this._document.selection.createRange();
+					textRange.pasteHTML('');
+				}
+			};
+
+			return Selection;
+		})();
+
+		window.getSelection = (function(){
+			var selection = new Selection(document);
+			return function() { return selection; };
+		})();
+
+	})(jQuery);
+}
+
+jQuery.extend(Range.prototype, {
+
+	beforeRange: function(range)
+	{
+		if ( ! range ||
+			 ! range.compareBoundaryPoints )
+		{
+			return false;
+		}
+		return ( this.compareBoundaryPoints( this.START_TO_START, range ) == -1 &&
+				 this.compareBoundaryPoints( this.START_TO_END, range ) == -1 &&
+				 this.compareBoundaryPoints( this.END_TO_END, range ) == -1 &&
+				 this.compareBoundaryPoints( this.END_TO_START, range ) == -1 );
+	},
+
+	afterRange: function(range)
+	{
+		if ( ! range ||
+			 ! range.compareBoundaryPoints )
+		{
+			return false;
+		}
+		return ( this.compareBoundaryPoints( this.START_TO_START, range ) == 1 &&
+				 this.compareBoundaryPoints( this.START_TO_END, range ) == 1 &&
+				 this.compareBoundaryPoints( this.END_TO_END, range ) == 1 &&
+				 this.compareBoundaryPoints( this.END_TO_START, range ) == 1 );
+	},
+
+	betweenRange: function(range)
+	{
+		if ( ! range ||
+			 ! range.compareBoundaryPoints )
+		{
+			return false;
+		}
+		return ! ( this.beforeRange(range) || this.afterRange(range) );
+	},
+
+	equalRange: function(range)
+	{
+		if ( ! range ||
+			 ! range.compareBoundaryPoints )
+		{
+			return false;
+		}
+
+		// if both ranges are collapsed we just need to compare one point
+		if (this.collapsed && range.collapsed)
+		{
+			return (this.compareBoundaryPoints( this.START_TO_START, range ) == 0);
+		}
+
+		return ( this.compareBoundaryPoints( this.START_TO_START, range ) == 0 &&
+				 this.compareBoundaryPoints( this.START_TO_END, range ) == 1 &&
+				 this.compareBoundaryPoints( this.END_TO_END, range ) == 0 &&
+				 this.compareBoundaryPoints( this.END_TO_START, range ) == -1 );
+	},
+
+	getNode: function()
+	{
+		var
+		parent	= this.commonAncestorContainer,
+		that	= this,
+		child;
+
+		while (parent.nodeType == Node.TEXT_NODE)
+		{
+			parent = parent.parentNode;
+		}
+
+		jQuery(parent).children().each(function(){
+			var range = document.createRange();
+			range.selectNodeContents(this);
+			child = that.betweenRange(range);
+		});
+
+		return $(child || parent).get(0);
+	}
+});
+
+if ( typeof Selection == 'undefined' )
+{
+	var Selection = {};
+	Selection.prototype = window.getSelection().__proto__;
+}
+
+(function( DOC, $ ) {
+
+	// functions we want to normalize
+	var
+	getNode,
+	selectNode,
+	setBookmark,
+	moveToBookmark;
+
+	if ( $.browser.msie )
+	{
+		getNode = function()
+		{
+			var range = this._document.selection.createRange();
+			return $(range.parentElement());
+		}
+
+		selectNode = function(element)
+		{
+			var range = this._document.body.createTextRange();
+			range.moveToElementText(element);
+			range.select();
+		}
+
+		setBookmark = function()
+		{
+			var
+			$bookmark	= $('#WysiHat-bookmark'),
+			$parent		= $('<div/>'),
+			range		= this._document.selection.createRange();
+
+			if ( $bookmark.length > 0 )
+			{
+				$bookmark.remove();
+			}
+
+			$bookmark = $( '<span id="WysiHat-bookmark">&nbsp;</span>' )
+							.appendTo( $parent );
+
+			range.collapse(true);
+			range.pasteHTML( $parent.html() );
+		}
+
+		moveToBookmark = function()
+		{
+			var
+			$bookmark	= $('#WysiHat-bookmark'),
+			range		= this._document.selection.createRange();
+
+			if ( $bookmark.length > 0 )
+			{
+				$bookmark.remove();
+			}
+
+			range.moveToElementText( $bookmark.get(0) );
+			range.collapse(true);
+			range.select();
+
+			$bookmark.remove();
+		}
+	}
+	else
+	{
+		getNode = function()
+		{
+			return ( this.rangeCount > 0 ) ? this.getRangeAt(0).getNode() : null;
+		}
+
+		selectNode = function(element)
+		{
+			var range = DOC.createRange();
+			range.selectNode(element[0]);
+			this.removeAllRanges();
+			this.addRange(range);
+		}
+
+		setBookmark = function()
+		{
+			var $bookmark	= $('#WysiHat-bookmark');
+
+			if ( $bookmark.length > 0 )
+			{
+				$bookmark.remove();
+			}
+
+			$bookmark = $( '<span id="WysiHat-bookmark">&nbsp;</span>' );
+
+			this.getRangeAt(0).insertNode( $bookmark.get(0) );
+		}
+
+		moveToBookmark = function()
+		{
+			var
+			$bookmark	= $('#WysiHat-bookmark'),
+			range		= DOC.createRange();
+
+			if ( $bookmark.length > 0 )
+			{
+				$bookmark.remove();
+			}
+
+			range.setStartBefore( $bookmark.get(0) );
+			this.removeAllRanges();
+			this.addRange(range);
+
+			$bookmark.remove();
+		}
+	}
+
+	$.extend(Selection.prototype, {
+		getNode: getNode,
+		selectNode: selectNode,
+		setBookmark: setBookmark,
+		moveToBookmark: moveToBookmark
+	});
+
+})(document, jQuery);
