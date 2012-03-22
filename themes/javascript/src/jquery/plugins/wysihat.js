@@ -264,7 +264,7 @@ WysiHat.Element = (function( $ ){
 /*  IE Selection and Range classes
  *
  *  Original created by Tim Cameron Ryan
- *    http://github.com/timcameronryan/IERange
+ *	http://github.com/timcameronryan/IERange
  *  Copyright (c) 2009 Tim Cameron Ryan
  *  Released under the MIT/X License
  *
@@ -947,7 +947,7 @@ jQuery.extend(Range.prototype, (function(){
 		afterRange:   afterRange,
 		betweenRange: betweenRange,
 		equalRange:   equalRange,
-		getNode:      getNode
+		getNode:	  getNode
 	};
 
 })());
@@ -996,7 +996,7 @@ if ( typeof Selection == 'undefined' )
 	}
 
 	$.extend(Selection.prototype, {
-		getNode:    getNode,
+		getNode:	getNode,
 		selectNode: selectNode
 	});
 
@@ -1590,7 +1590,7 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 		$(DOC.activeElement).trigger( CHANGE_EVT );
 	}
 	function noSpans()
-	{
+	{	
 		try {
 			WIN.document.execCommand('styleWithCSS', 0, false);
 			noSpans = function(){
@@ -1598,9 +1598,9 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 			};
 		} catch (e) {
 			try {
-		    	WIN.document.execCommand('useCSS', 0, true);
+				WIN.document.execCommand('useCSS', 0, true);
 				noSpans = function(){
-			    	WIN.document.execCommand('useCSS', 0, true);
+					WIN.document.execCommand('useCSS', 0, true);
 				};
 			} catch (e) {
 				try {
@@ -1609,7 +1609,7 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 						WIN.document.execCommand('styleWithCSS', false, false);
 					};
 				}
-		        catch (e) {}
+				catch (e) {}
 			}
 		}
 	}
@@ -2013,7 +2013,7 @@ if ( typeof Node == "undefined" )
 	}
 
 	$.extend( Selection.prototype, {
-		setBookmark:    setBookmark,
+		setBookmark:	setBookmark,
 		moveToBookmark: moveToBookmark
 	});
 
@@ -2047,7 +2047,7 @@ jQuery(document).ready(function(){
 		selectionChangeHandler = function()
 		{
 			var
-			element        = DOC.activeElement,
+			element		= DOC.activeElement,
 			elementTagName = element.tagName.toLowerCase(),
 			selection, range;
 
@@ -2123,28 +2123,28 @@ jQuery(document).ready(function(){
 
 				$field.data( 'original-html', $editor.children().detach() );
 
-			    if ( original_event.clipboardData &&
+				if ( original_event.clipboardData &&
 					 original_event.clipboardData.getData )
 				{
-			        if ( /text\/html/.test( original_event.clipboardData.types ) )
+					if ( /text\/html/.test( original_event.clipboardData.types ) )
 					{
-			            $editor.html( original_event.clipboardData.getData('text/html') );
-			        }
-			        else if ( /text\/plain/.test( original_event.clipboardData.types ) )
+						$editor.html( original_event.clipboardData.getData('text/html') );
+					}
+					else if ( /text\/plain/.test( original_event.clipboardData.types ) )
 					{
-			            $editor.html( original_event.clipboardData.getData('text/plain') );
-			        }
-			        else
+						$editor.html( original_event.clipboardData.getData('text/plain') );
+					}
+					else
 					{
-			            $editor.html('');
-			        }
-			        waitforpastedata( $editor );
-			        original_event.stopPropagation();
-			        original_event.preventDefault();
-			        return false;
-			    }
+						$editor.html('');
+					}
+					waitforpastedata( $editor );
+					original_event.stopPropagation();
+					original_event.preventDefault();
+					return false;
+				}
 
-			    $editor.html('');
+				$editor.html('');
 				waitforpastedata( $editor );
 				return true;
 			 });
@@ -2154,13 +2154,13 @@ jQuery(document).ready(function(){
 				if ( $editor.contents().length )
 				{
 					processpaste( $editor );
-			    }
-			    else
+				}
+				else
 				{
 					setTimeout(function(){
 						waitforpastedata( $editor );
 					}, 20 );
-			    }
+				}
 			}
 
 			function processpaste( $editor )
@@ -2629,16 +2629,16 @@ WysiHat.Formatting = (function($){
 		}
 
 		return {
-			initialize:           initialize,
+			initialize:		   initialize,
 			createToolbarElement: createToolbarElement,
-			addButtonSet:         addButtonSet,
-			addButton:            addButton,
+			addButtonSet:		 addButtonSet,
+			addButton:			addButton,
 			createButtonElement:  createButtonElement,
-			buttonHandler:        buttonHandler,
+			buttonHandler:		buttonHandler,
 			observeButtonClick:   observeButtonClick,
 			buttonStateHandler:   buttonStateHandler,
 			observeStateChanges:  observeStateChanges,
-			updateButtonState:    updateButtonState
+			updateButtonState:	updateButtonState
 		};
 	};
 
@@ -2659,7 +2659,7 @@ WysiHat.Toolbar.ButtonSets.Standard = [
 	{ label: "Strikethrough", cssClass: 'toolbar_button' },
 	{ label: "Bullets",
 	  cssClass: 'toolbar_button', handler: function(editor) {
-	    return editor.toggleUnorderedList();
+		return editor.toggleUnorderedList();
 	  }
 	}
 ];
