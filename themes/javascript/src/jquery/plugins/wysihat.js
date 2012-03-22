@@ -24,7 +24,6 @@ var WysiHat = {
 	IMMEDIATE	= ':immediate',
 
 	INDEX		= 0,
-	NULL		= null,
 	EMPTY		= '';
 
 	WysiHat.Editor = {
@@ -35,8 +34,8 @@ var WysiHat = {
 			var
 			t_id	= $field.attr( ID ),
 			e_id	= ( t_id != EMPTY ? t_id : WYSIHAT + INDEX++ ) + EDITOR,
-			fTimer	= NULL,
-			eTimer	= NULL,
+			fTimer	= null,
+			eTimer	= null,
 			$editor	= $( '#' + e_id );
 
 			if ( t_id == EMPTY )
@@ -110,8 +109,6 @@ var WysiHat = {
 WysiHat.Element = (function( $ ){
 
 	var
-	FALSE = false,
-
 	roots			= [ 'blockquote', 'details', 'fieldset', 'figure', 'td' ],
 
 	sections		= [ 'article', 'aside', 'header', 'footer', 'nav', 'section' ],
@@ -139,8 +136,8 @@ WysiHat.Element = (function( $ ){
 	{
 		var
 		i	= arguments.length,
-		ret	= FALSE;
-		while ( ret == FALSE &&
+		ret	= false;
+		while ( ret == false &&
 				i-- > 1 )
 		{
 			ret	= $el.is( arguments[i].join(',') );
@@ -277,9 +274,6 @@ if (!window.getSelection) {
 	(function($){
 
 		var
-		NULL = null,
-		FALSE	= false,
-
 		DOMUtils = {
 			isDataNode: function( node )
 			{
@@ -1098,9 +1092,6 @@ if ( typeof Selection == 'undefined' )
 WysiHat.Commands = (function( WIN, DOC, $ ){
 
 	var
-	TRUE			= true,
-	FALSE			= false,
-	NULL			= null,
 	UNDEFINED,
 	OL				= 'ol',
 	UL				= 'ul',
@@ -1118,7 +1109,7 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 
 	function boldSelection()
 	{
-		this.execCommand('bold', FALSE, NULL);
+		this.execCommand('bold', false, null);
 	}
 	function isBold()
 	{
@@ -1126,7 +1117,7 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 	}
 	function underlineSelection()
 	{
-		this.execCommand('underline', FALSE, NULL);
+		this.execCommand('underline', false, null);
 	}
 	function isUnderlined()
 	{
@@ -1134,7 +1125,7 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 	}
 	function italicizeSelection()
 	{
-		this.execCommand('italic', FALSE, NULL);
+		this.execCommand('italic', false, null);
 	}
 	function isItalic()
 	{
@@ -1142,7 +1133,7 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 	}
 	function strikethroughSelection()
 	{
-		this.execCommand('strikethrough', FALSE, NULL);
+		this.execCommand('strikethrough', false, null);
 	}
 	function isStruckthrough()
 	{
@@ -1253,25 +1244,25 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 
 	function fontSelection(font)
 	{
-		this.execCommand('fontname', FALSE, font);
+		this.execCommand('fontname', false, font);
 	}
 	function fontSizeSelection(fontSize)
 	{
-		this.execCommand('fontsize', FALSE, fontSize);
+		this.execCommand('fontsize', false, fontSize);
 	}
 	function colorSelection(color)
 	{
-		this.execCommand('forecolor', FALSE, color);
+		this.execCommand('forecolor', false, color);
 	}
 	function backgroundColorSelection(color)
 	{
 		if ( $.browser.mozilla )
 		{
-			this.execCommand('hilitecolor', FALSE, color);
+			this.execCommand('hilitecolor', false, color);
 		}
 		else
 		{
-			this.execCommand('backcolor', FALSE, color);
+			this.execCommand('backcolor', false, color);
 		}
 	}
 
@@ -1289,7 +1280,7 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 
 	function linkSelection(url)
 	{
-		this.execCommand('createLink', FALSE, url);
+		this.execCommand('createLink', false, url);
 	}
 	function unlinkSelection()
 	{
@@ -1427,7 +1418,7 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 
 	function insertImage( url, attrs )
 	{
-		this.execCommand('insertImage', FALSE, url);
+		this.execCommand('insertImage', false, url);
 	}
 
 
@@ -1437,13 +1428,13 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 		{
 			var range = WIN.document.selection.createRange();
 			range.pasteHTML(html);
-			range.collapse(FALSE);
+			range.collapse(false);
 			range.select();
 			$(DOC.activeElement).trigger( CHANGE_EVT );
 		}
 		else
 		{
-			this.execCommand('insertHTML', FALSE, html);
+			this.execCommand('insertHTML', false, html);
 		}
 	}
 
@@ -1493,7 +1484,7 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 				.each(function(){
 					editor.replaceElement( $(this), tagName );
 				 })
-				.data( replaced, TRUE );
+				.data( replaced, true );
 
 		}
 		$editor
@@ -1593,7 +1584,7 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 			try {
 				WIN.document.execCommand(command, ui, value);
 			}
-			catch(e) { return NULL; }
+			catch(e) { return null; }
 		}
 
 		$(DOC.activeElement).trigger( CHANGE_EVT );
@@ -1601,21 +1592,21 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 	function noSpans()
 	{
 		try {
-			WIN.document.execCommand('styleWithCSS', 0, FALSE);
+			WIN.document.execCommand('styleWithCSS', 0, false);
 			noSpans = function(){
-				WIN.document.execCommand('styleWithCSS', 0, FALSE);
+				WIN.document.execCommand('styleWithCSS', 0, false);
 			};
 		} catch (e) {
 			try {
-		    	WIN.document.execCommand('useCSS', 0, TRUE);
+		    	WIN.document.execCommand('useCSS', 0, true);
 				noSpans = function(){
-			    	WIN.document.execCommand('useCSS', 0, TRUE);
+			    	WIN.document.execCommand('useCSS', 0, true);
 				};
 			} catch (e) {
 				try {
-					WIN.document.execCommand('styleWithCSS', FALSE, FALSE);
+					WIN.document.execCommand('styleWithCSS', false, false);
 					noSpans = function(){
-						WIN.document.execCommand('styleWithCSS', FALSE, FALSE);
+						WIN.document.execCommand('styleWithCSS', false, false);
 					};
 				}
 		        catch (e) {}
@@ -1634,7 +1625,7 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 		try {
 			return WIN.document.queryCommandState(state);
 		}
-		catch(e) { return NULL; }
+		catch(e) { return null; }
 	}
 
 	function getSelectedStyles()
@@ -1652,7 +1643,7 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 	function toggleHTML( e )
 	{
 		var
-		HTML	= FALSE,
+		HTML	= false,
 		$editor	= $(this),
 		$target	= $( e.target ),
 		text	= $target.text(),
@@ -1770,7 +1761,7 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 	{
 		var
 		phrases	= WysiHat.Element.getPhraseElements(),
-		phrase	= FALSE,
+		phrase	= false,
 		tags	= tagNames.split(','),
 		t		= tags.length,
 		sel		= WIN.getSelection(),
@@ -1791,7 +1782,7 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 			{
 				if ( $.inArray( tags[t], phrases ) != -1 )
 				{
-					phrase = TRUE;
+					phrase = true;
 					break;
 				}
 			}
