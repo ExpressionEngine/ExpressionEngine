@@ -240,10 +240,9 @@ class Remember {
 		
 		$rem_data = $rem_q->row_array();
 		$rem_q->free_result();
-		
+
 		// validate browser markers
-		if ($this->ip_address != $rem_data['ip_address'] OR
-			$this->user_agent != $rem_data['user_agent'])
+		if ($this->user_agent != $rem_data['user_agent'])
 		{
 			$this->_delete_cookie();
 			return FALSE;
