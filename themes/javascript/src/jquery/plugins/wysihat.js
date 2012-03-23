@@ -7,9 +7,32 @@
  *--------------------------------------------------------------------------*/
 
 
+// ---------------------------------------------------------------------
+
+/**
+ * This file is rather lengthy, so I've organized it into rough
+ * sections. I suggest reading the documentation for each section
+ * to get a general idea of where things happen. The list below
+ * are headers (except for #1) so that you can search for them.
+ *
+ * WysiHat Base
+ * Element Manager
+ * Change Events
+ * Editor Commands
+ * Paste Handler
+ * Formatting Class
+ * Toolbar Class
+ * Defaults and jQuery Binding
+ * Browser Compat Classes
+ */
+
+// ---------------------------------------------------------------------
+
+
 var WysiHat = {
 	name:	'WysiHat'
 };
+
 (function($){
 
 	var
@@ -18,32 +41,27 @@ var WysiHat = {
 	FIELD		= '-field',
 	CHANGE		= ':change',
 	CLASS		= WYSIHAT + EDITOR,
-	ID			= 'id',
 	E_EVT		= CLASS + CHANGE,
 	F_EVT		= WYSIHAT + FIELD + CHANGE,
 	IMMEDIATE	= ':immediate',
-
-	INDEX		= 0,
-	EMPTY		= '';
+	INDEX		= 0;
 
 	WysiHat.Editor = {
 
 		attach: function( $field )
 		{
-
 			var
-			t_id	= $field.attr( ID ),
-			e_id	= ( t_id != EMPTY ? t_id : WYSIHAT + INDEX++ ) + EDITOR,
+			tId	= $field.attr( 'id' ),
+			eId	= ( tId ? tId : WYSIHAT + INDEX++ ) + EDITOR,
 			fTimer	= null,
 			eTimer	= null,
-			$editor	= $( '#' + e_id );
+			$editor	= $( '#' + eId );
 
-			if ( t_id == EMPTY )
+			if ( tId == '' )
 			{
-				t_id = e_id.replace( EDITOR, FIELD );
-				$field.attr( ID, t_id );
+				tId = eId.replace( EDITOR, FIELD );
+				$field.attr( 'id', tId );
 			}
-
 
 			if ( $editor.length )
 			{
@@ -54,9 +72,9 @@ var WysiHat = {
 				return $editor;
 			}
 
-			$editor = $('<div id="' + e_id + '" class="' + CLASS + '" contentEditable="true" role="application"></div>')
-								.html( WysiHat.Formatting.getBrowserMarkupFrom( $field ) )
-								.data( 'field', $field );
+			$editor = $('<div id="' + eId + '" class="' + CLASS + '" contentEditable="true" role="application"></div>')
+				.html( WysiHat.Formatting.getBrowserMarkupFrom( $field ) )
+				.data( 'field', $field );
 
 			$.extend( $editor, WysiHat.Commands );
 
@@ -106,6 +124,18 @@ var WysiHat = {
 
 })(jQuery);
 
+
+// ---------------------------------------------------------------------
+
+/**
+ * Element Manager
+ *
+ * Holds information about available elements and can be used to
+ * check if an element is of a valid type.
+ */
+
+// ---------------------------------------------------------------------
+
 WysiHat.Element = (function( $ ){
 
 	var
@@ -115,7 +145,7 @@ WysiHat.Element = (function( $ ){
 
 	containers		= [ 'blockquote', 'details', 'dl', 'ol', 'table', 'ul' ],
 
-	sub_containers	= [ 'dd', 'dt', 'li', 'summary', 'td', 'th' ],
+	subContainers	= [ 'dd', 'dt', 'li', 'summary', 'td', 'th' ],
 
 	content			= [ 'address', 'caption', 'dd', 'div', 'dt', 'figcaption', 'figure', 'h1', 'h2', 'h3',
 						'h4', 'h5', 'h6', 'hgroup', 'hr', 'p', 'pre', 'summary', 'small' ],
@@ -127,7 +157,7 @@ WysiHat.Element = (function( $ ){
 
 	formatting		= [ 'b', 'code', 'del', 'em', 'i', 'ins', 'kbd', 'span', 's', 'strong', 'u' ],
 
-	html4_blocks	= [ 'address', 'blockquote', 'div', 'dd', 'dt', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'pre' ],
+	html4Blocks		= [ 'address', 'blockquote', 'div', 'dd', 'dt', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'pre' ],
 
 	forms			= [ 'button', 'datalist', 'fieldset', 'form', 'input', 'keygen', 'label',
 						'legend', 'optgroup', 'option', 'output', 'select', 'textarea' ];
@@ -160,19 +190,19 @@ WysiHat.Element = (function( $ ){
 		},
 		isSubContainer: function( $el )
 		{
-			return is( $el, sub_containers );
+			return is( $el, subContainers );
 		},
 		isBlock: function( $el )
 		{
-			return is( $el, roots, sections, containers, sub_containers, content );
+			return is( $el, roots, sections, containers, subContainers, content );
 		},
 		isHTML4Block: function( $el )
 		{
-			return is( $el, html4_blocks );
+			return is( $el, html4Blocks );
 		},
 		isContentElement: function( $el )
 		{
-			return is( $el, sub_containers, content );
+			return is( $el, subContainers, content );
 		},
 		isMediaElement: function( $el )
 		{
@@ -205,19 +235,19 @@ WysiHat.Element = (function( $ ){
 		},
 		getSubContainers: function()
 		{
-			return sub_containers;
+			return subContainers;
 		},
 		getBlocks: function()
 		{
-			return roots.concat( sections, containers, sub_containers, content );
+			return roots.concat( sections, containers, subContainers, content );
 		},
 		getHTML4Blocks: function()
 		{
-			return html4_blocks;
+			return html4Blocks;
 		},
 		getContentElements: function()
 		{
-			return sub_containers.concat( content );
+			return subContainers.concat( content );
 		},
 		getMediaElements: function()
 		{
@@ -239,6 +269,20 @@ WysiHat.Element = (function( $ ){
 
 })( jQuery );
 
+
+// ---------------------------------------------------------------------
+
+/**
+ * Change Events
+ *
+ * Binds to various events to fire things such fieldChange and
+ * editorChange. Currently also handles browser insertion for
+ * empty events.
+ *
+ * Will probably be removed in favor of a real event system.
+ */
+
+// ---------------------------------------------------------------------
 
 (function($, DOC){
 
@@ -385,20 +429,36 @@ WysiHat.Element = (function( $ ){
 
 })(jQuery, document);
 
+
+// ---------------------------------------------------------------------
+
+/**
+ * Editor Commands
+ *
+ * Container for reasonable base commands, such as bold, italicize,
+ * and others. Currently also contains a normalized execCommand
+ * function that may be moved to the browser normalization section.
+ *
+ * These currently extend the editor element, so you can call any
+ * of them: $editor.boldSelection().
+ */
+
+// ---------------------------------------------------------------------
+
 WysiHat.Commands = (function( WIN, DOC, $ ){
 
 	var
 	WYSIHAT_EDITOR	= 'WysiHat-editor',
 	CHANGE_EVT		= WYSIHAT_EDITOR + ':change',
 
-	valid_cmds		= [ 'backColor', 'bold', 'createLink', 'fontName', 'fontSize', 'foreColor', 'hiliteColor',
+	validCommands	= [ 'backColor', 'bold', 'createLink', 'fontName', 'fontSize', 'foreColor', 'hiliteColor',
 						'italic', 'removeFormat', 'strikethrough', 'subscript', 'superscript', 'underline', 'unlink',
 						'delete', 'formatBlock', 'forwardDelete', 'indent', 'insertHorizontalRule', 'insertHTML',
 						'insertImage', 'insertLineBreak', 'insertOrderedList', 'insertParagraph', 'insertText',
 						'insertUnorderedList', 'justifyCenter', 'justifyFull', 'justifyLeft', 'justifyRight', 'outdent',
 						'copy', 'cut', 'paste', 'selectAll', 'styleWithCSS', 'useCSS' ],
 
-	block_els		= WysiHat.Element.getContentElements().join(',').replace( ',div,', ',div:not(.' + WYSIHAT_EDITOR + '),' );
+	blockEls		= WysiHat.Element.getContentElements().join(',').replace( ',div,', ',div:not(.' + WYSIHAT_EDITOR + '),' );
 
 	function boldSelection()
 	{
@@ -438,7 +498,7 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 		var $quote = $('<blockquote/>');
 		this.manipulateSelection(function( range, $quote ){
 			var $q		= $quote.clone(),
-				$els	= this.getRangeElements( range, block_els ),
+				$els	= this.getRangeElements( range, blockEls ),
 				last	= $els.length - 1,
 				$coll	= $();
 			$els.each(function(i){
@@ -616,7 +676,7 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 		{
 			this.manipulateSelection(function( range, $list ){
 				var $l = $list.clone();
-				this.getRangeElements( range, block_els ).each(function(i){
+				this.getRangeElements( range, blockEls ).each(function(i){
 					var $this = $(this);
 					if ( $this.parent().is('ul') )
 					{
@@ -676,7 +736,7 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 		{
 			this.manipulateSelection(function( range, $list ){
 				var $l = $list.clone();
-				this.getRangeElements( range, block_els ).each(function(i){
+				this.getRangeElements( range, blockEls ).each(function(i){
 					var $this = $(this);
 					if ( $this.parent().is('ol') )
 					{
@@ -737,7 +797,7 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 		selection	= WIN.getSelection(),
 		range		= selection.getRangeAt(0),
 		node		= selection.getNode(),
-		arg_length	= arguments.length,
+		argLength	= arguments.length,
 		el;
 
 		if (range.collapsed)
@@ -748,9 +808,9 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 			selection.addRange(range);
 		}
 		range = selection.getRangeAt(0);
-		while ( arg_length-- )
+		while ( argLength-- )
 		{
-			el = $('<' + arguments[arg_length] + '/>');
+			el = $('<' + arguments[argLength] + '/>');
 			range.surroundContents( el.get(0) );
 		}
 		$(DOC.activeElement).trigger( CHANGE_EVT );
@@ -773,7 +833,7 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 			range	= selection.getRangeAt( i );
 			ranges.push( range );
 
-			this.getRangeElements( range, block_els )
+			this.getRangeElements( range, blockEls )
 				.each(function(){
 					editor.replaceElement( $(this), tagName );
 				 })
@@ -803,19 +863,18 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 
 		var
 		old		= $el.get(0),
-		$new_el	= $('<'+tagName+'/>').html(old.innerHTML),
-
+		$newEl	= $('<'+tagName+'/>').html(old.innerHTML),
 		attrs	= old.attributes,
 		len		= attrs.length || 0;
 
 		while (len--)
 		{
-			$new_el.attr( attrs[len].name, attrs[len].value );
+			$newEl.attr( attrs[len].name, attrs[len].value );
 		}
 
-		$el.replaceWith( $new_el );
+		$el.replaceWith( $newEl );
 
-		return $new_el;
+		return $newEl;
 	}
 
 	function deleteElement()
@@ -852,7 +911,7 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 		{
 			range = selection.getRangeAt( i );
 			ranges.push( range );
-			this.getRangeElements( range, block_els ).each( stripFormatters );
+			this.getRangeElements( range, blockEls ).each( stripFormatters );
 		}
 
 		$(DOC.activeElement).trigger( CHANGE_EVT );
@@ -862,7 +921,7 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 
 	function isValidCommand( cmd )
 	{
-		return ( $.inArray( cmd, valid_cmds ) > -1 );
+		return ( $.inArray( cmd, validCommands ) > -1 );
 	}
 	function execCommand( command, ui, value )
 	{
@@ -1201,29 +1260,20 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 		}
 	};
 })( window, document, jQuery );
-if ( typeof Node == "undefined" )
-{
-	(function(){
-		function Node(){
-			return {
-				ATTRIBUTE_NODE: 2,
-				CDATA_SECTION_NODE: 4,
-				COMMENT_NODE: 8,
-				DOCUMENT_FRAGMENT_NODE: 11,
-				DOCUMENT_NODE: 9,
-				DOCUMENT_TYPE_NODE: 10,
-				ELEMENT_NODE: 1,
-				ENTITY_NODE: 6,
-				ENTITY_REFERENCE_NODE: 5,
-				NOTATION_NODE: 12,
-				PROCESSING_INSTRUCTION_NODE: 7,
-				TEXT_NODE: 3
-			};
-		};
-		window.Node = new Node();
-	})();
-}
 
+
+// ---------------------------------------------------------------------
+
+/**
+ * Paste Handler
+ *
+ * @todo normalize in compat and move logic to event system
+ *
+ * Normalizes the paste event for various browsers and controls
+ * cursor reinsertion.
+ */
+
+// ---------------------------------------------------------------------
 
 (function($){
 
@@ -1260,30 +1310,30 @@ if ( typeof Node == "undefined" )
 			 })
 			.delegate('.WysiHat-editor', 'paste', function(e){
 				var
-				original_event	= e.originalEvent,
+				originalEvent	= e.originalEvent,
 				$editor			= $(this),
 				$field			= $editor.data('field');
 
 				$field.data( 'original-html', $editor.children().detach() );
 
-				if ( original_event.clipboardData &&
-					 original_event.clipboardData.getData )
+				if ( originalEvent.clipboardData &&
+					 originalEvent.clipboardData.getData )
 				{
-					if ( /text\/html/.test( original_event.clipboardData.types ) )
+					if ( /text\/html/.test( originalEvent.clipboardData.types ) )
 					{
-						$editor.html( original_event.clipboardData.getData('text/html') );
+						$editor.html( originalEvent.clipboardData.getData('text/html') );
 					}
-					else if ( /text\/plain/.test( original_event.clipboardData.types ) )
+					else if ( /text\/plain/.test( originalEvent.clipboardData.types ) )
 					{
-						$editor.html( original_event.clipboardData.getData('text/plain') );
+						$editor.html( originalEvent.clipboardData.getData('text/plain') );
 					}
 					else
 					{
 						$editor.html('');
 					}
 					waitforpastedata( $editor );
-					original_event.stopPropagation();
-					original_event.preventDefault();
+					originalEvent.stopPropagation();
+					originalEvent.preventDefault();
 					return false;
 				}
 
@@ -1314,24 +1364,24 @@ if ( typeof Node == "undefined" )
 
 				var
 				$field			= $editor.data('field'),
-				$original_html	= $field.data('original-html'),
-				saved_range		= $field.data('saved-range'),
+				$originalHtml	= $field.data('original-html'),
+				savedRange		= $field.data('saved-range'),
 				range			= document.createRange(),
 
-				pasted_content	= document.createDocumentFragment(),
+				pastedContent	= document.createDocumentFragment(),
 				
 				// Separates the pasted text into sections defined by two linebreaks
 				// for conversion to paragraphs
-				pasted_text		= $editor.getPreText().split( /\n([ \t]*\n)+/g ),
-				len				= pasted_text.length,
+				pastedText		= $editor.getPreText().split( /\n([ \t]*\n)+/g ),
+				len				= pastedText.length,
 				p				= document.createElement('p'),
 				br				= document.createElement('br'),
-				p_clone			= null,
+				pClone			= null,
 				empty			= /[\s\r\n]/g,
 				comments		= /<!--[^>]*-->/g;
 				
 				// Loop through paragraphs as defined by our above regex
-				$.each(pasted_text, function(index, paragraph)
+				$.each(pastedText, function(index, paragraph)
 				{
 					// Remove HTML comments, Word may insert these
 					paragraph = paragraph.replace(comments, '');
@@ -1347,52 +1397,52 @@ if ( typeof Node == "undefined" )
 					paragraph = paragraph.split(/[\r\n]/g);
 					
 					// We'll append each line of the paragraph to this node
-					p_fragment = document.createDocumentFragment();
+					pFragment = document.createDocumentFragment();
 					
 					$.each(paragraph, function(index, para)
 					{
 						// Add the current text line to the fragment
-						p_fragment.appendChild(document.createTextNode(para));
+						pFragment.appendChild(document.createTextNode(para));
 						
 						// If this isn't the end of the paragraph, add a <br> element
 						// to the end
 						if (index != paragraph.length - 1)
 						{
-							p_fragment.appendChild(br.cloneNode(false));
+							pFragment.appendChild(br.cloneNode(false));
 						}
 					});
 					
 					// If we are starting the paste outside an existing block element,
 					// OR have moved on to other paragraphs in the array, wrap pasted
 					// text in paragraph tags
-					if (saved_range.startContainer == 'p' || index != 0)
+					if (savedRange.startContainer == 'p' || index != 0)
 					{
-						p_clone = p.cloneNode(false);
-						p_clone.appendChild(p_fragment);
+						pClone = p.cloneNode(false);
+						pClone.appendChild(pFragment);
 						
-						pasted_content.appendChild(p_clone);
+						pastedContent.appendChild(pClone);
 					}
 					// Otherwise, we are probably pasting text in the middle
 					// of an existing block element, just pass the text along
 					else
 					{
-						pasted_content.appendChild(p_fragment);
+						pastedContent.appendChild(pFragment);
 					}
 				});
 				
 				$editor
 					.empty()
-					.append($original_html);
+					.append($originalHtml);
 
-				range.setStart(saved_range.startContainer, saved_range.startOffset);
-				range.setEnd(saved_range.endContainer, saved_range.endOffset);
+				range.setStart(savedRange.startContainer, savedRange.startOffset);
+				range.setEnd(savedRange.endContainer, savedRange.endOffset);
 				
 				if ( ! range.collapsed)
 				{
 					range.deleteContents();
 				}
 				
-				range.insertNode(pasted_content);
+				range.insertNode(pastedContent);
 
 				WysiHat.Formatting.cleanup($editor);
 
@@ -1410,7 +1460,7 @@ if ( typeof Node == "undefined" )
 
 				tNodeLoc = getOffsetNode($editor.get(0), lengthToCursor);
 
-				range.setStart(tNodeLoc[0], tNodeLoc[1] + $(pasted_content).text().length);
+				range.setStart(tNodeLoc[0], tNodeLoc[1] + $(pastedContent).text().length);
 				range.collapse(true);
 				window.getSelection().addRange(range);
 			}
@@ -1484,6 +1534,20 @@ if ( typeof Node == "undefined" )
 
 })(jQuery);
 
+
+// ---------------------------------------------------------------------
+
+/**
+ * Formatting Class
+ *
+ * Responsible for keeping the markup clean and compliant. Also
+ * deals with keeping changes between the raw text and editor in
+ * sync periodically.
+ */
+
+// ---------------------------------------------------------------------
+
+
 WysiHat.Formatting = (function($){
 
 	return {
@@ -1550,18 +1614,18 @@ WysiHat.Formatting = (function($){
 		format: function( $el )
 		{
 			var
-			re_blocks = new RegExp( '(<(?:ul|ol)>|<\/(?:' + WysiHat.Element.getBlocks().join('|') + ')>)[\r\n]*', 'g' ),
+			// @todo move this out of the function
+			reBlocks = new RegExp( '(<(?:ul|ol)>|<\/(?:' + WysiHat.Element.getBlocks().join('|') + ')>)[\r\n]*', 'g' ),
 			html = $el.html()
 						.replace('<p>&nbsp;</p>','')
 						.replace(/<br\/?><\/p>/,'</p>')
-						.replace( re_blocks,'$1\n' )
+						.replace( reBlocks,'$1\n' )
 						.replace(/\n+/,'\n')
 						.replace(/<p>\n+<\/p>/,'');
 			$el.html( html );
 		},
 		getBrowserMarkupFrom: function( $el )
 		{
-
 			var $container = $('<div>' + $el.val().replace(/\n/,'') + '</div>');
 
 			this.cleanup( $container );
@@ -1574,16 +1638,13 @@ WysiHat.Formatting = (function($){
 			}
 
 			return $container.html();
-
 		},
 
 		getApplicationMarkupFrom: function( $el )
 		{
 			var
-			$clone			= $el.clone(),
-			el_id			= $el.attr('id'),
+			$clone = $el.clone(),
 			$container, html;
-
 
 			$container = $('<div/>').html($clone.html());
 
@@ -1595,8 +1656,6 @@ WysiHat.Formatting = (function($){
 			}
 
 			this.cleanup( $container );
-
-
 			this.format( $container );
 
 			return $container
@@ -1609,6 +1668,20 @@ WysiHat.Formatting = (function($){
 	};
 
 })(jQuery);
+
+
+// ---------------------------------------------------------------------
+
+/**
+ * Toolbar Class
+ *
+ * Handles the creation of the toolbar and manages the individual
+ * buttons states. You can add your own by using:
+ * $toolbar.addButton({ options });
+ */
+
+// ---------------------------------------------------------------------
+
 
 (function($){
 
@@ -1780,6 +1853,18 @@ WysiHat.Formatting = (function($){
 })(jQuery);
 
 
+// ---------------------------------------------------------------------
+
+/**
+ * Defaults and jQuery Binding
+ *
+ * This code sets up reasonable editor defaults and then adds
+ * a convenience setup function to jQuery.fn that you can use
+ * as $('textarea').wysihat(options).
+ */
+
+// ---------------------------------------------------------------------
+
 WysiHat.Toolbar.ButtonSets = {};
 
 WysiHat.Toolbar.ButtonSets.Basic = [
@@ -1813,21 +1898,17 @@ jQuery.fn.wysihat = function(options) {
 
 
 
+// ---------------------------------------------------------------------
 
+/**
+ * Browser Compat Classes
+ *
+ * Below we normalize the Range and Selection classes to work
+ * properly across all browsers. If you like IE, you'll feel
+ * right at home down here.
+ */
 
-
-
-
-
-//
-//
-//
-// WELCOME TO BROWSER COMPAT WORLD
-// Danger: IE lives down here!
-//
-//
-//
-
+// ---------------------------------------------------------------------
 
 
 
@@ -2458,6 +2539,33 @@ if (!window.getSelection) {
 
 	})(jQuery);
 }
+
+
+
+if ( typeof Node == "undefined" )
+{
+	(function(){
+		function Node(){
+			return {
+				ATTRIBUTE_NODE: 2,
+				CDATA_SECTION_NODE: 4,
+				COMMENT_NODE: 8,
+				DOCUMENT_FRAGMENT_NODE: 11,
+				DOCUMENT_NODE: 9,
+				DOCUMENT_TYPE_NODE: 10,
+				ELEMENT_NODE: 1,
+				ENTITY_NODE: 6,
+				ENTITY_REFERENCE_NODE: 5,
+				NOTATION_NODE: 12,
+				PROCESSING_INSTRUCTION_NODE: 7,
+				TEXT_NODE: 3
+			};
+		};
+		window.Node = new Node();
+	})();
+}
+
+
 
 jQuery.extend(Range.prototype, {
 
