@@ -70,9 +70,10 @@ There are three validation types, set in the config file:
 
 class EE_Session {
 	
-	public $user_session_len	 = 7200;  // User sessions expire in two hours
-	public $cpan_session_len	 = 3600;  // Admin sessions expire in one hour
-
+	public $user_session_len	= 7200;  // User sessions expire in two hours
+	public $cpan_session_len	= 3600;  // Admin sessions expire in one hour
+	public $valid_session_types	= array('cs', 'c', 's');
+	
 	public $c_session			= 'sessionid';
 	public $c_expire			= 'expiration';
 	public $c_anon				= 'anon';
@@ -142,7 +143,7 @@ class EE_Session {
 			'user_agent' 		=>  substr($this->EE->input->user_agent(), 0, 120),
 			'last_activity'		=>  0
 		);
-		
+
 		// -------------------------------------------
 		// 'sessions_start' hook.
 		//  - Reset any session class variable
@@ -154,21 +155,33 @@ class EE_Session {
 		//
 		// -------------------------------------------
 
-		if ($this->EE->input->cookie($this->c_session))
+		// Set the validation type
+		$this->validation = (REQ == 'CP') ? $this->EE->config->item('admin_session_type') : $this->EE->config->item('user_session_type');
+
+		// default to "cookies and sessions" if validation type doesn't exist or is invalid
+		if ( ! in_array($this->validation, $this->valid_session_types))
 		{
-			$this->cookies_exist = TRUE;
-			$this->sdata['session_id'] = $this->EE->input->cookie($this->c_session);			
+			$this->validation = 'cs';
 		}
-		else
+		
+		// Grab the session ID and update browser fingerprint based on the validation type
+		// we use the same URL key whether it's getting the session ID or the browser fingerprint,
+		// simplifying URI parsing and complicating session hijacking attempts
+		switch ($this->validation)
 		{
-			if ($this->EE->input->get('S') && $this->EE->input->get('S') != 0)
-			{
-				$this->sdata['session_id'] = $this->EE->input->get('S');
-			}
-			elseif ($this->EE->uri->session_id != '')
-			{
-				$this->sdata['session_id'] = $this->EE->uri->session_id;
-			}			
+			case 's'	:
+				$this->sdata['session_id'] = ($this->EE->input->get('S')) ? $this->EE->input->get('S') : $this->EE->uri->session_id;
+				$this->sdata['fingerprint'] = $this->_create_fingerprint();
+				break;
+			case 'c'	:
+				$this->sdata['session_id'] = $this->EE->input->cookie($this->c_session);
+				$this->sdata['fingerprint'] = $this->_create_fingerprint();
+				break;
+			case 'cs'	:
+			default		:
+				$this->sdata['session_id'] = $this->EE->input->cookie($this->c_session);
+				$this->sdata['fingerprint'] = ($this->EE->input->get('S')) ? $this->EE->input->get('S') : $this->EE->uri->session_id;
+				break;
 		}
 		
 		// Check remember me
@@ -177,27 +190,9 @@ class EE_Session {
 			$this->cookies_exist = TRUE;
 		}
 
-		// Set the Validation Type
-		if (REQ == 'CP')
-		{
-			$this->validation = ( ! in_array($this->EE->config->item('admin_session_type'), array('cs', 'c', 's'))) ? 'cs' : $this->EE->config->item('admin_session_type');
-		}
-		else
-		{
-			$this->validation = ( ! in_array($this->EE->config->item('user_session_type'), array('cs', 'c', 's'))) ? 'cs' : $this->EE->config->item('user_session_type');
-		}
-		
-		// Do session IDs exist?
-		switch ($this->validation)
-		{
-			case 'cs'	: $session_id = ($this->sdata['session_id'] != '0' AND $this->cookies_exist == TRUE) ? TRUE : FALSE;
-				break;
-			case 'c'	: $session_id = ($this->cookies_exist) ? TRUE : FALSE;
-				break;
-			case 's'	: $session_id = ($this->sdata['session_id'] != '0') ? TRUE : FALSE;
-				break;
-		}
-		
+		// Did we find a session ID?
+		$session_id = ($this->sdata['session_id'] != '') ? TRUE : FALSE;
+				
 		// Fetch Session Data		
 		// IMPORTANT: The session data must be fetched before the member data so don't move this.
 		if ($session_id === TRUE)
@@ -252,7 +247,7 @@ class EE_Session {
 		// Merge Session and User Data Arrays		
 		// We merge these into into one array for portability
 		$this->userdata = array_merge($this->userdata, $this->sdata);
-		
+
 		// -------------------------------------------
 		// 'sessions_end' hook.
 		//  - Modify the user's session/member data.
@@ -407,14 +402,15 @@ class EE_Session {
 		{
 			$this->sdata['admin_sess'] 	= ($admin_session == FALSE) ? 0 : 1;  
 		}
-		
+
 		$this->sdata['session_id'] 		= $this->EE->functions->random();  
 		$this->sdata['ip_address']  	= $this->EE->input->ip_address();  
 		$this->sdata['member_id']  		= (int) $member_id; 
-		$this->sdata['last_activity']	= $this->EE->localize->now;  
-		$this->sdata['user_agent']		= substr($this->EE->input->user_agent(), 0, 120);
+		$this->sdata['last_activity']	= $this->EE->localize->now;
+		$this->sdata['fingerprint']		= $this->_create_fingerprint($this->sess_crypt_key);
 		$this->userdata['member_id']	= (int) $member_id;  
 		$this->userdata['session_id']	= $this->sdata['session_id'];
+		$this->userdata['fingerprint']	= $this->sdata['fingerprint'];
 		$this->userdata['site_id']		= $this->EE->config->item('site_id');
 		
 		$this->EE->functions->set_cookie($this->c_session, $this->sdata['session_id'], $this->session_length);	
@@ -701,13 +697,12 @@ class EE_Session {
 	 */
 	public function fetch_session_data()
 	{
-		// Look for session.  Match the user's IP address and browser for added security.
-		$query = $this->EE->db->select('member_id, admin_sess, last_activity')
+		$query = $this->EE->db->select('member_id, admin_sess, last_activity, fingerprint')
 			->get_where(
 				'sessions',
 				array(
 					'session_id' => (string) $this->sdata['session_id'],
-					'user_agent' => $this->sdata['user_agent']
+					'fingerprint' => $this->sdata['fingerprint']
 				)
 			);
 		
@@ -725,7 +720,7 @@ class EE_Session {
 		$this->sdata['admin_sess'] = ($query->row('admin_sess') == 1) ? 1 : 0;
 		
 		// Log last activity
-		$this->sdata['last_activity'] = $query->row('last_activity') ;
+		$this->sdata['last_activity'] = $query->row('last_activity');
 		
 		// If session has expired, delete it and set session data to GUEST
 		if ($this->validation != 'c')
@@ -965,7 +960,7 @@ class EE_Session {
 	public function update_session()
 	{
 		$this->sdata['last_activity'] = $this->EE->localize->now;
-		
+
 		$this->EE->db->query($this->EE->db->update_string('exp_sessions', $this->sdata, "session_id ='".$this->EE->db->escape_str($this->sdata['session_id'])."'")); 
 
 		// Update session ID cookie
@@ -1109,9 +1104,10 @@ class EE_Session {
 	 */
 	protected function _initialize_session()
 	{  
-		$this->sdata['session_id'] = 0;	
-		$this->sdata['admin_sess'] = 0;
-		$this->sdata['member_id']  = 0;
+		$this->sdata['session_id']	= 0;
+		$this->sdata['fingerprint']	= 0;
+		$this->sdata['admin_sess']	= 0;
+		$this->sdata['member_id']	= 0;
 	}
 
 	// --------------------------------------------------------------------
@@ -1147,6 +1143,18 @@ class EE_Session {
 
 	// --------------------------------------------------------------------	
 
+	/**
+	 * Create a browser fingerprint
+	 *
+	 * @return	string
+	 */
+	protected function _create_fingerprint($salt = 'kosher')
+	{
+		return md5($this->EE->input->user_agent().$salt);
+	}
+	
+	// --------------------------------------------------------------------	
+	
 	/**
 	 * Set signed flashdata cookie
 	 *

@@ -271,7 +271,7 @@ class EE_Core {
 		{
 			$this->EE->output->enable_profiler(TRUE);
 		}
-	
+	$this->EE->output->enable_profiler(TRUE);
 		/*
 		 * -----------------------------------------------------------------
 		 *  Filter GET Data
@@ -346,12 +346,17 @@ class EE_Core {
 	function _initialize_cp()
 	{
 		$s = 0;
-		
-		if ($this->EE->config->item('admin_session_type') != 'c')
+
+		switch ($this->EE->config->item('admin_session_type'))
 		{
-			$s = $this->EE->session->userdata('session_id', 0);
+			case 's'	:
+				$s = $this->EE->session->userdata('session_id', 0);
+				break;
+			case 'cs'	:
+				$s = $this->EE->session->userdata('fingerprint', 0);
+				break;
 		}
-		
+				
 		define('BASE', SELF.'?S='.$s.'&amp;D=cp');			// cp url
 		define('PATH_CP_THEME', PATH_THEMES.'cp_themes/');	// theme path
 		

@@ -159,9 +159,13 @@ class Login extends CI_Controller {
 		
 		$base = BASE;
 
-		if ($this->config->item('admin_session_type') != 'c')
+		if ($this->config->item('admin_session_type') == 's')
 		{
 			$base = preg_replace('/S=\d+/', 'S='.$incoming->session_id(), BASE);
+		}
+		elseif ($this->config->item('admin_session_type') == 'cs')
+		{
+			$base = preg_replace('/S=\d+/', 'S='.$this->session->userdata['fingerprint'], BASE);
 		}
 
 		$return_path = $base.AMP.'C=homepage';
