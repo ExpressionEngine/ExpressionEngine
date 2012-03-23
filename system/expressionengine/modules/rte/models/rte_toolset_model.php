@@ -279,7 +279,7 @@ class Rte_toolset_model extends CI_Model {
 		$this->load->model('rte_tool_model');
 
 		// Load all available tools
-		$this->EE->rte_tool_model->load_tools_into_db();
+		$this->rte_tool_model->load_tools_into_db();
 
 		// default toolset
 		$tool_ids = $this->rte_tool_model->get_tool_ids(array(
