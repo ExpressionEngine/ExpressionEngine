@@ -783,11 +783,11 @@ class EE_Functions {
 		}
 
 		/* -------------------------------------------
-		/* 'set_cookie_start' hook.
+		/* 'set_cookie_end' hook.
 		/*  - Take control of Cookie setting routine
-		/*  - Added EE 2.6
+		/*  - Added EE 2.5.0
 		*/
-			$this->EE->extensions->call('set_cookie_start', $data);
+			$this->EE->extensions->call('set_cookie_end', $data);
 			if ($this->EE->extensions->end_script === TRUE) return;
 		/*
 		/* -------------------------------------------*/
