@@ -181,9 +181,11 @@
 			// get the elements
 			s_el = sel.anchorNode;
 			e_el = sel.focusNode;
+			
 
-			if ( s_el == e_el &&
-				 sel.anchorOffset == sel.focusOffset )
+			if ((s_el == e_el &&
+				sel.anchorOffset == sel.focusOffset) ||
+				e_el.textContent == '​') // Our zero-width character
 			{
 				link = false;
 			}
