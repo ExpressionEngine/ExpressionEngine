@@ -1788,6 +1788,14 @@ WysiHat.Formatting = (function($){
 			var that = this;
 
 			$button.click(function(e){
+				
+				// Bring focus to the editor before the handler is called
+				// so that selection data is available to tools
+				if ( ! that.$editor.is(':focus'))
+				{
+					that.$editor.focus();
+				}
+				
 				handler( that.$editor, e );
 				that.$editor.trigger( 'WysiHat-selection:change' );
 				that.$editor.focus();
