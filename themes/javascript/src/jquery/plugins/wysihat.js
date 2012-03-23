@@ -458,7 +458,7 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 						'insertUnorderedList', 'justifyCenter', 'justifyFull', 'justifyLeft', 'justifyRight', 'outdent',
 						'copy', 'cut', 'paste', 'selectAll', 'styleWithCSS', 'useCSS' ],
 
-	blockEls		= WysiHat.Element.getContentElements().join(',').replace( ',div,', ',div:not(.' + WYSIHAT_EDITOR + '),' );
+	blockElements	= WysiHat.Element.getContentElements().join(',').replace( ',div,', ',div:not(.' + WYSIHAT_EDITOR + '),' );
 
 	function boldSelection()
 	{
@@ -497,10 +497,12 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 	{
 		var $quote = $('<blockquote/>');
 		this.manipulateSelection(function( range, $quote ){
-			var $q		= $quote.clone(),
-				$els	= this.getRangeElements( range, blockEls ),
-				last	= $els.length - 1,
-				$coll	= $();
+			var
+			$q		= $quote.clone(),
+			$els	= this.getRangeElements( range, blockElements ),
+			last	= $els.length - 1,
+			$coll	= $();
+
 			$els.each(function(i){
 				var
 				$this	= $(this),
@@ -523,8 +525,8 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 				else if ( sub )
 				{
 					$coll = $coll.add(
-								$this.closest( WysiHat.Element.getContainers().join(",") )
-							);
+						$this.closest( WysiHat.Element.getContainers().join(",") )
+					);
 				}
 				else
 				{
@@ -542,13 +544,14 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 	{
 		this.manipulateSelection(function( range ){
 			this.getRangeElements( range, 'blockquote > *' ).each(function(){
-				var el		= this,
-					$el		= $(el),
-					$parent	= $el.closest('blockquote'),
-					$bq		= $parent.clone().html(''),
-					$sibs	= $parent.children(),
-					last	= $sibs.length - 1,
-					$coll	= $();
+				var
+				el		= this,
+				$el		= $(el),
+				$parent	= $el.closest('blockquote'),
+				$bq		= $parent.clone().html(''),
+				$sibs	= $parent.children(),
+				last	= $sibs.length - 1,
+				$coll	= $();
 
 				$el.unwrap('blockquote');
 
@@ -650,17 +653,17 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 	function toggleOrderedList()
 	{
 		var
-		$list	= $('<ol/>');
+		$list = $('<ol/>');
 
 		if ( isOrderedList() )
 		{
-			this.manipulateSelection(function( range, $list ){
-				this.getRangeElements( range, 'ol' ).each(function(i){
+			this.manipulateSelection(function( range, $list ) {
+				this.getRangeElements( range, 'ol' ).each(function(i) {
 					var $this = $(this);
 					$this.children('li').each(function(){
 						var $this = $(this);
 						replaceElement( $this, 'p' );
-						$this.find('ol,ul').each(function(){
+						$this.find('ol,ul').each(function() {
 							var	$parent = $(this).parent();
 							if ( $parent.is('p') )
 							{
@@ -676,7 +679,7 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 		{
 			this.manipulateSelection(function( range, $list ){
 				var $l = $list.clone();
-				this.getRangeElements( range, blockEls ).each(function(i){
+				this.getRangeElements( range, blockElements ).each(function(i){
 					var $this = $(this);
 					if ( $this.parent().is('ul') )
 					{
@@ -710,7 +713,7 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 	function toggleUnorderedList()
 	{
 		var
-		$list	= $('<ul/>');
+		$list = $('<ul/>');
 
 		if ( isUnorderedList() )
 		{
@@ -736,7 +739,7 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 		{
 			this.manipulateSelection(function( range, $list ){
 				var $l = $list.clone();
-				this.getRangeElements( range, blockEls ).each(function(i){
+				this.getRangeElements( range, blockElements ).each(function(i){
 					var $this = $(this);
 					if ( $this.parent().is('ol') )
 					{
@@ -833,7 +836,7 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 			range	= selection.getRangeAt( i );
 			ranges.push( range );
 
-			this.getRangeElements( range, blockEls )
+			this.getRangeElements( range, blockElements )
 				.each(function(){
 					editor.replaceElement( $(this), tagName );
 				 })
@@ -911,7 +914,7 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 		{
 			range = selection.getRangeAt( i );
 			ranges.push( range );
-			this.getRangeElements( range, blockEls ).each( stripFormatters );
+			this.getRangeElements( range, blockElements ).each( stripFormatters );
 		}
 
 		$(DOC.activeElement).trigger( CHANGE_EVT );
@@ -1553,8 +1556,7 @@ WysiHat.Formatting = (function($){
 	return {
 		cleanup: function( $element )
 		{
-			var
-			replaceElement = WysiHat.Commands.replaceElement;
+			var replaceElement = WysiHat.Commands.replaceElement;
 			$element
 				.find('span')
 					.each(function(){
@@ -1644,7 +1646,8 @@ WysiHat.Formatting = (function($){
 		{
 			var
 			$clone = $el.clone(),
-			$container, html;
+			$container,
+			html;
 
 			$container = $('<div/>').html($clone.html());
 
@@ -1732,17 +1735,17 @@ WysiHat.Formatting = (function($){
 		createButtonElement: function( $toolbar, options )
 		{
 			var $btn = $('<button aria-pressed="false" tabindex="-1"><b>' + options['label'] + '</b></button>')
-							.addClass( 'button ' + options['name'] )
-							.appendTo( $toolbar )
-							.hover(
-								function(){
-									var $button = $(this).closest('button');
-									$button.attr('title',$button.find('b').text());
-								},
-								function(){
-									$(this).closest('button').removeAttr('title');
-								}
-							 );
+				.addClass( 'button ' + options['name'] )
+				.appendTo( $toolbar )
+				.hover(
+					function(){
+						var $button = $(this).closest('button');
+						$button.attr('title',$button.find('b').text());
+					},
+					function(){
+						$(this).closest('button').removeAttr('title');
+					}
+				);
 
 			if ( options['cssClass'] )
 			{
@@ -1892,6 +1895,7 @@ jQuery.fn.wysihat = function(options) {
 		var
 		editor	= WysiHat.Editor.attach( jQuery(this) ),
 		toolbar	= new WysiHat.Toolbar(editor);
+
 		toolbar.addButtonSet(options);
 	});
 };
@@ -1924,8 +1928,7 @@ jQuery.fn.wysihat = function(options) {
 if (!window.getSelection) {
 	(function($){
 
-		var
-		DOMUtils = {
+		var DOMUtils = {
 			isDataNode: function( node )
 			{
 				try {
@@ -2436,19 +2439,19 @@ if (!window.getSelection) {
 					range	= this._document.selection.createRange(),
 					text	= range.text.split(/\r|\n/),
 					$parent	= $( range.parentElement() ),
-					a_re, $a, f_re, $f;
+					anchorRe, focusRe;
 
 					if ( text.length > 1 )
 					{
-						a_re	= new RegExp( text[0] + '$' );
-						f_re	= new RegExp( '^' + text[text.length-1] );
+						anchorRe = new RegExp( text[0] + '$' );
+						focusRe = new RegExp( '^' + text[text.length-1] );
 
 						$parent.children().each(function(){
-							if ( $(this).text().match( a_re ) )
+							if ( $(this).text().match( anchorRe ) )
 							{
 								this.anchorNode = this;
 							}
-							if ( $(this).text().match( f_re ) )
+							if ( $(this).text().match( focusRe ) )
 							{
 								this.focusNode = this;
 							}
