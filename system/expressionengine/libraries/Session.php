@@ -37,16 +37,16 @@ There are three validation types, set in the config file:
   1. User cookies AND session ID (cs)
 		
 	This is the most secure way to run a site. A session cookie is set
-	with a random ID, which is also appended to the url.
+	with a random ID, and a browser fingerprint is added to the URL.
 
 	The cookie expires when you have been inactive longer than two
-	hours (one hour in the control panel). The ID in the url will be
+	hours (one hour in the control panel). The fingerprint in the url will be
 	lost when you close the browser.
 	
 	Using this setting does NOT allow 'stay logged-in' capability, as each 
 	session has a finite lifespan.
 
-  2. Cookies only - no session ID (c)
+  2. Cookies only - (c)
 	
 	With this validation type, a session ID string is not added to the url.
 	Therefore users can remain permanently logged in if they choose the
@@ -141,7 +141,8 @@ class EE_Session {
 			'admin_sess' 		=>  0,
 			'ip_address' 		=>  $this->EE->input->ip_address(),
 			'user_agent' 		=>  substr($this->EE->input->user_agent(), 0, 120),
-			'last_activity'		=>  0
+			'last_activity'		=>  0,
+			'sess_start'		=>	0
 		);
 
 		// -------------------------------------------
@@ -192,7 +193,7 @@ class EE_Session {
 
 		// Did we find a session ID?
 		$session_id = ($this->sdata['session_id'] != '') ? TRUE : FALSE;
-				
+
 		// Fetch Session Data		
 		// IMPORTANT: The session data must be fetched before the member data so don't move this.
 		if ($session_id === TRUE)
@@ -208,7 +209,7 @@ class EE_Session {
 		
 		// Update/Create Session
 		if ($session_id === FALSE OR $member_data_exists === FALSE)
-		{ 
+		{
 			$this->fetch_guest_data();
 		}
 		else
@@ -407,6 +408,7 @@ class EE_Session {
 		$this->sdata['ip_address']  	= $this->EE->input->ip_address();  
 		$this->sdata['member_id']  		= (int) $member_id; 
 		$this->sdata['last_activity']	= $this->EE->localize->now;
+		$this->sdata['sess_start']		= $this->sdata['last_activity'];
 		$this->sdata['fingerprint']		= $this->_create_fingerprint($this->sess_crypt_key);
 		$this->userdata['member_id']	= (int) $member_id;  
 		$this->userdata['session_id']	= $this->sdata['session_id'];
@@ -544,7 +546,7 @@ class EE_Session {
 		}
 
 		// If the user has been inactive longer than the session length we'll
-		// set the "last_visit" cooke with the "last_activity" date.
+		// set the "last_visit" cookie with the "last_activity" date.
 		
 		if (($this->sdata['last_activity'] + $this->session_length) < $this->EE->localize->now) 
 		{
@@ -697,7 +699,7 @@ class EE_Session {
 	 */
 	public function fetch_session_data()
 	{
-		$query = $this->EE->db->select('member_id, admin_sess, last_activity, fingerprint')
+		$query = $this->EE->db->select('member_id, admin_sess, last_activity, fingerprint, sess_start')
 			->get_where(
 				'sessions',
 				array(
@@ -705,14 +707,14 @@ class EE_Session {
 					'fingerprint' => $this->sdata['fingerprint']
 				)
 			);
-		
+
 		if ($query->num_rows() == 0 OR $query->row('member_id') == 0)
 		{
 			$this->_initialize_session();
 		
 			return FALSE;				
 		}
-		
+
 		// Assign member ID to session array
 		$this->sdata['member_id'] = (int) $query->row('member_id');
 		
@@ -721,6 +723,7 @@ class EE_Session {
 		
 		// Log last activity
 		$this->sdata['last_activity'] = $query->row('last_activity');
+		$this->sdata['sess_start'] = $query->row('sess_start');
 		
 		// If session has expired, delete it and set session data to GUEST
 		if ($this->validation != 'c')
@@ -961,17 +964,25 @@ class EE_Session {
 	{
 		$this->sdata['last_activity'] = $this->EE->localize->now;
 
-		$this->EE->db->query($this->EE->db->update_string('exp_sessions', $this->sdata, "session_id ='".$this->EE->db->escape_str($this->sdata['session_id'])."'")); 
+		$cur_session_id = $this->sdata['session_id'];
+
+		// generate a new session ID if they've remained active during the whole TTL
+		if (($this->sdata['last_activity'] - $this->sdata['sess_start']) > $this->session_length)
+		{
+			$this->sdata['session_id'] = $this->EE->functions->random();
+			$this->userdata['session_id'] = $this->sdata['session_id'];
+			$this->sdata['sess_start'] = $this->sdata['last_activity'];
+		}
+
+		$this->EE->db->query($this->EE->db->update_string('exp_sessions', $this->sdata, "session_id = '".$cur_session_id."'")); 
 
 		// Update session ID cookie
-		
 		if ($this->validation != 's')
 		{
 			$this->EE->functions->set_cookie($this->c_session , $this->sdata['session_id'],  $this->session_length);	
 		}
 			
-		// If we only require cookies for validation, set admin session.	
-			
+		// If we only require cookies for validation, set admin session.
 		if ($this->validation == 'c'  AND  $this->access_cp == TRUE)
 		{			
 			$this->sdata['admin_sess'] = 1;
