@@ -175,6 +175,7 @@ class EE_Session {
 				$this->sdata['fingerprint'] = $this->_create_fingerprint();
 				break;
 			case 'c'	:
+				$this->cookies_exist;
 				$this->sdata['session_id'] = $this->EE->input->cookie($this->c_session);
 				$this->sdata['fingerprint'] = $this->_create_fingerprint();
 				break;
@@ -192,7 +193,7 @@ class EE_Session {
 		}
 
 		// Did we find a session ID?
-		$session_id = ($this->sdata['session_id'] != '') ? TRUE : FALSE;
+		$session_id = ($this->sdata['session_id'] != '' OR ($this->validation == 'c' && $this->cookies_exist)) ? TRUE : FALSE;
 
 		// Fetch Session Data		
 		// IMPORTANT: The session data must be fetched before the member data so don't move this.
