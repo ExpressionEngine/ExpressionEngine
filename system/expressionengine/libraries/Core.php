@@ -356,7 +356,7 @@ class EE_Core {
 				$s = $this->EE->session->userdata('fingerprint', 0);
 				break;
 		}
-				
+
 		define('BASE', SELF.'?S='.$s.'&amp;D=cp');			// cp url
 		define('PATH_CP_THEME', PATH_THEMES.'cp_themes/');	// theme path
 		

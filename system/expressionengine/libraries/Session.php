@@ -70,8 +70,8 @@ There are three validation types, set in the config file:
 
 class EE_Session {
 	
-	public $user_session_len	= 7200;  // User sessions expire in two hours
-	public $cpan_session_len	= 3600;  // Admin sessions expire in one hour
+	public $user_session_len	= 60;  // User sessions expire in two hours
+	public $cpan_session_len	= 60;  // Admin sessions expire in one hour
 	public $valid_session_types	= array('cs', 'c', 's');
 	
 	public $c_session			= 'sessionid';
@@ -164,7 +164,7 @@ class EE_Session {
 		{
 			$this->validation = 'cs';
 		}
-		
+
 		// Grab the session ID and update browser fingerprint based on the validation type
 		// we use the same URL key whether it's getting the session ID or the browser fingerprint,
 		// simplifying URI parsing and complicating session hijacking attempts
@@ -184,7 +184,7 @@ class EE_Session {
 				$this->sdata['fingerprint'] = ($this->EE->input->get('S')) ? $this->EE->input->get('S') : $this->EE->uri->session_id;
 				break;
 		}
-		
+
 		// Check remember me
 		if ($this->EE->remember->exists())
 		{
@@ -409,7 +409,10 @@ class EE_Session {
 		$this->sdata['member_id']  		= (int) $member_id; 
 		$this->sdata['last_activity']	= $this->EE->localize->now;
 		$this->sdata['sess_start']		= $this->sdata['last_activity'];
-		$this->sdata['fingerprint']		= $this->_create_fingerprint($this->sess_crypt_key);
+		
+		// 'cs' sessions we propogate the fingerprint, so we can increase the uniqueness, otherwise it's calculated on the fly
+		$this->sdata['fingerprint']		= ($this->validation == 'cs') ? $this->_create_fingerprint($this->sess_crypt_key) : $this->_create_fingerprint();
+		
 		$this->userdata['member_id']	= (int) $member_id;  
 		$this->userdata['session_id']	= $this->sdata['session_id'];
 		$this->userdata['fingerprint']	= $this->sdata['fingerprint'];
