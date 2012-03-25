@@ -971,7 +971,9 @@ class EE_Session {
 		$cur_session_id = $this->sdata['session_id'];
 
 		// generate a new session ID if they've remained active during the whole TTL
-		if (($this->sdata['last_activity'] - $this->sdata['sess_start']) > $this->session_length)
+		// but only if the session ID is being transported via a cookie, or the
+		// rotation would cause you to have an invalid session in other open windows or tabs
+		if ($this->validation != 's' && ($this->sdata['last_activity'] - $this->sdata['sess_start']) > $this->session_length)
 		{
 			$this->sdata['session_id'] = $this->EE->functions->random();
 			$this->userdata['session_id'] = $this->sdata['session_id'];
