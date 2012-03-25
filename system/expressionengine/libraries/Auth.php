@@ -581,7 +581,6 @@ class Auth_result {
 	private $group;
 	private $member;
 	private $session_id;
-	private $remember_me = 0;
 	private $anon = FALSE;
 	private $EE;
 	
@@ -705,18 +704,6 @@ class Auth_result {
 	// --------------------------------------------------------------------
 	
 	/**
-	 * Remember me expiration setter
-	 *
-	 * @access	public
-	 */
-	function remember_me($expire)
-	{
-		$this->remember_me = $expire;
-	}
-
-	// --------------------------------------------------------------------
-	
-	/**
 	 * Anon setter
 	 *
 	 * @access	public
@@ -763,7 +750,7 @@ class Auth_result {
 		
 		if ($this->EE->config->item($sess_type) != 's')
 		{
-			$expire = $this->remember_me;
+			$expire = $this->EE->remember->get_expiry();
 			
 			if ($this->anon)
 			{
@@ -778,7 +765,7 @@ class Auth_result {
 			// (un)set remember me
 			if ($expire)
 			{
-				$this->EE->remember->create($expire);
+				$this->EE->remember->create();
 			}
 			else
 			{

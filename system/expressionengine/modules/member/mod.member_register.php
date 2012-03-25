@@ -696,7 +696,7 @@ class Member_register extends Member {
 			$member_data_q = $this->EE->db->get_where('members', array('member_id' => $member_id));
 			
 			$incoming = new Auth_result($member_data_q->row());
-			$incoming->remember_me(60*60*24*182);
+			$incoming->remember_me();
 			$incoming->start_session();
 
 			$message = lang('mbr_your_are_logged_in');

@@ -144,7 +144,7 @@ class Login extends CI_Controller {
 		// "Remember Me" is one year
 		if (isset($_POST['remember_me']))
 		{
-			$incoming->remember_me(60*60*24*365);
+			$incoming->remember_me();
 		}
 		
 		if (is_numeric($this->input->post('site_id')))
