@@ -141,7 +141,6 @@ class Login extends CI_Controller {
 		// Kill existing flash cookie
 		$this->functions->set_cookie('flash');
 		
-		// "Remember Me" is one year
 		if (isset($_POST['remember_me']))
 		{
 			$incoming->remember_me();

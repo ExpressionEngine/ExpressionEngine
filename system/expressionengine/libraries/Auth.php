@@ -581,6 +581,7 @@ class Auth_result {
 	private $group;
 	private $member;
 	private $session_id;
+	private $remember_me = FALSE;
 	private $anon = FALSE;
 	private $EE;
 	
@@ -763,7 +764,7 @@ class Auth_result {
 			}
 			
 			// (un)set remember me
-			if ($expire)
+			if ($this->remember_me)
 			{
 				$this->EE->remember->create();
 			}
@@ -845,6 +846,20 @@ class Auth_result {
 	public function use_session_id($session_id)
 	{
 		$this->session_id = $session_id;
+	}
+	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Remember me
+	 *
+	 * Whether or not this session will be started with 'remember me'
+	 *
+	 * @access	public
+	 */	
+	public function remember_me($remember = TRUE)
+	{
+		$this->remember_me = ($remember) ? TRUE : FALSE;
 	}
 	
 	// --------------------------------------------------------------------

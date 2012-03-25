@@ -224,7 +224,7 @@ class Remember {
 	 */
 	public function get_expiry()
 	{
-		return $this->expirty;
+		return $this->expiry;
 	}
 	
 	// --------------------------------------------------------------------
