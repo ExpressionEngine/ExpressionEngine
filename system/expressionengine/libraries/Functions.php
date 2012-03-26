@@ -628,8 +628,17 @@ class EE_Functions {
 			// $_POST['RET'] variable is set. Since the login routine relies on the RET
 			// info to know where to redirect back to we need to sandwich in the session ID.
 			if ($this->EE->config->item('user_session_type') != 'c')
-			{				
-				if ($this->EE->session->userdata['session_id'] != '' && ! stristr($ret, $this->EE->session->userdata['session_id']))
+			{
+				if ($this->EE->config->item('user_session_type') == 's')
+				{
+					$id = $this->EE->session->userdata['session_id'];
+				}
+				else
+				{
+					$id = $this->EE->session->userdata['fingerprint'];
+				}
+				
+				if ($id != '' && ! stristr($ret, $id))
 				{
 					$url = $this->EE->config->slash_item('site_url');
 					
@@ -640,7 +649,7 @@ class EE_Functions {
 						$url .= '?';
 					}		
 			
-					$sess_id = "/S=".$this->EE->session->userdata['session_id']."/";
+					$sess_id = "/S=".$id."/";
 	
 					$ret = str_replace($url, $url.$sess_id, $ret);			
 				}			
