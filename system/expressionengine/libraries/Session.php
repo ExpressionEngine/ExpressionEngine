@@ -70,8 +70,8 @@ There are three validation types, set in the config file:
 
 class EE_Session {
 	
-	public $user_session_len	= 60;  // User sessions expire in two hours
-	public $cpan_session_len	= 60;  // Admin sessions expire in one hour
+	public $user_session_len	= 7200;  // User sessions expire in two hours
+	public $cpan_session_len	= 3600;  // Admin sessions expire in one hour
 	public $valid_session_types	= array('cs', 'c', 's');
 	
 	public $c_session			= 'sessionid';

@@ -271,7 +271,7 @@ class EE_Core {
 		{
 			$this->EE->output->enable_profiler(TRUE);
 		}
-	$this->EE->output->enable_profiler(TRUE);
+
 		/*
 		 * -----------------------------------------------------------------
 		 *  Filter GET Data
