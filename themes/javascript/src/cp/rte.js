@@ -1,5 +1,4 @@
 (function($){
-	
 	var	$edit_toolset	= $('a[href*=edit_toolset]:not(.addTab)'),
 		$modal			= $('<div id="rte_toolset_editor_modal"><div class="contents"/></div>');
 	
@@ -16,6 +15,7 @@
 			setupToolsetBuilder();
 		}
 	});
+
 	
 	// Load the RTE Builder
 	function load_rte_builder(url)
@@ -25,6 +25,7 @@
 			// Check to see what we're dealing with. The module returns the full
 			// view, whereas the extension returns the innards.
 			$contents = $('#mainContent .contents', data);
+			
 			if ($contents.size()) {
 				modal_contents = $contents.html();
 				modal_title = $('#mainContent .edit', data).text();
@@ -44,9 +45,9 @@
 				.dialog('open');
 		});
 	}
-	
+
 	// Home Page - Trigger Toolset overlay
-	if ( $edit_toolset.length )
+	if ($edit_toolset.length )
 	{
 		$edit_toolset.click(function(e){
 			e.preventDefault();
@@ -57,11 +58,9 @@
 	}
 	
 	// MyAccount - Trigger Toolset overlay
-	var	$my_toolset_id		= $('#registerUser select#rte_toolset_id')
-								.change(toggle_rte_edit_link),
-		$edit_my_toolset	= $('<input type="button" class="submit"/>')
-								.css('margin-left','5px')
-								.val( EE.rte.edit_text );
+	var	$my_toolset_id		= $('#rte_toolset_id').change(toggle_rte_edit_link),
+		$edit_my_toolset	= $('#edit_toolset');
+
 	// Get the builder
 	function get_rte_toolset_builder()
 	{
@@ -81,12 +80,14 @@
 			load_rte_builder( builder_url );
 		}
 	}
+
 	// add & remove the edit link
 	function toggle_rte_edit_link()
 	{
 		if ( $my_toolset_id.find('option:selected').text() == EE.rte.custom_toolset_text )
 		{
-			$my_toolset_id.parent().append( $edit_my_toolset );
+			$edit_my_toolset.show();
+
 			if ( $my_toolset_id.val() == 'new' )
 			{
 				get_rte_toolset_builder();
@@ -94,11 +95,13 @@
 		}
 		else
 		{
-			$edit_my_toolset.remove();
+			$edit_my_toolset.hide();
 		}
 	}
+
 	// Run once
-	toggle_rte_edit_link();
+	$('#rte_toolset_id').change();
+
 	// Observe click
 	$my_toolset_id
 		.parent()
