@@ -20,7 +20,7 @@
  * @package		ExpressionEngine
  * @subpackage	Libraries
  * @category	Modules
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
 

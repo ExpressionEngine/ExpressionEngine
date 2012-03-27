@@ -1,5 +1,29 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		ExpressionEngine Dev Team
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @license		http://expressionengine.com/user_guide/license.html
+ * @link		http://expressionengine.com
+ * @since		Version 2.5
+ * @filesource
+ */
+
+// ------------------------------------------------------------------------
+
+/**
+ * ExpressionEngine Rich Text Editor Module
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Extensions
+ * @category	Extensions
+ * @author		EllisLab Dev Team
+ * @link		http://expressionengine.com
+ */
+
 class Rte_ext {
 
 	var $name			= 'Rich Text Editor';
