@@ -100,7 +100,7 @@ if ($EE_view_disable !== TRUE)
 						<div>
 							<p id="layout_groups_holder">
 								<?php foreach($member_groups_laylist as $group):?>
-									<label><?=form_checkbox('member_group[]', $group['group_id'], FALSE, 'class="toggle_member_groups"')?> <?=$group['group_title']?></label><br />
+									<label><?=form_checkbox('member_group[]', $group['group_id'], ($layout_group == $group['group_id']), 'class="toggle_member_groups"')?> <?=$group['group_title']?></label><br />
 								<?php endforeach;?>
 								<label><?=form_checkbox('toggle_member_groups', 'toggle_member_groups', FALSE, 'class="toggle_member_groups" id="toggle_member_groups_all"').' '.$this->lang->line('select_all')?></label>
 							</p>
@@ -112,7 +112,7 @@ if ($EE_view_disable !== TRUE)
 								<div class="layout_preview_inner">
 									<select name="layout_preview">
 										<?php foreach($member_groups_laylist as $group):?>
-											<option value="<?= $group['group_id'] ?>">
+											<option value="<?= $group['group_id'] ?>" <?= ($layout_group == $group['group_id']) ? 'selected' : '' ?>>
 												<?= $group['group_title'] ?>
 											</option>
 										<?php endforeach;?>

@@ -309,6 +309,8 @@ class Content_publish extends CI_Controller {
 			'field_list'		=> $field_list,
 			'layout_styles'		=> $layout_styles,
 			'field_output'		=> $field_output,
+			'layout_group'	=> (is_numeric($this->input->get_post('layout_preview'))) ?
+				$this->input->get_post('layout_preview') : $this->session->userdata('group_id'),
 			
 			'spell_enabled'		=> TRUE,
 			'smileys_enabled'	=> $this->_smileys_enabled,
@@ -329,7 +331,7 @@ class Content_publish extends CI_Controller {
 				'filter'			=> $this->input->get_post('filter')
 			),
 			
-			'preview_url' => $preview_url
+			'preview_url'	=> $preview_url
 		);
 
 		$this->cp->set_breadcrumb(BASE.AMP.'C=content_publish', lang('publish'));
