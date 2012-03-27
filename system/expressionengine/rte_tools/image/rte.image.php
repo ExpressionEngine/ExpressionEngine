@@ -73,10 +73,15 @@ Class Image_rte {
 	/** -------------------------------------*/
 	function libraries()
 	{
+		return array();
+
+		// @todo The following should already be loaded in the CP...
+/*
 		return array(
 			'plugin'	=> 'ee_filebrowser',
 			'ui'		=> 'dialog'
 		);
+*/
 	}
 	
 	/** -------------------------------------
