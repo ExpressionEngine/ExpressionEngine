@@ -1445,27 +1445,36 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 					range.deleteContents();
 				}
 				
+				// Grab the new node so we can select it
+				var lastChild = pastedContent.childNodes[
+					pastedContent.childNodes.length - 1
+				];
+				
 				range.insertNode(pastedContent);
-
+				
 				WysiHat.Formatting.cleanup($editor);
-
+				
 				// The change event on $field triggers a full
 				// editor content replacement. So we grab the
 				// location of the cursor before that happens
-				range.setStart($editor.get(0));
-
+				range.selectNodeContents(lastChild);
+				range.setStart($editor.get(0), 0);
+				
 				var
 				lengthToCursor = range.toString().replace(/\n/g, '').length,
 				tNodeLoc;
-
+				
 				$editor.trigger('WysiHat-editor:change:immediate');
 				$field.trigger('WysiHat-field:change:immediate');
-
+				
 				tNodeLoc = getOffsetNode($editor.get(0), lengthToCursor);
-
+				
+				var s = window.getSelection();
+				
 				range.setStart(tNodeLoc[0], tNodeLoc[1] + $(pastedContent).text().length);
 				range.collapse(true);
-				window.getSelection().addRange(range);
+				s.removeAllRanges();
+				s.addRange(range);
 			}
 
 			// Given a node and and an offset, find the correct
