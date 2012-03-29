@@ -1937,6 +1937,11 @@ span.defaultIndicator {
 	background-color:	#f4f6f6;
 }
 
+.templateTable thead tr.even td,
+.templateTable thead tr.odd {
+	background-color: transparent;
+}
+
 a.view_link:link,
 a.delete_link:link,
 a.show_prefs_link:link,
