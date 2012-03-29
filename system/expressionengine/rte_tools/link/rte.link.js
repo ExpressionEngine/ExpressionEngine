@@ -7,9 +7,9 @@
 							'<input type="text"/></p>' +
 							//'<p><label>' + EE.rte.link.dialog.rel_field_label + '</label>' +
 							// '<select></select></p>' +
-							'<p class="buttons"><button class="submit" type="submit">' + 
-							EE.rte.link.dialog.submit_button +
-							'</button></p>' +
+							'<p class="buttons">' +
+							'	<a class="rte-link-remove js_hide">' + EE.rte.link.dialog.remove_link + '</a>' +
+							'	<button class="submit" type="submit">' + EE.rte.link.dialog.add_link + '</button></p>' +
 							'</div>'),
 		$url			= $link_dialog.find('input[type=url]'),
 		$title			= $link_dialog.find('input[type=text]'),
@@ -89,11 +89,17 @@
 					{
 						el = el.parentNode;
 					}
-					el = $(el);
-					if ( el.is('a') )
-					{
-						$url.val( el.attr('href') );
-						$title.val( el.attr('title') );
+
+					$el = $(el);
+
+					if ($el.is('a')) {
+						$url.val( $el.attr('href'));
+						$title.val( $el.attr('title'));
+						$('.submit').text(EE.rte.link.dialog.update_link);
+						$('.rte-link-remove').show();
+					} else {
+						$('.submit').text(EE.rte.link.dialog.add_link);
+						$('.rte-link-remove').hide();
 					}
 				}
 				
@@ -125,17 +131,23 @@
 				$editor.trigger( EE.rte.update_event );
 			}
 		})
-		// setup the close on enter
-		.delegate('input','keypress',function( e ){
-			// enter
-			if ( e.which == 13 )
-			{
+		// Close on Enter
+		.on('keypress', 'input', function(e){
+			if (e.which == 13) {
 				validateLinkDialog();
 			}
 		 })
-		// setup the submit button
-		.find('.submit')
-			.click(validateLinkDialog);
+		// Remove link
+		.on('click', '.rte-link-remove', function(){
+			$el.replaceWith($el.text());
+	
+			$link_dialog.dialog('close');
+		})
+		// Add link
+		.on('click', '.submit', function(){
+			validateLinkDialog();
+		});
+
 
 	function validateLinkDialog()
 	{
@@ -181,9 +193,11 @@
 			// get the elements
 			s_el = sel.anchorNode;
 			e_el = sel.focusNode;
+			
 
-			if ( s_el == e_el &&
-				 sel.anchorOffset == sel.focusOffset )
+			if ((s_el == e_el &&
+				sel.anchorOffset == sel.focusOffset) ||
+				e_el.textContent == '​') // Our zero-width character
 			{
 				link = false;
 			}
@@ -193,6 +207,7 @@
 			{
 				s_el = s_el.parentNode;
 			}
+
 			if ( s_el.nodeName.toLowerCase() == 'a' )
 			{
 				link = true;

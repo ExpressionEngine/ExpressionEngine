@@ -161,7 +161,7 @@ WysiHat.Element = (function( $ ){
 	phrases			= [ 'a', 'abbr', 'b', 'br', 'cite', 'code', 'del', 'dfn', 'em', 'i', 'ins', 'kbd',
 	 					'mark', 'span', 'q', 'samp', 's', 'strong', 'sub', 'sup', 'time', 'u', 'var', 'wbr' ],
 
-	formatting		= [ 'b', 'code', 'del', 'em', 'i', 'ins', 'kbd', 'span', 's', 'strong', 'u' ],
+	formatting		= [ 'b', 'code', 'del', 'em', 'i', 'ins', 'kbd', 'span', 's', 'strong', 'u', 'font' ],
 
 	html4Blocks		= [ 'address', 'blockquote', 'div', 'dd', 'dt', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'pre' ],
 
@@ -2242,12 +2242,15 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 					range.deleteContents();
 				}
 				
+
+				// Grab the new node so we can select it
 				var lastChild = pastedContent.childNodes[
 					pastedContent.childNodes.length - 1
 				];
+				
 
 				range.insertNode(pastedContent);
-
+				
 				WysiHat.Formatting.cleanup($editor);
 
 				// Some browsers won't actually add the pasted
@@ -2257,6 +2260,7 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 				// The change event on $field triggers a full
 				// editor content replacement. We grab the
 				// location of the cursor before that happens
+
 				var selectionUtil = $editor.data('selectionUtil'),
 					before = selectionUtil.get(range);
 
@@ -2265,7 +2269,6 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 
 				// And restore their cursor
 				selectionUtil.set(before);
-				
 			}
 
 			// Getting text from contentEditable DIVs and retaining linebreaks
@@ -2569,19 +2572,30 @@ WysiHat.Formatting = {
 			var that = this;
 
 			$button.click(function(e){
+
+				// Bring focus to the editor before the handler is called
+				// so that selection data is available to tools
+				if ( ! that.$editor.is(':focus'))
+				{
+					that.$editor.focus();
+				}
+
+
 				// @pk before
+				// Save the selection and current text so that we can
+				// work out how to undo the change.
 				var full_editor_before = that.$editor.html(),
-					selectionUtil = that.$editor.data('selectionUtil');
-
-				var before = selectionUtil.get(),
+					selectionUtil = that.$editor.data('selectionUtil'),
+					before = selectionUtil.get(),
 					after;
-
+				
 				handler( that.$editor, e );
 				that.$editor.trigger( 'WysiHat-selection:change' );
 				that.$editor.focus();
 
-				after = selectionUtil.get();
 				// @pk after
+				// Add the changes as an undo.
+				after = selectionUtil.get();
 				that.$editor.eventCore.textChange(full_editor_before, that.$editor.html(), before, after);
 
 				return false;

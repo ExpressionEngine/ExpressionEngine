@@ -3,11 +3,11 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
- * @since		Version 2.4
+ * @since		Version 2.5
  * @filesource
  */
 
@@ -19,8 +19,8 @@
  * @package		ExpressionEngine
  * @subpackage	Modules
  * @category	Modules
- * @author		Aaron Gustafson
- * @link		http://easy-designs.net
+ * @author		EllisLab Dev Team
+ * @link		http://expressionengine.com
  */
 class Rte_mcp {
 
@@ -193,7 +193,6 @@ class Rte_mcp {
 		$this->EE->functions->redirect($this->_base_url);
 	}
 
-
 	// --------------------------------------------------------------------
 	
 	/**
@@ -259,7 +258,6 @@ class Rte_mcp {
 		$this->EE->functions->redirect($this->_base_url);
 	}
 
-
 	// --------------------------------------------------------------------
 	
 	/**
@@ -293,124 +291,54 @@ class Rte_mcp {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
-	 * Build the toolset JS
+	 * Update prefs form action
 	 *
 	 * @access	public
-	 * @param	int $toolset_id The ID of the toolset to load
-	 * @return	string The JavaScript
+	 * @return	void
 	 */
-	public function build_toolset_js( $toolset_id = FALSE )
+	public function toolset_js()
 	{
-		$this->EE->load->library('javascript');
+		$this->EE->load->library('rte_lib');
 		
-		// load in the event information so buttons can trigger 
-		$this->EE->javascript->set_global( 'rte.update_event', 'WysiHat-editor:change' );
+		$toolset_id 	= (int)$this->EE->input->get('toolset_id');
+		$selector		= '.rte';
 		
-		// start empty
-		$js = '';
-
-		// determine the toolset
-		$this->EE->load->model(array('rte_toolset_model','rte_tool_model'));
-
-		if ( ! $toolset_id)
+		if ( ! $this->EE->config->item('rte_enabled') == 'y')
 		{
-			$toolset_id = $this->EE->rte_toolset_model->get_member_toolset();
+			exit();
 		}
 
-		$tools = $this->EE->rte_tool_model->get_tools($toolset_id);
+		$includes = array(
+			'jquery'	=> FALSE,
+			'jquery_ui' => FALSE
+		);
 
-		// make sure we should load the JS
-		if ( ! $tools OR $this->EE->config->item('rte_enabled') != 'y')
-		{
-			return;
-		}
-		
-		// setup the framework
-		ob_start(); ?>
+		// @todo Normalize quotes in $selector
+		// @todo make this better
 
-		$(".rte").each(function(){
-			var
-			$field	= $(this),
-			$parent	= $field.parent(),
+		$js = $this->EE->rte_lib->build_js($toolset_id, $selector, $includes);
 
-			// set up the editor
-			$editor	= WysiHat.Editor.attach($field),
+		header('Content-type: text/javascript; charset=utf-8');
+		header('Cache-Control: no-cache, must-revalidate');
+		header('Expires: Sat, 26 Jul 1997 05:00:00 GMT');
 
-			// establish the toolbar
-			toolbar	= new WysiHat.Toolbar($editor);
+		$this->EE->javascript->compile();
 
-<?php	$js = ob_get_contents();
-		ob_end_clean(); 
-
-		// load the tools
-		foreach ($tools as $tool)
-		{
-			// load the globals
-			if (count($tool['globals']))
-			{
-				$this->EE->javascript->set_global( $tool['globals'] );
-			}
-			
-			// load any libraries we need
-			if (count($tool['libraries']))
-			{
-				$this->EE->cp->add_js_script( $tool['libraries'] );
-			}
-			
-			// add any styles we need
-			if ( ! empty( $tool['styles']))
-			{
-				$this->EE->cp->add_to_head( '<style>' . $tool['styles'] . '</style>' );
-			}
-			
-			// load in the definition
-			if ( ! empty( $tool['definition']))
-			{
-				$js .= $tool['definition'];
-			}
-		}
-
-		$js .= '
-
-			});
-			';
-		
-		// return vs. print… is there a better CI way to do this?
-		$print = $this->EE->input->get_post('print');
-
-		if ($print == 'yes')
-		{
-			header('Content-type: text/javascript; charset=utf-8');
-			header('Cache-Control: no-cache, must-revalidate');
-			header('Expires: Sat, 26 Jul 1997 05:00:00 GMT');
-			
-			// compile the JS
-			$this->EE->javascript->compile();
-
-			die('
-				(function(){
-					var EE = ' . $this->EE->javascript->generate_json($this->EE->javascript->global_vars) . ';' .
-				 	$js .
-				'})();
-				');
-		}
-		else
-		{
-			return $js;
-		}
+		exit($js);
 	}
 
 	// --------------------------------------------------------------------
 
 	/**
-	 * RTE toggle JS
+	 * RTE preferences link JS
 	 *
 	 * @access	public
 	 * @return	string The JavaScript
+	 * @todo	Finish this
 	 */
-	public function build_rte_toggle_js()
+	public function build_rte_pref_js()
 	{
 		$js = '';
 		
@@ -421,124 +349,38 @@ class Rte_mcp {
 			$this->EE->cp->add_to_head(
 				'
 				<style>
-					.rte_toggle_link { display:block; float: right; margin: 5px 30px 5px 0; }
-					#rte_toggle_dialog p { margin: 10px 0; }
-					#rte_toggle_dialog .buttons { text-align: center; }
+					.rte_prefs_link { display:block; float: right; margin: 5px 30px 5px 0; }
+					#rte_prefs_dialog p { margin: 10px 0; }
+					#rte_prefs_dialog .buttons { text-align: center; }
 				</style>
 				'
 			);
-			
-			// JS config
-			$this->EE->javascript->set_global(array(
-				'rte'	=> array(
-					'update_event'		=> 'WysiHat-editor:change',
-					'toolset_src'		=> $this->_base_url.AMP.'method=build_toolset_js'.AMP.'print=yes',
-					'toggle_rte_url'	=> $this->_base_url.AMP.'method=toggle_member_rte',
-					'is_enabled'		=> ($this->EE->session->userdata('rte_enabled') == 'y'),
-					'toggle_dialog'		=> array(
-						'title'				=> lang('toggle_rte_dialog_title'),
-						'headline_disable'	=> lang('toggle_rte_dialog_headline_disable'),
-						'headline_enable'	=> lang('toggle_rte_dialog_headline_enable'),
-						'text_disable'		=> lang('toggle_rte_dialog_text_disable'),
-						'text_enable'		=> lang('toggle_rte_dialog_text_enable'),
-						'disable'			=> lang('disable_button'),
-						'enable'			=> lang('enable_button'),
-						'cancel'			=> lang('cancel')
-					),
-					'toggle_link'		=> array(
-						'text_disable'	=> lang('disable_rte'),
-						'text_enable'	=> lang('enable_rte')
-					)
-				)
-			));
 			
 			// add in the code that would toggle the toolset
 			ob_start(); ?>
 			
 			var
-			$rte_toggle_link	= $( '<a class="rte_toggle_link" href="#rte_toggle_dialog"></a>' ),
-			$rte_toggle_dialog 	= $( '<div id="rte_toggle_dialog">' +
-										'<p class="headline"><strong></strong></p><p></p><p class="buttons">' +
-										'<button value="yes" class="submit"></button> or <a href="#cancel"></a></p>' +
-									 '</div>' );
-		
-			function setup_rte_toggle_dialog()
-			{
-				var
-				link	= EE.rte.is_enabled ? EE.rte.toggle_link.text_disable : EE.rte.toggle_link.text_enable,
-				head	= EE.rte.is_enabled ? EE.rte.toggle_dialog.headline_disable : EE.rte.toggle_dialog.headline_enable,
-				text	= EE.rte.is_enabled ? EE.rte.toggle_dialog.text_disable : EE.rte.toggle_dialog.text_enable,
-				yes		= EE.rte.is_enabled ? EE.rte.toggle_dialog.disable : EE.rte.toggle_dialog.enable;
-			
-				$('.rte_toggle_link')
-					.text(link);
-				$rte_toggle_dialog
-					.find('strong').text(head).end()
-					.find('p:not([class])').text(text).end()
-					.find('button').text(yes).end();
-			}
-		
-			function toggle_rte()
-			{
-				var re_amp = /&amp;/g;
-				$.get( EE.rte.toggle_rte_url.replace(re_amp,'&'), function(){
-					if ( EE.rte.is_enabled )
-					{
-						$('[class|=WysiHat]').remove();
-						$('.rte').show();
-					}
-					else
-					{
-						$.getScript( EE.rte.toolset_src.replace(re_amp,'&') );
-					}				
-				
-					// toggle the status and the dialog
-					EE.rte.is_enabled = ! EE.rte.is_enabled;
-				
-					$rte_toggle_dialog.dialog('close');
-					setup_rte_toggle_dialog();
+			$rte_prefs_link	= $('<a class="rte_prefs_link" href="#rte_prefs_dialog">Prefs</a>' ),
+			$rte_prefs_dialog = $('<div id="rte_prefs_dialog" />')
+				.load(EE.rte.prefs_url.replace(/&amp;/g,'&'), function() {
+					
+					// We have the dialog content, now setup the dialog
+					console.log('loaded');
 				});
-			}
-			
+							
 			// set up the link
-			$rte_toggle_link
-				.click(function(e){
-					e.preventDefault();
-					$rte_toggle_dialog.dialog('open');
-				 });
+			$rte_prefs_link.click(function(e){
+				e.preventDefault();
+				$rte_prefs_dialog.dialog('open');
+			 });
 		
 			// insert it
 			$(".rte").each(function(){
-				$rte_toggle_link
+				$rte_prefs_link
 					.clone(true)
 					.insertAfter($(this));
 			});
 
-			// run setup once
-			setup_rte_toggle_dialog();
-
-			// set up the Dialog box
-			$rte_toggle_dialog
-				.dialog({
-					width: 400,
-					height: 180,
-					resizable: false,
-					position: ["center","center"],
-					modal: true,
-					draggable: true,
-					title: EE.rte.toggle_dialog.title,
-					autoOpen: false,
-					zIndex: 99999
-				 })
-				.find('.buttons button')
-					.click(toggle_rte)
-					.end()
-				.find('.buttons a')
-					.text( EE.rte.toggle_dialog.cancel )
-					.click(function(e){
-						e.preventDefault();
-						$rte_toggle_dialog.dialog('close');
-					});
 		
 <?php		$js = ob_get_contents();
 			ob_end_clean(); 

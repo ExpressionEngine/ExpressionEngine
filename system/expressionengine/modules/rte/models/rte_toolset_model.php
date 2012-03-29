@@ -3,11 +3,11 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
- * @since		Version 2.0
+ * @since		Version 2.5
  * @filesource
  */
 
@@ -19,8 +19,8 @@
  * @package		ExpressionEngine
  * @subpackage	Modules
  * @category	Modules
- * @author		Aaron Gustafson
- * @link		http://easy-designs.net
+ * @author		EllisLab Dev Team
+ * @link		http://expressionengine.com
  */
 class Rte_toolset_model extends CI_Model {
 	
@@ -279,7 +279,7 @@ class Rte_toolset_model extends CI_Model {
 		$this->load->model('rte_tool_model');
 
 		// Load all available tools
-		$this->EE->rte_tool_model->load_tools_into_db();
+		$this->rte_tool_model->load_tools_into_db();
 
 		// default toolset
 		$tool_ids = $this->rte_tool_model->get_tool_ids(array(

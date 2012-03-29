@@ -1,5 +1,29 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @license		http://expressionengine.com/user_guide/license.html
+ * @link		http://expressionengine.com
+ * @since		Version 2.5
+ * @filesource
+ */
+
+// ------------------------------------------------------------------------
+
+/**
+ * ExpressionEngine Rich Text Editor Module
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Extensions
+ * @category	Extensions
+ * @author		EllisLab Dev Team
+ * @link		http://expressionengine.com
+ */
+
 class Rte_ext {
 
 	var $name			= 'Rich Text Editor';
@@ -92,7 +116,6 @@ class Rte_ext {
 					'title'	=> lang('define_my_toolset')
 				),
 				'toolset_builder_url'	=> BASE.AMP.'C=myaccount'.AMP.'M=custom_action'.AMP.'extension=rte'.AMP.'method=edit_toolset'.AMP.'private=true',
-				'custom_toolset_text'	=> lang('my_custom_toolset'),
 				'edit_text'				=> lang('edit')
 			)
 		));
@@ -235,26 +258,25 @@ class Rte_ext {
 	 * @param	array $results The row_array for the entry
 	 * @return	array Modified result array
 	 */
-	function publish_form_entry_data( $results )
+	function publish_form_entry_data($results)
 	{
-		# get the Module
-		include_once(APPPATH.'modules/'.$this->module.'/'.'mcp.'.$this->module.'.php');
-		$class_name	= ucfirst($this->module).'_mcp';
-		$RTE		= new $class_name();
-		
-		# WysiHat
+		// WysiHat
 		$this->EE->cp->add_to_head($this->EE->view->head_link('css/rte.css'));
 		$this->EE->cp->add_js_script(array('plugin' => 'wysihat'));
-		
-		# Toolset JS
-		$js = array(
-			$RTE->build_rte_toggle_js()
-		);
-		if ($this->EE->session->userdata('rte_enabled') == 'y')
-		{
-			$js[] = $RTE->build_toolset_js();
-		}
-		$this->EE->javascript->compile();
+
+		// Toolset JS
+
+		// JS config
+		$this->EE->javascript->set_global(array(
+			'rte'	=> array(
+				'update_event' 	=> 'WysiHat-editor:change',
+				'toolset_src'	=> BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=rte'.AMP.'method=toolset_js',
+				'prefs_url'		=> BASE.AMP.'C=myaccount'.AMP.'M=custom_action'.AMP.'extension=rte'.AMP.'method=myaccount_settings'
+			)
+		));
+
+		$js = "$.getScript(EE.rte.toolset_src.replace(/&amp;/g,'&'));";
+
 		$this->EE->javascript->output($js);
 		
 		return $results;
@@ -269,7 +291,7 @@ class Rte_ext {
 	function activate_extension()
 	{
 		return TRUE;
-		# show_error('This extension is automatically installed with the Rich Text Editor module');
+		// show_error('This extension is automatically installed with the Rich Text Editor module');
 	}
 
 	// --------------------------------------------------------------------
@@ -281,7 +303,7 @@ class Rte_ext {
 	function update_extension( $current = FALSE )
 	{
 		return TRUE;
-		# show_error('This extension is automatically updated with the Rich Text Editor module');
+		// show_error('This extension is automatically updated with the Rich Text Editor module');
 	}
 
 	// --------------------------------------------------------------------
@@ -293,7 +315,7 @@ class Rte_ext {
 	function disable_extension()
 	{
 		return TRUE;
-		# show_error('This extension is automatically deleted with the Rich Text Editor module');
+		// show_error('This extension is automatically deleted with the Rich Text Editor module');
 	}
 	
 		// --------------------------------------------------------------------
@@ -305,7 +327,7 @@ class Rte_ext {
 	function uninstall_extension()
 	{
 		return TRUE;
-		# show_error('This extension is automatically deleted with the Rich Text Editor module');
+		// show_error('This extension is automatically deleted with the Rich Text Editor module');
 	}
 	
 }

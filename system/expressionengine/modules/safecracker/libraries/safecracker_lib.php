@@ -952,15 +952,15 @@ class Safecracker_lib
 			// toolset id specified?
 			$rte_toolset_id = (int)$this->EE->TMPL->fetch_param('rte_toolset_id');
 
-			$rte_js_src = $this->EE->functions->fetch_site_index().QUERY_MARKER
+			$js_url = $this->EE->functions->fetch_site_index().QUERY_MARKER
 				.'ACT='.$this->EE->functions->fetch_action_id('Rte', 'get_js')
-				.'&selector='.urlencode($rte_selector)
 				.'&toolset_id='.$rte_toolset_id
-				.'&include_jquery=n';
+				.'&selector='.urlencode($rte_selector)
+				.'&include=jquery_ui';
 				
-			$this->head .= '<script type="text/javascript" src="'.$rte_js_src.'"></script>'."\n";
+			$this->head .= '<script type="text/javascript" src="'.$js_url.'"></script>'."\n";
 
-			// Force loading jQuery here since we're disabling it for the RTE
+			// Force loading jQuery here (SafeCracker) since we're not including it for the RTE
 			$include_jquery = '&include_jquery=y';
 		}
 

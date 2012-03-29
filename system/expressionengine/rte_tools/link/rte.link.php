@@ -47,15 +47,17 @@ Class Link_rte {
 		$this->EE->lang->loadfile('rte');
 		return array(
 			'rte.link'	=> array(
-				'add'		=> lang('make_link'),
+				'add'		=> lang('link'),
 				'dialog'	=> array(
-						'title'				=> lang('rte_link_preferences'),
+						'title'				=> lang('link'),
 						'url_field_label'	=> lang('url'),
 						'title_field_label'	=> lang('title'),
 						'rel_field_label'	=> lang('relationship'),
-						'submit_button'		=> lang('submit'),
 						'selection_error'	=> lang('selection_error'),
-						'url_required'		=> lang('valid_url_required')
+						'url_required'		=> lang('valid_url_required'),
+						'add_link'			=> lang('add_link'),
+						'update_link'		=> lang('update_link'),
+						'remove_link'		=> lang('remove_link')
 				)
 			)
 		);

@@ -103,23 +103,14 @@ $editor.mouseup(getTheRange);
 
 $image_button.click(function(){
 	// make sure we have a ref to the file browser
-	if ( ! $file_browser )
-	{
+	if ( ! $file_browser) {
 		$file_browser = $('#file_browser');
 	}
-	$file_browser
-		// switch the view
-		.find('#view_type')
-			.val('thumb')
-			.change()
-		// hide the view_type field to not allow it to change
-			.parent()
-				.hide()
-				.end()
-			.end()
-		// append the caption field
-		.find('#filterMenu')
-			.prepend( $caption );
+
+	// don't add the caption field more than once
+	if ( ! $('#filterMenu .rte_image_caption').length) {
+		$file_browser.find('#filterMenu').prepend($caption);
+	}
 });
 
 $parent.append('<input type="hidden" id="rte_image_' + $field.attr('name') + '"/>');
