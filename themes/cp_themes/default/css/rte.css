@@ -331,7 +331,7 @@
 }
 
 .WysiHat-editor-toolbar .view_source b,
-.WysiHat-editor-toolbar .strip_tags b,
+.WysiHat-editor-toolbar .strip_tags b {
 	background-image: none;
 	text-indent: 0;
 	padding-top: 1px;
