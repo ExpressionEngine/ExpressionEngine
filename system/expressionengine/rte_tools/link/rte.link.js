@@ -14,7 +14,8 @@
 		$url			= $link_dialog.find('input[type=url]'),
 		$title			= $link_dialog.find('input[type=text]'),
 		//$rel			= $link_dialog.find('select'),
-		uuid			= $editor.attr('id');
+		uuid			= $editor.attr('id'),
+		$el;
 
 	// assign the UUIDs to make the fields and labels associate
 	$url
@@ -83,10 +84,8 @@
 				var	sel		= reSelect(),
 					el		= sel.anchorNode;
 
-				if ( el )
-				{
-					while ( el.nodeType != 1 )
-					{
+				if (el) {
+					while (el.nodeType != 1) {
 						el = el.parentNode;
 					}
 
@@ -110,17 +109,15 @@
 					title	= $('#rte_link_title-'+uuid).val(),
 					el		= sel.anchorNode;
 				
-				if ( el )
-				{
-					while ( el.nodeType != 1 )
-					{
+				if (el) {
+					while (el.nodeType != 1) {
 						el = el.parentNode;
 					}
-					el = $(el);
-					if ( el.is('a') &&
-					 	 title != '' )
-					{
-						el.attr('title',title);
+
+					$el = $(el);
+
+					if ($el.is('a') && title != '') {
+						$el.attr('title',title);
 					}
 				}
 
@@ -195,8 +192,7 @@
 			e_el = sel.focusNode;
 			
 
-			if ((s_el == e_el &&
-				sel.anchorOffset == sel.focusOffset) ||
+			if ((s_el == e_el && sel.anchorOffset == sel.focusOffset) ||
 				e_el.textContent == '​') // Our zero-width character
 			{
 				link = false;
