@@ -81,60 +81,6 @@ class EE_Email extends CI_Email {
 	}
 	
 	// --------------------------------------------------------------------
-	
-	function send()
-	{
-		if ($this->_replyto_flag == FALSE)
-		{
-			$this->reply_to($this->_headers['From']);
-		}
-
-		if (( ! isset($this->_recipients) AND ! isset($this->_headers['To']))  AND
-			( ! isset($this->_bcc_array) AND ! isset($this->_headers['Bcc'])) AND
-			( ! isset($this->_headers['Cc'])))
-		{
-			$this->_set_error_message('email_no_recipients');
-			return FALSE;
-		}
-
-		$this->_build_headers();
-
-		if ($this->bcc_batch_mode  AND  count($this->_bcc_array) > 0)
-		{
-			if (count($this->_bcc_array) > $this->bcc_batch_size)
-				return $this->batch_bcc_send();
-		}
-		
-		$this->_build_message();
-		
-		// ------------------------------------------------------
-		// 'email_send' hook.
-		//  - Optionally modifies and overrides sending of email.
-		//
-		$send_email = $this->EE->extensions->call(
-			'email_send',
-			&$this->_headers,
-			&$this->_recipients,
-			&$this->_bcc_array,
-			&$this->_finalbody
-		);
-		//
-		// ------------------------------------------------------
-		
-		if ($send_email)
-		{
-			if ( ! $this->_spool_email())
-			{
-				return FALSE;
-			}
-			else
-			{
-				return TRUE;
-			}
-		}
-	}
-	
-	// --------------------------------------------------------------------
 
 	/**
 	 * Set the email message
@@ -157,7 +103,37 @@ class EE_Email extends CI_Email {
 		return $this;
 	}
 	
-
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Override _spool_email so we can provide a hook
+	 */
+	function _spool_email()
+	{
+		// ------------------------------------------------------
+		// 'email_send' hook.
+		//  - Optionally modifies and overrides sending of email.
+		//
+		if ($this->EE->extensions->active_hook('email_send') === TRUE)
+		{
+			$send_email = $this->EE->extensions->call(
+				'email_send',
+				&$this->_headers,
+				&$this->_recipients,
+				&$this->_bcc_array,
+				&$this->_finalbody
+			);
+			
+			if ($send_email === TRUE)
+			{
+				return TRUE;
+			}
+		}
+		//
+		// ------------------------------------------------------
+		
+		return parent::_spool_email();
+	}
 }
 // END CLASS
 
