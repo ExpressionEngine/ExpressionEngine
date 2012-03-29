@@ -116,7 +116,7 @@ class EE_Email extends CI_Email {
 		//
 		if ($this->EE->extensions->active_hook('email_send') === TRUE)
 		{
-			$send_email = $this->EE->extensions->call(
+			$ret = $this->EE->extensions->call(
 				'email_send',
 				&$this->_headers,
 				&$this->_recipients,
@@ -124,9 +124,9 @@ class EE_Email extends CI_Email {
 				&$this->_finalbody
 			);
 			
-			if ($send_email === TRUE)
+			if ($this->EE->extensions->end_script === TRUE)
 			{
-				return TRUE;
+				return $ret;
 			}
 		}
 		//
