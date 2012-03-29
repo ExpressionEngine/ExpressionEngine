@@ -78,6 +78,12 @@ var WysiHat = {
 
 			$.extend( $editor, WysiHat.Commands );
 
+			$editor.selectionUtil = new WysiHat.SelectionUtil($editor);
+			$editor.data('selectionUtil', $editor.selectionUtil);
+
+			$editor.eventCore = new WysiHat.EventCore($editor);
+			$editor.data('eventCore', $editor.eventCore);
+
 			function updateField()
 			{
 				$field.val( WysiHat.Formatting.getApplicationMarkupFrom( $editor ) );
@@ -101,7 +107,7 @@ var WysiHat = {
 					}
 					fTimer = setTimeout(updateEditor, 250 );
 				 })
-				.bind( F_EVT + IMMEDIATE, updateEditor )
+				.bind( F_EVT + IMMEDIATE, updateEditor)
 				.hide()
 				.before(
 					$editor
@@ -430,6 +436,798 @@ WysiHat.Element = (function( $ ){
 })(jQuery, document);
 
 
+
+///////////////////////////////////
+// BRAND NEW EVENT SYSTEM! WOOT! //
+///////////////////////////////////
+
+(function($){
+
+	var
+	KEYS,
+	keyShortcuts;
+
+	KEYS = (function() {
+		var keys = {
+			3: "enter",
+			8: "backspace",
+			9: "tab",
+			13: "enter",
+			16: "shift",
+			17: "ctrl",
+			18: "alt",
+			27: "esc",
+			32: "space",
+			37: "left",
+			38: "up",
+			39: "right",
+			40: "down",
+			46: "delete",
+			91: "mod", 92: "mod", 93: "mod",
+
+		// argh
+			59: ";",
+			186: ";",
+			187: "=",
+			188: ",",
+			189: "-",
+			190: ".",
+			191: "/",
+			192: "`",
+			219: "[",
+			220: "\\",
+			221: "]",
+			222: "'",
+			63232: "up",
+			63233: "down",
+			63234: "left",
+			63235: "right",
+			63272: "delete"
+		};
+
+		// numbers
+		for (var i = 0; i < 10; i++) {
+			keys[i + 48] = String(i);
+		}
+
+		// letters
+		for (var i = 65; i <= 90; i++) {
+			keys[i] = String.fromCharCode(i);
+		}
+
+		return keys;
+	})();
+
+	keyShortcuts = (function() {
+
+		// @todo @future would be cool if cmd+s triggered an autosave
+		// @todo give addon folks a way to add to these?
+		var
+		ios = /AppleWebKit/.test(navigator.userAgent) && /Mobile\/\w+/.test(navigator.userAgent),
+		mac = ios || /Mac/.test(navigator.platform),
+		prefix = mac ? 'cmd' : 'ctrl';
+
+		return {
+			'cut': prefix + '-x',
+			'copy': prefix + '-c',
+			'paste': prefix + '-v',
+			'undo': prefix + '-z',
+			'redo': prefix + '-shift-z',
+
+			// @todo move to tools?
+			'bold': prefix + '-b',
+			'italics': prefix + '-i',
+			'underline': prefix + '-u',
+		};
+	})();
+
+	WysiHat.EventCore = function($el)
+	{
+		this.$editor = $el;
+		this.observers = {};
+
+		this.textStart = null;
+		this.textStartSel = null;
+		this.textDeleting = false; // typing backwards ;)
+
+		// helper classes
+		this.undoStack = new WysiHat.UndoStack();
+		this.selectionUtil = $el.data('selectionUtil');
+
+		// @todo implement all out hijacking
+		this._hijack_events();
+	}
+
+	WysiHat.EventCore.prototype = {
+
+		/**
+		 * Bind an event observer
+		 *
+		 * $editor.observer('bold', { ... })
+		 */
+		observe: function(name, options)
+		{
+			// @todo if options is a function, pick one?
+			// @todo monkey patch .bind on the editor?
+
+			if ( ! this.observers[name])
+			{
+				this.observers = [];
+			}
+
+			this.observers.push(options);
+		},
+
+		/**
+		 * Fire an event on all observers
+		 *
+		 * $editor.fire('bold')
+		 */
+		fire: function(name)
+		{
+			// mark text change
+			this._saveTextState(name);
+
+			if (name == 'undo' || name == 'redo')
+			{
+				var modified,
+					check = (name == 'undo') ? 'hasUndo' : 'hasRedo';
+
+				if (this.undoStack[check]())
+				{
+					modified = this.undoStack[name](this.$editor.html());
+
+					this.$editor.html(modified[0]);
+					this.selectionUtil.set(modified[1]);
+				}
+			}
+
+			return;
+
+			// @pk Working on it, don't worry!
+
+			var
+			i,
+			ret,
+			length,
+			beforeRange,
+			beforeContent,
+			changedContent,
+			afterRange,
+			afterContent;
+
+			if ( ! this.observers[name] || ! this.observers[name].length)
+			{
+				return;
+			}
+
+			length = observers.length;
+
+			// @todo undo stack
+			// @todo grab string and range
+
+			// run the before events
+			for (i = 0; i < length; i++)
+			{
+				if (observers[i].before)
+				{
+					ret = observers[i].before(beforeContent, beforeRange);
+
+					// event was canceled
+					if (ret === false)
+					{
+						return;
+					}
+				}
+			}
+
+			changedContent = beforeContent;
+
+			// run the during events
+			for (i = 0; i < length; i++)
+			{
+				if (observers[i].during)
+				{
+					ret = observers[i].during(changedContent, beforeContent);
+
+					if (ret !== undefined)
+					{
+						changedContent = ret;
+					}
+				}
+			}
+
+			afterContent = changedContent;
+			// @todo grab new range
+
+			// run the after events
+			for (i = 0; i < length; i++)
+			{
+				if (observers[i].after)
+				{
+					observers[i].after(afterContent, afterRange);
+				}
+			}
+
+			// @todo undo stack
+		},
+
+		textChange: function(before, after, selBefore, selAfter)
+		{
+			this.undoStack.push(before, after, selBefore, selAfter);
+		},
+
+		/**
+		 * Check if a current event matches
+		 * a key action we're looking for
+		 *
+		 * isKeyCombo('ctrl-x', evt)
+		 * isKeyCombo('esc', evt)
+		 *
+		 * @return bool
+		 */
+		isKeyCombo: function(strName, e) {
+			var modified = '',
+				keyname = '',
+				minus = strName.indexOf('-') > -1;
+
+			// european altGr
+			if (e.altGraphKey)
+			{
+				return false;
+			}
+
+			if (e.metaKey) modified += 'cmd-';
+			if (e.altKey) modified += 'alt-';
+			if (e.ctrlKey) modified += 'ctrl-';
+			if (e.shiftKey) modified += 'shift-';
+
+			if ( ! minus && strName.length > 1)
+			{
+				// just looking for a modifier
+				return modified.replace(/-$/, '') == strName;
+			}
+
+			keyname = KEYS[e.keyCode];
+
+			if ( ! keyname)
+			{
+				return false;
+			}
+
+			return strName.toLowerCase() == (modified + keyname).toLowerCase();
+		},
+
+		/**
+		 * Check for named events.
+		 *
+		 * @todo list of named events
+		 * @todo let plugins add to them
+		 *
+		 * isEvent('copy', evt)
+		 */
+		isEvent: function(name, evt)
+		{
+			var type = evt.type;
+
+			// just asking for a type?
+			if (type == name)
+			{
+				return true;
+			}
+
+			// key events can look up shortcuts
+			// but if it's not a key event, we're done
+			if (type.substr(0, 3) != 'key')
+			{
+				return false;
+			}
+
+			var keyCombo = keyShortcuts[name];
+
+			if ( ! keyCombo) {
+				return false;
+			}
+
+			return this.isKeyCombo(keyCombo, evt);
+		},
+
+		/**
+		 * Save the state of the text they have
+		 * typed so far.
+		 *
+		 * @todo call periodically to make it more natural
+		 */
+		_saveTextState: function(name)
+		{
+			// some events shouldn't affect this
+			// @todo figure out the whole list
+			if (name == 'redo')
+			{
+				return;
+			}
+
+			if (this.textStart)
+			{
+				var selEnd = this.selectionUtil.get();
+				this.textChange(this.textStart, this.$editor.html(), this.textStartSel, selEnd);
+				this.textStart = null;
+				this.textStartSel = null;
+			}
+		},
+
+		// ---------------------
+		// INTERNAL EVENT SYSTEM
+		// These functions handle dom events, they do _not_ get called
+		// from a triggered event (but they may trigger events).
+		// ---------------------
+
+		/**
+		 * Takes control of all editor events
+		 *
+		 * This is what makes it all work. If we fail here, we're
+		 * most definitely up the creek. No kidding.
+		 */
+		_hijack_events: function()
+		{
+			var event_map = {
+
+				// @todo remember one event type can still have the
+				// effects / fire another (keyEvent can result in a
+				// selectionChange), but initially the shortest shortest
+				// route is best.
+
+			//	'blur change': $.proxy(this._blurEvent, this),
+				'selectionchange focus mouseup': $.proxy(this._rangeEvent, this),
+				'keydown keyup keypress': $.proxy(this._keyEvent, this),
+			//	'cut input paste': $.proxy(this._event, this),
+			//	'click doubleclick mousedown mouseup': $.proxy(this._mouseEvent, this)
+			};
+
+
+			this.$editor.on(event_map);
+		},
+
+		/**
+		 * Key Combo Events
+		 *
+		 * Looks for known named key combinations and fires the
+		 * correct event.
+		 */
+		_keyComboEvent: function(evt)
+		{
+			var attempt = ['undo', 'redo'],
+				name;
+
+			if (evt.type == 'keydown')
+			{
+				while(name = attempt.shift())
+				{
+					if (this.isEvent(name, evt))
+					{
+						evt.preventDefault();
+						this.fire(name);
+						return false;
+					}
+				}
+			}
+
+			return true;
+		},
+
+		/**
+		 * Handle key events
+		 *
+		 * Order most definitely matters here - don't touch it!
+		 */
+		_keyEvent: function(evt)
+		{
+			var s;
+
+			// currently ignoring these remove it if you
+			// need it, shouldn't break anything
+			if (evt.type == 'keypress')
+			{
+				return true;
+			}
+
+			if (evt.ctrlKey || evt.altKey || evt.metaKey)
+			{
+				return this._keyComboEvent(evt);
+			}
+
+			if (evt.type == 'keydown')
+			{
+				if (KEYS[evt.keyCode] == 'backspace')
+				{
+					if (this.textDeleting == false)
+					{
+						this.textDeleting = true;
+						this._saveTextState('backspace');
+					}
+				}
+				else
+				{
+					if (this.textDeleting == true)
+					{
+						this.textDeleting = false;
+						this._saveTextState('keypress');
+					}
+				}
+
+				if (this.textStart == null)
+				{
+					this.textStartSel = this.selectionUtil.get();
+					this.textStart = this.$editor.html();
+				}
+			}
+			else if (evt.type == 'keyup')
+			{
+				switch (KEYS[evt.keyCode])
+				{
+					case 'up':
+					case 'down':
+					case 'left':
+					case 'right':
+						this._saveTextState('keyup');
+				}
+			}
+		},
+
+		/**
+		 * Potential Range Changes
+		 *
+		 * @todo put a fast check for range change here instead of
+		 * grabbing the range and doing the string length trick in the util
+		 */
+		_rangeEvent: function(evt)
+		{
+			this._saveTextState(evt.type);
+		}
+	};
+
+	WysiHat.EventCore.constructor = WysiHat.EventCore;
+
+
+
+	WysiHat.UndoStack = function()
+	{
+		// @todo max depth
+		this.saved = [],
+		this.index = 0;
+	}
+
+	WysiHat.UndoStack.prototype = {
+
+		/**
+		 * Add a change to the undo stack
+		 *
+		 * Takes a before and after string. These can be arrays as long
+		 * as equal indexes match up.
+		 */
+		push: function(before, after, selBefore, selAfter)
+		{
+			var diff = [],
+				that = this;
+
+			if ($.isArray(before))
+			{
+				diff = $.map(before, function(item, i) {
+					return that._diff(item, after[i]);
+				});
+			}
+			else
+			{
+				diff = this._diff(before, after);
+			}
+
+			if (diff)
+			{
+				if (this.index < this.saved.length)
+				{
+					this.saved = this.saved.slice(0, this.index);
+					this.index = this.saved.length;
+				}
+
+				this.index++;
+				this.saved.push({
+					changes: diff,
+					selection: [selBefore, selAfter]
+				});
+			}
+		},
+
+		/**
+		 * Undo the current event stack item
+		 *
+		 * Takes a string to undo on and returns the new one
+		 */
+		undo: function(S)
+		{
+			this.index--;
+			var delta = this.saved[this.index],
+				diff = delta.changes,
+				length = diff.length;
+			
+			for (var i = 0; i < length; i++) {
+				change = diff[i];
+				S = S.substring(0, change[0]) + change[1] + S.substring(change[0] + change[2].length);
+			}
+
+			return [S, delta.selection[0]];
+		},
+
+		/**
+		 * Redo the current event stack item
+		 *
+		 * Takes a string to redo on and returns the new one
+		 */
+		redo: function(S)
+		{
+			var delta = this.saved[this.index],
+				diff = delta.changes,
+				length = diff.length;
+
+			for (var i = length - 1; i >= 0; i--) {
+				change = diff[i];
+				S = S.substring(0, change[0]) + change[2] + S.substring(change[0] + change[1].length);
+			}
+
+			this.index++;
+			return [S, delta.selection[1]];
+		},
+
+		/**
+		 * Undo available?
+		 */
+		hasUndo: function()
+		{
+			return (this.index != 0);
+		},
+
+		/**
+		 * Redo available?
+		 */
+		hasRedo: function()
+		{
+			return (this.index != this.saved.length);
+		},
+
+		/**
+		 * Simple line diffing algo
+		 *
+		 * Pretty naive implementation, but enough to recognize
+		 * identical ends and wrapping. The two most common cases.
+		 *
+		 * Returns and array of differences. A difference looks like
+		 * this: [index, old, new]. Returns null if str1 and str2
+		 * are identical.
+		 */
+		_diff: function(str1, str2)
+		{
+			var l1 = str1.length,
+				l2 = str2.length,
+				diffs = [],
+				trim_before = 0,
+				trim_after = 0,
+				substr_i;
+
+			// easiest case
+			if (str1 == str2) {
+				return null;
+			}
+
+			// trim identical stuff off the beginning
+			while(trim_before < l1 && trim_before < l2)
+			{
+				if (str1[trim_before] != str2[trim_before])
+				{
+					break;
+				}
+				
+				trim_before++;
+			}
+
+			// trim identical stuff off the beginning
+			while(trim_after < l1 && trim_after < l2)
+			{
+				if (str1[l1 - trim_after - 1] != str2[l2 - trim_after - 1])
+				{
+					break;
+				}
+
+				trim_after++;
+			}
+
+			// It involved walking through the whole thing? Ignore it
+			if (trim_before == Math.min(l1, l2))
+			{
+				trim_before = 0;
+			}
+			if (trim_after == Math.min(l1, l2))
+			{
+				trim_after = 0;
+			}
+
+			// We have something to trim. Do it and recalculate lengths.
+			if (trim_before || trim_after)
+			{
+				str1 = str1.substring(trim_before, l1 - trim_after);
+				str2 = str2.substring(trim_before, l2 - trim_after);
+
+				l1 = str1.length;
+				l2 = str2.length;
+			}
+
+			// common case - wrapping / unwrapping
+			if (l1 !== l2)
+			{
+				// always check for shorter in longer
+				if (l1 < l2)
+				{
+					substr_i = str2.indexOf(str1);
+				}
+				else
+				{
+					substr_i = str1.indexOf(str2);
+				}
+
+				if (substr_i > -1)
+				{
+					if (l1 < l2)
+					{
+						return [
+							[trim_before, '', str2.substr(0, substr_i)], // wrapping before text
+							[trim_before + l1, '', str2.substr(substr_i + l1)] // wrapping after
+						];
+					}
+					else
+					{
+						return [
+							[trim_before, str1.substr(0, substr_i), ''], // unwrap before
+							[trim_before + substr_i + l2, str1.substr(substr_i + l2), ''] // unwrap after
+						];
+					}
+				}
+			}
+
+			// if the strings are long we can probably diff more,
+			// but this is pretty darned good
+			return [[trim_before, str1, str2]];
+		}
+
+	};
+
+	WysiHat.UndoStack.constructor = WysiHat.UndoStack;
+
+
+	WysiHat.SelectionUtil = function($el)
+	{
+		this.$editor = $el;
+		this.top = this.$editor.get(0);
+	}
+
+	WysiHat.SelectionUtil.prototype = {
+
+		/**
+		 * Get current selection offsets based on
+		 * the editors *text* (not html!).
+		 */
+		get: function(range)
+		{
+			var s = window.getSelection(),
+				r = document.createRange(),
+				length, topOffset;
+
+			if (range === undefined)
+			{
+				range = s.getRangeAt(0);
+			}
+
+			length = range.toString().replace(/\n/g, '').length;
+
+			r.setStart(this.top, 0);
+			r.setEnd(range.startContainer, range.startOffset);
+
+			topOffset = r.toString().replace(/\n+/g, '').length;
+
+			return [topOffset, topOffset + length];
+		},
+
+		/**
+		 * Create a selection or move the current one.
+		 * Again, this is text! Omit end to move the cursor.
+		 */
+		set: function(start, end)
+		{
+			if ($.isArray(start))
+			{
+				end = start[1];
+				start = start[0];
+			}
+
+			var s = window.getSelection(),
+				r = document.createRange(),
+				startOffset, endOffset;
+
+			startOffset = this._getOffsetNode(this.top, start);
+			r.setStart.apply(r, startOffset);
+
+			// collapsed
+			if (end === undefined)
+			{
+				end = start;
+				r.collapse(true);
+			}
+			else
+			{
+				endOffset = this._getOffsetNode(this.top, end);
+				r.setEnd.apply(r, endOffset);
+			}
+
+			s.removeAllRanges();
+			s.addRange(r);
+		},
+
+		/**
+		 * Get the contents of the current selection
+		 */
+		toString: function(range)
+		{
+			var s = window.getSelection();
+
+			if (range === undefined)
+			{
+				range = s.getRangeAt(0);
+			}
+
+			return range.toString();
+		},
+
+		/**
+		 * Given a node and and an offset, find the correct
+		 * textnode and offset that we can create a range with.
+		 */
+		_getOffsetNode: function(startNode, offset)
+		{
+			var curNode = startNode,
+				curNodeLen = 0;
+
+			function getTextNodes(node)
+			{
+				if (node.nodeType == 3 || node.nodeType == 4)
+				{
+					if (offset > 0)
+					{
+						curNode = node;
+						offset -= node.nodeValue.replace(/\n/g, '').length;
+					}
+				}
+				else
+				{
+					for (var i = 0, len = node.childNodes.length; offset > 0 && i < len; ++i)
+					{
+						getTextNodes(node.childNodes[i]);
+					}
+				}
+			}
+
+			getTextNodes(startNode);
+
+			// weird case where they try to select something from 0
+			if (curNode.nodeType != 3 && offset == 0)
+			{
+				return [curNode, 0];
+			}
+
+			return [curNode, curNode.nodeValue.length + offset];
+		}
+	};
+
+	WysiHat.SelectionUtil.constructor = WysiHat.SelectionUtil;
+
+})(jQuery);
+
 // ---------------------------------------------------------------------
 
 /**
@@ -540,6 +1338,7 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 			});
 		}, $quote);
 	}
+
 	function unquoteSelection()
 	{
 		this.manipulateSelection(function( range ){
@@ -563,8 +1362,7 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 							$coll = $coll.add(this);
 						}
 
-						if ( i == last ||
-							 this == el )
+						if ( i == last || this == el )
 						{
 							$coll.wrapAll($bq.clone());
 							$coll = $();
@@ -821,7 +1619,6 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 
 	function changeContentBlock( tagName )
 	{
-
 		var
 		selection	= WIN.getSelection(),
 		editor		= this,
@@ -845,7 +1642,7 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 		}
 		$editor
 			.children( tagName )
-				.removeData( replaced );
+			.removeData( replaced );
 
 		$(DOC.activeElement).trigger( CHANGE_EVT );
 
@@ -859,7 +1656,7 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 
 	function replaceElement( $el, tagName )
 	{
-		if ( $el.is( '.' + WYSIHAT_EDITOR ) )
+		if ( $el.hasClass( WYSIHAT_EDITOR ) )
 		{
 			return;
 		}
@@ -890,7 +1687,6 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 
 	function stripFormattingElements()
 	{
-
 		function stripFormatters( i, el )
 		{
 			var $el = $(el);
@@ -928,18 +1724,14 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 	}
 	function execCommand( command, ui, value )
 	{
-		var handler = this.commands[command];
-		if ( handler )
+		noSpans();
+		try
 		{
-			handler.bind(this)(value);
+			DOC.execCommand(command, ui, value);
 		}
-		else
+		catch(e)
 		{
-			noSpans();
-			try {
-				DOC.execCommand(command, ui, value);
-			}
-			catch(e) { return null; }
+			return null;
 		}
 
 		$(DOC.activeElement).trigger( CHANGE_EVT );
@@ -969,6 +1761,7 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 		}
 	}
 	noSpans();
+
 	function queryCommandState(state)
 	{
 		var handler = this.queryCommands[state];
@@ -986,12 +1779,13 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 	function getSelectedStyles()
 	{
 		var
-		styles = {},
-		editor = this;
-		editor.styleSelectors.each(function(style){
-			var node = editor.selection.getNode();
-			styles[style.first()] = $(node).css(style.last());
-		});
+		selection = window.getSelection(),
+		$node = $(selection.getNode()),
+		styles = {};
+
+		for (var s in this.styleSelectors) {
+			styles[s] = $node.css(this.styleSelectors[s]);
+		}
 		return styles;
 	}
 
@@ -1182,6 +1976,10 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 		 			$(b).closest( tagNames ).length );
 	}
 
+	function getBlockElements() {
+		return blockElements;
+	}
+
 
 	return {
 		boldSelection:				boldSelection,
@@ -1242,7 +2040,7 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 		restoreRanges:				restoreRanges,
 		selectionIsWithin:			selectionIsWithin,
 
-		commands: {},
+		getBlockElements:			getBlockElements,
 
 		queryCommands: {
 			bold:			isBold,
@@ -1372,7 +2170,6 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 				range			= document.createRange(),
 
 				pastedContent	= document.createDocumentFragment(),
-				
 				// Separates the pasted text into sections defined by two linebreaks
 				// for conversion to paragraphs
 				pastedText		= $editor.getPreText().split( /\n([ \t]*\n)+/g ),
@@ -1382,7 +2179,7 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 				pClone			= null,
 				empty			= /[\s\r\n]/g,
 				comments		= /<!--[^>]*-->/g;
-				
+
 				// Loop through paragraphs as defined by our above regex
 				$.each(pastedText, function(index, paragraph)
 				{
@@ -1432,7 +2229,7 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 						pastedContent.appendChild(pFragment);
 					}
 				});
-				
+
 				$editor
 					.empty()
 					.append($originalHtml);
@@ -1445,58 +2242,32 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 					range.deleteContents();
 				}
 				
+				var lastChild = pastedContent.childNodes[
+					pastedContent.childNodes.length - 1
+				];
+
 				range.insertNode(pastedContent);
 
 				WysiHat.Formatting.cleanup($editor);
 
-				// The change event on $field triggers a full
-				// editor content replacement. So we grab the
-				// location of the cursor before that happens
-				range.setStart($editor.get(0));
+				// Some browsers won't actually add the pasted
+				// content to the selection, so we do that first
+				range.selectNodeContents(lastChild);
 
-				var
-				lengthToCursor = range.toString().replace(/\n/g, '').length,
-				tNodeLoc;
+				// The change event on $field triggers a full
+				// editor content replacement. We grab the
+				// location of the cursor before that happens
+				var selectionUtil = $editor.data('selectionUtil'),
+					before = selectionUtil.get(range);
 
 				$editor.trigger('WysiHat-editor:change:immediate');
 				$field.trigger('WysiHat-field:change:immediate');
 
-				tNodeLoc = getOffsetNode($editor.get(0), lengthToCursor);
-
-				range.setStart(tNodeLoc[0], tNodeLoc[1] + $(pastedContent).text().length);
-				range.collapse(true);
-				window.getSelection().addRange(range);
+				// And restore their cursor
+				selectionUtil.set(before);
+				
 			}
 
-			// Given a node and and an offset, find the correct
-			// textnode and offset that we can create a range with.
-			function getOffsetNode(startNode, offset)
-			{
-				var curNode = startNode;
-
-				function getTextNodes(node)
-				{
-					if (node.nodeType == 3)
-					{
-						if (offset > 0)
-						{
-							curNode = node;
-							offset -= node.nodeValue.replace(/\n/g, '').length;
-						}
-					}
-					else
-					{
-						for (var i = 0, len = node.childNodes.length; offset > 0 && i < len; ++i)
-						{
-							getTextNodes(node.childNodes[i]);
-						}
-					}
-				}
-
-				getTextNodes(startNode);
-				return [curNode, curNode.nodeValue.length + offset];
-			}
-			
 			// Getting text from contentEditable DIVs and retaining linebreaks
 			// can be tricky cross-browser, so we'll use this to handle them all
 			$.fn.getPreText = function()
@@ -1551,124 +2322,124 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 // ---------------------------------------------------------------------
 
 
-WysiHat.Formatting = (function($){
+(function($){
 
-	return {
-		cleanup: function( $element )
+WysiHat.Formatting = {
+	cleanup: function( $element )
+	{
+		var replaceElement = WysiHat.Commands.replaceElement;
+		$element
+			.find('span')
+				.each(function(){
+					var $this = $(this);
+					if ( $this.hasClass('Apple-style-span') )
+					{
+						$this.removeClass('Apple-style-span');
+					}
+
+					if ( $this.css('font-weight') == 'bold' &&
+					 	 $this.css('font-style') == 'italic' )
+					{
+						$this.removeAttr('style').wrap('<strong>');
+						replaceElement( $this, 'em' );
+					}
+					else if ( $this.css('font-weight') == 'bold' )
+					{
+						replaceElement( $this.removeAttr('style'), 'strong' );
+					}
+					else if ( $this.css('font-style') == 'italic' )
+					{
+						replaceElement( $this.removeAttr('style'), 'em' );
+					}
+				 })
+				.end()
+			.children('div')
+				.each(function(){
+				 	if ( ! this.attributes.length )
+				 	{
+				 		replaceElement( $(this), 'p' );
+				 	}
+				 })
+				.end()
+			.find('b')
+				.each(function(){
+				 	replaceElement($(this),'strong');
+				 })
+				.end()
+			.find('i')
+				.each(function(){
+				 	replaceElement($(this),'em');
+				 })
+				.end()
+			.find('strike')
+				.each(function(){
+				 	replaceElement($(this),'del');
+				 })
+				.end()
+			.find('u')
+				.each(function(){
+				 	replaceElement($(this),'ins');
+				 })
+				.end()
+			.find('p:empty')
+				.remove();
+	},
+	format: function( $el )
+	{
+		var
+		// @todo move this out of the function
+		reBlocks = new RegExp( '(<(?:ul|ol)>|<\/(?:' + WysiHat.Element.getBlocks().join('|') + ')>)[\r\n]*', 'g' ),
+		html = $el.html()
+					.replace('<p>&nbsp;</p>','')
+					.replace(/<br\/?><\/p>/,'</p>')
+					.replace( reBlocks,'$1\n' )
+					.replace(/\n+/,'\n')
+					.replace(/<p>\n+<\/p>/,'');
+		$el.html( html );
+	},
+	getBrowserMarkupFrom: function( $el )
+	{
+		var $container = $('<div>' + $el.val().replace(/\n/,'') + '</div>');
+
+		this.cleanup( $container );
+
+		if ( $container.html() == '' ||
+		 	 $container.html() == '<br>' ||
+		 	 $container.html() == '<br/>' )
 		{
-			var replaceElement = WysiHat.Commands.replaceElement;
-			$element
-				.find('span')
-					.each(function(){
-						var $this = $(this);
-						if ( $this.is('.Apple-style-span') )
-						{
-							$this.removeClass('.Apple-style-span');
-						}
-						if ( $this.css('font-weight') == 'bold' &&
-						 	 $this.css('font-style') == 'italic' )
-						{
-							$this.removeAttr('style').wrap('<strong>');
-							replaceElement( $this, 'em' );
-						}
-						else if ( $this.css('font-weight') == 'bold' )
-						{
-							replaceElement( $this.removeAttr('style'), 'strong' );
-						}
-						else if ( $this.css('font-style') == 'italic' )
-						{
-							replaceElement( $this.removeAttr('style'), 'em' );
-						}
-					 })
-					.end()
-				.children('div')
-					.each(function(){
-					 	var $this = $(this);
-					 	if ( ! $this.get(0).attributes.length )
-					 	{
-					 		replaceElement( $this, 'p' );
-					 	}
-					 })
-					.end()
-				.find('b')
-					.each(function(){
-					 	replaceElement($(this),'strong');
-					 })
-					.end()
-				.find('i')
-					.each(function(){
-					 	replaceElement($(this),'em');
-					 })
-					.end()
-				.find('strike')
-					.each(function(){
-					 	replaceElement($(this),'del');
-					 })
-					.end()
-				.find('u')
-					.each(function(){
-					 	replaceElement($(this),'ins');
-					 })
-					.end()
-				.find('p:empty')
-					.remove();
-		},
-		format: function( $el )
-		{
-			var
-			// @todo move this out of the function
-			reBlocks = new RegExp( '(<(?:ul|ol)>|<\/(?:' + WysiHat.Element.getBlocks().join('|') + ')>)[\r\n]*', 'g' ),
-			html = $el.html()
-						.replace('<p>&nbsp;</p>','')
-						.replace(/<br\/?><\/p>/,'</p>')
-						.replace( reBlocks,'$1\n' )
-						.replace(/\n+/,'\n')
-						.replace(/<p>\n+<\/p>/,'');
-			$el.html( html );
-		},
-		getBrowserMarkupFrom: function( $el )
-		{
-			var $container = $('<div>' + $el.val().replace(/\n/,'') + '</div>');
-
-			this.cleanup( $container );
-
-			if ( $container.html() == '' ||
-			 	 $container.html() == '<br>' ||
-			 	 $container.html() == '<br/>' )
-			{
-				$container.html('<p>&#x200b;</p>');
-			}
-
-			return $container.html();
-		},
-
-		getApplicationMarkupFrom: function( $el )
-		{
-			var
-			$clone = $el.clone(),
-			$container,
-			html;
-
-			$container = $('<div/>').html($clone.html());
-
-			if ( $container.html() == '' ||
-			 	 $container.html() == '<br>' ||
-			 	 $container.html() == '<br/>' )
-			{
-				$container.html('<p>&#x200b;</p>');
-			}
-
-			this.cleanup( $container );
-			this.format( $container );
-
-			return $container
-					.html()
-					.replace( /<\/?[A-Z]+/g, function(tag){
-						return tag.toLowerCase();
-					 });
+			$container.html('<p>&#x200b;</p>');
 		}
 
-	};
+		return $container.html();
+	},
+
+	getApplicationMarkupFrom: function( $el )
+	{
+		var
+		$clone = $el.clone(),
+		$container,
+		html;
+
+		$container = $('<div/>').html($clone.html());
+
+		if ( $container.html() == '' ||
+		 	 $container.html() == '<br>' ||
+		 	 $container.html() == '<br/>' )
+		{
+			$container.html('<p>&#x200b;</p>');
+		}
+
+		this.cleanup( $container );
+		this.format( $container );
+
+		return $container
+				.html()
+				.replace( /<\/?[A-Z]+/g, function(tag){
+					return tag.toLowerCase();
+				 });
+	}
+
+};
 
 })(jQuery);
 
@@ -1722,9 +2493,9 @@ WysiHat.Formatting = (function($){
 			{
 				options['handler'] = handler;
 			}
+
 			handler = this.buttonHandler( name, options );
 			this.observeButtonClick( $button, handler );
-
 
 			handler = this.buttonStateHandler( name, options );
 			this.observeStateChanges( $button, name, handler );
@@ -1768,18 +2539,28 @@ WysiHat.Formatting = (function($){
 
 		buttonHandler: function( name, options )
 		{
-			var handler = function(){};
+			var handler = $.noop;
+
 			if ( options['handler'] )
 			{
-				handler = options['handler'];
+				return options['handler'];
 			}
 			else if ( WysiHat.Commands.isValidCommand( name ) )
 			{
-				handler = function( $editor )
+				if (WysiHat.Commands[name+'Selection'])
+				{
+					return function( $editor )
+					{
+						return $editor[name+'Selection']();
+					};
+				}
+
+				return function( $editor )
 				{
 					return $editor.execCommand(name);
 				};
 			}
+
 			return handler;
 		},
 
@@ -1788,16 +2569,29 @@ WysiHat.Formatting = (function($){
 			var that = this;
 
 			$button.click(function(e){
+				// @pk before
+				var full_editor_before = that.$editor.html(),
+					selectionUtil = that.$editor.data('selectionUtil');
+
+				var before = selectionUtil.get(),
+					after;
+
 				handler( that.$editor, e );
 				that.$editor.trigger( 'WysiHat-selection:change' );
 				that.$editor.focus();
+
+				after = selectionUtil.get();
+				// @pk after
+				that.$editor.eventCore.textChange(full_editor_before, that.$editor.html(), before, after);
+
 				return false;
 			});
+
 		},
 
 		buttonStateHandler: function( name, options )
 		{
-			var handler = function(){};
+			var handler = $.noop;
 			if ( options['query'] )
 			{
 				handler = options['query'];
@@ -1853,6 +2647,8 @@ WysiHat.Formatting = (function($){
 		}
 	};
 
+	WysiHat.Toolbar.constructor = WysiHat.Toolbar;
+
 })(jQuery);
 
 
@@ -1886,6 +2682,7 @@ WysiHat.Toolbar.ButtonSets.Standard = [
 	  }
 	}
 ];
+
 jQuery.fn.wysihat = function(options) {
 	options = jQuery.extend({
 		buttons: WysiHat.Toolbar.ButtonSets.Standard
@@ -1927,7 +2724,6 @@ jQuery.fn.wysihat = function(options) {
  */
 if (!window.getSelection) {
 	(function($){
-
 		var DOMUtils = {
 			isDataNode: function( node )
 			{
@@ -2036,7 +2832,6 @@ if (!window.getSelection) {
 						{
 							textOffset = offset;
 						}
-
 
 						textRange.setEndPoint(bStart ? 'StartToStart' : 'EndToStart', cursor);
 						textRange[bStart ? 'moveStart' : 'moveEnd']('character', textOffset);
@@ -2251,10 +3046,6 @@ if (!window.getSelection) {
 					range.setStart( this.startContainer, this.startOffset );
 					range.setEnd( this.endContainer, this.endOffset );
 					return range;
-				},
-
-				detach: function()
-				{
 				},
 
 				toString: function()
