@@ -2268,7 +2268,7 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 				$field.trigger('WysiHat-field:change:immediate');
 
 				// And restore their cursor
-				selectionUtil.set(before);
+				selectionUtil.set(before[1]);
 			}
 
 			// Getting text from contentEditable DIVs and retaining linebreaks
