@@ -79,7 +79,7 @@ class EE_Email extends CI_Email {
 
 		$this->initialize($config);
 	}
-
+	
 	// --------------------------------------------------------------------
 
 	/**
@@ -103,7 +103,42 @@ class EE_Email extends CI_Email {
 		return $this;
 	}
 	
-
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Override _spool_email so we can provide a hook
+	 */
+	function _spool_email()
+	{
+		// ------------------------------------------------------
+		// 'email_send' hook.
+		//  - Optionally modifies and overrides sending of email.
+		//
+		if ($this->EE->extensions->active_hook('email_send') === TRUE)
+		{
+			$ret = $this->EE->extensions->call(
+				'email_send',
+				array(
+					&$this->_headers,
+					&$this->_header_str,
+					&$this->_recipients,
+					&$this->_cc_array,
+					&$this->_bcc_array,
+					&$this->_subject,
+					&$this->_finalbody
+				)
+			);
+			
+			if ($this->EE->extensions->end_script === TRUE)
+			{
+				return $ret;
+			}
+		}
+		//
+		// ------------------------------------------------------
+		
+		return parent::_spool_email();
+	}
 }
 // END CLASS
 
