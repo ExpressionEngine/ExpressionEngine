@@ -120,7 +120,6 @@ class EE_Email extends CI_Email {
 				'email_send',
 				array(
 					&$this->_headers,
-					&$this->_header_str,
 					&$this->_recipients,
 					&$this->_cc_array,
 					&$this->_bcc_array,
