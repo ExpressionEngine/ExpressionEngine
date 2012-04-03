@@ -87,10 +87,8 @@ class File_field {
 		
 		// Get the thumbnail
 		$thumb_info = $this->EE->filemanager->get_thumb($vars['filename'], $vars['upload_location_id']);
-		$vars['thumb'] = img(array(
-			'src' => $thumb_info['thumb'],
-			'alt' => $vars['filename']
-		));
+		$vars['thumb'] = $thumb_info['thumb'];
+		$vars['alt'] = $vars['filename'];
 		
 		// Create the hidden fields for the file and directory
 		$vars['hidden']	  = form_hidden($field_name.'_hidden', $vars['filename']);
