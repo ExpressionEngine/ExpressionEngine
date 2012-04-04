@@ -130,11 +130,11 @@ class Api_channel_entries extends Api {
 						'title'						=> ($this->EE->config->item('auto_convert_high_ascii') == 'y') ? ascii_to_entities($data['title']) : $data['title'],
 						'url_title'					=> $data['url_title'],
 						'entry_date'				=> $data['entry_date'],
-						'edit_date'					=> date("YmdHis"),
+						'edit_date'					=> $this->EE->localize->decode_date('%Y%m%d%H%i%s', $data['entry_date'], TRUE),
 						'versioning_enabled'		=> $data['versioning_enabled'],
-						'year'						=> date('Y', $data['entry_date']),
-						'month'						=> date('m', $data['entry_date']),
-						'day'						=> date('d', $data['entry_date']),
+						'year'						=> $this->EE->localize->decode_date('%Y', $data['entry_date'], TRUE),
+						'month'						=> $this->EE->localize->decode_date('%m', $data['entry_date'], TRUE),
+						'day'						=> $this->EE->localize->decode_date('%d', $data['entry_date'], TRUE),
 						'expiration_date'			=> $data['expiration_date'],
 						'comment_expiration_date'	=> $data['comment_expiration_date'],
 						'recent_comment_date'		=> (isset($data['recent_comment_date']) && $data['recent_comment_date']) ? $data['recent_comment_date'] : 0,
@@ -142,7 +142,7 @@ class Api_channel_entries extends Api {
 						'status'					=> $data['status'],
 						'allow_comments'			=> $data['allow_comments'],
 					 );
-
+		
 		$this->meta =& $meta;
 		
 		$meta_keys = array_keys($meta);
@@ -266,11 +266,11 @@ class Api_channel_entries extends Api {
 						'title'						=> ($this->EE->config->item('auto_convert_high_ascii') == 'y') ? ascii_to_entities($data['title']) : $data['title'],
 						'url_title'					=> $data['url_title'],
 						'entry_date'				=> $data['entry_date'],
-						'edit_date'					=> date("YmdHis"),
+						'edit_date'					=> $this->EE->localize->decode_date('%Y%m%d%H%i%s', $data['entry_date'], TRUE),
 						'versioning_enabled'		=> $data['versioning_enabled'],
-						'year'						=> date('Y', $data['entry_date']),
-						'month'						=> date('m', $data['entry_date']),
-						'day'						=> date('d', $data['entry_date']),
+						'year'						=> $this->EE->localize->decode_date('%Y', $data['entry_date'], TRUE),
+						'month'						=> $this->EE->localize->decode_date('%m', $data['entry_date'], TRUE),
+						'day'						=> $this->EE->localize->decode_date('%d', $data['entry_date'], TRUE),
 						'expiration_date'			=> $data['expiration_date'],
 						'comment_expiration_date'	=> $data['comment_expiration_date'],
 						'recent_comment_date'		=> (isset($data['recent_comment_date']) && $data['recent_comment_date']) ? $data['recent_comment_date'] : 0,
