@@ -111,8 +111,14 @@ class Members extends CI_Controller {
 			$member_name = '';
 		}
 		
+		// Get order by and sort preferences for our initial state
+		$order_by = ($this->config->item('memberlist_order_by')) ?
+			$this->config->item('memberlist_order_by') : 'member_id';
+		$sort = ($this->config->item('memberlist_sort_order')) ?
+			$this->config->item('memberlist_sort_order') : 'asc';
+		
 		$initial_state = array(
-			'sort'	=> array('member_id' => 'asc')
+			'sort'	=> array($order_by => $sort)
 		);
 		
 		$params = array(
