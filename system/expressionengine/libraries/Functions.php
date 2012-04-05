@@ -367,9 +367,9 @@ class EE_Functions {
 		$location = str_replace(array("\n", "\r"), '', $location);
 
 		// Remove any and all line breaks
-		while (strpos($location, '%0d') !== FALSE OR strpos($location, '%0a') !== FALSE)
+		while (stripos($location, '%0d') !== FALSE OR stripos($location, '%0a') !== FALSE)
 		{
-			$location = str_replace(array('%0d', '%0a'), '', $location);
+			$location = str_ireplace(array('%0d', '%0a'), '', $location);
 		}
 
 		$location = str_replace('&amp;', '&', $this->insert_action_ids($location));
