@@ -1403,8 +1403,8 @@ class Filemanager {
 				// Next set crop accordingly
 				$resized_image_dimensions = $this->get_image_dimensions($resized_path.$prefs['file_name']);
 				$config['source_image'] = $resized_path.$prefs['file_name'];
-				$config['x_axis'] = (($resized_image_dimensions['width'] / 2) - ($config['width'] / 2));
-				$config['y_axis'] = (($resized_image_dimensions['height'] / 2) - ($config['height'] / 2));
+				$config['x_axis'] = (($resized_image_dimensions['width'] / 2) - ($size['width'] / 2));
+				$config['y_axis'] = (($resized_image_dimensions['height'] / 2) - ($size['height'] / 2));
 				$config['maintain_ratio'] = FALSE;
 				
 				// Change height and width back to the desired size
