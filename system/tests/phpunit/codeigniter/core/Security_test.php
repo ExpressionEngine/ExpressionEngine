@@ -148,6 +148,57 @@ class Security_test extends CI_TestCase {
 		}
 	}
 
+	// -------------------------------------------------------------------------
+
+	public function testBase64Urls()
+	{
+		$vectors = array(
+			"<a/''' target=\"_blank\" href=data:text/html;;base64,PHNjcmlwdD5hbGVydChvcGVuZXIuZG9jdW1lbnQuYm9keS5pbm5lckhUTUwpPC9zY3JpcHQ+>firefox11</a>"
+			=> "<a/''' target=\"_blank\" href=[removed],PHNjcmlwdD5hbGVydChvcGVuZXIuZG9jdW1lbnQuYm9keS5pbm5lckhUTUwpPC9zY3JpcHQ+>firefox11</a>",
+
+			'<svg xmlns="http://www.w3.org/2000/svg"
+xmlns:xlink="http://www.w3.org/1999/xlink"> <feImage> <set
+attributeName="xlink:href"
+to="data:image/svg+xml;charset=utf-8;base64,
+PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxzY3JpcHQ%2BYWxlcnQoMSk8L3NjcmlwdD48L3N2Zz4NCg%3D%3D"/>
+</feImage> </svg>'
+			=> '<svg 
+xmlns:xlink="http://www.w3.org/1999/xlink"> <feImage> <set
+attributeName="xlink:href"
+to=[removed],
+PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxzY3JpcHQ+YWxlcnQoMSk8L3NjcmlwdD48L3N2Zz4NCg=="/>
+</feImage> </svg>',
+
+			'<a target="_blank"
+href="data:text/html;BASE64youdummy,PHNjcmlwdD5hbGVydCh3aW5kb3cub3BlbmVyLmRvY3VtZW50LmRvY3VtZW50RWxlbWVudC5pbm5lckhUTUwpPC9zY3JpcHQ+">clickme
+in firefox</a>'
+			=> '<a target="_blank">clickme
+in firefox</a>'
+		);
+
+		foreach ($vectors as $attack => $expected)
+		{
+			var_dump($expected, $this->security->xss_clean($attack));
+			$this->assertEquals($expected, $this->security->xss_clean($attack));
+		}
+	}
+
+	// -------------------------------------------------------------------------
+
+	public function testSpecialCharProperties()
+	{
+		$vectors = array(
+			'<button a=">" autofocus onfocus=alert&#40;1&#41;>'
+			=> '<button a=">" autofocus >'
+		);
+	
+		foreach ($vectors as $attack => $expected)
+		{
+			var_dump($expected, $this->security->xss_clean($attack));
+			$this->assertEquals($expected, $this->security->xss_clean($attack));
+		}	
+	}
+
 	// --------------------------------------------------------------------
 	
 	private function _nullhex_encode()
