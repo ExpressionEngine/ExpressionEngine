@@ -178,7 +178,6 @@ in firefox</a>'
 
 		foreach ($vectors as $attack => $expected)
 		{
-			var_dump($expected, $this->security->xss_clean($attack));
 			$this->assertEquals($expected, $this->security->xss_clean($attack));
 		}
 	}
@@ -194,7 +193,6 @@ in firefox</a>'
 	
 		foreach ($vectors as $attack => $expected)
 		{
-			var_dump($expected, $this->security->xss_clean($attack));
 			$this->assertEquals($expected, $this->security->xss_clean($attack));
 		}	
 	}
