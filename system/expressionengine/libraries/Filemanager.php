@@ -1351,10 +1351,45 @@ class Filemanager {
 				if ($prefs['width'] > $prefs['height'])
 				{
 					$config['width'] = round($prefs['width'] * $size['height'] / $prefs['height']);
+					
+					// If the new width ends up being smaller than the
+					// resized width
+					if ($config['width'] < $size['width'])
+					{
+						$config['width'] = $size['width'];
+						$config['master_dim'] = 'width';
+					}
 				}
 				elseif ($prefs['height'] > $prefs['width'])
 				{
 					$config['height'] = round($prefs['height'] * $size['width'] / $prefs['width']);
+					
+					// If the new height ends up being smaller than the
+					// desired resized height
+					if ($config['height'] < $size['height'])
+					{
+						$config['height'] = $size['height'];
+						$config['master_dim'] = 'height';
+					}
+				}
+				// If we're dealing with a perfect square image
+				elseif ($prefs['height'] == $prefs['width'])
+				{
+					// And the desired image is landscape, edit the
+					// square image's width to fit
+					if ($size['width'] > $size['height'] ||
+						$size['width'] == $size['height'])
+					{
+						$config['width'] = $size['width'];
+						$config['master_dim'] = 'width';
+					}
+					// If the desired image is portrait, edit the
+					// square image's height to fit
+					elseif ($size['width'] < $size['height'])
+					{
+						$config['height'] = $size['height'];
+						$config['master_dim'] = 'height';
+					}
 				}
 				
 				// First resize down to smallest possible size (greater of height and width)
@@ -1368,8 +1403,8 @@ class Filemanager {
 				// Next set crop accordingly
 				$resized_image_dimensions = $this->get_image_dimensions($resized_path.$prefs['file_name']);
 				$config['source_image'] = $resized_path.$prefs['file_name'];
-				$config['x_axis'] = (($resized_image_dimensions['width'] / 2) - ($config['width'] / 2));
-				$config['y_axis'] = (($resized_image_dimensions['height'] / 2) - ($config['height'] / 2));
+				$config['x_axis'] = (($resized_image_dimensions['width'] / 2) - ($size['width'] / 2));
+				$config['y_axis'] = (($resized_image_dimensions['height'] / 2) - ($size['height'] / 2));
 				$config['maintain_ratio'] = FALSE;
 				
 				// Change height and width back to the desired size

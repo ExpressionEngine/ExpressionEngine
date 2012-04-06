@@ -1099,9 +1099,9 @@ class Content_edit extends CI_Controller {
 			 }
 
 			// Day, Month, and Year Fields
-			$data['year']	= date('Y', $data['entry_date']);
-			$data['month']	= date('m', $data['entry_date']);
-			$data['day']	= date('d', $data['entry_date']);
+			$data['year']	= $this->localize->decode_date('%Y', $data['entry_date'], TRUE);
+			$data['month']	= $this->localize->decode_date('%m', $data['entry_date'], TRUE);
+			$data['day']	= $this->localize->decode_date('%d', $data['entry_date'], TRUE);
 
 			// Update the entry
 			$this->db->query($this->db->update_string('exp_channel_titles', $data, "entry_id = '$id'"));

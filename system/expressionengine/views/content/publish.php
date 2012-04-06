@@ -141,6 +141,16 @@ if ($EE_view_disable !== TRUE)
 						<div id="<?=url_title($tab, 'underscore', TRUE)?>" class="main_tab<?=($tab == $first_tab) ? '' : ' js_hide'?>">
 							
 							<?php foreach($_fields as $_n):?>
+								
+								<?php
+								// There is a rare case where a field may have been deleted but
+								// still exists in a publish layout; if so, skip it
+								if ( ! isset($layout_styles[$_n]) OR ! isset($field_list[$_n]))
+								{
+									continue;
+								}
+								?>
+								
 								<?php $style = 'width: '.$layout_styles[$_n]['width'].'; '.($layout_styles[$_n]['visible'] ? '' : 'display: none;');?>
 								<div class="publish_field publish_<?=$field_list[$_n]['field_type']?>" id="hold_field_<?=$field_list[$_n]['field_id']?>" style="<?=$style?>">
 									<div class="handle"></div>
