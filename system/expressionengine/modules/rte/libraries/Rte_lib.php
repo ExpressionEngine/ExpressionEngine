@@ -277,15 +277,22 @@ class Rte_lib
 	{
 		$this->EE->load->model(array('rte_toolset_model','rte_tool_model'));
 		
-		// get the tools
+		// no toolset specified?
 		if ( ! $toolset_id)
 		{
 			$toolset_id = $this->EE->rte_toolset_model->get_member_toolset();
 		}
 
-		$tools = $this->EE->rte_tool_model->get_tools($toolset_id);
+		// get the toolset
+		$toolset = $this->EE->rte_toolset_model->get($toolset_id);
 
-		if ( ! $tools OR $this->EE->config->item('rte_enabled') != 'y')
+		if ( ! $toolset OR ! $toolset['rte_tools'])
+		{
+			return;
+		}
+
+		// get the tools
+		if ( ! $tools = $this->EE->rte_tool_model->get_tools($toolset['rte_tools']))
 		{
 			return;
 		}

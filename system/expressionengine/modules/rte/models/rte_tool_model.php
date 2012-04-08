@@ -101,20 +101,14 @@ class Rte_tool_model extends CI_Model {
 	}
 	
 	/**
-	 * Gets all tools in a given toolset
+	 * Get Tools
 	 * 
 	 * @access	public
-	 * @param	int		The ID of the toolset
+	 * @param	array	The IDs of the tools to get
 	 * @return	array 	An array of tools, each indexed to globals, libraries, styles, and definition
 	 */
-	public function get_tools($toolset_id = FALSE)
+	public function get_tools($tool_ids = array())
 	{
-		// Get the tool ids used by this toolset
-		$query = $this->db->where('rte_toolset_id', $toolset_id)
-			->get('rte_toolsets');
-
-		$tool_ids = $query->num_rows() ? explode('|', $query->row('rte_tools')) : FALSE;
-
 		if ( ! $tool_ids)
 		{
 			return FALSE;
