@@ -13,7 +13,7 @@
 <?php 	endif; ?>
 
 	<div class="rte-toolset-builder ui-widget">
-		<input type="hidden" id="rte-toolset-tools" name="rte_selected_tools" value="<?=implode('|',$toolset_tools)?>"/>
+		<input type="hidden" id="rte-toolset-tools" name="rte_selected_tools"/>
 
 		<div class="notice"></div>	
 
@@ -23,8 +23,8 @@
 					<strong><?=lang('available_tools')?></strong>
 					<div class="rte-toolset-builder-scrollpane" tabindex="0">
 						<ul id="rte-tools-unused" class="rte-tools-connected">
-<?php	foreach ($unused_tools as $tool_id): ?>
-							<li class="rte-tool" data-tool-id="<?=$tool_id?>"><?=$available_tools[$tool_id]?></li>
+<?php	foreach ($unused_tools as $tool): ?>
+							<li class="rte-tool" data-tool-id="<?=$tool['rte_tool_id']?>"><?=$tool['name']?></li>
 <?php	endforeach; ?>
 						</ul>
 					</div>
@@ -37,8 +37,8 @@
 					<strong><?=lang('tools_in_toolset')?></strong>
 					<div class="rte-toolset-builder-scrollpane" tabindex="0">
 						<ul id="rte-tools-selected" class="rte-tools-connected ui-sortable">
-<?php	foreach ($toolset_tools as $tool_id): ?>
-							<li class="rte-tool" data-tool-id="<?=$tool_id?>"><?=$available_tools[$tool_id]?></li>
+<?php	foreach ($used_tools as $tool): ?>
+							<li class="rte-tool" data-tool-id="<?=$tool['rte_tool_id']?>"><?=$tool['name']?></li>
 <?php	endforeach; ?>
 						</ul>
 					</div>

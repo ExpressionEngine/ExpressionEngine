@@ -25,40 +25,42 @@
 class Rte_tool_model extends CI_Model {
 
 	private $tools;
-	
-	/**
-	 * Gets all RTE tools
-	 * 
-	 * @access	public
-	 * @param	bool $list Whether or not you want it to be a ID => name list
-	 * @return	array The tools
-	 */
-	public function get_all($list = FALSE)
-	{
-		// get the tools from the DB
-		$results = $this->db->get('rte_tools')
-			->result_array();
 
-		// decide what to return
-		return $list ? $this->_make_list($results) : $results;
-	}
-	
 	/**
-	 * Gets all enabled RTE tools
+	 * Get Tool List
 	 * 
 	 * @access	public
-	 * @param	bool $list Whether or not you want it to be a ID => name list
-	 * @return	array The tools
+	 * @param	bool 	Only include tools that are enabled?
+	 * @return	array 	Associative array of tools sorted by (translated) name
 	 */
-	public function get_available($list = FALSE)
+	public function get_tool_list($enabled_only = FALSE)
 	{
-		// get the tools from the DB
-		$results = $this->db->get_where('rte_tools', array('enabled' => 'y'))
-			->result_array();
-		// decide what to return
-		return $list ? $this->_make_list($results) : $results;
+		// get tools from DB
+		if ($enabled_only)
+		{
+			$this->db->where('enabled', 'y');
+		}
+
+		$tools = $this->db->get('rte_tools')->result_array();
+
+		// is there a better (translated) name we can use for any of them?
+		foreach ($tools as &$tool)
+		{
+			$name_key = strtolower($tool['class']);
+
+			$tool['name'] = ($name_key != lang($name_key)) ? lang($name_key) : $tool['name'];
+		}
+
+		// alpha sort by final tool name
+		if (count($tools))
+		{
+			usort($tools, array($this, '_sort_by_name'));		
+		}
+
+		return $tools;
 	}
-	
+
+
 	/**
 	 * Gets the tool IDs for the supplied tools
 	 * 
@@ -144,13 +146,12 @@ class Rte_tool_model extends CI_Model {
 
 		foreach ($tools_sorted as $t)
 		{
-			$tool_name	= strtolower(str_replace(' ', '_', $t->name));
-			$tool_class	= ucfirst($tool_name).'_rte';
-			
+			$base_name = str_replace('_rte', '', strtolower($t->class));
+
 			// find the tool file
 			foreach (array(PATH_RTE, PATH_THIRD) as $tmp_path)
 			{
-				$file = $tmp_path.$tool_name.'/rte.'.$tool_name.'.php';
+				$file = $tmp_path.$base_name.'/rte.'.$base_name.'.php';
 
 				if ( ! file_exists($file))
 				{
@@ -159,13 +160,13 @@ class Rte_tool_model extends CI_Model {
 				
 				// load it in, instantiate the tool & add the definition
 				include_once($file);
-				$TOOL = new $tool_class();
+				$TOOL = new $t->class();
 				
 				// loop through the pieces and pull them from the object
 				foreach ($tool as $component => $default)
 				{
 					// make sure the method exists
-					if (method_exists($tool_class, $component))
+					if (method_exists($t->class, $component))
 					{
 						$temp = $TOOL->$component();
 
@@ -175,7 +176,7 @@ class Rte_tool_model extends CI_Model {
 							$tool[$component] = $temp;
 						}
 					}
-					elseif (property_exists($tool_class, $component))
+					elseif (property_exists($t->class, $component))
 					{
 						$tool[$component] = $TOOL->$component;
 					}
@@ -218,25 +219,6 @@ class Rte_tool_model extends CI_Model {
 
 
 	/**
-	 * Make the results array into an <option>-compatible list
-	 * 
-	 * @access	private
-	 * @param	array $result The result array to convert
-	 * @return	array An ID => name array
-	 */
-	private function _make_list($result)
-	{
-		$return = array();
-		
-		foreach ($result as $r)
-		{
-			$return[$r['rte_tool_id']] = $r['name'];
-		}
-		
-		return $return;
-	}
-	
-	/**
 	 * Load tools into the DB
 	 */
 	public function load_tools_into_db()
@@ -270,9 +252,22 @@ class Rte_tool_model extends CI_Model {
 		$this->db->where_not_in('class', $classes)
 			->delete('rte_tools');
 	}
-	
+
+
+	/**
+	 * Helper for sorting tools by name (anonymous functions, please!)
+	 * 
+	 * @access	private
+	 * @param	array 	Tool
+	 * @param	array 	Tool
+	 * @return	int
+	 */
+	private function _sort_by_name($a, $b)
+	{
+		return strcmp($a["name"], $b["name"]);
+	}
 }
 // END CLASS
 
-/* End of file rte_toolset_model.php */
+/* End of file rte_tool_model.php */
 /* Location: ./system/expressionengine/modules/rte/models/rte_tool_model.php */

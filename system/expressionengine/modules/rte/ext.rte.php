@@ -94,8 +94,9 @@ class Rte_ext {
 			)
 			->row();
 		
-		// get the toolset options
+		// get available toolsets
 		$toolset_opts = $this->EE->rte_toolset_model->get_member_options();
+
 		foreach ($toolset_opts as $id => $name)
 		{
 			$toolset_opts[$id] = lang($name);
