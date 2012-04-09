@@ -196,14 +196,17 @@ class Rte_toolset_model extends CI_Model {
 		// Get the tool ids used by this toolset
 		$toolset = $this->db->where('rte_toolset_id', $toolset_id)
 			->get('rte_toolsets')
-			->row();
+			->row_array();
 
 		if ( ! $toolset)
 		{
 			return FALSE;
 		}
 
-		$toolset->rte_tools = explode('|', $toolset->rte_tools);
+		if ($toolset['rte_tools'])
+		{
+			$toolset['rte_tools'] = explode('|', $toolset['rte_tools']);
+		}
 
 		return $toolset;
 	}

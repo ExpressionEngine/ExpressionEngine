@@ -47,7 +47,6 @@ Class Headings_rte {
 		$this->EE->lang->loadfile('rte');
 		return array(
 			'rte.headings'	=> array(
-				'block_formats'	=> lang('block_formats'),
 				'paragraph'		=> lang('paragraph'),
 				'heading_1'		=> lang('heading_1'),
 				'heading_2'		=> lang('heading_2'),
@@ -69,7 +68,6 @@ Class Headings_rte {
 		var $formatting_selector = $('<select class="button picker"/>');
 		
 		$formatting_selector
-			.append('<option value="">' + EE.rte.headings.block_formats + '</option>')
 			.append('<option value="p">' + EE.rte.headings.paragraph + '</option>')
 			.append('<option value="h1">' + EE.rte.headings.heading_1 + '</option>')
 			.append('<option value="h2">' + EE.rte.headings.heading_2 + '</option>')

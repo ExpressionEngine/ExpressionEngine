@@ -76,7 +76,7 @@ class Rte_mcp {
 			'rte_default_toolset_id'	=> $this->EE->config->item('rte_default_toolset_id'),
 			'toolset_opts'				=> $this->EE->rte_toolset_model->get_active(TRUE),
 			'toolsets'					=> $this->EE->rte_toolset_model->get_all(),
-			'tools'						=> $this->EE->rte_tool_model->get_all(),
+			'tools'						=> $this->EE->rte_tool_model->get_tool_list(),
 			'new_toolset_link'			=> $this->_base_url.AMP.'method=edit_toolset'
 		);
 		

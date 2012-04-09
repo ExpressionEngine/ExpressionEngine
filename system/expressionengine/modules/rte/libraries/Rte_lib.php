@@ -98,33 +98,33 @@ class Rte_lib
 			'file'	=> 'cp/rte'
 		));
 		
-		// get the tools lists (can only include active tools)
-		$unused_tools 		= $toolset_tools = array();
-		$available_tools	= $this->EE->rte_tool_model->get_available(TRUE);
-		$toolset_tool_ids	= array();
+		$unused_tools = $used_tools = $toolset_tool_ids = array();
 
 		if ( ! $is_new && $toolset = $this->EE->rte_toolset_model->get($toolset_id))
 		{
 			$toolset_tool_ids = $toolset->rte_tools;
 		}
 
-		foreach ($available_tools as $tool_id => $tool_name)
-		{
-			$tool_index = array_search($tool_id, $toolset_tool_ids);
+		// get the tool list (only enabled tools)
+		$enabled_tools = $this->EE->rte_tool_model->get_tool_list(TRUE);
 
+		foreach ($enabled_tools as $tool)
+		{
+			$tool_index = array_search($tool['rte_tool_id'], $toolset_tool_ids);
+
+			// is the tool in this toolset?
 			if ($tool_index !== FALSE)
 			{
-				$toolset_tools[$tool_index] = $tool_id;
+				$used_tools[$tool_index] = $tool;
 			}
 			else
 			{
-				$unused_tools[] = $tool_id;
+				$unused_tools[] = $tool;
 			}
 		}
 
-		// ensure the proper order
-		ksort( $toolset_tools, SORT_NUMERIC );
-		sort( $unused_tools );
+		// sort used tools by custom order
+		ksort($used_tools, SORT_NUMERIC);
 		
 		// set up the page
 		$this->EE->cp->set_breadcrumb($this->module_url, lang('rte_module_name'));
@@ -135,9 +135,9 @@ class Rte_lib
 			'action'			=> $this->form_url.AMP.'method=save_toolset'.( !! $toolset_id ? AMP.'rte_toolset_id='.$toolset_id : ''),
 			'is_private'		=> $is_private,
 			'toolset_name'		=> ( ! $toolset || $is_private ? '' : $toolset->name ),
-			'available_tools'	=> $available_tools,
+			'available_tools'	=> $enabled_tools,
 			'unused_tools'		=> $unused_tools,
-			'toolset_tools'		=> $toolset_tools
+			'used_tools'		=> $used_tools
 		);
 		
 		// JS
@@ -277,15 +277,22 @@ class Rte_lib
 	{
 		$this->EE->load->model(array('rte_toolset_model','rte_tool_model'));
 		
-		// get the tools
+		// no toolset specified?
 		if ( ! $toolset_id)
 		{
 			$toolset_id = $this->EE->rte_toolset_model->get_member_toolset();
 		}
 
-		$tools = $this->EE->rte_tool_model->get_tools($toolset_id);
+		// get the toolset
+		$toolset = $this->EE->rte_toolset_model->get($toolset_id);
 
-		if ( ! $tools OR $this->EE->config->item('rte_enabled') != 'y')
+		if ( ! $toolset OR ! $toolset['rte_tools'])
+		{
+			return;
+		}
+
+		// get the tools
+		if ( ! $tools = $this->EE->rte_tool_model->get_tools($toolset['rte_tools']))
 		{
 			return;
 		}
@@ -584,4 +591,4 @@ class Rte_lib
 }
 
 /* End of file rte_lib.php */
-/* Location: ./system/expressionengine/modules/safecracker/libraries/rte_lib.php */
+/* Location: ./system/expressionengine/modules/rte/libraries/rte_lib.php */

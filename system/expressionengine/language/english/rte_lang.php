@@ -3,9 +3,9 @@
 $lang = array(
 
 'rte_module_name' => 'Rich Text Editor',
-'rte_module_description' => 'Enables rich text editing in text areas.',
+'rte_module_description' => 'Enables rich text editing in text areas',
 
-# Headings
+// Headings
 'nav_rte_settings' => 'Rich Text Editor Settings',
 'rte_settings' => 'General Rich Text Editor Settings for Site',
 'rte_prefs' => 'Rich Text Editor Preferences',
@@ -15,7 +15,7 @@ $lang = array(
 'define_toolset' => 'Define Custom Rich Text Editor Toolset',
 'define_my_toolset' => 'Define My Custom Rich Text Editor Toolset',
 
-# Snippets
+// Snippets
 'no' => 'No',
 'yes' => 'Yes',
 'enabled' => 'Enabled',
@@ -29,7 +29,7 @@ $lang = array(
 'enable_rte' => 'Enable the Rich Text Editor',
 'disable_rte' => 'Disable Rich Text Editor',
 
-# Flashes
+// Flashes
 'settings_saved' => 'Your Rich Text Editor Settings have been saved.',
 'settings_not_saved' => 'Your Rich Text Editor Settings could not be saved. Please try again.',
 'settings_saved' => 'Your Rich Text Editor Preferences have been saved.',
@@ -43,7 +43,7 @@ $lang = array(
 'valid_url_required' => 'A valid URL is required.',
 'name_required' => 'A name is required and must be unique.',
 
-# Labels
+// Labels
 'enable_rte_globally' => 'Enable the Rich Text Editor?',
 'enable_rte_in_forum' => 'Enable the Rich Text Editor for use in the Forums?',
 'choose_default_toolset' => 'Choose the Default Toolset',
@@ -64,37 +64,40 @@ $lang = array(
 'relationship' => 'Relationship',
 'selection_error' => 'You must select some text in order to do something with it',
 
-# Toggle Dialog
-'toggle_rte_dialog_title' => 'Rich Text Editor Preferences',
-'toggle_rte_dialog_headline_disable' => 'Are you sure you want to disable the Rich Text Editor for your account?',
-'toggle_rte_dialog_headline_enable' => 'Are you sure you want to enable the Rich Text Editor for your account?',
-'toggle_rte_dialog_text_disable' => 'This will disable the Rich Text Editor for all fields. You can re-enable the Rich Text Editor using the “Enable Rich Text Editor” link or by updating your settings in My Account.',
-'toggle_rte_dialog_text_enable' => 'This will enable the Rich Text Editor for all fields. You can disable the Rich Text Editor using the “Enable Rich Text Editor” link or by updating your settings in My Account.',
-'toggle_rte_dialog_disable' => '',
-'enable' => '',
-'disable' => '',
+// Tool names (based on class name)
+'blockquote_rte' 	=> 'Quote',
+'bold_rte' 			=> 'Bold',
+'headings_rte' 		=> 'Headings',
+'image_rte' 		=> 'Insert Image',
+'italic_rte' 		=> 'Italic',
+'link_rte' 			=> 'Link',
+'ordered_list_rte' 	=> 'Numbered List',
+'preferences_rte' 	=> 'Preferences',
+'strip_tags_rte' 	=> 'Clear Formatting',
+'underline_rte' 	=> 'Underline',
+'unordered_list_rte'=> 'Bulleted List',
+'view_source_rte' 	=> 'View Code',
 
-# Tools
+// Tool misc
 'make_bold' => 'Bold',
 'remove_bold' => 'Unbold',
 'make_italics' => 'Italicize',
 'remove_italics' => 'Remove Italics',
 'make_underline' => 'Underline',
 'remove_underline' => 'Remove Underline',
-'make_ul' => 'Convert to Unordered List',
-'remove_ul' => 'Remove Unordered List',
-'make_ol' => 'Convert to Ordered List',
-'remove_ol' => 'Remove Ordered List',
-'make_blockquote' => 'Blockquote',
-'remove_blockquote' => 'Remove Blockquote',
+'make_ul' => 'Convert to Bulleted List',
+'remove_ul' => 'Remove Bulleted List',
+'make_ol' => 'Convert to Numbered List',
+'remove_ol' => 'Remove Numbered List',
+'make_blockquote' => 'Quote',
+'remove_blockquote' => 'Remove Quote',
 'link' => 'Link',
 'add_link' => 'Add Link',
 'update_link' => 'Update Link',
 'remove_link' => 'Remove Link',
 'view_code' => 'View Code',
 'view_content' => 'View Content',
-'strip_tags' => 'Strip Formatting Tags',
-'block_formats' => '-- Block Formats --',
+'strip_tags' => 'Clear Formatting',
 'paragraph' => 'Paragraph',
 'heading_1' => 'Heading 1',
 'heading_2' => 'Heading 2',
@@ -111,10 +114,8 @@ $lang = array(
 'img_wrap_none' => 'Separate Text',
 'img_wrap_right' => 'Wrap Right',
 
-# IGNORE
 ''=>''
-
 );
 
 /* End of file rte_lang.php */
-/* Location: ./system/expressionengine/modules/rte/language/english/rte_lang.php */
+/* Location: ./system/expressionengine/language/english/rte_lang.php */
