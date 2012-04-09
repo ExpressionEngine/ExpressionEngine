@@ -1249,10 +1249,22 @@ WysiHat.Element = (function( $ ){
 
 			getTextNodes(startNode);
 
-			// weird case where they try to select something from 0
-			if (curNode.nodeType != 3 && offset == 0)
+			if (offset == 0)
 			{
-				return [curNode, 0];
+				// weird case where they try to select something from 0
+				if (curNode.nodeType != 3)
+				{
+					return [curNode, 0];
+				}
+
+				// Offset is 0 but we're at the end of the node,
+				// jump ahead in the dom to the real beginning node.
+				while (curNode.nextSibling === null)
+				{
+					curNode = curNode.parentNode;
+				}
+
+				curNode = curNode.nextSibling;
 			}
 
 			return [curNode, curNode.nodeValue.length + offset];
