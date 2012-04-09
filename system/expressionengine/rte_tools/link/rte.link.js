@@ -1,5 +1,6 @@
 (function(){
-	
+	var $editor, final_url, anchorNode;
+
 	var	$link_dialog	= $('<div class="rte-link-dialog">' +
 							'<p><label>* ' + EE.rte.link.dialog.url_field_label + '</label>' +
 							'<input type="url" required="required"/></p>' +
@@ -13,58 +14,7 @@
 							'</div>'),
 		$url			= $link_dialog.find('input[type=url]'),
 		$title			= $link_dialog.find('input[type=text]'),
-		//$rel			= $link_dialog.find('select'),
-		uuid			= $editor.attr('id'),
 		$el;
-
-	// assign the UUIDs to make the fields and labels associate
-	$url
-		.attr('id','rte_link_url-'+uuid)
-		.prev('label')
-			.attr('for','rte_link_url-'+uuid);
-	$title
-		.attr('id','rte_link_title-'+uuid)
-		.prev('label')
-			.attr('for','rte_link_title-'+uuid);
-	//		$rel
-	//			.attr('id','rte_link_rel-'+uuid)
-	//			.prev('label')
-	//				.attr('for','rte_link_rel-'+uuid);
-
-	function reSelect()
-	{
-		// the paste handler collects selection data as part of the field. Hooray!
-		var	$field	= $editor.data('field'),
-			o_range	= $field.data('saved-range'),
-			sel		= window.getSelection(),
-			range	= document.createRange();
-
-		// if the DOM changes this will fail
-		try {
-			
-			if (sel != '')
-			{
-				// If the selection isn't empty, but startOffset and endOffset
-				// are the same, the user likely selected all text in the editor;
-				// instead of claiming no text was selected to the user, we'll
-				// edit the range so link-creation still works
-				if (o_range.startOffset == o_range.endOffset)
-				{
-					o_range.startOffset = 0;
-				}
-			}
-			
-			// recreate the Range
-			range.setStart( o_range.startContainer, o_range.startOffset );
-			range.setEnd( o_range.endContainer, o_range.endOffset );
-
-			// select the range
-			sel.removeAllRanges();
-			sel.addRange( range );
-		} catch(e) {}
-
-		return sel;
-	}
 
 	$link_dialog
 		.appendTo('body')
@@ -81,8 +31,7 @@
 				// remove existing notices
 				$link_dialog.find('.notice').remove();
 
-				var	sel		= reSelect(),
-					el		= sel.anchorNode;
+				var	el = anchorNode;
 
 				if (el) {
 					while (el.nodeType != 1) {
@@ -105,9 +54,8 @@
 				$url.focus();
 			},
 			close: function(e, ui) {
-				var	sel		= reSelect(),
-					title	= $('#rte_link_title-'+uuid).val(),
-					el		= sel.anchorNode;
+				var	title	= $('#rte_link_title-').val(),
+					el		= anchorNode;
 				
 				if (el) {
 					while (el.nodeType != 1) {
@@ -136,6 +84,7 @@
 		 })
 		// Remove link
 		.on('click', '.rte-link-remove', function(){
+			var $el = $(anchorNode);
 			$el.replaceWith($el.text());
 	
 			$link_dialog.dialog('close');
@@ -151,9 +100,6 @@
 		// remove existing notices
 		$link_dialog.find('.notice').remove();
 
-		// re-establish the selection
-		reSelect();
-
 		var	url			= $url.val().trim(),
 			$error		= $('<div class="notice"/>').text(EE.rte.link.dialog.url_required);
 
@@ -166,7 +112,7 @@
 		$error.remove();
 
 		// link!
-		$editor.linkSelection(url);
+		final_url = url;
 
 		// close
 		$link_dialog.dialog('close');
@@ -175,8 +121,14 @@
 	toolbar.addButton({
 		name:	'link',
 	    label:	EE.rte.link.add,
-	    handler: function(){
-			var sel		= reSelect(),
+	    handler: function($e, state, finalize) {
+	    	var selUtil = $e.data('selectionUtil');
+	    	$editor = $e.data('wysihat');
+	    	$editor.select();
+
+	    	selUtil.set(state.selection);
+	    	
+			var sel		= window.getSelection(),
 				range	= document.createRange(),
 				link	= true,
 				s_el, e_el;
@@ -203,25 +155,28 @@
 				link = true;
 				// select the whole <a>
 				range.selectNode( s_el );
-				$field.data(
-					'saved-range',
-					{
-						startContainer:	range.startContainer,
-						startOffset:	range.startOffset,
-						endContainer: 	range.endContainer,
-						endOffset:		range.endOffset
-					}
-				);
 			}
 
+			anchorNode = s_el;
+			
 			if ( link )
 			{
 				$link_dialog.dialog('open');
+				$link_dialog.bind('dialogclose', function() {
+					// selUtil.set(state.selection);
+					selUtil.set( selUtil.get(range) );
+					$editor.linkSelection(final_url);
+					setTimeout(function() {
+						finalize();
+					}, 50);
+				});
 			}
 			else
 			{
 				alert( EE.rte.link.dialog.selection_error );
 			}
+
+			return false;
 		},
 		query: function( $editor ){
 			return $editor.queryCommandState('createLink');

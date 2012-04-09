@@ -65,7 +65,7 @@ Class Ordered_list_rte {
 			label:			EE.rte.ordered_list.add,
 			'toggle-text':	EE.rte.ordered_list.remove,
 	    	handler: function( $ed ){
-		 		return $ed.toggleOrderedList();
+		 		$ed.toggleOrderedList();
 			},
 			query: function( $editor ){
 				return $editor.queryCommandState('insertOrderedList');

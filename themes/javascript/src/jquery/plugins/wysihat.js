@@ -77,6 +77,7 @@ var WysiHat = {
 				.data( 'field', $field );
 
 			$.extend( $editor, WysiHat.Commands );
+			$editor.data('wysihat', $editor);
 
 			$editor.selectionUtil = new WysiHat.SelectionUtil($editor);
 			$editor.data('selectionUtil', $editor.selectionUtil);
@@ -445,7 +446,8 @@ WysiHat.Element = (function( $ ){
 
 	var
 	KEYS,
-	keyShortcuts;
+	keyShortcuts,
+	EventHandlers;
 
 	KEYS = (function() {
 		var keys = {
@@ -520,141 +522,136 @@ WysiHat.Element = (function( $ ){
 			'underline': prefix + '-u',
 		};
 	})();
+	
+	// this is a singleton!
+	WysiHat.Events = (function() {
+		var handlers = {};
+
+		return {
+			add: function(action, func)
+			{
+				handlers[action] = func;
+			},
+			has: function(action)
+			{
+				return (action in handlers);
+			},
+			run: function(action, editor, state, finalize) {
+				var ret = handlers[action](editor, state, finalize);
+
+				// false means you run finalize yourself
+				// in all other cases, we run it. If it was
+				// already run, no harm done.
+				if (ret !== false)
+				{
+					finalize();
+				}
+			}
+		};
+	})();
+
+	// add a few defautlts
+	// @todo move to where we do buttons
+	WysiHat.Events.add('paste', function($editor, state, finalize) {
+		setTimeout(function() {
+			WysiHat.Formatting.cleanup($editor);
+			finalize();
+		}, 50);
+
+		// we call finalize manually
+		return false;
+	});
 
 	WysiHat.EventCore = function($el)
 	{
 		this.$editor = $el;
-		this.observers = {};
 
 		this.textStart = null;
-		this.textStartSel = null;
+		this.pasteStart = null;
 		this.textDeleting = false; // typing backwards ;)
 
 		// helper classes
 		this.undoStack = new WysiHat.UndoStack();
 		this.selectionUtil = $el.data('selectionUtil');
+		this.events = WysiHat.Events;
 
-		// @todo implement all out hijacking
 		this._hijack_events();
-	}
+	};
 
 	WysiHat.EventCore.prototype = {
 
 		/**
-		 * Bind an event observer
-		 *
-		 * $editor.observer('bold', { ... })
-		 */
-		observe: function(name, options)
-		{
-			// @todo if options is a function, pick one?
-			// @todo monkey patch .bind on the editor?
-
-			if ( ! this.observers[name])
-			{
-				this.observers = [];
-			}
-
-			this.observers.push(options);
-		},
-
-		/**
-		 * Fire an event on all observers
+		 * Pass an event to its handler
 		 *
 		 * $editor.fire('bold')
 		 */
-		fire: function(name)
+		fire: function(action)
 		{
-			// mark text change
-			this._saveTextState(name);
+			var that = this,
+				beforeState,
+				finalize;
 
-			if (name == 'undo' || name == 'redo')
+
+			// special case - undo and redo
+			if (action == 'undo' || action == 'redo')
 			{
 				var modified,
-					check = (name == 'undo') ? 'hasUndo' : 'hasRedo';
+					check = (action == 'undo') ? 'hasUndo' : 'hasRedo';
 
 				if (this.undoStack[check]())
 				{
-					modified = this.undoStack[name](this.$editor.html());
+					modified = this.undoStack[action](this.$editor.html());
 
 					this.$editor.html(modified[0]);
 					this.selectionUtil.set(modified[1]);
 				}
-			}
 
-			return;
-
-			// @pk Working on it, don't worry!
-
-			var
-			i,
-			ret,
-			length,
-			beforeRange,
-			beforeContent,
-			changedContent,
-			afterRange,
-			afterContent;
-
-			if ( ! this.observers[name] || ! this.observers[name].length)
-			{
 				return;
 			}
 
-			length = observers.length;
+			// mark text change
+			beforeState = this.getState(),
+			this._saveTextState(action);
 
-			// @todo undo stack
-			// @todo grab string and range
-
-			// run the before events
-			for (i = 0; i < length; i++)
+			if ( ! this.events.has(action))
 			{
-				if (observers[i].before)
-				{
-					ret = observers[i].before(beforeContent, beforeRange);
-
-					// event was canceled
-					if (ret === false)
-					{
-						return;
-					}
-				}
+				// let it go ...
+				return true;
 			}
 
-			changedContent = beforeContent;
-
-			// run the during events
-			for (i = 0; i < length; i++)
-			{
-				if (observers[i].during)
+			// setup a finalizer for the event.
+			// make sure it can only be run once
+			finalize = function() {
+				if (this.hasRun)
 				{
-					ret = observers[i].during(changedContent, beforeContent);
-
-					if (ret !== undefined)
-					{
-						changedContent = ret;
-					}
+					return;
 				}
-			}
 
-			afterContent = changedContent;
-			// @todo grab new range
+				that.textChange(beforeState);
+				that._saveTextState(action);
+				that.$editor.focus();
 
-			// run the after events
-			for (i = 0; i < length; i++)
-			{
-				if (observers[i].after)
-				{
-					observers[i].after(afterContent, afterRange);
-				}
-			}
+				this.hasRun = true;
+			};
 
-			// @todo undo stack
+			this.events.run(action, this.$editor, beforeState, $.proxy(finalize, finalize));
 		},
 
-		textChange: function(before, after, selBefore, selAfter)
+		/**
+		 * Mark a text change. Takes the
+		 * objects from getState as before
+		 * and after [optional] parameters.
+		 *
+		 * @return void
+		 */
+		textChange: function(before, after)
 		{
-			this.undoStack.push(before, after, selBefore, selAfter);
+			after = after || this.getState();
+
+			this.undoStack.push(
+				before.html, after.html,
+				before.selection, after.selection
+			);
 		},
 
 		/**
@@ -733,10 +730,21 @@ WysiHat.Element = (function( $ ){
 		},
 
 		/**
+		 * Get the editor's current state
+		 */
+		getState: function()
+		{
+			return {
+				html: this.$editor.html(),
+				selection: this.selectionUtil.get()
+			}
+		},
+
+		/**
 		 * Save the state of the text they have
 		 * typed so far.
 		 *
-		 * @todo call periodically to make it more natural
+		 * @todo call periodically to make it more natural?
 		 */
 		_saveTextState: function(name)
 		{
@@ -749,10 +757,8 @@ WysiHat.Element = (function( $ ){
 
 			if (this.textStart)
 			{
-				var selEnd = this.selectionUtil.get();
-				this.textChange(this.textStart, this.$editor.html(), this.textStartSel, selEnd);
+				this.textChange(this.textStart);
 				this.textStart = null;
-				this.textStartSel = null;
 			}
 		},
 
@@ -777,13 +783,12 @@ WysiHat.Element = (function( $ ){
 				// selectionChange), but initially the shortest shortest
 				// route is best.
 
-			//	'blur change': $.proxy(this._blurEvent, this),
-				'selectionchange focus mouseup': $.proxy(this._rangeEvent, this),
+			//	'focusout change': $.proxy(this._blurEvent, this),
+				'selectionchange focusin mouseup': $.proxy(this._rangeEvent, this),
 				'keydown keyup keypress': $.proxy(this._keyEvent, this),
-			//	'cut input paste': $.proxy(this._event, this),
+				'cut undo redo paste input contextmenu': $.proxy(this._menuEvent, this),
 			//	'click doubleclick mousedown mouseup': $.proxy(this._mouseEvent, this)
 			};
-
 
 			this.$editor.on(event_map);
 		},
@@ -796,7 +801,7 @@ WysiHat.Element = (function( $ ){
 		 */
 		_keyComboEvent: function(evt)
 		{
-			var attempt = ['undo', 'redo'],
+			var attempt = ['undo', 'redo', 'paste'],
 				name;
 
 			if (evt.type == 'keydown')
@@ -805,6 +810,12 @@ WysiHat.Element = (function( $ ){
 				{
 					if (this.isEvent(name, evt))
 					{
+						if (name == 'paste')
+						{
+							this.fire(name);
+							return true;
+						}
+
 						evt.preventDefault();
 						this.fire(name);
 						return false;
@@ -822,8 +833,6 @@ WysiHat.Element = (function( $ ){
 		 */
 		_keyEvent: function(evt)
 		{
-			var s;
-
 			// currently ignoring these remove it if you
 			// need it, shouldn't break anything
 			if (evt.type == 'keypress')
@@ -857,8 +866,7 @@ WysiHat.Element = (function( $ ){
 
 				if (this.textStart == null)
 				{
-					this.textStartSel = this.selectionUtil.get();
-					this.textStart = this.$editor.html();
+					this.textStart = this.getState();
 				}
 			}
 			else if (evt.type == 'keyup')
@@ -883,17 +891,40 @@ WysiHat.Element = (function( $ ){
 		_rangeEvent: function(evt)
 		{
 			this._saveTextState(evt.type);
+		},
+
+		/**
+		 * Events that can be triggered in the user's context
+		 * menu. This doesn't work too well, we may need a pair
+		 * of buttons for undo and redo. (@todo)
+		 */
+		_menuEvent: function(evt)
+		{
+			var that = this;
+
+			var attempt = ['undo', 'redo'/*, 'paste'*/],
+				name;
+
+			while(name = attempt.shift())
+			{
+				if (this.isEvent(name, evt))
+				{
+					evt.preventDefault();
+					this.fire(name);
+					return false;
+				}
+			}
+
+			//WysiHat.Formatting.cleanup(this.$editor);
 		}
 	};
 
 	WysiHat.EventCore.constructor = WysiHat.EventCore;
 
-
-
 	WysiHat.UndoStack = function()
 	{
-		// @todo max depth
-		this.saved = [],
+		this.max_depth = 75;
+		this.saved = [];
 		this.index = 0;
 	}
 
@@ -923,11 +954,14 @@ WysiHat.Element = (function( $ ){
 
 			if (diff)
 			{
+				// remove any redos we might have
 				if (this.index < this.saved.length)
 				{
 					this.saved = this.saved.slice(0, this.index);
 					this.index = this.saved.length;
 				}
+
+				// @todo max_depth check
 
 				this.index++;
 				this.saved.push({
@@ -1039,7 +1073,8 @@ WysiHat.Element = (function( $ ){
 				trim_after++;
 			}
 
-			// It involved walking through the whole thing? Ignore it
+			// It involved walking through the whole thing? We can ignore
+			// it the code below will take care of finding the smallest difference.
 			if (trim_before == Math.min(l1, l2))
 			{
 				trim_before = 0;
@@ -2075,7 +2110,7 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
  */
 
 // ---------------------------------------------------------------------
-
+/*
 (function($){
 
 	if ( ! $.browser.msie )
@@ -2311,7 +2346,7 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 
 })(jQuery);
 
-
+*/
 // ---------------------------------------------------------------------
 
 /**
@@ -2498,7 +2533,9 @@ WysiHat.Formatting = {
 			}
 
 			handler = this.buttonHandler( name, options );
-			this.observeButtonClick( $button, handler );
+			WysiHat.Events.add(name, handler);
+
+			this.observeButtonClick( $button, handler, name );
 
 			handler = this.buttonStateHandler( name, options );
 			this.observeStateChanges( $button, name, handler );
@@ -2567,36 +2604,37 @@ WysiHat.Formatting = {
 			return handler;
 		},
 
-		observeButtonClick: function( $button, handler )
+		observeButtonClick: function( $button, handler, name )
 		{
 			var that = this;
 
 			$button.click(function(e){
+				var $editor = that.$editor;
 
 				// Bring focus to the editor before the handler is called
 				// so that selection data is available to tools
-				if ( ! that.$editor.is(':focus'))
+				if ( ! $editor.is(':focus'))
 				{
-					that.$editor.focus();
+					$editor.focus();
 				}
 
+				$editor.eventCore.fire(name);
 
-				// @pk before
+				//$editor.trigger( 'WysiHat-selection:change' );
+
+				return false;
+
 				// Save the selection and current text so that we can
 				// work out how to undo the change.
-				var full_editor_before = that.$editor.html(),
-					selectionUtil = that.$editor.data('selectionUtil'),
-					before = selectionUtil.get(),
-					after;
+				var eventCore = $editor.eventCore,
+					before = eventCore.getState();
 				
-				handler( that.$editor, e );
-				that.$editor.trigger( 'WysiHat-selection:change' );
-				that.$editor.focus();
+				handler( $editor, e );
+				$editor.trigger( 'WysiHat-selection:change' );
+				$editor.focus();
 
-				// @pk after
 				// Add the changes as an undo.
-				after = selectionUtil.get();
-				that.$editor.eventCore.textChange(full_editor_before, that.$editor.html(), before, after);
+				eventCore.textChange(before);
 
 				return false;
 			});
