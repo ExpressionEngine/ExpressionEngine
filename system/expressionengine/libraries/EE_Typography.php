@@ -650,10 +650,7 @@ class EE_Typography extends CI_Typography {
 		// where the inner url was valid, but did not exactly match the other:
 		// [url=http://www.iblamepaul.com]www.iblamepaul.com[/url] ;) -pk
 		
-		if (strpos($str, 'http') !== FALSE)
-		{
-			$str = preg_replace_callback("#(^|\s|\(|..\])((http(s?)://)|(www\.))(\w+[^\s\)\<\[]+)(.{0,6})#im", array(&$this, 'auto_linker_callback'), $str);
-		}
+		$str = preg_replace_callback("#(^|\s|\(|..\])((http(s?)://)|(www\.))(\w+[^\s\)\<\[]+)(.{0,6})#im", array(&$this, 'auto_linker_callback'), $str);
 		
 		// Auto link email
 		if (strpos($str, '@') !== FALSE)
