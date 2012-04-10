@@ -84,7 +84,7 @@ class Rte_lib
 
 			// grab the toolset
 			$toolset	= $this->EE->rte_toolset_model->get($toolset_id);
-			$is_private	= ($toolset->member_id != 0);
+			$is_private	= ($toolset['member_id'] != 0);
 		}
 		else
 		{
@@ -102,7 +102,7 @@ class Rte_lib
 
 		if ( ! $is_new && $toolset = $this->EE->rte_toolset_model->get($toolset_id))
 		{
-			$toolset_tool_ids = $toolset->rte_tools;
+			$toolset_tool_ids = $toolset['rte_tools'];
 		}
 
 		// get the tool list (only enabled tools)
@@ -128,13 +128,13 @@ class Rte_lib
 		
 		// set up the page
 		$this->EE->cp->set_breadcrumb($this->module_url, lang('rte_module_name'));
-		$title = $is_private ? lang('define_my_toolset') : lang('define_toolset');
+		$title = $is_private ? lang('edit_my_toolset') : lang('edit_toolset');
 		$vars = array(
 			'cp_page_title'		=> $title,
 			'module_base'		=> $this->cancel_url,
 			'action'			=> $this->form_url.AMP.'method=save_toolset'.( !! $toolset_id ? AMP.'rte_toolset_id='.$toolset_id : ''),
 			'is_private'		=> $is_private,
-			'toolset_name'		=> ( ! $toolset || $is_private ? '' : $toolset->name ),
+			'toolset_name'		=> ( ! $toolset || $is_private ? '' : $toolset['name']),
 			'available_tools'	=> $enabled_tools,
 			'unused_tools'		=> $unused_tools,
 			'used_tools'		=> $used_tools

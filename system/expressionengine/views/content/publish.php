@@ -68,7 +68,7 @@ if ($EE_view_disable !== TRUE)
 											<?=$field['field_label']?>
 										</a> 
 										<a href="#" class="delete delete_field" id="remove_field_<?=$field['field_id']?>" data-visible="<?= (isset($field['field_visibility'])) ? $field['field_visibility'] : 'y' ?>">
-											<img src="<?=$cp_theme_url?>images/<? if (isset($field['field_visibility'])): echo ($field['field_visibility'] == "y") ? 'open_eye' : 'closed_eye'; endif ?>.png" alt="<?=lang('delete')?>" width="15" height="15" />
+											<img src="<?=$cp_theme_url?>images/<?php if (isset($field['field_visibility'])): echo ($field['field_visibility'] == "y") ? 'open_eye' : 'closed_eye'; endif ?>.png" alt="<?=lang('delete')?>" width="15" height="15" />
 										</a>
 									<?php endif;?>
 									</li>
