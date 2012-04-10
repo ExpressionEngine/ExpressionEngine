@@ -154,7 +154,20 @@ class Security_test extends CI_TestCase {
 	{
 		$vectors = array(
 			"<a/''' target=\"_blank\" href=data:text/html;;base64,PHNjcmlwdD5hbGVydChvcGVuZXIuZG9jdW1lbnQuYm9keS5pbm5lckhUTUwpPC9zY3JpcHQ+>firefox11</a>"
-			=> "<a/''' target=\"_blank\" href=[removed],PHNjcmlwdD5hbGVydChvcGVuZXIuZG9jdW1lbnQuYm9keS5pbm5lckhUTUwpPC9zY3JpcHQ+>firefox11</a>",
+			=> "<a/''' target=\"_blank\" href=[removed]PHNjcmlwdD5hbGVydChvcGVuZXIuZG9jdW1lbnQuYm9keS5pbm5lckhUTUwpPC9zY3JpcHQ+>firefox11</a>",
+
+			'data 
+
+
+:
+
+base64'
+			=> 'data 
+
+
+:
+
+base64',
 
 			'<svg xmlns="http://www.w3.org/2000/svg"
 xmlns:xlink="http://www.w3.org/1999/xlink"> <feImage> <set
@@ -165,7 +178,7 @@ PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxzY3JpcHQ%2BYWxlcnQoMSk8L3
 			=> '<svg 
 xmlns:xlink="http://www.w3.org/1999/xlink"> <feImage> <set
 attributeName="xlink:href"
-to=[removed],
+to=[removed]
 PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxzY3JpcHQ+YWxlcnQoMSk8L3NjcmlwdD48L3N2Zz4NCg=="/>
 </feImage> </svg>',
 
@@ -175,6 +188,8 @@ in firefox</a>'
 			=> '<a target="_blank">clickme
 in firefox</a>'
 		);
+
+
 
 		foreach ($vectors as $attack => $expected)
 		{
