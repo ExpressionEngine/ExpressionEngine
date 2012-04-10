@@ -1,25 +1,29 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-/*
-=====================================================
- ExpressionEngine - by EllisLab
------------------------------------------------------
- http://expressionengine.com/
------------------------------------------------------
- Copyright (c) 2004 - 2011 EllisLab, Inc.
-=====================================================
- THIS IS COPYRIGHTED SOFTWARE
- PLEASE READ THE LICENSE AGREEMENT
- http://expressionengine.com/user_guide/license.html
-=====================================================
- File: rte.headings.php
------------------------------------------------------
- Purpose: Headings RTE Tool
-=====================================================
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		ExpressionEngine Dev Team
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @license		http://expressionengine.com/user_guide/license.html
+ * @link		http://expressionengine.com
+ * @since		Version 2.5
+ * @filesource
+ */
+ 
+// ------------------------------------------------------------------------
 
-*/
-
-Class Headings_rte {
+/**
+ * ExpressionEngine Headings RTE Tool
+ *
+ * @package		ExpressionEngine
+ * @subpackage	RTE
+ * @category	RTE
+ * @author		ExpressionEngine Dev Team
+ * @link		http://expressionengine.com
+ */
+class Headings_rte {
 	
 	public $info = array(
 		'name'			=> 'Headings',
@@ -30,18 +34,24 @@ Class Headings_rte {
 	
 	private $EE;
 	
-	/** -------------------------------------
-	/**  Constructor
-	/** -------------------------------------*/
+	/**
+	 * Constructor
+	 *
+	 * @access	public
+	 */
 	function __construct()
 	{
 		// Make a local reference of the ExpressionEngine super object
 		$this->EE =& get_instance();
 	}
 
-	/** -------------------------------------
-	/**  Globals we need defined
-	/** -------------------------------------*/
+	// --------------------------------------------------------------------
+
+	/**
+	 * Globals we need
+	 *
+	 * @access	public
+	 */
 	function globals()
 	{
 		$this->EE->lang->loadfile('rte');
@@ -58,9 +68,13 @@ Class Headings_rte {
 		);
 	}
 
-	/** -------------------------------------
-	/**  RTE Tool Definition
-	/** -------------------------------------*/
+	// --------------------------------------------------------------------
+
+	/**
+	 * JS Defintion
+	 *
+	 * @access	public
+	 */
 	function definition()
 	{
 		ob_start(); ?>
