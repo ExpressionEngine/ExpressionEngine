@@ -264,7 +264,7 @@ class File_field {
 		}
 		
 		unset($_POST[$field_name.'_hidden_dir']);
-		return array('value' => $_POST[$field_name]);
+		return array('value' => $this->format_data($_POST[$field_name], $hidden_dir));
 	}
 	
 	// ------------------------------------------------------------------------
