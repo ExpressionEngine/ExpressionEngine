@@ -114,7 +114,7 @@ class Rte_ext {
 		$this->EE->javascript->set_global(array(
 			'rte'	=> array(
 				'toolset_modal' => array(
-					'title'	=> lang('define_my_toolset')
+					'title'	=> lang('edit_my_toolset')
 				),
 				'toolset_builder_url'	=> BASE.AMP.'C=myaccount'.AMP.'M=custom_action'.AMP.'extension=rte'.AMP.'method=edit_toolset'.AMP.'private=true',
 				'edit_text'				=> lang('edit')
