@@ -119,13 +119,13 @@ class EE_Email extends CI_Email {
 			$ret = $this->EE->extensions->call(
 				'email_send',
 				array(
-					&$this->_headers,
-					&$this->_header_str,
-					&$this->_recipients,
-					&$this->_cc_array,
-					&$this->_bcc_array,
-					&$this->_subject,
-					&$this->_finalbody
+					'headers'		=> &$this->_headers,
+					'header_str'	=> &$this->_header_str,
+					'recipients'	=> &$this->_recipients,
+					'cc_array'		=> &$this->_cc_array,
+					'bcc_array'		=> &$this->_bcc_array,
+					'subject'		=> &$this->_subject,
+					'finalbody'		=> &$this->_finalbody
 				)
 			);
 			

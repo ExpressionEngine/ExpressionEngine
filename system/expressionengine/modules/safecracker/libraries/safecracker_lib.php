@@ -1350,13 +1350,7 @@ class Safecracker_lib
 		//added for EE2.1.2
 		$this->EE->api->instantiate(array('channel_categories'));
 		$this->EE->load->library('api/api_sc_channel_entries');
-		
-		//trick the form_validation lib
-		//show 'em who's the boss
-		$this->EE->form_validation->CI =& $this;
-		$this->lang =& $this->EE->lang;
-		$this->api_channel_fields =& $this->EE->api_channel_fields;
-		
+				
 		foreach ($this->form_validation_methods as $method)
 		{
 			$this->EE->form_validation->set_message($method, lang('safecracker_'.$method));
@@ -2872,15 +2866,6 @@ class Safecracker_lib
 		return (is_array($data)) ? $data : array();
 	}
 
-	// --------------------------------------------------------------------
-	
-	/* form validation methods */
-	
-	public function valid_ee_date($data)
-	{
-		return (strtotime($data) !== FALSE);
-	}
-	
 	// --------------------------------------------------------------------
 	
 	/**

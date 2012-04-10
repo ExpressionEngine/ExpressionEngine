@@ -198,10 +198,19 @@
 		$EE =& get_instance();
 		$EE->load->helper('file');
 		
-		if ( ! is_dir(APPPATH.'cache/ee_version'))
+		$cache_path = $EE->config->item('cache_path');
+		
+		if (empty($cache_path))
 		{
-			mkdir(APPPATH.'cache/ee_version', DIR_WRITE_MODE);
-			@chmod(APPPATH.'cache/ee_version', DIR_WRITE_MODE);	
+			$cache_path = APPPATH.'cache/';
+		}
+		
+		$cache_path .= 'ee_version/';
+		
+		if ( ! is_dir($cache_path))
+		{
+			mkdir($cache_path, DIR_WRITE_MODE);
+			@chmod($cache_path, DIR_WRITE_MODE);	
 		}
 		
 		$data = array(
@@ -209,9 +218,9 @@
 				'data' 		=> $details
 			);
 
-		if (write_file(APPPATH.'cache/ee_version/current_version', serialize($data)))
+		if (write_file($cache_path.'current_version', serialize($data)))
 		{
-			@chmod(APPPATH.'cache/ee_version/current_version', FILE_WRITE_MODE);			
+			@chmod($cache_path.'current_version', FILE_WRITE_MODE);			
 		}		
 	}
 

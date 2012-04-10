@@ -580,7 +580,7 @@ select.select {
 	padding:			8px 0 8px 0;
 	position:			absolute;
 	width:				169px;
-	z-index:			50;
+	z-index:			200;
 
 	-moz-border-radius:		10px;
 	-webkit-border-radius:	10px;
@@ -622,7 +622,7 @@ select.select {
 #navigationTabs li li.parent:focus > a,
 #navigationTabs li li.parent.active > a {
 	position:			relative;
-	z-index:			55;
+	z-index:			201;
 	background:			#F81A53;
 	color:				#fff;
 	width:				130px;

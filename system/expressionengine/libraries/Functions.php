@@ -363,6 +363,15 @@ class EE_Functions {
 	 */
 	function redirect($location, $method = FALSE)
 	{
+		// Remove hard line breaks and carriage returns
+		$location = str_replace(array("\n", "\r"), '', $location);
+
+		// Remove any and all line breaks
+		while (stripos($location, '%0d') !== FALSE OR stripos($location, '%0a') !== FALSE)
+		{
+			$location = str_ireplace(array('%0d', '%0a'), '', $location);
+		}
+
 		$location = str_replace('&amp;', '&', $this->insert_action_ids($location));
 
 		if (count($this->EE->session->flashdata))
