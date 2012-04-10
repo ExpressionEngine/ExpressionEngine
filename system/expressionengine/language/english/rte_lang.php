@@ -12,8 +12,8 @@ $lang = array(
 'rte_toolsets' => 'Rich Text Editor Toolsets',
 'rte_tools' => 'Rich Text Editor Tools',
 'create_new_rte_toolset' => 'Create a New Toolset',
-'define_toolset' => 'Define Custom Rich Text Editor Toolset',
-'define_my_toolset' => 'Define My Custom Rich Text Editor Toolset',
+'edit_toolset' => 'Edit Toolset',
+'edit_my_toolset' => 'Edit My Toolset',
 
 // Snippets
 'no' => 'No',
