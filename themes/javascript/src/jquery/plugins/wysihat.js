@@ -591,6 +591,7 @@ WysiHat.Element = (function( $ ){
 				beforeState,
 				finalize;
 
+			this._saveTextState(action);
 
 			// special case - undo and redo
 			if (action == 'undo' || action == 'redo')
@@ -610,8 +611,7 @@ WysiHat.Element = (function( $ ){
 			}
 
 			// mark text change
-			beforeState = this.getState(),
-			this._saveTextState(action);
+			beforeState = this.getState();
 
 			if ( ! this.events.has(action))
 			{
@@ -627,11 +627,11 @@ WysiHat.Element = (function( $ ){
 					return;
 				}
 
+				this.hasRun = true;
+
 				that.textChange(beforeState);
 				that._saveTextState(action);
 				that.$editor.focus();
-
-				this.hasRun = true;
 			};
 
 			this.events.run(action, this.$editor, beforeState, $.proxy(finalize, finalize));
@@ -891,6 +891,7 @@ WysiHat.Element = (function( $ ){
 		_rangeEvent: function(evt)
 		{
 			this._saveTextState(evt.type);
+			this.$editor.trigger( 'WysiHat-selection:change' );
 		},
 
 		/**
@@ -1230,7 +1231,7 @@ WysiHat.Element = (function( $ ){
 
 			function getTextNodes(node)
 			{
-				if (node.nodeType == 3 || node.nodeType == 4)
+				if (node.nodeType == Node.TEXT_NODE || node.nodeType == Node.CDATA_SECTION_NODE)
 				{
 					if (offset > 0)
 					{
@@ -1252,7 +1253,7 @@ WysiHat.Element = (function( $ ){
 			if (offset == 0)
 			{
 				// weird case where they try to select something from 0
-				if (curNode.nodeType != 3)
+				if (curNode.nodeType != Node.TEXT_NODE)
 				{
 					return [curNode, 0];
 				}
@@ -1267,7 +1268,8 @@ WysiHat.Element = (function( $ ){
 				curNode = curNode.nextSibling;
 			}
 
-			return [curNode, curNode.nodeValue.length + offset];
+			curNodeLen = curNode.nodeValue ? curNode.nodeValue.length : 0;
+			return [curNode, curNodeLen + offset];
 		}
 	};
 

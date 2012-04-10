@@ -1,25 +1,29 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-/*
-=====================================================
- ExpressionEngine - by EllisLab
------------------------------------------------------
- http://expressionengine.com/
------------------------------------------------------
- Copyright (c) 2004 - 2011 EllisLab, Inc.
-=====================================================
- THIS IS COPYRIGHTED SOFTWARE
- PLEASE READ THE LICENSE AGREEMENT
- http://expressionengine.com/user_guide/license.html
-=====================================================
- File: rte.link.php
------------------------------------------------------
- Purpose: Link RTE Tool
-=====================================================
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		ExpressionEngine Dev Team
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @license		http://expressionengine.com/user_guide/license.html
+ * @link		http://expressionengine.com
+ * @since		Version 2.5
+ * @filesource
+ */
+ 
+// ------------------------------------------------------------------------
 
-*/
-
-Class Link_rte {
+/**
+ * ExpressionEngine Link RTE Tool
+ *
+ * @package		ExpressionEngine
+ * @subpackage	RTE
+ * @category	RTE
+ * @author		ExpressionEngine Dev Team
+ * @link		http://expressionengine.com
+ */
+class Link_rte {
 	
 	public $info = array(
 		'name'			=> 'Link',
@@ -30,18 +34,24 @@ Class Link_rte {
 	
 	private $EE;
 	
-	/** -------------------------------------
-	/**  Constructor
-	/** -------------------------------------*/
+	/**
+	 * Constructor
+	 *
+	 * @access	public
+	 */
 	function __construct()
 	{
 		// Make a local reference of the ExpressionEngine super object
 		$this->EE =& get_instance();
 	}
 
-	/** -------------------------------------
-	/**  Globals we need defined
-	/** -------------------------------------*/
+	// --------------------------------------------------------------------
+
+	/**
+	 * Globals we need
+	 *
+	 * @access	public
+	 */
 	function globals()
 	{
 		$this->EE->lang->loadfile('rte');
@@ -63,9 +73,13 @@ Class Link_rte {
 		);
 	}
 	
-	/** -------------------------------------
-	/**  Libraries we need loaded
-	/** -------------------------------------*/
+	// --------------------------------------------------------------------
+
+	/**
+	 * Libraries we need
+	 *
+	 * @access	public
+	 */
 	function libraries()
 	{
 		return array(
@@ -73,9 +87,13 @@ Class Link_rte {
 		);
 	}
 	
-	/** -------------------------------------
-	/**  Styles we need loaded
-	/** -------------------------------------*/
+	// --------------------------------------------------------------------
+
+	/**
+	 * Styles we need
+	 *
+	 * @access	public
+	 */
 	function styles()
 	{
 		ob_start(); ?>
@@ -91,9 +109,13 @@ Class Link_rte {
 		return $buffer;
 	}
 
-	/** -------------------------------------
-	/**  RTE Tool Definition
-	/** -------------------------------------*/
+	// --------------------------------------------------------------------
+
+	/**
+	 * JS Defintion
+	 *
+	 * @access	public
+	 */
 	function definition()
 	{
 		# load the external file

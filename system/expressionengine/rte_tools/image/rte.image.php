@@ -1,25 +1,29 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-/*
-=====================================================
- ExpressionEngine - by EllisLab
------------------------------------------------------
- http://expressionengine.com/
------------------------------------------------------
- Copyright (c) 2004 - 2011 EllisLab, Inc.
-=====================================================
- THIS IS COPYRIGHTED SOFTWARE
- PLEASE READ THE LICENSE AGREEMENT
- http://expressionengine.com/user_guide/license.html
-=====================================================
- File: rte.image.php
------------------------------------------------------
- Purpose: Image RTE Tool
-=====================================================
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		ExpressionEngine Dev Team
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @license		http://expressionengine.com/user_guide/license.html
+ * @link		http://expressionengine.com
+ * @since		Version 2.5
+ * @filesource
+ */
+ 
+// ------------------------------------------------------------------------
 
-*/
-
-Class Image_rte {
+/**
+ * ExpressionEngine Image RTE Tool
+ *
+ * @package		ExpressionEngine
+ * @subpackage	RTE
+ * @category	RTE
+ * @author		ExpressionEngine Dev Team
+ * @link		http://expressionengine.com
+ */
+class Image_rte {
 	
 	public $info = array(
 		'name'			=> 'Image',
@@ -32,9 +36,11 @@ Class Image_rte {
 	private $folders	= array();
 	private $filedirs	= array();
 	
-	/** -------------------------------------
-	/**  Constructor
-	/** -------------------------------------*/
+	/**
+	 * Constructor
+	 *
+	 * @access	public
+	 */
 	function __construct()
 	{
 		// Make a local reference of the ExpressionEngine super object
@@ -44,9 +50,13 @@ Class Image_rte {
 		$this->_get_file_locations();
 	}
 
-	/** -------------------------------------
-	/**  Globals we need defined
-	/** -------------------------------------*/
+	// --------------------------------------------------------------------
+
+	/**
+	 * Globals we need
+	 *
+	 * @access	public
+	 */
 	function globals()
 	{
 		$this->EE->lang->loadfile('rte');
@@ -84,9 +94,13 @@ Class Image_rte {
 */
 	}
 	
-	/** -------------------------------------
-	/**  Styles we need loaded
-	/** -------------------------------------*/
+	// --------------------------------------------------------------------
+
+	/**
+	 * Styles we need
+	 *
+	 * @access	public
+	 */
 	function styles()
 	{
 		# load the external file
@@ -96,18 +110,26 @@ Class Image_rte {
 		return str_replace('{theme_folder_url}', $theme, $styles);
 	}
 
-	/** -------------------------------------
-	/**  RTE Tool Definition
-	/** -------------------------------------*/
+	// --------------------------------------------------------------------
+
+	/**
+	 * JS Defintion
+	 *
+	 * @access	public
+	 */
 	function definition()
 	{
 		# load the external file
 		return file_get_contents( 'rte.image.js', TRUE );
 	}
 	
-	/** -------------------------------------
-	/**  Collect the folders
-	/** -------------------------------------*/
+	// --------------------------------------------------------------------
+
+	/**
+	 * Collect the folders
+	 *
+	 * @access	private
+	 */
 	private function _get_file_locations()
 	{
 		$this->EE->load->model('file_upload_preferences_model');
