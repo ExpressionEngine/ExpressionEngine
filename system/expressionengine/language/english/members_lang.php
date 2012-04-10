@@ -916,6 +916,8 @@ $lang = array(
 'include_in_mailinglists' =>
 "Allow Members in Site's Mailing Lists and Related Abilities? (i.e. Group Available in Communicate section)",
 
+'member_delete_dont_reassign_entries' =>
+"Don't reassign this member's entries, just delete them ALL",
 
 ''=>''
 );
