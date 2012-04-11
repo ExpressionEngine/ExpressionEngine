@@ -1,5 +1,5 @@
 <div class="file_set <?=$set_class?>">
-	<p class='filename'><?=$thumb?><br /><?=$filename?></p>
+	<p class='filename'><img src="<?=$thumb?>" alt="<?=$alt?>"/><br /><?=$filename?></p>
 	<p class='sub_filename'><a href="#" class="remove_file"><?=lang('remove_file')?></a></p>
 	<p><?=$hidden?></p>
 </div>

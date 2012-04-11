@@ -1,25 +1,29 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-/*
-=====================================================
- ExpressionEngine - by EllisLab
------------------------------------------------------
- http://expressionengine.com/
------------------------------------------------------
- Copyright (c) 2004 - 2011 EllisLab, Inc.
-=====================================================
- THIS IS COPYRIGHTED SOFTWARE
- PLEASE READ THE LICENSE AGREEMENT
- http://expressionengine.com/user_guide/license.html
-=====================================================
- File: rte.view_source.php
------------------------------------------------------
- Purpose: View Source RTE Tool
-=====================================================
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		ExpressionEngine Dev Team
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @license		http://expressionengine.com/user_guide/license.html
+ * @link		http://expressionengine.com
+ * @since		Version 2.5
+ * @filesource
+ */
+ 
+// ------------------------------------------------------------------------
 
-*/
-
-Class View_source_rte {
+/**
+ * ExpressionEngine View Source RTE Tool
+ *
+ * @package		ExpressionEngine
+ * @subpackage	RTE
+ * @category	RTE
+ * @author		ExpressionEngine Dev Team
+ * @link		http://expressionengine.com
+ */
+class View_source_rte {
 	
 	public $info = array(
 		'name'			=> 'View Source',
@@ -30,18 +34,24 @@ Class View_source_rte {
 	
 	private $EE;
 	
-	/** -------------------------------------
-	/**  Constructor
-	/** -------------------------------------*/
+	/**
+	 * Constructor
+	 *
+	 * @access	public
+	 */
 	function __construct()
 	{
 		// Make a local reference of the ExpressionEngine super object
 		$this->EE =& get_instance();
 	}
 
-	/** -------------------------------------
-	/**  Globals we need defined
-	/** -------------------------------------*/
+	// --------------------------------------------------------------------
+
+	/**
+	 * Javascript globls we need
+	 *
+	 * @access	public
+	 */
 	function globals()
 	{
 		$this->EE->lang->loadfile('rte');
@@ -53,9 +63,14 @@ Class View_source_rte {
 		);
 	}
 	
-	/** -------------------------------------
-	/**  Libraries we need loaded
-	/** -------------------------------------*/
+	// --------------------------------------------------------------------
+
+	/**
+	 * Libraries we need
+	 *
+	 * @access	public
+	 * @return	mixed array of libraries
+	 */
 	function libraries()
 	{
 		return array(
@@ -63,9 +78,13 @@ Class View_source_rte {
 		);
 	}
 	
-	/** -------------------------------------
-	/**  RTE Tool Definition
-	/** -------------------------------------*/
+	// --------------------------------------------------------------------
+
+	/**
+	 * Javascript Definition
+	 *
+	 * @access	public
+	 */
 	function definition()
 	{
 		ob_start(); ?>
@@ -74,7 +93,8 @@ Class View_source_rte {
 			name:			'view_source',
 			label:			EE.rte.view_source.code,
 			'toggle-text':	EE.rte.view_source.content,
-			handler: function( $editor, e ){
+			handler: function( $editor, beforeState, finalize ){
+				var e = { target: $editor.find('get(0) };
 				$editor.toggleHTML( e );
 			}
 		});
