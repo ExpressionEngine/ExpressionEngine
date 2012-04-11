@@ -117,6 +117,16 @@ class Members extends CI_Controller {
 		$sort = ($this->config->item('memberlist_sort_order')) ?
 			$this->config->item('memberlist_sort_order') : 'asc';
 		
+		// Fix for an issue where users may have 'total_posts' saved
+		// in their site settings for sorting members; but the actual
+		// column should be total_forum_posts, so we need to correct
+		// it until member preferences can be saved again with the
+		// right value
+		if ($order_by == 'total_posts')
+		{
+			$order_by = 'total_forum_posts';
+		}
+		
 		$initial_state = array(
 			'sort'	=> array($order_by => $sort)
 		);
@@ -1680,7 +1690,7 @@ class Members extends CI_Controller {
 					),
 
 			'memberlist_cfg'		=>	array(
-					'memberlist_order_by'		=> array('s', array('total_posts'		=> 'total_posts',
+					'memberlist_order_by'		=> array('s', array('total_forum_posts'		=> 'total_posts',
 						'screen_name'		=> 'screen_name',
 						'total_comments'	=> 'total_comments',
 						'total_entries'		=> 'total_entries',
