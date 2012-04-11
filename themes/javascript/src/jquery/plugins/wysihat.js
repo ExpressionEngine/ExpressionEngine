@@ -2506,7 +2506,7 @@ WysiHat.Formatting = {
  *
  * Handles the creation of the toolbar and manages the individual
  * buttons states. You can add your own by using:
- * $toolbar.addButton({ options });
+ * toolbar.addButton({ options });
  */
 
 // ---------------------------------------------------------------------
@@ -2519,6 +2519,9 @@ WysiHat.Formatting = {
 		this.$editor = $el;
 		this.$toolbar = $('<div class="' + WysiHat.name + '-editor-toolbar" role="presentation"></div>')
 						.insertBefore( $el );
+		
+		// Provide easy access to each $editor's toolbar instance
+		this.$editor.toolbar = this;
 	}
 
 	WysiHat.Toolbar.prototype = {

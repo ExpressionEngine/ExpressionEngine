@@ -94,7 +94,9 @@ class View_source_rte {
 			label:			EE.rte.view_source.code,
 			'toggle-text':	EE.rte.view_source.content,
 			handler: function( $editor, beforeState, finalize ){
-				var e = { target: $editor.find('get(0) };
+				var e = {
+					target: $editor.toolbar.$toolbar.find('button.view_source')
+				};
 				$editor.toggleHTML( e );
 			}
 		});
