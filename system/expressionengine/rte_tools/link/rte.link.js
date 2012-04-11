@@ -143,6 +143,9 @@
 			{
 				link = false;
 			}
+			
+			range.setStart(sel.anchorNode, sel.anchorOffset);
+			range.setEnd(sel.focusNode, sel.focusOffset);
 
 			// Can I get an A?
 			while ( s_el.nodeType != 1 )
@@ -162,10 +165,11 @@
 			if ( link )
 			{
 				$link_dialog.dialog('open');
-				$link_dialog.bind('dialogclose', function() {
-					// selUtil.set(state.selection);
+				$link_dialog.bind('dialogclose', function()
+				{
 					selUtil.set( selUtil.get(range) );
 					$editor.linkSelection(final_url);
+					
 					setTimeout(function() {
 						finalize();
 					}, 50);
