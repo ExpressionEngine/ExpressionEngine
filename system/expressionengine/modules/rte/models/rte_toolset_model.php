@@ -281,8 +281,22 @@ class Rte_toolset_model extends CI_Model {
 	{
 		$this->load->model('rte_tool_model');
 
-		// Load all available tools
-		$this->rte_tool_model->load_tools_into_db();
+		$tool_names = array('Blockquote', 'Bold', 'Headings', 'Image', 'Italic',
+			'Link', 'Ordered List', 'Strip Tags', 'Underline', 'Unordered List',
+			'View Source');
+
+		// Load all available tools		
+		foreach ($tool_names as $tool)
+		{
+			$this->db->insert(
+				'rte_tools',
+				array(
+					'name'		=> $tool,
+					'class'		=> ucfirst(strtolower(str_replace(' ', '_', $tool))).'_rte',
+					'enabled'	=> 'y'
+				)
+			);
+		}
 
 		// default toolset
 		$tool_ids = $this->rte_tool_model->get_tool_ids(array(
