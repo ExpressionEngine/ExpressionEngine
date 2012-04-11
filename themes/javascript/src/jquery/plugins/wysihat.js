@@ -84,6 +84,9 @@ var WysiHat = {
 
 			$editor.eventCore = new WysiHat.EventCore($editor);
 			$editor.data('eventCore', $editor.eventCore);
+			
+			// Respect textarea's existing row count settings
+			$editor.height($field.height());
 
 			function updateField()
 			{
