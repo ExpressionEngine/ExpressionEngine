@@ -22,7 +22,7 @@
  * @author		ExpressionEngine Dev Team
  * @link		http://expressionengine.com
  */
-class EE_Addons {
+class Addons {
 
 	var $EE;
 	var $_map;						// addons sorted by addon_type (plural)
@@ -81,10 +81,10 @@ class EE_Addons {
 			// Run through extensions, modules and fieldtypes
 			foreach (array('extensions', 'modules', 'fieldtypes') as $val)
 			{
-				if (($map = directory_map(APPPATH.$val.'/', 2)) !== FALSE)
+				$directory_path = (defined('EE_APPPATH')) ? EE_APPPATH : APPPATH;
+				if (($map = directory_map($directory_path.$val.'/', 2)) !== FALSE)
 				{
 					$this->package_list($map, $val, TRUE);
-
 				}				
 			}
 			
