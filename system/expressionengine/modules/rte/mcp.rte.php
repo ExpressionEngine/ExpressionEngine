@@ -49,9 +49,6 @@ class Rte_mcp {
 		$this->_form_base	= 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=rte';
 		$this->EE->rte_lib->cancel_url = $this->_base_url;
 		$this->EE->rte_lib->form_url = $this->_form_base;
-
-		// Load all tools into the DB
-		$this->EE->rte_tool_model->load_tools_into_db();
 	}
 
 	// --------------------------------------------------------------------

@@ -211,42 +211,45 @@ class Rte_tool_model extends CI_Model {
 		return $this->db->affected_rows();
 	}
 
-
 	/**
-	 * Load tools into the DB
+	 * Convenience method to add a tool, pass it a tool name with or without
+	 * spaces
+	 * @param String $tool_name The name of the tool to add
+	 * @return Integer The ID of the affected row
 	 */
-	public function load_tools_into_db()
+	public function add($tool_name)
 	{
-		$this->load->library('addons');
-		
-		// get the file list and the installed tools list
-		$files		= $this->addons->get_files('rte_tools');
-		$installed	= $this->addons->get_installed('rte_tools');
-		$classes	= array();
-		
-		// add new tools
-		foreach ($files as $package => $details)
-		{
-			$classes[] = $details['class'];
-			if ( ! isset($installed[$package]))
-			{
-				// make a record of the add-on in the DB
-				$this->db->insert(
-					'rte_tools',
-					array(
-						'name'		=> $details['name'],
-						'class'		=> $details['class'],
-						'enabled'	=> 'y'
-					)
-				);
-			}
-		}
-		
-		// cleanup removed tools
-		$this->db->where_not_in('class', $classes)
-			->delete('rte_tools');
+		return $this->save_tool(array(
+			'name' 		=> ucfirst($tool_name),
+			'class'		=> $this->_class_name($tool_name),
+			'enabled'	=> 'y'
+		));
 	}
 
+	/**
+	 * Deletes a tool
+	 * @param  String $tool_name The name of the tool to delete
+	 */
+	public function delete($tool_name)
+	{
+		$this->db->delete(
+			'rte_tools', 
+			array(
+				'name'	=> ucfirst($tool_name),
+				'class' => $this->_class_name($tool_name)
+			)
+		);
+	}
+
+	/**
+	 * Generates the class name that should be being used (e.g. tool becomes Tool_rte)
+	 * @param  String $tool_name The name of the tool to get the class name for
+	 * @return String The class name of the tool
+	 */
+	private function _class_name($tool_name)
+	{
+		return ucfirst(strtolower(str_replace(' ', '_', $tool_name))).'_rte';
+	}
 
 	/**
 	 * Helper for sorting tools by name (anonymous functions, please!)
