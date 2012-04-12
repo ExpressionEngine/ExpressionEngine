@@ -203,7 +203,7 @@ class Rte_lib
 		}
 		
 		// save it
-		if ($this->EE->rte_toolset_model->save_toolset($toolset, $toolset_id))
+		if ($this->EE->rte_toolset_model->save_toolset($toolset, $toolset_id) !== FALSE)
 		{
 			// if it’s new, get the ID
 			if ( ! $toolset_id)
@@ -235,7 +235,7 @@ class Rte_lib
 	// --------------------------------------------------------------------
 
 	/**
-	 * Validates a toolset name for existance and uniqueness
+	 * Validates a toolset name for existence and uniqueness
 	 *
 	 * @access	public
 	 * @return	mixed JSON or Boolean for validity
