@@ -1909,8 +1909,7 @@ class Admin_content extends CI_Controller {
 			
 			// Load in necessary js files
 			$this->cp->add_js_script(array(
-				'file'		=> array('cp/global'),
-				'plugin'	=> array('ee_url_title'),
+				'plugin'	=> array('ee_url_title')
 			));
 			
 			$this->javascript->keyup('#cat_name', '$("#cat_name").ee_url_title($("#cat_url_title"));');
