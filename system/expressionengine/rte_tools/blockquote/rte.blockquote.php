@@ -74,14 +74,13 @@ class Blockquote_rte {
 	{
 		ob_start(); ?>
 		
-		toolbar.addButton({
-			name: 			'blockquote',
+		WysiHat.addButton('blockquote', {
 			label:			EE.rte.blockquote.add,
 			'toggle-text': 	EE.rte.blockquote.remove,
-			handler: 	function( $ed ){
-				return $ed.toggleIndentation();
+			handler: function() {
+				return this.$editor.toggleIndentation();
 			},
-			query: function( $editor, $btn ){
+			query: function() {
 				var
 				selection	= window.getSelection(),
 				hasRange	= !! selection.rangeCount,

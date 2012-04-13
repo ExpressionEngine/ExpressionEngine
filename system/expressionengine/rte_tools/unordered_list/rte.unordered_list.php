@@ -75,15 +75,14 @@ class Unordered_list_rte {
 	{
 		ob_start(); ?>
 		
-		toolbar.addButton({
-			name:			'unordered_list',
+		WysiHat.addButton('unordered_list', {
 			label:			EE.rte.unordered_list.add,
 			'toggle-text':	EE.rte.unordered_list.remove,
-			handler: function( $ed ){
-				return $ed.toggleUnorderedList();
+			handler: function(){
+				return this.$editor.toggleUnorderedList();
 			},
-			query: function( $editor ){
-				return $editor.queryCommandState('insertUnorderedList');
+			query: function(){
+				return this.$editor.queryCommandState('insertUnorderedList');
 			}
 		});
 		

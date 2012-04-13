@@ -74,10 +74,12 @@ class Italic_rte {
 	{
 		ob_start(); ?>
 		
-		toolbar.addButton({
-			name:			'italic',
+		WysiHat.addButton('italic', {
 			label:			EE.rte.italics.add,
-			'toggle-text':	EE.rte.italics.remove
+			'toggle-text':	EE.rte.italics.remove,
+			handler: function() {
+				this.$editor.italicizeSelection();
+			}
 		});
 		
 <?php	$buffer = ob_get_contents();

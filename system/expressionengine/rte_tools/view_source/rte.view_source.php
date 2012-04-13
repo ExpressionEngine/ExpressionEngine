@@ -89,15 +89,33 @@ class View_source_rte {
 	{
 		ob_start(); ?>
 		
-		toolbar.addButton({
-			name:			'view_source',
+		WysiHat.addButton('view_source', {
 			label:			EE.rte.view_source.code,
 			'toggle-text':	EE.rte.view_source.content,
-			handler: function( $editor, beforeState, finalize ){
+			init: function(name, $editor) {
+				this.parent.init(name, $editor);
+				$editor.add($editor.data('field'))
+					.bind('resize', function() {
+						var $this	= $(this);
+			
+						if ($this.is('.WysiHat-editor') && $this.is(':visible')) {
+							$this.data('field')
+								.height($this.height())
+								.width($this.outerWidth());
+						} else if ($this.is('.rte') && $this.is(':visible')) {
+							$this.data('editor')
+								.height($this.height())
+								.width($this.width());
+						}
+					}).resize();
+				return this;
+			},
+			handler: function() {
+				console.log('hi');
 				var e = {
-					target: $editor.toolbar.$toolbar.find('button.view_source')
+					target: this.$element
 				};
-				$editor.toggleHTML( e );
+				this.$editor.toggleHTML( e );
 			}
 		});
 		
@@ -115,10 +133,6 @@ class View_source_rte {
 					.width($this.width());
 			}
 		}
-
-		$editor.add($field)
-			.bind('resize',syncSizes)
-			.resize();
 		
 <?php	$buffer = ob_get_contents();
 		ob_end_clean(); 

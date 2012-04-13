@@ -74,8 +74,7 @@ class Bold_rte {
 	{
 		ob_start(); ?>
 		
-		toolbar.addButton({
-			name: 			'bold',
+		WysiHat.addButton('bold', {
 			label: 			EE.rte.bold.add,
 			'toggle-text':	EE.rte.bold.remove
 		});

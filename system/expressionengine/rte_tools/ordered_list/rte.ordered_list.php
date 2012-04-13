@@ -74,15 +74,14 @@ class Ordered_list_rte {
 	{
 		ob_start(); ?>
 		
-		toolbar.addButton({
-	    	name:			'ordered_list',
+		WysiHat.addButton('ordered_list', {
 			label:			EE.rte.ordered_list.add,
 			'toggle-text':	EE.rte.ordered_list.remove,
-	    	handler: function( $ed ){
-		 		$ed.toggleOrderedList();
+	    	handler: function() {
+		 		this.$editor.toggleOrderedList();
 			},
-			query: function( $editor ){
-				return $editor.queryCommandState('insertOrderedList');
+			query: function() {
+				return this.$editor.queryCommandState('insertOrderedList');
 			}
 	    });
 		

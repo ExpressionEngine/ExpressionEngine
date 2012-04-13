@@ -118,16 +118,16 @@
 		$link_dialog.dialog('close');
 	}
 
-	toolbar.addButton({
-		name:	'link',
-	    label:	EE.rte.link.add,
-	    handler: function($e, state, finalize) {
-	    	var selUtil = $e.data('selectionUtil');
-	    	$editor = $e.data('wysihat');
-	    	$editor.select();
+	WysiHat.addButton('link', {
+		label:	EE.rte.link.add,
+		handler: function(state, finalize) {
+			var selUtil = this.Selection,
+				$editor = this.$editor;
 
-	    	selUtil.set(state.selection);
-	    	
+			$editor.select();
+
+			selUtil.set(state.selection);
+
 			var sel		= window.getSelection(),
 				range	= document.createRange(),
 				link	= true,

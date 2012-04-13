@@ -74,8 +74,7 @@ class Underline_rte {
 	{
 		ob_start(); ?>
 		
-		toolbar.addButton({
-			name:			'underline',
+		WysiHat.addButton('underline', {
 			label:			EE.rte.underline.add,
 			'toggle-text':	EE.rte.underline.remove
 		});

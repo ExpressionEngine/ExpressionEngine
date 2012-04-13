@@ -71,12 +71,11 @@ class Strip_tags_rte {
 	{
 		ob_start(); ?>
 		
-		toolbar.addButton({
-			name:	"strip_tags",
+		WysiHat.addButton('strip_tags', {
 			label:	EE.rte.strip_tags.label,
-			handler: function( $ed ){
-				$ed.stripFormattingElements();
-				$ed.unformatContentBlock();
+			handler: function(){
+				this.$editor.stripFormattingElements();
+				this.$editor.unformatContentBlock();
 			}
 		});
 		
