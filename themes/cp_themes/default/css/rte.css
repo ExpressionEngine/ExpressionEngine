@@ -44,13 +44,13 @@
 	-o-border-radius: 3px;
 	-webkit-border-radius: 3px;
 	border-radius: 3px;
-	height: 260px;
+	height: 360px;
 	overflow-x: hidden;
 	overflow-y: auto;
 }
 
 .rte-toolset-builder-scrollpane ul {
-	min-height: 258px;
+	min-height: 358px;
 }
 
 .rte-tool {
