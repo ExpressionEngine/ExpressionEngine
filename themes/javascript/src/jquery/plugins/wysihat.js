@@ -580,62 +580,6 @@ WysiHat.Element = (function( $ ){
 			'underline': prefix + '-u'
 		};
 	})();
-	
-	// this is a singleton!
-	WysiHat.Events = (function() {
-		var handlers = {};
-
-		return {
-			/**
-			 * Add a handler for editor events. These
-			 * are things such as "bold" or "paste". Not
-			 * browser events!
-			 */
-			add: function(action, func)
-			{
-				handlers[action] = func;
-			},
-
-			/**
-			 * Do we have a handler?
-			 */
-			has: function(action)
-			{
-				return (action in handlers);
-			},
-
-			/**
-			 * Run the event handler.
-			 *
-			 * @param action event name
-			 * @param state current state
-			 * @param finalize completion callback for asynchronous tools
-			 */
-			run: function(action, state, finalize) {
-				var ret = handlers[action](state, finalize);
-
-				// false means you run finalize yourself
-				// in all other cases, we run it. If it was
-				// already run, no harm done.
-				if (ret !== false)
-				{
-					finalize();
-				}
-			}
-		};
-	})();
-
-	// add a few defautlts
-	// @todo move to where we do buttons
-	WysiHat.Events.add('paste', function($editor, state, finalize) {
-		setTimeout(function() {
-			WysiHat.Formatting.cleanup($editor);
-			finalize();
-		}, 50);
-
-		// we call finalize manually
-		return false;
-	});
 
 	WysiHat.EventCore = function($el)
 	{
@@ -648,12 +592,49 @@ WysiHat.Element = (function( $ ){
 		// helper classes
 		this.undoStack = new WysiHat.UndoStack();
 		this.selectionUtil = $el.data('selectionUtil');
-		this.events = WysiHat.Events;
+		this.eventHandlers = [];
 
 		this._hijack_events();
 	};
 
 	WysiHat.EventCore.prototype = {
+
+		/**
+		 * Add a handler for editor events. These
+		 * are things such as "bold" or "paste". Not
+		 * browser events!
+		 */
+		add: function(action, func)
+		{
+			this.eventHandlers[action] = func;
+		},
+
+		/**
+		 * Do we have a handler?
+		 */
+		has: function(action)
+		{
+			return (action in this.eventHandlers);
+		},
+
+		/**
+		 * Run the event handler.
+		 *
+		 * @param action event name
+		 * @param state current state
+		 * @param finalize completion callback for asynchronous tools
+		 */
+		run: function(action, state, finalize) {
+			var ret = this.eventHandlers[action](state, finalize);
+
+			// false means you run finalize yourself
+			// in all other cases, we run it. If it was
+			// already run, no harm done.
+			if (ret !== false)
+			{
+				finalize();
+			}
+		},
 
 		/**
 		 * Pass an event to its handler
@@ -688,7 +669,7 @@ WysiHat.Element = (function( $ ){
 			// mark text change
 			beforeState = this.getState();
 
-			if ( ! this.events.has(action))
+			if ( ! this.has(action))
 			{
 				// let it go ...
 				return true;
@@ -709,7 +690,7 @@ WysiHat.Element = (function( $ ){
 				that.$editor.focus();
 			};
 
-			this.events.run(action, beforeState, $.proxy(finalize, finalize));
+			this.run(action, beforeState, $.proxy(finalize, finalize));
 		},
 
 		/**
@@ -1241,12 +1222,18 @@ WysiHat.Element = (function( $ ){
 		 */
 		get: function(range)
 		{
+
 			var s = window.getSelection(),
 				r = document.createRange(),
 				length, topOffset;
 
 			if (range === undefined)
 			{
+				if ( ! s.rangeCount)
+				{
+					return [0, 0];
+				}
+
 				range = s.getRangeAt(0);
 			}
 
@@ -2704,7 +2691,17 @@ WysiHat.Formatting = {
 			this.addButton(buttons[i]);
 		}
 	}
+/*
+		WysiHat.Events.add('paste', function($editor, state, finalize) {
+		setTimeout(function() {
+			WysiHat.Formatting.cleanup($editor);
+			finalize();
+		}, 50);
 
+		// we call finalize manually
+		return false;
+	});
+*/
 	WysiHat.Toolbar.prototype = {
 
 		addButton: function(name)
@@ -2714,12 +2711,13 @@ WysiHat.Formatting = {
 
 			// Add add a selectionUtil reference straight onto the button
 			button.Selection = this.$editor.data('selectionUtil');
+			button.EventCore = this.$editor.data('eventCore');
 
 			// @todo commands really shouldn't weird-ly extend the editor. it's confusing as fuck.
 			// button.Commands = this.$editor.Commands;
 
 			button.setElement( this.createButtonElement(button) );
-			WysiHat.Events.add(name, button.getHandler());
+			button.EventCore.add(name, button.getHandler());
 
 			this.observeButtonClick(button);
 			this.observeStateChanges(button);
