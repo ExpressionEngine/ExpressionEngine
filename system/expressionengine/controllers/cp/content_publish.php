@@ -266,11 +266,11 @@ class Content_publish extends CI_Controller {
 		$this->file_field->browser();
 		
 		$this->cp->add_js_script(array(
-			'ui'		=> array('datepicker', 'resizable', 'draggable', 'droppable'),
-			'plugin'	=> array('markitup', 'toolbox.expose', 'overlay', 'tmpl', 'ee_url_title'),
-			'file'		=> array('json2', 'cp/publish', 'cp/publish_tabs', 'cp/global')
+			'ui'	 => array('datepicker', 'resizable', 'draggable', 'droppable'),
+			'plugin' => array('markitup', 'toolbox.expose', 'overlay', 'tmpl', 'ee_url_title'),
+			'file'	=> array('json2', 'cp/publish', 'cp/publish_tabs')
 		));
-		
+
 		if ($this->session->userdata('group_id') == 1)
 		{
 			$this->cp->add_js_script(array('file' => 'cp/publish_admin'));
