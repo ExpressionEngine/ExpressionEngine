@@ -78,39 +78,34 @@ class Headings_rte {
 	function definition()
 	{
 		ob_start(); ?>
-		
-		var $formatting_selector = $('<select class="button picker"/>');
-		
-		$formatting_selector
-			.append('<option value="p">' + EE.rte.headings.paragraph + '</option>')
-			.append('<option value="h1">' + EE.rte.headings.heading_1 + '</option>')
-			.append('<option value="h2">' + EE.rte.headings.heading_2 + '</option>')
-			.append('<option value="h3">' + EE.rte.headings.heading_3 + '</option>')
-			.append('<option value="h4">' + EE.rte.headings.heading_4 + '</option>')
-			.append('<option value="h5">' + EE.rte.headings.heading_5 + '</option>')
-			.append('<option value="h6">' + EE.rte.headings.heading_6 + '</option>')
-			.change(function(){
-				var val = $(this).val();
-				if ( val != '' )
-				{
-					$editor.changeContentBlock( $(this).val() );
 
-					// trigger the update
-					$editor.trigger( EE.rte.update_event );
+		WysiHat.addButton('headings', {
+			type: 'select',
+			options: [
+				['p', EE.rte.headings.paragraph],
+				['h1', EE.rte.headings.heading_1],
+				['h2', EE.rte.headings.heading_2],
+				['h3', EE.rte.headings.heading_3],
+				['h4', EE.rte.headings.heading_4],
+				['h5', EE.rte.headings.heading_5],
+				['h6', EE.rte.headings.heading_6]
+			],
+			handler: function(state, finalize) {
+
+				if ( this.$element.val() != '' )
+				{
+					this.$editor.changeContentBlock(this.$element.val());
+					this.$editor.trigger(EE.rte.update_event);
 				}
-			})
-			.appendTo( $parent.find('.WysiHat-editor-toolbar') );
-		
-		// update the selector as the user clicks around
-		$editor.bind(
-			'keyup mouseup',
-			function(){
+			},
+			query: function() {
+
 				var
-				selection	= window.getSelection(),
-				hasRange	= !! selection.rangeCount,
-				el			= selection.anchorNode,
-				blocks	 	= 'p,h1,h2,h3,h4,h5,h6',
-				$el, $p;
+					selection	= window.getSelection(),
+					hasRange	= !! selection.rangeCount,
+					el			= selection.anchorNode,
+					blocks	 	= 'p,h1,h2,h3,h4,h5,h6',
+					$el, $p;
 
 				if ( hasRange )
 				{
@@ -124,22 +119,24 @@ class Headings_rte {
 						}
 					}
 				}
-				
+
 				$el 	= $(el);
 				$parent	= $el.parents(blocks);
+
 				if ( $el.is(blocks) )
 				{
-					$formatting_selector.val(el.nodeName.toLowerCase());
+					this.$element.val(el.nodeName.toLowerCase());
 				}
 				else if ( $parent.length )
 				{
-					$formatting_selector.val($parent.get(0).nodeName.toLowerCase());
+					this.$element.val($parent.get(0).nodeName.toLowerCase());
 				}
 				else
 				{
-					$formatting_selector.val('');
+					this.$element.val('');
 				}
-			});
+			}
+		});
 		
 <?php	$buffer = ob_get_contents();
 		ob_end_clean(); 

@@ -47,7 +47,7 @@ var WysiHat = {
 	 * Acts a lot like ES5 object.create with the addition
 	 * of a <parent> property on the child which contains
 	 * proxied versions of the parent *methods*. Giving us easy
-	 * extending if we want it.
+	 * extending if we want it (we do).
 	 *
 	 * @todo bad place for this, it looks like you can extend wysihat
 	 */
@@ -82,7 +82,7 @@ var WysiHat = {
 	 * Available buttons.
 	 * Don't touch it, use addButton above.
 	 */
-	_buttons: [],
+	_buttons: []
 };
 
 
@@ -577,7 +577,7 @@ WysiHat.Element = (function( $ ){
 			// @todo move to tools?
 			'bold': prefix + '-b',
 			'italics': prefix + '-i',
-			'underline': prefix + '-u',
+			'underline': prefix + '-u'
 		};
 	})();
 	
@@ -861,7 +861,7 @@ WysiHat.Element = (function( $ ){
 			//	'focusout change': $.proxy(this._blurEvent, this),
 				'selectionchange focusin mouseup': $.proxy(this._rangeEvent, this),
 				'keydown keyup keypress': $.proxy(this._keyEvent, this),
-				'cut undo redo paste input contextmenu': $.proxy(this._menuEvent, this),
+				'cut undo redo paste input contextmenu': $.proxy(this._menuEvent, this)
 			//	'click doubleclick mousedown mouseup': $.proxy(this._mouseEvent, this)
 			};
 
@@ -966,7 +966,9 @@ WysiHat.Element = (function( $ ){
 		_rangeEvent: function(evt)
 		{
 			this._saveTextState(evt.type);
-			this.$editor.trigger( 'WysiHat-selection:change' );
+	// @todo this is a little too aggressive since we still have
+	// aaron's original events firing. Rip them out first.
+	//		this.$editor.trigger( 'WysiHat-selection:change' );
 		},
 
 		/**
@@ -1526,12 +1528,10 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 	{
 		if ( this.isIndented() )
 		{
-			console.log('yup');
 			this.unquoteSelection();
 		}
 		else
 		{
-			console.log('nope');
 			this.quoteSelection();
 		}
 	}
@@ -1951,9 +1951,6 @@ var iii = 0;
 			$btn.data('toggle-text', 'View Content');
 		}
 
-if (i++) {
-	return;
-}
 		this.toggleHTML = function()
 		{
 			if ( ! HTML )
@@ -2730,18 +2727,39 @@ WysiHat.Formatting = {
 
 		createButtonElement: function(button)
 		{
-			var $btn = $('<button aria-pressed="false" tabindex="-1"><b>' + button.label + '</b></button>')
-				.addClass( 'button ' + button.name)
-				.appendTo(this.$toolbar)
-				.hover(
-					function() {
-						var $button = $(this).closest('button');
-						$button.attr('title',$button.find('b').text());
-					},
-					function() {
-						$(this).closest('button').removeAttr('title');
-					}
-				);
+			var $btn;
+
+			if (button.type && button.type == 'select')
+			{
+				var opts = button.options,
+					l = opts.length, i = 0;
+
+				$btn = $('<select class="button picker"/>');
+
+				for ( ; i < l; i++)
+				{
+					$btn.append(
+						'<option value="' + opts[i][0] + '">' + opts[i][1] + '</option>'
+					);
+				}
+			}
+			else
+			{
+				$btn = $('<button aria-pressed="false" tabindex="-1"></button>');
+
+				$btn.append('<b>' + button.label + '</b>')
+					.addClass( 'button ' + button.name)
+					.hover(
+						function() {
+							this.title = $(this).find('b').text();
+						},
+						function() {
+							$(this).removeAttr('title');
+						}
+					);
+			}
+
+			$btn.appendTo(this.$toolbar);
 
 			if (button.cssClass)
 			{
@@ -2764,7 +2782,9 @@ WysiHat.Formatting = {
 
 		observeButtonClick: function(button)
 		{
-			button.$element.click(function(e){
+			var evt = (button.type && button.type == 'select') ? 'change' : 'click';
+
+			button.$element.bind(evt, function(e){
 				var $editor = button.$editor;
 
 				// Bring focus to the editor before the handler is called
