@@ -70,7 +70,7 @@ var WysiHat = {
 		obj = new F();
 
 		// No hasOwn check here. If you pass an object with
-		// a prototype as props, then you're an idiot. 
+		// a prototype as props, then you're an idiot.
 		for (prop in props) {
 			obj[prop] = props[prop];
 		}
@@ -858,7 +858,7 @@ WysiHat.Element = (function( $ ){
 				// selectionChange), but initially the shortest shortest
 				// route is best.
 
-			//	'focusout change': $.proxy(this._blurEvent, this),
+				// 'focusout change': $.proxy(this._blurEvent, this),
 				'selectionchange focusin mouseup': $.proxy(this._rangeEvent, this),
 				'keydown keyup keypress': $.proxy(this._keyEvent, this),
 				'cut undo redo paste input contextmenu': $.proxy(this._menuEvent, this)
