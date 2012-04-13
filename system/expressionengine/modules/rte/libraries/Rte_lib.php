@@ -318,7 +318,7 @@ class Rte_lib
 			// load the definition
 			if ( ! empty($tool['definition']))
 			{
-				if (in_array($tool['info']['name'], array('Bold', 'Italic', 'Link', 'Blockquote', 'Ordered List', 'Strip Tags', 'Underline', 'Unordered List', 'View Source')))
+				if ($tool['info']['name'] != 'Image')
 				$bits['definitions'] .= $tool['definition'];
 			}
 
