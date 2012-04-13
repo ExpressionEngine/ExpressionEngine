@@ -1,38 +1,24 @@
+/**
+ * Do NOT, I repeat do NOT, use this as a template for your buttons.
+ *
+ * This is terrible.
+ */
+
+(function() {
+
+var $image_button,
+	$parent,
+	$editor,
+	$field;
+
+function setupImageTool($editor, $image_button) {
+
 var	img_range		= null,
 	img_timer		= false,
 	EE_rte_image	= EE.rte.image,
 	$file_browser	= null,
 	$figure_overlay = $('<div id="rte_image_figure_overlay" class="WysiHat-ui-control"><p></p></div>').hide().appendTo('body'),
-	$curr_figure	= null,
-	$image_button	= toolbar.addButton({
-		name:		'image',
-		label:		EE_rte_image.add,
-		handler: function( $ed ){
-			// nothing (we observe from elsewhere)
-		}
-	});
-
-// Convert {filedir_n} tags to their respective URLs for
-// image presenation in the editor
-(function(){
-	var filedirs	= EE_rte_image.filedirs,
-		html		= $editor.html(),
-		path, path_re;
-	
-	// Firefox will return the left and right braces as entities,
-	// we need to switch those back for replacement below
-	html = html.replace('%7B', '{');
-	html = html.replace('%7D', '}');
-	
-	// Loop through the file directories and replace their
-	// respective tags in the editor's HTML
-	for ( path in filedirs )
-	{
-		path_re = new RegExp(path, 'g');
-		html = html.replace( path_re, filedirs[path] );
-	}
-	$editor.html(html);
-})();
+	$curr_figure	= null;
 
 // Upon form submission, convert file upload paths back to
 // {filedir_n} format for storage in the database
@@ -242,3 +228,42 @@ $editor
 				width:		$this.outerWidth()
 			});
 	});
+}
+
+WysiHat.addButton('image', {
+	label: EE.rte.image.add,
+	init: function(name, $editor) {
+
+		var filedirs	= EE.rte.image.filedirs,
+			html		= $editor.html(),
+			that		= this,
+			path_re, path;
+
+		// Firefox will return the left and right braces as entities,
+		// we need to switch those back for replacement below
+		html = html.replace('%7B', '{');
+		html = html.replace('%7D', '}');
+
+		for ( path in filedirs )
+		{
+			path_re = new RegExp(path, 'g');
+			html = html.replace( path_re, filedirs[path] );
+		}
+
+		$field = $editor.data('field');
+		$parent = $editor.parent();
+		$editor.html(html);
+
+		// blargh
+		setTimeout(function() {
+			setupImageTool($editor, that.$element);
+		}, 50);
+
+		return this.parent.init(name, $editor);
+	},
+	handler: function() {
+		// Rien? Tant pis!
+	}
+});
+
+})();

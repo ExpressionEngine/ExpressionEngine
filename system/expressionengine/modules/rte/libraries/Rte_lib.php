@@ -318,7 +318,6 @@ class Rte_lib
 			// load the definition
 			if ( ! empty($tool['definition']))
 			{
-				if ($tool['info']['name'] != 'Image')
 				$bits['definitions'] .= $tool['definition'];
 			}
 
