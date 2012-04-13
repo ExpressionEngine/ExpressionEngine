@@ -1934,7 +1934,6 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 		return styles;
 	}
 
-var iii = 0;
 	function toggleHTML( e )
 	{
 		var
@@ -2679,6 +2678,7 @@ WysiHat.Formatting = {
 					.text(this['toggle-text'] ? this['toggle-text'] : this.label);
 			return this;
 		},
+
 		setOff: function() {
 			this.$element
 				.removeClass('selected')

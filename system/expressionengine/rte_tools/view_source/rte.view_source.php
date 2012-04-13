@@ -111,7 +111,6 @@ class View_source_rte {
 				return this;
 			},
 			handler: function() {
-				console.log('hi');
 				var e = {
 					target: this.$element
 				};
