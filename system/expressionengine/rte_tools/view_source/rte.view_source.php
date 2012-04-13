@@ -113,7 +113,7 @@ class View_source_rte {
 			handler: function() {
 				this.$editor.toggleHTML({
 					target: this.$element
-				);
+				});
 			}
 		});
 		
