@@ -383,7 +383,6 @@ class Rte_lib
 
 		$js .= '
 				// RTE Styles
-				var toolbar = { addButton: function() {} };
 				$("<link rel=\"stylesheet\" href=\"' . $rtecss . '\"/>")
 					.add( $("<style>' . preg_replace( '/\\s+/', ' ', $bits['styles'] ) . '</style>"))
 					.appendTo("head");
