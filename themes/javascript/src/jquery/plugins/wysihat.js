@@ -2519,28 +2519,31 @@ WysiHat.Formatting = {
 			.find('p:empty')
 				.remove();
 	},
+	reBlocks: new RegExp(
+		'(<(?:ul|ol)>|<\/(?:' + WysiHat.Element.getBlocks().join('|') + ')>)[\r\n]*',
+		'g'
+	),
 	format: function( $el )
 	{
-		var
-		// @todo move this out of the function
-		reBlocks = new RegExp( '(<(?:ul|ol)>|<\/(?:' + WysiHat.Element.getBlocks().join('|') + ')>)[\r\n]*', 'g' ),
-		html = $el.html()
-					.replace('<p>&nbsp;</p>','')
-					.replace(/<br\/?><\/p>/,'</p>')
-					.replace( reBlocks,'$1\n' )
-					.replace(/\n+/,'\n')
-					.replace(/<p>\n+<\/p>/,'');
-		$el.html( html );
+		$el.html(function(i, old) {
+			return old.replace('<p>&nbsp;</p>', '')
+				.replace(/<br\/?><\/p>/, '</p>')
+				.replace(this.reBlocks, '$1\n')
+				.replace(/\n+/, '\n')
+				.replace(/<p>\n+<\/p>/, '');
+		});
 	},
 	getBrowserMarkupFrom: function( $el )
 	{
-		var $container = $('<div>' + $el.val().replace(/\n/,'') + '</div>');
+		var $container = $('<div>' + $el.val().replace(/\n/, '') + '</div>'),
+			html;
 
 		this.cleanup( $container );
+		html = $container.html();
 
-		if ( $container.html() == '' ||
-		 	 $container.html() == '<br>' ||
-		 	 $container.html() == '<br/>' )
+		if (html == '' ||
+		 	html == '<br>' ||
+		 	html == '<br/>' )
 		{
 			$container.html('<p>&#x200b;</p>');
 		}
@@ -2556,10 +2559,11 @@ WysiHat.Formatting = {
 		html;
 
 		$container = $('<div/>').html($clone.html());
+		html = $container.html();
 
-		if ( $container.html() == '' ||
-		 	 $container.html() == '<br>' ||
-		 	 $container.html() == '<br/>' )
+		if (html == '' ||
+		 	html == '<br>' ||
+		 	html == '<br/>' )
 		{
 			$container.html('<p>&#x200b;</p>');
 		}
