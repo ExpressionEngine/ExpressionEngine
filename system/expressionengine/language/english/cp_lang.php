@@ -338,7 +338,7 @@ $lang = array(
 'hide sidebar',
 
 'reveal_sidebar' =>
-'reveal sidebar',
+'show sidebar',
 
 //----------------------------
 // Buttons
