@@ -2376,6 +2376,27 @@ class EE_Template {
 		
 		$template = ($template == '') ? 'index' : $template;
 		
+		/* -------------------------------------------
+		/*	Hidden Configuration Variable
+		/*	- template_sync_ignore_prefixes => array 
+			If a template file starts with an ignored prefix?
+			We ignore it.
+		/* -------------------------------------------*/
+
+		if ($this->EE->config->item('template_sync_ignore_prefixes') !== FALSE)
+		{
+			$prefixes = $this->EE->config->item('template_sync_ignore_prefixes');
+			
+			foreach ($prefixes as $v)
+			{
+				$length = strlen($v);
+				if (strncmp($template, $v, $length) == 0)
+				{
+					return FALSE;
+				}
+			}
+		}
+
 		if ($db_check)
 		{
 			$this->EE->db->from('templates');
@@ -2403,12 +2424,12 @@ class EE_Template {
 		}
 
 		$filename = FALSE;
-		
+
 		// Note- we should add the extension before checking.
 
 		foreach ($this->EE->api_template_structure->file_extensions as $type => $temp_ext)
 		{
-			if (file_exists($basepath.'/'.$template.$temp_ext) && is_really_writable($basepath.'/'.$template.$temp_ext))
+			if (file_exists($basepath.'/'.$template.$temp_ext))
 			{
 				// found it with an extension
 				$filename = $template.$temp_ext;

@@ -63,6 +63,7 @@ class EE_Email extends CI_Email {
 		/*	Hidden Configuration Variables
 		/*	- email_newline => Default newline.
 		/*  - email_crlf => CRLF used in quoted-printable encoding
+		/*  - email_smtp_port => SMTP Port
         /* -------------------------------------------*/
 		
 		if ($this->EE->config->item('email_newline') !== FALSE)
@@ -74,7 +75,12 @@ class EE_Email extends CI_Email {
 		{
 			$config['crlf'] = $this->EE->config->item('email_crlf');
 		}
-		
+
+		if ($this->EE->config->item('email_smtp_port') !== FALSE)
+		{
+			$config['smtp_port'] = $this->EE->config->item('smtp_port');
+		}
+				
 		$this->useragent = APP_NAME.' '.APP_VER;		
 
 		$this->initialize($config);
