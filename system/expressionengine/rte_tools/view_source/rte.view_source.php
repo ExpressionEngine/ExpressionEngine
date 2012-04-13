@@ -111,27 +111,11 @@ class View_source_rte {
 				return this;
 			},
 			handler: function() {
-				var e = {
+				this.$editor.toggleHTML({
 					target: this.$element
-				};
-				this.$editor.toggleHTML( e );
+				);
 			}
 		});
-		
-		function syncSizes()
-		{
-			var $this	= $(this);
-			
-			if ($this.is('.WysiHat-editor') && $this.is(':visible')) {
-				$this.data('field')
-					.height($this.height())
-					.width($this.outerWidth());
-			} else if ($this.is('.rte') && $this.is(':visible')) {
-				$this.data('editor')
-					.height($this.height())
-					.width($this.width());
-			}
-		}
 		
 <?php	$buffer = ob_get_contents();
 		ob_end_clean(); 
