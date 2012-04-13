@@ -76,7 +76,7 @@ class Rte_ext {
 	// --------------------------------------------------------------------
 
 	/**
-	 * MyAccount Rich Text Editor Preferences Page
+	 * My Account Preferences
 	 *
 	 * @access	public
 	 * @return	string The page contents
@@ -85,45 +85,58 @@ class Rte_ext {
 	{
 		$this->EE->load->library('javascript');
 		$this->EE->load->model('rte_toolset_model');
-		
-		// get the member prefs
-		$prefs = $this->EE->db->select( array( 'rte_enabled','rte_toolset_id' ))
-			->get_where(
-				'members',
-				array('member_id' => $member_id)
-			)
-			->row();
-		
-		// get available toolsets
-		$toolset_opts = $this->EE->rte_toolset_model->get_member_options();
 
-		foreach ($toolset_opts as $id => $name)
+		// get member preferences
+		$prefs = $this->EE->rte_toolset_model->get_member_prefs();
+
+		// get available toolsets
+		$toolsets = $this->EE->rte_toolset_model->get_member_toolsets();
+				
+		// assume we don't have a custom toolset to begin with
+		$my_toolset_id = 0;
+
+		// build the dropdown
+		foreach ($toolsets as $t)
 		{
-			$toolset_opts[$id] = lang($name);
+			if ($t['member_id'] == $this->EE->session->userdata('member_id'))
+			{
+				// we have a custom toolset; grab its id
+				$my_toolset_id = $t['rte_toolset_id'];
+				continue;
+			}
+
+			$options[$t['rte_toolset_id']] = $t['name'];
 		}
-		
+
+		// insert our custom toolset at the beginning of the list
+		$options = array($my_toolset_id => lang('my_toolset')) + $options;
+
 		// setup the page
 		$vars = array(
 			'cp_page_title'			=> lang('rte_prefs'),
-			'rte_enabled'			=> $prefs->rte_enabled,
-			'rte_toolset_id_opts'	=> $toolset_opts,
-			'rte_toolset_id'		=> $prefs->rte_toolset_id
+			'rte_enabled'			=> $prefs['rte_enabled'],
+			'rte_toolset_id'		=> $prefs['rte_toolset_id'],
+			'rte_toolset_id_opts'	=> $options
 		);
 		
 		// JS stuff
 		$this->EE->javascript->set_global(array(
 			'rte'	=> array(
-				'toolset_modal' => array(
-					'title'	=> lang('edit_my_toolset')
+				'lang' => array(
+					'edit_my_toolset'	=> lang('edit_my_toolset')
 				),
-				'toolset_builder_url'	=> BASE.AMP.'C=myaccount'.AMP.'M=custom_action'.AMP.'extension=rte'.AMP.'method=edit_toolset'.AMP.'private=true',
-				'edit_text'				=> lang('edit')
+				'url'	=> array(
+					'edit_my_toolset' 	=> BASE.AMP.'C=myaccount'.AMP.'M=custom_action'.AMP.'extension=rte'.AMP.'method=edit_toolset'.AMP.'private=true'.AMP.'rte_toolset_id='.$my_toolset_id,
+				),
+				'my_toolset_id'			=> $my_toolset_id
 			)
 		));
+
 		$this->EE->cp->add_js_script(array(
 			'file'	=> 'cp/rte',
 			'ui'	=> 'dialog'
 		));
+
 		$this->EE->javascript->compile();
 		
 		// add the CSS
@@ -153,7 +166,7 @@ class Rte_ext {
 		);
 		$this->EE->form_validation->set_rules(
 			'rte_toolset_id',
-			lang('choose_default_toolset'),
+			lang('default_toolset'),
 			'required|is_numeric'
 		);
 		
@@ -187,10 +200,10 @@ class Rte_ext {
 	 * @param	int $toolset_id The Toolset ID to be edited (optional)
 	 * @return	string The page
 	 */
-	public function edit_toolset($toolset_id = FALSE)
+	public function edit_toolset()
 	{
 		$this->EE->rte_lib->form_url = 'C=myaccount'.AMP.'M=custom_action'.AMP.'extension=rte'.AMP.'method=save_toolset';
-		return $this->EE->rte_lib->edit_toolset($toolset_id);
+		return $this->EE->rte_lib->edit_toolset();
 	}
 
 	// --------------------------------------------------------------------
@@ -201,16 +214,6 @@ class Rte_ext {
 	public function save_toolset()
 	{
 		$this->EE->rte_lib->save_toolset();
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Passthrough to the library's validate_toolset_name() method
-	 */
-	public function validate_toolset_name()
-	{
-		return $this->EE->rte_lib->validate_toolset_name();
 	}
 
 	// --------------------------------------------------------------------

@@ -1,9 +1,9 @@
-(function($){
-	var	$edit_toolset	= $('a[href*=edit_toolset]:not(.addTab)'),
-		$modal			= $('<div id="rte_toolset_editor_modal"><div class="contents"/></div>');
+(function($) {
+
+	var	$toolset_editor = $('<div id="rte_toolset_editor_modal"><div class="contents"/></div>');
 	
 	// make the modal
-	$modal.dialog({
+	$toolset_editor.dialog({
 		width: 600,
 		resizable: false,
 		position: ["center","center"],
@@ -12,11 +12,39 @@
 		autoOpen: false,
 		zIndex: 99999,
 		open: function(e, ui) {
-			setupToolsetBuilder();
+			setupToolsetEditor();
 		}
 	});
 
 	
+	// My Account - Toolset dropdown
+	$('body').on('change', '#rte_toolset_id', function() {
+	
+		var toolset_id = $(this).val();
+
+		if (toolset_id == '0' || toolset_id == EE.rte.my_toolset_id) {
+			$('#edit_toolset').show();
+
+			// show the toolset editor if creating a custom toolset for the first time 
+			if (toolset_id == '0') {
+				load_rte_builder(EE.rte.url.edit_my_toolset.replace(/&amp;/g,'&'));
+			}
+
+			return;
+		}
+
+		$('#edit_toolset').hide();
+	});
+
+	// My Account - Fire dropdown change event once on load
+	$('#rte_toolset_id').change();
+
+	// My Account - Edit button (for My Toolset)
+	$('#edit_toolset').click(function(){
+		load_rte_builder(EE.rte.url.edit_my_toolset.replace(/&amp;/g,'&'))
+	});
+	
+
 	// Load the RTE Builder
 	function load_rte_builder(url)
 	{
@@ -31,10 +59,10 @@
 				modal_title = $('#mainContent .edit', data).text();
 			} else {
 				modal_contents = data;
-				modal_title = EE.rte.toolset_modal.title;
+				modal_title = EE.rte.lang.edit_my_toolset;
 			}
 
-			$modal
+			$toolset_editor
 				.find('.contents')
 					.html(modal_contents)
 					.find('div.heading')
@@ -46,80 +74,28 @@
 		});
 	}
 
-	// Home Page - Trigger Toolset overlay
-	if ($edit_toolset.length )
-	{
-		$edit_toolset.click(function(e){
-			e.preventDefault();
-			var $a = $(this).closest('a');
-			// Load the RTE Builder
-			load_rte_builder( $a.attr('href') );
-		});
-	}
+	// Module home page
+	$('body').on('click', '.edit_toolset', function(e) {
+
+		e.preventDefault();
+
+		// Load the RTE Builder
+		load_rte_builder($(this).attr('href'));
+	});
 	
-	// MyAccount - Trigger Toolset overlay
-	var	$my_toolset_id		= $('#rte_toolset_id').change(toggle_rte_edit_link),
-		$edit_my_toolset	= $('#edit_toolset');
 
-	// Get the builder
-	function get_rte_toolset_builder()
-	{
-		$modal.dialog();
-
-		var builder_url	= EE.rte.toolset_builder_url.replace(/&amp;/g,'&'); // damn AMPs
-
-		// My Custom Toolset - trigger edit on My Custom Toolset
-		if ( $my_toolset_id.find('option:selected').text() == EE.rte.custom_toolset_text )
-		{
-			// pass the toolset id if we have it
-			if ( $my_toolset_id.val() != 'new' )
-			{
-				builder_url += '&rte_toolset_id=' + $my_toolset_id.val();
-			}
-			// Load the RTE Builder
-			load_rte_builder( builder_url );
-		}
-	}
-
-	// add & remove the edit link
-	function toggle_rte_edit_link()
-	{
-		if ( $my_toolset_id.find('option:selected').text() == EE.rte.custom_toolset_text )
-		{
-			$edit_my_toolset.show();
-
-			if ( $my_toolset_id.val() == 'new' )
-			{
-				get_rte_toolset_builder();
-			}
-		}
-		else
-		{
-			$edit_my_toolset.hide();
-		}
-	}
-
-	// Run once
-	$('#rte_toolset_id').change();
-
-	// Observe click
-	$my_toolset_id
-		.parent()
-			.delegate('input.submit','click',get_rte_toolset_builder);
-	
-	
 	// Enable toolset item selection/de-selection
-	$('#rte_toolset_editor_modal').on('click', '.rte-tool', function(e) {
+	$toolset_editor.on('click', '.rte-tool', function() {
 		$(this).toggleClass('rte-tool-active');
 	});
 
-	// Toolset Builder
-	function setupToolsetBuilder()
+	// Toolset Editor Modal
+	function setupToolsetEditor()
 	{
 		// Cancel link
 		$('#rte-builder-closer').click(function(e) {
 			e.preventDefault();
-			$modal.dialog('close');
+			$toolset_editor.dialog('close');
 		});
 
 		$("#rte-tools-selected, #rte-tools-unused").sortable({
@@ -167,7 +143,7 @@
 				// Remove items that are marked for removal
 				$('.rte-tool-remove').remove();
 				
-				// Remove placeholder fix element and re-add at end of both lists*
+				// Remove placeholder fix element* and re-add at end of both lists
 				$('.rte-placeholder-fix').remove();
 				$('.rte-tools-connected').append('<li class="rte-placeholder-fix"/>');
 			}
@@ -180,13 +156,22 @@
 		$('.rte-tools-connected').append('<li class="rte-placeholder-fix"/>');
 
 
-		// Ajax submission
-		$('#rte_toolset_editor_modal form').submit(function(e) {
+		// AJAX submit handler
+		$toolset_editor.find('form').submit(function(e) {
+
 			e.preventDefault();
 			
-			update_rte_toolset();
+			var tool_ids = [];
+	
+			$('#rte-tools-selected .rte-tool').each(function() {
+				tool_ids.push($(this).data('tool-id'));
+			});
+	
+			// populate field with selected tool ids
+			$('#rte-toolset-tools').val(tool_ids.join('|'));
 			
 			$.post($(this).attr('action'), $(this).serialize(), function(data) {
+
 				if (data.error) {
 					$('#rte_toolset_editor_modal .notice').text(data.error);
 
@@ -195,31 +180,13 @@
 
 				$.ee_notice(data.success, {type: 'success'});
 
-				$modal.dialog('close');
+				$toolset_editor.dialog('close');
 
 				if (data.force_refresh) {
 					window.location = window.location;
 				}
 			},'json');
 		});
-	}
-	
-	function update_rte_toolset()
-	{
-		var ids = [];
-
-		$('#rte-tools-selected .rte-tool').each(function() {
-			ids.push($(this).data('tool-id'));
-		});
-
-		// update the field
-		$('#rte-toolset-tools').val( ids.join('|') );
-	}
-	
-	// in the toolset builder page
-	if ( $('#rte-tools-selected').length )
-	{
-		setupToolsetBuilder();
 	}
 	
 })(jQuery);

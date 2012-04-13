@@ -58,22 +58,23 @@ class Rte_lib
 	 */
 	public function edit_toolset($toolset_id = FALSE)
 	{
-		$this->EE->load->library(array('table','javascript'));
-		$this->EE->load->model(array('rte_toolset_model','rte_tool_model'));
-		
-		// get the toolset
-		if ( ! is_numeric($toolset_id)) 
+		if ($toolset_id === FALSE)
 		{
 			$toolset_id = $this->EE->input->get_post('rte_toolset_id');
 		}
 
-		// make sure the user can access this toolset
-		$failure	= FALSE;
-		$is_private	= FALSE;
-		$toolset	= FALSE;
-		$is_new		= FALSE;
+		if ( ! is_numeric($toolset_id))
+		{
+			exit();
+		}
 
-		if (is_numeric($toolset_id))
+		$this->EE->load->library(array('table','javascript'));
+		$this->EE->load->model(array('rte_toolset_model','rte_tool_model'));
+
+		// new toolset?
+		$is_new = $toolset_id == 0;
+
+		if ( ! $is_new)
 		{
 			// make sure the user can access it
 			if ( ! $this->EE->rte_toolset_model->member_can_access($toolset_id))
@@ -88,29 +89,19 @@ class Rte_lib
 		}
 		else
 		{
-			$is_new		= TRUE;
+			$toolset['rte_tools'] = array();
 			$is_private = ($this->EE->input->get_post('private') == 'true');
 		}
-		
-		// JS stuff
-		$this->EE->cp->add_js_script(array(
-			'ui' 	=> 'sortable',
-			'file'	=> 'cp/rte'
-		));
-		
-		$unused_tools = $used_tools = $toolset_tool_ids = array();
 
-		if ( ! $is_new && $toolset = $this->EE->rte_toolset_model->get($toolset_id))
-		{
-			$toolset_tool_ids = $toolset['rte_tools'];
-		}
 
-		// get the tool list (only enabled tools)
+		// get list of enabled tools
 		$enabled_tools = $this->EE->rte_tool_model->get_tool_list(TRUE);
+
+		$unused_tools = $used_tools = array();
 
 		foreach ($enabled_tools as $tool)
 		{
-			$tool_index = array_search($tool['rte_tool_id'], $toolset_tool_ids);
+			$tool_index = array_search($tool['rte_tool_id'], $toolset['rte_tools']);
 
 			// is the tool in this toolset?
 			if ($tool_index !== FALSE)
@@ -141,19 +132,14 @@ class Rte_lib
 		);
 		
 		// JS
-		$this->EE->javascript->set_global(array(
-			'rte'	=> array(
-				'toolset_modal.title'		=> $title,
-				'validate_toolset_name_url'	=> BASE.AMP.'C=myaccount'.AMP.'M=custom_action'.AMP.'extension=rte'.AMP.'method=validate_toolset_name',
-				'name_required'				=> lang('name_required')
-			)
+		$this->EE->cp->add_js_script(array(
+			'ui' 	=> 'sortable',
+			'file'	=> 'cp/rte'
 		));
-		$this->EE->javascript->compile();
 		
 		// CSS
 		$this->EE->cp->add_to_head($this->EE->view->head_link('css/rte.css'));
 		
-		// page
 		return $this->EE->load->view('edit_toolset', $vars, TRUE);
 	}
 
@@ -171,7 +157,8 @@ class Rte_lib
 		
 		// get the toolset
 		$toolset_id = $this->EE->input->get_post('rte_toolset_id');
-		$toolset	= array(
+
+		$toolset = array(
 			'name'		=> $this->EE->input->get_post('rte_toolset_name'),
 			'rte_tools' => $this->EE->input->get_post('rte_selected_tools'),
 			'member_id'	=> ($this->EE->input->get_post('private') == 'true' ? $this->EE->session->userdata('member_id') : 0)
@@ -187,14 +174,22 @@ class Rte_lib
 				'error' => lang('name_required')
 			));
 		}
-				
+
+		// is the name unique?
+		if ( ! $is_members && ! $this->EE->rte_toolset_model->unique_name($toolset['name'], $toolset_id))
+		{
+			$this->EE->output->send_ajax_response(array(
+				'error' => lang('unique_name_required')
+			));
+		}
+
 		// Updating? Make sure the toolset exists and they aren't trying any
 		// funny business...
 		if ($toolset_id)
 		{
 			$orig = $this->EE->rte_toolset_model->get($toolset_id);
 			
-			if ( ! $orig || $is_members && $orig->member_id != $this->EE->session->userdata('member_id'))
+			if ( ! $orig || $is_members && $orig['member_id'] != $this->EE->session->userdata('member_id'))
 			{
 				$this->EE->output->send_ajax_response(array(
 					'error' => lang('toolset_update_failed')
@@ -229,36 +224,6 @@ class Rte_lib
 			$this->EE->output->send_ajax_response(array(
 				'error' => lang('toolset_update_failed')
 			));
-		}
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Validates a toolset name for existence and uniqueness
-	 *
-	 * @access	public
-	 * @return	mixed JSON or Boolean for validity
-	 */
-	public function validate_toolset_name()
-	{
-		$this->EE->load->library('javascript');
-		$this->EE->load->model('rte_toolset_model');
-		
-		$valid = $this->EE->rte_toolset_model->check_name(
-			$this->EE->input->get_post('name'),
-			$this->EE->input->get_post('rte_toolset_id')
-		);
-
-		if ($this->EE->input->is_ajax_request())
-		{
-			$this->EE->output->send_ajax_response(array(
-				'valid' => $valid
-			));
-		}
-		else
-		{
-			return $valid;
 		}
 	}
 

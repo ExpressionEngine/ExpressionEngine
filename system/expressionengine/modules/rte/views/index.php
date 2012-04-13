@@ -20,7 +20,7 @@
 			)
 		);
 		$this->table->add_row(
-			'<strong>'.lang('choose_default_toolset').'</strong>'.BR.lang('default_toolset_details'),
+			'<strong>'.lang('default_toolset').'</strong>'.BR.lang('default_toolset_details'),
 			array(
 				'style'	=> 'width:50%',
 				'data'	=> form_dropdown('rte_default_toolset_id', $toolset_opts, $rte_default_toolset_id)
@@ -54,7 +54,7 @@
 			$this->table->add_row(
 				array(
 					'style' => 'width:34%',
-					'data'	=> '<a href="'.$module_base.AMP.'method=edit_toolset'.AMP.'rte_toolset_id='.$toolset['rte_toolset_id'].'">'.$toolset['name'].'</a>'
+					'data'	=> '<a class="edit_toolset" href="'.$module_base.AMP.'method=edit_toolset'.AMP.'rte_toolset_id='.$toolset['rte_toolset_id'].'">'.$toolset['name'].'</a>'
 				),
 				array(
 					'style' => 'width:33%',
@@ -69,7 +69,7 @@
 
 		echo $this->table->generate(); ?>
 		
-		<p><a class="submit" style="display: inline-block"href="<?=$new_toolset_link?>"><?=lang('create_new_rte_toolset')?></a></p>
+		<p><a class="edit_toolset submit" style="display: inline-block"href="<?=$new_toolset_link?>"><?=lang('create_new_rte_toolset')?></a></p>
 		
 		<p><?=NBS?></p>
 

@@ -9,7 +9,7 @@
 	</table>
 <?php 	else: ?>
 	<input type="hidden" name="private" value="true"/>
-	<input type="hidden" name="rte_toolset_name" value="<?=lang('my_custom_toolset')?>"/>
+	<input type="hidden" name="rte_toolset_name" value="<?=lang('my_toolset')?>"/>
 <?php 	endif; ?>
 
 	<div class="rte-toolset-builder ui-widget">

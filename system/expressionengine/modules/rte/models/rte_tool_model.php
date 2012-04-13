@@ -35,7 +35,6 @@ class Rte_tool_model extends CI_Model {
 	 */
 	public function get_tool_list($enabled_only = FALSE)
 	{
-		// get tools from DB
 		if ($enabled_only)
 		{
 			$this->db->where('enabled', 'y');
