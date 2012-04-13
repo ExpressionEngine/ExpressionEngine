@@ -396,7 +396,7 @@ class Rte_lib
 
 				// setup the editors for this page
 				$("' . $selector . '").wysihat({
-					buttons: '.$this->EE->javascript->generate_json($bits['buttons']).'
+					buttons: '.$this->EE->javascript->generate_json($bits['buttons'], TRUE).'
 				});
 			}
 		})();';
