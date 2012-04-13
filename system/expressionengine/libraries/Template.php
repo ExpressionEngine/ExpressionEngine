@@ -2376,27 +2376,6 @@ class EE_Template {
 		
 		$template = ($template == '') ? 'index' : $template;
 		
-		/* -------------------------------------------
-		/*	Hidden Configuration Variable
-		/*	- template_sync_ignore_prefixes => array 
-			If a template file starts with an ignored prefix?
-			We ignore it.
-		/* -------------------------------------------*/
-
-		if ($this->EE->config->item('template_sync_ignore_prefixes') !== FALSE)
-		{
-			$prefixes = $this->EE->config->item('template_sync_ignore_prefixes');
-			
-			foreach ($prefixes as $v)
-			{
-				$length = strlen($v);
-				if (strncmp($template, $v, $length) == 0)
-				{
-					return FALSE;
-				}
-			}
-		}
-
 		if ($db_check)
 		{
 			$this->EE->db->from('templates');
