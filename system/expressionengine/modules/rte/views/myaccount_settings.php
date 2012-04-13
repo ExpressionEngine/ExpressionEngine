@@ -7,7 +7,8 @@
 </p>
 <p>
 	<label for="rte_toolset_id"><?=lang('default_toolset')?></label>
-	<?=form_dropdown('rte_toolset_id', $rte_toolset_id_opts, $rte_toolset_id, 'id="rte_toolset_id"')?>
+	<?=form_dropdown('rte_toolset_id', $rte_toolset_id_opts, $rte_toolset_id, 'id="rte_toolset_id"').NBS ?>
+	<input type="button" id="edit_toolset" class="submit js_hide" value="<?=lang('edit')?>"/>
 </p>
-	
+
 <p class="submit"><?=form_submit('myaccount_settings_update', lang('update'), 'class="submit"')?></p>

@@ -2,13 +2,11 @@ var	img_range		= null,
 	img_timer		= false,
 	EE_rte_image	= EE.rte.image,
 	$file_browser	= null,
-	$caption		= $('<p class="rte_image_caption"><strong>' + EE_rte_image.caption_text + '</strong> <input type="text" id="rte_image_caption"/></p>'),
-	$caption_field	= $caption.find('#rte_image_caption'),
 	$figure_overlay = $('<div id="rte_image_figure_overlay" class="WysiHat-ui-control"><p></p></div>').hide().appendTo('body'),
 	$curr_figure	= null,
 	$image_button	= toolbar.addButton({
 		name:		'image',
-	    label:		EE_rte_image.add,
+		label:		EE_rte_image.add,
 		handler: function( $ed ){
 			// nothing (we observe from elsewhere)
 		}
@@ -53,7 +51,7 @@ $editor
 				}
 				$field.val(val);
 			});
-		 });
+		});
 
 function getTheRange(){
 	var	ranges		= $editor.getRanges(),
@@ -78,7 +76,7 @@ function getTheRange(){
 	{
 		img_range	= selection.getRangeAt(0).cloneRange();
 		el			= $editor.getRangeElements( img_range, WysiHat.Element.getBlocks().join(',') ).get(0);
-		if ( el != null )
+		if (el !== null)
 		{
 			if ( $(el).is('li,dt,dd,td') )
 			{
@@ -106,18 +104,13 @@ $image_button.click(function(){
 	if ( ! $file_browser) {
 		$file_browser = $('#file_browser');
 	}
-
-	// don't add the caption field more than once
-	if ( ! $('#filterMenu .rte_image_caption').length) {
-		$file_browser.find('#filterMenu').prepend($caption);
-	}
 });
 
 $parent.append('<input type="hidden" id="rte_image_' + $field.attr('name') + '"/>');
 $.ee_filebrowser.add_trigger(
 	$image_button,
 	'userfile_' + $field.attr('name'),
-	function( image_object, file_field, editor_field )
+	function(image_object, file_field, editor_field)
 	{
 		if ( ! img_range )
 		{
@@ -125,20 +118,18 @@ $.ee_filebrowser.add_trigger(
 		}
 		
 		var	$img = $('<figure/>')
-						.css('text-align','center')
-						.append(
-							$('<img alt=""/>')
-								.attr( 'src', image_object.thumb.replace( /_thumbs\//, '' ) )
-						 );
+			.css('text-align','center')
+			.append(
+				$('<img alt=""/>')
+				.attr('src', image_object.thumb.replace(/_thumbs\//, ''))
+			);
 		
-		if ( $caption_field.val() != '' )
+		if ((caption_text = prompt(EE_rte_image.caption_text)))
 		{
 			$img.append(
-				$('<figcaption/>').text( $caption_field.val() )
+				$('<figcaption/>').text(caption_text)
 			);
-			$caption_field.val('');
 		}
-		$caption.remove();
 		
 		img_range.insertNode( $img.get(0) );
 		
@@ -153,7 +144,7 @@ $.ee_filebrowser.add_trigger(
 				// show the footer again
 				.parent()
 					.show();
-	}	
+	}
 );
 
 // figure overlay setup
@@ -180,7 +171,7 @@ $figure_overlay
 	.find('p')
 		.append(
 			$('<button class="button align-left"><b>'+EE_rte_image.align_left+'</b></button>').click(function(){ alignFigureContent('left'); })
-		 )
+		)
 		.append(
 			$('<button class="button align-center"><b>'+EE_rte_image.align_center+'</b></button>').click(function(){
 				if ( $curr_figure.data('floating') )
@@ -193,10 +184,10 @@ $figure_overlay
 					hideFigureOverlay();
 				}
 			})
-		 )
+		)
 		.append(
 			$('<button class="button align-right"><b>'+EE_rte_image.align_right+'</b></button>').click(function(){ alignFigureContent('right'); })
-		 )
+		)
 		.append( $('<br/>') )
 		.append(
 			$('<button class="button wrap-left"><b>'+EE_rte_image.wrap_left+'</b></button>').click(function(){
@@ -206,15 +197,15 @@ $figure_overlay
 					.data('floating',true);
 				hideFigureOverlay();
 			})
-		 )
+		)
 		.append(
 			$('<button class="button wrap-none"><b>'+EE_rte_image.wrap_none+'</b></button>').click(function(){
 				$curr_figure
 					.css('float','none')
 					.data('floating',false);
 				hideFigureOverlay();
-			}) 
-		 )
+			})
+		)
 		.append(
 			$('<button class="button wrap-right"><b>'+EE_rte_image.wrap_right+'</b></button>').click(function(){
 				var alignment = $curr_figure.css('text-align');
@@ -223,18 +214,18 @@ $figure_overlay
 					.data('floating',true);
 				hideFigureOverlay();
 			})
-		 )
+		)
 		.append( $('<br/>') )
 		.append(
 			$('<button class="button remove"><b>'+EE_rte_image.remove+'</b></button>').click(function(){
 				$curr_figure.remove();
 				hideFigureOverlay();
 			})
-		 )
+		)
 	.find('button').each(function(){
 		var $this = $(this);
 		$this.attr('title',$this.find('b').text());
-	 });
+	});
 	
 $editor
 	.delegate('figure img','mouseover',function(){
@@ -249,5 +240,5 @@ $editor
 				top:		offsets.top,
 				height:		$this.outerHeight(),
 				width:		$this.outerWidth()
-			 });
-	 });
+			});
+	});

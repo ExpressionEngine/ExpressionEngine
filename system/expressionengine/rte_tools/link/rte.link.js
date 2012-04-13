@@ -1,5 +1,5 @@
 (function(){
-	var $editor, final_url, anchorNode;
+	var $editor, final_url, anchorNode, range, selUtil;
 
 	var	$link_dialog	= $('<div class="rte-link-dialog">' +
 							'<p><label>* ' + EE.rte.link.dialog.url_field_label + '</label>' +
@@ -113,7 +113,10 @@
 
 		// link!
 		final_url = url;
-
+		
+		selUtil.set( selUtil.get(range) );
+		$editor.linkSelection(final_url);
+		
 		// close
 		$link_dialog.dialog('close');
 	}
@@ -121,15 +124,13 @@
 	WysiHat.addButton('link', {
 		label:	EE.rte.link.add,
 		handler: function(state, finalize) {
-			var selUtil = this.Selection,
-				$editor = this.$editor;
-
+			$editor = this.$editor;
 			$editor.select();
 
+			selUtil = this.Selection,
 			selUtil.set(state.selection);
 
 			var sel		= window.getSelection(),
-				range	= document.createRange(),
 				link	= true,
 				s_el, e_el;
 
@@ -144,6 +145,7 @@
 				link = false;
 			}
 			
+			range = document.createRange();
 			range.setStart(sel.anchorNode, sel.anchorOffset);
 			range.setEnd(sel.focusNode, sel.focusOffset);
 
@@ -167,9 +169,6 @@
 				$link_dialog.dialog('open');
 				$link_dialog.bind('dialogclose', function()
 				{
-					selUtil.set( selUtil.get(range) );
-					$editor.linkSelection(final_url);
-					
 					setTimeout(function() {
 						finalize();
 					}, 50);

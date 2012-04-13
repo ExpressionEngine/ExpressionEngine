@@ -7,13 +7,14 @@ $lang = array(
 
 // Headings
 'nav_rte_settings' => 'Rich Text Editor Settings',
-'rte_settings' => 'General Rich Text Editor Settings for Site',
+'rte_settings' => 'Site Preferences',
 'rte_prefs' => 'Rich Text Editor Preferences',
-'rte_toolsets' => 'Rich Text Editor Toolsets',
-'rte_tools' => 'Rich Text Editor Tools',
+'rte_toolsets' => 'Toolsets',
+'rte_tools' => 'Tools',
 'create_new_rte_toolset' => 'Create a New Toolset',
 'edit_toolset' => 'Edit Toolset',
 'edit_my_toolset' => 'Edit My Toolset',
+'my_toolset'	=> 'My Toolset',
 
 // Snippets
 'no' => 'No',
@@ -41,13 +42,14 @@ $lang = array(
 'tool_updated' => 'Tool updated',
 'tool_update_failed' => 'Tool update failed. Please try again.',
 'valid_url_required' => 'A valid URL is required.',
-'name_required' => 'A name is required and must be unique.',
+'name_required' => 'The Toolset Name is required.',
+'unique_name_required' => 'The Toolset Name must be unique.',
 
 // Labels
 'enable_rte_globally' => 'Enable the Rich Text Editor?',
 'enable_rte_in_forum' => 'Enable the Rich Text Editor for use in the Forums?',
-'choose_default_toolset' => 'Choose the Default Toolset',
-'default_toolset_details' => 'Toolset for all users with access to Textarea fields using the Rich Text Editor.',
+'default_toolset' => 'Default Toolset',
+'default_toolset_details' => 'Shown for users that have not created their own or chosen another.',
 'toolset_name' => 'Toolset Name',
 'available_tools' => 'Available Tools (not being used)',
 'tools_in_toolset' => 'In This Toolset',
@@ -55,9 +57,8 @@ $lang = array(
 'toolset_builder_instructions' => 'Select one or more tools and drag them to the desired location.',
 'enable_rte_myaccount' => 'Enable Rich Text Editor?',
 'default_toolset' => 'Default Toolset',
-'my_custom_toolset' => 'My Custom Toolset',
 'enable_rte_for_field' => 'Enable the Rich Text Editor for This Field',
-'rte_image_caption'	=> 'Does this Image Need a Caption?',
+'rte_image_caption'	=> 'Image Caption:',
 'rte_center_error' => 'You can’t center an element that is being wrapped',
 'url' => 'URL',
 'title' => 'Title',

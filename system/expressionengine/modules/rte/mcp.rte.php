@@ -61,9 +61,16 @@ class Rte_mcp {
 	 */
 	public function index()
 	{
-		// dependencies
 		$this->EE->load->library(array('table','javascript'));
 		$this->EE->load->model('rte_toolset_model');
+
+		// prep the Default Toolset dropdown
+		$toolset_opts = array();
+
+		foreach ($this->EE->rte_toolset_model->get_toolset_list(TRUE) as $t)
+		{
+			$toolset_opts[$t['rte_toolset_id']] = $t['name'];
+		}
 
 		$vars = array(
 			'cp_page_title'				=> lang('rte_module_name'),
@@ -71,28 +78,21 @@ class Rte_mcp {
 			'action'					=> $this->_form_base.AMP.'method=prefs_update',
 			'rte_enabled'				=> $this->EE->config->item('rte_enabled'),
 			'rte_default_toolset_id'	=> $this->EE->config->item('rte_default_toolset_id'),
-			'toolset_opts'				=> $this->EE->rte_toolset_model->get_active(TRUE),
-			'toolsets'					=> $this->EE->rte_toolset_model->get_all(),
+			'toolset_opts'				=> $toolset_opts,
+			'toolsets'					=> $this->EE->rte_toolset_model->get_toolset_list(),
 			'tools'						=> $this->EE->rte_tool_model->get_tool_list(),
-			'new_toolset_link'			=> $this->_base_url.AMP.'method=edit_toolset'
+			'new_toolset_link'			=> $this->_base_url.AMP.'method=edit_toolset'.AMP.'rte_toolset_id=0'
 		);
-		
+
 		// JS
 		$this->EE->cp->add_js_script(array(
 			'file'		=> 'cp/rte',
 			'plugin'	=> array('overlay', 'toolbox.expose')
 		));
-		$this->EE->javascript->set_global(array(
-			'rte'	=> array(
-				'name_required'				=> lang('name_required'),
-				'validate_toolset_name_url'	=> BASE.AMP.'C=myaccount'.AMP.'M=custom_action'.AMP.'extension=rte'.AMP.'method=validate_toolset_name',
-			)
-		));
-		$this->EE->javascript->compile();
-		
+
 		// CSS
 		$this->EE->cp->add_to_head($this->EE->view->head_link('css/rte.css'));
-		
+
 		// return the page
 		return $this->EE->load->view('index', $vars, TRUE);
 	}
@@ -118,7 +118,7 @@ class Rte_mcp {
 
 		$this->EE->form_validation->set_rules(
 			'rte_default_toolset_id',
-			lang('choose_default_toolset'),
+			lang('default_toolset'),
 			'required|is_numeric'
 		);
 		
@@ -216,19 +216,6 @@ class Rte_mcp {
 	}
 
 	// --------------------------------------------------------------------
-	
-	/**
-	 * Validates a toolset name for existance and uniqueness
-	 *
-	 * @access	public
-	 * @return	mixed JSON or Boolean for validity
-	 */
-	public function validate_toolset_name()
-	{
-		return $this->EE->rte_lib->validate_toolset_name();
-	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Enables or disables a tool
@@ -253,38 +240,6 @@ class Rte_mcp {
 		}
 
 		$this->EE->functions->redirect($this->_base_url);
-	}
-
-	// --------------------------------------------------------------------
-	
-	/**
-	 * MyAccount RTE settings form action
-	 *
-	 * @access	public
-	 * @return	int The number of affected rows (should be 1 or 0)
-	 */
-	public function toggle_member_rte()
-	{
-		// get the current status
-		$enabled = ($this->EE->session->userdata('rte_enabled') == 'y');
-		
-		// update the prefs
-		$this->EE->db->update(
-			'members',
-			array( 'rte_enabled'	=> ($enabled ? 'n' : 'y') ),
-			array( 'member_id'		=> $this->EE->session->userdata('member_id') )
-		);
-		
-		// exit
-		$affected_rows = $this->EE->db->affected_rows();
-		if ($this->EE->input->is_ajax_request())
-		{
-			die( $affected_rows );
-		}
-		else
-		{
-			return $affected_rows;
-		}
 	}
 
 	// --------------------------------------------------------------------

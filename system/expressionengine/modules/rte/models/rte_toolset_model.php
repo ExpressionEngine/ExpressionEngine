@@ -25,83 +25,60 @@
 class Rte_toolset_model extends CI_Model {
 	
 	/**
+	 * Get member's RTE preferences
+	 * 
+	 * @access	public
+	 * @return	array
+	 */
+	public function get_member_prefs()
+	{
+		// get member's toolset preference
+		$prefs = $this->db->select('rte_enabled, rte_toolset_id')
+			->where('member_id', $this->session->userdata('member_id'))
+			->get('members')
+			->row_array();
+	
+		return $prefs;
+	}
+
+
+	/**
+	 * Get all toolsets available for the current member
+	 * 
+	 * @access	public
+	 * @return	array The tools in ID => name format
+	 */
+	public function get_member_toolsets()
+	{
+		// get all available toolsets
+		$toolsets = $this->db->where('member_id', $this->session->userdata('member_id'))
+			->or_where("member_id = '0' AND enabled = 'y'")
+			->get('rte_toolsets')
+			->result_array();
+			
+		return $toolsets;
+	}
+
+
+	/**
 	 * Get all the Toolsets
 	 * 
 	 * @access	public
 	 * @param	bool $list Whether or not you want it to be a ID => name list
 	 * @return	array The tools
 	 */
-	public function get_all($list = FALSE)
+	public function get_toolset_list($enabled_only = FALSE)
 	{
-		$results = $this->db->get_where(
-				'rte_toolsets',
-				array('member_id'	=> '0') // public toolsets only
-			)
-			->result_array();
-		
-		return $list ? $this->_make_list($results) : $results;
-	}
-	
-	/**
-	 * Get enabled Toolsets
-	 * 
-	 * @access	public
-	 * @param	bool $list Whether or not you want it to be a ID => name list
-	 * @return	array The tools
-	 */
-	public function get_active($list = FALSE)
-	{
-		$results = $this->db->get_where(
-			'rte_toolsets',
-			array(
-				'member_id'	=> '0', // public only
-				'enabled' 	=> 'y'
-			)
-		)->result_array();
-		return $list ? $this->_make_list($results) : $results;
-	}
-	
-	/**
-	 * Get the toolsets available to a given Member
-	 * 
-	 * @access	public
-	 * @return	array The tools in ID => name format
-	 */
-	public function get_member_options()
-	{
-		// get the toolsets
-		$results = $this->db->where("
-				( `member_id` = '{$this->session->userdata('member_id')}'
-				  OR
-				  ( `member_id` = '0' AND `enabled` = 'y' ) )
-				",
-				NULL, FALSE )
-			->get('rte_toolsets')
-			->result_array();
+		if ($enabled_only)
+		{
+			$this->db->where('enabled', 'y');
+		}
 
-		// has this user made a personal toolset?
-		$has_personal = FALSE;
-		foreach ($results as $i => $toolset)
-		{
-			if ($toolset['member_id'] != 0)
-			{
-				$has_personal = TRUE;
-				// move the personal one to the end of the array & rename it
-				$tool = $toolset;
-				unset($results[$i]);
-				$results[] = $tool;
-				break;
-			}
-		}
-		// if no personal toolset, create one
-		if ( ! $has_personal)
-		{
-			$results[] = array(
-				'rte_toolset_id'	=> 'new',
-				'name'				=> 'my_custom_toolset'
-			);
-		}
-		return $this->_make_list($results);
+		$this->db->where('member_id', '0'); // public toolsets only
+
+		$toolsets = $this->db->get('rte_toolsets')->result_array();
+
+		return $toolsets;
 	}
 
 
@@ -133,8 +110,8 @@ class Rte_toolset_model extends CI_Model {
 
 		return $toolset_id;
 	}
-	
-	
+
+
 	/**
 	 * Check to see if the current member can access the Toolset
 	 * 
@@ -183,7 +160,8 @@ class Rte_toolset_model extends CI_Model {
 		return (($toolset->member_id != 0 && $toolset->member_id == $this->session->userdata('member_id')) ||
 				($toolset->member_id == 0 && $admin));
 	}
-	
+
+
 	/**
 	 * Get the toolset
 	 * 
@@ -191,7 +169,7 @@ class Rte_toolset_model extends CI_Model {
 	 * @param	int $toolset_id The Toolset ID
 	 * @return	obj The Toolset row object
 	 */
-	public function get($toolset_id = FALSE)
+	public function get($toolset_id)
 	{
 		// Get the tool ids used by this toolset
 		$toolset = $this->db->where('rte_toolset_id', $toolset_id)
@@ -206,6 +184,10 @@ class Rte_toolset_model extends CI_Model {
 		if ($toolset['rte_tools'])
 		{
 			$toolset['rte_tools'] = explode('|', $toolset['rte_tools']);
+		}
+		else
+		{
+			$toolset['rte_tools'] = array();
 		}
 
 		return $toolset;
@@ -229,7 +211,8 @@ class Rte_toolset_model extends CI_Model {
 			)
 			->row('member_id') != 0;
 	}
-	
+
+
 	/**
 	 * Save a toolset
 	 * 
@@ -251,10 +234,10 @@ class Rte_toolset_model extends CI_Model {
 			$this->db->insert('rte_toolsets', $toolset);		
 		}
 
-		// return the affected rows
 		return $this->db->affected_rows();
 	}
-	
+
+
 	/**
 	 * Delete a toolset
 	 * 
@@ -266,14 +249,16 @@ class Rte_toolset_model extends CI_Model {
 	{
 		if ($toolset_id)
 		{
-			$this->db
-				->where(array('rte_toolset_id' => $toolset_id))
+			$this->db->where('rte_toolset_id', $toolset_id)
 				->delete('rte_toolsets');
+
 			return $this->db->affected_rows();
 		}
+
 		return FALSE;
 	}
-	
+
+
 	/**
 	 * Load the Default Toolsets into the DB
 	 */
@@ -314,7 +299,8 @@ class Rte_toolset_model extends CI_Model {
 			)
 		);		
 	}
-	
+
+
 	/**
 	 * Check the name of the toolset for uniqueness
 	 * 
@@ -323,9 +309,12 @@ class Rte_toolset_model extends CI_Model {
 	 * @param	int $toolset_id The ID of the toolset (optional)
 	 * @return	bool
 	 */
-	public function check_name($name, $toolset_id = FALSE)
+	public function unique_name($name, $toolset_id = FALSE)
 	{
-		$where = array('name' => $name);
+		$where = array(
+			'name' 		=> $name,
+			'member_id' => 0
+		);
 
 		if ($toolset_id !== FALSE)
 		{
@@ -333,28 +322,10 @@ class Rte_toolset_model extends CI_Model {
 		}
 
 		$query = $this->db->get_where('rte_toolsets', $where);
+
 		return ! $query->num_rows();
 	}
 
-	/**
-	 * Make the results array into an <option>-compatible list
-	 * 
-	 * @access	private
-	 * @param	array $result The result array to convert
-	 * @return	array An ID => name array
-	 */
-	private function _make_list($result)
-	{
-		$return = array();
-		
-		foreach ($result as $r)
-		{
-			$return[$r['rte_toolset_id']] = $r['name'];
-		}
-		
-		return $return;
-	}
-	
 }
 // END CLASS
 
