@@ -362,7 +362,7 @@ textarea.rte,
 	font-size: 110%;
 	min-height: 100px;
 	margin: 0;
-	padding: 4px;
+	padding: 5px;
 	outline: none;
 	overflow: auto;
 	resize: vertical;
@@ -386,7 +386,7 @@ textarea.rte:focus,
 .WysiHat-editor ul,
 .WysiHat-editor ol,
 .WysiHat-editor dl {
-	margin: 0 0 10px;
+	margin: 0 0 10px !important;
 }
 
 .WysiHat-editor figure {
