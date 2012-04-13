@@ -306,6 +306,7 @@ class Rte_lib
 			),
 			'styles' => '',
 			'definitions' => '',
+			'buttons' => array(),
 			'libraries' => array()
 		);
 
@@ -348,12 +349,16 @@ class Rte_lib
 			{
 				$bits['styles'] .= $tool['styles'];
 			}
-			
+
 			// load the definition
 			if ( ! empty($tool['definition']))
 			{
+				if (in_array($tool['info']['name'], array('Bold', 'Italic', 'Link', 'Blockquote', 'Ordered List', 'Strip Tags', 'Underline', 'Unordered List', 'View Source')))
 				$bits['definitions'] .= $tool['definition'];
 			}
+
+			// add to toolbar
+			$bits['buttons'][] = strtolower(str_replace(' ', '_', $tool['info']['name']));
 		}
 
 		// potentially required assets
@@ -414,6 +419,7 @@ class Rte_lib
 
 		$js .= '
 				// RTE Styles
+				var toolbar = { addButton: function() {} };
 				$("<link rel=\"stylesheet\" href=\"' . $rtecss . '\"/>")
 					.add( $("<style>' . preg_replace( '/\\s+/', ' ', $bits['styles'] ) . '</style>"))
 					.appendTo("head");
@@ -421,27 +427,12 @@ class Rte_lib
 				// globals
 				' . $this->_set_globals($bits['globals']) . '
 
-				$("' . $selector . '").each(function(index)
-				{
-					var
-					$field = $(this),
-					$parent	= $field.parent();
-					
-					// Add ID attributes to textareas missing them
-					if ($field.attr("id") == undefined)
-					{
-						$field.attr("id", "rte-"+index);
-					}
-					
-					// set up the editor
-					var $editor	= WysiHat.Editor.attach($field);
- 
-					// establish the toolbar
-					var toolbar	= new WysiHat.Toolbar($editor);
+				// button class definitions
+				' . $bits['definitions'] . '
 
-					// tools
-					' . $bits['definitions'] . '
-
+				// setup the editors for this page
+				$("' . $selector . '").wysihat({
+					buttons: '.$this->EE->javascript->generate_json($bits['buttons']).'
 				});
 			}
 		})();';

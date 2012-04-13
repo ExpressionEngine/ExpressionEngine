@@ -6,7 +6,6 @@
  *  WysiHat is freely distributable under the terms of an MIT-style license.
  *--------------------------------------------------------------------------*/
 
-
 // ---------------------------------------------------------------------
 
 /**
@@ -28,10 +27,59 @@
 
 // ---------------------------------------------------------------------
 
-
 var WysiHat = {
-	name:	'WysiHat'
+	name:	'WysiHat',
+	
+	/**
+	 * Add a button
+	 *
+	 * This does not mean it will be displayed,
+	 * it only means that it will be a valid button
+	 * option in $.fn.wysihat.
+	 */
+	addButton: function(name, config) {
+		_buttons[name] = config;
+	},
+
+	/**
+	 * Simple Prototypal Inheritance
+	 *
+	 * Acts a lot like ES5 object.create with the addition
+	 * of a <parent> property on the child which contains
+	 * proxied versions of the parent *methods*. Giving us easy
+	 * extending if we want it.
+	 *
+	 * @todo bad place for this, it looks like you can extend wysihat
+	 */
+	inherit: function(proto, props)
+	{
+		function F() {
+			var k;
+			// Proxy the parent methods to get .parent working
+			this.parent = {};
+			for (k in proto) {
+				if (proto.hasOwnProperty(k)) {
+					this.parent[k] = $.proxy(proto[k], this);
+				}
+			}
+		}
+
+		var prop, obj;
+
+		F.prototype = proto;
+		obj = new F();
+
+		// No hasOwn check here. If you pass an object with
+		// a prototype as props, then you're an idiot. 
+		for (prop in props) {
+			obj[prop] = props[prop];
+		}
+
+		return obj;
+	}
 };
+
+var _buttons = {};
 
 (function($){
 
@@ -48,7 +96,7 @@ var WysiHat = {
 
 	WysiHat.Editor = {
 
-		attach: function( $field )
+		attach: function($field, options)
 		{
 			var
 			tId	= $field.attr( 'id' ),
@@ -75,15 +123,6 @@ var WysiHat = {
 			$editor = $('<div id="' + eId + '" class="' + CLASS + '" contentEditable="true" role="application"></div>')
 				.html( WysiHat.Formatting.getBrowserMarkupFrom( $field ) )
 				.data( 'field', $field );
-
-			$.extend( $editor, WysiHat.Commands );
-			$editor.data('wysihat', $editor);
-
-			$editor.selectionUtil = new WysiHat.SelectionUtil($editor);
-			$editor.data('selectionUtil', $editor.selectionUtil);
-
-			$editor.eventCore = new WysiHat.EventCore($editor);
-			$editor.data('eventCore', $editor.eventCore);
 			
 			// Respect textarea's existing row count settings
 			$editor.height($field.height());
@@ -100,7 +139,6 @@ var WysiHat = {
 			}
 
 			$field
-				.data( 'editor', $editor )
 				.bind('keyup mouseup',function(){
 					$field.trigger(F_EVT);
 				 })
@@ -126,7 +164,19 @@ var WysiHat = {
 							eTimer = setTimeout(updateField, 250);
 						 })
 						.bind( E_EVT + IMMEDIATE, updateField )
-				 )
+				 );
+
+			$.extend( $editor, WysiHat.Commands );
+			$editor.data('wysihat', $editor);
+
+			$editor.selectionUtil = new WysiHat.SelectionUtil($editor);
+			$editor.data('selectionUtil', $editor.selectionUtil);
+
+			$editor.eventCore = new WysiHat.EventCore($editor);
+			$editor.data('eventCore', $editor.eventCore);
+
+			$editor.toolbar	= new WysiHat.Toolbar($editor, options.buttons);
+			$editor.data('toolbar', $editor.toolbar);
 
 			return $editor;
 		}
@@ -531,16 +581,33 @@ WysiHat.Element = (function( $ ){
 		var handlers = {};
 
 		return {
+			/**
+			 * Add a handler for editor events. These
+			 * are things such as "bold" or "paste". Not
+			 * browser events!
+			 */
 			add: function(action, func)
 			{
 				handlers[action] = func;
 			},
+
+			/**
+			 * Do we have a handler?
+			 */
 			has: function(action)
 			{
 				return (action in handlers);
 			},
-			run: function(action, editor, state, finalize) {
-				var ret = handlers[action](editor, state, finalize);
+
+			/**
+			 * Run the event handler.
+			 *
+			 * @param action event name
+			 * @param state current state
+			 * @param finalize completion callback for asynchronous tools
+			 */
+			run: function(action, state, finalize) {
+				var ret = handlers[action](state, finalize);
 
 				// false means you run finalize yourself
 				// in all other cases, we run it. If it was
@@ -637,7 +704,7 @@ WysiHat.Element = (function( $ ){
 				that.$editor.focus();
 			};
 
-			this.events.run(action, this.$editor, beforeState, $.proxy(finalize, finalize));
+			this.events.run(action, beforeState, $.proxy(finalize, finalize));
 		},
 
 		/**
@@ -1140,6 +1207,17 @@ WysiHat.Element = (function( $ ){
 	WysiHat.UndoStack.constructor = WysiHat.UndoStack;
 
 
+	/**
+	 * Selection Utility
+	 *
+	 * Since working with range is such a PITA, we
+	 * dropped in a small helper. It's bound onto
+	 * editor.data('selectionUtil') right now. It
+	 * should also be available to buttons simply
+	 * as this.selectionUtil.
+	 *
+	 * Provides get(), set(), and toString().
+	 */
 	WysiHat.SelectionUtil = function($el)
 	{
 		this.$editor = $el;
@@ -1151,6 +1229,8 @@ WysiHat.Element = (function( $ ){
 		/**
 		 * Get current selection offsets based on
 		 * the editors *text* (not html!).
+		 *
+		 * @return [startIndex, endIndex]
 		 */
 		get: function(range)
 		{
@@ -1176,6 +1256,10 @@ WysiHat.Element = (function( $ ){
 		/**
 		 * Create a selection or move the current one.
 		 * Again, this is text! Omit end to move the cursor.
+		 *
+		 * @param startIndex, endIndex
+		 * OR
+		 * @param [startIndex, endIndex] // as returned by get
 		 */
 		set: function(start, end)
 		{
@@ -1226,6 +1310,8 @@ WysiHat.Element = (function( $ ){
 		/**
 		 * Given a node and and an offset, find the correct
 		 * textnode and offset that we can create a range with.
+		 *
+		 * You probably don't want to touch this :).
 		 */
 		_getOffsetNode: function(startNode, offset)
 		{
@@ -1435,10 +1521,12 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 	{
 		if ( this.isIndented() )
 		{
+			console.log('yup');
 			this.unquoteSelection();
 		}
 		else
 		{
+			console.log('nope');
 			this.quoteSelection();
 		}
 	}
@@ -1841,6 +1929,7 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 		return styles;
 	}
 
+var iii = 0;
 	function toggleHTML( e )
 	{
 		var
@@ -1854,9 +1943,12 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 
 		if ( $btn.data('toggle-text') == undefined )
 		{
-			$btn.data('toggle-text','View Content');
+			$btn.data('toggle-text', 'View Content');
 		}
 
+if (i++) {
+	return;
+}
 		this.toggleHTML = function()
 		{
 			if ( ! HTML )
@@ -2506,7 +2598,7 @@ WysiHat.Formatting = {
  *
  * Handles the creation of the toolbar and manages the individual
  * buttons states. You can add your own by using:
- * toolbar.addButton({ options });
+ * WysiHat.addButton(name, { options });
  */
 
 // ---------------------------------------------------------------------
@@ -2514,122 +2606,161 @@ WysiHat.Formatting = {
 
 (function($){
 
-	WysiHat.Toolbar = function($el)
+	var default_config = {
+		buttons: []
+	};
+
+	var BlankButton = {
+		init: function(name, $editor)
+		{
+			this.name = name;
+			this.$editor = $editor;
+			return this;
+		},
+
+		setElement: function(el)
+		{
+			this.$element = $(el);
+			return this;
+		},
+
+		getHandler: function()
+		{
+			if (this.handler)
+			{
+				return $.proxy(this, 'handler');
+			}
+
+			var that = this;
+			if ( WysiHat.Commands.isValidCommand( this.name ) )
+			{
+				if (WysiHat.Commands[this.name+'Selection'])
+				{
+					return function()
+					{
+						return that.$editor[that.name+'Selection']();
+					};
+				}
+
+				return function()
+				{
+					return that.$editor.execCommand(that.name);
+				};
+			}
+
+			return $.noop;
+		},
+
+		getStateHandler: function()
+		{
+			if (this.query)
+			{
+				return $.proxy(this, 'query');
+			}
+			else if ( WysiHat.Commands.isValidCommand( this.name ) )
+			{
+				var that = this;
+				return function( $editor )
+				{
+					return $editor.queryCommandState(that.name);
+				};
+			}
+
+			return $.noop;
+		},
+
+		setOn: function() {
+			this.$element
+				.addClass('selected')
+				.attr('aria-pressed','true')
+				.find('b')
+					.text(this['toggle-text'] ? this['toggle-text'] : this.label);
+			return this;
+		},
+		setOff: function() {
+			this.$element
+				.removeClass('selected')
+				.attr('aria-pressed','false')
+				.find('b')
+					.text(this.label);
+			return this;
+		}
+	};
+
+	WysiHat.Toolbar = function($el, buttons)
 	{
 		this.$editor = $el;
-		this.$toolbar = $('<div class="' + WysiHat.name + '-editor-toolbar" role="presentation"></div>')
-						.insertBefore( $el );
-		
-		// Provide easy access to each $editor's toolbar instance
-		this.$editor.toolbar = this;
+		this.$toolbar = $('<div class="' + WysiHat.name + '-editor-toolbar" role="presentation"></div>');
+
+		$el.before(this.$toolbar);
+
+		// add buttons
+		var l = buttons.length, i;
+
+		for (i = 0 ; i < l; i++)
+		{
+			this.addButton(buttons[i]);
+		}
 	}
 
 	WysiHat.Toolbar.prototype = {
 
-		addButtonSet: function(options)
+		addButton: function(name)
 		{
-			var that = this;
+			var $button, stateHandler,
+				button = WysiHat.inherit(BlankButton, _buttons[name]).init(name, this.$editor);
 
-			$(options.buttons).each(function(index, button){
-				that.addButton(button);
-			});
+			// Add add a selectionUtil reference straight onto the button
+			button.Selection = this.$editor.data('selectionUtil');
+
+			// @todo commands really shouldn't weird-ly extend the editor. it's confusing as fuck.
+			// button.Commands = this.$editor.Commands;
+
+			button.setElement( this.createButtonElement(button) );
+			WysiHat.Events.add(name, button.getHandler());
+			
+			this.observeButtonClick(button);
+			this.observeStateChanges(button);
 		},
 
-		addButton: function( options, handler )
+		createButtonElement: function(button)
 		{
-			var name, $button;
-
-			if ( ! options['name'] )
-			{
-				options['name'] = options['label'].toLowerCase();
-			}
-			name = options['name'];
-
-			$button = this.createButtonElement( this.$toolbar, options );
-
-			if ( handler )
-			{
-				options['handler'] = handler;
-			}
-
-			handler = this.buttonHandler( name, options );
-			WysiHat.Events.add(name, handler);
-
-			this.observeButtonClick( $button, handler, name );
-
-			handler = this.buttonStateHandler( name, options );
-			this.observeStateChanges( $button, name, handler );
-
-			return $button;
-		},
-
-		createButtonElement: function( $toolbar, options )
-		{
-			var $btn = $('<button aria-pressed="false" tabindex="-1"><b>' + options['label'] + '</b></button>')
-				.addClass( 'button ' + options['name'] )
-				.appendTo( $toolbar )
+			var $btn = $('<button aria-pressed="false" tabindex="-1"><b>' + button.label + '</b></button>')
+				.addClass( 'button ' + button.name)
+				.appendTo(this.$toolbar)
 				.hover(
-					function(){
+					function() {
 						var $button = $(this).closest('button');
 						$button.attr('title',$button.find('b').text());
 					},
-					function(){
+					function() {
 						$(this).closest('button').removeAttr('title');
 					}
 				);
 
-			if ( options['cssClass'] )
+			if (button.cssClass)
 			{
-				$btn.addClass( options['cssClass'] );
+				$btn.addClass(button.cssClass);
 			}
 
-			if ( options['title'] )
+			if (button.title)
 			{
-				$btn.attr('title',options['title']);
+				$btn.attr('title', button.title);
 			}
 
-			$btn.data( 'text', options['label'] );
-			if ( options['toggle-text'] )
+			$btn.data('text', button.label);
+			if (button['toggle-text'])
 			{
-				$btn.data( 'toggle-text', options['toggle-text'] );
+				$btn.data('toggle-text', button['toggle-text']);
 			}
 
 			return $btn;
 		},
 
-		buttonHandler: function( name, options )
+		observeButtonClick: function(button)
 		{
-			var handler = $.noop;
-
-			if ( options['handler'] )
-			{
-				return options['handler'];
-			}
-			else if ( WysiHat.Commands.isValidCommand( name ) )
-			{
-				if (WysiHat.Commands[name+'Selection'])
-				{
-					return function( $editor )
-					{
-						return $editor[name+'Selection']();
-					};
-				}
-
-				return function( $editor )
-				{
-					return $editor.execCommand(name);
-				};
-			}
-
-			return handler;
-		},
-
-		observeButtonClick: function( $button, handler, name )
-		{
-			var that = this;
-
-			$button.click(function(e){
-				var $editor = that.$editor;
+			button.$element.click(function(e){
+				var $editor = button.$editor;
 
 				// Bring focus to the editor before the handler is called
 				// so that selection data is available to tools
@@ -2638,84 +2769,41 @@ WysiHat.Formatting = {
 					$editor.focus();
 				}
 
-				$editor.eventCore.fire(name);
+				$editor.eventCore.fire(button.name);
 
 				//$editor.trigger( 'WysiHat-selection:change' );
 
 				return false;
-
-				// Save the selection and current text so that we can
-				// work out how to undo the change.
-				var eventCore = $editor.eventCore,
-					before = eventCore.getState();
-				
-				handler( $editor, e );
-				$editor.trigger( 'WysiHat-selection:change' );
-				$editor.focus();
-
-				// Add the changes as an undo.
-				eventCore.textChange(before);
-
-				return false;
 			});
 
 		},
 
-		buttonStateHandler: function( name, options )
-		{
-			var handler = $.noop;
-			if ( options['query'] )
-			{
-				handler = options['query'];
-			}
-			else if ( WysiHat.Commands.isValidCommand( name ) )
-			{
-				handler = function( $editor )
-				{
-					return $editor.queryCommandState(name);
-				};
-			}
-			return handler;
-		},
-
-		observeStateChanges: function( $button, name, handler )
+		observeStateChanges: function(button)
 		{
 			var
 			that = this,
+			handler = button.getStateHandler(),
 			previousState;
 
 			that.$editor.bind( 'WysiHat-selection:change', function(){
-				var state = handler( that.$editor, $button );
+				var state = handler( button.$editor, button.$element );
 				if (state != previousState)
 				{
 					previousState = state;
-					that.updateButtonState( $button, name, state );
+					that.updateButtonState(button, state);
 				}
 			});
 		},
 
-		updateButtonState: function( $button, name, state )
+		updateButtonState: function(button, state)
 		{
-			var
-			text	= $button.data('text'),
-			toggle	= $button.data('toggle-text');
+			if (state)
+			{
+				button.setOn();
+				return;
+			}
 
-			if ( state )
-			{
-				$button
-					.addClass('selected')
-					.attr('aria-pressed','true')
-					.find('b')
-						.text( toggle ? toggle : text );
-			}
-			else
-			{
-				$button
-					.removeClass('selected')
-					.attr('aria-pressed','false')
-					.find('b')
-						.text( text );
-			}
+			button.setOff();
 		}
 	};
 
@@ -2736,36 +2824,22 @@ WysiHat.Formatting = {
 
 // ---------------------------------------------------------------------
 
-WysiHat.Toolbar.ButtonSets = {};
-
-WysiHat.Toolbar.ButtonSets.Basic = [
-	{ label: "Bold" },
-	{ label: "Underline" },
-	{ label: "Italic" }
-];
-
-WysiHat.Toolbar.ButtonSets.Standard = [
-	{ label: "Bold", cssClass: 'toolbar_button' },
-	{ label: "Italic", cssClass: 'toolbar_button' },
-	{ label: "Strikethrough", cssClass: 'toolbar_button' },
-	{ label: "Bullets",
-	  cssClass: 'toolbar_button', handler: function(editor) {
-		return editor.toggleUnorderedList();
-	  }
-	}
-];
-
 jQuery.fn.wysihat = function(options) {
-	options = jQuery.extend({
-		buttons: WysiHat.Toolbar.ButtonSets.Standard
-	}, options);
 
-	return this.each(function(){
-		var
-		editor	= WysiHat.Editor.attach( jQuery(this) ),
-		toolbar	= new WysiHat.Toolbar(editor);
+	var el = this.data('wysihat');
 
-		toolbar.addButtonSet(options);
+	if (el)
+	{
+		if (jQuery.inArray(options, ['selectionUtil', 'eventCore', 'toolbar']) != -1)
+		{
+			return el[options];
+		}
+
+		return el;
+	}
+
+	return this.each(function() {
+		WysiHat.Editor.attach(jQuery(this), options);
 	});
 };
 
