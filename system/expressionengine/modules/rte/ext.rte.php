@@ -276,7 +276,19 @@ class Rte_ext {
 			)
 		));
 
-		$js = "$.getScript(EE.rte.toolset_src.replace(/&amp;/g,'&'));";
+		// getScript causes the browser to supress freaking everything.
+		// It's surprisingly hard to write tools without errors.
+		// Replacing it with an async tag for now. -pk
+		// $js = "$.getScript(EE.rte.toolset_src.replace(/&amp;/g,'&'));";
+		$js = "
+			var d = document,
+				script = d.getElementsByTagName('script')[0],
+				tag = d.createElement('script');
+			tag.type = 'text/javascript';
+			tag.async = true;
+			tag.src = EE.rte.toolset_src.replace(/&amp;/g,'&');
+			script.parentNode.insertBefore(tag, script);
+		";
 
 		$this->EE->javascript->output($js);
 		
