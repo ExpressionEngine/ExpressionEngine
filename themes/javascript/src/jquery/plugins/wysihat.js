@@ -29,7 +29,7 @@
 
 var WysiHat = {
 	name:	'WysiHat',
-	
+
 	/**
 	 * Add a button
 	 *
@@ -38,7 +38,7 @@ var WysiHat = {
 	 * option in $.fn.wysihat.
 	 */
 	addButton: function(name, config) {
-		_buttons[name] = config;
+		this._buttons[name] = config;
 	},
 
 	/**
@@ -76,10 +76,15 @@ var WysiHat = {
 		}
 
 		return obj;
-	}
+	},
+
+	/**
+	 * Available buttons.
+	 * Don't touch it, use addButton above.
+	 */
+	_buttons: [],
 };
 
-var _buttons = {};
 
 (function($){
 
@@ -2708,7 +2713,7 @@ WysiHat.Formatting = {
 		addButton: function(name)
 		{
 			var $button, stateHandler,
-				button = WysiHat.inherit(BlankButton, _buttons[name]).init(name, this.$editor);
+				button = WysiHat.inherit(BlankButton, WysiHat._buttons[name]).init(name, this.$editor);
 
 			// Add add a selectionUtil reference straight onto the button
 			button.Selection = this.$editor.data('selectionUtil');
@@ -2718,7 +2723,7 @@ WysiHat.Formatting = {
 
 			button.setElement( this.createButtonElement(button) );
 			WysiHat.Events.add(name, button.getHandler());
-			
+
 			this.observeButtonClick(button);
 			this.observeStateChanges(button);
 		},
