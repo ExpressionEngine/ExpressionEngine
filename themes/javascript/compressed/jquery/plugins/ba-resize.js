@@ -1,4 +1,4 @@
-/*
+/*!
  * jQuery resize event - v1.1 - 3/14/2010
  * http://benalman.com/projects/jquery-resize-plugin/
  * 
@@ -6,4 +6,6 @@
  * Dual licensed under the MIT and GPL licenses.
  * http://benalman.com/about/license/
  */
-(function($,h,c){var a=$([]),e=$.resize=$.extend($.resize,{}),i,k="setTimeout",j="resize",d=j+"-special-event",b="delay",f="throttleWindow";e[b]=250;e[f]=true;$.event.special[j]={setup:function(){if(!e[f]&&this[k]){return false}var l=$(this);a=a.add(l);$.data(this,d,{w:l.width(),h:l.height()});if(a.length===1){g()}},teardown:function(){if(!e[f]&&this[k]){return false}var l=$(this);a=a.not(l);l.removeData(d);if(!a.length){clearTimeout(i)}},add:function(l){if(!e[f]&&this[k]){return false}var n;function m(s,o,p){var q=$(this),r=$.data(this,d);r.w=o!==c?o:q.width();r.h=p!==c?p:q.height();n.apply(this,arguments)}if($.isFunction(l)){n=l;return m}else{n=l.handler;l.handler=m}}};function g(){i=h[k](function(){a.each(function(){var n=$(this),m=n.width(),l=n.height(),o=$.data(this,d);if(m!==o.w||l!==o.h){n.trigger(j,[o.w=m,o.h=l])}});g()},e[b])}})(jQuery,this);
+
+(function(b,m,k){function g(){h=m[e](function(){c.each(function(){var a=b(this),c=a.width(),d=a.height(),j=b.data(this,i);if(c!==j.w||d!==j.h)a.trigger(f,[j.w=c,j.h=d])});g()},d[l])}var c=b([]),d=b.resize=b.extend(b.resize,{}),h,e="setTimeout",f="resize",i=f+"-special-event",l="delay";d[l]=250;d.throttleWindow=!0;b.event.special[f]={setup:function(){if(!d.throttleWindow&&this[e])return!1;var a=b(this);c=c.add(a);b.data(this,i,{w:a.width(),h:a.height()});c.length===1&&g()},teardown:function(){if(!d.throttleWindow&&
+this[e])return!1;var a=b(this);c=c.not(a);a.removeData(i);c.length||clearTimeout(h)},add:function(a){function c(a,d,e){var g=b(this),h=b.data(this,i);h.w=d!==k?d:g.width();h.h=e!==k?e:g.height();f.apply(this,arguments)}if(!d.throttleWindow&&this[e])return!1;var f;if(b.isFunction(a))return f=a,c;else f=a.handler,a.handler=c}}})(jQuery,this);
