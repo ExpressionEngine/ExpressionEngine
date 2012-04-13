@@ -4559,34 +4559,6 @@ class Design extends CI_Controller {
 					$template_name = substr($template, 0, -$ext_length);
 					$template_type = array_search('.'.$ext, $this->api_template_structure->file_extensions);
 
-					/* -------------------------------------------
-					/*	Hidden Configuration Variable
-					/*	- template_sync_ignore_prefixes => array 
-						If a template file starts with an ignored prefix?
-						We ignore it.
-					/* -------------------------------------------*/
-
-					if ($this->config->item('template_sync_ignore_prefixes') !== FALSE)
-					{
-						$prefixes = $this->config->item('template_sync_ignore_prefixes');
-						$invalid_prefix = FALSE;
-			
-						foreach ($prefixes as $v)
-						{
-							$length = strlen($v);
-							if (strncmp($template_name, $v, $length) == 0)
-							{
-								$invalid_prefix = TRUE;
-								break;
-							}
-						}
-						
-						if ($invalid_prefix)
-						{
-							continue;
-						}
-					}
-
 					if (isset($existing[$group][$template_name]))
 					{
 						continue;
