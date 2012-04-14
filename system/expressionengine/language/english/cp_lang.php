@@ -191,7 +191,7 @@ $lang = array(
 //----------------------------
 
 'session_expiring' =>
-'Your Session has expired.  Please log back in to avoid data loss',
+'Your session has expired. Please log back in to avoid data loss.',
 
 'loading' =>
 'Loading',
