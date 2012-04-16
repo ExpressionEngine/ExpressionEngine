@@ -271,6 +271,7 @@ class Rte_ext {
 		// Toolset JS URL
 		$toolset_url = $this->EE->functions->fetch_site_index().QUERY_MARKER
 			.'ACT='.$this->EE->cp->fetch_action_id('Rte', 'get_js')
+			.'&cp=y'
 			.'&toolset_id=0'
 			.'&selector=.rte';
 
