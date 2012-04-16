@@ -35,7 +35,8 @@ if ($EE_view_disable !== TRUE)
 			{
 				foreach ($custom_fields as $field)
 				{
-					$this->table->add_row($field['field_id'],
+					$this->table->add_row(
+						$field['field_id'],
 						'<a href="'.BASE.AMP.'C=admin_content'.AMP.'M=edit_custom_category_field'.AMP.'group_id='.$group_id.AMP.'field_id='.$field['field_id'].'">'.$field['field_label'].'</a>',
 						$field['field_name'],
 						$field['field_type'],
