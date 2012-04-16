@@ -262,6 +262,9 @@ class Rte_lib
 			return;
 		}
 
+		// is this request from inside the CP?
+		$cp_req = (REQ == 'CP' OR $this->EE->input->get('cp') && $this->EE->session->userdata('member_id'));
+
 		// bare minimum required
 		$bits	= array(
 			'globals'	=> array(
@@ -291,7 +294,7 @@ class Rte_lib
 		foreach ($tools as $tool)
 		{
 			// skip tools that are not available to the front-end
-			if ($tool['info']['cp_only'] == 'y' && REQ != 'CP')
+			if ($tool['info']['cp_only'] == 'y' && ! $cp_req)
 			{
 				continue;
 			}

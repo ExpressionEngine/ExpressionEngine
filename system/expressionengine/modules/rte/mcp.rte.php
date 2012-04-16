@@ -242,44 +242,6 @@ class Rte_mcp {
 		$this->EE->functions->redirect($this->_base_url);
 	}
 
-	// --------------------------------------------------------------------
-
-	/**
-	 * Update prefs form action
-	 *
-	 * @access	public
-	 * @return	void
-	 */
-	public function toolset_js()
-	{
-		$this->EE->load->library('rte_lib');
-		
-		$toolset_id 	= (int)$this->EE->input->get('toolset_id');
-		$selector		= '.rte';
-		
-		if ( ! $this->EE->config->item('rte_enabled') == 'y')
-		{
-			exit();
-		}
-
-		$includes = array(
-			'jquery'	=> FALSE,
-			'jquery_ui' => FALSE
-		);
-
-		// @todo Normalize quotes in $selector
-		// @todo make this better
-
-		$js = $this->EE->rte_lib->build_js($toolset_id, $selector, $includes);
-
-		header('Content-type: text/javascript; charset=utf-8');
-		header('Cache-Control: no-cache, must-revalidate');
-		header('Expires: Sat, 26 Jul 1997 05:00:00 GMT');
-
-		$this->EE->javascript->compile();
-
-		exit($js);
-	}
 
 	// --------------------------------------------------------------------
 
