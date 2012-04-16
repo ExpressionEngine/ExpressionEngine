@@ -114,13 +114,16 @@
 		// link!
 		final_url = url;
 		
-		selUtil.set( selUtil.get(range) );
+		// Reselect the text/node
+		var sel = window.getSelection();
+		sel.removeAllRanges();
+		sel.addRange(range);
+		
 		$editor.linkSelection(final_url);
 		
 		// Select the whole of our new link, not just the text inside,
 		// that way Firefox doesn't trap you inside the link
-		var sel = window.getSelection(),
-			parent_node = sel.focusNode.parentNode;
+		var parent_node = sel.focusNode.parentNode;
 		if (parent_node.nodeName.toLowerCase() == 'a')
 		{
 			range.selectNode(parent_node);
