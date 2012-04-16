@@ -273,7 +273,7 @@ class Cp {
 			'plugin'	=> array('ee_focus', 'ee_interact.event', 'ee_notice', 'ee_txtarea', 'tablesorter', 'ee_toggle_all'),
 			'file'		=> 'cp/global_start'
 		);
-		
+
 		if ($this->cp_theme != 'mobile')
 		{
 			$js_scripts['plugin'][] = 'ee_navigation';
@@ -362,6 +362,7 @@ class Cp {
 	function render_footer_js()
 	{
 		// add global end file
+		$this->_seal_combo_loader();
 		$this->add_js_script('file', 'cp/global_end');
 		
 		$str = '';
@@ -395,7 +396,7 @@ class Cp {
 		
 		$this->js_files = array_map('array_unique', $this->js_files);
 		
-		foreach($this->js_files as $type => $files)
+		foreach ($this->js_files as $type => $files)
 		{
 			if (isset($this->loaded[$type]))
 			{
@@ -456,7 +457,7 @@ class Cp {
 		
 		switch($type)
 		{
-			case 'ui':			$file = PATH_THEMES.'javascript/'.$folder.'/jquery/ui/ui.'.$name.'.js';
+			case 'ui':			$file = PATH_THEMES.'javascript/'.$folder.'/jquery/ui/jquery.ui.'.$name.'.js';
 				break;
 			case 'plugin':		$file = PATH_THEMES.'javascript/'.$folder.'/jquery/plugins/'.$name.'.js';
 				break;

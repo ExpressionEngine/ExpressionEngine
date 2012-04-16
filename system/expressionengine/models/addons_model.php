@@ -337,6 +337,37 @@ class Addons_model extends CI_Model {
 		
 		return $_installed[$ft_name];
 	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * RTE Tool installed
+	 *
+	 * Returns true if a RTE tool is installed, false if not
+	 *
+	 * @access	public
+	 * @param	string
+	 * @return	boolean
+	 */
+	function rte_tool_installed($tool_name)
+	{
+		// Is the module even installed?
+		if ( ! $this->db->table_exists('rte_tools'))
+		{
+			return FALSE;
+		}
+
+		static $_installed = array();
+		
+		if ( ! isset($_installed[$tool_name]))
+		{
+			$this->db->from("rte_tools");
+			$this->db->where("name", ucfirst(strtolower(str_replace(' ', '_', $tool_name))));
+			$_installed[$tool_name] = ($this->db->count_all_results() > 0) ? TRUE : FALSE;
+		}
+		
+		return $_installed[$tool_name];
+	}
 	
 	// --------------------------------------------------------------------
 
