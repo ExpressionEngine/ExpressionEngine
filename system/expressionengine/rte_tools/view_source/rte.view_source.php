@@ -99,11 +99,11 @@ class View_source_rte {
 						var $this	= $(this);
 			
 						if ($this.is('.WysiHat-editor') && $this.is(':visible')) {
-							$this.data('field')
+							$editor.data('field')
 								.height($this.height())
 								.width($this.outerWidth());
 						} else if ($this.is('.rte') && $this.is(':visible')) {
-							$this.data('editor')
+							$editor
 								.height($this.height())
 								.width($this.width());
 						}

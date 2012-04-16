@@ -117,6 +117,16 @@
 		selUtil.set( selUtil.get(range) );
 		$editor.linkSelection(final_url);
 		
+		// Select the whole of our new link, not just the text inside,
+		// that way Firefox doesn't trap you inside the link
+		var sel = window.getSelection(),
+			parent_node = sel.focusNode.parentNode;
+		if (parent_node.nodeName.toLowerCase() == 'a')
+		{
+			range.selectNode(parent_node);
+			sel.addRange(range);
+		};
+		
 		// close
 		$link_dialog.dialog('close');
 	}
