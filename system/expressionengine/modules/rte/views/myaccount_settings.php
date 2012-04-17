@@ -6,7 +6,7 @@
 	<?=form_radio('rte_enabled', 'n', ($rte_enabled=='n'), 'id="enable_rte_myaccount_n"')?> <?=lang('no')?>
 </p>
 <p>
-	<label for="rte_toolset_id"><?=lang('default_toolset')?></label>
+	<label for="rte_toolset_id"><?=lang('toolset')?></label>
 	<?=form_dropdown('rte_toolset_id', $rte_toolset_id_opts, $rte_toolset_id, 'id="rte_toolset_id"').NBS ?>
 	<input type="button" id="edit_toolset" class="submit js_hide" value="<?=lang('edit')?>"/>
 </p>
