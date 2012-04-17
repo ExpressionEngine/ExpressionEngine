@@ -53,7 +53,7 @@ class File_field {
 	 * 		Either 'all' or 'image'
 	 * @return string Fully rendered file field
 	 */
-	public function field($field_name, $data = '', $allowed_file_dirs = 'all', $content_type = 'all')
+	public function field($field_name, $data = '', $allowed_file_dirs = 'all', $content_type = 'all', $view_type = 'list')
 	{
 		// Load necessary library, helper, model and langfile
 		$this->EE->load->library('filemanager');

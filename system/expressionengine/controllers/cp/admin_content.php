@@ -1909,8 +1909,7 @@ class Admin_content extends CI_Controller {
 			
 			// Load in necessary js files
 			$this->cp->add_js_script(array(
-				'file'		=> array('cp/global'),
-				'plugin'	=> array('ee_url_title'),
+				'plugin'	=> array('ee_url_title')
 			));
 			
 			$this->javascript->keyup('#cat_name', '$("#cat_name").ee_url_title($("#cat_url_title"));');
@@ -3731,7 +3730,7 @@ class Admin_content extends CI_Controller {
 		}
 		
 		$vars = $this->api_channel_fields->field_edit_vars($group_id, $field_id);
-		
+
 		if ($vars === FALSE)
 		{
 			show_error(lang('unauthorized_access'));
