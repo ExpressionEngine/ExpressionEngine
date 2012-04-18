@@ -41,46 +41,39 @@
 
 	// My Account - Edit button (for My Toolset)
 	$('#edit_toolset').click(function(){
-		load_rte_builder(EE.rte.url.edit_my_toolset.replace(/&amp;/g,'&'))
+		load_rte_builder(EE.rte.url.edit_my_toolset.replace(/&amp;/g,'&'), EE.rte.lang.edit_my_toolset)
 	});
 	
 
 	// Load the RTE Builder
-	function load_rte_builder(url)
+	function load_rte_builder(url, dialog_title)
 	{
-		$.get(url, function(data){
+		$.getJSON(url, function(data) {
 
-			// Check to see what we're dealing with. The module returns the full
-			// view, whereas the extension returns the innards.
-			$contents = $('#mainContent .contents', data);
-			
-			if ($contents.size()) {
-				modal_contents = $contents.html();
-				modal_title = $('#mainContent .edit', data).text();
-			} else {
-				modal_contents = data;
-				modal_title = EE.rte.lang.edit_my_toolset;
+			if (data.error) {
+				$.ee_notice(data.error, {type: 'error'});
+				return;
 			}
-
-			$toolset_editor
-				.find('.contents')
-					.html(modal_contents)
-					.find('div.heading')
-						.remove()
-						.end()
-					.end()
-				.dialog('option', 'title', modal_title)
+			
+			// populate dialog innards
+			$toolset_editor.find('.contents').html(data.success);
+			
+			// show dialog
+			$toolset_editor			
+				.dialog('option', 'title', dialog_title)
 				.dialog('open');
 		});
 	}
 
 	// Module home page
 	$('body').on('click', '.edit_toolset', function(e) {
-
 		e.preventDefault();
 
+		// Editing or Creating?
+		var title = (this.id == 'create_toolset') ? EE.rte.lang.create_toolset : EE.rte.lang.edit_toolset;		
+
 		// Load the RTE Builder
-		load_rte_builder($(this).attr('href'));
+		load_rte_builder($(this).attr('href'), title);
 	});
 	
 
@@ -174,7 +167,6 @@
 
 				if (data.error) {
 					$('#rte_toolset_editor_modal .notice').text(data.error);
-
 					return;
 				}
 

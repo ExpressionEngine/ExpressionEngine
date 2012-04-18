@@ -50,7 +50,7 @@
 	<p>
 		<?=form_submit(array('name' => 'submit', 'value' => lang('submit'), 'class' => 'submit'));?>
 		&nbsp; or
-		<a id="rte-builder-closer" href="<?=$module_base?>"><?=lang('cancel')?></a>
+		<a id="rte-builder-closer"><?=lang('cancel')?></a>
 	</p>
 	
 	<?=form_close();?>
