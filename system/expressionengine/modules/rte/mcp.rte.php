@@ -86,8 +86,16 @@ class Rte_mcp {
 
 		// JS
 		$this->EE->cp->add_js_script(array(
-			'file'		=> 'cp/rte',
-			'plugin'	=> array('overlay', 'toolbox.expose')
+			'file'		=> 'cp/rte'
+		));
+
+		$this->EE->javascript->set_global(array(
+			'rte'	=> array(
+				'lang' => array(
+					'edit_toolset'		=> lang('edit_toolset'),
+					'create_toolset'	=> lang('create_new_rte_toolset')
+				)
+			)
 		));
 
 		// CSS

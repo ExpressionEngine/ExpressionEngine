@@ -69,7 +69,7 @@
 
 		echo $this->table->generate(); ?>
 		
-		<p><a class="edit_toolset submit" style="display: inline-block"href="<?=$new_toolset_link?>"><?=lang('create_new_rte_toolset')?></a></p>
+		<p><a id="create_toolset" class="edit_toolset submit" style="display: inline-block"href="<?=$new_toolset_link?>"><?=lang('create_new_rte_toolset')?></a></p>
 		
 		<p><?=NBS?></p>
 

@@ -94,6 +94,10 @@
 	margin: 0
 }
 
+#rte-builder-closer {
+	cursor: pointer;
+}
+
 .rte-tool-placeholder {
 	border: 2px solid blue;
 }

@@ -24,27 +24,15 @@
  * @link		http://expressionengine.com
  */
 
-class Rte_lib
-{
-	public $module_url = '';
-	public $cancel_url = '';
-	public $form_url = '';
+class Rte_lib {
 
 	public function __construct()
 	{
 		$this->EE =& get_instance();
 		$this->EE->lang->loadfile('rte');
 
-		if (REQ == 'CP')
-		{
-			$this->module_url = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=rte';
-		}
-
-		if (AJAX_REQUEST)
-		{
-			// Turn off the profiler, everything is in a modal
-			$this->EE->output->enable_profiler(FALSE);
-		}
+		// Turn off the profiler, everything is AJAX-ish
+		$this->EE->output->enable_profiler(FALSE);
 	}
 
 	// -------------------------------------------------------------------------
@@ -72,25 +60,25 @@ class Rte_lib
 		$this->EE->load->model(array('rte_toolset_model','rte_tool_model'));
 
 		// new toolset?
-		$is_new = $toolset_id == 0;
-
-		if ( ! $is_new)
+		if ($toolset_id == 0)
 		{
-			// make sure the user can access it
+			$toolset['rte_tools'] = array();
+			$toolset['name'] = '';
+			$is_private = ($this->EE->input->get_post('private') == 'true');
+		}
+		else
+		{
+			// make sure user can access the existing toolset
 			if ( ! $this->EE->rte_toolset_model->member_can_access($toolset_id))
 			{
-				$this->EE->session->set_flashdata('message_failure', lang('cannot_edit_toolset'));
-				$this->EE->functions->redirect($this->module_url);
+				$this->EE->output->send_ajax_response(array(
+					'error' => lang('toolset_edit_failed')
+				));
 			}
 
 			// grab the toolset
 			$toolset	= $this->EE->rte_toolset_model->get($toolset_id);
 			$is_private	= ($toolset['member_id'] != 0);
-		}
-		else
-		{
-			$toolset['rte_tools'] = array();
-			$is_private = ($this->EE->input->get_post('private') == 'true');
 		}
 
 
@@ -117,12 +105,8 @@ class Rte_lib
 		// sort used tools by custom order
 		ksort($used_tools, SORT_NUMERIC);
 		
-		// set up the page
-		$this->EE->cp->set_breadcrumb($this->module_url, lang('rte_module_name'));
-		$title = $is_private ? lang('edit_my_toolset') : lang('edit_toolset');
+		// set up the form
 		$vars = array(
-			'cp_page_title'		=> $title,
-			'module_base'		=> $this->cancel_url,
 			'action'			=> $this->form_url.AMP.'method=save_toolset'.( !! $toolset_id ? AMP.'rte_toolset_id='.$toolset_id : ''),
 			'is_private'		=> $is_private,
 			'toolset_name'		=> ( ! $toolset || $is_private ? '' : $toolset['name']),
@@ -140,7 +124,10 @@ class Rte_lib
 		// CSS
 		$this->EE->cp->add_to_head($this->EE->view->head_link('css/rte.css'));
 		
-		return $this->EE->load->view('edit_toolset', $vars, TRUE);
+		// return the form
+		$this->EE->output->send_ajax_response(array(
+			'success' => $this->EE->load->view('edit_toolset', $vars, TRUE)
+		));
 	}
 
 	// --------------------------------------------------------------------
@@ -154,7 +141,7 @@ class Rte_lib
 	public function save_toolset()
 	{
 		$this->EE->load->model('rte_toolset_model');
-		
+
 		// get the toolset
 		$toolset_id = $this->EE->input->get_post('rte_toolset_id');
 
@@ -163,7 +150,7 @@ class Rte_lib
 			'rte_tools' => $this->EE->input->get_post('rte_selected_tools'),
 			'member_id'	=> ($this->EE->input->get_post('private') == 'true' ? $this->EE->session->userdata('member_id') : 0)
 		);
-		
+
 		// is this an individual’s private toolset?
 		$is_members = ($this->EE->input->get_post('private') == 'true');
 
@@ -198,33 +185,31 @@ class Rte_lib
 		}
 		
 		// save it
-		if ($this->EE->rte_toolset_model->save_toolset($toolset, $toolset_id) !== FALSE)
-		{
-			// if it’s new, get the ID
-			if ( ! $toolset_id)
-			{
-				$toolset_id = $this->EE->db->insert_id();
-			}
-			
-			// update the member profile
-			if ($is_members && $toolset_id)
-			{
-				$this->EE->db
-					->where( array( 'member_id' => $this->EE->session->userdata('member_id') ) )
-					->update( 'members', array( 'rte_toolset_id' => $toolset_id ) );
-			}
-			
-			$this->EE->output->send_ajax_response(array(
-				'success' 		=> lang('toolset_updated'),
-				'force_refresh' => ! $is_members
-			));
-		}
-		else
+		if ($this->EE->rte_toolset_model->save_toolset($toolset, $toolset_id) === FALSE)
 		{
 			$this->EE->output->send_ajax_response(array(
 				'error' => lang('toolset_update_failed')
 			));
 		}
+
+		// if it’s new, get the ID
+		if ( ! $toolset_id)
+		{
+			$toolset_id = $this->EE->db->insert_id();
+		}
+
+		// update the member profile
+		if ($is_members && $toolset_id)
+		{
+			$this->EE->db
+				->where('member_id', $this->EE->session->userdata('member_id'))
+				->update('members', array('rte_toolset_id' => $toolset_id));
+		}
+
+		$this->EE->output->send_ajax_response(array(
+			'success' 		=> lang('toolset_updated'),
+			'force_refresh' => ! $is_members
+		));
 	}
 
 	// ------------------------------------------------------------------------
@@ -263,7 +248,7 @@ class Rte_lib
 		}
 
 		// is this request from inside the CP?
-		$cp_req = (REQ == 'CP' OR $this->EE->input->get('cp') && $this->EE->session->userdata('member_id'));
+		$cp_req = $this->EE->input->get('cp') && $this->EE->session->userdata('member_id');
 
 		// bare minimum required
 		$bits	= array(
@@ -358,7 +343,7 @@ class Rte_lib
 
 		// Even if we don't load jQuery above, we still need to wait for it
 		$js .= '
-				interval = setInterval( loadRTE, 100);
+				interval = setInterval(loadRTE, 100);
 			}
 			else
 			{
