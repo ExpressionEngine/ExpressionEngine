@@ -159,7 +159,7 @@ EE.namespace('EE.publish.file_browser');
 		}
 
 		$("input[name="+field+"_hidden]").val(file.file_name);
-		$("select[name="+field+"_directory]").val(file.upload_location_id);
+		$("input[name="+field+"_hidden_dir], select[name="+field+"_directory]").val(file.upload_location_id);
 	}
 	
 	/**
