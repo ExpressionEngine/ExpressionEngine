@@ -9,7 +9,8 @@
 var $image_button,
 	$parent,
 	$editor,
-	$field;
+	$field,
+	image_finalize;
 
 function setupImageTool($editor, $image_button) {
 
@@ -119,8 +120,7 @@ $.ee_filebrowser.add_trigger(
 		
 		img_range.insertNode( $img.get(0) );
 		
-		// trigger the update
-		$editor.trigger( EE.rte.update_event );
+		image_finalize();
 		
 		$file_browser
 			// switch the view back
@@ -261,8 +261,9 @@ WysiHat.addButton('image', {
 
 		return this.parent.init(name, $editor);
 	},
-	handler: function() {
-		// Rien? Tant pis!
+	handler: function(state, finalize) {
+		image_finalize = finalize;
+		return false;
 	}
 });
 
