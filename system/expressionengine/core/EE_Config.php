@@ -683,6 +683,11 @@ class EE_Config Extends CI_Config {
 				$site_ids[] = $site->site_id;
 			}
 		}
+		// Support passing of a single site ID without being in an array
+		elseif ( ! is_array($site_ids) AND is_numeric($site_ids))
+		{
+			$site_ids = array($site_ids);
+		}
 
 		// unset() exceptions for calls coming from POST data
 		unset($new_values['return_location']);
