@@ -268,14 +268,21 @@ class Rte_ext {
 		$this->EE->cp->add_to_head($this->EE->view->head_link('css/rte.css'));
 		$this->EE->cp->add_js_script(array('plugin' => 'wysihat'));
 
-		// Toolset JS
+		// Toolset JS URL
+		$toolset_url = $this->EE->functions->fetch_site_index().QUERY_MARKER
+			.'ACT='.$this->EE->cp->fetch_action_id('Rte', 'get_js')
+			.'&cp=y'
+			.'&toolset_id=0'
+			.'&selector=.rte';
 
 		// JS config
 		$this->EE->javascript->set_global(array(
 			'rte'	=> array(
 				'update_event' 	=> 'WysiHat-editor:change',
-				'toolset_src'	=> BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=rte'.AMP.'method=toolset_js',
-				'prefs_url'		=> BASE.AMP.'C=myaccount'.AMP.'M=custom_action'.AMP.'extension=rte'.AMP.'method=myaccount_settings'
+				'url'	=> array(
+					'toolset_js'	=> $toolset_url,
+					'prefs'			=> BASE.AMP.'C=myaccount'.AMP.'M=custom_action'.AMP.'extension=rte'.AMP.'method=myaccount_settings'
+				)
 			)
 		));
 
@@ -289,7 +296,7 @@ class Rte_ext {
 				tag = d.createElement('script');
 			tag.type = 'text/javascript';
 			tag.async = true;
-			tag.src = EE.rte.toolset_src.replace(/&amp;/g,'&');
+			tag.src = EE.rte.url.toolset_js.replace(/&amp;/g,'&');
 			script.parentNode.insertBefore(tag, script);
 		";
 

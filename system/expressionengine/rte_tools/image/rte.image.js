@@ -9,13 +9,12 @@
 var $image_button,
 	$parent,
 	$editor,
-	$field;
+	$field,
+	image_finalize;
 
 function setupImageTool($editor, $image_button) {
 
-var	img_range		= null,
-	img_timer		= false,
-	EE_rte_image	= EE.rte.image,
+var EE_rte_image	= EE.rte.image,
 	$file_browser	= null,
 	$figure_overlay = $('<div id="rte_image_figure_overlay" class="WysiHat-ui-control"><p></p></div>').hide().appendTo('body'),
 	$curr_figure	= null;
@@ -39,52 +38,6 @@ $editor
 			});
 		});
 
-function getTheRange(){
-	var	ranges		= $editor.getRanges(),
-		selection	= window.getSelection(),
-		hasRange	= !! selection.rangeCount,
-		el			= selection.anchorNode;
-
-	if ( hasRange )
-	{
-		while ( el.nodeType != "1" )
-		{
-			el = el.parentNode;
-		}
-	}
-
-	if ( ! el || ! $editor.has( $(el) ).length )
-	{
-		hasRange = false;
-	}
-
-	if ( hasRange )
-	{
-		img_range	= selection.getRangeAt(0).cloneRange();
-		el			= $editor.getRangeElements( img_range, WysiHat.Element.getBlocks().join(',') ).get(0);
-		if (el !== null)
-		{
-			if ( $(el).is('li,dt,dd,td') )
-			{
-				img_range.setStart( el, 0 );
-				img_range.setEnd( el, 0 );
-			}
-			else
-			{
-				img_range.setStartBefore( el );
-				img_range.setEndBefore( el );
-			}
-		}
-		img_range.collapse(true);
-	}
-	else
-	{
-		img_range = document.createRange();
-		img_range.selectNode( $editor.get(0).firstChild );
-	}
-}
-$editor.mouseup(getTheRange);
-
 $image_button.click(function(){
 	// make sure we have a ref to the file browser
 	if ( ! $file_browser) {
@@ -98,10 +51,12 @@ $.ee_filebrowser.add_trigger(
 	'userfile_' + $field.attr('name'),
 	function(image_object, file_field, editor_field)
 	{
-		if ( ! img_range )
-		{
-			getTheRange();
-		}
+		var sel		= window.getSelection(),
+			range = document.createRange();
+		
+		range = document.createRange();
+		range.setStart(sel.anchorNode, sel.anchorOffset);
+		range.setEnd(sel.focusNode, sel.focusOffset);
 		
 		var	$img = $('<figure/>')
 			.css('text-align','center')
@@ -117,10 +72,9 @@ $.ee_filebrowser.add_trigger(
 			);
 		}
 		
-		img_range.insertNode( $img.get(0) );
+		range.insertNode( $img.get(0) );
 		
-		// trigger the update
-		$editor.trigger( EE.rte.update_event );
+		image_finalize();
 		
 		$file_browser
 			// switch the view back
@@ -261,8 +215,9 @@ WysiHat.addButton('image', {
 
 		return this.parent.init(name, $editor);
 	},
-	handler: function() {
-		// Rien? Tant pis!
+	handler: function(state, finalize) {
+		image_finalize = finalize;
+		return false;
 	}
 });
 

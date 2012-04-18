@@ -71,9 +71,6 @@
 
 				// empty the fields
 				$link_dialog.find('input,select').val('');
-
-				// trigger the update
-				$editor.trigger( EE.rte.update_event );
 			}
 		})
 		// Close on Enter
