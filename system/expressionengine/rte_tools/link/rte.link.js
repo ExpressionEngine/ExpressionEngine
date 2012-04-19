@@ -1,5 +1,5 @@
 (function(){
-	var $editor, final_url, anchorNode, range, selUtil;
+	var $editor, final_url, anchorNode, range, selUtil, button;
 
 	var	$link_dialog	= $('<div class="rte-link-dialog">' +
 							'<p><label>* ' + EE.rte.link.dialog.url_field_label + '</label>' +
@@ -116,7 +116,7 @@
 		sel.removeAllRanges();
 		sel.addRange(range);
 		
-		$editor.linkSelection(final_url);
+		button.make('link', final_url);
 		
 		// Select the whole of our new link, not just the text inside,
 		// that way Firefox doesn't trap you inside the link
@@ -134,6 +134,7 @@
 	WysiHat.addButton('link', {
 		label:	EE.rte.link.add,
 		handler: function(state, finalize) {
+			button = this;
 			$editor = this.$editor;
 			$editor.select();
 
@@ -192,6 +193,7 @@
 			return false;
 		},
 		query: function( $editor ){
+			return this.is('linked');
 			return $editor.queryCommandState('createLink');
 		}
 	});

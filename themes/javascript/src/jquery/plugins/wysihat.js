@@ -6,6 +6,8 @@
  *  WysiHat is freely distributable under the terms of an MIT-style license.
  *--------------------------------------------------------------------------*/
 
+(function(document, $, undefined){
+
 // ---------------------------------------------------------------------
 
 /**
@@ -14,12 +16,17 @@
  * to get a general idea of where things happen. The list below
  * are headers (except for #1) so that you can search for them.
  *
- * WysiHat Base
+ * Core Namespace
+ * Editor Class
  * Element Manager
  * Change Events
+ * Event Class
+ * Undo Class
+ * Selection Utility
  * Editor Commands
- * Paste Handler
+ * Commands Mixin
  * Formatting Class
+ * Blank Button
  * Toolbar Class
  * Defaults and jQuery Binding
  * Browser Compat Classes
@@ -27,7 +34,14 @@
 
 // ---------------------------------------------------------------------
 
-var WysiHat = {
+/**
+ * WysiHat Namespace
+ *
+ * Tracks registered buttons and provides the basic setup function.
+ * Usually the latter should be called through $.fn.wysihat instead.
+ */
+var WysiHat = window.WysiHat = {
+
 	name:	'WysiHat',
 
 	/**
@@ -39,6 +53,18 @@ var WysiHat = {
 	 */
 	addButton: function(name, config) {
 		this._buttons[name] = config;
+	},
+
+	/**
+	 * Attach WysiHat to a field
+	 *
+	 * This is what makes it all happen. Most of the
+	 * time you will want to use the jQuery.fn version
+	 * though:
+	 * $(textarea).wysihat(options);
+	 */
+	attach: function(field, options) {
+		return new WysiHat.Editor($(field), options);
 	},
 
 	/**
@@ -86,109 +112,151 @@ var WysiHat = {
 };
 
 
-(function($){
+// ---------------------------------------------------------------------
+
+/**
+ * WysiHat.Editor
+ *
+ * The parent class of the editor. Instantiating it gets the whole
+ * snafu going. Holds the textarea and editor objects as well as
+ * all of the utility classes.
+ */
+
+// ---------------------------------------------------------------------
+
+WysiHat.Editor = function($field, options) {
+	this.$field = $field;
+	this.$editor = this.create();
+
+	$field.hide().before(this.$editor);
+
+	this.init(options);
+}
+
+WysiHat.Editor.prototype = {
+
+	create: function() {
+		return $('<div/>', {
+			'class': WysiHat.name + '-editor',
+
+			'data': {
+				'wysihat': this,
+				'field': this.$field
+			},
+
+			'role': 'application',
+			'contentEditable': 'true',
+
+			// Respect textarea's existing row count settings
+			'height': this.$field.height(),
+
+			'html': WysiHat.Formatting.getBrowserMarkupFrom(this.$field)
+		});
+	},
+
+	init: function(options) {
+		var $ed = this.$editor;
+
+		this.Commands = WysiHat.Commands;
+		this.Undo = new WysiHat.Undo();
+		this.Selection = new WysiHat.Selection($ed);
+		this.Event = new WysiHat.Event(this);
+		this.Toolbar = new WysiHat.Toolbar($ed, options.buttons);
+	}
+};
+
+WysiHat.Editor.constructor = WysiHat.Editor;
+
+/*
+
+var
+WYSIHAT 	= WysiHat.name,
+EDITOR		= '-editor',
+FIELD		= '-field',
+CHANGE		= ':change',
+CLASS		= WYSIHAT + EDITOR,
+E_EVT		= CLASS + CHANGE,
+F_EVT		= WYSIHAT + FIELD + CHANGE,
+IMMEDIATE	= ':immediate',
+INDEX		= 0;
+
+WysiHat.attach = function($field, options) {
 
 	var
-	WYSIHAT 	= WysiHat.name,
-	EDITOR		= '-editor',
-	FIELD		= '-field',
-	CHANGE		= ':change',
-	CLASS		= WYSIHAT + EDITOR,
-	E_EVT		= CLASS + CHANGE,
-	F_EVT		= WYSIHAT + FIELD + CHANGE,
-	IMMEDIATE	= ':immediate',
-	INDEX		= 0;
+	tId	= $field.attr( 'id' ),
+	eId	= ( tId ? tId : WYSIHAT + INDEX++ ) + EDITOR,
+	fTimer	= null,
+	eTimer	= null,
+	$editor	= $( '#' + eId );
 
-	WysiHat.Editor = {
+	if ( tId == '' )
+	{
+		tId = eId.replace( EDITOR, FIELD );
+		$field.attr( 'id', tId );
+	}
 
-		attach: function($field, options)
-		{
-			var
-			tId	= $field.attr( 'id' ),
-			eId	= ( tId ? tId : WYSIHAT + INDEX++ ) + EDITOR,
-			fTimer	= null,
-			eTimer	= null,
-			$editor	= $( '#' + eId );
+	$editor = $('<div id="' + eId + '" class="' + CLASS + '" contentEditable="true" role="application"></div>')
+		.html( WysiHat.Formatting.getBrowserMarkupFrom( $field ) )
+		.data( 'field', $field );
+	
+	// Respect textarea's existing row count settings
+	$editor.height($field.height());
 
-			if ( tId == '' )
+	function updateField()
+	{
+		$field.val( WysiHat.Formatting.getApplicationMarkupFrom( $editor ) );
+		fTimer = null;
+	}
+	function updateEditor()
+	{
+		$editor.html( WysiHat.Formatting.getBrowserMarkupFrom( $field ) );
+		eTimer = null;
+	}
+
+	$field
+		.bind('keyup mouseup',function(){
+			$field.trigger(F_EVT);
+		 })
+		.bind( F_EVT, function(){
+			if ( fTimer )
 			{
-				tId = eId.replace( EDITOR, FIELD );
-				$field.attr( 'id', tId );
+				clearTimeout( fTimer );
 			}
-
-			if ( $editor.length )
-			{
-				if ( ! $editor.hasClass( CLASS ) )
-				{
-					$editor.addClass( CLASS );
-				}
-				return $editor;
-			}
-
-			$editor = $('<div id="' + eId + '" class="' + CLASS + '" contentEditable="true" role="application"></div>')
-				.html( WysiHat.Formatting.getBrowserMarkupFrom( $field ) )
-				.data( 'field', $field );
-			
-			// Respect textarea's existing row count settings
-			$editor.height($field.height());
-
-			function updateField()
-			{
-				$field.val( WysiHat.Formatting.getApplicationMarkupFrom( $editor ) );
-				fTimer = null;
-			}
-			function updateEditor()
-			{
-				$editor.html( WysiHat.Formatting.getBrowserMarkupFrom( $field ) );
-				eTimer = null;
-			}
-
-			$field
+			fTimer = setTimeout(updateEditor, 250 );
+		 })
+		.bind( F_EVT + IMMEDIATE, updateEditor)
+		.hide()
+		.before(
+			$editor
 				.bind('keyup mouseup',function(){
-					$field.trigger(F_EVT);
+					$editor.trigger(E_EVT);
 				 })
-				.bind( F_EVT, function(){
-					if ( fTimer )
+				.bind( E_EVT, function(){
+					if ( eTimer )
 					{
-						clearTimeout( fTimer );
+						clearTimeout( eTimer );
 					}
-					fTimer = setTimeout(updateEditor, 250 );
+					eTimer = setTimeout(updateField, 250);
 				 })
-				.bind( F_EVT + IMMEDIATE, updateEditor)
-				.hide()
-				.before(
-					$editor
-						.bind('keyup mouseup',function(){
-							$editor.trigger(E_EVT);
-						 })
-						.bind( E_EVT, function(){
-							if ( eTimer )
-							{
-								clearTimeout( eTimer );
-							}
-							eTimer = setTimeout(updateField, 250);
-						 })
-						.bind( E_EVT + IMMEDIATE, updateField )
-				 );
+				.bind( E_EVT + IMMEDIATE, updateField )
+		 );
 
-			$.extend( $editor, WysiHat.Commands );
-			$editor.data('wysihat', $editor);
+	$.extend( $editor, WysiHat.Commands );
+	$editor.data('wysihat', $editor);
 
-			$editor.selectionUtil = new WysiHat.SelectionUtil($editor);
-			$editor.data('selectionUtil', $editor.selectionUtil);
+	$editor.selectionUtil = new WysiHat.SelectionUtil($editor);
+	$editor.data('selectionUtil', $editor.selectionUtil);
 
-			$editor.eventCore = new WysiHat.EventCore($editor);
-			$editor.data('eventCore', $editor.eventCore);
+	$editor.eventCore = new WysiHat.EventCore($editor);
+	$editor.data('eventCore', $editor.eventCore);
 
-			$editor.toolbar	= new WysiHat.Toolbar($editor, options.buttons);
-			$editor.data('toolbar', $editor.toolbar);
+	$editor.toolbar	= new WysiHat.Toolbar($editor, options.buttons);
+	$editor.data('toolbar', $editor.toolbar);
 
-			return $editor;
-		}
-	};
+	return $editor;
+};
 
-})(jQuery);
-
+*/
 
 // ---------------------------------------------------------------------
 
@@ -201,7 +269,7 @@ var WysiHat = {
 
 // ---------------------------------------------------------------------
 
-WysiHat.Element = (function( $ ){
+WysiHat.Element = (function(){
 
 	var
 	roots			= [ 'blockquote', 'details', 'fieldset', 'figure', 'td' ],
@@ -332,7 +400,7 @@ WysiHat.Element = (function( $ ){
 		}
 	};
 
-})( jQuery );
+})();
 
 
 // ---------------------------------------------------------------------
@@ -349,1016 +417,1054 @@ WysiHat.Element = (function( $ ){
 
 // ---------------------------------------------------------------------
 
-(function($, DOC){
+$(document).ready(function(){
 
-	$(document).ready(function(){
+	var
+	timer = null,
+	$doc = $(document),
+	// &#x200b; is a zero-width character so we have something to select
+	// and place the cursor inside the paragraph tags, Webkit won't select
+	// an empty element due to a long-standing bug
+	// https://bugs.webkit.org/show_bug.cgi?id=15256
+	// <wbr> didn't seem to behave the same so I'm using the entity
+	// http://www.quirksmode.org/oddsandends/wbr.html
+	empty	= '<p>&#x200b;</p>',
+	previousRange,
+	selectionChangeHandler,
+	$element;
 
-		var
-		timer = null,
-		$doc = $(DOC),
-		// &#x200b; is a zero-width character so we have something to select
-		// and place the cursor inside the paragraph tags, Webkit won't select
-		// an empty element due to a long-standing bug
-		// https://bugs.webkit.org/show_bug.cgi?id=15256
-		// <wbr> didn't seem to behave the same so I'm using the entity
-		// http://www.quirksmode.org/oddsandends/wbr.html
-		empty	= '<p>&#x200b;</p>',
-		previousRange,
-		selectionChangeHandler,
-		$element;
-
-		function fieldChangeHandler( e )
+	function fieldChangeHandler( e )
+	{
+		if ( timer )
 		{
-			if ( timer )
+			clearTimeout(timer);
+		}
+
+		$element = $(this);
+
+		timer = setTimeout(function(){
+			var
+			element		= $element.get(0),
+			val, evt;
+
+			if ( $element.is('*[contenteditable=""],*[contenteditable=true]') )
 			{
-				clearTimeout(timer);
+				val	= $element.html();
+
+				if ( val == '' ||
+				 	 val == '<br>' ||
+				 	 val == '<br/>' )
+				{
+					val = empty;
+					$element.html(val);
+					selectEmptyParagraph($element);
+				}
+
+				evt	= 'editor:change';
+			}
+			else
+			{
+				val	= $element.val();
+				evt	= 'field:change';
 			}
 
-			$element = $(this);
-
-			timer = setTimeout(function(){
-				var
-				element		= $element.get(0),
-				val, evt;
-
-				if ( $element.is('*[contenteditable=""],*[contenteditable=true]') )
-				{
-					val	= $element.html();
-
-					if ( val == '' ||
-					 	 val == '<br>' ||
-					 	 val == '<br/>' )
-					{
-						val = empty;
-						$element.html(val);
-						selectEmptyParagraph($element);
-					}
-
-					evt	= 'editor:change';
-				}
-				else
-				{
-					val	= $element.val();
-					evt	= 'field:change';
-				}
-
-				if ( val &&
-					 element.previousValue != val )
-				{
-					$element.trigger( 'WysiHat-' + evt );
-					element.previousValue = val;
-				}
-			}, 100);
-		}
-
-		function selectEmptyParagraph( $el )
-		{
-			var $el	= $element || $(this),
-				s	= window.getSelection(),
-				r	= document.createRange();
-			// If the editor has our special zero-width character in it wrapped
-			// with paragraph tags, select it
-			if ( $el.html() == '<p>​</p>' )
+			if ( val &&
+				 element.previousValue != val )
 			{
-				s.removeAllRanges();
-				r.selectNodeContents($el.find('p').get(0));
-				s.addRange(r);
-				
-				// Get Firefox's cursor behaving naturally by clearing out the
-				// zero-width character; if we run this for webkit too, then it
-				// breaks Webkit's cursor behavior
-				if ($.browser.mozilla)
-				{
-					$el.find('p').eq(0).html('');
-				}
+				$element.trigger( 'WysiHat-' + evt );
+				element.previousValue = val;
+			}
+		}, 100);
+	}
+
+	function selectEmptyParagraph( $el )
+	{
+		var $el	= $element || $(this),
+			s	= window.getSelection(),
+			r	= document.createRange();
+		// If the editor has our special zero-width character in it wrapped
+		// with paragraph tags, select it
+		if ( $el.html() == '<p>​</p>' )
+		{
+			s.removeAllRanges();
+			r.selectNodeContents($el.find('p').get(0));
+			s.addRange(r);
+			
+			// Get Firefox's cursor behaving naturally by clearing out the
+			// zero-width character; if we run this for webkit too, then it
+			// breaks Webkit's cursor behavior
+			if ($.browser.mozilla)
+			{
+				$el.find('p').eq(0).html('');
 			}
 		}
+	}
 
-		$('body')
-			.delegate('input,textarea,*[contenteditable],*[contenteditable=true]', 'keydown', fieldChangeHandler )
-			.delegate('*[contenteditable],*[contenteditable=true]', 'focus', selectEmptyParagraph );
+	$('body')
+		.delegate('input,textarea,*[contenteditable],*[contenteditable=true]', 'keydown', fieldChangeHandler )
+		.delegate('*[contenteditable],*[contenteditable=true]', 'focus', selectEmptyParagraph );
 
 
-		if ( 'onselectionchange' in DOC &&
-			 'selection' in DOC )
+	if ( 'onselectionchange' in document &&
+		 'selection' in document )
+	{
+		selectionChangeHandler = function()
 		{
-			selectionChangeHandler = function()
+			var
+			range	= document.selection.createRange(),
+			element	= range.parentElement();
+			$(element)
+				.trigger( 'WysiHat-selection:change' );
+		}
+
+ 		$doc.bind( 'selectionchange', selectionChangeHandler );
+	}
+	else
+	{
+		selectionChangeHandler = function()
+		{
+			var
+			element		= document.activeElement,
+			elementTagName = element.tagName.toLowerCase(),
+			selection, range;
+
+			if ( elementTagName == 'textarea' ||
+				 elementTagName == 'input' )
 			{
-				var
-				range	= DOC.selection.createRange(),
-				element	= range.parentElement();
-				$(element)
-					.trigger( 'WysiHat-selection:change' );
+				previousRange = null;
+			}
+			else
+			{
+				selection = window.getSelection();
+				if (selection.rangeCount < 1) { return };
+
+				range = selection.getRangeAt(0);
+				if ( range && range.equalRange(previousRange) ) { return; }
+
+				previousRange	= range;
+				element			= range.commonAncestorContainer;
+				while (element.nodeType == Node.TEXT_NODE)
+				{
+					element = element.parentNode;
+				}
 			}
 
-	 		$doc.bind( 'selectionchange', selectionChangeHandler );
-		}
-		else
-		{
-			selectionChangeHandler = function()
-			{
-				var
-				element		= DOC.activeElement,
-				elementTagName = element.tagName.toLowerCase(),
-				selection, range;
+			$(element)
+				.trigger( 'WysiHat-selection:change' );
+		};
 
-				if ( elementTagName == 'textarea' ||
-					 elementTagName == 'input' )
-				{
-					previousRange = null;
-				}
-				else
-				{
-					selection = window.getSelection();
-					if (selection.rangeCount < 1) { return };
-
-					range = selection.getRangeAt(0);
-					if ( range && range.equalRange(previousRange) ) { return; }
-
-					previousRange	= range;
-					element			= range.commonAncestorContainer;
-					while (element.nodeType == Node.TEXT_NODE)
-					{
-						element = element.parentNode;
-					}
-				}
-
-				$(element)
-					.trigger( 'WysiHat-selection:change' );
-			};
-
-			$doc.mouseup( selectionChangeHandler );
-			$doc.keyup( selectionChangeHandler );
-		}
-	});
-
-})(jQuery, document);
-
+		$doc.mouseup( selectionChangeHandler );
+		$doc.keyup( selectionChangeHandler );
+	}
+});
 
 
 ///////////////////////////////////
 // BRAND NEW EVENT SYSTEM! WOOT! //
 ///////////////////////////////////
 
-(function($){
+var
+KEYS,
+keyShortcuts,
+EventHandlers;
 
-	var
-	KEYS,
-	keyShortcuts,
-	EventHandlers;
+KEYS = (function() {
+	var keys = {
+		3: "enter",
+		8: "backspace",
+		9: "tab",
+		13: "enter",
+		16: "shift",
+		17: "ctrl",
+		18: "alt",
+		27: "esc",
+		32: "space",
+		37: "left",
+		38: "up",
+		39: "right",
+		40: "down",
+		46: "delete",
+		91: "mod", 92: "mod", 93: "mod",
 
-	KEYS = (function() {
-		var keys = {
-			3: "enter",
-			8: "backspace",
-			9: "tab",
-			13: "enter",
-			16: "shift",
-			17: "ctrl",
-			18: "alt",
-			27: "esc",
-			32: "space",
-			37: "left",
-			38: "up",
-			39: "right",
-			40: "down",
-			46: "delete",
-			91: "mod", 92: "mod", 93: "mod",
-
-		// argh
-			59: ";",
-			186: ";",
-			187: "=",
-			188: ",",
-			189: "-",
-			190: ".",
-			191: "/",
-			192: "`",
-			219: "[",
-			220: "\\",
-			221: "]",
-			222: "'",
-			63232: "up",
-			63233: "down",
-			63234: "left",
-			63235: "right",
-			63272: "delete"
-		};
-
-		// numbers
-		for (var i = 0; i < 10; i++) {
-			keys[i + 48] = String(i);
-		}
-
-		// letters
-		for (var i = 65; i <= 90; i++) {
-			keys[i] = String.fromCharCode(i);
-		}
-
-		return keys;
-	})();
-
-	keyShortcuts = (function() {
-
-		// @todo @future would be cool if cmd+s triggered an autosave
-		// @todo give addon folks a way to add to these?
-		var
-		ios = /AppleWebKit/.test(navigator.userAgent) && /Mobile\/\w+/.test(navigator.userAgent),
-		mac = ios || /Mac/.test(navigator.platform),
-		prefix = mac ? 'cmd' : 'ctrl';
-
-		return {
-			'cut': prefix + '-x',
-			'copy': prefix + '-c',
-			'paste': prefix + '-v',
-			'undo': prefix + '-z',
-			'redo': prefix + '-shift-z',
-
-			// @todo move to tools?
-			'bold': prefix + '-b',
-			'italics': prefix + '-i',
-			'underline': prefix + '-u'
-		};
-	})();
-
-	WysiHat.EventCore = function($el)
-	{
-		this.$editor = $el;
-
-		this.textStart = null;
-		this.pasteStart = null;
-		this.textDeleting = false; // typing backwards ;)
-
-		// helper classes
-		this.undoStack = new WysiHat.UndoStack();
-		this.selectionUtil = $el.data('selectionUtil');
-		this.eventHandlers = [];
-
-		this._hijack_events();
+	// argh
+		59: ";",
+		186: ";",
+		187: "=",
+		188: ",",
+		189: "-",
+		190: ".",
+		191: "/",
+		192: "`",
+		219: "[",
+		220: "\\",
+		221: "]",
+		222: "'",
+		63232: "up",
+		63233: "down",
+		63234: "left",
+		63235: "right",
+		63272: "delete"
 	};
 
-	WysiHat.EventCore.prototype = {
+	// numbers
+	for (var i = 0; i < 10; i++) {
+		keys[i + 48] = String(i);
+	}
 
-		/**
-		 * Add a handler for editor events. These
-		 * are things such as "bold" or "paste". Not
-		 * browser events!
-		 */
-		add: function(action, func)
+	// letters
+	for (var i = 65; i <= 90; i++) {
+		keys[i] = String.fromCharCode(i);
+	}
+
+	return keys;
+})();
+
+keyShortcuts = (function() {
+
+	// @todo @future would be cool if cmd+s triggered an autosave
+	// @todo give addon folks a way to add to these?
+	var
+	ios = /AppleWebKit/.test(navigator.userAgent) && /Mobile\/\w+/.test(navigator.userAgent),
+	mac = ios || /Mac/.test(navigator.platform),
+	prefix = mac ? 'cmd' : 'ctrl';
+
+	return {
+		'cut': prefix + '-x',
+		'copy': prefix + '-c',
+		'paste': prefix + '-v',
+		'undo': prefix + '-z',
+		'redo': prefix + '-shift-z',
+
+		// @todo move to tools?
+		'bold': prefix + '-b',
+		'italics': prefix + '-i',
+		'underline': prefix + '-u'
+	};
+})();
+
+
+// ---------------------------------------------------------------------
+
+/**
+ * Event Class
+ *
+ * Big kahuna of event handlers. This deals with both public and
+ * private events.
+ *
+ * Here's the basic intended functionality. It binds on all of the
+ * browser events that will ever fire on the darned thing. Then,
+ * it looks for actions like typing, pasting, button pushing and
+ * records their before and after states for undoing.
+ *
+ * It also holds names of the buttons, so that a button action can
+ * be triggered directly. Loosely coupling buttons and letting devs
+ * play with triggering actions in different ways without completely
+ * copying our buttons.
+ */
+
+// ---------------------------------------------------------------------
+
+WysiHat.Event = function(obj)
+{
+	this.$editor = obj.$editor;
+	this.eventHandlers = [];
+
+	this.textStart = null;
+	this.pasteStart = null;
+	this.textDeleting = false; // typing backwards ;)
+
+	// helper classes
+	this.Undo = obj.Undo;
+	this.Selection = obj.Selection;
+
+	this._hijack_events();
+};
+
+WysiHat.Event.prototype = {
+
+	/**
+	 * Add a handler for editor events. These
+	 * are things such as "bold" or "paste". Not
+	 * browser events!
+	 */
+	add: function(action, func)
+	{
+		this.eventHandlers[action] = func;
+	},
+
+	/**
+	 * Do we have a handler?
+	 */
+	has: function(action)
+	{
+		return (action in this.eventHandlers);
+	},
+
+	/**
+	 * Run the event handler.
+	 *
+	 * @param action event name
+	 * @param state current state
+	 * @param finalize completion callback for asynchronous tools
+	 */
+	run: function(action, state, finalize) {
+		var ret = this.eventHandlers[action](state, finalize);
+
+		// false means you run finalize yourself
+		// in all other cases, we run it. If it was
+		// already run, no harm done.
+		if (ret !== false)
 		{
-			this.eventHandlers[action] = func;
-		},
+			finalize();
+		}
+	},
 
-		/**
-		 * Do we have a handler?
-		 */
-		has: function(action)
+	/**
+	 * Pass an event to its handler
+	 *
+	 * $editor.fire('bold')
+	 */
+	fire: function(action)
+	{
+		var that = this,
+			beforeState,
+			finalize;
+
+		this._saveTextState(action);
+
+		// special case - undo and redo
+		if (action == 'undo' || action == 'redo')
 		{
-			return (action in this.eventHandlers);
-		},
+			var modified,
+				check = (action == 'undo') ? 'hasUndo' : 'hasRedo';
 
-		/**
-		 * Run the event handler.
-		 *
-		 * @param action event name
-		 * @param state current state
-		 * @param finalize completion callback for asynchronous tools
-		 */
-		run: function(action, state, finalize) {
-			var ret = this.eventHandlers[action](state, finalize);
-
-			// false means you run finalize yourself
-			// in all other cases, we run it. If it was
-			// already run, no harm done.
-			if (ret !== false)
+			if (this.Undo[check]())
 			{
-				finalize();
-			}
-		},
+				modified = this.Undo[action](this.$editor.html());
 
-		/**
-		 * Pass an event to its handler
-		 *
-		 * $editor.fire('bold')
-		 */
-		fire: function(action)
+				this.$editor.html(modified[0]);
+				this.Selection.set(modified[1]);
+			}
+
+			return;
+		}
+
+		// mark text change
+		beforeState = this.getState();
+
+		if ( ! this.has(action))
 		{
-			var that = this,
-				beforeState,
-				finalize;
-
-			this._saveTextState(action);
-
-			// special case - undo and redo
-			if (action == 'undo' || action == 'redo')
-			{
-				var modified,
-					check = (action == 'undo') ? 'hasUndo' : 'hasRedo';
-
-				if (this.undoStack[check]())
-				{
-					modified = this.undoStack[action](this.$editor.html());
-
-					this.$editor.html(modified[0]);
-					this.selectionUtil.set(modified[1]);
-				}
-
-				return;
-			}
-
-			// mark text change
-			beforeState = this.getState();
-
-			if ( ! this.has(action))
-			{
-				// let it go ...
-				return true;
-			}
-
-			// setup a finalizer for the event.
-			// make sure it can only be run once
-			finalize = function() {
-				if (this.hasRun)
-				{
-					return;
-				}
-
-				this.hasRun = true;
-
-				that.textChange(beforeState);
-				that._saveTextState(action);
-				that.$editor.focus();
-			};
-
-			this.run(action, beforeState, $.proxy(finalize, finalize));
-		},
-
-		/**
-		 * Mark a text change. Takes the
-		 * objects from getState as before
-		 * and after [optional] parameters.
-		 *
-		 * @return void
-		 */
-		textChange: function(before, after)
-		{
-			after = after || this.getState();
-
-			this.undoStack.push(
-				before.html, after.html,
-				before.selection, after.selection
-			);
-		},
-
-		/**
-		 * Check if a current event matches
-		 * a key action we're looking for
-		 *
-		 * isKeyCombo('ctrl-x', evt)
-		 * isKeyCombo('esc', evt)
-		 *
-		 * @return bool
-		 */
-		isKeyCombo: function(strName, e) {
-			var modified = '',
-				keyname = '',
-				minus = strName.indexOf('-') > -1;
-
-			// european altGr
-			if (e.altGraphKey)
-			{
-				return false;
-			}
-
-			if (e.metaKey) modified += 'cmd-';
-			if (e.altKey) modified += 'alt-';
-			if (e.ctrlKey) modified += 'ctrl-';
-			if (e.shiftKey) modified += 'shift-';
-
-			if ( ! minus && strName.length > 1)
-			{
-				// just looking for a modifier
-				return modified.replace(/-$/, '') == strName;
-			}
-
-			keyname = KEYS[e.keyCode];
-
-			if ( ! keyname)
-			{
-				return false;
-			}
-
-			return strName.toLowerCase() == (modified + keyname).toLowerCase();
-		},
-
-		/**
-		 * Check for named events.
-		 *
-		 * @todo list of named events
-		 * @todo let plugins add to them
-		 *
-		 * isEvent('copy', evt)
-		 */
-		isEvent: function(name, evt)
-		{
-			var type = evt.type;
-
-			// just asking for a type?
-			if (type == name)
-			{
-				return true;
-			}
-
-			// key events can look up shortcuts
-			// but if it's not a key event, we're done
-			if (type.substr(0, 3) != 'key')
-			{
-				return false;
-			}
-
-			var keyCombo = keyShortcuts[name];
-
-			if ( ! keyCombo) {
-				return false;
-			}
-
-			return this.isKeyCombo(keyCombo, evt);
-		},
-
-		/**
-		 * Get the editor's current state
-		 */
-		getState: function()
-		{
-			return {
-				html: this.$editor.html(),
-				selection: this.selectionUtil.get()
-			}
-		},
-
-		/**
-		 * Save the state of the text they have
-		 * typed so far.
-		 *
-		 * @todo call periodically to make it more natural?
-		 */
-		_saveTextState: function(name)
-		{
-			// some events shouldn't affect this
-			// @todo figure out the whole list
-			if (name == 'redo')
-			{
-				return;
-			}
-
-			if (this.textStart)
-			{
-				this.textChange(this.textStart);
-				this.textStart = null;
-			}
-		},
-
-		// ---------------------
-		// INTERNAL EVENT SYSTEM
-		// These functions handle dom events, they do _not_ get called
-		// from a triggered event (but they may trigger events).
-		// ---------------------
-
-		/**
-		 * Takes control of all editor events
-		 *
-		 * This is what makes it all work. If we fail here, we're
-		 * most definitely up the creek. No kidding.
-		 */
-		_hijack_events: function()
-		{
-			var event_map = {
-
-				// @todo remember one event type can still have the
-				// effects / fire another (keyEvent can result in a
-				// selectionChange), but initially the shortest shortest
-				// route is best.
-
-				// 'focusout change': $.proxy(this._blurEvent, this),
-				'selectionchange focusin mouseup': $.proxy(this._rangeEvent, this),
-				'keydown keyup keypress': $.proxy(this._keyEvent, this),
-				'cut undo redo paste input contextmenu': $.proxy(this._menuEvent, this)
-			//	'click doubleclick mousedown mouseup': $.proxy(this._mouseEvent, this)
-			};
-
-			this.$editor.on(event_map);
-		},
-
-		/**
-		 * Key Combo Events
-		 *
-		 * Looks for known named key combinations and fires the
-		 * correct event.
-		 */
-		_keyComboEvent: function(evt)
-		{
-			var attempt = ['undo', 'redo', 'paste'],
-				name;
-
-			if (evt.type == 'keydown')
-			{
-				while(name = attempt.shift())
-				{
-					if (this.isEvent(name, evt))
-					{
-						if (name == 'paste')
-						{
-							this.fire(name);
-							return true;
-						}
-
-						evt.preventDefault();
-						this.fire(name);
-						return false;
-					}
-				}
-			}
-
+			// let it go ...
 			return true;
-		},
+		}
 
-		/**
-		 * Handle key events
-		 *
-		 * Order most definitely matters here - don't touch it!
-		 */
-		_keyEvent: function(evt)
+		// setup a finalizer for the event.
+		// make sure it can only be run once
+		finalize = function() {
+			if (this.hasRun)
+			{
+				return;
+			}
+
+			this.hasRun = true;
+
+			that.textChange(beforeState);
+			that._saveTextState(action);
+			that.$editor.focus();
+		};
+
+		this.run(action, beforeState, $.proxy(finalize, finalize));
+	},
+
+	/**
+	 * Mark a text change. Takes the
+	 * objects from getState as before
+	 * and after [optional] parameters.
+	 *
+	 * @return void
+	 */
+	textChange: function(before, after)
+	{
+		after = after || this.getState();
+
+		this.Undo.push(
+			before.html, after.html,
+			before.selection, after.selection
+		);
+	},
+
+	/**
+	 * Check if a current event matches
+	 * a key action we're looking for
+	 *
+	 * isKeyCombo('ctrl-x', evt)
+	 * isKeyCombo('esc', evt)
+	 *
+	 * @return bool
+	 */
+	isKeyCombo: function(strName, e) {
+		var modified = '',
+			keyname = '',
+			minus = strName.indexOf('-') > -1;
+
+		// european altGr
+		if (e.altGraphKey)
 		{
-			// currently ignoring these remove it if you
-			// need it, shouldn't break anything
-			if (evt.type == 'keypress')
-			{
-				return true;
-			}
+			return false;
+		}
 
-			if (evt.ctrlKey || evt.altKey || evt.metaKey)
-			{
-				return this._keyComboEvent(evt);
-			}
+		if (e.metaKey) modified += 'cmd-';
+		if (e.altKey) modified += 'alt-';
+		if (e.ctrlKey) modified += 'ctrl-';
+		if (e.shiftKey) modified += 'shift-';
 
-			if (evt.type == 'keydown')
-			{
-				if (KEYS[evt.keyCode] == 'backspace')
-				{
-					if (this.textDeleting == false)
-					{
-						this.textDeleting = true;
-						this._saveTextState('backspace');
-					}
-				}
-				else
-				{
-					if (this.textDeleting == true)
-					{
-						this.textDeleting = false;
-						this._saveTextState('keypress');
-					}
-				}
-
-				if (this.textStart == null)
-				{
-					this.textStart = this.getState();
-				}
-			}
-			else if (evt.type == 'keyup')
-			{
-				switch (KEYS[evt.keyCode])
-				{
-					case 'up':
-					case 'down':
-					case 'left':
-					case 'right':
-						this._saveTextState('keyup');
-				}
-			}
-		},
-
-		/**
-		 * Potential Range Changes
-		 *
-		 * @todo put a fast check for range change here instead of
-		 * grabbing the range and doing the string length trick in the util
-		 */
-		_rangeEvent: function(evt)
+		if ( ! minus && strName.length > 1)
 		{
-			this._saveTextState(evt.type);
-	// @todo this is a little too aggressive since we still have
-	// aaron's original events firing. Rip them out first.
-	//		this.$editor.trigger( 'WysiHat-selection:change' );
-		},
+			// just looking for a modifier
+			return modified.replace(/-$/, '') == strName;
+		}
 
-		/**
-		 * Events that can be triggered in the user's context
-		 * menu. This doesn't work too well, we may need a pair
-		 * of buttons for undo and redo. (@todo)
-		 */
-		_menuEvent: function(evt)
+		keyname = KEYS[e.keyCode];
+
+		if ( ! keyname)
 		{
-			var that = this;
+			return false;
+		}
 
-			var attempt = ['undo', 'redo'/*, 'paste'*/],
-				name;
+		return strName.toLowerCase() == (modified + keyname).toLowerCase();
+	},
 
+	/**
+	 * Check for named events.
+	 *
+	 * @todo list of named events
+	 * @todo let plugins add to them
+	 *
+	 * isEvent('copy', evt)
+	 */
+	isEvent: function(name, evt)
+	{
+		var type = evt.type;
+
+		// just asking for a type?
+		if (type == name)
+		{
+			return true;
+		}
+
+		// key events can look up shortcuts
+		// but if it's not a key event, we're done
+		if (type.substr(0, 3) != 'key')
+		{
+			return false;
+		}
+
+		var keyCombo = keyShortcuts[name];
+
+		if ( ! keyCombo) {
+			return false;
+		}
+
+		return this.isKeyCombo(keyCombo, evt);
+	},
+
+	/**
+	 * Get the editor's current state
+	 */
+	getState: function()
+	{
+		return {
+			html: this.$editor.html(),
+			selection: this.Selection.get()
+		}
+	},
+
+	/**
+	 * Save the state of the text they have
+	 * typed so far.
+	 *
+	 * @todo call periodically to make it more natural?
+	 */
+	_saveTextState: function(name)
+	{
+		// some events shouldn't affect this
+		// @todo figure out the whole list
+		if (name == 'redo')
+		{
+			return;
+		}
+
+		if (this.textStart)
+		{
+			this.textChange(this.textStart);
+			this.textStart = null;
+		}
+	},
+
+	// ---------------------
+	// INTERNAL EVENT SYSTEM
+	// These functions handle dom events, they do _not_ get called
+	// from a triggered event (but they may trigger events).
+	// ---------------------
+
+	/**
+	 * Takes control of all editor events
+	 *
+	 * This is what makes it all work. If we fail here, we're
+	 * most definitely up the creek. No kidding.
+	 */
+	_hijack_events: function()
+	{
+		var event_map = {
+
+			// @todo remember one event type can still have the
+			// effects / fire another (keyEvent can result in a
+			// selectionChange), but initially the shortest shortest
+			// route is best.
+
+			// 'focusout change': $.proxy(this._blurEvent, this),
+			'selectionchange focusin mouseup': $.proxy(this._rangeEvent, this),
+			'keydown keyup keypress': $.proxy(this._keyEvent, this),
+			'cut undo redo paste input contextmenu': $.proxy(this._menuEvent, this)
+		//	'click doubleclick mousedown mouseup': $.proxy(this._mouseEvent, this)
+		};
+
+		this.$editor.on(event_map);
+	},
+
+	/**
+	 * Key Combo Events
+	 *
+	 * Looks for known named key combinations and fires the
+	 * correct event.
+	 */
+	_keyComboEvent: function(evt)
+	{
+		var attempt = ['undo', 'redo', 'paste'],
+			name;
+
+		if (evt.type == 'keydown')
+		{
 			while(name = attempt.shift())
 			{
 				if (this.isEvent(name, evt))
 				{
+					if (name == 'paste')
+					{
+						this.fire(name);
+						return true;
+					}
+
 					evt.preventDefault();
 					this.fire(name);
 					return false;
 				}
 			}
-
-			//WysiHat.Formatting.cleanup(this.$editor);
-		}
-	};
-
-	WysiHat.EventCore.constructor = WysiHat.EventCore;
-
-	WysiHat.UndoStack = function()
-	{
-		this.max_depth = 75;
-		this.saved = [];
-		this.index = 0;
-	}
-
-	WysiHat.UndoStack.prototype = {
-
-		/**
-		 * Add a change to the undo stack
-		 *
-		 * Takes a before and after string. These can be arrays as long
-		 * as equal indexes match up.
-		 */
-		push: function(before, after, selBefore, selAfter)
-		{
-			var diff = [],
-				that = this;
-
-			if ($.isArray(before))
-			{
-				diff = $.map(before, function(item, i) {
-					return that._diff(item, after[i]);
-				});
-			}
-			else
-			{
-				diff = this._diff(before, after);
-			}
-
-			if (diff)
-			{
-				// remove any redos we might have
-				if (this.index < this.saved.length)
-				{
-					this.saved = this.saved.slice(0, this.index);
-					this.index = this.saved.length;
-				}
-
-				// @todo max_depth check
-
-				this.index++;
-				this.saved.push({
-					changes: diff,
-					selection: [selBefore, selAfter]
-				});
-			}
-		},
-
-		/**
-		 * Undo the current event stack item
-		 *
-		 * Takes a string to undo on and returns the new one
-		 */
-		undo: function(S)
-		{
-			this.index--;
-			var delta = this.saved[this.index],
-				diff = delta.changes,
-				length = diff.length;
-			
-			for (var i = 0; i < length; i++) {
-				change = diff[i];
-				S = S.substring(0, change[0]) + change[1] + S.substring(change[0] + change[2].length);
-			}
-
-			return [S, delta.selection[0]];
-		},
-
-		/**
-		 * Redo the current event stack item
-		 *
-		 * Takes a string to redo on and returns the new one
-		 */
-		redo: function(S)
-		{
-			var delta = this.saved[this.index],
-				diff = delta.changes,
-				length = diff.length;
-
-			for (var i = length - 1; i >= 0; i--) {
-				change = diff[i];
-				S = S.substring(0, change[0]) + change[2] + S.substring(change[0] + change[1].length);
-			}
-
-			this.index++;
-			return [S, delta.selection[1]];
-		},
-
-		/**
-		 * Undo available?
-		 */
-		hasUndo: function()
-		{
-			return (this.index != 0);
-		},
-
-		/**
-		 * Redo available?
-		 */
-		hasRedo: function()
-		{
-			return (this.index != this.saved.length);
-		},
-
-		/**
-		 * Simple line diffing algo
-		 *
-		 * Pretty naive implementation, but enough to recognize
-		 * identical ends and wrapping. The two most common cases.
-		 *
-		 * Returns and array of differences. A difference looks like
-		 * this: [index, old, new]. Returns null if str1 and str2
-		 * are identical.
-		 */
-		_diff: function(str1, str2)
-		{
-			var l1 = str1.length,
-				l2 = str2.length,
-				diffs = [],
-				trim_before = 0,
-				trim_after = 0,
-				substr_i;
-
-			// easiest case
-			if (str1 == str2) {
-				return null;
-			}
-
-			// trim identical stuff off the beginning
-			while(trim_before < l1 && trim_before < l2)
-			{
-				if (str1[trim_before] != str2[trim_before])
-				{
-					break;
-				}
-				
-				trim_before++;
-			}
-
-			// trim identical stuff off the beginning
-			while(trim_after < l1 && trim_after < l2)
-			{
-				if (str1[l1 - trim_after - 1] != str2[l2 - trim_after - 1])
-				{
-					break;
-				}
-
-				trim_after++;
-			}
-
-			// It involved walking through the whole thing? We can ignore
-			// it the code below will take care of finding the smallest difference.
-			if (trim_before == Math.min(l1, l2))
-			{
-				trim_before = 0;
-			}
-			if (trim_after == Math.min(l1, l2))
-			{
-				trim_after = 0;
-			}
-
-			// We have something to trim. Do it and recalculate lengths.
-			if (trim_before || trim_after)
-			{
-				str1 = str1.substring(trim_before, l1 - trim_after);
-				str2 = str2.substring(trim_before, l2 - trim_after);
-
-				l1 = str1.length;
-				l2 = str2.length;
-			}
-
-			// common case - wrapping / unwrapping
-			if (l1 !== l2)
-			{
-				// always check for shorter in longer
-				if (l1 < l2)
-				{
-					substr_i = str2.indexOf(str1);
-				}
-				else
-				{
-					substr_i = str1.indexOf(str2);
-				}
-
-				if (substr_i > -1)
-				{
-					if (l1 < l2)
-					{
-						return [
-							[trim_before, '', str2.substr(0, substr_i)], // wrapping before text
-							[trim_before + l1, '', str2.substr(substr_i + l1)] // wrapping after
-						];
-					}
-					else
-					{
-						return [
-							[trim_before, str1.substr(0, substr_i), ''], // unwrap before
-							[trim_before + substr_i + l2, str1.substr(substr_i + l2), ''] // unwrap after
-						];
-					}
-				}
-			}
-
-			// if the strings are long we can probably diff more,
-			// but this is pretty darned good
-			return [[trim_before, str1, str2]];
 		}
 
-	};
-
-	WysiHat.UndoStack.constructor = WysiHat.UndoStack;
-
+		return true;
+	},
 
 	/**
-	 * Selection Utility
+	 * Handle key events
 	 *
-	 * Since working with range is such a PITA, we
-	 * dropped in a small helper. It's bound onto
-	 * editor.data('selectionUtil') right now. It
-	 * should also be available to buttons simply
-	 * as this.selectionUtil.
-	 *
-	 * Provides get(), set(), and toString().
+	 * Order most definitely matters here - don't touch it!
 	 */
-	WysiHat.SelectionUtil = function($el)
+	_keyEvent: function(evt)
 	{
-		this.$editor = $el;
-		this.top = this.$editor.get(0);
-	}
-
-	WysiHat.SelectionUtil.prototype = {
-
-		/**
-		 * Get current selection offsets based on
-		 * the editors *text* (not html!).
-		 *
-		 * @return [startIndex, endIndex]
-		 */
-		get: function(range)
+		// currently ignoring these remove it if you
+		// need it, shouldn't break anything
+		if (evt.type == 'keypress')
 		{
+			return true;
+		}
 
-			var s = window.getSelection(),
-				r = document.createRange(),
-				length, topOffset;
+		if (evt.ctrlKey || evt.altKey || evt.metaKey)
+		{
+			return this._keyComboEvent(evt);
+		}
 
-			if (range === undefined)
+		if (evt.type == 'keydown')
+		{
+			if (KEYS[evt.keyCode] == 'backspace')
 			{
-				if ( ! s.rangeCount)
+				if (this.textDeleting == false)
 				{
-					return [0, 0];
+					this.textDeleting = true;
+					this._saveTextState('backspace');
 				}
-
-				range = s.getRangeAt(0);
-			}
-
-			length = range.toString().replace(/\n/g, '').length;
-
-			r.setStart(this.top, 0);
-			r.setEnd(range.startContainer, range.startOffset);
-
-			topOffset = r.toString().replace(/\n+/g, '').length;
-
-			return [topOffset, topOffset + length];
-		},
-
-		/**
-		 * Create a selection or move the current one.
-		 * Again, this is text! Omit end to move the cursor.
-		 *
-		 * @param startIndex, endIndex
-		 * OR
-		 * @param [startIndex, endIndex] // as returned by get
-		 */
-		set: function(start, end)
-		{
-			if ($.isArray(start))
-			{
-				end = start[1];
-				start = start[0];
-			}
-
-			var s = window.getSelection(),
-				r = document.createRange(),
-				startOffset, endOffset;
-
-			startOffset = this._getOffsetNode(this.top, start);
-			r.setStart.apply(r, startOffset);
-
-			// collapsed
-			if (end === undefined)
-			{
-				end = start;
-				r.collapse(true);
 			}
 			else
 			{
-				endOffset = this._getOffsetNode(this.top, end);
-				r.setEnd.apply(r, endOffset);
-			}
-
-			s.removeAllRanges();
-			s.addRange(r);
-		},
-
-		/**
-		 * Get the contents of the current selection
-		 */
-		toString: function(range)
-		{
-			var s = window.getSelection();
-
-			if (range === undefined)
-			{
-				range = s.getRangeAt(0);
-			}
-
-			return range.toString();
-		},
-
-		/**
-		 * Given a node and and an offset, find the correct
-		 * textnode and offset that we can create a range with.
-		 *
-		 * You probably don't want to touch this :).
-		 */
-		_getOffsetNode: function(startNode, offset)
-		{
-			var curNode = startNode,
-				curNodeLen = 0;
-
-			function getTextNodes(node)
-			{
-				if (node.nodeType == Node.TEXT_NODE || node.nodeType == Node.CDATA_SECTION_NODE)
+				if (this.textDeleting == true)
 				{
-					if (offset > 0)
-					{
-						curNode = node;
-						offset -= node.nodeValue.replace(/\n/g, '').length;
-					}
+					this.textDeleting = false;
+					this._saveTextState('keypress');
+				}
+			}
+
+			if (this.textStart == null)
+			{
+				this.textStart = this.getState();
+			}
+		}
+		else if (evt.type == 'keyup')
+		{
+			switch (KEYS[evt.keyCode])
+			{
+				case 'up':
+				case 'down':
+				case 'left':
+				case 'right':
+					this._saveTextState('keyup');
+			}
+		}
+	},
+
+	/**
+	 * Potential Range Changes
+	 *
+	 * @todo put a fast check for range change here instead of
+	 * grabbing the range and doing the string length trick in the util
+	 */
+	_rangeEvent: function(evt)
+	{
+		this._saveTextState(evt.type);
+// @todo this is a little too aggressive since we still have
+// aaron's original events firing. Rip them out first.
+//		this.$editor.trigger( 'WysiHat-selection:change' );
+	},
+
+	/**
+	 * Events that can be triggered in the user's context
+	 * menu. This doesn't work too well, we may need a pair
+	 * of buttons for undo and redo. (@todo)
+	 */
+	_menuEvent: function(evt)
+	{
+		var that = this;
+
+		var attempt = ['undo', 'redo'/*, 'paste'*/],
+			name;
+
+		while(name = attempt.shift())
+		{
+			if (this.isEvent(name, evt))
+			{
+				evt.preventDefault();
+				this.fire(name);
+				return false;
+			}
+		}
+
+		//WysiHat.Formatting.cleanup(this.$editor);
+	}
+};
+
+WysiHat.Event.constructor = WysiHat.Event;
+
+
+// ---------------------------------------------------------------------
+
+/**
+ * Undo Class
+ *
+ * Implements a basic undo and redo stack.
+ *
+ * As you would expect it keeps track of changes as they are handed
+ * to it. Usually this is in the form of two pieces of html repre-
+ * senting the before and after state of the editor. It will do a
+ * simple diff to reduce its memory footprint.
+ *
+ * Additionally, it keeps track of the selection at the event end
+ * points to give a more natural undo experience (try it in your
+ * text editor - it reselects).
+ */
+
+// ---------------------------------------------------------------------
+
+WysiHat.Undo = function()
+{
+	this.max_depth = 75;	// @todo implement
+	this.saved = [];
+	this.index = 0;
+}
+
+WysiHat.Undo.prototype = {
+
+	/**
+	 * Add a change to the undo stack
+	 *
+	 * Takes a before and after string. These can be arrays as long
+	 * as equal indexes match up.
+	 */
+	push: function(before, after, selBefore, selAfter)
+	{
+		var diff = [],
+			that = this;
+
+		if ($.isArray(before))
+		{
+			diff = $.map(before, function(item, i) {
+				return that._diff(item, after[i]);
+			});
+		}
+		else
+		{
+			diff = this._diff(before, after);
+		}
+
+		if (diff)
+		{
+			// remove any redos we might have
+			if (this.index < this.saved.length)
+			{
+				this.saved = this.saved.slice(0, this.index);
+				this.index = this.saved.length;
+			}
+
+			// @todo max_depth check
+
+			this.index++;
+			this.saved.push({
+				changes: diff,
+				selection: [selBefore, selAfter]
+			});
+		}
+	},
+
+	/**
+	 * Undo the current event stack item
+	 *
+	 * Takes a string to undo on and returns the new one
+	 */
+	undo: function(S)
+	{
+		this.index--;
+		var delta = this.saved[this.index],
+			diff = delta.changes,
+			length = diff.length;
+		
+		for (var i = 0; i < length; i++) {
+			change = diff[i];
+			S = S.substring(0, change[0]) + change[1] + S.substring(change[0] + change[2].length);
+		}
+
+		return [S, delta.selection[0]];
+	},
+
+	/**
+	 * Redo the current event stack item
+	 *
+	 * Takes a string to redo on and returns the new one
+	 */
+	redo: function(S)
+	{
+		var delta = this.saved[this.index],
+			diff = delta.changes,
+			length = diff.length;
+
+		for (var i = length - 1; i >= 0; i--) {
+			change = diff[i];
+			S = S.substring(0, change[0]) + change[2] + S.substring(change[0] + change[1].length);
+		}
+
+		this.index++;
+		return [S, delta.selection[1]];
+	},
+
+	/**
+	 * Undo available?
+	 */
+	hasUndo: function()
+	{
+		return (this.index != 0);
+	},
+
+	/**
+	 * Redo available?
+	 */
+	hasRedo: function()
+	{
+		return (this.index != this.saved.length);
+	},
+
+	/**
+	 * Simple line diffing algo
+	 *
+	 * Pretty naive implementation, but enough to recognize
+	 * identical ends and wrapping. The two most common cases.
+	 *
+	 * Returns and array of differences. A difference looks like
+	 * this: [index, old, new]. Returns null if str1 and str2
+	 * are identical.
+	 */
+	_diff: function(str1, str2)
+	{
+		var l1 = str1.length,
+			l2 = str2.length,
+			diffs = [],
+			trim_before = 0,
+			trim_after = 0,
+			substr_i;
+
+		// easiest case
+		if (str1 == str2) {
+			return null;
+		}
+
+		// trim identical stuff off the beginning
+		while(trim_before < l1 && trim_before < l2)
+		{
+			if (str1[trim_before] != str2[trim_before])
+			{
+				break;
+			}
+			
+			trim_before++;
+		}
+
+		// trim identical stuff off the beginning
+		while(trim_after < l1 && trim_after < l2)
+		{
+			if (str1[l1 - trim_after - 1] != str2[l2 - trim_after - 1])
+			{
+				break;
+			}
+
+			trim_after++;
+		}
+
+		// It involved walking through the whole thing? We can ignore
+		// it the code below will take care of finding the smallest difference.
+		if (trim_before == Math.min(l1, l2))
+		{
+			trim_before = 0;
+		}
+		if (trim_after == Math.min(l1, l2))
+		{
+			trim_after = 0;
+		}
+
+		// We have something to trim. Do it and recalculate lengths.
+		if (trim_before || trim_after)
+		{
+			str1 = str1.substring(trim_before, l1 - trim_after);
+			str2 = str2.substring(trim_before, l2 - trim_after);
+
+			l1 = str1.length;
+			l2 = str2.length;
+		}
+
+		// common case - wrapping / unwrapping
+		if (l1 !== l2)
+		{
+			// always check for shorter in longer
+			if (l1 < l2)
+			{
+				substr_i = str2.indexOf(str1);
+			}
+			else
+			{
+				substr_i = str1.indexOf(str2);
+			}
+
+			if (substr_i > -1)
+			{
+				if (l1 < l2)
+				{
+					return [
+						[trim_before, '', str2.substr(0, substr_i)], // wrapping before text
+						[trim_before + l1, '', str2.substr(substr_i + l1)] // wrapping after
+					];
 				}
 				else
 				{
-					for (var i = 0, len = node.childNodes.length; offset > 0 && i < len; ++i)
-					{
-						getTextNodes(node.childNodes[i]);
-					}
+					return [
+						[trim_before, str1.substr(0, substr_i), ''], // unwrap before
+						[trim_before + substr_i + l2, str1.substr(substr_i + l2), ''] // unwrap after
+					];
 				}
 			}
-
-			getTextNodes(startNode);
-
-			if (offset == 0)
-			{
-				// weird case where they try to select something from 0
-				if (curNode.nodeType != Node.TEXT_NODE)
-				{
-					return [curNode, 0];
-				}
-
-				// Offset is 0 but we're at the end of the node,
-				// jump ahead in the dom to the real beginning node.
-				while (curNode.nextSibling === null)
-				{
-					curNode = curNode.parentNode;
-				}
-
-				curNode = curNode.nextSibling;
-			}
-
-			curNodeLen = curNode.nodeValue ? curNode.nodeValue.length : 0;
-			return [curNode, curNodeLen + offset];
 		}
-	};
 
-	WysiHat.SelectionUtil.constructor = WysiHat.SelectionUtil;
+		// if the strings are long we can probably diff more,
+		// but this is pretty darned good
+		return [[trim_before, str1, str2]];
+	}
+};
 
-})(jQuery);
+WysiHat.Undo.constructor = WysiHat.Undo;
+
+
+// ---------------------------------------------------------------------
+
+/**
+ * Selection Utility
+ *
+ * Abstracts out some of the more simple range manipulations.
+ *
+ * Working with ranges can be a PITA, especially for simple cursor
+ * movements like those the undo class needs to do to recreate its
+ * selections. To make this a little easier on everyone, we built a
+ * small utility.
+ *
+ * Provides get(), set(), and toString().
+ */
+
+// ---------------------------------------------------------------------
+
+WysiHat.Selection = function($el)
+{
+	this.$editor = $el;
+	this.top = this.$editor.get(0);
+}
+
+WysiHat.Selection.prototype = {
+
+	/**
+	 * Get current selection offsets based on
+	 * the editors *text* (not html!).
+	 *
+	 * @return [startIndex, endIndex]
+	 */
+	get: function(range)
+	{
+		var s = window.getSelection(),
+			r = document.createRange(),
+			length, topOffset;
+
+		if (range === undefined)
+		{
+			if ( ! s.rangeCount)
+			{
+				return [0, 0];
+			}
+
+			range = s.getRangeAt(0);
+		}
+
+		length = range.toString().replace(/\n/g, '').length;
+
+		r.setStart(this.top, 0);
+		r.setEnd(range.startContainer, range.startOffset);
+
+		topOffset = r.toString().replace(/\n+/g, '').length;
+
+		return [topOffset, topOffset + length];
+	},
+
+	/**
+	 * Create a selection or move the current one.
+	 * Again, this is text! Omit end to move the cursor.
+	 *
+	 * @param startIndex, endIndex
+	 * OR
+	 * @param [startIndex, endIndex] // as returned by get
+	 */
+	set: function(start, end)
+	{
+		if ($.isArray(start))
+		{
+			end = start[1];
+			start = start[0];
+		}
+
+		var s = window.getSelection(),
+			r = document.createRange(),
+			startOffset, endOffset;
+
+		startOffset = this._getOffsetNode(this.top, start);
+		r.setStart.apply(r, startOffset);
+
+		// collapsed
+		if (end === undefined)
+		{
+			end = start;
+			r.collapse(true);
+		}
+		else
+		{
+			endOffset = this._getOffsetNode(this.top, end);
+			r.setEnd.apply(r, endOffset);
+		}
+
+		s.removeAllRanges();
+		s.addRange(r);
+	},
+
+	/**
+	 * Get the contents of the current selection
+	 */
+	toString: function(range)
+	{
+		var s = window.getSelection();
+
+		if (range === undefined)
+		{
+			range = s.getRangeAt(0);
+		}
+
+		return range.toString();
+	},
+
+	/**
+	 * Given a node and and an offset, find the correct
+	 * textnode and offset that we can create a range with.
+	 *
+	 * You probably don't want to touch this :).
+	 */
+	_getOffsetNode: function(startNode, offset)
+	{
+		var curNode = startNode,
+			curNodeLen = 0;
+
+		function getTextNodes(node)
+		{
+			if (node.nodeType == Node.TEXT_NODE || node.nodeType == Node.CDATA_SECTION_NODE)
+			{
+				if (offset > 0)
+				{
+					curNode = node;
+					offset -= node.nodeValue.replace(/\n/g, '').length;
+				}
+			}
+			else
+			{
+				for (var i = 0, len = node.childNodes.length; offset > 0 && i < len; ++i)
+				{
+					getTextNodes(node.childNodes[i]);
+				}
+			}
+		}
+
+		getTextNodes(startNode);
+
+		if (offset == 0)
+		{
+			// weird case where they try to select something from 0
+			if (curNode.nodeType != Node.TEXT_NODE)
+			{
+				return [curNode, 0];
+			}
+
+			// Offset is 0 but we're at the end of the node,
+			// jump ahead in the dom to the real beginning node.
+			while (curNode.nextSibling === null)
+			{
+				curNode = curNode.parentNode;
+			}
+
+			curNode = curNode.nextSibling;
+		}
+
+		curNodeLen = curNode.nodeValue ? curNode.nodeValue.length : 0;
+		return [curNode, curNodeLen + offset];
+	}
+};
+
+WysiHat.Selection.constructor = WysiHat.Selection;
+
 
 // ---------------------------------------------------------------------
 
@@ -1375,676 +1481,222 @@ WysiHat.Element = (function( $ ){
 
 // ---------------------------------------------------------------------
 
-WysiHat.Commands = (function( WIN, DOC, $ ){
+WysiHat.Commands = (function() {
 
-	var
-	WYSIHAT_EDITOR	= 'WysiHat-editor',
-	CHANGE_EVT		= WYSIHAT_EDITOR + ':change',
+	// setup the empty objects
+	var Commands = {
+		is: {},
+		make: {}
+	};
 
-	validCommands	= [ 'backColor', 'bold', 'createLink', 'fontName', 'fontSize', 'foreColor', 'hiliteColor',
-						'italic', 'removeFormat', 'strikethrough', 'subscript', 'superscript', 'underline', 'unlink',
-						'delete', 'formatBlock', 'forwardDelete', 'indent', 'insertHorizontalRule', 'insertHTML',
-						'insertImage', 'insertLineBreak', 'insertOrderedList', 'insertParagraph', 'insertText',
-						'insertUnorderedList', 'justifyCenter', 'justifyFull', 'justifyLeft', 'justifyRight', 'outdent',
-						'copy', 'cut', 'paste', 'selectAll', 'styleWithCSS', 'useCSS' ],
+	// List used to autogenerate a bunch of is* and make*
+	// commands that all follow the same pattern.
+	var auto = {
 
-	blockElements	= WysiHat.Element.getContentElements().join(',').replace( ',div,', ',div:not(.' + WYSIHAT_EDITOR + '),' );
+		// no frills mapping to execCommand
+		makeEasy: [
+			'bold', 'underline', 'italic', 'strikethrough', 'fontname',
+			'fontsize', 'forecolor', 'createLink', 'insertImage'
+		],
 
-	function boldSelection()
-	{
-		this.execCommand('bold', false, null);
-	}
-	function isBold()
-	{
-		return ( selectionIsWithin('b,strong') || document.queryCommandState('bold') );
-	}
-	function underlineSelection()
-	{
-		this.execCommand('underline', false, null);
-	}
-	function isUnderlined()
-	{
-		return ( selectionIsWithin('u,ins') || document.queryCommandState('underline') );
-	}
-	function italicizeSelection()
-	{
-		this.execCommand('italic', false, null);
-	}
-	function isItalic()
-	{
-		return ( selectionIsWithin('i,em') || document.queryCommandState('italic') );
-	}
-	function strikethroughSelection()
-	{
-		this.execCommand('strikethrough', false, null);
-	}
-	function isStruckthrough()
-	{
-		return ( selectionIsWithin('s,del') || document.queryCommandState('strikethrough') );
-	}
+		// selectors to use for selectionIsWithin
+		isSelectors: {
+			'bold':	'b, strong',
+			'italic': 'i, em',
+			'link': 'a[href]',
+			'underline': 'u, ins',
+			'indented': 'blockquote',
+			'strikethrough': 's, del',
+			'orderedList': 'ol',
+			'unorderedList': 'ul'
+		},
 
-	function quoteSelection()
-	{
-		var $quote = $('<blockquote/>');
-		this.manipulateSelection(function( range, $quote ){
-			var
-			$q		= $quote.clone(),
-			$els	= this.getRangeElements( range, blockElements ),
-			last	= $els.length - 1,
-			$coll	= $();
+		// native queryCommandState options
+		isNativeState: {
+			'bold': 'bold',
+			'italic': 'italic',
+			'underline': 'underline',
+			'strikethrough': 'strikethrough',
+			'orderedList': 'insertOrderedList',
+			'unorderedList': 'insertUnorderedList'
+		}
+	};
 
-			$els.each(function(i){
-				var
-				$this	= $(this),
-				sub		= false,
-				$el;
+	// Fill in the simple make() commands
+	$.each(auto.makeEasy, function(i, v) {
+		Commands.make[v] = function(param) {
+			Commands.execCommand(v, false, param);
+		}
+	});
 
-				if ( WysiHat.Element.isSubContainer( $this ) )
-				{
-					sub = true;
-				}
-
-				if ( ! i &&
-					 sub &&
-					 i == last )
-				{
-					$el = $('<p/>').html( $this.html() );
-					$this.html('').append( $el );
-					$coll = $coll.add($el);
-				}
-				else if ( sub )
-				{
-					$coll = $coll.add(
-						$this.closest( WysiHat.Element.getContainers().join(",") )
-					);
-				}
-				else
-				{
-					$coll = $coll.add($this);
-				}
-
-				if ( i == last )
-				{
-					$coll.wrapAll( $q );
-				}
-			});
-		}, $quote);
-	}
-
-	function unquoteSelection()
-	{
-		this.manipulateSelection(function( range ){
-			this.getRangeElements( range, 'blockquote > *' ).each(function(){
-				var
-				el		= this,
-				$el		= $(el),
-				$parent	= $el.closest('blockquote'),
-				$bq		= $parent.clone().html(''),
-				$sibs	= $parent.children(),
-				last	= $sibs.length - 1,
-				$coll	= $();
-
-				$el.unwrap('blockquote');
-
-				if ( last > 0 )
-				{
-					$sibs.each(function(i){
-						if ( this != el )
-						{
-							$coll = $coll.add(this);
-						}
-
-						if ( i == last || this == el )
-						{
-							$coll.wrapAll($bq.clone());
-							$coll = $();
-						}
-					});
-				}
-
-				$parent = $el.parent();
-				if ( WysiHat.Element.isSubContainer( $parent ) &&
-				 	 $parent.children().length == 1 )
-				{
-					$parent.html($el.html());
-				}
-			});
-		});
-	}
-	function toggleIndentation()
-	{
-		if ( this.isIndented() )
+	// Fill in the simple is() commands
+	$.each(auto.isSelectors, function(k, v) {
+		if (k in auto.isNativeState)
 		{
-			this.unquoteSelection();
+			Commands.is[k] = function() {
+				return (Commands.selectionIsWithin(v) || document.queryCommandState(auto.isNativeState[k]));
+			};
 		}
 		else
 		{
-			this.quoteSelection();
+			Commands.is[k] = function() {
+				return Commands.selectionIsWithin(v);
+			};
 		}
-	}
-	function isIndented()
-	{
-		return selectionIsWithin('blockquote');
-	}
+	});
 
+	// Setup a few aliases for nicer usage
+	// i.e. this.is('underlined')
+	var aliases = {
+		is: {
+			'linked': 'link',
+			'underlined': 'underline',
+			'struckthrough': 'strikethrough',
+			'ol': 'orderedList',
+			'ul': 'unorderedList'
+		},
 
-	function fontSelection(font)
-	{
-		this.execCommand('fontname', false, font);
-	}
-	function fontSizeSelection(fontSize)
-	{
-		this.execCommand('fontsize', false, fontSize);
-	}
-	function colorSelection(color)
-	{
-		this.execCommand('forecolor', false, color);
-	}
-	function backgroundColorSelection(color)
-	{
-		if ( $.browser.mozilla )
-		{
-			this.execCommand('hilitecolor', false, color);
+		make: {
+			'italicize': 'italic',
+			'font': 'fontname',
+			'color': 'forecolor',
+			'link': 'createLink',
+			'ol': 'orderedList',
+			'ul': 'unorderedList',
+			'align': 'alignment'
 		}
-		else
-		{
-			this.execCommand('backcolor', false, color);
+	};
+
+	// add the aliases to the is and make objects
+	$.each(aliases.is, function(k, v) {
+		Commands.is[k] = function() {
+			return Commands.is[v]();
 		}
-	}
+	});
+
+	$.each(aliases.make, function(k, v) {
+		Commands.make[k] = $.proxy(Commands.make, v);
+	});
 
 
-	function alignSelection(alignment)
-	{
-		this.execCommand('justify' + alignment);
-	}
-	function alignSelected()
-	{
-		var node = WIN.getSelection().getNode();
-		return $(node).css('textAlign');
-	}
-
-
-	function linkSelection(url)
-	{
-		this.execCommand('createLink', false, url);
-	}
-	function unlinkSelection()
-	{
-		this.manipulateSelection(function( range ){
-			this.getRangeElements( range, '[href]' ).each(this.clearElement);
-		});
-	}
-	function isLinked()
-	{
-		return selectionIsWithin('a[href]');
-	}
-
-
-	function toggleOrderedList()
-	{
-		var
-		$list = $('<ol/>');
-
-		if ( isOrderedList() )
-		{
-			this.manipulateSelection(function( range, $list ) {
-				this.getRangeElements( range, 'ol' ).each(function(i) {
-					var $this = $(this);
-					$this.children('li').each(function(){
-						var $this = $(this);
-						replaceElement( $this, 'p' );
-						$this.find('ol,ul').each(function() {
-							var	$parent = $(this).parent();
-							if ( $parent.is('p') )
-							{
-								deleteElement.apply( $parent );
-							}
-						});
-					});
-					deleteElement.apply( $this );
-				});
-			});
-		}
-		else
-		{
-			this.manipulateSelection(function( range, $list ){
-				var $l = $list.clone();
-				this.getRangeElements( range, blockElements ).each(function(i){
-					var $this = $(this);
-					if ( $this.parent().is('ul') )
-					{
-						replaceElement( $this.parent(), 'ol' );
-						$l = $this.parent();
-					}
-					else
-					{
-						if ( ! i )
-						{
-							$this.replaceWith( $l );
-						}
-						$this.appendTo( $l );
-					}
-				});
-				$l.children(':not(li)').each(function(){
-					replaceElement( $(this), 'li' );
-				});
-			}, $list );
-		}
-		$(DOC.activeElement).trigger( CHANGE_EVT );
-	}
-	function insertOrderedList()
-	{
-		toggleOrderedList();
-	}
-	function isOrderedList()
-	{
-		return ( selectionIsWithin('ol') || document.queryCommandState('insertOrderedList') );
-	}
-	function toggleUnorderedList()
-	{
-		var
-		$list = $('<ul/>');
-
-		if ( isUnorderedList() )
-		{
-			this.manipulateSelection(function( range, $list ){
-				this.getRangeElements( range, 'ul' ).each(function(i){
-					var $this = $(this);
-					$this.children('li').each(function(){
-						var $this = $(this);
-						replaceElement( $this, 'p' );
-						$this.find('ol,ul').each(function(){
-							var	$parent = $(this).parent();
-							if ( $parent.is('p') )
-							{
-								deleteElement.apply( $parent );
-							}
-						});
-					});
-					deleteElement.apply( $this );
-				});
-			});
-		}
-		else
-		{
-			this.manipulateSelection(function( range, $list ){
-				var $l = $list.clone();
-				this.getRangeElements( range, blockElements ).each(function(i){
-					var $this = $(this);
-					if ( $this.parent().is('ol') )
-					{
-						replaceElement( $this.parent(), 'ul' );
-						$l = $this.parent();
-					}
-					else
-					{
-						if ( ! i )
-						{
-							$this.replaceWith( $l );
-						}
-						$this.appendTo( $l );
-					}
-				});
-				$l.children(':not(li)').each(function(){
-					replaceElement( $(this), 'li' );
-				});
-			}, $list );
-		}
-		$(DOC.activeElement).trigger( CHANGE_EVT );
-	}
-	function insertUnorderedList()
-	{
-		toggleUnorderedList();
-	}
-	function isUnorderedList()
-	{
-		return ( selectionIsWithin('ul') || document.queryCommandState('insertUnorderedList') );
-	}
-
-
-	function insertImage( url, attrs )
-	{
-		this.execCommand('insertImage', false, url);
-	}
-
-
-	function insertHTML(html)
-	{
-		if ( $.browser.msie )
-		{
-			var range = DOC.selection.createRange();
-			range.pasteHTML(html);
-			range.collapse(false);
-			range.select();
-			$(DOC.activeElement).trigger( CHANGE_EVT );
-		}
-		else
-		{
-			this.execCommand('insertHTML', false, html);
-		}
-	}
-
-	function wrapHTML()
-	{
-		var
-		selection	= WIN.getSelection(),
-		range		= selection.getRangeAt(0),
-		node		= selection.getNode(),
-		argLength	= arguments.length,
-		el;
-
-		if (range.collapsed)
-		{
-			range = DOC.createRange();
-			range.selectNodeContents(node);
-			selection.removeAllRanges();
-			selection.addRange(range);
-		}
-		range = selection.getRangeAt(0);
-		while ( argLength-- )
-		{
-			el = $('<' + arguments[argLength] + '/>');
-			range.surroundContents( el.get(0) );
-		}
-		$(DOC.activeElement).trigger( CHANGE_EVT );
-	}
-
-	function changeContentBlock( tagName )
-	{
-		var
-		selection	= WIN.getSelection(),
-		editor		= this,
-		$editor		= $(editor),
-		replaced	= 'WysiHat-replaced',
-		i			= selection.rangeCount,
-		ranges		= [],
-		range;
-
-		while ( i-- )
-		{
-			range	= selection.getRangeAt( i );
-			ranges.push( range );
-
-			this.getRangeElements( range, blockElements )
-				.each(function(){
-					editor.replaceElement( $(this), tagName );
-				 })
-				.data( replaced, true );
-
-		}
-		$editor
-			.children( tagName )
-			.removeData( replaced );
-
-		$(DOC.activeElement).trigger( CHANGE_EVT );
-
-		this.restoreRanges( ranges );
-	}
-
-	function unformatContentBlock()
-	{
-		this.changeContentBlock('p');
-	}
-
-	function replaceElement( $el, tagName )
-	{
-		if ( $el.hasClass( WYSIHAT_EDITOR ) )
-		{
-			return;
-		}
-
-		var
-		old		= $el.get(0),
-		$newEl	= $('<'+tagName+'/>').html(old.innerHTML),
-		attrs	= old.attributes,
-		len		= attrs.length || 0;
-
-		while (len--)
-		{
-			$newEl.attr( attrs[len].name, attrs[len].value );
-		}
-
-		$el.replaceWith( $newEl );
-
-		return $newEl;
-	}
-
-	function deleteElement()
-	{
-		var $this = $(this);
-		$this.replaceWith( $this.html() );
-
-		$(DOC.activeElement).trigger( CHANGE_EVT );
-	}
-
-	function stripFormattingElements()
-	{
-		function stripFormatters( i, el )
-		{
-			var $el = $(el);
-
-			$el.children().each(stripFormatters);
-
-			if ( isFormatter( $el ) )
-			{
-				deleteElement.apply( $el );
+	// Do some feature detection for styling
+	// with css instead of font tags
+	Commands.noSpans = (function() {
+		try {
+			document.execCommand('styleWithCSS', 0, false);
+			return function(){
+				document.execCommand('styleWithCSS', 0, false);
+			};
+		} catch (e) {
+			try {
+				document.execCommand('useCSS', 0, true);
+				return function(){
+					document.execCommand('useCSS', 0, true);
+				};
+			} catch (e) {
+				try {
+					document.execCommand('styleWithCSS', false, false);
+					return function(){
+						document.execCommand('styleWithCSS', false, false);
+					};
+				}
+				catch (e) {
+					return $.noop;
+				}
 			}
 		}
+	})();
 
-		var
-		selection	= WIN.getSelection(),
-		isFormatter	= WysiHat.Element.isFormatter,
-		i			= selection.rangeCount,
-		ranges		= [],
-		range;
+	// and return that for now, we'll extend it with
+	// some handwritten custom methods below.
+	return Commands;
 
-		while ( i-- )
-		{
-			range = selection.getRangeAt( i );
-			ranges.push( range );
-			this.getRangeElements( range, blockElements ).each( stripFormatters );
-		}
+})();
 
-		$(DOC.activeElement).trigger( CHANGE_EVT );
 
-		this.restoreRanges( ranges );
-	}
+// @todo these reek
+var CHANGE_EVT = WysiHat.name + '-editor:change',
+	blockElements = WysiHat.Element.getContentElements().join(',').replace( ',div,', ',div:not(.' + WysiHat.name + '-editor' + '),' );
 
-	function isValidCommand( cmd )
-	{
-		return ( $.inArray( cmd, validCommands ) > -1 );
-	}
-	function execCommand( command, ui, value )
-	{
-		noSpans();
-		try
-		{
-			DOC.execCommand(command, ui, value);
+/**
+ * Add the more complex commands
+ */
+$.extend(WysiHat.Commands, {
+
+	// Map to make sense of weird property names
+	styleSelectors: {
+		fontname:		'fontFamily',
+		fontsize:		'fontSize',
+		forecolor:		'color',
+		hilitecolor:	'backgroundColor',
+		backcolor:		'backgroundColor'
+	},
+
+	// Valid commands to execCommand
+	validCommands: [
+		'backColor', 'bold', 'createLink', 'fontName', 'fontSize', 'foreColor', 'hiliteColor',
+		'italic', 'removeFormat', 'strikethrough', 'subscript', 'superscript', 'underline', 'unlink',
+		'delete', 'formatBlock', 'forwardDelete', 'indent', 'insertHorizontalRule', 'insertHTML',
+		'insertImage', 'insertLineBreak', 'insertOrderedList', 'insertParagraph', 'insertText',
+		'insertUnorderedList', 'justifyCenter', 'justifyFull', 'justifyLeft', 'justifyRight', 'outdent',
+		'copy', 'cut', 'paste', 'selectAll', 'styleWithCSS', 'useCSS'
+	],
+
+	/**
+	 * Just like the standard browser execCommand
+	 * with some precaucions.
+	 */
+	execCommand: function(command, ui, value) {
+		this.noSpans();
+
+		try {
+			document.execCommand(command, ui, value);
 		}
 		catch(e)
 		{
 			return null;
 		}
 
-		$(DOC.activeElement).trigger( CHANGE_EVT );
-	}
-	function noSpans()
-	{	
-		try {
-			DOC.execCommand('styleWithCSS', 0, false);
-			noSpans = function(){
-				DOC.execCommand('styleWithCSS', 0, false);
-			};
-		} catch (e) {
-			try {
-				DOC.execCommand('useCSS', 0, true);
-				noSpans = function(){
-					DOC.execCommand('useCSS', 0, true);
-				};
-			} catch (e) {
-				try {
-					DOC.execCommand('styleWithCSS', false, false);
-					noSpans = function(){
-						DOC.execCommand('styleWithCSS', false, false);
-					};
-				}
-				catch (e) {}
-			}
-		}
-	}
-	noSpans();
+		$(document.activeElement).trigger( CHANGE_EVT );
+	},
 
-	function queryCommandState(state)
+	isMakeCommand: function(cmd)
 	{
-		var handler = this.queryCommands[state];
-		if ( handler )
+		return (cmd in this.make);
+	},
+
+	isValidExecCommand: function(cmd)
+	{
+		return ($.inArray(cmd, this.validCommands) > -1);
+	},
+
+	queryCommandState: function(state)
+	{
+		if (state in this.is)
 		{
-			return handler();
+			return this.is[state]();
 		}
 		
 		try {
-			return DOC.queryCommandState(state);
+			return document.queryCommandState(state);
 		}
-		catch(e) { return null; }
-	}
-
-	function getSelectedStyles()
-	{
-		var
-		selection = window.getSelection(),
-		$node = $(selection.getNode()),
-		styles = {};
-
-		for (var s in this.styleSelectors) {
-			styles[s] = $node.css(this.styleSelectors[s]);
+		catch(e) {
+			return null;
 		}
-		return styles;
-	}
+	},
 
-	function toggleHTML( e )
-	{
-		var
-		HTML	= false,
-		$editor	= $(this),
-		$target	= $( e.target ),
-		text	= $target.text(),
-		$btn	= $target.closest( 'button,[role=button]' ),
-		$field	= $editor.data('field'),
-		$tools	= $btn.siblings();
-
-		if ( $btn.data('toggle-text') == undefined )
-		{
-			$btn.data('toggle-text', 'View Content');
-		}
-
-		this.toggleHTML = function()
-		{
-			if ( ! HTML )
-			{
-				$btn.find('b').text($btn.data('toggle-text'));
-				$tools.hide();
-				$editor.trigger('WysiHat-editor:change:immediate').hide();
-				$field.show();
-			}
-			else
-			{
-				$btn.find('b').text(text);
-				$tools.show();
-				$field.trigger('WysiHat-field:change:immediate').hide();
-				$editor.show();
-			}
-			HTML = ! HTML;
-		};
-
-		this.toggleHTML();
-	}
-
-
-	function manipulateSelection()
-	{
-		var
-		selection	= WIN.getSelection(),
-		i			= selection.rangeCount,
-		ranges		= [],
-		args		= arguments,
-		callback	= args[0],
-		range;
-
-		while ( i-- )
-		{
-			range	= selection.getRangeAt( i );
-			ranges.push( range );
-
-			args[0] = range;
-
-			callback.apply( this, args );
-		}
-		$(DOC.activeElement).trigger( CHANGE_EVT );
-		this.restoreRanges( ranges );
-	}
-	function getRangeElements( range, tagNames )
-	{
-		var
-		$from	= $( range.startContainer ).closest( tagNames ),
-		$to		= $( range.endContainer ).closest( tagNames ),
-		$els	= $('nullset');
-
-		if ( !! $from.parents('.WysiHat-editor').length &&
-		 	 !! $to.parents('.WysiHat-editor').length )
-		{
-			$els = $from;
-
-			if ( ! $from.filter( $to ).length )
-			{
-				if ( $from.nextAll().filter( $to ).length )
-				{
-					$els = $from.nextUntil( $to ).andSelf().add( $to );
-				}
-				else
-				{
-					$els = $from.prevUntil( $to ).andSelf().add( $to );
-				}
-			}
-		}
-
-		return $els;
-	}
-	function getRanges()
-	{
-		var
-		selection	= WIN.getSelection(),
-		i			= selection.rangeCount,
-		ranges		= [],
-		range;
-
-		while ( i-- )
-		{
-			range	= selection.getRangeAt( i );
-			ranges.push( range );
-		}
-
-		return ranges;
-	}
-	function restoreRanges( ranges )
-	{
-		var
-		selection = WIN.getSelection(),
-		i = ranges.length;
-
-		selection.removeAllRanges();
-		while ( i-- )
-		{
-			selection.addRange( ranges[i] );
-		}
-	}
-	function selectionIsWithin( tagNames )
+	/**
+	 * Takes the current selection and checks if it is
+	 * within a selector given as a parameter.
+	 */
+	selectionIsWithin: function(tagNames)
 	{
 		var
 		phrases	= WysiHat.Element.getPhraseElements(),
 		phrase	= false,
 		tags	= tagNames.split(','),
 		t		= tags.length,
-		sel		= WIN.getSelection(),
+		sel		= window.getSelection(),
 		a		= sel.anchorNode,
 		b		= sel.focusNode;
 
@@ -2106,93 +1758,567 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 		}
 		return !! ( $(a).closest( tagNames ).length ||
 		 			$(b).closest( tagNames ).length );
-	}
+	},
 
-	function getBlockElements() {
-		return blockElements;
-	}
+	getSelectedStyles: function()
+	{
+		var
+		selection = window.getSelection(),
+		$node = $(selection.getNode()),
+		styles = {};
 
-
-	return {
-		boldSelection:				boldSelection,
-		isBold:						isBold,
-		italicizeSelection:			italicizeSelection,
-		isItalic:					isItalic,
-		underlineSelection:			underlineSelection,
-		isUnderlined:				isUnderlined,
-		strikethroughSelection:		strikethroughSelection,
-		isStruckthrough:			isStruckthrough,
-
-		quoteSelection:				quoteSelection,
-		unquoteSelection:			unquoteSelection,
-		toggleIndentation:			toggleIndentation,
-		isIndented:					isIndented,
-
-		fontSelection:				fontSelection,
-		fontSizeSelection:			fontSizeSelection,
-		colorSelection:				colorSelection,
-		backgroundColorSelection:	backgroundColorSelection,
-
-		alignSelection:				alignSelection,
-		alignSelected:				alignSelected,
-
-		linkSelection:				linkSelection,
-		unlinkSelection:			unlinkSelection,
-		isLinked:					isLinked,
-
-		toggleOrderedList:			toggleOrderedList,
-		insertOrderedList:			insertOrderedList,
-		isOrderedList:				isOrderedList,
-		toggleUnorderedList:		toggleUnorderedList,
-		insertUnorderedList:		insertUnorderedList,
-		isUnorderedList:			isUnorderedList,
-
-		insertImage:				insertImage,
-
-		insertHTML:					insertHTML,
-		wrapHTML:					wrapHTML,
-
-		changeContentBlock:			changeContentBlock,
-		unformatContentBlock:		unformatContentBlock,
-		replaceElement:				replaceElement,
-		deleteElement:				deleteElement,
-		stripFormattingElements:	stripFormattingElements,
-
-		execCommand:				execCommand,
-		noSpans:					noSpans,
-		queryCommandState:			queryCommandState,
-		getSelectedStyles:			getSelectedStyles,
-
-		toggleHTML:					toggleHTML,
-
-		isValidCommand:				isValidCommand,
-		manipulateSelection:		manipulateSelection,
-		getRangeElements:			getRangeElements,
-		getRanges:					getRanges,
-		restoreRanges:				restoreRanges,
-		selectionIsWithin:			selectionIsWithin,
-
-		getBlockElements:			getBlockElements,
-
-		queryCommands: {
-			bold:			isBold,
-			italic:			isItalic,
-			underline:		isUnderlined,
-			strikethrough:	isStruckthrough,
-			createLink:		isLinked,
-			orderedlist:	isOrderedList,
-			unorderedlist:	isUnorderedList
-		},
-
-		styleSelectors: {
-			fontname:		'fontFamily',
-			fontsize:		'fontSize',
-			forecolor:		'color',
-			hilitecolor:	'backgroundColor',
-			backcolor:		'backgroundColor'
+		for (var s in this.styleSelectors) {
+			styles[s] = $node.css(this.styleSelectors[s]);
 		}
-	};
-})( window, document, jQuery );
+		return styles;
+	},
+
+	replaceElement: function( $el, tagName )
+	{
+		if ( $el.hasClass(WysiHat.name + '-editor') )
+		{
+			return;
+		}
+
+		var
+		old		= $el.get(0),
+		$newEl	= $('<'+tagName+'/>').html(old.innerHTML),
+		attrs	= old.attributes,
+		len		= attrs.length || 0;
+
+		while (len--)
+		{
+			$newEl.attr( attrs[len].name, attrs[len].value );
+		}
+
+		$el.replaceWith( $newEl );
+
+		return $newEl;
+	},
+
+	/**
+	 * This is a highly unsafe method to have lying
+	 * around. It has to be called with apply to make
+	 * sure it operates on the right scope. I honestly
+	 * have no idea why it's written this way. -pk
+	 *
+	 * @todo fix it
+	 */
+	deleteElement: function()
+	{
+		var $this = $(this);
+		$this.replaceWith( $this.html() );
+
+		$(document.activeElement).trigger( CHANGE_EVT );
+	},
+
+	/**
+	 * Completely strips the editor of formatting.
+	 * This is used primarly by the remove formatting
+	 * button.
+	 */
+	stripFormattingElements: function()
+	{
+		function stripFormatters( i, el )
+		{
+			var $el = $(el);
+
+			$el.children().each(stripFormatters);
+
+			if ( isFormatter( $el ) )
+			{
+				deleteElement.apply( $el );
+			}
+		}
+
+		var
+		selection	= window.getSelection(),
+		isFormatter	= WysiHat.Element.isFormatter,
+		i			= selection.rangeCount,
+		ranges		= [],
+		range;
+
+		while ( i-- )
+		{
+			range = selection.getRangeAt( i );
+			ranges.push( range );
+			this.getRangeElements( range, blockElements ).each( stripFormatters );
+		}
+
+		$(document.activeElement).trigger( CHANGE_EVT );
+
+		this.restoreRanges( ranges );
+	},
+
+	/**
+	 * Allows you to manipulate the current
+	 * selection range by range and then resets
+	 * the original selection.
+	 */
+	manipulateSelection: function()
+	{
+		var
+		selection	= window.getSelection(),
+		i			= selection.rangeCount,
+		ranges		= [],
+		args		= arguments,
+		callback	= args[0],
+		range;
+
+		while ( i-- )
+		{
+			range	= selection.getRangeAt( i );
+			ranges.push( range );
+
+			args[0] = range;
+
+			callback.apply( this, args );
+		}
+		$(document.activeElement).trigger( CHANGE_EVT );
+		this.restoreRanges( ranges );
+	},
+
+	getRangeElements: function(range, tagNames)
+	{
+		var
+		$from	= $( range.startContainer ).closest( tagNames ),
+		$to		= $( range.endContainer ).closest( tagNames ),
+		$els	= $('nullset');
+
+		if ( !! $from.parents('.WysiHat-editor').length &&
+		 	 !! $to.parents('.WysiHat-editor').length )
+		{
+			$els = $from;
+
+			if ( ! $from.filter( $to ).length )
+			{
+				if ( $from.nextAll().filter( $to ).length )
+				{
+					$els = $from.nextUntil( $to ).andSelf().add( $to );
+				}
+				else
+				{
+					$els = $from.prevUntil( $to ).andSelf().add( $to );
+				}
+			}
+		}
+
+		return $els;
+	},
+
+	/**
+	 * Grabs all ranges in the current selection and
+	 * returns them as a usable array.
+	 */
+	getRanges: function()
+	{
+		var
+		selection	= window.getSelection(),
+		i			= selection.rangeCount,
+		ranges		= [],
+		range;
+
+		while ( i-- )
+		{
+			range	= selection.getRangeAt( i );
+			ranges.push( range );
+		}
+
+		return ranges;
+	},
+
+	/**
+	 * Removes all ranges that may have been created
+	 * in the editing process and replaces them with
+	 * saved ranges passed in by the dev.
+	 */
+	restoreRanges: function(ranges)
+	{
+		var
+		selection = window.getSelection(),
+		i = ranges.length;
+
+		selection.removeAllRanges();
+		while ( i-- )
+		{
+			selection.addRange( ranges[i] );
+		}
+	},
+
+	/**
+	 * Changes the parent html block element
+	 * into the one passed in by the dev.
+	 * Ex. Use to flip headings.
+	 */
+	changeContentBlock: function(tagName)
+	{
+		var
+		selection	= window.getSelection(),
+		editor		= this,
+		$editor		= $(editor),
+		replaced	= 'WysiHat-replaced',
+		i			= selection.rangeCount,
+		ranges		= [],
+		range;
+
+		while ( i-- )
+		{
+			range	= selection.getRangeAt( i );
+			ranges.push( range );
+
+			this.getRangeElements( range, blockElements )
+				.each(function(){
+					editor.replaceElement( $(this), tagName );
+				 })
+				.data( replaced, true );
+
+		}
+		$editor
+			.children( tagName )
+			.removeData( replaced );
+
+		$(document.activeElement).trigger( CHANGE_EVT );
+
+		this.restoreRanges( ranges );
+	},
+
+	/**
+	 * Utility function to get back to a paragraph state
+	 */
+	unformatContentBlock: function()
+	{
+		this.changeContentBlock('p');
+	},
+
+	/**
+	 * @todo I don't like name and placement -pk
+	 */
+	unlinkSelection: function()
+	{
+		this.manipulateSelection(function( range ){
+			this.getRangeElements( range, '[href]' ).each(this.clearElement);
+		});
+	},
+
+	/**
+	 * Wrap the current selection in some html
+	 */
+	wrapHTML: function()
+	{
+		var
+		selection	= window.getSelection(),
+		range		= selection.getRangeAt(0),
+		node		= selection.getNode(),
+		argLength	= arguments.length,
+		el;
+
+		if (range.collapsed)
+		{
+			range = document.createRange();
+			range.selectNodeContents(node);
+			selection.removeAllRanges();
+			selection.addRange(range);
+		}
+		range = selection.getRangeAt(0);
+		while ( argLength-- )
+		{
+			el = $('<' + arguments[argLength] + '/>');
+			range.surroundContents( el.get(0) );
+		}
+		$(document.activeElement).trigger( CHANGE_EVT );
+	},
+
+	/**
+	 * @todo Why does this have to take an event? It only
+	 * needs the target. Heck it could receive a button
+	 * instance.
+	 */
+	toggleHTML: function(obj)
+	{
+		var
+		$editor	= obj.$editor,
+		$target	= obj.$element,
+		text	= $target.text(),
+		$btn	= $target.closest( 'button,[role=button]' ),
+		$field	= $editor.data('field'),
+		$tools	= $btn.siblings();
+
+		if ( $btn.data('toggle-text') == undefined )
+		{
+			$btn.data('toggle-text', 'View Content');
+		}
+
+		if ($editor.is(':visible'))
+		{
+			$btn.find('b').text($btn.data('toggle-text'));
+			$tools.hide();
+			$editor.trigger('WysiHat-editor:change:immediate').hide();
+			$field.show();
+		}
+		else
+		{
+			$btn.find('b').text(text);
+			$tools.show();
+			$field.trigger('WysiHat-field:change:immediate').hide();
+			$editor.show();
+		}
+	},
+
+	insertHTML: function(html)
+	{
+		if ( $.browser.msie )
+		{
+			var range = document.selection.createRange();
+			range.pasteHTML(html);
+			range.collapse(false);
+			range.select();
+			$(document.activeElement).trigger( CHANGE_EVT );
+		}
+		else
+		{
+			this.execCommand('insertHTML', false, html);
+		}
+	},
+
+	quoteSelection: function()
+	{
+		var $quote = $('<blockquote/>');
+		this.manipulateSelection(function( range, $quote ){
+			var
+			$q		= $quote.clone(),
+			$els	= this.getRangeElements( range, blockElements ),
+			last	= $els.length - 1,
+			$coll	= $();
+
+			$els.each(function(i){
+				var
+				$this	= $(this),
+				sub		= false,
+				$el;
+
+				if ( WysiHat.Element.isSubContainer( $this ) )
+				{
+					sub = true;
+				}
+
+				if ( ! i &&
+					 sub &&
+					 i == last )
+				{
+					$el = $('<p/>').html( $this.html() );
+					$this.html('').append( $el );
+					$coll = $coll.add($el);
+				}
+				else if ( sub )
+				{
+					$coll = $coll.add(
+						$this.closest( WysiHat.Element.getContainers().join(",") )
+					);
+				}
+				else
+				{
+					$coll = $coll.add($this);
+				}
+
+				if ( i == last )
+				{
+					$coll.wrapAll( $q );
+				}
+			});
+		}, $quote);
+	},
+
+	unquoteSelection: function()
+	{
+		this.manipulateSelection(function( range ){
+			this.getRangeElements( range, 'blockquote > *' ).each(function(){
+				var
+				el		= this,
+				$el		= $(el),
+				$parent	= $el.closest('blockquote'),
+				$bq		= $parent.clone().html(''),
+				$sibs	= $parent.children(),
+				last	= $sibs.length - 1,
+				$coll	= $();
+
+				$el.unwrap('blockquote');
+
+				if ( last > 0 )
+				{
+					$sibs.each(function(i){
+						if ( this != el )
+						{
+							$coll = $coll.add(this);
+						}
+
+						if ( i == last || this == el )
+						{
+							$coll.wrapAll($bq.clone());
+							$coll = $();
+						}
+					});
+				}
+
+				$parent = $el.parent();
+				if ( WysiHat.Element.isSubContainer( $parent ) &&
+				 	 $parent.children().length == 1 )
+				{
+					$parent.html($el.html());
+				}
+			});
+		});
+	},
+
+	toggleList: function(type)
+	{
+		var
+		$list = $('<'+type+'/>'),
+		other = (type == 'ul') ? 'ol' : 'ul',
+		that = this;
+
+		if (this.is[type]())
+		{
+			this.manipulateSelection(function( range, $list ){
+				this.getRangeElements( range, type ).each(function(i){
+					var $this = $(this);
+					$this.children('li').each(function(){
+						var $this = $(this);
+						that.replaceElement( $this, 'p' );
+						$this.find('ol,ul').each(function(){
+							var	$parent = $(this).parent();
+							if ( $parent.is('p') )
+							{
+								that.deleteElement.apply( $parent );
+							}
+						});
+					});
+					that.deleteElement.apply( $this );
+				});
+			});
+		}
+		else
+		{
+			this.manipulateSelection(function( range, $list ){
+				var $l = $list.clone();
+				this.getRangeElements( range, blockElements ).each(function(i){
+					var $this = $(this);
+					if ( $this.parent().is(other) )
+					{
+						that.replaceElement( $this.parent(), type );
+						$l = $this.parent();
+					}
+					else
+					{
+						if ( ! i )
+						{
+							$this.replaceWith( $l );
+						}
+						$this.appendTo( $l );
+					}
+				});
+				$l.children(':not(li)').each(function(){
+					that.replaceElement( $(this), 'li' );
+				});
+			}, $list );
+		}
+		$(document.activeElement).trigger( CHANGE_EVT );
+	}
+});
+
+/**
+ * A few more make methods that either alias to some
+ * larger top level stuff or couldn't quite be auto
+ * generated.
+ */
+$.extend(WysiHat.Commands.make, {
+	blockquote: function() {
+		if (WysiHat.Commands.is.indented())
+		{
+			WysiHat.Commands.unquoteSelection();
+		}
+		else
+		{
+			WysiHat.Commands.quoteSelection();
+		}
+	},
+
+	orderedList: function() {
+		WysiHat.Commands.toggleList('ol');
+	},
+
+	unorderedList: function() {
+		WysiHat.Commands.toggleList('ul');
+	},
+
+	alignment: function(alignment)
+	{
+		WysiHat.Commands.execCommand('justify' + alignment);
+	},
+
+	backgroundColor: function(color)
+	{
+		var cmd = $.browser.mozilla ? 'hilitecolor' : 'backcolor';
+		WysiHat.Commands.execCommand(cmd, false, color);
+	}
+});
+
+
+// ---------------------------------------------------------------------
+
+/**
+ * Commands Mixin
+ *
+ * Prettier solution to working with the basic manipulations.
+ *
+ * The old version of WysiHat had a boatload of fooSelection()
+ * and isFoo() methods. It got a little unweidy, especially as
+ * they were extended directly onto the editor jquery result.
+ *
+ * The above fixes most of that, but in order to smooth out the
+ * bumps a bit more, I'm giving both the editor and the buttons
+ * a single is() and make() api.
+ *
+ * They still have access to this.Commands for more advanced
+ * manipulations.
+ *
+ * this.is('italic');
+ * this.make('italic');
+ * this.toggle('blockquote');
+ * 
+ * this.Commands.advancedStuff();
+ */
+
+// ---------------------------------------------------------------------
+
+var CommandsMixin = {
+
+	/**
+	 * Better solution for what used to be a bunch
+	 * of isFooBar() methods:
+	 * this.is('bold')
+	 */
+	is: function(which) {
+		return WysiHat.Commands.is[which]();
+	},
+
+	/**
+	 * Nice method for doing built-in manipulations
+	 * such as: this.make('bold')
+	 */
+	make: function(which, param) {
+		return WysiHat.Commands.make[which](param);
+	},
+
+	/**
+	 * Same as make, but makes more sense
+	 * for some: this.toggle('blockquote')
+	 */
+	toggle: function(which, param) {
+		return WysiHat.Commands.make[which](param);
+	},
+};
+
+$.extend(WysiHat.Editor.prototype, CommandsMixin);
 
 
 // ---------------------------------------------------------------------
@@ -2456,9 +2582,6 @@ WysiHat.Commands = (function( WIN, DOC, $ ){
 
 // ---------------------------------------------------------------------
 
-
-(function($){
-
 WysiHat.Formatting = {
 	cleanup: function( $element )
 	{
@@ -2577,11 +2700,99 @@ WysiHat.Formatting = {
 					return tag.toLowerCase();
 				 });
 	}
-
 };
 
-})(jQuery);
+// ---------------------------------------------------------------------
 
+/**
+ * Blank Button
+ *
+ * The base prototype for all buttons. Handles the basic init and
+ * provides a nice way to extend the buttons without having to re-
+ * do all of the work the toolbar does.
+ */
+
+// ---------------------------------------------------------------------
+
+var BlankButton = {
+	init: function(name, $editor)
+	{
+		this.name = name;
+		this.$editor = $editor;
+		return this;
+	},
+
+	setElement: function(el)
+	{
+		this.$element = $(el);
+		return this;
+	},
+
+	getHandler: function()
+	{
+		if (this.handler)
+		{
+			return $.proxy(this, 'handler');
+		}
+
+		var that = this;
+
+		if (WysiHat.Commands.isMakeCommand(this.name))
+		{
+			return function()
+			{
+				return WysiHat.Commands.make[that.name]();
+			}
+		}
+		else if (WysiHat.Commands.isValidExecCommand(this.name))
+		{
+			return function()
+			{
+				return WysiHat.Commands.execCommand(that.name);
+			};
+		}
+
+		return $.noop;
+	},
+
+	getStateHandler: function()
+	{
+		if (this.query)
+		{
+			return $.proxy(this, 'query');
+		}
+		else if ( WysiHat.Commands.isValidExecCommand( this.name ) )
+		{
+			var that = this;
+			return function( $editor )
+			{
+				// @pk clean up
+				var E = $editor.data('wysihat');
+				return E.Commands.queryCommandState(that.name);
+			};
+		}
+
+		return $.noop;
+	},
+
+	setOn: function() {
+		this.$element
+			.addClass('selected')
+			.attr('aria-pressed','true')
+			.find('b')
+				.text(this['toggle-text'] ? this['toggle-text'] : this.label);
+		return this;
+	},
+
+	setOff: function() {
+		this.$element
+			.removeClass('selected')
+			.attr('aria-pressed','false')
+			.find('b')
+				.text(this.label);
+		return this;
+	}
+};
 
 // ---------------------------------------------------------------------
 
@@ -2595,106 +2806,21 @@ WysiHat.Formatting = {
 
 // ---------------------------------------------------------------------
 
+WysiHat.Toolbar = function($el, buttons)
+{
+	this.$editor = $el;
+	this.$toolbar = $('<div class="' + WysiHat.name + '-editor-toolbar" role="presentation"></div>');
 
-(function($){
+	$el.before(this.$toolbar);
 
-	var default_config = {
-		buttons: []
-	};
+	// add buttons
+	var l = buttons.length, i;
 
-	var BlankButton = {
-		init: function(name, $editor)
-		{
-			this.name = name;
-			this.$editor = $editor;
-			return this;
-		},
-
-		setElement: function(el)
-		{
-			this.$element = $(el);
-			return this;
-		},
-
-		getHandler: function()
-		{
-			if (this.handler)
-			{
-				return $.proxy(this, 'handler');
-			}
-
-			var that = this;
-			if ( WysiHat.Commands.isValidCommand( this.name ) )
-			{
-				if (WysiHat.Commands[this.name+'Selection'])
-				{
-					return function()
-					{
-						return that.$editor[that.name+'Selection']();
-					};
-				}
-
-				return function()
-				{
-					return that.$editor.execCommand(that.name);
-				};
-			}
-
-			return $.noop;
-		},
-
-		getStateHandler: function()
-		{
-			if (this.query)
-			{
-				return $.proxy(this, 'query');
-			}
-			else if ( WysiHat.Commands.isValidCommand( this.name ) )
-			{
-				var that = this;
-				return function( $editor )
-				{
-					return $editor.queryCommandState(that.name);
-				};
-			}
-
-			return $.noop;
-		},
-
-		setOn: function() {
-			this.$element
-				.addClass('selected')
-				.attr('aria-pressed','true')
-				.find('b')
-					.text(this['toggle-text'] ? this['toggle-text'] : this.label);
-			return this;
-		},
-
-		setOff: function() {
-			this.$element
-				.removeClass('selected')
-				.attr('aria-pressed','false')
-				.find('b')
-					.text(this.label);
-			return this;
-		}
-	};
-
-	WysiHat.Toolbar = function($el, buttons)
+	for (i = 0 ; i < l; i++)
 	{
-		this.$editor = $el;
-		this.$toolbar = $('<div class="' + WysiHat.name + '-editor-toolbar" role="presentation"></div>');
-
-		$el.before(this.$toolbar);
-
-		// add buttons
-		var l = buttons.length, i;
-
-		for (i = 0 ; i < l; i++)
-		{
-			this.addButton(buttons[i]);
-		}
+		this.addButton(buttons[i]);
 	}
+}
 /*
 		WysiHat.Events.add('paste', function($editor, state, finalize) {
 		setTimeout(function() {
@@ -2706,138 +2832,141 @@ WysiHat.Formatting = {
 		return false;
 	});
 */
-	WysiHat.Toolbar.prototype = {
+WysiHat.Toolbar.prototype = {
 
-		addButton: function(name)
+	addButton: function(name)
+	{
+		var Editor = this.$editor.data('wysihat');
+
+		var $button, stateHandler,
+			button = WysiHat.inherit(BlankButton, WysiHat._buttons[name]).init(name, Editor.$editor);
+
+		$.extend(button, CommandsMixin);
+
+		// Add utility references straight onto the button
+		button.Event = Editor.Event;
+		button.Commands = Editor.Commands;
+		button.Selection = Editor.Selection;
+
+		button.setElement( this.createButtonElement(button) );
+		button.Event.add(name, button.getHandler());
+
+		this.observeButtonClick(button);
+		this.observeStateChanges(button);
+	},
+
+	createButtonElement: function(button)
+	{
+		var $btn;
+
+		if (button.type && button.type == 'select')
 		{
-			var $button, stateHandler,
-				button = WysiHat.inherit(BlankButton, WysiHat._buttons[name]).init(name, this.$editor);
+			var opts = button.options,
+				l = opts.length, i = 0;
 
-			// Add add a selectionUtil reference straight onto the button
-			button.Selection = this.$editor.data('selectionUtil');
-			button.EventCore = this.$editor.data('eventCore');
+			$btn = $('<select class="button picker"/>');
 
-			// @todo commands really shouldn't weird-ly extend the editor. it's confusing as fuck.
-			// button.Commands = this.$editor.Commands;
-
-			button.setElement( this.createButtonElement(button) );
-			button.EventCore.add(name, button.getHandler());
-
-			this.observeButtonClick(button);
-			this.observeStateChanges(button);
-		},
-
-		createButtonElement: function(button)
-		{
-			var $btn;
-
-			if (button.type && button.type == 'select')
+			for ( ; i < l; i++)
 			{
-				var opts = button.options,
-					l = opts.length, i = 0;
-
-				$btn = $('<select class="button picker"/>');
-
-				for ( ; i < l; i++)
-				{
-					$btn.append(
-						'<option value="' + opts[i][0] + '">' + opts[i][1] + '</option>'
-					);
-				}
+				$btn.append(
+					'<option value="' + opts[i][0] + '">' + opts[i][1] + '</option>'
+				);
 			}
-			else
-			{
-				$btn = $('<button aria-pressed="false" tabindex="-1"></button>');
-
-				$btn.append('<b>' + button.label + '</b>')
-					.addClass( 'button ' + button.name)
-					.hover(
-						function() {
-							this.title = $(this).find('b').text();
-						},
-						function() {
-							$(this).removeAttr('title');
-						}
-					);
-			}
-
-			$btn.appendTo(this.$toolbar);
-
-			if (button.cssClass)
-			{
-				$btn.addClass(button.cssClass);
-			}
-
-			if (button.title)
-			{
-				$btn.attr('title', button.title);
-			}
-
-			$btn.data('text', button.label);
-			if (button['toggle-text'])
-			{
-				$btn.data('toggle-text', button['toggle-text']);
-			}
-
-			return $btn;
-		},
-
-		observeButtonClick: function(button)
-		{
-			var evt = (button.type && button.type == 'select') ? 'change' : 'click';
-
-			button.$element.bind(evt, function(e){
-				var $editor = button.$editor;
-
-				// Bring focus to the editor before the handler is called
-				// so that selection data is available to tools
-				if ( ! $editor.is(':focus'))
-				{
-					$editor.focus();
-				}
-
-				$editor.eventCore.fire(button.name);
-
-				//$editor.trigger( 'WysiHat-selection:change' );
-
-				return false;
-			});
-
-		},
-
-		observeStateChanges: function(button)
-		{
-			var
-			that = this,
-			handler = button.getStateHandler(),
-			previousState;
-
-			that.$editor.bind( 'WysiHat-selection:change', function(){
-				var state = handler( button.$editor, button.$element );
-				if (state != previousState)
-				{
-					previousState = state;
-					that.updateButtonState(button, state);
-				}
-			});
-		},
-
-		updateButtonState: function(button, state)
-		{
-			if (state)
-			{
-				button.setOn();
-				return;
-			}
-
-			button.setOff();
 		}
-	};
+		else
+		{
+			$btn = $('<button aria-pressed="false" tabindex="-1"></button>');
 
-	WysiHat.Toolbar.constructor = WysiHat.Toolbar;
+			$btn.append('<b>' + button.label + '</b>')
+				.addClass( 'button ' + button.name)
+				.hover(
+					function() {
+						this.title = $(this).find('b').text();
+					},
+					function() {
+						$(this).removeAttr('title');
+					}
+				);
+		}
 
-})(jQuery);
+		$btn.appendTo(this.$toolbar);
 
+		if (button.cssClass)
+		{
+			$btn.addClass(button.cssClass);
+		}
+
+		if (button.title)
+		{
+			$btn.attr('title', button.title);
+		}
+
+		$btn.data('text', button.label);
+		if (button['toggle-text'])
+		{
+			$btn.data('toggle-text', button['toggle-text']);
+		}
+
+		return $btn;
+	},
+
+	observeButtonClick: function(button)
+	{
+		var evt = (button.type && button.type == 'select') ? 'change' : 'click';
+
+		button.$element.bind(evt, function(e){
+			var $editor = button.$editor;
+
+			// Bring focus to the editor before the handler is called
+			// so that selection data is available to tools
+			if ( ! $editor.is(':focus'))
+			{
+				$editor.focus();
+			}
+
+			button.Event.fire(button.name);
+
+			//$editor.trigger( 'WysiHat-selection:change' );
+
+			return false;
+		});
+
+	},
+
+	observeStateChanges: function(button)
+	{
+		var
+		that = this,
+		handler = button.getStateHandler(),
+		previousState;
+
+		that.$editor.bind( 'WysiHat-selection:change', function(){
+			var state = handler( button.$editor, button.$element );
+			if (state != previousState)
+			{
+				previousState = state;
+				that.updateButtonState(button, state);
+			}
+		});
+	},
+
+	updateButtonState: function(button, state)
+	{
+		if (state)
+		{
+			button.setOn();
+			return;
+		}
+
+		button.setOff();
+	}
+};
+
+WysiHat.Toolbar.constructor = WysiHat.Toolbar;
+
+
+
+})(document, jQuery);
 
 // ---------------------------------------------------------------------
 
@@ -2857,7 +2986,7 @@ jQuery.fn.wysihat = function(options) {
 
 	if (el)
 	{
-		if (jQuery.inArray(options, ['selectionUtil', 'eventCore', 'toolbar']) != -1)
+		if (jQuery.inArray(options, ['Event', 'Selection', 'Toolbar', 'Undo']) != -1)
 		{
 			return el[options];
 		}
@@ -2866,7 +2995,7 @@ jQuery.fn.wysihat = function(options) {
 	}
 
 	return this.each(function() {
-		WysiHat.Editor.attach(jQuery(this), options);
+		WysiHat.attach(this, options);
 	});
 };
 
@@ -2885,6 +3014,7 @@ jQuery.fn.wysihat = function(options) {
 // ---------------------------------------------------------------------
 
 
+(function(document, $) {
 
 /*  IE Selection and Range classes
  *
@@ -3534,7 +3664,7 @@ if ( typeof Node == "undefined" )
 
 
 
-jQuery.extend(Range.prototype, {
+$.extend(Range.prototype, {
 
 	beforeRange: function(range)
 	{
@@ -3604,7 +3734,7 @@ jQuery.extend(Range.prototype, {
 			parent = parent.parentNode;
 		}
 
-		jQuery(parent).children().each(function(){
+		$(parent).children().each(function(){
 			var range = document.createRange();
 			range.selectNodeContents(this);
 			child = that.betweenRange(range);
@@ -3620,120 +3750,119 @@ if ( typeof Selection == 'undefined' )
 	Selection.prototype = window.getSelection().__proto__;
 }
 
-(function( DOC, $ ) {
+// functions we want to normalize
+var
+getNode,
+selectNode,
+setBookmark,
+moveToBookmark;
 
-	// functions we want to normalize
-	var
-	getNode,
-	selectNode,
-	setBookmark,
-	moveToBookmark;
-
-	if ( $.browser.msie )
+if ( $.browser.msie )
+{
+	getNode = function()
 	{
-		getNode = function()
-		{
-			var range = this._document.selection.createRange();
-			return $(range.parentElement());
-		}
-
-		selectNode = function(element)
-		{
-			var range = this._document.body.createTextRange();
-			range.moveToElementText(element);
-			range.select();
-		}
-
-		setBookmark = function()
-		{
-			var
-			$bookmark	= $('#WysiHat-bookmark'),
-			$parent		= $('<div/>'),
-			range		= this._document.selection.createRange();
-
-			if ( $bookmark.length > 0 )
-			{
-				$bookmark.remove();
-			}
-
-			$bookmark = $( '<span id="WysiHat-bookmark">&nbsp;</span>' )
-							.appendTo( $parent );
-
-			range.collapse(true);
-			range.pasteHTML( $parent.html() );
-		}
-
-		moveToBookmark = function()
-		{
-			var
-			$bookmark	= $('#WysiHat-bookmark'),
-			range		= this._document.selection.createRange();
-
-			if ( $bookmark.length > 0 )
-			{
-				$bookmark.remove();
-			}
-
-			range.moveToElementText( $bookmark.get(0) );
-			range.collapse(true);
-			range.select();
-
-			$bookmark.remove();
-		}
-	}
-	else
-	{
-		getNode = function()
-		{
-			return ( this.rangeCount > 0 ) ? this.getRangeAt(0).getNode() : null;
-		}
-
-		selectNode = function(element)
-		{
-			var range = DOC.createRange();
-			range.selectNode(element[0]);
-			this.removeAllRanges();
-			this.addRange(range);
-		}
-
-		setBookmark = function()
-		{
-			var $bookmark	= $('#WysiHat-bookmark');
-
-			if ( $bookmark.length > 0 )
-			{
-				$bookmark.remove();
-			}
-
-			$bookmark = $( '<span id="WysiHat-bookmark">&nbsp;</span>' );
-
-			this.getRangeAt(0).insertNode( $bookmark.get(0) );
-		}
-
-		moveToBookmark = function()
-		{
-			var
-			$bookmark	= $('#WysiHat-bookmark'),
-			range		= DOC.createRange();
-
-			if ( $bookmark.length > 0 )
-			{
-				$bookmark.remove();
-			}
-
-			range.setStartBefore( $bookmark.get(0) );
-			this.removeAllRanges();
-			this.addRange(range);
-
-			$bookmark.remove();
-		}
+		var range = this._document.selection.createRange();
+		return $(range.parentElement());
 	}
 
-	$.extend(Selection.prototype, {
-		getNode: getNode,
-		selectNode: selectNode,
-		setBookmark: setBookmark,
-		moveToBookmark: moveToBookmark
-	});
+	selectNode = function(element)
+	{
+		var range = this._document.body.createTextRange();
+		range.moveToElementText(element);
+		range.select();
+	}
+
+	setBookmark = function()
+	{
+		var
+		$bookmark	= $('#WysiHat-bookmark'),
+		$parent		= $('<div/>'),
+		range		= this._document.selection.createRange();
+
+		if ( $bookmark.length > 0 )
+		{
+			$bookmark.remove();
+		}
+
+		$bookmark = $( '<span id="WysiHat-bookmark">&nbsp;</span>' )
+						.appendTo( $parent );
+
+		range.collapse(true);
+		range.pasteHTML( $parent.html() );
+	}
+
+	moveToBookmark = function()
+	{
+		var
+		$bookmark	= $('#WysiHat-bookmark'),
+		range		= this._document.selection.createRange();
+
+		if ( $bookmark.length > 0 )
+		{
+			$bookmark.remove();
+		}
+
+		range.moveToElementText( $bookmark.get(0) );
+		range.collapse(true);
+		range.select();
+
+		$bookmark.remove();
+	}
+}
+else
+{
+	getNode = function()
+	{
+		return ( this.rangeCount > 0 ) ? this.getRangeAt(0).getNode() : null;
+	}
+
+	selectNode = function(element)
+	{
+		var range = document.createRange();
+		range.selectNode(element[0]);
+		this.removeAllRanges();
+		this.addRange(range);
+	}
+
+	setBookmark = function()
+	{
+		var $bookmark	= $('#WysiHat-bookmark');
+
+		if ( $bookmark.length > 0 )
+		{
+			$bookmark.remove();
+		}
+
+		$bookmark = $( '<span id="WysiHat-bookmark">&nbsp;</span>' );
+
+		this.getRangeAt(0).insertNode( $bookmark.get(0) );
+	}
+
+	moveToBookmark = function()
+	{
+		var
+		$bookmark	= $('#WysiHat-bookmark'),
+		range		= document.createRange();
+
+		if ( $bookmark.length > 0 )
+		{
+			$bookmark.remove();
+		}
+
+		range.setStartBefore( $bookmark.get(0) );
+		this.removeAllRanges();
+		this.addRange(range);
+
+		$bookmark.remove();
+	}
+}
+
+$.extend(Selection.prototype, {
+	getNode: getNode,
+	selectNode: selectNode,
+	setBookmark: setBookmark,
+	moveToBookmark: moveToBookmark
+});
+
 
 })(document, jQuery);

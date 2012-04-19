@@ -51,6 +51,11 @@ $.ee_filebrowser.add_trigger(
 	'userfile_' + $field.attr('name'),
 	function(image_object, file_field, editor_field)
 	{
+		if ( ! $editor.is(':focus'))
+		{
+			$editor.focus();
+		}
+		
 		var sel		= window.getSelection(),
 			range = document.createRange();
 		
