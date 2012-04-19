@@ -253,9 +253,7 @@ class Rte_lib {
 		// bare minimum required
 		$bits	= array(
 			'globals'	=> array(
-				'rte'		=> array(
-					'update_event' => 'WysiHat-editor:change'
-				)
+				'rte'		=> array()
 			),
 			'styles' => '',
 			'definitions' => '',

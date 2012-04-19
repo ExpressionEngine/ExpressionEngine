@@ -278,7 +278,6 @@ class Rte_ext {
 		// JS config
 		$this->EE->javascript->set_global(array(
 			'rte'	=> array(
-				'update_event' 	=> 'WysiHat-editor:change',
 				'url'	=> array(
 					'toolset_js'	=> $toolset_url,
 					'prefs'			=> BASE.AMP.'C=myaccount'.AMP.'M=custom_action'.AMP.'extension=rte'.AMP.'method=myaccount_settings'
