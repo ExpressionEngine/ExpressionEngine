@@ -1498,14 +1498,12 @@ WysiHat.Commands = (function() {
 
 })();
 
-
-// @todo this reeks
-var blockElements = WysiHat.Element.getContentElements().join(',').replace( ',div,', ',div:not(.' + WysiHat.name + '-editor' + '),' );
-
 /**
  * Add the more complex commands
  */
 $.extend(WysiHat.Commands, {
+
+	_blockElements: WysiHat.Element.getContentElements().join(',').replace(',div,', ',div:not(.' + WysiHat.name + '-editor' + '),'),
 
 	// Map to make sense of weird property names
 	styleSelectors: {
@@ -1722,7 +1720,7 @@ $.extend(WysiHat.Commands, {
 		{
 			range = selection.getRangeAt( i );
 			ranges.push( range );
-			this.getRangeElements( range, blockElements ).each( stripFormatters );
+			this.getRangeElements( range, this._blockElements ).each( stripFormatters );
 		}
 
 		this.restoreRanges( ranges );
@@ -1844,7 +1842,7 @@ $.extend(WysiHat.Commands, {
 			range	= selection.getRangeAt( i );
 			ranges.push( range );
 
-			this.getRangeElements( range, blockElements )
+			this.getRangeElements( range, this._blockElements )
 				.each(function(){
 					editor.replaceElement( $(this), tagName );
 				 })
@@ -1952,7 +1950,7 @@ $.extend(WysiHat.Commands, {
 		this.manipulateSelection(function( range, $quote ){
 			var
 			$q		= $quote.clone(),
-			$els	= this.getRangeElements( range, blockElements ),
+			$els	= this.getRangeElements( range, this._blockElements ),
 			last	= $els.length - 1,
 			$coll	= $();
 
@@ -2066,7 +2064,7 @@ $.extend(WysiHat.Commands, {
 		{
 			this.manipulateSelection(function( range, $list ){
 				var $l = $list.clone();
-				this.getRangeElements( range, blockElements ).each(function(i){
+				this.getRangeElements( range, this._blockElements ).each(function(i){
 					var $this = $(this);
 					if ( $this.parent().is(other) )
 					{
