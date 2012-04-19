@@ -95,7 +95,6 @@ class Headings_rte {
 				if ( this.$element.val() != '' )
 				{
 					this.Commands.changeContentBlock(this.$element.val());
-					this.$editor.trigger(EE.rte.update_event);
 				}
 			},
 			query: function() {

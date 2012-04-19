@@ -96,9 +96,6 @@ function hideFigureOverlay()
 {
 	$figure_overlay.hide();
 	$curr_figure = null;
-
-	// trigger the update
-	$editor.trigger( EE.rte.update_event );
 }
 function alignFigureContent( direction )
 {
