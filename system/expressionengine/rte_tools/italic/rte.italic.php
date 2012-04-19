@@ -76,10 +76,7 @@ class Italic_rte {
 		
 		WysiHat.addButton('italic', {
 			label:			EE.rte.italics.add,
-			'toggle-text':	EE.rte.italics.remove,
-			handler: function() {
-				this.$editor.italicizeSelection();
-			}
+			'toggle-text':	EE.rte.italics.remove
 		});
 		
 <?php	$buffer = ob_get_contents();

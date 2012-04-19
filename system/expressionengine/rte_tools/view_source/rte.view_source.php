@@ -111,9 +111,7 @@ class View_source_rte {
 				return this;
 			},
 			handler: function() {
-				this.$editor.toggleHTML({
-					target: this.$element
-				});
+				this.Commands.toggleHTML(this);
 			}
 		});
 		
