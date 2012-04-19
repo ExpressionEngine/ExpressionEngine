@@ -1904,9 +1904,7 @@ $.extend(WysiHat.Commands, {
 	},
 
 	/**
-	 * @todo Why does this have to take an event? It only
-	 * needs the target. Heck it could receive a button
-	 * instance.
+	 * Toggle between the editor and the textarea.
 	 */
 	toggleHTML: function(obj)
 	{
