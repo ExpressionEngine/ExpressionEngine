@@ -1926,15 +1926,10 @@ $.extend(WysiHat.Commands, {
 		var
 		$editor	= obj.$editor,
 		$target	= obj.$element,
-		text	= $target.text(),
 		$btn	= $target.closest( 'button,[role=button]' ),
 		$field	= $editor.data('field'),
-		$tools	= $btn.siblings();
-
-		if ( $btn.data('toggle-text') == undefined )
-		{
-			$btn.data('toggle-text', 'View Content');
-		}
+		$tools	= $btn.siblings(),
+		text	= $btn.data('text');
 
 		if ($editor.is(':visible'))
 		{
