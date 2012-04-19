@@ -39,7 +39,13 @@
 					}
 
 					$el = $(el);
-
+					
+					if ($el.is('img') && $el.parent().is('a'))
+					{
+						$el = $el.parent();
+						anchorNode = el.parentNode;
+					};
+					
 					if ($el.is('a')) {
 						$url.val( $el.attr('href'));
 						$title.val( $el.attr('title'));
@@ -82,7 +88,7 @@
 		// Remove link
 		.on('click', '.rte-link-remove', function(){
 			var $el = $(anchorNode);
-			$el.replaceWith($el.text());
+			$el.replaceWith($el.html());
 	
 			$link_dialog.dialog('close');
 		})
@@ -149,28 +155,54 @@
 			s_el = sel.anchorNode;
 			e_el = sel.focusNode;
 			
-
+			range = document.createRange();
+			
+			range.setStart(sel.anchorNode, sel.anchorOffset);
+			range.setEnd(sel.focusNode, sel.focusOffset);
+			
 			if ((s_el == e_el && sel.anchorOffset == sel.focusOffset) ||
 				e_el.textContent == '​') // Our zero-width character
 			{
 				link = false;
+				
+				while ( s_el.childNodes.length > 0 )
+				{
+					s_el = s_el.childNodes[0];
+				}
+				
+				if ( s_el.nodeName.toLowerCase() == 'img' )
+				{
+					link = true;
+					
+					if (s_el.parentNode.nodeName.toLowerCase() == 'a')
+					{
+						range.selectNode( s_el.parentNode );
+					}
+					else
+					{
+						range.selectNode( s_el );
+					}
+				}
 			}
-			
-			range = document.createRange();
-			range.setStart(sel.anchorNode, sel.anchorOffset);
-			range.setEnd(sel.focusNode, sel.focusOffset);
-
-			// Can I get an A?
-			while ( s_el.nodeType != 1 )
+			else
 			{
-				s_el = s_el.parentNode;
-			}
+				// Can I get an A?
+				while ( s_el.nodeType != 1 )
+				{
+					s_el = s_el.parentNode;
+				}
 
-			if ( s_el.nodeName.toLowerCase() == 'a' )
-			{
-				link = true;
-				// select the whole <a>
-				range.selectNode( s_el );
+				if ( s_el.nodeName.toLowerCase() == 'a' )
+				{
+					link = true;
+					// select the whole <a>
+					range.selectNode( s_el );
+				}
+				else if (s_el.parentNode.nodeName.toLowerCase() == 'a')
+				{
+					s_el = s_el.parentNode;
+					range.selectNode( s_el );
+				}
 			}
 
 			anchorNode = s_el;
