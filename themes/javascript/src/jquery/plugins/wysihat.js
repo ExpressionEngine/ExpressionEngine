@@ -135,6 +135,15 @@ WysiHat.Editor = function($field, options) {
 
 WysiHat.Editor.prototype = {
 
+	/**
+	 * Special empty entity so that we always have
+	 * paragraph tags to work with.
+	 */
+	_empty: '<p>&#x200b;</p>',
+
+	/**
+	 * Create the main editor html
+	 */
 	create: function() {
 		return $('<div/>', {
 			'class': WysiHat.name + '-editor',
@@ -154,6 +163,9 @@ WysiHat.Editor.prototype = {
 		});
 	},
 
+	/**
+	 * Setup all of the utility classes
+	 */
 	init: function(options) {
 		var $ed = this.$editor;
 
@@ -174,6 +186,37 @@ WysiHat.Editor.prototype = {
 	updateEditor: function()
 	{
 		this.$editor.html( WysiHat.Formatting.getBrowserMarkupFrom(this.$field) );
+		this.selectEmptyParagraph();
+	},
+
+	selectEmptyParagraph: function()
+	{
+		var $el	= this.$editor,
+			val = $el.html(),
+			s = window.getSelection(),
+			r;
+
+		if ( val == '' ||
+			 val == '<br>' ||
+			 val == '<br/>' ||
+			 val == '<p></p>' )
+		{
+			$el.html(this._empty);
+
+			r = document.createRange();
+			s.removeAllRanges();
+			r.selectNodeContents($el.find('p').get(0));
+			
+			// Get Firefox's cursor behaving naturally by clearing out the
+			// zero-width character; if we run this for webkit too, then it
+			// breaks Webkit's cursor behavior
+			if ($.browser.mozilla)
+			{
+				$el.find('p').eq(0).html('');
+			}
+
+			s.addRange(r);
+		}
 	}
 };
 
@@ -342,90 +385,9 @@ WysiHat.Element = (function(){
 $(document).ready(function(){
 
 	var
-	timer = null,
 	$doc = $(document),
-	// &#x200b; is a zero-width character so we have something to select
-	// and place the cursor inside the paragraph tags, Webkit won't select
-	// an empty element due to a long-standing bug
-	// https://bugs.webkit.org/show_bug.cgi?id=15256
-	// <wbr> didn't seem to behave the same so I'm using the entity
-	// http://www.quirksmode.org/oddsandends/wbr.html
-	empty	= '<p>&#x200b;</p>',
 	previousRange,
-	selectionChangeHandler,
-	$element;
-
-	function fieldChangeHandler( e )
-	{
-		if ( timer )
-		{
-			clearTimeout(timer);
-		}
-
-		$element = $(this);
-
-		timer = setTimeout(function(){
-			var
-			element		= $element.get(0),
-			val, evt;
-
-			if ( $element.is('*[contenteditable=""],*[contenteditable=true]') )
-			{
-				val	= $element.html();
-
-				if ( val == '' ||
-				 	 val == '<br>' ||
-				 	 val == '<br/>' )
-				{
-					val = empty;
-					$element.html(val);
-					selectEmptyParagraph($element);
-				}
-
-				evt	= 'editor:change';
-			}
-			else
-			{
-				val	= $element.val();
-				evt	= 'field:change';
-			}
-
-			if ( val &&
-				 element.previousValue != val )
-			{
-				$element.trigger( 'WysiHat-' + evt );
-				element.previousValue = val;
-			}
-		}, 100);
-	}
-
-	function selectEmptyParagraph( $el )
-	{
-		var $el	= $element || $(this),
-			s	= window.getSelection(),
-			r	= document.createRange();
-		// If the editor has our special zero-width character in it wrapped
-		// with paragraph tags, select it
-		if ( $el.html() == '<p>​</p>' )
-		{
-			s.removeAllRanges();
-			r.selectNodeContents($el.find('p').get(0));
-			s.addRange(r);
-			
-			// Get Firefox's cursor behaving naturally by clearing out the
-			// zero-width character; if we run this for webkit too, then it
-			// breaks Webkit's cursor behavior
-			if ($.browser.mozilla)
-			{
-				$el.find('p').eq(0).html('');
-			}
-		}
-	}
-
-	$('body')
-		.delegate('input,textarea,*[contenteditable],*[contenteditable=true]', 'keydown', fieldChangeHandler )
-		.delegate('*[contenteditable],*[contenteditable=true]', 'focus', selectEmptyParagraph );
-
+	selectionChangeHandler;
 
 	if ( 'onselectionchange' in document &&
 		 'selection' in document )
@@ -711,6 +673,7 @@ WysiHat.Event.prototype = {
 		after = after || this.getState();
 
 		this.Editor.updateField();
+		this.Editor.selectEmptyParagraph();
 
 		this.Undo.push(
 			before.html, after.html,
@@ -2850,8 +2813,6 @@ WysiHat.Toolbar.prototype = {
 			}
 
 			button.Event.fire(button.name);
-
-			//$editor.trigger( 'WysiHat-selection:change' );
 
 			return false;
 		});
