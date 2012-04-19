@@ -918,9 +918,6 @@ WysiHat.Event.prototype = {
 	_rangeEvent: function(evt)
 	{
 		this._saveTextState(evt.type);
-// @todo this is a little too aggressive since we still have
-// aaron's original events firing. Rip them out first.
-//		this.$editor.trigger( 'WysiHat-selection:change' );
 	},
 
 	/**
@@ -1502,9 +1499,8 @@ WysiHat.Commands = (function() {
 })();
 
 
-// @todo these reek
-var CHANGE_EVT = WysiHat.name + '-editor:change',
-	blockElements = WysiHat.Element.getContentElements().join(',').replace( ',div,', ',div:not(.' + WysiHat.name + '-editor' + '),' );
+// @todo this reeks
+var blockElements = WysiHat.Element.getContentElements().join(',').replace( ',div,', ',div:not(.' + WysiHat.name + '-editor' + '),' );
 
 /**
  * Add the more complex commands
@@ -1544,8 +1540,6 @@ $.extend(WysiHat.Commands, {
 		{
 			return null;
 		}
-
-		$(document.activeElement).trigger( CHANGE_EVT );
 	},
 
 	isMakeCommand: function(cmd)
@@ -1696,8 +1690,6 @@ $.extend(WysiHat.Commands, {
 	{
 		var $this = $(this);
 		$this.replaceWith( $this.html() );
-
-		$(document.activeElement).trigger( CHANGE_EVT );
 	},
 
 	/**
@@ -1733,8 +1725,6 @@ $.extend(WysiHat.Commands, {
 			this.getRangeElements( range, blockElements ).each( stripFormatters );
 		}
 
-		$(document.activeElement).trigger( CHANGE_EVT );
-
 		this.restoreRanges( ranges );
 	},
 
@@ -1762,7 +1752,7 @@ $.extend(WysiHat.Commands, {
 
 			callback.apply( this, args );
 		}
-		$(document.activeElement).trigger( CHANGE_EVT );
+
 		this.restoreRanges( ranges );
 	},
 
@@ -1865,8 +1855,6 @@ $.extend(WysiHat.Commands, {
 			.children( tagName )
 			.removeData( replaced );
 
-		$(document.activeElement).trigger( CHANGE_EVT );
-
 		this.restoreRanges( ranges );
 	},
 
@@ -1913,7 +1901,6 @@ $.extend(WysiHat.Commands, {
 			el = $('<' + arguments[argLength] + '/>');
 			range.surroundContents( el.get(0) );
 		}
-		$(document.activeElement).trigger( CHANGE_EVT );
 	},
 
 	/**
@@ -1934,14 +1921,14 @@ $.extend(WysiHat.Commands, {
 		{
 			$btn.find('b').text($btn.data('toggle-text'));
 			$tools.hide();
-			$editor.trigger('WysiHat-editor:change:immediate').hide();
+			$editor.hide();
 			$field.show();
 		}
 		else
 		{
 			$btn.find('b').text(text);
 			$tools.show();
-			$field.trigger('WysiHat-field:change:immediate').hide();
+			$field.hide();
 			$editor.show();
 		}
 	},
@@ -1954,7 +1941,6 @@ $.extend(WysiHat.Commands, {
 			range.pasteHTML(html);
 			range.collapse(false);
 			range.select();
-			$(document.activeElement).trigger( CHANGE_EVT );
 		}
 		else
 		{
@@ -2103,7 +2089,6 @@ $.extend(WysiHat.Commands, {
 				});
 			}, $list );
 		}
-		$(document.activeElement).trigger( CHANGE_EVT );
 	}
 });
 
