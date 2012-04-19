@@ -94,7 +94,7 @@ class Rte_toolset_model extends CI_Model {
 			->select('members.rte_toolset_id')
 			->from('members')
 			->where('members.member_id', $this->session->userdata('member_id'))
-			->join('rte_toolsets', 'members.rte_toolset_id = rte_toolsets.rte_toolset_id')
+			->join('rte_toolsets', 'members.rte_toolset_id = rte_toolsets.toolset_id')
 			->get();
 
 		// member’s choice?
@@ -122,7 +122,7 @@ class Rte_toolset_model extends CI_Model {
 	public function member_can_access($toolset_id = FALSE)
 	{
 		// Get the toolset
-		$toolset = $this->db->where('rte_toolset_id', $toolset_id)
+		$toolset = $this->db->where('toolset_id', $toolset_id)
 			->get('rte_toolsets')
 			->row();
 
@@ -172,7 +172,7 @@ class Rte_toolset_model extends CI_Model {
 	public function get($toolset_id)
 	{
 		// Get the tool ids used by this toolset
-		$toolset = $this->db->where('rte_toolset_id', $toolset_id)
+		$toolset = $this->db->where('toolset_id', $toolset_id)
 			->get('rte_toolsets')
 			->row_array();
 
@@ -181,13 +181,13 @@ class Rte_toolset_model extends CI_Model {
 			return FALSE;
 		}
 
-		if ($toolset['rte_tools'])
+		if ($toolset['tools'])
 		{
-			$toolset['rte_tools'] = explode('|', $toolset['rte_tools']);
+			$toolset['tools'] = explode('|', $toolset['tools']);
 		}
 		else
 		{
-			$toolset['rte_tools'] = array();
+			$toolset['tools'] = array();
 		}
 
 		return $toolset;
@@ -206,7 +206,7 @@ class Rte_toolset_model extends CI_Model {
 		return $this->db->select('member_id')
 			->get_where(
 				'rte_toolsets',
-				array( 'rte_toolset_id' => $toolset_id ),
+				array( 'toolset_id' => $toolset_id ),
 				1
 			)
 			->row('member_id') != 0;
@@ -226,7 +226,7 @@ class Rte_toolset_model extends CI_Model {
 		// update or insert?
 		if ($toolset_id)
 		{
-			$this->db->where('rte_toolset_id', $toolset_id)
+			$this->db->where('toolset_id', $toolset_id)
 				->update('rte_toolsets', $toolset);
 		} 
 		else
@@ -249,7 +249,7 @@ class Rte_toolset_model extends CI_Model {
 	{
 		if ($toolset_id)
 		{
-			$this->db->where('rte_toolset_id', $toolset_id)
+			$this->db->where('toolset_id', $toolset_id)
 				->delete('rte_toolsets');
 
 			return $this->db->affected_rows();
@@ -294,7 +294,7 @@ class Rte_toolset_model extends CI_Model {
 			'rte_toolsets',
 			array(
 				'name'		=> 'Default',
-				'rte_tools'	=> implode('|', $tool_ids),
+				'tools'		=> implode('|', $tool_ids),
 				'enabled'	=> 'y'
 			)
 		);		
@@ -318,7 +318,7 @@ class Rte_toolset_model extends CI_Model {
 
 		if ($toolset_id !== FALSE)
 		{
-			$where['rte_toolset_id !='] = $toolset_id;
+			$where['toolset_id !='] = $toolset_id;
 		}
 
 		$query = $this->db->get_where('rte_toolsets', $where);

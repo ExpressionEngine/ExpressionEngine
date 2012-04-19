@@ -101,11 +101,11 @@ class Rte_ext {
 			if ($t['member_id'] == $this->EE->session->userdata('member_id'))
 			{
 				// we have a custom toolset; grab its id
-				$my_toolset_id = $t['rte_toolset_id'];
+				$my_toolset_id = $t['toolset_id'];
 				continue;
 			}
 
-			$options[$t['rte_toolset_id']] = $t['name'];
+			$options[$t['toolset_id']] = $t['name'];
 		}
 
 		// insert our custom toolset at the beginning of the list
@@ -113,10 +113,10 @@ class Rte_ext {
 
 		// setup the page
 		$vars = array(
-			'cp_page_title'			=> lang('rte_prefs'),
-			'rte_enabled'			=> $prefs['rte_enabled'],
-			'rte_toolset_id'		=> $prefs['rte_toolset_id'],
-			'rte_toolset_id_opts'	=> $options
+			'cp_page_title'		=> lang('rte_prefs'),
+			'rte_enabled'		=> $prefs['rte_enabled'],
+			'toolset_id'		=> $prefs['rte_toolset_id'],
+			'toolset_id_opts'	=> $options
 		);
 		
 		// JS stuff
@@ -126,7 +126,7 @@ class Rte_ext {
 					'edit_my_toolset'	=> lang('edit_my_toolset')
 				),
 				'url'	=> array(
-					'edit_my_toolset' 	=> BASE.AMP.'C=myaccount'.AMP.'M=custom_action'.AMP.'extension=rte'.AMP.'method=edit_toolset'.AMP.'private=true'.AMP.'rte_toolset_id='.$my_toolset_id,
+					'edit_my_toolset' 	=> BASE.AMP.'C=myaccount'.AMP.'M=custom_action'.AMP.'extension=rte'.AMP.'method=edit_toolset'.AMP.'private=true'.AMP.'toolset_id='.$my_toolset_id,
 				),
 				'my_toolset_id'			=> $my_toolset_id
 			)
@@ -165,7 +165,7 @@ class Rte_ext {
 			'required|enum[y,n]'
 		);
 		$this->EE->form_validation->set_rules(
-			'rte_toolset_id',
+			'toolset_id',
 			lang('default_toolset'),
 			'required|is_numeric'
 		);
@@ -178,7 +178,7 @@ class Rte_ext {
 				'members',
 				array(
 					'rte_enabled'		=> $this->EE->input->get_post('rte_enabled'),
-					'rte_toolset_id'	=> $this->EE->input->get_post('rte_toolset_id')
+					'rte_toolset_id'	=> $this->EE->input->get_post('toolset_id')
 				),
 				array('member_id' => $member_id)
 			);

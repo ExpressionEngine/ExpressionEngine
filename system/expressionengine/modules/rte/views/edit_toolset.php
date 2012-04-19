@@ -3,17 +3,17 @@
 <?php	if ( ! $is_private): ?>
 	<table class="rte-toolset-settings" cellspacing="0" cellpadding="0" border="0">
 		<tr>
-			<td><label for="rte-toolset-name"><?=lang('toolset_name')?></label></td>
-			<td><?=form_input(array('name'=>'rte_toolset_name','id'=>'rte-toolset-name','value'=>$toolset_name))?></td>
+			<td><label for="toolset_name"><?=lang('toolset_name')?></label></td>
+			<td><?=form_input(array('name'=>'toolset_name','id'=>'toolset_name','value'=>$toolset_name))?></td>
 		</tr>
 	</table>
 <?php 	else: ?>
 	<input type="hidden" name="private" value="true"/>
-	<input type="hidden" name="rte_toolset_name" value="<?=lang('my_toolset')?>"/>
+	<input type="hidden" name="toolset_name" value="<?=lang('my_toolset')?>"/>
 <?php 	endif; ?>
 
 	<div class="rte-toolset-builder ui-widget">
-		<input type="hidden" id="rte-toolset-tools" name="rte_selected_tools"/>
+		<input type="hidden" id="rte-toolset-tools" name="selected_tools"/>
 
 		<div class="notice"></div>	
 
@@ -24,7 +24,7 @@
 					<div class="rte-toolset-builder-scrollpane" tabindex="0">
 						<ul id="rte-tools-unused" class="rte-tools-connected">
 <?php	foreach ($unused_tools as $tool): ?>
-							<li class="rte-tool" data-tool-id="<?=$tool['rte_tool_id']?>"><?=$tool['name']?></li>
+							<li class="rte-tool" data-tool-id="<?=$tool['tool_id']?>"><?=$tool['name']?></li>
 <?php	endforeach; ?>
 						</ul>
 					</div>
@@ -38,7 +38,7 @@
 					<div class="rte-toolset-builder-scrollpane" tabindex="0">
 						<ul id="rte-tools-selected" class="rte-tools-connected ui-sortable">
 <?php	foreach ($used_tools as $tool): ?>
-							<li class="rte-tool" data-tool-id="<?=$tool['rte_tool_id']?>"><?=$tool['name']?></li>
+							<li class="rte-tool" data-tool-id="<?=$tool['tool_id']?>"><?=$tool['name']?></li>
 <?php	endforeach; ?>
 						</ul>
 					</div>
