@@ -40,12 +40,6 @@
 
 					$el = $(el);
 					
-					if ($el.is('img') && $el.parent().is('a'))
-					{
-						$el = $el.parent();
-						anchorNode = el.parentNode;
-					};
-					
 					if ($el.is('a')) {
 						$url.val( $el.attr('href'));
 						$title.val( $el.attr('title'));
@@ -164,47 +158,56 @@
 				e_el.textContent == '​') // Our zero-width character
 			{
 				link = false;
-				
+			}
+			
+			// If our initial check failed, but the selection still has
+			// child nodes, a figure element may be selected and we need to
+			// traverse down the nodes and see if an image tag is there;
+			// or, we may have selected an image to begin with
+			if (( ! link && s_el.childNodes.length > 0) ||
+				s_el.nodeName.toLowerCase() == 'img')
+			{
 				while ( s_el.childNodes.length > 0 )
 				{
 					s_el = s_el.childNodes[0];
 				}
 				
-				if ( s_el.nodeName.toLowerCase() == 'img' )
+				// If we found an image, and it's already in an anchor tag,
+				// grab the anchor tag for selection instead
+				if (s_el.nodeName.toLowerCase() == 'img' &&
+					s_el.parentNode.nodeName.toLowerCase() == 'a')
+				{
+					s_el = s_el.parentNode;
+				}
+				
+				// If we ended up with an image or anchor tag, select it
+				if (s_el.nodeName.toLowerCase() == 'a' ||
+					s_el.nodeName.toLowerCase() == 'img')
 				{
 					link = true;
-					
-					if (s_el.parentNode.nodeName.toLowerCase() == 'a')
-					{
-						range.selectNode( s_el.parentNode );
-					}
-					else
-					{
-						range.selectNode( s_el );
-					}
+					range.selectNode( s_el );
 				}
 			}
-			else
+			
+			// If our selected node is not an anchor tag or an image tag,
+			// we may need to traverse our parents to see if we're already
+			// in an anchor tag; if so, select it for editing
+			if (s_el.nodeName.toLowerCase() != 'a' &&
+				s_el.nodeName.toLowerCase() != 'img')
 			{
-				// Can I get an A?
+				// Reach the first element node
 				while ( s_el.nodeType != 1 )
 				{
 					s_el = s_el.parentNode;
 				}
-
+				
 				if ( s_el.nodeName.toLowerCase() == 'a' )
 				{
 					link = true;
-					// select the whole <a>
-					range.selectNode( s_el );
-				}
-				else if (s_el.parentNode.nodeName.toLowerCase() == 'a')
-				{
-					s_el = s_el.parentNode;
 					range.selectNode( s_el );
 				}
 			}
-
+			
 			anchorNode = s_el;
 			
 			if ( link )
