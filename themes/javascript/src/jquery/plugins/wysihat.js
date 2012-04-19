@@ -1925,8 +1925,7 @@ $.extend(WysiHat.Commands, {
 	{
 		var
 		$editor	= obj.$editor,
-		$target	= obj.$element,
-		$btn	= $target.closest( 'button,[role=button]' ),
+		$btn	= obj.$element,
 		$field	= $editor.data('field'),
 		$tools	= $btn.siblings(),
 		text	= $btn.data('text');
