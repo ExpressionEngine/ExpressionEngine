@@ -56,10 +56,9 @@ $.ee_filebrowser.add_trigger(
 			$editor.focus();
 		}
 		
-		var sel		= window.getSelection(),
+		var sel = window.getSelection(),
 			range = document.createRange();
 		
-		range = document.createRange();
 		range.setStart(sel.anchorNode, sel.anchorOffset);
 		range.setEnd(sel.focusNode, sel.focusOffset);
 		
