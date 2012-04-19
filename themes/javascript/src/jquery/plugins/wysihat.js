@@ -162,101 +162,23 @@ WysiHat.Editor.prototype = {
 		this.Selection = new WysiHat.Selection($ed);
 		this.Event = new WysiHat.Event(this);
 		this.Toolbar = new WysiHat.Toolbar($ed, options.buttons);
+
+		this.$field.change($.proxy(this, 'updateEditor'));
+	},
+
+	updateField: function()
+	{
+		this.$field.val( WysiHat.Formatting.getApplicationMarkupFrom(this.$editor) );
+	},
+
+	updateEditor: function()
+	{
+		this.$editor.html( WysiHat.Formatting.getBrowserMarkupFrom(this.$field) );
 	}
 };
 
 WysiHat.Editor.constructor = WysiHat.Editor;
 
-/*
-
-var
-WYSIHAT 	= WysiHat.name,
-EDITOR		= '-editor',
-FIELD		= '-field',
-CHANGE		= ':change',
-CLASS		= WYSIHAT + EDITOR,
-E_EVT		= CLASS + CHANGE,
-F_EVT		= WYSIHAT + FIELD + CHANGE,
-IMMEDIATE	= ':immediate',
-INDEX		= 0;
-
-WysiHat.attach = function($field, options) {
-
-	var
-	tId	= $field.attr( 'id' ),
-	eId	= ( tId ? tId : WYSIHAT + INDEX++ ) + EDITOR,
-	fTimer	= null,
-	eTimer	= null,
-	$editor	= $( '#' + eId );
-
-	if ( tId == '' )
-	{
-		tId = eId.replace( EDITOR, FIELD );
-		$field.attr( 'id', tId );
-	}
-
-	$editor = $('<div id="' + eId + '" class="' + CLASS + '" contentEditable="true" role="application"></div>')
-		.html( WysiHat.Formatting.getBrowserMarkupFrom( $field ) )
-		.data( 'field', $field );
-	
-	// Respect textarea's existing row count settings
-	$editor.height($field.height());
-
-	function updateField()
-	{
-		$field.val( WysiHat.Formatting.getApplicationMarkupFrom( $editor ) );
-		fTimer = null;
-	}
-	function updateEditor()
-	{
-		$editor.html( WysiHat.Formatting.getBrowserMarkupFrom( $field ) );
-		eTimer = null;
-	}
-
-	$field
-		.bind('keyup mouseup',function(){
-			$field.trigger(F_EVT);
-		 })
-		.bind( F_EVT, function(){
-			if ( fTimer )
-			{
-				clearTimeout( fTimer );
-			}
-			fTimer = setTimeout(updateEditor, 250 );
-		 })
-		.bind( F_EVT + IMMEDIATE, updateEditor)
-		.hide()
-		.before(
-			$editor
-				.bind('keyup mouseup',function(){
-					$editor.trigger(E_EVT);
-				 })
-				.bind( E_EVT, function(){
-					if ( eTimer )
-					{
-						clearTimeout( eTimer );
-					}
-					eTimer = setTimeout(updateField, 250);
-				 })
-				.bind( E_EVT + IMMEDIATE, updateField )
-		 );
-
-	$.extend( $editor, WysiHat.Commands );
-	$editor.data('wysihat', $editor);
-
-	$editor.selectionUtil = new WysiHat.SelectionUtil($editor);
-	$editor.data('selectionUtil', $editor.selectionUtil);
-
-	$editor.eventCore = new WysiHat.EventCore($editor);
-	$editor.data('eventCore', $editor.eventCore);
-
-	$editor.toolbar	= new WysiHat.Toolbar($editor, options.buttons);
-	$editor.data('toolbar', $editor.toolbar);
-
-	return $editor;
-};
-
-*/
 
 // ---------------------------------------------------------------------
 
@@ -666,6 +588,7 @@ keyShortcuts = (function() {
 
 WysiHat.Event = function(obj)
 {
+	this.Editor = obj;
 	this.$editor = obj.$editor;
 	this.eventHandlers = [];
 
@@ -786,6 +709,8 @@ WysiHat.Event.prototype = {
 	textChange: function(before, after)
 	{
 		after = after || this.getState();
+
+		this.Editor.updateField();
 
 		this.Undo.push(
 			before.html, after.html,
