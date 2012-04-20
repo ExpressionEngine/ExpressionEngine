@@ -2473,6 +2473,7 @@ WysiHat.Formatting = {
 			}
 			else if ( ! $.trim($prev.html()))
 			{
+				currentP.after('\n');
 				currentP = removal.pop();
 			}
 
@@ -2552,6 +2553,10 @@ WysiHat.Formatting = {
 
 		this.cleanup( $container );
 		this.format( $container );
+
+		$container.find('*').html(function(i, val) {
+			return val.replace('\n', '<br>\n').replace(/(\t| +)/g, ' ');
+		});
 
 		return $container
 				.html()
