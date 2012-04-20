@@ -69,7 +69,7 @@ class Rte_mcp {
 
 		foreach ($this->EE->rte_toolset_model->get_toolset_list(TRUE) as $t)
 		{
-			$toolset_opts[$t['rte_toolset_id']] = $t['name'];
+			$toolset_opts[$t['toolset_id']] = $t['name'];
 		}
 
 		$vars = array(
@@ -81,7 +81,7 @@ class Rte_mcp {
 			'toolset_opts'				=> $toolset_opts,
 			'toolsets'					=> $this->EE->rte_toolset_model->get_toolset_list(),
 			'tools'						=> $this->EE->rte_tool_model->get_tool_list(),
-			'new_toolset_link'			=> $this->_base_url.AMP.'method=edit_toolset'.AMP.'rte_toolset_id=0'
+			'new_toolset_link'			=> $this->_base_url.AMP.'method=edit_toolset'.AMP.'toolset_id=0'
 		);
 
 		// JS
@@ -93,7 +93,7 @@ class Rte_mcp {
 			'rte'	=> array(
 				'lang' => array(
 					'edit_toolset'		=> lang('edit_toolset'),
-					'create_toolset'	=> lang('create_new_rte_toolset')
+					'create_toolset'	=> lang('create_new_toolset')
 				)
 			)
 		));
@@ -183,7 +183,7 @@ class Rte_mcp {
 	{
 		$this->EE->load->model('rte_toolset_model');
 		
-		$toolset_id = $this->EE->input->get_post('rte_toolset_id');
+		$toolset_id = $this->EE->input->get_post('toolset_id');
 		$enabled = $this->EE->input->get_post('enabled') != 'n' ? 'y' :'n';
 
 		if ($this->EE->rte_toolset_model->save_toolset(array('enabled' => $enabled), $toolset_id))
@@ -211,7 +211,7 @@ class Rte_mcp {
 		$this->EE->load->model('rte_toolset_model');
 		
 		// delete
-		if ($this->EE->rte_toolset_model->delete($this->EE->input->get_post('rte_toolset_id')))
+		if ($this->EE->rte_toolset_model->delete($this->EE->input->get_post('toolset_id')))
 		{
 			$this->EE->session->set_flashdata('message_success', lang('toolset_deleted'));
 		}
@@ -235,7 +235,7 @@ class Rte_mcp {
 	{
 		$this->EE->load->model('rte_tool_model');
 		
-		$tool_id = $this->EE->input->get_post('rte_tool_id');
+		$tool_id = $this->EE->input->get_post('tool_id');
 		$enabled = $this->EE->input->get_post('enabled') != 'n' ? 'y' :'n';
 
 		if ($this->EE->rte_tool_model->save_tool(array('enabled' => $enabled), $tool_id))

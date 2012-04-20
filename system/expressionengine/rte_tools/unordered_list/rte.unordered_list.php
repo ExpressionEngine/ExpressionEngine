@@ -79,10 +79,10 @@ class Unordered_list_rte {
 			label:			EE.rte.unordered_list.add,
 			'toggle-text':	EE.rte.unordered_list.remove,
 			handler: function(){
-				return this.$editor.toggleUnorderedList();
+				this.make('unorderedList');
 			},
 			query: function(){
-				return this.$editor.queryCommandState('insertUnorderedList');
+				return this.is('unorderedList');
 			}
 		});
 		

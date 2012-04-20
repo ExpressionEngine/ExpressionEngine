@@ -68,7 +68,7 @@ class Rte_upd {
 		
 		// RTE Toolsets Table
 		$fields = array(
-			'rte_toolset_id'	=> array(
+			'toolset_id'	=> array(
 				'type'				=> 'int',
 				'constraint'		=> '10',
 				'unsigned'			=> TRUE,
@@ -83,7 +83,7 @@ class Rte_upd {
 				'type'				=> 'varchar',
 				'constraint'		=> '100'
 			),
-			'rte_tools'			=> array(
+			'tools'				=> array(
 				'type'				=> 'text'
 			),
 			'enabled'			=> array(
@@ -93,13 +93,13 @@ class Rte_upd {
 			)
 		);
 		$this->EE->dbforge->add_field($fields);
-		$this->EE->dbforge->add_key('rte_toolset_id', TRUE);
+		$this->EE->dbforge->add_key('toolset_id', TRUE);
 		$this->EE->dbforge->add_key(array('member_id','enabled'));
 		$this->EE->dbforge->create_table('rte_toolsets');
 		
 		// RTE Tools Table
 		$fields = array(
-			'rte_tool_id'	=> array(
+			'tool_id'	=> array(
 				'type'				=> 'int',
 				'constraint'		=> '10',
 				'unsigned'			=> TRUE,
@@ -120,7 +120,7 @@ class Rte_upd {
 			)
 		);
 		$this->EE->dbforge->add_field($fields);
-		$this->EE->dbforge->add_key('rte_tool_id', TRUE);
+		$this->EE->dbforge->add_key('tool_id', TRUE);
 		$this->EE->dbforge->add_key(array('enabled'));
 		$this->EE->dbforge->create_table('rte_tools');
 		

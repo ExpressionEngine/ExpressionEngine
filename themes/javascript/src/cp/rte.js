@@ -18,7 +18,7 @@
 
 	
 	// My Account - Toolset dropdown
-	$('body').on('change', '#rte_toolset_id', function() {
+	$('body').on('change', '#toolset_id', function() {
 	
 		var toolset_id = $(this).val();
 
@@ -37,7 +37,7 @@
 	});
 
 	// My Account - Fire dropdown change event once on load
-	$('#rte_toolset_id').change();
+	$('#toolset_id').change();
 
 	// My Account - Edit button (for My Toolset)
 	$('#edit_toolset').click(function(){

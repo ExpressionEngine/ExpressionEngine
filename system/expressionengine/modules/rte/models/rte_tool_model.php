@@ -80,7 +80,7 @@ class Rte_tool_model extends CI_Model {
 			}
 
 			// get the tools
-			$results = $this->db->select(array('rte_tool_id','class'))
+			$results = $this->db->select(array('tool_id','class'))
 				->where_in('class', $tools)
 				->get('rte_tools')
 				->result_array();
@@ -89,7 +89,7 @@ class Rte_tool_model extends CI_Model {
 			foreach ($results as $row)
 			{
 				// set the indexes according to the original array
-				$tool_ids[array_search($row['class'],$tools)] = $row['rte_tool_id'];
+				$tool_ids[array_search($row['class'], $tools)] = $row['tool_id'];
 			}
 
 			// sort them appropriately
@@ -114,14 +114,14 @@ class Rte_tool_model extends CI_Model {
 		}
 
 		// Grab each tool's row
-		$query = $this->db->where_in('rte_tool_id', $tool_ids)
+		$query = $this->db->where_in('tool_id', $tool_ids)
 			->where('enabled', 'y')
 			->get('rte_tools');
 
 		// Index them by their position in $tool_ids
 		foreach ($query->result() as $row)
 		{
-			$i = array_search($row->rte_tool_id, $tool_ids);
+			$i = array_search($row->tool_id, $tool_ids);
 			$tools_sorted[$i] = $row;
 		}
 		
@@ -198,7 +198,7 @@ class Rte_tool_model extends CI_Model {
 		// update or insert?
 		if ($tool_id)
 		{
-			$this->db->where('rte_tool_id', $tool_id)
+			$this->db->where('tool_id', $tool_id)
 				->update('rte_tools', $tool);
 		} 
 		else

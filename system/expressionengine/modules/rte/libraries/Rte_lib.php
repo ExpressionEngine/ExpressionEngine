@@ -48,7 +48,7 @@ class Rte_lib {
 	{
 		if ($toolset_id === FALSE)
 		{
-			$toolset_id = $this->EE->input->get_post('rte_toolset_id');
+			$toolset_id = $this->EE->input->get_post('toolset_id');
 		}
 
 		if ( ! is_numeric($toolset_id))
@@ -62,7 +62,7 @@ class Rte_lib {
 		// new toolset?
 		if ($toolset_id == 0)
 		{
-			$toolset['rte_tools'] = array();
+			$toolset['tools'] = array();
 			$toolset['name'] = '';
 			$is_private = ($this->EE->input->get_post('private') == 'true');
 		}
@@ -89,7 +89,7 @@ class Rte_lib {
 
 		foreach ($enabled_tools as $tool)
 		{
-			$tool_index = array_search($tool['rte_tool_id'], $toolset['rte_tools']);
+			$tool_index = array_search($tool['tool_id'], $toolset['tools']);
 
 			// is the tool in this toolset?
 			if ($tool_index !== FALSE)
@@ -107,7 +107,7 @@ class Rte_lib {
 		
 		// set up the form
 		$vars = array(
-			'action'			=> $this->form_url.AMP.'method=save_toolset'.( !! $toolset_id ? AMP.'rte_toolset_id='.$toolset_id : ''),
+			'action'			=> $this->form_url.AMP.'method=save_toolset'.( !! $toolset_id ? AMP.'toolset_id='.$toolset_id : ''),
 			'is_private'		=> $is_private,
 			'toolset_name'		=> ( ! $toolset || $is_private ? '' : $toolset['name']),
 			'available_tools'	=> $enabled_tools,
@@ -143,11 +143,11 @@ class Rte_lib {
 		$this->EE->load->model('rte_toolset_model');
 
 		// get the toolset
-		$toolset_id = $this->EE->input->get_post('rte_toolset_id');
+		$toolset_id = $this->EE->input->get_post('toolset_id');
 
 		$toolset = array(
-			'name'		=> $this->EE->input->get_post('rte_toolset_name'),
-			'rte_tools' => $this->EE->input->get_post('rte_selected_tools'),
+			'name'		=> $this->EE->input->get_post('toolset_name'),
+			'tools' 	=> $this->EE->input->get_post('selected_tools'),
 			'member_id'	=> ($this->EE->input->get_post('private') == 'true' ? $this->EE->session->userdata('member_id') : 0)
 		);
 
@@ -236,13 +236,13 @@ class Rte_lib {
 		// get the toolset
 		$toolset = $this->EE->rte_toolset_model->get($toolset_id);
 
-		if ( ! $toolset OR ! $toolset['rte_tools'])
+		if ( ! $toolset OR ! $toolset['tools'])
 		{
 			return;
 		}
 
 		// get the tools
-		if ( ! $tools = $this->EE->rte_tool_model->get_tools($toolset['rte_tools']))
+		if ( ! $tools = $this->EE->rte_tool_model->get_tools($toolset['tools']))
 		{
 			return;
 		}
@@ -253,9 +253,7 @@ class Rte_lib {
 		// bare minimum required
 		$bits	= array(
 			'globals'	=> array(
-				'rte'		=> array(
-					'update_event' => 'WysiHat-editor:change'
-				)
+				'rte'		=> array()
 			),
 			'styles' => '',
 			'definitions' => '',

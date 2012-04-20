@@ -74,8 +74,8 @@ class Strip_tags_rte {
 		WysiHat.addButton('strip_tags', {
 			label:	EE.rte.strip_tags.label,
 			handler: function(){
-				this.$editor.stripFormattingElements();
-				this.$editor.unformatContentBlock();
+				this.Commands.stripFormattingElements();
+				this.Commands.unformatContentBlock();
 			}
 		});
 		

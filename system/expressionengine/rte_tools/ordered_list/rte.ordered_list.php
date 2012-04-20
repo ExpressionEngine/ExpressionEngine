@@ -78,10 +78,10 @@ class Ordered_list_rte {
 			label:			EE.rte.ordered_list.add,
 			'toggle-text':	EE.rte.ordered_list.remove,
 	    	handler: function() {
-		 		this.$editor.toggleOrderedList();
+	    		this.make('orderedList');
 			},
 			query: function() {
-				return this.$editor.queryCommandState('insertOrderedList');
+				return this.is('orderedList');
 			}
 	    });
 		

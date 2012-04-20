@@ -1,5 +1,5 @@
 (function(){
-	var $editor, final_url, anchorNode, range, selUtil;
+	var $editor, final_url, anchorNode, range, selUtil, button;
 
 	var	$link_dialog	= $('<div class="rte-link-dialog">' +
 							'<p><label>* ' + EE.rte.link.dialog.url_field_label + '</label>' +
@@ -39,7 +39,7 @@
 					}
 
 					$el = $(el);
-
+					
 					if ($el.is('a')) {
 						$url.val( $el.attr('href'));
 						$title.val( $el.attr('title'));
@@ -71,9 +71,6 @@
 
 				// empty the fields
 				$link_dialog.find('input,select').val('');
-
-				// trigger the update
-				$editor.trigger( EE.rte.update_event );
 			}
 		})
 		// Close on Enter
@@ -85,7 +82,7 @@
 		// Remove link
 		.on('click', '.rte-link-remove', function(){
 			var $el = $(anchorNode);
-			$el.replaceWith($el.text());
+			$el.replaceWith($el.html());
 	
 			$link_dialog.dialog('close');
 		})
@@ -119,7 +116,7 @@
 		sel.removeAllRanges();
 		sel.addRange(range);
 		
-		$editor.linkSelection(final_url);
+		button.make('link', final_url);
 		
 		// Select the whole of our new link, not just the text inside,
 		// that way Firefox doesn't trap you inside the link
@@ -137,6 +134,7 @@
 	WysiHat.addButton('link', {
 		label:	EE.rte.link.add,
 		handler: function(state, finalize) {
+			button = this;
 			$editor = this.$editor;
 			$editor.select();
 
@@ -151,30 +149,65 @@
 			s_el = sel.anchorNode;
 			e_el = sel.focusNode;
 			
-
+			range = document.createRange();
+			
+			range.setStart(sel.anchorNode, sel.anchorOffset);
+			range.setEnd(sel.focusNode, sel.focusOffset);
+			
 			if ((s_el == e_el && sel.anchorOffset == sel.focusOffset) ||
 				e_el.textContent == '​') // Our zero-width character
 			{
 				link = false;
 			}
 			
-			range = document.createRange();
-			range.setStart(sel.anchorNode, sel.anchorOffset);
-			range.setEnd(sel.focusNode, sel.focusOffset);
-
-			// Can I get an A?
-			while ( s_el.nodeType != 1 )
+			// If our initial check failed, but the selection still has
+			// child nodes, a figure element may be selected and we need to
+			// traverse down the nodes and see if an image tag is there;
+			// or, we may have selected an image to begin with
+			if (( ! link && s_el.childNodes.length > 0) ||
+				s_el.nodeName.toLowerCase() == 'img')
 			{
-				s_el = s_el.parentNode;
+				while ( s_el.childNodes.length > 0 )
+				{
+					s_el = s_el.childNodes[0];
+				}
+				
+				// If we found an image, and it's already in an anchor tag,
+				// grab the anchor tag for selection instead
+				if (s_el.nodeName.toLowerCase() == 'img' &&
+					s_el.parentNode.nodeName.toLowerCase() == 'a')
+				{
+					s_el = s_el.parentNode;
+				}
+				
+				// If we ended up with an image or anchor tag, select it
+				if (s_el.nodeName.toLowerCase() == 'a' ||
+					s_el.nodeName.toLowerCase() == 'img')
+				{
+					link = true;
+					range.selectNode( s_el );
+				}
 			}
-
-			if ( s_el.nodeName.toLowerCase() == 'a' )
+			
+			// If our selected node is not an anchor tag or an image tag,
+			// we may need to traverse our parents to see if we're already
+			// in an anchor tag; if so, select it for editing
+			if (s_el.nodeName.toLowerCase() != 'a' &&
+				s_el.nodeName.toLowerCase() != 'img')
 			{
-				link = true;
-				// select the whole <a>
-				range.selectNode( s_el );
+				// Reach the first element node
+				while ( s_el.nodeType != 1 )
+				{
+					s_el = s_el.parentNode;
+				}
+				
+				if ( s_el.nodeName.toLowerCase() == 'a' )
+				{
+					link = true;
+					range.selectNode( s_el );
+				}
 			}
-
+			
 			anchorNode = s_el;
 			
 			if ( link )
@@ -195,6 +228,7 @@
 			return false;
 		},
 		query: function( $editor ){
+			return this.is('linked');
 			return $editor.queryCommandState('createLink');
 		}
 	});

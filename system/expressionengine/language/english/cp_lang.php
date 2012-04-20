@@ -434,6 +434,8 @@ $lang = array(
 'status'						=> 'Status',
 'select_all'					=> 'Select All',
 
+'name'							=> 'Name',
+
 //----------------------------
 // Sites and Channels
 //----------------------------
