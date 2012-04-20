@@ -2431,6 +2431,41 @@ WysiHat.Formatting = {
 				return inner;
 			});
 		}
+
+		// ok, now the fun bit with the paragraphs and newlines.
+		// the browsers turn all newlines into paragraphs, we only
+		// want them for the doubles newlines and brs otherwise. So
+		// we need to step through all the sibling pairs and merge
+		// when they are not separated by a blank.
+
+		var currentP,
+			prevEmpty = true;
+
+		$element.find('p ~ p').each(function() {
+			var $this = $(this);
+
+			if (prevEmpty)
+			{
+				prevEmpty = false;
+				currentP = $this;
+				return;
+			}
+
+			if ( ! $this.prev())
+			{
+				return;
+			}
+
+			prevEmpty = ( ! $.trim(this.innerHTML));
+
+			currentP.html(function(i, val) {
+				// has contents? add a newline
+				val = $.trim(val) ? val + '<br>' : val;
+				return val + $this.html();
+			});
+
+			$this.remove();
+		});
 	},
 
 	reBlocks: new RegExp(
