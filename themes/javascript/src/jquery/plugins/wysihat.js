@@ -181,7 +181,15 @@ WysiHat.Editor.prototype = {
 		this.Toolbar = new WysiHat.Toolbar($ed, options.buttons);
 
 		this.$field.change($.proxy(this, 'updateEditor'));
-		$ed.closest('form').submit($.proxy(this, 'updateField'));
+
+		// if, on submit, the editor is active, we
+		// need to sync to the field before sending the data
+		$ed.closest('form').submit(function() {
+			if ($ed.is(':visible'))
+			{
+				this.updateField();
+			}
+		});
 	},
 
 	/**
