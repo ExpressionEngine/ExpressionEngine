@@ -663,6 +663,7 @@ WysiHat.Event = function(obj)
 
 	this._hijack_events();
 
+	// special events
 	this.add('paste', WysiHat.Paster.getHandler(obj));
 };
 
@@ -1030,16 +1031,19 @@ WysiHat.Event.prototype = {
 	{
 		var that = this;
 
-		var attempt = ['undo', 'redo'/*, 'paste'*/],
+		var attempt = ['undo', 'redo', 'paste'],
 			name;
 
 		while(name = attempt.shift())
 		{
 			if (this.isEvent(name, evt))
 			{
-				evt.preventDefault();
+				if (name != 'paste')
+				{
+					evt.preventDefault();
+				}
+				
 				this.fire(name);
-				return false;
 			}
 		}
 	}
