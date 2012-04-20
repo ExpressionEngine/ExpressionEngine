@@ -1086,7 +1086,7 @@ WysiHat.Event.constructor = WysiHat.Event;
 
 WysiHat.Undo = function()
 {
-	this.max_depth = 75;	// @todo implement
+	this.max_depth = 75;
 	this.saved = [];
 	this.index = 0;
 }
@@ -1124,7 +1124,11 @@ WysiHat.Undo.prototype = {
 				this.index = this.saved.length;
 			}
 
-			// @todo max_depth check
+			// max_depth check
+			if (this.saved.length > this.max_depth) {
+				this.saved = this.saved.slice(this.saved.length - this.max_depth);
+				this.index = this.saved.length;
+			}
 
 			this.index++;
 			this.saved.push({
