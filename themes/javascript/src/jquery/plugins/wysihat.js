@@ -229,7 +229,8 @@ WysiHat.Editor.prototype = {
 		if ( val == '' ||
 			 val == '<br>' ||
 			 val == '<br/>' ||
-			 val == '<p></p>' )
+			 val == '<p></p>' ||
+			 val == '<p>\0</p>')
 		{
 			$el.html(this._empty);
 
@@ -513,6 +514,8 @@ WysiHat.Paster = (function() {
 				$paster.focus();
 
 				setTimeout(function handlePaste() {
+					
+					// slow browser? wait a little longer
 					if ( ! $paster.html())
 					{
 						waitTime += _pollTime;
@@ -524,7 +527,8 @@ WysiHat.Paster = (function() {
 						}
 					}
 
-					var $parentBlock = $(startC).closest(WysiHat.Element.getBlocks().join(','));
+					var $parentBlock = = $(startC).closest(WysiHat.Element.getBlocks().join(',')),
+						html = Editor.$editor.html();
 					
 					if ($parentBlock.length)
 					{
@@ -537,7 +541,22 @@ WysiHat.Paster = (function() {
 
 					Editor.$editor.focus();
 					Editor.Commands.restoreRanges(ranges);
-					Editor.Commands.insertHTML($paster.html());
+
+					if ( html == '' ||
+						 html == '<br>' ||
+						 html == '<br/>' ||
+						 html == '<p></p>' ||
+						 html == '<p>\0</p>' ||
+						 html == Editor._empty)
+					{
+						// on an empty editor we want to completely replace
+						// otherwise the first paragraph gets munged
+						Editor.$editor.html($paster.html());
+					}
+					else
+					{
+						Editor.Commands.insertHTML($paster.html());
+					}
 
 					$paster = $paster.remove();
 					finalize();
@@ -2439,33 +2458,45 @@ WysiHat.Formatting = {
 		// when they are not separated by a blank.
 
 		var currentP,
-			prevEmpty = true;
+			removal = [];
+
+		// if previous blank, start new one
+		// if previous not blank, add to previous
 
 		$element.find('p ~ p').each(function() {
-			var $this = $(this);
+			var $this = $(this),
+				$prev = $this.prev();
 
-			if (prevEmpty)
+			if ( ! currentP)
 			{
-				prevEmpty = false;
-				currentP = $this;
-				return;
+				currentP = $prev;
 			}
-
-			if ( ! $this.prev())
+			else if ( ! $.trim($prev.html()))
 			{
-				return;
+				currentP = removal.pop();
 			}
-
-			prevEmpty = ( ! $.trim(this.innerHTML));
 
 			currentP.html(function(i, val) {
-				// has contents? add a newline
-				val = $.trim(val) ? val + '<br>' : val;
-				return val + $this.html();
+				var html = $.trim($this.html());
+				val = $.trim(val);
+
+				// both have contents? add a newline between them
+				if (val && html)
+				{
+					val += '<br>';
+				}
+
+				return val + html;
 			});
 
-			$this.remove();
+			removal.push($this);
 		});
+
+		// we no longer need these
+		while (currentP = removal.pop())
+		{
+			currentP.remove();
+		}
 	},
 
 	reBlocks: new RegExp(
