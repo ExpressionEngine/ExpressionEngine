@@ -20,6 +20,8 @@
  * Editor Class
  * Element Manager
  * Change Events
+ * Paste Handler
+ * Key Helper
  * Event Class
  * Undo Class
  * Selection Utility
@@ -96,7 +98,7 @@ var WysiHat = window.WysiHat = {
 		obj = new F();
 
 		// No hasOwn check here. If you pass an object with
-		// a prototype as props, then you're an idiot.
+		// a prototype as props, then you're a JavascrHipster.
 		for (prop in props) {
 			obj[prop] = props[prop];
 		}
@@ -129,6 +131,10 @@ WysiHat.Editor = function($field, options) {
 	this.$editor = this.create();
 
 	$field.hide().before(this.$editor);
+
+	this.Element = WysiHat.Element;
+	this.Commands = WysiHat.Commands;
+	this.Formatting = WysiHat.Formatting;
 
 	this.init(options);
 }
@@ -169,26 +175,42 @@ WysiHat.Editor.prototype = {
 	init: function(options) {
 		var $ed = this.$editor;
 
-		this.Commands = WysiHat.Commands;
 		this.Undo = new WysiHat.Undo();
 		this.Selection = new WysiHat.Selection($ed);
 		this.Event = new WysiHat.Event(this);
 		this.Toolbar = new WysiHat.Toolbar($ed, options.buttons);
 
 		this.$field.change($.proxy(this, 'updateEditor'));
+		$ed.closest('form').submit($.proxy(this, 'updateField'));
 	},
 
+	/**
+	 * Update the editor's textarea
+	 *
+	 * Syncs the editor and its field from the editor's content.
+	 */
 	updateField: function()
 	{
 		this.$field.val( WysiHat.Formatting.getApplicationMarkupFrom(this.$editor) );
 	},
 
+	/**
+	 * Update the editor contents
+	 *
+	 * Syncs the editor and its field from the fields's content.
+	 */
 	updateEditor: function()
 	{
 		this.$editor.html( WysiHat.Formatting.getBrowserMarkupFrom(this.$field) );
 		this.selectEmptyParagraph();
 	},
 
+	/**
+	 * Select Empty Paragraph
+	 *
+	 * Makes sure we actually have a paragraph to put our cursor in
+	 * when the editor is completely empty.
+	 */
 	selectEmptyParagraph: function()
 	{
 		var $el	= this.$editor,
@@ -398,10 +420,10 @@ $(document).ready(function(){
 			range	= document.selection.createRange(),
 			element	= range.parentElement();
 			$(element)
-				.trigger( 'WysiHat-selection:change' );
+				.trigger('WysiHat-selection:change');
 		}
 
- 		$doc.bind( 'selectionchange', selectionChangeHandler );
+ 		$doc.on('selectionchange', selectionChangeHandler);
 	}
 	else
 	{
@@ -443,9 +465,78 @@ $(document).ready(function(){
 });
 
 
-///////////////////////////////////
-// BRAND NEW EVENT SYSTEM! WOOT! //
-///////////////////////////////////
+// ---------------------------------------------------------------------
+
+/**
+ * Paste Handler
+ *
+ * A paste helper utility. How this works, is that browsers will
+ * fire paste before actually inserting the text. So that we can
+ * quickly create a new contentEditable object that is outside the
+ * viewport. Focus it. And the text will go in there. That makes
+ * it much easier for us to clean up.
+ */
+
+// ---------------------------------------------------------------------
+
+WysiHat.Paster = (function() {
+
+	// helper element to do cleanup on
+	var $paster = $('<div id="paster" contentEditable="true"/>').css({
+		'width': '100%',
+		'height': 10,
+		'position': 'absolute',
+		'top': document.body.scrollTop,
+		'left': -9999
+	});
+
+	return {
+		getHandler: function(Editor)
+		{
+			return function(state, finalize) {
+				var ranges = Editor.Commands.getRanges(),
+					startC = ranges[0].startContainer;
+
+				$paster.html('');
+				$paster.appendTo(document.body);
+				$paster.focus();
+
+				setTimeout(function() {
+
+					var $parentBlock = $(startC).closest(WysiHat.Element.getBlocks().join(','));
+					
+					if ($parentBlock.length)
+					{
+						Editor.Formatting.cleanupPaste($paster, $parentBlock.get(0).tagName);
+					}
+					else
+					{
+						Editor.Formatting.cleanupPaste($paster);
+					}
+
+					Editor.$editor.focus();
+					Editor.Commands.restoreRanges(ranges);
+					Editor.Commands.insertHTML($paster.html());
+
+					$paster = $paster.remove();
+					finalize();
+				}, 50);
+
+				return false;
+			};
+		}
+	};
+})();
+
+// ---------------------------------------------------------------------
+
+/**
+ * Key Helper
+ *
+ * Small utility that holds key values and common shortcuts.
+ */
+
+// ---------------------------------------------------------------------
 
 var
 KEYS,
@@ -563,6 +654,8 @@ WysiHat.Event = function(obj)
 	this.Selection = obj.Selection;
 
 	this._hijack_events();
+
+	this.add('paste', WysiHat.Paster.getHandler(obj));
 };
 
 WysiHat.Event.prototype = {
@@ -634,14 +727,14 @@ WysiHat.Event.prototype = {
 			return;
 		}
 
-		// mark text change
-		beforeState = this.getState();
-
 		if ( ! this.has(action))
 		{
 			// let it go ...
 			return true;
 		}
+
+		// mark text change
+		beforeState = this.getState();
 
 		// setup a finalizer for the event.
 		// make sure it can only be run once
@@ -811,7 +904,7 @@ WysiHat.Event.prototype = {
 			// route is best.
 
 			// 'focusout change': $.proxy(this._blurEvent, this),
-			'selectionchange focusin mouseup': $.proxy(this._rangeEvent, this),
+			'selectionchange focusin mousedown': $.proxy(this._rangeEvent, this),
 			'keydown keyup keypress': $.proxy(this._keyEvent, this),
 			'cut undo redo paste input contextmenu': $.proxy(this._menuEvent, this)
 		//	'click doubleclick mousedown mouseup': $.proxy(this._mouseEvent, this)
@@ -941,8 +1034,6 @@ WysiHat.Event.prototype = {
 				return false;
 			}
 		}
-
-		//WysiHat.Formatting.cleanup(this.$editor);
 	}
 };
 
@@ -1796,7 +1887,7 @@ $.extend(WysiHat.Commands, {
 
 		while ( i-- )
 		{
-			range	= selection.getRangeAt( i );
+			range = selection.getRangeAt( i );
 			ranges.push( range );
 		}
 
@@ -2183,256 +2274,6 @@ var CommandsMixin = {
 
 $.extend(WysiHat.Editor.prototype, CommandsMixin);
 
-
-// ---------------------------------------------------------------------
-
-/**
- * Paste Handler
- *
- * @todo normalize in compat and move logic to event system
- *
- * Normalizes the paste event for various browsers and controls
- * cursor reinsertion.
- */
-
-// ---------------------------------------------------------------------
-/*
-(function($){
-
-	if ( ! $.browser.msie )
-	{
-		$('body')
-			.delegate('.WysiHat-editor', 'contextmenu click doubleclick keydown', function(){
-
-				var
-				$editor		= $(this),
-				$field		= $editor.data('field'),
-				selection	= window.getSelection(),
-				range		= selection.getRangeAt(0);
-
-				if ( range )
-				{
-					range = range.cloneRange();
-				}
-				else
-				{
-					range = document.createRange();
-					range.selectNode( $editor.get(0).firstChild );
-				}
-
-				$field.data(
-					'saved-range',
-					{
-						startContainer:	range.startContainer,
-						startOffset:	range.startOffset,
-						endContainer: 	range.endContainer,
-						endOffset:		range.endOffset
-					}
-				);
-			 })
-			.delegate('.WysiHat-editor', 'paste', function(e){
-				var
-				originalEvent	= e.originalEvent,
-				$editor			= $(this),
-				$field			= $editor.data('field');
-
-				$field.data( 'original-html', $editor.children().detach() );
-
-				if ( originalEvent.clipboardData &&
-					 originalEvent.clipboardData.getData )
-				{
-					if ( /text\/html/.test( originalEvent.clipboardData.types ) )
-					{
-						$editor.html( originalEvent.clipboardData.getData('text/html') );
-					}
-					else if ( /text\/plain/.test( originalEvent.clipboardData.types ) )
-					{
-						$editor.html( originalEvent.clipboardData.getData('text/plain') );
-					}
-					else
-					{
-						$editor.html('');
-					}
-					waitforpastedata( $editor );
-					originalEvent.stopPropagation();
-					originalEvent.preventDefault();
-					return false;
-				}
-
-				$editor.html('');
-				waitforpastedata( $editor );
-				return true;
-			 });
-
-			function waitforpastedata( $editor )
-			{
-				if ( $editor.contents().length )
-				{
-					processpaste( $editor );
-				}
-				else
-				{
-					setTimeout(function(){
-						waitforpastedata( $editor );
-					}, 20 );
-				}
-			}
-
-			function processpaste( $editor )
-			{
-				$editor
-					.remove('script,noscript,style,:hidden')
-					.html( $editor.get(0).innerHTML.replace( /></g, '> <') );
-
-				var
-				$field			= $editor.data('field'),
-				$originalHtml	= $field.data('original-html'),
-				savedRange		= $field.data('saved-range'),
-				range			= document.createRange(),
-
-				pastedContent	= document.createDocumentFragment(),
-				// Separates the pasted text into sections defined by two linebreaks
-				// for conversion to paragraphs
-				pastedText		= $editor.getPreText().split( /\n([ \t]*\n)+/g ),
-				len				= pastedText.length,
-				p				= document.createElement('p'),
-				br				= document.createElement('br'),
-				pClone			= null,
-				empty			= /[\s\r\n]/g,
-				comments		= /<!--[^>]*-->/g;
-
-				// Loop through paragraphs as defined by our above regex
-				$.each(pastedText, function(index, paragraph)
-				{
-					// Remove HTML comments, Word may insert these
-					paragraph = paragraph.replace(comments, '');
-					
-					// If the paragraph is empty, skip it
-					if (paragraph.replace(empty, '') == '')
-					{
-						return true;
-					}
-					
-					// Split paragraph into single linebreaks to add <br> tags
-					// to the end of the lines
-					paragraph = paragraph.split(/[\r\n]/g);
-					
-					// We'll append each line of the paragraph to this node
-					pFragment = document.createDocumentFragment();
-					
-					$.each(paragraph, function(index, para)
-					{
-						// Add the current text line to the fragment
-						pFragment.appendChild(document.createTextNode(para));
-						
-						// If this isn't the end of the paragraph, add a <br> element
-						// to the end
-						if (index != paragraph.length - 1)
-						{
-							pFragment.appendChild(br.cloneNode(false));
-						}
-					});
-					
-					// If we are starting the paste outside an existing block element,
-					// OR have moved on to other paragraphs in the array, wrap pasted
-					// text in paragraph tags
-					if (savedRange.startContainer == 'p' || index != 0)
-					{
-						pClone = p.cloneNode(false);
-						pClone.appendChild(pFragment);
-						
-						pastedContent.appendChild(pClone);
-					}
-					// Otherwise, we are probably pasting text in the middle
-					// of an existing block element, just pass the text along
-					else
-					{
-						pastedContent.appendChild(pFragment);
-					}
-				});
-
-				$editor
-					.empty()
-					.append($originalHtml);
-
-				range.setStart(savedRange.startContainer, savedRange.startOffset);
-				range.setEnd(savedRange.endContainer, savedRange.endOffset);
-				
-				if ( ! range.collapsed)
-				{
-					range.deleteContents();
-				}
-				
-
-				// Grab the new node so we can select it
-				var lastChild = pastedContent.childNodes[
-					pastedContent.childNodes.length - 1
-				];
-				
-
-				range.insertNode(pastedContent);
-				
-				WysiHat.Formatting.cleanup($editor);
-
-				// Some browsers won't actually add the pasted
-				// content to the selection, so we do that first
-				range.selectNodeContents(lastChild);
-
-				// The change event on $field triggers a full
-				// editor content replacement. We grab the
-				// location of the cursor before that happens
-
-				var selectionUtil = $editor.data('selectionUtil'),
-					before = selectionUtil.get(range);
-
-				$editor.trigger('WysiHat-editor:change:immediate');
-				$field.trigger('WysiHat-field:change:immediate');
-
-				// And restore their cursor
-				selectionUtil.set(before[1]);
-			}
-
-			// Getting text from contentEditable DIVs and retaining linebreaks
-			// can be tricky cross-browser, so we'll use this to handle them all
-			$.fn.getPreText = function()
-			{
-				var preText = $("<pre />").html(this.html());
-				
-				if ($.browser.webkit)
-				{
-					preText.find("div").replaceWith(function()
-					{
-						return "\n" + this.innerHTML;
-					});
-				}
-				else if ($.browser.msie)
-				{
-					preText.find("p").replaceWith(function()
-					{
-						return this.innerHTML + "<br>";
-					});
-				}
-				else if ($.browser.mozilla || $.browser.opera || $.browser.msie)
-				{
-					preText.find("br").replaceWith("\n");
-				}
-				
-				return preText.text();
-			};
-		}
-		else
-		{
-			$('body')
-				.delegate('.WysiHat-editor', 'paste', function(){
-					WysiHat.Formatting.cleanup( $(this) );
-
-					$(this).trigger( 'WysiHat-editor:change:immediate' );
-				 });
-		}
-
-})(jQuery);
-
-*/
 // ---------------------------------------------------------------------
 
 /**
@@ -2446,10 +2287,19 @@ $.extend(WysiHat.Editor.prototype, CommandsMixin);
 // ---------------------------------------------------------------------
 
 WysiHat.Formatting = {
-	cleanup: function( $element )
+	cleanup: function($element)
 	{
 		var replaceElement = WysiHat.Commands.replaceElement;
+
+		// kill comments
+		$element.contents().filter(function() {
+			return this.nodeType == Node.COMMENT_NODE;
+		}).remove();
+
 		$element
+			.find('br')
+				.replaceWith('\n')
+				.end()
 			.find('span')
 				.each(function(){
 					var $this = $(this);
@@ -2502,13 +2352,63 @@ WysiHat.Formatting = {
 				 	replaceElement($(this),'ins');
 				 })
 				.end()
-			.find('p:empty')
-				.remove();
+			.find('p:empty,script,noscript,style').remove();
 	},
+
+	cleanupPaste: function($element, parentTagName)
+	{
+		var replaceElement = WysiHat.Commands.replaceElement;
+
+		this.cleanup($element);
+
+		// Ok, now we want to get rid of everything except for the
+		// bare tags (with some exceptions, but not many). The trick
+		// is to run through the found elements backwards. Otherwise
+		// the node reference disappears when the parent is replaced.
+		var els = $element.find('*'),
+			rev = $.makeArray(els).reverse();
+
+		$.each(rev, function() {
+			var nodeName = this.nodeName.toLowerCase(),
+				replace = document.createElement(nodeName);
+
+			switch (nodeName) {
+				case 'a':
+					replace.href = this.href;
+					replace.title = this.title;
+					break;
+				case 'img':
+					replace.src = this.src;
+					replace.alt = this.alt;
+					break;
+				default:
+					; // no attributes for you (on* would be dangerous)
+			}
+
+			replace.innerHTML = this.innerHTML;
+			$(this).replaceWith(replace);
+		});
+
+		// remove needless spans and empty elements
+		$element.find('span').children(WysiHat.Element.getBlocks()).unwrap();
+		$element.find(':empty').remove();
+
+		// on reinsertion we need to check for identically nested elements
+		// and clean those up. Otherwise pasting an h1 into an h1 is a clusterf***
+		if (parentTagName.toLowerCase() != 'p')
+		{
+			$element
+			.find(parentTagName).replaceWith(function(i, inner) {
+				return inner;
+			});
+		}
+	},
+
 	reBlocks: new RegExp(
 		'(<(?:ul|ol)>|<\/(?:' + WysiHat.Element.getBlocks().join('|') + ')>)[\r\n]*',
 		'g'
 	),
+
 	format: function( $el )
 	{
 		$el.html(function(i, old) {
@@ -2519,6 +2419,7 @@ WysiHat.Formatting = {
 				.replace(/<p>\n+<\/p>/, '');
 		});
 	},
+	
 	getBrowserMarkupFrom: function( $el )
 	{
 		var $container = $('<div>' + $el.val().replace(/\n/, '') + '</div>'),
@@ -2684,17 +2585,7 @@ WysiHat.Toolbar = function($el, buttons)
 		this.addButton(buttons[i]);
 	}
 }
-/*
-		WysiHat.Events.add('paste', function($editor, state, finalize) {
-		setTimeout(function() {
-			WysiHat.Formatting.cleanup($editor);
-			finalize();
-		}, 50);
 
-		// we call finalize manually
-		return false;
-	});
-*/
 WysiHat.Toolbar.prototype = {
 
 	addButton: function(name)
@@ -2777,7 +2668,7 @@ WysiHat.Toolbar.prototype = {
 	{
 		var evt = (button.type && button.type == 'select') ? 'change' : 'click';
 
-		button.$element.bind(evt, function(e){
+		button.$element.on(evt, function(e){
 			var $editor = button.$editor;
 
 			// Bring focus to the editor before the handler is called
@@ -2801,7 +2692,7 @@ WysiHat.Toolbar.prototype = {
 		handler = button.getStateHandler(),
 		previousState;
 
-		that.$editor.bind( 'WysiHat-selection:change', function(){
+		that.$editor.on( 'WysiHat-selection:change', function(){
 			var state = handler( button.$editor, button.$element );
 			if (state != previousState)
 			{
