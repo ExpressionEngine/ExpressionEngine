@@ -494,22 +494,35 @@ WysiHat.Paster = (function() {
 		'width': '100%',
 		'height': 10,
 		'position': 'absolute',
-		'top': document.body.scrollTop,
 		'left': -9999
 	});
+
+	var _pollTime = 50,
+		_pollTimeout = 200;
 
 	return {
 		getHandler: function(Editor)
 		{
 			return function(state, finalize) {
 				var ranges = Editor.Commands.getRanges(),
-					startC = ranges[0].startContainer;
+					startC = ranges[0].startContainer,
+					waitTime = 0;
 
-				$paster.html('');
+				$paster.html('').css('top', document.body.scrollTop);
 				$paster.appendTo(document.body);
 				$paster.focus();
 
-				setTimeout(function() {
+				setTimeout(function handlePaste() {
+					if ( ! $paster.html())
+					{
+						waitTime += _pollTime;
+
+						if (waitTime < _pollTimeout)
+						{
+							setTimeout(handlePaste, _pollTime);
+							return;
+						}
+					}
 
 					var $parentBlock = $(startC).closest(WysiHat.Element.getBlocks().join(','));
 					
@@ -528,7 +541,7 @@ WysiHat.Paster = (function() {
 
 					$paster = $paster.remove();
 					finalize();
-				}, 50);
+				}, _pollTime);
 
 				return false;
 			};
@@ -1042,7 +1055,7 @@ WysiHat.Event.prototype = {
 				{
 					evt.preventDefault();
 				}
-				
+
 				this.fire(name);
 			}
 		}
