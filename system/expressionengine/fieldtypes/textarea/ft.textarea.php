@@ -87,7 +87,11 @@ class Textarea_ft extends EE_Fieldtype {
 			$this->settings['field_enable_rte'] = 'n';
 		}
 
-		if ($this->settings['field_enable_rte'] == 'y')
+		// Check to see if it's an RTE, don't forget to check the RTE module and
+		// the user's preferences
+		if ($this->EE->session->userdata('rte_enabled') == 'y' 
+			AND $this->EE->config->item('rte_enabled') == 'y'
+			AND $this->settings['field_enable_rte'] == 'y')
 		{
 			$field['class']	= 'rte';
 
