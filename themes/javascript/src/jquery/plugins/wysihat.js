@@ -145,7 +145,7 @@ WysiHat.Editor.prototype = {
 	 * Special empty entity so that we always have
 	 * paragraph tags to work with.
 	 */
-	_empty: '<p>&#x200b;</p>',
+	_empty: '<p>'+String.fromCharCode(8203)+'</p>',
 
 	/**
 	 * Create the main editor html
@@ -514,7 +514,7 @@ WysiHat.Paster = (function() {
 				$paster.focus();
 
 				setTimeout(function handlePaste() {
-					
+
 					// slow browser? wait a little longer
 					if ( ! $paster.html())
 					{
@@ -527,7 +527,7 @@ WysiHat.Paster = (function() {
 						}
 					}
 
-					var $parentBlock = = $(startC).closest(WysiHat.Element.getBlocks().join(',')),
+					var $parentBlock = $(startC).closest(WysiHat.Element.getBlocks().join(',')),
 						html = Editor.$editor.html();
 					
 					if ($parentBlock.length)
