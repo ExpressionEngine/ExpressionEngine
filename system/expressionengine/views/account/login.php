@@ -5,8 +5,8 @@
 
 	<?=$this->view->head_title($cp_page_title)?>
 	<?=$this->view->head_link('css/login.css'); ?>
-	<?=$this->view->head_link('css/jquery-ui-1.8.16.custom.css'); ?>
 	<?=$this->view->script_tag('jquery/jquery.js')?>
+	
 </head>
 <body>
 
