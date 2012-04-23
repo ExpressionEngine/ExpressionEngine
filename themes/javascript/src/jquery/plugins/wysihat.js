@@ -145,7 +145,7 @@ WysiHat.Editor.prototype = {
 	 * Special empty entity so that we always have
 	 * paragraph tags to work with.
 	 */
-	_empty: '<p>&#x200b;</p>',
+	_empty: '<p>'+String.fromCharCode(8203)+'</p>',
 
 	/**
 	 * Create the main editor html
@@ -229,7 +229,8 @@ WysiHat.Editor.prototype = {
 		if ( val == '' ||
 			 val == '<br>' ||
 			 val == '<br/>' ||
-			 val == '<p></p>' )
+			 val == '<p></p>' ||
+			 val == '<p>\0</p>')
 		{
 			$el.html(this._empty);
 
@@ -513,6 +514,8 @@ WysiHat.Paster = (function() {
 				$paster.focus();
 
 				setTimeout(function handlePaste() {
+
+					// slow browser? wait a little longer
 					if ( ! $paster.html())
 					{
 						waitTime += _pollTime;
@@ -524,7 +527,8 @@ WysiHat.Paster = (function() {
 						}
 					}
 
-					var $parentBlock = $(startC).closest(WysiHat.Element.getBlocks().join(','));
+					var $parentBlock = $(startC).closest(WysiHat.Element.getBlocks().join(',')),
+						html = Editor.$editor.html();
 					
 					if ($parentBlock.length)
 					{
@@ -537,7 +541,22 @@ WysiHat.Paster = (function() {
 
 					Editor.$editor.focus();
 					Editor.Commands.restoreRanges(ranges);
-					Editor.Commands.insertHTML($paster.html());
+
+					if ( html == '' ||
+						 html == '<br>' ||
+						 html == '<br/>' ||
+						 html == '<p></p>' ||
+						 html == '<p>\0</p>' ||
+						 html == Editor._empty)
+					{
+						// on an empty editor we want to completely replace
+						// otherwise the first paragraph gets munged
+						Editor.$editor.html($paster.html());
+					}
+					else
+					{
+						Editor.Commands.insertHTML($paster.html());
+					}
 
 					$paster = $paster.remove();
 					finalize();
@@ -1086,7 +1105,7 @@ WysiHat.Event.constructor = WysiHat.Event;
 
 WysiHat.Undo = function()
 {
-	this.max_depth = 75;	// @todo implement
+	this.max_depth = 75;
 	this.saved = [];
 	this.index = 0;
 }
@@ -1124,7 +1143,11 @@ WysiHat.Undo.prototype = {
 				this.index = this.saved.length;
 			}
 
-			// @todo max_depth check
+			// max_depth check
+			if (this.saved.length > this.max_depth) {
+				this.saved = this.saved.slice(this.saved.length - this.max_depth);
+				this.index = this.saved.length;
+			}
 
 			this.index++;
 			this.saved.push({
@@ -2427,6 +2450,54 @@ WysiHat.Formatting = {
 				return inner;
 			});
 		}
+
+		// ok, now the fun bit with the paragraphs and newlines.
+		// the browsers turn all newlines into paragraphs, we only
+		// want them for the doubles newlines and brs otherwise. So
+		// we need to step through all the sibling pairs and merge
+		// when they are not separated by a blank.
+
+		var currentP,
+			removal = [];
+
+		// if previous blank, start new one
+		// if previous not blank, add to previous
+
+		$element.find('p ~ p').each(function() {
+			var $this = $(this),
+				$prev = $this.prev();
+
+			if ( ! currentP)
+			{
+				currentP = $prev;
+			}
+			else if ( ! $.trim($prev.html()))
+			{
+				currentP.after('\n');
+				currentP = removal.pop();
+			}
+
+			currentP.html(function(i, val) {
+				var html = $.trim($this.html());
+				val = $.trim(val);
+
+				// both have contents? add a newline between them
+				if (val && html)
+				{
+					val += '<br>';
+				}
+
+				return val + html;
+			});
+
+			removal.push($this);
+		});
+
+		// we no longer need these
+		while (currentP = removal.pop())
+		{
+			currentP.remove();
+		}
 	},
 
 	reBlocks: new RegExp(
@@ -2482,6 +2553,10 @@ WysiHat.Formatting = {
 
 		this.cleanup( $container );
 		this.format( $container );
+
+		$container.find('*').html(function(i, val) {
+			return val.replace('\n', '<br>\n').replace(/(\t| +)/g, ' ');
+		});
 
 		return $container
 				.html()
