@@ -2317,7 +2317,7 @@ var CommandsMixin = {
 	 */
 	toggle: function(which, param) {
 		return WysiHat.Commands.make[which](param);
-	},
+	}
 };
 
 $.extend(WysiHat.Editor.prototype, CommandsMixin);
