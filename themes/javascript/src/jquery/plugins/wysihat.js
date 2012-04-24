@@ -3482,7 +3482,7 @@ if (!window.getSelection) {
 		})();
 
 		window.getSelection = (function(){
-			var selection = new Selection(document);
+			var selection = new window.Selection(document);
 			return function() { return selection; };
 		})();
 
