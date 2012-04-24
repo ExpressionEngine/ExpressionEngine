@@ -959,9 +959,6 @@ class Safecracker_lib
 				.'&include=jquery_ui';
 				
 			$this->head .= '<script type="text/javascript" src="'.$js_url.'"></script>'."\n";
-
-			// Force loading jQuery here (SafeCracker) since we're not including it for the RTE
-			$include_jquery = '&include_jquery=y';
 		}
 
 		$this->head .= '<script type="text/javascript" charset="utf-8" src="'.$this->EE->functions->fetch_site_index().QUERY_MARKER.'ACT='.$this->EE->functions->fetch_action_id('Safecracker', 'combo_loader').'&'.str_replace('%2C', ',', http_build_query($this->EE->cp->js_files)).'&v='.max($mtime).$use_live_url.$include_jquery.'"></script>'."\n";
