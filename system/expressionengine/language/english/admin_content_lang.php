@@ -42,7 +42,7 @@ $lang = array(
 'This is the name that will appear in the PUBLISH page',
 
 'deft_field_formatting' =>
-'Default Text Formatting for This Field',
+'Default Text Formatting',
 
 'formatting_no_available' =>
 'Text formatting is not available for your chosen field type',
