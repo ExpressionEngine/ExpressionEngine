@@ -64,12 +64,17 @@ class Rte_mcp {
 		$this->EE->load->library(array('table','javascript'));
 		$this->EE->load->model('rte_toolset_model');
 
+		$toolsets = $this->EE->rte_toolset_model->get_toolset_list();
+		
 		// prep the Default Toolset dropdown
 		$toolset_opts = array();
 
-		foreach ($this->EE->rte_toolset_model->get_toolset_list(TRUE) as $t)
+		foreach ($toolsets as $t)
 		{
-			$toolset_opts[$t['toolset_id']] = $t['name'];
+			if ($t['enabled'] == 'y')
+			{
+				$toolset_opts[$t['toolset_id']] = $t['name'];
+			}
 		}
 
 		$vars = array(
@@ -78,8 +83,8 @@ class Rte_mcp {
 			'action'					=> $this->_form_base.AMP.'method=prefs_update',
 			'rte_enabled'				=> $this->EE->config->item('rte_enabled'),
 			'rte_default_toolset_id'	=> $this->EE->config->item('rte_default_toolset_id'),
+			'toolsets'					=> $toolsets,
 			'toolset_opts'				=> $toolset_opts,
-			'toolsets'					=> $this->EE->rte_toolset_model->get_toolset_list(),
 			'tools'						=> $this->EE->rte_tool_model->get_tool_list(),
 			'new_toolset_link'			=> $this->_base_url.AMP.'method=edit_toolset'.AMP.'toolset_id=0'
 		);
