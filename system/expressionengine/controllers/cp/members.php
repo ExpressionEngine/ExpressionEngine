@@ -1097,17 +1097,6 @@ class Members extends CI_Controller {
 					}
 				}
 			}
-
-			// Don't show any CP-related preferences for Banned, Guests, or Pending.
-			// May want to strip these down even further.
-			if ($group_id == 2 OR $group_id == 3 OR $group_id == 4)
-			{
-				unset($form[$site->site_id]['global_cp_access']);
-				unset($form[$site->site_id]['cp_admin_privs']);
-				unset($form[$site->site_id]['cp_email_privs']);
-				unset($form[$site->site_id]['cp_template_access_privs']);
-				unset($form[$site->site_id]['cp_email_privs']);
-			}
 		}
 
 		return $form;
