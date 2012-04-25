@@ -47,7 +47,7 @@ $lang = array(
 'unique_name_required' => 'The Toolset Name must be unique.',
 
 // Labels
-'enable_rte_globally' => 'Enable the Rich Text Editor?',
+'enable_rte_globally' => 'Enable Rich Text Editor',
 'enable_rte_in_forum' => 'Enable the Rich Text Editor for use in the Forums?',
 'default_toolset' => 'Default Toolset',
 'default_toolset_details' => 'Shown for users that have not created their own or chosen another.',
@@ -56,8 +56,8 @@ $lang = array(
 'tools_in_toolset' => 'In This Toolset',
 'toolset_builder_label' => 'Which tools should be availble in this Toolset?',
 'toolset_builder_instructions' => 'Select one or more tools and drag them to the desired location.',
-'enable_rte_myaccount' => 'Enable Rich Text Editor?',
-'enable_rte_for_field' => 'Enable the Rich Text Editor for This Field',
+'enable_rte_myaccount' => 'Enable Rich Text Editor',
+'enable_rte_for_field' => 'Enable Rich Text Editor',
 'rte_image_caption'	=> 'Image Caption:',
 'rte_center_error' => 'You can’t center an element that is being wrapped',
 'url' => 'URL',
