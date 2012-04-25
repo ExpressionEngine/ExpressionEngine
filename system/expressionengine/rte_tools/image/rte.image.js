@@ -73,7 +73,8 @@ $.ee_filebrowser.add_trigger(
 		{
 			$img.append(
 				$('<figcaption/>').text(caption_text)
-			);
+			)
+			.find('img').attr('alt', caption_text);
 		}
 		
 		range.insertNode( $img.get(0) );
