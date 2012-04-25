@@ -315,9 +315,6 @@ class Rte_lib {
 		$jquery = $this->EE->config->item('theme_folder_url') . 'javascript/' .
 				  ($this->EE->config->item('use_compressed_js') == 'n' ? 'src' : 'compressed') .
 				  '/jquery/jquery.js';
-		$uicss	= $this->EE->config->item('theme_folder_url') . 'javascript/' .
-				  ($this->EE->config->item('use_compressed_js') == 'n' ? 'src' : 'compressed') .
-				  '/jquery/themes/default/ui.all.css';
 		$rtecss	= $this->EE->config->item('theme_folder_url') . 'cp_themes/default/css/rte.css';
 		
 		$this->EE->load->library('javascript');
@@ -356,30 +353,21 @@ class Rte_lib {
 				
 				var $ = jQuery;
 				
-				// RTE Library Start
+				// RTE library
 				' . $this->_load_js_files($bits['libraries']) . '
-				// RTE Library End
-		';
 
-				// Don't include jQuery UI stylesheet if we don't need to
-				if ($include['jquery_ui'])
-				{
-					$js .= '$("<link rel=\"stylesheet\" href=\"' . $uicss . '\"/>").appendTo("head")';
-				}
-
-		$js .= '
-				// RTE Styles
+				// RTE styles
 				$("<link rel=\"stylesheet\" href=\"' . $rtecss . '\"/>")
 					.add( $("<style>' . preg_replace( '/\\s+/', ' ', $bits['styles'] ) . '</style>"))
 					.appendTo("head");
 
-				// globals
+				// RTE globals
 				' . $this->_set_globals($bits['globals']) . '
 
-				// button class definitions
+				// RTE button class definitions
 				' . $bits['definitions'] . '
 
-				// setup the editors for this page
+				// RTE editor setup for this page
 				$("' . $selector . '").wysihat({
 					buttons: '.$this->EE->javascript->generate_json($bits['buttons'], TRUE).'
 				});

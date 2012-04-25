@@ -1,7 +1,7 @@
 (function(){
 	var $editor, link_node, range, button;
 
-	var	$link_dialog	= $('<div class="rte-link-dialog">' +
+	var	$link_dialog	= $('<div id="rte-link-dialog">' +
 							'<p><label>* ' + EE.rte.link.dialog.url_field_label + '</label>' +
 							'<input type="text" name="url" required="required" /></p>' +
 							'<p><label>' + EE.rte.link.dialog.title_field_label + '</label>' +
@@ -9,7 +9,7 @@
 							//'<p><label>' + EE.rte.link.dialog.rel_field_label + '</label>' +
 							// '<select></select></p>' +
 							'<p class="buttons">' +
-							'	<a class="rte-link-remove js_hide">' + EE.rte.link.dialog.remove_link + '</a>' +
+							'	<a id="rte-remove-link" style="display:none">' + EE.rte.link.dialog.remove_link + '</a>' +
 							'	<input class="submit" type="submit" value="' + EE.rte.link.dialog.add_link +'" /></p>' +
 							'</div>'),
 		$url			= $link_dialog.find('input[name=url]'),
@@ -45,10 +45,10 @@
 						$url.val( $el.attr('href'));
 						$title.val( $el.attr('title'));
 						$submit.val(EE.rte.link.dialog.update_link);
-						$('.rte-link-remove').show();
+						$('#rte-remove-link').show();
 					} else {
 						$submit.val(EE.rte.link.dialog.add_link);
-						$('.rte-link-remove').hide();
+						$('#rte-remove-link').hide();
 					}
 				}
 				
@@ -81,14 +81,14 @@
 			}
 		 })
 		// Remove link
-		.on('click', '.rte-link-remove', function(){
+		.on('click', '#rte-remove-link', function(){
 			var $el = $(link_node);
 			$el.replaceWith($el.html());
 	
 			$link_dialog.dialog('close');
 		})
 		// Add link
-		.on('click', '.rte-link-dialog .submit', function(){
+		.on('click', '#rte-link-dialog .submit', function(){
 			validateLinkDialog();
 		});
 

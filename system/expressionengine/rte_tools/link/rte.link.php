@@ -98,11 +98,46 @@ class Link_rte {
 	{
 		ob_start(); ?>
 
-		#rte_link_dialog p { margin-bottom:10px; }
-		#rte_link_dialog label { width: 90px; display: inline-block; }
-		#rte_link_dialog input, #rte_link_dialog select { width: 70%; margin-left: 10px; }
-		#rte_link_dialog .buttons { text-align: center; }
-		#rte_link_dialog button { cursor: pointer; }
+		#rte-link-dialog p {
+			margin:10px 0;
+		}
+		
+		#rte-link-dialog label {
+			display: inline-block;
+		}
+
+		#rte-link-dialog input[type=\"text\"]
+		{
+			width: 100%;
+			-moz-box-sizing: border-box;
+			-webkit-box-sizing: border-box;
+			box-sizing: border-box;
+			padding: 4px;
+		}
+
+		#rte-link-dialog .buttons {
+			margin: 10px 0 8px;
+			float: right;
+		}
+
+		#rte-link-dialog .submit {
+			cursor: pointer;
+		}
+
+		#rte-link-dialog .notice {
+			color: #CE0000;
+			font-weight: bold;
+			margin: 5px 0;
+		}
+
+		#rte-remove-link {
+			cursor: pointer;
+			margin-right: 1em;
+		}
+
+		#rte-remove-link:hover {
+			text-decoration: underline;
+		}
 
 <?php	$buffer = ob_get_contents();
 		ob_end_clean(); 
