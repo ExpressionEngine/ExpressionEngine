@@ -124,6 +124,20 @@
 		var anchor_node = ($(sel.focusNode.parentNode).is('a'))
 			? sel.focusNode.parentNode : sel.focusNode;
 		
+		// More fiddlyness to find the anchor node, this is also
+		// mainly due to Firefox
+		if ( ! $(anchor_node).is('a'))
+		{
+			if ($(link_node).is('a'))
+			{
+				anchor_node = link_node;
+			}
+			else if ($(link_node.parentNode).is('a'))
+			{
+				anchor_node = link_node.parentNode;
+			}
+		};
+		
 		if ($(anchor_node).is('a'))
 		{
 			range.selectNode(anchor_node);
@@ -146,6 +160,9 @@
 			button = this;
 			$editor = this.$editor;
 			$editor.select();
+			
+			var selUtil = this.Selection;
+			selUtil.set(state.selection);
 			
 			var sel		= window.getSelection(),
 				link	= true,
