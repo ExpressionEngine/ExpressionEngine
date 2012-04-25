@@ -1,19 +1,19 @@
 (function(){
-	var $editor, final_url, anchorNode, range, selUtil, button;
+	var $editor, final_url, anchorNode, range, button;
 
 	var	$link_dialog	= $('<div class="rte-link-dialog">' +
 							'<p><label>* ' + EE.rte.link.dialog.url_field_label + '</label>' +
-							'<input type="url" required="required"/></p>' +
+							'<input type="text" name="url" required="required" /></p>' +
 							'<p><label>' + EE.rte.link.dialog.title_field_label + '</label>' +
-							'<input type="text"/></p>' +
+							'<input type="text" name="title" /></p>' +
 							//'<p><label>' + EE.rte.link.dialog.rel_field_label + '</label>' +
 							// '<select></select></p>' +
 							'<p class="buttons">' +
 							'	<a class="rte-link-remove js_hide">' + EE.rte.link.dialog.remove_link + '</a>' +
-							'	<button class="submit" type="submit">' + EE.rte.link.dialog.add_link + '</button></p>' +
+							'	<input class="submit" type="submit" value="' + EE.rte.link.dialog.add_link +'" /></p>' +
 							'</div>'),
-		$url			= $link_dialog.find('input[type=url]'),
-		$title			= $link_dialog.find('input[type=text]'),
+		$url			= $link_dialog.find('input[name=url]'),
+		$title			= $link_dialog.find('input[name=title]'),
 		$el;
 
 	$link_dialog
@@ -30,9 +30,9 @@
 			open: function(e, ui) {
 				// remove existing notices
 				$link_dialog.find('.notice').remove();
-
+				
 				var	el = anchorNode;
-
+				
 				if (el) {
 					while (el.nodeType != 1) {
 						el = el.parentNode;
@@ -43,10 +43,10 @@
 					if ($el.is('a')) {
 						$url.val( $el.attr('href'));
 						$title.val( $el.attr('title'));
-						$('.submit').text(EE.rte.link.dialog.update_link);
+						$('.submit').val(EE.rte.link.dialog.update_link);
 						$('.rte-link-remove').show();
 					} else {
-						$('.submit').text(EE.rte.link.dialog.add_link);
+						$('.submit').val(EE.rte.link.dialog.add_link);
 						$('.rte-link-remove').hide();
 					}
 				}
@@ -70,7 +70,7 @@
 				}
 
 				// empty the fields
-				$link_dialog.find('input,select').val('');
+				$link_dialog.find('input[type=text],select').val('');
 			}
 		})
 		// Close on Enter
@@ -96,8 +96,8 @@
 	{
 		// remove existing notices
 		$link_dialog.find('.notice').remove();
-
-		var	url			= $url.val().trim(),
+		
+		var	url			= $url.val().replace(/^\s+|\s+$/g, ''),
 			$error		= $('<div class="notice"/>').text(EE.rte.link.dialog.url_required);
 
 		// is it empty?
@@ -137,14 +137,11 @@
 			button = this;
 			$editor = this.$editor;
 			$editor.select();
-
-			selUtil = this.Selection,
-			selUtil.set(state.selection);
-
+			
 			var sel		= window.getSelection(),
 				link	= true,
 				s_el, e_el;
-
+				
 			// get the elements
 			s_el = sel.anchorNode;
 			e_el = sel.focusNode;
