@@ -144,7 +144,11 @@
 			sel.addRange(range);
 			
 			// Title attribute
-			if (title != '')
+			if (title == '')
+			{
+				$(anchor_node).removeAttr('title');
+			}
+			else
 			{
 				$(anchor_node).attr('title', title);
 			}
