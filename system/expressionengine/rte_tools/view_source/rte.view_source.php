@@ -81,6 +81,26 @@ class View_source_rte {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Styles
+	 *
+	 * @access	public
+	 */
+	function styles()
+	{
+		ob_start(); ?>
+
+		.WysiHat-editor-toolbar .view_source {
+			text-transform: uppercase;
+		}
+		
+<?php	$buffer = ob_get_contents();
+		ob_end_clean(); 
+		return $buffer;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Javascript Definition
 	 *
 	 * @access	public

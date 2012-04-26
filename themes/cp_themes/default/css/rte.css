@@ -131,7 +131,7 @@
 	color: #969ea3;
 	padding: 4px 8px;
 	margin: 0 5px 0 0;
-	text-transform: uppercase;
+	text-transform: lowercase;
 	vertical-align: middle;
 }
 
@@ -334,7 +334,7 @@
 	-o-appearance: none;
 	-webkit-appearance: none;
 	appearance: none;
-	text-transform: none;
+	text-transform: lowercase;
 	width: 120px;
 }
 
