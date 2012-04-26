@@ -2345,9 +2345,6 @@ WysiHat.Formatting = {
 		}).remove();
 
 		$element
-			.find('br')
-				.replaceWith('\n')
-				.end()
 			.find('span')
 				.each(function(){
 					var $this = $(this);
@@ -2406,7 +2403,6 @@ WysiHat.Formatting = {
 	cleanupPaste: function($element, parentTagName)
 	{
 		var replaceElement = WysiHat.Commands.replaceElement;
-
 		this.cleanup($element);
 
 		// Ok, now we want to get rid of everything except for the
@@ -2435,6 +2431,17 @@ WysiHat.Formatting = {
 
 			replace.innerHTML = this.innerHTML;
 			$(this).replaceWith(replace);
+		});
+
+		// normalize all browsers to use paragraphs per line.
+		// safari already does this, firefox uses only <br>s, since
+		// we have a good way to parse the paragraph structure below,
+		// it makes sense to enforce it.
+		$element.find('br').replaceWith('\n');
+		$element.html(function(i, html) {
+			html = html.replace(/\n/g, "\n</p><p>");
+
+			return '<p>' + $.trim(html) + '</p>';
 		});
 
 		// remove needless spans and empty elements
@@ -2498,6 +2505,11 @@ WysiHat.Formatting = {
 		{
 			currentP.remove();
 		}
+
+		// make it pretty
+		$element
+			.before("\n")
+			.find("br").replaceWith('<br>\n');
 	},
 
 	reBlocks: new RegExp(
@@ -2555,7 +2567,10 @@ WysiHat.Formatting = {
 		this.format( $container );
 
 		$container.find('*').html(function(i, val) {
-			return val.replace('\n', '<br>\n').replace(/(\t| +)/g, ' ');
+			return val
+				.replace('\n', '<br>\n')
+				.replace(/(<br>)+/g, '<br>')
+				.replace(/(\t| +)/g, ' ');
 		});
 
 		return $container
