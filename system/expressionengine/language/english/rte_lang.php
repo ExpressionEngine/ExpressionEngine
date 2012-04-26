@@ -63,7 +63,7 @@ $lang = array(
 'url' => 'URL',
 'title' => 'Title',
 'relationship' => 'Relationship',
-'selection_error' => 'You must select some text in order to do something with it',
+'selection_error' => 'Please select some text or images first.',
 
 // Tool names (based on class name)
 'blockquote_rte' 	=> 'Quote',
