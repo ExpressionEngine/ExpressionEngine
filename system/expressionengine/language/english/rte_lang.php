@@ -96,6 +96,7 @@ $lang = array(
 'add_link' => 'Add Link',
 'update_link' => 'Update Link',
 'remove_link' => 'Remove Link',
+'external_link' => 'External Link',
 'view_code' => 'View Code',
 'view_content' => 'View Content',
 'strip_tags' => 'Clear Formatting',

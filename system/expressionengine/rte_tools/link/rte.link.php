@@ -67,7 +67,8 @@ class Link_rte {
 						'url_required'		=> lang('valid_url_required'),
 						'add_link'			=> lang('add_link'),
 						'update_link'		=> lang('update_link'),
-						'remove_link'		=> lang('remove_link')
+						'remove_link'		=> lang('remove_link'),
+						'external_link'		=> lang('external_link')
 				)
 			)
 		);
@@ -137,6 +138,10 @@ class Link_rte {
 
 		#rte-remove-link:hover {
 			text-decoration: underline;
+		}
+
+		#rte-link-dialog-external {
+			margin-top: 10px;
 		}
 
 <?php	$buffer = ob_get_contents();

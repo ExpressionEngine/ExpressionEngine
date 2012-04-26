@@ -6,8 +6,8 @@
 							'<input type="text" name="url" required="required" /></p>' +
 							'<p><label>' + EE.rte.link.dialog.title_field_label + '</label>' +
 							'<input type="text" name="title" /></p>' +
-							//'<p><label>' + EE.rte.link.dialog.rel_field_label + '</label>' +
-							// '<select></select></p>' +
+							'<p><input type="checkbox" id="rte-link-dialog-external"/> ' +
+							'<label for="rte-link-dialog-external">' + EE.rte.link.dialog.external_link + '</label></p>' +
 							'<p class="buttons">' +
 							'	<a id="rte-remove-link" style="display:none">' + EE.rte.link.dialog.remove_link + '</a>' +
 							'	<input class="submit" type="submit" value="' + EE.rte.link.dialog.add_link +'" /></p>' +
@@ -15,6 +15,7 @@
 		$url			= $link_dialog.find('input[name=url]'),
 		$title			= $link_dialog.find('input[name=title]'),
 		$submit			= $link_dialog.find('input.submit'),
+		$external		= $link_dialog.find('#rte-link-dialog-external'),
 		$el;
 
 	$link_dialog
@@ -44,6 +45,7 @@
 					if ($el.is('a')) {
 						$url.val( $el.attr('href'));
 						$title.val( $el.attr('title'));
+						$external.prop('checked', $el.attr('target') == '_blank');
 						$submit.val(EE.rte.link.dialog.update_link);
 						$('#rte-remove-link').show();
 					} else {
@@ -151,6 +153,14 @@
 			else
 			{
 				$(anchor_node).attr('title', title);
+			}
+
+			// Target attribute
+			if ($external.prop('checked')) {
+				$(anchor_node).attr('target', '_blank');
+			}
+			else {
+				$(anchor_node).removeAttr('target');
 			}
 		};
 		
