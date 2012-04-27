@@ -1836,6 +1836,8 @@ $.extend(WysiHat.Commands, {
 	 */
 	stripFormattingElements: function()
 	{
+		var that = this;
+
 		function stripFormatters( i, el )
 		{
 			var $el = $(el);
@@ -1844,7 +1846,7 @@ $.extend(WysiHat.Commands, {
 
 			if ( isFormatter( $el ) )
 			{
-				deleteElement.apply( $el );
+				that.deleteElement.apply( $el );
 			}
 		}
 
