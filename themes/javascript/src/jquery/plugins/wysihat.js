@@ -173,7 +173,8 @@ WysiHat.Editor.prototype = {
 	 * Setup all of the utility classes
 	 */
 	init: function(options) {
-		var $ed = this.$editor;
+		var $ed = this.$editor,
+			that = this;
 
 		this.Undo = new WysiHat.Undo();
 		this.Selection = new WysiHat.Selection($ed);
@@ -187,7 +188,7 @@ WysiHat.Editor.prototype = {
 		$ed.closest('form').submit(function() {
 			if ($ed.is(':visible'))
 			{
-				this.updateField();
+				that.updateField();
 			}
 		});
 	},
