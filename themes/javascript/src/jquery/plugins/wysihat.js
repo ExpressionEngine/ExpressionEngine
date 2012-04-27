@@ -2363,16 +2363,16 @@ WysiHat.Formatting = {
 
 					if (isItalic && isBold)
 					{
-						$this.wrap('<strong>');
-						replaceElement($this, 'em');
+						$this.wrap('<b>');
+						replaceElement($this, 'i');
 					}
 					else if (isBold)
 					{
-						replaceElement($this, 'strong');
+						replaceElement($this, 'b');
 					}
 					else if (isItalic)
 					{
-						replaceElement($this, 'em');
+						replaceElement($this, 'i');
 					}
 				 })
 				.end()
@@ -2384,14 +2384,14 @@ WysiHat.Formatting = {
 				 	}
 				 })
 				.end()
-			.find('b')
+			.find('strong')
 				.each(function(){
-				 	replaceElement($(this),'strong');
+				 	replaceElement($(this),'b');
 				 })
 				.end()
-			.find('i')
+			.find('em')
 				.each(function(){
-				 	replaceElement($(this),'em');
+				 	replaceElement($(this),'i');
 				 })
 				.end()
 			.find('strike')
@@ -2403,7 +2403,7 @@ WysiHat.Formatting = {
 				.each(function(){
 				 	replaceElement($(this),'ins');
 				 })
-				.end()
+				.end()s
 			.find('p:empty,script,noscript,style').remove();
 	},
 
