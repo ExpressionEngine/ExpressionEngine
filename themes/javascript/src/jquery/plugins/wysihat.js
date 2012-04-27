@@ -2755,7 +2755,7 @@ WysiHat.Toolbar.prototype = {
 			var opts = button.options,
 				l = opts.length, i = 0;
 
-			$btn = $('<select class="button picker"/>');
+			$btn = $('<select class="button"/>');
 
 			for ( ; i < l; i++)
 			{
@@ -2763,6 +2763,9 @@ WysiHat.Toolbar.prototype = {
 					'<option value="' + opts[i][0] + '">' + opts[i][1] + '</option>'
 				);
 			}
+
+			$btn.appendTo(this.$toolbar)
+				.wrap('<div class="button select-container"/>');
 		}
 		else
 		{
@@ -2777,10 +2780,9 @@ WysiHat.Toolbar.prototype = {
 					function() {
 						$(this).removeAttr('title');
 					}
-				);
+				)
+				.appendTo(this.$toolbar);
 		}
-
-		$btn.appendTo(this.$toolbar);
 
 		if (button.cssClass)
 		{
