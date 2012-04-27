@@ -64,10 +64,7 @@
 }
 
 .rte-tool-active {
-	background: #fffcb6; /* url(../images/rte_images/selected.png) 6px 8px no-repeat;
-	border-color: #bfbc5e;
-	color: #89873b;
-	padding-left: 21px; */
+	background: #fffcb6;
 }
 
 .rte-toolset-builder-scrollpane .ui-sortable-helper {
@@ -126,6 +123,7 @@
 	-webkit-border-radius: 3px;
 	border-radius: 3px;
 	cursor: pointer;
+	display: inline-block;
 	float: none;
 	font: 11px/13px Helvetica, sans-serif;
 	color: #969ea3;
@@ -328,14 +326,41 @@
 	padding-top: 1px;
 }
 
-.WysiHat-editor-toolbar select.picker {
+.WysiHat-editor-toolbar .select-container {
+	display: inline-block;
+	padding: 0;
+	width: 95px;
+	overflow: hidden;
+	background: url(data:image/gif;base64,R0lGODlhCQAFAIABAJaeo////yH5BAEAAAEALAAAAAAJAAUAAAIKhH+BGYoNGWxgFgA7) no-repeat 90% 50% white !important;
+}
+
+.WysiHat-editor-toolbar .select-container:hover {
+	background: url(data:image/gif;base64,R0lGODlhCQAFAIABAERXYv///yH5BAEAAAEALAAAAAAJAAUAAAIKhH+BGYoNGWxgFgA7) no-repeat 90% 50% white !important;
+}
+
+.WysiHat-editor-toolbar select {
+	background: transparent !important;
+	border: none !important;
+	font-weight: bold !important;
+	outline: 0;
+	text-transform: lowercase;
+	width: 120px;
 	-moz-appearance: none;
 	-ms-appearance: none;
 	-o-appearance: none;
 	-webkit-appearance: none;
 	appearance: none;
-	text-transform: lowercase;
-	width: 120px;
+}
+
+.WysiHat-editor-toolbar .button:hover select{
+	color: #445762; /* for IE */
+}
+
+.WysiHat-editor-toolbar select option {
+	/* for FF */
+	font-size: 12px;
+	font-weight: normal;
+	padding: 1px 0;
 }
 
 /* Editor */
@@ -413,9 +438,5 @@ textarea.rte:focus,
 @-moz-document url-prefix() {
 	.WysiHat-editor-toolbar .button {
 		padding-bottom: 1px;
-	}
-
-	.WysiHat-editor-toolbar select.picker {
-		padding-bottom: 4px;
 	}
 }
