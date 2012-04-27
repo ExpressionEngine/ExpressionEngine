@@ -509,7 +509,7 @@ WysiHat.Paster = (function() {
 					startC = ranges[0].startContainer,
 					waitTime = 0;
 
-				$paster.html('').css('top', document.body.scrollTop);
+				$paster.html('').css('top', $(document).scrollTop());
 				$paster.appendTo(document.body);
 				$paster.focus();
 
@@ -2402,6 +2402,10 @@ WysiHat.Formatting = {
 			.find('p:empty,script,noscript,style').remove();
 	},
 
+	// selection before tag, between tags, after tags
+	// between tags (x offset)
+
+
 	cleanupPaste: function($element, parentTagName)
 	{
 		var replaceElement = WysiHat.Commands.replaceElement;
@@ -2411,6 +2415,7 @@ WysiHat.Formatting = {
 		// bare tags (with some exceptions, but not many). The trick
 		// is to run through the found elements backwards. Otherwise
 		// the node reference disappears when the parent is replaced.
+
 		var els = $element.find('*'),
 			rev = $.makeArray(els).reverse();
 
@@ -2435,15 +2440,31 @@ WysiHat.Formatting = {
 			$(this).replaceWith(replace);
 		});
 
-		// normalize all browsers to use paragraphs per line.
-		// safari already does this, firefox uses only <br>s, since
-		// we have a good way to parse the paragraph structure below,
-		// it makes sense to enforce it.
+
+		// most of this deals with newlines, start
+		// out with a reasonable subset
 		$element.find('br').replaceWith('\n');
 		$element.html(function(i, html) {
-			html = html.replace(/\n/g, "\n</p><p>");
+			html = $.trim(html);
+			html = html
+				.replace(/<\/p>\s*<p>/g, '\n')
+				.replace(/^(<p>)+/, '')		// some browsers automatically wrap every line in
+				.replace(/(<\/p>)+$/, '');	// paragraphs, remove the outer ones, we don't want those.
 
-			return '<p>' + $.trim(html) + '</p>';
+			// no newlines, no paragraphs, no nonsense
+			if (html.indexOf('\n') == -1) {
+				return html;
+			}
+
+			// with the single line case out of the way, convert everything
+			// to paragraphs. This will make weeding out the double newlines
+			// easier below. I know it seems silly. By the end of this we're
+			// back to input for safari, but normalized for all others.
+			html = html
+				.replace(/\n/, "<p>")
+				.replace(/\n/g, "\n</p><p>");
+
+			return $.trim(html) + "</p>";
 		});
 
 		// remove needless spans and empty elements
@@ -2460,11 +2481,11 @@ WysiHat.Formatting = {
 			});
 		}
 
-		// ok, now the fun bit with the paragraphs and newlines.
-		// the browsers turn all newlines into paragraphs, we only
-		// want them for the doubles newlines and brs otherwise. So
-		// we need to step through all the sibling pairs and merge
-		// when they are not separated by a blank.
+		// ok, now the fun bit with the paragraphs and newlines again.
+		// We equalize all newlines into paragraphs above, but really
+		// we only want them for the doubles newlines. All others are
+		// supposed to be <br>s. So we need to step through all the
+		// sibling pairs and merge when they are not separated by a blank.
 
 		var currentP,
 			removal = [];
@@ -2508,7 +2529,8 @@ WysiHat.Formatting = {
 			currentP.remove();
 		}
 
-		// make it pretty
+		// since all of the code above was newline sensitive, what
+		// comes out has none. So make it pretty!
 		$element
 			.before("\n")
 			.find("br").replaceWith('<br>\n');
