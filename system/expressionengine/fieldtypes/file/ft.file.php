@@ -51,7 +51,7 @@ class File_ft extends EE_Fieldtype {
 	 */
 	function save($data)
 	{
-		$directory = $this->EE->input->post($field_name.'_hidden_dir');
+		$directory = $this->EE->input->post($this->field_name.'_hidden_dir');
 		return $this->EE->file_field->format_data($data, $directory);
 	}
 	
