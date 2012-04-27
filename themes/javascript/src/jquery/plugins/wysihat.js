@@ -2403,7 +2403,7 @@ WysiHat.Formatting = {
 				.each(function(){
 				 	replaceElement($(this),'ins');
 				 })
-				.end()s
+				.end()
 			.find('p:empty,script,noscript,style').remove();
 	},
 
