@@ -2355,19 +2355,24 @@ WysiHat.Formatting = {
 						$this.removeClass('Apple-style-span');
 					}
 
-					if ( $this.css('font-weight') == 'bold' &&
-					 	 $this.css('font-style') == 'italic' )
+					var fontWeight = $this.css('font-weight'),
+						isBold = (fontWeight == 'bold' || fontWeight > 500),
+						isItalic = ($this.css('font-style') == 'italic');
+
+					$this.removeAttr('style');
+
+					if (isItalic && isBold)
 					{
-						$this.removeAttr('style').wrap('<strong>');
-						replaceElement( $this, 'em' );
+						$this.wrap('<strong>');
+						replaceElement($this, 'em');
 					}
-					else if ( $this.css('font-weight') == 'bold' )
+					else if (isBold)
 					{
-						replaceElement( $this.removeAttr('style'), 'strong' );
+						replaceElement($this, 'strong');
 					}
-					else if ( $this.css('font-style') == 'italic' )
+					else if (isItalic)
 					{
-						replaceElement( $this.removeAttr('style'), 'em' );
+						replaceElement($this, 'em');
 					}
 				 })
 				.end()
