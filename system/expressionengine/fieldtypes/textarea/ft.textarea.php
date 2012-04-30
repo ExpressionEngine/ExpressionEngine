@@ -52,7 +52,7 @@ class Textarea_ft extends EE_Fieldtype {
 
 
 		// form prepped nonsense
-		$data = htmlspecialchars_decode($data);
+		$data = htmlspecialchars_decode($data, ENT_QUOTES);
 		$code_marker = unique_marker('code');
 		$code_chunks = array();
 
@@ -119,7 +119,7 @@ class Textarea_ft extends EE_Fieldtype {
 			$data = str_replace($code_marker.$i, '[code]'.$chunk.'[/code]', $data);
 		}
 		
-		$data = htmlspecialchars($data);
+		$data = htmlspecialchars($data, ENT_QUOTES);
 
 		$field['value'] = $data;
 		return form_textarea($field);
@@ -136,7 +136,7 @@ class Textarea_ft extends EE_Fieldtype {
 		}
 
 		$data = str_replace('<br>', "\n", $data); // must happen before the decode or we won't know which are ours
-		$data = htmlspecialchars_decode($data);
+		$data = htmlspecialchars_decode($data, ENT_QUOTES);
 
 		// decode double encoded code chunks
 		if (preg_match_all("/\[code\](.+?)\[\/code\]/si", $data, $matches))
