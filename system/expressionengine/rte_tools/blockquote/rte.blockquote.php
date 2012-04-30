@@ -78,7 +78,7 @@ class Blockquote_rte {
 			label:			EE.rte.blockquote.add,
 			'toggle-text': 	EE.rte.blockquote.remove,
 			handler: function() {
-				return this.toggle('blockquote');
+				this.toggle('blockquote');
 			},
 			query: function() {
 				var
