@@ -129,13 +129,18 @@ var WysiHat = window.WysiHat = {
 WysiHat.Editor = function($field, options) {
 	this.$field = $field;
 	this.$editor = this.create();
-
-	$field.hide().before(this.$editor);
-
+	
+	$field.hide().before(
+		$('<div/>', {
+			'class': WysiHat.name + '-container',
+			'html': this.$editor
+		})
+	);
+	
 	this.Element = WysiHat.Element;
 	this.Commands = WysiHat.Commands;
 	this.Formatting = WysiHat.Formatting;
-
+	
 	this.init(options);
 }
 
