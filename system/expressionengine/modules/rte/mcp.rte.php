@@ -255,67 +255,6 @@ class Rte_mcp {
 		$this->EE->functions->redirect($this->_base_url);
 	}
 
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * RTE preferences link JS
-	 *
-	 * @access	public
-	 * @return	string The JavaScript
-	 * @todo	Finish this
-	 */
-	public function build_rte_pref_js()
-	{
-		$js = '';
-		
-		// make sure it’s on
-		if ($this->EE->config->item('rte_enabled') == 'y')
-		{
-			// styles
-			$this->EE->cp->add_to_head(
-				'
-				<style>
-					.rte_prefs_link { display:block; float: right; margin: 5px 30px 5px 0; }
-					#rte_prefs_dialog p { margin: 10px 0; }
-					#rte_prefs_dialog .buttons { text-align: center; }
-				</style>
-				'
-			);
-			
-			// add in the code that would toggle the toolset
-			ob_start(); ?>
-			
-			var
-			$rte_prefs_link	= $('<a class="rte_prefs_link" href="#rte_prefs_dialog">Prefs</a>' ),
-			$rte_prefs_dialog = $('<div id="rte_prefs_dialog" />')
-				.load(EE.rte.prefs_url.replace(/&amp;/g,'&'), function() {
-					
-					// We have the dialog content, now setup the dialog
-					console.log('loaded');
-				});
-							
-			// set up the link
-			$rte_prefs_link.click(function(e){
-				e.preventDefault();
-				$rte_prefs_dialog.dialog('open');
-			 });
-		
-			// insert it
-			$(".rte").each(function(){
-				$rte_prefs_link
-					.clone(true)
-					.insertAfter($(this));
-			});
-
-		
-<?php		$js = ob_get_contents();
-			ob_end_clean(); 
-		}
-
-		return $js;
-	}
-
 	// --------------------------------------------------------------------
 
 	/**
