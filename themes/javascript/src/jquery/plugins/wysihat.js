@@ -173,7 +173,8 @@ WysiHat.Editor.prototype = {
 	 * Setup all of the utility classes
 	 */
 	init: function(options) {
-		var $ed = this.$editor;
+		var $ed = this.$editor,
+			that = this;
 
 		this.Undo = new WysiHat.Undo();
 		this.Selection = new WysiHat.Selection($ed);
@@ -187,7 +188,7 @@ WysiHat.Editor.prototype = {
 		$ed.closest('form').submit(function() {
 			if ($ed.is(':visible'))
 			{
-				this.updateField();
+				that.updateField();
 			}
 		});
 	},
@@ -1398,18 +1399,18 @@ WysiHat.Selection.prototype = {
 			r = document.createRange(),
 			startOffset, endOffset;
 
-		startOffset = this._getOffsetNode(this.top, start);
+		startOffset = this._getOffsetNode(this.top, start, true);
 		r.setStart.apply(r, startOffset);
 
 		// collapsed
-		if (end === undefined)
+		if (end === undefined || end == start)
 		{
 			end = start;
 			r.collapse(true);
 		}
 		else
 		{
-			endOffset = this._getOffsetNode(this.top, end);
+			endOffset = this._getOffsetNode(this.top, end, false);
 			r.setEnd.apply(r, endOffset);
 		}
 
@@ -1438,10 +1439,11 @@ WysiHat.Selection.prototype = {
 	 *
 	 * You probably don't want to touch this :).
 	 */
-	_getOffsetNode: function(startNode, offset)
+	_getOffsetNode: function(startNode, offset, isStart)
 	{
 		var curNode = startNode,
-			curNodeLen = 0;
+			curNodeLen = 0,
+			blocks = WysiHat.Element.getBlocks();
 
 		function getTextNodes(node)
 		{
@@ -1466,20 +1468,38 @@ WysiHat.Selection.prototype = {
 
 		if (offset == 0)
 		{
-			// weird case where they try to select something from 0
+			// weird case where they try to select a non text node
+			// e.g. The beginning of the editor.
 			if (curNode.nodeType != Node.TEXT_NODE)
 			{
+				// do our best to get to a text node
+				while (curNode.firstChild !== null)
+				{
+					curNode = curNode.firstChild;
+				}
+
 				return [curNode, 0];
 			}
 
-			// Offset is 0 but we're at the end of the node,
-			// jump ahead in the dom to the real beginning node.
-			while (curNode.nextSibling === null)
+			// Offset 0 means we're at the end of the node.
+			// If we're starting a selection and the end is a
+			// block node, we need to jump to the next one so
+			// that we don't select that initial newline.
+			if (isStart)
 			{
-				curNode = curNode.parentNode;
-			}
+				while (curNode.nextSibling === null)
+				{
+					curNode = curNode.parentNode;
+				}
 
-			curNode = curNode.nextSibling;
+				// the current one is a block element
+				// and we can move further? do it.
+				if (blocks.indexOf(curNode.nodeName.toLowerCase()) > -1 &&
+					curNode.nextSibling !== null)
+				{
+					curNode = curNode.nextSibling;
+				}
+			}
 		}
 
 		curNodeLen = curNode.nodeValue ? curNode.nodeValue.length : 0;
@@ -2355,19 +2375,24 @@ WysiHat.Formatting = {
 						$this.removeClass('Apple-style-span');
 					}
 
-					if ( $this.css('font-weight') == 'bold' &&
-					 	 $this.css('font-style') == 'italic' )
+					var fontWeight = $this.css('font-weight'),
+						isBold = (fontWeight == 'bold' || fontWeight > 500),
+						isItalic = ($this.css('font-style') == 'italic');
+
+					$this.removeAttr('style');
+
+					if (isItalic && isBold)
 					{
-						$this.removeAttr('style').wrap('<strong>');
-						replaceElement( $this, 'em' );
+						$this.wrap('<b>');
+						replaceElement($this, 'i');
 					}
-					else if ( $this.css('font-weight') == 'bold' )
+					else if (isBold)
 					{
-						replaceElement( $this.removeAttr('style'), 'strong' );
+						replaceElement($this, 'b');
 					}
-					else if ( $this.css('font-style') == 'italic' )
+					else if (isItalic)
 					{
-						replaceElement( $this.removeAttr('style'), 'em' );
+						replaceElement($this, 'i');
 					}
 				 })
 				.end()
@@ -2379,14 +2404,14 @@ WysiHat.Formatting = {
 				 	}
 				 })
 				.end()
-			.find('b')
+			.find('strong')
 				.each(function(){
-				 	replaceElement($(this),'strong');
+				 	replaceElement($(this),'b');
 				 })
 				.end()
-			.find('i')
+			.find('em')
 				.each(function(){
-				 	replaceElement($(this),'em');
+				 	replaceElement($(this),'i');
 				 })
 				.end()
 			.find('strike')
