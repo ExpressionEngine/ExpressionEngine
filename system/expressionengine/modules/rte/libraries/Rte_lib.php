@@ -252,26 +252,20 @@ class Rte_lib {
 
 		// bare minimum required
 		$bits	= array(
-			'globals'	=> array(
-				'rte'		=> array()
+			'globals'		=> array(
+				'rte' => array()
 			),
-			'styles' => '',
-			'definitions' => '',
-			'buttons' => array(),
-			'libraries' => array()
+			'styles' 		=> '',
+			'definitions' 	=> '',
+			'buttons' 		=> array(),
+			'libraries' 	=> array(
+				'plugin' => array('wysihat')
+			)
 		);
 
-		// @todo force hard override of tools' includes?
 		if ($include['jquery_ui'])
 		{
-			$bits['libraries']	= array(
-				'ui'			=> array(
-					'core', 'widget'
-				),
-				'plugin'		=> array(
-					'wysihat'
-				)
-			);
+			$bits['libraries']['ui'] = array('core', 'widget');
 		}	
 
 		foreach ($tools as $tool)

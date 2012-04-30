@@ -99,6 +99,7 @@ class Rte {
 		if ($this->EE->TMPL->fetch_param('include_jquery') != 'no')
 		{
 			$includes[] = 'jquery';
+			$includes[] = 'jquery_ui';
 		}
 
 		if (count($includes))

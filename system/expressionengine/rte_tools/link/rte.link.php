@@ -84,7 +84,7 @@ class Link_rte {
 	function libraries()
 	{
 		return array(
-			'ui'	=> 'dialog'
+			'ui'	=> array('dialog', 'position')
 		);
 	}
 	
