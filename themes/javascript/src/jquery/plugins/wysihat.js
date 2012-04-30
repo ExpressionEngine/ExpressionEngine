@@ -169,9 +169,6 @@ WysiHat.Editor.prototype = {
 
 			// Respect textarea's existing row count settings
 			'height': this.$field.height(),
-			
-			// Set editor's width in pixels so overflow: auto; works
-			'width': this.$field.outerWidth(),
 
 			'html': WysiHat.Formatting.getBrowserMarkupFrom(this.$field)
 		});
