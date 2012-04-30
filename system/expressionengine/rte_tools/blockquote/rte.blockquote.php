@@ -77,8 +77,9 @@ class Blockquote_rte {
 		WysiHat.addButton('blockquote', {
 			label:			EE.rte.blockquote.add,
 			'toggle-text': 	EE.rte.blockquote.remove,
-			handler: function() {
+			handler: function(state) {
 				this.toggle('blockquote');
+				this.Selection.set(state.selection);
 			},
 			query: function() {
 				var

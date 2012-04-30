@@ -91,11 +91,8 @@ class Headings_rte {
 				['h6', EE.rte.headings.heading_6]
 			],
 			handler: function(state, finalize) {
-
-				if ( this.$element.val() != '' )
-				{
-					this.Commands.changeContentBlock(this.$element.val());
-				}
+				this.Commands.changeContentBlock(this.$element.val());
+				this.Selection.set(state.selection);
 			},
 			query: function() {
 
