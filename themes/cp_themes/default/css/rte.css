@@ -99,8 +99,16 @@
 	border: 2px solid blue;
 }
 
+/* Container */
+
+.WysiHat-container {
+	overflow: hidden;
+	position: relative;
+	width: 99.5%;
+}
 
 /* Toolbar */
+
 .WysiHat-editor-toolbar {
 	background: #ECF1F4 url(../images/publish_field_background.jpg) no-repeat -15px 0px;
 	border: 1px solid #8195A0;
@@ -110,8 +118,9 @@
 	border-radius: 3px 3px 0 0;
 	margin-bottom: -1px;
 	padding: 4px;
+	position: relative;
 	overflow: hidden;
-	width: 98.5%;
+	z-index: 1;
 }
 
 .WysiHat-editor-toolbar .button,
@@ -382,6 +391,9 @@ textarea.rte,
 	outline: none;
 	overflow: auto;
 	resize: vertical;
+}
+
+textarea.rte {
 	width: 98.5%;
 }
 

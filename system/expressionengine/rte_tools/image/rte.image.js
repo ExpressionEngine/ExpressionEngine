@@ -16,7 +16,9 @@ function setupImageTool($editor, $image_button) {
 
 var EE_rte_image	= EE.rte.image,
 	$file_browser	= null,
-	$figure_overlay = $('<div id="rte_image_figure_overlay" class="WysiHat-ui-control"><p></p></div>').hide().appendTo('body'),
+	$figure_overlay = $('<div id="rte_image_figure_overlay" class="WysiHat-ui-control"><p></p></div>')
+		.hide()
+		.appendTo($editor.parents('.WysiHat-container')),
 	$curr_figure	= null;
 
 // Upon form submission, convert file upload paths back to
@@ -172,7 +174,7 @@ $figure_overlay
 $editor
 	.delegate('figure img','mouseover',function(){
 		var	$this	= $(this),
-			offsets = $this.offset();
+			offsets = $this.position();
 			$curr_figure = $(this).closest('figure');
 			$curr_figure.data( 'floating', ( $curr_figure.css('float') != 'none' ) );
 		$figure_overlay
