@@ -99,6 +99,7 @@ function setupImageTool($editor, $image_button) {
 	{
 		$figure_overlay.hide();
 		$curr_figure = null;
+		
 	}
 	
 	function alignFigureContent( direction )
@@ -116,10 +117,14 @@ function setupImageTool($editor, $image_button) {
 		.mouseleave(hideFigureOverlay)
 		.find('p')
 			.append(
-				$('<button class="button align-left"><b>'+EE_rte_image.align_left+'</b></button>').click(function(){ alignFigureContent('left'); })
+				$('<button class="button align-left"><b>'+EE_rte_image.align_left+'</b></button>').click(function(e){
+					e.preventDefault();
+					alignFigureContent('left');
+				})
 			)
 			.append(
-				$('<button class="button align-center"><b>'+EE_rte_image.align_center+'</b></button>').click(function(){
+				$('<button class="button align-center"><b>'+EE_rte_image.align_center+'</b></button>').click(function(e){
+					e.preventDefault();
 					if ( $curr_figure.data('floating') )
 					{
 						alert(EE.rte.image.center_error);
@@ -132,11 +137,15 @@ function setupImageTool($editor, $image_button) {
 				})
 			)
 			.append(
-				$('<button class="button align-right"><b>'+EE_rte_image.align_right+'</b></button>').click(function(){ alignFigureContent('right'); })
+				$('<button class="button align-right"><b>'+EE_rte_image.align_right+'</b></button>').click(function(e){
+					e.preventDefault();
+					alignFigureContent('right');
+				})
 			)
 			.append( $('<br/>') )
 			.append(
-				$('<button class="button wrap-left"><b>'+EE_rte_image.wrap_left+'</b></button>').click(function(){
+				$('<button class="button wrap-left"><b>'+EE_rte_image.wrap_left+'</b></button>').click(function(e){
+					e.preventDefault();
 					var alignment = $curr_figure.css('text-align');
 					$curr_figure
 						.css('float','left')
@@ -145,7 +154,8 @@ function setupImageTool($editor, $image_button) {
 				})
 			)
 			.append(
-				$('<button class="button wrap-none"><b>'+EE_rte_image.wrap_none+'</b></button>').click(function(){
+				$('<button class="button wrap-none"><b>'+EE_rte_image.wrap_none+'</b></button>').click(function(e){
+					e.preventDefault();
 					$curr_figure
 						.css('float','none')
 						.data('floating',false);
@@ -153,7 +163,8 @@ function setupImageTool($editor, $image_button) {
 				})
 			)
 			.append(
-				$('<button class="button wrap-right"><b>'+EE_rte_image.wrap_right+'</b></button>').click(function(){
+				$('<button class="button wrap-right"><b>'+EE_rte_image.wrap_right+'</b></button>').click(function(e){
+					e.preventDefault();
 					var alignment = $curr_figure.css('text-align');
 					$curr_figure
 						.css('float','right')
@@ -163,7 +174,8 @@ function setupImageTool($editor, $image_button) {
 			)
 			.append( $('<br/>') )
 			.append(
-				$('<button class="button remove"><b>'+EE_rte_image.remove+'</b></button>').click(function(){
+				$('<button class="button remove"><b>'+EE_rte_image.remove+'</b></button>').click(function(e){
+					e.preventDefault();
 					$curr_figure.remove();
 					hideFigureOverlay();
 				})
