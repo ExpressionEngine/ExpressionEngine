@@ -904,7 +904,7 @@ WysiHat.Event.prototype = {
 		return {
 			html: this.$editor.html(),
 			selection: this.Selection.get()
-		}
+		};
 	},
 
 	/**
@@ -1279,8 +1279,8 @@ WysiHat.Undo.prototype = {
 		// We have something to trim. Do it and recalculate lengths.
 		if (trim_before || trim_after)
 		{
-			str1 = str1.substring(trim_before, l1 - trim_after);
-			str2 = str2.substring(trim_before, l2 - trim_after);
+			str1 = str1.substring(trim_before, l1 - trim_after + 1);
+			str2 = str2.substring(trim_before, l2 - trim_after + 1);
 
 			l1 = str1.length;
 			l2 = str2.length;
