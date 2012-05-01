@@ -3645,7 +3645,7 @@ if ( ! document.getSelection) {
 
 })();
 
-} // endif ( ! window.selection)
+} // end "if ( ! window.selection)"
 else
 {
 	// quick fix so we can extend the native prototype
