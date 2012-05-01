@@ -175,6 +175,10 @@
 			$editor = this.$editor;
 			$editor.select();
 
+			// reselect for FF
+			var selUtil = this.Selection; 
+			selUtil.set(state.selection);
+
 			var sel		= window.getSelection(),
 				link	= true,
 				s_el, e_el;
