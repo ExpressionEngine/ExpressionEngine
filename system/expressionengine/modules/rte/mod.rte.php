@@ -65,8 +65,8 @@ class Rte {
 			$includes[$allowed] = in_array($allowed, $include);
 		}
 
-		// @todo Normalize quotes in $selector
-		$selector = urldecode($selector);
+		// try to be nice and swap double quotes for single
+		$selector = urldecode(str_replace('"', "'", $selector));
 
 		$this->EE->load->library('rte_lib');
 		$js = $this->EE->rte_lib->build_js($toolset_id, $selector, $includes);
