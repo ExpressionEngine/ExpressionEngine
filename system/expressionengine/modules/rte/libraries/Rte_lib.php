@@ -197,6 +197,14 @@ class Rte_lib {
 		{
 			$toolset_id = $this->EE->db->insert_id();
 		}
+		
+		// If the default toolset was deleted
+		if ($this->EE->config->item('rte_default_toolset_id') == 0)
+		{
+			$this->EE->config->update_site_prefs(array(
+				'rte_default_toolset_id' => $toolset_id
+			));
+		}
 
 		// update the member profile
 		if ($is_members && $toolset_id)
