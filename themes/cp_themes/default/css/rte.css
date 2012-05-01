@@ -413,7 +413,8 @@ textarea.rte:focus,
 .WysiHat-editor p,
 .WysiHat-editor ul,
 .WysiHat-editor ol,
-.WysiHat-editor dl {
+.WysiHat-editor dl,
+.WysiHat-editor div {
 	margin: 0 0 10px !important;
 }
 
