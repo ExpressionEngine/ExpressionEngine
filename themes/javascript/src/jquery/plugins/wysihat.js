@@ -1348,7 +1348,6 @@ WysiHat.Selection = function($el)
 {
 	this.$editor = $el;
 	this.top = this.$editor.get(0);
-	this._getSelection = window.getSelection;
 }
 
 WysiHat.Selection.prototype = {
