@@ -174,14 +174,11 @@
 			button = this;
 			$editor = this.$editor;
 			$editor.select();
-			
-			var selUtil = this.Selection;
-			selUtil.set(state.selection);
-			
+
 			var sel		= window.getSelection(),
 				link	= true,
 				s_el, e_el;
-			
+
 			// get the elements
 			s_el = sel.anchorNode;
 			e_el = sel.focusNode;
@@ -190,7 +187,7 @@
 			
 			range.setStart(sel.anchorNode, sel.anchorOffset);
 			range.setEnd(sel.focusNode, sel.focusOffset);
-			
+
 			if ((s_el == e_el && sel.anchorOffset == sel.focusOffset) ||
 				e_el.textContent == '​') // Our zero-width character
 			{
@@ -246,7 +243,7 @@
 			}
 			
 			link_node = s_el;
-			
+
 			if ( link )
 			{
 				$link_dialog.dialog('open');
