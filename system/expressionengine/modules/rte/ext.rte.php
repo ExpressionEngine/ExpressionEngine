@@ -94,7 +94,9 @@ class Rte_ext {
 				
 		// assume we don't have a custom toolset to begin with
 		$my_toolset_id = 0;
-
+		
+		$options = array();
+		
 		// build the dropdown
 		foreach ($toolsets as $t)
 		{
