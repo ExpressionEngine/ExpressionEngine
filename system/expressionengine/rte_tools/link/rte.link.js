@@ -1,5 +1,5 @@
 (function(){
-	var $editor, link_node, range, button;
+	var $editor, link_node, range, button, origState;
 
 	var	$link_dialog	= $('<div id="rte-link-dialog">' +
 							'<p><label>* ' + EE.rte.link.dialog.url_field_label + '</label>' +
@@ -85,9 +85,10 @@
 		// Remove link
 		.on('click', '#rte-remove-link', function(){
 			var $el = $(link_node);
-			$el.replaceWith($el.html());
-	
+			$el.replaceWith($el.html());	
 			$link_dialog.dialog('close');
+
+			button.Selection.set(origState.selection);
 		})
 		// Add link
 		.on('click', '#rte-link-dialog .submit', function(){
@@ -172,6 +173,7 @@
 		label:	EE.rte.link.add,
 		handler: function(state, finalize) {
 			button = this;
+			origState = state;
 			$editor = this.$editor;
 			$editor.select();
 
