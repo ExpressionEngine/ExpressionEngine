@@ -215,10 +215,35 @@ class Rte_mcp {
 	{
 		$this->EE->load->model('rte_toolset_model');
 		
-		// delete
-		if ($this->EE->rte_toolset_model->delete($this->EE->input->get_post('toolset_id')))
+		$toolset_id = $this->EE->input->get_post('toolset_id');
+		
+		// Delete
+		if ($this->EE->rte_toolset_model->delete($toolset_id))
 		{
 			$this->EE->session->set_flashdata('message_success', lang('toolset_deleted'));
+			
+			// If the default toolset was deleted
+			if ($toolset_id == $this->EE->config->item('rte_default_toolset_id'))
+			{
+				$toolsets = $this->EE->rte_toolset_model->get_toolset_list();
+				
+				// Make the new default toolset the first available
+				if ( ! empty($toolsets))
+				{
+					$default_toolset_pref = array(
+						'rte_default_toolset_id' => $toolsets[0]['toolset_id']
+					);
+				}
+				// Or set it to zero if there are no toolsets left
+				else
+				{
+					$default_toolset_pref = array(
+						'rte_default_toolset_id' => 0
+					);
+				}
+				
+				$this->EE->config->update_site_prefs($default_toolset_pref);
+			}
 		}
 		else
 		{
