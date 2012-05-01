@@ -1348,6 +1348,7 @@ WysiHat.Selection = function($el)
 {
 	this.$editor = $el;
 	this.top = this.$editor.get(0);
+	this._getSelection = window.getSelection;
 }
 
 WysiHat.Selection.prototype = {
@@ -3071,6 +3072,11 @@ if ( ! document.getSelection) {
 			this.setEnd(node.parentNode, CompatUtil.getNodeIndex(node) + 1);
 		},
 
+		insertNode: function(node)
+		{
+			CompatUtil.insertNode(node, this.startContainer, this.startOffset);
+		},
+
 		/**
 		 * Select a node's contents
 		 */
@@ -3360,6 +3366,41 @@ if ( ! document.getSelection) {
 			return null;
 		},
 
+		insertNode: function(node, n, o)
+		{
+			var firstNodeInserted = node.nodeType == 11 ? node.firstChild : node;
+			if (this.isCharacterDataNode(n))
+			{
+				if (o == n.length)
+				{
+					$(node).insertAfter(n);
+				}
+				else
+				{
+					n.parentNode.insertBefore(node, o == 0 ? n : this.splitDataNode(n, o));
+				}
+			}
+			else if (o >= n.childNodes.length)
+			{
+				n.appendChild(node);
+			}
+			else
+			{
+				n.insertBefore(node, n.childNodes[o]);
+			}
+
+			return firstNodeInserted;
+		},
+
+		splitDataNode: function(node, index)
+		{
+			var newNode = node.cloneNode(false);
+			newNode.deleteData(0, index);
+			node.deleteData(index, node.length - index);
+			$(newNode).insertAfter(node);
+			return newNode;
+		},
+
 		rangeToTextRange: function(range)
 		{
 			var startRange, endRange;
@@ -3605,12 +3646,9 @@ if ( ! document.getSelection) {
 })();
 
 } // endif ( ! window.selection)
-
-
-// quick fix so we can extend the native prototype
-// this isn't pretty ...
-if ( typeof Selection == 'undefined' )
+else
 {
+	// quick fix so we can extend the native prototype
 	var Selection = {};
 	Selection.prototype = window.getSelection().__proto__;
 }
@@ -3641,7 +3679,7 @@ $.extend(Range.prototype, {
 	}
 });
 
-$.extend(Selection.prototype, {
+$.extend(window.Selection.prototype, {
 	getNode: function()
 	{
 		return ( this.rangeCount > 0 ) ? this.getRangeAt(0).getNode() : null;
