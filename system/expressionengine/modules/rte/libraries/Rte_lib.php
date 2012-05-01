@@ -216,7 +216,7 @@ class Rte_lib {
 
 		$this->EE->output->send_ajax_response(array(
 			'success' 		=> lang('toolset_updated'),
-			'force_refresh' => ! $is_members
+			'force_refresh' => TRUE
 		));
 	}
 
