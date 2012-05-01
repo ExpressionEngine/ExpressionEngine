@@ -2985,7 +2985,10 @@ if ( ! document.getSelection) {
  *
  * Big hat tips to Tim Down's Rangy and Tim Cameron
  * Ryan's IERange. Neither quite worked here so I
- * reimplemented it with lots of inspiration.
+ * reimplemented it with lots of inspiration from
+ * their code.
+ *
+ * Rangy and IERange are MIT Licensed
  */
 (function() {
 
@@ -3314,12 +3317,20 @@ if ( ! document.getSelection) {
 	 */
 	var CompatUtil = {
 
+		/**
+		 * Character data nodes have text, others
+		 * have childNodes.
+		 */
 		isCharacterDataNode: function(node)
 		{
 			var t = node.nodeType;
 			return t == 3 || t == 4 || t == 8 ; // Text, CDataSection or Comment
 		},
 
+		/**
+		 * Find a node offset for non-chardatanode
+		 * selection offsets.
+		 */
 		getNodeIndex: function(node)
 		{
 			var i = 0;
@@ -3330,6 +3341,10 @@ if ( ! document.getSelection) {
 			return i;
 		},
 
+		/*
+		 * Check for ancestors. May be able to move
+		 * this to $.contains(ancestor, descendant) in the future.
+		 */
 		isAncestorOf: function(ancestor, descendant, selfIsAncestor)
 		{
 			var n = selfIsAncestor ? descendant : descendant.parentNode;
@@ -3346,6 +3361,9 @@ if ( ! document.getSelection) {
 			return false;
 		},
 
+		/**
+		 * Find a shared ancestor
+		 */
 		getCommonAncestor: function(node1, node2)
 		{
 			var ancestors = [], n;
@@ -3365,6 +3383,11 @@ if ( ! document.getSelection) {
 			return null;
 		},
 
+		/*
+		 * Insert the node at a specific offset.
+		 * Needs to split text nodes if the insertion is to happen
+		 * in the middle of some text.
+		 */
 		insertNode: function(node, n, o)
 		{
 			var firstNodeInserted = node.nodeType == 11 ? node.firstChild : node;
@@ -3391,6 +3414,10 @@ if ( ! document.getSelection) {
 			return firstNodeInserted;
 		},
 
+		/**
+		 * Split a text, comment, or cdata node
+		 * to make room for a new insertion.
+		 */
 		splitDataNode: function(node, index)
 		{
 			var newNode = node.cloneNode(false);
@@ -3400,6 +3427,9 @@ if ( ! document.getSelection) {
 			return newNode;
 		},
 
+		/**
+		 * Convert a range object back to a textRange
+		 */
 		rangeToTextRange: function(range)
 		{
 			var startRange, endRange;
@@ -3424,6 +3454,11 @@ if ( ! document.getSelection) {
 			return textRange;
 		},
 
+		/**
+		 * IE's textRange.parentElement is buggy, so
+		 * this function does a bit more work to ensure
+		 * consistency.
+		 */
 		getParentElement: function(textRange)
 		{
 			var parentEl = textRange.parentElement(),
@@ -3446,6 +3481,9 @@ if ( ! document.getSelection) {
 			return startEndContainer == parentEl ? startEndContainer : this.getCommonAncestor(parentEl, startEndContainer);
 		},
 
+		/**
+		 * Traverse the dom and place a textNode at the desired position.
+		 */
 		createBoundaryTextRange: function(boundaryPosition, isStart)
 		{
 			var doc = document,
@@ -3508,10 +3546,12 @@ if ( ! document.getSelection) {
 			return workingRange;
 		},
 
-		// Gets the boundary of a TextRange expressed as a node and an offset within that node. This function started out as
-		// an improved version of code found in Tim Cameron Ryan's IERange (http://code.google.com/p/ierange/) but has
-		// grown, fixing problems with line breaks in preformatted text, adding workaround for IE TextRange bugs, handling
-		// for inputs and images, plus optimizations.
+		/**
+		 * Gets the boundary of a TextRange expressed as a node and an offset within that node. This function started out as
+		 * an improved version of code found in Tim Cameron Ryan's IERange (http://code.google.com/p/ierange/) but has
+		 * grown, fixing problems with line breaks in preformatted text, adding workaround for IE TextRange bugs, handling
+		 * for inputs and images, plus optimizations.
+		 */
 		getBoundary: function(textRange, wholeRangeContainerElement, isStart, isCollapsed)
 		{
 			var workingRange = textRange.duplicate(),
@@ -3657,6 +3697,13 @@ else
 // Both native and our shims.
 
 $.extend(Range.prototype, {
+
+	/**
+	 * Compare two ranges for equality. We want to
+	 * compare the actual selection rather than just
+	 * the offsets, since there is more than one way
+	 * to specify a certain selection.
+	 */
 	equalRange: function(range)
 	{
 		if ( ! range ||
@@ -3679,6 +3726,11 @@ $.extend(Range.prototype, {
 });
 
 $.extend(window.Selection.prototype, {
+
+	/**
+	 * Get the node that most encompasses the
+	 * entire selection.
+	 */
 	getNode: function()
 	{
 		return ( this.rangeCount > 0 ) ? this.getRangeAt(0).getNode() : null;
