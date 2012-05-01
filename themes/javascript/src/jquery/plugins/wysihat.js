@@ -3604,12 +3604,8 @@ if ( ! document.getSelection) {
 
 })();
 
-} // endif ( ! window.selection)
-
-
-// quick fix so we can extend the native prototype
-// this isn't pretty ...
-if ( typeof Selection == 'undefined' )
+}
+else
 {
 	var Selection = {};
 	Selection.prototype = window.getSelection().__proto__;
@@ -3641,7 +3637,7 @@ $.extend(Range.prototype, {
 	}
 });
 
-$.extend(Selection.prototype, {
+$.extend(window.Selection.prototype, {
 	getNode: function()
 	{
 		return ( this.rangeCount > 0 ) ? this.getRangeAt(0).getNode() : null;
