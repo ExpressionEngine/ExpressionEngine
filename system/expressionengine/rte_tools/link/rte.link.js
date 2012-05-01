@@ -113,7 +113,7 @@
 		$error.remove();
 		
 		// Reselect the text/node
-		var sel = WysiHat.getSelection();
+		var sel = window.getSelection();
 		sel.removeAllRanges();
 		sel.addRange(range);
 		
@@ -179,7 +179,7 @@
 			var selUtil = this.Selection; 
 			selUtil.set(state.selection);
 
-			var sel		= WysiHat.getSelection(),
+			var sel		= window.getSelection(),
 				link	= true,
 				s_el, e_el;
 

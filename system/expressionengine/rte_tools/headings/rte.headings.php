@@ -97,7 +97,7 @@ class Headings_rte {
 			query: function() {
 
 				var
-					selection	= WysiHat.getSelection(),
+					selection	= window.getSelection(),
 					hasRange	= !! selection.rangeCount,
 					el			= selection.anchorNode,
 					blocks	 	= 'p,h1,h2,h3,h4,h5,h6',

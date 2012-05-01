@@ -83,7 +83,7 @@ class Blockquote_rte {
 			},
 			query: function() {
 				var
-				selection	= WysiHat.getSelection(),
+				selection	= window.getSelection(),
 				hasRange	= !! selection.rangeCount,
 				el			= selection.anchorNode;
 

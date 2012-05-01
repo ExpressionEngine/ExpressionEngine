@@ -106,12 +106,6 @@ var WysiHat = window.WysiHat = {
 		return obj;
 	},
 
-	// overriden for IE in the compat section
-	getSelection: function()
-	{
-		return window.getSelection();
-	},
-
 	/**
 	 * Available buttons.
 	 * Don't touch it, use addButton above.
@@ -235,7 +229,7 @@ WysiHat.Editor.prototype = {
 	{
 		var $el	= this.$editor,
 			val = $el.html(),
-			s = WysiHat.getSelection(),
+			s = window.getSelection(),
 			r;
 
 		if ( val == '' ||
@@ -462,7 +456,7 @@ $(document).ready(function(){
 			}
 			else
 			{
-				selection = WysiHat.getSelection();
+				selection = window.getSelection();
 				if (selection.rangeCount < 1) { return };
 
 				range = selection.getRangeAt(0);
@@ -1366,7 +1360,7 @@ WysiHat.Selection.prototype = {
 	 */
 	get: function(range)
 	{
-		var s = WysiHat.getSelection(),
+		var s = window.getSelection(),
 			r = document.createRange(),
 			length, topOffset;
 
@@ -1406,7 +1400,7 @@ WysiHat.Selection.prototype = {
 			start = start[0];
 		}
 
-		var s = WysiHat.getSelection(),
+		var s = window.getSelection(),
 			r = document.createRange(),
 			startOffset, endOffset;
 
@@ -1434,7 +1428,7 @@ WysiHat.Selection.prototype = {
 	 */
 	toString: function(range)
 	{
-		var s = WysiHat.getSelection();
+		var s = window.getSelection();
 
 		if (range === undefined)
 		{
@@ -1746,7 +1740,7 @@ $.extend(WysiHat.Commands, {
 		phrase	= false,
 		tags	= tagNames.split(','),
 		t		= tags.length,
-		sel		= WysiHat.getSelection(),
+		sel		= window.getSelection(),
 		a		= sel.anchorNode,
 		b		= sel.focusNode;
 
@@ -1813,7 +1807,7 @@ $.extend(WysiHat.Commands, {
 	getSelectedStyles: function()
 	{
 		var
-		selection = WysiHat.getSelection(),
+		selection = window.getSelection(),
 		$node = $(selection.getNode()),
 		styles = {};
 
@@ -1882,7 +1876,7 @@ $.extend(WysiHat.Commands, {
 		}
 
 		var
-		selection	= WysiHat.getSelection(),
+		selection	= window.getSelection(),
 		isFormatter	= WysiHat.Element.isFormatter,
 		i			= selection.rangeCount,
 		ranges		= [],
@@ -1906,7 +1900,7 @@ $.extend(WysiHat.Commands, {
 	manipulateSelection: function()
 	{
 		var
-		selection	= WysiHat.getSelection(),
+		selection	= window.getSelection(),
 		i			= selection.rangeCount,
 		ranges		= [],
 		args		= arguments,
@@ -1961,7 +1955,7 @@ $.extend(WysiHat.Commands, {
 	getRanges: function()
 	{
 		var
-		selection	= WysiHat.getSelection(),
+		selection	= window.getSelection(),
 		i			= selection.rangeCount,
 		ranges		= [],
 		range;
@@ -1983,7 +1977,7 @@ $.extend(WysiHat.Commands, {
 	restoreRanges: function(ranges)
 	{
 		var
-		selection = WysiHat.getSelection(),
+		selection = window.getSelection(),
 		i = ranges.length;
 
 		selection.removeAllRanges();
@@ -2001,7 +1995,7 @@ $.extend(WysiHat.Commands, {
 	changeContentBlock: function(tagName)
 	{
 		var
-		selection	= WysiHat.getSelection(),
+		selection	= window.getSelection(),
 		editor		= this,
 		$editor		= $(editor),
 		replaced	= 'WysiHat-replaced',
@@ -2052,7 +2046,7 @@ $.extend(WysiHat.Commands, {
 	wrapHTML: function()
 	{
 		var
-		selection	= WysiHat.getSelection(),
+		selection	= window.getSelection(),
 		range		= selection.getRangeAt(0),
 		node		= selection.getNode(),
 		argLength	= arguments.length,
@@ -3295,7 +3289,7 @@ if ( ! document.getSelection) {
 	 * applies doubly in this case because of the _refresh call.
 	 */
 	var S = new Selection();
-	window.getSelection = WysiHat.getSelection = function() {
+	window.getSelection = function() {
 		return S._refresh();
 	};
 
