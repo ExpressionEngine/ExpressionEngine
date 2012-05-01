@@ -3648,8 +3648,8 @@ if ( ! document.getSelection) {
 else
 {
 	// quick fix so we can extend the native prototype
-	var Selection = {};
-	Selection.prototype = window.getSelection().__proto__;
+	window.Selection = {};
+	window.Selection.prototype = window.getSelection().__proto__;
 }
 
 
