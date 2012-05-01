@@ -58,7 +58,7 @@ function setupImageTool($editor, $image_button) {
 				$editor.focus();
 			}
 			
-			var sel = window.getSelection(),
+			var sel = WysiHat.getSelection(),
 				range = document.createRange();
 			
 			range.setStart(sel.anchorNode, sel.anchorOffset);
