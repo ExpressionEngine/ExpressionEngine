@@ -2439,6 +2439,7 @@ WysiHat.Formatting = {
 		$element.find('br').replaceWith('\n');
 		$element.html(function(i, html) {
 			html = $.trim(html);
+			html = html.replace(/<!--[^>]*-->/g, ''); // remove comments
 			html = html
 				.replace(/<\/p>\s*<p>/g, '\n')
 				.replace(/^(<p>)+/, '')		// some browsers automatically wrap every line in
