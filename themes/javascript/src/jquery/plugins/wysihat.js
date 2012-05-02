@@ -2439,11 +2439,11 @@ WysiHat.Formatting = {
 		$element.find('br').replaceWith('\n');
 		$element.html(function(i, html) {
 			html = $.trim(html);
-			html = html.replace(/<!--[^>]*-->/g, ''); // remove comments
 			html = html
 				.replace(/<\/p>\s*<p>/g, '\n')
-				.replace(/^(<p>)+/, '')		// some browsers automatically wrap every line in
-				.replace(/(<\/p>)+$/, '');	// paragraphs, remove the outer ones, we don't want those.
+				.replace(/^(<p>)+/, '')			// some browsers automatically wrap every line in
+				.replace(/(<\/p>)+$/, '')		// paragraphs, remove the outer ones, we don't want those.
+				.replace(/<!--[^>]*-->/g, '');	// remove comments
 
 			// no newlines, no paragraphs, no nonsense
 			if (html.indexOf('\n') == -1) {
