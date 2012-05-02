@@ -205,7 +205,8 @@ WysiHat.addButton('link', {
 
 	_setupDialog: function()
 	{
-		var $link_dialog = $(
+		var that = this,
+			$link_dialog = $(
 			'<div id="rte-link-dialog">' +
 			'<p><label>* ' + EE.rte.link.dialog.url_field_label + '</label>' +
 			'<input type="text" name="url" required="required" /></p>' +
@@ -231,7 +232,11 @@ WysiHat.addButton('link', {
 				autoOpen: false,
 				zIndex: 99999,
 				open: $.proxy(this, '_dialogOpen'),
-				close: function() { setTimeout($.proxy(this, '_dialogClose'), 1); }
+				close: function() {
+					setTimeout(function() {
+						that._dialogOpen();
+					}, 10);
+				}
 			})
 			.on('keypress', 'input', $.proxy(this, '_keyEvent'))				// Close on Enter
 			.on('click', '#rte-remove-link', $.proxy(this, '_removeLink'))		// Remove link
