@@ -129,14 +129,15 @@ var WysiHat = window.WysiHat = {
 WysiHat.Editor = function($field, options) {
 	this.$field = $field;
 	this.$editor = this.create();
-	
-	$field.hide().before(
+
+	$field.hide().before(this.$editor);
+
+	$field.add(this.$editor).wrapAll(
 		$('<div/>', {
-			'class': WysiHat.name + '-container',
-			'html': this.$editor
+			'class': WysiHat.name + '-container'
 		})
 	);
-	
+
 	this.Element = WysiHat.Element;
 	this.Commands = WysiHat.Commands;
 	this.Formatting = WysiHat.Formatting;
@@ -273,6 +274,7 @@ WysiHat.Editor.constructor = WysiHat.Editor;
 
 WysiHat.Element = (function(){
 
+	// @todo add tr somewhere
 	var
 	roots			= [ 'blockquote', 'details', 'fieldset', 'figure', 'td' ],
 
@@ -703,6 +705,7 @@ WysiHat.Event = function(obj)
 
 	// special events
 	this.add('paste', WysiHat.Paster.getHandler(obj));
+
 };
 
 WysiHat.Event.prototype = {
@@ -1881,6 +1884,8 @@ $.extend(WysiHat.Commands, {
 		i			= selection.rangeCount,
 		ranges		= [],
 		range;
+
+		var containers = WysiHat.Element.containers();
 
 		while ( i-- )
 		{

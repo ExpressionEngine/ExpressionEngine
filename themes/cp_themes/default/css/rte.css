@@ -102,7 +102,7 @@
 /* Container */
 
 .WysiHat-container {
-	overflow: hidden;
+	overflow: auto;
 	position: relative;
 	width: 99.5%;
 }
@@ -394,7 +394,7 @@ textarea.rte,
 }
 
 textarea.rte {
-	width: 98.5%;
+	width: 100%;
 }
 
 textarea.rte:focus,

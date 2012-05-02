@@ -114,20 +114,21 @@ class View_source_rte {
 			'toggle-text':	EE.rte.view_source.content,
 			init: function(name, $editor) {
 				this.parent.init(name, $editor);
-				$editor.add($editor.data('field'))
-					.bind('resize', function() {
-						var $this	= $(this);
-			
-						if ($this.is('.WysiHat-editor') && $this.is(':visible')) {
-							$editor.data('field')
-								.height($this.height())
-								.width($this.outerWidth());
-						} else if ($this.is('.rte') && $this.is(':visible')) {
-							$editor
-								.height($this.height())
-								.width($this.width());
-						}
-					}).resize();
+
+				var $editor = this.$editor,
+					$field = $editor.data('field'),
+					$container = $editor.parent();
+
+				$container.resize(function() {
+					if ($editor.is(':visible')) {
+						$field
+							.height($editor.outerHeight());
+					} else if ($field.is(':visible')) {
+						$editor
+							.height($field.height());
+					}
+				}).resize();
+
 				return this;
 			},
 			handler: function() {
