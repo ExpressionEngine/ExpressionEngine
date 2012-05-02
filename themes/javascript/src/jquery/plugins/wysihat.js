@@ -1869,17 +1869,14 @@ $.extend(WysiHat.Commands, {
 	},
 
 	/**
-	 * This is a highly unsafe method to have lying
-	 * around. It has to be called with apply to make
-	 * sure it operates on the right scope. I honestly
-	 * have no idea why it's written this way. -pk
-	 *
-	 * @todo fix it
+	 * Is a bit of a misnamed method. It really acts more
+	 * like an unwarp. The element is deleted, but the
+	 * contents stay intact!
 	 */
-	deleteElement: function()
+	deleteElement: function(el)
 	{
-		var $this = $(this);
-		$this.replaceWith( $this.html() );
+		var $el = $(el);
+		$el.replaceWith( $el.html() );
 	},
 
 	/**
@@ -1899,7 +1896,7 @@ $.extend(WysiHat.Commands, {
 
 			if ( isFormatter( $el ) )
 			{
-				that.deleteElement.apply( $el );
+				that.deleteElement( $el );
 			}
 		}
 

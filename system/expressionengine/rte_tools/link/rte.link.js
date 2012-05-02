@@ -192,7 +192,7 @@ WysiHat.addButton('link', {
 
 	_removeLink: function()
 	{
-		this.Commands.deleteElement.call(this.link_node);
+		this.Commands.deleteElement(this.link_node);
 
 		this.$link_dialog.dialog('close');
 		this.Selection.set(this.origState.selection);
