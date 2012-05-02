@@ -127,16 +127,11 @@ var WysiHat = window.WysiHat = {
 // ---------------------------------------------------------------------
 
 WysiHat.Editor = function($field, options) {
-	this.$field = $field;
+	this.$field = $field.hide();
 	this.$editor = this.create();
 
-	$field.hide().before(this.$editor);
-
-	$field.add(this.$editor).wrapAll(
-		$('<div/>', {
-			'class': WysiHat.name + '-container'
-		})
-	);
+	$field.before(this.$editor);
+	this.createWrapper();
 
 	this.Element = WysiHat.Element;
 	this.Commands = WysiHat.Commands;
@@ -173,6 +168,33 @@ WysiHat.Editor.prototype = {
 
 			'html': WysiHat.Formatting.getBrowserMarkupFrom(this.$field)
 		});
+	},
+
+	/**
+	 * Wrap everything up so that we can do things
+	 * like the image overlay without crazy hacks.
+	 */
+	createWrapper: function()
+	{
+		var that = this;
+		this.$field.add(this.$editor).wrapAll(
+			$('<div/>', {
+				'class': WysiHat.name + '-container',
+
+				// keep sizes in sync
+				'resize': function()
+				{
+					if (that.$field.is(':visible'))
+					{
+						that.$editor.height(that.$field.outerHeight());
+					}
+					else if (that.$editor.is(':visible'))
+					{
+						that.$field.height(that.$editor.innerHeight());
+					}
+				}
+			})
+		);
 	},
 
 	/**
@@ -1884,8 +1906,6 @@ $.extend(WysiHat.Commands, {
 		i			= selection.rangeCount,
 		ranges		= [],
 		range;
-
-		var containers = WysiHat.Element.containers();
 
 		while ( i-- )
 		{
