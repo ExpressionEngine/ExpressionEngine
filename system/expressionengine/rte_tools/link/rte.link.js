@@ -187,6 +187,7 @@ WysiHat.addButton('link', {
 		if (e.which == 13) // enter
 		{
 			this._validateLinkDialog();
+			return false;
 		}
 	},
 
