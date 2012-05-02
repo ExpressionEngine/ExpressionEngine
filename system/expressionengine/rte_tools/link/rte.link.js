@@ -231,7 +231,7 @@ WysiHat.addButton('link', {
 				autoOpen: false,
 				zIndex: 99999,
 				open: $.proxy(this, '_dialogOpen'),
-				close: $.proxy(this, '_dialogClose')
+				close: function() { setTimeout($.proxy(this, '_dialogClose'), 1); }
 			})
 			.on('keypress', 'input', $.proxy(this, '_keyEvent'))				// Close on Enter
 			.on('click', '#rte-remove-link', $.proxy(this, '_removeLink'))		// Remove link
