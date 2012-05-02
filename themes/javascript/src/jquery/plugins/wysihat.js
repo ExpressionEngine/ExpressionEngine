@@ -127,15 +127,16 @@ var WysiHat = window.WysiHat = {
 // ---------------------------------------------------------------------
 
 WysiHat.Editor = function($field, options) {
-	this.$field = $field;
+	this.$field = $field.hide();
 	this.$editor = this.create();
 
-	$field.hide().before(this.$editor);
+	$field.before(this.$editor);
+	this.createWrapper();
 
 	this.Element = WysiHat.Element;
 	this.Commands = WysiHat.Commands;
 	this.Formatting = WysiHat.Formatting;
-
+	
 	this.init(options);
 }
 
@@ -170,10 +171,38 @@ WysiHat.Editor.prototype = {
 	},
 
 	/**
+	 * Wrap everything up so that we can do things
+	 * like the image overlay without crazy hacks.
+	 */
+	createWrapper: function()
+	{
+		var that = this;
+		this.$field.add(this.$editor).wrapAll(
+			$('<div/>', {
+				'class': WysiHat.name + '-container',
+
+				// keep sizes in sync
+				'resize': function()
+				{
+					if (that.$field.is(':visible'))
+					{
+						that.$editor.height(that.$field.outerHeight());
+					}
+					else if (that.$editor.is(':visible'))
+					{
+						that.$field.height(that.$editor.innerHeight());
+					}
+				}
+			})
+		);
+	},
+
+	/**
 	 * Setup all of the utility classes
 	 */
 	init: function(options) {
-		var $ed = this.$editor;
+		var $ed = this.$editor,
+			that = this;
 
 		this.Undo = new WysiHat.Undo();
 		this.Selection = new WysiHat.Selection($ed);
@@ -187,7 +216,7 @@ WysiHat.Editor.prototype = {
 		$ed.closest('form').submit(function() {
 			if ($ed.is(':visible'))
 			{
-				this.updateField();
+				that.updateField();
 			}
 		});
 	},
@@ -267,6 +296,7 @@ WysiHat.Editor.constructor = WysiHat.Editor;
 
 WysiHat.Element = (function(){
 
+	// @todo add tr somewhere
 	var
 	roots			= [ 'blockquote', 'details', 'fieldset', 'figure', 'td' ],
 
@@ -509,7 +539,7 @@ WysiHat.Paster = (function() {
 					startC = ranges[0].startContainer,
 					waitTime = 0;
 
-				$paster.html('').css('top', document.body.scrollTop);
+				$paster.html('').css('top', $(document).scrollTop());
 				$paster.appendTo(document.body);
 				$paster.focus();
 
@@ -697,6 +727,7 @@ WysiHat.Event = function(obj)
 
 	// special events
 	this.add('paste', WysiHat.Paster.getHandler(obj));
+
 };
 
 WysiHat.Event.prototype = {
@@ -898,7 +929,7 @@ WysiHat.Event.prototype = {
 		return {
 			html: this.$editor.html(),
 			selection: this.Selection.get()
-		}
+		};
 	},
 
 	/**
@@ -1273,8 +1304,8 @@ WysiHat.Undo.prototype = {
 		// We have something to trim. Do it and recalculate lengths.
 		if (trim_before || trim_after)
 		{
-			str1 = str1.substring(trim_before, l1 - trim_after);
-			str2 = str2.substring(trim_before, l2 - trim_after);
+			str1 = str1.substring(trim_before, l1 - trim_after + 1);
+			str2 = str2.substring(trim_before, l2 - trim_after + 1);
 
 			l1 = str1.length;
 			l2 = str2.length;
@@ -1398,18 +1429,18 @@ WysiHat.Selection.prototype = {
 			r = document.createRange(),
 			startOffset, endOffset;
 
-		startOffset = this._getOffsetNode(this.top, start);
+		startOffset = this._getOffsetNode(this.top, start, true);
 		r.setStart.apply(r, startOffset);
 
 		// collapsed
-		if (end === undefined)
+		if (end === undefined || end == start)
 		{
 			end = start;
 			r.collapse(true);
 		}
 		else
 		{
-			endOffset = this._getOffsetNode(this.top, end);
+			endOffset = this._getOffsetNode(this.top, end, false);
 			r.setEnd.apply(r, endOffset);
 		}
 
@@ -1438,10 +1469,11 @@ WysiHat.Selection.prototype = {
 	 *
 	 * You probably don't want to touch this :).
 	 */
-	_getOffsetNode: function(startNode, offset)
+	_getOffsetNode: function(startNode, offset, isStart)
 	{
 		var curNode = startNode,
-			curNodeLen = 0;
+			curNodeLen = 0,
+			blocks = WysiHat.Element.getBlocks();
 
 		function getTextNodes(node)
 		{
@@ -1466,20 +1498,38 @@ WysiHat.Selection.prototype = {
 
 		if (offset == 0)
 		{
-			// weird case where they try to select something from 0
+			// weird case where they try to select a non text node
+			// e.g. The beginning of the editor.
 			if (curNode.nodeType != Node.TEXT_NODE)
 			{
+				// do our best to get to a text node
+				while (curNode.firstChild !== null)
+				{
+					curNode = curNode.firstChild;
+				}
+
 				return [curNode, 0];
 			}
 
-			// Offset is 0 but we're at the end of the node,
-			// jump ahead in the dom to the real beginning node.
-			while (curNode.nextSibling === null)
+			// Offset 0 means we're at the end of the node.
+			// If we're starting a selection and the end is a
+			// block node, we need to jump to the next one so
+			// that we don't select that initial newline.
+			if (isStart)
 			{
-				curNode = curNode.parentNode;
-			}
+				while (curNode.nextSibling === null)
+				{
+					curNode = curNode.parentNode;
+				}
 
-			curNode = curNode.nextSibling;
+				// the current one is a block element
+				// and we can move further? do it.
+				if ($.inArray(curNode.nodeName.toLowerCase(), blocks) > -1 &&
+					curNode.nextSibling !== null)
+				{
+					curNode = curNode.nextSibling;
+				}
+			}
 		}
 
 		curNodeLen = curNode.nodeValue ? curNode.nodeValue.length : 0;
@@ -1520,7 +1570,8 @@ WysiHat.Commands = (function() {
 		// no frills mapping to execCommand
 		makeEasy: [
 			'bold', 'underline', 'italic', 'strikethrough', 'fontname',
-			'fontsize', 'forecolor', 'createLink', 'insertImage'
+			'fontsize', 'forecolor', 'createLink', 'insertImage',
+			'insertOrderedList', 'insertUnorderedList'
 		],
 
 		// selectors to use for selectionIsWithin
@@ -1585,8 +1636,10 @@ WysiHat.Commands = (function() {
 			'font': 'fontname',
 			'color': 'forecolor',
 			'link': 'createLink',
-			'ol': 'orderedList',
-			'ul': 'unorderedList',
+			'ol': 'insertOrderedList',
+			'ul': 'insertUnorderedList',
+			'orderedList': 'insertOrderedList',
+			'unorderedList': 'insertUnorderedList',
 			'align': 'alignment'
 		}
 	};
@@ -1816,17 +1869,14 @@ $.extend(WysiHat.Commands, {
 	},
 
 	/**
-	 * This is a highly unsafe method to have lying
-	 * around. It has to be called with apply to make
-	 * sure it operates on the right scope. I honestly
-	 * have no idea why it's written this way. -pk
-	 *
-	 * @todo fix it
+	 * Is a bit of a misnamed method. It really acts more
+	 * like an unwarp. The element is deleted, but the
+	 * contents stay intact!
 	 */
-	deleteElement: function()
+	deleteElement: function(el)
 	{
-		var $this = $(this);
-		$this.replaceWith( $this.html() );
+		var $el = $(el);
+		$el.replaceWith( $el.html() );
 	},
 
 	/**
@@ -1836,6 +1886,8 @@ $.extend(WysiHat.Commands, {
 	 */
 	stripFormattingElements: function()
 	{
+		var that = this;
+
 		function stripFormatters( i, el )
 		{
 			var $el = $(el);
@@ -1844,7 +1896,7 @@ $.extend(WysiHat.Commands, {
 
 			if ( isFormatter( $el ) )
 			{
-				deleteElement.apply( $el );
+				that.deleteElement( $el );
 			}
 		}
 
@@ -2170,60 +2222,6 @@ $.extend(WysiHat.Commands, {
 				}
 			});
 		});
-	},
-
-	toggleList: function(type)
-	{
-		var
-		$list = $('<'+type+'/>'),
-		other = (type == 'ul') ? 'ol' : 'ul',
-		that = this;
-
-		if (this.is[type]())
-		{
-			this.manipulateSelection(function( range, $list ){
-				this.getRangeElements( range, type ).each(function(i){
-					var $this = $(this);
-					$this.children('li').each(function(){
-						var $this = $(this);
-						that.replaceElement( $this, 'p' );
-						$this.find('ol,ul').each(function(){
-							var	$parent = $(this).parent();
-							if ( $parent.is('p') )
-							{
-								that.deleteElement.apply( $parent );
-							}
-						});
-					});
-					that.deleteElement.apply( $this );
-				});
-			});
-		}
-		else
-		{
-			this.manipulateSelection(function( range, $list ){
-				var $l = $list.clone();
-				this.getRangeElements( range, this._blockElements ).each(function(i){
-					var $this = $(this);
-					if ( $this.parent().is(other) )
-					{
-						that.replaceElement( $this.parent(), type );
-						$l = $this.parent();
-					}
-					else
-					{
-						if ( ! i )
-						{
-							$this.replaceWith( $l );
-						}
-						$this.appendTo( $l );
-					}
-				});
-				$l.children(':not(li)').each(function(){
-					that.replaceElement( $(this), 'li' );
-				});
-			}, $list );
-		}
 	}
 });
 
@@ -2242,14 +2240,6 @@ $.extend(WysiHat.Commands.make, {
 		{
 			WysiHat.Commands.quoteSelection();
 		}
-	},
-
-	orderedList: function() {
-		WysiHat.Commands.toggleList('ol');
-	},
-
-	unorderedList: function() {
-		WysiHat.Commands.toggleList('ul');
 	},
 
 	alignment: function(alignment)
@@ -2345,9 +2335,6 @@ WysiHat.Formatting = {
 		}).remove();
 
 		$element
-			.find('br')
-				.replaceWith('\n')
-				.end()
 			.find('span')
 				.each(function(){
 					var $this = $(this);
@@ -2356,19 +2343,24 @@ WysiHat.Formatting = {
 						$this.removeClass('Apple-style-span');
 					}
 
-					if ( $this.css('font-weight') == 'bold' &&
-					 	 $this.css('font-style') == 'italic' )
+					var fontWeight = $this.css('font-weight'),
+						isBold = (fontWeight == 'bold' || fontWeight > 500),
+						isItalic = ($this.css('font-style') == 'italic');
+
+					$this.removeAttr('style');
+
+					if (isItalic && isBold)
 					{
-						$this.removeAttr('style').wrap('<strong>');
-						replaceElement( $this, 'em' );
+						$this.wrap('<b>');
+						replaceElement($this, 'i');
 					}
-					else if ( $this.css('font-weight') == 'bold' )
+					else if (isBold)
 					{
-						replaceElement( $this.removeAttr('style'), 'strong' );
+						replaceElement($this, 'b');
 					}
-					else if ( $this.css('font-style') == 'italic' )
+					else if (isItalic)
 					{
-						replaceElement( $this.removeAttr('style'), 'em' );
+						replaceElement($this, 'i');
 					}
 				 })
 				.end()
@@ -2380,14 +2372,14 @@ WysiHat.Formatting = {
 				 	}
 				 })
 				.end()
-			.find('b')
+			.find('strong')
 				.each(function(){
-				 	replaceElement($(this),'strong');
+				 	replaceElement($(this),'b');
 				 })
 				.end()
-			.find('i')
+			.find('em')
 				.each(function(){
-				 	replaceElement($(this),'em');
+				 	replaceElement($(this),'i');
 				 })
 				.end()
 			.find('strike')
@@ -2403,16 +2395,20 @@ WysiHat.Formatting = {
 			.find('p:empty,script,noscript,style').remove();
 	},
 
+	// selection before tag, between tags, after tags
+	// between tags (x offset)
+
+
 	cleanupPaste: function($element, parentTagName)
 	{
 		var replaceElement = WysiHat.Commands.replaceElement;
-
 		this.cleanup($element);
 
 		// Ok, now we want to get rid of everything except for the
 		// bare tags (with some exceptions, but not many). The trick
 		// is to run through the found elements backwards. Otherwise
 		// the node reference disappears when the parent is replaced.
+
 		var els = $element.find('*'),
 			rev = $.makeArray(els).reverse();
 
@@ -2437,6 +2433,33 @@ WysiHat.Formatting = {
 			$(this).replaceWith(replace);
 		});
 
+
+		// most of this deals with newlines, start
+		// out with a reasonable subset
+		$element.find('br').replaceWith('\n');
+		$element.html(function(i, html) {
+			html = $.trim(html);
+			html = html
+				.replace(/<\/p>\s*<p>/g, '\n')
+				.replace(/^(<p>)+/, '')		// some browsers automatically wrap every line in
+				.replace(/(<\/p>)+$/, '');	// paragraphs, remove the outer ones, we don't want those.
+
+			// no newlines, no paragraphs, no nonsense
+			if (html.indexOf('\n') == -1) {
+				return html;
+			}
+
+			// with the single line case out of the way, convert everything
+			// to paragraphs. This will make weeding out the double newlines
+			// easier below. I know it seems silly. By the end of this we're
+			// back to input for safari, but normalized for all others.
+			html = html
+				.replace(/\n/, "<p>")
+				.replace(/\n/g, "\n</p><p>");
+
+			return $.trim(html) + "</p>";
+		});
+
 		// remove needless spans and empty elements
 		$element.find('span').children(WysiHat.Element.getBlocks()).unwrap();
 		$element.find(':empty').remove();
@@ -2451,11 +2474,11 @@ WysiHat.Formatting = {
 			});
 		}
 
-		// ok, now the fun bit with the paragraphs and newlines.
-		// the browsers turn all newlines into paragraphs, we only
-		// want them for the doubles newlines and brs otherwise. So
-		// we need to step through all the sibling pairs and merge
-		// when they are not separated by a blank.
+		// ok, now the fun bit with the paragraphs and newlines again.
+		// We equalize all newlines into paragraphs above, but really
+		// we only want them for the doubles newlines. All others are
+		// supposed to be <br>s. So we need to step through all the
+		// sibling pairs and merge when they are not separated by a blank.
 
 		var currentP,
 			removal = [];
@@ -2498,6 +2521,12 @@ WysiHat.Formatting = {
 		{
 			currentP.remove();
 		}
+
+		// since all of the code above was newline sensitive, what
+		// comes out has none. So make it pretty!
+		$element
+			.before("\n")
+			.find("br").replaceWith('<br>\n');
 	},
 
 	reBlocks: new RegExp(
@@ -2555,7 +2584,10 @@ WysiHat.Formatting = {
 		this.format( $container );
 
 		$container.find('*').html(function(i, val) {
-			return val.replace('\n', '<br>\n').replace(/(\t| +)/g, ' ');
+			return val
+				.replace('\n', '<br>\n')
+				.replace(/(<br>)+/g, '<br>')
+				.replace(/(\t| +)/g, ' ');
 		});
 
 		return $container
@@ -2672,6 +2704,8 @@ var BlankButton = {
 
 WysiHat.Toolbar = function($el, buttons)
 {
+	this.suspendQueries = false;
+
 	this.$editor = $el;
 	this.$toolbar = $('<div class="' + WysiHat.name + '-editor-toolbar" role="presentation"></div>');
 
@@ -2718,7 +2752,7 @@ WysiHat.Toolbar.prototype = {
 			var opts = button.options,
 				l = opts.length, i = 0;
 
-			$btn = $('<select class="button picker"/>');
+			$btn = $('<select class="button"/>');
 
 			for ( ; i < l; i++)
 			{
@@ -2726,6 +2760,9 @@ WysiHat.Toolbar.prototype = {
 					'<option value="' + opts[i][0] + '">' + opts[i][1] + '</option>'
 				);
 			}
+
+			$btn.appendTo(this.$toolbar)
+				.wrap('<div class="button select-container"/>');
 		}
 		else
 		{
@@ -2740,10 +2777,9 @@ WysiHat.Toolbar.prototype = {
 					function() {
 						$(this).removeAttr('title');
 					}
-				);
+				)
+				.appendTo(this.$toolbar);
 		}
-
-		$btn.appendTo(this.$toolbar);
 
 		if (button.cssClass)
 		{
@@ -2766,9 +2802,18 @@ WysiHat.Toolbar.prototype = {
 
 	observeButtonClick: function(button)
 	{
-		var evt = (button.type && button.type == 'select') ? 'change' : 'click';
 
-		button.$element.on(evt, function(e){
+		var evt = (button.type && button.type == 'select') ? 'change' : 'click',
+			that = this;
+
+		button.$element.on(evt, function(e) {
+			// IE had trouble doing change handlers
+			// as the state check would run too soon
+			// and reset the input element, so we suspend
+			// the query checks until after the event handler
+			// has run.
+			that.suspendQueries = true;
+
 			var $editor = button.$editor;
 
 			// Bring focus to the editor before the handler is called
@@ -2780,9 +2825,19 @@ WysiHat.Toolbar.prototype = {
 
 			button.Event.fire(button.name);
 
-			return false;
+			that.suspendQueries = false;
+			return false; // (evt == 'change');
 		});
 
+/*
+
+		button.$element.on('click', function() {
+			//button.make('orderedList');
+			button.Commands.execCommand('insertOrderedList', false, null);
+			button.$editor.focus();
+			return false;
+		});
+*/
 	},
 
 	observeStateChanges: function(button)
@@ -2793,6 +2848,11 @@ WysiHat.Toolbar.prototype = {
 		previousState;
 
 		that.$editor.on( 'WysiHat-selection:change', function(){
+			if (that.suspendQueries)
+			{
+				return;
+			}
+
 			var state = handler( button.$editor, button.$element );
 			if (state != previousState)
 			{
@@ -2868,629 +2928,6 @@ jQuery.fn.wysihat = function(options) {
 
 (function(document, $) {
 
-/*  IE Selection and Range classes
- *
- *  Original created by Tim Cameron Ryan
- *	http://github.com/timcameronryan/IERange
- *  Copyright (c) 2009 Tim Cameron Ryan
- *  Released under the MIT/X License
- *
- *  Modified by Joshua Peek
- */
-if (!window.getSelection) {
-	(function($){
-		var DOMUtils = {
-			isDataNode: function( node )
-			{
-				try {
-					return node && node.nodeValue !== null && node.data !== null;
-				} catch (e) {
-					return false;
-				}
-			},
-
-			isAncestorOf: function( parent, node )
-			{
-				if ( ! parent )
-				{
-					return false;
-				}
-				return ! DOMUtils.isDataNode(parent) &&
-					   ( node.parentNode == parent ||
-						 parent.contains( DOMUtils.isDataNode(node) ? node.parentNode : node ) );
-			},
-
-			isAncestorOrSelf: function( root, node )
-			{
-				return root == node ||
-				 	   DOMUtils.isAncestorOf( root, node );
-			},
-
-			findClosestAncestor: function( root, node )
-			{
-				if ( DOMUtils.isAncestorOf( root, node ) )
-				{
-					while ( node && node.parentNode != root )
-					{
-						node = node.parentNode;
-					}
-				}
-				return node;
-			},
-
-			getNodeLength: function(node)
-			{
-				return DOMUtils.isDataNode(node) ? node.length : node.childNodes.length;
-			},
-
-			splitDataNode: function( node, offset )
-			{
-				if ( ! DOMUtils.isDataNode( node ) )
-				{
-					return false;
-				}
-				var newNode = node.cloneNode(false);
-				node.deleteData(offset, node.length);
-				newNode.deleteData(0, offset);
-				node.parentNode.insertBefore( newNode, node.nextSibling );
-			}
-		};
-
-		window.Range = (function(){
-
-			function Range( document )
-			{
-				this._document = document;
-				this.startContainer = this.endContainer = document.body;
-				this.endOffset = DOMUtils.getNodeLength(document.body);
-			}
-
-			function findChildPosition( node )
-			{
-				for ( var i = 0; node = node.previousSibling; i++ )
-				{
-					continue;
-				}
-				return i;
-			}
-
-			Range.prototype = {
-
-				START_TO_START:	0,
-				START_TO_END:	1,
-				END_TO_END:		2,
-				END_TO_START:	3,
-
-				startContainer:	null,
-				startOffset:	0,
-				endContainer:	null,
-				endOffset:		0,
-				commonAncestorContainer: null,
-				collapsed:		false,
-				_document:		null,
-
-				_toTextRange: function()
-				{
-					function adoptEndPoint( textRange, domRange, bStart )
-					{
-						var
-						container		= domRange[bStart ? 'startContainer' : 'endContainer'],
-						offset			= domRange[bStart ? 'startOffset' : 'endOffset'],
-						textOffset		= 0,
-						anchorNode		= DOMUtils.isDataNode(container) ? container : container.childNodes[offset],
-						anchorParent	= DOMUtils.isDataNode(container) ? container.parentNode : container,
-						cursorNode		= domRange._document.createElement('a'),
-						cursor			= domRange._document.body.createTextRange();
-
-						if ( container.nodeType == 3 ||
-							 container.nodeType == 4 )
-						{
-							textOffset = offset;
-						}
-
-						textRange.setEndPoint(bStart ? 'StartToStart' : 'EndToStart', cursor);
-						textRange[bStart ? 'moveStart' : 'moveEnd']('character', textOffset);
-					}
-
-					var textRange = this._document.body.createTextRange();
-					adoptEndPoint(textRange, this, true);
-					adoptEndPoint(textRange, this, false);
-					return textRange;
-				},
-
-				_refreshProperties: function()
-				{
-					this.collapsed = (this.startContainer == this.endContainer && this.startOffset == this.endOffset);
-					var node = this.startContainer;
-					while ( node &&
-							node != this.endContainer &&
-							! DOMUtils.isAncestorOf(node, this.endContainer) )
-					{
-						node = node.parentNode;
-					}
-					this.commonAncestorContainer = node;
-				},
-
-				setStart: function( container, offset )
-				{
-					this.startContainer	= container;
-					this.startOffset	= offset;
-					this._refreshProperties();
-				},
-
-				setEnd: function( container, offset )
-				{
-					this.endContainer	= container;
-					this.endOffset		= offset;
-					this._refreshProperties();
-				},
-
-				setStartBefore: function( refNode )
-				{
-					this.setStart( refNode.parentNode, findChildPosition(refNode) );
-				},
-
-				setStartAfter: function(refNode)
-				{
-					this.setStart( refNode.parentNode, findChildPosition(refNode) + 1 );
-				},
-
-				setEndBefore: function( refNode )
-				{
-					this.setEnd(refNode.parentNode, findChildPosition(refNode));
-				},
-
-				setEndAfter: function( refNode )
-				{
-					this.setEnd( refNode.parentNode, findChildPosition(refNode) + 1 );
-				},
-
-				selectNode: function( refNode )
-				{
-					this.setStartBefore(refNode);
-					this.setEndAfter(refNode);
-				},
-
-				selectNodeContents: function( refNode )
-				{
-					this.setStart(refNode, 0);
-					this.setEnd(refNode, DOMUtils.getNodeLength(refNode));
-				},
-
-				collapse: function(toStart)
-				{
-					if (toStart)
-					{
-						this.setEnd(this.startContainer, this.startOffset);
-					}
-					else
-					{
-						this.setStart(this.endContainer, this.endOffset);
-					}
-				},
-
-				cloneContents: function()
-				{
-					return (function cloneSubtree( iterator ){
-						for ( var node, frag = document.createDocumentFragment(); node = iterator.next(); )
-						{
-							node = node.cloneNode( ! iterator.hasPartialSubtree() );
-							if ( iterator.hasPartialSubtree() )
-							{
-								node.appendChild( cloneSubtree( iterator.getSubtreeIterator() ) );
-							}
-							frag.appendChild( node );
-						}
-						return frag;
-					})( new RangeIterator(this) );
-				},
-
-				extractContents: function()
-				{
-					var range = this.cloneRange();
-					if (this.startContainer != this.commonAncestorContainer)
-					{
-						this.setStartAfter(DOMUtils.findClosestAncestor(this.commonAncestorContainer, this.startContainer));
-					}
-					this.collapse(true);
-					return (function extractSubtree( iterator ){
-						for ( var node, frag = document.createDocumentFragment(); node = iterator.next(); )
-						{
-							iterator.hasPartialSubtree() ? node = node.cloneNode(false) : iterator.remove();
-							if ( iterator.hasPartialSubtree() )
-							{
-								node.appendChild( extractSubtree( iterator.getSubtreeIterator() ) );
-							}
-							frag.appendChild( node );
-						}
-						return frag;
-					})( new RangeIterator(range) );
-				},
-
-				deleteContents: function()
-				{
-					var range = this.cloneRange();
-					if (this.startContainer != this.commonAncestorContainer)
-					{
-						this.setStartAfter( DOMUtils.findClosestAncestor( this.commonAncestorContainer, this.startContainer ) );
-					}
-					this.collapse(true);
-					(function deleteSubtree( iterator ){
-						while ( iterator.next() )
-						{
-							iterator.hasPartialSubtree() ? deleteSubtree( iterator.getSubtreeIterator() ) : iterator.remove();
-						}
-					})( new RangeIterator(range) );
-				},
-
-				insertNode: function(newNode)
-				{
-					if (DOMUtils.isDataNode(this.startContainer))
-					{
-						DOMUtils.splitDataNode( this.startContainer, this.startOffset );
-						this.startContainer.parentNode.insertBefore( newNode, this.startContainer.nextSibling );
-					}
-					else
-					{
-						var offsetNode = this.startContainer.childNodes[this.startOffset];
-						if (offsetNode)
-						{
-							this.startContainer.insertBefore( newNode, offsetNode );
-						}
-						else
-						{
-							this.startContainer.appendChild( newNode );
-						}
-					}
-					this.setStart(this.startContainer, this.startOffset);
-				},
-
-				surroundContents: function(newNode)
-				{
-					var content = this.extractContents();
-					this.insertNode(newNode);
-					newNode.appendChild(content);
-					this.selectNode(newNode);
-				},
-
-				compareBoundaryPoints: function(how, sourceRange)
-				{
-					var containerA, offsetA, containerB, offsetB;
-					switch ( how )
-					{
-						case this.START_TO_START:
-						case this.START_TO_END:
-							containerA = this.startContainer;
-							offsetA = this.startOffset;
-							break;
-						case this.END_TO_END:
-						case this.END_TO_START:
-							containerA = this.endContainer;
-							offsetA = this.endOffset;
-							break;
-					}
-					switch ( how )
-					{
-						case this.START_TO_START:
-						case this.END_TO_START:
-							containerB = sourceRange.startContainer;
-							offsetB = sourceRange.startOffset;
-							break;
-						case this.START_TO_END:
-						case this.END_TO_END:
-							containerB = sourceRange.endContainer;
-							offsetB = sourceRange.endOffset;
-							break;
-					}
-
-					return ( containerA.sourceIndex < containerB.sourceIndex
-								? -1
-								: ( containerA.sourceIndex == containerB.sourceIndex
-										? ( offsetA < offsetB
-												? -1
-												: ( offsetA == offsetB ? 0 : 1 )
-										  ) // offsetA < offsetB
-										: 1
-								  ) // containerA.sourceIndex == containerB.sourceIndex
-						   ); // containerA.sourceIndex < containerB.sourceIndex
-				},
-
-				cloneRange: function()
-				{
-					var range = new Range( this._document );
-					range.setStart( this.startContainer, this.startOffset );
-					range.setEnd( this.endContainer, this.endOffset );
-					return range;
-				},
-
-				toString: function()
-				{
-					return this._toTextRange().text;
-				},
-
-				createContextualFragment: function( tagString )
-				{
-					var
-					content		= ( DOMUtils.isDataNode(this.startContainer) ? this.startContainer.parentNode
-																			 : this.startContainer ).cloneNode(false),
-					fragment	= this._document.createDocumentFragment();
-
-					content.innerHTML = tagString;
-					for ( ; content.firstChild; )
-					{
-						fragment.appendChild(content.firstChild);
-					}
-					return fragment;
-				}
-			};
-
-			function RangeIterator(range)
-			{
-				this.range = range;
-				if ( range.collapsed )
-				{
-					return;
-				}
-
-				var root	= range.commonAncestorContainer;
-				this._next	= range.startContainer == root && ! DOMUtils.isDataNode( range.startContainer )
-								? range.startContainer.childNodes[range.startOffset]
-								: DOMUtils.findClosestAncestor( root, range.startContainer );
-				this._end	= range.endContainer == root && ! DOMUtils.isDataNode( range.endContainer )
-								? range.endContainer.childNodes[range.endOffset]
-								: DOMUtils.findClosestAncestor( root, range.endContainer ).nextSibling;
-			}
-
-			RangeIterator.prototype = {
-
-				range: null,
-				_current: null,
-				_next: null,
-				_end: null,
-
-				hasNext: function()
-				{
-					return !! this._next;
-				},
-
-				next: function()
-				{
-					var current	= this._current = this._next;
-					this._next	= this._current && this._current.nextSibling != this._end ? this._current.nextSibling : null;
-
-					if (DOMUtils.isDataNode(this._current))
-					{
-						if ( this.range.endContainer == this._current )
-						{
-							( current = current.cloneNode(true) ).deleteData( this.range.endOffset, current.length - this.range.endOffset );
-						}
-						if ( this.range.startContainer == this._current )
-						{
-							( current = current.cloneNode(true) ).deleteData( 0, this.range.startOffset );
-						}
-					}
-					return current;
-				},
-
-				remove: function()
-				{
-					if ( DOMUtils.isDataNode(this._current) &&
-						 ( this.range.startContainer == this._current ||
-						   this.range.endContainer == this._current ) )
-					{
-						var
-						start	= this.range.startContainer == this._current ? this.range.startOffset : 0,
-						end		= this.range.endContainer == this._current ? this.range.endOffset : this._current.length;
-						this._current.deleteData( start, end - start );
-					}
-					else
-					{
-						this._current.parentNode.removeChild( this._current );
-					}
-				},
-
-				hasPartialSubtree: function()
-				{
-					return ! DOMUtils.isDataNode(this._current) &&
-						   ( DOMUtils.isAncestorOrSelf( this._current, this.range.startContainer ) ||
-							 DOMUtils.isAncestorOrSelf( this._current, this.range.endContainer ) );
-				},
-
-				getSubtreeIterator: function()
-				{
-					var subRange = new Range(this.range._document);
-					subRange.selectNodeContents(this._current);
-					if ( DOMUtils.isAncestorOrSelf(this._current, this.range.startContainer) )
-					{
-						subRange.setStart( this.range.startContainer, this.range.startOffset );
-					}
-					if ( DOMUtils.isAncestorOrSelf( this._current, this.range.endContainer ) )
-					{
-						subRange.setEnd(this.range.endContainer, this.range.endOffset);
-					}
-					return new RangeIterator(subRange);
-				}
-			};
-
-			return Range;
-		})();
-
-		window.Range._fromTextRange = function( textRange, document )
-		{
-			function adoptBoundary(domRange, textRange, bStart)
-			{
-				var
-				cursorNode	= document.createElement('a'),
-				cursor		= textRange.duplicate(),
-				parent;
-
-				cursor.collapse(bStart);
-				parent = cursor.parentElement();
-
-				do {
-					parent.insertBefore( cursorNode, cursorNode.previousSibling );
-					cursor.moveToElementText( cursorNode );
-				} while ( cursorNode.previousSibling &&
-						  cursor.compareEndPoints( bStart ? 'StartToStart' : 'StartToEnd', textRange ) > 0 );
-
-				if ( cursorNode.nextSibling &&
-					 cursor.compareEndPoints(bStart ? 'StartToStart' : 'StartToEnd', textRange) == -1 )
-				{
-					cursor.setEndPoint( bStart ? 'EndToStart' : 'EndToEnd', textRange );
-					domRange[bStart ? 'setStart' : 'setEnd']( cursorNode.nextSibling, cursor.text.length );
-				}
-				else
-				{
-					domRange[bStart ? 'setStartBefore' : 'setEndBefore'](cursorNode);
-				}
-				cursorNode.parentNode.removeChild(cursorNode);
-			}
-
-			var domRange = new Range(document);
-			adoptBoundary(domRange, textRange, true);
-			adoptBoundary(domRange, textRange, false);
-			return domRange;
-		};
-
-		document.createRange = function()
-		{
-			return new Range(document);
-		};
-
-		window.Selection = (function(){
-			function Selection(document)
-			{
-				this._document = document;
-
-				var selection = this;
-				document.attachEvent('onselectionchange', function(){
-					selection._selectionChangeHandler();
-				});
-
-				setTimeout(function(){
-					selection._selectionChangeHandler();
-				},10);
-			}
-
-			Selection.prototype = {
-
-				rangeCount: 0,
-				_document:	null,
-				anchorNode:	null,
-				focusNode:	null,
-
-				_selectionChangeHandler: function()
-				{
-					var
-					range	= this._document.selection.createRange(),
-					text	= range.text.split(/\r|\n/),
-					$parent	= $( range.parentElement() ),
-					anchorRe, focusRe;
-
-					if ( text.length > 1 )
-					{
-						anchorRe = new RegExp( text[0] + '$' );
-						focusRe = new RegExp( '^' + text[text.length-1] );
-
-						$parent.children().each(function(){
-							if ( $(this).text().match( anchorRe ) )
-							{
-								this.anchorNode = this;
-							}
-							if ( $(this).text().match( focusRe ) )
-							{
-								this.focusNode = this;
-							}
-						});
-					}
-					else
-					{
-						this.anchorNode = $parent.get(0);
-						this.focusNode	= this.anchorNode;
-					}
-
-					this.rangeCount = this._selectionExists( range ) ? 1 : 0;
-				},
-
-				_selectionExists: function( textRange )
-				{
-					return textRange.parentElement().isContentEditable ||
-						   textRange.compareEndPoints('StartToEnd', textRange) != 0;
-				},
-				addRange: function(range)
-				{
-					var
-					selection	= this._document.selection.createRange(),
-					textRange	= range._toTextRange();
-					if ( ! this._selectionExists(selection) )
-					{
-						try {
- 							textRange.select();
-						} catch(e) {}
-					}
-					else
-					{
-						if (textRange.compareEndPoints('StartToStart', selection) == -1)
-						{
-							if ( textRange.compareEndPoints('StartToEnd', selection) > -1 &&
-								 textRange.compareEndPoints('EndToEnd', selection) == -1 )
-							{
-								selection.setEndPoint('StartToStart', textRange);
-							}
-						}
-						else
-						{
-							if ( textRange.compareEndPoints('EndToStart', selection) < 1 &&
-								 textRange.compareEndPoints('EndToEnd', selection) > -1 )
-							{
-								selection.setEndPoint('EndToEnd', textRange);
-							}
-						}
-						selection.select();
-					}
-				},
-				removeAllRanges: function()
-				{
-					this._document.selection.empty();
-				},
-				getRangeAt: function(index)
-				{
-					var textRange = this._document.selection.createRange();
-					if ( this._selectionExists( textRange ) )
-					{
-						return Range._fromTextRange( textRange, this._document );
-					}
-					return null;
-				},
-				toString: function()
-				{
-					return this._document.selection.createRange().text;
-				},
-				isCollapsed: function()
-				{
-					var range = document.createRange();
-					return range.collapsed;
-				},
-				deleteFromDocument: function()
-				{
-					var textRange = this._document.selection.createRange();
-					textRange.pasteHTML('');
-				}
-			};
-
-			return Selection;
-		})();
-
-		window.getSelection = (function(){
-			var selection = new window.Selection(document);
-			return function() { return selection; };
-		})();
-
-	})(jQuery);
-}
-
-
-
 if ( typeof Node == "undefined" )
 {
 	(function(){
@@ -3514,50 +2951,736 @@ if ( typeof Node == "undefined" )
 	})();
 }
 
+if ( ! document.getSelection) {
 
+/**
+ * Selection and Range Shims
+ *
+ * Big hat tips to Tim Down's Rangy and Tim Cameron
+ * Ryan's IERange. Neither quite worked here so I
+ * reimplemented it with lots of inspiration from
+ * their code.
+ *
+ * Rangy and IERange are MIT Licensed
+ */
+(function() {
+
+
+	/**
+	 * Ranges. These are fun.
+	 */
+	function Range() {
+
+		this.startContainer;
+		this.startOffset;
+
+		this.endContainer;
+		this.endOffset;
+
+		this.collapsed;
+	}
+
+	Range.prototype = {
+
+		/**
+		 * Set the beginning of the range
+		 */
+		setStart: function(container, offset)
+		{
+			this.startContainer = container;
+			this.startOffset = offset;
+
+			if (container == this.endContainer && offset == this.endOffset)
+			{
+				this.collapsed = true;
+			}
+		},
+
+		/**
+		 * Set the end of the range
+		 */
+		setEnd: function(container, offset)
+		{
+			this.endContainer = container;
+			this.endOffset = offset;
+
+			if (container == this.startContainer && offset == this.startOffset)
+			{
+				this.collapsed = true;
+			}
+		},
+
+		/**
+		 * Collapse the range
+		 */
+		collapse: function(toBeginning)
+		{
+			if (toBeginning)
+			{
+				// move to beginning
+				this.endContainer = this.startContainer;
+				this.endOffset = this.startOffset;
+			}
+			else
+			{
+				// move to end
+				this.startContainer = this.endContainer;
+				this.startOffset = this.endOffset;
+			}
+		},
+
+		/**
+		 * Get the containing node
+		 */
+		getNode: function()
+		{
+			var textRange = document.selection.createRange();
+			return CompatUtil.getParentElement(textRange);
+		},
+
+		/**
+		 * Select a specific node
+		 */
+		selectNode: function(node)
+		{
+			this.setStart(node.parentNode, CompatUtil.getNodeIndex(node));
+			this.setEnd(node.parentNode, CompatUtil.getNodeIndex(node) + 1);
+		},
+
+		insertNode: function(node)
+		{
+			CompatUtil.insertNode(node, this.startContainer, this.startOffset);
+		},
+
+		/**
+		 * Select a node's contents
+		 */
+		selectNodeContents: function(node)
+		{
+			var l = CompatUtil.isCharacterDataNode(node) ? node.length : node.childNodes.length;
+			this.setStart(node, 0);
+			this.setEnd(node, l);
+		},
+
+		surroundContents: function(node)
+		{
+			// @pk @todo implement
+		},
+
+		/**
+		 * Grab a copy of this Range
+		 */
+		cloneRange: function()
+		{
+			var range = new Range();
+
+			range.setStart(this.startContainer, this.startOffset);
+			range.setEnd(this.endContainer, this.endOffset);
+
+			return range;
+		},
+
+		/**
+		 * Get the text content
+		 */
+		toString: function()
+		{
+			var tr = CompatUtil.rangeToTextRange(this);
+			return tr ? tr.text : '';
+		}
+	};
+
+
+	/**
+	 * Open the range getter up to the public.
+	 */
+	document.createRange = function() {
+		return new Range();
+	};
+
+
+	/**
+	 * And now selections! Wahoo!
+	 */
+	function Selection() {
+		this._reset();
+		this._selection = document.selection;
+	}
+
+	Selection.prototype = {
+
+		/**
+		 * Sort of an init / reset.
+		 *
+		 * Selections are singletons so their
+		 * state is very fragile.
+		 */
+		_reset: function()
+		{
+			this.rangeCount = 0;
+
+			this.anchorNode = null;
+			this.anchorOffset = null;
+
+			this.focusNode = null;
+			this.focusOffset = null;
+
+			// implementation
+			this._ranges = [];
+		},
+
+		/**
+		 * Add a range to the visible selection
+		 */
+		addRange: function(range)
+		{
+			var tr = CompatUtil.rangeToTextRange(range);
+
+			if ( ! tr)
+			{
+				this.removeAllRanges();
+				return;
+			}
+
+			tr.select();
+
+			// Check for intersection with old?
+			// Skipping it for now, I don't think we
+			// ever use them that way. If you decide to
+			// add it, I suggest riffing off webkit's
+			// webcore DOMSelection::addRange logic. -pk
+
+			this.rangeCount = 1;
+			this._ranges = [range];
+			this.isCollapsed = range.collapsed;
+
+			this._updateNodeRefs(range);
+		},
+
+		/**
+		 * Deselect Everything
+		 */
+		removeAllRanges: function()
+		{
+			if (this.rangeCount)
+			{
+				this._selection.empty();
+			}
+
+			this._reset();
+		},
+
+		/**
+		 * Firefox supports more than one range in a selection.
+		 * We do not.
+		 */
+		getRangeAt: function(index)
+		{
+			if (index !== 0)
+			{
+				return null;
+			}
+
+			return this._ranges[index];
+		},
+
+		/**
+		 * Get the string contents
+		 */
+		toString: function()
+		{
+			// grab range contents
+			if (this.rangeCount)
+			{
+				return this._ranges[0].toString();
+			}
+
+			return '';
+		},
+
+		/**
+		 * Refresh the selection state
+		 *
+		 * There is only one selection per window, so we call
+		 * this every time the user asks for a selection through
+		 * getSelection.
+		 */
+		_refresh: function()
+		{
+			// the TextRange parentElement implementation is bugtastic, so
+			// we need to do this manually ...
+
+			var textRange = this._selection.createRange(),
+				Container = CompatUtil.getParentElement(textRange),
+				start, end, range;
+
+			// is collapsed?
+			if (textRange.compareEndPoints("StartToEnd", textRange) == 0)
+			{
+				start = CompatUtil.getBoundary(textRange, Container, true, true);
+				end = start;
+			}
+			else
+			{
+				start = CompatUtil.getBoundary(textRange, Container, true, false);
+				end = CompatUtil.getBoundary(textRange, Container, false, false);
+			}
+
+			var range = new Range();
+			range.setStart(start.node, start.offset);
+			range.setEnd(end.node, end.offset);
+
+			this.rangeCount = 1;
+			this._ranges = [range];
+			this.isCollapsed = range.collapsed;
+
+			this._updateNodeRefs(range);
+
+			return this;
+		},
+
+		/**
+		 * Sync the nodes and offsets
+		 *
+		 * For whatever reason the selection holds
+		 * what amounts to duplicate data about the
+		 * ranges. No magic __get in js, so we copy.
+		 */
+		_updateNodeRefs: function(range)
+		{
+			this.anchorNode = range.startContainer;
+			this.anchorOffset = range.startOffset;
+
+			this.focusNode = range.endContainer;
+			this.focusOffset = range.endOffset;
+		}
+	};
+
+
+	/**
+	 * Open the selection getter up to the public.
+	 *
+	 * It is generally a good idea to grab a new selection
+	 * if there is any chance of it being messed with. This
+	 * applies doubly in this case because of the _refresh call.
+	 */
+	var S = new Selection();
+	window.getSelection = function() {
+		return S._refresh();
+	};
+
+
+	/**
+	 * Dom Position Helper Object
+	 *
+	 * This can slowly be pulled out, but it's used in a few
+	 * places and actually isn't too inconvenient.
+	 */
+	function DomPosition(node, offset)
+	{
+		this.node = node;
+		this.offset = offset;
+	}
+
+	/**
+	 * Some utility helper methods.
+	 *
+	 * Big, big hat tip to Rangy!
+	 * http://code.google.com/p/rangy/
+	 */
+	var CompatUtil = {
+
+		/**
+		 * Character data nodes have text, others
+		 * have childNodes.
+		 */
+		isCharacterDataNode: function(node)
+		{
+			var t = node.nodeType;
+			return t == 3 || t == 4 || t == 8 ; // Text, CDataSection or Comment
+		},
+
+		/**
+		 * Find a node offset for non-chardatanode
+		 * selection offsets.
+		 */
+		getNodeIndex: function(node)
+		{
+			var i = 0;
+			while((node = node.previousSibling))
+			{
+				i++;
+			}
+			return i;
+		},
+
+		/*
+		 * Check for ancestors. May be able to move
+		 * this to $.contains(ancestor, descendant) in the future.
+		 */
+		isAncestorOf: function(ancestor, descendant, selfIsAncestor)
+		{
+			var n = selfIsAncestor ? descendant : descendant.parentNode;
+			while (n)
+			{
+				if (n === ancestor)
+				{
+					return true;
+				}
+
+				n = n.parentNode;
+			}
+
+			return false;
+		},
+
+		/**
+		 * Find a shared ancestor
+		 */
+		getCommonAncestor: function(node1, node2)
+		{
+			var ancestors = [], n;
+			for (n = node1; n; n = n.parentNode)
+			{
+				ancestors.push(n);
+			}
+
+			for (n = node2; n; n = n.parentNode)
+			{
+				if ($.inArray(n, ancestors) > -1)
+				{
+					return n;
+				}
+			}
+
+			return null;
+		},
+
+		/*
+		 * Insert the node at a specific offset.
+		 * Needs to split text nodes if the insertion is to happen
+		 * in the middle of some text.
+		 */
+		insertNode: function(node, n, o)
+		{
+			var firstNodeInserted = node.nodeType == 11 ? node.firstChild : node;
+			if (this.isCharacterDataNode(n))
+			{
+				if (o == n.length)
+				{
+					$(node).insertAfter(n);
+				}
+				else
+				{
+					n.parentNode.insertBefore(node, o == 0 ? n : this.splitDataNode(n, o));
+				}
+			}
+			else if (o >= n.childNodes.length)
+			{
+				n.appendChild(node);
+			}
+			else
+			{
+				n.insertBefore(node, n.childNodes[o]);
+			}
+
+			return firstNodeInserted;
+		},
+
+		/**
+		 * Split a text, comment, or cdata node
+		 * to make room for a new insertion.
+		 */
+		splitDataNode: function(node, index)
+		{
+			var newNode = node.cloneNode(false);
+			newNode.deleteData(0, index);
+			node.deleteData(index, node.length - index);
+			$(newNode).insertAfter(node);
+			return newNode;
+		},
+
+		/**
+		 * Convert a range object back to a textRange
+		 */
+		rangeToTextRange: function(range)
+		{
+			var startRange, endRange;
+
+			startRange = this.createBoundaryTextRange(new DomPosition(range.startContainer, range.startOffset), true);
+
+			if (range.collapsed)
+			{
+				return startRange;
+			}
+
+			endRange = this.createBoundaryTextRange(new DomPosition(range.endContainer, range.endOffset), false);
+
+			if ( ! startRange || ! endRange)
+			{
+				return false;
+			}
+
+			textRange = document.body.createTextRange();
+			textRange.setEndPoint("StartToStart", startRange);
+			textRange.setEndPoint("EndToEnd", endRange);
+			return textRange;
+		},
+
+		/**
+		 * IE's textRange.parentElement is buggy, so
+		 * this function does a bit more work to ensure
+		 * consistency.
+		 */
+		getParentElement: function(textRange)
+		{
+			var parentEl = textRange.parentElement(),
+				startEndContainer,
+				startEl, endEl,
+				range;
+
+			// find starting element
+			range = textRange.duplicate();
+			range.collapse(true);
+			startEl = range.parentElement();
+
+			// find ending element
+			range = textRange.duplicate();
+			range.collapse(false);
+			endEl = range.parentElement();
+
+			// find common parent
+			startEndContainer = (startEl == endEl) ? startEl : this.getCommonAncestor(startEl, endEl);
+			return startEndContainer == parentEl ? startEndContainer : this.getCommonAncestor(parentEl, startEndContainer);
+		},
+
+		/**
+		 * Traverse the dom and place a textNode at the desired position.
+		 */
+		createBoundaryTextRange: function(boundaryPosition, isStart)
+		{
+			var doc = document,
+				boundaryOffset = boundaryPosition.offset,
+				workingRange = doc.body.createTextRange(),
+				nodeIsDataNode = this.isCharacterDataNode(boundaryPosition.node),
+				boundaryNode, boundaryParent,
+				workingNode, childNodes;
+
+			if (nodeIsDataNode)
+			{
+				boundaryNode = boundaryPosition.node;
+				boundaryParent = boundaryNode.parentNode;
+			}
+			else
+			{
+				childNodes = boundaryPosition.node.childNodes;
+				boundaryNode = (boundaryOffset < childNodes.length) ? childNodes[boundaryOffset] : null;
+				boundaryParent = boundaryPosition.node;
+			}
+
+			// Position the range immediately before the node containing the boundary
+			workingNode = doc.createElement("span");
+
+			// Making the working element non-empty element persuades IE to consider the TextRange boundary to be within the
+			// element rather than immediately before or after it, which is what we want
+			workingNode.innerHTML = "&#feff;";
+
+			// insertBefore is supposed to work like appendChild if the second parameter is null. However, a bug report
+			// for IERange suggests that it can crash the browser: http://code.google.com/p/ierange/issues/detail?id=12
+
+			if (boundaryNode)
+			{
+				boundaryParent.insertBefore(workingNode, boundaryNode);
+			}
+			else
+			{
+				boundaryParent.appendChild(workingNode);
+			}
+
+			if ( ! $.contains(document.body, workingNode))
+			{
+				// Clean up and bail
+				boundaryParent.removeChild(workingNode);
+				return null;
+			}
+
+			workingRange.moveToElementText(workingNode);
+			workingRange.collapse(!isStart);
+
+			// Clean up
+			boundaryParent.removeChild(workingNode);
+
+			// Move the working range to the text offset, if required
+			if (nodeIsDataNode)
+			{
+				workingRange[isStart ? "moveStart" : "moveEnd"]("character", boundaryOffset);
+			}
+
+			return workingRange;
+		},
+
+		/**
+		 * Gets the boundary of a TextRange expressed as a node and an offset within that node. This function started out as
+		 * an improved version of code found in Tim Cameron Ryan's IERange (http://code.google.com/p/ierange/) but has
+		 * grown, fixing problems with line breaks in preformatted text, adding workaround for IE TextRange bugs, handling
+		 * for inputs and images, plus optimizations.
+		 */
+		getBoundary: function(textRange, wholeRangeContainerElement, isStart, isCollapsed)
+		{
+			var workingRange = textRange.duplicate(),
+				containerElement;
+
+			workingRange.collapse(isStart);
+			containerElement = workingRange.parentElement();
+
+			// Sometimes collapsing a TextRange that's at the start of a text node can move it into the previous node, so
+			// check for that
+			// TODO: Find out when. Workaround for wholeRangeContainerElement may break this
+			if ( ! this.isAncestorOf(wholeRangeContainerElement, containerElement, true))
+			{
+				containerElement = wholeRangeContainerElement;
+			}
+
+			// Deal with nodes that cannot "contain rich HTML markup". In practice, this means form inputs, images and
+			// similar. See http://msdn.microsoft.com/en-us/library/aa703950%28VS.85%29.aspx
+			if ( ! containerElement.canHaveHTML)
+			{
+				return new DomPosition(containerElement.parentNode, this.getNodeIndex(containerElement));
+			}
+
+			var workingNode = document.createElement("span"),
+				workingComparisonType = isStart ? "StartToStart" : "StartToEnd",
+				comparison, previousNode, nextNode, boundaryPosition, boundaryNode;
+
+			// Move the working range through the container's children, starting at the end and working backwards, until the
+			// working range reaches or goes past the boundary we're interested in
+			do
+			{
+				containerElement.insertBefore(workingNode, workingNode.previousSibling);
+				workingRange.moveToElementText(workingNode);
+			}
+			while ((comparison = workingRange.compareEndPoints(workingComparisonType, textRange)) > 0 &&
+					workingNode.previousSibling);
+
+			// We've now reached or gone past the boundary of the text range we're interested in
+			// so have identified the node we want
+			boundaryNode = workingNode.nextSibling;
+
+			if (comparison == -1 && boundaryNode && this.isCharacterDataNode(boundaryNode))
+			{
+				// This is a character data node (text, comment, cdata). The working range is collapsed at the start of the
+				// node containing the text range's boundary, so we move the end of the working range to the boundary point
+				// and measure the length of its text to get the boundary's offset within the node.
+				workingRange.setEndPoint(isStart ? "EndToStart" : "EndToEnd", textRange);
+
+				var offset;
+
+				if (/[\r\n]/.test(boundaryNode.data))
+				{
+					/*
+					For the particular case of a boundary within a text node containing line breaks (within a <pre> element,
+					for example), we need a slightly complicated approach to get the boundary's offset in IE. The facts:
+
+					- Each line break is represented as \r in the text node's data/nodeValue properties
+					- Each line break is represented as \r\n in the TextRange's 'text' property
+					- The 'text' property of the TextRange does not contain trailing line breaks
+
+					To get round the problem presented by the final fact above, we can use the fact that TextRange's
+					moveStart() and moveEnd() methods return the actual number of characters moved, which is not necessarily
+					the same as the number of characters it was instructed to move. The simplest approach is to use this to
+					store the characters moved when moving both the start and end of the range to the start of the document
+					body and subtracting the start offset from the end offset (the "move-negative-gazillion" method).
+					However, this is extremely slow when the document is large and the range is near the end of it. Clearly
+					doing the mirror image (i.e. moving the range boundaries to the end of the document) has the same
+					problem.
+
+					Another approach that works is to use moveStart() to move the start boundary of the range up to the end
+					boundary one character at a time and incrementing a counter with the value returned by the moveStart()
+					call. However, the check for whether the start boundary has reached the end boundary is expensive, so
+					this method is slow (although unlike "move-negative-gazillion" is largely unaffected by the location of
+					the range within the document).
+
+					The method below is a hybrid of the two methods above. It uses the fact that a string containing the
+					TextRange's 'text' property with each \r\n converted to a single \r character cannot be longer than the
+					text of the TextRange, so the start of the range is moved that length initially and then a character at
+					a time to make up for any trailing line breaks not contained in the 'text' property. This has good
+					performance in most situations compared to the previous two methods.
+					*/
+					var tempRange = workingRange.duplicate(),
+						rangeLength = tempRange.text.replace(/\r\n/g, "\r").length;
+
+					offset = tempRange.moveStart("character", rangeLength);
+					while ((comparison = tempRange.compareEndPoints("StartToEnd", tempRange)) == -1)
+					{
+						offset++;
+						tempRange.moveStart("character", 1);
+					}
+				}
+				else
+				{
+					offset = workingRange.text.length;
+				}
+
+				boundaryPosition = new DomPosition(boundaryNode, offset);
+			}
+			else
+			{
+				// If the boundary immediately follows a character data node and this is the end boundary, we should favour
+				// a position within that, and likewise for a start boundary preceding a character data node
+				previousNode = (isCollapsed || !isStart) && workingNode.previousSibling;
+				nextNode = (isCollapsed || isStart) && workingNode.nextSibling;
+
+				if (nextNode && this.isCharacterDataNode(nextNode))
+				{
+					boundaryPosition = new DomPosition(nextNode, 0);
+				}
+				else if (previousNode && this.isCharacterDataNode(previousNode))
+				{
+					boundaryPosition = new DomPosition(previousNode, previousNode.length);
+				}
+				else
+				{
+					boundaryPosition = new DomPosition(containerElement, this.getNodeIndex(workingNode));
+				}
+			}
+
+			// Clean up
+			workingNode.parentNode.removeChild(workingNode);
+
+			return boundaryPosition;
+		}
+	};
+
+	// expose them for the trickery below
+	window.Range = Range;
+	window.Selection = Selection;
+
+})();
+
+} // end "if ( ! window.selection)"
+else
+{
+	// quick fix so we can extend the native prototype
+	window.Selection = {};
+	window.Selection.prototype = window.getSelection().__proto__;
+}
+
+
+// Add a few more methods to all ranges and selections.
+// Both native and our shims.
 
 $.extend(Range.prototype, {
 
-	beforeRange: function(range)
-	{
-		if ( ! range ||
-			 ! range.compareBoundaryPoints )
-		{
-			return false;
-		}
-		return ( this.compareBoundaryPoints( this.START_TO_START, range ) == -1 &&
-				 this.compareBoundaryPoints( this.START_TO_END, range ) == -1 &&
-				 this.compareBoundaryPoints( this.END_TO_END, range ) == -1 &&
-				 this.compareBoundaryPoints( this.END_TO_START, range ) == -1 );
-	},
-
-	afterRange: function(range)
-	{
-		if ( ! range ||
-			 ! range.compareBoundaryPoints )
-		{
-			return false;
-		}
-		return ( this.compareBoundaryPoints( this.START_TO_START, range ) == 1 &&
-				 this.compareBoundaryPoints( this.START_TO_END, range ) == 1 &&
-				 this.compareBoundaryPoints( this.END_TO_END, range ) == 1 &&
-				 this.compareBoundaryPoints( this.END_TO_START, range ) == 1 );
-	},
-
-	betweenRange: function(range)
-	{
-		if ( ! range ||
-			 ! range.compareBoundaryPoints )
-		{
-			return false;
-		}
-		return ! ( this.beforeRange(range) || this.afterRange(range) );
-	},
-
+	/**
+	 * Compare two ranges for equality. We want to
+	 * compare the actual selection rather than just
+	 * the offsets, since there is more than one way
+	 * to specify a certain selection.
+	 */
 	equalRange: function(range)
 	{
 		if ( ! range ||
-			 ! range.compareBoundaryPoints )
+		! range.compareBoundaryPoints )
 		{
 			return false;
 		}
@@ -3569,152 +3692,22 @@ $.extend(Range.prototype, {
 		}
 
 		return ( this.compareBoundaryPoints( this.START_TO_START, range ) == 0 &&
-				 this.compareBoundaryPoints( this.START_TO_END, range ) == 1 &&
-				 this.compareBoundaryPoints( this.END_TO_END, range ) == 0 &&
-				 this.compareBoundaryPoints( this.END_TO_START, range ) == -1 );
-	},
-
-	getNode: function()
-	{
-		var
-		parent	= this.commonAncestorContainer,
-		that	= this,
-		child;
-
-		while (parent.nodeType == Node.TEXT_NODE)
-		{
-			parent = parent.parentNode;
-		}
-
-		$(parent).children().each(function(){
-			var range = document.createRange();
-			range.selectNodeContents(this);
-			child = that.betweenRange(range);
-		});
-
-		return $(child || parent).get(0);
+			this.compareBoundaryPoints( this.START_TO_END, range ) == 1 &&
+			this.compareBoundaryPoints( this.END_TO_END, range ) == 0 &&
+			this.compareBoundaryPoints( this.END_TO_START, range ) == -1 );
 	}
 });
 
-if ( typeof Selection == 'undefined' )
-{
-	var Selection = {};
-	Selection.prototype = window.getSelection().__proto__;
-}
+$.extend(window.Selection.prototype, {
 
-// functions we want to normalize
-var
-getNode,
-selectNode,
-setBookmark,
-moveToBookmark;
-
-if ( $.browser.msie )
-{
-	getNode = function()
-	{
-		var range = this._document.selection.createRange();
-		return $(range.parentElement());
-	}
-
-	selectNode = function(element)
-	{
-		var range = this._document.body.createTextRange();
-		range.moveToElementText(element);
-		range.select();
-	}
-
-	setBookmark = function()
-	{
-		var
-		$bookmark	= $('#WysiHat-bookmark'),
-		$parent		= $('<div/>'),
-		range		= this._document.selection.createRange();
-
-		if ( $bookmark.length > 0 )
-		{
-			$bookmark.remove();
-		}
-
-		$bookmark = $( '<span id="WysiHat-bookmark">&nbsp;</span>' )
-						.appendTo( $parent );
-
-		range.collapse(true);
-		range.pasteHTML( $parent.html() );
-	}
-
-	moveToBookmark = function()
-	{
-		var
-		$bookmark	= $('#WysiHat-bookmark'),
-		range		= this._document.selection.createRange();
-
-		if ( $bookmark.length > 0 )
-		{
-			$bookmark.remove();
-		}
-
-		range.moveToElementText( $bookmark.get(0) );
-		range.collapse(true);
-		range.select();
-
-		$bookmark.remove();
-	}
-}
-else
-{
-	getNode = function()
+	/**
+	 * Get the node that most encompasses the
+	 * entire selection.
+	 */
+	getNode: function()
 	{
 		return ( this.rangeCount > 0 ) ? this.getRangeAt(0).getNode() : null;
 	}
-
-	selectNode = function(element)
-	{
-		var range = document.createRange();
-		range.selectNode(element[0]);
-		this.removeAllRanges();
-		this.addRange(range);
-	}
-
-	setBookmark = function()
-	{
-		var $bookmark	= $('#WysiHat-bookmark');
-
-		if ( $bookmark.length > 0 )
-		{
-			$bookmark.remove();
-		}
-
-		$bookmark = $( '<span id="WysiHat-bookmark">&nbsp;</span>' );
-
-		this.getRangeAt(0).insertNode( $bookmark.get(0) );
-	}
-
-	moveToBookmark = function()
-	{
-		var
-		$bookmark	= $('#WysiHat-bookmark'),
-		range		= document.createRange();
-
-		if ( $bookmark.length > 0 )
-		{
-			$bookmark.remove();
-		}
-
-		range.setStartBefore( $bookmark.get(0) );
-		this.removeAllRanges();
-		this.addRange(range);
-
-		$bookmark.remove();
-	}
-}
-
-$.extend(Selection.prototype, {
-	getNode: getNode,
-	selectNode: selectNode,
-	setBookmark: setBookmark,
-	moveToBookmark: moveToBookmark
 });
-
 
 })(document, jQuery);

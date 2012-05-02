@@ -64,12 +64,17 @@ class Rte_mcp {
 		$this->EE->load->library(array('table','javascript'));
 		$this->EE->load->model('rte_toolset_model');
 
+		$toolsets = $this->EE->rte_toolset_model->get_toolset_list();
+		
 		// prep the Default Toolset dropdown
 		$toolset_opts = array();
 
-		foreach ($this->EE->rte_toolset_model->get_toolset_list(TRUE) as $t)
+		foreach ($toolsets as $t)
 		{
-			$toolset_opts[$t['toolset_id']] = $t['name'];
+			if ($t['enabled'] == 'y')
+			{
+				$toolset_opts[$t['toolset_id']] = $t['name'];
+			}
 		}
 
 		$vars = array(
@@ -78,8 +83,8 @@ class Rte_mcp {
 			'action'					=> $this->_form_base.AMP.'method=prefs_update',
 			'rte_enabled'				=> $this->EE->config->item('rte_enabled'),
 			'rte_default_toolset_id'	=> $this->EE->config->item('rte_default_toolset_id'),
+			'toolsets'					=> $toolsets,
 			'toolset_opts'				=> $toolset_opts,
-			'toolsets'					=> $this->EE->rte_toolset_model->get_toolset_list(),
 			'tools'						=> $this->EE->rte_tool_model->get_tool_list(),
 			'new_toolset_link'			=> $this->_base_url.AMP.'method=edit_toolset'.AMP.'toolset_id=0'
 		);
@@ -210,10 +215,35 @@ class Rte_mcp {
 	{
 		$this->EE->load->model('rte_toolset_model');
 		
-		// delete
-		if ($this->EE->rte_toolset_model->delete($this->EE->input->get_post('toolset_id')))
+		$toolset_id = $this->EE->input->get_post('toolset_id');
+		
+		// Delete
+		if ($this->EE->rte_toolset_model->delete($toolset_id))
 		{
 			$this->EE->session->set_flashdata('message_success', lang('toolset_deleted'));
+			
+			// If the default toolset was deleted
+			if ($toolset_id == $this->EE->config->item('rte_default_toolset_id'))
+			{
+				$toolsets = $this->EE->rte_toolset_model->get_toolset_list();
+				
+				// Make the new default toolset the first available
+				if ( ! empty($toolsets))
+				{
+					$default_toolset_pref = array(
+						'rte_default_toolset_id' => $toolsets[0]['toolset_id']
+					);
+				}
+				// Or set it to zero if there are no toolsets left
+				else
+				{
+					$default_toolset_pref = array(
+						'rte_default_toolset_id' => 0
+					);
+				}
+				
+				$this->EE->config->update_site_prefs($default_toolset_pref);
+			}
 		}
 		else
 		{
@@ -248,67 +278,6 @@ class Rte_mcp {
 		}
 
 		$this->EE->functions->redirect($this->_base_url);
-	}
-
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * RTE preferences link JS
-	 *
-	 * @access	public
-	 * @return	string The JavaScript
-	 * @todo	Finish this
-	 */
-	public function build_rte_pref_js()
-	{
-		$js = '';
-		
-		// make sure it’s on
-		if ($this->EE->config->item('rte_enabled') == 'y')
-		{
-			// styles
-			$this->EE->cp->add_to_head(
-				'
-				<style>
-					.rte_prefs_link { display:block; float: right; margin: 5px 30px 5px 0; }
-					#rte_prefs_dialog p { margin: 10px 0; }
-					#rte_prefs_dialog .buttons { text-align: center; }
-				</style>
-				'
-			);
-			
-			// add in the code that would toggle the toolset
-			ob_start(); ?>
-			
-			var
-			$rte_prefs_link	= $('<a class="rte_prefs_link" href="#rte_prefs_dialog">Prefs</a>' ),
-			$rte_prefs_dialog = $('<div id="rte_prefs_dialog" />')
-				.load(EE.rte.prefs_url.replace(/&amp;/g,'&'), function() {
-					
-					// We have the dialog content, now setup the dialog
-					console.log('loaded');
-				});
-							
-			// set up the link
-			$rte_prefs_link.click(function(e){
-				e.preventDefault();
-				$rte_prefs_dialog.dialog('open');
-			 });
-		
-			// insert it
-			$(".rte").each(function(){
-				$rte_prefs_link
-					.clone(true)
-					.insertAfter($(this));
-			});
-
-		
-<?php		$js = ob_get_contents();
-			ob_end_clean(); 
-		}
-
-		return $js;
 	}
 
 	// --------------------------------------------------------------------

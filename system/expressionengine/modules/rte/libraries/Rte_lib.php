@@ -197,6 +197,14 @@ class Rte_lib {
 		{
 			$toolset_id = $this->EE->db->insert_id();
 		}
+		
+		// If the default toolset was deleted
+		if ($this->EE->config->item('rte_default_toolset_id') == 0)
+		{
+			$this->EE->config->update_site_prefs(array(
+				'rte_default_toolset_id' => $toolset_id
+			));
+		}
 
 		// update the member profile
 		if ($is_members && $toolset_id)
@@ -208,7 +216,7 @@ class Rte_lib {
 
 		$this->EE->output->send_ajax_response(array(
 			'success' 		=> lang('toolset_updated'),
-			'force_refresh' => ! $is_members
+			'force_refresh' => TRUE
 		));
 	}
 
@@ -252,26 +260,20 @@ class Rte_lib {
 
 		// bare minimum required
 		$bits	= array(
-			'globals'	=> array(
-				'rte'		=> array()
+			'globals'		=> array(
+				'rte' => array()
 			),
-			'styles' => '',
-			'definitions' => '',
-			'buttons' => array(),
-			'libraries' => array()
+			'styles' 		=> '',
+			'definitions' 	=> '',
+			'buttons' 		=> array(),
+			'libraries' 	=> array(
+				'plugin' => array('wysihat')
+			)
 		);
 
-		// @todo force hard override of tools' includes?
 		if ($include['jquery_ui'])
 		{
-			$bits['libraries']	= array(
-				'ui'			=> array(
-					'core', 'widget'
-				),
-				'plugin'		=> array(
-					'wysihat'
-				)
-			);
+			$bits['libraries']['ui'] = array('core', 'widget');
 		}	
 
 		foreach ($tools as $tool)
@@ -315,9 +317,6 @@ class Rte_lib {
 		$jquery = $this->EE->config->item('theme_folder_url') . 'javascript/' .
 				  ($this->EE->config->item('use_compressed_js') == 'n' ? 'src' : 'compressed') .
 				  '/jquery/jquery.js';
-		$uicss	= $this->EE->config->item('theme_folder_url') . 'javascript/' .
-				  ($this->EE->config->item('use_compressed_js') == 'n' ? 'src' : 'compressed') .
-				  '/jquery/themes/default/ui.all.css';
 		$rtecss	= $this->EE->config->item('theme_folder_url') . 'cp_themes/default/css/rte.css';
 		
 		$this->EE->load->library('javascript');
@@ -356,30 +355,21 @@ class Rte_lib {
 				
 				var $ = jQuery;
 				
-				// RTE Library Start
+				// RTE library
 				' . $this->_load_js_files($bits['libraries']) . '
-				// RTE Library End
-		';
 
-				// Don't include jQuery UI stylesheet if we don't need to
-				if ($include['jquery_ui'])
-				{
-					$js .= '$("<link rel=\"stylesheet\" href=\"' . $uicss . '\"/>").appendTo("head")';
-				}
-
-		$js .= '
-				// RTE Styles
+				// RTE styles
 				$("<link rel=\"stylesheet\" href=\"' . $rtecss . '\"/>")
 					.add( $("<style>' . preg_replace( '/\\s+/', ' ', $bits['styles'] ) . '</style>"))
 					.appendTo("head");
 
-				// globals
+				// RTE globals
 				' . $this->_set_globals($bits['globals']) . '
 
-				// button class definitions
+				// RTE button class definitions
 				' . $bits['definitions'] . '
 
-				// setup the editors for this page
+				// RTE editor setup for this page
 				$("' . $selector . '").wysihat({
 					buttons: '.$this->EE->javascript->generate_json($bits['buttons'], TRUE).'
 				});

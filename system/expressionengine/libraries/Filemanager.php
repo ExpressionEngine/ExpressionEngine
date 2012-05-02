@@ -757,6 +757,15 @@ class Filemanager {
 	 */
 	function setup()
 	{
+		// Make sure there are directories
+		$dirs = $this->directories(FALSE, TRUE);
+		if (empty($dirs))
+		{
+			return $this->EE->output->send_ajax_response(array(
+				'error' => lang('no_upload_dirs')
+			));
+		}
+
 		if (REQ != 'CP')
 		{
 			$this->EE->load->helper('form');
@@ -810,7 +819,7 @@ class Filemanager {
 	public function datatables($first_dir = NULL)
 	{
 		$this->EE->load->model('file_model');
-		
+
 		// Argh
 		$this->EE->_mcp_reference = $this;
 		

@@ -74,7 +74,9 @@ class Rte_toolset_model extends CI_Model {
 			$this->db->where('enabled', 'y');
 		}
 
-		$this->db->where('member_id', '0'); // public toolsets only
+		$this->db
+			->where('member_id', '0') // public toolsets only
+			->order_by('name', 'asc');
 
 		$toolsets = $this->db->get('rte_toolsets')->result_array();
 

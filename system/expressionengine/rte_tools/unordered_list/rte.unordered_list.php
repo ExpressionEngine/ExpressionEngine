@@ -78,7 +78,7 @@ class Unordered_list_rte {
 		WysiHat.addButton('unordered_list', {
 			label:			EE.rte.unordered_list.add,
 			'toggle-text':	EE.rte.unordered_list.remove,
-			handler: function(){
+			handler: function(state){
 				this.make('unorderedList');
 			},
 			query: function(){

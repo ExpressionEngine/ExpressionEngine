@@ -81,6 +81,26 @@ class View_source_rte {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Styles
+	 *
+	 * @access	public
+	 */
+	function styles()
+	{
+		ob_start(); ?>
+
+		.WysiHat-editor-toolbar .view_source {
+			text-transform: uppercase;
+		}
+		
+<?php	$buffer = ob_get_contents();
+		ob_end_clean(); 
+		return $buffer;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Javascript Definition
 	 *
 	 * @access	public
@@ -92,24 +112,6 @@ class View_source_rte {
 		WysiHat.addButton('view_source', {
 			label:			EE.rte.view_source.code,
 			'toggle-text':	EE.rte.view_source.content,
-			init: function(name, $editor) {
-				this.parent.init(name, $editor);
-				$editor.add($editor.data('field'))
-					.bind('resize', function() {
-						var $this	= $(this);
-			
-						if ($this.is('.WysiHat-editor') && $this.is(':visible')) {
-							$editor.data('field')
-								.height($this.height())
-								.width($this.outerWidth());
-						} else if ($this.is('.rte') && $this.is(':visible')) {
-							$editor
-								.height($this.height())
-								.width($this.width());
-						}
-					}).resize();
-				return this;
-			},
 			handler: function() {
 				this.Commands.toggleHTML(this);
 			}

@@ -77,13 +77,13 @@ class Ordered_list_rte {
 		WysiHat.addButton('ordered_list', {
 			label:			EE.rte.ordered_list.add,
 			'toggle-text':	EE.rte.ordered_list.remove,
-	    	handler: function() {
-	    		this.make('orderedList');
+			handler: function(state) {
+				this.make('orderedList');
 			},
 			query: function() {
 				return this.is('orderedList');
 			}
-	    });
+		});
 		
 <?php	$buffer = ob_get_contents();
 		ob_end_clean(); 
