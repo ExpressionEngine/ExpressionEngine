@@ -71,7 +71,7 @@ function setupImageTool($editor, $image_button) {
 					.attr('src', image_object.thumb.replace(/_thumbs\//, ''))
 				);
 			
-			if ((caption_text = prompt(EE_rte_image.caption_text)))
+			if ((caption_text = prompt(EE_rte_image.caption_text, '')))
 			{
 				$img.append(
 					$('<figcaption/>').text(caption_text)
