@@ -269,7 +269,7 @@ class Rte_toolset_model extends CI_Model {
 		$this->load->model('rte_tool_model');
 
 		$tool_names = array('Blockquote', 'Bold', 'Headings', 'Image', 'Italic',
-			'Link', 'Ordered List', 'Strip Tags', 'Underline', 'Unordered List',
+			'Link', 'Ordered List', 'Underline', 'Unordered List',
 			'View Source');
 
 		// Load all available tools		
