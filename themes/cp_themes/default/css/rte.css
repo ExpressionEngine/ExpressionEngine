@@ -102,7 +102,7 @@
 /* Container */
 
 .WysiHat-container {
-	overflow: auto;
+	overflow: hidden;
 	position: relative;
 	width: 99.5%;
 }

@@ -112,25 +112,6 @@ class View_source_rte {
 		WysiHat.addButton('view_source', {
 			label:			EE.rte.view_source.code,
 			'toggle-text':	EE.rte.view_source.content,
-			init: function(name, $editor) {
-				this.parent.init(name, $editor);
-
-				var $editor = this.$editor,
-					$field = $editor.data('field'),
-					$container = $editor.parent();
-
-				$container.resize(function() {
-					if ($editor.is(':visible')) {
-						$field
-							.height($editor.outerHeight());
-					} else if ($field.is(':visible')) {
-						$editor
-							.height($field.height());
-					}
-				}).resize();
-
-				return this;
-			},
 			handler: function() {
 				this.Commands.toggleHTML(this);
 			}
