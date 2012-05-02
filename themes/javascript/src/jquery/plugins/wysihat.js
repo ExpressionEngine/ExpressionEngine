@@ -1399,12 +1399,12 @@ WysiHat.Selection.prototype = {
 			range = s.getRangeAt(0);
 		}
 
-		length = range.toString().replace(/\n/g, '').length;
+		length = range.toString().replace(/[\r\n]/g, '').length;
 
 		r.setStart(this.top, 0);
 		r.setEnd(range.startContainer, range.startOffset);
 
-		topOffset = r.toString().replace(/\n+/g, '').length;
+		topOffset = r.toString().replace(/[\r\n]/g, '').length;
 
 		return [topOffset, topOffset + length];
 	},
