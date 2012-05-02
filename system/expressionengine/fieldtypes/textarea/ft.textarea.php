@@ -119,6 +119,11 @@ class Textarea_ft extends EE_Fieldtype {
 			$data = str_replace($code_marker.$i, '[code]'.$chunk.'[/code]', $data);
 		}
 		
+		// instead of making browsers attempt to download an invalid image src
+		// (containing an unrendered {filedir_x} tag) we'll swap the src attr
+		// for a temporary data attr, then swap it back when the RTE inits
+		$data = preg_replace('/src="{filedir_/i', 'data-ee-filedir-$0', $data);
+	
 		$data = htmlspecialchars($data, ENT_QUOTES);
 
 		$field['value'] = $data;
