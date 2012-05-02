@@ -1570,7 +1570,8 @@ WysiHat.Commands = (function() {
 		// no frills mapping to execCommand
 		makeEasy: [
 			'bold', 'underline', 'italic', 'strikethrough', 'fontname',
-			'fontsize', 'forecolor', 'createLink', 'insertImage'
+			'fontsize', 'forecolor', 'createLink', 'insertImage',
+			'insertOrderedList', 'insertUnorderedList'
 		],
 
 		// selectors to use for selectionIsWithin
@@ -1635,8 +1636,10 @@ WysiHat.Commands = (function() {
 			'font': 'fontname',
 			'color': 'forecolor',
 			'link': 'createLink',
-			'ol': 'orderedList',
-			'ul': 'unorderedList',
+			'ol': 'insertOrderedList',
+			'ul': 'insertUnorderedList',
+			'orderedList': 'insertOrderedList',
+			'unorderedList': 'insertUnorderedList',
 			'align': 'alignment'
 		}
 	};
@@ -2222,60 +2225,6 @@ $.extend(WysiHat.Commands, {
 				}
 			});
 		});
-	},
-
-	toggleList: function(type)
-	{
-		var
-		$list = $('<'+type+'/>'),
-		other = (type == 'ul') ? 'ol' : 'ul',
-		that = this;
-
-		if (this.is[type]())
-		{
-			this.manipulateSelection(function( range, $list ){
-				this.getRangeElements( range, type ).each(function(i){
-					var $this = $(this);
-					$this.children('li').each(function(){
-						var $this = $(this);
-						that.replaceElement( $this, 'p' );
-						$this.find('ol,ul').each(function(){
-							var	$parent = $(this).parent();
-							if ( $parent.is('p') )
-							{
-								that.deleteElement.apply( $parent );
-							}
-						});
-					});
-					that.deleteElement.apply( $this );
-				});
-			});
-		}
-		else
-		{
-			this.manipulateSelection(function( range, $list ){
-				var $l = $list.clone();
-				this.getRangeElements( range, this._blockElements ).each(function(i){
-					var $this = $(this);
-					if ( $this.parent().is(other) )
-					{
-						that.replaceElement( $this.parent(), type );
-						$l = $this.parent();
-					}
-					else
-					{
-						if ( ! i )
-						{
-							$this.replaceWith( $l );
-						}
-						$this.appendTo( $l );
-					}
-				});
-				$l.children(':not(li)').each(function(){
-					that.replaceElement( $(this), 'li' );
-				});
-			}, $list );
-		}
 	}
 });
 
@@ -2294,14 +2243,6 @@ $.extend(WysiHat.Commands.make, {
 		{
 			WysiHat.Commands.quoteSelection();
 		}
-	},
-
-	orderedList: function() {
-		WysiHat.Commands.toggleList('ol');
-	},
-
-	unorderedList: function() {
-		WysiHat.Commands.toggleList('ul');
 	},
 
 	alignment: function(alignment)
@@ -2864,6 +2805,7 @@ WysiHat.Toolbar.prototype = {
 
 	observeButtonClick: function(button)
 	{
+
 		var evt = (button.type && button.type == 'select') ? 'change' : 'click',
 			that = this;
 
@@ -2890,6 +2832,15 @@ WysiHat.Toolbar.prototype = {
 			return false; // (evt == 'change');
 		});
 
+/*
+
+		button.$element.on('click', function() {
+			//button.make('orderedList');
+			button.Commands.execCommand('insertOrderedList', false, null);
+			button.$editor.focus();
+			return false;
+		});
+*/
 	},
 
 	observeStateChanges: function(button)

@@ -80,7 +80,6 @@ class Unordered_list_rte {
 			'toggle-text':	EE.rte.unordered_list.remove,
 			handler: function(state){
 				this.make('unorderedList');
-				this.Selection.set(state.selection);
 			},
 			query: function(){
 				return this.is('unorderedList');

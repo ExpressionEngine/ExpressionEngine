@@ -79,7 +79,6 @@ class Ordered_list_rte {
 			'toggle-text':	EE.rte.ordered_list.remove,
 			handler: function(state) {
 				this.make('orderedList');
-				this.Selection.set(state.selection);
 			},
 			query: function() {
 				return this.is('orderedList');
