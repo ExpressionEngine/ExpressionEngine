@@ -45,9 +45,6 @@ class Image_rte {
 	{
 		// Make a local reference of the ExpressionEngine super object
 		$this->EE =& get_instance();
-		
-		// load in the file locations
-		$this->_get_file_locations();
 	}
 
 	// --------------------------------------------------------------------
@@ -123,29 +120,6 @@ class Image_rte {
 		return file_get_contents( 'rte.image.js', TRUE );
 	}
 	
-	// --------------------------------------------------------------------
-
-	/**
-	 * Collect the folders
-	 *
-	 * @access	private
-	 */
-	private function _get_file_locations()
-	{
-		$this->EE->load->model('file_upload_preferences_model');
-		$dirs = $this->EE->file_upload_preferences_model->get_file_upload_preferences($this->EE->session->userdata('group_id'));
-		
-		$domain = $this->EE->config->item('site_url');
-		
-		foreach( $dirs as $d )
-		{
-			# create the filedir reference
-			$filedir	= '{filedir_'.$d['id'].'}';
-			$this->folders[$d['url']]	= $filedir;
-			$this->filedirs[$filedir]	= $d['url'];
-		}
-	}
-
 } // END Image_rte
 
 /* End of file rte.image.php */

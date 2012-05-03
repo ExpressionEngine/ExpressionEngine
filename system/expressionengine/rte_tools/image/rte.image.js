@@ -222,9 +222,6 @@ WysiHat.addButton('image', {
 			html = html.replace( path_re, filedirs[path] );
 		}
 		
-		// Swap data-ee-filedir-src attributes with src
-		html = html.replace('data-ee-filedir-src=', 'src=');
-
 		$field = $editor.data('field');
 		$parent = $editor.parent();
 		$editor.html(html);
