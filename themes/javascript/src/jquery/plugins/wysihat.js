@@ -146,7 +146,8 @@ WysiHat.Editor.prototype = {
 	 * Special empty entity so that we always have
 	 * paragraph tags to work with.
 	 */
-	_empty: '<p>'+String.fromCharCode(8203)+'</p>',
+	_emptyChar: String.fromCharCode(8203),
+	_empty: '<p>'+this._emptyChar+'</p>',
 
 	/**
 	 * Create the main editor html
@@ -837,7 +838,7 @@ WysiHat.Event.prototype = {
 	{
 		after = after || this.getState();
 
-		this.Editor.updateField();
+		// this.Editor.updateField();
 		this.Editor.selectEmptyParagraph();
 
 		this.Undo.push(
@@ -935,8 +936,6 @@ WysiHat.Event.prototype = {
 	/**
 	 * Save the state of the text they have
 	 * typed so far.
-	 *
-	 * @todo call periodically to make it more natural?
 	 */
 	_saveTextState: function(name)
 	{
@@ -1377,6 +1376,8 @@ WysiHat.Selection = function($el)
 
 WysiHat.Selection.prototype = {
 
+	_replace: new RegExp('[\r\n]', 'g'),
+
 	/**
 	 * Get current selection offsets based on
 	 * the editors *text* (not html!).
@@ -1399,12 +1400,12 @@ WysiHat.Selection.prototype = {
 			range = s.getRangeAt(0);
 		}
 
-		length = range.toString().replace(/[\r\n]/g, '').length;
+		length = range.toString().replace(this._replace, '').length;
 
 		r.setStart(this.top, 0);
 		r.setEnd(range.startContainer, range.startOffset);
 
-		topOffset = r.toString().replace(/[\r\n]/g, '').length;
+		topOffset = r.toString().replace(this._replace, '').length;
 
 		return [topOffset, topOffset + length];
 	},
@@ -1471,8 +1472,9 @@ WysiHat.Selection.prototype = {
 	 */
 	_getOffsetNode: function(startNode, offset, isStart)
 	{
-		var curNode = startNode,
+		var	curNode = startNode,
 			curNodeLen = 0,
+			last = this.$editor.get(0).lastChild,
 			blocks = WysiHat.Element.getBlocks();
 
 		function getTextNodes(node)
@@ -1517,7 +1519,7 @@ WysiHat.Selection.prototype = {
 			// that we don't select that initial newline.
 			if (isStart)
 			{
-				while (curNode.nextSibling === null)
+				while (curNode.nextSibling === null && curNode.parentNode !== last)
 				{
 					curNode = curNode.parentNode;
 				}
@@ -1780,6 +1782,11 @@ $.extend(WysiHat.Commands, {
 			a = a.nextSibling;
 		}
 
+		if ( ! a )
+		{
+			return false;
+		}
+
 		if ( $.browser.mozilla )
 		{
 			while ( t-- )
@@ -1807,11 +1814,6 @@ $.extend(WysiHat.Commands, {
 					}
 				}
 			}
-		}
-
-		if ( ! a )
-		{
-			return false;
 		}
 
 		while ( a &&
@@ -2325,45 +2327,56 @@ $.extend(WysiHat.Editor.prototype, CommandsMixin);
 // ---------------------------------------------------------------------
 
 WysiHat.Formatting = {
+
+
+	_bottomUp: function($parent, selector, callback)
+	{
+		var els = $parent.find(selector),
+			rev = $.makeArray(els).reverse();
+
+		$.each(rev, callback);
+	},
+
 	cleanup: function($element)
 	{
-		var replaceElement = WysiHat.Commands.replaceElement;
+		var replaceElement = WysiHat.Commands.replaceElement,
+			deleteElement = WysiHat.Commands.deleteElement;
 
 		// kill comments
 		$element.contents().filter(function() {
 			return this.nodeType == Node.COMMENT_NODE;
 		}).remove();
 
+		this._bottomUp($element, 'span', function()
+		{
+			var $this = $(this),
+				fontWeight = $this.css('font-weight'),
+				isBold = (fontWeight == 'bold' || fontWeight > 500),
+				isItalic = ($this.css('font-style') == 'italic');
+
+			if ( $this.hasClass('Apple-style-span') )
+			{
+				$this.removeClass('Apple-style-span');
+			}
+
+			$this.removeAttr('style');
+
+			if (isItalic && isBold)
+			{
+				$this.wrap('<b>');
+				replaceElement($this, 'i');
+			}
+			else if (isBold)
+			{
+				replaceElement($this, 'b');
+			}
+			else if (isItalic)
+			{
+				replaceElement($this, 'i');
+			}
+		});
+
 		$element
-			.find('span')
-				.each(function(){
-					var $this = $(this);
-					if ( $this.hasClass('Apple-style-span') )
-					{
-						$this.removeClass('Apple-style-span');
-					}
-
-					var fontWeight = $this.css('font-weight'),
-						isBold = (fontWeight == 'bold' || fontWeight > 500),
-						isItalic = ($this.css('font-style') == 'italic');
-
-					$this.removeAttr('style');
-
-					if (isItalic && isBold)
-					{
-						$this.wrap('<b>');
-						replaceElement($this, 'i');
-					}
-					else if (isBold)
-					{
-						replaceElement($this, 'b');
-					}
-					else if (isItalic)
-					{
-						replaceElement($this, 'i');
-					}
-				 })
-				.end()
 			.children('div')
 				.each(function(){
 				 	if ( ! this.attributes.length )
@@ -2374,30 +2387,35 @@ WysiHat.Formatting = {
 				.end()
 			.find('strong')
 				.each(function(){
-				 	replaceElement($(this),'b');
+				 	replaceElement($(this), 'b');
 				 })
 				.end()
 			.find('em')
 				.each(function(){
-				 	replaceElement($(this),'i');
+				 	replaceElement($(this), 'i');
 				 })
 				.end()
 			.find('strike')
 				.each(function(){
-				 	replaceElement($(this),'del');
+				 	replaceElement($(this), 'del');
 				 })
 				.end()
 			.find('u')
 				.each(function(){
-				 	replaceElement($(this),'ins');
+				 	replaceElement($(this), 'ins');
 				 })
 				.end()
 			.find('p:empty,script,noscript,style').remove();
+
+		// firefox will sometimes end up nesting identical
+		// tags. Let's not do that, please.
+		$element.find('b > b, i > i').each(function() {
+			deleteElement(this);
+		});
 	},
 
 	// selection before tag, between tags, after tags
 	// between tags (x offset)
-
 
 	cleanupPaste: function($element, parentTagName)
 	{
@@ -2409,10 +2427,7 @@ WysiHat.Formatting = {
 		// is to run through the found elements backwards. Otherwise
 		// the node reference disappears when the parent is replaced.
 
-		var els = $element.find('*'),
-			rev = $.makeArray(els).reverse();
-
-		$.each(rev, function() {
+		this._bottomUp($element, '*', function() {
 			var nodeName = this.nodeName.toLowerCase(),
 				replace = document.createElement(nodeName);
 
@@ -2733,6 +2748,7 @@ WysiHat.Toolbar.prototype = {
 		$.extend(button, CommandsMixin);
 
 		// Add utility references straight onto the button
+		button.Editor = Editor;
 		button.Event = Editor.Event;
 		button.Commands = Editor.Commands;
 		button.Selection = Editor.Selection;
@@ -2827,18 +2843,9 @@ WysiHat.Toolbar.prototype = {
 			button.Event.fire(button.name);
 
 			that.suspendQueries = false;
-			return false; // (evt == 'change');
-		});
 
-/*
-
-		button.$element.on('click', function() {
-			//button.make('orderedList');
-			button.Commands.execCommand('insertOrderedList', false, null);
-			button.$editor.focus();
 			return false;
 		});
-*/
 	},
 
 	observeStateChanges: function(button)

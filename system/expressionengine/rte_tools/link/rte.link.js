@@ -26,15 +26,13 @@ WysiHat.addButton('link', {
 
 		var sel		= window.getSelection(),
 			link	= true,
-			s_el, e_el;
+			test_el, s_el, e_el;
 
 		// get the elements
 		s_el = sel.anchorNode;
 		e_el = sel.focusNode;
 		
-		this.range = document.createRange();
-		this.range.setStart(sel.anchorNode, sel.anchorOffset);
-		this.range.setEnd(sel.focusNode, sel.focusOffset);
+		this.range = sel.getRangeAt(0);
 
 		if ((s_el == e_el && sel.anchorOffset == sel.focusOffset) ||
 			e_el.textContent == '​') // Our zero-width character
@@ -42,71 +40,33 @@ WysiHat.addButton('link', {
 			link = false;
 		}
 		
-		// If our initial check failed, but the selection still has
-		// child nodes, a figure element may be selected and we need to
-		// traverse down the nodes and see if an image tag is there;
-		// or, we may have selected an image to begin with
-		if (( ! link && s_el.childNodes.length > 0) ||
-			$(s_el).is('img'))
-		{
-			while ( s_el.childNodes.length > 0 )
-			{
-				s_el = s_el.childNodes[0];
-			}
-			
-			// If we found an image, and it's already in an anchor tag,
-			// grab the anchor tag for selection instead
-			if ($(s_el).is('img') &&
-				$(s_el.parentNode).is('a'))
-			{
-				s_el = s_el.parentNode;
-			}
-			
-			// If we ended up with an image or anchor tag, select it
-			if ($(s_el).is('a') ||
-				$(s_el).is('img'))
-			{
-				link = true;
-				this.range.selectNode( s_el );
-			}
-		}
-		
-		// If our selected node is not an anchor tag or an image tag,
-		// we may need to traverse our parents to see if we're already
-		// in an anchor tag; if so, select it for editing
-		if ( ! $(s_el).is('a') &&
-			 ! $(s_el).is('img'))
-		{
-			// Reach the first element node
-			while ( s_el.nodeType != 1 )
-			{
-				s_el = s_el.parentNode;
-			}
-			
-			if ($(s_el).is('a'))
-			{
-				link = true;
-				this.range.selectNode( s_el );
-			}
-		}
-		
-		this.link_node = s_el;
+		// find link element
+		test_el = this._findLinkableNode(s_el, 'img');
 
+		// found?
+		if (test_el !== false)
+		{
+			s_el = test_el;
+			link = true;
+			this.range.selectNode(s_el);
+		}
+		
 		if ( link )
 		{
+			this.link_node = s_el;
+
 			this.$link_dialog.dialog('open');
 			this.$link_dialog.bind('dialogclose', function() {
 				setTimeout(function() {
 					finalize();
 				}, 50);
 			});
-		}
-		else
-		{
-			alert( EE.rte.link.dialog.selection_error );
-		}
 
-		return false;
+			return false;
+		}
+		
+		// only return false if we go async
+		alert( EE.rte.link.dialog.selection_error );
 	},
 
 	query: function($editor)
@@ -118,6 +78,54 @@ WysiHat.addButton('link', {
 	/////////////////////
 	// Private Methods //
 	/////////////////////
+
+	_is: function(node, name)
+	{
+		return (node.tagName && node.tagName.toLowerCase() == name);
+	},
+
+	_findLinkableNode: function(el, childTagName)
+	{
+		var _is = this._is;
+
+		// can we go deeper? do it!
+		if (el.childNodes.length > 0 || _is(el, childTagName))
+		{
+			while(el.childNodes.length > 0)
+			{
+				el = el.childNodes[0];
+			}
+
+			// If we found the child, and it's already in an anchor tag,
+			// grab the anchor tag for selection instead
+			if (_is(el, childTagName) && _is(el.parentNode, 'a'))
+			{
+				el = el.parentNode;
+			}
+		}
+
+		// ended up with a child or link? good, select them
+		if (_is(el, 'a') || _is(el, childTagName))
+		{
+			return el;
+		}
+
+		// look up for luck
+		if ( ! _is(el, 'a') && ! _is(el, childTagName))
+		{
+			while (el.nodeType != 1)
+			{
+				el = el.parentNode;
+			}
+
+			if (_is(el, 'a'))
+			{
+				return el;
+			}
+		}
+
+		return false;
+	},
 
 
 	_clearErrors: function()
@@ -265,9 +273,12 @@ WysiHat.addButton('link', {
 		}
 		
 		// Reselect the text/node
-		var sel = window.getSelection();
-		sel.removeAllRanges();
-		sel.addRange(this.range);
+		//var sel = window.getSelection();
+		//sel.removeAllRanges();
+		//sel.addRange(this.range);
+		this.$editor.focus();
+		this.Selection.set(this.origState.selection);
+		this.$link_dialog.dialog('close');
 		
 		// Make a link! This is what the other 300
 		// lines of code are here for, folks.
@@ -276,26 +287,40 @@ WysiHat.addButton('link', {
 		// Select our new link so that Firefox will not keep the
 		// selection inside the link, thus trapping the cursor, and
 		// we also need to add the optional title attribute; if we
-		// linked an image, the anchor is likely the focusNode
-		var anchor_node = ($(sel.focusNode.parentNode).is('a'))
-			? sel.focusNode.parentNode : sel.focusNode;
-		
-		// More fiddlyness to find the anchor node, this is also
-		// mainly due to Firefox
-		if ( ! $(anchor_node).is('a'))
+		// linked an image, the anchor is likely the focusNode so
+		// we try that first. IE doesn't always play that way, so
+		// we try a few others as well.
+
+		var sel = window.getSelection(),
+			_is = this._is,
+			attempt = [sel.focusNode, sel.anchorNode],
+			anchor_node;
+
+		// do our best to find that darned link
+		// we just created. laugh or cry?
+		while (anchor_node = attempt.shift())
 		{
-			if ($(this.link_node).is('a'))
+			if (_is(anchor_node, 'a'))
 			{
-				anchor_node = this.link_node;
+				break;
 			}
-			else if ($(this.link_node.parentNode).is('a'))
+			else if (_is(anchor_node.parentNode, 'a'))
 			{
-				anchor_node = this.link_node.parentNode;
+				anchor_node = anchor_node.parentNode;
+				break
+			}
+
+			anchor_node = this._findLinkableNode(anchorNode);
+
+			if (anchor_node !== false)
+			{
+				break;
 			}
 		}
-		
-		if ($(anchor_node).is('a'))
+
+		if (anchor_node !== false)
 		{
+			sel.removeAllRanges();
 			this.range.selectNode(anchor_node);
 			sel.addRange(this.range);
 			
