@@ -113,6 +113,7 @@ class View_source_rte {
 			label:			EE.rte.view_source.code,
 			'toggle-text':	EE.rte.view_source.content,
 			handler: function() {
+				this.Editor.updateField();
 				this.Commands.toggleHTML(this);
 			}
 		});
