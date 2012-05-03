@@ -18,6 +18,8 @@ WysiHat.addButton('link', {
 
 	handler: function(state, finalize)
 	{
+		this.link_node = null;
+
 		this.origState = state;
 		this.$editor.select();
 
@@ -49,12 +51,11 @@ WysiHat.addButton('link', {
 			s_el = test_el;
 			link = true;
 			this.range.selectNode(s_el);
+			this.link_node = s_el;
 		}
 		
 		if ( link )
 		{
-			this.link_node = s_el;
-
 			this.$link_dialog.dialog('open');
 			this.$link_dialog.bind('dialogclose', function() {
 				setTimeout(function() {
@@ -100,7 +101,7 @@ WysiHat.addButton('link', {
 			// grab the anchor tag for selection instead
 			if (_is(el, childTagName) && _is(el.parentNode, 'a'))
 			{
-				el = el.parentNode;
+				return el.parentNode;
 			}
 		}
 
@@ -118,7 +119,7 @@ WysiHat.addButton('link', {
 				el = el.parentNode;
 			}
 
-			if (_is(el, 'a'))
+			if (_is(el, 'a') || _is(el, childTagName))
 			{
 				return el;
 			}
@@ -271,13 +272,20 @@ WysiHat.addButton('link', {
 			this.$error.appendTo(this.$url.parent());
 			return;
 		}
-		
-		// Reselect the text/node
-		//var sel = window.getSelection();
-		//sel.removeAllRanges();
-		//sel.addRange(this.range);
+
+		// reselect the text
 		this.$editor.focus();
 		this.Selection.set(this.origState.selection);
+
+		if (this.link_node)
+		{
+			// Had a node, reselect it
+			var sel = window.getSelection();
+			sel.removeAllRanges();
+			sel.addRange(this.range);
+			this.range.selectNode(this.link_node);
+		}
+
 		this.$link_dialog.dialog('close');
 		
 		// Make a link! This is what the other 300
