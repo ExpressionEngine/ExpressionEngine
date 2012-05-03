@@ -66,21 +66,6 @@ class View_source_rte {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Libraries we need
-	 *
-	 * @access	public
-	 * @return	mixed array of libraries
-	 */
-	function libraries()
-	{
-		return array(
-			'plugin' => 'ba-resize'
-		);
-	}
-	
-	// --------------------------------------------------------------------
-
-	/**
 	 * Styles
 	 *
 	 * @access	public

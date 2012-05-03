@@ -183,7 +183,7 @@ WysiHat.Editor.prototype = {
 				'class': WysiHat.name + '-container',
 
 				// keep sizes in sync
-				'resize': function()
+				'mouseup': function()
 				{
 					if (that.$field.is(':visible'))
 					{
