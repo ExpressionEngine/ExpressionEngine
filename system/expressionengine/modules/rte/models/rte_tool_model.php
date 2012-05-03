@@ -259,18 +259,23 @@ class Rte_tool_model extends CI_Model {
 		$tools = $this->get_tool_list();
 		$files = $this->addons->get_files('rte_tools');
 
+		// Map out the class names and tool_id's of each tool in the database
 		$tool_map = array();
 		foreach ($tools as $tool)
 		{
 			$tool_map[$tool['class']] = $tool['tool_id'];
 		}
 
+		// Check for RTE tool files and assign their class names as the key of
+		// an array to diff later
 		$files_map = array();
 		foreach ($files as $file)
 		{
-			$file[$file['class']] = '';
+			$files_map[$file['class']] = '';
 		}
 		
+		// Diff the two arrays to figure out what's orphaned and delete 
+		// those tools
 		$orphaned_tools = array_diff_key($tool_map, $files_map);
 		foreach ($orphaned_tools as $orphaned_tool_id)
 		{
