@@ -227,17 +227,55 @@ class Rte_tool_model extends CI_Model {
 
 	/**
 	 * Deletes a tool
-	 * @param  String $tool_name The name of the tool to delete
+	 * @param  String|integer $tool Either the name of the tool or the id of the tool
 	 */
-	public function delete($tool_name)
+	public function delete($tool)
 	{
-		$this->db->delete(
-			'rte_tools', 
-			array(
-				'name'	=> ucfirst($tool_name),
-				'class' => $this->_class_name($tool_name)
-			)
-		);
+		if (is_numeric($tool))
+		{
+			$this->db->where('tool_id', (int) $tool);
+		}
+		elseif (is_string($tool))
+		{
+			$this->db->where(array(
+				'name'	=> ucfirst($tool),
+				'class' => $this->_class_name($tool)
+			));
+		}
+		else
+		{
+			return FALSE;
+		}
+
+		$this->db->delete('rte_tools');
+	}
+
+	/**
+	 * Deletes tools from the database when the corresponding file is missing
+	 */
+	public function delete_missing_tools()
+	{
+		$this->load->library('addons');
+		$tools = $this->get_tool_list();
+		$files = $this->addons->get_files('rte_tools');
+
+		$tool_map = array();
+		foreach ($tools as $tool)
+		{
+			$tool_map[$tool['class']] = $tool['tool_id'];
+		}
+
+		$files_map = array();
+		foreach ($files as $file)
+		{
+			$file[$file['class']] = '';
+		}
+		
+		$orphaned_tools = array_diff_key($tool_map, $files_map);
+		foreach ($orphaned_tools as $orphaned_tool_id)
+		{
+			$this->delete($orphaned_tool_id);
+		}
 	}
 
 	/**
