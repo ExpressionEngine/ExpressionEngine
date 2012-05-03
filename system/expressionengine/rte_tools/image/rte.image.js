@@ -221,7 +221,7 @@ WysiHat.addButton('image', {
 			path_re = new RegExp(path, 'g');
 			html = html.replace( path_re, filedirs[path] );
 		}
-
+		
 		$field = $editor.data('field');
 		$parent = $editor.parent();
 		$editor.html(html);

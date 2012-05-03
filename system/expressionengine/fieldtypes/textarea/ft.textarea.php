@@ -119,6 +119,19 @@ class Textarea_ft extends EE_Fieldtype {
 			$data = str_replace($code_marker.$i, '[code]'.$chunk.'[/code]', $data);
 		}
 		
+		// Swap {filedir_x} with the real URL. It will be converted back
+		// upon submit by the RTE Image tool.
+		$this->EE->load->model('file_upload_preferences_model');
+		$dirs = $this->EE->file_upload_preferences_model->get_file_upload_preferences($this->EE->session->userdata('group_id'));
+		
+		foreach($dirs as $d)
+		{
+			// tag to replace
+			$filedir = "{filedir_{$d['id']}}";
+
+			$data = str_replace($filedir, $d['url'], $data);
+		}
+	
 		$data = htmlspecialchars($data, ENT_QUOTES);
 
 		$field['value'] = $data;
