@@ -187,11 +187,11 @@ WysiHat.Editor.prototype = {
 				{
 					if (that.$field.is(':visible'))
 					{
-						that.$editor.height(that.$field.outerHeight());
+						that.$editor.height(that.$field.height());
 					}
 					else if (that.$editor.is(':visible'))
 					{
-						that.$field.height(that.$editor.innerHeight());
+						that.$field.height(that.$editor.outerHeight());
 					}
 				}
 			})

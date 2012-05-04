@@ -419,6 +419,7 @@ textarea.rte:focus,
 }
 
 .WysiHat-editor figure {
+	display: block;
 	margin: 0 20px 10px;
 	text-align: center;
 }
