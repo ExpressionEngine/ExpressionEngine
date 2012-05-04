@@ -168,17 +168,34 @@ class Rte_ft extends EE_Fieldtype {
 	
 	function display_settings($data)
 	{
-		return;
+		$prefix = 'rte';
+
+		// Text direction
+		$this->text_direction_row($data, $prefix);
+
+		// Textarea rows
+		$field_rows	= ($data['field_ta_rows'] == '') ? 10 : $data['field_ta_rows'];
+
+		$this->EE->table->add_row(
+			lang('textarea_rows', $prefix.'_ta_rows'),
+			form_input(array(
+				'id'	=> $prefix.'_ta_rows',
+				'name'	=> 'field_ta_rows',
+				'size'	=> 4,
+				'value'	=> $field_rows
+				)
+			)
+		);
 	}
 	
 	// --------------------------------------------------------------------
 
 	function save_settings($data)
 	{		
-		$settings['field_type'] = 'rte';
-		$settings['field_show_fmt'] = 'n';
+		$data['field_type'] = 'rte';
+		$data['field_show_fmt'] = 'n';
 
-		return $settings;
+		return $data;
 	}	
 }
 
