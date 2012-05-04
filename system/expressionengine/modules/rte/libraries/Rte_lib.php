@@ -369,6 +369,15 @@ class Rte_lib {
 				// RTE button class definitions
 				' . $bits['definitions'] . '
 
+				$("' . $selector . '").each(function(index)
+				{
+					// Add ID attributes to textareas missing them
+					if ($(this).attr("id") == undefined)
+					{
+						$(this).attr("id", "rte-"+index);
+					}
+				});		
+
 				// RTE editor setup for this page
 				$("' . $selector . '").wysihat({
 					buttons: '.$this->EE->javascript->generate_json($bits['buttons'], TRUE).'
