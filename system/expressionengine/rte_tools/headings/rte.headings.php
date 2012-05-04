@@ -129,7 +129,7 @@ class Headings_rte {
 				}
 				else
 				{
-					this.$element.val('');
+					this.$element.val('p');
 				}
 			}
 		});
