@@ -194,7 +194,7 @@ function setupImageTool($editor, $image_button) {
 		});
 		
 	$editor
-		.delegate('figure img','mouseover',function(){
+		.delegate('figure img', 'mouseover', function(){
 			if (dragging)
 			{
 				return;
@@ -212,7 +212,23 @@ function setupImageTool($editor, $image_button) {
 					height:		$this.outerHeight(),
 					width:		$this.outerWidth()
 				});
+			$figure_overlay.data('image', $this);
 		});
+
+	$figure_overlay.on('dblclick', function(e) {
+		var $field = $figure_overlay.data('image'),
+			sel = window.getSelection(),
+			range = document.createRange();
+
+		if ($field)
+		{
+			e.preventDefault();
+			range.selectNode($field.get(0));
+			sel.removeAllRanges();
+			sel.addRange(range);
+			hideFigureOverlay();
+		}
+	});
 }
 
 WysiHat.addButton('image', {
