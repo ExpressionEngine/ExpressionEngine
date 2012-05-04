@@ -10,6 +10,7 @@ var $image_button,
 	$parent,
 	$editor,
 	$field,
+	dragging = false,
 	image_finalize;
 
 function setupImageTool($editor, $image_button) {
@@ -21,6 +22,13 @@ function setupImageTool($editor, $image_button) {
 			.appendTo($editor.parents('.WysiHat-container')),
 		$curr_figure	= null;
 	
+
+	$editor.on('mousedown', function() {
+		dragging = true;
+	}).on('mouseup', function() {
+		dragging = false;
+	});
+
 	// Upon form submission, convert file upload paths back to
 	// {filedir_n} format for storage in the database
 	$editor
@@ -187,6 +195,11 @@ function setupImageTool($editor, $image_button) {
 		
 	$editor
 		.delegate('figure img','mouseover',function(){
+			if (dragging)
+			{
+				return;
+			}
+
 			var	$this	= $(this),
 				offsets = $this.position();
 				$curr_figure = $(this).closest('figure');

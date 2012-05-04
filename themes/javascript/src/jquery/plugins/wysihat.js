@@ -2635,7 +2635,6 @@ var BlankButton = {
 		this.name = name;
 		this.$editor = $editor;
 		this.$field = $editor.data('field');
-		this.field_id = this.$field.attr('id').replace(/^field_id_/, '');
 		return this;
 	},
 
