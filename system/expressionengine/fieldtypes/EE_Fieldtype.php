@@ -287,10 +287,10 @@ class EE_Fieldtype {
 
 		$this->EE->table->add_row(
 			'<strong>'.lang('text_direction').'</strong>',
-			form_radio($prefix.'field_text_direction', 'ltr', $data['field_text_direction_ltr'], 'id="field_text_direction_ltr"').NBS.
-				lang('ltr', 'field_text_direction_ltr').NBS.NBS.NBS.NBS.NBS.
-				form_radio($prefix.'field_text_direction', 'rtl', $data['field_text_direction_rtl'], 'id="field_text_direction_rtl"').NBS.
-				lang('rtl', 'field_text_direction_rtl')
+			form_radio($prefix.'field_text_direction', 'ltr', $data['field_text_direction_ltr'], 'id="'.$prefix.'field_text_direction_ltr"').NBS.
+				lang('ltr', $prefix.'field_text_direction_ltr').NBS.NBS.NBS.NBS.NBS.
+				form_radio($prefix.'field_text_direction', 'rtl', $data['field_text_direction_rtl'], 'id="'.$prefix.'field_text_direction_rtl"').NBS.
+				lang('rtl', $prefix.'field_text_direction_rtl')
 		);		
 	}
 	
