@@ -176,7 +176,6 @@ class Rte_ft extends EE_Fieldtype {
 	function save_settings($data)
 	{		
 		$settings['field_type'] = 'rte';
-		$settings['field_fmt'] = 'none';
 		$settings['field_show_fmt'] = 'n';
 
 		return $settings;
