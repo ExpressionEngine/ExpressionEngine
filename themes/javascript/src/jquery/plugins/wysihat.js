@@ -167,6 +167,9 @@ WysiHat.Editor.prototype = {
 			// Respect textarea's existing row count settings
 			'height': this.$field.height(),
 
+			// Text direction
+			'dir': this.$field.attr('dir'),
+
 			'html': WysiHat.Formatting.getBrowserMarkupFrom(this.$field)
 		});
 	},
