@@ -47,7 +47,6 @@ class Rte_mcp {
 		// set some properties
 		$this->_base_url	= BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=rte';
 		$this->_form_base	= 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=rte';
-		$this->EE->rte_lib->cancel_url = $this->_base_url;
 		$this->EE->rte_lib->form_url = $this->_form_base;
 
 		// Delete missing tools

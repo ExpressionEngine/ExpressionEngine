@@ -281,16 +281,11 @@ class Rte_ext {
 		$this->EE->javascript->set_global(array(
 			'rte'	=> array(
 				'url'	=> array(
-					'toolset_js'	=> $toolset_url,
-					'prefs'			=> BASE.AMP.'C=myaccount'.AMP.'M=custom_action'.AMP.'extension=rte'.AMP.'method=myaccount_settings'
+					'toolset_js'	=> $toolset_url
 				)
 			)
 		));
 
-		// getScript causes the browser to supress freaking everything.
-		// It's surprisingly hard to write tools without errors.
-		// Replacing it with an async tag for now. -pk
-		// $js = "$.getScript(EE.rte.toolset_src.replace(/&amp;/g,'&'));";
 		$js = "
 			var d = document,
 				script = d.getElementsByTagName('script')[0],
@@ -315,7 +310,6 @@ class Rte_ext {
 	function activate_extension()
 	{
 		return TRUE;
-		// show_error('This extension is automatically installed with the Rich Text Editor module');
 	}
 
 	// --------------------------------------------------------------------
@@ -327,7 +321,6 @@ class Rte_ext {
 	function update_extension( $current = FALSE )
 	{
 		return TRUE;
-		// show_error('This extension is automatically updated with the Rich Text Editor module');
 	}
 
 	// --------------------------------------------------------------------
@@ -339,7 +332,6 @@ class Rte_ext {
 	function disable_extension()
 	{
 		return TRUE;
-		// show_error('This extension is automatically deleted with the Rich Text Editor module');
 	}
 	
 		// --------------------------------------------------------------------
@@ -351,7 +343,6 @@ class Rte_ext {
 	function uninstall_extension()
 	{
 		return TRUE;
-		// show_error('This extension is automatically deleted with the Rich Text Editor module');
 	}
 	
 }
