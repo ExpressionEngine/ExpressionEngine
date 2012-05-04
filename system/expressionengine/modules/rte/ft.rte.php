@@ -134,8 +134,8 @@ class Rte_ft extends EE_Fieldtype {
 
 	function save($data)
 	{
-		if ( ! isset($this->settings['field_enable_rte']) OR
-			$this->settings['field_enable_rte'] == 'n')
+		if ($this->EE->session->userdata('rte_enabled') != 'y' 
+			OR $this->EE->config->item('rte_enabled') != 'y')
 		{
 			return $data;
 		}
