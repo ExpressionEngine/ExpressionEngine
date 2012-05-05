@@ -91,7 +91,7 @@ class Rte_ext {
 
 		// get available toolsets
 		$toolsets = $this->EE->rte_toolset_model->get_member_toolsets();
-				
+
 		// assume we don't have a custom toolset to begin with
 		$my_toolset_id = 0;
 		
@@ -113,11 +113,17 @@ class Rte_ext {
 		// insert our custom toolset at the beginning of the list
 		$options = array($my_toolset_id => lang('my_toolset')) + $options;
 
+		// Check the rte_toolset_id, if it's not defined, opt for the 
+		// install default
+		$selected_toolset_id = ($prefs['rte_toolset_id'] == 0) ?  
+			$this->EE->config->item('rte_default_toolset_id'):
+			$prefs['rte_toolset_id'];
+		
 		// setup the page
 		$vars = array(
 			'cp_page_title'		=> lang('rte_prefs'),
 			'rte_enabled'		=> $prefs['rte_enabled'],
-			'toolset_id'		=> $prefs['rte_toolset_id'],
+			'toolset_id'		=> $selected_toolset_id,
 			'toolset_id_opts'	=> $options
 		);
 		
