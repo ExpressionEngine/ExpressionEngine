@@ -9,8 +9,8 @@ $lang = array(
 'remember_me' =>
 'Auto log-in on future visits?',
 
-'no_username_email' =>
-'The username / email field is required.',
+'no_username' =>
+'The username field is required.',
 
 'no_password' =>
 'The password field is required.',

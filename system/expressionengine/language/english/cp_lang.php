@@ -220,9 +220,6 @@ $lang = array(
 'username' => 
 'Username',
 
-'username_email' => 
-'Username / Email',
-
 'password' => 
 'Password',
 
