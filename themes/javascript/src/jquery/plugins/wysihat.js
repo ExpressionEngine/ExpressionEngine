@@ -1524,8 +1524,11 @@ WysiHat.Selection.prototype = {
 			// that we don't select that initial newline.
 			if (isStart)
 			{
+				var depth = 0;
+
 				while (curNode.nextSibling === null && curNode.parentNode !== last)
 				{
+					depth++;
 					curNode = curNode.parentNode;
 				}
 
@@ -1535,6 +1538,13 @@ WysiHat.Selection.prototype = {
 					curNode.nextSibling !== null)
 				{
 					curNode = curNode.nextSibling;
+				}
+
+				// and back down into the blocks
+				while (depth && curNode.firstChild && curNode.firstChild.nodeName.toLowerCase() != 'br')
+				{
+					depth--;
+					curNode = curNode.firstChild;
 				}
 			}
 		}
