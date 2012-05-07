@@ -1251,7 +1251,7 @@ class EE_Template {
 				// Does method exist?  Is This A Module and Is It Installed?
 				if ((in_array($this->tag_data[$i]['class'], $this->modules) && 
 							  ! isset($this->module_data[$class_name])) OR 
-							  ! method_exists($EE, $meth_name))
+							  ! is_callable(array($EE, $meth_name)))
 				{
 					
 					$this->log_item("Tag Not Processed: Method Inexistent or Module Not Installed");
@@ -2403,12 +2403,12 @@ class EE_Template {
 		}
 
 		$filename = FALSE;
-		
+
 		// Note- we should add the extension before checking.
 
 		foreach ($this->EE->api_template_structure->file_extensions as $type => $temp_ext)
 		{
-			if (file_exists($basepath.'/'.$template.$temp_ext) && is_really_writable($basepath.'/'.$template.$temp_ext))
+			if (file_exists($basepath.'/'.$template.$temp_ext))
 			{
 				// found it with an extension
 				$filename = $template.$temp_ext;

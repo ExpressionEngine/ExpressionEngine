@@ -24,7 +24,7 @@
  */
 class Wizard extends CI_Controller {
 
-	var $version			= '2.4.0';	// The version being installed
+	var $version			= '2.5.0';	// The version being installed
 	var $installed_version	= ''; 		// The version the user is currently running (assuming they are running EE)
 	var $minimum_php		= '5.1.6';	// Minimum version required to run EE
 	var $schema				= NULL;		// This will contain the schema object with our queries	
@@ -71,8 +71,8 @@ class Wizard extends CI_Controller {
 	var $native_modules = array('blacklist', 'channel', 'comment', 'commerce', 
 		'email', 'emoticon', 'file', 'forum', 'gallery', 'ip_to_nation', 
 		'jquery', 'mailinglist', 'member', 'metaweblog_api', 'moblog', 'pages',
-		'query', 'referrer', 'rss', 'safecracker', 'search', 'simple_commerce',
-		'stats', 'updated_sites', 'wiki');
+		'query', 'referrer', 'rss', 'rte', 'safecracker', 'search',
+		'simple_commerce', 'stats', 'updated_sites', 'wiki');
 
 	// Third Party Modules may send error messages if something goes wrong.
 	var $module_install_errors = array(); // array that collects all error messages

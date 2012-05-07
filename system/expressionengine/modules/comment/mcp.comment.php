@@ -385,9 +385,6 @@ class Comment_mcp {
 			);
 		}
 
-		// flip the array
-		$comments = array_reverse($comments);
-
 		return $comments;
 	}
 
@@ -492,7 +489,6 @@ class Comment_mcp {
 			'comments',
 			array('site_id' => (int) $this->EE->config->item('site_id'))
 		);
-
 
 //		->get('comments', $this->_limit, $this->_offset);
 
