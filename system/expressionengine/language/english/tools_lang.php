@@ -61,7 +61,6 @@ $lang = array(
 'trans_file_not_writable'=> 'Translation file is not writeable.',
 'logs_deleted'			=> 'Logs deleted',
 
-'import_from_mt' 		=> 'Movable Type Import Utility',
 'member_import' 		=> 'Member Import Utility',
 'missing_password_type'	=> 'The required type attribute is missing in the password element for user: %x. Please consult the documentation for the correct import format.',
 

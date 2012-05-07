@@ -535,7 +535,6 @@ class Cp_search {
 					),
 					'tools_utilities'	=> array(
 							'member_import'					=> array('access' => 'can_access_utilities', TRUE),
-							'import_from_mt'				=> array('access' => 'can_access_utilities', TRUE),
 							'import_from_xml'				=> array('access' => 'can_access_utilities', TRUE),
 							'translation_tool'				=> array('access' => 'can_access_utilities', TRUE)
 					),

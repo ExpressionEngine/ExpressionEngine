@@ -1251,7 +1251,7 @@ class EE_Template {
 				// Does method exist?  Is This A Module and Is It Installed?
 				if ((in_array($this->tag_data[$i]['class'], $this->modules) && 
 							  ! isset($this->module_data[$class_name])) OR 
-							  ! method_exists($EE, $meth_name))
+							  ! is_callable(array($EE, $meth_name)))
 				{
 					
 					$this->log_item("Tag Not Processed: Method Inexistent or Module Not Installed");
@@ -2186,7 +2186,7 @@ class EE_Template {
 					a.allow_php, a.php_parse_location, b.group_name')
 					->from('templates a')
 					->join('template_groups b', 'a.group_id = b.group_id')
-					->where('template_id', 3)
+					->where('template_id', $query->row('no_auth_bounce'))
 					->get();
 			}
 		}
@@ -2403,12 +2403,12 @@ class EE_Template {
 		}
 
 		$filename = FALSE;
-		
+
 		// Note- we should add the extension before checking.
 
 		foreach ($this->EE->api_template_structure->file_extensions as $type => $temp_ext)
 		{
-			if (file_exists($basepath.'/'.$template.$temp_ext) && is_really_writable($basepath.'/'.$template.$temp_ext))
+			if (file_exists($basepath.'/'.$template.$temp_ext))
 			{
 				// found it with an extension
 				$filename = $template.$temp_ext;
@@ -3525,9 +3525,10 @@ class EE_Template {
 	 *
 	 * @param	string	- the tagdata / text to be parsed
 	 * @param	array	- the rows of variables and their data
+	 * @param	boolean	- Option to disable backspace parameter
 	 * @return	string
 	 */
-	public function parse_variables($tagdata, $variables)
+	public function parse_variables($tagdata, $variables, $enable_backspace = TRUE)
 	{	
 		if ($tagdata == '' OR ! is_array($variables) OR empty($variables) OR ! is_array($variables[0]))
 		{
@@ -3591,7 +3592,7 @@ class EE_Template {
 		
 		$backspace = $this->fetch_param('backspace', FALSE);
 		
-		if (is_numeric($backspace))
+		if (is_numeric($backspace) AND $enable_backspace)
 		{
 			$str = substr($str, 0, -$backspace);
 		}

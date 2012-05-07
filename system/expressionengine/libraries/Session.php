@@ -292,14 +292,18 @@ class EE_Session {
 	{
 		switch ($type)
 		{
-			case 'ip'			: $ban = $this->EE->config->item('banned_ips');
-								  $match = $this->EE->input->ip_address();
+			case 'ip':
+				$ban = $this->EE->config->item('banned_ips');
+				$match = $this->EE->input->ip_address();
 				break;
-			case 'email'		: $ban = $this->EE->config->item('banned_emails');
+			case 'email':
+				$ban = $this->EE->config->item('banned_emails');
 				break;
-			case 'username'		: $ban = $this->EE->config->item('banned_usernames');
+			case 'username':
+				$ban = $this->EE->config->item('banned_usernames');
 				break;
-			case 'screen_name'	: $ban = $this->EE->config->item('banned_screen_names');
+			case 'screen_name':
+				$ban = $this->EE->config->item('banned_screen_names');
 				break;
 		}
 		
@@ -376,12 +380,10 @@ class EE_Session {
 		$p_where = "(user_agent ='{$this->EE->db->escape_str($this->userdata['user_agent'])}' OR username='{$this->EE->db->escape_str($username)}')";
 
 		$lockout = $this->EE->db->select("COUNT(*) as count")
-								->where('login_date > ', $expire)
-								->where('ip_address', $this->EE->input->ip_address())
-								->where($p_where)
-								->get('password_lockout');
-		
-								
+			->where('login_date > ', $expire)
+			->where('ip_address', $this->EE->input->ip_address())
+			->where($p_where)
+			->get('password_lockout');
 		
 		return ($lockout->row('count') >= 4) ? TRUE : FALSE;
 	}
@@ -700,12 +702,14 @@ class EE_Session {
 	public function fetch_session_data()
 	{
 		// Look for session.  Match the user's IP address and browser for added security.
-		$this->EE->db->select('member_id, admin_sess, last_activity')
-			->where('session_id', (string) $this->sdata['session_id'])
-			->where('ip_address', $this->sdata['ip_address'])
-			->where('user_agent', $this->sdata['user_agent']);
-
-		$query = $this->EE->db->get('sessions');
+		$query = $this->EE->db->select('member_id, admin_sess, last_activity')
+			->get_where(
+				'sessions',
+				array(
+					'session_id' => (string) $this->sdata['session_id'],
+					'user_agent' => $this->sdata['user_agent']
+				)
+			);
 		
 		if ($query->num_rows() == 0 OR $query->row('member_id') == 0)
 		{

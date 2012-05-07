@@ -88,9 +88,9 @@ if ($EE_view_disable !== TRUE)
 				</td>
 				<td>
 					<?=form_radio('field_is_hidden', 'n', ($field_is_hidden == 'n'), 'id="field_is_hidden_n"')?>
-					<?=lang('yes', 'field_is_hidden_y')?>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+					<?=lang('yes', 'field_is_hidden_n')?>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 					<?=form_radio('field_is_hidden', 'y', ($field_is_hidden == 'y'), 'id="field_is_hidden_y"')?>
-					<?=lang('no', 'field_is_hidden_n')?>
+					<?=lang('no', 'field_is_hidden_y')?>
 				</td>
 			</tr>
 			<tr>

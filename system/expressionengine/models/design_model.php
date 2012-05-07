@@ -32,8 +32,10 @@ class Design_model extends CI_Model {
 		$this->db->where('t.site_id', $this->config->item('site_id'));
 		$this->db->order_by('t.group_id, t.template_name', 'ASC');
 		
+		$keywords = trim($this->input->post('template_keywords'));
+		
 		// add in search terms if necessary		
-		if (($keywords = trim($this->input->post('template_keywords'))) != FALSE)
+		if ($keywords !== FALSE AND $keywords != '')
 		{
 			// note that search helper sanitize_search_terms() is intentionally not used here
 			// since users may want to search for tags, javascript etc.  Terms are escaped

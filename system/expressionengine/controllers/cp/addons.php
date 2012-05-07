@@ -89,6 +89,13 @@ class Addons extends CI_Controller {
 		$this->cp->set_variable('cp_page_title', lang('package_settings'));
 		
 		$components = $this->addons->_packages[$package];
+
+		// Ignore RTE Tools if the module is not installed
+		$this->db->from('modules')->where('module_name', 'Rte');
+		if ($this->db->count_all_results() <= 0)
+		{
+			unset($components['rte_tool']);
+		}
 		
 		if (isset($components['plugin']))
 		{
@@ -142,12 +149,16 @@ class Addons extends CI_Controller {
 				include_once($info['path'].$info['file']);
 				$class = $info['class'];
 				
+				$this->load->add_package_path($info['path']);
+
 				$out = new $class;
 				
 				if (isset($out->required_by) && is_array($out->required_by))
 				{			
 					$required[$type] = $out->required_by;
 				}
+
+				$this->load->remove_package_path($info['path']);
 			}
 		}
 		

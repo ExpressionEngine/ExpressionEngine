@@ -757,6 +757,15 @@ class Filemanager {
 	 */
 	function setup()
 	{
+		// Make sure there are directories
+		$dirs = $this->directories(FALSE, TRUE);
+		if (empty($dirs))
+		{
+			return $this->EE->output->send_ajax_response(array(
+				'error' => lang('no_upload_dirs')
+			));
+		}
+
 		if (REQ != 'CP')
 		{
 			$this->EE->load->helper('form');
@@ -810,7 +819,7 @@ class Filemanager {
 	public function datatables($first_dir = NULL)
 	{
 		$this->EE->load->model('file_model');
-		
+
 		// Argh
 		$this->EE->_mcp_reference = $this;
 		
@@ -880,12 +889,17 @@ class Filemanager {
 			$file_params['search_value']	= $params['keywords'];
 			$file_params['search_in']		= 'all';
 		}
-		
+
+		// Mask the URL if we're coming from the CP
+		$sync_files_url = (REQ == "CP") ?
+			$this->EE->cp->masked_url('http://expressionengine.com/user_guide/cp/content/files/sync_files.html') :
+			'http://expressionengine.com/user_guide/cp/content/files/sync_files.html';
+
 		return array(
 			'rows'			=> $this->_browser_get_files($dir, $file_params),
-			'no_results' 	=> sprintf(
+			'no_results'	=> sprintf(
 				lang('no_uploaded_files'), 
-				$this->EE->cp->masked_url('http://expressionengine.com/user_guide/cp/content/files/sync_files.html'),
+				$sync_files_url,
 				BASE.AMP.'C=content_files'.AMP.'M=file_upload_preferences'
 			),
 			'pagination' 	=> array(
@@ -1346,10 +1360,45 @@ class Filemanager {
 				if ($prefs['width'] > $prefs['height'])
 				{
 					$config['width'] = round($prefs['width'] * $size['height'] / $prefs['height']);
+					
+					// If the new width ends up being smaller than the
+					// resized width
+					if ($config['width'] < $size['width'])
+					{
+						$config['width'] = $size['width'];
+						$config['master_dim'] = 'width';
+					}
 				}
 				elseif ($prefs['height'] > $prefs['width'])
 				{
 					$config['height'] = round($prefs['height'] * $size['width'] / $prefs['width']);
+					
+					// If the new height ends up being smaller than the
+					// desired resized height
+					if ($config['height'] < $size['height'])
+					{
+						$config['height'] = $size['height'];
+						$config['master_dim'] = 'height';
+					}
+				}
+				// If we're dealing with a perfect square image
+				elseif ($prefs['height'] == $prefs['width'])
+				{
+					// And the desired image is landscape, edit the
+					// square image's width to fit
+					if ($size['width'] > $size['height'] ||
+						$size['width'] == $size['height'])
+					{
+						$config['width'] = $size['width'];
+						$config['master_dim'] = 'width';
+					}
+					// If the desired image is portrait, edit the
+					// square image's height to fit
+					elseif ($size['width'] < $size['height'])
+					{
+						$config['height'] = $size['height'];
+						$config['master_dim'] = 'height';
+					}
 				}
 				
 				// First resize down to smallest possible size (greater of height and width)
@@ -1363,8 +1412,8 @@ class Filemanager {
 				// Next set crop accordingly
 				$resized_image_dimensions = $this->get_image_dimensions($resized_path.$prefs['file_name']);
 				$config['source_image'] = $resized_path.$prefs['file_name'];
-				$config['x_axis'] = (($resized_image_dimensions['width'] / 2) - ($config['width'] / 2));
-				$config['y_axis'] = (($resized_image_dimensions['height'] / 2) - ($config['height'] / 2));
+				$config['x_axis'] = (($resized_image_dimensions['width'] / 2) - ($size['width'] / 2));
+				$config['y_axis'] = (($resized_image_dimensions['height'] / 2) - ($size['height'] / 2));
 				$config['maintain_ratio'] = FALSE;
 				
 				// Change height and width back to the desired size

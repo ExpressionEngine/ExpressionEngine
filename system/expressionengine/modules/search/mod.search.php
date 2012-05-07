@@ -1350,6 +1350,14 @@ class Search {
 		{
 			$sql .= " LIMIT ".$pagination->offset.", ".$pagination->per_page;
 		}
+		else if ($pagination->per_page > 0)
+		{
+			$sql .= " LIMIT 0, ".$pagination->per_page;
+		}
+		else
+		{
+			$sql .= " LIMIT 0, 100";
+		}
 		
 		$query = $this->EE->db->query($sql);
 		

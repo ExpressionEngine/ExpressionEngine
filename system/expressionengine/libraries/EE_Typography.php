@@ -374,7 +374,7 @@ class EE_Typography extends CI_Typography {
 		$str = $this->format_html($str);
 
 		//  Auto-link URLs and email addresses
-		if ($this->auto_links == 'y' AND $this->html_format != 'none')
+		if ($this->auto_links == 'y')
 		{
 			$str = $this->auto_linker($str);
 		}
@@ -584,16 +584,6 @@ class EE_Typography extends CI_Typography {
 			}
 		}
 
-		// Convert codeblock division used with code tag
-
-		if (count($this->code_chunks) > 0)
-		{
-			foreach ($this->code_chunks as $key => $val)
-			{
-				$str = str_replace('<div class="codeblock">{'.$key.'yH45k02wsSdrp}</div>', '[div class="codeblock"]{'.$key.'yH45k02wsSdrp}[/div]', $str);
-			}
- 		}
-
 		// Convert anchors to BBCode
         // We do this to prevent allowed HTML from getting converted in the next step
         // Old method would only convert links that had href= as the first tag attribute
@@ -660,10 +650,7 @@ class EE_Typography extends CI_Typography {
 		// where the inner url was valid, but did not exactly match the other:
 		// [url=http://www.iblamepaul.com]www.iblamepaul.com[/url] ;) -pk
 		
-		if (strpos($str, 'http') !== FALSE)
-		{
-			$str = preg_replace_callback("#(^|\s|\(|..\])((http(s?)://)|(www\.))(\w+[^\s\)\<\[]+)(.{0,6})#im", array(&$this, 'auto_linker_callback'), $str);
-		}
+		$str = preg_replace_callback("#(^|\s|\(|..\])((http(s?)://)|(www\.))(\w+[^\s\)\<\[]+)(.{0,6})#im", array(&$this, 'auto_linker_callback'), $str);
 		
 		// Auto link email
 		if (strpos($str, '@') !== FALSE)
@@ -1170,7 +1157,7 @@ class EE_Typography extends CI_Typography {
 	 * Colorize code strings
 	 */
 	public function text_highlight($str)
-	{		
+	{	
 		// No [code] tags?  No reason to live.  Goodbye cruel world...
 		
 		if ( ! preg_match_all("/\[code\](.+?)\[\/code\]/si", $str, $matches))
@@ -1221,7 +1208,9 @@ class EE_Typography extends CI_Typography {
 						
 			$this->code_chunks[$this->code_counter] = $temp;
 
-			$str = str_replace($matches['0'][$i], '<div class="codeblock">{'.$this->code_counter.'yH45k02wsSdrp}</div>', $str);
+			// Go directly to BB code to avoid extra replace and 
+			// prevent 'convert to entities' from converting the div tag
+			$str = str_replace($matches['0'][$i], '[div class="codeblock"]{'.$this->code_counter.'yH45k02wsSdrp}[/div]', $str);
 			
 			$this->code_counter++;
 		}		
@@ -1491,6 +1480,8 @@ while (--j >= 0)
 				{
 					// First line takes care of the line break that might be there, which should
 					// be a line break because it is just a simple break from the [code] tag.
+
+					// Note: [div class="codeblock"] has been converted to <div class="codeblock"> at this pont
 					$str = str_replace('<div class="codeblock">{'.$key.'yH45k02wsSdrp}</div>'."\n<br />", '</p><div class="codeblock">'.$val.'</div><p>', $str);
 					$str = str_replace('<div class="codeblock">{'.$key.'yH45k02wsSdrp}</div>', '</p><div class="codeblock">'.$val.'</div><p>', $str);
 				}

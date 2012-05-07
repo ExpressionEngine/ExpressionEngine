@@ -69,6 +69,7 @@ class EE_Core {
 		define('PATH_EXT',		APPPATH.'extensions/');
 		define('PATH_ACC',		APPPATH.'accessories/');
 		define('PATH_FT',		APPPATH.'fieldtypes/');
+		define('PATH_RTE',		APPPATH.'rte_tools/');
 		if ($this->EE->config->item('third_party_path'))
 		{
 			define(
@@ -100,7 +101,7 @@ class EE_Core {
 		$this->native_modules = array(
 			'blacklist', 'channel', 'comment', 'commerce', 'email', 'emoticon',
 			'file', 'forum', 'ip_to_nation', 'jquery', 'mailinglist', 'member',
-			'metaweblog_api', 'moblog', 'pages', 'query', 'referrer', 'rss',
+			'metaweblog_api', 'moblog', 'pages', 'query', 'referrer', 'rss', 'rte',
 			'safecracker', 'search', 'simple_commerce', 'stats',
 			'updated_sites', 'wiki'
 		);

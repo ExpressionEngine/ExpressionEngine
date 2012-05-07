@@ -26,6 +26,8 @@
 
 class Member_register extends Member {
 
+	var $errors = array();
+
 	/**
 	 * Member Registration Form
 	 */
@@ -34,12 +36,15 @@ class Member_register extends Member {
 		// Do we allow new member registrations?
 		if ($this->EE->config->item('allow_member_registration') == 'n')
 		{
-
-			$data = array(	'title' 	=> lang('member_registration'),
-							'heading'	=> lang('notice'),
-							'content'	=> lang('mbr_registration_not_allowed'),
-							'link'		=> array($this->EE->functions->fetch_site_index(), stripslashes($this->EE->config->item('site_name')))
-						 );
+			$data = array(	
+				'title' 	=> lang('member_registration'),
+				'heading'	=> lang('notice'),
+				'content'	=> lang('mbr_registration_not_allowed'),
+				'link'		=> array(
+					$this->EE->functions->fetch_site_index(),
+					stripslashes($this->EE->config->item('site_name'))
+				)
+			);
 
 			$this->EE->output->show_message($data);
 		}
@@ -47,8 +52,10 @@ class Member_register extends Member {
 		// Is the current user logged in?
 		if ($this->EE->session->userdata('member_id') != 0)
 		{
-			return $this->EE->output->show_user_error('general', 
-				array(lang('mbr_you_are_registered')));
+			return $this->EE->output->show_user_error(
+				'general', 
+				array(lang('mbr_you_are_registered'))
+			);
 		}
 
 		// Fetch the registration form
@@ -56,8 +63,8 @@ class Member_register extends Member {
 
 		// Do we have custom fields to show?
 		$query = $this->EE->db->where('m_field_reg', 'y')
-							  ->order_by('m_field_order')
-							  ->get('member_fields');
+			->order_by('m_field_order')
+			->get('member_fields');
 
 		// If not, we'll kill the custom field variables from the template
 		if ($query->num_rows() == 0)
@@ -251,29 +258,33 @@ class Member_register extends Member {
 		// Is user banned?
 		if ($this->EE->session->userdata('is_banned') === TRUE)
 		{
-			return $this->EE->output->show_user_error('general', 
-								array(lang('not_authorized')));
+			return $this->EE->output->show_user_error(
+				'general', 
+				array(lang('not_authorized'))
+			);
 		}
 
 		// Blacklist/Whitelist Check
 		if ($this->EE->blacklist->blacklisted == 'y' && 
 			$this->EE->blacklist->whitelisted == 'n')
 		{
-			return $this->EE->output->show_user_error('general', 
-								array(lang('not_authorized')));
+			return $this->EE->output->show_user_error(
+				'general', 
+				array(lang('not_authorized'))
+			);
 		}
 
 		$this->EE->load->helper('url');
 
-		/* -------------------------------------------
-		/* 'member_member_register_start' hook.
-		/*  - Take control of member registration routine
-		/*  - Added EE 1.4.2
-		*/
+		// -------------------------------------------
+		// 'member_member_register_start' hook.
+		//  - Take control of member registration routine
+		//  - Added EE 1.4.2
+		//
 			$edata = $this->EE->extensions->call('member_member_register_start');
 			if ($this->EE->extensions->end_script === TRUE) return;
-		/*
-		/* -------------------------------------------*/
+		//
+		// -------------------------------------------
 
 		// Set the default globals
 		$default = array(
@@ -383,7 +394,18 @@ class Member_register extends Member {
 			}
 		}
 
-		$errors = array_merge($VAL->errors, $cust_errors);
+ 
+		// -------------------------------------------
+		// 'member_member_register_errors' hook.
+		//  - Additional error checking prior to submission
+		//  - Added EE 2.5.0
+		//
+			$this->EE->extensions->call('member_member_register_errors', $this);
+			if ($this->EE->extensions->end_script === TRUE) return;
+		//
+		// -------------------------------------------
+ 
+		$errors = array_merge($VAL->errors, $cust_errors, $this->errors);
 
 		// Display error is there are any
 		if (count($errors) > 0)

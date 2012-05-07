@@ -209,17 +209,20 @@ class Api_channel_fields extends Api {
 		{
 			$file = 'ft.'.$field_type.'.php';
 			$path = PATH_FT.$field_type.'/';
-			
 
-			
 			if ( ! file_exists($path.$file))
 			{
 				$path = PATH_THIRD.$field_type.'/';
 				
 				if ( ! file_exists($path.$file))
 				{
-					show_error(sprintf($this->EE->lang->line('unable_to_load_field_type'),
-					 						strtolower($file)));
+					$path = PATH_MOD.$field_type.'/';
+
+					if ( ! file_exists($path.$file))
+					{
+						show_error(sprintf($this->EE->lang->line('unable_to_load_field_type'),
+						 						strtolower($file)));
+					}
 				}
 			}
 			
@@ -1258,7 +1261,7 @@ class Api_channel_fields extends Api {
 		if ($field_data['field_order'] == 0 OR $field_data['field_order'] == '')
 		{
 			$query = $this->EE->db->select('MAX(field_order) as max')
-					      ->where('site_id', $this->config->item('site_id'))
+					      ->where('site_id', $this->EE->config->item('site_id'))
 					      ->where('group_id', (int) $group_id)
 					      ->get('channel_fields');
 				
@@ -1455,10 +1458,12 @@ class Api_channel_fields extends Api {
 	 * 
 	 * @param string|int $group_id
 	 * @param string|int $field_id optional if new field
+	 * @param array|false $field_types array of field types to present as field_type_options,
+	 * 				   will show all valid field types if FALSE
 	 * 
 	 * @return array    the default fields needed to use the admin/field_edit view
 	 */
-	public function field_edit_vars($group_id, $field_id = FALSE)
+	public function field_edit_vars($group_id, $field_id = FALSE, $field_types = FALSE)
 	{
 		$this->errors = array();
 		
@@ -1672,6 +1677,11 @@ class Api_channel_fields extends Api {
 
 		foreach($fts as $key => $attr)
 		{
+			if (is_array($field_types) && ! in_array($key, $field_types))
+			{
+				continue;
+			}
+			
 			// Global settings
 			$settings = unserialize(base64_decode($fts[$key]['settings']));
 			

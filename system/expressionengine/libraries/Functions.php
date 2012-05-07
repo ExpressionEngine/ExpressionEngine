@@ -363,6 +363,15 @@ class EE_Functions {
 	 */
 	function redirect($location, $method = FALSE)
 	{
+		// Remove hard line breaks and carriage returns
+		$location = str_replace(array("\n", "\r"), '', $location);
+
+		// Remove any and all line breaks
+		while (stripos($location, '%0d') !== FALSE OR stripos($location, '%0a') !== FALSE)
+		{
+			$location = str_ireplace(array('%0d', '%0a'), '', $location);
+		}
+
 		$location = str_replace('&amp;', '&', $this->insert_action_ids($location));
 
 		if (count($this->EE->session->flashdata))
@@ -480,20 +489,31 @@ class EE_Functions {
 			$data['hidden_fields'][$this->EE->security->get_csrf_token_name()] = $this->EE->security->get_csrf_hash();
 		}
 
+		// -------------------------------------------
 		// 'form_declaration_modify_data' hook.
 		//  - Modify the $data parameters before they are processed
+		//  - Added EE 1.4.0
+		//
 		if ($this->EE->extensions->active_hook('form_declaration_modify_data') === TRUE)
 		{
 			$data = $this->EE->extensions->call('form_declaration_modify_data', $data);
 		}
-		
+		//
+		// -------------------------------------------
+
+		// -------------------------------------------
 		// 'form_declaration_return' hook.
 		//  - Take control of the form_declaration function
+		//  - Added EE 1.4.0
+		//
 		if ($this->EE->extensions->active_hook('form_declaration_return') === TRUE)
 		{
 			$form = $this->EE->extensions->call('form_declaration_return', $data);
 			if ($this->EE->extensions->end_script === TRUE) return $form;
 		}
+		//
+		// -------------------------------------------		
+
 			
 		if ($data['action'] == '')
 		{
@@ -551,6 +571,7 @@ class EE_Functions {
 		return $form;
 	}
 	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -725,39 +746,42 @@ class EE_Functions {
 	 */
 	function set_cookie($name = '', $value = '', $expire = '')
 	{
+
+		$data['name'] = $name;
+
 		if ( ! is_numeric($expire))
 		{
-			$expire = time() - 86500;
+			$data['expire'] = time() - 86500;
 		}
 		else
 		{
 			if ($expire > 0)
 			{
-				$expire = time() + $expire;
+				$data['expire'] = time() + $expire;
 			}
 			else
 			{
-				$expire = 0;
+				$data['expire'] = 0;
 			}
 		}
 					
-		$prefix = ( ! $this->EE->config->item('cookie_prefix')) ? 'exp_' : $this->EE->config->item('cookie_prefix').'_';
-		$path	= ( ! $this->EE->config->item('cookie_path'))	? '/'	: $this->EE->config->item('cookie_path');
+		$data['prefix'] = ( ! $this->EE->config->item('cookie_prefix')) ? 'exp_' : $this->EE->config->item('cookie_prefix').'_';
+		$data['path']	= ( ! $this->EE->config->item('cookie_path'))	? '/'	: $this->EE->config->item('cookie_path');
 		
 		if (REQ == 'CP' && $this->EE->config->item('multiple_sites_enabled') == 'y')
 		{
-			$domain = $this->EE->config->cp_cookie_domain;
+			$data['domain'] = $this->EE->config->cp_cookie_domain;
 		}
 		else
 		{
-			$domain = ( ! $this->EE->config->item('cookie_domain')) ? '' : $this->EE->config->item('cookie_domain');
+			$data['domain'] = ( ! $this->EE->config->item('cookie_domain')) ? '' : $this->EE->config->item('cookie_domain');
 		}
 		
-		$value = stripslashes($value);
+		$data['value'] = stripslashes($value);
 		
-		$secure_cookie = ($this->EE->config->item('cookie_secure') === TRUE) ? 1 : 0;
+		$data['secure_cookie'] = ($this->EE->config->item('cookie_secure') === TRUE) ? 1 : 0;
 
-		if ($secure_cookie)
+		if ($data['secure_cookie'])
 		{
 			$req = isset($_SERVER['HTTPS']) ? $_SERVER['HTTPS'] : FALSE;
 
@@ -766,8 +790,20 @@ class EE_Functions {
 				return FALSE;
 			}
 		}
+
+		/* -------------------------------------------
+		/* 'set_cookie_end' hook.
+		/*  - Take control of Cookie setting routine
+		/*  - Added EE 2.5.0
+		*/
+			$this->EE->extensions->call('set_cookie_end', $data);
+			if ($this->EE->extensions->end_script === TRUE) return;
+		/*
+		/* -------------------------------------------*/
+
 					
-		setcookie($prefix.$name, $value, $expire, $path, $domain, $secure_cookie);
+		setcookie($data['prefix'].$data['name'], $data['value'], $data['expire'], 
+			$data['path'], $data['domain'], $data['secure_cookie']);
 	}
 
 	// --------------------------------------------------------------------
@@ -2582,9 +2618,9 @@ class EE_Functions {
 			// aren't going to be available yet.  So this is a quick workaround
 			// to ensure advanced conditionals using embedded variables can do
 			// their thing in mod tags.
-			$vars = array_merge($vars, $this->EE->TMPL->embed_vars);			
+			$vars = array_merge($vars, $this->EE->TMPL->embed_vars);
 		}
-					
+		
 		if (count($vars) == 0) return $str;
 
 		$switch  = array();
@@ -2844,7 +2880,7 @@ class EE_Functions {
 		}
 
 		$this->EE->load->model('file_upload_preferences_model');
-		$upload_prefs = $this->EE->file_upload_preferences_model->get_file_upload_preferences();
+		$upload_prefs = $this->EE->file_upload_preferences_model->get_file_upload_preferences(NULL, NULL, TRUE);
 
 		if (count($upload_prefs) == 0)
 		{

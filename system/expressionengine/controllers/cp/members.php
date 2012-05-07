@@ -111,8 +111,24 @@ class Members extends CI_Controller {
 			$member_name = '';
 		}
 		
+		// Get order by and sort preferences for our initial state
+		$order_by = ($this->config->item('memberlist_order_by')) ?
+			$this->config->item('memberlist_order_by') : 'member_id';
+		$sort = ($this->config->item('memberlist_sort_order')) ?
+			$this->config->item('memberlist_sort_order') : 'asc';
+		
+		// Fix for an issue where users may have 'total_posts' saved
+		// in their site settings for sorting members; but the actual
+		// column should be total_forum_posts, so we need to correct
+		// it until member preferences can be saved again with the
+		// right value
+		if ($order_by == 'total_posts')
+		{
+			$order_by = 'total_forum_posts';
+		}
+		
 		$initial_state = array(
-			'sort'	=> array('member_id' => 'asc')
+			'sort'	=> array($order_by => $sort)
 		);
 		
 		$params = array(
@@ -480,7 +496,9 @@ class Members extends CI_Controller {
 		// Do the users being deleted have entries assigned to them?
 		// If so, fetch the member names for reassigment
 
-		$vars['heirs'] = array();
+		$vars['heirs'] = array(
+			'' => lang('member_delete_dont_reassign_entries')
+		);
 		
 		if ($this->member_model->count_member_entries($damned)  > 0)
 		{
@@ -692,14 +710,14 @@ class Members extends CI_Controller {
 		//  Fetch member ID numbers and build the query
 
 		$ids = array();
-		$mids = array();
+		$member_ids = array();
 		
 		foreach ($this->input->post('delete') as $key => $val)
 		{		
 			if ($val != '')
 			{
 				$ids[] = "member_id = '".$this->db->escape_str($val)."'";
-				$mids[] = $this->db->escape_str($val);
+				$member_ids[] = $this->db->escape_str($val);
 			}		
 		}
 		
@@ -741,7 +759,7 @@ class Members extends CI_Controller {
 		
 		// If we got this far we're clear to delete the members
 		$this->load->model('member_model');
-		$this->member_model->delete_member($mids, $this->input->post('heir'));
+		$this->member_model->delete_member($member_ids, $this->input->post('heir'));
 		
 		/** ----------------------------------
 		/**  Email notification recipients
@@ -749,7 +767,7 @@ class Members extends CI_Controller {
 		$this->db->select('DISTINCT(member_id), screen_name, email, mbr_delete_notify_emails');
 		$this->db->join('member_groups', 'members.group_id = member_groups.group_id', 'left');
 		$this->db->where('mbr_delete_notify_emails !=', '');
-		$this->db->where_in('member_id', $mids);
+		$this->db->where_in('member_id', $member_ids);
 		$group_query = $this->db->get('members');
 		
 		foreach ($group_query->result() as $member) 
@@ -802,7 +820,7 @@ class Members extends CI_Controller {
 		/* 'cp_members_member_delete_end' hook.
 		/*  - Additional processing when a member is deleted through the CP
 		*/
-			$edata = $this->extensions->call('cp_members_member_delete_end');
+			$edata = $this->extensions->call('cp_members_member_delete_end', $member_ids);
 			if ($this->extensions->end_script === TRUE) return;
 		/*
 		/* -------------------------------------------*/
@@ -917,7 +935,7 @@ class Members extends CI_Controller {
 
 		$this->javascript->output('
 			$(".site_prefs").hide();
-			$(".site_prefs:first").show();
+			$("#site_options_'.$this->config->item('site_id').'").show();
 			
 			$("#site_list_pulldown").change(function() {
 				id = $("#site_list_pulldown").val();
@@ -972,7 +990,8 @@ class Members extends CI_Controller {
 			'page_title'		=> sprintf(lang($page_title_lang), $group_title),
 			'group_title'		=> ($is_clone) ? '' : $group_title,
 			'sites_dropdown'	=> $sites_dropdown,
-			'module_data'		=> $this->_setup_module_data($id)
+			'module_data'		=> $this->_setup_module_data($id),
+			'site_id'		=> $this->config->item('site_id'),
 		);
 
 		$this->load->view('members/edit_member_group', $data);
@@ -1077,17 +1096,6 @@ class Members extends CI_Controller {
 						);
 					}
 				}
-			}
-
-			// Don't show any CP-related preferences for Banned, Guests, or Pending.
-			// May want to strip these down even further.
-			if ($group_id == 2 OR $group_id == 3 OR $group_id == 4)
-			{
-				unset($form[$site->site_id]['global_cp_access']);
-				unset($form[$site->site_id]['cp_admin_privs']);
-				unset($form[$site->site_id]['cp_email_privs']);
-				unset($form[$site->site_id]['cp_template_access_privs']);
-				unset($form[$site->site_id]['cp_email_privs']);
 			}
 		}
 
@@ -1671,7 +1679,7 @@ class Members extends CI_Controller {
 					),
 
 			'memberlist_cfg'		=>	array(
-					'memberlist_order_by'		=> array('s', array('total_posts'		=> 'total_posts',
+					'memberlist_order_by'		=> array('s', array('total_forum_posts'		=> 'total_posts',
 						'screen_name'		=> 'screen_name',
 						'total_comments'	=> 'total_comments',
 						'total_entries'		=> 'total_entries',

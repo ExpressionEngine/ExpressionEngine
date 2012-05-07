@@ -25,10 +25,11 @@
 
 class Content_files extends CI_Controller {
 
-	private $_upload_dirs    = array();
-	private $_base_url       = '';
-	private $remove_spaces    = TRUE;
-	private $temp_prefix      = "temp_file_";
+	private $_upload_dirs	= array();
+	private $_allowed_dirs	= array();
+	private $_base_url		= '';
+	private $remove_spaces	= TRUE;
+	private $temp_prefix	= "temp_file_";
 
 	private $nest_categories = 'y';
 	private $per_page		 = 40;
@@ -2312,24 +2313,6 @@ class Content_files extends CI_Controller {
 			$this->db->insert('upload_prefs', $data);
 			$id = $this->db->insert_id();
 			$cp_message = lang('new_file_upload_created');
-		}
-		
-		// Update upload_preferences config item if it exists
-		if (($upload_prefs_config = $this->config->item('upload_preferences')) !== FALSE)
-		{
-			// We'll go through each key we have in the $data array and see
-			// if the user has a custom value set for it
-			foreach ($data as $key => $value)
-			{
-				// If the key exists in custom preferences, set the new value
-				if (isset($upload_prefs_config[$id][$key]))
-				{
-					$upload_prefs_config[$id][$key] = $value;
-				}
-			}
-			
-			// Update config with new values
-			$this->config->_update_config(array('upload_preferences' => $upload_prefs_config));
 		}
 		
 		if (isset($size_data))

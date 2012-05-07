@@ -499,9 +499,6 @@ class Simple_commerce {
 
 				//  Is this a repeat, perhaps?
 				//  Note- subscription signups do not have a txn_id so we check only non-subscriptions
-			
-				$query = $this->EE->db->query("SELECT COUNT(*) AS count FROM exp_simple_commerce_purchases
-								 WHERE txn_id = '".$this->EE->db->escape_str($this->post['txn_id'])."'");
 								 
 				$this->EE->db->where('txn_id', $this->post['txn_id']); 
 				$this->EE->db->from('exp_simple_commerce_purchases');

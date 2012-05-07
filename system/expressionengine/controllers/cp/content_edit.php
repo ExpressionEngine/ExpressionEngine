@@ -85,7 +85,18 @@ class Content_edit extends CI_Controller {
 			$channels[$c_row->channel_id] = $c_row;
 		}
 
+		// Set up Per page data
+		// ----------------------------------------------------------------
+				
+		// Results per page pull-down menu
+		if ( ! ($perpage = $this->input->get_post('perpage')))
+		{
+			$perpage = ($this->input->cookie('perpage') == FALSE) ? 50 : $this->input->cookie('perpage');
+		}
 		
+		$this->functions->set_cookie('perpage' , $perpage, 60*60*24*182);		
+
+
 		// Table
 		// ----------------------------------------------------------------
 		
@@ -120,7 +131,7 @@ class Content_edit extends CI_Controller {
 		);
 		
 		$params = array(
-			'perpage'	=> 50,
+			'perpage'	=> $perpage,
 			'channels'	=> $channels,
 		);
 				
@@ -128,19 +139,6 @@ class Content_edit extends CI_Controller {
 		
 		$filter_data = $vars['filter_data'];
 		unset($vars['filter_data']);
-		
-		
-		// Set up Per page data
-		// ----------------------------------------------------------------
-				
-		// Results per page pull-down menu
-		if ( ! ($perpage = $this->input->get_post('perpage')))
-		{
-			$perpage = $this->input->cookie('perpage');
-		}
-		
-		$this->functions->set_cookie('perpage' , $perpage, 60*60*24*182);
-		
 		
 		// Setup the form!
 		// ----------------------------------------------------------------
@@ -240,6 +238,7 @@ class Content_edit extends CI_Controller {
 		
 		// Because of the auto convert we prepare a specific variable with the converted ascii
 		// characters while leaving the $keywords variable intact for display and URL purposes
+		$this->load->helper('text');
 		$search_keywords = ($this->config->item('auto_convert_high_ascii') == 'y') ? ascii_to_entities($keywords) : $keywords;				
 		
 		$perpage = $this->input->get_post('perpage');
@@ -324,7 +323,7 @@ class Content_edit extends CI_Controller {
 		$show_link = TRUE;
 		$comment_counts = array();
 		
-		if (count($entry_ids))
+		if (count($entry_ids) AND $this->db->table_exists('comments'))
 		{
 			$comment_qry = $this->db->select('entry_id, COUNT(*) as count')
 				->where_in('entry_id', $entry_ids)
@@ -406,7 +405,7 @@ class Content_edit extends CI_Controller {
 		
 		foreach ($rows as &$row)
 		{
-			$url = $this->publish_base_uri.AMP."M=entry_form".AMP."channel_id={$row['channel_id']}".AMP."entry_id={$row['entry_id']}";
+			$url = $this->publish_base_uri.AMP."M=entry_form".AMP."channel_id={$row['channel_id']}".AMP."entry_id={$row['entry_id']}".AMP.$filter_url;
 			
 			$row['title'] = anchor(BASE.AMP.$url, $row['title']);
 			$row['view'] = '---';
@@ -946,7 +945,7 @@ class Content_edit extends CI_Controller {
 		
 		$cutoff_date = time();
 		$cutoff_date -= $autosave_prune;
-		$cutoff_date = gmdate("YmdHis", $cutoff_date);
+		$cutoff_date = date("YmdHis", $cutoff_date);
 		
 		$this->db->where('edit_date <', $cutoff_date)->delete('channel_entries_autosave');
 	}
@@ -1100,9 +1099,9 @@ class Content_edit extends CI_Controller {
 			 }
 
 			// Day, Month, and Year Fields
-			$data['year']	= date('Y', $data['entry_date']);
-			$data['month']	= date('m', $data['entry_date']);
-			$data['day']	= date('d', $data['entry_date']);
+			$data['year']	= $this->localize->decode_date('%Y', $data['entry_date'], TRUE);
+			$data['month']	= $this->localize->decode_date('%m', $data['entry_date'], TRUE);
+			$data['day']	= $this->localize->decode_date('%d', $data['entry_date'], TRUE);
 
 			// Update the entry
 			$this->db->query($this->db->update_string('exp_channel_titles', $data, "entry_id = '$id'"));

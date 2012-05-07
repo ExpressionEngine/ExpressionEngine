@@ -303,6 +303,37 @@ class Addons_installer {
 			
 			$this->EE->db->delete('fieldtypes', array('name' => $fieldtype)); 
 		}
+	}	
+	// --------------------------------------------------------------------
+
+	/**
+	 * RTE Tool Installer
+	 *
+	 * @access	private
+	 * @param String $tool The name of the tool, with or without spaces, but 
+	 *     without _rte at the end
+	 */
+	function install_rte_tool($tool)
+	{
+		$this->EE->load->add_package_path(PATH_MOD.'rte', FALSE);
+		$this->EE->load->model('rte_tool_model');
+		$this->EE->rte_tool_model->add($tool);
+	}
+	
+	// --------------------------------------------------------------------
+
+	/**
+	 * RTE Tool Uninstaller
+	 *
+	 * @access	private
+	 * @param	string
+	 * @return	void
+	 */
+	function uninstall_rte_tool($tool)
+	{
+		$this->EE->load->add_package_path(PATH_MOD.'rte', FALSE);
+		$this->EE->load->model('rte_tool_model');
+		$this->EE->rte_tool_model->delete($tool);
 	}
 
 	// --------------------------------------------------------------------

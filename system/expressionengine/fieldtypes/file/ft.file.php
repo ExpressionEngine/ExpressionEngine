@@ -51,7 +51,7 @@ class File_ft extends EE_Fieldtype {
 	 */
 	function save($data)
 	{
-		$directory = $this->EE->input->post('field_id_'.$this->field_id.'_directory');
+		$directory = $this->EE->input->post($this->field_name.'_hidden_dir');
 		return $this->EE->file_field->format_data($data, $directory);
 	}
 	
@@ -104,7 +104,20 @@ class File_ft extends EE_Fieldtype {
 	}
 	
 	// --------------------------------------------------------------------
-
+	
+	/**
+	 * Runs before the channel entries loop on the front end
+	 *
+	 * @param array $data	All custom field data about to be processed for the front end
+	 * @return void
+	 */
+	function pre_loop($data)
+	{
+		$this->EE->file_field->cache_data($data);
+	}
+	
+	// --------------------------------------------------------------------
+	
 	/**
 	 * Replace frontend tag
 	 *
@@ -112,7 +125,12 @@ class File_ft extends EE_Fieldtype {
 	 */
 	function replace_tag($file_info, $params = array(), $tagdata = FALSE)
 	{
-		if ($tagdata !== FALSE)
+		// Make sure we have file_info to work with
+		if ($tagdata !== FALSE AND $file_info === FALSE)
+		{
+			$tagdata = $this->EE->functions->prep_conditionals($tagdata, array());
+		}
+		else if ($tagdata !== FALSE)
 		{
 			$tagdata = $this->EE->functions->prep_conditionals($tagdata, $file_info);
 
@@ -135,9 +153,11 @@ class File_ft extends EE_Fieldtype {
 
 						switch ($val)
 						{
-							case 'upload_date' 	: $upload_date[$matches['0'][$j]] = $this->EE->localize->fetch_date_params($matches['1'][$j]);
+							case 'upload_date':
+								$upload_date[$matches['0'][$j]] = $this->EE->localize->fetch_date_params($matches['1'][$j]);
 								break;
-							case 'modified_date' : $modified_date[$matches['0'][$j]] = $this->EE->localize->fetch_date_params($matches['1'][$j]);
+							case 'modified_date':
+								$modified_date[$matches['0'][$j]] = $this->EE->localize->fetch_date_params($matches['1'][$j]);
 								break;
 						}
 					}
@@ -150,7 +170,17 @@ class File_ft extends EE_Fieldtype {
 				if (isset($upload_date[$key]))
 				{
 					foreach ($upload_date[$key] as $dvar)
-						$val = str_replace($dvar, $this->EE->localize->convert_timestamp($dvar, $file_info['upload_date'], TRUE), $val);					
+					{
+						$val = str_replace(
+							$dvar, 
+							$this->EE->localize->convert_timestamp(
+								$dvar, 
+								$file_info['upload_date'], 
+								TRUE
+							), 
+							$val
+						);
+					}
 
 					$tagdata = $this->EE->TMPL->swap_var_single($key, $val, $tagdata);
 				}
@@ -159,7 +189,17 @@ class File_ft extends EE_Fieldtype {
 				if (isset($modified_date[$key]))
 				{
 					foreach ($modified_date[$key] as $dvar)
-						$val = str_replace($dvar, $this->EE->localize->convert_timestamp($dvar, $file_info['modified_date'], TRUE), $val);					
+					{
+						$val = str_replace(
+							$dvar, 
+							$this->EE->localize->convert_timestamp(
+								$dvar, 
+								$file_info['modified_date'], 
+								TRUE
+							),
+							$val
+						);
+					}
 
 					$tagdata = $this->EE->TMPL->swap_var_single($key, $val, $tagdata);
 				}
@@ -212,7 +252,7 @@ class File_ft extends EE_Fieldtype {
 	{
 		if ($modifier)
 		{
-			$file_info['path'] .= '_'.$modifier.'/';	
+			$file_info['path'] .= '_'.$modifier.'/';
 		}
 
 		return $this->replace_tag($file_info, $params, $tagdata);
@@ -227,13 +267,15 @@ class File_ft extends EE_Fieldtype {
 	 */
 	function display_settings($data)
 	{
+		$prefix = 'file';
+
 		$this->EE->load->model('file_upload_preferences_model');
 		
 		$field_content_options = array('all' => lang('all'), 'image' => lang('type_image'));
 
 		$this->EE->table->add_row(
-			lang('field_content_file', 'field_content_file'),
-			form_dropdown('file_field_content_type', $field_content_options, $data['field_content_type'], 'id="file_field_content_type"')
+			lang('field_content_file', $prefix.'field_content_type'),
+			form_dropdown('file_field_content_type', $field_content_options, $data['field_content_type'], 'id="'.$prefix.'field_content_type"')
 		);
 		
 		$directory_options['all'] = lang('all');
@@ -248,8 +290,8 @@ class File_ft extends EE_Fieldtype {
 		$allowed_directories = ( ! isset($data['allowed_directories'])) ? 'all' : $data['allowed_directories'];
 
 		$this->EE->table->add_row(
-			lang('allowed_dirs_file', 'allowed_dirs_file'),
-			form_dropdown('file_allowed_directories', $directory_options, $allowed_directories, 'id="file_allowed_directories"')
+			lang('allowed_dirs_file', $prefix.'field_allowed_dirs'),
+			form_dropdown('file_allowed_directories', $directory_options, $allowed_directories, 'id="'.$prefix.'field_allowed_dirs"')
 		);		
 		
 	}

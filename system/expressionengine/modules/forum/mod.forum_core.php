@@ -146,66 +146,6 @@ class Forum_Core extends Forum {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Recursively Fetch Template Elements
-	 *
-	 * Note:  A "template element" refers to an HTML component used to 
-	 * build the forum (header, breadcrumb, footer, etc.). Each "template 
-	 * element" corresponds to a particular function in one of the theme files.
-	 *
-	 * This function allows any template element to be embedded within any other 
-	 * template element. Template elements can contain "include variables" which 
-	 * call other template elements.
-	 * The include variables look like this: {include:function_name}
-	 *
-	 * If an include is found, this function loads that element and recursively 
-	 * looks for additional includes.  
-	 *
-	 * In some cases, template elements need to be processed rather than simply 
-	 * returned.
-	 * If we need to process the include, THIS file will contain a function 
-	 * named exactly the same as the template element which will be called.  If 
-	 * the function does not exist we return the pure data.
-	 *
-	 * Right now there is no safety to prevent a run-away loop if an include is 
-	 * put within itself.
-	 *
-	 * @param
-	 */
-	function _include_recursive($function)
-	{ 
-		if ($this->return_data == '' AND $this->trigger_error_page === TRUE)
-		{
-			$function = 'error_page';
-		}
-			
-		$element = ( ! method_exists($this, $function)) ? $this->load_element($function) : $this->$function();
-
-		if ($this->return_data == '')
-		{
-			$this->return_data = $element;
-		}
-		else
-		{
-			$this->return_data = str_replace('{include:'.$function.'}', $element, $this->return_data);
-		}
-			
-			if (preg_match_all("/{include:(.+?)\}/i", $this->return_data, $matches))
-			{	
-			for ($j = 0; $j < count($matches['0']); $j++)
-			{	
-				if ( ! in_array($matches['1'][$j], $this->include_exceptions))
-				{
-					return $this->return_data = str_replace($matches['0'][$j], $this->_include_recursive($matches['1'][$j]), $this->return_data);
-				}
-			}
-		}		
-				
-		return $this->return_data;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Fetch Forum Moderators
 	 */
 	function _load_moderators()
@@ -10118,14 +10058,22 @@ class Forum_Core extends Forum {
 
 		if ($query->num_rows() == 0)
 		{
-			return $this->EE->output->show_user_error('off', array(lang('search_no_result')), lang('search_result_heading'));		
+			return $this->EE->output->show_user_error(
+				'off', 
+				array(lang('search_no_result')),
+				lang('search_result_heading')
+			);		
 		}
 		
 		$post_ids  = unserialize(stripslashes($query->row('post_ids') ));
 		
 		if ( ! isset($post_ids[$topic_id]))
 		{
-			return $this->EE->output->show_user_error('off', array(lang('search_no_result')), lang('search_result_heading'));
+			return $this->EE->output->show_user_error(
+				'off', 
+				array(lang('search_no_result')), 
+				lang('search_result_heading')
+			);
 		}
 
 		// Load the XML Helper
@@ -10134,7 +10082,6 @@ class Forum_Core extends Forum {
 		// we are only concerned about posts for this topic
 		$post_ids	= $post_ids[$topic_id];
 		$keywords	= xml_convert($query->row('keywords') );
-
 
 		// Load the template		
 		$str = $this->load_element('thread_search_results');
@@ -10147,15 +10094,13 @@ class Forum_Core extends Forum {
 		
 		if ($total_rows > $post_limit)
 		{	
-			$pagination = $this->_create_pagination(
-					array(
-							'first_url'		=> $this->forum_path('/search_thread/'.$this->current_id.$topic_id.'/'),
-							'path'			=> $this->forum_path('/search_thread/'.$this->current_id.$topic_id.'/'),
-							'total_count'	=> $total_rows,
-							'per_page'		=> 20,
-							'cur_page'		=> $this->current_page
-						)
-					);
+			$pagination = $this->_create_pagination(array(
+				'first_url'		=> $this->forum_path('/search_thread/'.$this->current_id.$topic_id.'/'),
+				'path'			=> $this->forum_path('/search_thread/'.$this->current_id.$topic_id.'/'),
+				'total_count'	=> $total_rows,
+				'per_page'		=> 20,
+				'cur_page'		=> $this->current_page
+			));
 			
 			// Slice our array so we can limit the query properly
 		
@@ -10178,31 +10123,40 @@ class Forum_Core extends Forum {
 		}
 		
 		// Fetch the posts and topic title
-		$query = $this->EE->db->select('title')->where('topic_id', $topic_id)->get('forum_topics');
+		$query = $this->EE->db->select('title')
+			->where('topic_id', $topic_id)
+			->get('forum_topics');
 		
 		if ($query->num_rows() == 0)
 		{
-			return $this->EE->output->show_user_error('off', array(lang('search_no_result')), lang('search_result_heading'));		
+			return $this->EE->output->show_user_error(
+				'off',
+				array(lang('search_no_result')),
+				lang('search_result_heading')
+			);
 		}
 		
 		$topic_title = $query->row('title') ;
 		
 		$qry = $this->EE->db->select('p.forum_id, p.topic_id, p.post_id, 
-									  p.author_id, p.body, p.post_date,
-									  m.screen_name AS author')
-							->from(array('forum_posts p', 'members m'))
-							->where('p.topic_id', $topic_id)
-							->where('m.member_id', 'p.author_id')
-							->where_in('p.post_id', array_unique($post_ids))
-							->order_by('post_date', 'DESC')
-							->get();
-	
+				p.author_id, p.body, p.post_date, m.screen_name AS author')
+			->from('forum_posts p')
+			->join('members m', 'p.author_id = m.member_id')
+			->where('p.topic_id', $topic_id)
+			->where_in('p.post_id', array_unique($post_ids))
+			->order_by('post_date', 'DESC')
+			->get();
+		
 		// No results?  Something has gone terribly wrong!!		
 		if ($qry->num_rows() == 0)
 		{
-			return $this->EE->output->show_user_error('off', array(lang('search_no_result')), lang('search_result_heading'));		
+			return $this->EE->output->show_user_error(
+				'off',
+				array(lang('search_no_result')),
+				lang('search_result_heading')
+			);
 		}
-	
+		
 		// Fetch the "row" template
 		$template = $this->load_element('thread_result_rows');
 		
@@ -10225,7 +10179,7 @@ class Forum_Core extends Forum {
 		{
 			$switches = explode('|', $smatch['2']);
 		}
-						
+					
 		foreach ($qry->result_array() as $row)
 		{
 			$temp = $template;
@@ -10264,16 +10218,17 @@ class Forum_Core extends Forum {
 						
 			$snippet = substr($snippet, 0, 30);
 			
-			$temp = $this->var_swap($temp,
-							array(
-									'topic_marker'			=>	$topic_marker,
-									'topic_type'			=>  $topic_type,
-									'author'				=>	$row['author'],
-									'snippet'				=>  $this->EE->functions->encode_ee_tags($snippet, TRUE),
-									'path:member_profile'	=>	$this->profile_path($row['author_id']),
-									'path:viewreply'		=>	$this->forum_path('/viewreply/'.$row['post_id'].'/')
-								)
-							);
+			$temp = $this->var_swap(
+				$temp,
+				array(
+					'topic_marker'			=>	$topic_marker,
+					'topic_type'			=>  $topic_type,
+					'author'				=>	$row['author'],
+					'snippet'				=>  $this->EE->functions->encode_ee_tags($snippet, TRUE),
+					'path:member_profile'	=>	$this->profile_path($row['author_id']),
+					'path:viewreply'		=>	$this->forum_path('/viewreply/'.$row['post_id'].'/')
+				)
+			);
 
 			// Parse the post_date
 			if ($date !== FALSE AND $row['post_date'] != 0)
@@ -10300,19 +10255,22 @@ class Forum_Core extends Forum {
 		}
 
 		$str = str_replace('{include:thread_result_rows}', $topics, $str);
-			
+
 		// Parse the template
-		return $this->var_swap($this->load_element('search_thread_page'),
-							array(
-								'include:thread_search_results'	=> $str,
-								'pagination_links'			=> $pagination,
-								'current_page'				=> $current_page,
-								'total_pages'				=> $total_pages,								
-								'keywords'					=> $keywords,								
-								'total_results'				=> $total_rows,
-								'topic_title'				=> $this->EE->typography->filter_censored_words($this->_convert_special_chars($topic_title))
-								)
-							);
+		return $this->var_swap(
+			$this->load_element('search_thread_page'),
+			array(
+				'include:thread_search_results'	=> $str,
+				'pagination_links'			=> $pagination,
+				'current_page'				=> $current_page,
+				'total_pages'				=> $total_pages,								
+				'keywords'					=> $keywords,								
+				'total_results'				=> $total_rows,
+				'topic_title'				=> $this->EE->typography->filter_censored_words(
+					$this->_convert_special_chars($topic_title)
+				)
+			)
+		);
 	}
 
 	// ----------------------------------------------------------------------
