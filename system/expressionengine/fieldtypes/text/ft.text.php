@@ -119,6 +119,11 @@ class Text_ft extends EE_Fieldtype {
 	
 	function replace_tag($data, $params = '', $tagdata = '')
 	{
+		if (isset($params['raw_output']) && $params['raw_output'] == 'yes')
+		{
+			return $this->EE->functions->encode_ee_tags($data);
+		}
+
 		$type		= isset($this->settings['field_content_type']) ? $this->settings['field_content_type'] : 'all';
 		$decimals	= isset($params['decimal_place']) ? (int) $params['decimal_place'] : FALSE;
 		
