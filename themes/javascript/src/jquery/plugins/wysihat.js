@@ -2,6 +2,8 @@
  *  (c) 2008-2010 Joshua Peek
  *  JQ-WysiHat - jQuery port of WysiHat to run on jQuery
  *  (c) 2010 Scott Williams & Aaron Gustafson
+ *  EL-WysiHat - Extensive rewrite of JQ-WysiHat for ExpressionEngine
+ *  (c) 2012 EllisLab, Inc.
  *
  *  WysiHat is freely distributable under the terms of an MIT-style license.
  *--------------------------------------------------------------------------*/
