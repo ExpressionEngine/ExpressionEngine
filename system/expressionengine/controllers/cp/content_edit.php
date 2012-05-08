@@ -85,7 +85,18 @@ class Content_edit extends CI_Controller {
 			$channels[$c_row->channel_id] = $c_row;
 		}
 
+		// Set up Per page data
+		// ----------------------------------------------------------------
+				
+		// Results per page pull-down menu
+		if ( ! ($perpage = $this->input->get_post('perpage')))
+		{
+			$perpage = ($this->input->cookie('perpage') == FALSE) ? 50 : $this->input->cookie('perpage');
+		}
 		
+		$this->functions->set_cookie('perpage' , $perpage, 60*60*24*182);		
+
+
 		// Table
 		// ----------------------------------------------------------------
 		
@@ -120,7 +131,7 @@ class Content_edit extends CI_Controller {
 		);
 		
 		$params = array(
-			'perpage'	=> 50,
+			'perpage'	=> $perpage,
 			'channels'	=> $channels,
 		);
 				
@@ -128,19 +139,6 @@ class Content_edit extends CI_Controller {
 		
 		$filter_data = $vars['filter_data'];
 		unset($vars['filter_data']);
-		
-		
-		// Set up Per page data
-		// ----------------------------------------------------------------
-				
-		// Results per page pull-down menu
-		if ( ! ($perpage = $this->input->get_post('perpage')))
-		{
-			$perpage = $this->input->cookie('perpage');
-		}
-		
-		$this->functions->set_cookie('perpage' , $perpage, 60*60*24*182);
-		
 		
 		// Setup the form!
 		// ----------------------------------------------------------------
@@ -1101,9 +1099,9 @@ class Content_edit extends CI_Controller {
 			 }
 
 			// Day, Month, and Year Fields
-			$data['year']	= date('Y', $data['entry_date']);
-			$data['month']	= date('m', $data['entry_date']);
-			$data['day']	= date('d', $data['entry_date']);
+			$data['year']	= $this->localize->decode_date('%Y', $data['entry_date'], TRUE);
+			$data['month']	= $this->localize->decode_date('%m', $data['entry_date'], TRUE);
+			$data['day']	= $this->localize->decode_date('%d', $data['entry_date'], TRUE);
 
 			// Update the entry
 			$this->db->query($this->db->update_string('exp_channel_titles', $data, "entry_id = '$id'"));

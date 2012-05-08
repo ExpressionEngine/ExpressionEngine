@@ -702,35 +702,14 @@ class EE_Session {
 	public function fetch_session_data()
 	{
 		// Look for session.  Match the user's IP address and browser for added security.
-		$this->EE->db->select('member_id, admin_sess, last_activity')
-			->where('session_id', (string) $this->sdata['session_id'])
-			->where('user_agent', $this->sdata['user_agent']);
-		
-		// Determine the ip accuracy we're looking for
-		$accuracy = (is_numeric($this->EE->config->item('session_ip_accuracy'))) ? 
-			(int) $this->EE->config->item('session_ip_accuracy') : 
-			4;
-
-		// If full accuracy, do a where
-		if ($accuracy === 4)
-		{
-			$this->EE->db->where('ip_address', $this->sdata['ip_address']);	
-		}
-		// If more than 0 accuracy, do a like
-		else if ($accuracy !== 0)
-		{
-			$current_ip = explode('.', $this->sdata['ip_address']);
-			$like_ip = array();
-			
-			for ($octet = 0; $octet < $accuracy; $octet++)
-			{ 
-				$like_ip[] = $current_ip[$octet];
-			}
-
-			$this->EE->db->like('ip_address', implode('.', $like_ip), 'after');
-		}
-
-		$query = $this->EE->db->get('sessions');
+		$query = $this->EE->db->select('member_id, admin_sess, last_activity')
+			->get_where(
+				'sessions',
+				array(
+					'session_id' => (string) $this->sdata['session_id'],
+					'user_agent' => $this->sdata['user_agent']
+				)
+			);
 		
 		if ($query->num_rows() == 0 OR $query->row('member_id') == 0)
 		{

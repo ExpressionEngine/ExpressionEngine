@@ -189,6 +189,7 @@ a.file_browser_thumbnail:hover {
 
 .button_bar img,
 .button_bar a,
+.button_bar a.submit,
 .button_bar input {
 	display: none;
 }

@@ -90,6 +90,11 @@ class Multi_select_ft extends EE_Fieldtype {
 			$entry = implode(', ', $data);
 		}
 
+		if (isset($params['raw_output']) && $params['raw_output'] == 'yes')
+		{
+			return $this->EE->functions->encode_ee_tags($entry);
+		}
+
 		return $this->EE->typography->parse_type(
 				$this->EE->functions->encode_ee_tags($entry),
 				array(
@@ -134,6 +139,11 @@ class Multi_select_ft extends EE_Fieldtype {
 		if (isset($params['backspace']))
 		{
 			$chunk = substr($chunk, 0, - $params['backspace']);
+		}
+		
+		if (isset($params['raw_output']) && $params['raw_output'] == 'yes')
+		{
+			return $this->EE->functions->encode_ee_tags($chunk);
 		}
 		
 		// Typography!

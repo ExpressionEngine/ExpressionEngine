@@ -89,6 +89,13 @@ class Addons extends CI_Controller {
 		$this->cp->set_variable('cp_page_title', lang('package_settings'));
 		
 		$components = $this->addons->_packages[$package];
+
+		// Ignore RTE Tools if the module is not installed
+		$this->db->from('modules')->where('module_name', 'Rte');
+		if ($this->db->count_all_results() <= 0)
+		{
+			unset($components['rte_tool']);
+		}
 		
 		if (isset($components['plugin']))
 		{

@@ -55,6 +55,11 @@ class Textarea_ft extends EE_Fieldtype {
 
 	function replace_tag($data, $params = '', $tagdata = '')
 	{
+		if (isset($params['raw_output']) && $params['raw_output'] == 'yes')
+		{
+			return $this->EE->functions->encode_ee_tags($data);
+		}
+		
 		return $this->EE->typography->parse_type(
 			$this->EE->functions->encode_ee_tags($data),
 			array(

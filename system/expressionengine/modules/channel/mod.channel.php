@@ -26,56 +26,57 @@
 
 class Channel {
 
-	var $limit	= '100';	// Default maximum query results if not specified.
+	public $limit	= '100';	// Default maximum query results if not specified.
 
 	// These variable are all set dynamically
 
-	var $query;
-	var $TYPE;
-	var $entry_id				= '';
-	var	$uri					= '';
-	var $uristr					= '';
-	var $return_data			= '';	 	// Final data
-	var $hit_tracking_id		= FALSE;
-	var	$sql					= FALSE;
-	var $cfields				= array();
-	var $dfields				= array();
-	var $rfields				= array();
-	var $mfields				= array();
-	var $pfields				= array();
-	var $categories				= array();
-	var $catfields				= array();
-	var $channel_name	 		= array();
-	var $channels_array			= array();
-	var $related_entries		= array();
-	var $reverse_related_entries= array();
-	var $reserved_cat_segment 	= '';
-	var $use_category_names		= FALSE;
-	var $cat_request			= FALSE;
-	var $enable					= array();	// modified by various tags with disable= parameter
-    var $absolute_results		= NULL;		// absolute total results returned by the tag, useful when paginating
-	var $display_by				= '';
+	public $query;
+	public $TYPE;
+	public $entry_id				= '';
+	public $uri						= '';
+	public $uristr					= '';
+	public $return_data				= '';	 	// Final data
+	public $hit_tracking_id			= FALSE;
+	public $sql						= FALSE;
+	public $cfields					= array();
+	public $dfields					= array();
+	public $rfields					= array();
+	public $mfields					= array();
+	public $pfields					= array();
+	public $categories				= array();
+	public $catfields				= array();
+	public $channel_name	 		= array();
+	public $channels_array			= array();
+	public $related_entries			= array();
+	public $reverse_related_entries = array();
+	public $reserved_cat_segment 	= '';
+	public $use_category_names		= FALSE;
+	public $cat_request				= FALSE;
+	public $enable					= array();	// modified by various tags with disable= parameter
+	public $absolute_results		= NULL;		// absolute total results returned by the tag, useful when paginating
+	public $display_by				= '';
 
 	// These are used with the nested category trees
 
-	var $category_list  		= array();
-	var $cat_full_array			= array();
-	var $cat_array				= array();
-	var $temp_array				= array();
-	var $category_count			= 0;
+	public $category_list  			= array();
+	public $cat_full_array			= array();
+	public $cat_array				= array();
+	public $temp_array				= array();
+	public $category_count			= 0;
 
-	var $pagination;
+	public $pagination;
+	public $pager_sql 				= '';
 
 	// SQL Caching
-	var $sql_cache_dir			= 'sql_cache/';
+	public $sql_cache_dir			= 'sql_cache/';
 
 	// Misc. - Class variable usable by extensions
-	var $misc					= FALSE;
+	public $misc					= FALSE;
 
 	/**
 	  * Constructor
 	  */
-	function Channel()
+	public function Channel()
 	{
 		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();
@@ -107,7 +108,7 @@ class Channel {
 	/**
 	  *  Initialize values
 	  */
-	function initialize()
+	public function initialize()
 	{
 		$this->sql 			= '';
 		$this->return_data	= '';
@@ -118,7 +119,7 @@ class Channel {
 	/**
 	  *  Fetch Cache
 	  */
-	function fetch_cache($identifier = '')
+	public function fetch_cache($identifier = '')
 	{
 		$tag = ($identifier == '') ? $this->EE->TMPL->tagproper : $this->EE->TMPL->tagproper.$identifier;
 
@@ -158,7 +159,7 @@ class Channel {
 	/**
 	  *  Save Cache
 	  */
-	function save_cache($sql, $identifier = '')
+	public function save_cache($sql, $identifier = '')
 	{
 		$tag = ($identifier == '') ? $this->EE->TMPL->tagproper : $this->EE->TMPL->tagproper.$identifier;
 
@@ -199,7 +200,7 @@ class Channel {
 	/**
 	  *  Channel entries
 	  */
-	function entries()
+	public function entries()
 	{
 		// If the "related_categories" mode is enabled
 		// we'll call the "related_categories" function
@@ -347,7 +348,7 @@ class Channel {
 	/**
 	  *  Process related entries
 	  */
-	function parse_related_entries()
+	public function parse_related_entries()
 	{
 		$sql = "SELECT rel_id, rel_parent_id, rel_child_id, rel_type, rel_data
 				FROM exp_relationships
@@ -461,7 +462,7 @@ class Channel {
 	/**
 	  *  Process reverse related entries
 	  */
-	function parse_reverse_related_entries()
+	public function parse_reverse_related_entries()
 	{
 		$this->EE->db->select('rel_id, rel_parent_id, rel_child_id, rel_type, reverse_rel_data');
 		$this->EE->db->where_in('rel_child_id', array_keys($this->reverse_related_entries));
@@ -804,7 +805,7 @@ class Channel {
 	/**
 	  *  Track Views
 	  */
-	function track_views()
+	public function track_views()
 	{
 		if ($this->EE->config->item('enable_entry_view_tracking') == 'n')
 		{
@@ -840,7 +841,7 @@ class Channel {
 	/**
 	  *  Fetch custom channel field IDs
 	  */
-	function fetch_custom_channel_fields()
+	public function fetch_custom_channel_fields()
 	{
 		if (isset($this->EE->session->cache['channel']['custom_channel_fields']) && isset($this->EE->session->cache['channel']['date_fields'])
 			&& isset($this->EE->session->cache['channel']['relationship_fields'])  && isset($this->EE->session->cache['channel']['pair_custom_fields']))
@@ -873,7 +874,7 @@ class Channel {
 	/**
 	  *  Fetch custom member field IDs
 	  */
-	function fetch_custom_member_fields()
+	public function fetch_custom_member_fields()
 	{
 		$this->EE->db->select('m_field_id, m_field_name, m_field_fmt');
 		$query = $this->EE->db->get('member_fields');
@@ -905,7 +906,7 @@ class Channel {
 	/**
 	  *  Fetch categories
 	  */
-	function fetch_categories()
+	public function fetch_categories()
 	{
 		if ($this->enable['category_fields'] === TRUE)
 		{
@@ -1011,7 +1012,7 @@ class Channel {
 	/**
 	  *  Build SQL query
 	  */
-	function build_sql_query($qstring = '')
+	public function build_sql_query($qstring = '')
 	{
 		$entry_id		= '';
 		$year			= '';
@@ -2584,12 +2585,12 @@ class Channel {
 
 		if ($this->pagination->paginate == TRUE)
 		{
-			$pager_sql = '';
+			$this->pager_sql = '';
 			
 			if ($this->pagination->field_pagination == FALSE)
 			{
-				$pager_sql = $sql_a.$sql_b.$sql;
-				$query = $this->EE->db->query($pager_sql);
+				$this->pager_sql = $sql_a.$sql_b.$sql;
+				$query = $this->EE->db->query($this->pager_sql);
 				$total = $query->num_rows;
 				$this->absolute_results = $total;
 
@@ -2605,9 +2606,9 @@ class Channel {
 			}
 			else
 			{
-				$pager_sql = $sql_a.$sql_b.$sql;
+				$this->pager_sql = $sql_a.$sql_b.$sql;
 
-				$query = $this->EE->db->query($pager_sql);
+				$query = $this->EE->db->query($this->pager_sql);
 
 				$total = $query->num_rows;
 				$this->absolute_results = $total;
@@ -2617,7 +2618,7 @@ class Channel {
 
 				if ($this->EE->config->item('enable_sql_caching') == 'y')
 				{
-					$this->save_cache($pager_sql, 'pagination_query');
+					$this->save_cache($this->pager_sql, 'pagination_query');
 					$this->save_cache('1', 'field_pagination');
 				}
 			}
@@ -2752,7 +2753,7 @@ class Channel {
 	/**
 	  *  Parse channel entries - New Attempt
 	  */
-	function parse_channel_entries_new()
+	public function parse_channel_entries_new()
 	{
 		// Internal Tag Caching
 		$processed_member_fields = array();
@@ -3094,7 +3095,7 @@ class Channel {
 	/**
 	  *  Parse channel entries
 	  */
-	function parse_channel_entries()
+	public function parse_channel_entries()
 	{
 		$switch = array();
 		$processed_member_fields = array();
@@ -4726,7 +4727,7 @@ class Channel {
 	/**
 	  *  Channel Info Tag
 	  */
-	function info()
+	public function info()
 	{
 		if ( ! $channel_name = $this->EE->TMPL->fetch_param('channel'))
 		{
@@ -4805,7 +4806,7 @@ class Channel {
 	/**
 	  *  Channel Name
 	  */
-	function channel_name()
+	public function channel_name()
 	{
 		$channel_name = $this->EE->TMPL->fetch_param('channel');
 
@@ -4845,7 +4846,7 @@ class Channel {
 	  * Need to finish this function.  It lets a simple list of categories
 	  * appear along with the post total.
 	  */
-	function category_totals()
+	public function category_totals()
 	{
 		$sql = "SELECT count( exp_category_posts.entry_id ) AS count,
 				exp_categories.cat_id,
@@ -4861,7 +4862,7 @@ class Channel {
 	/**
 	  *  Channel Categories
 	  */
-	function categories()
+	public function categories()
 	{
 		// -------------------------------------------
 		// 'channel_module_categories_start' hook.
@@ -5328,7 +5329,7 @@ class Channel {
 	/**
 	  *  Process Subcategories
 	  */
-	function process_subcategories($parent_id)
+	public function process_subcategories($parent_id)
 	{
 		foreach($this->temp_array as $key => $val)
 		{
@@ -5345,7 +5346,7 @@ class Channel {
 	/**
 	  *  Category archives
 	  */
-	function category_archive()
+	public function category_archive()
 	{
 		$sql = "SELECT DISTINCT cat_group, channel_id FROM exp_channels WHERE site_id IN ('".implode("','", $this->EE->TMPL->site_ids)."') ";
 
@@ -5800,7 +5801,7 @@ class Channel {
 	// category tree until it finds the category ID
 	// number of any parents.  It's used by the function
 	// below
-	function find_parent($parent, $all)
+	public function find_parent($parent, $all)
 	{
 		foreach ($all as $cat_id => $parent_id)
 		{
@@ -5821,7 +5822,7 @@ class Channel {
 	  *
 	  * This function and the next create a nested, hierarchical category tree
 	  */
-	function category_tree($cdata = array())
+	public function category_tree($cdata = array())
 	{
 		$default = array('group_id', 'channel_ids', 'path', 'template', 'depth', 'channel_array', 'parent_only', 'show_empty', 'strict_empty');
 
@@ -6068,160 +6069,13 @@ class Channel {
 		// Get category ID from URL for {if active} conditional
 		$this->EE->load->helper('segment');
 		$active_cat = parse_category($this->query_string);
-
-		foreach($this->cat_array as $key => $val)
-		{
-			if (0 == $val[0])
-			{
-				if ($open == 0)
-				{
-					$open = 1;
-
-					$this->category_list[] = "<ul>\n";
-				}
-
-				$chunk = $template;
-				
-				$this->EE->load->library('file_field');
-				$cat_image = $this->EE->file_field->parse_field($val[2]);
-				
-				$cat_vars = array('category_name'			=> $val[1],
-								  'category_url_title'		=> $val[4],
-								  'category_description'	=> $val[3],
-								  'category_image'			=> $cat_image['url'],
-								  'category_id'				=> $key,
-								  'parent_id'				=> $val[0],
-								  'active'					=> ($active_cat == $key || $active_cat == $val[4])
-								);
-
-				// add custom fields for conditionals prep
-
-				foreach ($this->catfields as $v)
-				{
-					$cat_vars[$v['field_name']] = ( ! isset($val['field_id_'.$v['field_id']])) ? '' : $val['field_id_'.$v['field_id']];
-				}
-
-				$cat_vars['count'] = ++$this->category_count;
-				$cat_vars['total_results'] = $total_results;
-
-				$chunk = $this->EE->functions->prep_conditionals($chunk, $cat_vars);
-
-				$chunk = str_replace( array(LD.'category_id'.RD,
-											LD.'category_name'.RD,
-											LD.'category_url_title'.RD,
-											LD.'category_image'.RD,
-											LD.'category_description'.RD,
-											LD.'parent_id'.RD),
-									  array($key,
-									  		$val[1],
-											$val[4],
-									  		$cat_image['url'],
-									  		$val[3],
-											$val[0]),
-								 			$chunk);
-
-				foreach($path as $pkey => $pval)
-				{
-					if ($this->use_category_names == TRUE)
-					{
-						$chunk = str_replace($pkey, $this->EE->functions->remove_double_slashes($pval.'/'.$this->reserved_cat_segment.'/'.$val[4]), $chunk);
-					}
-					else
-					{
-						$chunk = str_replace($pkey, $this->EE->functions->remove_double_slashes($pval.'/C'.$key), $chunk);
-					}
-				}
-
-				// parse custom fields
-				foreach($this->catfields as $cval)
-				{
-					if (isset($val['field_id_'.$cval['field_id']]) AND $val['field_id_'.$cval['field_id']] != '')
-					{
-						$field_content = $this->EE->typography->parse_type($val['field_id_'.$cval['field_id']],
-																	array(
-																		  'text_format'		=> $val['field_ft_'.$cval['field_id']],
-																		  'html_format'		=> $val['field_html_formatting'],
-																		  'auto_links'		=> 'n',
-																		  'allow_img_url'	=> 'y'
-																		)
-																);
-						$chunk = str_replace(LD.$cval['field_name'].RD, $field_content, $chunk);
-					}
-					else
-					{
-						// garbage collection
-						$chunk = str_replace(LD.$cval['field_name'].RD, '', $chunk);
-					}
-				}
-
-				/** --------------------------------
-				/**  {count}
-				/** --------------------------------*/
-
-				if (strpos($chunk, LD.'count'.RD) !== FALSE)
-				{
-					$chunk = str_replace(LD.'count'.RD, $this->category_count, $chunk);
-				}
-
-				/** --------------------------------
-				/**  {total_results}
-				/** --------------------------------*/
-
-				if (strpos($chunk, LD.'total_results'.RD) !== FALSE)
-				{
-					$chunk = str_replace(LD.'total_results'.RD, $total_results, $chunk);
-				}
-
-				$this->category_list[] = "\t<li>".$chunk;
-
-				if (is_array($channel_array))
-				{
-					$fillable_entries = 'n';
-
-					foreach($channel_array as $k => $v)
-					{
-						$k = substr($k, strpos($k, '_') + 1);
-
-						if ($key == $k)
-						{
-							if ($fillable_entries == 'n')
-							{
-								$this->category_list[] = "\n\t\t<ul>\n";
-								$fillable_entries = 'y';
-							}
-
-							$this->category_list[] = "\t\t\t$v\n";
-						}
-					}
-				}
-
-				if (isset($fillable_entries) && $fillable_entries == 'y')
-				{
-					$this->category_list[] = "\t\t</ul>\n";
-				}
-
-				$this->category_subtree(
-											array(
-													'parent_id'		=> $key,
-													'path'			=> $path,
-													'template'		=> $template,
-													'channel_array' 	=> $channel_array
-												  )
-									);
-				$t = '';
-
-				if (isset($fillable_entries) && $fillable_entries == 'y')
-				{
-					$t .= "\t";
-				}
-
-				$this->category_list[] = $t."</li>\n";
-
-				unset($this->temp_array[$key]);
-
-				$this->close_ul(0);
-			}
-		}
+		
+		$this->category_subtree(array(
+			'parent_id'		=> '0',
+			'path'			=> $path,
+			'template'		=> $template,
+			'channel_array' 	=> $channel_array
+		));
 	}
 
 	// ------------------------------------------------------------------------
@@ -6229,7 +6083,7 @@ class Channel {
 	/**
 	  *  Category Sub-tree
 	  */
-	function category_subtree($cdata = array())
+	public function category_subtree($cdata = array())
 	{
 		$default = array('parent_id', 'path', 'template', 'depth', 'channel_array', 'show_empty');
 
@@ -6416,7 +6270,7 @@ class Channel {
 	  *
 	  * This is a helper function to the above
 	  */
-	function close_ul($parent_id, $depth = 0)
+	public function close_ul($parent_id, $depth = 0)
 	{
 		$count = 0;
 
@@ -6442,7 +6296,7 @@ class Channel {
 	/**
 	  *  Channel "category_heading" tag
 	  */
-	function category_heading()
+	public function category_heading()
 	{
 		if ($this->query_string == '')
 		{
@@ -6690,17 +6544,17 @@ class Channel {
 	/**  Next / Prev entry tags
 	/** ---------------------------------------*/
 
-	function next_entry()
+	public function next_entry()
 	{
 		return $this->next_prev_entry('next');
 	}
 
-	function prev_entry()
+	public function prev_entry()
 	{
 		return $this->next_prev_entry('prev');
 	}
 
-	function next_prev_entry($which = 'next')
+	public function next_prev_entry($which = 'next')
 	{
 		$which = ($which != 'next' AND $which != 'prev') ? 'next' : $which;
 		$sort = ($which == 'next') ? 'ASC' : 'DESC';
@@ -7006,7 +6860,7 @@ class Channel {
 	/**
 	  *  Channel "month links"
 	  */
-	function month_links()
+	public function month_links()
 	{
 		$return = '';
 
@@ -7248,7 +7102,7 @@ class Channel {
 	  *
 	  * related_categories_mode="on"
 	  */
-	function related_entries()
+	public function related_entries()
 	{
 		if ($this->query_string == '')
 		{
@@ -7469,7 +7323,7 @@ class Channel {
 	/**
 	  *  Channel Calendar
 	  */
-	function calendar()
+	public function calendar()
 	{
 		// -------------------------------------------
 		// 'channel_module_calendar_start' hook.
@@ -7501,7 +7355,7 @@ class Channel {
 	  * 1. It allows submitted data to be previewed
 	  * 2. It allows submitted data to be inserted
 	  */
-	function insert_new_entry()
+	public function insert_new_entry()
 	{
 		if ( ! class_exists('Channel_standalone'))
 		{
@@ -7520,7 +7374,7 @@ class Channel {
 	  * Used by the SAEF
 	  */
 
-	function filemanager_endpoint($function = '', $params = array())
+	public function filemanager_endpoint($function = '', $params = array())
 	{
 		$this->EE->load->library('filemanager');
 		$this->EE->lang->loadfile('content');
@@ -7546,7 +7400,7 @@ class Channel {
 	  * Used by the SAEF
 	  */
 
-	function smiley_pop()
+	public function smiley_pop()
 	{	
 		if ($this->EE->session->userdata('member_id') == 0)
 		{
@@ -7663,7 +7517,7 @@ class Channel {
 	/**
 	  *  Stand-alone version of the entry form
 	  */
-	function entry_form($return_form = FALSE, $captcha = '')
+	public function entry_form($return_form = FALSE, $captcha = '')
 	{
 		if ( ! class_exists('Channel_standalone'))
 		{
@@ -7679,7 +7533,7 @@ class Channel {
 	/**
 	 * ACT method for Stand Alone Entry Form Javascript
 	 */
-	function saef_filebrowser()
+	public function saef_filebrowser()
 	{
 		if ( ! class_exists('Channel_standalone'))
 		{

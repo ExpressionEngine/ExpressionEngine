@@ -18,6 +18,7 @@
 		
 		current_directory = 0,
 		settings = {},
+		error = '',
 		
 		$table = null,
 		
@@ -93,6 +94,11 @@
 			data: data,
 			cache: false,
 			success: function(data, textStatus, xhr) {
+				if (data.error) {
+					error = data.error;
+					return;
+				}
+
 				if (typeof callback == 'function') {
 					callback.call(this, data);
 				};
@@ -130,6 +136,12 @@
 		}
 		
 		$(el).click(function() {
+			// Check to see if we have any errors from setup
+			if (error) {
+				alert(error);
+				return false;
+			}
+
 			var that = this;
 
 			// Change the upload field to their preferred name

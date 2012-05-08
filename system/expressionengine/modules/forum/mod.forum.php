@@ -27,8 +27,8 @@
 class Forum {
 
 
-	public $version				= '3.1.7';
-	public $build				= '20120123';
+	public $version				= '3.1.8';
+	public $build				= '20120507';
 	public $use_site_profile	= FALSE;
 	public $search_limit		= 250; // Maximum number of search results (x2 since it can include this number of topics + this number of posts)
 	public $return_data 		= '';
@@ -288,7 +288,6 @@ class Forum {
 		{
 			$function = $remap[$function];
 		}
-						
 
 		// The output is based on whether we are using the main template parser or not.
 		// If the config.php file contains a forum "triggering" word we'll send
@@ -535,7 +534,27 @@ class Forum {
 			$function = 'error_page';
 		}
 			
-		$element = ( ! method_exists($this, $function)) ? $this->load_element($function) : $this->$function();
+		if (method_exists($this, $function))
+		{
+			$element = $this->$function();
+		}
+		else
+		{
+			$element = $this->load_element($function);
+
+			// -------------------------------------------
+			// 'forum_include_extras' hook.
+			//  - Add more forum theme pages and functions
+			//  - Added EE 2.5.0
+			//
+			if ($this->EE->extensions->active_hook('forum_include_extras') === TRUE)
+			{
+				$element = $this->EE->extensions->call('forum_include_extras', $this, $function, $element);
+			}
+			//
+			// -------------------------------------------			
+		
+		}
 
 		if ($this->return_data == '')
 		{
@@ -587,7 +606,21 @@ class Forum {
 	 */		
 	public function load_element($which)
 	{
-		if ( ! ($classname = $this->_fetch_filename($which)))
+		$classname = $this->_fetch_filename($which);
+
+		// -------------------------------------------
+		// 'forum_add_template' hook.
+		//  - Add more forum theme pages and functions
+		//  - Added EE 2.5.0
+		//
+		if ($this->EE->extensions->active_hook('forum_add_template') === TRUE)
+		{
+			$classname = $this->EE->extensions->call('forum_add_template', $which, $classname);
+		}
+		//
+		// -------------------------------------------
+
+		if ( ! $classname)
 		{
 			$data = array(	'title' 	=> lang('error'),
 							'heading'	=> lang('general_error'),
