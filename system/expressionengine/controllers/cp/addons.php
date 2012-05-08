@@ -164,10 +164,8 @@ class Addons extends CI_Controller {
 		$vars['package'] = ucfirst(str_replace('_', ' ', $package));
 		$vars['components'] = $components;
 		$vars['required'] = $required;
-		
-		$this->javascript->compile();
-		
-		$this->load->view('addons/package_settings', $vars);
+				
+		$this->view->render('addons/package_settings', $vars);
 	}
 }
 // END CLASS

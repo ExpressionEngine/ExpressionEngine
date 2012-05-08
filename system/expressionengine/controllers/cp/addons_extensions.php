@@ -61,8 +61,6 @@ class Addons_extensions extends CI_Controller {
 			widgets: ["zebra"]
 		}');
 
-		$this->javascript->compile();
-
 		$this->load->library('addons');
 		$this->load->model('addons_model');
 
@@ -173,7 +171,7 @@ class Addons_extensions extends CI_Controller {
 		        $extensions_toggle => BASE.AMP.'C=addons_extensions'.AMP.'M=toggle_extension_confirm'
 		    ));
 
-		$this->load->view('addons/extensions', $vars);
+		$this->view->render('addons/extensions', $vars);
 	}
 	
 	// --------------------------------------------------------------------
@@ -204,8 +202,7 @@ class Addons_extensions extends CI_Controller {
 			BASE.AMP.'C=addons_extensions'=> lang('extensions')
 		));
 		
-		$this->javascript->compile();
-		$this->load->view('addons/toggle_confirm', $vars);
+		$this->view->render('addons/toggle_confirm', $vars);
 	}
 	
 	// --------------------------------------------------------------------
@@ -386,8 +383,8 @@ class Addons_extensions extends CI_Controller {
 
 
 			// load it up, kapowpow!
-			$this->javascript->compile();
-			$this->load->view('addons/extensions_settings_custom', $vars);
+			$this->view->cp_heading = lang('extension_settings').': '.$name;
+			$this->view->render('addons/extensions_settings_custom', $vars);
 			return;
 		}
 
@@ -479,11 +476,9 @@ class Addons_extensions extends CI_Controller {
 			$vars['fields'][$key] = array('type' => $options[0], 'value' => $details, 'subtext' => $sub, 'selected' => $selected);
 		}
 		
-		$vars['hidden'] = array('file' => $vars['file']);
-
-		$this->javascript->compile();
-
-		$this->load->view('addons/extensions_settings', $vars);
+		$this->view->hidden = array('file' => $vars['file']);
+		$this->view->cp_heading = lang('extension_settings').': '.$name;
+		$this->view->render('addons/extensions_settings', $vars);
 	}
 	
 	// --------------------------------------------------------------------

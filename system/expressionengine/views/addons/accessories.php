@@ -1,5 +1,5 @@
 <?php
-extend_template('default');
+	extend_template('default');
 
 	$this->table->set_heading(array('data' => lang('accessory_name'), 'width' => '50%'), lang('available_to_member_groups'), lang('specific_page'), lang('status'));
 	
