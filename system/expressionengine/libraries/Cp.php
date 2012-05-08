@@ -515,6 +515,9 @@ class Cp {
 	 */
 	function delete_layout_tabs($tabs = array(), $namespace = '', $channel_id = array())
 	{
+		$this->EE->load->library('logger');
+		$this->EE->logger->deprecated(NULL, 'Layout::delete_layout_tabs()');
+
 		$this->EE->load->library('layout');
 		return $this->EE->layout->delete_layout_tabs($tabs, $namespace, $channel_id);
 	}	
@@ -568,6 +571,9 @@ class Cp {
 	 */
 	function delete_layout_fields($tabs, $channel_id = array())
 	{
+		$this->EE->load->library('logger');
+		$this->EE->logger->deprecated(NULL, 'Layout::delete_layout_fields()');
+		
 		$this->EE->load->library('layout');
 		return $this->EE->layout->delete_layout_fields($tabs, $channel_id);
 	}
