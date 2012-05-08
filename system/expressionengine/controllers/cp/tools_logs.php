@@ -59,12 +59,10 @@ class Tools_logs extends CI_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->cp->set_variable('cp_page_title', lang('tools_logs'));
 		$this->cp->set_breadcrumb(BASE.AMP.'C=tools', lang('tools'));
 
-		$this->javascript->compile();
-
-		$this->load->view('_shared/overview');
+		$this->view->cp_page_title = lang('tools_logs');
+		$this->view->render('_shared/overview');
 	}
 
 	// --------------------------------------------------------------------

@@ -25,7 +25,12 @@
 
 class View {
 
+	private $EE;
+
+	protected $_template = 'default';
 	protected $_theme = 'default';
+	protected $_data = array();
+	protected $_disabled = array();
 	
 	public function __construct()
 	{
@@ -49,9 +54,70 @@ class View {
 		$this->EE->session->userdata['cp_theme'] = $cp_theme;
 		$this->EE->load->add_theme_cascade(PATH_CP_THEME.$cp_theme.'/');
 	}
+
+	// --------------------------------------------------------------------------
+
+	/**
+	 * Set Template
+	 */
+	public function set_template($template = 'default')
+	{
+		$this->_template = $template;
+	}
 	
 	// --------------------------------------------------------------------------
 	
+	/**
+	 * Render output (html)
+	 */
+	public function render($view, $data = array(), $return = FALSE)
+	{
+		// @todo move menu, accessory, and sidebar creation here
+	//	$this->_menu();
+		$this->_accessories();
+	//	$this->_sidebar();
+
+
+		$this->EE->javascript->compile();
+		$this->EE->load->helper('view_helper');
+
+		$data = array_merge($this->_data, $data);
+		$data['EE_render_view'] = $view;
+
+		return $this->EE->load->view('_templates/'.$this->_template, $data, $return);
+	}
+
+	protected function _accessories()
+	{
+		if ($this->disabled('accessories'))
+		{
+			return;
+		}
+
+		$this->EE->load->library('accessories');
+		$this->_data['cp_accessories'] = $this->EE->accessories->generate_accessories();
+	}
+
+	// --------------------------------------------------------------------------
+
+	public function disable()
+	{
+		$which = func_get_args();
+		while ($el = array_pop($which))
+		{
+			$this->_disabled[] = $el;
+		}
+	}
+
+	// --------------------------------------------------------------------------
+
+	public function disabled($which)
+	{
+		return in_array($which, $this->_disabled);
+	}
+
+	// --------------------------------------------------------------------------
+
 	/**
 	 * Head Title
 	 *
@@ -104,7 +170,7 @@ class View {
 	 * @param	string		produces "media='screen'" by default
 	 * @return 	string		returns the link string.	
 	 */
-	public function head_link($file, $media='screen')
+	public function head_link($file, $media = 'screen')
 	{
 		$filemtime = NULL;
 		$file_url  = NULL;
@@ -158,4 +224,23 @@ class View {
 
 	// --------------------------------------------------------------------------
 	
+	public function __set($key, $value)
+	{
+		$this->_data[$key] = $value;
+	}
+	
+	public function __get($key)
+	{
+		return isset($this->_data[$key]) ? $this->_data[$key] : NULL;
+	}
+
+	public function __isset($key)
+	{
+		return isset($this->_data[$key]);
+	}
+
+	public function __unset($key)
+	{
+		unset($this->_data[$key]);
+	}
 }

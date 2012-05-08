@@ -51,12 +51,10 @@ class Addons extends CI_Controller {
 	 */	
 	function index()
 	{
-		$this->cp->set_variable('cp_page_title', lang('addons'));
+		$this->view->cp_page_title = lang('addons');
+		$this->view->controller = 'addons';
 
-		$this->load->vars(array('controller' => 'addons'));
-
-		$this->javascript->compile();
-		$this->load->view('_shared/overview');
+		$this->view->render('_shared/overview');
 	}
 	
 	// --------------------------------------------------------------------

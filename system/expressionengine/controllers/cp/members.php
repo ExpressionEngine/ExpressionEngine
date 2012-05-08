@@ -62,13 +62,10 @@ class Members extends CI_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->cp->set_variable('cp_page_title', lang('members'));
+		$this->view->cp_page_title = lang('members');
+		$this->view->controller = 'members';
 
-		$this->javascript->compile();
-
-		$this->load->vars(array('controller' => 'members'));
-
-		$this->load->view('_shared/overview');
+		$this->view->render('_shared/overview');
 	}
 	
 	// --------------------------------------------------------------------

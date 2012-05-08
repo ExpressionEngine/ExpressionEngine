@@ -45,9 +45,10 @@ class Admin_system extends CI_Controller {
 	{
 		$this->_restrict_prefs_access();
 
-		$this->cp->set_variable('cp_page_title', lang('admin_system'));
-		
-		$this->load->view('_shared/overview', array('controller' => 'admin'));
+		$this->view->controller = 'admin';
+		$this->view->cp_page_title = lang('admin_system');
+
+		$this->view->render('_shared/overview');
 	}
 
 	// --------------------------------------------------------------------

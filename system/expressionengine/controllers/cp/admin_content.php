@@ -67,15 +67,10 @@ class Admin_content extends CI_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->cp->set_variable('cp_page_title', lang('admin'));
+		$this->view->cp_page_title = lang('admin_content');
+		$this->view->controller = 'admin';
 
-		$this->javascript->compile();
-
-		$this->cp->set_variable('cp_page_title', lang('admin_content'));
-
-		$this->load->vars(array('controller'=>'admin'));
-		
-		$this->load->view('_shared/overview');
+		$this->view->render('_shared/overview');
 	}
 
 	// --------------------------------------------------------------------

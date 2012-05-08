@@ -89,16 +89,15 @@ class Design extends CI_Controller {
 		{
 			show_error(lang('unauthorized_access'));
 		}
-
-		$this->cp->set_variable('cp_page_title', lang('design'));
 		
-		$this->javascript->output($this->javascript->slidedown("#adminTemplatesSubmenu"));
+		$this->javascript->output(
+			$this->javascript->slidedown("#adminTemplatesSubmenu")
+		);
 
-		$this->javascript->compile();
+		$this->view->cp_page_title = lang('design');
+		$this->view->controller = 'design';
 
-		$this->load->vars(array('controller'=>'design'));
-
-		$this->load->view('_shared/overview');
+		$this->view->render('_shared/overview');
 	}
 	
 	// --------------------------------------------------------------------

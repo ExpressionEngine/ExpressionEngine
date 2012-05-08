@@ -91,7 +91,7 @@ class Cp {
 
 
 		$this->EE->load->library('menu');
-		$this->EE->load->library('accessories');
+	//	$this->EE->load->library('accessories');
 		$this->EE->load->library('javascript', array('autoload' => FALSE));
 
 		$this->EE->load->model('member_model'); // for screen_name, quicklinks
@@ -154,7 +154,7 @@ class Cp {
 								
 			// Menu
 			'cp_menu_items'			=> $this->EE->menu->generate_menu(),
-			'cp_accessories'		=> $this->EE->accessories->generate_accessories(),
+	//		'cp_accessories'		=> $this->EE->accessories->generate_accessories(),
 			
 			// Sidebar state (overwritten below if needed)
 			'sidebar_state'			=> '',
@@ -898,7 +898,6 @@ class Cp {
 	 * @access public
 	 * @return array
 	 */
-
 	function get_installed_modules()
 	{
 	    if ( ! is_array($this->installed_modules))

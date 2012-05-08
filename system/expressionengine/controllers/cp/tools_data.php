@@ -67,14 +67,12 @@ class Tools_data extends CI_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->cp->set_variable('cp_page_title', lang('tools_data'));
 		$this->cp->set_breadcrumb(BASE.AMP.'C=tools', lang('tools'));
 
-		$this->javascript->compile();
+		$this->view->cp_page_title = lang('tools_data');
+		$this->view->controller = 'tools/tools_data';
 
-		$this->load->vars(array('controller'=>'tools/tools_data'));
-
-		$this->load->view('_shared/overview');
+		$this->view->render('_shared/overview');
 	}
 
 	// --------------------------------------------------------------------

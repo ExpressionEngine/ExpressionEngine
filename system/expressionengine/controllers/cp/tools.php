@@ -51,13 +51,10 @@ class Tools extends CI_Controller {
 	 */	
 	function index()
 	{
-		$this->cp->set_variable('cp_page_title', lang('tools'));
+		$this->view->cp_page_title = lang('tools');
+		$this->view->controller = 'tools';
 
-		$this->javascript->compile();
-
-		$this->load->vars(array('controller' => 'tools'));
-
-		$this->load->view('_shared/overview');
+		$this->view->render('_shared/overview');
 	}
 	
 }

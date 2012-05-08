@@ -61,13 +61,10 @@ class Tools_utilities extends CI_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->cp->set_variable('cp_page_title', lang('tools_utilities'));
+		$this->view->cp_page_title = lang('tools_utilities');
+		$this->view->controller = 'tools/tools_utilities';
 
-		$this->javascript->compile();
-
-		$this->load->vars(array('controller'=>'tools/tools_utilities'));
-
-		$this->load->view('_shared/overview');
+		$this->view->render('_shared/overview');
 	}
 
 	// --------------------------------------------------------------------
