@@ -1,3 +1,5 @@
+<?php extend_template('wrapper'); ?>
+
 <?php if ($message OR isset($new_checksums)):?>
 	<div id="ee_important_message" class="<?=( ! $info_message_open) ? 'closed' : 'open'?>">
 		<div class="contents" id="ee_homepage_notice">

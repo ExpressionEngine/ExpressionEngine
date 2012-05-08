@@ -1,3 +1,5 @@
+<?php extend_template('basic'); ?>
+
 <?php
 $menu_array = array();
 

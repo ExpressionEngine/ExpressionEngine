@@ -27,8 +27,8 @@ class View {
 
 	private $EE;
 
-	protected $_template = 'default';
 	protected $_theme = 'default';
+	protected $_extend = '';
 	protected $_data = array();
 	protected $_disabled = array();
 	
@@ -56,36 +56,57 @@ class View {
 	}
 
 	// --------------------------------------------------------------------------
-
-	/**
-	 * Set Template
-	 */
-	public function set_template($template = 'default')
-	{
-		$this->_template = $template;
-	}
-	
-	// --------------------------------------------------------------------------
 	
 	/**
 	 * Render output (html)
 	 */
 	public function render($view, $data = array(), $return = FALSE)
 	{
-		// @todo move menu, accessory, and sidebar creation here
-	//	$this->_menu();
+		$this->_menu();
 		$this->_accessories();
-	//	$this->_sidebar();
-
+		$this->_sidebar();
 
 		$this->EE->javascript->compile();
 		$this->EE->load->helper('view_helper');
 
 		$data = array_merge($this->_data, $data);
-		$data['EE_render_view'] = $view;
 
-		return $this->EE->load->view('_templates/'.$this->_template, $data, $return);
+		// load up the inner
+		$rendered_view = $this->EE->load->view($view, $data, TRUE);
+
+		// traverse up the extensions
+		// we stop passing other data - it's cached in the loader
+		while ($this->_extend)
+		{
+			$view = $this->_extend;
+			$this->_extend = '';
+			$rendered_view = $this->EE->load->view($view, array('EE_rendered_view' => $rendered_view), TRUE);
+		}
+
+		// and now with the templates
+		// $content = $this->EE->load->view('_templates/'.$this->_template, $data, TRUE);
+
+		if ($return)
+		{
+			return $rendered_view;
+		}
+
+		$this->EE->output->set_output($rendered_view);
 	}
+
+	public function extend($which, $disable)
+	{
+		$this->_extend = $which;
+
+		if ( ! is_array($disable))
+		{
+			$disable = array($disable);
+		}
+
+		call_user_func_array(array($this, 'disable'), $disable);
+	}
+
+	// --------------------------------------------------------------------------
 
 	protected function _accessories()
 	{
@@ -96,6 +117,41 @@ class View {
 
 		$this->EE->load->library('accessories');
 		$this->_data['cp_accessories'] = $this->EE->accessories->generate_accessories();
+	}
+
+	// --------------------------------------------------------------------------
+
+	protected function _menu()
+	{
+		if ($this->disabled('menu'))
+		{
+			return;
+		}
+
+		$this->EE->load->library('menu');
+		$this->_data['cp_menu_items'] = $this->EE->menu->generate_menu();
+	}
+
+	// --------------------------------------------------------------------------
+
+	protected function _sidebar()
+	{
+		$this->_data['sidebar_state'] = '';
+		$this->_data['maincontent_state'] = '';
+
+		if ($this->EE->session->userdata('show_sidebar') == 'n')
+		{
+			$this->_data['sidebar_state'] = ' style="display:none"';
+			$this->_data['maincontent_state'] = ' style="width:100%; display:block"';
+        }
+
+        if ($this->disabled('sidebar'))
+		{
+			return;
+		}
+
+		// @todo move over sidebar content from cp
+		// has a member query & session cache dependency
 	}
 
 	// --------------------------------------------------------------------------

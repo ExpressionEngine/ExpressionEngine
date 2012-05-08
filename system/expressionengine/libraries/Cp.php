@@ -90,8 +90,6 @@ class Cp {
 		define('JS_FOLDER', $js_folder);
 
 
-		$this->EE->load->library('menu');
-	//	$this->EE->load->library('accessories');
 		$this->EE->load->library('javascript', array('autoload' => FALSE));
 
 		$this->EE->load->model('member_model'); // for screen_name, quicklinks
@@ -151,14 +149,6 @@ class Cp {
 			
 			'EE_view_disable'		=> FALSE,
 			'is_super_admin'		=> ($this->EE->session->userdata['group_id'] == 1) ? TRUE : FALSE,	// for conditional use in view files
-								
-			// Menu
-			'cp_menu_items'			=> $this->EE->menu->generate_menu(),
-	//		'cp_accessories'		=> $this->EE->accessories->generate_accessories(),
-			
-			// Sidebar state (overwritten below if needed)
-			'sidebar_state'			=> '',
-			'maincontent_state'		=> '',
 		);
 		
 		
@@ -210,13 +200,6 @@ class Cp {
 		{
 			$this->set_breadcrumb(BASE.AMP.'C='.$this->EE->router->class, lang($this->EE->router->class));
 		}
-		
-		if ($this->EE->session->userdata('show_sidebar') == 'n')
-		{
-			$vars['sidebar_state']		= ' style="display:none"';
-			$vars['maincontent_state']	= ' style="width:100%; display:block"';
-        }
-		
 		
 		// The base javascript variables that will be available globally through EE.varname
 		// this really could be made easier - ideally it would show up right below the main

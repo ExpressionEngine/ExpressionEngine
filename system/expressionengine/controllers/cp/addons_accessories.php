@@ -37,6 +37,7 @@ class Addons_accessories extends CI_Controller {
 	{
 		parent::__construct();
 		
+		$this->load->library('accessories');
 		$this->human_names = $this->_fetch_human_names();
 		
 		$this->load->library('addons');
@@ -61,7 +62,7 @@ class Addons_accessories extends CI_Controller {
 		$this->load->library('table');
 		$this->load->helper('html');
 
-		$this->cp->set_variable('cp_page_title', lang('accessories'));
+		$this->view->cp_page_title = lang('accessories');
 
 		$this->cp->set_breadcrumb(BASE.AMP.'C=addons', lang('addons'));
 		
@@ -180,9 +181,8 @@ class Addons_accessories extends CI_Controller {
 			}
 		}
 
-		$this->javascript->compile();
-
-		$this->load->view('addons/accessories', array('accessories' => $accessories));
+		$this->view->accessories = $accessories;
+		$this->view->render('addons/accessories');
 	}
 	
 	// --------------------------------------------------------------------
@@ -317,7 +317,7 @@ class Addons_accessories extends CI_Controller {
 			$acc = new $class();
 		}
 
-		$this->cp->set_variable('cp_page_title', lang('edit_accessory_preferences').': '.$acc->name);
+		$this->view->cp_page_title = lang('edit_accessory_preferences').': '.$acc->name;
 
 		// a bit of a breadcrumb override is needed
 		$this->cp->set_variable('cp_breadcrumbs', array(
@@ -415,8 +415,6 @@ class Addons_accessories extends CI_Controller {
 			table_stripe();
 		');
 
-		$this->javascript->compile();
-
 		$vars['member_groups'] = $this->human_names['member_groups'];
 		$controllers = $this->human_names['controllers'];
 		$parent_controllers = $this->parent_controllers;
@@ -438,7 +436,7 @@ class Addons_accessories extends CI_Controller {
 		$vars['acc_controllers'] = explode('|', $installed[$name]['controllers']);
 		$vars['acc_member_groups'] = explode('|', $installed[$name]['member_groups']);
 
-		$this->load->view('addons/accessory_preferences', $vars);
+		$this->view->render('addons/accessory_preferences', $vars);
 	}
 	
 	// --------------------------------------------------------------------
