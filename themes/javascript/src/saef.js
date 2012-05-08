@@ -2,7 +2,7 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
@@ -156,7 +156,7 @@ $(document).ready(function() {
 	$(".js_hide").hide();
 
 	if (EE.publish.markitup !== undefined && EE.publish.markitup.fields !== undefined) {
-		$.each(EE.publish.markitup.fields, function(key, value) { 
+		$.each(EE.publish.markitup.fields, function(key, value) {
 			$("#"+key).markItUp(mySettings);
 		});
 	}
@@ -168,10 +168,10 @@ $(document).ready(function() {
 			$(this).parent().siblings('.smileyContent .spellcheck_content').hide();
 			return false;
 		});
-	 
+		
 		$('a.smiley_link').toggle(function() {
 			which = $(this).attr('id').substr(12);
-			$('#smiley_table_'+which).slideDown('fast', function() { 
+			$('#smiley_table_'+which).slideDown('fast', function() {
 				$(this).css('display', '');
 			});
 			}, function() {
@@ -204,13 +204,11 @@ $(document).ready(function() {
 			$(this).children("img").attr("src", EE.THEME_URL+"images/publish_minus.gif");
 		}
 	);
-	
-	$.ee_filebrowser();
-	
+		
 	var field_for_writemode_publish = "";
 	
-	if (EE.publish.show_write_mode === true) { 
-		$("#write_mode_textarea").markItUp(myWritemodeSettings);		
+	if (EE.publish.show_write_mode === true) {
+		$("#write_mode_textarea").markItUp(myWritemodeSettings);
 	}
 
 	$(".write_mode_trigger").click(function(){
@@ -225,75 +223,5 @@ $(document).ready(function() {
 		$("#write_mode_textarea").val($("#"+field_for_writemode_publish).val());
 		$("#write_mode_textarea").focus();
 		return false;
-	});
-	
-	// Prep for a workaround to allow markitup file insertion in file inputs
-	$(".btn_img a, .file_manipulate").click(function(){
-		window.file_manager_context = ($(this).parent().attr("class").indexOf("markItUpButton") == -1) ? 	$(this).closest("div").find("input").attr("id") : "textarea_a8LogxV4eFdcbC";
-	});
-	
-	function file_field_changed(file, field) {
-		var container = $("input[name="+field+"]").closest(".publish_field");
-
-		if (file.is_image == false) {
-			container.find(".file_set").show().find(".filename").html("<img src=\""+EE.PATH_CP_GBL_IMG+"default.png\" alt=\""+EE.PATH_CP_GBL_IMG+"default.png\" /><br />"+file.name);
-		}
-		else
-		{
-			container.find(".file_set").show().find(".filename").html("<img src=\""+file.thumb+"\" alt=\""+file.name+"\" /><br />"+file.name);
-		}
-
-		$("input[name="+field+"_hidden]").val(file.name);
-		$("select[name="+field+"_directory]").val(file.directory);
-
-		$.ee_filebrowser.reset(); // restores everything to "default" state - also needed above for textareas
-	}
-	
-	// $("#publishForm input[type=file]").each(function() {
-	// 	var container = $(this).closest(".publish_field"),
-	// 		trigger = container.find(".choose_file"),
-	// 		content_type = $(this).data('content-type'),
-	// 		directory = $(this).data('directory'),
-	// 		settings = {
-	// 			"content_type": content_type,
-	// 			"directory": directory
-	// 		};
-	// 
-	// 	$.ee_filebrowser.add_trigger(trigger, $(this).attr("name"), settings, file_field_changed);
-	// 
-	// 	container.find(".remove_file").click(function() {
-	// 		container.find("input[type=hidden]").val("");
-	// 		container.find(".file_set").hide();
-	// 		return false;
-	// 	});
-	// });
-	
-	// Bind the image html buttons
-	$.ee_filebrowser.add_trigger(".btn_img a, .file_manipulate", function(file) {
-		// We also need to allow file insertion into text inputs (vs textareas) but markitup
-		// will not accommodate this, so we need to detect if this request is coming from a 
-		// markitup button (textarea_a8LogxV4eFdcbC), or another field type.
-		if (window.file_manager_context == "textarea_a8LogxV4eFdcbC") {
-			// Handle images and non-images differently
-			if ( ! file.is_image) {
-				$.markItUp({name:"Link", key:"L", openWith:"<a href=\"{filedir_"+file.directory+"}"+file.name+"\">", closeWith:"</a>", placeHolder:file.name });
-			} else {
-				$.markItUp({ replaceWith:"<img src=\"{filedir_"+file.directory+"}"+file.name+"\" alt=\"[![Alternative text]!]\" "+file.dimensions+"/>" } );}
-			} else {
-				$("#"+window.file_manager_context).val("{filedir_"+file.directory+"}"+file.name);
-			}
-		});
-		
-		$("input[type=file]", "#publishForm").each(function() {
-			var container = $(this).closest(".publish_field"),
-				trigger = container.find(".choose_file");
-	
-			$.ee_filebrowser.add_trigger(trigger, $(this).attr("name"), file_field_changed);
-	
-			container.find(".remove_file").click(function() {
-			container.find("input[type=hidden]").val("");
-			container.find(".file_set").hide();
-			return false;
-		});
 	});
 });

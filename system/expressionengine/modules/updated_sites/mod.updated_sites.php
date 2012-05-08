@@ -3,7 +3,7 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
@@ -19,7 +19,7 @@
  * @package		ExpressionEngine
  * @subpackage	Modules
  * @category	Update File
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
 class Updated_sites {
@@ -54,32 +54,24 @@ class Updated_sites {
 	function incoming()
 	{
 		//  Load the XML-RPC Files
-
-		if ( ! class_exists('XML_RPC'))
-		{
-			require APPPATH.'libraries/Xmlrpc.php';
-		}
-		
-		if ( ! class_exists('XML_RPC_Server'))
-		{
-			require APPPATH.'libraries/Xmlrpcs.php';
-		}
+		$this->EE->load->library('xmlrpc');
+		$this->EE->load->library('xmlrpcs');
 
 		//  Specify Functions
 
-		$functions = array( 'channelUpdates.extendedPing' => array(
+		$functions = array( 'weblogUpdates.extendedPing' => array(
 																  'function' => 'Updated_sites.extended',
 																  'signature' => array(array('string', 'string','string', 'string')),
 																  'docstring' => 'Extended Pings for An EE Site'),
-							'channelUpdates.ping' 		 => array(
+							'weblogUpdates.ping' 		 => array(
 																  'function' => 'Updated_sites.regular',
 																  'signature' => array(array('string', 'string')),
-																  'docstring' => 'Channels.com Pings for An EE Site')
+																  'docstring' => 'Weblog.com Pings for An EE Site')
 							);
 
 		//  Instantiate the Server Class
-
-		$server = new XML_RPC_Server($functions);
+		$this->EE->xmlrpcs->initialize(array('functions' => $functions, 'object' => $this));
+		$this->EE->xmlrpcs->serve();
 	}
 
 	// ------------------------------------------------------------------------
@@ -98,13 +90,14 @@ class Updated_sites {
 		
 		$this->id = ( ! $this->EE->input->get('id')) ? '1' : $this->EE->input->get_post('id');
 		
-		$query = $this->EE->db->query("SELECT updated_sites_allowed, updated_sites_prune FROM exp_updated_sites 
-							 WHERE updated_sites_id = '".$this->EE->db->escape_str($this->id)."'");
-			
+		$query = $this->EE->db->get_where('updated_sites', array('updated_sites_id' => $this->id));
+		
 		if ($query->num_rows() > 0)
 		{
-			$this->allowed	= explode('|', trim($query->row('updated_sites_allowed') ));
-			$this->prune	= $query->row('updated_sites_prune') ;
+   			$row = $query->row_array();
+		
+			$this->allowed = explode("\n", trim($row['updated_sites_allowed']));
+			$this->prune	= $row['updated_sites_prune'];
 		}
 	}
 
@@ -143,7 +136,7 @@ class Updated_sites {
 					  'ping_ipaddress'	=> $this->EE->input->ip_address(),
 					  'ping_config_id'	=> $this->id);
 					  
-		$this->EE->db->query($this->EE->db->insert_string('exp_updated_site_pings', $data));
+		$this->EE->db->insert('updated_site_pings', $data); 
 		
 		return $this->success();
 	}
@@ -181,7 +174,7 @@ class Updated_sites {
 					  'ping_ipaddress'	=> $this->EE->input->ip_address(),
 					  'ping_config_id'	=> $this->id);
 					  
-		$this->EE->db->query($this->EE->db->insert_string('exp_updated_site_pings', $data));
+		$this->EE->db->insert('updated_site_pings', $data); 
 		
 		return $this->success();
 	}
@@ -250,16 +243,18 @@ class Updated_sites {
 	  */
 	function throttle_check($url)
 	{
-		/** ---------------------------------------------
-		/**  Throttling - Only one ping every X minutes
-		/** ---------------------------------------------*/
-			
-		$query = $this->EE->db->query("SELECT COUNT(*) AS count 
-							 FROM exp_updated_site_pings
-							 WHERE (ping_site_url = '".$this->EE->db->escape_str($url)."' OR ping_ipaddress = '".$this->EE->input->ip_address()."')
-							 AND ping_date > '".($this->EE->localize->now-($this->throttle*60))."'");
+
+		//  Throttling - Only one ping every X minutes
+		$or = "(ping_site_url = '".$this->EE->db->escape_str($url)."' OR ping_ipaddress = '".$this->EE->input->ip_address()."')";
+
+		$this->EE->db->where($or, NULL, FALSE);
+		$this->EE->db->where('ping_date >', $this->EE->localize->now-($this->throttle*60));
+		$this->EE->db->from('updated_site_pings');
+		
+		$count = $this->EE->db->count_all_results();
+		
 							 
-		if ($query->row('count')  > 0)
+		if ($count > 0)
 		{
 			return FALSE;
 		}  
@@ -280,7 +275,7 @@ class Updated_sites {
 	  */
 	function error($message)
 	{
-		return new XML_RPC_Response('0','401', $message);
+		return $this->EE->xmlrpc->send_error_message('401', $message);
 	}
 
 	// ------------------------------------------------------------------------
@@ -307,23 +302,28 @@ class Updated_sites {
 			{
 				$this->prune = 500;
 			}
+
+			$this->EE->db->select_max('ping_id');
+			$query = $this->EE->db->get('updated_site_pings');
 			
-			$query = $this->EE->db->query("SELECT MAX(ping_id) as ping_id FROM exp_updated_site_pings");
-			$row = $query->row_array();
-			
-			if ( ! empty($row['ping_id']))
+			if ($query->num_rows() > 0)
 			{
-				$this->EE->db->query("DELETE FROM exp_updated_site_pings WHERE ping_id < ".($query->row('ping_id') -$this->prune)."");
+   				$row = $query->row_array();
+
+				$this->EE->db->where('ping_id <', $row['ping_id'] -$this->prune);
+				$this->EE->db->delete('updated_site_pings');
 			}
 		}
 
 		// Send Success Message
-
-		$response = new XML_RPC_Response(new XML_RPC_Values(array('flerror' => new XML_RPC_Values('0',"boolean"),
-											 					  'message' => new XML_RPC_Values($this->EE->lang->line('successful_ping'),"string")),'struct')
-										);
-
-		return $response;
+		$response = array(
+                 array(
+                        'flerror' => array(FALSE, 'boolean'),
+                        'message' => array($this->EE->lang->line('successful_ping'), 'string')
+                     ),
+                 'struct');
+		
+		return $this->EE->xmlrpc->send_response($response);
 	}
 
 	// ------------------------------------------------------------------------

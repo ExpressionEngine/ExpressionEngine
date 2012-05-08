@@ -2,7 +2,7 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
@@ -287,6 +287,7 @@ $.widget('ee.table', {
 			// @todo only remove those that are not in the result set?
 			if ( ! res.rows.length) {
 				if (self.tbody.is('tbody')) {
+					self.tbody.empty();
 					self.element.hide();
 					self.element.after(self.no_results);	
 				} else {

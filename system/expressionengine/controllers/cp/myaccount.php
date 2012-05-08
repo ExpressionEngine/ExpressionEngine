@@ -3,7 +3,7 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
@@ -19,7 +19,7 @@
  * @package		ExpressionEngine
  * @subpackage	Control Panel
  * @category	Control Panel
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
 class MyAccount extends CI_Controller {
@@ -27,6 +27,7 @@ class MyAccount extends CI_Controller {
 	var $id			= '';
 	var $username	= '';
 	var $unique_dates = array();
+	var $extension_paths = array();
 
 	/**
 	 * Constructor
@@ -167,6 +168,56 @@ class MyAccount extends CI_Controller {
 			$vars['can_delete_members'] = ($this->cp->allowed_group('can_delete_members') AND $this->id != $this->session->userdata('member_id')) ? TRUE : FALSE;
 		}
 		
+		// default additional_nav lists are empty
+		$vars['additional_nav'] = array(
+			'personal_settings' => array(),
+			'utilities' => array(),
+			'private_messages' => array(),
+			'customize_cp' => array(),
+			'channel_preferences' => array(),
+			'administrative_options' => array()
+		);
+		
+		// -------------------------------------------
+		// 'myaccount_nav_setup' hook.
+		//  - Add items to the My Account nav
+		//  - return must be an associative array using a pre-defined key
+		//
+		if ($this->extensions->active_hook('myaccount_nav_setup') === TRUE)
+		{
+			$vars['additional_nav'] = array_merge_recursive(
+				$vars['additional_nav'], 
+				$this->extensions->call('myaccount_nav_setup')
+			);
+		}
+		//
+		// -------------------------------------------
+
+		// make sure we have usable URLs in additional_nav
+		$this->load->model('addons_model');
+		foreach ($vars['additional_nav'] as $additional_nav_key => $additional_nav_links)
+		{
+			if (count($additional_nav_links))
+			{
+				foreach ($additional_nav_links as $additional_nav_link_text => $additional_nav_link_link)
+				{
+					if (is_array($additional_nav_link_link))
+					{
+						// create the link
+						if ($this->addons_model->extension_installed($additional_nav_link_link['extension']))
+						{
+							$vars['additional_nav'][$additional_nav_key][$additional_nav_link_text] = BASE.AMP.'C=myaccount'.AMP.'M=custom_screen'.AMP.'extension='.$additional_nav_link_link['extension'].AMP.'method='.$additional_nav_link_link['method'];
+						}
+						// don’t create the link if the extension doesn't exist
+						else
+						{
+							unset($vars['additional_nav'][$additional_nav_key][$additional_nav_link_text]);
+						}
+					}
+				}
+			}
+		}
+
 		return $vars;
 	}
 
@@ -1057,6 +1108,7 @@ class MyAccount extends CI_Controller {
 			$vars['html_buttons'] = $this->admin_model->get_html_buttons(0);
 		}
 
+		$vars['member_id'] = $this->id;
 		$vars['i'] = 1;
 
 		$this->load->view('account/html_buttons', $vars);
@@ -2646,6 +2698,150 @@ class MyAccount extends CI_Controller {
 		$this->output->send_ajax_response($resp); 
 
 	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Custom My Account Screens
+	 */
+	public function custom_screen()
+	{
+		list($vars, $extension, $method, $method_save) = $this->_custom_action();
+
+		// Automatically push to the $method+'_save' method
+		$vars['action'] = 'C=myaccount'.AMP.'M=custom_screen_save'.AMP.'extension='.$extension.AMP.'method='.$method.AMP.'method_save='.$method_save;
+
+		// load the view wrapper
+		$this->load->view('account/custom_screen', $vars);
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Method called when a custom screen added with the myaccount_nav_setup 
+	 * hook is called
+	 */
+	public function custom_screen_save()
+	{
+		list($vars, $extension, $method, $method_save) = $this->_custom_action('method_save');
+
+		// Redirect back
+		$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=custom_screen'.AMP.'extension='.$extension.AMP.'method='.$method.AMP.'method_save='.$method_save);
+	}
+
+	// -------------------------------------------------------------------------
+
+	public function custom_action()
+	{
+		list($vars, $extension, $method, $method_save) = $this->_custom_action();
+
+		if (AJAX_REQUEST)
+		{
+			echo $vars['content'];
+		}
+		else
+		{
+			return $vars['content'];
+		}
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Abstraction of the custom screen page that takes care of figuring out the
+	 * name of the extension, the methods that should be called, what files to
+	 * load, and what method to call
+	 * 
+	 * @param  string $method_choice The method to call, 
+	 *		either 'method' or 'method_save'
+	 * @return Array containing four items: 
+	 *		$vars: Variables to pass to view
+	 *		$extension: Extension name (should not include '_ext' or 'ext.')
+	 *		$method: Extension's method called to display settings
+	 *		$method_save: Extension's method called when the form is submit
+	 */
+	private function _custom_action($method_choice = 'method')
+	{
+		$vars = $this->_account_menu_setup();
+		$vars['form_hidden']['id'] = $this->id;
+
+		// get the module & method
+		$extension 	= strtolower($this->input->get_post('extension'));
+		$method 	= strtolower($this->input->get_post('method'));
+
+		// Check for a method_save get variable, if it doesn't exist, assume 
+		// it's the method name with _save at the end (e.g. method_save)
+		$method_save	= ($this->input->get_post('method_save')) ? 
+			strtolower($this->input->get_post('method_save')) :
+			$method.'_save';
+
+		$class_name = ucfirst($extension).'_ext';
+		$file_name	= 'ext.'.$extension.'.php';
+
+		$this->_load_extension_paths($extension);
+	
+		// Include the Extension
+		include_once($this->extension_paths[$extension].$file_name);
+		
+		$this->load->add_package_path($this->extension_paths[$extension], FALSE);
+
+		// Validate method choice parameter
+		$method_choice = (in_array($method_choice, array('method', 'method_save'))) ?
+			$method_choice :
+			'method';
+
+		$EXTENSION = new $class_name();
+		$this->lang->loadfile($extension, '', FALSE); // Don't show errors
+		if (method_exists($EXTENSION, $$method_choice) === TRUE)
+		{
+			// get the content back from the extension
+			$vars['content'] = $EXTENSION->$$method_choice($this->id);
+		}
+		else
+		{
+			show_error(sprintf(lang('unable_to_execute_method'), $file_name));
+		}
+
+		$this->load->remove_package_path($this->extension_paths[$extension]);
+
+		return array($vars, $extension, $method, $method_save);
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Make sure the extension paths have been cached
+	 * 
+	 * @param  string $extension The name of the extension to load the path of
+	 * @return void
+	 */
+	private function _load_extension_paths($extension)
+	{
+		// Have we encountered this one before?
+		if ( ! isset($this->extension_paths[$extension]))
+		{
+			// First or third party?
+			foreach (array(PATH_MOD, PATH_THIRD) as $tmp_path)
+			{
+				if (file_exists($tmp_path.$extension.'/ext.'.$extension.'.php'))
+				{
+
+					$this->extension_paths[$extension] = $tmp_path.$extension.'/';
+					break;
+				}
+			}
+
+			// Include file
+			if ( ! class_exists($extension.'_ext'))
+			{
+				if ( ! isset($this->extension_paths[$extension]))
+				{
+					show_error(sprintf(lang('unable_to_load_module'), 'ext.'.$extension.'.php'));
+				}
+			}
+		}
+	}
+
 }
 
 /* End of file myaccount.php */

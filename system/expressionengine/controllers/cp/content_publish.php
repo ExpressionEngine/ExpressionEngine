@@ -6,7 +6,7 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
@@ -22,7 +22,7 @@
  * @package		ExpressionEngine
  * @subpackage	Control Panel
  * @category	Control Panel
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
 class Content_publish extends CI_Controller {
@@ -266,11 +266,11 @@ class Content_publish extends CI_Controller {
 		$this->file_field->browser();
 		
 		$this->cp->add_js_script(array(
-			'ui'		=> array('datepicker', 'resizable', 'draggable', 'droppable'),
-			'plugin'	=> array('markitup', 'toolbox.expose', 'overlay', 'tmpl', 'ee_url_title'),
-			'file'		=> array('json2', 'cp/publish', 'cp/publish_tabs', 'cp/global')
+			'ui'	 => array('datepicker', 'resizable', 'draggable', 'droppable'),
+			'plugin' => array('markitup', 'toolbox.expose', 'overlay', 'tmpl', 'ee_url_title'),
+			'file'	=> array('json2', 'cp/publish', 'cp/publish_tabs')
 		));
-		
+
 		if ($this->session->userdata('group_id') == 1)
 		{
 			$this->cp->add_js_script(array('file' => 'cp/publish_admin'));
@@ -309,6 +309,8 @@ class Content_publish extends CI_Controller {
 			'field_list'		=> $field_list,
 			'layout_styles'		=> $layout_styles,
 			'field_output'		=> $field_output,
+			'layout_group'	=> (is_numeric($this->input->get_post('layout_preview'))) ?
+				$this->input->get_post('layout_preview') : $this->session->userdata('group_id'),
 			
 			'spell_enabled'		=> TRUE,
 			'smileys_enabled'	=> $this->_smileys_enabled,
@@ -329,7 +331,7 @@ class Content_publish extends CI_Controller {
 				'filter'			=> $this->input->get_post('filter')
 			),
 			
-			'preview_url' => $preview_url
+			'preview_url'	=> $preview_url
 		);
 
 		$this->cp->set_breadcrumb(BASE.AMP.'C=content_publish', lang('publish'));
@@ -2553,8 +2555,6 @@ class Content_publish extends CI_Controller {
 					$this->javascript->set_global('filebrowser.image_tag', '<img src="[![Link:!:http://]!]" alt="[![Alternative text]!]" />');			
 		}
 		
-		$this->javascript->set_global('p.image_tag', 'foo you!');
-
 		$markItUp = $markItUp_writemode = array(
 			'nameSpace'		=> "html",
 			'onShiftEnter'	=> array('keepDefault' => FALSE, 'replaceWith' => "<br />\n"),

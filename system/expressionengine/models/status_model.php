@@ -3,7 +3,7 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
@@ -19,7 +19,7 @@
  * @package		ExpressionEngine
  * @subpackage	Core
  * @category	Model
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
 class Status_model extends CI_Model {
@@ -139,6 +139,10 @@ class Status_model extends CI_Model {
 	{
 		$this->db->delete('status_groups', array('group_id' => $group_id));
 		$this->db->delete('statuses', array('group_id' => $group_id));
+
+		// Clear out any references in exp_channels
+		$this->db->where('status_group', $group_id);
+		$this->db->update('channels', array('status_group' => NULL));		
 	}
 
 	// --------------------------------------------------------------------

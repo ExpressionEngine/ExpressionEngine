@@ -12,6 +12,7 @@ $lang = array(
 'accessory'						=>		'Accessory',
 'module'						=>		'Module',
 'extension'						=>		'Extension',
+'rte_tool'						=>		'Rich Text Editor Tool',
 
 'addons_accessories'			=> 		'Accessories',
 'addons_modules'				=>		'Modules',

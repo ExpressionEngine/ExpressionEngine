@@ -3,7 +3,7 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
@@ -19,7 +19,7 @@
  * @package		ExpressionEngine
  * @subpackage	Core
  * @category	Core
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
 class EE_Config Extends CI_Config {
@@ -218,8 +218,8 @@ class EE_Config Extends CI_Config {
 				$this->site_prefs('', 1);
 				return;
 			}
-
-			exit("Site Error:  Unable to Load Site Preferences; No Preferences Found");
+			
+			show_error("Site Error:  Unable to Load Site Preferences; No Preferences Found");
 		}
 		
 		// Reset Core Preferences back to their Pre-Database State
@@ -242,35 +242,14 @@ class EE_Config Extends CI_Config {
 
 				if ( ! is_string($data) OR substr($data, 0, 2) != 'a:')
 				{
-					exit("Site Error:  Unable to Load Site Preferences; Invalid Preference Data");
+					show_error("Site Error:  Unable to Load Site Preferences; Invalid Preference Data");
 				}			
 				// Any values in config.php take precedence over those in the database, so it goes second in array_merge()
 				$this->config = array_merge(unserialize($data), $this->config);
 			}
 			elseif ($name == 'site_pages')
 			{
-				$data =  base64_decode($data);
-
-				if ( ! is_string($data) OR substr($data, 0, 2) != 'a:')
-				{
-					$this->config['site_pages'][$row['site_id']] = array('uris' => array(), 'templates' => array());
-					//$this->config['site_pages']['uris'][1] = '/evil/';
-					//$this->config['site_pages']['templates'][1] = 16;
-					continue;
-				}
-
-				$this->config['site_pages'] = unserialize($data);
-				
-				// Double check that the variables are set.
-				if ( ! isset($this->config['site_pages'][$row['site_id']]['uris']))
-				{
-					$this->config['site_pages'][$row['site_id']]['uris'] = ( ! isset($this->config['site_pages']['uris'])) ? array() : $this->config['site_pages']['uris'];
-				}
-			
-				if ( ! isset($this->config['site_pages'][$row['site_id']]['templates']))
-				{
-					$this->config['site_pages'][$row['site_id']]['templates'] = ( ! isset($this->config['site_pages']['templates'])) ? array() : $this->config['site_pages']['templates'];
-				}				
+				$this->config['site_pages'] = $this->site_pages($row['site_id'], $data);
 			}
 			elseif ($name == 'site_bootstrap_checksums')
 			{
@@ -393,7 +372,74 @@ class EE_Config Extends CI_Config {
 			$EE->db->cache_off();
 		}
 	}
-
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Decodes and returns Pages information for sites
+	 *
+	 * @param int $site_id	Site ID of to get Pages data for; if left blank,
+	 *		Pages data from all sites will be returned
+	 * @param string $data	Base64-encoded Pages data; if left blank, this
+	 *		information will be queried from the database
+	 * @return array	Pages information
+	 */
+	public function site_pages($site_id = NULL, $data = NULL)
+	{
+		$EE =& get_instance();
+		
+		$sites = array();
+		
+		// If no site ID is specified, get ALL sites data
+		if (empty($site_id))
+		{
+			$sites = $EE->db->get('sites')->result_array();
+		}
+		// If the site ID is set but no data passed in to decode, get it from the database
+		else if (empty($data))
+		{
+			$sites = $EE->db->get_where('sites', array('site_id' => $site_id))->result_array();
+		}
+		// Otherwise, we have both parameters, create an array for processing
+		else
+		{
+			$sites[] = array(
+				'site_id'		=> $site_id,
+				'site_pages'	=> $data
+			);
+		}
+		
+		// This is where we'll put everything to return
+		$site_pages = array();
+		
+		// Loop through each site and decode Pages information
+		foreach ($sites as $site)
+		{
+			$data = base64_decode($site['site_pages']);
+			
+			if ( ! is_string($data) OR substr($data, 0, 2) != 'a:')
+			{
+				$site_pages[$site['site_id']] = array('uris' => array(), 'templates' => array());
+			}
+			
+			$data = unserialize($data);
+			
+			$site_pages[$site['site_id']] = $data[$site['site_id']];
+			
+			if ( ! isset($site_pages[$site['site_id']]['uris']))
+			{
+				$site_pages[$site['site_id']]['uris'] = ( ! isset($site_pages['uris'])) ? array() : $site_pages['uris'];
+			}
+			
+			if ( ! isset($site_pages[$site['site_id']]['templates']))
+			{
+				$site_pages[$site['site_id']]['templates'] = ( ! isset($site_pages['templates'])) ? array() : $site_pages['templates'];
+			}
+		}
+		
+		return $site_pages;
+	}
+	
 	// --------------------------------------------------------------------
 	
 	/**
@@ -426,160 +472,173 @@ class EE_Config Extends CI_Config {
 	 */	
 	function divination($which)
 	{
-		$system_default = array('is_site_on',
-								'site_index',
-								'site_url',
-								'theme_folder_url',
-								'theme_folder_path',
-								'webmaster_email',
-								'webmaster_name',
-								'channel_nomenclature',
-								'max_caches',
-								'captcha_url',
-								'captcha_path',
-								'captcha_font',
-								'captcha_rand',
-								'captcha_require_members',
-								'enable_db_caching',
-								'enable_sql_caching',
-								'force_query_string',
-								'show_profiler',
-								'template_debugging',
-								'include_seconds',
-								'cookie_domain',
-								'cookie_path',
-								'user_session_type',
-								'admin_session_type',
-								'allow_username_change',
-								'allow_multi_logins',
-								'password_lockout',
-								'password_lockout_interval',
-								'require_ip_for_login',
-								'require_ip_for_posting',
-								'require_secure_passwords',
-								'allow_dictionary_pw',
-								'name_of_dictionary_file',
-								'xss_clean_uploads',
-								'redirect_method',
-								'deft_lang',
-								'xml_lang',
-								'send_headers',
-								'gzip_output',
-								'log_referrers',
-								'max_referrers',
-								'time_format',
-								'server_timezone',
-								'server_offset',
-								'daylight_savings',
-								'default_site_timezone',
-								'default_site_dst',
-								'mail_protocol',
-								'smtp_server',
-								'smtp_username',
-								'smtp_password',
-								'email_debug',
-								'email_charset',
-								'email_batchmode',
-								'email_batch_size',
-								'mail_format',
-								'word_wrap',
-								'email_console_timelock',
-								'log_email_console_msgs',
-								'cp_theme',
-								'email_module_captchas',
-								'log_search_terms',
-								'secure_forms',
-								'deny_duplicate_data',
-								'redirect_submitted_links',
-								'enable_censoring',
-								'censored_words',
-								'censor_replacement',
-								'banned_ips',
-								'banned_emails',
-								'banned_usernames',
-								'banned_screen_names',
-								'ban_action',
-								'ban_message',
-								'ban_destination',
-								'enable_emoticons',
-								'emoticon_url',
-								'recount_batch_total',
-								'new_version_check',
-								'enable_throttling',
-								'banish_masked_ips',
-								'max_page_loads',
-								'time_interval',
-								'lockout_time',
-								'banishment_type',
-								'banishment_url',
-								'banishment_message',
-								'enable_search_log',
-								'max_logged_searches');
+		$system_default = array(
+			'is_site_on',
+			'site_index',
+			'site_url',
+			'theme_folder_url',
+			'theme_folder_path',
+			'webmaster_email',
+			'webmaster_name',
+			'channel_nomenclature',
+			'max_caches',
+			'captcha_url',
+			'captcha_path',
+			'captcha_font',
+			'captcha_rand',
+			'captcha_require_members',
+			'enable_db_caching',
+			'enable_sql_caching',
+			'force_query_string',
+			'show_profiler',
+			'template_debugging',
+			'include_seconds',
+			'cookie_domain',
+			'cookie_path',
+			'user_session_type',
+			'admin_session_type',
+			'allow_username_change',
+			'allow_multi_logins',
+			'password_lockout',
+			'password_lockout_interval',
+			'require_ip_for_login',
+			'require_ip_for_posting',
+			'require_secure_passwords',
+			'allow_dictionary_pw',
+			'name_of_dictionary_file',
+			'xss_clean_uploads',
+			'redirect_method',
+			'deft_lang',
+			'xml_lang',
+			'send_headers',
+			'gzip_output',
+			'log_referrers',
+			'max_referrers',
+			'time_format',
+			'server_timezone',
+			'server_offset',
+			'daylight_savings',
+			'default_site_timezone',
+			'default_site_dst',
+			'mail_protocol',
+			'smtp_server',
+			'smtp_username',
+			'smtp_password',
+			'email_debug',
+			'email_charset',
+			'email_batchmode',
+			'email_batch_size',
+			'mail_format',
+			'word_wrap',
+			'email_console_timelock',
+			'log_email_console_msgs',
+			'cp_theme',
+			'email_module_captchas',
+			'log_search_terms',
+			'secure_forms',
+			'deny_duplicate_data',
+			'redirect_submitted_links',
+			'enable_censoring',
+			'censored_words',
+			'censor_replacement',
+			'banned_ips',
+			'banned_emails',
+			'banned_usernames',
+			'banned_screen_names',
+			'ban_action',
+			'ban_message',
+			'ban_destination',
+			'enable_emoticons',
+			'emoticon_url',
+			'recount_batch_total',
+			'new_version_check',
+			'enable_throttling',
+			'banish_masked_ips',
+			'max_page_loads',
+			'time_interval',
+			'lockout_time',
+			'banishment_type',
+			'banishment_url',
+			'banishment_message',
+			'enable_search_log',
+			'max_logged_searches',
+			'rte_enabled',
+			'rte_default_toolset_id'
+		);
 		
-		$mailinglist_default = array('mailinglist_enabled', 'mailinglist_notify', 'mailinglist_notify_emails');
+		$mailinglist_default = array(
+			'mailinglist_enabled',
+			'mailinglist_notify',
+			'mailinglist_notify_emails'
+		);
 		
-		$member_default = array('un_min_len',
-								'pw_min_len',
-								'allow_member_registration',
-								'allow_member_localization',
-								'req_mbr_activation',
-								'new_member_notification',
-								'mbr_notification_emails',
-								'require_terms_of_service',
-								'use_membership_captcha',
-								'default_member_group',
-								'profile_trigger',
-								'member_theme',
-								'enable_avatars',
-								'allow_avatar_uploads',
-								'avatar_url',
-								'avatar_path',
-								'avatar_max_width',
-								'avatar_max_height',
-								'avatar_max_kb',
-								'enable_photos',
-								'photo_url',
-								'photo_path',
-								'photo_max_width',
-								'photo_max_height',
-								'photo_max_kb',
-								'allow_signatures',
-								'sig_maxlength',
-								'sig_allow_img_hotlink',
-								'sig_allow_img_upload',
-								'sig_img_url',
-								'sig_img_path',
-								'sig_img_max_width',
-								'sig_img_max_height',
-								'sig_img_max_kb',
-								'prv_msg_upload_path',
-								'prv_msg_max_attachments',
-								'prv_msg_attach_maxsize',
-								'prv_msg_attach_total',
-								'prv_msg_html_format',
-								'prv_msg_auto_links',
-								'prv_msg_max_chars',
-								'memberlist_order_by',
-								'memberlist_sort_order',
-								'memberlist_row_limit');
-								
-		$template_default = array('site_404',
-								  'save_tmpl_revisions',
-								  'max_tmpl_revisions',
-								  'save_tmpl_files',
-								  'tmpl_file_basepath',
-								  'strict_urls'
-								);
+		$member_default = array(
+			'un_min_len',
+			'pw_min_len',
+			'allow_member_registration',
+			'allow_member_localization',
+			'req_mbr_activation',
+			'new_member_notification',
+			'mbr_notification_emails',
+			'require_terms_of_service',
+			'use_membership_captcha',
+			'default_member_group',
+			'profile_trigger',
+			'member_theme',
+			'enable_avatars',
+			'allow_avatar_uploads',
+			'avatar_url',
+			'avatar_path',
+			'avatar_max_width',
+			'avatar_max_height',
+			'avatar_max_kb',
+			'enable_photos',
+			'photo_url',
+			'photo_path',
+			'photo_max_width',
+			'photo_max_height',
+			'photo_max_kb',
+			'allow_signatures',
+			'sig_maxlength',
+			'sig_allow_img_hotlink',
+			'sig_allow_img_upload',
+			'sig_img_url',
+			'sig_img_path',
+			'sig_img_max_width',
+			'sig_img_max_height',
+			'sig_img_max_kb',
+			'prv_msg_upload_path',
+			'prv_msg_max_attachments',
+			'prv_msg_attach_maxsize',
+			'prv_msg_attach_total',
+			'prv_msg_html_format',
+			'prv_msg_auto_links',
+			'prv_msg_max_chars',
+			'memberlist_order_by',
+			'memberlist_sort_order',
+			'memberlist_row_limit'
+		);
+			
+		$template_default = array(
+			'site_404',
+			'save_tmpl_revisions',
+			'max_tmpl_revisions',
+			'save_tmpl_files',
+			'tmpl_file_basepath',
+			'strict_urls'
+		);
 								  
-		$channel_default = array('image_resize_protocol',
-								'image_library_path',
-								'thumbnail_prefix',
-								'word_separator',
-								'use_category_name',
-								'reserved_category_word',
-								'auto_convert_high_ascii',
-								'new_posts_clear_caches',
-								'auto_assign_cat_parents');
+		$channel_default = array(
+			'image_resize_protocol',
+			'image_library_path',
+			'thumbnail_prefix',
+			'word_separator',
+			'use_category_name',
+			'reserved_category_word',
+			'auto_convert_high_ascii',
+			'new_posts_clear_caches',
+			'auto_assign_cat_parents'
+		);
 								
 		$name = $which.'_default';
 		
@@ -591,23 +650,44 @@ class EE_Config Extends CI_Config {
 	/**
 	 * Update the Site Preferences
 	 *
-	 * Parses through an array of values and sees if they are valid site preferences.  If so,
-	 * we update the preferences in the database for this site.   Anything left over is shipped
-	 * over to the _update_config() and _update_dbconfig() methods for storage in the config files
+	 * Parses through an array of values and sees if they are valid site 
+	 * preferences.  If so, we update the preferences in the database for this 
+	 * site. Anything left over is shipped over to the _update_config() and 
+	 * _update_dbconfig() methods for storage in the config files
 	 *
 	 * @access	private
 	 * @param	array
 	 * @param	array
 	 * @return	bool
 	 */		
-	function update_site_prefs($new_values = array(), $site_id = FALSE, $find = '', $replace = '')
+	function update_site_prefs($new_values = array(), $site_ids = array(), $find = '', $replace = '')
 	{
-		if ($site_id === FALSE)
-		{
-			$site_id = $this->item('site_id');
-		}	
+		// Establish EE super object as class level just for this method and the
+		// child methods called
+		$this->EE =& get_instance();
 
-		$EE =& get_instance();
+		if (empty($site_ids))
+		{
+			$site_ids = array($this->item('site_id'));
+		}
+		// If we want all sites, get the list
+		elseif ($site_ids === 'all')
+		{
+			$site_ids = array();
+
+			$site_ids_query = $this->EE->db->select('site_id')
+				->get('sites');
+
+			foreach ($site_ids_query->result() as $site)
+			{
+				$site_ids[] = $site->site_id;
+			}
+		}
+		// Support passing of a single site ID without being in an array
+		elseif ( ! is_array($site_ids) AND is_numeric($site_ids))
+		{
+			$site_ids = array($site_ids);
+		}
 
 		// unset() exceptions for calls coming from POST data
 		unset($new_values['return_location']);
@@ -616,8 +696,8 @@ class EE_Config Extends CI_Config {
 		// Safety check for member profile trigger
 		if (isset($new_values['profile_trigger']) && $new_values['profile_trigger'] == '')
 		{
-			$EE->lang->loadfile('admin');
-			show_error($EE->lang->line('empty_profile_trigger'));
+			$this->EE->lang->loadfile('admin');
+			show_error(lang('empty_profile_trigger'));
 		}
 		
 		// We'll format censored words if they happen to cross our path
@@ -628,127 +708,30 @@ class EE_Config Extends CI_Config {
 			$new_values['censored_words'] = trim($new_values['censored_words'], '|');
 		}
 
-		// Category trigger matches template != biscuit	 (biscuits, Robin? Okay! --Derek)
-
-		if (isset($new_values['reserved_category_word']) AND $new_values['reserved_category_word'] != $this->item('reserved_category_word'))
-		{
-			$query = $EE->db->query("SELECT template_id, template_name, group_name
-								FROM exp_templates t
-								LEFT JOIN exp_template_groups g ON t.group_id = g.group_id
-								WHERE (template_name = '".$EE->db->escape_str($new_values['reserved_category_word'])."'
-								OR group_name = '".$EE->db->escape_str($new_values['reserved_category_word'])."')
-								AND t.site_id = '".$EE->db->escape_str($EE->config->item('site_id'))."' LIMIT 1");
-
-			if ($query->num_rows() > 0)
-			{
-				show_error($EE->lang->line('category_trigger_duplication').' ('.htmlentities($new_values['reserved_category_word']).')');
-			}
-		}
-
-		// Do path checks if needed
-		$paths = array('sig_img_path', 'avatar_path', 'photo_path', 'captcha_path', 'prv_msg_upload_path', 'theme_folder_path');
-
-		foreach ($paths as $val)
-		{
-			if (isset($new_values[$val]) AND $new_values[$val] != '')
-			{
-				if (substr($new_values[$val], -1) != '/' && substr($new_values[$val], -1) != '\\')
-				{
-					$new_values[$val] .= '/';
-				}
-
-				$fp = ($val == 'avatar_path') ? $new_values[$val].'uploads/' : $new_values[$val];
-				
-				if ( ! @is_dir($fp))
-				{
-					$this->_config_path_errors[$EE->lang->line('invalid_path')][$val] = $EE->lang->line($val) .': ' .$fp;
-				}
-
-				if (( ! is_really_writable($fp)) && ($val != 'theme_folder_path'))
-				{
-					if ( ! isset($this->_config_path_errors[$EE->lang->line('invalid_path')][$val]))
-					{
-
-						
-						$this->_config_path_errors[$EE->lang->line('not_writable_path')][$val] = $EE->lang->line($val) .': ' .$fp;
-					}
-				}
-			}
-		}
-
 		// To enable CI's helpers and native functions that deal with URLs
 		// to work correctly we make these CI config items identical
 		// to the EE counterparts
 		$ci_config = array();
-
 		if (isset($new_values['site_index']))
 		{
 			$ci_config['index_page'] = $new_values['site_index'];
 		}
-		
-		if ($this->item('multiple_sites_enabled') !== 'y' && isset($new_values['site_name']))
-		{	
-			$EE->db->query($EE->db->update_string('exp_sites', 
-					  array('site_label' => str_replace($find, $replace, $new_values['site_name'])),
-					  "site_id = '".$EE->db->escape_str($site_id)."'"));
-			unset($new_values['site_name']);
-		}
-		
-		$query = $EE->db->query("SELECT * FROM exp_sites WHERE site_id = '".$EE->db->escape_str($site_id)."'");
-			
-		
-		// Because Pages is a special snowflake
-		if ($EE->config->item('site_pages') !== FALSE)
+
+		// Verify paths are valid
+		$this->_check_paths($new_values);
+
+		// Let's get this shindig started
+		foreach ($site_ids as $site_id)
 		{
-			if (isset($new_values['site_url']) OR isset($new_values['site_index']))
-			{
-				$pages	= unserialize(base64_decode($query->row('site_pages')));
-				
-				$url = (isset($new_values['site_url'])) ? $new_values['site_url'].'/' : $this->config['site_url'].'/';
-				$url .= (isset($new_values['site_index'])) ? $new_values['site_index'].'/' : $this->config['site_index'].'/';
-				
-				$pages[$EE->config->item('site_id')]['url'] = preg_replace("#(^|[^:])//+#", "\\1/", $url);
+			$this->_category_trigger_check($site_id, $new_values);
+			$new_values = $this->_rename_non_msm_site($site_id, $new_values, $find, $replace);
 
-				$EE->db->query($EE->db->update_string('exp_sites', 
-							  array('site_pages' => base64_encode(serialize($pages))),
-								  "site_id = '".$EE->db->escape_str($site_id)."'"));
-			}
-		}
+			// Get site information
+			$query = $this->EE->db->get_where('sites', array('site_id' => $site_id));
 
-		foreach(array('system', 'channel', 'template', 'mailinglist', 'member') as $type)
-		{
-			$prefs	 = unserialize(base64_decode($query->row('site_'.$type.'_preferences')));			
-			$changes = 'n';
-			
-			foreach($this->divination($type) as $value)
-			{
-				if (isset($new_values[$value]))
-				{
-					$changes = 'y';
-					
-					$prefs[$value] = str_replace('\\', '/', $new_values[$value]);
-					unset($new_values[$value]);
-				}
-				
-				if ($find != '')
-				{
-					$changes = 'y';
-					
-					$prefs[$value] = str_replace($find, $replace, $prefs[$value]);
-				}
-			}
-			
-			if ($changes == 'y')
-			{
-				$EE->db->query($EE->db->update_string('exp_sites', 
-									  array('site_'.$type.'_preferences' => base64_encode(serialize($prefs))),
-									  "site_id = '".$EE->db->escape_str($site_id)."'"));
-			}
-		}
-
-		/** ----------------------------------------
-		/**	 Certain Preferences might remain in config.php
-		/** ----------------------------------------*/
+			$this->_update_pages($site_id, $new_values, $query);
+			$new_values = $this->_update_preferences($site_id, $new_values, $query, $find, $replace);
+		}		
 
 		// Add the CI pref items to the new values array if needed
 		if (count($ci_config) > 0)
@@ -759,33 +742,219 @@ class EE_Config Extends CI_Config {
 			}
 		}
 
-		// Is there anything to update?
-		if (count($new_values) > 0)
+		// Update config file with remaining values
+		$this->_remaining_config_values($new_values);
+		
+		return $this->_config_path_errors;
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Check that reserved_category_word isn't the same thing as a template_name
+	 * @param  int 		$site_id    ID of the site to upate
+	 * @param  Array 	$site_prefs Site preferences sent to update_site_prefs
+	 */
+	private function _category_trigger_check($site_id, $site_prefs)
+	{
+		// Category trigger matches template != biscuit	 (biscuits, Robin? Okay! --Derek)
+		if (isset($new_values['reserved_category_word']) AND $new_values['reserved_category_word'] != $this->item('reserved_category_word'))
 		{
-			foreach ($new_values as $key => $val)
+			$escaped_word = $this->EE->db->escape_str($new_values['reserved_category_word']);
+
+			$query = $this->EE->db->select('template_id, template_name, group_name')
+				->from('templates t')
+				->join('template_groups g', 't.group_id = g.group_id', 'left')
+				->where('t.site_id', $site_id)
+				->where('(template_name = "'.$escaped_word.'" OR group_name = "'.$escaped_word.'")')
+				->limit(1)
+				->get();
+
+			if ($query->num_rows() > 0)
+			{
+				show_error(lang('category_trigger_duplication').' ('.htmlentities($new_values['reserved_category_word']).')');
+			}
+		}
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Check paths in site preference array
+	 * @param  Array 	$site_prefs Site preferences sent to update_site_prefs
+	 */
+	private function _check_paths($site_prefs)
+	{
+		// Do path checks if needed
+		$paths = array('sig_img_path', 'avatar_path', 'photo_path', 'captcha_path', 'prv_msg_upload_path', 'theme_folder_path');
+
+		foreach ($paths as $val)
+		{
+			if (isset($site_prefs[$val]) AND $site_prefs[$val] != '')
+			{
+				if (substr($site_prefs[$val], -1) != '/' && substr($site_prefs[$val], -1) != '\\')
+				{
+					$site_prefs[$val] .= '/';
+				}
+
+				$fp = ($val == 'avatar_path') ? $site_prefs[$val].'uploads/' : $site_prefs[$val];
+				
+				if ( ! @is_dir($fp))
+				{
+					$this->_config_path_errors[lang('invalid_path')][$val] = lang($val) .': ' .$fp;
+				}
+
+				if (( ! is_really_writable($fp)) && ($val != 'theme_folder_path'))
+				{
+					if ( ! isset($this->_config_path_errors[lang('invalid_path')][$val]))
+					{
+						$this->_config_path_errors[lang('not_writable_path')][$val] = lang($val) .': ' .$fp;
+					}
+				}
+			}
+		}
+	}
+
+	// -------------------------------------------------------------------------
+	
+	/**
+	 * Rename the site if MSM is not on
+	 * @param  int 		$site_id    ID of the site to upate
+	 * @param  Array 	$site_prefs Site preferences sent to update_site_prefs
+	 * @param  String 	$find       String to find in site_name
+	 * @param  String 	$replace    String to replace with in site_name
+	 * @return Array of update site preferences
+	 */
+	private function _rename_non_msm_site($site_id, $site_prefs, $find, $replace)
+	{
+		// Rename the site_name ONLY IF MSM isn't installed
+		if ($this->item('multiple_sites_enabled') !== 'y' && isset($site_prefs['site_name']))
+		{
+			$this->EE->db->update(
+				'sites',
+				array('site_label' => str_replace($find, $replace, $site_prefs['site_name'])),
+				array('site_id' => $site_id)
+			);
+
+			unset($site_prefs['site_name']);
+		}
+
+		return $site_prefs;
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Update Pages for individual site
+	 * @param  int 		$site_id    ID of the site to update
+	 * @param  Array 	$site_prefs Site preferences sent to update_site_prefs
+	 * @param  Object 	$query      Query object of row in exp_sites
+	 * @return [type]
+	 */
+	private function _update_pages($site_id, $site_prefs, $query)
+	{
+		// Because Pages is a special snowflake
+		if ($this->EE->config->item('site_pages') !== FALSE)
+		{
+			if (isset($site_prefs['site_url']) OR isset($site_prefs['site_index']))
+			{
+				$pages	= unserialize(base64_decode($query->row('site_pages')));
+				
+				$url = (isset($site_prefs['site_url'])) ? $site_prefs['site_url'].'/' : $this->config['site_url'].'/';
+				$url .= (isset($site_prefs['site_index'])) ? $site_prefs['site_index'].'/' : $this->config['site_index'].'/';
+				
+				$pages[$site_id]['url'] = preg_replace("#(^|[^:])//+#", "\\1/", $url);
+
+				$this->EE->db->update(
+					'sites',
+					array('site_pages' => base64_encode(serialize($pages))),
+					array('site_id' => $site_id)
+				);
+			}
+		}
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Updates preference columns in exp_sites
+	 * @param  int 		$site_id    ID of the site to update
+	 * @param  Array 	$site_prefs Site preferences sent to update_site_prefs
+	 * @param  Object 	$query      Query object of row in exp_sites
+	 * @param  String 	$find       String to find in site_name
+	 * @param  String 	$replace    String to replace with in site_name
+ 	 * @return Array of update site preferences
+	 */
+	private function _update_preferences($site_id, $site_prefs, $query, $find, $replace)
+	{
+		foreach(array('system', 'channel', 'template', 'mailinglist', 'member') as $type)
+		{
+			$prefs	 = unserialize(base64_decode($query->row('site_'.$type.'_preferences')));			
+			$changes = 'n';
+			
+			foreach($this->divination($type) as $value)
+			{
+				if (isset($site_prefs[$value]))
+				{
+					$changes = 'y';
+					
+					$prefs[$value] = str_replace('\\', '/', $site_prefs[$value]);
+					unset($site_prefs[$value]);
+				}
+				
+				if ($find != '')
+				{
+					$changes = 'y';
+					
+					$prefs[$value] = str_replace($find, $replace, $prefs[$value]);
+				}
+			}
+
+			if ($changes == 'y')
+			{
+				$this->EE->db->update(
+					'sites',
+					array('site_'.$type.'_preferences' => base64_encode(serialize($prefs))),
+					array('site_id' => $site_id)
+				);
+			}
+		}
+
+		return $site_prefs;
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Validates config values when updating site preferences and adds them to 
+	 * the config file
+	 * @param  Array 	$site_prefs Site preferences sent to update_site_prefs
+	 */
+	private function _remaining_config_values($site_prefs)
+	{
+		if (count($site_prefs) > 0)
+		{
+			foreach ($site_prefs as $key => $val)
 			{
 				if (is_string($val))
 				{
-					$new_values[$key] = stripslashes(str_replace('\\', '/', $val));
+					$site_prefs[$key] = stripslashes(str_replace('\\', '/', $val));
 				}
 			}
 			
 			// Update the config file or database file
 
 			// If the "pconnect" item is found we know we're dealing with the DB file
-			if (isset($new_values['pconnect']))
+			if (isset($site_prefs['pconnect']))
 			{
-				$this->_update_dbconfig($new_values);
+				$this->_update_dbconfig($site_prefs);
 			}
 			else
 			{
-				$this->_update_config($new_values);
+				$this->_update_config($site_prefs);
 			}
 		}
-		
-		return $this->_config_path_errors;
 	}
-	
 	
 	// --------------------------------------------------------------------
 

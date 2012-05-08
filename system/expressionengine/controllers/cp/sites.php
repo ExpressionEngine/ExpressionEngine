@@ -3,7 +3,7 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
@@ -19,7 +19,7 @@
  * @package		ExpressionEngine
  * @subpackage	Control Panel
  * @category	Control Panel
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
 class Sites extends CI_Controller {
@@ -160,15 +160,7 @@ class Sites extends CI_Controller {
 		
 		// This is just way too simple.
 		
-		// If they are already setting cookies with a specified domain, keep using it in this backend
-		$current_cookie_domain = $this->config->item('cookie_domain');
-		
 		$this->config->site_prefs('', $site_id);
-		
-		if ($current_cookie_domain != FALSE && $current_cookie_domain != '')
-		{
-			$this->config->cp_cookie_domain = $current_cookie_domain;
-		}
 		
 		$this->functions->set_cookie('cp_last_site_id', $site_id, 0);
 		

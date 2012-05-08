@@ -4,7 +4,7 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team, 
+ * @author		EllisLab Dev Team, 
  * 		- Original Development by Barrett Newton -- http://barrettnewton.com
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
@@ -21,7 +21,7 @@
  * @package		ExpressionEngine
  * @subpackage	Libraries
  * @category	Modules
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
 
@@ -837,19 +837,11 @@ class Safecracker_lib
 			}
 
 			$this->head .= "\n".' // ]]>'."\n".'</script>';
-
-			//this is no longer necessary since adding the combo loader
-			/*
-			if ($this->bool_string($this->EE->TMPL->fetch_param('saef_javascript'), TRUE))
-			{
-				$this->head .= $this->EE->session->cache['safecracker']['channel_standalone_output_js']['str'];
-			}
-			*/
 		}
 		
 		$js_defaults = array(
 			'ui' => array('core', 'widget', 'button', 'dialog'),
-			'plugin' => array('scrollable', 'scrollable.navigator', 'ee_filebrowser', 'ee_fileuploader', 'markitup', 'thickbox'),
+			'plugin' => array('scrollable', 'scrollable.navigator', 'markitup', 'thickbox'),
 		);
 		
 		if (version_compare(APP_VER, '2.1.3', '>'))
@@ -951,9 +943,26 @@ class Safecracker_lib
 		$use_live_url = ($this->bool_string($this->EE->TMPL->fetch_param('use_live_url'), TRUE)) ? '&use_live_url=y' : '';
 		
 		$include_jquery = ($this->bool_string($include_jquery, TRUE)) ? '&include_jquery=y' : '';
-	
+
+		// RTE Selector parameter?
+		$rte_selector = $this->EE->TMPL->fetch_param('rte_selector');
+
+		if ($rte_selector)
+		{
+			// toolset id specified?
+			$rte_toolset_id = (int)$this->EE->TMPL->fetch_param('rte_toolset_id');
+
+			$js_url = $this->EE->functions->fetch_site_index().QUERY_MARKER
+				.'ACT='.$this->EE->functions->fetch_action_id('Rte', 'get_js')
+				.'&toolset_id='.$rte_toolset_id
+				.'&selector='.urlencode($rte_selector)
+				.'&include=jquery_ui';
+				
+			$this->head .= '<script type="text/javascript" src="'.$js_url.'"></script>'."\n";
+		}
+
 		$this->head .= '<script type="text/javascript" charset="utf-8" src="'.$this->EE->functions->fetch_site_index().QUERY_MARKER.'ACT='.$this->EE->functions->fetch_action_id('Safecracker', 'combo_loader').'&'.str_replace('%2C', ',', http_build_query($this->EE->cp->js_files)).'&v='.max($mtime).$use_live_url.$include_jquery.'"></script>'."\n";
-		
+
 		//add fieldtype styles
 		foreach ($this->EE->cp->its_all_in_your_head as $item)
 		{
@@ -1338,13 +1347,7 @@ class Safecracker_lib
 		//added for EE2.1.2
 		$this->EE->api->instantiate(array('channel_categories'));
 		$this->EE->load->library('api/api_sc_channel_entries');
-		
-		//trick the form_validation lib
-		//show 'em who's the boss
-		$this->EE->form_validation->CI =& $this;
-		$this->lang =& $this->EE->lang;
-		$this->api_channel_fields =& $this->EE->api_channel_fields;
-		
+				
 		foreach ($this->form_validation_methods as $method)
 		{
 			$this->EE->form_validation->set_message($method, lang('safecracker_'.$method));
@@ -2860,15 +2863,6 @@ class Safecracker_lib
 		return (is_array($data)) ? $data : array();
 	}
 
-	// --------------------------------------------------------------------
-	
-	/* form validation methods */
-	
-	public function valid_ee_date($data)
-	{
-		return (strtotime($data) !== FALSE);
-	}
-	
 	// --------------------------------------------------------------------
 	
 	/**

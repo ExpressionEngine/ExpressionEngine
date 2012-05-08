@@ -4,7 +4,7 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
@@ -20,7 +20,7 @@
  * @package		ExpressionEngine
  * @subpackage	Core
  * @category	Core
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
 class Remember {
@@ -240,10 +240,9 @@ class Remember {
 		
 		$rem_data = $rem_q->row_array();
 		$rem_q->free_result();
-		
+
 		// validate browser markers
-		if ($this->ip_address != $rem_data['ip_address'] OR
-			$this->user_agent != $rem_data['user_agent'])
+		if ($this->user_agent != $rem_data['user_agent'])
 		{
 			$this->_delete_cookie();
 			return FALSE;

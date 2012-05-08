@@ -70,7 +70,7 @@
 						$version_file[] = explode('|', $d);
 					}
 
-					// 1 => 
+					// 0 => 
 					//   array
 					//     0 => string '2.1.0' (length=5)
 					//     1 => string '20100805' (length=8)
@@ -99,6 +99,12 @@
 			$version_file = $cached;
 		}
 		
+		// one final check for good measure
+		if ( ! _is_valid_version_file($version_file))
+		{
+			return FALSE;
+		}
+
 		if (isset($version_file['error']) &&  $version_file['error'] == TRUE)
 		{
 			return FALSE;
@@ -109,6 +115,46 @@
 	
 	// --------------------------------------------------------------------
 
+	/**
+	 * Validate version file
+	 * Prototype:
+	 *  0 => 
+	 *    array
+	 *      0 => string '2.1.0' (length=5)
+	 *      1 => string '20100805' (length=8)
+	 *      2 => string 'normal' (length=6)
+	 * 
+	 * @access	private
+	 * @return	bool
+	 */
+	function _is_valid_version_file($version_file)
+	{
+		if ( ! is_array($version_file))
+		{
+			return FALSE;
+		}
+		
+		foreach ($version_file as $version)
+		{
+			if ( ! is_array($version) OR count($version) != 3)
+			{
+				return FALSE;
+			}
+			
+			foreach ($version as $val)
+			{
+				if ( ! is_string($val))
+				{
+					return FALSE;
+				}
+			}
+		}
+		
+		return TRUE;
+	}
+	
+	// --------------------------------------------------------------------
+	
 	/**
 	 * Check EE Version Cache.
 	 *
@@ -126,9 +172,9 @@
 
 		if ($contents !== FALSE)
 		{
-			$details = unserialize($contents);
+			$details = @unserialize($contents);
 
-			if (($details['timestamp'] + $cache_expire) > $EE->localize->now)
+			if (isset($details['timestamp']) && ($details['timestamp'] + $cache_expire) > $EE->localize->now)
 			{
 				return $details['data'];
 			}
@@ -152,10 +198,19 @@
 		$EE =& get_instance();
 		$EE->load->helper('file');
 		
-		if ( ! is_dir(APPPATH.'cache/ee_version'))
+		$cache_path = $EE->config->item('cache_path');
+		
+		if (empty($cache_path))
 		{
-			mkdir(APPPATH.'cache/ee_version', DIR_WRITE_MODE);
-			@chmod(APPPATH.'cache/ee_version', DIR_WRITE_MODE);	
+			$cache_path = APPPATH.'cache/';
+		}
+		
+		$cache_path .= 'ee_version/';
+		
+		if ( ! is_dir($cache_path))
+		{
+			mkdir($cache_path, DIR_WRITE_MODE);
+			@chmod($cache_path, DIR_WRITE_MODE);	
 		}
 		
 		$data = array(
@@ -163,9 +218,9 @@
 				'data' 		=> $details
 			);
 
-		if (write_file(APPPATH.'cache/ee_version/current_version', serialize($data)))
+		if (write_file($cache_path.'current_version', serialize($data)))
 		{
-			@chmod(APPPATH.'cache/ee_version/current_version', FILE_WRITE_MODE);			
+			@chmod($cache_path.'current_version', FILE_WRITE_MODE);			
 		}		
 	}
 

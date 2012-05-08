@@ -4,7 +4,7 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
@@ -20,7 +20,7 @@
  * @package		ExpressionEngine
  * @subpackage	Modules
  * @category	Modules
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
 
@@ -1225,6 +1225,7 @@ class Channel {
 						if ($result->num_rows() == 1)
 						{
 							$qstring = str_replace($cut_qstring, 'C'.$result->row('cat_id') , $qstring);
+							$cat_id = $result->row('cat_id');
 						}
 						else
 						{
@@ -1236,49 +1237,28 @@ class Channel {
 							if ($result->num_rows() == 1)
 							{
 								$qstring = 'C'.$result->row('cat_id') ;
+								$cat_id = $result->row('cat_id');
 							}
 						}
 					}
 				}
 				
-				// Check to see if we're dealing with a category request
-				$numeric_category = preg_match(
-					"#(^|\/)C(\d+)#", 
-					$this->query_string, 
-					$match
-				);
-				$query_string_array = explode("/", $this->query_string);
-				$word_category = array_search(
-					$this->reserved_cat_segment, 
-					$query_string_array
-				);
+				// If we got here, category may be numeric
+				if (empty($cat_id))
+				{
+					$this->EE->load->helper('segment');
+					$cat_id = parse_category($this->query_string);
+				}
 				
-				if ($numeric_category OR $word_category !== FALSE)
+				// If we were able to get a numeric category ID
+				if (is_numeric($cat_id) AND $cat_id !== FALSE)
 				{
 					$this->cat_request = TRUE;
 				}
-
-				// Numeric version of the category
-				if ($dynamic AND $numeric_category)
+				// parse_category did not return a numberic ID, blow away $cat_id
+				else
 				{
-					$cat_id = $match[2];
-					$qstring = trim_slashes(
-						str_replace($match[0], '', $qstring)
-					);
-				}
-				elseif ($dynamic AND
-						$word_category !== FALSE AND
-						count($query_string_array) > ($word_category + 1))
-				{
-					$cat_id_query = $this->EE->db->select('cat_id')
-						->get_where(
-							'categories',
-							array(
-								'cat_url_title' => $query_string_array[$word_category + 1]
-							)
-						);
-
-					$cat_id = $cat_id_query->row('cat_id');
+					$cat_id = FALSE;
 				}
 			
 
@@ -3395,7 +3375,13 @@ class Channel {
 		$total_results = count($query_result);
 
 		$site_pages = $this->EE->config->item('site_pages');
-
+		
+		// If custom fields are enabled, notify them of the data we're about to send
+		if ( ! empty($this->cfields))
+		{
+			$this->_send_custom_field_data_to_fieldtypes($query_result);
+		}
+		
 		foreach ($query_result as $count => $row)
 		{
 			// Fetch the tag block containing the variables that need to be parsed
@@ -4677,6 +4663,61 @@ class Channel {
 			if (is_numeric($back))
 			{
 				$this->return_data = substr($this->return_data, 0, - $back);
+			}
+		}
+	}
+	
+	/**
+	 * Sends custom field data to fieldtypes before the entries loop runs.
+	 * This is particularly helpful to fieldtypes that need to query the database
+	 * based on what they're passed, like the File field. This allows them to run
+	 * potentially a single query to gather needed data instead of a query for
+	 * each row.
+	 *
+	 * @param string $entries_data 
+	 * @return void
+	 */
+	private function _send_custom_field_data_to_fieldtypes($entries_data)
+	{
+		// We'll stick custom field data into this array in the form of:
+		//   field_id => array('data1', 'data2', ...);
+		$custom_field_data = array();
+		
+		// Loop through channel entry data
+		foreach ($entries_data as $row)
+		{
+			// Get array of custom fields for the row's current site
+			$custom_fields = $this->cfields[$row['site_id']];
+			
+			foreach ($custom_fields as $field_name => $field_id)
+			{
+				// If the field exists and isn't empty
+				if (isset($row['field_id_'.$field_id]))
+				{
+					if ( ! empty($row['field_id_'.$field_id]))
+					{
+						// Add the data to our custom field data array
+						$custom_field_data[$field_id][] = $row['field_id_'.$field_id];
+					}
+				}
+			}
+		}
+		
+		if ( ! empty($custom_field_data))
+		{
+			$this->EE->load->library('api');
+			$this->EE->api->instantiate('channel_fields');
+			
+			// For each custom field, notify its fieldtype class of the data we collected
+			foreach ($custom_field_data as $field_id => $data)
+			{
+				if ($this->EE->api_channel_fields->setup_handler($field_id))
+				{
+					if ($this->EE->api_channel_fields->check_method_exists('pre_loop'))
+					{
+						$this->EE->api_channel_fields->apply('pre_loop', array($data));
+					}
+				}
 			}
 		}
 	}
@@ -6028,160 +6069,13 @@ class Channel {
 		// Get category ID from URL for {if active} conditional
 		$this->EE->load->helper('segment');
 		$active_cat = parse_category($this->query_string);
-
-		foreach($this->cat_array as $key => $val)
-		{
-			if (0 == $val[0])
-			{
-				if ($open == 0)
-				{
-					$open = 1;
-
-					$this->category_list[] = "<ul>\n";
-				}
-
-				$chunk = $template;
-				
-				$this->EE->load->library('file_field');
-				$cat_image = $this->EE->file_field->parse_field($val[2]);
-				
-				$cat_vars = array('category_name'			=> $val[1],
-								  'category_url_title'		=> $val[4],
-								  'category_description'	=> $val[3],
-								  'category_image'			=> $cat_image['url'],
-								  'category_id'				=> $key,
-								  'parent_id'				=> $val[0],
-								  'active'					=> ($active_cat == $key || $active_cat == $val[4])
-								);
-
-				// add custom fields for conditionals prep
-
-				foreach ($this->catfields as $v)
-				{
-					$cat_vars[$v['field_name']] = ( ! isset($val['field_id_'.$v['field_id']])) ? '' : $val['field_id_'.$v['field_id']];
-				}
-
-				$cat_vars['count'] = ++$this->category_count;
-				$cat_vars['total_results'] = $total_results;
-
-				$chunk = $this->EE->functions->prep_conditionals($chunk, $cat_vars);
-
-				$chunk = str_replace( array(LD.'category_id'.RD,
-											LD.'category_name'.RD,
-											LD.'category_url_title'.RD,
-											LD.'category_image'.RD,
-											LD.'category_description'.RD,
-											LD.'parent_id'.RD),
-									  array($key,
-									  		$val[1],
-											$val[4],
-									  		$cat_image['url'],
-									  		$val[3],
-											$val[0]),
-								 			$chunk);
-
-				foreach($path as $pkey => $pval)
-				{
-					if ($this->use_category_names == TRUE)
-					{
-						$chunk = str_replace($pkey, $this->EE->functions->remove_double_slashes($pval.'/'.$this->reserved_cat_segment.'/'.$val[4]), $chunk);
-					}
-					else
-					{
-						$chunk = str_replace($pkey, $this->EE->functions->remove_double_slashes($pval.'/C'.$key), $chunk);
-					}
-				}
-
-				// parse custom fields
-				foreach($this->catfields as $cval)
-				{
-					if (isset($val['field_id_'.$cval['field_id']]) AND $val['field_id_'.$cval['field_id']] != '')
-					{
-						$field_content = $this->EE->typography->parse_type($val['field_id_'.$cval['field_id']],
-																	array(
-																		  'text_format'		=> $val['field_ft_'.$cval['field_id']],
-																		  'html_format'		=> $val['field_html_formatting'],
-																		  'auto_links'		=> 'n',
-																		  'allow_img_url'	=> 'y'
-																		)
-																);
-						$chunk = str_replace(LD.$cval['field_name'].RD, $field_content, $chunk);
-					}
-					else
-					{
-						// garbage collection
-						$chunk = str_replace(LD.$cval['field_name'].RD, '', $chunk);
-					}
-				}
-
-				/** --------------------------------
-				/**  {count}
-				/** --------------------------------*/
-
-				if (strpos($chunk, LD.'count'.RD) !== FALSE)
-				{
-					$chunk = str_replace(LD.'count'.RD, $this->category_count, $chunk);
-				}
-
-				/** --------------------------------
-				/**  {total_results}
-				/** --------------------------------*/
-
-				if (strpos($chunk, LD.'total_results'.RD) !== FALSE)
-				{
-					$chunk = str_replace(LD.'total_results'.RD, $total_results, $chunk);
-				}
-
-				$this->category_list[] = "\t<li>".$chunk;
-
-				if (is_array($channel_array))
-				{
-					$fillable_entries = 'n';
-
-					foreach($channel_array as $k => $v)
-					{
-						$k = substr($k, strpos($k, '_') + 1);
-
-						if ($key == $k)
-						{
-							if ($fillable_entries == 'n')
-							{
-								$this->category_list[] = "\n\t\t<ul>\n";
-								$fillable_entries = 'y';
-							}
-
-							$this->category_list[] = "\t\t\t$v\n";
-						}
-					}
-				}
-
-				if (isset($fillable_entries) && $fillable_entries == 'y')
-				{
-					$this->category_list[] = "\t\t</ul>\n";
-				}
-
-				$this->category_subtree(
-											array(
-													'parent_id'		=> $key,
-													'path'			=> $path,
-													'template'		=> $template,
-													'channel_array' 	=> $channel_array
-												  )
-									);
-				$t = '';
-
-				if (isset($fillable_entries) && $fillable_entries == 'y')
-				{
-					$t .= "\t";
-				}
-
-				$this->category_list[] = $t."</li>\n";
-
-				unset($this->temp_array[$key]);
-
-				$this->close_ul(0);
-			}
-		}
+		
+		$this->category_subtree(array(
+			'parent_id'		=> '0',
+			'path'			=> $path,
+			'template'		=> $template,
+			'channel_array' 	=> $channel_array
+		));
 	}
 
 	// ------------------------------------------------------------------------

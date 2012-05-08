@@ -3,7 +3,7 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
@@ -19,7 +19,7 @@
  * @package		ExpressionEngine
  * @subpackage	Libraries
  * @category	Validation
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
 class EE_Form_validation extends CI_Form_validation {
@@ -412,6 +412,33 @@ class EE_Form_validation extends CI_Form_validation {
 		return $str;
 	}
 	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Check to see if a date is valid by passing it to strtotime()
+	 * @param  String $date Date value to validate
+	 * @return Boolean      TRUE if it's a date, FALSE otherwise
+	 */
+	public function valid_date($date)
+	{
+		return (strtotime($date) !== FALSE);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Deprecated method from SafeCracker, added for one version
+	 * @deprecated 2.5
+	 * @param  String $date Date value to validate
+	 * @return Boolean      TRUE if it's a date, FALSE otherwise
+	 */
+	public function valid_ee_date($date)
+	{
+		$this->CI->load->library('logger');
+		$this->CI->logger->developer('Deprecated SafeCracker validation rule "valid_ee_date" was called. Please use "valid_date" instead.', TRUE);
+		return $this->valid_date($date);
+	}
+
 	// --------------------------------------------------------------------
 
 	/**

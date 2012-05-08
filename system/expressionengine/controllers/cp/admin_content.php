@@ -3,7 +3,7 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
@@ -19,7 +19,7 @@
  * @package		ExpressionEngine
  * @subpackage	Control Panel
  * @category	Control Panel
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
 class Admin_content extends CI_Controller {
@@ -157,7 +157,7 @@ class Admin_content extends CI_Controller {
 
 		$vars['duplicate_channel_prefs_options'][''] = lang('do_not_duplicate');
 
-		if ($channels->num_rows() > 0)
+		if ($channels != FALSE && $channels->num_rows() > 0)
 		{
 			foreach($channels->result() as $channel)
 			{
@@ -512,7 +512,7 @@ class Admin_content extends CI_Controller {
 
 		if ($edit == FALSE)
 		{
-			$create_templates	= $this->input->get_post('create_templates');
+			$create_templates	= ($this->input->get_post('create_templates') == FALSE OR $this->input->get_post('create_templates') == 'no') ? 'no' : $this->input->get_post('create_templates');
 			$old_group_id		= $this->input->get_post('old_group_id');
 			$group_name			= $this->input->post('group_name');
 
@@ -733,6 +733,9 @@ class Admin_content extends CI_Controller {
 			$insert_id = $this->db->insert_id();
 			$channel_id = $insert_id;
 			
+			// If they made the channel?  Give access to that channel to the member group?
+
+
 			if ($dupe_id !== FALSE AND is_numeric($dupe_id) && $edit_group_prefs == FALSE)
 			{
 				// Duplicate layouts
@@ -1906,8 +1909,7 @@ class Admin_content extends CI_Controller {
 			
 			// Load in necessary js files
 			$this->cp->add_js_script(array(
-				'file'		=> array('cp/global'),
-				'plugin'	=> array('ee_url_title'),
+				'plugin'	=> array('ee_url_title')
 			));
 			
 			$this->javascript->keyup('#cat_name', '$("#cat_name").ee_url_title($("#cat_url_title"));');
@@ -2342,7 +2344,11 @@ class Admin_content extends CI_Controller {
 				{
 					if (($key = array_search($this->input->get_post('parent_id'), $children)) !== FALSE)
 					{
-						$this->db->query($this->db->update_string('exp_categories', array('parent_id' => $query->row('parent_id') ), "cat_id = '".$children[$key]."'"));
+						$this->db->update(
+							'categories',
+							array('parent_id' => $query->row('parent_id')),
+							array('cat_id' => $children[$key])
+						);
 					}
 					else	// Find All Descendants
 					{
@@ -2356,7 +2362,11 @@ class Admin_content extends CI_Controller {
 								{
 									if ($key == $this->input->get_post('parent_id'))
 									{
-										$this->db->query($this->db->update_string('exp_categories', array('parent_id' => $query->row('parent_id') ), "cat_id = '".$key."'"));
+										$this->db->update(
+											'categories',
+											array('parent_id' => $query->row('parent_id')),
+											array('cat_id' => $key)
+										);
 										break 2;
 									}
 
@@ -2369,21 +2379,19 @@ class Admin_content extends CI_Controller {
 			}
 
 			$sql = $this->db->update_string(
-										'exp_categories',
-
-										array(
-												'cat_name'  		=> $this->input->post('cat_name'),
-												'cat_url_title'		=> $this->input->post('cat_url_title'),
-												'cat_description'	=> $this->input->post('cat_description'),
-												'cat_image' 		=> $this->input->post('cat_image'),
-												'parent_id' 		=> $this->input->post('parent_id')
-											 ),
-
-										array(
-												'cat_id'	=> $this->input->post('cat_id'),
-												'group_id'  => $this->input->post('group_id')
-											  )
-									 );
+				'exp_categories',
+				array(
+					'cat_name'  		=> $this->input->post('cat_name'),
+					'cat_url_title'		=> $this->input->post('cat_url_title'),
+					'cat_description'	=> $this->input->post('cat_description'),
+					'cat_image' 		=> $this->input->post('cat_image'),
+					'parent_id' 		=> $this->input->post('parent_id')
+				),
+				array(
+					'cat_id'	=> $this->input->post('cat_id'),
+					'group_id'  => $this->input->post('group_id')
+				)
+			);
 
 			$this->db->query($sql);
 			$update = TRUE;
@@ -3722,7 +3730,7 @@ class Admin_content extends CI_Controller {
 		}
 		
 		$vars = $this->api_channel_fields->field_edit_vars($group_id, $field_id);
-		
+
 		if ($vars === FALSE)
 		{
 			show_error(lang('unauthorized_access'));

@@ -209,17 +209,20 @@ class Api_channel_fields extends Api {
 		{
 			$file = 'ft.'.$field_type.'.php';
 			$path = PATH_FT.$field_type.'/';
-			
 
-			
 			if ( ! file_exists($path.$file))
 			{
 				$path = PATH_THIRD.$field_type.'/';
 				
 				if ( ! file_exists($path.$file))
 				{
-					show_error(sprintf($this->EE->lang->line('unable_to_load_field_type'),
-					 						strtolower($file)));
+					$path = PATH_MOD.$field_type.'/';
+
+					if ( ! file_exists($path.$file))
+					{
+						show_error(sprintf($this->EE->lang->line('unable_to_load_field_type'),
+						 						strtolower($file)));
+					}
 				}
 			}
 			
@@ -1258,7 +1261,7 @@ class Api_channel_fields extends Api {
 		if ($field_data['field_order'] == 0 OR $field_data['field_order'] == '')
 		{
 			$query = $this->EE->db->select('MAX(field_order) as max')
-					      ->where('site_id', $this->config->item('site_id'))
+					      ->where('site_id', $this->EE->config->item('site_id'))
 					      ->where('group_id', (int) $group_id)
 					      ->get('channel_fields');
 				

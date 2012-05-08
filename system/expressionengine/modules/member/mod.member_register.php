@@ -4,7 +4,7 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
@@ -20,11 +20,13 @@
  * @package		ExpressionEngine
  * @subpackage	Modules
  * @category	Modules
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
 
 class Member_register extends Member {
+
+	var $errors = array();
 
 	/**
 	 * Member Registration Form
@@ -392,7 +394,18 @@ class Member_register extends Member {
 			}
 		}
 
-		$errors = array_merge($VAL->errors, $cust_errors);
+ 
+		// -------------------------------------------
+		// 'member_member_register_errors' hook.
+		//  - Additional error checking prior to submission
+		//  - Added EE 2.5.0
+		//
+			$this->EE->extensions->call('member_member_register_errors', $this);
+			if ($this->EE->extensions->end_script === TRUE) return;
+		//
+		// -------------------------------------------
+ 
+		$errors = array_merge($VAL->errors, $cust_errors, $this->errors);
 
 		// Display error is there are any
 		if (count($errors) > 0)

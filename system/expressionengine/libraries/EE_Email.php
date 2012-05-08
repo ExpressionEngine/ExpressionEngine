@@ -3,7 +3,7 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
@@ -19,7 +19,7 @@
  * @package		ExpressionEngine
  * @subpackage	Core
  * @category	Core
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
 class EE_Email extends CI_Email {
@@ -63,6 +63,7 @@ class EE_Email extends CI_Email {
 		/*	Hidden Configuration Variables
 		/*	- email_newline => Default newline.
 		/*  - email_crlf => CRLF used in quoted-printable encoding
+		/*  - email_smtp_port => SMTP Port
         /* -------------------------------------------*/
 		
 		if ($this->EE->config->item('email_newline') !== FALSE)
@@ -74,12 +75,17 @@ class EE_Email extends CI_Email {
 		{
 			$config['crlf'] = $this->EE->config->item('email_crlf');
 		}
-		
+
+		if ($this->EE->config->item('email_smtp_port') !== FALSE)
+		{
+			$config['smtp_port'] = $this->EE->config->item('smtp_port');
+		}
+				
 		$this->useragent = APP_NAME.' '.APP_VER;		
 
 		$this->initialize($config);
 	}
-
+	
 	// --------------------------------------------------------------------
 
 	/**
@@ -103,7 +109,42 @@ class EE_Email extends CI_Email {
 		return $this;
 	}
 	
-
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Override _spool_email so we can provide a hook
+	 */
+	function _spool_email()
+	{
+		// ------------------------------------------------------
+		// 'email_send' hook.
+		//  - Optionally modifies and overrides sending of email.
+		//
+		if ($this->EE->extensions->active_hook('email_send') === TRUE)
+		{
+			$ret = $this->EE->extensions->call(
+				'email_send',
+				array(
+					'headers'		=> &$this->_headers,
+					'header_str'	=> &$this->_header_str,
+					'recipients'	=> &$this->_recipients,
+					'cc_array'		=> &$this->_cc_array,
+					'bcc_array'		=> &$this->_bcc_array,
+					'subject'		=> &$this->_subject,
+					'finalbody'		=> &$this->_finalbody
+				)
+			);
+			
+			if ($this->EE->extensions->end_script === TRUE)
+			{
+				return $ret;
+			}
+		}
+		//
+		// ------------------------------------------------------
+		
+		return parent::_spool_email();
+	}
 }
 // END CLASS
 

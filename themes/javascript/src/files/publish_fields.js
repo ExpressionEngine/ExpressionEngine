@@ -2,7 +2,7 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
@@ -159,7 +159,7 @@ EE.namespace('EE.publish.file_browser');
 		}
 
 		$("input[name="+field+"_hidden]").val(file.file_name);
-		$("select[name="+field+"_directory]").val(file.upload_location_id);
+		$("input[name="+field+"_hidden_dir], select[name="+field+"_directory]").val(file.upload_location_id);
 	}
 	
 	/**
