@@ -1,3 +1,5 @@
+<?php extend_view('_wrapper') ?>
+
 <?=form_open($_form_base.AMP.'method=forum_update_moderator', '', $hidden); ?>
 
 <p class="go_notice"><?=lang('forum_moderator_inst')?></p>

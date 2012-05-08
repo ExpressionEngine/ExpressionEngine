@@ -62,12 +62,20 @@ class View {
 	 */
 	public function render($view, $data = array(), $return = FALSE)
 	{
-		$this->_menu();
-		$this->_accessories();
-		$this->_sidebar();
+		// cp rendering calls don't return data, modules do.
+		// this is kind of hacky for now, having a template
+		// dependency should trigger these. It's all backwards.
+		// @todo fix it
+		if ( ! $return)
+		{
+			$this->_menu();
+			$this->_accessories();
+			$this->_sidebar();
+		}
+
+		$this->EE->load->helper('view_helper');
 
 		$this->EE->javascript->compile();
-		$this->EE->load->helper('view_helper');
 
 		$data = array_merge($this->_data, $data);
 
@@ -83,8 +91,8 @@ class View {
 			$rendered_view = $this->EE->load->view($view, array('EE_rendered_view' => $rendered_view), TRUE);
 		}
 
-		// and now with the templates
-		// $content = $this->EE->load->view('_templates/'.$this->_template, $data, TRUE);
+		// clear for future calls
+		$this->_clear();
 
 		if ($return)
 		{
@@ -104,6 +112,13 @@ class View {
 		}
 
 		call_user_func_array(array($this, 'disable'), $disable);
+	}
+
+	protected function _clear()
+	{
+		$this->_extend = '';
+		$this->_data = array();
+		$this->_disabled = array();
 	}
 
 	// --------------------------------------------------------------------------

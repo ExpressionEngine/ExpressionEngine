@@ -354,7 +354,7 @@ class Addons_modules extends CI_Controller {
 
 		// remove package paths
 		$this->load->remove_package_path($installed[$module]['path']);
-	
+
 		$this->view->render('addons/module_cp_container', $vars);
 	}
 
