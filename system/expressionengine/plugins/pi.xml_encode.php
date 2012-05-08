@@ -15,7 +15,7 @@ $plugin_info = array(
  *
  * @package			ExpressionEngine
  * @category		Plugin
- * @author			ExpressionEngine Dev Team
+ * @author			EllisLab Dev Team
  * @copyright		Copyright (c) 2004 - 2012, EllisLab, Inc.
  * @link			http://expressionengine.com/downloads/details/xml_encode/
  */
