@@ -58,14 +58,14 @@ class Wizard extends CI_Controller {
 	 	'do_install', 'trackback_form', 'do_update');
 	
 	// Absolutely, positively must always be installed
-	var $required_modules = array('channel', 'member', 'stats');
+	var $required_modules = array('channel', 'member', 'stats', 'rte');
 	
 	var $theme_required_modules = array();
 		
 	// Our default installed modules, if there is no "override"
 	var $default_installed_modules = array('comment', 'email', 'emoticon',
 		'jquery', 'member', 'query', 'rss', 'search', 'stats', 'channel',
-		'mailinglist', 'safecracker');
+		'mailinglist', 'safecracker', 'rte');
 	
 	// Native First Party ExpressionEngine Modules (everything else is in third party folder)
 	var $native_modules = array('blacklist', 'channel', 'comment', 'commerce', 
