@@ -191,7 +191,7 @@ $lang = array(
 //----------------------------
 
 'session_expiring' =>
-'Your Session has expired.  Please log back in to avoid data loss',
+'Your session has expired. Please log back in to avoid data loss.',
 
 'loading' =>
 'Loading',
@@ -263,7 +263,7 @@ $lang = array(
 '%x SQL queries used',
 
 'build' =>
-'Build:',
+'Build Date:',
 
 'forgot_password' =>
 'Forgot your password?',
@@ -338,7 +338,7 @@ $lang = array(
 'hide sidebar',
 
 'reveal_sidebar' =>
-'reveal sidebar',
+'show sidebar',
 
 //----------------------------
 // Buttons
@@ -433,6 +433,8 @@ $lang = array(
 
 'status'						=> 'Status',
 'select_all'					=> 'Select All',
+
+'name'							=> 'Name',
 
 //----------------------------
 // Sites and Channels

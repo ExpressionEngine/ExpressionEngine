@@ -3,7 +3,7 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
@@ -19,11 +19,13 @@
  * @package		ExpressionEngine
  * @subpackage	Core
  * @category	Core
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
 class EE_Upload extends CI_Upload 
 {
+	protected $use_temp_dir = FALSE;
+
 	/**
 	 * Constructor
 	 */ 
@@ -137,6 +139,91 @@ class EE_Upload extends CI_Upload
 		unlink ($this->upload_path.$original_file);
 
 		return TRUE;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Validate Upload Path
+	 *
+	 * Verifies that it is a valid upload path with proper permissions.
+	 *
+	 * @access	public
+	 */
+	public function validate_upload_path()
+	{
+		if ($this->use_temp_dir)
+		{
+			$path = $this->_discover_temp_path();
+
+			if ($path)
+			{
+				$this->upload_path = $path;
+			}
+			else
+			{
+				$this->set_error('No usable temp directory found.');
+				return FALSE;
+			}
+		}
+
+		return parent::validate_upload_path();
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Keep the file in the temp directory?
+	 *
+	 * @access	public
+	 */
+	public function initialize($config = array())
+	{
+		if (isset($config['use_temp_dir']) && $config['use_temp_dir'] === TRUE)
+		{
+			$this->use_temp_dir = TRUE;
+		}
+		else
+		{
+			$this->use_temp_dir = FALSE;
+		}
+
+		parent::initialize($config);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Find a valid temp directory?
+	 *
+	 * @access	public
+	 */
+	public function _discover_temp_path()
+	{
+		$attempt = array();
+        $ini_path = ini_get('upload_tmp_dir');
+
+        if ($ini_path)
+        {
+            $attempt[] = realpath($ini_path);
+        }
+
+		$attempt[] = sys_get_temp_dir();
+		$attempt[] = @getenv('TMP');
+		$attempt[] = @getenv('TMPDIR');
+		$attempt[] = @getenv('TEMP');
+
+		$valid_temps = array_filter($attempt);	// remove false's
+
+		foreach ($valid_temps as $dir)
+		{
+			if (is_readable($dir) && is_writable($dir))
+			{
+				return $dir;
+			}
+		}
+
+		return FALSE;
 	}
 }
 // END CLASS

@@ -3,7 +3,7 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
@@ -19,7 +19,7 @@
  * @package		ExpressionEngine
  * @subpackage	Core
  * @category	Core
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
 class EE_Addons {
@@ -54,7 +54,8 @@ class EE_Addons {
 			'extensions'	=> 'ext',
 			'accessories'	=> 'acc',
 			'plugins'		=> 'pi',
-			'fieldtypes'	=> 'ft'
+			'fieldtypes'	=> 'ft',
+			'rte_tools'		=> 'rte'
 		);
 				
 		if ( ! is_array($this->_map))
@@ -69,7 +70,8 @@ class EE_Addons {
 				'extensions'	=> array(),
 				'accessories'	=> array(),
 				'plugins'		=> array(),
-				'fieldtypes'	=> array()
+				'fieldtypes'	=> array(),
+				'rte_tools'		=> array()
 			);
 
 			if (($map = directory_map(PATH_THIRD, 2)) !== FALSE)
@@ -78,8 +80,8 @@ class EE_Addons {
 
 			}
 			
-			// Run through extensions, modules and fieldtypes
-			foreach (array('extensions', 'modules', 'fieldtypes') as $val)
+			// Run through extensions, modules, fieldtypes and rte_tools
+			foreach (array('extensions', 'modules', 'fieldtypes', 'rte_tools') as $val)
 			{
 				if (($map = directory_map(APPPATH.$val.'/', 2)) !== FALSE)
 				{
@@ -98,7 +100,7 @@ class EE_Addons {
 		// And now first party addons - will override any third party packages of the same name.
 		// We can be a little more efficient here and only check the directory they asked for
 		
-		static $_fp_read = array('extensions', 'modules', 'fieldtypes');
+		static $_fp_read = array('extensions', 'modules', 'fieldtypes', 'rte_tools');
 		
 		// is_package calls this function with a blank key to skip
 		// first party - we'll do that right here instead of checking
@@ -130,7 +132,7 @@ class EE_Addons {
 					{
 						$name	= substr($file, strlen($abbr.'.'), - $ext_len);
 						$class	= ($abbr == 'pi') ? ucfirst($name) : ucfirst($name).'_'.$abbr;
-						$path = ($abbr == 'ext' OR $abbr == 'acc' OR $abbr == 'ft') ? constant('PATH_'.strtoupper($abbr)) : $root_path.$name.'/';
+						$path = ($abbr == 'ext' OR $abbr == 'acc' OR $abbr == 'ft' OR $abbr == 'rte') ? constant('PATH_'.strtoupper($abbr)) : $root_path.$name.'/';
 						
 						$this->_map[$type][$name] = array(
 							'path'	=> $path,
@@ -169,7 +171,8 @@ class EE_Addons {
 			'extensions'	=> 'ext',
 			'accessories'	=> 'acc',
 			'plugins'		=> 'pi',
-			'fieldtypes'	=> 'ft'
+			'fieldtypes'	=> 'ft',
+			'rte_tools'		=> 'rte'
 		);
 		
 		// First party is plural, third party is singular
@@ -180,7 +183,8 @@ class EE_Addons {
 			'extensions'	=> 'extension',
 			'plugins'		=> 'plugin',
 			'accessories'	=> 'accessory',
-			'fieldtypes'	=> 'fieldtype'
+			'fieldtypes'	=> 'fieldtype',
+			'rte_tools'		=> 'rte_tool'
 		); 
 
    		$type = ($type == '') ? '' : $type.'/';
@@ -318,6 +322,25 @@ class EE_Addons {
 				{
 					$name = $row['name'];
 					
+					if (isset($files[$name]))
+					{
+						$_installed[$type][$name] = array_merge($files[$name], $row);
+					}
+				}
+			}
+		}
+		elseif ($type == 'rte_tools')
+		{
+			$query = $this->EE->db->get_where('rte_tools');
+			
+			if ($query->num_rows() > 0)
+			{
+				$files = $this->get_files('rte_tools');
+				
+				foreach($query->result_array() as $row)
+				{
+					$name = strtolower(substr($row['class'], 0, -4));
+
 					if (isset($files[$name]))
 					{
 						$_installed[$type][$name] = array_merge($files[$name], $row);

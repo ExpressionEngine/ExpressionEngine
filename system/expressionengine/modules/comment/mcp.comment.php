@@ -3,7 +3,7 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
@@ -19,7 +19,7 @@
  * @package		ExpressionEngine
  * @subpackage	Modules
  * @category	Modules
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
 class Comment_mcp {
@@ -385,9 +385,6 @@ class Comment_mcp {
 			);
 		}
 
-		// flip the array
-		$comments = array_reverse($comments);
-
 		return $comments;
 	}
 
@@ -492,7 +489,6 @@ class Comment_mcp {
 			'comments',
 			array('site_id' => (int) $this->EE->config->item('site_id'))
 		);
-
 
 //		->get('comments', $this->_limit, $this->_offset);
 

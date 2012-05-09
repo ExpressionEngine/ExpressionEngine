@@ -3,7 +3,7 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
@@ -19,7 +19,7 @@
  * @package		ExpressionEngine
  * @subpackage	Fieldtypes
  * @category	Fieldtypes
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
 class File_ft extends EE_Fieldtype {
@@ -51,7 +51,7 @@ class File_ft extends EE_Fieldtype {
 	 */
 	function save($data)
 	{
-		$directory = $this->EE->input->post('field_id_'.$this->field_id.'_directory');
+		$directory = $this->EE->input->post($this->field_name.'_hidden_dir');
 		return $this->EE->file_field->format_data($data, $directory);
 	}
 	
@@ -125,6 +125,11 @@ class File_ft extends EE_Fieldtype {
 	 */
 	function replace_tag($file_info, $params = array(), $tagdata = FALSE)
 	{
+		if (isset($params['raw_output']) && $params['raw_output'] == 'yes')
+		{
+			return $file_info['raw_output'];
+		}
+		
 		// Make sure we have file_info to work with
 		if ($tagdata !== FALSE AND $file_info === FALSE)
 		{
@@ -267,13 +272,15 @@ class File_ft extends EE_Fieldtype {
 	 */
 	function display_settings($data)
 	{
+		$prefix = 'file';
+
 		$this->EE->load->model('file_upload_preferences_model');
 		
 		$field_content_options = array('all' => lang('all'), 'image' => lang('type_image'));
 
 		$this->EE->table->add_row(
-			lang('field_content_file', 'field_content_file'),
-			form_dropdown('file_field_content_type', $field_content_options, $data['field_content_type'], 'id="file_field_content_type"')
+			lang('field_content_file', $prefix.'field_content_type'),
+			form_dropdown('file_field_content_type', $field_content_options, $data['field_content_type'], 'id="'.$prefix.'field_content_type"')
 		);
 		
 		$directory_options['all'] = lang('all');
@@ -288,8 +295,8 @@ class File_ft extends EE_Fieldtype {
 		$allowed_directories = ( ! isset($data['allowed_directories'])) ? 'all' : $data['allowed_directories'];
 
 		$this->EE->table->add_row(
-			lang('allowed_dirs_file', 'allowed_dirs_file'),
-			form_dropdown('file_allowed_directories', $directory_options, $allowed_directories, 'id="file_allowed_directories"')
+			lang('allowed_dirs_file', $prefix.'field_allowed_dirs'),
+			form_dropdown('file_allowed_directories', $directory_options, $allowed_directories, 'id="'.$prefix.'field_allowed_dirs"')
 		);		
 		
 	}

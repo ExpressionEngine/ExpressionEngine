@@ -3,7 +3,7 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
@@ -19,7 +19,7 @@
  * @package		ExpressionEngine
  * @subpackage	Modules
  * @category	Modules
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
 class Comment {
@@ -2653,8 +2653,10 @@ class Comment {
 
 			// We don't want to send an admin notification if the person
 			// leaving the comment is an admin in the notification list
+			// For added security, we only trust the post email if the
+			// commenter is logged in.
 
-			if ($_POST['email'] != '')
+			if ($this->EE->session->userdata('member_id') != 0 && $_POST['email'] != '')
 			{
 				if (strpos($notify_address, $_POST['email']) !== FALSE)
 				{

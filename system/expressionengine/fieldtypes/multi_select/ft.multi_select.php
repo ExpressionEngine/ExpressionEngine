@@ -3,7 +3,7 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
@@ -19,7 +19,7 @@
  * @package		ExpressionEngine
  * @subpackage	Fieldtypes
  * @category	Fieldtypes
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
 class Multi_select_ft extends EE_Fieldtype {
@@ -90,6 +90,11 @@ class Multi_select_ft extends EE_Fieldtype {
 			$entry = implode(', ', $data);
 		}
 
+		if (isset($params['raw_output']) && $params['raw_output'] == 'yes')
+		{
+			return $this->EE->functions->encode_ee_tags($entry);
+		}
+
 		return $this->EE->typography->parse_type(
 				$this->EE->functions->encode_ee_tags($entry),
 				array(
@@ -134,6 +139,11 @@ class Multi_select_ft extends EE_Fieldtype {
 		if (isset($params['backspace']))
 		{
 			$chunk = substr($chunk, 0, - $params['backspace']);
+		}
+		
+		if (isset($params['raw_output']) && $params['raw_output'] == 'yes')
+		{
+			return $this->EE->functions->encode_ee_tags($chunk);
 		}
 		
 		// Typography!

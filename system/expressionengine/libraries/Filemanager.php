@@ -4,7 +4,7 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
@@ -20,7 +20,7 @@
  * @package		ExpressionEngine
  * @subpackage	Core
  * @category	Filemanager
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
 
@@ -757,6 +757,15 @@ class Filemanager {
 	 */
 	function setup()
 	{
+		// Make sure there are directories
+		$dirs = $this->directories(FALSE, TRUE);
+		if (empty($dirs))
+		{
+			return $this->EE->output->send_ajax_response(array(
+				'error' => lang('no_upload_dirs')
+			));
+		}
+
 		if (REQ != 'CP')
 		{
 			$this->EE->load->helper('form');
@@ -810,7 +819,7 @@ class Filemanager {
 	public function datatables($first_dir = NULL)
 	{
 		$this->EE->load->model('file_model');
-		
+
 		// Argh
 		$this->EE->_mcp_reference = $this;
 		

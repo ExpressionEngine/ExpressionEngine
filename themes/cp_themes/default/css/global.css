@@ -329,6 +329,11 @@ ul.bulleted {
 	border:				0;
 }
 
+a:link.submit,
+a:visited.submit {
+	display: inline-block;
+}
+
 .cancel {
 	font-weight: 		normal;
 	padding: 			0 10px;
