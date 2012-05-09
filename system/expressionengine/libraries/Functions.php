@@ -73,10 +73,17 @@ class EE_Functions {
 			$url .= '?';
 		}
 		
-		if (is_object($this->EE->session) && $this->EE->session->userdata('session_id') != '' && REQ != 'CP' && $sess_id == TRUE && 
-			$this->EE->config->item('user_session_type') != 'c' && $this->template_type == 'webpage')
-		{ 
-			$url .= "/S=".$this->EE->session->userdata('session_id')."/";
+		if ($this->EE->config->item('user_session_type') != 'c' && is_object($this->EE->session) && REQ != 'CP' && $sess_id == TRUE && $this->template_type == 'webpage')
+		{
+			switch ($this->EE->config->item('user_session_type'))
+			{
+				case 's'	:
+					$url .= "/S=".$this->EE->session->userdata('session_id', 0)."/";
+					break;
+				case 'cs'	:
+					$url .= "/S=".$this->EE->session->userdata('fingerprint', 0)."/";
+					break;
+			}
 		}
 		
 		if ($add_slash == TRUE)
@@ -642,8 +649,17 @@ class EE_Functions {
 			// $_POST['RET'] variable is set. Since the login routine relies on the RET
 			// info to know where to redirect back to we need to sandwich in the session ID.
 			if ($this->EE->config->item('user_session_type') != 'c')
-			{				
-				if ($this->EE->session->userdata['session_id'] != '' && ! stristr($ret, $this->EE->session->userdata['session_id']))
+			{
+				if ($this->EE->config->item('user_session_type') == 's')
+				{
+					$id = $this->EE->session->userdata['session_id'];
+				}
+				else
+				{
+					$id = $this->EE->session->userdata['fingerprint'];
+				}
+				
+				if ($id != '' && ! stristr($ret, $id))
 				{
 					$url = $this->EE->config->slash_item('site_url');
 					
@@ -654,7 +670,7 @@ class EE_Functions {
 						$url .= '?';
 					}		
 			
-					$sess_id = "/S=".$this->EE->session->userdata['session_id']."/";
+					$sess_id = "/S=".$id."/";
 	
 					$ret = str_replace($url, $url.$sess_id, $ret);			
 				}			
