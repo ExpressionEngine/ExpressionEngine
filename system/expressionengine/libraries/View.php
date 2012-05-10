@@ -25,7 +25,13 @@
 
 class View {
 
+	private $EE;
+
 	protected $_theme = 'default';
+	protected $_extend = '';
+	protected $_data = array();
+	protected $_disabled = array();
+	protected $_disable_up = array();
 	
 	public function __construct()
 	{
@@ -36,6 +42,9 @@ class View {
 	
 	/**
 	 * Set Theme
+	 *
+	 * @access public
+	 * @return void
 	 */
 	public function set_cp_theme($cp_theme)
 	{
@@ -49,9 +58,182 @@ class View {
 		$this->EE->session->userdata['cp_theme'] = $cp_theme;
 		$this->EE->load->add_theme_cascade(PATH_CP_THEME.$cp_theme.'/');
 	}
-	
+
 	// --------------------------------------------------------------------------
 	
+	/**
+	 * Render output (html)
+	 *
+	 * @access public
+	 * @return void
+	 */
+	public function render($view, $data = array(), $return = FALSE)
+	{
+		// cp rendering calls don't return data, modules do.
+		// this is kind of hacky for now, having a template
+		// dependency should trigger these. It's all backwards.
+		// @todo fix it
+		if ( ! $return)
+		{
+			$this->_menu();
+			$this->_accessories();
+			$this->_sidebar();
+		}
+
+		$this->EE->load->helper('view_helper');
+
+		$this->EE->javascript->compile();
+
+		$data = array_merge($this->_data, $data);
+
+		// load up the inner
+		$rendered_view = $this->EE->load->view($view, $data, TRUE);
+
+		// traverse up the extensions
+		// we stop passing other data - it's cached in the loader
+		while ($this->_extend)
+		{
+			$view = $this->_extend;
+			$this->_extend = '';
+			$this->disable($this->_disable_up);
+			$this->_disable_up = array();
+			$rendered_view = $this->EE->load->view($view, array('EE_rendered_view' => $rendered_view), TRUE);
+		}
+
+		// clear for future calls
+		$this->_clear();
+
+		if ($return)
+		{
+			return $rendered_view;
+		}
+
+		$this->EE->output->set_output($rendered_view);
+	}
+
+	// --------------------------------------------------------------------------
+	
+	/**
+	 * Extend a template or view
+	 *
+	 * @access public
+	 * @return void
+	 */
+	public function extend($which, $disable)
+	{
+		$this->_extend = $which;
+
+		if ( ! is_array($disable))
+		{
+			$disable = array($disable);
+		}
+
+		$this->_disable_up = $disable;
+	}
+
+	// --------------------------------------------------------------------------
+
+	/**
+	 * Load up accessories for our view
+	 *
+	 * @access public
+	 * @return void
+	 */
+	protected function _accessories()
+	{
+		if ($this->disabled('accessories'))
+		{
+			return;
+		}
+
+		$this->EE->load->library('accessories');
+		$this->_data['cp_accessories'] = $this->EE->accessories->generate_accessories();
+	}
+
+	// --------------------------------------------------------------------------
+
+	/**
+	 * Load up the menu for our view
+	 *
+	 * @access public
+	 * @return void
+	 */
+	protected function _menu()
+	{
+		if ($this->disabled('menu'))
+		{
+			return;
+		}
+
+		$this->EE->load->library('menu');
+		$this->_data['cp_menu_items'] = $this->EE->menu->generate_menu();
+	}
+
+	// --------------------------------------------------------------------------
+
+	/**
+	 * Load up the sidebar for our view
+	 *
+	 * @access public
+	 * @return void
+	 */
+	protected function _sidebar()
+	{
+		$this->_data['sidebar_state'] = '';
+		$this->_data['maincontent_state'] = '';
+
+		if ($this->EE->session->userdata('show_sidebar') == 'n')
+		{
+			$this->_data['sidebar_state'] = ' style="display:none"';
+			$this->_data['maincontent_state'] = ' style="width:100%; display:block"';
+        }
+
+        if ($this->disabled('sidebar'))
+		{
+			return;
+		}
+
+		// @todo move over sidebar content from cp
+		// has a member query & session cache dependency
+	}
+
+	// --------------------------------------------------------------------------
+
+	/**
+	 * Disable a view feature
+	 *
+	 * @access public
+	 * @return void
+	 */
+	public function disable($which)
+	{
+		if ( ! is_array($which))
+		{
+			$this->_disabled[] = $which;
+			return;
+		}
+
+		while ($el = array_pop($which))
+		{
+			$this->_disabled[] = $el;
+		}
+	}
+
+	// --------------------------------------------------------------------------
+
+	/**
+	 * Check if a view featuer is disabled
+	 *
+	 * @access public
+	 * @return void
+	 */
+	public function disabled($which)
+	{
+		return in_array($which, $this->_disabled);
+	}
+
+	// --------------------------------------------------------------------------
+
 	/**
 	 * Head Title
 	 *
@@ -104,7 +286,7 @@ class View {
 	 * @param	string		produces "media='screen'" by default
 	 * @return 	string		returns the link string.	
 	 */
-	public function head_link($file, $media='screen')
+	public function head_link($file, $media = 'screen')
 	{
 		$filemtime = NULL;
 		$file_url  = NULL;
@@ -144,6 +326,7 @@ class View {
 	 *
 	 * this function will extract which theme we will be loading the file from.
 	 * 
+	 * @access protected
 	 * @param 	string	system path of the file.
 	 * @return 	string	the URL
 	 */
@@ -158,4 +341,39 @@ class View {
 
 	// --------------------------------------------------------------------------
 	
+	/**
+	 * Clear the class
+	 *
+	 * @access protected
+	 * @return void
+	 */
+	protected function _clear()
+	{
+		$this->_extend = '';
+		$this->_data = array();
+		$this->_disabled = array();
+		$this->_disable_up = array();
+	}
+
+	// --------------------------------------------------------------------------
+	
+	public function __set($key, $value)
+	{
+		$this->_data[$key] = $value;
+	}
+	
+	public function __get($key)
+	{
+		return isset($this->_data[$key]) ? $this->_data[$key] : NULL;
+	}
+
+	public function __isset($key)
+	{
+		return isset($this->_data[$key]);
+	}
+
+	public function __unset($key)
+	{
+		unset($this->_data[$key]);
+	}
 }

@@ -51,12 +51,10 @@ class Addons extends CI_Controller {
 	 */	
 	function index()
 	{
-		$this->cp->set_variable('cp_page_title', lang('addons'));
+		$this->view->cp_page_title = lang('addons');
+		$this->view->controller = 'addons';
 
-		$this->load->vars(array('controller' => 'addons'));
-
-		$this->javascript->compile();
-		$this->load->view('_shared/overview');
+		$this->view->render('_shared/overview');
 	}
 	
 	// --------------------------------------------------------------------
@@ -166,10 +164,8 @@ class Addons extends CI_Controller {
 		$vars['package'] = ucfirst(str_replace('_', ' ', $package));
 		$vars['components'] = $components;
 		$vars['required'] = $required;
-		
-		$this->javascript->compile();
-		
-		$this->load->view('addons/package_settings', $vars);
+				
+		$this->view->render('addons/package_settings', $vars);
 	}
 }
 // END CLASS

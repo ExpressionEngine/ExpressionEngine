@@ -417,7 +417,7 @@ class EE_Core {
 		// Load our view library
 		$this->EE->load->library('view');
 		$this->EE->view->set_cp_theme($cp_theme);
-		
+
 		// Fetch control panel language file
 		$this->EE->lang->loadfile('cp');
 		

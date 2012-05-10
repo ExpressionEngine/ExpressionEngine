@@ -167,7 +167,7 @@ class Addons_plugins extends CI_Controller {
 		$vars['plugins'] = $plugins;
 		$vars['remote'] = $remote;
 
-		$this->load->view('addons/plugin_manager', $vars);
+		$this->view->render('addons/plugin_manager', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -210,7 +210,7 @@ class Addons_plugins extends CI_Controller {
 			BASE.AMP.'C=addons_plugins'=> lang('addons_plugins')
 		));
 
-		$this->load->view('addons/plugin_info', array('plugin' => $plugin));
+		$this->view->render('addons/plugin_info', array('plugin' => $plugin));
 	}
 
 
@@ -246,7 +246,7 @@ class Addons_plugins extends CI_Controller {
 		$vars['message'] = (count($hidden) > 1) ? 'plugin_multiple_confirm' : 'plugin_single_confirm';
 		$vars['hidden'] = $hidden;
 
-		$this->load->view('addons/plugin_delete', $vars);
+		$this->view->render('addons/plugin_delete', $vars);
 	}
 
 	// --------------------------------------------------------------------
