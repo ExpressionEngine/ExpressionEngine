@@ -1193,7 +1193,7 @@ class EE_Schema {
 			 `keywords` varchar(200) NOT NULL,
 			 `fields` varchar(200) NOT NULL,
 			 `member_id` int(10) unsigned NOT NULL,
-			 `ip_address` varchar(16) NOT NULL,
+			 `ip_address` varchar(45) NOT NULL,
 			 `total_results` int(8) unsigned NOT NULL,
 			 `query` text NOT NULL,
 			 PRIMARY KEY `search_id` (`search_id`),
@@ -1316,7 +1316,7 @@ class EE_Schema {
 		$Q[] = "CREATE TABLE `exp_remember_me` (
 				`remember_me_id` varchar(40) NOT NULL DEFAULT '0',
 				`member_id` int(10) DEFAULT '0',
-				`ip_address` varchar(16) DEFAULT '0',
+				`ip_address` varchar(45) DEFAULT '0',
 				`user_agent` varchar(120) DEFAULT '',
 				`admin_sess` tinyint(1) DEFAULT '0',
 				`site_id` int(4) DEFAULT '1',
