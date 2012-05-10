@@ -163,12 +163,18 @@ class EE_Menu {
 			),
 			'tools_logs'		=> array(
 				'view_cp_log'					=> BASE.AMP.'C=tools_logs'.AMP.'M=view_cp_log',
-				'view_search_log'				=> BASE.AMP.'C=tools_logs'.AMP.'M=view_search_log',
 				'view_throttle_log'				=> BASE.AMP.'C=tools_logs'.AMP.'M=view_throttle_log',
 				'view_email_log'				=> BASE.AMP.'C=tools_logs'.AMP.'M=view_email_log'
 			)
 		);
+
+		// Only show Search Log menu item if Search Module is installed
+		if ($this->EE->db->table_exists('search_log'))
+		{
+			$menu['tools']['tools_logs']['view_search_log'] = BASE.AMP.'C=tools_logs'.AMP.'M=view_search_log';
+		}
 		
+		// Show Developer Log for Super Admins only
 		if ($this->EE->session->userdata('group_id') == 1)
 		{
 			$menu['tools']['tools_logs']['view_developer_log'] = BASE.AMP.'C=tools_logs'.AMP.'M=view_developer_log';
