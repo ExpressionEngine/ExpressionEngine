@@ -112,10 +112,8 @@ class Tools_logs extends CI_Controller {
 			BASE.AMP.'C=tools' => lang('tools'),
 			BASE.AMP.'C=tools_logs'=> lang('tools_logs')
 		));
-		
-		$this->javascript->compile();
-		
-		$this->load->view('tools/view_cp_log', $vars);
+				
+		$this->view->render('tools/view_cp_log', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -205,8 +203,7 @@ class Tools_logs extends CI_Controller {
 			BASE.AMP.'C=tools_logs'=> lang('tools_logs')
 		));
 
-		$this->javascript->compile();
-		$this->load->view('tools/view_search_log', $vars);
+		$this->view->render('tools/view_search_log', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -315,8 +312,7 @@ class Tools_logs extends CI_Controller {
 
 		$data['blacklist_installed'] = ($count > 0);
 
-		$this->javascript->compile();
-		$this->load->view('tools/view_throttle_log', $data);
+		$this->view->render('tools/view_throttle_log', $data);
 	}
 
 	// --------------------------------------------------------------------
@@ -453,8 +449,7 @@ class Tools_logs extends CI_Controller {
 			));
 		}
 		
-		$this->javascript->compile();
-		$this->load->view('tools/view_email_log', $data);
+		$this->view->render('tools/view_email_log', $data);
 	}
 
 	// --------------------------------------------------------------------
@@ -574,8 +569,7 @@ class Tools_logs extends CI_Controller {
 			)
 		);
 		
-		$this->javascript->compile();
-		$this->load->view('tools/view_developer_log', $vars);
+		$this->view->render('tools/view_developer_log', $vars);
 	}
 	
 	// --------------------------------------------------------------------
@@ -738,7 +732,7 @@ class Tools_logs extends CI_Controller {
 			$this->functions->redirect(BASE.AMP.'C=tools_logs'.AMP.'M=view_email_log');
 		}
 		
-		$this->load->view('tools/view_email', $query->row_array());
+		$this->view->render('tools/view_email', $query->row_array());
 	}
 	
 	// --------------------------------------------------------------------

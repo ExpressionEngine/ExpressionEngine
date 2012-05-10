@@ -84,10 +84,7 @@ class Tools_utilities extends CI_Controller {
 		}
 
 		$this->cp->set_variable('cp_page_title', lang('import_utilities'));
-
-		$this->javascript->compile();
-
-		$this->load->view('tools/import_utilities');
+		$this->view->render('tools/import_utilities');
 	}
 	
 	// --------------------------------------------------------------------
@@ -112,9 +109,7 @@ class Tools_utilities extends CI_Controller {
 
 		$this->cp->set_variable('cp_page_title', lang('member_import'));
 
-		$this->javascript->compile();
-
-		$this->load->view('tools/member_import');
+		$this->view->render('tools/member_import');
 	}
 	
 	// --------------------------------------------------------------------
@@ -156,8 +151,6 @@ class Tools_utilities extends CI_Controller {
 		$this->load->model('member_model');
 
 		$this->cp->set_variable('cp_page_title', lang('import_from_xml'));
-
-		$this->javascript->compile();
 		
 		$get_groups = $this->member_model->get_member_groups(); 
 		
@@ -171,7 +164,7 @@ class Tools_utilities extends CI_Controller {
 		$vars['dst_enabled'] = $this->config->item('daylight_savings');  
 		$vars['auto_custom_field_enabled'] = TRUE;
 		
-		$this->load->view('tools/import_from_xml', $vars);
+		$this->view->render('tools/import_from_xml', $vars);
 		
 	}
 
@@ -267,8 +260,6 @@ class Tools_utilities extends CI_Controller {
 			$row = $query->row_array();
 			$group_name = $row['group_title'];			
 		}
-
-		$this->javascript->compile();
 					
 		$data = array(
 						'xml_file'   		=> $this->input->post('xml_file'),
@@ -339,7 +330,7 @@ class Tools_utilities extends CI_Controller {
 	
 		$vars['post_url'] = 'C=tools_utilities'.AMP.'M=process_xml';
 
-		$this->load->view('tools/confirm_import_xml', $vars);		
+		$this->view->render('tools/confirm_import_xml', $vars);		
 	}
 	
 	// --------------------------------------------------------------------
@@ -388,8 +379,6 @@ class Tools_utilities extends CI_Controller {
 			$group_name = ' -- ';
 		}
 		
-		$this->javascript->compile();
-
 		$data = array(
 						'xml_file'   		=> $this->input->post('xml_file'),
 						'group_id' 			=> $this->input->post('group_id'),
@@ -426,7 +415,7 @@ class Tools_utilities extends CI_Controller {
 		
 		$vars['added_fields'] = $this->input->post('added_fields');
 
-		$this->load->view('tools/confirm_import_xml', $vars);		
+		$this->view->render('tools/confirm_import_xml', $vars);		
 		
 	
 	}
@@ -461,8 +450,6 @@ class Tools_utilities extends CI_Controller {
 					}
 				);')
 			);	
-
-		$this->javascript->compile();			
 				
 		$vars['form_hidden']['new'] = $new_custom_fields['new'];
 		$vars['xml_fields'] = $new_custom_fields['xml_fields'];
@@ -491,7 +478,7 @@ class Tools_utilities extends CI_Controller {
 		$vars['m_field_fmt'] = '';
 
 				
-		return $this->load->view('tools/custom_field_form', $vars);				
+		return $this->view->render('tools/custom_field_form', $vars);				
 	}
 	
 	// --------------------------------------------------------------------
@@ -1308,8 +1295,7 @@ class Tools_utilities extends CI_Controller {
 					
 		');
 
-		$this->javascript->compile();
-		$this->load->view('tools/convert_from_delimited');
+		$this->view->render('tools/convert_from_delimited');
 	}
 
 	
@@ -1407,7 +1393,7 @@ class Tools_utilities extends CI_Controller {
 		$this->cp->set_breadcrumb(BASE.AMP.'C=tools_utilities'.AMP.'M=member_import', lang('member_import_utility'));
 
 		
-		$this->load->view('tools/convert_xml_pairs', $vars);
+		$this->view->render('tools/convert_xml_pairs', $vars);
 
 	}
 
@@ -1681,7 +1667,7 @@ class Tools_utilities extends CI_Controller {
 		$this->cp->set_variable('cp_page_title', lang('confirm_field_assignment'));
 		$this->cp->set_breadcrumb(BASE.AMP.'C=tools_utilities'.AMP.'M=member_import', lang('member_import_utility'));
 		
-		$this->load->view('tools/confirm_convert_xml', $vars);
+		$this->view->render('tools/confirm_convert_xml', $vars);
 	}	
 	
 	// --------------------------------------------------------------------
@@ -1799,7 +1785,7 @@ class Tools_utilities extends CI_Controller {
 		$vars['output'] = $xml;
 		$vars['heading'] = lang('view_xml');
 
-		$this->load->view('tools/view_xml', $vars);
+		$this->view->render('tools/view_xml', $vars);
 	}
 	
 	// --------------------------------------------------------------------
@@ -1845,7 +1831,7 @@ class Tools_utilities extends CI_Controller {
 
 		$vars['message'] = ($message == '') ? NULL : $message;
 
-		$this->load->view('tools/view_xml', $vars);
+		$this->view->render('tools/view_xml', $vars);
 	}	
 
 	// --------------------------------------------------------------------
@@ -1901,10 +1887,8 @@ class Tools_utilities extends CI_Controller {
 			'message'			=> $message,
 			'language_files'	=> $this->tools_model->get_language_filelist()
 		);
-		
-		$this->javascript->compile();
-		
-		$this->load->view('tools/translation_tool', $data);
+				
+		$this->view->render('tools/translation_tool', $data);
 	}
 
 	// --------------------------------------------------------------------
@@ -1935,8 +1919,6 @@ class Tools_utilities extends CI_Controller {
 			widgets: ["zebra"]
 		}');
 
-		$this->javascript->compile();
-
 		$lang_list = $this->tools_model->get_language_list($language_file);
 
 		$data = array(
@@ -1946,7 +1928,7 @@ class Tools_utilities extends CI_Controller {
 			'language_list'	=> (count($lang_list) === 0) ? FALSE : $lang_list
 		);
 		
-		$this->load->view('tools/translate', $data);
+		$this->view->render('tools/translate', $data);
 	}
 
 	// --------------------------------------------------------------------
@@ -2077,7 +2059,6 @@ class Tools_utilities extends CI_Controller {
 		}
 		
 		$this->cp->set_variable('cp_page_title', lang('php_info'));
-		$this->javascript->compile();
 		// a bit of a breadcrumb override is needed
 		$this->cp->set_variable('cp_breadcrumbs', array(
 			BASE.AMP.'C=tools' => lang('tools'),
@@ -2113,7 +2094,7 @@ class Tools_utilities extends CI_Controller {
 
 		$vars['php_info'] = $output;
 
-		$this->load->view('tools/php_info', $vars);
+		$this->view->render('tools/php_info', $vars);
 	}
 }
 

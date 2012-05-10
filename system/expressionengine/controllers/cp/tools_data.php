@@ -109,9 +109,7 @@ class Tools_data extends CI_Controller {
 			BASE.AMP.'C=tools_data'=> lang('tools_data')
 		));
 
-		$this->javascript->compile();
-
-		$this->load->view('tools/clear_caching', $vars);
+		$this->view->render('tools/clear_caching', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -149,10 +147,7 @@ class Tools_data extends CI_Controller {
 			widgets: ["zebra"]
 		}');
 
-
-		$this->javascript->compile();
-
-		$this->load->view('tools/sql_manager', array('sql_info' => $sql_info));
+		$this->view->render('tools/sql_manager', array('sql_info' => $sql_info));
 	}
 
 	// --------------------------------------------------------------------
@@ -189,7 +184,7 @@ class Tools_data extends CI_Controller {
 			BASE.AMP.'C=tools_data'.AMP.'M=sql_manager' => lang('sql_manager')
 		));
 
-		$this->load->view('tools/sql_query_form');
+		$this->view->render('tools/sql_query_form');
 	}
 
 	// --------------------------------------------------------------------
@@ -233,23 +228,21 @@ class Tools_data extends CI_Controller {
 		));
 
 		$this->javascript->output('
-									$(".toggle_all").toggle(
-										function(){
-											$("input.toggle").each(function() {
-												this.checked = true;
-											});
-										}, function (){
-											var checked_status = this.checked;
-											$("input.toggle").each(function() {
-												this.checked = false;
-											});
-										}
-									);'
-								);
+			$(".toggle_all").toggle(
+				function(){
+					$("input.toggle").each(function() {
+						this.checked = true;
+					});
+				}, function (){
+					var checked_status = this.checked;
+					$("input.toggle").each(function() {
+						this.checked = false;
+					});
+				}
+			);'
+		);
 
-		$this->javascript->compile();
-
-		$this->load->view('tools/sql_view_database', $details);
+		$this->view->render('tools/sql_view_database', $details);
 	}
 
 	// --------------------------------------------------------------------
@@ -317,9 +310,7 @@ class Tools_data extends CI_Controller {
 			BASE.AMP.'C=tools_data'.AMP.'M=sql_manager'=> lang('sql_manager')
 		));
 
-		$this->javascript->compile();
-
-		$this->load->view('tools/sql_run_table_action', $vars);
+		$this->view->render('tools/sql_run_table_action', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -464,7 +455,7 @@ class Tools_data extends CI_Controller {
 					if ( ! $query = $this->db->query($new_sql))
 					{
 						$vars['no_results'] = lang('sql_no_result');
-						$this->load->view('tools/sql_results', $vars);
+						$this->view->render('tools/sql_results', $vars);
 						return;
 					}
 					
@@ -492,7 +483,7 @@ class Tools_data extends CI_Controller {
 				if ( ! $query = $this->db->query($sql))
 				{
 					$vars['no_results'] = lang('sql_no_result');
-					$this->load->view('tools/sql_results', $vars);
+					$this->view->render('tools/sql_results', $vars);
 					return;
 				}
 			}
@@ -507,7 +498,7 @@ class Tools_data extends CI_Controller {
 					$vars['thequery'] = $this->security->xss_clean($sql);
 					$vars['write'] = TRUE;
 
-					$this->load->view('tools/sql_results', $vars);
+					$this->view->render('tools/sql_results', $vars);
 					return;
 				}
 			}
@@ -517,7 +508,7 @@ class Tools_data extends CI_Controller {
 		if ($query->num_rows() == 0)
 		{
 			$vars['no_results'] = lang('sql_no_result');
-			$this->load->view('tools/sql_results', $vars);
+			$this->view->render('tools/sql_results', $vars);
 			return;
 		}
 
@@ -525,9 +516,7 @@ class Tools_data extends CI_Controller {
 		$vars['total_results'] = str_replace('%x', (isset($total_results)) ? $total_results : $query->num_rows(), lang('total_results'));
 		$vars['query'] = $query;
 
-		$this->javascript->compile();
-
-		$this->load->view('tools/sql_results', $vars);
+		$this->view->render('tools/sql_results', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -566,13 +555,11 @@ class Tools_data extends CI_Controller {
 			BASE.AMP.'C=tools_data'=> lang('tools_data')
 		));
 
-		$this->javascript->compile();
-
 		$vars['save_tmpl_files'] = ($this->config->item('save_tmpl_files') == 'y') ? TRUE : FALSE;
 		$vars['replace_options'] = $this->tools_model->get_search_replace_options();
 		$vars['replaced'] = ($replaced !== FALSE) ? lang('rows_replaced').' '.$replaced : FALSE;
 
-		$this->load->view('tools/search_and_replace', $vars);
+		$this->view->render('tools/search_and_replace', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -795,9 +782,7 @@ class Tools_data extends CI_Controller {
 			BASE.AMP.'C=tools_data'=> lang('tools_data')
 		));
 
-		$this->javascript->compile();
-
-		$this->load->view('tools/recount_stats', $vars);
+		$this->view->render('tools/recount_stats', $vars);
 	}
 
 	// --------------------------------------------------------------------

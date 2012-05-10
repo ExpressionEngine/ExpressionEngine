@@ -249,10 +249,8 @@ class Tools_communicate extends CI_Controller {
 				$vars['member_groups'][$row->group_title] = array('name' => 'group_'.$row->group_id, 'value' => $row->group_id, 'checked' => $checked);
 			}
 		}
-		
-		$this->javascript->compile();
 
-		$this->load->view('tools/communicate', $vars);
+		$this->view->render('tools/communicate', $vars);
 	}
 
 	// --------------------------------------------------------------------	
@@ -462,7 +460,7 @@ class Tools_communicate extends CI_Controller {
 
 			$this->communicate_model->save_cache_data($cache_data);
 
-			$this->load->view('tools/email_sent', array(
+			$this->view->render('tools/email_sent', array(
 				'debug' => $this->email->_debug_msg
 			));
 			
@@ -688,7 +686,7 @@ class Tools_communicate extends CI_Controller {
 			//  Update email cache
 			$this->communicate_model->update_email_cache($total_sent, '', $id);
 
-			$this->load->view('tools/email_sent', array(
+			$this->view->render('tools/email_sent', array(
 				'debug' => $this->email->_debug_msg,
 				'total_sent' => $total_sent
 			));
@@ -711,7 +709,6 @@ class Tools_communicate extends CI_Controller {
 		$this->cp->set_variable('cp_page_title', lang('sending_email'));
 		
 		$this->load->view('_shared/refresh_message', $data);
-		return;
 	}
 
 	// --------------------------------------------------------------------
@@ -955,7 +952,7 @@ class Tools_communicate extends CI_Controller {
 
 			$this->cp->set_variable('cp_page_title', lang('email_success'));
 		
-			$this->load->view('tools/email_sent', array('debug' => $this->email->_debug_msg, 'total_sent' => $total));
+			$this->view->render('tools/email_sent', array('debug' => $this->email->_debug_msg, 'total_sent' => $total));
 		}
 	}
 
@@ -1024,9 +1021,7 @@ class Tools_communicate extends CI_Controller {
 			BASE.AMP.'C=tools_communicate'=> lang('communicate')
 		));
 		
-		$this->javascript->compile();
-		
-		$this->load->view('tools/view_cached_email', $vars);
+		$this->view->render('tools/view_cached_email', $vars);
 	}
 
 
@@ -1121,7 +1116,7 @@ class Tools_communicate extends CI_Controller {
 		$this->cp->set_variable('cp_page_title', lang('delete_emails'));
 		$this->cp->set_breadcrumb(BASE.AMP.'C=tools_communicate'.AMP.'M=view_cache', lang('view_email_cache'));
 		
-		$this->load->view('tools/email_delete_confirm', $vars);
+		$this->view->render('tools/email_delete_confirm', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -1218,7 +1213,7 @@ class Tools_communicate extends CI_Controller {
 			BASE.AMP.'C=tools_communicate'=> lang('communicate')
 		));
 
-		$this->load->view('tools/view_email', $vars);
+		$this->view->render('tools/view_email', $vars);
 	}
 
 	// --------------------------------------------------------------------
