@@ -25,7 +25,7 @@ if ( ! defined('EXT'))
 
 class Search_upd {
 
-	var $version = '2.1';
+	var $version = '2.2';
 	
 	function Search_upd()
 	{
@@ -52,7 +52,7 @@ class Search_upd {
 					 search_date int(10) NOT NULL,
 					 keywords varchar(60) NOT NULL,
 					 member_id int(10) unsigned NOT NULL,
-					 ip_address varchar(16) NOT NULL,
+					 ip_address varchar(45) NOT NULL,
 					 total_results int(6) NOT NULL,
 					 per_page tinyint(3) unsigned NOT NULL,
 					 query mediumtext NULL DEFAULT NULL,
@@ -66,7 +66,7 @@ class Search_upd {
 					site_id INT(4) UNSIGNED NOT NULL DEFAULT 1,
 					member_id int(10) unsigned NOT NULL,
 					screen_name varchar(50) NOT NULL,
-					ip_address varchar(16) default '0' NOT NULL,
+					ip_address varchar(45) default '0' NOT NULL,
 					search_date int(10) NOT NULL,
 					search_type varchar(32) NOT NULL,
 					search_terms varchar(200) NOT NULL,
@@ -133,7 +133,34 @@ class Search_upd {
 				'exp_search_log', 'exp_search'
 			));
 		}
-		
+
+		if (version_compare($current, '2.2', '<'))
+		{
+			// Update ip_address column
+			$this->EE->load->dbforge();
+
+			$tables = array('search', 'search_log');
+
+			foreach ($tables as $table)
+			{
+				$column_settings = array(
+					'ip_address' => array(
+						'name' 			=> 'ip_address',
+						'type' 			=> 'varchar',
+						'constraint'	=> '45',
+						'default'		=> '0',
+						'null'			=> FALSE
+					)
+				);
+
+				if ($table == 'search')
+				{
+					unset($column_settings['ip_address']['default']);
+				}
+
+				$this->EE->dbforge->modify_column($table, $column_settings);	
+			}
+		}
 		
 		return TRUE;
 	}
