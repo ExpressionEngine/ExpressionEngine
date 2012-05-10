@@ -63,17 +63,22 @@ class Updater {
 
 		foreach ($tables as $table)
 		{
-			$this->EE->dbforge->modify_column(
-				$table,
-				array(
-					'ip_address' => array(
-						'name' 			=> 'ip_address',
-						'type' 			=> 'varchar',
-						'constraint' 	=> 45,
-						'default'		=> '0'
-					)
+			$column_settings = array(
+				'ip_address' => array(
+					'name' 			=> 'ip_address',
+					'type' 			=> 'varchar',
+					'constraint' 	=> 45,
+					'default'		=> '0',
+					'null'			=> FALSE
 				)
 			);
+			
+			if ($table == 'remember_me')
+			{
+				unset($column_settings['ip_address']['null']);
+			}
+
+			$this->EE->dbforge->modify_column($table, $column_settings);
 		}
 	}
 }	
