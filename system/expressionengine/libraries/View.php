@@ -31,6 +31,7 @@ class View {
 	protected $_extend = '';
 	protected $_data = array();
 	protected $_disabled = array();
+	protected $_disable_up = array();
 	
 	public function __construct()
 	{
@@ -88,6 +89,8 @@ class View {
 		{
 			$view = $this->_extend;
 			$this->_extend = '';
+			$this->disable($this->_disable_up);
+			$this->_disable_up = array();
 			$rendered_view = $this->EE->load->view($view, array('EE_rendered_view' => $rendered_view), TRUE);
 		}
 
@@ -111,7 +114,7 @@ class View {
 			$disable = array($disable);
 		}
 
-		call_user_func_array(array($this, 'disable'), $disable);
+		$this->_disable_up = $disable;
 	}
 
 	protected function _clear()
@@ -171,9 +174,14 @@ class View {
 
 	// --------------------------------------------------------------------------
 
-	public function disable()
+	public function disable($which)
 	{
-		$which = func_get_args();
+		if ( ! is_array($which))
+		{
+			$this->_disabled[] = $which;
+			return;
+		}
+
 		while ($el = array_pop($which))
 		{
 			$this->_disabled[] = $el;

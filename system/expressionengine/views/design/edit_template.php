@@ -1,16 +1,7 @@
-<?php
-if ($EE_view_disable !== TRUE)
-{
-	$this->load->view('_shared/header');
-	$this->load->view('_shared/main_menu');
-	$this->load->view('_shared/sidebar');
-	$this->load->view('_shared/breadcrumbs');
-}
-?>
+<?php extend_template('wrapper', 'right_nav') ?>
 
-<div id="mainContent"<?=$maincontent_state?>>
 	<div id="templateViewLink">
-	<?php $this->load->view('_shared/right_nav')?>
+		<?php $this->load->view('_shared/right_nav')?>
 	</div>
 	<div class="contents">
         <div class="heading">
@@ -48,18 +39,16 @@ if ($EE_view_disable !== TRUE)
 
 		</div>
 
-			<?=form_open('C=design'.AMP.'M=update_template'.AMP.'tgpref='.$group_id, '', array('template_id' => $template_id, 'group_id' => $group_id))?>
+		<?=form_open('C=design'.AMP.'M=update_template'.AMP.'tgpref='.$group_id, '', array('template_id' => $template_id, 'group_id' => $group_id))?>
 
-
-			<?=form_textarea(array(
-									'name'	=> 'template_data',
-									'id'	=> 'template_data',
-									'cols'	=> '100',
-									'rows'	=> $prefs['template_size'],
-									'wrap'	=> 'off',
-									'value' => $template_data
-							));?>
-
+		<?=form_textarea(array(
+			'name'	=> 'template_data',
+			'id'	=> 'template_data',
+			'cols'	=> '100',
+			'rows'	=> $prefs['template_size'],
+			'wrap'	=> 'off',
+			'value' => $template_data
+		));?>
 
 		<?php if(is_array($warnings) && count($warnings)): ?>
 			<?=form_hidden('warnings', 'yes')?>
@@ -228,14 +217,3 @@ if ($EE_view_disable !== TRUE)
 	</div>
     </div> <!-- pageContents -->
 	</div> <!-- contents -->
-</div> <!-- mainContent -->
-
-<?php
-if ($EE_view_disable !== TRUE)
-{
-	$this->load->view('_shared/accessories');
-	$this->load->view('_shared/footer');
-}
-
-/* End of file edit_template.php */
-/* Location: ./themes/cp_themes/default/design/edit_template.php */
