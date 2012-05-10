@@ -42,6 +42,9 @@ class View {
 	
 	/**
 	 * Set Theme
+	 *
+	 * @access public
+	 * @return void
 	 */
 	public function set_cp_theme($cp_theme)
 	{
@@ -60,6 +63,9 @@ class View {
 	
 	/**
 	 * Render output (html)
+	 *
+	 * @access public
+	 * @return void
 	 */
 	public function render($view, $data = array(), $return = FALSE)
 	{
@@ -105,6 +111,14 @@ class View {
 		$this->EE->output->set_output($rendered_view);
 	}
 
+	// --------------------------------------------------------------------------
+	
+	/**
+	 * Extend a template or view
+	 *
+	 * @access public
+	 * @return void
+	 */
 	public function extend($which, $disable)
 	{
 		$this->_extend = $which;
@@ -117,15 +131,14 @@ class View {
 		$this->_disable_up = $disable;
 	}
 
-	protected function _clear()
-	{
-		$this->_extend = '';
-		$this->_data = array();
-		$this->_disabled = array();
-	}
-
 	// --------------------------------------------------------------------------
 
+	/**
+	 * Load up accessories for our view
+	 *
+	 * @access public
+	 * @return void
+	 */
 	protected function _accessories()
 	{
 		if ($this->disabled('accessories'))
@@ -139,6 +152,12 @@ class View {
 
 	// --------------------------------------------------------------------------
 
+	/**
+	 * Load up the menu for our view
+	 *
+	 * @access public
+	 * @return void
+	 */
 	protected function _menu()
 	{
 		if ($this->disabled('menu'))
@@ -152,6 +171,12 @@ class View {
 
 	// --------------------------------------------------------------------------
 
+	/**
+	 * Load up the sidebar for our view
+	 *
+	 * @access public
+	 * @return void
+	 */
 	protected function _sidebar()
 	{
 		$this->_data['sidebar_state'] = '';
@@ -174,6 +199,12 @@ class View {
 
 	// --------------------------------------------------------------------------
 
+	/**
+	 * Disable a view feature
+	 *
+	 * @access public
+	 * @return void
+	 */
 	public function disable($which)
 	{
 		if ( ! is_array($which))
@@ -190,6 +221,12 @@ class View {
 
 	// --------------------------------------------------------------------------
 
+	/**
+	 * Check if a view featuer is disabled
+	 *
+	 * @access public
+	 * @return void
+	 */
 	public function disabled($which)
 	{
 		return in_array($which, $this->_disabled);
@@ -289,6 +326,7 @@ class View {
 	 *
 	 * this function will extract which theme we will be loading the file from.
 	 * 
+	 * @access protected
 	 * @param 	string	system path of the file.
 	 * @return 	string	the URL
 	 */
@@ -299,6 +337,22 @@ class View {
 		$theme_name = ltrim(strrchr($path, '/'), '/');
 
 		return $this->EE->config->item('theme_folder_url') . 'cp_themes/' . $theme_name . '/';		
+	}
+
+	// --------------------------------------------------------------------------
+	
+	/**
+	 * Clear the class
+	 *
+	 * @access protected
+	 * @return void
+	 */
+	protected function _clear()
+	{
+		$this->_extend = '';
+		$this->_data = array();
+		$this->_disabled = array();
+		$this->_disable_up = array();
 	}
 
 	// --------------------------------------------------------------------------
