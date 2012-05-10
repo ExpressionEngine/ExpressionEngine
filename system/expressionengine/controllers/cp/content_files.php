@@ -50,6 +50,7 @@ class Content_files extends CI_Controller {
 		}
 
 		$this->lang->loadfile('filemanager');
+		$this->load->library('api');
 		$this->load->library('filemanager');
 		$this->load->model('file_model');
 		$this->load->model('file_upload_preferences_model');
@@ -269,8 +270,7 @@ class Content_files extends CI_Controller {
 			'upload_dirs_options' 	=> $upload_dirs_options
 		));
 
-		$this->javascript->compile();
-		$this->load->view('content/files/index', $data);
+		$this->view->render('content/files/index', $data);
 	}
 
 	// --------------------------------------------------------------------
@@ -673,7 +673,7 @@ class Content_files extends CI_Controller {
 
 		$this->cp->set_variable('cp_page_title', lang('delete_selected_files'));
 
-		$this->load->view('content/files/confirm_file_delete', $data);
+		$this->view->render('content/files/confirm_file_delete', $data);
 	}
 
 	// ------------------------------------------------------------------------
@@ -834,10 +834,8 @@ class Content_files extends CI_Controller {
 			'ui'		=> array('droppable'),
 			'file'		=> array('cp/publish_tabs')
 		));
-		
-		$this->javascript->compile();
-		
-		$this->load->view('content/files/edit_file', $data);
+				
+		$this->view->render('content/files/edit_file', $data);
 	}
 	
 	// ------------------------------------------------------------------------
@@ -950,9 +948,7 @@ class Content_files extends CI_Controller {
 			});
 		');
 		
-		$this->javascript->compile();
-
-		$this->load->view('content/files/edit_image', $data);
+		$this->view->render('content/files/edit_image', $data);
 	}
 
 	// ------------------------------------------------------------------------
@@ -1158,8 +1154,7 @@ class Content_files extends CI_Controller {
 			lang('file_upload_prefs')
 		);
 		
-		$this->javascript->compile();
-		$this->load->view('content/files/sync', $vars);
+		$this->view->render('content/files/sync', $vars);
 
 
 		// process file array - move to own method?
@@ -1449,11 +1444,9 @@ class Content_files extends CI_Controller {
 
 		$vars['watermarks'] = $this->file_model->get_watermark_preferences();
 
-		$this->javascript->compile();
-
 		$this->cp->set_action_nav(array('create_new_wm_pref' => BASE.AMP.'C=content_files'.AMP.'M=edit_watermark_preferences'));
 
-		$this->load->view('content/files/watermark_preferences', $vars);
+		$this->view->render('content/files/watermark_preferences', $vars);
 
 
 	}
@@ -1640,11 +1633,9 @@ class Content_files extends CI_Controller {
 							  ->set_rules($config);
 		$this->form_validation->set_old_value('wm_id', $id);
 
-		$this->javascript->compile();
-
 		if ( ! $this->form_validation->run())
 		{
-			$this->load->view('content/files/watermark_settings', $vars);
+			$this->view->render('content/files/watermark_settings', $vars);
 		}
 		else
 		{
@@ -1784,8 +1775,7 @@ class Content_files extends CI_Controller {
 			$data['items'][] = $item->wm_name;
 		}
 
-		$this->javascript->compile();
-		$this->load->view('content/files/pref_delete_confirm', $data);
+		$this->view->render('content/files/pref_delete_confirm', $data);
 
 	}
 
@@ -1853,19 +1843,11 @@ class Content_files extends CI_Controller {
 		$vars['message'] = $message;
 		$vars['upload_locations'] = $this->file_upload_preferences_model->get_file_upload_preferences($this->session->userdata('group_id'));
 
-		$this->javascript->compile();
 
 		$this->cp->set_action_nav(array('create_new_upload_pref' => BASE.AMP.'C=content_files'.AMP.'M=edit_upload_preferences'));
 
-		$this->load->view('content/files/file_upload_preferences', $vars);
+		$this->view->render('content/files/file_upload_preferences', $vars);
 	}
-
-
-	function delete_dimension()
-	{
-
-	}
-
 
 	// --------------------------------------------------------------------
 
@@ -2108,8 +2090,7 @@ class Content_files extends CI_Controller {
 
 		if ( ! $this->form_validation->run())
 		{
-			$this->javascript->compile();
-			$this->load->view('content/files/file_upload_create', $data);
+			$this->view->render('content/files/file_upload_create', $data);
 		}
 		else
 		{
@@ -2388,8 +2369,7 @@ class Content_files extends CI_Controller {
 			$data['items'][] = $items['name'];
 		}
 
-		$this->javascript->compile();
-		$this->load->view('content/files/pref_delete_confirm', $data);
+		$this->view->render('content/files/pref_delete_confirm', $data);
 	}
 
 	// --------------------------------------------------------------------
@@ -2476,7 +2456,7 @@ class Content_files extends CI_Controller {
 			)
 		);
 
-		$this->load->view('content/files/batch_upload_index', $data);
+		$this->view->render('content/files/batch_upload_index', $data);
 	}
 
 	// --------------------------------------------------------------------
@@ -2675,7 +2655,7 @@ class Content_files extends CI_Controller {
 
 		);
 
-		$this->load->view('content/files/manual_batch', $data);
+		$this->view->render('content/files/manual_batch', $data);
 	}
 
 	// --------------------------------------------------------------------
