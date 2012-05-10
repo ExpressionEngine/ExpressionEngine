@@ -3,7 +3,7 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
@@ -19,7 +19,7 @@
  * @package		ExpressionEngine
  * @subpackage	Core
  * @category	Core
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
  
@@ -37,16 +37,16 @@ There are three validation types, set in the config file:
   1. User cookies AND session ID (cs)
 		
 	This is the most secure way to run a site. A session cookie is set
-	with a random ID, which is also appended to the url.
+	with a random ID, and a browser fingerprint is added to the URL.
 
 	The cookie expires when you have been inactive longer than two
-	hours (one hour in the control panel). The ID in the url will be
+	hours (one hour in the control panel). The fingerprint in the url will be
 	lost when you close the browser.
 	
 	Using this setting does NOT allow 'stay logged-in' capability, as each 
 	session has a finite lifespan.
 
-  2. Cookies only - no session ID (c)
+  2. Cookies only - (c)
 	
 	With this validation type, a session ID string is not added to the url.
 	Therefore users can remain permanently logged in if they choose the
@@ -70,9 +70,10 @@ There are three validation types, set in the config file:
 
 class EE_Session {
 	
-	public $user_session_len	 = 7200;  // User sessions expire in two hours
-	public $cpan_session_len	 = 3600;  // Admin sessions expire in one hour
-
+	public $user_session_len	= 7200;  // User sessions expire in two hours
+	public $cpan_session_len	= 3600;  // Admin sessions expire in one hour
+	public $valid_session_types	= array('cs', 'c', 's');
+	
 	public $c_session			= 'sessionid';
 	public $c_expire			= 'expiration';
 	public $c_anon				= 'anon';
@@ -110,39 +111,15 @@ class EE_Session {
 	{
 		$this->EE =& get_instance();
 
-		$ban_status = $this->_do_ban_check();
-
 		$this->session_length = $this->_setup_session_length();
 
 		// Set Default Session Values 
 		// Set USER-DATA as GUEST until proven otherwise	
-		$this->userdata = array(
-			'username'			=> $this->EE->input->cookie('my_name'),
-			'screen_name'		=> '',
-			'email'				=> $this->EE->input->cookie('my_email'),
-			'url'				=> $this->EE->input->cookie('my_url'),
-			'location'			=> $this->EE->input->cookie('my_location'),
-			'language'			=> '',
-			'timezone'			=> ($this->EE->config->item('default_site_timezone') && $this->EE->config->item('default_site_timezone') != '') ? $this->EE->config->item('default_site_timezone') : $this->EE->config->item('server_timezone'),
-			'daylight_savings'  => ($this->EE->config->item('default_site_dst') && $this->EE->config->item('default_site_dst') != '') ? $this->EE->config->item('default_site_dst') : $this->EE->config->item('daylight_savings'),
-			'time_format'		=> ($this->EE->config->item('time_format') && $this->EE->config->item('time_format') != '') ? $this->EE->config->item('time_format') : 'us',
-			'group_id'			=> '3',
-			'access_cp'			=>  0,
-			'last_visit'		=>  0,
-			'is_banned'			=>  $ban_status,
-			'ignore_list'		=>  array()
-		);
-
-		// Set SESSION data as GUEST until proven otherwise
-		$this->sdata = array(
-			'session_id' 		=>  0,
-			'member_id'  		=>  0,
-			'admin_sess' 		=>  0,
-			'ip_address' 		=>  $this->EE->input->ip_address(),
-			'user_agent' 		=>  substr($this->EE->input->user_agent(), 0, 120),
-			'last_activity'		=>  0
-		);
+		$this->_initialize_userdata();
 		
+		// Set SESSION data as GUEST until proven otherwise
+		$this->_initialize_session();
+
 		// -------------------------------------------
 		// 'sessions_start' hook.
 		//  - Reset any session class variable
@@ -154,50 +131,43 @@ class EE_Session {
 		//
 		// -------------------------------------------
 
-		if ($this->EE->input->cookie($this->c_session))
+		// Set the validation type
+		$this->validation = (REQ == 'CP') ? $this->EE->config->item('admin_session_type') : $this->EE->config->item('user_session_type');
+
+		// default to "cookies and sessions" if validation type doesn't exist or is invalid
+		if ( ! in_array($this->validation, $this->valid_session_types))
 		{
-			$this->cookies_exist = TRUE;
-			$this->sdata['session_id'] = $this->EE->input->cookie($this->c_session);			
+			$this->validation = 'cs';
 		}
-		else
+
+		// Grab the session ID and update browser fingerprint based on the validation type
+		// we use the same URL key whether it's getting the session ID or the browser fingerprint,
+		// simplifying URI parsing and complicating session hijacking attempts
+		switch ($this->validation)
 		{
-			if ($this->EE->input->get('S') && $this->EE->input->get('S') != 0)
-			{
-				$this->sdata['session_id'] = $this->EE->input->get('S');
-			}
-			elseif ($this->EE->uri->session_id != '')
-			{
-				$this->sdata['session_id'] = $this->EE->uri->session_id;
-			}			
+			case 's'	:
+				$this->sdata['session_id'] = ($this->EE->input->get('S')) ? $this->EE->input->get('S') : $this->EE->uri->session_id;
+				break;
+			case 'c'	:
+				$this->cookies_exist;
+				$this->sdata['session_id'] = $this->EE->input->cookie($this->c_session);
+				break;
+			case 'cs'	:
+			default		:
+				$this->sdata['session_id'] = $this->EE->input->cookie($this->c_session);
+				$this->sdata['fingerprint'] = ($this->EE->input->get('S')) ? $this->EE->input->get('S') : $this->EE->uri->session_id;
+				break;
 		}
-		
+
 		// Check remember me
 		if ($this->EE->remember->exists())
 		{
 			$this->cookies_exist = TRUE;
 		}
 
-		// Set the Validation Type
-		if (REQ == 'CP')
-		{
-			$this->validation = ( ! in_array($this->EE->config->item('admin_session_type'), array('cs', 'c', 's'))) ? 'cs' : $this->EE->config->item('admin_session_type');
-		}
-		else
-		{
-			$this->validation = ( ! in_array($this->EE->config->item('user_session_type'), array('cs', 'c', 's'))) ? 'cs' : $this->EE->config->item('user_session_type');
-		}
-		
-		// Do session IDs exist?
-		switch ($this->validation)
-		{
-			case 'cs'	: $session_id = ($this->sdata['session_id'] != '0' AND $this->cookies_exist == TRUE) ? TRUE : FALSE;
-				break;
-			case 'c'	: $session_id = ($this->cookies_exist) ? TRUE : FALSE;
-				break;
-			case 's'	: $session_id = ($this->sdata['session_id'] != '0') ? TRUE : FALSE;
-				break;
-		}
-		
+		// Did we find a session ID?
+		$session_id = ($this->sdata['session_id'] != '' OR ($this->validation == 'c' && $this->cookies_exist)) ? TRUE : FALSE;
+
 		// Fetch Session Data		
 		// IMPORTANT: The session data must be fetched before the member data so don't move this.
 		if ($session_id === TRUE)
@@ -213,7 +183,7 @@ class EE_Session {
 		
 		// Update/Create Session
 		if ($session_id === FALSE OR $member_data_exists === FALSE)
-		{ 
+		{
 			$this->fetch_guest_data();
 		}
 		else
@@ -252,7 +222,7 @@ class EE_Session {
 		// Merge Session and User Data Arrays		
 		// We merge these into into one array for portability
 		$this->userdata = array_merge($this->userdata, $this->sdata);
-		
+
 		// -------------------------------------------
 		// 'sessions_end' hook.
 		//  - Modify the user's session/member data.
@@ -267,7 +237,6 @@ class EE_Session {
 		
 		unset($this->sdata);
 		unset($session_id);
-		unset($ban_status);
 		unset($member_data_exists);
 	}
 
@@ -407,14 +376,22 @@ class EE_Session {
 		{
 			$this->sdata['admin_sess'] 	= ($admin_session == FALSE) ? 0 : 1;  
 		}
-		
+
+		$crypt_key = $this->EE->db->select('crypt_key')
+			->get_where('members', array('member_id' => $member_id))
+			->row('crypt_key');
+
 		$this->sdata['session_id'] 		= $this->EE->functions->random();  
-		$this->sdata['ip_address']  	= $this->EE->input->ip_address();  
-		$this->sdata['member_id']  		= (int) $member_id; 
-		$this->sdata['last_activity']	= $this->EE->localize->now;  
+		$this->sdata['ip_address']  	= $this->EE->input->ip_address();
 		$this->sdata['user_agent']		= substr($this->EE->input->user_agent(), 0, 120);
+		$this->sdata['member_id']  		= (int) $member_id; 
+		$this->sdata['last_activity']	= $this->EE->localize->now;
+		$this->sdata['sess_start']		= $this->sdata['last_activity'];
+		$this->sdata['fingerprint']		= $this->_create_fingerprint((string) $crypt_key);
+
 		$this->userdata['member_id']	= (int) $member_id;  
 		$this->userdata['session_id']	= $this->sdata['session_id'];
+		$this->userdata['fingerprint']	= $this->sdata['fingerprint'];
 		$this->userdata['site_id']		= $this->EE->config->item('site_id');
 		
 		$this->EE->functions->set_cookie($this->c_session, $this->sdata['session_id'], $this->session_length);	
@@ -548,7 +525,7 @@ class EE_Session {
 		}
 
 		// If the user has been inactive longer than the session length we'll
-		// set the "last_visit" cooke with the "last_activity" date.
+		// set the "last_visit" cookie with the "last_activity" date.
 		
 		if (($this->sdata['last_activity'] + $this->session_length) < $this->EE->localize->now) 
 		{
@@ -579,7 +556,7 @@ class EE_Session {
 			$this->_initialize_session();
 			return FALSE;
 		}
-		
+
 		// Turn the query rows into array values
 		foreach ($member_query->row_array() as $key => $val)
 		{
@@ -605,6 +582,15 @@ class EE_Session {
 					$this->sess_crypt_key = $val;
 				}
 			}
+		}
+		
+		// validate the fingerprint as a last measure for 'c' and 's' sessions, since the fingerprint is only
+		// propogated in 'cs' sessions
+		if ($this->sdata['fingerprint'] != $this->_create_fingerprint($this->sess_crypt_key))
+		{
+			$this->_initialize_session();
+			$this->_initialize_userdata();
+			return FALSE;	
 		}
 		
 		// Create the array for the Ignore List
@@ -701,21 +687,22 @@ class EE_Session {
 	 */
 	public function fetch_session_data()
 	{
-		// Look for session.  Match the user's IP address and browser for added security.
-		$query = $this->EE->db->select('member_id, admin_sess, last_activity')
-			->get_where(
-				'sessions',
-				array(
-					'session_id' => (string) $this->sdata['session_id'],
-					'user_agent' => $this->sdata['user_agent']
-				)
-			);
+		$this->EE->db->select('member_id, admin_sess, last_activity, fingerprint, sess_start');
+		$this->EE->db->where('session_id', (string) $this->sdata['session_id']);
 		
+		// We already have a fingerprint to compare if they're running cs sessions
+		// otherwise we'll do it after fetching their member data, presuming the session ID is valid
+		if ($this->validation == 'cs')
+		{
+			$this->EE->db->where('fingerprint', (string) $this->sdata['fingerprint']);
+		}
+
+		$query = $this->EE->db->get('sessions');
+
 		if ($query->num_rows() == 0 OR $query->row('member_id') == 0)
 		{
 			$this->_initialize_session();
-		
-			return FALSE;				
+			return FALSE;
 		}
 		
 		// Assign member ID to session array
@@ -725,7 +712,11 @@ class EE_Session {
 		$this->sdata['admin_sess'] = ($query->row('admin_sess') == 1) ? 1 : 0;
 		
 		// Log last activity
-		$this->sdata['last_activity'] = $query->row('last_activity') ;
+		$this->sdata['last_activity'] = $query->row('last_activity');
+		$this->sdata['sess_start'] = $query->row('sess_start');
+		
+		// Set the fingerprint for c and s sessions to validate when fetching member data
+		$this->sdata['fingerprint'] = $query->row('fingerprint');
 		
 		// If session has expired, delete it and set session data to GUEST
 		if ($this->validation != 'c')
@@ -965,18 +956,28 @@ class EE_Session {
 	public function update_session()
 	{
 		$this->sdata['last_activity'] = $this->EE->localize->now;
-		
-		$this->EE->db->query($this->EE->db->update_string('exp_sessions', $this->sdata, "session_id ='".$this->EE->db->escape_str($this->sdata['session_id'])."'")); 
+
+		$cur_session_id = $this->sdata['session_id'];
+
+		// generate a new session ID if they've remained active during the whole TTL
+		// but only if the session ID is being transported via a cookie, or the
+		// rotation would cause you to have an invalid session in other open windows or tabs
+		if ($this->validation != 's' && ($this->sdata['last_activity'] - $this->sdata['sess_start']) > $this->session_length)
+		{
+			$this->sdata['session_id'] = $this->EE->functions->random();
+			$this->userdata['session_id'] = $this->sdata['session_id'];
+			$this->sdata['sess_start'] = $this->sdata['last_activity'];
+		}
+
+		$this->EE->db->query($this->EE->db->update_string('exp_sessions', $this->sdata, "session_id = '".$cur_session_id."'")); 
 
 		// Update session ID cookie
-		
 		if ($this->validation != 's')
 		{
 			$this->EE->functions->set_cookie($this->c_session , $this->sdata['session_id'],  $this->session_length);	
 		}
 			
-		// If we only require cookies for validation, set admin session.	
-			
+		// If we only require cookies for validation, set admin session.
 		if ($this->validation == 'c'  AND  $this->access_cp == TRUE)
 		{			
 			$this->sdata['admin_sess'] = 1;
@@ -1108,14 +1109,48 @@ class EE_Session {
 	 * @return 	void
 	 */
 	protected function _initialize_session()
-	{  
-		$this->sdata['session_id'] = 0;	
-		$this->sdata['admin_sess'] = 0;
-		$this->sdata['member_id']  = 0;
+	{
+		$this->sdata = array(
+			'session_id' 		=>  0,
+			'fingerprint'		=>	0,
+			'member_id'  		=>  0,
+			'admin_sess' 		=>  0,
+			'ip_address' 		=>  $this->EE->input->ip_address(),
+			'user_agent' 		=>  substr($this->EE->input->user_agent(), 0, 120),
+			'last_activity'		=>  0,
+			'sess_start'		=>	0
+		);
 	}
 
 	// --------------------------------------------------------------------
 
+	/**
+	 * Reset userdata as GUEST
+	 *
+	 * @return 	void
+	 */
+	protected function _initialize_userdata()
+	{
+		$this->userdata = array(
+			'username'			=> $this->EE->input->cookie('my_name'),
+			'screen_name'		=> '',
+			'email'				=> $this->EE->input->cookie('my_email'),
+			'url'				=> $this->EE->input->cookie('my_url'),
+			'location'			=> $this->EE->input->cookie('my_location'),
+			'language'			=> '',
+			'timezone'			=> ($this->EE->config->item('default_site_timezone') && $this->EE->config->item('default_site_timezone') != '') ? $this->EE->config->item('default_site_timezone') : $this->EE->config->item('server_timezone'),
+			'daylight_savings'  => ($this->EE->config->item('default_site_dst') && $this->EE->config->item('default_site_dst') != '') ? $this->EE->config->item('default_site_dst') : $this->EE->config->item('daylight_savings'),
+			'time_format'		=> ($this->EE->config->item('time_format') && $this->EE->config->item('time_format') != '') ? $this->EE->config->item('time_format') : 'us',
+			'group_id'			=> '3',
+			'access_cp'			=>  0,
+			'last_visit'		=>  0,
+			'is_banned'			=>  $this->_do_ban_check(),
+			'ignore_list'		=>  array()
+		);
+	}
+	
+	// --------------------------------------------------------------------
+	
 	/**
 	 * Prep flashdata
 	 *
@@ -1147,6 +1182,18 @@ class EE_Session {
 
 	// --------------------------------------------------------------------	
 
+	/**
+	 * Create a browser fingerprint
+	 *
+	 * @return	string
+	 */
+	protected function _create_fingerprint($salt = 'kosher')
+	{
+		return md5($this->EE->input->user_agent().$salt);
+	}
+	
+	// --------------------------------------------------------------------	
+	
 	/**
 	 * Set signed flashdata cookie
 	 *

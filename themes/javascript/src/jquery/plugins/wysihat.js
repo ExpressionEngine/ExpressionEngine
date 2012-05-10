@@ -2931,7 +2931,8 @@ jQuery.fn.wysihat = function(options) {
 	}
 
 	return this.each(function() {
-		WysiHat.attach(this, options);
+		el = WysiHat.attach(this, options);
+		$(this).data('wysihat', el);
 	});
 };
 

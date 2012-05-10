@@ -3,7 +3,7 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
@@ -19,7 +19,7 @@
  * @package		ExpressionEngine
  * @subpackage	Core
  * @category	Core
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
 class Cp {
@@ -499,7 +499,7 @@ class Cp {
 	function delete_layout_tabs($tabs = array(), $namespace = '', $channel_id = array())
 	{
 		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated(NULL, 'Layout::delete_layout_tabs()');
+		$this->EE->logger->deprecated('2.5.1', 'Layout::delete_layout_tabs()');
 
 		$this->EE->load->library('layout');
 		return $this->EE->layout->delete_layout_tabs($tabs, $namespace, $channel_id);
@@ -555,7 +555,7 @@ class Cp {
 	function delete_layout_fields($tabs, $channel_id = array())
 	{
 		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated(NULL, 'Layout::delete_layout_fields()');
+		$this->EE->logger->deprecated('2.5.1', 'Layout::delete_layout_fields()');
 
 		$this->EE->load->library('layout');
 		return $this->EE->layout->delete_layout_fields($tabs, $channel_id);

@@ -3,7 +3,7 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
@@ -19,7 +19,7 @@
  * @package		ExpressionEngine
  * @subpackage	Control Panel
  * @category	Control Panel
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
 class Admin_content extends CI_Controller {
@@ -2179,10 +2179,9 @@ class Admin_content extends CI_Controller {
 			$this->input->post('cat_image'), 
 			'cat_image'
 		);
-		// var_dump($cat_image);
+		
 		$_POST['cat_image'] = $this->file_field->format_data(
-			$cat_image['value'],
-			$this->input->post('cat_image_directory')
+			$cat_image['value']
 		);
 		
 		// Finish data prep for insertion

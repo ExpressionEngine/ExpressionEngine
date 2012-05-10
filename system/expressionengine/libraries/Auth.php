@@ -3,7 +3,7 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
@@ -19,7 +19,7 @@
  * @package		ExpressionEngine
  * @subpackage	Core
  * @category	Core
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
 
@@ -581,7 +581,7 @@ class Auth_result {
 	private $group;
 	private $member;
 	private $session_id;
-	private $remember_me = 0;
+	private $remember_me = FALSE;
 	private $anon = FALSE;
 	private $EE;
 	
@@ -705,18 +705,6 @@ class Auth_result {
 	// --------------------------------------------------------------------
 	
 	/**
-	 * Remember me expiration setter
-	 *
-	 * @access	public
-	 */
-	function remember_me($expire)
-	{
-		$this->remember_me = $expire;
-	}
-
-	// --------------------------------------------------------------------
-	
-	/**
 	 * Anon setter
 	 *
 	 * @access	public
@@ -763,7 +751,7 @@ class Auth_result {
 		
 		if ($this->EE->config->item($sess_type) != 's')
 		{
-			$expire = $this->remember_me;
+			$expire = $this->EE->remember->get_expiry();
 			
 			if ($this->anon)
 			{
@@ -776,9 +764,9 @@ class Auth_result {
 			}
 			
 			// (un)set remember me
-			if ($expire)
+			if ($this->remember_me)
 			{
-				$this->EE->remember->create($expire);
+				$this->EE->remember->create();
 			}
 			else
 			{
@@ -858,6 +846,20 @@ class Auth_result {
 	public function use_session_id($session_id)
 	{
 		$this->session_id = $session_id;
+	}
+	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Remember me
+	 *
+	 * Whether or not this session will be started with 'remember me'
+	 *
+	 * @access	public
+	 */	
+	public function remember_me($remember = TRUE)
+	{
+		$this->remember_me = ($remember) ? TRUE : FALSE;
 	}
 	
 	// --------------------------------------------------------------------

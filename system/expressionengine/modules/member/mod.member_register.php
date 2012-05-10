@@ -4,7 +4,7 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
@@ -20,7 +20,7 @@
  * @package		ExpressionEngine
  * @subpackage	Modules
  * @category	Modules
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
 
@@ -709,7 +709,7 @@ class Member_register extends Member {
 			$member_data_q = $this->EE->db->get_where('members', array('member_id' => $member_id));
 			
 			$incoming = new Auth_result($member_data_q->row());
-			$incoming->remember_me(60*60*24*182);
+			$incoming->remember_me();
 			$incoming->start_session();
 
 			$message = lang('mbr_your_are_logged_in');

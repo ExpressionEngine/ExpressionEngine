@@ -1,4 +1,4 @@
-<?php  if (!defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -10,21 +10,21 @@
  * @since		Version 2.0
  * @filesource
  */
-
+ 
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Simple Commerce Model
+ * ExpressionEngine Remember Me library config
  *
  * @package		ExpressionEngine
  * @subpackage	Core
- * @category	Model
+ * @category	Config
  * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
-class Sc_model extends CI_Model {
+ 
+ // default expiration of two weeks, in seconds
+ $config['remember_me_ttl'] = 60*60*24*14;
 
-}
-// End Class
-/* End of file sc_model.php */
-/* Location: ./system/expressionengine/modules/simple_commerce/models/sc_model.php */
+/* End of file remember.php */
+/* Location: ./system/expressionengine/config/remember.php */

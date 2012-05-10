@@ -4,7 +4,7 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
@@ -20,7 +20,7 @@
  * @package		ExpressionEngine
  * @subpackage	Core
  * @category	Core
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
 class EE_Core {
@@ -85,8 +85,8 @@ class EE_Core {
 		// application constants
 		define('IS_FREELANCER',	FALSE);
 		define('APP_NAME',		'ExpressionEngine'.(IS_FREELANCER ? ' Freelancer' : ''));
-		define('APP_BUILD',		'20111227');
-		define('APP_VER',		'2.4.0');
+		define('APP_BUILD',		'20120507');
+		define('APP_VER',		'2.5.0');
 		define('SLASH',			'&#47;');
 		define('LD',			'{');
 		define('RD',			'}');
@@ -272,7 +272,7 @@ class EE_Core {
 		{
 			$this->EE->output->enable_profiler(TRUE);
 		}
-	
+
 		/*
 		 * -----------------------------------------------------------------
 		 *  Filter GET Data
@@ -347,12 +347,17 @@ class EE_Core {
 	function _initialize_cp()
 	{
 		$s = 0;
-		
-		if ($this->EE->config->item('admin_session_type') != 'c')
+
+		switch ($this->EE->config->item('admin_session_type'))
 		{
-			$s = $this->EE->session->userdata('session_id', 0);
+			case 's'	:
+				$s = $this->EE->session->userdata('session_id', 0);
+				break;
+			case 'cs'	:
+				$s = $this->EE->session->userdata('fingerprint', 0);
+				break;
 		}
-		
+
 		define('BASE', SELF.'?S='.$s.'&amp;D=cp');			// cp url
 		define('PATH_CP_THEME', PATH_THEMES.'cp_themes/');	// theme path
 		
