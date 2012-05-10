@@ -85,8 +85,6 @@ class Sites extends CI_Controller {
 		$this->load->library('table');
 		$this->lang->loadfile('sites_cp');
 		
-		$this->javascript->compile();
-		
 		$vars['sites'] = $this->session->userdata('assigned_sites');
 
 		$this->cp->set_variable('cp_page_title', lang('switch_site'));
@@ -96,11 +94,9 @@ class Sites extends CI_Controller {
 
 		$vars['message'] = $message;
 
-		$this->javascript->compile();
-
 		$this->cp->set_right_nav(array('edit_sites' => BASE.AMP.'C=sites'.AMP.'M=manage_sites'));
 		
-		$this->load->view('sites/switch', $vars);
+		$this->view->render('sites/switch', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -202,8 +198,6 @@ class Sites extends CI_Controller {
 			widgets: ["zebra"]
 		}');
 
-		$this->javascript->compile();
-
 		if ($created_id = $this->input->get('created_id'))
 		{
 			$this->db->select('site_label');
@@ -224,11 +218,9 @@ class Sites extends CI_Controller {
 		$vars['site_data'] = $this->site_model->get_site();
 		$vars['message'] = $message;
 		
-		$this->javascript->compile();
-		
 		$this->cp->set_right_nav(array('create_new_site' => BASE.AMP.'C=sites'.AMP.'M=add_edit_site'));
 		
-		$this->load->view('sites/list_sites', $vars);
+		$this->view->render('sites/list_sites', $vars);
 	}
 	
 	// --------------------------------------------------------------------
@@ -335,8 +327,7 @@ class Sites extends CI_Controller {
 				$vars['form_url'] .= AMP.'site_id='.$site_id;
 		}
 
-		$this->javascript->compile();
-		$this->load->view('sites/edit_form', $vars);		
+		$this->view->render('sites/edit_form', $vars);		
 	}
 	
 
@@ -1650,8 +1641,7 @@ class Sites extends CI_Controller {
 		$vars['site_id'] = $site_id;
 		$vars['message'] = lang('delete_site_confirmation');
 		
-		$this->javascript->compile();
-		$this->load->view('sites/delete_confirm', $vars);
+		$this->view->render('sites/delete_confirm', $vars);
 	}
 	
 	// --------------------------------------------------------------------
