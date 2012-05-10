@@ -191,8 +191,7 @@ class Content_edit extends CI_Controller {
 		));
 
 		$this->javascript->set_global('autosave_map', $vars['autosave_array']);
-		$this->javascript->compile();
-		$this->load->view('content/edit', $vars);
+		$this->view->render('content/edit', $vars);
 	}
 	
 	
@@ -807,16 +806,14 @@ class Content_edit extends CI_Controller {
 			}
 		}
 
-		$this->javascript->compile();
-
-		$this->cp->set_variable('cp_page_title', lang('multi_entry_editor'));
 		// A bit of a breadcrumb override is needed
 		$this->cp->set_variable('cp_breadcrumbs', array(
 			BASE.AMP.'C=content' => lang('content'),
 			BASE.AMP.'C=content_edit'=> lang('edit')
 		));
 
-		$this->load->view('content/multi_edit', $vars);
+		$this->view->cp_page_title = lang('multi_entry_editor');
+		$this->view->render('content/multi_edit', $vars);
 	}
 	
 	// --------------------------------------------------------------------
@@ -866,7 +863,7 @@ class Content_edit extends CI_Controller {
 		}
 		
 		$this->cp->set_breadcrumb($this->edit_base_url, lang('edit'));
-		$this->load->view('content/autosave', $data);
+		$this->view->render('content/autosave', $data);
 	}
 	
 	// --------------------------------------------------------------------
@@ -1273,8 +1270,7 @@ class Content_edit extends CI_Controller {
 	
 		$this->cp->set_variable('cp_page_title', lang('multi_entry_category_editor'));
 
-		$this->javascript->compile();
-		$this->load->view('content/multi_cat_edit', $vars);
+		$this->view->render('content/multi_cat_edit', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -1472,8 +1468,7 @@ class Content_edit extends CI_Controller {
 
 		$this->cp->set_variable('cp_page_title', lang('delete_confirm'));
 
-		$this->javascript->compile();
-		$this->load->view('content/delete_confirm', $vars);
+		$this->view->render('content/delete_confirm', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -1703,8 +1698,7 @@ class Content_edit extends CI_Controller {
 		$vars['left_column'] = lang('most_recent_entries');
 		$vars['right_column'] = lang('comments');
 		
-		$this->javascript->compile();
-		$this->load->view('content/recent_list', $vars);
+		$this->view->render('content/recent_list', $vars);
 	}
 	
 	/**
