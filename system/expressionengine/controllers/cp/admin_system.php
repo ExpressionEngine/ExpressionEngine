@@ -110,8 +110,6 @@ class Admin_system extends CI_Controller {
 			}
 		}');
 
-		$this->javascript->compile();
-
 		$this->cp->set_variable('cp_page_title', lang($type));
 
 		$this->load->library('table');
@@ -194,7 +192,7 @@ class Admin_system extends CI_Controller {
 			{
 				$vars['cp_messages']['error'] = $this->form_validation->error_string('', '');
 	
-				$this->load->view('admin/config_pages', $vars);
+				$this->view->render('admin/config_pages', $vars);
 	
 				return;
 			}
@@ -205,7 +203,7 @@ class Admin_system extends CI_Controller {
 		$vars = $this->_prep_view_vars($type);
 		$vars['form_action'] = 'C=admin_system'.AMP.'M='.$return_loc;
 
-		$this->load->view('admin/config_pages', $vars);
+		$this->view->render('admin/config_pages', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -658,9 +656,7 @@ class Admin_system extends CI_Controller {
 			$("table tbody tr:visible:odd").addClass("odd");
 		');
 
-		$this->javascript->compile();
-
-		$this->load->view('admin/config_editor', $vars);
+		$this->view->render('admin/config_editor', $vars);
 	}
 
 	// --------------------------------------------------------------------
