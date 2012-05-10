@@ -164,12 +164,9 @@
 			<tr class="even text_type">
 				<?php
 				//Dropshadow Distance
-				$options = array('0' => 0, '1' => 1, '2' => 2, '3' => 3, '4' => 4, '5' => 5, '6' => 6, '7' => 7,
-				 '8' => 8, '9' => 9, '10' => 10, '11' => 11, '12' => 12, '13' => 13, '14' => 14, '15' => 15, 
-				'16' => 16, '17' => 17, '18' => 18, '19' => 19, '20');
 				?>
 				<td><?=form_label(lang('wm_shadow_distance'), 'wm_shadow_distance'); ?></td>
-				<td><?=form_dropdown('wm_shadow_distance', $options, $wm_shadow_distance); ?></td>
+				<td><?=form_dropdown('wm_shadow_distance', range(0, 20), $wm_shadow_distance); ?></td>
 			</tr>
 
 			<tr class="odd text_type">
