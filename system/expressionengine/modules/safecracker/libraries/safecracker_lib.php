@@ -1600,7 +1600,7 @@ class Safecracker_lib
 		
 		if ( ! empty($params['group_id']))
 		{
-			$this->EE->data_sorter->filter($categories, 'group_id', $params['group_id'], 'in_array');
+			$this->EE->data_sorter->filter($categories, 'category_group_id', $params['group_id'], 'in_array');
 		}
 		
 		if ( ! empty($params['order_by']))
