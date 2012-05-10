@@ -2204,10 +2204,9 @@ class Admin_content extends CI_Controller {
 			$this->input->post('cat_image'), 
 			'cat_image'
 		);
-		// var_dump($cat_image);
+		
 		$_POST['cat_image'] = $this->file_field->format_data(
-			$cat_image['value'],
-			$this->input->post('cat_image_directory')
+			$cat_image['value']
 		);
 		
 		// Finish data prep for insertion
