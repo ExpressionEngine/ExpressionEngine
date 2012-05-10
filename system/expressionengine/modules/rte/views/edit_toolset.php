@@ -49,7 +49,7 @@
 
 	<p>
 		<?=form_submit(array('name' => 'submit', 'value' => lang('submit'), 'class' => 'submit'));?>
-		&nbsp; or
+		&nbsp; <?=lang('or')?>
 		<a id="rte-builder-closer"><?=lang('cancel')?></a>
 	</p>
 	
