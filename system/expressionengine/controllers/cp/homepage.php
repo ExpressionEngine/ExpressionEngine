@@ -33,7 +33,7 @@ class Homepage extends CI_Controller {
 	function index()
 	{
 		$this->cp->get_installed_modules();
-		$this->cp->set_variable('cp_page_title', lang('main_menu'));
+		$this->view->cp_page_title = lang('main_menu');
 
 		$message			= array();
 		$show_notice		= $this->_checksum_bootstrap_files();
@@ -117,7 +117,7 @@ class Homepage extends CI_Controller {
 		$this->load->model('channel_model');
 
 		$vars['cp_recent_ids'] = array(
-			'entry'		=> $this->channel_model->get_most_recent_id('entry')
+			'entry'	=> $this->channel_model->get_most_recent_id('entry')
 		);
 		
 		// 2.3.1 Patch
@@ -137,9 +137,7 @@ class Homepage extends CI_Controller {
 		}
 
 		$this->cp->add_js_script('file', 'cp/homepage');
-		$this->javascript->compile();
-		
-		$this->load->view('homepage', $vars);
+		$this->view->render('homepage', $vars);
 	}
 
 

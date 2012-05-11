@@ -47,13 +47,13 @@ if ($EE_view_disable !== TRUE)
 			<div id="template_create" class="pageContents">
 		
 			<?=form_textarea(array(
-									'name'	=> 'template_data',
-					              	'id'	=> 'template_data',
-					              	'cols'	=> '100',
-					              	'rows'	=> '20',
-									'value'	=> $revision_data,
-									'style' => 'border: 0;'
-							));?>
+				'name'	=> 'template_data',
+				'id'	=> 'template_data',
+				'cols'	=> '100',
+				'rows'	=> '20',
+				'value'	=> $revision_data,
+				'style' => 'border: 0;'
+			));?>
 
 			</div>
 		</div>
