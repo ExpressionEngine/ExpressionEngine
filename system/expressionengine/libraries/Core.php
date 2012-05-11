@@ -283,6 +283,19 @@ class EE_Core {
 		 */
 
 		$this->EE->input->filter_get_data(REQ);
+
+		
+		// Requests to our css and js controller don't need
+		// any user specific prep work
+		if ($this->EE->router->class == 'css' OR $this->EE->router->class == 'javascript')
+		{
+			// If it's a CP request we will initialize it
+			if (REQ == 'CP')
+			{
+				return $this->_initialize_cp();
+			}
+		}
+		
 		
 		// Update system stats
 		$this->EE->load->library('stats');
@@ -413,6 +426,15 @@ class EE_Core {
 				break;
 			}
 		}
+
+
+		// Request to our css controller don't need any
+		// of the expensive prep work below
+		if ($this->EE->router->class == 'css' OR $this->EE->router->class == 'javascript')
+		{
+			return;
+		}
+
 		
 		// Load our view library
 		$this->EE->load->library('view');
@@ -452,13 +474,6 @@ class EE_Core {
 		if ($this->EE->session->userdata('group_id') != 1 AND $this->EE->session->ban_check('ip'))
 		{
 			return $this->EE->output->fatal_error(lang('not_authorized'));
-		}
-		
-		// Request to our css controller don't need any
-		// of the expensive prep work below
-		if ($this->EE->router->class == 'css' OR $this->EE->router->class == 'javascript')
-		{
-			return;
 		}
 		
 		// Load common helper files
