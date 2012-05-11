@@ -13,25 +13,11 @@
 	<?php endif;?>
 	<!--[if lte IE 7]><?=$this->view->head_link('css/iefix.css')?><![endif]-->
 
-	<?php 
-	if (isset($cp_global_js))
-	{
-		echo $cp_global_js;
-	} ?>
-	
-	<?=$this->view->script_tag('jquery/jquery.js')?>
-	<?php //$this->view->script_tag('jquery/plugins/corner.js')?>
-
 	<?php if ($advanced_css_mtime): ?>
 	<script charset="utf-8" type="text/javascript" src="<?=BASE.AMP.'C=javascript'.AMP.'M=load'.AMP.'file=css'.AMP.'theme='.$this->cp->cp_theme.AMP.'v='.$advanced_css_mtime?>"></script>
 	<?php endif;?>
 
 	<?php
-	if (isset($script_head)) 
-	{
-		echo $script_head;
-	}
-
 	foreach ($this->cp->its_all_in_your_head as $item)
 	{
 		echo $item."\n";
