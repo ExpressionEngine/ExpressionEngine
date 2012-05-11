@@ -3301,7 +3301,7 @@ class Design extends CI_Controller {
 				$vars['default_group'] = $groups['group_name'];
 			}
 		}
-		
+
 		// member group query
 		$this->db->select('group_id, group_title');
 		$this->db->where('site_id', $this->config->item('site_id'));
@@ -3335,6 +3335,7 @@ class Design extends CI_Controller {
 		
 		$vars['templates'] = array();
 		$displayed_groups = array();
+		$prefs_json = array();
 		
 		foreach ($query->result_array() as $row)
 		{
@@ -3380,7 +3381,24 @@ class Design extends CI_Controller {
 					'access' => isset($denied_groups[$row['template_id']][$group_id]) ? FALSE : TRUE
 				);
 			}
+
+			$prefs_json[$row['template_id']] = array(
+				'id' => $row['template_id'],
+				'group_id' => $row['group_id'],
+				'name' => $row['template_name'],
+				'type' => $row['template_type'],
+				'cache' => $row['cache'],
+				'refresh' => $row['refresh'],
+				'allow_php' => $row['allow_php'],
+				'php_parsing' => $row['php_parse_location'],
+				'hits' => $row['hits'],
+				'access' => $vars['templates'][$row['group_id']][$row['template_id']]['access'],
+				'no_auth_bounce' => $row['no_auth_bounce'],
+				'enable_http_auth' => $row['enable_http_auth']
+			);
 		}
+
+		$this->javascript->set_global('pref_json', $prefs_json);
 
 		// remove any template groups that aren't being displayed, as may be the case when a search was performed
 		foreach ($vars['template_groups'] as $index => $group)
