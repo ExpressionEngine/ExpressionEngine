@@ -65,6 +65,8 @@ class EE_Schema {
 			  admin_sess tinyint(1) default '0' NOT NULL,
 			  ip_address varchar(16) default '0' NOT NULL,
 			  user_agent varchar(120) NOT NULL,
+			  fingerprint varchar(40) NOT NULL,
+			  sess_start int(10) unsigned DEFAULT '0' NOT NULL,
 			  last_activity int(10) unsigned DEFAULT '0' NOT NULL,
 			  PRIMARY KEY `session_id` (`session_id`),
 			  KEY `member_id` (`member_id`),
