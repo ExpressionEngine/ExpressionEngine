@@ -1627,24 +1627,6 @@ class Content_edit extends CI_Controller {
 
 		$this->javascript->set_global('edit.channelInfo', $channel_info);
 	}
-	
-	// --------------------------------------------------------------------
-	
-	/**
-	 * Custom dates
-	 */
-	public function custom_dates()
-	{
-		if ( ! $this->cp->allowed_group('can_access_content'))
-		{
-			show_error(lang('unauthorized_access'));
-		}
-
-		$this->output->enable_profiler(FALSE);
-
-		// load the javascript view, as its just a variable, no html template needed
-		$this->load->view('_shared/javascript');
-	}
 
 	// --------------------------------------------------------------------
 
