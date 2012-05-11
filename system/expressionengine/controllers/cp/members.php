@@ -496,12 +496,12 @@ class Members extends CI_Controller {
 		// Do the users being deleted have entries assigned to them?
 		// If so, fetch the member names for reassigment
 
-		$vars['heirs'] = array(
-			'' => lang('member_delete_dont_reassign_entries')
-		);
-		
 		if ($this->member_model->count_member_entries($damned)  > 0)
 		{
+			$vars['heirs'] = array(
+				'' => lang('member_delete_dont_reassign_entries')
+			);
+
 			$group_ids = $this->member_model->get_members_group_ids($damned);
 			
 			// Find Valid Member Replacements
