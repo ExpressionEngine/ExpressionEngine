@@ -96,7 +96,6 @@ class View {
 			$view = $this->_extend;
 			$this->_extend = '';
 			$this->disable($this->_disable_up);
-			$this->_disable_up = array();
 			$rendered_view = $this->EE->load->view($view, array('EE_rendered_view' => $rendered_view), TRUE);
 		}
 
@@ -209,14 +208,15 @@ class View {
 	{
 		if ( ! is_array($which))
 		{
-			$this->_disabled[] = $which;
-			return;
+			$which = array($which);
 		}
 
 		while ($el = array_pop($which))
 		{
 			$this->_disabled[] = $el;
 		}
+
+		$this->_disable_up = array();
 	}
 
 	// --------------------------------------------------------------------------
