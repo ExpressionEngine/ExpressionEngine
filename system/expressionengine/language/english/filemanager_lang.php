@@ -435,6 +435,9 @@ $lang = array(
 'credit' =>
 'Credit',
 
+'upload_directory' =>
+'Upload Directory:',
+
 ''=>''
 );
 
