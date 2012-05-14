@@ -460,11 +460,9 @@ class Javascript extends CI_Controller {
 						use = ["-moz-border-radius", "", "-$1$2$3$4"];	/* ... thanks mozilla */
 					}
 
-					console.log("found");
 					supported = true;
 					return false;
 				}
-				console.log("loop");
 			});
 
 			if ( ! supported)
