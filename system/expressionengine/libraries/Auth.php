@@ -178,7 +178,7 @@ class Auth {
 	 *	)
 	 * 
 	 * Your best option is to use:
-	 * 		list($username, $password, $incoming) = $this->_verify()
+	 * 		list($username, $password, $incoming) = $this->verify()
 	 * 
 	 * If an error results, the lang key will be added to $this->(auth->)errors[]
 	 * and this method will return FALSE
@@ -242,13 +242,20 @@ class Auth {
 			$this->EE->functions->redirect(BASE.AMP.'C=login');
 		}
 
-
 		//  Check credentials
 		// ----------------------------------------------------------------
-
 		$password = (string) $this->EE->input->post('password');
+
+		// Allow users to register with Username
+		// ----------------------------------------------------------------
 		$incoming = $this->EE->auth->authenticate_username($username, $password);
 
+		// Allow users to register with Email
+		// ----------------------------------------------------------------
+		if( ! $incoming) {
+			$incoming = $this->EE->auth->authenticate_email($username, $password);
+		}
+		
 		// Not even close
 		if ( ! $incoming)
 		{
