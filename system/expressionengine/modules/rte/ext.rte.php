@@ -281,7 +281,7 @@ class Rte_ext {
 			.'ACT='.$this->EE->cp->fetch_action_id('Rte', 'get_js')
 			.'&cp=y'
 			.'&toolset_id=0'
-			.'&selector=.rte';
+			.'&selector=.WysiHat-field';
 
 		// JS config
 		$this->EE->javascript->set_global(array(

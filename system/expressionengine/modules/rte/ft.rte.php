@@ -84,7 +84,7 @@ class Rte_ft extends EE_Fieldtype {
 		if ($this->EE->session->userdata('rte_enabled') == 'y' 
 			AND $this->EE->config->item('rte_enabled') == 'y')
 		{
-			$field['class']	= 'rte';
+			$field['class']	= 'WysiHat-field';
 
 			foreach ($code_chunks as &$chunk)
 			{
