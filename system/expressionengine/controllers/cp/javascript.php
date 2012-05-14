@@ -423,14 +423,22 @@ class Javascript extends CI_Controller {
 			/* Simple iterator so we can keep jquery at the bottom of the page */
 
 			function each(el, fn) {
+				var ret;
+
 				if (el.length) {
 					for (var i = 0, l = el.length; i < l; i++) {
-						fn.call(el[i], i, el[i]);
+						if (fn.call(el[i], i, el[i]) === false)
+						{
+							return;
+						}
 					}
 					return;
 				}
 				for (var key in el) {
-					fn.call(el[key], key, el[key]);
+					if (fn.call(el[key], key, el[key]))
+					{
+						return;
+					}
 				}
 			}
 
@@ -452,9 +460,11 @@ class Javascript extends CI_Controller {
 						use = ["-moz-border-radius", "", "-$1$2$3$4"];	/* ... thanks mozilla */
 					}
 
+					console.log("found");
 					supported = true;
 					return false;
 				}
+				console.log("loop");
 			});
 
 			if ( ! supported)
