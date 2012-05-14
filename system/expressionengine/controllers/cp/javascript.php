@@ -476,7 +476,6 @@ class Javascript extends CI_Controller {
 			});
 
 			function process_css(key, value) {
-				console.log(key, value);
 
 				if (key.indexOf("@") == -1) {
 					
