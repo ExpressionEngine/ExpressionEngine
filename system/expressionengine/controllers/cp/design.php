@@ -2717,7 +2717,7 @@ class Design extends CI_Controller {
 		$template_id = $this->input->get_post('template_id');
 		$template_data = $this->input->get_post('template_data');
 
-		$this->jquery->plugin(BASE.AMP.'C=javascript'.AMP.'M=load'.AMP.'plugin=markitup', TRUE);
+		$this->cp->add_js_script('plugin', 'markitup');
 
 		$markItUp = array(
 			'nameSpace'		=> "html",
@@ -2787,7 +2787,7 @@ class Design extends CI_Controller {
 		$template_id = $this->input->get_post('template_id');
 		$template_data = $this->input->get_post('template_data');
 		
-		$this->jquery->plugin(BASE.AMP.'C=javascript'.AMP.'M=load'.AMP.'plugin=markitup', TRUE);
+		$this->cp->add_js_script('plugin', 'markitup');
 
 		$markItUp = array(
 			'nameSpace'	=> "html",
@@ -3080,8 +3080,7 @@ class Design extends CI_Controller {
 		$vars['type']				= 'profile';
 				
 		$this->cp->set_variable('cp_page_title', lang('member_profile_templates'));
-		
-		$this->jquery->plugin(BASE.AMP.'C=javascript'.AMP.'M=load'.AMP.'plugin=markitup', TRUE);
+		$this->cp->add_js_script('plugin', 'markitup');
 
 		$markItUp = array(
 			'nameSpace'		=> "html",
@@ -3191,7 +3190,7 @@ class Design extends CI_Controller {
 			widgets: ["zebra"]
 		}');
 
-		$this->jquery->plugin(BASE.AMP.'C=javascript'.AMP.'M=load'.AMP.'file=cp/manager', TRUE);
+		$this->cp->add_js_script('file', 'cp/manager');
 
 		// auto scan for new templates
 		if ($this->config->item('save_tmpl_files') == 'y' && $this->config->item('tmpl_file_basepath') != '')
