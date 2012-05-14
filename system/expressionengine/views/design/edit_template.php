@@ -85,11 +85,6 @@
 						</tr>
 					<?php endforeach;?>
 				</table>
-				<script type="text/javascript" charset="utf-8">
-					EE.manager = EE.manager || {};
-					EE.manager.warnings = <?=$this->javascript->generate_json($warnings, TRUE)?>;
-				</script>
-			
 				</div>
 			</div>
 		<?php endif; ?>
