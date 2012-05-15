@@ -23,7 +23,7 @@
 				<p style="text-align:left; margin-bottom:5px"><?=lang('start_date', 'custom_date_start')?>:&nbsp; <input type="text" name="custom_date_start" id="custom_date_start" value="yyyy-mm-dd" size="12" tabindex="1" /></p>
 				<span id="custom_date_start_span"></span>
 			</div>
-            <div id="cal2" style="width:250px; float:left; text-align:center;">
+			<div id="cal2" style="width:250px; float:left; text-align:center;">
 				<p style="text-align:left; margin-bottom:5px"><?=lang('end_date', 'custom_date_end')?>:&nbsp; <input type="text" name="custom_date_end" id="custom_date_end" value="yyyy-mm-dd" size="12" tabindex="2" /></p>
 				<span id="custom_date_end_span"></span>          
 			</div>
