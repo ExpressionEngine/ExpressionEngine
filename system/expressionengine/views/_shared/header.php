@@ -9,7 +9,7 @@
 	<?=$this->view->head_link('css/override.css'); ?>
 
 	<?php if ($this->extensions->active_hook('cp_css_end') === TRUE):?>
-	<link rel="stylesheet" href="<?=BASE.AMP.'C=css'.AMP.'M=cp_global_ext';?>" type="text/css" />
+	<link rel="stylesheet" href="<?=BASE.AMP.'C=css'.AMP.'M=cp_global_ext'.AMP.'theme='.$this->cp->cp_theme;?>" type="text/css" />
 	<?php endif;?>
 	<!--[if lte IE 7]><?=$this->view->head_link('css/iefix.css')?><![endif]-->
 
