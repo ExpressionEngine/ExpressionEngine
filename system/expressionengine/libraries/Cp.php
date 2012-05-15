@@ -285,6 +285,10 @@ class Cp {
 		$this->_accessories();
 		$this->_sidebar();
 
+		// add global end file
+		$this->_seal_combo_loader();
+		$this->add_js_script('file', 'cp/global_end');
+
 		return $this->view->render($view, $data, $return);
 	}
 
@@ -429,10 +433,6 @@ class Cp {
 	 */
 	function render_footer_js()
 	{
-		// add global end file
-		$this->_seal_combo_loader();
-		$this->add_js_script('file', 'cp/global_end');
-		
 		$str = '';
 		$requests = $this->_seal_combo_loader();
 		
