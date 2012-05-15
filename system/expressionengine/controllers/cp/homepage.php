@@ -109,8 +109,8 @@ class Homepage extends CP_Controller {
 		}
 		
 		//  Comment blocks
-		$vars['comments_installed']			= $this->db->table_exists('comments');
 		$vars['can_moderate_comments']		= $this->cp->allowed_group('can_moderate_comments') ? TRUE : FALSE;
+		$vars['comments_installed']			= $vars['can_moderate_comments'] ? $this->db->table_exists('comments') : FALSE;
 		$vars['comment_validation_count']	= ($vars['comments_installed']) ? $this->_total_validating_comments() : FALSE;	
 
 		// Most recent comment and most recent entry
