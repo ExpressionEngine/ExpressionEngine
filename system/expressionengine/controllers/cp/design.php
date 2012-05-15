@@ -30,18 +30,18 @@ class Design extends CP_Controller {
 	var $reserved_names = array('act', 'css');
 	
 	// Reserved Global Variable names
-	var $reserved_vars	= array(
-								'lang',
-								'charset',
-								'homepage',
-								'debug_mode',
-								'gzip_mode',
-								'version',
-								'elapsed_time',
-								'hits',
-								'total_queries',
-								'XID_HASH'
-								);
+	var $reserved_vars = array(
+		'lang',
+		'charset',
+		'homepage',
+		'debug_mode',
+		'gzip_mode',
+		'version',
+		'elapsed_time',
+		'hits',
+		'total_queries',
+		'XID_HASH'
+	);
 	
 	/**
 	 * Constructor
