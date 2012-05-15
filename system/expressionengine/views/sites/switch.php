@@ -5,7 +5,7 @@ if ($can_admin_sites)
 }
 else
 {
-	extend_template('default', 'right_nav');
+	extend_template('default', 'ee_right_nav');
 }
 
 $this->table->set_heading(lang('choose_site'));

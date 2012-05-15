@@ -22,7 +22,6 @@
  * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
-
 class View {
 
 	private $EE;
@@ -33,6 +32,11 @@ class View {
 	protected $_disabled = array();
 	protected $_disable_up = array();
 	
+	/**
+	 * Constructor
+	 *
+	 * @access public
+	 */
 	public function __construct()
 	{
 		$this->EE =& get_instance();

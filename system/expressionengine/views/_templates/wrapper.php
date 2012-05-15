@@ -1,16 +1,16 @@
 <?php
 if ($EE_view_disable !== TRUE)
 {
-	enabled('header') && $this->load->view('_shared/header');
-	enabled('menu') && $this->load->view('_shared/main_menu');
-	enabled('sidebar') && $this->load->view('_shared/sidebar');
-	enabled('breadcrumbs') && $this->load->view('_shared/breadcrumbs');
+	enabled('ee_header') && $this->view('_shared/header');
+	enabled('ee_menu') && $this->view('_shared/main_menu');
+	enabled('ee_sidebar') && $this->view('_shared/sidebar');
+	enabled('ee_breadcrumbs') && $this->view('_shared/breadcrumbs');
 }
 ?>
 
 <div id="mainContent"<?=$maincontent_state?>>
 
-	<?php enabled('right_nav') && $this->load->view('_shared/right_nav'); ?>
+	<?php enabled('ee_right_nav') && $this->view('_shared/right_nav'); ?>
 	<?=$EE_rendered_view?>
 
 </div>
@@ -20,7 +20,7 @@ if ($EE_view_disable !== TRUE)
 <?php
 if ($EE_view_disable !== TRUE)
 {
-	enabled('accessories') && $this->load->view('_shared/accessories');
-	enabled('footer') && $this->load->view('_shared/footer');
+	enabled('ee_accessories') && $this->view('_shared/accessories');
+	enabled('ee_footer') && $this->view('_shared/footer');
 }
 ?>

@@ -1,7 +1,7 @@
-<?php extend_template('wrapper', 'right_nav') ?>
+<?php extend_template('wrapper', 'ee_right_nav') ?>
 
 	<div id="templateViewLink">
-		<?php $this->load->view('_shared/right_nav')?>
+		<?php $this->view('_shared/right_nav')?>
 	</div>
 	<div class="contents">
         <div class="heading">
@@ -9,7 +9,7 @@
         </div>
         
         <div class="pageContents">
-	<?php $this->load->view('_shared/message')?>
+	<?php $this->view('_shared/message')?>
 		
 	<div id="templateEditor" class="formArea">
 		<?php if ($message):?>

@@ -6,7 +6,7 @@ if ($can_add_site)
 }
 else
 {
-	extend_template('default', 'right_nav');
+	extend_template('default', 'ee_right_nav');
 }
 ?>
 

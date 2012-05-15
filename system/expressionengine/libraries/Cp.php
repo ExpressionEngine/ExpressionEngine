@@ -298,7 +298,7 @@ class Cp {
 	 */
 	protected function _accessories()
 	{
-		if ($this->view->disabled('accessories'))
+		if ($this->view->disabled('ee_accessories'))
 		{
 			return;
 		}
@@ -317,7 +317,7 @@ class Cp {
 	 */
 	protected function _menu()
 	{
-		if ($this->view->disabled('menu'))
+		if ($this->view->disabled('ee_menu'))
 		{
 			return;
 		}
@@ -345,7 +345,7 @@ class Cp {
 			$this->view->maincontent_state = ' style="width:100%; display:block"';
         }
 
-        if ($this->view->disabled('sidebar'))
+        if ($this->view->disabled('ee_sidebar'))
 		{
 			return;
 		}
