@@ -54,7 +54,7 @@ class Addons extends CI_Controller {
 		$this->view->cp_page_title = lang('addons');
 		$this->view->controller = 'addons';
 
-		$this->view->render('_shared/overview');
+		$this->cp->render('_shared/overview');
 	}
 	
 	// --------------------------------------------------------------------
@@ -165,7 +165,7 @@ class Addons extends CI_Controller {
 		$vars['components'] = $components;
 		$vars['required'] = $required;
 				
-		$this->view->render('addons/package_settings', $vars);
+		$this->cp->render('addons/package_settings', $vars);
 	}
 }
 // END CLASS

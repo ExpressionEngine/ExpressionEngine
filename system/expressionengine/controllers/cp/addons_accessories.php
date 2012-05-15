@@ -182,7 +182,7 @@ class Addons_accessories extends CI_Controller {
 		}
 
 		$this->view->accessories = $accessories;
-		$this->view->render('addons/accessories');
+		$this->cp->render('addons/accessories');
 	}
 	
 	// --------------------------------------------------------------------
@@ -351,7 +351,7 @@ class Addons_accessories extends CI_Controller {
 		$vars['acc_controllers'] = explode('|', $installed[$name]['controllers']);
 		$vars['acc_member_groups'] = explode('|', $installed[$name]['member_groups']);
 
-		$this->view->render('addons/accessory_preferences', $vars);
+		$this->cp->render('addons/accessory_preferences', $vars);
 	}
 	
 	// --------------------------------------------------------------------

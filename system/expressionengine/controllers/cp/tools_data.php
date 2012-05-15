@@ -72,7 +72,7 @@ class Tools_data extends CI_Controller {
 		$this->view->cp_page_title = lang('tools_data');
 		$this->view->controller = 'tools/tools_data';
 
-		$this->view->render('_shared/overview');
+		$this->cp->render('_shared/overview');
 	}
 
 	// --------------------------------------------------------------------
@@ -109,7 +109,7 @@ class Tools_data extends CI_Controller {
 			BASE.AMP.'C=tools_data'=> lang('tools_data')
 		));
 
-		$this->view->render('tools/clear_caching', $vars);
+		$this->cp->render('tools/clear_caching', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -147,7 +147,7 @@ class Tools_data extends CI_Controller {
 			widgets: ["zebra"]
 		}');
 
-		$this->view->render('tools/sql_manager', array('sql_info' => $sql_info));
+		$this->cp->render('tools/sql_manager', array('sql_info' => $sql_info));
 	}
 
 	// --------------------------------------------------------------------
@@ -184,7 +184,7 @@ class Tools_data extends CI_Controller {
 			BASE.AMP.'C=tools_data'.AMP.'M=sql_manager' => lang('sql_manager')
 		));
 
-		$this->view->render('tools/sql_query_form');
+		$this->cp->render('tools/sql_query_form');
 	}
 
 	// --------------------------------------------------------------------
@@ -242,7 +242,7 @@ class Tools_data extends CI_Controller {
 			);'
 		);
 
-		$this->view->render('tools/sql_view_database', $details);
+		$this->cp->render('tools/sql_view_database', $details);
 	}
 
 	// --------------------------------------------------------------------
@@ -310,7 +310,7 @@ class Tools_data extends CI_Controller {
 			BASE.AMP.'C=tools_data'.AMP.'M=sql_manager'=> lang('sql_manager')
 		));
 
-		$this->view->render('tools/sql_run_table_action', $vars);
+		$this->cp->render('tools/sql_run_table_action', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -455,7 +455,7 @@ class Tools_data extends CI_Controller {
 					if ( ! $query = $this->db->query($new_sql))
 					{
 						$vars['no_results'] = lang('sql_no_result');
-						$this->view->render('tools/sql_results', $vars);
+						$this->cp->render('tools/sql_results', $vars);
 						return;
 					}
 					
@@ -483,7 +483,7 @@ class Tools_data extends CI_Controller {
 				if ( ! $query = $this->db->query($sql))
 				{
 					$vars['no_results'] = lang('sql_no_result');
-					$this->view->render('tools/sql_results', $vars);
+					$this->cp->render('tools/sql_results', $vars);
 					return;
 				}
 			}
@@ -498,7 +498,7 @@ class Tools_data extends CI_Controller {
 					$vars['thequery'] = $this->security->xss_clean($sql);
 					$vars['write'] = TRUE;
 
-					$this->view->render('tools/sql_results', $vars);
+					$this->cp->render('tools/sql_results', $vars);
 					return;
 				}
 			}
@@ -508,7 +508,7 @@ class Tools_data extends CI_Controller {
 		if ($query->num_rows() == 0)
 		{
 			$vars['no_results'] = lang('sql_no_result');
-			$this->view->render('tools/sql_results', $vars);
+			$this->cp->render('tools/sql_results', $vars);
 			return;
 		}
 
@@ -516,7 +516,7 @@ class Tools_data extends CI_Controller {
 		$vars['total_results'] = str_replace('%x', (isset($total_results)) ? $total_results : $query->num_rows(), lang('total_results'));
 		$vars['query'] = $query;
 
-		$this->view->render('tools/sql_results', $vars);
+		$this->cp->render('tools/sql_results', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -559,7 +559,7 @@ class Tools_data extends CI_Controller {
 		$vars['replace_options'] = $this->tools_model->get_search_replace_options();
 		$vars['replaced'] = ($replaced !== FALSE) ? lang('rows_replaced').' '.$replaced : FALSE;
 
-		$this->view->render('tools/search_and_replace', $vars);
+		$this->cp->render('tools/search_and_replace', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -782,7 +782,7 @@ class Tools_data extends CI_Controller {
 			BASE.AMP.'C=tools_data'=> lang('tools_data')
 		));
 
-		$this->view->render('tools/recount_stats', $vars);
+		$this->cp->render('tools/recount_stats', $vars);
 	}
 
 	// --------------------------------------------------------------------

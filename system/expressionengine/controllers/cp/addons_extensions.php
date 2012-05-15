@@ -171,7 +171,7 @@ class Addons_extensions extends CI_Controller {
 		        $extensions_toggle => BASE.AMP.'C=addons_extensions'.AMP.'M=toggle_extension_confirm'
 		    ));
 
-		$this->view->render('addons/extensions', $vars);
+		$this->cp->render('addons/extensions', $vars);
 	}
 	
 	// --------------------------------------------------------------------
@@ -202,7 +202,7 @@ class Addons_extensions extends CI_Controller {
 			BASE.AMP.'C=addons_extensions'=> lang('extensions')
 		));
 		
-		$this->view->render('addons/toggle_confirm', $vars);
+		$this->cp->render('addons/toggle_confirm', $vars);
 	}
 	
 	// --------------------------------------------------------------------
@@ -384,7 +384,7 @@ class Addons_extensions extends CI_Controller {
 
 			// load it up, kapowpow!
 			$this->view->cp_heading = lang('extension_settings').': '.$name;
-			$this->view->render('addons/extensions_settings_custom', $vars);
+			$this->cp->render('addons/extensions_settings_custom', $vars);
 			return;
 		}
 
@@ -478,7 +478,7 @@ class Addons_extensions extends CI_Controller {
 		
 		$this->view->hidden = array('file' => $vars['file']);
 		$this->view->cp_heading = lang('extension_settings').': '.$name;
-		$this->view->render('addons/extensions_settings', $vars);
+		$this->cp->render('addons/extensions_settings', $vars);
 	}
 	
 	// --------------------------------------------------------------------

@@ -108,7 +108,7 @@ class MyAccount extends CI_Controller {
 			}
 		}
 
-		$this->view->render('account/index', $vars);
+		$this->cp->render('account/index', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -377,7 +377,7 @@ class MyAccount extends CI_Controller {
 			}
 		}
 
-		$this->view->render('account/edit_profile', $vars);
+		$this->cp->render('account/edit_profile', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -492,7 +492,7 @@ class MyAccount extends CI_Controller {
 
 		$vars['checkboxes'] = array('accept_admin_email', 'accept_user_email', 'notify_by_default', 'notify_of_pm', 'smart_notifications');
 
-		$this->view->render('account/email_settings', $vars);
+		$this->cp->render('account/email_settings', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -601,7 +601,7 @@ class MyAccount extends CI_Controller {
 
 		$vars['checkboxes'] = array('accept_messages', 'display_avatars', 'display_signatures', 'parse_smileys');
 
-		$this->view->render('account/edit_preferences', $vars);
+		$this->cp->render('account/edit_preferences', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -651,7 +651,7 @@ class MyAccount extends CI_Controller {
 
 		$vars['allow_username_change'] = ($this->session->userdata['group_id'] != '1' AND $this->config->item('allow_username_change') == 'n') ? FALSE : TRUE;
 
-		$this->view->render('account/username_password', $vars);
+		$this->cp->render('account/username_password', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -913,7 +913,7 @@ class MyAccount extends CI_Controller {
 
 		$vars = array_merge($this->_account_menu_setup(), $vars);
 
-		$this->view->render('account/ping_servers', $vars);
+		$this->cp->render('account/ping_servers', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -1088,7 +1088,7 @@ class MyAccount extends CI_Controller {
 		$vars['member_id'] = $this->id;
 		$vars['i'] = 1;
 
-		$this->view->render('account/html_buttons', $vars);
+		$this->cp->render('account/html_buttons', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -1171,7 +1171,7 @@ class MyAccount extends CI_Controller {
 
 		$vars['cp_theme_options'] =	 $this->admin_model->get_cp_theme_list();
 
-		$this->view->render('account/cp_theme', $vars);
+		$this->cp->render('account/cp_theme', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -1268,7 +1268,7 @@ class MyAccount extends CI_Controller {
 		$this->pagination->initialize($config);
 		$vars['pagination'] = $this->pagination->create_links();
 
-		$this->view->render('account/subscriptions', $vars);
+		$this->cp->render('account/subscriptions', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -1375,7 +1375,7 @@ class MyAccount extends CI_Controller {
 
 		$vars['language_options'] = $this->language_model->language_pack_names();
 
-		$this->view->render('account/localization', $vars);
+		$this->cp->render('account/localization', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -1475,7 +1475,7 @@ class MyAccount extends CI_Controller {
 			}
 		}
 
-		$this->view->render('account/edit_signature', $vars);
+		$this->cp->render('account/edit_signature', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -1603,7 +1603,7 @@ class MyAccount extends CI_Controller {
 
 		$vars['avatar_image_remove'] = ($this->config->item('allow_avatar_uploads') == 'y' AND $cur_avatar_url != '') ? TRUE : FALSE;
 
-		$this->view->render('account/edit_avatar', $vars);
+		$this->cp->render('account/edit_avatar', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -1656,7 +1656,7 @@ class MyAccount extends CI_Controller {
 
 		$vars['remove_photo'] = ($cur_photo_url != '') ? TRUE : FALSE;
 
-		$this->view->render('account/edit_photo', $vars);
+		$this->cp->render('account/edit_photo', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -1742,7 +1742,7 @@ class MyAccount extends CI_Controller {
 						'cell_alt_start' => '<td style="width:30%">'
 					));
 
-		$this->view->render('account/browse_avatars', $vars);
+		$this->cp->render('account/browse_avatars', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -1964,7 +1964,7 @@ class MyAccount extends CI_Controller {
 			}
 		}
 
-		$this->view->render('account/member_preferences', $vars);
+		$this->cp->render('account/member_preferences', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -2086,7 +2086,7 @@ class MyAccount extends CI_Controller {
 
 		$vars['blank_count'] = count($vars['quicklinks'])+1;
 
-		$this->view->render('account/quicklinks', $vars);
+		$this->cp->render('account/quicklinks', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -2232,7 +2232,7 @@ class MyAccount extends CI_Controller {
 			}');
 		}
 
-		$this->view->render('account/main_menu_manager', $vars);
+		$this->cp->render('account/main_menu_manager', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -2468,7 +2468,7 @@ class MyAccount extends CI_Controller {
 			$vars['bm_link'] = "javascript:bm=$type;void(bmentry=window.open('".$path."title='+encodeURI(document.title)+'&tb_url='+encodeURI(window.location.href)+'&".$field_id."='+encodeURI(bm),'bmentry',''))";
 		}
 
-		$this->view->render('account/bookmarklet', $vars);
+		$this->cp->render('account/bookmarklet', $vars);
 	}
 
 	/** -----------------------------------
@@ -2614,7 +2614,7 @@ class MyAccount extends CI_Controller {
 			}
 		}
 
-		$this->view->render('account/ignore_list', $vars);
+		$this->cp->render('account/ignore_list', $vars);
 	}
 	
 	/**
@@ -2653,7 +2653,7 @@ class MyAccount extends CI_Controller {
 		$vars['action'] = 'C=myaccount'.AMP.'M=custom_screen_save'.AMP.'extension='.$extension.AMP.'method='.$method.AMP.'method_save='.$method_save;
 
 		// load the view wrapper
-		$this->view->render('account/custom_screen', $vars);
+		$this->cp->render('account/custom_screen', $vars);
 	}
 
 	// -------------------------------------------------------------------------

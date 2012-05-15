@@ -96,7 +96,7 @@ class Sites extends CI_Controller {
 
 		$this->cp->set_right_nav(array('edit_sites' => BASE.AMP.'C=sites'.AMP.'M=manage_sites'));
 		
-		$this->view->render('sites/switch', $vars);
+		$this->cp->render('sites/switch', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -220,7 +220,7 @@ class Sites extends CI_Controller {
 		
 		$this->cp->set_right_nav(array('create_new_site' => BASE.AMP.'C=sites'.AMP.'M=add_edit_site'));
 		
-		$this->view->render('sites/list_sites', $vars);
+		$this->cp->render('sites/list_sites', $vars);
 	}
 	
 	// --------------------------------------------------------------------
@@ -327,7 +327,7 @@ class Sites extends CI_Controller {
 				$vars['form_url'] .= AMP.'site_id='.$site_id;
 		}
 
-		$this->view->render('sites/edit_form', $vars);		
+		$this->cp->render('sites/edit_form', $vars);		
 	}
 	
 
@@ -1641,7 +1641,7 @@ class Sites extends CI_Controller {
 		$vars['site_id'] = $site_id;
 		$vars['message'] = lang('delete_site_confirmation');
 		
-		$this->view->render('sites/delete_confirm', $vars);
+		$this->cp->render('sites/delete_confirm', $vars);
 	}
 	
 	// --------------------------------------------------------------------

@@ -63,7 +63,7 @@ class Content extends CI_Controller {
 		$this->view->cp_page_title = lang('content');
 		$this->view->controller = 'content';
 
-		$this->view->render('_shared/overview');
+		$this->cp->render('_shared/overview');
 	}
 	
 	

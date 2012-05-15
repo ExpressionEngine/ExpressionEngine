@@ -110,7 +110,7 @@ class Content_publish extends CI_Controller {
 			$this->functions->redirect($base_url.key($data['assigned_channels']));
 		}
 
-		$this->view->render('content/channel_select_list', $data);
+		$this->cp->render('content/channel_select_list', $data);
 	}
 	
 	// --------------------------------------------------------------------
@@ -335,7 +335,7 @@ class Content_publish extends CI_Controller {
 
 		$this->cp->set_breadcrumb(BASE.AMP.'C=content_publish', lang('publish'));
 		
-		$this->view->render('content/publish', $data);
+		$this->cp->render('content/publish', $data);
 	}
 	
 	// --------------------------------------------------------------------
@@ -751,7 +751,7 @@ class Content_publish extends CI_Controller {
 		);
 		
 		$this->view->cp_page_title = lang('view_entry');
-		$this->view->render('content/view_entry', $data);
+		$this->cp->render('content/view_entry', $data);
 	}
 	
 	// --------------------------------------------------------------------
@@ -1301,7 +1301,7 @@ class Content_publish extends CI_Controller {
 			
 			$data['cp_page_title'] = lang('xmlrpc_ping_errors');
 			
-			$this->view->render('content/ping_errors', $data);
+			$this->cp->render('content/ping_errors', $data);
 			
 			return TRUE;	// tricking it into not publish again
 		}

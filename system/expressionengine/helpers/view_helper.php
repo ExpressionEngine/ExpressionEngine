@@ -1,25 +1,68 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @license		http://expressionengine.com/user_guide/license.html
+ * @link		http://expressionengine.com
+ * @since		Version 2.6
+ * @filesource
+ */
+ 
+// ------------------------------------------------------------------------
 
+/**
+ * ExpressionEngine View Helper
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Helpers
+ * @category	Helpers
+ * @author		EllisLab Dev Team
+ * @link		http://expressionengine.com
+ */
+
+// ------------------------------------------------------------------------
+
+/**
+ * Extend a view in the _template directory
+ */
 function extend_template($which, $disable = array())
 {
 	get_instance()->view->extend('_templates/'.$which, $disable);
 }
 
+// ------------------------------------------------------------------------
+
+/**
+ * Extend a view. Contents of the current view
+ * are passed in as $EE_Rendered_view
+ */
 function extend_view($which, $disable = array())
 {
 	get_instance()->view->extend($which, $disable);
 }
 
+// ------------------------------------------------------------------------
+
+/**
+ * Check if a view block is disabled
+ */
 function disabled($which)
 {
 	return get_instance()->view->disabled($which);
 }
 
+// ------------------------------------------------------------------------
+
+/**
+ * Check if a view block is enabled
+ */
 function enabled($which)
 {
 	return ! get_instance()->view->disabled($which);
 }
 
-/* End of file  */
-/* Location: 
- */
+/* End of file */
+/* Location: system/expressionengine/helpers/view_helper.php */

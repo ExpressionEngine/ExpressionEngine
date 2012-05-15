@@ -65,7 +65,7 @@ class Members extends CI_Controller {
 		$this->view->cp_page_title = lang('members');
 		$this->view->controller = 'members';
 
-		$this->view->render('_shared/overview');
+		$this->cp->render('_shared/overview');
 	}
 	
 	// --------------------------------------------------------------------
@@ -210,7 +210,7 @@ class Members extends CI_Controller {
 		}
 		
 		$this->cp->set_variable('cp_page_title', lang('view_members'));
-		$this->view->render('members/view_members', $vars);
+		$this->cp->render('members/view_members', $vars);
 	}
 
 	// ----------------------------------------------------------------
@@ -517,7 +517,7 @@ class Members extends CI_Controller {
 
 		$this->cp->set_variable('cp_page_title', lang('delete_member'));
 		
-		$this->view->render('members/delete_confirm', $vars);
+		$this->cp->render('members/delete_confirm', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -571,7 +571,7 @@ class Members extends CI_Controller {
 
 		$vars['can_access_cp'] = ($query->row('can_access_cp')  == 'y') ? TRUE : FALSE;
 
-		$this->view->render('members/login_as_member', $vars);
+		$this->cp->render('members/login_as_member', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -903,7 +903,7 @@ class Members extends CI_Controller {
 
         $this->cp->set_right_nav(array('create_new_member_group' => BASE.AMP.'C=members'.AMP.'M=edit_member_group'));
 
-		$this->view->render('members/member_group_manager', $vars);
+		$this->cp->render('members/member_group_manager', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -986,7 +986,7 @@ class Members extends CI_Controller {
 			'site_id'		=> $this->config->item('site_id'),
 		);
 
-		$this->view->render('members/edit_member_group', $data);
+		$this->cp->render('members/edit_member_group', $data);
 	}
 	
 	// --------------------------------------------------------------------
@@ -1881,7 +1881,7 @@ class Members extends CI_Controller {
 			widgets: ["zebra"]
 		}');
 		
-		$this->view->render('members/member_config', $vars);
+		$this->cp->render('members/member_config', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -2302,7 +2302,7 @@ class Members extends CI_Controller {
 
 		$this->cp->set_variable('cp_page_title', lang('delete_member_group'));
 		
-		$this->view->render('members/delete_member_group_conf', $vars);
+		$this->cp->render('members/delete_member_group_conf', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -2377,7 +2377,7 @@ class Members extends CI_Controller {
 		
 		if ($vars['notice'] === TRUE)
 		{
-			return $this->view->render('members/register', $vars);
+			return $this->cp->render('members/register', $vars);
 		}
 		
 		$this->load->library(array('form_validation', 'table'));
@@ -2507,7 +2507,7 @@ class Members extends CI_Controller {
 				$vars['member_groups'][$group->group_id] = $group->group_title;
 			}
 
-			$this->view->render('members/register', $vars);
+			$this->cp->render('members/register', $vars);
 		}
 		else
 		{
@@ -2718,7 +2718,7 @@ class Members extends CI_Controller {
 
 		$this->cp->set_variable('cp_page_title', lang('user_banning'));
 
-		$this->view->render('members/member_banning', $vars);
+		$this->cp->render('members/member_banning', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -2807,7 +2807,7 @@ class Members extends CI_Controller {
 		
 		$this->cp->set_right_nav(array('create_new_profile_field' => BASE.AMP.'C=members'.AMP.'M=edit_profile_field'));
 		
-		$this->view->render('members/custom_profile_fields', $vars);
+		$this->cp->render('members/custom_profile_fields', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -3020,7 +3020,7 @@ class Members extends CI_Controller {
 			</script>';
 		$this->cp->add_to_foot($additional);
 				
-		$this->view->render('members/edit_profile_field', $vars);
+		$this->cp->render('members/edit_profile_field', $vars);
 	}
 
 	// ------------------------------------------------------------------
@@ -3245,7 +3245,7 @@ class Members extends CI_Controller {
 				
 		$this->cp->set_variable('cp_page_title', lang('delete_field'));
 		
-		$this->view->render('members/delete_profile_fields_confirm', $vars);
+		$this->cp->render('members/delete_profile_fields_confirm', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -3317,7 +3317,7 @@ class Members extends CI_Controller {
 		$this->cp->set_variable('cp_page_title', lang('edit_field_order'));
 		$this->cp->set_breadcrumb(BASE.AMP.'C=members'.AMP.'M=custom_profile_fields', lang('custom_profile_fields'));
 
-		$this->view->render('members/edit_field_order', $vars);
+		$this->cp->render('members/edit_field_order', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -3381,7 +3381,7 @@ class Members extends CI_Controller {
 
 		$vars['message'] = $message;
 
-		$this->view->render('members/ip_search', $vars);
+		$this->cp->render('members/ip_search', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -3579,7 +3579,7 @@ class Members extends CI_Controller {
 
 		$vars['grand_total'] = $grand_total;
 
-		$this->view->render('members/ip_search_results', $vars);
+		$this->cp->render('members/ip_search_results', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -3628,7 +3628,7 @@ class Members extends CI_Controller {
 			$vars['options']['delete'] = lang('delete_selected');
 		}
 		
-		$this->view->render('members/activate', $vars);
+		$this->cp->render('members/activate', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -3755,7 +3755,7 @@ class Members extends CI_Controller {
 
 		$this->cp->set_variable('cp_page_title', $vars['message']);
 
-		$this->view->render("members/message", $vars);
+		$this->cp->render("members/message", $vars);
 	}	
 }
 /* End of file members.php */

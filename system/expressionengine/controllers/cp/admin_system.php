@@ -48,7 +48,7 @@ class Admin_system extends CI_Controller {
 		$this->view->controller = 'admin';
 		$this->view->cp_page_title = lang('admin_system');
 
-		$this->view->render('_shared/overview');
+		$this->cp->render('_shared/overview');
 	}
 
 	// --------------------------------------------------------------------
@@ -192,7 +192,7 @@ class Admin_system extends CI_Controller {
 			{
 				$vars['cp_messages']['error'] = $this->form_validation->error_string('', '');
 	
-				$this->view->render('admin/config_pages', $vars);
+				$this->cp->render('admin/config_pages', $vars);
 	
 				return;
 			}
@@ -203,7 +203,7 @@ class Admin_system extends CI_Controller {
 		$vars = $this->_prep_view_vars($type);
 		$vars['form_action'] = 'C=admin_system'.AMP.'M='.$return_loc;
 
-		$this->view->render('admin/config_pages', $vars);
+		$this->cp->render('admin/config_pages', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -656,7 +656,7 @@ class Admin_system extends CI_Controller {
 			$("table tbody tr:visible:odd").addClass("odd");
 		');
 
-		$this->view->render('admin/config_editor', $vars);
+		$this->cp->render('admin/config_editor', $vars);
 	}
 
 	// --------------------------------------------------------------------

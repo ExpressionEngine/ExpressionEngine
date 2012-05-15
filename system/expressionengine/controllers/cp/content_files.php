@@ -270,7 +270,7 @@ class Content_files extends CI_Controller {
 			'upload_dirs_options' 	=> $upload_dirs_options
 		));
 
-		$this->view->render('content/files/index', $data);
+		$this->cp->render('content/files/index', $data);
 	}
 
 	// --------------------------------------------------------------------
@@ -673,7 +673,7 @@ class Content_files extends CI_Controller {
 
 		$this->cp->set_variable('cp_page_title', lang('delete_selected_files'));
 
-		$this->view->render('content/files/confirm_file_delete', $data);
+		$this->cp->render('content/files/confirm_file_delete', $data);
 	}
 
 	// ------------------------------------------------------------------------
@@ -835,7 +835,7 @@ class Content_files extends CI_Controller {
 			'file'		=> array('cp/publish_tabs')
 		));
 				
-		$this->view->render('content/files/edit_file', $data);
+		$this->cp->render('content/files/edit_file', $data);
 	}
 	
 	// ------------------------------------------------------------------------
@@ -948,7 +948,7 @@ class Content_files extends CI_Controller {
 			});
 		');
 		
-		$this->view->render('content/files/edit_image', $data);
+		$this->cp->render('content/files/edit_image', $data);
 	}
 
 	// ------------------------------------------------------------------------
@@ -1154,7 +1154,7 @@ class Content_files extends CI_Controller {
 			lang('file_upload_prefs')
 		);
 		
-		$this->view->render('content/files/sync', $vars);
+		$this->cp->render('content/files/sync', $vars);
 
 
 		// process file array - move to own method?
@@ -1446,7 +1446,7 @@ class Content_files extends CI_Controller {
 
 		$this->cp->set_action_nav(array('create_new_wm_pref' => BASE.AMP.'C=content_files'.AMP.'M=edit_watermark_preferences'));
 
-		$this->view->render('content/files/watermark_preferences', $vars);
+		$this->cp->render('content/files/watermark_preferences', $vars);
 
 
 	}
@@ -1635,7 +1635,7 @@ class Content_files extends CI_Controller {
 
 		if ( ! $this->form_validation->run())
 		{
-			$this->view->render('content/files/watermark_settings', $vars);
+			$this->cp->render('content/files/watermark_settings', $vars);
 		}
 		else
 		{
@@ -1775,7 +1775,7 @@ class Content_files extends CI_Controller {
 			$data['items'][] = $item->wm_name;
 		}
 
-		$this->view->render('content/files/pref_delete_confirm', $data);
+		$this->cp->render('content/files/pref_delete_confirm', $data);
 
 	}
 
@@ -1846,7 +1846,7 @@ class Content_files extends CI_Controller {
 
 		$this->cp->set_action_nav(array('create_new_upload_pref' => BASE.AMP.'C=content_files'.AMP.'M=edit_upload_preferences'));
 
-		$this->view->render('content/files/file_upload_preferences', $vars);
+		$this->cp->render('content/files/file_upload_preferences', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -2090,7 +2090,7 @@ class Content_files extends CI_Controller {
 
 		if ( ! $this->form_validation->run())
 		{
-			$this->view->render('content/files/file_upload_create', $data);
+			$this->cp->render('content/files/file_upload_create', $data);
 		}
 		else
 		{
@@ -2369,7 +2369,7 @@ class Content_files extends CI_Controller {
 			$data['items'][] = $items['name'];
 		}
 
-		$this->view->render('content/files/pref_delete_confirm', $data);
+		$this->cp->render('content/files/pref_delete_confirm', $data);
 	}
 
 	// --------------------------------------------------------------------
@@ -2456,7 +2456,7 @@ class Content_files extends CI_Controller {
 			)
 		);
 
-		$this->view->render('content/files/batch_upload_index', $data);
+		$this->cp->render('content/files/batch_upload_index', $data);
 	}
 
 	// --------------------------------------------------------------------
@@ -2655,7 +2655,7 @@ class Content_files extends CI_Controller {
 
 		);
 
-		$this->view->render('content/files/manual_batch', $data);
+		$this->cp->render('content/files/manual_batch', $data);
 	}
 
 	// --------------------------------------------------------------------

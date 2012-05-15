@@ -137,7 +137,7 @@ class Homepage extends CI_Controller {
 		}
 
 		$this->cp->add_js_script('file', 'cp/homepage');
-		$this->view->render('homepage', $vars);
+		$this->cp->render('homepage', $vars);
 	}
 
 

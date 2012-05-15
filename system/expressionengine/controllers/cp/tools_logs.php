@@ -62,7 +62,7 @@ class Tools_logs extends CI_Controller {
 		$this->cp->set_breadcrumb(BASE.AMP.'C=tools', lang('tools'));
 
 		$this->view->cp_page_title = lang('tools_logs');
-		$this->view->render('_shared/overview');
+		$this->cp->render('_shared/overview');
 	}
 
 	// --------------------------------------------------------------------
@@ -113,7 +113,7 @@ class Tools_logs extends CI_Controller {
 			BASE.AMP.'C=tools_logs'=> lang('tools_logs')
 		));
 				
-		$this->view->render('tools/view_cp_log', $vars);
+		$this->cp->render('tools/view_cp_log', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -203,7 +203,7 @@ class Tools_logs extends CI_Controller {
 			BASE.AMP.'C=tools_logs'=> lang('tools_logs')
 		));
 
-		$this->view->render('tools/view_search_log', $vars);
+		$this->cp->render('tools/view_search_log', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -312,7 +312,7 @@ class Tools_logs extends CI_Controller {
 
 		$data['blacklist_installed'] = ($count > 0);
 
-		$this->view->render('tools/view_throttle_log', $data);
+		$this->cp->render('tools/view_throttle_log', $data);
 	}
 
 	// --------------------------------------------------------------------
@@ -449,7 +449,7 @@ class Tools_logs extends CI_Controller {
 			));
 		}
 		
-		$this->view->render('tools/view_email_log', $data);
+		$this->cp->render('tools/view_email_log', $data);
 	}
 
 	// --------------------------------------------------------------------
@@ -569,7 +569,7 @@ class Tools_logs extends CI_Controller {
 			)
 		);
 		
-		$this->view->render('tools/view_developer_log', $vars);
+		$this->cp->render('tools/view_developer_log', $vars);
 	}
 	
 	// --------------------------------------------------------------------
@@ -732,7 +732,7 @@ class Tools_logs extends CI_Controller {
 			$this->functions->redirect(BASE.AMP.'C=tools_logs'.AMP.'M=view_email_log');
 		}
 		
-		$this->view->render('tools/view_email', $query->row_array());
+		$this->cp->render('tools/view_email', $query->row_array());
 	}
 	
 	// --------------------------------------------------------------------

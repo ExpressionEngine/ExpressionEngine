@@ -54,7 +54,7 @@ class Tools extends CI_Controller {
 		$this->view->cp_page_title = lang('tools');
 		$this->view->controller = 'tools';
 
-		$this->view->render('_shared/overview');
+		$this->cp->render('_shared/overview');
 	}
 	
 }
