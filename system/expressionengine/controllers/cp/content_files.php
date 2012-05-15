@@ -23,7 +23,7 @@
  * @link		http://expressionengine.com
  */
 
-class Content_files extends CI_Controller {
+class Content_files extends CP_Controller {
 
 	private $_upload_dirs	= array();
 	private $_allowed_dirs	= array();

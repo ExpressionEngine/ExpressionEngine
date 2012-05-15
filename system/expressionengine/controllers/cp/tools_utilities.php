@@ -22,7 +22,7 @@
  * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
-class Tools_utilities extends CI_Controller {
+class Tools_utilities extends CP_Controller {
 
 	private $errors					= array();
 	private $members				= array();

@@ -22,7 +22,7 @@
  * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
-class Content extends CI_Controller {
+class Content extends CP_Controller {
 
 	/**
 	 * Constructor

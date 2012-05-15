@@ -22,7 +22,7 @@
  * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
-class Tools extends CI_Controller {
+class Tools extends CP_Controller {
 
 	/**
 	 * Constructor

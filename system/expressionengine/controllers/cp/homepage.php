@@ -22,7 +22,7 @@
  * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
-class Homepage extends CI_Controller {
+class Homepage extends CP_Controller {
 
 	/**
 	 * Index function

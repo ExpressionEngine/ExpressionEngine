@@ -22,7 +22,7 @@
  * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
-class Addons_accessories extends CI_Controller {
+class Addons_accessories extends CP_Controller {
 	
 	var $human_names = array();
 	

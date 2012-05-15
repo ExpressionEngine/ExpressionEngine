@@ -22,7 +22,7 @@
  * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
-class MyAccount extends CI_Controller {
+class MyAccount extends CP_Controller {
 
 	var $id			= '';
 	var $username	= '';

@@ -23,7 +23,7 @@
  * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
-class Addons_modules extends CI_Controller {
+class Addons_modules extends CP_Controller {
 
 	var $_mcp_reference;
 

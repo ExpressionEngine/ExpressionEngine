@@ -22,7 +22,7 @@
  * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
-class Admin_system extends CI_Controller {
+class Admin_system extends CP_Controller {
 
 	/**
 	 * Constructor

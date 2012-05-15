@@ -22,7 +22,7 @@
  * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
-class Search extends CI_Controller {
+class Search extends CP_Controller {
 
 	/**
 	 * Constructor

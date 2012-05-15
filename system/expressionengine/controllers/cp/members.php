@@ -23,7 +23,7 @@
  * @link		http://expressionengine.com
  */
 
-class Members extends CI_Controller {
+class Members extends CP_Controller {
 
 	// Default member groups.  We used these for translation purposes
 	private $english		= array('Guests', 'Banned', 'Members', 'Pending', 'Super Admins');

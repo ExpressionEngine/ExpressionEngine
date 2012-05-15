@@ -22,7 +22,7 @@
  * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
-class Addons extends CI_Controller {
+class Addons extends CP_Controller {
 
 	/**
 	 * Constructor

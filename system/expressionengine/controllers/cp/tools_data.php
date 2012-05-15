@@ -22,7 +22,7 @@
  * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
-class Tools_data extends CI_Controller {
+class Tools_data extends CP_Controller {
 
 	var $sub_breadcrumbs = array();
 

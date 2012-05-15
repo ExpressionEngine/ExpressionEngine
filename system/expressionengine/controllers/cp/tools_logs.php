@@ -22,7 +22,7 @@
  * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
-class Tools_logs extends CI_Controller {
+class Tools_logs extends CP_Controller {
 	
 	var $perpage		= 50;
 

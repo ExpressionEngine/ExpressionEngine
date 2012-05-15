@@ -22,7 +22,7 @@
  * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
-class Admin_content extends CI_Controller {
+class Admin_content extends CP_Controller {
 
 	var $reserved = array(
 					'random', 'date', 'title', 'url_title', 'edit_date', 

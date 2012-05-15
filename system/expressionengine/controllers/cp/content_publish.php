@@ -25,7 +25,7 @@
  * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
-class Content_publish extends CI_Controller {
+class Content_publish extends CP_Controller {
 
 	private $_tab_labels		= array();
 	private $_module_tabs		= array();

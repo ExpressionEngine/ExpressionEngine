@@ -22,7 +22,7 @@
  * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
-class Addons_plugins extends CI_Controller {
+class Addons_plugins extends CP_Controller {
 
 	var $paths = array();
 

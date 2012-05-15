@@ -22,7 +22,7 @@
  * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
-class Sites extends CI_Controller {
+class Sites extends CP_Controller {
 
 	var $version 			= '2.1.2';
 	var $build_number		= '20120123';

@@ -22,7 +22,7 @@
  * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
-class Tools_communicate extends CI_Controller {
+class Tools_communicate extends CP_Controller {
 
 	var $mailinglist_exists	= FALSE;
 	var $attachments		= array();

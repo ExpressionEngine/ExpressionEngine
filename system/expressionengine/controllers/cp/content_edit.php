@@ -22,7 +22,7 @@
  * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
-class Content_edit extends CI_Controller {
+class Content_edit extends CP_Controller {
 
 	private $publish_base_uri;
 	private $publish_base_url;

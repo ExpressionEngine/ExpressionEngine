@@ -22,7 +22,7 @@
  * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
-class Design extends CI_Controller {
+class Design extends CP_Controller {
 
 	var $sub_breadcrumbs = array();
 

@@ -1,6 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class Addons_fieldtypes extends CI_Controller {
+class Addons_fieldtypes extends CP_Controller {
 
 
 	/**
