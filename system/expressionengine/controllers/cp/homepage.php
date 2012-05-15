@@ -132,7 +132,6 @@ class Homepage extends CP_Controller {
 		$this->cp->render('homepage', $vars);
 	}
 
-
 	// --------------------------------------------------------------------
 	
 	/**
@@ -152,11 +151,10 @@ class Homepage extends CP_Controller {
 		return $this->db->count_all_results();
   	}
 
-
 	// --------------------------------------------------------------------
 	
 	/**
-	 *  Get Recent Entries
+	 * Get Recent Entries
 	 *
 	 * Gets total number of comments with 'pending' status
 	 *
@@ -173,7 +171,8 @@ class Homepage extends CP_Controller {
 		if ($query && $query->num_rows() > 0)
 		{
 			$result = $query->result();
-			foreach($result as $row)
+
+			foreach ($result as $row)
 			{
 				$link = '';
 				
@@ -181,9 +180,8 @@ class Homepage extends CP_Controller {
 				{
 					$link = BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.$row->channel_id.AMP.'entry_id='.$row->entry_id;
 				}
-				
 
-				$link = ($link == '') ? $row->title: '<a href="'.$link.'">'.$row->title.'</a>';
+				$link = ($link == '') ? $row->title : '<a href="'.$link.'">'.$row->title.'</a>';
 				
 				$entries[] = $link;
 			}
@@ -191,8 +189,6 @@ class Homepage extends CP_Controller {
 		
 		return $entries;
 	}
-
-
 
 	// --------------------------------------------------------------------
 
@@ -299,9 +295,9 @@ class Homepage extends CP_Controller {
 				$new_release = TRUE;
 				$high_priority = TRUE;
 				$high_priority_release = array(
-						'version'		=> $app_data[0],
-						'build'			=> $app_data[1]
-					);
+					'version'	=> $app_data[0],
+					'build'		=> $app_data[1]
+				);
 
 				continue;
 			}
@@ -311,15 +307,15 @@ class Homepage extends CP_Controller {
 				$new_release = TRUE;
 				$high_priority = TRUE;
 				$high_priority_release = array(
-						'version'		=> $app_data[0],
-						'build'			=> $app_data[1]
-					);
+					'version'	=> $app_data[0],
+					'build'		=> $app_data[1]
+				);
 
 				continue;					
 			}
 		}
 		
-		if (! $new_release)
+		if ( ! $new_release)
 		{
 			return FALSE;
 		}
@@ -330,10 +326,10 @@ class Homepage extends CP_Controller {
 		// released in the past 2 calendar days, we don't show anything
 		// on the control panel home page unless it was a security release
 		$date_threshold = mktime(0, 0, 0, 
-							substr($cur_ver[1], 4, -2), // Month
-							(substr($cur_ver[1], -2) + 2), // Day + 2 
-							substr($cur_ver[1], 0, 4) // Year
-					);		
+			substr($cur_ver[1], 4, -2), // Month
+			(substr($cur_ver[1], -2) + 2), // Day + 2 
+			substr($cur_ver[1], 0, 4) // Year
+		);		
 		
 		if (($this->localize->now < $date_threshold) && $high_priority != TRUE)
 		{
@@ -343,20 +339,20 @@ class Homepage extends CP_Controller {
 		if ($high_priority)
 		{
 			return sprintf(lang('new_version_notice_high_priority'),
-						   $high_priority_release['version'],	
-						   $high_priority_release['build'],
-						   $cur_ver[0],
-						   $cur_ver[1],
-						   $download_url,
-						   $this->cp->masked_url($this->config->item('doc_url').'installation/update.html'));
+				$high_priority_release['version'],	
+				$high_priority_release['build'],
+				$cur_ver[0],
+				$cur_ver[1],
+				$download_url,
+				$this->cp->masked_url($this->config->item('doc_url').'installation/update.html')
+			);
 		}
-		else
-		{
-			return sprintf(lang('new_version_notice'),
-						   $details['version'],
-						   $download_url,
-						   $this->cp->masked_url($this->config->item('doc_url').'installation/update.html'));					
-		}
+		
+		return sprintf(lang('new_version_notice'),
+			$details['version'],
+			$download_url,
+			$this->cp->masked_url($this->config->item('doc_url').'installation/update.html')
+		);
 	}
 
 }
