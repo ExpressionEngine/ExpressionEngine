@@ -554,13 +554,13 @@ class Cp {
 	 */
 	function set_right_nav($nav = array())
 	{
-		$this->EE->load->vars('cp_right_nav', array_reverse($nav));
+		$this->view->cp_right_nav = array_reverse($nav);
 	}
 	
 	// --------------------------------------------------------------------
 	
 	/**
-	 * Set the right navigation
+	 * Set the in-header navigation
 	 *
 	 * @access	public
 	 * @param	array
@@ -569,7 +569,7 @@ class Cp {
 	 */
 	function set_action_nav($nav = array())
 	{
-		$this->EE->load->vars('cp_action_nav', array_reverse($nav));
+		$this->view->cp_action_nav = array_reverse($nav);
 	}
 
 	// --------------------------------------------------------------------
