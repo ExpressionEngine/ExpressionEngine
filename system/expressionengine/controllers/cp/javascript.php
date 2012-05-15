@@ -31,6 +31,9 @@ class Javascript extends CI_Controller {
 	{
 		parent::__construct();
 
+		$this->load->library('core');
+		$this->core->bootstrap();
+
 		if ( ! defined('PATH_JQUERY'))
 		{
 			if ($this->config->item('use_compressed_js') == 'n')
@@ -123,6 +126,7 @@ class Javascript extends CI_Controller {
 		// trying to load a specific js file?
 		$loadfile = ($loadfile) ? $loadfile : $this->input->get_post('file');
 		$package = $this->input->get_post('package');
+		$cp_theme = $this->input->get_post('theme');
 		
 		$loadfile = $this->security->sanitize_filename($loadfile, TRUE);
 		
@@ -159,13 +163,13 @@ class Javascript extends CI_Controller {
 			$contents = 'css';
 			
 			$css_paths = array(
-				PATH_CP_THEME.$this->session->userdata('cp_theme').'/',
+				PATH_CP_THEME.$cp_theme.'/',
 				PATH_CP_THEME.'default/'
 			);
 
-			if ($this->session->userdata('cp_theme') == 'default')
+			if ($cp_theme == 'default')
 			{
-				array_shift($css_paths);
+				unset($css_paths[0]);
 			}
 			
 			foreach ($css_paths as $a_path)
@@ -323,9 +327,7 @@ class Javascript extends CI_Controller {
 			}
 		}
 
-		$length = strlen($contents);
 		$modified = $this->input->get_post('v');
-
 		$this->_set_headers($mock_name, $modified);
 		
 		$this->output->set_header('Content-Length: '.strlen($contents));
