@@ -846,6 +846,9 @@ class Cp {
 	 */
 	function fetch_cp_themes()
 	{
+		$this->EE->load->library('logger');
+		$this->EE->logger->deprecated('2.6.0', 'Admin_model::get_cp_theme_list()');
+
 		$this->EE->load->model('admin_model');
 		return $this->EE->admin_model->get_cp_theme_list();
 	}
