@@ -38,7 +38,7 @@ class View {
 		$this->EE =& get_instance();
 	}
 	
-	// --------------------------------------------------------------------------
+	// --------------------------------------------------------------------
 	
 	/**
 	 * Set Theme
@@ -59,7 +59,7 @@ class View {
 		$this->EE->load->add_theme_cascade(PATH_CP_THEME.$cp_theme.'/');
 	}
 
-	// --------------------------------------------------------------------------
+	// --------------------------------------------------------------------
 	
 	/**
 	 * Render output (html)
@@ -69,19 +69,7 @@ class View {
 	 */
 	public function render($view, $data = array(), $return = FALSE)
 	{
-		// cp rendering calls don't return data, modules do.
-		// this is kind of hacky for now, having a template
-		// dependency should trigger these. It's all backwards.
-		// @todo fix it
-		if ( ! $return)
-		{
-			$this->_menu();
-			$this->_accessories();
-			$this->_sidebar();
-		}
-
 		$this->EE->load->helper('view_helper');
-
 		$this->EE->javascript->compile();
 
 		$data = array_merge($this->_data, $data);
@@ -110,7 +98,7 @@ class View {
 		$this->EE->output->set_output($rendered_view);
 	}
 
-	// --------------------------------------------------------------------------
+	// --------------------------------------------------------------------
 	
 	/**
 	 * Extend a template or view
@@ -130,73 +118,7 @@ class View {
 		$this->_disable_up = $disable;
 	}
 
-	// --------------------------------------------------------------------------
-
-	/**
-	 * Load up accessories for our view
-	 *
-	 * @access public
-	 * @return void
-	 */
-	protected function _accessories()
-	{
-		if ($this->disabled('accessories'))
-		{
-			return;
-		}
-
-		$this->EE->load->library('accessories');
-		$this->_data['cp_accessories'] = $this->EE->accessories->generate_accessories();
-	}
-
-	// --------------------------------------------------------------------------
-
-	/**
-	 * Load up the menu for our view
-	 *
-	 * @access public
-	 * @return void
-	 */
-	protected function _menu()
-	{
-		if ($this->disabled('menu'))
-		{
-			return;
-		}
-
-		$this->EE->load->library('menu');
-		$this->_data['cp_menu_items'] = $this->EE->menu->generate_menu();
-	}
-
-	// --------------------------------------------------------------------------
-
-	/**
-	 * Load up the sidebar for our view
-	 *
-	 * @access public
-	 * @return void
-	 */
-	protected function _sidebar()
-	{
-		$this->_data['sidebar_state'] = '';
-		$this->_data['maincontent_state'] = '';
-
-		if ($this->EE->session->userdata('show_sidebar') == 'n')
-		{
-			$this->_data['sidebar_state'] = ' style="display:none"';
-			$this->_data['maincontent_state'] = ' style="width:100%; display:block"';
-        }
-
-        if ($this->disabled('sidebar'))
-		{
-			return;
-		}
-
-		// @todo move over sidebar content from cp
-		// has a member query & session cache dependency
-	}
-
-	// --------------------------------------------------------------------------
+	// --------------------------------------------------------------------
 
 	/**
 	 * Disable a view feature
@@ -219,7 +141,7 @@ class View {
 		$this->_disable_up = array();
 	}
 
-	// --------------------------------------------------------------------------
+	// --------------------------------------------------------------------
 
 	/**
 	 * Check if a view featuer is disabled
@@ -232,7 +154,7 @@ class View {
 		return in_array($which, $this->_disabled);
 	}
 
-	// --------------------------------------------------------------------------
+	// --------------------------------------------------------------------
 
 	/**
 	 * Head Title
@@ -244,7 +166,7 @@ class View {
 		return '<title>' . $title . ' | ExpressionEngine</title>'.PHP_EOL;
 	}
 	
-	// --------------------------------------------------------------------------
+	// --------------------------------------------------------------------
 
 	/**
 	 * Script tag
@@ -274,7 +196,7 @@ class View {
 		return '<script type="text/javascript" src="' . $url . '"></script>'.PHP_EOL;
 	}
 
-	// --------------------------------------------------------------------------
+	// --------------------------------------------------------------------
 	
 	/**
 	 * Head Link
@@ -319,7 +241,7 @@ class View {
 		return '<link rel="stylesheet" href="'.$file_url.'?v='.$filemtime.'" type="text/css" media="'.$media.'" />'.PHP_EOL;
 	}
 
-	// --------------------------------------------------------------------------
+	// --------------------------------------------------------------------
 	
 	/**
 	 * Get themes URL from supplied system path
@@ -339,7 +261,7 @@ class View {
 		return $this->EE->config->item('theme_folder_url') . 'cp_themes/' . $theme_name . '/';		
 	}
 
-	// --------------------------------------------------------------------------
+	// --------------------------------------------------------------------
 	
 	/**
 	 * Clear the class
@@ -355,8 +277,10 @@ class View {
 		$this->_disable_up = array();
 	}
 
-	// --------------------------------------------------------------------------
-	
+	// --------------------------------------------------------------------
+	// Template Data Getters and Setters
+	// --------------------------------------------------------------------
+
 	public function __set($key, $value)
 	{
 		$this->_data[$key] = $value;

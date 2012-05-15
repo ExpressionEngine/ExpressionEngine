@@ -23,6 +23,9 @@
  * @link		http://expressionengine.com
  */
 class Cp {
+
+	private $EE;
+	private $view;
 	
 	var $cp_theme				= '';
 	var $cp_theme_url			= '';	// base URL to the CP theme folder
@@ -51,6 +54,7 @@ class Cp {
 	function __construct()
 	{
 		$this->EE =& get_instance();
+		$this->view = $this->EE->view;
 		
 		if ($this->EE->router->fetch_class() == 'ee')
 		{
@@ -101,7 +105,7 @@ class Cp {
 		
 		$cp_messages = array();
 		
-		foreach(array('message_success', 'message_notice', 'message_error', 'message_failure') as $flash_key)
+		foreach (array('message_success', 'message_notice', 'message_error', 'message_failure') as $flash_key)
 		{
 			if ($message = $this->EE->session->flashdata($flash_key))
 			{
@@ -241,7 +245,6 @@ class Cp {
 			'XID'				=> XID_SECURE_HASH,
 			'PATH_CP_GBL_IMG'	=> PATH_CP_GBL_IMG,
 			'CP_SIDEBAR_STATE'	=> $this->EE->session->userdata('show_sidebar'),
-			//'flashdata'			=> $this->EE->session->flashdata,
 			'username'			=> $this->EE->session->userdata('username'),
 			'router_class'		=> $this->EE->router->class, // advanced css
 			'lang'				=> $js_lang_keys,
@@ -266,7 +269,89 @@ class Cp {
 		$this->_seal_combo_loader();		
 		
 		$this->EE->load->vars($vars);
-		$this->EE->javascript->compile();
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Render output (html)
+	 *
+	 * @access public
+	 * @return void
+	 */
+	public function render($view, $data = array(), $return = FALSE)
+	{
+		$this->_menu();
+		$this->_accessories();
+		$this->_sidebar();
+
+		return $this->view->render($view, $data, $return);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Load up accessories for our view
+	 *
+	 * @access public
+	 * @return void
+	 */
+	protected function _accessories()
+	{
+		if ($this->view->disabled('accessories'))
+		{
+			return;
+		}
+
+		$this->EE->load->library('accessories');
+		$this->view->cp_accessories = $this->EE->accessories->generate_accessories();
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Load up the menu for our view
+	 *
+	 * @access public
+	 * @return void
+	 */
+	protected function _menu()
+	{
+		if ($this->view->disabled('menu'))
+		{
+			return;
+		}
+
+		$this->EE->load->library('menu');
+		$this->view->cp_menu_items = $this->EE->menu->generate_menu();
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Load up the sidebar for our view
+	 *
+	 * @access public
+	 * @return void
+	 */
+	protected function _sidebar()
+	{
+		$this->view->sidebar_state = '';
+		$this->view->maincontent_state = '';
+
+		if ($this->EE->session->userdata('show_sidebar') == 'n')
+		{
+			$this->view->sidebar_state = ' style="display:none"';
+			$this->view->maincontent_state = ' style="width:100%; display:block"';
+        }
+
+        if ($this->view->disabled('sidebar'))
+		{
+			return;
+		}
+
+		// @todo move over sidebar content from set_default_view_vars
+		// has a member query & session cache dependency
 	}
 
 	// --------------------------------------------------------------------
@@ -676,7 +761,7 @@ class Cp {
 	 */		
 	function set_variable($name, $value)
 	{	
-		$this->EE->load->vars(array($name => $value));
+		$this->view->$name = $value;
 	}
 	
 	// --------------------------------------------------------------------
@@ -692,8 +777,7 @@ class Cp {
 		static $_crumbs = array();
 		
 		$_crumbs[$link] = $title;
-		
-		$this->EE->load->vars(array('cp_breadcrumbs' => $_crumbs));
+		$this->view->cp_breadcrumbs = $_crumbs;
 	}
 	
 	// --------------------------------------------------------------------
@@ -717,29 +801,33 @@ class Cp {
 					$this->EE->functions->redirect(BASE);
 				}
 				
-				$query = $this->EE->db->query("SELECT COUNT(*) AS count FROM exp_security_hashes 
-												 WHERE hash = '".$this->EE->db->escape_str($_POST['XID'])."' 
-												 AND ip_address = '".$this->EE->input->ip_address()."' 
-												 AND date > UNIX_TIMESTAMP()-".$this->xid_ttl);
+				$query = $this->EE->db->query(
+					"SELECT COUNT(*) AS count FROM exp_security_hashes 
+					 WHERE hash = '".$this->EE->db->escape_str($_POST['XID'])."' 
+					 AND ip_address = '".$this->EE->input->ip_address()."' 
+					 AND date > UNIX_TIMESTAMP()-".$this->xid_ttl
+				);
 	
 				if ($query->row('count')  == 0)
 				{
 					$this->EE->functions->redirect(BASE);
 				}
-				else
-				{
-					$this->EE->db->query("DELETE FROM exp_security_hashes 
-											WHERE date < UNIX_TIMESTAMP()-{$this->xid_ttl}
-											AND ip_address = '".$this->EE->input->ip_address()."'");
-								
-					unset($_POST['XID']);
-				}
+				
+				$this->EE->db->query(
+					"DELETE FROM exp_security_hashes 
+					 WHERE date < UNIX_TIMESTAMP()-{$this->xid_ttl}
+					 AND ip_address = '".$this->EE->input->ip_address()."'"
+				);
+				
+				unset($_POST['XID']);
 			}
 			
 			$hash = $this->EE->functions->random('encrypt');
-			$this->EE->db->query("INSERT INTO exp_security_hashes (date, ip_address, hash)
-								VALUES 
-								(UNIX_TIMESTAMP(), '".$this->EE->input->ip_address()."', '".$hash."')");
+			$this->EE->db->query(
+				"INSERT INTO exp_security_hashes (date, ip_address, hash)
+				 VALUES 
+				 (UNIX_TIMESTAMP(), '".$this->EE->input->ip_address()."', '".$hash."')"
+			);
 		}
 		
 		define('XID_SECURE_HASH', $hash);
