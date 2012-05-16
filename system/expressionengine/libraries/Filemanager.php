@@ -1159,16 +1159,35 @@ class Filemanager {
 		// Channel may not be set for pngs - so we default to highest
 		$image_info['channels'] = ( ! isset($image_info['channels'])) ? 4 : $image_info['channels'];
 
-		$memory_needed = round(($image_info[0] * $image_info[1]
-											  // bits may not always be present
-											* (isset($image_info['bits']) ? $image_info['bits'] : 8)
-											* $image_info['channels'] / 8
-											+ $k64
-								) * $this->_memory_tweak_factor
-                         );
+		$memory_needed = round((
+			$image_info[0] * $image_info[1]
+			// bits may not always be present
+			* (isset($image_info['bits']) ? $image_info['bits'] : 8)
+			* $image_info['channels'] / 8
+			+ $k64
+			) * $this->_memory_tweak_factor
+		);
 
-		$memory_setting = (ini_get('memory_limit') != '') ? intval(ini_get('memory_limit')) : 8;
-		$current = $memory_setting*1024*1024;
+		$memory_setting = ini_get('memory_limit');
+
+		if ( ! $memory_setting)
+		{
+			$memory_setting = '8M';
+		}
+		
+		list($current, $unit) = sscanf($setting, "%d %s");
+
+		switch (strtolower($unit))
+		{
+			case 'g':
+				$current *= 1024;
+				// no break
+			case 'm':
+				$current *= 1024;
+				// no break;
+			case 'k':
+				$current *= 1024;
+		}
 
 		if (function_exists('memory_get_usage'))
 		{
