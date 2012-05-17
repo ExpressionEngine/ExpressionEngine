@@ -7,7 +7,7 @@ WysiHat.addButton('link', {
 	init: function() {
 		this.parent.init.apply(this, arguments);
 
-		this.$link_dialog = this._setupDialog();
+		this.$link_dialog;
 		this.$error = $('<div class="notice"/>').text(EE.rte.link.dialog.url_required);
 
 		this.origState;
@@ -57,8 +57,10 @@ WysiHat.addButton('link', {
 		
 		if ( link )
 		{
+			this.$link_dialog = this._setupDialog();
 			this.$link_dialog.dialog('open');
 			this.$link_dialog.bind('dialogclose', function() {
+				$(this).remove();
 				setTimeout(function() {
 					finalize();
 				}, 50);
