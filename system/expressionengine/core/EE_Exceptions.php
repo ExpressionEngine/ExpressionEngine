@@ -37,7 +37,7 @@ class EE_Exceptions extends CI_Exceptions {
 	 */
 	function show_error($heading, $message, $template = 'error_general', $status_code = 500)
 	{
-		set_status_header(500);
+		set_status_header($status_code);
 		
 		// "safe" HTML typography in EE will strip paragraph tags, and needs newlines to indicate paragraphs
 		$message = '<p>'.implode("</p>\n\n<p>", ( ! is_array($message)) ? array($message) : $message).'</p>';
