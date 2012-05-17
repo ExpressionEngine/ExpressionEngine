@@ -41,6 +41,10 @@ WysiHat.addButton('link', {
 		
 		// find link element
 		test_el = this._findLinkableNode(s_el, 'img', sel.anchorOffset);
+		if ( ! this._is(test_el, 'a'))
+		{
+			test_el = this._findLinkableNode(e_el, 'img', sel.focusOffset);
+		}
 
 		// found?
 		if (test_el !== false)
@@ -308,31 +312,13 @@ WysiHat.addButton('link', {
 
 		var sel = window.getSelection(),
 			_is = this._is,
-			attempt = [sel.focusNode, sel.anchorNode],
-			anchor_node;
-
-		// do our best to find that darned link
-		// we just created. laugh or cry?
-		while (anchor_node = attempt.shift())
+			anchor_node = this._findLinkableNode(sel.anchorNode, 'img', sel.anchorOffset);
+		
+		if ( ! _is(anchor_node, 'a'))
 		{
-			if (_is(anchor_node, 'a'))
-			{
-				break;
-			}
-			else if (_is(anchor_node.parentNode, 'a'))
-			{
-				anchor_node = anchor_node.parentNode;
-				break
-			}
-
-			anchor_node = this._findLinkableNode(anchor_node);
-
-			if (anchor_node !== false)
-			{
-				break;
-			}
+			anchor_node = this._findLinkableNode(sel.focusNode, 'img', sel.focusOffset);
 		}
-
+		
 		if (anchor_node !== false)
 		{
 			sel.removeAllRanges();
