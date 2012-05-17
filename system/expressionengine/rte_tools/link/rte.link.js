@@ -23,9 +23,6 @@ WysiHat.addButton('link', {
 		this.origState = state;
 		this.$editor.select();
 
-		// reselect for FF
-		this.Selection.set(state.selection);
-
 		var sel		= window.getSelection(),
 			link	= true,
 			test_el, s_el, e_el;
@@ -273,16 +270,15 @@ WysiHat.addButton('link', {
 			return;
 		}
 
-		// reselect the text
 		this.$editor.focus();
-		this.Selection.set(this.origState.selection);
 
+		// Reselect the range
+		var sel = window.getSelection();
+		sel.removeAllRanges();
+		sel.addRange(this.range);
+		
 		if (this.link_node)
 		{
-			// Had a node, reselect it
-			var sel = window.getSelection();
-			sel.removeAllRanges();
-			sel.addRange(this.range);
 			this.range.selectNode(this.link_node);
 		}
 
@@ -318,7 +314,7 @@ WysiHat.addButton('link', {
 				break
 			}
 
-			anchor_node = this._findLinkableNode(anchorNode);
+			anchor_node = this._findLinkableNode(anchor_node);
 
 			if (anchor_node !== false)
 			{
