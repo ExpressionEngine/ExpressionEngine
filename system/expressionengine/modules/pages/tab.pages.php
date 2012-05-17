@@ -234,7 +234,7 @@ class Pages_tab {
 				                    str_replace($this->EE->config->item('site_url'), '',
 				                                $mod_data['pages_uri']));
 				
-				$page = '/' . ltrim($page, '/');
+				$page = '/' . trim($page, '/');
 				
 				$site_pages[$site_id]['uris'][$params['entry_id']] = $page;
 				$site_pages[$site_id]['templates'][$params['entry_id']] = preg_replace("#[^0-9]+$#i", '',
