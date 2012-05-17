@@ -40,7 +40,7 @@ WysiHat.addButton('link', {
 		}
 		
 		// find link element
-		test_el = this._findLinkableNode(s_el, 'img');
+		test_el = this._findLinkableNode(s_el, 'img', sel.anchorOffset);
 
 		// found?
 		if (test_el !== false)
@@ -82,10 +82,11 @@ WysiHat.addButton('link', {
 		return (node.tagName && node.tagName.toLowerCase() == name);
 	},
 
-	_findLinkableNode: function(el, childTagName)
+	_findLinkableNode: function(el, childTagName, offset)
 	{
-		var _is = this._is;
-
+		var _is = this._is,
+			firefox_node = el.childNodes[offset];
+		
 		// can we go deeper? do it!
 		if (el.childNodes.length > 0 || _is(el, childTagName))
 		{
@@ -119,6 +120,16 @@ WysiHat.addButton('link', {
 			if (_is(el, 'a') || _is(el, childTagName))
 			{
 				return el;
+			}
+		}
+		
+		// Firefox gives is the parent node, with the anchor offset
+		// being the index of the node in the parent node
+		if (firefox_node !== undefined)
+		{
+			if (_is(firefox_node, 'a'))
+			{
+				return firefox_node;
 			}
 		}
 
