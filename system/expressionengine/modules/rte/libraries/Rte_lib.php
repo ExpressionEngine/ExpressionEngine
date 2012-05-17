@@ -370,9 +370,11 @@ class Rte_lib {
 				' . $bits['definitions'] . '
 
 				// RTE editor setup for this page
-				$("' . $selector . '").wysihat({
-					buttons: '.$this->EE->javascript->generate_json($bits['buttons'], TRUE).'
-				});
+				$("' . $selector . '")
+					.addClass("WysiHat-field")
+					.wysihat({
+						buttons: '.$this->EE->javascript->generate_json($bits['buttons'], TRUE).'
+					});
 			}
 		})();';
 

@@ -373,7 +373,7 @@
 }
 
 /* Editor */
-textarea.rte,
+textarea.WysiHat-field,
 .WysiHat-editor {
 	background: #fff;
 	border: 1px solid #8195A0;
@@ -393,11 +393,11 @@ textarea.rte,
 	resize: vertical;
 }
 
-textarea.rte {
+textarea.WysiHat-field {
 	width: 100%;
 }
 
-textarea.rte:focus,
+textarea.WysiHat-field:focus,
 .WysiHat-editor:focus {
 	background-color: #FFFFF5;
 	border: 2px solid #8195A0;

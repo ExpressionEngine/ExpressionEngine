@@ -84,7 +84,7 @@ class Rte_ft extends EE_Fieldtype {
 		if ($this->EE->session->userdata('rte_enabled') == 'y' 
 			AND $this->EE->config->item('rte_enabled') == 'y')
 		{
-			$field['class']	= 'rte';
+			$field['class']	= 'WysiHat-field';
 
 			foreach ($code_chunks as &$chunk)
 			{
@@ -180,7 +180,7 @@ class Rte_ft extends EE_Fieldtype {
 			lang('textarea_rows', $prefix.'_ta_rows'),
 			form_input(array(
 				'id'	=> $prefix.'_ta_rows',
-				'name'	=> 'field_ta_rows',
+				'name'	=> $prefix.'_ta_rows',
 				'size'	=> 4,
 				'value'	=> $field_rows
 				)
@@ -194,6 +194,7 @@ class Rte_ft extends EE_Fieldtype {
 	{		
 		$data['field_type'] = 'rte';
 		$data['field_show_fmt'] = 'n';
+		$data['field_ta_rows'] = $this->EE->input->post('rte_ta_rows');
 
 		return $data;
 	}	

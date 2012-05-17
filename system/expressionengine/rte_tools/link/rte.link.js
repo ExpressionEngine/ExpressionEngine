@@ -7,7 +7,7 @@ WysiHat.addButton('link', {
 	init: function() {
 		this.parent.init.apply(this, arguments);
 
-		this.$link_dialog = this._setupDialog();
+		this.$link_dialog;
 		this.$error = $('<div class="notice"/>').text(EE.rte.link.dialog.url_required);
 
 		this.origState;
@@ -22,9 +22,6 @@ WysiHat.addButton('link', {
 
 		this.origState = state;
 		this.$editor.select();
-
-		// reselect for FF
-		this.Selection.set(state.selection);
 
 		var sel		= window.getSelection(),
 			link	= true,
@@ -43,7 +40,11 @@ WysiHat.addButton('link', {
 		}
 		
 		// find link element
-		test_el = this._findLinkableNode(s_el, 'img');
+		test_el = this._findLinkableNode(s_el, 'img', sel.anchorOffset);
+		if ( ! this._is(test_el, 'a'))
+		{
+			test_el = this._findLinkableNode(e_el, 'img', sel.focusOffset);
+		}
 
 		// found?
 		if (test_el !== false)
@@ -56,8 +57,10 @@ WysiHat.addButton('link', {
 		
 		if ( link )
 		{
+			this.$link_dialog = this._setupDialog();
 			this.$link_dialog.dialog('open');
 			this.$link_dialog.bind('dialogclose', function() {
+				$(this).remove();
 				setTimeout(function() {
 					finalize();
 				}, 50);
@@ -85,10 +88,11 @@ WysiHat.addButton('link', {
 		return (node.tagName && node.tagName.toLowerCase() == name);
 	},
 
-	_findLinkableNode: function(el, childTagName)
+	_findLinkableNode: function(el, childTagName, offset)
 	{
-		var _is = this._is;
-
+		var _is = this._is,
+			firefox_node = el.childNodes[offset];
+		
 		// can we go deeper? do it!
 		if (el.childNodes.length > 0 || _is(el, childTagName))
 		{
@@ -122,6 +126,16 @@ WysiHat.addButton('link', {
 			if (_is(el, 'a') || _is(el, childTagName))
 			{
 				return el;
+			}
+		}
+		
+		// Firefox gives is the parent node, with the anchor offset
+		// being the index of the node in the parent node
+		if (firefox_node !== undefined)
+		{
+			if (_is(firefox_node, 'a'))
+			{
+				return firefox_node;
 			}
 		}
 
@@ -273,16 +287,15 @@ WysiHat.addButton('link', {
 			return;
 		}
 
-		// reselect the text
 		this.$editor.focus();
-		this.Selection.set(this.origState.selection);
 
+		// Reselect the range
+		var sel = window.getSelection();
+		sel.removeAllRanges();
+		sel.addRange(this.range);
+		
 		if (this.link_node)
 		{
-			// Had a node, reselect it
-			var sel = window.getSelection();
-			sel.removeAllRanges();
-			sel.addRange(this.range);
 			this.range.selectNode(this.link_node);
 		}
 
@@ -301,31 +314,13 @@ WysiHat.addButton('link', {
 
 		var sel = window.getSelection(),
 			_is = this._is,
-			attempt = [sel.focusNode, sel.anchorNode],
-			anchor_node;
-
-		// do our best to find that darned link
-		// we just created. laugh or cry?
-		while (anchor_node = attempt.shift())
+			anchor_node = this._findLinkableNode(sel.anchorNode, 'img', sel.anchorOffset);
+		
+		if ( ! _is(anchor_node, 'a'))
 		{
-			if (_is(anchor_node, 'a'))
-			{
-				break;
-			}
-			else if (_is(anchor_node.parentNode, 'a'))
-			{
-				anchor_node = anchor_node.parentNode;
-				break
-			}
-
-			anchor_node = this._findLinkableNode(anchorNode);
-
-			if (anchor_node !== false)
-			{
-				break;
-			}
+			anchor_node = this._findLinkableNode(sel.focusNode, 'img', sel.focusOffset);
 		}
-
+		
 		if (anchor_node !== false)
 		{
 			sel.removeAllRanges();

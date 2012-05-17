@@ -143,7 +143,17 @@ class Auth {
 
 		$not_allowed_groups = array_merge($not_allowed_groups, $always_disallowed);
 
-		if ( ! $this->_retrieve_http_basic())
+		$authed = $this->_retrieve_http_basic();
+
+		if ($authed !== FALSE)
+		{
+			if (in_array($authed->member('group_id'), $not_allowed_groups))
+			{
+				$authed = FALSE;
+			}
+		}
+
+		if ($authed === FALSE)
 		{
 			@header('WWW-Authenticate: Basic realm="'.$realm.'"');
 			$this->EE->output->set_status_header(401);
@@ -570,7 +580,7 @@ class Auth {
 			return FALSE;	
 		}
 
-		return ($this->authenticate_username($user, $pass)) ? TRUE : FALSE;
+		return $this->authenticate_username($user, $pass);
 	}
 }
 // END Auth class

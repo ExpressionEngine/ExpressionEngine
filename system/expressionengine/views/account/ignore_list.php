@@ -9,7 +9,7 @@
 
 		<div id="add_member">
 		<p>
-			<?=lang('Member Screen Name', 'name')?>
+			<?=lang('member_usernames', 'name')?>
 			<?=form_input(array('id'=>'name','name'=>'name','class'=>'field','value'=>'','maxlength'=>50))?>
 		</p>
 		<p class="submit">

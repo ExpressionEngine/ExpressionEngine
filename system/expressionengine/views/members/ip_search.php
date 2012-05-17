@@ -15,7 +15,11 @@ if ($EE_view_disable !== TRUE)
         <div class="heading"><h2><?=lang('ip_search')?></h2></div>
 
 		<div class="pageContents">
-
+			
+			<?php if ($message):?>
+				<p class="notice"><?=$message?></p>
+			<?php endif;?>
+			
 			<?=form_open('C=members'.AMP.'M=do_ip_search')?>
 
 			<?php $this->load->view('_shared/message');?>

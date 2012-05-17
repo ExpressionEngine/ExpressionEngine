@@ -30,7 +30,8 @@ EE.publish.category_editor = function() {
 		cat_groups_buttons = {},
 		cat_list_url = EE.BASE+'&C=admin_content&M=category_editor&group_id=',
 		refresh_cats, setup_page, reload, i,
-		selected_cats = {};
+		selected_cats = {},
+		$editor_container = $('<div />');
 
 	// categories with a lot of custom fields need to scroll
 	cat_modal_container.css({
@@ -125,7 +126,7 @@ EE.publish.category_editor = function() {
 					data: values,
 					dataType: "html",
 					beforeSend: function() {
-						container.html(EE.lang.loading);
+						$editor_container.html(EE.lang.loading);
 					},
 					success: function(res) {
 						res = $.trim(res);
@@ -136,7 +137,7 @@ EE.publish.category_editor = function() {
 								form = response.find("form");
 
 							if (form.length == 0) {
-								container.html(response);
+								$editor_container.html(response);
 							}
 							
 							response = response.wrap('<div />').parent(); // outer html hack
@@ -205,8 +206,12 @@ EE.publish.category_editor = function() {
 			}).toArray();
 		}
 		
-		cat_groups_containers[gid].text(EE.lang.loading);
-
+		// Hide the checkboxes instead of destroying them in case publish form is
+		// submitted while the category editor is still showing
+		cat_groups_containers[gid].find('label').hide();
+		
+		cat_groups_containers[gid].append($editor_container.html(EE.lang.loading));
+		
 		$.ajax({
 			url: $(this).attr('href') + "&timestamp="+now() + resp_filter,
 			dataType: "html",
@@ -221,7 +226,7 @@ EE.publish.category_editor = function() {
 					
 					filtered_res = $('<div />').append(res).html();
 					if (res.find('form').length == 0) {
-						cat_groups_containers[gid].html(filtered_res);
+						$editor_container.html(filtered_res);
 					}
 				}
 
@@ -229,7 +234,7 @@ EE.publish.category_editor = function() {
 			},
 			error: function(response) {
 				response = $.parseJSON(response.responseText);
-				cat_groups_containers[gid].html(response.error);
+				$loading.text(response.error);
 				setup_page.call(cat_groups_containers[gid], response.error, true);
 			}
 		});
