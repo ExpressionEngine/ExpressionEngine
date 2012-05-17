@@ -45,7 +45,7 @@ class Content_publish extends CI_Controller {
 	{
 		parent::__construct();
 
-		if ( ! $this->cp->allowed_group('can_access_content'))
+		if ( ! $this->cp->allowed_group('can_access_content', 'can_access_publish'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
