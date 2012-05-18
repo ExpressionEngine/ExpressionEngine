@@ -1175,7 +1175,7 @@ class Filemanager {
 			$memory_setting = '8M';
 		}
 		
-		list($current, $unit) = sscanf($setting, "%d %s");
+		list($current, $unit) = sscanf($memory_setting, "%d %s");
 
 		switch (strtolower($unit))
 		{
@@ -1448,6 +1448,8 @@ class Filemanager {
 			}
 			else
 			{
+				$config['master_dim'] = $force_master_dim;
+				
 				$this->EE->image_lib->initialize($config);
 				
 				if ( ! $this->EE->image_lib->resize())
