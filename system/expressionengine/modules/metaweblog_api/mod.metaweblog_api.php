@@ -395,7 +395,7 @@ class Metaweblog_api {
 
 		$this->EE->api_channel_fields->setup_entry_settings($this->channel_id, $data);
 				
-		if ( ! $this->EE->api_channel_entries->submit_new_entry($this->channel_id, $data))
+		if ( ! $this->EE->api_channel_entries->save_entry($data, $this->channel_id))
 		{
 			$errors = $this->EE->api_channel_entries->get_errors();
 
