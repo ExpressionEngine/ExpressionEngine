@@ -1175,7 +1175,7 @@ class Filemanager {
 			$memory_setting = '8M';
 		}
 		
-		list($current, $unit) = sscanf($setting, "%d %s");
+		list($current, $unit) = sscanf($memory_setting, "%d %s");
 
 		switch (strtolower($unit))
 		{
