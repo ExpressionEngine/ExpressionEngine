@@ -22,7 +22,7 @@
  * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
-class Search extends CI_Controller {
+class Search extends CP_Controller {
 
 	/**
 	 * Constructor
@@ -90,8 +90,7 @@ class Search extends CI_Controller {
 			exit;
 		}
 		
-		$this->javascript->compile();
-		$this->load->view('search/results', $vars);
+		$this->cp->render('search/results', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -122,7 +121,7 @@ class Search extends CI_Controller {
 			// Meta refresh to start the process
 			$meta = '<meta http-equiv="refresh" content="1;url='.BASE.AMP.'C=search'.AMP.'M=build_index'.AMP.'language='.$language.AMP.'working=y'.$saved.'" />';
 			$this->cp->add_to_head($meta);
-			$this->load->view('search/rebuild', $vars);
+			$this->cp->render('search/rebuild', $vars);
 		}
 		elseif ($flag == 'y')
 		{

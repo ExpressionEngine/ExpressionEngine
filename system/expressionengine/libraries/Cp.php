@@ -23,6 +23,9 @@
  * @link		http://expressionengine.com
  */
 class Cp {
+
+	private $EE;
+	private $view;
 	
 	var $cp_theme				= '';
 	var $cp_theme_url			= '';	// base URL to the CP theme folder
@@ -51,6 +54,7 @@ class Cp {
 	function __construct()
 	{
 		$this->EE =& get_instance();
+		$this->view = $this->EE->view;
 		
 		if ($this->EE->router->fetch_class() == 'ee')
 		{
@@ -90,8 +94,6 @@ class Cp {
 		define('JS_FOLDER', $js_folder);
 
 
-		$this->EE->load->library('menu');
-		$this->EE->load->library('accessories');
 		$this->EE->load->library('javascript', array('autoload' => FALSE));
 
 		$this->EE->load->model('member_model'); // for screen_name, quicklinks
@@ -103,7 +105,7 @@ class Cp {
 		
 		$cp_messages = array();
 		
-		foreach(array('message_success', 'message_notice', 'message_error', 'message_failure') as $flash_key)
+		foreach (array('message_success', 'message_notice', 'message_error', 'message_failure') as $flash_key)
 		{
 			if ($message = $this->EE->session->flashdata($flash_key))
 			{
@@ -151,14 +153,6 @@ class Cp {
 			
 			'EE_view_disable'		=> FALSE,
 			'is_super_admin'		=> ($this->EE->session->userdata['group_id'] == 1) ? TRUE : FALSE,	// for conditional use in view files
-								
-			// Menu
-			'cp_menu_items'			=> $this->EE->menu->generate_menu(),
-			'cp_accessories'		=> $this->EE->accessories->generate_accessories(),
-			
-			// Sidebar state (overwritten below if needed)
-			'sidebar_state'			=> '',
-			'maincontent_state'		=> '',
 		);
 		
 		
@@ -211,13 +205,6 @@ class Cp {
 			$this->set_breadcrumb(BASE.AMP.'C='.$this->EE->router->class, lang($this->EE->router->class));
 		}
 		
-		if ($this->EE->session->userdata('show_sidebar') == 'n')
-		{
-			$vars['sidebar_state']		= ' style="display:none"';
-			$vars['maincontent_state']	= ' style="width:100%; display:block"';
-        }
-		
-		
 		// The base javascript variables that will be available globally through EE.varname
 		// this really could be made easier - ideally it would show up right below the main
 		// jQuery script tag - before the plugins, so that it has access to jQuery.
@@ -258,7 +245,6 @@ class Cp {
 			'XID'				=> XID_SECURE_HASH,
 			'PATH_CP_GBL_IMG'	=> PATH_CP_GBL_IMG,
 			'CP_SIDEBAR_STATE'	=> $this->EE->session->userdata('show_sidebar'),
-			//'flashdata'			=> $this->EE->session->flashdata,
 			'username'			=> $this->EE->session->userdata('username'),
 			'router_class'		=> $this->EE->router->class, // advanced css
 			'lang'				=> $js_lang_keys,
@@ -283,7 +269,93 @@ class Cp {
 		$this->_seal_combo_loader();		
 		
 		$this->EE->load->vars($vars);
-		$this->EE->javascript->compile();
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Render output (html)
+	 *
+	 * @access public
+	 * @return void
+	 */
+	public function render($view, $data = array(), $return = FALSE)
+	{
+		$this->_menu();
+		$this->_accessories();
+		$this->_sidebar();
+
+		// add global end file
+		$this->_seal_combo_loader();
+		$this->add_js_script('file', 'cp/global_end');
+
+		return $this->view->render($view, $data, $return);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Load up accessories for our view
+	 *
+	 * @access public
+	 * @return void
+	 */
+	protected function _accessories()
+	{
+		if ($this->view->disabled('ee_accessories'))
+		{
+			return;
+		}
+
+		$this->EE->load->library('accessories');
+		$this->view->cp_accessories = $this->EE->accessories->generate_accessories();
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Load up the menu for our view
+	 *
+	 * @access public
+	 * @return void
+	 */
+	protected function _menu()
+	{
+		if ($this->view->disabled('ee_menu'))
+		{
+			return;
+		}
+
+		$this->EE->load->library('menu');
+		$this->view->cp_menu_items = $this->EE->menu->generate_menu();
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Load up the sidebar for our view
+	 *
+	 * @access public
+	 * @return void
+	 */
+	protected function _sidebar()
+	{
+		$this->view->sidebar_state = '';
+		$this->view->maincontent_state = '';
+
+		if ($this->EE->session->userdata('show_sidebar') == 'n')
+		{
+			$this->view->sidebar_state = ' style="display:none"';
+			$this->view->maincontent_state = ' style="width:100%; display:block"';
+        }
+
+        if ($this->view->disabled('ee_sidebar'))
+		{
+			return;
+		}
+
+		// @todo move over sidebar content from set_default_view_vars
+		// has a member query & session cache dependency
 	}
 
 	// --------------------------------------------------------------------
@@ -361,10 +433,6 @@ class Cp {
 	 */
 	function render_footer_js()
 	{
-		// add global end file
-		$this->_seal_combo_loader();
-		$this->add_js_script('file', 'cp/global_end');
-		
 		$str = '';
 		$requests = $this->_seal_combo_loader();
 		
@@ -486,13 +554,13 @@ class Cp {
 	 */
 	function set_right_nav($nav = array())
 	{
-		$this->EE->load->vars('cp_right_nav', array_reverse($nav));
+		$this->view->cp_right_nav = array_reverse($nav);
 	}
 	
 	// --------------------------------------------------------------------
 	
 	/**
-	 * Set the right navigation
+	 * Set the in-header navigation
 	 *
 	 * @access	public
 	 * @param	array
@@ -501,7 +569,7 @@ class Cp {
 	 */
 	function set_action_nav($nav = array())
 	{
-		$this->EE->load->vars('cp_action_nav', array_reverse($nav));
+		$this->view->cp_action_nav = array_reverse($nav);
 	}
 
 	// --------------------------------------------------------------------
@@ -693,7 +761,7 @@ class Cp {
 	 */		
 	function set_variable($name, $value)
 	{	
-		$this->EE->load->vars(array($name => $value));
+		$this->view->$name = $value;
 	}
 	
 	// --------------------------------------------------------------------
@@ -709,8 +777,7 @@ class Cp {
 		static $_crumbs = array();
 		
 		$_crumbs[$link] = $title;
-		
-		$this->EE->load->vars(array('cp_breadcrumbs' => $_crumbs));
+		$this->view->cp_breadcrumbs = $_crumbs;
 	}
 	
 	// --------------------------------------------------------------------
@@ -734,29 +801,33 @@ class Cp {
 					$this->EE->functions->redirect(BASE);
 				}
 				
-				$query = $this->EE->db->query("SELECT COUNT(*) AS count FROM exp_security_hashes 
-												 WHERE hash = '".$this->EE->db->escape_str($_POST['XID'])."' 
-												 AND ip_address = '".$this->EE->input->ip_address()."' 
-												 AND date > UNIX_TIMESTAMP()-".$this->xid_ttl);
+				$query = $this->EE->db->query(
+					"SELECT COUNT(*) AS count FROM exp_security_hashes 
+					 WHERE hash = '".$this->EE->db->escape_str($_POST['XID'])."' 
+					 AND ip_address = '".$this->EE->input->ip_address()."' 
+					 AND date > UNIX_TIMESTAMP()-".$this->xid_ttl
+				);
 	
 				if ($query->row('count')  == 0)
 				{
 					$this->EE->functions->redirect(BASE);
 				}
-				else
-				{
-					$this->EE->db->query("DELETE FROM exp_security_hashes 
-											WHERE date < UNIX_TIMESTAMP()-{$this->xid_ttl}
-											AND ip_address = '".$this->EE->input->ip_address()."'");
-								
-					unset($_POST['XID']);
-				}
+				
+				$this->EE->db->query(
+					"DELETE FROM exp_security_hashes 
+					 WHERE date < UNIX_TIMESTAMP()-{$this->xid_ttl}
+					 AND ip_address = '".$this->EE->input->ip_address()."'"
+				);
+				
+				unset($_POST['XID']);
 			}
 			
 			$hash = $this->EE->functions->random('encrypt');
-			$this->EE->db->query("INSERT INTO exp_security_hashes (date, ip_address, hash)
-								VALUES 
-								(UNIX_TIMESTAMP(), '".$this->EE->input->ip_address()."', '".$hash."')");
+			$this->EE->db->query(
+				"INSERT INTO exp_security_hashes (date, ip_address, hash)
+				 VALUES 
+				 (UNIX_TIMESTAMP(), '".$this->EE->input->ip_address()."', '".$hash."')"
+			);
 		}
 		
 		define('XID_SECURE_HASH', $hash);
@@ -775,6 +846,9 @@ class Cp {
 	 */
 	function fetch_cp_themes()
 	{
+		$this->EE->load->library('logger');
+		$this->EE->logger->deprecated('2.6.0', 'Admin_model::get_cp_theme_list()');
+
 		$this->EE->load->model('admin_model');
 		return $this->EE->admin_model->get_cp_theme_list();
 	}
@@ -812,7 +886,7 @@ class Cp {
 	{
 		$current_top_path = $this->EE->load->first_package_path();
 		$package = trim(str_replace(array(PATH_THIRD, 'views'), '', $current_top_path), '/');
-		$url = BASE.AMP.'C=css'.AMP.'M=third_party'.AMP.'package='.$package.AMP.'file='.$file;
+		$url = BASE.AMP.'C=css'.AMP.'M=third_party'.AMP.'package='.$package.AMP.'theme='.$this->cp->cp_theme.AMP.'file='.$file;
 		
 		$this->add_to_head('<link type="text/css" rel="stylesheet" href="'.$url.'" />');
 	}
@@ -898,7 +972,6 @@ class Cp {
 	 * @access public
 	 * @return array
 	 */
-
 	function get_installed_modules()
 	{
 	    if ( ! is_array($this->installed_modules))

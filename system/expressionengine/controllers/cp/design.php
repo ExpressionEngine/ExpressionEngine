@@ -22,7 +22,7 @@
  * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
-class Design extends CI_Controller {
+class Design extends CP_Controller {
 
 	var $sub_breadcrumbs = array();
 
@@ -30,18 +30,18 @@ class Design extends CI_Controller {
 	var $reserved_names = array('act', 'css');
 	
 	// Reserved Global Variable names
-	var $reserved_vars	= array(
-								'lang',
-								'charset',
-								'homepage',
-								'debug_mode',
-								'gzip_mode',
-								'version',
-								'elapsed_time',
-								'hits',
-								'total_queries',
-								'XID_HASH'
-								);
+	var $reserved_vars = array(
+		'lang',
+		'charset',
+		'homepage',
+		'debug_mode',
+		'gzip_mode',
+		'version',
+		'elapsed_time',
+		'hits',
+		'total_queries',
+		'XID_HASH'
+	);
 	
 	/**
 	 * Constructor
@@ -57,8 +57,6 @@ class Design extends CI_Controller {
 
 		$this->load->model('template_model');
 		$this->lang->loadfile('design');
-		
-		$this->javascript->compile();
 
 		if ($this->cp->allowed_group('can_admin_templates'))
 		{
@@ -89,16 +87,15 @@ class Design extends CI_Controller {
 		{
 			show_error(lang('unauthorized_access'));
 		}
-
-		$this->cp->set_variable('cp_page_title', lang('design'));
 		
-		$this->javascript->output($this->javascript->slidedown("#adminTemplatesSubmenu"));
+		$this->javascript->output(
+			$this->javascript->slidedown("#adminTemplatesSubmenu")
+		);
 
-		$this->javascript->compile();
+		$this->view->cp_page_title = lang('design');
+		$this->view->controller = 'design';
 
-		$this->load->vars(array('controller'=>'design'));
-
-		$this->load->view('_shared/overview');
+		$this->cp->render('_shared/overview');
 	}
 	
 	// --------------------------------------------------------------------
@@ -130,8 +127,6 @@ class Design extends CI_Controller {
 
 		$this->cp->set_variable('cp_page_title', lang('new_template_form'));
 
-		$this->javascript->compile();
-
 		$template_groups_query = $this->template_model->get_template_groups();
 		$vars['template_groups'] = $template_groups_query->result_array();
 		$vars['link_to_method'] = ($edit) ? 'edit_template_group' : 'new_template';
@@ -149,7 +144,7 @@ class Design extends CI_Controller {
 			}
 		}
 
-		$this->load->view('design/new_template_group_pick', $vars);
+		$this->cp->render('design/new_template_group_pick', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -197,8 +192,7 @@ class Design extends CI_Controller {
 			}
 		}
 
-		$this->javascript->compile();
-		$this->load->view('design/delete_template_group', $vars);
+		$this->cp->render('design/delete_template_group', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -258,8 +252,7 @@ class Design extends CI_Controller {
 
 		$vars['form_hidden']['group_id'] = $group_id;
 
-		$this->javascript->compile();
-		$this->load->view('design/template_group_delete_confirm', $vars);
+		$this->cp->render('design/template_group_delete_confirm', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -389,9 +382,7 @@ class Design extends CI_Controller {
 		$this->cp->set_variable('cp_page_title', lang('create_new_template'));
 		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager'.AMP.'tgpref='.$group_id, lang('template_manager'));		
 
-
-		$this->javascript->compile();
-		$this->load->view('design/new_template', $vars);
+		$this->cp->render('design/new_template', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -455,8 +446,7 @@ class Design extends CI_Controller {
 		}
 		else
 		{
-			$this->javascript->compile();
-			$this->load->view('design/new_template_group', $vars);
+			$this->cp->render('design/new_template_group', $vars);
 		}
 	}
 
@@ -537,8 +527,7 @@ class Design extends CI_Controller {
 			$vars['save_tmpl_revisions_y'] = TRUE;          
 		}
 
-		$this->javascript->compile();
-		$this->load->view('design/global_template_preferences', $vars);
+		$this->cp->render('design/global_template_preferences', $vars);
 	}
 	
 	function update_global_template_prefs()
@@ -600,13 +589,11 @@ class Design extends CI_Controller {
 		$vars['message'] = ($this->input->get_post('delete') !== FALSE) ? lang('variable_deleted') : FALSE;
 		$vars['message'] = ($this->input->get_post('update') !== FALSE) ? lang('snippet_updated') : FALSE;
 
-		$this->javascript->compile();
-
 		$this->cp->set_right_nav(array(
-		            'create_new_snippet' => BASE.AMP.'C=design'.AMP.'M=snippets_edit')
-		        );
+			'create_new_snippet' => BASE.AMP.'C=design'.AMP.'M=snippets_edit')
+		);
 		
-		$this->load->view('design/snippets', $vars);
+		$this->cp->render('design/snippets', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -663,8 +650,7 @@ class Design extends CI_Controller {
 		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager', lang('template_manager'));
 		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=snippets', lang('snippets'));
 		
-		$this->javascript->compile();
-		$this->load->view('design/snippets_edit', $vars);
+		$this->cp->render('design/snippets_edit', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -809,7 +795,7 @@ class Design extends CI_Controller {
 			$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=snippets', lang('snippets'));
 			
 			$this->cp->set_variable('cp_page_title', lang('delete_snippet'));				
-			$this->load->view('design/snippets_delete', $snippet);
+			$this->cp->render('design/snippets_delete', $snippet);
 		}
 	}
 
@@ -842,14 +828,12 @@ class Design extends CI_Controller {
 		
 		$vars['global_variables']		= $this->template_model->get_global_variables();
 		$vars['global_variables_count']	= $vars['global_variables']->num_rows();
-
-		$this->javascript->compile();
 		
 		$this->cp->set_right_nav(array(
 		        'create_new_global_variable'  => BASE.AMP.'C=design'.AMP.'M=global_variables_create'
 		    ));
 		
-		$this->load->view('design/global_variables', $vars);
+		$this->cp->render('design/global_variables', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -922,8 +906,7 @@ class Design extends CI_Controller {
 
 			$this->cp->set_variable('cp_page_title', lang('global_var_update'));
 
-			$this->javascript->compile();
-			$this->load->view('design/global_variables_update', $vars);
+			$this->cp->render('design/global_variables_update', $vars);
 		}	
 	}
 	
@@ -986,9 +969,7 @@ class Design extends CI_Controller {
 		else
 		{		
 			$this->cp->set_variable('cp_page_title', lang('create_new_global_variable'));
-
-			$this->javascript->compile();
-			$this->load->view('design/global_variables_create');
+			$this->cp->render('design/global_variables_create');
 		}
 	}
 	
@@ -1044,8 +1025,7 @@ class Design extends CI_Controller {
 			$vars['variable_id'] = $global_variable_info->variable_id;
 			$vars['variable_name'] = $global_variable_info->variable_name;		
 			
-			$this->javascript->compile();
-			$this->load->view('design/global_variables_delete', $vars);
+			$this->cp->render('design/global_variables_delete', $vars);
 		}
 	}
 
@@ -1076,7 +1056,7 @@ class Design extends CI_Controller {
 		{
 			$vars['message'] = lang('no_templates_assigned');
 			$vars['show_template_manager'] = FALSE;
-			return $this->load->view('design/template_preferences_manager', $vars);
+			return $this->cp->render('design/template_preferences_manager', $vars);
 		}
 
 		$this->load->library('table');
@@ -1127,7 +1107,7 @@ class Design extends CI_Controller {
 		{
 			$vars['message'] = lang('no_templates_available');
 			$vars['show_template_manager'] = FALSE;
-			return $this->load->view('design/template_preferences_manager', $vars);
+			return $this->cp->render('design/template_preferences_manager', $vars);
 		}
 
 		// Create MultiSelect Lists
@@ -1282,8 +1262,7 @@ class Design extends CI_Controller {
 		$this->cp->set_variable('cp_page_title', lang('template_preferences_manager'));
 		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager', lang('template_manager'));
 		
-		$this->javascript->compile();
-		$this->load->view('design/template_preferences_manager', $vars);
+		$this->cp->render('design/template_preferences_manager', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -1941,16 +1920,14 @@ class Design extends CI_Controller {
 		}
 		
 		$vars['warnings'] = $warnings;
-		
 		$vars['template_types'] = $this->_get_template_types();
 
-		$this->javascript->compile();
-
+		$this->javascript->set_global('manager.warnings', $warnings);
 		$this->cp->set_right_nav(array(
 		    'view_rendered_template' => $vars['view_path']
 		    ));
 		
-		$this->load->view('design/edit_template', $vars);
+		$this->cp->render('design/edit_template', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -2372,13 +2349,11 @@ class Design extends CI_Controller {
 		return TRUE;			
 	}
 
-
 	// --------------------------------------------------------------------
 
 	/**
 	  *  View Template Revision
 	  */
-	
     function template_revision_history()
     {
 		if ($this->config->item('save_tmpl_revisions') == 'n')
@@ -2409,8 +2384,6 @@ class Design extends CI_Controller {
 		$vars = array();
 		
 		$this->javascript->output('$(window).focus();');
-
-		$this->javascript->compile();
 
 		if ($id != 'clear')
 		{
@@ -2475,11 +2448,7 @@ class Design extends CI_Controller {
 		$vars['template_group']	 = $result->row('group_name') ;
 		$vars['template_name']		= $query->row('template_name') ;  		
  
-		//$EE_view_disable = TRUE;
-	//	$vars['EE_view_disable'] = TRUE;
-
-		$this->javascript->compile();
-		$this->load->view('design/revision_history', $vars);
+		$this->cp->render('design/revision_history', $vars);
     }
 
    
@@ -2513,8 +2482,7 @@ class Design extends CI_Controller {
 		$vars['template_name'] = '';
 		$vars['revision_date'] = ''; 
 
-		$this->javascript->compile();
-		$this->load->view('design/revision_history', $vars);
+		$this->cp->render('design/revision_history', $vars);
     }
    
 
@@ -2592,8 +2560,7 @@ class Design extends CI_Controller {
 
 		$vars['form_hidden']['template_id'] = $template_id;
 
-		$this->javascript->compile();
-		$this->load->view('design/template_delete_confirm', $vars);
+		$this->cp->render('design/template_delete_confirm', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -2750,7 +2717,7 @@ class Design extends CI_Controller {
 		$template_id = $this->input->get_post('template_id');
 		$template_data = $this->input->get_post('template_data');
 
-		$this->jquery->plugin(BASE.AMP.'C=javascript'.AMP.'M=load'.AMP.'plugin=markitup', TRUE);
+		$this->cp->add_js_script('plugin', 'markitup');
 
 		$markItUp = array(
 			'nameSpace'		=> "html",
@@ -2795,8 +2762,7 @@ class Design extends CI_Controller {
 				'message'		=> $message
 			);
 
-			$this->javascript->compile();
-			$this->load->view('design/user_message', $vars);
+			$this->cp->render('design/user_message', $vars);
 		}
 	}
 
@@ -2817,13 +2783,11 @@ class Design extends CI_Controller {
 		{
 			show_error(lang('unauthorized_access'));
 		}
-
-		$this->javascript->compile();
 		
 		$template_id = $this->input->get_post('template_id');
 		$template_data = $this->input->get_post('template_data');
 		
-		$this->jquery->plugin(BASE.AMP.'C=javascript'.AMP.'M=load'.AMP.'plugin=markitup', TRUE);
+		$this->cp->add_js_script('plugin', 'markitup');
 
 		$markItUp = array(
 			'nameSpace'	=> "html",
@@ -2865,8 +2829,7 @@ class Design extends CI_Controller {
 				'template_id'	=> $template_data->template_id,
 			);
 			
-			$this->javascript->compile();
-			$this->load->view('design/system_offline', $vars);
+			$this->cp->render('design/system_offline', $vars);
 		}
 	}
 
@@ -2891,8 +2854,7 @@ class Design extends CI_Controller {
 
 		$vars['specialty_email_templates_summary'] = $this->template_model->get_specialty_email_templates_summary();
 		
-		$this->javascript->compile();
-		$this->load->view('design/email_notification', $vars);
+		$this->cp->render('design/email_notification', $vars);
 	}
 	
 	// --------------------------------------------------------------------
@@ -2956,8 +2918,7 @@ class Design extends CI_Controller {
 			'enable_template'	=> $template_query->row('enable_template')
 		);
 
-		$this->javascript->compile();
-		$this->load->view('design/edit_email_notification', $vars);
+		$this->cp->render('design/edit_email_notification', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -3025,8 +2986,7 @@ class Design extends CI_Controller {
 
 		$this->cp->set_variable('cp_page_title', lang('member_profile_templates'));
 
-		$this->javascript->compile();
-		$this->load->view('design/member_profile_templates', $vars);
+		$this->cp->render('design/member_profile_templates', $vars);
 	}
 	
 	// --------------------------------------------------------------------
@@ -3072,8 +3032,7 @@ class Design extends CI_Controller {
 
 		$this->cp->set_variable('cp_page_title', lang('member_profile_templates'));
 
-		$this->javascript->compile();
-		$this->load->view('design/member_profile_templates_list', $vars);							
+		$this->cp->render('design/member_profile_templates_list', $vars);							
 	}
 
 	// --------------------------------------------------------------------	
@@ -3121,8 +3080,7 @@ class Design extends CI_Controller {
 		$vars['type']				= 'profile';
 				
 		$this->cp->set_variable('cp_page_title', lang('member_profile_templates'));
-		
-		$this->jquery->plugin(BASE.AMP.'C=javascript'.AMP.'M=load'.AMP.'plugin=markitup', TRUE);
+		$this->cp->add_js_script('plugin', 'markitup');
 
 		$markItUp = array(
 			'nameSpace'		=> "html",
@@ -3143,8 +3101,7 @@ class Design extends CI_Controller {
 			$("#template_data").markItUp('.$this->javascript->generate_json($markItUp).');
 		');
 
-		$this->javascript->compile();
-		$this->load->view('design/edit_theme_template', $vars);
+		$this->cp->render('design/edit_theme_template', $vars);
 	}
 
 	
@@ -3233,7 +3190,7 @@ class Design extends CI_Controller {
 			widgets: ["zebra"]
 		}');
 
-		$this->jquery->plugin(BASE.AMP.'C=javascript'.AMP.'M=load'.AMP.'file=cp/manager', TRUE);
+		$this->cp->add_js_script('file', 'cp/manager');
 
 		// auto scan for new templates
 		if ($this->config->item('save_tmpl_files') == 'y' && $this->config->item('tmpl_file_basepath') != '')
@@ -3344,7 +3301,7 @@ class Design extends CI_Controller {
 				$vars['default_group'] = $groups['group_name'];
 			}
 		}
-		
+
 		// member group query
 		$this->db->select('group_id, group_title');
 		$this->db->where('site_id', $this->config->item('site_id'));
@@ -3378,6 +3335,7 @@ class Design extends CI_Controller {
 		
 		$vars['templates'] = array();
 		$displayed_groups = array();
+		$prefs_json = array();
 		
 		foreach ($query->result_array() as $row)
 		{
@@ -3423,7 +3381,24 @@ class Design extends CI_Controller {
 					'access' => isset($denied_groups[$row['template_id']][$group_id]) ? FALSE : TRUE
 				);
 			}
+
+			$prefs_json[$row['template_id']] = array(
+				'id' => $row['template_id'],
+				'group_id' => $row['group_id'],
+				'name' => $row['template_name'],
+				'type' => $row['template_type'],
+				'cache' => $row['cache'],
+				'refresh' => $row['refresh'],
+				'allow_php' => $row['allow_php'],
+				'php_parsing' => $row['php_parse_location'],
+				'hits' => $row['hits'],
+				'access' => $vars['templates'][$row['group_id']][$row['template_id']]['access'],
+				'no_auth_bounce' => $row['no_auth_bounce'],
+				'enable_http_auth' => $row['enable_http_auth']
+			);
 		}
+
+		$this->javascript->set_global('pref_json', $prefs_json);
 
 		// remove any template groups that aren't being displayed, as may be the case when a search was performed
 		foreach ($vars['template_groups'] as $index => $group)
@@ -3478,8 +3453,7 @@ class Design extends CI_Controller {
 
 		$this->cp->set_right_nav($this->sub_breadcrumbs);
 
-		$this->javascript->compile();
-		$this->load->view('design/manager', $vars);
+		$this->cp->render('design/manager', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -3763,8 +3737,7 @@ class Design extends CI_Controller {
 				'old_name'		=> $vars['group_name']
 			);
 
-			$this->javascript->compile();
-			$this->load->view('design/edit_template_group', $vars);
+			$this->cp->render('design/edit_template_group', $vars);
 		}
 		else
 		{
@@ -3971,8 +3944,7 @@ class Design extends CI_Controller {
 
 		$vars['template_groups'] = $this->template_model->get_template_groups();
 
-		$this->javascript->compile();
-		$this->load->view('design/edit_template_group_order', $vars);
+		$this->cp->render('design/edit_template_group_order', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -4188,8 +4160,7 @@ class Design extends CI_Controller {
 		$vars['message'] = $message;
 		$vars['templates'] = $existing;
 		
-		$this->javascript->compile();
-		$this->load->view('design/sync_confirm', $vars);
+		$this->cp->render('design/sync_confirm', $vars);
 	}
 	
 	/**

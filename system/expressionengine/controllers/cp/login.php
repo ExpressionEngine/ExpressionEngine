@@ -22,7 +22,7 @@
  * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */ 
-class Login extends CI_Controller {
+class Login extends CP_Controller {
 	
 	var $username = '';		// stores username on login failure
 

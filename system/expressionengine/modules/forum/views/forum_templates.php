@@ -1,3 +1,5 @@
+<?php extend_view('_wrapper') ?>
+
 <div class="shun"></div>
 
 <?php if (count($templates) < 1):?>

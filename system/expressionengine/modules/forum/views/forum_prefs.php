@@ -1,3 +1,5 @@
+<?php extend_view('_wrapper') ?>
+
 <?=form_open($_form_base.AMP.'method=forum_prefs_update', '', $hidden)?>
 
 <span class="cp_button"><a id="toggle_accordion" href="#"><?=lang('show_hide')?></a></span>

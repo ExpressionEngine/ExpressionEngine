@@ -31,6 +31,9 @@ class Javascript extends CI_Controller {
 	{
 		parent::__construct();
 
+		$this->load->library('core');
+		$this->core->bootstrap();
+
 		if ( ! defined('PATH_JQUERY'))
 		{
 			if ($this->config->item('use_compressed_js') == 'n')
@@ -123,6 +126,7 @@ class Javascript extends CI_Controller {
 		// trying to load a specific js file?
 		$loadfile = ($loadfile) ? $loadfile : $this->input->get_post('file');
 		$package = $this->input->get_post('package');
+		$cp_theme = $this->input->get_post('theme');
 		
 		$loadfile = $this->security->sanitize_filename($loadfile, TRUE);
 		
@@ -159,13 +163,13 @@ class Javascript extends CI_Controller {
 			$contents = 'css';
 			
 			$css_paths = array(
-				PATH_CP_THEME.$this->session->userdata('cp_theme').'/',
+				PATH_CP_THEME.$cp_theme.'/',
 				PATH_CP_THEME.'default/'
 			);
 
-			if ($this->session->userdata('cp_theme') == 'default')
+			if ($cp_theme == 'default')
 			{
-				array_shift($css_paths);
+				unset($css_paths[0]);
 			}
 			
 			foreach ($css_paths as $a_path)
@@ -282,7 +286,7 @@ class Javascript extends CI_Controller {
 		);
 		
 		$mock_name = '';
-		
+
 		foreach($types as $type => $path)
 		{
 			$mock_name .= $this->input->get_post($type);
@@ -324,7 +328,6 @@ class Javascript extends CI_Controller {
 		}
 
 		$modified = $this->input->get_post('v');
-
 		$this->_set_headers($mock_name, $modified);
 		
 		$this->output->set_header('Content-Length: '.strlen($contents));
@@ -400,7 +403,10 @@ class Javascript extends CI_Controller {
 	 */
 	function _css_javascript($file)
 	{
-		$js = '(function($, doc) {
+		$js = '(function(doc) {
+
+			var $, jQuery; /* test no jquery */
+
 			var adv_css = '.$this->_advanced_css($file).', selector,
 		 		compat_el = doc.createElement("ee_compat"),
 
@@ -416,9 +422,31 @@ class Javascript extends CI_Controller {
 
 				css_radii = {};
 
+			/* Simple iterator so we can keep jquery at the bottom of the page */
+
+			function each(el, fn) {
+				var ret;
+
+				if (el.length) {
+					for (var i = 0, l = el.length; i < l; i++) {
+						if (fn.call(el[i], i, el[i]) === false)
+						{
+							return;
+						}
+					}
+					return;
+				}
+				for (var key in el) {
+					if (fn.call(el[key], key, el[key]))
+					{
+						return;
+					}
+				}
+			}
+
 			/* Detect browser support and define a proper prefix */
 			
-			$.each(prefixes, function(i) {
+			each(prefixes, function(i) {
 				
 				var name = i ? this+"BorderRadius" : "borderRadius";
 
@@ -438,13 +466,18 @@ class Javascript extends CI_Controller {
 					return false;
 				}
 			});
+
+			if ( ! supported)
+			{
+				return;
+			}
 			
 			/*
 			 * Different names for the same thing.
 			 * Spec: border-bottom-left-radius, Moz: border-radius-bottomleft, Plugin: bl
 			 */
 
-			$.each(corners, function(i, v) {
+			each(corners, function(i, v) {
 				if (use[2]) {
 					v = v.replace(regex, use[2]);
 				}
@@ -456,51 +489,33 @@ class Javascript extends CI_Controller {
 
 				if (key.indexOf("@") == -1) {
 					
-					var apply_radius = "",
-						sep = (supported) ? ":" : " ",
-						jQel;
+					var apply_radius = "";
 
 					for (radius in css_radii) {
 						if (value[radius]) {
-							apply_radius += css_radii[radius]+sep+value[radius]+";";
+							apply_radius += css_radii[radius]+":"+value[radius]+";";
 							delete(value[radius]);
 						}
 					}
 
-					if (supported) {
-						inline_css.push(key+"{"+apply_radius+"}");
-					}
-					else {
-						jQel = $(key).css(value);
-
-						if (apply_radius) {
-							/* jQel.uncorner().corner(apply_radius); */
-						}
-					}
+					inline_css.push(key+"{"+apply_radius+"}");
 				}
 				else if (key.indexOf("@"+EE.router_class) != -1) {
-					$.each(value, process_css);
+					each(value, process_css);
 				}
 			}
 			
-			if (supported) {
-				$.each(adv_css, process_css);
+			each(adv_css, process_css);
 
-				var head = doc.getElementsByTagName("head")[0],
-					ss_txt = doc.createTextNode(inline_css.join("\n")),
-					ss_el = doc.createElement("style");
+			var head = doc.getElementsByTagName("head")[0],
+				ss_txt = doc.createTextNode(inline_css.join("\n")),
+				ss_el = doc.createElement("style");
 
-				ss_el.setAttribute("type", "text/css");
-				ss_el.appendChild(ss_txt);
-				head.appendChild(ss_el);
-			}
-			else {
-				$(doc).ready(function() {
-					$.each(adv_css, process_css);
-				});
-			}
+			ss_el.setAttribute("type", "text/css");
+			ss_el.appendChild(ss_txt);
+			head.appendChild(ss_el);
 
-		})(jQuery, this.document)';
+		})(this.document)';
 
 		$js = preg_replace('|/\*.*?\*/|s', '', $js);
 		return str_replace(array("\t", "\n"), '', $js);
