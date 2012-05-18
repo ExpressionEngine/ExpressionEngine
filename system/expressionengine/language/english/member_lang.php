@@ -53,9 +53,6 @@ $lang = array(
 'existing_un' =>
 'Your existing username',
 
-'existing_pw' =>
-'Your existing password',
-
 'un_len' =>
 'Usernames must be at least %s characters in length',
 
@@ -72,7 +69,7 @@ $lang = array(
 'Your Existing Username',
 
 'existing_password' =>
-'Your Existing Password',
+'Your Current Password',
 
 'all_fields_required' =>
 'You must submit all fields',

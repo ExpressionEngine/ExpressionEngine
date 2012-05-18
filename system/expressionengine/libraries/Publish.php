@@ -93,7 +93,7 @@ class Publish
 				}
 			}
 		}
-		elseif ( ! isset($selected_categories))
+		elseif ( ! isset($selected_categories) AND $entry_id !== 0)
 		{
 			if ($file)
 			{
