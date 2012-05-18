@@ -1805,6 +1805,7 @@ div#templates {
 }
 
 #templates .column {
+	overflow: hidden;
 	padding:			0 18px 0 10px;
 }
 
