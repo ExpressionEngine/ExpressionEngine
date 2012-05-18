@@ -96,7 +96,7 @@ class Channel {
 			$this->reserved_cat_segment	= $this->EE->config->item("reserved_category_word");
 		}
 
-		// a number tags utilize the disable= parameter, set it here
+		// a number of tags utilize the disable= parameter, set it here
 		if (isset($this->EE->TMPL) && is_object($this->EE->TMPL))
 		{
 			$this->_fetch_disable_param();

@@ -156,7 +156,7 @@ class EE_Functions {
 	 * @access	public
 	 * @return	string
 	 */
-	function create_page_url($base_url, $segment, $trailing_slash = true)
+	function create_page_url($base_url, $segment, $trailing_slash = FALSE)
 	{
 		// Load the string helper
 		$this->EE->load->helper('string');       
