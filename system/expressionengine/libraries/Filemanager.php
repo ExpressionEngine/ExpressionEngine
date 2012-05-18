@@ -1448,6 +1448,8 @@ class Filemanager {
 			}
 			else
 			{
+				$config['master_dim'] = $force_master_dim;
+				
 				$this->EE->image_lib->initialize($config);
 				
 				if ( ! $this->EE->image_lib->resize())
