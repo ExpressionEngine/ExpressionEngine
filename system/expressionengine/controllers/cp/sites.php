@@ -1608,7 +1608,18 @@ class Sites extends CI_Controller {
 					}
 				}
 			}
-			
+		}
+
+		// Check to see if there's a status group
+		if ($edit === FALSE)
+		{
+			$this->load->model('status_model');
+			$count = $this->status_model->get_status_groups($site_id)->row('count');
+
+			if ($count > 0)
+			{
+				$this->status_model->insert_statuses('Statuses', $site_id);
+			}
 		}
 		
 		// Refresh Sites List	
