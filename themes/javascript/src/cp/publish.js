@@ -522,7 +522,7 @@ function disable_fields(state) {
 		submit.addClass("disabled_field");
 		admin_link.addClass("admin_mode");
 		$("#holder div.markItUp, #holder p.spellcheck").each(function() {
-			$(this).before("<div class=\"cover\" style=\"position:absolute;width:100%;height:50px;z-index:9999;\"></div>").css({});
+			$(this).before("<div class=\"cover\" style=\"position:absolute;width:98%;height:50px;z-index:9999;\"></div>").css({});
 		});
 
 		$('.contents, .publish_field input, .publish_field textarea').css('-webkit-user-select', 'none');

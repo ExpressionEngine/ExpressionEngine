@@ -7,6 +7,7 @@ $lang = array(
 
 // Headings
 'nav_rte_settings' => 'Rich Text Editor Settings',
+'nav_rte_settings_short_desc' => 'Manage Rich Text Editor Tools and Toolsets',
 'rte_settings' => 'Site Preferences',
 'rte_prefs' => 'Rich Text Editor Preferences',
 'toolsets' => 'Toolsets',

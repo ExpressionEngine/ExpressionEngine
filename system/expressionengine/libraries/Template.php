@@ -3838,21 +3838,32 @@ class EE_Template {
 		foreach ($matches[1] as $k => $match)
 		{
 			$str = '';
+			$parameters = array();
+			$count = 1;
+			
+			// Get parameters of variable pair
+			if (preg_match_all("|".LD.$name.'(.*?)'.RD."|s", $matches[0][$k], $param_matches))
+			{
+				$parameters = $this->EE->functions->assign_parameters($param_matches[1][0]);
+			}
+			
+			// Limit parameter
+			$limit = (isset($parameters['limit'])) ? $parameters['limit'] : NULL;
 			
 			foreach ($variables as $set)
 			{
 				$temp = $match;
 
-				foreach ($set as $name => $value)
+				foreach ($set as $key => $value)
 				{
-					if (isset($this->unfound_vars[$depth][$name]))
+					if (isset($this->unfound_vars[$depth][$key]))
 					{
 						continue;
 					}
 
-					if (strpos($string, LD.$name) === FALSE)
+					if (strpos($string, LD.$key) === FALSE)
 					{
-						$this->unfound_vars[$depth][$name] = TRUE;
+						$this->unfound_vars[$depth][$key] = TRUE;
 						continue;
 					}
 					
@@ -3868,17 +3879,31 @@ class EE_Template {
 
 						if (isset($value[0]) && is_array($value[0]))
 						{
-							$temp = $this->_parse_var_pair($name, $value, $temp, $depth + 1);
+							$temp = $this->_parse_var_pair($key, $value, $temp, $depth + 1);
 							continue;
 						}
 					}
 
-					$temp = $this->_parse_var_single($name, $value, $temp);
+					$temp = $this->_parse_var_single($key, $value, $temp);
 				}
 
 				// Prep conditionals
 				$temp = $this->EE->functions->prep_conditionals($temp, $set);
 				$str .= $temp;
+				
+				// Break if we're past the limit
+				if ($limit !== NULL AND $limit == $count++)
+				{
+					break;
+				}
+			}
+			
+			// Backspace parameter
+			$backspace = (isset($parameters['backspace'])) ? $parameters['backspace'] : NULL;
+			
+			if (is_numeric($backspace))
+			{
+				$str = substr($str, 0, -$backspace);
 			}
 			
 			$string = str_replace($matches[0][$k], $str, $string);
