@@ -192,43 +192,42 @@ class Tools_utilities extends CI_Controller {
 		$this->load->library('form_validation');
 		
 		$config = array(
-					   array(
-							 'field'   => 'xml_file',
-							 'label'   => 'lang:xml_file_loc',
-							 'rules'   => 'required|callback__file_exists'
-						  ),
-					   array(
-							 'field'   => 'group_id',
-							 'label'   => 'lang:default_group_id',
-							 'rules'   => ''
-						  ),
-					   array(
-							 'field'   => 'language',
-							 'label'   => 'lang:language',
-							 'rules'   => ''
-						  ),
-					   array(
-							 'field'   => 'timezones',
-							 'label'   => 'lang:timezones',
-							 'rules'   => ''
-						  ),
-					   array(
-							 'field'   => 'time_format',
-							 'label'   => 'lang:time_format',
-							 'rules'   => ''
-						  ),
-					   array(
-							 'field'   => 'daylight_savings',
-							 'label'   => 'lang:daylight_savings',
-							 'rules'   => ''
-						  ),
-					   array(
-							 'field'   => 'auto_custom_field',
-							 'label'   => 'lang:auto_custom_field',
-							 'rules'   => ''
-						  )
-						
-					);
+			array(
+				 'field'   => 'xml_file',
+				 'label'   => 'lang:xml_file_loc',
+				 'rules'   => 'required|callback__file_exists'
+			),
+			array(
+				 'field'   => 'group_id',
+				 'label'   => 'lang:default_group_id',
+				 'rules'   => ''
+			),
+			array(
+				 'field'   => 'language',
+				 'label'   => 'lang:language',
+				 'rules'   => ''
+			),
+			array(
+				 'field'   => 'timezones',
+				 'label'   => 'lang:timezones',
+				 'rules'   => ''
+			),
+			array(
+				 'field'   => 'time_format',
+				 'label'   => 'lang:time_format',
+				 'rules'   => ''
+			),
+			array(
+				 'field'   => 'daylight_savings',
+				 'label'   => 'lang:daylight_savings',
+				 'rules'   => ''
+			),
+			array(
+				 'field'   => 'auto_custom_field',
+				 'label'   => 'lang:auto_custom_field',
+				 'rules'   => ''
+			)			
+		);
 		
 		$this->form_validation->set_rules($config);
 		$this->form_validation->set_error_delimiters('<span class="notice">', '</span>');
@@ -274,14 +273,14 @@ class Tools_utilities extends CI_Controller {
 		$this->javascript->compile();
 					
 		$data = array(
-						'xml_file'   		=> $this->input->post('xml_file'),
-						'group_id' 			=> $this->input->post('group_id'),
-						'language' 			=> ($this->input->post('language') == lang('none')) ? '' : $this->input->post('language'),
-						'timezones' 		=> $this->input->post('timezones'),
-						'time_format' 		=> $this->input->post('time_format'),
-						'daylight_savings' 	=> ($this->input->post('daylight_savings') == 'y') ? 'y' : 'n',
-						'auto_custom_field' => ($this->input->post('auto_custom_field') == 'y') ? 'y' : 'n'
-					);
+			'xml_file'   		=> $this->input->post('xml_file'),
+			'group_id' 			=> $this->input->post('group_id'),
+			'language' 			=> ($this->input->post('language') == lang('none')) ? '' : $this->input->post('language'),
+			'timezones' 		=> $this->input->post('timezones'),
+			'time_format' 		=> $this->input->post('time_format'),
+			'daylight_savings' 	=> ($this->input->post('daylight_savings') == 'y') ? 'y' : 'n',
+			'auto_custom_field' => ($this->input->post('auto_custom_field') == 'y') ? 'y' : 'n'
+		);
 					
 
 		$vars['data_display'] = array(
@@ -370,9 +369,7 @@ class Tools_utilities extends CI_Controller {
 		$this->lang->loadfile('member_import');
 		$this->load->library('table');
 		$this->load->helper('date');
-		$this->lang->loadfile('member_import');
 		$this->load->model('member_model');
-
 		
 		$this->db->select('group_title');
 		$this->db->where('group_id', $this->input->post('group_id'));
@@ -393,14 +390,14 @@ class Tools_utilities extends CI_Controller {
 		$this->javascript->compile();
 
 		$data = array(
-						'xml_file'   		=> $this->input->post('xml_file'),
-						'group_id' 			=> $this->input->post('group_id'),
-						'language' 			=> ($this->input->post('language') == lang('none')) ? '' : $this->input->post('language'),
-						'timezones' 			=> $this->input->post('timezones'),
-						'time_format' 		=> $this->input->post('time_format'),
-						'daylight_savings' 	=> ($this->input->post('daylight_savings') == 'y') ? 'y' : 'n',
-						'auto_custom_field' => ($this->input->post('auto_custom_field') == 'y') ? 'y' : 'n'
-					);
+			'xml_file'   		=> $this->input->post('xml_file'),
+			'group_id' 			=> $this->input->post('group_id'),
+			'language' 			=> ($this->input->post('language') == lang('none')) ? '' : $this->input->post('language'),
+			'timezones' 		=> $this->input->post('timezones'),
+			'time_format' 		=> $this->input->post('time_format'),
+			'daylight_savings' 	=> ($this->input->post('daylight_savings') == 'y') ? 'y' : 'n',
+			'auto_custom_field' => ($this->input->post('auto_custom_field') == 'y') ? 'y' : 'n'
+		);
 					
 
 		$vars['data_display'] = array(
