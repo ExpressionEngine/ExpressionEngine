@@ -253,15 +253,21 @@ class Sites extends CI_Controller {
 		$title = ($site_id) ? lang('edit_site') : lang('create_new_site');
 		$this->cp->set_variable('cp_page_title', $title);
 		
-		$this->load->model('site_model');
-		$this->load->model('file_upload_preferences_model');
+		$this->load->model(array(
+			'site_model', 
+			'file_upload_preferences_model',
+			'channel_model',
+			'template_model'
+		));
 		$this->load->helper(array('form', 'snippets'));
 		$this->lang->loadfile('filemanager');
 		
-		$values = array('site_id'					=> '',
-						'site_label'				=> '',
-						'site_name'					=> '',
-						'site_description'			=> '');
+		$values = array(
+			'site_id'			=> '',
+			'site_label'		=> '',
+			'site_name'			=> '',
+			'site_description'	=> ''
+		);
 
 		if ($site_id)
 		{
@@ -277,53 +283,55 @@ class Sites extends CI_Controller {
 		
 		if ($values['site_id'] == '')
 		{
-				$this->lang->loadfile('content');
-				$this->lang->loadfile('design');
-				
-				$vars['channels'] = $this->db->query("SELECT channel_title, channel_id, site_label FROM exp_channels, exp_sites
-									 				WHERE exp_sites.site_id = exp_channels.site_id
-									 				ORDER by site_label, channel_title");
-									
-				$vars['channel_options'] = array(
-												'nothing'		=> lang('do_nothing'),
-												'move'			=> lang('move_channel_move_data'),
-												'duplicate'		=> lang('duplicate_channel_no_data'),
-												'duplicate_all'	=> lang('duplicate_channel_all_data')
-												);
+			$this->lang->loadfile('content');
+			$this->lang->loadfile('design');
+			
+			// Get channels from the model
+			$vars['channels'] = $this->channel_model->get_channels(
+				'all', 
+				array('channel_title, channel_id', 'site_id')
+			);
 
+			$vars['channel_options'] = array(
+				'nothing'		=> lang('do_nothing'),
+				'move'			=> lang('move_channel_move_data'),
+				'duplicate'		=> lang('duplicate_channel_no_data'),
+				'duplicate_all'	=> lang('duplicate_channel_all_data')
+			);
+			
+			// Get upload directories
+			$vars['upload_directories'] = $this->file_upload_preferences_model->get_file_upload_preferences(1, NULL, TRUE, array('order_by' => array('site_id' => 'asc')));
 
-				$vars['upload_directories'] = 	$this->db->query("SELECT name, id, site_label FROM exp_upload_prefs, exp_sites
-										 						WHERE exp_sites.site_id = exp_upload_prefs.site_id
-										 						ORDER by site_label, exp_upload_prefs.name");
-				
-				// Bring in overridden upload directory values to show on Add Site screen
-				$vars['upload_directories_override'] = $this->file_upload_preferences_model->get_file_upload_preferences(1, NULL, TRUE);
+			$vars['upload_directory_options'] = array(
+				'nothing'		=> lang('do_nothing'),
+				'move'			=> lang('move_upload_destination'),
+				'duplicate'		=> lang('duplicate_upload_destination')
+			);
 
-				$vars['upload_directory_options'] = array(
-												'nothing'		=> lang('do_nothing'),
-												'move'			=> lang('move_upload_destination'),
-												'duplicate'		=> lang('duplicate_upload_destination')
-												);
+			// Get Template Groups
+			$vars['template_groups'] = $this->template_model->get_template_groups('all');
 
+			$vars['template_group_options'] = array(
+				'nothing'		=> lang('do_nothing'),
+				'move'			=> lang('move_template_group'),
+				'duplicate'		=> lang('duplicate_template_group')
+			);
 
-				$vars['template_groups'] = $this->db->query("SELECT group_name, group_id, site_label FROM exp_template_groups, exp_sites
-									 						WHERE exp_sites.site_id = exp_template_groups.site_id
-									 						ORDER by site_label, group_name");
+			// Get Global Variables (site information)
+			$sites = $this->site_model->get_site();
+			$sites_map = array();
+			foreach ($sites->result_array() as $site_info)
+			{
+				$sites_map[$site_info['site_id']] = $site_info;
+			}
+			ksort($sites_map);
+			$vars['sites'] = $sites_map;
 
-				$vars['template_group_options'] = array(
-												'nothing'		=> lang('do_nothing'),
-												'move'			=> lang('move_template_group'),
-												'duplicate'		=> lang('duplicate_template_group')
-												);
-
-				$vars['global_variables'] = $this->db->query("SELECT site_id, site_label FROM exp_sites ORDER by site_label");
-				
-				
-				$vars['global_variable_options'] = array(
-												'nothing'		=> lang('do_nothing'),
-												'move'			=> lang('move_global_variables'),
-												'duplicate'		=> lang('duplicate_global_variables')
-												);
+			$vars['global_variable_options'] = array(
+				'nothing'		=> lang('do_nothing'),
+				'move'			=> lang('move_global_variables'),
+				'duplicate'		=> lang('duplicate_global_variables')
+			);
 		}
 		
 		$vars['values'] = $values;
@@ -332,7 +340,7 @@ class Sites extends CI_Controller {
 		
 		if ($site_id)
 		{
-				$vars['form_url'] .= AMP.'site_id='.$site_id;
+			$vars['form_url'] .= AMP.'site_id='.$site_id;
 		}
 
 		$this->javascript->compile();
