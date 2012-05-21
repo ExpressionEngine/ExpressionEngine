@@ -1239,13 +1239,13 @@ class Content_publish extends CP_Controller {
 		{
 			$type		= '';
 			$page_title	= 'entry_has_been_updated';
-			$success	= $this->api_channel_entries->update_entry($entry_id, $data);
+			$success	= $this->api_channel_entries->save_entry($data, NULL, $entry_id);
 		}
 		else
 		{
 			$type		= 'new';
 			$page_title	= 'entry_has_been_added';
-			$success	= $this->api_channel_entries->submit_new_entry($_POST['channel_id'], $data);
+			$success	= $this->api_channel_entries->save_entry($data, $_POST['channel_id']);
 		}
 		
 		

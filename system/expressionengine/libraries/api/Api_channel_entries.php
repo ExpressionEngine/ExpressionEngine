@@ -68,60 +68,72 @@ class Api_channel_entries extends Api {
 	// --------------------------------------------------------------------
 	
 	/**
-	 * Submit New Entry
+	 * Saves a new or existing channel entry
 	 *
-	 * Handles entry submission from an arbitrary, authenticated source
-	 *
-	 * @access	public
-	 * @param	int
-	 * @param	array
-	 * @return	mixed
+	 * @param string $data Entry data
+	 * @param string $channel_id Channel ID when adding new entries
+	 * @param string $entry_id Entry ID when editing an existing entry
+	 * @param string $autosave 
+	 * @return bool
 	 */
-	function submit_new_entry($channel_id, $data, $autosave = FALSE)
+	public function save_entry($data, $channel_id = NULL, $entry_id = 0, $autosave = FALSE)
 	{
-		$this->entry_id = 0;
+		$entry_id = (empty($entry_id)) ? 0 : $entry_id;
+		
+		$this->entry_id = $entry_id;
 		$this->autosave_entry_id = isset($data['autosave_entry_id']) ? $data['autosave_entry_id'] : 0;
-		
-		// yoost incase
-		$data['channel_id'] = $channel_id;
-		
 		$this->data =& $data;
-		$mod_data = array();
 		
-		$this->initialize(array('channel_id' => $channel_id, 'entry_id' => 0, 'autosave' => $autosave));
-
+		$initialize = array(
+			'entry_id' => $entry_id,
+			'autosave' => $autosave
+		);
+		
+		if ( ! empty($channel_id))
+		{
+			$initialize['channel_id'] = $channel_id;
+			$data['channel_id'] = $channel_id;
+		}
+		
+		$this->initialize($initialize);
+		
 		if ( ! $this->_base_prep($data))
 		{
 			return FALSE;
 		}
-
+		
 		if ($this->trigger_hook('entry_submission_start') === TRUE)
 		{
 			return TRUE;
 		}
 		
-		// Data cached by base_prep is only needed for updates - toss it
-		
-		$this->_cache = array();
+		$save_function = '_update_entry';
+		if (empty($entry_id))
+		{
+			// Data cached by base_prep is only needed for updates - toss it
+			$this->_cache = array();
+			$save_function = '_insert_entry';
+		}
 		
 		$this->_fetch_channel_preferences();
 		$this->_do_channel_switch($data);
 
 		// We break out the third party data here
+		$mod_data = array();
 		$this->_fetch_module_data($data, $mod_data);		
 
 		$this->_check_for_data_errors($data);
-				
+
 		// Lets make sure those went smoothly
-		
+
 		if (count($this->errors) > 0)
 		{
 			return ($this->autosave) ? $this->errors : FALSE;
 		}
-		
+
 		$this->_prepare_data($data, $mod_data, $autosave);
 		$this->_build_relationships($data);
-
+		
 		$meta = array(
 			'channel_id'				=> $this->channel_id,
 			'author_id'					=> $data['author_id'],
@@ -144,7 +156,7 @@ class Api_channel_entries extends Api {
 		);
 		
 		$this->meta =& $meta;
-		
+
 		$meta_keys = array_keys($meta);
 		$meta_keys = array_diff($meta_keys, array('channel_id', 'entry_id', 'site_id'));
 
@@ -162,155 +174,16 @@ class Api_channel_entries extends Api {
 		{
 			// autosave is done at this point, title and custom field insertion.
 			// no revisions, stat updating or cache clearing needed.
-			return $this->_insert_entry($meta, $data, $mod_data);
-		}
-		
-		$this->_insert_entry($meta, $data, $mod_data);
-		
-		if (count($mod_data) > 0)
-		{
-			$this->_set_mod_data($meta, $data, $mod_data);
-		}
-		
-		$this->_sync_related($meta, $data);
-		
-		if (isset($data['save_revision']) && $data['save_revision'])
-		{
-			return TRUE;
-		}
-		
-		if (isset($data['ping_servers']) && count($data['ping_servers']) > 0)
-		{
-			$this->send_pings($data['ping_servers'], $channel_id, $this->entry_id);
-		}
-		
-		$this->EE->stats->update_channel_stats($channel_id);
-		
-		if ($this->EE->config->item('new_posts_clear_caches') == 'y')
-		{
-			$this->EE->functions->clear_caching('all');
-		}
-		else
-		{
-			$this->EE->functions->clear_caching('sql');
-		}
-		
-		// I know this looks redundant in July of 2009, but if the code moves
-		// around, putting this return here now will ensure it doesn't get
-		// forgotten in the future. -dj
-		if ($this->trigger_hook('entry_submission_end') === TRUE)
-		{
-			return TRUE;
-		}
-		
-		return TRUE;
-	}
-	
-	// --------------------------------------------------------------------
-	
-	/**
-	 * Update entry
-	 *
-	 * Handles updating of existing entries from arbitrary, authenticated source
-	 *
-	 * @access	public
-	 * @param	int
-	 * @param	array
-	 * @return	mixed
-	 */
-	function update_entry($entry_id, $data, $autosave = FALSE)
-	{
-		$this->data =& $data;
-		$mod_data = array();
-		$this->initialize(array('entry_id' => $entry_id, 'autosave' => $autosave));
-
-		if ( ! $this->entry_exists($this->entry_id))
-		{
-			return $this->_set_error('no_entry_to_update');
-		}
-		
-		if ( ! $this->_base_prep($data))
-		{
-			return FALSE;
+			return $this->$save_function($meta, $data, $mod_data);
 		}
 
-		if ($this->trigger_hook('entry_submission_start') === TRUE)
-		{
-			return TRUE;
-		}
-				
-		$this->_fetch_channel_preferences();
-		$this->_do_channel_switch($data);
-
-		// We break out the third party data here
-		$this->_fetch_module_data($data, $mod_data);
-		
-		$this->_check_for_data_errors($data);
-	
-		// Lets make sure those went smoothly
-		
-		if (count($this->errors) > 0)
-		{
-			return ($this->autosave) ? $this->errors : FALSE;
-		}
-		
-		$this->_prepare_data($data, $mod_data, $autosave);
-		
-		$this->_build_relationships($data);
-		
-		$meta = array(
-			'channel_id'				=> $this->channel_id,
-			'author_id'					=> $data['author_id'],
-			'site_id'					=> $this->EE->config->item('site_id'),
-			'ip_address'				=> $this->EE->input->ip_address(),
-			'title'						=> ($this->EE->config->item('auto_convert_high_ascii') == 'y') ? ascii_to_entities($data['title']) : $data['title'],
-			'url_title'					=> $data['url_title'],
-			'entry_date'				=> $data['entry_date'],
-			'edit_date'					=> $this->EE->localize->decode_date('%Y%m%d%H%i%s', $data['entry_date'], TRUE),
-			'versioning_enabled'		=> $data['versioning_enabled'],
-			'year'						=> $this->EE->localize->decode_date('%Y', $data['entry_date'], TRUE),
-			'month'						=> $this->EE->localize->decode_date('%m', $data['entry_date'], TRUE),
-			'day'						=> $this->EE->localize->decode_date('%d', $data['entry_date'], TRUE),
-			'expiration_date'			=> $data['expiration_date'],
-			'comment_expiration_date'	=> $data['comment_expiration_date'],
-			'recent_comment_date'		=> (isset($data['recent_comment_date']) && $data['recent_comment_date']) ? $data['recent_comment_date'] : 0,
-			'sticky'					=> (isset($data['sticky']) && $data['sticky'] == 'y') ? 'y' : 'n',
-			'status'					=> $data['status'],
-			'allow_comments'			=> $data['allow_comments'],
-		);
-
-		$this->meta =& $meta;
-		
-		$meta_keys = array_keys($meta);
-		$meta_keys = array_diff($meta_keys, array('channel_id', 'entry_id', 'site_id'));
-
-		foreach($meta_keys as $k)
-		{
-			unset($data[$k]);
-		}
-
-		if ($this->trigger_hook('entry_submission_ready') === TRUE)
-		{
-			return TRUE;
-		}
-				
-		
-		if ($this->autosave)
-		{
-			// autosave is done at this point, title and custom field insertion.
-			// no revisions, stat updating or cache clearing needed.
-			return $this->_update_entry($meta, $data, $mod_data);
-		}
-		
-		$this->_update_entry($meta, $data, $mod_data);
-
-
+		$this->$save_function($meta, $data, $mod_data);
 
 		if (count($mod_data) > 0)
 		{
 			$this->_set_mod_data($meta, $data, $mod_data);
-		}		
-		
+		}
+
 		$this->_sync_related($meta, $data);
 
 		if (isset($data['save_revision']) && $data['save_revision'])
@@ -338,7 +211,7 @@ class Api_channel_entries extends Api {
 		{
 			$this->EE->functions->clear_caching('sql');
 		}
-		
+
 		// I know this looks redundant in July of 2009, but if the code moves
 		// around, putting this return here now will ensure it doesn't get
 		// forgotten in the future. -dj
@@ -348,6 +221,48 @@ class Api_channel_entries extends Api {
 		}
 
 		return TRUE;
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Submit New Entry
+	 *
+	 * Handles entry submission from an arbitrary, authenticated source
+	 *
+	 * @access	public
+	 * @param	int
+	 * @param	array
+	 * @return	mixed
+	 * @deprecated 2.6
+	 */
+	function submit_new_entry($channel_id, $data, $autosave = FALSE)
+	{
+		$this->EE->load->library('logger');
+		$this->EE->logger->deprecated('2.6', 'Api_channel_entries::save_entry()');
+		
+		return $this->save_entry($data, $channel_id, NULL, $autosave);
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Update entry
+	 *
+	 * Handles updating of existing entries from arbitrary, authenticated source
+	 *
+	 * @access	public
+	 * @param	int
+	 * @param	array
+	 * @return	mixed
+	 * @deprecated 2.6
+	 */
+	function update_entry($entry_id, $data, $autosave = FALSE)
+	{
+		$this->EE->load->library('logger');
+		$this->EE->logger->deprecated('2.6', 'Api_channel_entries::save_entry()');
+		
+		return $this->save_entry($data, NULL, $entry_id, $autosave);
 	}
 	
 	// --------------------------------------------------------------------
@@ -381,7 +296,7 @@ class Api_channel_entries extends Api {
 			return $this->submit_new_entry($data['channel_id'], $data, TRUE);
 		}
 		
-		return $this->update_entry($data['entry_id'], $data, TRUE);
+		return $this->save_entry($data, NULL, $data['entry_id'], TRUE);
 	}
 
 	// --------------------------------------------------------------------
