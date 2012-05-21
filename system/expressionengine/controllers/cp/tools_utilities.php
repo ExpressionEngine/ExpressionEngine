@@ -285,15 +285,14 @@ class Tools_utilities extends CI_Controller {
 					
 
 		$vars['data_display'] = array(
-						'xml_file'   		=> $data['xml_file'],
-						'default_group_id'	=> $group_name,
-						'language' 			=> ($data['language'] == '') ? lang('none') : ucfirst($data['language']),
-						'timezones' 		=> lang($data['timezones']),
-						'time_format' 		=> ($data['time_format'] == 0) ? lang('united_states') : lang('european'),
-						'daylight_savings' 	=> ($data['daylight_savings'] == 'y') ? lang('yes') : lang('no'),
-						'auto_custom_field' => ($data['auto_custom_field'] == 'y') ? lang('yes') : lang('no')
-					 );
-
+			'xml_file'   		=> $data['xml_file'],
+			'default_group_id'	=> $group_name,
+			'language' 			=> ($data['language'] == '') ? lang('none') : ucfirst($data['language']),
+			'timezones' 		=> lang($data['timezones']),
+			'time_format' 		=> ($data['time_format'] == 'us') ? lang('united_states') : lang('european'),
+			'daylight_savings' 	=> ($data['daylight_savings'] == 'y') ? lang('yes') : lang('no'),
+			'auto_custom_field' => ($data['auto_custom_field'] == 'y') ? lang('yes') : lang('no')
+		);
 				
 		$vars['form_hidden'] = $data;
 		$vars['added_fields'] = array();
@@ -405,14 +404,14 @@ class Tools_utilities extends CI_Controller {
 					
 
 		$vars['data_display'] = array(
-						'xml_file'   		=> $data['xml_file'],
-						'default_group_id'	=> $group_name,
-						'language' 			=> ($data['language'] == '') ? lang('none') : ucfirst($data['language']),
-						'timezones' 			=> lang($data['timezones']),
-						'time_format' 		=> ($data['time_format'] == 'us') ? lang('united_states') : lang('european'),
-						'daylight_savings' 	=> ($data['daylight_savings'] == 'y') ? lang('yes') : lang('no'),
-						'auto_custom_field' => ($data['auto_custom_field'] == 'y') ? lang('yes') : lang('no')
-					 );
+			'xml_file'   		=> $data['xml_file'],
+			'default_group_id'	=> $group_name,
+			'language' 			=> ($data['language'] == '') ? lang('none') : ucfirst($data['language']),
+			'timezones' 		=> lang($data['timezones']),
+			'time_format' 		=> ($data['time_format'] == 'us') ? lang('united_states') : lang('european'),
+			'daylight_savings' 	=> ($data['daylight_savings'] == 'y') ? lang('yes') : lang('no'),
+			'auto_custom_field' => ($data['auto_custom_field'] == 'y') ? lang('yes') : lang('no')
+		 );
 
 			
 		$vars['form_hidden'] = ($map) ? array_merge($data, $_POST['field_map']) : $data;
