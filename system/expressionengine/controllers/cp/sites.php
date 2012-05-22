@@ -1099,6 +1099,9 @@ class Sites extends CI_Controller {
 				$field_match	 = array();
 				$cat_field_match = array();
 
+				// Load DB Forge, we'll need this for some alters later on
+				$this->load->dbforge();
+
 				foreach($channel_ids as $old_channel => $new_channel)
 				{
 					$query = $this->db->select('cat_group, status_group, field_group')
@@ -1255,34 +1258,58 @@ class Sites extends CI_Controller {
 									
 									$field_match[$old_field_id] = $field_id;
 									
-									// Channel Data Field Creation, Whee!									
+									// Channel Data Field Creation, Whee!
 									if ($row['field_type'] == 'date' OR $row['field_type'] == 'rel')
 									{
-										$this->db->query("ALTER TABLE exp_channel_data ADD COLUMN field_id_".$this->db->escape_str($field_id)." int(10) NOT NULL DEFAULT 0");
-										$this->db->query("ALTER TABLE exp_channel_data ADD COLUMN field_ft_".$this->db->escape_str($field_id)." tinytext NULL");
-
+										$columns = array(
+											'field_id_'.$field_id => array(
+												'type' 			=> 'int',
+												'constraint' 	=> 10,
+												'null' 			=> FALSE,
+												'default' 		=> 0
+											),
+											'field_ft_'.$field_id => array(
+												'type'			=> 'tinytext',
+												'null'			=> TRUE
+											)
+										);
+										
 										if ($row['field_type'] == 'date')
 										{
-											$this->db->query("ALTER TABLE exp_channel_data ADD COLUMN field_dt_".$this->db->escape_str($field_id)." varchar(8) AFTER field_ft_".$this->db->escape_str($field_id));
+											$columns['field_dt_'.$field_id] = array(
+												'type'			=> 'varchar',
+												'constraint'	=> 8
+											);
 										}
+
+										$this->dbforge->add_column('channel_data', $columns);
 									}
 									else
 									{
+										$columns = array(
+											'field_id_'.$field_id => array(
+												'type' 			=> 'text',
+												'null' 			=> FALSE,
+											),
+											'field_ft_'.$field_id => array(
+												'type'			=> 'tinytext',
+												'null'			=> TRUE
+											)
+										);
+
 										switch ($row['field_content_type'])
 										{
 											case 'numeric':
-												$type = 'FLOAT DEFAULT 0';
+												$columns['field_id_'.$field_id]['type'] = 'float';
+												$columns['field_id_'.$field_id]['default'] = 0;
 												break;
 											case 'integer':
-												$type = 'INT DEFAULT 0';
+												$columns['field_id_'.$field_id]['type'] = 'int';
+												$columns['field_id_'.$field_id]['default'] = 0;
 												break;
-											default:
-												$type = 'text';
 										}
-				
-										$this->db->query("ALTER TABLE exp_channel_data ADD COLUMN field_id_".$this->db->escape_str($field_id).' '.$type);
-										$this->db->query("ALTER TABLE exp_channel_data ADD COLUMN field_ft_".$this->db->escape_str($field_id)." tinytext NULL");
 
+										$this->dbforge->add_column('channel_data', $columns);
 										
 										// Replace NULL values
 										if ($type == 'text')
@@ -1436,8 +1463,19 @@ class Sites extends CI_Controller {
 									$cat_field_match[$old_field_id] = $field_id;
 
 									// Custom Catagory Field Data Creation, Whee!
-									$this->db->query("ALTER TABLE `exp_category_field_data` ADD COLUMN `field_id_{$field_id}` text NOT NULL");
-									$this->db->query("ALTER TABLE `exp_category_field_data` ADD COLUMN `field_ft_{$field_id}` varchar(40) NOT NULL default 'none'");
+									$columns = array(
+										'field_id_'.$field_id => array(
+											'type' 			=> 'text',
+											'null' 			=> FALSE,
+										),
+										'field_ft_'.$field_id => array(
+											'type'			=> 'varchar',
+											'constraint'	=> 40,
+											'null'			=> FALSE,
+											'default'		=> 'none'
+										)
+									);
+									$this->dbforge->add_column('category_field_data', $columns);
 
 									$this->db->update(
 										'category_field_data',
@@ -1931,6 +1969,7 @@ class Sites extends CI_Controller {
 
 		// Delete Channel Custom Field Columns for Site		
 		// Save the field ids in an array so we can delete the associated field formats
+		$this->load->dbforge();
 		$nuked_field_ids = array();
 		
 		$query = $this->db->select('field_id, field_type')
@@ -1943,14 +1982,14 @@ class Sites extends CI_Controller {
 		{
 			foreach($query->result_array() as $row)
 			{
-				$this->db->query("ALTER TABLE exp_channel_data DROP COLUMN field_id_".$row['field_id']);
-				$this->db->query("ALTER TABLE exp_channel_data DROP COLUMN field_ft_".$row['field_id']);
+				$this->dbforge->drop_column('channel_data', 'field_id_'.$row['field_id']);
+				$this->dbforge->drop_column('channel_data', 'field_ft_'.$row['field_id']);
 
 				$nuked_field_ids[] = $row['field_id'];
                 
 				if ($row['field_type'] == 'date')
 				{
-					$this->db->query("ALTER TABLE exp_channel_data DROP COLUMN field_dt_".$row['field_id']);
+					$this->dbforge->drop_column('channel_data', 'field_dt_'.$row['field_id']);
 				}
 			}
 		}
@@ -1974,8 +2013,8 @@ class Sites extends CI_Controller {
 			foreach($query->result_array() as $row)
 			{
 				$field_id = $row['field_id'];
-				$this->db->query("ALTER TABLE exp_category_field_data DROP COLUMN field_id_{$field_id}");
-        		$this->db->query("ALTER TABLE exp_category_field_data DROP COLUMN field_ft_{$field_id}");
+				$this->dbforge->drop_column('category_field_data', 'field_id_'.$field_id);
+				$this->dbforge->drop_column('category_field_data', 'field_ft_'.$field_id);
 			}
 		}
 		
