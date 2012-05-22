@@ -1618,14 +1618,10 @@ class Sites extends CI_Controller {
 								
 								if ($row['field_type'] == 'file')
 								{
-									$this->db->update(
-										'channel_data',
-										array(
-											$field_match[$row['field_id']] 
-											=> str_replace('a8bxdee', $row['field_id'], $file_string)
-										),
-										array('channel_id' => $channel_id)
-									);
+									$this->db->query("UPDATE exp_channel_data 
+										SET `field_id_".$this->db->escape_str($field_match[$row['field_id']])."` = ".
+										str_replace('a8bxdee', $row['field_id'], $file_string).
+											"WHERE channel_id = '".$this->db->escape_str($channel_id)."'");
 								}
 								else
 								{
