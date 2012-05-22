@@ -2035,9 +2035,12 @@ class Content_publish extends CI_Controller {
 		
 		$qry = $this->db->select('username, screen_name')
 						->get_where('members', array('member_id' => (int) $author_id));
-			
-		$author = ($qry->row('screen_name')  == '') ? $qry->row('username') : $qry->row('screen_name');
-		$menu_author_options[$author_id] = $author;
+		
+		if ($qry->num_rows() > 0)
+		{
+			$menu_author_options[$author_id] = ($qry->row('screen_name')  == '')
+				? $qry->row('username') : $qry->row('screen_name');
+		}
 		
 		// Next we'll gather all the authors that are allowed to be in this list
 		$author_list = $this->member_model->get_authors();
