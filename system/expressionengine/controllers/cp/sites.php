@@ -845,7 +845,7 @@ class Sites extends CI_Controller {
 					}
 					else
 					{
-						$query = $this->get_where(
+						$query = $this->db->get_where(
 							'upload_prefs',
 							array('id' => $upload_id)
 						);
@@ -1150,7 +1150,7 @@ class Sites extends CI_Controller {
 							
 							$status[$status_group ] = $this->db->insert_id();
 							
-							$squery = $this->get_where(
+							$squery = $this->db->get_where(
 								'statuses',
 								array('group_id' => $status_group)
 							);
