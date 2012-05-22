@@ -31,15 +31,21 @@ class Rte_ft extends EE_Fieldtype {
 	
 	var $has_array_data = FALSE;
 	
-	// Paragraph tags wrapping our zero-width character,
-	// our signal that the editor is empty
-	var $_empty = '<p>​</p>';
+	// We consider the editor empty in these cases
+	var $_empty = array(
+		'',
+		'<br>',
+		'<br/>',
+		'<br />',
+		'<p></p>',
+		'<p>​</p>' // Zero-width character
+	);
 
 	// --------------------------------------------------------------------
 
 	function validate($data)
 	{
-		if ($this->settings['field_required'] == 'y' && $data == $this->_empty)
+		if ($this->settings['field_required'] == 'y' && in_array($data, $this->_empty))
 		{
 			return lang('required');
 		}
@@ -151,7 +157,7 @@ class Rte_ft extends EE_Fieldtype {
 		
 		// If the editor was saved empty, save nothing to database
 		// so it behaves as expected with conditional tags
-		if ($data == $this->_empty)
+		if (in_array($data, $this->_empty))
 		{
 			return NULL;
 		}

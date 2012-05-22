@@ -220,7 +220,10 @@ WysiHat.Editor.prototype = {
 		// if, on submit, the editor is active, we
 		// need to sync to the field before sending the data
 		$ed.closest('form').submit(function() {
-			if ($ed.is(':visible'))
+			// Instead of checking to see if the $editor is visible,
+			// we check to see if the $field is NOT visible to account
+			// cases where the editor may be hidden in a dynamic layout
+			if ( ! that.$field.is(':visible'))
 			{
 				that.updateField();
 			}

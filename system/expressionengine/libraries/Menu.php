@@ -1053,7 +1053,7 @@ class EE_Menu {
 				}
 				else
 				{
-					$page = $help_map['addons_modules'];	
+					$page .= $help_map['addons_modules'];
 				}
 			}
 		}
