@@ -592,8 +592,13 @@ class Tools_communicate extends CI_Controller {
 			{
 				$error = TRUE;
 			}
-
-			$this->_delete_attachments(); // Remove attachments now
+			
+			// Remove attachments only if member groups or mailing lists
+			// don't need them
+			if (empty($emails))
+			{
+				$this->_delete_attachments();
+			}
 
 			if ($error == TRUE)
 			{
@@ -1318,7 +1323,10 @@ class Tools_communicate extends CI_Controller {
 	{
 		foreach ($this->attachments as $file)
 		{
-			unlink($file);
+			if (file_exists($file))
+			{
+				unlink($file);
+			}
 		}
 	}
 
