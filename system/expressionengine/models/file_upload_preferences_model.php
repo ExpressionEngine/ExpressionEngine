@@ -96,7 +96,7 @@ class File_upload_preferences_model extends CI_Model
 	 * @return	array	Result array of DB object, possibly merged with custom
 	 * 		file upload settings
 	 */
-	function get_file_upload_preferences($group_id = NULL, $id = NULL, $ignore_site_id = FALSE)
+	function get_file_upload_preferences($group_id = NULL, $id = NULL, $ignore_site_id = FALSE, $parameters = array())
 	{
 		// for admins, no specific filtering, just give them everything
 		if ($group_id != 1)
@@ -130,6 +130,15 @@ class File_upload_preferences_model extends CI_Model
 		if ( ! $ignore_site_id)
 		{
 			$this->db->where('site_id', $this->config->item('site_id'));
+		}
+
+		// Check for order_by parameters
+		if (isset($parameters['order_by']))
+		{
+			foreach ($parameters['order_by'] as $column => $direction)
+			{
+				$this->db->order_by($column, $direction);
+			}
 		}
 		
 		$this->db->order_by('name');

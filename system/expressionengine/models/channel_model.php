@@ -37,6 +37,10 @@ class Channel_model extends CI_Model {
 		{
 			$site_id = $this->config->item('site_id');
 		}
+		elseif ($site_id === 'all')
+		{
+			$this->db->order_by('site_id');
+		}
 
 		// If the user is restricted to specific channels, add that to the query
 		if ($this->session->userdata('group_id') != 1)
