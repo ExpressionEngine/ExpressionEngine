@@ -1181,12 +1181,12 @@ class Sites extends CI_Controller {
 					
 					if ( ! empty($field_group))
 					{					
-						if ( ! isset($fields[$query->row('field_group') ]))
+						if ( ! isset($fields[$field_group]))
 						{
 							$fquery = $this->db->select('group_name')
 								->get_where(
 									'field_groups',
-									array('group_id' => $query->row('field_group'))
+									array('group_id' => $field_group)
 								);
 							
 							$fq_group_name = $fquery->row('group_name');
@@ -1212,12 +1212,12 @@ class Sites extends CI_Controller {
 								)
 							);
 							
-							$fields[$query->row('field_group') ] = $this->db->insert_id();
+							$fields[$field_group] = $this->db->insert_id();
 							
 							// New Fields Created for New Field Group
 							$fquery = $this->db->get_where(
 								'channel_fields',
-								array('group_id' => $query->row('field_group'))
+								array('group_id' => $field_group)
 							);
 							
 							if ($fquery->num_rows() > 0)
@@ -1231,17 +1231,16 @@ class Sites extends CI_Controller {
 										);
 																
 									$old_field_id 		= $row['field_id'];
-								
 									$row['site_id'] 	= $site_id;
 									unset($row['field_id']);
-									$row['group_id']	= $fields[$query->row('field_group') ];
+									$row['group_id']	= $fields[$field_group];
 									
 									// Uniqueness checks
 									foreach(array('field_name', 'field_label') AS $check)
 									{
 										$count = $this->db->where(array(
 												'site_id'	=> $site_id,
-												'group_id'	=> $query->row('field_group')
+												'group_id'	=> $field_group
 											))
 											->like($check, $row[$check], 'after')
 											->count_all_results('channel_fields');
@@ -1362,7 +1361,7 @@ class Sites extends CI_Controller {
 						$this->db->update(
 							'channels', 
 							array(
-								'field_group' => $fields[$query->row('field_group')], 
+								'field_group' => $fields[$field_group], 
 								'search_excerpt' => (int) $channel_data['search_excerpt']
 							), 
 							array('channel_id' => $new_channel)
@@ -1371,7 +1370,7 @@ class Sites extends CI_Controller {
 						// Moved Channel?  Need Old Field Group
 						if (isset($moved[$old_channel]))
 						{
-							$moved[$old_channel] = $query->row('field_group') ;
+							$moved[$old_channel] = $field_group ;
 						}
 					}
 					
