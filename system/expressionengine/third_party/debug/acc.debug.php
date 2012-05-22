@@ -7,6 +7,8 @@ class Debug_acc {
 	var $version		= '1.0';
 	var $description	= 'Debug Accessory';
 	var $sections		= array();
+
+	protected $_has_result;
 	
 	// --------------------------------------------------------------------
 
@@ -31,38 +33,30 @@ class Debug_acc {
 	 * Do some eval magic
 	 *
 	 * @access	public
-	 * @return	void
+	 * @return	string	eval'd results
 	 */
-	function process_run()
+	public function process_run()
 	{
-		$code = get_instance()->input->post('code');
-
-		$lines = explode("\n", $code);
-
-		$last = array_pop($lines);
-		$operator = current(explode(' ', $last));
-		$has_result = TRUE;
-
-		if ($operator != 'print' && $operator != 'echo')
-		{
-			array_push($lines, '$_debug_result = '.$last.';');
-		}
-		else
-		{
-			$has_result = FALSE;
-			array_push($lines, $last.';');
-		}
-
-		$code = implode("\n", $lines);
+		$source = get_instance()->input->post('code');
+		$code = $this->_parse_code($source);
 
 		ob_start();
 		eval($code);
+		/*
+		// @todo limited scope? what happens to $this?
+		$run = function($code)
+		{
+			eval($code);
+		}
+		*/
 		$buffer = ob_get_contents();
 		@ob_end_clean();
 
 		$buffer2 = '';
 
-		if ( ! $buffer && $has_result)
+		// no output of its own, let's dump our
+		// debug variable
+		if ( ! $buffer && $this->_has_result)
 		{
 			ob_start();
 			var_dump($_debug_result);
@@ -77,12 +71,123 @@ class Debug_acc {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Build the simple form
+	 * Prep code for eval
+	 *
+	 * Parses the code to allow us to var_dump the result of the last
+	 * statement, if there is no other output results from the code.
 	 *
 	 * @access	public
-	 * @return	void
+	 * @return	string	eval'd results
 	 */
-	function _form()
+	private function _parse_code($code)
+	{
+		// @todo do a reflection if it's a function or class
+		// and show it in a collapsed state
+		// Class Name
+		//	-> interfaces (collapse)
+		//	-> methods
+		//	-> properties
+
+		$tokens = token_get_all('<?php '.$code);
+
+		$b_depth = 0;		// block depth
+		$p_depth = 0;		// parenthesis depth
+		$s_depth = 0;		// square bracket depth
+
+		$last_stmt_begin_ln = 0;
+		$last_stmt_end_ln = 0;
+
+		$end_moved = FALSE;
+
+		foreach ($tokens as $t)
+		{
+			if (is_array($t))
+			{
+				// always ignore comments
+				if ($t[0] == T_COMMENT || $t[0] == T_DOC_COMMENT)
+				{
+					continue;
+				}
+
+				// move ends if we're back to root
+				if (($p_depth + $b_depth + $s_depth) === 0)
+				{
+					// ignore end movements for consecutive whitespace
+					// and comments, as well as previous semicolons
+					if ($end_moved)
+					{
+						$last_stmt_end_ln = $t[2];
+						$end_moved = FALSE;
+					}
+
+					// ignore all whitespace when moving the beginning
+					if ($t[0] != T_WHITESPACE)
+					{
+						$last_stmt_begin_ln = $t[2];
+						$end_moved = TRUE;
+					}
+				}
+			}
+			else
+			{
+				switch ($t)
+				{
+					case '(':	$p_depth++;
+						break;
+					case ')':	$p_depth--;
+						break;
+					case '{':	$b_depth++;
+						break;
+					case '}':	$b_depth--;
+						break;
+					case '[':	$s_depth++;
+						break;
+					case ']':	$s_depth--;
+						break;
+					case ';':	$end_moved = TRUE;
+						break;
+				}
+			}
+		}
+
+		$lines = explode("\n", $code);
+		$last =& $lines[$last_stmt_begin_ln - 1];
+
+		$this->_has_result = TRUE;
+		$operator = current(explode(' ', $last));
+
+		// add a debug variable assignment for non-results
+		if ($operator != 'print' && $operator != 'echo')
+		{
+			$last = '$_debug_result = '.$last;
+		}
+		else
+		{
+			$this->_has_result = FALSE;
+		}
+
+		// sometimes we end on a ) or }
+		if ($end_moved || ($p_depth + $b_depth + $s_depth))
+		{
+			$last_stmt_end_ln = count($lines);
+		}
+
+		// add a semi-colon
+		$lines[$last_stmt_end_ln - 1] .= ';';
+
+		// reassemble prepped code
+		return implode("\n", $lines);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Build the simple form
+	 *
+	 * @access	private
+	 * @return	string	form
+	 */
+	private function _form()
 	{
 		return
 			form_open('C=addons_accessories'.AMP.'M=process_request'.AMP.'accessory=debug'.AMP.'method=process_run').
@@ -99,10 +204,10 @@ class Debug_acc {
 	 *
 	 * Hook up events, allow tabs, and bind cmd+enter to submit.
 	 *
-	 * @access	public
+	 * @access	private
 	 * @return	void
 	 */
-	function _javascript()
+	private function _javascript()
 	{
 		ob_start();
 ?>
@@ -165,7 +270,7 @@ form.submit(function() {
 	 * @access	public
 	 * @return	void
 	 */
-	function __get($var)
+	public function __get($var)
 	{
 		$EE =& get_instance();
 		
