@@ -14,7 +14,7 @@
 	<!--[if lte IE 7]><?=$this->view->head_link('css/iefix.css')?><![endif]-->
 
 	<?php if ($advanced_css_mtime): ?>
-	<script charset="utf-8" type="text/javascript" src="<?=BASE.AMP.'C=javascript'.AMP.'M=load'.AMP.'file=css'.AMP.'theme='.$this->cp->cp_theme.AMP.'v='.$advanced_css_mtime?>"></script>
+	<script charset="utf-8" type="text/javascript" src="<?=BASE.AMP.'C=javascript'.AMP.'M=css'.AMP.'theme='.$this->cp->cp_theme.AMP.'v='.$advanced_css_mtime?>"></script>
 	<?php endif;?>
 
 	<?php

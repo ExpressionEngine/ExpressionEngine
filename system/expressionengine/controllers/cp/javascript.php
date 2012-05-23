@@ -10,11 +10,11 @@
  * @since		Version 2.0
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine CP CSS Loading Class
+ * ExpressionEngine CP Javascript Loading Class
  *
  * @package		ExpressionEngine
  * @subpackage	Control Panel
@@ -34,17 +34,8 @@ class Javascript extends CI_Controller {
 		$this->load->library('core');
 		$this->core->bootstrap();
 
-		if ( ! defined('PATH_JQUERY'))
-		{
-			if ($this->config->item('use_compressed_js') == 'n')
-			{
-				define('PATH_JQUERY', PATH_THEMES.'javascript/src/jquery/');
-			}
-			else
-			{
-				define('PATH_JQUERY', PATH_THEMES.'javascript/compressed/jquery/');
-			}
-		}
+		$dir = ($this->config->item('use_compressed_js') == 'n') ? 'src' : 'compressed';
+		define('PATH_JAVASCRIPT', PATH_THEMES.'javascript/'.$dir.'/');
 
 		$this->lang->loadfile('jquery');
 	}
@@ -59,7 +50,8 @@ class Javascript extends CI_Controller {
 	 */
 	function index()
 	{
-		$this->load('jquery');
+		// use view->script_tag() instead
+		// $this->load('jquery');
 	}
 
 	// --------------------------------------------------------------------
@@ -120,14 +112,12 @@ class Javascript extends CI_Controller {
 	{
 		$this->output->enable_profiler(FALSE);
 		
-		$file = '';
-		$contents = '';		// needed for css parsing
+		$file = '';		
+		$cp_theme = $this->input->get_post('theme');
+		$package = $this->input->get_post('package');
 
 		// trying to load a specific js file?
-		$loadfile = ($loadfile) ? $loadfile : $this->input->get_post('file');
-		$package = $this->input->get_post('package');
-		$cp_theme = $this->input->get_post('theme');
-		
+		$loadfile = $this->input->get_post('file');
 		$loadfile = $this->security->sanitize_filename($loadfile, TRUE);
 		
 		if ($loadfile == 'ext_scripts')
@@ -139,59 +129,20 @@ class Javascript extends CI_Controller {
 		{
 			$file = PATH_THIRD.$package.'/javascript/'.$loadfile.'.js';
 		}
-		elseif ($loadfile == 'jquery')
-		{
-			$file = PATH_JQUERY.'jquery.js';
-		}
 		elseif ($loadfile == '')
 		{
 			if (($plugin = $this->input->get_post('plugin')) !== FALSE)
 			{
-				$file = PATH_JQUERY.'plugins/'.$plugin.'.js';
+				$file = PATH_JAVASCRIPT.'jquery/plugins/'.$plugin.'.js';
 			}
 			elseif (($ui = $this->input->get_post('ui')) !== FALSE)
 			{
-				$file = PATH_JQUERY.'ui/jquery.ui.'.$ui.'.js';
-			}
-			elseif (($effect = $this->input->get_post('effect')) !== FALSE)
-			{
-				$file = PATH_JQUERY.'ui/jquery.effect.'.$effect.'.js';
-			}
-		}
-		elseif ($loadfile == 'css')
-		{
-			$contents = 'css';
-			
-			$css_paths = array(
-				PATH_CP_THEME.$cp_theme.'/',
-				PATH_CP_THEME.'default/'
-			);
-
-			if ($cp_theme == 'default')
-			{
-				unset($css_paths[0]);
-			}
-			
-			foreach ($css_paths as $a_path)
-			{
-				$file = $a_path.'css/advanced.css';
-				
-				if (file_exists($file))
-				{
-					break;
-				}
+				$file = PATH_JAVASCRIPT.'jquery/ui/jquery.ui.'.$ui.'.js';
 			}
 		}
 		else
 		{
-			if ($this->config->item('use_compressed_js') == 'n')
-			{
-				$file = PATH_THEMES.'javascript/src/'.$loadfile.'.js';
-			}
-			else
-			{
-				$file = PATH_THEMES.'javascript/compressed/'.$loadfile.'.js';
-			}
+			$file = PATH_JAVASCRIPT.$loadfile.'.js';
 		}
 
 		if ( ! $file OR ! file_exists($file))
@@ -214,15 +165,7 @@ class Javascript extends CI_Controller {
 		// Grab the file, content length and serve
 		// it up with the proper content type!
 
-		if ($contents == 'css')
-		{
-			// File exists and not in client cache - reparse
-			$contents = $this->_css_javascript($file);
-		}
-		else
-		{
-			$contents = file_get_contents($file);
-		}
+		$contents = file_get_contents($file);
 
 		$this->output->set_header('Content-Length: '.strlen($contents));
 		$this->output->set_output($contents);
@@ -275,12 +218,10 @@ class Javascript extends CI_Controller {
 		$this->output->enable_profiler(FALSE);
 
 		$contents	= '';
-		$folder 	= $this->config->item('use_compressed_js') == 'n' ? 'src' : 'compressed';
 		$types		= array(
-			'effect'	=> PATH_JQUERY.'ui/jquery.effects.',
-			'ui'		=> PATH_JQUERY.'ui/jquery.ui.',
-			'plugin'	=> PATH_JQUERY.'plugins/',
-			'file'		=> PATH_THEMES.'javascript/'.$folder.'/',
+			'ui'		=> PATH_JAVASCRIPT.'jquery/ui/jquery.ui.',
+			'plugin'	=> PATH_JAVASCRIPT.'jquery/plugins/',
+			'file'		=> PATH_JAVASCRIPT,
 			'package'	=> PATH_THIRD,
 			'fp_module'	=> PATH_MOD
 		);
@@ -388,7 +329,55 @@ class Javascript extends CI_Controller {
 		$this->output->set_header('Vary: Accept-Encoding');
 		$this->output->set_header('Last-Modified: '.$modified);
 		$this->output->set_header('Expires: '.$expires);        
-    }
+	}
+
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Load CSS
+	 *
+	 * Handles css prefixes. Consider it deprecated
+	 *
+	 * @access	public
+	 * @return	type
+	 */
+	function css()
+	{
+		$cp_theme = $this->input->get_post('theme');
+
+		$css_paths = array(
+			PATH_CP_THEME.$cp_theme.'/',
+			PATH_CP_THEME.'default/'
+		);
+
+		if ($cp_theme == 'default')
+		{
+			unset($css_paths[0]);
+		}
+		
+		foreach ($css_paths as $a_path)
+		{
+			$file = $a_path.'css/advanced.css';
+			
+			if (file_exists($file))
+			{
+				break;
+			}
+		}
+
+		// Can't do any of this if we're not allowed
+		// to send any headers
+
+		$this->_set_headers($file);
+
+		// Grab the file, content length and serve
+		// it up with the proper content type!
+
+		$contents = $this->_css_javascript($file);
+		$this->output->set_header('Content-Length: '.strlen($contents));
+		$this->output->set_output($contents);
+	}
 
 
 	// --------------------------------------------------------------------
