@@ -2946,7 +2946,7 @@ class Forum_mcp {
 			return $this->EE->load->view('theme_templates', $vars, TRUE);
 		}
 		
-		$this->EE->jquery->plugin(BASE.AMP.'C=javascript'.AMP.'M=load'.AMP.'plugin=markitup', TRUE);
+		$this->EE->cp->add_js_script('plugin', 'markitup');
 
 		$markItUp = array(
 			'nameSpace'	=> "html",
