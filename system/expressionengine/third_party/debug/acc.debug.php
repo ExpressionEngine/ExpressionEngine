@@ -7,8 +7,6 @@ class Debug_acc {
 	var $version		= '1.0';
 	var $description	= 'Debug Accessory';
 	var $sections		= array();
-
-	protected $_has_result;
 	
 	// --------------------------------------------------------------------
 
@@ -20,7 +18,7 @@ class Debug_acc {
 	 */
 	function set_sections()
 	{
-		$this->_javascript();
+		$this->cp->load_package_js('run');
 		$this->sections = array(
 			'Code' => $this->_form(),
 			'Result' => '<div id="'.$this->id.'_result" style="background: #fff; color: #555; padding:5px 10px"></div>'
@@ -42,13 +40,6 @@ class Debug_acc {
 
 		ob_start();
 		eval($code);
-		/*
-		// @todo limited scope? what happens to $this?
-		$run = function($code)
-		{
-			eval($code);
-		}
-		*/
 		$buffer = ob_get_contents();
 		@ob_end_clean();
 
@@ -56,16 +47,97 @@ class Debug_acc {
 
 		// no output of its own, let's dump our
 		// debug variable
-		if ( ! $buffer && $this->_has_result)
+		if ( ! $buffer && isset($_debug_result))
 		{
 			ob_start();
-			var_dump($_debug_result);
+			$this->_dump_result($_debug_result);
 			$buffer2 = ob_get_contents();
 			@ob_end_clean();
 		}
 
 		echo $buffer2."\n".$buffer;
 		exit;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Dump the result variable
+	 *
+	 * Does some extra magic to show class and function reflections
+	 *
+	 * @access	private
+	 * @return	string	dump
+	 */
+	private function _dump_result($result)
+	{
+		if ( ! (is_object($result) && $result instanceof Reflector))
+		{
+			var_dump($result);
+			return;
+		}
+
+		$pad = '&nbsp;&nbsp&nbsp';
+
+		if ($result instanceof ReflectionClass)
+		{
+			echo '<strong>Class:</strong><br>';
+			echo $pad.$result->getName().'<br>';
+
+			foreach (array('Properties', 'Methods') as $members)
+			{
+				$parts = $result->{'get'.$members}();
+
+				if (empty($parts))
+				{
+					continue;
+				}
+
+				echo '<br>';
+				echo '<strong>'.$members.':</strong><br>';
+
+				foreach ($parts as $part)
+				{
+					echo $pad;
+					echo $part->name;
+					echo ' <span style="color: #aaa">'.implode(' ', Reflection::getModifierNames($part->getModifiers())).'</span>';
+					echo '<br>';
+				}
+			}
+
+			return;
+		}
+
+		if ($result instanceof ReflectionFunction)
+		{
+			echo '<strong>Function:</strong><br>';
+			echo $pad.$result->getName().'<br>';
+
+			foreach (array('Parameters') as $members)
+			{
+				$parts = $result->{'get'.$members}();
+
+				if (empty($parts))
+				{
+					continue;
+				}
+
+				echo '<br>';
+				echo '<strong>'.$members.':</strong><br>';
+
+				foreach ($parts as $part)
+				{
+					echo $pad;
+					echo $part->name;
+					if ($part->isOptional())
+					{
+						echo ' <span style="color: #aaa">'.var_export($part->getDefaultValue(), TRUE).'</span>';
+					}
+					echo '<br>';
+				}
+
+			}
+		}
 	}
 
 	// --------------------------------------------------------------------
@@ -94,6 +166,7 @@ class Debug_acc {
 		$p_depth = 0;		// parenthesis depth
 		$s_depth = 0;		// square bracket depth
 
+		$last_stmt_begin_token = NULL;
 		$last_stmt_begin_ln = 0;
 		$last_stmt_end_ln = 0;
 
@@ -123,6 +196,7 @@ class Debug_acc {
 					// ignore all whitespace when moving the beginning
 					if ($t[0] != T_WHITESPACE)
 					{
+						$last_stmt_begin_token = $t;
 						$last_stmt_begin_ln = $t[2];
 						$end_moved = TRUE;
 					}
@@ -130,6 +204,11 @@ class Debug_acc {
 			}
 			else
 			{
+				if ($end_moved)
+				{
+					$last_stmt_begin_token = $t;
+				}
+
 				switch ($t)
 				{
 					case '(':	$p_depth++;
@@ -139,6 +218,7 @@ class Debug_acc {
 					case '{':	$b_depth++;
 						break;
 					case '}':	$b_depth--;
+								$end_moved = TRUE;
 						break;
 					case '[':	$s_depth++;
 						break;
@@ -153,19 +233,6 @@ class Debug_acc {
 		$lines = explode("\n", $code);
 		$last =& $lines[$last_stmt_begin_ln - 1];
 
-		$this->_has_result = TRUE;
-		$operator = current(explode(' ', $last));
-
-		// add a debug variable assignment for non-results
-		if ($operator != 'print' && $operator != 'echo')
-		{
-			$last = '$_debug_result = '.$last;
-		}
-		else
-		{
-			$this->_has_result = FALSE;
-		}
-
 		// sometimes we end on a ) or }
 		if ($end_moved || ($p_depth + $b_depth + $s_depth))
 		{
@@ -174,6 +241,24 @@ class Debug_acc {
 
 		// add a semi-colon
 		$lines[$last_stmt_end_ln - 1] .= ';';
+
+
+		// add debug variable assignment for non-results
+
+		list($operator, $keyword) = explode(' ', trim($last).' ');
+		$keyword = preg_replace('/^(\w+).*/is', '$1', $keyword);
+
+		$reflectable = array('class', 'function');
+		$lang_constructs = array('print', 'echo', 'eval');
+
+		if (in_array($operator, $reflectable))
+		{
+			$lines[] = '$_debug_result = new Reflection'.ucfirst($operator).'("'.$keyword.'");';
+		}
+		elseif ( ! in_array($operator, $lang_constructs))
+		{
+			$last = '$_debug_result = '.$last;
+		}
 
 		// reassemble prepped code
 		return implode("\n", $lines);
@@ -195,71 +280,6 @@ class Debug_acc {
 			BR.
 			form_submit('run', 'Run').
 			form_close();
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Load up the js
-	 *
-	 * Hook up events, allow tabs, and bind cmd+enter to submit.
-	 *
-	 * @access	private
-	 * @return	void
-	 */
-	private function _javascript()
-	{
-		ob_start();
-?>
-
-var acc = $('#debug'),
-	form = acc.find('form'),
-	code = acc.find('textarea'),
-	code_el = code.get(0),
-	result = acc.find('.accessorySection').eq(1);
-
-result.hide();
-
-code.keydown(function (e) {
-	if (e.keyCode == 9) { // tab
-		if ('selectionStart' in code_el) {
-			var newStart = code_el.selectionStart + "\t".length;
-
-			code_el.value = code_el.value.substr(0, code_el.selectionStart) +
-							"\t" +
-							code_el.value.substr(code_el.selectionEnd, code_el.value.length);
-			code_el.setSelectionRange(newStart, newStart);
-		}
-		else if (document.selection) {
-			document.selection.createRange().text = "\t";
-		}
-
-		return false;
-	}
-
-	if (e.keyCode == 13 && (e.metaKey || e.ctrlKey))
-	{
-		form.triggerHandler('submit');
-		return false;
-	}
-});
-
-form.submit(function() {
-	var url = this.action;
-	result.fadeOut('fast');
-
-	$.post(url, {code: code.val()}, function(res) {
-		result.find('div').html(res);
-		result.fadeIn('fast');
-	});
-
-	return false;
-});
-
-<?php
-		$buffer = ob_get_contents();
-		@ob_end_clean();
-		get_instance()->javascript->output($buffer);
 	}
 
 	// --------------------------------------------------------------------
