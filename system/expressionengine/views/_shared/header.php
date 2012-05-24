@@ -13,10 +13,6 @@
 	<?php endif;?>
 	<!--[if lte IE 7]><?=$this->view->head_link('css/iefix.css')?><![endif]-->
 
-	<?php if ($advanced_css_mtime): ?>
-	<script charset="utf-8" type="text/javascript" src="<?=BASE.AMP.'C=javascript'.AMP.'M=css'.AMP.'theme='.$this->cp->cp_theme.AMP.'v='.$advanced_css_mtime?>"></script>
-	<?php endif;?>
-
 	<?php
 	foreach ($this->cp->its_all_in_your_head as $item)
 	{

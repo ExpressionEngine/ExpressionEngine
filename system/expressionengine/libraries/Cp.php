@@ -177,29 +177,6 @@ class Cp {
 						  ->set_cache('cp_sidebar', 'cp_avatar_width', $vars['cp_avatar_width'])
 						  ->set_cache('cp_sidebar', 'cp_avatar_height', $vars['cp_avatar_height']);
 
-		$css_paths = array(
-			PATH_CP_THEME.$this->cp_theme.'/',
-			PATH_CP_THEME.'default/'
-		);
-	
-		if ($this->cp_theme !== 'default')
-		{
-			array_shift($css_paths);
-		}
-
-		foreach ($css_paths as $a_path)
-		{
-			$file = $a_path.'css/advanced.css';
-			
-			if (file_exists($file))
-			{
-				break;
-			}
-		}
-		
-		$vars['advanced_css_mtime'] = (file_exists($file)) ? filemtime($file) : FALSE;
-		
-		
 		if ($this->EE->router->method != 'index')
 		{
 			$this->set_breadcrumb(BASE.AMP.'C='.$this->EE->router->class, lang($this->EE->router->class));
@@ -256,7 +233,7 @@ class Cp {
 		$js_scripts = array(
 			'ui'		=> array('core', 'widget', 'mouse', 'position', 'sortable', 'dialog'),
 			'plugin'	=> array('ee_focus', 'ee_interact.event', 'ee_notice', 'ee_txtarea', 'tablesorter', 'ee_toggle_all'),
-			'file'		=> 'cp/global_start'
+			'file'		=> array('json2', 'underscore', 'cp/global_start')
 		);
 
 		if ($this->cp_theme != 'mobile')
