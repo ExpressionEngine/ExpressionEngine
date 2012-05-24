@@ -276,18 +276,14 @@ class Rte_ext {
 		$this->EE->cp->add_to_head($this->EE->view->head_link('css/rte.css'));
 		$this->EE->cp->add_js_script(array('plugin' => 'wysihat'));
 
-		// Toolset JS URL
-		$toolset_url = $this->EE->functions->fetch_site_index().QUERY_MARKER
-			.'ACT='.$this->EE->cp->fetch_action_id('Rte', 'get_js')
-			.'&cp=y'
-			.'&toolset_id=0'
-			.'&selector=.WysiHat-field';
-
+		// Build toolset JS and include CP-only tools
+		$toolset_js = $this->EE->rte_lib->build_js(0, '.WysiHat-field', NULL, TRUE);
+		
 		// JS config
 		$this->EE->javascript->set_global(array(
 			'rte'	=> array(
-				'url'	=> array(
-					'toolset_js'	=> $toolset_url
+				'js'	=> array(
+					'toolset_js'	=> $toolset_js
 				)
 			)
 		));
@@ -298,7 +294,7 @@ class Rte_ext {
 				tag = d.createElement('script');
 			tag.type = 'text/javascript';
 			tag.async = true;
-			tag.src = EE.rte.url.toolset_js.replace(/&amp;/g,'&');
+			tag.innerHTML = EE.rte.js.toolset_js;
 			script.parentNode.insertBefore(tag, script);
 		";
 
