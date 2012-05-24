@@ -815,7 +815,7 @@ class Sites extends CI_Controller {
 								unset($comments);						
 							}
 							
-							$query = $this->where_in('entry_id', array_flip($entries[$old_channel_id]))
+							$query = $this->db->where_in('entry_id', array_flip($entries[$old_channel_id]))
 								->get('category_posts');
 							
 							foreach($query->result_array() as $row)
