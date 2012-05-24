@@ -806,7 +806,7 @@ class Sites extends CI_Controller {
 								// do inserts in batches so the data movement isn't _completely_ insane...
 								for ($i = 0, $total = count($comments); $i < $total; $i = $i + 100)
 								{
-									$this->db->insert(
+									$this->db->insert_batch(
 										'comments', 
 										array_slice($comments, $i, 100)
 									);
