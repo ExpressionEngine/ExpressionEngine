@@ -591,6 +591,12 @@ class EE_Core {
 				$match_uri = '/'.trim($this->EE->uri->uri_string, '/');	// will result in '/' if uri_string is blank
 				$page_uris = $pages[$site_id]['uris'];
 				
+				// trim page uris in case there's a trailing slash on any of them
+				foreach ($page_uris as $index => $value)
+				{
+					$page_uris[$index] = '/'.trim($value, '/');
+				}
+
 				// case insensitive URI comparison
 				$entry_id = array_search(strtolower($match_uri), array_map('strtolower', $page_uris));
 				
