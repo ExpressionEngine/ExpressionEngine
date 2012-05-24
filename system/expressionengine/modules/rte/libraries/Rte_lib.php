@@ -256,7 +256,7 @@ class Rte_lib {
 		}
 
 		// is this request from inside the CP?
-		$cp_req = $this->EE->input->get('cp') && $this->EE->session->userdata('member_id');
+		$cp_req = $this->EE->input->get('cp') && (bool) $this->EE->session->userdata('admin_sess');
 
 		// bare minimum required
 		$bits	= array(
