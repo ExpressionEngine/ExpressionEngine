@@ -272,37 +272,10 @@ class Rte_ext {
 	 */
 	function publish_form_entry_data($results)
 	{
-		// WysiHat
-		$this->EE->cp->add_to_head($this->EE->view->head_link('css/rte.css'));
-		$this->EE->cp->add_js_script(array('plugin' => 'wysihat'));
-
-		// Toolset JS URL
-		$toolset_url = $this->EE->functions->fetch_site_index().QUERY_MARKER
-			.'ACT='.$this->EE->cp->fetch_action_id('Rte', 'get_js')
-			.'&cp=y'
-			.'&toolset_id=0'
-			.'&selector=.WysiHat-field';
-
-		// JS config
-		$this->EE->javascript->set_global(array(
-			'rte'	=> array(
-				'url'	=> array(
-					'toolset_js'	=> $toolset_url
-				)
-			)
-		));
-
-		$js = "
-			var d = document,
-				script = d.getElementsByTagName('script')[0],
-				tag = d.createElement('script');
-			tag.type = 'text/javascript';
-			tag.async = true;
-			tag.src = EE.rte.url.toolset_js.replace(/&amp;/g,'&');
-			script.parentNode.insertBefore(tag, script);
-		";
-
-		$this->EE->javascript->output($js);
+		// Build toolset JS and include CP-only tools
+		$this->EE->javascript->output(
+			$this->EE->rte_lib->build_js(0, '.WysiHat-field', NULL, TRUE)
+		);
 		
 		return $results;
 	}
