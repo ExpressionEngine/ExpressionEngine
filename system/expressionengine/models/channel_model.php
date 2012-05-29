@@ -184,34 +184,11 @@ class Channel_model extends CI_Model {
 	 */
 	function get_required_fields($field_group)
 	{
-
 		$this->db->from('channel_fields');
 		$this->db->where('group_id', $field_group);
 		$this->db->where('field_required', 'y');		
 		$this->db->order_by('field_order');
 		return $this->db->get();
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Get Channel Categories
-	 *
-	 * Gets category information for a given category group, by default only fetches cat_id and cat_name
-	 * 
-	 * @deprecated 2.3, Use category_model->get_channel_categories instead
-	 *
-	 * @access	public
-	 * @param	int
-	 * @return	mixed
-	 */
-	function get_channel_categories($cat_group, $additional_fields = array(), $additional_where = array())
-	{
-		$this->load->library('logger');
-		$this->logger->deprecated('2.3', 'Category_model::get_channel_categories()');
-		
-		$this->load->model('category_model');
-		return $this->category_model->get_channel_categories($cat_group, $additional_fields, $additional_where);
 	}
 	
 	// --------------------------------------------------------------------

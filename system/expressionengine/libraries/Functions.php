@@ -412,26 +412,6 @@ class EE_Functions {
 
 		exit;
 	}
-
-	
-	// --------------------------------------------------------------------
-
-	/**
-	 * Convert a string into an encrypted hash
-	 * DEPRECATED 2.0
-	 * 
-	 * @access	public
-	 * @param	string
-	 * @return	string
-	 */
-	function hash($str)
-	{
-		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated('2.0', 'Security_helper::do_hash');
-		
-		$this->EE->load->helper('security');
-		return do_hash($str);
-	}
 	
 	// --------------------------------------------------------------------
 
@@ -976,81 +956,6 @@ class EE_Functions {
 			}
 		}
 	}
-		
-	// --------------------------------------------------------------------
-
-	/**
-	 * Create character encoding menu
-	 *
-	 * DEPRECATED IN 2.0
-	 *
-	 * @access	public
-	 * @param	string
-	 * @param	string
-	 * @param	string
-	 * @return	string
-	 */
-	function encoding_menu($name, $selected = '')
-	{
-		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated('2.0');
-		
-		$file = APPPATH.'config/languages.php';	
-
-		if ( ! file_exists($file)) 
-		{
-			return FALSE;
-		}
-
-		require_once $file;
-		
-		$languages = array_flip($languages);
-		
-		$this->EE->load->helper('form');
-		
-		return form_dropdown($name, $languages, $selected);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Create Directory Map
-	 *
-	 * DEPRECATED IN 2.2
-	 *
-	 * @access	public
-	 * @param	string
-	 * @param	bool
-	 * @return	array
-	 */
-	function create_directory_map($source_dir, $top_level_only = FALSE)
-	{
-		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated('2.2');
-		
-		if ( ! isset($filedata))
-			$filedata = array();
-		
-		if ($fp = @opendir($source_dir))
-		{ 
-			while (FALSE !== ($file = readdir($fp)))
-			{
-				if (@is_dir($source_dir.$file) && substr($file, 0, 1) != '.' AND $top_level_only == FALSE) 
-				{		
-					$temp_array = array();
-					 
-					$temp_array = $this->create_directory_map($source_dir.$file."/");	
-					
-					$filedata[$file] = $temp_array;
-				}
-				elseif (substr($file, 0, 1) != "." && $file != 'index.html')
-				{
-					$filedata[] = $file;
-				}
-			}		 
-			return $filedata;		
-		} 
-	} 
 	
 	// --------------------------------------------------------------------
 
@@ -2913,26 +2818,6 @@ class EE_Functions {
 		}
 		
 		return $this->file_paths;
-	}
-	
-	// --------------------------------------------------------------------
-
-	/**
-	 * Clones an Object
-	 * 
-	 * This is required because of the way PHP 5 handles the passing of objects
-	 * @php4
-	 * 
-	 * @deprecated as of EE 2.1.2
-	 * @param	object
-	 * @return	object
-	 */
-	function clone_object($object)
-	{
-		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated('2.1.2');
-		
-		return clone $object;
 	}
 	
 	// --------------------------------------------------------------------

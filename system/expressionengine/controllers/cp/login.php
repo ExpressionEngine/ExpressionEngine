@@ -81,23 +81,6 @@ class Login extends CP_Controller {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Login Form
-	 *
-	 * This method boggles the mind. Deprecated!
-	 *
-	 * @return	void
-	 */	
-	public function login_form()
-	{
-		$this->load->library('logger');
-		$this->logger->deprecated();
-		
-		$this->index();
-	}  
-	
-	// --------------------------------------------------------------------
-
-	/**
 	 * Authenticate user
 	 *
 	 * @return	mixed

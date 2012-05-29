@@ -560,47 +560,10 @@ class Cp {
 	function delete_layout_tabs($tabs = array(), $namespace = '', $channel_id = array())
 	{
 		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated('2.5.1', 'Layout::delete_layout_tabs()');
+		$this->EE->logger->deprecated('2.6', 'Layout::delete_layout_tabs()');
 
 		$this->EE->load->library('layout');
 		return $this->EE->layout->delete_layout_tabs($tabs, $namespace, $channel_id);
-	}	
-
-	// --------------------------------------------------------------------
-	
-	/**
-	 * Deprecated Add new tabs and associated fields to saved publish layouts
-	 *
-	 * @access	public
-	 * @param	array
-	 * @return	bool
-	 */
-	function add_layout_tabs($tabs = array(), $namespace = '', $channel_id = array())
-	{
-		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated(NULL, 'Layout::add_layout_tabs()');
-		
-		$this->EE->load->library('layout');
-		$this->EE->layout->add_layout_tabs($tabs, $namespace, $channel_id);
-	}
-
-	// --------------------------------------------------------------------
-	
-	/**
-	 * Deprecated Adds new fields to the saved publish layouts, creating the default tab if required
-	 *
-	 * @access	public
-	 * @param	array
-	 * @param	int
-	 * @return	bool
-	 */
-	function add_layout_fields($tabs = array(), $channel_id = array())
-	{
-		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated(NULL, 'Layout::add_layout_fields()');
-		
-		$this->EE->load->library('layout');
-		return $this->EE->layout->add_layout_fields($tabs, $channel_id);
 	}
 
 	// --------------------------------------------------------------------
@@ -616,7 +579,7 @@ class Cp {
 	function delete_layout_fields($tabs, $channel_id = array())
 	{
 		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated('2.5.1', 'Layout::delete_layout_fields()');
+		$this->EE->logger->deprecated('2.6', 'Layout::delete_layout_fields()');
 
 		$this->EE->load->library('layout');
 		return $this->EE->layout->delete_layout_fields($tabs, $channel_id);
@@ -823,7 +786,7 @@ class Cp {
 	function fetch_cp_themes()
 	{
 		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated('2.6.0', 'Admin_model::get_cp_theme_list()');
+		$this->EE->logger->deprecated('2.6', 'Admin_model::get_cp_theme_list()');
 
 		$this->EE->load->model('admin_model');
 		return $this->EE->admin_model->get_cp_theme_list();
