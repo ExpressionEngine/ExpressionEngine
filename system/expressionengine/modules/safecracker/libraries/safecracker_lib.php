@@ -1302,6 +1302,23 @@ class Safecracker_lib
 					{
 						$_FILES['field_id_'.$field['field_id']] = $value;
 						unset($_FILES[$key]);
+
+						// Check to see if a file was actually selected
+						if ($_POST[$field['field_name']] === 'NULL')
+						{
+							if ( ! empty($_POST[$field['field_name'].'_existing']))
+							{
+								$_POST[$field['field_name']] = $_POST[$field['field_name'].'_existing'];
+							}
+							else if ( ! empty($_POST[$field['field_name'].'_hidden']))
+							{
+								$_POST[$field['field_name']] = $_POST[$field['field_name'].'_hidden'];
+							}
+							else
+							{
+								$_POST[$field['field_name']] = '';
+							}
+						}
 					}
 					else if (preg_match('/^'.$field['field_name'].'_(.+)/', $key, $match))
 					{

@@ -36,9 +36,10 @@ class EE_Input extends CI_Input {
 	 *
 	 * @access	public
 	 * @param	string
+	 * @param	bool
 	 * @return	string
 	 */
-	function cookie($index = '')
+	function cookie($index = '', $xss_clean = FALSE)
 	{
 		$EE =& get_instance();
 		

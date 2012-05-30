@@ -373,7 +373,7 @@
 }
 
 /* Editor */
-textarea.rte,
+textarea.WysiHat-field,
 .WysiHat-editor {
 	background: #fff;
 	border: 1px solid #8195A0;
@@ -381,6 +381,10 @@ textarea.rte,
 	-o-border-radius: 0 0 3px 3px;
 	-webkit-border-radius: 0 0 3px 3px;
 	border-radius: 0 0 3px 3px;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-ms-box-sizing: border-box;
+	box-sizing: border-box;
 	clear: both;
 	color: #5F6C74;
 	font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif !important;
@@ -393,11 +397,11 @@ textarea.rte,
 	resize: vertical;
 }
 
-textarea.rte {
+textarea.WysiHat-field {
 	width: 100%;
 }
 
-textarea.rte:focus,
+textarea.WysiHat-field:focus,
 .WysiHat-editor:focus {
 	background-color: #FFFFF5;
 	border: 2px solid #8195A0;

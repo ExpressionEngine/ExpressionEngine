@@ -229,9 +229,10 @@ class Rte_lib {
 	 * @param	int 	The ID of the toolset you want to load
 	 * @param	string 	The selector that will match the elements to turn into an RTE
 	 * @param	array   Include or skip certain JS libs: array('jquery' => FALSE //skip)
+	 * @param	bool	If TRUE, includes tools that are for the control panel only
 	 * @return	string 	The JS needed to embed the RTE
 	 */
-	public function build_js($toolset_id, $selector, $include = array())
+	public function build_js($toolset_id, $selector, $include = array(), $cp_only = FALSE)
 	{
 		$this->EE->load->model(array('rte_toolset_model','rte_tool_model'));
 		
@@ -255,9 +256,6 @@ class Rte_lib {
 			return;
 		}
 
-		// is this request from inside the CP?
-		$cp_req = $this->EE->input->get('cp') && $this->EE->session->userdata('member_id');
-
 		// bare minimum required
 		$bits	= array(
 			'globals'		=> array(
@@ -279,7 +277,7 @@ class Rte_lib {
 		foreach ($tools as $tool)
 		{
 			// skip tools that are not available to the front-end
-			if ($tool['info']['cp_only'] == 'y' && ! $cp_req)
+			if ($tool['info']['cp_only'] == 'y' && ! $cp_only)
 			{
 				continue;
 			}
@@ -370,9 +368,11 @@ class Rte_lib {
 				' . $bits['definitions'] . '
 
 				// RTE editor setup for this page
-				$("' . $selector . '").wysihat({
-					buttons: '.$this->EE->javascript->generate_json($bits['buttons'], TRUE).'
-				});
+				$("' . $selector . '")
+					.addClass("WysiHat-field")
+					.wysihat({
+						buttons: '.$this->EE->javascript->generate_json($bits['buttons'], TRUE).'
+					});
 			}
 		})();';
 

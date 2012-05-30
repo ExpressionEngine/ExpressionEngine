@@ -163,7 +163,7 @@ class EE_Functions {
 	 * @access	public
 	 * @return	string
 	 */
-	function create_page_url($base_url, $segment, $trailing_slash = true)
+	function create_page_url($base_url, $segment, $trailing_slash = FALSE)
 	{
 		// Load the string helper
 		$this->EE->load->helper('string');       
@@ -672,7 +672,7 @@ class EE_Functions {
 	 * @return	mixed
 	 */	
 	function evaluate($str)
-	{	
+	{
 		return eval('?'.'>'.$str.'<?php ');		
 	}
 	
@@ -2564,15 +2564,28 @@ class EE_Functions {
 		if (preg_match_all("/".preg_quote(LD)."((if:else)*if)\s+(.*?)".preg_quote(RD)."/", $str, $matches))
 		{
 			// PROTECT QUOTED TEXT
-			//  That which is in quotes should be protected and ignored as it will screw
-			//  up the parsing if the variable is found within a string
+			// That which is in quotes should be protected and ignored as it will screw
+			// up the parsing if the variable is found within a string
 			
 			if (preg_match_all('/([\"\'])([^\\1]*?)\\1/s', implode(' ', $matches[3]), $quote_matches))
 			{
-				foreach($quote_matches[0] as $quote_match)
+				foreach($quote_matches[0] as $ii => $quote_match)
 				{
 					$md5_key = (string) hexdec($prep_id.md5($quote_match));
 					$protect[$quote_match] = $md5_key;
+
+					// We do these conversions on variables below, so we need
+					// to also do them on the hardcoded values to make sure
+					// the conditionals resolve as expected.
+					// e.g. {if location == "pony's house"}
+					$quote_match = '"'.
+						str_replace(
+							array("'", '"', '(', ')', '$', '{', '}', "\n", "\r", '\\'), 
+							array('&#39;', '&#34;', '&#40;', '&#41;', '&#36;', '', '', '', '', '&#92;'), 
+							$quote_matches[2][$ii]
+						).
+						'"';
+
 					$switch[$md5_key] = $quote_match;
 				}
 				
@@ -2586,11 +2599,8 @@ class EE_Functions {
 				$matches['t'] = str_replace($valid, ' ', $matches[3]);
 			}
 			
-			// FIND WHAT WE NEED, NOTHING MORE!
-			// On reedmaniac.com with no caching this code below knocked off, 
-			// on average, about .07 seconds on a .34 page load. Not too shabby.
-			// Sadly, its influence is far less on a cached page.  Ah well...			
-			$data		= array();
+			// Find what we need, nothing more!!
+			$data = array();
 
 			foreach($matches['t'] as $cond)
 			{
@@ -2686,7 +2696,7 @@ class EE_Functions {
 				$matches['s'] = preg_replace("/(^|\s+)[0-9]+(\s|$)/", ' ', $matches['s']); // Remove unquoted numbers
 				$done = array();
 			}
-			
+
 			for($i=0, $s = count($matches[0]); $i < $s; ++$i)
 			{	
 				if ($safety == 'y' && ! in_array($matches[0][$i], $done))
@@ -2767,14 +2777,14 @@ class EE_Functions {
 
 			$str = str_replace(array_keys($switch), array_values($switch), $str);
 		}
-		
+
 		unset($data);
 		unset($switch);
 		unset($matches);
 		unset($protect);
-		
+
 		$str = str_replace(unique_marker('if_else_safety'),LD.'if:else'.RD, $str);
-		
+
 		return $str;
 	}
 	

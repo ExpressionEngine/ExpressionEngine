@@ -12,11 +12,16 @@
 
 	<p class="notice"><?=lang('action_can_not_be_undone')?></p>
 
-	<?php if(count($heirs) == 1):?>
-	<p><?=lang('heir_to_member_entries', 'heir').BR.form_dropdown('heir', $heirs)?></p>
-	<?php elseif(count($heirs) > 1):?>
-	<p><?=lang('heir_to_members_entries', 'heir').BR.form_dropdown('heir', $heirs)?></p>
-	<?php endif;?>
+	<?php if (isset($heirs)): ?>
+		<p>
+			<?php if (count($heirs) == 1): ?>
+				<?=lang('heir_to_member_entries', 'heir')?>
+			<?php elseif (count($heirs) > 1): ?>
+				<?=lang('heir_to_members_entries', 'heir')?>
+			<?php endif; ?>
+			<?=BR.form_dropdown('heir', $heirs)?>
+		</p>
+	<?php endif; ?>
 
 	<p><?=form_submit('delete_members', lang('delete'), 'class="submit"')?></p>
 

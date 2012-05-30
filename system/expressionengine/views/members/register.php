@@ -191,8 +191,6 @@ $this->table->add_row(array(
 		'id'=>'bio',
 		'rows'=> 12,
 		'name'=>'bio',
-		'class'=>'field',
-		'style'=>'width:99%;',  
 		'value'=>$bio))
 	));			
 

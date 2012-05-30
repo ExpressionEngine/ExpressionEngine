@@ -3,7 +3,7 @@
 		<?php if ( ! empty($filemanager_directories)):?>
 			<?=form_open('', array('id' => 'dir_choice_form'))?>
 				<span class="dir_choice_container">
-					<?=form_label('Upload Directory:', 'dir_choice').NBS?>
+					<?=lang('upload_directory', 'dir_choice').NBS?>
 					<?=form_dropdown('dir_choice', $filemanager_directories, key($filemanager_directories), 'id="dir_choice"').NBS?>
 				</span>
 				<input type="text" name="keywords" value="" id="keywords" placeholder="<?= lang('keywords') ?>" />

@@ -12,6 +12,7 @@ var Comment_cp = {
 	'</tr>',
 
 	setup_index: function() {
+
 		this.table = $('.mainTable');
 
 		$.template('comment_additional_row', this.detail_template);
@@ -124,6 +125,8 @@ var Comment_cp = {
 
 // run_script is set in the controller
 if (EE.comment && EE.comment.run_script) {
-	var script = EE.comment.run_script;
-	Comment_cp[script]();
+	setTimeout(function() {
+		var script = EE.comment.run_script;
+		Comment_cp[script]();
+	}, 100);
 }

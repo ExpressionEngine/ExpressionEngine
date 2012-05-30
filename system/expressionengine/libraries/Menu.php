@@ -1049,11 +1049,11 @@ class EE_Menu {
 				{
 					require_once PATH_THIRD.$module.'/config/help_menu.php';
 					$method = ($this->EE->input->get('method') !== FALSE) ? $this->EE->input->get('method') : 'index';
-					$page = (isset($help_menu[$method])) ? $help_menu[$method] : $help_map['addons_modules'];
+					$page = (isset($help_menu[$method])) ? $help_menu[$method] : $page.$help_map['addons_modules'];
 				}
 				else
 				{
-					$page = $help_map['addons_modules'];	
+					$page .= $help_map['addons_modules'];
 				}
 			}
 		}

@@ -39,7 +39,7 @@
 		</tr>
 		<tr class="odd">
 			<td><?=lang('time_format', 'time_format')?></td>
-			<td><?=form_dropdown('time_format', array(lang('united_states'),lang('european')), set_value('time_format'))?></td>
+			<td><?=form_dropdown('time_format', array('us' => lang('united_states'), 'eu' => lang('european')), set_value('time_format'))?></td>
 		</tr>
 		<tr class="even">
 			<td><?=lang('daylight_savings', 'daylight_savings')?></td>
@@ -56,4 +56,5 @@
 	</table>
 
 	<p><?=form_submit('convert_from_delimited', lang('submit'), 'class="submit"')?> </p>
+
 <?=form_close()?>

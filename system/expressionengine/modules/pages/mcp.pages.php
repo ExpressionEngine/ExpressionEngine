@@ -121,7 +121,7 @@ class Pages_mcp {
 
 		foreach($pages[$this->EE->config->item('site_id')]['uris'] as $entry_id => $url)
 		{
-			$url = ($url == '/') ? '/' : '/'.trim($url, '/').'/';
+			$url = ($url == '/') ? '/' : '/'.trim($url, '/');
 
 			$vars['pages'][$entry_id]['entry_id'] = $entry_id;
 			$vars['pages'][$entry_id]['entry_id'] = $entry_id;

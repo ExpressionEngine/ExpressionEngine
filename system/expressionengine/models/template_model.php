@@ -104,9 +104,24 @@ class Template_model extends CI_Model {
 	 * @access	public
 	 * @return	object
 	 */
-	function get_template_groups()
+	function get_template_groups($site_id = 0)
 	{
-		$this->db->where('site_id', $this->config->item('site_id'));
+		if ($site_id !== 'all' OR $site_id === 0)
+		{
+			// If we're not looking for all sites, and there's no ID, use the
+			// current site ID
+			$this->db->where('site_id', $this->config->item('site_id'));
+		}
+		elseif (is_numeric($site_id))
+		{
+			// If it's numeric, use that in the where clause
+			$this->db->where('site_id', (int) $site_id);
+		}
+		else
+		{
+			$this->db->order_by('site_id');
+		}
+
 		$this->db->order_by('group_order, group_name ASC');
 		return $this->db->get('template_groups');
 	}

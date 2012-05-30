@@ -29,10 +29,6 @@ class Admin_content extends CP_Controller {
 					'comment_total', 'username', 'screen_name', 
 					'most_recent_comment', 'expiration_date');
 
-	// Default "open" and "closed" status colors
-	var $status_color_open	= '009933';
-	var $status_color_closed = '990000';
-
 	// Category arrays
 	var $categories = array();
 	var $cat_update = array();
@@ -4252,7 +4248,7 @@ class Admin_content extends CP_Controller {
 		// Construct the query based on whether we are updating or inserting
 		if ($edit == FALSE)
 		{
-			$this->status_model->insert_statuses($group_name, $this->status_color_open, $this->status_color_closed);
+			$this->status_model->insert_statuses($group_name);
 
 			$cp_message = lang('status_group_created').NBS.$group_name;
 
@@ -4281,7 +4277,7 @@ class Admin_content extends CP_Controller {
 		}
 		else
 		{
-			$this->status_model->update_statuses($group_name, $group_id, $this->status_color_open, $this->status_color_closed);
+			$this->status_model->update_statuses($group_name, $group_id);
 
 			$cp_message = lang('status_group_updated').NBS.$group_name;
 		}

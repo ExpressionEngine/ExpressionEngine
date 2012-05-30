@@ -86,8 +86,8 @@ class EE_Core {
 		// application constants
 		define('IS_FREELANCER',	FALSE);
 		define('APP_NAME',		'ExpressionEngine'.(IS_FREELANCER ? ' Freelancer' : ''));
-		define('APP_BUILD',		'20120507');
-		define('APP_VER',		'2.5.0');
+		define('APP_BUILD',		'20120523');
+		define('APP_VER',		'2.5.1');
 		define('SLASH',			'&#47;');
 		define('LD',			'{');
 		define('RD',			'}');
@@ -596,7 +596,14 @@ class EE_Core {
 				$match_uri = '/'.trim($this->EE->uri->uri_string, '/');	// will result in '/' if uri_string is blank
 				$page_uris = $pages[$site_id]['uris'];
 				
-				$entry_id = array_search($match_uri, $page_uris);
+				// trim page uris in case there's a trailing slash on any of them
+				foreach ($page_uris as $index => $value)
+				{
+					$page_uris[$index] = '/'.trim($value, '/');
+				}
+
+				// case insensitive URI comparison
+				$entry_id = array_search(strtolower($match_uri), array_map('strtolower', $page_uris));
 				
 				if ( ! $entry_id AND $match_uri != '/')
 				{

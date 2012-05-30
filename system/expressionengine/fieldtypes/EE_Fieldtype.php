@@ -83,7 +83,7 @@ class EE_Fieldtype {
 	
 	// --------------------------------------------------------------------
 	
-	function validate()
+	function validate($data)
 	{
 		return TRUE;
 	}
