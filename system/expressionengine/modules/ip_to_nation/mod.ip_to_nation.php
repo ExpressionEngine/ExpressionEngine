@@ -27,23 +27,24 @@ class Ip_to_nation {
 
 	var $return_data = '';
 
-
-	function Ip_to_nation()
+	function __construct()
 	{
-		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();
 	}
 
+	// ----------------------------------------------------------------------
 
-	/** ----------------------------------------
-	/**  World flags
-	/** ----------------------------------------*/
+	/**
+	 * World flags
+	 */
 	function world_flags($ip = '')
 	{
 		if ($ip == '')
+		{
 			$ip = $this->EE->TMPL->tagdata;
+		}
 
-			$ip = trim($ip);
+		$ip = trim($ip);
 
 		if ( ! $this->EE->input->valid_ip($ip))
 		{
@@ -73,12 +74,11 @@ class Ip_to_nation {
 		return $this->return_data;
 	}
 
-
-
-
-	/** ----------------------------------------
-	/**  Countries
-	/** ----------------------------------------*/
+	// ----------------------------------------------------------------------
+	
+	/**
+	 * Countries
+	 */
 	function get_country($which = '')
 	{
 		if ( ! isset($this->EE->session->cache['ip_to_nation']['countries']))
@@ -99,9 +99,6 @@ class Ip_to_nation {
 
 		return $this->EE->session->cache['ip_to_nation']['countries'][$which];
 	}
-
-
-
 }
 // END CLASS
 
