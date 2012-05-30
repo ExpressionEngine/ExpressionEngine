@@ -115,6 +115,12 @@ $lang = array(
 'invalid_action' => 
 'The action you have requested is invalid.',
 
+'current_password_required' =>
+'Your current password is required.',
+
+'current_password_incorrect' =>
+'Your current password was not submitted correctly.',
+
 'captcha_required' =>
 'You must submit the word that appears in the image',
 

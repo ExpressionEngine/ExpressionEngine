@@ -4,7 +4,7 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
@@ -20,13 +20,13 @@
  * @package		ExpressionEngine
  * @subpackage	Modules
  * @category	Modules
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
 
 class Forum_upd {
 
-	var $version			= '3.1.8';
+	var $version			= '3.1.9';
 	
 	function Forum_upd()
 	{
@@ -263,7 +263,7 @@ class Forum_upd {
 			pentry_id int(10) unsigned NOT NULL default '0',
 			moved_forum_id int(6) unsigned NOT NULL default '0',
 			author_id int(10) unsigned NOT NULL default '0',
-			ip_address varchar(16) NOT NULL,
+			ip_address varchar(45) NOT NULL,
 			title varchar(150) NOT NULL,
 			body text NOT NULL,
 			status char(1) NOT NULL default 'o',
@@ -294,7 +294,7 @@ class Forum_upd {
 			forum_id int(6) unsigned NOT NULL,
 			board_id int(6) unsigned NOT NULL DEFAULT '1',
 			author_id int(10) unsigned NOT NULL default '0',
-			ip_address varchar(16) NOT NULL,
+			ip_address varchar(45) NOT NULL,
 			body text NOT NULL,
 			post_date int(10) NOT NULL,
 			post_edit_date int(10) NOT NULL DEFAULT 0,
@@ -392,7 +392,7 @@ class Forum_upd {
 			 search_date int(10) NOT NULL,
 			 keywords varchar(60) NOT NULL,
 			 member_id int(10) unsigned NOT NULL,
-			 ip_address varchar(16) NOT NULL,
+			 ip_address varchar(45) NOT NULL,
 			 topic_ids text NOT NULL,
 			 post_ids text NOT NULL,
 			 sort_order varchar(200) NOT NULL,
@@ -922,6 +922,29 @@ class Forum_upd {
 		if (version_compare($current, '3.1.5', '<')) { }
 		
 		if (version_compare($current, '3.1.6', '<')) { }
+
+		if (version_compare($current, '3.1.9', '<'))
+		{
+			// Update ip_address column
+			$this->EE->load->dbforge();
+
+			$tables = array('forum_topics', 'forum_posts', 'forum_search');
+
+			foreach ($tables as $table)
+			{
+				$this->EE->dbforge->modify_column(
+					$table,
+					array(
+						'ip_address' => array(
+							'name' 			=> 'ip_address',
+							'type' 			=> 'varchar',
+							'constraint'	=> '45',
+							'null'			=> FALSE
+						)
+					)
+				);	
+			}
+		}
 		
 		return TRUE;		
 		

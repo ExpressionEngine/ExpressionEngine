@@ -3,7 +3,7 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
@@ -19,7 +19,7 @@
  * @package		ExpressionEngine
  * @subpackage	Core
  * @category	Model
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
 class Channel_model extends CI_Model {
@@ -36,6 +36,10 @@ class Channel_model extends CI_Model {
 		if (( $site_id === NULL OR ! is_numeric($site_id)) && $site_id != 'all')
 		{
 			$site_id = $this->config->item('site_id');
+		}
+		elseif ($site_id === 'all')
+		{
+			$this->db->order_by('site_id');
 		}
 
 		// If the user is restricted to specific channels, add that to the query

@@ -3,7 +3,7 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
@@ -19,7 +19,7 @@
  * @package		ExpressionEngine
  * @subpackage	Core
  * @category	Core
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
 class EE_Typography extends CI_Typography {
@@ -1323,7 +1323,7 @@ class EE_Typography extends CI_Typography {
 		}
 		
 		$bit = array_reverse($bit);
-		$span_marker = 'eeEncEmail_'.$this->EE->functions->random('alpha', 10);
+		$span_marker = 'data-eeEncEmail_'.$this->EE->functions->random('alpha', 10);
 
 		ob_start();
 
@@ -1332,7 +1332,7 @@ class EE_Typography extends CI_Typography {
  * This javascript currently breaks in the forum if it outputs curly brackets. 
  * Test if you change it.
  * 
- * Leave the comments in the where (--j >= 0) loop. They make sure that when 
+ * Leave the comments in the while (--j >= 0) loop. They make sure that when 
  * the line breaks are removed EE doesn't see {if...
  *
  * Regex speed hat tip: http://blog.stevenlevithan.com/archives/faster-trim-javascript

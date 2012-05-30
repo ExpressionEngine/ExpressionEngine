@@ -3,7 +3,7 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
@@ -19,7 +19,7 @@
  * @package		ExpressionEngine
  * @subpackage	Modules
  * @category	Modules
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
 class Metaweblog_api {
@@ -297,7 +297,12 @@ class Metaweblog_api {
 
 		$convert_breaks = ( ! isset($parameters['3']['mt_convert_breaks'])) ? '' : $parameters['3']['mt_convert_breaks'];
 
-		if ($convert_breaks != '')
+		if ($convert_breaks === '0')
+		{
+			// MarsEdit sends '0' as synonymous with 'none'
+			$convert_breaks = 'none';
+		}
+		elseif ($convert_breaks != '')
 		{
 			$plugins = $this->fetch_plugins();
 
@@ -530,7 +535,12 @@ class Metaweblog_api {
 
 		$convert_breaks = ( ! isset($parameters['3']['mt_convert_breaks'])) ? '' : $parameters['3']['mt_convert_breaks'];
 
-		if ($convert_breaks != '')
+		if ($convert_breaks === '0')
+		{
+			// MarsEdit sends '0' as synonymous with 'none'
+			$convert_breaks = 'none';
+		}
+		elseif ($convert_breaks != '')
 		{
 			$plugins = $this->fetch_plugins();
 
@@ -1848,49 +1858,23 @@ class Metaweblog_api {
 	 */
 	function fetch_plugins()
 	{
-		$exclude = array('auto_xhtml');
+		// Always available
+		$plugins = array('br', 'xhtml');
+		
+		// Additional first or third-party plugins
+		$this->EE->load->library('addons');
 
-		$filelist = array('none', 'br', 'xhtml');
-		$ext_len = strlen('.php');
-
-		if ($fp = @opendir(PATH_PI))
+		foreach ($this->EE->addons->get_files('plugins') as $plugin)
 		{
-			while (FALSE !== ($file = readdir($fp)))
-			{
-				if (strncasecmp($file, 'pi.', 3) == 0 && substr($file, -$ext_len) == '.php' && strlen($file) > strlen('pi..php'))
-				{
-					$file = substr($file, 3, -$ext_len);
-
-					if ( ! in_array($file, $exclude))
-					{
-						$filelist[] = $file;
-					}
-				}
-			}
-
-			closedir($fp);
+			$plugins[] = strtolower($plugin['class']);
 		}
-
-		if ($fp = @opendir(PATH_THIRD.'plugins/'))
-		{
-			while (FALSE !== ($file = readdir($fp)))
-			{
-				if (strncasecmp($file, 'pi.', 3) == 0 && substr($file, -$ext_len) == '.php' && strlen($file) > strlen('pi..php'))
-				{
-					$file = substr($file, 3, -$ext_len);
-
-					if ( ! in_array($file, $exclude))
-					{
-						$filelist[] = $file;
-					}
-				}
-			}
-
-			closedir($fp);
-		}
-
-		sort($filelist);
-		return $filelist;
+		
+		sort($plugins);
+		
+		// Add None as the first option
+		$plugins = array_merge(array('none'), $plugins);
+		
+		return $plugins;
 	}
 
 

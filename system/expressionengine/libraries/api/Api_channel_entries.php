@@ -3,7 +3,7 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
@@ -19,7 +19,7 @@
  * @package		ExpressionEngine
  * @subpackage	Core
  * @category	Core
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
 class Api_channel_entries extends Api {
@@ -266,7 +266,7 @@ class Api_channel_entries extends Api {
 			'title'						=> ($this->EE->config->item('auto_convert_high_ascii') == 'y') ? ascii_to_entities($data['title']) : $data['title'],
 			'url_title'					=> $data['url_title'],
 			'entry_date'				=> $data['entry_date'],
-			'edit_date'					=> $this->EE->localize->decode_date('%Y%m%d%H%i%s', $data['entry_date'], TRUE),
+			'edit_date'					=> $this->EE->localize->decode_date('%Y%m%d%H%i%s', $this->EE->localize->now, FALSE),
 			'versioning_enabled'		=> $data['versioning_enabled'],
 			'year'						=> $this->EE->localize->decode_date('%Y', $data['entry_date'], TRUE),
 			'month'						=> $this->EE->localize->decode_date('%m', $data['entry_date'], TRUE),

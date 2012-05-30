@@ -3,7 +3,7 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
@@ -19,13 +19,13 @@
  * @package		ExpressionEngine
  * @subpackage	Modules
  * @category	Update File
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
 
 class Mailinglist_upd {
 
-	var $version = '3.0';
+	var $version = '3.1';
 
 	function Mailinglist_upd()
 	{
@@ -99,7 +99,7 @@ class Mailinglist_upd {
 												),
 						'ip_address'  => array(
 													'type' 				=> 'varchar',
-													'constraint'		=> '16',
+													'constraint'		=> '45',
 													'null'				=> FALSE
 												),
 		);
@@ -239,6 +239,21 @@ class Mailinglist_upd {
 			$this->EE->db->query("ALTER TABLE `exp_mailing_list` MODIFY COLUMN `user_id` int(10) unsigned NOT NULL PRIMARY KEY auto_increment");
 			$this->EE->db->query("ALTER TABLE `exp_mailing_list` DROP KEY `user_id`");
 			$this->EE->db->query("ALTER TABLE `exp_mailing_list_queue` ADD COLUMN `queue_id` int(10) UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY FIRST");
+		}
+
+		if (version_compare($current, '3.1', '<'))
+		{
+			// Update ip_address column
+			$this->EE->dbforge->modify_column(
+				'mailing_list',
+				array(
+					'ip_address' => array(
+						'name' 			=> 'ip_address',
+						'type' 			=> 'varchar',
+						'constraint'	=> '45'
+					)
+				)
+			);
 		}
 
 		return TRUE;

@@ -35,7 +35,7 @@ function setupImageTool($editor, $image_button) {
 		.parents('form')
 			.submit(function(){
 				var folders = EE_rte_image.folders;
-				$('.rte').each(function(){
+				$('.WysiHat-field').each(function(){
 					var	$field	= $(this),
 						val		= $field.val(),
 						path, path_re;
