@@ -1,4 +1,3 @@
-
 <?=form_open('C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=ip_to_nation'.AMP.'method=update')?>
 
 	<p><?=lang('ban_info')?></p>

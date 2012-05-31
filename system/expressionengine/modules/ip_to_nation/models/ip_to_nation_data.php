@@ -1,6 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class Iptonation_model extends CI_Model {
+class Ip_to_nation_data extends CI_Model {
 
 	private $table = 'ip2nation';
 	private $c_table = 'ip2nation_countries';
@@ -43,14 +43,13 @@ class Iptonation_model extends CI_Model {
 	{
 		// get old banned info
 		$banned = $this->db
-			->select('banned')
+			->select('code')
 			->get_where($this->c_table, array('banned' => 'y'))
 			->result_array();
 
 		// all we care about is if it's set
 		$banned = array_map('array_pop', $banned);
 		$banned = array_flip($banned);
-
 
 		// remove all data
 		$this->db->truncate($this->table);

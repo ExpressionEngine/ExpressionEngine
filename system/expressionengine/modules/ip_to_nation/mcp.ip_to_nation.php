@@ -30,14 +30,14 @@ class Ip_to_nation_mcp {
 	function __construct()
 	{
 		$this->load->helper('array');
-		$this->load->model('ip_to_nation_model', 'ip_data');
+		$this->load->model('ip_to_nation_data', 'ip_data');
 		
 		$this->base_url = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=ip_to_nation';
 
 		if ($this->cp->allowed_group('can_moderate_comments', 'can_edit_all_comments', 'can_delete_all_comments'))
 		{
 			$this->cp->set_right_nav(array(
-				'update_ips' => $this->base_url.AMP.'method=import_form'
+				'update_ips' => $this->base_url.AMP.'method=update_data'
 			));	
 		}
 	}
@@ -126,6 +126,7 @@ class Ip_to_nation_mcp {
 		$ban = array_intersect_key($_POST, $countries);
 		$ban = preg_grep('/y/', $ban);
 
+		// ban them
 		$this->ip_data->ban(array_keys($ban));
 
 		$this->session->set_flashdata('message_success', lang('banlist_updated'));
@@ -135,39 +136,236 @@ class Ip_to_nation_mcp {
 	// ----------------------------------------------------------------------
 
 	/**
-	  * Import Form
+	  * Update data
 	  */
-	function import_form()
+	function update_data()
 	{
 		$this->cp->set_breadcrumb($this->base_url, lang('ip_to_nation_module_name'));
 
-		$this->load->library('form_validation');
-		$this->form_validation->set_rules('ip2nation_file',	'File',	'required|callback__file_exists');
-		$this->form_validation->set_error_delimiters('<p class="notice">', '</p>');
+		$last_update = $this->config->item('ip2nation_db_date');
+		$cache_files = $this->_cache_files('csv');
+
+		// clear out stale data before we start
+		if ( ! empty($cache_files))
+		{
+			foreach ($cache_files as $file)
+			{
+				unlink($file);
+			}
+		}
+
+		// check again, if we can't clear them, the user will
+		// have to do something about it or we end up killing
+		// their database in the next step.
+		if (count($this->_cache_files('csv')))
+		{
+			$this->session->set_flashdata('message_failure', lang('@todo cache full'));
+			$this->functions->redirect($this->base_url.AMP.'method=index');
+		}
+
+		// look for data files that they may have
+		// uploaded manually
+		$data_files = $this->_cache_files('zip,gz');
+
+		if (count($cache_files))
+		{
+			// tell the user we're using them and move on
+			// internally make first step the unzipping
+		}
+
+		$data = array(
+			'update_data_provider' => str_replace('%d', $this->cp->masked_url('http://www.maxmind.com/app/geolite'), lang('update_data_provider')),
+			'last_update' => ($last_update) ? $this->localize->set_human_time($last_update) : FALSE
+		);
+
+		$this->cp->add_js_script('fp_module', 'ip_to_nation');
+
+		$this->javascript->set_global(array(
+			'ip2n' => array(
+				'run_script' => 'update',
+				'base_url' => str_replace(AMP, '&', $this->base_url),
+				'steps' => array('download_data', 'extract_data', 'insert_data'),
+				'lang' => array(
+					'ip_db_updating' => lang('ip_db_updating'),
+					'ip_db_failed' => lang('ip_db_failed')
+				)
+			)
+		));
+
+		$this->view->cp_page_title = lang('update_ips');
+		return $this->load->view('import', $data, TRUE);
+	}
+
+	// ----------------------------------------------------------------------
+
+	function download_data()
+	{
+		if ( ! AJAX_REQUEST)
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		$cache_path = $this->_cache_path();
+
+		// download
+		$files = array(
+			'http://geolite.maxmind.com/download/geoip/database/GeoIPCountryCSV.zip',
+			'http://geolite.maxmind.com/download/geoip/database/GeoIPv6.csv.gz'
+		);
+/*
+		$files = array(
+			'http://ellislab.dev/ee2/themes/ip2n_test/GeoIPCountryCSV.zip',
+			'http://ellislab.dev/ee2/themes/ip2n_test/GeoIPv6.csv.gz'
+		);
+*/
+		foreach ($files as $file)
+		{
+			$out_fh = fopen($cache_path.basename($file), "w");
+
+			$timeout = 5;
+			$ch = curl_init();
+			curl_setopt($ch, CURLOPT_URL, $file);
+			curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
+			curl_setopt($ch, CURLOPT_FILE, $out_fh);
+			curl_exec($ch);
+			curl_close($ch);
+		}
+
+		$this->output->send_ajax_response(array(
+			'success' => lang('ip_db_downloaded')
+		));
+	}
+
+	// ----------------------------------------------------------------------
+
+	function extract_data()
+	{
+		if ( ! AJAX_REQUEST)
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		$cache_files = $this->_cache_files('zip, gz');
+
+		foreach ($cache_files as $file)
+		{
+			$filename = basename($file);
+			$ext = end(explode('.', $filename));
+
+			$fn = '_extract_'.$ext;
+			$this->$fn($filename);
+		}
+
+		$this->output->send_ajax_response(array(
+			'success' => lang('ip_db_unpacked')
+		));
+	}
+
+	// ----------------------------------------------------------------------
+
+	function insert_data()
+	{
+		if ( ! AJAX_REQUEST)
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		$files = $this->_cache_files('csv');
+		$this->ip_data->load($files);
+
+		// cleanup
+		array_map('unlink', $this->_cache_files('csv,gz,zip'));
 		
-		if ($this->form_validation->run() === FALSE)
+		$this->output->send_ajax_response(array(
+			'success' => lang('ip_db_updated')
+		));
+	}
+
+	// ----------------------------------------------------------------------
+
+	function _cache_files($ext)
+	{
+		$ext = '{'.str_replace(' ', '', $ext).'}';
+		$path = $this->_cache_path();
+		return glob($path.'*.'.$ext, GLOB_BRACE);
+	}
+
+	// ----------------------------------------------------------------------
+
+	function _cache_path()
+	{
+		$cache_path = $this->config->item('cache_path');
+
+		if (empty($cache_path))
 		{
-			$last_update = $this->config->item('ip2nation_db_date');
-
-			$data = array(
-				'update_info' => str_replace('%d', $this->cp->masked_url('http://www.maxmind.com/app/geolite'), lang('update_info')),
-				'last_update' => ($last_update) ? $this->localize->set_human_time($last_update) : FALSE
-			);
-
-			$this->view->cp_page_title = lang('update_ips');
-			return $this->load->view('import', $data, TRUE);
+			$cache_path = APPPATH.'cache/';
 		}
 
-		if ( ! $result)
+		$cache_path .= 'ip2nation/';
+
+		if ( ! is_dir($cache_path))
 		{
-			$this->session->set_flashdata('message_failure', lang('ip_db_failed'));
+			mkdir($cache_path, DIR_WRITE_MODE);
+			@chmod($cache_path, DIR_WRITE_MODE);	
 		}
-		else
+
+		return $cache_path;
+	}
+
+	// ----------------------------------------------------------------------
+
+	/**
+	 * Extract gz file
+	 */
+	private function _extract_gz($source)
+	{
+		$cache_path = $this->_cache_path();
+		ob_start();
+
+		readgzfile($cache_path.$source);
+
+		$file_contents = ob_get_contents();
+		ob_end_clean();
+
+		$outname = str_replace('.gz', '', $source);
+		file_put_contents($cache_path.$outname, $file_contents);
+		@chmod($cache_path.$outname, FILE_WRITE_MODE);	
+	}
+
+	// ----------------------------------------------------------------------
+
+	/**
+	 * Extract zip archive
+	 *
+	 * Extracts into same directory as the source
+	 */
+	private function _extract_zip($source)
+	{
+		$cache_path = $this->_cache_path();
+
+		// unzip
+		$zip = zip_open($cache_path.$source);
+
+		if (is_resource($zip))
 		{
-			$this->session->set_flashdata('message_success', lang('ip_db_updated'));
+			while ($zip_entry = zip_read($zip))
+			{
+				$outfile = $cache_path.zip_entry_name($zip_entry);
+				$fp = fopen($outfile, "w");
+
+				if (zip_entry_open($zip, $zip_entry, "r"))
+				{
+					$buf = zip_entry_read($zip_entry, zip_entry_filesize($zip_entry));
+					fwrite($fp, "$buf");
+					zip_entry_close($zip_entry);
+				}
+				
+				fclose($fp);
+				@chmod($outfile, FILE_WRITE_MODE);	
+			}
+
+			zip_close($zip);
 		}
-		
-		$this->functions->redirect($this->base_url.AMP.'method=index');
 	}
 
 	// ----------------------------------------------------------------------
@@ -183,29 +381,6 @@ class Ip_to_nation_mcp {
 		}
 
 		return $countries;
-	}
-	
-	// ----------------------------------------------------------------------
-
-	/**
-	 * File exists
-	 *
-	 * Validation callback that checks if a file exits
-	 *
-	 * @access	private
-	 * @param	string
-	 * @return	boolean
-	 */
-	function _file_exists($file)
-	{
-		if (file_exists($file) && ! is_dir($file))
-		{
-			return TRUE;
-		}
-		
-		$this->lang->loadfile('admin');
-		$this->form_validation->set_message('_file_exists', lang('invalid_path').' '.$file);
-		return FALSE;
 	}
 
 	// ----------------------------------------------------------------------
