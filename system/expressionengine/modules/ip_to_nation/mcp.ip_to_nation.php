@@ -174,7 +174,11 @@ class Ip_to_nation_mcp {
 		}
 
 		$data = array(
-			'update_data_provider' => str_replace('%d', $this->cp->masked_url('http://www.maxmind.com/app/geolite'), lang('update_data_provider')),
+			'update_data_provider' => str_replace(
+				'%d',
+				$this->cp->masked_url('http://www.maxmind.com/app/geolite'),
+				lang('update_data_provider')
+			),
 			'last_update' => ($last_update) ? $this->localize->set_human_time($last_update) : FALSE
 		);
 
@@ -198,6 +202,9 @@ class Ip_to_nation_mcp {
 
 	// ----------------------------------------------------------------------
 
+	/**
+	 * Download new data files
+	 */
 	function download_data()
 	{
 		if ( ! AJAX_REQUEST)
@@ -238,6 +245,9 @@ class Ip_to_nation_mcp {
 
 	// ----------------------------------------------------------------------
 
+	/**
+	 * Extract all data files
+	 */
 	function extract_data()
 	{
 		if ( ! AJAX_REQUEST)
