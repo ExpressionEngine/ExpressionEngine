@@ -760,7 +760,23 @@ class EE_Session {
 			return FALSE;
 		}
 
-		$query = $this->EE->db->query("SELECT country FROM exp_ip2nation WHERE ip < INET_ATON('".$this->EE->db->escape_str($this->EE->input->ip_address())."') ORDER BY ip DESC LIMIT 0,1");
+		// all IPv4 go to IPv6 mapped
+		$addr = $this->EE->input->ip_address();
+
+		if (strpos($addr, ':') === FALSE && strpos($addr, '.') !== FALSE)
+		{
+			$addr = '::'.$addr;
+		}
+		
+		$addr = inet_pton($addr);
+
+		$query = $this->EE->db
+			->select('country')
+			->where("ip_range_low <= '".$addr."'", '', FALSE)
+			->where("ip_range_high >= '".$addr."'", '', FALSE)
+			->order_by('ip_range_low', 'desc')
+			->limit(1, 0)
+			->get('ip2nation');
 				
 		if ($query->num_rows() == 1)
 		{
