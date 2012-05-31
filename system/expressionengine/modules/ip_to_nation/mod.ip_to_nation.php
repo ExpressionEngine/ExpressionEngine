@@ -52,15 +52,17 @@ class Ip_to_nation {
 			return;
 		}
 
-		$query = $this->EE->db->query("SELECT country FROM exp_ip2nation WHERE ip < INET_ATON('".$this->EE->db->escape_str($ip)."') ORDER BY ip DESC LIMIT 0,1");
+		$this->EE->load->model('ip_to_nation_data', 'ip_data');
 
-		if ($query->num_rows() != 1)
+		$c_code = $this->EE->ip_data->find($ip);
+
+		if ( ! $c_code)
 		{
 			$this->return_data = $ip;
 			return;
 		}
 
-		$country = $this->get_country($query->row('country') );
+		$country = $this->get_country($c_code);
 
 		if ($this->EE->TMPL->fetch_param('type') == 'text')
 		{
@@ -68,7 +70,7 @@ class Ip_to_nation {
 		}
 		else
 		{
-			$this->return_data = '<img src="'.$this->EE->TMPL->fetch_param('image_url').'flag_'.$query->row('country') .'.gif" width="18" height="12" alt="'.$country.'" title="'.$country.'" />';
+			$this->return_data = '<img src="'.$this->EE->TMPL->fetch_param('image_url').'flag_'.$c_code.'.gif" width="18" height="12" alt="'.$country.'" title="'.$country.'" />';
 		}
 
 		return $this->return_data;
