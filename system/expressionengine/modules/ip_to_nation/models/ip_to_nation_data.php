@@ -7,6 +7,9 @@ class Ip_to_nation_data extends CI_Model {
 
 	// ----------------------------------------------------------------------
 
+	/**
+	 * Get a country by ip address
+	 */
 	function find($ip)
 	{
 		$BIN = $this->to_binary($ip);
@@ -29,6 +32,9 @@ class Ip_to_nation_data extends CI_Model {
 
 	// ----------------------------------------------------------------------
 
+	/**
+	 * Replace IP data with that of all the files in `$dir`
+	 */
 	function load_dir($dir)
 	{
 		$dir = rtrim($dir, '/');
@@ -39,6 +45,9 @@ class Ip_to_nation_data extends CI_Model {
 
 	// ----------------------------------------------------------------------
 
+	/**
+	 * Replace IP data with that in `$files`
+	 */
 	function load($files)
 	{
 		// get old banned info
@@ -85,22 +94,28 @@ class Ip_to_nation_data extends CI_Model {
 
 	// ----------------------------------------------------------------------
 
-	function ban($ips)
+	/**
+	 * Ban a countries by their country code
+	 */
+	function ban($countries)
 	{
 		// Set all countries to unbanned
 		$this->db->update($this->c_table, array('banned' => 'n'));
 
 		// And then reban those we know about
-		if (count($ips))
+		if (count($countries))
 		{
 			$this->db
-				->where_in('code', $ips)
+				->where_in('code', $countries)
 				->update($this->c_table, array('banned' => 'y'));
 		}
 	}
 
 	// ----------------------------------------------------------------------
 
+	/**
+	 * Convert an IP address to its IPv6 packed format
+	 */
 	function to_binary($addr)
 	{
 		// all IPv4 go to IPv6 mapped
@@ -113,6 +128,11 @@ class Ip_to_nation_data extends CI_Model {
 
 	// ----------------------------------------------------------------------
 
+	/**
+	 * Read the ip file and update the db
+	 *
+	 * Returns a list of countries in the file
+	 */
 	private function _read_and_insert($file)
 	{
 		if (($fh = fopen($file, 'r')) === FALSE)
