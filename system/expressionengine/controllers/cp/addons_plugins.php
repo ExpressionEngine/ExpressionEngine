@@ -530,7 +530,7 @@ class Addons_plugins extends CP_Controller {
 	 */
 	function _get_installed_plugins()
 	{
-		$this->load->helper('file');
+		$this->load->helper(array('file', 'directory'));
 
 		$ext_len = strlen('.php');
 
