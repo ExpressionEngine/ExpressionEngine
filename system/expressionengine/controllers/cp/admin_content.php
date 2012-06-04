@@ -3,7 +3,7 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
@@ -19,7 +19,7 @@
  * @package		ExpressionEngine
  * @subpackage	Control Panel
  * @category	Control Panel
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
 class Admin_content extends CI_Controller {
@@ -28,10 +28,6 @@ class Admin_content extends CI_Controller {
 					'random', 'date', 'title', 'url_title', 'edit_date', 
 					'comment_total', 'username', 'screen_name', 
 					'most_recent_comment', 'expiration_date');
-
-	// Default "open" and "closed" status colors
-	var $status_color_open	= '009933';
-	var $status_color_closed = '990000';
 
 	// Category arrays
 	var $categories = array();
@@ -2204,10 +2200,9 @@ class Admin_content extends CI_Controller {
 			$this->input->post('cat_image'), 
 			'cat_image'
 		);
-		// var_dump($cat_image);
+		
 		$_POST['cat_image'] = $this->file_field->format_data(
-			$cat_image['value'],
-			$this->input->post('cat_image_directory')
+			$cat_image['value']
 		);
 		
 		// Finish data prep for insertion
@@ -4292,7 +4287,7 @@ class Admin_content extends CI_Controller {
 		// Construct the query based on whether we are updating or inserting
 		if ($edit == FALSE)
 		{
-			$this->status_model->insert_statuses($group_name, $this->status_color_open, $this->status_color_closed);
+			$this->status_model->insert_statuses($group_name);
 
 			$cp_message = lang('status_group_created').NBS.$group_name;
 
@@ -4321,7 +4316,7 @@ class Admin_content extends CI_Controller {
 		}
 		else
 		{
-			$this->status_model->update_statuses($group_name, $group_id, $this->status_color_open, $this->status_color_closed);
+			$this->status_model->update_statuses($group_name, $group_id);
 
 			$cp_message = lang('status_group_updated').NBS.$group_name;
 		}

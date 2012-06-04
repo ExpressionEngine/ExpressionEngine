@@ -3,7 +3,7 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
@@ -19,7 +19,7 @@
  * @package		ExpressionEngine
  * @subpackage	Control Panel
  * @category	Control Panel
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
 
@@ -496,12 +496,12 @@ class Members extends CI_Controller {
 		// Do the users being deleted have entries assigned to them?
 		// If so, fetch the member names for reassigment
 
-		$vars['heirs'] = array(
-			'' => lang('member_delete_dont_reassign_entries')
-		);
-		
 		if ($this->member_model->count_member_entries($damned)  > 0)
 		{
+			$vars['heirs'] = array(
+				'' => lang('member_delete_dont_reassign_entries')
+			);
+
 			$group_ids = $this->member_model->get_members_group_ids($damned);
 			
 			// Find Valid Member Replacements

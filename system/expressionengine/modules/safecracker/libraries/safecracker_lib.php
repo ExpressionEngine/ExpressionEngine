@@ -4,7 +4,7 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team, 
+ * @author		EllisLab Dev Team, 
  * 		- Original Development by Barrett Newton -- http://barrettnewton.com
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
@@ -21,7 +21,7 @@
  * @package		ExpressionEngine
  * @subpackage	Libraries
  * @category	Modules
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
 
@@ -1281,6 +1281,23 @@ class Safecracker_lib
 					{
 						$_FILES['field_id_'.$field['field_id']] = $value;
 						unset($_FILES[$key]);
+
+						// Check to see if a file was actually selected
+						if ($_POST[$field['field_name']] === 'NULL')
+						{
+							if ( ! empty($_POST[$field['field_name'].'_existing']))
+							{
+								$_POST[$field['field_name']] = $_POST[$field['field_name'].'_existing'];
+							}
+							else if ( ! empty($_POST[$field['field_name'].'_hidden']))
+							{
+								$_POST[$field['field_name']] = $_POST[$field['field_name'].'_hidden'];
+							}
+							else
+							{
+								$_POST[$field['field_name']] = '';
+							}
+						}
 					}
 					else if (preg_match('/^'.$field['field_name'].'_(.+)/', $key, $match))
 					{
@@ -1600,7 +1617,7 @@ class Safecracker_lib
 		
 		if ( ! empty($params['group_id']))
 		{
-			$this->EE->data_sorter->filter($categories, 'group_id', $params['group_id'], 'in_array');
+			$this->EE->data_sorter->filter($categories, 'category_group_id', $params['group_id'], 'in_array');
 		}
 		
 		if ( ! empty($params['order_by']))

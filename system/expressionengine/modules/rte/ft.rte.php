@@ -3,7 +3,7 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
@@ -19,7 +19,7 @@
  * @package		ExpressionEngine
  * @subpackage	Fieldtypes
  * @category	Fieldtypes
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
 class Rte_ft extends EE_Fieldtype {
@@ -30,11 +30,26 @@ class Rte_ft extends EE_Fieldtype {
 	);
 	
 	var $has_array_data = FALSE;
+	
+	// We consider the editor empty in these cases
+	var $_empty = array(
+		'',
+		'<br>',
+		'<br/>',
+		'<br />',
+		'<p></p>',
+		'<p>​</p>' // Zero-width character
+	);
 
 	// --------------------------------------------------------------------
 
 	function validate($data)
 	{
+		if ($this->settings['field_required'] == 'y' && in_array($data, $this->_empty))
+		{
+			return lang('required');
+		}
+		
 		return TRUE;
 	}
 
@@ -84,7 +99,7 @@ class Rte_ft extends EE_Fieldtype {
 		if ($this->EE->session->userdata('rte_enabled') == 'y' 
 			AND $this->EE->config->item('rte_enabled') == 'y')
 		{
-			$field['class']	= 'rte';
+			$field['class']	= 'WysiHat-field';
 
 			foreach ($code_chunks as &$chunk)
 			{
@@ -139,6 +154,13 @@ class Rte_ft extends EE_Fieldtype {
 		{
 			return $data;
 		}
+		
+		// If the editor was saved empty, save nothing to database
+		// so it behaves as expected with conditional tags
+		if (in_array($data, $this->_empty))
+		{
+			return NULL;
+		}
 
 		$data = str_replace('<br>', "\n", $data); // must happen before the decode or we won't know which are ours
 		$data = htmlspecialchars_decode($data, ENT_QUOTES);
@@ -180,7 +202,7 @@ class Rte_ft extends EE_Fieldtype {
 			lang('textarea_rows', $prefix.'_ta_rows'),
 			form_input(array(
 				'id'	=> $prefix.'_ta_rows',
-				'name'	=> 'field_ta_rows',
+				'name'	=> $prefix.'_ta_rows',
 				'size'	=> 4,
 				'value'	=> $field_rows
 				)
@@ -194,6 +216,7 @@ class Rte_ft extends EE_Fieldtype {
 	{		
 		$data['field_type'] = 'rte';
 		$data['field_show_fmt'] = 'n';
+		$data['field_ta_rows'] = $this->EE->input->post('rte_ta_rows');
 
 		return $data;
 	}	

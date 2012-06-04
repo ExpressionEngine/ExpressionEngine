@@ -3,7 +3,7 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
@@ -19,7 +19,7 @@
  * @package		ExpressionEngine
  * @subpackage	Control Panel
  * @category	Control Panel
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
 class Tools_communicate extends CI_Controller {
@@ -592,8 +592,13 @@ class Tools_communicate extends CI_Controller {
 			{
 				$error = TRUE;
 			}
-
-			$this->_delete_attachments(); // Remove attachments now
+			
+			// Remove attachments only if member groups or mailing lists
+			// don't need them
+			if (empty($emails))
+			{
+				$this->_delete_attachments();
+			}
 
 			if ($error == TRUE)
 			{
@@ -1318,7 +1323,10 @@ class Tools_communicate extends CI_Controller {
 	{
 		foreach ($this->attachments as $file)
 		{
-			unlink($file);
+			if (file_exists($file))
+			{
+				unlink($file);
+			}
 		}
 	}
 

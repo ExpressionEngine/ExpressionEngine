@@ -64,7 +64,7 @@ if ($EE_view_disable !== TRUE)
 			<?php foreach($channels->result() as $channel):?>
 			<tr>
 				<td>
-					<?=$channel->site_label.NBS.'-'.NBS.$channel->channel_title?>
+					<?=$sites[$channel->site_id]['site_label'].NBS.'-'.NBS.$channel->channel_title?>
 				</td>
 				<td>
 					<?=form_dropdown('channel_'.$channel->channel_id, $channel_options)?><br />
@@ -77,13 +77,13 @@ if ($EE_view_disable !== TRUE)
 				<th><?=lang('move_options')?></th>
 			</tr>
 			
-			<?php foreach($upload_directories->result() as $upload):?>
+			<?php foreach($upload_directories as $upload):?>
 			<tr>
 				<td>
-					<?=$upload->site_label.NBS.'-'.NBS.$upload_directories_override[$upload->id]['name']?>
+					<?=$sites[$upload['site_id']]['site_label'].NBS.'-'.NBS.$upload['name']?>
 				</td>
 				<td>
-					<?=form_dropdown('upload_'.$upload->id, $upload_directory_options)?>
+					<?=form_dropdown('upload_'.$upload['id'], $upload_directory_options)?>
 				</td>
 			</tr>
 			<?php endforeach;?>
@@ -96,7 +96,7 @@ if ($EE_view_disable !== TRUE)
 			<?php foreach($template_groups->result() as $group):?>
 			<tr>
 				<td>
-					<?=$group->site_label.NBS.'-'.NBS.$group->group_name?>
+					<?=$sites[$group->site_id]['site_label'].NBS.'-'.NBS.$group->group_name?>
 				</td>
 				<td>
 					<?=form_dropdown('template_group_'.$group->group_id, $template_group_options)?>
@@ -109,13 +109,13 @@ if ($EE_view_disable !== TRUE)
 				<th><?=lang('move_options')?></th>
 			</tr>
 			
-			<?php foreach($global_variables->result() as $row):?>
+			<?php foreach($sites as $row):?>
 			<tr>
 				<td>
-					<?=$row->site_label.NBS.'-'.NBS.lang('global_variables')?>
+					<?=$row['site_label'].NBS.'-'.NBS.lang('global_variables')?>
 				</td>
 				<td>
-					<?=form_dropdown('global_variables_'.$row->site_id, $global_variable_options)?>
+					<?=form_dropdown('global_variables_'.$row['site_id'], $global_variable_options)?>
 				</td>
 			</tr>
 			<?php endforeach;?>

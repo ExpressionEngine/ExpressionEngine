@@ -86,11 +86,12 @@ password for a member account with permissions to post to at least one channel.'
 'Configuration Name',
 
 'metaweblog_parse_type' => 
-'Text Formatting Preference',
+'Use Default Text Formatting Preferences',
 
 'metaweblog_parse_type_subtext' =>
-'Setting to yes will output an entry\'s content as if it was being displayed on 
-a webpage with all BBCode and file directories rendered.',
+'If Yes, the Channel Fields below will be sent as if they are being displayed on 
+a webpage, with the field\'s Text Formatting preference respected. If No, the field\'s
+content will be sent untouched.',
 
 'yes' =>
 'Yes',
@@ -149,7 +150,7 @@ over the API, so setting to \'None\' will prevent any file uploads via channel e
 'Do Not Set Status (Client decides)',
 
 'auto_br' =>
-'Auto &lt;br /&gt;',
+'Auto <br/>',
 
 'xhtml' =>
 'XHTML',

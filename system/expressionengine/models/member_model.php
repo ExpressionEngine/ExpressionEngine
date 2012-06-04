@@ -3,7 +3,7 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
@@ -19,7 +19,7 @@
  * @package		ExpressionEngine
  * @subpackage	Core
  * @category	Model
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
 class Member_model extends CI_Model {
@@ -563,7 +563,6 @@ class Member_model extends CI_Model {
 		// Remove traces of member from base member tables
 		// ---------------------------------------------------------------
 		$tables_fields = array(
-			'comment_subscriptions' => 'member_id',
 			'members'				=> 'member_id',
 			'member_data'			=> 'member_id',
 			'member_homepage'		=> 'member_id',
@@ -575,6 +574,12 @@ class Member_model extends CI_Model {
 			'remember_me'			=> 'member_id',
 			'sessions'				=> 'member_id'
 		);
+
+		// If comment module is installed
+		if ($this->db->table_exists('comment_subscriptions'))
+		{
+			$tables_fields['comment_subscriptions'] = 'member_id';
+		}
 		
 		// Loop through tables array and clear out based on member ID
 		foreach ($tables_fields as $table => $field)
@@ -663,7 +668,11 @@ class Member_model extends CI_Model {
 				
 				$this->db->where_in('author_id', $member_ids)->delete('channel_titles');
 				$this->db->where_in('entry_id', $entry_ids)->delete('channel_data');
-				$this->db->where_in('entry_id', $entry_ids)->delete('comments');
+
+				if ($this->db->table_exists('comments'))
+				{
+					$this->db->where_in('entry_id', $entry_ids)->delete('comments');
+				}
 			}
 		}
 		
@@ -671,26 +680,29 @@ class Member_model extends CI_Model {
 		// Find affected entries for members's comments and update totals
 		// ---------------------------------------------------------------
 		
-		$this->db->select('DISTINCT(entry_id), channel_id');
-		$this->db->where_in('author_id', $member_ids);
-		$entries = $this->db->get('comments');
-		
-		$entry_ids = array();
-		foreach ($entries->result_array() as $row)
+		if ($this->db->table_exists('comments'))
 		{
-			// Entries to update
-			$entry_ids[] = $row['entry_id'];
+			$this->db->select('DISTINCT(entry_id), channel_id');
+			$this->db->where_in('author_id', $member_ids);
+			$entries = $this->db->get('comments');
 			
-			// Gather channel IDs to update stats later
-			$channel_ids[]  = $row['channel_id'];
+			$entry_ids = array();
+			foreach ($entries->result_array() as $row)
+			{
+				// Entries to update
+				$entry_ids[] = $row['entry_id'];
+				
+				// Gather channel IDs to update stats later
+				$channel_ids[]  = $row['channel_id'];
+			}
+			
+			// Delete comments
+			$this->db->where_in('author_id', $member_ids)->delete('comments');
+			
+			// Update individual entry comment counts
+			$this->load->model('comment_model');
+			$this->comment_model->recount_entry_comments($entry_ids);
 		}
-		
-		// Delete comments
-		$this->db->where_in('author_id', $member_ids)->delete('comments');
-		
-		// Update individual entry comment counts
-		$this->load->model('comment_model');
-		$this->comment_model->recount_entry_comments($entry_ids);
 		
 		// Update channel and comment stats
 		$channel_ids = array_unique($channel_ids);

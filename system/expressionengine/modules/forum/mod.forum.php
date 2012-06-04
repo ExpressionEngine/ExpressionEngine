@@ -4,7 +4,7 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
@@ -20,14 +20,14 @@
  * @package		ExpressionEngine
  * @subpackage	Modules
  * @category	Modules
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
 
 class Forum {
 
 
-	public $version				= '3.1.8';
+	public $version				= '3.1.9';
 	public $build				= '20120507';
 	public $use_site_profile	= FALSE;
 	public $search_limit		= 250; // Maximum number of search results (x2 since it can include this number of topics + this number of posts)

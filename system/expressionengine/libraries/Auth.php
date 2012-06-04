@@ -3,7 +3,7 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
@@ -19,7 +19,7 @@
  * @package		ExpressionEngine
  * @subpackage	Core
  * @category	Core
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
 
@@ -143,7 +143,17 @@ class Auth {
 
 		$not_allowed_groups = array_merge($not_allowed_groups, $always_disallowed);
 
-		if ( ! $this->_retrieve_http_basic())
+		$authed = $this->_retrieve_http_basic();
+
+		if ($authed !== FALSE)
+		{
+			if (in_array($authed->member('group_id'), $not_allowed_groups))
+			{
+				$authed = FALSE;
+			}
+		}
+
+		if ($authed === FALSE)
 		{
 			@header('WWW-Authenticate: Basic realm="'.$realm.'"');
 			$this->EE->output->set_status_header(401);
@@ -570,7 +580,7 @@ class Auth {
 			return FALSE;	
 		}
 
-		return ($this->authenticate_username($user, $pass)) ? TRUE : FALSE;
+		return $this->authenticate_username($user, $pass);
 	}
 }
 // END Auth class

@@ -28,7 +28,7 @@ $lang = array(
 'Return to login',
 
 'password_lockout_in_effect' =>
-'You are only permitted to make four login attempts every %x minute(s)',
+'You are only permitted to make four login attempts every %d minute(s)',
 
 'unauthorized_request' =>
 'You are not authorized to perform this action',
