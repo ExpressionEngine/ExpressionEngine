@@ -151,7 +151,7 @@ class Referrer_upd {
 		{
 			// Update ip_address column
 			$this->EE->dbforge->modify_column(
-				'referrer',
+				'referrers',
 				array(
 					'ref_ip' => array(
 						'name' 			=> 'ref_ip',
