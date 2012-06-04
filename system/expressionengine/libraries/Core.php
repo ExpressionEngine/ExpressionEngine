@@ -262,6 +262,9 @@ class EE_Core {
 		// Load the "core" language file - must happen after the session is loaded
 		$this->EE->lang->loadfile('core');
 
+		// Compat helper, for those times where php doesn't quite cut it
+		$this->EE->load->helper('compat');
+
 		// Now that we have a session we'll enable debugging if the user is a super admin
 		if ($this->EE->config->item('debug') == 1 AND $this->EE->session->userdata('group_id') == 1)
 		{
