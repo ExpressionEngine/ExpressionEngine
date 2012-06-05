@@ -224,7 +224,7 @@ class Channel_standalone extends Channel {
 		
 			$data = array_merge($extra, $data);
 	
-			$success = $this->EE->api_channel_entries->save_entry($data, $channel_id);
+			$success = $this->EE->api_channel_entries->submit_new_entry($channel_id, $data);
 
 			if ( ! $success)
 			{

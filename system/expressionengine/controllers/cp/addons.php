@@ -22,7 +22,7 @@
  * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
-class Addons extends CP_Controller {
+class Addons extends CI_Controller {
 
 	/**
 	 * Constructor
@@ -51,10 +51,12 @@ class Addons extends CP_Controller {
 	 */	
 	function index()
 	{
-		$this->view->cp_page_title = lang('addons');
-		$this->view->controller = 'addons';
+		$this->cp->set_variable('cp_page_title', lang('addons'));
 
-		$this->cp->render('_shared/overview');
+		$this->load->vars(array('controller' => 'addons'));
+
+		$this->javascript->compile();
+		$this->load->view('_shared/overview');
 	}
 	
 	// --------------------------------------------------------------------
@@ -164,8 +166,10 @@ class Addons extends CP_Controller {
 		$vars['package'] = ucfirst(str_replace('_', ' ', $package));
 		$vars['components'] = $components;
 		$vars['required'] = $required;
-				
-		$this->cp->render('addons/package_settings', $vars);
+		
+		$this->javascript->compile();
+		
+		$this->load->view('addons/package_settings', $vars);
 	}
 }
 // END CLASS

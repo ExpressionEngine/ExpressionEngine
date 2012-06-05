@@ -34,6 +34,7 @@
 			width:				600px;
 
 			-webkit-border-radius: 3px;
+			-moz-border-radius:	3px;
 			border-radius:		3px;
 
 			-webkit-box-shadow: 0 1px 3px #171E23;

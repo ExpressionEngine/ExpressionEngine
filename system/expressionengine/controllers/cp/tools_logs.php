@@ -22,7 +22,7 @@
  * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
-class Tools_logs extends CP_Controller {
+class Tools_logs extends CI_Controller {
 	
 	var $perpage		= 50;
 
@@ -59,10 +59,12 @@ class Tools_logs extends CP_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
+		$this->cp->set_variable('cp_page_title', lang('tools_logs'));
 		$this->cp->set_breadcrumb(BASE.AMP.'C=tools', lang('tools'));
 
-		$this->view->cp_page_title = lang('tools_logs');
-		$this->cp->render('_shared/overview');
+		$this->javascript->compile();
+
+		$this->load->view('_shared/overview');
 	}
 
 	// --------------------------------------------------------------------
@@ -112,8 +114,10 @@ class Tools_logs extends CP_Controller {
 			BASE.AMP.'C=tools' => lang('tools'),
 			BASE.AMP.'C=tools_logs'=> lang('tools_logs')
 		));
-				
-		$this->cp->render('tools/view_cp_log', $vars);
+		
+		$this->javascript->compile();
+		
+		$this->load->view('tools/view_cp_log', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -203,7 +207,8 @@ class Tools_logs extends CP_Controller {
 			BASE.AMP.'C=tools_logs'=> lang('tools_logs')
 		));
 
-		$this->cp->render('tools/view_search_log', $vars);
+		$this->javascript->compile();
+		$this->load->view('tools/view_search_log', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -312,7 +317,8 @@ class Tools_logs extends CP_Controller {
 
 		$data['blacklist_installed'] = ($count > 0);
 
-		$this->cp->render('tools/view_throttle_log', $data);
+		$this->javascript->compile();
+		$this->load->view('tools/view_throttle_log', $data);
 	}
 
 	// --------------------------------------------------------------------
@@ -449,7 +455,8 @@ class Tools_logs extends CP_Controller {
 			));
 		}
 		
-		$this->cp->render('tools/view_email_log', $data);
+		$this->javascript->compile();
+		$this->load->view('tools/view_email_log', $data);
 	}
 
 	// --------------------------------------------------------------------
@@ -569,7 +576,8 @@ class Tools_logs extends CP_Controller {
 			)
 		);
 		
-		$this->cp->render('tools/view_developer_log', $vars);
+		$this->javascript->compile();
+		$this->load->view('tools/view_developer_log', $vars);
 	}
 	
 	// --------------------------------------------------------------------
@@ -732,7 +740,7 @@ class Tools_logs extends CP_Controller {
 			$this->functions->redirect(BASE.AMP.'C=tools_logs'.AMP.'M=view_email_log');
 		}
 		
-		$this->cp->render('tools/view_email', $query->row_array());
+		$this->load->view('tools/view_email', $query->row_array());
 	}
 	
 	// --------------------------------------------------------------------

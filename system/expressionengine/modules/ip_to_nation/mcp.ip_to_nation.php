@@ -11,7 +11,7 @@
  * @filesource
  */
 
-// --------------------------------------------------------------------------
+// ------------------------------------------------------------------------
 
 /**
  * ExpressionEngine IP to Nation Module
@@ -27,381 +27,331 @@ class Ip_to_nation_mcp {
 	/**
 	  * Constructor
 	  */
-	function __construct()
+	function Ip_to_nation_mcp()
 	{
-		$this->load->helper('array');
-		$this->load->model('ip_to_nation_data', 'ip_data');
+		// Make a local reference to the ExpressionEngine super object
+		$this->EE =& get_instance();
+		$this->EE->load->helper('form');
 		
 		$this->base_url = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=ip_to_nation';
 
-		if ($this->cp->allowed_group('can_moderate_comments', 'can_edit_all_comments', 'can_delete_all_comments'))
-		{
-			$this->cp->set_right_nav(array(
-				'update_ips' => $this->base_url.AMP.'method=update_data'
-			));	
-		}
+			if ($this->EE->cp->allowed_group('can_moderate_comments') &&  $this->EE->cp->allowed_group('can_edit_all_comments') && $this->EE->cp->allowed_group('can_delete_all_comments'))
+			{
+				$this->EE->cp->set_right_nav(array(
+									'update_ips'				=> $this->base_url.AMP.'method=import_form'
+									));	
+			}		
+		
+		
 	}
 
-	// ----------------------------------------------------------------------
+	// ------------------------------------------------------------------------
 
 	/**
 	  * Nation Home Page
 	  */
 	function index()
 	{
-		$countries = $this->_country_names();
-
-		$ip = '';
-		$country = '';
-
+		if ( ! include_once(APPPATH.'config/countries.php'))
+		{
+			show_error($this->EE->lang->line('countryfile_missing'));
+		}
+		
 		if (isset($_POST['ip']))
 		{
-			$ip_address = trim($_POST['ip']);
+		    $ip_address = trim($_POST['ip']);
+		}
+				
+		$vars['cp_page_title'] = $this->EE->lang->line('ip_to_nation_module_name');
+		$vars['country'] = '';
+		$vars['ip'] = (isset($ip_address) AND $this->EE->input->valid_ip($ip_address)) ? $ip_address : '';
 
-			if ($this->input->valid_ip($ip_address))
-		    {
-		    	$ip = $ip_address;
-   				$c_code = $this->ip_data->find($ip);
-   				$country = element($c_code, $countries, '');
-		    }
+		if ($vars['ip'] != '')
+		{
+			$this->EE->db->select('country');
+			$this->EE->db->from('ip2nation');
+			$this->EE->db->where("ip < INET_ATON('".trim($vars['ip'])."')", '', FALSE);
+			$this->EE->db->order_by('ip', 'desc');
+			$this->EE->db->limit(1, 0);
+			$query = $this->EE->db->get();
+
+			if ($query->num_rows() == 1)
+			{
+				if (@isset($countries[$query->row('country') ]))
+				{
+					$vars['country'] = $countries[$query->row('country')];
+				}
+			}
 		}
 
-		$data = compact('ip', 'country');
-		$this->view->cp_page_title = lang('ip_to_nation_module_name');
-		return $this->load->view('index', $data, TRUE);
+		return $this->EE->load->view('index', $vars, TRUE);
 	}
 
-	// ----------------------------------------------------------------------
+	// ------------------------------------------------------------------------
 
 	/**
 	  * Ban list table
 	  */
-	function banlist()
+	function banlist($updated = FALSE)
 	{
-		$countries = $this->_country_names();
+		if ( ! include(APPPATH.'config/countries.php'))
+		{
+			show_error($this->EE->lang->line('countryfile_missing'));
+		}
 
-		$query = $this->db->get('ip2nation_countries')->result();
+		$this->EE->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=ip_to_nation', $this->EE->lang->line('ip_to_nation_module_name'));
+
+		$vars['cp_page_title'] = $this->EE->lang->line('banlist');
+
+		$query = $this->EE->db->get('ip2nation_countries');
 		$status = array();
 
-		foreach ($query as $row)
+		foreach ($query->result() as $row)
 		{
 			$status[$row->code] = $row->banned;
 		}
 
-		$country_list = array();
+		$vars['countries'] = array();
 
 		foreach ($countries as $key => $val)
 		{
 			// Don't show countries for which we lack IP information
 			if (isset($status[$key]))
 			{
-				$country_list[$key] = array(
-					'code' => $key,
-					'name' => $val,
-					'status' => ($status[$key] == 'y')
-				);
+				$vars['countries'][$key]['code'] = $key;
+				$vars['countries'][$key]['name'] = $val;
+	
+				if ($key == 'gb')
+				{
+					$vars['countries'][$key]['status'] = ($status['uk'] == 'y') ? TRUE : FALSE;				
+				}
+				else
+				{
+					$vars['countries'][$key]['status'] = ($status[$key] == 'y') ? TRUE : FALSE;				
+				}
 			}
 		}
 
-		$this->cp->set_breadcrumb(
-			$this->base_url,
-			lang('ip_to_nation_module_name')
-		);
-
-		$data = compact('country_list');
-		$this->view->cp_page_title = lang('banlist');
-		return $this->load->view('banlist', $data, TRUE);
+		return $this->EE->load->view('banlist', $vars, TRUE);
 	}
 
-	// ----------------------------------------------------------------------
+	// ------------------------------------------------------------------------
 
 	/**
 	  * Update Ban List
 	  */
 	function update()
 	{
-		$countries = $this->_country_names();
-
-		// remove unknowns and 'n's
-		$ban = array_intersect_key($_POST, $countries);
-		$ban = preg_grep('/y/', $ban);
-
-		// ban them
-		$this->ip_data->ban(array_keys($ban));
-
-		$this->session->set_flashdata('message_success', lang('banlist_updated'));
-		$this->functions->redirect($this->base_url.AMP.'method=index');
-	}
-	
-	// ----------------------------------------------------------------------
-
-	/**
-	  * Update data
-	  */
-	function update_data()
-	{
-		$this->cp->set_breadcrumb($this->base_url, lang('ip_to_nation_module_name'));
-
-		$last_update = $this->config->item('ip2nation_db_date');
-		$cache_files = $this->_cache_files('csv');
-
-		// clear out stale data before we start
-		if ( ! empty($cache_files))
-		{
-			foreach ($cache_files as $file)
-			{
-				unlink($file);
-			}
-		}
-
-		// check again, if we can't clear them, the user will
-		// have to do something about it or we end up killing
-		// their database in the next step.
-		if (count($this->_cache_files('csv')))
-		{
-			$this->session->set_flashdata('message_failure', lang('@todo cache full'));
-			$this->functions->redirect($this->base_url.AMP.'method=index');
-		}
-
-		// look for data files that they may have
-		// uploaded manually
-		$data_files = $this->_cache_files('zip,gz');
-
-		if (count($cache_files))
-		{
-			// tell the user we're using them and move on
-			// internally make first step the unzipping
-		}
-
-		$data = array(
-			'update_data_provider' => str_replace(
-				'%d',
-				$this->cp->masked_url('http://www.maxmind.com/app/geolite'),
-				lang('update_data_provider')
-			),
-			'last_update' => ($last_update) ? $this->localize->set_human_time($last_update) : FALSE
-		);
-
-		$this->cp->add_js_script('fp_module', 'ip_to_nation');
-
-		$this->javascript->set_global(array(
-			'ip2n' => array(
-				'run_script' => 'update',
-				'base_url' => str_replace(AMP, '&', $this->base_url),
-				'steps' => array('download_data', 'extract_data', 'insert_data'),
-				'lang' => array(
-					'ip_db_updating' => lang('ip_db_updating'),
-					'ip_db_failed' => lang('ip_db_failed')
-				)
-			)
-		));
-
-		$this->view->cp_page_title = lang('update_ips');
-		return $this->load->view('import', $data, TRUE);
-	}
-
-	// ----------------------------------------------------------------------
-
-	/**
-	 * Download new data files
-	 */
-	function download_data()
-	{
-		if ( ! AJAX_REQUEST)
-		{
-			show_error(lang('unauthorized_access'));
-		}
-
-		$cache_path = $this->_cache_path();
-
-		// download
-		$files = array(
-			'http://geolite.maxmind.com/download/geoip/database/GeoIPCountryCSV.zip',
-			'http://geolite.maxmind.com/download/geoip/database/GeoIPv6.csv.gz'
-		);
-/*
-		$files = array(
-			'http://ellislab.dev/ee2/themes/ip2n_test/GeoIPCountryCSV.zip',
-			'http://ellislab.dev/ee2/themes/ip2n_test/GeoIPv6.csv.gz'
-		);
-*/
-		foreach ($files as $file)
-		{
-			$out_fh = fopen($cache_path.basename($file), "w");
-
-			$timeout = 5;
-			$ch = curl_init();
-			curl_setopt($ch, CURLOPT_URL, $file);
-			curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
-			curl_setopt($ch, CURLOPT_FILE, $out_fh);
-			curl_exec($ch);
-			curl_close($ch);
-		}
-
-		$this->output->send_ajax_response(array(
-			'success' => lang('ip_db_downloaded')
-		));
-	}
-
-	// ----------------------------------------------------------------------
-
-	/**
-	 * Extract all data files
-	 */
-	function extract_data()
-	{
-		if ( ! AJAX_REQUEST)
-		{
-			show_error(lang('unauthorized_access'));
-		}
-
-		$cache_files = $this->_cache_files('zip, gz');
-
-		foreach ($cache_files as $file)
-		{
-			$filename = basename($file);
-			$ext = end(explode('.', $filename));
-
-			$fn = '_extract_'.$ext;
-			$this->$fn($filename);
-		}
-
-		$this->output->send_ajax_response(array(
-			'success' => lang('ip_db_unpacked')
-		));
-	}
-
-	// ----------------------------------------------------------------------
-
-	function insert_data()
-	{
-		if ( ! AJAX_REQUEST)
-		{
-			show_error(lang('unauthorized_access'));
-		}
-
-		$files = $this->_cache_files('csv');
-		$this->ip_data->load($files);
-
-		// cleanup
-		array_map('unlink', $this->_cache_files('csv,gz,zip'));
-		
-		$this->output->send_ajax_response(array(
-			'success' => lang('ip_db_updated')
-		));
-	}
-
-	// ----------------------------------------------------------------------
-
-	function _cache_files($ext)
-	{
-		$ext = '{'.str_replace(' ', '', $ext).'}';
-		$path = $this->_cache_path();
-		return glob($path.'*.'.$ext, GLOB_BRACE);
-	}
-
-	// ----------------------------------------------------------------------
-
-	function _cache_path()
-	{
-		$cache_path = $this->config->item('cache_path');
-
-		if (empty($cache_path))
-		{
-			$cache_path = APPPATH.'cache/';
-		}
-
-		$cache_path .= 'ip2nation/';
-
-		if ( ! is_dir($cache_path))
-		{
-			mkdir($cache_path, DIR_WRITE_MODE);
-			@chmod($cache_path, DIR_WRITE_MODE);	
-		}
-
-		return $cache_path;
-	}
-
-	// ----------------------------------------------------------------------
-
-	/**
-	 * Extract gz file
-	 */
-	private function _extract_gz($source)
-	{
-		$cache_path = $this->_cache_path();
-		ob_start();
-
-		readgzfile($cache_path.$source);
-
-		$file_contents = ob_get_contents();
-		ob_end_clean();
-
-		$outname = str_replace('.gz', '', $source);
-		file_put_contents($cache_path.$outname, $file_contents);
-		@chmod($cache_path.$outname, FILE_WRITE_MODE);	
-	}
-
-	// ----------------------------------------------------------------------
-
-	/**
-	 * Extract zip archive
-	 *
-	 * Extracts into same directory as the source
-	 */
-	private function _extract_zip($source)
-	{
-		$cache_path = $this->_cache_path();
-
-		// unzip
-		$zip = zip_open($cache_path.$source);
-
-		if (is_resource($zip))
-		{
-			while ($zip_entry = zip_read($zip))
-			{
-				$outfile = $cache_path.zip_entry_name($zip_entry);
-				$fp = fopen($outfile, "w");
-
-				if (zip_entry_open($zip, $zip_entry, "r"))
-				{
-					$buf = zip_entry_read($zip_entry, zip_entry_filesize($zip_entry));
-					fwrite($fp, "$buf");
-					zip_entry_close($zip_entry);
-				}
-				
-				fclose($fp);
-				@chmod($outfile, FILE_WRITE_MODE);	
-			}
-
-			zip_close($zip);
-		}
-	}
-
-	// ----------------------------------------------------------------------
-
-	/**
-	 * Grab the country name file
-	 */
-	function _country_names()
-	{
 		if ( ! include(APPPATH.'config/countries.php'))
 		{
-			show_error(lang('countryfile_missing'));
+			show_error($this->EE->lang->line('countryfile_missing'));
 		}
 
-		return $countries;
-	}
+		// Set all countries to unbanned
+		$this->EE->db->update('ip2nation_countries', array('banned'=>'n'));
 
-	// ----------------------------------------------------------------------
+		// Unset everything that isn't an explictly banned country
+		foreach ($_POST as $key => $val)
+		{
+			if ($key == 'gb')
+			{
+				$_POST['uk'] = $val;
+				unset($_POST['gb']);
+			}
+
+			if ( ! isset($countries[$key]) AND $val != 'y')
+			{
+				unset($_POST[$key]);
+			}
+		}
+
+		// Everything left was banned
+		if (count($_POST) > 0)
+		{
+			$this->EE->db->where_in('CODE', array_keys($_POST));
+			$this->EE->db->update('ip2nation_countries', array('banned'=>'y'));
+		}
+
+		// Countries array will be reset in banlist(), so wipe it here
+		unset($countries);
+		
+		$this->EE->session->set_flashdata('message_success', $this->EE->lang->line('banlist_updated'));
+		$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=ip_to_nation'.AMP.'method=index');
+	}
+	
+	// ------------------------------------------------------------------------
 
 	/**
-	 * Easier superobject access
-	 */
-	function __get($key)
+	  * Import Form
+	  */
+	function import_form()
 	{
-		return get_instance()->$key;
+		$this->EE->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=ip_to_nation', $this->EE->lang->line('ip_to_nation_module_name'));
+
+		$vars['cp_page_title'] = $this->EE->lang->line('update_ips');
+		
+		$this->EE->load->library('form_validation');
+					
+		$this->EE->form_validation->set_rules('ip2nation_file',	'File',	'required|callback__file_exists');
+		$this->EE->form_validation->set_error_delimiters('<p class="notice">', '</p>');
+		
+		$vars['update_info'] = str_replace('%d', $this->EE->cp->masked_url('http://www.ip2nation.com/'), $this->EE->lang->line('update_info'));
+		
+		$last_update =	$this->EE->config->item('ip2nation_db_date');
+		$vars['last_update'] = ($last_update && $last_update != '') ? $this->EE->localize->set_human_time($last_update) : FALSE;
+
+		if ($this->EE->form_validation->run() === FALSE)
+		{
+			return $this->EE->load->view('import', $vars, TRUE);
+		}
+		
+		$result = $this->_convert_file($this->EE->input->post('ip2nation_file'));
+		
+		if ( ! $result)
+		{
+			$message = $this->EE->lang->line('ip_db_failed');
+
+			$this->EE->session->set_flashdata('message_failure', $message);			
+		}
+		else
+		{
+			$message = $this->EE->lang->line('ip_db_updated');
+
+			$this->EE->session->set_flashdata('message_success', $message);
+		}
+			$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.
+				'M=show_module_cp'.AMP.'module=ip_to_nation'.AMP.'method=index');		
 	}
+	
+	// ------------------------------------------------------------------------
+
+	/**
+	  * Convert SQL File
+	  */
+	function _convert_file($ip_file)
+	{
+
+		//  Read data file into an array
+		$master_array = $this->_datafile_to_array($ip_file);
+		
+		if ( ! $master_array)
+		{
+			return FALSE;
+		}
+		
+		// Fetch banned nations
+		$query = $this->EE->db->get_where('ip2nation_countries', array('banned'=>'y'));
+
+		// Truncate tables
+		$this->EE->db->truncate('ip2nation_countries');
+		$this->EE->db->truncate('ip2nation');
+
+		// Re-insert the massive number of records
+		
+		$this->EE->db->insert_batch('ip2nation', $master_array['ips']);
+
+		$this->EE->db->insert_batch('ip2nation_countries', $master_array['cc']);		
+
+		// update banned nations
+		if ($query->num_rows() > 0)
+		{
+			foreach ($query->result_array() as $row)
+			{
+				$this->EE->db->query($this->EE->db->update_string('exp_ip2nation_countries', array('banned' => 'y'), array('code' => $row['code'])));
+			}
+		}
+		
+		$this->EE->config->_update_config(array('ip2nation_db_date' => $this->EE->localize->now));
+		
+		return TRUE;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Datafile to Array
+	 *
+	 * Read ip2nation sql file into an array
+	 * 
+	 * @access	private
+	 * @return	array
+	 */	
+	function _datafile_to_array($file)
+	{
+		$contents = file($file);
+		
+		$master_array = array();
+
+		//  Parse file into array
+		foreach ($contents as $line)
+		{
+			if (strncmp($line, 'INSERT INTO ip2nation (', 23) == 0)
+			{
+				//$line = str_replace('INSERT INTO ip2nation (ip, country)', '', $line);
+				//$data = str_replace(array('"', "'", ' '), '', substr(trim($line), 43, -2));
+				
+				if ( ! preg_match_all("/\((.+?)\)/", $line, $matches))
+				{
+					return FALSE;
+				}
+
+				$security_check = explode(',', $matches[1][1]);
+				
+				if (count($security_check) > 2)
+				{
+					return FALSE;
+				}
+				
+				if ( ! ctype_digit($security_check[0]))
+				{
+					return FALSE;
+				}
+
+				$country = trim($security_check[1], "' ");
+				
+				if (strlen($country) != 2)
+				{
+					return FALSE;
+				}								
+				
+				$master_array['ips'][] = array('ip' => $security_check[0], 'country' => $country);
+				$master_array['cc'][$country] = array('code' => $country);
+			}
+			elseif (strncmp($line, 'INSERT INTO ip2nationCountries', 30) == 0)
+			{
+				break;
+			}
+		}
+		
+		return ( ! empty($master_array)) ? $master_array : FALSE;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * File exists
+	 *
+	 * Validation callback that checks if a file exits
+	 *
+	 * @access	private
+	 * @param	string
+	 * @return	boolean
+	 */
+	function _file_exists($file)
+	{
+		if ( ! file_exists($file) || is_dir($file))
+		{
+			$this->EE->lang->loadfile('admin');
+			$this->EE->form_validation->set_message('_file_exists', $this->EE->lang->line('invalid_path').' '.$file);
+			return FALSE;
+		}
+		
+		return TRUE;
+	}
+
+
+
+
 }
 // END CLASS
 

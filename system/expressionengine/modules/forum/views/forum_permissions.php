@@ -1,5 +1,3 @@
-<?php extend_view('_wrapper') ?>
-
 <?=form_open($_form_base.AMP.'method=forum_update_permissions', '', $hidden)?>
 
 <?php if ($forum_id == 'global'): ?>

@@ -1,12 +1,14 @@
-<?php extend_view('account/_wrapper') ?>
+<?php $this->load->view('account/_account_header');?>
 
-<div>
-	<h3><?=lang('member_stats').NBS.$username?></h3>
+	<div>
+		<h3><?=lang('member_stats').NBS.$username?></h3>
 
-	<?php foreach($fields as $key=>$value):?>
-	<p>
-		<span><?=lang($key)?>:</span>
-		<?=$value?>
-	</p>
-	<?php endforeach;?>
-</div>
+		<?php foreach($fields as $key=>$value):?>
+		<p>
+			<span><?=lang($key)?>:</span>
+			<?=$value?>
+		</p>
+		<?php endforeach;?>
+	</div>
+
+<?php $this->load->view('account/_account_footer');

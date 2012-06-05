@@ -1236,6 +1236,21 @@ class EE_Typography extends CI_Typography {
 	// --------------------------------------------------------------------	
 
 	/**
+	 * Auto XHTML Typography
+	 *
+	 * @deprecated in 2.1.5 and will be removed at a later date.
+	 */
+    function xhtml_typography($str)
+    {
+		$this->EE->load->library('logger');
+		$this->EE->logger->deprecated('2.1.5', 'EE_Typography::auto_typography()');
+		
+		return $this->auto_typography($str);
+    }
+
+	// --------------------------------------------------------------------	
+
+	/**
 	 * Encode Email Address
 	 */
 	public function encode_email($email, $title = '', $anchor = TRUE)

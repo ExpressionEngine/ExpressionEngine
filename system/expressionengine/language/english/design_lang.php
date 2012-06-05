@@ -89,13 +89,13 @@ $lang = array(
 'The maximum number of revisions that should be kept for EACH template.  For example, if you set this to 5, only the most recent 5 revisions will be saved for any given template.',
 
 'save_tmpl_files' =>
-'Save Templates as Files',
+'Allow Templates to be Saved as Files?',
 
 'save_tmpl_files_exp' =>
-'Saves templates as files on your server. Click Help for more information.',
+'When saving your templates you can optionally save them as files on your server. Please consult the user guide for more info regarding this feature.',
 
 'tmpl_file_basepath' =>
-'Server path to site\'s templates',
+'Basepath to Template File Directory',
 
 'tmpl_file_basepath_exp' =>
 'Server path to the directory in which the template files should be saved.',

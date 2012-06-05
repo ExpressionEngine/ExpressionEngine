@@ -1,5 +1,3 @@
-<?php extend_view('_wrapper') ?>
-
 <?php
 $this->table->set_heading(
 	array('data' => lang('board_id'),				'style' => 'width: 8%'),

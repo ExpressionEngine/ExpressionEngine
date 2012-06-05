@@ -15,7 +15,7 @@
 // --------------------------------------------------------------------
 
 /**
- * ExpressionEngine File Module
+ * ExpressionEngine Channel Module
  *
  * @package		ExpressionEngine
  * @subpackage	Modules

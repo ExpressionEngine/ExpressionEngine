@@ -188,7 +188,7 @@ class Auth {
 	 *	)
 	 * 
 	 * Your best option is to use:
-	 * 		list($username, $password, $incoming) = $this->verify()
+	 * 		list($username, $password, $incoming) = $this->_verify()
 	 * 
 	 * If an error results, the lang key will be added to $this->(auth->)errors[]
 	 * and this method will return FALSE
@@ -252,20 +252,13 @@ class Auth {
 			$this->EE->functions->redirect(BASE.AMP.'C=login');
 		}
 
+
 		//  Check credentials
 		// ----------------------------------------------------------------
-		$password = (string) $this->EE->input->post('password');
 
-		// Allow users to register with Username
-		// ----------------------------------------------------------------
+		$password = (string) $this->EE->input->post('password');
 		$incoming = $this->EE->auth->authenticate_username($username, $password);
 
-		// Allow users to register with Email
-		// ----------------------------------------------------------------
-		if( ! $incoming) {
-			$incoming = $this->EE->auth->authenticate_email($username, $password);
-		}
-		
 		// Not even close
 		if ( ! $incoming)
 		{
@@ -598,7 +591,7 @@ class Auth_result {
 	private $group;
 	private $member;
 	private $session_id;
-	private $remember_me = FALSE;
+	private $remember_me = 0;
 	private $anon = FALSE;
 	private $EE;
 	
@@ -722,6 +715,18 @@ class Auth_result {
 	// --------------------------------------------------------------------
 	
 	/**
+	 * Remember me expiration setter
+	 *
+	 * @access	public
+	 */
+	function remember_me($expire)
+	{
+		$this->remember_me = $expire;
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
 	 * Anon setter
 	 *
 	 * @access	public
@@ -768,7 +773,7 @@ class Auth_result {
 		
 		if ($this->EE->config->item($sess_type) != 's')
 		{
-			$expire = $this->EE->remember->get_expiry();
+			$expire = $this->remember_me;
 			
 			if ($this->anon)
 			{
@@ -781,9 +786,9 @@ class Auth_result {
 			}
 			
 			// (un)set remember me
-			if ($this->remember_me)
+			if ($expire)
 			{
-				$this->EE->remember->create();
+				$this->EE->remember->create($expire);
 			}
 			else
 			{
@@ -863,20 +868,6 @@ class Auth_result {
 	public function use_session_id($session_id)
 	{
 		$this->session_id = $session_id;
-	}
-	
-	// --------------------------------------------------------------------
-
-	/**
-	 * Remember me
-	 *
-	 * Whether or not this session will be started with 'remember me'
-	 *
-	 * @access	public
-	 */	
-	public function remember_me($remember = TRUE)
-	{
-		$this->remember_me = ($remember) ? TRUE : FALSE;
 	}
 	
 	// --------------------------------------------------------------------

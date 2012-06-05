@@ -33,6 +33,7 @@ class EE_Accessories {
 	function __construct()
 	{
 		$this->EE =& get_instance();
+		
 		$this->EE->load->library('addons');
 	}	
 

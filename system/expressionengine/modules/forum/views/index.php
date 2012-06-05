@@ -1,5 +1,3 @@
-<?php extend_view('_wrapper') ?>
-
 <span class="cp_button"><a href="<?=$_id_base.AMP.'method=forum_prefs'?>"><?=lang('forum_prefs')?></a></span>
 <span class="cp_button"><a href="<?=$_id_base.AMP.'method=forum_permissions'.AMP.'forum_id=global'?>"><?=lang('forum_global_permissions')?></a></span>
 

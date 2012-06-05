@@ -257,7 +257,7 @@ class Member_auth extends Member {
 		// "Remember Me" is one year
 		if (isset($_POST['auto_login']))
 		{
-			$sess->remember_me();
+			$sess->remember_me(60*60*24*365);
 		}
 
 		$anon = ($this->EE->input->post('anon') == 1) ? FALSE : TRUE;
@@ -316,7 +316,7 @@ class Member_auth extends Member {
 		// this is silly - only works for the first site
 		if (isset($_POST['auto_login']))
 		{
-			$incoming->remember_me();
+			$incoming->remember_me(60*60*24*365);
 		}
 		
 		// hook onto an existing session

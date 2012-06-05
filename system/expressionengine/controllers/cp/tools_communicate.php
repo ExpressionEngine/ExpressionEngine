@@ -22,7 +22,7 @@
  * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
-class Tools_communicate extends CP_Controller {
+class Tools_communicate extends CI_Controller {
 
 	var $mailinglist_exists	= FALSE;
 	var $attachments		= array();
@@ -249,8 +249,10 @@ class Tools_communicate extends CP_Controller {
 				$vars['member_groups'][$row->group_title] = array('name' => 'group_'.$row->group_id, 'value' => $row->group_id, 'checked' => $checked);
 			}
 		}
+		
+		$this->javascript->compile();
 
-		$this->cp->render('tools/communicate', $vars);
+		$this->load->view('tools/communicate', $vars);
 	}
 
 	// --------------------------------------------------------------------	
@@ -280,30 +282,39 @@ class Tools_communicate extends CP_Controller {
 	/**
 	 * Attachment Handler
 	 * 
-	 * Used to manage and validate attachments. Must remain public,
-	 * it's a form validation callback.
+	 * Used to manage and validate attachments
 	 *
-	 * @access	public
+	 * @access	private
 	 * @return	bool
 	 */
 	function _attachment_handler()
 	{
-		$this->load->library('upload');
-		$this->upload->initialize(array(
-			'allowed_types'	=> '*',
-			'use_temp_dir'	=> TRUE
-		));
-
-		if ( ! $this->upload->do_upload('attachment'))
+		// File Attachments?
+		if ($_FILES['attachment']['name'] != '')
 		{
-			$this->form_validation->set_message('_attachment_handler', lang('attachment_problem'));
-			return FALSE;
+			$temp_attachment = $_FILES['attachment']['tmp_name'];
+
+			if ( ! is_uploaded_file($temp_attachment))
+			{
+				$this->form_validation->set_message('_attachment_handler', lang('attachment_problem'));
+				return FALSE;
+			}
+
+			$temp_path = substr($temp_attachment, 0, strrpos($temp_attachment, DIRECTORY_SEPARATOR)+1);
+			$attachment = $temp_path.$_FILES['attachment']['name'];
+
+			// Try to give it a humane name. This should happen so quickly that multiple users
+			// won't be able to collide, but check for that first
+			if ( ! file_exists($attachment) AND ! rename($temp_attachment, $attachment))
+			{
+				// If we aren't able to rename this for any reason, then just attach
+				// the file with the temp name instead.
+				$attachment = $temp_attachment;
+			}
+
+			$this->attachments[] = $attachment;
+			$this->email->attach($attachment);
 		}
-
-		$data = $this->upload->data();
-
-		$this->attachments[] = $data['full_path'];
-		$this->email->attach($data['full_path']);
 
 		return TRUE;
 	}
@@ -460,7 +471,7 @@ class Tools_communicate extends CP_Controller {
 
 			$this->communicate_model->save_cache_data($cache_data);
 
-			$this->cp->render('tools/email_sent', array(
+			$this->load->view('tools/email_sent', array(
 				'debug' => $this->email->_debug_msg
 			));
 			
@@ -691,7 +702,7 @@ class Tools_communicate extends CP_Controller {
 			//  Update email cache
 			$this->communicate_model->update_email_cache($total_sent, '', $id);
 
-			$this->cp->render('tools/email_sent', array(
+			$this->load->view('tools/email_sent', array(
 				'debug' => $this->email->_debug_msg,
 				'total_sent' => $total_sent
 			));
@@ -714,6 +725,7 @@ class Tools_communicate extends CP_Controller {
 		$this->cp->set_variable('cp_page_title', lang('sending_email'));
 		
 		$this->load->view('_shared/refresh_message', $data);
+		return;
 	}
 
 	// --------------------------------------------------------------------
@@ -957,7 +969,7 @@ class Tools_communicate extends CP_Controller {
 
 			$this->cp->set_variable('cp_page_title', lang('email_success'));
 		
-			$this->cp->render('tools/email_sent', array('debug' => $this->email->_debug_msg, 'total_sent' => $total));
+			$this->load->view('tools/email_sent', array('debug' => $this->email->_debug_msg, 'total_sent' => $total));
 		}
 	}
 
@@ -1026,7 +1038,9 @@ class Tools_communicate extends CP_Controller {
 			BASE.AMP.'C=tools_communicate'=> lang('communicate')
 		));
 		
-		$this->cp->render('tools/view_cached_email', $vars);
+		$this->javascript->compile();
+		
+		$this->load->view('tools/view_cached_email', $vars);
 	}
 
 
@@ -1121,7 +1135,7 @@ class Tools_communicate extends CP_Controller {
 		$this->cp->set_variable('cp_page_title', lang('delete_emails'));
 		$this->cp->set_breadcrumb(BASE.AMP.'C=tools_communicate'.AMP.'M=view_cache', lang('view_email_cache'));
 		
-		$this->cp->render('tools/email_delete_confirm', $vars);
+		$this->load->view('tools/email_delete_confirm', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -1218,7 +1232,7 @@ class Tools_communicate extends CP_Controller {
 			BASE.AMP.'C=tools_communicate'=> lang('communicate')
 		));
 
-		$this->cp->render('tools/view_email', $vars);
+		$this->load->view('tools/view_email', $vars);
 	}
 
 	// --------------------------------------------------------------------
