@@ -4,7 +4,9 @@
 
 	<?php if ($country != ''):?>
 		<p><span class="notice"><?=lang('ip_result')?></span> <?=$country?></p>
-	<?php endif;?>
+	<?php elseif ($error !== FALSE): ?>
+		<p><span class="notice"><?=$error?></span></p>
+	<?php endif ?>
 
 	<p>
 		<?=lang('ip_search_inst', 'ip')?>
