@@ -167,12 +167,6 @@ class Ip_to_nation_mcp {
 		// uploaded manually
 		$data_files = $this->_cache_files('zip,gz');
 
-		if (count($cache_files))
-		{
-			// tell the user we're using them and move on
-			// internally make first step the unzipping
-		}
-
 		$data = array(
 			'update_data_provider' => str_replace(
 				'%d',
@@ -219,12 +213,7 @@ class Ip_to_nation_mcp {
 			'http://geolite.maxmind.com/download/geoip/database/GeoIPCountryCSV.zip',
 			'http://geolite.maxmind.com/download/geoip/database/GeoIPv6.csv.gz'
 		);
-/*
-		$files = array(
-			'http://ellislab.dev/ee2/themes/ip2n_test/GeoIPCountryCSV.zip',
-			'http://ellislab.dev/ee2/themes/ip2n_test/GeoIPv6.csv.gz'
-		);
-*/
+		
 		foreach ($files as $file)
 		{
 			$out_fh = fopen($cache_path.basename($file), "w");
