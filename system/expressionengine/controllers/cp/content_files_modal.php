@@ -23,7 +23,7 @@
  * @link		http://expressionengine.com
  */
 
-class Content_files_modal extends CI_Controller {
+class Content_files_modal extends CP_Controller {
 
 	private $_upload_dirs    = array();
 	private $_base_url       = '';

@@ -22,7 +22,7 @@
  * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
-class Admin_content extends CI_Controller {
+class Admin_content extends CP_Controller {
 
 	var $reserved = array(
 					'random', 'date', 'title', 'url_title', 'edit_date', 
@@ -63,15 +63,10 @@ class Admin_content extends CI_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->cp->set_variable('cp_page_title', lang('admin'));
+		$this->view->cp_page_title = lang('admin_content');
+		$this->view->controller = 'admin';
 
-		$this->javascript->compile();
-
-		$this->cp->set_variable('cp_page_title', lang('admin_content'));
-
-		$this->load->vars(array('controller'=>'admin'));
-		
-		$this->load->view('_shared/overview');
+		$this->cp->render('_shared/overview');
 	}
 
 	// --------------------------------------------------------------------
@@ -94,19 +89,15 @@ class Admin_content extends CI_Controller {
 		$this->lang->loadfile('admin_content');
 		$this->load->model('channel_model');
 
-		$this->cp->set_variable('cp_page_title', lang('channels'));
-
 		$this->jquery->tablesorter('.mainTable', '{
 			headers: {2: {sorter: false}, 3: {sorter: false}, 4: {sorter: false}},
 			widgets: ["zebra"]
-		}');
+		}');		
 
-		$this->javascript->compile();
-		
+		$this->view->channel_data = $this->channel_model->get_channels();
 
-		$vars['channel_data'] = $this->channel_model->get_channels();
-
-		$this->load->view('admin/channel_management', $vars);
+		$this->view->cp_page_title = lang('channels');
+		$this->cp->render('admin/channel_management');
 	}
 
 	// --------------------------------------------------------------------
@@ -229,9 +220,7 @@ class Admin_content extends CI_Controller {
 		}
 
 		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=channel_management', lang('channels'));
-
-		$this->javascript->compile();
-		$this->load->view('admin/channel_add', $vars);
+		$this->cp->render('admin/channel_add', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -380,13 +369,10 @@ class Admin_content extends CI_Controller {
 		
 		$vars['languages'] = $this->admin_model->get_xml_encodings();
 
-		$this->javascript->compile();
-
-		$this->cp->set_variable('cp_page_title', lang('channel_prefs').': '.$vars['channel_title']);
 		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=channel_management', lang('channels'));
 
-
-		$this->load->view('admin/channel_edit', $vars);
+		$this->view->cp_page_title = lang('channel_prefs').': '.$vars['channel_title'];
+		$this->cp->render('admin/channel_edit', $vars);
 	}
 	
 	// --------------------------------------------------------------------
@@ -1140,12 +1126,10 @@ class Admin_content extends CI_Controller {
 			}
 		}
 
-		$this->javascript->compile();
-
-		$this->cp->set_variable('cp_page_title', lang('edit_group_assignments'));
 		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=channel_management', lang('channels'));
 
-		$this->load->view('admin/channel_edit_group_assignments', $vars);
+		$this->view->cp_page_title = lang('edit_group_assignments').' : '.$vars['channel_title'];
+		$this->cp->render('admin/channel_edit_group_assignments', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -1188,8 +1172,7 @@ class Admin_content extends CI_Controller {
 			$vars['items'][] = $item->channel_title;
 		}
 
-		$this->javascript->compile();
-		$this->load->view('admin/preference_delete_confirm', $vars);
+		$this->cp->render('admin/preference_delete_confirm', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -1290,8 +1273,6 @@ class Admin_content extends CI_Controller {
 			widgets: ["zebra"]
 		}');
 
-		$this->javascript->compile();
-
 		// Fetch count of custom fields per group
 		$cfcount = array();
 		
@@ -1325,9 +1306,11 @@ class Admin_content extends CI_Controller {
 			$cat_count++;
 		}
 
-        $this->cp->set_right_nav(array('create_new_category_group' => BASE.AMP.'C=admin_content'.AMP.'M=edit_category_group'));
+        $this->cp->set_right_nav(array(
+        	'create_new_category_group' => BASE.AMP.'C=admin_content'.AMP.'M=edit_category_group'
+        ));
 
-		$this->load->view('admin/category_management', $vars);
+		$this->cp->render('admin/category_management', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -1438,9 +1421,7 @@ class Admin_content extends CI_Controller {
 		// Get the selected 'excluded' group
 		$vars['exclude_selected'] = (isset($vars['exclude_group'])) ? $vars['exclude_group'] : FALSE;
 		
-		$this->javascript->compile();
-
-		$this->load->view('admin/edit_category_group', $vars);
+		$this->cp->render('admin/edit_category_group', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -1603,8 +1584,7 @@ class Admin_content extends CI_Controller {
 			$vars['items'][] = $item->group_name;
 		}
 
-		$this->javascript->compile();
-		$this->load->view('admin/preference_delete_confirm', $vars);
+		$this->cp->render('admin/preference_delete_confirm', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -1695,9 +1675,6 @@ class Admin_content extends CI_Controller {
 			widgets: ["zebra"]
 		}');
 
-		$this->javascript->compile();
-
-
 		if ($group_id == '')
 		{
 			if (($group_id = $this->input->get_post('group_id')) === FALSE OR ! is_numeric($group_id))
@@ -1773,7 +1750,7 @@ class Admin_content extends CI_Controller {
 			'new_category'  => BASE.AMP.'C=admin_content'.AMP.'M=category_edit'.AMP.'group_id='.$group_id
 		));
 
-		$this->load->view('admin/category_editor', $vars);
+		$this->cp->render('admin/category_editor', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -2025,8 +2002,7 @@ class Admin_content extends CI_Controller {
 			}
 		}
 
-		$this->javascript->compile();
-		$this->load->view('admin/category_edit', $vars);
+		$this->cp->render('admin/category_edit', $vars);
 	}
 	
 	// --------------------------------------------------------------------
@@ -2091,8 +2067,7 @@ class Admin_content extends CI_Controller {
 			$vars['items'][] = $item->cat_name;
 		}
 
-		$this->javascript->compile();
-		$this->load->view('admin/preference_delete_confirm', $vars);
+		$this->cp->render('admin/preference_delete_confirm', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -2548,8 +2523,7 @@ class Admin_content extends CI_Controller {
 		$vars['form_hidden']['sort_order'] = $this->input->post('sort_order');
 		$vars['form_hidden']['override'] = 1;		
 
-		$this->javascript->compile();
-		$this->load->view('admin/category_order_confirm', $vars);					
+		$this->cp->render('admin/category_order_confirm', $vars);					
 		
 	}
 
@@ -2854,8 +2828,7 @@ class Admin_content extends CI_Controller {
 			widgets: ["zebra"]
 		}');
 
-		$this->javascript->compile();
-		$this->load->view('admin/category_custom_field_group_manager', $vars);
+		$this->cp->render('admin/category_custom_field_group_manager', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -3076,8 +3049,7 @@ class Admin_content extends CI_Controller {
 			$("#formatting_notice").hide();
 		');
 
-		$this->javascript->compile();
-		$this->load->view('admin/edit_custom_category_field', $vars);
+		$this->cp->render('admin/edit_custom_category_field', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -3280,8 +3252,7 @@ class Admin_content extends CI_Controller {
 			$vars['items'][] = $item->field_label;
 		}
 
-		$this->javascript->compile();
-		$this->load->view('admin/preference_delete_confirm', $vars);
+		$this->cp->render('admin/preference_delete_confirm', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -3356,14 +3327,12 @@ class Admin_content extends CI_Controller {
 			widgets: ["zebra"]
 		}');
 
-		$this->javascript->compile();
-
 		$vars['message'] = $message;
 		$vars['field_groups'] = $this->field_model->get_field_groups(); // Fetch field groups
 
         $this->cp->set_right_nav(array('create_new_field_group' => BASE.AMP.'C=admin_content'.AMP.'M=field_group_edit'));
 
-		$this->load->view('admin/field_group_management', $vars);
+		$this->cp->render('admin/field_group_management', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -3419,9 +3388,7 @@ class Admin_content extends CI_Controller {
 			$vars['submit_lang_key'] = 'submit';
 		}
 
-		$this->javascript->compile();
-
-		$this->load->view('admin/field_group_edit', $vars);
+		$this->cp->render('admin/field_group_edit', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -3466,8 +3433,7 @@ class Admin_content extends CI_Controller {
 			$vars['items'][] = $item->group_name;
 		}
 
-		$this->javascript->compile();
-		$this->load->view('admin/preference_delete_confirm', $vars);
+		$this->cp->render('admin/preference_delete_confirm', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -3682,8 +3648,7 @@ class Admin_content extends CI_Controller {
 		
 		$this->cp->add_js_script('file', 'cp/custom_fields');
 
-		$this->javascript->compile();
-		$this->load->view('admin/field_management', $vars);
+		$this->cp->render('admin/field_management', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -3764,8 +3729,7 @@ class Admin_content extends CI_Controller {
 			widgets: ["zebra"]
 		}');
 
-		$this->javascript->compile();
-		$this->load->view('admin/field_edit', $vars);
+		$this->cp->render('admin/field_edit', $vars);
 	}
 
 
@@ -3895,8 +3859,7 @@ class Admin_content extends CI_Controller {
 			$vars['items'][] = $item->field_label;
 		}
 
-		$this->javascript->compile();
-		$this->load->view('admin/preference_delete_confirm', $vars);
+		$this->cp->render('admin/preference_delete_confirm', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -4017,17 +3980,17 @@ class Admin_content extends CI_Controller {
 
 		$vars['format_options'] = $options;
 		
-		$this->javascript->compile();
-		$this->load->view('admin/edit_formatting_options', $vars);
+		$this->cp->render('admin/edit_formatting_options', $vars);
 	}
 
+ 	// --------------------------------------------------------------------
  
- 
- 
- 
-	/** ---------------------------------------
-	/**  Update Formatting Buttons
-	/** ---------------------------------------*/
+ 	/**
+ 	 * Update Formatting Buttons
+ 	 *
+ 	 * @access public
+ 	 * @return void
+ 	 */
 	function update_formatting_options()
 	{
 		$this->_restrict_prefs_access();
@@ -4088,12 +4051,12 @@ class Admin_content extends CI_Controller {
 
 		// Fetch category groups
 		$vars['status_groups'] = $this->status_model->get_status_groups();
-
-		$this->javascript->compile();
 		
-		$this->cp->set_right_nav(array('create_new_status_group' => BASE.AMP.'C=admin_content'.AMP.'M=status_group_edit'));
+		$this->cp->set_right_nav(array(
+			'create_new_status_group' => BASE.AMP.'C=admin_content'.AMP.'M=status_group_edit'
+		));
 		
-		$this->load->view('admin/status_group_management', $vars);
+		$this->cp->render('admin/status_group_management', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -4149,8 +4112,7 @@ class Admin_content extends CI_Controller {
 			$this->cp->set_variable('cp_page_title', lang('create_new_status_group'));
 		}
 		
-		$this->javascript->compile();
-		$this->load->view('admin/status_group_edit', $vars);
+		$this->cp->render('admin/status_group_edit', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -4195,8 +4157,7 @@ class Admin_content extends CI_Controller {
 			$vars['items'][] = $item->group_name;
 		}
 
-		$this->javascript->compile();
-		$this->load->view('admin/preference_delete_confirm', $vars);
+		$this->cp->render('admin/preference_delete_confirm', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -4364,12 +4325,10 @@ class Admin_content extends CI_Controller {
 
 		// Fetch status groups
 		$vars['statuses'] = $this->status_model->get_statuses($group_id);
-
-		$this->javascript->compile();
 		
         $this->cp->set_right_nav(array('create_new_status' => BASE.AMP.'C=admin_content'.AMP.'M=status_edit'.AMP.'group_id='.$group_id));
 		
-		$this->load->view('admin/status_management', $vars);
+		$this->cp->render('admin/status_management', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -4481,8 +4440,7 @@ class Admin_content extends CI_Controller {
 			}
 		}
 
-		$this->javascript->compile();
-		$this->load->view('admin/status_edit', $vars);
+		$this->cp->render('admin/status_edit', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -4635,8 +4593,7 @@ class Admin_content extends CI_Controller {
 			$vars['items'][] = $item->status;
 		}
 
-		$this->javascript->compile();
-		$this->load->view('admin/preference_delete_confirm', $vars);
+		$this->cp->render('admin/preference_delete_confirm', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -4831,8 +4788,7 @@ class Admin_content extends CI_Controller {
 
 		$this->cp->add_to_head('<style type="text/css">.tablesize{height:45px!important;}</style>');
 
-		$this->javascript->compile();
-		$this->load->view('admin/default_ping_servers', $vars);
+		$this->cp->render('admin/default_ping_servers', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -4961,10 +4917,8 @@ class Admin_content extends CI_Controller {
 
 		$vars['html_buttons'] = $this->admin_model->get_html_buttons(0); // recall it in case in insert happened
 		$vars['i'] = 1;
-
-		$this->javascript->compile();
 		
-		$this->load->view('admin/default_html_buttons', $vars);
+		$this->cp->render('admin/default_html_buttons', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -5231,13 +5185,10 @@ class Admin_content extends CI_Controller {
 		}
 
 		// if this is an update, show the success message
-		//$vars['alert'] = ($this->input->get_post('U')) ? lang('preferences_updated') : FALSE;
 		$vars['return_loc'] = BASE.AMP.'C=admin_content'.AMP.'M='.$return_loc;
 
-		$this->cp->set_variable('cp_page_title', lang($type));
-
-		$this->javascript->compile();
-		$this->load->view('admin/config_pages', $vars);
+		$this->view->cp_page_title = lang($type);
+		$this->cp->render('admin/config_pages', $vars);
 	}
 
 	// --------------------------------------------------------------------

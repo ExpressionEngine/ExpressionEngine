@@ -23,7 +23,7 @@
  * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
-class Addons_modules extends CI_Controller {
+class Addons_modules extends CP_Controller {
 
 	var $_mcp_reference;
 
@@ -226,8 +226,7 @@ class Addons_modules extends CI_Controller {
 		$this->cp->set_variable('cp_page_title', lang('modules'));
 		$this->cp->set_breadcrumb(BASE.AMP.'C=addons', lang('addons'));
 
-		$this->javascript->compile();
-		$this->load->view('addons/modules', $vars);
+		$this->cp->render('addons/modules', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -356,9 +355,7 @@ class Addons_modules extends CI_Controller {
 		// remove package paths
 		$this->load->remove_package_path($installed[$module]['path']);
 
-		$this->javascript->compile();
-	
-		$this->load->view('addons/module_cp_container', $vars);
+		$this->cp->render('addons/module_cp_container', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -417,8 +414,7 @@ class Addons_modules extends CI_Controller {
 			BASE.AMP.'C=addons_modules'=> lang('modules')
 		));
 		
-		$this->javascript->compile();
-		$this->load->view('addons/module_delete_confirm', $vars);
+		$this->cp->render('addons/module_delete_confirm', $vars);
 	}
 
 	// --------------------------------------------------------------------

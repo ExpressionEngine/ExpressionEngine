@@ -23,6 +23,9 @@
  * @link		http://expressionengine.com
  */
 class Cp {
+
+	private $EE;
+	private $view;
 	
 	var $cp_theme				= '';
 	var $cp_theme_url			= '';	// base URL to the CP theme folder
@@ -51,6 +54,7 @@ class Cp {
 	function __construct()
 	{
 		$this->EE =& get_instance();
+		$this->view = $this->EE->view;
 		
 		if ($this->EE->router->fetch_class() == 'ee')
 		{
@@ -90,8 +94,6 @@ class Cp {
 		define('JS_FOLDER', $js_folder);
 
 
-		$this->EE->load->library('menu');
-		$this->EE->load->library('accessories');
 		$this->EE->load->library('javascript', array('autoload' => FALSE));
 
 		$this->EE->load->model('member_model'); // for screen_name, quicklinks
@@ -103,7 +105,7 @@ class Cp {
 		
 		$cp_messages = array();
 		
-		foreach(array('message_success', 'message_notice', 'message_error', 'message_failure') as $flash_key)
+		foreach (array('message_success', 'message_notice', 'message_error', 'message_failure') as $flash_key)
 		{
 			if ($message = $this->EE->session->flashdata($flash_key))
 			{
@@ -151,14 +153,6 @@ class Cp {
 			
 			'EE_view_disable'		=> FALSE,
 			'is_super_admin'		=> ($this->EE->session->userdata['group_id'] == 1) ? TRUE : FALSE,	// for conditional use in view files
-								
-			// Menu
-			'cp_menu_items'			=> $this->EE->menu->generate_menu(),
-			'cp_accessories'		=> $this->EE->accessories->generate_accessories(),
-			
-			// Sidebar state (overwritten below if needed)
-			'sidebar_state'			=> '',
-			'maincontent_state'		=> '',
 		);
 		
 		
@@ -183,40 +177,10 @@ class Cp {
 						  ->set_cache('cp_sidebar', 'cp_avatar_width', $vars['cp_avatar_width'])
 						  ->set_cache('cp_sidebar', 'cp_avatar_height', $vars['cp_avatar_height']);
 
-		$css_paths = array(
-			PATH_CP_THEME.$this->cp_theme.'/',
-			PATH_CP_THEME.'default/'
-		);
-	
-		if ($this->cp_theme !== 'default')
-		{
-			array_shift($css_paths);
-		}
-
-		foreach ($css_paths as $a_path)
-		{
-			$file = $a_path.'css/advanced.css';
-			
-			if (file_exists($file))
-			{
-				break;
-			}
-		}
-		
-		$vars['advanced_css_mtime'] = (file_exists($file)) ? filemtime($file) : FALSE;
-		
-		
 		if ($this->EE->router->method != 'index')
 		{
 			$this->set_breadcrumb(BASE.AMP.'C='.$this->EE->router->class, lang($this->EE->router->class));
 		}
-		
-		if ($this->EE->session->userdata('show_sidebar') == 'n')
-		{
-			$vars['sidebar_state']		= ' style="display:none"';
-			$vars['maincontent_state']	= ' style="width:100%; display:block"';
-        }
-		
 		
 		// The base javascript variables that will be available globally through EE.varname
 		// this really could be made easier - ideally it would show up right below the main
@@ -258,7 +222,6 @@ class Cp {
 			'XID'				=> XID_SECURE_HASH,
 			'PATH_CP_GBL_IMG'	=> PATH_CP_GBL_IMG,
 			'CP_SIDEBAR_STATE'	=> $this->EE->session->userdata('show_sidebar'),
-			//'flashdata'			=> $this->EE->session->flashdata,
 			'username'			=> $this->EE->session->userdata('username'),
 			'router_class'		=> $this->EE->router->class, // advanced css
 			'lang'				=> $js_lang_keys,
@@ -268,10 +231,9 @@ class Cp {
 		// Combo-load the javascript files we need for every request
 
 		$js_scripts = array(
-			'effect'	=> 'core',
 			'ui'		=> array('core', 'widget', 'mouse', 'position', 'sortable', 'dialog'),
 			'plugin'	=> array('ee_focus', 'ee_interact.event', 'ee_notice', 'ee_txtarea', 'tablesorter', 'ee_toggle_all'),
-			'file'		=> 'cp/global_start'
+			'file'		=> array('json2', 'underscore', 'cp/global_start')
 		);
 
 		if ($this->cp_theme != 'mobile')
@@ -283,7 +245,93 @@ class Cp {
 		$this->_seal_combo_loader();		
 		
 		$this->EE->load->vars($vars);
-		$this->EE->javascript->compile();
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Render output (html)
+	 *
+	 * @access public
+	 * @return void
+	 */
+	public function render($view, $data = array(), $return = FALSE)
+	{
+		$this->_menu();
+		$this->_accessories();
+		$this->_sidebar();
+
+		// add global end file
+		$this->_seal_combo_loader();
+		$this->add_js_script('file', 'cp/global_end');
+
+		return $this->view->render($view, $data, $return);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Load up accessories for our view
+	 *
+	 * @access public
+	 * @return void
+	 */
+	protected function _accessories()
+	{
+		if ($this->view->disabled('ee_accessories'))
+		{
+			return;
+		}
+
+		$this->EE->load->library('accessories');
+		$this->view->cp_accessories = $this->EE->accessories->generate_accessories();
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Load up the menu for our view
+	 *
+	 * @access public
+	 * @return void
+	 */
+	protected function _menu()
+	{
+		if ($this->view->disabled('ee_menu'))
+		{
+			return;
+		}
+
+		$this->EE->load->library('menu');
+		$this->view->cp_menu_items = $this->EE->menu->generate_menu();
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Load up the sidebar for our view
+	 *
+	 * @access public
+	 * @return void
+	 */
+	protected function _sidebar()
+	{
+		$this->view->sidebar_state = '';
+		$this->view->maincontent_state = '';
+
+		if ($this->EE->session->userdata('show_sidebar') == 'n')
+		{
+			$this->view->sidebar_state = ' style="display:none"';
+			$this->view->maincontent_state = ' style="width:100%; display:block"';
+        }
+
+        if ($this->view->disabled('ee_sidebar'))
+		{
+			return;
+		}
+
+		// @todo move over sidebar content from set_default_view_vars
+		// has a member query & session cache dependency
 	}
 
 	// --------------------------------------------------------------------
@@ -361,10 +409,6 @@ class Cp {
 	 */
 	function render_footer_js()
 	{
-		// add global end file
-		$this->_seal_combo_loader();
-		$this->add_js_script('file', 'cp/global_end');
-		
 		$str = '';
 		$requests = $this->_seal_combo_loader();
 		
@@ -486,13 +530,13 @@ class Cp {
 	 */
 	function set_right_nav($nav = array())
 	{
-		$this->EE->load->vars('cp_right_nav', array_reverse($nav));
+		$this->view->cp_right_nav = array_reverse($nav);
 	}
 	
 	// --------------------------------------------------------------------
 	
 	/**
-	 * Set the right navigation
+	 * Set the in-header navigation
 	 *
 	 * @access	public
 	 * @param	array
@@ -501,7 +545,7 @@ class Cp {
 	 */
 	function set_action_nav($nav = array())
 	{
-		$this->EE->load->vars('cp_action_nav', array_reverse($nav));
+		$this->view->cp_action_nav = array_reverse($nav);
 	}
 
 	// --------------------------------------------------------------------
@@ -515,45 +559,11 @@ class Cp {
 	 */
 	function delete_layout_tabs($tabs = array(), $namespace = '', $channel_id = array())
 	{
+		$this->EE->load->library('logger');
+		$this->EE->logger->deprecated('2.6', 'Layout::delete_layout_tabs()');
+
 		$this->EE->load->library('layout');
 		return $this->EE->layout->delete_layout_tabs($tabs, $namespace, $channel_id);
-	}	
-
-	// --------------------------------------------------------------------
-	
-	/**
-	 * Deprecated Add new tabs and associated fields to saved publish layouts
-	 *
-	 * @access	public
-	 * @param	array
-	 * @return	bool
-	 */
-	function add_layout_tabs($tabs = array(), $namespace = '', $channel_id = array())
-	{
-		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated(NULL, 'Layout::add_layout_tabs()');
-		
-		$this->EE->load->library('layout');
-		$this->EE->layout->add_layout_tabs($tabs, $namespace, $channel_id);
-	}
-
-	// --------------------------------------------------------------------
-	
-	/**
-	 * Deprecated Adds new fields to the saved publish layouts, creating the default tab if required
-	 *
-	 * @access	public
-	 * @param	array
-	 * @param	int
-	 * @return	bool
-	 */
-	function add_layout_fields($tabs = array(), $channel_id = array())
-	{
-		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated(NULL, 'Layout::add_layout_fields()');
-		
-		$this->EE->load->library('layout');
-		return $this->EE->layout->add_layout_fields($tabs, $channel_id);
 	}
 
 	// --------------------------------------------------------------------
@@ -568,6 +578,9 @@ class Cp {
 	 */
 	function delete_layout_fields($tabs, $channel_id = array())
 	{
+		$this->EE->load->library('logger');
+		$this->EE->logger->deprecated('2.6', 'Layout::delete_layout_fields()');
+
 		$this->EE->load->library('layout');
 		return $this->EE->layout->delete_layout_fields($tabs, $channel_id);
 	}
@@ -687,7 +700,7 @@ class Cp {
 	 */		
 	function set_variable($name, $value)
 	{	
-		$this->EE->load->vars(array($name => $value));
+		$this->view->$name = $value;
 	}
 	
 	// --------------------------------------------------------------------
@@ -703,8 +716,7 @@ class Cp {
 		static $_crumbs = array();
 		
 		$_crumbs[$link] = $title;
-		
-		$this->EE->load->vars(array('cp_breadcrumbs' => $_crumbs));
+		$this->view->cp_breadcrumbs = $_crumbs;
 	}
 	
 	// --------------------------------------------------------------------
@@ -728,29 +740,33 @@ class Cp {
 					$this->EE->functions->redirect(BASE);
 				}
 				
-				$query = $this->EE->db->query("SELECT COUNT(*) AS count FROM exp_security_hashes 
-												 WHERE hash = '".$this->EE->db->escape_str($_POST['XID'])."' 
-												 AND ip_address = '".$this->EE->input->ip_address()."' 
-												 AND date > UNIX_TIMESTAMP()-".$this->xid_ttl);
+				$query = $this->EE->db->query(
+					"SELECT COUNT(*) AS count FROM exp_security_hashes 
+					 WHERE hash = '".$this->EE->db->escape_str($_POST['XID'])."' 
+					 AND ip_address = '".$this->EE->input->ip_address()."' 
+					 AND date > UNIX_TIMESTAMP()-".$this->xid_ttl
+				);
 	
 				if ($query->row('count')  == 0)
 				{
 					$this->EE->functions->redirect(BASE);
 				}
-				else
-				{
-					$this->EE->db->query("DELETE FROM exp_security_hashes 
-											WHERE date < UNIX_TIMESTAMP()-{$this->xid_ttl}
-											AND ip_address = '".$this->EE->input->ip_address()."'");
-								
-					unset($_POST['XID']);
-				}
+				
+				$this->EE->db->query(
+					"DELETE FROM exp_security_hashes 
+					 WHERE date < UNIX_TIMESTAMP()-{$this->xid_ttl}
+					 AND ip_address = '".$this->EE->input->ip_address()."'"
+				);
+				
+				unset($_POST['XID']);
 			}
 			
 			$hash = $this->EE->functions->random('encrypt');
-			$this->EE->db->query("INSERT INTO exp_security_hashes (date, ip_address, hash)
-								VALUES 
-								(UNIX_TIMESTAMP(), '".$this->EE->input->ip_address()."', '".$hash."')");
+			$this->EE->db->query(
+				"INSERT INTO exp_security_hashes (date, ip_address, hash)
+				 VALUES 
+				 (UNIX_TIMESTAMP(), '".$this->EE->input->ip_address()."', '".$hash."')"
+			);
 		}
 		
 		define('XID_SECURE_HASH', $hash);
@@ -769,6 +785,9 @@ class Cp {
 	 */
 	function fetch_cp_themes()
 	{
+		$this->EE->load->library('logger');
+		$this->EE->logger->deprecated('2.6', 'Admin_model::get_cp_theme_list()');
+
 		$this->EE->load->model('admin_model');
 		return $this->EE->admin_model->get_cp_theme_list();
 	}
@@ -806,7 +825,7 @@ class Cp {
 	{
 		$current_top_path = $this->EE->load->first_package_path();
 		$package = trim(str_replace(array(PATH_THIRD, 'views'), '', $current_top_path), '/');
-		$url = BASE.AMP.'C=css'.AMP.'M=third_party'.AMP.'package='.$package.AMP.'file='.$file;
+		$url = BASE.AMP.'C=css'.AMP.'M=third_party'.AMP.'package='.$package.AMP.'theme='.$this->cp->cp_theme.AMP.'file='.$file;
 		
 		$this->add_to_head('<link type="text/css" rel="stylesheet" href="'.$url.'" />');
 	}
@@ -892,7 +911,6 @@ class Cp {
 	 * @access public
 	 * @return array
 	 */
-
 	function get_installed_modules()
 	{
 	    if ( ! is_array($this->installed_modules))
@@ -935,47 +953,50 @@ class Cp {
 		}
 		
 		$channel_vars = array(
-								'aol_im', 'author', 'author_id', 'avatar_image_height',
-								'avatar_image_width', 'avatar_url', 'bday_d', 'bday_m',
-								'bday_y', 'bio', 'comment_auto_path',
-								'comment_entry_id_auto_path', 
-								'comment_total', 'comment_url_title_path', 'count',
-								'edit_date', 'email', 'entry_date', 'entry_id',
-								'entry_id_path', 'expiration_date', 'forum_topic_id',
-								'gmt_edit_date', 'gmt_entry_date', 'icq', 'interests',
-								'ip_address', 'location', 'member_search_path', 'month', 
-								'msn_im', 'occupation', 'permalink', 'photo_image_height',
-								'photo_image_width', 'photo_url', 'profile_path',
-								'recent_comment_date', 'relative_date', 'relative_url',
-								'screen_name', 'signature', 'signature_image_height',
-								'signature_image_url', 'signature_image_width', 'status',
-								'switch', 'title', 'title_permalink', 'total_results',
-								'trimmed_url', 'url', 'url_as_email_as_link', 'url_or_email', 
-								'url_or_email_as_author', 'url_title', 'url_title_path', 
-								'username', 'channel', 'channel_id', 'yahoo_im', 'year' 
-							);
+			'aol_im', 'author', 'author_id', 'avatar_image_height',
+			'avatar_image_width', 'avatar_url', 'bday_d', 'bday_m',
+			'bday_y', 'bio', 'comment_auto_path',
+			'comment_entry_id_auto_path', 
+			'comment_total', 'comment_url_title_path', 'count',
+			'edit_date', 'email', 'entry_date', 'entry_id',
+			'entry_id_path', 'expiration_date', 'forum_topic_id',
+			'gmt_edit_date', 'gmt_entry_date', 'icq', 'interests',
+			'ip_address', 'location', 'member_search_path', 'month', 
+			'msn_im', 'occupation', 'permalink', 'photo_image_height',
+			'photo_image_width', 'photo_url', 'profile_path',
+			'recent_comment_date', 'relative_date', 'relative_url',
+			'screen_name', 'signature', 'signature_image_height',
+			'signature_image_url', 'signature_image_width', 'status',
+			'switch', 'title', 'title_permalink', 'total_results',
+			'trimmed_url', 'url', 'url_as_email_as_link', 'url_or_email', 
+			'url_or_email_as_author', 'url_title', 'url_title_path', 
+			'username', 'channel', 'channel_id', 'yahoo_im', 'year' 
+		);
 							
 		$global_vars = array(
-								'app_version', 'captcha', 'charset', 'current_time',
-								'debug_mode', 'elapsed_time', 'email', 'embed', 'encode',
-								'group_description', 'group_id', 'gzip_mode', 'hits',
-								'homepage', 'ip_address', 'ip_hostname', 'lang', 'location',
-								'member_group', 'member_id', 'member_profile_link', 'path',
-								'private_messages', 'screen_name', 'site_index', 'site_name',
-								'site_url', 'stylesheet', 'total_comments', 'total_entries',
-								'total_forum_posts', 'total_forum_topics', 'total_queries',
-								'username', 'webmaster_email', 'version'
-							);
+			'app_version', 'captcha', 'charset', 'current_time',
+			'debug_mode', 'elapsed_time', 'email', 'embed', 'encode',
+			'group_description', 'group_id', 'gzip_mode', 'hits',
+			'homepage', 'ip_address', 'ip_hostname', 'lang', 'location',
+			'member_group', 'member_id', 'member_profile_link', 'path',
+			'private_messages', 'screen_name', 'site_index', 'site_name',
+			'site_url', 'stylesheet', 'total_comments', 'total_entries',
+			'total_forum_posts', 'total_forum_topics', 'total_queries',
+			'username', 'webmaster_email', 'version'
+		);
 		
 		$orderby_vars = array(
-								'comment_total', 'date', 'edit_date', 'expiration_date',
-								'most_recent_comment', 'random', 'screen_name', 'title',
-								'url_title', 'username', 'view_count_four', 'view_count_one',
-								'view_count_three', 'view_count_two'
-						 	 );
+			'comment_total', 'date', 'edit_date', 'expiration_date',
+			'most_recent_comment', 'random', 'screen_name', 'title',
+			'url_title', 'username', 'view_count_four', 'view_count_one',
+			'view_count_three', 'view_count_two'
+		);
 						
-		$invalid_fields = array_unique(array_merge($channel_vars, $global_vars, $orderby_vars));
-		return $invalid_fields;
+		return array_unique(array_merge(
+			$channel_vars,
+			$global_vars,
+			$orderby_vars
+		));
 	}
 
 	// --------------------------------------------------------------------

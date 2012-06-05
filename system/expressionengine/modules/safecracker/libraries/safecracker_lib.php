@@ -782,6 +782,15 @@ class Safecracker_lib
 		{
 			$this->form_hidden('logged_out_member_id', $this->encrypt_input($this->logged_out_member_id));
 		}
+
+		$require_entry = 'n';
+
+		if ($this->bool_string($this->EE->TMPL->fetch_param('require_entry')))
+		{
+			$require_entry = $this->entry('entry_id');
+		}
+
+		$this->form_hidden('require_entry', $this->encrypt_input($require_entry));
 		
 		//add class to form
 		if ($this->EE->TMPL->fetch_param('class'))
@@ -1170,8 +1179,20 @@ class Safecracker_lib
 			
 			$this->EE->db->delete('captcha');
 		}
-		
+
 		//is an edit form?
+		$require_entry = $this->EE->input->post('require_entry');
+		$require_entry = $this->decrypt_input($require_entry);
+
+		if ($require_entry !== 'n')
+		{
+			if ($this->EE->input->post('entry_id') != $require_entry)
+			{
+				// oh no you didn't!
+				$_POST['entry_id'] = $require_entry;
+			}
+		}
+
 		if ($this->EE->input->post('entry_id'))
 		{
 			$this->edit = TRUE;
@@ -1421,11 +1442,11 @@ class Safecracker_lib
 			{
 				if ($this->entry('entry_id'))
 				{
-					$submit = $this->EE->api_sc_channel_entries->update_entry($this->entry('entry_id'), $_POST);
+					$submit = $this->EE->api_sc_channel_entries->save_entry($_POST, NULL, $this->entry('entry_id'));
 				}
 				else
 				{
-					$submit = $this->EE->api_sc_channel_entries->submit_new_entry($this->channel('channel_id'), $_POST);
+					$submit = $this->EE->api_sc_channel_entries->save_entry($_POST, $this->channel('channel_id'));
 				}
 				
 				if ( ! $submit)
