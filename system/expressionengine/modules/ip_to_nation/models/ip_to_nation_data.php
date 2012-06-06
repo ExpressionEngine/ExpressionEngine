@@ -176,7 +176,7 @@ class Ip_to_nation_data extends CI_Model {
 			$this->db->insert_batch('exp_ip2nation', $insert);
 		}
 
-		$coutries = array_unique($countries);
+		$countries = array_unique($countries);
 		sort($countries);
 
 		fclose($fh);
