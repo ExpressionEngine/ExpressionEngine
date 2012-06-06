@@ -105,6 +105,7 @@ class Radio_ft extends EE_Fieldtype {
 	
 	function replace_tag($data, $params = '', $tagdata = '')
 	{
+		// Experimental parameter, do not use
 		if (isset($params['raw_output']) && $params['raw_output'] == 'yes')
 		{
 			return $this->EE->functions->encode_ee_tags($data);

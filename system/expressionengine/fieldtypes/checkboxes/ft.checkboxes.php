@@ -172,6 +172,7 @@ class Checkboxes_ft extends EE_Fieldtype {
 			$entry = implode(', ', $data);
 		}
 
+		// Experimental parameter, do not use
 		if (isset($params['raw_output']) && $params['raw_output'] == 'yes')
 		{
 			return $this->EE->functions->encode_ee_tags($entry);
@@ -223,6 +224,7 @@ class Checkboxes_ft extends EE_Fieldtype {
 			$chunk = substr($chunk, 0, - $params['backspace']);
 		}
 		
+		// Experimental parameter, do not use
 		if (isset($params['raw_output']) && $params['raw_output'] == 'yes')
 		{
 			return $this->EE->functions->encode_ee_tags($chunk);

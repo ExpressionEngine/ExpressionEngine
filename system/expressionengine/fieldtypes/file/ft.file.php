@@ -125,6 +125,7 @@ class File_ft extends EE_Fieldtype {
 	 */
 	function replace_tag($file_info, $params = array(), $tagdata = FALSE)
 	{
+		// Experimental parameter, do not use
 		if (isset($params['raw_output']) && $params['raw_output'] == 'yes')
 		{
 			return $file_info['raw_output'];
