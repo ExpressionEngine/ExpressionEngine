@@ -1,13 +1,14 @@
-
 <?=form_open('C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=ip_to_nation'.AMP.'method=update')?>
 
 	<p><?=lang('ban_info')?></p>
 
 	<ul class="inline_labels">
-	<?php foreach($countries as $country):?>
+	<?php foreach($country_list as $country):?>
 		<li>
-			<?=form_checkbox($country['code'], 'y', $country['status'], "id='code_{$country['code']}'")?> 
-			<label for="code_<?=$country['code']?>"><?=$country['name']?></label>
+			<label for="code_<?=$country['code']?>">
+				<?=form_checkbox($country['code'], 'y', $country['status'], "id='code_{$country['code']}'")?> 
+				<?=$country['name']?>
+			</label>
 		</li>
 	<?php endforeach;?>
 	</ul>

@@ -192,7 +192,7 @@ WysiHat.Editor.prototype = {
 				{
 					if (that.$field.is(':visible'))
 					{
-						that.$editor.height(that.$field.height());
+						that.$editor.height(that.$field.outerHeight());
 					}
 					else if (that.$editor.is(':visible'))
 					{

@@ -15,7 +15,7 @@ $lang = array(
 //----------------------------------------
 
 'iptonation_missing' =>
-'Unable to find the file called iptonation.php.  Please make sure you have uploaded all components of this module.',
+'Unable to find the file called iptonation.php. Please make sure you have uploaded all components of this module.',
 
 'countryfile_missing' =>
 'Unable to find the file called country.php in your config folder.',
@@ -29,6 +29,12 @@ $lang = array(
 'ip_result' =>
 'The IP you submitted is from the following country:',
 
+'ip_not_valid' =>
+'The IP you submitted is not a valid IP address.',
+
+'ip_not_found' =>
+'There are no results for the IP you submitted.',
+
 'manage_banlist' =>
 'Manage Your Banned Country List',
 
@@ -36,7 +42,7 @@ $lang = array(
 'Country',
 
 'ban_info' =>
-'Select the countries you wish to ban.  When a country is banned, a person with a IP address corresponding to it will not be able to submit comments, or use your email/tell-a-friend form.  They will still be able to view your site.',
+'Select the countries you wish to ban. When a country is banned, a person with a IP address corresponding to it will not be able to submit comments, or use your email/tell-a-friend form. They will still be able to view your site.',
 
 'ban' =>
 'Ban',
@@ -51,24 +57,30 @@ $lang = array(
 'Update IP Database', 
 
 'update_info' =>
-'Update the IP and country code information using the latest export from <a href=\'%d\' title=\'Download Here\'>ip2nation.com</a>', 
+'Update the IP and country code information', 
 
 'update_blurb' =>
-'In order to update, you must first put the unzipped file containing the ip2nation sql data on your server, and then submit the location of the file.',
+'The new data will automatically be downloaded and applied. This may take several minutes and increase load on your database.',
 
-'ip2nation_file_loc' => 
-'Server Path to SQL File', 
-
-'unable_to_read_file' =>
-'Unable to read file.',
+'update_data_provider' =>
+'Data source: <a href=\'%d\' title=\'Data Provider\'>maxmind.com</a>',
 
 'last_update' => 'Last update: ',
+
+'ip_db_updating' =>
+'Downloading update ...',
+
+'ip_db_downloaded' =>
+'Downloaded IP Database. Unpacking ...',
+
+'ip_db_unpacked' =>
+'Unpacked IP Database. Inserting data ...',
 
 'ip_db_updated' =>
 'IP Database Update Successful',
 
 'ip_db_failed' =>
-'Disallowed characters in Import File',
+'IP Databse Update Failed',
 
 ''=>''
 );

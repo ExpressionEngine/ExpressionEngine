@@ -1,25 +1,21 @@
-<h3><?=$update_info?></h3>
-
-<p><strong><?=lang('update_blurb')?></strong></p><br/>
-
-	<?php if ($last_update):
-		echo '<p>' . lang('last_update').$last_update . '</p><br/>';
-	endif; ?>
+<h3><?=lang('update_info')?></h3>
 	
-<?=form_open('C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=ip_to_nation'.AMP.'method=import_form')?>
-
-
-	<p>
-		<?=lang('ip2nation_file_loc', 'ip2nation_file')?>
-	</p>
+<?=form_open('C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=ip_to_nation'.AMP.'method=download_data', 'id="update_form"')?>
 
 	<p>
-		<?=form_error('ip2nation_file')?>
-		<?=form_input(array('id'=>'ip2nation_file','name'=>'ip2nation_file', 'class'=>'field', 'value'=>set_value('ip2nation_file')))?>
+		<?=lang('update_blurb')?>
 	</p>
 
 	<p>
 		<?=form_submit(array('name' => 'submit', 'value' => lang('update'), 'class' => 'submit'))?>
 	</p>
+
+	<br>
+
+	<?php if ($last_update): ?>
+		<p><?=lang('last_update').$last_update?></p>
+	<?php endif; ?>
+
+	<p><?=$update_data_provider?></p>
 
 <?=form_close()?>
