@@ -1407,7 +1407,7 @@ class Sites extends CI_Controller {
 							foreach(array('group_name') AS $check)
 							{
 								$count = $this->db->where('site_id', $site_id)
-									->like($check, $gquery->row[$check], 'after')
+									->like($check, $gquery->row($check), 'after')
 									->count_all_results('category_groups');
 
 								if ($count > 0)
@@ -1662,35 +1662,34 @@ class Sites extends CI_Controller {
 								}
 								else
 								{
-									$this->db->update(
-										'channel_data',
-										array(
-											"field_id_{$field_match[$row['field_id']]}"
-											=> 'field_id_'.$row['field_id']
-										),
-										array('channel_id' => $channel_id)
+									// Set the new field to be the same as the old field
+									$this->db->set(
+										"field_id_{$field_match[$row['field_id']]}", 
+										'`field_id_'.$row['field_id'].'`', 
+										FALSE
 									);
+									$this->db->where('channel_id', $channel_id)
+										->update('channel_data');
 								}								
 								
-								$this->db->update(
-									'channel_data',
-									array(
-										"field_ft_{$field_match[$row['field_id']]}"
-										=> 'field_ft_'.$row['field_id']
-									),
-									array('channel_id' => $channel_id)
+								$this->db->set(
+									"field_ft_{$field_match[$row['field_id']]}", 
+									'`field_ft_'.$row['field_id'].'`', 
+									FALSE
 								);
+								$this->db->where('channel_id', $channel_id)
+									->update('channel_data');
 
 								if ($row['field_type'] == 'date')
 								{
-									$this->db->update(
-										'channel_data',
-										array(
-											"field_dt_{$field_match[$row['field_id']]}"
-											=> 'field_dt_'.$row['field_id']
-										),
-										array('channel_id' => $channel_id)
+									// Set the new field to be the same as the old field
+									$this->db->set(
+										"field_dt_{$field_match[$row['field_id']]}", 
+										'`field_dt_'.$row['field_id'].'`', 
+										FALSE
 									);
+									$this->db->where('channel_id', $channel_id)
+										->update('channel_data');
 								}
 								
 								if ($row['field_type'] == 'rel' && $row['field_related_to'] == 'channel')
