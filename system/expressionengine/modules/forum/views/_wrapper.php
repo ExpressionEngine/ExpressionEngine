@@ -37,7 +37,7 @@
 <?php endif; ?>
 
 	<div>
-		<?=$EE_rendered_view?>
+		<?=$this->load->view($content_view)?>
 	</div>
 
 <?php

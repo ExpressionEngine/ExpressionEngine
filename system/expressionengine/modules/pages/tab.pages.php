@@ -90,7 +90,6 @@ class Pages_tab {
 			$this->EE->javascript->set_global('publish.pages.pageUri', $pages_uri);
 		}
 		
-		$this->EE->load->model('template_model');
 		$templates = $this->EE->template_model->get_templates($site_id);
 		
 		foreach ($templates->result() as $template)

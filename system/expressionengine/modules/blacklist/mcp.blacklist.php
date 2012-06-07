@@ -438,6 +438,15 @@ class Blacklist_mcp {
 						$this->EE->db->delete('referrers');
 					}
 				}
+
+				if ($val == 'ip')
+				{
+					// Collapse IPv6 addresses
+					if ($this->EE->input->valid_ip($this->value, 'ipv6'))
+					{
+						$new_values[$key] = inet_ntop(inet_pton($this->value));
+					}
+				}
 			 }
 
 			 sort($new_values);
@@ -526,6 +535,15 @@ class Blacklist_mcp {
 					if (trim($value) == "" OR trim($value) == NL)
 					{
 						unset($new_values[$key]);
+					}
+
+					if ($val == 'ip')
+					{
+						// Collapse IPv6 addresses
+						if ($this->EE->input->valid_ip($value, 'ipv6'))
+						{
+							$new_values[$key] = inet_ntop(inet_pton($value));
+						}
 					}
 				 }
 

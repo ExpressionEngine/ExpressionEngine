@@ -1,7 +1,16 @@
-<?php extend_template('wrapper', 'ee_right_nav') ?>
+<?php
+if ($EE_view_disable !== TRUE)
+{
+	$this->load->view('_shared/header');
+	$this->load->view('_shared/main_menu');
+	$this->load->view('_shared/sidebar');
+	$this->load->view('_shared/breadcrumbs');
+}
+?>
 
+<div id="mainContent"<?=$maincontent_state?>>
 	<div id="templateViewLink">
-		<?php $this->view('_shared/right_nav')?>
+	<?php $this->load->view('_shared/right_nav')?>
 	</div>
 	<div class="contents">
         <div class="heading">
@@ -9,7 +18,7 @@
         </div>
         
         <div class="pageContents">
-	<?php $this->view('_shared/message')?>
+	<?php $this->load->view('_shared/message')?>
 		
 	<div id="templateEditor" class="formArea">
 		<?php if ($message):?>
@@ -39,16 +48,18 @@
 
 		</div>
 
-		<?=form_open('C=design'.AMP.'M=update_template'.AMP.'tgpref='.$group_id, '', array('template_id' => $template_id, 'group_id' => $group_id))?>
+			<?=form_open('C=design'.AMP.'M=update_template'.AMP.'tgpref='.$group_id, '', array('template_id' => $template_id, 'group_id' => $group_id))?>
 
-		<?=form_textarea(array(
-			'name'	=> 'template_data',
-			'id'	=> 'template_data',
-			'cols'	=> '100',
-			'rows'	=> $prefs['template_size'],
-			'wrap'	=> 'off',
-			'value' => $template_data
-		));?>
+
+			<?=form_textarea(array(
+									'name'	=> 'template_data',
+									'id'	=> 'template_data',
+									'cols'	=> '100',
+									'rows'	=> $prefs['template_size'],
+									'wrap'	=> 'off',
+									'value' => $template_data
+							));?>
+
 
 		<?php if(is_array($warnings) && count($warnings)): ?>
 			<?=form_hidden('warnings', 'yes')?>
@@ -85,6 +96,11 @@
 						</tr>
 					<?php endforeach;?>
 				</table>
+				<script type="text/javascript" charset="utf-8">
+					EE.manager = EE.manager || {};
+					EE.manager.warnings = <?=$this->javascript->generate_json($warnings, TRUE)?>;
+				</script>
+			
 				</div>
 			</div>
 		<?php endif; ?>
@@ -212,3 +228,14 @@
 	</div>
     </div> <!-- pageContents -->
 	</div> <!-- contents -->
+</div> <!-- mainContent -->
+
+<?php
+if ($EE_view_disable !== TRUE)
+{
+	$this->load->view('_shared/accessories');
+	$this->load->view('_shared/footer');
+}
+
+/* End of file edit_template.php */
+/* Location: ./themes/cp_themes/default/design/edit_template.php */

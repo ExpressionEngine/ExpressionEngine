@@ -22,7 +22,7 @@
  * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
-class Tools extends CP_Controller {
+class Tools extends CI_Controller {
 
 	/**
 	 * Constructor
@@ -51,10 +51,13 @@ class Tools extends CP_Controller {
 	 */	
 	function index()
 	{
-		$this->view->cp_page_title = lang('tools');
-		$this->view->controller = 'tools';
+		$this->cp->set_variable('cp_page_title', lang('tools'));
 
-		$this->cp->render('_shared/overview');
+		$this->javascript->compile();
+
+		$this->load->vars(array('controller' => 'tools'));
+
+		$this->load->view('_shared/overview');
 	}
 	
 }

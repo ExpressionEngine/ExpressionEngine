@@ -29,6 +29,12 @@ $lang = array(
 'ip_result' =>
 'The IP you submitted is from the following country:',
 
+'ip_not_valid' =>
+'The IP you submitted is not a valid IP address.',
+
+'ip_not_found' =>
+'There are no results for the IP you submitted.',
+
 'manage_banlist' =>
 'Manage Your Banned Country List',
 

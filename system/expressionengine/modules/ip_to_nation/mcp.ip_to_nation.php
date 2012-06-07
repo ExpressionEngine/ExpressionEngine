@@ -53,20 +53,30 @@ class Ip_to_nation_mcp {
 
 		$ip = '';
 		$country = '';
+		$error = FALSE;
 
 		if (isset($_POST['ip']))
 		{
 			$ip_address = trim($_POST['ip']);
-
+			
 			if ($this->input->valid_ip($ip_address))
 		    {
 		    	$ip = $ip_address;
    				$c_code = $this->ip_data->find($ip);
    				$country = element($c_code, $countries, '');
+
+   				if ($c_code === FALSE)
+   				{
+   					$error = lang('ip_not_found');
+   				}
+		    }
+		    else
+		    {
+		    	$error = lang('ip_not_valid');
 		    }
 		}
 
-		$data = compact('ip', 'country');
+		$data = compact('ip', 'country', 'error');
 		$this->view->cp_page_title = lang('ip_to_nation_module_name');
 		return $this->load->view('index', $data, TRUE);
 	}
@@ -167,12 +177,6 @@ class Ip_to_nation_mcp {
 		// uploaded manually
 		$data_files = $this->_cache_files('zip,gz');
 
-		if (count($cache_files))
-		{
-			// tell the user we're using them and move on
-			// internally make first step the unzipping
-		}
-
 		$data = array(
 			'update_data_provider' => str_replace(
 				'%d',
@@ -219,12 +223,7 @@ class Ip_to_nation_mcp {
 			'http://geolite.maxmind.com/download/geoip/database/GeoIPCountryCSV.zip',
 			'http://geolite.maxmind.com/download/geoip/database/GeoIPv6.csv.gz'
 		);
-/*
-		$files = array(
-			'http://ellislab.dev/ee2/themes/ip2n_test/GeoIPCountryCSV.zip',
-			'http://ellislab.dev/ee2/themes/ip2n_test/GeoIPv6.csv.gz'
-		);
-*/
+
 		foreach ($files as $file)
 		{
 			$out_fh = fopen($cache_path.basename($file), "w");

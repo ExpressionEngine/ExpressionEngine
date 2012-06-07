@@ -400,6 +400,7 @@ class Rte_lib {
 		}
 
 		$types	= array(
+			'effect'	=> PATH_JQUERY.'ui/jquery.effects.',
 			'ui'		=> PATH_JQUERY.'ui/jquery.ui.',
 			'plugin'	=> PATH_JQUERY.'plugins/',
 			'file'		=> PATH_THEMES.'javascript/'.$folder.'/',

@@ -1,0 +1,50 @@
+/** Advanced.css
+ *
+ * The styles in this file are applied using javascript.
+ * It is pre-parsed by PHP (slow), so try to keep it short.
+ * 
+ * The advantage of using this file is that it provides full
+ * cross-browser support for border-radius and advanced css 3
+ * selectors (docs.jquery.com/Selectors)
+ *
+ */
+
+/* Radius 10 */
+.button a,
+.cp_button a,
+#search form,
+div.contentMenu,
+#mainContent .formArea,
+#navigationTabs .first_level:not(.addTab) {
+	border-radius: 10px;
+}
+
+#navigationTabs .addTab {
+	border-radius: none;
+}
+
+#accessoryTabs li,
+.heading {
+	overflow: hidden;	/* our headings have images in them where rounding won't work */
+	border-top-right-radius: 10px;
+	border-top-left-radius: 10px;
+}
+
+.tableFooter,
+div.pageContents,
+#mainContent #publishForm {
+	border-bottom-right-radius: 10px;
+	border-bottom-left-radius: 10px;
+}
+
+.newTemplate {
+	border-radius: 5px;
+}
+
+#write_mode_writer {
+	border-radius: 15px;
+}
+
+.js_hide {
+	display: none;
+}

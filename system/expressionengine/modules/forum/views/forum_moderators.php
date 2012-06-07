@@ -1,5 +1,3 @@
-<?php extend_view('_wrapper') ?>
-
 <?php
 $parent_id = NULL;
 

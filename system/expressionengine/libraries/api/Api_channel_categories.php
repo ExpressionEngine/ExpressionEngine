@@ -176,6 +176,25 @@ class Api_channel_categories extends Api {
 			}
 		}
 	}
+	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Category Edit Sub-tree 
+	 *
+	 * @deprecated 
+	 *
+	 * @param 	mixed
+	 * @param 	
+	 *
+	 */
+	public function category_edit_subtree($cat_id, $categories, $depth)
+	{
+		$this->EE->load->library('logger');
+		$this->EE->logger->deprecated('2.0', 'Api_channel_categories::category_form_subtree()');
+		
+		$this->category_form_subtree($cat_id, $categories, $depth);
+	}
 
 	// --------------------------------------------------------------------
 	

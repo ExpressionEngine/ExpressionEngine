@@ -68,8 +68,9 @@ input[type="password"] {
   	padding:				4px;
 	width:					100%;
 	
-  	-webkit-border-radius:	3px;
 	border-radius:			3px;
+	-moz-border-radius:		3px;
+  	-webkit-border-radius:	3px;
 }
 
 span.fake_input {
@@ -176,8 +177,8 @@ table a:hover {
 
 .pageContents a.submit {
 	color:					#fff;
+	-moz-border-radius:		3px;
 	-webkit-border-radius:	3px;
-	border-radius:			3px;
 }
 
 
@@ -376,8 +377,8 @@ button.submit,
 input.disabled-btn {
 	font: 12px/12px Arial, 'Hevlvetica Neue', sans-serif;
 	
+	-moz-border-radius: 3px;
 	-webkit-border-radius: 3px;
-	border-radius: 3px;
 }
 
 .disabled-btn,
@@ -590,6 +591,7 @@ select.select {
 	width:				169px;
 	z-index:			200;
 
+	-moz-border-radius:		10px;
 	-webkit-border-radius:	10px;
 	border-radius:			10px;
 
@@ -1016,8 +1018,8 @@ a#revealSidebarLink:link, a#revealSidebarLink:visited  {
 .contentMenu ul {
 	padding-bottom:			20px;
 	background-color: 		#ECF1F4;
+	-moz-border-radius: 	10px;
 	-webkit-border-radius: 	10px;
-	border-radius:		 	10px;
 }
 
 .contentMenu ul.homeBlocks {
@@ -2887,6 +2889,7 @@ html.js .publish_hidden {
 	background:				-moz-linear-gradient(#666, #000);
 	
 	-webkit-border-radius:	10px;
+	-moz-border-radius:		10px;
 	border-radius:			10px;
 	
 	-webkit-box-shadow:		0 1px 0 #000;
@@ -3195,6 +3198,8 @@ input#ip_address {
 
 	-webkit-border-top-left-radius: 5px;
 	-webkit-border-top-right-radius: 5px;
+	-moz-border-radius-topleft: 5px;
+	-moz-border-radius-topright: 5px;
 	border-radius-topleft: 5px;
 	border-radius-topright: 5px;
 }
@@ -3298,6 +3303,7 @@ input#ip_address {
 	padding:				15px;
 
 	-webkit-border-radius: 	8px;
+	-moz-border-radius: 	8px;
 	border-radius: 			8px;
 	
 	-webkit-box-shadow: 	rgba(0, 0, 0, 0.347656) 0px 8px 8px;
@@ -3793,6 +3799,7 @@ html.js .js_show {
 	padding: 			3px 2px 3px 4px;
 	
 	-webkit-border-radius: 	4px;
+	-moz-border-radius: 	4px;
 	border-radius: 			4px;
 }
 
@@ -3970,8 +3977,8 @@ html.js .js_show {
 	-webkit-border-bottom-left-radius: 10px;
 	-webkit-border-bottom-right-radius: 10px;
 	
-	border-bottom-left-radius: 10px;
-	border-bottom-right-radius: 10px;
+	-moz-border-radius-bottomleft: 10px;
+	-moz-border-radius-bottomright: 10px;
 }
 
 #notice_container {
@@ -4030,7 +4037,7 @@ html.js .js_show {
 	margin-left: -22px;
 	margin-right: 5px;
 	-webkit-border-radius: 6px;
-	border-radius: 6px;
+	-moz-border-radius: 6px;
 }
 
 #close_notice {
@@ -4049,59 +4056,4 @@ div.alert p {
 div.alert li {
 	list-style: disc;
 	margin-left: 20px;
-}
-
-
-/* Advanced.css
- *
- * This probably should be integrated above. No point doing it without
- * a designer taking a look. For now it's moved.
- */
-
-/* There is also .js_show. Use these instead of show() hide(), muuuch faster! */
-.js_hide {
-	display: none;
-}
-
-.button a,
-.cp_button a,
-#search form,
-div.contentMenu,
-#mainContent .formArea,
-#navigationTabs .first_level {
-	-webkit-border-radius: 10px;
-	border-radius: 10px;
-}
-
-#navigationTabs .addTab {
-	border-radius: 0;
-}
-
-#accessoryTabs li,
-.heading {
-	overflow: hidden;	/* our headings have images in them where rounding won't work */
-
-	-webkit-border-top-left-radius: 10px;
-	-webkit-border-top-right-radius: 10px;
-	border-top-left-radius: 10px;
-	border-top-right-radius: 10px;
-}
-
-.tableFooter,
-div.pageContents,
-#mainContent #publishForm {
-	-webkit-border-bottom-right-radius: 10px;
-	-webkit-border-bottom-left-radius: 10px;
-	border-bottom-right-radius: 10px;
-	border-bottom-left-radius: 10px;
-}
-
-.newTemplate {
-	-webkit-border-radius: 5px;
-	border-radius: 5px;
-}
-
-#write_mode_writer {
-	-webkit-border-radius: 15px;
-	border-radius: 15px;
 }

@@ -22,7 +22,7 @@
  * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
-class Addons_extensions extends CP_Controller {
+class Addons_extensions extends CI_Controller {
 
 	/**
 	 * Constructor
@@ -60,6 +60,8 @@ class Addons_extensions extends CP_Controller {
 		$this->jquery->tablesorter('.mainTable', '{
 			widgets: ["zebra"]
 		}');
+
+		$this->javascript->compile();
 
 		$this->load->library('addons');
 		$this->load->model('addons_model');
@@ -171,7 +173,7 @@ class Addons_extensions extends CP_Controller {
 		        $extensions_toggle => BASE.AMP.'C=addons_extensions'.AMP.'M=toggle_extension_confirm'
 		    ));
 
-		$this->cp->render('addons/extensions', $vars);
+		$this->load->view('addons/extensions', $vars);
 	}
 	
 	// --------------------------------------------------------------------
@@ -202,7 +204,8 @@ class Addons_extensions extends CP_Controller {
 			BASE.AMP.'C=addons_extensions'=> lang('extensions')
 		));
 		
-		$this->cp->render('addons/toggle_confirm', $vars);
+		$this->javascript->compile();
+		$this->load->view('addons/toggle_confirm', $vars);
 	}
 	
 	// --------------------------------------------------------------------
@@ -383,8 +386,8 @@ class Addons_extensions extends CP_Controller {
 
 
 			// load it up, kapowpow!
-			$this->view->cp_heading = lang('extension_settings').': '.$name;
-			$this->cp->render('addons/extensions_settings_custom', $vars);
+			$this->javascript->compile();
+			$this->load->view('addons/extensions_settings_custom', $vars);
 			return;
 		}
 
@@ -476,9 +479,11 @@ class Addons_extensions extends CP_Controller {
 			$vars['fields'][$key] = array('type' => $options[0], 'value' => $details, 'subtext' => $sub, 'selected' => $selected);
 		}
 		
-		$this->view->hidden = array('file' => $vars['file']);
-		$this->view->cp_heading = lang('extension_settings').': '.$name;
-		$this->cp->render('addons/extensions_settings', $vars);
+		$vars['hidden'] = array('file' => $vars['file']);
+
+		$this->javascript->compile();
+
+		$this->load->view('addons/extensions_settings', $vars);
 	}
 	
 	// --------------------------------------------------------------------

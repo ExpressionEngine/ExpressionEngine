@@ -23,7 +23,7 @@
  * @link		http://expressionengine.com
  */
 
-class Members extends CP_Controller {
+class Members extends CI_Controller {
 
 	// Default member groups.  We used these for translation purposes
 	private $english		= array('Guests', 'Banned', 'Members', 'Pending', 'Super Admins');
@@ -62,10 +62,13 @@ class Members extends CP_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->view->cp_page_title = lang('members');
-		$this->view->controller = 'members';
+		$this->cp->set_variable('cp_page_title', lang('members'));
 
-		$this->cp->render('_shared/overview');
+		$this->javascript->compile();
+
+		$this->load->vars(array('controller' => 'members'));
+
+		$this->load->view('_shared/overview');
 	}
 	
 	// --------------------------------------------------------------------
@@ -209,8 +212,9 @@ class Members extends CP_Controller {
 			$vars['delete_button_label'] = lang('delete_selected');
 		}
 		
+		$this->javascript->compile();
 		$this->cp->set_variable('cp_page_title', lang('view_members'));
-		$this->cp->render('members/view_members', $vars);
+		$this->load->view('members/view_members', $vars);
 	}
 
 	// ----------------------------------------------------------------
@@ -517,7 +521,7 @@ class Members extends CP_Controller {
 
 		$this->cp->set_variable('cp_page_title', lang('delete_member'));
 		
-		$this->cp->render('members/delete_confirm', $vars);
+		$this->load->view('members/delete_confirm', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -571,7 +575,7 @@ class Members extends CP_Controller {
 
 		$vars['can_access_cp'] = ($query->row('can_access_cp')  == 'y') ? TRUE : FALSE;
 
-		$this->cp->render('members/login_as_member', $vars);
+		$this->load->view('members/login_as_member', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -899,11 +903,13 @@ class Members extends CP_Controller {
 
 		$this->jquery->tablesorter('.mainTable', '{headers: {1: {sorter: false}, 5: {sorter: false}}, widgets: ["zebra"]}');
 		
+		$this->javascript->compile();
+		
 		$vars['groups'] = $groups;
 
         $this->cp->set_right_nav(array('create_new_member_group' => BASE.AMP.'C=members'.AMP.'M=edit_member_group'));
 
-		$this->cp->render('members/member_group_manager', $vars);
+		$this->load->view('members/member_group_manager', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -938,6 +944,8 @@ class Members extends CP_Controller {
 				});
 			});
 		');
+	
+		$this->javascript->compile();
 		
 		$this->lang->loadfile('admin');
 
@@ -986,7 +994,7 @@ class Members extends CP_Controller {
 			'site_id'		=> $this->config->item('site_id'),
 		);
 
-		$this->cp->render('members/edit_member_group', $data);
+		$this->load->view('members/edit_member_group', $data);
 	}
 	
 	// --------------------------------------------------------------------
@@ -1880,8 +1888,10 @@ class Members extends CP_Controller {
 			headers: {},
 			widgets: ["zebra"]
 		}');
+
+		$this->javascript->compile();
 		
-		$this->cp->render('members/member_config', $vars);
+		$this->load->view('members/member_config', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -2301,8 +2311,10 @@ class Members extends CP_Controller {
 		}			
 
 		$this->cp->set_variable('cp_page_title', lang('delete_member_group'));
+			
+		$this->javascript->compile();
 		
-		$this->cp->render('members/delete_member_group_conf', $vars);
+		$this->load->view('members/delete_member_group_conf', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -2377,7 +2389,7 @@ class Members extends CP_Controller {
 		
 		if ($vars['notice'] === TRUE)
 		{
-			return $this->cp->render('members/register', $vars);
+			return $this->load->view('members/register', $vars);
 		}
 		
 		$this->load->library(array('form_validation', 'table'));
@@ -2499,6 +2511,8 @@ class Members extends CP_Controller {
 
 		if ($this->form_validation->run() === FALSE)
 		{
+			$this->javascript->compile();
+
 			$vars['member_groups'] = array();
 
 			foreach($member_groups->result() as $group)
@@ -2507,7 +2521,7 @@ class Members extends CP_Controller {
 				$vars['member_groups'][$group->group_id] = $group->group_title;
 			}
 
-			$this->cp->render('members/register', $vars);
+			$this->load->view('members/register', $vars);
 		}
 		else
 		{
@@ -2718,7 +2732,7 @@ class Members extends CP_Controller {
 
 		$this->cp->set_variable('cp_page_title', lang('user_banning'));
 
-		$this->cp->render('members/member_banning', $vars);
+		$this->load->view('members/member_banning', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -2804,10 +2818,12 @@ class Members extends CP_Controller {
 		$this->cp->set_variable('cp_page_title', lang('custom_profile_fields'));
 
 		$this->jquery->tablesorter('.mainTable', '{headers: {3: {sorter: false}, 4: {sorter: false}},	widgets: ["zebra"]}');
+
+		$this->javascript->compile();
 		
 		$this->cp->set_right_nav(array('create_new_profile_field' => BASE.AMP.'C=members'.AMP.'M=edit_profile_field'));
 		
-		$this->cp->render('members/custom_profile_fields', $vars);
+		$this->load->view('members/custom_profile_fields', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -3019,8 +3035,10 @@ class Members extends CP_Controller {
 					}
 			</script>';
 		$this->cp->add_to_foot($additional);
+
+		$this->javascript->compile();
 				
-		$this->cp->render('members/edit_profile_field', $vars);
+		$this->load->view('members/edit_profile_field', $vars);
 	}
 
 	// ------------------------------------------------------------------
@@ -3245,7 +3263,7 @@ class Members extends CP_Controller {
 				
 		$this->cp->set_variable('cp_page_title', lang('delete_field'));
 		
-		$this->cp->render('members/delete_profile_fields_confirm', $vars);
+		$this->load->view('members/delete_profile_fields_confirm', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -3317,7 +3335,7 @@ class Members extends CP_Controller {
 		$this->cp->set_variable('cp_page_title', lang('edit_field_order'));
 		$this->cp->set_breadcrumb(BASE.AMP.'C=members'.AMP.'M=custom_profile_fields', lang('custom_profile_fields'));
 
-		$this->cp->render('members/edit_field_order', $vars);
+		$this->load->view('members/edit_field_order', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -3378,10 +3396,12 @@ class Members extends CP_Controller {
         $this->load->library('table');
 
 		$this->cp->set_variable('cp_page_title', lang('ip_search'));
+		
+		$this->javascript->compile();
 
 		$vars['message'] = $message;
 
-		$this->cp->render('members/ip_search', $vars);
+		$this->load->view('members/ip_search', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -3576,10 +3596,12 @@ class Members extends CP_Controller {
 		}
 
 		$this->cp->set_variable('cp_page_title', lang('ip_search'));
+		
+		$this->javascript->compile();
 
 		$vars['grand_total'] = $grand_total;
 
-		$this->cp->render('members/ip_search_results', $vars);
+		$this->load->view('members/ip_search_results', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -3611,6 +3633,8 @@ class Members extends CP_Controller {
 				});
 			});
 		');
+
+		$this->javascript->compile();
 		
 		$group_members = $this->member_model->get_group_members(4);
 
@@ -3628,7 +3652,7 @@ class Members extends CP_Controller {
 			$vars['options']['delete'] = lang('delete_selected');
 		}
 		
-		$this->cp->render('members/activate', $vars);
+		$this->load->view('members/activate', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -3755,7 +3779,7 @@ class Members extends CP_Controller {
 
 		$this->cp->set_variable('cp_page_title', $vars['message']);
 
-		$this->cp->render("members/message", $vars);
+		$this->load->view("members/message", $vars);
 	}	
 }
 /* End of file members.php */

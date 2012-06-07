@@ -22,7 +22,7 @@
  * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */ 
-class Login extends CP_Controller {
+class Login extends CI_Controller {
 	
 	var $username = '';		// stores username on login failure
 
@@ -81,6 +81,23 @@ class Login extends CP_Controller {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Login Form
+	 *
+	 * This method boggles the mind. Deprecated!
+	 *
+	 * @return	void
+	 */	
+	public function login_form()
+	{
+		$this->load->library('logger');
+		$this->logger->deprecated();
+		
+		$this->index();
+	}  
+	
+	// --------------------------------------------------------------------
+
+	/**
 	 * Authenticate user
 	 *
 	 * @return	mixed
@@ -124,9 +141,10 @@ class Login extends CP_Controller {
 		// Kill existing flash cookie
 		$this->functions->set_cookie('flash');
 		
+		// "Remember Me" is one year
 		if (isset($_POST['remember_me']))
 		{
-			$incoming->remember_me();
+			$incoming->remember_me(60*60*24*365);
 		}
 		
 		if (is_numeric($this->input->post('site_id')))
@@ -141,13 +159,9 @@ class Login extends CP_Controller {
 		
 		$base = BASE;
 
-		if ($this->config->item('admin_session_type') == 's')
+		if ($this->config->item('admin_session_type') != 'c')
 		{
 			$base = preg_replace('/S=\d+/', 'S='.$incoming->session_id(), BASE);
-		}
-		elseif ($this->config->item('admin_session_type') == 'cs')
-		{
-			$base = preg_replace('/S=\d+/', 'S='.$this->session->userdata['fingerprint'], BASE);
 		}
 
 		$return_path = $base.AMP.'C=homepage';

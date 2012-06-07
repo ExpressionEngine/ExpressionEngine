@@ -1,28 +1,58 @@
-<?php extend_template('default') ?>
+<?php
+if ($EE_view_disable !== TRUE)
+{
+	$this->load->view('_shared/header');
+	$this->load->view('_shared/main_menu');
+	$this->load->view('_shared/sidebar');
+	$this->load->view('_shared/breadcrumbs');
+}
+?>
 
-<?=form_open('C=members'.AMP.'M=member_delete')?>
+<div id="mainContent"<?=$maincontent_state?>>
+	<?php $this->load->view('_shared/right_nav')?>
+	<div class="contents">
 
-	<?php foreach($damned as $member_id):?>
-		<?=form_hidden('delete[]', $member_id)?>
-	<?php endforeach;?>
+			<div class="heading"><h2 class="edit"><?=$cp_page_title?></h2></div>
+		    <div class="pageContents">
 
-	<p><strong><?=lang('delete_members_confirm')?></strong></p>
+				<?=form_open('C=members'.AMP.'M=member_delete')?>
+	
+				<?php foreach($damned as $member_id):?>
+					<?=form_hidden('delete[]', $member_id)?>
+				<?php endforeach;?>
 
-	<?=$user_name?>
+				<p><strong><?=lang('delete_members_confirm')?></strong></p>
+		
+				<?=$user_name?>
+		
+				<p class="notice"><?=lang('action_can_not_be_undone')?></p>
 
-	<p class="notice"><?=lang('action_can_not_be_undone')?></p>
+				<?php if (isset($heirs)): ?>
+					<p>
+						<?php if (count($heirs) == 1): ?>
+							<?=lang('heir_to_member_entries', 'heir')?>
+						<?php elseif (count($heirs) > 1): ?>
+							<?=lang('heir_to_members_entries', 'heir')?>
+						<?php endif; ?>
+						<?=BR.form_dropdown('heir', $heirs)?>
+					</p>
+				<?php endif; ?>
 
-	<?php if (isset($heirs)): ?>
-		<p>
-			<?php if (count($heirs) == 1): ?>
-				<?=lang('heir_to_member_entries', 'heir')?>
-			<?php elseif (count($heirs) > 1): ?>
-				<?=lang('heir_to_members_entries', 'heir')?>
-			<?php endif; ?>
-			<?=BR.form_dropdown('heir', $heirs)?>
-		</p>
-	<?php endif; ?>
+				<p><?=form_submit('delete_members', lang('delete'), 'class="submit"')?></p>
+	
+				<?=form_close()?>
 
-	<p><?=form_submit('delete_members', lang('delete'), 'class="submit"')?></p>
+			</div>
+		
+	</div> <!-- contents -->
+</div> <!-- mainContent -->
 
-<?=form_close()?>
+<?php
+if ($EE_view_disable !== TRUE)
+{
+	$this->load->view('_shared/accessories');
+	$this->load->view('_shared/footer');
+}
+
+/* End of file delete_confirm.php */
+/* Location: ./themes/cp_themes/default/members/delete_confirm.php */

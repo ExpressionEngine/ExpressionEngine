@@ -22,7 +22,7 @@
  * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
-class Sites extends CP_Controller {
+class Sites extends CI_Controller {
 
 	var $version 			= '2.1.3';
 	var $build_number		= '20120523';
@@ -85,6 +85,8 @@ class Sites extends CP_Controller {
 		$this->load->library('table');
 		$this->lang->loadfile('sites_cp');
 		
+		$this->javascript->compile();
+		
 		$vars['sites'] = $this->session->userdata('assigned_sites');
 
 		$this->cp->set_variable('cp_page_title', lang('switch_site'));
@@ -94,9 +96,11 @@ class Sites extends CP_Controller {
 
 		$vars['message'] = $message;
 
+		$this->javascript->compile();
+
 		$this->cp->set_right_nav(array('edit_sites' => BASE.AMP.'C=sites'.AMP.'M=manage_sites'));
 		
-		$this->cp->render('sites/switch', $vars);
+		$this->load->view('sites/switch', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -198,6 +202,8 @@ class Sites extends CP_Controller {
 			widgets: ["zebra"]
 		}');
 
+		$this->javascript->compile();
+
 		if ($created_id = $this->input->get('created_id'))
 		{
 			$this->db->select('site_label');
@@ -218,9 +224,11 @@ class Sites extends CP_Controller {
 		$vars['site_data'] = $this->site_model->get_site();
 		$vars['message'] = $message;
 		
+		$this->javascript->compile();
+		
 		$this->cp->set_right_nav(array('create_new_site' => BASE.AMP.'C=sites'.AMP.'M=add_edit_site'));
 		
-		$this->cp->render('sites/list_sites', $vars);
+		$this->load->view('sites/list_sites', $vars);
 	}
 	
 	// --------------------------------------------------------------------
@@ -335,7 +343,8 @@ class Sites extends CP_Controller {
 			$vars['form_url'] .= AMP.'site_id='.$site_id;
 		}
 
-		$this->cp->render('sites/edit_form', $vars);		
+		$this->javascript->compile();
+		$this->load->view('sites/edit_form', $vars);		
 	}
 	
 
@@ -1851,7 +1860,8 @@ class Sites extends CP_Controller {
 		$vars['site_id'] = $site_id;
 		$vars['message'] = lang('delete_site_confirmation');
 		
-		$this->cp->render('sites/delete_confirm', $vars);
+		$this->javascript->compile();
+		$this->load->view('sites/delete_confirm', $vars);
 	}
 	
 	// --------------------------------------------------------------------

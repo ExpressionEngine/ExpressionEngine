@@ -25,7 +25,7 @@
  * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
-class Content_publish extends CP_Controller {
+class Content_publish extends CI_Controller {
 
 	private $_tab_labels		= array();
 	private $_module_tabs		= array();
@@ -110,7 +110,8 @@ class Content_publish extends CP_Controller {
 			$this->functions->redirect($base_url.key($data['assigned_channels']));
 		}
 
-		$this->cp->render('content/channel_select_list', $data);
+		$this->javascript->compile();
+		$this->load->view('content/channel_select_list', $data);
 	}
 	
 	// --------------------------------------------------------------------
@@ -335,7 +336,8 @@ class Content_publish extends CP_Controller {
 
 		$this->cp->set_breadcrumb(BASE.AMP.'C=content_publish', lang('publish'));
 		
-		$this->cp->render('content/publish', $data);
+		$this->javascript->compile();
+		$this->load->view('content/publish', $data);
 	}
 	
 	// --------------------------------------------------------------------
@@ -750,8 +752,10 @@ class Content_publish extends CP_Controller {
 			'entry_contents'		=> $r
 		);
 		
-		$this->view->cp_page_title = lang('view_entry');
-		$this->cp->render('content/view_entry', $data);
+		$this->javascript->compile();
+
+		$this->cp->set_variable('cp_page_title', lang('view_entry'));
+		$this->load->view('content/view_entry', $data);
 	}
 	
 	// --------------------------------------------------------------------
@@ -1239,13 +1243,13 @@ class Content_publish extends CP_Controller {
 		{
 			$type		= '';
 			$page_title	= 'entry_has_been_updated';
-			$success	= $this->api_channel_entries->save_entry($data, NULL, $entry_id);
+			$success	= $this->api_channel_entries->update_entry($entry_id, $data);
 		}
 		else
 		{
 			$type		= 'new';
 			$page_title	= 'entry_has_been_added';
-			$success	= $this->api_channel_entries->save_entry($data, $_POST['channel_id']);
+			$success	= $this->api_channel_entries->submit_new_entry($_POST['channel_id'], $data);
 		}
 		
 		
@@ -1301,7 +1305,7 @@ class Content_publish extends CP_Controller {
 			
 			$data['cp_page_title'] = lang('xmlrpc_ping_errors');
 			
-			$this->cp->render('content/ping_errors', $data);
+			$this->load->view('content/ping_errors', $data);
 			
 			return TRUE;	// tricking it into not publish again
 		}

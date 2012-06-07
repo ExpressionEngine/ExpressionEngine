@@ -25,7 +25,7 @@
 
 class Referrer_upd {
 
-	var $version = '2.1';
+	var $version = '2.1.1';
 	
 	function Referrer_upd()
 	{
@@ -147,11 +147,11 @@ class Referrer_upd {
 			$this->EE->db->query("ALTER TABLE `exp_referrers` CHANGE `ref_from` `ref_from` VARCHAR(150) NOT NULL");
 		}
 	
-		if (version_compare($current, '2.1', '<'))
+		if (version_compare($current, '2.1.1', '<'))
 		{
 			// Update ip_address column
 			$this->EE->dbforge->modify_column(
-				'comments',
+				'referrers',
 				array(
 					'ref_ip' => array(
 						'name' 			=> 'ref_ip',

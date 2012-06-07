@@ -33,7 +33,6 @@ class Remember {
 	protected $data = NULL;
 	protected $cookie = 'remember';
 	protected $cookie_value = FALSE;
-	protected $expiry = 1209600;		// default expiration of two weeks, in seconds (60*60*24*14)
 	
 	protected $ip_address = '';
 	protected $user_agent = '';
@@ -45,12 +44,11 @@ class Remember {
 	 *
 	 * @access	public
 	 */
-	function __construct($params = array())
+	function __construct()
 	{
 		$this->EE =& get_instance();
 		
 		$this->cookie_value = $this->EE->input->cookie($this->cookie);
-		$this->expiry = (isset($params['remember_me_ttl'])) ? $params['remember_me_ttl'] : $this->expiry;
 		
 		$this->ip_address = $this->EE->input->ip_address();
 		$this->user_agent = substr($this->EE->input->user_agent(), 0, 120);
@@ -63,7 +61,7 @@ class Remember {
 	 *
 	 * @return void
 	 */
-	public function create()
+	public function create($expiration)
 	{
 		// this is a good time to check how many they have
 		$active = $this->EE->db
@@ -83,7 +81,7 @@ class Remember {
 			'user_agent'		=> $this->user_agent,
 			'admin_sess'		=> $this->EE->session->userdata('admin_sess'),
 			'site_id'			=> $this->EE->config->item('site_id'),
-			'expiration'		=> $this->EE->localize->now + $this->expiry,
+			'expiration'		=> $this->EE->localize->now + $expiration,
 			'last_refresh'		=> $this->EE->localize->now
 		);
 		
@@ -102,7 +100,7 @@ class Remember {
 			$this->_garbage_collect();
 		}
 		
-		$this->_set_cookie($this->data['remember_me_id'], $this->expiry);
+		$this->_set_cookie($this->data['remember_me_id'], $expiration);
 	}
 	
 	// --------------------------------------------------------------------
@@ -218,18 +216,6 @@ class Remember {
 	// --------------------------------------------------------------------
 	
 	/**
-	 * Expiry getter
-	 *
-	 * @return int
-	 */
-	public function get_expiry()
-	{
-		return $this->expiry;
-	}
-	
-	// --------------------------------------------------------------------
-	
-	/**
 	 * Get the remember me data in the db and validate it
 	 *
 	 * @return bool
@@ -283,7 +269,7 @@ class Remember {
 	 */
 	protected function _generate_id()
 	{
-		return $this->EE->functions->random();
+		return sha1(uniqid(mt_rand(), TRUE));
 	}
 	
 	// --------------------------------------------------------------------
@@ -325,10 +311,10 @@ class Remember {
 		
 		if ((rand() % 100) < $this->gc_probability)
 		{
-			$expired = $this->EE->localize->now - $this->expiry;
+			$last_year = $this->EE->localize->now - 60*60*24*365;
 			
 			$this->EE->db->where('expiration <', $this->EE->localize->now)
-				->or_where('last_refresh <', $expired)
+				->or_where('last_refresh <', $last_year)
 				->delete($this->table);
 			
 		}

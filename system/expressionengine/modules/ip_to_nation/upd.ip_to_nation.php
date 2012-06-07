@@ -34,8 +34,6 @@ class Ip_to_nation_upd {
 	{
 		$this->EE =& get_instance();
 		$this->EE->load->dbforge();
-
-		$this->EE->load->model('ip_to_nation_data', 'ip_data');
 	}
 
 	// --------------------------------------------------------------------
@@ -104,10 +102,6 @@ class Ip_to_nation_upd {
 		);
 
 		$this->EE->db->insert('modules', $data);
-
-		// Insert the massive number of records
-		$path = defined('EE_APPPATH') ? EE_APPPATH : APPPATH;
-		$this->EE->ip_data->load_dir($path.'modules/ip_to_nation/install_data/');
 
 		$this->EE->config->_update_config(array(
 			'ip2nation' => 'y',
@@ -290,11 +284,6 @@ class Ip_to_nation_upd {
 					'default' => 0
 				)
 			));
-
-			// and re-insert our base data
-			// this will also take care of refreshing our banned list
-			$path = defined('EE_APPPATH') ? EE_APPPATH : APPPATH;
-			$this->EE->ip_data->load_dir($path.'modules/ip_to_nation/install_data/');
 		}
 		
 		return TRUE;

@@ -22,7 +22,7 @@
  * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
-class Content extends CP_Controller {
+class Content extends CI_Controller {
 
 	/**
 	 * Constructor
@@ -56,14 +56,15 @@ class Content extends CP_Controller {
 
 		$this->lang->loadfile('content');
 
-		$this->javascript->output(
-			$this->javascript->slidedown("#adminTemplatesSubmenu")
-		);
+		$this->cp->set_variable('cp_page_title', lang('content'));
 		
-		$this->view->cp_page_title = lang('content');
-		$this->view->controller = 'content';
+		$this->javascript->output($this->javascript->slidedown("#adminTemplatesSubmenu"));
 
-		$this->cp->render('_shared/overview');
+		$this->javascript->compile();
+
+		$this->load->vars(array('controller'=>'content'));
+
+		$this->load->view('_shared/overview');
 	}
 	
 	

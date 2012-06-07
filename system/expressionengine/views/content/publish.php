@@ -1,4 +1,17 @@
-<?php extend_template('basic') ?>
+<?php
+if ($EE_view_disable !== TRUE)
+{
+	$this->load->view('_shared/header');
+	$this->load->view('_shared/main_menu');
+	$this->load->view('_shared/sidebar');
+	$this->load->view('_shared/breadcrumbs');
+}
+?>
+
+
+<div id="mainContent"<?=$maincontent_state?>>
+	<?php $this->load->view('_shared/right_nav')?>
+	<div class="contents">
 		
 		<div class="heading">
 			<h2><?=$cp_page_title?></h2>
@@ -236,6 +249,10 @@
 		</div> <!-- /publishPageContents -->
 
 
+	</div> <!-- /contents -->
+</div> <!-- /mainContent -->
+
+
 <!-- Modals -->
 	<div id="write_mode_container">
 		<div id="write_mode_close_container">
@@ -263,3 +280,14 @@
 		</div>
 	<?php endif;?>
 <!-- /Modals -->
+
+
+<?php
+if ($EE_view_disable !== TRUE)
+{
+	$this->load->view('_shared/accessories');
+	$this->load->view('_shared/footer');
+}
+
+/* End of file publish.php */
+/* Location: ./themes/cp_themes/corporate/content/publish.php */

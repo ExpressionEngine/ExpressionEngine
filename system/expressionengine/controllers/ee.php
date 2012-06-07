@@ -17,7 +17,7 @@
  * This class doesn't do much work.  Most of the heavy lifting is done via
  * libraries/Core.php, which runs automatically behind the scenes.  
  */
-class EE extends EE_Controller {
+class EE extends CI_Controller {
 
 	/**
 	 * Index

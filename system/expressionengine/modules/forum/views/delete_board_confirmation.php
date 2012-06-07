@@ -1,5 +1,3 @@
-<?php extend_view('_wrapper') ?>
-
 <div>
 	<?=form_open($form_action, '', $hidden)?>
 

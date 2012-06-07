@@ -1,5 +1,3 @@
-<?php extend_view('_wrapper') ?>
-
 <?php if ($not_writable): ?>
 	<p class="notice"><?=lang('file_not_writable')?><br /><br /><?=lang('file_writing_instructions')?></p>
 <?php endif; ?>
