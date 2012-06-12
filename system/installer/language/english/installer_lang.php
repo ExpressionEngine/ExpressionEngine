@@ -124,7 +124,7 @@ $lang['site_located_here'] = 'Your Website is located here';
 $lang['running_current'] = 'You are now running the most current version of ExpressionEngine!';
 $lang['version_warning'] = 'Error: In order to install ExpressionEngine, your server must be running PHP version %x or newer.';
 $lang['version_running'] = 'Your server is current running PHP version:';
-$lang['switch_hosts'] = 'If you would like to switch to a host that provides more current software, please consider <a href="http://www.enginehosting.com/">EngineHosting</a>';
+$lang['switch_hosts'] = 'Contact your hosting provider to see if newer software is available for your server.';
 
 $lang['trackback_removal_options'] = 'Trackback Conversion and Archiving Options';
 $lang['trackback_gone_in_200'] = 'The Trackback module has been removed in ExpressionEngine 2.  You can choose to convert existing trackbacks to comments and/or generate a zip archive containing all existing trackbacks.';
