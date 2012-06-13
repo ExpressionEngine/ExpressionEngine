@@ -234,6 +234,11 @@ class Rte_ext {
 	 */
 	function cp_menu_array($menu)
 	{
+		if ($this->EE->extensions->last_call !== FALSE)
+		{
+			$menu = $this->EE->extensions->last_call;
+		}
+
 		// If this isn't a Super Admin, let's check to see if they can modify 
 		// the RTE module
 		if ($this->EE->session->userdata('group_id') != 1)
