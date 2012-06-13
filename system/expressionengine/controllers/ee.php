@@ -112,7 +112,7 @@ class EE extends CI_Controller {
 		{
 			if ($this->session->userdata['group_id'] == 1)
 			{		
-				$output .= '<div style="color: #333; background-color: #ededed; margin:10px; padding-bottom:10px;">';
+				$output .= '<div style="color: #333; background-color: #ededed; margin:10px; padding-bottom:10px;" id="expressionengine_template_debug">';
 				$output .= "<div style=\"text-align: left; font-family: Sans-serif; font-size: 11px; margin: 12px; padding: 6px\"><hr size='1'><b>TEMPLATE DEBUGGING</b><hr size='1'></div>";
 				
 				foreach ($this->TMPL->log as $val)

@@ -737,6 +737,18 @@ class Admin_content extends CI_Controller {
 				// Duplicate layouts
 				$this->layout->duplicate_layout($dupe_id, $channel_id);
 			}
+			
+			// If member group has ability to create the channel, they should be
+			// able to access it as well
+			if ($this->session->userdata('group_id') != 1) 
+			{
+				$data = array(
+					'group_id'		=> $this->session->userdata('group_id'),
+					'channel_id'	=> $channel_id
+				);
+				
+				$this->db->insert('channel_member_groups', $data); 
+			}
 
 			$success_msg = lang('channel_created');
 
