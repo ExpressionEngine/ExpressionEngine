@@ -25,8 +25,8 @@ PHP Unit >= 3.5.6
 
 vfsStream
 
-	pear channel-discover pear.php-tools.net
-	pear install pat/vfsStream-alpha
+	pear channel-discover pear.bovigo.org
+	pear install bovigo/vfsStream-beta
 
 #### Installation of PEAR and PHPUnit on Ubuntu
 
