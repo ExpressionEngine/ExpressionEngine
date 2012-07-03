@@ -3288,8 +3288,43 @@ class Channel {
 			}
 		}
 
+		// "Search by Member" link
+		// We use this with the {member_search_path} variable
+
+		$result_path = (preg_match("/".LD."member_search_path\s*=(.*?)".RD."/s", $this->EE->TMPL->tagdata, $match)) ? $match[1] : 'search/results';
+		$result_path = str_replace(array('"',"'"), "", $result_path);
+
+		$search_link = $this->EE->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$this->EE->functions->fetch_action_id('Search', 'do_search').'&amp;result_path='.$result_path.'&amp;mbr=';
+
+		// Start the main processing loop
+
+		// For our hook to work, we need to grab the result array
+		$query_result = $this->query->result_array();
+
+		// Ditch everything else
+		$this->query->free_result();
+		unset($this->query);
+
+		// -------------------------------------------
+		// 'channel_entries_query_result' hook.
+		//  - Take the whole query result array, do what you wish
+		//  - added 1.6.7
+		//
+			if ($this->EE->extensions->active_hook('channel_entries_query_result') === TRUE)
+			{
+				$query_result = $this->EE->extensions->call('channel_entries_query_result', $this, $query_result);
+				if ($this->EE->extensions->end_script === TRUE) return $this->EE->TMPL->tagdata;
+			}
+		//
+		// -------------------------------------------
+
+		$total_results = count($query_result);
+
+		$site_pages = $this->EE->config->item('site_pages');
+		
 		// Fetch Custom Field Chunks
 		// If any of our custom fields are tag pair fields, we'll grab those chunks now
+		// Moved below hook in 2.6
 
 		$pfield_chunk = array();
 
@@ -3414,43 +3449,7 @@ class Channel {
 		
 		$modified_conditionals = array_map('array_unique', $modified_conditionals);
 		unset($all_field_names, $modified_field_options);
-		
-		
 
-		// "Search by Member" link
-		// We use this with the {member_search_path} variable
-
-		$result_path = (preg_match("/".LD."member_search_path\s*=(.*?)".RD."/s", $this->EE->TMPL->tagdata, $match)) ? $match[1] : 'search/results';
-		$result_path = str_replace(array('"',"'"), "", $result_path);
-
-		$search_link = $this->EE->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$this->EE->functions->fetch_action_id('Search', 'do_search').'&amp;result_path='.$result_path.'&amp;mbr=';
-
-		// Start the main processing loop
-
-		// For our hook to work, we need to grab the result array
-		$query_result = $this->query->result_array();
-
-		// Ditch everything else
-		$this->query->free_result();
-		unset($this->query);
-
-		// -------------------------------------------
-		// 'channel_entries_query_result' hook.
-		//  - Take the whole query result array, do what you wish
-		//  - added 1.6.7
-		//
-			if ($this->EE->extensions->active_hook('channel_entries_query_result') === TRUE)
-			{
-				$query_result = $this->EE->extensions->call('channel_entries_query_result', $this, $query_result);
-				if ($this->EE->extensions->end_script === TRUE) return $this->EE->TMPL->tagdata;
-			}
-		//
-		// -------------------------------------------
-
-		$total_results = count($query_result);
-
-		$site_pages = $this->EE->config->item('site_pages');
-		
 		// If custom fields are enabled, notify them of the data we're about to send
 		if ( ! empty($this->cfields))
 		{
