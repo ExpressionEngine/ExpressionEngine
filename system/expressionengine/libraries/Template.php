@@ -2375,7 +2375,13 @@ class EE_Template {
 		}
 		
 		$template = ($template == '') ? 'index' : $template;
-		
+
+		// Template Groups and Templates are limited to 50 characters in db
+		if (strlen($template) > 50 OR strlen($template_group) > 50)
+		{
+			return FALSE;
+		}
+				
 		if ($db_check)
 		{
 			$this->EE->db->from('templates');
