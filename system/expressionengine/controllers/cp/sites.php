@@ -815,13 +815,16 @@ class Sites extends CI_Controller {
 								unset($comments);						
 							}
 							
-							$query = $this->db->where_in('entry_id', array_flip($entries[$old_channel_id]))
-								->get('category_posts');
-							
-							foreach($query->result_array() as $row)
+							if ( ! empty($entries[$old_channel_id]))
 							{
-								$row['entry_id'] = $entries[$old_channel_id][$row['entry_id']];
-								$this->db->insert('category_posts', $row);
+								$query = $this->db->where_in('entry_id', array_flip($entries[$old_channel_id]))
+									->get('category_posts');
+							
+								foreach($query->result_array() as $row)
+								{
+									$row['entry_id'] = $entries[$old_channel_id][$row['entry_id']];
+									$this->db->insert('category_posts', $row);
+								}
 							}
 						}
 					}
@@ -1584,26 +1587,31 @@ class Sites extends CI_Controller {
 							$complete_entries = array_merge($complete_entries, $its_entries);
 						}
 						
-						// Find Relationships for Old Entry IDs That Have Been Moveed
-						$query = $this->db->where_in('rel_parent_id', array_flip($complete_entries))
-							->get('relationships');
+						$rel_check = (empty($complete_entries)) ? FALSE : TRUE;
 						
-						if ($query->num_rows() > 0)
+						// Find Relationships for Old Entry IDs That Have Been Moveed
+						if ($rel_check)
 						{
-							foreach($query->result_array() as $row)
+							$query = $this->db->where_in('rel_parent_id', array_flip($complete_entries))
+								->get('relationships');
+						
+							if ($query->num_rows() > 0)
 							{
-								// Only If Child Moveed As Well...
-								
-								if (isset($complete_entries[$row['rel_child_id']]))
+								foreach($query->result_array() as $row)
 								{
-									$old_rel_id 		  = $row['rel_id'];
-									unset($row['rel_id']);
-									$row['rel_child_id']  = $complete_entries[$row['rel_child_id']];
-									$row['rel_parent_id'] = $complete_entries[$row['rel_parent_id']];
+									// Only If Child Moveed As Well...
+								
+									if (isset($complete_entries[$row['rel_child_id']]))
+									{
+										$old_rel_id 		  = $row['rel_id'];
+										unset($row['rel_id']);
+										$row['rel_child_id']  = $complete_entries[$row['rel_child_id']];
+										$row['rel_parent_id'] = $complete_entries[$row['rel_parent_id']];
 									
-									$this->db->insert('relationships', $row);
+										$this->db->insert('relationships', $row);
 									
-									$moved_relationships[$old_rel_id] = $this->db->insert_id();
+										$moved_relationships[$old_rel_id] = $this->db->insert_id();
+									}
 								}
 							}
 						}
