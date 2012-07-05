@@ -2932,20 +2932,13 @@ class EE_Template {
 
 		foreach ($user_vars as $val)
 		{
-			if (isset($this->EE->session->userdata[$val]) && strval($this->EE->session->userdata[$val]) != '')
-			{
-				$str = str_replace(LD.$val.RD, $this->EE->session->userdata[$val], $str);				 
-				$str = str_replace('{out_'.$val.'}', $this->EE->session->userdata[$val], $str);
-				$str = str_replace('{global->'.$val.'}', $this->EE->session->userdata[$val], $str);
-				$str = str_replace('{logged_in_'.$val.'}', $this->EE->session->userdata[$val], $str);
-			}
-			else
-			{
-				$str = str_replace(LD.$val.RD, '', $str);				 
-				$str = str_replace('{out_'.$val.'}', '', $str);
-				$str = str_replace('{global->'.$val.'}', '', $str);
-				$str = str_replace('{logged_in_'.$val.'}', '', $str);
-			}
+			$replace = (isset($this->EE->session->userdata[$val]) && strval($this->EE->session->userdata[$val]) != '') ? 
+				$this->EE->session->userdata[$val] : '';
+				
+			$str = str_replace(LD.$val.RD, $replace, $str);				 
+			$str = str_replace('{out_'.$val.'}', $replace, $str);
+			$str = str_replace('{global->'.$val.'}', $replace, $str);
+			$str = str_replace('{logged_in_'.$val.'}', $replace, $str);
 		}
 		
 		// Path variable: {path=group/template}		
