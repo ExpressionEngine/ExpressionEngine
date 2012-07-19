@@ -2652,19 +2652,19 @@ class EE_Functions {
 				{
 					$md5_key = (string) hexdec($prep_id.md5($quote_match));
 					$protect[$quote_match] = $md5_key;
-
+					
 					// We do these conversions on variables below, so we need
 					// to also do them on the hardcoded values to make sure
 					// the conditionals resolve as expected.
 					// e.g. {if location == "pony's house"}
-					$quote_match = '"'.
+					$quote_match = "'".
 						str_replace(
 							array("'", '"', '(', ')', '$', '{', '}', "\n", "\r", '\\'), 
 							array('&#39;', '&#34;', '&#40;', '&#41;', '&#36;', '', '', '', '', '&#92;'), 
 							$quote_matches[2][$ii]
 						).
-						'"';
-
+						"'";
+					
 					$switch[$md5_key] = $quote_match;
 				}
 				
