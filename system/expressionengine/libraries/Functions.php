@@ -2653,17 +2653,35 @@ class EE_Functions {
 					$md5_key = (string) hexdec($prep_id.md5($quote_match));
 					$protect[$quote_match] = $md5_key;
 					
+					$surrounding_quote = FALSE;
+					
+					// To better protect quotes inside conditional quotes, we need to
+					// determine which kind of quote to surround the newly-encoded string
+					if (is_string_surrounded($quote_match, "'"))
+					{
+						$surrounding_quote = "'";
+					}
+					elseif (is_string_surrounded($quote_match, '"'))
+					{
+						$surrounding_quote = '"';
+					}
+					
+					if ($surrounding_quote === FALSE)
+					{
+						$surrounding_quote = '"';
+					}
+					
 					// We do these conversions on variables below, so we need
 					// to also do them on the hardcoded values to make sure
 					// the conditionals resolve as expected.
 					// e.g. {if location == "pony's house"}
-					$quote_match = "'".
+					$quote_match = $surrounding_quote.
 						str_replace(
 							array("'", '"', '(', ')', '$', '{', '}', "\n", "\r", '\\'), 
 							array('&#39;', '&#34;', '&#40;', '&#41;', '&#36;', '', '', '', '', '&#92;'), 
 							$quote_matches[2][$ii]
 						).
-						"'";
+						$surrounding_quote;
 					
 					$switch[$md5_key] = $quote_match;
 				}
