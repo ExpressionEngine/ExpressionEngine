@@ -1,7 +1,9 @@
 require 'capybara/cucumber' 
-require 'capybara/webkit' 
+require 'capybara/webkit'
 
-Capybara.run_server = false 
-Capybara.app_host = 'http://expressionengine2/' 
-Capybara.default_selector = :css 
+Capybara.run_server = false
+Capybara.default_selector = :css
 Capybara.default_driver = :webkit
+
+# Make a file called env_local.rb and set this
+# Capybara.app_host = 'http://expressionengine2/'
