@@ -63,5 +63,21 @@ function trim_nbs($string)
 	return trim($string, " \t\n\r\0\xB\xA0".chr(0xC2).chr(0xA0));
 }
 
+// ----------------------------------------------------------------------------
+
+/**
+ * Determines if a string begins and ends with a specified character
+ * 
+ * @param	string	$string		The string to check
+ * @param	string	$character	The character to check for at the beginning and
+ *		end of the string
+ * @return	boolean	Whether or not the conditional is true
+ */
+function is_string_surrounded($string, $character)
+{
+	return (substr($string, 0, 1) == $character
+		AND substr($string, -1, 1) == $character);
+}
+
 /* End of file EE_string_helper.php */
 /* Location: ./system/expressionengine/helpers/EE_string_helper.php */
