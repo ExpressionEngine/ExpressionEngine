@@ -1,5 +1,6 @@
 require 'capybara/cucumber' 
 require 'capybara/webkit'
+require 'capybara/rspec'
 
 Capybara.run_server = false
 Capybara.default_selector = :css
