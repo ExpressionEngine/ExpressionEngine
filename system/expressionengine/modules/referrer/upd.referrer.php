@@ -3,7 +3,7 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
@@ -19,13 +19,13 @@
  * @package		ExpressionEngine
  * @subpackage	Modules
  * @category	Update File
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
 
 class Referrer_upd {
 
-	var $version = '2.0';
+	var $version = '2.1.1';
 	
 	function Referrer_upd()
 	{
@@ -58,7 +58,7 @@ class Referrer_upd {
 														'constraint'	=> '150'),
 						'ref_to'			  => array(	'type'			=> 'varchar',
 														'constraint'	=> '120'),
-						'ref_ip'			  => array('type' => 'varchar' , 'constraint' => '16'),
+						'ref_ip'			  => array('type' => 'varchar' , 'constraint' => '45'),
 						'ref_date'			  => array(	'type' 			 => 'int',
 														'constraint'	 => '10',
 														'unsigned'		 => TRUE,
@@ -146,7 +146,22 @@ class Referrer_upd {
 			$this->EE->db->query("ALTER TABLE `exp_referrers` DROP COLUMN `user_blog`");
 			$this->EE->db->query("ALTER TABLE `exp_referrers` CHANGE `ref_from` `ref_from` VARCHAR(150) NOT NULL");
 		}
-		
+	
+		if (version_compare($current, '2.1.1', '<'))
+		{
+			// Update ip_address column
+			$this->EE->dbforge->modify_column(
+				'referrers',
+				array(
+					'ref_ip' => array(
+						'name' 			=> 'ref_ip',
+						'type' 			=> 'varchar',
+						'constraint'	=> '45'
+					)
+				)
+			);
+		}
+
 		return TRUE;
 	}
 }

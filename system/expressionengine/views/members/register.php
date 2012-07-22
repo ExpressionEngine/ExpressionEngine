@@ -206,8 +206,6 @@ if ($EE_view_disable !== TRUE)
 					'id'=>'bio',
 					'rows'=> 12,
 					'name'=>'bio',
-					'class'=>'field',
-					'style'=>'width:99%;',  
 					'value'=>$bio))
 				));			
 			

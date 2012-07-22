@@ -4,7 +4,7 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
@@ -20,7 +20,7 @@
  * @package		ExpressionEngine
  * @subpackage	Modules
  * @category	Modules
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
 
@@ -342,16 +342,20 @@ class File {
 		$this->EE->db->select('exp_files.file_id');
 		$this->EE->db->from('files');
 
-		$this->EE->db->where_in('exp_files.site_id', $this->EE->TMPL->site_ids);
-
 		if ($file_id != '')
 		{
 			$this->EE->functions->ar_andor_string($file_id, 'exp_files.file_id').' ';
 		}
-
+		
+		// If directory_id is set in template
 		if (($directory_ids = $this->EE->TMPL->fetch_param('directory_id')) != FALSE)
-		{		
-			$this->EE->functions->ar_andor_string($directory_ids, 'upload_location_id').' ';
+		{
+			$this->EE->functions->ar_andor_string($directory_ids, 'upload_location_id');
+		}
+		// If no directory_id is set, restrict files to current site
+		else
+		{
+			$this->EE->db->where_in('exp_files.site_id', $this->EE->TMPL->site_ids);
 		}
 		
 		//  Limit query by category
@@ -848,7 +852,7 @@ class File {
 		$default_variables = array('description', 'caption', 'title');
 
 		$this->EE->load->model('file_upload_preferences_model');
-		$upload_prefs = $this->EE->file_upload_preferences_model->get_file_upload_preferences(1);
+		$upload_prefs = $this->EE->file_upload_preferences_model->get_file_upload_preferences(1, NULL, TRUE);
 
 		foreach ($this->query->result_array() as $count => $row)
 		{

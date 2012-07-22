@@ -3,7 +3,7 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
@@ -19,7 +19,7 @@
  * @package		ExpressionEngine
  * @subpackage	Core
  * @category	Core
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
 class EE_Template {
@@ -1251,7 +1251,7 @@ class EE_Template {
 				// Does method exist?  Is This A Module and Is It Installed?
 				if ((in_array($this->tag_data[$i]['class'], $this->modules) && 
 							  ! isset($this->module_data[$class_name])) OR 
-							  ! method_exists($EE, $meth_name))
+							  ! is_callable(array($EE, $meth_name)))
 				{
 					
 					$this->log_item("Tag Not Processed: Method Inexistent or Module Not Installed");
@@ -2403,12 +2403,12 @@ class EE_Template {
 		}
 
 		$filename = FALSE;
-		
+
 		// Note- we should add the extension before checking.
 
 		foreach ($this->EE->api_template_structure->file_extensions as $type => $temp_ext)
 		{
-			if (file_exists($basepath.'/'.$template.$temp_ext) && is_really_writable($basepath.'/'.$template.$temp_ext))
+			if (file_exists($basepath.'/'.$template.$temp_ext))
 			{
 				// found it with an extension
 				$filename = $template.$temp_ext;
@@ -3838,21 +3838,32 @@ class EE_Template {
 		foreach ($matches[1] as $k => $match)
 		{
 			$str = '';
+			$parameters = array();
+			$count = 1;
+			
+			// Get parameters of variable pair
+			if (preg_match_all("|".LD.$name.'(.*?)'.RD."|s", $matches[0][$k], $param_matches))
+			{
+				$parameters = $this->EE->functions->assign_parameters($param_matches[1][0]);
+			}
+			
+			// Limit parameter
+			$limit = (isset($parameters['limit'])) ? $parameters['limit'] : NULL;
 			
 			foreach ($variables as $set)
 			{
 				$temp = $match;
 
-				foreach ($set as $name => $value)
+				foreach ($set as $key => $value)
 				{
-					if (isset($this->unfound_vars[$depth][$name]))
+					if (isset($this->unfound_vars[$depth][$key]))
 					{
 						continue;
 					}
 
-					if (strpos($string, LD.$name) === FALSE)
+					if (strpos($string, LD.$key) === FALSE)
 					{
-						$this->unfound_vars[$depth][$name] = TRUE;
+						$this->unfound_vars[$depth][$key] = TRUE;
 						continue;
 					}
 					
@@ -3868,17 +3879,31 @@ class EE_Template {
 
 						if (isset($value[0]) && is_array($value[0]))
 						{
-							$temp = $this->_parse_var_pair($name, $value, $temp, $depth + 1);
+							$temp = $this->_parse_var_pair($key, $value, $temp, $depth + 1);
 							continue;
 						}
 					}
 
-					$temp = $this->_parse_var_single($name, $value, $temp);
+					$temp = $this->_parse_var_single($key, $value, $temp);
 				}
 
 				// Prep conditionals
 				$temp = $this->EE->functions->prep_conditionals($temp, $set);
 				$str .= $temp;
+				
+				// Break if we're past the limit
+				if ($limit !== NULL AND $limit == $count++)
+				{
+					break;
+				}
+			}
+			
+			// Backspace parameter
+			$backspace = (isset($parameters['backspace'])) ? $parameters['backspace'] : NULL;
+			
+			if (is_numeric($backspace))
+			{
+				$str = substr($str, 0, -$backspace);
 			}
 			
 			$string = str_replace($matches[0][$k], $str, $string);

@@ -3,7 +3,7 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
@@ -19,7 +19,7 @@
  * @package		ExpressionEngine
  * @subpackage	Control Panel
  * @category	Control Panel
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
 
@@ -111,8 +111,24 @@ class Members extends CI_Controller {
 			$member_name = '';
 		}
 		
+		// Get order by and sort preferences for our initial state
+		$order_by = ($this->config->item('memberlist_order_by')) ?
+			$this->config->item('memberlist_order_by') : 'member_id';
+		$sort = ($this->config->item('memberlist_sort_order')) ?
+			$this->config->item('memberlist_sort_order') : 'asc';
+		
+		// Fix for an issue where users may have 'total_posts' saved
+		// in their site settings for sorting members; but the actual
+		// column should be total_forum_posts, so we need to correct
+		// it until member preferences can be saved again with the
+		// right value
+		if ($order_by == 'total_posts')
+		{
+			$order_by = 'total_forum_posts';
+		}
+		
 		$initial_state = array(
-			'sort'	=> array('member_id' => 'asc')
+			'sort'	=> array($order_by => $sort)
 		);
 		
 		$params = array(
@@ -480,12 +496,12 @@ class Members extends CI_Controller {
 		// Do the users being deleted have entries assigned to them?
 		// If so, fetch the member names for reassigment
 
-		$vars['heirs'] = array(
-			'' => lang('member_delete_dont_reassign_entries')
-		);
-		
 		if ($this->member_model->count_member_entries($damned)  > 0)
 		{
+			$vars['heirs'] = array(
+				'' => lang('member_delete_dont_reassign_entries')
+			);
+
 			$group_ids = $this->member_model->get_members_group_ids($damned);
 			
 			// Find Valid Member Replacements
@@ -1081,17 +1097,6 @@ class Members extends CI_Controller {
 					}
 				}
 			}
-
-			// Don't show any CP-related preferences for Banned, Guests, or Pending.
-			// May want to strip these down even further.
-			if ($group_id == 2 OR $group_id == 3 OR $group_id == 4)
-			{
-				unset($form[$site->site_id]['global_cp_access']);
-				unset($form[$site->site_id]['cp_admin_privs']);
-				unset($form[$site->site_id]['cp_email_privs']);
-				unset($form[$site->site_id]['cp_template_access_privs']);
-				unset($form[$site->site_id]['cp_email_privs']);
-			}
 		}
 
 		return $form;
@@ -1674,7 +1679,7 @@ class Members extends CI_Controller {
 					),
 
 			'memberlist_cfg'		=>	array(
-					'memberlist_order_by'		=> array('s', array('total_posts'		=> 'total_posts',
+					'memberlist_order_by'		=> array('s', array('total_forum_posts'		=> 'total_posts',
 						'screen_name'		=> 'screen_name',
 						'total_comments'	=> 'total_comments',
 						'total_entries'		=> 'total_entries',

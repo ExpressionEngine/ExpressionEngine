@@ -3,7 +3,7 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
@@ -19,7 +19,7 @@
  * @package		ExpressionEngine
  * @subpackage	Core
  * @category	Core
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
 class EE_Input extends CI_Input {
@@ -36,9 +36,10 @@ class EE_Input extends CI_Input {
 	 *
 	 * @access	public
 	 * @param	string
+	 * @param	bool
 	 * @return	string
 	 */
-	function cookie($index = '')
+	function cookie($index = '', $xss_clean = FALSE)
 	{
 		$EE =& get_instance();
 		
@@ -111,12 +112,14 @@ class EE_Input extends CI_Input {
 							$data = '<br>'.htmlentities(print_r($data, TRUE));
 						}
 						
+						set_status_header(503);
 						exit(sprintf("Invalid GET Data - Array %s", $data));
 					}
 					elseif (preg_match("#(;|\?|exec\s*\(|system\s*\(|passthru\s*\(|cmd\s*\(|[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})#i", $val))
 					{
 						$data = ((int) config_item('debug') == 2) ? '<br>'.htmlentities($val) : '';
 						
+						set_status_header(503);
 						exit(sprintf("Invalid GET Data %s", $data));
 					}   
 				}

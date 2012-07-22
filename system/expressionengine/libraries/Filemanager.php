@@ -4,7 +4,7 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
@@ -20,7 +20,7 @@
  * @package		ExpressionEngine
  * @subpackage	Core
  * @category	Filemanager
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
 
@@ -757,6 +757,15 @@ class Filemanager {
 	 */
 	function setup()
 	{
+		// Make sure there are directories
+		$dirs = $this->directories(FALSE, TRUE);
+		if (empty($dirs))
+		{
+			return $this->EE->output->send_ajax_response(array(
+				'error' => lang('no_upload_dirs')
+			));
+		}
+
 		if (REQ != 'CP')
 		{
 			$this->EE->load->helper('form');
@@ -810,7 +819,7 @@ class Filemanager {
 	public function datatables($first_dir = NULL)
 	{
 		$this->EE->load->model('file_model');
-		
+
 		// Argh
 		$this->EE->_mcp_reference = $this;
 		
@@ -880,12 +889,17 @@ class Filemanager {
 			$file_params['search_value']	= $params['keywords'];
 			$file_params['search_in']		= 'all';
 		}
-		
+
+		// Mask the URL if we're coming from the CP
+		$sync_files_url = (REQ == "CP") ?
+			$this->EE->cp->masked_url('http://expressionengine.com/user_guide/cp/content/files/sync_files.html') :
+			'http://expressionengine.com/user_guide/cp/content/files/sync_files.html';
+
 		return array(
 			'rows'			=> $this->_browser_get_files($dir, $file_params),
-			'no_results' 	=> sprintf(
+			'no_results'	=> sprintf(
 				lang('no_uploaded_files'), 
-				$this->EE->cp->masked_url('http://expressionengine.com/user_guide/cp/content/files/sync_files.html'),
+				$sync_files_url,
 				BASE.AMP.'C=content_files'.AMP.'M=file_upload_preferences'
 			),
 			'pagination' 	=> array(
@@ -1145,16 +1159,35 @@ class Filemanager {
 		// Channel may not be set for pngs - so we default to highest
 		$image_info['channels'] = ( ! isset($image_info['channels'])) ? 4 : $image_info['channels'];
 
-		$memory_needed = round(($image_info[0] * $image_info[1]
-											  // bits may not always be present
-											* (isset($image_info['bits']) ? $image_info['bits'] : 8)
-											* $image_info['channels'] / 8
-											+ $k64
-								) * $this->_memory_tweak_factor
-                         );
+		$memory_needed = round((
+			$image_info[0] * $image_info[1]
+			// bits may not always be present
+			* (isset($image_info['bits']) ? $image_info['bits'] : 8)
+			* $image_info['channels'] / 8
+			+ $k64
+			) * $this->_memory_tweak_factor
+		);
 
-		$memory_setting = (ini_get('memory_limit') != '') ? intval(ini_get('memory_limit')) : 8;
-		$current = $memory_setting*1024*1024;
+		$memory_setting = ini_get('memory_limit');
+
+		if ( ! $memory_setting)
+		{
+			$memory_setting = '8M';
+		}
+		
+		list($current, $unit) = sscanf($memory_setting, "%d %s");
+
+		switch (strtolower($unit))
+		{
+			case 'g':
+				$current *= 1024;
+				// no break
+			case 'm':
+				$current *= 1024;
+				// no break;
+			case 'k':
+				$current *= 1024;
+		}
 
 		if (function_exists('memory_get_usage'))
 		{
@@ -1346,10 +1379,45 @@ class Filemanager {
 				if ($prefs['width'] > $prefs['height'])
 				{
 					$config['width'] = round($prefs['width'] * $size['height'] / $prefs['height']);
+					
+					// If the new width ends up being smaller than the
+					// resized width
+					if ($config['width'] < $size['width'])
+					{
+						$config['width'] = $size['width'];
+						$config['master_dim'] = 'width';
+					}
 				}
 				elseif ($prefs['height'] > $prefs['width'])
 				{
 					$config['height'] = round($prefs['height'] * $size['width'] / $prefs['width']);
+					
+					// If the new height ends up being smaller than the
+					// desired resized height
+					if ($config['height'] < $size['height'])
+					{
+						$config['height'] = $size['height'];
+						$config['master_dim'] = 'height';
+					}
+				}
+				// If we're dealing with a perfect square image
+				elseif ($prefs['height'] == $prefs['width'])
+				{
+					// And the desired image is landscape, edit the
+					// square image's width to fit
+					if ($size['width'] > $size['height'] ||
+						$size['width'] == $size['height'])
+					{
+						$config['width'] = $size['width'];
+						$config['master_dim'] = 'width';
+					}
+					// If the desired image is portrait, edit the
+					// square image's height to fit
+					elseif ($size['width'] < $size['height'])
+					{
+						$config['height'] = $size['height'];
+						$config['master_dim'] = 'height';
+					}
 				}
 				
 				// First resize down to smallest possible size (greater of height and width)
@@ -1363,8 +1431,8 @@ class Filemanager {
 				// Next set crop accordingly
 				$resized_image_dimensions = $this->get_image_dimensions($resized_path.$prefs['file_name']);
 				$config['source_image'] = $resized_path.$prefs['file_name'];
-				$config['x_axis'] = (($resized_image_dimensions['width'] / 2) - ($config['width'] / 2));
-				$config['y_axis'] = (($resized_image_dimensions['height'] / 2) - ($config['height'] / 2));
+				$config['x_axis'] = (($resized_image_dimensions['width'] / 2) - ($size['width'] / 2));
+				$config['y_axis'] = (($resized_image_dimensions['height'] / 2) - ($size['height'] / 2));
 				$config['maintain_ratio'] = FALSE;
 				
 				// Change height and width back to the desired size
@@ -1380,6 +1448,8 @@ class Filemanager {
 			}
 			else
 			{
+				$config['master_dim'] = $force_master_dim;
+				
 				$this->EE->image_lib->initialize($config);
 				
 				if ( ! $this->EE->image_lib->resize())

@@ -3,7 +3,7 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
@@ -20,7 +20,7 @@
  * @package		ExpressionEngine
  * @subpackage	Control Panel
  * @category	Control Panel
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
 class Addons_modules extends CI_Controller {
@@ -64,7 +64,6 @@ class Addons_modules extends CI_Controller {
 		$this->cp->set_right_nav(array('update_modules' => BASE.AMP.'C=addons_modules'.AMP.'check_updates=y'));
 
 		$this->jquery->tablesorter('.mainTable', '{
-			headers: {0: {sorter: false}},
         	textExtraction: "complex",			
 			widgets: ["zebra"]
 		}');		
@@ -102,7 +101,6 @@ class Addons_modules extends CI_Controller {
 		}
 
 		$vars['table_headings'] = array(
-			'',
 			lang('module_name'),
 			lang('module_description'),
 			lang('module_version'),
@@ -126,8 +124,6 @@ class Addons_modules extends CI_Controller {
 					continue;
 				}
 			}
-
-			$data[$modcount][] = $modcount;
 
 			// Module Name
 			$name = (lang(strtolower($module).'_module_name') != FALSE) ? lang(strtolower($module).'_module_name') : $module_info['name'];
@@ -184,6 +180,8 @@ class Addons_modules extends CI_Controller {
 				$class = ucfirst($module).'_upd';
 				$version = $this->installed_modules[$module]['module_version'];
 
+				$this->load->add_package_path($this->installed_modules[$module]['path']);
+
 				$UPD = new $class;
 				$UPD->_ee_path = APPPATH;
 		
@@ -192,6 +190,8 @@ class Addons_modules extends CI_Controller {
 					$this->db->update('modules', array('module_version' => $UPD->version), array('module_name' => ucfirst($module)));
 					$updated[] = $name.': '.lang('updated_to_version').' '.$UPD->version;
 				}
+
+				$this->load->remove_package_path($this->installed_modules[$module]['path']);
 			}
 		}
 
@@ -219,7 +219,6 @@ class Addons_modules extends CI_Controller {
 		foreach ($names as $k => $v)
 		{
 			$vars['modules'][$id] = $data[$k];
-			$vars['modules'][$id][0] = $k;
 			$id++;
 		}
 

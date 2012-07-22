@@ -179,6 +179,7 @@ else
 <p><?php echo $this->lang->line('optional_modules_info'); ?></p>
 <table>
 <tr>
+<?php unset($modules['rte'], $modules['ip_to_nation']) ?>
 <?php $i = 0; foreach ($modules as $key => $name): ?>
 <?php if ($i++ % 3 == 0):?></tr><tr><?php endif; ?>
 <?php $checked = ($name['checked'] === TRUE) ? "checked='checked'" : ''; ?>

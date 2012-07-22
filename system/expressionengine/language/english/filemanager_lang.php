@@ -88,7 +88,7 @@ $lang = array(
 'list'						=> 'a list',
 'thumbnails'				=> 'thumbnails',
 'pagination_count_text'     => 'Showing %s to %s of %s files.',
-'pagination_filter_text'    => 'Show files as %s.',
+'pagination_filter_text'    => 'Show files as %s',
 'pagination_page'			=> 'Page',
 'all_categories'			=> 'all categories',
 'total_dir_size'            => 'Total Directory Size:',
@@ -434,6 +434,9 @@ $lang = array(
 
 'credit' =>
 'Credit',
+
+'upload_directory' =>
+'Upload Directory:',
 
 ''=>''
 );

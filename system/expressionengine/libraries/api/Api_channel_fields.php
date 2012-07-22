@@ -204,27 +204,39 @@ class Api_channel_fields extends Api {
 			require_once APPPATH.'fieldtypes/EE_Fieldtype.php';
 			$this->ee_base_ft = TRUE;
 		}
-		
-		$this->EE->load->library('addons');
-		
-		$fts = $this->EE->addons->get_files('fieldtypes');
 
 		if ( ! isset($this->field_types[$field_type]))
 		{
 			$file = 'ft.'.$field_type.'.php';
-			$path = PATH_FT.$field_type.'/';
+			$paths = array(PATH_FT.$field_type.'/');
+		
+			$this->EE->load->library('addons');
 			
+			$fts = $this->EE->addons->get_files('fieldtypes');
 
-			
-			if ( ! file_exists($path.$file) && isset($fts[$field_type]))
+			if (isset($fts[$field_type]))
 			{
-				$path = PATH_THIRD.$fts[$field_type]['package'].'/';
-				
-				if ( ! file_exists($path.$file))
+				$paths[] = PATH_THIRD.$fts[$field_type]['package'].'/';
+			}
+			
+			$paths[] = PATH_MOD.$field_type.'/';
+			
+			$found_path = FALSE;
+			
+			foreach ($paths as $path)
+			{
+				if (file_exists($path.$file))
 				{
-					show_error(sprintf($this->EE->lang->line('unable_to_load_field_type'),
-					 						strtolower($file)));
+					$found_path = TRUE;
+					
+					break;
 				}
+			}
+
+			if ( ! $found_path)
+			{
+				show_error(sprintf($this->EE->lang->line('unable_to_load_field_type'),
+										strtolower($file)));
 			}
 			
 			require_once $path.$file;
@@ -1262,7 +1274,7 @@ class Api_channel_fields extends Api {
 		if ($field_data['field_order'] == 0 OR $field_data['field_order'] == '')
 		{
 			$query = $this->EE->db->select('MAX(field_order) as max')
-					      ->where('site_id', $this->config->item('site_id'))
+					      ->where('site_id', $this->EE->config->item('site_id'))
 					      ->where('group_id', (int) $group_id)
 					      ->get('channel_fields');
 				

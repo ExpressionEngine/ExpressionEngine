@@ -527,9 +527,8 @@ table td > a, table td p > a, table td span > a, table td strong > a {
 	list-style:			none;
 }
 
-ul#navigationTabs {
-	margin-left:		25px;
-	margin-top:			0;
+#navigationTabs {
+	margin: 			0 24px 0 25px;
 	padding-top:		2px;
 }
 
@@ -3026,7 +3025,7 @@ html.js .publish_hidden {
 }
 
 label.hide_field {
-	margin: 			5px 17px 0px 12px;
+	margin: 			5px 17px 5px 12px;
 }
 
 .publish_field fieldset.holder {

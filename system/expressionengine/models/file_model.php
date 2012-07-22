@@ -3,7 +3,7 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
@@ -19,7 +19,7 @@
  * @package		ExpressionEngine
  * @subpackage	Core
  * @category	Model
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
 class File_model extends CI_Model {
@@ -240,6 +240,15 @@ class File_model extends CI_Model {
 				}
 			}
 		}
+
+		/* -------------------------------------------
+		/* 'file_after_save' hook.
+		/*  - Add additional processing after file is saved
+		*/
+			$this->extensions->call('file_after_save', $file_id, $data);
+			if ($this->extensions->end_script === TRUE) return;
+		/*
+		/* -------------------------------------------*/
 
 		return $successful;
 	}

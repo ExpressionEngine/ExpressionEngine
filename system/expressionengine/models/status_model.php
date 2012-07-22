@@ -3,7 +3,7 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
@@ -19,11 +19,16 @@
  * @package		ExpressionEngine
  * @subpackage	Core
  * @category	Model
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
 class Status_model extends CI_Model {
-	
+
+	// Default "open" and "closed" status colors	
+	var $status_color_open	= '009933';
+	var $status_color_closed = '990000';
+
+
 	/**
 	 * Get Statuses
 	 *
@@ -115,12 +120,17 @@ class Status_model extends CI_Model {
 	 * @access	public
 	 * @return	mixed
 	 */
-	function get_status_groups()
+	function get_status_groups($site_id = NULL)
 	{
+		if ( ! isset($site_id))
+		{
+			$site_id = $this->config->item('site_id');
+		}
+
 		$this->db->select('status_groups.group_id, status_groups.group_name');
 		$this->db->select("COUNT(".$this->db->dbprefix('statuses.group_id').") as count");
 		$this->db->join('statuses', 'status_groups.group_id = statuses.group_id', 'left');
-		$this->db->where('status_groups.site_id', $this->config->item('site_id'));
+		$this->db->where('status_groups.site_id', $site_id);
 		$this->db->group_by('status_groups.group_id');
 		$this->db->order_by('status_groups.group_name');
 		
@@ -139,6 +149,10 @@ class Status_model extends CI_Model {
 	{
 		$this->db->delete('status_groups', array('group_id' => $group_id));
 		$this->db->delete('statuses', array('group_id' => $group_id));
+
+		// Clear out any references in exp_channels
+		$this->db->where('status_group', $group_id);
+		$this->db->update('channels', array('status_group' => NULL));		
 	}
 
 	// --------------------------------------------------------------------
@@ -149,29 +163,36 @@ class Status_model extends CI_Model {
 	 * @access	public
 	 * @return	void
 	 */
-	function insert_statuses($group_name, $status_color_open, $status_color_closed)
+	function insert_statuses($group_name, $site_id = NULL)
 	{
+		if ( ! isset($site_id))
+		{
+			$site_id = $this->config->item('site_id');
+		}
+
 		$data = array(
-					'group_name'	=> $group_name,
-					'site_id'		=> $this->config->item('site_id')
-				);
+			'group_name'	=> $group_name,
+			'site_id'		=> $site_id
+		);
 
 		$this->db->insert('status_groups', $data);
 		$group_id = $this->db->insert_id();
 
 		$open = array(
-					'site_id'			=> $this->config->item('site_id'),
-					'group_id'			=> $group_id,
-					'status'			=> 'open',
-					'status_order'		=> '1',
-					'highlight'			=> $this->status_color_open
+			'site_id'			=> $site_id,
+			'group_id'			=> $group_id,
+			'status'			=> 'open',
+			'status_order'		=> '1',
+			'highlight'			=> $this->status_color_open
 		);
-		$closed = array_merge($open,
-				array(
-					'status'			=> 'closed',
-					'status_order'		=> '2',
-					'highlight'			=> $this->status_color_closed
-					)
+
+		$closed = array_merge(
+			$open,
+			array(
+				'status'			=> 'closed',
+				'status_order'		=> '2',
+				'highlight'			=> $this->status_color_closed
+			)
 		);
 
 		$this->db->insert('statuses', $open);
@@ -186,16 +207,16 @@ class Status_model extends CI_Model {
 	 * @access	public
 	 * @return	void
 	 */
-	function update_statuses($group_name, $group_id, $status_color_open, $status_color_closed)
+	function update_statuses($group_name, $group_id)
 	{
-		$data = array(
-						'group_name' => $group_name,
-						'site_id' => $this->config->item('site_id')
+		$this->db->update(
+			'status_groups',
+			array(
+				'group_name'	=> $group_name,
+				'site_id'		=> $this->config->item('site_id')
+			),
+			array('group_id' => $group_id)
 		);
-
-		$this->db->where('group_id', $group_id);
-
-		$this->db->update('status_groups', $data);
 	}
 
 	// --------------------------------------------------------------------

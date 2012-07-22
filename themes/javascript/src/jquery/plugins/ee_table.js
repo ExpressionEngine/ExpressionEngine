@@ -2,7 +2,7 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
@@ -287,6 +287,7 @@ $.widget('ee.table', {
 			// @todo only remove those that are not in the result set?
 			if ( ! res.rows.length) {
 				if (self.tbody.is('tbody')) {
+					self.tbody.empty();
 					self.element.hide();
 					self.element.after(self.no_results);	
 				} else {
@@ -704,10 +705,16 @@ function Sort(options, plugin) {
 	var l = this._initial_sort.length;
 	
 	while (l--) {
-		this.sort.push(this._initial_sort[l]);
-		this.header_map[ this._initial_sort[l][0] ]
-			.toggleClass(this.css.asc, (this._initial_sort[l][1] === 'asc'))
-			.toggleClass(this.css.desc, (this._initial_sort[l][1] === 'desc'));
+		
+		var this_header_map = this.header_map[ this._initial_sort[l][0] ];
+
+		if (this_header_map !== undefined)
+		{
+			this.sort.push(this._initial_sort[l]);
+			this_header_map
+				.toggleClass(this.css.asc, (this._initial_sort[l][1] === 'asc'))
+				.toggleClass(this.css.desc, (this._initial_sort[l][1] === 'desc'));
+		};
 	}
 }
 

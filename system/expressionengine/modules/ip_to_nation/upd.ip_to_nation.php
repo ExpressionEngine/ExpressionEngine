@@ -3,7 +3,7 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
@@ -19,20 +19,19 @@
  * @package		ExpressionEngine
  * @subpackage	Modules
  * @category	Update File
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
 
 class Ip_to_nation_upd {
 
-	var $version = '2.3';
+	var $version = '3.0';
 
 	/**
 	  * Constructor
 	  */
-	function Ip_to_nation_upd()
+	function __construct()
 	{
-		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();
 		$this->EE->load->dbforge();
 	}
@@ -47,50 +46,49 @@ class Ip_to_nation_upd {
 	 */
 	function install()
 	{
-		if ( ! include_once($this->_ee_path.'modules/ip_to_nation/iptonation.php'))
-		{
-			$this->EE->lang->loadfile('ip_to_nation');
-			show_error($this->EE->lang->line('iptonation_missing'));
-		}
-
 		$this->EE->dbforge->drop_table('ip2nation');
 
 		$fields = array(
-						'ip'	=> array(
-													'type'			=> 'int',
-													'constraint'	=> 11,
-													'null'			=> FALSE,
-													'default'		=> 0,
-													'unsigned'		=> TRUE
-												),
-						'country'  => array(
-													'type' 			=> 'char',
-													'constraint'	=> 2,
-													'null'			=> FALSE,
-													'default'		=> ''
-												),
+			'ip_range_low' => array(
+				'type'			=> 'VARBINARY',
+				'constraint'	=> 16,
+				'null'			=> FALSE,
+				'default'		=> 0
+			),
+			'ip_range_high' => array(
+				'type'			=> 'VARBINARY',
+				'constraint'	=> 16,
+				'null'			=> FALSE,
+				'default'		=> 0
+			),
+			'country' => array(
+				'type' 			=> 'char',
+				'constraint'	=> 2,
+				'null'			=> FALSE,
+				'default'		=> ''
+			)
 		);
 
 		$this->EE->dbforge->add_field('id');
 		$this->EE->dbforge->add_field($fields);
-		$this->EE->dbforge->add_key('ip');
+		$this->EE->dbforge->add_key(array('ip_range_low', 'ip_range_high'));
 		$this->EE->dbforge->create_table('ip2nation');
 
 		$this->EE->dbforge->drop_table('ip2nation_countries');
 
 		$fields = array(
-						'code'	=> array(
-													'type'			=> 'varchar',
-													'constraint'	=> 2,
-													'null'			=> FALSE,
-													'default'		=> ''
-												),
-						'banned'  => array(
-													'type' 			=> 'varchar',
-													'constraint'	=> 1,
-													'null'			=> FALSE,
-													'default'		=> 'n'
-												),
+			'code'	=> array(
+				'type'			=> 'varchar',
+				'constraint'	=> 2,
+				'null'			=> FALSE,
+				'default'		=> ''
+			),
+			'banned'  => array(
+				'type' 			=> 'varchar',
+				'constraint'	=> 1,
+				'null'			=> FALSE,
+				'default'		=> 'n'
+			)
 		);
 
 		$this->EE->dbforge->add_field($fields);
@@ -105,19 +103,10 @@ class Ip_to_nation_upd {
 
 		$this->EE->db->insert('modules', $data);
 
-		// Insert the massive number of records
-
-		for ($i = 0, $total = count($cc); $i < $total; $i = $i + 100)
-		{
-			$this->EE->db->query("INSERT INTO exp_ip2nation_countries (code) VALUES ('".implode("'), ('", array_slice($cc, $i, 100))."')");
-		}
-
-		for ($i = 0, $total = count($ip); $i < $total; $i = $i + 100)
-		{
-			$this->EE->db->query("INSERT INTO exp_ip2nation (ip, country) VALUES (".implode("), (", array_slice($ip, $i, 100)).")");
-		}
-
-		$this->EE->config->_update_config(array('ip2nation' => 'y', 'ip2nation_db_date' => 1290177198));
+		$this->EE->config->_update_config(array(
+			'ip2nation' => 'y',
+			'ip2nation_db_date' => 1335677198
+		));
 
 		return TRUE;
 	}
@@ -154,7 +143,13 @@ class Ip_to_nation_upd {
 
 		//  Remove a couple items from the file
 		
-		$this->EE->config->_update_config(array(), array('ip2nation' => '', 'ip2nation_db_date' => ''));
+		$this->EE->config->_update_config(
+			array(),
+			array(
+				'ip2nation' => '',
+				'ip2nation_db_date' => ''
+			)
+		);
 
 		return TRUE;
 	}
@@ -259,7 +254,37 @@ class Ip_to_nation_upd {
 			
 			$this->EE->config->_update_config(array('ip2nation_db_date' => 1290177198));
 		}
-		
+
+		// Version 3 switches to the MaxMind Geolite dataset for
+		// IPv6 ip address support. This requires a significant schema
+		// change to efficiently split the data.
+		if (version_compare($current, '3.0', '<'))
+		{
+			// clear the ip data
+			$this->EE->db->truncate('ip2nation');
+
+			// next, change the ip column to support IPv6 sizes
+			// and change the name since we now do range queries
+			$this->EE->dbforge->modify_column('ip2nation', array(
+				'ip' => array(
+					'name' => 'ip_range_low',
+					'type' => 'VARBINARY',
+					'constraint' => 16,
+					'null' => FALSE,
+					'default' => 0
+				)
+			));
+
+			// and add a column for the upper end of the range
+			$this->EE->dbforge->add_column('ip2nation', array(
+				'ip_range_high' => array(
+					'type' => 'VARBINARY',
+					'constraint' => 16,
+					'null' => FALSE,
+					'default' => 0
+				)
+			));
+		}
 		
 		return TRUE;
 	}

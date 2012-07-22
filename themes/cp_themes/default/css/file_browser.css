@@ -142,18 +142,6 @@ a.file_browser_thumbnail:hover {
 	background: #fff;
 }
 
-a.file_browser_thumbnail.first {
-	margin-left: 0;
-}
-
-a.file_browser_thumbnail.last {
-	margin-right: 0;
-}
-
-a.file_browser_thumbnail.last_row {
-	border-bottom: 0 none;
-}
-
 #file_browser #pagination_meta {
 	line-height: 1.9;
 	margin-bottom: 4px;
@@ -201,6 +189,7 @@ a.file_browser_thumbnail.last_row {
 
 .button_bar img,
 .button_bar a,
+.button_bar a.submit,
 .button_bar input {
 	display: none;
 }

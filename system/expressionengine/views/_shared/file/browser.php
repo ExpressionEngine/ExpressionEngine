@@ -3,7 +3,7 @@
 		<?php if ( ! empty($filemanager_directories)):?>
 			<?=form_open('', array('id' => 'dir_choice_form'))?>
 				<span class="dir_choice_container">
-					<?=form_label('Upload Directory:', 'dir_choice').NBS?>
+					<?=lang('upload_directory', 'dir_choice').NBS?>
 					<?=form_dropdown('dir_choice', $filemanager_directories, key($filemanager_directories), 'id="dir_choice"').NBS?>
 				</span>
 				<input type="text" name="keywords" value="" id="keywords" placeholder="<?= lang('keywords') ?>" />
@@ -28,7 +28,7 @@
 	</div>
 	
 	<div id="file_browser_footer">
-		<?=sprintf(lang('pagination_filter_text'), $view_filters).NBS?>
+		<p><?=sprintf(lang('pagination_filter_text'), $view_filters).NBS?></p>
 		<?=$pagination_html?>
 	</div>
 </div>

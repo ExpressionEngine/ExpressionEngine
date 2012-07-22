@@ -5,6 +5,8 @@
 
 	<?=$this->view->head_title($cp_page_title)?>
 	<?=$this->view->head_link('css/login.css'); ?>
+	<?=$this->view->script_tag('jquery/jquery.js')?>
+	
 </head>
 <body>
 
@@ -46,6 +48,12 @@
 		<?=form_close()?>
 
 	</div>
+<?php
+if (isset($script_foot))
+{
+	echo $script_foot;
+}
+?>
 
 </body>
 </html>

@@ -3,7 +3,7 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
@@ -19,12 +19,12 @@
  * @package		ExpressionEngine
  * @subpackage	Core
  * @category	Core
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
 class Wizard extends CI_Controller {
 
-	var $version			= '2.4.0';	// The version being installed
+	var $version			= '2.5.0';	// The version being installed
 	var $installed_version	= ''; 		// The version the user is currently running (assuming they are running EE)
 	var $minimum_php		= '5.1.6';	// Minimum version required to run EE
 	var $schema				= NULL;		// This will contain the schema object with our queries	
@@ -58,21 +58,21 @@ class Wizard extends CI_Controller {
 	 	'do_install', 'trackback_form', 'do_update');
 	
 	// Absolutely, positively must always be installed
-	var $required_modules = array('channel', 'member', 'stats');
+	var $required_modules = array('channel', 'member', 'stats', 'rte');
 	
 	var $theme_required_modules = array();
 		
 	// Our default installed modules, if there is no "override"
 	var $default_installed_modules = array('comment', 'email', 'emoticon',
 		'jquery', 'member', 'query', 'rss', 'search', 'stats', 'channel',
-		'mailinglist', 'safecracker');
+		'mailinglist', 'safecracker', 'rte');
 	
 	// Native First Party ExpressionEngine Modules (everything else is in third party folder)
 	var $native_modules = array('blacklist', 'channel', 'comment', 'commerce', 
 		'email', 'emoticon', 'file', 'forum', 'gallery', 'ip_to_nation', 
 		'jquery', 'mailinglist', 'member', 'metaweblog_api', 'moblog', 'pages',
-		'query', 'referrer', 'rss', 'safecracker', 'search', 'simple_commerce',
-		'stats', 'updated_sites', 'wiki');
+		'query', 'referrer', 'rss', 'rte', 'safecracker', 'search',
+		'simple_commerce', 'stats', 'updated_sites', 'wiki');
 
 	// Third Party Modules may send error messages if something goes wrong.
 	var $module_install_errors = array(); // array that collects all error messages

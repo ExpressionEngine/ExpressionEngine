@@ -2,7 +2,7 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
@@ -117,7 +117,7 @@ function template_edit_ajax() {
 	group_id = holder_data.group_id;
 
 	template_name = holder.find(".template_name").val();
-	template_type = holder.find(".template_type").val();
+	template_type = holder.find("select[name^=template_type]").val();
 	cache = holder.find("select[name^=cache]").val();
 	refresh = holder.find(".refresh").val();
 	allow_php = holder.find("select[name^=allow_php]").val();

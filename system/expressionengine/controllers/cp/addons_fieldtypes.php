@@ -22,7 +22,6 @@ class Addons_fieldtypes extends CI_Controller {
 		$this->cp->set_variable('cp_page_title', lang('addons_fieldtypes'));
 		
 		$this->jquery->tablesorter('.mainTable', '{
-			headers: {0: {sorter: false}},
         	textExtraction: "complex",			
 			widgets: ["zebra"]
 		}');
@@ -40,7 +39,6 @@ class Addons_fieldtypes extends CI_Controller {
 		}
 
 		$vars['table_headings'] = array(
-										'',
 										lang('fieldtype_name'),
 										lang('version'),
 										lang('status'),
@@ -84,7 +82,6 @@ class Addons_fieldtypes extends CI_Controller {
 
 			// Add to the view array
 			$data[$ftcount] = array(
-				$ftcount,
 				$name,
 				$version,
 				$show_status,
@@ -101,7 +98,6 @@ class Addons_fieldtypes extends CI_Controller {
 		foreach ($names as $k => $v)
 		{
 			$vars['fieldtypes'][$id] = $data[$k];
-			$vars['fieldtypes'][$id][0] = $k;
 			$id++;
 		}
 

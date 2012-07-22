@@ -3,7 +3,7 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
@@ -19,7 +19,7 @@
  * @package		ExpressionEngine
  * @subpackage	Control Panel
  * @category	Control Panel
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
 class Content_edit extends CI_Controller {
@@ -85,7 +85,18 @@ class Content_edit extends CI_Controller {
 			$channels[$c_row->channel_id] = $c_row;
 		}
 
+		// Set up Per page data
+		// ----------------------------------------------------------------
+				
+		// Results per page pull-down menu
+		if ( ! ($perpage = $this->input->get_post('perpage')))
+		{
+			$perpage = ($this->input->cookie('perpage') == FALSE) ? 50 : $this->input->cookie('perpage');
+		}
 		
+		$this->functions->set_cookie('perpage' , $perpage, 60*60*24*182);		
+
+
 		// Table
 		// ----------------------------------------------------------------
 		
@@ -120,7 +131,7 @@ class Content_edit extends CI_Controller {
 		);
 		
 		$params = array(
-			'perpage'	=> 50,
+			'perpage'	=> $perpage,
 			'channels'	=> $channels,
 		);
 				
@@ -128,19 +139,6 @@ class Content_edit extends CI_Controller {
 		
 		$filter_data = $vars['filter_data'];
 		unset($vars['filter_data']);
-		
-		
-		// Set up Per page data
-		// ----------------------------------------------------------------
-				
-		// Results per page pull-down menu
-		if ( ! ($perpage = $this->input->get_post('perpage')))
-		{
-			$perpage = $this->input->cookie('perpage');
-		}
-		
-		$this->functions->set_cookie('perpage' , $perpage, 60*60*24*182);
-		
 		
 		// Setup the form!
 		// ----------------------------------------------------------------
@@ -407,7 +405,7 @@ class Content_edit extends CI_Controller {
 		
 		foreach ($rows as &$row)
 		{
-			$url = $this->publish_base_uri.AMP."M=entry_form".AMP."channel_id={$row['channel_id']}".AMP."entry_id={$row['entry_id']}";
+			$url = $this->publish_base_uri.AMP."M=entry_form".AMP."channel_id={$row['channel_id']}".AMP."entry_id={$row['entry_id']}".AMP.$filter_url;
 			
 			$row['title'] = anchor(BASE.AMP.$url, $row['title']);
 			$row['view'] = '---';
@@ -947,7 +945,7 @@ class Content_edit extends CI_Controller {
 		
 		$cutoff_date = time();
 		$cutoff_date -= $autosave_prune;
-		$cutoff_date = gmdate("YmdHis", $cutoff_date);
+		$cutoff_date = date("YmdHis", $cutoff_date);
 		
 		$this->db->where('edit_date <', $cutoff_date)->delete('channel_entries_autosave');
 	}
@@ -1101,9 +1099,9 @@ class Content_edit extends CI_Controller {
 			 }
 
 			// Day, Month, and Year Fields
-			$data['year']	= date('Y', $data['entry_date']);
-			$data['month']	= date('m', $data['entry_date']);
-			$data['day']	= date('d', $data['entry_date']);
+			$data['year']	= $this->localize->decode_date('%Y', $data['entry_date'], TRUE);
+			$data['month']	= $this->localize->decode_date('%m', $data['entry_date'], TRUE);
+			$data['day']	= $this->localize->decode_date('%d', $data['entry_date'], TRUE);
 
 			// Update the entry
 			$this->db->query($this->db->update_string('exp_channel_titles', $data, "entry_id = '$id'"));

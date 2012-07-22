@@ -3,7 +3,7 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
@@ -19,7 +19,7 @@
  * @package		ExpressionEngine
  * @subpackage	Modules
  * @category	Modules
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
 
@@ -337,7 +337,7 @@ class Search {
 			'result_page'			=> $this->EE->TMPL->fetch_param('result_page', 'search/results'),
 			'no_results_page'		=> $this->EE->TMPL->fetch_param('no_result_page', '')
 		);
-		
+
 		$meta = serialize($meta);
 
 		if ( function_exists('mcrypt_encrypt') )
@@ -345,7 +345,13 @@ class Search {
 			$init_size = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB);
 			$init_vect = mcrypt_create_iv($init_size, MCRYPT_RAND);
 
-			$meta = mcrypt_encrypt(MCRYPT_RIJNDAEL_256, md5($this->EE->db->username.$this->EE->db->password), $meta, MCRYPT_MODE_ECB, $init_vect);
+			$meta = mcrypt_encrypt(
+				MCRYPT_RIJNDAEL_256,
+				md5($this->EE->db->username.$this->EE->db->password),
+				$meta,
+				MCRYPT_MODE_ECB,
+				$init_vect
+			);
 		}
 		else
 		{
@@ -654,8 +660,6 @@ class Search {
 		/**  Add status declaration to the query
 		/** ----------------------------------------------*/
 		
-		$sql .= "\nAND exp_channel_titles.status != 'closed' ";
-		
 		if (isset($this->_meta['status']) AND ($status = $this->_meta['status']) != '')
 		{
 			$status = str_replace('Open',	'open',	$status);
@@ -673,7 +677,7 @@ class Search {
 			
 			if ( ! in_array('closed', $stati))
 			{
-				$sql .= "\nAND exp_channel_titles.status != 'closed' ";				
+				$sql .= "\nAND exp_channel_titles.status != 'closed' ";
 			}
 		}
 		else
@@ -1349,6 +1353,14 @@ class Search {
 		if ($pagination->paginate === TRUE OR $old_pagination)
 		{
 			$sql .= " LIMIT ".$pagination->offset.", ".$pagination->per_page;
+		}
+		else if ($pagination->per_page > 0)
+		{
+			$sql .= " LIMIT 0, ".$pagination->per_page;
+		}
+		else
+		{
+			$sql .= " LIMIT 0, 100";
 		}
 		
 		$query = $this->EE->db->query($sql);

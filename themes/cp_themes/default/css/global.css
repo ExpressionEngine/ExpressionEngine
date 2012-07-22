@@ -66,7 +66,7 @@ input[type="password"] {
 	color:					#5f6c74;
 	outline:				0;
   	padding:				4px;
-	width:					99%;
+	width:					100%;
 	
 	border-radius:			3px;
 	-moz-border-radius:		3px;
@@ -79,11 +79,20 @@ span.fake_input {
 	padding: 4px;
 }
 
+textarea,
+input[type="text"],
+input[type="email"],
+input[type="url"],
+input[type="number"],
+input[type="password"] {
+	-webkit-box-sizing:		border-box;
+	-moz-box-sizing:		border-box; /* firefox never does 100% textareas without this */
+	-ms-box-sizing: 		border-box;
+	box-sizing:				border-box; 
+}
+
 textarea {
 	resize:					vertical;
-	-moz-box-sizing:		border-box; /* firefox never does 100% textareas without this */
-	-webkit-box-sizing:		border-box;
-	box-sizing:				border-box; 
 }
 
 textarea:focus,
@@ -327,6 +336,11 @@ ul.bulleted {
 	padding:			5px 9px;
 	color:				#fff/*!important*/;
 	border:				0;
+}
+
+a:link.submit,
+a:visited.submit {
+	display: inline-block;
 }
 
 .cancel {
@@ -575,7 +589,7 @@ select.select {
 	padding:			8px 0 8px 0;
 	position:			absolute;
 	width:				169px;
-	z-index:			50;
+	z-index:			200;
 
 	-moz-border-radius:		10px;
 	-webkit-border-radius:	10px;
@@ -617,7 +631,7 @@ select.select {
 #navigationTabs li li.parent:focus > a,
 #navigationTabs li li.parent.active > a {
 	position:			relative;
-	z-index:			55;
+	z-index:			201;
 	background:			#F81A53;
 	color:				#fff;
 	width:				130px;
@@ -1217,11 +1231,6 @@ a#revealSidebarLink:link, a#revealSidebarLink:visited  {
 	clear:				left;
 }
 
-#mainContent #registerUser table input[type=text], 
-#mainContent #registerUser table textarea {
-	width:				99%;
-}
-
 #mainContent #registerUser label, 
 #mainContent #registerUser span {
 	font-weight:		bold;
@@ -1278,10 +1287,6 @@ input.submit {
 }
 #mainContent .pageContents #registerUser fieldset table {
 	margin:				0;
-}
-
-#mainContent #registerUser table.mainTable input {
-	width:				95%;
 }
 
 #mainContent #filterMenu .group {
@@ -1766,11 +1771,11 @@ select#site_list_pulldown { margin-bottom:10px; }
 }
 
 #mainContent .field {
-	width: 				59%;
+	width: 				60%;
 }
 
 .fullfield {
-	width: 				99%;
+	width: 				100%;
 }
 
 /* template manager */
@@ -1800,6 +1805,7 @@ div#templates {
 }
 
 #templates .column {
+	overflow: hidden;
 	padding:			0 18px 0 10px;
 }
 
@@ -1935,6 +1941,11 @@ span.defaultIndicator {
 }
 .templateTable tr.odd  {
 	background-color:	#f4f6f6;
+}
+
+.templateTable thead tr.even td,
+.templateTable thead tr.odd {
+	background-color: transparent;
 }
 
 a.view_link:link,
@@ -2630,11 +2641,10 @@ a#refresh_categories {
 
 .publish_text input, .publish_textarea textarea {
 	margin-top: 		7px;
-	width: 				98.5%;
+	width: 				100%;
 }
 
 .publish_text input {
-	height:				17px;
 	margin-top: 		11px;
 }
 

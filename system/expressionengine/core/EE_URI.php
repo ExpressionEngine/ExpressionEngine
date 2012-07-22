@@ -3,7 +3,7 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
@@ -19,7 +19,7 @@
  * @package		ExpressionEngine
  * @subpackage	Core
  * @category	Core
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
 class EE_URI extends CI_URI {
@@ -132,7 +132,7 @@ class EE_URI extends CI_URI {
 		// Safety Check:  If the URL contains more than 9 segments we'll show an error message
 		if (count($segs) > 9)
 		{
-			show_error("Error: The URL contains too many segments.", 400);
+			show_error("Error: The URL contains too many segments.", 404);
 		}
 		
 

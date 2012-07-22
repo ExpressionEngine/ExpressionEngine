@@ -3,7 +3,7 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
@@ -19,7 +19,7 @@
  * @package		ExpressionEngine
  * @subpackage	Fieldtypes
  * @category	Fieldtypes
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
 class EE_Fieldtype {
@@ -83,7 +83,7 @@ class EE_Fieldtype {
 	
 	// --------------------------------------------------------------------
 	
-	function validate()
+	function validate($data)
 	{
 		return TRUE;
 	}
@@ -266,9 +266,9 @@ class EE_Fieldtype {
 				NBS.$data['edit_format_link'].BR.BR.
 				'<strong>'.lang('show_formatting_buttons').'</strong>'.BR.
 				form_radio($prefix.'field_show_fmt', 'y', $data['field_show_fmt_y'], 'id="'.$prefix.'field_show_fmt_y"').NBS.
-				lang('yes', 'field_show_fmt_y').NBS.NBS.NBS.NBS.NBS.
+				lang('yes', $prefix.'field_show_fmt_y').NBS.NBS.NBS.NBS.NBS.
 				form_radio($prefix.'field_show_fmt', 'n', $data['field_show_fmt_n'], 'id="'.$prefix.'field_show_fmt_n"').NBS.
-				lang('no', 'field_show_fmt_n').
+				lang('no', $prefix.'field_show_fmt_n').
 				$extra
 		);
 		
@@ -287,10 +287,10 @@ class EE_Fieldtype {
 
 		$this->EE->table->add_row(
 			'<strong>'.lang('text_direction').'</strong>',
-			form_radio($prefix.'field_text_direction', 'ltr', $data['field_text_direction_ltr'], 'id="field_text_direction_ltr"').NBS.
-				lang('ltr', 'field_text_direction_ltr').NBS.NBS.NBS.NBS.NBS.
-				form_radio($prefix.'field_text_direction', 'rtl', $data['field_text_direction_rtl'], 'id="field_text_direction_rtl"').NBS.
-				lang('rtl', 'field_text_direction_rtl')
+			form_radio($prefix.'field_text_direction', 'ltr', $data['field_text_direction_ltr'], 'id="'.$prefix.'field_text_direction_ltr"').NBS.
+				lang('ltr', $prefix.'field_text_direction_ltr').NBS.NBS.NBS.NBS.NBS.
+				form_radio($prefix.'field_text_direction', 'rtl', $data['field_text_direction_rtl'], 'id="'.$prefix.'field_text_direction_rtl"').NBS.
+				lang('rtl', $prefix.'field_text_direction_rtl')
 		);		
 	}
 	
@@ -338,7 +338,7 @@ class EE_Fieldtype {
 				lang('field_populate_from_channel', $prefix.'field_pre_populate_y').
 			'</p>',
 			'<p class="field_format_option select_format_n">'.
-				lang('multi_list_items', $prefix.'multi_select_list_items').BR.
+				lang('multi_list_items', $prefix.'field_list_items').BR.
 				lang('field_list_instructions').BR.
 				form_textarea(array('id'=>$prefix.'field_list_items','name'=>$prefix.'field_list_items', 'rows'=>10, 'cols'=>50, 'value'=>$data['field_list_items'])).
 			'</p>
@@ -401,10 +401,10 @@ class EE_Fieldtype {
 		
 		$this->EE->table->add_row(
 			'<strong>'.lang($lang).'</strong>',
-				form_radio($prefix.$data_key, 'y', $val_is_y, 'id="'.$data_key.'_y"').NBS.
-				lang('yes', $data_key.'_y').NBS.NBS.NBS.NBS.NBS.
-				form_radio($prefix.$data_key, 'n', ( ! $val_is_y), 'id="'.$data_key.'_n"').NBS.
-				lang('no', $data_key.'_n')
+				form_radio($prefix.$data_key, 'y', $val_is_y, 'id="'.$prefix.$data_key.'_y"').NBS.
+				lang('yes', $prefix.$data_key.'_y').NBS.NBS.NBS.NBS.NBS.
+				form_radio($prefix.$data_key, 'n', ( ! $val_is_y), 'id="'.$prefix.$data_key.'_n"').NBS.
+				lang('no', $prefix.$data_key.'_n')
 		);
 	}
 	

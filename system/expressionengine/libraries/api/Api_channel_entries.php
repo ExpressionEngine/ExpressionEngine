@@ -3,7 +3,7 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
@@ -19,7 +19,7 @@
  * @package		ExpressionEngine
  * @subpackage	Core
  * @category	Core
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
 class Api_channel_entries extends Api {
@@ -123,26 +123,26 @@ class Api_channel_entries extends Api {
 		$this->_build_relationships($data);
 
 		$meta = array(
-						'channel_id'				=> $this->channel_id,
-						'author_id'					=> $data['author_id'],
-						'site_id'					=> $this->EE->config->item('site_id'),
-						'ip_address'				=> $this->EE->input->ip_address(),
-						'title'						=> ($this->EE->config->item('auto_convert_high_ascii') == 'y') ? ascii_to_entities($data['title']) : $data['title'],
-						'url_title'					=> $data['url_title'],
-						'entry_date'				=> $data['entry_date'],
-						'edit_date'					=> date("YmdHis"),
-						'versioning_enabled'		=> $data['versioning_enabled'],
-						'year'						=> date('Y', $data['entry_date']),
-						'month'						=> date('m', $data['entry_date']),
-						'day'						=> date('d', $data['entry_date']),
-						'expiration_date'			=> $data['expiration_date'],
-						'comment_expiration_date'	=> $data['comment_expiration_date'],
-						'recent_comment_date'		=> (isset($data['recent_comment_date']) && $data['recent_comment_date']) ? $data['recent_comment_date'] : 0,
-						'sticky'					=> (isset($data['sticky']) && $data['sticky'] == 'y') ? 'y' : 'n',
-						'status'					=> $data['status'],
-						'allow_comments'			=> $data['allow_comments'],
-					 );
-
+			'channel_id'				=> $this->channel_id,
+			'author_id'					=> $data['author_id'],
+			'site_id'					=> $this->EE->config->item('site_id'),
+			'ip_address'				=> $this->EE->input->ip_address(),
+			'title'						=> ($this->EE->config->item('auto_convert_high_ascii') == 'y') ? ascii_to_entities($data['title']) : $data['title'],
+			'url_title'					=> $data['url_title'],
+			'entry_date'				=> $data['entry_date'],
+			'edit_date'					=> $this->EE->localize->decode_date('%Y%m%d%H%i%s', $data['entry_date'], TRUE),
+			'versioning_enabled'		=> $data['versioning_enabled'],
+			'year'						=> $this->EE->localize->decode_date('%Y', $data['entry_date'], TRUE),
+			'month'						=> $this->EE->localize->decode_date('%m', $data['entry_date'], TRUE),
+			'day'						=> $this->EE->localize->decode_date('%d', $data['entry_date'], TRUE),
+			'expiration_date'			=> $data['expiration_date'],
+			'comment_expiration_date'	=> $data['comment_expiration_date'],
+			'recent_comment_date'		=> (isset($data['recent_comment_date']) && $data['recent_comment_date']) ? $data['recent_comment_date'] : 0,
+			'sticky'					=> (isset($data['sticky']) && $data['sticky'] == 'y') ? 'y' : 'n',
+			'status'					=> $data['status'],
+			'allow_comments'			=> $data['allow_comments'],
+		);
+		
 		$this->meta =& $meta;
 		
 		$meta_keys = array_keys($meta);
@@ -259,25 +259,25 @@ class Api_channel_entries extends Api {
 		$this->_build_relationships($data);
 		
 		$meta = array(
-						'channel_id'				=> $this->channel_id,
-						'author_id'					=> $data['author_id'],
-						'site_id'					=> $this->EE->config->item('site_id'),
-						'ip_address'				=> $this->EE->input->ip_address(),
-						'title'						=> ($this->EE->config->item('auto_convert_high_ascii') == 'y') ? ascii_to_entities($data['title']) : $data['title'],
-						'url_title'					=> $data['url_title'],
-						'entry_date'				=> $data['entry_date'],
-						'edit_date'					=> date("YmdHis"),
-						'versioning_enabled'		=> $data['versioning_enabled'],
-						'year'						=> date('Y', $data['entry_date']),
-						'month'						=> date('m', $data['entry_date']),
-						'day'						=> date('d', $data['entry_date']),
-						'expiration_date'			=> $data['expiration_date'],
-						'comment_expiration_date'	=> $data['comment_expiration_date'],
-						'recent_comment_date'		=> (isset($data['recent_comment_date']) && $data['recent_comment_date']) ? $data['recent_comment_date'] : 0,
-						'sticky'					=> (isset($data['sticky']) && $data['sticky'] == 'y') ? 'y' : 'n',
-						'status'					=> $data['status'],
-						'allow_comments'			=> $data['allow_comments'],
-					 );
+			'channel_id'				=> $this->channel_id,
+			'author_id'					=> $data['author_id'],
+			'site_id'					=> $this->EE->config->item('site_id'),
+			'ip_address'				=> $this->EE->input->ip_address(),
+			'title'						=> ($this->EE->config->item('auto_convert_high_ascii') == 'y') ? ascii_to_entities($data['title']) : $data['title'],
+			'url_title'					=> $data['url_title'],
+			'entry_date'				=> $data['entry_date'],
+			'edit_date'					=> $this->EE->localize->decode_date('%Y%m%d%H%i%s', $this->EE->localize->now, FALSE),
+			'versioning_enabled'		=> $data['versioning_enabled'],
+			'year'						=> $this->EE->localize->decode_date('%Y', $data['entry_date'], TRUE),
+			'month'						=> $this->EE->localize->decode_date('%m', $data['entry_date'], TRUE),
+			'day'						=> $this->EE->localize->decode_date('%d', $data['entry_date'], TRUE),
+			'expiration_date'			=> $data['expiration_date'],
+			'comment_expiration_date'	=> $data['comment_expiration_date'],
+			'recent_comment_date'		=> (isset($data['recent_comment_date']) && $data['recent_comment_date']) ? $data['recent_comment_date'] : 0,
+			'sticky'					=> (isset($data['sticky']) && $data['sticky'] == 'y') ? 'y' : 'n',
+			'status'					=> $data['status'],
+			'allow_comments'			=> $data['allow_comments'],
+		);
 
 		$this->meta =& $meta;
 		
@@ -1879,27 +1879,11 @@ class Api_channel_entries extends Api {
 	{
 		$meta['dst_enabled'] =  $this->_cache['dst_enabled'];
 		
-		// Check if the author changed
+		// See if the author changed and store the old author ID for updating stats later
 		$this->EE->db->select('author_id');
 		$query = $this->EE->db->get_where('channel_titles', array('entry_id' => $this->entry_id));
-		$old_author = $query->row('author_id') ;
-
-		// autosave doesn't impact these stats
+		$old_author = $query->row('author_id');
 		
-		if ( ! $this->autosave && $old_author != $meta['author_id'])
-		{
-			// Decremenet the counter on the old author
-
-			$this->EE->db->where('member_id', $old_author);
-			$this->EE->db->set('total_entries', 'total_entries-1', FALSE);
-			$this->EE->db->update('members');
-
-
-			$this->EE->db->where('member_id', $meta['author_id']);
-			$this->EE->db->set('total_entries', 'total_entries+1', FALSE);
-			$this->EE->db->update('members');
-		}
-
 		// Update the entry data
 		
 		unset($meta['entry_id']);
@@ -2011,6 +1995,19 @@ class Api_channel_entries extends Api {
 		if ($this->autosave)
 		{
 			return $autosave_entry_id;
+		}
+		
+		// If the original auther changed, update member entry stats
+		// for old author and new author
+		if ( ! $this->autosave && $old_author != $meta['author_id'])
+		{
+			$this->EE->load->model('member_model');
+			$this->EE->member_model->update_member_entry_stats(
+				array(
+					$old_author,
+					$meta['author_id']
+				)
+			);
 		}
 
 		// Remove any autosaved data

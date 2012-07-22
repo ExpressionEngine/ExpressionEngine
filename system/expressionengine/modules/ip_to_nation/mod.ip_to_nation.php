@@ -3,7 +3,7 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
@@ -19,7 +19,7 @@
  * @package		ExpressionEngine
  * @subpackage	Modules
  * @category	Modules
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
 
@@ -27,23 +27,24 @@ class Ip_to_nation {
 
 	var $return_data = '';
 
-
-	function Ip_to_nation()
+	function __construct()
 	{
-		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();
 	}
 
+	// ----------------------------------------------------------------------
 
-	/** ----------------------------------------
-	/**  World flags
-	/** ----------------------------------------*/
+	/**
+	 * World flags
+	 */
 	function world_flags($ip = '')
 	{
 		if ($ip == '')
+		{
 			$ip = $this->EE->TMPL->tagdata;
+		}
 
-			$ip = trim($ip);
+		$ip = trim($ip);
 
 		if ( ! $this->EE->input->valid_ip($ip))
 		{
@@ -51,15 +52,17 @@ class Ip_to_nation {
 			return;
 		}
 
-		$query = $this->EE->db->query("SELECT country FROM exp_ip2nation WHERE ip < INET_ATON('".$this->EE->db->escape_str($ip)."') ORDER BY ip DESC LIMIT 0,1");
+		$this->EE->load->model('ip_to_nation_data', 'ip_data');
 
-		if ($query->num_rows() != 1)
+		$c_code = $this->EE->ip_data->find($ip);
+
+		if ( ! $c_code)
 		{
 			$this->return_data = $ip;
 			return;
 		}
 
-		$country = $this->get_country($query->row('country') );
+		$country = $this->get_country($c_code);
 
 		if ($this->EE->TMPL->fetch_param('type') == 'text')
 		{
@@ -67,18 +70,17 @@ class Ip_to_nation {
 		}
 		else
 		{
-			$this->return_data = '<img src="'.$this->EE->TMPL->fetch_param('image_url').'flag_'.$query->row('country') .'.gif" width="18" height="12" alt="'.$country.'" title="'.$country.'" />';
+			$this->return_data = '<img src="'.$this->EE->TMPL->fetch_param('image_url').'flag_'.$c_code.'.gif" width="18" height="12" alt="'.$country.'" title="'.$country.'" />';
 		}
 
 		return $this->return_data;
 	}
 
-
-
-
-	/** ----------------------------------------
-	/**  Countries
-	/** ----------------------------------------*/
+	// ----------------------------------------------------------------------
+	
+	/**
+	 * Countries
+	 */
 	function get_country($which = '')
 	{
 		if ( ! isset($this->EE->session->cache['ip_to_nation']['countries']))
@@ -99,9 +101,6 @@ class Ip_to_nation {
 
 		return $this->EE->session->cache['ip_to_nation']['countries'][$which];
 	}
-
-
-
 }
 // END CLASS
 

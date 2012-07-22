@@ -3,7 +3,7 @@
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
@@ -19,7 +19,7 @@
  * @package		ExpressionEngine
  * @subpackage	Fieldtypes
  * @category	Fieldtypes
- * @author		ExpressionEngine Dev Team
+ * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
 class Select_ft extends EE_Fieldtype {
@@ -82,6 +82,12 @@ class Select_ft extends EE_Fieldtype {
 	
 	function replace_tag($data, $params = '', $tagdata = '')
 	{
+		// Experimental parameter, do not use
+		if (isset($params['raw_output']) && $params['raw_output'] == 'yes')
+		{
+			return $this->EE->functions->encode_ee_tags($data);
+		}
+
 		return $this->EE->typography->parse_type(
 			$this->EE->functions->encode_ee_tags($data),
 			array(
