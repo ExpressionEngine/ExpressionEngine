@@ -111,27 +111,28 @@ class Addons extends CI_Controller {
 			{
 				if ($new_state = $this->input->get_post('install_'.$type))
 				{
+					// Addon_installer does it's own "is installed" check when
+					// installing/uninstalling fieldtypes, so we can safely add
+					// FTs at this point without checking the installation status
+					if ($type === 'fieldtype')
+					{
+						if ($new_state === 'uninstall')
+						{
+							$uninstall[] = $type;
+						}
+						elseif ($new_state === 'install')
+						{
+							$install[] = $type;
+						}
+						
+						continue;
+					}
+					
 					$installed_f = $type.'_installed';
 					
 					if (method_exists($this->addons_model, $installed_f))
 					{
-						if ($type === 'fieldtype')
-						{
-							//if even one fieldtype is not installed, we'll consider this not installed
-							$is_installed = FALSE;
-							
-							foreach ($info as $fieldtype_name => $fieldtype_info)
-							{
-								if ( ! $is_installed = $this->addons_model->$installed_f($package))
-								{
-									break;
-								}
-							}
-						}
-						else
-						{
-							$is_installed = $this->addons_model->$installed_f($package);
-						}
+						$is_installed = $this->addons_model->$installed_f($package);
 						
 						if ($is_installed && ($new_state == 'uninstall'))
 						{
