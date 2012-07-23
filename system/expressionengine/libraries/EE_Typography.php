@@ -494,7 +494,9 @@ class EE_Typography extends CI_Typography {
 			}	
 		//
 		// -------------------------------------------
-
+		
+		$this->initialize();
+		
 		return $str;
 	}
 
