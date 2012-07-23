@@ -1218,14 +1218,21 @@ class EE_Functions {
 	function delete_directory($path, $del_root = FALSE)
 	{
 		$path = rtrim($path, '/');
-
+		$path_delete = $path.'_delete';
+		
 		if ( ! is_dir($path))
 		{
 			return FALSE;
 		}
 		
+		// Delete temporary directory if it happens to exist from a previous attempt
+		if (is_dir($path_delete))
+		{
+			@exec("rm -r -f {$path_delete}");
+		}
+		
 		// let's try this the sane way first
-		@exec("mv {$path} {$path}_delete", $out, $ret);
+		@exec("mv {$path} {$path_delete}", $out, $ret);
 
 		if (isset($ret) && $ret == 0)
 		{
@@ -1239,7 +1246,7 @@ class EE_Functions {
 				}				
 			}
 
-			@exec("rm -r -f {$path}_delete");
+			@exec("rm -r -f {$path_delete}");
 		}
 		else
 		{
