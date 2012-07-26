@@ -1158,7 +1158,7 @@ class Api_channel_entries extends Api {
 			{
 				if ($this->EE->session->userdata('can_assign_post_authors') != 'y')
 				{
-					$this->_set_error('not_authorized');
+					$this->_set_error('not_authorized', 'author');
 				}
 				else
 				{
@@ -1177,7 +1177,7 @@ class Api_channel_entries extends Api {
 					
 					if ( ! in_array($data['author_id'], $allowed_authors))
 					{
-						$this->_set_error('invalid_author');
+						$this->_set_error('invalid_author', 'author');
 					}
 				}
 			}
