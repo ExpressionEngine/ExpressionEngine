@@ -994,7 +994,7 @@ class Channel {
 
 					if (0 == $v[1])
 					{
-						$this->cat_array[] = $v;
+						$this->cat_array[] = $this->temp_array[$k];
 						$this->process_subcategories($k);
 					}
 				}
