@@ -126,7 +126,7 @@ class Updater {
 	 */
 	private function _update_files_table()
 	{
-		if ( ! $this->EE->db->field_exists('credit', 'files') AND  ! $this->EE->db->field_exists('location', 'files'))
+		if ( ! $this->EE->db->field_exists('credit', 'files') AND ! $this->EE->db->field_exists('location', 'files'))
 		{
 			$this->EE->dbforge->add_column(
 				'files',
@@ -145,6 +145,14 @@ class Updater {
 		
 		if ($this->EE->db->field_exists('caption', 'files'))
 		{
+			// If the description field also exists, it's likely
+			// this update is being run again from a version further
+			// back than the point the DB is actually at.
+			if ($this->EE->db->field_exists('description', 'files'))
+			{
+				$this->EE->dbforge->drop_column('files', 'description');
+			}
+
 			// Rename "caption" field to "description"
 			$this->EE->dbforge->modify_column(
 				'files',
