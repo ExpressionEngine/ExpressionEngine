@@ -67,20 +67,24 @@ class Updater {
 	 */
 	private function _update_watermarks_table()
 	{
-		// Rename offset columns
-		$this->EE->dbforge->modify_column(
-			'file_watermarks',
-			array(
-				'wm_x_offset' => array(
-					'name' => 'wm_hor_offset',
-					'type' => 'int'
-				),
-				'wm_y_offset' => array(
-					'name' => 'wm_vrt_offset',
-					'type' => 'int'
+		if ($this->EE->db->field_exists('wm_x_offset', 'file_watermarks') AND $this->EE->db->field_exists('wm_y_offset', 'file_watermarks'))
+		{
+			// Rename offset columns
+			$this->EE->dbforge->modify_column(
+				'file_watermarks',
+				array(
+					'wm_x_offset' => array(
+						'name' => 'wm_hor_offset',
+						'type' => 'int'
+					),
+					'wm_y_offset' => array(
+						'name' => 'wm_vrt_offset',
+						'type' => 'int'
+					)
 				)
-			)
-		);
+			);
+		}
+
 	}
 	
 	// --------------------------------------------------------------------
@@ -122,41 +126,57 @@ class Updater {
 	 */
 	private function _update_files_table()
 	{
-		$this->EE->dbforge->add_column(
-			'files',
-			array(
-				'credit' => array(
-					'type'			=> 'varchar',
-					'constraint'	=> 255
-				),
-				'location' => array(
-					'type'			=> 'varchar',
-					'constraint'	=> 255
+		if ( ! $this->EE->db->field_exists('credit', 'files') AND  ! $this->EE->db->field_exists('location', 'files'))
+		{
+			$this->EE->dbforge->add_column(
+				'files',
+				array(
+					'credit' => array(
+						'type'			=> 'varchar',
+						'constraint'	=> 255
+					),
+					'location' => array(
+						'type'			=> 'varchar',
+						'constraint'	=> 255
+					)
 				)
-			)
-		);
+			);
+		}
 		
-		// Rename "caption" field to "description"
-		$this->EE->dbforge->modify_column(
-			'files',
-			array(
-				'caption' => array(
-					'name' => 'description',
-					'type' => 'text'
-				),
-			)
-		);
+		if ($this->EE->db->field_exists('caption', 'files'))
+		{
+			// Rename "caption" field to "description"
+			$this->EE->dbforge->modify_column(
+				'files',
+				array(
+					'caption' => array(
+						'name' => 'description',
+						'type' => 'text'
+					),
+				)
+			);
+		}
 		
 		// Drop the 6 custom fields
 		for ($i = 1; $i < 7; $i++)
-		{ 
-			$this->EE->dbforge->drop_column('files', 'field_'.$i);
-			$this->EE->dbforge->drop_column('files', 'field_'.$i.'_fmt');
+		{
+			if ($this->EE->db->field_exists('field_'.$i, 'files'))
+			{
+				$this->EE->dbforge->drop_column('files', 'field_'.$i);
+				$this->EE->dbforge->drop_column('files', 'field_'.$i.'_fmt');
+			}
 		}
 		
 		// Drop 'metadata' and 'status' fields
-		$this->EE->dbforge->drop_column('files', 'metadata');
-		$this->EE->dbforge->drop_column('files', 'status');
+		if ($this->EE->db->field_exists('metadata', 'files'))
+		{
+			$this->EE->dbforge->drop_column('files', 'metadata');
+		}
+
+		if ($this->EE->db->field_exists('status', 'files'))
+		{
+			$this->EE->dbforge->drop_column('files', 'status');
+		}
 	}
 	
 	// --------------------------------------------------------------------
