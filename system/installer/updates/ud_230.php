@@ -65,7 +65,10 @@ class Updater {
 		$this->EE->load->dbforge();
 		
 		// Drop site_id
-		$this->EE->dbforge->drop_column('sessions', 'site_id');
+		if ($this->EE->db->field_exists('site_id', 'sessions'))
+		{
+			$this->EE->dbforge->drop_column('sessions', 'site_id');
+		}
     }
 
 	// --------------------------------------------------------------------
