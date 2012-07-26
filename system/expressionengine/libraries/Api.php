@@ -213,16 +213,19 @@ class Api {
 		if ($count > 0)
 		{
 			// We may need some room to add our numbers- trim url_title to 70 characters
-			$url_title = substr($url_title, 0, 70);
-			
-			// Check again
-			if ($self_id != '')
+			if (strlen($url_title) > 70)
 			{
-				$this->EE->db->where(array($self_field.' !=' => $self_id));
+				$url_title = substr($url_title, 0, 70);
+				
+				// Check again
+				if ($self_id != '')
+				{
+					$this->EE->db->where(array($self_field.' !=' => $self_id));
+				}
+				
+				$this->EE->db->where(array($url_title_field => $url_title, $type_field => $type_id));
+				$count = $this->EE->db->count_all_results($table);
 			}
-
-			$this->EE->db->where(array($url_title_field => $url_title, $type_field => $type_id));
-			$count = $this->EE->db->count_all_results($table);
 			
 			if ($count > 0)
 			{
