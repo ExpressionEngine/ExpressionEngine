@@ -739,6 +739,12 @@ class Channel {
 					{
 						uksort($new, 'strnatcasecmp'); 
 					}
+					// If it's in the base options and not a string?
+					// Sort numeric
+					elseif (in_array($order, $base_orders))
+					{
+						ksort($new, SORT_NUMERIC);						
+					}
 					// Sort keys based on set sort flags
 					else
 					{
