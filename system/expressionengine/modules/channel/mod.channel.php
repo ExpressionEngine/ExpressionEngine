@@ -1581,7 +1581,7 @@ class Channel {
 		$sql .= "LEFT JOIN exp_members AS m ON m.member_id = t.author_id ";
 
 
-		if ($this->EE->TMPL->fetch_param('category') OR $this->EE->TMPL->fetch_param('category_group') OR $cat_id != '')
+		if ($this->EE->TMPL->fetch_param('category') OR $this->EE->TMPL->fetch_param('category_group') OR ($cat_id != '' && $dynamic == TRUE))
 		{
 			/* --------------------------------
 			/*  We use LEFT JOIN when there is a 'not' so that we get
