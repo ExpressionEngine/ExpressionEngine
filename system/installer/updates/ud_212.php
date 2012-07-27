@@ -34,10 +34,23 @@ class Updater {
 
     function do_update()
     {
-		$Q[] = "ALTER TABLE exp_members ADD show_sidebar char(1) NOT NULL default 'y' AFTER quick_tabs";		
-		$Q[] = "ALTER TABLE exp_member_fields ADD m_field_cp_reg char(1) NOT NULL default 'n' AFTER m_field_reg";
+    	if ( ! $this->EE->db->field_exists('show_sidebar', 'members'))
+    	{
+			$Q[] = "ALTER TABLE exp_members ADD show_sidebar char(1) NOT NULL default 'y' AFTER quick_tabs";
+    	}
+
+    	if ( ! $this->EE->db->field_exists('m_field_cp_reg', 'member_fields'))
+    	{
+    		$Q[] = "ALTER TABLE exp_member_fields ADD m_field_cp_reg char(1) NOT NULL default 'n' AFTER m_field_reg";
+    	}
+		
 		$Q[] = "ALTER TABLE exp_accessories CHANGE member_groups member_groups varchar(255) NOT NULL";
-		$Q[] = "ALTER TABLE exp_member_groups ADD can_edit_html_buttons char(1) NOT NULL DEFAULT 'n' AFTER can_view_profiles";
+
+		if ( ! $this->EE->db->field_exists('can_edit_html_buttons', 'member_groups'))
+		{
+			$Q[] = "ALTER TABLE exp_member_groups ADD can_edit_html_buttons char(1) NOT NULL DEFAULT 'n' AFTER can_view_profiles";
+		}
+		
 		$Q[] = "UPDATE exp_member_groups SET can_edit_html_buttons = 'y' WHERE can_access_cp = 'y'";
 
 		if ($this->EE->db->table_exists('exp_comments'))
