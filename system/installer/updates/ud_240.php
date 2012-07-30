@@ -147,22 +147,27 @@ class Updater {
 		{
 			// If the description field also exists, it's likely
 			// this update is being run again from a version further
-			// back than the point the DB is actually at.
+			// back than the point the DB is actually at. We should
+			// remove 'caption' since 'description' likely has the
+			// correct data in it.
 			if ($this->EE->db->field_exists('description', 'files'))
 			{
-				$this->EE->dbforge->drop_column('files', 'description');
+				$this->EE->dbforge->drop_column('files', 'caption');
+			}
+			else
+			{
+				// Rename "caption" field to "description"
+				$this->EE->dbforge->modify_column(
+					'files',
+					array(
+						'caption' => array(
+							'name' => 'description',
+							'type' => 'text'
+						),
+					)
+				);				
 			}
 
-			// Rename "caption" field to "description"
-			$this->EE->dbforge->modify_column(
-				'files',
-				array(
-					'caption' => array(
-						'name' => 'description',
-						'type' => 'text'
-					),
-				)
-			);
 		}
 		
 		// Drop the 6 custom fields
