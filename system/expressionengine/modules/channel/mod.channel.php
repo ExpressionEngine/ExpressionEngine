@@ -2984,21 +2984,21 @@ class Channel {
 			$row['photo_image_height'] = '';
 
 
-			if ($this->EE->session->userdata('display_signatures') != 'n' && $row['sig_img_filename'] != ''  && $this->EE->session->userdata('display_signatures') != 'n')
+			if ($this->EE->session->userdata('display_signatures') != 'n' && $row['sig_img_filename'] != '')
 			{
 				$row['signature_image_url'] 	= $this->EE->config->slash_item('sig_img_url').$row['sig_img_filename'];
 				$row['signature_image_width']	= $row['sig_img_width'];
 				$row['signature_image_height']	= $row['sig_img_height'];
 			}
 
-			if ($this->EE->session->userdata('display_avatars') != 'n' && $row['avatar_filename'] != ''  && $this->EE->session->userdata('display_avatars') != 'n')
+			if ($this->EE->session->userdata('display_avatars') != 'n' && $row['avatar_filename'] != '')
 			{
 				$row['avatar_url'] 			= $this->EE->config->slash_item('avatar_url').$row['avatar_filename'];
 				$row['avatar_image_width']	= $row['avatar_width'];
 				$row['avatar_image_height']	= $row['avatar_height'];
 			}
 
-			if ($this->EE->session->userdata('display_photos') != 'n' && $row['photo_filename'] != ''  && $this->EE->session->userdata('display_photos') != 'n')
+			if ($this->EE->session->userdata('display_photos') != 'n' && $row['photo_filename'] != '')
 			{
 				$row['photo_url'] 			= $this->EE->config->slash_item('photo_url').$row['photo_filename'];
 				$row['photo_image_width']	= $row['photo_width'];
