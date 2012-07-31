@@ -69,20 +69,33 @@ class Updater {
 	{
 		if ($this->EE->db->field_exists('wm_x_offset', 'file_watermarks') AND $this->EE->db->field_exists('wm_y_offset', 'file_watermarks'))
 		{
-			// Rename offset columns
-			$this->EE->dbforge->modify_column(
-				'file_watermarks',
-				array(
-					'wm_x_offset' => array(
-						'name' => 'wm_hor_offset',
-						'type' => 'int'
-					),
-					'wm_y_offset' => array(
-						'name' => 'wm_vrt_offset',
-						'type' => 'int'
+			// If the wm_hor_offset or wm_vrt_offset fields also exists,
+			// it's likely this update is being run again from a version
+			// further back than the point the DB is actually at. We
+			// should remove 'wm_x_offset' and 'wm_y_offset' since the
+			// new columns likely have the correct data in it.
+			if ($this->EE->db->field_exists('wm_hor_offset', 'file_watermarks') AND $this->EE->db->field_exists('wm_vrt_offset', 'file_watermarks'))
+			{
+				$this->EE->dbforge->drop_column('file_watermarks', 'wm_x_offset');
+				$this->EE->dbforge->drop_column('file_watermarks', 'wm_y_offset');
+			}
+			else
+			{
+				// Rename offset columns
+				$this->EE->dbforge->modify_column(
+					'file_watermarks',
+					array(
+						'wm_x_offset' => array(
+							'name' => 'wm_hor_offset',
+							'type' => 'int'
+						),
+						'wm_y_offset' => array(
+							'name' => 'wm_vrt_offset',
+							'type' => 'int'
+						)
 					)
-				)
-			);
+				);
+			}
 		}
 
 	}
