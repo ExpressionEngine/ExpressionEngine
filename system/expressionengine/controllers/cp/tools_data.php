@@ -43,12 +43,20 @@ class Tools_data extends CI_Controller {
 		$this->load->model('tools_model');
 		$this->lang->loadfile('tools_data');
 
-		$this->sub_breadcrumbs = array(
-			'sql_view_database'		=> BASE.AMP.'C=tools_data'.AMP.'M=sql_view_database',
-			'sql_query_form'		=> BASE.AMP.'C=tools_data'.AMP.'M=sql_query_form',
-			'sql_status'			=> BASE.AMP.'C=tools_data'.AMP.'M=sql_status',
-			'sql_system_vars'		=> BASE.AMP.'C=tools_data'.AMP.'M=sql_system_vars',
-			'sql_processlist'		=> BASE.AMP.'C=tools_data'.AMP.'M=sql_processlist'
+		$this->sub_breadcrumbs['sql_view_database'] = BASE.AMP.'C=tools_data'.AMP.'M=sql_view_database';
+		
+		// Only show Database Query Form link for Super Admins
+		if ($this->session->userdata('group_id') == '1')
+		{
+			$this->sub_breadcrumbs['sql_query_form'] = BASE.AMP.'C=tools_data'.AMP.'M=sql_query_form';
+		}
+		
+		$this->sub_breadcrumbs = array_merge($this->sub_breadcrumbs,
+			array(
+				'sql_status'			=> BASE.AMP.'C=tools_data'.AMP.'M=sql_status',
+				'sql_system_vars'		=> BASE.AMP.'C=tools_data'.AMP.'M=sql_system_vars',
+				'sql_processlist'		=> BASE.AMP.'C=tools_data'.AMP.'M=sql_processlist'
+			)
 		);
 	}
 
@@ -175,7 +183,7 @@ class Tools_data extends CI_Controller {
 		}
 		
 		// Super Admins only, please
-		if ($this->session->userdata['group_id'] != '1')
+		if ($this->session->userdata('group_id') != '1')
 		{
 			show_error(lang('unauthorized_access'));
 		}
