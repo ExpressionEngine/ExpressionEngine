@@ -614,7 +614,7 @@ class EE_Session {
 		$this->userdata['total_forum_posts'] = $member_query->row('total_forum_topics')  + $member_query->row('total_forum_posts') ;
 		$this->userdata['total_forum_replies'] = $member_query->row('total_forum_posts') ;
 		
-		$this->userdata['display_photos'] = $this->userdata['display_avatars'];
+		$this->userdata['display_photos'] = $this->EE->config->item('enable_photos');
 		
 		//  Are users allowed to localize?
 		if ($this->EE->config->item('allow_member_localization') == 'n')
