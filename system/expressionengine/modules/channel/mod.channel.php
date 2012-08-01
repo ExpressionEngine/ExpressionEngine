@@ -4440,8 +4440,8 @@ class Channel {
 
 				//  parse basic fields (username, screen_name, etc.)
 				//  Use array_key_exists to handle null values
-
-				if (array_key_exists($val, $row))
+				
+				if ($val AND array_key_exists($val, $row))
 				{
 					$tagdata = $this->EE->TMPL->swap_var_single($val, $row[$val], $tagdata);
 				}
