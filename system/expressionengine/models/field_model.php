@@ -184,10 +184,15 @@ class Field_model extends CI_Model {
 		
 		$this->db->where('group_id', $group_id);
 		$this->db->delete('field_groups'); 
-
+		
+		// Delete associated channel fields
 		$this->db->where('group_id', $group_id);
 		$this->db->delete('channel_fields');
 
+		// Disassociate field group with channels
+		$this->db->where('field_group', $group_id);
+		$this->db->update('channels', array('field_group' => NULL));
+		
 		return $field_ids;
 
 	}

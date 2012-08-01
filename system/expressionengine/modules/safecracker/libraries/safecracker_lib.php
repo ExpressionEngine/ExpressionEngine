@@ -1421,11 +1421,11 @@ class Safecracker_lib
 			{
 				if ($this->entry('entry_id'))
 				{
-					$submit = $this->EE->api_sc_channel_entries->update_entry($this->entry('entry_id'), $_POST);
+					$submit = $this->EE->api_sc_channel_entries->save_entry($_POST, NULL, $this->entry('entry_id'));
 				}
 				else
 				{
-					$submit = $this->EE->api_sc_channel_entries->submit_new_entry($this->channel('channel_id'), $_POST);
+					$submit = $this->EE->api_sc_channel_entries->save_entry($_POST, $this->channel('channel_id'));
 				}
 				
 				if ( ! $submit)

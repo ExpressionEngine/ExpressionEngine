@@ -149,7 +149,9 @@ WysiHat.Editor.prototype = {
 	 * paragraph tags to work with.
 	 */
 	_emptyChar: String.fromCharCode(8203),
-	_empty: '<p>'+this._emptyChar+'</p>',
+	_empty: function () {
+	    return '<p>'+this._emptyChar+'</p>';
+	},
 
 	/**
 	 * Create the main editor html
@@ -270,7 +272,7 @@ WysiHat.Editor.prototype = {
 			 val == '<p></p>' ||
 			 val == '<p>\0</p>')
 		{
-			$el.html(this._empty);
+			$el.html(this._empty());
 
 			r = document.createRange();
 			s.removeAllRanges();
@@ -586,7 +588,7 @@ WysiHat.Paster = (function() {
 						 html == '<br/>' ||
 						 html == '<p></p>' ||
 						 html == '<p>\0</p>' ||
-						 html == Editor._empty)
+						 html == Editor._empty())
 					{
 						// on an empty editor we want to completely replace
 						// otherwise the first paragraph gets munged

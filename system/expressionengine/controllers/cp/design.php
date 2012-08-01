@@ -4154,9 +4154,20 @@ class Design extends CI_Controller {
 			
 				$group_name = substr($group, 0, -6); // remove .group
 
+				// DB column limits template and group name to 50 characters
+				if (strlen($group_name) > 50)
+				{
+					continue;
+				}	
+
 				foreach ($templates as $template)
 				{
 					if (is_array($template))
+					{
+						continue;
+					}
+
+					if (strlen($template) > 50)
 					{
 						continue;
 					}
@@ -4490,8 +4501,15 @@ class Design extends CI_Controller {
 				{
 					continue;
 				}
-
+				
 				$group_name = substr($group, 0, -6); // remove .group
+
+				// DB column limits template and group name to 50 characters
+				if (strlen($group_name) > 50)
+				{
+					continue;
+				}
+
 				$group_id = '';
 
 				if ( ! preg_match("#^[a-zA-Z0-9_\-]+$#i", $group_name))
@@ -4504,12 +4522,12 @@ class Design extends CI_Controller {
 				{
 					if ( ! $this->api->is_url_safe($group_name))
 					{
-						show_error(lang('illegal_characters').NBS.NBS.'a'.htmlentities($group_name));
+						continue;
 					}
 
 					if (in_array($group_name, $this->reserved_names))
 					{
-						show_error(lang('reserved_name').NBS.NBS.htmlentities($group_name));
+						continue;
 					}
 				
 					$data = array(
@@ -4557,6 +4575,7 @@ class Design extends CI_Controller {
 
 					$ext_length = strlen($ext)+1;
 					$template_name = substr($template, 0, -$ext_length);
+				
 					$template_type = array_search('.'.$ext, $this->api_template_structure->file_extensions);
 
 					if (isset($existing[$group][$template_name]))
@@ -4566,9 +4585,14 @@ class Design extends CI_Controller {
 
 					if ( ! $this->api->is_url_safe($template_name))
 					{
-						show_error(lang('illegal_characters').NBS.NBS.htmlentities($template_name));
+						continue;
 					}
 								
+					if (strlen($template_name) > 50)
+					{
+						continue;
+					}
+
 
 					$data = array(
 									'group_id'				=> $group_id,

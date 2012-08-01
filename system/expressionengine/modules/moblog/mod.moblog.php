@@ -1220,7 +1220,7 @@ class Moblog {
 
 		$this->EE->api_channel_fields->setup_entry_settings($data['channel_id'], $data);
 		
-		$result = $this->EE->api_channel_entries->submit_new_entry($data['channel_id'], $data);
+		$result = $this->EE->api_channel_entries->save_entry($data, $data['channel_id']);
 
 		if ($result)
 		{

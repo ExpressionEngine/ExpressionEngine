@@ -2015,7 +2015,9 @@ class EE_Template {
 	
 		$hidden_indicator = ($this->EE->config->item('hidden_template_indicator') === FALSE) ? '.' : $this->EE->config->item('hidden_template_indicator');			
 		
-		if ($this->depth == 0 AND substr($template, 0, 1) == $hidden_indicator)
+		if ($this->depth == 0 
+			AND substr($template, 0, 1) == $hidden_indicator
+			AND $this->EE->uri->page_query_string == '') // Allow hidden templates to be used for Pages requests
 		{
 			/* -------------------------------------------
 			/*	Hidden Configuration Variable
@@ -2375,7 +2377,13 @@ class EE_Template {
 		}
 		
 		$template = ($template == '') ? 'index' : $template;
-		
+
+		// Template Groups and Templates are limited to 50 characters in db
+		if (strlen($template) > 50 OR strlen($template_group) > 50)
+		{
+			return FALSE;
+		}
+				
 		if ($db_check)
 		{
 			$this->EE->db->from('templates');
@@ -2926,13 +2934,13 @@ class EE_Template {
 
 		foreach ($user_vars as $val)
 		{
-			if (isset($this->EE->session->userdata[$val]) AND ($val == 'group_description' OR strval($this->EE->session->userdata[$val]) != ''))
-			{
-				$str = str_replace(LD.$val.RD, $this->EE->session->userdata[$val], $str);				 
-				$str = str_replace('{out_'.$val.'}', $this->EE->session->userdata[$val], $str);
-				$str = str_replace('{global->'.$val.'}', $this->EE->session->userdata[$val], $str);
-				$str = str_replace('{logged_in_'.$val.'}', $this->EE->session->userdata[$val], $str);
-			}
+			$replace = (isset($this->EE->session->userdata[$val]) && strval($this->EE->session->userdata[$val]) != '') ? 
+				$this->EE->session->userdata[$val] : '';
+				
+			$str = str_replace(LD.$val.RD, $replace, $str);				 
+			$str = str_replace('{out_'.$val.'}', $replace, $str);
+			$str = str_replace('{global->'.$val.'}', $replace, $str);
+			$str = str_replace('{logged_in_'.$val.'}', $replace, $str);
 		}
 		
 		// Path variable: {path=group/template}		

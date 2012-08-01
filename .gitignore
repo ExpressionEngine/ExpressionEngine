@@ -1,5 +1,6 @@
 .DS_Store
 Thumbs.db
+env_local.rb
 system/expressionengine/config/config.php
 system/expressionengine/config/database.php
 system/expressionengine/config/config1x.php

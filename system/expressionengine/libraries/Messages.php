@@ -3147,7 +3147,7 @@ DOH;
 				
 				if ($this->allegiance == 'user')
 				{
-					$this->single_parts['path']['send_pm'] = $this->_create_path('pm').$this->buddies[$i]['5'].'/';
+					$this->single_parts['path']['send_pm'] = $this->_create_path('pm').'/'.$this->buddies[$i]['5'].'/';
 				}
 				else
 				{
