@@ -432,7 +432,7 @@ class Api_channel_entries extends Api {
 			{
 				if ( ! in_array($row['channel_id'], $allowed_channels))
 				{
-					return FALSE;
+					return $this->_set_error('unauthorized_for_this_channel');
 				}
 			}
 
@@ -447,7 +447,7 @@ class Api_channel_entries extends Api {
 			{
 				if ($this->EE->session->userdata('can_delete_all_entries') != 'y')
 				{
-					return $this->_set_error('unauthorized_to_delete_self');
+					return $this->_set_error('unauthorized_to_delete_others');
 				}
 			}
 
