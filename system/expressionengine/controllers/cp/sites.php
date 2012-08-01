@@ -2064,6 +2064,7 @@ class Sites extends CI_Controller {
 			'exp_search',
 			'exp_search_log',
 			'exp_sites',
+			'exp_snippets',
 			'exp_specialty_templates',
 			'exp_stats',
 			'exp_statuses',

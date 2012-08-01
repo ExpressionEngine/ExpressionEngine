@@ -155,25 +155,7 @@ class EE_Extensions {
 		$this->EE->addons->is_package('');
 		
 		// Retrieve arguments for function
-		if (is_object($parameter_one) && is_php('5.0.0') == TRUE)
-		{
-			$php4_object = FALSE;
-			$args = array_slice(func_get_args(), 1);
-		}
-		else
-		{
-			$php4_object = TRUE;
-			$args = array_slice(func_get_args(), 1);
-		}
-
-		if (is_php('5'))
-		{
-			foreach($args as $k => $v)
-			{
-				$php5_args[$k] =& $args[$k];
-			}
-		}
-		
+		$args = array_slice(func_get_args(), 1);
 		
 		// Go through all the calls for this hook
 		foreach($this->extensions[$which] as $priority => $calls)
@@ -249,22 +231,10 @@ class EE_Extensions {
 				{
 					$this->EE->TMPL->log_item('Calling Extension Class/Method: '.$class_name.'/'.$method);
 				}
-
-				if ($php4_object === TRUE)
-				{
-					$this->last_call = call_user_func_array(array(&$this->OBJ[$class_name], $method), array(&$parameter_one) + $args);
-				}
-				elseif ( ! empty($php5_args))
-				{
-					$this->last_call = call_user_func_array(array(&$this->OBJ[$class_name], $method), $php5_args);
-				}
-				else
-				{
-					$this->last_call = call_user_func_array(array(&$this->OBJ[$class_name], $method), $args);
-				}
+				
+				$this->last_call = call_user_func_array(array(&$this->OBJ[$class_name], $method), $args);
 				
 				$this->in_progress = '';
-				
 
 				$this->EE->load->remove_package_path($path);
 
