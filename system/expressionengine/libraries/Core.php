@@ -86,7 +86,7 @@ class EE_Core {
 		define('IS_FREELANCER',	FALSE);
 		define('APP_NAME',		'ExpressionEngine'.(IS_FREELANCER ? ' Freelancer' : ''));
 		define('APP_BUILD',		'20120606');
-		define('APP_VER',		'2.5.2');
+		define('APP_VER',		'2.5.3');
 		define('SLASH',			'&#47;');
 		define('LD',			'{');
 		define('RD',			'}');
