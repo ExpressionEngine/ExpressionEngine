@@ -981,7 +981,7 @@ class Admin_content extends CI_Controller {
 		
 		if ( ! isset($data['cat_group']) OR $data['cat_group'] == '')
 		{
-			$data['cat_group'] = NULL;
+			$data['cat_group'] = '';
 		}
 		
 
