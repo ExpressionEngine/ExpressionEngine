@@ -126,7 +126,17 @@ class Content_publish extends CI_Controller {
 	public function entry_form()
 	{
 		$this->load->library('form_validation');
-		
+
+        // Needed for custom tabs loaded by layout_model from the db table
+        // exp_layout_publish where the whole layout (fields and tabs) are
+        // stored in serialized form.  This language file contains the
+        // localized names for the fields and tabs.  We may want to push
+        // this call deeper down the rabbit hole so that it is simply
+        // always available whenever we load the layout_model.  Or this
+        // may be the only spot we use it.  Not sure, so sticking it
+        // here for now.  -Daniel B.
+        $this->lang->loadfile('publish_tabs_custom');		
+
 		$entry_id	= (int) $this->input->get_post('entry_id');
 		$channel_id	= (int) $this->input->get_post('channel_id');
 		
@@ -2369,7 +2379,7 @@ class Content_publish extends CI_Controller {
 					{
 						$settings[$val['field_id']]['field_data'] = $entry_data[$val['field_id']];
 					}
-					
+				    	
 					$this->_tab_labels[$tab]	= lang($tab);
 					$this->_module_tabs[$tab][] = array(
 													'id' 	=> $val['field_id'],
