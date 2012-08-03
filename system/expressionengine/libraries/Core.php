@@ -666,7 +666,7 @@ class EE_Core {
 			}
 		}
 	
-		if ( ! isset($last_clear) && $this->EE->config->item('enable_online_user_tracking') != 'n')
+		if ( ! isset($last_clear))
 		{
 			$this->EE->db->select('last_cache_clear');
 			$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
