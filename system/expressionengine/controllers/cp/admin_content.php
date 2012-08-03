@@ -1969,12 +1969,12 @@ class Admin_content extends CI_Controller {
 			$dq_row = $data_query->row_array();
 			$this->load->model('addons_model');
 			$plugins = $this->addons_model->get_plugin_formatting();
-			
+            
+            $vars['custom_format_options']['none'] = 'None';
 			foreach ($plugins as $k=>$v)
 			{
 				$vars['custom_format_options'][$k] = $v;
-			}			
-
+			}
 			foreach ($field_query->result_array() as $row)
 			{
 				$vars['cat_custom_fields'][$row['field_id']]['field_content'] = ( ! isset($dq_row['field_id_'.$row['field_id']])) ? '' : $dq_row['field_id_'.$row['field_id']];
