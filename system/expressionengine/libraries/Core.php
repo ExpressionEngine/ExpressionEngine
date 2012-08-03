@@ -635,7 +635,7 @@ class EE_Core {
 			}
 		}
 
-		require APPPATH.'libraries/Template.php';
+		require_once APPPATH.'libraries/Template.php';
 
 		$this->EE->TMPL = new EE_Template();
 
