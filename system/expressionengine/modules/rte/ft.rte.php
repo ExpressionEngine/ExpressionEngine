@@ -183,7 +183,20 @@ class Rte_ft extends EE_Fieldtype {
 
 	function replace_tag($data, $params = '', $tagdata = '')
 	{
-		return $this->EE->functions->encode_ee_tags($this->EE->typography->parse_file_paths($data));
+		// Experimental parameter, do not use
+		if (isset($params['raw_output']) && $params['raw_output'] == 'yes')
+		{
+			return $this->EE->functions->encode_ee_tags($data);
+		}
+		
+		return $this->EE->typography->parse_type(
+			$this->EE->functions->encode_ee_tags(
+				$this->EE->typography->parse_file_paths($data)
+			),
+			array(
+				'auto_links' => $this->row['channel_auto_link_urls']
+			)
+		);
 	}
 	
 	// --------------------------------------------------------------------
