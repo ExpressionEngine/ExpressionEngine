@@ -103,19 +103,7 @@ class EE_Input extends CI_Input {
 			{
 				if ($filter_keys == TRUE)
 				{
-					if (is_array($val))
-					{
-						$data = '';
-						
-						if ((int) config_item('debug') == 2)
-						{
-							$data = '<br>'.htmlentities(print_r($data, TRUE));
-						}
-						
-						set_status_header(503);
-						exit(sprintf("Invalid GET Data - Array %s", $data));
-					}
-					elseif (preg_match("#(;|\?|exec\s*\(|system\s*\(|passthru\s*\(|cmd\s*\(|[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})#i", $val))
+					if (preg_match("#(;|\?|exec\s*\(|system\s*\(|passthru\s*\(|cmd\s*\(|[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})#i", $val))
 					{
 						$data = ((int) config_item('debug') == 2) ? '<br>'.htmlentities($val) : '';
 						
