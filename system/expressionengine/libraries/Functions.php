@@ -2716,7 +2716,7 @@ class EE_Functions {
 				{
 					if (array_key_exists($x[$i], $vars))
 					{
-						$data[$x[$i]] = $vars[$x[$i]];
+						$data[$x[$i]] = trim($vars[$x[$i]]);
 					}
 					elseif($embedded_tags === TRUE && ! is_numeric($x[$i]))
 					{
