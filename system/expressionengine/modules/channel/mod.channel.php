@@ -233,7 +233,7 @@ class Channel {
 
 		$save_cache = FALSE;
 		
-		if ($this->EE->config->item('enable_sql_caching') == 'y')
+		if ($this->EE->config->item('enable_sql_caching') == 'y' && $this->EE->TMPL->fetch_param('author_id') != 'CURRENT_USER')
 		{
 			if (FALSE == ($this->sql = $this->fetch_cache()))
 			{
