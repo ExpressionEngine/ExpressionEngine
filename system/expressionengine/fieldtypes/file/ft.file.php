@@ -232,11 +232,19 @@ class File_ft extends EE_Fieldtype {
 			{
 				if ($params['wrap'] == 'link')
 				{
-					return '<a href="'.$full_path.'">'.$file_info['filename'].'</a>';
+					$properties = ( ! empty($file_info['file_properties'])) ? ' '.$file_info['file_properties'] : '';
+					
+					return $file_info['file_pre_format']
+						.'<a href="'.$full_path.'"'.$properties.'>'.$file_info['filename'].'</a>'
+						.$file_info['file_post_format'];
 				}
 				elseif ($params['wrap'] == 'image')
 				{
-					return '<img src="'.$full_path.'" alt="'.$file_info['filename'].'" />';
+					$properties = ( ! empty($file_info['image_properties'])) ? ' '.$file_info['image_properties'] : '';
+					
+					return $file_info['image_pre_format']
+						.'<img src="'.$full_path.'"'.$properties.' alt="'.$file_info['filename'].'" />'
+						.$file_info['image_post_format'];
 				}
 			}
 
