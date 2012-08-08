@@ -33,6 +33,7 @@ class File_field {
 	var $_dir_ids = array();
 	
 	var $_manipulations = array();
+	var $_upload_prefs = array();
 	
 	public function __construct()
 	{
@@ -181,8 +182,6 @@ class File_field {
 	 */
 	public function validate($data, $field_name, $required = 'n')
 	{
-		$this->EE->load->model('file_upload_preferences_model');
-		
 		$dir_field		= $field_name.'_directory';
 		$hidden_field	= $field_name.'_hidden';
 		$hidden_dir		= ($this->EE->input->post($field_name.'_hidden_dir')) ? $this->EE->input->post($field_name.'_hidden_dir') : '';
@@ -192,7 +191,7 @@ class File_field {
 		$_POST[$field_name] = '';
 		
 		// Default directory
-		$upload_directories = $this->EE->file_upload_preferences_model->get_file_upload_preferences($this->EE->session->userdata('group_id'));
+		$upload_directories = $this->_get_upload_prefs();
 		
 		// Directory selected - switch
 		$filedir = ($this->EE->input->post($dir_field)) ? $this->EE->input->post($dir_field) : '';
@@ -433,9 +432,6 @@ class File_field {
 	 */
 	public function parse_field($data)
 	{
-		// Get cached upload directories
-		$file_dirs = $this->_file_dirs();
-		
 		// If the file field is in the "{filedir_n}image.jpg" format
 		if (preg_match('/^{filedir_(\d+)}/', $data, $matches))
 		{
@@ -472,9 +468,13 @@ class File_field {
 			return FALSE;
 		}
 		
+		// Get cached upload directories
+		$upload_dir = $this->_get_upload_prefs();
+		$upload_dir = $upload_dir[$file['upload_location_id']];
+		
 		// Set additional data based on what we've gathered
 		$file['raw_output']	= $data;
-		$file['path'] 		= (isset($file_dirs[$file['upload_location_id']])) ? $file_dirs[$file['upload_location_id']] : '';
+		$file['path'] 		= (isset($upload_dir['url'])) ? $upload_dir['url'] : '';
 		$file['extension'] 	= substr(strrchr($file['file_name'], '.'), 1);
 		$file['filename'] 	= basename($file['file_name'], '.'.$file['extension']); // backwards compatibility
 		$file['url'] 		= $file['path'].$file['file_name'];
@@ -483,6 +483,16 @@ class File_field {
 		
 		$file['width'] 	= isset($dimensions[1]) ? $dimensions[1] : '';
 		$file['height'] = isset($dimensions[0]) ? $dimensions[0] : '';
+		
+		// Pre and post formatting
+		$file['image_pre_format'] = $upload_dir['pre_format'];
+		$file['image_post_format'] = $upload_dir['post_format'];
+		$file['file_pre_format'] = $upload_dir['file_pre_format'];
+		$file['file_post_format'] = $upload_dir['file_post_format'];
+		
+		// Image/file properties
+		$file['image_properties'] = $upload_dir['properties'];
+		$file['file_properties'] = $upload_dir['file_properties'];
 		
 		$manipulations = $this->_get_dimensions_by_dir_id($file['upload_location_id']);
 		
@@ -544,6 +554,27 @@ class File_field {
 		}
 		
 		return $this->EE->session->cache(__CLASS__, 'file_dirs');
+	}
+	
+	// ------------------------------------------------------------------------
+	
+	/**
+	 * Get upload preferences and keep it cached in the class
+	 * 
+	 * @return array Array of upload preferences
+	 */
+	private function _get_upload_prefs()
+	{
+		if (empty($this->_upload_prefs))
+		{
+			$this->EE->load->model('file_upload_preferences_model');
+			
+			$this->_upload_prefs = $this->EE->file_upload_preferences_model->get_file_upload_preferences(
+				$this->EE->session->userdata('group_id')
+			);
+		}
+		
+		return $this->_upload_prefs;
 	}
 	
 	// ------------------------------------------------------------------------
