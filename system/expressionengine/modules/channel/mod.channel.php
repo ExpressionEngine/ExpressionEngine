@@ -2309,10 +2309,16 @@ class Channel {
 
 		if ( ! empty($this->EE->TMPL->search_fields))
 		{
+            $sites = ($this->EE->TMPL->site_ids ? $this->EE->TMPL->site_ids : array($this->EE->config->item('site_id'))); 
 			foreach ($this->EE->TMPL->search_fields as $field_name => $terms)
 			{
-				if (isset($this->cfields[$this->EE->config->item('site_id')][$field_name]))
-				{
+                foreach($sites as $site_name=>$site_id) 
+                {
+                    if ( ! isset($this->cfields[$site_id][$field_name]))
+                    {
+                        continue;
+                    }
+
 					if (strncmp($terms, '=', 1) ==  0)
 					{
 						/** ---------------------------------------
@@ -2326,7 +2332,7 @@ class Channel {
 						{
 							$terms = str_replace('IS_EMPTY', '', $terms);
 
-							$add_search = $this->EE->functions->sql_andor_string($terms, 'wd.field_id_'.$this->cfields[$this->EE->config->item('site_id')][$field_name]);
+							$add_search = $this->EE->functions->sql_andor_string($terms, 'wd.field_id_'.$this->cfields[$site_id][$field_name]);
 
 							// remove the first AND output by $this->EE->functions->sql_andor_string() so we can parenthesize this clause
 							$add_search = substr($add_search, 3);
@@ -2335,16 +2341,16 @@ class Channel {
 
 							if (strncmp($terms, 'not ', 4) == 0)
 							{
-								$sql .= 'AND ('.$add_search.' '.$conj.' wd.field_id_'.$this->cfields[$this->EE->config->item('site_id')][$field_name].' != "") ';
+								$sql .= 'AND ('.$add_search.' '.$conj.' wd.field_id_'.$this->cfields[$site_id][$field_name].' != "") ';
 							}
 							else
 							{
-								$sql .= 'AND ('.$add_search.' '.$conj.' wd.field_id_'.$this->cfields[$this->EE->config->item('site_id')][$field_name].' = "") ';
+								$sql .= 'AND ('.$add_search.' '.$conj.' wd.field_id_'.$this->cfields[$site_id][$field_name].' = "") ';
 							}
 						}
 						else
 						{
-							$sql .= $this->EE->functions->sql_andor_string($terms, 'wd.field_id_'.$this->cfields[$this->EE->config->item('site_id')][$field_name]).' ';
+							$sql .= $this->EE->functions->sql_andor_string($terms, 'wd.field_id_'.$this->cfields[$site_id][$field_name]).' ';
 						}
 					}
 					else
@@ -2380,7 +2386,7 @@ class Channel {
 						{
 							if ($term == 'IS_EMPTY')
 							{
-								$sql .= ' wd.field_id_'.$this->cfields[$this->EE->config->item('site_id')][$field_name].' '.$like.' "" '.$andor;
+								$sql .= ' wd.field_id_'.$this->cfields[$site_id][$field_name].' '.$like.' "" '.$andor;
 							}
 							elseif (strpos($term, '\W') !== FALSE) // full word only, no partial matches
 							{
@@ -2389,11 +2395,11 @@ class Channel {
 								// Note: MySQL's nutty POSIX regex word boundary is [[:>:]]
 								$term = '([[:<:]]|^)'.preg_quote(str_replace('\W', '', $term)).'([[:>:]]|$)';
 
-								$sql .= ' wd.field_id_'.$this->cfields[$this->EE->config->item('site_id')][$field_name].$not.'REGEXP "'.$this->EE->db->escape_str($term).'" '.$andor;
+								$sql .= ' wd.field_id_'.$this->cfields[$site_id][$field_name].$not.'REGEXP "'.$this->EE->db->escape_str($term).'" '.$andor;
 							}
 							else
 							{
-								$sql .= ' wd.field_id_'.$this->cfields[$this->EE->config->item('site_id')][$field_name].' '.$like.' "%'.$this->EE->db->escape_like_str($term).'%" '.$andor;
+								$sql .= ' wd.field_id_'.$this->cfields[$site_id][$field_name].' '.$like.' "%'.$this->EE->db->escape_like_str($term).'%" '.$andor;
 							}
 						}
 
