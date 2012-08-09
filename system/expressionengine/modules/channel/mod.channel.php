@@ -5480,11 +5480,11 @@ class Channel {
 			}
 		}
 
-		$tit_chunk = (preg_match("/".LD."entry_titles\s*".RD."(.*?)".LD.'\/'."entry_titles\s*".RD."/s", $this->EE->TMPL->tagdata, $match)) ? $match[1] : '';
+		$title_chunk = (preg_match("/".LD."entry_titles\s*".RD."(.*?)".LD.'\/'."entry_titles\s*".RD."/s", $this->EE->TMPL->tagdata, $match)) ? $match[1] : '';
 
 		$t_path = array();
 
-		if (preg_match_all("#".LD."path(=.+?)".RD."#", $tit_chunk, $matches))
+		if (preg_match_all("#".LD."path(=.+?)".RD."#", $title_chunk, $matches))
 		{
 			for ($i = 0; $i < count($matches[0]); $i++)
 			{
@@ -5494,7 +5494,7 @@ class Channel {
 
 		$id_path = array();
 
-		if (preg_match_all("#".LD."entry_id_path(=.+?)".RD."#", $tit_chunk, $matches))
+		if (preg_match_all("#".LD."entry_id_path(=.+?)".RD."#", $title_chunk, $matches))
 		{
 			for ($i = 0; $i < count($matches[0]); $i++)
 			{
@@ -5504,7 +5504,7 @@ class Channel {
 
 		$entry_date = array();
 
-		preg_match_all("/".LD."entry_date\s+format\s*=\s*(\042|\047)([^\\1]*?)\\1".RD."/s", $tit_chunk, $matches);
+		preg_match_all("/".LD."entry_date\s+format\s*=\s*(\042|\047)([^\\1]*?)\\1".RD."/s", $title_chunk, $matches);
 		{
 			$j = count($matches[0]);
 			for ($i = 0; $i < $j; $i++)
@@ -5519,12 +5519,12 @@ class Channel {
 
 		if ($this->EE->TMPL->fetch_param('style') == '' OR $this->EE->TMPL->fetch_param('style') == 'nested')
 		{
-			if ($result->num_rows() > 0 && $tit_chunk != '')
+			if ($result->num_rows() > 0 && $title_chunk != '')
 			{
 					$i = 0;
 				foreach($result->result_array() as $row)
 				{
-					$chunk = "<li>".str_replace(LD.'category_name'.RD, '', $tit_chunk)."</li>";
+					$chunk = "<li>".str_replace(LD.'category_name'.RD, '', $title_chunk)."</li>";
 
 					foreach($t_path as $tkey => $tval)
 					{
@@ -5766,7 +5766,7 @@ class Channel {
 						{
 							$chunk = str_replace(array(LD.'title'.RD, LD.'category_name'.RD),
 												 array($trow['title'],$row['cat_name']),
-												 $tit_chunk);
+												 $title_chunk);
 
 							foreach($t_path as $tkey => $tval)
 							{
