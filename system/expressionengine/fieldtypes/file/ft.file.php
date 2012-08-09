@@ -232,10 +232,10 @@ class File_ft extends EE_Fieldtype {
 			{
 				if ($params['wrap'] == 'link')
 				{
-					$properties = ( ! empty($file_info['file_properties'])) ? ' '.$file_info['file_properties'] : '';
+					$this->EE->load->helper('url_helper');
 					
 					return $file_info['file_pre_format']
-						.'<a href="'.$full_path.'"'.$properties.'>'.$file_info['filename'].'</a>'
+						.anchor($full_path, $file_info['filename'], $file_info['file_properties'])
 						.$file_info['file_post_format'];
 				}
 				elseif ($params['wrap'] == 'image')
