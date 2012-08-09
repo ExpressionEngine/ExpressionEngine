@@ -1,23 +1,8 @@
-<?php
-if ($EE_view_disable !== TRUE)
-{
-	$this->load->view('_shared/header');
-	$this->load->view('_shared/main_menu');
-	$this->load->view('_shared/sidebar');
-	$this->load->view('_shared/breadcrumbs');
-}
-?>
+<?php extend_template('default') ?>
+		
+<?=form_error('general_error')?>
 
-<div id="mainContent"<?=$maincontent_state?>>
-	<?php $this->load->view('_shared/right_nav')?>
-	<div class="contents">
-
-		<div class="heading"><h2 class="edit"><?=$cp_page_title?></h2></div>
-		<div class="pageContents">
-			
-			<?=form_error('general_error')?>
-
-		<?=form_open($form_url, '', $form_hidden)?>
+<?=form_open($form_url, '', $form_hidden)?>
 
 		<table id="entries" class="mainTable padTable" cellspacing="0" cellpadding="0" border="0">
 		<tbody>
@@ -124,21 +109,6 @@ if ($EE_view_disable !== TRUE)
 		</tbody>
 		</table>
 
-		<p><?=form_submit('site_edit_submit', lang('submit'), 'class="submit"')?></p>
-		
-
-		<?=form_close()?>
-		</div>
-
-	</div> <!-- contents -->
-</div> <!-- mainContent -->
-
-<?php
-if ($EE_view_disable !== TRUE)
-{
-	$this->load->view('_shared/accessories');
-	$this->load->view('_shared/footer');
-}
-
-/* End of file edit_form.php */
-/* Location: ./themes/cp_themes/default/sites/edit_form.php */
+	<p><?=form_submit('site_edit_submit', lang('submit'), 'class="submit"')?></p>
+	
+<?=form_close()?>

@@ -111,7 +111,7 @@ class EE_Javascript extends CI_Javascript {
 			}
 			
 			if (typeof EE === "undefined" || ! EE) {
-				var EE = '.$this->generate_json($this->global_vars, TRUE).';
+				var EE = '.json_encode($this->global_vars).';
 			}
 		');
 

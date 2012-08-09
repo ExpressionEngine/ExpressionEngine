@@ -44,6 +44,11 @@
 $route['default_controller'] = "ee/index";
 $route['404_override'] = "ee/index";
 
+if (defined('REQ') && REQ == 'CP')
+{
+	$route['default_controller'] = "cp/homepage/index";
+	$route['404_override'] = "cp/homepage/index";
+}
 
 /* End of file routes.php */
 /* Location: ./system/expressionengine/config/routes.php */

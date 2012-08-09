@@ -25,7 +25,18 @@
  */
 class Updater {
 	
+	private $EE;
 	var $version_suffix = '';
+	
+	/**
+	 * Constructor
+	 */
+	public function __construct()
+	{
+		$this->EE =& get_instance();
+	}
+	
+	// --------------------------------------------------------------------
 	
 	/**
 	 * Do Update
@@ -34,10 +45,50 @@ class Updater {
 	 */
 	public function do_update()
 	{
+		$this->EE->load->dbforge();
+		
+		$this->_update_session_table();
+		
 		return TRUE;
 	}
+	
+	// --------------------------------------------------------------------
+
+	/**
+	 * update Session table
+	 *
+	 * @return TRUE
+	 */
+	private function _update_session_table()
+	{
+		if ( ! $this->EE->db->field_exists('fingerprint', 'sessions'))
+		{
+			$this->EE->dbforge->add_column(
+				'sessions',
+				array(
+					'fingerprint' => array(
+						'type'			=> 'varchar',
+						'constraint'	=> 40
+					),
+					'sess_start' => array(
+						'type'			=> 'int',
+						'constraint'	=> 10,
+						'unsigned'		=> TRUE,
+						'default'		=> 0,
+						'null'			=> FALSE
+					)
+				),
+				'user_agent'
+			);	
+		}
+		
+		return TRUE;
+	}
+	
+	// --------------------------------------------------------------------
+
 }	
 /* END CLASS */
 
-/* End of file ud_252.php */
-/* Location: ./system/expressionengine/installer/updates/ud_252.php */
+/* End of file ud_260.php */
+/* Location: ./system/expressionengine/installer/updates/ud_260.php */
