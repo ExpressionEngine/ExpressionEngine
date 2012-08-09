@@ -635,9 +635,7 @@ class EE_Core {
 			}
 		}
 
-		require APPPATH.'libraries/Template.php';
-
-		$this->EE->TMPL = new EE_Template();
+		$this->EE->load->library('template', NULL, 'TMPL');
 
 		// Parse the template
 		$this->EE->TMPL->run_template_engine($template_group, $template);
