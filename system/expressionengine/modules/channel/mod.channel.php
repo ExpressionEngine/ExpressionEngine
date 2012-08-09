@@ -5807,10 +5807,6 @@ class Channel {
 					$parsed_row = preg_replace($titles_pattern, $titles_parsed, $parsed_row);
 					
 					$return_data .= $parsed_row;
-					
-					// Reset concatenated chunks for the next row
-					$categories_parsed = '';
-					$titles_parsed = '';
 				}
 				
 				if ($this->EE->TMPL->fetch_param('backspace'))
