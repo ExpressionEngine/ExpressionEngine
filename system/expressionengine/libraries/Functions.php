@@ -2764,11 +2764,6 @@ class EE_Functions {
 				
 				if ($data[$key] != 'TRUE' && $data[$key] != 'FALSE' && ($key != $data[$key] OR $embedded_tags !== TRUE))
 				{
-					if (stristr($data[$key], '<script'))
-					{
-						$data[$key] = preg_replace("/<script.*?".">.*?<\/script>/is", '', $data[$key]); // <? Fixes BBEdit display bug
-					}
-					
 					$data[$key] = '"'.
 								  str_replace(array("'", '"', '(', ')', '$', '{', '}', "\n", "\r", '\\'), 
 											  array('&#39;', '&#34;', '&#40;', '&#41;', '&#36;', '', '', '', '', '&#92;'), 
