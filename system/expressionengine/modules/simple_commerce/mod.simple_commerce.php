@@ -462,7 +462,7 @@ class Simple_commerce {
 			// Not our paypal account receiving money, so invalid - 
 			// and we key off txn_type for our conditional handling
 
-			if (strtolower($paypal_account) != trim($this->post['receiver_email']) OR ! isset($this->post['txn_type']))
+			if (strtolower($paypal_account) != trim(strtolower($this->post['receiver_email'])) OR ! isset($this->post['txn_type']))
 			{
 				return FALSE;
 			}
