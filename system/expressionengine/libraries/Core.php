@@ -222,8 +222,29 @@ class EE_Core {
 		unset($theme_path);
 		
 		// Define Third Party Theme Path and URL
-		define('PATH_THIRD_THEMES',	PATH_THEMES.'third_party/');
-		define('URL_THIRD_THEMES',	$this->EE->config->slash_item('theme_folder_url').'third_party/');
+		if ($this->EE->config->item('path_third_themes'))
+		{
+			define(
+				'PATH_THIRD_THEMES',
+				rtrim(realpath($this->EE->config->item('path_third_themes')), '/').'/'
+			);
+		}
+		else
+		{
+			define('PATH_THIRD_THEMES',	PATH_THEMES.'third_party/');
+		}
+		
+		if ($this->EE->config->item('url_third_themes'))
+		{
+			define(
+				'URL_THIRD_THEMES',
+				rtrim(realpath($this->EE->config->item('url_third_themes')), '/').'/'
+			);
+		}
+		else
+		{
+			define('URL_THIRD_THEMES',	$this->EE->config->slash_item('theme_folder_url').'third_party/');
+		}
 		
 		// Is this a stylesheet request?  If so, we're done.
 		if (isset($_GET['css']) OR (isset($_GET['ACT']) && $_GET['ACT'] == 'css')) 
