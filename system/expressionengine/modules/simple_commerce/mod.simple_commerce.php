@@ -462,7 +462,7 @@ class Simple_commerce {
 			// Not our paypal account receiving money, so invalid - 
 			// and we key off txn_type for our conditional handling
 
-			if (strtolower($paypal_account) != trim($this->post['receiver_email']) OR ! isset($this->post['txn_type']))
+			if (strtolower($paypal_account) != trim(strtolower($this->post['receiver_email'])) OR ! isset($this->post['txn_type']))
 			{
 				return FALSE;
 			}
@@ -576,7 +576,9 @@ class Simple_commerce {
 			// str_replace("\n", "\r\n", $value)
 			// put line feeds back to CR+LF as that's how PayPal sends them out
 			// otherwise multi-line data will be rejected as INVALID
-			$postdata .= "&$key=".urlencode(stripslashes(str_replace("\n", "\r\n", $value)));
+			// Note: get_magic_quotes_gpc FALSE as of PHP 5.4.0
+			$stripped = (get_magic_quotes_gpc()) ? stripslashes(str_replace("\n", "\r\n", $value)) : str_replace("\n", "\r\n", $value);
+			$postdata .= "&$key=".urlencode($stripped);
 		}
 
 		$ch=curl_init(); 
@@ -626,7 +628,9 @@ class Simple_commerce {
 			// str_replace("\n", "\r\n", $value)
 			// put line feeds back to CR+LF as that's how PayPal sends them out
 			// otherwise multi-line data will be rejected as INVALID
-			$postdata .= "&$key=".urlencode(stripslashes(str_replace("\n", "\r\n", $value)));
+			// Note: get_magic_quotes_gpc FALSE as of PHP 5.4.0
+			$stripped = (get_magic_quotes_gpc()) ? stripslashes(str_replace("\n", "\r\n", $value)) : str_replace("\n", "\r\n", $value);
+			$postdata .= "&$key=".urlencode($stripped);
 		}
 		
 		$info = '';

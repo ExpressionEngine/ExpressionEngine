@@ -1513,6 +1513,12 @@ class Api_channel_entries extends Api {
 				$this->EE->api_channel_categories->fetch_category_parents($data['category']);
 			}
 		}
+		
+		// Remove invisible characters from entry title
+		if (isset($data['title']))
+		{
+			$data['title'] = remove_invisible_characters($data['title']);
+		}
 
 		unset($data['category']);
 

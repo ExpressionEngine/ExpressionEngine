@@ -296,7 +296,7 @@ class Channel_entries_model extends CI_Model {
 						->where('member_id', $this->session->userdata('member_id'))
 						->get('ping_servers');
 
-		$member_id = ($qry->row('count') === 0) ? 0 : $this->session->userdata('member_id');
+		$member_id = ($qry->row('count') == 0) ? 0 : $this->session->userdata('member_id');
 
 		$qry = $this->db->select('id, server_name, is_default')
 						->where('site_id', $this->config->item('site_id'))

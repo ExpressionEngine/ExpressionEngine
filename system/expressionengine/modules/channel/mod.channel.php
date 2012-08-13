@@ -5522,8 +5522,12 @@ class Channel {
 		$channel_array = array();
 
 		$parent_only = ($this->EE->TMPL->fetch_param('parent_only') == 'yes') ? TRUE : FALSE;
-
-		$cat_chunk  = (preg_match("/".LD."categories\s*".RD."(.*?)".LD.'\/'."categories\s*".RD."/s", $this->EE->TMPL->tagdata, $match)) ? $match[1] : '';
+		
+		// Gather patterns for parsing and replacement of variable pairs
+		$categories_pattern = "/".LD."categories\s*".RD."(.*?)".LD.'\/'."categories\s*".RD."/s";
+		$titles_pattern = "/".LD."entry_titles\s*".RD."(.*?)".LD.'\/'."entry_titles\s*".RD."/s";
+		
+		$cat_chunk  = (preg_match($categories_pattern, $this->EE->TMPL->tagdata, $match)) ? $match[1] : '';
 
 		$c_path = array();
 
@@ -5535,11 +5539,11 @@ class Channel {
 			}
 		}
 
-		$tit_chunk = (preg_match("/".LD."entry_titles\s*".RD."(.*?)".LD.'\/'."entry_titles\s*".RD."/s", $this->EE->TMPL->tagdata, $match)) ? $match[1] : '';
+		$title_chunk = (preg_match($titles_pattern, $this->EE->TMPL->tagdata, $match)) ? $match[1] : '';
 
 		$t_path = array();
 
-		if (preg_match_all("#".LD."path(=.+?)".RD."#", $tit_chunk, $matches))
+		if (preg_match_all("#".LD."path(=.+?)".RD."#", $title_chunk, $matches))
 		{
 			for ($i = 0; $i < count($matches[0]); $i++)
 			{
@@ -5549,7 +5553,7 @@ class Channel {
 
 		$id_path = array();
 
-		if (preg_match_all("#".LD."entry_id_path(=.+?)".RD."#", $tit_chunk, $matches))
+		if (preg_match_all("#".LD."entry_id_path(=.+?)".RD."#", $title_chunk, $matches))
 		{
 			for ($i = 0; $i < count($matches[0]); $i++)
 			{
@@ -5559,7 +5563,7 @@ class Channel {
 
 		$entry_date = array();
 
-		preg_match_all("/".LD."entry_date\s+format\s*=\s*(\042|\047)([^\\1]*?)\\1".RD."/s", $tit_chunk, $matches);
+		preg_match_all("/".LD."entry_date\s+format\s*=\s*(\042|\047)([^\\1]*?)\\1".RD."/s", $title_chunk, $matches);
 		{
 			$j = count($matches[0]);
 			for ($i = 0; $i < $j; $i++)
@@ -5570,16 +5574,16 @@ class Channel {
 			}
 		}
 
-		$str = '';
+		$return_data = '';
 
 		if ($this->EE->TMPL->fetch_param('style') == '' OR $this->EE->TMPL->fetch_param('style') == 'nested')
 		{
-			if ($result->num_rows() > 0 && $tit_chunk != '')
+			if ($result->num_rows() > 0 && $title_chunk != '')
 			{
 					$i = 0;
 				foreach($result->result_array() as $row)
 				{
-					$chunk = "<li>".str_replace(LD.'category_name'.RD, '', $tit_chunk)."</li>";
+					$chunk = "<li>".str_replace(LD.'category_name'.RD, '', $title_chunk)."</li>";
 
 					foreach($t_path as $tkey => $tval)
 					{
@@ -5623,10 +5627,10 @@ class Channel {
 				$class_name = ($this->EE->TMPL->fetch_param('class') === FALSE) ? 'nav_cat_archive' : $this->EE->TMPL->fetch_param('class');
 
 				$this->category_list[0] = '<ul id="'.$id_name.'" class="'.$class_name.'">'."\n";
-
+				
 				foreach ($this->category_list as $val)
 				{
-					$str .= $val;
+					$return_data .= $val;
 				}
 			}
 		}
@@ -5721,7 +5725,7 @@ class Channel {
 
 			$sql .= " ORDER BY c.group_id, c.parent_id, c.cat_order";
 		 	$query = $this->EE->db->query($sql);
-
+			
 			if ($query->num_rows() > 0)
 			{
 				$this->EE->load->library('typography');
@@ -5734,9 +5738,14 @@ class Channel {
 				// Get category ID from URL for {if active} conditional
 				$this->EE->load->helper('segment');
 				$active_cat = parse_category($this->query_string);
-
+				
 				foreach($query->result_array() as $row)
 				{
+					// We'll concatenate parsed category and title chunks here for
+					// replacing in the tagdata later
+					$categories_parsed = '';
+					$titles_parsed = '';
+					
 					if ( ! isset($used[$row['cat_name']]))
 					{
 						$chunk = $cat_chunk;
@@ -5811,7 +5820,7 @@ class Channel {
 							$chunk = $this->EE->file_field->parse_string($chunk);
 						}
 						
-						$str .= $chunk;
+						$categories_parsed .= $chunk;
 						$used[$row['cat_name']] = TRUE;
 					}
 					
@@ -5821,7 +5830,7 @@ class Channel {
 						{
 							$chunk = str_replace(array(LD.'title'.RD, LD.'category_name'.RD),
 												 array($trow['title'],$row['cat_name']),
-												 $tit_chunk);
+												 $title_chunk);
 
 							foreach($t_path as $tkey => $tval)
 							{
@@ -5844,19 +5853,25 @@ class Channel {
 
 							}
 
-							$str .= $chunk;
+							$titles_parsed .= $chunk;
 						}
 					}
-
-					if ($this->EE->TMPL->fetch_param('backspace'))
-					{
-						$str = substr($str, 0, - $this->EE->TMPL->fetch_param('backspace'));
-					}
+					
+					// Parse row then concatenate on $return_data
+					$parsed_row = preg_replace($categories_pattern, $categories_parsed, $this->EE->TMPL->tagdata);
+					$parsed_row = preg_replace($titles_pattern, $titles_parsed, $parsed_row);
+					
+					$return_data .= $parsed_row;
+				}
+				
+				if ($this->EE->TMPL->fetch_param('backspace'))
+				{
+					$return_data = substr($return_data, 0, - $this->EE->TMPL->fetch_param('backspace'));
 				}
 			}
 		}
 
-		return $str;
+		return $return_data;
 	}
 
 	// ------------------------------------------------------------------------
