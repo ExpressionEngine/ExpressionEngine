@@ -1278,12 +1278,14 @@ class MyAccount extends CI_Controller {
 
 		$email = $query->row('email') ;
 
-		$subscription_data = $this->members->get_member_subscriptions($this->id, $rownum);
+		$subscription_data = $this->members->get_member_subscriptions($this->id, $rownum, $perpage);
 
 		$vars['subscriptions'] = $subscription_data['result_array'];
 
+		$id = ($this->id != $this->session->userdata('member_id')) ? AMP.'id='.$this->id : '';
+		
 		// Pagination stuff
-		$config['base_url'] = BASE.AMP.'C=myaccount'.AMP.'M=subscriptions';
+		$config['base_url'] = BASE.AMP.'C=myaccount'.AMP.'M=subscriptions'.$id;
 		$config['total_rows'] = $subscription_data['total_results'];
 		$config['per_page'] = $perpage;
 		$config['page_query_string'] = TRUE;
