@@ -2572,17 +2572,11 @@ class Content_publish extends CI_Controller {
 			}
 		}
 		
-		// We force an image button if it doesn't already exist
-		if ($has_image == FALSE && count($this->_file_manager['file_list']))
-		{
-			$button_js[] = array(
-				'name'			=> 'img',
-				'key'			=> '',
-				'replaceWith'	=> '',
-				'className'		=> 'btn_img'
-			);
-			$this->javascript->set_global('filebrowser.image_tag', '<img src="[![Link:!:http://]!]" alt="[![Alternative text]!]" />');			
-		}
+		// Set global variable for optional file browser button
+		$this->javascript->set_global(
+			'filebrowser.image_tag',
+			'<img src="[![Link:!:http://]!]" alt="[![Alternative text]!]" />'
+		);
 		
 		$markItUp = $markItUp_writemode = array(
 			'nameSpace'		=> "html",
