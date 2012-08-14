@@ -238,7 +238,7 @@ class EE_Core {
 		{
 			define(
 				'URL_THIRD_THEMES',
-				rtrim(realpath($this->EE->config->item('url_third_themes')), '/').'/'
+				rtrim($this->EE->config->item('url_third_themes'), '/').'/'
 			);
 		}
 		else
