@@ -1026,14 +1026,14 @@ class Channel {
     *  all of those fields will be searched.  
     *
     *****************************************************************/
-    protected function generate_sql_for_field_search($search_fields, $site_ids) 
+    protected function generate_field_search_sql($search_fields, $site_ids) 
     {	
         $sql = '';
         foreach ($search_fields as $field_name => $search_terms)
         {   
             $fields_sql = '';
             $sites = ($site_ids ? $site_ids : array($this->EE->config->item('site_id'))); 
-            foreach($sites as $site_name => $site_id) 
+            foreach ($sites as $site_name => $site_id) 
             {
                 $terms = $search_terms;
                 if ( ! isset($this->cfields[$site_id][$field_name]))
@@ -1058,13 +1058,13 @@ class Channel {
                         // 'not', much prefer to do it once and then set a 
                         // boolean.  But..
                         $not = false;
-                        if(strncmp($terms, 'not ', 4) == 0)
+                        if (strncmp($terms, 'not ', 4) == 0)
                         {
                             $not = true;
                             $terms = substr($terms, 4);
                         }
 
-                        if(strpos($terms, '|') !== false)
+                        if (strpos($terms, '|') !== false)
                         {  
                             $terms = str_replace('IS_EMPTY|', '', $terms);
                         }
@@ -1075,7 +1075,8 @@ class Channel {
                            
                         $add_search = '';
                         $conj = ''; 
-                        if(!empty($terms)) {
+                        if ( ! empty($terms)) 
+                        {
                             // ...it makes this a little hacky.  Gonna leave it for the moment,
                             // but may come back to it.
                             $add_search = $this->EE->functions->sql_andor_string(($not ? 'not ' . $terms : $terms), 'wd.field_id_'.$this->cfields[$site_id][$field_name]);
@@ -1156,7 +1157,7 @@ class Channel {
                 }
                 $fields_sql .= ' OR ';
             } // foreach($sites as $site_id)
-            if(!empty($fields_sql))
+            if ( ! empty($fields_sql))
             {
                 $sql .=  'AND (' . substr($fields_sql, 0, -3) . ')'; 
             }
