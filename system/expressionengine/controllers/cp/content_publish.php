@@ -2546,8 +2546,13 @@ class Content_publish extends CI_Controller {
 				
 				if (count($this->_file_manager['file_list']))
 				{
-					$button_js[] = array('name' => $button->tag_name, 'key' => $button->accesskey, 'replaceWith' => '', 'className' => $button->classname);
-					$this->javascript->set_global('filebrowser.image_tag', $button->tag_open);
+					$button_js[] = array(
+						'name'			=> $button->tag_name,
+						'key'			=> $button->accesskey,
+						'replaceWith'	=> '',
+						'className'		=> $button->classname.' id'.$button->id
+					);
+					$this->javascript->set_global('filebrowser.image_tag_'.$button->id, $button->tag_open);
 				}
 			}
 			elseif(strpos($button->classname, 'markItUpSeparator') !== FALSE)
@@ -2557,15 +2562,26 @@ class Content_publish extends CI_Controller {
 			}
 			else
 			{
-				$button_js[] = array('name' => $button->tag_name, 'key' => strtoupper($button->accesskey), 'openWith' => $button->tag_open, 'closeWith' => $button->tag_close, 'className' => $button->classname);
+				$button_js[] = array(
+					'name'		=> $button->tag_name,
+					'key'		=> strtoupper($button->accesskey),
+					'openWith'	=> $button->tag_open,
+					'closeWith'	=> $button->tag_close,
+					'className'	=> $button->classname.' id'.$button->id
+				);
 			}
 		}
 		
 		// We force an image button if it doesn't already exist
 		if ($has_image == FALSE && count($this->_file_manager['file_list']))
 		{
-					$button_js[] = array('name' => 'img', 'key' => '', 'replaceWith' => '', 'className' => 'btn_img');
-					$this->javascript->set_global('filebrowser.image_tag', '<img src="[![Link:!:http://]!]" alt="[![Alternative text]!]" />');			
+			$button_js[] = array(
+				'name'			=> 'img',
+				'key'			=> '',
+				'replaceWith'	=> '',
+				'className'		=> 'btn_img'
+			);
+			$this->javascript->set_global('filebrowser.image_tag', '<img src="[![Link:!:http://]!]" alt="[![Alternative text]!]" />');			
 		}
 		
 		$markItUp = $markItUp_writemode = array(
