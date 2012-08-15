@@ -472,6 +472,8 @@ class File_field {
 		$upload_dir = $this->_get_upload_prefs();
 		$upload_dir = $upload_dir[$file['upload_location_id']];
 		
+		$file['file_name'] = urlencode($file['file_name']);
+		
 		// Set additional data based on what we've gathered
 		$file['raw_output']	= $data;
 		$file['path'] 		= (isset($upload_dir['url'])) ? $upload_dir['url'] : '';

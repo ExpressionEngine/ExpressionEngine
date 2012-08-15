@@ -1838,6 +1838,8 @@ class Filemanager {
 
 		foreach ($files as &$file)
 		{
+			$file['file_name'] = urlencode($file['file_name']);
+			
 			// Get thumb information
 			$thumb_info = $this->get_thumb($file, $dir['id']);
 			
@@ -1850,7 +1852,7 @@ class Filemanager {
 					title="'.$file['file_name'].'" 
 					onclick="$.ee_filebrowser.placeImage('.$file['file_id'].'); return false;"
 				>
-					'.$file['file_name'].'
+					'.urldecode($file['file_name']).'
 				</a>';
 			
 			$file['short_name']		= ellipsize($file['title'], 13, 0.5);
