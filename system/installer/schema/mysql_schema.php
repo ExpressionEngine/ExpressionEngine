@@ -47,7 +47,7 @@ class EE_Schema {
 			  `site_label` varchar(100) NOT NULL default '',
 			  `site_name` varchar(50) NOT NULL default '',
 			  `site_description` text NULL,
-			  `site_system_preferences` TEXT NOT NULL ,
+			  `site_system_preferences` mediumtext NOT NULL ,
 			  `site_mailinglist_preferences` TEXT NOT NULL ,
 			  `site_member_preferences` TEXT NOT NULL ,
 			  `site_template_preferences` TEXT NOT NULL ,
