@@ -115,23 +115,20 @@ class Simple_commerce {
 			$cancel = $this->EE->functions->create_url($cancel);
 		}
 		
-			
-		if ($show_disabled === TRUE)
+		if ($show_disabled !== TRUE)
 		{
-			$addsql = '';
+			$this->EE->db->where('simple_commerce_items.item_enabled', 'y');
 		}
-		else
-		{
-			$addsql = "AND sci.item_enabled = 'y' ";
-		}
-		
-		$query = $this->EE->db->query("SELECT wt.title AS item_name, sci.* 
-							 FROM exp_simple_commerce_items sci, exp_channel_titles wt
-							 WHERE sci.entry_id = '".$this->EE->db->escape_str($entry_id)."'
-							 {$addsql}
-							 AND sci.entry_id = wt.entry_id
-							 LIMIT 1");
 							
+		$query = $this->EE->db->select('t.title as item_name, simple_commerce_items.*')
+		  		->where('simple_commerce_items.entry_id', $entry_id)
+				->where('simple_commerce_items.entry_id = t.entry_id', NULL, FALSE)
+		  		->from('simple_commerce_items')
+		  		->from('channel_titles t')
+		  		->limit(1)		
+		  		->get();
+
+
 		if ($query->num_rows() == 0) return;
 		
 		$row = $query->row_array();
@@ -468,13 +465,13 @@ class Simple_commerce {
 			}
 			
 			//  User Valid?
-			$this->EE->db->select('screen_name');
-			$this->EE->db->where('member_id', $this->post['custom']); 
-			$query = $this->EE->db->get('exp_members');
+			$query = $this->EE->db->select('screen_name')
+						->where('member_id', $this->post['custom'])
+						->get('members');
 			
 			if ($query->num_rows() == 0) return FALSE;
 			
-			$this->post['screen_name'] = $query->row('screen_name') ;
+			$this->post['screen_name'] = $query->row('screen_name');
 
     		/** --------------------------------------------
 			/**  The Subscription Types We Care About
@@ -501,7 +498,7 @@ class Simple_commerce {
 				//  Note- subscription signups do not have a txn_id so we check only non-subscriptions
 								 
 				$this->EE->db->where('txn_id', $this->post['txn_id']); 
-				$this->EE->db->from('exp_simple_commerce_purchases');
+				$this->EE->db->from('simple_commerce_purchases');
 
 				if ($this->EE->db->count_all_results()  > 0) return FALSE;
 
@@ -664,11 +661,13 @@ class Simple_commerce {
 	/** ----------------------------------------*/
 	function perform_actions($item_id, $qnty, $subtotal, $num_in_cart='', $type='')
 	{
-		$query = $this->EE->db->query("SELECT wt.title as item_name, sc.* 
-							 FROM exp_simple_commerce_items sc, exp_channel_titles wt
-							 WHERE sc.entry_id = wt.entry_id 
-							 AND sc.item_id = '".$this->EE->db->escape_str($item_id)."'");
-							
+		$query = $this->EE->db->select('t.title as item_name, simple_commerce_items.*')
+		  		->where('simple_commerce_items.entry_id = t.entry_id', NULL, FALSE)
+		  		->where('simple_commerce_items.item_id', $item_id)
+		  		->from('simple_commerce_items')
+		  		->from('channel_titles t')
+		  		->get();
+
 		if ($query->num_rows() != 1)
     	{
     		return;
@@ -768,22 +767,22 @@ class Simple_commerce {
 			
 			if ( ! is_numeric($qnty) OR $qnty == 1)
 			{
-				$this->EE->db->insert('exp_simple_commerce_purchases', $data);
+				$this->EE->db->insert('simple_commerce_purchases', $data);
 
 				$this->EE->db->where('item_id', $item_id);
 				$this->EE->db->set('item_purchases', "item_purchases + 1", FALSE);
-				$this->EE->db->update('exp_simple_commerce_items'); 				
+				$this->EE->db->update('simple_commerce_items'); 				
 			}
 			else
 			{
 				for($i=0;  $i < $qnty; ++$i)
 				{
-					$this->EE->db->insert('exp_simple_commerce_purchases', $data); 	
+					$this->EE->db->insert('simple_commerce_purchases', $data); 	
 				}
 				
 				$this->EE->db->where('item_id', $item_id);
 				$this->EE->db->set('item_purchases', "item_purchases + {$qnty}", FALSE);
-				$this->EE->db->update('exp_simple_commerce_items'); 				
+				$this->EE->db->update('simple_commerce_items'); 				
 			}
 		}  // end non-sub entry
 		
@@ -793,7 +792,7 @@ class Simple_commerce {
 		{
 			$this->EE->db->where('member_id', $this->post['custom']);
 			$this->EE->db->where('group_id !=', 1);
-			$this->EE->db->update('exp_members', array('group_id' => $new_member_group)); 
+			$this->EE->db->update('members', array('group_id' => $new_member_group)); 
 		}
 			
 
@@ -804,13 +803,13 @@ class Simple_commerce {
 		if ($customer_email_template != '' && $customer_email_template != 0)
 		{
 			$this->EE->db->select('email');
-			$result = $this->EE->db->get_where('exp_members', array('member_id' => $this->post['custom']));
+			$result = $this->EE->db->get_where('members', array('member_id' => $this->post['custom']));
 
 			$cust_row = $result->row();
 			$to = $cust_row->email;
 								
 			$this->EE->db->select('email_subject, email_body');
-			$result = $this->EE->db->get_where('exp_simple_commerce_emails', array('email_id' => $customer_email_template));
+			$result = $this->EE->db->get_where('simple_commerce_emails', array('email_id' => $customer_email_template));
 						
 			if ($result->num_rows() > 0)
 			{
@@ -840,7 +839,7 @@ class Simple_commerce {
 		if ($row->admin_email_address != '' && $admin_email_template != '' && $admin_email_template != 0)
 		{	
 			$this->EE->db->select('email_subject, email_body');
-			$result = $this->EE->db->get_where('exp_simple_commerce_emails', array('email_id' => $admin_email_template));									
+			$result = $this->EE->db->get_where('simple_commerce_emails', array('email_id' => $admin_email_template));									
 									
 				
 			if ($result->num_rows() > 0)
@@ -894,10 +893,10 @@ class Simple_commerce {
     function end_subscription()
     {
         //  Check for Subscription
-		$this->EE->db->select('purchase_id, item_id');
-		$this->EE->db->where('member_id', $this->post['custom']);
-		$this->EE->db->where('paypal_subscriber_id', $this->post['subscr_id']);
-		$query = $this->EE->db->get('exp_simple_commerce_purchases');
+		$query = $this->EE->db->select('purchase_id, item_id')
+					->where('member_id', $this->post['custom'])
+					->where('paypal_subscriber_id', $this->post['subscr_id'])
+					->get('simple_commerce_purchases');
 
 		// What if multiple subscriptions?  
 		// Note that paypal_subscriber_id is unique to each subscription despite the way it sounds
@@ -907,18 +906,17 @@ class Simple_commerce {
      
         if ($query->num_rows() == 0)
         {
-
         	return FALSE;
         }
  	
 		$data = array('subscription_end_date' => $this->EE->localize->now);
-		
+
 		$this->EE->db->where('purchase_id', $query->row('purchase_id'));
-		$this->EE->db->update('exp_simple_commerce_purchases', $data); 		
+		$this->EE->db->update('simple_commerce_purchases', $data); 		
 		
 		$this->EE->db->where('item_id', $query->row('item_id'));
 		$this->EE->db->set('current_subscriptions', "current_subscriptions - 1 ", FALSE);
-		$this->EE->db->update('exp_simple_commerce_items'); 
+		$this->EE->db->update('simple_commerce_items'); 
 
 		return TRUE;
     }
@@ -972,14 +970,9 @@ class Simple_commerce {
 					  'paypal_details'			=> serialize($this->post),
 					  'paypal_subscriber_id'	=> $this->post['subscr_id']);
 		
-		$this->EE->db->insert('exp_simple_commerce_purchases', $data);
+		$this->EE->db->insert('simple_commerce_purchases', $data);
 		
 		// Don't update count until it's paid
-		
-		//$this->EE->db->where('item_id', $row->item_id);
-		//$this->EE->db->set('item_purchases', "item_purchases + 1", FALSE);
-		//$this->EE->db->set('current_subscriptions', "current_subscriptions + 1", FALSE);		
-		//$this->EE->db->update('exp_simple_commerce_items');		
     
     	return TRUE;
     } 
@@ -988,33 +981,36 @@ class Simple_commerce {
 
 	function subscription_payment($row)
 	{
-
         //  Check for Subscription Sign-up
 		$this->EE->db->select('purchase_id, item_id');
 		$this->EE->db->where('member_id', $this->post['custom']);
 		$this->EE->db->where('paypal_subscriber_id', $this->post['subscr_id']);
-		$query = $this->EE->db->get('exp_simple_commerce_purchases');
+		$query = $this->EE->db->get('simple_commerce_purchases');
 
 		// What if multiple subscriptions?  
 		// Note that paypal_subscriber_id is unique to each subscription despite the way it sounds
 		// k- 0 is still subscribed.  If it has a date?  
 		// They were unsubscribed then.  So- null if not subscription type.
         					 
-        if ($query->num_rows() == 0)
+        // Note- it's possible to get the payment notification before the start_subscription
+		// data- in which case, num_rows will be empty BUT we want Paypal to resend
+		if ($query->num_rows() == 0)
         {
-        	return FALSE;
+			//return 400 header so paypal resends
+			@header("HTTP/1.1 400 Bad Request");
+			exit('Invalid');			
         }
 
 		$data = array('txn_id' => $this->post['txn_id']);
 		
 
 		$this->EE->db->where('paypal_subscriber_id', $this->post['subscr_id']);
-		$this->EE->db->update('exp_simple_commerce_purchases', $data);
+		$this->EE->db->update('simple_commerce_purchases', $data);
 
 		$this->EE->db->where('item_id', $row->item_id);
 		$this->EE->db->set('item_purchases', "item_purchases + 1", FALSE);
 		$this->EE->db->set('current_subscriptions', "current_subscriptions + 1", FALSE);		
-		$this->EE->db->update('exp_simple_commerce_items');	
+		$this->EE->db->update('simple_commerce_items');	
 		
 		return TRUE;
 		
