@@ -2053,7 +2053,7 @@ class Filemanager {
 			'file_name'		=> $clean_filename,
 			'upload_path'	=> $dir['server_path'],
 			'allowed_types'	=> $allowed_types,
-			'max_size'		=> round($dir['max_size']/1024, 2)
+			'max_size'		=> round($dir['max_size']/1024, 3)
 		);
 		
 		$this->EE->load->helper('xss');
@@ -2390,7 +2390,7 @@ class Filemanager {
 		$config = array(
 			'upload_path'	=> $upload_directory['server_path'],
 			'allowed_types'	=> ($this->EE->session->userdata('group_id') == 1) ? 'all' : $upload_directory['allowed_types'],
-			'max_size'		=> round($upload_directory['max_size']/1024, 2),
+			'max_size'		=> round($upload_directory['max_size']/1024, 3),
 			'max_width'		=> $upload_directory['max_width'],
 			'max_height'	=> $upload_directory['max_height']
 		);
