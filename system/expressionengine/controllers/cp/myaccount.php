@@ -2728,7 +2728,7 @@ class MyAccount extends CI_Controller {
 		list($vars, $extension, $method, $method_save) = $this->_custom_action('method_save');
 
 		// Redirect back
-		$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=custom_screen'.AMP.'extension='.$extension.AMP.'method='.$method.AMP.'method_save='.$method_save);
+		$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=custom_screen'.AMP.'extension='.$extension.AMP.'method='.$method.AMP.'method_save='.$method_save.AMP.'id='.$this->id);
 	}
 
 	// -------------------------------------------------------------------------
