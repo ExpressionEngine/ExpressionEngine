@@ -1335,8 +1335,7 @@ class Channel {
 					if ($query->num_rows() > 0)
 					{
 						$valid = 'y';
-						$last  = explode('|', $query->row('cat_group') );
-						$valid_cats = array();
+						$valid_cats = explode('|', $query->row('cat_group') );
 
 						foreach($query->result_array() as $row)
 						{
@@ -1346,7 +1345,7 @@ class Channel {
 							}
 							else
 							{
-								$valid_cats = array_intersect($last, explode('|', $row['cat_group']));
+								$valid_cats = array_intersect($valid_cats, explode('|', $row['cat_group']));
 							}
 
 							$valid_cats = array_unique($valid_cats);
@@ -6436,8 +6435,7 @@ class Channel {
 			if ($query->num_rows() > 0)
 			{
 				$valid = 'y';
-				$last  = explode('|', $query->row('cat_group') );
-				$valid_cats = array();
+				$valid_cats  = explode('|', $query->row('cat_group') );
 
 				foreach($query->result_array() as $row)
 				{
@@ -6447,7 +6445,7 @@ class Channel {
 					}
 					else
 					{
-						$valid_cats = array_intersect($last, explode('|', $row['cat_group']));
+						$valid_cats = array_intersect($valid_cats, explode('|', $row['cat_group']));
 					}
 
 					$valid_cats = array_unique($valid_cats);
