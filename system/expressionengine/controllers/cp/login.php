@@ -438,15 +438,16 @@ class Login extends CI_Controller {
 		$address = strip_tags($address);
 		
 		// Fetch user data
-		
 		$this->db->select('member_id, username');
 		$this->db->where('email', $address);
 		$query = $this->db->get('members');
-		
+
+		// Show a success email even if the email doesn't exist so spammers
+		// don't know if an email exists or not		
 		if ($query->num_rows() == 0)
 		{
-			$this->session->set_flashdata('message', lang('no_email_found'));
-			$this->functions->redirect(BASE.AMP.'C=login'.AMP.'M=forgotten_password_form');
+			$vars['message_success'] = lang('forgotten_email_sent');
+			return $this->load->view('account/request_new_password', $vars);
 		}
 		
 		$member_id = $query->row('member_id') ;
@@ -470,11 +471,11 @@ class Login extends CI_Controller {
 		
 		// Buid the email message
 		$swap = array(
-						'name'		=> $username,
-						'reset_url'	=> $this->config->item('cp_url')."?D=cp&C=login&M=reset_password&id=".$rand,
-						'site_name'	=> stripslashes($this->config->item('site_name')),
-						'site_url'	=> $this->config->item('site_url')
-					 );
+			'name'		=> $username,
+			'reset_url'	=> $this->config->item('cp_url')."?D=cp&C=login&M=reset_password&id=".$rand,
+			'site_name'	=> stripslashes($this->config->item('site_name')),
+			'site_url'	=> $this->config->item('site_url')
+		);
 					
 		$template = $this->functions->fetch_email_template('forgot_password_instructions');
 		$message_title = $this->_var_swap($template['title'], $swap);
