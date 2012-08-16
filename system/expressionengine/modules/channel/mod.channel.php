@@ -3310,7 +3310,7 @@ class Channel {
 						// There's no efficient regex to match this case, so we'll find the last nested
 						// opening tag and re-cut the chunk.
 
-						if (preg_match("/".LD."{$field_name}(.*?)".RD."(.*?)".LD.'\/'.$field_name.RD."/s", $this->EE->TMPL->tagdata, $matches, 0, $offset))
+						if (preg_match("/".LD."{$field_name}(.*?)".RD."(.*?)".LD.'\/'."{$field_name}(.*?)".RD."/s", $this->EE->TMPL->tagdata, $matches, 0, $offset))
 						{
 							$chunk = $matches[0];
 							$params = $matches[1];
@@ -3335,7 +3335,15 @@ class Channel {
 								}
 							}
 							
-							$pfield_chunk[$site_id][$field_name][] = array($inner, $this->EE->functions->assign_parameters($params), $chunk);
+							$chunk_array = array($inner, $this->EE->functions->assign_parameters($params), $chunk);
+							
+							// Grab modifier if it exists and add it to the chunk array
+							if (substr($params, 0, 1) == ':')
+							{
+								$chunk_array[] = str_replace(':', '', $params);
+							}
+							
+							$pfield_chunk[$site_id][$field_name][] = $chunk_array;
 						}
 						
 						$offset = $end + 1;
@@ -3817,20 +3825,17 @@ class Channel {
 
 				// First we need the key name out of the {name foo=bar|baz} mess
 				$key_name = $key;
-				$parse_fnc = 'replace_tag';
+				$parse_fnc_catchall = 'replace_tag_catchall';
 
 				if (($spc = strpos($key, ' ')) !== FALSE)
 				{
 					$key_name = substr($key, 0, $spc);
 				}
-
-				/* Currently does not work with pair fields
+				
 				if (($cln = strpos($key, ':')) !== FALSE)
 				{
-					$parse_fnc = 'replace_'.substr($key_name, $cln + 1);
 					$key_name = substr($key_name, 0, $cln);
 				}
-				*/
 				
 				// Is it a custom field?
 				if (isset($this->cfields[$row['site_id']][$key_name]) && ! in_array($key_name, $parsed_custom_pairs))
@@ -3858,8 +3863,32 @@ class Channel {
 							{
 								foreach($pfield_chunk[$row['site_id']][$key_name] as $chk_data)
 								{
-									// $chk_data = array(chunk_contents, parameters, chunk_with_tag);
-									$tpl_chunk = $this->EE->api_channel_fields->apply('replace_tag', array($data, $chk_data[1], $chk_data[0]));
+									// Set up parse function name based on whether or not
+									// we have a modifier
+									$parse_fnc = (isset($chk_data[3]))
+										? 'replace_'.$chk_data[3] : 'replace_tag';
+									
+									if ($this->EE->api_channel_fields->check_method_exists($parse_fnc))
+									{
+										$tpl_chunk = $this->EE->api_channel_fields->apply(
+											$parse_fnc,
+											array($data, $chk_data[1], $chk_data[0])
+										);
+									}
+									// Go to catchall and include modifier
+									elseif ($this->EE->api_channel_fields->check_method_exists($parse_fnc_catchall)
+										AND isset($chk_data[3]))
+									{
+										$tpl_chunk = $this->EE->api_channel_fields->apply(
+											$parse_fnc_catchall,
+											array($data, $chk_data[1], $chk_data[0], $chk_data[3])
+										);
+									}
+									else
+									{
+										$tpl_chunk = '';
+										$this->EE->TMPL->log_item('Unable to find parse type for custom field: '.$key_name);
+									}
 
 									// Replace the chunk
 									$tagdata = str_replace($chk_data[2], $tpl_chunk, $tagdata);
