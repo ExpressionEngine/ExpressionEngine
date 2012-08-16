@@ -462,6 +462,8 @@ class File_field {
 				'upload_location_id'	=> '',
 				'file_hw_original'		=> ''
 			);
+			
+			return $file;
 		}
 		else if (empty($file) AND empty($data))
 		{
