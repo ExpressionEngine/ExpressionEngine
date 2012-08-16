@@ -533,7 +533,7 @@ class Safecracker_lib
 					$this->EE->javascript->output('$("input[name=comment_expiration_date]").datepicker({defaultDate: new Date('.$comment_expiration_date.')});');
 				}
 			}
-
+		
 			foreach ($this->EE->TMPL->var_single as $key)
 			{
 				if ($this->entry($key) !== FALSE)
@@ -600,7 +600,7 @@ class Safecracker_lib
 					$this->parse_variables[$match[0]] = ( ! empty($this->field_errors[$match[1]])) ? $this->field_errors[$match[1]] : '';
 				}
 			}
-			
+	
 			$this->form_hidden(
 				array(
 				      'entry_id' => $this->entry('entry_id'),
@@ -1958,7 +1958,7 @@ class Safecracker_lib
 	}
 
 	// --------------------------------------------------------------------	
-	
+
 	/**
 	 * Load entry
 	 * 
@@ -1982,7 +1982,7 @@ class Safecracker_lib
 		
 		//get an array with entry title data, custom field data (with field_id_X AND short name keys)
 		$select = 'exp_channel_titles.*, exp_channel_data.*';
-		
+	
 		foreach ($this->custom_fields as $field)
 		{
 			$select .= ', exp_channel_data.`field_id_'.$field['field_id'].'` as `'.$field['field_name'].'`';
@@ -2014,11 +2014,19 @@ class Safecracker_lib
 			{
 				$row['categories'][] = $cat_row['cat_id'];
 			}
+
+			$this->EE->api->instantiate('channel_fields');
 			
+			foreach ($this->custom_fields as $field=>$definition)
+			{
+				if($definition['field_type'] == 'text') {
+					$this->EE->api_channel_fields->include_handler($definition['field_type']);
+					$handler = $this->EE->api_channel_fields->setup_handler($definition['field_type'], TRUE);
+					$row[$field] = $handler->_format_number($row[$field], $definition['field_content_type']);	
+				}
+			}			
 			$this->entry = $row;
-		} else {
-			
-		}
+		} 
 		
 		unset($query);
 	}
