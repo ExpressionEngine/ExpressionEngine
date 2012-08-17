@@ -3449,9 +3449,9 @@ class Design extends CI_Controller {
 		$first_template = reset($vars['template_groups']);
 		$vars['first_template'] = $first_template['group_id'];
 
-		if ($this->input->get('tgpref'))
+		if ($this->input->get('tgpref', TRUE))
 		{
-			$vars['first_template'] = $this->input->get('tgpref');			
+			$vars['first_template'] = $this->input->get('tgpref', TRUE);			
 		}
 		
 		$this->javascript->output('$("#template_group_'.$vars['first_template'].'").addClass("selected");');
