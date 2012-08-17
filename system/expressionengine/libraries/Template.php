@@ -90,7 +90,7 @@ class EE_Template {
 
     var $strict_urls		= FALSE;		// Whether to make URLs operate strictly or not.  This is set via a template global pref
 	
-	var $realm				= 'ExpressionEngine Template';  // Localize?
+	var $realm				= 'Restricted Content';  // Localize?
 
 	var $marker = '0o93H7pQ09L8X1t49cHY01Z5j4TT91fGfr'; // Temporary marker used as a place-holder for template data
 
