@@ -311,7 +311,7 @@ class Content_files extends CI_Controller {
 			),
 			'pagination' => array(
 				'per_page'	 => $params['limit'],
-				'total_rows' => $this->file_model->count_files($allowed_dirs)
+				'total_rows' => $this->file_model->count_files($dirs)
 			),
 			
 			// regular returns
