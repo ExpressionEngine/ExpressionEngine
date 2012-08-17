@@ -1345,11 +1345,14 @@ class Content_files extends CI_Controller {
 					TRUE 	// Don't overwrite existing thumbs
 				);
 				
+				$file_path_name = $this->_upload_dirs[$id]['server_path'].$file['name'];
+				
 				// Update dimensions
-				$image_dimensions = $this->filemanager->get_image_dimensions($this->_upload_dirs[$id]['server_path'].$file['name']);
+				$image_dimensions = $this->filemanager->get_image_dimensions($file_path_name);
 				
 				$file_data = array(
 					'file_id'				=> $query->row('file_id'),
+					'file_size'				=> filesize($file_path_name),
 					'file_hw_original'		=> $image_dimensions['height'] . ' ' . $image_dimensions['width']
 				);
 				$this->file_model->save_file($file_data);
