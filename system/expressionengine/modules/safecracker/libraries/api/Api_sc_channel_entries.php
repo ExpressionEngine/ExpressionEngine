@@ -63,18 +63,35 @@ class Api_sc_channel_entries extends Api_channel_entries
 		}
 
 		$rel_ids = array();
+		$checkbox_fields = explode('|', $data['checkbox_fields']);
 		
 		foreach($this->EE->safecracker->custom_fields as $field)
 		{
-			if ( ! $this->EE->safecracker->preserve_checkboxes && $field['field_type'] == 'checkboxes')
+			// Preserve off-screen checkboxes
+			if ($field['field_type'] == 'checkboxes')
 			{
-				continue;
+				if ($this->EE->safecracker->preserve_checkboxes)
+				{
+					// If a checkbox field was present on screen but has no value,
+					// assign a blank value to it so the database is updated
+					if (in_array($field['field_name'], $checkbox_fields) AND
+						! isset($data[$field['field_name']]))
+					{
+						$data[$field['field_name']] = '';
+						continue;
+					}
+				}
+				else
+				{
+					continue;
+				}
 			}
 			
-			//preserve the original value if this field wasn't POSTed
+			// Preserve the original value if this field wasn't POSTed
 			if (empty($field['isset']))
 			{
-				$data['field_id_'.$field['field_id']] = ($this->EE->safecracker->entry($field['field_name']) !== FALSE) ? $this->EE->safecracker->entry($field['field_name']) : '';
+				$data['field_id_'.$field['field_id']] = ($this->EE->safecracker->entry($field['field_name']) !== FALSE)
+					? $this->EE->safecracker->entry($field['field_name']) : '';
 
 
 				// The entry API expects the rel_child_id from the exp_relationships field 

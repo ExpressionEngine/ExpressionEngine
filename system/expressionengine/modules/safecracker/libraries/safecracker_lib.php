@@ -442,6 +442,12 @@ class Safecracker_lib
 			$this->EE->javascript->output('$.each(SafeCracker.markItUpFields,function(a){$("#"+a).markItUp(mySettings);});');
 		}
 		
+		// We'll store all checkbox fieldnames in here, so that in case one
+		// has preserve_checkboxes set to "yes" but still needs to edit
+		// checkboxes that have the potential to be blank, the field can be
+		// updated while preserving the checkboxes that aren't on screen
+		$checkbox_fields = array();
+		
 		foreach ($this->EE->TMPL->var_pair as $tag_pair_open => $tagparams)
 		{
 			$tag_name = current(preg_split('/\s/', $tag_pair_open));
@@ -474,6 +480,8 @@ class Safecracker_lib
 			//options:field_name tag pair parsing
 			else if (preg_match('/^options:(.*)/', $tag_name, $match) && in_array($this->get_field_type($match[1]), $this->option_fields))
 			{
+				$checkbox_fields[] = $match[1];
+				
 				$this->parse_variables[$match[0]] = (isset($custom_field_variables[$match[1]]['options'])) ? $custom_field_variables[$match[1]]['options'] : '';
 			}
 			
@@ -506,6 +514,8 @@ class Safecracker_lib
 				$this->parse_variables['status_menu'] = array(array('select_options' => $select_options));
 			}
 		}
+		
+		$this->form_hidden('checkbox_fields', implode('|', $checkbox_fields));
 		
 		//edit form
 		if ($this->entry)
