@@ -558,7 +558,7 @@ class Safecracker_lib
 					}
 					else
 					{
-						$this->parse_variables[$key] = $this->entry($key);
+						$this->parse_variables[$key] = form_prep($this->entry($key), $key);
 					}
 				}
 				
