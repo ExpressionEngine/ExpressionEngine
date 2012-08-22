@@ -45,6 +45,7 @@ class Updater {
 		$this->EE->load->dbforge();
 		
 		$this->_change_site_preferences_column_type();
+		$this->_truncate_tables();
 		
 		return TRUE;
 	}
@@ -52,7 +53,7 @@ class Updater {
 	// --------------------------------------------------------------------
 	
 	/**
-	 * Changes column type for the `site_system_preferences column` in
+	 * Changes column type for the `site_system_preferences` column in
 	 * `sites` from TEXT to MEDIUMTEXT
 	 */
 	private function _change_site_preferences_column_type()
@@ -66,6 +67,21 @@ class Updater {
 				)
 			)
 		);
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Truncates `security_hashes` and `throttle` tables in response to bug
+	 * #17795 where these tables may not be emptied regularly. Now that the
+	 * fix is in place, to help prevent a case where EE will hang when
+	 * trying to clear 15 million records based on a non-indexed date field,
+	 * let's just clear out the tables.
+	 */
+	private function _truncate_tables()
+	{
+		$this->EE->db->truncate('security_hashes');
+		$this->EE->db->truncate('throttle');
 	}
 }	
 /* END CLASS */
