@@ -1205,6 +1205,16 @@ class Safecracker_lib
 		
 		$this->preserve_checkboxes = $this->bool_string($this->EE->input->post('preserve_checkboxes'), FALSE);
 		
+		// If any checkbox fields are missing from the POST array,
+		// add them in as blank values for form validation to catch
+		foreach (explode('|', $_POST['checkbox_fields']) as $checkbox)
+		{
+			if ( ! isset($_POST[$checkbox]))
+			{
+				$_POST[$checkbox] = '';
+			}
+		}
+		
 		foreach ($this->custom_fields as $i => $field)
 		{
 			$isset = (isset($_POST['field_id_'.$field['field_id']]) || isset($_POST[$field['field_name']]) || (((isset($_FILES['field_id_'.$field['field_id']]) && $_FILES['field_id_'.$field['field_id']]['error'] != 4) || (isset($_FILES[$field['field_name']]) && $_FILES[$field['field_name']]['error'] != 4)) && in_array($field['field_type'], $this->file_fields)));
