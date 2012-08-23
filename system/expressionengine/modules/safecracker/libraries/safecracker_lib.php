@@ -1219,6 +1219,12 @@ class Safecracker_lib
 		{
 			$isset = (isset($_POST['field_id_'.$field['field_id']]) || isset($_POST[$field['field_name']]) || (((isset($_FILES['field_id_'.$field['field_id']]) && $_FILES['field_id_'.$field['field_id']]['error'] != 4) || (isset($_FILES[$field['field_name']]) && $_FILES[$field['field_name']]['error'] != 4)) && in_array($field['field_type'], $this->file_fields)));
 			
+			// If file exists, add it to the POST array for validation
+			if (isset($_FILES[$field['field_name']]['name']))
+			{
+				$_POST[$field['field_name']] = $_FILES[$field['field_name']]['name'];
+			}
+			
 			$this->custom_fields[$i]['isset'] = $isset;
 			
 			if ( ! $this->edit || $isset)
