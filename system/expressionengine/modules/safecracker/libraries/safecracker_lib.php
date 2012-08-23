@@ -2105,7 +2105,7 @@ class Safecracker_lib
 	 */
 	public function fetch_settings()
 	{
-		if (empty($this->settings))
+		if ($this->settings === NULL)
 		{
 			$this->EE->db->select('settings');
 			$this->EE->db->where('class', 'Safecracker_ext');
@@ -2113,10 +2113,8 @@ class Safecracker_lib
 			
 			$query = $this->EE->db->get('extensions');
 			
-			if ($query->row('settings'))
-			{
-				$this->settings = $this->unserialize($query->row('settings'));
-			}
+			$this->settings = ($query->row('settings')) ?
+				$this->unserialize($query->row('settings')) : FALSE;
 		}
 	}
 
@@ -2601,7 +2599,6 @@ class Safecracker_lib
 		$this->preserve_checkboxes = FALSE;
 		$this->post_error_callbacks = array();
 		$this->require_save_call = array();
-		$this->settings = array();
 		$this->skip_xss_fieldtypes = array();
 		$this->skip_xss_field_ids = array();
 		$this->statuses = array();
