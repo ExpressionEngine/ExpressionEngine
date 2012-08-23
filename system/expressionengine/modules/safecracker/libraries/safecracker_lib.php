@@ -1227,7 +1227,12 @@ class Safecracker_lib
 				
 				if ( ! empty($rules[$field['field_name']]))
 				{
-					$field_rules = explode('|', $this->decrypt_input($rules[$field['field_name']]));
+					if (($rules_decrypted = $this->decrypt_input($rules[$field['field_name']])) === FALSE)
+					{
+						$this->EE->output->show_user_error(FALSE, lang('form_decryption_failed'));
+					}
+					
+					$field_rules = explode('|', $rules_decrypted);
 				}
 				
 				if ( ! in_array('call_field_validation['.$field['field_id'].']', $field_rules))
@@ -1708,7 +1713,7 @@ class Safecracker_lib
 	
 			if (substr($raw, -32) !== md5($this->EE->session->sess_crypt_key.$decoded))
 			{
-				return '';
+				return FALSE;
 			}
 		}
 		
