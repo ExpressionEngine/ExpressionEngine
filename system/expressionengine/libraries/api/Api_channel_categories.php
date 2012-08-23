@@ -98,7 +98,7 @@ class Api_channel_categories extends Api {
 		
 		$order = ($order == 'a') ? "cat_name" : "cat_order";
 		
-		$query = $this->EE->db->select('cat_name, cat_id, parent_id, g.group_id, group_name')
+		$query = $this->EE->db->select('cat_name, cat_id, parent_id, cat_image, cat_description, g.group_id, group_name')
 						->from('category_groups g, categories c')
 						->where('g.group_id', 'c.group_id', FALSE)
 						->where_in('g.group_id', $group_ids)
@@ -114,7 +114,14 @@ class Api_channel_categories extends Api {
 
 		foreach($query->result_array() as $row)
 		{
-			$cat_array[$row['cat_id']]	= array($row['parent_id'], $row['cat_name'], $row['group_id'], $row['group_name']);
+			$cat_array[$row['cat_id']]	= array(
+				$row['parent_id'],
+				$row['cat_name'],
+				$row['group_id'],
+				$row['group_name'],
+				$row['cat_image'],
+				$row['cat_description']
+			);
 		}
 
 		// Build our output...
@@ -126,7 +133,7 @@ class Api_channel_categories extends Api {
 				$sel = (isset($catarray[$key])) ? TRUE : FALSE;
 				$depth = 1;
 
-				$this->categories[$key] = array($key, $val[1], (int) $val[2], $val[3], $sel, $depth, FALSE);
+				$this->categories[$key] = array($key, $val[1], (int) $val[2], $val[3], $sel, $depth, FALSE, $val[4], $val[5]);
 				//$this->categories[$key] = array('cat_id' => $key, 'cat_name' => $val['1'], 'group_id' => $val['2'], 'group_name' => $val['3'], 'selected' => $sel, 'depth' => $depth);				
 				$this->_category_subtree($key, $cat_array, $depth, $selected);
 			}
@@ -169,7 +176,7 @@ class Api_channel_categories extends Api {
 			if ($cat_id == $val['0'])
 			{
 				$sel = (isset($catarray[$key])) ? TRUE : FALSE;
-				$this->categories[$key] = array($key, $val['1'], (int) $val['2'], $val['3'], $sel, $depth, (int) $val[0]);
+				$this->categories[$key] = array($key, $val['1'], (int) $val['2'], $val['3'], $sel, $depth, (int) $val[0], $val[4], $val[5]);
 				//$this->categories[$key] = array('cat_id' => $key, 'cat_name' => $val['1'], 'group_id' => $val['2'], 'group_name' => $val['3'], 'selected' => $sel, 'depth' => $depth);					
 				
 				$this->_category_subtree($key, $cat_array, $depth, $selected);

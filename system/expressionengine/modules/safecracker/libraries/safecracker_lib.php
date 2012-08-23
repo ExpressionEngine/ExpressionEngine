@@ -1831,7 +1831,7 @@ class Safecracker_lib
 		}
 
 		// Load up the library and figure out what belongs and what's selected
-		$this->EE->load->library('api');
+		$this->EE->load->library(array('api', 'file_field'));
 		$this->EE->api->instantiate('channel_categories');
 		$category_list = $this->EE->api_channel_categories->category_tree(
 			$this->channel('cat_group'),
@@ -1849,6 +1849,8 @@ class Safecracker_lib
 
 			$selected = ($category_info[4] === TRUE) ? ' selected="selected"' : '';
 			$checked = ($category_info[4] === TRUE) ? ' checked="checked"' : '';
+			
+			$category_image = $this->EE->file_field->parse_field($category_info[7]);
 
 			// Translate response from API to something parse variables can understand
 			$categories[$category_id] = array(
@@ -1858,7 +1860,8 @@ class Safecracker_lib
 				'category_group' => $category_info[3],
 				'category_parent' => $category_info[6],
 				'category_depth' => $category_info[5],
-
+				'category_image' => (isset($category_image['url'])) ? $category_image['url'] : '',
+				'category_description' => $category_info[8],
 				'selected' => $selected,
 				'checked' => $checked
 			);
