@@ -191,7 +191,7 @@ class EE_Validate {
 		{
 			if ($this->username == '')
 			{
-				return $this->errors[] = $this->EE->lang->line('disallowed_screen_chars');
+				return $this->errors[] = $this->EE->lang->line('missing_username');
 			}
 			
 			return $this->screen_name = $this->username;

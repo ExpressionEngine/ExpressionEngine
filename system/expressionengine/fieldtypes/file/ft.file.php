@@ -224,7 +224,9 @@ class File_ft extends EE_Fieldtype {
 
 			return $tagdata;
 		}
-		else if ($file_info['path'] != '' AND $file_info['filename'] != '' AND $file_info['extension'] !== FALSE)
+		else if ( ! empty($file_info['path'])
+			AND ! empty($file_info['filename'])
+			AND $file_info['extension'] !== FALSE)
 		{
 			$full_path = $file_info['path'].$file_info['filename'].'.'.$file_info['extension'];
 
@@ -232,11 +234,19 @@ class File_ft extends EE_Fieldtype {
 			{
 				if ($params['wrap'] == 'link')
 				{
-					return '<a href="'.$full_path.'">'.$file_info['filename'].'</a>';
+					$this->EE->load->helper('url_helper');
+					
+					return $file_info['file_pre_format']
+						.anchor($full_path, $file_info['filename'], $file_info['file_properties'])
+						.$file_info['file_post_format'];
 				}
 				elseif ($params['wrap'] == 'image')
 				{
-					return '<img src="'.$full_path.'" alt="'.$file_info['filename'].'" />';
+					$properties = ( ! empty($file_info['image_properties'])) ? ' '.$file_info['image_properties'] : '';
+					
+					return $file_info['image_pre_format']
+						.'<img src="'.$full_path.'"'.$properties.' alt="'.$file_info['filename'].'" />'
+						.$file_info['image_post_format'];
 				}
 			}
 
@@ -256,7 +266,7 @@ class File_ft extends EE_Fieldtype {
 	 */
 	function replace_tag_catchall($file_info, $params = array(), $tagdata = FALSE, $modifier)
 	{
-		if ($modifier)
+		if ($modifier AND isset($file_info['path']))
 		{
 			$file_info['path'] .= '_'.$modifier.'/';
 		}

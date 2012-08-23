@@ -1278,12 +1278,14 @@ class MyAccount extends CI_Controller {
 
 		$email = $query->row('email') ;
 
-		$subscription_data = $this->members->get_member_subscriptions($this->id, $rownum);
+		$subscription_data = $this->members->get_member_subscriptions($this->id, $rownum, $perpage);
 
 		$vars['subscriptions'] = $subscription_data['result_array'];
 
+		$id = ($this->id != $this->session->userdata('member_id')) ? AMP.'id='.$this->id : '';
+		
 		// Pagination stuff
-		$config['base_url'] = BASE.AMP.'C=myaccount'.AMP.'M=subscriptions';
+		$config['base_url'] = BASE.AMP.'C=myaccount'.AMP.'M=subscriptions'.$id;
 		$config['total_rows'] = $subscription_data['total_results'];
 		$config['per_page'] = $perpage;
 		$config['page_query_string'] = TRUE;
@@ -2310,7 +2312,7 @@ class MyAccount extends CI_Controller {
 
 		$vars = array_merge($this->_account_menu_setup(), $vars);
 
-		$link = BASE.AMP.str_replace(array('/', '--'), array('&', '='), $this->input->get('link', TRUE));
+		$link = str_replace(array('/', '--'), array('&', '='), $this->input->get('link', TRUE));
 		$linkt = base64_decode($this->input->get('linkt', TRUE));
 
 		if ($link == '')
@@ -2726,7 +2728,7 @@ class MyAccount extends CI_Controller {
 		list($vars, $extension, $method, $method_save) = $this->_custom_action('method_save');
 
 		// Redirect back
-		$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=custom_screen'.AMP.'extension='.$extension.AMP.'method='.$method.AMP.'method_save='.$method_save);
+		$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=custom_screen'.AMP.'extension='.$extension.AMP.'method='.$method.AMP.'method_save='.$method_save.AMP.'id='.$this->id);
 	}
 
 	// -------------------------------------------------------------------------
