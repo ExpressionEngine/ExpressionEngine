@@ -739,6 +739,12 @@ class Channel {
 					{
 						uksort($new, 'strnatcasecmp'); 
 					}
+					// If it's in the base options and not a string?
+					// Sort numeric
+					elseif (in_array($order, $base_orders))
+					{
+						ksort($new, SORT_NUMERIC);						
+					}
 					// Sort keys based on set sort flags
 					else
 					{
@@ -994,7 +1000,7 @@ class Channel {
 
 					if (0 == $v[1])
 					{
-						$this->cat_array[] = $v;
+						$this->cat_array[] = $this->temp_array[$k];
 						$this->process_subcategories($k);
 					}
 				}
@@ -1575,7 +1581,7 @@ class Channel {
 		$sql .= "LEFT JOIN exp_members AS m ON m.member_id = t.author_id ";
 
 
-		if ($this->EE->TMPL->fetch_param('category') OR $this->EE->TMPL->fetch_param('category_group') OR $cat_id != '')
+		if ($this->EE->TMPL->fetch_param('category') OR $this->EE->TMPL->fetch_param('category_group') OR ($cat_id != '' && $dynamic == TRUE))
 		{
 			/* --------------------------------
 			/*  We use LEFT JOIN when there is a 'not' so that we get
@@ -2978,21 +2984,21 @@ class Channel {
 			$row['photo_image_height'] = '';
 
 
-			if ($this->EE->session->userdata('display_signatures') != 'n' && $row['sig_img_filename'] != ''  && $this->EE->session->userdata('display_signatures') != 'n')
+			if ($this->EE->session->userdata('display_signatures') != 'n' && $row['sig_img_filename'] != '')
 			{
 				$row['signature_image_url'] 	= $this->EE->config->slash_item('sig_img_url').$row['sig_img_filename'];
 				$row['signature_image_width']	= $row['sig_img_width'];
 				$row['signature_image_height']	= $row['sig_img_height'];
 			}
 
-			if ($this->EE->session->userdata('display_avatars') != 'n' && $row['avatar_filename'] != ''  && $this->EE->session->userdata('display_avatars') != 'n')
+			if ($this->EE->session->userdata('display_avatars') != 'n' && $row['avatar_filename'] != '')
 			{
 				$row['avatar_url'] 			= $this->EE->config->slash_item('avatar_url').$row['avatar_filename'];
 				$row['avatar_image_width']	= $row['avatar_width'];
 				$row['avatar_image_height']	= $row['avatar_height'];
 			}
 
-			if ($this->EE->session->userdata('display_photos') != 'n' && $row['photo_filename'] != ''  && $this->EE->session->userdata('display_photos') != 'n')
+			if ($this->EE->session->userdata('display_photos') != 'n' && $row['photo_filename'] != '')
 			{
 				$row['photo_url'] 			= $this->EE->config->slash_item('photo_url').$row['photo_filename'];
 				$row['photo_image_width']	= $row['photo_width'];
@@ -4434,8 +4440,8 @@ class Channel {
 
 				//  parse basic fields (username, screen_name, etc.)
 				//  Use array_key_exists to handle null values
-
-				if (array_key_exists($val, $row))
+				
+				if ($val AND array_key_exists($val, $row))
 				{
 					$tagdata = $this->EE->TMPL->swap_var_single($val, $row[$val], $tagdata);
 				}

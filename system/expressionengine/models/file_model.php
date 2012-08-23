@@ -241,6 +241,15 @@ class File_model extends CI_Model {
 			}
 		}
 
+		/* -------------------------------------------
+		/* 'file_after_save' hook.
+		/*  - Add additional processing after file is saved
+		*/
+			$this->extensions->call('file_after_save', $file_id, $data);
+			if ($this->extensions->end_script === TRUE) return;
+		/*
+		/* -------------------------------------------*/
+
 		return $successful;
 	}
 

@@ -2015,7 +2015,9 @@ class EE_Template {
 	
 		$hidden_indicator = ($this->EE->config->item('hidden_template_indicator') === FALSE) ? '.' : $this->EE->config->item('hidden_template_indicator');			
 		
-		if ($this->depth == 0 AND substr($template, 0, 1) == $hidden_indicator)
+		if ($this->depth == 0 
+			AND substr($template, 0, 1) == $hidden_indicator
+			AND $this->EE->uri->page_query_string == '') // Allow hidden templates to be used for Pages requests
 		{
 			/* -------------------------------------------
 			/*	Hidden Configuration Variable
