@@ -273,11 +273,15 @@ class Api_channel_entries extends Api {
 			'day'						=> $this->EE->localize->decode_date('%d', $data['entry_date'], TRUE),
 			'expiration_date'			=> $data['expiration_date'],
 			'comment_expiration_date'	=> $data['comment_expiration_date'],
-			'recent_comment_date'		=> (isset($data['recent_comment_date']) && $data['recent_comment_date']) ? $data['recent_comment_date'] : 0,
 			'sticky'					=> (isset($data['sticky']) && $data['sticky'] == 'y') ? 'y' : 'n',
 			'status'					=> $data['status'],
 			'allow_comments'			=> $data['allow_comments'],
 		);
+		
+		if (isset($data['recent_comment_date']))
+		{
+			$meta['recent_comment_date'] = $data['recent_comment_date'];
+		}
 
 		$this->meta =& $meta;
 		

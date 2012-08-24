@@ -288,15 +288,19 @@ class Content_files extends CI_Controller {
 		
 		$params = array(
 			'cat_id' 		=> $get_post['cat_id'], 
-			'type'			=> $get_post['type'], 
+			'type'			=> $get_post['file_type'], 
 			'limit'			=> $get_post['per_page'], 
 			'offset'		=> $state['offset'],
 			'search_value'	=> $get_post['keywords'], 
 			'order'			=> $state['sort'], 
-			'no_clue'		=> TRUE, 
-			'search_in'		=> ($get_post['search_in'] != '') ? $get_post['search_in'] : 'file_name'
+			'no_clue'		=> TRUE,
+			'search_in'		=> ($get_post['search_in'] != '') ? $get_post['search_in'] : 'file_name',
+			'date_start'	=> $get_post['date_start'],
+			'date_end'		=> $get_post['date_end'],
+			'date_range'	=> (substr($get_post['date_range'], 0, strlen($get_post['date_start'])) == $get_post['date_start'])
+								? FALSE : $get_post['date_range']
 		);
-
+		
 		$filtered_entries = $this->file_model->get_files($dirs, $params);
 
 		$files = $filtered_entries['results'];
@@ -311,7 +315,7 @@ class Content_files extends CI_Controller {
 			),
 			'pagination' => array(
 				'per_page'	 => $params['limit'],
-				'total_rows' => $this->file_model->count_files($allowed_dirs)
+				'total_rows' => $total_filtered
 			),
 			
 			// regular returns
@@ -437,7 +441,12 @@ class Content_files extends CI_Controller {
 			'status'		=> ($this->input->get_post('status') != 'all') ? $this->input->get_post('status') : '',
 			'search_in'		=> ($this->input->get_post('search_in')),
 			'search_type'	=> $this->input->get_post('search_type'),
-			'type'			=> ($type = $this->input->get_post('type')) ? $type : 'all'
+			'type'			=> ($type = $this->input->get_post('type')) ? $type : 'all',
+			'date_range'	=> $this->input->get_post('date_range'),
+			'date_start'	=> (($date_start = $this->input->get_post('custom_date_start')) != 'yyyy-mm-dd'
+									AND $date_start !== FALSE) ? $date_start : FALSE,
+			'date_end'		=> (($date_end = $this->input->get_post('custom_date_end')) != 'yyyy-mm-dd'
+									AND $date_end !== FALSE) ? $date_end : FALSE
 		);
 		
 		if ($this->input->post('keywords'))
@@ -1336,11 +1345,14 @@ class Content_files extends CI_Controller {
 					TRUE 	// Don't overwrite existing thumbs
 				);
 				
+				$file_path_name = $this->_upload_dirs[$id]['server_path'].$file['name'];
+				
 				// Update dimensions
-				$image_dimensions = $this->filemanager->get_image_dimensions($this->_upload_dirs[$id]['server_path'].$file['name']);
+				$image_dimensions = $this->filemanager->get_image_dimensions($file_path_name);
 				
 				$file_data = array(
 					'file_id'				=> $query->row('file_id'),
+					'file_size'				=> filesize($file_path_name),
 					'file_hw_original'		=> $image_dimensions['height'] . ' ' . $image_dimensions['width']
 				);
 				$this->file_model->save_file($file_data);

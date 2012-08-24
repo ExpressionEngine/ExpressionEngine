@@ -442,6 +442,12 @@ class Safecracker_lib
 			$this->EE->javascript->output('$.each(SafeCracker.markItUpFields,function(a){$("#"+a).markItUp(mySettings);});');
 		}
 		
+		// We'll store all checkbox fieldnames in here, so that in case one
+		// has preserve_checkboxes set to "yes" but still needs to edit
+		// checkboxes that have the potential to be blank, the field can be
+		// updated while preserving the checkboxes that aren't on screen
+		$checkbox_fields = array();
+		
 		foreach ($this->EE->TMPL->var_pair as $tag_pair_open => $tagparams)
 		{
 			$tag_name = current(preg_split('/\s/', $tag_pair_open));
@@ -474,6 +480,8 @@ class Safecracker_lib
 			//options:field_name tag pair parsing
 			else if (preg_match('/^options:(.*)/', $tag_name, $match) && in_array($this->get_field_type($match[1]), $this->option_fields))
 			{
+				$checkbox_fields[] = $match[1];
+				
 				$this->parse_variables[$match[0]] = (isset($custom_field_variables[$match[1]]['options'])) ? $custom_field_variables[$match[1]]['options'] : '';
 			}
 			
@@ -506,6 +514,8 @@ class Safecracker_lib
 				$this->parse_variables['status_menu'] = array(array('select_options' => $select_options));
 			}
 		}
+		
+		$this->form_hidden('checkbox_fields', implode('|', $checkbox_fields));
 		
 		//edit form
 		if ($this->entry)
@@ -548,7 +558,7 @@ class Safecracker_lib
 					}
 					else
 					{
-						$this->parse_variables[$key] = $this->entry($key);
+						$this->parse_variables[$key] = form_prep($this->entry($key), $key);
 					}
 				}
 				
@@ -1195,9 +1205,25 @@ class Safecracker_lib
 		
 		$this->preserve_checkboxes = $this->bool_string($this->EE->input->post('preserve_checkboxes'), FALSE);
 		
+		// If any checkbox fields are missing from the POST array,
+		// add them in as blank values for form validation to catch
+		foreach (explode('|', $_POST['checkbox_fields']) as $checkbox)
+		{
+			if ( ! isset($_POST[$checkbox]))
+			{
+				$_POST[$checkbox] = '';
+			}
+		}
+		
 		foreach ($this->custom_fields as $i => $field)
 		{
 			$isset = (isset($_POST['field_id_'.$field['field_id']]) || isset($_POST[$field['field_name']]) || (((isset($_FILES['field_id_'.$field['field_id']]) && $_FILES['field_id_'.$field['field_id']]['error'] != 4) || (isset($_FILES[$field['field_name']]) && $_FILES[$field['field_name']]['error'] != 4)) && in_array($field['field_type'], $this->file_fields)));
+			
+			// If file exists, add it to the POST array for validation
+			if (isset($_FILES[$field['field_name']]['name']))
+			{
+				$_POST[$field['field_name']] = $_FILES[$field['field_name']]['name'];
+			}
 			
 			$this->custom_fields[$i]['isset'] = $isset;
 			
@@ -1207,7 +1233,12 @@ class Safecracker_lib
 				
 				if ( ! empty($rules[$field['field_name']]))
 				{
-					$field_rules = explode('|', $this->decrypt_input($rules[$field['field_name']]));
+					if (($rules_decrypted = $this->decrypt_input($rules[$field['field_name']])) === FALSE)
+					{
+						$this->EE->output->show_user_error(FALSE, lang('form_decryption_failed'));
+					}
+					
+					$field_rules = explode('|', $rules_decrypted);
 				}
 				
 				if ( ! in_array('call_field_validation['.$field['field_id'].']', $field_rules))
@@ -1688,7 +1719,7 @@ class Safecracker_lib
 	
 			if (substr($raw, -32) !== md5($this->EE->session->sess_crypt_key.$decoded))
 			{
-				return '';
+				return FALSE;
 			}
 		}
 		
@@ -1800,7 +1831,7 @@ class Safecracker_lib
 		}
 
 		// Load up the library and figure out what belongs and what's selected
-		$this->EE->load->library('api');
+		$this->EE->load->library(array('api', 'file_field'));
 		$this->EE->api->instantiate('channel_categories');
 		$category_list = $this->EE->api_channel_categories->category_tree(
 			$this->channel('cat_group'),
@@ -1818,6 +1849,8 @@ class Safecracker_lib
 
 			$selected = ($category_info[4] === TRUE) ? ' selected="selected"' : '';
 			$checked = ($category_info[4] === TRUE) ? ' checked="checked"' : '';
+			
+			$category_image = $this->EE->file_field->parse_field($category_info[7]);
 
 			// Translate response from API to something parse variables can understand
 			$categories[$category_id] = array(
@@ -1827,7 +1860,8 @@ class Safecracker_lib
 				'category_group' => $category_info[3],
 				'category_parent' => $category_info[6],
 				'category_depth' => $category_info[5],
-
+				'category_image' => (isset($category_image['url'])) ? $category_image['url'] : '',
+				'category_description' => $category_info[8],
 				'selected' => $selected,
 				'checked' => $checked
 			);
@@ -2080,7 +2114,7 @@ class Safecracker_lib
 	 */
 	public function fetch_settings()
 	{
-		if (empty($this->settings))
+		if ($this->settings === NULL)
 		{
 			$this->EE->db->select('settings');
 			$this->EE->db->where('class', 'Safecracker_ext');
@@ -2088,10 +2122,8 @@ class Safecracker_lib
 			
 			$query = $this->EE->db->get('extensions');
 			
-			if ($query->row('settings'))
-			{
-				$this->settings = $this->unserialize($query->row('settings'));
-			}
+			$this->settings = ($query->row('settings')) ?
+				$this->unserialize($query->row('settings')) : FALSE;
 		}
 	}
 
@@ -2576,7 +2608,6 @@ class Safecracker_lib
 		$this->preserve_checkboxes = FALSE;
 		$this->post_error_callbacks = array();
 		$this->require_save_call = array();
-		$this->settings = array();
 		$this->skip_xss_fieldtypes = array();
 		$this->skip_xss_field_ids = array();
 		$this->statuses = array();

@@ -3850,14 +3850,9 @@ class EE_Template {
 
 				foreach ($set as $key => $value)
 				{
-					if (isset($this->unfound_vars[$depth][$key]))
+					if (isset($this->unfound_vars[$depth][$key]) OR
+						strpos($string, LD.$key) === FALSE)
 					{
-						continue;
-					}
-
-					if (strpos($string, LD.$key) === FALSE)
-					{
-						$this->unfound_vars[$depth][$key] = TRUE;
 						continue;
 					}
 					
