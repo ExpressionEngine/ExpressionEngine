@@ -201,6 +201,39 @@ class Migrate {
 
 	}
 
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Drop Index
+	 *
+	 * Drop an index in the given database table if it exists.
+	 *
+	 * @param	string	table name
+	 * @param	string	index name
+	 * @return	bool
+	 */
+	function drop_index($table = '', $index_name = '')
+	{
+		if ($this->EE->db->table_exists($table))
+		{
+			// Check to make sure this index exists.
+			$query = $this->EE->db->query("SHOW INDEX FROM ".$this->EE->db->dbprefix.$table." WHERE Key_name = '".$index_name."'");
+
+			if ($query->num_rows() !== 0)
+			{
+				// Create index
+				$sql = "DROP INDEX ".$index_name." on ".$this->EE->db->dbprefix.$table;
+
+				if ($this->EE->db->query($sql) === TRUE)
+				{
+					return TRUE;
+				}
+			}
+		}
+
+		return FALSE;
+	}
+
 }
 
 // END Migrate class
