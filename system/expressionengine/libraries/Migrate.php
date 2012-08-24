@@ -198,4 +198,4 @@ class Migrate {
 
 
 /* End of file Migrate.php */
-/* Location: ./system/expressionengine/installer/libraries/Migrate.php */
+/* Location: ./system/expressionengine/libraries/Migrate.php */
