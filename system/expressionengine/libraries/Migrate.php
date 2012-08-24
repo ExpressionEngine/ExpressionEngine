@@ -169,22 +169,31 @@ class Migrate {
 	 * Add a new index to the given database table if it doesn't already exist.
 	 *
 	 * @param	string	table name
-	 * @param	string	index name
+	 * @param	string	column to index
+	 * @param	string	index name (optional)
 	 * @return	bool
 	 */
-	function create_index($table = '', $index = '')
+	function create_index($table = '', $index_col_name = '', $index_name = '')
 	{
-		// Check to make sure this index doesn't already exist.
-		$query = $this->EE->db->query("SHOW INDEX FROM ".$this->EE->db->dbprefix.$table." WHERE Key_name = '".$index."'");
-
-		if ($query->num_rows() == 0)
+		if ($this->EE->db->table_exists($table))
 		{
-			// Create index
-			$sql = "CREATE INDEX ".$index." on ".$this->EE->db->dbprefix.$table."(".$index.")";
-
-			if ($this->EE->db->query($sql) === TRUE)
+			if ($index_name == '')
 			{
-				return TRUE;
+				$index_name = $index_col_name;
+			}
+
+			// Check to make sure this index doesn't already exist.
+			$query = $this->EE->db->query("SHOW INDEX FROM ".$this->EE->db->dbprefix.$table." WHERE Key_name = '".$index_name."'");
+
+			if ($query->num_rows() == 0)
+			{
+				// Create index
+				$sql = "CREATE INDEX ".$index_name." on ".$this->EE->db->dbprefix.$table."(".$index_col_name.")";
+
+				if ($this->EE->db->query($sql) === TRUE)
+				{
+					return TRUE;
+				}
 			}
 		}
 
