@@ -1211,7 +1211,6 @@ class Api_channel_entries extends Api {
 				$this->_prep_multi_field($data, $row);
 			}
 		}
-		}
 
 		// Channel data present for pings?
 		if (isset($data['ping_servers']) && count($data['ping_servers']) > 0)
