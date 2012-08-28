@@ -1219,6 +1219,12 @@ class Safecracker_lib
 		{
 			$isset = (isset($_POST['field_id_'.$field['field_id']]) || isset($_POST[$field['field_name']]) || (((isset($_FILES['field_id_'.$field['field_id']]) && $_FILES['field_id_'.$field['field_id']]['error'] != 4) || (isset($_FILES[$field['field_name']]) && $_FILES[$field['field_name']]['error'] != 4)) && in_array($field['field_type'], $this->file_fields)));
 			
+			// If file exists, add it to the POST array for validation
+			if (isset($_FILES[$field['field_name']]['name']))
+			{
+				$_POST[$field['field_name']] = $_FILES[$field['field_name']]['name'];
+			}
+			
 			$this->custom_fields[$i]['isset'] = $isset;
 			
 			if ( ! $this->edit || $isset)
@@ -1825,7 +1831,7 @@ class Safecracker_lib
 		}
 
 		// Load up the library and figure out what belongs and what's selected
-		$this->EE->load->library('api');
+		$this->EE->load->library(array('api', 'file_field'));
 		$this->EE->api->instantiate('channel_categories');
 		$category_list = $this->EE->api_channel_categories->category_tree(
 			$this->channel('cat_group'),
@@ -1843,6 +1849,8 @@ class Safecracker_lib
 
 			$selected = ($category_info[4] === TRUE) ? ' selected="selected"' : '';
 			$checked = ($category_info[4] === TRUE) ? ' checked="checked"' : '';
+			
+			$category_image = $this->EE->file_field->parse_field($category_info[7]);
 
 			// Translate response from API to something parse variables can understand
 			$categories[$category_id] = array(
@@ -1852,7 +1860,8 @@ class Safecracker_lib
 				'category_group' => $category_info[3],
 				'category_parent' => $category_info[6],
 				'category_depth' => $category_info[5],
-
+				'category_image' => (isset($category_image['url'])) ? $category_image['url'] : '',
+				'category_description' => $category_info[8],
 				'selected' => $selected,
 				'checked' => $checked
 			);
@@ -2105,7 +2114,7 @@ class Safecracker_lib
 	 */
 	public function fetch_settings()
 	{
-		if (empty($this->settings))
+		if ($this->settings === NULL)
 		{
 			$this->EE->db->select('settings');
 			$this->EE->db->where('class', 'Safecracker_ext');
@@ -2113,10 +2122,8 @@ class Safecracker_lib
 			
 			$query = $this->EE->db->get('extensions');
 			
-			if ($query->row('settings'))
-			{
-				$this->settings = $this->unserialize($query->row('settings'));
-			}
+			$this->settings = ($query->row('settings')) ?
+				$this->unserialize($query->row('settings')) : FALSE;
 		}
 	}
 
@@ -2601,7 +2608,6 @@ class Safecracker_lib
 		$this->preserve_checkboxes = FALSE;
 		$this->post_error_callbacks = array();
 		$this->require_save_call = array();
-		$this->settings = array();
 		$this->skip_xss_fieldtypes = array();
 		$this->skip_xss_field_ids = array();
 		$this->statuses = array();
