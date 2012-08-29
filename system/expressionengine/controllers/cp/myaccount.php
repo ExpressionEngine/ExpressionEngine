@@ -2170,6 +2170,9 @@ class MyAccount extends CI_Controller {
 		{
 			if (strncmp($key, 'title_', 6) == 0 && $val != '')
 			{
+				// XSS clean the title
+				$_POST[$key] = $val = $this->security->xss_clean($val);
+
 				$i = $_POST['order_'.substr($key, 6)];
 
 				if ($i == '' OR $i == 0)
