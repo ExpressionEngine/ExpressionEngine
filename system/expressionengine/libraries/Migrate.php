@@ -69,6 +69,12 @@ class Migrate {
 	 */
 	function add_column($table = '', $field = array(), $after_field = '')
 	{
+		// Check to make sure table exists
+		if ( ! $this->EE->db->table_exists($table))
+		{
+			return FALSE;
+		}
+
 		$result = FALSE;
 
 		foreach ($field as $k => $v)
@@ -100,6 +106,12 @@ class Migrate {
 	 */
 	function drop_column($table = '', $column_name = '')
 	{
+		// Check to make sure table exists
+		if ( ! $this->EE->db->table_exists($table))
+		{
+			return FALSE;
+		}
+
 		if ($this->EE->db->field_exists($column_name, $table))
 		{
 			return $this->EE->dbforge->drop_column($table, $column_name);
@@ -131,6 +143,12 @@ class Migrate {
 	 */
 	function modify_column($table = '', $field = array())
 	{
+		// Check to make sure table exists
+		if ( ! $this->EE->db->table_exists($table))
+		{
+			return FALSE;
+		}
+
 		$result = FALSE;
 
 		foreach ($field as $k => $v)
@@ -178,33 +196,35 @@ class Migrate {
 	function insert_set($table = '', $values = array(), $unique = array())
 	{
 		// Check to make sure table exists
-		if ($this->EE->db->table_exists($table))
+		if ( ! $this->EE->db->table_exists($table))
 		{
-			// Check to make sure $unique, if present, doesn't already exist in table
-			if (! empty($unique))
-			{
-				foreach ($unique as $k => $v)
-				{
-					if (array_key_exists($k, $values))
-					{
-						$query = $this->EE->db
-										->where($k, $v)
-										->get($table);
+			return FALSE;
+		}
 
-						if ($query->num_rows() > 0)
-						{
-							// If the unique field content already exists in this column
-							// in the DB, return FALSE since this set of values cannot
-							// be inserted.
-							return FALSE;
-						}	
-					}
+		// Check to make sure $unique, if present, doesn't already exist in table
+		if (! empty($unique))
+		{
+			foreach ($unique as $k => $v)
+			{
+				if (array_key_exists($k, $values))
+				{
+					$query = $this->EE->db
+									->where($k, $v)
+									->get($table);
+
+					if ($query->num_rows() > 0)
+					{
+						// If the unique field content already exists in this column
+						// in the DB, return FALSE since this set of values cannot
+						// be inserted.
+						return FALSE;
+					}	
 				}
 			}
-			
-			$this->EE->db->set($values);			
-			$this->EE->db->insert($table);			
 		}
+		
+		$this->EE->db->set($values);			
+		$this->EE->db->insert($table);			
 
 		return FALSE;
 
@@ -224,25 +244,28 @@ class Migrate {
 	 */
 	function create_index($table = '', $index_col_name = '', $index_name = '')
 	{
-		if ($this->EE->db->table_exists($table))
+		// Check to make sure table exists
+		if ( ! $this->EE->db->table_exists($table))
 		{
-			if ($index_name == '')
+			return FALSE;
+		}
+
+		if ($index_name == '')
+		{
+			$index_name = $index_col_name;
+		}
+
+		// Check to make sure this index doesn't already exist.
+		$query = $this->EE->db->query("SHOW INDEX FROM ".$this->EE->db->dbprefix.$table." WHERE Key_name = '".$index_name."'");
+
+		if ($query->num_rows() == 0)
+		{
+			// Create index
+			$sql = "CREATE INDEX ".$index_name." on ".$this->EE->db->dbprefix.$table."(".$index_col_name.")";
+
+			if ($this->EE->db->query($sql) === TRUE)
 			{
-				$index_name = $index_col_name;
-			}
-
-			// Check to make sure this index doesn't already exist.
-			$query = $this->EE->db->query("SHOW INDEX FROM ".$this->EE->db->dbprefix.$table." WHERE Key_name = '".$index_name."'");
-
-			if ($query->num_rows() == 0)
-			{
-				// Create index
-				$sql = "CREATE INDEX ".$index_name." on ".$this->EE->db->dbprefix.$table."(".$index_col_name.")";
-
-				if ($this->EE->db->query($sql) === TRUE)
-				{
-					return TRUE;
-				}
+				return TRUE;
 			}
 		}
 
@@ -263,20 +286,23 @@ class Migrate {
 	 */
 	function drop_index($table = '', $index_name = '')
 	{
-		if ($this->EE->db->table_exists($table))
+		// Check to make sure table exists
+		if ( ! $this->EE->db->table_exists($table))
 		{
-			// Check to make sure this index exists.
-			$query = $this->EE->db->query("SHOW INDEX FROM ".$this->EE->db->dbprefix.$table." WHERE Key_name = '".$index_name."'");
+			return FALSE;
+		}
 
-			if ($query->num_rows() !== 0)
+		// Check to make sure this index exists.
+		$query = $this->EE->db->query("SHOW INDEX FROM ".$this->EE->db->dbprefix.$table." WHERE Key_name = '".$index_name."'");
+
+		if ($query->num_rows() !== 0)
+		{
+			// Create index
+			$sql = "DROP INDEX ".$index_name." on ".$this->EE->db->dbprefix.$table;
+
+			if ($this->EE->db->query($sql) === TRUE)
 			{
-				// Create index
-				$sql = "DROP INDEX ".$index_name." on ".$this->EE->db->dbprefix.$table;
-
-				if ($this->EE->db->query($sql) === TRUE)
-				{
-					return TRUE;
-				}
+				return TRUE;
 			}
 		}
 
