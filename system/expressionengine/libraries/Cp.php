@@ -67,6 +67,8 @@ class Cp {
 				'cp_theme_url'	=> $this->cp_theme_url
 			));
 		}
+
+		$this->EE->output->set_header('X-Frame-Options: Deny');
 	}
 
 	
