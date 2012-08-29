@@ -164,6 +164,55 @@ class Migrate {
 	// --------------------------------------------------------------------
 	
 	/**
+	 * Insert Set
+	 *
+	 * Insert values into the database, with optional unique
+	 * column name/values in a given column(s).
+	 *
+	 * @param	string	table name
+	 * @param	array	associative array of column names => row values
+	 * @param	array	check for uniqueness, associative array of column
+	 *                  names => row values (can only include key/value pairs from $values)
+	 * @return	bool
+	 */
+	function insert_set($table = '', $values = array(), $unique = array())
+	{
+		// Check to make sure table exists
+		if ($this->EE->db->table_exists($table))
+		{
+			// Check to make sure $unique, if present, doesn't already exist in table
+			if (! empty($unique))
+			{
+				foreach ($unique as $k => $v)
+				{
+					if (array_key_exists($k, $values))
+					{
+						$query = $this->EE->db
+										->where($k, $v)
+										->get($table);
+
+						if ($query->num_rows() > 0)
+						{
+							// If the unique field content already exists in this column
+							// in the DB, return FALSE since this set of values cannot
+							// be inserted.
+							return FALSE;
+						}	
+					}
+				}
+			}
+			
+			$this->EE->db->set($values);			
+			$this->EE->db->insert($table);			
+		}
+
+		return FALSE;
+
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
 	 * Create Index
 	 *
 	 * Add a new index to the given database table if it doesn't already exist.
