@@ -2647,7 +2647,7 @@ class EE_Functions {
 		// as efficient as possible?  It also gives me a chance to catch some
 		// user error mistakes.
 
-		if (preg_match_all("/".preg_quote(LD)."((if:else)*if)\s+(.*?)".preg_quote(RD)."/", $str, $matches))
+		if (preg_match_all("/".preg_quote(LD)."((if:else)*if)\s+(.*?)".preg_quote(RD)."/s", $str, $matches))
 		{
 			// PROTECT QUOTED TEXT
 			// That which is in quotes should be protected and ignored as it will screw
@@ -2716,7 +2716,7 @@ class EE_Functions {
 				{
 					if (array_key_exists($x[$i], $vars))
 					{
-						$data[$x[$i]] = $vars[$x[$i]];
+						$data[$x[$i]] = trim($vars[$x[$i]]);
 					}
 					elseif($embedded_tags === TRUE && ! is_numeric($x[$i]))
 					{
@@ -2764,11 +2764,6 @@ class EE_Functions {
 				
 				if ($data[$key] != 'TRUE' && $data[$key] != 'FALSE' && ($key != $data[$key] OR $embedded_tags !== TRUE))
 				{
-					if (stristr($data[$key], '<script'))
-					{
-						$data[$key] = preg_replace("/<script.*?".">.*?<\/script>/is", '', $data[$key]); // <? Fixes BBEdit display bug
-					}
-					
 					$data[$key] = '"'.
 								  str_replace(array("'", '"', '(', ')', '$', '{', '}', "\n", "\r", '\\'), 
 											  array('&#39;', '&#34;', '&#40;', '&#41;', '&#36;', '', '', '', '', '&#92;'), 

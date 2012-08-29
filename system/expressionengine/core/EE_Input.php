@@ -89,7 +89,11 @@ class EE_Input extends CI_Input {
 
 		$filter_keys = TRUE;
 	
-		if ($request_type == 'CP' && isset($_GET['BK']) && isset($_GET['channel_id']) && isset($_GET['title']) && $EE->session->userdata['admin_sess'] == 1)
+		if ($request_type == 'CP'
+			&& isset($_GET['BK'])
+			&& isset($_GET['channel_id'])
+			&& isset($_GET['title'])
+			&& $EE->session->userdata('admin_sess') == 1)
 		{
 			if (in_array($EE->input->get_post('channel_id'), $EE->functions->fetch_assigned_channels()))
 			{			
@@ -97,28 +101,28 @@ class EE_Input extends CI_Input {
 			}		
 		}
 	
-		if (isset($_GET) AND $filter_keys === TRUE)
+		if (isset($_GET))
 		{
 			foreach($_GET as $key => $val)
 			{
-				if (is_array($val))
+				if ($filter_keys == TRUE)
 				{
-					$data = '';
-					
-					if ((int) config_item('debug') == 2)
+					if (preg_match("#(;|\?|exec\s*\(|system\s*\(|passthru\s*\(|cmd\s*\(|[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})#i", $val))
 					{
-						$data = '<br>'.htmlentities(print_r($data, TRUE));
-					}
-					
-					set_status_header(503);
-					exit(sprintf("Invalid GET Data - Array %s", $data));
-				}
-				elseif (preg_match("#(;|\?|exec\s*\(|system\s*\(|passthru\s*\(|cmd\s*\(|[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})#i", $val))
-				{
-					$data = ((int) config_item('debug') == 2) ? '<br>'.htmlentities($val) : '';
-					
-					set_status_header(503);
-					exit(sprintf("Invalid GET Data %s", $data));
+						// Only notify super admins of the offending data
+						if ($EE->session->userdata('group_id') == 1)
+						{
+							$data = ((int) config_item('debug') == 2) ? '<br>'.htmlentities($val) : '';
+							
+							set_status_header(503);
+							exit(sprintf("Invalid GET Data %s", $data));
+						}
+						// Otherwise, handle it more gracefully and just unset the variable
+						else
+						{
+							unset($_GET[$key]);
+						}
+					}   
 				}
 			}	
 		}	

@@ -158,7 +158,13 @@ class Installer_Config Extends EE_Config {
 		{
 			$table_name = 'exp_sites';
 		}
-
+		
+		// Preferences table won't exist pre-1.6
+		if ( ! $this->EE->db->table_exists($table_name))
+		{
+			return;
+		}
+		
 		$query = $this->EE->db->query("SELECT `site_system_preferences` FROM $table_name WHERE site_id = '1'");
 
 		$all_preferences = unserialize($query->row('site_system_preferences'));

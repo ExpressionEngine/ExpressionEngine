@@ -149,11 +149,19 @@ class Api_channel_entries extends Api {
 			'day'						=> $this->EE->localize->decode_date('%d', $data['entry_date'], TRUE),
 			'expiration_date'			=> $data['expiration_date'],
 			'comment_expiration_date'	=> $data['comment_expiration_date'],
-			'recent_comment_date'		=> (isset($data['recent_comment_date']) && $data['recent_comment_date']) ? $data['recent_comment_date'] : 0,
 			'sticky'					=> (isset($data['sticky']) && $data['sticky'] == 'y') ? 'y' : 'n',
 			'status'					=> $data['status'],
 			'allow_comments'			=> $data['allow_comments'],
 		);
+		
+		if (isset($data['recent_comment_date']))
+		{
+			$meta['recent_comment_date'] = $data['recent_comment_date'];
+		}
+		elseif ($entry_id == 0)
+		{
+			$meta['recent_comment_date'] = 0;
+		}
 		
 		$this->meta =& $meta;
 
@@ -1067,60 +1075,53 @@ class Api_channel_entries extends Api {
 		}
 		
 		// Required and custom fields
-		
-		$this->EE->db->select('field_id, field_label, field_type, field_required');
-		$this->EE->db->join('channels', 'channels.field_group = channel_fields.group_id', 'left');
-		$this->EE->db->where('channel_id', $this->channel_id);
-		$query = $this->EE->db->get('channel_fields');
+		$result_array = $this->_get_custom_fields();
 
-		if ($query->num_rows() > 0)
+		foreach ($result_array as $row)
 		{
-			foreach ($query->result_array() as $row)
+			// Required field?
+			if ($row['field_required'] == 'y')
 			{
-				// Required field?
-				if ($row['field_required'] == 'y')
+				if ($row['field_type'] == "file" AND isset($data['field_id_'.$row['field_id'].'_hidden']) AND $data['field_id_'.$row['field_id'].'_hidden'] == '')
 				{
-					if ($row['field_type'] == "file" AND isset($data['field_id_'.$row['field_id'].'_hidden']) AND $data['field_id_'.$row['field_id'].'_hidden'] == '')
-					{
-						$this->_set_error('custom_field_empty', $row['field_label']);
-						continue;
-					}
-
-					if (isset($data['field_id_'.$row['field_id']]) AND $data['field_id_'.$row['field_id']] === '')
-					{
-						$this->_set_error('custom_field_empty', $row['field_label']);
-						continue;
-					}
+					$this->_set_error('custom_field_empty', $row['field_label']);
+					continue;
 				}
-				elseif ( ! isset($data['field_id_'.$row['field_id']]))
+
+				if (isset($data['field_id_'.$row['field_id']]) AND $data['field_id_'.$row['field_id']] === '')
 				{
-					// fields that aren't required should still be set
-					$data['field_id_'.$row['field_id']] = '';
+					$this->_set_error('custom_field_empty', $row['field_label']);
+					continue;
+				}
+			}
+			elseif ( ! isset($data['field_id_'.$row['field_id']]))
+			{
+				// fields that aren't required should still be set
+				$data['field_id_'.$row['field_id']] = '';
+			}
+			
+			// Custom fields that need processing
+			
+			if ($row['field_type'] == 'file')
+			{
+				if ($this->autosave && isset($data['field_id_'.$row['field_id'].'_hidden']))
+				{
+					$directory = $data['field_id_'.$row['field_id'].'_directory'];
+					$data['field_id_'.$row['field_id']] =  '{filedir_'.$directory.'}'.$data['field_id_'.$row['field_id'].'_hidden'];
+					unset($data['field_id_'.$row['field_id'].'_hidden']);
+
 				}
 				
-				// Custom fields that need processing
-				
-				if ($row['field_type'] == 'file')
-				{
-					if ($this->autosave && isset($data['field_id_'.$row['field_id'].'_hidden']))
-					{
-						$directory = $data['field_id_'.$row['field_id'].'_directory'];
-						$data['field_id_'.$row['field_id']] =  '{filedir_'.$directory.'}'.$data['field_id_'.$row['field_id'].'_hidden'];
-						unset($data['field_id_'.$row['field_id'].'_hidden']);
-
-					}
-					
-					unset($data['field_id_'.$row['field_id'].'_directory']);
-				}
-				elseif ($row['field_type'] == 'date')
-				{
-					$func = '_prep_'.$row['field_type'].'_field';
-					$this->$func($data, $row);
-				}
-				elseif ($row['field_type'] == 'multi_select' OR $row['field_type'] == 'checkboxes')
-				{
-					$this->_prep_multi_field($data, $row);
-				}
+				unset($data['field_id_'.$row['field_id'].'_directory']);
+			}
+			elseif ($row['field_type'] == 'date')
+			{
+				$func = '_prep_'.$row['field_type'].'_field';
+				$this->$func($data, $row);
+			}
+			elseif ($row['field_type'] == 'multi_select' OR $row['field_type'] == 'checkboxes')
+			{
+				$this->_prep_multi_field($data, $row);
 			}
 		}
 
@@ -1422,6 +1423,12 @@ class Api_channel_entries extends Api {
 				$this->EE->api_channel_categories->fetch_category_parents($data['category']);
 			}
 		}
+		
+		// Remove invisible characters from entry title
+		if (isset($data['title']))
+		{
+			$data['title'] = remove_invisible_characters($data['title']);
+		}
 
 		unset($data['category']);
 
@@ -1459,56 +1466,50 @@ class Api_channel_entries extends Api {
 		
 		$this->instantiate('channel_fields');
 
-		$this->EE->db->select('field_id, field_name, field_label, field_type, field_required');
-		$this->EE->db->join('channels', 'channels.field_group = channel_fields.group_id', 'left');
-		$this->EE->db->where('channel_id', $this->channel_id);
-		$query = $this->EE->db->get('channel_fields');
-		
-		if ($query->num_rows() > 0)
+		$result_array = $this->_get_custom_fields();
+
+		foreach ($result_array as $row)
 		{
-			foreach ($query->result_array() as $row)
+			$field_name = 'field_id_'.$row['field_id'];
+			
+			// @todo remove in 2.1.2
+			// backwards compatible for some incorrect code noticed in a few third party modules.
+			// Will be removed in 2.1.2, and a note to that effect is in the 2.1.1 update notes
+			// $this->field_id should be used instead as documented
+			// http://expressionengine.com/user_guide/development/fieldtypes.html#class_variables
+			$this->EE->api_channel_fields->settings[$row['field_id']]['field_id'] = $row['field_id'];
+			
+			if (isset($data[$field_name]) OR isset($mod_data[$field_name]))
 			{
-				$field_name = 'field_id_'.$row['field_id'];
-				
-				// @todo remove in 2.1.2
-				// backwards compatible for some incorrect code noticed in a few third party modules.
-				// Will be removed in 2.1.2, and a note to that effect is in the 2.1.1 update notes
-				// $this->field_id should be used instead as documented
-				// http://expressionengine.com/user_guide/development/fieldtypes.html#class_variables
-				$this->EE->api_channel_fields->settings[$row['field_id']]['field_id'] = $row['field_id'];
-				
-				if (isset($data[$field_name]) OR isset($mod_data[$field_name]))
+				$this->EE->api_channel_fields->setup_handler($row['field_id']);
+
+				// Break out module fields here
+				if (isset($data[$field_name]))
 				{
-					$this->EE->api_channel_fields->setup_handler($row['field_id']);
-
-					// Break out module fields here
-					if (isset($data[$field_name]))
+					if ( ! $autosave)
 					{
-						if ( ! $autosave)
-						{
-							$data[$field_name] = $this->EE->api_channel_fields->apply('save', array($data[$field_name]));
-						}
-						
-						if (isset($data['revision_post'][$field_name]))
-						{
-							$data['revision_post'][$field_name] = $data[$field_name];
-						}
-						
+						$data[$field_name] = $this->EE->api_channel_fields->apply('save', array($data[$field_name]));
 					}
-					elseif (isset($mod_data[$field_name]))
+					
+					if (isset($data['revision_post'][$field_name]))
 					{
-						if ( ! $autosave)
-						{
-							$mod_data[$field_name] = $this->EE->api_channel_fields->apply('save', array($mod_data[$field_name]));
-						}
-
-						if (isset($data['revision_post'][$field_name]))
-						{
-							$data['revision_post'][$field_name] = $mod_data[$field_name];
-						}
+						$data['revision_post'][$field_name] = $data[$field_name];
 					}
-				}				
-			}
+					
+				}
+				elseif (isset($mod_data[$field_name]))
+				{
+					if ( ! $autosave)
+					{
+						$mod_data[$field_name] = $this->EE->api_channel_fields->apply('save', array($mod_data[$field_name]));
+					}
+
+					if (isset($data['revision_post'][$field_name]))
+					{
+						$data['revision_post'][$field_name] = $mod_data[$field_name];
+					}
+				}
+			}				
 		}
 	}
 	
@@ -2014,30 +2015,24 @@ class Api_channel_entries extends Api {
 		}
 		
 		// Post update custom fields
-		$this->EE->db->select('field_id, field_name, field_label, field_type, field_required');
-		$this->EE->db->join('channels', 'channels.field_group = channel_fields.group_id', 'left');
-		$this->EE->db->where('channel_id', $this->channel_id);
-		$query = $this->EE->db->get('channel_fields');
+		$result_array = $this->_get_custom_fields();
 
-		if ($query->num_rows() > 0)
+		foreach ($result_array as $row)
 		{
-			foreach ($query->result_array() as $row)
-			{
-				$field_name = 'field_id_'.$row['field_id'];
-				
-				$this->EE->api_channel_fields->settings[$row['field_id']]['entry_id'] = $this->entry_id;
-				
-				// @todo remove in 2.1.2
-				// backwards compatible for some incorrect code noticed in a few third party modules.
-				// Will be removed in 2.1.2, and a note to that effect is in the 2.1.1 update notes
-				// $this->field_id should be used instead as documented
-				// http://expressionengine.com/user_guide/development/fieldtypes.html#class_variables
-				$this->EE->api_channel_fields->settings[$row['field_id']]['field_id'] = $row['field_id'];
-				
-				$fdata = isset($data[$field_name]) ? $data[$field_name] : '';
-				$this->EE->api_channel_fields->setup_handler($row['field_id']);
-				$this->EE->api_channel_fields->apply('post_save', array($fdata));				
-			}
+			$field_name = 'field_id_'.$row['field_id'];
+			
+			$this->EE->api_channel_fields->settings[$row['field_id']]['entry_id'] = $this->entry_id;
+			
+			// @todo remove in 2.1.2
+			// backwards compatible for some incorrect code noticed in a few third party modules.
+			// Will be removed in 2.1.2, and a note to that effect is in the 2.1.1 update notes
+			// $this->field_id should be used instead as documented
+			// http://expressionengine.com/user_guide/development/fieldtypes.html#class_variables
+			$this->EE->api_channel_fields->settings[$row['field_id']]['field_id'] = $row['field_id'];
+			
+			$fdata = isset($data[$field_name]) ? $data[$field_name] : '';
+			$this->EE->api_channel_fields->setup_handler($row['field_id']);
+			$this->EE->api_channel_fields->apply('post_save', array($fdata));				
 		}
 	}
 	
@@ -2094,6 +2089,40 @@ class Api_channel_entries extends Api {
 			}
 		}
 
+		return $result;
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Custom Field Query
+	 *
+	 *
+	 * @access	private
+	 * @return	mixed
+	 */
+	private function _get_custom_fields()
+	{
+		$this->EE->db->select('field_id, field_name, field_label, field_type, field_required');
+		$this->EE->db->join('channels', 'channels.field_group = channel_fields.group_id', 'left');
+		$this->EE->db->where('channel_id', $this->channel_id);
+		$query = $this->EE->db->get('channel_fields');
+		$result = $query->result_array();
+
+		// ----------------------------------------------------------------
+		// 'api_channel_entries_custom_field_query' hook.
+		// - Take the custom fields query array result, do what you wish
+		// - added 2.6
+		//
+		if ($this->EE->extensions->active_hook('api_channel_entries_custom_field_query') === TRUE)
+		{
+			$result = $this->EE->extensions->call('api_channel_entries_custom_field_query', $result);
+			if ($this->EE->extensions->end_script === TRUE) return;
+		}
+		//
+		// ----------------------------------------------------------------
+
+		$query->free_result();
 		return $result;
 	}
 }

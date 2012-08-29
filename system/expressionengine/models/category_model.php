@@ -60,7 +60,7 @@ class Category_model extends CI_Model {
 	 *
 	 * So in the file upload preferences, we use:
 	 *			WHERE exclude_group = 0
-	 *			OR exclude_group != 1
+	 *			OR exclude_group = 1
 	 *
 	 * And basically the opposite on channel group assignment preferences.
 	 *
@@ -85,8 +85,7 @@ class Category_model extends CI_Model {
 		
 		if ($include !== 0)
 		{
-			$this->db->where('exclude_group', 0)
-					 ->or_where('exclude_group', (int) $include);
+			$this->db->where('(exclude_group = "0" OR exclude_group = "' . (int) $include . '")', NULL, FALSE);
 		}
 
 		return $this->db->select('group_id, group_name, sort_order')

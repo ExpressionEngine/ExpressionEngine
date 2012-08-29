@@ -21,17 +21,17 @@
 
 {if invalid_username}
 	<td class="tableCellTwo" align="right" style="width:35%;"><b>{lang:choose_new_un}</b></td>
-	<td class="tableCellTwo" style="width:75%;"><input type="text" style="width:80%" class="input" name="new_username" size="20" value="" maxlength="50" /></td>
+	<td class="tableCellTwo" style="width:75%;"><input type="text" style="width:80%" class="input" name="new_username" size="20" value="" maxlength="50" autocomplete='off' /></td>
 	</tr><tr>
 {/if}
 
 {if invalid_password}
 	<td class="tableCellTwo" align="right"><b>{lang:choose_new_pw}</b></td>
-	<td class="tableCellTwo"><input type="password" style="width:80%" class="input" name="new_password" size="20" value="" maxlength="40" /></td>
+	<td class="tableCellTwo"><input type="password" style="width:80%" class="input" name="new_password" size="20" value="" maxlength="40" autocomplete='off' /></td>
 	</tr><tr>
 	
 	<td class="tableCellTwo" align="right"><b>{lang:confirm_new_pw}</b></td>
-	<td class="tableCellTwo"><input type="password" style="width:80%" class="input" name="new_password_confirm" size="20" value="" maxlength="40" /></td>
+	<td class="tableCellTwo"><input type="password" style="width:80%" class="input" name="new_password_confirm" size="20" value="" maxlength="40" autocomplete='off' /></td>
 	</tr><tr>
 {/if}
 
@@ -48,12 +48,12 @@
 </tr><tr>
 
 <td class="tableCellTwo" align="right" style="width:35%;"><b>{lang:existing_username}</b></td>
-<td class="tableCellTwo" style="width:75%;"><input type="text" style="width:80%" class="input" name="username" size="20" value="" maxlength="50" /></td>
+<td class="tableCellTwo" style="width:75%;"><input type="text" style="width:80%" class="input" name="username" size="20" value="" maxlength="50" autocomplete='off' /></td>
 
 </tr><tr>
 
 <td class="tableCellTwo" align="right"><b>{lang:existing_password}</b></td>
-<td class="tableCellTwo"><input type="password" style="width:80%" class="input" name="password" size="20" value="" maxlength="40" /></td>
+<td class="tableCellTwo"><input type="password" style="width:80%" class="input" name="password" size="20" value="" maxlength="40" autocomplete='off' /></td>
 
 </tr><tr>
 

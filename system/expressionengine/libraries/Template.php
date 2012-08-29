@@ -90,7 +90,7 @@ class EE_Template {
 
     var $strict_urls		= FALSE;		// Whether to make URLs operate strictly or not.  This is set via a template global pref
 	
-	var $realm				= 'ExpressionEngine Template';  // Localize?
+	var $realm				= 'Restricted Content';  // Localize?
 
 	var $marker = '0o93H7pQ09L8X1t49cHY01Z5j4TT91fGfr'; // Temporary marker used as a place-holder for template data
 
@@ -1935,27 +1935,13 @@ class EE_Template {
 				
 				// Turn off caching
 				$this->disable_caching = TRUE;
-
-				// is 404 preference set, we wet our group/template names as 
-				// blank. The fetch_template() function below will fetch the 404
-				// and show it
-				if ($this->EE->config->item('site_404'))
-				{
-					$template_group = '';
-					$template = '';
-					$this->log_item("Template group and template not found, showing 404 page");
-				}
-				else
-				// No 404 preference is set so we will show the index template
-				// from the default template group
-				{
-					$this->EE->uri->query_string = trim_slashes(
-						$this->EE->uri->uri_string
-					);
-					$template_group	= $result->row('group_name');
-					$template = 'index';
-					$this->log_item("Showing index. Template not found: ".$this->EE->uri->segment(1));
-				}
+				
+				// Default to site's index template
+				$this->EE->uri->query_string = trim_slashes(
+					$this->EE->uri->uri_string
+				);
+				$template_group	= $result->row('group_name');
+				$template = 'index';
 			}
 		}
 
@@ -3864,14 +3850,9 @@ class EE_Template {
 
 				foreach ($set as $key => $value)
 				{
-					if (isset($this->unfound_vars[$depth][$key]))
+					if (isset($this->unfound_vars[$depth][$key]) OR
+						strpos($string, LD.$key) === FALSE)
 					{
-						continue;
-					}
-
-					if (strpos($string, LD.$key) === FALSE)
-					{
-						$this->unfound_vars[$depth][$key] = TRUE;
 						continue;
 					}
 					

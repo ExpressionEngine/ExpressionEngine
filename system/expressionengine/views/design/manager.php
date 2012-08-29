@@ -151,8 +151,6 @@ if ($EE_view_disable !== TRUE)
 
 					<?php
 					
-					$prefs_json = array();
-					
 					$this->table->set_template($table_template);
 						foreach ($templates as $group): 
 							$temp = current($group);
@@ -183,20 +181,6 @@ if ($EE_view_disable !== TRUE)
 							$this->table->set_heading($main_table_headings);
 
 							foreach ($group as $template):
-								$prefs_json[$template['template_id']] = array(
-									'id' => $template['template_id'],
-									'group_id' => $template['group_id'],
-									'name' => $template['template_name'],
-									'type' => $template['template_type'],
-									'cache' => $template['cache'],
-									'refresh' => $template['refresh'],
-									'allow_php' => $template['allow_php'],
-									'php_parsing' => $template['php_parse_location'],
-									'hits' => $template['hits'],
-									'access' => $template['access'],
-									'no_auth_bounce' => $template['no_auth_bounce'],
-									'enable_http_auth' => $template['enable_http_auth']
-								);
 								
 								$delete_link = ($template['template_name'] == 'index') ? '--' :
 								'<a href="'.BASE.AMP.'C=design'.AMP.'M=template_delete_confirm'.AMP.
@@ -227,12 +211,7 @@ if ($EE_view_disable !== TRUE)
 							</div>
 						<?php
 						endforeach;
-						
-						$prefs_json = $this->javascript->generate_json($prefs_json);
 					?>
-					<script type="text/javascript" charset="utf-8">
-						EE.pref_json = <?=$prefs_json?>;
-					</script>
 				</div>
 			</div>
 			

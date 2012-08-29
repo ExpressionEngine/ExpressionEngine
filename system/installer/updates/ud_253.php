@@ -8,7 +8,7 @@
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
- * @since		Version 2.6
+ * @since		Version 2.5.3
  * @filesource
  */
  
@@ -35,8 +35,6 @@ class Updater {
 		$this->EE =& get_instance();
 	}
 	
-	// --------------------------------------------------------------------
-	
 	/**
 	 * Do Update
 	 *
@@ -46,7 +44,8 @@ class Updater {
 	{
 		$this->EE->load->dbforge();
 		
-		$this->_change_member_totals_length();
+		$this->_change_site_preferences_column_type();
+		$this->_truncate_tables();
 		
 		return TRUE;
 	}
@@ -54,28 +53,38 @@ class Updater {
 	// --------------------------------------------------------------------
 	
 	/**
-	 * Changes column type for `total_entries` and `total_comments` in the
-	 * members table from smallint to mediumint to match the columns in the
-	 * channels table and stats table.
+	 * Changes column type for the `site_system_preferences` column in
+	 * `sites` from TEXT to MEDIUMTEXT
 	 */
-	private function _change_member_totals_length()
+	private function _change_site_preferences_column_type()
 	{
 		$this->EE->dbforge->modify_column(
-			'members',
+			'sites',
 			array(
-				'total_entries' => array(
-					'name' => 'total_entries',
-					'type' => 'mediumint(8)'
-				),
-				'total_comments' => array(
-					'name' => 'total_comments',
-					'type' => 'mediumint(8)'
-				),
+				'site_system_preferences' => array(
+					'name' => 'site_system_preferences',
+					'type' => 'mediumtext'
+				)
 			)
 		);
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Truncates `security_hashes` and `throttle` tables in response to bug
+	 * #17795 where these tables may not be emptied regularly. Now that the
+	 * fix is in place, to help prevent a case where EE will hang when
+	 * trying to clear 15 million records based on a non-indexed date field,
+	 * let's just clear out the tables.
+	 */
+	private function _truncate_tables()
+	{
+		$this->EE->db->truncate('security_hashes');
+		$this->EE->db->truncate('throttle');
 	}
 }	
 /* END CLASS */
 
-/* End of file ud_252.php */
-/* Location: ./system/expressionengine/installer/updates/ud_252.php */
+/* End of file ud_253.php */
+/* Location: ./system/expressionengine/installer/updates/ud_253.php */

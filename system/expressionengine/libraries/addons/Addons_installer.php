@@ -482,6 +482,8 @@ class Addons_installer {
 		{
 			return $this->{$action.'_'.$type}($addon);
 		}
+
+		$this->EE->load->model('addons_model');
 		
 		// third party - do entire package
 		if ($show_package && count($this->EE->addons->_packages[$addon]) > 1) 
@@ -494,11 +496,32 @@ class Addons_installer {
 
 			if (method_exists($this, $method))
 			{
-				$this->EE->load->add_package_path($this->EE->addons->_packages[$addon][$type]['path'], FALSE);
-				
-				$this->$method($addon);
-				
-				$this->EE->load->remove_package_path($this->EE->addons->_packages[$addon][$type]['path']);
+				// Fieldtypes provide an array of multiple fieldtypes
+				if ($type === 'fieldtype')
+				{
+					foreach ($this->EE->addons->_packages[$addon][$type] as $fieldtype_name => $fieldtype_settings)
+					{
+						$installed = $this->EE->addons_model->fieldtype_installed($fieldtype_name);
+
+						//don't perform action if it's not necessary, ie it's already installed or uninstalled
+						if (($action === 'install' && ! $installed) || ($action === 'uninstall' && $installed))
+						{
+							$this->EE->load->add_package_path($fieldtype_settings['path'], FALSE);
+
+							$this->$method($fieldtype_name);
+
+							$this->EE->load->remove_package_path($fieldtype_settings['path']);
+						}
+					}
+				}
+				else
+				{
+					$this->EE->load->add_package_path($this->EE->addons->_packages[$addon][$type]['path'], FALSE);
+					
+					$this->$method($addon);
+					
+					$this->EE->load->remove_package_path($this->EE->addons->_packages[$addon][$type]['path']);
+				}
 			}
 		}
 	}

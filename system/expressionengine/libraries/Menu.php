@@ -736,6 +736,15 @@ class EE_Menu {
 
 				$title = (isset($x['0'])) ? $x['0'] : '';
 				$link  = (isset($x['1'])) ? $x['1'] : '';
+				
+				// Look to see if the session is in the link; if so, it was
+				// it was likely stored the old way which made for possibly
+				// broken links, like if it was saved with index.php but is
+				// being accessed through admin.php
+				if (strstr($link, '?S=') === FALSE)
+				{
+					$link = BASE.AMP.$link;
+				}
 
 				$tabs[$title] = $link;
 			}
