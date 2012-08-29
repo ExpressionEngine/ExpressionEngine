@@ -61,14 +61,9 @@ class Updater {
 	 * @return 	void
 	 */
 	private function _update_session_table()
-	{
-		$this->EE->load->dbforge();
-		
+	{	
 		// Drop site_id
-		if ($this->EE->db->field_exists('site_id', 'sessions'))
-		{
-			$this->EE->dbforge->drop_column('sessions', 'site_id');
-		}
+		$this->EE->migrate->drop_column('sessions', 'site_id');
     }
 
 	// --------------------------------------------------------------------
