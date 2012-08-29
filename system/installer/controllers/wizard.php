@@ -1317,6 +1317,8 @@ PAPAYA;
 		$UD = new Updater;
 		$method = 'do_update';
 		
+		$this->load->library('migrate');
+		
 		if ($this->config->item('ud_next_step') != FALSE)
 		{
 			$method = $this->config->item('ud_next_step');

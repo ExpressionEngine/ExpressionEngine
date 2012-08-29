@@ -78,7 +78,7 @@ class Updater {
 				unset($column_settings['ip_address']['null']);
 			}
 
-			$this->EE->dbforge->modify_column($table, $column_settings);
+			$this->EE->migrate->modify_column($table, $column_settings);
 		}
 	}
 }	
