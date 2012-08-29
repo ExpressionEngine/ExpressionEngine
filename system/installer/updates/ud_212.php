@@ -34,36 +34,59 @@ class Updater {
 
     function do_update()
     {
-    	if ( ! $this->EE->db->field_exists('show_sidebar', 'members'))
-    	{
-			$Q[] = "ALTER TABLE exp_members ADD show_sidebar char(1) NOT NULL default 'y' AFTER quick_tabs";
-    	}
+		$fields = array(
+					'show_sidebar' 	=> array(
+								'type'			=> 'char',
+								'constraint'	=> 1,
+								'null'			=> FALSE,
+								'default'		=> 'y'
+								));
 
-    	if ( ! $this->EE->db->field_exists('m_field_cp_reg', 'member_fields'))
-    	{
-    		$Q[] = "ALTER TABLE exp_member_fields ADD m_field_cp_reg char(1) NOT NULL default 'n' AFTER m_field_reg";
-    	}
-		
-		$Q[] = "ALTER TABLE exp_accessories CHANGE member_groups member_groups varchar(255) NOT NULL";
+		$this->EE->migrate->add_column('members', $fields, 'quick_tabs');
 
-		if ( ! $this->EE->db->field_exists('can_edit_html_buttons', 'member_groups'))
+
+		$fields = array(
+					'm_field_cp_reg' 	=> array(
+								'type'			=> 'char',
+								'constraint'	=> 1,
+								'null'			=> FALSE,
+								'default'		=> 'n'
+								));
+
+		$this->EE->migrate->add_column('member_fields', $fields, 'm_field_reg');
+
+
+		$fields = array(
+					'member_groups' 	=> array(
+								'name'			=> 'member_groups',
+								'type'			=> 'varchar',
+								'constraint'	=> 255,
+								'null'			=> FALSE
+								));
+
+		$this->EE->migrate->modify_column('accessories', $fields);
+
+
+		$fields = array(
+					'can_edit_html_buttons' 	=> array(
+								'type'			=> 'char',
+								'constraint'	=> 1,
+								'null'			=> FALSE,
+								'default'		=> 'n'
+								));
+
+		$this->EE->migrate->add_column('member_groups', $fields, 'can_view_profiles');
+
+		$this->EE->db->set('can_edit_html_buttons', 'y');
+		$this->EE->db->where('can_access_cp', 'y');
+		$this->EE->db->update('member_groups');
+
+
+		if ($this->EE->db->table_exists('comments'))
 		{
-			$Q[] = "ALTER TABLE exp_member_groups ADD can_edit_html_buttons char(1) NOT NULL DEFAULT 'n' AFTER can_view_profiles";
-		}
-		
-		$Q[] = "UPDATE exp_member_groups SET can_edit_html_buttons = 'y' WHERE can_access_cp = 'y'";
-
-		if ($this->EE->db->table_exists('exp_comments'))
-		{
-			$Q[] = "UPDATE exp_comments SET location = '' WHERE location = '0'";	
-		}
-
-		$count = count($Q);
-		
-		foreach ($Q as $num => $sql)
-		{
-			$this->EE->progress->update_state("Running Query $num of $count");
-	        $this->EE->db->query($sql);
+			$this->EE->db->set('location', '');
+			$this->EE->db->where('location', '0');
+			$this->EE->db->update('comments');
 		}
 		
 		// Remove allow_multi_emails from config
