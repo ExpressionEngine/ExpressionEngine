@@ -45,8 +45,6 @@ class Updater {
 	 */
 	public function do_update()
 	{
-		$this->EE->load->dbforge();
-		
 		$this->_update_session_table();
 
 		$this->_update_password_lockout_table();
@@ -78,14 +76,8 @@ class Updater {
 	 */
 	private function _update_session_table()
 	{
-		// Check to make sure this index doesn't already exist.
-		$query = $this->EE->db->query("SHOW INDEX FROM exp_sessions WHERE Key_name = 'last_activity_idx'");
-
-		if ($query->num_rows() == 0)
-		{
-			// Add an index on last_activity
-			$this->EE->db->query("CREATE INDEX last_activity_idx on exp_sessions(last_activity)");
-		}		
+		// Add an index on last_activity
+		$this->EE->migrate->create_index('sessions', 'last_activity', 'last_activity_idx');
 
 		$field = array(
 			'user_agent'	=> array(
@@ -95,7 +87,7 @@ class Updater {
 			)
 		);
 
-		$this->EE->dbforge->modify_column('sessions', $field);
+		$this->EE->migrate->modify_column('sessions', $field);
 	}
 
 	// --------------------------------------------------------------------
@@ -119,7 +111,7 @@ class Updater {
 			)
 		);
 
-		$this->EE->dbforge->modify_column('password_lockout', $field);
+		$this->EE->migrate->modify_column('password_lockout', $field);
 	}
 	// --------------------------------------------------------------------
 
@@ -143,40 +135,33 @@ class Updater {
 			)
 		);
 
-		$this->EE->dbforge->modify_column('members', $field);
+		$this->EE->migrate->modify_column('members', $field);
 
 
-		if ( ! $this->EE->db->field_exists('salt', 'members'))
-		{
-			// Add a salt column VARCHAR(128)
-			$field = array(
-				'salt'			=> array(
-					'type'			=> 'VARCHAR',
-					'constraint'	=> 128,
-					'default'		=> '',
-					'null'			=> FALSE
-				)
-			);
+		// Add a salt column VARCHAR(128)
+		$field = array(
+			'salt'			=> array(
+				'type'			=> 'VARCHAR',
+				'constraint'	=> 128,
+				'default'		=> '',
+				'null'			=> FALSE
+			)
+		);
 
-			$this->EE->dbforge->add_column('members', $field);
-		}
-
-		if ( ! $this->EE->db->field_exists('remember_me', 'members'))
-		{
-			// Add a remember_me column VARCHAR(32)
-			$field = array(
-				'remember_me'	=> array(
-					'type'			=> 'VARCHAR',
-					'constraint'	=> 32,
-					'default'		=> '',
-					'null'			=> FALSE
-				)
-			);
-
-			$this->EE->dbforge->add_column('members', $field);
-		}
-
+		$this->EE->migrate->add_column('members', $field);
 		
+		
+		// Add a remember_me column VARCHAR(32)
+		$field = array(
+			'remember_me'	=> array(
+				'type'			=> 'VARCHAR',
+				'constraint'	=> 32,
+				'default'		=> '',
+				'null'			=> FALSE
+			)
+		);
+
+		$this->EE->migrate->add_column('members', $field);
 	}
 
 	// --------------------------------------------------------------------
@@ -186,17 +171,13 @@ class Updater {
 	 */
 	private function _update_files_table()
 	{
+		$field = array(
+			'caption'	=> array(
+				'type'		=> 'text'
+			)
+		);
 
-		if ( ! $this->EE->db->field_exists('caption', 'files'))
-		{
-			$field = array(
-				'caption'	=> array(
-					'type'		=> 'text'
-				)
-			);
-
-			$this->EE->dbforge->add_column('files', $field);
-		}
+		$this->EE->migrate->add_column('files', $field);
 	}
 	
 	// --------------------------------------------------------------------
@@ -206,18 +187,7 @@ class Updater {
 	 */
 	private function _update_comments_table()
 	{
-		if ($this->EE->db->table_exists('exp_comments'))
-		{
-			// Check to make sure this index doesn't already exist.
-			$query = $this->EE->db->query("SHOW INDEX FROM exp_comments WHERE Key_name = 'comment_date_idx'");
-
-			if ($query->num_rows() == 0)
-			{
-				// Add an index on comment_date
-				$this->EE->db->query("CREATE INDEX comment_date_idx on exp_comments(comment_date)");
-			}
-			
-		}
+		$this->EE->migrate->create_index('comments', 'comment_date', 'comment_date_idx');
 	}
 
 	// --------------------------------------------------------------------
@@ -227,21 +197,8 @@ class Updater {
 	 */
 	private function _update_template_groups()
 	{
-		// Check to make sure this index doesn't already exist.
-		$query = $this->EE->db->query("SHOW INDEX FROM exp_template_groups WHERE Key_name = 'group_name_idx'");
-
-		if ($query->num_rows() == 0)
-		{
-			$this->EE->db->query("CREATE INDEX group_name_idx on exp_template_groups(group_name)");
-		}
-
-		// Check to make sure this index doesn't already exist.
-		$query = $this->EE->db->query("SHOW INDEX FROM exp_template_groups WHERE Key_name = 'group_order_idx'");
-
-		if ($query->num_rows() == 0)
-		{
-			$this->EE->db->query("CREATE INDEX group_order_idx on exp_template_groups(group_order)");
-		}
+		$this->EE->migrate->create_index('template_groups', 'group_name', 'group_name_idx');
+		$this->EE->migrate->create_index('template_groups', 'group_order', 'group_order_idx');
 	}
 
 	// --------------------------------------------------------------------	
