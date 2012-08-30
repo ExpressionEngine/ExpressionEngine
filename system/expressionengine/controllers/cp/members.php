@@ -601,6 +601,18 @@ class Members extends CI_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
+		// Check password authentication
+		$this->load->library('auth');
+		$validate = $this->auth->authenticate_id(
+			$this->session->userdata['member_id'],
+			$this->input->post('password_auth')
+		);
+
+		if ( ! $validate)
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		// Fetch member data
 		$this->db->from('members, member_groups');
 		$this->db->select('members.username, members.password, members.unique_id, members.member_id, members.group_id, member_groups.can_access_cp');
