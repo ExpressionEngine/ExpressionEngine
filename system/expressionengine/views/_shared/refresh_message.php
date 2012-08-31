@@ -6,12 +6,7 @@
 	
 	<title><?=$cp_page_title?> | ExpressionEngine</title>
 
-	<link rel="stylesheet" href="<?=BASE.AMP.'C=css'?>" type="text/css" media="screen" title="Global Styles" charset="utf-8" />
-    
-	<link rel="stylesheet" href="<?=BASE.AMP.'C=css'.AMP.'M=datepicker'?>" type="text/css" media="screen" />
-	<!--[if lte IE 7]>
-	<link rel="stylesheet" href="<?=BASE.AMP.'C=css'.AMP.'M=iefix'?>" type="text/css" media="screen" charset="utf-8" />
-	<![endif]-->
+	<?=$this->view->head_link('css/global.css'); ?>
 
 	<?php 
     if (isset($library_src))

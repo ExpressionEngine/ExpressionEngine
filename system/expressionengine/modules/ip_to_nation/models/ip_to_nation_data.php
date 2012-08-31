@@ -158,7 +158,7 @@ class Ip_to_nation_data extends CI_Model {
 				'country'		=> strtolower($data[4])
 			);
 
-			$countries[$batch] = $data[4];
+			$countries[] = $data[4];
 
 			if ($batch >= 1000)
 			{

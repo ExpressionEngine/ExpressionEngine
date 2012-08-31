@@ -40,9 +40,6 @@ class Rte_lib {
 	{
 		$this->EE =& get_instance();
 		$this->EE->lang->loadfile('rte');
-
-		// Turn off the profiler, everything is AJAX-ish
-		$this->EE->output->enable_profiler(FALSE);
 	}
 
 	// -------------------------------------------------------------------------
@@ -65,6 +62,8 @@ class Rte_lib {
 		{
 			exit();
 		}
+		
+		$this->EE->output->enable_profiler(FALSE);
 
 		$this->EE->load->library(array('table','javascript'));
 		$this->EE->load->model(array('rte_toolset_model','rte_tool_model'));
@@ -150,6 +149,8 @@ class Rte_lib {
 	 */
 	public function save_toolset()
 	{
+		$this->EE->output->enable_profiler(FALSE);
+		
 		$this->EE->load->model('rte_toolset_model');
 
 		// get the toolset

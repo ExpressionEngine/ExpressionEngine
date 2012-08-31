@@ -1090,7 +1090,7 @@ class Simple_commerce_mcp {
 				$vars['purchases'][$id]['screen_name'] = '';
 				$vars['purchases'][$id]['item_id'] = '';
 				$vars['purchases'][$id]['purchase_date'] = $this->EE->localize->set_human_time();
-				$vars['purchases'][$id]['subscription_end_date'] = '';
+				$vars['purchases'][$id]['subscription_end_date'] = 0;
 				$vars['purchases'][$id]['item_cost'] =  '';
 				$vars['purchases'][$id]['purchase_id'] =  0;
 
@@ -1197,9 +1197,9 @@ class Simple_commerce_mcp {
 
 	function _valid_sub_date($str, $key)
 	{
-		$str = ($str == '') ? '' : $this->EE->localize->convert_human_date_to_gmt($str);
+		$str = ($str == '') ? 0 : $this->EE->localize->convert_human_date_to_gmt($str);
 
-		if ( ! is_numeric($str) && $str != '' OR ($str < 0))
+		if ( ! is_numeric($str) OR ($str < 0))
 		{
 			$this->EE->form_validation->set_message('_valid_date', $this->lang->line('invalid_date_formatting'));
 			return FALSE;

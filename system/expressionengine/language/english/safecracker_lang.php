@@ -36,6 +36,7 @@ $lang = array(
 	'curl_not_installed'	=> 'The cURL library for PHP Must be installed to process forms sent offsite to third-parties.',
 	
 	/* rules */
+	'form_decryption_failed' => 'Decryption of form settings failed.',
 	'required' => 'The %s field is required.',
 	'isset' => 'The %s field must have a value.',
 	'valid_email' => 'The %s field must contain a valid email address.',

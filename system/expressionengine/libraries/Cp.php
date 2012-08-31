@@ -300,7 +300,7 @@ class Cp {
 	 */
 	function masked_url($url)
 	{
-		return $this->EE->functions->fetch_site_index(0,0).QUERY_MARKER.'URL='.$url;
+		return $this->EE->functions->fetch_site_index(0,0).QUERY_MARKER.'URL='.urlencode($url);
 	}
 
 	// --------------------------------------------------------------------

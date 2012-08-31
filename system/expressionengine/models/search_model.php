@@ -401,7 +401,7 @@ class Search_model extends CI_Model {
 		
 		
 		// Process hook data
-		if (is_array($data['_hook_wheres']) && is_array($data['_hook_wheres']))
+		if (isset($data['_hook_wheres']) && is_array($data['_hook_wheres']))
 		{
 			foreach($data['_hook_wheres'] as $field => $value)
 			{

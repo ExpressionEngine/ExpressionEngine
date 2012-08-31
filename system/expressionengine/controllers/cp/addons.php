@@ -111,6 +111,23 @@ class Addons extends CI_Controller {
 			{
 				if ($new_state = $this->input->get_post('install_'.$type))
 				{
+					// Addon_installer does it's own "is installed" check when
+					// installing/uninstalling fieldtypes, so we can safely add
+					// FTs at this point without checking the installation status
+					if ($type === 'fieldtype')
+					{
+						if ($new_state === 'uninstall')
+						{
+							$uninstall[] = $type;
+						}
+						elseif ($new_state === 'install')
+						{
+							$install[] = $type;
+						}
+						
+						continue;
+					}
+					
 					$installed_f = $type.'_installed';
 					
 					if (method_exists($this->addons_model, $installed_f))
@@ -139,10 +156,21 @@ class Addons extends CI_Controller {
 
 		$vars = array();
 		
+		//whether or not this is an installation or an uninstallation
+		$is_package_installed = FALSE;
+		
 		foreach($components as $type => $info)
 		{
+			//fieldtypes are given the install status of the whole package
+			//so don't bother checking install status of fieldtypes
+			if ($type === 'fieldtype')
+			{
+				continue;
+			}
+			
 			$inst_func = $type.'_installed';
-			$components[$type]['installed'] = $this->addons_model->$inst_func($package);
+			
+			$is_package_installed = $components[$type]['installed'] = $this->addons_model->$inst_func($package);
 
 			if ($type == 'extension')
 			{
@@ -160,6 +188,13 @@ class Addons extends CI_Controller {
 
 				$this->load->remove_package_path($info['path']);
 			}
+		}
+		
+		//since fieldtypes can be uninstalled one-by-one without uninstalling the whole package
+		//set the "installed" status to whether the other components (ext, mod, acc) are installed
+		if (isset($components['fieldtype']))
+		{
+			$components['fieldtype']['installed'] = $is_package_installed;
 		}
 		
 		$vars['form_action'] = 'C=addons'.AMP.'M=package_settings'.AMP.'package='.$package.AMP.'return='.$return;
