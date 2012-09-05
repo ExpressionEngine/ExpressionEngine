@@ -157,6 +157,12 @@ class EE_Extensions {
 		// Retrieve arguments for function
 		$args = array_slice(func_get_args(), 1);
 		
+		// Give arguments by reference
+		foreach($args as $k => $v)
+		{
+			$args[$k] =& $args[$k];
+		}
+		
 		// Go through all the calls for this hook
 		foreach($this->extensions[$which] as $priority => $calls)
 		{
