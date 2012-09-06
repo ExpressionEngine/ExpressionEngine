@@ -3376,12 +3376,20 @@ class Design extends CI_Controller {
 		$vars['templates'] = array();
 		$displayed_groups = array();
 		$vars['no_auth_bounce_options'] = array();
-		$first = 0;
 		$prefs_json = array();
+		
+		$first_template = reset($vars['template_groups']);
+		$vars['first_template'] = $first_template['group_id'];
+		
+		// Get template group ID so we can load the right preferences
+		if ($this->input->get('tgpref', TRUE))
+		{
+			$vars['first_template'] = $this->input->get('tgpref', TRUE);
+		}
 		
 		foreach ($query->result_array() as $row)
 		{
-			if ($first == 0 OR $first == $row['group_id'])
+			if ($vars['first_template'] == 0 OR $vars['first_template'] == $row['group_id'])
 			{
 				//  The very first group populates the default json prefs array
 				foreach($vars['member_groups'] as $group_id => $group)
@@ -3471,15 +3479,6 @@ class Design extends CI_Controller {
 			{
 				$vars['no_auth_bounce_options'][$row['template_id']] = $row['group_name'].'/'.$row['template_name'];
 			}
-		}
-		
-		//$first_template = reset($vars['template_groups']->result_array());
-		$first_template = reset($vars['template_groups']);
-		$vars['first_template'] = $first_template['group_id'];
-
-		if ($this->input->get('tgpref', TRUE))
-		{
-			$vars['first_template'] = $this->input->get('tgpref', TRUE);			
 		}
 		
 		$prefs_json = $this->javascript->generate_json($prefs_json);
