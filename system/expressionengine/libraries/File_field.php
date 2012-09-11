@@ -472,6 +472,12 @@ class File_field {
 		
 		// Get cached upload directories
 		$upload_dir = $this->_get_upload_prefs();
+		
+		if ( ! isset($upload_dir[$file['upload_location_id']]))
+		{
+			return FALSE;
+		}
+		
 		$upload_dir = $upload_dir[$file['upload_location_id']];
 		
 		$file['file_name'] = urlencode($file['file_name']);

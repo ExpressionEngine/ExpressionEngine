@@ -2660,20 +2660,12 @@ class EE_Functions {
 					$md5_key = (string) hexdec($prep_id.md5($quote_match));
 					$protect[$quote_match] = $md5_key;
 					
-					$surrounding_quote = FALSE;
-					
 					// To better protect quotes inside conditional quotes, we need to
 					// determine which kind of quote to surround the newly-encoded string
-					if (is_string_surrounded($quote_match, "'"))
-					{
-						$surrounding_quote = "'";
-					}
-					elseif (is_string_surrounded($quote_match, '"'))
-					{
-						$surrounding_quote = '"';
-					}
+					$surrounding_quote = surrounding_character($quote_match);
 					
-					if ($surrounding_quote === FALSE)
+					if (($surrounding_quote != '"' AND $surrounding_quote != "'")
+						OR $surrounding_quote === FALSE)
 					{
 						$surrounding_quote = '"';
 					}
