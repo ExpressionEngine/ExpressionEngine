@@ -1206,6 +1206,12 @@ class Moblog {
 		}
 
 		// forgive me, please.
+		
+		// ...
+
+		// ...
+
+		// No.  I don't think I will forgive you.
 		$orig_group_id = $this->EE->session->userdata('group_id');
 		$orig_can_assign = $this->EE->session->userdata('can_assign_post_authors');
 		$orig_can_edit = $this->EE->session->userdata('can_edit_other_entries');
@@ -1219,7 +1225,7 @@ class Moblog {
 		$this->EE->api->instantiate('channel_fields');
 
 		$this->EE->api_channel_fields->setup_entry_settings($data['channel_id'], $data);
-		
+	
 		$result = $this->EE->api_channel_entries->save_entry($data, $data['channel_id']);
 
 		if ($result)

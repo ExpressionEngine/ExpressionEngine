@@ -1723,6 +1723,10 @@ class Api_channel_entries extends Api {
 				{
 					unset($cust_fields[$field->name]);
 				}
+				elseif($field->type == 'real' && isset($cust_fields[$field->name]))
+				{
+					$cust_fields[$field->name] = (float)$cust_fields[$field->name];
+				}
 			}
 		}
 		
@@ -1737,7 +1741,6 @@ class Api_channel_entries extends Api {
 			
 			return $this->entry_id;
 		}
-
 		$this->EE->db->insert('channel_data', $cust_fields);
 
 
