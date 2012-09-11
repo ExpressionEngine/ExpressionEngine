@@ -359,7 +359,7 @@ class Member_register extends Member {
 					// Ensure their selection is actually a valid choice
 					$options = explode("\n", $row['m_field_list_items']);
 					
-					if (! in_array($_POST[$field_name], $options))
+					if (! in_array(htmlentities($_POST[$field_name]), $options))
 					{
 						$valid = FALSE;
 						$cust_errors[] = lang('mbr_field_invalid').'&nbsp;'.$row['m_field_label'];

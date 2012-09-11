@@ -890,7 +890,7 @@ class Email {
 		$recipients = $this->_encrypt_recipients($recipients);
 
 		$data = array(
-			'id'			=> ($this->EE->TMPL->form_id == '') ? 'contact_form' : $this->EE->TMPL->form_id,
+			'id'			=> ($this->EE->TMPL->form_id == '') ? $form_id : $this->EE->TMPL->form_id,
 			'class'			=> $this->EE->TMPL->form_class,
 			'hidden_fields'	=> array(
 				'ACT'				=> $this->EE->functions->fetch_action_id('Email', 'send_email'),

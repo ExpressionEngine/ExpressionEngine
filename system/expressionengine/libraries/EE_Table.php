@@ -29,6 +29,7 @@ class EE_Table extends CI_Table {
 	protected $base_url = '';
 	protected $no_results = '';
 	protected $pagination_tmpl = '';
+	protected $raw_data = '';
 	
 	protected $jq_template = FALSE;
 	

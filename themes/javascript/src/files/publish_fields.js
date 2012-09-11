@@ -28,7 +28,13 @@ EE.namespace('EE.publish.file_browser');
 				props = '',
 				open = '',
 				close = '';
-
+				
+			button_id = $(this).parent().attr('class').match(/id(\d+)/);
+			if (button_id != null)
+			{
+				button_id = button_id[1];
+			}
+			
 			// A bit of working around various textareas, text inputs, tec
 			if ($(this).closest("#markItUpWrite_mode_textarea").length) {
 				textareaId = "write_mode_textarea";
@@ -61,9 +67,11 @@ EE.namespace('EE.publish.file_browser');
 
 				open = EE.upload_directories[file.upload_location_id].pre_format;
 				close = EE.upload_directories[file.upload_location_id].post_format;
-
+				
+				image_tag = (button_id == null) ? EE.filebrowser.image_tag : EE.filebrowser['image_tag_'+button_id];
+				
 				// Include any user additions before or after the image link
-				replace = EE.filebrowser.image_tag.replace(/src="(.*)\[!\[Link:!:http:\/\/\]!\](.*)"/, 'src="$1{filedir_'+file.upload_location_id+'}'+file.file_name+'$2"');
+				replace = image_tag.replace(/src="(.*)\[!\[Link:!:http:\/\/\]!\](.*)"/, 'src="$1{filedir_'+file.upload_location_id+'}'+file.file_name+'$2"');
 
 				// Figure out dimensions
 				dimensions = '';

@@ -185,7 +185,9 @@ class Addons_modules extends CI_Controller {
 				$UPD = new $class;
 				$UPD->_ee_path = APPPATH;
 		
-				if ($UPD->version > $version && method_exists($UPD, 'update') && $UPD->update($version) !== FALSE)
+				if (version_compare($UPD->version, $version, '>')
+					&& method_exists($UPD, 'update')
+					&& $UPD->update($version) !== FALSE)
 				{
 					$this->db->update('modules', array('module_version' => $UPD->version), array('module_name' => ucfirst($module)));
 					$updated[] = $name.': '.lang('updated_to_version').' '.$UPD->version;

@@ -214,6 +214,11 @@ class Content_edit extends CI_Controller {
 		$keywords = (string) $this->input->post('keywords');
 		$channel_id = (string) $this->input->get_post('channel_id');
 		
+		if ($channel_id == 'null')
+		{
+			$channel_id = NULL;
+		}
+		
 		if ( ! $keywords)
 		{
 			$keywords = (string) $this->input->get('keywords');

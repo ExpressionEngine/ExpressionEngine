@@ -87,10 +87,10 @@ class Rte_ext {
 		$this->EE->load->model('rte_toolset_model');
 
 		// get member preferences
-		$prefs = $this->EE->rte_toolset_model->get_member_prefs();
+		$prefs = $this->EE->rte_toolset_model->get_member_prefs($member_id);
 
 		// get available toolsets
-		$toolsets = $this->EE->rte_toolset_model->get_member_toolsets();
+		$toolsets = $this->EE->rte_toolset_model->get_member_toolsets($member_id);
 
 		// assume we don't have a custom toolset to begin with
 		$my_toolset_id = 0;
@@ -100,7 +100,7 @@ class Rte_ext {
 		// build the dropdown
 		foreach ($toolsets as $t)
 		{
-			if ($t['member_id'] == $this->EE->session->userdata('member_id'))
+			if ($t['member_id'] == $member_id)
 			{
 				// we have a custom toolset; grab its id
 				$my_toolset_id = $t['toolset_id'];
@@ -111,7 +111,10 @@ class Rte_ext {
 		}
 
 		// insert our custom toolset at the beginning of the list
-		$options = array($my_toolset_id => lang('my_toolset')) + $options;
+		if ($member_id == $this->EE->session->userdata('member_id'))
+		{
+			$options = array($my_toolset_id => lang('my_toolset')) + $options;
+		}
 
 		// Check the rte_toolset_id, if it's not defined, opt for the 
 		// install default
@@ -234,6 +237,11 @@ class Rte_ext {
 	 */
 	function cp_menu_array($menu)
 	{
+		if ($this->EE->extensions->last_call !== FALSE)
+		{
+			$menu = $this->EE->extensions->last_call;
+		}
+
 		// If this isn't a Super Admin, let's check to see if they can modify 
 		// the RTE module
 		if ($this->EE->session->userdata('group_id') != 1)

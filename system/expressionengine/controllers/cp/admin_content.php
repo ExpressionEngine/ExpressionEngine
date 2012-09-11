@@ -737,6 +737,18 @@ class Admin_content extends CI_Controller {
 				// Duplicate layouts
 				$this->layout->duplicate_layout($dupe_id, $channel_id);
 			}
+			
+			// If member group has ability to create the channel, they should be
+			// able to access it as well
+			if ($this->session->userdata('group_id') != 1) 
+			{
+				$data = array(
+					'group_id'		=> $this->session->userdata('group_id'),
+					'channel_id'	=> $channel_id
+				);
+				
+				$this->db->insert('channel_member_groups', $data); 
+			}
 
 			$success_msg = lang('channel_created');
 
@@ -969,7 +981,7 @@ class Admin_content extends CI_Controller {
 		
 		if ( ! isset($data['cat_group']) OR $data['cat_group'] == '')
 		{
-			$data['cat_group'] = NULL;
+			$data['cat_group'] = '';
 		}
 		
 
@@ -1957,12 +1969,12 @@ class Admin_content extends CI_Controller {
 			$dq_row = $data_query->row_array();
 			$this->load->model('addons_model');
 			$plugins = $this->addons_model->get_plugin_formatting();
-			
+            
+            $vars['custom_format_options']['none'] = 'None';
 			foreach ($plugins as $k=>$v)
 			{
 				$vars['custom_format_options'][$k] = $v;
-			}			
-
+			}
 			foreach ($field_query->result_array() as $row)
 			{
 				$vars['cat_custom_fields'][$row['field_id']]['field_content'] = ( ! isset($dq_row['field_id_'.$row['field_id']])) ? '' : $dq_row['field_id_'.$row['field_id']];
@@ -2598,68 +2610,39 @@ class Admin_content extends CI_Controller {
 		{
 			$this->_restrict_prefs_access();
 		}
-
-		$sql = "SELECT cat_name, cat_id, parent_id FROM exp_categories WHERE group_id ='$group_id' ORDER BY parent_id, cat_name";
 		
-		$query = $this->db->query($sql);
+		$this->db->select('cat_name, cat_id, parent_id');
+		$this->db->where('group_id', $group_id);
+		$this->db->order_by('parent_id, cat_name');
+		$categories = $this->db->get('categories');
 			  
-		if ($query->num_rows() == 0)
+		if ($categories->num_rows() == 0)
 		{
 			return FALSE;
 		}
-							
-		foreach($query->result_array() as $row)
-		{		
-			$this->cat_update[$row['cat_id']]  = array($row['parent_id'], '1', $row['cat_name']);
-		}
-	 	
-		$order = 0;
 		
-		foreach($this->cat_update as $key => $val) 
+		$order = 0;
+		$parent = 0;
+		
+		foreach($categories->result_array() as $category)
 		{
-			if (0 == $val['0'])
-			{	
-				$order++;
-				$this->cat_update[$key]['1'] = $order;
-				$this->process_subcategories($key);  // Sends parent_id
+			// Once we're on a new parent, reset the ordering
+			if ($category['parent_id'] != $parent)
+			{
+				$order = 0;
+				$parent = $category['parent_id'];
 			}
-		} 
+			
+			$order++;
+			
+			$this->cat_update[$category['cat_id']] = array(
+				$category['parent_id'],
+				$order,
+				$category['cat_name']
+			);
+		}
 		
 		return $this->cat_update;
-	}
-
-	
-	
-	
-	/** --------------------------------
-	/**  Process Subcategories
-	/** --------------------------------*/
-		
-	function process_subcategories($parent_id)
-	{		
-		if (AJAX_REQUEST)
-		{
-			if ( ! $this->cp->allowed_group('can_edit_categories'))
-			{
-				show_error(lang('unauthorized_access'));
-			}
-		}
-		else
-		{
-			$this->_restrict_prefs_access();
-		}
-		
-		$order = 0;
-		
-		foreach($this->cat_update as $key => $val) 
-		{
-			if ($parent_id == $val['0'])
-			{
-				$order++;
-				$this->cat_update[$key]['1'] = $order;												
-				$this->process_subcategories($key);
-			}
-		}
 	}
 
 	// ------------------------------------------------------------------------

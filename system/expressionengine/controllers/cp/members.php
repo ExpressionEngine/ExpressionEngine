@@ -932,31 +932,34 @@ class Members extends CI_Controller {
 		$this->load->model(array(
 			'channel_model', 'template_model', 'addons_model'
 		));
-
-		$this->javascript->output('
-			$(".site_prefs").hide();
-			$("#site_options_'.$this->config->item('site_id').'").show();
-			
-			$("#site_list_pulldown").change(function() {
-				id = $("#site_list_pulldown").val();
-				$(".site_prefs").fadeOut("500", function(){
-					$("#site_options_"+id).fadeIn("500");
-				});
-			});
-		');
 	
-		$this->javascript->compile();
-		
 		$this->lang->loadfile('admin');
 
 		list($sites, $sites_dropdown) = $this->_get_sites();
 		
+		$site_id = ($this->input->get_post('site_id'))
+			? (int) $this->input->get_post('site_id') : $this->config->item('site_id');
 		$group_id = (int) $this->input->get_post('group_id');
 		$clone_id = (int) $this->input->get_post('clone_id');
-
+		
+		$base = BASE.AMP.'C=members'.AMP.'M=edit_member_group';
+		
+		if ($group_id)
+		{
+			$base .= AMP.'group_id='.$group_id;
+		}
+		
+		$this->javascript->output('
+			$("#site_list_pulldown").change(function() {
+				id = $("#site_list_pulldown").val();
+				window.location.href = "'.html_entity_decode($base).'&site_id="+id
+			});
+		');
+		
+		$this->javascript->compile();
+		
 		// $id is the id we will use as group_id, but it may not be the actual 
 		// group_id depending on if this is a clone or if group_id was null
-		
 		$id = ( ! $group_id) ? 3 : $group_id;
 
 		// If we're cloning, set $id to the member group id that we clone
@@ -970,28 +973,27 @@ class Members extends CI_Controller {
 								($group_id !== 0) ? lang('edit_member_group') : lang('create_member_group'));
 		$this->cp->set_breadcrumb(BASE.AMP.'C=members'.AMP.'M=member_group_manager', lang('member_groups'));
 		
-		$group_data = $this->_setup_group_data($id);
+		$group_data = $this->_setup_group_data($id, $site_id);
 
-		$default_id = $this->config->item('site_id');
-		
 		list($group_title, $group_description) = $this->_setup_title_desc($group_id, $group_data, $is_clone);
 		
 		$page_title_lang = ($is_clone OR ! $group_id) ? 'member_cfg' : 'member_cfg_existing';
-	
+		
 		$data = array(
 			'action'			=> ( ! $group_id) ? 'submit' : 'update',
 			'form_hidden'		=> array(
 				'clone_id'			=> ( ! $clone_id) ? '' : $clone_id,
-				'group_id'			=> $group_id
+				'group_id'			=> $group_id,
+				'site_id'			=> $site_id
 			),
-			'group_data'		=> $this->_setup_final_group_data($sites, $group_data, $id, $is_clone),
+			'group_data'		=> $this->_setup_final_group_data($site_id, $group_data, $id, $is_clone),
 			'group_description'	=> $group_description,
 			'group_id'			=> $group_id,
 			'page_title'		=> sprintf(lang($page_title_lang), $group_title),
 			'group_title'		=> ($is_clone) ? '' : $group_title,
 			'sites_dropdown'	=> $sites_dropdown,
 			'module_data'		=> $this->_setup_module_data($id),
-			'site_id'		=> $this->config->item('site_id'),
+			'site_id'			=> $site_id,
 		);
 
 		$this->load->view('members/edit_member_group', $data);
@@ -1011,90 +1013,85 @@ class Members extends CI_Controller {
 	 *
 	 * @return 	array 		
 	 */
-	private function _setup_final_group_data($sites, $group_data, $group_id, $is_clone = FALSE)
+	private function _setup_final_group_data($site_id, $group_data, $group_id, $is_clone = FALSE)
 	{
 		// Get the channel, module and template names and preferences
-		list($channel_names, $channel_perms) = $this->_setup_channel_names($group_id);
-		list($template_names, $template_perms) = $this->_setup_template_names($group_id);
+		list($channel_names, $channel_perms) = $this->_setup_channel_names($site_id, $group_id);
+		list($template_names, $template_perms) = $this->_setup_template_names($site_id, $group_id);
 
 		// Build the structural array
 		$group_cluster = $this->_member_group_cluster($channel_perms, $template_perms, $group_id, $is_clone);
 
 		$form = array();
 
-		// Building this array for each site
-		foreach ($sites->result() as $site)
+		foreach ($group_cluster as $group_name => $preferences)
 		{
-			foreach ($group_cluster as $group_name => $preferences)
+			// If we're dealing with channel post privileges
+			if (
+				($group_name == 'cp_channel_post_privs' OR $group_name == "cp_template_access_privs") AND 
+				isset($preferences[$site_id])
+			)
 			{
-				// var_dump($group_name, $preferences[$site->site_id]);
-				// If we're dealing with channel post privileges
-				if (
-					($group_name == 'cp_channel_post_privs' OR $group_name == "cp_template_access_privs") AND 
-					isset($preferences[$site->site_id])
-				)
+				// We'll conditionally set the language for the preference below
+				$group_name_lang = '';
+				
+				switch ($group_name)
 				{
-					// We'll conditionally set the language for the preference below
-					$group_name_lang = '';
-					
-					switch ($group_name)
-					{
-						case 'cp_channel_post_privs':
-							$current_permissions = $channel_perms[$site->site_id];
-							$current_names = $channel_names;
-							$group_name_lang = lang('can_post_in');
-							break;
-						case 'cp_template_access_privs':
-							$current_permissions = $preferences[$site->site_id];
-							$current_names = $template_names;
-							$group_name_lang = lang('can_access_tg');
-							break;
-						default:
-							continue;
-							break;
-					}
-
-					foreach ($current_permissions as $current_id => $preference_value) 
-					{
-						$form[$site->site_id][$group_name][] = array(
-							'label' => $group_name_lang . NBS . NBS . $this->_build_group_data_label(
-								$current_names[$current_id],
-								TRUE
-							),
-							'controls' => $this->_build_group_data_input(
-								$current_id,
-								$preference_value,
-								$site->site_id
-							)
-						);
-					}
+					case 'cp_channel_post_privs':
+						$current_permissions = $channel_perms[$site_id];
+						$current_names = $channel_names;
+						$group_name_lang = lang('can_post_in');
+						break;
+					case 'cp_template_access_privs':
+						$current_permissions = $preferences[$site_id];
+						$current_names = $template_names;
+						$group_name_lang = lang('can_access_tg');
+						break;
+					default:
+						continue;
+						break;
 				}
-				// If we're building the security lock
-				else if ($group_name == 'security_lock')
+
+				foreach ($current_permissions as $current_id => $preference_value) 
 				{
-					$form[$site->site_id][$group_name][] = array(
-						'label' => '<strong class="notice">'.lang('enable_lock').'</strong><br />'.lang('lock_description'),
+					$form[$site_id][$group_name][] = array(
+						'label' => $group_name_lang . NBS . NBS . $this->_build_group_data_label(
+							$current_names[$current_id],
+							TRUE
+						),
 						'controls' => $this->_build_group_data_input(
-							'is_locked',
-							$group_data[$site->site_id]['is_locked'],
-							$site->site_id
+							$current_id,
+							$preference_value,
+							$site_id
 						)
 					);
 				}
-				// Otherwise, loop through the keyed preferences
-				else if ($group_name != 'cp_template_access_privs' AND $group_name != 'cp_channel_post_privs')
+			}
+			// If we're building the security lock
+			else if ($group_name == 'security_lock')
+			{
+				$form[$site_id][$group_name][] = array(
+					'label' => '<strong class="notice">'.lang('enable_lock').'</strong><br />'.lang('lock_description'),
+					'controls' => $this->_build_group_data_input(
+						'is_locked',
+						$group_data[0]['is_locked'],
+						$site_id
+					)
+				);
+			}
+			// Otherwise, loop through the keyed preferences
+			else if ($group_name != 'cp_template_access_privs' AND $group_name != 'cp_channel_post_privs')
+			{
+				foreach ($preferences as $preference_name => $preference_value) 
 				{
-					foreach ($preferences as $preference_name => $preference_value) 
-					{
-						$form[$site->site_id][$group_name][$preference_name] = array(
-							'label' => $this->_build_group_data_label($preference_name),
-							'controls' => $this->_build_group_data_input(
-								$preference_name,
-								$group_data[$site->site_id][$preference_name],
-								$site->site_id
-							)
-						);
-					}
+					$form[$site_id][$group_name][$preference_name] = array(
+						'label' => $this->_build_group_data_label($preference_name),
+						'controls' => $this->_build_group_data_input(
+							$preference_name,
+							$group_data[0][$preference_name],
+							$site_id
+						)
+					);
 				}
 			}
 		}
@@ -1382,18 +1379,20 @@ class Members extends CI_Controller {
 	 *
 	 * Assembles template names from the database for use in the group_data array
 	 *
-	 * @param 	int 	member group id used for permissions checking
-	 * @return 	array 	array of template namesa and associated permissions
+	 * @param 	int 	Site ID
+	 * @param 	int 	Member group ID used for permissions checking
+	 * @return 	array 	Array of template names and associated permissions
 	 */
-	private function _setup_template_names($id)
+	private function _setup_template_names($site_id, $id)
 	{
 		$template_names = array();
 		$template_perms = array();
 		$template_ids   = array();
 		
 		$templates = $this->db->select('group_id, group_name, site_id')
-							  ->order_by('group_name')
-							  ->get('template_groups');
+			->where('site_id', $site_id)
+			->order_by('group_name')
+			->get('template_groups');
 		
 		if ($id === 1)
 		{
@@ -1511,18 +1510,20 @@ class Members extends CI_Controller {
 	 * Gets channel names from the database and processes permissions, 
 	 * based on member group id
 	 *
-	 * @param 	int 	member group id
-	 * @return 	array 	array of channel names and associated permissions.
+	 * @param 	int 	Site ID
+	 * @param 	int 	Member Group ID
+	 * @return 	array 	Array of channel names and associated permissions.
 	 */
-	private function _setup_channel_names($id)
+	private function _setup_channel_names($site_id, $id)
 	{
 		$channel_names = array();
 		$channel_perms = array();
 		$channel_ids   = array();
 		
 		$channels = $this->db->select('channel_id, site_id, channel_title')
-							 ->order_by('channel_title')
-							 ->get('channels');
+			->where('site_id', $site_id)
+			->order_by('channel_title')
+			->get('channels');
 
 		// Super Admins get everything
 		if ($id === 1)
@@ -1567,23 +1568,24 @@ class Members extends CI_Controller {
 	 *
 	 * Sets up the initial array of member group data for use in edit_member_groups
 	 *
-	 * @param 	int 	member group id
+	 * @param 	int 	Member group ID
+	 * @param 	int 	Site ID
 	 * @return 	array 
 	 */
-	private function _setup_group_data($id)
+	private function _setup_group_data($id, $site_id)
 	{
-		$member_group_q = $this->db->get_where('member_groups',
-										array('group_id' => $id));
+		$member_group_q = $this->db->get_where(
+			'member_groups',
+			array(
+				'group_id'	=> $id,
+				'site_id'	=> $site_id
+			)
+		);
 		
-		$group_data = array();
-		
-		foreach ($member_group_q->result_array() as $row)
-		{
-			$group_data[$row['site_id']] = $row;
-		}
+		$group_data = $member_group_q->result_array();
 		
 		$member_group_q->free_result();
-
+		
 		return $group_data;
 	}
 	
@@ -1636,8 +1638,8 @@ class Members extends CI_Controller {
 	{
 		$site_id = $this->config->item('site_id');
 		
-		$group_title = ( ! $group_id OR $is_clone) ? '' : $group_data[$site_id]['group_title'];
-		$group_description = ( ! $group_id OR $is_clone) ? '' : $group_data[$site_id]['group_description'];
+		$group_title = ( ! $group_id OR $is_clone) ? '' : $group_data[0]['group_title'];
+		$group_description = ( ! $group_id OR $is_clone) ? '' : $group_data[0]['group_description'];
 
 		// Can this be translated?
 		if (isset($this->english[$group_title]))
@@ -1955,6 +1957,7 @@ class Members extends CI_Controller {
 		
 		$group_id = $this->input->post('group_id');
 		$clone_id = $this->input->post('clone_id');
+		$site_id = $this->input->post('site_id');
 
 		unset($_POST['group_id']);
 		unset($_POST['clone_id']);
@@ -2020,80 +2023,128 @@ class Members extends CI_Controller {
 		$module_ids = array();
 		$channel_ids = array();
 		$template_ids = array();
+		$module_ids_yes = array();
+		$channel_ids_yes = array();
+		$template_ids_yes = array();
 		$cat_group_privs = array('can_edit_categories', 'can_delete_categories');
 				
-		foreach($query->result_array() as $row)
-		{
-			$site_id = $row['site_id'];
+		/** ----------------------------------------------------
+		/**  Remove and Store Channel and Template Permissions
+		/** ----------------------------------------------------*/
 		
-			/** ----------------------------------------------------
-			/**  Remove and Store Channel and Template Permissions
-			/** ----------------------------------------------------*/
-			
-			$data = array('group_title' 		=> $this->input->post('group_title'),
-						  'group_description'	=> $this->input->post('group_description'),
-						  'site_id'				=> $site_id,
-						  'group_id'			=> $group_id);
-			
-			// If editing Super Admin group, the is_locked field doesn't exist, so make sure we
-			// got a value from the form before writing 0 to the database
-			if ($this->input->post('is_locked') !== FALSE)
+		$data = array('group_title' 		=> $this->input->post('group_title'),
+					  'group_description'	=> $this->input->post('group_description'),
+					  'site_id'				=> $site_id,
+					  'group_id'			=> $group_id);
+		
+		// If editing Super Admin group, the is_locked field doesn't exist, so make sure we
+		// got a value from the form before writing 0 to the database
+		if ($this->input->post('is_locked') !== FALSE)
+		{
+			$data['is_locked'] = $this->input->post('is_locked');
+		}
+		
+		foreach ($_POST as $key => $val)
+		{
+			if (substr($key, 0, strlen($site_id.'_channel_id_')) == $site_id.'_channel_id_')
 			{
-				$data['is_locked'] = $this->input->post('is_locked');
-			}
-			
-			foreach ($_POST as $key => $val)
-			{
-				if (substr($key, 0, strlen($site_id.'_channel_id_')) == $site_id.'_channel_id_')
-				{
-					if ($val == 'y')
-					{
-						$channel_ids[] = substr($key, strlen($site_id.'_channel_id_'));
-					}
-				}
-				elseif (substr($key, 0, strlen('module_id_')) == 'module_id_')
-				{
-					if ($val == 'y')
-					{
-						$module_ids[] = substr($key, strlen('module_id_'));			
-					}
-				}
-				elseif (substr($key, 0, strlen($site_id.'_template_id_')) == $site_id.'_template_id_')
-				{
-					if ($val == 'y')
-					{
-						$template_ids[] = substr($key, strlen($site_id.'_template_id_'));						
-					}
-				}
-				elseif (substr($key, 0, strlen($site_id.'_')) == $site_id.'_')
-				{
-					$data[substr($key, strlen($site_id.'_'))] = $_POST[$key];
-				}
-				else
-				{
-					continue;
-				}
+				$channel_id = substr($key, strlen($site_id.'_channel_id_'));
+				$channel_ids[] = $channel_id;
 				
-				unset($_POST[$key]);
+				if ($val == 'y')
+				{
+					$channel_ids_yes[] = array(
+						'channel_id' => $channel_id,
+						'group_id' => $group_id
+					);
+				}
 			}
+			elseif (substr($key, 0, strlen('module_id_')) == 'module_id_')
+			{
+				$module_id = substr($key, strlen('module_id_'));
+				$module_ids[] = $module_id;
+				
+				if ($val == 'y')
+				{
+					$module_ids_yes[] = array(
+						'module_id' => $module_id,
+						'group_id' => $group_id
+					);
+				}
+			}
+			elseif (substr($key, 0, strlen($site_id.'_template_id_')) == $site_id.'_template_id_')
+			{
+				$template_id = substr($key, strlen($site_id.'_template_id_'));
+				$template_ids[] = $template_id;
+				
+				if ($val == 'y')
+				{
+					$template_ids_yes[] = array(
+						'template_group_id' => $template_id,
+						'group_id' => $group_id
+					);
+				}
+			}
+			elseif (substr($key, 0, strlen($site_id.'_')) == $site_id.'_')
+			{
+				$data[substr($key, strlen($site_id.'_'))] = $_POST[$key];
+			}
+			else
+			{
+				continue;
+			}
+			
+			unset($_POST[$key]);
+		}
 
-			if ($edit === FALSE)
-			{	
-				$this->db->query($this->db->insert_string('exp_member_groups', $data));
-				
-				$uploads = $this->db->query("SELECT exp_upload_prefs.id FROM exp_upload_prefs WHERE site_id = '".$this->db->escape_str($site_id)."'");
-				
-				if ($uploads->num_rows() > 0)
+		if ($edit === FALSE)
+		{	
+			$this->db->query($this->db->insert_string('exp_member_groups', $data));
+			
+			$uploads = $this->db->query("SELECT exp_upload_prefs.id FROM exp_upload_prefs WHERE site_id = '".$this->db->escape_str($site_id)."'");
+			
+			if ($uploads->num_rows() > 0)
+			{
+				foreach($uploads->result_array() as $upload)
 				{
-					foreach($uploads->result_array() as $upload)
-					{
-						$this->db->query("INSERT INTO exp_upload_no_access (upload_id, upload_loc, member_group) VALUES ('".$this->db->escape_str($upload['id'])."', 'cp', '{$group_id}')");
-					}
+					$this->db->query("INSERT INTO exp_upload_no_access (upload_id, upload_loc, member_group) VALUES ('".$this->db->escape_str($upload['id'])."', 'cp', '{$group_id}')");
 				}
-				
-				if ($group_id != 1)
+			}
+			
+			if ($group_id != 1)
+			{
+				foreach ($cat_group_privs as $field)
 				{
-					foreach ($cat_group_privs as $field)
+					$privs = array(
+									'member_group' => $group_id,
+									'field' => $field,
+									'allow' => ($data[$field] == 'y') ? TRUE : FALSE,
+									'site_id' => $site_id,
+									'clone_id' => $clone_id
+								);
+
+					$this->_update_cat_group_privs($privs);	
+				}
+			}
+			
+			$cp_message = lang('member_group_created').NBS.NBS.$_POST['group_title'];			
+		}
+		else
+		{			
+			unset($data['group_id']);
+			
+			$this->db->query($this->db->update_string('exp_member_groups', $data, "group_id = '$group_id' AND site_id = '{$site_id}'"));
+			
+			if ($group_id != 1)
+			{
+				// update category group discrete privileges
+
+				foreach ($cat_group_privs as $field)
+				{
+					// only modify category group privs if value changed, so we do not
+					// globally overwrite existing defined privileges carelessly
+
+					if ($old_cat_privs[$site_id][$field] != $data[$field])
 					{
 						$privs = array(
 										'member_group' => $group_id,
@@ -2103,79 +2154,47 @@ class Members extends CI_Controller {
 										'clone_id' => $clone_id
 									);
 
-						$this->_update_cat_group_privs($privs);	
+						$this->_update_cat_group_privs($privs);						
 					}
 				}
-				
-				$cp_message = lang('member_group_created').NBS.NBS.$_POST['group_title'];			
 			}
-			else
-			{			
-				unset($data['group_id']);
-				
-				$this->db->query($this->db->update_string('exp_member_groups', $data, "group_id = '$group_id' AND site_id = '{$site_id}'"));
-				
-				if ($group_id != 1)
-				{
-					// update category group discrete privileges
-
-					foreach ($cat_group_privs as $field)
-					{
-						// only modify category group privs if value changed, so we do not
-						// globally overwrite existing defined privileges carelessly
-
-						if ($old_cat_privs[$site_id][$field] != $data[$field])
-						{
-							$privs = array(
-											'member_group' => $group_id,
-											'field' => $field,
-											'allow' => ($data[$field] == 'y') ? TRUE : FALSE,
-											'site_id' => $site_id,
-											'clone_id' => $clone_id
-										);
-	
-							$this->_update_cat_group_privs($privs);						
-						}
-					}
-				}
-				
-				$cp_message = lang('member_group_updated').NBS.NBS.$_POST['group_title'];
-			}
-		}
-
-		// Update groups
-		
-		$this->db->query("DELETE FROM exp_channel_member_groups WHERE group_id = '$group_id'");
-		$this->db->query("DELETE FROM exp_module_member_groups WHERE group_id = '$group_id'");
-		$this->db->query("DELETE FROM exp_template_member_groups WHERE group_id = '$group_id'");
-
-		if (count($channel_ids) > 0)
-		{
-			foreach ($channel_ids as $val)
-			{
-				$this->db->query("INSERT INTO exp_channel_member_groups (group_id, channel_id) VALUES ('$group_id', '$val')");
-			}
-		}
 			
-		if (count($module_ids) > 0)
+			$cp_message = lang('member_group_updated').NBS.NBS.$_POST['group_title'];
+		}
+
+		// First, delete old channel, module and template permissions for this site
+		if ( ! empty($channel_ids))
 		{
-			foreach ($module_ids as $val)
-			{
-				$this->db->query("INSERT INTO exp_module_member_groups (group_id, module_id) VALUES ('$group_id', '$val')");
-			}
+			$this->db->where_in('channel_id', $channel_ids);
+			$this->db->delete('channel_member_groups');
+		}
+		if ( ! empty($module_ids))
+		{
+			$this->db->where_in('module_id', $module_ids);
+			$this->db->delete('module_member_groups');
+		}
+		if ( ! empty($template_ids))
+		{
+			$this->db->where_in('template_group_id', $template_ids);
+			$this->db->delete('template_member_groups');
 		}
 		
-		if (count($template_ids) > 0)
+		// Then, add back in the only ones that should exist based on the form submission
+		if ( ! empty($channel_ids_yes))
 		{
-			foreach ($template_ids as $val)
-			{
-				$this->db->query("INSERT INTO exp_template_member_groups (group_id, template_group_id) VALUES ('$group_id', '$val')");
-			}
-	 	}	
+			$this->db->insert_batch('channel_member_groups', $channel_ids_yes);
+		}
+		if ( ! empty($module_ids_yes))
+		{
+			$this->db->insert_batch('module_member_groups', $module_ids_yes);
+		}
+		if ( ! empty($template_ids_yes))
+		{
+			$this->db->insert_batch('template_member_groups', $template_ids_yes);
+		}
 		
 		// Update CP log
-		
-		$this->logger->log_action($cp_message);			
+		$this->logger->log_action($cp_message);
 
   		$_POST['group_id'] = $group_id;
 

@@ -63,5 +63,20 @@ function trim_nbs($string)
 	return trim($string, " \t\n\r\0\xB\xA0".chr(0xC2).chr(0xA0));
 }
 
+// ----------------------------------------------------------------------------
+
+/**
+ * Returns the surrounding character of a string, if it exists
+ * 
+ * @param	string	$string		The string to check
+ * @return	mixed	The surrounding character, or FALSE if there isn't one
+ */
+function surrounding_character($string)
+{
+	$first_char = substr($string, 0, 1);
+	
+	return ($first_char == substr($string, -1, 1)) ? $first_char : FALSE;
+}
+
 /* End of file EE_string_helper.php */
 /* Location: ./system/expressionengine/helpers/EE_string_helper.php */

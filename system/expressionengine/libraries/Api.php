@@ -213,18 +213,21 @@ class Api {
 		if ($count > 0)
 		{
 			// We may need some room to add our numbers- trim url_title to 70 characters
-			$url_title = substr($url_title, 0, 70);
-			
-			// Check again
-			if ($self_id != '')
+			if (strlen($url_title) > 70)
 			{
-				$this->EE->db->where(array($self_field.' !=' => $self_id));
+				$url_title = substr($url_title, 0, 70);
+				
+				// Check again
+				if ($self_id != '')
+				{
+					$this->EE->db->where(array($self_field.' !=' => $self_id));
+				}
+				
+				$this->EE->db->where(array($url_title_field => $url_title, $type_field => $type_id));
+				$count = $this->EE->db->count_all_results($table);
 			}
-
-			$this->EE->db->where(array($url_title_field => $url_title, $type_field => $type_id));
-			$count = $this->EE->db->count_all_results($table);
 			
-			if ($count > 0)
+			while ($count > 0)
 			{
 				if ($self_id != '')
 				{
@@ -237,14 +240,22 @@ class Api {
 				$this->EE->db->order_by('next_suffix', 'DESC');
 				$this->EE->db->limit(1);
 				$query = $this->EE->db->get($table);
-			
-				// Did something go tragically wrong?  Is the appended number going to kick us over the 75 character limit?
-				if ($query->num_rows() == 0 OR ($query->row('next_suffix') > 99999))
+				
+				// If no records found, we likely had to shorten the URL title (below)
+				// to give more space for numbers; so, we'll start the counting back
+				// at 1 since we don't necessarily know where we left off with the old
+				// URL title
+				$url_title_suffix = ( ! is_array($query->row('next_suffix'))) ? (int)$query->row('next_suffix') : 1;
+				
+				// Is the appended number going to kick us over the 75 character limit?
+				// If so, shorten it by one more character and try again
+				if (strlen($url_title.$url_title_suffix) > 75)
 				{
-					return FALSE;
+					$url_title = substr($url_title, 0, strlen($url_title) - 1);
+					continue;
 				}
 			
-				$url_title = $url_title.$query->row('next_suffix');
+				$url_title = $url_title.$url_title_suffix;
 			
 				// little double check for safety
 			

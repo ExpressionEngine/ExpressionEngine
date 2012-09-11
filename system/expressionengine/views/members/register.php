@@ -33,59 +33,54 @@ if ($EE_view_disable !== TRUE)
 
 			// Username
 			$this->table->add_row(array(
-					form_label(required().lang('username'), 'username').NBS.form_error('username'),
-					form_input(array(
-						'id'	=> 'username',
-						'name'	=> 'username',
-						'class' => 'field',
-						'maxlength' => 50,
-						'value' => set_value('username')
-						)
-					)
-				)
-			);
+				form_label(required().lang('username'), 'username').NBS.form_error('username'),
+				form_input(array(
+					'id'	=> 'username',
+					'name'	=> 'username',
+					'class' => 'field',
+					'maxlength' => 50,
+					'value' => set_value('username'),
+					'autocomplete' => 'off'
+				))
+			));
 
 			// Password
 			$this->table->add_row(array(
-					form_label(required().lang('password'), 'password').NBS.form_error('password'),
-					form_password(array(
-						'id'	=> 'password',
-						'name'	=> 'password',
-						'class' => 'field',
-						'maxlength' => 40,
-						'value' => set_value('password')
-						)
-					)
-				)
-			);
+				form_label(required().lang('password'), 'password').NBS.form_error('password'),
+				form_password(array(
+					'id'	=> 'password',
+					'name'	=> 'password',
+					'class' => 'field',
+					'maxlength' => 40,
+					'value' => set_value('password'),
+					'autocomplete' => 'off'
+				))
+			));
 
 			// Password Confirm
 			$this->table->add_row(array(
-					form_label(required().lang('password_confirm'), 'password_confirm').NBS.form_error('password_confirm'),
-					form_password(array(
-						'id'	=> 'password_confirm',
-						'name'	=> 'password_confirm',
-						'class' => 'field',
-						'maxlength' => 40,
-						'value' => set_value('password_confirm')
-						)
-					)
-				)
-			);
+				form_label(required().lang('password_confirm'), 'password_confirm').NBS.form_error('password_confirm'),
+				form_password(array(
+					'id'	=> 'password_confirm',
+					'name'	=> 'password_confirm',
+					'class' => 'field',
+					'maxlength' => 40,
+					'value' => set_value('password_confirm'),
+					'autocomplete' => 'off'
+				))
+			));
 
 			// Screen Name
 			$this->table->add_row(array(
-					form_label(lang('screen_name'), 'screen_name').NBS.form_error('screen_name'),
-					form_input(array(
-						'id'	=> 'screen_name',
-						'name'	=> 'screen_name',
-						'class' => 'field',
-						'maxlength' => 50,
-						'value' => set_value('screen_name')
-						)
-					)
-				)
-			);
+				form_label(lang('screen_name'), 'screen_name').NBS.form_error('screen_name'),
+				form_input(array(
+					'id'	=> 'screen_name',
+					'name'	=> 'screen_name',
+					'class' => 'field',
+					'maxlength' => 50,
+					'value' => set_value('screen_name'),
+				))
+			));
 
 			// Email
 			$this->table->add_row(array(
@@ -95,7 +90,8 @@ if ($EE_view_disable !== TRUE)
 						'name'	=> 'email',
 						'class' => 'field',
 						'maxlength' => 72,
-						'value' => set_value('email')
+						'value' => set_value('email'),
+						'autocomplete' => 'off'
 						)
 					)
 				)

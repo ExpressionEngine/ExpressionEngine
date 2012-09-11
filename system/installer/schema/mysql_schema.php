@@ -47,7 +47,7 @@ class EE_Schema {
 			  `site_label` varchar(100) NOT NULL default '',
 			  `site_name` varchar(50) NOT NULL default '',
 			  `site_description` text NULL,
-			  `site_system_preferences` TEXT NOT NULL ,
+			  `site_system_preferences` mediumtext NOT NULL ,
 			  `site_mailinglist_preferences` TEXT NOT NULL ,
 			  `site_member_preferences` TEXT NOT NULL ,
 			  `site_template_preferences` TEXT NOT NULL ,
@@ -1394,7 +1394,7 @@ class EE_Schema {
 						'site_bootstrap_checksums'		=> ''
 					);
 						
-		$Q[] = $this->EE->db->insert_string('exp_sites', $site);
+		$Q[] = $this->EE->db->insert_string('sites', $site);
 				
 		$Q[] = "INSERT INTO exp_member_groups VALUES ('1', 1, 'Super Admins', '', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y',  'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', '', 'y', 'y', 'y', '0', 'y', '20', '60', 'y', 'y', 'y', 'y', 'y')";
 		$Q[] = "INSERT INTO exp_member_groups VALUES ('2', 1, 'Banned', '', 'y', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n',  'n', 'n', '', 'n', 'n', 'n', '60', 'n', '20', '60', 'n', 'n', 'n', 'n', 'n')";

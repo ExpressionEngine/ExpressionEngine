@@ -1218,14 +1218,21 @@ class EE_Functions {
 	function delete_directory($path, $del_root = FALSE)
 	{
 		$path = rtrim($path, '/');
-
+		$path_delete = $path.'_delete';
+		
 		if ( ! is_dir($path))
 		{
 			return FALSE;
 		}
 		
+		// Delete temporary directory if it happens to exist from a previous attempt
+		if (is_dir($path_delete))
+		{
+			@exec("rm -r -f {$path_delete}");
+		}
+		
 		// let's try this the sane way first
-		@exec("mv {$path} {$path}_delete", $out, $ret);
+		@exec("mv {$path} {$path_delete}", $out, $ret);
 
 		if (isset($ret) && $ret == 0)
 		{
@@ -1239,7 +1246,7 @@ class EE_Functions {
 				}				
 			}
 
-			@exec("rm -r -f {$path}_delete");
+			@exec("rm -r -f {$path_delete}");
 		}
 		else
 		{
@@ -2640,7 +2647,7 @@ class EE_Functions {
 		// as efficient as possible?  It also gives me a chance to catch some
 		// user error mistakes.
 
-		if (preg_match_all("/".preg_quote(LD)."((if:else)*if)\s+(.*?)".preg_quote(RD)."/", $str, $matches))
+		if (preg_match_all("/".preg_quote(LD)."((if:else)*if)\s+(.*?)".preg_quote(RD)."/s", $str, $matches))
 		{
 			// PROTECT QUOTED TEXT
 			// That which is in quotes should be protected and ignored as it will screw
@@ -2652,19 +2659,29 @@ class EE_Functions {
 				{
 					$md5_key = (string) hexdec($prep_id.md5($quote_match));
 					$protect[$quote_match] = $md5_key;
-
+					
+					// To better protect quotes inside conditional quotes, we need to
+					// determine which kind of quote to surround the newly-encoded string
+					$surrounding_quote = surrounding_character($quote_match);
+					
+					if (($surrounding_quote != '"' AND $surrounding_quote != "'")
+						OR $surrounding_quote === FALSE)
+					{
+						$surrounding_quote = '"';
+					}
+					
 					// We do these conversions on variables below, so we need
 					// to also do them on the hardcoded values to make sure
 					// the conditionals resolve as expected.
 					// e.g. {if location == "pony's house"}
-					$quote_match = '"'.
+					$quote_match = $surrounding_quote.
 						str_replace(
 							array("'", '"', '(', ')', '$', '{', '}', "\n", "\r", '\\'), 
 							array('&#39;', '&#34;', '&#40;', '&#41;', '&#36;', '', '', '', '', '&#92;'), 
 							$quote_matches[2][$ii]
 						).
-						'"';
-
+						$surrounding_quote;
+					
 					$switch[$md5_key] = $quote_match;
 				}
 				
@@ -2691,7 +2708,7 @@ class EE_Functions {
 				{
 					if (array_key_exists($x[$i], $vars))
 					{
-						$data[$x[$i]] = $vars[$x[$i]];
+						$data[$x[$i]] = trim($vars[$x[$i]]);
 					}
 					elseif($embedded_tags === TRUE && ! is_numeric($x[$i]))
 					{
@@ -2739,11 +2756,6 @@ class EE_Functions {
 				
 				if ($data[$key] != 'TRUE' && $data[$key] != 'FALSE' && ($key != $data[$key] OR $embedded_tags !== TRUE))
 				{
-					if (stristr($data[$key], '<script'))
-					{
-						$data[$key] = preg_replace("/<script.*?".">.*?<\/script>/is", '', $data[$key]); // <? Fixes BBEdit display bug
-					}
-					
 					$data[$key] = '"'.
 								  str_replace(array("'", '"', '(', ')', '$', '{', '}', "\n", "\r", '\\'), 
 											  array('&#39;', '&#34;', '&#40;', '&#41;', '&#36;', '', '', '', '', '&#92;'), 

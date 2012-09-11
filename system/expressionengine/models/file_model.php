@@ -39,6 +39,9 @@ class File_model extends CI_Model {
 	 * - search_value
 	 * - order
 	 * - do_count
+	 * - date_range
+	 * - date_start
+	 * - date_end
 	 *
 	 * @access	public
 	 * @param	int
@@ -72,6 +75,20 @@ class File_model extends CI_Model {
 		elseif ($parameters['type'] == 'non-image')
 		{
 			$this->db->where_not_in('mime_type', $this->_image_types);
+		}
+		
+		// Custom Date Range
+		if ( ! empty($parameters['date_start'])
+			AND ! empty($parameters['date_end'])
+			AND empty($parameters['date_range']))
+		{
+			$this->db->where('upload_date >=', strtotime($parameters['date_start']));
+			$this->db->where('upload_date <=', strtotime($parameters['date_end']));
+		}
+		// Date range based on number of days
+		elseif ( ! empty($parameters['date_range']))
+		{
+			$this->db->where('upload_date >=', $this->localize->now - ($parameters['date_range'] * 86400));
 		}
 		
 		$this->db->where('files.site_id', $this->config->item('site_id'));
@@ -240,6 +257,15 @@ class File_model extends CI_Model {
 				}
 			}
 		}
+
+		/* -------------------------------------------
+		/* 'file_after_save' hook.
+		/*  - Add additional processing after file is saved
+		*/
+			$this->extensions->call('file_after_save', $file_id, $data);
+			if ($this->extensions->end_script === TRUE) return;
+		/*
+		/* -------------------------------------------*/
 
 		return $successful;
 	}
