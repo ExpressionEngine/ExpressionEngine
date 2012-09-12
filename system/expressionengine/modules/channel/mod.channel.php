@@ -1144,9 +1144,9 @@ class Channel {
 								. $andor;
 						}
 						else
-						{
+						
 							$fields_sql .= ' (wd.site_id=' . $site_id 
-								. ' AND wd.field_id_' . $this->cfields[$site_id][$field_name]
+								. ' AND wd.field_id_' . $this->cfields[$site_id][$field_name] . ' '
 								. $not . ' LIKE "%' . $this->EE->db->escape_like_str($term) . '%") ' 
 								. $andor;
 						}
