@@ -359,7 +359,7 @@ class Comment {
 			$this->EE->functions->ar_andor_string($status, 'c.status');
 
 			// No custom status for comments, so we can be leaner in check for 'c'
-			if (stristr($status, "'c'") === FALSE)
+			if (stristr($status, "c") === FALSE)
 			{
 				$this->EE->db->where('c.status !=', 'c');
 			}
