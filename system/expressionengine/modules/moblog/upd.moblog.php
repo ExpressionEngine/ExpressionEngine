@@ -63,7 +63,7 @@ class Moblog_upd {
 			'moblog_time_interval'		=> array('type' => 'int', 'constraint' => 4, 'unsigned' => TRUE, 'default' => '0'),
 			'moblog_type'				=> array('type' => 'varchar', 'constraint' => 10,	'default' => ''),
 			'moblog_gallery_id'			=> array('type' => 'int', 'constraint' => 6, 'default' => '0'),
-			'moblog_gallery_category'	=> array('type' => 'int', 'cosntraint' => 10, 'unsigned' => TRUE, 'default' => '0'),
+			'moblog_gallery_category'	=> array('type' => 'int', 'constraint' => 10, 'unsigned' => TRUE, 'default' => '0'),
 			'moblog_gallery_status'		=> array('type' => 'varchar', 'constraint' => 50, 'default' => ''),
 			'moblog_gallery_comments'	=> array('type' => 'varchar', 'constraint' => 10, 'default' => 'y'),
 			'moblog_gallery_author'		=> array('type' => 'int', 'constraint' => 10, 'unsigned' => TRUE, 'default' => '1'),
