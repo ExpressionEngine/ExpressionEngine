@@ -97,15 +97,15 @@ class MyAccount extends CI_Controller {
 			$vars['username'] = $this->username;
 
 			$vars['fields'] = array(
-								'email'				=> mailto($query->row('email'), $query->row('email')),
-								'join_date'			=> $this->localize->set_human_time($query->row('join_date')),
-								'last_visit'		=> ($query->row('last_visit') == 0 OR $query->row('last_visit') == '') ? '--' : $this->localize->set_human_time($query->row('last_visit')),
-								'total_entries'		=> $query->row('total_entries'),
-								'total_comments'	=> $query->row('total_comments'),
-								'last_entry_date'	=> ($query->row('last_entry_date') == 0 OR $query->row('last_entry_date') == '') ? '--' : $this->localize->set_human_time($query->row('last_entry_date')),
-								'last_comment_date' => ($query->row('last_comment_date') == 0 OR $query->row('last_comment_date') == '') ? '--' : $this->localize->set_human_time($query->row('last_comment_date')),
-								'user_ip_address'	=> $query->row('ip_address')
-							);
+				'email'				=> mailto($query->row('email'), $query->row('email')),
+				'join_date'			=> $this->localize->set_human_time($query->row('join_date')),
+				'last_visit'		=> ($query->row('last_visit') == 0 OR $query->row('last_visit') == '') ? '--' : $this->localize->set_human_time($query->row('last_visit')),
+				'total_entries'		=> $query->row('total_entries'),
+				'total_comments'	=> $query->row('total_comments'),
+				'last_entry_date'	=> ($query->row('last_entry_date') == 0 OR $query->row('last_entry_date') == '') ? '--' : $this->localize->set_human_time($query->row('last_entry_date')),
+				'last_comment_date' => ($query->row('last_comment_date') == 0 OR $query->row('last_comment_date') == '') ? '--' : $this->localize->set_human_time($query->row('last_comment_date')),
+				'user_ip_address'	=> $query->row('ip_address')
+			);
 
 			if ($this->config->item('forum_is_installed') == "y")
 			{
@@ -308,20 +308,20 @@ class MyAccount extends CI_Controller {
 		}
 
 		$vars['bday_m_options'] = array(
-							''	 => lang('month'),
-							'01' => lang('cal_january'),
-							'02' => lang('cal_february'),
-							'03' => lang('cal_march'),
-							'04' => lang('cal_april'),
-							'05' => lang('cal_mayl'),
-							'06' => lang('cal_june'),
-							'07' => lang('cal_july'),
-							'08' => lang('cal_august'),
-							'09' => lang('cal_september'),
-							'10' => lang('cal_october'),
-							'11' => lang('cal_november'),
-							'12' => lang('cal_december')
-						);
+			''	 => lang('month'),
+			'01' => lang('cal_january'),
+			'02' => lang('cal_february'),
+			'03' => lang('cal_march'),
+			'04' => lang('cal_april'),
+			'05' => lang('cal_mayl'),
+			'06' => lang('cal_june'),
+			'07' => lang('cal_july'),
+			'08' => lang('cal_august'),
+			'09' => lang('cal_september'),
+			'10' => lang('cal_october'),
+			'11' => lang('cal_november'),
+			'12' => lang('cal_december')
+		);
 
 		$vars['bday_d_options'][''] = lang('day');
 		
@@ -412,19 +412,20 @@ class MyAccount extends CI_Controller {
 
 		$_POST['url'] = ($_POST['url'] == 'http://') ? '' : $_POST['url'];
 		
-		$fields = array(	'bday_y',
-							'bday_m',
-							'bday_d',
-							'url',
-							'location',
-							'occupation',
-							'interests',
-							'aol_im',
-							'icq',
-							'yahoo_im',
-							'msn_im',
-							'bio'
-						);
+		$fields = array(	
+			'bday_y',
+			'bday_m',
+			'bday_d',
+			'url',
+			'location',
+			'occupation',
+			'interests',
+			'aol_im',
+			'icq',
+			'yahoo_im',
+			'msn_im',
+			'bio'
+		);
 
 		$data = array();
 
@@ -464,9 +465,9 @@ class MyAccount extends CI_Controller {
 			if ($this->db->table_exists('comments'))
 			{
 				$d = array(
-						'location'	=> $data['location'],
-						'url'		=> $data['url']
-					);
+					'location'	=> $data['location'],
+					'url'		=> $data['url']
+				);
 				
 				$this->db->where('author_id', $this->id);
 				$this->db->update('comments', $d);
@@ -540,18 +541,16 @@ class MyAccount extends CI_Controller {
 			require APPPATH.'libraries/Validate.php';
 		}
 
-		$this->VAL = new EE_Validate(
-								array(
-										'member_id'			=> $this->id,
-										'val_type'			=> 'update', // new or update
-										'fetch_lang'		=> FALSE,
-										'require_cpw'		=> ($current_email != $_POST['email']) ? TRUE :FALSE,
-										'enable_log'		=> TRUE,
-										'email'				=> $this->input->post('email'),
-										'cur_email'			=> $current_email,
-										'cur_password'		=> $this->input->post('password')
-									 )
-							);
+		$this->VAL = new EE_Validate(array(
+			'member_id'			=> $this->id,
+			'val_type'			=> 'update', // new or update
+			'fetch_lang'		=> FALSE,
+			'require_cpw'		=> ($current_email != $_POST['email']) ? TRUE :FALSE,
+			'enable_log'		=> TRUE,
+			'email'				=> $this->input->post('email'),
+			'cur_email'			=> $current_email,
+			'cur_password'		=> $this->input->post('password')
+		));
 
 		$this->VAL->validate_email();
 
@@ -562,13 +561,13 @@ class MyAccount extends CI_Controller {
 
 		// Assign the query data
 		$data = array(
-						'email'				 =>	 $this->input->post('email'),
-						'accept_admin_email'	=> (isset($_POST['accept_admin_email'])) ? 'y' : 'n',
-						'accept_user_email'	 => (isset($_POST['accept_user_email']))  ? 'y' : 'n',
-						'notify_by_default'	 => (isset($_POST['notify_by_default']))  ? 'y' : 'n',
-						'notify_of_pm'			=> (isset($_POST['notify_of_pm']))	? 'y' : 'n',
-						'smart_notifications'	=> (isset($_POST['smart_notifications']))  ? 'y' : 'n'
-					  );
+			'email'				 	=>	 $this->input->post('email'),
+			'accept_admin_email' 	=> (isset($_POST['accept_admin_email'])) ? 'y' : 'n',
+			'accept_user_email'	 	=> (isset($_POST['accept_user_email']))  ? 'y' : 'n',
+			'notify_by_default'	 	=> (isset($_POST['notify_by_default']))  ? 'y' : 'n',
+			'notify_of_pm'			=> (isset($_POST['notify_of_pm']))	? 'y' : 'n',
+			'smart_notifications'	=> (isset($_POST['smart_notifications']))  ? 'y' : 'n'
+		);
 
 		$this->member_model->update_member($this->id, $data);
 
@@ -638,11 +637,11 @@ class MyAccount extends CI_Controller {
 		}
 
 		$data = array(
-						'accept_messages'		=> (isset($_POST['accept_messages'])) ? 'y' : 'n',
-						'display_avatars'		=> (isset($_POST['display_avatars'])) ? 'y' : 'n',
-						'display_signatures'	=> (isset($_POST['display_signatures']))  ? 'y' : 'n',
-						'parse_smileys'			=> (isset($_POST['parse_smileys']))  ? 'y' : 'n'
-					  );
+			'accept_messages'		=> (isset($_POST['accept_messages'])) ? 'y' : 'n',
+			'display_avatars'		=> (isset($_POST['display_avatars'])) ? 'y' : 'n',
+			'display_signatures'	=> (isset($_POST['display_signatures']))  ? 'y' : 'n',
+			'parse_smileys'			=> (isset($_POST['parse_smileys']))  ? 'y' : 'n'
+		);
 
 		$this->member_model->update_member($this->id, $data);
 
@@ -710,17 +709,17 @@ class MyAccount extends CI_Controller {
 			$_POST['screen_name'] = $_POST['username'];
 		}
 
-		// Validate submitted data
+		// Fetch member data
+		$query = $this->member_model->get_member_data($this->id, array('username', 'screen_name'));
 
+		// Validate submitted data
 		if ( ! class_exists('EE_Validate'))
 		{
 			require APPPATH.'libraries/Validate.php';
 		}
 
-		// Fetch member data
-		$query = $this->member_model->get_member_data($this->id, array('username', 'screen_name'));
-
-		$this->VAL = new EE_Validate(array(
+		// Setup userdata for validation
+		$validation_data = array(
 			'member_id'			=> $this->id,
 			'val_type'			=> 'update', // new or update
 			'fetch_lang'		=> FALSE,
@@ -770,24 +769,26 @@ class MyAccount extends CI_Controller {
 		}
 
 		// Display errors if there are any
-
 		if (count($this->VAL->errors) > 0)
 		{
 			show_error($this->VAL->show_errors());
 		}
 
 		// Update "last post" forum info if needed
-
 		if ($query->row('screen_name') != $_POST['screen_name'] && 
 			$this->config->item('forum_is_installed') == "y")
 		{
 			$this->db->where('forum_last_post_author_id', $this->id);
-			$this->db->update('forums', array('forum_last_post_author' => 
-												$this->input->post('screen_name')));
+			$this->db->update(
+				'forums',
+				array('forum_last_post_author' => $this->input->post('screen_name'))
+			);
 			
 			$this->db->where('mod_member_id', $this->id);
-			$this->db->update('forum_moderators', array('mod_member_name' => 
-													$this->input->post('screen_name')));
+			$this->db->update(
+				'forum_moderators',
+				array('mod_member_name' => $this->input->post('screen_name'))
+			);
 		}
 
 		// Assign the query data
@@ -799,7 +800,6 @@ class MyAccount extends CI_Controller {
 		}
 
 		// Was a password submitted?
-
 		$pw_change = FALSE;
 
 		if ($_POST['password'] != '')
@@ -1361,10 +1361,12 @@ class MyAccount extends CI_Controller {
 		{
 			switch (substr($val, 0, 1))
 			{
-				case "b"	: 	$this->subscription->init('comment', array('entry_id' => substr($val, 1)), TRUE);
-								$this->subscription->unsubscribe($this->id);
+				case "b":
+					$this->subscription->init('comment', array('entry_id' => substr($val, 1)), TRUE);
+					$this->subscription->unsubscribe($this->id);
 					break;
-				case "f"	: $this->db->delete('forum_subscriptions', array('topic_id' => substr($val, 1))); 
+				case "f":
+					$this->db->delete('forum_subscriptions', array('topic_id' => substr($val, 1))); 
 					break;
 			}
 		}
@@ -1409,9 +1411,7 @@ class MyAccount extends CI_Controller {
 		
 		foreach ($fields as $val)
 		{
-			{
-				$vars[$val] = $query->row($val);
-			}
+			$vars[$val] = $query->row($val);
 		}
 
 		if ($vars['timezone'] == '')
