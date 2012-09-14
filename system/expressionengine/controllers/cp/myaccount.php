@@ -675,6 +675,8 @@ class MyAccount extends CI_Controller {
 
 		$vars['allow_username_change'] = ($this->session->userdata['group_id'] != '1' AND $this->config->item('allow_username_change') == 'n') ? FALSE : TRUE;
 
+		$vars['self_edit'] = $this->self_edit;
+
 		$this->load->view('account/username_password', $vars);
 	}
 
@@ -731,7 +733,28 @@ class MyAccount extends CI_Controller {
 			'password'			=> $_POST['password'],
 			'password_confirm'	=> $_POST['password_confirm'],
 			'cur_password'		=> $this->input->post('current_password')
-		));
+		);
+
+		// Are we dealing with a Super Admin editing someone else's account?
+		if ( ! $this->self_edit AND $this->session->userdata('group_id') == 1)
+		{
+			// Validate Super Admin's password
+			$this->load->library('auth');
+			$auth = $this->auth->authenticate_id(
+				$this->session->userdata('member_id'),
+				$this->input->post('current_password')
+			);
+
+			if ($auth === FALSE)
+			{
+				show_error(lang('invalid_password'));
+			}
+
+			// Make sure we don't verify the actual member's existing password
+			$validation_data['require_cpw'] = FALSE;
+		}
+
+		$this->VAL = new EE_Validate($validation_data);
 
 		$this->VAL->validate_screen_name();
 
