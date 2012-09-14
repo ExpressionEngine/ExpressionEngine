@@ -133,6 +133,8 @@ class Date_ft extends EE_Fieldtype {
 			$date = $this->EE->localize->set_localized_time($field_data);
 		}
 		
+		$this->EE->javascript->set_global('date.include_seconds', $this->EE->config->item('include_seconds'));
+		
 		// Note- the JS will automatically localize the default date- but not necessarily in a way we want
 		// Hence we adjust default date to compensate for the coming localization
 		$this->EE->javascript->output('

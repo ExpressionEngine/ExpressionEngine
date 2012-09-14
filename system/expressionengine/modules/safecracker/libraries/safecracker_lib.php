@@ -1228,13 +1228,16 @@ class Safecracker_lib
 		
 		// If any checkbox fields are missing from the POST array,
 		// add them in as blank values for form validation to catch
-		foreach (explode('|', $_POST['checkbox_fields']) as $checkbox)
+		if (isset($_POST['checkbox_fields']))
 		{
-			if ( ! isset($_POST[$checkbox]))
+			foreach (explode('|', $_POST['checkbox_fields']) as $checkbox)
 			{
-				$_POST[$checkbox] = '';
+				if ( ! isset($_POST[$checkbox]))
+				{
+					$_POST[$checkbox] = '';
+				}
 			}
-		}
+		} 
 		
 		foreach ($this->custom_fields as $i => $field)
 		{

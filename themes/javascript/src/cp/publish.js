@@ -470,10 +470,23 @@ EE.date_obj_time = (function() {
 	var date_obj = new Date(),
 		date_obj_hours = date_obj.getHours(),
 		date_obj_mins = date_obj.getMinutes(),
+		date_obj_secs = "",
 		date_obj_am_pm = "";
 
 	if (date_obj_mins < 10) {
 		date_obj_mins = "0" + date_obj_mins;
+	}
+	
+	if (EE.date.include_seconds == 'y')
+	{
+		date_obj_secs = date_obj.getSeconds();
+		
+		if (date_obj_secs < 10)
+		{
+			date_obj_secs = "0" + date_obj_secs;
+		}
+		
+		date_obj_secs = ":" + date_obj_secs;
 	}
 
 	if (EE.date.format == "us") {
@@ -490,7 +503,7 @@ EE.date_obj_time = (function() {
 		date_obj_hours = "0" + date_obj_hours;
 	}
 	
-	return " '" + date_obj_hours + ":" + date_obj_mins + date_obj_am_pm + "'";
+	return " '" + date_obj_hours + ":" + date_obj_mins + date_obj_secs + date_obj_am_pm + "'";
 }());
 
 

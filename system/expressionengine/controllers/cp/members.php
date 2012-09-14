@@ -2157,16 +2157,19 @@ class Members extends CP_Controller {
 		// First, delete old channel, module and template permissions for this site
 		if ( ! empty($channel_ids))
 		{
+			$this->db->where('group_id', $group_id);
 			$this->db->where_in('channel_id', $channel_ids);
 			$this->db->delete('channel_member_groups');
 		}
 		if ( ! empty($module_ids))
 		{
+			$this->db->where('group_id', $group_id);
 			$this->db->where_in('module_id', $module_ids);
 			$this->db->delete('module_member_groups');
 		}
 		if ( ! empty($template_ids))
 		{
+			$this->db->where('group_id', $group_id);
 			$this->db->where_in('template_group_id', $template_ids);
 			$this->db->delete('template_member_groups');
 		}
