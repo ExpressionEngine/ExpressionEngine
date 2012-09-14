@@ -1,3 +1,5 @@
+<?php extend_view('_wrapper') ?>
+
 <div id="ajaxContent" style="display: none; text-align: center;">
 	<p class="notice"><?=lang('forum_use_lookup_inst')?></p>
 	<div class="shun">

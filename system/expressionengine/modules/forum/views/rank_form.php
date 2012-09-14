@@ -1,3 +1,5 @@
+<?php extend_view('_wrapper') ?>
+
 <?php $edit = (isset($rank) && is_array($rank)); ?>
 
 <?=form_open($_form_base.AMP.'method=forum_update_rank'.($edit ? AMP.'rank_id='.$rank['rank_id'] : '')); ?>

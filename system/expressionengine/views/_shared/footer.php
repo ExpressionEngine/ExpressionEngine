@@ -12,6 +12,33 @@
 	?>
 </div> <!-- footer -->
 
+<div id="notice_container">
+	<div id="notice_texts_container">
+		<a id="close_notice" href="javascript:jQuery.ee_notice.destroy();">&times;</a>
+		
+		<div class="notice_texts notice_success"></div>
+		<div class="notice_texts notice_alert"></div>
+		<div class="notice_texts notice_error"></div>
+		<div class="notice_texts notice_custom"></div>
+	</div>
+	<div id="notice_flag">
+		<p id="notice_counts">
+			<span class="notice_success"><img src="<?=$cp_theme_url?>images/success.png" alt="" width="14" height="14" /></span>
+			<span class="notice_alert"><img src="<?=$cp_theme_url?>images/alert.png" alt="" width="14" height="14" /></span>
+			<span class="notice_error"><img src="<?=$cp_theme_url?>images/error.png" alt="" width="14" height="14" /></span>
+			<span class="notice_info"><img src="<?=$cp_theme_url?>images/info.png" alt="" width="14" height="14" /></span>
+		</p>
+	</div>
+</div>
+
+<?php 
+if (isset($cp_global_js))
+{
+	echo $cp_global_js;
+} ?>
+
+<?=$this->view->script_tag('jquery/jquery.js')?>
+
 <?php
 
 echo $this->cp->render_footer_js();
@@ -31,25 +58,6 @@ foreach ($this->cp->footer_item as $item)
 	echo $item."\n";
 }
 ?>
-
-<div id="notice_container">
-	<div id="notice_texts_container">
-		<a id="close_notice" href="javascript:jQuery.ee_notice.destroy();">&times;</a>
-		
-		<div class="notice_texts notice_success"></div>
-		<div class="notice_texts notice_alert"></div>
-		<div class="notice_texts notice_error"></div>
-		<div class="notice_texts notice_custom"></div>
-	</div>
-	<div id="notice_flag">
-		<p id="notice_counts">
-			<span class="notice_success"><img src="<?=$cp_theme_url?>images/success.png" alt="" width="14" height="14" /></span>
-			<span class="notice_alert"><img src="<?=$cp_theme_url?>images/alert.png" alt="" width="14" height="14" /></span>
-			<span class="notice_error"><img src="<?=$cp_theme_url?>images/error.png" alt="" width="14" height="14" /></span>
-			<span class="notice_info"><img src="<?=$cp_theme_url?>images/info.png" alt="" width="14" height="14" /></span>
-		</p>
-	</div>
-</div>
 
 </body>
 </html>

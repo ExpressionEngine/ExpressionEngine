@@ -270,21 +270,6 @@ EE.publish.category_editor = function() {
 };
 
 /**
- * Check to see if a number or string is an integer
- *
- * @returns True if the value is an integer, false otherwise
- * @type Boolean
- */
-Number.prototype.is_integer = String.prototype.is_integer = function() {
-	var unparsed = this;
-	var parsed = parseInt(unparsed, 10);
-	
-	if (isNaN(parsed)) { return false; }
-	
-	return unparsed == parsed && unparsed.toString() == parsed.toString();
-};
-
-/**
  * Get the percentage width of a field
  *
  * @param {jQuery Object} $element The jQuery object of a field in the publish form (e.g. $('.publish_field'))
@@ -292,10 +277,12 @@ Number.prototype.is_integer = String.prototype.is_integer = function() {
  * @type Number
  */
 EE.publish.get_percentage_width = function($element) {
-	var width = 0;
+	var width = 0,
+		isInteger = /[0-9]+/ig,
+		dataWidth = $element.attr('data-width');
 	
-	if ($element.attr('data-width') && $element.attr('data-width').slice(0, -1).is_integer()) {
-		return parseInt($element.attr('data-width'), 10);
+	if (dataWidth && isInteger.test(dataWidth.slice(0, -1))) {
+		return parseInt(dataWidth, 10);
 	};
 	
 	return Math.round(($element.width() / $element.parent().width()) * 10) * 10;

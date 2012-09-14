@@ -25,7 +25,7 @@
  * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
-class Content_publish extends CI_Controller {
+class Content_publish extends CP_Controller {
 
 	private $_tab_labels		= array();
 	private $_module_tabs		= array();
@@ -110,8 +110,7 @@ class Content_publish extends CI_Controller {
 			$this->functions->redirect($base_url.key($data['assigned_channels']));
 		}
 
-		$this->javascript->compile();
-		$this->load->view('content/channel_select_list', $data);
+		$this->cp->render('content/channel_select_list', $data);
 	}
 	
 	// --------------------------------------------------------------------
@@ -346,8 +345,7 @@ class Content_publish extends CI_Controller {
 
 		$this->cp->set_breadcrumb(BASE.AMP.'C=content_publish', lang('publish'));
 		
-		$this->javascript->compile();
-		$this->load->view('content/publish', $data);
+		$this->cp->render('content/publish', $data);
 	}
 	
 	// --------------------------------------------------------------------
@@ -762,10 +760,8 @@ class Content_publish extends CI_Controller {
 			'entry_contents'		=> $r
 		);
 		
-		$this->javascript->compile();
-
-		$this->cp->set_variable('cp_page_title', lang('view_entry'));
-		$this->load->view('content/view_entry', $data);
+		$this->view->cp_page_title = lang('view_entry');
+		$this->cp->render('content/view_entry', $data);
 	}
 	
 	// --------------------------------------------------------------------
@@ -1315,7 +1311,7 @@ class Content_publish extends CI_Controller {
 			
 			$data['cp_page_title'] = lang('xmlrpc_ping_errors');
 			
-			$this->load->view('content/ping_errors', $data);
+			$this->cp->render('content/ping_errors', $data);
 			
 			return TRUE;	// tricking it into not publish again
 		}

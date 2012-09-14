@@ -109,36 +109,6 @@ class EE_Localize {
 	// --------------------------------------------------------------------
 
 	/**
-	 *  Set GMT time
-	 *
-	 * Takes a Unix timestamp as input and returns it as GMT
-	 *
-	 * @deprecated 2.3
-	 * @access	public
-	 * @param	string
-	 * @return	string
-	 */
-	function set_gmt($now = '')
-	{
-		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated('2.3');
-
-		if ($now == '')
-		{
-			$now = time();
-		}
-
-		if ( ! is_numeric($now))
-		{
-			$now = strtotime($now);
-		}
-
-		return $now;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 *   Convert a MySQL timestamp to GMT
 	 *
 	 * @access	public
@@ -531,30 +501,6 @@ class EE_Localize {
 		{
 			$time += 3600;
 		}
-
-		return $time;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Offset Entry DST
-	 *
-	 * DEPRECATED
-	 *
-	 * This adds/subtracts an hour if the submitted entry
-	 * has the "honor DST setting" clicked
-	 *
-	 * @access	public
-	 * @param	string
-	 * @param	string
-	 * @param	bool
-	 * @return	int
-	 */
-	function offset_entry_dst($time = '', $dst_enabled = '', $add_time = TRUE)
-	{
-		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated();
 
 		return $time;
 	}
