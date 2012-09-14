@@ -26,6 +26,7 @@ class MyAccount extends CI_Controller {
 
 	var $id			= '';
 	var $username	= '';
+	var $self_edit	= TRUE;
 	var $unique_dates = array();
 	var $extension_paths = array();
 
@@ -66,6 +67,9 @@ class MyAccount extends CI_Controller {
 
 		$this->username = ($query->row('screen_name')  == '') ? $query->row('username') : $query->row('screen_name');
 		$this->cp->set_variable('member_username', $this->username);
+
+		// Set self_edit to determine whether or not someone else is editing
+		$this->self_edit = ((int) $this->id === (int) $this->session->userdata('member_id')) ? TRUE : FALSE;
 	}
 
 	// --------------------------------------------------------------------
@@ -129,7 +133,7 @@ class MyAccount extends CI_Controller {
 	{
 		//	Private Messaging
 		$vars['private_messaging_menu'] = array();
-		if ($this->id == $this->session->userdata['member_id'])
+		if ($this->self_edit)
 		{
 			if ( ! class_exists('EE_Messages'))
 			{
@@ -781,7 +785,7 @@ class MyAccount extends CI_Controller {
 
 			$this->auth->update_password($this->id, $this->input->post('password'));
 
-			if ($this->id == $this->session->userdata('member_id'))
+			if ($this->self_edit)
 			{
 				$pw_change = TRUE;
 			}
@@ -1995,7 +1999,7 @@ class MyAccount extends CI_Controller {
 
 			$query = $this->member_model->get_member_groups('is_locked');
 
-			if ($this->session->userdata('group_id') == 1 && $this->session->userdata('member_id') == $this->id)
+			if ($this->session->userdata('group_id') == 1 && $this->self_edit)
 			{
 				// Can't demote ourselves; Super Admin is the only way
 				$vars['group_id_options'][1] = $query->row(0)->group_title;
@@ -2050,7 +2054,7 @@ class MyAccount extends CI_Controller {
 
 			if ($this->session->userdata('group_id') == '1')
 			{
-				if ($data['group_id'] != '1' && $this->session->userdata('member_id') == $this->id)
+				if ($data['group_id'] != '1' && $this->self_edit)
 				{
 					show_error(lang('super_admin_demotion_alert'));
 				}
