@@ -206,35 +206,62 @@ class Safecracker_ext
 	{
 		$this->fetch_channels();
 		$this->fetch_settings();
-		
+
+		$site_id = $this->EE->config->item('site_id');
+
+		// We should be able to just check override_status in order
+		// to determine whether we've initialized the settings for
+		// the entire site.
+		if( ! isset($this->settings['override_status'][$site_id]))
+		{
+			$this->settings['override_status'][$site_id] = array();
+			$this->settings['allow_guests'][$site_id] = array();
+			$this->settings['logged_out_member_id'][$site_id] = array();
+			$this->settings['require_captcha'][$site_id] = array();
+		}
+
+		$post = $this->EE->security->xss_clean($_POST);
 		foreach ($this->channels as $row)
 		{
-			$site_id = $this->EE->config->item('site_id');
-			$settings = array();
+			// Just make things a little clearer.
+			$channel_id = $row['channel_id'];
 
-			if ( ! empty($_POST['allow_guests'][$site_id][$row['channel_id']]) 
-				&& ! empty($_POST['logged_out_member_id'][$site_id][$row['channel_id']]))
+			if(isset($post['override_status'][$site_id][$channel_id]))
 			{
-				$settings[] = 'allow_guests';
-				$settings[] = 'logged_out_member_id';
-				
-				if (isset($_POST['require_captcha'][$site_id][$row['channel_id']]))
+				$this->settings['override_status'][$site_id][$channel_id] = $post['override_status'][$site_id][$channel_id];
+			}
+
+			$allow_guests = isset($post['allow_guests'][$site_id][$channel_id]) ? $post['allow_guests'][$site_id][$channel_id] : false;
+			if ( ! $allow_guests) 
+			{
+				unset($this->settings['allow_guests'][$site_id][$channel_id]);
+				unset($this->settings['logged_out_member_id'][$site_id][$channel_id]);
+				unset($this->settings['require_captcha'][$site_id][$channel_id]);
+			} 
+			else 
+			{
+				$this->settings['allow_guests'][$site_id][$channel_id] = $allow_guests;
+				if ( ! empty($post['logged_out_member_id'][$site_id][$channel_id]))
 				{
-					$settings[] = 'require_captcha';
+					$this->settings['logged_out_member_id'][$site_id][$channel_id] = $post['logged_out_member_id'][$site_id][$channel_id];
 				}
-			}
-			if (isset($_POST['override_status'][$site_id][$row['channel_id']]))
-			{
-				$settings[] = 'override_status';
-			}
-
-			foreach ($settings as $setting)
-			{
-				$data = $this->EE->input->post($setting, TRUE);
-				$this->settings[$setting][$site_id][$row['channel_id']] = $data[$site_id][$row['channel_id']];
+				elseif (isset($this->settings['logged_out_member_id'][$site_id][$channel_id])) 
+				{
+					unset($this->settings['logged_out_member_id'][$site_id][$channel_id]);
+				}
+			
+				if ( ! empty($post['require_captcha'][$site_id][$channel_id])) 
+				{
+					$this->settings['require_captcha'][$site_id][$channel_id] = $post['require_captcha'][$site_id][$channel_id];
+				}
+				elseif (isset($this->settings['require_captcha'][$site_id][$channel_id]))
+				{
+					unset($this->settings['require_captcha'][$site_id][$channel_id]);
+				}
 			}
 		}
 		
+
 		$this->EE->db->update(
 			'extensions',
 			array('settings' => serialize($this->settings)),
@@ -264,7 +291,20 @@ class Safecracker_ext
 		
 		$query = $this->EE->db->get('extensions');
 		
-		$this->settings = ($query->row('settings')) ? $this->unserialize($query->row('settings')) : array();
+		$this->settings = ($query->row('settings')) ? $this->unserialize($query->row('settings')) : NULL;
+
+		// If we don't have settings to load, then initialize the
+		// settings array.
+		if ($this->settings === NULL)
+		{
+			$this->settings = array(
+				'override_status'	=>	array(),
+				'allow_guests'		=>	array(),
+				'logged_out_member_id'=>array(),
+				'require_captcha'	=>	array()
+			);
+		}
+		
 	}
 
 	// --------------------------------------------------------------------

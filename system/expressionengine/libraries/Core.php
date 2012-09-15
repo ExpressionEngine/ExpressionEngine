@@ -85,7 +85,7 @@ class EE_Core {
 		// application constants
 		define('IS_FREELANCER',	FALSE);
 		define('APP_NAME',		'ExpressionEngine'.(IS_FREELANCER ? ' Freelancer' : ''));
-		define('APP_BUILD',		'20120606');
+		define('APP_BUILD',		'20120911');
 		define('APP_VER',		'2.6.0');
 		define('SLASH',			'&#47;');
 		define('LD',			'{');
@@ -222,8 +222,29 @@ class EE_Core {
 		unset($theme_path);
 		
 		// Define Third Party Theme Path and URL
-		define('PATH_THIRD_THEMES',	PATH_THEMES.'third_party/');
-		define('URL_THIRD_THEMES',	$this->EE->config->slash_item('theme_folder_url').'third_party/');
+		if ($this->EE->config->item('path_third_themes'))
+		{
+			define(
+				'PATH_THIRD_THEMES',
+				rtrim(realpath($this->EE->config->item('path_third_themes')), '/').'/'
+			);
+		}
+		else
+		{
+			define('PATH_THIRD_THEMES',	PATH_THEMES.'third_party/');
+		}
+		
+		if ($this->EE->config->item('url_third_themes'))
+		{
+			define(
+				'URL_THIRD_THEMES',
+				rtrim($this->EE->config->item('url_third_themes'), '/').'/'
+			);
+		}
+		else
+		{
+			define('URL_THIRD_THEMES',	$this->EE->config->slash_item('theme_folder_url').'third_party/');
+		}
 		
 		// Is this a stylesheet request?  If so, we're done.
 		if (isset($_GET['css']) OR (isset($_GET['ACT']) && $_GET['ACT'] == 'css')) 
@@ -664,7 +685,7 @@ class EE_Core {
 			}
 		}
 	
-		if ( ! isset($last_clear) && $this->EE->config->item('enable_online_user_tracking') != 'n')
+		if ( ! isset($last_clear))
 		{
 			$this->EE->db->select('last_cache_clear');
 			$this->EE->db->where('site_id', $this->EE->config->item('site_id'));

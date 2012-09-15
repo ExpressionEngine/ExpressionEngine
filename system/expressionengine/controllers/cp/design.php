@@ -3283,12 +3283,20 @@ class Design extends CI_Controller {
 			}
 			
 			$("table").trigger("applyWidgets");
-
+			
+			
+			EE.template_prefs_url = EE.BASE + "&C=design&M=template_prefs_ajax";
+			
 			$(".groupList ul li a").each(function(){
 				var id = $(this).parent("li").attr("id");
 
 				// enable group switching
 				$(this).click(function() {
+
+					// Populate the prefs for just that group
+					EE.manager.refreshPrefs(id);
+					
+
 					// change appearance in side bar
 					$(this).parent("li").addClass("selected").siblings("li").removeClass("selected");
 					$("#" + id + "_templates").show().siblings(":not(.linkBar)").hide();
@@ -3345,18 +3353,7 @@ class Design extends CI_Controller {
 			}
 		}
 		
-		// member group query
-		$this->db->select('group_id, group_title');
-		$this->db->where('site_id', $this->config->item('site_id'));
-		$this->db->where('group_id !=', '1');
-		$this->db->order_by('group_title');
-		$m_groups = $this->db->get('member_groups');
-		
-		$vars['member_groups'] = array();
-		foreach($m_groups->result() as $m_group)
-		{
-			$vars['member_groups'][$m_group->group_id] = $m_group;
-		}
+		$vars['member_groups'] = $this->_get_member_array();
 
 		$hidden_indicator = ($this->config->item('hidden_template_indicator') != '') ? $this->config->item('hidden_template_indicator') : '.';
 		$hidden_indicator_length = strlen($hidden_indicator);
@@ -3378,12 +3375,60 @@ class Design extends CI_Controller {
 		
 		$vars['templates'] = array();
 		$displayed_groups = array();
+		$vars['no_auth_bounce_options'] = array();
+		$prefs_json = array();
+		
+		$first_template = reset($vars['template_groups']);
+		$vars['first_template'] = $first_template['group_id'];
+		
+		// Get template group ID so we can load the right preferences
+		if ($this->input->get('tgpref', TRUE))
+		{
+			$vars['first_template'] = $this->input->get('tgpref', TRUE);
+		}
 		
 		foreach ($query->result_array() as $row)
 		{
+			if ($vars['first_template'] == 0 OR $vars['first_template'] == $row['group_id'])
+			{
+				//  The very first group populates the default json prefs array
+				foreach($vars['member_groups'] as $group_id => $group)
+				{
+					$access[$group_id] = array(
+						'id' => $group->group_id,
+						'group_name' => $group->group_title,
+						'access' => isset($denied_groups[$row['template_id']][$group_id]) ? FALSE : TRUE
+						);
+				}			
+			
+				$prefs_json[$row['template_id']] = array(
+					'id' => $row['template_id'],
+					'group_id' => $row['group_id'],
+					'name' => $row['template_name'],
+					'type' => $row['template_type'],
+					'cache' => $row['cache'],
+					'refresh' => $row['refresh'],
+					'allow_php' => $row['allow_php'],
+					'php_parsing' => $row['php_parse_location'],
+					'hits' => $row['hits'],
+					'access' => $access,
+					'no_auth_bounce' => $row['no_auth_bounce'],
+					'enable_http_auth' => $row['enable_http_auth']
+				);
+				
+
+				$first = $row['group_id'];
+			}
+			
 			$displayed_groups[$row['group_id']] = $row['group_id'];
 			
-			$vars['templates'][$row['group_id']][$row['template_id']] = $row;
+			$vars['templates'][$row['group_id']][$row['template_id']]['hits'] = $row['hits'];
+			$vars['templates'][$row['group_id']][$row['template_id']]['template_id'] = $row['template_id'];
+			$vars['templates'][$row['group_id']][$row['template_id']]['group_id'] = $row['group_id'];
+			$vars['templates'][$row['group_id']][$row['template_id']]['template_name'] = $row['template_name'];
+			$vars['templates'][$row['group_id']][$row['template_id']]['template_type'] = $row['template_type'];
+			$vars['templates'][$row['group_id']][$row['template_id']]['enable_http_auth'] = $row['enable_http_auth'];  // needed for display
+			
 			$vars['templates'][$row['group_id']][$row['template_id']]['hidden'] = (strncmp($row['template_name'], $hidden_indicator, $hidden_indicator_length) == 0) ? TRUE : FALSE;
 
 			if ($row['template_name'] == 'index')
@@ -3414,15 +3459,6 @@ class Design extends CI_Controller {
 				}				
 			}			
 			
-			// Access
-			foreach($vars['member_groups'] as $group_id => $group)
-			{
-				$vars['templates'][$row['group_id']][$row['template_id']]['access'][$group_id] = array(
-					'id' => $group->group_id,
-					'group_name' => $group->group_title,
-					'access' => isset($denied_groups[$row['template_id']][$group_id]) ? FALSE : TRUE
-				);
-			}
 		}
 
 		// remove any template groups that aren't being displayed, as may be the case when a search was performed
@@ -3445,15 +3481,9 @@ class Design extends CI_Controller {
 			}
 		}
 		
-		//$first_template = reset($vars['template_groups']->result_array());
-		$first_template = reset($vars['template_groups']);
-		$vars['first_template'] = $first_template['group_id'];
-
-		if ($this->input->get('tgpref'))
-		{
-			$vars['first_template'] = $this->input->get('tgpref');			
-		}
+		$prefs_json = $this->javascript->generate_json($prefs_json);
 		
+		$this->javascript->output("EE.pref_json = $prefs_json");
 		$this->javascript->output('$("#template_group_'.$vars['first_template'].'").addClass("selected");');
 		$this->javascript->output('$("#template_group_'.$vars['first_template'].'_templates").show();');
 		$this->javascript->output(
@@ -3533,6 +3563,92 @@ class Design extends CI_Controller {
 		exit();
 	}
 
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Template Prefs Ajax
+	 *
+	 * Used for inline editing of template prefs
+	 *
+	 * @access	public
+	 * @return	type
+	 */
+	function template_prefs_ajax()
+	{
+		$template_group = $this->input->get_post("group_id");
+		$template_group = str_replace('template_group_', '', $template_group);
+		
+		$this->load->model('design_model');
+		
+		$query = $this->design_model->fetch_templates($template_group);
+
+		if ($query->num_rows() == 0)
+		{
+			return array();
+		}
+		
+		$member_groups = $this->_get_member_array();
+		
+		// template access restrictions query
+		$denied_groups = $this->design_model->template_access_restrictions();
+		
+		$vars['templates'] = array();
+		$displayed_groups = array();
+		$template_prefs = array();
+		
+		foreach ($query->result_array() as $row)
+		{
+			// Access
+
+			foreach($member_groups as $group_id => $group)
+			{
+				$access[$group_id] = array(
+					'id' => $group->group_id,
+					'group_name' => $group->group_title,
+					'access' => isset($denied_groups[$row['template_id']][$group_id]) ? FALSE : TRUE
+				);
+			}			
+			
+			$prefs_json[$row['template_id']] = array(
+				'id' => $row['template_id'],
+				'group_id' => $row['group_id'],
+				'name' => $row['template_name'],
+				'type' => $row['template_type'],
+				'cache' => $row['cache'],
+				'refresh' => $row['refresh'],
+				'allow_php' => $row['allow_php'],
+				'php_parsing' => $row['php_parse_location'],
+				'hits' => $row['hits'],
+				'access' => $access,
+				'no_auth_bounce' => $row['no_auth_bounce'],
+				'enable_http_auth' => $row['enable_http_auth']
+			);
+		}
+		
+		$this->output->send_ajax_response($prefs_json);
+	}
+
+	private function _get_member_array()
+	{
+		$member_groups = array();
+		
+		// member group query
+		$this->db->select('group_id, group_title');
+		$this->db->where('site_id', $this->config->item('site_id'));
+		$this->db->where('group_id !=', '1');
+		$this->db->order_by('group_title');
+		$m_groups = $this->db->get('member_groups');
+		
+		$member_groups = array();
+		
+		foreach($m_groups->result() as $m_group)
+		{
+			$member_groups[$m_group->group_id] = $m_group;
+		}
+		
+		return $member_groups;		
+	}
 
 	// --------------------------------------------------------------------
 

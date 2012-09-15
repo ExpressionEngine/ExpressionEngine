@@ -359,7 +359,7 @@ class Comment {
 			$this->EE->functions->ar_andor_string($status, 'c.status');
 
 			// No custom status for comments, so we can be leaner in check for 'c'
-			if (stristr($status, "'c'") === FALSE)
+			if (stristr($status, "c") === FALSE)
 			{
 				$this->EE->db->where('c.status !=', 'c');
 			}
@@ -2051,7 +2051,7 @@ class Comment {
 		$this->EE->lang->loadfile('comment');
 		
 		//  No comment- let's end it here
-		if ($_POST['comment'] == '')
+		if (trim($_POST['comment']) == '')
 		{
 			$error = $this->EE->lang->line('cmt_missing_comment');
 			return $this->EE->output->show_user_error('submission', $error);
@@ -2350,7 +2350,7 @@ class Comment {
 			/**  Missing name?
 			/** ----------------------------------------*/
 
-			if ($_POST['name'] == '')
+			if (trim($_POST['name']) == '')
 			{
 				$error[] = $this->EE->lang->line('cmt_missing_name');
 			}

@@ -2647,7 +2647,7 @@ class EE_Functions {
 		// as efficient as possible?  It also gives me a chance to catch some
 		// user error mistakes.
 
-		if (preg_match_all("/".preg_quote(LD)."((if:else)*if)\s+(.*?)".preg_quote(RD)."/", $str, $matches))
+		if (preg_match_all("/".preg_quote(LD)."((if:else)*if)\s+(.*?)".preg_quote(RD)."/s", $str, $matches))
 		{
 			// PROTECT QUOTED TEXT
 			// That which is in quotes should be protected and ignored as it will screw
@@ -2660,20 +2660,12 @@ class EE_Functions {
 					$md5_key = (string) hexdec($prep_id.md5($quote_match));
 					$protect[$quote_match] = $md5_key;
 					
-					$surrounding_quote = FALSE;
-					
 					// To better protect quotes inside conditional quotes, we need to
 					// determine which kind of quote to surround the newly-encoded string
-					if (is_string_surrounded($quote_match, "'"))
-					{
-						$surrounding_quote = "'";
-					}
-					elseif (is_string_surrounded($quote_match, '"'))
-					{
-						$surrounding_quote = '"';
-					}
+					$surrounding_quote = surrounding_character($quote_match);
 					
-					if ($surrounding_quote === FALSE)
+					if (($surrounding_quote != '"' AND $surrounding_quote != "'")
+						OR $surrounding_quote === FALSE)
 					{
 						$surrounding_quote = '"';
 					}
@@ -2716,7 +2708,7 @@ class EE_Functions {
 				{
 					if (array_key_exists($x[$i], $vars))
 					{
-						$data[$x[$i]] = $vars[$x[$i]];
+						$data[$x[$i]] = trim($vars[$x[$i]]);
 					}
 					elseif($embedded_tags === TRUE && ! is_numeric($x[$i]))
 					{
@@ -2764,11 +2756,6 @@ class EE_Functions {
 				
 				if ($data[$key] != 'TRUE' && $data[$key] != 'FALSE' && ($key != $data[$key] OR $embedded_tags !== TRUE))
 				{
-					if (stristr($data[$key], '<script'))
-					{
-						$data[$key] = preg_replace("/<script.*?".">.*?<\/script>/is", '', $data[$key]); // <? Fixes BBEdit display bug
-					}
-					
 					$data[$key] = '"'.
 								  str_replace(array("'", '"', '(', ')', '$', '{', '}', "\n", "\r", '\\'), 
 											  array('&#39;', '&#34;', '&#40;', '&#41;', '&#36;', '', '', '', '', '&#92;'), 
@@ -2789,7 +2776,28 @@ class EE_Functions {
 				}
 			}
 			
-			$matches[3] = str_replace(array_keys($protect), array_values($protect), $matches[3]);
+			// Example:
+			// 
+			//     {if entry_date < current_time}FUTURE{/if}
+			//     {if "{entry_date format='%Y%m%d'}" ==  "{current_time format='%Y%m%d'}"}Today{/if}
+			// 
+			// The above used to fail because the second conditional would turn into something like:
+			// 
+			//     {if "{"1343930801" format='%Y%m%d'}
+			//
+			// So here, we make sure the value we're replacing doesn't ALSO happen to appear in the
+			// middle of something that looks like a date field with a format parameter
+			foreach ($matches[3] as &$match)
+			{
+				foreach ($protect as $key => $value)
+				{
+					// Make sure $key doesn't appear as "{$key "
+					if ( ! strstr($match, LD.$key.' '))
+					{
+						$match = str_replace($key, $value, $match);
+					}
+				}
+			}
 			
 			if ($safety == 'y')
 			{

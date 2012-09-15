@@ -407,7 +407,16 @@ class Channel_standalone extends Channel {
 		// Fetch Custom Fields
 		// $field_query = $this->EE->channel_model->get_channel_fields($field_group);
 		
-		$html_buttons = $this->EE->admin_model->get_html_buttons($this->EE->session->userdata('member_id'));
+		if ( ! $this->EE->session->cache(__CLASS__, 'html_buttons'))
+		{
+			$this->EE->session->set_cache(
+				__CLASS__,
+				'html_buttons',
+				$this->EE->admin_model->get_html_buttons($this->EE->session->userdata('member_id'))
+			);
+		}
+		
+		$html_buttons = $this->EE->session->cache(__CLASS__, 'html_buttons');
 		$button_js = array();
 
 		foreach ($html_buttons->result() as $button)
@@ -465,13 +474,8 @@ class Channel_standalone extends Channel {
 			$markItUp_writemode['onTab'] = array('keepDefault' => FALSE, 'replaceWith' => "\t");
 		}
 		
-		// Are smiley's & spellcheck Enabled?
-		$this->EE->db->select('COUNT(*) as count');
-		$this->EE->db->where('module_name', 'Emoticon');
-		$smiley = $this->EE->db->get('modules');
+		$this->_installed_mods['smileys'] = array_key_exists('Emoticon', $this->EE->TMPL->module_data);
 		
-		$this->_installed_mods['smileys'] = ((int) $smiley->row('count') == 1) ? TRUE : FALSE;
-
 		// -------------------------------------------
 		//	Publish Page Title Focus - makes the title field gain focus when the page is loaded
 		//

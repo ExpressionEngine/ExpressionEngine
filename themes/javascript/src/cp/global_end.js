@@ -36,6 +36,11 @@ $('table').each(function() {
 
 	if ($(this).data('table_config')) {
 		config = $(this).data('table_config');
+		
+		if ( ! $.isPlainObject(config))	{
+			config = $.parseJSON(config);
+		}
+		
 		$(this).table(config);
 	}
 	

@@ -32,6 +32,7 @@ class Filemanager {
 	public $upload_errors		= FALSE;
 	public $upload_data			= NULL;
 	public $upload_warnings		= FALSE;
+	public $ignore_dupes		= TRUE;
 
 	private $EE;
 	
@@ -122,7 +123,7 @@ class Filemanager {
 		$ext = '.'.$ext;
 		
 		// Figure out a unique filename
-		if ($parameters['ignore_dupes'] === FALSE)
+		if ($parameters['ignore_dupes'] === FALSE OR $this->ignore_dupes == FALSE)
 		{
 			$basename = $filename;
 			
@@ -1838,6 +1839,8 @@ class Filemanager {
 
 		foreach ($files as &$file)
 		{
+			$file['file_name'] = urlencode($file['file_name']);
+			
 			// Get thumb information
 			$thumb_info = $this->get_thumb($file, $dir['id']);
 			
@@ -1850,7 +1853,7 @@ class Filemanager {
 					title="'.$file['file_name'].'" 
 					onclick="$.ee_filebrowser.placeImage('.$file['file_id'].'); return false;"
 				>
-					'.$file['file_name'].'
+					'.urldecode($file['file_name']).'
 				</a>';
 			
 			$file['short_name']		= ellipsize($file['title'], 13, 0.5);
@@ -2051,7 +2054,7 @@ class Filemanager {
 			'file_name'		=> $clean_filename,
 			'upload_path'	=> $dir['server_path'],
 			'allowed_types'	=> $allowed_types,
-			'max_size'		=> round($dir['max_size']/1024, 2)
+			'max_size'		=> round($dir['max_size']/1024, 3)
 		);
 		
 		$this->EE->load->helper('xss');
@@ -2388,7 +2391,7 @@ class Filemanager {
 		$config = array(
 			'upload_path'	=> $upload_directory['server_path'],
 			'allowed_types'	=> ($this->EE->session->userdata('group_id') == 1) ? 'all' : $upload_directory['allowed_types'],
-			'max_size'		=> round($upload_directory['max_size']/1024, 2),
+			'max_size'		=> round($upload_directory['max_size']/1024, 3),
 			'max_width'		=> $upload_directory['max_width'],
 			'max_height'	=> $upload_directory['max_height']
 		);

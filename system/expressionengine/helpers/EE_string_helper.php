@@ -66,17 +66,16 @@ function trim_nbs($string)
 // ----------------------------------------------------------------------------
 
 /**
- * Determines if a string begins and ends with a specified character
+ * Returns the surrounding character of a string, if it exists
  * 
  * @param	string	$string		The string to check
- * @param	string	$character	The character to check for at the beginning and
- *		end of the string
- * @return	boolean	Whether or not the conditional is true
+ * @return	mixed	The surrounding character, or FALSE if there isn't one
  */
-function is_string_surrounded($string, $character)
+function surrounding_character($string)
 {
-	return (substr($string, 0, 1) == $character
-		AND substr($string, -1, 1) == $character);
+	$first_char = substr($string, 0, 1);
+	
+	return ($first_char == substr($string, -1, 1)) ? $first_char : FALSE;
 }
 
 /* End of file EE_string_helper.php */

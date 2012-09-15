@@ -190,11 +190,11 @@ class EE_Addons {
    		$type = ($type == '') ? '' : $type.'/';
 
 		foreach ($map as $pkg_name => $files)
-    	{
-    		if ( ! is_array($files))
-    		{
-    			$files = array($files);
-    		}
+		{
+			if ( ! is_array($files))
+			{
+				$files = array($files);
+			}
 
 			foreach ($files as $file)
 			{
@@ -206,30 +206,48 @@ class EE_Addons {
 
 				foreach($type_ident as $addon_type => $ident)
 				{
-					if ($file == $ident.'.'.$pkg_name.'.php')
+					// Fieldtypes can have names that do not match the $pkg_name
+					$valid = ($ident === 'ft') ? preg_match('/^'.$ident.'\.(.*?)\.php$/', $file, $match) : ($file == $ident.'.'.$pkg_name.'.php');
+
+					if ($valid)
 					{
+						$name = ($ident === 'ft') ? $match[1] : $pkg_name;
+						
 						// Plugin classes don't have a suffix
-						$class = ($ident == 'pi') ? ucfirst($pkg_name) : ucfirst($pkg_name).'_'.$ident;
+						$class = ($ident == 'pi') ? ucfirst($name) : ucfirst($name).'_'.$ident;
 						$path = ($native) ? APPPATH.$type.$pkg_name.'/' : PATH_THIRD.$pkg_name.'/';
 						$author = ($native) ? 'native' : 'third_party';
 
-						$this->_map[$addon_type][$pkg_name] = array(
+						$this->_map[$addon_type][$name] = array(
 							'path'	=> $path,
 							'file'	=> $file,
-							'name'	=> ucwords(str_replace('_', ' ', $pkg_name)),
+							'name'	=> ucwords(str_replace('_', ' ', $name)),
 							'class'	=> $class,
 							'package' => $pkg_name,
 							'type' => $author
 						);
 
 						// Add cross-reference for package lookups - singular keys
-						$this->_packages[$pkg_name][$_plural_map[$addon_type]] =& $this->_map[$addon_type][$pkg_name];
+						if ($ident === 'ft')
+						{
+							// For fieldtypes, _packages is an array, since there can be multiple fieldtypes per package
+							if ( ! isset($this->_packages[$pkg_name][$_plural_map[$addon_type]]))
+							{
+								$this->_packages[$pkg_name][$_plural_map[$addon_type]] = array();
+							}
 
-    					break;
-    				}
-    			}
-    		}
-    	}			    
+							$this->_packages[$pkg_name][$_plural_map[$addon_type]][$name] =& $this->_map[$addon_type][$name];
+						}
+						else
+						{
+							$this->_packages[$pkg_name][$_plural_map[$addon_type]] =& $this->_map[$addon_type][$pkg_name];
+						}
+						
+						break;
+					}
+				}
+			}
+		}
 	}
 
 

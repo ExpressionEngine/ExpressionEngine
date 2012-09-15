@@ -5690,13 +5690,13 @@ class Forum_Core extends Forum {
 			}
 		}
 		
-		if ($type == 'topic' AND $this->EE->input->get_post('title') == '')	
+		if ($type == 'topic' AND trim($this->EE->input->get_post('title')) == '')	
 		{
 			$this->submission_error = lang('empty_title_field');
 		}
 		
 		// Is the body blank?		
-		if ($this->EE->input->get_post('body') == '')
+		if (trim($this->EE->input->get_post('body')) == '')
 		{
 			$this->submission_error = lang('empty_body_field');
 		}	

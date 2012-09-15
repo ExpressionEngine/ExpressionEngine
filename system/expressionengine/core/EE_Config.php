@@ -60,14 +60,14 @@ class EE_Config Extends CI_Config {
 		// Fetch the config file
 		if ( ! @include($this->config_path))
 		{
-			show_error('Unable to locate your config file (expressionengine/config/config.php)');
+			show_error('Unable to locate your config file (expressionengine/config/config.php)', 503);
 		}
 		
 		// Is the config file blank?  If so it means that ExpressionEngine has not been installed yet
 		if ( ! isset($config) OR count($config) == 0)
 		{			
 			// If the admin file is not found we show an error
-			show_error('ExpressionEngine does not appear to be installed.  If you are accessing this page for the first time, please consult the user guide for installation instructions.');
+			show_error('ExpressionEngine does not appear to be installed.  If you are accessing this page for the first time, please consult the user guide for installation instructions.', 503);
 		}
 		
 		// Temporarily disable db caching for this build unless enable_db_caching
@@ -219,7 +219,7 @@ class EE_Config Extends CI_Config {
 				return;
 			}
 			
-			show_error("Site Error:  Unable to Load Site Preferences; No Preferences Found");
+			show_error("Site Error:  Unable to Load Site Preferences; No Preferences Found", 503);
 		}
 		
 		// Reset Core Preferences back to their Pre-Database State
@@ -242,7 +242,7 @@ class EE_Config Extends CI_Config {
 
 				if ( ! is_string($data) OR substr($data, 0, 2) != 'a:')
 				{
-					show_error("Site Error:  Unable to Load Site Preferences; Invalid Preference Data");
+					show_error("Site Error:  Unable to Load Site Preferences; Invalid Preference Data", 503);
 				}			
 				// Any values in config.php take precedence over those in the database, so it goes second in array_merge()
 				$this->config = array_merge(unserialize($data), $this->config);
@@ -984,7 +984,7 @@ class EE_Config Extends CI_Config {
 		// Is the config file writable?
 		if ( ! is_really_writable($this->config_path))
 		{
-			show_error('Your config.php file does not appear to have the proper file permissions.  Please set the file permissions to 666 on the following file: expressionengine/config/config.php');
+			show_error('Your config.php file does not appear to have the proper file permissions.  Please set the file permissions to 666 on the following file: expressionengine/config/config.php', 503);
 		}
 		
 		// Read the config file as PHP
@@ -1150,7 +1150,7 @@ class EE_Config Extends CI_Config {
 		// Is the database file writable?
 		if ( ! is_really_writable($this->database_path))
 		{
-			show_error('Your database.php file does not appear to have the proper file permissions.  Please set the file permissions to 666 on the following file: expressionengine/config/database.php');
+			show_error('Your database.php file does not appear to have the proper file permissions.  Please set the file permissions to 666 on the following file: expressionengine/config/database.php', 503);
 		}
 
 		$prototype = array(
@@ -1186,7 +1186,7 @@ class EE_Config Extends CI_Config {
 		// Is the active group available in the array?
 		if ( ! isset($db) OR ! isset($db[$active_group]))
 		{
-			show_error('Your database.php file seems to have a problem.  Unable to find the active group.');
+			show_error('Your database.php file seems to have a problem.  Unable to find the active group.', 503);
 		}
 		
 		// Now we read the file data as a string
