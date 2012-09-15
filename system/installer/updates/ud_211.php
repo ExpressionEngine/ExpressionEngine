@@ -122,6 +122,13 @@ class Updater {
 		$offset = 0;
 		$progress   = "Moving Comment Notifications: %s";
 		
+		// If the notify field doesn't exist anymore, we can move on
+		// to the next update file.
+		if ( ! $this->EE->db->field_exists('notify', 'comments'))
+		{
+		   return TRUE;
+		}
+
 		$this->EE->db->distinct();
 		$this->EE->db->select('entry_id, email, name, author_id');
 		$this->EE->db->where('notify', 'y');
