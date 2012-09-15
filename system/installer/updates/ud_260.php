@@ -44,8 +44,6 @@ class Updater {
 	 */
 	public function do_update()
 	{
-		$this->EE->load->dbforge();
-		
 		$this->_change_member_totals_length();
 		
 		return TRUE;
@@ -60,7 +58,7 @@ class Updater {
 	 */
 	private function _change_member_totals_length()
 	{
-		$this->EE->dbforge->modify_column(
+		$this->EE->migrate->modify_column(
 			'members',
 			array(
 				'total_entries' => array(
