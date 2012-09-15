@@ -40,7 +40,6 @@ class Updater {
 		
 		// Get all the text fields in the table
 		$fields = $this->EE->db->field_data('channel_data');
-		$Q = array();
 		
 		$fields_to_alter = array();
 
@@ -57,28 +56,34 @@ class Updater {
 			foreach ($fields_to_alter as $row)
             {
  				// We'll switch null values to empty string for our text fields
-          		$Q[] = "UPDATE `exp_channel_data` SET {$row['0']} = '' WHERE {$row['0']} IS NULL";				
+          		$this->EE->db->query("UPDATE `exp_channel_data` SET {$row['0']} = '' WHERE {$row['0']} IS NULL");
         	}
 		}
 		
 		// There was a brief time where this was altered but installer still set to 50 characters
 		// so we update again to catch any from that window
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `email` `email` varchar(72) NOT NULL";		
-		$query = $this->EE->db->where('template_name', 'comments_opened_notification')
-								->get('specialty_templates');
+		$fields = array(
+					'email' 	=> array(
+								'name'			=> 'email',
+								'type'			=> 'varchar',
+								'constraint'	=> 72,
+								'null'			=> FALSE
+								));
 
-		if ($query->num_rows() == 0)
-		{
-			$Q[] = "INSERT INTO exp_specialty_templates (template_name, data_title, template_data) values ('comments_opened_notification', 'New comments have been added', '".addslashes($this->comments_opened_notification())."')";
-		}
+		$this->EE->migrate->modify_column('members', $fields);
 
-		$count = count($Q);
-		
-		foreach ($Q as $num => $sql)
-		{
-			$this->EE->progress->update_state("Running Query $num of $count");
-	        $this->EE->db->query($sql);
-		}
+		// If 'comments_opened_notification' isn't already in exp_specialty_templates, add it.
+		$values = array(
+					'template_name'	=> 'comments_opened_notification',
+					'data_title'	=> 'New comments have been added',
+					'template_data'	=> addslashes($this->comments_opened_notification()),
+					);
+
+		$unique = array(
+					'template_name'	=> 'comments_opened_notification'
+					);
+
+		$this->EE->migrate->insert_set('specialty_templates', $values, $unique);
 		
 		// Do we need to move comment notifications?
 		if ( ! $this->EE->db->table_exists('exp_comments'))
@@ -181,7 +186,6 @@ class Updater {
 	function comments_opened_notification()
 	{
 return <<<EOF
-
 Responses have been added to the entry you subscribed to at:
 {channel_name}
 
