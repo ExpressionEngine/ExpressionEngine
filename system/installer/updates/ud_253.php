@@ -41,9 +41,7 @@ class Updater {
 	 * @return TRUE
 	 */
 	public function do_update()
-	{
-		$this->EE->load->dbforge();
-		
+	{		
 		$this->_change_site_preferences_column_type();
 		$this->_truncate_tables();
 		
@@ -58,7 +56,7 @@ class Updater {
 	 */
 	private function _change_site_preferences_column_type()
 	{
-		$this->EE->dbforge->modify_column(
+		$this->EE->migrate->modify_column(
 			'sites',
 			array(
 				'site_system_preferences' => array(
