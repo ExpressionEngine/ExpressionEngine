@@ -1308,6 +1308,9 @@ PAPAYA;
 				)
 			);
 		}
+			
+		// Clear any latent status messages still present in the PHP session
+		$this->progress->clear_state();
 		
 		// Set a liberal execution time limit, some of these
 		// updates are pretty big.

@@ -62,6 +62,22 @@ class Progress {
 	// --------------------------------------------------------------------
 	
 	/**
+	 * Clear State
+	 *
+	 * Clears any latent status message still present in the PHP session
+	 *
+	 * @return	string
+	 */
+	public function clear_state()
+	{
+		session_start();
+		unset ($_SESSION['_progress_state']);
+		session_write_close();
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
 	 * Gets the proper js and meta tag
 	 *
 	 * Use this on the intermediate page to make it non-js compatible
@@ -73,6 +89,21 @@ class Progress {
 	{
 		$EE =& get_instance();
 		return $EE->load->view('progress_header', $settings, TRUE);
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Updates the step count
+	 *
+	 * Used to mark progress within each update file.
+	 *
+	 * @param	string
+	 * @return	void
+	 */
+	public function step($current, $total)
+	{
+		$this->update_state("Step $current of $total");
 	}
 }
 

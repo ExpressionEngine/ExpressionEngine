@@ -46,12 +46,24 @@ class Updater {
 	public function do_update()
 	{
 		$this->EE->load->dbforge();
-		
-		$this->_update_watermarks_table();
-		$this->_update_file_dimensions_table();
-		$this->_update_files_table();
-		$this->_add_developer_log_table();
-		$this->_create_remember_me();
+
+		$steps = array(
+			'_update_watermarks_table',
+			'_update_file_dimensions_table',
+			'_update_files_table',
+			'_add_developer_log_table',
+			'_create_remember_me',
+			);
+
+		$current_step	= 1;
+		$total_steps	= count($steps);
+
+		foreach ($steps as $k => $v)
+		{
+			$this->EE->progress->step($current_step, $total_steps);
+			$this->$v();
+			$current_step++;
+		}
 		
 		return TRUE;
 	}
