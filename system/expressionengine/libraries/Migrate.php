@@ -202,24 +202,25 @@ class Migrate {
 		}
 
 		// Check to make sure $unique, if present, doesn't already exist in table
+		// Checks all parts of $unique as one query rather than individually.
 		if (! empty($unique))
 		{
 			foreach ($unique as $k => $v)
 			{
 				if (array_key_exists($k, $values))
 				{
-					$query = $this->EE->db
-									->where($k, $v)
-									->get($table);
-
-					if ($query->num_rows() > 0)
-					{
-						// If the unique field content already exists in this column
-						// in the DB, return FALSE since this set of values cannot
-						// be inserted.
-						return FALSE;
-					}	
+					$this->EE->db->where($k, $v);
 				}
+			}
+
+			$query = $this->EE->db->get($table);
+
+			if ($query->num_rows() > 0)
+			{
+				// If the unique field content already exists in this column
+				// in the DB, return FALSE since this set of values cannot
+				// be inserted.
+				return FALSE;
 			}
 		}
 		
