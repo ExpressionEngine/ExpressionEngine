@@ -3925,8 +3925,8 @@ class EE_Template {
 	function _match_date_vars($str)
 	{
 		if (strpos($str, 'format=') === FALSE) return;
-	
-		if (preg_match_all("/".LD."([^".RD."]*?)\s+format=[\"'](.*?)[\"']".RD."/s", $str, $matches, PREG_SET_ORDER))
+		
+		if (preg_match_all("/".LD."([\w+]*)\s+format=[\"'](.*?)[\"']".RD."/", $str, $matches, PREG_SET_ORDER))
 		{
 			for ($j = 0, $tot = count($matches); $j < $tot; $j++)
 			{
