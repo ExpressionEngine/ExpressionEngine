@@ -46,32 +46,44 @@ class Updater {
 	public function do_update()
 	{
 		$this->EE->load->dbforge();
+
+		$steps = '';
 		
 		// Kill blogger
 		if ($this->EE->db->table_exists('blogger'))
 		{
-			$this->_transfer_blogger();
-			$this->_drop_blogger();
+			$steps[] = '_transfer_blogger';
+			$steps[] = '_drop_blogger';
 			// remove blogger
 		}
 		
 		// Add batch dir preference to exp_upload_prefs
-		$this->_do_upload_pref_update();
+		$steps[] = '_do_upload_pref_update';
 		
 		// Update category group
-		$this->_do_cat_group_update();
+		$steps[] = '_do_cat_group_update';
 		
 		// Build file-related tables
-		$this->_do_build_file_tables();
+		$steps[] = '_do_build_file_tables';
 		
 		// Permission changes
-		$this->_do_permissions_update();
+		$steps[] = '_do_permissions_update';
 		
 		// Move field_content_type to the channel_fields settings array
-		$this->_do_custom_field_update();		
+		$steps[] = '_do_custom_field_update';		
 		
 		// Add a MySQL index or three to help performance
-		$this->_do_add_indexes();
+		$steps[] = '_do_add_indexes';
+
+		$current_step	= 1;
+		$total_steps	= count($steps);
+
+		foreach ($steps as $k => $v)
+		{
+			$this->EE->progress->step($current_step, $total_steps);
+			$this->$v();
+			$current_step++;
+		}
 
 		return TRUE;
 	}

@@ -45,19 +45,25 @@ class Updater {
 	 */
 	public function do_update()
 	{
-		$this->_update_session_table();
+		$steps = array(
+			'_update_session_table',
+			'_update_password_lockout_table',
+			'_update_members_table',
+			'_update_files_table',
+			'_update_comments_table',
+			'_update_template_groups',
+			'_alter_sidebar_deft',
+			);
 
-		$this->_update_password_lockout_table();
-		
-		$this->_update_members_table();
-		
-		$this->_update_files_table();
+		$current_step	= 1;
+		$total_steps	= count($steps);
 
-		$this->_update_comments_table();
-
-		$this->_update_template_groups();
-
-		$this->_alter_sidebar_deft();
+		foreach ($steps as $k => $v)
+		{
+			$this->EE->progress->step($current_step, $total_steps);
+			$this->$v();
+			$current_step++;
+		}
 
 		return TRUE;
 	}

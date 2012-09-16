@@ -44,7 +44,19 @@ class Updater {
 	 */
 	public function do_update()
 	{
-		$this->_change_member_totals_length();
+		$steps = array(
+			'_change_member_totals_length',
+			);
+
+		$current_step	= 1;
+		$total_steps	= count($steps);
+
+		foreach ($steps as $k => $v)
+		{
+			$this->EE->progress->step($current_step, $total_steps);
+			$this->$v();
+			$current_step++;
+		}
 		
 		return TRUE;
 	}

@@ -41,9 +41,21 @@ class Updater {
 	 * @return TRUE
 	 */
 	public function do_update()
-	{		
-		$this->_change_site_preferences_column_type();
-		$this->_truncate_tables();
+	{
+		$steps = array(
+			'_change_site_preferences_column_type',
+			'_truncate_tables',
+			);
+
+		$current_step	= 1;
+		$total_steps	= count($steps);
+
+		foreach ($steps as $k => $v)
+		{
+			$this->EE->progress->step($current_step, $total_steps);
+			$this->$v();
+			$current_step++;
+		}
 		
 		return TRUE;
 	}
