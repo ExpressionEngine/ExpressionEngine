@@ -2319,13 +2319,18 @@ class Members extends CI_Controller {
 
 		$data['screen_name'] = ($this->input->post('screen_name')) ? $this->input->post('screen_name') : $this->input->post('username');
 
-		// Assign the query data
+		// Get the password information from Auth
+		$this->load->library('auth');
+		$hashed_password = $this->auth->hash_password($this->input->post('password'));
 
+		// Assign the query data
 		$data['username'] 	= $this->input->post('username');
-		$data['password']	= do_hash($this->input->post('password'));
+		$data['password']	= $hashed_password['password'];
+		$data['salt']		= $hashed_password['salt'];
+		$data['unique_id']	= random_string('encrypt');
+		$data['crypt_key']	= $this->functions->random('encrypt', 16);
 		$data['email']		= $this->input->post('email');
 		$data['ip_address']	= $this->input->ip_address();
-		$data['unique_id']	= random_string('encrypt');
 		$data['join_date']	= $this->localize->now;
 		$data['language'] 	= $this->config->item('deft_lang');
 		$data['timezone'] 	= ($this->config->item('default_site_timezone') && $this->config->item('default_site_timezone') != '') ? $this->config->item('default_site_timezone') : $this->config->item('server_timezone');
@@ -2336,8 +2341,8 @@ class Members extends CI_Controller {
 
 		$data['group_id'] = ( ! $this->input->post('group_id')) ? 2 : $_POST['group_id'];
 
-		$base_fields = array('bday_y', 'bday_m', 'bday_d', 'url', 'location', 'occupation', 'interests', 'aol_im',
-							'icq', 'yahoo_im', 'msn_im', 'bio');
+		$base_fields = array('bday_y', 'bday_m', 'bday_d', 'url', 'location', 
+			'occupation', 'interests', 'aol_im', 'icq', 'yahoo_im', 'msn_im', 'bio');
 
 		foreach ($base_fields as $val)
 		{
