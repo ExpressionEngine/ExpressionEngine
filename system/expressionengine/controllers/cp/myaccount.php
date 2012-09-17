@@ -535,21 +535,11 @@ class MyAccount extends CI_Controller {
 			$current_email = $query->row('email');
 		}
 
-		//	Validate submitted data
-		if ( ! class_exists('EE_Validate'))
-		{
-			require APPPATH.'libraries/Validate.php';
-		}
-
-		$this->VAL = new EE_Validate(array(
-			'member_id'			=> $this->id,
-			'val_type'			=> 'update', // new or update
-			'fetch_lang'		=> FALSE,
-			'require_cpw'		=> ($current_email != $_POST['email']) ? TRUE :FALSE,
-			'enable_log'		=> TRUE,
-			'email'				=> $this->input->post('email'),
-			'cur_email'			=> $current_email,
-			'cur_password'		=> $this->input->post('password')
+		$this->VAL = $this->_validate_user(array(
+			'require_cpw'	=> ($current_email != $this->input->post('email')) ? TRUE : FALSE,
+			'email'			=> $this->input->post('email'),
+			'cur_email'		=> $current_email,
+			'cur_password'	=> $this->input->post('current_password')
 		));
 
 		$this->VAL->validate_email();
@@ -561,7 +551,7 @@ class MyAccount extends CI_Controller {
 
 		// Assign the query data
 		$data = array(
-			'email'				 	=>	 $this->input->post('email'),
+			'email'				 	=> $this->input->post('email'),
 			'accept_admin_email' 	=> (isset($_POST['accept_admin_email'])) ? 'y' : 'n',
 			'accept_user_email'	 	=> (isset($_POST['accept_user_email']))  ? 'y' : 'n',
 			'notify_by_default'	 	=> (isset($_POST['notify_by_default']))  ? 'y' : 'n',
@@ -712,48 +702,15 @@ class MyAccount extends CI_Controller {
 		// Fetch member data
 		$query = $this->member_model->get_member_data($this->id, array('username', 'screen_name'));
 
-		// Validate submitted data
-		if ( ! class_exists('EE_Validate'))
-		{
-			require APPPATH.'libraries/Validate.php';
-		}
-
-		// Setup userdata for validation
-		$validation_data = array(
-			'member_id'			=> $this->id,
-			'val_type'			=> 'update', // new or update
-			'fetch_lang'		=> FALSE,
-			'require_cpw'		=> TRUE,
-			'enable_log'		=> TRUE,
-			'username'			=> $_POST['username'],
+		$this->VAL = $this->_validate_user(array(
+			'username'			=> $this->input->post('username'),
 			'cur_username'		=> $query->row('username'),
-			'screen_name'		=> $_POST['screen_name'],
+			'screen_name'		=> $this->input->post('screen_name'),
 			'cur_screen_name'	=> $query->row('screen_name'),
-			'password'			=> $_POST['password'],
-			'password_confirm'	=> $_POST['password_confirm'],
+			'password'			=> $this->input->post('password'),
+			'password_confirm'	=> $this->input->post('password_confirm'),
 			'cur_password'		=> $this->input->post('current_password')
-		);
-
-		// Are we dealing with a Super Admin editing someone else's account?
-		if ( ! $this->self_edit AND $this->session->userdata('group_id') == 1)
-		{
-			// Validate Super Admin's password
-			$this->load->library('auth');
-			$auth = $this->auth->authenticate_id(
-				$this->session->userdata('member_id'),
-				$this->input->post('current_password')
-			);
-
-			if ($auth === FALSE)
-			{
-				show_error(lang('invalid_password'));
-			}
-
-			// Make sure we don't verify the actual member's existing password
-			$validation_data['require_cpw'] = FALSE;
-		}
-
-		$this->VAL = new EE_Validate($validation_data);
+		));
 
 		$this->VAL->validate_screen_name();
 
@@ -839,6 +796,53 @@ class MyAccount extends CI_Controller {
 
 		$this->session->set_flashdata('message_success', lang('settings_updated'));
 		$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=username_password'.AMP.'id='.$this->id);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Validate either a user, or a Super Admin editing the user
+	 * @param  array $validation_data Validation data to be sent to EE_Validate
+	 * @return EE_Validate	Validation object returned from EE_Validate
+	 */
+	private function _validate_user($validation_data)
+	{
+		//	Validate submitted data
+		if ( ! class_exists('EE_Validate'))
+		{
+			require APPPATH.'libraries/Validate.php';
+		}
+
+		$defaults = array(
+			'member_id'		=> $this->id,
+			'val_type'		=> 'update', // new or update
+			'fetch_lang'	=> FALSE,
+			'require_cpw'	=> TRUE,
+			'enable_log'	=> TRUE,
+		);
+
+		$validation_data = array_merge($defaults, $validation_data);
+
+		// Are we dealing with a Super Admin editing someone else's account?
+		if ( ! $this->self_edit AND $this->session->userdata('group_id') == 1)
+		{
+			// Validate Super Admin's password
+			$this->load->library('auth');
+			$auth = $this->auth->authenticate_id(
+				$this->session->userdata('member_id'),
+				$this->input->post('current_password')
+			);
+
+			if ($auth === FALSE)
+			{
+				show_error(lang('invalid_password'));
+			}
+
+			// Make sure we don't verify the actual member's existing password
+			$validation_data['require_cpw'] = FALSE;
+		}
+
+		return new EE_Validate($validation_data);
 	}
 
 	// --------------------------------------------------------------------
