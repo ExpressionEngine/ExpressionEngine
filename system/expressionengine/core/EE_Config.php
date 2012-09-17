@@ -476,6 +476,7 @@ class EE_Config Extends CI_Config {
 			'is_site_on',
 			'site_index',
 			'site_url',
+			'cp_url',
 			'theme_folder_url',
 			'theme_folder_path',
 			'webmaster_email',
