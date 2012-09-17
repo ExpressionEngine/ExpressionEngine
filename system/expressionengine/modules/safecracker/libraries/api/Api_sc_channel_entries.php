@@ -63,7 +63,7 @@ class Api_sc_channel_entries extends Api_channel_entries
 		}
 
 		$rel_ids = array();
-		$checkbox_fields = explode('|', $data['checkbox_fields']);
+		$checkbox_fields = isset($data['checkbox_fields']) ? explode('|', $data['checkbox_fields']) : array();
 		
 		foreach($this->EE->safecracker->custom_fields as $field)
 		{
