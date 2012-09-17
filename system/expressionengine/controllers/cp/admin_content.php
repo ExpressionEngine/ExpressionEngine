@@ -630,6 +630,12 @@ class Admin_content extends CI_Controller {
 			// Insert data
 
 			$_POST['site_id'] = $this->config->item('site_id');
+			$_POST['status_group'] = ($this->input->post('status_group') !== FALSE &&
+				$this->input->post('status_group') != '')
+				? $this->input->post('status_group') : NULL;
+			$_POST['field_group'] = ($this->input->post('field_group') !== FALSE &&
+				$this->input->post('field_group') != '')
+				? $this->input->post('field_group') : NULL;
 
 			// duplicating preferences?
 			if ($dupe_id !== FALSE AND is_numeric($dupe_id))
