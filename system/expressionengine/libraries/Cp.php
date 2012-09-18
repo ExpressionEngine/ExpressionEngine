@@ -54,7 +54,6 @@ class Cp {
 	function __construct()
 	{
 		$this->EE =& get_instance();
-		$this->view = $this->EE->view;
 		
 		if ($this->EE->router->fetch_class() == 'ee')
 		{
@@ -265,7 +264,7 @@ class Cp {
 		$this->_seal_combo_loader();
 		$this->add_js_script('file', 'cp/global_end');
 
-		return $this->view->render($view, $data, $return);
+		return $this->EE->view->render($view, $data, $return);
 	}
 
 	// --------------------------------------------------------------------
@@ -278,13 +277,13 @@ class Cp {
 	 */
 	protected function _accessories()
 	{
-		if ($this->view->disabled('ee_accessories'))
+		if ($this->EE->view->disabled('ee_accessories'))
 		{
 			return;
 		}
 
 		$this->EE->load->library('accessories');
-		$this->view->cp_accessories = $this->EE->accessories->generate_accessories();
+		$this->EE->view->cp_accessories = $this->EE->accessories->generate_accessories();
 	}
 
 	// --------------------------------------------------------------------
@@ -297,13 +296,13 @@ class Cp {
 	 */
 	protected function _menu()
 	{
-		if ($this->view->disabled('ee_menu'))
+		if ($this->EE->view->disabled('ee_menu'))
 		{
 			return;
 		}
 
 		$this->EE->load->library('menu');
-		$this->view->cp_menu_items = $this->EE->menu->generate_menu();
+		$this->EE->view->cp_menu_items = $this->EE->menu->generate_menu();
 	}
 
 	// --------------------------------------------------------------------
@@ -316,16 +315,16 @@ class Cp {
 	 */
 	protected function _sidebar()
 	{
-		$this->view->sidebar_state = '';
-		$this->view->maincontent_state = '';
+		$this->EE->view->sidebar_state = '';
+		$this->EE->view->maincontent_state = '';
 
 		if ($this->EE->session->userdata('show_sidebar') == 'n')
 		{
-			$this->view->sidebar_state = ' style="display:none"';
-			$this->view->maincontent_state = ' style="width:100%; display:block"';
+			$this->EE->view->sidebar_state = ' style="display:none"';
+			$this->EE->view->maincontent_state = ' style="width:100%; display:block"';
         }
 
-        if ($this->view->disabled('ee_sidebar'))
+        if ($this->EE->view->disabled('ee_sidebar'))
 		{
 			return;
 		}
@@ -530,7 +529,7 @@ class Cp {
 	 */
 	function set_right_nav($nav = array())
 	{
-		$this->view->cp_right_nav = array_reverse($nav);
+		$this->EE->view->cp_right_nav = array_reverse($nav);
 	}
 	
 	// --------------------------------------------------------------------
@@ -545,7 +544,7 @@ class Cp {
 	 */
 	function set_action_nav($nav = array())
 	{
-		$this->view->cp_action_nav = array_reverse($nav);
+		$this->EE->view->cp_action_nav = array_reverse($nav);
 	}
 
 	// --------------------------------------------------------------------
@@ -700,7 +699,7 @@ class Cp {
 	 */		
 	function set_variable($name, $value)
 	{	
-		$this->view->$name = $value;
+		$this->EE->view->$name = $value;
 	}
 	
 	// --------------------------------------------------------------------
@@ -716,7 +715,7 @@ class Cp {
 		static $_crumbs = array();
 		
 		$_crumbs[$link] = $title;
-		$this->view->cp_breadcrumbs = $_crumbs;
+		$this->EE->view->cp_breadcrumbs = $_crumbs;
 	}
 	
 	// --------------------------------------------------------------------
