@@ -147,6 +147,7 @@ class Channel_model extends CI_Model {
 	function get_channel_statuses($status_group)
 	{
 		$this->db->where('group_id', $status_group);
+		$this->db->order_by('status_order');
 		return $this->db->get('statuses');
 	}
 
