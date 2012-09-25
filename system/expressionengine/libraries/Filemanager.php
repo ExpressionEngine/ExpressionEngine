@@ -32,7 +32,6 @@ class Filemanager {
 	public $upload_errors		= FALSE;
 	public $upload_data			= NULL;
 	public $upload_warnings		= FALSE;
-	public $ignore_dupes		= TRUE;
 
 	private $EE;
 	
@@ -123,7 +122,7 @@ class Filemanager {
 		$ext = '.'.$ext;
 		
 		// Figure out a unique filename
-		if ($parameters['ignore_dupes'] === FALSE OR $this->ignore_dupes == FALSE)
+		if ($parameters['ignore_dupes'] === FALSE)
 		{
 			$basename = $filename;
 			
