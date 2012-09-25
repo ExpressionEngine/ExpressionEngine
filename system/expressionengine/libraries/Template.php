@@ -3379,50 +3379,6 @@ class EE_Template {
 		
 		$this->log[] = '('.number_format($time, 6). $memory_usage . ') '.$str;
 	}
-	
-	// --------------------------------------------------------------------
-	
-	/**
-	 * Basic HTTP Authentication for Templates
-	 *
-	 * @deprecated in 2.2 -- Moved to the Auth Library
-	 *
-	 * @access	public
-	 * @return	header
-	 */
-	function template_authentication_basic()
-	{
-		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated('2.2', 'Auth Library');
-		
-		@header('WWW-Authenticate: Basic realm="'.$this->realm.'"');
-		$this->EE->output->set_status_header(401);
-		@header("Date: ".gmdate("D, d M Y H:i:s")." GMT");
-		exit("HTTP/1.0 401 Unauthorized");
-	}
-	
-	// --------------------------------------------------------------------
-	
-	/**
-	 * HTTP Authentication Validation
-	 *
-	 * Takes the username/password from the HTTP Authentication and validates it against the
-	 * member database and see if this member's member group has access to the template.
-	 *
-	 * @deprecated -- Moved to the Auth Library in 2.2.
-	 * @access	public
-	 * @param	array
-	 * @return	header
-	 */
-	function template_authentication_check_basic($not_allowed_groups = array())
-	{
-		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated('2.2', 'Auth Library');
-		
-		$this->EE->load->library('auth');
-		return $this->EE->auth->authenticate_http_basic($not_allowed_groups,
-														$this->realm);
-	}
 
 	// --------------------------------------------------------------------
 	
@@ -3925,8 +3881,8 @@ class EE_Template {
 	function _match_date_vars($str)
 	{
 		if (strpos($str, 'format=') === FALSE) return;
-	
-		if (preg_match_all("/".LD."([^".RD."]*?)\s+format=[\"'](.*?)[\"']".RD."/s", $str, $matches, PREG_SET_ORDER))
+		
+		if (preg_match_all("/".LD."([\w+]*)\s+format=[\"'](.*?)[\"']".RD."/", $str, $matches, PREG_SET_ORDER))
 		{
 			for ($j = 0, $tot = count($matches); $j < $tot; $j++)
 			{

@@ -1,6 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class Addons_fieldtypes extends CI_Controller {
+class Addons_fieldtypes extends CP_Controller {
 
 
 	/**
@@ -101,10 +101,9 @@ class Addons_fieldtypes extends CI_Controller {
 			$id++;
 		}
 
-		$this->javascript->compile();
 		$this->cp->set_breadcrumb(BASE.AMP.'C=addons', lang('addons'));
 		
-		$this->load->view('addons/fieldtypes', $vars);
+		$this->cp->render('addons/fieldtypes', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -175,7 +174,7 @@ class Addons_fieldtypes extends CI_Controller {
 		
 		$this->cp->set_variable('cp_page_title', lang('delete_fieldtype'));
 		
-		return $this->load->view('addons/fieldtype_delete_confirm', array('form_action' => 'C=addons_fieldtypes'.AMP.'M=uninstall'.AMP.'ft='.$ft));
+		return $this->cp->render('addons/fieldtype_delete_confirm', array('form_action' => 'C=addons_fieldtypes'.AMP.'M=uninstall'.AMP.'ft='.$ft));
 	}
 		
 	// --------------------------------------------------------------------
@@ -246,9 +245,7 @@ class Addons_fieldtypes extends CI_Controller {
 			'_ft_name'			=> $ft
 		);
 		$this->cp->set_variable('cp_page_title', $FT->info['name']);
-		
-		$this->javascript->compile();
-		$this->load->view('addons/fieldtype_global_settings', $vars);
+		$this->cp->render('addons/fieldtype_global_settings', $vars);
 	}
 }
 

@@ -792,6 +792,15 @@ class Safecracker_lib
 		{
 			$this->form_hidden('logged_out_member_id', $this->encrypt_input($this->logged_out_member_id));
 		}
+
+		$require_entry = 'n';
+
+		if ($this->bool_string($this->EE->TMPL->fetch_param('require_entry')))
+		{
+			$require_entry = $this->entry('entry_id');
+		}
+
+		$this->form_hidden('require_entry', $this->encrypt_input($require_entry));
 		
 		//add class to form
 		if ($this->EE->TMPL->fetch_param('class'))
@@ -1180,8 +1189,20 @@ class Safecracker_lib
 			
 			$this->EE->db->delete('captcha');
 		}
-		
+
 		//is an edit form?
+		$require_entry = $this->EE->input->post('require_entry');
+		$require_entry = $this->decrypt_input($require_entry);
+
+		if ($require_entry !== 'n')
+		{
+			if ($this->EE->input->post('entry_id') != $require_entry)
+			{
+				// oh no you didn't!
+				$_POST['entry_id'] = $require_entry;
+			}
+		}
+
 		if ($this->EE->input->post('entry_id'))
 		{
 			$this->edit = TRUE;
@@ -1207,13 +1228,16 @@ class Safecracker_lib
 		
 		// If any checkbox fields are missing from the POST array,
 		// add them in as blank values for form validation to catch
-		foreach (explode('|', $_POST['checkbox_fields']) as $checkbox)
+		if (isset($_POST['checkbox_fields']))
 		{
-			if ( ! isset($_POST[$checkbox]))
+			foreach (explode('|', $_POST['checkbox_fields']) as $checkbox)
 			{
-				$_POST[$checkbox] = '';
+				if ( ! isset($_POST[$checkbox]))
+				{
+					$_POST[$checkbox] = '';
+				}
 			}
-		}
+		} 
 		
 		foreach ($this->custom_fields as $i => $field)
 		{

@@ -65,7 +65,7 @@ input, .error {
 	font-size:			16px;
 	border:				none;
 	-webkit-border-radius: 6px;
-	-moz-border-radius:	6px;
+	border-radius:		6px;
 	padding:			10px;
 	width:				430px;
 	margin-right:		5px;
@@ -99,7 +99,7 @@ input.submit {
 	width:				396px;
 	
 	-webkit-border-radius: 6px;
-	-moz-border-radius:	6px;
+	border-radius:		6px;
 }
 
 .error {

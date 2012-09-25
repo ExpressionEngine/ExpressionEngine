@@ -22,10 +22,6 @@
 	
 	<?=$this->view->script_tag('jquery/jquery.js')?>
 
-	<?php if ($advanced_css_mtime): ?>
-	<script charset="utf-8" type="text/javascript" src="<?=BASE.AMP.'C=javascript'.AMP.'M=load'.AMP.'file=css'.AMP.'theme='.$this->cp->cp_theme.AMP.'v='.$advanced_css_mtime?>"></script>
-	<?php endif;?>
-
 	<?php
 	if (isset($script_head)) 
 	{

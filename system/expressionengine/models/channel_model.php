@@ -147,6 +147,7 @@ class Channel_model extends CI_Model {
 	function get_channel_statuses($status_group)
 	{
 		$this->db->where('group_id', $status_group);
+		$this->db->order_by('status_order');
 		return $this->db->get('statuses');
 	}
 
@@ -188,34 +189,11 @@ class Channel_model extends CI_Model {
 	 */
 	function get_required_fields($field_group)
 	{
-
 		$this->db->from('channel_fields');
 		$this->db->where('group_id', $field_group);
 		$this->db->where('field_required', 'y');		
 		$this->db->order_by('field_order');
 		return $this->db->get();
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Get Channel Categories
-	 *
-	 * Gets category information for a given category group, by default only fetches cat_id and cat_name
-	 * 
-	 * @deprecated 2.3, Use category_model->get_channel_categories instead
-	 *
-	 * @access	public
-	 * @param	int
-	 * @return	mixed
-	 */
-	function get_channel_categories($cat_group, $additional_fields = array(), $additional_where = array())
-	{
-		$this->load->library('logger');
-		$this->logger->deprecated('2.3', 'Category_model::get_channel_categories()');
-		
-		$this->load->model('category_model');
-		return $this->category_model->get_channel_categories($cat_group, $additional_fields, $additional_where);
 	}
 	
 	// --------------------------------------------------------------------
@@ -229,6 +207,11 @@ class Channel_model extends CI_Model {
 	 */
 	function get_most_recent_id($type = 'entry')
 	{
+		if ( ! $allowed_channels = $this->session->userdata('assigned_channels'))
+		{
+			return FALSE;
+		}
+
 		// By default we only grab the primary id
 		$fields = array($type.'_id');
 		$sort = $type.'_date';
@@ -239,31 +222,23 @@ class Channel_model extends CI_Model {
 				break;
 			case 'entry':
 			default:
-				$table = 'channel_titles';
-				$fields[] = 'channel_id';
+				$table 		= 'channel_titles';
+				$fields[] 	= 'channel_id';
 		}
 		
-		$this->db->select($fields);
-		$this->db->order_by($sort, 'DESC');
-		$this->db->where('site_id', $this->config->item('site_id'));
+		$this->db->select($fields)
+			->order_by($sort, 'DESC')
+			->where('site_id', $this->config->item('site_id'));
 		
 		if ($this->session->userdata['can_edit_other_entries'] != 'y')
 		{
-			$this->db->where('author_id', $this->session->userdata['member_id']);
+			$this->db->where('author_id', $this->session->userdata('member_id'));
 		}
-		
-		if ($allowed_channels = $this->session->userdata('assigned_channels'))
-		{
-			// Only return an entry from a channel the user has access to
-			$this->db->where_in('channel_id', array_keys($allowed_channels));
-		}
-		// Return FALSE if user does not have access to any channels
-		else
-		{
-			return FALSE;
-		}
-		
-		$entry = $this->db->get($table, 1);
+
+		// Only return an entry from a channel the user has access to
+		$entry = $this->db
+			->where_in('channel_id', array_keys($allowed_channels))
+			->get($table, 1);
 		
 		// Return the result if we found anything
 		if ($entry->num_rows() > 0)

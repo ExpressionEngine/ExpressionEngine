@@ -15,7 +15,7 @@
 // --------------------------------------------------------------------
 
 /**
- * ExpressionEngine Channel Module
+ * ExpressionEngine File Module
  *
  * @package		ExpressionEngine
  * @subpackage	Modules
@@ -868,7 +868,7 @@ class File {
 			$row['directory_id']	= $row['id'];
 			$row['directory_title']	= $row['name'];
 			$row['entry_id']		= $row['file_id'];
-			$row['file_url']		= reduce_double_slashes($row_prefs['url'].'/'.$row['file_name']);
+			$row['file_url']		= rtrim($row_prefs['url'], '/').'/'.$row['file_name'];
 			$row['filename'] 		= $row['file_name'];
 			$row['viewable_image'] = $this->is_viewable_image($row['file_name']);
 
@@ -908,7 +908,7 @@ class File {
 				{
 					$size_data = array();
 					
-					$row[$data['name'].'_file_url'] = reduce_double_slashes($row_prefs['url'].'/_'.$data['name'].'/'.$row['file_name']);
+					$row[$data['name'].'_file_url'] = rtrim($row_prefs['url'], '/').'/_'.$data['name'].'/'.$row['file_name'];
 					
 					$size_data = $this->get_file_sizes(reduce_double_slashes($row_prefs['server_path'].'/_'.$data['name'].'/'.$row['file_name']));
 						

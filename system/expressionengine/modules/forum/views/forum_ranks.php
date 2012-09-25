@@ -1,3 +1,5 @@
+<?php extend_view('_wrapper') ?>
+
 <?php
 $this->table->set_heading(
 	array('data' => lang('forum_rank_title'),			'style' => 'width: 35%'),
