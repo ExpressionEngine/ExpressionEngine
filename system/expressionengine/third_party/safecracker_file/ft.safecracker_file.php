@@ -132,7 +132,6 @@ class Safecracker_file_ft extends File_ft
 			$this->EE->load->add_package_path(PATH_THIRD.'safecracker_file/');
 			$this->EE->load->library('Filemanager');
 			
-			$this->EE->filemanager->ignore_dupes = FALSE;
 			$data = $this->EE->filemanager->upload_file($this->settings['safecracker_upload_dir'], $field_name);
 			
 			if (array_key_exists('error', $data))
