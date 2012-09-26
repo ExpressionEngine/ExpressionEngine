@@ -625,7 +625,7 @@ class Comment {
 		$item_count = 0;
 
 		$relative_count = 0;
-		$absolute_count = ($pagination->current_page == '') ? 0 : $pagination->current_page;
+		$absolute_count = ($pagination->current_page == 1) ? 0 : ($pagination->current_page - 1) * $pagination->per_page;
 
 		foreach ($results as $id => $row)
 		{
