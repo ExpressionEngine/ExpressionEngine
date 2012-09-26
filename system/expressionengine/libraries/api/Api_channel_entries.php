@@ -242,13 +242,9 @@ class Api_channel_entries extends Api {
 	 * @param	int
 	 * @param	array
 	 * @return	mixed
-	 * @deprecated 2.6
 	 */
 	function submit_new_entry($channel_id, $data, $autosave = FALSE)
 	{
-		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated('2.6', 'Api_channel_entries::save_entry()');
-		
 		return $this->save_entry($data, $channel_id, NULL, $autosave);
 	}
 	
@@ -263,13 +259,9 @@ class Api_channel_entries extends Api {
 	 * @param	int
 	 * @param	array
 	 * @return	mixed
-	 * @deprecated 2.6
 	 */
 	function update_entry($entry_id, $data, $autosave = FALSE)
 	{
-		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated('2.6', 'Api_channel_entries::save_entry()');
-		
 		return $this->save_entry($data, NULL, $entry_id, $autosave);
 	}
 	
