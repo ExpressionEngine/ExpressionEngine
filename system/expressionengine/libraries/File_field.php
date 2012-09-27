@@ -580,7 +580,9 @@ class File_field {
 			$this->EE->load->model('file_upload_preferences_model');
 			
 			$this->_upload_prefs = $this->EE->file_upload_preferences_model->get_file_upload_preferences(
-				$this->EE->session->userdata('group_id')
+				$this->EE->session->userdata('group_id'),
+				NULL,
+				TRUE
 			);
 		}
 		
