@@ -29,7 +29,7 @@ class Members extends CI_Controller {
 	private $english		= array('Guests', 'Banned', 'Members', 'Pending', 'Super Admins');
 	private $no_delete		= array('1', '2', '3', '4'); // Member groups that can not be deleted
 	private $perpage		= 50;  // Number of results on the "View all member" page	
-	
+
 	/**
 	 * Constructor
 	 */
@@ -918,6 +918,11 @@ class Members extends CI_Controller {
 	 * Edit Member Group
 	 *
 	 * Edit/Create a member group form
+
+	 * FIXME This is currently broken if you try to use the 
+	 * site drop down to switch sites while editing a group.  The group
+	 * only exists for a single site, not all sites.  And so an error is
+	 * thrown.
 	 */		
 	public function edit_member_group()
 	{
@@ -1953,7 +1958,7 @@ class Members extends CI_Controller {
 			show_error(lang('only_superadmins_can_admin_groups'));
 		}
 
-		$edit = TRUE;
+		$this->load->model('Member_group_model');
 		
 		$group_id = $this->input->post('group_id');
 		$clone_id = $this->input->post('clone_id');
@@ -1962,238 +1967,23 @@ class Members extends CI_Controller {
 		unset($_POST['group_id']);
 		unset($_POST['clone_id']);
 
-		// Only super admins can edit the "super admin" group
-		if ($group_id == 1  AND $this->session->userdata['group_id'] != 1)
-		{
-			show_error(lang('unauthorized_access'));
-		}
-
 		// No group name
 		if ( ! $group_title = $this->input->post('group_title'))
 		{
 			show_error(lang('missing_group_title'));
 		}
-		
+	
+		// FIXME This is never used.  Is there a reason to continue doing this?	
 		$return = ($this->input->get_post('return')) ? TRUE : FALSE;
 		unset($_POST['return']);
-		
-		// New Group? Find Max
-		
+	
 		if (empty($group_id))
 		{
-			$edit = FALSE;
-			
-			$query = $this->db->query("SELECT MAX(group_id) as max_group FROM exp_member_groups");
-			
-			$group_id = $query->row('max_group') + 1;
-		}
-		
-		// Group Title already exists?
-		$this->db->from('member_groups')
-					->where('group_title', $group_title)
-					->where('group_id !=', $group_id);
-		
-		if ($this->db->count_all_results())
-		{
-			show_error(lang('group_title_exists'));
-		}
-
-		// get existing category privileges if necessary
-		
-		if ($edit == TRUE)
-		{
-			$query = $this->db->query("SELECT site_id, can_edit_categories, can_delete_categories FROM exp_member_groups WHERE group_id = '".$this->db->escape_str($group_id)."'");
-			
-			$old_cat_privs = array();
-			
-			foreach ($query->result_array() as $row)
-			{
-				$old_cat_privs[$row['site_id']]['can_edit_categories'] = $row['can_edit_categories'];
-				$old_cat_privs[$row['site_id']]['can_delete_categories'] = $row['can_delete_categories'];
-			}
-		}
-		
-		if ($this->config->item('multiple_sites_enabled') == 'n')
-		{
-			$this->db->where('site_id', 1);
-		}
-		
-		$query = $this->db->select('site_id')->get('sites');
-		
-		$module_ids = array();
-		$channel_ids = array();
-		$template_ids = array();
-		$module_ids_yes = array();
-		$channel_ids_yes = array();
-		$template_ids_yes = array();
-		$cat_group_privs = array('can_edit_categories', 'can_delete_categories');
-				
-		/** ----------------------------------------------------
-		/**  Remove and Store Channel and Template Permissions
-		/** ----------------------------------------------------*/
-		
-		$data = array('group_title' 		=> $this->input->post('group_title'),
-					  'group_description'	=> $this->input->post('group_description'),
-					  'site_id'				=> $site_id,
-					  'group_id'			=> $group_id);
-		
-		// If editing Super Admin group, the is_locked field doesn't exist, so make sure we
-		// got a value from the form before writing 0 to the database
-		if ($this->input->post('is_locked') !== FALSE)
-		{
-			$data['is_locked'] = $this->input->post('is_locked');
-		}
-		
-		foreach ($_POST as $key => $val)
-		{
-			if (substr($key, 0, strlen($site_id.'_channel_id_')) == $site_id.'_channel_id_')
-			{
-				$channel_id = substr($key, strlen($site_id.'_channel_id_'));
-				$channel_ids[] = $channel_id;
-				
-				if ($val == 'y')
-				{
-					$channel_ids_yes[] = array(
-						'channel_id' => $channel_id,
-						'group_id' => $group_id
-					);
-				}
-			}
-			elseif (substr($key, 0, strlen('module_id_')) == 'module_id_')
-			{
-				$module_id = substr($key, strlen('module_id_'));
-				$module_ids[] = $module_id;
-				
-				if ($val == 'y')
-				{
-					$module_ids_yes[] = array(
-						'module_id' => $module_id,
-						'group_id' => $group_id
-					);
-				}
-			}
-			elseif (substr($key, 0, strlen($site_id.'_template_id_')) == $site_id.'_template_id_')
-			{
-				$template_id = substr($key, strlen($site_id.'_template_id_'));
-				$template_ids[] = $template_id;
-				
-				if ($val == 'y')
-				{
-					$template_ids_yes[] = array(
-						'template_group_id' => $template_id,
-						'group_id' => $group_id
-					);
-				}
-			}
-			elseif (substr($key, 0, strlen($site_id.'_')) == $site_id.'_')
-			{
-				$data[substr($key, strlen($site_id.'_'))] = $_POST[$key];
-			}
-			else
-			{
-				continue;
-			}
-			
-			unset($_POST[$key]);
-		}
-
-		if ($edit === FALSE)
-		{	
-			$this->db->query($this->db->insert_string('exp_member_groups', $data));
-			
-			$uploads = $this->db->query("SELECT exp_upload_prefs.id FROM exp_upload_prefs WHERE site_id = '".$this->db->escape_str($site_id)."'");
-			
-			if ($uploads->num_rows() > 0)
-			{
-				foreach($uploads->result_array() as $upload)
-				{
-					$this->db->query("INSERT INTO exp_upload_no_access (upload_id, upload_loc, member_group) VALUES ('".$this->db->escape_str($upload['id'])."', 'cp', '{$group_id}')");
-				}
-			}
-			
-			if ($group_id != 1)
-			{
-				foreach ($cat_group_privs as $field)
-				{
-					$privs = array(
-									'member_group' => $group_id,
-									'field' => $field,
-									'allow' => ($data[$field] == 'y') ? TRUE : FALSE,
-									'site_id' => $site_id,
-									'clone_id' => $clone_id
-								);
-
-					$this->_update_cat_group_privs($privs);	
-				}
-			}
-			
-			$cp_message = lang('member_group_created').NBS.NBS.$_POST['group_title'];			
+			$cp_message = $this->Member_group_model->parse_add_form($site_id, $clone_id, $group_title);	
 		}
 		else
-		{			
-			unset($data['group_id']);
-			
-			$this->db->query($this->db->update_string('exp_member_groups', $data, "group_id = '$group_id' AND site_id = '{$site_id}'"));
-			
-			if ($group_id != 1)
-			{
-				// update category group discrete privileges
-
-				foreach ($cat_group_privs as $field)
-				{
-					// only modify category group privs if value changed, so we do not
-					// globally overwrite existing defined privileges carelessly
-
-					if ($old_cat_privs[$site_id][$field] != $data[$field])
-					{
-						$privs = array(
-										'member_group' => $group_id,
-										'field' => $field,
-										'allow' => ($data[$field] == 'y') ? TRUE : FALSE,
-										'site_id' => $site_id,
-										'clone_id' => $clone_id
-									);
-
-						$this->_update_cat_group_privs($privs);						
-					}
-				}
-			}
-			
-			$cp_message = lang('member_group_updated').NBS.NBS.$_POST['group_title'];
-		}
-
-		// First, delete old channel, module and template permissions for this site
-		if ( ! empty($channel_ids))
 		{
-			$this->db->where('group_id', $group_id);
-			$this->db->where_in('channel_id', $channel_ids);
-			$this->db->delete('channel_member_groups');
-		}
-		if ( ! empty($module_ids))
-		{
-			$this->db->where('group_id', $group_id);
-			$this->db->where_in('module_id', $module_ids);
-			$this->db->delete('module_member_groups');
-		}
-		if ( ! empty($template_ids))
-		{
-			$this->db->where('group_id', $group_id);
-			$this->db->where_in('template_group_id', $template_ids);
-			$this->db->delete('template_member_groups');
-		}
-		
-		// Then, add back in the only ones that should exist based on the form submission
-		if ( ! empty($channel_ids_yes))
-		{
-			$this->db->insert_batch('channel_member_groups', $channel_ids_yes);
-		}
-		if ( ! empty($module_ids_yes))
-		{
-			$this->db->insert_batch('module_member_groups', $module_ids_yes);
-		}
-		if ( ! empty($template_ids_yes))
-		{
-			$this->db->insert_batch('template_member_groups', $template_ids_yes);
+			$cp_message = $this->Member_group_model->parse_edit_form($group_id, $site_id, $clone_id, $group_title);
 		}
 		
 		// Update CP log
@@ -2203,75 +1993,6 @@ class Members extends CI_Controller {
 
 		$this->session->set_flashdata('message_success', $cp_message);
 		$this->functions->redirect(BASE.AMP.'C=members'.AMP.'M=member_group_manager');
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Update Category Group Privileges
-	 *
-	 * Updates exp_category_groups privilege lists for
-	 * editing and deleting categories
-	 *
-	 * @return	mixed
-	 */		
-	private function _update_cat_group_privs($params)
-	{
-		if ( ! is_array($params) OR empty($params))
-		{
-			return FALSE;
-		}
-
-		$expected = array('member_group', 'field', 'allow', 'site_id', 'clone_id');
-		
-		// turn parameters into variables
-		
-		foreach ($expected as $key)
-		{
-			// naughty!
-			
-			if ( ! isset($params[$key]))
-			{
-				return FALSE;
-			}
-			
-			$$key = $params[$key];
-		}
-		
-		$query = $this->db->query("SELECT group_id, ".$this->db->escape_str($field)." FROM exp_category_groups WHERE site_id = '".$this->db->escape_str($site_id)."'");
-		
-		// nothing to do?
-		
-		if ($query->num_rows() == 0)
-		{
-			return FALSE;
-		}
-
-		foreach ($query->result_array() as $row)
-		{
-			$can_do = explode('|', rtrim($row[$field], '|'));
-
-			if ($allow === TRUE)
-			{
-				if (is_numeric($clone_id))
-				{
-					if (in_array($clone_id, $can_do) OR $clone_id == 1)
-					{
-						$can_do[] = $member_group;
-					}						
-				}
-				elseif ($clone_id === FALSE)
-				{
-					$can_do[] = $member_group;
-				}
-			}
-			else
-			{
-				$can_do = array_diff($can_do, array($member_group));
-			}
-
-			$this->db->query($this->db->update_string('exp_category_groups', array($field => implode('|', $can_do)), "group_id = '{$row['group_id']}'"));
-		}
 	}
 
 	// --------------------------------------------------------------------
