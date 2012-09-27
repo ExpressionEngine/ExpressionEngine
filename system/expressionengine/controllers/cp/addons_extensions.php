@@ -36,6 +36,7 @@ class Addons_extensions extends CI_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
+		$this->load->library('addons');
 		$this->lang->loadfile('addons');
 		$this->load->model('addons_model');
 	}
@@ -60,10 +61,9 @@ class Addons_extensions extends CI_Controller {
 		$this->jquery->tablesorter('.mainTable', '{
 			widgets: ["zebra"]
 		}');
-
+		
 		$this->javascript->compile();
 
-		$this->load->library('addons');
 		$this->load->model('addons_model');
 
 		$installed_ext = array();
@@ -314,6 +314,7 @@ class Addons_extensions extends CI_Controller {
 		}
 		
 		$name = strtolower($vars['file']);
+		$this->addons->get_files('extensions');
 		$ext_path = $this->addons->_packages[$name]['extension']['path'];
 
 		/** -----------------------------
