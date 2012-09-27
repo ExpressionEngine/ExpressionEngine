@@ -36,6 +36,7 @@ class Addons_extensions extends CP_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
+		$this->load->library('addons');
 		$this->lang->loadfile('addons');
 		$this->load->model('addons_model');
 	}
@@ -61,7 +62,6 @@ class Addons_extensions extends CP_Controller {
 			widgets: ["zebra"]
 		}');
 
-		$this->load->library('addons');
 		$this->load->model('addons_model');
 
 		$installed_ext = array();
@@ -311,6 +311,7 @@ class Addons_extensions extends CP_Controller {
 		}
 		
 		$name = strtolower($vars['file']);
+		$this->addons->get_files('extensions');
 		$ext_path = $this->addons->_packages[$name]['extension']['path'];
 
 		/** -----------------------------
