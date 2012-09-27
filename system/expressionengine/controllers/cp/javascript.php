@@ -34,10 +34,8 @@ class Javascript extends CI_Controller {
 		$this->load->library('core');
 		$this->core->bootstrap();
 
-		$dir = ($this->config->item('use_compressed_js') == 'n') ? 'src' : 'compressed';
-		define('PATH_JAVASCRIPT', PATH_THEMES.'javascript/'.$dir.'/');
-
 		$this->lang->loadfile('jquery');
+		$this->load->library('javascript_loader');
 	}
 
 	// --------------------------------------------------------------------
@@ -160,7 +158,7 @@ class Javascript extends CI_Controller {
 		// Can't do any of this if we're not allowed
 		// to send any headers
 
-		$this->_set_headers($file);
+		$this->javascript_loader->set_headers($file);
 
 		// Grab the file, content length and serve
 		// it up with the proper content type!
@@ -215,120 +213,7 @@ class Javascript extends CI_Controller {
 	 */
 	function combo_load()
 	{
-		$this->output->enable_profiler(FALSE);
-
-		$contents	= '';
-		$types		= array(
-			'ui'		=> PATH_JAVASCRIPT.'jquery/ui/jquery.ui.',
-			'plugin'	=> PATH_JAVASCRIPT.'jquery/plugins/',
-			'file'		=> PATH_JAVASCRIPT,
-			'package'	=> PATH_THIRD,
-			'fp_module'	=> PATH_MOD
-		);
-		
-		$mock_name = '';
-
-		foreach($types as $type => $path)
-		{
-			$mock_name .= $this->input->get_post($type);
-			$files = explode(',', $this->input->get_post($type));
-			
-			foreach($files as $file)
-			{
-				if ($type == 'package' OR $type == 'fp_module')
-				{
-					$file = $file.'/javascript/'.$file;
-				}
-				elseif ($type == 'file')
-				{
-					$parts = explode('/', $file);
-					$file = array();
-					
-					foreach ($parts as $part)
-					{
-						if ($part != '..')
-						{
-							$file[] = $this->security->sanitize_filename($part);
-						}
-					}
-								
-					$file = implode('/', $file);
-				}
-				else
-				{
-					$file = $this->security->sanitize_filename($file);
-				}
-				
-				$file = $path.$file.'.js';
-
-				if (file_exists($file))
-				{
-					$contents .= file_get_contents($file)."\n\n";
-				}
-			}
-		}
-
-		$modified = $this->input->get_post('v');
-		$this->_set_headers($mock_name, $modified);
-		
-		$this->output->set_header('Content-Length: '.strlen($contents));
-		$this->output->set_output($contents);
-	}
-	
-	// --------------------------------------------------------------------
-	
-	/**
-	 * Set Headers
-	 *
-	 * @access	private
-     * @param	string 
-	 * @return	string
-	 */
-    function _set_headers($file, $mtime = FALSE)
-    {
-		$this->output->out_type = 'cp_asset';
-		$this->output->set_header("Content-Type: text/javascript");
-
-		if ($this->config->item('send_headers') != 'y')
-		{
-			// All we need is content type - we're done
-			return;
-		}
-
-		$max_age		= 5184000;
-		$modified		= ($mtime !== FALSE) ? $mtime : @filemtime($file);
-		$modified_since	= $this->input->server('HTTP_IF_MODIFIED_SINCE');
-
-		// Remove anything after the semicolon
-
-		if ($pos = strrpos($modified_since, ';') !== FALSE)
-		{
-			$modified_since = substr($modified_since, 0, $pos);
-		}
-		
-		// If the file is in the client cache, we'll
-		// send a 304 and be done with it.
-
-		if ($modified_since && (strtotime($modified_since) == $modified))
-		{
-			$this->output->set_status_header(304);
-			exit;
-		}
-		
-		// Send a custom ETag to maintain a useful cache in
-		// load-balanced environments
-		
-        $this->output->set_header("ETag: ".md5($modified.$file));
-
-		// All times GMT
-		$modified = gmdate('D, d M Y H:i:s', $modified).' GMT';
-		$expires = gmdate('D, d M Y H:i:s', time() + $max_age).' GMT';
-
-		$this->output->set_status_header(200);
-		$this->output->set_header("Cache-Control: max-age={$max_age}, must-revalidate");
-		$this->output->set_header('Vary: Accept-Encoding');
-		$this->output->set_header('Last-Modified: '.$modified);
-		$this->output->set_header('Expires: '.$expires);        
+		$this->javascript_loader->combo_load();
 	}
 }
 
