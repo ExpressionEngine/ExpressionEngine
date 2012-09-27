@@ -1,8 +1,6 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-require_once APPPATH.'controllers/cp/javascript.php';
-
-class SC_Javascript extends Javascript
+class SC_Javascript
 {
 	private $js_path;
 	
@@ -48,7 +46,8 @@ class SC_Javascript extends Javascript
 	 */
 	public function combo_load()
 	{
-		parent::combo_load();
+		$this->load->library('javascript_loader');
+		$this->javascript_loader->combo_load();
 		
 		if ($this->input->get('include_jquery') == 'y')
 		{
@@ -69,6 +68,17 @@ class SC_Javascript extends Javascript
 		$this->output->append_output(file_get_contents($this->js_path.'saef.js'));
 		
 		$this->output->set_header('Content-Length: '.strlen($this->output->get_output()));
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Avoid get_instance()
+	 */
+	public function __get($key)
+	{
+		$EE =& get_instance();
+		return $EE->$key;
 	}
 }
 
