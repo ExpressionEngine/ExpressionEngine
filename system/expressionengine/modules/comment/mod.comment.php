@@ -3168,7 +3168,7 @@ class Comment {
 		
 		
 		// Secure Forms check - do it early due to amount of further data manipulation before insert
-		if ($this->EE->security->check_xid($xid) == FALSE) 
+		if ($this->EE->security->secure_forms_check($xid) == FALSE) 
 		{
 		 	$this->EE->output->send_ajax_response(array('error' => $unauthorized));
 		}
@@ -3222,11 +3222,7 @@ class Comment {
 			if (count($data) > 0)
 			{
 				$data['edit_date'] = $this->EE->localize->now;
-
-
-				//  Clear security hash
-				$this->EE->security->delete_xid($xid);
-
+				
 				$this->EE->db->where('comment_id', $this->EE->input->get_post('comment_id'));
 				$this->EE->db->update('comments', $data); 
 			
@@ -3409,23 +3405,9 @@ CMT_EDIT_SCR;
 			$db_reset = TRUE;
 		}
 
-		$this->EE->load->helper('string');
-		$hash = random_string('encrypt', 8);
-
-		/*
-		$data = array(
-               'date' => UNIX_TIMESTAMP(),
-               'ip_address' => $this->EE->input->ip_address(),
-               'hash' => $hash
-            );
-
-		$this->EE->db->insert('security_hashes', $data); 
-		*/
-		
-		$this->EE->db->query("INSERT INTO exp_security_hashes (date, ip_address, hash) VALUES (UNIX_TIMESTAMP(), '".$this->EE->input->ip_address()."', '".$this->EE->db->escape_str($hash)."')");
+		$hash = $this->EE->security->generate_xid();
 
 		// Re-enable DB caching
-				
 		if ($db_reset == TRUE)
 		{
 			$this->EE->db->cache_on();

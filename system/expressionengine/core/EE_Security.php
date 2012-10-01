@@ -40,14 +40,11 @@ class EE_Security extends CI_Security {
 	 */
 	public function secure_forms_check($xid)
 	{	
-		if ( ! $this->check_xid($xid))
-		{
-			return FALSE;
-		}
+		$check = $this->check_xid($xid);
 		
-  		$this->delete_xid($xid);
+		$this->delete_xid($xid);
 
-		return TRUE;
+		return $check;
 	}
 	
 	// --------------------------------------------------------------------
@@ -73,10 +70,10 @@ class EE_Security extends CI_Security {
 		}
 
 		$total = $EE->db->where('hash', $xid)
-						->where('ip_address', $EE->input->ip_address())
-						->where('date > UNIX_TIMESTAMP()-7200')
-						->from('security_hashes')
-						->count_all_results();
+			->where('ip_address', $EE->input->ip_address())
+			->where('date > UNIX_TIMESTAMP()-7200')
+			->from('security_hashes')
+			->count_all_results();
 		
 		if ($total === 0)
 		{
@@ -86,6 +83,32 @@ class EE_Security extends CI_Security {
 		return TRUE;		
 	}
 	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Generate Security Hash
+	 *
+	 * @return String XID generated
+	 */
+	public function generate_xid($count = 1, $array = FALSE)
+	{
+		$EE =& get_instance();
+
+		$hashes = array();
+		$query = "INSERT INTO exp_security_hashes (date, ip_address, hash) VALUES";
+		
+		while ($count > 0) {
+			$hash = $EE->functions->random('encrypt');
+			$query .= " (UNIX_TIMESTAMP(), '".$EE->input->ip_address()."', '".$hash."') ";
+			$hashes[] = $hash;
+			$count--;
+		};
+
+		$EE->db->query($query);
+		
+		return (count($hashes) > 1 OR $array) ? $hashes : $hashes[0];
+	}
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -104,10 +127,22 @@ class EE_Security extends CI_Security {
 		}
 
 		$EE->db->where("(hash='".$EE->db->escape_str($xid)."' AND ip_address = '".$EE->input->ip_address()."')", NULL, FALSE)
-			   ->or_where('date < UNIX_TIMESTAMP()-7200')
-			   ->delete('security_hashes');
+			->or_where('date < UNIX_TIMESTAMP()-7200')
+			->delete('security_hashes');
 		
 		return;		
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Deletes out of date XIDs
+	 */
+	public function garbage_collect_xids()
+	{
+		$EE =& get_instance();
+		$EE->db->where('date < UNIX_TIMESTAMP()-7200')
+			->delete('security_hashes');
 	}
 
 }
