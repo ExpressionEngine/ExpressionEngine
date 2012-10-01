@@ -70,7 +70,7 @@ class EE_Security extends CI_Security {
 		}
 
 		$total = $EE->db->where('hash', $xid)
-			->where('ip_address', $EE->input->ip_address())
+			->where('session_id', $EE->session->userdata('session_id'))
 			->where('date > UNIX_TIMESTAMP()-7200')
 			->from('security_hashes')
 			->count_all_results();
@@ -95,17 +95,18 @@ class EE_Security extends CI_Security {
 		$EE =& get_instance();
 
 		$hashes = array();
-		$query = "INSERT INTO exp_security_hashes (date, ip_address, hash) VALUES";
+		$inserts = array();
+
+		$query = "INSERT INTO exp_security_hashes (date, session_id, hash) VALUES ";
 		
 		while ($count > 0) {
 			$hash = $EE->functions->random('encrypt');
-			$query .= " (UNIX_TIMESTAMP(), '".$EE->input->ip_address()."', '".$hash."') ";
+			$inserts[] = "(UNIX_TIMESTAMP(), '".$EE->session->userdata('session_id')."', '".$hash."')";
 			$hashes[] = $hash;
 			$count--;
 		};
 
-		$EE->db->query($query);
-		
+		$EE->db->query($query.implode(',', $inserts));
 		return (count($hashes) > 1 OR $array) ? $hashes : $hashes[0];
 	}
 
@@ -126,7 +127,7 @@ class EE_Security extends CI_Security {
 			return;
 		}
 
-		$EE->db->where("(hash='".$EE->db->escape_str($xid)."' AND ip_address = '".$EE->input->ip_address()."')", NULL, FALSE)
+		$EE->db->where('hash', $xid)
 			->or_where('date < UNIX_TIMESTAMP()-7200')
 			->delete('security_hashes');
 		
