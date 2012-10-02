@@ -75,7 +75,7 @@ class EE_Security extends CI_Security {
 				'hash' 			=> $xid,
 				'session_id' 	=> $EE->session->userdata('session_id'),
 				'date >' 		=> $EE->localize->now - $this->_xid_ttl
-			)
+			))
 			->from('security_hashes')
 			->count_all_results();
 		
@@ -104,7 +104,7 @@ class EE_Security extends CI_Security {
 		for ($i = 0; $i < $count; $i++)
 		{
 			$hash = $EE->functions->random('encrypt');
-			$inserts = array(
+			$inserts[] = array(
 				'date' 			=> $EE->localize->now,
 				'session_id'	=> $EE->session->userdata('session_id'),
 				'hash' 			=> $hash
