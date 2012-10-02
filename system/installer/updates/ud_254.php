@@ -180,6 +180,8 @@ class Updater {
 					)
 				)
 			);
+
+			$this->EE->db->truncate('security_hashes');
 		}
 		
 		return TRUE;
