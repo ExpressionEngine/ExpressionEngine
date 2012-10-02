@@ -47,6 +47,8 @@ class Updater {
 		$this->EE->load->dbforge();
 		
 		$this->_change_member_totals_length();
+		$this->_update_session_table();
+		$this->_update_security_hashes_table();
 		
 		return TRUE;
 	}
@@ -125,6 +127,64 @@ class Updater {
 		
 		return implode("\n", $lines);
 	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * update Session table
+	 *
+	 * @return TRUE
+	 */
+	private function _update_session_table()
+	{
+		if ( ! $this->EE->db->field_exists('fingerprint', 'sessions'))
+		{
+			$this->EE->dbforge->add_column(
+				'sessions',
+				array(
+					'fingerprint' => array(
+						'type'			=> 'varchar',
+						'constraint'	=> 40
+					),
+					'sess_start' => array(
+						'type'			=> 'int',
+						'constraint'	=> 10,
+						'unsigned'		=> TRUE,
+						'default'		=> 0,
+						'null'			=> FALSE
+					)
+				),
+				'user_agent'
+			);	
+		}
+		
+		return TRUE;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Update the security_hashes table to convert ip_address to session_id
+	 */
+	private function _update_security_hashes_table()
+	{
+		if ( ! $this->EE->db->field_exists('session_id', 'security_hashes'))
+		{
+			$this->EE->dbforge->modify_column(
+				'security_hashes',
+				array(
+					'ip_address' => array(
+						'name' 			=> 'session_id',
+						'type' 			=> 'varchar',
+						'constraint' 	=> 40
+					)
+				)
+			);
+		}
+		
+		return TRUE;
+	}
+	
 }	
 /* END CLASS */
 
