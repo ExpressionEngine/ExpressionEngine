@@ -24,6 +24,8 @@
  */
 class EE_Security extends CI_Security {
 
+	private $_xid_ttl = 7200;
+
 	// Small note, if you feel the urge to add a constructor,
 	// do not call get_instance(). The CI Security library
 	// is sometimes instantiated before the controller is loaded.
@@ -69,9 +71,11 @@ class EE_Security extends CI_Security {
 			return FALSE;
 		}
 
-		$total = $EE->db->where('hash', $xid)
-			->where('session_id', $EE->session->userdata('session_id'))
-			->where('date > UNIX_TIMESTAMP()-7200')
+		$total = $EE->db->where(array(
+				'hash' 			=> $xid,
+				'session_id' 	=> $EE->session->userdata('session_id'),
+				'date >' 		=> $EE->localize->now - $this->_xid_ttl
+			)
 			->from('security_hashes')
 			->count_all_results();
 		
@@ -97,16 +101,19 @@ class EE_Security extends CI_Security {
 		$hashes = array();
 		$inserts = array();
 
-		$query = "INSERT INTO exp_security_hashes (date, session_id, hash) VALUES ";
-		
-		while ($count > 0) {
+		for ($i = 0; $i < $count; $i++)
+		{
 			$hash = $EE->functions->random('encrypt');
-			$inserts[] = "(UNIX_TIMESTAMP(), '".$EE->session->userdata('session_id')."', '".$hash."')";
-			$hashes[] = $hash;
-			$count--;
-		};
+			$inserts = array(
+				'date' 			=> $EE->localize->now,
+				'session_id'	=> $EE->session->userdata('session_id'),
+				'hash' 			=> $hash
+			);
+			$hashes[] = $hash;	
+		}
+		
+		$EE->db->insert_batch('security_hashes', $inserts);
 
-		$EE->db->query($query.implode(',', $inserts));
 		return (count($hashes) > 1 OR $array) ? $hashes : $hashes[0];
 	}
 
@@ -128,7 +135,7 @@ class EE_Security extends CI_Security {
 		}
 
 		$EE->db->where('hash', $xid)
-			->or_where('date < UNIX_TIMESTAMP()-7200')
+			->or_where('date <', $EE->localize->now - $this->_xid_ttl)
 			->delete('security_hashes');
 		
 		return;		
@@ -142,7 +149,7 @@ class EE_Security extends CI_Security {
 	public function garbage_collect_xids()
 	{
 		$EE =& get_instance();
-		$EE->db->where('date < UNIX_TIMESTAMP()-7200')
+		$EE->db->where('date <', $EE->localize->now - $this->_xid_ttl)
 			->delete('security_hashes');
 	}
 
