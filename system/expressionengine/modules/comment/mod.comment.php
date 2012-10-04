@@ -72,24 +72,77 @@ class Comment {
 	}
 
 	// --------------------------------------------------------------------
+	
+	/**
+	 * Private Method: _fetch_disable_param
+	 *
+	 * Retrieve the disable parameter from the template and parse it 
+	 * out into the $enabled_features array.  Return that array. The
+	 * $enabled_features array is an array of boolean values keyed to
+	 * certain features of tag that can be disabled.  In the case of
+	 * the comment module, only pagination may currently be disabled.
+	 *
+	 * NOTE: This code is virtual identical to Channel::_fetch_disable_param()
+     * it should be commonized somehow, but our current program structure
+	 * does not make this easy and putting it in a random cache of common
+	 * functions does not make sense.
+	 *
+	 * FIXME Commonlize this code in a logical way.  
+	 *
+	 * @return array An array of enabled features of the form feature_key=>boolean
+	 */
+	private function _fetch_disable_param()
+	{
+		$enabled_features = array('pagination' => TRUE);
 
+		// Get the disable parameter from the template.
+		if ($disabled = $this->EE->TMPL->fetch_param('disable'))
+		{
+			// If we have more than one value, then
+			// we need to break them out.
+			if (strpos($disabled, '|') !== FALSE)
+			{
+				foreach (explode('|', $disabled) as $feature)
+				{
+					if (isset($enabled_features[$feature]))
+					{
+						$enabled_features[$feature] = FALSE;
+					}
+				}
+			}
+			// Otherwise there's just one value and just
+			// disable the one.
+			elseif (isset($enabled_features[$disabled]))
+			{
+				$enabled_features[$disabled] = FALSE;
+			}
+		}
+
+		// Return our array.
+		return $enabled_features;
+	}
+	
+	
 	/**
 	 * Comment Entries
 	 *
 	 * @access	public
 	 * @return	string
 	 */
-	function entries()
+	public function entries()
 	{
 		$return 		= '';
 		$qstring		= $this->EE->uri->query_string;
 		$uristr			= $this->EE->uri->uri_string;
 		$switch 		= array();
 		$search_link	= '';
+		$enabled 		= $this->_fetch_disable_param();
 
-		// Pagination variables
-		$this->EE->load->library('pagination');
-		$pagination = new Pagination_object(__CLASS__);
+		if($enabled['pagination'])
+		{
+			$this->EE->load->library('pagination');
+			$pagination = new Pagination_object(__CLASS__);
+		}
 		
 		if ($this->EE->TMPL->fetch_param('dynamic') == 'no')
 		{
@@ -99,10 +152,13 @@ class Comment {
 		{
 			$dynamic = TRUE;
 		}
-		
+	
+		// 	
 		$force_entry = FALSE;
-		
-		if ($this->EE->TMPL->fetch_param('author_id') !== FALSE OR $this->EE->TMPL->fetch_param('entry_id') !== FALSE OR $this->EE->TMPL->fetch_param('url_title') !== FALSE OR $this->EE->TMPL->fetch_param('comment_id') !== FALSE)
+		if ($this->EE->TMPL->fetch_param('author_id') !== FALSE 
+			OR $this->EE->TMPL->fetch_param('entry_id') !== FALSE 
+			OR $this->EE->TMPL->fetch_param('url_title') !== FALSE 
+			OR $this->EE->TMPL->fetch_param('comment_id') !== FALSE)
 		{
 			$force_entry = TRUE;
 		}
@@ -140,7 +196,10 @@ class Comment {
 		{
 			if (preg_match("#(^|/)N(\d+)(/|$)#i", $qstring, $match))
 			{
-				$pagination->current_page = $match['2'];
+				if($enabled['pagination'])
+				{
+					$pagination->current_page = $match['2'];
+				}
 				$uristr  = trim($this->EE->functions->remove_double_slashes(str_replace($match['0'], '/', $uristr)), '/');
 			}
 		}
@@ -148,7 +207,10 @@ class Comment {
 		{
 			if (preg_match("#(^|/)P(\d+)(/|$)#", $qstring, $match))
 			{
-				$pagination->current_page = $match['2'];
+				if($enabled['pagination'])
+				{
+					$pagination->current_page = $match['2'];
+				}
 				$uristr  = $this->EE->functions->remove_double_slashes(str_replace($match['0'], '/', $uristr));
 				$qstring = trim($this->EE->functions->remove_double_slashes(str_replace($match['0'], '/', $qstring)), '/');
 			}
@@ -156,26 +218,22 @@ class Comment {
 		
 		// Fetch channel_ids if appropriate
 		$channel_ids = array();
-		
 		if ($channel = $this->EE->TMPL->fetch_param('channel') OR $this->EE->TMPL->fetch_param('site'))
 		{
 			$this->EE->db->select('channel_id');
 			$this->EE->db->where_in('site_id', $this->EE->TMPL->site_ids);
-
 			if ($channel !== FALSE)
 			{
 				$this->EE->functions->ar_andor_string($channel, 'channel_name');
 			}
 
 			$channels = $this->EE->db->get('channels');
-			
 			if ($channels->num_rows() == 0)
 			{
 				if ( ! $dynamic)
 				{
 					return $this->EE->TMPL->no_results();
 				}
-
 				return false;
 			}
 			else
@@ -187,10 +245,8 @@ class Comment {
 			}
 		}
 
-		$comment_id_param = FALSE;
-
 		// Fetch entry ids- we'll use them to make sure comments are to open, etc. entries
-		
+		$comment_id_param = FALSE;
 		if  ($dynamic == TRUE OR $force_entry == TRUE)
 		{
 			if ($force_entry == TRUE)
@@ -207,7 +263,6 @@ class Comment {
 				elseif ($comment_id_param = $this->EE->TMPL->fetch_param('comment_id'))
 				{
 					$force_entry_ids = $this->fetch_comment_ids_param($comment_id_param);
-					
 					if (count($force_entry_ids) == 0)
 					{
 						// No entry ids for the comment ids?  How'd they manage that
@@ -215,10 +270,8 @@ class Comment {
 						{
 							return $this->EE->TMPL->no_results();
 						}
-
 						return false;
 					}
-					
 					$this->EE->db->where_in('entry_id', $force_entry_ids);
 				}
 			}
@@ -280,9 +333,7 @@ class Comment {
 			{
 				$this->EE->db->where_in('channel_titles.channel_id', $channel_ids);
 			}
-
 			$this->EE->db->from('channel_titles');
-
 			$query = $this->EE->db->get();
 
 			// Bad ID?  See ya!
@@ -307,19 +358,37 @@ class Comment {
 		//  Set sorting and limiting
 		if ( ! $dynamic)
 		{
-			$pagination->per_page = $this->EE->TMPL->fetch_param('limit', 100);
+			if($enabled['pagination'])
+			{
+				$pagination->per_page = $this->EE->TMPL->fetch_param('limit', 100);
+			}
+			else
+			{
+				$limit = $this->EE->TMPL->fetch_param('limit', 100);
+			}
 			$sort = $this->EE->TMPL->fetch_param('sort', 'desc');
 		}
 		else
 		{
-			$pagination->per_page = $this->EE->TMPL->fetch_param('limit', $this->limit);
+
+			if($enabled['pagination'])
+			{
+				$pagination->per_page = $this->EE->TMPL->fetch_param('limit', $this->limit);
+			}
+			else
+			{
+				$limit = $this->EE->TMPL->fetch_param('limit', $this->limit);
+			}
 			$sort = $this->EE->TMPL->fetch_param('sort', 'asc');
 		}
 
 		$allowed_sorts = array('date', 'email', 'location', 'name', 'url');
 
-		// Capture the pagination template
-		$pagination->get_template();
+				if($enabled['pagination'])
+		{
+			// Capture the pagination template
+			$pagination->get_template();
+		}
 
 		/** ----------------------------------------
 		/**  Fetch comment ID numbers
@@ -438,32 +507,47 @@ class Comment {
 				$this->EE->functions->ar_andor_string($comment_id_param, 'comment_id');
 			}
 		}
-		
-		$total_rows = $this->EE->db->count_all_results();
-		
-		if ($pagination->paginate === TRUE)
-		{
-			// When we are only showing comments and it is 
-			// not based on an entry id or url title
-			// in the URL, we can make the query much 
-			// more efficient and save some work.
-			$pagination->total_rows = $total_rows;
-		}
+	
+		if($enabled['pagination'])
+		{	
+			$total_rows = $this->EE->db->count_all_results();
+			if ($pagination->paginate === TRUE)
+			{
+				// When we are only showing comments and it is 
+				// not based on an entry id or url title
+				// in the URL, we can make the query much 
+				// more efficient and save some work.
+				$pagination->total_rows = $total_rows;
+			}
+		} 
 		
 		$this_sort = ($random) ? 'random' : strtolower($sort);
-		
-		// Figure out of we need a pagination offset
-		if (preg_match('/P(\d+)(?:\/|$)/', $this->EE->uri->uri_string, $matches))
-		{
-			$pagination->offset = $matches[1];
-		}
-		else
-		{
-			$pagination->offset = 0;
+
+		// We're not stripping it out this time, so we can just
+		// ignore the check if we're not paginating.
+		if($enabled['pagination'])
+		{	
+			// Figure out of we need a pagination offset
+			if (preg_match('/P(\d+)(?:\/|$)/', $this->EE->uri->uri_string, $matches))
+			{
+				$pagination->offset = $matches[1];
+			}
+			else
+			{
+				$pagination->offset = 0;
+			}
 		}
 		
 		$this->EE->db->order_by($order_by, $this_sort);
-		$this->EE->db->limit($pagination->per_page, $pagination->offset);
+		
+		if($enabled['pagination'])
+		{
+			$this->EE->db->limit($pagination->per_page, $pagination->offset);
+		}
+		else
+		{
+			$this->EE->db->limit($limit, 0);
+		}
 		
 		$this->EE->db->stop_cache();
 		$query = $this->EE->db->get();
@@ -483,9 +567,12 @@ class Comment {
 		{
 			return $this->EE->TMPL->no_results();
 		}
-		
-		// Build pagination
-		$pagination->build($pagination->per_page);
+	
+		if($enabled['pagination']) 
+		{	
+			// Build pagination
+			$pagination->build($pagination->per_page);
+		}
 		
 		/** -----------------------------------
 		/**  Fetch Comments if necessary
@@ -625,7 +712,14 @@ class Comment {
 		$item_count = 0;
 
 		$relative_count = 0;
-		$absolute_count = ($pagination->current_page == 1) ? 0 : ($pagination->current_page - 1) * $pagination->per_page;
+		if($enabled['pagination'])
+		{
+			$absolute_count = ($pagination->current_page == '') ? 0 : ($pagination->current_page - 1) * $pagination->per_page;
+		}
+		else 
+		{	
+			$absolute_count = 0;
+		}
 
 		foreach ($results as $id => $row)
 		{
@@ -639,7 +733,10 @@ class Comment {
 
 			$row['count']			= $relative_count;
 			$row['absolute_count']	= $absolute_count;
-			$row['total_comments']	= $total_rows;
+			if($enabled['pagination'])
+			{
+				$row['total_comments']	= $total_rows;
+			}
 			$row['total_results']	= $total_results;
 
 			// This lets the {if location} variable work
@@ -1182,12 +1279,20 @@ class Comment {
 		/**  Add pagination to result
 		/** ----------------------------------------*/
 
-		return $pagination->render($return);
+		if($enabled['pagination'])
+		{
+			return $pagination->render($return);
+		}
+		else
+		{
+			return $return;
+		}
 	}
 
-
+	
 	// --------------------------------------------------------------------
 
+	
 	/**
 	 * Fetch comment ids associated entry ids
 	 *
@@ -1214,6 +1319,7 @@ class Comment {
 		return $entry_ids;
 	}
 
+	
 	// --------------------------------------------------------------------
 
 	/**
