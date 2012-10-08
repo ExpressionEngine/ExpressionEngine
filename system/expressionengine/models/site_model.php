@@ -40,7 +40,7 @@ class Site_model extends CI_Model {
 				->get('sites');
 		
 		$site_ids = array();
-		foreach($site_query->get_results() as $result)
+		foreach($site_query->result_array() as $result)
 		{
 			$site_ids[] = $result['site_id'];
 		}
