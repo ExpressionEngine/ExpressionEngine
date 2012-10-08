@@ -41,7 +41,6 @@ class Member_group_model extends CI_Model
 		parent::__construct();
 	}
 
-	// {{{ _group_title_exists($group_id, $group_title):			private boolean
 	/**
 		Determine whether a group with a certain title exists or not.
 		Throws an error when a title is found.
@@ -63,14 +62,11 @@ class Member_group_model extends CI_Model
 		
 		if ($this->db->count_all_results())
 		{
-			show_error(lang('group_title_exists'));
 			return true;
 		}
 		return false;
 	}
 
-	// }}}
-	// {{{ _parse_form_data($data):			private array
 	/**
 		Parse the data we need out of the $_POST super global.  Get
 		most of it from the input object and the rest, the stuff 
@@ -167,9 +163,6 @@ class Member_group_model extends CI_Model
 		return $data;
 	}
 
-	// }}}
-	// {{{ _update_uploads($group_id):			private void
-
 	/**
 		TODO Anyone know what and why?  
 	*/
@@ -184,9 +177,6 @@ class Member_group_model extends CI_Model
 			}
 		}
 	}
-
-	// }}}
-	// {{{ _update_cat_group_privs(array $params):				private void
 
 	/**
 	 * Update Category Group Privileges
@@ -253,8 +243,6 @@ class Member_group_model extends CI_Model
 		}
 	}
 
-	// }}}
-	// {{{ _update_permissions(array $permissions):			private void
 	/**
 		Update the related permissions tables
 			
@@ -331,10 +319,6 @@ class Member_group_model extends CI_Model
 		}
 	}
 
-	// }}}
-	
-	// {{{ parse_add_form($group_id, $site_id, $clone_id, $group_title):			public void
-
 	/**
 		Handle the input from the Member Groups form when we're adding.
 			(CP Home > Members > Member Groups > Add Member Group)
@@ -355,7 +339,7 @@ class Member_group_model extends CI_Model
 		
 		if($this->_group_title_exists($group_id, $group_title))
 		{
-			return;	
+			return false;	
 		}
 
 		$data = $this->_parse_form_data($group_id, $site_id);
@@ -391,11 +375,8 @@ class Member_group_model extends CI_Model
 
 		$this->_update_permissions($group_id, $permissions);
 		
-		return lang('member_group_created').NBS.NBS.$group_title;			
 	}
 
-	// }}}
-	// {{{ parse_edit_form($group_id, $site_id, $clone_id, $group_title):			public void
 	/**
 		Handle the input from the Member Groups form when we're editing.
 			(CP Home > Members > Member Groups > Edit Member Group)
@@ -466,9 +447,6 @@ class Member_group_model extends CI_Model
 		return lang('member_group_updated').NBS.NBS.$group_title;
 	}
 
-	// }}}
-	
-	// {{{ create(array $data):			public void
 	/**
 		Create a row in the exp_member_groups table.
 
@@ -481,9 +459,6 @@ class Member_group_model extends CI_Model
 		$this->db->insert('exp_member_groups', $data);
 	}
 	
-	// }}}
-	// {{{ update():			public void
-
 	/**
 		Update a row in the exp_member_groups table.
 	
@@ -498,8 +473,6 @@ class Member_group_model extends CI_Model
 		$this->db->update('exp_member_groups', $data, array('group_id'=>$group_id, 'site_id'=>$site_id));
 	}
 
-	// }}}
-	// {{{ delete_channel_permissions($group_id, array $channel_ids):			public void
 	/**
 		Delete a group of rows from the exp_channel_member_groups table.  The
 		rows have ids in the $channel_ids array and a group_id equal to $group_id.
@@ -513,9 +486,6 @@ class Member_group_model extends CI_Model
 		$this->db->where_in('channel_id', $channel_ids);
 		$this->db->delete('channel_member_groups');
 	}
-
-	// }}}
-	// {{{ delete_template_permissions($group_id, array $channel_ids):			public void
 	
 	/**
 		Delete a group of rows from the exp_template_member_groups table.  The
@@ -531,9 +501,6 @@ class Member_group_model extends CI_Model
 		$this->db->delete('template_member_groups');
 	}
 
-	// }}}
-	// {{{ delete_module_permissions($group_id, array $channel_ids):			public void
-	
 	/**
 		Delete a group of rows from the exp_module_member_groups table.  The
 		rows have ids in the $module_ids array and a group_id equal to $group_id.
@@ -549,8 +516,6 @@ class Member_group_model extends CI_Model
 		$this->db->where_in('module_id', $module_ids);
 		$this->db->delete('module_member_groups');
 	}
-
-	// }}}
 
 }
 
