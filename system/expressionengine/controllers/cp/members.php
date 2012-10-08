@@ -1613,7 +1613,7 @@ class Members extends CP_Controller {
 							->order_by('site_label')
 							->get('sites');
 		
-		$sites_dropdown = (!$group_id && $msm_enabled) ? array('all'=>'All Sites') : array();
+		$sites_dropdown = array();
 		
 		// Setup Sites dropdown
 		foreach ($sites_q->result() as $row)
