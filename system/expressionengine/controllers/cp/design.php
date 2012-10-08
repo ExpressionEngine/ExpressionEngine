@@ -1678,6 +1678,9 @@ class Design extends CP_Controller {
 			show_error(lang('id_not_found'));
 		}
 
+		// Supress browser XSS check that could cause obscure bug after saving
+		$this->output->set_header("X-XSS-Protection: 0");
+		
 		$this->load->library('api');
 		$this->api->instantiate('template_structure');
 		$this->load->model('design_model');
