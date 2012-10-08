@@ -940,12 +940,18 @@ class Members extends CI_Controller {
 	
 		$this->lang->loadfile('admin');
 
-		list($sites, $sites_dropdown) = $this->_get_sites();
 		
 		$site_id = ($this->input->get_post('site_id'))
 			? (int) $this->input->get_post('site_id') : $this->config->item('site_id');
 		$group_id = (int) $this->input->get_post('group_id');
 		$clone_id = (int) $this->input->get_post('clone_id');
+
+		if($site_id == 'all' && ! $group_id) {
+			$add_to_all_sites = TRUE;
+			$site_id = 1;
+		}
+		
+		list($sites, $sites_dropdown) = $this->_get_sites($group_id);
 		
 		$base = BASE.AMP.'C=members'.AMP.'M=edit_member_group';
 		
@@ -989,7 +995,7 @@ class Members extends CI_Controller {
 			'form_hidden'		=> array(
 				'clone_id'			=> ( ! $clone_id) ? '' : $clone_id,
 				'group_id'			=> $group_id,
-				'site_id'			=> $site_id
+				'site_id'			=> ($add_to_all_sites ? 'all' : $site_id)
 			),
 			'group_data'		=> $this->_setup_final_group_data($site_id, $group_data, $id, $is_clone),
 			'group_description'	=> $group_description,
@@ -998,7 +1004,7 @@ class Members extends CI_Controller {
 			'group_title'		=> ($is_clone) ? '' : $group_title,
 			'sites_dropdown'	=> $sites_dropdown,
 			'module_data'		=> $this->_setup_module_data($id),
-			'site_id'			=> $site_id,
+			'site_id'			=> ($add_to_all_sites ? 'all' : $site_id),
 		);
 
 		$this->load->view('members/edit_member_group', $data);
@@ -1605,9 +1611,10 @@ class Members extends CI_Controller {
 	 *
 	 * @return 	array 	$sites_q => DB Object, $sites_dropdown => array
 	 */
-	private function _get_sites()
+	private function _get_sites($group_id = false)
 	{
-		$site_id = $this->config->item('multiple_sites_enabled') == 'y' ? '' : 1;
+		$msm_enabled = ($this->config->item('multiple_sites_enabled') == 'y') ? TRUE : FALSE;
+		$site_id = $msm_enabled ? '' : 1;
 
 		if ($site_id != '')
 		{
@@ -1618,7 +1625,7 @@ class Members extends CI_Controller {
 							->order_by('site_label')
 							->get('sites');
 		
-		$sites_dropdown = array();
+		$sites_dropdown = (!$group_id && $msm_enabled) ? array('all'=>'All Sites') : array();
 		
 		// Setup Sites dropdown
 		foreach ($sites_q->result() as $row)
