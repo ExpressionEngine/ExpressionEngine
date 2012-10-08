@@ -940,7 +940,7 @@ class Members extends CI_Controller {
 	
 		$this->lang->loadfile('admin');
 
-		list($sites, $sites_dropdown) = $this->_get_sites($group_id);
+		list($sites, $sites_dropdown) = $this->_get_sites();
 		
 		$site_id = ($this->input->get_post('site_id'))
 			? (int) $this->input->get_post('site_id') : $this->config->item('site_id');
