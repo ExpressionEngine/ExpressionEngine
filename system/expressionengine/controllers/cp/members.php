@@ -1972,46 +1972,7 @@ class Members extends CP_Controller {
 	
 		if (empty($group_id))
 		{
-			// We are currently faced with a bit of a predicament in the 
-			// edit_member_group form.  Namely, the way it was written
-			// previously depended on loading hidden versions of the full
-			// form for each site.  When there were lots of sites this got
-			// (understandably) slow.  So that way of doing things got
-			// removed, however, we advertise the ability to create groups
-			// across all sites at once.  Doing this sanely requires a major
-			// redesign of the whole form (which is coming, eventually).  In
-			// the mean time we need a quick fix.  The quick fix is that,
-			// no matter what site you have selected in the site drop down,
-			// if you are adding a group it will be added to all sites where
-			// a group of that title doesn't already exist.  That's what
-			// this bit of code does.
-			// FIXME Redesign the edit and add member group forms.  Make this sane.
-			$sites = array();
-			foreach($this->Site_model->get_site_ids() as $id)
-			{
-				$sites[$id] = $this->Member_group_model->parse_add_form($_POST, $site_id, $id, $clone_id, $group_title);	
-			}
-
-			// This is messy and subpar, but so it goes.  We only want to show
-			// the "group_title_exists" error in the case when the group exists
-			// for --ALL-- sites.  So we keep track of which sites we've created
-			// groups for.  If we create groups for any sites (even just one) then
-			// we show the success message.  Otherwise, if we haven't set the 
-			// success message we show the error.  Hopefully this will be fixed
-			// after we redesign this part of the control panel.
-			$cp_message = NULL;	
-			foreach($sites as $site_created)
-			{
-				if($site_created) 
-				{
-					$cp_message = lang('member_group_created').NBS.NBS.$group_title;			
-				}
-			}
-			if($cp_message === NULL) 
-			{
-				show_error(lang('group_title_exists'));
-			}
-		
+			$cp_message  = $this->Member_group_model->parse_add_form($_POST, $site_id, $this->Site_model->get_site_ids(), $clone_id, $group_title);	
 		}
 		else
 		{
