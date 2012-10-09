@@ -68,11 +68,8 @@ class Member_group_model extends CI_Model
 	}
 
 	/**
-		Parse the data we need out of the $_POST super global.  Get
-		most of it from the input object and the rest, the stuff 
-		we just need to check whether or not it's been set, we just
-		get straight from POST.  It builds a data array, containing
-		several permissions sub arrays that are meant to be pulled
+		Parse the data from the post data we're passed. Builds a data array, 
+		containing several permissions sub arrays that are meant to be pulled
 		out before the data array is sent to the database as a row
 		in the exp_member_groups table.  The subarrays to be
 		pulled out are 'channel', 'template' and 'module'.
@@ -80,7 +77,7 @@ class Member_group_model extends CI_Model
 		@param int $group_id The id of the group we're parsing data for.
 		@param int $site_id The id of the site to which that group belongs.
 	*/	
-	private function _parse_form_data($group_id, $site_id)
+	private function _parse_form_data($post, $group_id, $site_id)
 	{
 				
 		/** ----------------------------------------------------
@@ -102,7 +99,7 @@ class Member_group_model extends CI_Model
 		$data['channel'] = array();
 		$data['module'] = array();
 		$data['template'] = array();	
-		foreach ($_POST as $key => $val)
+		foreach ($post as $key => $val)
 		{
 			if (substr($key, 0, strlen($site_id.'_channel_id_')) == $site_id.'_channel_id_')
 			{
@@ -151,14 +148,14 @@ class Member_group_model extends CI_Model
 			}
 			elseif (substr($key, 0, strlen($site_id.'_')) == $site_id.'_')
 			{
-				$data[substr($key, strlen($site_id.'_'))] = $_POST[$key];
+				$data[substr($key, strlen($site_id.'_'))] = $post[$key];
 			}
 			else
 			{
 				continue;
 			}
 			
-			unset($_POST[$key]);
+			unset($post[$key]);
 		}
 		return $data;
 	}
@@ -325,13 +322,14 @@ class Member_group_model extends CI_Model
 
 		Update the exp_member_groups table and several child and related tables.
 
+		@param array $post The post data from the form that we are processing.
 		@param int $site_id The id of the site to which the group belongs.
 		@param int $clone_id TODO  Anyone know what this is?
 		@param string $group_title The title of the group we're adding.
 
 		@return The message to send to the CP.		
 	*/
-	public function parse_add_form($site_id, $clone_id, $group_title)
+	public function parse_add_form(array $post, $site_id, $clone_id, $group_title)
 	{
 		// Get the next available group id to use for our new group.
 		$query = $this->db->query("SELECT MAX(group_id) as max_group FROM exp_member_groups");
@@ -342,7 +340,7 @@ class Member_group_model extends CI_Model
 			return false;	
 		}
 
-		$data = $this->_parse_form_data($group_id, $site_id);
+		$data = $this->_parse_form_data($post, $group_id, $site_id);
 
 		// We'll need this later when we call $this->_update_permissions()	
 		// We'll have to unpack them and it's klutzy, but for now, this is the best I got.
@@ -383,6 +381,7 @@ class Member_group_model extends CI_Model
 
 		Update the exp_member_groups table and several child and related tables.
 
+		@param array $post The post data from the form that we are processing.
 		@param int $group_id The id of the group we're editing.
 		@param int $site_id The id of the site to which the group belongs.
 		@param int $clone_id TODO  Anyone know what this is?
@@ -390,7 +389,7 @@ class Member_group_model extends CI_Model
 
 		@return The message to send to the CP.		
 	*/
-	public function parse_edit_form($group_id, $site_id, $clone_id, $group_title) 
+	public function parse_edit_form(array $post, $group_id, $site_id, $clone_id, $group_title) 
 	{
 		if($this->_group_title_exists($group_id, $group_title))
 		{
@@ -406,7 +405,7 @@ class Member_group_model extends CI_Model
 			$old_cat_privs[$row['site_id']]['can_delete_categories'] = $row['can_delete_categories'];
 		}
 
-		$data = $this->_parse_form_data($group_id, $site_id);
+		$data = $this->_parse_form_data($post, $group_id, $site_id);
 		unset($data['group_id']);
 
 		// We'll need this later when we call $this->_update_permissions()	
