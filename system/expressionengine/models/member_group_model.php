@@ -330,49 +330,64 @@ class Member_group_model extends CI_Model
 
 		@return The message to send to the CP.		
 	*/
-	public function parse_add_form(array $post, $form_site_id, $site_id, $clone_id, $group_title)
+	public function parse_add_form(array $post, $form_site_id, array $site_ids, $clone_id, $group_title)
 	{
 		// Get the next available group id to use for our new group.
 		$query = $this->db->query("SELECT MAX(group_id) as max_group FROM exp_member_groups");
 		$group_id = $query->row('max_group') + 1;
-		
-		if($this->_group_title_exists($site_id, $group_id, $group_title))
-		{
-			return false;	
-		}
 
-		$data = $this->_parse_form_data($post, $form_site_id, $group_id, $site_id);
-
-		// We'll need this later when we call $this->_update_permissions()	
-		// We'll have to unpack them and it's klutzy, but for now, this is the best I got.
-		$permissions = array('channel'=>$data['channel'], 'module'=>$data['module'], 'template'=>$data['template']);
-		// And we don't want them hanging around in the data arround to be stuck into the database.
-		unset($data['channel']);
-		unset($data['module']);
-		unset($data['template']);
-
-		$this->create($data);
-	
-		$this->_update_uploads($group_id, $site_id);	
-		
-		if ($group_id != 1)
-		{
-			$cat_group_privs = array('can_edit_categories', 'can_delete_categories');
-			foreach ($cat_group_privs as $field)
+		$created_group = FALSE;
+		foreach($site_ids as $site_id) 
+		{		
+			if($this->_group_title_exists($site_id, $group_id, $group_title))
 			{
-				$privs = array(
-								'member_group' => $group_id,
-								'field' => $field,
-								'allow' => ($data[$field] == 'y') ? TRUE : FALSE,
-								'site_id' => $site_id,
-								'clone_id' => $clone_id
-							);
-
-				$this->_update_cat_group_privs($privs);	
+				continue;	
 			}
+
+			$data = $this->_parse_form_data($post, $form_site_id, $group_id, $site_id);
+
+			// We'll need this later when we call $this->_update_permissions()	
+			// We'll have to unpack them and it's klutzy, but for now, this is the best I got.
+			$permissions = array('channel'=>$data['channel'], 'module'=>$data['module'], 'template'=>$data['template']);
+			// And we don't want them hanging around in the data arround to be stuck into the database.
+			unset($data['channel']);
+			unset($data['module']);
+			unset($data['template']);
+
+			$this->create($data);
+		
+			$this->_update_uploads($group_id, $site_id);	
+			
+			if ($group_id != 1)
+			{
+				$cat_group_privs = array('can_edit_categories', 'can_delete_categories');
+				foreach ($cat_group_privs as $field)
+				{
+					$privs = array(
+									'member_group' => $group_id,
+									'field' => $field,
+									'allow' => ($data[$field] == 'y') ? TRUE : FALSE,
+									'site_id' => $site_id,
+									'clone_id' => $clone_id
+								);
+
+					$this->_update_cat_group_privs($privs);	
+				}
+			}
+
+			$this->_update_permissions($group_id, $permissions);
+			$created_group = TRUE;
 		}
 
-		$this->_update_permissions($group_id, $permissions);
+		if($created_group)
+		{
+			return lang('member_group_created').NBS.NBS.$group_title;
+		}
+		else 
+		{
+ 			show_error(lang('group_title_exists'));
+			return;
+		}
 	}
 
 	/**
