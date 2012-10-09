@@ -1989,7 +1989,7 @@ class Members extends CP_Controller {
 			$sites = array();
 			foreach($this->Site_model->get_site_ids() as $site_id)
 			{
-				$sites[$site_id] = $this->Member_group_model->parse_add_form($site_id, $clone_id, $group_title);	
+				$sites[$site_id] = $this->Member_group_model->parse_add_form($_POST, $site_id, $clone_id, $group_title);	
 			}
 
 			// This is messy and subpar, but so it goes.  We only want to show
@@ -2015,7 +2015,7 @@ class Members extends CP_Controller {
 		}
 		else
 		{
-			$cp_message = $this->Member_group_model->parse_edit_form($group_id, $site_id, $clone_id, $group_title);
+			$cp_message = $this->Member_group_model->parse_edit_form($_POST, $group_id, $site_id, $clone_id, $group_title);
 		}
 		
 		// Update CP log
