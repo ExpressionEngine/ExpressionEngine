@@ -336,7 +336,7 @@ class Member_group_model extends CI_Model
 		$query = $this->db->query("SELECT MAX(group_id) as max_group FROM exp_member_groups");
 		$group_id = $query->row('max_group') + 1;
 		
-		if($this->_group_title_exists($group_id, $group_title))
+		if($this->_group_title_exists($site_id, $group_id, $group_title))
 		{
 			return false;	
 		}
@@ -392,7 +392,7 @@ class Member_group_model extends CI_Model
 	*/
 	public function parse_edit_form(array $post, $group_id, $site_id, $clone_id, $group_title) 
 	{
-		if($this->_group_title_exists($group_id, $group_title))
+		if($this->_group_title_exists($site_id, $group_id, $group_title))
 		{
 			return;	
 		}
