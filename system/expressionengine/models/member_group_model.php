@@ -78,7 +78,7 @@ class Member_group_model extends CI_Model
 		@param int $group_id The id of the group we're parsing data for.
 		@param int $site_id The id of the site to which that group belongs.
 	*/	
-	private function _parse_form_data($post, $group_id, $site_id)
+	private function _parse_form_data($post, $form_site_id, $group_id, $site_id)
 	{
 				
 		/** ----------------------------------------------------
@@ -102,9 +102,9 @@ class Member_group_model extends CI_Model
 		$data['template'] = array();	
 		foreach ($post as $key => $val)
 		{
-			if (substr($key, 0, strlen($site_id.'_channel_id_')) == $site_id.'_channel_id_')
+			if (substr($key, 0, strlen($form_site_id.'_channel_id_')) == $form_site_id.'_channel_id_')
 			{
-				$channel_id = substr($key, strlen($site_id.'_channel_id_'));
+				$channel_id = substr($key, strlen($form_site_id.'_channel_id_'));
 				if ($val == 'y')
 				{
 					$data['channel'][$channel_id] = array(
@@ -132,9 +132,9 @@ class Member_group_model extends CI_Model
 					$data['module'][$module_id] = false;
 				}
 			}
-			elseif (substr($key, 0, strlen($site_id.'_template_id_')) == $site_id.'_template_id_')
+			elseif (substr($key, 0, strlen($form_site_id.'_template_id_')) == $form_site_id.'_template_id_')
 			{
-				$template_id = substr($key, strlen($site_id.'_template_id_'));
+				$template_id = substr($key, strlen($form_site_id.'_template_id_'));
 				if ($val == 'y')
 				{
 					$data['template'][$template_id] = array(
@@ -147,9 +147,9 @@ class Member_group_model extends CI_Model
 					$data['template'][$template_id] = false;
 				}
 			}
-			elseif (substr($key, 0, strlen($site_id.'_')) == $site_id.'_')
+			elseif (substr($key, 0, strlen($form_site_id.'_')) == $form_site_id.'_')
 			{
-				$data[substr($key, strlen($site_id.'_'))] = $post[$key];
+				$data[substr($key, strlen($form_site_id.'_'))] = $post[$key];
 			}
 			else
 			{
@@ -330,7 +330,7 @@ class Member_group_model extends CI_Model
 
 		@return The message to send to the CP.		
 	*/
-	public function parse_add_form(array $post, $site_id, $clone_id, $group_title)
+	public function parse_add_form(array $post, $form_site_id, $site_id, $clone_id, $group_title)
 	{
 		// Get the next available group id to use for our new group.
 		$query = $this->db->query("SELECT MAX(group_id) as max_group FROM exp_member_groups");
@@ -341,7 +341,7 @@ class Member_group_model extends CI_Model
 			return false;	
 		}
 
-		$data = $this->_parse_form_data($post, $group_id, $site_id);
+		$data = $this->_parse_form_data($post, $form_site_id, $group_id, $site_id);
 
 		// We'll need this later when we call $this->_update_permissions()	
 		// We'll have to unpack them and it's klutzy, but for now, this is the best I got.
@@ -373,7 +373,6 @@ class Member_group_model extends CI_Model
 		}
 
 		$this->_update_permissions($group_id, $permissions);
-		
 	}
 
 	/**

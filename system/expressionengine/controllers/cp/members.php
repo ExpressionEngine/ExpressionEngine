@@ -1987,9 +1987,9 @@ class Members extends CP_Controller {
 			// this bit of code does.
 			// FIXME Redesign the edit and add member group forms.  Make this sane.
 			$sites = array();
-			foreach($this->Site_model->get_site_ids() as $site_id)
+			foreach($this->Site_model->get_site_ids() as $id)
 			{
-				$sites[$site_id] = $this->Member_group_model->parse_add_form($_POST, $site_id, $clone_id, $group_title);	
+				$sites[$id] = $this->Member_group_model->parse_add_form($_POST, $site_id, $id, $clone_id, $group_title);	
 			}
 
 			// This is messy and subpar, but so it goes.  We only want to show
