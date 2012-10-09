@@ -496,7 +496,7 @@ class Member_group_model extends CI_Model
 	public function delete_template_permissions($group_id, array $template_ids)
 	{
 		$this->db->where('group_id', $group_id);
-		$this->db->where_in('template_id', $template_ids);
+		$this->db->where_in('template_group_id', $template_ids);
 		$this->db->delete('template_member_groups');
 	}
 
