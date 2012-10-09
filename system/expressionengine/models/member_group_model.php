@@ -54,10 +54,11 @@ class Member_group_model extends CI_Model
 
 		@return boolean True if a group with the given title is found, false otherwise.
 	*/
-	private function _group_title_exists($group_id, $group_title)
+	private function _group_title_exists($site_id, $group_id, $group_title)
 	{
 		$this->db->from('member_groups')
 					->where('group_title', $group_title)
+					->where('site_id', $site_id)
 					->where('group_id !=', $group_id);
 		
 		if ($this->db->count_all_results())
