@@ -265,7 +265,7 @@ class Remember {
 		// validate time
 		if ($rem_data['expiration'] < $this->EE->localize->now)
 		{
-			$this->_delete_remember_me();
+			$this->_delete_cookie();
 			return FALSE;			
 		}
 		
