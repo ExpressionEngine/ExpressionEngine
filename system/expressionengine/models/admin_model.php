@@ -228,6 +228,11 @@ class Admin_model extends CI_Model {
 			unset($f_data['general_cfg']['is_site_on']);
 		}
 
+		if ( ! $this->db->table_exists('referrers'))
+		{
+			unset($f_data['tracking_cfg']['log_referrers']);
+		}
+
 		return $f_data[$type];
 	}
 
