@@ -121,6 +121,9 @@ class Referrer_upd {
 			$this->EE->db->query($query);
 		}
 
+		// turn off referrer tracking
+   		$this->EE->config->update_site_prefs(array('log_referrers' => 'n'), 'all');
+
 		return TRUE;
 	}
 	
