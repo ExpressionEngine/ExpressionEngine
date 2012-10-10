@@ -420,7 +420,7 @@ class Member_group_model extends CI_Model
 			$old_cat_privs[$row['site_id']]['can_delete_categories'] = $row['can_delete_categories'];
 		}
 
-		$data = $this->_parse_form_data($post, $group_id, $site_id);
+		$data = $this->_parse_form_data($post, $site_id, $group_id, $site_id);
 		unset($data['group_id']);
 
 		// We'll need this later when we call $this->_update_permissions()	
@@ -484,14 +484,6 @@ class Member_group_model extends CI_Model
 	*/
 	public function update($group_id, $site_id, array $data)
 	{
-		if(isset($data['group_id'])) 
-		{
-			unset($data['group_id']);
-		}
-		if(isset($data['site_id'])) 
-		{
-			unset($data['site_id']);
-		}
 		$this->db->update('exp_member_groups', $data, array('group_id'=>$group_id, 'site_id'=>$site_id));
 	}
 
