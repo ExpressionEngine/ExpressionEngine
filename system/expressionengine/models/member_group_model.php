@@ -484,6 +484,14 @@ class Member_group_model extends CI_Model
 	*/
 	public function update($group_id, $site_id, array $data)
 	{
+		if(isset($data['group_id'])) 
+		{
+			unset($data['group_id']);
+		}
+		if(isset($data['site_id'])) 
+		{
+			unset($data['site_id']);
+		}
 		$this->db->update('exp_member_groups', $data, array('group_id'=>$group_id, 'site_id'=>$site_id));
 	}
 
