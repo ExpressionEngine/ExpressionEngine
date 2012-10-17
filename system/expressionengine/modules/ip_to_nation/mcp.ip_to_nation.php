@@ -285,6 +285,8 @@ class Ip_to_nation_mcp {
 		// cleanup
 		array_map('unlink', $this->_cache_files('csv,gz,zip'));
 		
+		$this->config->_update_config(array('ip2nation_db_date' => $this->localize->now));
+		
 		$this->output->send_ajax_response(array(
 			'success' => lang('ip_db_updated')
 		));
