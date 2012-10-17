@@ -121,7 +121,12 @@ class Comment {
 		// Return our array.
 		return $enabled_features;
 	}
-	
+
+	private function _comment_edit_time_limit()
+	{
+		$time_limit_sec = 60 * $this->EE->config->item('comment_edit_time_limit');
+		return $this->EE->localize->now - $time_limit_sec;
+	}
 	
 	/**
 	 * Comment Entries
@@ -778,18 +783,22 @@ class Comment {
 			
 			$cond['editable'] = FALSE;
 			$cond['can_moderate_comment'] = FALSE;
-			
-			if ($this->EE->session->userdata['group_id'] == 1 OR 
-				$this->EE->session->userdata['can_edit_all_comments'] == 'y' OR 
-				($this->EE->session->userdata['can_edit_own_comments'] == 'y' && $row['entry_author_id'] == $this->EE->session->userdata['member_id'])
-				)
+		
+			$limit_time = $this->_comment_edit_time_limit();	
+			if ($row['comment_date'] > $limit_time) 
 			{
-				$cond['editable'] = TRUE;
-				$cond['can_moderate_comment'] = TRUE;
-			}
-			elseif ($this->EE->session->userdata['member_id'] != '0'  && $row['author_id'] == $this->EE->session->userdata['member_id'])
-			{
-				$cond['editable'] = TRUE;
+				if ($this->EE->session->userdata['group_id'] == 1 OR 
+					$this->EE->session->userdata['can_edit_all_comments'] == 'y' OR 
+					($this->EE->session->userdata['can_edit_own_comments'] == 'y' && $row['entry_author_id'] == $this->EE->session->userdata['member_id'])
+					)
+				{
+					$cond['editable'] = TRUE;
+					$cond['can_moderate_comment'] = TRUE;
+				}
+				elseif ($this->EE->session->userdata['member_id'] != '0'  && $row['author_id'] == $this->EE->session->userdata['member_id'])
+				{
+					$cond['editable'] = TRUE;
+				}
 			}
 
 			if ( isset($mfields) && is_array($mfields) && count($mfields) > 0)
@@ -3142,13 +3151,13 @@ class Comment {
 
 		if ($this->EE->input->get_post('comment_id') === FALSE OR (($this->EE->input->get_post('comment') === FALSE OR $this->EE->input->get_post('comment') == '') && $this->EE->input->get_post('status') != 'close'))
 		{
-			$this->EE->output->send_ajax_response(array('error' => $unauthorized));
+			$this->EE->output->send_ajax_response(array('error' => $unauthorized, 'reason'=>'comment'));
 		}
 		
 		// Not logged in member- eject
 		if ($this->EE->session->userdata['member_id'] == '0')
 		{
-			$this->EE->output->send_ajax_response(array('error' => $unauthorized));
+			$this->EE->output->send_ajax_response(array('error' => $unauthorized, 'reason'=>'member_id'));
 		}
 		
 		$xid = $this->EE->input->get_post('XID');
@@ -3156,8 +3165,8 @@ class Comment {
 		
 		// Secure Forms check - do it early due to amount of further data manipulation before insert
 		if ($this->EE->security->check_xid($xid) == FALSE) 
-		{ 
-		 	$this->EE->output->send_ajax_response(array('error' => $unauthorized));
+		{
+		 	$this->EE->output->send_ajax_response(array('error' => $unauthorized, 'reason'=>'xid'));
 		}
 		
 		$edited_status = ($this->EE->input->get_post('status') != 'close') ? FALSE : 'c';
@@ -3173,31 +3182,34 @@ class Comment {
 		$this->EE->db->where('comments.channel_id = '.$this->EE->db->dbprefix('channels').'.channel_id');
 		$this->EE->db->where('comments.entry_id = '.$this->EE->db->dbprefix('channel_titles').'.entry_id');
 		$query = $this->EE->db->get();
-		
+
 		if ($query->num_rows() > 0)
 		{
-			if ($this->EE->session->userdata['group_id'] == 1 OR 
-				$this->EE->session->userdata['can_edit_all_comments'] == 'y' OR 
-				($this->EE->session->userdata['can_edit_own_comments'] == 'y' && $query->row('entry_author_id') == $this->EE->session->userdata['member_id']))
+			if ($this->EE->session->userdata['group_id'] == 1 
+				OR $this->EE->session->userdata['can_edit_all_comments'] == 'y' 
+				OR ($this->EE->session->userdata['can_edit_own_comments'] == 'y' 
+					&& $query->row('entry_author_id') == $this->EE->session->userdata['member_id']))
+			{
+				$can_edit = TRUE;
+				$can_moderate = TRUE;
+			}
+			elseif ($this->EE->session->userdata['member_id'] != '0'  
+				&& $query->row('author_id') == $this->EE->session->userdata['member_id'])
+			{
+				// Check for time limit
+				if ($this->EE->config->item('comment_edit_time_limit') > 0)
 				{
-					$can_edit = TRUE;
-					$can_moderate = TRUE;
-				}
-				elseif ($this->EE->session->userdata['member_id'] != '0'  && $query->row('author_id') == $this->EE->session->userdata['member_id'])
-				{
-					// Check for time limit
-					if ($this->EE->config->item('comment_edit_time_limit') > 0)
-					{
-						if ($query->row('comment_date') > $this->EE->localize->now - 60*$this->EE->config->item('edit_time_limit'))
-						{
-							$can_edit = TRUE;
-						}
-					}
-					else
+					$limit_time = $this->_comment_edit_time_limit();
+					if ($query->row('comment_date') > $limit_time)
 					{
 						$can_edit = TRUE;
 					}
 				}
+				else
+				{
+					$can_edit = TRUE;
+				}
+			}
 
 			$data = array();
 
@@ -3215,12 +3227,13 @@ class Comment {
 			{
 				$data['edit_date'] = $this->EE->localize->now;
 
+
 				//  Clear security hash
 				$this->EE->security->delete_xid($xid);
 
 				$this->EE->db->where('comment_id', $this->EE->input->get_post('comment_id'));
 				$this->EE->db->update('comments', $data); 
-				
+			
 				if ($edited_status != FALSE & $can_moderate != FALSE)
 				{
 					// create new security hash and send it back with updated comment.
@@ -3249,7 +3262,7 @@ class Comment {
 			}
 		}
 
-		$this->EE->output->send_ajax_response(array('error' => $unauthorized));
+		$this->EE->output->send_ajax_response(array('error' => $unauthorized, 'reason'=>'timeout'));
 	}
 
 	// --------------------------------------------------------------------
@@ -3341,7 +3354,7 @@ $.fn.CommentEditor = function(options) {
 		var content = $("#comment_"+id).find('.editCommentBox'+' textarea').val(),
 			data = {comment: content, comment_id: id, XID: hash};
 		
-	$.post(OPT.url, data, function (res) {
+		$.post(OPT.url, data, function (res) {
 			if (res.error) {
 				return $.error('Could not save comment.');
 			}
