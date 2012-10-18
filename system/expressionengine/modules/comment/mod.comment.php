@@ -74,15 +74,13 @@ class Comment {
 	// --------------------------------------------------------------------
 	
 	/**
-	 * Private Method: _fetch_disable_param
-	 *
 	 * Retrieve the disable parameter from the template and parse it 
 	 * out into the $enabled_features array.  Return that array. The
 	 * $enabled_features array is an array of boolean values keyed to
 	 * certain features of tag that can be disabled.  In the case of
 	 * the comment module, only pagination may currently be disabled.
 	 *
-	 * NOTE: This code is virtual identical to Channel::_fetch_disable_param()
+	 * NOTE: This code is virtually identical to Channel::_fetch_disable_param()
      * it should be commonized somehow, but our current program structure
 	 * does not make this easy and putting it in a random cache of common
 	 * functions does not make sense.
@@ -122,6 +120,14 @@ class Comment {
 		return $enabled_features;
 	}
 
+
+	/**
+	 * Get the time in seconds since the epoc at which a comment may
+	 * no longer be editted. If current time is past this value then
+	 * do not allow the user to edit it.
+	 *
+	 * @return int The time at which comment editing permission expires in seconds since the epoc.
+	 */
 	private function _comment_edit_time_limit()
 	{
 		$time_limit_sec = 60 * $this->EE->config->item('comment_edit_time_limit');
@@ -784,8 +790,7 @@ class Comment {
 			$cond['editable'] = FALSE;
 			$cond['can_moderate_comment'] = FALSE;
 		
-			$limit_time = $this->_comment_edit_time_limit();	
-			if ($row['comment_date'] > $limit_time) 
+			if ($row['comment_date'] > $this->_comment_edit_time_limit()) 
 			{
 				if ($this->EE->session->userdata['group_id'] == 1 OR 
 					$this->EE->session->userdata['can_edit_all_comments'] == 'y' OR 
@@ -3151,13 +3156,13 @@ class Comment {
 
 		if ($this->EE->input->get_post('comment_id') === FALSE OR (($this->EE->input->get_post('comment') === FALSE OR $this->EE->input->get_post('comment') == '') && $this->EE->input->get_post('status') != 'close'))
 		{
-			$this->EE->output->send_ajax_response(array('error' => $unauthorized, 'reason'=>'comment'));
+			$this->EE->output->send_ajax_response(array('error' => $unauthorized));
 		}
 		
 		// Not logged in member- eject
 		if ($this->EE->session->userdata['member_id'] == '0')
 		{
-			$this->EE->output->send_ajax_response(array('error' => $unauthorized, 'reason'=>'member_id'));
+			$this->EE->output->send_ajax_response(array('error' => $unauthorized));
 		}
 		
 		$xid = $this->EE->input->get_post('XID');
@@ -3166,7 +3171,7 @@ class Comment {
 		// Secure Forms check - do it early due to amount of further data manipulation before insert
 		if ($this->EE->security->check_xid($xid) == FALSE) 
 		{
-		 	$this->EE->output->send_ajax_response(array('error' => $unauthorized, 'reason'=>'xid'));
+		 	$this->EE->output->send_ajax_response(array('error' => $unauthorized));
 		}
 		
 		$edited_status = ($this->EE->input->get_post('status') != 'close') ? FALSE : 'c';
@@ -3199,15 +3204,14 @@ class Comment {
 				// Check for time limit
 				if ($this->EE->config->item('comment_edit_time_limit') > 0)
 				{
-					$limit_time = $this->_comment_edit_time_limit();
-					if ($query->row('comment_date') > $limit_time)
+					if ($query->row('comment_date') > $this->_comment_edit_time_limit())
 					{
-						$can_edit = TRUE;
+						$can_edit = true;
 					}
 				}
 				else
 				{
-					$can_edit = TRUE;
+					$can_edit = true;
 				}
 			}
 
@@ -3239,7 +3243,7 @@ class Comment {
 					// create new security hash and send it back with updated comment.
 				
 					$new_hash = $this->_new_hash();
-					$this->EE->output->send_ajax_response(array('moderated' => $this->EE->lang->line('closed'), 'XID' => $new_hash));
+					$this->EE->output->send_ajax_response(array('moderated' => $this->EE->lang->line('closed')));
 				}
 
 				$this->EE->load->library('typography'); 
@@ -3262,7 +3266,7 @@ class Comment {
 			}
 		}
 
-		$this->EE->output->send_ajax_response(array('error' => $unauthorized, 'reason'=>'timeout'));
+		$this->EE->output->send_ajax_response(array('error' => $unauthorized));
 	}
 
 	// --------------------------------------------------------------------
@@ -3356,6 +3360,7 @@ $.fn.CommentEditor = function(options) {
 		
 		$.post(OPT.url, data, function (res) {
 			if (res.error) {
+				hideEditor(id);
 				return $.error('Could not save comment.');
 			}
 
