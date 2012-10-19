@@ -74,15 +74,13 @@ class Comment {
 	// --------------------------------------------------------------------
 	
 	/**
-	 * Private Method: _fetch_disable_param
-	 *
 	 * Retrieve the disable parameter from the template and parse it 
 	 * out into the $enabled_features array.  Return that array. The
 	 * $enabled_features array is an array of boolean values keyed to
 	 * certain features of tag that can be disabled.  In the case of
 	 * the comment module, only pagination may currently be disabled.
 	 *
-	 * NOTE: This code is virtual identical to Channel::_fetch_disable_param()
+	 * NOTE: This code is virtually identical to Channel::_fetch_disable_param()
      * it should be commonized somehow, but our current program structure
 	 * does not make this easy and putting it in a random cache of common
 	 * functions does not make sense.
@@ -121,7 +119,20 @@ class Comment {
 		// Return our array.
 		return $enabled_features;
 	}
-	
+
+
+	/**
+	 * Get the time in seconds since the epoc at which a comment may
+	 * no longer be editted. If current time is past this value then
+	 * do not allow the user to edit it.
+	 *
+	 * @return int The time at which comment editing permission expires in seconds since the epoc.
+	 */
+	private function _comment_edit_time_limit()
+	{
+		$time_limit_sec = 60 * $this->EE->config->item('comment_edit_time_limit');
+		return $this->EE->localize->now - $time_limit_sec;
+	}
 	
 	/**
 	 * Comment Entries
@@ -778,18 +789,21 @@ class Comment {
 			
 			$cond['editable'] = FALSE;
 			$cond['can_moderate_comment'] = FALSE;
-			
-			if ($this->EE->session->userdata['group_id'] == 1 OR 
-				$this->EE->session->userdata['can_edit_all_comments'] == 'y' OR 
-				($this->EE->session->userdata['can_edit_own_comments'] == 'y' && $row['entry_author_id'] == $this->EE->session->userdata['member_id'])
-				)
+		
+			if ($row['comment_date'] > $this->_comment_edit_time_limit()) 
 			{
-				$cond['editable'] = TRUE;
-				$cond['can_moderate_comment'] = TRUE;
-			}
-			elseif ($this->EE->session->userdata['member_id'] != '0'  && $row['author_id'] == $this->EE->session->userdata['member_id'])
-			{
-				$cond['editable'] = TRUE;
+				if ($this->EE->session->userdata['group_id'] == 1 OR 
+					$this->EE->session->userdata['can_edit_all_comments'] == 'y' OR 
+					($this->EE->session->userdata['can_edit_own_comments'] == 'y' && $row['entry_author_id'] == $this->EE->session->userdata['member_id'])
+					)
+				{
+					$cond['editable'] = TRUE;
+					$cond['can_moderate_comment'] = TRUE;
+				}
+				elseif ($this->EE->session->userdata['member_id'] != '0'  && $row['author_id'] == $this->EE->session->userdata['member_id'])
+				{
+					$cond['editable'] = TRUE;
+				}
 			}
 
 			if ( isset($mfields) && is_array($mfields) && count($mfields) > 0)
@@ -3156,7 +3170,7 @@ class Comment {
 		
 		// Secure Forms check - do it early due to amount of further data manipulation before insert
 		if ($this->EE->security->check_xid($xid) == FALSE) 
-		{ 
+		{
 		 	$this->EE->output->send_ajax_response(array('error' => $unauthorized));
 		}
 		
@@ -3173,31 +3187,33 @@ class Comment {
 		$this->EE->db->where('comments.channel_id = '.$this->EE->db->dbprefix('channels').'.channel_id');
 		$this->EE->db->where('comments.entry_id = '.$this->EE->db->dbprefix('channel_titles').'.entry_id');
 		$query = $this->EE->db->get();
-		
+
 		if ($query->num_rows() > 0)
 		{
-			if ($this->EE->session->userdata['group_id'] == 1 OR 
-				$this->EE->session->userdata['can_edit_all_comments'] == 'y' OR 
-				($this->EE->session->userdata['can_edit_own_comments'] == 'y' && $query->row('entry_author_id') == $this->EE->session->userdata['member_id']))
+			if ($this->EE->session->userdata['group_id'] == 1 
+				OR $this->EE->session->userdata['can_edit_all_comments'] == 'y' 
+				OR ($this->EE->session->userdata['can_edit_own_comments'] == 'y' 
+					&& $query->row('entry_author_id') == $this->EE->session->userdata['member_id']))
+			{
+				$can_edit = TRUE;
+				$can_moderate = TRUE;
+			}
+			elseif ($this->EE->session->userdata['member_id'] != '0'  
+				&& $query->row('author_id') == $this->EE->session->userdata['member_id'])
+			{
+				// Check for time limit
+				if ($this->EE->config->item('comment_edit_time_limit') > 0)
 				{
-					$can_edit = TRUE;
-					$can_moderate = TRUE;
-				}
-				elseif ($this->EE->session->userdata['member_id'] != '0'  && $query->row('author_id') == $this->EE->session->userdata['member_id'])
-				{
-					// Check for time limit
-					if ($this->EE->config->item('comment_edit_time_limit') > 0)
+					if ($query->row('comment_date') > $this->_comment_edit_time_limit())
 					{
-						if ($query->row('comment_date') > $this->EE->localize->now - 60*$this->EE->config->item('edit_time_limit'))
-						{
-							$can_edit = TRUE;
-						}
-					}
-					else
-					{
-						$can_edit = TRUE;
+						$can_edit = true;
 					}
 				}
+				else
+				{
+					$can_edit = true;
+				}
+			}
 
 			$data = array();
 
@@ -3215,18 +3231,19 @@ class Comment {
 			{
 				$data['edit_date'] = $this->EE->localize->now;
 
+
 				//  Clear security hash
 				$this->EE->security->delete_xid($xid);
 
 				$this->EE->db->where('comment_id', $this->EE->input->get_post('comment_id'));
 				$this->EE->db->update('comments', $data); 
-				
+			
 				if ($edited_status != FALSE & $can_moderate != FALSE)
 				{
 					// create new security hash and send it back with updated comment.
 				
 					$new_hash = $this->_new_hash();
-					$this->EE->output->send_ajax_response(array('moderated' => $this->EE->lang->line('closed'), 'XID' => $new_hash));
+					$this->EE->output->send_ajax_response(array('moderated' => $this->EE->lang->line('closed')));
 				}
 
 				$this->EE->load->library('typography'); 
@@ -3341,8 +3358,9 @@ $.fn.CommentEditor = function(options) {
 		var content = $("#comment_"+id).find('.editCommentBox'+' textarea').val(),
 			data = {comment: content, comment_id: id, XID: hash};
 		
-	$.post(OPT.url, data, function (res) {
+		$.post(OPT.url, data, function (res) {
 			if (res.error) {
+				hideEditor(id);
 				return $.error('Could not save comment.');
 			}
 
