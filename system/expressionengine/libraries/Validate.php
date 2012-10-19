@@ -169,9 +169,11 @@ class EE_Validate {
 			}
 		
 			// Is username taken?
-			$query = $this->EE->db->query("SELECT COUNT(*) as count FROM exp_members WHERE username = '".$this->EE->db->escape_str($this->username)."'");
-							  
-			if ($query->row('count')  > 0)
+			$this->EE->db->from('members');
+			$this->EE->db->where('username = LOWER('.$this->EE->db->escape($this->username).')', NULL, FALSE);
+			$count = $this->EE->db->count_all_results();
+
+			if ($count  > 0)
 			{
 				$this->errors[] = $this->EE->lang->line('username_taken');
 			}
