@@ -36,6 +36,7 @@ if (!defined('BASEPATH')) {
 
 class Member_group_model extends CI_Model 
 {
+	
 	public function __construct()
 	{
 		parent::__construct();
@@ -76,7 +77,7 @@ class Member_group_model extends CI_Model
 		pulled out are 'channel', 'template' and 'module'.
 
 		@param int $group_id The id of the group we're parsing data for.
-		@param int $site_id The id of the site to which that group belongs.
+		@param int $site_id The site id submitted with the form, not necessarily the site we'll be creating a group for. 
 	*/	
 	private function _parse_form_data($post, $form_site_id, $group_id, $site_id)
 	{
@@ -332,9 +333,31 @@ class Member_group_model extends CI_Model
 	*/
 	public function parse_add_form(array $post, $form_site_id, array $site_ids, $clone_id, $group_title)
 	{
+		// This is less than optimal, but it allows us to use
+		// that foreach loop for both multi-site manager and
+		// single site.  
+		// FIXME This could be done much better. -Daniel
+		if($this->config->item('multiple_sites_enabled') == 'y')
+		{		
+			$site_ids = $this->site_model->get_site_ids();
+		}
+		else
+		{
+			$site_ids = array($this->config->item('site_id'));
+		}
+
 		// Get the next available group id to use for our new group.
 		$query = $this->db->query("SELECT MAX(group_id) as max_group FROM exp_member_groups");
 		$group_id = $query->row('max_group') + 1;
+
+		$data = $this->_parse_form_data($post, $form_site_id, $group_id);
+		// We'll need this later when we call $this->_update_permissions()	
+		// We'll have to unpack them and it's klutzy, but for now, this is the best I got. -Daniel
+		$permissions = array('channel'=>$data['channel'],'module'=>$data['module'],'template'=>$data['template']);
+		// And we don't want them hanging around in the data arround to be stuck into the database.
+		unset($data['channel']);
+		unset($data['module']);
+		unset($data['template']);
 
 		$created_group = FALSE;
 		foreach($site_ids as $site_id) 
@@ -343,16 +366,9 @@ class Member_group_model extends CI_Model
 			{
 				continue;	
 			}
-
-			$data = $this->_parse_form_data($post, $form_site_id, $group_id, $site_id);
-
-			// We'll need this later when we call $this->_update_permissions()	
-			// We'll have to unpack them and it's klutzy, but for now, this is the best I got.
-			$permissions = array('channel'=>$data['channel'], 'module'=>$data['module'], 'template'=>$data['template']);
-			// And we don't want them hanging around in the data arround to be stuck into the database.
-			unset($data['channel']);
-			unset($data['module']);
-			unset($data['template']);
+			// Override the site id set by _parse_form_data() with
+			// the one we're using in our loop.
+			$data['site_id'] = $site_id;
 
 			$this->create($data);
 		
@@ -374,10 +390,16 @@ class Member_group_model extends CI_Model
 					$this->_update_cat_group_privs($privs);	
 				}
 			}
-
-			$this->_update_permissions($group_id, $permissions);
+			
 			$created_group = TRUE;
 		}
+
+		// This doesn't use site_id, only group_id.  The ids recieved
+		// in the form for permissions will either be specific to the
+		// site the form is submitted for, or they'll be common across
+		// all sites (in the case of modules).  So this can happen
+		// out side the creation loop.
+		$this->_update_permissions($group_id, $permissions);
 
 		if($created_group)
 		{
@@ -408,7 +430,28 @@ class Member_group_model extends CI_Model
 	{
 		if($this->_group_title_exists($site_id, $group_id, $group_title))
 		{
+ 			show_error(lang('group_title_exists'));
 			return;	
+		}
+
+		$is_multisite = ($this->config->item('multiple_sites_enabled') == 'y' ? TRUE : FALSE);
+		if($is_multisite)
+		{	
+			$groups_query = $this->get(array('group_id'=> $group_id));
+			$title_changed = FALSE;
+			foreach($groups_query->result_array() as $group)
+			{
+				if($group['site_id'] != $site_id && $group['group_title'] != $group_title)
+				{
+					$title_changed = TRUE;
+				}
+			}
+		}
+
+		if($is_multisite && $title_changed)
+		{
+			$data = array('group_title'=>$group_title);
+			$this->update_all_sites($group_id, $data);
 		}
 
 		$query = $this->db->query('SELECT site_id, can_edit_categories, can_delete_categories FROM exp_member_groups WHERE group_id = "'.$this->db->escape_str($group_id).'"');
@@ -420,7 +463,7 @@ class Member_group_model extends CI_Model
 			$old_cat_privs[$row['site_id']]['can_delete_categories'] = $row['can_delete_categories'];
 		}
 
-		$data = $this->_parse_form_data($post, $site_id, $group_id, $site_id);
+		$data = $this->_parse_form_data($post, $site_id, $group_id);
 		unset($data['group_id']);
 
 		// We'll need this later when we call $this->_update_permissions()	
@@ -460,6 +503,33 @@ class Member_group_model extends CI_Model
 	
 		return lang('member_group_updated').NBS.NBS.$group_title;
 	}
+	
+	/**
+		Retrieve rows from the exp_member_groups table.  $fields is an array
+		of fields to select.  It defaults to group_id, site_id and group_title.
+		$where_group is an array of where condition groupings.
+
+		@param array $where_conditions The where conditions you wish to limit your search by. 
+		@param array $fields The fields you wish to select.
+	*/
+	public function get(array $where_conditions=array(), array $fields=array('group_id', 'site_id', 'group_title'))
+	{
+		$this->db->select(implode(',', $fields));
+
+		foreach($where_conditions as $field=>$value)
+		{
+			if(is_array($value))
+			{
+				$this->db->where_in($field, $value);
+			}
+			else 
+			{
+				$this->db->where($field, $value);
+			}
+		}
+
+		return $this->db->get('exp_member_groups');
+	}
 
 	/**
 		Create a row in the exp_member_groups table.
@@ -474,6 +544,25 @@ class Member_group_model extends CI_Model
 	}
 	
 	/**
+		Apply the update to all groups with with the given group_id.
+
+		NOTE: Made this a seperate method instead of making site_id
+		optional in update, because leaving out the site_id is not
+		something we want to happen accidentially.  If we're going
+		to be updating all member groups, it should be done with 
+		intention.
+		
+		@param int $group_id The id of the member group that we'll be updating.
+		@param array $data The data we'll changing to in the form db_field=>value.
+	*/
+	public function update_all_sites($group_id, array $data) 
+	{
+		$this->db->where('group_id', $group_id);
+		$this->db->update('exp_member_groups', $data);
+		return $this->db->affected_rows();
+	}
+
+	/**
 		Update a row in the exp_member_groups table.
 	
 		@param int $group_id The id of the group we're updating
@@ -484,7 +573,10 @@ class Member_group_model extends CI_Model
 	*/
 	public function update($group_id, $site_id, array $data)
 	{
-		$this->db->update('exp_member_groups', $data, array('group_id'=>$group_id, 'site_id'=>$site_id));
+		$this->db->where('group_id', $group_id)
+			->where('site_id', $site_id);
+		$this->db->update('exp_member_groups', $data);
+		return $this->db->affected_rows();
 	}
 
 	/**

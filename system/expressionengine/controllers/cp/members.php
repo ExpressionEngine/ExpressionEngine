@@ -1974,13 +1974,9 @@ class Members extends CI_Controller {
 			show_error(lang('missing_group_title'));
 		}
 	
-		// FIXME This is never used.  Is there a reason to continue doing this?	
-		$return = ($this->input->get_post('return')) ? TRUE : FALSE;
-		unset($_POST['return']);
-	
 		if (empty($group_id))
 		{
-			$cp_message  = $this->Member_group_model->parse_add_form($_POST, $site_id, $this->Site_model->get_site_ids(), $clone_id, $group_title);	
+			$cp_message  = $this->Member_group_model->parse_add_form($_POST, $site_id, $clone_id, $group_title);	
 		}
 		else
 		{
@@ -1989,8 +1985,6 @@ class Members extends CI_Controller {
 		
 		// Update CP log
 		$this->logger->log_action($cp_message);
-
-  		$_POST['group_id'] = $group_id;
 
 		$this->session->set_flashdata('message_success', $cp_message);
 		$this->functions->redirect(BASE.AMP.'C=members'.AMP.'M=member_group_manager');
