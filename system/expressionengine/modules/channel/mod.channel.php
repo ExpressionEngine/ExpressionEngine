@@ -570,9 +570,9 @@ class Channel {
 				$random = ($order == 'random') ? TRUE : FALSE;
 
 				$base_orders = array('random', 'date', 'title', 'url_title', 'edit_date', 'comment_total', 'username', 'screen_name', 'most_recent_comment', 'expiration_date', 'entry_id', 
-									 'view_count_one', 'view_count_two', 'view_count_three', 'view_count_four');
+									 'view_count_one', 'view_count_two', 'view_count_three', 'view_count_four', 'status');
 
-				$str_sort = array('title', 'url_title', 'username', 'screen_name');
+				$str_sort = array('title', 'url_title', 'username', 'screen_name', 'status');
 				
 				if ( ! in_array($order, $base_orders))
 				{
@@ -802,7 +802,7 @@ class Channel {
 											$return_data);
 			}
 		}
-
+		
 		$this->return_data = $return_data;
 	}
 
@@ -1599,7 +1599,7 @@ class Channel {
 		/**  Validate Results for Later Processing
 		/** -------------------------------------*/
 
-		$base_orders = array('random', 'entry_id', 'date', 'entry_date', 'title', 'url_title', 'edit_date', 'comment_total', 'username', 'screen_name', 'most_recent_comment', 'expiration_date',
+		$base_orders = array('status', 'random', 'entry_id', 'date', 'entry_date', 'title', 'url_title', 'edit_date', 'comment_total', 'username', 'screen_name', 'most_recent_comment', 'expiration_date',
 							 'view_count_one', 'view_count_two', 'view_count_three', 'view_count_four');
 
 		foreach($order_array as $key => $order)
@@ -1698,6 +1698,8 @@ class Channel {
 				$fixed_order = array_reverse($fixed_order);
 			}
 		}
+
+
 
 		/**------
 		/**  Build the master SQL query
@@ -2531,6 +2533,10 @@ class Channel {
 
 						case 'expiration_date' :
 							$end .= "t.expiration_date";
+						break;
+
+						case 'status' :
+							$end .= "t.status";
 						break;
 
 						case 'title' :
