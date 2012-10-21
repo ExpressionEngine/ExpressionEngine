@@ -480,7 +480,7 @@ class File_field {
 		
 		$upload_dir = $upload_dir[$file['upload_location_id']];
 		
-		$file['file_name'] = urlencode($file['file_name']);
+		$file['file_name'] = rawurlencode($file['file_name']);
 		
 		// Set additional data based on what we've gathered
 		$file['raw_output']	= $data;

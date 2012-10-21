@@ -361,9 +361,7 @@ class Content_files extends CI_Controller {
 				
 				$is_image = FALSE;
 
-				$file_location = $this->functions->remove_double_slashes(
-					$this->_upload_dirs[$file['upload_location_id']]['url'].'/'.urlencode($file['file_name'])
-				);
+				$file_location = rtrim($this->_upload_dirs[$file['upload_location_id']]['url'], '/').'/'.rawurlencode($file['file_name']);
 
 				$file_path = $this->functions->remove_double_slashes(
 					$this->_upload_dirs[$file['upload_location_id']]['server_path'].'/'.$file['file_name']
@@ -1027,7 +1025,7 @@ class Content_files extends CI_Controller {
 		$data = array(
 			'filemtime'		=> ($filemtime = @filemtime($file_path)) ? $filemtime : 0,
 			'file_info'		=> $file_info,
-			'file_name'		=> urlencode($file_name),
+			'file_name'		=> $file_name,
 			'file_path'		=> $file_path,
 			'file_url'		=> $file_url,
 			'form_hiddens'	=> array(
