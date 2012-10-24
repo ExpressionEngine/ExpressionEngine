@@ -171,6 +171,7 @@ class EE_Validate {
 			// Is username taken?
 			$this->EE->db->from('members');
 			$this->EE->db->where('username = LOWER('.$this->EE->db->escape($this->username).')', NULL, FALSE);
+			$this->EE->db->where('LOWER(username) = '.$this->EE->db->escape(strtolower($this->username)), NULL, FALSE); 
 			$count = $this->EE->db->count_all_results();
 
 			if ($count  > 0)
