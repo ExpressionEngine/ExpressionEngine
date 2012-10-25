@@ -469,9 +469,9 @@ class File_field {
 		{
 			return FALSE;
 		}
-		
-		$this->EE->load->model('file_upload_preferences_model');
-		$upload_dir = $this->EE->file_upload_preferences_model->get_file_upload_preferences();
+
+		// Get the cached upload preferences
+		$upload_dir = $this->_get_upload_prefs();
 			
 		if ( ! isset($upload_dir[$file['upload_location_id']]))
 		{
@@ -579,7 +579,7 @@ class File_field {
 			$this->EE->load->model('file_upload_preferences_model');
 			
 			$this->_upload_prefs = $this->EE->file_upload_preferences_model->get_file_upload_preferences(
-				$this->EE->session->userdata('group_id'),
+				NULL,
 				NULL,
 				TRUE
 			);
