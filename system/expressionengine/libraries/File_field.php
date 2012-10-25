@@ -470,9 +470,9 @@ class File_field {
 			return FALSE;
 		}
 		
-		// Get cached upload directories
-		$upload_dir = $this->_get_upload_prefs();
-		
+		$this->EE->load->model('file_upload_preferences_model');
+		$upload_dir = $this->EE->file_upload_preferences_model->get_file_upload_preferences();
+			
 		if ( ! isset($upload_dir[$file['upload_location_id']]))
 		{
 			return FALSE;
@@ -511,7 +511,6 @@ class File_field {
 			$file['url:'.$m['short_name']] = $file['path'].'_'.$m['short_name'].'/'.$file['file_name'];
 			
 		}
-		
 		return $file;
 	}
 	
