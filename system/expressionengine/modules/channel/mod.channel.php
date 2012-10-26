@@ -1026,7 +1026,123 @@ class Channel {
     *  all of those fields will be searched.  
     *
     *****************************************************************/
-	protected function generate_field_search_sql($search_fields, $site_ids) 
+	/**
+	
+	*/
+	private function _exact_field_search($terms, $field_name, $site_id)
+	{
+
+		// Trivial case, we don't have special IS_EMPTY handling.
+		if(strpos($terms, 'IS_EMPTY') === FALSE) 
+		{
+			return substr($this->EE->functions->sql_andor_string($terms, 'wd.field_id_'.$this->cfields[$site_id][$field_name]), 3).' ';
+		}
+
+		// Did this because I don't like repeatedly checking
+		// the beginning of the string with strncmp for that
+		// 'not', much prefer to do it once and then set a 
+		// boolean.  But.. [cont:1]
+		$not = false;
+		if (strncmp($terms, 'not ', 4) == 0)
+		{
+			$not = true;
+			$terms = substr($terms, 4);
+		}
+
+		if (strpos($terms, '|') !== false)
+		{  
+			$terms = str_replace('IS_EMPTY|', '', $terms);
+		}
+		else 
+		{
+			$terms = str_replace('IS_EMPTY', '', $terms);
+		}
+		   
+		$add_search = '';
+		$conj = ''; 
+	
+		// If we have search terms, then we need to build the search.
+		if ( ! empty($terms)) 
+		{
+			// [cont:1]...it makes this a little hacky.  Gonna leave it for the moment,
+			// but may come back to it.
+			$add_search = $this->EE->functions->sql_andor_string(($not ? 'not ' . $terms : $terms), 'wd.field_id_'.$this->cfields[$site_id][$field_name]);
+			// remove the first AND output by $this->EE->functions->sql_andor_string() so we can parenthesize this clause
+			$add_search = '(wd.site_id=' . $site_id . ' AND ' . substr($add_search, 3) . ')';
+											
+			$conj = ($add_search != '' && ! $not) ? 'OR' : 'AND';
+		}
+
+		// If we reach here, we have an IS_EMPTY in addition to possible search terms.
+		// Add the empty check condition.
+		if ($not)
+		{
+			return $add_search . ' ' . $conj . ' (wd.site_id=' . $site_id . ' AND wd.field_id_'.$this->cfields[$site_id][$field_name].' != "")';
+		}
+
+		return $add_search.' '.$conj.' (wd.site_id=' . $site_id . ' AND wd.field_id_'.$this->cfields[$site_id][$field_name].' = "")';
+	}
+
+	/**
+
+	*/
+	private function _field_search($terms, $field_name, $site_id)
+	{
+		$not = '';
+		if (strncmp($terms, 'not ', 4) == 0)
+		{
+			$terms = substr($terms, 4);
+			$not = 'NOT';
+		}
+
+		if (strpos($terms, '&&') !== FALSE)
+		{
+			$terms = explode('&&', $terms);
+			$andor = $not == 'NOT' ? 'OR' : 'AND';
+		}
+		else
+		{
+			$terms = explode('|', $terms);
+			$andor = $not == 'NOT' ? 'AND' : 'OR';
+		}
+
+
+		$search_sql = '';
+		foreach ($terms as $term)
+		{
+			if($search_sql !== '') 
+			{
+				$search_sql .= $andor;
+			}
+			if ($term == 'IS_EMPTY')
+			{
+				$search_sql .= ' (wd.site_id=' . $site_id
+					. ' AND wd.field_id_' . $this->cfields[$site_id][$field_name] . ($not=='NOT' ? '!' : '') . '="") ';
+			}
+			elseif (strpos($term, '\W') !== FALSE) // full word only, no partial matches
+			{
+				// Note: MySQL's nutty POSIX regex word boundary is [[:>:]]
+				$term = '([[:<:]]|^)'.preg_quote(str_replace('\W', '', $term)).'([[:>:]]|$)';
+
+				$search_sql .= ' (wd.site_id=' . $site_id 
+					. ' AND wd.field_id_' . $this->cfields[$site_id][$field_name] . ' ' . $not 
+					. ' REGEXP "' . $this->EE->db->escape_str($term).'") ';
+			}
+			else
+			{	
+				$search_sql .= ' (wd.site_id=' . $site_id 
+					. ' AND wd.field_id_' . $this->cfields[$site_id][$field_name] . ' '
+					. $not . ' LIKE "%' . $this->EE->db->escape_like_str($term) . '%") ';
+			}
+		}
+
+		return $search_sql;
+	}
+
+	/**
+
+	*/
+	private function _generate_field_search_sql($search_fields, $site_ids) 
 	{	
 		$sql = '';
 		foreach ($search_fields as $field_name => $search_terms)
@@ -1035,6 +1151,14 @@ class Channel {
 			$sites = ($site_ids ? $site_ids : array($this->EE->config->item('site_id'))); 
 			foreach ($sites as $site_name => $site_id) 
 			{
+				// If fields_sql isn't empty then this isn't a first
+				// loop and we have terms that need to be ored together.
+				if($fields_sql !== '') {	
+					$fields_sql .= ' OR ';
+				}
+
+				// We're goign to repeat the search on each site
+				// so store the terms in a temp.  FIXME Necessary?
 				$terms = $search_terms;
 				if ( ! isset($this->cfields[$site_id][$field_name]))
 				{
@@ -1043,130 +1167,24 @@ class Channel {
 			
 				if (strncmp($terms, '=', 1) ==  0)
 				{
-					/** ---------------------------------------
-					/**  Exact Match e.g.: search:body="=pickle"
-					/** ---------------------------------------*/
-
+					// Remove the '=' sign that specified exact match.
 					$terms = substr($terms, 1);
-
-					// special handling for IS_EMPTY
-					if (strpos($terms, 'IS_EMPTY') !== FALSE)
-					{
-
-						// Did this because I don't like repeatedly checking
-						// the beginning of the string with strncmp for that
-						// 'not', much prefer to do it once and then set a 
-						// boolean.  But..
-						$not = false;
-						if (strncmp($terms, 'not ', 4) == 0)
-						{
-							$not = true;
-							$terms = substr($terms, 4);
-						}
-
-						if (strpos($terms, '|') !== false)
-						{  
-							$terms = str_replace('IS_EMPTY|', '', $terms);
-						}
-						else 
-						{
-							$terms = str_replace('IS_EMPTY', '', $terms);
-						}
-						   
-						$add_search = '';
-						$conj = ''; 
-						if ( ! empty($terms)) 
-						{
-							// ...it makes this a little hacky.  Gonna leave it for the moment,
-							// but may come back to it.
-							$add_search = $this->EE->functions->sql_andor_string(($not ? 'not ' . $terms : $terms), 'wd.field_id_'.$this->cfields[$site_id][$field_name]);
-							// remove the first AND output by $this->EE->functions->sql_andor_string() so we can parenthesize this clause
-							$add_search = '(wd.site_id=' . $site_id . ' AND ' . substr($add_search, 3) . ')';
-															
-							$conj = ($add_search != '' && !$not) ? 'OR' : 'AND';
-						}
-	 
-						if ($not)
-						{
-							$fields_sql .= $add_search.' '.$conj.' (wd.site_id=' . $site_id . ' AND wd.field_id_'.$this->cfields[$site_id][$field_name].' != "")';
-						}
-						else
-						{
-							$fields_sql .= $add_search.' '.$conj.' (wd.site_id=' . $site_id . ' AND wd.field_id_'.$this->cfields[$site_id][$field_name].' = "")';
-						}
-					}
-					else
-					{
-						$fields_sql .= substr($this->EE->functions->sql_andor_string($terms, 'wd.field_id_'.$this->cfields[$site_id][$field_name]), 3).' ';
-					}
+					
+					$field_sql .= $this->_exact_field_search($terms, $field_name, $site_id);	
 				}
 				else
 				{
-					/** ---------------------------------------
-					/**  "Contains" e.g.: search:body="pickle"
-					/** ---------------------------------------*/
-
-					$not = '';
-					if (strncmp($terms, 'not ', 4) == 0)
-					{
-						$terms = substr($terms, 4);
-						$not = 'NOT';
-					}
-
-					if (strpos($terms, '&&') !== FALSE)
-					{
-						$terms = explode('&&', $terms);
-						$andor = $not == 'NOT' ? 'OR' : 'AND';
-					}
-					else
-					{
-						$terms = explode('|', $terms);
-						$andor = $not == 'NOT' ? 'AND' : 'OR';
-					}
-
-
-					foreach ($terms as $term)
-					{
-						if ($term == 'IS_EMPTY')
-						{
-							$fields_sql .= ' (wd.site_id=' . $site_id
-								. ' AND wd.field_id_' . $this->cfields[$site_id][$field_name] . ($not=='NOT' ? '!' : '') . '="") '
-								. $andor;
-						}
-						elseif (strpos($term, '\W') !== FALSE) // full word only, no partial matches
-						{
-							// Note: MySQL's nutty POSIX regex word boundary is [[:>:]]
-							$term = '([[:<:]]|^)'.preg_quote(str_replace('\W', '', $term)).'([[:>:]]|$)';
-
-							$fields_sql .= ' (wd.site_id=' . $site_id 
-								. ' AND wd.field_id_' . $this->cfields[$site_id][$field_name] . ' ' . $not 
-								. ' REGEXP "' . $this->EE->db->escape_str($term).'") '
-								. $andor;
-						}
-						else
-						{	
-							$fields_sql .= ' (wd.site_id=' . $site_id 
-								. ' AND wd.field_id_' . $this->cfields[$site_id][$field_name] . ' '
-								. $not . ' LIKE "%' . $this->EE->db->escape_like_str($term) . '%") ' 
-								. $andor;
-						}
-					}
-					
-					// Remove the extra "and" or "or".
-					$fields_sql = substr($fields_sql, 0, -strlen($andor));
+					$field_sql .= $this->_field_search($terms, $field_name, $site_id);
 				}
-				$fields_sql .= ' OR ';
+				
 			} // foreach($sites as $site_id)
 			if ( ! empty($fields_sql))
 			{
-				$sql .=  'AND (' . substr($fields_sql, 0, -3) . ')'; 
+				$sql .=  'AND (' . $fields_sql . ')'; 
 			}
 		}
 		return $sql;
 	}
-
-
-
 	
 	/**
 	  *  Build SQL query
@@ -2463,7 +2481,7 @@ class Channel {
 
 		if ( ! empty($this->EE->TMPL->search_fields))
 		{
-            $sql .= $this->generate_field_search_sql($this->EE->TMPL->search_fields, $this->EE->TMPL->site_ids);
+            $sql .= $this->_generate_field_search_sql($this->EE->TMPL->search_fields, $this->EE->TMPL->site_ids);
 		}
 
 		/**----------
