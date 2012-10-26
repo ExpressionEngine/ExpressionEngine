@@ -3242,7 +3242,7 @@ class Comment {
 					// create new security hash and send it back with updated comment.
 				
 					$new_hash = $this->_new_hash();
-					$this->EE->output->send_ajax_response(array('moderated' => $this->EE->lang->line('closed')));
+					$this->EE->output->send_ajax_response(array('moderated' => $this->EE->lang->line('closed'), 'XID' => $new_hash));
 				}
 
 				$this->EE->load->library('typography'); 
