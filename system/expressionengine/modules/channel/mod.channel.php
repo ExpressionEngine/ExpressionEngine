@@ -1145,8 +1145,17 @@ class Channel {
 	private function _generate_field_search_sql($search_fields, $site_ids) 
 	{	
 		$sql = '';
+
 		foreach ($search_fields as $field_name => $search_terms)
-		{   
+		{  
+			// Log empty terms to notify the user. 
+			if(empty($search_terms))
+			{
+				$this->EE->TMPL->log_item('WARNING: Field search parameter for field "' . $field_name . '" was empty.  If you wish to search for an empty field, use IS_EMPTY.');
+				continue;
+			}
+
+			$found_term = TRUE;
 			$fields_sql = '';
 			$sites = ($site_ids ? $site_ids : array($this->EE->config->item('site_id'))); 
 			foreach ($sites as $site_name => $site_id) 
@@ -1183,6 +1192,8 @@ class Channel {
 				$sql .=  'AND (' . $fields_sql . ')'; 
 			}
 		}
+	
+
 		return $sql;
 	}
 	
