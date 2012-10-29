@@ -3189,6 +3189,7 @@ class Comment {
 
 		if ($query->num_rows() > 0)
 		{
+			// User is logged in and in a member group that can edit this comment.
 			if ($this->EE->session->userdata['group_id'] == 1 
 				OR $this->EE->session->userdata['can_edit_all_comments'] == 'y' 
 				OR ($this->EE->session->userdata['can_edit_own_comments'] == 'y' 
@@ -3197,21 +3198,13 @@ class Comment {
 				$can_edit = TRUE;
 				$can_moderate = TRUE;
 			}
+			// User is logged in and can still edit this comment.
 			elseif ($this->EE->session->userdata['member_id'] != '0'  
-				&& $query->row('author_id') == $this->EE->session->userdata['member_id'])
+				&& $query->row('author_id') == $this->EE->session->userdata['member_id']
+				&& ($this->EE->config->item('comment_edit_time_limit') <= 0 
+					|| $query->row('comment_date') > $this->_comment_edit_time_limit()))
 			{
-				// Check for time limit
-				if ($this->EE->config->item('comment_edit_time_limit') > 0)
-				{
-					if ($query->row('comment_date') > $this->_comment_edit_time_limit())
-					{
-						$can_edit = true;
-					}
-				}
-				else
-				{
-					$can_edit = true;
-				}
+				$can_edit = true;
 			}
 
 			$data = array();
