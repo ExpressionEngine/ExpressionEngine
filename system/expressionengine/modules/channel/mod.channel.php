@@ -1027,7 +1027,9 @@ class Channel {
     *
     *****************************************************************/
 	/**
-	
+		Generate the SQL for an exact query in field search.
+
+			search:field="=words|other words"	
 	*/
 	private function _exact_field_search($terms, $field_name, $site_id)
 	{
@@ -1084,7 +1086,9 @@ class Channel {
 	}
 
 	/**
+		Generate the SQL for a LIKE query in field search.
 
+			search:field="words|other words|IS_EMPTY"
 	*/
 	private function _field_search($terms, $field_name, $site_id)
 	{
@@ -1140,7 +1144,32 @@ class Channel {
 	}
 
 	/**
+		Generate the SQL where condition to handle the {exp:channel:entries}
+		field search parameter -- search:field="".  There are two primary
+		syntax possibilities:
 
+			search:field="words|other words"
+		
+		and
+
+			search:field="=words|other words"
+
+		The first performs a LIKE "%words%" OR LIKE "%other words%".  The second
+		one performs an ="words" OR ="other words".  Other possibilities are
+		prepending "not" to negate the search:
+		
+			search:field="not words|other words"
+
+		And using IS_EMPTY to indicate an empty field.
+
+			search:field ="IS_EMPTY"
+			search:field="not IS_EMPTY"
+			search:field="=IS_EMPTY"
+			search:field="=not IS_EMPTY"
+
+		All of these may be combined:
+		
+			search:field="not IS_EMPTY|words"
 	*/
 	private function _generate_field_search_sql($search_fields, $site_ids) 
 	{	
@@ -1149,13 +1178,12 @@ class Channel {
 		foreach ($search_fields as $field_name => $search_terms)
 		{  
 			// Log empty terms to notify the user. 
-			if(empty($search_terms))
+			if(empty($search_terms) || $search_terms === '=')
 			{
 				$this->EE->TMPL->log_item('WARNING: Field search parameter for field "' . $field_name . '" was empty.  If you wish to search for an empty field, use IS_EMPTY.');
 				continue;
 			}
 
-			$found_term = TRUE;
 			$fields_sql = '';
 			$sites = ($site_ids ? $site_ids : array($this->EE->config->item('site_id'))); 
 			foreach ($sites as $site_name => $site_id) 
@@ -1179,11 +1207,11 @@ class Channel {
 					// Remove the '=' sign that specified exact match.
 					$terms = substr($terms, 1);
 					
-					$field_sql .= $this->_exact_field_search($terms, $field_name, $site_id);	
+					$fields_sql .= $this->_exact_field_search($terms, $field_name, $site_id);	
 				}
 				else
 				{
-					$field_sql .= $this->_field_search($terms, $field_name, $site_id);
+					$fields_sql .= $this->_field_search($terms, $field_name, $site_id);
 				}
 				
 			} // foreach($sites as $site_id)
