@@ -149,7 +149,7 @@ class Comment {
 		$search_link	= '';
 		$enabled 		= $this->_fetch_disable_param();
 
-		if($enabled['pagination'])
+		if ($enabled['pagination'])
 		{
 			$this->EE->load->library('pagination');
 			$pagination = new Pagination_object(__CLASS__);
@@ -207,7 +207,7 @@ class Comment {
 		{
 			if (preg_match("#(^|/)N(\d+)(/|$)#i", $qstring, $match))
 			{
-				if($enabled['pagination'])
+				if ($enabled['pagination'])
 				{
 					$pagination->current_page = $match['2'];
 				}
@@ -218,7 +218,7 @@ class Comment {
 		{
 			if (preg_match("#(^|/)P(\d+)(/|$)#", $qstring, $match))
 			{
-				if($enabled['pagination'])
+				if ($enabled['pagination'])
 				{
 					$pagination->current_page = $match['2'];
 				}
@@ -369,7 +369,7 @@ class Comment {
 		//  Set sorting and limiting
 		if ( ! $dynamic)
 		{
-			if($enabled['pagination'])
+			if ($enabled['pagination'])
 			{
 				$pagination->per_page = $this->EE->TMPL->fetch_param('limit', 100);
 			}
@@ -382,7 +382,7 @@ class Comment {
 		else
 		{
 
-			if($enabled['pagination'])
+			if ($enabled['pagination'])
 			{
 				$pagination->per_page = $this->EE->TMPL->fetch_param('limit', $this->limit);
 			}
@@ -395,7 +395,7 @@ class Comment {
 
 		$allowed_sorts = array('date', 'email', 'location', 'name', 'url');
 
-				if($enabled['pagination'])
+		if ($enabled['pagination'])
 		{
 			// Capture the pagination template
 			$pagination->get_template();
@@ -519,7 +519,7 @@ class Comment {
 			}
 		}
 	
-		if($enabled['pagination'])
+		if ($enabled['pagination'])
 		{	
 			$total_rows = $this->EE->db->count_all_results();
 			if ($pagination->paginate === TRUE)
@@ -536,7 +536,7 @@ class Comment {
 
 		// We're not stripping it out this time, so we can just
 		// ignore the check if we're not paginating.
-		if($enabled['pagination'])
+		if ($enabled['pagination'])
 		{	
 			// Figure out of we need a pagination offset
 			if (preg_match('/P(\d+)(?:\/|$)/', $this->EE->uri->uri_string, $matches))
@@ -551,7 +551,7 @@ class Comment {
 		
 		$this->EE->db->order_by($order_by, $this_sort);
 		
-		if($enabled['pagination'])
+		if ($enabled['pagination'])
 		{
 			$this->EE->db->limit($pagination->per_page, $pagination->offset);
 		}
@@ -579,7 +579,7 @@ class Comment {
 			return $this->EE->TMPL->no_results();
 		}
 	
-		if($enabled['pagination']) 
+		if ($enabled['pagination']) 
 		{	
 			// Build pagination
 			$pagination->build($pagination->per_page);
@@ -723,7 +723,7 @@ class Comment {
 		$item_count = 0;
 
 		$relative_count = 0;
-		if($enabled['pagination'])
+		if ($enabled['pagination'])
 		{
 			$absolute_count = ($pagination->current_page == '') ? 0 : ($pagination->current_page - 1) * $pagination->per_page;
 		}
@@ -744,7 +744,7 @@ class Comment {
 
 			$row['count']			= $relative_count;
 			$row['absolute_count']	= $absolute_count;
-			if($enabled['pagination'])
+			if ($enabled['pagination'])
 			{
 				$row['total_comments']	= $total_rows;
 			}
@@ -766,11 +766,11 @@ class Comment {
 			// 'comment_entries_tagdata' hook.
 			//  - Modify and play with the tagdata before everyone else
 			//
-				if ($this->EE->extensions->active_hook('comment_entries_tagdata') === TRUE)
-				{
-					$tagdata = $this->EE->extensions->call('comment_entries_tagdata', $tagdata, $row);
-					if ($this->EE->extensions->end_script === TRUE) return $tagdata;
-				}
+			if ($this->EE->extensions->active_hook('comment_entries_tagdata') === TRUE)
+			{
+				$tagdata = $this->EE->extensions->call('comment_entries_tagdata', $tagdata, $row);
+				if ($this->EE->extensions->end_script === TRUE) return $tagdata;
+			}
 			//
 			// -------------------------------------------
 
@@ -790,20 +790,19 @@ class Comment {
 			$cond['editable'] = FALSE;
 			$cond['can_moderate_comment'] = FALSE;
 		
-			if ($row['comment_date'] > $this->_comment_edit_time_limit()) 
+			if ($this->EE->session->userdata['group_id'] == 1 
+				OR $this->EE->session->userdata['can_edit_all_comments'] == 'y' 
+				OR ($this->EE->session->userdata['can_edit_own_comments'] == 'y' && $row['entry_author_id'] == $this->EE->session->userdata['member_id'])
+				)
 			{
-				if ($this->EE->session->userdata['group_id'] == 1 OR 
-					$this->EE->session->userdata['can_edit_all_comments'] == 'y' OR 
-					($this->EE->session->userdata['can_edit_own_comments'] == 'y' && $row['entry_author_id'] == $this->EE->session->userdata['member_id'])
-					)
-				{
+				$cond['editable'] = TRUE;
+				$cond['can_moderate_comment'] = TRUE;
+			}
+			elseif ($this->EE->session->userdata['member_id'] != '0'  
+				&& $row['author_id'] == $this->EE->session->userdata['member_id']
+				&& $row['comment_date'] > $this->_comment_edit_time_limit())
+			{
 					$cond['editable'] = TRUE;
-					$cond['can_moderate_comment'] = TRUE;
-				}
-				elseif ($this->EE->session->userdata['member_id'] != '0'  && $row['author_id'] == $this->EE->session->userdata['member_id'])
-				{
-					$cond['editable'] = TRUE;
-				}
 			}
 
 			if ( isset($mfields) && is_array($mfields) && count($mfields) > 0)
@@ -1293,7 +1292,7 @@ class Comment {
 		/**  Add pagination to result
 		/** ----------------------------------------*/
 
-		if($enabled['pagination'])
+		if ($enabled['pagination'])
 		{
 			return $pagination->render($return);
 		}
@@ -3190,6 +3189,7 @@ class Comment {
 
 		if ($query->num_rows() > 0)
 		{
+			// User is logged in and in a member group that can edit this comment.
 			if ($this->EE->session->userdata['group_id'] == 1 
 				OR $this->EE->session->userdata['can_edit_all_comments'] == 'y' 
 				OR ($this->EE->session->userdata['can_edit_own_comments'] == 'y' 
@@ -3198,21 +3198,13 @@ class Comment {
 				$can_edit = TRUE;
 				$can_moderate = TRUE;
 			}
+			// User is logged in and can still edit this comment.
 			elseif ($this->EE->session->userdata['member_id'] != '0'  
-				&& $query->row('author_id') == $this->EE->session->userdata['member_id'])
+				&& $query->row('author_id') == $this->EE->session->userdata['member_id']
+				&& ($this->EE->config->item('comment_edit_time_limit') <= 0 
+					|| $query->row('comment_date') > $this->_comment_edit_time_limit()))
 			{
-				// Check for time limit
-				if ($this->EE->config->item('comment_edit_time_limit') > 0)
-				{
-					if ($query->row('comment_date') > $this->_comment_edit_time_limit())
-					{
-						$can_edit = true;
-					}
-				}
-				else
-				{
-					$can_edit = true;
-				}
+				$can_edit = true;
 			}
 
 			$data = array();
@@ -3243,7 +3235,7 @@ class Comment {
 					// create new security hash and send it back with updated comment.
 				
 					$new_hash = $this->_new_hash();
-					$this->EE->output->send_ajax_response(array('moderated' => $this->EE->lang->line('closed')));
+					$this->EE->output->send_ajax_response(array('moderated' => $this->EE->lang->line('closed'), 'XID' => $new_hash));
 				}
 
 				$this->EE->load->library('typography'); 
