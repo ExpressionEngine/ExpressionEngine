@@ -142,7 +142,7 @@ class Api_channel_entries extends Api {
 			'title'						=> ($this->EE->config->item('auto_convert_high_ascii') == 'y') ? ascii_to_entities($data['title']) : $data['title'],
 			'url_title'					=> $data['url_title'],
 			'entry_date'				=> $data['entry_date'],
-			'edit_date'					=> $this->EE->localize->decode_date('%Y%m%d%H%i%s', $data['entry_date'], FALSE),
+			'edit_date'					=> $this->EE->localize->decode_date('%Y%m%d%H%i%s', $data['edit_date'], FALSE),
 			'versioning_enabled'		=> $data['versioning_enabled'],
 			'year'						=> $this->EE->localize->decode_date('%Y', $data['entry_date'], TRUE),
 			'month'						=> $this->EE->localize->decode_date('%m', $data['entry_date'], TRUE),
@@ -1035,8 +1035,7 @@ class Api_channel_entries extends Api {
 		// Always required fields
 		
 		$required = array(
-			'title'			=> 'missing_title',
-			'entry_date'	=> 'missing_date'
+			'title'			=> 'missing_title'
 		);
 		
 		if ( ! isset($data['title']) OR ! $data['title'] = strip_tags(trim($data['title'])))
@@ -1045,10 +1044,14 @@ class Api_channel_entries extends Api {
 			$this->_set_error('missing_title', 'title');
 		}
 		
+		// Set entry_date and edit_date to "now" if empty
+
+		$data['entry_date'] = empty($data['entry_date']) ? $this->EE->localize->now : $data['entry_date'];
+		$data['edit_date'] = empty($data['edit_date']) ? $this->EE->localize->now : $data['edit_date'];
 		
 		//	Convert built-in date fields to UNIX timestamps
 
-		$dates = array('entry_date');
+		$dates = array('entry_date', 'edit_date');
 
 		foreach(array('expiration_date', 'comment_expiration_date') as $date)
 		{
