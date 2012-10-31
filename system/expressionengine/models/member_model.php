@@ -392,12 +392,6 @@ class Member_model extends CI_Model {
 	 */
 	function create_member($data = array(), $cdata = FALSE)
 	{
-		// Insert into the main table
-		$this->db->insert('members', $data);
-
-		// grab insert id
-		$member_id = $this->db->insert_id();
-
 		// ---------------------------------------------------------------
 		// 'member_create_start' hook.
 		// - Provides an opportunity for extra code to be executed upon
@@ -406,10 +400,16 @@ class Member_model extends CI_Model {
 		// hook.
 		if ($this->extensions->active_hook('member_create_start'))
 		{
-			$this->extensions->call('member_create_start', $data, $cdata);
+			list($data, $cdata) = $this->extensions->call('member_create_start', $member_id, $data, $cdata);
 		}
 		//
 		// ---------------------------------------------------------------
+
+		// Insert into the main table
+		$this->db->insert('members', $data);
+
+		// grab insert id
+		$member_id = $this->db->insert_id();
 
 		// Create a record in the custom field table
 		if ($cdata)
@@ -430,7 +430,7 @@ class Member_model extends CI_Model {
 		// member creation.
 		if ($this->extensions->active_hook('member_create_end'))
 		{
-			$this->extensions->call('member_create_end', $data, $cdata);
+			$this->extensions->call('member_create_end', $member_id, $data, $cdata);
 		}
 		//
 		// ---------------------------------------------------------------
@@ -461,7 +461,7 @@ class Member_model extends CI_Model {
 		//
 		if ($this->extensions->active_hook('member_update_start'))
 		{
-			$this->extensions->call('member_update_start', $member_id, $data);
+			$data = $this->extensions->call('member_update_start', $member_id, $data);
 		}
 		//
 		// ---------------------------------------------------------------
