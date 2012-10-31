@@ -112,9 +112,7 @@ class Members {
 		{
 			if ($type == 'avatar')
 			{
-				$this->EE->db->select('avatar_filename');
-				$this->EE->db->where('member_id', $id);
-				$query = $this->EE->db->get('members');
+				$query = $this->EE->member_model->get_member_data($id, array('avatar_filename'));
 
 				if ($query->row('avatar_filename')	== '')
 				{
@@ -127,9 +125,7 @@ class Members {
 					return array('redirect', array($edit_image));
 				}
 
-				$this->EE->db->where('member_id', $id);
-				$this->EE->db->set('avatar_filename', '');
-				$this->EE->db->update('members');
+				$this->EE->member_model->update_member($id, array('avatar_filename' => ''));
 
 				if (strncmp($query->row('avatar_filename'), 'uploads/', 8) == 0)
 				{
@@ -138,9 +134,7 @@ class Members {
 			}
 			elseif ($type == 'photo')
 			{
-				$this->EE->db->select('photo_filename');
-				$this->EE->db->where('member_id', $id);
-				$query = $this->EE->db->get('members');
+				$query = $this->EE->member_model->get_member_data($id, array('photo_filename'));
 
 				if ($query->row('photo_filename')  == '')
 				{
@@ -152,17 +146,13 @@ class Members {
 					return array('redirect', array($edit_image));
 				}
 				
-				$this->EE->db->set('photo_filename', '');
-				$this->EE->db->where('member_id', $id);
-				$this->EE->db->update('members');
+				$this->EE->member_model->update_member($id, array('photo_filename' => ''));
 
 				@unlink($this->EE->config->slash_item('photo_path').$query->row('photo_filename') );
 			}
 			else
 			{
-				$this->EE->db->select('sig_img_filename');
-				$this->EE->db->where('member_id', $id);
-				$query = $this->EE->db->get('members');
+				$query = $this->EE->member_model->get_member_data($id, array('sig_img_filename'));
 				
 				if ($query->row('sig_img_filename')	 == '')
 				{
@@ -174,9 +164,7 @@ class Members {
 					return array('redirect', array($edit_image));
 				}
 				
-				$this->EE->db->set('sig_img_filename', '');
-				$this->EE->db->where('member_id', $id);
-				$this->EE->db->update('members');
+				$this->EE->member_model->update_member($id, array('sig_img_filename' => ''));
 
 				@unlink($this->EE->config->slash_item('sig_img_path').$query->row('sig_img_filename') );
 			}

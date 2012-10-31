@@ -398,6 +398,19 @@ class Member_model extends CI_Model {
 		// grab insert id
 		$member_id = $this->db->insert_id();
 
+		// ---------------------------------------------------------------
+		// 'member_create_start' hook.
+		// - Provides an opportunity for extra code to be executed upon
+		// member creation, and also gives the opportunity to modify the
+		// member data by altering the arrays of data that we pass to the
+		// hook.
+		if ($this->extensions->active_hook('member_create_start'))
+		{
+			$this->extensions->call('member_create_start', $data, $cdata);
+		}
+		//
+		// ---------------------------------------------------------------
+
 		// Create a record in the custom field table
 		if ($cdata)
 		{
@@ -410,6 +423,17 @@ class Member_model extends CI_Model {
 
 		// Create a record in the member homepage table
 		$this->db->insert('member_homepage', array('member_id' => $member_id));
+
+		// ---------------------------------------------------------------
+		// 'member_create_end' hook.
+		// - Provides an opportunity for extra code to be executed after
+		// member creation.
+		if ($this->extensions->active_hook('member_create_end'))
+		{
+			$this->extensions->call('member_create_end', $data, $cdata);
+		}
+		//
+		// ---------------------------------------------------------------
 
 		return $member_id;
 	}
@@ -428,6 +452,20 @@ class Member_model extends CI_Model {
 	 */
 	function update_member($member_id = '', $data = array(), $additional_where = array())
 	{
+		// ---------------------------------------------------------------
+		// 'member_update_start' hook.
+		// - Provides an opportunity for extra code to be executed upon
+		// member update, and also gives the opportunity to modify the
+		// update for member data by altering the array of data that we
+		// pass to the hook.
+		//
+		if ($this->extensions->active_hook('member_update_start'))
+		{
+			$this->extensions->call('member_update_start', $member_id, $data);
+		}
+		//
+		// ---------------------------------------------------------------
+
 		$default_null = array('bday_y',	'bday_m', 'bday_d');
 		
 		foreach($default_null as $val)
@@ -457,6 +495,18 @@ class Member_model extends CI_Model {
 				}
 			}
 		}
+
+		// ---------------------------------------------------------------
+		// 'member_update_end' hook.
+		// - Provides an opportunity for extra code to be executed after
+		// member update.
+		//
+		if ($this->extensions->active_hook('member_update_end'))
+		{
+			$this->extensions->call('member_update_end', $member_id, $data);
+		}
+		//
+		// ---------------------------------------------------------------
 
 		$this->db->where('member_id', $member_id);
 		$this->db->update('members', $data);
