@@ -798,6 +798,13 @@ class Auth_result {
 		
 		if ($cp_sess === TRUE)
 		{
+			// Log the login
+
+			// We'll manually add the username to the Session array so
+			// the logger class can use it.
+			$this->EE->session->userdata['username'] = $this->member('username');
+			$this->EE->logger->log_action(lang('member_logged_in'));
+
 			// -------------------------------------------
 			// 'cp_member_login' hook.
 			//  - Additional processing when a member is logging into CP
@@ -806,13 +813,6 @@ class Auth_result {
 				if ($this->EE->extensions->end_script === TRUE) return;
 			//
 			// -------------------------------------------
-			
-			// Log the login
-
-			// We'll manually add the username to the Session array so
-			// the logger class can use it.
-			$this->EE->session->userdata['username'] = $this->member('username');
-			$this->EE->logger->log_action(lang('member_logged_in'));
 		}
 		elseif ($multi)
 		{
