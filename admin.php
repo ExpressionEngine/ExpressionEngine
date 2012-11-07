@@ -38,8 +38,8 @@
  * will log into, and its URL.
  *
  */
-//	$assign_to_config['site_name']  = 'domain2_short_name';
-//	$assign_to_config['cp_url'] = 'http://domain2.com/admin.php';
+$assign_to_config['site_name']  = 'main';
+$assign_to_config['cp_url'] = 'http://main.ee-msm-develop.hobbiton/admin.php';
 
 
 /*
@@ -134,7 +134,7 @@
  *
  */ 
  	// Is the installation folder present?
-	if (is_dir($system_path.'installer/'))
+	if (FALSE && is_dir($system_path.'installer/'))
 	{
 		// We need a different subclass prefix when we run the installer,
 		// because it has its own Config class extension with some

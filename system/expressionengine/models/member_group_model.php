@@ -79,7 +79,7 @@ class Member_group_model extends CI_Model
 		@param int $group_id The id of the group we're parsing data for.
 		@param int $site_id The site id submitted with the form, not necessarily the site we'll be creating a group for. 
 	*/	
-	private function _parse_form_data($post, $form_site_id, $group_id, $site_id)
+	private function _parse_form_data($post, $form_site_id, $group_id)
 	{
 				
 		/** ----------------------------------------------------
@@ -88,7 +88,6 @@ class Member_group_model extends CI_Model
 		
 		$data = array('group_title' 		=> $this->input->post('group_title'),
 					  'group_description'	=> $this->input->post('group_description'),
-					  'site_id'				=> $site_id,
 					  'group_id'			=> $group_id);
 		
 		// If editing Super Admin group, the is_locked field doesn't exist, so make sure we
@@ -331,7 +330,7 @@ class Member_group_model extends CI_Model
 
 		@return The message to send to the CP.		
 	*/
-	public function parse_add_form(array $post, $form_site_id, array $site_ids, $clone_id, $group_title)
+	public function parse_add_form(array $post, $form_site_id, $clone_id, $group_title)
 	{
 		// This is less than optimal, but it allows us to use
 		// that foreach loop for both multi-site manager and
@@ -339,6 +338,7 @@ class Member_group_model extends CI_Model
 		// FIXME This could be done much better. -Daniel
 		if($this->config->item('multiple_sites_enabled') == 'y')
 		{		
+			$this->load->model('site_model');		
 			$site_ids = $this->site_model->get_site_ids();
 		}
 		else
