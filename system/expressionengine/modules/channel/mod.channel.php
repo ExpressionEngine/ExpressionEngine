@@ -6991,7 +6991,7 @@ class Channel {
 		{
 			$path  = (preg_match("#".LD."path=(.+?)".RD."#", $this->EE->TMPL->tagdata, $match)) ? $this->EE->functions->create_url($match[1]) : $this->EE->functions->create_url("SITE_INDEX");
 			$path .= '/'.$query->row('url_title');
-			$this->EE->TMPL->tagdata = preg_replace("#".LD."path=.+?".RD."#", $path, $this->EE->TMPL->tagdata);
+			$this->EE->TMPL->tagdata = preg_replace("#".LD."path=.+?".RD."#", $this->EE->functions->remove_double_slashes($path), $this->EE->TMPL->tagdata);
 		}
 
 		if (strpos($this->EE->TMPL->tagdata, LD.'id_path=') !== FALSE)
@@ -6999,7 +6999,7 @@ class Channel {
 			$id_path  = (preg_match("#".LD."id_path=(.+?)".RD."#", $this->EE->TMPL->tagdata, $match)) ? $this->EE->functions->create_url($match[1]) : $this->EE->functions->create_url("SITE_INDEX");
 			$id_path .= '/'.$query->row('entry_id');
 
-			$this->EE->TMPL->tagdata = preg_replace("#".LD."id_path=.+?".RD."#", $id_path, $this->EE->TMPL->tagdata);
+			$this->EE->TMPL->tagdata = preg_replace("#".LD."id_path=.+?".RD."#", $this->EE->functions->remove_double_slashes($id_path), $this->EE->TMPL->tagdata);
 		}
 
 		if (strpos($this->EE->TMPL->tagdata, LD.'url_title') !== FALSE)
@@ -7024,7 +7024,7 @@ class Channel {
 													$this->EE->TMPL->tagdata);
 		}
 
-		return $this->EE->functions->remove_double_slashes(stripslashes($this->EE->TMPL->tagdata));
+		return $this->EE->TMPL->tagdata;
 	}
 
 	// ------------------------------------------------------------------------
