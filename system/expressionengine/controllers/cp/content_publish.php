@@ -654,7 +654,7 @@ class Content_publish extends CI_Controller {
 		
 		$r = '';
 
-		$entry_title = $this->typography->format_characters(stripslashes($resrow['title']));
+		$entry_title = $this->typography->format_characters($resrow['title']);
 
 		foreach ($fields as $key => $val)
 		{
@@ -679,7 +679,7 @@ class Content_publish extends CI_Controller {
 				}
 				else
 				{
-					$r .= $this->typography->parse_type(stripslashes($resrow[$key]),
+					$r .= $this->typography->parse_type($resrow[$key],
 											 array(
 														'text_format'	=> $resrow['field_ft_'.$expl['1']],
 														'html_format'	=> $channel_info->channel_html_formatting,
