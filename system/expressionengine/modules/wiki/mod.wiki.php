@@ -4793,7 +4793,7 @@ class Wiki {
 
 			if (isset($letter_header))
 			{	
-				$this_letter = (function_exists('mb_strtoupper')) ? mb_strtoupper(substr($row['topic'], 0, 1), $this->EE->config->item('charset')) : strtoupper(substr($row['topic'], 0));
+				$this_letter = (function_exists('mb_strtoupper')) ? mb_strtoupper(substr($row['topic'], 0, 1), $this->EE->config->item('charset')) : strtoupper(substr($row['topic'], 0, 1));
 				
 				if ($last_letter != $this_letter)
 				{
