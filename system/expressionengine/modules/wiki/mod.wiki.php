@@ -1221,10 +1221,11 @@ class Wiki {
 				/**  Get categorized page ids
 				/** ---------------------------------------*/
 
-				$query = $this->EE->db->query("SELECT DISTINCT(exp_wiki_category_articles.page_id)
-									FROM exp_wiki_category_articles
-									LEFT JOIN exp_wiki_page ON exp_wiki_page.page_id = exp_wiki_category_articles.page_id
-									WHERE exp_wiki_page.wiki_id = '".$this->EE->db->escape_str($this->wiki_id)."'");
+				$query = $this->EE->db->select('exp_wiki_category_articles.page_id')
+							->from('wiki_category_articles')
+							->join('wiki_page', 'exp_wiki_page.page_id = exp_wiki_category_articles.page_id')
+							->where('wiki_id', $this->wiki_id)
+							->get();
 
 				if ($query->num_rows() > 0)
 				{
@@ -1284,11 +1285,11 @@ class Wiki {
 			
 		if (isset($this->seg_parts['1']) && isset($this->namespaces[strtolower($this->seg_parts['1'])]))
 		{
-			$xsql = "AND LOWER(p.page_namespace) = '".$this->EE->db->escape_str(strtolower($this->seg_parts['1']))."'";
+			$xsql .= "AND LOWER(p.page_namespace) = '".$this->EE->db->escape_str(strtolower($this->seg_parts['1']))."'";
 		}
 		else
 		{
-			$xsql = "AND p.page_namespace = ''";
+			$xsql .= "AND p.page_namespace = ''";
 		}
 		
 		$results = $this->EE->db->query("SELECT r.*, 
