@@ -3946,10 +3946,13 @@ class Wiki {
 							}
 						}
 					}
-					
-					$t_query = $this->EE->db->query("SELECT COUNT(*) AS count FROM exp_wiki_page WHERE page_name = '".$this->EE->db->escape_str($data['page_name'])."' AND LOWER(page_namespace) = '".$this->EE->db->escape_str($data['page_namespace'])."'");
 
-					if ($t_query->row('count')  > 0)
+					$t_query = $this->EE->db->where('page_name', $data['page_name'])
+							->where('LOWER(page_namespace)', $data['page_namespace'])
+							->where('wiki_id', $this->wiki_id)
+							->count_all_results('wiki_page');
+					
+					if ($t_query > 0)
 					{
 						return $this->EE->output->show_user_error('general', array($this->EE->lang->line('duplicate_article')));
 					}
