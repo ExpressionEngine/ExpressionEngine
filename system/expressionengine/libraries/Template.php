@@ -2505,7 +2505,7 @@ class EE_Template {
 				if (isset($template[1]))
 				{
 					$this->log_item('Processing "'.$template[0].'/'.$template[1].'" Template as 404 Page');
-					$this->output->out_type = "404";
+					$this->EE->output->out_type = "404";
 					$this->template_type = "404";
 					$this->fetch_and_parse($template[0], $template[1]);
 					$this->cease_processing = TRUE;
