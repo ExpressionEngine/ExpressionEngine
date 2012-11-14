@@ -1221,7 +1221,7 @@ class Wiki {
 				/**  Get categorized page ids
 				/** ---------------------------------------*/
 
-				$query = $this->EE->db->select('exp_wiki_category_articles.page_id')
+				$query = $this->EE->db->distinct('exp_wiki_category_articles.page_id')
 							->from('wiki_category_articles')
 							->join('wiki_page', 'exp_wiki_page.page_id = exp_wiki_category_articles.page_id')
 							->where('wiki_id', $this->wiki_id)
