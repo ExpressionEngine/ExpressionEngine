@@ -2935,6 +2935,12 @@ class EE_Template {
 			$str = preg_replace_callback("/".LD."\s*path=(.*?)".RD."/", array(&$this->EE->functions, 'create_url'), $str);
 		}
 		
+		// {current_url}
+		$str = str_replace(LD.'current_url'.RD, $this->EE->functions->fetch_current_uri(), $str);
+
+		// {current_path}
+		$str = str_replace(LD.'current_path'.RD, (($this->EE->uri->uri_string) ? $this->EE->uri->uri_string : '/'), $str);
+
 		// Add Action IDs form forms and links
 		$str = $this->EE->functions->insert_action_ids($str);
 		
