@@ -495,6 +495,9 @@ class EE_Typography extends CI_Typography {
 		//
 		// -------------------------------------------
 		
+		// safety
+		$str = $this->EE->functions->encode_ee_tags($str, $this->convert_curly); 
+
 		return $str;
 	}
 
