@@ -188,7 +188,7 @@ class Content_files extends CI_Controller {
 		);
 
 		$search_select_options = array(
-			''				=> lang('search_in'),
+			'all'				=> lang('search_in'),
 			'file_name'		=> lang('file_name'),
 			'file_title'	=> lang('file_title'),
 			'custom_field'	=> lang('custom_fields'),
