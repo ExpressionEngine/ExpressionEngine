@@ -1580,7 +1580,7 @@ class Search {
 			);
 		}
 		
-		return stripslashes($this->EE->TMPL->tagdata);
+		return $this->EE->TMPL->tagdata;
 	}
 	
 	// --------------------------------------------------------------------------
