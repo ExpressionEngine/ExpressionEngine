@@ -1225,7 +1225,18 @@ class Safecracker_lib
 			// If file exists, add it to the POST array for validation
 			if (isset($_FILES[$field['field_name']]['name']))
 			{
-				$_POST[$field['field_name']] = $_FILES[$field['field_name']]['name'];
+				// Allow multi-dimensional arrays that contain files
+				if (is_array($_FILES[$field['field_name']]['name']) && is_array($_POST[$field['field_name']]))
+				{
+					$_POST[$field['field_name']] = array_merge_recursive(
+						$_POST[$field['field_name']],
+						$_FILES[$field['field_name']]['name']
+					);
+				}
+				else
+				{
+					$_POST[$field['field_name']] = $_FILES[$field['field_name']]['name'];
+				}
 			}
 			
 			$this->custom_fields[$i]['isset'] = $isset;
