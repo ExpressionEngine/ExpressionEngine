@@ -8,13 +8,13 @@
 		<?php if ($allow_username_change):?>
 		<p>
 			<?=lang('username', 'username')?>
-			<?=form_input(array('id' => 'username', 'name' => 'username', 'class' => 'field', 'value' => $username, 'maxlength' => 50, 'autocomplete' => 'off'))?>
+			<?=form_input(array('id' => 'username', 'name' => 'username', 'class' => 'field', 'value' => $username, 'maxlength' => 50))?>
 		</p>
 		<?php endif;?>
 
 		<p>
 			<?=lang('screen_name', 'screen_name')?>
-			<?=form_input(array('id' => 'screen_name', 'name' => 'screen_name', 'class' => 'field', 'value' => $screen_name, 'maxlength' => 50, 'autocomplete' => 'off'))?>
+			<?=form_input(array('id' => 'screen_name', 'name' => 'screen_name', 'class' => 'field', 'value' => $screen_name, 'maxlength' => 50))?>
 		</p>
 
 		<fieldset>

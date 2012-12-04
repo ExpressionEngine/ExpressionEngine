@@ -7,7 +7,7 @@
 
 		<p>
 			<?=form_label(required().lang('email'), 'email')?>
-			<?=form_input(array('id' => 'email', 'name' => 'email', 'class' => 'field', 'value' => $email, 'maxlength' => 72, 'autocomplete' => 'off'))?>
+			<?=form_input(array('id' => 'email', 'name' => 'email', 'class' => 'field', 'value' => $email, 'maxlength' => 72))?>
 		</p>
 
 		<?php if ($this->session->userdata('group_id') != 1):?>
