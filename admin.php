@@ -134,7 +134,7 @@
  *
  */ 
  	// Is the installation folder present?
-	if (is_dir($system_path.'installer/'))
+	if (FALSE && is_dir($system_path.'installer/'))
 	{
 		// We need a different subclass prefix when we run the installer,
 		// because it has its own Config class extension with some

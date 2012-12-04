@@ -24,12 +24,12 @@
 
 		<p>
 			<?=lang('new_password', 'password')?>
-			<?=form_password(array('id'=>'password','name'=>'password','class'=>'field','value'=>'','maxlength'=>40))?>
+			<?=form_password(array('id' => 'password', 'name' => 'password', 'class' => 'field', 'value' => '', 'maxlength' => 40, 'autocomplete' => 'off'))?>
 		</p>
 
 		<p>
 			<?=lang('new_password_confirm', 'password_confirm')?>
-			<?=form_password(array('id'=>'password_confirm','name'=>'password_confirm','class'=>'field','value'=>'','maxlength'=>40))?>
+			<?=form_password(array('id' => 'password_confirm', 'name' => 'password_confirm', 'class' => 'field', 'value' => '', 'maxlength' => 40, 'autocomplete' => 'off'))?>
 		</p>
 
 		<?php if ($this->session->userdata('group_id') != 1):?>
@@ -38,7 +38,7 @@
 
 		<p>
 			<?=lang('existing_password', 'current_password')?>
-			<?=form_password(array('id'=>'current_password','name'=>'current_password','class'=>'field','value'=>'','maxlength'=>40))?>
+			<?=form_password(array('id' => 'current_password', 'name' => 'current_password', 'class' => 'field', 'value' => '', 'maxlength' => 40, 'autocomplete' => 'off'))?>
 		</p>
 
 		<?php endif;?>
