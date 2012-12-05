@@ -1143,7 +1143,7 @@ class Content_files extends CI_Controller {
 		}
 
 		$this->cp->add_js_script(array(
-				'plugin' => array('tmpl', 'toggle_all'),
+				'plugin' => array('tmpl'),
 				'ui'     => array('progressbar'),
 				'file'   => array('underscore', 'cp/files/synchronize')
 			)
