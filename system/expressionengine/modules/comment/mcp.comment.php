@@ -57,7 +57,6 @@ class Comment_mcp {
 			}
 
 			$this->EE->cp->add_js_script(array(
-				'plugin'	=> 'toggle_all',
 				'fp_module'	=> 'comment'
 			));
 		}

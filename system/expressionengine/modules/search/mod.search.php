@@ -1389,7 +1389,7 @@ class Search {
 		$channel = new Channel;
 
 		// This allows the channel {absolute_count} variable to work
-		$channel->p_page = ($pagination->per_page * $pagination->current_page) - $pagination->per_page;
+		$channel->pagination->offset = ($pagination->per_page * $pagination->current_page) - $pagination->per_page;
 
 		$channel->fetch_custom_channel_fields();
 		$channel->fetch_custom_member_fields();
