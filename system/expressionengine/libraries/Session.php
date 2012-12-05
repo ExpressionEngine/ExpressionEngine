@@ -375,14 +375,11 @@ class EE_Session {
 		} 
 		
 		$interval = $this->EE->config->item('password_lockout_interval') * 60;
-		
-		$expire = time() - $interval;
-		$p_where = "(user_agent ='{$this->EE->db->escape_str($this->userdata['user_agent'])}' OR username='{$this->EE->db->escape_str($username)}')";
 
 		$lockout = $this->EE->db->select("COUNT(*) as count")
-			->where('login_date > ', $expire)
+			->where('login_date > ', time() - $interval)
 			->where('ip_address', $this->EE->input->ip_address())
-			->where($p_where)
+			->where('username', $username)
 			->get('password_lockout');
 		
 		return ($lockout->row('count') >= 4) ? TRUE : FALSE;
