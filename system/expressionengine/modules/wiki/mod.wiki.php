@@ -4520,12 +4520,11 @@ class Wiki {
 		// Secure Forms check
 	  	// If the hash is not found we'll simply reload the page.
 	  
-		if ($this->EE->config->item('secure_forms') == 'y' && $search_paginate === FALSE)
+		if ($this->EE->config->item('secure_forms') == 'y' 
+			AND $search_paginate === FALSE
+			AND $this->EE->security->secure_forms_check($this->EE->input->post('XID')) == FALSE)
 		{
-			if ($this->EE->security->secure_forms_check($this->EE->input->post('XID')) == FALSE)
-			{
-				$this->redirect('', $this->EE->input->get_post('title'));
-			}
+			$this->redirect('', $this->EE->input->get_post('title'));
 		}
 		
 		/** ----------------------------------------
@@ -5264,20 +5263,12 @@ class Wiki {
 			$this->EE->lang->loadfile('upload');
 		
 			// Secure Forms
-			
-			if ($this->EE->config->item('secure_forms') == 'y')
+			if ($this->EE->config->item('secure_forms') == 'y'
+				AND ! $this->EE->security->secure_forms_check($this->EE->input->post['XID']))
 			{
-				$this->EE->db->select('COUNT(*) as count');
-				$this->EE->db->where('ip_address', $this->EE->input->ip_address());
-				$this->EE->db->where('date >', 'UNIX_TIMESTAMP()-7200');
-				$results = $this->EE->db->get('security_hashes');				
-			
-				if ($results->row('count')  == 0)
-				{
-					$this->redirect($this->special_ns, 'Uploads');
-				}	
+				$this->redirect($this->special_ns, 'Uploads');
 			}
-			
+
 			/** -------------------------------------
 			/**  Edit Limit
 			/** -------------------------------------*/
@@ -5389,16 +5380,7 @@ class Wiki {
 							array($this->EE->lang->line($saved['message'])));
 			}			
 			
-
-			$this->EE->db->insert('wiki_uploads', $data);			
-			
-			if ($this->EE->config->item('secure_forms') == 'y')
-			{
-				$this->EE->db->where('hash', $_POST['XID']);
-				$this->EE->db->where('ip_address', $this->EE->input->ip_address());
-				$this->EE->db->or_where('date', 'UNIX_TIMESTAMP()-7200');
-				$this->EE->db->delete('security_hashes');				
-			}
+			$this->EE->db->insert('wiki_uploads', $data);
 			
 			$this->redirect($this->file_ns, $new_name);
 		}

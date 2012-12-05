@@ -32,16 +32,18 @@
 			<?=form_password(array('id' => 'password_confirm', 'name' => 'password_confirm', 'class' => 'field', 'value' => '', 'maxlength' => 40, 'autocomplete' => 'off'))?>
 		</p>
 
-		<?php if ($this->session->userdata('group_id') != 1):?>
-
-		<div class="notice"><?=lang('existing_password_exp')?></div>
+		<div class="notice">
+			<?php if ($self_edit): ?>
+				<?=lang('existing_password_exp')?>
+			<?php else: ?>
+				<?=lang('password_auth')?>
+			<?php endif ?>
+		</div>
 
 		<p>
 			<?=lang('existing_password', 'current_password')?>
 			<?=form_password(array('id' => 'current_password', 'name' => 'current_password', 'class' => 'field', 'value' => '', 'maxlength' => 40, 'autocomplete' => 'off'))?>
 		</p>
-
-		<?php endif;?>
 
 	</fieldset>
 

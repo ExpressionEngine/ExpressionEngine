@@ -70,6 +70,9 @@ class Cp {
 				'cp_theme_url'	=> $this->cp_theme_url
 			));
 		}
+
+		// Make sure all requests to iframe the CP are denied
+		$this->EE->output->set_header('X-Frame-Options: Deny');
 	}
 
 	
@@ -734,38 +737,16 @@ class Cp {
 		{
 			if (count($_POST) > 0)
 			{
-				if ( ! isset($_POST['XID']))
+				if ( ! isset($_POST['XID'])
+					OR ! $this->EE->security->secure_forms_check($_POST['XID']))
 				{
 					$this->EE->functions->redirect(BASE);
 				}
-				
-				$query = $this->EE->db->query(
-					"SELECT COUNT(*) AS count FROM exp_security_hashes 
-					 WHERE hash = '".$this->EE->db->escape_str($_POST['XID'])."' 
-					 AND ip_address = '".$this->EE->input->ip_address()."' 
-					 AND date > UNIX_TIMESTAMP()-".$this->xid_ttl
-				);
-	
-				if ($query->row('count')  == 0)
-				{
-					$this->EE->functions->redirect(BASE);
-				}
-				
-				$this->EE->db->query(
-					"DELETE FROM exp_security_hashes 
-					 WHERE date < UNIX_TIMESTAMP()-{$this->xid_ttl}
-					 AND ip_address = '".$this->EE->input->ip_address()."'"
-				);
 				
 				unset($_POST['XID']);
 			}
 			
-			$hash = $this->EE->functions->random('encrypt');
-			$this->EE->db->query(
-				"INSERT INTO exp_security_hashes (date, ip_address, hash)
-				 VALUES 
-				 (UNIX_TIMESTAMP(), '".$this->EE->input->ip_address()."', '".$hash."')"
-			);
+			$hash = $this->EE->security->generate_xid();
 		}
 		
 		define('XID_SECURE_HASH', $hash);

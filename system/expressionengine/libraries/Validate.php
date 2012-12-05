@@ -78,11 +78,6 @@ class EE_Validate {
 	 */
 	function password_safety_check()
 	{
-		if ($this->EE->session->userdata('group_id') == 1)
-		{
-			return;
-		}
-			
 		if ($this->cur_password == '')
 		{
 			return $this->errors[] = $this->EE->lang->line('missing_current_password');

@@ -725,7 +725,7 @@ class EE_Functions {
 	{	 
 		if ($this->EE->config->item('secure_forms') == 'y')
 		{
-			$this->EE->db->query("DELETE FROM exp_security_hashes WHERE date < UNIX_TIMESTAMP()-7200");
+			$this->EE->security->garbage_collect_xids();
 		}	
 	}
 	
@@ -1584,20 +1584,14 @@ class EE_Functions {
 				}
 			
 				// Add security hashes
+				$hashes = $this->EE->security->generate_xid(count($matches[1]), TRUE);
 				
-				$sql = "INSERT INTO exp_security_hashes (date, ip_address, hash) VALUES";
-				
-				foreach ($matches[1] as $val)
+				foreach ($hashes as $hash)
 				{
-					$hash = $this->random('encrypt');
 					$str = preg_replace("/{XID_HASH}/", $hash, $str, 1);
-					$sql .= "(UNIX_TIMESTAMP(), '".$this->EE->input->ip_address()."', '".$hash."'),";
 				}
-				
-				$this->EE->db->query(substr($sql,0,-1));
-				
+								
 				// Re-enable DB caching
-				
 				if ($db_reset == TRUE)
 				{
 					$this->EE->db->cache_on();			
