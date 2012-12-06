@@ -393,15 +393,7 @@ class Safecracker_lib
 				
 				$temp = $tagdata;
 				
-				//parse conditionals
-				//$temp = $this->swap_conditionals($temp, $custom_field_variables_row);
-				$embed_vars = $this->EE->TMPL->embed_vars;
-				
-				$this->EE->TMPL->embed_vars = array_merge($this->EE->TMPL->embed_vars, $custom_field_variables_row);
-				
-				$temp = $this->EE->TMPL->advanced_conditionals($temp);
-				
-				$this->EE->TMPL->embed_vars = $embed_vars;
+				$temp = $this->EE->functions->prep_conditionals($temp, $custom_field_variables_row);
 				
 				if (strpos($temp, LD.'display_field'.RD) !== FALSE)
 				{
