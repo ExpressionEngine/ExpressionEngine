@@ -2774,7 +2774,11 @@ class Member {
 						$time = $this->EE->localize->set_localized_time($time, $zone, $default_fields['daylight_savings']);
 					}
 
-					$this->EE->TMPL->tagdata = $this->_var_swap_single($key, $this->EE->localize->decode_date($val, $time), $this->EE->TMPL->tagdata);
+					$this->EE->TMPL->tagdata = $this->_var_swap_single(
+						$key,
+						$this->EE->localize->decode_date($val, $time, FALSE),
+						$this->EE->TMPL->tagdata
+					);
 				}
 
 				//  {bio}
