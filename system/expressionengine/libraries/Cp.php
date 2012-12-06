@@ -868,7 +868,7 @@ class Cp {
 		{
 			return TRUE;
 		}
-		
+	
 		foreach ($which as $w)
 		{
 			$k = $this->EE->session->userdata($w);

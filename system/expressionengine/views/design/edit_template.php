@@ -105,7 +105,7 @@ if ($EE_view_disable !== TRUE)
 			</div>
 		<?php endif; ?>
 		
-		<?php if ($can_admin_templates): ?>	
+		<?php if ($can_admin_design): ?>	
 
 			<div class="editAccordion">
 				<h3><?=lang('preferences')?></h3>

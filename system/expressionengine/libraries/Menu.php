@@ -536,6 +536,8 @@ class EE_Menu {
 			if ( ! $this->EE->cp->allowed_group('can_admin_design'))
 			{
 				unset($menu['design']['message_pages']);
+				unset($menu['design']['templates']['template_preferences']);				
+				unset($menu['design']['templates']['global_preferences']);
 			}			
 
 			if ( ! $this->EE->cp->allowed_group('can_admin_templates'))
@@ -545,9 +547,7 @@ class EE_Menu {
 				unset($menu['design']['templates']['create_template']);
 				unset($menu['design']['templates']['snippets']);
 				unset($menu['design']['templates']['sync_templates']);
-				unset($menu['design']['templates']['template_preferences']);				
 				unset($menu['design']['templates']['global_variables']);
-				unset($menu['design']['templates']['global_preferences']);
 				unset($menu['design']['templates'][0]);	
 			}
 		}
