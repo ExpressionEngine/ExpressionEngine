@@ -43,8 +43,11 @@ class EE_Security extends CI_Security {
 	public function secure_forms_check($xid)
 	{	
 		$check = $this->check_xid($xid);
-		
-		$this->delete_xid($xid);
+
+		if (REQ != 'CP' OR ! AJAX_REQUEST)
+		{
+			$this->delete_xid($xid);
+		}
 
 		return $check;
 	}
