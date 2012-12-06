@@ -38,12 +38,18 @@ if ($EE_view_disable !== TRUE)
 				<?=form_input(array('id'=>'other_url','name'=>'other_url','size'=>50,'value'=>$this->functions->fetch_site_index()))?>
 			</div>
 
+			<br />
+
+			<p>
+				<span class="notice"><?=lang('password_auth', 'password_auth')?></span>
+				<?=form_password(array('id' => 'password_auth', 'name' => 'password_auth', 'maxlength' => 40))?>
+			</p>
+
 			<p>
 				<?=form_submit('login_as_member', lang('submit'), 'class="submit"')?>
 			</p>
 
 			<?=form_close()?>
-
 
 		</div>
 

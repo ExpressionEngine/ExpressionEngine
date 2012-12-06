@@ -427,16 +427,10 @@ class Member_register extends Member {
 		}
 
 		// Secure Mode Forms?
-		if ($this->EE->config->item('secure_forms') == 'y')
+		if ($this->EE->config->item('secure_forms') == 'y'
+			AND ! $this->EE->security->secure_forms_check($this->EE->input->post['XID']))
 		{
-			$query = $this->EE->db->query("SELECT COUNT(*) AS count FROM exp_security_hashes WHERE hash='".$this->EE->db->escape_str($_POST['XID'])."' AND ip_address = '".$this->EE->input->ip_address()."' AND ip_address = '".$this->EE->input->ip_address()."' AND date > UNIX_TIMESTAMP()-7200");
-
-			if ($query->row('count')  == 0)
-			{
-				return $this->EE->output->show_user_error('general', array(lang('not_authorized')));
-			}
-
-			$this->EE->db->query("DELETE FROM exp_security_hashes WHERE (hash='".$this->EE->db->escape_str($_POST['XID'])."' AND ip_address = '".$this->EE->input->ip_address()."') OR date < UNIX_TIMESTAMP()-7200");
+			return $this->EE->output->show_user_error('general', array(lang('not_authorized')));
 		}
 		
 		$this->EE->load->helper('security');
