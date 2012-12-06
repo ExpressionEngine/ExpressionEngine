@@ -101,7 +101,7 @@ class Api_channel_structure extends Api {
 			return $this->channels[$site_id];
 		}
 		
-		$query = $this->EE->channel_model->get_channels();
+		$query = $this->EE->channel_model->get_channels($site_id);
 		
 		if ( ! $query OR $query->num_rows() == 0)
 		{

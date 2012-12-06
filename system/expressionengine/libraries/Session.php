@@ -936,7 +936,7 @@ class EE_Session {
 		
 		if (REQ == 'PAGE')
 		{		
-			$this->EE->functions->set_cookie('tracker'); 
+			$this->EE->functions->set_cookie('tracker', serialize($tracker), '0');
 		}
 		
 		return $tracker;
