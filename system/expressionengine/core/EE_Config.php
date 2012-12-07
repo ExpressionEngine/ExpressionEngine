@@ -346,7 +346,8 @@ class EE_Config Extends CI_Config {
 			$url = $this->config['site_url'].'/';
 			$url .= $this->config['site_index'].'/';
 
-			$this->config['site_pages'][$row['site_id']]['url'] = preg_replace("#(^|[^:])//+#", "\\1/", $url);
+			$EE->load->helper('string_helper');
+			$this->config['site_pages'][$row['site_id']]['url'] = reduce_double_slashes($url);
 		}
 
 		// master tracking override?
@@ -864,7 +865,8 @@ class EE_Config Extends CI_Config {
 				$url = (isset($site_prefs['site_url'])) ? $site_prefs['site_url'].'/' : $this->config['site_url'].'/';
 				$url .= (isset($site_prefs['site_index'])) ? $site_prefs['site_index'].'/' : $this->config['site_index'].'/';
 				
-				$pages[$site_id]['url'] = preg_replace("#(^|[^:])//+#", "\\1/", $url);
+				$this->EE->load->helper('string_helper');
+				$pages[$site_id]['url'] = reduce_double_slashes($url);
 
 				$this->EE->db->update(
 					'sites',

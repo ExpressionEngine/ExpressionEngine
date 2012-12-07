@@ -277,13 +277,16 @@ class EE_Functions {
 	 * With all the URL/URI parsing/building, there is the potential
 	 * to end up with double slashes.  This is a clean-up function.
 	 *
+	 * Will likely be deprecated in 2.6, use string helper instead
+	 *
 	 * @access	public
 	 * @param	string
 	 * @return	string
 	 */
 	function remove_double_slashes($str)
 	{
-		return preg_replace("#(^|[^:])//+#", "\\1/", $str);
+		$this->EE->load->helper('string_helper');
+		return reduce_double_slashes($str);
 	}
 	
 	// --------------------------------------------------------------------
