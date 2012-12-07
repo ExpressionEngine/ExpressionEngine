@@ -508,7 +508,10 @@ class Safecracker_ext
 			$data = $this->EE->extensions->last_call;
 		}
 		
-		if (isset($this->EE->TMPL) && is_object($this->EE->TMPL) && ! empty($this->EE->session->cache['safecracker']['form_declaration']))
+		if (isset($this->EE->TMPL)
+			AND is_object($this->EE->TMPL)
+			AND ! empty($this->EE->session->cache['safecracker']['form_declaration'])
+			AND $this->EE->safecracker->form_loaded)
 		{
 			unset($this->EE->session->cache['safecracker']['form_declaration']);
 			
