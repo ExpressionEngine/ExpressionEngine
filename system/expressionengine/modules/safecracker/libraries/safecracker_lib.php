@@ -29,6 +29,7 @@ class Safecracker_lib
 {
 	public $initialized = FALSE;
 	public $form_error = FALSE;
+	public $form_loaded = TRUE;
 	public $site_id;
 	
 	public $categories;
@@ -816,6 +817,9 @@ class Safecracker_lib
 		
 		$return = $this->channel_standalone->entry_form(TRUE, $this->EE->functions->cached_captcha);
 		
+		// Channel standalone will return nothing if member doesn't have permission
+		$this->form_loaded = ( ! empty($return));
+
 		$this->EE->config->set_item('site_id', $current_site_id);
 		
 		if (isset($this->EE->session->cache['safecracker']['channel_standalone_output_js']))
