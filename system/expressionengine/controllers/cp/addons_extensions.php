@@ -89,7 +89,9 @@ class Addons_extensions extends CP_Controller {
 			
 			if ( ! class_exists($class_name))
 			{
-				if (DEBUG)
+				if ($this->config->item('debug') == 2
+					OR ($this->config->item('debug') == 1
+						AND $this->session->userdata('group_id') == 1))
 				{
 					include($ext['path'].$ext['file']);
 				}
