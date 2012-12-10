@@ -784,7 +784,7 @@ class Content_edit extends CI_Controller {
 
 			// Set up date js
 			$this->javascript->output('
-				$(".entry_date_'.$entry_id.'").datepicker({dateFormat: $.datepicker.W3C + date_obj_time, defaultDate: new Date('.($this->localize->set_localized_time($row['entry_date']) * 1000).')});
+				$(".entry_date_'.$entry_id.'").datepicker({constrainInput: false, dateFormat: $.datepicker.W3C + date_obj_time, defaultDate: new Date('.($this->localize->set_localized_time($row['entry_date']) * 1000).')});
 			');
 
 			// Sticky
