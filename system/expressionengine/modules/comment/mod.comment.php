@@ -928,7 +928,7 @@ class Comment {
 								$dvar, 
 								$this->EE->localize->convert_timestamp(
 									$dvar, 
-									$this->EE->localize->timestamp_to_gmt($row['edit_date']), 
+									$row['edit_date'], 
 									TRUE
 								), 
 								$val
