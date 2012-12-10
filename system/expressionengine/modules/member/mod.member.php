@@ -2350,8 +2350,11 @@ class Member {
 			unset($fresh);
 		}
 		
-		$this->EE->TMPL->parse($str);
-		$str = $this->EE->TMPL->parse_globals($this->EE->TMPL->final_template);
+		if ( ! $this->in_forum)
+		{
+			$this->EE->TMPL->parse($str);
+			$str = $this->EE->TMPL->parse_globals($this->EE->TMPL->final_template);
+		}
 		
 		//  Add security hashes to forms
 		if ( ! class_exists('Template'))
