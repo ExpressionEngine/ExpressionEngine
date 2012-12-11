@@ -99,7 +99,7 @@ class News_and_stats_acc {
 			require PATH_PI.'pi.magpie.php';
 		}
 
-		$feed = fetch_rss('http://expressionengine.com/feeds/rss/cpnews/', 60*60*24*3); // set cache to 3 days
+		$feed = fetch_rss('http://ellislab.com/blog/rss-feed/cpnews/', 60*60*24*3); // set cache to 3 days
 
 		$i = 0;
 
@@ -115,11 +115,13 @@ class News_and_stats_acc {
 
 			$obj = new stdClass;
 
-			for ($i = 0, $total = count($feed->items); $i < $total, $i < 3; $i++)
+			$total = (count($feed->items) >= 3) ? 3 : count($feed->items);
+
+			for ($i = 0; $i < $total; $i++)
 			{
 				$title = $feed->items[$i]['title'];
 
-				$date = $feed->items[$i]['pubdate'];
+				$date = $feed->items[$i]['dc']['date'];
 				$date = $this->EE->localize->set_human_time(strtotime(preg_replace(
 					"/(20[10][0-9]\-[0-9]{2}\-[0-9]{2})T([0-9]{2}:[0-9]{2}:[0-9]{2})Z/", 
 					'\\1 \\2 UTC',
