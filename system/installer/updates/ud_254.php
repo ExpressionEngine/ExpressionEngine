@@ -49,6 +49,7 @@ class Updater {
 		$this->_change_member_totals_length();
 		$this->_update_session_table();
 		$this->_update_security_hashes_table();
+		$this->_update_docs_url();
 		
 		return TRUE;
 	}
@@ -185,6 +186,23 @@ class Updater {
 		}
 		
 		return TRUE;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Update docs URL if it's still pointing to expressionengine.com
+	 */
+	private function _update_docs_url()
+	{
+		if (strpos($this->EE->config->item('doc_url'), 'expressionengine.com') !== FALSE)
+		{
+			$this->EE->config->_update_config(
+				array(
+					'doc_url' => 'http://ellislab.com/expressionengine/user-guide/'
+				)
+			);
+		}
 	}
 	
 }	
