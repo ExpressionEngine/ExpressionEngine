@@ -5,8 +5,8 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,7 +20,7 @@
  * @subpackage	Control Panel
  * @category	Accessories
  * @author		EllisLab Dev Team
- * @link		http://expressionengine.com
+ * @link		http://ellislab.com
  */
 class News_and_stats_acc {
 	
@@ -155,7 +155,7 @@ class News_and_stats_acc {
 			$ret .= '
 				<div>
 					<a onclick="window.open(this.href); return false;" href="'.
-						$this->EE->cp->masked_url('http://expressionengine.com/blog/').
+						$this->EE->cp->masked_url('http://ellislab.com/blog/').
 					'">'.lang('more_news').'</a>
 				</div>';
 			

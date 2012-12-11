@@ -6,8 +6,8 @@
  * @package     ExpressionEngine
  * @author      EllisLab Dev Team
  * @copyright   Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license     http://expressionengine.com/user_guide/license.html
- * @link        http://expressionengine.com
+ * @license     http://ellislab.com/expressionengine/user-guide/license.html
+ * @link        http://ellislab.com
  * @since       Version 2.0
  * @filesource
  */
@@ -21,7 +21,7 @@
  * @subpackage  Core
  * @category    Core
  * @author      EllisLab Dev Team
- * @link        http://expressionengine.com
+ * @link        http://ellislab.com
  */
 class Updater {
 
@@ -37,7 +37,7 @@ class Updater {
 		// update docs location
 		if ($this->EE->config->item('doc_url') == 'http://expressionengine.com/public_beta/docs/')
 		{
-			$this->EE->config->update_site_prefs(array('doc_url' => 'http://expressionengine.com/user_guide/'), 1);
+			$this->EE->config->update_site_prefs(array('doc_url' => 'http://ellislab.com/expressionengine/user-guide/'), 1);
 		}
 		
 		if ( ! $this->EE->db->field_exists('can_access_fieldtypes', 'member_groups'))
