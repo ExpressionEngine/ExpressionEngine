@@ -5,8 +5,8 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,7 +20,7 @@
  * @subpackage	Control Panel
  * @category	Accessories
  * @author		EllisLab Dev Team
- * @link		http://expressionengine.com
+ * @link		http://ellislab.com
  */
 class Learning_acc {
 	
@@ -68,8 +68,7 @@ class Learning_acc {
 			',
 			$this->EE->lang->line('support') => '<ul>
 						<li><a href="'.$this->EE->cp->masked_url($this->EE->config->item('doc_url')).'" title="'.$this->EE->lang->line('documentation').'">'.$this->EE->lang->line('documentation').'</a></li>
-						<li><a href="'.$this->EE->cp->masked_url('http://expressionengine.com/forums/').'" title="'.$this->EE->lang->line('support_forums').'">'.$this->EE->lang->line('support_forums').'</a></li>
-						<li><a href="'.$this->EE->cp->masked_url('http://expressionengine.com/wiki/').'" title="'.$this->EE->lang->line('wiki').'" title="'.$this->EE->lang->line('wiki').'">'.$this->EE->lang->line('wiki').'</a></li>
+						<li><a href="'.$this->EE->cp->masked_url('http://ellislab.com/forums/').'" title="'.$this->EE->lang->line('support_forums').'">'.$this->EE->lang->line('support_forums').'</a></li>
 					</ul>'			
 		);
 	}

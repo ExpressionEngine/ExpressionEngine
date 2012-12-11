@@ -5,8 +5,8 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,7 +20,7 @@
  * @subpackage	Core
  * @category	Core
  * @author		EllisLab Dev Team
- * @link		http://expressionengine.com
+ * @link		http://ellislab.com
  */
 class Wizard extends CI_Controller {
 
@@ -80,7 +80,7 @@ class Wizard extends CI_Controller {
 	// These are the values we need to set during a first time installation
 	var $userdata = array(
 		'app_version'			=> '',
-		'doc_url'				=> 'http://expressionengine.com/user_guide/',
+		'doc_url'				=> 'http://ellislab.com/expressionengine/user-guide/',
 		'install_lock'			=> '1',
 		'ext'					=> '.php',
 		'ip'					=> '',

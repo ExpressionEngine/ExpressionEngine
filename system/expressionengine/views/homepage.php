@@ -136,7 +136,6 @@ if ($EE_view_disable !== TRUE)
 			</li>
 			
 			<li class="resource"><a rel="external" href="<?=config_item('doc_url')?>"><?=lang('user_guide')?></a></li>
-			<li class="resource"><a rel="external" href="http://expressionengine.com/wiki/"><?=lang('ee_wiki')?></a></li>
 		</ul>
 	</div>
 
