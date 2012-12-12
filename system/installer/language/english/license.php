@@ -1,6 +1,6 @@
 This license is a legal agreement between you and EllisLab, Inc. for the use of ExpressionEngine (*all versions*) Software (the "Software"). By downloading any version of ExpressionEngine or any ExpressionEngine Add-ons you agree to be bound by the terms and conditions of this license. EllisLab, Inc. reserves the right to alter this agreement at any time, for any reason, without notice.
 
-Revised on: 25 November, 2012
+Revised on: 18 December, 2012
 
 EXPRESSIONENGINE INSTALLATIONS
 
@@ -9,8 +9,8 @@ An ExpressionEngine license purchase allows a single "live" installation in a pr
 Permitted Use
 
 *  ExpressionEngine 2.x Licenses:
-   *  Users of an ExpressionEngine 2.x License may use the Software on a website engaging in either commercial or non-commercial activities.
-   *  Users of the Software free trial must purchase a license to continue using the Software after the trial period.
+   *  Standard License: Users of a standard ExpressionEngine 2.x License may use the Software on a website engaging in either commercial or non-commercial activities.
+   *  Core License: Users of the Core License may use the Software only on a website engaging in personal, non-commercial, or non-profit activities.
 
 *  ExpressionEngine 1.x Licenses:
    *  Core License: Users of the Core License may use the Software only on a website engaging in personal, non-commercial, or non-profit activities.
