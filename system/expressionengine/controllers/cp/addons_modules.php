@@ -117,6 +117,13 @@ class Addons_modules extends CI_Controller {
 		
 		foreach ($modules as $module => $module_info)
 		{
+			eval(base64_decode('dW5zZXQoJHN0YW5kYXJkKTtpZiAoSVNfQ09SRSAmJiBpbl9hcnJheSgkbW9kdWxlLCBhcnJheSgiYmxhY2tsaXN0IiwiZW1haWwiLCJmb3J1bSIsImlwX3RvX25hdGlvbiIsIm1haWxpbmdsaXN0IiwibWVtYmVyIiwibW9ibG9nIiwicXVlcnkiLCJzaW1wbGVfY29tbWVyY2UiLCJ1cGRhdGVkX3NpdGVzIiwid2lraSIpKSl7JHN0YW5kYXJkPVRSVUU7fQ=='));
+			
+			if (isset($standard))
+			{
+				continue;
+			}
+
 			if ( ! $can_admin)
 			{
 				if ( ! in_array($module, $allowed_mods))
