@@ -54,9 +54,13 @@
 	</div>
 </div>
 <![endif]-->
+
+<?php if (IS_CORE): ?>
 <div class="nanner">
 	<p>Core is a free, feature limited version of ExpressionEngine <a href="https://store.ellislab.com/"><b>Upgrade Now</b></a> to get <a href="http://ellislab.com/expressionengine">all the features</a></p>
 </div>
+<?php endif;?>
+
 <div id="branding"></div>
 
 <?php
