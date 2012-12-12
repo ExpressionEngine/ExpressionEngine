@@ -585,7 +585,7 @@ class EE_Template {
 			{
 				$name = substr($ex[0], 0, strpos($ex[0], ':'));
 				
-				if ($this->EE->config->item('multiple_sites_enabled') == 'y' && ! IS_FREELANCER)
+				if ($this->EE->config->item('multiple_sites_enabled') == 'y' && ! IS_CORE)
 				{
 					if (count($this->sites) == 0)
 					{
@@ -3483,7 +3483,7 @@ class EE_Template {
 		if (isset($this->tagparams['site']))
 		{
 			if (count($this->sites) == 0 && 
-				$this->EE->config->item('multiple_sites_enabled') == 'y' && ! IS_FREELANCER)
+				$this->EE->config->item('multiple_sites_enabled') == 'y' && ! IS_CORE)
 			{
 				$sites_query = $this->EE->db->query("SELECT site_id, site_name FROM exp_sites ORDER BY site_id");
 				

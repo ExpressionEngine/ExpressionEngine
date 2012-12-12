@@ -214,7 +214,7 @@ class Admin_model extends CI_Model {
 			unset($f_data['general_cfg']['cp_url']);
 		}
 
-		if ( ! file_exists(APPPATH.'libraries/Sites.php') OR IS_FREELANCER)
+		if ( ! file_exists(APPPATH.'libraries/Sites.php') OR IS_CORE)
 		{
 			unset($f_data['general_cfg']['multiple_sites_enabled']);	
 		}
