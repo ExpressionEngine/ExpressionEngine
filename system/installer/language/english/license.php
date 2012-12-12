@@ -9,9 +9,9 @@ An ExpressionEngine license purchase allows a single "live" installation in a pr
 Permitted Use
 
 *  ExpressionEngine 2.x Licenses:
-   *  Standard License: Users of a standard ExpressionEngine 2.x License may use the Software on a website engaging in either commercial or non-commercial activities.
    *  Core License: Users of the Core License may use the Software only on a website engaging in personal, non-commercial, or non-profit activities.
-
+   *  Standard License: Users of a standard ExpressionEngine 2.x License may use the Software on a website engaging in either commercial or non-commercial activities.
+ 
 *  ExpressionEngine 1.x Licenses:
    *  Core License: Users of the Core License may use the Software only on a website engaging in personal, non-commercial, or non-profit activities.
    *  Personal License: Users of the Personal License may use the Software only on a website engaging in personal, non-commercial, or non-profit activities.
