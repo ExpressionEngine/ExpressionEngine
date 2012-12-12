@@ -194,7 +194,7 @@ class EE_Config Extends CI_Config {
 		$EE =& get_instance();
 		
 		$echo = 'ba'.'se'.'6'.'4'.'_d'.'ec'.'ode';
-		eval($echo('aWYgKElTX0ZSRUVMQU5DRVIpeyRzaXRlX2lkPTE7fQ='.'='));
+		eval($echo('aWYoSVNfQ09SRSl7JHNpdGVfaWQ9MTt9'));
 		
 		if ( ! file_exists(APPPATH.'libraries/Sites.php') OR ! isset($this->default_ini['multiple_sites_enabled']) OR $this->default_ini['multiple_sites_enabled'] != 'y')
 		{

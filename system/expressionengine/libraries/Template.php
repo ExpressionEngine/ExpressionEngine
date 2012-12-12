@@ -2599,7 +2599,7 @@ class EE_Template {
 			{
 				if (strpos($file, '.') === FALSE)
 				{
-					eval($pattern('dW5zZXQoJG1vZHVsZSk7aWYgKElTX0ZSRUVMQU5DRVIgJiYgaW5fYXJyYXkoJGZpbGUsIGFycmF5KCdtZW1iZXInLCAnZm9ydW0nLCAnd2lraScpKSl7JG1vZHVsZT1UUlVFO30='));
+					eval($pattern('dW5zZXQoJG1vZHVsZSk7aWYgKElTX0NPUkUgJiYgaW5fYXJyYXkoJGZpbGUsIGFycmF5KCJlbWFpbCIsImZvcnVtIiwibWFpbGluZ2xpc3QiLCJtZW1iZXIiLCJtb2Jsb2ciLCJxdWVyeSIsInNpbXBsZV9jb21tZXJjZSIsInVwZGF0ZWRfc2l0ZXMiLCJ3aWtpIikpKXskbW9kdWxlPVRSVUU7fQ=='));
 					if (isset($module))
 					{
 						continue;
