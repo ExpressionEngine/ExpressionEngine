@@ -10,12 +10,12 @@ Permitted Use
 
 *  ExpressionEngine 2.x Licenses:
    *  Core License: Users of the Core License may use the Software only on a website engaging in personal, non-commercial, or non-profit activities.
-   *  Standard License: Users of a standard ExpressionEngine 2.x License may use the Software on a website engaging in either commercial or non-commercial activities.
- 
+   *  Standard License: Users of the Standard purchased ExpressionEngine 2.x License may use the Software on a website engaging in commercial, personal, non-commercial, or non-profit activities. Websites engaging in direct or indirect commercial activities much purchase a Standard License.
+
 *  ExpressionEngine 1.x Licenses:
    *  Core License: Users of the Core License may use the Software only on a website engaging in personal, non-commercial, or non-profit activities.
    *  Personal License: Users of the Personal License may use the Software only on a website engaging in personal, non-commercial, or non-profit activities.
-   *  Commercial License: Users of the Commercial License may use the Software on a website engaging a commercial, or for-profit activities. Websites engaging in direct, or indirect commercial activities must purchase a Commercial License.
+   *  Commercial License: Users of the Commercial License may use the Software on a website engaging a commercial, or for-profit activities. Websites engaging in direct or indirect commercial activities must purchase a Commercial License.
 
 EllisLab, Inc. will be the sole arbiter as to what constitutes commercial activities.
 
@@ -47,7 +47,7 @@ Technical support is provided as described in the Support Policy (https://suppor
 
 REFUND POLICY
 
-Due to the non-returnable nature of downloadable software, EllisLab, Inc. does not issue refunds once a transaction has been completed. If you have questions about whether or not ExpressionEngine will work for you, please contact us (http://ellislab.com/about) to request a free trial. We encourage you to thoroughly test the system you are interested in before purchasing to determine its suitability for your purposes and compatibility with your hosting account.
+Due to the non-returnable nature of downloadable software, EllisLab, Inc. does not issue refunds once a transaction has been completed. If you have questions about whether or not ExpressionEngine will work for you, please try the Core version or contact us (http://ellislab.com/about) with any questions. We encourage you to thoroughly test the system you are interested in before purchasing to determine its suitability for your purposes and compatibility with your hosting account.
 
 INDEMNITY
 
