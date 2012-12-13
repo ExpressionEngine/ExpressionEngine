@@ -72,6 +72,14 @@ if ($EE_view_disable !== TRUE)
 							break;
 						case 'i':
 							$label = lang($name, $name);
+							
+							if ($name == 'license_number' && IS_CORE)
+							{
+								$details['value']['value'] = 'CORE LICENSE';
+								$pref = form_input(array_merge($details['value'], array('id' => $name, 'class' => 'input fullfield', 'size' => 20, 'maxlength' => 120, 'disabled' => 'disabled')));
+								break;								
+							}
+
 							$pref = form_input(array_merge($details['value'], array('id' => $name, 'class' => 'input fullfield', 'size' => 20, 'maxlength' => 120)));
 							break;
 					}
