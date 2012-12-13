@@ -2590,7 +2590,6 @@ class EE_Template {
 		$this->EE->load->helper('file');
 		$this->EE->load->helper('directory');
 		$ext_len = strlen('.php');
-		$pattern = 'bas'.'e'.'6'.'4_d'.'ecode';
 		
 		// first get first party modules
 		if (($map = directory_map(PATH_MOD, TRUE)) !== FALSE)
@@ -2599,8 +2598,7 @@ class EE_Template {
 			{
 				if (strpos($file, '.') === FALSE)
 				{
-					eval($pattern('dW5zZXQoJG1vZHVsZSk7aWYgKElTX0NPUkUgJiYgaW5fYXJyYXkoJGZpbGUsIGFycmF5KCJibGFja2xpc3QiLCJlbWFpbCIsImZvcnVtIiwiaXBfdG9fbmF0aW9uIiwibWFpbGluZ2xpc3QiLCJtZW1iZXIiLCJtb2Jsb2ciLCJxdWVyeSIsInNpbXBsZV9jb21tZXJjZSIsInVwZGF0ZWRfc2l0ZXMiLCJ3aWtpIikpKXskbW9kdWxlPVRSVUU7fQ=='));
-					if (isset($module))
+					if (IS_CORE && in_array($file, $this->EE->core->standard_modules))
 					{
 						continue;
 					}

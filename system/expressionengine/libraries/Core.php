@@ -105,8 +105,10 @@ class EE_Core {
 			'safecracker', 'search', 'simple_commerce', 'stats',
 			'updated_sites', 'wiki'
 		);
-		
-		
+		$this->standard_modules = array('blacklist', 'email', 'forum', 'ip_to_nation',
+			'mailinglist', 'member', 'moblog', 'query', 'simple_commerce',
+			'updated_sites', 'wiki');
+
 		// Set a liberal script execution time limit, making it shorter for front-end requests than CI's default
 		if (function_exists("set_time_limit") == TRUE AND @ini_get("safe_mode") == 0)
 		{
