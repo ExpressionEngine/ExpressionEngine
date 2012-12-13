@@ -69,7 +69,7 @@ class Cp {
 		}
 
 		// Make sure all requests to iframe the CP are denied
-		$this->EE->output->set_header('X-Frame-Options: Deny');
+		$this->EE->output->set_header('X-Frame-Options: SameOrigin');
 	}
 
 	
