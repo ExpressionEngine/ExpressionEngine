@@ -33,6 +33,10 @@ DISPLAY OF COPYRIGHT NOTICES
 
 All copyright and proprietary notices and logos in the Control Panel and within the Software files must remain intact.
 
+GIVING CREDIT
+
+Core License Users are required to display a "powered by ExpressionEngine" link or graphic on their publicly accessible site, pointing to http://ellislab.com/expressionengine. Users of a purchased Standard license are exempt from this requirement.
+
 MAKING COPIES
 
 You may make copies of the Software for back-up purposes, provided that you reproduce the Software in its original form and with all proprietary notices on the back-up copy.
