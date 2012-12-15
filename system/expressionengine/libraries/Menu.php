@@ -278,7 +278,7 @@ class EE_Menu {
 			$menu['design']['themes']['wiki_themes'] = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=wiki'.AMP.'method=list_themes';
 		}
 		
-		if ( ! IS_FREELANCER)
+		if ( ! IS_CORE)
 		{
 			$menu['design']['themes']['member_profile_templates'] = BASE.AMP."C=design".AMP."M=member_profile_templates";
 		}
@@ -769,7 +769,7 @@ class EE_Menu {
 		$this->EE->load->model('site_model');
 		
 		$site_list = $this->EE->session->userdata('assigned_sites'); 
-		$site_list = ($this->EE->config->item('multiple_sites_enabled') === 'y' && ! IS_FREELANCER) ? $site_list : FALSE;
+		$site_list = ($this->EE->config->item('multiple_sites_enabled') === 'y' && ! IS_CORE) ? $site_list : FALSE;
 
 		$menu = array();
 

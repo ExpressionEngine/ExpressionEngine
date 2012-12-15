@@ -54,6 +54,7 @@
 	</div>
 </div>
 <![endif]-->
+
 <div id="branding"></div>
 
 <?php
