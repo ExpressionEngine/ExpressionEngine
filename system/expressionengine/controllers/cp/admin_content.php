@@ -5,8 +5,8 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,7 +20,7 @@
  * @subpackage	Control Panel
  * @category	Control Panel
  * @author		EllisLab Dev Team
- * @link		http://expressionengine.com
+ * @link		http://ellislab.com
  */
 class Admin_content extends CI_Controller {
 
@@ -630,6 +630,12 @@ class Admin_content extends CI_Controller {
 			// Insert data
 
 			$_POST['site_id'] = $this->config->item('site_id');
+			$_POST['status_group'] = ($this->input->post('status_group') !== FALSE &&
+				$this->input->post('status_group') != '')
+				? $this->input->post('status_group') : NULL;
+			$_POST['field_group'] = ($this->input->post('field_group') !== FALSE &&
+				$this->input->post('field_group') != '')
+				? $this->input->post('field_group') : NULL;
 
 			// duplicating preferences?
 			if ($dupe_id !== FALSE AND is_numeric($dupe_id))

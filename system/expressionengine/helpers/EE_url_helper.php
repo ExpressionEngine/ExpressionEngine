@@ -22,7 +22,7 @@
  * @subpackage	Helpers
  * @category	Helpers
  * @author		EllisLab Dev Team
- * @link		http://expressionengine.com
+ * @link		http://ellislab.com
  */
 
 // ------------------------------------------------------------------------

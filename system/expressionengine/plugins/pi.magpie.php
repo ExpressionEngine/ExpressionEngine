@@ -4,13 +4,13 @@
 =====================================================
  ExpressionEngine - by EllisLab
 -----------------------------------------------------
- http://expressionengine.com/
+ http://ellislab.com/
 -----------------------------------------------------
  Copyright (c) 2004 - 2012 EllisLab, Inc.
 =====================================================
  THIS IS COPYRIGHTED SOFTWARE
  PLEASE READ THE LICENSE AGREEMENT
- http://expressionengine.com/user_guide/license.html
+ http://ellislab.com/expressionengine/user-guide/license.html
 =====================================================
  File: pi.magpie.php
 -----------------------------------------------------
@@ -23,7 +23,7 @@ $plugin_info = array(
 	'pi_name'			=> 'Magpie RSS Parser',
 	'pi_version'		=> '1.3.5',
 	'pi_author'			=> 'Paul Burdick',
-	'pi_author_url'		=> 'http://expressionengine.com/',
+	'pi_author_url'		=> 'http://ellislab.com/',
 	'pi_description'	=> 'Retrieves and Parses RSS/Atom Feeds',
 	'pi_usage'			=> Magpie::usage()
 );

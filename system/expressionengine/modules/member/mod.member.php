@@ -6,8 +6,8 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -21,7 +21,7 @@
  * @subpackage	Modules
  * @category	Modules
  * @author		EllisLab Dev Team
- * @link		http://expressionengine.com
+ * @link		http://ellislab.com
  */
 
  /*
@@ -2350,8 +2350,11 @@ class Member {
 			unset($fresh);
 		}
 		
-		$this->EE->TMPL->parse($str);
-		$str = $this->EE->TMPL->parse_globals($this->EE->TMPL->final_template);
+		if ( ! $this->in_forum)
+		{
+			$this->EE->TMPL->parse($str);
+			$str = $this->EE->TMPL->parse_globals($this->EE->TMPL->final_template);
+		}
 		
 		//  Add security hashes to forms
 		if ( ! class_exists('Template'))
@@ -2774,7 +2777,11 @@ class Member {
 						$time = $this->EE->localize->set_localized_time($time, $zone, $default_fields['daylight_savings']);
 					}
 
-					$this->EE->TMPL->tagdata = $this->_var_swap_single($key, $this->EE->localize->decode_date($val, $time), $this->EE->TMPL->tagdata);
+					$this->EE->TMPL->tagdata = $this->_var_swap_single(
+						$key,
+						$this->EE->localize->decode_date($val, $time, FALSE),
+						$this->EE->TMPL->tagdata
+					);
 				}
 
 				//  {bio}

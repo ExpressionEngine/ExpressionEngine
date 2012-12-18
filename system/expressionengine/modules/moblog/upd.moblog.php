@@ -5,8 +5,8 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,7 +20,7 @@
  * @subpackage	Modules
  * @category	Update File
  * @author		EllisLab Dev Team
- * @link		http://expressionengine.com
+ * @link		http://ellislab.com
  */
 
 class Moblog_upd {
@@ -63,7 +63,7 @@ class Moblog_upd {
 			'moblog_time_interval'		=> array('type' => 'int', 'constraint' => 4, 'unsigned' => TRUE, 'default' => '0'),
 			'moblog_type'				=> array('type' => 'varchar', 'constraint' => 10,	'default' => ''),
 			'moblog_gallery_id'			=> array('type' => 'int', 'constraint' => 6, 'default' => '0'),
-			'moblog_gallery_category'	=> array('type' => 'int', 'cosntraint' => 10, 'unsigned' => TRUE, 'default' => '0'),
+			'moblog_gallery_category'	=> array('type' => 'int', 'constraint' => 10, 'unsigned' => TRUE, 'default' => '0'),
 			'moblog_gallery_status'		=> array('type' => 'varchar', 'constraint' => 50, 'default' => ''),
 			'moblog_gallery_comments'	=> array('type' => 'varchar', 'constraint' => 10, 'default' => 'y'),
 			'moblog_gallery_author'		=> array('type' => 'int', 'constraint' => 10, 'unsigned' => TRUE, 'default' => '1'),

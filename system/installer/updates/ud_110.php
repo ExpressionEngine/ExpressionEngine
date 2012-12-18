@@ -5,8 +5,8 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,7 +20,7 @@
  * @subpackage	Core
  * @category	Core
  * @author		EllisLab Dev Team
- * @link		http://expressionengine.com
+ * @link		http://ellislab.com
  */
 class Updater {
 
@@ -316,13 +316,13 @@ class Category_Order {
 		$str .= '====================================================='."\n";
 		$str .= ' ExpressionEngine - by EllisLab'."\n";
 		$str .= '-----------------------------------------------------'."\n";
-		$str .= ' http://expressionengine.com/'."\n";
+		$str .= ' http://ellislab.com/'."\n";
 		$str .= '-----------------------------------------------------'."\n";
 		$str .= ' Copyright (c) 2003 - 2012, EllisLab, Inc.'."\n";
 		$str .= '====================================================='."\n";
 		$str .= ' THIS IS COPYRIGHTED SOFTWARE'."\n";
 		$str .= ' PLEASE READ THE LICENSE AGREEMENT'."\n";
-		$str .= ' http://expressionengine.com/user_guide/license.html'."\n";
+		$str .= ' http://ellislab.com/expressionengine/user-guide/license.html'."\n";
 		$str .= '====================================================='."\n";
 		$str .= ' Purpose: Member Profile Skin Elements'."\n";
 		$str .= '====================================================='."\n";

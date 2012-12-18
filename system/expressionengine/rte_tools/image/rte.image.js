@@ -20,7 +20,8 @@ function setupImageTool($editor, $image_button) {
 		$figure_overlay = $('<div id="rte_image_figure_overlay" class="WysiHat-ui-control"><p></p></div>')
 			.hide()
 			.appendTo($editor.parents('.WysiHat-container')),
-		$curr_figure	= null;
+		$curr_figure	= null,
+		saved_range		= null;
 	
 
 	$editor.on('mousedown', function() {
@@ -53,6 +54,12 @@ function setupImageTool($editor, $image_button) {
 		if ( ! $file_browser) {
 			$file_browser = $('#file_browser');
 		}
+
+		// Keep the current range around until choosing a file
+		// is completed in case the browser's selection changes
+		// in the mean time
+		sel = window.getSelection();
+		saved_range = sel.getRangeAt(0);
 	});
 	
 	$parent.append('<input type="hidden" id="rte_image_' + $field.attr('name') + '"/>');
@@ -65,12 +72,6 @@ function setupImageTool($editor, $image_button) {
 			{
 				$editor.focus();
 			}
-			
-			var sel = window.getSelection(),
-				range = document.createRange();
-			
-			range.setStart(sel.anchorNode, sel.anchorOffset);
-			range.setEnd(sel.focusNode, sel.focusOffset);
 			
 			var	$img = $('<figure/>')
 				.css('text-align','center')
@@ -87,7 +88,7 @@ function setupImageTool($editor, $image_button) {
 				.find('img').attr('alt', caption_text);
 			}
 			
-			range.insertNode( $img.get(0) );
+			saved_range.insertNode( $img.get(0) );
 			
 			image_finalize();
 			

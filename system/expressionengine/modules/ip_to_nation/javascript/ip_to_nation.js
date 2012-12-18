@@ -29,8 +29,12 @@ var Ip2n_cp = {
 
 				return;
 			}
-
-			that.progress_p.text(EE.ip2n.lang.ip_db_failed);
+			
+			msg = data.error || '';
+			
+			that.progress_p.text(EE.ip2n.lang.ip_db_failed + '  ' + msg);
+			
+		
 		});
 	}
 

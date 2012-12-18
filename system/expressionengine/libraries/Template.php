@@ -5,8 +5,8 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,7 +20,7 @@
  * @subpackage	Core
  * @category	Core
  * @author		EllisLab Dev Team
- * @link		http://expressionengine.com
+ * @link		http://ellislab.com
  */
 class EE_Template {
 		
@@ -90,7 +90,7 @@ class EE_Template {
 
     var $strict_urls		= FALSE;		// Whether to make URLs operate strictly or not.  This is set via a template global pref
 	
-	var $realm				= 'ExpressionEngine Template';  // Localize?
+	var $realm				= 'Restricted Content';  // Localize?
 
 	var $marker = '0o93H7pQ09L8X1t49cHY01Z5j4TT91fGfr'; // Temporary marker used as a place-holder for template data
 
@@ -585,7 +585,7 @@ class EE_Template {
 			{
 				$name = substr($ex[0], 0, strpos($ex[0], ':'));
 				
-				if ($this->EE->config->item('multiple_sites_enabled') == 'y' && ! IS_FREELANCER)
+				if ($this->EE->config->item('multiple_sites_enabled') == 'y' && ! IS_CORE)
 				{
 					if (count($this->sites) == 0)
 					{
@@ -2505,7 +2505,7 @@ class EE_Template {
 				if (isset($template[1]))
 				{
 					$this->log_item('Processing "'.$template[0].'/'.$template[1].'" Template as 404 Page');
-					$this->output->out_type = "404";
+					$this->EE->output->out_type = "404";
 					$this->template_type = "404";
 					$this->fetch_and_parse($template[0], $template[1]);
 					$this->cease_processing = TRUE;
@@ -2590,7 +2590,6 @@ class EE_Template {
 		$this->EE->load->helper('file');
 		$this->EE->load->helper('directory');
 		$ext_len = strlen('.php');
-		$pattern = 'bas'.'e'.'6'.'4_d'.'ecode';
 		
 		// first get first party modules
 		if (($map = directory_map(PATH_MOD, TRUE)) !== FALSE)
@@ -2599,8 +2598,7 @@ class EE_Template {
 			{
 				if (strpos($file, '.') === FALSE)
 				{
-					eval($pattern('dW5zZXQoJG1vZHVsZSk7aWYgKElTX0ZSRUVMQU5DRVIgJiYgaW5fYXJyYXkoJGZpbGUsIGFycmF5KCdtZW1iZXInLCAnZm9ydW0nLCAnd2lraScpKSl7JG1vZHVsZT1UUlVFO30='));
-					if (isset($module))
+					if (IS_CORE && in_array($file, $this->EE->core->standard_modules))
 					{
 						continue;
 					}
@@ -2935,6 +2933,12 @@ class EE_Template {
 			$str = preg_replace_callback("/".LD."\s*path=(.*?)".RD."/", array(&$this->EE->functions, 'create_url'), $str);
 		}
 		
+		// {current_url}
+		$str = str_replace(LD.'current_url'.RD, $this->EE->functions->fetch_current_uri(), $str);
+
+		// {current_path}
+		$str = str_replace(LD.'current_path'.RD, (($this->EE->uri->uri_string) ? $this->EE->uri->uri_string : '/'), $str);
+
 		// Add Action IDs form forms and links
 		$str = $this->EE->functions->insert_action_ids($str);
 		
@@ -3477,7 +3481,7 @@ class EE_Template {
 		if (isset($this->tagparams['site']))
 		{
 			if (count($this->sites) == 0 && 
-				$this->EE->config->item('multiple_sites_enabled') == 'y' && ! IS_FREELANCER)
+				$this->EE->config->item('multiple_sites_enabled') == 'y' && ! IS_CORE)
 			{
 				$sites_query = $this->EE->db->query("SELECT site_id, site_name FROM exp_sites ORDER BY site_id");
 				
@@ -3925,8 +3929,8 @@ class EE_Template {
 	function _match_date_vars($str)
 	{
 		if (strpos($str, 'format=') === FALSE) return;
-	
-		if (preg_match_all("/".LD."([^".RD."]*?)\s+format=[\"'](.*?)[\"']".RD."/s", $str, $matches, PREG_SET_ORDER))
+		
+		if (preg_match_all("/".LD."([\w+]*)\s+format=[\"'](.*?)[\"']".RD."/", $str, $matches, PREG_SET_ORDER))
 		{
 			for ($j = 0, $tot = count($matches); $j < $tot; $j++)
 			{

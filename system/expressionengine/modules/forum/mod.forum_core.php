@@ -6,8 +6,8 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -21,7 +21,7 @@
  * @subpackage	Modules
  * @category	Modules
  * @author		EllisLab Dev Team
- * @link		http://expressionengine.com
+ * @link		http://ellislab.com
  */
 
 class Forum_Core extends Forum {
@@ -8887,17 +8887,6 @@ class Forum_Core extends Forum {
 				return $this->EE->output->show_user_error('general', str_replace("%x", $this->EE->session->userdata['search_flood_control'], lang('search_time_not_expired')));
 			}
 		}
-		
-		// Secure forms?
-	  	// If the hash is not found we'll simply reload the page.
-	  	if ($member_id == '' && $new_topic_search === FALSE && $view_pending_topics === FALSE)
-	  	{
-		  	if ( ! $this->EE->security->secure_forms_check($this->EE->input->post('XID')))
-		  	{
-				$this->EE->functions->redirect($this->forum_path('search'));
-				exit;
-		  	}  		
-	  	}
 
 		// Fetch allowed forums
 		// Before doing anything else we'll fetch the forum IDs 

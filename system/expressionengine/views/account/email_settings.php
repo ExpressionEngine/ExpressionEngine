@@ -7,15 +7,22 @@
 
 		<p>
 			<?=form_label(required().lang('email'), 'email')?>
-			<?=form_input(array('id' => 'email', 'name' => 'email', 'class' => 'field', 'value' => $email, 'maxlength' => 72, 'autocomplete' => 'off'))?>
+			<?=form_input(array('id' => 'email', 'name' => 'email', 'class' => 'field', 'value' => $email, 'maxlength' => 72))?>
 		</p>
 
-		<?php if ($this->session->userdata('group_id') != 1):?>
-		<p><em class="notice"><?=lang('existing_password_email')?></em><br />
-			<?=form_label(lang('existing_password'), 'password')?>
-			<?=form_password(array('id' => 'password', 'name' => 'password', 'class' => 'password' ,'value' => '', 'maxlength' => 40, 'autocomplete' => 'off'))?>
+		
+		<p>
+			<em class="notice">
+				<?php if ($this->session->userdata('group_id') == 1):?>
+					<?=lang('password_auth')?>
+				<?php else: ?>
+					<?=lang('existing_password_email')?>
+				<?php endif;?>
+			</em>
+			<br />
+			<?=form_label(lang('existing_password'), 'current_password')?>
+			<?=form_password(array('id' => 'current_password', 'name' => 'current_password', 'class' => 'current_password' ,'value' => '', 'maxlength' => 40, 'autocomplete' => 'off'))?>
 		</p>
-		<?php endif;?>
 
 		<fieldset><legend><?=lang('email_options')?></legend>
 		<table style="width:100%">

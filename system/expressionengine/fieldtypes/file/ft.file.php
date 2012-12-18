@@ -5,8 +5,8 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,7 +20,7 @@
  * @subpackage	Fieldtypes
  * @category	Fieldtypes
  * @author		EllisLab Dev Team
- * @link		http://expressionengine.com
+ * @link		http://ellislab.com
  */
 class File_ft extends EE_Fieldtype {
 
@@ -52,7 +52,7 @@ class File_ft extends EE_Fieldtype {
 	function save($data)
 	{
 		$directory = $this->EE->input->post($this->field_name.'_hidden_dir');
-		return $this->EE->file_field->format_data($data, $directory);
+		return $this->EE->file_field->format_data(urldecode($data), $directory);
 	}
 	
 	// --------------------------------------------------------------------

@@ -17,6 +17,9 @@ $lang = array(
 'forum_post' =>
 'Forum Topic',
 
+'password_auth' =>
+'You must submit your current Super Admin password to continue',
+
 'existing_password_exp' =>
 'You must submit the current password to update this page',
 

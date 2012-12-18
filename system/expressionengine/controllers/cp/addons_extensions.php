@@ -5,8 +5,8 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,7 +20,7 @@
  * @subpackage	Control Panel
  * @category	Control Panel
  * @author		EllisLab Dev Team
- * @link		http://expressionengine.com
+ * @link		http://ellislab.com
  */
 class Addons_extensions extends CI_Controller {
 
@@ -36,6 +36,7 @@ class Addons_extensions extends CI_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
+		$this->load->library('addons');
 		$this->lang->loadfile('addons');
 		$this->load->model('addons_model');
 	}
@@ -60,10 +61,9 @@ class Addons_extensions extends CI_Controller {
 		$this->jquery->tablesorter('.mainTable', '{
 			widgets: ["zebra"]
 		}');
-
+		
 		$this->javascript->compile();
 
-		$this->load->library('addons');
 		$this->load->model('addons_model');
 
 		$installed_ext = array();
@@ -91,7 +91,9 @@ class Addons_extensions extends CI_Controller {
 			
 			if ( ! class_exists($class_name))
 			{
-				if (DEBUG)
+				if ($this->config->item('debug') == 2
+					OR ($this->config->item('debug') == 1
+						AND $this->session->userdata('group_id') == 1))
 				{
 					include($ext['path'].$ext['file']);
 				}
@@ -314,6 +316,7 @@ class Addons_extensions extends CI_Controller {
 		}
 		
 		$name = strtolower($vars['file']);
+		$this->addons->get_files('extensions');
 		$ext_path = $this->addons->_packages[$name]['extension']['path'];
 
 		/** -----------------------------

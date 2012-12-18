@@ -6,8 +6,8 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -21,7 +21,7 @@
  * @subpackage	Modules
  * @category	Modules
  * @author		EllisLab Dev Team
- * @link		http://expressionengine.com
+ * @link		http://ellislab.com
  */
 
 class File {
@@ -868,7 +868,7 @@ class File {
 			$row['directory_id']	= $row['id'];
 			$row['directory_title']	= $row['name'];
 			$row['entry_id']		= $row['file_id'];
-			$row['file_url']		= reduce_double_slashes($row_prefs['url'].'/'.$row['file_name']);
+			$row['file_url']		= rtrim($row_prefs['url'], '/').'/'.$row['file_name'];
 			$row['filename'] 		= $row['file_name'];
 			$row['viewable_image'] = $this->is_viewable_image($row['file_name']);
 
@@ -908,7 +908,7 @@ class File {
 				{
 					$size_data = array();
 					
-					$row[$data['name'].'_file_url'] = reduce_double_slashes($row_prefs['url'].'/_'.$data['name'].'/'.$row['file_name']);
+					$row[$data['name'].'_file_url'] = rtrim($row_prefs['url'], '/').'/_'.$data['name'].'/'.$row['file_name'];
 					
 					$size_data = $this->get_file_sizes(reduce_double_slashes($row_prefs['server_path'].'/_'.$data['name'].'/'.$row['file_name']));
 						

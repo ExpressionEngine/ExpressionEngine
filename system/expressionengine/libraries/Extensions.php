@@ -5,8 +5,8 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,7 +20,7 @@
  * @subpackage	Core
  * @category	Core
  * @author		EllisLab Dev Team
- * @link		http://expressionengine.com
+ * @link		http://ellislab.com
  */
 class EE_Extensions {  
 	
@@ -155,7 +155,25 @@ class EE_Extensions {
 		$this->EE->addons->is_package('');
 		
 		// Retrieve arguments for function
-		$args = array_slice(func_get_args(), 1);
+		if (is_object($parameter_one) && is_php('5.0.0') == TRUE)
+		{
+			$php4_object = FALSE;
+			$args = array_slice(func_get_args(), 1);
+		}
+		else
+		{
+			$php4_object = TRUE;
+			$args = array_slice(func_get_args(), 1);
+		}
+
+		if (is_php('5'))
+		{
+			foreach($args as $k => $v)
+			{
+				$php5_args[$k] =& $args[$k];
+			}
+		}
+		
 		
 		// Give arguments by reference
 		foreach($args as $k => $v)
@@ -237,10 +255,22 @@ class EE_Extensions {
 				{
 					$this->EE->TMPL->log_item('Calling Extension Class/Method: '.$class_name.'/'.$method);
 				}
-				
-				$this->last_call = call_user_func_array(array(&$this->OBJ[$class_name], $method), $args);
+
+				if ($php4_object === TRUE)
+				{
+					$this->last_call = call_user_func_array(array(&$this->OBJ[$class_name], $method), array(&$parameter_one) + $args);
+				}
+				elseif ( ! empty($php5_args))
+				{
+					$this->last_call = call_user_func_array(array(&$this->OBJ[$class_name], $method), $php5_args);
+				}
+				else
+				{
+					$this->last_call = call_user_func_array(array(&$this->OBJ[$class_name], $method), $args);
+				}
 				
 				$this->in_progress = '';
+				
 
 				$this->EE->load->remove_package_path($path);
 

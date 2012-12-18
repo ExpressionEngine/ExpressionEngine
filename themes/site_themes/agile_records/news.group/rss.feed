@@ -17,7 +17,7 @@
 	<dc:creator>{email}</dc:creator>
 	<dc:rights>Copyright {gmt_date format="%Y"}</dc:rights>
 	<dc:date>{gmt_date format="%Y-%m-%dT%H:%i:%s%Q"}</dc:date>
-	<admin:generatorAgent rdf:resource="http://expressionengine.com/" />
+	<admin:generatorAgent rdf:resource="http://ellislab.com/" />
 	
 {exp:channel:entries channel="news" limit="10" dynamic_start="on" disable="member_data"}
 	<item>

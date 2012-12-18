@@ -8,8 +8,8 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -23,7 +23,7 @@
  * @subpackage	Control Panel
  * @category	Control Panel
  * @author		EllisLab Dev Team
- * @link		http://expressionengine.com
+ * @link		http://ellislab.com
  */
 class Content_publish extends CI_Controller {
 
@@ -654,7 +654,7 @@ class Content_publish extends CI_Controller {
 		
 		$r = '';
 
-		$entry_title = $this->typography->format_characters(stripslashes($resrow['title']));
+		$entry_title = $this->typography->format_characters($resrow['title']);
 
 		foreach ($fields as $key => $val)
 		{
@@ -679,7 +679,7 @@ class Content_publish extends CI_Controller {
 				}
 				else
 				{
-					$r .= $this->typography->parse_type(stripslashes($resrow[$key]),
+					$r .= $this->typography->parse_type($resrow[$key],
 											 array(
 														'text_format'	=> $resrow['field_ft_'.$expl['1']],
 														'html_format'	=> $channel_info->channel_html_formatting,

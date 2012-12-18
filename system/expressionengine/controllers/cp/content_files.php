@@ -5,8 +5,8 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,7 +20,7 @@
  * @subpackage	Control Panel
  * @category	Control Panel
  * @author		EllisLab Dev Team
- * @link		http://expressionengine.com
+ * @link		http://ellislab.com
  */
 
 class Content_files extends CI_Controller {
@@ -188,7 +188,7 @@ class Content_files extends CI_Controller {
 		);
 
 		$search_select_options = array(
-			''				=> lang('search_in'),
+			'all'				=> lang('search_in'),
 			'file_name'		=> lang('file_name'),
 			'file_title'	=> lang('file_title'),
 			'custom_field'	=> lang('custom_fields'),
@@ -310,7 +310,7 @@ class Content_files extends CI_Controller {
 			'rows' => $this->_fetch_file_list($files, $total_filtered),
 			'no_results' => sprintf(
 				lang('no_uploaded_files'), 
-				$this->cp->masked_url('http://expressionengine.com/user_guide/cp/content/files/sync_files.html'),
+				$this->cp->masked_url('http://ellislab.com/expressionengine/user-guide/cp/content/files/sync_files.html'),
 				BASE.AMP.'C=content_files'.AMP.'M=file_upload_preferences'
 			),
 			'pagination' => array(
@@ -340,7 +340,7 @@ class Content_files extends CI_Controller {
 	{
 		$file_list = array();
 
-		if ($total_filtered > 0)
+		if ($total_filtered > 0 AND ! empty($this->_upload_dirs))
 		{
 			// Date
 			$date_fmt = ($this->session->userdata('time_format') != '') ?
@@ -361,9 +361,7 @@ class Content_files extends CI_Controller {
 				
 				$is_image = FALSE;
 
-				$file_location = $this->functions->remove_double_slashes(
-					$this->_upload_dirs[$file['upload_location_id']]['url'].'/'.urlencode($file['file_name'])
-				);
+				$file_location = rtrim($this->_upload_dirs[$file['upload_location_id']]['url'], '/').'/'.rawurlencode($file['file_name']);
 
 				$file_path = $this->functions->remove_double_slashes(
 					$this->_upload_dirs[$file['upload_location_id']]['server_path'].'/'.$file['file_name']
@@ -1027,7 +1025,7 @@ class Content_files extends CI_Controller {
 		$data = array(
 			'filemtime'		=> ($filemtime = @filemtime($file_path)) ? $filemtime : 0,
 			'file_info'		=> $file_info,
-			'file_name'		=> urlencode($file_name),
+			'file_name'		=> $file_name,
 			'file_path'		=> $file_path,
 			'file_url'		=> $file_url,
 			'form_hiddens'	=> array(
@@ -1145,7 +1143,7 @@ class Content_files extends CI_Controller {
 		}
 
 		$this->cp->add_js_script(array(
-				'plugin' => array('tmpl', 'toggle_all'),
+				'plugin' => array('tmpl'),
 				'ui'     => array('progressbar'),
 				'file'   => array('underscore', 'cp/files/synchronize')
 			)

@@ -5,8 +5,8 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,7 +20,7 @@
  * @subpackage	Modules
  * @category	Modules
  * @author		EllisLab Dev Team
- * @link		http://expressionengine.com
+ * @link		http://ellislab.com
  */
 class Ip_to_nation_mcp {
 
@@ -217,6 +217,8 @@ class Ip_to_nation_mcp {
 		}
 
 		$cache_path = $this->_cache_path();
+		$valid_response = TRUE;
+		$out_files = array();
 
 		// download
 		$files = array(
@@ -227,6 +229,7 @@ class Ip_to_nation_mcp {
 		foreach ($files as $file)
 		{
 			$out_fh = fopen($cache_path.basename($file), "w");
+			$out_files[] = $cache_path.basename($file);
 
 			$timeout = 5;
 			$ch = curl_init();
@@ -234,7 +237,26 @@ class Ip_to_nation_mcp {
 			curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
 			curl_setopt($ch, CURLOPT_FILE, $out_fh);
 			curl_exec($ch);
+			$http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 			curl_close($ch);
+
+			if ($http_status != '200')
+			{
+				$valid_response = FALSE;
+				$response_code[] = $http_status;
+			}
+		}
+		
+		if ( ! $valid_response)
+		{
+			// cleanup
+			array_map('unlink', $out_files);
+			
+			$msg = (in_array('403', $response_code)) ? 'ip_db_connection_403' : 'ip_db_connection_error';
+			
+			$this->output->send_ajax_response(array(
+				'error' => lang($msg)
+				));
 		}
 
 		$this->output->send_ajax_response(array(
@@ -284,6 +306,8 @@ class Ip_to_nation_mcp {
 
 		// cleanup
 		array_map('unlink', $this->_cache_files('csv,gz,zip'));
+		
+		$this->config->_update_config(array('ip2nation_db_date' => $this->localize->now));
 		
 		$this->output->send_ajax_response(array(
 			'success' => lang('ip_db_updated')

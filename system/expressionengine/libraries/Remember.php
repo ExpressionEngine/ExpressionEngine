@@ -6,8 +6,8 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.4
  * @filesource
  */
@@ -21,7 +21,7 @@
  * @subpackage	Core
  * @category	Core
  * @author		EllisLab Dev Team
- * @link		http://expressionengine.com
+ * @link		http://ellislab.com
  */
 class Remember {
 
@@ -251,7 +251,7 @@ class Remember {
 		// validate time
 		if ($rem_data['expiration'] < $this->EE->localize->now)
 		{
-			$this->_delete_remember_me();
+			$this->_delete_cookie();
 			return FALSE;			
 		}
 		

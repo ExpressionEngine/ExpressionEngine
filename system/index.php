@@ -5,8 +5,8 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  */
 
@@ -33,7 +33,7 @@
  * ExpressionEngine "system" folder. This is blank by default,
  * meaning that this file resides in the "system" folder itself.
  *
- * http://expressionengine.com/user_guide/installation/best_practices.html
+ * http://ellislab.com/expressionengine/user-guide/installation/best_practices.html
  * 
  */
 	$system_path = "";

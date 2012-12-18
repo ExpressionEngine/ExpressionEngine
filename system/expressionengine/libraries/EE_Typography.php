@@ -5,8 +5,8 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,7 +20,7 @@
  * @subpackage	Core
  * @category	Core
  * @author		EllisLab Dev Team
- * @link		http://expressionengine.com
+ * @link		http://ellislab.com
  */
 class EE_Typography extends CI_Typography {
 
@@ -420,17 +420,17 @@ class EE_Typography extends CI_Typography {
 				$this->EE->TMPL = new EE_Template();
 			}			
 			
-			$plugin = ucfirst($prefs['text_format']);
+			$plugin = ucfirst($this->text_format);
 			
 			if ( ! class_exists($plugin))
 			{	
-				if (in_array($prefs['text_format'], $this->EE->core->native_plugins))
+				if (in_array($this->text_format, $this->EE->core->native_plugins))
 				{
-					require_once PATH_PI.'pi.'.$prefs['text_format'].'.php';
+					require_once PATH_PI.'pi.'.$this->text_format.'.php';
 				}
 				else
 				{
-					require_once PATH_THIRD.$prefs['text_format'].'/pi.'.$prefs['text_format'].'.php';
+					require_once PATH_THIRD.$this->text_format.'/pi.'.$this->text_format.'.php';
 				}
 			}
 			
@@ -494,8 +494,6 @@ class EE_Typography extends CI_Typography {
 			}	
 		//
 		// -------------------------------------------
-		
-		$this->initialize();
 		
 		return $str;
 	}
