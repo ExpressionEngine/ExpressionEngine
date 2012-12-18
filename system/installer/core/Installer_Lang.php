@@ -35,8 +35,22 @@ require_once(EE_APPPATH.'core/EE_Lang'.EXT);
  */
 
 class Installer_Lang Extends EE_Lang {
-	// Yes, it's empty!
+	
+	/**
+	 *   Fetch a specific line of text
+	 *
+	 * @access	public
+	 * @param	string
+	 * @param	string
+	 * @return	string
+	 */
+	public function line($which = '', $label = '')
+	{
+		$line = parent::line($which, $label);
+		return str_replace('ExpressionEngine', 'ExpressionEngine Core', $line);
+	}
 }
+
 
 /* End of file Installer_Lang.php */
 /* Location: ./system/expressionengine/installer/libraries/Installer_Lang.php */
