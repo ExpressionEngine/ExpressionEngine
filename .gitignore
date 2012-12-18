@@ -35,6 +35,7 @@ system/expressionengine/third_party/*
 !system/expressionengine/third_party/safecracker_file
 !system/expressionengine/third_party/cookie_check
 !system/expressionengine/third_party/cookie_consent
+!system/expressionengine/third_party/nannerbanner
 
 system/expressionengine/language/deutsch/*
 

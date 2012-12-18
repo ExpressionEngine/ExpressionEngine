@@ -169,6 +169,8 @@ class Wizard extends CI_Controller {
 	{
 		parent::__construct();
 		
+		define('IS_CORE', FALSE);
+
 		// Third party constants
 		if ($this->config->item('third_party_path'))
 		{
@@ -1125,7 +1127,7 @@ PAPAYA;
 		$this->userdata['cp_url'] = ($self != '') ? $host.$self : $host.SELF;
 		
 		// license number
-		$this->userdata['license_number'] = '';
+		$this->userdata['license_number'] = (IS_CORE) ? 'CORE LICENSE' : '';
 		
 		// Since the CP access file can be inside or outside of the "system" folder
 		// we will do a little test to help us set the site_url item
@@ -1588,6 +1590,12 @@ PAPAYA;
 	 */	
 	function _set_output($content = '', $array = array())
 	{
+		if (IS_CORE)
+		{
+			$this->heading = str_replace('ExpressionEngine', 'ExpressionEngine Core', $this->heading);
+			$this->title = str_replace('ExpressionEngine', 'ExpressionEngine Core', $this->title);
+		}
+
 		$data = array(
 			'heading'			=> $this->heading,
 			'title'				=> $this->title,
@@ -1600,6 +1608,7 @@ PAPAYA;
 			'installed_version'	=> $this->installed_version,
 			'languages'			=> $this->languages,
 			'javascript_path'	=> $this->javascript_path,
+			'is_core'			=> (IS_CORE) ? 'Core ' : ''
 		);
 
 		$data = array_merge($array, $data);

@@ -4105,3 +4105,23 @@ div.pageContents,
 	-webkit-border-radius: 15px;
 	border-radius: 15px;
 }
+
+.nanner{
+	background-color: #3E4C54;
+	border: solid #000000;
+	border-width: 1px 0;
+	color: #ECF1F4;
+	font-size: 12px;
+	padding: 10px;
+
+}
+
+	.nanner a:link,
+	.nanner a:visited{ color: #ECF1F4; text-decoration: underline; }
+
+	.nanner a:hover,
+	.nanner a:active{ color: #FFFFFF; }
+
+	.nanner p{ text-align: center; }
+
+	.nanner img{ margin-right: 5px; position: relative; top: 2px; }

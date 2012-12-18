@@ -114,9 +114,14 @@ class Addons_modules extends CP_Controller {
 		$names	 = array();
 		$data	 = array();
 		$updated = array();
-		
+
 		foreach ($modules as $module => $module_info)
 		{
+			if (IS_CORE && in_array($module, $this->core->standard_modules))
+			{
+				continue;
+			}
+
 			if ( ! $can_admin)
 			{
 				if ( ! in_array($module, $allowed_mods))

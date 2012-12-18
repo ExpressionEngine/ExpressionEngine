@@ -340,7 +340,7 @@ class Content_files extends CP_Controller {
 	{
 		$file_list = array();
 
-		if ($total_filtered > 0)
+		if ($total_filtered > 0 AND ! empty($this->_upload_dirs))
 		{
 			// Date
 			$date_fmt = ($this->session->userdata('time_format') != '') ?
