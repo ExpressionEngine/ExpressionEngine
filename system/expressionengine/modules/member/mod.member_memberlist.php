@@ -179,7 +179,7 @@ class Member_memberlist extends Member {
 		/** ---------------------------------*/
 
 		if ($this->EE->config->item('secure_forms') == 'y'
-			AND ! $this->EE->security->secure_forms_check($this->EE->input->post['XID']))
+			AND ! $this->EE->security->secure_forms_check($this->EE->input->post('XID')))
 		{
 			return FALSE;
 		}
