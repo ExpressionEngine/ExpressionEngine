@@ -47,7 +47,13 @@ class Installer_Lang Extends EE_Lang {
 	public function line($which = '', $label = '')
 	{
 		$line = parent::line($which, $label);
-		return str_replace('ExpressionEngine', 'ExpressionEngine Core', $line);
+
+		if (IS_CORE)
+		{
+			$line = str_replace('ExpressionEngine', 'ExpressionEngine Core', $line);			
+		}
+
+		return $line;
 	}
 }
 
