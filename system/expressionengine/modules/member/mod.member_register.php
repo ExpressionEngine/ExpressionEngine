@@ -428,7 +428,7 @@ class Member_register extends Member {
 
 		// Secure Mode Forms?
 		if ($this->EE->config->item('secure_forms') == 'y'
-			AND ! $this->EE->security->secure_forms_check($this->EE->input->post['XID']))
+			AND ! $this->EE->security->secure_forms_check($this->EE->input->post('XID')))
 		{
 			return $this->EE->output->show_user_error('general', array(lang('not_authorized')));
 		}
