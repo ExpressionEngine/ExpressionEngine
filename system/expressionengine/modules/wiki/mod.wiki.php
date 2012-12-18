@@ -5264,7 +5264,7 @@ class Wiki {
 		
 			// Secure Forms
 			if ($this->EE->config->item('secure_forms') == 'y'
-				AND ! $this->EE->security->secure_forms_check($this->EE->input->post['XID']))
+				AND ! $this->EE->security->secure_forms_check($this->EE->input->post('XID')))
 			{
 				$this->redirect($this->special_ns, 'Uploads');
 			}
