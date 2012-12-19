@@ -70,7 +70,7 @@ class Updater {
 								'null'			=> FALSE
 								));
 
-		$this->EE->migrate->modify_column('members', $fields);
+		$this->EE->smartforge->modify_column('members', $fields);
 
 		// If 'comments_opened_notification' isn't already in exp_specialty_templates, add it.
 		$values = array(
@@ -83,7 +83,7 @@ class Updater {
 					'template_name'	=> 'comments_opened_notification'
 					);
 
-		$this->EE->migrate->insert_set('specialty_templates', $values, $unique);
+		$this->EE->smartforge->insert_set('specialty_templates', $values, $unique);
 		
 		// Do we need to move comment notifications?
 		// We should skip it if the Comments module isn't installed.
@@ -190,7 +190,7 @@ class Updater {
 		}
 		
 		//  Lastly- we get rid of the notify field
-		$this->EE->migrate->drop_column('comments', 'notify');
+		$this->EE->smartforge->drop_column('comments', 'notify');
 		
 		return TRUE;
 	}

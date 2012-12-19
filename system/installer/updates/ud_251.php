@@ -90,7 +90,7 @@ class Updater {
 				unset($column_settings['ip_address']['null']);
 			}
 
-			$this->EE->migrate->modify_column($table, $column_settings);
+			$this->EE->smartforge->modify_column($table, $column_settings);
 		}
 	}
 }	

@@ -40,7 +40,7 @@ class Updater {
 			$this->EE->config->update_site_prefs(array('doc_url' => 'http://ellislab.com/expressionengine/user-guide/'), 1);
 		}
 
-		$this->EE->migrate->add_column(
+		$this->EE->smartforge->add_column(
 			'member_groups',
 			array(
 				'can_access_fieldtypes' => array(

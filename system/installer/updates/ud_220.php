@@ -83,7 +83,7 @@ class Updater {
 	private function _update_session_table()
 	{
 		// Add an index on last_activity
-		$this->EE->migrate->create_index('sessions', 'last_activity', 'last_activity_idx');
+		$this->EE->smartforge->create_index('sessions', 'last_activity', 'last_activity_idx');
 
 		$field = array(
 			'user_agent'	=> array(
@@ -93,7 +93,7 @@ class Updater {
 			)
 		);
 
-		$this->EE->migrate->modify_column('sessions', $field);
+		$this->EE->smartforge->modify_column('sessions', $field);
 	}
 
 	// --------------------------------------------------------------------
@@ -117,7 +117,7 @@ class Updater {
 			)
 		);
 
-		$this->EE->migrate->modify_column('password_lockout', $field);
+		$this->EE->smartforge->modify_column('password_lockout', $field);
 	}
 	// --------------------------------------------------------------------
 
@@ -141,7 +141,7 @@ class Updater {
 			)
 		);
 
-		$this->EE->migrate->modify_column('members', $field);
+		$this->EE->smartforge->modify_column('members', $field);
 
 
 		// Add a salt column VARCHAR(128)
@@ -154,7 +154,7 @@ class Updater {
 			)
 		);
 
-		$this->EE->migrate->add_column('members', $field);
+		$this->EE->smartforge->add_column('members', $field);
 		
 		
 		// Add a remember_me column VARCHAR(32)
@@ -167,7 +167,7 @@ class Updater {
 			)
 		);
 
-		$this->EE->migrate->add_column('members', $field);
+		$this->EE->smartforge->add_column('members', $field);
 	}
 
 	// --------------------------------------------------------------------
@@ -183,7 +183,7 @@ class Updater {
 			)
 		);
 
-		$this->EE->migrate->add_column('files', $field);
+		$this->EE->smartforge->add_column('files', $field);
 	}
 	
 	// --------------------------------------------------------------------
@@ -193,7 +193,7 @@ class Updater {
 	 */
 	private function _update_comments_table()
 	{
-		$this->EE->migrate->create_index('comments', 'comment_date', 'comment_date_idx');
+		$this->EE->smartforge->create_index('comments', 'comment_date', 'comment_date_idx');
 	}
 
 	// --------------------------------------------------------------------
@@ -203,8 +203,8 @@ class Updater {
 	 */
 	private function _update_template_groups()
 	{
-		$this->EE->migrate->create_index('template_groups', 'group_name', 'group_name_idx');
-		$this->EE->migrate->create_index('template_groups', 'group_order', 'group_order_idx');
+		$this->EE->smartforge->create_index('template_groups', 'group_name', 'group_name_idx');
+		$this->EE->smartforge->create_index('template_groups', 'group_order', 'group_order_idx');
 	}
 
 	// --------------------------------------------------------------------	

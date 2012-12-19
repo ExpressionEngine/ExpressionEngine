@@ -5,8 +5,8 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -14,7 +14,7 @@
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Update Migrate Class
+ * ExpressionEngine Update SmartForge Class
  *
  * @package		ExpressionEngine
  * @subpackage	Core
@@ -22,7 +22,7 @@
  * @author		EllisLab Dev Team
  * @link		http://expressionengine.com
  */
-class Migrate {
+class Smartforge {
 	
 	function __construct()
 	{
@@ -312,8 +312,8 @@ class Migrate {
 
 }
 
-// END Migrate class
+// END SmartForge class
 
 
-/* End of file Migrate.php */
-/* Location: ./system/expressionengine/libraries/Migrate.php */
+/* End of file Smartforge.php */
+/* Location: ./system/expressionengine/libraries/Smartforge.php */

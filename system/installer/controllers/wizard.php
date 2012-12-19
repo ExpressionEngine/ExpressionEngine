@@ -1322,7 +1322,7 @@ PAPAYA;
 		$UD = new Updater;
 		$method = 'do_update';
 		
-		$this->load->library('migrate');
+		$this->load->library('smartforge');
 		
 		if ($this->config->item('ud_next_step') != FALSE)
 		{

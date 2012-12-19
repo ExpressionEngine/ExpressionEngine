@@ -42,7 +42,7 @@ class Updater {
 								'default'		=> 'y'
 								));
 
-		$this->EE->migrate->add_column('members', $fields, 'quick_tabs');
+		$this->EE->smartforge->add_column('members', $fields, 'quick_tabs');
 
 
 		$fields = array(
@@ -53,7 +53,7 @@ class Updater {
 								'default'		=> 'n'
 								));
 
-		$this->EE->migrate->add_column('member_fields', $fields, 'm_field_reg');
+		$this->EE->smartforge->add_column('member_fields', $fields, 'm_field_reg');
 
 
 		$fields = array(
@@ -64,7 +64,7 @@ class Updater {
 								'null'			=> FALSE
 								));
 
-		$this->EE->migrate->modify_column('accessories', $fields);
+		$this->EE->smartforge->modify_column('accessories', $fields);
 
 
 		$fields = array(
@@ -75,7 +75,7 @@ class Updater {
 								'default'		=> 'n'
 								));
 
-		$this->EE->migrate->add_column('member_groups', $fields, 'can_view_profiles');
+		$this->EE->smartforge->add_column('member_groups', $fields, 'can_view_profiles');
 
 		$this->EE->db->set('can_edit_html_buttons', 'y');
 		$this->EE->db->where('can_access_cp', 'y');

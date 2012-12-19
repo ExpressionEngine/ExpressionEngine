@@ -68,7 +68,7 @@ class Updater {
 	 */
 	private function _change_site_preferences_column_type()
 	{
-		$this->EE->migrate->modify_column(
+		$this->EE->smartforge->modify_column(
 			'sites',
 			array(
 				'site_system_preferences' => array(

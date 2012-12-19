@@ -40,23 +40,23 @@ class Updater {
 		$this->EE->db->where('rel_type', 'blog');
 		$this->EE->db->update('relationships');
 
-		$this->EE->migrate->drop_column('channels', 'show_url_title');
-		$this->EE->migrate->drop_column('channels', 'show_ping_cluster');
-		$this->EE->migrate->drop_column('channels', 'show_options_cluster');
-		$this->EE->migrate->drop_column('channels', 'show_forum_cluster');
-		$this->EE->migrate->drop_column('channels', 'show_show_all_cluster');
-		$this->EE->migrate->drop_column('channels', 'show_status_menu');
-		$this->EE->migrate->drop_column('channels', 'show_categories_menu');
-		$this->EE->migrate->drop_column('channels', 'show_date_menu');
-		$this->EE->migrate->drop_column('channels', 'show_pages_cluster');
-		$this->EE->migrate->drop_column('channels', 'show_author_menu');
+		$this->EE->smartforge->drop_column('channels', 'show_url_title');
+		$this->EE->smartforge->drop_column('channels', 'show_ping_cluster');
+		$this->EE->smartforge->drop_column('channels', 'show_options_cluster');
+		$this->EE->smartforge->drop_column('channels', 'show_forum_cluster');
+		$this->EE->smartforge->drop_column('channels', 'show_show_all_cluster');
+		$this->EE->smartforge->drop_column('channels', 'show_status_menu');
+		$this->EE->smartforge->drop_column('channels', 'show_categories_menu');
+		$this->EE->smartforge->drop_column('channels', 'show_date_menu');
+		$this->EE->smartforge->drop_column('channels', 'show_pages_cluster');
+		$this->EE->smartforge->drop_column('channels', 'show_author_menu');
 
 		// Leftover trackback indication can go
 		$this->EE->db->where('module_name', 'Trackback');
 		$this->EE->db->delete('modules');
 
 		// Email field size consistent with RFC2822 recommended header line limit of 78 (minus "from: ")
-		$this->EE->migrate->modify_column(
+		$this->EE->smartforge->modify_column(
 			'members',
 			array(
 				'email' => array(
@@ -74,7 +74,7 @@ class Updater {
 					'method'	=> 'smiley_pop'
 					);
 
-		$this->EE->migrate->insert_set('actions', $values, $values);
+		$this->EE->smartforge->insert_set('actions', $values, $values);
 
 
 		$values = array(
@@ -82,7 +82,7 @@ class Updater {
 					'method'	=> 'filemanager_endpoint'
 					);
 
-		$this->EE->migrate->insert_set('actions', $values, $values);
+		$this->EE->smartforge->insert_set('actions', $values, $values);
 
 
 		// If the action id is for the Weblog class, change it
@@ -167,7 +167,7 @@ class Updater {
 			}
 		}
 
-		$this->EE->migrate->add_column(
+		$this->EE->smartforge->add_column(
 			'password_lockout',
 			array(
 				'username' => array(

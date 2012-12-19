@@ -35,7 +35,7 @@ class Updater {
     function do_update()
     {
         // Modules now have a tab setting
-		$this->EE->migrate->add_column(
+		$this->EE->smartforge->add_column(
 			'modules',
 			array(
 				'has_publish_fields' => array(
@@ -55,7 +55,7 @@ class Updater {
 		$this->EE->db->update('channel_fields');
 
 		// Add missing column
-		$this->EE->migrate->add_column(
+		$this->EE->smartforge->add_column(
 			'channel_fields',
 			array(
 				'field_settings' => array(
@@ -66,7 +66,7 @@ class Updater {
 		);
 	    
 		// Increase fieldtype name length
-		$this->EE->migrate->modify_column(
+		$this->EE->smartforge->modify_column(
 			'channel_fields',
 			array(
 				'field_type' => array(
@@ -128,7 +128,7 @@ class Updater {
 						'has_global_settings'	=> 'n'
 						);
 
-			$this->EE->migrate->insert_set('fieldtypes', $values, $values);
+			$this->EE->smartforge->insert_set('fieldtypes', $values, $values);
 		}
 		
 		// Remove weblog from specialty_templates 

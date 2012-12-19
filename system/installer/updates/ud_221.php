@@ -46,7 +46,7 @@ class Updater {
 	public function do_update()
     {
 		// 2.1.3 was missing this from its schema
-		$this->EE->migrate->add_column(
+		$this->EE->smartforge->add_column(
 			'member_groups',
 			array(
 				'can_access_fieldtypes' => array(

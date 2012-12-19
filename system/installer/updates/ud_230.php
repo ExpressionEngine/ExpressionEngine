@@ -75,7 +75,7 @@ class Updater {
 	private function _update_session_table()
 	{	
 		// Drop site_id
-		$this->EE->migrate->drop_column('sessions', 'site_id');
+		$this->EE->smartforge->drop_column('sessions', 'site_id');
     }
 
 	// --------------------------------------------------------------------

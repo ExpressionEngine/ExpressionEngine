@@ -178,7 +178,7 @@ class Updater {
 								'constraint'	=> 255
 					));
 
-		$this->EE->migrate->add_column('upload_prefs', $fields);
+		$this->EE->smartforge->add_column('upload_prefs', $fields);
 		
 		$fields = array(
 					'server_path'	=> array(
@@ -188,7 +188,7 @@ class Updater {
 					),
 		);
 		
-		$this->EE->migrate->modify_column('upload_prefs', $fields);
+		$this->EE->smartforge->modify_column('upload_prefs', $fields);
 	}
 	
 	// ------------------------------------------------------------------------
@@ -210,7 +210,7 @@ class Updater {
 								'default'		=> 0
 								));
 
-		$this->EE->migrate->add_column('category_groups', $fields);		
+		$this->EE->smartforge->add_column('category_groups', $fields);		
 	}
 
 	// ------------------------------------------------------------------------	
@@ -541,7 +541,7 @@ class Updater {
 								'default'		=> 'n'
 								));
 
-		$this->EE->migrate->add_column('member_groups', $fields, 'can_admin_channels');		
+		$this->EE->smartforge->add_column('member_groups', $fields, 'can_admin_channels');		
 	}
 	
 	// ------------------------------------------------------------------------
@@ -580,13 +580,13 @@ class Updater {
 	private function _do_add_indexes()
 	{
 		// We do a ton of template lookups based off the template name.  How about indexing on it?
-		$this->EE->migrate->create_index('templates', 'template_name');
+		$this->EE->smartforge->create_index('templates', 'template_name');
 
 		// Same with the channel_name in exp_channels
-		$this->EE->migrate->create_index('channels', 'channel_name');
+		$this->EE->smartforge->create_index('channels', 'channel_name');
 
 		// and the same for field_type on exp_channel_fields
-		$this->EE->migrate->create_index('channel_fields', 'field_type');
+		$this->EE->smartforge->create_index('channel_fields', 'field_type');
 	}
 
 	// --------------------------------------------------------------------	

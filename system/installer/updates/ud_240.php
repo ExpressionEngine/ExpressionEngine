@@ -80,7 +80,7 @@ class Updater {
 	private function _update_watermarks_table()
 	{
 		// Rename offset columns
-		$this->EE->migrate->modify_column(
+		$this->EE->smartforge->modify_column(
 			'file_watermarks',
 			array(
 				'wm_x_offset' => array(
@@ -106,7 +106,7 @@ class Updater {
 	 */
 	private function _update_file_dimensions_table()
 	{
-		$this->EE->migrate->add_column(
+		$this->EE->smartforge->add_column(
 			'file_dimensions',
 			array(
 				'site_id' => array(
@@ -131,7 +131,7 @@ class Updater {
 	 */
 	private function _update_files_table()
 	{
-		$this->EE->migrate->add_column(
+		$this->EE->smartforge->add_column(
 			'files',
 			array(
 				'credit' => array(
@@ -146,7 +146,7 @@ class Updater {
 		);
 		
 		// Rename "caption" field to "description"
-		$this->EE->migrate->modify_column(
+		$this->EE->smartforge->modify_column(
 			'files',
 			array(
 				'caption' => array(
@@ -159,13 +159,13 @@ class Updater {
 		// Drop the 6 custom fields
 		for ($i = 1; $i < 7; $i++)
 		{ 
-			$this->EE->migrate->drop_column('files', 'field_'.$i);
-			$this->EE->migrate->drop_column('files', 'field_'.$i.'_fmt');
+			$this->EE->smartforge->drop_column('files', 'field_'.$i);
+			$this->EE->smartforge->drop_column('files', 'field_'.$i.'_fmt');
 		}
 		
 		// Drop 'metadata' and 'status' fields
-		$this->EE->migrate->drop_column('files', 'metadata');
-		$this->EE->migrate->drop_column('files', 'status');
+		$this->EE->smartforge->drop_column('files', 'metadata');
+		$this->EE->smartforge->drop_column('files', 'status');
 	}
 	
 	// --------------------------------------------------------------------
@@ -244,7 +244,7 @@ class Updater {
 	private function _create_remember_me()
 	{
 		// Hotness coming up, drop it!
-		$this->EE->migrate->drop_column('members', 'remember_me');
+		$this->EE->smartforge->drop_column('members', 'remember_me');
 
 		// This has the same structure as sessions, except for the
 		// primary key and "last_activity" fields. Also added site_id back
