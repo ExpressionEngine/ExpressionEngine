@@ -1375,6 +1375,10 @@ class Safecracker_lib
 						$_POST[$field] = $this->EE->localize->set_human_time($this->EE->localize->now);
 					}
 				}
+				elseif ($field == 'versioning_enabled' AND $this->channel['enable_versioning'] == 'y')
+				{
+					$_POST[$field] = 'y';
+				}
 				else
 				{
 					if ($this->entry($field) !== FALSE)
