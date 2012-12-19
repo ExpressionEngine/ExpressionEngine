@@ -10,7 +10,7 @@
 </head>
 <body>
 
-<div id="branding"><a href="http://expressionengine.com/"><img src="<?=PATH_CP_GBL_IMG?>ee_logo_branding.gif" width="250" height="28" alt="<?=lang('powered_by')?> ExpressionEngine" /></a></div>
+<div id="branding"><a href="http://ellislab.com/"><img src="<?=PATH_CP_GBL_IMG?>ee_logo_branding.gif" width="250" height="28" alt="<?=lang('powered_by')?> ExpressionEngine" /></a></div>
 
 	<div id="content">
 		
@@ -26,7 +26,7 @@
 		<dl>
 			<dt><?=lang('username', 'username')?>:</dt>
 			<dd>
-				<?=form_input(array('style' => 'width:90%', 'size' => '35', 'dir' => 'ltr', 'name' => "username", 'id' => "username", 'value' => $username, 'maxlength' => 50, 'autocomplete' => 'off'))?>
+				<?=form_input(array('style' => 'width:90%', 'size' => '35', 'dir' => 'ltr', 'name' => "username", 'id' => "username", 'value' => $username, 'maxlength' => 50))?>
 			</dd>
 
 			<dt><?=lang('password', 'password')?>:</dt>

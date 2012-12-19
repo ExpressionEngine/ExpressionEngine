@@ -5,8 +5,8 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,7 +20,7 @@
  * @subpackage	Core
  * @category	Core
  * @author		EllisLab Dev Team
- * @link		http://expressionengine.com
+ * @link		http://ellislab.com
  */
 class EE_Functions {  
 	
@@ -277,13 +277,16 @@ class EE_Functions {
 	 * With all the URL/URI parsing/building, there is the potential
 	 * to end up with double slashes.  This is a clean-up function.
 	 *
+	 * Will likely be deprecated in 2.6, use string helper instead
+	 *
 	 * @access	public
 	 * @param	string
 	 * @return	string
 	 */
 	function remove_double_slashes($str)
 	{
-		return preg_replace("#(^|[^:])//+#", "\\1/", $str);
+		$this->EE->load->helper('string_helper');
+		return reduce_double_slashes($str);
 	}
 	
 	// --------------------------------------------------------------------
@@ -725,7 +728,7 @@ class EE_Functions {
 	{	 
 		if ($this->EE->config->item('secure_forms') == 'y')
 		{
-			$this->EE->db->query("DELETE FROM exp_security_hashes WHERE date < UNIX_TIMESTAMP()-7200");
+			$this->EE->security->garbage_collect_xids();
 		}	
 	}
 	
@@ -1584,20 +1587,14 @@ class EE_Functions {
 				}
 			
 				// Add security hashes
+				$hashes = $this->EE->security->generate_xid(count($matches[1]), TRUE);
 				
-				$sql = "INSERT INTO exp_security_hashes (date, ip_address, hash) VALUES";
-				
-				foreach ($matches[1] as $val)
+				foreach ($hashes as $hash)
 				{
-					$hash = $this->random('encrypt');
 					$str = preg_replace("/{XID_HASH}/", $hash, $str, 1);
-					$sql .= "(UNIX_TIMESTAMP(), '".$this->EE->input->ip_address()."', '".$hash."'),";
 				}
-				
-				$this->EE->db->query(substr($sql,0,-1));
-				
+								
 				// Re-enable DB caching
-				
 				if ($db_reset == TRUE)
 				{
 					$this->EE->db->cache_on();			

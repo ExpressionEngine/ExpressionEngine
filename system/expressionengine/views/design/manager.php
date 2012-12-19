@@ -60,7 +60,7 @@
 
 				<?=$this->load->view('_shared/message')?>
 
-				<?php if ($can_admin_templates): ?>
+				<?php if ($can_admin_design): ?>
 					<div id="prefRowTemplate" style="display:none">
 						<table class="templateTable accessTable" border="0" cellspacing="0" cellpadding="0">
 							<tr>
@@ -159,7 +159,7 @@
 							<?php
 							$main_table_headings = array(lang('edit_template'), lang('view'));
 							
-							if ($can_admin_templates)
+							if ($can_admin_design)
 							{
 								$main_table_headings = array_merge($main_table_headings, array(lang('access'), lang('preferences')));
 							}
@@ -181,7 +181,7 @@
 									 'class' => 'templateName '.$template['class']),
 									'<a rel="external" href="'.$template['view_path'].'">'.lang('view').'</a>');
 									
-								if ($can_admin_templates)
+								if ($can_admin_design)
 								{
 									$main_table_data = array_merge($main_table_data, array('<a href="#" class="show_access_link" id="show_access_link_'.$template['template_id'].'">'.lang('access').'</a>',
 									'<a href="#" class="show_prefs_link" id="show_prefs_link_'.$template['template_id'].'">'.lang('edit_preferences').'</a>'));

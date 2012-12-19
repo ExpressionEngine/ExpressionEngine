@@ -168,7 +168,7 @@ class EE_Schema {
 		$Q[] = "CREATE TABLE exp_security_hashes (
 			 hash_id int(10) unsigned NOT NULL auto_increment,
 			 date int(10) unsigned NOT NULL,
-			 ip_address varchar(45) default '0' NOT NULL,
+			 session_id varchar(40) default '0' NOT NULL,
 			 hash varchar(40) NOT NULL,
 			 PRIMARY KEY `hash_id` (`hash_id`),
 			 KEY `hash` (`hash`)

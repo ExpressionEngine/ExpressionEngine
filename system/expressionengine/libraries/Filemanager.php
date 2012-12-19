@@ -6,8 +6,8 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -21,7 +21,7 @@
  * @subpackage	Core
  * @category	Filemanager
  * @author		EllisLab Dev Team
- * @link		http://expressionengine.com
+ * @link		http://ellislab.com
  */
 
 class Filemanager {
@@ -892,8 +892,8 @@ class Filemanager {
 
 		// Mask the URL if we're coming from the CP
 		$sync_files_url = (REQ == "CP") ?
-			$this->EE->cp->masked_url('http://expressionengine.com/user_guide/cp/content/files/sync_files.html') :
-			'http://expressionengine.com/user_guide/cp/content/files/sync_files.html';
+			$this->EE->cp->masked_url('http://ellislab.com/expressionengine/user-guide/cp/content/files/sync_files.html') :
+			'http://ellislab.com/expressionengine/user-guide/cp/content/files/sync_files.html';
 
 		return array(
 			'rows'			=> $this->_browser_get_files($dir, $file_params),

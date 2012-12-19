@@ -5,8 +5,8 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,7 +20,7 @@
  * @subpackage	Control Panel
  * @category	Control Panel
  * @author		EllisLab Dev Team
- * @link		http://expressionengine.com
+ * @link		http://ellislab.com
  */
 
 class Content_files extends CP_Controller {
@@ -310,7 +310,7 @@ class Content_files extends CP_Controller {
 			'rows' => $this->_fetch_file_list($files, $total_filtered),
 			'no_results' => sprintf(
 				lang('no_uploaded_files'), 
-				$this->cp->masked_url('http://expressionengine.com/user_guide/cp/content/files/sync_files.html'),
+				$this->cp->masked_url('http://ellislab.com/expressionengine/user-guide/cp/content/files/sync_files.html'),
 				BASE.AMP.'C=content_files'.AMP.'M=file_upload_preferences'
 			),
 			'pagination' => array(
@@ -340,7 +340,7 @@ class Content_files extends CP_Controller {
 	{
 		$file_list = array();
 
-		if ($total_filtered > 0)
+		if ($total_filtered > 0 AND ! empty($this->_upload_dirs))
 		{
 			// Date
 			$date_fmt = ($this->session->userdata('time_format') != '') ?
@@ -1139,7 +1139,7 @@ class Content_files extends CP_Controller {
 		}
 
 		$this->cp->add_js_script(array(
-				'plugin' => array('tmpl', 'toggle_all'),
+				'plugin' => array('tmpl'),
 				'ui'     => array('progressbar'),
 				'file'   => array('underscore', 'cp/files/synchronize')
 			)

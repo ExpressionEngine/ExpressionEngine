@@ -5,8 +5,8 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,7 +20,7 @@
  * @subpackage	Control Panel
  * @category	Control Panel
  * @author		EllisLab Dev Team
- * @link		http://expressionengine.com
+ * @link		http://ellislab.com
  */
 class Design extends CP_Controller {
 
@@ -57,16 +57,26 @@ class Design extends CP_Controller {
 
 		$this->load->model('template_model');
 		$this->lang->loadfile('design');
-
+	
+		$this->javascript->compile();
+	
+		$this->sub_breadcrumbs = array();	
 		if ($this->cp->allowed_group('can_admin_templates'))
 		{
-			$this->sub_breadcrumbs = array(
+			$this->sub_breadcrumbs = array_merge($this->sub_breadcrumbs, array(
 				'global_variables'				=> BASE.AMP.'C=design'.AMP.'M=global_variables',
 				'snippets'						=> BASE.AMP.'C=design'.AMP.'M=snippets',
 				'sync_templates'				=> BASE.AMP.'C=design'.AMP.'M=sync_templates',
+			));
+		}
+
+		// This is worded as "Can administrate design preferences" in member group management.
+		if ($this->cp->allowed_group('can_admin_design'))
+		{
+			$this->sub_breadcrumbs = array_merge($this->sub_breadcrumbs, array(
 				'global_template_preferences'	=> BASE.AMP.'C=design'.AMP.'M=global_template_preferences',
 				'template_preferences_manager'	=> BASE.AMP.'C=design'.AMP.'M=template_preferences_manager'
-			);
+			));
 		}
 
 		$this->cp->set_variable('wiki_installed', (bool) $this->db->table_exists('wikis'));
@@ -455,12 +465,15 @@ class Design extends CP_Controller {
 	/**
 	 * Global Template Preferences
 	 *
+	 * Page to allow users to edit the global template preferences in the
+	 * cp's design section.
+	 *
 	 * @access	public
 	 * @return	type
 	 */
 	function global_template_preferences()
 	{
-		if ( ! $this->cp->allowed_group('can_access_design', 'can_admin_templates'))
+		if ( ! $this->cp->allowed_group('can_access_design', 'can_admin_design'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -529,10 +542,17 @@ class Design extends CP_Controller {
 
 		$this->cp->render('design/global_template_preferences', $vars);
 	}
-	
+
+	/**
+	 * Update Global Template Preferences
+	 *
+	 * The form presented in global_template_preferences() redirects to
+	 * here for processing.
+	 *
+	 */	
 	function update_global_template_prefs()
 	{
-		if ( ! $this->cp->allowed_group('can_access_design', 'can_admin_templates'))
+		if ( ! $this->cp->allowed_group('can_access_design', 'can_admin_design'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -1039,7 +1059,7 @@ class Design extends CP_Controller {
 	 */
 	function template_preferences_manager($message = '')
 	{
-		if ( ! $this->cp->allowed_group('can_access_design', 'can_admin_templates'))
+		if ( ! $this->cp->allowed_group('can_access_design', 'can_admin_design'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -1052,7 +1072,7 @@ class Design extends CP_Controller {
 		$vars['message'] = $message;
 		$vars['show_template_manager'] = TRUE; // in an error condition, this will go false
 
-		if ($this->session->userdata['group_id'] != 1 && (count($this->session->userdata['assigned_template_groups']) == 0 OR $this->cp->allowed_group('can_admin_templates') == FALSE))
+		if ($this->session->userdata['group_id'] != 1 && (count($this->session->userdata['assigned_template_groups']) == 0 OR $this->cp->allowed_group('can_admin_design') == FALSE))
 		{
 			$vars['message'] = lang('no_templates_assigned');
 			$vars['show_template_manager'] = FALSE;
@@ -1275,14 +1295,14 @@ class Design extends CP_Controller {
 	 */
 	function update_manager_prefs()
 	{
-		if ( ! $this->cp->allowed_group('can_access_design', 'can_admin_templates'))
+		if ( ! $this->cp->allowed_group('can_access_design', 'can_admin_design'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
 
 		// Determine Valid Template Groups and Templates
 
-		if ($this->session->userdata['group_id'] != 1 && (count($this->session->userdata['assigned_template_groups']) == 0 OR $this->cp->allowed_group('can_admin_templates') == FALSE))
+		if ($this->session->userdata['group_id'] != 1 && (count($this->session->userdata['assigned_template_groups']) == 0 OR $this->cp->allowed_group('can_admin_design') == FALSE))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -1687,7 +1707,7 @@ class Design extends CP_Controller {
 		
 		$this->load->helper('file');
 
-		$vars['can_admin_templates'] = $this->cp->allowed_group('can_admin_templates');
+		$vars['can_admin_design'] = $this->cp->allowed_group('can_admin_design');
 		
 		$query = $this->template_model->get_template_info($template_id);
 		
@@ -1912,7 +1932,7 @@ class Design extends CP_Controller {
 		}
 
 		$vars['no_auth_bounce_options'] = array();
-		if ($this->cp->allowed_group('can_admin_templates'))
+		if ($this->cp->allowed_group('can_admin_design'))
 		{
 			$query = $this->template_model->get_templates();
 			
@@ -3180,6 +3200,7 @@ class Design extends CP_Controller {
 
 		$this->load->library('table');
 		$vars['can_admin_templates'] = $this->cp->allowed_group('can_admin_templates');
+		$vars['can_admin_design'] = $this->cp->allowed_group('can_admin_design');
 
 		$this->jquery->tablesorter('.templateTable', '{
 			headers: { 
@@ -3432,7 +3453,7 @@ class Design extends CP_Controller {
 		}
 		
 		$vars['no_auth_bounce_options'] = array();
-		if ($this->cp->allowed_group('can_admin_templates'))
+		if ($this->cp->allowed_group('can_admin_design'))
 		{
 			$query = $this->template_model->get_templates();
 			
@@ -3622,7 +3643,7 @@ class Design extends CP_Controller {
 	 */
 	function template_edit_ajax()
 	{
-		if ( ! $this->cp->allowed_group('can_access_design', 'can_admin_templates'))
+		if ( ! $this->cp->allowed_group('can_access_design', 'can_admin_design'))
 		{
 			$this->output->send_ajax_response(lang('unauthorized_access'), TRUE);
 		}
@@ -3740,7 +3761,7 @@ class Design extends CP_Controller {
 	 */
 	function access_edit_ajax()
 	{
-		if ( ! $this->cp->allowed_group('can_access_design', 'can_admin_templates'))
+		if ( ! $this->cp->allowed_group('can_access_design', 'can_admin_design'))
 		{
 			$this->output->send_ajax_response(lang('unauthorized_access'), TRUE);
 		}	
@@ -3753,14 +3774,13 @@ class Design extends CP_Controller {
 		}
 
 		$this->output->enable_profiler(FALSE);
-
 		if ($member_group = $this->input->get_post('member_group_id'))
 		{
 			$new_status = $this->input->get_post('new_status');
 			$no_auth_bounce = $this->input->get_post('no_auth_bounce');
 			
 			if (($new_status != 'y' && $new_status != 'n') OR ! ctype_digit($no_auth_bounce))
-			{
+			{	
 				$this->output->send_ajax_response(lang('unauthorized_access'), TRUE);
 			}
 
@@ -3770,7 +3790,7 @@ class Design extends CP_Controller {
 		elseif ($enable_http_auth = $this->input->get_post('enable_http_auth'))
 		{
 			if ($enable_http_auth != 'y' && $enable_http_auth != 'n')
-			{
+			{	
 				$this->output->send_ajax_response(lang('unauthorized_access'), TRUE);
 			}
 			
@@ -3779,14 +3799,14 @@ class Design extends CP_Controller {
 		elseif ($no_auth_bounce = $this->input->get_post('no_auth_bounce'))
 		{
 			if ( ! ctype_digit($no_auth_bounce))
-			{
+			{	
 				$this->output->send_ajax_response(lang('unauthorized_access'), TRUE);
 			}
 			
 			$this->template_model->update_template_ajax($template_id, array('no_auth_bounce' => $no_auth_bounce));
 		}
 		else
-		{
+		{	
 			$this->output->send_ajax_response(lang('unauthorized_access'), TRUE);
 		}
 

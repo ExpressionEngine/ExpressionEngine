@@ -5,8 +5,8 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,7 +20,7 @@
  * @subpackage	Control Panel
  * @category	Control Panel
  * @author		EllisLab Dev Team
- * @link		http://expressionengine.com
+ * @link		http://ellislab.com
  */
 class Content_edit extends CP_Controller {
 
@@ -783,7 +783,7 @@ class Content_edit extends CP_Controller {
 
 			// Set up date js
 			$this->javascript->output('
-				$(".entry_date_'.$entry_id.'").datepicker({dateFormat: $.datepicker.W3C + date_obj_time, defaultDate: new Date('.($this->localize->set_localized_time($row['entry_date']) * 1000).')});
+				$(".entry_date_'.$entry_id.'").datepicker({constrainInput: false, dateFormat: $.datepicker.W3C + date_obj_time, defaultDate: new Date('.($this->localize->set_localized_time($row['entry_date']) * 1000).')});
 			');
 
 			// Sticky

@@ -5,8 +5,8 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,7 +20,7 @@
  * @subpackage	Modules
  * @category	Update File
  * @author		EllisLab Dev Team
- * @link		http://expressionengine.com
+ * @link		http://ellislab.com
  */
 
 class Email {
@@ -173,7 +173,7 @@ class Email {
 	 * Tell a friend form
 	 *
 	 * {exp:email:tell_a_friend charset="utf-8" allow_html='n'}
-	 * {exp:email:tell_a_friend charset="utf-8" allow_html='<p>,<a>' recipients='sales@expressionengine.com'}
+	 * {exp:email:tell_a_friend charset="utf-8" allow_html='<p>,<a>' recipients='sales@ellislab.com'}
 	 * {member_email}, {member_name}, {current_time format="%Y %d %m"}
 	 */
 	public function tell_a_friend()
@@ -533,7 +533,7 @@ class Email {
 		}
 
 		// Check Form Hash
-		if ( ! $this->EE->security->check_xid($this->EE->input->post('XID')))
+		if ( ! $this->EE->security->secure_forms_check($this->EE->input->post('XID')))
 		{
 			return $this->EE->output->show_user_error('general', array(lang('not_authorized')));
 		}
@@ -774,12 +774,6 @@ class Email {
 		);
 
 		$this->EE->db->query($this->EE->db->insert_string('exp_email_tracker', $data));
-
-		// Delete spam hashes
-		if (isset($_POST['XID']))
-		{
-			$this->EE->db->query("DELETE FROM exp_security_hashes WHERE (hash='".$this->EE->db->escape_str($_POST['XID'])."' AND ip_address = '".$this->EE->input->ip_address()."') OR date < UNIX_TIMESTAMP()-7200");
-		}
 
 		/* -------------------------------------
 		/*  'email_module_send_email_end' hook.

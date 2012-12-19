@@ -18,7 +18,7 @@ else
 
 <div class="shade">
 <h5><?php echo $this->lang->line('license_number'); ?></h5>
-<p><input type='text' name='license_number' value='<?php echo $license_number; ?>' size='40' /></p>
+<p><input type='text' name='license_number' value='<?php echo $license_number; ?>' size='40' <?php if (IS_CORE) { echo 'disabled="disabled"';} ?>/></p>
 <p><?php echo $this->lang->line('locate_license_number'); ?></p>
 </div>
 
