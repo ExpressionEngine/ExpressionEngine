@@ -1,3 +1,5 @@
+<?php extend_view('_wrapper') ?>
+
 <span class="cp_button"><a href="<?=$_id_base.AMP.'method=forum_edit'.AMP.'is_cat=1'?>"><?=lang('forum_cat_add_new')?></a></span>
 <span class="cp_button"><a href="<?=$_id_base.AMP.'method=forum_resync'?>"><?=lang('forum_resync')?></a></span>
 <div class="shun clear_left"></div>

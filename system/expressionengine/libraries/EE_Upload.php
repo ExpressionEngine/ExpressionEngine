@@ -5,8 +5,8 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,10 +20,12 @@
  * @subpackage	Core
  * @category	Core
  * @author		EllisLab Dev Team
- * @link		http://expressionengine.com
+ * @link		http://ellislab.com
  */
 class EE_Upload extends CI_Upload 
 {
+	protected $use_temp_dir = FALSE;
+
 	/**
 	 * Constructor
 	 */ 
@@ -42,53 +44,6 @@ class EE_Upload extends CI_Upload
 
 		log_message('debug', "Upload Class Initialized");
 	}	
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Set the file name
-	 *
-	 * This function takes a filename/path as input and looks for the
-	 * existence of a file with the same name. If found, we put a temp prefix on it and append a
-	 * number to the end of the filename to avoid overwriting a pre-existing file.
-	 *
-	 * @param	string
-	 * @param	string
-	 * @return	string
-	 */
-	public function set_filename($path, $filename)
-	{
-		if ($this->encrypt_name == TRUE)
-		{
-			mt_srand();
-			$filename = md5(uniqid(mt_rand())).$this->file_ext;
-		}
-
-		if ( ! file_exists($path.$filename))
-		{
-			return $filename;
-		}
-
-		$filename = str_replace($this->file_ext, '', $filename);
-
-		$new_filename = '';
-		for ($i = 1; $i < 100; $i++)
-		{
-			if ( ! file_exists($path.$this->temp_prefix.$filename.$i.$this->file_ext))
-			{
-				$new_filename = $this->temp_prefix.$filename.$i.$this->file_ext;
-				break;
-			}
-		}
-
-		if ($new_filename == '')
-		{
-			$this->set_error('upload_bad_filename');
-			return FALSE;
-		}
-
-		return $new_filename;
-	}
 
 	// --------------------------------------------------------------------
 
@@ -137,6 +92,91 @@ class EE_Upload extends CI_Upload
 		unlink ($this->upload_path.$original_file);
 
 		return TRUE;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Validate Upload Path
+	 *
+	 * Verifies that it is a valid upload path with proper permissions.
+	 *
+	 * @access	public
+	 */
+	public function validate_upload_path()
+	{
+		if ($this->use_temp_dir)
+		{
+			$path = $this->_discover_temp_path();
+
+			if ($path)
+			{
+				$this->upload_path = $path;
+			}
+			else
+			{
+				$this->set_error('No usable temp directory found.');
+				return FALSE;
+			}
+		}
+
+		return parent::validate_upload_path();
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Keep the file in the temp directory?
+	 *
+	 * @access	public
+	 */
+	public function initialize($config = array())
+	{
+		if (isset($config['use_temp_dir']) && $config['use_temp_dir'] === TRUE)
+		{
+			$this->use_temp_dir = TRUE;
+		}
+		else
+		{
+			$this->use_temp_dir = FALSE;
+		}
+
+		parent::initialize($config);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Find a valid temp directory?
+	 *
+	 * @access	public
+	 */
+	public function _discover_temp_path()
+	{
+		$attempt = array();
+        $ini_path = ini_get('upload_tmp_dir');
+
+        if ($ini_path)
+        {
+            $attempt[] = realpath($ini_path);
+        }
+
+		$attempt[] = sys_get_temp_dir();
+		$attempt[] = @getenv('TMP');
+		$attempt[] = @getenv('TMPDIR');
+		$attempt[] = @getenv('TEMP');
+
+		$valid_temps = array_filter($attempt);	// remove false's
+
+		foreach ($valid_temps as $dir)
+		{
+			if (is_readable($dir) && is_writable($dir))
+			{
+				return $dir;
+			}
+		}
+
+		return FALSE;
 	}
 }
 // END CLASS

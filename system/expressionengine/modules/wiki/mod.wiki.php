@@ -5,8 +5,8 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,7 +20,7 @@
  * @subpackage	Modules
  * @category	Modules
  * @author		EllisLab Dev Team
- * @link		http://expressionengine.com
+ * @link		http://ellislab.com
  */
 class Wiki {
 
@@ -1221,10 +1221,11 @@ class Wiki {
 				/**  Get categorized page ids
 				/** ---------------------------------------*/
 
-				$query = $this->EE->db->query("SELECT DISTINCT(exp_wiki_category_articles.page_id)
-									FROM exp_wiki_category_articles
-									LEFT JOIN exp_wiki_page ON exp_wiki_page.page_id = exp_wiki_category_articles.page_id
-									WHERE exp_wiki_page.wiki_id = '".$this->EE->db->escape_str($this->wiki_id)."'");
+				$query = $this->EE->db->distinct('exp_wiki_category_articles.page_id')
+							->from('wiki_category_articles')
+							->join('wiki_page', 'exp_wiki_page.page_id = exp_wiki_category_articles.page_id')
+							->where('wiki_id', $this->wiki_id)
+							->get();
 
 				if ($query->num_rows() > 0)
 				{
@@ -1284,11 +1285,11 @@ class Wiki {
 			
 		if (isset($this->seg_parts['1']) && isset($this->namespaces[strtolower($this->seg_parts['1'])]))
 		{
-			$xsql = "AND LOWER(p.page_namespace) = '".$this->EE->db->escape_str(strtolower($this->seg_parts['1']))."'";
+			$xsql .= "AND LOWER(p.page_namespace) = '".$this->EE->db->escape_str(strtolower($this->seg_parts['1']))."'";
 		}
 		else
 		{
-			$xsql = "AND p.page_namespace = ''";
+			$xsql .= "AND p.page_namespace = ''";
 		}
 		
 		$results = $this->EE->db->query("SELECT r.*, 
@@ -3945,10 +3946,13 @@ class Wiki {
 							}
 						}
 					}
-					
-					$t_query = $this->EE->db->query("SELECT COUNT(*) AS count FROM exp_wiki_page WHERE page_name = '".$this->EE->db->escape_str($data['page_name'])."' AND LOWER(page_namespace) = '".$this->EE->db->escape_str($data['page_namespace'])."'");
 
-					if ($t_query->row('count')  > 0)
+					$t_query = $this->EE->db->where('page_name', $data['page_name'])
+							->where('LOWER(page_namespace)', $data['page_namespace'])
+							->where('wiki_id', $this->wiki_id)
+							->count_all_results('wiki_page');
+					
+					if ($t_query > 0)
 					{
 						return $this->EE->output->show_user_error('general', array($this->EE->lang->line('duplicate_article')));
 					}
@@ -4516,12 +4520,11 @@ class Wiki {
 		// Secure Forms check
 	  	// If the hash is not found we'll simply reload the page.
 	  
-		if ($this->EE->config->item('secure_forms') == 'y' && $search_paginate === FALSE)
+		if ($this->EE->config->item('secure_forms') == 'y' 
+			AND $search_paginate === FALSE
+			AND $this->EE->security->secure_forms_check($this->EE->input->post('XID')) == FALSE)
 		{
-			if ($this->EE->security->secure_forms_check($this->EE->input->post('XID')) == FALSE)
-			{
-				$this->redirect('', $this->EE->input->get_post('title'));
-			}
+			$this->redirect('', $this->EE->input->get_post('title'));
 		}
 		
 		/** ----------------------------------------
@@ -4789,7 +4792,7 @@ class Wiki {
 
 			if (isset($letter_header))
 			{	
-				$this_letter = (function_exists('mb_strtoupper')) ? mb_strtoupper(substr($row['topic'], 0, 1), $this->EE->config->item('charset')) : strtoupper(substr($row['topic'], 0));
+				$this_letter = (function_exists('mb_strtoupper')) ? mb_strtoupper(substr($row['topic'], 0, 1), $this->EE->config->item('charset')) : strtoupper(substr($row['topic'], 0, 1));
 				
 				if ($last_letter != $this_letter)
 				{
@@ -5260,20 +5263,12 @@ class Wiki {
 			$this->EE->lang->loadfile('upload');
 		
 			// Secure Forms
-			
-			if ($this->EE->config->item('secure_forms') == 'y')
+			if ($this->EE->config->item('secure_forms') == 'y'
+				AND ! $this->EE->security->secure_forms_check($this->EE->input->post('XID')))
 			{
-				$this->EE->db->select('COUNT(*) as count');
-				$this->EE->db->where('ip_address', $this->EE->input->ip_address());
-				$this->EE->db->where('date >', 'UNIX_TIMESTAMP()-7200');
-				$results = $this->EE->db->get('security_hashes');				
-			
-				if ($results->row('count')  == 0)
-				{
-					$this->redirect($this->special_ns, 'Uploads');
-				}	
+				$this->redirect($this->special_ns, 'Uploads');
 			}
-			
+
 			/** -------------------------------------
 			/**  Edit Limit
 			/** -------------------------------------*/
@@ -5385,16 +5380,7 @@ class Wiki {
 							array($this->EE->lang->line($saved['message'])));
 			}			
 			
-
-			$this->EE->db->insert('wiki_uploads', $data);			
-			
-			if ($this->EE->config->item('secure_forms') == 'y')
-			{
-				$this->EE->db->where('hash', $_POST['XID']);
-				$this->EE->db->where('ip_address', $this->EE->input->ip_address());
-				$this->EE->db->or_where('date', 'UNIX_TIMESTAMP()-7200');
-				$this->EE->db->delete('security_hashes');				
-			}
+			$this->EE->db->insert('wiki_uploads', $data);
 			
 			$this->redirect($this->file_ns, $new_name);
 		}

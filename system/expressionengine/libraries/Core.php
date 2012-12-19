@@ -6,8 +6,8 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -21,7 +21,7 @@
  * @subpackage	Core
  * @category	Core
  * @author		EllisLab Dev Team
- * @link		http://expressionengine.com
+ * @link		http://ellislab.com
  */
 class EE_Core {
 	
@@ -33,20 +33,6 @@ class EE_Core {
 	 */	
 	function __construct()
 	{
-		// Call initialize to do the heavy lifting
-		$this->_initialize_core();
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Initialize EE
-	 *
-	 * @access	private
-	 * @return	void
-	 */
-	function _initialize_core()
-	{
 		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();
 		
@@ -55,7 +41,22 @@ class EE_Core {
 		// for core to the super object quickly enough.
 		// Breaks access to core in the menu lib.
 		$this->EE->core = $this;
-		
+
+		// Set a liberal script execution time limit, making it shorter for front-end requests than CI's default
+		if (function_exists("set_time_limit") == TRUE AND @ini_get("safe_mode") == 0)
+		{
+			@set_time_limit((REQ == 'CP') ? 300 : 90);
+		}
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Sets up the very bare system needed for things such
+	 * as cp css and stylesheet requests.
+	 */
+	function bootstrap()
+	{
 		// Define the request type
 		// Note: admin.php defines REQ=CP
 		if ( ! defined('REQ'))
@@ -83,8 +84,8 @@ class EE_Core {
 		}
 		
 		// application constants
-		define('IS_FREELANCER',	FALSE);
-		define('APP_NAME',		'ExpressionEngine'.(IS_FREELANCER ? ' Freelancer' : ''));
+		define('IS_CORE',		FALSE);
+		define('APP_NAME',		'ExpressionEngine'.(IS_CORE ? ' Core' : ''));
 		define('APP_BUILD',		'20120911');
 		define('APP_VER',		'2.6.0');
 		define('SLASH',			'&#47;');
@@ -96,27 +97,11 @@ class EE_Core {
 		define('NL',			"\n");
 		define('PATH_DICT', 	APPPATH.'config/');
 		define('AJAX_REQUEST',	$this->EE->input->is_ajax_request());
-
-		$this->native_plugins = array('magpie', 'xml_encode');
-		$this->native_modules = array(
-			'blacklist', 'channel', 'comment', 'commerce', 'email', 'emoticon',
-			'file', 'forum', 'ip_to_nation', 'jquery', 'mailinglist', 'member',
-			'metaweblog_api', 'moblog', 'pages', 'query', 'referrer', 'rss', 'rte',
-			'safecracker', 'search', 'simple_commerce', 'stats',
-			'updated_sites', 'wiki'
-		);
-		
-		
-		// Set a liberal script execution time limit, making it shorter for front-end requests than CI's default
-		if (function_exists("set_time_limit") == TRUE AND @ini_get("safe_mode") == 0)
-		{
-			@set_time_limit((REQ == 'CP') ? 300 : 90);
-		}
 		
 		// Load DB and set DB preferences
 		$this->EE->load->database();
-		$this->EE->db->swap_pre 	= 'exp_';
-		$this->EE->db->db_debug 	= FALSE;
+		$this->EE->db->swap_pre = 'exp_';
+		$this->EE->db->db_debug = FALSE;
 	
 		// Note enable_db_caching is a per site setting specified in EE_Config.php
 		// If debug is on we enable the profiler and DB debug
@@ -188,7 +173,7 @@ class EE_Core {
 		{
 			$this->EE->config->set_item('index_page', $this->EE->config->item('site_index'));
 		}
-			
+
 		// Set the path to the "themes" folder
 		if ($this->EE->config->item('theme_folder_path') !== FALSE && 
 			$this->EE->config->item('theme_folder_path') != '')
@@ -222,29 +207,44 @@ class EE_Core {
 		unset($theme_path);
 		
 		// Define Third Party Theme Path and URL
-		if ($this->EE->config->item('path_third_themes'))
+		define('PATH_THIRD_THEMES',	PATH_THEMES.'third_party/');
+		define('URL_THIRD_THEMES',	$this->EE->config->slash_item('theme_folder_url').'third_party/');
+
+
+		// Load the very, very base classes
+		// ideally these won't query much
+		$this->EE->load->library('functions');
+		$this->EE->load->library('extensions');
+
+		// Our design is a little dirty. The asset controllers need
+		// path_cp_theme. Fix it without loading all the other junk!
+		if (REQ == 'CP')
 		{
-			define(
-				'PATH_THIRD_THEMES',
-				rtrim(realpath($this->EE->config->item('path_third_themes')), '/').'/'
-			);
+			define('PATH_CP_THEME', PATH_THEMES.'cp_themes/');	// theme path
 		}
-		else
-		{
-			define('PATH_THIRD_THEMES',	PATH_THEMES.'third_party/');
-		}
-		
-		if ($this->EE->config->item('url_third_themes'))
-		{
-			define(
-				'URL_THIRD_THEMES',
-				rtrim($this->EE->config->item('url_third_themes'), '/').'/'
-			);
-		}
-		else
-		{
-			define('URL_THIRD_THEMES',	$this->EE->config->slash_item('theme_folder_url').'third_party/');
-		}
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Initialize EE
+	 *
+	 * @access	private
+	 * @return	void
+	 */
+	function run_ee()
+	{
+		$this->native_plugins = array('magpie', 'xml_encode');
+		$this->native_modules = array(
+			'blacklist', 'channel', 'comment', 'commerce', 'email', 'emoticon',
+			'file', 'forum', 'ip_to_nation', 'jquery', 'mailinglist', 'member',
+			'metaweblog_api', 'moblog', 'pages', 'query', 'referrer', 'rss', 'rte',
+			'safecracker', 'search', 'simple_commerce', 'stats',
+			'updated_sites', 'wiki'
+		);
+		$this->standard_modules = array('blacklist', 'email', 'forum', 'ip_to_nation',
+			'mailinglist', 'member', 'moblog', 'query', 'simple_commerce',
+			'updated_sites', 'wiki');
 		
 		// Is this a stylesheet request?  If so, we're done.
 		if (isset($_GET['css']) OR (isset($_GET['ACT']) && $_GET['ACT'] == 'css')) 
@@ -266,10 +266,6 @@ class EE_Core {
 			$this->EE->load->library('file_integrity');
 			$this->EE->file_integrity->create_bootstrap_checksum();
 		}
-
-		// Load the remaining base classes
-		$this->EE->load->library('functions');
-		$this->EE->load->library('extensions');
 		
 		if (function_exists('date_default_timezone_set'))
 		{
@@ -296,7 +292,7 @@ class EE_Core {
 		{
 			$this->EE->output->enable_profiler(TRUE);
 		}
-	
+
 		/*
 		 * -----------------------------------------------------------------
 		 *  Filter GET Data
@@ -352,12 +348,6 @@ class EE_Core {
 				unset($var_keys);
 			}
 		}
-		
-		// If it's a CP request we will initialize it
-		if (REQ == 'CP')
-		{
-			$this->_initialize_cp();
-		}
 	}	
 
 	// ------------------------------------------------------------------------
@@ -368,24 +358,28 @@ class EE_Core {
 	 * @access	private
 	 * @return	void
 	 */	
-	function _initialize_cp()
+	function run_cp()
 	{
 		$s = 0;
-		
-		if ($this->EE->config->item('admin_session_type') != 'c')
+
+		switch ($this->EE->config->item('admin_session_type'))
 		{
-			$s = $this->EE->session->userdata('session_id', 0);
+			case 's'	:
+				$s = $this->EE->session->userdata('session_id', 0);
+				break;
+			case 'cs'	:
+				$s = $this->EE->session->userdata('fingerprint', 0);
+				break;
 		}
-		
-		define('BASE', SELF.'?S='.$s.'&amp;D=cp');			// cp url
-		define('PATH_CP_THEME', PATH_THEMES.'cp_themes/');	// theme path
-		
+
+		define('BASE', SELF.'?S='.$s.'&amp;D=cp'); // cp url
+
 		// Show the control panel home page in the event that a
 		// controller class isn't found in the URL
-		if ($this->EE->router->fetch_class() == 'ee' OR
-			$this->EE->router->fetch_class() == '')
+		if ($this->EE->router->fetch_class() == '' OR
+			! isset($_GET['S']))
 		{
-			$this->EE->functions->redirect(BASE.'&C=homepage');
+			$this->EE->functions->redirect(BASE.'C=homepage');
 		}
 
 		// load the user agent lib to check for mobile
@@ -436,7 +430,7 @@ class EE_Core {
 		// Load our view library
 		$this->EE->load->library('view');
 		$this->EE->view->set_cp_theme($cp_theme);
-		
+
 		// Fetch control panel language file
 		$this->EE->lang->loadfile('cp');
 		
@@ -473,13 +467,6 @@ class EE_Core {
 			return $this->EE->output->fatal_error(lang('not_authorized'));
 		}
 		
-		// Request to our css controller don't need any
-		// of the expensive prep work below
-		if ($this->EE->router->class == 'css' OR $this->EE->router->class == 'javascript')
-		{
-			return;
-		}
-		
 		// Load common helper files
 		$this->EE->load->helper(array('url', 'form', 'quicktab'));
 
@@ -497,7 +484,7 @@ class EE_Core {
 		// @todo remove after 2.1.1's release, move to the update script
 		if (strncmp($this->EE->config->item('doc_url'), 'http://expressionengine.com/docs', 32) == 0)
 		{
-			$this->EE->config->update_site_prefs(array('doc_url' => 'http://expressionengine.com/user_guide/'));
+			$this->EE->config->update_site_prefs(array('doc_url' => 'http://ellislab.com/expressionengine/user-guide/'));
 		}
 	}
 	
@@ -561,7 +548,7 @@ class EE_Core {
 		$profile_trigger = $this->EE->config->item('profile_trigger');
 		
 		
-		if ( ! IS_FREELANCER && $forum_trigger && 
+		if ( ! IS_CORE && $forum_trigger && 
 			in_array($this->EE->uri->segment(1), preg_split('/\|/', $forum_trigger, -1, PREG_SPLIT_NO_EMPTY)))
 		{
 			require PATH_MOD.'forum/mod.forum.php';
@@ -569,7 +556,7 @@ class EE_Core {
 			return;
 		}
 		
-		if ( ! IS_FREELANCER && $profile_trigger && $profile_trigger == $this->EE->uri->segment(1))
+		if ( ! IS_CORE && $profile_trigger && $profile_trigger == $this->EE->uri->segment(1))
 		{
 			// We do the same thing with the member profile area.  
 		

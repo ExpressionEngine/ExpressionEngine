@@ -5,8 +5,8 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,7 +20,7 @@
  * @subpackage	Modules
  * @category	Update File
  * @author		EllisLab Dev Team
- * @link		http://expressionengine.com
+ * @link		http://ellislab.com
  */
 
 class Ip_to_nation_upd {
@@ -34,6 +34,8 @@ class Ip_to_nation_upd {
 	{
 		$this->EE =& get_instance();
 		$this->EE->load->dbforge();
+
+		$this->EE->load->model('ip_to_nation_data', 'ip_data');
 	}
 
 	// --------------------------------------------------------------------
@@ -178,82 +180,10 @@ class Ip_to_nation_upd {
 			$this->EE->db->query("ALTER TABLE `exp_ip2nation_countries` ADD PRIMARY KEY `code` (`code`)");
 		}
 
-		// Version 2.2 user data based on 02/27/2010 sql from ip2nation.com
-		if (version_compare($current, '2.2', '<'))
-		{
-			if ( ! include_once($this->_ee_path.'modules/ip_to_nation/iptonation.php'))
-			{
-				$this->EE->lang->loadfile('ip_to_nation');
-				show_error($this->EE->lang->line('iptonation_missing'));
-			}
+		// Version 2.2 (02/27/2010) and 2.3 (11/19/2010) used an included sql file from ip2nation.com
+		// File is no longer included and table truncated in 3.0, so removing that code
+		// They should update IP lists via CP going forward
 
-			// Fetch banned nations
-			$query = $this->EE->db->get_where('ip2nation_countries', array('banned'=>'y'));
-
-			// Truncate tables
-			$this->EE->db->truncate('ip2nation_countries');
-			$this->EE->db->truncate('ip2nation');
-
-			// Re-insert the massive number of records
-			for ($i = 0, $total = count($cc); $i < $total; $i = $i + 100)
-			{
-				$this->EE->db->query("INSERT INTO exp_ip2nation_countries (code) VALUES ('".implode("'), ('", array_slice($cc, $i, 100))."')");
-			}
-
-			for ($i = 0, $total = count($ip); $i < $total; $i = $i + 100)
-			{
-				$this->EE->db->query("INSERT INTO exp_ip2nation (ip, country) VALUES (".implode("), (", array_slice($ip, $i, 100)).")");
-			}
-
-			// update banned nations
-			if ($query->num_rows() > 0)
-			{
-				foreach ($query->result_array() as $row)
-				{
-					$this->EE->db->query($this->EE->db->update_string('exp_ip2nation_countries', array('banned' => 'y'), array('code' => $row['code'])));
-				}
-			}
-		}
-		
-		// Version 2.3 user data based on 11/19/2010 sql from ip2nation.com
-		// Add dl date to config via $this->EE->localize->now which is 1290177198
-		if (version_compare($current, '2.3', '<'))
-		{
-			if ( ! include_once($this->_ee_path.'modules/ip_to_nation/iptonation.php'))
-			{
-				$this->EE->lang->loadfile('ip_to_nation');
-				show_error($this->EE->lang->line('iptonation_missing'));
-			}
-
-			// Fetch banned nations
-			$query = $this->EE->db->get_where('ip2nation_countries', array('banned'=>'y'));
-
-			// Truncate tables
-			$this->EE->db->truncate('ip2nation_countries');
-			$this->EE->db->truncate('ip2nation');
-
-			// Re-insert the massive number of records
-			for ($i = 0, $total = count($cc); $i < $total; $i = $i + 100)
-			{
-				$this->EE->db->query("INSERT INTO exp_ip2nation_countries (code) VALUES ('".implode("'), ('", array_slice($cc, $i, 100))."')");
-			}
-
-			for ($i = 0, $total = count($ip); $i < $total; $i = $i + 100)
-			{
-				$this->EE->db->query("INSERT INTO exp_ip2nation (ip, country) VALUES (".implode("), (", array_slice($ip, $i, 100)).")");
-			}
-
-			// update banned nations
-			if ($query->num_rows() > 0)
-			{
-				foreach ($query->result_array() as $row)
-				{
-					$this->EE->db->query($this->EE->db->update_string('exp_ip2nation_countries', array('banned' => 'y'), array('code' => $row['code'])));
-				}
-			}
-			
-			$this->EE->config->_update_config(array('ip2nation_db_date' => 1290177198));
-		}
 
 		// Version 3 switches to the MaxMind Geolite dataset for
 		// IPv6 ip address support. This requires a significant schema

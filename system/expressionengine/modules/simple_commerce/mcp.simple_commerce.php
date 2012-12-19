@@ -5,8 +5,8 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,7 +20,7 @@
  * @subpackage	Modules
  * @category	Modules
  * @author		EllisLab Dev Team
- * @link		http://expressionengine.com
+ * @link		http://ellislab.com
  */
 
 class Simple_commerce_mcp {
@@ -698,7 +698,7 @@ class Simple_commerce_mcp {
 
 		$type = 'add_email';
 
-		$this->EE->jquery->plugin(BASE.AMP.'C=javascript'.AMP.'M=load'.AMP.'file=ee_txtarea', TRUE);
+		$this->EE->cp->add_js_script('plugin', 'ee_txtarea');
 
 		$vars['template_directions'] = $this->EE->load->view('template_directions', '', TRUE);
 
@@ -1042,7 +1042,7 @@ class Simple_commerce_mcp {
 		$vars['form_hidden'] = array();
 		$type = 'add_purchase';
 
-		$this->EE->jquery->ui(BASE.AMP.'C=javascript'.AMP.'M=load'.AMP.'ui=datepicker', TRUE);
+		$this->EE->cp->add_js_script('ui', 'datepicker');
 
 		// used in date field
 		$this->EE->javascript->output('

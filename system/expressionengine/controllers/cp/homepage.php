@@ -5,8 +5,8 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,9 +20,9 @@
  * @subpackage	Control Panel
  * @category	Control Panel
  * @author		EllisLab Dev Team
- * @link		http://expressionengine.com
+ * @link		http://ellislab.com
  */
-class Homepage extends CI_Controller {
+class Homepage extends CP_Controller {
 
 	/**
 	 * Index function
@@ -33,7 +33,7 @@ class Homepage extends CI_Controller {
 	function index()
 	{
 		$this->cp->get_installed_modules();
-		$this->cp->set_variable('cp_page_title', lang('main_menu'));
+		$this->view->cp_page_title = lang('main_menu');
 
 		$message			= array();
 		$show_notice		= $this->_checksum_bootstrap_files();
@@ -109,24 +109,16 @@ class Homepage extends CI_Controller {
 		}
 		
 		//  Comment blocks
-		$vars['comments_installed']			= $this->db->table_exists('comments');
 		$vars['can_moderate_comments']		= $this->cp->allowed_group('can_moderate_comments') ? TRUE : FALSE;
+		$vars['comments_installed']			= $vars['can_moderate_comments'] ? $this->db->table_exists('comments') : FALSE;
 		$vars['comment_validation_count']	= ($vars['comments_installed']) ? $this->_total_validating_comments() : FALSE;	
 
 		// Most recent comment and most recent entry
 		$this->load->model('channel_model');
 
 		$vars['cp_recent_ids'] = array(
-			'entry'		=> $this->channel_model->get_most_recent_id('entry')
+			'entry'	=> $this->channel_model->get_most_recent_id('entry')
 		);
-		
-		// 2.3.1 Patch
-		if (version_compare(APP_VER, '2.3.1', '<') && $this->session->userdata('group_id') == 1)
-		{
-			$show_notice = TRUE;
-			$vars['info_message_open'] = TRUE; // big mistakes cannot be hidden
-			$vars['version'] = $this->_check_patch();
-		}
 
 		// Prep js
 		$this->javascript->set_global('lang.close', lang('close'));
@@ -137,11 +129,8 @@ class Homepage extends CI_Controller {
 		}
 
 		$this->cp->add_js_script('file', 'cp/homepage');
-		$this->javascript->compile();
-		
-		$this->load->view('homepage', $vars);
+		$this->cp->render('homepage', $vars);
 	}
-
 
 	// --------------------------------------------------------------------
 	
@@ -162,11 +151,10 @@ class Homepage extends CI_Controller {
 		return $this->db->count_all_results();
   	}
 
-
 	// --------------------------------------------------------------------
 	
 	/**
-	 *  Get Recent Entries
+	 * Get Recent Entries
 	 *
 	 * Gets total number of comments with 'pending' status
 	 *
@@ -183,7 +171,8 @@ class Homepage extends CI_Controller {
 		if ($query && $query->num_rows() > 0)
 		{
 			$result = $query->result();
-			foreach($result as $row)
+
+			foreach ($result as $row)
 			{
 				$link = '';
 				
@@ -191,9 +180,8 @@ class Homepage extends CI_Controller {
 				{
 					$link = BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.$row->channel_id.AMP.'entry_id='.$row->entry_id;
 				}
-				
 
-				$link = ($link == '') ? $row->title: '<a href="'.$link.'">'.$row->title.'</a>';
+				$link = ($link == '') ? $row->title : '<a href="'.$link.'">'.$row->title.'</a>';
 				
 				$entries[] = $link;
 			}
@@ -201,8 +189,6 @@ class Homepage extends CI_Controller {
 		
 		return $entries;
 	}
-
-
 
 	// --------------------------------------------------------------------
 
@@ -284,7 +270,7 @@ class Homepage extends CI_Controller {
 	 */	
 	function _version_check()
 	{	
-		$download_url = $this->cp->masked_url('https://secure.expressionengine.com/download.php');
+		$download_url = $this->cp->masked_url('https://store.ellislab.com/manage');
 		
 		$this->load->helper('version_helper');
 			
@@ -309,9 +295,9 @@ class Homepage extends CI_Controller {
 				$new_release = TRUE;
 				$high_priority = TRUE;
 				$high_priority_release = array(
-						'version'		=> $app_data[0],
-						'build'			=> $app_data[1]
-					);
+					'version'	=> $app_data[0],
+					'build'		=> $app_data[1]
+				);
 
 				continue;
 			}
@@ -321,15 +307,15 @@ class Homepage extends CI_Controller {
 				$new_release = TRUE;
 				$high_priority = TRUE;
 				$high_priority_release = array(
-						'version'		=> $app_data[0],
-						'build'			=> $app_data[1]
-					);
+					'version'	=> $app_data[0],
+					'build'		=> $app_data[1]
+				);
 
 				continue;					
 			}
 		}
 		
-		if (! $new_release)
+		if ( ! $new_release)
 		{
 			return FALSE;
 		}
@@ -340,10 +326,10 @@ class Homepage extends CI_Controller {
 		// released in the past 2 calendar days, we don't show anything
 		// on the control panel home page unless it was a security release
 		$date_threshold = mktime(0, 0, 0, 
-							substr($cur_ver[1], 4, -2), // Month
-							(substr($cur_ver[1], -2) + 2), // Day + 2 
-							substr($cur_ver[1], 0, 4) // Year
-					);		
+			substr($cur_ver[1], 4, -2), // Month
+			(substr($cur_ver[1], -2) + 2), // Day + 2 
+			substr($cur_ver[1], 0, 4) // Year
+		);		
 		
 		if (($this->localize->now < $date_threshold) && $high_priority != TRUE)
 		{
@@ -353,55 +339,20 @@ class Homepage extends CI_Controller {
 		if ($high_priority)
 		{
 			return sprintf(lang('new_version_notice_high_priority'),
-						   $high_priority_release['version'],	
-						   $high_priority_release['build'],
-						   $cur_ver[0],
-						   $cur_ver[1],
-						   $download_url,
-						   $this->cp->masked_url($this->config->item('doc_url').'installation/update.html'));
+				$high_priority_release['version'],	
+				$high_priority_release['build'],
+				$cur_ver[0],
+				$cur_ver[1],
+				$download_url,
+				$this->cp->masked_url($this->config->item('doc_url').'installation/update.html')
+			);
 		}
-		else
-		{
-			return sprintf(lang('new_version_notice'),
-						   $details['version'],
-						   $download_url,
-						   $this->cp->masked_url($this->config->item('doc_url').'installation/update.html'));					
-		}
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * EE 2.3.1 Patch Check
-	 *
-	 * @access	private
-	 * @return	string
-	 */
-	private function _check_patch()
-	{
-		if (version_compare(APP_VER, '2.3.0', '<'))
-		{
-			$msg = '<span class="notice">Patch unsuccessful!</span><br><br>';
-			$msg .= 'This patch cannot be applied to ExpressionEngine versions older than 2.3.0.<br><br>Please do a full upgrade to version 2.3.1 or contact <a href="http://expressionengine.com/forums">tech support</a> for more information.';
-			return $msg;
-		}
-
-		$contents = file_get_contents(BASEPATH.'core/Security.php');
-		$checksum = substr_count($contents, 'replace');
 		
-		unset($contents);
-		
-		if ($checksum != 40)
-		{
-			$msg = '<span class="notice">Patch unsuccessful!</span><br><br>';
-			$msg .= 'Incorrect File: <kbd>system/codeigniter/core/Security.php</kbd>.<br><br>If you need assistance, please contact <a href="http://expressionengine.com/forums">tech support</a> for more information.';
-			return $msg;
-		}
-
-		$this->config->update_site_prefs(array('app_version' => '231'));
-		$msg = '<span class="go_notice">Patch successfully applied!</span><br><br>';
-		$msg .= 'You are now on ExpressionEngine 2.3.1.';
-		return $msg;
+		return sprintf(lang('new_version_notice'),
+			$details['version'],
+			$download_url,
+			$this->cp->masked_url($this->config->item('doc_url').'installation/update.html')
+		);
 	}
 
 }

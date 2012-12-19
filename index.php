@@ -5,8 +5,8 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  */
 
@@ -21,7 +21,7 @@
  * Indicate the new name and/or path here. The path can be relative
  * or it can be a full server path.
  *
- * http://expressionengine.com/user_guide/installation/best_practices.html
+ * http://ellislab.com/expressionengine/user-guide/installation/best_practices.html
  * 
  */
 	$system_path = './system';
@@ -33,16 +33,16 @@
  * --------------------------------------------------------------------
  *
  * Uncomment the following variables if you are using the Multiple
- * Site Manager: http://expressionengine.com/user_guide/cp/sites
+ * Site Manager: http://ellislab.com/expressionengine/user-guide/cp/sites
  *
  * Set the Short Name of the site this file will display, the URL of
  * this site's admin.php file, and the main URL of the site (without
  * index.php) 
  *
  */
-//	$assign_to_config['site_name']  = 'domain2_short_name';
-//	$assign_to_config['cp_url'] = 'http://domain2.com/admin.php';
-//	$assign_to_config['site_url'] = 'http://domain2.com';
+ //  $assign_to_config['site_name']  = 'domain2_short_name'; 
+ //  $assign_to_config['cp_url'] = 'http://domain2.com/admin.php'; 
+ //  $assign_to_config['site_url'] = 'http://domain2.com'; 
 
 
 /*

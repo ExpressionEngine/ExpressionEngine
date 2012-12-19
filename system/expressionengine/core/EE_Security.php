@@ -5,8 +5,8 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,9 +20,11 @@
  * @subpackage	Core
  * @category	Core
  * @author		EllisLab Dev Team
- * @link		http://expressionengine.com
+ * @link		http://ellislab.com
  */
 class EE_Security extends CI_Security {
+
+	private $_xid_ttl = 7200;
 
 	// Small note, if you feel the urge to add a constructor,
 	// do not call get_instance(). The CI Security library
@@ -40,14 +42,14 @@ class EE_Security extends CI_Security {
 	 */
 	public function secure_forms_check($xid)
 	{	
-		if ( ! $this->check_xid($xid))
-		{
-			return FALSE;
-		}
-		
-  		$this->delete_xid($xid);
+		$check = $this->check_xid($xid);
 
-		return TRUE;
+		if (REQ != 'CP' OR ! AJAX_REQUEST)
+		{
+			$this->delete_xid($xid);
+		}
+
+		return $check;
 	}
 	
 	// --------------------------------------------------------------------
@@ -72,11 +74,13 @@ class EE_Security extends CI_Security {
 			return FALSE;
 		}
 
-		$total = $EE->db->where('hash', $xid)
-						->where('ip_address', $EE->input->ip_address())
-						->where('date > UNIX_TIMESTAMP()-7200')
-						->from('security_hashes')
-						->count_all_results();
+		$total = $EE->db->where(array(
+				'hash' 			=> $xid,
+				'session_id' 	=> $EE->session->userdata('session_id'),
+				'date >' 		=> $EE->localize->now - $this->_xid_ttl
+			))
+			->from('security_hashes')
+			->count_all_results();
 		
 		if ($total === 0)
 		{
@@ -86,6 +90,36 @@ class EE_Security extends CI_Security {
 		return TRUE;		
 	}
 	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Generate Security Hash
+	 *
+	 * @return String XID generated
+	 */
+	public function generate_xid($count = 1, $array = FALSE)
+	{
+		$EE =& get_instance();
+
+		$hashes = array();
+		$inserts = array();
+
+		for ($i = 0; $i < $count; $i++)
+		{
+			$hash = $EE->functions->random('encrypt');
+			$inserts[] = array(
+				'date' 			=> $EE->localize->now,
+				'session_id'	=> $EE->session->userdata('session_id'),
+				'hash' 			=> $hash
+			);
+			$hashes[] = $hash;	
+		}
+		
+		$EE->db->insert_batch('security_hashes', $inserts);
+
+		return (count($hashes) > 1 OR $array) ? $hashes : $hashes[0];
+	}
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -103,11 +137,23 @@ class EE_Security extends CI_Security {
 			return;
 		}
 
-		$EE->db->where("(hash='".$EE->db->escape_str($xid)."' AND ip_address = '".$EE->input->ip_address()."')", NULL, FALSE)
-			   ->or_where('date < UNIX_TIMESTAMP()-7200')
-			   ->delete('security_hashes');
+		$EE->db->where('hash', $xid)
+			->or_where('date <', $EE->localize->now - $this->_xid_ttl)
+			->delete('security_hashes');
 		
 		return;		
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Deletes out of date XIDs
+	 */
+	public function garbage_collect_xids()
+	{
+		$EE =& get_instance();
+		$EE->db->where('date <', $EE->localize->now - $this->_xid_ttl)
+			->delete('security_hashes');
 	}
 
 }

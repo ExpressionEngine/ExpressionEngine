@@ -51,7 +51,7 @@ if (isset($refresh) && $refresh === TRUE)
 			
 			<div id="footer">
 				
-				ExpressionEngine <?php echo $version; ?> - &#169; <?php echo $copyright; ?>
+				ExpressionEngine <?php echo $is_core.$version; ?> - &#169; <?php echo $copyright; ?>
 				
 			</div>
 

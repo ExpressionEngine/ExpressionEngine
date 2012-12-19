@@ -5,8 +5,8 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,7 +20,7 @@
  * @subpackage	Core
  * @category	Model
  * @author		EllisLab Dev Team
- * @link		http://expressionengine.com
+ * @link		http://ellislab.com
  */
 class Tools_model extends CI_Model {
 
@@ -483,62 +483,6 @@ class Tools_model extends CI_Model {
 		}
 
 		return $lang_list;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Delete Upload Preferences
-	 *
-	 * @deprecated Deprecated since 2.2
-	 * @param	int
-	 * @return	string
-	 */
-	public function delete_upload_preferences($id = '')
-	{
-		$this->load->library('logger');
-		$this->logger->deprecated('2.2', 'File_upload_preferences_model::delete_upload_preferences()');
-		
-		$this->load->model('file_upload_preferences_model');
-
-		return $this->file_upload_preferences_model->delete_upload_preferences($id);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Get Upload Preferences
-	 *
-	 * @deprecated Deprecated since 2.2
-	 * @param	int
-	 * @return	mixed
-	 */
-	public function get_upload_preferences($group_id = NULL, $id = NULL)
-	{
-		$this->load->library('logger');
-		$this->logger->deprecated('2.2', 'File_upload_preferences_model::get_file_upload_preferences()');
-		
-		$this->load->model('file_upload_preferences_model');
-		return $this->file_upload_preferences_model->get_upload_preferences($group_id, $id);
-	}
-	
-	// --------------------------------------------------------------------
-
-	/**
-	 * Get Files
-	 *
-	 * @deprecated Deprecated since 2.2
-	 * @param	int
-	 * @return	mixed
-	 */
-	public function get_files($directories = array(), $allowed_types = array(), $full_server_path = '', $hide_sensitive_data = FALSE, $get_dimensions = FALSE, $files_array = array())
-	{
-		$this->load->library('logger');
-		$this->logger->deprecated('2.2', 'File_model::get_raw_files()');
-		
-		$this->load->model('file_model');
-		
-		return $this->file_model->get_raw_files($directories, $allowed_types, $full_server_path, $hide_sensitive_data, $get_dimensions, $files_array);
 	}
 
 	// --------------------------------------------------------------------

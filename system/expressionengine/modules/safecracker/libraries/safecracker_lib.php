@@ -7,8 +7,8 @@
  * @author		EllisLab Dev Team, 
  * 		- Original Development by Barrett Newton -- http://barrettnewton.com
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -22,13 +22,14 @@
  * @subpackage	Libraries
  * @category	Modules
  * @author		EllisLab Dev Team
- * @link		http://expressionengine.com
+ * @link		http://ellislab.com
  */
 
 class Safecracker_lib
 {
 	public $initialized = FALSE;
 	public $form_error = FALSE;
+	public $form_loaded = TRUE;
 	public $site_id;
 	
 	public $categories;
@@ -393,15 +394,7 @@ class Safecracker_lib
 				
 				$temp = $tagdata;
 				
-				//parse conditionals
-				//$temp = $this->swap_conditionals($temp, $custom_field_variables_row);
-				$embed_vars = $this->EE->TMPL->embed_vars;
-				
-				$this->EE->TMPL->embed_vars = array_merge($this->EE->TMPL->embed_vars, $custom_field_variables_row);
-				
-				$temp = $this->EE->TMPL->advanced_conditionals($temp);
-				
-				$this->EE->TMPL->embed_vars = $embed_vars;
+				$temp = $this->EE->functions->prep_conditionals($temp, $custom_field_variables_row);
 				
 				if (strpos($temp, LD.'display_field'.RD) !== FALSE)
 				{
@@ -792,6 +785,15 @@ class Safecracker_lib
 		{
 			$this->form_hidden('logged_out_member_id', $this->encrypt_input($this->logged_out_member_id));
 		}
+
+		$require_entry = 'n';
+
+		if ($this->bool_string($this->EE->TMPL->fetch_param('require_entry')))
+		{
+			$require_entry = $this->entry('entry_id');
+		}
+
+		$this->form_hidden('require_entry', $this->encrypt_input($require_entry));
 		
 		//add class to form
 		if ($this->EE->TMPL->fetch_param('class'))
@@ -824,6 +826,9 @@ class Safecracker_lib
 		
 		$return = $this->channel_standalone->entry_form(TRUE, $this->EE->functions->cached_captcha);
 		
+		// Channel standalone will return nothing if member doesn't have permission
+		$this->form_loaded = ( ! empty($return));
+
 		$this->EE->config->set_item('site_id', $current_site_id);
 		
 		if (isset($this->EE->session->cache['safecracker']['channel_standalone_output_js']))
@@ -1180,8 +1185,20 @@ class Safecracker_lib
 			
 			$this->EE->db->delete('captcha');
 		}
-		
+
 		//is an edit form?
+		$require_entry = $this->EE->input->post('require_entry');
+		$require_entry = $this->decrypt_input($require_entry);
+
+		if ($require_entry !== 'n')
+		{
+			if ($this->EE->input->post('entry_id') != $require_entry)
+			{
+				// oh no you didn't!
+				$_POST['entry_id'] = $require_entry;
+			}
+		}
+
 		if ($this->EE->input->post('entry_id'))
 		{
 			$this->edit = TRUE;
@@ -1225,7 +1242,18 @@ class Safecracker_lib
 			// If file exists, add it to the POST array for validation
 			if (isset($_FILES[$field['field_name']]['name']))
 			{
-				$_POST[$field['field_name']] = $_FILES[$field['field_name']]['name'];
+				// Allow multi-dimensional arrays that contain files
+				if (is_array($_FILES[$field['field_name']]['name']) && is_array($_POST[$field['field_name']]))
+				{
+					$_POST[$field['field_name']] = array_merge_recursive(
+						$_POST[$field['field_name']],
+						$_FILES[$field['field_name']]['name']
+					);
+				}
+				else
+				{
+					$_POST[$field['field_name']] = $_FILES[$field['field_name']]['name'];
+				}
 			}
 			
 			$this->custom_fields[$i]['isset'] = $isset;

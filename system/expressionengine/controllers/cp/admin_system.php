@@ -5,8 +5,8 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,9 +20,9 @@
  * @subpackage	Control Panel
  * @category	Control Panel
  * @author		EllisLab Dev Team
- * @link		http://expressionengine.com
+ * @link		http://ellislab.com
  */
-class Admin_system extends CI_Controller {
+class Admin_system extends CP_Controller {
 
 	/**
 	 * Constructor
@@ -45,9 +45,10 @@ class Admin_system extends CI_Controller {
 	{
 		$this->_restrict_prefs_access();
 
-		$this->cp->set_variable('cp_page_title', lang('admin_system'));
-		
-		$this->load->view('_shared/overview', array('controller' => 'admin'));
+		$this->view->controller = 'admin';
+		$this->view->cp_page_title = lang('admin_system');
+
+		$this->cp->render('_shared/overview');
 	}
 
 	// --------------------------------------------------------------------
@@ -108,8 +109,6 @@ class Admin_system extends CI_Controller {
 				}
 			}
 		}');
-
-		$this->javascript->compile();
 
 		$this->cp->set_variable('cp_page_title', lang($type));
 
@@ -193,7 +192,7 @@ class Admin_system extends CI_Controller {
 			{
 				$vars['cp_messages']['error'] = $this->form_validation->error_string('', '');
 	
-				$this->load->view('admin/config_pages', $vars);
+				$this->cp->render('admin/config_pages', $vars);
 	
 				return;
 			}
@@ -204,7 +203,7 @@ class Admin_system extends CI_Controller {
 		$vars = $this->_prep_view_vars($type);
 		$vars['form_action'] = 'C=admin_system'.AMP.'M='.$return_loc;
 
-		$this->load->view('admin/config_pages', $vars);
+		$this->cp->render('admin/config_pages', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -657,9 +656,7 @@ class Admin_system extends CI_Controller {
 			$("table tbody tr:visible:odd").addClass("odd");
 		');
 
-		$this->javascript->compile();
-
-		$this->load->view('admin/config_editor', $vars);
+		$this->cp->render('admin/config_editor', $vars);
 	}
 
 	// --------------------------------------------------------------------

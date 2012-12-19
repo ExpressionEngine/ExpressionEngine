@@ -5,8 +5,8 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,7 +20,7 @@
  * @subpackage	Control Panel
  * @category	Control Panel
  * @author		EllisLab Dev Team
- * @link		http://expressionengine.com
+ * @link		http://ellislab.com
  */
 class EE_Menu {
 
@@ -278,7 +278,7 @@ class EE_Menu {
 			$menu['design']['themes']['wiki_themes'] = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=wiki'.AMP.'method=list_themes';
 		}
 		
-		if ( ! IS_FREELANCER)
+		if ( ! IS_CORE)
 		{
 			$menu['design']['themes']['member_profile_templates'] = BASE.AMP."C=design".AMP."M=member_profile_templates";
 		}
@@ -536,6 +536,8 @@ class EE_Menu {
 			if ( ! $this->EE->cp->allowed_group('can_admin_design'))
 			{
 				unset($menu['design']['message_pages']);
+				unset($menu['design']['templates']['template_preferences']);				
+				unset($menu['design']['templates']['global_preferences']);
 			}			
 
 			if ( ! $this->EE->cp->allowed_group('can_admin_templates'))
@@ -545,9 +547,7 @@ class EE_Menu {
 				unset($menu['design']['templates']['create_template']);
 				unset($menu['design']['templates']['snippets']);
 				unset($menu['design']['templates']['sync_templates']);
-				unset($menu['design']['templates']['template_preferences']);				
 				unset($menu['design']['templates']['global_variables']);
-				unset($menu['design']['templates']['global_preferences']);
 				unset($menu['design']['templates'][0]);	
 			}
 		}
@@ -769,7 +769,7 @@ class EE_Menu {
 		$this->EE->load->model('site_model');
 		
 		$site_list = $this->EE->session->userdata('assigned_sites'); 
-		$site_list = ($this->EE->config->item('multiple_sites_enabled') === 'y' && ! IS_FREELANCER) ? $site_list : FALSE;
+		$site_list = ($this->EE->config->item('multiple_sites_enabled') === 'y' && ! IS_CORE) ? $site_list : FALSE;
 
 		$menu = array();
 

@@ -6,8 +6,8 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.4
  * @filesource
  */
@@ -21,7 +21,7 @@
  * @subpackage	Core
  * @category	File_field
  * @author		EllisLab Dev Team
- * @link		http://expressionengine.com
+ * @link		http://ellislab.com
  */
 
 class File_field {
@@ -469,10 +469,10 @@ class File_field {
 		{
 			return FALSE;
 		}
-		
-		// Get cached upload directories
+
+		// Get the cached upload preferences
 		$upload_dir = $this->_get_upload_prefs();
-		
+			
 		if ( ! isset($upload_dir[$file['upload_location_id']]))
 		{
 			return FALSE;
@@ -480,7 +480,7 @@ class File_field {
 		
 		$upload_dir = $upload_dir[$file['upload_location_id']];
 		
-		$file['file_name'] = urlencode($file['file_name']);
+		$file['file_name'] = rawurlencode($file['file_name']);
 		
 		// Set additional data based on what we've gathered
 		$file['raw_output']	= $data;
@@ -511,7 +511,6 @@ class File_field {
 			$file['url:'.$m['short_name']] = $file['path'].'_'.$m['short_name'].'/'.$file['file_name'];
 			
 		}
-		
 		return $file;
 	}
 	
@@ -580,7 +579,9 @@ class File_field {
 			$this->EE->load->model('file_upload_preferences_model');
 			
 			$this->_upload_prefs = $this->EE->file_upload_preferences_model->get_file_upload_preferences(
-				$this->EE->session->userdata('group_id')
+				NULL,
+				NULL,
+				TRUE
 			);
 		}
 		

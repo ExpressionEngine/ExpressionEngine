@@ -5,8 +5,8 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,9 +20,17 @@
  * @subpackage	Control Panel
  * @category	Control Panel
  * @author		EllisLab Dev Team
- * @link		http://expressionengine.com
+ * @link		http://ellislab.com
  */
 class Css extends CI_Controller {
+
+	function __construct()
+	{
+		parent::__construct();
+
+		$this->load->library('core');
+		$this->core->bootstrap();
+	}
 
 	/**
 	 * _remap function
@@ -40,6 +48,8 @@ class Css extends CI_Controller {
 		
 		$file = 'global';
 		$path = '';
+
+		$cp_theme = $this->input->get_post('theme');
 		
 		if ($this->input->get_post('M') == 'third_party' && $package = $this->input->get_post('package'))
 		{
@@ -60,13 +70,12 @@ class Css extends CI_Controller {
 			$file = $this->input->get_post('M');
 		}
 		
-		
 		$css_paths = array(
-			PATH_CP_THEME.$this->session->userdata('cp_theme').'/',
+			PATH_CP_THEME.$cp_theme.'/',
 			PATH_CP_THEME.'default/'
 		);
 
-		if ($this->session->userdata('cp_theme') == 'default')
+		if ($cp_theme == 'default')
 		{
 			array_shift($css_paths);
 		}

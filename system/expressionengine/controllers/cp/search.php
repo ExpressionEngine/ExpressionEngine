@@ -5,8 +5,8 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,9 +20,9 @@
  * @subpackage	Control Panel
  * @category	Control Panel
  * @author		EllisLab Dev Team
- * @link		http://expressionengine.com
+ * @link		http://ellislab.com
  */
-class Search extends CI_Controller {
+class Search extends CP_Controller {
 
 	/**
 	 * Constructor
@@ -90,8 +90,7 @@ class Search extends CI_Controller {
 			exit;
 		}
 		
-		$this->javascript->compile();
-		$this->load->view('search/results', $vars);
+		$this->cp->render('search/results', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -122,7 +121,7 @@ class Search extends CI_Controller {
 			// Meta refresh to start the process
 			$meta = '<meta http-equiv="refresh" content="1;url='.BASE.AMP.'C=search'.AMP.'M=build_index'.AMP.'language='.$language.AMP.'working=y'.$saved.'" />';
 			$this->cp->add_to_head($meta);
-			$this->load->view('search/rebuild', $vars);
+			$this->cp->render('search/rebuild', $vars);
 		}
 		elseif ($flag == 'y')
 		{

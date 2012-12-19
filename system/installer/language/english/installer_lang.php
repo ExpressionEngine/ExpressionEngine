@@ -13,7 +13,7 @@ $lang['license_agree'] = 'I agree to abide by the license Terms and Conditions a
 $lang['license_disagree'] = 'I do NOT agree to abide by the license Terms and Conditions as stated above';
 $lang['server_settings'] = 'Server Settings';
 $lang['license_number'] = 'ExpressionEngine License Number';
-$lang['locate_license_number'] = 'Available in the <a href="https://secure.expressionengine.com/download.php">download area</a> of the ExpressionEngine.com site.';
+$lang['locate_license_number'] = 'Available in the <a href="https://store.ellislab.com/manage">download area</a> of the EllisLab.com site.';
 $lang['name_of_index'] = 'Name of the index page of your ExpressionEngine site';
 $lang['normally_index'] = 'Unless you renamed the file it will be named <strong>index.php</strong>';
 $lang['url_of_index'] = 'URL to the directory where the above index page is located';
@@ -77,7 +77,7 @@ $lang['error'] = 'ERROR';
 $lang['submit'] = 'Submit';
 $lang['error_occurred'] = 'The following error occurred:';
 $lang['module_errors_occurred'] = 'The following error(s) were reported during module installation:';
-$lang['support_resource_info'] = 'If you have questions regarding the above errors please visit our  <a href="http://expressionengine.com/support/">Support Resources</a> page or contact ExpressionEngine technical support.';
+$lang['support_resource_info'] = 'If you have questions regarding the above errors please visit our  <a href="http://ellislab.com/support/">Support Resources</a> page or contact ExpressionEngine technical support.';
 $lang['click_to_install'] = 'Click here to install a brand new copy of ExpressionEngine';
 $lang['click_to_update'] = 'Click here to update ExpressionEngine to Version %s';
 $lang['version_update_text'] = 'Running update ...';

@@ -5,8 +5,8 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,7 +20,7 @@
  * @subpackage	Control Panel
  * @category	Accessories
  * @author		EllisLab Dev Team
- * @link		http://expressionengine.com
+ * @link		http://ellislab.com
  */
 class Expressionengine_info_acc {
 
@@ -72,9 +72,9 @@ class Expressionengine_info_acc {
 	{
 		return '
 		<ul>
-			<li><a href="'.$this->EE->cp->masked_url('http://expressionengine.com/user_guide').'">'.lang('documentation').'</a></li>
-			<li><a href="'.$this->EE->cp->masked_url('http://expressionengine.com/support/support_policy/').'">'.lang('support_resources').'</a></li>
-			<li><a href="'.$this->EE->cp->masked_url('https://secure.expressionengine.com/download.php').'">'.lang('downloads').'</a></li>
+			<li><a href="'.$this->EE->cp->masked_url('http://ellislab.com/expressionengine/user-guide/').'">'.lang('documentation').'</a></li>
+			<li><a href="'.$this->EE->cp->masked_url('http://ellislab.com/support/').'">'.lang('support_resources').'</a></li>
+			<li><a href="'.$this->EE->cp->masked_url('https://store.ellislab.com/manage').'">'.lang('downloads').'</a></li>
 		</ul>
 		';
 	}
@@ -92,7 +92,7 @@ class Expressionengine_info_acc {
 		$this->EE->load->helper('version_helper');
 			
 		$details = get_version_info();
-		$download_url = $this->EE->cp->masked_url('https://secure.expressionengine.com/download.php');
+		$download_url = $this->EE->cp->masked_url('https://store.ellislab.com/manage');
 		
 		if ( ! $details)
 		{

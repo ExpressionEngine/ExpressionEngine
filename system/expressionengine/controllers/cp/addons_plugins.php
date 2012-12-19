@@ -5,8 +5,8 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,9 +20,9 @@
  * @subpackage	Control Panel
  * @category	Control Panel
  * @author		EllisLab Dev Team
- * @link		http://expressionengine.com
+ * @link		http://ellislab.com
  */
-class Addons_plugins extends CI_Controller {
+class Addons_plugins extends CP_Controller {
 
 	var $paths = array();
 
@@ -167,7 +167,7 @@ class Addons_plugins extends CI_Controller {
 		$vars['plugins'] = $plugins;
 		$vars['remote'] = $remote;
 
-		$this->load->view('addons/plugin_manager', $vars);
+		$this->cp->render('addons/plugin_manager', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -210,7 +210,7 @@ class Addons_plugins extends CI_Controller {
 			BASE.AMP.'C=addons_plugins'=> lang('addons_plugins')
 		));
 
-		$this->load->view('addons/plugin_info', array('plugin' => $plugin));
+		$this->cp->render('addons/plugin_info', array('plugin' => $plugin));
 	}
 
 
@@ -246,7 +246,7 @@ class Addons_plugins extends CI_Controller {
 		$vars['message'] = (count($hidden) > 1) ? 'plugin_multiple_confirm' : 'plugin_single_confirm';
 		$vars['hidden'] = $hidden;
 
-		$this->load->view('addons/plugin_delete', $vars);
+		$this->cp->render('addons/plugin_delete', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -530,7 +530,7 @@ class Addons_plugins extends CI_Controller {
 	 */
 	function _get_installed_plugins()
 	{
-		$this->load->helper('file');
+		$this->load->helper(array('file', 'directory'));
 
 		$ext_len = strlen('.php');
 

@@ -5,8 +5,8 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,7 +20,7 @@
  * @subpackage	Core
  * @category	Core
  * @author		EllisLab Dev Team
- * @link		http://expressionengine.com
+ * @link		http://ellislab.com
  */
 class Api_channel_entries extends Api {
 	
@@ -142,7 +142,7 @@ class Api_channel_entries extends Api {
 			'title'						=> ($this->EE->config->item('auto_convert_high_ascii') == 'y') ? ascii_to_entities($data['title']) : $data['title'],
 			'url_title'					=> $data['url_title'],
 			'entry_date'				=> $data['entry_date'],
-			'edit_date'					=> $this->EE->localize->decode_date('%Y%m%d%H%i%s', $data['entry_date'], FALSE),
+			'edit_date'					=> $this->EE->localize->decode_date('%Y%m%d%H%i%s', $data['edit_date'], FALSE),
 			'versioning_enabled'		=> $data['versioning_enabled'],
 			'year'						=> $this->EE->localize->decode_date('%Y', $data['entry_date'], TRUE),
 			'month'						=> $this->EE->localize->decode_date('%m', $data['entry_date'], TRUE),
@@ -242,7 +242,6 @@ class Api_channel_entries extends Api {
 	 * @param	int
 	 * @param	array
 	 * @return	mixed
-	 * @deprecated 2.6
 	 */
 	function submit_new_entry($channel_id, $data, $autosave = FALSE)
 	{
@@ -260,7 +259,6 @@ class Api_channel_entries extends Api {
 	 * @param	int
 	 * @param	array
 	 * @return	mixed
-	 * @deprecated 2.6
 	 */
 	function update_entry($entry_id, $data, $autosave = FALSE)
 	{
@@ -1029,8 +1027,7 @@ class Api_channel_entries extends Api {
 		// Always required fields
 		
 		$required = array(
-			'title'			=> 'missing_title',
-			'entry_date'	=> 'missing_date'
+			'title'			=> 'missing_title'
 		);
 		
 		if ( ! isset($data['title']) OR ! $data['title'] = strip_tags(trim($data['title'])))
@@ -1039,10 +1036,14 @@ class Api_channel_entries extends Api {
 			$this->_set_error('missing_title', 'title');
 		}
 		
+		// Set entry_date and edit_date to "now" if empty
+
+		$data['entry_date'] = empty($data['entry_date']) ? $this->EE->localize->now : $data['entry_date'];
+		$data['edit_date'] = empty($data['edit_date']) ? $this->EE->localize->now : $data['edit_date'];
 		
 		//	Convert built-in date fields to UNIX timestamps
 
-		$dates = array('entry_date');
+		$dates = array('entry_date', 'edit_date');
 
 		foreach(array('expiration_date', 'comment_expiration_date') as $date)
 		{
@@ -1476,7 +1477,7 @@ class Api_channel_entries extends Api {
 			// backwards compatible for some incorrect code noticed in a few third party modules.
 			// Will be removed in 2.1.2, and a note to that effect is in the 2.1.1 update notes
 			// $this->field_id should be used instead as documented
-			// http://expressionengine.com/user_guide/development/fieldtypes.html#class_variables
+			// http://ellislab.com/expressionengine/user-guide/development/fieldtypes.html#class-variables
 			$this->EE->api_channel_fields->settings[$row['field_id']]['field_id'] = $row['field_id'];
 			
 			if (isset($data[$field_name]) OR isset($mod_data[$field_name]))
@@ -2030,7 +2031,7 @@ class Api_channel_entries extends Api {
 			// backwards compatible for some incorrect code noticed in a few third party modules.
 			// Will be removed in 2.1.2, and a note to that effect is in the 2.1.1 update notes
 			// $this->field_id should be used instead as documented
-			// http://expressionengine.com/user_guide/development/fieldtypes.html#class_variables
+			// http://ellislab.com/expressionengine/user-guide/development/fieldtypes.html#class-variables
 			$this->EE->api_channel_fields->settings[$row['field_id']]['field_id'] = $row['field_id'];
 			
 			$fdata = isset($data[$field_name]) ? $data[$field_name] : '';

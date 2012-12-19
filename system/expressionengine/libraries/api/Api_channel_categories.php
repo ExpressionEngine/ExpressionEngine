@@ -5,8 +5,8 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,7 +20,7 @@
  * @subpackage	Core
  * @category	Core
  * @author		EllisLab Dev Team
- * @link		http://expressionengine.com
+ * @link		http://ellislab.com
  */
 class Api_channel_categories extends Api {
 
@@ -182,25 +182,6 @@ class Api_channel_categories extends Api {
 				$this->_category_subtree($key, $cat_array, $depth, $selected);
 			}
 		}
-	}
-	
-	// --------------------------------------------------------------------
-
-	/**
-	 * Category Edit Sub-tree 
-	 *
-	 * @deprecated 
-	 *
-	 * @param 	mixed
-	 * @param 	
-	 *
-	 */
-	public function category_edit_subtree($cat_id, $categories, $depth)
-	{
-		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated('2.0', 'Api_channel_categories::category_form_subtree()');
-		
-		$this->category_form_subtree($cat_id, $categories, $depth);
 	}
 
 	// --------------------------------------------------------------------

@@ -6,8 +6,8 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -21,7 +21,7 @@
  * @subpackage	Modules
  * @category	Modules
  * @author		EllisLab Dev Team
- * @link		http://expressionengine.com
+ * @link		http://ellislab.com
  */
 
 class Channel {
@@ -570,9 +570,9 @@ class Channel {
 				$random = ($order == 'random') ? TRUE : FALSE;
 
 				$base_orders = array('random', 'date', 'title', 'url_title', 'edit_date', 'comment_total', 'username', 'screen_name', 'most_recent_comment', 'expiration_date', 'entry_id', 
-									 'view_count_one', 'view_count_two', 'view_count_three', 'view_count_four');
+									 'view_count_one', 'view_count_two', 'view_count_three', 'view_count_four', 'status');
 
-				$str_sort = array('title', 'url_title', 'username', 'screen_name');
+				$str_sort = array('title', 'url_title', 'username', 'screen_name', 'status');
 				
 				if ( ! in_array($order, $base_orders))
 				{
@@ -802,7 +802,7 @@ class Channel {
 											$return_data);
 			}
 		}
-
+		
 		$this->return_data = $return_data;
 	}
 
@@ -1026,15 +1026,176 @@ class Channel {
     *  all of those fields will be searched.  
     *
     *****************************************************************/
-	protected function generate_field_search_sql($search_fields, $site_ids) 
+	/**
+		Generate the SQL for an exact query in field search.
+
+			search:field="=words|other words"	
+	*/
+	private function _exact_field_search($terms, $field_name, $site_id)
+	{
+
+		// Trivial case, we don't have special IS_EMPTY handling.
+		if(strpos($terms, 'IS_EMPTY') === FALSE) 
+		{
+			return substr($this->EE->functions->sql_andor_string($terms, 'wd.field_id_'.$this->cfields[$site_id][$field_name]), 3).' ';
+		}
+
+		// Did this because I don't like repeatedly checking
+		// the beginning of the string with strncmp for that
+		// 'not', much prefer to do it once and then set a 
+		// boolean.  But.. [cont:1]
+		$not = false;
+		if (strncmp($terms, 'not ', 4) == 0)
+		{
+			$not = true;
+			$terms = substr($terms, 4);
+		}
+
+		if (strpos($terms, '|') !== false)
+		{  
+			$terms = str_replace('IS_EMPTY|', '', $terms);
+		}
+		else 
+		{
+			$terms = str_replace('IS_EMPTY', '', $terms);
+		}
+		   
+		$add_search = '';
+		$conj = ''; 
+	
+		// If we have search terms, then we need to build the search.
+		if ( ! empty($terms)) 
+		{
+			// [cont:1]...it makes this a little hacky.  Gonna leave it for the moment,
+			// but may come back to it.
+			$add_search = $this->EE->functions->sql_andor_string(($not ? 'not ' . $terms : $terms), 'wd.field_id_'.$this->cfields[$site_id][$field_name]);
+			// remove the first AND output by $this->EE->functions->sql_andor_string() so we can parenthesize this clause
+			$add_search = '(wd.site_id=' . $site_id . ' AND ' . substr($add_search, 3) . ')';
+											
+			$conj = ($add_search != '' && ! $not) ? 'OR' : 'AND';
+		}
+
+		// If we reach here, we have an IS_EMPTY in addition to possible search terms.
+		// Add the empty check condition.
+		if ($not)
+		{
+			return $add_search . ' ' . $conj . ' (wd.site_id=' . $site_id . ' AND wd.field_id_'.$this->cfields[$site_id][$field_name].' != "")';
+		}
+
+		return $add_search.' '.$conj.' (wd.site_id=' . $site_id . ' AND wd.field_id_'.$this->cfields[$site_id][$field_name].' = "")';
+	}
+
+	/**
+		Generate the SQL for a LIKE query in field search.
+
+			search:field="words|other words|IS_EMPTY"
+	*/
+	private function _field_search($terms, $field_name, $site_id)
+	{
+		$not = '';
+		if (strncmp($terms, 'not ', 4) == 0)
+		{
+			$terms = substr($terms, 4);
+			$not = 'NOT';
+		}
+
+		if (strpos($terms, '&&') !== FALSE)
+		{
+			$terms = explode('&&', $terms);
+			$andor = $not == 'NOT' ? 'OR' : 'AND';
+		}
+		else
+		{
+			$terms = explode('|', $terms);
+			$andor = $not == 'NOT' ? 'AND' : 'OR';
+		}
+
+
+		$search_sql = '';
+		foreach ($terms as $term)
+		{
+			if($search_sql !== '') 
+			{
+				$search_sql .= $andor;
+			}
+			if ($term == 'IS_EMPTY')
+			{
+				$search_sql .= ' (wd.site_id=' . $site_id
+					. ' AND wd.field_id_' . $this->cfields[$site_id][$field_name] . ($not=='NOT' ? '!' : '') . '="") ';
+			}
+			elseif (strpos($term, '\W') !== FALSE) // full word only, no partial matches
+			{
+				// Note: MySQL's nutty POSIX regex word boundary is [[:>:]]
+				$term = '([[:<:]]|^)'.preg_quote(str_replace('\W', '', $term)).'([[:>:]]|$)';
+
+				$search_sql .= ' (wd.site_id=' . $site_id 
+					. ' AND wd.field_id_' . $this->cfields[$site_id][$field_name] . ' ' . $not 
+					. ' REGEXP "' . $this->EE->db->escape_str($term).'") ';
+			}
+			else
+			{	
+				$search_sql .= ' (wd.site_id=' . $site_id 
+					. ' AND wd.field_id_' . $this->cfields[$site_id][$field_name] . ' '
+					. $not . ' LIKE "%' . $this->EE->db->escape_like_str($term) . '%") ';
+			}
+		}
+
+		return $search_sql;
+	}
+
+	/**
+		Generate the SQL where condition to handle the {exp:channel:entries}
+		field search parameter -- search:field="".  There are two primary
+		syntax possibilities:
+
+			search:field="words|other words"
+		
+		and
+
+			search:field="=words|other words"
+
+		The first performs a LIKE "%words%" OR LIKE "%other words%".  The second
+		one performs an ="words" OR ="other words".  Other possibilities are
+		prepending "not" to negate the search:
+		
+			search:field="not words|other words"
+
+		And using IS_EMPTY to indicate an empty field.
+
+			search:field ="IS_EMPTY"
+			search:field="not IS_EMPTY"
+			search:field="=IS_EMPTY"
+			search:field="=not IS_EMPTY"
+
+		All of these may be combined:
+		
+			search:field="not IS_EMPTY|words"
+	*/
+	private function _generate_field_search_sql($search_fields, $site_ids) 
 	{	
 		$sql = '';
+
 		foreach ($search_fields as $field_name => $search_terms)
-		{   
+		{  
+			// Log empty terms to notify the user. 
+			if(empty($search_terms) || $search_terms === '=')
+			{
+				$this->EE->TMPL->log_item('WARNING: Field search parameter for field "' . $field_name . '" was empty.  If you wish to search for an empty field, use IS_EMPTY.');
+				continue;
+			}
+
 			$fields_sql = '';
 			$sites = ($site_ids ? $site_ids : array($this->EE->config->item('site_id'))); 
 			foreach ($sites as $site_name => $site_id) 
 			{
+				// If fields_sql isn't empty then this isn't a first
+				// loop and we have terms that need to be ored together.
+				if($fields_sql !== '') {	
+					$fields_sql .= ' OR ';
+				}
+
+				// We're goign to repeat the search on each site
+				// so store the terms in a temp.  FIXME Necessary?
 				$terms = $search_terms;
 				if ( ! isset($this->cfields[$site_id][$field_name]))
 				{
@@ -1043,130 +1204,26 @@ class Channel {
 			
 				if (strncmp($terms, '=', 1) ==  0)
 				{
-					/** ---------------------------------------
-					/**  Exact Match e.g.: search:body="=pickle"
-					/** ---------------------------------------*/
-
+					// Remove the '=' sign that specified exact match.
 					$terms = substr($terms, 1);
-
-					// special handling for IS_EMPTY
-					if (strpos($terms, 'IS_EMPTY') !== FALSE)
-					{
-
-						// Did this because I don't like repeatedly checking
-						// the beginning of the string with strncmp for that
-						// 'not', much prefer to do it once and then set a 
-						// boolean.  But..
-						$not = false;
-						if (strncmp($terms, 'not ', 4) == 0)
-						{
-							$not = true;
-							$terms = substr($terms, 4);
-						}
-
-						if (strpos($terms, '|') !== false)
-						{  
-							$terms = str_replace('IS_EMPTY|', '', $terms);
-						}
-						else 
-						{
-							$terms = str_replace('IS_EMPTY', '', $terms);
-						}
-						   
-						$add_search = '';
-						$conj = ''; 
-						if ( ! empty($terms)) 
-						{
-							// ...it makes this a little hacky.  Gonna leave it for the moment,
-							// but may come back to it.
-							$add_search = $this->EE->functions->sql_andor_string(($not ? 'not ' . $terms : $terms), 'wd.field_id_'.$this->cfields[$site_id][$field_name]);
-							// remove the first AND output by $this->EE->functions->sql_andor_string() so we can parenthesize this clause
-							$add_search = '(wd.site_id=' . $site_id . ' AND ' . substr($add_search, 3) . ')';
-															
-							$conj = ($add_search != '' && !$not) ? 'OR' : 'AND';
-						}
-	 
-						if ($not)
-						{
-							$fields_sql .= $add_search.' '.$conj.' (wd.site_id=' . $site_id . ' AND wd.field_id_'.$this->cfields[$site_id][$field_name].' != "")';
-						}
-						else
-						{
-							$fields_sql .= $add_search.' '.$conj.' (wd.site_id=' . $site_id . ' AND wd.field_id_'.$this->cfields[$site_id][$field_name].' = "")';
-						}
-					}
-					else
-					{
-						$fields_sql .= substr($this->EE->functions->sql_andor_string($terms, 'wd.field_id_'.$this->cfields[$site_id][$field_name]), 3).' ';
-					}
+					
+					$fields_sql .= $this->_exact_field_search($terms, $field_name, $site_id);	
 				}
 				else
 				{
-					/** ---------------------------------------
-					/**  "Contains" e.g.: search:body="pickle"
-					/** ---------------------------------------*/
-
-					$not = '';
-					if (strncmp($terms, 'not ', 4) == 0)
-					{
-						$terms = substr($terms, 4);
-						$not = 'NOT';
-					}
-
-					if (strpos($terms, '&&') !== FALSE)
-					{
-						$terms = explode('&&', $terms);
-						$andor = $not == 'NOT' ? 'OR' : 'AND';
-					}
-					else
-					{
-						$terms = explode('|', $terms);
-						$andor = $not == 'NOT' ? 'AND' : 'OR';
-					}
-
-
-					foreach ($terms as $term)
-					{
-						if ($term == 'IS_EMPTY')
-						{
-							$fields_sql .= ' (wd.site_id=' . $site_id
-								. ' AND wd.field_id_' . $this->cfields[$site_id][$field_name] . ($not=='NOT' ? '!' : '') . '="") '
-								. $andor;
-						}
-						elseif (strpos($term, '\W') !== FALSE) // full word only, no partial matches
-						{
-							// Note: MySQL's nutty POSIX regex word boundary is [[:>:]]
-							$term = '([[:<:]]|^)'.preg_quote(str_replace('\W', '', $term)).'([[:>:]]|$)';
-
-							$fields_sql .= ' (wd.site_id=' . $site_id 
-								. ' AND wd.field_id_' . $this->cfields[$site_id][$field_name] . ' ' . $not 
-								. ' REGEXP "' . $this->EE->db->escape_str($term).'") '
-								. $andor;
-						}
-						else
-						{	
-							$fields_sql .= ' (wd.site_id=' . $site_id 
-								. ' AND wd.field_id_' . $this->cfields[$site_id][$field_name] . ' '
-								. $not . ' LIKE "%' . $this->EE->db->escape_like_str($term) . '%") ' 
-								. $andor;
-						}
-					}
-					
-					// Remove the extra "and" or "or".
-					$fields_sql = substr($fields_sql, 0, -strlen($andor));
+					$fields_sql .= $this->_field_search($terms, $field_name, $site_id);
 				}
-				$fields_sql .= ' OR ';
+				
 			} // foreach($sites as $site_id)
 			if ( ! empty($fields_sql))
 			{
-				$sql .=  'AND (' . substr($fields_sql, 0, -3) . ')'; 
+				$sql .=  'AND (' . $fields_sql . ')'; 
 			}
 		}
+	
+
 		return $sql;
 	}
-
-
-
 	
 	/**
 	  *  Build SQL query
@@ -1599,7 +1656,7 @@ class Channel {
 		/**  Validate Results for Later Processing
 		/** -------------------------------------*/
 
-		$base_orders = array('random', 'entry_id', 'date', 'entry_date', 'title', 'url_title', 'edit_date', 'comment_total', 'username', 'screen_name', 'most_recent_comment', 'expiration_date',
+		$base_orders = array('status', 'random', 'entry_id', 'date', 'entry_date', 'title', 'url_title', 'edit_date', 'comment_total', 'username', 'screen_name', 'most_recent_comment', 'expiration_date',
 							 'view_count_one', 'view_count_two', 'view_count_three', 'view_count_four');
 
 		foreach($order_array as $key => $order)
@@ -1698,6 +1755,8 @@ class Channel {
 				$fixed_order = array_reverse($fixed_order);
 			}
 		}
+
+
 
 		/**------
 		/**  Build the master SQL query
@@ -2461,7 +2520,7 @@ class Channel {
 
 		if ( ! empty($this->EE->TMPL->search_fields))
 		{
-            $sql .= $this->generate_field_search_sql($this->EE->TMPL->search_fields, $this->EE->TMPL->site_ids);
+            $sql .= $this->_generate_field_search_sql($this->EE->TMPL->search_fields, $this->EE->TMPL->site_ids);
 		}
 
 		/**----------
@@ -2531,6 +2590,10 @@ class Channel {
 
 						case 'expiration_date' :
 							$end .= "t.expiration_date";
+						break;
+
+						case 'status' :
+							$end .= "t.status";
 						break;
 
 						case 'title' :
@@ -6928,7 +6991,7 @@ class Channel {
 		{
 			$path  = (preg_match("#".LD."path=(.+?)".RD."#", $this->EE->TMPL->tagdata, $match)) ? $this->EE->functions->create_url($match[1]) : $this->EE->functions->create_url("SITE_INDEX");
 			$path .= '/'.$query->row('url_title');
-			$this->EE->TMPL->tagdata = preg_replace("#".LD."path=.+?".RD."#", $path, $this->EE->TMPL->tagdata);
+			$this->EE->TMPL->tagdata = preg_replace("#".LD."path=.+?".RD."#", $this->EE->functions->remove_double_slashes($path), $this->EE->TMPL->tagdata);
 		}
 
 		if (strpos($this->EE->TMPL->tagdata, LD.'id_path=') !== FALSE)
@@ -6936,7 +6999,7 @@ class Channel {
 			$id_path  = (preg_match("#".LD."id_path=(.+?)".RD."#", $this->EE->TMPL->tagdata, $match)) ? $this->EE->functions->create_url($match[1]) : $this->EE->functions->create_url("SITE_INDEX");
 			$id_path .= '/'.$query->row('entry_id');
 
-			$this->EE->TMPL->tagdata = preg_replace("#".LD."id_path=.+?".RD."#", $id_path, $this->EE->TMPL->tagdata);
+			$this->EE->TMPL->tagdata = preg_replace("#".LD."id_path=.+?".RD."#", $this->EE->functions->remove_double_slashes($id_path), $this->EE->TMPL->tagdata);
 		}
 
 		if (strpos($this->EE->TMPL->tagdata, LD.'url_title') !== FALSE)
@@ -6961,7 +7024,7 @@ class Channel {
 													$this->EE->TMPL->tagdata);
 		}
 
-		return $this->EE->functions->remove_double_slashes(stripslashes($this->EE->TMPL->tagdata));
+		return $this->EE->TMPL->tagdata;
 	}
 
 	// ------------------------------------------------------------------------

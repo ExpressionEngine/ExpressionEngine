@@ -5,8 +5,8 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,9 +20,9 @@
  * @subpackage	Control Panel
  * @category	Control Panel
  * @author		EllisLab Dev Team
- * @link		http://expressionengine.com
+ * @link		http://ellislab.com
  */
-class Addons extends CI_Controller {
+class Addons extends CP_Controller {
 
 	/**
 	 * Constructor
@@ -51,12 +51,10 @@ class Addons extends CI_Controller {
 	 */	
 	function index()
 	{
-		$this->cp->set_variable('cp_page_title', lang('addons'));
+		$this->view->cp_page_title = lang('addons');
+		$this->view->controller = 'addons';
 
-		$this->load->vars(array('controller' => 'addons'));
-
-		$this->javascript->compile();
-		$this->load->view('_shared/overview');
+		$this->cp->render('_shared/overview');
 	}
 	
 	// --------------------------------------------------------------------
@@ -201,10 +199,8 @@ class Addons extends CI_Controller {
 		$vars['package'] = ucfirst(str_replace('_', ' ', $package));
 		$vars['components'] = $components;
 		$vars['required'] = $required;
-		
-		$this->javascript->compile();
-		
-		$this->load->view('addons/package_settings', $vars);
+				
+		$this->cp->render('addons/package_settings', $vars);
 	}
 }
 // END CLASS

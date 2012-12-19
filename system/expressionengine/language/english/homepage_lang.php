@@ -27,10 +27,7 @@ The following files are affected:
 {changed}
 
 If you made these changes, please accept the modifications on the control panel homepage.  If you did not alter these files it may indicate a hacking attempt. Check the files for any suspicious contents (JavaScript or iFrames) and contact ExpressionEngine support:
-http://expressionengine.com/forums/viewforum/105/
-
-Please review the support policy before posting to the forums:
-http://expressionengine.com/support/support_policy/',
+https://support.ellislab.com/',
 
 'new_version_notice' =>
 'ExpressionEngine version %s is now available.'."\n".'
@@ -174,7 +171,7 @@ Please download <a href="%s" title="Download Here">here</a> and follow the <a hr
 'You have %d unviewed items in the <a href="%s">Developer Log</a>.',
 
 'version_mismatch' =>
-'Your ExpressionEngine installation&rsquo;s version (%s) is not consistent with the reported version (%s). <a href="http://expressionengine.com/user_guide/installation/update.html">Please update your installation of ExpressionEngine again</a>.',
+'Your ExpressionEngine installation&rsquo;s version (%s) is not consistent with the reported version (%s). <a href="http://ellislab.com/expressionengine/user-guide/installation/update.html">Please update your installation of ExpressionEngine again</a>.',
 
 ''=>''
 );

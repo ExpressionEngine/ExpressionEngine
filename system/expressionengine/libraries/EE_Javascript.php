@@ -5,8 +5,8 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,7 +20,7 @@
  * @subpackage	Core
  * @category	Core
  * @author		EllisLab Dev Team
- * @link		http://expressionengine.com
+ * @link		http://ellislab.com
  */
 class EE_Javascript extends CI_Javascript {
 
@@ -111,7 +111,7 @@ class EE_Javascript extends CI_Javascript {
 			}
 			
 			if (typeof EE === "undefined" || ! EE) {
-				var EE = '.$this->generate_json($this->global_vars, TRUE).';
+				var EE = '.json_encode($this->global_vars).';
 			}
 		');
 

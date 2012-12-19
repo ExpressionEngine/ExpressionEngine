@@ -5,8 +5,8 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -22,7 +22,7 @@
  * @subpackage	Core
  * @category	Core
  * @author		EllisLab Dev Team
- * @link		http://expressionengine.com
+ * @link		http://ellislab.com
  */
 class XML_Cache {
 	var $tag;
@@ -42,7 +42,7 @@ class XML_Cache {
  * @subpackage	Core
  * @category	Core
  * @author		EllisLab Dev Team
- * @link		http://expressionengine.com
+ * @link		http://ellislab.com
  */
 class EE_XMLparser {
 	
@@ -111,37 +111,6 @@ class EE_XMLparser {
 		}
 		return $elements[0];
 	}
-
-	
-	
-	/** -------------------------------------
-	/**  Deprecated function for converting delimited data to XML
-	/** -------------------------------------*/
-	
-	function data2xml($data, $structure, $root = "root", $element = "element", $delimiter = "\t", $enclosure = '')
-	{
-		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated();
-		
-		if ( ! is_string($data) OR ! is_array($structure) OR count($structure) == 0)
-		{
-			$this->errors[] = "Data or structure improperly defined";
-			return FALSE;
-		}
-		
-		$params = array(
-							'data'			=> $data,
-							'structure'		=> $structure,
-							'root'			=> $root,
-							'element'		=> $element,
-							'delimiter'		=> $delimiter,
-							'enclosure'		=> $enclosure
-						);
-		
-		return $this->delimited_to_xml($params);
-	}
-
-	
 	
 	/** -------------------------------------
 	/**  Convert delimited text to XML

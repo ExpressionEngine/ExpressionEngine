@@ -7,8 +7,8 @@
  * @author		EllisLab Dev Team, 
  * 		- Original Development by Barrett Newton -- http://barrettnewton.com
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -22,7 +22,7 @@
  * @subpackage	Extensions
  * @category	Extensions
  * @author		EllisLab Dev Team
- * @link		http://expressionengine.com
+ * @link		http://ellislab.com
  */
 
 class Safecracker_ext
@@ -32,7 +32,7 @@ class Safecracker_ext
 	public $version = '2.1';
 	public $description = 'A replacement and enchancement of the Stand-Alone Entry Form';
 	public $settings_exist = 'y';
-	public $docs_url = 'http://expressionengine.com/user_guide/modules/safecracker/index.html';
+	public $docs_url = 'http://ellislab.com/expressionengine/user-guide/modules/safecracker/index.html';
 	public $classname = 'Safecracker_ext';
 	public $required_by = array('module');
 	
@@ -508,7 +508,10 @@ class Safecracker_ext
 			$data = $this->EE->extensions->last_call;
 		}
 		
-		if (isset($this->EE->TMPL) && is_object($this->EE->TMPL) && ! empty($this->EE->session->cache['safecracker']['form_declaration']))
+		if (isset($this->EE->TMPL)
+			AND is_object($this->EE->TMPL)
+			AND ! empty($this->EE->session->cache['safecracker']['form_declaration'])
+			AND $this->EE->safecracker->form_loaded)
 		{
 			unset($this->EE->session->cache['safecracker']['form_declaration']);
 			

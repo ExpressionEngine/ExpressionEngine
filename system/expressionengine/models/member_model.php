@@ -5,8 +5,8 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,7 +20,7 @@
  * @subpackage	Core
  * @category	Model
  * @author		EllisLab Dev Team
- * @link		http://expressionengine.com
+ * @link		http://ellislab.com
  */
 class Member_model extends CI_Model {
 	
@@ -938,26 +938,6 @@ class Member_model extends CI_Model {
 		}
 		
 		return $this->db->get();
-	}
-	
-	// --------------------------------------------------------------------
-	
-	/**
-	 * Get Authors Simple
-	 *
-	 * This function returns a set of members who are authors in a set channel- member group data is omitted
-	 *
-	 * @deprecated	2.4, Use member_model->get_authors instead
-	 * @access	public
-	 * @param	integer
-	 * @return	mixed
-	 */
-	function get_authors_simple($author_id = FALSE, $limit = FALSE, $offset = FALSE)
-	{
-		$this->load->library('logger');
-		$this->logger->deprecated('2.4', 'Member_model::get_authors()');
-		
-		return $this->get_authors($author_id, $limit, $offset);
 	}
 	
 	// --------------------------------------------------------------------

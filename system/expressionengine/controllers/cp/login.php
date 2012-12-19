@@ -5,8 +5,8 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,9 +20,9 @@
  * @subpackage	Control Panel
  * @category	Control Panel
  * @author		EllisLab Dev Team
- * @link		http://expressionengine.com
+ * @link		http://ellislab.com
  */ 
-class Login extends CI_Controller {
+class Login extends CP_Controller {
 	
 	var $username = '';		// stores username on login failure
 
@@ -81,23 +81,6 @@ class Login extends CI_Controller {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Login Form
-	 *
-	 * This method boggles the mind. Deprecated!
-	 *
-	 * @return	void
-	 */	
-	public function login_form()
-	{
-		$this->load->library('logger');
-		$this->logger->deprecated();
-		
-		$this->index();
-	}  
-	
-	// --------------------------------------------------------------------
-
-	/**
 	 * Authenticate user
 	 *
 	 * @return	mixed
@@ -141,10 +124,9 @@ class Login extends CI_Controller {
 		// Kill existing flash cookie
 		$this->functions->set_cookie('flash');
 		
-		// "Remember Me" is one year
 		if (isset($_POST['remember_me']))
 		{
-			$incoming->remember_me(60*60*24*365);
+			$incoming->remember_me();
 		}
 		
 		if (is_numeric($this->input->post('site_id')))
@@ -159,9 +141,13 @@ class Login extends CI_Controller {
 		
 		$base = BASE;
 
-		if ($this->config->item('admin_session_type') != 'c')
+		if ($this->config->item('admin_session_type') == 's')
 		{
 			$base = preg_replace('/S=\d+/', 'S='.$incoming->session_id(), BASE);
+		}
+		elseif ($this->config->item('admin_session_type') == 'cs')
+		{
+			$base = preg_replace('/S=\d+/', 'S='.$this->session->userdata['fingerprint'], BASE);
 		}
 
 		$return_path = $base.AMP.'C=homepage';

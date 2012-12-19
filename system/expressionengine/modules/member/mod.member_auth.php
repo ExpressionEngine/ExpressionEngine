@@ -6,8 +6,8 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -21,7 +21,7 @@
  * @subpackage	Modules
  * @category	Modules
  * @author		EllisLab Dev Team
- * @link		http://expressionengine.com
+ * @link		http://ellislab.com
  */
 
 class Member_auth extends Member {
@@ -257,7 +257,7 @@ class Member_auth extends Member {
 		// "Remember Me" is one year
 		if (isset($_POST['auto_login']))
 		{
-			$sess->remember_me(60*60*24*365);
+			$sess->remember_me();
 		}
 
 		$anon = ($this->EE->input->post('anon') == 1) ? FALSE : TRUE;
@@ -316,7 +316,7 @@ class Member_auth extends Member {
 		// this is silly - only works for the first site
 		if (isset($_POST['auto_login']))
 		{
-			$incoming->remember_me(60*60*24*365);
+			$incoming->remember_me();
 		}
 		
 		// hook onto an existing session

@@ -1,36 +1,24 @@
-<?php
-if ($EE_view_disable !== TRUE)
-{
-	$this->load->view('_shared/header');
-	$this->load->view('_shared/main_menu');
-	$this->load->view('_shared/sidebar');
-	$this->load->view('_shared/breadcrumbs');
-}
-?>
-
-<div id="mainContent"<?=$maincontent_state?>>
-	<?php $this->load->view('_shared/right_nav')?>
-	<div class="contents">
+<?php extend_template('basic') ?>
 		<div class="formArea">
 			<div>
-					<div class="templateEditorTop">
-						<h2><?=lang('template_management')?></h2>
+				<div class="templateEditorTop">
+					<h2><?=lang('template_management')?></h2>
 
-						<div class="search">
-							<?=form_open('C=design'.AMP.'M=manager')?>
-								<input type="text" id="template_keywords" name="template_keywords" value="<?=set_value('template_keywords')?>" placeholder="<?=lang('search_template')?>" maxlength="80" class="input" />
-								<?php if ($search_terms):?>
-								<div id="template_keywords_reset"><span></span></div>
-								<?php endif;?>
-							</form>
-						</div>
-						<?php if ($search_terms):?>
-						<div class="templateSearchResults">
-							<h3><?=lang('search_terms')?></h3>
-							<div><strong class="notice"><?=$search_terms?></strong></div>
-							<?=$result_count_lang?>
-						</div><?php endif;?>
+					<div class="search">
+						<?=form_open('C=design'.AMP.'M=manager')?>
+							<input type="text" id="template_keywords" name="template_keywords" value="<?=set_value('template_keywords')?>" placeholder="<?=lang('search_template')?>" maxlength="80" class="input" />
+							<?php if ($search_terms):?>
+							<div id="template_keywords_reset"><span></span></div>
+							<?php endif;?>
+						</form>
 					</div>
+					<?php if ($search_terms):?>
+					<div class="templateSearchResults">
+						<h3><?=lang('search_terms')?></h3>
+						<div><strong class="notice"><?=$search_terms?></strong></div>
+						<?=$result_count_lang?>
+					</div><?php endif;?>
+				</div>
 			</div>
 
 
@@ -72,7 +60,7 @@ if ($EE_view_disable !== TRUE)
 
 				<?=$this->load->view('_shared/message')?>
 
-				<?php if ($can_admin_templates): ?>
+				<?php if ($can_admin_design): ?>
 					<div id="prefRowTemplate" style="display:none">
 						<table class="templateTable accessTable" border="0" cellspacing="0" cellpadding="0">
 							<tr>
@@ -171,7 +159,7 @@ if ($EE_view_disable !== TRUE)
 							<?php
 							$main_table_headings = array(lang('edit_template'), lang('view'));
 							
-							if ($can_admin_templates)
+							if ($can_admin_design)
 							{
 								$main_table_headings = array_merge($main_table_headings, array(lang('access'), lang('preferences')));
 							}
@@ -193,7 +181,7 @@ if ($EE_view_disable !== TRUE)
 									 'class' => 'templateName '.$template['class']),
 									'<a rel="external" href="'.$template['view_path'].'">'.lang('view').'</a>');
 									
-								if ($can_admin_templates)
+								if ($can_admin_design)
 								{
 									$main_table_data = array_merge($main_table_data, array('<a href="#" class="show_access_link" id="show_access_link_'.$template['template_id'].'">'.lang('access').'</a>',
 									'<a href="#" class="show_prefs_link" id="show_prefs_link_'.$template['template_id'].'">'.lang('edit_preferences').'</a>'));
@@ -214,19 +202,3 @@ if ($EE_view_disable !== TRUE)
 					?>
 				</div>
 			</div>
-			
-		<div class="clear_left">&nbsp;</div>
-		</div>
-
-	</div> <!-- contents -->
-</div> <!-- mainContent -->
-
-<?php
-if ($EE_view_disable !== TRUE)
-{
-	$this->load->view('_shared/accessories');
-	$this->load->view('_shared/footer');
-}
-
-/* End of file manager.php */
-/* Location: ./themes/cp_themes/default/design/manager.php */

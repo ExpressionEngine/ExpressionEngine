@@ -6,8 +6,8 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -21,7 +21,7 @@
  * @subpackage	Modules
  * @category	Modules
  * @author		EllisLab Dev Team
- * @link		http://expressionengine.com
+ * @link		http://ellislab.com
  */
 
 class Forum_mcp {
@@ -258,7 +258,6 @@ class Forum_mcp {
 		
 		$vars['message'] = $message;
 		$vars['reduced_nav'] = FALSE;
-		$vars['content_view'] = $content_view;
 		
 		$vars['board_forum_url'] = $this->prefs['board_forum_url'];
 		
@@ -325,9 +324,8 @@ class Forum_mcp {
 			window.location = "'.str_replace(AMP, '&', $this->base).'&board_id="+$(this).val();
 		});
 		');
-		
-		$this->EE->javascript->compile();
-		return $this->EE->load->view('_wrapper', $vars, TRUE);
+
+		return $this->EE->view->render($content_view, $vars, TRUE);
 	}
 
 	// --------------------------------------------------------------------
@@ -2948,7 +2946,7 @@ class Forum_mcp {
 			return $this->EE->load->view('theme_templates', $vars, TRUE);
 		}
 		
-		$this->EE->jquery->plugin(BASE.AMP.'C=javascript'.AMP.'M=load'.AMP.'plugin=markitup', TRUE);
+		$this->EE->cp->add_js_script('plugin', 'markitup');
 
 		$markItUp = array(
 			'nameSpace'	=> "html",
@@ -2972,7 +2970,6 @@ class Forum_mcp {
 
 		$vars['not_writable'] = ! is_really_writable($full_path);
 		$vars['path'] = $path;
-		
 
 		return $this->_content_wrapper('edit_template', 'edit_template', $vars);
 	}

@@ -5,8 +5,8 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,7 +20,7 @@
  * @subpackage	Core
  * @category	Core
  * @author		EllisLab Dev Team
- * @link		http://expressionengine.com
+ * @link		http://ellislab.com
  */
 
 // ------------------------------------------------------------------------
@@ -188,7 +188,7 @@ class Auth {
 	 *	)
 	 * 
 	 * Your best option is to use:
-	 * 		list($username, $password, $incoming) = $this->_verify()
+	 * 		list($username, $password, $incoming) = $this->verify()
 	 * 
 	 * If an error results, the lang key will be added to $this->(auth->)errors[]
 	 * and this method will return FALSE
@@ -252,13 +252,20 @@ class Auth {
 			$this->EE->functions->redirect(BASE.AMP.'C=login');
 		}
 
-
 		//  Check credentials
 		// ----------------------------------------------------------------
-
 		$password = (string) $this->EE->input->post('password');
+
+		// Allow users to register with Username
+		// ----------------------------------------------------------------
 		$incoming = $this->EE->auth->authenticate_username($username, $password);
 
+		// Allow users to register with Email
+		// ----------------------------------------------------------------
+		if( ! $incoming) {
+			$incoming = $this->EE->auth->authenticate_email($username, $password);
+		}
+		
 		// Not even close
 		if ( ! $incoming)
 		{
@@ -591,7 +598,7 @@ class Auth_result {
 	private $group;
 	private $member;
 	private $session_id;
-	private $remember_me = 0;
+	private $remember_me = FALSE;
 	private $anon = FALSE;
 	private $EE;
 	
@@ -715,18 +722,6 @@ class Auth_result {
 	// --------------------------------------------------------------------
 	
 	/**
-	 * Remember me expiration setter
-	 *
-	 * @access	public
-	 */
-	function remember_me($expire)
-	{
-		$this->remember_me = $expire;
-	}
-
-	// --------------------------------------------------------------------
-	
-	/**
 	 * Anon setter
 	 *
 	 * @access	public
@@ -773,7 +768,7 @@ class Auth_result {
 		
 		if ($this->EE->config->item($sess_type) != 's')
 		{
-			$expire = $this->remember_me;
+			$expire = $this->EE->remember->get_expiry();
 			
 			if ($this->anon)
 			{
@@ -786,9 +781,9 @@ class Auth_result {
 			}
 			
 			// (un)set remember me
-			if ($expire)
+			if ($this->remember_me)
 			{
-				$this->EE->remember->create($expire);
+				$this->EE->remember->create();
 			}
 			else
 			{
@@ -798,6 +793,13 @@ class Auth_result {
 		
 		if ($cp_sess === TRUE)
 		{
+			// Log the login
+
+			// We'll manually add the username to the Session array so
+			// the logger class can use it.
+			$this->EE->session->userdata['username'] = $this->member('username');
+			$this->EE->logger->log_action(lang('member_logged_in'));
+
 			// -------------------------------------------
 			// 'cp_member_login' hook.
 			//  - Additional processing when a member is logging into CP
@@ -806,13 +808,6 @@ class Auth_result {
 				if ($this->EE->extensions->end_script === TRUE) return;
 			//
 			// -------------------------------------------
-			
-			// Log the login
-
-			// We'll manually add the username to the Session array so
-			// the logger class can use it.
-			$this->EE->session->userdata['username'] = $this->member('username');
-			$this->EE->logger->log_action(lang('member_logged_in'));
 		}
 		elseif ($multi)
 		{
@@ -868,6 +863,20 @@ class Auth_result {
 	public function use_session_id($session_id)
 	{
 		$this->session_id = $session_id;
+	}
+	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Remember me
+	 *
+	 * Whether or not this session will be started with 'remember me'
+	 *
+	 * @access	public
+	 */	
+	public function remember_me($remember = TRUE)
+	{
+		$this->remember_me = ($remember) ? TRUE : FALSE;
 	}
 	
 	// --------------------------------------------------------------------

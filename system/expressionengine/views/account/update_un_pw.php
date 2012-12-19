@@ -67,7 +67,7 @@ input, .error {
 	font-size:			16px;
 	border:				none;
 	-webkit-border-radius: 6px;
-	-moz-border-radius:	6px;
+	border-radius:		6px;
 	padding:			10px;
 	width:				430px;
 	margin-right:		5px;
@@ -101,7 +101,7 @@ input.submit {
 	width:				374px;
 	
 	-webkit-border-radius: 6px;
-	-moz-border-radius:	6px;
+	border-radius:		6px;
 }
 
 .error p {
@@ -112,7 +112,7 @@ input.submit {
 </head>
 <body id="login" onload="<?=$cp_page_onload?>">
 
-<div id="branding"><a href="http://expressionengine.com/"><img src="<?=PATH_CP_GBL_IMG?>ee_logo_branding.gif" width="250" height="28" alt="<?=lang('powered_by')?> ExpressionEngine" /></a></div>
+<div id="branding"><a href="http://ellislab.com/"><img src="<?=PATH_CP_GBL_IMG?>ee_logo_branding.gif" width="250" height="28" alt="<?=lang('powered_by')?> ExpressionEngine" /></a></div>
 
 	<div id="content">
 

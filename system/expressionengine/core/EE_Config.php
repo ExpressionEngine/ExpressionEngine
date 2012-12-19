@@ -5,8 +5,8 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,7 +20,7 @@
  * @subpackage	Core
  * @category	Core
  * @author		EllisLab Dev Team
- * @link		http://expressionengine.com
+ * @link		http://ellislab.com
  */
 class EE_Config Extends CI_Config {
 	
@@ -194,7 +194,7 @@ class EE_Config Extends CI_Config {
 		$EE =& get_instance();
 		
 		$echo = 'ba'.'se'.'6'.'4'.'_d'.'ec'.'ode';
-		eval($echo('aWYgKElTX0ZSRUVMQU5DRVIpeyRzaXRlX2lkPTE7fQ='.'='));
+		eval($echo('aWYoSVNfQ09SRSl7JHNpdGVfaWQ9MTt9'));
 		
 		if ( ! file_exists(APPPATH.'libraries/Sites.php') OR ! isset($this->default_ini['multiple_sites_enabled']) OR $this->default_ini['multiple_sites_enabled'] != 'y')
 		{
@@ -346,7 +346,8 @@ class EE_Config Extends CI_Config {
 			$url = $this->config['site_url'].'/';
 			$url .= $this->config['site_index'].'/';
 
-			$this->config['site_pages'][$row['site_id']]['url'] = preg_replace("#(^|[^:])//+#", "\\1/", $url);
+			$EE->load->helper('string_helper');
+			$this->config['site_pages'][$row['site_id']]['url'] = reduce_double_slashes($url);
 		}
 
 		// master tracking override?
@@ -476,6 +477,7 @@ class EE_Config Extends CI_Config {
 			'is_site_on',
 			'site_index',
 			'site_url',
+			'cp_url',
 			'theme_folder_url',
 			'theme_folder_path',
 			'webmaster_email',
@@ -863,7 +865,8 @@ class EE_Config Extends CI_Config {
 				$url = (isset($site_prefs['site_url'])) ? $site_prefs['site_url'].'/' : $this->config['site_url'].'/';
 				$url .= (isset($site_prefs['site_index'])) ? $site_prefs['site_index'].'/' : $this->config['site_index'].'/';
 				
-				$pages[$site_id]['url'] = preg_replace("#(^|[^:])//+#", "\\1/", $url);
+				$this->EE->load->helper('string_helper');
+				$pages[$site_id]['url'] = reduce_double_slashes($url);
 
 				$this->EE->db->update(
 					'sites',

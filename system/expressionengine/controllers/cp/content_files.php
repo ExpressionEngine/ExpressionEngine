@@ -5,8 +5,8 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,10 +20,10 @@
  * @subpackage	Control Panel
  * @category	Control Panel
  * @author		EllisLab Dev Team
- * @link		http://expressionengine.com
+ * @link		http://ellislab.com
  */
 
-class Content_files extends CI_Controller {
+class Content_files extends CP_Controller {
 
 	private $_upload_dirs	= array();
 	private $_allowed_dirs	= array();
@@ -50,6 +50,7 @@ class Content_files extends CI_Controller {
 		}
 
 		$this->lang->loadfile('filemanager');
+		$this->load->library('api');
 		$this->load->library('filemanager');
 		$this->load->model('file_model');
 		$this->load->model('file_upload_preferences_model');
@@ -188,7 +189,7 @@ class Content_files extends CI_Controller {
 		);
 
 		$search_select_options = array(
-			''				=> lang('search_in'),
+			'all'				=> lang('search_in'),
 			'file_name'		=> lang('file_name'),
 			'file_title'	=> lang('file_title'),
 			'custom_field'	=> lang('custom_fields'),
@@ -269,8 +270,7 @@ class Content_files extends CI_Controller {
 			'upload_dirs_options' 	=> $upload_dirs_options
 		));
 
-		$this->javascript->compile();
-		$this->load->view('content/files/index', $data);
+		$this->cp->render('content/files/index', $data);
 	}
 
 	// --------------------------------------------------------------------
@@ -310,7 +310,7 @@ class Content_files extends CI_Controller {
 			'rows' => $this->_fetch_file_list($files, $total_filtered),
 			'no_results' => sprintf(
 				lang('no_uploaded_files'), 
-				$this->cp->masked_url('http://expressionengine.com/user_guide/cp/content/files/sync_files.html'),
+				$this->cp->masked_url('http://ellislab.com/expressionengine/user-guide/cp/content/files/sync_files.html'),
 				BASE.AMP.'C=content_files'.AMP.'M=file_upload_preferences'
 			),
 			'pagination' => array(
@@ -340,7 +340,7 @@ class Content_files extends CI_Controller {
 	{
 		$file_list = array();
 
-		if ($total_filtered > 0)
+		if ($total_filtered > 0 AND ! empty($this->_upload_dirs))
 		{
 			// Date
 			$date_fmt = ($this->session->userdata('time_format') != '') ?
@@ -361,9 +361,7 @@ class Content_files extends CI_Controller {
 				
 				$is_image = FALSE;
 
-				$file_location = $this->functions->remove_double_slashes(
-					$this->_upload_dirs[$file['upload_location_id']]['url'].'/'.urlencode($file['file_name'])
-				);
+				$file_location = rtrim($this->_upload_dirs[$file['upload_location_id']]['url'], '/').'/'.rawurlencode($file['file_name']);
 
 				$file_path = $this->functions->remove_double_slashes(
 					$this->_upload_dirs[$file['upload_location_id']]['server_path'].'/'.$file['file_name']
@@ -682,7 +680,7 @@ class Content_files extends CI_Controller {
 
 		$this->cp->set_variable('cp_page_title', lang('delete_selected_files'));
 
-		$this->load->view('content/files/confirm_file_delete', $data);
+		$this->cp->render('content/files/confirm_file_delete', $data);
 	}
 
 	// ------------------------------------------------------------------------
@@ -843,10 +841,8 @@ class Content_files extends CI_Controller {
 			'ui'		=> array('droppable'),
 			'file'		=> array('cp/publish_tabs')
 		));
-		
-		$this->javascript->compile();
-		
-		$this->load->view('content/files/edit_file', $data);
+				
+		$this->cp->render('content/files/edit_file', $data);
 	}
 	
 	// ------------------------------------------------------------------------
@@ -959,9 +955,7 @@ class Content_files extends CI_Controller {
 			});
 		');
 		
-		$this->javascript->compile();
-
-		$this->load->view('content/files/edit_image', $data);
+		$this->cp->render('content/files/edit_image', $data);
 	}
 
 	// ------------------------------------------------------------------------
@@ -1027,7 +1021,7 @@ class Content_files extends CI_Controller {
 		$data = array(
 			'filemtime'		=> ($filemtime = @filemtime($file_path)) ? $filemtime : 0,
 			'file_info'		=> $file_info,
-			'file_name'		=> urlencode($file_name),
+			'file_name'		=> $file_name,
 			'file_path'		=> $file_path,
 			'file_url'		=> $file_url,
 			'form_hiddens'	=> array(
@@ -1145,7 +1139,7 @@ class Content_files extends CI_Controller {
 		}
 
 		$this->cp->add_js_script(array(
-				'plugin' => array('tmpl', 'toggle_all'),
+				'plugin' => array('tmpl'),
 				'ui'     => array('progressbar'),
 				'file'   => array('underscore', 'cp/files/synchronize')
 			)
@@ -1167,8 +1161,7 @@ class Content_files extends CI_Controller {
 			lang('file_upload_prefs')
 		);
 		
-		$this->javascript->compile();
-		$this->load->view('content/files/sync', $vars);
+		$this->cp->render('content/files/sync', $vars);
 
 
 		// process file array - move to own method?
@@ -1461,11 +1454,9 @@ class Content_files extends CI_Controller {
 
 		$vars['watermarks'] = $this->file_model->get_watermark_preferences();
 
-		$this->javascript->compile();
-
 		$this->cp->set_action_nav(array('create_new_wm_pref' => BASE.AMP.'C=content_files'.AMP.'M=edit_watermark_preferences'));
 
-		$this->load->view('content/files/watermark_preferences', $vars);
+		$this->cp->render('content/files/watermark_preferences', $vars);
 
 
 	}
@@ -1652,11 +1643,9 @@ class Content_files extends CI_Controller {
 							  ->set_rules($config);
 		$this->form_validation->set_old_value('wm_id', $id);
 
-		$this->javascript->compile();
-
 		if ( ! $this->form_validation->run())
 		{
-			$this->load->view('content/files/watermark_settings', $vars);
+			$this->cp->render('content/files/watermark_settings', $vars);
 		}
 		else
 		{
@@ -1796,8 +1785,7 @@ class Content_files extends CI_Controller {
 			$data['items'][] = $item->wm_name;
 		}
 
-		$this->javascript->compile();
-		$this->load->view('content/files/pref_delete_confirm', $data);
+		$this->cp->render('content/files/pref_delete_confirm', $data);
 
 	}
 
@@ -1865,19 +1853,11 @@ class Content_files extends CI_Controller {
 		$vars['message'] = $message;
 		$vars['upload_locations'] = $this->file_upload_preferences_model->get_file_upload_preferences($this->session->userdata('group_id'));
 
-		$this->javascript->compile();
 
 		$this->cp->set_action_nav(array('create_new_upload_pref' => BASE.AMP.'C=content_files'.AMP.'M=edit_upload_preferences'));
 
-		$this->load->view('content/files/file_upload_preferences', $vars);
+		$this->cp->render('content/files/file_upload_preferences', $vars);
 	}
-
-
-	function delete_dimension()
-	{
-
-	}
-
 
 	// --------------------------------------------------------------------
 
@@ -2120,8 +2100,7 @@ class Content_files extends CI_Controller {
 
 		if ( ! $this->form_validation->run())
 		{
-			$this->javascript->compile();
-			$this->load->view('content/files/file_upload_create', $data);
+			$this->cp->render('content/files/file_upload_create', $data);
 		}
 		else
 		{
@@ -2400,8 +2379,7 @@ class Content_files extends CI_Controller {
 			$data['items'][] = $items['name'];
 		}
 
-		$this->javascript->compile();
-		$this->load->view('content/files/pref_delete_confirm', $data);
+		$this->cp->render('content/files/pref_delete_confirm', $data);
 	}
 
 	// --------------------------------------------------------------------
@@ -2488,7 +2466,7 @@ class Content_files extends CI_Controller {
 			)
 		);
 
-		$this->load->view('content/files/batch_upload_index', $data);
+		$this->cp->render('content/files/batch_upload_index', $data);
 	}
 
 	// --------------------------------------------------------------------
@@ -2687,7 +2665,7 @@ class Content_files extends CI_Controller {
 
 		);
 
-		$this->load->view('content/files/manual_batch', $data);
+		$this->cp->render('content/files/manual_batch', $data);
 	}
 
 	// --------------------------------------------------------------------

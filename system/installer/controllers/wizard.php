@@ -5,8 +5,8 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,7 +20,7 @@
  * @subpackage	Core
  * @category	Core
  * @author		EllisLab Dev Team
- * @link		http://expressionengine.com
+ * @link		http://ellislab.com
  */
 class Wizard extends CI_Controller {
 
@@ -80,7 +80,7 @@ class Wizard extends CI_Controller {
 	// These are the values we need to set during a first time installation
 	var $userdata = array(
 		'app_version'			=> '',
-		'doc_url'				=> 'http://expressionengine.com/user_guide/',
+		'doc_url'				=> 'http://ellislab.com/expressionengine/user-guide/',
 		'install_lock'			=> '1',
 		'ext'					=> '.php',
 		'ip'					=> '',
@@ -169,6 +169,8 @@ class Wizard extends CI_Controller {
 	{
 		parent::__construct();
 		
+		define('IS_CORE', FALSE);
+
 		// Third party constants
 		if ($this->config->item('third_party_path'))
 		{
@@ -334,7 +336,7 @@ class Wizard extends CI_Controller {
 		// Prior to 2.0 the config array was named $conf.  This has changed to $config for 2.0
 		if (isset($conf))
 		{
-			$config = $conf;
+			$config = array_merge($config, $conf);
 		}
 		
 		// No config AND db arrays?  This means it's a first time install...hopefully. 
@@ -1125,7 +1127,7 @@ PAPAYA;
 		$this->userdata['cp_url'] = ($self != '') ? $host.$self : $host.SELF;
 		
 		// license number
-		$this->userdata['license_number'] = '';
+		$this->userdata['license_number'] = (IS_CORE) ? 'CORE LICENSE' : '';
 		
 		// Since the CP access file can be inside or outside of the "system" folder
 		// we will do a little test to help us set the site_url item
@@ -1593,6 +1595,12 @@ PAPAYA;
 	 */	
 	function _set_output($content = '', $array = array())
 	{
+		if (IS_CORE)
+		{
+			$this->heading = str_replace('ExpressionEngine', 'ExpressionEngine Core', $this->heading);
+			$this->title = str_replace('ExpressionEngine', 'ExpressionEngine Core', $this->title);
+		}
+
 		$data = array(
 			'heading'			=> $this->heading,
 			'title'				=> $this->title,
@@ -1605,6 +1613,7 @@ PAPAYA;
 			'installed_version'	=> $this->installed_version,
 			'languages'			=> $this->languages,
 			'javascript_path'	=> $this->javascript_path,
+			'is_core'			=> (IS_CORE) ? 'Core ' : ''
 		);
 
 		$data = array_merge($array, $data);
@@ -2743,7 +2752,7 @@ PAPAYA;
 		// Just in case the old variable naming is still present...
 		if (isset($conf))
 		{
-			$config = $conf;
+			$config = array_merge($config, $conf);
 		}
 		
 		// Add the CI config items to the array

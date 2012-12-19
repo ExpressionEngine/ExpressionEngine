@@ -5,8 +5,8 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
  */
@@ -20,7 +20,7 @@
  * @subpackage	Core
  * @category	Core
  * @author		EllisLab Dev Team
- * @link		http://expressionengine.com
+ * @link		http://ellislab.com
  */
 class EE_Localize {
 
@@ -104,36 +104,6 @@ class EE_Localize {
 		date_default_timezone_set($this->_get_php_timezone($this->EE->config->item('server_timezone')));
 
 		return $timestamp;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 *  Set GMT time
-	 *
-	 * Takes a Unix timestamp as input and returns it as GMT
-	 *
-	 * @deprecated 2.3
-	 * @access	public
-	 * @param	string
-	 * @return	string
-	 */
-	function set_gmt($now = '')
-	{
-		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated('2.3');
-
-		if ($now == '')
-		{
-			$now = time();
-		}
-
-		if ( ! is_numeric($now))
-		{
-			$now = strtotime($now);
-		}
-
-		return $now;
 	}
 
 	// --------------------------------------------------------------------
@@ -531,30 +501,6 @@ class EE_Localize {
 		{
 			$time += 3600;
 		}
-
-		return $time;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Offset Entry DST
-	 *
-	 * DEPRECATED
-	 *
-	 * This adds/subtracts an hour if the submitted entry
-	 * has the "honor DST setting" clicked
-	 *
-	 * @access	public
-	 * @param	string
-	 * @param	string
-	 * @param	bool
-	 * @return	int
-	 */
-	function offset_entry_dst($time = '', $dst_enabled = '', $add_time = TRUE)
-	{
-		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated();
 
 		return $time;
 	}
