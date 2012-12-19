@@ -45,7 +45,7 @@ class Updater {
 	 */
 	public function do_update()
 	{
-		$steps = array(
+		$steps = new ProgressIterator(array(
 			'_update_session_table',
 			'_update_password_lockout_table',
 			'_update_members_table',
@@ -53,16 +53,11 @@ class Updater {
 			'_update_comments_table',
 			'_update_template_groups',
 			'_alter_sidebar_deft',
-			);
-
-		$current_step	= 1;
-		$total_steps	= count($steps);
+			));
 
 		foreach ($steps as $k => $v)
 		{
-			$this->EE->progress->step($current_step, $total_steps);
 			$this->$v();
-			$current_step++;
 		}
 
 		return TRUE;

@@ -47,22 +47,17 @@ class Updater {
 	{
 		$this->EE->load->dbforge();
 
-		$steps = array(
+		$steps = new ProgressIterator(array(
 			'_update_watermarks_table',
 			'_update_file_dimensions_table',
 			'_update_files_table',
 			'_add_developer_log_table',
 			'_create_remember_me',
-			);
-
-		$current_step	= 1;
-		$total_steps	= count($steps);
+			));
 
 		foreach ($steps as $k => $v)
 		{
-			$this->EE->progress->step($current_step, $total_steps);
 			$this->$v();
-			$current_step++;
 		}
 		
 		return TRUE;

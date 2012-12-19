@@ -90,24 +90,30 @@ class Progress {
 		$EE =& get_instance();
 		return $EE->load->view('progress_header', $settings, TRUE);
 	}
-	
-	// --------------------------------------------------------------------
-	
-	/**
-	 * Updates the step count
-	 *
-	 * Used to mark progress within each update file.
-	 *
-	 * @param	string
-	 * @return	void
-	 */
-	public function step($current, $total)
-	{
-		$this->update_state("Step $current of $total");
-	}
 }
 
 // END Progress class
+
+class ProgressIterator extends ArrayIterator {
+
+	public function __construct($arr)
+	{
+		parent::__construct($arr);
+		$this->EE =& get_instance();
+	}
+
+	public function current()
+	{
+		$current_step = $this->key();
+		$total_steps = $this->count();
+
+		$this->EE->progress->update_state("Step $current_step of $total_steps");
+
+		return parent::current();
+	}
+}
+
+// END ProgressIterator class
 
 
 /* End of file Progress.php */

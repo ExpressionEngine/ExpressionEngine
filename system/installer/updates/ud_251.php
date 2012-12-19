@@ -44,18 +44,13 @@ class Updater {
 	 */
 	public function do_update()
 	{
-		$steps = array(
+		$steps = new ProgressIterator(array(
 			'_update_ip_address_length',
-			);
-
-		$current_step	= 1;
-		$total_steps	= count($steps);
+			));
 
 		foreach ($steps as $k => $v)
 		{
-			$this->EE->progress->step($current_step, $total_steps);
 			$this->$v();
-			$current_step++;
 		}
 
 		return TRUE;

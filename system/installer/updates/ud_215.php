@@ -75,14 +75,11 @@ class Updater {
 		// Add a MySQL index or three to help performance
 		$steps[] = '_do_add_indexes';
 
-		$current_step	= 1;
-		$total_steps	= count($steps);
+		$steps = new ProgressIterator($steps);
 
 		foreach ($steps as $k => $v)
 		{
-			$this->EE->progress->step($current_step, $total_steps);
 			$this->$v();
-			$current_step++;
 		}
 
 		return TRUE;
