@@ -44,12 +44,22 @@ class Updater {
 	 */
 	public function do_update()
 	{
-		$this->EE->load->dbforge();
-		
-		$this->_change_member_totals_length();
-		$this->_update_session_table();
-		$this->_update_security_hashes_table();
-		$this->_update_docs_url();
+		$steps = array(
+			'_change_member_totals_length',
+			'_update_session_table',
+			'_update_security_hashes_table',
+			'_update_docs_url',
+			);
+
+		$current_step	= 1;
+		$total_steps	= count($steps);
+
+		foreach ($steps as $k => $v)
+		{
+			$this->EE->progress->step($current_step, $total_steps);
+			$this->$v();
+			$current_step++;
+		}
 		
 		return TRUE;
 	}
@@ -63,7 +73,7 @@ class Updater {
 	 */
 	private function _change_member_totals_length()
 	{
-		$this->EE->dbforge->modify_column(
+		$this->EE->smartforge->modify_column(
 			'members',
 			array(
 				'total_entries' => array(
@@ -138,26 +148,23 @@ class Updater {
 	 */
 	private function _update_session_table()
 	{
-		if ( ! $this->EE->db->field_exists('fingerprint', 'sessions'))
-		{
-			$this->EE->dbforge->add_column(
-				'sessions',
-				array(
-					'fingerprint' => array(
-						'type'			=> 'varchar',
-						'constraint'	=> 40
-					),
-					'sess_start' => array(
-						'type'			=> 'int',
-						'constraint'	=> 10,
-						'unsigned'		=> TRUE,
-						'default'		=> 0,
-						'null'			=> FALSE
-					)
+		$this->EE->smartforge->add_column(
+			'sessions',
+			array(
+				'fingerprint' => array(
+					'type'			=> 'varchar',
+					'constraint'	=> 40
 				),
-				'user_agent'
-			);	
-		}
+				'sess_start' => array(
+					'type'			=> 'int',
+					'constraint'	=> 10,
+					'unsigned'		=> TRUE,
+					'default'		=> 0,
+					'null'			=> FALSE
+				)
+			),
+			'user_agent'
+		);
 		
 		return TRUE;
 	}
@@ -169,21 +176,18 @@ class Updater {
 	 */
 	private function _update_security_hashes_table()
 	{
-		if ( ! $this->EE->db->field_exists('session_id', 'security_hashes'))
-		{
-			$this->EE->dbforge->modify_column(
-				'security_hashes',
-				array(
-					'ip_address' => array(
-						'name' 			=> 'session_id',
-						'type' 			=> 'varchar',
-						'constraint' 	=> 40
-					)
+		$this->EE->smartforge->modify_column(
+			'security_hashes',
+			array(
+				'ip_address' => array(
+					'name' 			=> 'session_id',
+					'type' 			=> 'varchar',
+					'constraint' 	=> 40
 				)
-			);
+			)
+		);
 
-			$this->EE->db->truncate('security_hashes');
-		}
+		$this->EE->db->truncate('security_hashes');
 		
 		return TRUE;
 	}
