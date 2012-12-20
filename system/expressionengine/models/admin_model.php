@@ -198,7 +198,7 @@ class Admin_model extends CI_Model {
 			'tracking_cfg'		=>	array(
 											'enable_online_user_tracking'	=> array('r', array('y' => 'yes', 'n' => 'no'), 'y'),
 											'enable_hit_tracking'			=> array('r', array('y' => 'yes', 'n' => 'no'), 'y'),
-											'enable_entry_view_tracking'	=> array('r', array('y' => 'yes', 'n' => 'no'), 'y'),
+											'enable_entry_view_tracking'	=> array('r', array('y' => 'yes', 'n' => 'no'), 'n'),
 											'log_referrers'					=> array('r', array('y' => 'yes', 'n' => 'no')),
 											'max_referrers'					=> array('i', ''),
 											'dynamic_tracking_disabling'	=> array('i', '')
