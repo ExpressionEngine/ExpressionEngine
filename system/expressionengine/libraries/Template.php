@@ -2700,7 +2700,7 @@ class EE_Template {
 		// Redirect - if we have one of these, no need to go further     	
 		if (strpos($str, LD.'redirect') !== FALSE)
 		{
-			if (preg_match("/".LD."redirect\s*=\s*(\042|\047)([^\\1]*?)\\1".RD."/si", $str, $match))
+			if (preg_match("/".LD."redirect\s*=\s*(\042|\047)([^\\1]*?)\\1\s*(type\s*=\s*(\042|\047)([^\\4]*?)\\4)?".RD."/si", $str, $match))
 			{
 				if ($match['2'] == "404")
 				{
@@ -2723,8 +2723,19 @@ class EE_Template {
 				}
 				else
 				{
-					// Functions::redirect() exit;s on its own
-					$this->EE->functions->redirect($this->EE->functions->create_url($this->EE->functions->extract_path("=".$match['2'])));
+					// If we don't have a status code, we'll send NULL
+					// to redirect() which result in no status code being set and
+					// header using the default 302.
+					// If the status code isn't a 3xx redirect code, it will be ignored
+					// by redirect().
+					$status_code = NULL;
+					if(isset($match[5])) {
+						$status_code = $match[5];
+					} 
+
+					// Functions::redirect() exits on its own
+					$this->EE->functions->redirect($this->EE->functions->create_url($this->EE->functions->extract_path("=".$match['2'])), FALSE, $status_code);
+					
 				}
 			}
 		}

@@ -371,7 +371,7 @@ class EE_Functions {
 	 * @param	string
 	 * @return	void
 	 */
-	function redirect($location, $method = FALSE)
+	function redirect($location, $method = FALSE, $status_code=NULL)
 	{
 		// Remove hard line breaks and carriage returns
 		$location = str_replace(array("\n", "\r"), '', $location);
@@ -403,14 +403,22 @@ class EE_Functions {
 		if ($method === FALSE)
 		{
 			$method = $this->EE->config->item('redirect_method');
-		}		
+		}	
 
 		switch($method)
 		{
-			case 'refresh'	: header("Refresh: 0;url=$location");
+			case 'refresh': 
+				$header = "Refresh: 0;url=$location";
 				break;
-			default			: header("Location: $location");
+			default: 
+				$header = "Location: $location";
 				break;
+		}
+
+		if($status_code !== NULL && $status_code >= 300 && $status_code <= 308) {
+			header($header, TRUE, $status_code);
+		} else {
+			header($header);
 		}
 
 		exit;
