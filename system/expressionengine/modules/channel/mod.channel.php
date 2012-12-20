@@ -73,6 +73,9 @@ class Channel {
 	// Misc. - Class variable usable by extensions
 	public $misc					= FALSE;
 
+	// Array of parameters allowed to be set dynamically
+	private $_dynamic_parameters	= array();
+
 	/**
 	  * Constructor
 	  */
@@ -101,6 +104,12 @@ class Channel {
 		{
 			$this->_fetch_disable_param();
 		}
+
+		$this->_dynamic_parameters = array('channel', 'entry_id', 'category', 'orderby',
+			'sort', 'sticky', 'show_future_entries', 'show_expired', 'entry_id_from',
+			'entry_id_to', 'not_entry_id', 'start_on', 'stop_before', 'year', 'month',
+			'day', 'display_by', 'limit', 'username', 'status', 'group_id', 'cat_limit',
+			'month_limit', 'offset', 'author_id', 'url_title');
 	}
 
 	// ------------------------------------------------------------------------
@@ -127,7 +136,7 @@ class Channel {
 		{
 			foreach (explode('|', $this->EE->TMPL->fetch_param('dynamic_parameters')) as $var)
 			{
-				if (isset($_POST[$var]) && in_array($var, array('channel', 'entry_id', 'category', 'orderby', 'sort', 'sticky', 'show_future_entries', 'show_expired', 'entry_id_from', 'entry_id_to', 'not_entry_id', 'start_on', 'stop_before', 'year', 'month', 'day', 'display_by', 'limit', 'username', 'status', 'group_id', 'cat_limit', 'month_limit', 'offset', 'author_id')))
+				if (isset($_POST[$var]) && in_array($var, $this->_dynamic_parameters))
 				{
 					$tag .= $var.'="'.$_POST[$var].'"';
 				}
@@ -1261,7 +1270,7 @@ class Channel {
 		{
 			foreach (explode('|', $this->EE->TMPL->fetch_param('dynamic_parameters')) as $var)
 			{
-				if (isset($_POST[$var]) AND in_array($var, array('channel', 'entry_id', 'category', 'orderby', 'sort', 'sticky', 'show_future_entries', 'show_expired', 'entry_id_from', 'entry_id_to', 'not_entry_id', 'start_on', 'stop_before', 'year', 'month', 'day', 'display_by', 'limit', 'username', 'status', 'group_id', 'cat_limit', 'month_limit', 'offset', 'author_id')))
+				if (isset($_POST[$var]) AND in_array($var, $this->_dynamic_parameters))
 				{
 					$this->EE->TMPL->tagparams[$var] = $_POST[$var];
 				}
