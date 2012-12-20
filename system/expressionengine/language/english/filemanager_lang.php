@@ -131,8 +131,13 @@ $lang = array(
 'allowed_types' =>
 'Allowed File Types',
 
+// This is a tad hacky, but it legitimately needs to be in the lang file, since
+// we need to describe that it's limited by PHP setting.  There's no way to pass
+// a value in to a language piece.   
 'max_size' =>
 'Maximum File Size (in bytes)',
+
+'php_max_filesize'=>'Maximum upload size allowed by PHP is %s',
 
 'max_height' =>
 'Maximum Image Height (in pixels)',
