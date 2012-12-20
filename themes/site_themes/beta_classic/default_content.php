@@ -37,7 +37,7 @@ $Q[] = "INSERT INTO exp_category_field_data (cat_id, group_id, site_id) VALUES (
 $Q[] = "INSERT INTO exp_category_posts (entry_id, cat_id) VALUES ('1', '1')";
 
 // Create a default channel entry
-$Q[] = "INSERT INTO exp_channel_titles (channel_id, author_id, ip_address, entry_date, edit_date, year, month, day, title, url_title, status, dst_enabled) VALUES ('1', '1',  '".$this->input->ip_address()."', '".$this->now."', '".date("YmdHis")."', '".$this->year."', '".$this->month."', '".$this->day."', 'Getting Started with ExpressionEngine', 'getting_started', 'open', '".$this->userdata['daylight_savings']."')";
+$Q[] = "INSERT INTO exp_channel_titles (channel_id, author_id, ip_address, entry_date, edit_date, year, month, day, title, url_title, status) VALUES ('1', '1',  '".$this->input->ip_address()."', '".$this->now."', '".date("YmdHis")."', '".$this->year."', '".$this->month."', '".$this->day."', 'Getting Started with ExpressionEngine', 'getting_started', 'open')";
 $Q[] = "INSERT INTO exp_channel_data (entry_id, channel_id, field_id_1, field_ft_1, field_id_2, field_ft_2, field_id_3, field_ft_3) VALUES ('1', '1', '', 'xhtml', '".$this->db->escape_str($this->schema->default_entry)."', 'xhtml', '', 'xhtml')";
 
 if (@realpath(str_replace('../', './', $this->userdata['image_path'])) !== FALSE)

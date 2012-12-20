@@ -925,7 +925,6 @@ class Api_channel_fields extends Api {
 		
 		$channel_data = $channel_query->row_array();
 		
-		$dst_enabled = ($this->EE->session->userdata('daylight_savings') == 'y' ? TRUE : FALSE);		
 		
 		// We start by setting our default fields
 		
@@ -977,7 +976,6 @@ class Api_channel_fields extends Api {
 				'always_show_date'		=> 'y',
 				'default_offset'		=> 0,
 				'selected'				=> 'y',
-				'dst_enabled'			=> $dst_enabled				
 			),
 			'expiration_date' => array(
 				'field_id'				=> 'expiration_date',
@@ -991,12 +989,9 @@ class Api_channel_fields extends Api {
 				'field_show_fmt'		=> 'n',
 				'default_offset'		=> 0,
 				'selected'				=> 'y',
-				'dst_enabled'			=> $dst_enabled				
 			)	
 		);
 
-//wtf dst_enabled?		
-		
 		
 		// comment expiry here.
 		if (isset($this->EE->cp->installed_modules['comment']))
@@ -1013,7 +1008,6 @@ class Api_channel_fields extends Api {
 				'field_show_fmt'		=> 'n',
 				'default_offset'		=> $channel_data['comment_expiration'] * 86400,
 				'selected'				=> 'y',
-				'dst_enabled'			=> $dst_enabled
 			);
 		}
 		
@@ -1037,7 +1031,6 @@ class Api_channel_fields extends Api {
 			$field_fmt 		= $row['field_fmt'];
 			$field_dt 		= '';
 			$field_data		= '';
-			$dst_enabled	= '';
 						
 			if ($bookmarklet)
 			{
@@ -1061,7 +1054,6 @@ class Api_channel_fields extends Api {
 				'field_dt'				=> $field_dt,
 				'field_data'			=> $field_data,
 				'field_name'			=> 'field_id_'.$row['field_id'],
-				'dst_enabled'			=> $dst_enabled
 			);
 			
 			$ft_settings = array();

@@ -356,7 +356,7 @@ class Content_edit extends CP_Controller {
 		// ----------------------------------------------------------------
 		
 		$this->prune_autosave();
-		$this->db->select('entry_id, original_entry_id, channel_id, title, author_id, status, entry_date, dst_enabled, comment_total');
+		$this->db->select('entry_id, original_entry_id, channel_id, title, author_id, status, entry_date,  comment_total');
 		$autosave = $this->db->get('channel_entries_autosave');
 		
 		$autosave_array = array();
@@ -593,7 +593,7 @@ class Content_edit extends CP_Controller {
 		// Build and run the query
 		// -----------------------------
 
-		$this->db->select('entry_id, exp_channel_titles.channel_id, author_id, title, url_title, entry_date, dst_enabled, status, allow_comments, sticky, comment_system_enabled');
+		$this->db->select('entry_id, exp_channel_titles.channel_id, author_id, title, url_title, entry_date, status, allow_comments, sticky, comment_system_enabled');
 		$this->db->from('exp_channel_titles');
 		$this->db->join('exp_channels', 'exp_channels.channel_id = exp_channel_titles.channel_id');
 		$this->db->where_in('exp_channel_titles.entry_id', $entry_ids);
@@ -645,7 +645,7 @@ class Content_edit extends CP_Controller {
 			unset($query);
 
 			// Run the query one more time with the proper IDs.
-			$this->db->select('entry_id, exp_channel_titles.channel_id, author_id, title, url_title, entry_date, dst_enabled, status, allow_comments, sticky, comment_system_enabled');
+			$this->db->select('entry_id, exp_channel_titles.channel_id, author_id, title, url_title, entry_date, status, allow_comments, sticky, comment_system_enabled');
 			$this->db->from('exp_channel_titles');
 			$this->db->join('exp_channels', 'exp_channels.channel_id = exp_channel_titles.channel_id');
 			$this->db->where_in('exp_channel_titles.entry_id', $new_ids);
@@ -1187,7 +1187,7 @@ class Content_edit extends CP_Controller {
 		/** -----------------------------*/
 		
 		/* Available from $query:	entry_id, channel_id, author_id, title, url_title, 
-									entry_date, dst_enabled, status, allow_comments, 
+									entry_date, status, allow_comments, 
 									sticky
 		*/
 

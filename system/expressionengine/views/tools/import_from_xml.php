@@ -42,11 +42,6 @@
 			<td><?=form_dropdown('time_format', array('us' => lang('united_states'), 'eu' => lang('european')), set_value('time_format'))?></td>
 		</tr>
 		<tr class="even">
-			<td><?=lang('daylight_savings', 'daylight_savings')?></td>
-			<td><label for="dst_enabled"><input type="checkbox" name="daylight_savings" value="y" <?php echo set_checkbox('daylight_savings', 'y', $dst_enabled); ?> />		
-			<?=lang('dst_enabled')?></label></td>
-		</tr>
-		<tr class="odd">
 			<td><?=lang('auto_custom_field', 'auto_custom_field')?></td>
 			<td><?=lang('auto_custom_field_blurb')?><br />
 			<label for="auto_custom_field"><input type="checkbox" name="auto_custom_field" value="y" <?php echo set_checkbox('auto_custom_field', 'y'); ?> />		
