@@ -437,14 +437,6 @@ class Channel_calendar extends Channel {
 
 				foreach ($query->result_array() as $row)
 				{
-					/** ----------------------------------------
-					/**  Adjust dates if needed
-					/** ----------------------------------------*/
-
-					// If the "dst_enabled" item is set in any given entry
-					// we need to offset to the timestamp by an hour
-
-				if ($row['entry_date'] != '')
 
 					/** ----------------------------------------
 					/**  Define empty arrays and strings

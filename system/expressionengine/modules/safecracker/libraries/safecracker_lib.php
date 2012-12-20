@@ -1216,8 +1216,6 @@ class Safecracker_lib
 			{
 				$_POST['url_title'] = uniqid($this->EE->input->post('url_title', TRUE) ? $this->EE->input->post('url_title', TRUE) : url_title($this->EE->input->post('title', TRUE)), TRUE);
 			}
-			
-			$this->entry['dst_enabled'] = $this->EE->input->post('dst_enabled');
 		}
 		
 		$this->preserve_checkboxes = $this->bool_string($this->EE->input->post('preserve_checkboxes'), FALSE);
@@ -1789,7 +1787,7 @@ class Safecracker_lib
 		$this->EE->api_channel_fields->field_types[$this->EE->api_channel_fields->field_type]->field_id = $this->get_field_id($field_name);
 		
 		$this->EE->api_channel_fields->field_types[$this->EE->api_channel_fields->field_type]->settings = array_merge($this->get_field_settings($field_name), $this->get_field_data($field_name), $this->EE->api_channel_fields->get_global_settings($this->EE->api_channel_fields->field_type));
-		
+
 		if ($this->EE->api_channel_fields->field_type == 'date')
 		{
 			$this->EE->api_channel_fields->field_types[$this->EE->api_channel_fields->field_type]->settings['dst_enabled'] = $this->entry($field_name);
