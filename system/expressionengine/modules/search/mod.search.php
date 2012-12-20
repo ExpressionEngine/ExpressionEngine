@@ -1470,7 +1470,13 @@ class Search {
 				$format = ( ! isset($row['field_ft_'.$row['search_excerpt']])) ? 'xhtml' : $row['field_ft_'.$row['search_excerpt']];
 			
 				$full_text = $this->EE->typography->parse_type(
-					strip_tags($row['field_id_'.$row['search_excerpt']]),
+					// Replace block HTML tags with spaces so words don't run together in case
+					// they're saved with no spaces in between the markup
+					strip_tags(
+						preg_replace('/\s+/', ' ',
+							preg_replace('/<[\/?][p|br|div|h1|h2]*>/', ' ', $row['field_id_'.$row['search_excerpt']])
+						)
+					),
 					array(
 						'text_format'	=> $format,
 						'html_format'	=> 'safe',
