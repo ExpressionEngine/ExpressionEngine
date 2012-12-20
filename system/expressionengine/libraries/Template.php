@@ -2700,7 +2700,7 @@ class EE_Template {
 		// Redirect - if we have one of these, no need to go further     	
 		if (strpos($str, LD.'redirect') !== FALSE)
 		{
-			if (preg_match("/".LD."redirect\s*=\s*(\042|\047)([^\\1]*?)\\1\s*(type\s*=\s*(\042|\047)([^\\4]*?)\\4)?".RD."/si", $str, $match))
+			if (preg_match("/".LD."redirect\s*=\s*(\042|\047)([^\\1]*?)\\1\s*(status_code\s*=\s*(\042|\047)([^\\4]*?)\\4)?".RD."/si", $str, $match))
 			{
 				if ($match['2'] == "404")
 				{
