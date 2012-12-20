@@ -536,7 +536,7 @@ class Member_model extends CI_Model {
 		// Make sure $member_ids is an array
 		if ( ! is_array($member_ids))
 		{
-			$member_id = array((int) $member_ids);
+			$member_ids = array((int) $member_ids);
 		}
 		
 		// ---------------------------------------------------------------
