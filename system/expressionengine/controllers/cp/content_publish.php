@@ -45,7 +45,7 @@ class Content_publish extends CI_Controller {
 	{
 		parent::__construct();
 
-		if ( ! $this->cp->allowed_group('can_access_content', 'can_access_publish'))
+		if ( ! $this->cp->allowed_group('can_access_content'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -139,6 +139,12 @@ class Content_publish extends CI_Controller {
 
 		$entry_id	= (int) $this->input->get_post('entry_id');
 		$channel_id	= (int) $this->input->get_post('channel_id');
+
+		// Prevent publishing new entries if disallowed
+		if ( ! $this->cp->allowed_group('can_access_content', 'can_access_publish') AND $entry_id == 0)
+		{
+			show_error(lang('unauthorized_access'));
+		}
 		
 		$autosave	= ($this->input->get_post('use_autosave') == 'y');
 		
@@ -343,8 +349,11 @@ class Content_publish extends CI_Controller {
 			
 			'preview_url'	=> $preview_url
 		);
-
-		$this->cp->set_breadcrumb(BASE.AMP.'C=content_publish', lang('publish'));
+		
+		if ($this->cp->allowed_group('can_access_publish'))
+		{
+			$this->cp->set_breadcrumb(BASE.AMP.'C=content_publish', lang('publish'));
+		}
 		
 		$this->javascript->compile();
 		$this->load->view('content/publish', $data);
