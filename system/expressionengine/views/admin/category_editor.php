@@ -15,6 +15,7 @@
 		'ID',
 		lang('order'),
 		lang('category_name'),
+		lang('category_url_title'),
 		(($can_edit) ? lang('edit') : FALSE),
 		(($can_delete) ? lang('delete') : FALSE)
 	);
@@ -36,6 +37,7 @@
 			 	$category['0'],
 			 	$link,
 			 	$indent.$category['1'],
+				$category[9],
 			 	(($can_edit) ? '<a href="'.BASE.AMP.'C=admin_content'.AMP.'M=category_edit'.AMP.'cat_id='.$category['0'].AMP.'group_id='.$group_id.'">'. lang('edit').'</a>' : NULL),
 			 	(($can_delete) ? '<a href="'.BASE.AMP.'C=admin_content'.AMP.'M=category_delete_conf'.AMP.'cat_id='.$category['0'].AMP.'group_id='.$group_id.'">'. lang('delete').'</a>' : NULL)
 			 );

@@ -631,6 +631,9 @@ $lang = array(
 'category_name' =>
 'Category Name',
 
+'category_url_title' =>
+'Category URL Title',
+
 'category_image' =>
 'Category Image',
 
