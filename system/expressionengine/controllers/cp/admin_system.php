@@ -361,11 +361,13 @@ class Admin_system extends CP_Controller {
 							break;
 					}
 					break;
+				case 'p': // Fall through intended.
 				case 'i':
 					// Input fields
 					$details = array('name' => $name, 'value' => $this->form_validation->set_value($name, $value), 'id' => $name);
 
 					break;
+				
 			}
 
 			$vars['fields'][$name] = array('type' => $options[0], 'value' => $details, 'subtext' => $sub, 'selected' => $selected);

@@ -142,7 +142,7 @@ class Admin_model extends CI_Model {
 											'mail_protocol'				=> array('s', array('mail' => 'php_mail', 'sendmail' => 'sendmail', 'smtp' => 'smtp')),
 											'smtp_server'				=> array('i', ''),
 											'smtp_username'				=> array('i', ''),
-											'smtp_password'				=> array('i', ''),
+											'smtp_password'				=> array('p', ''),
 											'email_batchmode'			=> array('r', array('y' => 'yes', 'n' => 'no')),
 											'email_batch_size'			=> array('i', ''),
 											'mail_format'				=> array('s', array('plain' => 'plain_text', 'html' => 'html')),
