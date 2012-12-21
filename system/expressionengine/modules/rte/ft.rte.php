@@ -35,6 +35,8 @@ class Rte_ft extends EE_Fieldtype {
 
 	function validate($data)
 	{
+		$this->EE->load->library('rte_lib');
+		
 		if ($this->settings['field_required'] === 'y' && $this->EE->rte_lib->is_empty($data))
 		{
 			return lang('required');
