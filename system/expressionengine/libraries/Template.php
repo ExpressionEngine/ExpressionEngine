@@ -3886,7 +3886,7 @@ class EE_Template {
 	{
 		if (strpos($str, 'format=') === FALSE) return;
 		
-		if (preg_match_all("/".LD."([\w+]*)\s+format=[\"'](.*?)[\"']".RD."/", $str, $matches, PREG_SET_ORDER))
+		if (preg_match_all("/".LD."([\w:\-]+)\s+format=[\"'](.*?)[\"']".RD."/", $str, $matches, PREG_SET_ORDER))
 		{
 			for ($j = 0, $tot = count($matches); $j < $tot; $j++)
 			{

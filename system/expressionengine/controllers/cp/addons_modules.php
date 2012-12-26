@@ -145,7 +145,14 @@ class Addons_modules extends CP_Controller {
 			
 
 			// Module Description
-			$data[$modcount][] = lang(strtolower($module).'_module_description');
+			$data[$modcount][] = $this->typography->parse_type(
+				lang(strtolower($module).'_module_description'),
+				array(
+					'text_format'	=> 'none',
+					'html_format'	=> 'safe',
+					'auto_links'	=> 'y'
+				)
+			);
 
 			// Module Version
 			$version = ( ! isset($this->installed_modules[$module])) ?  '--' : $this->installed_modules[$module]['module_version'];
