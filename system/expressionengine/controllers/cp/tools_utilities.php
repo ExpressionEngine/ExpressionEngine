@@ -161,7 +161,6 @@ class Tools_utilities extends CP_Controller {
 
 		$vars['language_options'] = array('None' => 'None', 'English' => 'English');
 		$vars['member_groups'] = $member_groups;
-		$vars['dst_enabled'] = $this->config->item('daylight_savings');  
 		$vars['auto_custom_field_enabled'] = TRUE;
 		
 		$this->cp->render('tools/import_from_xml', $vars);

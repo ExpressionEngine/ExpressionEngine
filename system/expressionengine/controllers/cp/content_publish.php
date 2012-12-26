@@ -918,7 +918,6 @@ class Content_publish extends CP_Controller {
 		// Get Channel fields in the field group
 		$channel_fields = $this->channel_model->get_channel_fields($this->_channel_data['field_group']);
 
-		$this->_dst_enabled = ($this->session->userdata('daylight_savings') == 'y' ? TRUE : FALSE);
 
 		$field_settings = array();
 
@@ -927,7 +926,6 @@ class Content_publish extends CP_Controller {
 			$field_fmt 		= $row['field_fmt'];
 			$field_dt 		= '';
 			$field_data		= '';
-			$dst_enabled	= '';
 						
 			if ($entry_id === 0)
 			{
@@ -951,7 +949,6 @@ class Content_publish extends CP_Controller {
 				'field_dt'				=> $field_dt,
 				'field_data'			=> $field_data,
 				'field_name'			=> 'field_id_'.$row['field_id'],
-				'dst_enabled'			=> $this->_dst_enabled
 			);
 			
 			$ft_settings = array();
@@ -2308,7 +2305,6 @@ class Content_publish extends CP_Controller {
 				'always_show_date'		=> 'y',
 				'default_offset'		=> 0,
 				'selected'				=> 'y',
-				'dst_enabled'			=> $this->_dst_enabled				
 			),
 			'expiration_date' => array(
 				'field_id'				=> 'expiration_date',
@@ -2322,7 +2318,6 @@ class Content_publish extends CP_Controller {
 				'field_show_fmt'		=> 'n',
 				'default_offset'		=> 0,
 				'selected'				=> 'y',
-				'dst_enabled'			=> $this->_dst_enabled				
 			)	
 		);
 		
@@ -2341,7 +2336,6 @@ class Content_publish extends CP_Controller {
 				'field_show_fmt'		=> 'n',
 				'default_offset'		=> $this->_channel_data['comment_expiration'] * 86400,
 				'selected'				=> 'y',
-				'dst_enabled'			=> $this->_dst_enabled
 			);
 		}
 		

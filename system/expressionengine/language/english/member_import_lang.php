@@ -99,9 +99,6 @@ not implicitly given in the XML file.  These options will NOT override XML data.
 'download' =>
 'Download XML File',
 
-'dst_enabled' =>
-'DST Enabled',
-
 'duplicate_email' =>
 'Duplicate email: ',
 

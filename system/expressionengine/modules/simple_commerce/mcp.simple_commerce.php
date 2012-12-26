@@ -2692,7 +2692,6 @@ MAGIC;
 				exp_channel_titles.author_id,
 				exp_channel_titles.status,
 				exp_channel_titles.entry_date,
-				exp_channel_titles.dst_enabled,
 				exp_channel_titles.comment_total,
 				exp_channels.live_look_template,
 				exp_members.username,

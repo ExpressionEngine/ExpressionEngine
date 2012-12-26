@@ -1345,7 +1345,6 @@ class Api_channel_entries extends Api {
 		}
 		else
 		{
-			$this->_cache['dst_enabled'] = 'n';
 			
 			if ( ! isset($data['field_offset_'.$row['field_id']]))
 			{
@@ -1463,7 +1462,6 @@ class Api_channel_entries extends Api {
 		}
 		
 		
-		$this->_cache['dst_enabled'] = 'n';
 		
 		$this->instantiate('channel_fields');
 
@@ -1632,7 +1630,6 @@ class Api_channel_entries extends Api {
 	 */
 	function _insert_entry($meta, &$data, &$mod_data)
 	{
-		$meta['dst_enabled'] =  $this->_cache['dst_enabled'];
 		
 		if ($this->autosave)
 		{
@@ -1791,7 +1788,6 @@ class Api_channel_entries extends Api {
 	 */
 	function _update_entry($meta, &$data, &$mod_data)
 	{
-		$meta['dst_enabled'] =  $this->_cache['dst_enabled'];
 		
 		// See if the author changed and store the old author ID for updating stats later
 		$this->EE->db->select('author_id');

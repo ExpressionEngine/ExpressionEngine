@@ -2838,7 +2838,7 @@ class Channel {
 		// DO NOT CHANGE THE ORDER
 		// The exp_member_data table needs to be called before the exp_members table.
 
-		$this->sql .= " t.entry_id, t.channel_id, t.forum_topic_id, t.author_id, t.ip_address, t.title, t.url_title, t.status, t.dst_enabled, t.view_count_one, t.view_count_two, t.view_count_three, t.view_count_four, t.allow_comments, t.comment_expiration_date, t.sticky, t.entry_date, t.year, t.month, t.day, t.edit_date, t.expiration_date, t.recent_comment_date, t.comment_total, t.site_id as entry_site_id,
+		$this->sql .= " t.entry_id, t.channel_id, t.forum_topic_id, t.author_id, t.ip_address, t.title, t.url_title, t.status, t.view_count_one, t.view_count_two, t.view_count_three, t.view_count_four, t.allow_comments, t.comment_expiration_date, t.sticky, t.entry_date, t.year, t.month, t.day, t.edit_date, t.expiration_date, t.recent_comment_date, t.comment_total, t.site_id as entry_site_id,
 						w.channel_title, w.channel_name, w.channel_url, w.comment_url, w.comment_moderate, w.channel_html_formatting, w.channel_allow_img_urls, w.channel_auto_link_urls, w.comment_system_enabled, 
 						m.username, m.email, m.url, m.screen_name, m.location, m.occupation, m.interests, m.aol_im, m.yahoo_im, m.msn_im, m.icq, m.signature, m.sig_img_filename, m.sig_img_width, m.sig_img_height, m.avatar_filename, m.avatar_width, m.avatar_height, m.photo_filename, m.photo_width, m.photo_height, m.group_id, m.member_id, m.bday_d, m.bday_m, m.bday_y, m.bio,
 						md.*,
@@ -2946,15 +2946,6 @@ class Channel {
 			{
 				$row['page_uri'] = $site_pages[$row['site_id']]['uris'][$row['entry_id']];
 				$row['page_url'] = $this->EE->functions->create_page_url($site_pages[$row['site_id']]['url'], $site_pages[$row['site_id']]['uris'][$row['entry_id']]);
-			}
-
-			//  Adjust dates if needed
-			// If the "dst_enabled" item is set in any given entry
-			// we need to offset to the timestamp by an hour
-
-			if ( ! isset($row['dst_enabled']))
-			{
-				$row['dst_enabled'] = 'n';
 			}
 
 			//  More Variables, Mostly for Conditionals
@@ -3571,13 +3562,6 @@ class Channel {
 				}
 			//
 			// -------------------------------------------
-
-			//  Adjust dates if needed
-			// If the "dst_enabled" item is set in any given entry
-			// we need to offset to the timestamp by an hour
-
-			if ( ! isset($row['dst_enabled']))
-				$row['dst_enabled'] = 'n';
 
 			/**--
 			/**  Reset custom date fields

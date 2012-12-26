@@ -66,9 +66,6 @@ $lang = array(
 'revision_saved' =>
 'Revision Saved',
 
-'dst_enabled' =>
-'DST Active on Date of Entry',
-
 'multi_entries_updated' =>
 'Entrie(s) have been Updated',
 

@@ -65,17 +65,19 @@
 		foreach ($upload_pref_fields1 as $field)
 		{
 			$value = 'field_'.$field;
-			
+		
+			// This is a little hacky, but on the 'max_size' field we want to output the max filesize setting configured
+			// in php.	
 			$this->table->add_row(array(
-					lang($field, $field),
+					lang($field, $field) . ($field == 'max_size' ? '<br />' . sprintf(lang('php_max_filesize'), ini_get('upload_max_filesize')) : ''),
 					form_error($field).
 					form_input(array(
 						'id'	=> $field,
 						'name'	=> $field,
 						'class'	=> 'field',
 						'value'	=> set_value($field, $$value)
-						)
-					)
+						) 
+					)  
 				)
 			);
 		}

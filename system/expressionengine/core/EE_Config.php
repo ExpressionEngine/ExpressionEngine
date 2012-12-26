@@ -58,10 +58,7 @@ class EE_Config Extends CI_Config {
 	function _initialize()
 	{
 		// Fetch the config file
-		if ( ! @include($this->config_path))
-		{
-			show_error('Unable to locate your config file (expressionengine/config/config.php)', 503);
-		}
+		$config = get_config();
 		
 		// Is the config file blank?  If so it means that ExpressionEngine has not been installed yet
 		if ( ! isset($config) OR count($config) == 0)

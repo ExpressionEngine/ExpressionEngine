@@ -1216,8 +1216,6 @@ class Safecracker_lib
 			{
 				$_POST['url_title'] = uniqid($this->EE->input->post('url_title', TRUE) ? $this->EE->input->post('url_title', TRUE) : url_title($this->EE->input->post('title', TRUE)), TRUE);
 			}
-			
-			$this->entry['dst_enabled'] = $this->EE->input->post('dst_enabled');
 		}
 		
 		$this->preserve_checkboxes = $this->bool_string($this->EE->input->post('preserve_checkboxes'), FALSE);
@@ -1793,11 +1791,6 @@ class Safecracker_lib
 		$this->EE->api_channel_fields->field_types[$this->EE->api_channel_fields->field_type]->field_id = $this->get_field_id($field_name);
 		
 		$this->EE->api_channel_fields->field_types[$this->EE->api_channel_fields->field_type]->settings = array_merge($this->get_field_settings($field_name), $this->get_field_data($field_name), $this->EE->api_channel_fields->get_global_settings($this->EE->api_channel_fields->field_type));
-		
-		if ($this->EE->api_channel_fields->field_type == 'date')
-		{
-			$this->EE->api_channel_fields->field_types[$this->EE->api_channel_fields->field_type]->settings['dst_enabled'] = $this->entry($field_name);
-		}
 		
 		$_GET['entry_id'] = $this->entry('entry_id');
 		$_GET['channel_id'] = $this->entry('channel_id');
@@ -2548,7 +2541,6 @@ class Safecracker_lib
 		$this->channel = array();
 		$this->checkboxes = array(
 			'sticky',
-			'dst_enabled',
 			'allow_comments'
 		);
 		$this->custom_field_conditional_names = array(
@@ -2631,7 +2623,6 @@ class Safecracker_lib
 			'entry_date' => 'date',
 			'url_title' => 'text',
 			'sticky' => FALSE,
-			'dst_enabled' => FALSE,
 			'allow_comments' => FALSE,
 			'title' => 'text'
 		);
@@ -2666,7 +2657,6 @@ class Safecracker_lib
 			'allow_comments',
 			'sticky',
 			'entry_date',
-			'dst_enabled',
 			'year',
 			'month',
 			'day',

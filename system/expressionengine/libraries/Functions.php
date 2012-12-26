@@ -371,7 +371,7 @@ class EE_Functions {
 	 * @param	string
 	 * @return	void
 	 */
-	function redirect($location, $method = FALSE)
+	function redirect($location, $method = FALSE, $status_code=NULL)
 	{
 		// Remove hard line breaks and carriage returns
 		$location = str_replace(array("\n", "\r"), '', $location);
@@ -403,14 +403,22 @@ class EE_Functions {
 		if ($method === FALSE)
 		{
 			$method = $this->EE->config->item('redirect_method');
-		}		
+		}	
 
 		switch($method)
 		{
-			case 'refresh'	: header("Refresh: 0;url=$location");
+			case 'refresh': 
+				$header = "Refresh: 0;url=$location";
 				break;
-			default			: header("Location: $location");
+			default: 
+				$header = "Location: $location";
 				break;
+		}
+
+		if($status_code !== NULL && $status_code >= 300 && $status_code <= 308) {
+			header($header, TRUE, $status_code);
+		} else {
+			header($header);
 		}
 
 		exit;
@@ -1404,7 +1412,7 @@ class EE_Functions {
 	{
 		if ($data['type'] == 'channel' OR ($reverse === TRUE && $parent_entry === FALSE))
 		{
-			$sql = "SELECT t.entry_id, t.channel_id, t.forum_topic_id, t.author_id, t.ip_address, t.title, t.url_title, t.status, t.dst_enabled, t.view_count_one, t.view_count_two, t.view_count_three, t.view_count_four, t.allow_comments, t.comment_expiration_date, t.sticky, t.entry_date, t.year, t.month, t.day, t.entry_date, t.edit_date, t.expiration_date, t.recent_comment_date, t.comment_total, t.site_id as entry_site_id,
+			$sql = "SELECT t.entry_id, t.channel_id, t.forum_topic_id, t.author_id, t.ip_address, t.title, t.url_title, t.status, t.view_count_one, t.view_count_two, t.view_count_three, t.view_count_four, t.allow_comments, t.comment_expiration_date, t.sticky, t.entry_date, t.year, t.month, t.day, t.entry_date, t.edit_date, t.expiration_date, t.recent_comment_date, t.comment_total, t.site_id as entry_site_id,
 					w.channel_title, w.channel_name, w.channel_url, w.comment_url, w.comment_moderate, w.channel_html_formatting, w.channel_allow_img_urls, w.channel_auto_link_urls, 
 					m.username, m.email, m.url, m.screen_name, m.location, m.occupation, m.interests, m.aol_im, m.yahoo_im, m.msn_im, m.icq, m.signature, m.sig_img_filename, m.sig_img_width, m.sig_img_height, m.avatar_filename, m.avatar_width, m.avatar_height, m.photo_filename, m.photo_width, m.photo_height, m.group_id, m.member_id, m.bday_d, m.bday_m, m.bday_y, m.bio,
 					md.*,
