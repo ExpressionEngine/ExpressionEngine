@@ -1510,8 +1510,8 @@ class Search {
 			$output = preg_replace("/".LD.'switch'.RD."/", $switch, $output, count(explode(LD.'switch'.RD, $this->EE->TMPL->tagdata)) - 1);
 			$output = preg_replace("/".LD.'auto_path'.RD."/", $path, $output, count(explode(LD.'auto_path'.RD, $this->EE->TMPL->tagdata)) - 1);
 			$output = preg_replace("/".LD.'id_auto_path'.RD."/", $idpath, $output, count(explode(LD.'id_auto_path'.RD, $this->EE->TMPL->tagdata)) - 1);
-			$output = preg_replace("/".LD.'excerpt'.RD."/", preg_quote($excerpt), $output, count(explode(LD.'excerpt'.RD, $this->EE->TMPL->tagdata)) - 1);
-			$output = preg_replace("/".LD.'full_text'.RD."/", preg_quote($full_text), $output, count(explode(LD.'full_text'.RD, $this->EE->TMPL->tagdata)) - 1);
+			$output = preg_replace("/".LD.'excerpt'.RD."/", $this->_ecsape_replacement_pattern($excerpt), $output, count(explode(LD.'excerpt'.RD, $this->EE->TMPL->tagdata)) - 1);
+			$output = preg_replace("/".LD.'full_text'.RD."/", $this->_ecsape_replacement_pattern($full_text), $output, count(explode(LD.'full_text'.RD, $this->EE->TMPL->tagdata)) - 1);
 		
 			// Parse member_path
 			
@@ -1587,6 +1587,18 @@ class Search {
 		}
 		
 		return $this->EE->TMPL->tagdata;
+	}
+
+	// --------------------------------------------------------------------------
+	
+	/**
+	 * For when preg_quote is too much, we just need to excape replacement patterns
+	 * @param  string	String to escape
+	 * @return string	Escaped string
+	 */
+	private function _ecsape_replacement_pattern($string)
+	{
+		return strtr($string, array('\\' => '\\\\', '$' => '\$'));
 	}
 	
 	// --------------------------------------------------------------------------
