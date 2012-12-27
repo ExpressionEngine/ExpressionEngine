@@ -1658,6 +1658,10 @@ class Sites extends CP_Controller {
 										SET `field_id_".$this->db->escape_str($field_match[$row['field_id']])."` = ".
 										str_replace('a8bxdee', $row['field_id'], $file_string).
 											"WHERE channel_id = '".$this->db->escape_str($channel_id)."'");
+
+									$this->db->set('field_id_'.$row['field_id'], NULL);
+									$this->db->where('channel_id', $channel_id)
+										->update('channel_data');
 								}
 								else
 								{
@@ -1667,6 +1671,7 @@ class Sites extends CP_Controller {
 										'`field_id_'.$row['field_id'].'`', 
 										FALSE
 									);
+									$this->db->set('field_id_'.$row['field_id'], NULL);
 									$this->db->where('channel_id', $channel_id)
 										->update('channel_data');
 								}								
@@ -1676,6 +1681,7 @@ class Sites extends CP_Controller {
 									'`field_ft_'.$row['field_id'].'`', 
 									FALSE
 								);
+								$this->db->set('field_ft_'.$row['field_id'], NULL);
 								$this->db->where('channel_id', $channel_id)
 									->update('channel_data');
 
@@ -1687,6 +1693,7 @@ class Sites extends CP_Controller {
 										'`field_dt_'.$row['field_id'].'`', 
 										FALSE
 									);
+									$this->db->set('field_dt_'.$row['field_id'], NULL);
 									$this->db->where('channel_id', $channel_id)
 										->update('channel_data');
 								}

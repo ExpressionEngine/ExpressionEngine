@@ -1007,8 +1007,8 @@ class Content_files extends CP_Controller {
 		
 		// Some vars for later
 		$file_name	= $file['file_name'];
-		$file_url	= $this->_upload_dirs[$file_dir]['url'].urldecode($file_name);
-		$file_path	= $this->_upload_dirs[$file_dir]['server_path'].urldecode($file_name);
+		$file_url	= $this->_upload_dirs[$file_dir]['url'].rawurldecode($file_name);
+		$file_path	= $this->_upload_dirs[$file_dir]['server_path'].rawurldecode($file_name);
 
 		// Does this file exist?
 		if ( ! file_exists($file_path))
