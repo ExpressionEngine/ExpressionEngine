@@ -38,6 +38,8 @@ class EE_Loader extends CI_Loader {
 	 * of CI's object references are stuck onto the loader when loading views
 	 * I get access errors left and right. -pk
 	 *
+	 * FIXME  What's deprecated?  The method clearly isn't, it's a core method!
+	 *
 	 * @deprecated
 	 * @access	public
 	 */

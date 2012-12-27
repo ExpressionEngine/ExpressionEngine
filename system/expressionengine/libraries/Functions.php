@@ -285,6 +285,9 @@ class EE_Functions {
 	 */
 	function remove_double_slashes($str)
 	{
+		$this->EE->load->library('logger');
+		$this->EE->logger->deprecated('2.6');
+
 		$this->EE->load->helper('string_helper');
 		return reduce_double_slashes($str);
 	}

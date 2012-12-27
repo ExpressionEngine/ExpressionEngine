@@ -435,7 +435,7 @@ class EE_Form_validation extends CI_Form_validation {
 	public function valid_ee_date($date)
 	{
 		$this->CI->load->library('logger');
-		$this->CI->logger->developer('Deprecated SafeCracker validation rule "valid_ee_date" was called. Please use "valid_date" instead.', TRUE);
+		$this->CI->logger->deprecated('2.5', 'valid_date');
 		return $this->valid_date($date);
 	}
 

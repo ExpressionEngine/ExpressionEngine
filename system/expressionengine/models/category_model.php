@@ -36,6 +36,9 @@ class Category_model extends CI_Model {
 	 */
 	public function get_categories($group_id = '', $site_id = TRUE)
 	{
+		$EE = get_instance();
+		$EE->load->library('logger');
+		$EE->logger->deprecated('2.2.0', 'Category_model::get_category_groups()');
 		return $this->get_category_groups($group_id, $site_id);
 	}
 

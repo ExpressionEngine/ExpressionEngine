@@ -34,7 +34,7 @@ class EE_Fieldtype {
 	 */
 	public function __construct()
 	{
-		$this->EE_Fieldtype();
+		$this->EE =& get_instance();
 	}
 
 	// --------------------------------------------------------------------
@@ -45,11 +45,15 @@ class EE_Fieldtype {
 	 * @access	public
 	 * @deprecated This is only here to maintain backwards compatibility
 	 * for people using parent::EE_Fieldtype() and will be removed in a 
-	 * later version.
+	 * later version.  Deprecated as of version 2.6
 	 */
 	function EE_Fieldtype()
 	{
 		$this->EE =& get_instance();
+	
+		// Log the deprecation.
+		$this->EE->load->library('logger');
+		$this->EE->logger->deprecated('2.6', 'EE_Fieldtype::__construct()');	
 	}
 	
 	// --------------------------------------------------------------------
