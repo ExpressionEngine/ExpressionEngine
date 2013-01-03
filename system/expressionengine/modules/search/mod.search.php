@@ -331,7 +331,7 @@ class Search {
 			'channel'				=> $this->EE->TMPL->fetch_param('channel', ''),
 			'category'				=> $this->EE->TMPL->fetch_param('category', ''),
 			'search_in'				=> $this->EE->TMPL->fetch_param('search_in', ''),
-			'where'					=> $this->EE->TMPL->fetch_param('where', 'all'),
+			'where'					=> $this->EE->TMPL->fetch_param('where', ''),
 			'show_expired'			=> $this->EE->TMPL->fetch_param('show_expired', ''),
 			'show_future_entries'	=> $this->EE->TMPL->fetch_param('show_future_entries'),
 			'result_page'			=> $this->EE->TMPL->fetch_param('result_page', 'search/results'),
@@ -357,7 +357,6 @@ class Search {
 		{
 			$meta = $meta.md5($this->EE->db->username.$this->EE->db->password.$meta);
 		}
-		
 		
 		return base64_encode($meta);
 	}
@@ -417,6 +416,12 @@ class Search {
 				$this->_meta[$current_input] = $this->EE->input->post($current_input);
 			}
 		}
+
+		// Default 'where' to 'all' if it hasn't been specified
+		if ( ! isset($this->_meta['where']) OR $this->_meta['where'] === '')
+		{
+				$this->_meta['where'] = 'all';
+		}		
 	}
 	
 	// ------------------------------------------------------------------------
