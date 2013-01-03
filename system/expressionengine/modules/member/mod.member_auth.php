@@ -615,10 +615,14 @@ class Member_auth extends Member {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Retreive Forgotten Password
+	 * Handler page for the forgotten password form.  Processes the e-mail
+	 * given us in the form, generates a token and then sends that token
+	 * to the given e-mail with a backlink to a location where the user
+	 * can set their password.  
 	 */
 	public function retrieve_password()
 	{
+		
 		// Is user banned?
 		if ($this->EE->session->userdata('is_banned') === TRUE)
 		{
@@ -632,7 +636,6 @@ class Member_auth extends Member {
 		}
 
 		$this->EE->load->helper('email');
-
 		if ( ! valid_email($address))
 		{
 			return $this->EE->output->show_user_error('submission', array(lang('invalid_email_address')));
@@ -640,36 +643,32 @@ class Member_auth extends Member {
 
 		$address = strip_tags($address);
 
-		// Fetch user data
-		$query = $this->EE->db->select('member_id, username')
+		$memberQuery= $this->EE->db->select('member_id, username')
 							  ->where('email', $address)
 							  ->get('members');
 
-		if ($query->num_rows() == 0)
+		if ($memberQuery->num_rows() == 0)
 		{
 			return $this->EE->output->show_user_error('submission', array(lang('no_email_found')));
 		}
 
-		$member_id = $query->row('member_id') ;
-		$username  = $query->row('username') ;
+		$member_id = $memberQuery->row('member_id') ;
+		$username  = $memberQuery->row('username') ;
 
 		// Kill old data from the reset_password field
-
+		// Any row with a date before a day ago will be wiped out.
+		// (60 sec * 60 min * 24 hours = 1 day)
 		$time = time() - (60*60*24);
-
 		$this->EE->db->where('date <', $time)
 					 ->or_where('member_id', $member_id)
 					 ->delete('reset_password');
 
 		// Create a new DB record with the temporary reset code
 		$rand = $this->EE->functions->random('alnum', 8);
-
 		$data = array('member_id' => $member_id, 'resetcode' => $rand, 'date' => time());
-
 		$this->EE->db->query($this->EE->db->insert_string('exp_reset_password', $data));
 
 		// Buid the email message
-
 		if ($this->EE->input->get_post('FROM') == 'forum')
 		{
 			if ($this->EE->input->get_post('board_id') !== FALSE && 
@@ -705,12 +704,15 @@ class Member_auth extends Member {
 						'site_url'	=> $return
 					 );
 
+		// TODO Rewrite e-mail template
 		$template = $this->EE->functions->fetch_email_template('forgot_password_instructions');
+		
+		// _var_swap calls string replace on $template[] for each key in
+		// $swap.  If the key doesn't exist then no swapping happens.  
 		$email_tit = $this->_var_swap($template['title'], $swap);
 		$email_msg = $this->_var_swap($template['data'], $swap);
 
 		// Instantiate the email class
-
 		$this->EE->load->library('email');
 		$this->EE->email->wordwrap = true;
 		$this->EE->email->from($this->EE->config->item('webmaster_email'), $this->EE->config->item('webmaster_name'));
@@ -736,148 +738,61 @@ class Member_auth extends Member {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Reset the user's password
+	 * If a user arrives at this page with a valid token in their $_GET array,
+	 * use that token to look up the associated member and then present them
+	 * with a form allowing them to change their password. After resetting the
+	 * password, send them back to their original location (either member/login)
+	 * or the forum's login page. 
 	 */
 	public function reset_password()
 	{
-		// Is user banned?
+		// If the user is banned, send them away.
 		if ($this->EE->session->userdata('is_banned') === TRUE)
 		{
 			return $this->EE->output->show_user_error('general', array(lang('not_authorized')));
 		}
 
-		if ( ! $id = $this->EE->input->get_post('id'))
+		// They didn't include their token.  Give em an error.
+		if ( ! ($token = $this->EE->input->get_post('id')))
 		{
 			return $this->EE->output->show_user_error('submission', array(lang('mbr_no_reset_id')));
 		}
 
-		$time = time() - (60*60*24);
 
-		// Get the member ID from the reset_password field
-
-		$query = $this->EE->db->select('member_id')
-							  ->where('resetcode', $id)
-							  ->where('date >', $time)
-							  ->get('reset_password');
-
-		if ($query->num_rows() == 0)
+		// If we have password in post, then they have submitted the form.	
+		// Process it. 
+		if( ($password = $this->EE->input->get_post('password')))
 		{
-			return $this->EE->output->show_user_error('submission', array(lang('mbr_id_not_found')));
+
 		}
 
-		$member_id = $query->row('member_id') ;
+		// Otherwise, present them with the form.
+		$data = array(
+			'id'				=> 'reset_password_form',
+			'hidden_fields'		=> array(
+				'ACT'	=> $this->EE->functions->fetch_action_id('Member', 'reset_password'),
+				'RET'	=> 0, //FIXME Okay, learning by copying by example.  What is this and is it relevant? 
+				'FROM'	=> ($this->in_forum == TRUE) ? 'forum' : ''
+			)
+		);
 
-		// Fetch the user data
-		$query = $this->EE->db->select("username, email")
-							  ->where('member_id', $member_id)
-							  ->get('members');
-
-		if ($query->num_rows() === 0)
+		if ($this->in_forum === TRUE)
 		{
-			return FALSE;
+			$data['hidden_fields']['board_id'] = $this->board_id;
 		}
 
-		$address = $query->row('email') ;
-		$username = $query->row('username') ;
+		// TODO Make lang key
+		// TODO Clean out the old language keys
+		$this->_set_page_title(lang('mbr_reset_password'));
 
-		// Generate a new password that is valid according to our
-		// security preferences
-		$len = $this->EE->config->item('pw_min_len');
-		
-		if ($len < 8)
-		{
-			$len = 8;
-		}
-		
-		$rand = $this->EE->functions->random('alnum', $len);
-		
-		// add one of each character we require
-		if ($this->EE->config->item('require_secure_passwords') == 'y')
-		{
-			$alpha = range('a', 'z');
-			$number = rand(0, 9);
-			
-			shuffle($alpha);
-			
-			$rand .= $number.$alpha[0].strtoupper($alpha[1]);
-		}
-
-		// Update member's password
-		
-		$this->EE->load->helper('security');
-		$this->EE->db->set('password', do_hash($rand))
-					 ->where('member_id', $member_id)
-					 ->update('members');
-
-		// Kill old data from the reset_password field
-		$this->EE->db->where('date <', $time)
-					 ->or_where('member_id', $member_id)
-					 ->delete('reset_password');
-					
-
-		// Buid the email message
-		if ($this->EE->input->get_post('r') == 'f')
-		{
-			if ($this->EE->input->get_post('board_id') !== FALSE && 
-				is_numeric($this->EE->input->get_post('board_id')))
-			{
-				$query = $this->EE->db->select('board_forum_url, board_label')
-									  ->where('board_id', (int) $this->EE->input->get_post('board_id'))
-									  ->get('forum_boards');
-			}
-			else
-			{
-				$query = $this->EE->db->select('board_forum_url, board_label')
-									  ->where('board_id', (int) 1)
-									  ->get('forum_boards');
-			}
-
-			$return		= $query->row('board_forum_url') ;
-			$site_name	= $query->row('board_label') ;
-		}
-		else
-		{
-			$site_name = stripslashes($this->EE->config->item('site_name'));
-			$return 	= $this->EE->config->item('site_url');
-		}
-
-		$swap = array(
-						'name'		=> $username,
-						'username'	=> $username,
-						'password'	=> $rand,
-						'site_name'	=> $site_name,
-						'site_url'	=> $return
-					 );
-
-		$template = $this->EE->functions->fetch_email_template('reset_password_notification');
-		$email_tit = $this->_var_swap($template['title'], $swap);
-		$email_msg = $this->_var_swap($template['data'], $swap);
-
-		// Instantiate the email class
-		$this->EE->load->library('email');
-		$this->EE->email->wordwrap = TRUE;
-		$this->EE->email->from($this->EE->config->item('webmaster_email'), $this->EE->config->item('webmaster_name'));
-		$this->EE->email->to($address);
-		$this->EE->email->subject($email_tit);
-		$this->EE->email->message($email_msg);
-
-		if ( ! $this->EE->email->send())
-		{
-			return $this->EE->output->show_user_error('submission', 
-									array(lang('error_sending_email')));
-		}
-
-		// Build success message
-		$site_name = ($this->EE->config->item('site_name') == '') ? lang('back') : stripslashes($this->EE->config->item('site_name'));
-
-		$data = array(	'title' 	=> lang('mbr_login'),
-						'heading'	=> lang('thank_you'),
-						'content'	=> lang('password_has_been_reset'),
-						'link'		=> array($return, $site_name)
-					 );
-
-		$this->EE->output->show_message($data);
+		$returned = $this->_var_swap($this->_load_element('reset_password_form'),
+										array(
+												'form_declaration'		=>	$this->EE->functions->form_declaration($data)
+											 )
+										);
+		return $returned;
 	}
+	
 }
 // END CLASS
 
