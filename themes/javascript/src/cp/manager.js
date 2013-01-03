@@ -77,6 +77,7 @@ function refresh_prefs_ajax(id) {
 		type: "GET",
 		url: EE.template_prefs_url,
 		data: "is_ajax=TRUE&group_id=" + id,
+		dataType: 'json',
 		success: function (data) {
 			EE.pref_json = data;
 		}

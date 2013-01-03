@@ -186,7 +186,8 @@ class EE_Logger {
 		$deprecation_log = $this->developer($deprecated, TRUE, 604800);
 		
 		// Show and store flashdata only if we're in the CP, and only to Super Admins
-		if (REQ == 'CP' AND $this->EE->session->userdata('group_id') == 1)
+		if (REQ == 'CP' && isset($this->EE->session) && $this->EE->session instanceof EE_Session 
+			&& $this->EE->session->userdata('group_id') == 1)
 		{
 			$this->EE->lang->loadfile('tools');
 			
