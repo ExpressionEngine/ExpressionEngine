@@ -114,6 +114,10 @@ class Addons_modules extends CI_Controller {
 		$names	 = array();
 		$data	 = array();
 		$updated = array();
+		
+		// Load typography class
+		$this->load->library('typography');
+		$this->typography->initialize();
 
 		foreach ($modules as $module => $module_info)
 		{
