@@ -47,13 +47,14 @@ class Member {
 						'public_profile', 'memberlist', 'do_member_search', 
 						'member_search', 'register', 'smileys', 'login', 
 						'unpw_update', 'email_console', 'send_email', 
-						'aim_console', 'icq_console', 'forgot_password', 
+						'aim_console', 'icq_console', 'forgot_password', 'reset_password',
 						'delete', 'member_mini_search', 'do_member_mini_search', 
 					);
 
 	var $no_login 			= array(
 						'public_profile', 'memberlist', 'do_member_search', 
 						'member_search', 'register', 'forgot_password', 'unpw_update', 
+						'reset_password'
 					);
 
 	var $id_override		= array(
@@ -96,7 +97,6 @@ class Member {
 								'profile'				=>	'your_control_panel',
 								'delete'				=>	'mbr_delete',
 								'forgot_password'		=>	'mbr_forgotten_password',
-								'reset_password'		=>	'reset_password',
 								'login'					=>	'mbr_login',
 								'unpw_update'			=>  'settings_update',
 								'register'				=> 	'mbr_member_registration',
@@ -350,6 +350,7 @@ class Member {
 			'icq_console',
 			'send_email',
 			'forgot_password',
+			'reset_password',
 			'smileys',
 			'messages',
 			'delete'
@@ -361,8 +362,6 @@ class Member {
 			$this->_show_404_template();
 		}
 		
-		echo $this->request;
-
 		// Call the requested function
 		if ($this->request == 'profile') $this->request = 'profile_main';
 		if ($this->request == 'register') $this->request = 'registration_form';

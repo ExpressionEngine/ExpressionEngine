@@ -699,7 +699,7 @@ class Member_auth extends Member {
 
 		$swap = array(
 						'name'		=> $username,
-						'reset_url'	=> $this->EE->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$this->EE->functions->fetch_action_id('Member', 'reset_password').'&id='.$rand.$forum_id,
+						'reset_url'	=> $this->EE->functions->fetch_site_index(0, 0) . '/' . $this->EE->config->item('profile_trigger') . '/reset_password' .QUERY_MARKER.'&id='.$rand.$forum_id,
 						'site_name'	=> $site_name,
 						'site_url'	=> $return
 					 );
