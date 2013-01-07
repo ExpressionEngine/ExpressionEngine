@@ -785,11 +785,10 @@ class Member_auth extends Member {
 		// TODO Clean out the old language keys
 		$this->_set_page_title(lang('mbr_reset_password'));
 
-		$returned = $this->_var_swap($this->_load_element('reset_password_form'),
-										array(
-												'form_declaration'		=>	$this->EE->functions->form_declaration($data)
-											 )
-										);
+		$returned = $this->_var_swap(
+						$this->_load_element('reset_password_form'),
+						array('form_declaration' => $this->EE->functions->form_declaration($data))
+					);
 		return $returned;
 	}
 
@@ -815,8 +814,11 @@ class Member_auth extends Member {
 		{
 			return $this->EE->output->show_user_error('submission', array(lang('mbr_no_reset_id')));
 		}
-		
+	
+		// We'll use this in a couple of places to determine whether a token is still valid
+		// or not.  Tokens expire after exactly 1 day.	
 		$a_day_ago = time() - (60*60*24);		
+
 		// Make sure the token is valid and belongs to a member.	
 		$member_id_query = $this->EE->db->select('member_id')
 									->where('resetcode', $resetcode)
@@ -829,23 +831,19 @@ class Member_auth extends Member {
 		}
 
 		// Ensure the passwords match.
-		
 		if ( ! ($password = $this->EE->input->get_post('password'))) 
 		{
-			// TODO show "must enter password" error of some kind.
+			return $this->EE->output->show_user_error('submission', array(lang('mbr_missing_password')));
 		}
 
 		if ( ! ($password_confirm = $this->EE->input->get_post('password_confirm')))
 		{
-			// TODO show "must confirm password" error
+			return $this->EE->output->show_user_error('submission', array(lang('mbr_missing_confirm')));
 		}
 
-		if( $password_confirm !== $password) 
-		{
-			// TODO show "passwords must match" error
-		}
-
-		// Validate the password, using EE_Validate
+		// Validate the password, using EE_Validate. This will also
+		// handle checking whether the password and its confirmation
+		// match.
 		if ( ! class_exists('EE_Validate'))
 		{
 			require APPPATH.'libraries/Validate.php';
@@ -866,7 +864,14 @@ class Member_auth extends Member {
 		$this->EE->auth->update_password($member_id_query->row('member_id'),
 										 $password);
 
-		// Generate the location to which we will return them.
+		// Invalidate the old token.  While we're at it, may as well wipe out expired
+		// tokens too, just to keep them from building up.
+		$this->EE->db->where('date <', $a_day_ago)
+					->or_where('member_id', $member_id_query->row('member_id'))
+					->delete('reset_password');
+		
+
+		// Determine where we're sending them after showing the success message.
 		if ($this->EE->input->get_post('FORUM'))
 		{
 			$board_id = $this->EE->input->get_post('board_id');
@@ -876,8 +881,8 @@ class Member_auth extends Member {
 										->where('board_id', (int)$board_id)
 										->get('forum_boards');
 		
-			$return = $forum_query->row('board_forum_url');
 			$site_name = $forum_query->row('board_label');
+			$return = $forum_query->row('board_forum_url');
 		}
 		else
 		{
@@ -885,7 +890,7 @@ class Member_auth extends Member {
 			$return = $this->EE->config->item('site_url');
 		}
 		
-		// Build success message TODO
+		// Build success message TODO Need to write these language keys.
 		$data = array(	'title' 	=> lang('mbr_password_changed'),
 						'heading'	=> lang('mbr_password_changed'),
 						'content'	=> lang('mbr_successfully_changed_password'),
