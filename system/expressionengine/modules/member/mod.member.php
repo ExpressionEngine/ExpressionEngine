@@ -96,6 +96,7 @@ class Member {
 	var $crumb_map 			= array(
 								'profile'				=>	'your_control_panel',
 								'delete'				=>	'mbr_delete',
+								'reset_password'		=>  'mbr_reset_password',
 								'forgot_password'		=>	'mbr_forgotten_password',
 								'login'					=>	'mbr_login',
 								'unpw_update'			=>  'settings_update',

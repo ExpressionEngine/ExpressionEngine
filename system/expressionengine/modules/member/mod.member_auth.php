@@ -615,10 +615,12 @@ class Member_auth extends Member {
 	// --------------------------------------------------------------------
 
 	/**
+	 * E-mail Forgotten Password Token to User
+	 *
 	 * Handler page for the forgotten password form.  Processes the e-mail
 	 * given us in the form, generates a token and then sends that token
 	 * to the given e-mail with a backlink to a location where the user
-	 * can set their password.  
+	 * can set their password.  Expects to find the e-mail in `$_POST['email']`.
 	 */
 	public function retrieve_password()
 	{
@@ -656,10 +658,8 @@ class Member_auth extends Member {
 		$username  = $memberQuery->row('username') ;
 
 		// Kill old data from the reset_password field
-		// Any row with a date before a day ago will be wiped out.
-		// (60 sec * 60 min * 24 hours = 1 day)
-		$time = time() - (60*60*24);
-		$this->EE->db->where('date <', $time)
+		$a_day_ago = time() - (60*60*24);
+		$this->EE->db->where('date <', $a_day_ago)
 					 ->or_where('member_id', $member_id)
 					 ->delete('reset_password');
 
@@ -738,11 +738,15 @@ class Member_auth extends Member {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Reset Password Form Method
+	 *
 	 * If a user arrives at this page with a valid token in their $_GET array,
 	 * use that token to look up the associated member and then present them
 	 * with a form allowing them to change their password. After resetting the
 	 * password, send them back to their original location (either member/login)
 	 * or the forum's login page. 
+	 *
+	 * @return string The HTML of the form to allow the user to reset their password.
 	 */
 	public function reset_password()
 	{
@@ -753,26 +757,23 @@ class Member_auth extends Member {
 		}
 
 		// They didn't include their token.  Give em an error.
-		if ( ! ($token = $this->EE->input->get_post('id')))
+		if ( ! ($resetcode = $this->EE->input->get_post('id')))
 		{
 			return $this->EE->output->show_user_error('submission', array(lang('mbr_no_reset_id')));
 		}
+	
+		// TODO Do we want to check the token's validity before we allow them to submit the form,
+		// or is it enough to check after form submission and kill it then?
+		//
+		// Maybe after submission, make them work harder to find a valid token by brute force? Also,
+		// less work for us.
 
-
-		// If we have password in post, then they have submitted the form.	
-		// Process it. 
-		if( ($password = $this->EE->input->get_post('password')))
-		{
-
-		}
-
-		// Otherwise, present them with the form.
 		$data = array(
 			'id'				=> 'reset_password_form',
 			'hidden_fields'		=> array(
-				'ACT'	=> $this->EE->functions->fetch_action_id('Member', 'reset_password'),
-				'RET'	=> 0, //FIXME Okay, learning by copying by example.  What is this and is it relevant? 
-				'FROM'	=> ($this->in_forum == TRUE) ? 'forum' : ''
+				'ACT'	=> $this->EE->functions->fetch_action_id('Member', 'process_password_reset'),
+				'FROM'	=> ($this->in_forum == TRUE) ? 'forum' : '',
+				'resetcode' => $resetcode
 			)
 		);
 
@@ -781,7 +782,6 @@ class Member_auth extends Member {
 			$data['hidden_fields']['board_id'] = $this->board_id;
 		}
 
-		// TODO Make lang key
 		// TODO Clean out the old language keys
 		$this->_set_page_title(lang('mbr_reset_password'));
 
@@ -791,6 +791,108 @@ class Member_auth extends Member {
 											 )
 										);
 		return $returned;
+	}
+
+	/**
+	 * Reset Password Processing Action
+	 *
+	 * Processing action to process a reset password.  Sent here by the form presented 
+	 * to the user in `Member_auth::reset_password()`.  Process the form and return
+	 * the user to the appropriate login page.  Expects to find the contents of the 
+	 * form in `$_POST`.
+	 * 
+	 * @since 2.6
+	 */
+	public function process_password_reset()
+	{
+		// If the user is banned, send them away.
+		if ($this->EE->session->userdata('is_banned') === TRUE)
+		{
+			return $this->EE->output->show_user_error('general', array(lang('not_authorized')));
+		}
+
+		if ( ! ($resetcode = $this->EE->input->get_post('resetcode'))) 
+		{
+			return $this->EE->output->show_user_error('submission', array(lang('mbr_no_reset_id')));
+		}
+		
+		$a_day_ago = time() - (60*60*24);		
+		// Make sure the token is valid and belongs to a member.	
+		$member_id_query = $this->EE->db->select('member_id')
+									->where('resetcode', $resetcode)
+									->where('date >', $a_day_ago)
+									->get('reset_password');
+
+		if ($member_id_query->num_rows() === 0) 
+		{
+			return $this->EE->output->show_user_error('submission', array(lang('mbr_id_not_found')));
+		}
+
+		// Ensure the passwords match.
+		
+		if ( ! ($password = $this->EE->input->get_post('password'))) 
+		{
+			// TODO show "must enter password" error of some kind.
+		}
+
+		if ( ! ($password_confirm = $this->EE->input->get_post('password_confirm')))
+		{
+			// TODO show "must confirm password" error
+		}
+
+		if( $password_confirm !== $password) 
+		{
+			// TODO show "passwords must match" error
+		}
+
+		// Validate the password, using EE_Validate
+		if ( ! class_exists('EE_Validate'))
+		{
+			require APPPATH.'libraries/Validate.php';
+		}
+
+		$VAL = new EE_Validate(array(
+				'password'			=> $password,
+				'password_confirm'	=> $password_confirm,
+			 ));
+
+		$VAL->validate_password();
+		if (count($VAL->errors) > 0)
+		{
+			return $this->EE->output->show_user_error('submission', $VAL->errors);
+		}
+
+		// Update the database with the new password.  Apply the appropriate salt first.
+		$this->EE->auth->update_password($member_id_query->row('member_id'),
+										 $password);
+
+		// Generate the location to which we will return them.
+		if ($this->EE->input->get_post('FORUM'))
+		{
+			$board_id = $this->EE->input->get_post('board_id');
+			$board_id = ($board_id === FALSE OR ! is_numeric($board_id)) ? 1 : $board_id;
+			
+			$forum_query = $this->EE->db->select('board_forum_url, board_label')
+										->where('board_id', (int)$board_id)
+										->get('forum_boards');
+		
+			$return = $forum_query->row('board_forum_url');
+			$site_name = $forum_query->row('board_label');
+		}
+		else
+		{
+			$site_name = stripslashes($this->EE->config->item('site_name'));
+			$return = $this->EE->config->item('site_url');
+		}
+		
+		// Build success message TODO
+		$data = array(	'title' 	=> lang('mbr_password_changed'),
+						'heading'	=> lang('mbr_password_changed'),
+						'content'	=> lang('mbr_successfully_changed_password'),
+						'link'		=> array($return, $site_name)
+					 );
+
+		$this->EE->output->show_message($data);
 	}
 	
 }
