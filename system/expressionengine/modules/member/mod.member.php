@@ -1076,6 +1076,28 @@ class Member {
 	// --------------------------------------------------------------------
 
 	/**
+	 *
+	 */
+	public function process_reset_password()
+	{
+		if ( ! class_exists('Member_auth'))
+		{
+			require PATH_MOD.'member/mod.member_auth.php';
+		}
+
+		$MA = new Member_auth();
+
+		foreach(get_object_vars($this) as $key => $value)
+		{
+			$MA->{$key} = $value;
+		}
+
+		return $MA->process_reset_password();
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
 	 * Subscriptions Edit Form
 	 */
 	public function edit_subscriptions()

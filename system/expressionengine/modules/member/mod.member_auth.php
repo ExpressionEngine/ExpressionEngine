@@ -771,7 +771,7 @@ class Member_auth extends Member {
 		$data = array(
 			'id'				=> 'reset_password_form',
 			'hidden_fields'		=> array(
-				'ACT'	=> $this->EE->functions->fetch_action_id('Member', 'process_password_reset'),
+				'ACT'	=> $this->EE->functions->fetch_action_id('Member', 'process_reset_password'),
 				'FROM'	=> ($this->in_forum == TRUE) ? 'forum' : '',
 				'resetcode' => $resetcode
 			)
@@ -802,7 +802,7 @@ class Member_auth extends Member {
 	 * 
 	 * @since 2.6
 	 */
-	public function process_password_reset()
+	public function process_reset_password()
 	{
 		// If the user is banned, send them away.
 		if ($this->EE->session->userdata('is_banned') === TRUE)
