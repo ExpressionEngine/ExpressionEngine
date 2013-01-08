@@ -863,6 +863,7 @@ class Member_auth extends Member {
 			return $this->EE->output->show_user_error('submission', $VAL->errors);
 		}
 
+		$this->EE->load->library('auth');
 		// Update the database with the new password.  Apply the appropriate salt first.
 		$this->EE->auth->update_password(
 			$member_id_query->row('member_id'),
