@@ -366,9 +366,9 @@ class Member_auth extends Member {
 		if (isset($sites[$next_idx]))
 		{
 			$action_id = $this->EE->db->select('action_id')
-									  ->where('class', 'Member')
-									  ->where('method', 'member_login')
-									  ->get('actions');
+				->where('class', 'Member')
+				->where('method', 'member_login')
+				->get('actions');
 			
 			// next site
 			$next_qs = array(
@@ -450,26 +450,27 @@ class Member_auth extends Member {
 				is_numeric($this->EE->input->get_post('board_id')))
 			{
 				$query = $this->EE->db->select('board_label')
-									  ->where('board_id', $this->EE->input->get_post('board_id'))
-									  ->get('forum_boards');
+					->where('board_id', $this->EE->input->get_post('board_id'))
+					->get('forum_boards');
 			}
 			else
 			{
 				$query = $this->EE->db->select('board_label')
-									  ->where('board_id', (int) 1)
-									  ->get('forum_boards');
+					->where('board_id', (int) 1)
+					->get('forum_boards');
 			}
 
 			$site_name	= $query->row('board_label') ;
 		}
 
 		// Build success message
-		$data = array(	'title' 	=> lang('mbr_login'),
-						'heading'	=> lang('thank_you'),
-						'content'	=> lang('mbr_you_are_logged_in'),
-						'redirect'	=> $return,
-						'link'		=> array($return, $site_name)
-					 );
+		$data = array(
+			'title' 	=> lang('mbr_login'),
+			'heading'	=> lang('thank_you'),
+			'content'	=> lang('mbr_you_are_logged_in'),
+			'redirect'	=> $return,
+			'link'		=> array($return, $site_name)
+		);
 
 		$this->EE->output->show_message($data);
 	}
@@ -496,23 +497,23 @@ class Member_auth extends Member {
 		$escaped_ip = $this->EE->db->escape_str($this->EE->input->ip_address());
 
 		$this->EE->db->where('site_id', $this->EE->config->item('site_id'))
-					 ->where("(ip_address = '".$escaped_ip."' AND member_id = '0')", '', FALSE)
-					 ->or_where('date < ', $cutoff)
-					 ->delete('online_users');
+			->where("(ip_address = '".$escaped_ip."' AND member_id = '0')", '', FALSE)
+			->or_where('date < ', $cutoff)
+			->delete('online_users');
 
 		$data = array(
-						'member_id'		=> $this->EE->session->userdata('member_id'),
-						'name'			=> ($this->EE->session->userdata('screen_name') == '') ? $this->EE->session->userdata('username') : $this->EE->session->userdata('screen_name'),
-						'ip_address'	=> $this->EE->input->ip_address(),
-						'in_forum'		=> $in_forum,
-						'date'			=> $this->EE->localize->now,
-						'anon'			=> $anon,
-						'site_id'		=> $this->EE->config->item('site_id')
-					);
+			'member_id'		=> $this->EE->session->userdata('member_id'),
+			'name'			=> ($this->EE->session->userdata('screen_name') == '') ? $this->EE->session->userdata('username') : $this->EE->session->userdata('screen_name'),
+			'ip_address'	=> $this->EE->input->ip_address(),
+			'in_forum'		=> $in_forum,
+			'date'			=> $this->EE->localize->now,
+			'anon'			=> $anon,
+			'site_id'		=> $this->EE->config->item('site_id')
+		);
 
 		$this->EE->db->where('ip_address', $this->EE->input->ip_address())
-					 ->where('member_id', $data['member_id'])
-					 ->update('online_users', $data);		
+			->where('member_id', $data['member_id'])
+			->update('online_users', $data);		
 	}
 
 	// --------------------------------------------------------------------
@@ -552,14 +553,14 @@ class Member_auth extends Member {
 				is_numeric($this->EE->input->get_post('board_id')))
 			{
 				$query = $this->EE->db->select("board_forum_url, board_label")
-									  ->where('board_id', $this->EE->input->get_post('board_id'))
-									  ->get('forum_boards');
+					->where('board_id', $this->EE->input->get_post('board_id'))
+					->get('forum_boards');
 			}
 			else
 			{
 				$query = $this->EE->db->select('board_forum_url, board_label')
-									  ->where('board_id', (int) 1)
-									  ->get('forum_boards');
+					->where('board_id', (int) 1)
+					->get('forum_boards');
 			}
 
 			$url = $query->row('board_forum_url') ;
@@ -570,12 +571,13 @@ class Member_auth extends Member {
 		$url	= ( ! isset($url)) ? $this->EE->config->item('site_url')	: $url;
 		$name	= ( ! isset($url)) ? stripslashes($this->EE->config->item('site_name'))	: $name;
 
-		$data = array(	'title' 	=> lang('mbr_login'),
-						'heading'	=> lang('thank_you'),
-						'content'	=> lang('mbr_you_are_logged_out'),
-						'redirect'	=> $url,
-						'link'		=> array($url, $name)
-					 );
+		$data = array(
+			'title' 	=> lang('mbr_login'),
+			'heading'	=> lang('thank_you'),
+			'content'	=> lang('mbr_you_are_logged_out'),
+			'redirect'	=> $url,
+			'link'		=> array($url, $name)
+		);
 
 		$this->EE->output->show_message($data);
 	}
@@ -605,11 +607,12 @@ class Member_auth extends Member {
 
 		$this->_set_page_title(lang('mbr_forgotten_password'));
 
-		return $this->_var_swap($this->_load_element('forgot_form'),
-										array(
-												'form_declaration'		=>	$this->EE->functions->form_declaration($data)
-											 )
-										);
+		return $this->_var_swap(
+			$this->_load_element('forgot_form'),
+			array(
+				'form_declaration' => $this->EE->functions->form_declaration($data)
+			)
+		);
 	}
 
 	// --------------------------------------------------------------------
@@ -645,9 +648,9 @@ class Member_auth extends Member {
 
 		$address = strip_tags($address);
 
-		$memberQuery= $this->EE->db->select('member_id, username')
-							  ->where('email', $address)
-							  ->get('members');
+		$memberQuery = $this->EE->db->select('member_id, username')
+			->where('email', $address)
+			->get('members');
 
 		if ($memberQuery->num_rows() == 0)
 		{
@@ -660,8 +663,8 @@ class Member_auth extends Member {
 		// Kill old data from the reset_password field
 		$a_day_ago = time() - (60*60*24);
 		$this->EE->db->where('date <', $a_day_ago)
-					 ->or_where('member_id', $member_id)
-					 ->delete('reset_password');
+			->or_where('member_id', $member_id)
+			->delete('reset_password');
 
 		// Create a new DB record with the temporary reset code
 		$rand = $this->EE->functions->random('alnum', 8);
@@ -675,14 +678,14 @@ class Member_auth extends Member {
 				is_numeric($this->EE->input->get_post('board_id')))
 			{
 				$query = $this->EE->db->select('board_forum_url, board_id, board_label')
-									  ->where('board_id', $this->EE->input->get_post('board_id'))
-									  ->get('forum_boards');
+					->where('board_id', $this->EE->input->get_post('board_id'))
+					->get('forum_boards');
 			}
 			else
 			{
 				$query = $this->EE->db->select('board_forum_url, board_id, board_label')
-									  ->where('board_id', (int) 1)
-									  ->get('forum_boards');
+					->where('board_id', (int) 1)
+					->get('forum_boards');
 			}
 
 			$return		= $query->row('board_forum_url') ;
@@ -698,11 +701,11 @@ class Member_auth extends Member {
 		$forum_id = ($this->EE->input->get_post('FROM') == 'forum') ? '&r=f&board_id='.$board_id : '';
 
 		$swap = array(
-						'name'		=> $username,
-						'reset_url'	=> $this->EE->functions->fetch_site_index(0, 0) . '/' . $this->EE->config->item('profile_trigger') . '/reset_password' .QUERY_MARKER.'&id='.$rand.$forum_id,
-						'site_name'	=> $site_name,
-						'site_url'	=> $return
-					 );
+			'name'		=> $username,
+			'reset_url'	=> $this->EE->functions->fetch_site_index(0, 0) . '/' . $this->EE->config->item('profile_trigger') . '/reset_password' .QUERY_MARKER.'&id='.$rand.$forum_id,
+			'site_name'	=> $site_name,
+			'site_url'	=> $return
+		);
 
 		// TODO Rewrite e-mail template
 		$template = $this->EE->functions->fetch_email_template('forgot_password_instructions');
@@ -726,11 +729,12 @@ class Member_auth extends Member {
 		}
 
 		// Build success message
-		$data = array(	'title' 	=> lang('mbr_passwd_email_sent'),
-						'heading'	=> lang('thank_you'),
-						'content'	=> lang('forgotten_email_sent'),
-						'link'		=> array($return, $site_name)
-					 );
+		$data = array(	
+			'title' 	=> lang('mbr_passwd_email_sent'),
+			'heading'	=> lang('thank_you'),
+			'content'	=> lang('forgotten_email_sent'),
+			'link'		=> array($return, $site_name)
+		);
 
 		$this->EE->output->show_message($data);
 	}
@@ -785,11 +789,10 @@ class Member_auth extends Member {
 		// TODO Clean out the old language keys
 		$this->_set_page_title(lang('mbr_reset_password'));
 
-		$returned = $this->_var_swap(
-						$this->_load_element('reset_password_form'),
-						array('form_declaration' => $this->EE->functions->form_declaration($data))
-					);
-		return $returned;
+		return $this->_var_swap(
+			$this->_load_element('reset_password_form'),
+			array('form_declaration' => $this->EE->functions->form_declaration($data))
+		);
 	}
 
 	/**
@@ -821,9 +824,9 @@ class Member_auth extends Member {
 
 		// Make sure the token is valid and belongs to a member.	
 		$member_id_query = $this->EE->db->select('member_id')
-									->where('resetcode', $resetcode)
-									->where('date >', $a_day_ago)
-									->get('reset_password');
+			->where('resetcode', $resetcode)
+			->where('date >', $a_day_ago)
+			->get('reset_password');
 
 		if ($member_id_query->num_rows() === 0) 
 		{
@@ -850,9 +853,9 @@ class Member_auth extends Member {
 		}
 
 		$VAL = new EE_Validate(array(
-				'password'			=> $password,
-				'password_confirm'	=> $password_confirm,
-			 ));
+			'password'			=> $password,
+			'password_confirm'	=> $password_confirm,
+		 ));
 
 		$VAL->validate_password();
 		if (count($VAL->errors) > 0)
@@ -861,14 +864,16 @@ class Member_auth extends Member {
 		}
 
 		// Update the database with the new password.  Apply the appropriate salt first.
-		$this->EE->auth->update_password($member_id_query->row('member_id'),
-										 $password);
+		$this->EE->auth->update_password(
+			$member_id_query->row('member_id'),
+			$password
+		);
 
 		// Invalidate the old token.  While we're at it, may as well wipe out expired
 		// tokens too, just to keep them from building up.
 		$this->EE->db->where('date <', $a_day_ago)
-					->or_where('member_id', $member_id_query->row('member_id'))
-					->delete('reset_password');
+			->or_where('member_id', $member_id_query->row('member_id'))
+			->delete('reset_password');
 		
 
 		// Determine where we're sending them after showing the success message.
@@ -878,8 +883,8 @@ class Member_auth extends Member {
 			$board_id = ($board_id === FALSE OR ! is_numeric($board_id)) ? 1 : $board_id;
 			
 			$forum_query = $this->EE->db->select('board_forum_url, board_label')
-										->where('board_id', (int)$board_id)
-										->get('forum_boards');
+				->where('board_id', (int)$board_id)
+				->get('forum_boards');
 		
 			$site_name = $forum_query->row('board_label');
 			$return = $forum_query->row('board_forum_url');
@@ -891,11 +896,12 @@ class Member_auth extends Member {
 		}
 		
 		// Build success message TODO Need to write these language keys.
-		$data = array(	'title' 	=> lang('mbr_password_changed'),
-						'heading'	=> lang('mbr_password_changed'),
-						'content'	=> lang('mbr_successfully_changed_password'),
-						'link'		=> array($return, $site_name)
-					 );
+		$data = array(
+			'title' 	=> lang('mbr_password_changed'),
+			'heading'	=> lang('mbr_password_changed'),
+			'content'	=> lang('mbr_successfully_changed_password'),
+			'link'		=> array($return, $site_name)
+		);
 
 		$this->EE->output->show_message($data);
 	}
