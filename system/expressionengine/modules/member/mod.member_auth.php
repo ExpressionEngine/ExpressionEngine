@@ -671,7 +671,7 @@ class Member_auth extends Member {
 		$data = array('member_id' => $member_id, 'resetcode' => $rand, 'date' => time());
 		$this->EE->db->query($this->EE->db->insert_string('exp_reset_password', $data));
 
-		// Buid the email message
+		// Build the email message
 		if ($this->EE->input->get_post('FROM') == 'forum')
 		{
 			if ($this->EE->input->get_post('board_id') !== FALSE && 
@@ -765,12 +765,8 @@ class Member_auth extends Member {
 		{
 			return $this->EE->output->show_user_error('submission', array(lang('mbr_no_reset_id')));
 		}
-	
-		// TODO Do we want to check the token's validity before we allow them to submit the form,
-		// or is it enough to check after form submission and kill it then?
-		//
-		// Maybe after submission, make them work harder to find a valid token by brute force? Also,
-		// less work for us.
+
+		// TODO read out r and use it to set FROM	
 
 		$data = array(
 			'id'				=> 'reset_password_form',
@@ -794,6 +790,8 @@ class Member_auth extends Member {
 			array('form_declaration' => $this->EE->functions->form_declaration($data))
 		);
 	}
+
+	// ----------------------------------------------------------------------
 
 	/**
 	 * Reset Password Processing Action
@@ -901,7 +899,10 @@ class Member_auth extends Member {
 			'title' 	=> lang('mbr_password_changed'),
 			'heading'	=> lang('mbr_password_changed'),
 			'content'	=> lang('mbr_successfully_changed_password'),
-			'link'		=> array($return, $site_name)
+			'link'		=> array($return, $site_name),
+			'redirect'	=> $return,
+			'rate' => '5'
+
 		);
 
 		$this->EE->output->show_message($data);
