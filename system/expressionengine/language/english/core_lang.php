@@ -178,7 +178,7 @@ Confirm the fieldtype file is located in the expressionengine/third_party/ direc
 //----------------------------
 
 'forgotten_email_sent' => 
-'Instructions for resetting your password have just been emailed to you.',
+'If this email address is associated with an account, instructions for resetting your password have just been emailed to you.',
 
 'error_sending_email' => 
 'Unable to send email at this time.',
