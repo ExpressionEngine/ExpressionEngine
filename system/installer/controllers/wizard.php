@@ -24,7 +24,7 @@
  */
 class Wizard extends CI_Controller {
 
-	var $version			= '2.5.4';	// The version being installed
+	var $version			= '2.5.6';	// The version being installed
 	var $installed_version	= ''; 		// The version the user is currently running (assuming they are running EE)
 	var $minimum_php		= '5.1.6';	// Minimum version required to run EE
 	var $schema				= NULL;		// This will contain the schema object with our queries	
@@ -336,7 +336,7 @@ class Wizard extends CI_Controller {
 		// Prior to 2.0 the config array was named $conf.  This has changed to $config for 2.0
 		if (isset($conf))
 		{
-			$config = array_merge($config, $conf);
+			$config = $conf;
 		}
 		
 		// No config AND db arrays?  This means it's a first time install...hopefully. 

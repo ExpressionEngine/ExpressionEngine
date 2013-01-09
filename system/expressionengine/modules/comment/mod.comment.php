@@ -130,6 +130,11 @@ class Comment {
 	 */
 	private function _comment_edit_time_limit()
 	{
+		if ($this->EE->config->item('comment_edit_time_limit') == 0)
+		{
+			return 0;
+		}
+
 		$time_limit_sec = 60 * $this->EE->config->item('comment_edit_time_limit');
 		return $this->EE->localize->now - $time_limit_sec;
 	}
@@ -3201,8 +3206,7 @@ class Comment {
 			// User is logged in and can still edit this comment.
 			elseif ($this->EE->session->userdata['member_id'] != '0'  
 				&& $query->row('author_id') == $this->EE->session->userdata['member_id']
-				&& ($this->EE->config->item('comment_edit_time_limit') <= 0 
-					|| $query->row('comment_date') > $this->_comment_edit_time_limit()))
+				&& $query->row('comment_date') > $this->_comment_edit_time_limit())
 			{
 				$can_edit = true;
 			}

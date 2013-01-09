@@ -1036,6 +1036,11 @@ class Safecracker_lib
 								suffix = " AM";
 							}
 						}
+
+						if (hours < 10)
+						{
+							hours = "0" + hours;
+						}
 					
 						return " \'" + hours + ":" + minutes + suffix + "\'";
 					}

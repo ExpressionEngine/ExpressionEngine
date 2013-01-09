@@ -57,8 +57,7 @@ class Addons_modules extends CI_Controller {
 		// Set access status
 		$can_admin = ( ! $this->cp->allowed_group('can_admin_modules')) ? FALSE : TRUE;
 
-		$this->load->library('table');
-		$this->load->library('addons');
+		$this->load->library(array('addons', 'table', 'typography'));
 		$this->load->helper('directory');
 
 		$this->cp->set_right_nav(array('update_modules' => BASE.AMP.'C=addons_modules'.AMP.'check_updates=y'));
@@ -114,7 +113,7 @@ class Addons_modules extends CI_Controller {
 		$names	 = array();
 		$data	 = array();
 		$updated = array();
-
+		
 		foreach ($modules as $module => $module_info)
 		{
 			if (IS_CORE && in_array($module, $this->core->standard_modules))
