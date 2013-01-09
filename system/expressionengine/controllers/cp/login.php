@@ -29,7 +29,7 @@ class Login extends CP_Controller {
 	/**
 	 * Constructor
 	 */
-	function __construct()
+	public function __construct()
 	{
 		parent::__construct();
 
@@ -45,7 +45,7 @@ class Login extends CP_Controller {
 	 * @access	public
 	 * @return	void
 	 */	
-	function index()
+	public function index()
 	{
 		// If an ajax request ends up here the user is probably logged out
 		if (AJAX_REQUEST)
@@ -243,7 +243,7 @@ class Login extends CP_Controller {
 	 * @access	public
 	 * @return	mixed
 	 */
-	function update_un_pw()
+	public function update_un_pw()
 	{
 		$this->lang->loadfile('member');
 		
@@ -343,7 +343,7 @@ class Login extends CP_Controller {
 	 * @access	public
 	 * @return	null
 	 */
-	function logout()
+	public function logout()
 	{
 		if ($this->session->userdata('group_id') == 3) 
 		{
@@ -388,7 +388,7 @@ class Login extends CP_Controller {
 	 * @param	string
 	 * @return	mixed
 	 */
-	function forgotten_password_form()
+	public function forgotten_password_form()
 	{
 		$message = $this->session->flashdata('message');
 		
@@ -412,7 +412,7 @@ class Login extends CP_Controller {
 	 * @access	public
 	 * @return	mixed
 	 */
-	function request_new_password()
+	public function request_new_password()
 	{
 		if ( ! $address = $this->input->post('email'))
 		{
@@ -504,7 +504,7 @@ class Login extends CP_Controller {
 	 * @param	string
 	 * @return	mixed
 	 */
-	function reset_password()
+	public function reset_password()
 	{
 		if ( ! $id = $this->input->get('id'))
 		{
@@ -647,7 +647,7 @@ class Login extends CP_Controller {
 	 *	the control panel home page.
 	 *			
 	 */
-	function refresh_xid()
+	public function refresh_xid()
 	{
 		// the only way we will be hitting this is through an ajax request.
 		// Any other way is monkeying with URLs.  I have no patience for URL monkiers.

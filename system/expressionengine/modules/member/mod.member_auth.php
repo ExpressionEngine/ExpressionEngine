@@ -32,7 +32,7 @@ class Member_auth extends Member {
 	 * @param 	string 	number of pages to return back to in the 
 	 *					exp_tracker cookie
 	 */
-	function profile_login_form($return = '-2')
+	public function profile_login_form($return = '-2')
 	{
 		$login_form = $this->_load_element('login_form');
 
@@ -594,7 +594,7 @@ class Member_auth extends Member {
 		$data = array(
 			'id'				=> 'forgot_password_form',
 			'hidden_fields'		=> array(
-				'ACT'	=> $this->EE->functions->fetch_action_id('Member', 'retrieve_password'),
+				'ACT'	=> $this->EE->functions->fetch_action_id('Member', 'send_reset_token'),
 				'RET'	=> $ret,
 				'FROM'	=> ($this->in_forum == TRUE) ? 'forum' : ''
 			)
@@ -618,14 +618,16 @@ class Member_auth extends Member {
 	// --------------------------------------------------------------------
 
 	/**
-	 * E-mail Forgotten Password Token to User
+	 * E-mail Forgotten Password Reset Token to User
 	 *
 	 * Handler page for the forgotten password form.  Processes the e-mail
 	 * given us in the form, generates a token and then sends that token
 	 * to the given e-mail with a backlink to a location where the user
 	 * can set their password.  Expects to find the e-mail in `$_POST['email']`.
+	 *
+	 * @return void
 	 */
-	public function retrieve_password()
+	public function send_reset_token()
 	{
 		
 		// Is user banned?
@@ -861,8 +863,8 @@ class Member_auth extends Member {
 			return $this->EE->output->show_user_error('submission', $VAL->errors);
 		}
 
-		$this->EE->load->library('auth');
 		// Update the database with the new password.  Apply the appropriate salt first.
+		$this->EE->load->library('auth');
 		$this->EE->auth->update_password(
 			$member_id_query->row('member_id'),
 			$password
@@ -893,15 +895,15 @@ class Member_auth extends Member {
 			$site_name = stripslashes($this->EE->config->item('site_name'));
 			$return = $this->EE->config->item('site_url');
 		}
-		
-		// Build success message TODO Need to write these language keys.
+	
+		// Build the success message that we'll show to the user.	
 		$data = array(
 			'title' 	=> lang('mbr_password_changed'),
 			'heading'	=> lang('mbr_password_changed'),
 			'content'	=> lang('mbr_successfully_changed_password'),
-			'link'		=> array($return, $site_name),
-			'redirect'	=> $return,
-			'rate' => '5'
+			'link'		=> array($return, $site_name), // The link to show them. In the form of (URL, Name)
+			'redirect'	=> $return, // Redirect them to this URL...
+			'rate' => '5' // ...after 5 seconds.
 
 		);
 
