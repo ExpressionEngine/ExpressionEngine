@@ -1105,7 +1105,7 @@ class Api_channel_entries extends Api {
 			
 			if ($row['field_type'] == 'file')
 			{
-				if ($this->autosave && isset($data['field_id_'.$row['field_id'].'_hidden']))
+				if ($this->autosave && ! empty($data['field_id_'.$row['field_id'].'_hidden']))
 				{
 					$directory = $data['field_id_'.$row['field_id'].'_directory'];
 					$data['field_id_'.$row['field_id']] =  '{filedir_'.$directory.'}'.$data['field_id_'.$row['field_id'].'_hidden'];
