@@ -461,7 +461,7 @@ class EE_Validate {
 			return FALSE;
 		}
 				
-		$path = $this->EE->functions->remove_double_slashes(PATH_DICT.$this->EE->config->item('name_of_dictionary_file'));
+		$path = reduce_double_slashes(PATH_DICT.$this->EE->config->item('name_of_dictionary_file'));
 		
 		if ( ! file_exists($path))
 		{

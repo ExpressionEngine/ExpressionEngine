@@ -441,7 +441,7 @@ class Forum {
 			{					
 				$this->current_page = $match['1'];	
 					
-				$this->current_id = $this->EE->functions->remove_double_slashes(str_replace($match['0'], '', $this->current_id));
+				$this->current_id = reduce_double_slashes(str_replace($match['0'], '', $this->current_id));
 			}
 		}
 	
@@ -931,11 +931,11 @@ class Forum {
 		{
 			if ($this->return_override != '')
 			{
-				$hidden['RET'] = $this->EE->functions->remove_double_slashes($this->forum_path($this->current_request.'/'.$this->return_override));				
+				$hidden['RET'] = reduce_double_slashes($this->forum_path($this->current_request.'/'.$this->return_override));				
 			}
 			else
 			{
-				$hidden['RET'] = $this->EE->functions->remove_double_slashes($this->forum_path($this->current_request.'/'.$this->current_id));
+				$hidden['RET'] = reduce_double_slashes($this->forum_path($this->current_request.'/'.$this->current_id));
 			}
 		}
 				
@@ -962,7 +962,7 @@ class Forum {
 		}
 		elseif($method == 'do_split')
 		{
-			$action = $this->EE->functions->remove_double_slashes($this->forum_path($this->current_request.'/'.$hidden['topic_id']));
+			$action = reduce_double_slashes($this->forum_path($this->current_request.'/'.$hidden['topic_id']));
 			//print_r(get_object_vars($this));
 		}
 	
@@ -1038,7 +1038,7 @@ class Forum {
 			$this->_forum_set_basepath();
 		}
 
-		return $this->EE->functions->remove_double_slashes($this->basepath.$uri.'/');
+		return reduce_double_slashes($this->basepath.$uri.'/');
 	}
 
 	// --------------------------------------------------------------------		

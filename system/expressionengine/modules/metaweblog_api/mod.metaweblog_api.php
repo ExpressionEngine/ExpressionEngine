@@ -811,7 +811,7 @@ class Metaweblog_api {
 		foreach($query->result_array() as $row)
 		{
 			$convert_breaks = 'none';
-			$link = $this->EE->functions->remove_double_slashes($this->comment_url.'/'.$query->row('url_title') .'/');
+			$link = reduce_double_slashes($this->comment_url.'/'.$query->row('url_title') .'/');
 			
 			// Fields:  Textarea and Text Input Only
 
@@ -1328,7 +1328,7 @@ class Metaweblog_api {
 			{
 				$cat = array();
 
-				$link = $this->EE->functions->remove_double_slashes($this->channel_url.'/C'.$row['cat_id'].'/');
+				$link = reduce_double_slashes($this->channel_url.'/C'.$row['cat_id'].'/');
 
 				$cat['categoryId']		= array($row['cat_id'],'string');
 		 		$cat['description']		= array(($row['cat_description'] == '') ? $row['cat_name'] : $row['cat_description'],'string');

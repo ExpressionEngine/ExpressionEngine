@@ -93,9 +93,9 @@
 		{
 			$p_page = (isset($match[2])) ? $match[2] : $match[1];
 
-			$basepath = $EE->functions->remove_double_slashes(str_replace($match[0], '', $basepath));
+			$basepath = reduce_double_slashes(str_replace($match[0], '', $basepath));
 
-			$uristr  = $EE->functions->remove_double_slashes(str_replace($match[0], '', $uristr));
+			$uristr  = reduce_double_slashes(str_replace($match[0], '', $uristr));
 
 			$qstring = trim_slashes(str_replace($match[0], '', $qstring));
 
@@ -117,7 +117,7 @@
 		
 		if (preg_match("#^N(\d+)|/N(\d+)#", $qstring, $match))
 		{
-			$uristr  = $this->EE->functions->remove_double_slashes(str_replace($match[0], '', $uristr));
+			$uristr  = reduce_double_slashes(str_replace($match[0], '', $uristr));
 
 			$qstring = trim_slashes(str_replace($match[0], '', $qstring));
 		}

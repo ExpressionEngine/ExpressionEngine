@@ -1956,7 +1956,7 @@ class RSSCache {
 	function file_name ($url)
 	{		
 		$filename = md5( $url );
-		return $this->EE->functions->remove_double_slashes(join( DIRECTORY_SEPARATOR, array( $this->BASE_CACHE, $filename)));
+		return reduce_double_slashes(join( DIRECTORY_SEPARATOR, array( $this->BASE_CACHE, $filename)));
 	}
 
 /*=======================================================================*\

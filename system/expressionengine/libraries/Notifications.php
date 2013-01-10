@@ -62,8 +62,8 @@ class Notifications {
 						'email'				=> $this->EE->session->userdata('email'),
 						'channel_name'		=> $c->row('channel_title'),
 						'entry_title'		=> $e->row('title'),
-						'entry_url'			=> $this->EE->functions->remove_double_slashes($c->row('channel_url').'/'.$e->row('url_title')),
-						'comment_url'		=> $this->EE->functions->remove_double_slashes($c->row('comment_url').'/'.$e->row('url_title'))
+						'entry_url'			=> reduce_double_slashes($c->row('channel_url').'/'.$e->row('url_title')),
+						'comment_url'		=> reduce_double_slashes($c->row('comment_url').'/'.$e->row('url_title'))
 		);
 		
 		$template = $this->EE->functions->fetch_email_template('admin_notify_entry');

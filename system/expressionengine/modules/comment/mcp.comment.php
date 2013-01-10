@@ -1551,7 +1551,7 @@ class Comment_mcp {
 					'entry_title'					=> $results->row('title'),
 					'site_name'						=> stripslashes($this->EE->config->item('site_name')),
 					'site_url'						=> $this->EE->config->item('site_url'),
-					'comment_url'					=> $this->EE->functions->remove_double_slashes($com_url.'/'.$results->row('url_title') .'/'),
+					'comment_url'					=> reduce_double_slashes($com_url.'/'.$results->row('url_title') .'/'),
 					'channel_id'					=> $results->row('channel_id'),
 					'entry_id'						=> $results->row('entry_id'),
 					'url_title'						=> $results->row('url_title'),
