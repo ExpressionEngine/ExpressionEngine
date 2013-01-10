@@ -2906,7 +2906,6 @@ class Forum_mcp {
 		asort($vars['templates']['folders']);
 		asort($vars['templates']['files']);
 
-		$this->EE->load->helper('string');
 		return $this->_content_wrapper('forum_templates', 'forum_templates', $vars);
 	}
 	
@@ -3345,9 +3344,6 @@ class Forum_mcp {
 	 */
 	function update_triggers()
 	{
-		// Load the string helper
-		$this->EE->load->helper('string');
-		
 		$this->EE->db->select('site_id');
 		$query = $this->EE->db->get('sites');
 		

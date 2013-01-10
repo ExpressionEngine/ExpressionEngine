@@ -1797,7 +1797,6 @@ class Admin_content extends CP_Controller {
 
 		$this->load->model('category_model');
 		$this->lang->loadfile('admin_content');
-		$this->load->helper('string');
 		$this->load->library('form_validation');
 
 		$group_id = $this->input->get_post('group_id');
@@ -3126,9 +3125,6 @@ class Admin_content extends CP_Controller {
 
 		if ($_POST['field_list_items'] != '')
 		{
-			// Load the string helper
-			$this->load->helper('string');
-
 			$_POST['field_list_items'] = quotes_to_entities($_POST['field_list_items']);
 		}
 

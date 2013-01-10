@@ -92,7 +92,7 @@ class Content_files extends CP_Controller {
 	public function index()
 	{
 		$this->load->library('table');
-		$this->load->helper(array('string', 'search'));
+		$this->load->helper('search');
 		$this->api->instantiate('channel_categories');
 		
 		$this->table->set_base_url('C=content_files');

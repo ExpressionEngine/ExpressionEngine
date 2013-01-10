@@ -798,7 +798,6 @@ class Members extends CP_Controller {
 				$notify_address = str_replace($member->email, "", $notify_address);
 			}
 
-			$this->load->helper('string');
 			// Remove multiple commas
 			$notify_address = reduce_multiples($notify_address, ',', TRUE);
 
@@ -2133,7 +2132,7 @@ class Members extends CP_Controller {
 		}
 		
 		$this->load->library(array('form_validation', 'table'));
-		$this->load->helper(array('string', 'snippets'));
+		$this->load->helper('snippets');
 		$this->load->language('calendar');
 		
 		$vars['custom_profile_fields'] = array();
@@ -2499,7 +2498,6 @@ class Members extends CP_Controller {
 			$_POST[$key] = stripslashes($val);
 		}
 	
-		$this->load->helper('string');
 		$this->load->model('site_model');
 
 		$banned_ips				= str_replace(NL, '|', $_POST['banned_ips']);
@@ -2881,9 +2879,6 @@ class Members extends CP_Controller {
 
 		if ($this->input->post('m_field_list_items') != '')
 		{
-			// Load the string helper
-			$this->load->helper('string');
-
 			$_POST['m_field_list_items'] = quotes_to_entities($_POST['m_field_list_items']);
 		}
 

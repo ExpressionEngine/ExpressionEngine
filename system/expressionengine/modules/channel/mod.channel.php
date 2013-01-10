@@ -1324,9 +1324,6 @@ class Channel {
 			}
 			else
 			{
-				// Load the string helper
-				$this->EE->load->helper('string');
-
 				/** --------------------------------------
 				/**  Parse day
 				/** --------------------------------------*/
@@ -4751,7 +4748,6 @@ class Channel {
 					// prevent accidental parsing of other channel variables in custom field data
 					if (strpos($entry, '{') !== FALSE)
 					{
-						$this->EE->load->helper('string');
 	                    $tagdata = $this->EE->TMPL->swap_var_single($replace, str_replace(array('{', '}'), array(unique_marker('channel_bracket_open'), unique_marker('channel_bracket_close')), $entry), $tagdata);
 					}
 					else

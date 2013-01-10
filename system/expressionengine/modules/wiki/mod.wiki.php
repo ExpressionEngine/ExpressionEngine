@@ -5599,7 +5599,6 @@ class Wiki {
 		/** ------------------------------------*/
 		
 		$protected = array();
-		$this->EE->load->helper('string');
 		
 		$front_protect = unique_marker('wiki_front_protect');
 		$back_protect  = unique_marker('wiki_back_protect');

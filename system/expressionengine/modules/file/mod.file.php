@@ -554,9 +554,6 @@ class File {
 
 				if ($this->EE->TMPL->fetch_param('paginate_base'))
 				{
-					// Load the string helper
-					$this->EE->load->helper('string');
-
 					$this->basepath = $this->EE->functions->create_url(trim_slashes($this->EE->TMPL->fetch_param('paginate_base')));
 				}
 				

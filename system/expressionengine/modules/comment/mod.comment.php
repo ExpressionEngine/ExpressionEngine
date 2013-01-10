@@ -2105,9 +2105,6 @@ class Comment {
 		// Clean return value- segments only
 		$clean_return = str_replace($this->EE->functions->fetch_site_index(), '', $_POST['RET']);
 
-		// Load the string helper
-		$this->EE->load->helper('string');
-
 		$_POST['PRV'] = trim_slashes($this->EE->security->xss_clean($_POST['PRV']));
 
 		$this->EE->functions->clear_caching('all', $_POST['PRV']);
@@ -2788,7 +2785,6 @@ class Comment {
 				}
 			}
 
-			$this->EE->load->helper('string');
 			// Remove multiple commas
 			$notify_address = reduce_multiples($notify_address, ',', TRUE);
 

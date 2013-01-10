@@ -400,9 +400,6 @@ class Forum {
 		{
 			$this->EE->uri->segments['1'] = $this->forum_trigger;
 		}
-
-		// Load the string helper
-		$this->EE->load->helper('string');
 		
 		if ($this->use_trigger())
 		{

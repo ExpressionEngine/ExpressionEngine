@@ -223,9 +223,6 @@ class EE_Extensions {
 				}
 				else
 				{
-					// Load the string helper
-					$this->EE->load->helper('string');
-
 					$settings = ($metadata['1'] == '') ? '' : strip_slashes(unserialize($metadata['1']));
 					$this->s_cache[$class_name] = $settings;
 				}
