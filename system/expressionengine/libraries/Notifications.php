@@ -79,7 +79,6 @@ class Notifications {
 			$notify_address = str_replace($this->EE->session->userdata('email'), "", $notify_address);
 		}
 
-		$this->EE->load->helper('string');
 		$notify_address = reduce_multiples($notify_address, ',', TRUE);
 
 		if ($notify_address != '')

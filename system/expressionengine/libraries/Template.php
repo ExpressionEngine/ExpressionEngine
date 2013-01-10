@@ -553,9 +553,6 @@ class EE_Template {
 				$temp = str_replace($matches[0][$key], '', $temp);
 			}
 		}
-		
-		// Load the string helper
-		$this->EE->load->helper('string');
 
 		foreach($matches[2] as $key => $val)
 		{
@@ -1774,9 +1771,6 @@ class EE_Template {
         {
         	$this->strict_urls = ($this->EE->config->item('strict_urls') == 'y') ? TRUE : FALSE;
         }
-
-		// Load the string helper
-		$this->EE->load->helper('string');
 		
 		// At this point we know that we have at least one segment in the URI, so
 		// let's try to determine what template group/template we should show
@@ -3142,8 +3136,7 @@ class EE_Template {
 		// Final Prep, Safety On		
 		$str = $this->EE->functions->prep_conditionals($str, array_merge($this->segment_vars, $this->embed_vars, $this->EE->config->_global_vars, $data), 'y');
 				
-		// Protect Already Existing Unparsed PHP		
-		$this->EE->load->helper('string');
+		// Protect Already Existing Unparsed PHP
 		
 		$opener = unique_marker('tmpl_php_open');
 		$closer = unique_marker('tmpl_php_close');

@@ -323,8 +323,6 @@ class Pagination_object {
 				// Check to see if a paginate_base was provided
 				if ($this->EE->TMPL->fetch_param('paginate_base'))
 				{
-					$this->EE->load->helper('string');
-
 					$this->basepath = $this->EE->functions->create_url(
 						trim_slashes($this->EE->TMPL->fetch_param('paginate_base'))
 					);

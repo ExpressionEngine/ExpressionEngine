@@ -303,9 +303,6 @@ class Search {
 		/** ----------------------------------------
 		/**  Redirect to search results page
 		/** ----------------------------------------*/
-
-		// Load the string helper
-		$this->EE->load->helper('string');
 			
 		$path = $this->EE->functions->remove_double_slashes(
 			$this->EE->functions->create_url(

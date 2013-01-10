@@ -2722,7 +2722,6 @@ class Filemanager {
 	 */
 	public function download_files($files, $zip_name='downloaded_files.zip')
 	{
-		$this->EE->load->helper('string');
 		$this->EE->load->model('file_upload_preferences_model');
 		
 		$upload_prefs = $this->EE->file_upload_preferences_model->get_file_upload_preferences(1);

@@ -142,9 +142,6 @@ class EE_Functions {
 			return $this->fetch_site_index(0, 0).$qs.'ACT='.$this->fetch_action_id('Member', 'member_logout');
 		}	
 		// END Specials
-
-		// Load the string helper
-		$this->EE->load->helper('string');
  
 		$base = $this->fetch_site_index(0, $sess_id).'/'.trim_slashes($segment);
 		
@@ -165,9 +162,6 @@ class EE_Functions {
 	 */
 	function create_page_url($base_url, $segment, $trailing_slash = FALSE)
 	{
-		// Load the string helper
-		$this->EE->load->helper('string');       
-
 		if ($this->EE->config->item('force_query_string') == 'y')
 		{
 			if (strpos($base_url, $this->EE->config->item('index_page') . '/') !== FALSE)
@@ -288,7 +282,6 @@ class EE_Functions {
 		$this->EE->load->library('logger');
 		$this->EE->logger->deprecated('2.6');
 
-		$this->EE->load->helper('string_helper');
 		return reduce_double_slashes($str);
 	}
 	
@@ -314,9 +307,6 @@ class EE_Functions {
 			{
 				return $this->cached_path[$match[1]];
 			}
-
-			// Load the string helper
-			$this->EE->load->helper('string');
 
 			$path = trim_slashes(str_replace(array("'",'"'), "", $match[1]));
 			
@@ -439,7 +429,6 @@ class EE_Functions {
 	 */
 	function random($type = 'encrypt', $len = 8)
 	{
-		$this->EE->load->helper('string');
 		return random_string($type, $len);
 	}
 

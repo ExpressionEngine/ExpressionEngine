@@ -1232,7 +1232,7 @@ class MyAccount extends CP_Controller {
 	  */
 	function subscriptions()
 	{
-		$this->load->helper(array('snippets', 'string'));
+		$this->load->helper('snippets');
 		$this->load->library('table');
 		$this->load->library('pagination');
 		$this->load->library('members');
@@ -2547,7 +2547,7 @@ class MyAccount extends CP_Controller {
 	  */
 	function ignore_list()
 	{
-		$this->load->helper(array('snippets', 'string'));
+		$this->load->helper('snippets');
 		$this->load->library('table');
 
 		$vars['cp_page_title'] = lang('ignore_list');

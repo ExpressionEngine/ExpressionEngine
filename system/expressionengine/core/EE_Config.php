@@ -227,8 +227,6 @@ class EE_Config Extends CI_Config {
 		$this->config['site_pages'] = FALSE;
 		// Fetch the query result array
 		$row = $query->row_array();
-	
-		$EE->load->helper('string');
 
 		// Fold in the Preferences in the Database
 		foreach($query->row_array() as $name => $data)
@@ -343,7 +341,6 @@ class EE_Config Extends CI_Config {
 			$url = $this->config['site_url'].'/';
 			$url .= $this->config['site_index'].'/';
 
-			$EE->load->helper('string_helper');
 			$this->config['site_pages'][$row['site_id']]['url'] = reduce_double_slashes($url);
 		}
 
@@ -862,7 +859,6 @@ class EE_Config Extends CI_Config {
 				$url = (isset($site_prefs['site_url'])) ? $site_prefs['site_url'].'/' : $this->config['site_url'].'/';
 				$url .= (isset($site_prefs['site_index'])) ? $site_prefs['site_index'].'/' : $this->config['site_index'].'/';
 				
-				$this->EE->load->helper('string_helper');
 				$pages[$site_id]['url'] = reduce_double_slashes($url);
 
 				$this->EE->db->update(

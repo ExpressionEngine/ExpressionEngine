@@ -3003,7 +3003,6 @@ class Design extends CP_Controller {
 		}
 
 		$this->load->model('member_model');
-		$this->load->helper('string');
 							
 		$vars['profiles'] = $this->member_model->get_profile_templates();			
 

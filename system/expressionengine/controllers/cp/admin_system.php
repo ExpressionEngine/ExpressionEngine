@@ -625,7 +625,6 @@ class Admin_system extends CP_Controller {
 	{
 		$this->_restrict_prefs_access();
 
-		$this->load->helper('string');
 		$this->cp->set_variable('cp_page_title', lang('config_editor'));
 
 		$vars['config_items'] = $this->config->default_ini;

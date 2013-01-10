@@ -324,7 +324,7 @@ EOF;
 			$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist');
 		}
 
-		$this->EE->load->helper(array('email','string'));
+		$this->EE->load->helper('email');
 
 		//  Fetch existing addresses
 		$subscribe = ($this->EE->input->get_post('sub_action') == 'unsubscribe') ? FALSE : TRUE;

@@ -484,7 +484,7 @@ class Members {
 	 */
 	public function get_member_subscriptions($member_id, $rownum = 0, $perpage = 50)
 	{
-		$this->EE->load->helper(array('url', 'string'));
+		$this->EE->load->helper('url');
 		
 		// Set some base values
 		$channel_subscriptions	= FALSE;
