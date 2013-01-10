@@ -1034,7 +1034,7 @@ class Member {
 	/**
 	 * Retreive Forgotten Password
 	 */
-	public function retrieve_password()
+	public function send_reset_token()
 	{
 		if ( ! class_exists('Member_auth'))
 		{
@@ -1048,7 +1048,7 @@ class Member {
 			$MA->{$key} = $value;
 		}
 
-		$MA->retrieve_password();
+		$MA->send_reset_token();
 	}
 
 	// --------------------------------------------------------------------
@@ -1096,7 +1096,7 @@ class Member {
 	}
 
 	// --------------------------------------------------------------------
-	
+		
 	/**
 	 * Subscriptions Edit Form
 	 */

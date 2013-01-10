@@ -893,7 +893,7 @@ class Member_auth extends Member {
 		else
 		{
 			$site_name = stripslashes($this->EE->config->item('site_name'));
-			$return = $this->EE->config->item('site_url');
+			$return = $this->EE->functions->fetch_site_index() . '/' .  $this->EE->session->tracker[3];
 		}
 	
 		// Build the success message that we'll show to the user.	
