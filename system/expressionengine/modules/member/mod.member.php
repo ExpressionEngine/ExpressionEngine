@@ -2402,7 +2402,7 @@ class Member {
 			$this->_member_set_basepath();
 		}
 
-		return $this->EE->functions->remove_double_slashes($this->basepath.'/'.$uri);
+		return reduce_double_slashes($this->basepath.'/'.$uri);
 	}
 
 	// --------------------------------------------------------------------

@@ -1376,9 +1376,9 @@ class Channel {
 				{
 					$this->pagination->offset = (isset($match[2])) ? $match[2] : $match[1];
 
-					$this->pagination->basepath = $this->EE->functions->remove_double_slashes(str_replace($match[0], '', $this->pagination->basepath));
+					$this->pagination->basepath = reduce_double_slashes(str_replace($match[0], '', $this->pagination->basepath));
 
-					$this->uristr  = $this->EE->functions->remove_double_slashes(str_replace($match[0], '', $this->uristr));
+					$this->uristr  = reduce_double_slashes(str_replace($match[0], '', $this->uristr));
 
 					$qstring = trim_slashes(str_replace($match[0], '', $qstring));
 
@@ -1502,7 +1502,7 @@ class Channel {
 
 				if (preg_match("#^N(\d+)|/N(\d+)#", $qstring, $match))
 				{
-					$this->uristr  = $this->EE->functions->remove_double_slashes(str_replace($match[0], '', $this->uristr));
+					$this->uristr  = reduce_double_slashes(str_replace($match[0], '', $this->uristr));
 
 					$qstring = trim_slashes(str_replace($match[0], '', $qstring));
 				}
@@ -3772,11 +3772,11 @@ class Channel {
 									{
 										if ($this->use_category_names == TRUE)
 										{
-											$temp = preg_replace("#".LD."path=.+?".RD."#", $this->EE->functions->remove_double_slashes($this->EE->functions->create_url($match).'/'.$this->reserved_cat_segment.'/'.$v[6]), $temp, 1);
+											$temp = preg_replace("#".LD."path=.+?".RD."#", reduce_double_slashes($this->EE->functions->create_url($match).'/'.$this->reserved_cat_segment.'/'.$v[6]), $temp, 1);
 										}
 										else
 										{
-											$temp = preg_replace("#".LD."path=.+?".RD."#", $this->EE->functions->remove_double_slashes($this->EE->functions->create_url($match).'/C'.$v[0]), $temp, 1);
+											$temp = preg_replace("#".LD."path=.+?".RD."#", reduce_double_slashes($this->EE->functions->create_url($match).'/C'.$v[0]), $temp, 1);
 										}
 									}
 								}
@@ -3850,7 +3850,7 @@ class Channel {
 										$temp = str_replace(LD.$cv2['field_name'].RD, '', $temp);
 									}
 
-									$temp = $this->EE->functions->remove_double_slashes($temp);
+									$temp = reduce_double_slashes($temp);
 								}
 
 								$cats .= $temp;
@@ -5414,11 +5414,11 @@ class Channel {
 				{
 					if ($this->use_category_names == TRUE)
 					{
-						$chunk = str_replace($k, $this->EE->functions->remove_double_slashes($v.'/'.$this->reserved_cat_segment.'/'.$val[6]), $chunk);
+						$chunk = str_replace($k, reduce_double_slashes($v.'/'.$this->reserved_cat_segment.'/'.$val[6]), $chunk);
 					}
 					else
 					{
-						$chunk = str_replace($k, $this->EE->functions->remove_double_slashes($v.'/C'.$val[0]), $chunk);
+						$chunk = str_replace($k, reduce_double_slashes($v.'/C'.$val[0]), $chunk);
 					}
 				}
 
@@ -5677,12 +5677,12 @@ class Channel {
 
 					foreach($t_path as $tkey => $tval)
 					{
-						$chunk = str_replace($tkey, $this->EE->functions->remove_double_slashes($tval.'/'.$row['url_title']), $chunk);
+						$chunk = str_replace($tkey, reduce_double_slashes($tval.'/'.$row['url_title']), $chunk);
 					}
 
 					foreach($id_path as $tkey => $tval)
 					{
-						$chunk = str_replace($tkey, $this->EE->functions->remove_double_slashes($tval.'/'.$row['entry_id']), $chunk);
+						$chunk = str_replace($tkey, reduce_double_slashes($tval.'/'.$row['entry_id']), $chunk);
 					}
 
 					foreach($this->EE->TMPL->var_single as $key => $val)
@@ -5877,7 +5877,7 @@ class Channel {
 						foreach($c_path as $ckey => $cval)
 						{
 							$cat_seg = ($this->use_category_names == TRUE) ? $this->reserved_cat_segment.'/'.$row['cat_url_title'] : 'C'.$row['cat_id'];
-							$chunk = str_replace($ckey, $this->EE->functions->remove_double_slashes($cval.'/'.$cat_seg), $chunk);
+							$chunk = str_replace($ckey, reduce_double_slashes($cval.'/'.$cat_seg), $chunk);
 						}
 
 						// parse custom fields
@@ -5924,12 +5924,12 @@ class Channel {
 
 							foreach($t_path as $tkey => $tval)
 							{
-								$chunk = str_replace($tkey, $this->EE->functions->remove_double_slashes($tval.'/'.$trow['url_title']), $chunk);
+								$chunk = str_replace($tkey, reduce_double_slashes($tval.'/'.$trow['url_title']), $chunk);
 							}
 
 							foreach($id_path as $tkey => $tval)
 							{
-								$chunk = str_replace($tkey, $this->EE->functions->remove_double_slashes($tval.'/'.$trow['entry_id']), $chunk);
+								$chunk = str_replace($tkey, reduce_double_slashes($tval.'/'.$trow['entry_id']), $chunk);
 							}
 
 							foreach($this->EE->TMPL->var_single as $key => $val)
@@ -6331,11 +6331,11 @@ class Channel {
 				{
 					if ($this->use_category_names == TRUE)
 					{
-						$chunk = str_replace($pkey, $this->EE->functions->remove_double_slashes($pval.'/'.$this->reserved_cat_segment.'/'.$val[4]), $chunk);
+						$chunk = str_replace($pkey, reduce_double_slashes($pval.'/'.$this->reserved_cat_segment.'/'.$val[4]), $chunk);
 					}
 					else
 					{
-						$chunk = str_replace($pkey, $this->EE->functions->remove_double_slashes($pval.'/C'.$key), $chunk);
+						$chunk = str_replace($pkey, reduce_double_slashes($pval.'/C'.$key), $chunk);
 					}
 				}
 
@@ -6495,7 +6495,7 @@ class Channel {
 
 		if (preg_match("#/P\d+#", $qstring, $match))
 		{
-			$qstring = $this->EE->functions->remove_double_slashes(str_replace($match[0], '', $qstring));
+			$qstring = reduce_double_slashes(str_replace($match[0], '', $qstring));
 		}
 
 		/** --------------------------------------
@@ -6503,7 +6503,7 @@ class Channel {
 		/** --------------------------------------*/
 		if (preg_match("#/N(\d+)#", $qstring, $match))
 		{
-			$qstring = $this->EE->functions->remove_double_slashes(str_replace($match[0], '', $qstring));
+			$qstring = reduce_double_slashes(str_replace($match[0], '', $qstring));
 		}
 
 		// Is the category being specified by name?
@@ -6745,7 +6745,7 @@ class Channel {
 
 			if (preg_match("#/P\d+#", $qstring, $match))
 			{
-				$qstring = $this->EE->functions->remove_double_slashes(str_replace($match[0], '', $qstring));
+				$qstring = reduce_double_slashes(str_replace($match[0], '', $qstring));
 			}
 
 			/** --------------------------------------
@@ -6754,7 +6754,7 @@ class Channel {
 
 			if (preg_match("#/N(\d+)#", $qstring, $match))
 			{
-				$qstring = $this->EE->functions->remove_double_slashes(str_replace($match[0], '', $qstring));
+				$qstring = reduce_double_slashes(str_replace($match[0], '', $qstring));
 			}
 
 			if (strpos($qstring, '/') !== FALSE)
@@ -6990,7 +6990,7 @@ class Channel {
 		{
 			$path  = (preg_match("#".LD."path=(.+?)".RD."#", $this->EE->TMPL->tagdata, $match)) ? $this->EE->functions->create_url($match[1]) : $this->EE->functions->create_url("SITE_INDEX");
 			$path .= '/'.$query->row('url_title');
-			$this->EE->TMPL->tagdata = preg_replace("#".LD."path=.+?".RD."#", $this->EE->functions->remove_double_slashes($path), $this->EE->TMPL->tagdata);
+			$this->EE->TMPL->tagdata = preg_replace("#".LD."path=.+?".RD."#", reduce_double_slashes($path), $this->EE->TMPL->tagdata);
 		}
 
 		if (strpos($this->EE->TMPL->tagdata, LD.'id_path=') !== FALSE)
@@ -6998,7 +6998,7 @@ class Channel {
 			$id_path  = (preg_match("#".LD."id_path=(.+?)".RD."#", $this->EE->TMPL->tagdata, $match)) ? $this->EE->functions->create_url($match[1]) : $this->EE->functions->create_url("SITE_INDEX");
 			$id_path .= '/'.$query->row('entry_id');
 
-			$this->EE->TMPL->tagdata = preg_replace("#".LD."id_path=.+?".RD."#", $this->EE->functions->remove_double_slashes($id_path), $this->EE->TMPL->tagdata);
+			$this->EE->TMPL->tagdata = preg_replace("#".LD."id_path=.+?".RD."#", reduce_double_slashes($id_path), $this->EE->TMPL->tagdata);
 		}
 
 		if (strpos($this->EE->TMPL->tagdata, LD.'url_title') !== FALSE)
@@ -7288,7 +7288,7 @@ class Channel {
 
 		if (preg_match("#/P\d+#", $qstring, $match))
 		{
-			$qstring = $this->EE->functions->remove_double_slashes(str_replace($match[0], '', $qstring));
+			$qstring = reduce_double_slashes(str_replace($match[0], '', $qstring));
 		}
 
 		/** --------------------------------------
@@ -7296,7 +7296,7 @@ class Channel {
 		/** --------------------------------------*/
 		if (preg_match("#/N(\d+)#", $qstring, $match))
 		{
-			$qstring = $this->EE->functions->remove_double_slashes(str_replace($match[0], '', $qstring));
+			$qstring = reduce_double_slashes(str_replace($match[0], '', $qstring));
 		}
 
 		/** --------------------------------------

@@ -1279,7 +1279,7 @@ class Member_memberlist extends Member {
 		/**  Redirect to search results page
 		/** ----------------------------------------*/
 
-		return $this->EE->functions->redirect($this->EE->functions->remove_double_slashes($this->_member_path('member_search/'.$hash)));
+		return $this->EE->functions->redirect(reduce_double_slashes($this->_member_path('member_search/'.$hash)));
 	}
 }
 // END CLASS

@@ -192,11 +192,11 @@ class EE_Messages {
 	{
 		if ($this->allegiance == 'user')
 		{
-			return $this->EE->functions->remove_double_slashes($this->base_url.'/'.$uri);
+			return reduce_double_slashes($this->base_url.'/'.$uri);
 		}
 		else
 		{
-			return $this->EE->functions->remove_double_slashes($this->base_url.'/'.$uri.$hidden);
+			return reduce_double_slashes($this->base_url.'/'.$uri.$hidden);
 		}
 	}
 

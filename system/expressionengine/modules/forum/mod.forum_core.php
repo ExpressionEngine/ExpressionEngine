@@ -7859,7 +7859,7 @@ class Forum_Core extends Forum {
 			$this->EE->email->send();
 		}
 
-		$this->EE->functions->redirect($this->EE->functions->remove_double_slashes($_POST['RET'].$new_forum_id.'/'));
+		$this->EE->functions->redirect(reduce_double_slashes($_POST['RET'].$new_forum_id.'/'));
 		exit;	
 	}
 
@@ -10916,7 +10916,7 @@ class Forum_Core extends Forum {
 				{
 					$tagdata = $this->EE->TMPL->swap_var_single(
 														$key,
-														$this->EE->functions->remove_double_slashes($row['board_forum_url'].'/viewthread/'.$row['topic_id'].'/'),
+														reduce_double_slashes($row['board_forum_url'].'/viewthread/'.$row['topic_id'].'/'),
 														$tagdata
 													 );
 				}
