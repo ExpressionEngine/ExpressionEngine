@@ -31,7 +31,7 @@ class EE_Core {
 	/**
 	 * Constructor
 	 */	
-	function __construct()
+	public function __construct()
 	{
 		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();
@@ -52,10 +52,10 @@ class EE_Core {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Sets up the very bare system needed for things such
-	 * as cp css and stylesheet requests.
+	 * Sets constants, sets paths contants to appropriate directories, loads 
+	 * the database and generally prepares the system to run.
 	 */
-	function bootstrap()
+	public function bootstrap()
 	{
 		// Define the request type
 		// Note: admin.php defines REQ=CP
@@ -228,11 +228,13 @@ class EE_Core {
 
 	/**
 	 * Initialize EE
+	 * 
+	 * Called from EE_Controller to run EE's front end.
 	 *
-	 * @access	private
+	 * @access	public
 	 * @return	void
 	 */
-	function run_ee()
+	public function run_ee()
 	{
 		$this->native_plugins = array('magpie', 'xml_encode');
 		$this->native_modules = array(
@@ -355,10 +357,12 @@ class EE_Core {
 	/**
 	 * Generate Control Panel Request
 	 *
-	 * @access	private
+	 * Called from the EE_Controller to run EE's backend.
+	 *
+	 * @access public	
 	 * @return	void
 	 */	
-	function run_cp()
+	public function run_cp()
 	{
 		$s = 0;
 
@@ -452,7 +456,6 @@ class EE_Core {
 		{
 			// has their session Timed out and they are requesting a page?
 			// Grab the URL, base64_encode it and send them to the login screen.
-			
 			$safe_refresh = $this->EE->cp->get_safe_refresh();
 			$return_url = ($safe_refresh == 'C=homepage') ? '' : AMP.'return='.base64_encode($safe_refresh);
 			
