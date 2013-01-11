@@ -103,11 +103,12 @@ input.submit {
 <div class='highlight'><?=$message?></div>
 <?php endif;?>
 
-<?=form_open('C=login'.AMP.'M=send_reset_token')?>
+<?=form_open('C=login'.AMP.'M=process_reset_password')?>
 
 <dl>
-	<dt><?=lang('submit_email_address')?>:</dt>
-	<dd><?=form_input(array('style' => 'width:100%', 'size' => '35', 'dir' => 'ltr', 'name' => "email", 'id' => "email", 'maxlength' => 80, 'autocomplete' => 'off'))?></dd>
+	<dt><?=lang('enter_new_password')?>:</dt> <!-- TODO write this language key -->
+	<dd><?=form_password(array('style' => 'width:100%', 'size' => '35', 'dir' => 'ltr', 'name' => "password", 'id' => "password", 'maxlength' => 80, 'autocomplete' => 'off'))?></dd>
+	<dd><?=form_password(array('style' => 'width:100%', 'size' => '35', 'dir' => 'ltr', 'name' => "password_confirm", 'id' => "password_conform", 'maxlength' => 80, 'autocomplete' => 'off'))?></dd>
 </dl>
 
 <p><?=form_submit('submit', lang('submit'), 'class="submit"')?> <span><a href="<?=BASE.AMP.'C=login'?>"><?=lang('return_to_login')?></a></span></p>

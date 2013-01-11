@@ -412,7 +412,7 @@ class Login extends CP_Controller {
 	 * @access	public
 	 * @return	mixed
 	 */
-	public function request_new_password()
+	public function send_reset_token()
 	{
 		if ( ! $address = $this->input->post('email'))
 		{
@@ -438,27 +438,22 @@ class Login extends CP_Controller {
 		
 		$member_id = $query->row('member_id') ;
 		$username  = $query->row('username') ;
-		
-		// Kill old data from the reset_password field
-		
-		$time = time() - (60*60*24);
-		
-		$this->db->where('date <', $time);
+	
+		// Clean out any old reset codes.	
+		$a_day_ago = time() - (60*60*24);
+		$this->db->where('date <', $a_day_ago);
 		$this->db->or_where('member_id', $member_id);
 		$this->db->delete('reset_password');
 		
 		// Create a new DB record with the temporary reset code
-		
 		$rand = $this->functions->random('alnum', 8);
-				
 		$data = array('member_id' => $member_id, 'resetcode' => $rand, 'date' => time());
-		 
 		$this->db->query($this->db->insert_string('exp_reset_password', $data));
 		
 		// Buid the email message
 		$swap = array(
 			'name'		=> $username,
-			'reset_url'	=> $this->config->item('cp_url')."?D=cp&C=login&M=reset_password&id=".$rand,
+			'reset_url'	=> $this->config->item('cp_url')."?S=0&D=cp&C=login&M=reset_password&resetcode=".$rand,
 			'site_name'	=> stripslashes($this->config->item('site_name')),
 			'site_url'	=> $this->config->item('site_url')
 		);
@@ -469,7 +464,6 @@ class Login extends CP_Controller {
 
 
 		// Instantiate the email class
-			 
 		$this->load->library('email');
 		$this->email->wordwrap = true;
 		$this->email->from($this->config->item('webmaster_email'), $this->config->item('webmaster_name'));	
@@ -495,7 +489,7 @@ class Login extends CP_Controller {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Rest the password
+	 * Reset Password 
 	 *
 	 * This function is called when a user clicks the confirmation link
 	 * in the email they are sent when they request a new password
@@ -506,116 +500,42 @@ class Login extends CP_Controller {
 	 */
 	public function reset_password()
 	{
-		if ( ! $id = $this->input->get('id'))
+		if (empty($_GET['resetcode']))
 		{
-			$this->functions->redirect(BASE.AMP.'C=login');
+			return $this->functions->redirect(BASE.AMP.'C=login');
 		}
 
-		$this->load->library('auth');
+		$message = $this->session->flashdata('message');
 		
-		$time = time() - (60*60*24);
-					
-		// Get the member ID from the reset_password field	
+		$variables = array(
+			'resetcode'			=> $_GET['resetcode'],
+			'password'			=> '',
+			'password_confirm'  => '',
+			'message' 		=> $message,
+			'cp_page_title'	=> lang('enter_new_password') // TODO write this language key
+		);
 		
-		$this->db->select('member_id');
-		$this->db->where('resetcode', $id);
-		$this->db->where('date >', $time);
-		$query = $this->db->get('reset_password');
-		
-		if ($query->num_rows() == 0)
-		{
-			$this->functions->redirect(BASE.AMP.'C=login');
-		}
-		
-		$member_id = $query->row('member_id');
-				
-		// Fetch the user data
-		
-		$this->db->select('username, email');
-		$this->db->where('member_id', $member_id);
-		$query = $this->db->get('members');
-		
-		if ($query->num_rows() == 0)
-		{
-			$this->functions->redirect(BASE.AMP.'C=login');
-		}
-		
-		$address  = $query->row('email');
-		$username = $query->row('username');
-		
-		
-		$len = $this->config->item('pw_min_len');
-		
-		if ($len < 8)
-		{
-			$len = 8;
-		}
-		
-		$rand = $this->functions->random('alnum', $len);
-		
-		// add one of each character we require
-		if ($this->config->item('require_secure_passwords') == 'y')
-		{
-			$alpha = range('a', 'z');
-			$number = rand(0, 9);
-			
-			shuffle($alpha);
-			
-			$rand .= $number.$alpha[0].strtoupper($alpha[1]);
-		}
-		
-		
-		
-		// Update member's password
-		$update = $this->auth->update_password($member_id, $rand);
-		
-		if (FALSE === $update)
-		{
-			show_error(lang('unauthorized_access'));
-		}
-		
-		// Kill old data from the reset_password field
-		$this->db->where('date <', $time);
-		$this->db->or_where('member_id', $member_id);
-		$this->db->delete('reset_password');
-				
-		// Buid the email message
-		$swap = array(
-			'name'		=> $username,
-			'username'	=> $username,
-			'password'	=> $rand,
-			'site_name'	=> stripslashes($this->config->item('site_name')),
-			'site_url'	=> $this->config->item('site_url')
-		 );
-
-		$template = $this->functions->fetch_email_template('reset_password_notification');
-		$message_title = $this->_var_swap($template['title'], $swap);
-		$message = $this->_var_swap($template['data'], $swap);					
-		 
-		// Instantiate the email class
-			 
-		$this->load->library('email');
-		$this->email->wordwrap = TRUE;
-		$this->email->from($this->config->item('webmaster_email'), $this->config->item('webmaster_name'));
-		$this->email->to($address); 
-		$this->email->subject($message_title);	
-		$this->email->message($message);	
-		
-		if ( ! $this->email->send())
-		{
-			$res = lang('error_sending_email');
-		} 
-		else
-		{	
-			$res = lang('password_has_been_reset');
-		}
-		
-		$this->session->set_flashdata('message', $res);
-		$this->functions->redirect(BASE.AMP.'C=login');
+		$this->load->view('account/reset_password', $variables);
 	}
 	
 	// --------------------------------------------------------------------
-	
+
+	/**
+	 * Process Reset Password
+	 * 
+	 * Processing action to process a password reset.  Sent here by the form
+	 * displayed to the user in reset.
+	 * 
+	 * @since 2.6
+	 * @access public
+	 * @return null
+ 	 */
+	public function process_reset_password()
+	{
+		// TODO ...well... you know...
+	}
+
+	// --------------------------------------------------------------------	
 	/**
 	*  Replace variables
 	*/
