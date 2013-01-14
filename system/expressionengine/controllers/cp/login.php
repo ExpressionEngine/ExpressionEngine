@@ -383,10 +383,14 @@ class Login extends CP_Controller {
 
 	/**
 	 * Forgotten password form
+	 * 
+	 * Present a form to the user asking them for the e-mail address associated
+	 * with the account they are attempting to log in to.  If an e-mail address
+	 * is found in post, then the form will be populated with said e-mail.  Loads
+	 * the account/forgot_password view.
 	 *
 	 * @access	public
-	 * @param	string
-	 * @return	mixed
+	 * @return	null	
 	 */
 	public function forgotten_password_form()
 	{
@@ -407,7 +411,11 @@ class Login extends CP_Controller {
 	 * Request a forgotten password
 	 *
 	 * Accepts an email address as input, which gets looked up in the DB.
-	 * An email is sent to the user with a confirmation link
+	 * An email is sent to the user with a confirmation link, provided
+	 * the email is found in the database and is attached to a valid
+	 * member with access to the CP.
+	 *
+	 * TODO Check member permission to ensure cp access?
 	 *
 	 * @access	public
 	 * @return	mixed
@@ -492,7 +500,9 @@ class Login extends CP_Controller {
 	 * Reset Password 
 	 *
 	 * This function is called when a user clicks the confirmation link
-	 * in the email they are sent when they request a new password
+	 * in the email they are sent when they request a new password.  Needs
+	 * to have the resetcode in the $_GET array, otherwise it will redirect
+	 * the user to the login page.
 	 *
 	 * @access	public
 	 * @param	string
@@ -512,7 +522,7 @@ class Login extends CP_Controller {
 			'password'			=> '',
 			'password_confirm'  => '',
 			'message' 		=> $message,
-			'cp_page_title'	=> lang('enter_new_password') // TODO write this language key
+			'cp_page_title'	=> lang('enter_new_password') 
 		);
 		
 		$this->load->view('account/reset_password', $variables);
@@ -524,7 +534,8 @@ class Login extends CP_Controller {
 	 * Process Reset Password
 	 * 
 	 * Processing action to process a password reset.  Sent here by the form
-	 * displayed to the user in reset.
+	 * displayed to the user in reset.  Expects to find a resetcode, a 
+	 * password and a password confirmation in $_POST.
 	 * 
 	 * @since 2.6
 	 * @access public
@@ -532,14 +543,99 @@ class Login extends CP_Controller {
  	 */
 	public function process_reset_password()
 	{
-		// TODO ...well... you know...
+		// Check for errors -- should they even be here?
+		// -- Check their token
+		// -- check for banned
+		if ($this->session->userdata('is_banned') === TRUE)
+		{
+			return $this->output->show_user_error('general', array(lang('unauthorized_request')));
+		}
+
+		if( ! ($resetcode = $this->input->get_post('resetcode')))
+		{
+			return $this->output->show_user_error('submission', array(lang('no_reset_id')));
+		}
+
+		// Validate their reset code.  Make sure it matches a valid
+		// member.  TODO Confirm cp access permissions?  Or is it enough
+		// to do that in just send_token?
+		$a_day_ago = time() - (60*60*24);
+		$member_id_query = $this->db->select('member_id')
+			->where('resetcode', $resetcode)
+			->where('date >', $a_day_ago)
+			->get('reset_password');
+
+
+		if ($member_id_query->num_rows() === 0)
+		{
+			return $this->output->show_user_error('submission', array(lang('id_not_found')));
+		}
+
+		// Make sure that we have all the pieces of the form that we're
+		// looking for.  Show an error if we don't.	
+
+		if ( ! ($password = $this->input->get_post('password'))) 
+		{
+			return $this->output->show_user_error('submission', array(lang('no_password')));
+		}
+
+		if ( ! ($password_confirm = $this->input->get_post('password_confirm')))
+		{
+			return $this->output->show_user_error('submission', array(lang('no_confirm')));
+		}
+
+		// Create the validate class and validate the password.
+		if ( ! class_exists('EE_Validate'))
+		{
+			require APPPATH.'libraries/Validate.php';
+		}
+
+		$VAL = new EE_Validate(array(
+			'password'			=> $password,
+			'password_confirm'	=> $password_confirm,
+		 ));
+
+		$VAL->validate_password();
+		if (count($VAL->errors) > 0)
+		{
+			return $this->output->show_user_error('submission', $VAL->errors);
+		}
+
+		// Update the member row with the new password.
+		$this->load->library('auth');
+		$this->auth->update_password(
+			$member_id_query->row('member_id'),
+			$password
+		);
+
+		// Invalidate the old token.  While we're at it, may as well wipe out expired
+		// tokens too, just to keep them from building up.
+		$this->db->where('date <', $a_day_ago)
+			->or_where('member_id', $member_id_query->row('member_id'))
+			->delete('reset_password');
+
+		// Send em to the cp login screen.  That's the only place
+		// they could have come from.
+		$return = BASE.AMP.'C=login';
+		$data = array(
+			'title' 	=> lang('password_changed'),
+			'heading'	=> lang('password_changed'),
+			'content'	=> lang('successfully_changed_password'),
+			'link'		=> array($return, $this->config->item('site_name')), 
+			'redirect'	=> $return, // Redirect them to this URL...
+			'rate' => '5' // ...after 5 seconds.
+
+		);
+
+		$this->output->show_message($data);
 	}
 
 	// --------------------------------------------------------------------	
+
 	/**
 	*  Replace variables
 	*/
-	function _var_swap($str, $data)
+	private function _var_swap($str, $data)
 	{
 		if ( ! is_array($data))
 		{
