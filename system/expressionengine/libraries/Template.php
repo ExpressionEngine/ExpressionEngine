@@ -45,6 +45,9 @@ class EE_Template {
 	var $hit_lock			=  FALSE;		// Lets us lock the hit counter if sub-templates are contained in a template
 	var $parse_php			=  FALSE;		// Whether to parse PHP or not
 	var $protect_javascript =  TRUE;		// Protect javascript in conditionals
+
+	var $group_name			= '';			// Group of template being parsed
+	var $template_name		= '';			// Name of template being parsed
 	
 	var $tag_data			= array();		// Data contained in tags
 	var $modules		 	= array();		// List of installed modules
@@ -2349,6 +2352,10 @@ class EE_Template {
 			}
 		//
 		// -------------------------------------------
+
+		// remember what template we're on
+		$this->group_name = $row['group_name'];
+		$this->template_name = $row['template_name'];
 
 		return $this->convert_xml_declaration($this->remove_ee_comments($row['template_data']));
 	}
