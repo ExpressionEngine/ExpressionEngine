@@ -108,7 +108,7 @@ input.submit {
 <?=form_hidden('resetcode', $resetcode)?>
 
 <dl>
-	<dt><?=lang('new_password')?>:</dt> <!-- TODO write this language key -->
+	<dt><?=lang('new_password')?>:</dt> 
 	<dd><?=form_password(array('style' => 'width:100%', 'size' => '35', 'dir' => 'ltr', 'name' => "password", 'id' => "password", 'maxlength' => 80, 'autocomplete' => 'off'))?></dd>
 	<dt><?=lang('new_password_confirm')?></dt>
 	<dd><?=form_password(array('style' => 'width:100%', 'size' => '35', 'dir' => 'ltr', 'name' => "password_confirm", 'id' => "password_conform", 'maxlength' => 80, 'autocomplete' => 'off'))?></dd>

@@ -415,8 +415,6 @@ class Login extends CP_Controller {
 	 * the email is found in the database and is attached to a valid
 	 * member with access to the CP.
 	 *
-	 * TODO Check member permission to ensure cp access?
-	 *
 	 * @access	public
 	 * @return	mixed
 	 */
@@ -557,8 +555,7 @@ class Login extends CP_Controller {
 		}
 
 		// Validate their reset code.  Make sure it matches a valid
-		// member.  TODO Confirm cp access permissions?  Or is it enough
-		// to do that in just send_token?
+		// member.  
 		$a_day_ago = time() - (60*60*24);
 		$member_id_query = $this->db->select('member_id')
 			->where('resetcode', $resetcode)

@@ -709,7 +709,6 @@ class Member_auth extends Member {
 			'site_url'	=> $return
 		);
 
-		// TODO Rewrite e-mail template
 		$template = $this->EE->functions->fetch_email_template('forgot_password_instructions');
 		
 		// _var_swap calls string replace on $template[] for each key in
@@ -768,23 +767,23 @@ class Member_auth extends Member {
 			return $this->EE->output->show_user_error('submission', array(lang('mbr_no_reset_id')));
 		}
 
-		// TODO read out r and use it to set FROM	
+		// Check to see whether we're in the forum or not.
+		$in_forum = isset($_GET['r']) && $_GET['r'] == 'f';
 
 		$data = array(
 			'id'				=> 'reset_password_form',
 			'hidden_fields'		=> array(
 				'ACT'	=> $this->EE->functions->fetch_action_id('Member', 'process_reset_password'),
-				'FROM'	=> ($this->in_forum == TRUE) ? 'forum' : '',
+				'FROM'	=> ($in_forum == TRUE) ? 'forum' : '',
 				'resetcode' => $resetcode
 			)
 		);
 
-		if ($this->in_forum === TRUE)
+		if ($in_forum === TRUE)
 		{
-			$data['hidden_fields']['board_id'] = $this->board_id;
+			$data['hidden_fields']['board_id'] = (int)$_GET['board_id'];
 		}
 
-		// TODO Clean out the old language keys
 		$this->_set_page_title(lang('mbr_reset_password'));
 
 		return $this->_var_swap(
@@ -877,8 +876,18 @@ class Member_auth extends Member {
 			->delete('reset_password');
 		
 
-		// Determine where we're sending them after showing the success message.
-		if ($this->EE->input->get_post('FORUM'))
+		// If we can get their last URL from the tracker,
+		// then we'll use it.
+		if (isset($this->EE->session->tracker[3])) 
+		{
+			$site_name = stripslashes($this->EE->config->item('site_name'));
+			$return = $this->EE->functions->fetch_site_index() . '/' . $this->EE->session->tracker[3];
+		}
+		// Otherwise, it's entirely possible they are clicking the e-mail link after
+		// their session has expired.  In that case, the only information we have
+		// about where they came from is in the POST data (where it came from the GET data).
+		// Use it to get them as close as possible to where they started.
+		else if ($this->EE->input->get_post('FROM') == 'forum')
 		{
 			$board_id = $this->EE->input->get_post('board_id');
 			$board_id = ($board_id === FALSE OR ! is_numeric($board_id)) ? 1 : $board_id;
@@ -893,7 +902,7 @@ class Member_auth extends Member {
 		else
 		{
 			$site_name = stripslashes($this->EE->config->item('site_name'));
-			$return = $this->EE->functions->fetch_site_index() . '/' .  $this->EE->session->tracker[3];
+			$return = $this->EE->functions->fetch_site_index();
 		}
 	
 		// Build the success message that we'll show to the user.	
