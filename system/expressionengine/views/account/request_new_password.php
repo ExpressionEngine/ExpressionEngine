@@ -15,7 +15,7 @@ body {
 
 #content  {
 	text-align:			left;
-	padding:			100px 20px 5px 20px;
+	padding:			200px 20px 5px 20px;
 	margin:				20px auto 0 auto;
 	width:				485px;
 	background:			url('<?=$cp_theme_url?>images/ee_login_bg.gif') no-repeat center top;

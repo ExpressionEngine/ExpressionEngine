@@ -425,7 +425,6 @@ class Login extends CP_Controller {
 			$this->functions->redirect(BASE.AMP.'C=login'.AMP.'M=forgotten_password_form');
 		}
 		
-		$this->cp->set_variable('cp_page_title', lang('new_password_request'));
 		
 		$address = strip_tags($address);
 		
@@ -489,6 +488,7 @@ class Login extends CP_Controller {
 			$vars['message_success'] = lang('forgotten_email_sent');
 		}
 
+		$vars['cp_page_title'] = lang('forgotten_password');
 		$this->load->view('account/request_new_password', $vars);
 	}
 	

@@ -43,6 +43,9 @@ $lang = array(
 // Reset Password
 //-----------------------------------
 
+'forgotten_password' =>
+'Reset Password',
+
 'no_reset_id' => 
 'The ID number you submitted does not appear to be valid.  Please check the link you followed.',
 
