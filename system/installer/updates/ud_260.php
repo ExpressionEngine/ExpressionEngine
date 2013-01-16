@@ -49,6 +49,8 @@ class Updater {
 		
 		$this->_change_member_totals_length();
 		$this->_update_session_table();
+		$this->_update_actions_table();
+		$this->_update_specialty_templates();
 		
 		return TRUE;
 	}
@@ -156,7 +158,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 {site_name}
 {site_url}');	
 
-		$this->db->where('template_name', 'forgot_password_instructions')
+		$this->EE->db->where('template_name', 'forgot_password_instructions')
 			->update('specialty_templates', $data);
 	}
 }	
