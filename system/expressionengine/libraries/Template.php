@@ -48,6 +48,7 @@ class EE_Template {
 
 	var $group_name			= '';			// Group of template being parsed
 	var $template_name		= '';			// Name of template being parsed
+	var $template_id		= 0;
 	
 	var $tag_data			= array();		// Data contained in tags
 	var $modules		 	= array();		// List of installed modules
@@ -2355,6 +2356,7 @@ class EE_Template {
 
 		// remember what template we're on
 		$this->group_name = $row['group_name'];
+		$this->template_id = $row['template_id'];
 		$this->template_name = $row['template_name'];
 
 		return $this->convert_xml_declaration($this->remove_ee_comments($row['template_data']));

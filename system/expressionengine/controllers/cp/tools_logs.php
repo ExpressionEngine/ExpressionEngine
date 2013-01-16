@@ -515,7 +515,6 @@ class Tools_logs extends CP_Controller {
 		}
 		
 		$this->load->library('table');
-		
 		$this->table->set_base_url('C=tools_logs'.AMP.'M=view_developer_log');
 		$this->table->set_columns(array(
 			'log_id'		=> array('header' => lang('log_id')),
@@ -543,13 +542,13 @@ class Tools_logs extends CP_Controller {
 		
 		$vars = $this->table->datasource('_developer_log_filter', $initial_state, $params);
 
-		$this->cp->set_variable('cp_page_title', lang('view_developer_log'));
+		$this->view->cp_page_title = lang('view_developer_log');
 
 		// a bit of a breadcrumb override is needed
-		$this->cp->set_variable('cp_breadcrumbs', array(
+		$this->view->cp_breadcrumbs = array(
 			BASE.AMP.'C=tools' => lang('tools'),
 			BASE.AMP.'C=tools_logs'=> lang('tools_logs')
-		));
+		);
 		
 		$this->load->library('logger');
 		
@@ -606,7 +605,7 @@ class Tools_logs extends CP_Controller {
 					'class'	=> $new
 				),
 				'description' => array(
-					'data'	=> (isset($log['function'])) ? $this->logger->build_deprecation_language($log) : $log['description'],
+					'data'	=> $this->logger->build_deprecation_language($log),
 					'class'	=> $new
 				),
 				'viewed' => $log['viewed'],

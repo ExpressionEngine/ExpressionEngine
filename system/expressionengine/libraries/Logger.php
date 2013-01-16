@@ -165,14 +165,26 @@ class EE_Logger {
 	 */
 	function deprecated($version = NULL, $use_instead = NULL)
 	{
-		// debug_backtrace() will tell us what method is deprecated and what called it
-		$backtrace = debug_backtrace();
-		
-		// Make sure the keys exist
-		$function = (isset($backtrace[1]['function'])) ? $backtrace[1]['function'] : '';
-		$line = (isset($backtrace[1]['line'])) ? $backtrace[1]['line'] : 0;
-		$file = (isset($backtrace[1]['file'])) ? $backtrace[1]['file'] : '';
-		
+		$this->EE->load->helper('array');
+
+		// Using a caching iterator lets us easily peek ahead later
+		$backtrace = new CachingIterator(
+			new ArrayIterator(debug_backtrace()), 0
+		);
+
+		// seek to the callee
+		$backtrace->next();
+		$backtrace->next();
+		$callee = $backtrace->current();
+
+		// make sure the items are set
+		$line = element('line', $callee, 0);
+		$file = element('file', $callee, '');
+		$function = element('function', $callee, '');
+
+		// if we're inside the system folder we don't care about the parent path
+		$file = str_replace(APPPATH, 'system/expressionengine/', $file);
+
 		// Information we are capturing from the incident
 		$deprecated = array(
 			'function'			=> $function.'()',	// Name of deprecated function
@@ -181,6 +193,52 @@ class EE_Logger {
 			'deprecated_since'	=> $version,		// Version function was deprecated
 			'use_instead'		=> $use_instead		// Function to use instead
 		);
+
+		// On page requests we need to check a bunch of other stuff
+		if (REQ == 'PAGE')
+		{
+			foreach ($backtrace as $call)
+			{
+				if ($backtrace->hasNext())
+				{
+					$next = $backtrace->getInnerIterator()->current();
+
+					if (is_a(element('object', $next, ''), 'EE_Template'))
+					{
+						// found our parent tag
+						$addon_module = element('class', $call, '');
+						$addon_method = element('function', $call, '');
+
+						$deprecated += compact('addon_module', 'addon_method');
+
+						// grab our full tag name
+						$template_obj = $next['object'];
+						$addon_tag = $template_obj->tagproper;
+
+						$deprecated += array(
+							'template_id' => $template_obj->template_id,
+							'template_group' => $template_obj->group_name,
+							'template_name' => $template_obj->template_name
+						);
+
+						// check in snippets						
+						$global_vars = $this->EE->config->_global_vars;
+
+						$regex = '/'.preg_quote($addon_tag, '/').'/';
+						$matched = preg_grep($regex, $global_vars);
+
+						// Found in a snippet
+						if (count($matched))
+						{
+							$matched = array_keys($matched);
+							$deprecated += array('snippets' => implode('|', $matched));
+						}
+
+						break;
+					}
+				}
+			}
+		}
 		
 		// Only bug the user about this again after a week, or 604800 seconds
 		$deprecation_log = $this->developer($deprecated, TRUE, 604800);
@@ -224,17 +282,30 @@ class EE_Logger {
 	function build_deprecation_language($deprecated)
 	{
 		$this->EE->lang->loadfile('tools');
-		
-		// "The system has detected an add-on that is using outdated code..." and "What does this mean?" link
-		$message = lang('deprecation_detected').NBS.'<a href="#" class="deprecation_meaning">'.lang('dev_log_help').'</a><br />';
-		
+
+		if ( ! isset($deprecated['function']))
+		{
+			return $deprecated['description'];
+		}
+
 		// "Deprecated function %s called"
-		$message .= sprintf(lang('deprecated_function'), $deprecated['function']);
+		$message = sprintf(lang('deprecated_function'), $deprecated['function']);
 		
 		// "in %s on line %d."
 		if (isset($deprecated['file']) && isset($deprecated['line']))
 		{
 			$message .= NBS.sprintf(lang('deprecated_on_line'), $deprecated['file'], $deprecated['line']);
+		}
+
+		// "from template tag: %s in template %s"
+		if (isset($deprecated['addon_module']) && isset($deprecated['addon_method']))
+		{
+			$message .= '<br />';
+			$message .= sprintf(
+				lang('deprecated_template'),
+				'<code>exp:'.strtolower($deprecated['addon_module']).':'.$deprecated['addon_method'].'</code>',
+				'<a href="'.BASE.AMP.'C=design'.AMP.'M=edit_template'.AMP.'id='.$deprecated['template_id'].'">'.$deprecated['template_group'].'/'.$deprecated['template_name'].'</a>'
+			);
 		}
 		
 		if (isset($deprecated['deprecated_since']) 
