@@ -159,10 +159,11 @@ class Sites extends CI_Controller {
 		// }
 		
 		// This is just way too simple.
-		
+
+		// We set the cookie before switching prefs to ensure it uses current settings
+		$this->functions->set_cookie('cp_last_site_id', $site_id, 0);		
+
 		$this->config->site_prefs('', $site_id);
-		
-		$this->functions->set_cookie('cp_last_site_id', $site_id, 0);
 		
 		$this->functions->redirect($page);
 	}
