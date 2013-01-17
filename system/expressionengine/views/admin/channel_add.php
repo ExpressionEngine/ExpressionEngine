@@ -3,6 +3,11 @@
 <?=form_open('C=admin_content'.AMP.'M=channel_add', array('id'=>'channel_edit'))?>
 
 	<table class="mainTable solo" border="0" cellspacing="0" cellpadding="0">
+		<thead>
+			<tr>
+				<th colspan="2"><?=lang('channel_prefs')?></th>
+			</tr>
+		</thead>
 		<tr>
 			<td style="width: 50%;">
 				<?=required()?> <?=lang('channel_title', 'channel_title')?>
@@ -20,13 +25,6 @@
 		<tr>
 			<td><?=lang('duplicate_channel_prefs', 'duplicate_channel_prefs')?></td>
 			<td><?=form_dropdown('duplicate_channel_prefs', $duplicate_channel_prefs_options, '', 'id="duplicate_channel_prefs"')?></td>
-		</tr>
-		<tr>
-			<td><strong><?=lang('edit_group_prefs')?></strong></td>
-			<td>
-				<?=form_radio('edit_group_prefs', 'y', FALSE, 'id="edit_group_prefs_y"')?> <?=lang('yes', 'edit_group_prefs_y')?> &nbsp;&nbsp;&nbsp;
-				<?=form_radio('edit_group_prefs', 'n', TRUE, 'id="edit_group_prefs_n"')?> <?=lang('no', 'edit_group_prefs_n')?>
-			</td>
 		</tr>
 	</table>
 	
