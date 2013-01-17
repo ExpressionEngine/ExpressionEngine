@@ -636,9 +636,9 @@ class Admin_content extends CP_Controller {
 			}
 
 
-			$_POST['default_entry_title'] = ( ! isset(	$_POST['default_entry_title'])) ? '' : $_POST['default_entry_title'];
-			$_POST['url_title_prefix'] = ( ! isset(	$_POST['url_title_prefix'])) ? '' : $_POST['url_title_prefix'];
-					
+			$_POST['default_entry_title'] = '';
+			$_POST['url_title_prefix'] = '';
+			
 			$this->db->insert('channels', $_POST);		
 						
 			$insert_id = $this->db->insert_id();
