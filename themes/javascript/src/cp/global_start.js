@@ -445,7 +445,7 @@ EE.cp.deprecation_meaning = function()
 			width: 460
 		});
 	});
-}
+};
 
 EE.cp.zebra_tables = function(table) {
 	table = table || $('table');
@@ -460,4 +460,4 @@ EE.cp.zebra_tables = function(table) {
 		.filter(':even').addClass('even')
 		.end()
 		.filter(':odd').addClass('odd');
-}
+};

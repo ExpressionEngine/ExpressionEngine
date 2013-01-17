@@ -214,12 +214,3 @@
 	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
-<?php
-if ($EE_view_disable !== TRUE)
-{
-	$this->load->view('_shared/accessories');
-	$this->load->view('_shared/footer');
-}
-
-/* End of file edit_template.php */
-/* Location: ./themes/cp_themes/default/design/edit_template.php */

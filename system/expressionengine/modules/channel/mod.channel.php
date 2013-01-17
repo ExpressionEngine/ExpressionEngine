@@ -1194,6 +1194,16 @@ class Channel {
 			}
 
 			$fields_sql = '';
+			$search_terms = trim($search_terms);
+			
+			// Note- if a 'contains' search goes through with an empty string
+			// the resulting sql looks like: LIKE "%%"
+			// While it doesn't throw an error, there's no point in adding the overhead.
+			if ($search_terms == '' OR $search_terms == '=')
+			{
+				continue;
+			}
+			
 			$sites = ($site_ids ? $site_ids : array($this->EE->config->item('site_id'))); 
 			foreach ($sites as $site_name => $site_id) 
 			{
@@ -3811,11 +3821,11 @@ class Channel {
 										LD.'parent_id'.RD
 									),
 									array($v[0],
-										$v[2],
+										$this->EE->functions->encode_ee_tags($v[2]),
 										$v[6],
 										$cat_image['url'],
 										(isset($v[5])) ? $v[5] : '',
-										(isset($v[4])) ? $v[4] : '',
+										(isset($v[4])) ? $this->EE->functions->encode_ee_tags($v[4]) : '',
 										$v[1]
 									),
 									$temp
@@ -5394,9 +5404,9 @@ class Channel {
 						LD.'parent_id'.RD
 					),
 					array(
-						$val[3],
+						$this->EE->functions->encode_ee_tags($val[3]),
 						$val[6],
-						$val[4],
+						$this->EE->functions->encode_ee_tags($val[4]),
 						$cat_image['url'],
 						$val[0],
 						$val[1]
@@ -5861,10 +5871,10 @@ class Channel {
 													LD.'category_description'.RD,
 													LD.'parent_id'.RD),
 											  array($row['cat_id'],
-											  		$row['cat_name'],
+											  		$this->EE->functions->encode_ee_tags($row['cat_name']),
 													$row['cat_url_title'],
 											  		$cat_image['url'],
-											  		$row['cat_description'],
+											  		$this->EE->functions->encode_ee_tags($row['cat_description']),
 													$row['parent_id']),
 											  $chunk);
 
@@ -6314,10 +6324,10 @@ class Channel {
 											LD.'category_description'.RD,
 											LD.'parent_id'.RD),
 									  array($key,
-									  		$val[1],
+									  		$this->EE->functions->encode_ee_tags($val[1]),
 											$val[4],
 									  		$cat_image['url'],
-									  		$val[3],
+									  		$this->EE->functions->encode_ee_tags($val[3]),
 											$val[0]),
 									  $chunk);
 
@@ -6658,10 +6668,10 @@ class Channel {
 											LD.'category_description'.RD,
 											LD.'parent_id'.RD),
 							 	 	  array($match[2],
-											$query->row('cat_name'),
+											$this->EE->functions->encode_ee_tags($query->row('cat_name')),
 											$query->row('cat_url_title'),
 											$cat_image['url'],
-											$query->row('cat_description'),
+											$this->EE->functions->encode_ee_tags($query->row('cat_description')),
 											$query->row('parent_id')),
 							  		  $this->EE->TMPL->tagdata);
 
