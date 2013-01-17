@@ -44,7 +44,7 @@ class EE_Security extends CI_Security {
 	{	
 		$check = $this->check_xid($xid);
 
-		if (REQ != 'CP' OR ! AJAX_REQUEST)
+		if ( ! (REQ == 'CP' &&  AJAX_REQUEST))
 		{
 			$this->delete_xid($xid);
 		}
