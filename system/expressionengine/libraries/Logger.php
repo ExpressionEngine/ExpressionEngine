@@ -167,15 +167,10 @@ class EE_Logger {
 	{
 		$this->EE->load->helper('array');
 
-		// Using a caching iterator lets us easily peek ahead later
-		$backtrace = new CachingIterator(
-			new ArrayIterator(debug_backtrace()), 0
-		);
+		$backtrace = debug_backtrace();
 
-		// seek to the callee
-		$backtrace->next();
-		$backtrace->next();
-		$callee = $backtrace->current();
+		// find the call site
+		$callee = element(1, $backtrace, array());
 
 		// make sure the items are set
 		$line = element('line', $callee, 0);
@@ -197,11 +192,11 @@ class EE_Logger {
 		// On page requests we need to check a bunch of other stuff
 		if (REQ == 'PAGE')
 		{
-			foreach ($backtrace as $call)
+			foreach ($backtrace as $i => $call)
 			{
-				if ($backtrace->hasNext())
+				if (isset($backtrace[$i + 1]))
 				{
-					$next = $backtrace->getInnerIterator()->current();
+					$next = $backtrace[$i + 1];
 
 					if (is_a(element('object', $next, ''), 'EE_Template'))
 					{
