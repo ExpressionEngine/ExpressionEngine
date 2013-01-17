@@ -1194,6 +1194,16 @@ class Channel {
 			}
 
 			$fields_sql = '';
+			$search_terms = trim($search_terms);
+			
+			// Note- if a 'contains' search goes through with an empty string
+			// the resulting sql looks like: LIKE "%%"
+			// While it doesn't throw an error, there's no point in adding the overhead.
+			if ($search_terms == '' OR $search_terms == '=')
+			{
+				continue;
+			}
+			
 			$sites = ($site_ids ? $site_ids : array($this->EE->config->item('site_id'))); 
 			foreach ($sites as $site_name => $site_id) 
 			{

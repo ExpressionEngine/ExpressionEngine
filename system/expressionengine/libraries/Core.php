@@ -149,18 +149,20 @@ class EE_Core {
 		
 		$last_site_id = $this->EE->input->cookie('cp_last_site_id');
 		
-		if (REQ == 'CP' && ! empty($last_site_id) && is_numeric($last_site_id) &&
-			$last_site_id != $this->EE->config->item('site_id'))
+		if (REQ == 'CP' && $this->EE->config->item('multiple_sites_enabled') == 'y')
 		{
-			// If they are already setting cookies with a specified domain, keep using it in this backend
-			$current_cookie_domain = $this->EE->config->item('cookie_domain');
+			$cookie_prefix = $this->EE->config->item('cookie_prefix');
+			$cookie_path  = $this->EE->config->item('cookie_path');
+			$cookie_domain =  $this->EE->config->item('cookie_domain');		
 
-			$this->EE->config->site_prefs('', $last_site_id);
-
-			if ($current_cookie_domain != FALSE && $current_cookie_domain != '')
+			if (! empty($last_site_id) && is_numeric($last_site_id) && $last_site_id != $this->EE->config->item('site_id'))
 			{
-				$this->EE->config->cp_cookie_domain = $current_cookie_domain;
+				$this->EE->config->site_prefs('', $last_site_id);
 			}
+			
+			$this->EE->config->cp_cookie_prefix = $cookie_prefix;
+			$this->EE->config->cp_cookie_path  = $cookie_path;
+			$this->EE->config->cp_cookie_domain =  $cookie_domain;	
 		}
 		
 		// This allows CI compatibility

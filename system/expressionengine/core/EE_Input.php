@@ -107,7 +107,7 @@ class EE_Input extends CI_Input {
 			{
 				if ($filter_keys == TRUE)
 				{
-					if (preg_match("#(;|\?|exec\s*\(|system\s*\(|passthru\s*\(|cmd\s*\(|[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})#i", $val))
+					if (preg_match("#(;|exec\s*\(|system\s*\(|passthru\s*\(|cmd\s*\()#i", $val))
 					{
 						// Only notify super admins of the offending data
 						if ($EE->session->userdata('group_id') == 1)
