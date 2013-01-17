@@ -461,9 +461,6 @@ class Admin_content extends CP_Controller {
 		// Load the layout Library & update the layouts
 		$this->load->library('layout');
 
-		$add_rss = (isset($_POST['add_rss'])) ? TRUE : FALSE;
-		unset($_POST['add_rss']);
-
 		$return = ($this->input->get_post('return')) ? TRUE : FALSE;
 		unset($_POST['return']);
 		$edit_group_prefs = TRUE;
@@ -841,90 +838,23 @@ class Admin_content extends CP_Controller {
 							$temp = preg_replace("#".$old_group_name."/(.+?)#", $group_name."/\\1", $temp);
 
 							$data = array(
-											'group_id'				=> $group_id,
-											'template_name'  		=> $row['template_name'],
-											'template_notes'  		=> $row['template_notes'],
-											'cache'  				=> $row['cache'],
-											'refresh'  				=> $row['refresh'],
-											'no_auth_bounce'  		=> $row['no_auth_bounce'],
-											'php_parse_location'	=> $row['php_parse_location'],
-											'allow_php'  			=> ($this->session->userdata['group_id'] == 1) ? $row['allow_php'] : 'n',
-											'template_type' 		=> $row['template_type'],
-											'template_data'  		=> $temp,
-											'edit_date'				=> $this->localize->now,
-											'last_author_id' 		=> 0,
-											'site_id'				=> $this->config->item('site_id')
-										 );
+								'group_id'				=> $group_id,
+								'template_name'  		=> $row['template_name'],
+								'template_notes'  		=> $row['template_notes'],
+								'cache'  				=> $row['cache'],
+								'refresh'  				=> $row['refresh'],
+								'no_auth_bounce'  		=> $row['no_auth_bounce'],
+								'php_parse_location'	=> $row['php_parse_location'],
+								'allow_php'  			=> ($this->session->userdata['group_id'] == 1) ? $row['allow_php'] : 'n',
+								'template_type' 		=> $row['template_type'],
+								'template_data'  		=> $temp,
+								'edit_date'				=> $this->localize->now,
+								'last_author_id' 		=> 0,
+								'site_id'				=> $this->config->item('site_id')
+							 );
 
-									$this->db->insert('templates', $data);
-							}
-					}
-				}
-				else
-				{
-					$type = 'core';
-					if ($fp = @opendir(PATH_MOD))
-					{
-						while (FALSE !== ($file = readdir($fp)))
-						{
-							if (strpos($file, '.') === FALSE)
-							{
-								if ($file == 'mailinglist')
-								{
-									$type = 'full';
-									break;
-								}
-							}
+							$this->db->insert('templates', $data);
 						}
-						closedir($fp);
-					}
-
-
-					require PATH_THEMES.'site_themes/'.$template_theme.'/'.$template_theme.'.php';
-
-					foreach ($template_matrix as $tmpl)
-					{
-						$Q[] = array($tmpl['0'](), "INSERT INTO exp_templates(group_id, template_name, template_type, template_data, edit_date, site_id)
-													VALUES ('$group_id', '".$this->db->escape_str($tmpl['0'])."', '".$this->db->escape_str($tmpl['1'])."', '{template}', '".$this->localize->now."', '".$this->db->escape_str($this->config->item('site_id'))."')");
-					}
-
-					if ($add_rss == TRUE)
-					{
-						require PATH_THEMES.'site_themes/rss/rss.php';
-						$Q[] = array(rss_2(), "INSERT INTO exp_templates(group_id, template_name, template_type, template_data, edit_date, site_id)
-												VALUES ('$group_id', 'rss_2.0', 'feed', '{template}', '".$this->db->escape_str($this->localize->now)."', '".$this->db->escape_str($this->config->item('site_id'))."')");
-
-						$Q[] = array(atom(), "INSERT INTO exp_templates(group_id, template_name, template_type, template_data, edit_date, site_id)
-											  VALUES ('$group_id', 'atom', 'feed', '{template}', '".$this->db->escape_str($this->localize->now)."', '".$this->db->escape_str($this->config->item('site_id'))."')");
-					}
-
-					foreach ($Q as $val)
-					{
-						$temp = $val['0'];
-
-						$temp = str_replace('channel="channel1"', 'channel="'.$_POST['channel_name'].'"', $temp);
-						$temp = str_replace("channel='channel1'", 'channel="'.$_POST['channel_name'].'"', $temp);
-						$temp = str_replace('my_channel="channel1"', 'my_channel="'.$_POST['channel_name'].'"', $temp);
-						$temp = str_replace("my_channel='channel1'", 'my_channel="'.$_POST['channel_name'].'"', $temp);
-
-						$temp = str_replace('channel="default_site"', 'channel="'.$_POST['channel_name'].'"', $temp);
-						$temp = str_replace("channel='default_site'", 'channel="'.$_POST['channel_name'].'"', $temp);
-						$temp = str_replace('my_channel="default_site"', 'my_channel="'.$_POST['channel_name'].'"', $temp);
-						$temp = str_replace("my_channel='default_site'", 'my_channel="'.$_POST['channel_name'].'"', $temp);
-
-						$temp = str_replace('my_template_group="site"', 'my_template_group="'.$group_name.'"', $temp);
-						$temp = str_replace("my_template_group='site'", 'my_template_group="'.$group_name.'"', $temp);
-
-						$temp = str_replace("{stylesheet=channel/channel_css}", "{stylesheet=".$group_name."/site_css}", $temp);
-						$temp = str_replace("{stylesheet=site/site_css}", "{stylesheet=".$group_name."/site_css}", $temp);
-
-						$temp = str_replace('preload_replace:master_channel_name="channel1"', 'preload_replace:master_channel_name="'.$_POST['channel_name'].'"', $temp);
-						$temp = preg_replace("#channel/(.+?)#", $group_name."/\\1", $temp);
-
-						$temp = addslashes($temp);
-						$sql  = str_replace('{template}', $temp, $val['1']);
-
-						$this->db->query($sql);
 					}
 				}
 			}
