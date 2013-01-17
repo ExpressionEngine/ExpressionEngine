@@ -482,67 +482,9 @@ class Admin_content extends CP_Controller {
 
 		$error = array();
 
-		 if (isset($_POST['comment_expiration']) && $_POST['comment_expiration'] == '')
-		 {
-			$_POST['comment_expiration'] = 0;
-		 }
-
-		// Template Error Trapping
-
-		if ($edit == FALSE)
+		if (isset($_POST['comment_expiration']) && $_POST['comment_expiration'] == '')
 		{
-			$create_templates	= ($this->input->get_post('create_templates') == FALSE OR $this->input->get_post('create_templates') == 'no') ? 'no' : $this->input->get_post('create_templates');
-			$old_group_id		= $this->input->get_post('old_group_id');
-			$group_name			= $this->input->post('group_name');
-
-			$template_theme	= $this->security->sanitize_filename($this->input->get_post('template_theme'));
-
-			unset($_POST['create_templates']);
-			unset($_POST['old_group_id']);
-			unset($_POST['group_name']);
-			unset($_POST['template_theme']);
-
-			if ($create_templates != 'no')
-			{
-				$this->lang->loadfile('design');
-
-				if ( ! $this->cp->allowed_group('can_admin_templates'))
-				{
-					show_error(lang('unauthorized_access'));
-				}
-
-				if ( ! $group_name)
-				{
-					show_error(lang('group_required'));
-				}
-
-				if ( ! preg_match("#^[a-zA-Z0-9_\-/]+$#i", $group_name))
-				{
-					show_error(lang('illegal_characters'));
-				}
-
-				$reserved[] = 'act';
-
-				if ($this->config->item("forum_is_installed") == 'y' AND $this->config->item("forum_trigger") != '')
-				{
-					$reserved[] = $this->config->item("forum_trigger");
-				}
-
-				if (in_array($group_name, $reserved))
-				{
-					show_error(lang('reserved_name'));
-				}
-
-				$this->db->where('site_id', $this->config->item('site_id'));
-				$this->db->where('group_name', $group_name);
-				
-				$count = $this->db->count_all_results('template_groups');
-
-				if ($count > 0)
-				{
-					show_error(lang('template_group_taken'));
-				}
-			}
+			$_POST['comment_expiration'] = 0;
 		}
 
 		if ($this->input->post('apply_comment_enabled_to_existing'))
@@ -682,23 +624,7 @@ class Admin_content extends CP_Controller {
 								case 'search_results_url':
 								case 'ping_return_url':
 								case 'rss_url':
-									if ($create_templates != 'no')
-									{
-										if ( ! isset($old_group_name))
-										{
-											$this->db->select('group_name');
-											$this->db->where('group_id', $old_group_id);
-											$gquery = $this->db->get('template_groups');
-
-											$old_group_name = $gquery->row('group_name');
-										}
-
-										$_POST[$key] = str_replace("/{$old_group_name}/", "/{$group_name}/", $val);
-									}
-									else
-									{
 										$_POST[$key] = $val;
-									}
 									break;
 								default :
 									$_POST[$key] = $val;
@@ -763,101 +689,6 @@ class Admin_content extends CP_Controller {
 			$channel_id = $this->db->escape_str($_POST['channel_id']);
 
 			$success_msg = lang('channel_updated');
-		}
-		
-		/** -----------------------------------------
-		/**  Create Templates
-		/** -----------------------------------------*/
-		if ($edit == FALSE)
-		{
-			if ($create_templates != 'no')
-			{
-				$query = $this->db->query("SELECT COUNT(*) AS count FROM exp_template_groups");
-				$group_order = $query->row('count')  +1;
-
-				$this->db->insert('template_groups', array(
-														 'group_name'	  => $group_name,
-														 'group_order'	 => $group_order,
-														 'is_site_default' => 'n',
-														 'site_id'			=> $this->config->item('site_id')
-														));
-
-				$group_id = $this->db->insert_id();
-
-				if ($create_templates == 'duplicate')
-				{
-					$this->db->select('group_name');
-					$this->db->where('group_id', $old_group_id);
-					$query = $this->db->get('template_groups');
-					$old_group_name = $query->row('group_name') ;
-
-					$this->db->select('template_name, template_data, template_type, 
-										template_notes, cache, refresh, no_auth_bounce, 
-										allow_php, php_parse_location');
-					$this->db->where('group_id', $old_group_id);
-					$query = $this->db->get('templates');
-
-					if ($query->num_rows() == 0)
-					{
-						$this->db->insert('templates', array(
-															'group_id'	  => $group_id,
-															'template_name' => 'index',
-															'edit_date'		=> $this->localize->now,
-															'site_id'		=> $this->config->item('site_id')
-														 ));
-					}
-					else
-					{
-						$old_channel_name = '';
-
-						foreach ($query->result_array() as $row)
-						{
-							if ($old_channel_name == '')
-							{
-								if (preg_match_all("/channel=[\"'](.+?)[\"']/", $row['template_data'], $matches))
-								{
-									for ($i = 0; $i < count($matches['1']); $i++)
-									{
-										if (substr($matches['1'][$i], 0, 1) != '{')
-										{
-											$old_channel_name = $matches['1'][$i];
-											break;
-										}
-									}
-								}
-							}
-
-							$temp = str_replace('channel="'.$old_channel_name.'"', 'channel="'.$_POST['channel_name'].'"', $row['template_data']);
-							$temp = str_replace("channel='".$old_channel_name."'", 'channel="'.$_POST['channel_name'].'"', $temp);
-							$temp = preg_replace("/{stylesheet=.+?\/(.+?)}/", "{stylesheet=".$group_name."/\\1}", $temp);
-
-							$temp = preg_replace("#preload_replace:master_channel_name=\".+?\"#", 'preload_replace:master_channel_name="'.$_POST['channel_name'].'"', $temp);
-							$temp = preg_replace("#preload_replace:master_channel_name=\'.+?\'#", "preload_replace:master_channel_name='".$_POST['channel_name']."'", $temp);
-							$temp = preg_replace('#preload_replace:my_template_group=(\042|\047)([^\\1]*?)\\1#', "preload_replace:my_template_group=\\1{$group_name}\\1", $temp);
-
-							$temp = preg_replace("#".$old_group_name."/(.+?)#", $group_name."/\\1", $temp);
-
-							$data = array(
-								'group_id'				=> $group_id,
-								'template_name'  		=> $row['template_name'],
-								'template_notes'  		=> $row['template_notes'],
-								'cache'  				=> $row['cache'],
-								'refresh'  				=> $row['refresh'],
-								'no_auth_bounce'  		=> $row['no_auth_bounce'],
-								'php_parse_location'	=> $row['php_parse_location'],
-								'allow_php'  			=> ($this->session->userdata['group_id'] == 1) ? $row['allow_php'] : 'n',
-								'template_type' 		=> $row['template_type'],
-								'template_data'  		=> $temp,
-								'edit_date'				=> $this->localize->now,
-								'last_author_id' 		=> 0,
-								'site_id'				=> $this->config->item('site_id')
-							 );
-
-							$this->db->insert('templates', $data);
-						}
-					}
-				}
-			}
 		}
 
 		$cp_message = $success_msg.NBS.NBS.$_POST['channel_title'];
