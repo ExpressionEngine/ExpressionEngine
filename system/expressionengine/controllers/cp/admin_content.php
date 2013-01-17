@@ -129,14 +129,10 @@ class Admin_content extends CP_Controller {
 		$this->cp->add_js_script('plugin', 'ee_url_title');
 
 		$this->javascript->output('
-			$("#edit_group_prefs").hide();
 			$("#channel_title").bind("keyup keydown", function() {
 				$(this).ee_url_title("#channel_name");
 			});
 		');
-
-		$this->javascript->click("#edit_group_prefs_y", '$("#edit_group_prefs").show();', FALSE);
-		$this->javascript->click("#edit_group_prefs_n", '$("#edit_group_prefs").hide();', FALSE);
 
 		$this->cp->set_variable('cp_page_title', lang('create_new_channel'));
 
@@ -463,17 +459,6 @@ class Admin_content extends CP_Controller {
 
 		$return = ($this->input->get_post('return')) ? TRUE : FALSE;
 		unset($_POST['return']);
-		$edit_group_prefs = TRUE;
-		
-		if ($this->input->get_post('edit_group_prefs') !== 'y')
-		{
-			unset($_POST['cat_group']);
-			unset($_POST['status_group']);
-			unset($_POST['field_group']);
-			$edit_group_prefs = FALSE;
-		}
-
-		unset($_POST['edit_group_prefs']);
 
 		$dupe_id = $this->input->get_post('duplicate_channel_prefs');
 		unset($_POST['duplicate_channel_prefs']);
@@ -548,7 +533,7 @@ class Admin_content extends CP_Controller {
 				
 				if ($query->num_rows() == 1)
 				{
-					$_POST['field_group'] = $query->row('group_id') ;
+					$_POST['field_group'] = $query->row('group_id');
 				}
 			}
 
@@ -646,8 +631,7 @@ class Admin_content extends CP_Controller {
 			
 			// If they made the channel?  Give access to that channel to the member group?
 
-
-			if ($dupe_id !== FALSE AND is_numeric($dupe_id) && $edit_group_prefs == FALSE)
+			if ($dupe_id !== FALSE AND is_numeric($dupe_id))
 			{
 				// Duplicate layouts
 				$this->layout->duplicate_layout($dupe_id, $channel_id);
