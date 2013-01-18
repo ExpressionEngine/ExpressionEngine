@@ -128,8 +128,6 @@ class EE_Typography extends CI_Typography {
 		$this->code_chunks			= array();
 		$this->code_counter			= 0;
 		
-		$this->EE->load->helper('string');
-		
 		$this->http_hidden 			= unique_marker('typography_url_protect'); // hash to protect URLs in [url] BBCode
 		$this->safe_img_src_end		= unique_marker('typography_img_src_end'); // hash to mark end of image URLs during sanitizing of image tags
 

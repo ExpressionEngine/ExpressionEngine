@@ -306,9 +306,6 @@ class Addons_extensions extends CP_Controller {
 		
 		if ($query->num_rows() > 0 && $query->row('settings')  != '')
 		{
-			// Load the string helper
-			$this->load->helper('string');
-
 			$current = strip_slashes(unserialize($query->row('settings') ));
 		}
 		

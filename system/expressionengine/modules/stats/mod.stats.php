@@ -165,9 +165,6 @@ class Stats {
 				$backspace = $match['1'];
 			}
 
-			// Load the string helper
-			$this->EE->load->helper('string');
-
 			$member_path = (preg_match("/".LD."member_path=(.+?)".RD."/", 
 							$this->EE->TMPL->tagdata, $match)) ? $match['1'] : '';
 			$member_path = str_replace("\"", "", $member_path);

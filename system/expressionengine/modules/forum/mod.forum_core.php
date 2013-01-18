@@ -6383,7 +6383,6 @@ class Forum_Core extends Forum {
 				$notify_addresses = str_replace($this->EE->session->userdata('email'), "", $notify_addresses);				
 			}
 			
-			$this->EE->load->helper('string');
 			// Remove multiple commas
 			$notify_addresses = reduce_multiples($notify_addresses, ',', TRUE);
 		}
@@ -7171,8 +7170,6 @@ class Forum_Core extends Forum {
 		$old_forum_id	= $query->row('forum_id') ;
 		
 		// Gather the target topic ID
-		// Load the string helper
-		$this->EE->load->helper('string');
 	
 		$new_topic_id = trim(trim_slashes($this->EE->input->post('url')));
 		
@@ -7499,8 +7496,6 @@ class Forum_Core extends Forum {
 		$title 		= $query->row('title') ;
 
 		// Gather the merge ID
-		// Load the string helper
-		$this->EE->load->helper('string');
 		
 		$merge_id = trim(trim_slashes($this->EE->input->post('url')));
 		
@@ -7864,7 +7859,7 @@ class Forum_Core extends Forum {
 			$this->EE->email->send();
 		}
 
-		$this->EE->functions->redirect($this->EE->functions->remove_double_slashes($_POST['RET'].$new_forum_id.'/'));
+		$this->EE->functions->redirect(reduce_double_slashes($_POST['RET'].$new_forum_id.'/'));
 		exit;	
 	}
 
@@ -10921,7 +10916,7 @@ class Forum_Core extends Forum {
 				{
 					$tagdata = $this->EE->TMPL->swap_var_single(
 														$key,
-														$this->EE->functions->remove_double_slashes($row['board_forum_url'].'/viewthread/'.$row['topic_id'].'/'),
+														reduce_double_slashes($row['board_forum_url'].'/viewthread/'.$row['topic_id'].'/'),
 														$tagdata
 													 );
 				}

@@ -92,7 +92,7 @@ class Content_files extends CP_Controller {
 	public function index()
 	{
 		$this->load->library('table');
-		$this->load->helper(array('string', 'search'));
+		$this->load->helper('search');
 		$this->api->instantiate('channel_categories');
 		
 		$this->table->set_base_url('C=content_files');
@@ -363,7 +363,7 @@ class Content_files extends CP_Controller {
 
 				$file_location = rtrim($this->_upload_dirs[$file['upload_location_id']]['url'], '/').'/'.rawurlencode($file['file_name']);
 
-				$file_path = $this->functions->remove_double_slashes(
+				$file_path = reduce_double_slashes(
 					$this->_upload_dirs[$file['upload_location_id']]['server_path'].'/'.$file['file_name']
 				);
 
@@ -1353,11 +1353,11 @@ class Content_files extends CP_Controller {
 				continue;
 			}
 			
-			$file_location = $this->functions->remove_double_slashes(
+			$file_location = reduce_double_slashes(
 				$dir_data['url'].'/'.$file['name']
 			);
 
-			$file_path = $this->functions->remove_double_slashes(
+			$file_path = reduce_double_slashes(
 				$dir_data['server_path'].'/'.$file['name']
 			);
 

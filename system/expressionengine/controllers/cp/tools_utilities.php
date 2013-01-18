@@ -1768,8 +1768,6 @@ class Tools_utilities extends CP_Controller {
 		{
 			show_error(lang('unauthorized_access'));
 		}
-
-		$this->load->helper('string');
 		
 		$this->cp->set_variable('cp_page_title', lang('view_xml'));
 		$this->cp->set_breadcrumb(BASE.AMP.'C=tools_utilities'.AMP.'M=member_import', lang('member_import_utility'));
@@ -1798,8 +1796,6 @@ class Tools_utilities extends CP_Controller {
 		{
 			show_error(lang('unauthorized_access'));
 		}
-
-		$this->load->helper('string');
 			
 		$this->cp->set_variable('cp_page_title', lang('parse_error'));
 		$this->cp->set_breadcrumb(BASE.AMP.'C=tools_utilities'.AMP.'M=member_import', lang('member_import_utility'));
