@@ -280,7 +280,7 @@ class Forum_mcp {
 			$vars['_boards'][$row['board_id']] = form_prep($row['board_label']);
 		}
 
-		$this->EE->cp->set_variable('cp_page_title', $this->EE->lang->line($title));
+		$this->EE->view->cp_page_title = $this->EE->lang->line($title);
 		$this->EE->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=forum', $this->EE->lang->line('forum_module_name'));
 
 		// Using _add_crumb for templates means we end with a breadcrumb after the page title...
@@ -296,7 +296,7 @@ class Forum_mcp {
 			{
 				if ($key == (count($this->_add_crumb) - 1))
 				{
-					$this->EE->cp->set_variable('cp_page_title', current($crumb));
+					$this->EE->view->cp_page_title = current($crumb);
 				}
 				else
 				{
@@ -412,7 +412,7 @@ class Forum_mcp {
 			return FALSE;
 		}
 		
-		$this->EE->cp->set_variable('cp_page_title', $this->EE->lang->line('delete_board_confirmation'));
+		$this->EE->view->cp_page_title = $this->EE->lang->line('delete_board_confirmation');
 		
 		$vars['form_action'] = 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=forum'.AMP.'method=delete_board';
 		$vars['hidden'] = array('board_id' => $board_id);

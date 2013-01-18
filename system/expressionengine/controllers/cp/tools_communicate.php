@@ -68,7 +68,7 @@ class Tools_communicate extends CP_Controller {
 		$this->load->model('tools_model');
 		$this->lang->loadfile('tools');
 
-		$this->cp->set_variable('cp_page_title', lang('communicate'));
+		$this->view->cp_page_title = lang('communicate');
 
 		$this->javascript->output('$("#plaintext_alt_cont").hide();');
 		
@@ -137,7 +137,7 @@ class Tools_communicate extends CP_Controller {
 				show_error(lang('not_allowed_to_email_mailinglist'));
 			}
 			
-			$this->cp->set_variable('cp_page_title', lang('view_email_cache'));
+			$this->view->cp_page_title = lang('view_email_cache');
 			$vars['view_email_cache'] = TRUE;
 			
 			// Fetch cached data
@@ -325,7 +325,7 @@ class Tools_communicate extends CP_Controller {
 	function send_email()
 	{
 		$this->load->library('email');
-		$this->cp->set_variable('cp_page_title', lang('email_success'));
+		$this->view->cp_page_title = lang('email_success');
 
 		// Fetch $_POST data
 		// We'll turn the $_POST data into variables for simplicity
@@ -382,10 +382,10 @@ class Tools_communicate extends CP_Controller {
 		}
 
 		// a bit of a breadcrumb override is needed
-		$this->cp->set_variable('cp_breadcrumbs', array(
+		$this->view->cp_breadcrumbs = array(
 			BASE.AMP.'C=tools' => lang('tools'),
 			BASE.AMP.'C=tools_communicate'=> lang('communicate')
-		));
+		);
 
 		// Assign data for caching
 		$cache_data = array(
@@ -717,7 +717,7 @@ class Tools_communicate extends CP_Controller {
 			'refresh_heading'	=> lang('sending_email'),
 		);
 		
-		$this->cp->set_variable('cp_page_title', lang('sending_email'));
+		$this->view->cp_page_title = lang('sending_email');
 		
 		$this->load->view('_shared/refresh_message', $data);
 	}
@@ -961,7 +961,7 @@ class Tools_communicate extends CP_Controller {
 
 			$total = $total_sent + $batch;
 
-			$this->cp->set_variable('cp_page_title', lang('email_success'));
+			$this->view->cp_page_title = lang('email_success');
 		
 			$this->cp->render('tools/email_sent', array('debug' => $this->email->_debug_msg, 'total_sent' => $total));
 		}
@@ -1024,13 +1024,13 @@ class Tools_communicate extends CP_Controller {
 			);'
 		);
 
-		$this->cp->set_variable('cp_page_title', lang('view_email_cache'));
+		$this->view->cp_page_title = lang('view_email_cache');
 
 		// a bit of a breadcrumb override is needed
-		$this->cp->set_variable('cp_breadcrumbs', array(
+		$this->view->cp_breadcrumbs = array(
 			BASE.AMP.'C=tools' => lang('tools'),
 			BASE.AMP.'C=tools_communicate'=> lang('communicate')
-		));
+		);
 		
 		$this->cp->render('tools/view_cached_email', $vars);
 	}
@@ -1124,7 +1124,7 @@ class Tools_communicate extends CP_Controller {
 			$vars['hidden']['email['.$i++.']'] = $row->cache_id;
 		}
 		
-		$this->cp->set_variable('cp_page_title', lang('delete_emails'));
+		$this->view->cp_page_title = lang('delete_emails');
 		$this->cp->set_breadcrumb(BASE.AMP.'C=tools_communicate'.AMP.'M=view_cache', lang('view_email_cache'));
 		
 		$this->cp->render('tools/email_delete_confirm', $vars);
@@ -1216,13 +1216,13 @@ class Tools_communicate extends CP_Controller {
 			'allow_img_url' => 'y'
 		));
 		
-		$this->cp->set_variable('cp_page_title', $vars['subject']);
+		$this->view->cp_page_title = $vars['subject'];
 
 		// a bit of a breadcrumb override is needed
-		$this->cp->set_variable('cp_breadcrumbs', array(
+		$this->view->cp_breadcrumbs = array(
 			BASE.AMP.'C=tools' => lang('tools'),
 			BASE.AMP.'C=tools_communicate'=> lang('communicate')
-		));
+		);
 
 		$this->cp->render('tools/view_email', $vars);
 	}

@@ -49,7 +49,7 @@ class Search extends CP_Controller {
 		$this->load->helper('search');
 		
 		$vars['cp_page_title'] = lang('search_results');
-		$this->cp->set_variable('cp_page_title', $vars['cp_page_title']);
+		$this->view->cp_page_title = $vars['cp_page_title'];
 		
 		// Saved search
 		if ($search = $this->input->get('saved'))
@@ -116,7 +116,7 @@ class Search extends CP_Controller {
 		if ( ! $flag)
 		{
 			$vars['cp_page_title'] = 'Rebuilding Index';
-			$this->cp->set_variable('cp_page_title', $vars['cp_page_title']);
+			$this->view->cp_page_title = $vars['cp_page_title'];
 			
 			// Meta refresh to start the process
 			$meta = '<meta http-equiv="refresh" content="1;url='.BASE.AMP.'C=search'.AMP.'M=build_index'.AMP.'language='.$language.AMP.'working=y'.$saved.'" />';

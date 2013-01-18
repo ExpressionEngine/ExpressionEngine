@@ -110,7 +110,7 @@ class Admin_system extends CP_Controller {
 			}
 		}');
 
-		$this->cp->set_variable('cp_page_title', lang($type));
+		$this->view->cp_page_title = lang($type);
 
 		$this->load->library('table');
 		$this->load->library('form_validation');
@@ -625,7 +625,7 @@ class Admin_system extends CP_Controller {
 	{
 		$this->_restrict_prefs_access();
 
-		$this->cp->set_variable('cp_page_title', lang('config_editor'));
+		$this->view->cp_page_title = lang('config_editor');
 
 		$vars['config_items'] = $this->config->default_ini;
 		ksort($vars['config_items']);

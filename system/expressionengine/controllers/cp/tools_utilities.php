@@ -83,7 +83,7 @@ class Tools_utilities extends CP_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->cp->set_variable('cp_page_title', lang('import_utilities'));
+		$this->view->cp_page_title = lang('import_utilities');
 		$this->cp->render('tools/import_utilities');
 	}
 	
@@ -107,7 +107,7 @@ class Tools_utilities extends CP_Controller {
 
 		$this->lang->loadfile('member_import');
 
-		$this->cp->set_variable('cp_page_title', lang('member_import'));
+		$this->view->cp_page_title = lang('member_import');
 
 		$this->cp->render('tools/member_import');
 	}
@@ -150,7 +150,7 @@ class Tools_utilities extends CP_Controller {
 		$this->lang->loadfile('member_import');
 		$this->load->model('member_model');
 
-		$this->cp->set_variable('cp_page_title', lang('import_from_xml'));
+		$this->view->cp_page_title = lang('import_from_xml');
 		
 		$get_groups = $this->member_model->get_member_groups(); 
 		
@@ -321,7 +321,7 @@ class Tools_utilities extends CP_Controller {
 		$this->load->library('table');
 		$this->load->helper('date');
 
-		$this->cp->set_variable('cp_page_title', lang('confirm_details'));
+		$this->view->cp_page_title = lang('confirm_details');
 		$this->cp->set_breadcrumb(BASE.AMP.'C=tools_utilities'.AMP.'M=member_import', lang('member_import_utility'));
 		$this->cp->set_breadcrumb(BASE.AMP.'C=tools_utilities'.AMP.'M=import_from_xml', lang('import_from_xml'));
 	
@@ -402,7 +402,7 @@ class Tools_utilities extends CP_Controller {
 		$this->load->library('table');
 		$this->load->helper('date');
 
-		$this->cp->set_variable('cp_page_title', lang('confirm_details'));
+		$this->view->cp_page_title = lang('confirm_details');
 		$this->cp->set_breadcrumb(BASE.AMP.'C=tools_utilities'.AMP.'M=member_import', lang('member_import_utility'));
 		$this->cp->set_breadcrumb(BASE.AMP.'C=tools_utilities'.AMP.'M=import_from_xml', lang('import_from_xml'));
 	
@@ -1277,7 +1277,7 @@ class Tools_utilities extends CP_Controller {
 	 */	
 	private function _convert_from_delimited_form()
 	{
-		$this->cp->set_variable('cp_page_title', lang('convert_from_delimited'));
+		$this->view->cp_page_title = lang('convert_from_delimited');
 		$this->cp->set_breadcrumb(BASE.AMP.'C=tools_utilities'.AMP.'M=member_import', lang('member_import_utility'));
 
 		$this->javascript->output('
@@ -1384,7 +1384,7 @@ class Tools_utilities extends CP_Controller {
 				
 		$vars['encrypt'] = '';
 		
-		$this->cp->set_variable('cp_page_title', lang('assign_fields'));
+		$this->view->cp_page_title = lang('assign_fields');
 		$this->cp->set_breadcrumb(BASE.AMP.'C=tools_utilities'.AMP.'M=member_import', lang('member_import_utility'));
 
 		
@@ -1659,7 +1659,7 @@ class Tools_utilities extends CP_Controller {
 		$vars['type_view'] = FALSE;
 		$vars['type_download'] = TRUE;		
 
-		$this->cp->set_variable('cp_page_title', lang('confirm_field_assignment'));
+		$this->view->cp_page_title = lang('confirm_field_assignment');
 		$this->cp->set_breadcrumb(BASE.AMP.'C=tools_utilities'.AMP.'M=member_import', lang('member_import_utility'));
 		
 		$this->cp->render('tools/confirm_convert_xml', $vars);
@@ -1769,7 +1769,7 @@ class Tools_utilities extends CP_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 		
-		$this->cp->set_variable('cp_page_title', lang('view_xml'));
+		$this->view->cp_page_title = lang('view_xml');
 		$this->cp->set_breadcrumb(BASE.AMP.'C=tools_utilities'.AMP.'M=member_import', lang('member_import_utility'));
 
 		
@@ -1797,7 +1797,7 @@ class Tools_utilities extends CP_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 			
-		$this->cp->set_variable('cp_page_title', lang('parse_error'));
+		$this->view->cp_page_title = lang('parse_error');
 		$this->cp->set_breadcrumb(BASE.AMP.'C=tools_utilities'.AMP.'M=member_import', lang('member_import_utility'));
 
 		$out = '<ul>';
@@ -1870,7 +1870,7 @@ class Tools_utilities extends CP_Controller {
 			$not_writeable = lang('translation_dir_unwritable');
 		}
 
-		$this->cp->set_variable('cp_page_title', lang('translation_tool'));
+		$this->view->cp_page_title = lang('translation_tool');
 		$this->load->model('tools_model');
 		
 		$data = array(
@@ -1902,7 +1902,7 @@ class Tools_utilities extends CP_Controller {
 		$this->load->model('tools_model');
 		$language_file = $this->input->get_post('language_file');
 		
-		$this->cp->set_variable('cp_page_title', $language_file);
+		$this->view->cp_page_title = $language_file;
 		$this->cp->set_breadcrumb(BASE.AMP.'C=tools_utilities'.AMP.'M=translation_tool', lang('translation_tool'));
 
 		$this->jquery->tablesorter('.mainTable', '{
@@ -2049,12 +2049,12 @@ class Tools_utilities extends CP_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 		
-		$this->cp->set_variable('cp_page_title', lang('php_info'));
+		$this->view->cp_page_title = lang('php_info');
 		// a bit of a breadcrumb override is needed
-		$this->cp->set_variable('cp_breadcrumbs', array(
+		$this->view->cp_breadcrumbs = array(
 			BASE.AMP.'C=tools' => lang('tools'),
 			BASE.AMP.'C=tools_utilities'=> lang('tools_utilities')
-		));
+		);
 
 		ob_start();
 

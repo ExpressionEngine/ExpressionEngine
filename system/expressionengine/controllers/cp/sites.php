@@ -87,7 +87,7 @@ class Sites extends CP_Controller {
 		
 		$vars['sites'] = $this->session->userdata('assigned_sites');
 
-		$this->cp->set_variable('cp_page_title', lang('switch_site'));
+		$this->view->cp_page_title = lang('switch_site');
 		$this->cp->set_breadcrumb(BASE.AMP.'C=sites', lang('site_management'));
 				
 		$vars['can_admin_sites'] = $this->cp->allowed_group('can_admin_sites');
@@ -190,7 +190,7 @@ class Sites extends CP_Controller {
 		$this->load->library('table');
 		$this->load->model('site_model');
 
-		$this->cp->set_variable('cp_page_title', lang('site_management'));
+		$this->view->cp_page_title = lang('site_management');
 
 		$vars['msm_version'] = $this->version;
 		$vars['msm_build_number'] = $this->build_number;
@@ -244,7 +244,7 @@ class Sites extends CP_Controller {
 		$site_id = $this->input->get('site_id');
 		
 		$title = ($site_id) ? lang('edit_site') : lang('create_new_site');
-		$this->cp->set_variable('cp_page_title', $title);
+		$this->view->cp_page_title = $title;
 		
 		$this->load->model(array(
 			'site_model', 
@@ -1861,7 +1861,7 @@ class Sites extends CP_Controller {
 			return FALSE;
 		}
 		
-		$this->cp->set_variable('cp_page_title', lang('delete_site'));
+		$this->view->cp_page_title = lang('delete_site');
 		
 		$vars['site_id'] = $site_id;
 		$vars['message'] = lang('delete_site_confirmation');

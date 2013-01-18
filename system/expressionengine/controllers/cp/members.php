@@ -209,7 +209,7 @@ class Members extends CP_Controller {
 			$vars['delete_button_label'] = lang('delete_selected');
 		}
 		
-		$this->cp->set_variable('cp_page_title', lang('view_members'));
+		$this->view->cp_page_title = lang('view_members');
 		$this->cp->render('members/view_members', $vars);
 	}
 
@@ -515,7 +515,7 @@ class Members extends CP_Controller {
 			}
 		}
 
-		$this->cp->set_variable('cp_page_title', lang('delete_member'));
+		$this->view->cp_page_title = lang('delete_member');
 		
 		$this->cp->render('members/delete_confirm', $vars);
 	}
@@ -550,7 +550,7 @@ class Members extends CP_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->cp->set_variable('cp_page_title', lang('login_as_member'));
+		$this->view->cp_page_title = lang('login_as_member');
 
 		// Fetch member data
 		$this->db->from('members, member_groups');
@@ -906,7 +906,7 @@ class Members extends CP_Controller {
 
 		$vars['paginate'] = $this->pagination->create_links();
 
-		$this->cp->set_variable('cp_page_title', lang('member_groups'));
+		$this->view->cp_page_title = lang('member_groups');
 
 		$this->jquery->tablesorter('.mainTable', '{headers: {1: {sorter: false}, 5: {sorter: false}}, widgets: ["zebra"]}');
 		
@@ -979,8 +979,7 @@ class Members extends CP_Controller {
 			$id = $clone_id;
 		}
 
-		$this->cp->set_variable('cp_page_title', 
-								($group_id !== 0) ? lang('edit_member_group') : lang('create_member_group'));
+		$this->view->cp_page_title = ($group_id !== 0) ? lang('edit_member_group') : lang('create_member_group');
 		$this->cp->set_breadcrumb(BASE.AMP.'C=members'.AMP.'M=member_group_manager', lang('member_groups'));
 		
 		$group_data = $this->_setup_group_data($id, $site_id);
@@ -1895,7 +1894,7 @@ class Members extends CP_Controller {
 			}
 		}
 
-		$this->cp->set_variable('cp_page_title', lang('member_prefs'));
+		$this->view->cp_page_title = lang('member_prefs');
 
 		$this->jquery->tablesorter('table', '{
 			headers: {},
@@ -2051,7 +2050,7 @@ class Members extends CP_Controller {
 			}		
 		}			
 
-		$this->cp->set_variable('cp_page_title', lang('delete_member_group'));
+		$this->view->cp_page_title = lang('delete_member_group');
 		
 		$this->cp->render('members/delete_member_group_conf', $vars);
 	}
@@ -2115,7 +2114,7 @@ class Members extends CP_Controller {
 		}
 		
 		$this->lang->loadfile('myaccount');
-		$this->cp->set_variable('cp_page_title', lang('register_member'));
+		$this->view->cp_page_title = lang('register_member');
 		
 		// Find out if the user has access to any member groups
 		$is_locked = ($this->session->userdata['group_id'] == 1) ? array() : array('is_locked' => 'n');
@@ -2472,7 +2471,7 @@ class Members extends CP_Controller {
 			}
 		}
 
-		$this->cp->set_variable('cp_page_title', lang('user_banning'));
+		$this->view->cp_page_title = lang('user_banning');
 
 		$this->cp->render('members/member_banning', $vars);
 	}
@@ -2556,7 +2555,7 @@ class Members extends CP_Controller {
 
 		$vars['fields'] = $this->member_model->get_custom_member_fields();
 
-		$this->cp->set_variable('cp_page_title', lang('custom_profile_fields'));
+		$this->view->cp_page_title = lang('custom_profile_fields');
 
 		$this->jquery->tablesorter('.mainTable', '{headers: {3: {sorter: false}, 4: {sorter: false}},	widgets: ["zebra"]}');
 		
@@ -2759,7 +2758,7 @@ class Members extends CP_Controller {
 			}
 		}
 
-		$this->cp->set_variable('cp_page_title', lang($title));
+		$this->view->cp_page_title = lang($title);
 
 		$additional = '<script type="text/javascript">
 					function showhide_element(id)
@@ -2995,7 +2994,7 @@ class Members extends CP_Controller {
 		$vars['form_hidden'] = array('m_field_id'=>$m_field_id);
 		$vars['field_name'] = $query->row('m_field_label');
 				
-		$this->cp->set_variable('cp_page_title', lang('delete_field'));
+		$this->view->cp_page_title = lang('delete_field');
 		
 		$this->cp->render('members/delete_profile_fields_confirm', $vars);
 	}
@@ -3066,7 +3065,7 @@ class Members extends CP_Controller {
 				
 		$vars['fields'] = $fields;
 		
-		$this->cp->set_variable('cp_page_title', lang('edit_field_order'));
+		$this->view->cp_page_title = lang('edit_field_order');
 		$this->cp->set_breadcrumb(BASE.AMP.'C=members'.AMP.'M=custom_profile_fields', lang('custom_profile_fields'));
 
 		$this->cp->render('members/edit_field_order', $vars);
@@ -3129,7 +3128,7 @@ class Members extends CP_Controller {
 		
         $this->load->library('table');
 
-		$this->cp->set_variable('cp_page_title', lang('ip_search'));
+		$this->view->cp_page_title = lang('ip_search');
 
 		$vars['message'] = $message;
 
@@ -3327,7 +3326,7 @@ class Members extends CP_Controller {
 		
 		}
 
-		$this->cp->set_variable('cp_page_title', lang('ip_search'));
+		$this->view->cp_page_title = lang('ip_search');
 
 		$vars['grand_total'] = $grand_total;
 
@@ -3351,7 +3350,7 @@ class Members extends CP_Controller {
 		$this->load->library('table');
 		$vars['message'] = FALSE;
 
-		$this->cp->set_variable('cp_page_title', lang('member_validation'));
+		$this->view->cp_page_title = lang('member_validation');
 	
 		$this->jquery->tablesorter('.mainTable', '{headers: {1: {sorter: false}},	widgets: ["zebra"]}');
 
@@ -3505,7 +3504,7 @@ class Members extends CP_Controller {
 			
 		$vars['message'] = ($this->input->post('action') == 'activate') ? lang('members_are_validated') : lang('members_are_deleted');
 
-		$this->cp->set_variable('cp_page_title', $vars['message']);
+		$this->view->cp_page_title = $vars['message'];
 
 		$this->cp->render("members/message", $vars);
 	}	
