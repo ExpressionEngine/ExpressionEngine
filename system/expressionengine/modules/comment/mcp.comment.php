@@ -122,7 +122,7 @@ class Comment_mcp {
 			'lang.selection_required' => lang('selection_required')
 		));
 
-		$this->EE->cp->set_variable('cp_page_title', lang('comments'));
+		$this->EE->view->cp_page_title = lang('comments');
 
 		$data = array_merge(array(
 			'channel_select_opts' 	=> $this->_channel_select_opts(),
@@ -719,11 +719,12 @@ class Comment_mcp {
 
 		$this->EE->javascript->set_global('comment.run_script', 'setup_edit');
 
-		$this->EE->cp->set_variable('cp_page_title', lang('edit_comment'));
+		$this->EE->view->cp_page_title = lang('edit_comment');
 
 		// a bit of a breadcrumb override is needed
-		$this->EE->cp->set_variable('cp_breadcrumbs', array(
-			$this->base_url => lang('comments')));
+		$this->EE->view->cp_breadcrumbs = array(
+			$this->base_url => lang('comments')
+		);
 
 		$vars['hidden'] = $hidden;
 
@@ -1181,12 +1182,11 @@ class Comment_mcp {
 			$this->EE->functions->redirect($this->base_url);
 		}
 
-		$this->EE->cp->set_variable('cp_page_title', lang('delete_confirm'));
+		$this->EE->view->cp_page_title = lang('delete_confirm');
 
-		$this->EE->cp->set_variable('cp_breadcrumbs', array(
-			$this->base_url => lang('comments'),
-
-		));
+		$this->EE->view->cp_breadcrumbs = array(
+			$this->base_url => lang('comments')
+		);
 
 		$vars = array();
 
@@ -1675,10 +1675,11 @@ class Comment_mcp {
 		$vars = array('action_url' => 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=comment'.AMP.'method=save_settings'
 		);
 
-		$this->EE->cp->set_variable('cp_page_title', lang('comment_settings'));
+		$this->EE->view->cp_page_title = lang('comment_settings');
 
-		$this->EE->cp->set_variable('cp_breadcrumbs', array(
-			$this->base_url => lang('comments')));
+		$this->EE->view->cp_breadcrumbs = array(
+			$this->base_url => lang('comments')
+		);
 
 		$vars['comment_word_censoring']			= ($this->EE->config->item('comment_word_censoring') == 'y') ? TRUE : FALSE;
 		$vars['comment_moderation_override']	= ($this->EE->config->item('comment_moderation_override') == 'y') ? TRUE : FALSE;

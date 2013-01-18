@@ -210,7 +210,7 @@ class Content_files extends CP_Controller {
 		
 		
 		// Page Title
-		$this->cp->set_variable('cp_page_title', lang('content_files'));
+		$this->view->cp_page_title = lang('content_files');
 		
 		// both filebrowser and fileuploader need to be loaded because 
 		// fileuploader depends on filebrowser's methods
@@ -678,7 +678,7 @@ class Content_files extends CP_Controller {
 			'del_notice'	=> (count($files) == 1) ? 'confirm_del_file' : 'confirm_del_files'
 		);
 
-		$this->cp->set_variable('cp_page_title', lang('delete_selected_files'));
+		$this->view->cp_page_title = lang('delete_selected_files');
 
 		$this->cp->render('content/files/confirm_file_delete', $data);
 	}
@@ -976,7 +976,7 @@ class Content_files extends CP_Controller {
 	private function _edit_setup($page_title_lang_key)
 	{
 		// Page Title
-		$this->cp->set_variable('cp_page_title', lang($page_title_lang_key));
+		$this->view->cp_page_title = lang($page_title_lang_key);
 		$this->cp->set_breadcrumb(BASE.AMP.'C=content_files', lang('file_manager'));
 
 		// Do some basic permissions checking
@@ -1153,7 +1153,7 @@ class Content_files extends CP_Controller {
 			)
 		));
 
-		$this->cp->set_variable('cp_page_title', $this->_upload_dirs[$cid]['name']);
+		$this->view->cp_page_title = $this->_upload_dirs[$cid]['name'];
 
 		$this->cp->set_breadcrumb(BASE.AMP.'C=content_files', lang('file_manager'));			
 		$this->cp->set_breadcrumb(
@@ -1443,7 +1443,7 @@ class Content_files extends CP_Controller {
 		$this->load->library('table');
 		$this->load->model('file_model');
 
-		$this->cp->set_variable('cp_page_title', lang('watermark_prefs'));
+		$this->view->cp_page_title = lang('watermark_prefs');
 		$this->cp->set_breadcrumb($this->_base_url, lang('file_manager'));		
 		
 
@@ -1484,7 +1484,7 @@ class Content_files extends CP_Controller {
 		$id = $this->input->get_post('id');
 		$type = ($id) ? 'edit' : 'new';	
 		
-		$this->cp->set_variable('cp_page_title', lang('wm_'.$type));
+		$this->view->cp_page_title = lang('wm_'.$type);
 		$this->cp->set_breadcrumb($this->_base_url, lang('file_manager'));
 		$this->cp->set_breadcrumb($this->_base_url.AMP.'M=watermark_preferences', lang('watermark_prefs'));
 
@@ -1759,7 +1759,7 @@ class Content_files extends CP_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->cp->set_variable('cp_page_title', lang('delete_wm_preference'));
+		$this->view->cp_page_title = lang('delete_wm_preference');
 
 
 		$this->cp->set_breadcrumb($this->_base_url, lang('file_manager'));
@@ -1842,7 +1842,7 @@ class Content_files extends CP_Controller {
 
 		$this->load->library('table');
 
-		$this->cp->set_variable('cp_page_title', lang('file_upload_prefs'));
+		$this->view->cp_page_title = lang('file_upload_prefs');
 		$this->cp->set_breadcrumb(BASE.AMP.'C=content_files', lang('file_manager'));
 
 		$this->jquery->tablesorter('.mainTable', '{
@@ -2005,7 +2005,7 @@ class Content_files extends CP_Controller {
 
 		$title = ($type == 'edit') ? 'edit_file_upload_preferences' : 'new_file_upload_preferences';
 
-		$this->cp->set_variable('cp_page_title', lang($title));
+		$this->view->cp_page_title = lang($title);
 		$data['lang_line'] = ($type == 'edit') ? 'update' : 'submit';
 
 		$this->cp->set_breadcrumb($this->_base_url.AMP.'M=file_upload_preferences',
@@ -2356,7 +2356,7 @@ class Content_files extends CP_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->cp->set_variable('cp_page_title', lang('delete_upload_preference'));
+		$this->view->cp_page_title = lang('delete_upload_preference');
 		$this->cp->set_breadcrumb(BASE.AMP.'C=content_files', lang('file_manager'));
 		$this->cp->set_breadcrumb(BASE.AMP.'C=content_files'.AMP.'M=file_upload_preferences',
 								lang('file_upload_preferences'));
@@ -2433,7 +2433,7 @@ class Content_files extends CP_Controller {
 			$this->_process_batch_upload();
 		}
 
-		$this->cp->set_variable('cp_page_title', lang('batch_upload'));
+		$this->view->cp_page_title = lang('batch_upload');
 		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=file_upload_preferences',
 								lang('file_upload_preferences'));
 
@@ -2651,7 +2651,7 @@ class Content_files extends CP_Controller {
 			}
 		}
 
-		$this->cp->set_variable('cp_page_title', lang('batch_upload'));
+		$this->view->cp_page_title = lang('batch_upload');
 
 		$data = array(
 			'count_lang'			=> sprintf(lang('files_count_lang'),

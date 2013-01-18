@@ -135,7 +135,7 @@ class Design extends CP_Controller {
 		$this->load->model('template_model');
 		$this->lang->loadfile('admin_content');
 
-		$this->cp->set_variable('cp_page_title', lang('new_template_form'));
+		$this->view->cp_page_title = lang('new_template_form');
 
 		$template_groups_query = $this->template_model->get_template_groups();
 		$vars['template_groups'] = $template_groups_query->result_array();
@@ -184,7 +184,7 @@ class Design extends CP_Controller {
 		$this->load->model('template_model');
 		$this->lang->loadfile('admin_content');
 
-		$this->cp->set_variable('cp_page_title', lang('new_template_form'));
+		$this->view->cp_page_title = lang('new_template_form');
 
 		$template_groups_query = $this->template_model->get_template_groups();
 		$vars['template_groups'] = $template_groups_query->result_array();
@@ -389,7 +389,7 @@ class Design extends CP_Controller {
 
 		//create_new_template
 
-		$this->cp->set_variable('cp_page_title', lang('create_new_template'));
+		$this->view->cp_page_title = lang('create_new_template');
 		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager'.AMP.'tgpref='.$group_id, lang('template_manager'));		
 
 		$this->cp->render('design/new_template', $vars);
@@ -412,7 +412,7 @@ class Design extends CP_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 		
-		$this->cp->set_variable('cp_page_title', lang('create_new_template_group'));
+		$this->view->cp_page_title = lang('create_new_template_group');
 		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager', lang('template_manager'));
 
 		$this->load->model('template_model');
@@ -487,7 +487,7 @@ class Design extends CP_Controller {
 			widgets: ["zebra"]
 		}');
 		
-		$this->cp->set_variable('cp_page_title', lang('global_template_preferences'));
+		$this->view->cp_page_title = lang('global_template_preferences');
 		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager', lang('template_manager'));
 		
         $vars['template_data'] = array('' => lang('none'));	
@@ -602,7 +602,7 @@ class Design extends CP_Controller {
 		}');
 
 		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager', lang('template_manager'));
-		$this->cp->set_variable('cp_page_title', lang('snippets'));
+		$this->view->cp_page_title = lang('snippets');
 
 		$vars['snippets'] = $this->template_model->get_snippets();
 		$vars['snippets_count'] = $vars['snippets']->num_rows();
@@ -666,7 +666,7 @@ class Design extends CP_Controller {
 			}			
 		}
 
-		$this->cp->set_variable('cp_page_title', $vars['create_edit']);
+		$this->view->cp_page_title = $vars['create_edit'];
 		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager', lang('template_manager'));
 		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=snippets', lang('snippets'));
 		
@@ -814,7 +814,7 @@ class Design extends CP_Controller {
 			$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager', lang('template_manager'));
 			$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=snippets', lang('snippets'));
 			
-			$this->cp->set_variable('cp_page_title', lang('delete_snippet'));				
+			$this->view->cp_page_title = lang('delete_snippet');				
 			$this->cp->render('design/snippets_delete', $snippet);
 		}
 	}
@@ -838,7 +838,7 @@ class Design extends CP_Controller {
 		$this->load->model('template_model');
 		$this->load->library('table');
 	
-		$this->cp->set_variable('cp_page_title', lang('global_variables'));
+		$this->view->cp_page_title = lang('global_variables');
 		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager', lang('template_manager'));
 		
 		$this->jquery->tablesorter('.mainTable', '{
@@ -924,7 +924,7 @@ class Design extends CP_Controller {
 			$vars['variable_name'] = $global_variable_info->variable_name;		
 			$vars['variable_data'] = $global_variable_info->variable_data;		
 
-			$this->cp->set_variable('cp_page_title', lang('global_var_update'));
+			$this->view->cp_page_title = lang('global_var_update');
 
 			$this->cp->render('design/global_variables_update', $vars);
 		}	
@@ -988,7 +988,7 @@ class Design extends CP_Controller {
 		}
 		else
 		{		
-			$this->cp->set_variable('cp_page_title', lang('create_new_global_variable'));
+			$this->view->cp_page_title = lang('create_new_global_variable');
 			$this->cp->render('design/global_variables_create');
 		}
 	}
@@ -1038,7 +1038,7 @@ class Design extends CP_Controller {
 		}
 		else
 		{
-			$this->cp->set_variable('cp_page_title', lang('delete_global_variable'));
+			$this->view->cp_page_title = lang('delete_global_variable');
 
 			$global_variable_info = $global_variable->row(); // PHP 5 can do this in one step...
 			
@@ -1279,7 +1279,7 @@ class Design extends CP_Controller {
 
 		$vars['enable_http_auth_options'] = $yes_no_options;
 
-		$this->cp->set_variable('cp_page_title', lang('template_preferences_manager'));
+		$this->view->cp_page_title = lang('template_preferences_manager');
 		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager', lang('template_manager'));
 		
 		$this->cp->render('design/template_preferences_manager', $vars);
@@ -1750,7 +1750,7 @@ class Design extends CP_Controller {
 
 		
 		// now that we have the info, we can set the breadcrumb and page titles
-		$this->cp->set_variable('cp_page_title', lang('edit_template').' ('.$vars['template_group'].' / '.$vars['template_name'].')');
+		$this->view->cp_page_title = lang('edit_template').' ('.$vars['template_group'].' / '.$vars['template_name'].')';
 		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager'.AMP.'tgpref='.$group_id, lang('template_manager'));
 
 		$date_fmt = ($this->session->userdata('time_format') != '') ? $this->session->userdata('time_format') : $this->config->item('time_format');
@@ -2774,7 +2774,7 @@ class Design extends CP_Controller {
 		{
 			$this->lang->loadfile('specialty_tmp');
 				
-			$this->cp->set_variable('cp_page_title', lang('user_message'));
+			$this->view->cp_page_title = lang('user_message');
 	
 			$template = $this->template_model->get_specialty_template('message_template');
 			$template_data = $template->row();
@@ -2842,7 +2842,7 @@ class Design extends CP_Controller {
 		{
 			$this->lang->loadfile('specialty_tmp');
 	
-			$this->cp->set_variable('cp_page_title', lang('offline_template'));
+			$this->view->cp_page_title = lang('offline_template');
 	
 			$template = $this->template_model->get_specialty_template('offline_template');
 			$template_data = $template->row();
@@ -2873,7 +2873,7 @@ class Design extends CP_Controller {
 
 		$this->lang->loadfile('specialty_tmp');
 
-		$this->cp->set_variable('cp_page_title', lang('email_notification_template'));
+		$this->view->cp_page_title = lang('email_notification_template');
 
 		$vars['specialty_email_templates_summary'] = $this->template_model->get_specialty_email_templates_summary();
 		
@@ -2906,7 +2906,7 @@ class Design extends CP_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->cp->set_variable('cp_page_title', lang('edit_template'));
+		$this->view->cp_page_title = lang('edit_template');
 		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=email_notification', lang('email_notification_template'));
 				
 		$this->cp->add_js_script(array('plugin' => 'markitup'));
@@ -3006,7 +3006,7 @@ class Design extends CP_Controller {
 							
 		$vars['profiles'] = $this->member_model->get_profile_templates();			
 
-		$this->cp->set_variable('cp_page_title', lang('member_profile_templates'));
+		$this->view->cp_page_title = lang('member_profile_templates');
 
 		$this->cp->render('design/member_profile_templates', $vars);
 	}
@@ -3052,7 +3052,7 @@ class Design extends CP_Controller {
 
 		asort($vars['templates']);
 
-		$this->cp->set_variable('cp_page_title', lang('member_profile_templates'));
+		$this->view->cp_page_title = lang('member_profile_templates');
 
 		$this->cp->render('design/member_profile_templates_list', $vars);							
 	}
@@ -3101,7 +3101,7 @@ class Design extends CP_Controller {
 		$vars['message']			= ($update === TRUE) ? lang('template_updated') : '';
 		$vars['type']				= 'profile';
 				
-		$this->cp->set_variable('cp_page_title', lang('member_profile_templates'));
+		$this->view->cp_page_title = lang('member_profile_templates');
 		$this->cp->add_js_script('plugin', 'markitup');
 
 		$markItUp = array(
@@ -3195,7 +3195,7 @@ class Design extends CP_Controller {
 
 		$this->load->model('design_model');
 
-		$this->cp->set_variable('cp_page_title', lang('template_manager'));
+		$this->view->cp_page_title = lang('template_manager');
 
 		$this->load->library('table');
 		$vars['can_admin_templates'] = $this->cp->allowed_group('can_admin_templates');
@@ -3850,7 +3850,7 @@ class Design extends CP_Controller {
 
 		if ($this->form_validation->run() === FALSE)
 		{
-			$this->cp->set_variable('cp_page_title', lang('edit_template_group_form'));
+			$this->view->cp_page_title = lang('edit_template_group_form');
 			$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager'.AMP.'tgpref='.$group_id, lang('template_manager'));
 
 			$vars['form_hidden'] = array(
@@ -4043,7 +4043,7 @@ class Design extends CP_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->cp->set_variable('cp_page_title', lang('edit_template_group_order'));
+		$this->view->cp_page_title = lang('edit_template_group_order');
 
 		$this->javascript->output('
 			$("form label").css("cursor", "move");

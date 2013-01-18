@@ -1838,7 +1838,7 @@ MAGIC;
 		// Load the search helper so we can filter the keywords
 		$this->EE->load->helper('search');
 
-		$this->EE->cp->set_variable('cp_page_title', lang('edit'));
+		$this->EE->view->cp_page_title = lang('edit');
 
 		$this->EE->cp->add_js_script('ui', 'datepicker');
 
