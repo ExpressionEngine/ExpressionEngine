@@ -489,7 +489,7 @@ class Login extends CP_Controller {
 		}
 
 		$vars['cp_page_title'] = lang('forgotten_password');
-		$this->load->view('account/send_reset_token', $vars);
+		$this->load->view('account/show_reset_password_message', $vars);
 	}
 	
 	// --------------------------------------------------------------------
@@ -572,7 +572,7 @@ class Login extends CP_Controller {
 					'cp_page_title' => lang('password_changed')
 				);
 
-				return $this->load->view('account/reset_password_success', $vars);	
+				return $this->load->view('account/show_reset_password_message', $vars);	
 			}
 		}
 
