@@ -259,13 +259,12 @@ class Addons_modules extends CP_Controller {
 		
 		// These can be overriden by individual modules
 		$this->view->cp_page_title = lang('modules');
-		$this->cp->set_breadcrumb(BASE.AMP.'C=addons_modules', lang('modules'));
 
 		// a bit of a breadcrumb override is needed
-		$this->cp->set_variable('cp_breadcrumb', array(
+		$this->view->cp_breadcrumbs = array(
 			BASE.AMP.'C=addons' => lang('addons'),
 			BASE.AMP.'C=addons_modules'=> lang('addons_modules')
-		));
+		);
 
 		$module = $this->input->get_post('module');
 		$module = $this->security->sanitize_filename(strtolower($module));
