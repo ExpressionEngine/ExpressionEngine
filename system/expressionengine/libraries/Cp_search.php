@@ -486,9 +486,9 @@ class Cp_search {
 					'addons_extensions'	=> array(
 							'index'							=> array('access' => 'can_access_extensions', TRUE)							
 					),
-					// 'addons_fieldtypes'	=> array(
-					// 		'index'							=> array('access' => 'can_access_modules', TRUE)							
-					// ),
+					'addons_fieldtypes'	=> array(
+							'index'							=> array('access' => 'can_access_fieldtypes', TRUE)							
+					),
 					'addons_modules'	=> array(
 							'index'							=> array('access' => 'can_access_modules', TRUE)						
 					),
@@ -501,7 +501,6 @@ class Cp_search {
 					'content_files'		=> array(
 							'index'							=> array('access' => 'can_access_files', TRUE)
 					),
-
 					'design'			=> array(
 							'user_message'					=> array('access' => 'can_admin_design', TRUE),
 							'global_template_preferences'	=> array('access' => 'can_admin_design', 'template_cfg'),
@@ -531,7 +530,8 @@ class Cp_search {
 							'view_cp_log'					=> array('access' => 'can_access_logs', TRUE),
 							'view_throttle_log'				=> array('access' => 'can_access_logs', TRUE),
 							'view_search_log'				=> array('access' => 'can_access_logs', TRUE),
-							'view_email_log'				=> array('access' => 'can_access_logs', TRUE)
+							'view_email_log'				=> array('access' => 'can_access_logs', TRUE),
+							'view_developer_log'			=> array('access' => 'can_access_logs', TRUE)
 					),
 					'tools_utilities'	=> array(
 							'member_import'					=> array('access' => 'can_access_utilities', TRUE),
