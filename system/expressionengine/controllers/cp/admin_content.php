@@ -83,7 +83,9 @@ class Admin_content extends CP_Controller {
 	{
 		$this->_restrict_prefs_access();
 
-        $this->cp->set_right_nav(array('create_new_channel' => BASE.AMP.'C=admin_content'.AMP.'M=channel_add'));
+        $this->cp->set_right_nav(array(
+        	'create_new_channel' => BASE.AMP.'C=admin_content'.AMP.'M=channel_add'
+        ));
 
 		$this->load->library('table');
 		$this->lang->loadfile('admin_content');
@@ -92,11 +94,12 @@ class Admin_content extends CP_Controller {
 		$this->jquery->tablesorter('.mainTable', '{
 			headers: {2: {sorter: false}, 3: {sorter: false}, 4: {sorter: false}},
 			widgets: ["zebra"]
-		}');		
-
-		$this->view->channel_data = $this->channel_model->get_channels();
+		}');
 
 		$this->view->cp_page_title = lang('channels');
+		$this->view->channel_data = $this->channel_model->get_channels();
+
+		$this->cp->add_js_script('file', 'cp/custom_fields');
 		$this->cp->render('admin/channel_management');
 	}
 
