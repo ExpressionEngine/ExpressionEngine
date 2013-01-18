@@ -72,7 +72,7 @@ class Login extends CP_Controller {
 			$vars['return_path'] = $this->input->get('return');
 		}
 		
-		$this->cp->set_variable('return_path', SELF);
+		$this->view->return_path = SELF;
 		$this->view->cp_page_title = lang('login');
 
 		$this->load->view('account/login', $vars);

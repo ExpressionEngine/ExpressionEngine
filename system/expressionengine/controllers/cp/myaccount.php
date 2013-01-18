@@ -62,11 +62,11 @@ class MyAccount extends CP_Controller {
 			');
 		}
 
-		$this->cp->set_variable('message', '');
-		$this->cp->set_variable('id', $this->id);
+		$this->view->message = '';
+		$this->view->id = $this->id;
 
 		$this->username = ($query->row('screen_name')  == '') ? $query->row('username') : $query->row('screen_name');
-		$this->cp->set_variable('member_username', $this->username);
+		$this->view->member_username = $this->username;
 
 		// Set self_edit to determine whether or not someone else is editing
 		$this->self_edit = ((int) $this->id === (int) $this->session->userdata('member_id')) ? TRUE : FALSE;
