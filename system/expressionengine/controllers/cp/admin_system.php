@@ -482,12 +482,9 @@ class Admin_system extends CP_Controller {
 		if (isset($modules['mailinglist']))
 		{
 			$this->lang->loadfile('mailinglist');
-			$this->cp->set_variable(
-				'cp_breadcrumbs',
-				array(
-					BASE.AMP.'C=addons_modules' => lang('nav_modules'),
-					BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist' => lang('mailinglist_module_name')
-				)
+			$this->view->cp_breadcrumbs = array(
+				BASE.AMP.'C=addons_modules' => lang('nav_modules'),
+				BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist' => lang('mailinglist_module_name')
 			);
 		}
 
