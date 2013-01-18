@@ -52,12 +52,6 @@ $lang = array(
 'id_not_found' =>
 'The code number you submitted was not found in the database.',
 
-'no_password' =>
-'Please enter a new password.',
-
-'no_confirm' =>
-'Please confirm your new password.',
-
 'password_changed' =>
 'Password Successfully Changed',
 

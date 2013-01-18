@@ -1,3 +1,4 @@
+
 <html>
 <head>
 <title><?=$cp_page_title?> | ExpressionEngine</title>
@@ -121,15 +122,9 @@ input.submit {
 <div id="content">
 	
 <div id="white">
-	<?php if ($message_success != ''):?>
 		<div class="success">
 			<p><?=$message_success?></p>
 		</div>
-	<?php elseif ($message_error != ''):?>
-		<div class="error">
-			<p><?=$message_error?></p>
-		</div>
-	<?php endif;?>
 
 	<p><a href="<?=BASE.AMP.'C=login'?>"><?=lang('return_to_login')?></a></p>
 </div>
