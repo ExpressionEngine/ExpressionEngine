@@ -1227,7 +1227,9 @@ class Safecracker_lib
 			if (isset($_FILES[$field['field_name']]['name']))
 			{
 				// Allow multi-dimensional arrays that contain files
-				if (is_array($_FILES[$field['field_name']]['name']) && is_array($_POST[$field['field_name']]))
+				if (is_array($_FILES[$field['field_name']]['name']) 
+					&& isset($_POST[$field['field_name']]) 
+					&& is_array($_POST[$field['field_name']]))
 				{
 					$_POST[$field['field_name']] = array_merge_recursive(
 						$_POST[$field['field_name']],
