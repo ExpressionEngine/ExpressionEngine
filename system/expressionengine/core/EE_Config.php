@@ -28,9 +28,10 @@ class EE_Config Extends CI_Config {
 	var $database_path		= ''; // Set in the constructor below
 	var $default_ini 		= array();
 	var $exceptions	 		= array();	 // path.php exceptions
-	var $cp_cookie_domain	= '';
+	var $cp_cookie_domain	= '';  // These are set in Core before any MSM site switching
+	var $cp_cookie_prefix	= '';
+	var $cp_cookie_path		= '';
 	var $_global_vars 		= array();	// The global vars from path.php (deprecated but usable for other purposes now)
-	var $special_tlds 		= array('com', 'edu', 'net', 'org', 'gov', 'mil', 'int');	// seven special TLDs for cookie domains
 	var $_config_path_errors = array();
 
 	/**
@@ -269,73 +270,6 @@ class EE_Config Extends CI_Config {
 			}
 		}
 		
-		// Control Panel Cookie Domain
-		// Since the cookie domain changes based on the site chosen in the CP,
-		// and since one could have multiple CPs, some using admin.php with path.php, 
-		// we have to be a bit more creative in figuring out the correct, 
-		// usable cookie domain for the CP	
-		if (REQ == 'CP' && $this->item('multiple_sites_enabled') == 'y')
-		{
-			$this->cp_cookie_domain = '';
-			
-			if ($site_name != '')
-        	{
-        		$this->cp_cookie_domain = $this->config['cookie_domain'];
-        	}
-			else
-			{
-				if (isset($this->exceptions['site_url']) && $this->exceptions['site_url'] != '')
-				{
-					$base = $this->exceptions['site_url'];
-				}
-				elseif($this->default_ini['cp_url'] != '')
-				{
-					$base = $this->default_ini['cp_url'];
-				}
-				else
-				{
-					$base = 'http://'.$_SERVER['HTTP_HOST'];
-				}
-				
-				$i = 0;
-				
-				$parts = parse_url($base);
-				
-				if (isset($parts['host']))
-				{
-					if ($EE->input->valid_ip($parts['host']) === TRUE)
-					{
-						 $this->cp_cookie_domain = $parts['host'];
-					}
-					else
-					{
-						$host_parts = explode('.', $parts['host']);
-						
-						// The preg_match accounts for TLDs like .uk.com, .us.com,
-						// .us.net and so on. However, .jpn.com would pass right 
-						// through
-						
-						if (
-							count($host_parts) > 1 && 
-							! preg_match('/\.[a-z]{2}\.('.implode('|', $this->special_tlds).')$/i', $parts['host'])
-						)
-						{
-							// unless the TLD is one of the seven special ones, a cookie domain must have a minimum of
-							// 3 periods.  ".example.com" is allowed but ".example.us" for instance, is not.
-							// reference: http://wp.netscape.com/newsref/std/cookie_spec.html
-							$max_parts = (in_array(strtolower(substr($parts['host'], -3)), $this->special_tlds)) ? 2 : 3;
-		
-							while(count($host_parts) > 0 && $i < $max_parts)
-							{
-								$this->cp_cookie_domain = '.'.array_pop($host_parts).$this->cp_cookie_domain; ++$i;
-							}
-						}
-					}
-				}
-			}
-		}
-		
-
 		// Few More Variables
 		$this->config['site_short_name'] = $row['site_name'];
 		$this->config['site_name'] 		 = $row['site_label']; // Legacy code as 3rd Party modules likely use it
