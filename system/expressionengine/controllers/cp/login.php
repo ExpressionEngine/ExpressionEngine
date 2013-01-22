@@ -394,6 +394,11 @@ class Login extends CP_Controller {
 	 */
 	public function forgotten_password_form()
 	{
+		if ($this->session->userdata('member_id') !== 0)
+		{
+			return $this->functions->redirect(BASE);
+		}
+
 		$message = $this->session->flashdata('message');
 		
 		$variables = array(
@@ -420,6 +425,11 @@ class Login extends CP_Controller {
 	 */
 	public function send_reset_token()
 	{
+		if ($this->session->userdata('member_id') !== 0)
+		{
+			return $this->functions->redirect(BASE);
+		}
+
 		if ( ! $address = $this->input->post('email'))
 		{
 			$this->functions->redirect(BASE.AMP.'C=login'.AMP.'M=forgotten_password_form');
@@ -512,6 +522,10 @@ class Login extends CP_Controller {
 	 */
 	public function reset_password()
 	{
+		if ($this->session->userdata('member_id') !== 0)
+		{
+			return $this->functions->redirect(BASE);
+		}
 		
 		if ($this->session->userdata('is_banned') === TRUE)
 		{
@@ -594,8 +608,8 @@ class Login extends CP_Controller {
 	// --------------------------------------------------------------------
 
 	/**
-	*  Replace variables
-	*/
+	 *  Replace variables
+	 */
 	private function _var_swap($str, $data)
 	{
 		if ( ! is_array($data))
