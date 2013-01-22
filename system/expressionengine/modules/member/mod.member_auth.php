@@ -587,15 +587,25 @@ class Member_auth extends Member {
 	/**
 	 * Member Forgot Password Form
 	 *
+	 * Displays a form to the user asking for their e-mail address and posts
+	 * the results to Member_auth::send_reset_token().  If the user is logged
+	 * in, it sends them away.
+ 	 *
 	 * @param 	string 	pages to return back to
 	 */
-	public function forgot_password($ret = '-3')
+	public function forgot_password()
 	{
+		// If the user is logged in already, then send them away.  They have no
+		// business here.
+		if ($this->EE->session->userdata('member_id') !== 0)
+		{
+			return $this->EE->functions->redirect($this->EE->functions->fetch_site_index());
+		}
+
 		$data = array(
 			'id'				=> 'forgot_password_form',
 			'hidden_fields'		=> array(
 				'ACT'	=> $this->EE->functions->fetch_action_id('Member', 'send_reset_token'),
-				'RET'	=> $ret,
 				'FROM'	=> ($this->in_forum == TRUE) ? 'forum' : ''
 			)
 		);
@@ -629,6 +639,11 @@ class Member_auth extends Member {
 	 */
 	public function send_reset_token()
 	{
+		// if this user is logged in, then send them away.
+		if ($this->EE->session->userdata('member_id') !== 0)
+		{
+			return $this->EE->functions->redirect($this->EE->functions->fetch_site_index());
+		}
 		
 		// Is user banned?
 		if ($this->EE->session->userdata('is_banned') === TRUE)
@@ -755,6 +770,11 @@ class Member_auth extends Member {
 	 */
 	public function reset_password()
 	{
+		// if the use is logged in, then send them away
+		if ($this->EE->session->userdata('member_id') !== 0)
+		{
+			return $this->EE->functions->redirect($this->EE->functions->fetch_site_index());
+		}
 		// If the user is banned, send them away.
 		if ($this->EE->session->userdata('is_banned') === TRUE)
 		{
@@ -806,6 +826,12 @@ class Member_auth extends Member {
 	 */
 	public function process_reset_password()
 	{
+		// if the user is logged in, then send them away
+		if ($this->EE->session->userdata('member_id') !== 0)
+		{
+			return $this->EE->functions->redirect($this->EE->functions->fetch_site_index());
+		}
+
 		// If the user is banned, send them away.
 		if ($this->EE->session->userdata('is_banned') === TRUE)
 		{
