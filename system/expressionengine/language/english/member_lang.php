@@ -378,6 +378,9 @@ $lang = array(
 'login_required' =>
 'Login Required',
 
+'sign_in' =>
+'Sign into your account', 
+
 'must_be_logged_in' =>
 'This page is only accessible to logged-in users with proper access privileges',
 
@@ -421,7 +424,7 @@ $lang = array(
 'Member Registration',
 
 'mbr_forgotten_password' =>
-'Forgotten Password',
+'Request password reset',
 
 'mbr_memberlist' =>
 'Member List',
