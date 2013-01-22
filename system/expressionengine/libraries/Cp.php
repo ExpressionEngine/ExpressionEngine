@@ -722,44 +722,6 @@ class Cp {
 	}
 	
 	// --------------------------------------------------------------------
-
-	/**
-	 * Check and Validate Form XID in Post
-	 *
-	 * Checks the post data for a form XID and then validates that XID.
-	 * The XID -- regardless of whether or not it checks out as valid
-	 * -- will then be deleted and a new one generated.  If the validation
-	 * check fails, we'll return false and the caller should then show
-	 * an appropriate error.
-	 * 
-	 * @access public
-	 * @return boolean FALSE if there is an invalid XID, TRUE if valid or no XID 
-	 */
-	public function have_valid_xid()
-	{
-		$hash = '';
-		
-		if ($this->EE->config->item('secure_forms') == 'y')
-		{
-			if (count($_POST) > 0)
-			{
-				if ( ! isset($_POST['XID'])
-					OR ! $this->EE->security->secure_forms_check($_POST['XID']))
-				{
-					return FALSE;
-				}
-				
-				unset($_POST['XID']);
-			}
-			
-			$hash = $this->EE->security->generate_xid();
-		}
-		
-		define('XID_SECURE_HASH', $hash);
-		return TRUE;
-	}
-
-	// --------------------------------------------------------------------
 	
 	/**
 	 * Validate and Enable Secure Forms for the Control Panel
@@ -771,7 +733,7 @@ class Cp {
 	function secure_forms()
 	{
 		$this->EE->load->library('logger');
-		$this->EE->logger->deprecate('2.6', 'Cp::have_valid_xid()');		
+		$this->EE->logger->deprecate('2.6', 'EE_Security::have_valid_xid()');		
 		
 		$hash = '';
 		

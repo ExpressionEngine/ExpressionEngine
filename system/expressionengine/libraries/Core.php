@@ -473,7 +473,7 @@ class EE_Core {
 		$this->EE->load->helper(array('url', 'form', 'quicktab'));
 
 		// Secure forms stuff
-		if( ! $this->EE->cp->have_valid_xid())
+		if( ! $this->EE->security->have_valid_xid())
 		{
 			return $this->EE->functions->redirect(BASE);
 		}

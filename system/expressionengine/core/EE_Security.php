@@ -25,12 +25,52 @@
 class EE_Security extends CI_Security {
 
 	private $_xid_ttl = 7200;
-
+	
 	// Small note, if you feel the urge to add a constructor,
 	// do not call get_instance(). The CI Security library
 	// is sometimes instantiated before the controller is loaded.
 	// i.e. when turning CI's csrf_protection on. Which you shouldn't
 	// do in EE anywho. -pk
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Check and Validate Form XID in Post
+	 *
+	 * Checks the post data for a form XID and then validates that XID.
+	 * The XID -- regardless of whether or not it checks out as valid
+	 * -- will then be deleted and a new one generated.  If the validation
+	 * check fails, we'll return false and the caller should then show
+	 * an appropriate error.
+	 * 
+	 * @access public
+	 * @return boolean FALSE if there is an invalid XID, TRUE if valid or no XID 
+	 */
+	public function have_valid_xid()
+	{
+		$hash = '';
+		
+		$EE = get_instance();	
+			
+		if ($EE->config->item('secure_forms') == 'y')
+		{
+			if (count($_POST) > 0)
+			{
+				if ( ! isset($_POST['XID'])
+					OR ! $this->secure_forms_check($_POST['XID']))
+				{
+					return FALSE;
+				}
+				
+				unset($_POST['XID']);
+			}
+			
+			$hash = $this->generate_xid();
+		}
+		
+		define('XID_SECURE_HASH', $hash);
+		return TRUE;
+	}
 
 	// --------------------------------------------------------------------
 
@@ -62,7 +102,7 @@ class EE_Security extends CI_Security {
 	 */
 	public function check_xid($xid)
 	{
-		$EE =& get_instance();
+		$EE = get_instance();
 		
 		if ($EE->config->item('secure_forms') != 'y')
 		{
@@ -99,7 +139,7 @@ class EE_Security extends CI_Security {
 	 */
 	public function generate_xid($count = 1, $array = FALSE)
 	{
-		$EE =& get_instance();
+		$EE = get_instance();
 
 		$hashes = array();
 		$inserts = array();
@@ -130,7 +170,7 @@ class EE_Security extends CI_Security {
 	 */
 	public function delete_xid($xid)
 	{
-		$EE =& get_instance();
+		$EE = get_instance();
 		
 		if ($EE->config->item('secure_forms') != 'y' OR $xid === FALSE)
 		{
@@ -151,7 +191,7 @@ class EE_Security extends CI_Security {
 	 */
 	public function garbage_collect_xids()
 	{
-		$EE =& get_instance();
+		$EE = get_instance();
 		$EE->db->where('date <', $EE->localize->now - $this->_xid_ttl)
 			->delete('security_hashes');
 	}
