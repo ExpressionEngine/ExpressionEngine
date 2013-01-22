@@ -109,7 +109,7 @@ class CI_DB_mysql_utility extends CI_DB_utility {
 
 			if ($add_drop == TRUE)
 			{
-				$output .= 'DROP TABLE IF EXISTS '.$table.';'.$newline.$newline;
+				$output .= 'DROP TABLE IF EXISTS `'.$table.'`;'.$newline.$newline;
 			}
 
 			$i = 0;
@@ -129,7 +129,7 @@ class CI_DB_mysql_utility extends CI_DB_utility {
 			}
 
 			// Grab all the data from the current table
-			$query = $this->db->query("SELECT * FROM $table");
+			$query = $this->db->query('SELECT * FROM `'.$table.'`');
 
 			if ($query->num_rows() == 0)
 			{
@@ -147,10 +147,10 @@ class CI_DB_mysql_utility extends CI_DB_utility {
 			{
 				// Most versions of MySQL store timestamp as a string
 				$is_int[$i] = (in_array(
-										strtolower(mysql_field_type($query->result_id, $i)),
-										array('tinyint', 'smallint', 'mediumint', 'int', 'bigint'), //, 'timestamp'),
-										TRUE)
-										) ? TRUE : FALSE;
+						strtolower(mysql_field_type($query->result_id, $i)),
+						array('tinyint', 'smallint', 'mediumint', 'int', 'bigint'),
+						TRUE
+					)) ? TRUE : FALSE;
 
 				// Create a string of field names
 				$field_str .= '`'.$field->name.'`, ';
@@ -196,7 +196,7 @@ class CI_DB_mysql_utility extends CI_DB_utility {
 				$val_str = preg_replace( "/, $/" , "" , $val_str);
 
 				// Build the INSERT string
-				$output .= 'INSERT INTO '.$table.' ('.$field_str.') VALUES ('.$val_str.');'.$newline;
+				$output .= 'INSERT INTO `'.$table.'` ('.$field_str.') VALUES ('.$val_str.');'.$newline;
 			}
 
 			$output .= $newline.$newline;
