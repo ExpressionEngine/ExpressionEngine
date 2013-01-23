@@ -738,6 +738,7 @@ class EE_Functions {
 	 * Set Cookie
 	 *
 	 * @access	public
+	 * @deprecated 2.6
 	 * @param	string
 	 * @param	string
 	 * @param	string
@@ -746,67 +747,10 @@ class EE_Functions {
 	function set_cookie($name = '', $value = '', $expire = '')
 	{
 
-		$data['name'] = $name;
+		$this->EE->load->library('logger');
+		$this->EE->logger->deprecate('2.6', 'EE_Input::set_cookie()');
 
-		if ( ! is_numeric($expire))
-		{
-			$data['expire'] = time() - 86500;
-		}
-		else
-		{
-			if ($expire > 0)
-			{
-				$data['expire'] = time() + $expire;
-			}
-			else
-			{
-				$data['expire'] = 0;
-			}
-		}
-					
-		$data['prefix'] = ( ! $this->EE->config->item('cookie_prefix')) ? 'exp_' : $this->EE->config->item('cookie_prefix').'_';
-		$data['path']	= ( ! $this->EE->config->item('cookie_path'))	? '/'	: $this->EE->config->item('cookie_path');
-		
-		if (REQ == 'CP' && $this->EE->config->item('multiple_sites_enabled') == 'y')
-		{
-			$data['prefix'] = ( ! $this->EE->config->cp_cookie_prefix) ? 'exp_' : $this->EE->config->cp_cookie_prefix;
-			$data['path']	= ( ! $this->EE->config->cp_cookie_path) ? '/' : $this->EE->config->cp_cookie_path;
-			$data['domain'] = ( ! $this->EE->config->cp_cookie_domain) ? '' : $this->EE->config->cp_cookie_domain;
-		}
-		else
-		{
-			$data['prefix'] = ( ! $this->EE->config->item('cookie_prefix')) ? 'exp_' : $this->EE->config->item('cookie_prefix').'_';
-			$data['path']	= ( ! $this->EE->config->item('cookie_path'))	? '/'	: $this->EE->config->item('cookie_path');
-			$data['domain'] = ( ! $this->EE->config->item('cookie_domain')) ? '' : $this->EE->config->item('cookie_domain');
-		}
-		
-		$data['value'] = stripslashes($value);
-		
-		$data['secure_cookie'] = ($this->EE->config->item('cookie_secure') === TRUE) ? 1 : 0;
-
-		if ($data['secure_cookie'])
-		{
-			$req = isset($_SERVER['HTTPS']) ? $_SERVER['HTTPS'] : FALSE;
-
-			if ( ! $req OR $req == 'off')
-			{
-				return FALSE;
-			}
-		}
-
-		/* -------------------------------------------
-		/* 'set_cookie_end' hook.
-		/*  - Take control of Cookie setting routine
-		/*  - Added EE 2.5.0
-		*/
-			$this->EE->extensions->call('set_cookie_end', $data);
-			if ($this->EE->extensions->end_script === TRUE) return;
-		/*
-		/* -------------------------------------------*/
-
-					
-		setcookie($data['prefix'].$data['name'], $data['value'], $data['expire'], 
-			$data['path'], $data['domain'], $data['secure_cookie']);
+		return $this->EE->input->set_cookie($name, $value, $expire);
 	}
 
 	// --------------------------------------------------------------------
