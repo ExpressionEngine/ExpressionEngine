@@ -3528,8 +3528,8 @@ DOH;
 			return $this->send_bulletin();
 		}
 		
-		$begins  = $this->EE->localize->convert_human_date_to_gmt($_POST['bulletin_date']);
-		$expires = $this->EE->localize->convert_human_date_to_gmt($_POST['bulletin_expires']);
+		$begins  = $this->EE->localize->string_to_timestamp($_POST['bulletin_date']);
+		$expires = $this->EE->localize->string_to_timestamp($_POST['bulletin_expires']);
 		
 		if ($begins == 0)
 		{

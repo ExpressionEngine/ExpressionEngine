@@ -365,8 +365,8 @@ class Search_model extends CI_Model {
 				// Custom range
 				$ranges = explode('to', $data['date_range']);
 				
-				$start = $this->localize->convert_human_date_to_gmt(trim($ranges[0]).' 00:00');
-				$end = $this->localize->convert_human_date_to_gmt(trim($ranges[1]).' 23:59');
+				$start = $this->localize->string_to_timestamp(trim($ranges[0]).' 00:00');
+				$end = $this->localize->string_to_timestamp(trim($ranges[1]).' 23:59');
 			
 				if (ctype_digit($start) && ctype_digit($end))
 				{

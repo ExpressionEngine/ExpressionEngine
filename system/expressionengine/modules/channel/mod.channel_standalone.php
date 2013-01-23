@@ -1504,7 +1504,7 @@ class Channel_standalone extends Channel {
 
 				if (in_array($expl['1'], $date_fields))
 				{
-					$temp_date = $this->EE->localize->convert_human_date_to_gmt($_POST['field_id_'.$expl['1']]);
+					$temp_date = $this->EE->localize->string_to_timestamp($_POST['field_id_'.$expl['1']]);
 					$temp = $_POST['field_id_'.$expl['1']];
 					$cond[$fields['field_id_'.$expl['1']]['0']] =  $temp_date;
 				}

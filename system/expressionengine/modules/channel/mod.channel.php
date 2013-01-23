@@ -1937,12 +1937,12 @@ class Channel {
 		/**------------*/
 		if ($this->EE->TMPL->fetch_param('start_on'))
 		{
-			$sql .= "AND t.entry_date >= '".$this->EE->localize->convert_human_date_to_gmt($this->EE->TMPL->fetch_param('start_on'))."' ";			
+			$sql .= "AND t.entry_date >= '".$this->EE->localize->string_to_timestamp($this->EE->TMPL->fetch_param('start_on'))."' ";			
 		}
 
 		if ($this->EE->TMPL->fetch_param('stop_before'))
 		{
-			$sql .= "AND t.entry_date < '".$this->EE->localize->convert_human_date_to_gmt($this->EE->TMPL->fetch_param('stop_before'))."' ";	
+			$sql .= "AND t.entry_date < '".$this->EE->localize->string_to_timestamp($this->EE->TMPL->fetch_param('stop_before'))."' ";	
 		}
 
 		/**-------------

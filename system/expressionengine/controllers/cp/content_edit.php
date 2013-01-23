@@ -1072,11 +1072,10 @@ class Content_edit extends CP_Controller {
 			}
 			
 			// Convert the date to a Unix timestamp
-			$data['entry_date'] = $this->localize->convert_human_date_to_gmt($data['entry_date']);
+			$data['entry_date'] = $this->localize->string_to_timestamp($data['entry_date']);
 			
 			if ( ! is_numeric($data['entry_date'])) 
 			{ 
-				// Localize::convert_human_date_to_gmt() returns verbose errors
 				if ($data['entry_date'] !== FALSE)
 				{
 					$error[] = $data['entry_date'];

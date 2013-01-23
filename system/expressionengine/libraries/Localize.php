@@ -66,47 +66,199 @@ class EE_Localize {
 	/**
 	 * String to Timestamp
 	 *
-	 * Converts a human-readble date (and possibly time) to a UNIX timestamp
-	 * using the current user's locale
+	 * Converts a human-readble date (and possibly time) to a Unix timestamp
+	 * using the current member's locale
 	 *
-	 * @access	public
-	 * @param	string	human-readable datetime
+	 * @param	string	Human-readable date
 	 * @return	mixed	int if successful, otherwise FALSE
 	 */
-	function string_to_timestamp($human_string)
+	public function string_to_timestamp($human_string)
 	{
-		// THIS METHOD IS EXPERIMENTAL. Not stable for 2.4 release.
-
-		return $this->convert_human_date_to_gmt($human_string);
-
-		// Get the user's locale so that we have a baseline for converting their
-		// written datetime to UTC, and temporarily tell PHP to use it for this
-		// conversion only. If the user hasn't specified a timezone, the EE server
-		// settings will be used instead.
-		if ($timezone = $this->EE->session->userdata('timezone'))
+		if (trim($human_string) == '')
 		{
-			date_default_timezone_set($this->_get_php_timezone($timezone));
-			$dst = ($this->EE->session->userdata('daylight_savings')  == 'y') ? TRUE : FALSE;
-		}
-		else
-		{
-			$dst = ($this->EE->config->item('daylight_savings')  == 'y') ? TRUE : FALSE;
+			return '';
 		}
 
-		// Convert to timestamp. Strangely, given a string of whitespace it returns the
-		// current time rather than FALSE, so we trim here.
-		$timestamp = strtotime(trim($human_string));
+		$dt = $this->_datetime($human_string);
 
-		// Appply DST offset?
-		if ($dst && $timestamp !== FALSE)
+		return ($dt) ? $dt->format('U') : FALSE;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Given an EE date format and a Unix timestamp, returns the human-readable
+	 * date in the specified timezone or member's current timezone.
+	 *
+	 * @param	string	Date format, like "%D, %F %d, %Y - %g:%i:%s"
+	 * @param	int		Unix timestamp
+	 * @param	string	Timezone
+	 * @return	string	Formatted date
+	 */
+	public function formatted_date($format, $timestamp = NULL, $timezone = NULL)
+	{
+		if ( ! ($dt = $this->_datetime($timestamp, $timezone)))
 		{
-			$timestamp -= 3600;
+			return FALSE;
 		}
 
-		// Back to EE server setting
-		date_default_timezone_set($this->_get_php_timezone($this->EE->config->item('server_timezone')));
+		// Match all EE date vars, which are essentially the normal PHP date
+		// vars with a percent sign in front of them
+		if ( ! preg_match_all("/(%\S)/", $format, $matches))
+		{
+			return $dt->format('U');
+		}
 
-		return $timestamp;
+		// Loop through matched date vars and replace them in the $format string
+		foreach($matches[1] as $var)
+		{
+			$format = str_replace($var, $this->_date_string_for_variable($var, $dt), $format);
+		}
+		
+		return $format;
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Given an EE date format and a Unix timestamp, returns the human-readable
+	 * date in the specified timezone or member's current timezone.
+	 *
+	 * @param	string	Date format, like "%D, %F %d, %Y - %g:%i:%s"
+	 * @param	int		Unix timestamp
+	 * @param	string	Timezone
+	 * @return	string	Formatted date
+	 */
+	private function _date_string_for_variable($var, $dt)
+	{
+		// These letters following a percent sign we will convert to their
+		// matching PHP date variable value
+		$allowed_date_vars = array(
+			'a', 'A', 'B', 'd', 'D', 'F', 'g', 'G', 'h', 'H', 'i', 'I',
+			'j', 'l', 'L', 'm', 'M', 'n', 'O', 'P', 'Q', 'r', 's', 'S',
+			't', 'T', 'U', 'w', 'W', 'y', 'Y', 'z', 'Z'
+		);
+		
+		// These date variables have month or day names and need to be ran
+		// through the language library
+		$translatable_date_vars = array(
+			'a', 'A', 'D', 'F', 'l', 'M', 'r'
+		);
+
+		// If TRUE, the translatable date variables will be run through the
+		// language library; this check has been brought over from legacy code
+		$translate = ! (isset($this->EE->TMPL)
+			&& is_object($this->EE->TMPL) 
+			&& $this->EE->TMPL->template_type == 'feed');
+		
+		// Remove percent sign for easy comparing and passing to DateTime::format
+		$date_var = str_replace('%', '', $var);
+		
+		if (in_array($date_var, $allowed_date_vars))
+		{
+			// Special cases
+			switch ($date_var)
+			{
+				// F returns the full month name, but "May" is the same short
+				// and long, so we need to catch it and modify the lang key so
+				// the correct translation is returned
+				case 'F':
+					if ($dt->format('F') == 'May' && $translate)
+					{
+						return $this->EE->lang->line('May_l');
+					}
+					break;
+				// Concatenate the RFC 8288 format with translations
+				case 'r':
+					if ($translate)
+					{
+						$rfc = $this->EE->lang->line($dt->format('D'));		// Thu
+						$rfc .= $dt->format(', d ');						// , 21
+						$rfc .= $this->EE->lang->line($dt->format('M'));	// Dec
+						$rfc .= $dt->format(' Y H:i:s O'); 					// 2000 16:01:07 +0200
+
+						return $rfc;
+					}
+					break;
+				// Q was our replacement for P because P wasn't available < PHP 5.1.3,
+				// so keep it around for backwards compatability
+				case 'Q':
+					$date_var = 'P';
+					break;
+			}
+			
+			// If it's translatable, return the value for the lang key,
+			// otherwise send it straight to DateTime::format
+			if ($translate && in_array($date_var, $translatable_date_vars))
+			{
+				return $this->EE->lang->line($dt->format($date_var));
+			}
+			else
+			{
+				return $dt->format($date_var);
+			}
+		}
+		
+		return $var;
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Returns a DateTime object for the current time and member timezone
+	 * OR a specified time and timezone
+	 *
+	 * @param	string		Date string or Unix timestamp, current time used if NULL
+	 * @param	string		Timezone to convert time to
+	 * @return	datetime	DateTime object set to the given time and altered
+	 * 						for server offset
+	 */
+	private function _datetime($date_string = NULL, $timezone = NULL)
+	{
+		// Get the member's timezone if one isn't specified
+		if (empty($timezone))
+		{
+			$timezone = $this->EE->session->userdata('timezone');
+		}
+		
+		try
+		{
+			$timezone = new DateTimeZone($this->_get_php_timezone($timezone));
+
+			// If $date_string appears to be a Unix timestamp, prepend the
+			// string with '@' so DateTime knows it's a timestamp; the
+			// timezone parameter is ignored when a timestamp is passed,
+			// so set it separately after instantiation
+			if (is_numeric($date_string))
+			{
+				$dt = new DateTime('@'.$date_string);
+				$dt->setTimezone($timezone);
+			}
+			// Otherwise, we must instantiate the DateTime object with the
+			// correct DateTimeZone so that the date string passed in is
+			// immediately interpreted using the member's timezone and not
+			// the server timezone; otherwise, using setTimezone to set
+			// the timezone later will transform the date
+			else
+			{
+				$dt = new DateTime($date_string, $timezone);
+			}
+		}
+		catch (Exception $e)
+		{
+			return FALSE;
+		}
+
+		// Apply server offset only
+		if (empty($date_string)
+			&& ($offset = $this->EE->config->item('server_offset'))
+			&& is_numeric($offset))
+		{
+			$offset = ($offset > 0) ? '+'.$offset : $offset;
+			$dt->modify($offset.' minutes');
+		}
+
+		return $dt;
 	}
 
 	// --------------------------------------------------------------------
@@ -348,35 +500,33 @@ class EE_Localize {
 			$seconds = TRUE;
 		}
 
-		$fmt = ($this->EE->session->userdata['time_format'] != '') ? $this->EE->session->userdata['time_format'] : $this->EE->config->item('time_format');
+		$fmt = ($this->EE->session->userdata('time_format') != '')
+			? $this->EE->session->userdata('time_format') : $this->EE->config->item('time_format');
 
-		if ($localize)
-		{
-			$now = $this->set_localized_time($now);
-		}
-
-		$r  = gmdate('Y', $now).'-'.gmdate('m', $now).'-'.gmdate('d', $now).' ';
+		$format_string = '%Y-%m-%d';
 
 		if ($fmt == 'us')
 		{
-			$r .= gmdate('h', $now).':'.gmdate('i', $now);
+			$format_string .= ' %h:%i';
 		}
 		else
 		{
-			$r .= gmdate('H', $now).':'.gmdate('i', $now);
+			$format_string .= ' %H:%i';
 		}
 
 		if ($seconds)
 		{
-			$r .= ':'.gmdate('s', $now);
+			$format_string .= ':%s';
 		}
 
 		if ($fmt == 'us')
 		{
-			$r .= ' '.gmdate('A', $now);
+			$format_string .= ' %A';
 		}
 
-		return $r;
+		$timezone = ($localize) ? NULL : 'GMT';
+
+		return $this->formatted_date($format_string, $now, $timezone);
 	}
 
 	// --------------------------------------------------------------------
@@ -393,94 +543,9 @@ class EE_Localize {
 	 */
 	function convert_human_date_to_gmt($datestr = '')
 	{
-		if ($datestr == '')
-		{
-			return FALSE;
-		}
-
-		$datestr = trim($datestr);
-
-		$datestr = preg_replace('/\040+/', ' ', $datestr);
-
-		if ( ! preg_match('/^[0-9]{2,4}\-[0-9]{1,2}\-[0-9]{1,2}\s[0-9]{1,2}:[0-9]{1,2}(?::[0-9]{1,2})?(?:\s[AP]M)?$/i', $datestr))
-		{
-			return $this->EE->lang->line('invalid_date_formatting');
-		}
-
-		$split	= explode(' ', $datestr);
-
-		$ex		= explode("-", $split[0]);
-
-		$year	= (strlen($ex[0]) == 2) ? '20'.$ex[0] : $ex[0];
-		$month	= (strlen($ex[1]) == 1) ? '0'.$ex[1]  : $ex[1];
-		$day	= (strlen($ex[2]) == 1) ? '0'.$ex[2]  : $ex[2];
-
-		$ex		= explode(":", $split[1]);
-
-		$hour	= (strlen($ex[0]) == 1) ? '0'.$ex[0] : $ex[0];
-		$min	= (strlen($ex[1]) == 1) ? '0'.$ex[1] : $ex[1];
-
-		// I'll explain later
-		$fib_seconds = FALSE;
-
-		if (isset($ex[2]) && preg_match('/[0-9]{1,2}/', $ex[2]))
-		{
-			$sec = sprintf('%02d', $ex[2]);
-		}
-		else
-		{
-        	// Unless specified, seconds get set to zero.
-			// $sec = '00';
-			// The above doesn't make sense to me, and can cause entries submitted within the same
-			// minute to have identical timestamps, so I'm reverting to an older behavior - D'Jones
-			// *********************************************************************************************
-			// I now see what Paul was initially avoiding.  So, here's the dealio and how we'll address it:
-			// Since the seconds were not specified, we're going to fib and roll back one second, otherwise
-			// the submitted entry will be considered to not be < $this->now and will not be displayed on
-			// the page request that creates it, a common scenario when submitting entries via a SAEF.
-			// So we'll set a flag, and adjust the time by one second after the timestamp is generated.
-			// If we do it here, we'd have to step backwards through minutes and hours and days etc. to
-			// check if each needs to roll back, for dates like January 1, 1990 12:00:00
-			$sec = date('s', $this->now);
-			$fib_seconds = TRUE;
-		}
-
-		if (isset($split[2]))
-		{
-			$ampm = strtolower($split[2]);
-
-			if (substr($ampm, 0, 1) == 'p' AND $hour < 12)
-			{
-				$hour = $hour + 12;
-			}
-
-			if (substr($ampm, 0, 1) == 'a' AND $hour == 12)
-			{
-				$hour =  '00';
-			}
-
-			if (strlen($hour) == 1)
-			{
-				$hour = '0'.$hour;
-			}
-		}
-
-		if ($year < 1902 OR $year > 2037)
-		{
-			return $this->EE->lang->line('date_outside_of_range');
-		}
-
-		$time = gmmktime($hour, $min, $sec, $month, $day, $year, -1);
-
-		// Are we fibbing?
-		if ($fib_seconds === TRUE)
-		{
-			$time = $time - 1;
-		}
-
-		$time += $this->set_localized_offset();
-
-		return $time;
+		// TODO: deprecation notice
+		
+		return $this->string_to_timestamp($datestr);
 	}
 
 	// --------------------------------------------------------------------
@@ -647,37 +712,9 @@ class EE_Localize {
 	 */
 	function decode_date($datestr = '', $unixtime = '', $localize = TRUE)
 	{
-		$prelocalized = FALSE;
-
-		if ($datestr == '')
-		{
-			return (int) 0;
-		}
-
-		if ($unixtime == 0)
-		{
-			return (int) 0;
-		}
-
-		if ( ! preg_match_all("/(%\S)/", $datestr, $matches))
-		{
-			return $unixtime;
-		}
-
-		$gmt_tz_offsets = FALSE;
-
-		if ($localize === TRUE)
-		{
-			$unixtime = $this->set_localized_time($unixtime);
-			$prelocalized = TRUE;
-		}
-
-		foreach ($matches[1] as $val)
-		{
-			$datestr = str_replace($val, $this->convert_timestamp($val, $unixtime, FALSE, $prelocalized), $datestr);
-		}
-
-		return $datestr;
+		// TODO: Deprecate
+		
+		return $this->formatted_date($datestr, $unixtime);
 	}
 
 	// --------------------------------------------------------------------
@@ -729,112 +766,19 @@ class EE_Localize {
 	 */
 	function convert_timestamp($format = '', $time = '', $localize = TRUE, $prelocalized = FALSE)
 	{
-		$return_str = FALSE;
+		// TODO: Deprecate
+		
+		$return_array = FALSE;
 
-		if ( ! is_array($format))
+		if (is_array($format) && isset($format[0]))
 		{
-			$format = array($format);
-			$return_str = TRUE;
+			$return_array = TRUE;
+			$format = $format[0];
 		}
 
-		$localized_tz = ($prelocalized == TRUE) ? TRUE : $localize;
+		$format = $this->_date_string_for_variable($format, $this->_datetime($time));
 
-		$translate = (isset($this->EE->TMPL) && is_object($this->EE->TMPL) && $this->EE->TMPL->template_type == 'feed') ? FALSE : TRUE;
-
-		if ($this->ctz == 0)
-		{
-			$this->ctz = $this->set_localized_timezone();
-		}
-
-		$time = ($localize == TRUE) ? $this->set_localized_time($time) : $time;
-
-		$return = array();
-
-		foreach($format as $which)
-		{
-			if (isset($this->cached[$time][$which]))
-			{
-				$return[] = $this->cached[$time][$which];
-				continue;
-			}
-
-			switch ($which)
-			{
-				case '%a': 	$var = ($translate === FALSE) ? gmdate('a', $time) : $this->EE->lang->line(gmdate('a', $time)); // am/pm
-					break;
-				case '%A': 	$var = ($translate === FALSE) ? gmdate('A', $time) : $this->EE->lang->line(gmdate('A', $time)); // AM/PM
-					break;
-				case '%B': 	$var = gmdate('B', $time);
-					break;
-				case '%d': 	$var = gmdate('d', $time);
-					break;
-				case '%D': 	$var = ($translate === FALSE) ? gmdate('D', $time) : $this->EE->lang->line(gmdate('D', $time)); // Mon, Tues
-					break;
-				case '%F': 	$may = (gmdate('F', $time) == 'May') ? gmdate('F', $time).'_l' : gmdate('F', $time);
-							$var = ($translate === FALSE) ? gmdate('F', $time) : $this->EE->lang->line($may); // January, February
-					break;
-				case '%g': 	$var = gmdate('g', $time);
-					break;
-				case '%G': 	$var = gmdate('G', $time);
-					break;
-				case '%h': 	$var = gmdate('h', $time);
-					break;
-				case '%H': 	$var = gmdate('H', $time);
-					break;
-				case '%i': 	$var = gmdate('i', $time);
-					break;
-				case '%I': 	$var = ($localized_tz == TRUE) ? date('I', $time) : gmdate('I', $time);
-					break;
-				case '%j': 	$var = gmdate('j', $time);
-					break;
-				case '%l': 	$var = ($translate === FALSE) ? gmdate('l', $time) : $this->EE->lang->line(gmdate('l', $time)); // Monday, Tuesday
-					break;
-				case '%L': 	$var = gmdate('L', $time);
-					break;
-				case '%m': 	$var = gmdate('m', $time);
-					break;
-				case '%M': 	$var = ($translate === FALSE) ? gmdate('M', $time) : $this->EE->lang->line(gmdate('M', $time)); // Jan, Feb
-					break;
-				case '%n': 	$var = gmdate('n', $time);
-					break;
-				case '%O': 	$var = ($localized_tz == TRUE) ? date('O', $time) : gmdate('O', $time);
-					break;
-				case '%r': 	$var = ($translate === FALSE) ? gmdate('D', $time).gmdate(', d ', $time).gmdate('M', $time).gmdate(' Y H:i:s O', $time) : $this->EE->lang->line(gmdate('D', $time)).gmdate(', d ', $time).$this->EE->lang->line(gmdate('M', $time)).gmdate(' Y H:i:s O', $time);
-					break;
-				case '%s': 	$var = gmdate('s', $time);
-					break;
-				case '%S': 	$var = gmdate('S', $time);
-					break;
-				case '%t': 	$var = gmdate('t', $time);
-					break;
-				case '%T': 	$var = ($localized_tz == TRUE) ? $this->ctz : gmdate('T', $time);
-					break;
-				case '%U': 	$var = gmdate('U', $time);
-					break;
-				case '%w': 	$var = gmdate('w', $time);
-					break;
-				case '%W': 	$var = gmdate('W', $time);
-					break;
-				case '%y': 	$var = gmdate('y', $time);
-					break;
-				case '%Y': 	$var = gmdate('Y', $time);
-					break;
-				case '%Q':	$var = ($localized_tz == TRUE) ? $this->zone_offset($this->EE->session->userdata['timezone']) : '+00:00'; // equiv to date('P'), but P is not available in PHP < 5.1.3
-					break;
-				case '%z': 	$var = gmdate('z', $time);
-					break;
-				case '%Z':	$var = ($localized_tz == TRUE) ? date('Z', $time) : gmdate('Z', $time);
-					break;
-				default  :  $var = '';
-					break;
-			}
-
-			$this->cached[$time][$which] = $var;
-
-			$return[] = $var;
-		}
-
-		return ($return_str == TRUE) ? array_pop($return) : $return;
+		return ($return_array) ? array($format) : $format;
 	}
 
 	// --------------------------------------------------------------------

@@ -1197,7 +1197,7 @@ class Simple_commerce_mcp {
 
 	function _valid_sub_date($str, $key)
 	{
-		$str = ($str == '') ? 0 : $this->EE->localize->convert_human_date_to_gmt($str);
+		$str = ($str == '') ? 0 : $this->EE->localize->string_to_timestamp($str);
 
 		if ( ! is_numeric($str) OR ($str < 0))
 		{

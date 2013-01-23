@@ -79,7 +79,7 @@ class Date_ft extends EE_Fieldtype {
 		$date_field = $this->field_name;
 		$date_local = 'field_offset_'.$this->field_id;
 
-		$date = $this->EE->localize->set_localized_time();
+		$date = $this->EE->localize->now;
 		$custom_date = '';
 
 		$localize = FALSE;
@@ -111,7 +111,6 @@ class Date_ft extends EE_Fieldtype {
 					// Are we dealing with a fixed date?
 					if ($this->settings['field_dt'] != '')
 					{
-						$field_data = $this->EE->localize->simpl_offset($field_data, $this->settings['field_dt']);
 						$localize = FALSE;
 					}
 				}
@@ -130,7 +129,7 @@ class Date_ft extends EE_Fieldtype {
 				}
 			}
 
-			$date = $this->EE->localize->set_localized_time($field_data);
+			$date = $field_data;
 		}
 		
 		$this->EE->javascript->set_global('date.include_seconds', $this->EE->config->item('include_seconds'));
