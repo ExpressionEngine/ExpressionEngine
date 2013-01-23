@@ -810,10 +810,10 @@ class Filemanager {
 		
 		$filebrowser_html = $this->EE->load->ee_view('_shared/file/browser', $vars, TRUE);
 		
-		die($this->EE->javascript->generate_json(array(
+		$this->EE->output->send_ajax_response(array(
 			'manager'		=> str_replace(array("\n", "\t"), '', $filebrowser_html),	// reduces transfer size
 			'directories'	=> $vars['filemanager_directories']
-		)));
+		));
 	}
 	
 	public function datatables($first_dir = NULL)
