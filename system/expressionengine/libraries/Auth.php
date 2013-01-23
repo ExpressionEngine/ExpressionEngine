@@ -777,7 +777,7 @@ class Auth_result {
 			else
 			{
 				// Unset the anon cookie
-				$this->EE->input->set_cookie($this->EE->session->c_anon);				
+				$this->EE->input->delete_cookie($this->EE->session->c_anon);				
 			}
 			
 			// (un)set remember me

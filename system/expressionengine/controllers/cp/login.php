@@ -122,7 +122,7 @@ class Login extends CP_Controller {
 		// ----------------------------------------------------------------
 		
 		// Kill existing flash cookie
-		$this->input->set_cookie('flash');
+		$this->input->delete_cookie('flash');
 		
 		if (isset($_POST['remember_me']))
 		{
@@ -356,7 +356,7 @@ class Login extends CP_Controller {
 
 		$this->session->destroy();
 		
-		$this->input->set_cookie('read_topics');  
+		$this->input->delete_cookie('read_topics');  
 
 		$this->logger->log_action(lang('member_logged_out'));
 

@@ -1422,11 +1422,11 @@ class Member {
 		$this->EE->db->where('session_id', $this->EE->session->userdata('session_id'))
 					 ->delete('sessions');
 
-		$this->EE->input->set_cookie($this->EE->session->c_session);
-		$this->EE->input->set_cookie($this->EE->session->c_expire);
-		$this->EE->input->set_cookie($this->EE->session->c_anon);
-		$this->EE->input->set_cookie('read_topics');
-		$this->EE->input->set_cookie('tracker');
+		$this->EE->input->delete_cookie($this->EE->session->c_session);
+		$this->EE->input->delete_cookie($this->EE->session->c_expire);
+		$this->EE->input->delete_cookie($this->EE->session->c_anon);
+		$this->EE->input->delete_cookie('read_topics');
+		$this->EE->input->delete_cookie('tracker');
 
 		// Build Success Message
 		$url	= $this->EE->config->item('site_url');

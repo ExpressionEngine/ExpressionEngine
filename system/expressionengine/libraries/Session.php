@@ -462,10 +462,10 @@ class EE_Session {
 		$this->fetch_guest_data();
 		
 		$this->EE->remember->delete();
-		$this->EE->input->set_cookie($this->c_session);
-		$this->EE->input->set_cookie($this->c_expire);	
-		$this->EE->input->set_cookie($this->c_anon);
-		$this->EE->input->set_cookie('tracker'); 
+		$this->EE->input->delete_cookie($this->c_session);
+		$this->EE->input->delete_cookie($this->c_expire);	
+		$this->EE->input->delete_cookie($this->c_anon);
+		$this->EE->input->delete_cookie('tracker'); 
 	}
 
 	// --------------------------------------------------------------------

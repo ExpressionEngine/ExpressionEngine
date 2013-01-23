@@ -2217,7 +2217,7 @@ UNGA;
 		}
 		
 		// Clear the tracker cookie since we're not sure where the redirect should go
-		$this->EE->input->set_cookie('tracker');
+		$this->EE->input->delete_cookie('tracker');
 		
 		$return = $this->EE->functions->form_backtrack();
 		

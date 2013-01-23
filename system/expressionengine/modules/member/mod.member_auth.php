@@ -530,7 +530,7 @@ class Member_auth extends Member {
 		
 		$this->EE->session->destroy();
 
-		$this->EE->input->set_cookie('read_topics');
+		$this->EE->input->delete_cookie('read_topics');
 
 		/* -------------------------------------------
 		/* 'member_member_logout' hook.
