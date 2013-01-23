@@ -74,6 +74,12 @@ class EE_Input extends CI_Input {
 	 * @param	string	A time in seconds after which the cookie should expire.
 	 * 						The cookie will be set to expire this many seconds
 	 * 						after it is set.
+	 * @param	string	The domain.  IGNORED  Kept only for consistency with
+	 *						CI_Input::set_cookie(). Set from config.
+	 * @param	string	The path.  IGNORED  Kept only for consistency with
+	 *						CI_Input::set_cookie(). Set from config.
+	 * @param	string	The prefix.  IGNORED  Kept only for consistency with
+	 *						CI_Input::set_cookie(). Set from config.
 	 * @param	boolean	Whether to use HTTP only cookies (which are not accessable)
 	 * 						from javascript, or not.  TRUE to use HTTP only. 
 	 * 						defaults to FALSE.
