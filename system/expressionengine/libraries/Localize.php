@@ -48,13 +48,17 @@ class EE_Localize {
 		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();
 
-		// Fetch the current local server time and convert it to GMT
-		$this->now			= time();
-		$this->zones		= $this->zones();
+		$this->zones = $this->zones();
 
-		// Align PHP's default timezone with EE's server timezone setting
-		// EXPERIMENTAL - Not stable. Don't uncomment.
-		//date_default_timezone_set($this->_get_php_timezone($this->EE->config->item('server_timezone')));
+		// Fetch current Unix timestamp
+		$this->now = time();
+
+		// Apply server offset (in minutes) to $now
+		if (($offset = $this->EE->config->item('server_offset'))
+			&& is_numeric($offset))
+		{
+			$this->now += $offset * 60;
+		}
 	}
 
 	// --------------------------------------------------------------------
