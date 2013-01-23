@@ -74,13 +74,19 @@ class EE_Input extends CI_Input {
 	 * @param	string	A time in seconds after which the cookie should expire.
 	 * 						The cookie will be set to expire this many seconds
 	 * 						after it is set.
+	 * @param	string	The domain.  IGNORED  Kept only for consistency with
+	 *						CI_Input::set_cookie(). Set from config.
+	 * @param	string	The path.  IGNORED  Kept only for consistency with
+	 *						CI_Input::set_cookie(). Set from config.
+	 * @param	string	The prefix.  IGNORED  Kept only for consistency with
+	 *						CI_Input::set_cookie(). Set from config.
 	 * @param	boolean	Whether to use HTTP only cookies (which are not accessable)
 	 * 						from javascript, or not.  TRUE to use HTTP only. 
 	 * 						defaults to FALSE.
 	 * 
 	 * @return	boolean	FALSE if output has already been sent, TRUE otherwise.	
 	 */
-	public function set_cookie($name = '', $value = '', $expire = '', $httponly = FALSE)
+	public function set_cookie($name = '', $value = '', $expire = '', $domain = '', $path = '/', $prefix = '', $httponly = FALSE)
 	{
 
 		$data = array(
@@ -88,6 +94,13 @@ class EE_Input extends CI_Input {
 			'value' => $value,
 			'expire' => $expire,
 			'httponly' => $httponly,
+			// We have to set these so we can 
+			// check them and give the deprecation
+			// warning.  However, they will be
+			// ignored.
+			'domain' => $domain,
+			'path' => $path,
+			'prefix' => $prefix
 		);
 
 		// If name is an array, then most of the values we just set in the data array
@@ -95,7 +108,7 @@ class EE_Input extends CI_Input {
 		// to be in the array.  Yes, this is ugly as all get out.
 		if (is_array($name))
 		{
-			foreach (array('value', 'expire', 'name') as $item)
+			foreach (array('value', 'expire', 'name', 'domain', 'path', 'prefix') as $item)
 			{
 				if (isset($name[$item]))
 				{
@@ -103,6 +116,14 @@ class EE_Input extends CI_Input {
 				}
 			}
 		}
+
+		if ($data['domain'] !== '' || $data['path'] !== '/' || $data['prefix'] !== '')
+		{
+			$EE = get_instance();
+			$EE->load->library('logger');
+			$EE->logger->developer('Warning: domain, path and prefix must be set in EE\'s configuration files and cannot be overriden in set_cookie.');
+		}
+
 
 		// Clean up the value.
 		$data['value'] = stripslashes($data['value']);
