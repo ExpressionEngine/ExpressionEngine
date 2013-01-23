@@ -24,7 +24,6 @@
  */
 class EE_Localize {
 
-	var $server_now			= '';	// Local server time
 	var $now				= '';  // Local server time as GMT
 	var $ctz				=  0;  // Current user's timezone setting
 	var $zones				= array();
