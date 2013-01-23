@@ -2928,28 +2928,28 @@ class Comment {
 
 		if ($notify == 'y')
 		{
-			$this->EE->functions->set_cookie('notify_me', 'yes', 60*60*24*365);
+			$this->EE->input->set_cookie('notify_me', 'yes', 60*60*24*365);
 		}
 		else
 		{
-			$this->EE->functions->set_cookie('notify_me', 'no', 60*60*24*365);
+			$this->EE->input->set_cookie('notify_me', 'no', 60*60*24*365);
 		}
 
 		if ($this->EE->input->post('save_info'))
 		{
-			$this->EE->functions->set_cookie('save_info',	'yes',				60*60*24*365);
-			$this->EE->functions->set_cookie('my_name',		$_POST['name'],		60*60*24*365);
-			$this->EE->functions->set_cookie('my_email',	$_POST['email'],	60*60*24*365);
-			$this->EE->functions->set_cookie('my_url',		$_POST['url'],		60*60*24*365);
-			$this->EE->functions->set_cookie('my_location',	$_POST['location'],	60*60*24*365);
+			$this->EE->input->set_cookie('save_info',	'yes',				60*60*24*365);
+			$this->EE->input->set_cookie('my_name',		$_POST['name'],		60*60*24*365);
+			$this->EE->input->set_cookie('my_email',	$_POST['email'],	60*60*24*365);
+			$this->EE->input->set_cookie('my_url',		$_POST['url'],		60*60*24*365);
+			$this->EE->input->set_cookie('my_location',	$_POST['location'],	60*60*24*365);
 		}
 		else
 		{
-			$this->EE->functions->set_cookie('save_info',	'no', 60*60*24*365);
-			$this->EE->functions->set_cookie('my_name',		'');
-			$this->EE->functions->set_cookie('my_email',	'');
-			$this->EE->functions->set_cookie('my_url',		'');
-			$this->EE->functions->set_cookie('my_location',	'');
+			$this->EE->input->set_cookie('save_info',	'no', 60*60*24*365);
+			$this->EE->input->set_cookie('my_name',		'');
+			$this->EE->input->set_cookie('my_email',	'');
+			$this->EE->input->set_cookie('my_url',		'');
+			$this->EE->input->set_cookie('my_location',	'');
 		}
 
 		// -------------------------------------------

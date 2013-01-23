@@ -122,7 +122,7 @@ class Login extends CP_Controller {
 		// ----------------------------------------------------------------
 		
 		// Kill existing flash cookie
-		$this->functions->set_cookie('flash');
+		$this->input->set_cookie('flash');
 		
 		if (isset($_POST['remember_me']))
 		{
@@ -131,7 +131,7 @@ class Login extends CP_Controller {
 		
 		if (is_numeric($this->input->post('site_id')))
 		{
-			$this->functions->set_cookie('cp_last_site_id', $this->input->post('site_id'), 0);
+			$this->input->set_cookie('cp_last_site_id', $this->input->post('site_id'), 0);
 		}
 		
 		$incoming->start_session(TRUE);
@@ -356,7 +356,7 @@ class Login extends CP_Controller {
 
 		$this->session->destroy();
 		
-		$this->functions->set_cookie('read_topics');  
+		$this->input->set_cookie('read_topics');  
 
 		$this->logger->log_action(lang('member_logged_out'));
 

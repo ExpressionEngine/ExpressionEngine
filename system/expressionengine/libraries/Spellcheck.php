@@ -1138,7 +1138,7 @@ EOT;
 
 		$this->EE->session->tracker = array_shift($this->EE->session->tracker);
 
-		$this->EE->functions->set_cookie('tracker', serialize($this->EE->session->tracker), '0');
+		$this->EE->input->set_cookie('tracker', serialize($this->EE->session->tracker), '0');
 
   		if ( ! defined('AMP')) define('AMP', '&amp;');
 		if ( ! defined('BR'))  define('BR',  '<br />');

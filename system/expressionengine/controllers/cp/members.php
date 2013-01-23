@@ -662,8 +662,8 @@ class Members extends CP_Controller {
 
 		if ($type != 's')
 		{
-			$this->functions->set_cookie($this->session->c_expire , time()+$expire, $expire);
-			$this->functions->set_cookie($this->session->c_anon , 1,  $expire);
+			$this->input->set_cookie($this->session->c_expire , time()+$expire, $expire);
+			$this->input->set_cookie($this->session->c_anon , 1,  $expire);
 		}
 
 		// Create a new session

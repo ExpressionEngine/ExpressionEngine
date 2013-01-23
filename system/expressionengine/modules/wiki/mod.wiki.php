@@ -5692,7 +5692,7 @@ class Wiki {
 		
 		// success, so let's make remove this request from the tracker so login redirects don't go here
 		array_shift($this->EE->session->tracker);
-		$this->EE->functions->set_cookie('tracker', serialize($this->EE->session->tracker), '0');
+		$this->EE->input->set_cookie('tracker', serialize($this->EE->session->tracker), '0');
 		
 		fpassthru($fp);
 		@fclose($fp);

@@ -94,7 +94,7 @@ class Content_edit extends CP_Controller {
 			$perpage = ($this->input->cookie('perpage') == FALSE) ? 50 : $this->input->cookie('perpage');
 		}
 		
-		$this->functions->set_cookie('perpage' , $perpage, 60*60*24*182);		
+		$this->input->set_cookie('perpage' , $perpage, 60*60*24*182);		
 
 
 		// Table

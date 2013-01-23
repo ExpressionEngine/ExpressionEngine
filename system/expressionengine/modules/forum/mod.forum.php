@@ -2062,7 +2062,7 @@ class Forum {
 		
 		// Set a cookie!
 		$expire = 60*60*24*365;
-		$this->EE->functions->set_cookie('forum_theme', $theme, $expire);
+		$this->EE->input->set_cookie('forum_theme', $theme, $expire);
 
 		if (isset($this->EE->session->tracker[0]))
 		{	
@@ -2145,7 +2145,7 @@ class Forum {
 		{
 			array_shift($this->EE->session->tracker);
 
-			$this->EE->functions->set_cookie('tracker', serialize($this->EE->session->tracker), '0');
+			$this->EE->input->set_cookie('tracker', serialize($this->EE->session->tracker), '0');
 		}
 		
 		if ( ! class_exists('EE_Spellcheck'))

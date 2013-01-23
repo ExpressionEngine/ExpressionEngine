@@ -2258,7 +2258,7 @@ MAGIC;
 			$perpage = 50;
 		}
 
-		$this->EE->functions->set_cookie('perpage' , $perpage, 60*60*24*182);
+		$this->EE->input->set_cookie('perpage' , $perpage, 60*60*24*182);
 
 		$vars['perpage_selected'] = $perpage;
 

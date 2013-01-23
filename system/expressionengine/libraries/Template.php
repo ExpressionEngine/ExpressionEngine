@@ -2232,7 +2232,7 @@ class EE_Template {
 					$removed = array_shift($this->EE->session->tracker);
 				}
 				
-				$this->EE->functions->set_cookie('tracker', serialize($this->EE->session->tracker), '0'); 
+				$this->EE->input->set_cookie('tracker', serialize($this->EE->session->tracker), '0'); 
 			}
 		}
 		
