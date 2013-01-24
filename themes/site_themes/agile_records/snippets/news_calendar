@@ -1,7 +1,7 @@
 <h5>Calendar</h5>
 		<div id="news_calendar">
 			
-			<!-- Channel Calendar Tag: http://expressionengine.com/user_guide/modules/channel/calendar.html -->
+			<!-- Channel Calendar Tag: http://ellislab.com/expressionengine/user-guide/modules/channel/calendar.html -->
 			
 			{exp:channel:calendar switch="calendarToday|calendarCell" channel="news"}
 			<table class="calendarBG" border="0" cellpadding="6" cellspacing="1" summary="My Calendar">
