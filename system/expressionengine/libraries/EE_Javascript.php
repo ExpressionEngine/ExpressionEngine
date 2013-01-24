@@ -115,7 +115,7 @@ class EE_Javascript extends CI_Javascript {
 			}
 		');
 
-		$this->CI->cp->set_variable('cp_global_js', $global_js);
+		$this->CI->view->cp_global_js = $global_js;
 	}
 }
 

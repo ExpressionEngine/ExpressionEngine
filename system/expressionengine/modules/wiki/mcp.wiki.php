@@ -509,7 +509,6 @@ class Wiki_mcp {
 
 		$this->EE->javascript->compile();
 
-		$this->EE->load->helper('string');
 		return $this->EE->load->view('theme_templates', $vars, TRUE);
 	}
 

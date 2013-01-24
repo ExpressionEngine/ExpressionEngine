@@ -105,13 +105,13 @@ class Tools_logs extends CP_Controller {
 				
 		$vars = $this->table->datasource('_cp_log_filter', $initial_state, $params);
 				
-		$this->cp->set_variable('cp_page_title', lang('view_cp_log'));
+		$this->view->cp_page_title = lang('view_cp_log');
 
 		// a bit of a breadcrumb override is needed
-		$this->cp->set_variable('cp_breadcrumbs', array(
+		$this->view->cp_breadcrumbs = array(
 			BASE.AMP.'C=tools' => lang('tools'),
 			BASE.AMP.'C=tools_logs'=> lang('tools_logs')
-		));
+		);
 				
 		$this->cp->render('tools/view_cp_log', $vars);
 	}
@@ -195,13 +195,13 @@ class Tools_logs extends CP_Controller {
 		
 		$vars = $this->table->datasource('_search_log_filter', $initial_state, $params);
 
-		$this->cp->set_variable('cp_page_title', lang('view_search_log'));
+		$this->view->cp_page_title = lang('view_search_log');
 
 		// a bit of a breadcrumb override is needed
-		$this->cp->set_variable('cp_breadcrumbs', array(
+		$this->view->cp_breadcrumbs = array(
 			BASE.AMP.'C=tools' => lang('tools'),
 			BASE.AMP.'C=tools_logs'=> lang('tools_logs')
-		));
+		);
 
 		$this->cp->render('tools/view_search_log', $vars);
 	}
@@ -298,13 +298,13 @@ class Tools_logs extends CP_Controller {
 		
 		$data = $this->table->datasource('_throttle_log_filter', $initial_state, $params);
 		
-		$this->cp->set_variable('cp_page_title', lang('view_throttle_log'));
+		$this->view->cp_page_title = lang('view_throttle_log');
 
 		// a bit of a breadcrumb override is needed
-		$this->cp->set_variable('cp_breadcrumbs', array(
+		$this->view->cp_breadcrumbs = array(
 			BASE.AMP.'C=tools' => lang('tools'),
 			BASE.AMP.'C=tools_logs'=> lang('tools_logs')
-		));
+		);
 		
 		// Blacklist Installed?
 		$this->db->where('module_name', 'Blacklist');
@@ -420,13 +420,13 @@ class Tools_logs extends CP_Controller {
 		
 		$data = $this->table->datasource('_email_log_filter', $initial_state, $params);
 		
-		$this->cp->set_variable('cp_page_title', lang('view_email_logs'));
+		$this->view->cp_page_title = lang('view_email_logs');
 
 		// a bit of a breadcrumb override is needed
-		$this->cp->set_variable('cp_breadcrumbs', array(
+		$this->view->cp_breadcrumbs = array(
 			BASE.AMP.'C=tools' => lang('tools'),
 			BASE.AMP.'C=tools_logs'=> lang('tools_logs')
-		));
+		);
 
 		$this->javascript->output('
 			$("#toggle_all").toggle(
@@ -543,13 +543,13 @@ class Tools_logs extends CP_Controller {
 		
 		$vars = $this->table->datasource('_developer_log_filter', $initial_state, $params);
 
-		$this->cp->set_variable('cp_page_title', lang('view_developer_log'));
+		$this->view->cp_page_title = lang('view_developer_log');
 
 		// a bit of a breadcrumb override is needed
-		$this->cp->set_variable('cp_breadcrumbs', array(
+		$this->view->cp_breadcrumbs = array(
 			BASE.AMP.'C=tools' => lang('tools'),
 			BASE.AMP.'C=tools_logs'=> lang('tools_logs')
-		));
+		);
 		
 		$this->load->library('logger');
 		

@@ -76,7 +76,7 @@ class Simple_commerce_mcp {
 			'paypal_account'=> $this->EE->config->item('sc_paypal_account')
 		);
 
-		$base = $this->EE->functions->remove_double_slashes(str_replace('/public_html', '', substr(BASEPATH, 0, - strlen(SYSDIR.'/'))).'/encryption/');
+		$base = reduce_double_slashes(str_replace('/public_html', '', substr(BASEPATH, 0, - strlen(SYSDIR.'/'))).'/encryption/');
 
 		foreach (array('certificate_id', 'public_certificate', 'private_key', 'paypal_certificate', 'temp_path') as $val)
 		{
@@ -1838,7 +1838,7 @@ MAGIC;
 		// Load the search helper so we can filter the keywords
 		$this->EE->load->helper('search');
 
-		$this->EE->cp->set_variable('cp_page_title', lang('edit'));
+		$this->EE->view->cp_page_title = lang('edit');
 
 		$this->EE->cp->add_js_script('ui', 'datepicker');
 

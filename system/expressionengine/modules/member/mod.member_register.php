@@ -307,8 +307,6 @@ class Member_register extends Member {
 		{
 			require APPPATH.'libraries/Validate.php';
 		}
-		
-		$this->EE->load->helper('string');
 
 		$VAL = new EE_Validate(array(
 			'member_id'			=> '',
@@ -625,8 +623,6 @@ class Member_register extends Member {
 			$template = $this->EE->functions->fetch_email_template('admin_notify_reg');
 			$email_tit = $this->_var_swap($template['title'], $swap);
 			$email_msg = $this->_var_swap($template['data'], $swap);
-
-			$this->EE->load->helper('string');
 
 			// Remove multiple commas
 			$notify_address = reduce_multiples($this->EE->config->item('mbr_notification_emails'), ',', TRUE);

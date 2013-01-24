@@ -219,11 +219,11 @@ class Wiki {
 		
 		if ($this->EE->TMPL->fetch_param('profile_path') !== FALSE)
 		{
-			$this->profile_path = $this->EE->functions->remove_double_slashes('/'.$this->EE->TMPL->fetch_param('profile_path').'/'.$this->EE->config->item('profile_trigger').'/');
+			$this->profile_path = reduce_double_slashes('/'.$this->EE->TMPL->fetch_param('profile_path').'/'.$this->EE->config->item('profile_trigger').'/');
 		}
 		else
 		{
-			$this->profile_path = $this->EE->functions->remove_double_slashes('/'.$this->EE->config->item('profile_trigger').'/');
+			$this->profile_path = reduce_double_slashes('/'.$this->EE->config->item('profile_trigger').'/');
 		}
 		
 		/** ----------------------------------------
@@ -5447,7 +5447,7 @@ class Wiki {
 			{					
 				$this->p_page = (isset($match['2'])) ? $match['2'] : $match['1'];	
 					
-				$base_path = $this->EE->functions->remove_double_slashes(str_replace($match['0'], '', $base_path));
+				$base_path = reduce_double_slashes(str_replace($match['0'], '', $base_path));
 			}
 			
 			$this->p_page = ($this->p_page == '' OR ($limit > 1 AND $this->p_page == 1)) ? 0 : $this->p_page;
@@ -5599,7 +5599,6 @@ class Wiki {
 		/** ------------------------------------*/
 		
 		$protected = array();
-		$this->EE->load->helper('string');
 		
 		$front_protect = unique_marker('wiki_front_protect');
 		$back_protect  = unique_marker('wiki_back_protect');

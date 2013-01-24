@@ -87,7 +87,7 @@ class Content_publish extends CP_Controller {
 			);
 		}
 		
-		$this->cp->set_variable('cp_page_title', $title);
+		$this->view->cp_page_title = $title;
 
 		$this->load->model('channel_model');
 		$channels = $this->channel_model->get_channels();

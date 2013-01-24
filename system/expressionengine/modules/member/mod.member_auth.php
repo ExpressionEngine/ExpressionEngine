@@ -354,7 +354,7 @@ class Member_auth extends Member {
 			$orig_id = $this->EE->config->item('site_id');
 			$orig_idx = $current_idx;
 			$next_idx = ($current_idx == '0') ? '1' : '0';
-			$return = $this->EE->functions->remove_double_slashes($this->EE->functions->form_backtrack());
+			$return = reduce_double_slashes($this->EE->functions->form_backtrack());
 			$return = strtr(base64_encode($return), '/=', '_-');
 		}
 		elseif ($next_idx == $orig_idx)
@@ -441,7 +441,7 @@ class Member_auth extends Member {
 		// Build success message
 		$site_name = ($this->EE->config->item('site_name') == '') ? lang('back') : stripslashes($this->EE->config->item('site_name'));
 
-		$return = $this->EE->functions->remove_double_slashes($this->EE->functions->form_backtrack());
+		$return = reduce_double_slashes($this->EE->functions->form_backtrack());
 
 		// Is this a forum request?
 		if ($this->EE->input->get_post('FROM') == 'forum')

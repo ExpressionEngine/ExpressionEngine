@@ -110,7 +110,7 @@ class Admin_system extends CP_Controller {
 			}
 		}');
 
-		$this->cp->set_variable('cp_page_title', lang($type));
+		$this->view->cp_page_title = lang($type);
 
 		$this->load->library('table');
 		$this->load->library('form_validation');
@@ -482,12 +482,9 @@ class Admin_system extends CP_Controller {
 		if (isset($modules['mailinglist']))
 		{
 			$this->lang->loadfile('mailinglist');
-			$this->cp->set_variable(
-				'cp_breadcrumbs',
-				array(
-					BASE.AMP.'C=addons_modules' => lang('nav_modules'),
-					BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist' => lang('mailinglist_module_name')
-				)
+			$this->view->cp_breadcrumbs = array(
+				BASE.AMP.'C=addons_modules' => lang('nav_modules'),
+				BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist' => lang('mailinglist_module_name')
 			);
 		}
 
@@ -625,8 +622,7 @@ class Admin_system extends CP_Controller {
 	{
 		$this->_restrict_prefs_access();
 
-		$this->load->helper('string');
-		$this->cp->set_variable('cp_page_title', lang('config_editor'));
+		$this->view->cp_page_title = lang('config_editor');
 
 		$vars['config_items'] = $this->config->default_ini;
 		ksort($vars['config_items']);

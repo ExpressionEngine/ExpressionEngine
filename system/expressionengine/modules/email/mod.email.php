@@ -221,7 +221,7 @@ class Email {
 		{
 			$current_page = $match['1'];
 
-			$qstring = $this->EE->functions->remove_double_slashes(str_replace($match[0], '', $qstring));
+			$qstring = reduce_double_slashes(str_replace($match[0], '', $qstring));
 		}
 
 		// Remove "N"
@@ -229,7 +229,7 @@ class Email {
 		// It needs to be removed if presenst
 		if (preg_match("#/N(\d+)#", $qstring, $match))
 		{
-			$qstring = $this->EE->functions->remove_double_slashes(str_replace($match[0], '', $qstring));
+			$qstring = reduce_double_slashes(str_replace($match[0], '', $qstring));
 		}
 
 		/* -------------------------------------
