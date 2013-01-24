@@ -17,7 +17,7 @@ body {
 
 #content  {
 	text-align:			left;
-	padding:			200px 20px 5px 20px;
+	padding:			160px 20px 5px 20px;
 	margin:				20px auto 0 auto;
 	width:				440px;
 	background:			url('<?=$cp_theme_url?>images/ee_login_bg.gif') no-repeat center top;
@@ -97,7 +97,7 @@ input.submit {
 	background:			#e9fdd7 url('<?=$cp_theme_url?>images/success.png') no-repeat 8px 10px;
 	border:				1px solid #bce99a;
 	padding:			3px 15px 3px 30px;
-	margin:				0 0 20px 0;
+	margin:				40px 0 20px 0;
 	width:				396px;
 	
 	-webkit-border-radius: 6px;
