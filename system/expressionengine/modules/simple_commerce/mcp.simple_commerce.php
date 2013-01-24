@@ -1089,7 +1089,7 @@ class Simple_commerce_mcp {
 				$vars['purchases'][$id]['txn_id'] = '';
 				$vars['purchases'][$id]['screen_name'] = '';
 				$vars['purchases'][$id]['item_id'] = '';
-				$vars['purchases'][$id]['purchase_date'] = $this->EE->localize->set_human_time();
+				$vars['purchases'][$id]['purchase_date'] = $this->EE->localize->human_time();
 				$vars['purchases'][$id]['subscription_end_date'] = 0;
 				$vars['purchases'][$id]['item_cost'] =  '';
 				$vars['purchases'][$id]['purchase_id'] =  0;
@@ -1116,7 +1116,7 @@ class Simple_commerce_mcp {
 				$vars['purchases'][$row['purchase_id']]['txn_id'] = $row['txn_id'];
 				$vars['purchases'][$row['purchase_id']]['member_id']  = $row['member_id'];
 				$vars['purchases'][$row['purchase_id']]['item_id'] = $row['item_id'];
-				$vars['purchases'][$row['purchase_id']]['purchase_date'] = $this->EE->localize->set_human_time($row['purchase_date']);
+				$vars['purchases'][$row['purchase_id']]['purchase_date'] = $this->EE->localize->human_time($row['purchase_date']);
 
 				$vars['purchases'][$row['purchase_id']]['item_cost'] =  $row['item_cost'];
 				$vars['purchases'][$row['purchase_id']]['purchase_id'] = $row['purchase_id'];
@@ -1483,7 +1483,7 @@ class Simple_commerce_mcp {
 			
 			if ($purchase['subscription_end_date'] != 0)
 			{
-				$subscription_end_date = $this->EE->localize->set_human_time($purchase['subscription_end_date']);
+				$subscription_end_date = $this->EE->localize->human_time($purchase['subscription_end_date']);
 			}
 			elseif ($purchase['recurring'] == 'y')
 			{
@@ -1494,7 +1494,7 @@ class Simple_commerce_mcp {
 				'title'					=> '<a href="'.BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce'.
 					AMP.'method=edit_purchases'.AMP.'purchase_id='.$purchase['purchase_id'].'">'.$purchase['title'].'</a>',
 				'screen_name'			=> $purchase['screen_name'],
-				'purchase_date'			=> $this->EE->localize->set_human_time($purchase['purchase_date']),
+				'purchase_date'			=> $this->EE->localize->human_time($purchase['purchase_date']),
 				'subscription_end_date'	=> $subscription_end_date,
 				'item_cost'				=> $purchase['item_cost'],
 				'_check'				=> '<input class="toggle" id="edit_box_'.$purchase['purchase_id'].'" type="checkbox" name="toggle[]" value="'.$purchase['purchase_id'].'" />',

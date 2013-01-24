@@ -162,7 +162,7 @@ class Channel_standalone extends Channel {
 			
 			if ( ! $this->EE->input->post('entry_date'))
 			{
-				$_POST['entry_date'] = $this->EE->localize->set_human_time($this->EE->localize->now);
+				$_POST['entry_date'] = $this->EE->localize->human_time($this->EE->localize->now);
 			}
 
 			$data = $_POST;
@@ -922,7 +922,7 @@ class Channel_standalone extends Channel {
 			/** ----------------------------------------*/
 			if ($key == 'entry_date')
 			{
-				$entry_date = ( ! isset($_POST['entry_date'])) ? $this->EE->localize->set_human_time($this->EE->localize->now) : $_POST['entry_date'];
+				$entry_date = ( ! isset($_POST['entry_date'])) ? $this->EE->localize->human_time($this->EE->localize->now) : $_POST['entry_date'];
 
 				$tagdata = $this->EE->TMPL->swap_var_single($key, $entry_date, $tagdata);
 			}
@@ -954,7 +954,7 @@ class Channel_standalone extends Channel {
 					{
 						$comment_expiration_date = $channel_q->row('comment_expiration') * 86400;
 						$comment_expiration_date = $comment_expiration_date + $this->EE->localize->now;
-						$comment_expiration_date = $this->EE->localize->set_human_time($comment_expiration_date);
+						$comment_expiration_date = $this->EE->localize->human_time($comment_expiration_date);
 					}
 				}
 
@@ -1952,7 +1952,7 @@ class Channel_standalone extends Channel {
 
 					if ($field_data != '')
 					{
-						$custom_date = $this->EE->localize->set_human_time($field_data, $localize);						
+						$custom_date = $this->EE->localize->human_time($field_data, $localize);						
 					}
 
 					$cal_date = ($this->EE->localize->set_localized_time($custom_date) * 1000);

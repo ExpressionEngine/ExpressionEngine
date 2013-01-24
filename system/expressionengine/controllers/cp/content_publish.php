@@ -417,7 +417,7 @@ class Content_publish extends CP_Controller {
 		// @todo check for errors
 		
 		$msg = lang('autosave_success');
-		$time = $this->localize->set_human_time($this->localize->now);
+		$time = $this->localize->human_time($this->localize->now);
 		$time = trim(strstr($time, ' '));
 		
 		$this->output->send_ajax_response(array(
@@ -681,7 +681,7 @@ class Content_publish extends CP_Controller {
 							$localize = FALSE;
 						}
 
-						$r .= $this->localize->set_human_time($date, $localize);
+						$r .= $this->localize->human_time($date, $localize);
 					}
 				}
 				else
@@ -1966,7 +1966,7 @@ class Content_publish extends CP_Controller {
 					
 					$this->table->add_row(array(
 							'<strong>' . lang('revision') . ' ' . $j . '</strong>',
-							$this->localize->set_human_time($row->version_date),
+							$this->localize->human_time($row->version_date),
 							$row->screen_name,
 							$revlink
 						)

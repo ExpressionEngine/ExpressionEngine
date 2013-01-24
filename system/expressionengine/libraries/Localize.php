@@ -70,16 +70,17 @@ class EE_Localize {
 	 * using the current member's locale
 	 *
 	 * @param	string	Human-readable date
+	 * @param	bool	Is the human date prelocalized?
 	 * @return	mixed	int if successful, otherwise FALSE
 	 */
-	public function string_to_timestamp($human_string)
+	public function string_to_timestamp($human_string, $localized = TRUE)
 	{
 		if (trim($human_string) == '')
 		{
 			return '';
 		}
 
-		$dt = $this->_datetime($human_string);
+		$dt = $this->_datetime($human_string, $localized);
 
 		return ($dt) ? $dt->format('U') : FALSE;
 	}
@@ -92,12 +93,12 @@ class EE_Localize {
 	 *
 	 * @param	string	Date format, like "%D, %F %d, %Y - %g:%i:%s"
 	 * @param	int		Unix timestamp
-	 * @param	string	Timezone
+	 * @param	bool	Return date localized or not
 	 * @return	string	Formatted date
 	 */
-	public function formatted_date($format, $timestamp = NULL, $timezone = NULL)
+	public function formatted_date($format, $timestamp = NULL, $localized = TRUE)
 	{
-		if ( ! ($dt = $this->_datetime($timestamp, $timezone)))
+		if ( ! ($dt = $this->_datetime($timestamp, $localized)))
 		{
 			return FALSE;
 		}
@@ -203,22 +204,71 @@ class EE_Localize {
 	}
 
 	// --------------------------------------------------------------------
+
+	/**
+	 * Provides common date format for things like date fields, and takes
+	 * into consideration the member's time_format preference
+	 *
+	 * Example: 2015-10-21 06:30 PM
+	 *
+	 * @param	int		Unix timestamp
+	 * @param	bool	Localize to member's timezone or leave as GMT
+	 * @param	bool	Include seconds in returned string or not
+	 * @return	string	Formatted string
+	 */
+	public function human_time($timestamp = NULL, $localize = TRUE, $seconds = FALSE)
+	{
+		if ( ! $seconds && $this->EE->config->item('include_seconds') == 'y')
+		{
+			$seconds = TRUE;
+		}
+
+		/* -------------------------------------------
+		/*	Hidden Configuration Variables
+		/*	- include_seconds => Determines whether to include seconds in our human time.
+		/* -------------------------------------------*/
+		$fmt = ($this->EE->session->userdata('time_format') != '')
+			? $this->EE->session->userdata('time_format') : $this->EE->config->item('time_format');
+
+		// 2015-10-21
+		$format_string = '%Y-%m-%d ';
+
+		// 06:30 or 18:30
+		$format_string .= ($fmt == 'us') ? '%h:%i' : '%H:%i';
+
+		// Seconds
+		if ($seconds)
+		{
+			$format_string .= ':%s';
+		}
+
+		// AM/PM
+		if ($fmt == 'us')
+		{
+			$format_string .= ' %A';
+		}
+
+		return $this->formatted_date($format_string, $timestamp, $localize);
+	}
+
+	// --------------------------------------------------------------------
 	
 	/**
 	 * Returns a DateTime object for the current time and member timezone
 	 * OR a specified time and timezone
 	 *
 	 * @param	string		Date string or Unix timestamp, current time used if NULL
-	 * @param	string		Timezone to convert time to
+	 * @param	mixed		Bool: whether or not to localize to current member's
+	 *                      timezone, or string of timezone to convert to
 	 * @return	datetime	DateTime object set to the given time and altered
 	 * 						for server offset
 	 */
-	private function _datetime($date_string = NULL, $timezone = NULL)
+	private function _datetime($date_string = NULL, $timezone = TRUE)
 	{
-		// Get the member's timezone if one isn't specified
-		if (empty($timezone))
+		// Localize to member's timezone or leave as GMT
+		if (is_bool($timezone))
 		{
-			$timezone = $this->EE->session->userdata('timezone');
+			$timezone = ($timezone) ? $this->EE->session->userdata('timezone') : 'GMT';
 		}
 		
 		try
@@ -296,6 +346,12 @@ class EE_Localize {
 		);
 	}
 
+	// --------------------------------------------------------------------
+	// OLD STUFF STARTS HERE
+	// 
+	// Everything below this line is subject to deprecation, deletion, 
+	// ridicule or shame.
+	// --------------------------------------------------------------------
 
 	// --------------------------------------------------------------------
 
@@ -494,43 +550,10 @@ class EE_Localize {
 	 */
 	function set_human_time($now = '', $localize = TRUE, $seconds = FALSE)
 	{
-		/* -------------------------------------------
-		/*	Hidden Configuration Variables
-		/*	- include_seconds => Determines whether to include seconds in our human time.
-		/* -------------------------------------------*/
-
-		if (func_num_args() != 3 && $this->EE->config->item('include_seconds') == 'y')
-		{
-			$seconds = TRUE;
-		}
-
-		$fmt = ($this->EE->session->userdata('time_format') != '')
-			? $this->EE->session->userdata('time_format') : $this->EE->config->item('time_format');
-
-		$format_string = '%Y-%m-%d';
-
-		if ($fmt == 'us')
-		{
-			$format_string .= ' %h:%i';
-		}
-		else
-		{
-			$format_string .= ' %H:%i';
-		}
-
-		if ($seconds)
-		{
-			$format_string .= ':%s';
-		}
-
-		if ($fmt == 'us')
-		{
-			$format_string .= ' %A';
-		}
-
-		$timezone = ($localize) ? NULL : 'GMT';
-
-		return $this->formatted_date($format_string, $now, $timezone);
+		$this->EE->load->library('logger');
+		$this->EE->logger->deprecated('2.6', 'Localize::human_time');
+		
+		return $this->human_time($now, $localize, $seconds);
 	}
 
 	// --------------------------------------------------------------------
@@ -718,7 +741,7 @@ class EE_Localize {
 	{
 		// TODO: Deprecate
 		
-		return $this->formatted_date($datestr, $unixtime);
+		return $this->formatted_date($datestr, $unixtime, $localize);
 	}
 
 	// --------------------------------------------------------------------
@@ -780,9 +803,7 @@ class EE_Localize {
 			$format = $format[0];
 		}
 
-		$timezone = ($localize) ? NULL : 'GMT';
-
-		$format = $this->_date_string_for_variable($format, $this->_datetime($time, $timezone));
+		$format = $this->_date_string_for_variable($format, $this->_datetime($time, $localize));
 
 		return ($return_array) ? array($format) : $format;
 	}

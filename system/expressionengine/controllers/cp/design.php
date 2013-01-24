@@ -1862,7 +1862,7 @@ class Design extends CP_Controller {
 		{			 
 			foreach ($query->result_array() as $row)
 			{
-				$vars['revision_options'][$row['tracker_id']] = $this->localize->set_human_time($row['item_date']).' ('.$row['screen_name'].')';
+				$vars['revision_options'][$row['tracker_id']] = $this->localize->human_time($row['item_date']).' ('.$row['screen_name'].')';
 			}  
 
 			$vars['revision_options']['clear'] = lang('clear_revision_history');  

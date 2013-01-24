@@ -94,18 +94,18 @@ class MyAccount extends CP_Controller {
 
 			$vars['fields'] = array(
 				'email'				=> mailto($query->row('email'), $query->row('email')),
-				'join_date'			=> $this->localize->set_human_time($query->row('join_date')),
-				'last_visit'		=> ($query->row('last_visit') == 0 OR $query->row('last_visit') == '') ? '--' : $this->localize->set_human_time($query->row('last_visit')),
+				'join_date'			=> $this->localize->human_time($query->row('join_date')),
+				'last_visit'		=> ($query->row('last_visit') == 0 OR $query->row('last_visit') == '') ? '--' : $this->localize->human_time($query->row('last_visit')),
 				'total_entries'		=> $query->row('total_entries'),
 				'total_comments'	=> $query->row('total_comments'),
-				'last_entry_date'	=> ($query->row('last_entry_date') == 0 OR $query->row('last_entry_date') == '') ? '--' : $this->localize->set_human_time($query->row('last_entry_date')),
-				'last_comment_date' => ($query->row('last_comment_date') == 0 OR $query->row('last_comment_date') == '') ? '--' : $this->localize->set_human_time($query->row('last_comment_date')),
+				'last_entry_date'	=> ($query->row('last_entry_date') == 0 OR $query->row('last_entry_date') == '') ? '--' : $this->localize->human_time($query->row('last_entry_date')),
+				'last_comment_date' => ($query->row('last_comment_date') == 0 OR $query->row('last_comment_date') == '') ? '--' : $this->localize->human_time($query->row('last_comment_date')),
 				'user_ip_address'	=> $query->row('ip_address')
 			);
 
 			if ($this->config->item('forum_is_installed') == "y")
 			{
-				$fields['last_forum_post_date'] = ($query->row('last_forum_post_date') == 0) ? '--' : $this->localize->set_human_time($query->row('last_forum_post_date'));
+				$fields['last_forum_post_date'] = ($query->row('last_forum_post_date') == 0) ? '--' : $this->localize->human_time($query->row('last_forum_post_date'));
 				$fields['total_forum_topics']	= $query->row('total_forum_topics');
 				$fields['total_forum_replies']	= $query->row('total_forum_posts');
 				$fields['total_forum_posts']	= $query->row('total_forum_posts') + $query->row('total_forum_topics');

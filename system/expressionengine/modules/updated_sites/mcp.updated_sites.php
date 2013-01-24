@@ -475,7 +475,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			$vars['pings'][$row->ping_id]['rss'] = $row->ping_site_rss;
 
 			// Date
-			$vars['pings'][$row->ping_id]['date'] = ($row->ping_date != '' AND $row->ping_date != 0) ? $this->EE->localize->set_human_time($row->ping_date) : '-';
+			$vars['pings'][$row->ping_id]['date'] = ($row->ping_date != '' AND $row->ping_date != 0) ? $this->EE->localize->human_time($row->ping_date) : '-';
 
 			// delete checkbox
 			$vars['pings'][$row->ping_id]['toggle'] = array(
@@ -559,7 +559,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			$m[] =  '<a href="'.$this->EE->functions->fetch_site_index().
 			QUERY_MARKER.'URL='.$ping['ping_site_url'].'">'.character_limiter(str_replace('http://', '', $ping['ping_site_url']), 40).'</a>';
 			$m[] =	$ping['ping_site_rss'];
-			$m[] =	($ping['ping_date'] != '' AND $ping['ping_date'] != 0) ? $this->EE->localize->set_human_time($ping['ping_date']) : '-';
+			$m[] =	($ping['ping_date'] != '' AND $ping['ping_date'] != 0) ? $this->EE->localize->human_time($ping['ping_date']) : '-';
 			$m[] = '<input class="toggle" type="checkbox" name="email[]" value="'.$ping['ping_id'].'" />';		
 
 			$tdata[$i] = $m;

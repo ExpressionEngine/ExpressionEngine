@@ -1618,7 +1618,7 @@ class Filemanager {
 				continue;
 			}
 			
-			$file['date'] = $this->EE->localize->set_human_time($file['modified_date'], TRUE);
+			$file['date'] = $this->EE->localize->human_time($file['modified_date'], TRUE);
 			//$file['size'] = number_format($file['file_size']/1000, 1).' '.lang('file_size_unit');
 			$file['has_thumb'] = (in_array('thumb_'.$file['file_name'], $map));
 		}

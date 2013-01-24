@@ -82,8 +82,6 @@ class Date_ft extends EE_Fieldtype {
 		$date = $this->EE->localize->now;
 		$custom_date = '';
 
-		$localize = FALSE;
-		
 		if (isset($_POST[$date_field]) && ! is_numeric($_POST[$date_field]))
 		{
 			// probably had a validation error so repopulate as-is
@@ -99,7 +97,7 @@ class Date_ft extends EE_Fieldtype {
 
 				if (isset($this->settings['always_show_date']) && $this->settings['always_show_date'] == 'y')
 				{
-					$custom_date = $this->EE->localize->set_human_time($field_data, $localize);
+					$custom_date = $this->EE->localize->human_time($field_data);
 				}
 			}
 			else	// Everything else
@@ -125,7 +123,7 @@ class Date_ft extends EE_Fieldtype {
 				// shows the correct default.
 				if ($field_data)
 				{
-					$custom_date = $this->EE->localize->set_human_time($field_data, $localize);
+					$custom_date = $this->EE->localize->human_time($field_data, $localize);
 				}
 			}
 

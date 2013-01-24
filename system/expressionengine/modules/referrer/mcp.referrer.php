@@ -219,7 +219,7 @@ class Referrer_mcp {
 			$vars['referrers'][$row['ref_id']]['to_url'] = '/'.ltrim(str_replace($site_url, '', $row['ref_to']), '/');
 
 			// Date
-			$vars['referrers'][$row['ref_id']]['date'] = ($row['ref_date'] != '' AND $row['ref_date'] != 0) ? $this->EE->localize->set_human_time($row['ref_date']) : '-';
+			$vars['referrers'][$row['ref_id']]['date'] = ($row['ref_date'] != '' AND $row['ref_date'] != 0) ? $this->EE->localize->human_time($row['ref_date']) : '-';
 
 			// IP
 			$vars['referrers'][$row['ref_id']]['referrer_ip'] = ($row['ref_ip'] != '' AND $row['ref_ip'] != 0) ? $row['ref_ip'] : '-';
