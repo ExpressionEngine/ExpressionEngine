@@ -168,7 +168,7 @@ class EE_Localize {
 						return $this->EE->lang->line('May_l');
 					}
 					break;
-				// Concatenate the RFC 8288 format with translations
+				// Concatenate the RFC 2822 format with translations
 				case 'r':
 					if ($translate)
 					{
@@ -264,13 +264,17 @@ class EE_Localize {
 	// --------------------------------------------------------------------
 
 	/**
-	 *   Convert a MySQL timestamp to GMT
+	 * Convert a MySQL timestamp to GMT
+	 *
+	 * Legacy method to handle the edit_date column until it can be changed
+	 * to use timestamps. DateTime won't be able to handle the date formats
+	 * passed to this.
 	 *
 	 * @access	public
 	 * @param	string
 	 * @return	string
 	 */
-	function timestamp_to_gmt($str = '')
+	public function timestamp_to_gmt($str = '')
 	{
 		// We'll remove certain characters for backward compatibility
 		// since the formatting changed with MySQL 4.1
