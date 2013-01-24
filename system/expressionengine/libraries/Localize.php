@@ -776,7 +776,9 @@ class EE_Localize {
 			$format = $format[0];
 		}
 
-		$format = $this->_date_string_for_variable($format, $this->_datetime($time));
+		$timezone = ($localize) ? NULL : 'GMT';
+
+		$format = $this->_date_string_for_variable($format, $this->_datetime($time, $timezone));
 
 		return ($return_array) ? array($format) : $format;
 	}
