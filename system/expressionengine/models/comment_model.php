@@ -122,8 +122,13 @@ class Comment_model extends CI_Model {
 				{
 					foreach ($comment_q->result() as $row)
 					{
-						$sub_id = $subscription_map[$row->email];
-						$recipients[] = array($row->email, $sub_id, $row->name);
+						// Check due to possiblity of two replies with same email but
+						// different capitalization triggering an undefined index error
+						if (isset($subscription_map[$row->email]))
+						{
+							$sub_id = $subscription_map[$row->email];
+							$recipients[] = array($row->email, $sub_id, $row->name);
+						}			
 					}
 				}
 			}

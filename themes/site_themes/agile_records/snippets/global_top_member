@@ -1,6 +1,6 @@
 <div id="member">
 	
-	<!-- Utilized member conditionals: http://expressionengine.com/user_guide/templates/globals/conditionals.html-->
+	<!-- Utilized member conditionals: http://ellislab.com/expressionengine/user-guide/templates/globals/conditionals.html-->
             <h4>Hello{if logged_in} {screen_name}{/if}!</h4>
             {if is_freelancer == FALSE}
 			<ul>

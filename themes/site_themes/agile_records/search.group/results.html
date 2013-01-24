@@ -22,11 +22,11 @@
 	
 	<div id="content_pri"> <!-- This is where all primary content, left column gets entered -->
 		
-		<!-- Search Results tag: http://expressionengine.com/user_guide/modules/search/index.html#results -->
+		<!-- Search Results tag: http://ellislab.com/expressionengine/user-guide/modules/search/index.html#results -->
 		
 		{exp:search:search_results}
 			{if count == "1"}
-				<!-- exp:search:keywords: http://expressionengine.com/user_guide/modules/search/keywords.html -->
+				<!-- exp:search:keywords: http://ellislab.com/expressionengine/user-guide/modules/search/keywords.html -->
 				<!-- exp:search:keywords lets you echo out what search term was used -->
 			
 				<h3>Search Results for "<strong>{exp:search:keywords}</strong>":</h3>
@@ -36,11 +36,11 @@
 			<li>
 				<h4>
 					<a href="{comment_url_title_auto_path}">{title}</a>  //  
-					<!-- entry_date is a variable, and date formatting variables can be found at http://expressionengine.com/user_guide/templates/date_variable_formatting.html -->
+					<!-- entry_date is a variable, and date formatting variables can be found at http://ellislab.com/expressionengine/user-guide/templates/date_variable_formatting.html -->
 					{entry_date format="%F %d %Y"}
 				</h4>
 			
-				<!-- news_body and news_image are  custom channel fields. http://expressionengine.com/user_guide/cp/admin/channel_administration/custom_channel_fields.html -->
+				<!-- news_body and news_image are  custom channel fields. http://ellislab.com/expressionengine/user-guide/cp/admin/channel_administration/custom_channel_fields.html -->
 				{if news_image}
 					<img src="{news_image}" alt="{title}" />
 				{/if}
