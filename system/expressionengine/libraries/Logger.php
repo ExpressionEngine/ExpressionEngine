@@ -301,6 +301,19 @@ class EE_Logger {
 				'<code>exp:'.strtolower($deprecated['addon_module']).':'.$deprecated['addon_method'].'</code>',
 				'<a href="'.BASE.AMP.'C=design'.AMP.'M=edit_template'.AMP.'id='.$deprecated['template_id'].'">'.$deprecated['template_group'].'/'.$deprecated['template_name'].'</a>'
 			);
+
+			if ($deprecated['snippets'])
+			{
+				$snippets = explode('|', $deprecated['snippets']);
+
+				foreach ($snippets as &$snip)
+				{
+					$snip = '<a href="'.BASE.AMP.'C=design'.AMP.'M=snippets_edit'.AMP.'snippet='.$snip.'">{'.$snip.'}</a>';
+				}
+
+				$message .= '<br />';
+				$message .= sprintf(lang('deprecated_snippets'), implode(', ', $snippets));
+			}
 		}
 		
 		if (isset($deprecated['deprecated_since']) 

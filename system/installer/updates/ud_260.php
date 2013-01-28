@@ -49,6 +49,7 @@ class Updater {
 		
 		$this->_change_member_totals_length();
 		$this->_update_session_table();
+		$this->_add_template_name_to_dev_log();
 		
 		return TRUE;
 	}
@@ -108,6 +109,48 @@ class Updater {
 		}
 		
 		return TRUE;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * update Session table
+	 *
+	 * @return TRUE
+	 */
+	private function _add_template_name_to_dev_log()
+	{
+		$this->EE->dbforge->add_column(
+			'developer_log',
+			array(
+				'template_id' => array(
+					'type'			=> 'int',
+					'constraint'	=> 10,
+					'unsigned'		=> TRUE,
+					'default'		=> 0,
+					'null'			=> FALSE
+				),
+				'template_name' => array(
+					'type'			=> 'varchar',
+					'constraint'	=> 100
+				),
+				'template_group' => array(
+					'type'			=> 'varchar',
+					'constraint'	=> 100
+				),
+				'addon_module' => array(
+					'type'			=> 'varchar',
+					'constraint'	=> 100
+				),
+				'addon_method' => array(
+					'type'			=> 'varchar',
+					'constraint'	=> 100
+				),
+				'snippets' => array(
+					'type'			=> 'text'
+				)
+			)
+		);
 	}
 }	
 /* END CLASS */

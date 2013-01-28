@@ -89,6 +89,7 @@ $lang = array(
 'deprecated_since'		=> 'Deprecated since %s.',
 'deprecated_use_instead'	=> 'Use %s instead.',
 'deprecated_template'	=> 'From template tag %s in %s.',
+'deprecated_snippets'	=> 'This tag may have been parsed from one of these snippets: %s',
 'deprecation_detected'	=> 'The system has detected one or more add-ons that are using outdated code that may stop working or cause issues with the system.',
 'dev_log_view_report'	=> 'View report',
 'dev_log_help'			=> 'What does this mean?',
