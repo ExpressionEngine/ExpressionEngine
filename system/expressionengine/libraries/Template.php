@@ -1781,8 +1781,15 @@ class EE_Template {
 		$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
 		$query = $this->EE->db->get('template_groups');
 		
+		// This really shouldn't happen, but some addons have accidentally
+		// created duplicates so we cannot fail silently.
+		if ($query->num_rows() > 1)
+		{
+			$this->log_item("Duplicate Template Group: ".$this->EE->uri->segment(1));
+		}
+
 		// Template group found!
-		if ($query->num_rows() == 1)
+		elseif ($query->num_rows() == 1)
 		{
 			// Set the name of our template group
 			$template_group = $this->EE->uri->segment(1);
