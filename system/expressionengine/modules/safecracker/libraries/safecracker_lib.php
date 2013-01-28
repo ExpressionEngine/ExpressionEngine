@@ -1513,11 +1513,11 @@ class Safecracker_lib
 			{
 				if ($this->entry('entry_id'))
 				{
-					$submit = $this->EE->api_sc_channel_entries->save_entry($_POST, NULL, $this->entry('entry_id'));
+					$submit = $this->EE->api_sc_channel_entries->update_entry($this->entry('entry_id'), $_POST);
 				}
 				else
 				{
-					$submit = $this->EE->api_sc_channel_entries->save_entry($_POST, $this->channel('channel_id'));
+					$submit = $this->EE->api_sc_channel_entries->submit_new_entry($this->channel('channel_id'), $_POST);
 				}
 				
 				if ( ! $submit)
@@ -1634,7 +1634,7 @@ class Safecracker_lib
 			$this->EE->security->delete_xid($this->EE->input->post('XID'));
 		}
 		
-		$return = ($this->_meta['return']) ? $this->EE->functions->create_url($this->EE->input->post('return', TRUE)) : $this->EE->functions->fetch_site_index();
+		$return = ($this->_meta['return']) ? $this->EE->functions->create_url($this->_meta['return']) : $this->EE->functions->fetch_site_index();
 		    
 		if (strpos($return, 'ENTRY_ID') !== FALSE)
 		{
@@ -1820,6 +1820,11 @@ class Safecracker_lib
 		
 		$this->EE->api_channel_fields->field_types[$this->EE->api_channel_fields->field_type]->settings = array_merge($this->get_field_settings($field_name), $this->get_field_data($field_name), $this->EE->api_channel_fields->get_global_settings($this->EE->api_channel_fields->field_type));
 		
+		if ($this->EE->api_channel_fields->field_type == 'date')
+		{
+			$this->EE->api_channel_fields->field_types[$this->EE->api_channel_fields->field_type]->settings['dst_enabled'] = $this->entry($field_name);
+		}
+
 		$_GET['entry_id'] = $this->entry('entry_id');
 		$_GET['channel_id'] = $this->entry('channel_id');
 		
@@ -2649,6 +2654,7 @@ class Safecracker_lib
 		$this->channel = array();
 		$this->checkboxes = array(
 			'sticky',
+			'dst_enabled',
 			'allow_comments'
 		);
 		$this->custom_field_conditional_names = array(
@@ -2731,6 +2737,7 @@ class Safecracker_lib
 			'entry_date' => 'date',
 			'url_title' => 'text',
 			'sticky' => FALSE,
+			'dst_enabled' => FALSE,
 			'allow_comments' => FALSE,
 			'title' => 'text'
 		);
@@ -2765,6 +2772,7 @@ class Safecracker_lib
 			'allow_comments',
 			'sticky',
 			'entry_date',
+			'dst_enabled',
 			'year',
 			'month',
 			'day',
