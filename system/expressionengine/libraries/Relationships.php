@@ -131,7 +131,6 @@ class Relationships {
  	 * management in between other things and not worry about stepping on
  	 * toes on the CI db object.
  	 *
- 	 * @access	public
  	 * @return	CI active record object primed for cache clearing
  	 */
  	private function _isolate_db()
