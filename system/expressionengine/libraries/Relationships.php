@@ -77,6 +77,8 @@ class Relationships {
  	 */
  	public function clear_channel_cache($channel_id)
  	{
+ 		$db = $this->_isolate_db();
+ 		
  		$db->select('entry_id');
 
  		if (is_array($channel_id) && count($channel_id))
