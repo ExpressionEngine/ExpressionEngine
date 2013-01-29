@@ -160,10 +160,10 @@ class File_ft extends EE_Fieldtype {
 						switch ($val)
 						{
 							case 'upload_date':
-								$upload_date[$matches['0'][$j]] = $this->EE->localize->fetch_date_params($matches['1'][$j]);
+								$upload_date[$matches['0'][$j]] = $matches['1'][$j];
 								break;
 							case 'modified_date':
-								$modified_date[$matches['0'][$j]] = $this->EE->localize->fetch_date_params($matches['1'][$j]);
+								$modified_date[$matches['0'][$j]] = $matches['1'][$j];
 								break;
 						}
 					}
@@ -175,39 +175,27 @@ class File_ft extends EE_Fieldtype {
 				// Format {upload_date}
 				if (isset($upload_date[$key]))
 				{
-					foreach ($upload_date[$key] as $dvar)
-					{
-						$val = str_replace(
-							$dvar, 
-							$this->EE->localize->convert_timestamp(
-								$dvar, 
-								$file_info['upload_date'], 
-								TRUE
-							), 
-							$val
-						);
-					}
-
-					$tagdata = $this->EE->TMPL->swap_var_single($key, $val, $tagdata);
+					$tagdata = $this->EE->TMPL->swap_var_single(
+						$key,
+						$this->EE->localize->formatted_date(
+							$upload_date[$key], 
+							$file_info['upload_date']
+						),
+						$tagdata
+					);
 				}
 
 				// Format {modified_date}
 				if (isset($modified_date[$key]))
 				{
-					foreach ($modified_date[$key] as $dvar)
-					{
-						$val = str_replace(
-							$dvar, 
-							$this->EE->localize->convert_timestamp(
-								$dvar, 
-								$file_info['modified_date'], 
-								TRUE
-							),
-							$val
-						);
-					}
-
-					$tagdata = $this->EE->TMPL->swap_var_single($key, $val, $tagdata);
+					$tagdata = $this->EE->TMPL->swap_var_single(
+						$key,
+						$this->EE->localize->formatted_date(
+							$modified_date[$key], 
+							$file_info['modified_date']
+						),
+						$tagdata
+					);
 				}
 			}
 

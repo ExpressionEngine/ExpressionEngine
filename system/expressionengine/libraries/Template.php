@@ -3672,9 +3672,8 @@ class EE_Template {
 		{
 			foreach ($this->date_vars[$name] as $dvar => $dval)
 			{
-				$val = array_shift($dval);
 				$string = str_replace(LD.$dvar.RD,
-									  str_replace($dval, $this->EE->localize->convert_timestamp($dval, $value, TRUE), $val),
+									  $this->EE->localize->formatted_date($dval, $value),
 									  $string);
 			}
 			
@@ -3912,7 +3911,7 @@ class EE_Template {
 			{
 				$matches[$j][0] = str_replace(array(LD,RD), '', $matches[$j][0]);
 
-				$this->date_vars[$matches[$j][1]][$matches[$j][0]] = array_merge(array($matches[$j][2]), $this->EE->localize->fetch_date_params($matches[$j][2]));
+				$this->date_vars[$matches[$j][1]][$matches[$j][0]] = $matches[$j][2];
 			}
 		}
 		else

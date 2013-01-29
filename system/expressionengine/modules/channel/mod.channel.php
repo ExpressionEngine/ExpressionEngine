@@ -3018,7 +3018,7 @@ class Channel {
 
 				if (strtolower($this->EE->TMPL->fetch_param('start_day')) == 'monday')
 				{
-					$day_of_week = $this->EE->localize->convert_timestamp('%w', $row['entry_date'], TRUE);
+					$day_of_week = $this->EE->localize->formatted_date('%w', $row['entry_date']);
 
 					if ($day_of_week == '0')
 					{
@@ -3030,7 +3030,7 @@ class Channel {
 					}
 				}
 
-				$row['week_start_date'] = $row['entry_date'] - ($this->EE->localize->convert_timestamp('%w', $row['entry_date'], TRUE) * 60 * 60 * 24) + $offset;
+				$row['week_start_date'] = $row['entry_date'] - ($this->EE->localize->formatted_date('%w', $row['entry_date']) * 60 * 60 * 24) + $offset;
 			}
 
 			//  PATH Variables
@@ -3294,28 +3294,28 @@ class Channel {
 					switch ($val)
 					{
 						case 'entry_date': 
-							$entry_date[$matches[0][$j]] = $this->EE->localize->fetch_date_params($matches[2][$j]);
+							$entry_date[$matches[0][$j]] = $matches[2][$j];
 							break;
 						case 'gmt_date':
-							$gmt_date[$matches[0][$j]] = $this->EE->localize->fetch_date_params($matches[2][$j]);
+							$gmt_date[$matches[0][$j]] = $matches[2][$j];
 							break;
 						case 'gmt_entry_date':
-							$gmt_entry_date[$matches[0][$j]] = $this->EE->localize->fetch_date_params($matches[2][$j]);
+							$gmt_entry_date[$matches[0][$j]] = $matches[2][$j];
 							break;
 						case 'edit_date':
-							$edit_date[$matches[0][$j]] = $this->EE->localize->fetch_date_params($matches[2][$j]);
+							$edit_date[$matches[0][$j]] = $matches[2][$j];
 							break;
 						case 'gmt_edit_date':
-							$gmt_edit_date[$matches[0][$j]] = $this->EE->localize->fetch_date_params($matches[2][$j]);
+							$gmt_edit_date[$matches[0][$j]] = $matches[2][$j];
 							break;
 						case 'expiration_date':
-							$expiration_date[$matches[0][$j]] = $this->EE->localize->fetch_date_params($matches[2][$j]);
+							$expiration_date[$matches[0][$j]] = $matches[2][$j];
 							break;
 						case 'recent_comment_date':
-							$recent_comment_date[$matches[0][$j]] = $this->EE->localize->fetch_date_params($matches[2][$j]);
+							$recent_comment_date[$matches[0][$j]] = $matches[2][$j];
 							break;
 						case 'week_date':
-							$week_date[$matches[0][$j]] = $this->EE->localize->fetch_date_params($matches[2][$j]);
+							$week_date[$matches[0][$j]] = $matches[2][$j];
 							break;
 					}
 				}
@@ -3982,7 +3982,7 @@ class Channel {
 					//  Hourly header
 					if ($display == 'hourly')
 					{
-						$heading_date_hourly = gmdate('YmdH', $this->EE->localize->set_localized_time($row['entry_date']));
+						$heading_date_hourly = $this->EE->localize->formatted_date('%Y%m%d%H', $row['entry_date']);
 
 						if ($heading_date_hourly == $heading_flag_hourly)
 						{
@@ -4225,7 +4225,7 @@ class Channel {
 				//  parse entry date
 				if (isset($entry_date[$key]))
 				{
-					$val = str_replace($entry_date[$key], $this->EE->localize->convert_timestamp($entry_date[$key], $row['entry_date'], TRUE), $val);
+					$val = str_replace($entry_date[$key], $this->EE->localize->formatted_date($entry_date[$key], $row['entry_date']), $val);
 
 					$tagdata = $this->EE->TMPL->swap_var_single($key, $val, $tagdata);
 				}
@@ -4235,7 +4235,7 @@ class Channel {
 				{
 					if ($row['recent_comment_date'] != 0)
 					{
-						$val = str_replace($recent_comment_date[$key], $this->EE->localize->convert_timestamp($recent_comment_date[$key], $row['recent_comment_date'], TRUE), $val);
+						$val = str_replace($recent_comment_date[$key], $this->EE->localize->formatted_date($recent_comment_date[$key], $row['recent_comment_date']), $val);
 
 						$tagdata = $this->EE->TMPL->swap_var_single($key, $val, $tagdata);
 					}
@@ -4249,14 +4249,14 @@ class Channel {
 				//  GMT date - entry date in GMT
 				if (isset($gmt_entry_date[$key]))
 				{
-					$val = str_replace($gmt_entry_date[$key], $this->EE->localize->convert_timestamp($gmt_entry_date[$key], $row['entry_date'], FALSE), $val);
+					$val = str_replace($gmt_entry_date[$key], $this->EE->localize->formatted_date($gmt_entry_date[$key], $row['entry_date'], FALSE), $val);
 
 					$tagdata = $this->EE->TMPL->swap_var_single($key, $val, $tagdata);
 				}
 
 				if (isset($gmt_date[$key]))
 				{
-					$val = str_replace($gmt_date[$key], $this->EE->localize->convert_timestamp($gmt_date[$key], $row['entry_date'], FALSE), $val);
+					$val = str_replace($gmt_date[$key], $this->EE->localize->formatted_date($gmt_date[$key], $row['entry_date'], FALSE), $val);
 
 					$tagdata = $this->EE->TMPL->swap_var_single($key, $val, $tagdata);
 				}
@@ -4264,7 +4264,7 @@ class Channel {
 				//  parse "last edit" date
 				if (isset($edit_date[$key]))
 				{
-					$val = str_replace($edit_date[$key], $this->EE->localize->convert_timestamp($edit_date[$key], $this->EE->localize->timestamp_to_gmt($row['edit_date']), TRUE), $val);
+					$val = str_replace($edit_date[$key], $this->EE->localize->formatted_date($edit_date[$key], $this->EE->localize->timestamp_to_gmt($row['edit_date'])), $val);
 
 					$tagdata = $this->EE->TMPL->swap_var_single($key, $val, $tagdata);
 				}
@@ -4272,7 +4272,7 @@ class Channel {
 				//  "last edit" date as GMT
 				if (isset($gmt_edit_date[$key]))
 				{
-					$val = str_replace($gmt_edit_date[$key], $this->EE->localize->convert_timestamp($gmt_edit_date[$key], $this->EE->localize->timestamp_to_gmt($row['edit_date']), FALSE), $val);
+					$val = str_replace($gmt_edit_date[$key], $this->EE->localize->formatted_date($gmt_edit_date[$key], $this->EE->localize->timestamp_to_gmt($row['edit_date']), FALSE), $val);
 
 					$tagdata = $this->EE->TMPL->swap_var_single($key, $val, $tagdata);
 				}
@@ -4283,7 +4283,7 @@ class Channel {
 				{
 					if ($row['expiration_date'] != 0)
 					{
-						$val = str_replace($expiration_date[$key], $this->EE->localize->convert_timestamp($expiration_date[$key], $row['expiration_date'], TRUE), $val);
+						$val = str_replace($expiration_date[$key], $this->EE->localize->formatted_date($expiration_date[$key], $row['expiration_date']), $val);
 
 						$tagdata = $this->EE->TMPL->swap_var_single($key, $val, $tagdata);
 					}
@@ -4305,7 +4305,7 @@ class Channel {
 
 					if (strtolower($this->EE->TMPL->fetch_param('start_day')) == 'monday')
 					{
-						$day_of_week = $this->EE->localize->convert_timestamp('%w', $row['entry_date'], TRUE);
+						$day_of_week = $this->EE->localize->formatted_date('%w', $row['entry_date']);
 
 						if ($day_of_week == '0')
 						{
@@ -4317,9 +4317,9 @@ class Channel {
 						}
 					}
 
-					$week_start_date = $row['entry_date'] - ($this->EE->localize->convert_timestamp('%w', $row['entry_date'], TRUE) * 60 * 60 * 24) + $offset;
+					$week_start_date = $row['entry_date'] - ($this->EE->localize->formatted_date('%w', $row['entry_date'], TRUE) * 60 * 60 * 24) + $offset;
 
-					$val = str_replace($week_date[$key], $this->EE->localize->convert_timestamp($week_date[$key], $week_start_date, TRUE), $val);
+					$val = str_replace($week_date[$key], $this->EE->localize->formatted_date($week_date[$key], $week_start_date), $val);
 
 					$tagdata = $this->EE->TMPL->swap_var_single($key, $val, $tagdata);
 				}
@@ -5689,7 +5689,7 @@ class Channel {
 					{
 						if (isset($entry_date[$key]))
 						{
-							$val = str_replace($entry_date[$key], $this->EE->localize->convert_timestamp($entry_date[$key], $row['entry_date'], TRUE), $val);
+							$val = str_replace($entry_date[$key], $this->EE->localize->formatted_date($entry_date[$key], $row['entry_date']), $val);
 							$chunk = $this->EE->TMPL->swap_var_single($key, $val, $chunk);
 						}
 
@@ -5936,7 +5936,7 @@ class Channel {
 							{
 								if (isset($entry_date[$key]))
 								{
-									$val = str_replace($entry_date[$key], $this->EE->localize->convert_timestamp($entry_date[$key], $trow['entry_date'], TRUE), $val);
+									$val = str_replace($entry_date[$key], $this->EE->localize->formatted_date($entry_date[$key], $trow['entry_date']), $val);
 
 									$chunk = $this->EE->TMPL->swap_var_single($key, $val, $chunk);
 								}
