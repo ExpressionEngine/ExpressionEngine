@@ -79,8 +79,8 @@ class Design extends CP_Controller {
 			));
 		}
 
-		$this->view->wiki_installed = (bool) $this->db->table_exists('wikis'));
-		$this->view->forum_installed = (bool) $this->db->table_exists('forums'));
+		$this->view->wiki_installed = (bool) $this->db->table_exists('wikis');
+		$this->view->forum_installed = (bool) $this->db->table_exists('forums');
 	}
 	
 	// --------------------------------------------------------------------
