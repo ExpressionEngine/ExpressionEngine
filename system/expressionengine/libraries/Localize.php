@@ -48,7 +48,9 @@ class EE_Localize {
 		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();
 
-		$this->zones = $this->zones();
+		// TODO: Deprecate $zones
+		$this->EE->load->helper('date_helper');
+		$this->zones = timezones();
 
 		// Fetch current Unix timestamp
 		$this->now = time();
@@ -855,20 +857,11 @@ class EE_Localize {
 	 */
 	function timezone_menu($default = '')
 	{
-		$r  = "<div class='default'>";
-		$r .= "<select name='server_timezone' class='select'>";
+		$this->EE->load->library('logger');
+		$this->EE->logger->deprecated('2.6', 'Date helper\'s timezone_menu()');
 
-		foreach ($this->zones as $key => $val)
-		{
-			$selected = ($default == $key) ? " selected='selected'" : '';
-
-			$r .= "<option value='{$key}'{$selected}>".$this->EE->lang->line($key)."</option>\n";
-		}
-
-		$r .= "</select>";
-		$r .= "</div>";
-
-		return $r;
+		$this->EE->load->helper('date_helper');
+		return timezone_menu($default, 'select', 'server_timezone');
 	}
 
 	// --------------------------------------------------------------------
@@ -883,50 +876,11 @@ class EE_Localize {
 	 */
 	function zones()
 	{
-		// Note: Don't change the order of these even though
-		// some items appear to be in the wrong order
-		return array(
-					'UM12'		=> -12,
-					'UM11'		=> -11,
-					'UM10'		=> -10,
-					'UM95'		=> -9.5,
-					'UM9'		=> -9,
-					'UM8'		=> -8,
-					'UM7'		=> -7,
-					'UM6'		=> -6,
-					'UM5'		=> -5,
-					'UM45'		=> -4.5,
-					'UM4'		=> -4,
-					'UM35'		=> -3.5,
-					'UM3'		=> -3,
-					'UM2'		=> -2,
-					'UM1'		=> -1,
-					'UTC'		=> 0,
-					'UP1'		=> +1,
-					'UP2'		=> +2,
-					'UP3'		=> +3,
-					'UP35'		=> +3.5,
-					'UP4'		=> +4,
-					'UP45'		=> +4.5,
-					'UP5'		=> +5,
-					'UP55'		=> +5.5,
-					'UP575'		=> +5.75,
-					'UP6'		=> +6,
-					'UP65'		=> +6.5,
-					'UP7'		=> +7,
-					'UP8'		=> +8,
-					'UP875'		=> +8.75,
-					'UP9'		=> +9,
-					'UP95'		=> +9.5,
-					'UP10'		=> +10,
-					'UP105'		=> +10.5,
-					'UP11'		=> +11,
-					'UP115'		=> +11.5,
-					'UP12'		=> +12,
-					'UP1275'	=> +12.75,
-					'UP13'		=> +13,
-					'UP14'		=> +14
-			);
+		$this->EE->load->library('logger');
+		$this->EE->logger->deprecated('2.6', 'Date helper\'s timezones()');
+
+		$this->EE->load->helper('date_helper');
+		return timezones();
 	}
 
 	// --------------------------------------------------------------------

@@ -1551,10 +1551,12 @@ class Member_settings extends Member {
 
 		$query = $this->EE->db->query("SELECT language, timezone,daylight_savings FROM exp_members WHERE member_id = '".$this->EE->session->userdata('member_id')."'");
 
+		$this->EE->load->helper('date_helper');
+
 		return $this->_var_swap($this->_load_element('localization_form'),
 								array(
 										'path:update_localization'		=>	$this->_member_path('update_localization'),
-										'form:localization'				=>	$this->EE->localize->timezone_menu(($query->row('timezone')  == '') ? 'UTC' : $query->row('timezone') ),
+										'form:localization'				=>	timezone_menu(($query->row('timezone')  == '') ? 'UTC' : $query->row('timezone'), 'select', 'server_timezone'),
 										'state:daylight_savings'		=>	($query->row('daylight_savings')  == 'y') ? " checked='checked'" : '',
 										'form:time_format'				=>	$tf,
 										'form:language'					=>	$this->EE->functions->language_pack_names(($query->row('language')  == '') ? 'english' : $query->row('language') )

@@ -212,12 +212,14 @@ class Member_register extends Member {
 		$tf .= "<option value='eu'>".lang('european')."</option>\n";
 		$tf .= "</select>\n";
 
+		$this->EE->load->helper('date_helper');
+
 		// Parse languge lines
 		$reg_form = $this->_var_swap($reg_form,
 									array(
 											'lang:username_length'	=> $un_min_len,
 											'lang:password_length'	=> $pw_min_len,
-											'form:localization'		=> $this->EE->localize->timezone_menu('UTC'),
+											'form:localization'		=> timezone_menu('UTC', 'select', 'server_timezone'),
 											'form:time_format'		=> $tf,
 											'form:language'			=> $this->EE->functions->language_pack_names('english')
 
