@@ -154,6 +154,7 @@ class EE_Core {
 			$cookie_prefix = $this->EE->config->item('cookie_prefix');
 			$cookie_path  = $this->EE->config->item('cookie_path');
 			$cookie_domain =  $this->EE->config->item('cookie_domain');		
+			$cookie_httponly = $this->EE->config->item('cookie_httponly');
 
 			if (! empty($last_site_id) && is_numeric($last_site_id) && $last_site_id != $this->EE->config->item('site_id'))
 			{
@@ -163,6 +164,7 @@ class EE_Core {
 			$this->EE->config->cp_cookie_prefix = $cookie_prefix;
 			$this->EE->config->cp_cookie_path  = $cookie_path;
 			$this->EE->config->cp_cookie_domain =  $cookie_domain;	
+			$this->EE->config->cp_cookie_httponly = $cookie_httponly;
 		}
 		
 		// This allows CI compatibility

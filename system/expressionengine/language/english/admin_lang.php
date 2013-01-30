@@ -1152,6 +1152,12 @@ $lang = array(
 "cookie_path_explain" => 
 "Use only if you require a specific server path for cookies",
 
+"cookie_httponly" =>
+"Make Cookies HTTP Only",
+
+"cookie_httponly_explain" =>
+"Disable to allow access to your cookies from Javascript.  This can be a security risk.",
+
 "image_resize_protocol" =>
 "Image Resizing Protocol",
 

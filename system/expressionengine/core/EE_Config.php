@@ -31,6 +31,7 @@ class EE_Config Extends CI_Config {
 	var $cp_cookie_domain	= '';  // These are set in Core before any MSM site switching
 	var $cp_cookie_prefix	= '';
 	var $cp_cookie_path		= '';
+	var $cp_cookie_httponly = '';
 	var $_global_vars 		= array();	// The global vars from path.php (deprecated but usable for other purposes now)
 	var $_config_path_errors = array();
 

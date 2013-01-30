@@ -155,7 +155,8 @@ class Admin_model extends CI_Model {
 			'cookie_cfg'		=>	array(												
 											'cookie_domain'				=> array('i', ''),
 											'cookie_path'				=> array('i', ''),
-											'cookie_prefix'				=> array('i', '')
+											'cookie_prefix'				=> array('i', ''),
+											'cookie_httponly'			=> array('r', array('y' => 'yes', 'n' => 'no'))
 										 ),
 																				 
 			'captcha_cfg'		=>	array(												
