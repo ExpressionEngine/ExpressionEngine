@@ -2360,6 +2360,7 @@ PAPAYA;
 			'cookie_domain'					=>	'',
 			'cookie_path'					=>	'',
 			'cookie_prefix'					=>	'',
+			'cookie_httponly'				=>	'y',
 			'user_session_type'				=>	'c', 
 			'admin_session_type'			=>	'cs',
 			'allow_username_change'			=>	'y',
