@@ -42,13 +42,12 @@ class EE_Input extends CI_Input {
 	 * @return	boolean FALSE if output has already been sent (and thus the 
 	 * 						cookie not set), TRUE otherwise.
 	 */
-	public function delete_cookie($name, $httponly=FALSE)
+	public function delete_cookie($name)
 	{
 		$data = array(
 			'name' => $name,
 			'value' => '',
 			'expire' => time() - 86500,
-			'httponly' => $httponly
 		);
 	
 		return $this->_set_cookie($data);
@@ -80,20 +79,16 @@ class EE_Input extends CI_Input {
 	 *						CI_Input::set_cookie(). Set from config.
 	 * @param	string	The prefix.  IGNORED  Kept only for consistency with
 	 *						CI_Input::set_cookie(). Set from config.
-	 * @param	boolean	Whether to use HTTP only cookies (which are not accessable)
-	 * 						from javascript, or not.  TRUE to use HTTP only. 
-	 * 						defaults to FALSE.
 	 * 
 	 * @return	boolean	FALSE if output has already been sent, TRUE otherwise.	
 	 */
-	public function set_cookie($name = '', $value = '', $expire = '', $domain = '', $path = '/', $prefix = '', $httponly = FALSE)
+	public function set_cookie($name = '', $value = '', $expire = '', $domain = '', $path = '/', $prefix = '')
 	{
 
 		$data = array(
 			'name' => $name,
 			'value' => $value,
 			'expire' => $expire,
-			'httponly' => $httponly,
 			// We have to set these so we can 
 			// check them and give the deprecation
 			// warning.  However, they will be
@@ -171,7 +166,7 @@ class EE_Input extends CI_Input {
 		$EE = get_instance();
 
 		// Always assume we'll forget and catch ourselves.  The earlier you catch this sort of screw up the better.
-		if(!isset($data['name']) || !isset($data['value']) || !isset($data['expire']) || !isset($data['httponly']))
+		if(!isset($data['name']) || !isset($data['value']) || !isset($data['expire']))
 		{
 			throw new RuntimeException('EE_Input::_set_cookie() is missing key data.');
 		}
@@ -182,13 +177,18 @@ class EE_Input extends CI_Input {
 			$data['prefix'] = ( ! $EE->config->cp_cookie_prefix) ? 'exp_' : $EE->config->cp_cookie_prefix;
 			$data['path']	= ( ! $EE->config->cp_cookie_path) ? '/' : $EE->config->cp_cookie_path;
 			$data['domain'] = ( ! $EE->config->cp_cookie_domain) ? '' : $EE->config->cp_cookie_domain;
+			$data['httponly'] = ( ! $EE->config->cp_cookie_httponly) ? 'y' : $EE->config->cp_cookie_httponly;
 		}
 		else
 		{
 			$data['prefix'] = ( ! $EE->config->item('cookie_prefix')) ? 'exp_' : $EE->config->item('cookie_prefix').'_';
 			$data['path']	= ( ! $EE->config->item('cookie_path'))	? '/'	: $EE->config->item('cookie_path');
 			$data['domain'] = ( ! $EE->config->item('cookie_domain')) ? '' : $EE->config->item('cookie_domain');
+			$data['httponly'] = ( ! $EE->config->item('cookie_httponly')) ? 'y' : $EE->config->item('cookie_httponly');
 		}
+		
+		//  Turn httponly into a true boolean.
+		$data['httponly'] = ($data['httponly'] == 'y' ? TRUE : FALSE);
 	
 		// Deal with secure cookies.	
 		$data['secure_cookie'] = ($EE->config->item('cookie_secure') === TRUE) ? 1 : 0;
