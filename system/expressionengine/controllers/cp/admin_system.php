@@ -176,6 +176,8 @@ class Admin_system extends CI_Controller {
 
 			if ($validated)
 			{
+				$this->_final_post_prep($type);
+				
 				$config_update = $this->config->update_site_prefs($_POST);
 		
 				if ( ! empty($config_update))
@@ -377,6 +379,32 @@ class Admin_system extends CI_Controller {
 		return $vars;	
 	}
 
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Final POST Prep
+	 *
+	 * Any special tweaking before $_POST is inserted
+	 * can happen here
+	 *
+	 * @access	public
+	 * @return	void
+	 */
+	function _final_post_prep($type)
+	{
+		if ($type == 'localization_cfg')
+		{
+			$config = $this->member_model->get_localization_default(TRUE);
+			
+			// Do we need to set the localization defaults to match the server?
+			if ($config['member_id'] = '')
+			{
+				array_merge($_POST, array('default_site_timezone' => $this->input->post('server_timezone'), 
+										'default_site_dst' => $this->input->post('daylight_savings')));
+			}
+		}		
+	}
 
 
 	// --------------------------------------------------------------------
