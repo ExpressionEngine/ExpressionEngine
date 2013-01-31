@@ -1446,16 +1446,7 @@ class MyAccount extends CP_Controller {
 		if ($config['member_id'] == $this->id)
 		{
 			unset($config['member_id']);
-			$query = $this->site_model->get_site_system_preferences($this->config->item('site_id'));
-
-			$prefs = unserialize(base64_decode($query->row('site_system_preferences')));
-
-			foreach($config as $key => $value)
-			{
-				$prefs[$key] = $value;
-			}
-
-			$this->site_model->update_site_system_preferences($prefs, $this->config->item('site_id'));
+			$config_update = $this->config->update_site_prefs($config);
 		}
 
 		$this->session->set_flashdata('message_success', lang('settings_updated'));
