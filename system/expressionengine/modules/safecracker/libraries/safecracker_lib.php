@@ -157,28 +157,7 @@ class Safecracker_lib
 		//get the entry data, if an entry was specified
 		$this->fetch_entry($this->EE->TMPL->fetch_param('entry_id'), $this->EE->TMPL->fetch_param('url_title'));
 		
-		// Whoa there big conditional, what's going on here?
-		// We want to make sure no one's being tricky here and supplying
-		// an invalid entry_id or url_title via a segment, so we need to
-		// check to see if either exists and if it does make sure that the
-		// passed in version is the same as what we find in the database.
-		// If they are different (most likely it wasn't found in the 
-		// database) then don't show them the form
-		
-		if (
-			($this->EE->TMPL->fetch_param('entry_id') != '' AND
-			$this->entry('entry_id') != $this->EE->TMPL->fetch_param('entry_id')) OR
-			($this->EE->TMPL->fetch_param('url_title') != '' AND
-			$this->entry('url_title') != $this->EE->TMPL->fetch_param('url_title'))
-		)
-		{
-			if ($this->EE->TMPL->no_results())
-			{
-				return $this->EE->TMPL->no_results();
-			}
-			
-			return $this->EE->output->show_user_error(FALSE, lang('safecracker_require_entry'));
-		}
+		$this->entry_match_check(array('entry_id' => $this->EE->TMPL->fetch_param('entry_id'), 'url_title' => $this->EE->TMPL->fetch_param('url_title')));
 		
 		// @added rev 57
 		if ( ! $this->entry('entry_id') && $this->bool_string($this->EE->TMPL->fetch_param('require_entry')))
@@ -1098,9 +1077,6 @@ class Safecracker_lib
 		
 		$this->_get_meta_vars();
 		
-		// Debug the meta array
-		//var_dump($this->_meta); exit;
-		
 		$this->fetch_site(FALSE, $this->_meta['site_id']);
 		
 		$this->fetch_channel($this->_meta['channel_id']);
@@ -1184,20 +1160,30 @@ class Safecracker_lib
 			
 			$this->EE->db->delete('captcha');
 		}
-
-		//is an edit form?
-		$require_entry = $this->_meta['require_entry'];
-
-
-		if ($require_entry !== 'n')
+		
+		// Status Check to prevent post overrides
+		$status = $this->EE->input->post('status');
+		
+		if ($status)
 		{
-			if ($this->_meta['entry_id'] != $require_entry)
+			$valid_status = FALSE;
+			$this->fetch_statuses();
+		
+			foreach ($this->statuses as $status)
 			{
-				// oh no you didn't!
-				$this->_meta['entry_id'] = $require_entry;
+				if ($status == $status['status'])
+				{
+					$valid_status = TRUE;
+					break;
+				}
+			}
+			
+			if ( ! $valid_status)
+			{
+				unset($_POST['status']);
 			}
 		}
-
+		
 		if ($this->_meta['entry_id'])
 		{
 			$this->edit = TRUE;
@@ -1461,6 +1447,7 @@ class Safecracker_lib
 		if ( ! $this->EE->form_validation->run())
 		{
 			$this->field_errors = $this->EE->form_validation->_error_array;
+
 		}
 		
 		if ( ! $this->EE->security->check_xid($this->EE->input->post('XID')))
@@ -2297,26 +2284,53 @@ class Safecracker_lib
 	}
 
 
+	function entry_match_check($params)
+	{
+		// Whoa there big conditional, what's going on here?
+		// We want to make sure no one's being tricky here and supplying
+		// an invalid entry_id or url_title via a segment, so we need to
+		// check to see if either exists and if it does make sure that the
+		// passed in version is the same as what we find in the database.
+		// If they are different (most likely it wasn't found in the 
+		// database) then don't show them the form
+		
+		if (
+			($params['entry_id'] != '' && $this->entry('entry_id') != $params['entry_id']) OR
+			($params['url_title'] != '' && $this->entry('url_title') != $params['url_title'])
+		)
+		{
+			if ($this->EE->TMPL->no_results())
+			{
+				return $this->EE->TMPL->no_results();
+			}
+			
+			return $this->EE->output->show_user_error(FALSE, lang('safecracker_require_entry'));
+		}
+	}
+
 	protected function _build_meta_array()
 	{
-		$defaults = array('json', 'dynamic_title', 'error_handling', 'preserve_checkboxes', 'secure_return', 'return');
-		$bool_variable = array('secure_return', 'json', 'allow_comments');
+		$bool_variable = array('secure_return', 'json', 'author_only');
+		// required, channel, return
 		
 		$m_group_id = $this->EE->session->userdata('group_id');
 		
-		// We'll just take all of the parameters and put then in a big array
-		foreach ($this->all_params as $name)
-		{
-			$meta[$name] = $this->EE->TMPL->fetch_param($name);
-		}
+		// We'll just take all of the parameters and put then in an array
+		$params = array_merge(array_keys($this->EE->TMPL->tagparams), $bool_variable);
 		
 		// Add in the rules:
 		$meta['rules'] = array();
-		foreach ($this->EE->TMPL->tagparams as $key => $value)
+		$meta['return'] = '';
+		
+		foreach ($params as $name)
 		{
-			if (preg_match('/^rules:(.+)/', $key, $match))
+			if (preg_match('/^rules:(.+)/', $name, $match))
 			{
-				$meta['rules['.$match[1].']'] = $$value;
+				$meta['rules['.$match[1].']'] = $this->EE->TMPL->fetch_param($name);
+			}
+			else
+			{
+				$meta[$name] = $this->EE->TMPL->fetch_param($name);
 			}
 		}
 		
@@ -2325,18 +2339,29 @@ class Safecracker_lib
 			$meta[$name] = $this->bool_string($meta[$name]) ? 1 : FALSE;
 		}
 		
+		// If url_title is set?  Let's turn it into an entry_id and drop it from meta
+		if (isset($meta['url_title']))
+		{
+			$meta['entry_id'] = $this->entry('entry_id');
+			unset($meta['url_title']);
+		}
+		
 		// This will force an edit, and specify which entry_id
-		$meta['require_entry'] = ($meta['require_entry'] == 1) ? $this->entry('entry_id') : FALSE;
+		$meta['require_entry'] = (isset($meta['require_entry']) && $meta['require_entry'] == 1) ? $this->entry('entry_id') : FALSE;
 		
 		$meta['return'] = (isset($meta['return_'.$m_group_id])) ? $meta['return_'.$m_group_id] : $meta['return'];
-		$meta['site_id'] = $this->site_id;
+		$meta['site_id'] = $this->site_id;  // note- site id for the specified parameter!
 		
-		// Should be y or FALSE for allow_comments
-		$meta['allow_comments'] = ($this->channel['comment_system_enabled'] == 'y' && $meta['allow_comments'] == TRUE) ? 'y' : FALSE;
-	
+		$meta['channel'] = $this->channel('channel_id');
+		$meta['decrypt_check'] = TRUE;
+		
+		if ($this->channel('comment_system_enabled') != 'y')
+		{
+			$meta['allow_comments'] = 'n';
+		}
+
 		$meta = serialize($meta);
 		
-		// $this->EE->session->sess_crypt_key instead of db?
 		$this->EE->load->library('encrypt');
 		return $this->EE->encrypt->encode($meta, $this->EE->db->username.$this->EE->db->password);
 	}
@@ -2364,8 +2389,13 @@ class Safecracker_lib
 
 		$this->_meta = unserialize($meta);
 		
-		// Check for Overrides in POST????
-		$valid_inputs = array('allow_comments', 'url_title', 'entry_id');
+		if ( ! isset($this->_meta['decrypt_check']))
+		{
+			$this->EE->output->show_user_error(FALSE, lang('form_decryption_failed'));
+		}
+
+		// Check for Overrides in POST- only allow if param not set
+		$valid_inputs = array('allow_comments');
 		
 		foreach ($valid_inputs as $current_input) 
 		{
@@ -2374,7 +2404,42 @@ class Safecracker_lib
 				$this->_meta[$current_input] = $this->EE->input->post($current_input);
 			}
 		}
+
+		foreach ($this->all_params as $name)
+		{
+			$this->_meta[$name] = (isset($this->_meta[$name])) ? $this->_meta[$name] : FALSE;
+		}
+		
+		// Should be y or FALSE for allow_comments
+		// We do this here so they can be set via form input when not specified as a param
+		// This pains me, but go with it for now for consistency
+		$this->_meta['allow_comments'] = ($this->bool_string($this->_meta['allow_comments']) == TRUE) ? 'y' : FALSE;
+		$this->_meta['channel_id'] = ($this->_meta['channel_id'] != FALSE) ? $this->_meta['channel_id'] : $this->_meta['channel'];
+		
+		//is an edit form?  This seems madly overkill
+		if ($this->_meta['require_entry'])
+		{
+			$this->_meta['entry_id'] = $this->_meta['require_entry'];
+		}
+		
+
+		// Check for author_only setting
+		if ($this->_meta['entry_id'] != FALSE && 
+				(isset($this->_meta['author_only']) && $this->_meta['author_only'] != FALSE) &&
+				($this->entry('author_id') != $this->EE->session->userdata('member_id'))
+			)
+			
+		{
+			$this->EE->output->show_user_error(FALSE, lang('safecracker_author_only'));
+		}
+		
+		// Debates- not necessary, but might be good to have in post?  IDK.
+		foreach ($this->_meta as $k => $v)
+		{
+			//$_POST[$k] = $v;
+		}
 	}
+
 
 	// --------------------------------------------------------------------
 	
