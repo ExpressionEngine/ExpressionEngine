@@ -507,7 +507,7 @@ class Sites extends CI_Controller {
 			);
 			
 			// Short name change, possibly need to update the template file folder
-			if ($old->row('site_name') == $this->input->post('site_name'))
+			if ($old->row('site_name') != $this->input->post('site_name'))
 			{
 				$prefs = $old->row('site_template_preferences');
 				$prefs = unserialize(base64_decode($prefs));
