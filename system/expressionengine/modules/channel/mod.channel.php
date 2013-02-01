@@ -33,6 +33,14 @@ class Channel {
 	public $query;
 	public $TYPE;
 	public $entry_id				= '';
+
+	/**
+	 * Cache of entry ids from the entries we just pulled, generated in
+	 * build_sql_query() and then sent to the Relationships library when
+	 * pulling relationships.
+ 	 */
+	protected $_entry_ids				= array();
+
 	public $uri						= '';
 	public $uristr					= '';
 	public $return_data				= '';	 	// Final data
@@ -211,6 +219,7 @@ class Channel {
 	  */
 	public function entries()
 	{
+
 		// If the "related_categories" mode is enabled
 		// we'll call the "related_categories" function
 		// and bail out.
@@ -301,6 +310,20 @@ class Channel {
 			return $this->EE->TMPL->no_results();
 		}
 
+		// At this point, check to see if we have any relationships.  If we do,
+		// we'll parse them ahead of the main channel parsing.  We can do this
+		// because all relationship tags will be namespaced.  We'll just pick em
+		// out, grab the data we need and then replace them.  We'll edit chunk.
+		$this->EE->load->library('relationships');
+		$this->EE->relationships->parse_relationships($this->_entry_ids, $this->rfields[1]);
+		var_dump($this->query->result_array());
+		var_dump($this->cfields);
+		var_dump($this->rfields);
+		
+		var_dump($this->EE->TMPL->tag_data);
+		var_dump($this->EE->TMPL->var_single);
+		var_dump($this->EE->TMPL->var_pair);
+		die();
 		// -------------------------------------
 		//  "Relaxed" View Tracking
 		//
@@ -2839,7 +2862,8 @@ class Channel {
 			{
 				continue;
 			}
-
+			
+			$this->_entry_ids[] = $row['entry_id'];
 			$this->sql .= $row['entry_id'].',';
 		}
 
