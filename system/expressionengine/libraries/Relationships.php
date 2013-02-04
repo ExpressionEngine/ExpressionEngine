@@ -69,11 +69,14 @@ class Relationships {
 				$field_ids[] = $relationship_fields[$variable];
 			}
 		}
-
+		var_dump($field_ids);
 		// Perform some transformations on the generated array of field ids to
 		// get it into the form we need to perform our query.  That is to say
 		// an array of unique field ids grouped by nesting level.
 		$field_ids = array_map('array_unique', $this->_exchange_array_rows_with_columns($field_ids));
+
+		var_dump($field_ids);
+
 
 		$data = $this->get_child_entry_ids($entry_ids, $field_ids);
 	}
@@ -243,7 +246,7 @@ class Relationships {
 		
 		$sql .= ' ' . $fields . ' ' . $from . ' ' . $level_sql . ' WHERE L0.entry_id IN (' . implode(',', $entry_ids) . ')';
 
-		echo ($sql);
+		echo '<code>' . $sql . '</code>';
 
 		$db = $this->_isolate_db();
 		
@@ -251,7 +254,7 @@ class Relationships {
 	
 		$children = $this->_collapse_array_distinct_2d($id_query->result_array());
 
-		echo 'Result: <br />';
+		echo '<br />Result: <br />';
 		var_dump($children);
 	
 		return $children;

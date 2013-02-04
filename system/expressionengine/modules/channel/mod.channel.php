@@ -314,7 +314,7 @@ class Channel {
 		// we'll parse them ahead of the main channel parsing.  We can do this
 		// because all relationship tags will be namespaced.  We'll just pick em
 		// out, grab the data we need and then replace them.  We'll edit chunk.
-		$this->EE->load->library('relationships');
+		/*$this->EE->load->library('relationships');
 		$this->EE->relationships->parse_relationships($this->_entry_ids, $this->rfields[1]);
 		var_dump($this->query->result_array());
 		var_dump($this->cfields);
@@ -323,7 +323,7 @@ class Channel {
 		var_dump($this->EE->TMPL->tag_data);
 		var_dump($this->EE->TMPL->var_single);
 		var_dump($this->EE->TMPL->var_pair);
-		die();
+		die();*/
 		// -------------------------------------
 		//  "Relaxed" View Tracking
 		//
