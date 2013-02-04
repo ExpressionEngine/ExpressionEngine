@@ -810,10 +810,10 @@ class Filemanager {
 		
 		$filebrowser_html = $this->EE->load->ee_view('_shared/file/browser', $vars, TRUE);
 		
-		die($this->EE->javascript->generate_json(array(
+		$this->EE->output->send_ajax_response(array(
 			'manager'		=> str_replace(array("\n", "\t"), '', $filebrowser_html),	// reduces transfer size
 			'directories'	=> $vars['filemanager_directories']
-		)));
+		));
 	}
 	
 	public function datatables($first_dir = NULL)
@@ -2722,7 +2722,6 @@ class Filemanager {
 	 */
 	public function download_files($files, $zip_name='downloaded_files.zip')
 	{
-		$this->EE->load->helper('string');
 		$this->EE->load->model('file_upload_preferences_model');
 		
 		$upload_prefs = $this->EE->file_upload_preferences_model->get_file_upload_preferences(1);
@@ -2908,7 +2907,7 @@ class Filemanager {
 
 		// Clean up the filename and add the full path
 		$file_name = $this->EE->security->sanitize_filename(urldecode($file_name));
-		$file_path = $this->EE->functions->remove_double_slashes(
+		$file_path = reduce_double_slashes(
 			$upload_prefs['server_path'].DIRECTORY_SEPARATOR.$file_name
 		);
 

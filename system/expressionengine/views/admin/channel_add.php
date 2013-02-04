@@ -3,6 +3,11 @@
 <?=form_open('C=admin_content'.AMP.'M=channel_add', array('id'=>'channel_edit'))?>
 
 	<table class="mainTable solo" border="0" cellspacing="0" cellpadding="0">
+		<thead>
+			<tr>
+				<th colspan="2"><?=lang('channel_prefs')?></th>
+			</tr>
+		</thead>
 		<tr>
 			<td style="width: 50%;">
 				<?=required()?> <?=lang('channel_title', 'channel_title')?>
@@ -20,13 +25,6 @@
 		<tr>
 			<td><?=lang('duplicate_channel_prefs', 'duplicate_channel_prefs')?></td>
 			<td><?=form_dropdown('duplicate_channel_prefs', $duplicate_channel_prefs_options, '', 'id="duplicate_channel_prefs"')?></td>
-		</tr>
-		<tr>
-			<td><strong><?=lang('edit_group_prefs')?></strong></td>
-			<td>
-				<?=form_radio('edit_group_prefs', 'y', FALSE, 'id="edit_group_prefs_y"')?> <?=lang('yes', 'edit_group_prefs_y')?> &nbsp;&nbsp;&nbsp;
-				<?=form_radio('edit_group_prefs', 'n', TRUE, 'id="edit_group_prefs_n"')?> <?=lang('no', 'edit_group_prefs_n')?>
-			</td>
 		</tr>
 	</table>
 	
@@ -52,44 +50,6 @@
 			</tr>
 		</tbody>
 	</table>
-	
-	<?php if ($this->cp->allowed_group('can_admin_templates')):?>
-
-	<table class="mainTable solo" border="0" cellspacing="0" cellpadding="0">
-		<thead>
-			<tr>
-				<th colspan="2"><?=lang('template_creation')?></th>
-			</tr>
-		</thead>
-		<tbody>
-		
-			<tr>
-				<td style="width: 50%;"><?=form_radio('create_templates', 'no', TRUE)?> <?=lang('no', 'create_templates')?></td>
-				<td>&nbsp;</td>
-			</tr>					
-		
-		<?php if (count($themes) > 0):?>
-			<tr>
-				<td><?=form_radio('create_templates', 'theme', FALSE)?> <?=lang('use_a_theme', 'create_templates')?></td>
-				<td>
-					<p><?=form_dropdown('template_theme', $themes, '', 'id="template_theme"')?></p>
-					<?=form_checkbox('add_rss', 'y', FALSE)?> <?=lang('include_rss_templates', 'include_rss_templates')?>
-				</td>
-			</tr>
-		<?php endif;?>
-		
-			<tr>
-				<td><?=form_radio('create_templates', 'duplicate', FALSE, 'id="create_templates_dupe"')?> <?=lang('duplicate_group', 'create_templates_dupe')?></td> 
-				<td><?=form_dropdown('old_group_id', $old_group_id, '', 'id="old_group_id"')?></td>
-			</tr>
-			<tr>
-				<td><?=required()?> <?=lang('template_group_name', 'group_name')?><br /><?=lang('new_group_instructions')?></td>
-				<td><?=form_input(array('id'=>'group_name','name'=>'group_name','class'=>'fullfield'))?></td>
-			</tr>
-		</tbody>
-	</table>
-
-	<?php endif;?>
 
 	<p>
 		<?=form_submit(array('name' => 'channel_prefs_submit', 'value' => lang('submit'), 'class' => 'submit'))?>

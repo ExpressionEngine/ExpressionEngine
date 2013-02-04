@@ -429,8 +429,6 @@ class Mailinglist {
 			/** ----------------------------
 			/**  Send email
 			/** ----------------------------*/
-
-			$this->EE->load->helper('string');
 			
 			// Remove multiple commas
 			$notify_address = reduce_multiples($this->EE->config->item('mailinglist_notify_emails'), ',', TRUE);

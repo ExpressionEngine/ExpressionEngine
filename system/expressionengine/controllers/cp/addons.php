@@ -84,7 +84,7 @@ class Addons extends CP_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 		
-		$this->cp->set_variable('cp_page_title', lang('package_settings'));
+		$this->view->cp_page_title = lang('package_settings');
 		
 		$components = $this->addons->_packages[$package];
 

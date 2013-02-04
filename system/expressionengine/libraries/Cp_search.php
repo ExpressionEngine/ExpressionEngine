@@ -457,88 +457,88 @@ class Cp_search {
 		// array('keywords' => 'cookies', <regular options>)
 		//
 		$this->map = array(
-					'admin_system'		=> array(
-							'general_configuration'			=> array('access' => 'can_access_sys_prefs', 'general_cfg'),
-							'output_debugging_preferences'	=> array('access' => 'can_access_sys_prefs', 'output_cfg'),
-							'database_settings'				=> array('access' => 'can_access_sys_prefs', 'db_cfg'),
-							'security_session_preferences'	=> array('access' => 'can_access_sys_prefs', 'keywords' => 'cookie cookies', 'security_cfg'),
-							'throttling_configuration'		=> array('access' => 'can_access_sys_prefs', 'throttling_cfg'),
-							'localization_settings'			=> array('access' => 'can_access_sys_prefs', 'localization_cfg'),
-							'email_configuration'			=> array('access' => 'can_access_sys_prefs', 'email_cfg'),
-							'cookie_settings'				=> array('access' => 'can_access_sys_prefs', 'keywords' => 'cookies', 'cookie_cfg'),
-							'image_resizing_preferences'	=> array('access' => 'can_access_sys_prefs', 'image_cfg'),
-							'captcha_preferences'			=> array('access' => 'can_access_sys_prefs', 'captcha_cfg'),
-							'word_censoring'				=> array('access' => 'can_access_sys_prefs', 'censoring_cfg'),
-							'mailing_list_preferences'		=> array('access' => 'can_access_sys_prefs', 'mailinglist_cfg'),
-							'emoticon_preferences'			=> array('access' => 'can_access_sys_prefs', 'emoticon_cfg'),
-							'tracking_preferences'			=> array('access' => 'can_access_sys_prefs', 'tracking_cfg'),
-							'mailing_list_preferences'		=> array('access' => 'can_access_sys_prefs', 'mailinglist_cfg'),							
-							'search_log_configuration'		=> array('access' => 'can_access_sys_prefs', 'search_log_cfg')
-					),
-					'admin_content'		=> array(
-							'global_channel_preferences'	=> array('access' => 'can_admin_channels', 'channel_cfg'),
-							'field_group_management'		=> array('access' => 'can_admin_channels', TRUE),
-							'category_management'			=> array('access' => 'can_admin_categories', TRUE)
-					),
-					'addons_accessories'=> array(
-							'index'							=> array('access' => 'can_access_accessories', TRUE)
-					),
-					'addons_extensions'	=> array(
-							'index'							=> array('access' => 'can_access_extensions', TRUE)							
-					),
-					// 'addons_fieldtypes'	=> array(
-					// 		'index'							=> array('access' => 'can_access_modules', TRUE)							
-					// ),
-					'addons_modules'	=> array(
-							'index'							=> array('access' => 'can_access_modules', TRUE)						
-					),
-					'addons_plugins'	=> array(
-							'index'							=> array('access' => 'can_access_plugins', TRUE)						
-					),
-					'content_publish'		=> array(
-							'index'							=> array('keywords' => 'publish new entry', TRUE)
-					),
-					'content_files'		=> array(
-							'index'							=> array('access' => 'can_access_files', TRUE)
-					),
-
-					'design'			=> array(
-							'user_message'					=> array('access' => 'can_admin_design', TRUE),
-							'global_template_preferences'	=> array('access' => 'can_admin_design', 'template_cfg'),
-							'system_offline'				=> array('access' => 'can_admin_design', TRUE),
-							'email_notification'			=> array('access' => 'can_admin_templates', TRUE),
-							'member_profile_templates'		=> array('access' => 'can_admin_mbr_templates', TRUE)
-					),
-					'members'			=> array(
-							'register_member'				=> array('access' => 'can_admin_members', TRUE),
-							'member_validation'				=> array('access' => 'can_admin_members', TRUE),
-							'view_members'					=> array('access' => 'can_access_members', TRUE),
-							'ip_search'						=> array('access' => 'can_admin_members', 'keywords' => 'ip IP', TRUE),
-							'custom_profile_fields'			=> array('access' => 'can_admin_members', TRUE),
-							'member_group_manager'			=> array('access' => 'can_admin_mbr_groups', TRUE),
-							'member_config'					=> array('access' => 'can_admin_members', TRUE),
-							'member_banning'				=> array('access' => 'can_ban_users', TRUE),
-							'member_search'					=> TRUE
-					),
-					'tools_data'		=> array(
-							'sql_manager'					=> array('access' => 'can_access_data', TRUE),
-							'search_and_replace'			=> array('access' => 'can_access_data', TRUE),
-							'recount_stats'					=> array('access' => 'can_access_data', TRUE),
-							'php_info'						=> array('access' => 'can_access_data', TRUE),
-							'clear_caching'					=> array('access' => 'can_access_data', TRUE)
-					),
-					'tools_logs'		=> array(
-							'view_cp_log'					=> array('access' => 'can_access_logs', TRUE),
-							'view_throttle_log'				=> array('access' => 'can_access_logs', TRUE),
-							'view_search_log'				=> array('access' => 'can_access_logs', TRUE),
-							'view_email_log'				=> array('access' => 'can_access_logs', TRUE)
-					),
-					'tools_utilities'	=> array(
-							'member_import'					=> array('access' => 'can_access_utilities', TRUE),
-							'import_from_xml'				=> array('access' => 'can_access_utilities', TRUE),
-							'translation_tool'				=> array('access' => 'can_access_utilities', TRUE)
-					),
-				);
+			'admin_system'		=> array(
+					'general_configuration'			=> array('access' => 'can_access_sys_prefs', 'general_cfg'),
+					'output_debugging_preferences'	=> array('access' => 'can_access_sys_prefs', 'output_cfg'),
+					'database_settings'				=> array('access' => 'can_access_sys_prefs', 'db_cfg'),
+					'security_session_preferences'	=> array('access' => 'can_access_sys_prefs', 'keywords' => 'cookie cookies', 'security_cfg'),
+					'throttling_configuration'		=> array('access' => 'can_access_sys_prefs', 'throttling_cfg'),
+					'localization_settings'			=> array('access' => 'can_access_sys_prefs', 'localization_cfg'),
+					'email_configuration'			=> array('access' => 'can_access_sys_prefs', 'email_cfg'),
+					'cookie_settings'				=> array('access' => 'can_access_sys_prefs', 'keywords' => 'cookies', 'cookie_cfg'),
+					'image_resizing_preferences'	=> array('access' => 'can_access_sys_prefs', 'image_cfg'),
+					'captcha_preferences'			=> array('access' => 'can_access_sys_prefs', 'captcha_cfg'),
+					'word_censoring'				=> array('access' => 'can_access_sys_prefs', 'censoring_cfg'),
+					'mailing_list_preferences'		=> array('access' => 'can_access_sys_prefs', 'mailinglist_cfg'),
+					'emoticon_preferences'			=> array('access' => 'can_access_sys_prefs', 'emoticon_cfg'),
+					'tracking_preferences'			=> array('access' => 'can_access_sys_prefs', 'tracking_cfg'),
+					'mailing_list_preferences'		=> array('access' => 'can_access_sys_prefs', 'mailinglist_cfg'),							
+					'search_log_configuration'		=> array('access' => 'can_access_sys_prefs', 'search_log_cfg')
+			),
+			'admin_content'		=> array(
+					'global_channel_preferences'	=> array('access' => 'can_admin_channels', 'channel_cfg'),
+					'field_group_management'		=> array('access' => 'can_admin_channels', TRUE),
+					'category_management'			=> array('access' => 'can_admin_categories', TRUE)
+			),
+			'addons_accessories'=> array(
+					'index'							=> array('access' => 'can_access_accessories', TRUE)
+			),
+			'addons_extensions'	=> array(
+					'index'							=> array('access' => 'can_access_extensions', TRUE)							
+			),
+			'addons_fieldtypes'	=> array(
+					'index'							=> array('access' => 'can_access_fieldtypes', TRUE)							
+			),
+			'addons_modules'	=> array(
+					'index'							=> array('access' => 'can_access_modules', TRUE)						
+			),
+			'addons_plugins'	=> array(
+					'index'							=> array('access' => 'can_access_plugins', TRUE)						
+			),
+			'content_publish'		=> array(
+					'index'							=> array('keywords' => 'publish new entry', TRUE)
+			),
+			'content_files'		=> array(
+					'index'							=> array('access' => 'can_access_files', TRUE)
+			),
+			'design'			=> array(
+					'user_message'					=> array('access' => 'can_admin_design', TRUE),
+					'global_template_preferences'	=> array('access' => 'can_admin_design', 'template_cfg'),
+					'system_offline'				=> array('access' => 'can_admin_design', TRUE),
+					'email_notification'			=> array('access' => 'can_admin_templates', TRUE),
+					'member_profile_templates'		=> array('access' => 'can_admin_mbr_templates', TRUE)
+			),
+			'members'			=> array(
+					'register_member'				=> array('access' => 'can_admin_members', TRUE),
+					'member_validation'				=> array('access' => 'can_admin_members', TRUE),
+					'view_members'					=> array('access' => 'can_access_members', TRUE),
+					'ip_search'						=> array('access' => 'can_admin_members', 'keywords' => 'ip IP', TRUE),
+					'custom_profile_fields'			=> array('access' => 'can_admin_members', TRUE),
+					'member_group_manager'			=> array('access' => 'can_admin_mbr_groups', TRUE),
+					'member_config'					=> array('access' => 'can_admin_members', TRUE),
+					'member_banning'				=> array('access' => 'can_ban_users', TRUE),
+					'member_search'					=> TRUE
+			),
+			'tools_data'		=> array(
+					'sql_manager'					=> array('access' => 'can_access_data', TRUE),
+					'search_and_replace'			=> array('access' => 'can_access_data', TRUE),
+					'recount_stats'					=> array('access' => 'can_access_data', TRUE),
+					'php_info'						=> array('access' => 'can_access_data', TRUE),
+					'clear_caching'					=> array('access' => 'can_access_data', TRUE)
+			),
+			'tools_logs'		=> array(
+					'view_cp_log'					=> array('access' => 'can_access_logs', TRUE),
+					'view_throttle_log'				=> array('access' => 'can_access_logs', TRUE),
+					'view_search_log'				=> array('access' => 'can_access_logs', TRUE),
+					'view_email_log'				=> array('access' => 'can_access_logs', TRUE),
+					'view_developer_log'			=> array('access' => 'can_access_logs', TRUE)
+			),
+			'tools_utilities'	=> array(
+					'member_import'					=> array('access' => 'can_access_utilities', TRUE),
+					'import_from_xml'				=> array('access' => 'can_access_utilities', TRUE),
+					'translation_tool'				=> array('access' => 'can_access_utilities', TRUE)
+			),
+		);
 	}
 }
 
