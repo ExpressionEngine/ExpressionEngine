@@ -120,7 +120,7 @@ class Safecracker_ext
 		$this->EE->load->library('table');
 		$this->EE->load->helper('form');
 		
-		$this->EE->cp->set_variable('cp_page_title', lang('safecracker_module_name'));
+		$this->EE->view->cp_page_title = lang('safecracker_module_name');
 		
 		$this->EE->cp->add_to_head('
 	<script type="text/javascript" charset="utf-8">

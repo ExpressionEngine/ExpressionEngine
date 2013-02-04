@@ -72,9 +72,6 @@ class Forum_upd {
 	/** ---------------------------------*/
 	function update_triggers()
 	{
-		// Load the string helper
-		$this->EE->load->helper('string');
-		
 		$query = $this->EE->db->query("SELECT site_id FROM exp_sites");
 		
 		foreach($query->result_array() as $row)

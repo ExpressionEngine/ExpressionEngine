@@ -153,7 +153,7 @@
 				$forum_topic->title = str_replace(array('<', '>', '{', '}', '\'', '"', '?'), array('&lt;', '&gt;', '&#123;', '&#125;', '&#146;', '&quot;', '&#63;'), $forum_topic->title);
 
 				$this->table->add_row(
-					'<a href="'.$this->functions->remove_double_slashes($forum_topic->board_forum_url.'/viewthread/').$forum_topic->topic_id.'/'.'"><b>'.$forum_topic->title.'</b></a>',
+					'<a href="'.reduce_double_slashes($forum_topic->board_forum_url.'/viewthread/').$forum_topic->topic_id.'/'.'"><b>'.$forum_topic->title.'</b></a>',
 					'<a href="'.BASE.AMP.'C=myaccount'.AMP.'id='.$forum_topic->member_id.'"><b>'.$forum_topic->screen_name.'</b></a>',
 					'<a href="mailto:'.$forum_topic->email.'">'.$forum_topic->email.'</a>',
 					$forum_topic->ip_address
@@ -187,7 +187,7 @@
 			{
 
 				$this->table->add_row(
-					'<a href="'.$this->functions->remove_double_slashes($forum_post->board_forum_url.'/viewreply/').$forum_post->post_id.'/'.'"><b>'.substr(strip_tags($forum_post->body), 0, 45).'....</b></a>',
+					'<a href="'.reduce_double_slashes($forum_post->board_forum_url.'/viewreply/').$forum_post->post_id.'/'.'"><b>'.substr(strip_tags($forum_post->body), 0, 45).'....</b></a>',
 					'<a href="'.BASE.AMP.'C=myaccount'.AMP.'id='.$forum_post->member_id.'"><b>'.$forum_post->screen_name.'</b></a>',
 					'<a href="mailto:'.$forum_post->email.'">'.$forum_post->email.'</a>',
 					$forum_post->ip_address

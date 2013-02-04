@@ -180,7 +180,7 @@ class Pagination_object {
 				if (preg_match("#^P(\d+)|/P(\d+)#", $query_string, $match))
 				{
 					$this->offset = (isset($match[2])) ? $match[2] : $match[1];
-					$this->basepath = $this->EE->functions->remove_double_slashes(
+					$this->basepath = reduce_double_slashes(
 						str_replace($match[0], '', $this->basepath)
 					);
 				}
@@ -323,8 +323,6 @@ class Pagination_object {
 				// Check to see if a paginate_base was provided
 				if ($this->EE->TMPL->fetch_param('paginate_base'))
 				{
-					$this->EE->load->helper('string');
-
 					$this->basepath = $this->EE->functions->create_url(
 						trim_slashes($this->EE->TMPL->fetch_param('paginate_base'))
 					);

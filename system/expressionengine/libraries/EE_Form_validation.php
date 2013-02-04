@@ -113,7 +113,6 @@ class EE_Form_validation extends CI_Form_validation {
 			$type = 'update';
 		}
 		
-		$this->CI->load->helper('string');
 		$str = trim_nbs($str);
 		
 		// Is username formatting correct?
@@ -366,7 +365,6 @@ class EE_Form_validation extends CI_Form_validation {
 			$type = 'update';
 		}
 		
-		$this->CI->load->helper('string');
 		$str = trim_nbs($str);
 		
 		// Is email valid?

@@ -271,7 +271,7 @@ class Forum_tab {
 					 $params['mod_data']['forum_body']
 				);
 				
-				$body 	= $this->_convert_forum_tags($this->EE->functions->remove_double_slashes($body));
+				$body 	= $this->_convert_forum_tags(reduce_double_slashes($body));
 				
 				$data = array(
 					'title'					=> $this->EE->security->xss_clean($title),

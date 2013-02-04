@@ -72,8 +72,8 @@ class Login extends CP_Controller {
 			$vars['return_path'] = $this->input->get('return');
 		}
 		
-		$this->cp->set_variable('return_path', SELF);
-		$this->cp->set_variable('cp_page_title', lang('login'));
+		$this->view->return_path = SELF;
+		$this->view->cp_page_title = lang('login');
 
 		$this->load->view('account/login', $vars);
 	}
@@ -419,7 +419,7 @@ class Login extends CP_Controller {
 			$this->functions->redirect(BASE.AMP.'C=login'.AMP.'M=forgotten_password_form');
 		}
 		
-		$this->cp->set_variable('cp_page_title', lang('new_password_request'));
+		$this->view->cp_page_title = lang('new_password_request');
 		
 		$address = strip_tags($address);
 		

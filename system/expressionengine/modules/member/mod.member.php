@@ -180,8 +180,6 @@ class Member {
 		// This determines what page is shown. Anything after that will normally
 		// be an ID number, so we'll assign it to the $this->cur_id variable.
 
-		$this->EE->load->helper('string');
-
 		$this->request = trim_slashes($this->EE->uri->uri_string);
 
 		if (FALSE !== ($pos = strpos($this->request, $this->trigger.'/')))
@@ -1396,7 +1394,6 @@ class Member {
 				$notify_address = str_replace($this->EE->session->userdata('email'), "", $notify_address);
 			}
 
-			$this->EE->load->helper('string');
 			// Remove multiple commas
 			$notify_address = reduce_multiples($notify_address, ',', TRUE);
 
@@ -2405,7 +2402,7 @@ class Member {
 			$this->_member_set_basepath();
 		}
 
-		return $this->EE->functions->remove_double_slashes($this->basepath.'/'.$uri);
+		return reduce_double_slashes($this->basepath.'/'.$uri);
 	}
 
 	// --------------------------------------------------------------------

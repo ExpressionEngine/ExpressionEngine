@@ -414,7 +414,7 @@ class EE_Output extends CI_Output {
 		{
 			if (is_array($msg))
 			{
-				@header('Content-Type: application/json');
+				@header('Content-Type: application/json; charset=UTF-8');
 			}
 			else
 			{

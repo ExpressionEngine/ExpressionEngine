@@ -1239,7 +1239,6 @@ class Api_channel_fields extends Api {
 		if ($native_settings['field_list_items'] != '')
 		{
 			// This results in double encoding later on
-			//$this->load->helper('string');
 			//$native_settings['field_list_items'] = quotes_to_entities($native_settings['field_list_items']);
 		}
 		

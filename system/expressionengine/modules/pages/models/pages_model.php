@@ -75,9 +75,6 @@ class Pages_model extends CI_Model {
 		$this->db->select('site_pages');
 		$this->db->where('site_id', $this->config->item('site_id'));
         $query = $this->db->get('sites');
-        
-        // Load the string helper
-		$this->load->helper('string');
 
 		return unserialize(base64_decode($query->row('site_pages') ));
 	}

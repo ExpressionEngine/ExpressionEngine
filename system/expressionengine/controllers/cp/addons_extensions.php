@@ -55,7 +55,7 @@ class Addons_extensions extends CP_Controller {
 		$this->load->library('extensions');
 		$this->load->library('table');
 
-		$this->cp->set_variable('cp_page_title', lang('extensions'));
+		$this->view->cp_page_title = lang('extensions');
 		$this->cp->set_breadcrumb(BASE.AMP.'C=addons', lang('addons'));
 
 		$this->jquery->tablesorter('.mainTable', '{
@@ -197,12 +197,12 @@ class Addons_extensions extends CP_Controller {
 		$vars['form_hidden'] = array('which' => 'all');
 		$vars['message'] = lang($message);
 
-		$this->cp->set_variable('cp_page_title', lang($message));
+		$this->view->cp_page_title = lang($message);
 		
-		$this->cp->set_variable('cp_breadcrumbs', array(
+		$this->view->cp_breadcrumbs = array(
 			BASE.AMP.'C=addons' => lang('addons'),
 			BASE.AMP.'C=addons_extensions'=> lang('extensions')
-		));
+		);
 		
 		$this->cp->render('addons/toggle_confirm', $vars);
 	}
@@ -286,7 +286,7 @@ class Addons_extensions extends CP_Controller {
 		$this->lang->loadfile('admin');
 		$this->load->library('table');
 				
-		$this->cp->set_variable('cp_page_title', lang('extension_settings'));
+		$this->view->cp_page_title = lang('extension_settings');
 		$this->cp->set_breadcrumb(BASE.AMP.'C=addons_extensions', lang('extensions'));
 		
 		$vars['message'] = $message;
@@ -306,9 +306,6 @@ class Addons_extensions extends CP_Controller {
 		
 		if ($query->num_rows() > 0 && $query->row('settings')  != '')
 		{
-			// Load the string helper
-			$this->load->helper('string');
-
 			$current = strip_slashes(unserialize($query->row('settings') ));
 		}
 		
@@ -507,7 +504,7 @@ class Addons_extensions extends CP_Controller {
 
 		$this->lang->loadfile('admin');
 		
-		$this->cp->set_variable('cp_page_title', lang('extension_settings'));
+		$this->view->cp_page_title = lang('extension_settings');
 						
 		$vars['file'] = $this->input->get_post('file');
 		$class_name = ucfirst($vars['file']).'_ext';

@@ -183,7 +183,7 @@ class Content_edit extends CP_Controller {
 		$vars['search_form']	= 'C=content_edit';
 		$vars['entries_form']	= 'C=content_edit'.AMP.'M=multi_edit_form';
 		
-		$this->cp->set_variable('cp_page_title', lang('edit'));
+		$this->view->cp_page_title = lang('edit');
 		
 		$this->cp->add_js_script(array(
 			'ui'		=> 'datepicker',
@@ -812,10 +812,10 @@ class Content_edit extends CP_Controller {
 		}
 
 		// A bit of a breadcrumb override is needed
-		$this->cp->set_variable('cp_breadcrumbs', array(
+		$this->view->cp_breadcrumbs = array(
 			BASE.AMP.'C=content' => lang('content'),
 			BASE.AMP.'C=content_edit'=> lang('edit')
-		));
+		);
 
 		$this->view->cp_page_title = lang('multi_entry_editor');
 		$this->cp->render('content/multi_edit', $vars);
@@ -1273,7 +1273,7 @@ class Content_edit extends CP_Controller {
 
 		$vars['type'] = $type;
 	
-		$this->cp->set_variable('cp_page_title', lang('multi_entry_category_editor'));
+		$this->view->cp_page_title = lang('multi_entry_category_editor');
 
 		$this->cp->render('content/multi_cat_edit', $vars);
 	}
@@ -1471,7 +1471,7 @@ class Content_edit extends CP_Controller {
 			}
 		}
 
-		$this->cp->set_variable('cp_page_title', lang('delete_confirm'));
+		$this->view->cp_page_title = lang('delete_confirm');
 
 		$this->cp->render('content/delete_confirm', $vars);
 	}
@@ -1653,7 +1653,7 @@ class Content_edit extends CP_Controller {
 		$this->load->model('channel_entries_model');
 		$this->lang->loadfile('homepage');
 		
-		$this->cp->set_variable('cp_page_title', lang('most_recent_entries'));
+		$this->view->cp_page_title = lang('most_recent_entries');
 		
 		$count = $this->input->get('count');
 		$vars = array('entries' => array());

@@ -216,7 +216,7 @@ class Comment {
 				{
 					$pagination->current_page = $match['2'];
 				}
-				$uristr  = trim($this->EE->functions->remove_double_slashes(str_replace($match['0'], '/', $uristr)), '/');
+				$uristr  = trim(reduce_double_slashes(str_replace($match['0'], '/', $uristr)), '/');
 			}
 		}
 		else
@@ -227,8 +227,8 @@ class Comment {
 				{
 					$pagination->current_page = $match['2'];
 				}
-				$uristr  = $this->EE->functions->remove_double_slashes(str_replace($match['0'], '/', $uristr));
-				$qstring = trim($this->EE->functions->remove_double_slashes(str_replace($match['0'], '/', $qstring)), '/');
+				$uristr  = reduce_double_slashes(str_replace($match['0'], '/', $uristr));
+				$qstring = trim(reduce_double_slashes(str_replace($match['0'], '/', $qstring)), '/');
 			}
 		}
 		
@@ -1358,7 +1358,7 @@ class Comment {
 		
 		if (preg_match("#(^|/)P(\d+)(/|$)#", $qstring, $match))
 		{
-			$qstring = trim($this->EE->functions->remove_double_slashes(str_replace($match['0'], '/', $qstring)), '/');
+			$qstring = trim(reduce_double_slashes(str_replace($match['0'], '/', $qstring)), '/');
 		}
 
 		// Figure out the right entry ID
@@ -1780,7 +1780,7 @@ class Comment {
 		$url = $this->EE->functions->fetch_site_index(0,0).'/'.$uri_string;
 
 		$data = array(
-			'action'		=> $this->EE->functions->remove_double_slashes($url),
+			'action'		=> reduce_double_slashes($url),
 			'hidden_fields'	=> $hidden_fields,
 			'id'			=> ( ! isset($this->EE->TMPL->tagparams['id'])) ? 'comment_form' : $this->EE->TMPL->tagparams['id'],
 			'class'			=> ( ! isset($this->EE->TMPL->tagparams['class'])) ? NULL : $this->EE->TMPL->tagparams['class']
@@ -2104,9 +2104,6 @@ class Comment {
 		
 		// Clean return value- segments only
 		$clean_return = str_replace($this->EE->functions->fetch_site_index(), '', $_POST['RET']);
-
-		// Load the string helper
-		$this->EE->load->helper('string');
 
 		$_POST['PRV'] = trim_slashes($this->EE->security->xss_clean($_POST['PRV']));
 
@@ -2760,7 +2757,7 @@ class Comment {
 				'entry_title'		=> $entry_title,
 				'comment_id'		=> $comment_id,
 				'comment'			=> $comment,
-				'comment_url'		=> $this->EE->functions->remove_double_slashes($this->EE->input->remove_session_id($this->EE->functions->fetch_site_index().'/'.$_POST['URI'])),
+				'comment_url'		=> reduce_double_slashes($this->EE->input->remove_session_id($this->EE->functions->fetch_site_index().'/'.$_POST['URI'])),
 				'delete_link'		=> $cp_url.'&method=delete_comment_confirm&comment_id='.$comment_id, 
 				'approve_link'		=> $cp_url.'&method=change_comment_status&comment_id='.$comment_id.'&status=o', 
 				'close_link'		=> $cp_url.'&method=change_comment_status&comment_id='.$comment_id.'&status=c', 
@@ -2788,7 +2785,6 @@ class Comment {
 				}
 			}
 
-			$this->EE->load->helper('string');
 			// Remove multiple commas
 			$notify_address = reduce_multiples($notify_address, ',', TRUE);
 
@@ -2847,7 +2843,7 @@ class Comment {
 					'entry_title'		=> $entry_title,
 					'site_name'			=> stripslashes($this->EE->config->item('site_name')),
 					'site_url'			=> $this->EE->config->item('site_url'),
-					'comment_url'		=> $this->EE->functions->remove_double_slashes($this->EE->input->remove_session_id($this->EE->functions->fetch_site_index().'/'.$_POST['URI'])),
+					'comment_url'		=> reduce_double_slashes($this->EE->input->remove_session_id($this->EE->functions->fetch_site_index().'/'.$_POST['URI'])),
 					'comment_id'		=> $comment_id,
 					'comment'			=> $comment,
 					'channel_id'		=> $channel_id,
@@ -3012,7 +3008,7 @@ class Comment {
 		
 		if (preg_match("#(^|/)P(\d+)(/|$)#", $qstring, $match))
 		{
-			$qstring = trim($this->EE->functions->remove_double_slashes(str_replace($match['0'], '/', $qstring)), '/');
+			$qstring = trim(reduce_double_slashes(str_replace($match['0'], '/', $qstring)), '/');
 		}
 
 		// Figure out the right entry ID

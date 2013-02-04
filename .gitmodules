@@ -1,3 +1,0 @@
-[submodule "system/codeigniter"]
-    path = system/codeigniter
-    url = git@ellislab.beanstalkapp.com:/codeigniter-core.git

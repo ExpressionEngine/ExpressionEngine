@@ -528,7 +528,6 @@ class File_model extends CI_Model {
 		}
 	
 		$this->load->helper('file');
-		$this->load->helper('string');
 		$this->load->helper('text');
 		$this->load->helper('directory');
 		$this->load->library('encrypt');
