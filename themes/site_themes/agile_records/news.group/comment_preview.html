@@ -1,6 +1,6 @@
 {!-- Explanations and learning materials can be found in news/index and the other news template groups.  In-line comments here are only for features not introduced in news/index. 
 	 NOTE:  This is an ExpressionEngine Comment and it will not appear in the rendered source.  
-			http://expressionengine.com/user_guide/templates/commenting.html
+			http://ellislab.com/expressionengine/user-guide/templates/commenting.html
 --}
 {html_head}
 <!-- Below we use a channel entries tag to deliver a dynamic title element. -->
@@ -27,10 +27,10 @@
         	<div class="feature_end"></div>
 
 	<div id="content_pri"> <!-- This is where all primary content, left column gets entered -->
-		<!--  This is the channel entries tag.  Documentation for this parameter can be found at http://expressionengine.com/user_guide/modules/channel/channel_entries.html
+		<!--  This is the channel entries tag.  Documentation for this parameter can be found at http://ellislab.com/expressionengine/user-guide/modules/channel/channel_entries.html
 				 Parameters are the items inside the opening exp:channel:entries tag that allow limiting, filtering, and sorting. They go in the format item="limiter".  ie: channel="news". Below are links to the parameters used in this particular instance of the channel entries tag.  These are documented here:
 				
-				http://expressionengine.com/user_guide/channels/weblog/parameters.html
+				http://ellislab.com/expressionengine/user-guide/channels/weblog/parameters.html
 				
 		channel= which channel to output, multiple channels may be piped in (channel_1|channel_2)
 		limit= limits the number of entries output in this instance of the tag
@@ -38,11 +38,11 @@
 		require_entry= forces ExpressionEngine to compare Segment 3 to existing URL titles.  If there is no match, then nothing is output.  Use this in combination with if no_results to force a redirect to 404. -->
 		
 		{exp:channel:entries channel="news|about" disable="categories|member_data|category_fields|pagination" status="open|featured"}
-		<!-- count is a single variable: http://expressionengine.com/user_guide/modules/weblog/variables.html#var_count 
+		<!-- count is a single variable: http://ellislab.com/expressionengine/user-guide/modules/weblog/variables.html#var_count 
 		
 		In this case we've combined the count single variable with a Conditional Global Variable:
 		
-		http://expressionengine.com/user_guide/templates/globals/conditionals.html
+		http://ellislab.com/expressionengine/user-guide/templates/globals/conditionals.html
 		
 		to create code that shows up only once, at the top of the list of outputted channel entries and only if there is 1 or more entries -->
 		
@@ -56,13 +56,13 @@
 			<li>
 					<!-- comment_url_title_auto_path is a channel entries variable:
 
-					http://expressionengine.com/user_guide/modules/channel/variables.html#var_comment_url_title_auto_path
+					http://ellislab.com/expressionengine/user-guide/modules/channel/variables.html#var_comment_url_title_auto_path
 
 					This allows you to outpt a per-channel link to a single-entry page.  This can be used even if you are not using comments as a way to get a per-channel "permalink" page without writing your own conditional. -->
 					
-				<h4><a href="{comment_url_title_auto_path}">{title}</a>  //  <!-- entry_date is a variable, and date formatting variables can be found at http://expressionengine.com/user_guide/templates/date_variable_formatting.html -->{entry_date format="%F %d %Y"}</h4>
+				<h4><a href="{comment_url_title_auto_path}">{title}</a>  //  <!-- entry_date is a variable, and date formatting variables can be found at http://ellislab.com/expressionengine/user-guide/templates/date_variable_formatting.html -->{entry_date format="%F %d %Y"}</h4>
 				
-				<!-- the following two lines are custom channel fields. http://expressionengine.com/user_guide/cp/admin/channel_administration/custom_channel_fields.html -->
+				<!-- the following two lines are custom channel fields. http://ellislab.com/expressionengine/user-guide/cp/admin/channel_administration/custom_channel_fields.html -->
 				
 				{if news_image}
 					<img src="{news_image}" alt="{title}" />
@@ -76,7 +76,7 @@
 				{news_extended}
 				
 				<!-- Here we compare the channel short-name to a predefined word to output some information only if the entry occurs in a particular channel -->
-				{if channel_short_name == "news"}<p><a href="{comment_url_title_auto_path}#news_comments">{comment_total} comments</a> <!-- edit_this is a Snippet: http://expressionengine.com/user_guide/templates/globals/snippets.html --> {global_edit_this} </p> {/if}
+				{if channel_short_name == "news"}<p><a href="{comment_url_title_auto_path}#news_comments">{comment_total} comments</a> <!-- edit_this is a Snippet: http://ellislab.com/expressionengine/user-guide/templates/globals/snippets.html --> {global_edit_this} </p> {/if}
 			</li>
 		<!-- Comparing two channel entries variables to output data only at the end of the list of outputted channel entries -->
 		{if count == total_results}</ul>{/if}
@@ -84,8 +84,8 @@
 		{/exp:channel:entries}
 		
 			<div id="news_comments">
-			<!-- Comment Entries Tag outputs comments: http://expressionengine.com/user_guide/ http://expressionengine.com/user_guide/ 
-			Parameters found here: http://expressionengine.com/user_guide/modules/comment/entries.html#parameters
+			<!-- Comment Entries Tag outputs comments: http://ellislab.com/expressionengine/user-guide/ http://ellislab.com/expressionengine/user-guide/ 
+			Parameters found here: http://ellislab.com/expressionengine/user-guide/modules/comment/entries.html#parameters
 			sort= defines in what order to sort the comments
 			limit= how many comments to output
 			channel= what channels to show comments from
@@ -95,20 +95,20 @@
 			<ol>
 				<li>
 					<h5 class="commentdata">
-						<!-- Comment Entries variable: http://expressionengine.com/user_guide/modules/comment/entries.html#url_as_author 
+						<!-- Comment Entries variable: http://ellislab.com/expressionengine/user-guide/modules/comment/entries.html#url_as_author 
 						url_as_author outputs the URL if entered/in the member profile (if registered) or just the name if no URL-->
 						{url_as_author}
 						<!-- Comment date:
-						 http://expressionengine.com/user_guide/modules/comment/entries.html#var_comment_date
+						 http://ellislab.com/expressionengine/user-guide/modules/comment/entries.html#var_comment_date
 						
 						Formatted with Date Variable Formatting:
 						
-	http://expressionengine.com/user_guide//templates/date_variable_formatting.html -->
+	http://ellislab.com/expressionengine/user-guide//templates/date_variable_formatting.html -->
 	
 						<span>{comment_date format="%h:%i%a"}, {comment_date format=" %m/%d/%Y"}</span>
 						<!-- Checks if the member has chosen an avatar and displays it if so 
 						
-	http://expressionengine.com/user_guide/modules/comment/entries.html#conditionals
+	http://ellislab.com/expressionengine/user-guide/modules/comment/entries.html#conditionals
 						-->
 						{if avatar}
 							<img src="{avatar_url}" width="{avatar_image_width}" height="{avatar_image_height}" alt="{author}'s avatar" />
@@ -123,7 +123,7 @@
 
 			<!-- Comment Submission Form: 
 			
-			http://expressionengine.com/user_guide/ modules/comment/entries.html#submission_form
+			http://ellislab.com/expressionengine/user-guide/ modules/comment/entries.html#submission_form
 			
 			channel= parameter says which channel to submit this comment too.  This is very important to include if you use multiple channels that may have the same URL title.  It will stop the comment from being attached to the wrong entry.  channel= should always be included.			
 			-->
@@ -151,7 +151,7 @@
 					<input type="text" id="url" name="url" value="{url}" size="50" />
 				</label>
 			{/if}
-				<!-- comment_guidelines is a User Defined Global Variable: http://expressionengine.com/user_guide/templates/globals/user_defined.html -->
+				<!-- comment_guidelines is a User Defined Global Variable: http://ellislab.com/expressionengine/user-guide/templates/globals/user_defined.html -->
 				{comment_guidelines}
 				<label for="comment" class="comment">
 					<span>Comment:</span>
@@ -187,7 +187,7 @@
 	<div id="content_sec" class="right green40">
 		<h3 class="oldernews">Browse Older News</h3>
 		<div id="news_archives">
-			<!-- The period before the template in this embed indicates a "hidden template".  Hidden templates can not be viewed directly but can only be viewed when embedded in another template: http://expressionengine.com/user_guide/templates/hidden_templates.html -->
+			<!-- The period before the template in this embed indicates a "hidden template".  Hidden templates can not be viewed directly but can only be viewed when embedded in another template: http://ellislab.com/expressionengine/user-guide/templates/hidden_templates.html -->
 			<div id="categories_box">
 			{news_categories}
 			</div>
