@@ -1946,7 +1946,9 @@ class Forum_Core extends Forum {
 				{
 					if (date('Ymd', $row['forum_last_post_date']) == date('Ymd', $this->EE->localize->now))
 					{	
-						$temp = str_replace($date['0'], str_replace('%x', $this->EE->localize->format_timespan(($this->EE->localize->now - $row['forum_last_post_date'])), lang('ago')), $temp);
+						$this->EE->load->helper('date');
+
+						$temp = str_replace($date['0'], str_replace('%x', timespan($row['forum_last_post_date']), lang('ago')), $temp);
 					}
 					else
 					{
@@ -2062,6 +2064,8 @@ class Forum_Core extends Forum {
 		
 		// Render the template		
 		$topics = '';
+
+		$this->EE->load->helper('date');
 						
 		foreach ($query->result_array() as $row)
 		{
@@ -2084,7 +2088,7 @@ class Forum_Core extends Forum {
 			{
 				if (date('Ymd', $row['topic_date']) == date('Ymd', $this->EE->localize->now))
 				{	
-					$dt = str_replace('%x', $this->EE->localize->format_timespan(($this->EE->localize->now - $row['topic_date'])), lang('ago'));
+					$dt = str_replace('%x', timespan($row['topic_date']), lang('ago'));
 				}
 				else
 				{
@@ -2588,8 +2592,10 @@ class Forum_Core extends Forum {
 			if ($date !== FALSE AND $row['last_post_date'] != 0)
 			{
 				if (date('Ymd', $row['last_post_date']) == date('Ymd', $this->EE->localize->now))
-				{	
-					$dt = str_replace('%x', $this->EE->localize->format_timespan(($this->EE->localize->now - $row['last_post_date'])), lang('ago'));
+				{
+					$this->EE->load->helper('date');
+
+					$dt = str_replace('%x', timespan($row['last_post_date']), lang('ago'));
 				}
 				else
 				{
@@ -9846,6 +9852,8 @@ class Forum_Core extends Forum {
 			}
 		}
 
+		$this->EE->load->helper('date');
+
 		foreach ($qry->result_array() as $row)
 		{
 			$temp = $template;
@@ -9978,7 +9986,7 @@ class Forum_Core extends Forum {
 			{
 				if (date('Ymd', $row['last_post_date']) == date('Ymd', $this->EE->localize->now))
 				{	
-					$dt = str_replace('%x', $this->EE->localize->format_timespan(($this->EE->localize->now - $row['last_post_date'])), lang('ago'));
+					$dt = str_replace('%x', timespan($row['last_post_date']), lang('ago'));
 				}
 				else
 				{
@@ -10163,6 +10171,8 @@ class Forum_Core extends Forum {
 		{
 			$switches = explode('|', $smatch['2']);
 		}
+
+		$this->EE->load->helper('date');
 					
 		foreach ($qry->result_array() as $row)
 		{
@@ -10219,7 +10229,7 @@ class Forum_Core extends Forum {
 			{
 				if (date('Ymd', $row['post_date']) == date('Ymd', $this->EE->localize->now))
 				{	
-					$dt = str_replace('%x', $this->EE->localize->format_timespan(($this->EE->localize->now - $row['post_date'])), lang('ago'));
+					$dt = str_replace('%x', timespan($row['post_date']), lang('ago'));
 				}
 				else
 				{
@@ -10823,6 +10833,8 @@ class Forum_Core extends Forum {
 		$this->EE->load->library('typography');
 		$this->EE->typography->initialize();
 
+		$this->EE->load->helper('date');
+
 		$str = '';
 		
 		foreach ($query->result_array() as $row)
@@ -10943,7 +10955,7 @@ class Forum_Core extends Forum {
 				// {topic_relative_date}				
 				if ($key == "topic_relative_date")
 				{
-					$tagdata = $this->EE->TMPL->swap_var_single($val, $this->EE->localize->format_timespan($this->EE->localize->now - $row['topic_date']), $tagdata);
+					$tagdata = $this->EE->TMPL->swap_var_single($val, timespan($row['topic_date']), $tagdata);
 				}
 
 				// parse last post date
@@ -10958,7 +10970,7 @@ class Forum_Core extends Forum {
 				// {last_post_relative_date}	
 				if ($key == "last_post_relative_date")
 				{
-					$tagdata = $this->EE->TMPL->swap_var_single($val, $this->EE->localize->format_timespan($this->EE->localize->now - $row['last_post_date']), $tagdata);
+					$tagdata = $this->EE->TMPL->swap_var_single($val, timespan($row['last_post_date']), $tagdata);
 				}
 
 				// Parse {body}				

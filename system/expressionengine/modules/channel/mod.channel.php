@@ -2940,6 +2940,8 @@ class Channel {
 
 		$parse_data = array();
 
+		$this->EE->load->helper('date');
+
 		foreach ($this->query->result_array() as $count => $row)
 		{
 			//$row['count']			= $count+1;
@@ -2998,7 +3000,7 @@ class Channel {
 
 			if ( isset($existing_variables['relative_date']))
 			{
-				$row['relative_date']			= $this->EE->localize->format_timespan($this->EE->localize->now - $row['entry_date']);
+				$row['relative_date']			= timespan($row['entry_date']);
 			}
 
 			//  Date Variables
@@ -3059,7 +3061,7 @@ class Channel {
 
 			if ( isset($existing_variables['relative_date']))
 			{
-				$row['relative_date'] = $this->EE->localize->format_timespan($this->EE->localize->now - $row['entry_date']);
+				$row['relative_date'] = timespan($row['entry_date']);
 			}
 
 			// Trimmed URL
@@ -3278,6 +3280,8 @@ class Channel {
 
 		$date_vars = array('entry_date', 'gmt_date', 'gmt_entry_date', 'edit_date', 'gmt_edit_date', 'expiration_date', 'recent_comment_date', 'week_date');
 		$date_variables_exist = FALSE;
+
+		$this->EE->load->helper('date');
 
 		foreach ($date_vars as $val)
 		{
@@ -3654,7 +3658,7 @@ class Channel {
 			$cond['signature_image_url']	= $this->EE->config->slash_item('sig_img_url').$row['sig_img_filename'];
 			$cond['signature_image_width']	= $row['sig_img_width'];
 			$cond['signature_image_height']	= $row['sig_img_height'];
-			$cond['relative_date']			= $this->EE->localize->format_timespan($this->EE->localize->now - $row['entry_date']);
+			$cond['relative_date']			= timespan($row['entry_date']);
 
 			if (isset($this->cfields[$row['site_id']]))
 			{
@@ -4264,7 +4268,7 @@ class Channel {
 				//  parse "last edit" date
 				if (isset($edit_date[$key]))
 				{
-					$val = str_replace($edit_date[$key], $this->EE->localize->formatted_date($edit_date[$key], $this->EE->localize->timestamp_to_gmt($row['edit_date'])), $val);
+					$val = str_replace($edit_date[$key], $this->EE->localize->formatted_date($edit_date[$key], mysql_to_unix($row['edit_date'])), $val);
 
 					$tagdata = $this->EE->TMPL->swap_var_single($key, $val, $tagdata);
 				}
@@ -4272,7 +4276,7 @@ class Channel {
 				//  "last edit" date as GMT
 				if (isset($gmt_edit_date[$key]))
 				{
-					$val = str_replace($gmt_edit_date[$key], $this->EE->localize->formatted_date($gmt_edit_date[$key], $this->EE->localize->timestamp_to_gmt($row['edit_date']), FALSE), $val);
+					$val = str_replace($gmt_edit_date[$key], $this->EE->localize->formatted_date($gmt_edit_date[$key], mysql_to_unix($row['edit_date']), FALSE), $val);
 
 					$tagdata = $this->EE->TMPL->swap_var_single($key, $val, $tagdata);
 				}
@@ -4448,7 +4452,7 @@ class Channel {
 
 				if ($key == "relative_date")
 				{
-					$tagdata = $this->EE->TMPL->swap_var_single($val, $this->EE->localize->format_timespan($this->EE->localize->now - $row['entry_date']), $tagdata);
+					$tagdata = $this->EE->TMPL->swap_var_single($val, timespan($row['entry_date']), $tagdata);
 				}
 
 				//  {trimmed_url} - used by Atom feeds

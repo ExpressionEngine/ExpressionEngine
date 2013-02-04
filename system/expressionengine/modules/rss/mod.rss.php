@@ -187,6 +187,8 @@ class Rss {
 			}
 		}
 
+		$this->EE->load->helper('date');
+
 		foreach ($this->EE->TMPL->var_single as $key => $val)
 		{
 			//  {date}
@@ -236,7 +238,7 @@ class Rss {
 			{
 				foreach ($gmt_edit_date_array[$key] as $dvar)
 				{
-					$val = str_replace($dvar, $this->EE->localize->convert_timestamp($dvar, $this->EE->localize->timestamp_to_gmt($edit_date), FALSE), $val);					
+					$val = str_replace($dvar, $this->EE->localize->convert_timestamp($dvar, mysql_to_unix($edit_date), FALSE), $val);					
 				}
 
 				$this->EE->TMPL->tagdata = $this->EE->TMPL->swap_var_single($key, $val, $this->EE->TMPL->tagdata);					

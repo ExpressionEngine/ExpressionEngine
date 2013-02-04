@@ -49,7 +49,7 @@ class EE_Localize {
 		$this->EE =& get_instance();
 
 		// TODO: Deprecate $zones
-		$this->EE->load->helper('date_helper');
+		$this->EE->load->helper('date');
 		$this->zones = timezones();
 
 		// Fetch current Unix timestamp
@@ -358,6 +358,24 @@ class EE_Localize {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Convert a MySQL timestamp to GMT
+	 *
+	 * @access	public
+	 * @param	string
+	 * @return	string
+	 */
+	public function timestamp_to_gmt($str = '')
+	{
+		$this->EE->load->library('logger');
+		$this->EE->logger->deprecated('2.6', 'Date helper\'s mysql_to_unix()');
+
+		$this->EE->load->helper('date');
+		return mysql_to_unix($str);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 *   Set localized time
 	 *
 	 * Converts GMT time to the localized values of the current logged-in user
@@ -615,92 +633,11 @@ class EE_Localize {
 	 */
 	function format_timespan($seconds = '')
 	{
-		// things can get really screwy if a negative number is passed, which can happen
-		// in very rare load-balanced environments when the web servers' are not in
-		// perfect sync with one another
-		$seconds = abs($seconds);
+		$this->EE->load->library('logger');
+		$this->EE->logger->deprecated('2.6', 'Date helper\'s timespan()');
 
-		$seconds = ($seconds == '') ? 1 : $seconds;
-
-		$str = '';
-
-		$years = floor($seconds / 31536000);
-
-		if ($years > 0)
-		{
-			$str .= $years.' '.$this->EE->lang->line(($years	> 1) ? 'years' : 'year').', ';
-		}
-
-		$seconds -= $years * 31536000;
-
-		$months = floor($seconds / 2628000);
-
-		if ($years > 0 OR $months > 0)
-		{
-			if ($months > 0)
-			{
-				$str .= $months.' '.$this->EE->lang->line(($months	> 1) ? 'months'	: 'month').', ';
-			}
-
-			$seconds -= $months * 2628000;
-		}
-
-		$weeks = floor($seconds / 604800);
-
-		if ($years > 0 OR $months > 0 OR $weeks > 0)
-		{
-			if ($weeks > 0)
-			{
-				$str .= $weeks.' '.$this->EE->lang->line(($weeks > 1) ? 'weeks' : 'week').', ';
-			}
-
-			$seconds -= $weeks * 604800;
-		}
-
-		$days = floor($seconds / 86400);
-
-		if ($months > 0 OR $weeks > 0 OR $days > 0)
-		{
-			if ($days > 0)
-			{
-				$str .= $days.' '.$this->EE->lang->line(($days > 1) ? 'days' : 'day').', ';
-			}
-
-			$seconds -= $days * 86400;
-		}
-
-		$hours = floor($seconds / 3600);
-
-		if ($days > 0 OR $hours > 0)
-		{
-			if ($hours > 0)
-			{
-				$str .= $hours.' '.$this->EE->lang->line(($hours > 1) ? 'hours' : 'hour').', ';
-			}
-
-			$seconds -= $hours * 3600;
-		}
-
-		$minutes = floor($seconds / 60);
-
-		if ($days > 0 OR $hours > 0 OR $minutes > 0)
-		{
-			if ($minutes > 0)
-			{
-				$str .= $minutes.' '.$this->EE->lang->line(($minutes	> 1) ? 'minutes' : 'minute').', ';
-			}
-
-			$seconds -= $minutes * 60;
-		}
-
-		if ($str == '')
-		{
-			$str .= $seconds.' '.$this->EE->lang->line(($seconds	> 1) ? 'seconds' : 'second').', ';
-		}
-
-		$str = substr(trim($str), 0, -1);
-
-		return $str;
+		$this->EE->load->helper('date');
+		return timespan($seconds);
 	}
 
 	// --------------------------------------------------------------------
@@ -821,29 +758,10 @@ class EE_Localize {
 	 */
 	function zone_offset($tz = '')
 	{
-		if ($tz == '')
-		{
-			return '+00:00';
-		}
+		$this->EE->load->library('logger');
+		$this->EE->logger->deprecated('2.6');
 
-		$zone = trim($this->zones[$tz]);
-
-		if ( ! strstr($zone, '.'))
-		{
-			$zone .= ':00';
-		}
-
-		$zone = str_replace(".5", ':30', $zone);
-
-		if (substr($zone, 0, 1) != '-')
-		{
-			$zone = '+'.$zone;
-		}
-
-		$zone = preg_replace("/^(.{1})([0-9]{1}):(\d+)$/", "\\1D\\2:\\3", $zone);
-		$zone = str_replace("D", '0', $zone);
-
-		return $zone;
+		return $tz;
 	}
 
 	// --------------------------------------------------------------------
@@ -860,7 +778,7 @@ class EE_Localize {
 		$this->EE->load->library('logger');
 		$this->EE->logger->deprecated('2.6', 'Date helper\'s timezone_menu()');
 
-		$this->EE->load->helper('date_helper');
+		$this->EE->load->helper('date');
 		return timezone_menu($default, 'select', 'server_timezone');
 	}
 
@@ -959,71 +877,8 @@ class EE_Localize {
 	 */
 	function set_localized_timezone()
 	{
-        $zones = array(
-						'UM12'	=> array('',	''),
-						'UM11'	=> array('SST',	'SST'),
-						'UM10'	=> array('HST',	'HST'),
-						'UM95'	=> array('MART','MART'),
-						'UM9'	=> array('AKST','AKDT'),
-						'UM8'	=> array('PST',	'PDT'),
-						'UM7'	=> array('MST',	'MDT'),
-						'UM6'	=> array('CST',	'CDT'),
-						'UM5'	=> array('EST',	'EDT'),
-						'UM45'	=> array('VET',	'VET'),
-						'UM4'	=> array('AST',	'ADT'),
-						'UM35'	=> array('NST',	'NDT'),
-						'UM3'	=> array('ADT',	'ADT'),
-						'UM2'	=> array('MAST','MAST'),
-						'UM1'	=> array('AZOT','AZOT'),
-						'UTC'	=> array('GMT',	'GMT'),
-						'UP1'	=> array('MET',	'MET'),
-						'UP2'	=> array('EET',	'EET'),
-						'UP3'	=> array('BT', 	'BT'),
-						'UP35'	=> array('IRT',	'IRT'),
-						'UP4'	=> array('ZP4',	'ZP4'),
-						'UP45'	=> array('AFT',	'AFT'),
-						'UP5'	=> array('ZP5',	'ZP5'),
-						'UP55'	=> array('IST',	'IDT'),
-						'UP575'	=> array('NPT',	'NPT'),
-						'UP6'	=> array('ZP6',	'ZP6'),
-						'UP65'	=> array('BURT','BURT'),
-						'UP7'	=> array('WAST','WADT'),
-						'UP8'	=> array('WST','WDT'),
-						'UP875'	=> array('CWST','CWDT'),
-						'UP9'	=> array('JST',	'JDT'),
-						'UP95'	=> array('CST',	'CDT'),
-						'UP10'	=> array('AEST','AEDT'),
-						'UP105'	=> array('LHST','LHST'),
-						'UP11'	=> array('MAGT','MAGT'),
-						'UP115'	=> array('NFT',	'NFT'),
-						'UP12'	=> array('NZST','NZDT'),
-						'UP1275'=> array('CHAST','CHAST'),
-						'UP13'	=> array('PHOT','PHOT'),
-						'UP14'	=> array('LINT','LINT')
-                     );
-
-		if ($this->EE->session->userdata['timezone'] == '')
-		{
-			$zone = $this->EE->config->item('server_timezone');
-			$dst = ($this->EE->config->item('daylight_savings')  == 'y') ? TRUE : FALSE;
-		}
-		else
-		{
-			$zone = $this->EE->session->userdata['timezone'];
-			$dst = ($this->EE->session->userdata['daylight_savings'] == 'y') ? TRUE : FALSE;
-		}
-
-		if (isset($zones[$zone]))
-		{
-			if ($dst == FALSE)
-			{
-				return $zones[$zone][0];
-			}
-			else
-			{
-				return $zones[$zone][1];
-			}
-		}
+        $this->EE->load->library('logger');
+        $this->EE->logger->deprecated('2.6');
 
 		return 'GMT';
 	}
@@ -1043,22 +898,11 @@ class EE_Localize {
 	 */
 	function fetch_days_in_month($month, $year)
 	{
-		$days_in_month	= array(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
+		$this->EE->load->library('logger');
+		$this->EE->logger->deprecated('2.6', 'Date helper\'s days_in_month()');
 
-		if ($month < 1 OR $month > 12)
-		{
-			return 0;
-		}
-
-		if ($month == 2)
-		{
-			if ($year % 400 == 0 OR ($year % 4 == 0 AND $year % 100 != 0))
-			{
-				return 29;
-			}
-		}
-
-		return $days_in_month[$month - 1];
+		$this->EE->load->helper('date');
+		return days_in_month($month, $year);
 	}
 
 	// --------------------------------------------------------------------
