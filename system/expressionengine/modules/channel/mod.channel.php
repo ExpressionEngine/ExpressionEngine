@@ -4632,7 +4632,7 @@ class Channel {
 							}
 						}
 
-						$val = str_replace($custom_date_fields[$key], $this->EE->localize->convert_timestamp($custom_date_fields[$key], $temp_val, $localize), $val);
+						$val = str_replace($custom_date_fields[$key], $this->EE->localize->formatted_date($custom_date_fields[$key], $temp_val, $localize), $val);
 
 						$tagdata = $this->EE->TMPL->swap_var_single($key, $val, $tagdata);
 					}

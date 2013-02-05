@@ -172,15 +172,15 @@ class Rss {
 
 					switch ($val)
 					{
-						case 'date' 			: $entry_date_array[$matches[0][$j]] = $this->EE->localize->fetch_date_params($matches[1][$j]);
+						case 'date' 			: $entry_date_array[$matches[0][$j]] = $matches[1][$j];
 							break;
-						case 'gmt_date'			: $gmt_date_array[$matches[0][$j]] = $this->EE->localize->fetch_date_params($matches[1][$j]);
+						case 'gmt_date'			: $gmt_date_array[$matches[0][$j]] = $matches[1][$j];
 							break;
-						case 'gmt_entry_date'	: $gmt_entry_date_array[$matches[0][$j]] = $this->EE->localize->fetch_date_params($matches[1][$j]);
+						case 'gmt_entry_date'	: $gmt_entry_date_array[$matches[0][$j]] = $matches[1][$j];
 							break;
-						case 'edit_date' 		: $edit_date_array[$matches[0][$j]] = $this->EE->localize->fetch_date_params($matches[1][$j]);
+						case 'edit_date' 		: $edit_date_array[$matches[0][$j]] = $matches[1][$j];
 							break;
-						case 'gmt_edit_date'	: $gmt_edit_date_array[$matches[0][$j]] = $this->EE->localize->fetch_date_params($matches[1][$j]);
+						case 'gmt_edit_date'	: $gmt_edit_date_array[$matches[0][$j]] = $matches[1][$j];
 							break;
 					}
 				}
@@ -194,54 +194,67 @@ class Rss {
 			//  {date}
 			if (isset($entry_date_array[$key]))
 			{
-				foreach ($entry_date_array[$key] as $dvar)
-				{
-					$val = str_replace($dvar, $this->EE->localize->convert_timestamp($dvar, $entry_date, TRUE), $val);					
-				}
-
-				$this->EE->TMPL->tagdata = $this->EE->TMPL->swap_var_single($key, $val, $this->EE->TMPL->tagdata);					
+				$this->EE->TMPL->tagdata = $this->EE->TMPL->swap_var_single(
+					$key,
+					$this->EE->localize->formatted_date(
+						$entry_date_array[$key],
+						$entry_date
+					),
+					$this->EE->TMPL->tagdata
+				);					
 			}
 
 			//  GMT date - entry date in GMT
 			if (isset($gmt_entry_date_array[$key]))
 			{
-				foreach ($gmt_entry_date_array[$key] as $dvar)
-				{
-					$val = str_replace($dvar, $this->EE->localize->convert_timestamp($dvar, $entry_date, FALSE), $val);					
-				}
-
-				$this->EE->TMPL->tagdata = $this->EE->TMPL->swap_var_single($key, $val, $this->EE->TMPL->tagdata);					
+				$this->EE->TMPL->tagdata = $this->EE->TMPL->swap_var_single(
+					$key,
+					$this->EE->localize->formatted_date(
+						$gmt_entry_date_array[$key],
+						$entry_date,
+						FALSE
+					),
+					$this->EE->TMPL->tagdata
+				);				
 			}
 
 			if (isset($gmt_date_array[$key]))
 			{
-				foreach ($gmt_date_array[$key] as $dvar)
-				{
-					$val = str_replace($dvar, $this->EE->localize->convert_timestamp($dvar, $entry_date, FALSE), $val);
-				}
-
-				$this->EE->TMPL->tagdata = $this->EE->TMPL->swap_var_single($key, $val, $this->EE->TMPL->tagdata);					
+				$this->EE->TMPL->tagdata = $this->EE->TMPL->swap_var_single(
+					$key,
+					$this->EE->localize->formatted_date(
+						$gmt_date_array[$key],
+						$entry_date,
+						FALSE
+					),
+					$this->EE->TMPL->tagdata
+				);
 			}
 
 			//  parse "last edit" date
 			if (isset($edit_date_array[$key]))
 			{
-				foreach ($edit_date_array[$key] as $dvar)
-				{
-					$val = str_replace($dvar, $this->EE->localize->convert_timestamp($dvar, $edit_date, TRUE), $val);					
-				}
-				$this->EE->TMPL->tagdata = $this->EE->TMPL->swap_var_single($key, $val, $this->EE->TMPL->tagdata);					
+				$this->EE->TMPL->tagdata = $this->EE->TMPL->swap_var_single(
+					$key,
+					$this->EE->localize->formatted_date(
+						$edit_date_array[$key],
+						mysql_to_unix($edit_date)
+					),
+					$this->EE->TMPL->tagdata
+				);				
 			}
 
 			//  "last edit" date as GMT
 			if (isset($gmt_edit_date_array[$key]))
 			{
-				foreach ($gmt_edit_date_array[$key] as $dvar)
-				{
-					$val = str_replace($dvar, $this->EE->localize->convert_timestamp($dvar, mysql_to_unix($edit_date), FALSE), $val);					
-				}
-
-				$this->EE->TMPL->tagdata = $this->EE->TMPL->swap_var_single($key, $val, $this->EE->TMPL->tagdata);					
+				$this->EE->TMPL->tagdata = $this->EE->TMPL->swap_var_single(
+					$key,
+					$this->EE->localize->formatted_date(
+						$gmt_edit_date_array[$key],
+						mysql_to_unix($edit_date)
+					),
+					$this->EE->TMPL->tagdata
+				);
 			}			
 		}
 		

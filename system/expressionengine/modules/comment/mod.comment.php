@@ -686,13 +686,13 @@ class Comment {
 					switch ($val)
 					{
 						case 'comment_date':
-							$comment_date[$matches['0'][$j]] = $this->EE->localize->fetch_date_params($matches['1'][$j]);
+							$comment_date[$matches['0'][$j]] = $matches['1'][$j];
 							break;
 						case 'gmt_comment_date':
-							$gmt_comment_date[$matches['0'][$j]] = $this->EE->localize->fetch_date_params($matches['1'][$j]);
+							$gmt_comment_date[$matches['0'][$j]] = $matches['1'][$j];
 							break;
 						case 'edit_date':
-							$edit_date[$matches['0'][$j]] = $this->EE->localize->fetch_date_params($matches['1'][$j]);
+							$edit_date[$matches['0'][$j]] = $matches['1'][$j];
 							break;
 					}
 				}
@@ -897,12 +897,14 @@ class Comment {
 
 				if (isset($comment_date[$key]) && isset($row['comment_date']))
 				{
-					foreach ($comment_date[$key] as $dvar)
-					{
-						$val = str_replace($dvar, $this->EE->localize->convert_timestamp($dvar, $row['comment_date'], TRUE), $val);
-					}
-
-					$tagdata = $this->EE->TMPL->swap_var_single($key, $val, $tagdata);
+					$tagdata = $this->EE->TMPL->swap_var_single(
+						$key,
+						$this->EE->localize->formatted_date(
+							$comment_date[$key],
+							$row['comment_date']
+						),
+						$tagdata
+					);
 				}
 
 				/** ----------------------------------------
@@ -911,12 +913,15 @@ class Comment {
 
 				if (isset($gmt_comment_date[$key]) && isset($row['comment_date']))
 				{
-					foreach ($gmt_comment_date[$key] as $dvar)
-					{
-						$val = str_replace($dvar, $this->EE->localize->convert_timestamp($dvar, $row['comment_date'], FALSE), $val);
-					}
-
-					$tagdata = $this->EE->TMPL->swap_var_single($key, $val, $tagdata);
+					$tagdata = $this->EE->TMPL->swap_var_single(
+						$key,
+						$this->EE->localize->formatted_date(
+							$gmt_comment_date[$key],
+							$row['comment_date'],
+							FALSE
+						),
+						$tagdata
+					);
 				}
 
 				/** ----------------------------------------
@@ -927,20 +932,14 @@ class Comment {
 				{
 					if (isset($row['edit_date']))
 					{
-						foreach ($edit_date[$key] as $dvar)
-						{
-							$val = str_replace(
-								$dvar, 
-								$this->EE->localize->convert_timestamp(
-									$dvar, 
-									$row['edit_date'], 
-									TRUE
-								), 
-								$val
-							);
-						}
-
-						$tagdata = $this->EE->TMPL->swap_var_single($key, $val, $tagdata);
+						$tagdata = $this->EE->TMPL->swap_var_single(
+							$key,
+							$this->EE->localize->formatted_date(
+								$edit_date[$key],
+								$row['edit_date']
+							),
+							$tagdata
+						);
 					}
 				}
 
@@ -1904,7 +1903,7 @@ class Comment {
 				$matches['0'][$j] = str_replace(LD, '', $matches['0'][$j]);
 				$matches['0'][$j] = str_replace(RD, '', $matches['0'][$j]);
 
-				$comment_date[$matches['0'][$j]] = $this->EE->localize->fetch_date_params($matches['1'][$j]);
+				$comment_date[$matches['0'][$j]] = $matches['1'][$j];
 			}
 		}
 
@@ -2067,12 +2066,14 @@ class Comment {
 
 			elseif (isset($comment_date[$key]))
 			{
-				foreach ($comment_date[$key] as $dvar)
-				{
-					$val = str_replace($dvar, $this->EE->localize->convert_timestamp($dvar, $this->EE->localize->now, TRUE), $val);
-				}
-
-				$tagdata = $this->EE->TMPL->swap_var_single($key, $val, $tagdata);
+				$tagdata = $this->EE->TMPL->swap_var_single(
+					$key,
+					$this->EE->localize->formatted_date(
+						$comment_date[$key],
+						$this->EE->localize->now
+					),
+					$tagdata
+				);
 			}
 
 		}

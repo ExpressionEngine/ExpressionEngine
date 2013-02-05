@@ -469,20 +469,10 @@ class Channel_calendar extends Channel {
 					{
 						if (isset($entry_dates[$key]))
 						{
-							foreach ($entry_dates[$key] as $dvar)
-							{
-								$val = str_replace(
-									$dvar, 
-									$this->EE->localize->convert_timestamp(
-										$dvar, 
-										$row['entry_date'], 
-										TRUE
-									), 
-									$val
-								);
-							}
-							
-							$entry_date[$key] = $val;
+							$entry_date[$key] = $this->EE->localize->formatted_date(
+								$entry_date[$key], 
+								$row['entry_date']
+							);
 						}
 
 

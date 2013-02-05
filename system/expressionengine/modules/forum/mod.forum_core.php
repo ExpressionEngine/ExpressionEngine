@@ -10820,9 +10820,9 @@ class Forum_Core extends Forum {
 					
 					switch ($val)
 					{
-						case 'topic_date'		: $topic_date[$matches['0'][$j]] = $this->EE->localize->fetch_date_params($matches['1'][$j]);
+						case 'topic_date'		: $topic_date[$matches['0'][$j]] = $matches['1'][$j];
 							break;
-						case 'last_post_date'	: $last_post_date[$matches['0'][$j]] = $this->EE->localize->fetch_date_params($matches['1'][$j]);
+						case 'last_post_date'	: $last_post_date[$matches['0'][$j]] = $matches['1'][$j];
 							break;
 					}
 				}
@@ -10946,10 +10946,14 @@ class Forum_Core extends Forum {
 				// parse topic date		
 				if (isset($topic_date[$key]))
 				{
-					foreach ($topic_date[$key] as $dvar)
-						$val = str_replace($dvar, $this->EE->localize->convert_timestamp($dvar, $row['topic_date'], TRUE), $val);					
-	
-					$tagdata = $this->EE->TMPL->swap_var_single($key, $val, $tagdata);					
+					$tagdata = $this->EE->TMPL->swap_var_single(
+						$key,
+						$this->EE->localize->formatted_date(
+							$topic_date[$key],
+							$row['topic_date']
+						),
+						$tagdata
+					);					
 				}
 
 				// {topic_relative_date}				
@@ -10961,10 +10965,14 @@ class Forum_Core extends Forum {
 				// parse last post date
 				if (isset($last_post_date[$key]))
 				{
-					foreach ($last_post_date[$key] as $dvar)
-						$val = str_replace($dvar, $this->EE->localize->convert_timestamp($dvar, $row['last_post_date'], TRUE), $val);					
-	
-					$tagdata = $this->EE->TMPL->swap_var_single($key, $val, $tagdata);					
+					$tagdata = $this->EE->TMPL->swap_var_single(
+						$key,
+						$this->EE->localize->formatted_date(
+							$last_post_date[$key],
+							$row['last_post_date']
+						),
+						$tagdata
+					);				
 				}
 			
 				// {last_post_relative_date}	
