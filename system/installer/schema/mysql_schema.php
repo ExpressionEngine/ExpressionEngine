@@ -1311,6 +1311,12 @@ class EE_Schema {
 				`file` varchar(255) NULL,
 				`deprecated_since` varchar(10) NULL,
 				`use_instead` varchar(100) NULL,
+				`template_id` int(10) unsigned NOT NULL default 0,
+				`template_name` varchar(100) NULL,
+				`template_group` varchar(100) NULL,
+				`addon_module` varchar(100) NULL,
+				`addon_method` varchar(100) NULL,
+				`snippets` text NULL,
 				PRIMARY KEY (`log_id`)
 		)";
 		
