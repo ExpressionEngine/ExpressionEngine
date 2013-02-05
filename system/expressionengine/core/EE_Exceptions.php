@@ -50,6 +50,13 @@ class EE_Exceptions extends CI_Exceptions {
 
 		$EE =& get_instance();
 
+		if (defined('REQ') && REQ != 'CP')
+		{
+			$EE->load->library('logger');
+			$EE->logger->deprecate('2.6', 'Output::show_user_error()');
+		}
+
+
 		// let's be kind if it's a submission error, and offer a back link
 		if ( ! empty($_POST) && ! AJAX_REQUEST)
 		{
