@@ -469,7 +469,7 @@ class Channel_calendar extends Channel {
 					{
 						if (isset($entry_dates[$key]))
 						{
-							$entry_date[$key] = $this->EE->localize->formatted_date(
+							$entry_date[$key] = $this->EE->localize->format_date(
 								$entry_date[$key], 
 								$row['entry_date']
 							);

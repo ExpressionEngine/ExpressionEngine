@@ -65,7 +65,7 @@ if ($EE_view_disable !== TRUE)
 										array('class' => 'screen_name', 'data' => $member->screen_name),
 										'<a href="mailto:'.$member->email.'">'.$member->email.'</a>',
 										// localized date
-										$this->localize->formatted_date('%Y-%m-%d', $member->join_date),
+										$this->localize->format_date('%Y-%m-%d', $member->join_date),
 										($member->last_visit == 0) ? ' - ' : $this->localize->human_time($member->last_visit),
 									array('class' => 'group_'.$member->group_id, 'data' => $member_groups_dropdown[$member->group_id]),
 										'<input class="toggle" type="checkbox" name="toggle[]" value="'.$member->member_id.'" />'

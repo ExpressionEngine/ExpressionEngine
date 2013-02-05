@@ -196,7 +196,7 @@ class Rss {
 			{
 				$this->EE->TMPL->tagdata = $this->EE->TMPL->swap_var_single(
 					$key,
-					$this->EE->localize->formatted_date(
+					$this->EE->localize->format_date(
 						$entry_date_array[$key],
 						$entry_date
 					),
@@ -209,7 +209,7 @@ class Rss {
 			{
 				$this->EE->TMPL->tagdata = $this->EE->TMPL->swap_var_single(
 					$key,
-					$this->EE->localize->formatted_date(
+					$this->EE->localize->format_date(
 						$gmt_entry_date_array[$key],
 						$entry_date,
 						FALSE
@@ -222,7 +222,7 @@ class Rss {
 			{
 				$this->EE->TMPL->tagdata = $this->EE->TMPL->swap_var_single(
 					$key,
-					$this->EE->localize->formatted_date(
+					$this->EE->localize->format_date(
 						$gmt_date_array[$key],
 						$entry_date,
 						FALSE
@@ -236,7 +236,7 @@ class Rss {
 			{
 				$this->EE->TMPL->tagdata = $this->EE->TMPL->swap_var_single(
 					$key,
-					$this->EE->localize->formatted_date(
+					$this->EE->localize->format_date(
 						$edit_date_array[$key],
 						mysql_to_unix($edit_date)
 					),
@@ -249,7 +249,7 @@ class Rss {
 			{
 				$this->EE->TMPL->tagdata = $this->EE->TMPL->swap_var_single(
 					$key,
-					$this->EE->localize->formatted_date(
+					$this->EE->localize->format_date(
 						$gmt_edit_date_array[$key],
 						mysql_to_unix($edit_date)
 					),

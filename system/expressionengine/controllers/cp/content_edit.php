@@ -783,7 +783,7 @@ class Content_edit extends CP_Controller {
 
 			// Set up date js
 			$this->javascript->output('
-				$(".entry_date_'.$entry_id.'").datepicker({constrainInput: false, dateFormat: $.datepicker.W3C + date_obj_time, defaultDate: new Date("'.$this->localize->formatted_date('%D %M %d %Y', $row['entry_date']).'")});
+				$(".entry_date_'.$entry_id.'").datepicker({constrainInput: false, dateFormat: $.datepicker.W3C + date_obj_time, defaultDate: new Date("'.$this->localize->format_date('%D %M %d %Y', $row['entry_date']).'")});
 			');
 
 			// Sticky

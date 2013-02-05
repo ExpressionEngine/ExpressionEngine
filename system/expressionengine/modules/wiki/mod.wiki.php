@@ -991,7 +991,7 @@ class Wiki {
 			{
 				$this->return_data = str_replace(
 					$key,
-					$this->EE->localize->formatted_date(
+					$this->EE->localize->format_date(
 						$value,
 						$row['upload_date'],
 						FALSE
@@ -1409,7 +1409,7 @@ class Wiki {
 			{
 				foreach($dates['last_updated'] as $key => $value)
 				{
-					$data[$key] = $this->EE->localize->formatted_date(
+					$data[$key] = $this->EE->localize->format_date(
 						$value,
 						$row['revision_date']
 					);
@@ -1552,7 +1552,7 @@ class Wiki {
 			{
 				$this->return_data = str_replace(
 					$key,
-					$this->EE->localize->formatted_date(
+					$this->EE->localize->format_date(
 						$value,
 						$results->row('revision_date')
 					),
@@ -1567,7 +1567,7 @@ class Wiki {
 			{
 				$this->return_data = str_replace(
 					$key,
-					$this->EE->localize->formatted_date(
+					$this->EE->localize->format_date(
 						$value,
 						$results->row('revision_date'),
 						FALSE
@@ -1631,7 +1631,7 @@ class Wiki {
 			{
 				foreach($dates['revision_date'] as $key => $value)
 				{
-					$data[$key] = $this->EE->localize->formatted_date(
+					$data[$key] = $this->EE->localize->format_date(
 						$value,
 						$row['revision_date']
 					);
@@ -1642,7 +1642,7 @@ class Wiki {
 			{
 				foreach($dates['gmt_revision_date'] as $key => $value)
 				{
-					$data[$key] = $this->EE->localize->formatted_date(
+					$data[$key] = $this->EE->localize->format_date(
 						$value,
 						$row['revision_date'],
 						FALSE
@@ -2734,7 +2734,7 @@ class Wiki {
 					{
 						$temp = str_replace(
 							$date['0'],
-							$this->EE->localize->formatted_date(
+							$this->EE->localize->format_date(
 								$date_format,
 								$row['revision_date']
 							),
@@ -3597,7 +3597,7 @@ class Wiki {
 			{
 				$this->return_data = str_replace(
 					$key,
-					$this->EE->localize->formatted_date(
+					$this->EE->localize->format_date(
 						$value,
 						$results->row('revision_date')
 					),
@@ -4691,7 +4691,7 @@ class Wiki {
 			{
 				$this->return_data = str_replace(
 					$key,
-					$this->EE->localize->formatted_date(
+					$this->EE->localize->format_date(
 						$value,
 						$results->row('revision_date')
 					),
@@ -4706,7 +4706,7 @@ class Wiki {
 			{
 				$this->return_data = str_replace(
 					$key,
-					$this->EE->localize->formatted_date(
+					$this->EE->localize->format_date(
 						$value,
 						$results->row('revision_date'),
 						FALSE
@@ -4832,7 +4832,7 @@ class Wiki {
 			{
 				foreach($dates['revision_date'] as $key => $value)
 				{
-					$data[$key] = $this->EE->localize->formatted_date(
+					$data[$key] = $this->EE->localize->format_date(
 						$value,
 						$row['revision_date']
 					);
@@ -4843,7 +4843,7 @@ class Wiki {
 			{
 				foreach($dates['gmt_revision_date'] as $key => $value)
 				{
-					$data[$key] = $this->EE->localize->formatted_date(
+					$data[$key] = $this->EE->localize->format_date(
 						$value,
 						$row['revision_date'],
 						FALSE
@@ -5113,7 +5113,7 @@ class Wiki {
 			{
 				foreach($upload_date as $key => $value)
 				{
-					$data[$key] = $this->EE->localize->formatted_date(
+					$data[$key] = $this->EE->localize->format_date(
 						$value,
 						$row['upload_date'],
 						FALSE

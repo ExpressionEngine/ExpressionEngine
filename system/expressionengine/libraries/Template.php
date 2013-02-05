@@ -3673,7 +3673,7 @@ class EE_Template {
 			foreach ($this->date_vars[$name] as $dvar => $dval)
 			{
 				$string = str_replace(LD.$dvar.RD,
-									  $this->EE->localize->formatted_date($dval, $value),
+									  $this->EE->localize->format_date($dval, $value),
 									  $string);
 			}
 			

@@ -98,7 +98,7 @@ class EE_Localize {
 	 * @param	bool	Return date localized or not
 	 * @return	string	Formatted date
 	 */
-	public function formatted_date($format, $timestamp = NULL, $localized = TRUE)
+	public function format_date($format, $timestamp = NULL, $localized = TRUE)
 	{
 		if ( ! ($dt = $this->_datetime($timestamp, $localized)))
 		{
@@ -250,7 +250,7 @@ class EE_Localize {
 			$format_string .= ' %A';
 		}
 
-		return $this->formatted_date($format_string, $timestamp, $localize);
+		return $this->format_date($format_string, $timestamp, $localize);
 	}
 
 	// --------------------------------------------------------------------
@@ -714,7 +714,7 @@ class EE_Localize {
 	{
 		// TODO: Deprecate
 		
-		return $this->formatted_date($datestr, $unixtime, $localize);
+		return $this->format_date($datestr, $unixtime, $localize);
 	}
 
 	// --------------------------------------------------------------------
@@ -767,7 +767,7 @@ class EE_Localize {
 	function convert_timestamp($format = '', $time = '', $localize = TRUE, $prelocalized = FALSE)
 	{
 		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated('2.6', 'Localize::formatted_date');
+		$this->EE->logger->deprecated('2.6', 'Localize::format_date');
 		
 		$return_array = FALSE;
 
@@ -777,7 +777,7 @@ class EE_Localize {
 			$format = $format[0];
 		}
 
-		$format = $this->formatted_date($format, $time, $localize);
+		$format = $this->format_date($format, $time, $localize);
 
 		return ($return_array) ? array($format) : $format;
 	}

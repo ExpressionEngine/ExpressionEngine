@@ -1842,7 +1842,7 @@ class Tools_utilities extends CP_Controller {
 		}
 		
 		$this->load->helper('download');
-		force_download('member_'.$this->localize->formatted_date('%y%m%d').'.xml', $xml);
+		force_download('member_'.$this->localize->format_date('%y%m%d').'.xml', $xml);
 	}
 
 	// --------------------------------------------------------------------

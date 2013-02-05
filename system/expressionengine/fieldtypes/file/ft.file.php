@@ -177,7 +177,7 @@ class File_ft extends EE_Fieldtype {
 				{
 					$tagdata = $this->EE->TMPL->swap_var_single(
 						$key,
-						$this->EE->localize->formatted_date(
+						$this->EE->localize->format_date(
 							$upload_date[$key], 
 							$file_info['upload_date']
 						),
@@ -190,7 +190,7 @@ class File_ft extends EE_Fieldtype {
 				{
 					$tagdata = $this->EE->TMPL->swap_var_single(
 						$key,
-						$this->EE->localize->formatted_date(
+						$this->EE->localize->format_date(
 							$modified_date[$key], 
 							$file_info['modified_date']
 						),

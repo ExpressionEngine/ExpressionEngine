@@ -10948,7 +10948,7 @@ class Forum_Core extends Forum {
 				{
 					$tagdata = $this->EE->TMPL->swap_var_single(
 						$key,
-						$this->EE->localize->formatted_date(
+						$this->EE->localize->format_date(
 							$topic_date[$key],
 							$row['topic_date']
 						),
@@ -10967,7 +10967,7 @@ class Forum_Core extends Forum {
 				{
 					$tagdata = $this->EE->TMPL->swap_var_single(
 						$key,
-						$this->EE->localize->formatted_date(
+						$this->EE->localize->format_date(
 							$last_post_date[$key],
 							$row['last_post_date']
 						),

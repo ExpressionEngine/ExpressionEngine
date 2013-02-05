@@ -899,7 +899,7 @@ class Comment {
 				{
 					$tagdata = $this->EE->TMPL->swap_var_single(
 						$key,
-						$this->EE->localize->formatted_date(
+						$this->EE->localize->format_date(
 							$comment_date[$key],
 							$row['comment_date']
 						),
@@ -915,7 +915,7 @@ class Comment {
 				{
 					$tagdata = $this->EE->TMPL->swap_var_single(
 						$key,
-						$this->EE->localize->formatted_date(
+						$this->EE->localize->format_date(
 							$gmt_comment_date[$key],
 							$row['comment_date'],
 							FALSE
@@ -934,7 +934,7 @@ class Comment {
 					{
 						$tagdata = $this->EE->TMPL->swap_var_single(
 							$key,
-							$this->EE->localize->formatted_date(
+							$this->EE->localize->format_date(
 								$edit_date[$key],
 								$row['edit_date']
 							),
@@ -2068,7 +2068,7 @@ class Comment {
 			{
 				$tagdata = $this->EE->TMPL->swap_var_single(
 					$key,
-					$this->EE->localize->formatted_date(
+					$this->EE->localize->format_date(
 						$comment_date[$key],
 						$this->EE->localize->now
 					),
