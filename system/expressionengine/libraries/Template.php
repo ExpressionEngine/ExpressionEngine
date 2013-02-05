@@ -2158,27 +2158,30 @@ class EE_Template {
 		if ($query->row('enable_http_auth') != 'y' && $query->row('no_auth_bounce')  != '')
 		{
 			$this->log_item("Determining Template Access Privileges");
-		
-			$this->EE->db->select('COUNT(*) as count');
-			$this->EE->db->where('template_id', $query->row('template_id'));
-			$this->EE->db->where('member_group', $this->EE->session->userdata('group_id'));
-			$result = $this->EE->db->get('template_no_access');
 			
-			if ($result->row('count') > 0)
-			{ 
-				if ($this->depth > 0)
-				{
-					return '';
+			if ($this->EE->session->userdata('group_id') != 1)
+			{
+				$this->EE->db->select('COUNT(*) as count');
+				$this->EE->db->where('template_id', $query->row('template_id'));
+				$this->EE->db->where('member_group', $this->EE->session->userdata('group_id'));
+				$result = $this->EE->db->get('template_no_access');
+			
+				if ($result->row('count') > 0)
+				{ 
+					if ($this->depth > 0)
+					{
+						return '';
+					}
+			
+					$query = $this->EE->db->select('a.template_id, a.template_data,
+						a.template_name, a.template_type, a.edit_date,
+						a.save_template_file, a.cache, a.refresh, a.hits,
+						a.allow_php, a.php_parse_location, b.group_name')
+						->from('templates a')
+						->join('template_groups b', 'a.group_id = b.group_id')
+						->where('template_id', $query->row('no_auth_bounce'))
+						->get();
 				}
-			
-				$query = $this->EE->db->select('a.template_id, a.template_data,
-					a.template_name, a.template_type, a.edit_date,
-					a.save_template_file, a.cache, a.refresh, a.hits,
-					a.allow_php, a.php_parse_location, b.group_name')
-					->from('templates a')
-					->join('template_groups b', 'a.group_id = b.group_id')
-					->where('template_id', $query->row('no_auth_bounce'))
-					->get();
 			}
 		}
 		
