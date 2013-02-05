@@ -120,37 +120,40 @@ class Updater {
 	 */
 	private function _add_template_name_to_dev_log()
 	{
-		$this->EE->dbforge->add_column(
-			'developer_log',
-			array(
-				'template_id' => array(
-					'type'			=> 'int',
-					'constraint'	=> 10,
-					'unsigned'		=> TRUE,
-					'default'		=> 0,
-					'null'			=> FALSE
-				),
-				'template_name' => array(
-					'type'			=> 'varchar',
-					'constraint'	=> 100
-				),
-				'template_group' => array(
-					'type'			=> 'varchar',
-					'constraint'	=> 100
-				),
-				'addon_module' => array(
-					'type'			=> 'varchar',
-					'constraint'	=> 100
-				),
-				'addon_method' => array(
-					'type'			=> 'varchar',
-					'constraint'	=> 100
-				),
-				'snippets' => array(
-					'type'			=> 'text'
+		if ( ! $this->EE->db->field_exists('template_id', 'developer_log'))
+		{
+			$this->EE->dbforge->add_column(
+				'developer_log',
+				array(
+					'template_id' => array(
+						'type'			=> 'int',
+						'constraint'	=> 10,
+						'unsigned'		=> TRUE,
+						'default'		=> 0,
+						'null'			=> FALSE
+					),
+					'template_name' => array(
+						'type'			=> 'varchar',
+						'constraint'	=> 100
+					),
+					'template_group' => array(
+						'type'			=> 'varchar',
+						'constraint'	=> 100
+					),
+					'addon_module' => array(
+						'type'			=> 'varchar',
+						'constraint'	=> 100
+					),
+					'addon_method' => array(
+						'type'			=> 'varchar',
+						'constraint'	=> 100
+					),
+					'snippets' => array(
+						'type'			=> 'text'
+					)
 				)
-			)
-		);
+			);
+		}
 	}
 }	
 /* END CLASS */
