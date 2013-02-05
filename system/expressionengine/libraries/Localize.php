@@ -682,6 +682,9 @@ class EE_Localize {
 	 */
 	function fetch_date_params($datestr = '')
 	{
+		$this->EE->load->library('logger');
+		$this->EE->logger->deprecated('2.6');
+
 		if ($datestr == '')
 			return;
 

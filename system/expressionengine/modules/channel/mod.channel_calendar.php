@@ -313,7 +313,7 @@ class Channel_calendar extends Channel {
 				{
 					$matches['0'][$j] = str_replace(array(LD,RD), '', $matches['0'][$j]);
 
-					$entry_dates[$matches['0'][$j]] = $this->EE->localize->fetch_date_params($matches['1'][$j]);
+					$entry_dates[$matches['0'][$j]] = $matches['1'][$j];
 				}
 			}
 

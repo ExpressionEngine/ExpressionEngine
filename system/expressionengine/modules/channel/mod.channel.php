@@ -3344,7 +3344,7 @@ class Channel {
 						{
 							$matches[0][$j] = str_replace(array(LD,RD), '', $matches[0][$j]);
 
-							$custom_date_fields[$matches[0][$j]] = $this->EE->localize->fetch_date_params($matches[1][$j]);
+							$custom_date_fields[$matches[0][$j]] = $matches[1][$j];
 						}
 					}
 				}
@@ -5664,7 +5664,7 @@ class Channel {
 			{
 				$matches[0][$i] = str_replace(array(LD,RD), '', $matches[0][$i]);
 
-				$entry_date[$matches[0][$i]] = $this->EE->localize->fetch_date_params($matches[2][$i]);
+				$entry_date[$matches[0][$i]] = $matches[2][$i];
 			}
 		}
 

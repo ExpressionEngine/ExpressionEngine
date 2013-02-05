@@ -5031,7 +5031,7 @@ class Wiki {
 			{	
 				switch ($matches['1'][$j])
 				{
-					case 'upload_date' 		: $upload_date[$matches['0'][$j]] = array($matches['2'][$j], $this->EE->localize->fetch_date_params($matches['2'][$j]));
+					case 'upload_date' 		: $upload_date[$matches['0'][$j]] = $matches['2'][$j];
 						break;
 				}
 			}
