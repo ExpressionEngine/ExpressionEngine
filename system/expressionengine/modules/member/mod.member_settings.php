@@ -90,11 +90,11 @@ class Member_settings extends Member {
 		return  $this->_var_swap($this->_load_element('home_page'),
 								array(
 										'email'						=> $query->row('email') ,
-										'join_date'					=> $this->EE->localize->decode_date($datecodes['long'], $query->row('join_date') ),
-										'last_visit_date'			=> ($query->row('last_activity')  == 0) ? '--' : $this->EE->localize->decode_date($datecodes['long'], $query->row('last_activity') ),
-										'recent_entry_date'			=> ($query->row('last_entry_date')  == 0) ? '--' : $this->EE->localize->decode_date($datecodes['long'], $query->row('last_entry_date') ),
-										'recent_comment_date'		=> ($query->row('last_comment_date')  == 0) ? '--' : $this->EE->localize->decode_date($datecodes['long'], $query->row('last_comment_date') ),
-										'recent_forum_post_date'	=> ($query->row('last_forum_post_date')  == 0) ? '--' : $this->EE->localize->decode_date($datecodes['long'], $query->row('last_forum_post_date') ),
+										'join_date'					=> $this->EE->localize->format_date($datecodes['long'], $query->row('join_date') ),
+										'last_visit_date'			=> ($query->row('last_activity')  == 0) ? '--' : $this->EE->localize->format_date($datecodes['long'], $query->row('last_activity') ),
+										'recent_entry_date'			=> ($query->row('last_entry_date')  == 0) ? '--' : $this->EE->localize->format_date($datecodes['long'], $query->row('last_entry_date') ),
+										'recent_comment_date'		=> ($query->row('last_comment_date')  == 0) ? '--' : $this->EE->localize->format_date($datecodes['long'], $query->row('last_comment_date') ),
+										'recent_forum_post_date'	=> ($query->row('last_forum_post_date')  == 0) ? '--' : $this->EE->localize->format_date($datecodes['long'], $query->row('last_forum_post_date') ),
 										'total_topics'				=> $query->row('total_forum_topics') ,
 										'total_posts'				=> $query->row('total_forum_posts')  + $query->row('total_forum_topics') ,
 										'total_replies'				=> $query->row('total_forum_posts') ,
@@ -497,7 +497,7 @@ class Member_settings extends Member {
 
 			if (strncmp($key, 'last_visit', 10) == 0)
 			{
-				$content = $this->_var_swap_single($key, ($row['last_activity'] > 0) ? $this->EE->localize->decode_date($val, $row['last_activity'] ) : '', $content);
+				$content = $this->_var_swap_single($key, ($row['last_activity'] > 0) ? $this->EE->localize->format_date($val, $row['last_activity'] ) : '', $content);
 			}
 
 			/** ----------------------------------------
@@ -506,7 +506,7 @@ class Member_settings extends Member {
 
 			if (strncmp($key, 'join_date', 9) == 0)
 			{
-				$content = $this->_var_swap_single($key, ($row['join_date'] > 0) ? $this->EE->localize->decode_date($val, $row['join_date'] ) : '', $content);
+				$content = $this->_var_swap_single($key, ($row['join_date'] > 0) ? $this->EE->localize->format_date($val, $row['join_date'] ) : '', $content);
 			}
 
 			/** ----------------------------------------
@@ -515,7 +515,7 @@ class Member_settings extends Member {
 
 			if (strncmp($key, 'last_entry_date', 15) == 0)
 			{
-				$content = $this->_var_swap_single($key, ($row['last_entry_date']  > 0) ? $this->EE->localize->decode_date($val, $row['last_entry_date'] ) : '', $content);
+				$content = $this->_var_swap_single($key, ($row['last_entry_date']  > 0) ? $this->EE->localize->format_date($val, $row['last_entry_date'] ) : '', $content);
 			}
 
 			/** ----------------------------------------
@@ -524,7 +524,7 @@ class Member_settings extends Member {
 
 			if (strncmp($key, 'last_forum_post_date', 20) == 0)
 			{
-				$content = $this->_var_swap_single($key, ($row['last_forum_post_date']  > 0) ? $this->EE->localize->decode_date($val, $row['last_forum_post_date'] ) : '', $content);
+				$content = $this->_var_swap_single($key, ($row['last_forum_post_date']  > 0) ? $this->EE->localize->format_date($val, $row['last_forum_post_date'] ) : '', $content);
 			}
 
 			/** ----------------------------------------
@@ -533,7 +533,7 @@ class Member_settings extends Member {
 
 			if (strncmp($key, 'last_comment_date', 17) == 0)
 			{
-				$content = $this->_var_swap_single($key, ($row['last_comment_date']  > 0) ? $this->EE->localize->decode_date($val, $row['last_comment_date'] ) : '', $content);
+				$content = $this->_var_swap_single($key, ($row['last_comment_date']  > 0) ? $this->EE->localize->format_date($val, $row['last_comment_date'] ) : '', $content);
 			}
 
 			/** ----------------------

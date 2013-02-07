@@ -448,7 +448,7 @@ class Updated_sites {
 					}
 					else
   					{
-						$date = $this->EE->localize->decode_date($val, $row['ping_date']);
+						$date = $this->EE->localize->format_date($val, $row['ping_date']);
 					}
 				
 					$tagdata = $this->EE->TMPL->swap_var_single($key, $date, $tagdata);

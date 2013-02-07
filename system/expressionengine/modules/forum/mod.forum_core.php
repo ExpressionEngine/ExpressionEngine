@@ -535,7 +535,7 @@ class Forum_Core extends Forum {
 				
 				if ($date === TRUE)
 				{
-					$template = str_replace($dates['0'], $this->EE->localize->decode_date($dates['1'], $time), $template);
+					$template = str_replace($dates['0'], $this->EE->localize->format_date($dates['1'], $time), $template);
 				}
 				
 				$str = str_replace($matches['0'][$i], '<blockquote>'.$template, $str);
@@ -1453,7 +1453,7 @@ class Forum_Core extends Forum {
 		{	
 			for ($j = 0; $j < count($matches['0']); $j++)
 			{				
-				$template = preg_replace("/".$matches['0'][$j]."/", $this->EE->localize->decode_date($matches['1'][$j], $qry->row('last_post_date'), FALSE), $template, 1);				
+				$template = preg_replace("/".$matches['0'][$j]."/", $this->EE->localize->format_date($matches['1'][$j], $qry->row('last_post_date'), FALSE), $template, 1);				
 			}
 		}  		
 
@@ -1462,7 +1462,7 @@ class Forum_Core extends Forum {
 		{	
 			for ($j = 0; $j < count($matches['0']); $j++)
 			{				
-				$template = preg_replace("/".$matches['0'][$j]."/", $this->EE->localize->decode_date($matches['1'][$j], $qry->row('topic_edit_date'), FALSE ), $template, 1);				
+				$template = preg_replace("/".$matches['0'][$j]."/", $this->EE->localize->format_date($matches['1'][$j], $qry->row('topic_edit_date'), FALSE ), $template, 1);				
 			}
 		}
 		
@@ -1540,7 +1540,7 @@ class Forum_Core extends Forum {
 			{
 				for ($j = 0; $j < count($gmt_post_date['0']); $j++)
 				{				
-					$temp = preg_replace("/".$gmt_post_date['0'][$j]."/", $this->EE->localize->decode_date($gmt_post_date['1'][$j], $row['topic_date'], FALSE), $temp, 1);				
+					$temp = preg_replace("/".$gmt_post_date['0'][$j]."/", $this->EE->localize->format_date($gmt_post_date['1'][$j], $row['topic_date'], FALSE), $temp, 1);				
 				}
 			}
 			
@@ -1548,7 +1548,7 @@ class Forum_Core extends Forum {
 			{
 				for ($j = 0; $j < count($gmt_edit_date['0']); $j++)
 				{				
-					$temp = preg_replace("/".$gmt_edit_date['0'][$j]."/", $this->EE->localize->decode_date($gmt_edit_date['1'][$j], $row['topic_edit_date'], FALSE), $temp, 1);				
+					$temp = preg_replace("/".$gmt_edit_date['0'][$j]."/", $this->EE->localize->format_date($gmt_edit_date['1'][$j], $row['topic_edit_date'], FALSE), $temp, 1);				
 				}
 			}			
 		
@@ -1952,7 +1952,7 @@ class Forum_Core extends Forum {
 					}
 					else
 					{
-						$temp = str_replace($date['0'], $this->EE->localize->decode_date($date['1'], $row['forum_last_post_date']), $temp);
+						$temp = str_replace($date['0'], $this->EE->localize->format_date($date['1'], $row['forum_last_post_date']), $temp);
 					}
 				}
 			
@@ -2092,7 +2092,7 @@ class Forum_Core extends Forum {
 				}
 				else
 				{
-					$dt = $this->EE->localize->decode_date($date['1'], $row['topic_date']);
+					$dt = $this->EE->localize->format_date($date['1'], $row['topic_date']);
 				}
 			}
 			else
@@ -2599,7 +2599,7 @@ class Forum_Core extends Forum {
 				}
 				else
 				{
-					$dt = $this->EE->localize->decode_date($date['1'], $row['last_post_date']);
+					$dt = $this->EE->localize->format_date($date['1'], $row['last_post_date']);
 				}
 			}
 			else
@@ -3705,12 +3705,12 @@ class Forum_Core extends Forum {
 			// Parse the post date and join date
 			for ($j = 0; $j < count($post_date[0]); $j++)
 			{
-				$temp = str_replace($post_date[0][$j], $this->EE->localize->decode_date($post_date['1'][$j], $row['date']), $temp);
+				$temp = str_replace($post_date[0][$j], $this->EE->localize->format_date($post_date['1'][$j], $row['date']), $temp);
 			}
 											
 			for ($j = 0; $j < count($join_date[0]); $j++)
 			{
-				$temp = str_replace($join_date[0][$j], $this->EE->localize->decode_date($join_date['1'][$j], $row['join_date']), $temp);
+				$temp = str_replace($join_date[0][$j], $this->EE->localize->format_date($join_date['1'][$j], $row['join_date']), $temp);
 			}
 
 			// 2 minute window for edits
@@ -3718,7 +3718,7 @@ class Forum_Core extends Forum {
 			{
 				for ($j = 0; $j < count($edit_date[0]); $j++)
 				{
-					$temp = str_replace($edit_date[0][$j], $this->EE->localize->decode_date($edit_date[1][$j], $row['edit_date']), $temp);
+					$temp = str_replace($edit_date[0][$j], $this->EE->localize->format_date($edit_date[1][$j], $row['edit_date']), $temp);
 				}
 				
 				$temp = str_replace(LD.'edit_author'.RD, $row['edit_author'], $temp);
@@ -7130,7 +7130,7 @@ class Forum_Core extends Forum {
 			
 			for ($i = 0; $i < $count; $i++)
 			{
-				$template = str_replace($post_date['0'][$i], $this->EE->localize->decode_date($post_date['1'][$i], $query->row('post_date') ), $template);
+				$template = str_replace($post_date['0'][$i], $this->EE->localize->format_date($post_date['1'][$i], $query->row('post_date') ), $template);
 			}			
 		}
 		
@@ -8510,7 +8510,7 @@ class Forum_Core extends Forum {
 			{	
 				for ($j = 0; $j < count($matches['0']); $j++)
 				{
-					$str = str_replace($matches['0'][$j], $this->EE->localize->decode_date($matches['1'][$j], $this->EE->stats->statdata($stat)), $str);
+					$str = str_replace($matches['0'][$j], $this->EE->localize->format_date($matches['1'][$j], $this->EE->stats->statdata($stat)), $str);
 				}
 			}
 		}
@@ -9990,7 +9990,7 @@ class Forum_Core extends Forum {
 				}
 				else
 				{
-					$dt = $this->EE->localize->decode_date($date['1'], $row['last_post_date']);
+					$dt = $this->EE->localize->format_date($date['1'], $row['last_post_date']);
 				}
 			}
 			else
@@ -10233,7 +10233,7 @@ class Forum_Core extends Forum {
 				}
 				else
 				{
-					$dt = $this->EE->localize->decode_date($date['1'], $row['post_date']);
+					$dt = $this->EE->localize->format_date($date['1'], $row['post_date']);
 				}
 			}
 			else

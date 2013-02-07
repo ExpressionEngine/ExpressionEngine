@@ -2821,7 +2821,7 @@ MAGIC;
 				$datestr = '%Y-%m-%d %H:%i';
 			}
 
-			$vars['entries'][$row['entry_id']][] = $this->EE->localize->decode_date($datestr, $row['entry_date'], TRUE);
+			$vars['entries'][$row['entry_id']][] = $this->EE->localize->format_date($datestr, $row['entry_date']);
 
 			// Channel
 			$vars['entries'][$row['entry_id']][] = (isset($w_array[$row['channel_id']])) ? '<div class="smallNoWrap">'. $w_array[$row['channel_id']].'</div>' : '';

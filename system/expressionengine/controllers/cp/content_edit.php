@@ -414,7 +414,7 @@ class Content_edit extends CP_Controller {
 			$row['title'] = anchor(BASE.AMP.$url, $row['title']);
 			$row['view'] = '---';
 			$row['channel_name'] = $channels[$row['channel_id']]->channel_title;
-			$row['entry_date'] = $this->localize->decode_date($datestr, $row['entry_date'], TRUE);
+			$row['entry_date'] = $this->localize->format_date($datestr, $row['entry_date']);
 			$row['_check'] = form_checkbox('toggle[]', $row['entry_id'], '', ' class="toggle" id="delete_box_'.$row['entry_id'].'"');
 
 			// autosave indicator
@@ -1100,9 +1100,9 @@ class Content_edit extends CP_Controller {
 			 }
 
 			// Day, Month, and Year Fields
-			$data['year']	= $this->localize->decode_date('%Y', $data['entry_date'], TRUE);
-			$data['month']	= $this->localize->decode_date('%m', $data['entry_date'], TRUE);
-			$data['day']	= $this->localize->decode_date('%d', $data['entry_date'], TRUE);
+			$data['year']	= $this->localize->format_date('%Y', $data['entry_date']);
+			$data['month']	= $this->localize->format_date('%m', $data['entry_date']);
+			$data['day']	= $this->localize->format_date('%d', $data['entry_date']);
 
 			// Update the entry
 			$this->db->query($this->db->update_string('exp_channel_titles', $data, "entry_id = '$id'"));

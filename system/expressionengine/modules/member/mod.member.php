@@ -2662,37 +2662,37 @@ class Member {
 				//  "last_visit"
 				if (strncmp($key, 'last_visit', 10) == 0)
 				{
-					$this->EE->TMPL->tagdata = $this->_var_swap_single($key, ($default_fields['last_visit'] > 0) ? $this->EE->localize->decode_date($val, $default_fields['last_visit']) : '', $this->EE->TMPL->tagdata);
+					$this->EE->TMPL->tagdata = $this->_var_swap_single($key, ($default_fields['last_visit'] > 0) ? $this->EE->localize->format_date($val, $default_fields['last_visit']) : '', $this->EE->TMPL->tagdata);
 				}
 
 				//  "last_activity"
 				if (strncmp($key, 'last_activity', 10) == 0)
 				{
-					$this->EE->TMPL->tagdata = $this->_var_swap_single($key, ($default_fields['last_activity'] > 0) ? $this->EE->localize->decode_date($val, $default_fields['last_activity']) : '', $this->EE->TMPL->tagdata);
+					$this->EE->TMPL->tagdata = $this->_var_swap_single($key, ($default_fields['last_activity'] > 0) ? $this->EE->localize->format_date($val, $default_fields['last_activity']) : '', $this->EE->TMPL->tagdata);
 				}
 				
 				//  "join_date"
 				if (strncmp($key, 'join_date', 9) == 0)
 				{
-					$this->EE->TMPL->tagdata = $this->_var_swap_single($key, ($default_fields['join_date'] > 0) ? $this->EE->localize->decode_date($val, $default_fields['join_date']) : '', $this->EE->TMPL->tagdata);
+					$this->EE->TMPL->tagdata = $this->_var_swap_single($key, ($default_fields['join_date'] > 0) ? $this->EE->localize->format_date($val, $default_fields['join_date']) : '', $this->EE->TMPL->tagdata);
 				}
 
 				//  "last_entry_date"
 				if (strncmp($key, 'last_entry_date', 15) == 0)
 				{
-					$this->EE->TMPL->tagdata = $this->_var_swap_single($key, ($default_fields['last_entry_date'] > 0) ? $this->EE->localize->decode_date($val, $default_fields['last_entry_date']) : '', $this->EE->TMPL->tagdata);
+					$this->EE->TMPL->tagdata = $this->_var_swap_single($key, ($default_fields['last_entry_date'] > 0) ? $this->EE->localize->format_date($val, $default_fields['last_entry_date']) : '', $this->EE->TMPL->tagdata);
 				}
 
 				//  "last_forum_post_date"
 				if (strncmp($key, 'last_forum_post_date', 20) == 0)
 				{
-					$this->EE->TMPL->tagdata = $this->_var_swap_single($key, ($default_fields['last_forum_post_date'] > 0) ? $this->EE->localize->decode_date($val, $default_fields['last_forum_post_date']) : '', $this->EE->TMPL->tagdata);
+					$this->EE->TMPL->tagdata = $this->_var_swap_single($key, ($default_fields['last_forum_post_date'] > 0) ? $this->EE->localize->format_date($val, $default_fields['last_forum_post_date']) : '', $this->EE->TMPL->tagdata);
 				}
 
 				//  parse "recent_comment"
 				if (strncmp($key, 'last_comment_date', 17) == 0)
 				{
-					$this->EE->TMPL->tagdata = $this->_var_swap_single($key, ($default_fields['last_comment_date'] > 0) ? $this->EE->localize->decode_date($val, $default_fields['last_comment_date']) : '', $this->EE->TMPL->tagdata);
+					$this->EE->TMPL->tagdata = $this->_var_swap_single($key, ($default_fields['last_comment_date'] > 0) ? $this->EE->localize->format_date($val, $default_fields['last_comment_date']) : '', $this->EE->TMPL->tagdata);
 				}
 
 				//  {name}

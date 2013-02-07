@@ -382,7 +382,7 @@ class EE_Template {
 		{	
 			for ($j = 0; $j < count($matches[0]); $j++)
 			{				
-				$this->template = str_replace($matches[0][$j], $this->EE->localize->decode_date($matches[2][$j], $this->template_edit_date), $this->template);				
+				$this->template = str_replace($matches[0][$j], $this->EE->localize->format_date($matches[2][$j], $this->template_edit_date), $this->template);				
 			}
 		}  
 
@@ -391,7 +391,7 @@ class EE_Template {
 		{				
 			for ($j = 0; $j < count($matches[0]); $j++)
 			{				
-				$this->template = str_replace($matches[0][$j], $this->EE->localize->decode_date($matches[2][$j], $this->EE->localize->now), $this->template);	
+				$this->template = str_replace($matches[0][$j], $this->EE->localize->format_date($matches[2][$j]), $this->template);	
 			}
 		}
 		

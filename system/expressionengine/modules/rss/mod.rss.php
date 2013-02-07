@@ -410,7 +410,7 @@ class Rss {
 
 		if ($query->num_rows() > 0)
 		{
-			$last_update = $query->row('last_update')  + ($this->EE->localize->set_server_time() - $this->EE->localize->now);
+			$last_update = $query->row('last_update');
 			$edit_date = $query->row('edit_date') ;
 			$entry_date = $query->row('entry_date') ;
 		}

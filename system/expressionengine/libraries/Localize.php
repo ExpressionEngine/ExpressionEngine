@@ -465,6 +465,9 @@ class EE_Localize {
 	 */
 	function set_server_time($now = '')
 	{
+		$this->EE->load->library('logger');
+		$this->EE->logger->deprecated('2.6');
+
 		$this->EE->load->helper('date');
 		$zones = timezones();
 
@@ -505,6 +508,9 @@ class EE_Localize {
 	 */
 	function set_server_offset($time, $reverse = 0)
 	{
+		$this->EE->load->library('logger');
+		$this->EE->logger->deprecated('2.6');
+
 		$offset = ( ! $this->EE->config->item('server_offset')) ? 0 : $this->EE->config->item('server_offset') * 60;
 
 		if ($offset == 0)
@@ -540,6 +546,9 @@ class EE_Localize {
 	 */
 	function set_localized_offset()
 	{
+		$this->EE->load->library('logger');
+		$this->EE->logger->deprecated('2.6');
+		
 		$offset = 0;
 
 		$this->EE->load->helper('date');
@@ -720,7 +729,8 @@ class EE_Localize {
 	 */
 	function decode_date($datestr = '', $unixtime = '', $localize = TRUE)
 	{
-		// TODO: Deprecate
+		$this->EE->load->library('logger');
+		$this->EE->logger->deprecated('2.6', 'Localize::format_date');
 		
 		return $this->format_date($datestr, $unixtime, $localize);
 	}

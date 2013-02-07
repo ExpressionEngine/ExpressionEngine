@@ -166,7 +166,7 @@ class Referrer {
 						}
 						else
   						{
-							$date = $this->EE->localize->decode_date($val, $row['ref_date']);
+							$date = $this->EE->localize->format_date($val, $row['ref_date']);
 						}
 						$tagdata = $this->EE->TMPL->swap_var_single($key, $date, $tagdata);
 					}					

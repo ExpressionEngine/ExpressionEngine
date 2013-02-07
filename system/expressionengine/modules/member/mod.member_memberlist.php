@@ -809,7 +809,7 @@ class Member_memberlist extends Member {
 
 					if (strncmp($key, 'last_visit', 10) == 0)
 					{
-						$temp = $this->_var_swap_single($key, ($row['last_activity'] > 0) ? $this->EE->localize->decode_date($val, $row['last_activity']) : '--', $temp);
+						$temp = $this->_var_swap_single($key, ($row['last_activity'] > 0) ? $this->EE->localize->format_date($val, $row['last_activity']) : '--', $temp);
 					}
 
 					/** ----------------------------------------
@@ -818,7 +818,7 @@ class Member_memberlist extends Member {
 
 					if (strncmp($key, 'join_date', 9) == 0)
 					{
-						$temp = $this->_var_swap_single($key, ($row['join_date'] > 0) ? $this->EE->localize->decode_date($val, $row['join_date']) : '--', $temp);
+						$temp = $this->_var_swap_single($key, ($row['join_date'] > 0) ? $this->EE->localize->format_date($val, $row['join_date']) : '--', $temp);
 					}
 
 					/** ----------------------------------------
@@ -827,7 +827,7 @@ class Member_memberlist extends Member {
 
 					if (strncmp($key, 'last_entry_date', 15) == 0)
 					{
-						$temp = $this->_var_swap_single($key, ($row['last_entry_date'] > 0) ? $this->EE->localize->decode_date($val, $row['last_entry_date']) : '--', $temp);
+						$temp = $this->_var_swap_single($key, ($row['last_entry_date'] > 0) ? $this->EE->localize->format_date($val, $row['last_entry_date']) : '--', $temp);
 					}
 
 					/** ----------------------------------------
@@ -836,7 +836,7 @@ class Member_memberlist extends Member {
 
 					if (strncmp($key, 'last_comment_date', 17) == 0)
 					{
-						$temp = $this->_var_swap_single($key, ($row['last_comment_date'] > 0) ? $this->EE->localize->decode_date($val, $row['last_comment_date']) : '--', $temp);
+						$temp = $this->_var_swap_single($key, ($row['last_comment_date'] > 0) ? $this->EE->localize->format_date($val, $row['last_comment_date']) : '--', $temp);
 					}
 
 					/** ----------------------------------------
@@ -845,7 +845,7 @@ class Member_memberlist extends Member {
 
 					if (strncmp($key, 'last_forum_post_date', 20) == 0)
 					{
-						$temp = $this->_var_swap_single($key, ($row['last_forum_post_date'] > 0) ? $this->EE->localize->decode_date($val, $row['last_forum_post_date']) : '--', $temp);
+						$temp = $this->_var_swap_single($key, ($row['last_forum_post_date'] > 0) ? $this->EE->localize->format_date($val, $row['last_forum_post_date']) : '--', $temp);
 					}
 
 					/** ----------------------------------------
