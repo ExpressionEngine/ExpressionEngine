@@ -175,8 +175,9 @@ class Filemanager {
 	 * Get the upload directory preferences for an individual directory
 	 * 
 	 * @param integer $dir_id ID of the directory to get preferences for
+	 * @param	bool $ignore_site_id If TRUE, returns upload destinations for all sites
 	 */
-	function fetch_upload_dir_prefs($dir_id)
+	function fetch_upload_dir_prefs($dir_id, $ignore_site_id = FALSE)
 	{
 		if (isset($this->_upload_dir_prefs[$dir_id]))
 		{
@@ -188,7 +189,8 @@ class Filemanager {
 		// Figure out if the directory actually exists
 		$prefs = $this->EE->file_upload_preferences_model->get_file_upload_preferences(
 			'1', // Overriding the group ID to get all IDs
-			$dir_id
+			$dir_id,
+			$ignore_site_id
 		);
 		
 		if (count($prefs) == 0)
@@ -381,7 +383,7 @@ class Filemanager {
 		}
 		
 		// fetch preferences & merge with passed in prefs
-		$dir_prefs = $this->fetch_upload_dir_prefs($dir_id);
+		$dir_prefs = $this->fetch_upload_dir_prefs($dir_id, TRUE);
 		
 		if ( ! $dir_prefs)
 		{
@@ -974,11 +976,14 @@ class Filemanager {
 		{
 			$this->_initialize($this->config);
 		}
+
 		
 		if ( ! is_array($dirs))
 		{
 			$dirs = call_user_func($this->config['directories_callback']);
+
 		}
+		
 		
 		if ($return_all AND ! $ajax)	// safety - ajax calls can never get all info!
 		{
@@ -1548,11 +1553,12 @@ class Filemanager {
 	 * 	Optionally, you can use the file name in the event you don't have the
 	 * 	full response from save_file
 	 * @param integer $directory_id The ID of the upload directory the file is in
+	 * @param	bool $ignore_site_id If TRUE, returns upload destinations for all sites
 	 * @return string URL to the thumbnail
 	 */
-	public function get_thumb($file, $directory_id)
+	public function get_thumb($file, $directory_id, $ignore_site_id = FALSE)
 	{
-		$directory = $this->fetch_upload_dir_prefs($directory_id);
+		$directory = $this->fetch_upload_dir_prefs($directory_id, $ignore_site_id);
 		$thumb_info = array();
 		
 		// If the raw file name was passed in, figure out the mime_type
@@ -1761,7 +1767,9 @@ class Filemanager {
 		$this->EE->load->model('file_upload_preferences_model');
 		
 		$directories = $this->EE->file_upload_preferences_model->get_file_upload_preferences(
-			$this->EE->session->userdata('group_id')
+			$this->EE->session->userdata('group_id'),
+			NULL,
+			TRUE
 		);
 		
 		foreach($directories as $dir)
