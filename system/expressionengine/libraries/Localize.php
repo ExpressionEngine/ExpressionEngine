@@ -625,7 +625,8 @@ class EE_Localize {
 	 */
 	function convert_human_date_to_gmt($datestr = '')
 	{
-		// TODO: deprecation notice
+		$this->EE->load->library('logger');
+		$this->EE->logger->deprecated('2.6', 'Localize::string_to_timestamp');
 		
 		return $this->string_to_timestamp($datestr);
 	}

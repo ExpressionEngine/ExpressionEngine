@@ -1182,7 +1182,7 @@ class Simple_commerce_mcp {
 
 	function _valid_date($str, $key)
 	{
-		$str = $this->EE->localize->convert_human_date_to_gmt($str);
+		$str = $this->EE->localize->string_to_timestamp($str);
 
 		if ( ! is_numeric($str))
 		{
