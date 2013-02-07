@@ -1082,8 +1082,7 @@ class Simple_commerce_mcp {
 		if ($new == 'y')
 		{
 			$vars['action_url'] = 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce'.AMP.'method=adding_purchase';
-			$now_date = ($this->EE->localize->set_localized_time() * 1000);
-
+			
 			foreach($purchase_ids as $id)
 			{
 				$vars['purchases'][$id]['txn_id'] = '';
@@ -1095,8 +1094,8 @@ class Simple_commerce_mcp {
 				$vars['purchases'][$id]['purchase_id'] =  0;
 
 			$this->EE->javascript->output('
-			$("#purchase_date_'.$id.'").datepicker({dateFormat: $.datepicker.W3C + date_obj_time, defaultDate: new Date('.$now_date.')});
-			$("#subscription_end_date_'.$id.'").datepicker({dateFormat: $.datepicker.W3C + date_obj_time, defaultDate: new Date('.$now_date.')});
+			$("#purchase_date_'.$id.'").datepicker({dateFormat: $.datepicker.W3C + date_obj_time, defaultDate: new Date('.$this->localize->format_date('%D %M %d %Y').')});
+			$("#subscription_end_date_'.$id.'").datepicker({dateFormat: $.datepicker.W3C + date_obj_time, defaultDate: new Date('.$this->localize->format_date('%D %M %d %Y').')});
 		');
 
 			}
@@ -1527,9 +1526,7 @@ class Simple_commerce_mcp {
 		$cr	  = "\n";
 		$data = '';
 
-		$now = $this->EE->localize->set_localized_time();
-
-        $filename = $which.'_'.date('y', $now).date('m', $now).date('d', $now).'.txt';
+		$filename = $which.'_'.$this->EE->localize->format_date('%y%m%d').'.txt';
 
 		if ($which == 'items')
 		{

@@ -122,7 +122,7 @@ class Rss {
 			{
 				if ($diffe_request !== FALSE OR $feed_request !== FALSE)
 				{
-					$start_on = gmdate('Y-m-d h:i A',$this->EE->localize->set_localized_time($modify_tstamp));
+					$start_on = $this->EE->localize->format_date('%Y-%m-%d %h:%i %A', $modify_tstamp);
 				}
 			}
 		}

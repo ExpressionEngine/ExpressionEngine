@@ -624,16 +624,19 @@ class Member_settings extends Member {
 
 			if (strncmp($key, 'local_time', 10) == 0)
 			{
-				$time = $this->EE->localize->now;
+				$locale = FALSE;
 
 				if ($this->EE->session->userdata('member_id') != $this->cur_id)
 				{  
 					// Default is UTC?
-					$zone = ($row['timezone']  == '') ? 'UTC' : $row['timezone'] ;
-					$time = $this->EE->localize->set_localized_time($time, $zone, $row['daylight_savings'] );
+					$locale = ($default_fields['timezone'] == '') ? 'UTC' : $default_fields['timezone'];
 				}
 
-				$content = $this->_var_swap_single($key, $this->EE->localize->decode_date($val, $time), $content);
+				$content = $this->_var_swap_single(
+					$key,
+					$this->EE->localize->format_date($val, NULL, $locale),
+					$content
+				);
 			}
 
 			/** ----------------------

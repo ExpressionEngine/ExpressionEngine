@@ -25,9 +25,6 @@
 class EE_Localize {
 
 	var $now				= '';  // Local server time as GMT
-	var $ctz				=  0;  // Current user's timezone setting
-	var $zones				= array();
- 	var $cached				= array();
 	var $format				= array('DATE_ATOM'		=>	'%Y-%m-%dT%H:%i:%s%Q',
 									'DATE_COOKIE'	=>	'%l, %d-%M-%y %H:%i:%s UTC',
 									'DATE_ISO8601'	=>	'%Y-%m-%dT%H:%i:%s%Q',
@@ -47,10 +44,6 @@ class EE_Localize {
 	{
 		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();
-
-		// TODO: Deprecate $zones
-		$this->EE->load->helper('date');
-		$this->zones = timezones();
 
 		// Fetch current Unix timestamp
 		$this->now = time();
@@ -419,6 +412,12 @@ class EE_Localize {
 	 */
 	function set_localized_time($now = '', $timezone = '', $dst = '')
 	{
+		$this->EE->load->library('logger');
+		$this->EE->logger->deprecated('2.6');
+
+		$this->EE->load->helper('date');
+		$zones = timezones();
+
 		if ($now == '')
 		{
 			$now = $this->now;
@@ -438,8 +437,7 @@ class EE_Localize {
 			return $this->set_server_time($now);
 		}
 
-		// $now = $this->now + ($this->zones[$timezone] * 3600);
-		$now += $this->zones[$timezone] * 3600;
+		$now += $zones[$timezone] * 3600;
 
 		if ($dst == '')
 		{
@@ -467,6 +465,9 @@ class EE_Localize {
 	 */
 	function set_server_time($now = '')
 	{
+		$this->EE->load->helper('date');
+		$zones = timezones();
+
 		if ($now == '')
 		{
 			$now = $this->now;
@@ -474,7 +475,7 @@ class EE_Localize {
 
 		if ($tz = $this->EE->config->item('server_timezone'))
 		{
-			$now += $this->zones[$tz] * 3600;
+			$now += $zones[$tz] * 3600;
 		}
 
 		if ($this->EE->config->item('daylight_savings') == 'y')
@@ -541,11 +542,14 @@ class EE_Localize {
 	{
 		$offset = 0;
 
+		$this->EE->load->helper('date');
+		$zones = timezones();
+
 		if ($this->EE->session->userdata['timezone'] == '')
 		{
 			if ($tz = $this->EE->config->item('server_timezone'))
 			{
-				$offset += $this->zones[$tz];
+				$offset += $zones[$tz];
 			}
 
 			if ($this->EE->config->item('daylight_savings') == 'y')
@@ -555,7 +559,7 @@ class EE_Localize {
 		}
 		else
 		{
-			$offset += $this->zones[$this->EE->session->userdata['timezone']];
+			$offset += $zones[$this->EE->session->userdata['timezone']];
 
 			if ($this->EE->session->userdata['daylight_savings'] == 'y')
 			{
@@ -641,7 +645,10 @@ class EE_Localize {
 	 */
 	function simpl_offset($time = '', $timezone = '')
 	{
-		$time += $this->zones[$timezone] * 3600;
+		$this->EE->load->helper('date');
+		$zones = timezones();
+
+		$time += $zones[$timezone] * 3600;
 
 		if ($this->EE->session->userdata('daylight_savings') == 'y')
 		{

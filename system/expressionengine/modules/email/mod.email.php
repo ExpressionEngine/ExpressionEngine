@@ -116,8 +116,7 @@ class Email {
 
 			if (strncmp($key, 'current_time', 12) == 0)
 			{
-				$now = $this->EE->localize->set_localized_time();
-				$tagdata = $this->EE->TMPL->swap_var_single($key, $this->EE->localize->decode_date($val,$now), $tagdata);
+				$tagdata = $this->EE->TMPL->swap_var_single($key, $this->EE->localize->format_date($val), $tagdata);
 			}
 
 			if (($key == 'author_email' OR $key == 'author_name') && ! isset($$key))

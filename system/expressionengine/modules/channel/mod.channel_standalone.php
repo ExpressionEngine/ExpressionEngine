@@ -1944,23 +1944,17 @@ class Channel_standalone extends Channel {
 				}
 
 				$custom_date = '';
-				$localize = FALSE;
 				
 				if ($dtwhich != 'preview')
 				{
-					$localize = TRUE;
-
 					if ($field_data != '')
 					{
-						$custom_date = $this->EE->localize->human_time($field_data, $localize);						
+						$custom_date = $this->EE->localize->human_time($field_data);						
 					}
-
-					$cal_date = ($this->EE->localize->set_localized_time($custom_date) * 1000);
 				}
 				else
 				{
 					$custom_date = $_POST[$date_field];
-					$cal_date = ($custom_date != '') ? ($this->EE->localize->set_localized_time($this->EE->localize->convert_human_date_to_gmt($custom_date)) * 1000) : ($this->EE->localize->set_localized_time() * 1000);
 				}
 				
 				$temp_chunk = str_replace(LD.'temp_date'.RD, $date, $temp_chunk);

@@ -2765,18 +2765,17 @@ class Member {
 				//  {local_time}
 				if (strncmp($key, 'local_time', 10) == 0)
 				{
-					$time = $this->EE->localize->now;
+					$locale = FALSE;
 
 					if ($this->EE->session->userdata('member_id') != $this->cur_id)
 					{  
 						// Default is UTC?
-						$zone = ($default_fields['timezone'] == '') ? 'UTC' : $default_fields['timezone'];
-						$time = $this->EE->localize->set_localized_time($time, $zone, $default_fields['daylight_savings']);
+						$locale = ($default_fields['timezone'] == '') ? 'UTC' : $default_fields['timezone'];
 					}
 
 					$this->EE->TMPL->tagdata = $this->_var_swap_single(
 						$key,
-						$this->EE->localize->decode_date($val, $time, FALSE),
+						$this->EE->localize->format_date($val, NULL, $locale),
 						$this->EE->TMPL->tagdata
 					);
 				}

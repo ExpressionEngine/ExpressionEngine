@@ -4002,20 +4002,18 @@ class Channel {
 					//  Weekly header
 					elseif ($display == 'weekly')
 					{
-						$temp_date = $this->EE->localize->set_localized_time($row['entry_date']);
+						$temp_date = $row['entry_date'];
 
 						// date()'s week variable 'W' starts weeks on Monday per ISO-8601.
 						// By default we start weeks on Sunday, so we need to do a little dance for
 						// entries made on Sundays to make sure they get placed in the right week heading
-						if (strtolower($this->EE->TMPL->fetch_param('start_day')) != 'monday' && gmdate('w', $this->EE->localize->set_localized_time($row['entry_date'])) == 0)
+						if (strtolower($this->EE->TMPL->fetch_param('start_day')) != 'monday' && $this->EE->localize->format_date('%w', $row['entry_date']) == 0)
 						{
 							// add 7 days to toss us into the next ISO-8601 week
-							$heading_date_weekly = gmdate('YW', $temp_date + 604800);
+							$temp_date = strtotime('+1 week', $temp_date);
 						}
-						else
-						{
-							$heading_date_weekly = gmdate('YW', $temp_date);
-						}
+
+						$heading_date_weekly = $this->EE->localize->format_date('%Y%W', $temp_date);
 
 						if ($heading_date_weekly == $heading_flag_weekly)
 						{
@@ -4031,7 +4029,7 @@ class Channel {
 					//  Monthly header
 					elseif ($display == 'monthly')
 					{
-						$heading_date_monthly = gmdate('Ym', $this->EE->localize->set_localized_time($row['entry_date']));
+						$heading_date_monthly = $this->EE->localize->format_date('%Y%m', $row['entry_date']);
 
 						if ($heading_date_monthly == $heading_flag_monthly)
 						{
@@ -4047,7 +4045,7 @@ class Channel {
 					//  Yearly header
 					elseif ($display == 'yearly')
 					{
-						$heading_date_yearly = gmdate('Y', $this->EE->localize->set_localized_time($row['entry_date']));
+						$heading_date_yearly = $this->EE->localize->format_date('%Y', $row['entry_date']);
 
 						if ($heading_date_yearly == $heading_flag_yearly)
 						{
@@ -4063,7 +4061,7 @@ class Channel {
 					//  Default (daily) header
 					else
 					{
-			 			$heading_date_daily = gmdate('Ymd', $this->EE->localize->set_localized_time($row['entry_date']));
+			 			$heading_date_daily = $this->EE->localize->format_date('%Y%m%d', $row['entry_date']);
 			
 						if ($heading_date_daily == $heading_flag_daily)
 						{
@@ -4090,7 +4088,7 @@ class Channel {
 					if ($display == 'hourly')
 					{
 						if ( ! isset($query_result[$row['count']]) OR
-							gmdate('YmdH', $this->EE->localize->set_localized_time($row['entry_date'])) != gmdate('YmdH', $this->EE->localize->set_localized_time($query_result[$row['count']]['entry_date'])))
+							$this->EE->localize->format_date('%Y%m%d%H', $row['entry_date']) != $this->EE->localize->format_date('%Y%m%d%H', $query_result[$row['count']]['entry_date']))
 						{
 							$tagdata = $this->EE->TMPL->swap_var_pairs($key, 'date_footer', $tagdata);
 						}
@@ -4103,7 +4101,7 @@ class Channel {
 					elseif ($display == 'weekly')
 					{
 						if ( ! isset($query_result[$row['count']]) OR
-							gmdate('YW', $this->EE->localize->set_localized_time($row['entry_date'])) != gmdate('YW', $this->EE->localize->set_localized_time($query_result[$row['count']]['entry_date'])))
+							$this->EE->localize->format_date('%Y%W', $row['entry_date']) != $this->EE->localize->format_date('%Y%W', $query_result[$row['count']]['entry_date']))
 						{
 							$tagdata = $this->EE->TMPL->swap_var_pairs($key, 'date_footer', $tagdata);
 						}
@@ -4116,7 +4114,7 @@ class Channel {
 					elseif ($display == 'monthly')
 					{
 						if ( ! isset($query_result[$row['count']]) OR
-							gmdate('Ym', $this->EE->localize->set_localized_time($row['entry_date'])) != gmdate('Ym', $this->EE->localize->set_localized_time($query_result[$row['count']]['entry_date'])))
+							$this->EE->localize->format_date('%Y%m', $row['entry_date']) != $this->EE->localize->format_date('%Y%m', $query_result[$row['count']]['entry_date']))
 						{
 							$tagdata = $this->EE->TMPL->swap_var_pairs($key, 'date_footer', $tagdata);
 						}
@@ -4129,7 +4127,7 @@ class Channel {
 					elseif ($display == 'yearly')
 					{
 						if ( ! isset($query_result[$row['count']]) OR
-							gmdate('Y', $this->EE->localize->set_localized_time($row['entry_date'])) != gmdate('Y', $this->EE->localize->set_localized_time($query_result[$row['count']]['entry_date'])))
+							$this->EE->localize->format_date('%Y', $row['entry_date']) != $this->EE->localize->format_date('%Y', $query_result[$row['count']]['entry_date']))
 						{
 							$tagdata = $this->EE->TMPL->swap_var_pairs($key, 'date_footer', $tagdata);
 						}
@@ -4142,7 +4140,7 @@ class Channel {
 					else
 					{
 						if ( ! isset($query_result[$row['count']]) OR
-							gmdate('Ymd', $this->EE->localize->set_localized_time($row['entry_date'])) != gmdate('Ymd', $this->EE->localize->set_localized_time($query_result[$row['count']]['entry_date'])))
+							$this->EE->localize->format_date('%Y%m%d', $row['entry_date']) != $this->EE->localize->format_date('%Y%m%d', $query_result[$row['count']]['entry_date']))
 						{
 							$tagdata = $this->EE->TMPL->swap_var_pairs($key, 'date_footer', $tagdata);
 						}
