@@ -16,6 +16,93 @@
 /**
  * ExpressionEngine Relationship Class
  *
+ *
+ * Takes an array of field_ids that correspond to the ids of the
+ * relationship fields that we need to pull entries from in the
+ * relationship query. This array comes directly from the tag data.  For
+ * example, if we have a channel set up like the following:
+ * 
+ * Seasons
+ * 	title
+ * 	url_title
+ * 	games		RELATIONSHIP (Games)
+ * 	teams		RELATIONSHIP (Teams)
+ * 
+ * Games
+ * 	title
+ * 	url_title
+ * 	home		RELATIONSHIP (Teams, 1)
+ * 	away		RELATIONSHIP (Teams, 1)
+ *
+ * Teams
+ * 	title
+ * 	url_title
+ * 	players		RELATIONSHIP (Players)
+ * 
+ * Players
+ * 	title
+ * 	url_title
+ * 	first_name
+ * 	last_name
+ * 	number
+ *
+ * Then we might see tag data that looked like the following:
+ * 	
+ * 	{exp:channel:entries channel="Seasons"}
+ * 		{games}
+ * 			{games:home:title} vs {games:away:title}
+ * 			{games:home:players}
+ * 				{games:home:players:number} { games:home:players:first_name} {games:home:players:last_name}
+ * 			{/games:home:players}
+ * 			{games:away:players}
+ * 				{games:away:players:number} {games:away:players:first_name} {games:away:players:last_name}
+ * 			{games:away:players}
+ * 		{/games}
+ * 	{/exp:channel:entires}
+ * 
+ * 
+ * Since the leaf tags also contain the names for each level above them,
+ * we only need to pull the leaves out of the single_variables and from
+ * that we can generate our array.  In our above example, the leaves would
+ * be the following:
+ * 
+ * {games:home:title}
+ * {games:away:title}
+ * {games:home:players;number}
+ * {games:home:players:first_name}
+ * {games:home:players:last_name}
+ * {games:away:players:number}
+ * {games:away:players:first_name}
+ * {games:away:players:last_name}
+ * 
+ * Each section of those names corresponds to a field and thus a field_id.
+ * We can replace the names with field_id and then explode to get arrays:
+ * 
+ * array(2, 3, 4)
+ * array(2, 5, 6)
+ * array(2, 3, 7, 8)
+ * array(2, 3, 7, 9)
+ * array(2, 3, 7, 10)
+ * array(2, 5, 7, 8)
+ * array(2, 5, 7, 9)
+ * array(2, 5, 7, 10)
+ * 
+ * Since we're only interested in the relationship fields, we can trim off
+ * the final field id.  Then we can flip the matrix to we get an array of
+ * the ids we need at each level of nesting and run array unique, so we
+ * only get unique ids.  We don't need to retain the information about
+ * the tree structure, we only need the total list of the needed entries.
+ * We still have information about the final tree structure, so we can
+ * rebuild the tree from a generated list of entries using Pascal's tree
+ * library. So our finally result array passed to build_level will look
+ * like this:
+ *
+ * array(
+ * 	array(2),
+ *  array(3,5),
+ * 	array(7)
+ * )
+ *
  * @package		ExpressionEngine
  * @subpackage	Core
  * @category	Core
@@ -34,13 +121,16 @@ class Relationships {
 	 * Parse out any relationship tags from a channel entries tag.  We'll
 	 * find our relationship tags in the channel field data, parse them
 	 * into a form we can query against and then replace the data in question.
+	 * 
+	 * TODO handle the case where we find no relationship tags
 	 */
-	public function parse_relationships(array $entry_ids, array $relationship_fields)
+	public function get_relationship_data(array $entry_ids, array $relationship_fields)
 	{
 		$EE = get_instance();
 
 		$field_ids = array();
 
+		var_dump($EE->TMPL->var_single);
 		foreach ($EE->TMPL->var_single as $variable)
 		{
 			if (strpos($variable, ':') !== FALSE)
@@ -70,6 +160,18 @@ class Relationships {
 			}
 		}
 		var_dump($field_ids);
+
+		
+		$shortest_distance_to_leaf = 10000000000000; // Just an absurdly large number.
+		foreach ($field_ids as $leaf)
+		{
+			if (count($leaf) < $shortest_distance_to_leaf)
+			{
+				$shortest_distance_to_leaf = count($leaf);	
+			}
+		}
+	
+			
 		// Perform some transformations on the generated array of field ids to
 		// get it into the form we need to perform our query.  That is to say
 		// an array of unique field ids grouped by nesting level.
@@ -77,8 +179,148 @@ class Relationships {
 
 		var_dump($field_ids);
 
+		var_dump($shortest_distance_to_leaf);
+		// Okay, now that we have the base parent entry ids and the 
+		// ids of the relationship fields we'll need to be querying, in the right
+		// format, go ahead and get the ids of all child entries.
+		$data = $this->get_child_entry_ids($entry_ids, $field_ids, $shortest_distance_to_leaf);
 
-		$data = $this->get_child_entry_ids($entry_ids, $field_ids);
+		// Now we want to get the entry data for the child entries.
+		$EE->load->model('channel_entries_model');
+		$db = $this->_isolate_db();
+
+		// We needed to hang on to the parent->child relationships in the returned entry data,
+		// the straight list of entry ids can be retrieved from the keys in data.  We'll just
+		// run array_keys() and send it to get_entry_sql()
+		$entries_result = $db->query($EE->channel_entries_model->get_entry_sql(array_keys($data)));
+
+		// Now we need to attach the resulting entry arrays to
+		// the right spot in our data array.  The data array
+		// is keyed to entry_id, so it's pretty easy.
+		foreach ($entries_result->result_array() as $entry)
+		{
+			$data[$entry['entry_id']]['entry'] = $entry;
+		}
+
+		var_dump($data);
+
+		/*	
+ 	 	 * 	
+ 	 	 * 	{exp:channel:entries channel="Seasons"}
+ 	 	 * 		{games}
+ 	 	 * 			{games:home:title} vs {games:away:title}
+ 	 	 * 			{games:home:players}
+ 	 	 * 				{games:home:players:number} { games:home:players:first_name} {games:home:players:last_name}
+ 	 	 * 			{/games:home:players}
+ 	 	 * 			{games:away:players}
+ 	 	 * 				{games:away:players:number} {games:away:players:first_name} {games:away:players:last_name}
+ 	 	 * 			{games:away:players}
+ 	 	 * 		{/games}
+ 	 	 * 	{/exp:channel:entires}
+	 	 * 
+		 * Given this, what does parse_variables need to see?
+		 * 
+		 *array( 'games'=>array(
+		 *  These are games...
+		 *	0=>array(
+		 *		0=>array(
+		 *			'games:home:title' => '',
+		 *			'games:away:title' => '',
+	 	 *			'games:home:players' => array(
+	 	 *				These are players...
+	 	 *				0=>array(
+		 * 					0=>array(
+		 *						'games:home:players:number' => '',
+		 *						'games:home:players:first_name' => '',
+	 	 *						'games:home:players:last_name' => ''
+		 *					),
+		 *					1=>array(
+		 *						'games:home:players:number' => '',
+		 *						'games:home:players:first_name' => '',
+	 	 *						'games:home:players:last_name' => ''
+		 *					)
+		 *				)
+	 	 *			),
+	 	 *			'games:away:players' => array(
+		 *				These are players...
+	 	 *				0=>array(
+		 * 					0=>array(
+		 *						'games:away:players:number' => '',
+		 *						'games:away:players:first_name' => '',
+	 	 *						'games:away:players:last_name' => ''
+		 *					),
+		 *					1=>array(
+		 *						'games:away:players:number' => '',
+		 *						'games:away:players:first_name' => '',
+	 	 *						'games:away:players:last_name' => ''
+		 *					)
+		 *				)
+	 	 *			),
+		 * 		)
+		 * 	),
+		 *  1=>array(
+		 *		0=>array(
+		 *			'games:home:title' => '',
+		 *			'games:away:title' => '',
+	 	 *			'games:home:players' => array(
+	 	 *				These are players...
+	 	 *				0=>array(
+		 * 					0=>array(
+		 *						'games:home:players:number' => '',
+		 *						'games:home:players:first_name' => '',
+	 	 *						'games:home:players:last_name' => ''
+		 *					),
+		 *					1=>array(
+		 *						'games:home:players:number' => '',
+		 *						'games:home:players:first_name' => '',
+	 	 *						'games:home:players:last_name' => ''
+		 *					)
+		 *				)
+	 	 *			),
+	 	 *			'games:away:players' => array(
+		 *				These are players...
+	 	 *				0=>array(
+		 * 					0=>array(
+		 *						'games:away:players:number' => '',
+		 *						'games:away:players:first_name' => '',
+	 	 *						'games:away:players:last_name' => ''
+		 *					),
+		 *					1=>array(
+		 *						'games:away:players:number' => '',
+		 *						'games:away:players:first_name' => '',
+	 	 *						'games:away:players:last_name' => ''
+		 *					)
+		 *				)
+	 	 *			),
+		 * 		)
+		 *	)
+		 *)
+ 	 	 */
+
+		$variables = $this->_build_variables_array($data);
+	
+		var_dump($variables);
+	}
+
+	/**
+	 * Build Variables Array
+	 *
+ 	 * Take the related entries we've retrieved, examine the tag data and then build the array 
+	 * of variables that we'll pass to TMPL->parse_variables() for replacing.
+	 * 
+	 */
+	protected function _build_variables_array($data)
+	{
+		echo '_build_variables_array()<br />';
+		$EE = get_instance();
+
+		$variables = array();
+	
+		var_dump($EE->TMPL->var_single);
+		var_dump($EE->TMPL->var_pair);
+		var_dump($EE->TMPL->tagdata);
+
+		return $variables;
 	}
 
 	/**
@@ -112,148 +354,72 @@ class Relationships {
 		return $flipped;
 	}
 
- 	// --------------------------------------------------------------------
-	
 	/**
 	 * Retrieve the entry data for all related entries required by a call
 	 * of the channel entries tag.
-	 *
-	 * Takes an array of field_ids that correspond to the ids of the
-	 * relationship fields that we need to pull entries from in the
-	 * relationship query. This array comes directly from the tag data.  For
-	 * example, if we have a channel set up like the following:
-	 * 
-	 * Seasons
-	 * 	title
-	 * 	url_title
-	 * 	games		RELATIONSHIP (Games)
-	 * 	teams		RELATIONSHIP (Teams)
-	 * 
-	 * Games
-	 * 	title
-	 * 	url_title
-	 * 	home		RELATIONSHIP (Teams, 1)
-	 * 	away		RELATIONSHIP (Teams, 1)
-	 *
-	 * Teams
-	 * 	title
-	 * 	url_title
-	 * 	players		RELATIONSHIP (Players)
-	 * 
-	 * Players
-	 * 	title
-	 * 	url_title
-	 * 	first_name
-	 * 	last_name
-	 * 	number
-	 *
-	 * Then we might see tag data that looked like the following:
-	 * 	
-	 * 	{exp:channel:entries channel="Seasons"}
-	 * 		{games}
-	 * 			{games:home:title} vs {games:away:title}
-	 * 			{games:home:players}
-	 * 				{games:home:players:number} { games:home:players:first_name} {games:home:players:last_name}
-	 * 			{/games:home:players}
-	 * 			{games:away:players}
-	 * 				{games:away:players:number} {games:away:players:first_name} {games:away:players:last_name}
-	 * 			{games:away:players}
-	 * 		{/games}
-	 * 	{/exp:channel:entires}
-	 * 
-	 * Since the leaf tags also contain the names for each level above them,
-	 * we only need to pull the leaves out of the single_variables and from
-	 * that we can generate our array.  In our above example, the leaves would
-	 * be the following:
-	 * 
-	 * {games:home:title}
-	 * {games:away:title}
-	 * {games:home:players;number}
-	 * {games:home:players:first_name}
-	 * {games:home:players:last_name}
-	 * {games:away:players:number}
-	 * {games:away:players:first_name}
-	 * {games:away:players:last_name}
-	 * 
-	 * Each section of those names corresponds to a field and thus a field_id.
-	 * We can replace the names with field_id and then explode to get arrays:
-	 * 
-	 * array(2, 3, 4)
-	 * array(2, 5, 6)
- 	 * array(2, 3, 7, 8)
-	 * array(2, 3, 7, 9)
-	 * array(2, 3, 7, 10)
-	 * array(2, 5, 7, 8)
-	 * array(2, 5, 7, 9)
-	 * array(2, 5, 7, 10)
- 	 * 
-	 * Since we're only interested in the relationship fields, we can trim off
-	 * the final field id.  Then we can flip the matrix to we get an array of
-	 * the ids we need at each level of nesting and run array unique, so we
-	 * only get unique ids.  We don't need to retain the information about
-	 * the tree structure, we only need the total list of the needed entries.
- 	 * We still have information about the final tree structure, so we can
-	 * rebuild the tree from a generated list of entries using Pascal's tree
-	 * library. So our finally result array passed to build_level will look
-	 * like this:
- 	 *
-	 * array(
-	 * 	array(2),
-	 *  array(3,5),
-	 * 	array(7)
-	 * )
  	 * 
 	 * TODO handle siblings and parents
 	 * 
 	 *  FIXME This is ugly as all hell.  Probably possible to put this into the active record class. 
 	 * didn't feel like doing that on the first pass.  Just wanted to make it work.
 	 */
-	public function get_child_entry_ids(array $entry_ids, array $field_ids)
+	protected function _get_child_entry_ids(array $entry_ids, array $field_ids, $shortest_branch_length)
 	{
-		$sql = 'SELECT DISTINCT';
+		echo 'Before the query: <br />';
+		var_dump($field_ids);
+		$db = $this->_isolate_db();
+	
+		$db->distinct();
+		$db->select('L0.entry_id as L0');
+		$db->from('exp_channel_data as L0');
 
-		$fields = '';
-		$from = 'FROM exp_channel_data as L0';
-
-		$level_sql = '';
 		$level = 0;
 		foreach ($field_ids as $ids)
 		{
-			$level_sql .= ' JOIN exp_zero_wing AS L' . $level . 'R ON';
-			$branch = '(';
+			$branch = '';
 			foreach ($ids as $id)
 			{
-				if ($branch !== '(')
+				if ($branch !== '')
 				{
 					$branch .= ' OR ';	
 				}
 				$branch .= 'L' . $level . '.field_id_' . $id . ' = L' . $level . 'R.relationship_id';
+				if ($level >= $shortest_branch_length)
+				{
+					$branch .= ' OR L' . $level .'.field_id_' . $id . ' = NULL';
+				}
 			}
-			$branch .= ')';
+			
+			$db->join('exp_zero_wing as L' . $level . 'R', $branch, ($level >= $shortest_branch_length) ? 'left' : '');
+			$db->join('exp_channel_data as L' . ($level+1), 
+				'L' . ($level+1) . '.entry_id = L' . $level . 'R.entry_id' . (($level+1 > $shortest_branch_length) ? ' OR L' . ($level+1) . '.entry_id = NULL' : ''), 
+				($level+1 > $shortest_branch_length) ? 'left' : '');
 
-			$level_sql .= ' ' . $branch;
-			$level_sql .= ' JOIN exp_channel_data AS L' . ($level+1) . ' ON (L' . ($level+1) . '.entry_id = L' . $level . 'R.entry_id)';
+			// Now add the field ID from this level in.
+			foreach ($ids as $id)
+			{
+				$db->select('L' . $level . '.field_id_' . $id . ' as L' . $level . '_field_id_' . $id);
+			} 
+
+			$db->select('L' . $level . 'R.relationship_id as L' . $level .'_relationship_id');
+			
+			$level++;
 
 			// Add the aliased request for the entry_id to the fields section.		
-			if ($fields !== '')
-			{	
-				$fields .= ', ';
-			}
-			$fields .= 'L' . $level . '.entry_id AS L' . $level;
+			$db->select('L' . $level . '.entry_id AS L' . $level . ', L' . ($level-1) . '.entry_id as L' . $level . '_parent');
 
-			$level++;
 		}
 		
-		$sql .= ' ' . $fields . ' ' . $from . ' ' . $level_sql . ' WHERE L0.entry_id IN (' . implode(',', $entry_ids) . ')';
+		$db->where_in('L0.entry_id', $entry_ids);
 
+		$sql = $db->_compile_select();
 		echo '<code>' . $sql . '</code>';
-
-		$db = $this->_isolate_db();
 		
 		$id_query = $db->query($sql);	
-	
-		$children = $this->_collapse_array_distinct_2d($id_query->result_array());
 
+		var_dump($id_query->result_array());
+	
+		$children = $this->_collapse_array_distinct($id_query->result_array());
 		echo '<br />Result: <br />';
 		var_dump($children);
 	
@@ -270,25 +436,159 @@ class Relationships {
 	 * 
 	 * @return array A single dimensional array containing all unique values input.
 	 */
-	protected function _collapse_array_distinct_2d(array $array)
+	protected function _collapse_array_distinct(array $array)
 	{
 		$result = array();
 		foreach ($array as $row)
 		{
-			if (is_array($row))
-			{
-				foreach ($row as $item)
-				{
-					$result[$item] = TRUE;
-				}
-			}
-			else
-			{
-				$result[$row] = TRUE;
+			for ($i=0, $level = 'L' . $i; isset($row[$level]); $i++, $level = 'L' . $i)
+			{	
+				$id = $row[$level];
+				$result[$id] = array('id'=>$row[$level], 'parent_id'=>(isset($row[($level . '_parent')]) ? $row[($level . '_parent')] : 0));
 			}
 		}
-		return array_keys($result);
+		return $result;
 	}	
+
+ 	// --------------------------------------------------------------------
+	
+	/**
+ 	 * Assume we get the data in the following format:
+	 * 
+	 * 	array(
+	 * 		entry_id => array(
+	 * 			field_name => array(
+	 *				entry_id => array(
+	 *					field_name => array(
+	 *						entry_id => array(),
+	 *						entry_id => aray()
+	 *					),
+	 *					field_name => array(
+	 *						entry_id => array(),
+	 *						entry_id => array()
+	 * 					)
+	 * 				)
+	 * 			)
+	 *		)
+	 * 	)
+	 *	
+	 * 		
+	 */
+	public function parse_relationships($entry_id, array $data, $tagdata)
+	{
+					
+		// Parse_variables expects data of the form
+		//
+		// array(
+	 	//  # one loop cycle for outer most pair
+	 	//  # -- in our case, just one, the entry for the passed tagdata
+	 	// 	n => array(
+		// 		# single variable
+		// 		name => value,
+		// 		name => array(
+		// 			# variable pair
+		//			0 => array(
+		//				# single values
+		//				name => value,
+		//				name => value,
+		//				name => array(
+		//					0 => array(
+		//						name => value
+		//					)
+		//				)	
+		//			)
+		// 		)
+		// 	)
+		//		
+		// So for our test case:
+		//
+		// 	<h1><a href="{path="relationships/season"}/winter-2013">Winter 2013</a></h1>
+		// 	<p>This season will have the following teams:</p>
+		// 	<div class="teams">
+		// 	{teams}
+		// 		<h2>{teams:title}</h2>
+		// 		<div class="team">
+		// 		{teams:players}
+		// 			<span class="player">{teams:players:number} {teams:players:first_name} {teams:players:last_name}</span>
+		// 		{/teams:players}
+		// 		</div>
+		// 	{/teams}
+		// 	</div>
+		// 	<p>Who will play each other in the following games:</p>
+		// 	<div class="games">
+		// 	{games}
+		// 		<div class="game">
+		// 		{games:home:title} ({games:home_score}) vs {games:away:title} ({games:away_score})
+		// 		{games:home:players}
+		// 			{games:home:players:number} {games:home:players:first_name} {games:home:players:last_name}
+		// 		{/games:home:players}
+		// 		</div>
+		// 	{/games}
+		// 	</div>
+		//
+		// Assume we have...
+		// 
+		// array(
+		//	entry_id (winter 2013) => array(
+		//		teams => array(
+		//			entry_id (Omnislash) => array(
+		//				title => Omnislash,
+		//				players => array(
+		//					entry_id (Jason Yoder) => array(
+		//						number => 1,
+		//						first_name => Jason,
+		//						last_name => Yoder
+		//					)
+		//					entry_id (Adam Schobinger) => array(
+		//						etc...
+		//					)
+		//				)
+		//			)
+		//		),
+		//		games => array(
+		//		)
+		//	)
+		//) 
+		// 	 
+		// 
+		// We need...
+		//
+		// array(
+		//  # Winter 2013
+		// 	0 => array(
+		//		teams => array(
+		//			0 => array(
+		//				0 => array(
+		//					teams:title => Omnislash,
+		//					teams:players => array(
+		//						0 => array(
+		//							0 => array(
+		//								teams:players;number => 1,
+		//								teams:players:first_name => Jason,
+		//								teams:players:last_name => Yoder 
+		//							),
+		//							1 => array(
+		//								teams:players:number => 2,
+		//								teams;players:first_name => Adam,
+		//								teams:players:last_name => Schobinger
+		//							)
+		//						)
+		//					)
+		//				)
+		//				1 => array(
+		//					teams:title => Hammertime,
+		//					teams:players => array(
+		//						0 => array(
+		//							0 => array(
+		//								teams:players:number => 3,
+		//								teams:players:first_name => Dane,
+		//								teams:players:last_name => Lockhart,
+		//		
+		//		
+		$entry_data = $data[$entry_id];
+		
+	}
+
 
  	// --------------------------------------------------------------------
 

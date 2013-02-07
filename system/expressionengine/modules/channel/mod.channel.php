@@ -41,6 +41,14 @@ class Channel {
  	 */
 	protected $_entry_ids				= array();
 
+	/**
+	 * Data used by zero_wing relationships.  Ideally this wouldn't be a class
+	 * variable, but for now it makes more sense this way.  This will store the
+	 * data returned by Relationships::get_relationship_data() which will then
+	 * be passed back to Relationships::parse_relationship()
+	 */
+	protected $_zero_wing_data 		= array();
+
 	public $uri						= '';
 	public $uristr					= '';
 	public $return_data				= '';	 	// Final data
@@ -310,20 +318,6 @@ class Channel {
 			return $this->EE->TMPL->no_results();
 		}
 
-		// At this point, check to see if we have any relationships.  If we do,
-		// we'll parse them ahead of the main channel parsing.  We can do this
-		// because all relationship tags will be namespaced.  We'll just pick em
-		// out, grab the data we need and then replace them.  We'll edit chunk.
-		/*$this->EE->load->library('relationships');
-		$this->EE->relationships->parse_relationships($this->_entry_ids, $this->rfields[1]);
-		var_dump($this->query->result_array());
-		var_dump($this->cfields);
-		var_dump($this->rfields);
-		
-		var_dump($this->EE->TMPL->tag_data);
-		var_dump($this->EE->TMPL->var_single);
-		var_dump($this->EE->TMPL->var_pair);
-		die();*/
 		// -------------------------------------
 		//  "Relaxed" View Tracking
 		//
@@ -353,12 +347,37 @@ class Channel {
 			$this->fetch_categories();
 		}
 
+		// At this point, check to see if we have any relationships.  If we do,
+		// we'll parse them ahead of the main channel parsing.  We can do this
+		// because all relationship tags will be namespaced.  We'll just pick em
+		// out, grab the data we need and then replace them.  We'll edit chunk.
+		//
+		// FIXME Only call this if there are, in fact, values in rfields[1]
+		// TODO Make sure our multi-relationship fields find their way into rfields
+		$this->EE->load->library('relationships');
+		$this->_zero_wing_data = $this->EE->relationships->get_relationship_data($this->_entry_ids, $this->rfields[1]);
+
 		$this->parse_channel_entries();
 
 		if ($this->enable['pagination'] == TRUE)
 		{
 			$this->return_data = $this->pagination->render($this->return_data);
 		}
+
+
+		echo 'Data in Channel: <br />';
+		var_dump($this->cfields);
+		var_dump($this->rfields);
+		var_dump($this->pfields);
+		
+		echo 'Parsed data: <br />';
+		echo '<pre>' . htmlentities($this->return_data) . '</pre>';
+	
+		echo 'Data in Template: <br />';	
+		var_dump($this->EE->TMPL->tag_data);
+		var_dump($this->EE->TMPL->var_single);
+		var_dump($this->EE->TMPL->var_pair);
+		die(); 
 
 		// Does the tag contain "related entries" that we need to parse out?
 
@@ -3958,6 +3977,10 @@ class Channel {
 
 							$tagdata = $this->EE->TMPL->delete_var_pairs($key, $key_name, $tagdata);
 						}
+					}	
+					elseif (isset($this->rfields[$row['site_id']][$key]))
+					{
+					
 					}
 					else
 					{
@@ -4680,10 +4703,15 @@ class Channel {
 				
 				if (($cln = strpos($key, ':')) !== FALSE)
 				{
-					$modifier = substr($key, $cln + 1);
+					$first_term = substr($key, 0, $cln);
+					if ( ! isset($this->rfields[$row['site_id']][$first_term])) 
+					{
+						$modifier = substr($key, $cln + 1);
+						
 
-					$parse_fnc = 'replace_'.$modifier;
-					$val = $key = substr($key, 0, $cln);
+						$parse_fnc = 'replace_'.$modifier;
+						$val = $key = $first_term;
+					}
 				}
 
 				if (isset($this->cfields[$row['site_id']][$key]))
@@ -4772,12 +4800,13 @@ class Channel {
 
 			}
 			// END SINGLE VARIABLES
-
+			
 			// do we need to replace any curly braces that we protected in custom fields?
 			if (strpos($tagdata, unique_marker('channel_bracket_open')) !== FALSE)
 			{
 				$tagdata = str_replace(array(unique_marker('channel_bracket_open'), unique_marker('channel_bracket_close')), array('{', '}'), $tagdata);
 			}
+		
 
 			// -------------------------------------------
 			// 'channel_entries_tagdata_end' hook.
@@ -4790,7 +4819,10 @@ class Channel {
 				}
 			//
 			// -------------------------------------------
-
+		
+			$tagdata = $this->EE->relationships->parse_relationships($row['entry_id'], $this->_zero_wing_data, $tagdata);
+			echo 'Finished a round of parsing, what have we got? <br />';
+			echo '<pre>' . htmlentities ($tagdata) . '</pre>';
 			$this->return_data .= $tagdata;
 
 		}
