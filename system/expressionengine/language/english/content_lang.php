@@ -1013,6 +1013,9 @@ Confirm the fieldtype file is located in the expressionengine/third_party/ direc
 'menu_categories'	=> 'Categories',
 'menu_forum'		=> 'Forums',
 
+'rel_ft_no_entries'			=> 'No Entries',
+
+
 ''=>''
 );
 
