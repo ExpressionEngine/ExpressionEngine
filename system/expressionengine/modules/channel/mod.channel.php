@@ -354,8 +354,15 @@ class Channel {
 		//
 		// FIXME Only call this if there are, in fact, values in rfields[1]
 		// TODO Make sure our multi-relationship fields find their way into rfields
-		$this->EE->load->library('relationships');
-		$this->_zero_wing_data = $this->EE->relationships->get_relationship_data($this->_entry_ids, $this->rfields[1]);
+/*		$this->EE->load->library('relationships');
+
+		echo 'Data in Template: <br />';	
+		var_dump($this->EE->TMPL->tag_data);
+		var_dump($this->EE->TMPL->var_single);
+		var_dump($this->EE->TMPL->var_pair);
+
+		$relationship_parser = $this->EE->relationships->get_relationship_parser($this->EE->TMPL, $this->rfields[1]);
+		$relationship_parser->query_for_entries($this->_entry_ids); */
 
 		$this->parse_channel_entries();
 
@@ -4819,10 +4826,10 @@ class Channel {
 				}
 			//
 			// -------------------------------------------
-		
-			$tagdata = $this->EE->relationships->parse_relationships($row['entry_id'], $this->_zero_wing_data, $tagdata);
+			/** ZERO WING **/	
+			/*$tagdata = $this->EE->relationships->parse_relationships($row['entry_id'], $this->_zero_wing_data, $tagdata);
 			echo 'Finished a round of parsing, what have we got? <br />';
-			echo '<pre>' . htmlentities ($tagdata) . '</pre>';
+			echo '<pre>' . htmlentities ($tagdata) . '</pre>';*/
 			$this->return_data .= $tagdata;
 
 		}
