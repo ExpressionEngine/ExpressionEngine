@@ -910,29 +910,10 @@ class EE_Localize {
 	 */
 	function adjust_date($month, $year, $pad = FALSE)
 	{
-		$date = array();
-
-		$date['month']	= $month;
-		$date['year']	= $year;
-
-		while ($date['month'] > 12)
-		{
-			$date['month'] -= 12;
-			$date['year']++;
-		}
-
-		while ($date['month'] <= 0)
-		{
-			$date['month'] += 12;
-			$date['year']--;
-		}
-
-		if ($pad == TRUE AND strlen($date['month']) == 1)
-		{
-			$date['month'] = '0'.$date['month'];
-		}
-
-		return $date;
+		$this->EE->load->library(array('logger', 'calendar'));
+		$this->EE->logger->deprecated('2.6', 'Calendar::adjust_date');
+		
+		return $this->EE->calendar->adjust_date($month, $year, $pad);
 	}
 
 }

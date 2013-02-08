@@ -334,7 +334,7 @@ class CI_Calendar {
 	 * @param	integer	the year
 	 * @return	array
 	 */
-	function adjust_date($month, $year)
+	function adjust_date($month, $year, $pad = FALSE)
 	{
 		$date = array();
 
@@ -353,7 +353,7 @@ class CI_Calendar {
 			$date['year']--;
 		}
 
-		if (strlen($date['month']) == 1)
+		if ($pad == TRUE AND strlen($date['month']) == 1)
 		{
 			$date['month'] = '0'.$date['month'];
 		}

@@ -92,7 +92,8 @@ class Channel_calendar extends Channel {
 		/** ----------------------------------------
 		/**  Determine the total days in the month
 		/** ----------------------------------------*/
-		$adjusted_date = $this->EE->localize->adjust_date($month, $year);
+		$this->EE->load->library('calendar');
+		$adjusted_date = $this->EE->calendar->adjust_date($month, $year);
 
 		$month	= $adjusted_date['month'];
 		$year	= $adjusted_date['year'];
@@ -107,12 +108,12 @@ class Channel_calendar extends Channel {
 		/**  Determine the total days of the previous month
 		/** ---------------------------------------*/
 
-		$adj_prev_date = $this->EE->localize->adjust_date($month-1, $year);
+		$adj_prev_date = $this->EE->calendar->adjust_date($month-1, $year);
 
 		$prev_month = $adj_prev_date['month'];
 		$prev_year = $adj_prev_date['year'];
 
-		$prev_total_days = $this->EE->localize->fetch_days_in_month($prev_month, $prev_year);
+		$prev_total_days = days_in_month($prev_month, $prev_year);
 
 		/** ----------------------------------------
 		/**  Set the starting day of the week
@@ -140,7 +141,7 @@ class Channel_calendar extends Channel {
 
 		if (preg_match_all("#".LD."previous_path=(.+?)".RD."#", $this->EE->TMPL->tagdata, $matches))
 		{
-			$adjusted_date = $this->EE->localize->adjust_date($month - 1, $year, TRUE);
+			$adjusted_date = $this->EE->calendar->adjust_date($month - 1, $year, TRUE);
 
 			foreach ($matches['1'] as $match)
 			{
@@ -158,7 +159,7 @@ class Channel_calendar extends Channel {
 
 		if (preg_match_all("#".LD."next_path=(.+?)".RD."#", $this->EE->TMPL->tagdata, $matches))
 		{
-			$adjusted_date = $this->EE->localize->adjust_date($month + 1, $year, TRUE);
+			$adjusted_date = $this->EE->calendar->adjust_date($month + 1, $year, TRUE);
 
 			foreach ($matches['1'] as $match)
 			{

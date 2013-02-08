@@ -1949,6 +1949,8 @@ class Channel {
 		/**  Limit query by date contained in tag parameters
 		/**-------------*/
 
+		$this->EE->load->helper('date');
+		
 		if ($this->EE->TMPL->fetch_param('year') OR $this->EE->TMPL->fetch_param('month') OR $this->EE->TMPL->fetch_param('day'))
 		{
 			$year	= ( ! is_numeric($this->EE->TMPL->fetch_param('year'))) 	? date('Y') : $this->EE->TMPL->fetch_param('year');
@@ -1975,7 +1977,7 @@ class Channel {
 			if ($day == '')
 			{
 				$sday = 1;
-				$eday = $this->EE->localize->fetch_days_in_month($emonth, $year);
+				$eday = days_in_month($emonth, $year);
 			}
 			else
 			{
@@ -1999,7 +2001,7 @@ class Channel {
 				if ($day == '')
 				{
 					$sday = 1;
-					$eday = $this->EE->localize->fetch_days_in_month($month, $year);
+					$eday = days_in_month($month, $year);
 				}
 				else
 				{

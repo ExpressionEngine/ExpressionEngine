@@ -433,8 +433,9 @@ class MyAccount extends CP_Controller {
 
 		if (is_numeric($data['bday_d']) && is_numeric($data['bday_m']))
 		{
+			$this->load->helper('date');
 			$year = ($data['bday_y'] != '') ? $data['bday_y'] : date('Y');
-			$mdays = $this->localize->fetch_days_in_month($data['bday_m'], $year);
+			$mdays = days_in_month($data['bday_m'], $year);
 
 			if ($data['bday_d'] > $mdays)
 			{

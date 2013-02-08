@@ -1086,8 +1086,9 @@ class Member_settings extends Member {
 
 		if (is_numeric($data['bday_d']) AND is_numeric($data['bday_m']))
 		{
+			$this->EE->load->helper('date');
 			$year = ($data['bday_y'] != '') ? $data['bday_y'] : date('Y');
-			$mdays = $this->EE->localize->fetch_days_in_month($data['bday_m'], $year);
+			$mdays = days_in_month($data['bday_m'], $year);
 
 			if ($data['bday_d'] > $mdays)
 			{
