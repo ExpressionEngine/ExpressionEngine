@@ -1246,9 +1246,9 @@ class Safecracker_lib
 			{
 				$field_rules = array();
 				
-				if ( ! empty($rules[$field['field_name']]))
+				if (isset($rules[$field['field_name']]))
 				{
-					$field_rules = explode('|', $rules);
+					$field_rules = explode('|', $rules[$field['field_name']]);
 				}
 				
 				if ( ! in_array('call_field_validation['.$field['field_id'].']', $field_rules))
@@ -2310,6 +2310,10 @@ class Safecracker_lib
 
 	protected function _build_meta_array()
 	{
+		// channel and site are both valid parameters
+		// channel_id and site_id are not
+		// channel and site params should override channel_id and site_id
+
 		$bool_variable = array('secure_return', 'json', 'author_only');
 		// required, channel, return
 		
@@ -2326,7 +2330,7 @@ class Safecracker_lib
 		{
 			if (preg_match('/^rules:(.+)/', $name, $match))
 			{
-				$meta['rules['.$match[1].']'] = $this->EE->TMPL->fetch_param($name);
+				$meta['rules'][$match[1]] = $this->EE->TMPL->fetch_param($name);
 			}
 			else
 			{
@@ -2352,7 +2356,7 @@ class Safecracker_lib
 		$meta['return'] = (isset($meta['return_'.$m_group_id])) ? $meta['return_'.$m_group_id] : $meta['return'];
 		$meta['site_id'] = $this->site_id;  // note- site id for the specified parameter!
 		
-		$meta['channel'] = $this->channel('channel_id');
+		$meta['channel_id'] = $this->channel('channel_id');  // channel_id is for THIS channel- use new_channel to change it
 		$meta['decrypt_check'] = TRUE;
 		
 		if ($this->channel('comment_system_enabled') != 'y')
