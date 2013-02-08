@@ -359,18 +359,7 @@ class EE_Template {
 		}		
 	
 		// Parse date format string "constants"		
-		$date_constants	= array('DATE_ATOM'		=>	'%Y-%m-%dT%H:%i:%s%Q',
-								'DATE_COOKIE'	=>	'%l, %d-%M-%y %H:%i:%s UTC',
-								'DATE_ISO8601'	=>	'%Y-%m-%dT%H:%i:%s%Q',
-								'DATE_RFC822'	=>	'%D, %d %M %y %H:%i:%s %O',
-								'DATE_RFC850'	=>	'%l, %d-%M-%y %H:%m:%i UTC',
-								'DATE_RFC1036'	=>	'%D, %d %M %y %H:%i:%s %O',
-								'DATE_RFC1123'	=>	'%D, %d %M %Y %H:%i:%s %O',
-								'DATE_RFC2822'	=>	'%D, %d %M %Y %H:%i:%s %O',
-								'DATE_RSS'		=>	'%D, %d %M %Y %H:%i:%s %O',
-								'DATE_W3C'		=>	'%Y-%m-%dT%H:%i:%s%Q'
-								);
-		foreach ($date_constants as $key => $val)
+		foreach ($this->EE->localize->format as $key => $val)
 		{
 			$this->template = str_replace(LD.$key.RD, $val, $this->template);
 		}
