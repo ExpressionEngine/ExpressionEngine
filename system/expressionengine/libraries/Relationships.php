@@ -252,7 +252,9 @@ class Relationships {
  	}
 }
 
-
+/**
+ *
+ */
 class Relationship_Parser 
 {
 	/**
@@ -470,8 +472,7 @@ class Relationship_Parser
 		$db = get_instance()->relationships->_isolate_db();
 	
 		$db->distinct();
-		$db->select('L0.entry_id as L0_id');
-		$db->from('exp_channel_data as L0');
+		$db->from('exp_zero_wing as L0');
 
 		$level = 0;
 		foreach ($field_ids as $ids)
@@ -483,34 +484,32 @@ class Relationship_Parser
 				{
 					$branch .= ' OR ';	
 				}
-				$branch .= 'L' . $level . '.field_id_' . $id . ' = L' . $level . 'R.relationship_id';
+				$branch .= 'L' . $level . '.field_id =' . $id;
 				if ($level >= $shortest_branch_length)
 				{
-					$branch .= ' OR L' . $level .'.field_id_' . $id . ' = NULL';
+					$branch .= ' OR L' . $level .'.field_id = NULL';
 				}
 			}
 			
-			$db->join('exp_zero_wing as L' . $level . 'R', $branch, ($level >= $shortest_branch_length) ? 'left' : '');
-			$db->join('exp_channel_data as L' . ($level+1), 
-				'L' . ($level+1) . '.entry_id = L' . $level . 'R.entry_id' . (($level+1 > $shortest_branch_length) ? ' OR L' . ($level+1) . '.entry_id = NULL' : ''), 
-				($level+1 > $shortest_branch_length) ? 'left' : '');
+			$db->join('exp_zero_wing as L' . ($level+1), 
+				'L' . ($level) . '.child_id = L' . ($level+1) . '.parent_id' . (($level+1 >= $shortest_branch_length) ? ' OR L' . ($level+1) . '.parent_id = NULL' : ''), 
+				($level+1 >= $shortest_branch_length) ? 'left' : '');
 
 			// Now add the field ID from this level in.
 			foreach ($ids as $id)
 			{
-				$db->select('L' . $level . '.field_id_' . $id . ' as L' . $level . '_field_id_' . $id);
+				$db->select('L' . $level . '.field_id as L' . $level . '_field');
 			} 
 
-			$db->select('L' . $level . 'R.relationship_id as L' . $level .'_relationship_id');
+			// Add the aliased request for the entry_id to the fields section.		
+			$db->select('L' . $level . '.parent_id AS L' . $level . '_parent, L' . $level . '.child_id as L' . $level . '_id');
 			
 			$level++;
 
-			// Add the aliased request for the entry_id to the fields section.		
-			$db->select('L' . $level . '.entry_id AS L' . $level . '_id, L' . ($level-1) . '.entry_id as L' . $level . '_parent');
 
 		}
 		
-		$db->where_in('L0.entry_id', $entry_ids);
+		$db->where_in('L0.parent_id', $entry_ids);
 
 		$sql = $db->_compile_select();
 
@@ -537,16 +536,16 @@ class Relationship_Parser
 			$leaf_result = array();
 			foreach ($leaf as $key => $id)
 			{
+				if($id == NULL)
+				{
+					continue;
+				}
 				$level = substr($key, 1, strpos($key, '_')-1);
 				$key = substr($key, strpos($key, '_')+1);	
-	
-				$field_id = NULL;
-				$field_name = NULL;
-				if (strpos($key, 'field_id') !== FALSE) 
+				
+				if ($key == 'field') 
 				{
-					$field_id = substr($key, strrpos($key, '_')+1);
-					$field_name = $this->relationship_field_names[$field_id];
-					$key = 'field_id';
+					$id = $this->relationship_field_names[$id];
 				}
 
 				if ( ! isset($leaf_result[$level]))
@@ -554,25 +553,7 @@ class Relationship_Parser
 					$leaf_result[$level] = array();
 				}
 	
-				switch ($key)
-				{
-					case 'id':
-						$leaf_result[$level]['id'] = $id;
-					break;
-					case 'parent':
-						$leaf_result[$level]['parent'] = $id;
-					break;
-					case 'field_id':
-						if( ! isset($leaf_result[$level]['fields']))
-						{
-							$leaf_result[$level]['fields'] = array();
-						}
-						$leaf_result[$level]['fields'][$field_name] = $id;
-					break;
-					case 'relationship_id':
-						$leaf_result[$level]['relationship'] = $id;
-					break;
-				}
+				$leaf_result[$level][$key] = $id;
 			}
 			$parsed_leaves[] = $leaf_result;
 		}
@@ -605,61 +586,36 @@ class Relationship_Parser
 		{
 			$parent = NULL;
 			$field_name = NULL;
-			foreach ($leaf as $level)
+			foreach ($leaf as $l => $level)
 			{
+				if( ! isset($entries[$level['parent']]))
+				{
+					$entries[$level['parent']] = new Relationship_Entry($level['parent'], $this->custom_fields);
+				}
+				$parent = $entries[$level['parent']];
+				
 				if( ! isset($entries[$level['id']]))
 				{
 					$entries[$level['id']] = new Relationship_Entry($level['id'], $this->custom_fields);
 				}
 				$entry = $entries[$level['id']];
+
+				$field_name = $level['field'];
 				
-				if ($parent !== NULL && $field_name !== NULL)
-				{
-					$parent->add_child($field_name, $entry);	
-				}
-				else if ($parent === NULL && $field_name === NULL)
-				{
-					// We only want to add it to the tree if we haven't 
-					// already added it.
-					if( ! isset($tree[$entry->get_entry_id()]))
-					{
-						$tree[$entry->get_entry_id()] = $entry;
-					}
-				}
-				else
-				{
-					throw new RuntimeException('Malformed relationship data!');
-				}
+					
+				$parent->add_child($field_name, $entry);	
 
-				// If we don't have a relationship, we're done with this leaf, break out.
-				if ( ! isset($level['relationship']) OR  empty($level['relationship']))
+				// We only want to add it to the tree if we haven't 
+				// already added it and this only belongs in the tree
+				// if it's level zero.
+				if($l==0 && ! isset($tree[$parent->get_entry_id()]))
 				{
-					break;	
-				}
-
-				$found = FALSE;
-				foreach ($level['fields'] as $name => $relationship_id)
-				{
-					if ($relationship_id == $level['relationship'])
-					{
-						$found = TRUE;	
-						$parent = $entry;
-						$field_name = $name;
-						
-					}
-				}
-
-				// This should never, ever happen.  We should never have a case where we've
-				// selected an entry as a child who's relationship id does not match any of
-				// the parent's relationship fields.
-				if( ! $found)
-				{
-					throw new RuntimeException('Malformed relationship data!');
+					$tree[$parent->get_entry_id()] = $parent;
 				}
 			}
 
 		}
-
+		
 		$data = array(
 			'entry_ids' => array_keys($entries),
 			'entry_lookup' => $entries,
@@ -675,22 +631,9 @@ class Relationship_Parser
  	 * Take the related entries we've retrieved, examine the tag data and then build the array 
 	 * of variables that we'll pass to TMPL->parse_variables() for replacing.  
 	 * 
-	 * TODO WRITE ME! 
 	 */
 	protected function _build_variables_array($data)
 	{
-
-		/*echo 'TREE: <br />';
-		echo '<pre>'; 
-		foreach($data['tree'] as $entry) {
-			$entry->print_entry();	
-		} echo '</pre>';
-		
-		echo '_build_variables_array()<br />'; */
-
-	//	echo 'Tree: <br />';
-	//	echo '<pre>'; print_r($data['tree']); echo '</pre>';
-
 		$variables = array();
 		foreach ($data['tree'] as $entry_id => $entry)
 		{
@@ -700,6 +643,7 @@ class Relationship_Parser
 				$node = $entry;
 				$namespace = '';
 				$field = '';
+				$recursed = false;
 				while (strpos($variable, ':') !== false)
 				{
 					$field = substr($variable, 0, strpos($variable, ':'));
@@ -724,6 +668,7 @@ class Relationship_Parser
 						{
 							$this->_build_variables_array_recursive($child, $pair, $namespace, $variable);
 						}
+						$recursed = TRUE;
 						break;
 					}
 					// This is a 1 to 1 relationship field.
@@ -732,6 +677,10 @@ class Relationship_Parser
 					{
 						$node = $node->{$field};
 					}
+				}
+				if ($namespace !== '' && !$recursed)
+				{	
+					$entry_row[$namespace . ':' . $variable] = $node->{$variable};
 				}
 			}
 			$variables[$entry_id] = $entry_row;
