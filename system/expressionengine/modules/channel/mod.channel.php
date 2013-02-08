@@ -354,37 +354,17 @@ class Channel {
 		//
 		// FIXME Only call this if there are, in fact, values in rfields[1]
 		// TODO Make sure our multi-relationship fields find their way into rfields
-/*		$this->EE->load->library('relationships');
+		/** ZERO WING **/
+		$this->EE->load->library('relationships');
+		$relationship_parser = $this->EE->relationships->get_relationship_parser($this->EE->TMPL, $this->rfields[1], $this->cfields[1]);
+		$relationship_parser->query_for_entries($this->_entry_ids); 
 
-		echo 'Data in Template: <br />';	
-		var_dump($this->EE->TMPL->tag_data);
-		var_dump($this->EE->TMPL->var_single);
-		var_dump($this->EE->TMPL->var_pair);
-
-		$relationship_parser = $this->EE->relationships->get_relationship_parser($this->EE->TMPL, $this->rfields[1]);
-		$relationship_parser->query_for_entries($this->_entry_ids); */
-
-		$this->parse_channel_entries();
+		$this->parse_channel_entries($relationship_parser);
 
 		if ($this->enable['pagination'] == TRUE)
 		{
 			$this->return_data = $this->pagination->render($this->return_data);
 		}
-
-
-		echo 'Data in Channel: <br />';
-		var_dump($this->cfields);
-		var_dump($this->rfields);
-		var_dump($this->pfields);
-		
-		echo 'Parsed data: <br />';
-		echo '<pre>' . htmlentities($this->return_data) . '</pre>';
-	
-		echo 'Data in Template: <br />';	
-		var_dump($this->EE->TMPL->tag_data);
-		var_dump($this->EE->TMPL->var_single);
-		var_dump($this->EE->TMPL->var_pair);
-		die(); 
 
 		// Does the tag contain "related entries" that we need to parse out?
 
@@ -3251,7 +3231,7 @@ class Channel {
 	/**
 	  *  Parse channel entries
 	  */
-	public function parse_channel_entries()
+	public function parse_channel_entries($relationship_parser)
 	{
 		$switch = array();
 		$processed_member_fields = array();
@@ -4827,9 +4807,8 @@ class Channel {
 			//
 			// -------------------------------------------
 			/** ZERO WING **/	
-			/*$tagdata = $this->EE->relationships->parse_relationships($row['entry_id'], $this->_zero_wing_data, $tagdata);
-			echo 'Finished a round of parsing, what have we got? <br />';
-			echo '<pre>' . htmlentities ($tagdata) . '</pre>';*/
+			$tagdata = $relationship_parser->parse_relationships($row['entry_id'], $tagdata);
+			//echo 'Finished a round of parsing, what have we got? <br />';
 			$this->return_data .= $tagdata;
 
 		}

@@ -117,7 +117,7 @@ class Relationships {
  	// --------------------------------------------------------------------
 
 	/**
-	 * Get a relationship query object, populated with the information
+	 * Get a relationship parser and query object, populated with the information
 	 * we'll need to parse out the relationships in this template.
 	 *
 	 * @param int[] An array of entry ids for the entries we wish to pull the relationships of.
@@ -125,13 +125,9 @@ class Relationships {
 	 * @param Template The template we are parsing.
 	 * @return Relationship_Query The query object populated with the data queried from the database.
 	 */
-	public function get_relationship_parser(EE_Template $template, array $relationship_fields)
+	public function get_relationship_parser(EE_Template $template, array $relationship_fields, array $custom_fields)
 	{
-		echo 'Data in Template passed: <br />';	
-		var_dump($template->tag_data);
-		var_dump($template->var_single);
-		var_dump($template->var_pair);
-		return new Relationship_Parser($template, $relationship_fields);
+		return new Relationship_Parser($template, $relationship_fields, $custom_fields);
 	}
 
  	// --------------------------------------------------------------------
@@ -265,20 +261,39 @@ class Relationship_Parser
 	protected $template = NULL;
 
 	/**
-	 * An array of relationship fields that we have.
-	 */	
+	 * A mapping of relationship fields.  Maps name => field_id.
+	 */
 	protected $relationship_field_ids = array();
+	
+	/**
+	 * Another mapping of relationship fields going in the opposite direction.
+	 * Maps field_id => name.
+	 */ 
 	protected $relationship_field_names = array();
+
+	/**
+	 * Custom field id to name mapping.
+	 */
+	protected $custom_fields = array();
+
+	/**
+	 * An array of our relationship data in the format
+	 * that EE_Template::parse_variables() expects it to 
+	 * be in.
+	 */	
+	protected $variables = array();
 	
 	/**
 	 * Create a relationship parser for the given Template.
 	 */
-	public function __construct(EE_Template $template, array $relationship_fields)
+	public function __construct(EE_Template $template, array $relationship_fields, array $custom_fields)
 	{
 		$this->template = $template;
 		$this->relationship_field_ids = $relationship_fields;
 		$this->relationship_field_names = array_flip($relationship_fields);
+		$this->custom_fields = $custom_fields;
 	}
+
 
 	/**
 	 * TODO handle the case where we find no relationship tags
@@ -329,12 +344,12 @@ class Relationship_Parser
 		{
 			$data['entry_lookup'][$entry['entry_id']]->set_data($entry);
 		}
-
-		echo 'Merged: <pre>'; print_r($data); echo '</pre>';
-
-		$variables = $this->_build_variables_array($data);
 	
-		var_dump($variables);
+		// Alright, now build and store the variables array
+		// that parse_variables() will be expecting for our
+		// relationships.
+		$this->variables = $this->_build_variables_array($data);
+	
 	}
 
 	/**
@@ -498,6 +513,7 @@ class Relationship_Parser
 		$db->where_in('L0.entry_id', $entry_ids);
 
 		$sql = $db->_compile_select();
+
 		$id_query = $db->query($sql);	
 	
 		return $id_query->result_array();
@@ -593,7 +609,7 @@ class Relationship_Parser
 			{
 				if( ! isset($entries[$level['id']]))
 				{
-					$entries[$level['id']] = new Relationship_Entry($level['id']);
+					$entries[$level['id']] = new Relationship_Entry($level['id'], $this->custom_fields);
 				}
 				$entry = $entries[$level['id']];
 				
@@ -657,22 +673,140 @@ class Relationship_Parser
 	 * Build Variables Array
 	 *
  	 * Take the related entries we've retrieved, examine the tag data and then build the array 
-	 * of variables that we'll pass to TMPL->parse_variables() for replacing.  * * TODO WRITE ME! 
+	 * of variables that we'll pass to TMPL->parse_variables() for replacing.  
+	 * 
+	 * TODO WRITE ME! 
 	 */
-	protected function _build_variables_array($data, $field_ids)
+	protected function _build_variables_array($data)
 	{
+
+		/*echo 'TREE: <br />';
+		echo '<pre>'; 
+		foreach($data['tree'] as $entry) {
+			$entry->print_entry();	
+		} echo '</pre>';
 		
-		echo '_build_variables_array()<br />';
-		$EE = get_instance();
+		echo '_build_variables_array()<br />'; */
 
-		$field_ids = array_flip($field_ids);
-
-		echo 'Data: <br />';
-		var_dump($data);
-		var_dump($field_ids);
+	//	echo 'Tree: <br />';
+	//	echo '<pre>'; print_r($data['tree']); echo '</pre>';
 
 		$variables = array();
+		foreach ($data['tree'] as $entry_id => $entry)
+		{
+			$entry_row = array();
+			foreach ($this->template->var_single as $variable)
+			{	
+				$node = $entry;
+				$namespace = '';
+				$field = '';
+				while (strpos($variable, ':') !== false)
+				{
+					$field = substr($variable, 0, strpos($variable, ':'));
+					if ($namespace !== '')
+					{
+						$namespace .= ':';
+					}
+					$namespace .= $field;
+					$variable = substr($variable, strpos($variable, ':')+1);
 	
+					// This is a variable in a pair.  We need
+					// to handle it somehow.	
+					if (is_array($node->{$field}))
+					{
+						if ( ! isset($entry_row[$field]))
+						{
+							$entry_row[$field] = array('normalize'=>true);
+						}
+						
+						$pair = &$entry_row[$field];
+						foreach ($node->{$field} as $child)
+						{
+							$this->_build_variables_array_recursive($child, $pair, $namespace, $variable);
+						}
+						break;
+					}
+					// This is a 1 to 1 relationship field.
+					// we can just bounce down to the next level.
+					else 
+					{
+						$node = $node->{$field};
+					}
+				}
+			}
+			$variables[$entry_id] = $entry_row;
+		}
+		return $this->_normalize_array_keys($variables);
+	}
+
+	/**
+	 *
+	 */
+	protected function _build_variables_array_recursive(Relationship_Entry $node, array &$pair, $namespace, $variable)
+	{ 	
+		if ( ! isset($pair[$node->get_entry_id()]))
+		{
+			$pair[$node->get_entry_id()] = array();
+		}
+		$entry_row = &$pair[$node->get_entry_id()];
+
+		while (strpos($variable, ':') !== FALSE)
+		{
+			$field = substr($variable, 0, strpos($variable, ':'));
+			if ($namespace !== '')
+			{
+				$namespace .= ':';
+			}
+			$namespace .= $field;
+			$variable = substr($variable, strpos($variable, ':')+1);
+
+			// This is a variable in a pair.  We need
+			// to handle it somehow.	
+			if (is_array($node->{$field}))
+			{
+				if ( ! isset($entry_row[$namespace]))
+				{
+					$entry_row[$namespace] = array('normalize' => true);
+				}
+				
+				$next_pair = &$entry_row[$namespace];
+				
+				foreach ($node->{$field} as $child)
+				{
+					$this->_build_variables_array_recursive($child, $next_pair, $namespace, $variable);
+				}
+				return;
+			}
+			// This is a 1 to 1 relationship field.
+			// we can just bounce down to the next level.
+			else 
+			{
+				$node = $node->{$field};
+			}
+		}	
+		$entry_row[$namespace . ':' . $variable] = $node->{$variable};
+	}
+
+	protected function _normalize_array_keys($variables)
+	{
+		foreach($variables as $key => $value)
+		{
+			if (is_array($value))
+			{
+				$variables[$key] = $this->_normalize_array_keys($value);
+			}
+		}	
+
+		if (isset ($variables['normalize']))
+		{
+			unset ($variables['normalize']);
+			$result = array();
+			foreach ($variables as $key => $value) 
+			{
+				$result[] = $value;
+			}
+			return $result;
+		}
 
 		return $variables;
 	}
@@ -690,36 +824,9 @@ class Relationship_Parser
 	 */
 	public function parse_relationships($entry_id, $tagdata)
 	{
-					
-		$entry_data = $data[$entry_id];
-
-		$variables = array();
-		foreach ($EE->TMPL->single_var as $variable)
-		{
-			$parts = explode(':', $variable);
-
-			$variable_row = &$variables;
-			$data_row = &$entry_data;
-			foreach ($parts as $part)
-			{
-				if (is_array($data_row[$part]))
-				{
-					if ( ! isset($variable_row[$part]))
-					{
-						$variable_row[$part] = array();
-					}
-
-					$variables_row = &$variables[$part];	
-					$data_row = &$entry_data[$part];
-				}
-				else 
-				{
-					$variables_row[$variable] = $data_row[$part];
-				}
-			}
-
-		}
-		
+		$entry_data = $this->variables[$entry_id];
+		$tagdata = $this->template->parse_variables($tagdata, array(0=>$entry_data));
+		return $tagdata;
 	}
 
 }
@@ -731,25 +838,74 @@ class Relationship_Parser
 class Relationship_Entry
 {
 	protected $entry_id;
-	protected $data;
-	protected $children;
-		
-	public function __construct($entry_id)
+	protected $data = array();
+	protected $children = array();
+
+	protected $custom_fields;
+
+	public function print_entry() {
+		static $depth = -1;
+
+		$depth++;
+		for($i = 0; $i < $depth; $i++) {
+			echo "\t";
+		}
+		echo 'BEGIN ENTRY: ' . $this->entry_id . '(' . $this->data['title'] . ')<br />';
+		foreach($this->children as $field => $entries) {
+			for($i = 0; $i < $depth; $i++) {
+				echo "\t";
+			}
+			echo '-' .(is_array($entries) ? 'ARRAY() ' : '') . $field . ':<br />';
+			if( is_array($entries)) {
+				foreach($entries as $child) {
+					$child->print_entry();
+				}
+			}
+			elseif( is_object($entries)){
+				$entries->print_entry();
+			}
+			else {
+				var_dump($entries);	
+			}
+				
+			for($i = 0; $i < $depth; $i++) {
+				echo "\t";
+			}
+			echo '-END ' . $field . '<br />';
+		}
+		for($i = 0; $i < $depth; $i++) {
+			echo "\t";
+		}
+		echo 'END ENTRY: ' . $this->entry_id . '(' .$this->data['title'] . ')<br />';
+		$depth--;
+	}
+	
+	public function __construct($entry_id, $custom_fields)
 	{		
 		$this->entry_id = $entry_id;
+		$this->custom_fields = $custom_fields;
 	}
 
 	public function __get($name)
 	{
 		if (isset($this->children[$name]))
 		{
-			return $children[$name];
+			return $this->children[$name];
 		}
-		elseif (isset($this->entry[$name]))
+		elseif (isset($this->data[$name]))
 		{
-			return $this->entry[$name];
+			return $this->data[$name];
 		}
-		return NULL;
+	
+		if(isset($this->custom_fields[$name])) {	
+			$field_id = $this->custom_fields[$name];
+			if(isset($this->data['field_id_' . $field_id]))
+			{
+				return $this->data['field_id_' . $field_id];
+			}
+		}
+
+		throw new RuntimeException('Attempt to access a non-existent field!');
 	}
 
 	public function get_entry_id()
@@ -781,11 +937,26 @@ class Relationship_Entry
 
 	public function add_child($field, Relationship_Entry $child)
 	{
+		
 		if( ! isset($this->children[$field]))
 		{
-			$this->children[$field] = array();
+			$this->children[$field] = $child;
+			return $this;
 		}
-		
+		else if( ! is_array($this->children[$field]))
+		{
+			if ($this->children[$field]->get_entry_id() !== $child->get_entry_id()) 
+			{
+				$children = array(
+					$this->children[$field]->get_entry_id() => $this->children[$field],
+					$child->get_entry_id() => $child
+				);
+				$this->children[$field] = $children;
+				return $this;	
+			}
+			return $this;
+		}
+
 		$this->children[$field][$child->get_entry_id()] = $child;
 		return $this;
 	}
