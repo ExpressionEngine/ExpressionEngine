@@ -351,6 +351,7 @@ class Relationship_Parser
 		// that parse_variables() will be expecting for our
 		// relationships.
 		$this->variables = $this->_build_variables_array($data);
+		
 	
 	}
 
@@ -615,7 +616,7 @@ class Relationship_Parser
 			}
 
 		}
-		
+
 		$data = array(
 			'entry_ids' => array_keys($entries),
 			'entry_lookup' => $entries,

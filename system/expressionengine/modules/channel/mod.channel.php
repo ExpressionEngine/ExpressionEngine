@@ -41,14 +41,6 @@ class Channel {
  	 */
 	protected $_entry_ids				= array();
 
-	/**
-	 * Data used by zero_wing relationships.  Ideally this wouldn't be a class
-	 * variable, but for now it makes more sense this way.  This will store the
-	 * data returned by Relationships::get_relationship_data() which will then
-	 * be passed back to Relationships::parse_relationship()
-	 */
-	protected $_zero_wing_data 		= array();
-
 	public $uri						= '';
 	public $uristr					= '';
 	public $return_data				= '';	 	// Final data
@@ -57,6 +49,12 @@ class Channel {
 	public $cfields					= array();
 	public $dfields					= array();
 	public $rfields					= array();
+
+	/**
+	 * A mapping of field_name => field_id containing
+	 * only fields of the Zero Wing Relationship fieldtype.
+	 */
+	public $zwfields				= array();
 	public $mfields					= array();
 	public $pfields					= array();
 	public $categories				= array();
@@ -356,7 +354,7 @@ class Channel {
 		// TODO Make sure our multi-relationship fields find their way into rfields
 		/** ZERO WING **/
 		$this->EE->load->library('relationships');
-		$relationship_parser = $this->EE->relationships->get_relationship_parser($this->EE->TMPL, $this->rfields[1], $this->cfields[1]);
+		$relationship_parser = $this->EE->relationships->get_relationship_parser($this->EE->TMPL, $this->zwfields[1], $this->cfields[1]);
 		$relationship_parser->query_for_entries($this->_entry_ids); 
 
 		$this->parse_channel_entries($relationship_parser);
@@ -888,11 +886,13 @@ class Channel {
 	public function fetch_custom_channel_fields()
 	{
 		if (isset($this->EE->session->cache['channel']['custom_channel_fields']) && isset($this->EE->session->cache['channel']['date_fields'])
-			&& isset($this->EE->session->cache['channel']['relationship_fields'])  && isset($this->EE->session->cache['channel']['pair_custom_fields']))
+			&& isset($this->EE->session->cache['channel']['relationship_fields']) && isset($this->EE->session->cache['channel']['zero_wing_fields'])
+			&& isset($this->EE->session->cache['channel']['pair_custom_fields']))
 		{
 			$this->cfields = $this->EE->session->cache['channel']['custom_channel_fields'];
 			$this->dfields = $this->EE->session->cache['channel']['date_fields'];
 			$this->rfields = $this->EE->session->cache['channel']['relationship_fields'];
+			$this->zwfields = $this->EE->session->cache['channel']['zero_wing_fields'];
 			$this->pfields = $this->EE->session->cache['channel']['pair_custom_fields'];
 			return;
 		}
@@ -905,11 +905,13 @@ class Channel {
 		$this->cfields = $fields['custom_channel_fields'];
 		$this->dfields = $fields['date_fields'];
 		$this->rfields = $fields['relationship_fields'];
+		$this->zwfields = $fields['zero_wing_fields'];
 		$this->pfields = $fields['pair_custom_fields'];
 
   		$this->EE->session->cache['channel']['custom_channel_fields']	= $this->cfields;
 		$this->EE->session->cache['channel']['date_fields']				= $this->dfields;
 		$this->EE->session->cache['channel']['relationship_fields']		= $this->rfields;
+		$this->EE->session->cache['channel']['zero_wing_fields']		= $this->zwfields;
 		$this->EE->session->cache['channel']['pair_custom_fields']		= $this->pfields;
 	}
 
@@ -3965,7 +3967,7 @@ class Channel {
 							$tagdata = $this->EE->TMPL->delete_var_pairs($key, $key_name, $tagdata);
 						}
 					}	
-					elseif (isset($this->rfields[$row['site_id']][$key]))
+					elseif (isset($this->zwfields[$row['site_id']][$key]))
 					{
 					
 					}
@@ -4691,7 +4693,7 @@ class Channel {
 				if (($cln = strpos($key, ':')) !== FALSE)
 				{
 					$first_term = substr($key, 0, $cln);
-					if ( ! isset($this->rfields[$row['site_id']][$first_term])) 
+					if ( ! isset($this->zwfields[$row['site_id']][$first_term])) 
 					{
 						$modifier = substr($key, $cln + 1);
 						

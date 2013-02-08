@@ -137,6 +137,7 @@ class Api_channel_fields extends Api {
 		$dfields = array();
 		$rfields = array();
 		$pfields = array();
+		$zwfields = array();
 		
 		foreach ($query->result_array() as $row)
 		{
@@ -154,6 +155,10 @@ class Api_channel_fields extends Api {
 			elseif ($row['field_type'] == 'rel')
 			{
 				$rfields[$row['site_id']][$row['field_name']] = $row['field_id'];
+			}
+			else if ($row['field_type'] == 'zero_wing')
+			{
+				$zwfields[$row['site_id']][$row['field_name']] = $row['field_id'];
 			}
 			else
 			{
@@ -186,6 +191,7 @@ class Api_channel_fields extends Api {
 			'custom_channel_fields'	=> $cfields,
 			'date_fields'			=> $dfields,
 			'relationship_fields'	=> $rfields,
+			'zero_wing_fields'		=> $zwfields,
 			'pair_custom_fields'	=> $pfields
 		);
 	}
