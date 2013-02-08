@@ -13,11 +13,15 @@ class Ip_to_nation_data extends CI_Model {
 	function find($ip)
 	{
 		$BIN = $this->to_binary($ip);
+		
+		// If IP contains 39 or 92, we end up with ASCII quote or backslash
+		// Let's be sure to escape!
+		$BIN = $this->db->escape_str($BIN);
 
 		$query = $this->db
 			->select('country')
-			->where("ip_range_low <= '".$BIN."'", '', FALSE)
-			->where("ip_range_high >= '".$BIN."'", '', FALSE)
+			->where("ip_range_low <= '{$BIN}'", '', FALSE)
+			->where("ip_range_high >= '{$BIN}'", '', FALSE)
 			->order_by('ip_range_low', 'desc')
 			->limit(1, 0)
 			->get($this->table);

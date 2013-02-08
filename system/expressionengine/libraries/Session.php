@@ -765,11 +765,12 @@ class EE_Session {
 		}
 		
 		$addr = inet_pton($addr);
+		$addr = $this->EE->db->escape_str($addr);
 
 		$query = $this->EE->db
 			->select('country')
-			->where("ip_range_low <= '".$addr."'", '', FALSE)
-			->where("ip_range_high >= '".$addr."'", '', FALSE)
+			->where("ip_range_low <= '{$addr}'", '', FALSE)
+			->where("ip_range_high >= '{$addr}'", '', FALSE)
 			->order_by('ip_range_low', 'desc')
 			->limit(1, 0)
 			->get('ip2nation');
