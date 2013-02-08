@@ -81,19 +81,19 @@ class Zero_wing_ft extends EE_Fieldtype {
 
 		// clear old stuff
 		$this->EE->db
-			->where('entry_id', $entry_id)
+			->where('parent_id', $entry_id)
 			->where('field_id', $field_id)
 			->delete($this->_table);
 
 		// insert new stuff
 		$ships = array();
 
-		foreach ($data as $rel_id)
+		foreach ($data as $child_id)
 		{
 			$ships[] = array(
-				'entry_id'		  => $entry_id,
-				'relationship_id' => $rel_id,
-				'field_id'		  => $field_id
+				'parent_id'	=> $entry_id,
+				'child_id'	=> $child_id,
+				'field_id'	=> $field_id
 			);
 		}
 
@@ -114,8 +114,8 @@ class Zero_wing_ft extends EE_Fieldtype {
 	public function delete($ids)
 	{
 		$this->EE->db
-			->where_in('entry_id', $ids)
-			->or_where_in('relationship_id', $ids)
+			->where_in('parent_id', $ids)
+			->or_where_in('child_id', $ids)
 			->delete($this->_table);
 	}
 
@@ -142,8 +142,8 @@ class Zero_wing_ft extends EE_Fieldtype {
 		if ($entry_id)
 		{
 			$related = $this->EE->db
-				->select('relationship_id')
-				->where('entry_id', $entry_id)
+				->select('child_id')
+				->where('parent_id', $entry_id)
 				->where('field_id', $this->field_id)
 				->get($this->_table)
 				->result_array();
@@ -494,12 +494,18 @@ JSS;
 		$this->EE->load->dbforge();
 
 		$fields = array(
-			'entry_id'	=> array(
+			'relationship_id' => array(
+				'type'				=> 'int',
+				'constraint'		=> 10,
+				'unsigned'			=> TRUE,
+				'auto_increment'	=> TRUE
+			),
+			'parent_id'	=> array(
 				'type'				=> 'int',
 				'constraint'		=> 10,
 				'unsigned'			=> TRUE
 			),
-			'relationship_id'  => array(
+			'child_id'  => array(
 				'type'				=> 'int',
 				'constraint'		=> 10,
 				'unsigned'			=> TRUE
@@ -513,11 +519,12 @@ JSS;
 
 		$this->EE->dbforge->add_field($fields);
 
-		// Joined primary key
-		$this->EE->dbforge->add_key('entry_id', TRUE);
+		// Worthless primary key
 		$this->EE->dbforge->add_key('relationship_id', TRUE);
 
-		// Field id of entry
+		// Keyed table is keyed
+		$this->EE->dbforge->add_key('parent_id');
+		$this->EE->dbforge->add_key('child_id');
 		$this->EE->dbforge->add_key('field_id');
 
 		$this->EE->dbforge->create_table($this->_table);
