@@ -55,6 +55,7 @@ class Pagination_object {
 	public $cfields				= array();
 	public $type				= '';
 	public $dynamic_sql			= TRUE;
+	public $pagination_marker = "pagination_goes_here";
 	
 	public function __construct($classname)
 	{
@@ -114,11 +115,17 @@ class Pagination_object {
 			$this->paginate		= TRUE;
 			$this->template_data	= $paginate_match[1];
 			
+			// Determine if pagination needs to go at the top and/or bottom
+			$this->position = ( ! $this->EE->TMPL->fetch_param('paginate')) ? '' : $this->EE->TMPL->fetch_param('paginate');
+			
+			// if position is inline then insert temporary tag/marker
+			if($this->position == 'inline') { $replace_tag = LD . $this->pagination_marker . RD; } else { $replace_tag = ""; }
+			
 			// Remove pagination tags from template since we'll just 
 			// append/prepend it later
 			$this->EE->TMPL->tagdata = preg_replace(
 				"/".LD."paginate".RD.".+?".LD.'\/'."paginate".RD."/s",
-				"",
+				$replace_tag,
 				$this->EE->TMPL->tagdata
 			);
 		}
@@ -180,7 +187,7 @@ class Pagination_object {
 				if (preg_match("#^P(\d+)|/P(\d+)#", $query_string, $match))
 				{
 					$this->offset = (isset($match[2])) ? $match[2] : $match[1];
-					$this->basepath = reduce_double_slashes(
+					$this->basepath = $this->EE->functions->remove_double_slashes(
 						str_replace($match[0], '', $this->basepath)
 					);
 				}
@@ -323,6 +330,8 @@ class Pagination_object {
 				// Check to see if a paginate_base was provided
 				if ($this->EE->TMPL->fetch_param('paginate_base'))
 				{
+					$this->EE->load->helper('string');
+
 					$this->basepath = $this->EE->functions->create_url(
 						trim_slashes($this->EE->TMPL->fetch_param('paginate_base'))
 					);
@@ -437,9 +446,9 @@ class Pagination_object {
 			// ----------------------------------------------------------------
 			
 			// Determine if pagination needs to go at the top and/or bottom
-			$position = ( ! $this->EE->TMPL->fetch_param('paginate')) ? '' : $this->EE->TMPL->fetch_param('paginate');
+			//$position = ( ! $this->EE->TMPL->fetch_param('paginate')) ? '' : $this->EE->TMPL->fetch_param('paginate');
 			
-			switch ($position)
+			switch ($this->position)
 			{
 				case "top":
 					return $this->template_data.$return_data;
@@ -447,6 +456,14 @@ class Pagination_object {
 				case "both":
 					return $this->template_data.$return_data.$this->template_data;
 					break;
+				case "inline":
+    			$return_data = preg_replace(
+    				"/".LD.$this->pagination_marker.RD."/s",
+    				$this->template_data,
+    				$return_data
+    			);
+    			return $return_data;
+    			break;
 				case "bottom":
 				default:
 					return $return_data.$this->template_data;
