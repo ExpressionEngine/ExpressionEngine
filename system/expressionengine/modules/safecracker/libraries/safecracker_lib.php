@@ -446,7 +446,8 @@ class Safecracker_lib
 			}
 			
 			//options:field_name tag pair parsing
-			else if (preg_match('/^options:(.*)/', $tag_name, $match) && in_array($this->get_field_type($match[1]), $this->option_fields))
+			else if (preg_match('/^options:(.*)/', $tag_name, $match) && ($field_type_match = $this->get_field_type($match[1])) && 
+						(in_array($field_type_match, $this->option_fields) OR $field_type_match == 'rel'))
 			{
 				$checkbox_fields[] = $match[1];
 				
@@ -551,7 +552,8 @@ class Safecracker_lib
 					$this->parse_variables[$match[0]] = (array_key_exists($match[1], $this->custom_fields)) ? $this->custom_fields[$match[1]]['field_label'] : '';
 				}
 				
-				else if (preg_match('/^selected_option:(.*?)(:label)?$/', $key, $match) && in_array($this->get_field_type($match[1]), $this->option_fields))
+				else if (preg_match('/^selected_option:(.*?)(:label)?$/', $key, $match) && ($field_type_match = $this->get_field_type($match[1])) && 
+							(in_array($field_type_match, $this->option_fields) OR $field_type_match == 'rel'))
 				{
 					$options = (isset($custom_field_variables[$match[1]]['options'])) ? $custom_field_variables[$match[1]]['options'] : array();
 					
@@ -559,7 +561,14 @@ class Safecracker_lib
 					
 					foreach ($options as $option)
 					{
-						if ($option['option_value'] == $this->entry($match[1]))
+						if ($field_type_match == "rel")
+						{
+						 	if ( ! empty($option['selected']) OR ! empty($option['checked']))
+							{
+								$selected_option = ( ! empty($match[2])) ? $option['option_name'] : $option['option_value'];
+							}
+						}
+						elseif ($option['option_value'] == $this->entry($match[1]))
 						{
 							$selected_option = ( ! empty($match[2])) ? $option['option_name'] : $option['option_value'];
 						}
@@ -646,8 +655,8 @@ class Safecracker_lib
 							$this->parse_variables[$field['field_name']] = '';
 						}
 					}
-					
-					else if ($tag_name == 'options:'.$field['field_name'] && in_array($this->get_field_type($field['field_name']), $this->option_fields))
+					elseif ($tag_name == 'options:'.$field['field_name'] && ($field_type_match = $this->get_field_type($field['field_name'])) && 
+							(in_array($field_type_match, $this->option_fields) OR $field_type_match == 'rel'))
 					{
 						$this->parse_variables['options:'.$field['field_name']] = (isset($custom_field_variables[$field['field_name']]['options'])) ? $custom_field_variables[$field['field_name']]['options'] : '';
 					}
