@@ -4616,25 +4616,20 @@ class Channel {
 							continue;
 						}
 
-						// use a temporary variable in case the custom date variable is used
-						// multiple times with different formats; prevents localization from
-						// occurring multiple times on the same value
-						$temp_val = $row['field_id_'.$dval];
+						// If date is fixed, get timezone to convert timestamp to,
+						// otherwise localize it normally
+						$localize = (isset($row['field_dt_'.$dval]) AND $row['field_dt_'.$dval] != '')
+							? $row['field_dt_'.$dval] : TRUE;
 
-						$localize = TRUE;
-						if (isset($row['field_dt_'.$dval]) AND $row['field_dt_'.$dval] != '')
-						{
-							$localize = TRUE;
-							if ($row['field_dt_'.$dval] != '')
-							{
-								$temp_val = $this->EE->localize->simpl_offset($temp_val, $row['field_dt_'.$dval]);
-								$localize = FALSE;
-							}
-						}
-
-						$val = str_replace($custom_date_fields[$key], $this->EE->localize->format_date($custom_date_fields[$key], $temp_val, $localize), $val);
-
-						$tagdata = $this->EE->TMPL->swap_var_single($key, $val, $tagdata);
+						$tagdata = $this->EE->TMPL->swap_var_single(
+							$key, 
+							$this->EE->localize->format_date(
+								$custom_date_fields[$key],
+								$row['field_id_'.$dval], 
+								$localize
+							),
+							$tagdata
+						);
 					}
 				}
 

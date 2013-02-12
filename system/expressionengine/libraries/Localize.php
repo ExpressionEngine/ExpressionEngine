@@ -656,15 +656,8 @@ class EE_Localize {
 	 */
 	function simpl_offset($time = '', $timezone = '')
 	{
-		$this->EE->load->helper('date');
-		$zones = timezones();
-
-		$time += $zones[$timezone] * 3600;
-
-		if ($this->EE->session->userdata('daylight_savings') == 'y')
-		{
-			$time += 3600;
-		}
+		$this->EE->load->library('logger');
+		$this->EE->logger->deprecated('2.6');
 
 		return $time;
 	}

@@ -673,15 +673,10 @@ class Content_publish extends CP_Controller {
 				{
 					if ($resrow[$key] != 0)
 					{
-						$localize = TRUE;
-						$date = $resrow[$key];
-						if ($resrow['field_dt_'.$expl['1']] != '')
-						{
-							$date = $this->localize->simpl_offset($date, $resrow['field_dt_'.$expl['1']]);
-							$localize = FALSE;
-						}
+						$localize = ($resrow['field_dt_'.$expl['1']] != '')
+							? $resrow['field_dt_'.$expl['1']] : TRUE;
 
-						$r .= $this->localize->human_time($date, $localize);
+						$r .= $this->localize->human_time($resrow[$key], $localize);
 					}
 				}
 				else

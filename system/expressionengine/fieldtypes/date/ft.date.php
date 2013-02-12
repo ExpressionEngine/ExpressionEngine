@@ -81,6 +81,7 @@ class Date_ft extends EE_Fieldtype {
 
 		$date = $this->EE->localize->now;
 		$custom_date = '';
+		$localize = TRUE;
 
 		if (isset($_POST[$date_field]) && ! is_numeric($_POST[$date_field]))
 		{
@@ -89,33 +90,20 @@ class Date_ft extends EE_Fieldtype {
 		}
 		else
 		{
-			$offset = isset($this->settings['default_offset']) ? $this->settings['default_offset'] : 0;
-			
-			if ( ! $field_data && ! $offset)
+			if ( ! $field_data)
 			{
 				$field_data = $date;
 
 				if (isset($this->settings['always_show_date']) && $this->settings['always_show_date'] == 'y')
 				{
-					$custom_date = $this->EE->localize->human_time($field_data);
+					$custom_date = $this->EE->localize->human_time();
 				}
 			}
 			else	// Everything else
 			{
-				$localize = TRUE;
-
-				if (isset($this->settings['field_dt']))
+				if (isset($this->settings['field_dt']) AND $this->settings['field_dt'] != '')
 				{
-					// Are we dealing with a fixed date?
-					if ($this->settings['field_dt'] != '')
-					{
-						$localize = FALSE;
-					}
-				}
-				elseif ( ! $field_data && $offset)
-				{
-					$localize = FALSE;
-					$field_data = $date + $offset;
+					$localize = $this->settings['field_dt'];
 				}
 
 				// doing it in here so that if we don't have field_data
@@ -155,7 +143,7 @@ class Date_ft extends EE_Fieldtype {
 
 		if ( ! in_array($this->field_name, $special))
 		{
-			$localized = ( ! isset($_POST[$date_local])) ? (($localize == FALSE) ? 'n' : 'y') : $this->EE->input->post($date_local, TRUE);
+			$localized = ( ! isset($_POST[$date_local])) ? (($localize === TRUE) ? 'y' : 'n') : $this->EE->input->post($date_local, TRUE);
 
 			$localized_opts	= array(
 				'y' => $this->EE->lang->line('localized_date'),
