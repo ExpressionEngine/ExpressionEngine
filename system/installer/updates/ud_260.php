@@ -47,34 +47,9 @@ class Updater {
 	{
 		$this->EE->load->dbforge();
 		
-		$this->_change_member_totals_length();
-		$this->_update_session_table();
+		$this->_add_template_name_to_dev_log();
 		
 		return TRUE;
-	}
-	
-	// --------------------------------------------------------------------
-	
-	/**
-	 * Changes column type for `total_entries` and `total_comments` in the
-	 * members table from smallint to mediumint to match the columns in the
-	 * channels table and stats table.
-	 */
-	private function _change_member_totals_length()
-	{
-		$this->EE->dbforge->modify_column(
-			'members',
-			array(
-				'total_entries' => array(
-					'name' => 'total_entries',
-					'type' => 'mediumint(8)'
-				),
-				'total_comments' => array(
-					'name' => 'total_comments',
-					'type' => 'mediumint(8)'
-				),
-			)
-		);
 	}
 
 	// --------------------------------------------------------------------
@@ -84,30 +59,42 @@ class Updater {
 	 *
 	 * @return TRUE
 	 */
-	private function _update_session_table()
+	private function _add_template_name_to_dev_log()
 	{
-		if ( ! $this->EE->db->field_exists('fingerprint', 'sessions'))
+		if ( ! $this->EE->db->field_exists('template_id', 'developer_log'))
 		{
 			$this->EE->dbforge->add_column(
-				'sessions',
+				'developer_log',
 				array(
-					'fingerprint' => array(
-						'type'			=> 'varchar',
-						'constraint'	=> 40
-					),
-					'sess_start' => array(
+					'template_id' => array(
 						'type'			=> 'int',
 						'constraint'	=> 10,
 						'unsigned'		=> TRUE,
 						'default'		=> 0,
 						'null'			=> FALSE
+					),
+					'template_name' => array(
+						'type'			=> 'varchar',
+						'constraint'	=> 100
+					),
+					'template_group' => array(
+						'type'			=> 'varchar',
+						'constraint'	=> 100
+					),
+					'addon_module' => array(
+						'type'			=> 'varchar',
+						'constraint'	=> 100
+					),
+					'addon_method' => array(
+						'type'			=> 'varchar',
+						'constraint'	=> 100
+					),
+					'snippets' => array(
+						'type'			=> 'text'
 					)
-				),
-				'user_agent'
-			);	
+				)
+			);
 		}
-		
-		return TRUE;
 	}
 }	
 /* END CLASS */

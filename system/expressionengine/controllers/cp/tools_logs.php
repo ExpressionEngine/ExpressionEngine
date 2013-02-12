@@ -515,7 +515,6 @@ class Tools_logs extends CP_Controller {
 		}
 		
 		$this->load->library('table');
-		
 		$this->table->set_base_url('C=tools_logs'.AMP.'M=view_developer_log');
 		$this->table->set_columns(array(
 			'log_id'		=> array('header' => lang('log_id')),
@@ -606,7 +605,7 @@ class Tools_logs extends CP_Controller {
 					'class'	=> $new
 				),
 				'description' => array(
-					'data'	=> (isset($log['function'])) ? $this->logger->build_deprecation_language($log) : $log['description'],
+					'data'	=> $this->logger->build_deprecation_language($log),
 					'class'	=> $new
 				),
 				'viewed' => $log['viewed'],

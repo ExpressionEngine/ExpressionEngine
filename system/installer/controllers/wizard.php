@@ -2444,7 +2444,7 @@ PAPAYA;
 			'prv_msg_html_format'			=> 'safe',
 			'prv_msg_auto_links'			=> 'y',
 			'prv_msg_max_chars'				=> '6000',
-			'strict_urls'					=>	'n',
+			'strict_urls'					=>	'y',
 			'site_404'						=>	'',
 			'save_tmpl_revisions'			=>	'n',
 			'max_tmpl_revisions'			=>	'5',

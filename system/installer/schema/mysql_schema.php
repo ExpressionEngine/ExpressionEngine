@@ -11,6 +11,8 @@ class EE_Schema {
 	var $default_entry	= '';
 	var $theme_path		= '';
 
+	private $default_engine = 'MyISAM';
+
 	function EE_Schema()
 	{
 		// Make a local reference to the ExpressionEngine super object
@@ -1311,6 +1313,12 @@ class EE_Schema {
 				`file` varchar(255) NULL,
 				`deprecated_since` varchar(10) NULL,
 				`use_instead` varchar(100) NULL,
+				`template_id` int(10) unsigned NOT NULL default 0,
+				`template_name` varchar(100) NULL,
+				`template_group` varchar(100) NULL,
+				`addon_module` varchar(100) NULL,
+				`addon_method` varchar(100) NULL,
+				`snippets` text NULL,
 				PRIMARY KEY (`log_id`)
 		)";
 		
@@ -1441,10 +1449,15 @@ class EE_Schema {
 		}
 				
 		foreach($Q as $sql)
-		{    
-			if (UTF8_ENABLED === TRUE && strncmp($sql, 'CREATE TABLE', 12) == 0)
+		{   
+			if (strncmp($sql, 'CREATE TABLE', 12) == 0) 
 			{
-				$sql .= 'DEFAULT CHARACTER SET '.$this->EE->db->escape_str($this->EE->db->char_set).' COLLATE '.$this->EE->db->escape_str($this->EE->db->dbcollat);
+				$sql .= 'ENGINE=' . $this->default_engine . ' ';
+
+				if (UTF8_ENABLED === TRUE)
+				{
+					$sql .= 'DEFAULT CHARACTER SET '.$this->EE->db->escape_str($this->EE->db->char_set).' COLLATE '.$this->EE->db->escape_str($this->EE->db->dbcollat);
+				}
 			}
 			
 			if ($this->EE->db->query($sql) === FALSE)

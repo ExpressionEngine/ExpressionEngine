@@ -473,7 +473,10 @@ class EE_Core {
 		$this->EE->load->helper(array('url', 'form', 'quicktab'));
 
 		// Secure forms stuff
-		$this->EE->cp->secure_forms();
+		if( ! $this->EE->security->have_valid_xid())
+		{
+			return $this->EE->functions->redirect(BASE);
+		}
 		
 		// Certain variables will be included in every page, so we make sure they are set here
 		// Prevents possible PHP errors, if a developer forgets to set it explicitly.
