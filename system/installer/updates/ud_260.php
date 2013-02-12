@@ -44,69 +44,7 @@ class Updater {
 	 * @return TRUE
 	 */
 	public function do_update()
-	{
-		$this->EE->load->dbforge();
-		
-		$this->_change_member_totals_length();
-		$this->_update_session_table();
-		
-		return TRUE;
-	}
-	
-	// --------------------------------------------------------------------
-	
-	/**
-	 * Changes column type for `total_entries` and `total_comments` in the
-	 * members table from smallint to mediumint to match the columns in the
-	 * channels table and stats table.
-	 */
-	private function _change_member_totals_length()
-	{
-		$this->EE->dbforge->modify_column(
-			'members',
-			array(
-				'total_entries' => array(
-					'name' => 'total_entries',
-					'type' => 'mediumint(8)'
-				),
-				'total_comments' => array(
-					'name' => 'total_comments',
-					'type' => 'mediumint(8)'
-				),
-			)
-		);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * update Session table
-	 *
-	 * @return TRUE
-	 */
-	private function _update_session_table()
-	{
-		if ( ! $this->EE->db->field_exists('fingerprint', 'sessions'))
-		{
-			$this->EE->dbforge->add_column(
-				'sessions',
-				array(
-					'fingerprint' => array(
-						'type'			=> 'varchar',
-						'constraint'	=> 40
-					),
-					'sess_start' => array(
-						'type'			=> 'int',
-						'constraint'	=> 10,
-						'unsigned'		=> TRUE,
-						'default'		=> 0,
-						'null'			=> FALSE
-					)
-				),
-				'user_agent'
-			);	
-		}
-		
+	{	
 		return TRUE;
 	}
 }	
