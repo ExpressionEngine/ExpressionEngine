@@ -729,11 +729,15 @@ class Cp {
 	/**
 	 * Validate and Enable Secure Forms for the Control Panel
 	 *
+	 * @deprecated 2.6
 	 * @access	public
 	 * @return	void
 	 */		
 	function secure_forms()
 	{
+		$this->EE->load->library('logger');
+		$this->EE->logger->deprecate('2.6', 'EE_Security::have_valid_xid()');		
+		
 		$hash = '';
 		
 		if ($this->EE->config->item('secure_forms') == 'y')
