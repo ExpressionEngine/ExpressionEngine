@@ -266,10 +266,17 @@ class EE_Localize {
 		{
 			$timezone = ($timezone) ? $this->EE->session->userdata('timezone') : 'GMT';
 		}
+
+		// If timezone isn't known by PHP, it may be our legacy timezone
+		// notation and needs to be converted
+		if ( ! in_array($timezone, DateTimeZone::listIdentifiers()))
+		{
+			$timezone = $this->_get_php_timezone($timezone);
+		}
 		
 		try
 		{
-			$timezone = new DateTimeZone($this->_get_php_timezone($timezone));
+			$timezone = new DateTimeZone($timezone);
 
 			// If $date_string appears to be a Unix timestamp, prepend the
 			// string with '@' so DateTime knows it's a timestamp; the
@@ -387,19 +394,19 @@ class EE_Localize {
 	function localize_month($month = '')
 	{
 		$months = array(
-							'01' => array('Jan', 'January'),
-							'02' => array('Feb', 'February'),
-							'03' => array('Mar', 'March'),
-							'04' => array('Apr', 'April'),
-							'05' => array('May', 'May_l'),
-							'06' => array('Jun', 'June'),
-							'07' => array('Jul', 'July'),
-							'08' => array('Aug', 'August'),
-							'09' => array('Sep', 'September'),
-							'10' => array('Oct', 'October'),
-							'11' => array('Nov', 'November'),
-							'12' => array('Dec', 'December')
-						);
+			'01' => array('Jan', 'January'),
+			'02' => array('Feb', 'February'),
+			'03' => array('Mar', 'March'),
+			'04' => array('Apr', 'April'),
+			'05' => array('May', 'May_l'),
+			'06' => array('Jun', 'June'),
+			'07' => array('Jul', 'July'),
+			'08' => array('Aug', 'August'),
+			'09' => array('Sep', 'September'),
+			'10' => array('Oct', 'October'),
+			'11' => array('Nov', 'November'),
+			'12' => array('Dec', 'December')
+		);
 
 		if (isset($months[$month]))
 		{
