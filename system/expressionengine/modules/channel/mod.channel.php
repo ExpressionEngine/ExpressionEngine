@@ -2009,30 +2009,8 @@ class Channel {
 					$eday = $day;
 				}
 
-				$stime = gmmktime(0, 0, 0, $month, $sday, $year);
-				$etime = gmmktime(23, 59, 59, $month, $eday, $year);
-
-				if (date("I", $this->EE->localize->now) AND ! date("I", $stime))
-				{
-					$stime -= 3600;
-				}
-				elseif ( ! date("I", $this->EE->localize->now) AND date("I", $stime))
-				{
-					$stime += 3600;
-				}
-
-				$stime += $this->EE->localize->set_localized_offset();
-
-				if (date("I", $this->EE->localize->now) AND ! date("I", $etime))
-				{
-					$etime -= 3600;
-				}
-				elseif ( ! date("I", $this->EE->localize->now) AND date("I", $etime))
-				{
-					$etime += 3600;
-				}
-
-				$etime += $this->EE->localize->set_localized_offset();
+				$stime = $this->EE->localize->string_to_timestamp($year.'-'.$month.'-'.$sday.' 00:00:00');
+				$etime = $this->EE->localize->string_to_timestamp($year.'-'.$month.'-'.$eday.' 23:59:59');
 
 				$sql .= " AND t.entry_date >= ".$stime." AND t.entry_date <= ".$etime." ";
 			}
@@ -2309,33 +2287,17 @@ class Channel {
 
 						if ($distinct != FALSE)
 						{
-							// A Rough Attempt to Get the Localized Offset Added On
-
-							$offset = $this->EE->localize->set_localized_offset();
-							$dst_on = (date("I", $this->EE->localize->now) === 1) ? TRUE : FALSE;
-
 							$sql .= "AND (";
 
 							foreach ($distinct as $val)
 							{
-								if ($dst_on === TRUE AND (substr($val, 4) < 13 OR substr($val, 4) >= 43))
-								{
-									$offset -= 3600;
-								}
-								elseif ($dst_on === FALSE AND (substr($val, 4) >= 13 AND substr($val, 4) < 43))
-								{
-									$offset += 3600;
-								}
-
-								$sql_offset = ($offset < 0) ? "- ".abs($offset) : "+ ".$offset;
-
 								if ($this->EE->TMPL->fetch_param('start_day') === 'Monday')
 								{
-									$sql .= " DATE_FORMAT(FROM_UNIXTIME(entry_date {$sql_offset}), '%x%v') = '".$val."' OR";
+									$sql .= " DATE_FORMAT(FROM_UNIXTIME(entry_date), '%x%v') = '".$val."' OR";
 								}
 								else
 								{
-									$sql .= " DATE_FORMAT(FROM_UNIXTIME(entry_date {$sql_offset}), '%X%V') = '".$val."' OR";
+									$sql .= " DATE_FORMAT(FROM_UNIXTIME(entry_date), '%X%V') = '".$val."' OR";
 								}
 							}
 
