@@ -2291,13 +2291,15 @@ class Channel {
 
 							foreach ($distinct as $val)
 							{
+								$sql_offset = $timezones[$this->EE->config->item('server_timezone')] * 3600;
+
 								if ($this->EE->TMPL->fetch_param('start_day') === 'Monday')
 								{
-									$sql .= " DATE_FORMAT(FROM_UNIXTIME(entry_date), '%x%v') = '".$val."' OR";
+									$sql .= " DATE_FORMAT(FROM_UNIXTIME(entry_date + {$sql_offset}), '%x%v') = '".$val."' OR";
 								}
 								else
 								{
-									$sql .= " DATE_FORMAT(FROM_UNIXTIME(entry_date), '%X%V') = '".$val."' OR";
+									$sql .= " DATE_FORMAT(FROM_UNIXTIME(entry_date + {$sql_offset}), '%X%V') = '".$val."' OR";
 								}
 							}
 
