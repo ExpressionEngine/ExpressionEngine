@@ -374,10 +374,41 @@ class EE_Localize {
 	}
 
 	// --------------------------------------------------------------------
-	// OLD STUFF STARTS HERE
-	// 
-	// Everything below this line is subject to deprecation, deletion, 
-	// ridicule or shame.
+
+	/**
+	 * Localize month name
+	 *
+	 * Helper function used to translate month names.
+	 *
+	 * @access	public
+	 * @param	string
+	 * @return	string
+	 */
+	function localize_month($month = '')
+	{
+		$months = array(
+							'01' => array('Jan', 'January'),
+							'02' => array('Feb', 'February'),
+							'03' => array('Mar', 'March'),
+							'04' => array('Apr', 'April'),
+							'05' => array('May', 'May_l'),
+							'06' => array('Jun', 'June'),
+							'07' => array('Jul', 'July'),
+							'08' => array('Aug', 'August'),
+							'09' => array('Sep', 'September'),
+							'10' => array('Oct', 'October'),
+							'11' => array('Nov', 'November'),
+							'12' => array('Dec', 'December')
+						);
+
+		if (isset($months[$month]))
+		{
+			return $months[$month];
+		}
+	}
+
+	// --------------------------------------------------------------------
+	// Everything below this line has been deprecated.
 	// --------------------------------------------------------------------
 
 	// --------------------------------------------------------------------
@@ -727,40 +758,6 @@ class EE_Localize {
 		$this->EE->logger->deprecated('2.6', 'Localize::format_date');
 		
 		return $this->format_date($datestr, $unixtime, $localize);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Localize month name
-	 *
-	 * Helper function used to translate month names.
-	 *
-	 * @access	public
-	 * @param	string
-	 * @return	string
-	 */
-	function localize_month($month = '')
-	{
-		$months = array(
-							'01' => array('Jan', 'January'),
-							'02' => array('Feb', 'February'),
-							'03' => array('Mar', 'March'),
-							'04' => array('Apr', 'April'),
-							'05' => array('May', 'May_l'),
-							'06' => array('Jun', 'June'),
-							'07' => array('Jul', 'July'),
-							'08' => array('Aug', 'August'),
-							'09' => array('Sep', 'September'),
-							'10' => array('Oct', 'October'),
-							'11' => array('Nov', 'November'),
-							'12' => array('Dec', 'December')
-						);
-
-		if (isset($months[$month]))
-		{
-			return $months[$month];
-		}
 	}
 
 	// --------------------------------------------------------------------
