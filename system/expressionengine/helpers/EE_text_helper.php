@@ -39,11 +39,6 @@ if ( ! function_exists('convert_accented_characters'))
 {
 	function convert_accented_characters($match)
 	{
-		if (preg_match('/[^\x20-\x7f]/', $match) === 0)
-		{
-			return $match;
-		}
-
 		if ( ! file_exists(APPPATH.'config/foreign_chars.php'))
 		{
 			return $match;
