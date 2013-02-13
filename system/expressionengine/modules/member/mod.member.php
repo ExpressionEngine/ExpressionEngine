@@ -2502,8 +2502,7 @@ class Member {
 							m.bio,
 							m.join_date, m.last_visit, m.last_activity, m.last_entry_date, m.last_comment_date,
 							m.last_forum_post_date, m.total_entries, m.total_comments, m.total_forum_topics, m.total_forum_posts,
-							m.language, m.timezone, m.daylight_savings, m.bday_d, m.bday_m, m.bday_y,
-							g.group_title');
+							m.language, m.timezone, m.bday_d, m.bday_m, m.bday_y, g.group_title');
 		$this->EE->db->from(array('members m', 'member_groups g'));
 		$this->EE->db->where('m.member_id', $member_id);
 		$this->EE->db->where('g.site_id', $this->EE->config->item('site_id'));

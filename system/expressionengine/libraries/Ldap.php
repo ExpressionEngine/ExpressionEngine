@@ -36,7 +36,6 @@ class EE_LDAP {
 								'language', 
 								'timezone', 
 								'time_format', 
-								'daylight_savings',
 								'bday_y',
 								'bday_m',
 								'bday_d',

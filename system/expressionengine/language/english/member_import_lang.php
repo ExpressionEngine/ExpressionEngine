@@ -68,9 +68,6 @@ $lang = array(
 'convert_from_delimited_blurb' =>
 'Allows you to create an ExpressionEngine Member XML file from another application\'s delimited text file',
 
-'daylight_savings' =>
-'Daylight Saving Time',
-
 'auto_custom_field' =>
 'Create custom fields',
 

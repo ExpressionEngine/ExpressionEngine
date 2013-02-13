@@ -1376,7 +1376,7 @@ class MyAccount extends CP_Controller {
 
 		$vars['form_hidden']['id'] = $this->id;
 
-		$fields = array('timezone', 'daylight_savings', 'language', 'time_format');
+		$fields = array('timezone', 'language', 'time_format');
 		
 		// Fetch profile data
 		$query = $this->member_model->get_member_data($this->id, $fields);
@@ -1398,9 +1398,6 @@ class MyAccount extends CP_Controller {
 
 		$vars['time_format_options']['us'] = lang('united_states');
 		$vars['time_format_options']['eu'] = lang('european');
-		
-		$vars['daylight_savings_y'] = ($vars['daylight_savings'] == 'y') ? TRUE : FALSE;
-		$vars['daylight_savings_n'] = ($vars['daylight_savings'] == 'y') ? FALSE : TRUE;
 
 		if ($vars['language'] == '')
 		{
@@ -1434,7 +1431,6 @@ class MyAccount extends CP_Controller {
 		$data['language']	= $this->security->sanitize_filename($this->input->post('language'));
 		$data['timezone']	= $this->input->post('timezones');
 		$data['time_format'] = $this->input->post('time_format');
-		$data['daylight_savings'] = ($this->input->post('daylight_savings') == 'y') ? 'y' : 'n';
 
 		if ( ! is_dir(APPPATH.'language/'.$data['language']))
 		{

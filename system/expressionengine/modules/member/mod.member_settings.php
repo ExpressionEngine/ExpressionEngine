@@ -138,7 +138,7 @@ class Member_settings extends Member {
 					m.icq, m.aol_im, m.yahoo_im, m.msn_im, m.bio, m.join_date, m.last_visit, 
 					m.last_activity, m.last_entry_date, m.last_comment_date, m.last_forum_post_date, 
 					m.total_entries, m.total_comments, m.total_forum_topics,
-					m.total_forum_posts, m.language, m.timezone, m.daylight_savings, 
+					m.total_forum_posts, m.language, m.timezone, 
 					m.bday_d, m.bday_m, m.bday_y, m.accept_user_email, m.accept_messages,
 					g.group_title, g.can_send_private_messages';
 
@@ -1553,15 +1553,14 @@ class Member_settings extends Member {
 		$tf .= "</select>\n";
 
 
-		$query = $this->EE->db->query("SELECT language, timezone,daylight_savings FROM exp_members WHERE member_id = '".$this->EE->session->userdata('member_id')."'");
+		$query = $this->EE->db->query("SELECT language, timezone FROM exp_members WHERE member_id = '".$this->EE->session->userdata('member_id')."'");
 
 		$this->EE->load->helper('date_helper');
 
 		return $this->_var_swap($this->_load_element('localization_form'),
 								array(
 										'path:update_localization'		=>	$this->_member_path('update_localization'),
-										'form:localization'				=>	timezone_menu(($query->row('timezone')  == '') ? 'UTC' : $query->row('timezone'), 'select', 'server_timezone'),
-										'state:daylight_savings'		=>	($query->row('daylight_savings')  == 'y') ? " checked='checked'" : '',
+										'form:localization'				=>	timezone_menu(($query->row('timezone')  == '') ? 'UTC' : $query->row('timezone'), 'select', 'server_timezone')
 										'form:time_format'				=>	$tf,
 										'form:language'					=>	$this->EE->functions->language_pack_names(($query->row('language')  == '') ? 'english' : $query->row('language') )
 									 )
@@ -1598,8 +1597,6 @@ class Member_settings extends Member {
 		{
 			return $this->EE->output->show_user_error('general', array($this->EE->lang->line('invalid_action')));
 		}
-
-		$data['daylight_savings'] = ($this->EE->input->post('daylight_savings') == 'y') ? 'y' : 'n';
 
 		$this->EE->db->query($this->EE->db->update_string('exp_members', $data, "member_id = '".$this->EE->session->userdata('member_id')."'"));
 

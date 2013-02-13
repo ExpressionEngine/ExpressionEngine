@@ -201,11 +201,6 @@ else
 
 <p><?=timezone_menu($server_timezone, 'select', 'server_timezone')?></p>
 
-<p><?php echo $this->lang->line('dst_active'); ?></p>
-<input  class='radio' type="radio" name="daylight_savings" id="daylight_savings_y" value="y" <?php echo $dst1; ?> /> <label for='daylight_savings_y'><?php echo $this->lang->line('yes'); ?></label> &nbsp;&nbsp;
-<input type="radio"  class='radio' name="daylight_savings" id="daylight_savings_n" value="n" <?php echo $dst2; ?> /> <label for='daylight_savings_n'><?php echo $this->lang->line('no'); ?></label>
-</p>
-
 </div>
 
 

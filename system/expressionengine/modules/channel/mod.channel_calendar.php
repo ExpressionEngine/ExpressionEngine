@@ -579,16 +579,16 @@ class Channel_calendar extends Channel {
 
 						if (strncmp($key, 'day_path', 8) == 0)
 						{
-							$path = $this->EE->localize->format_date('%Y/%m/%d', $row['entry_date']);
+							$formatted_date_path = $this->EE->localize->format_date('%Y/%m/%d', $row['entry_date']);
 
 							if ($this->EE->functions->extract_path($key) != ''
 								AND $this->EE->functions->extract_path($key) != 'SITE_INDEX')
 							{
-								$path = $this->EE->functions->extract_path($key).'/'.$formatted_date_path;
+								$formatted_date_path = $this->EE->functions->extract_path($key).'/'.$formatted_date_path;
 							}
 
 							$if_entries = str_replace(LD.$key.RD, LD.'day_path'.$val.RD, $if_entries);
-							$day_path[$key] = $this->EE->functions->create_url($path);
+							$day_path[$key] = $this->EE->functions->create_url($formatted_date_path);
 						}
 
 					}

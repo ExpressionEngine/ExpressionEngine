@@ -454,10 +454,7 @@ class Member_register extends Member {
 									$this->EE->config->item('time_format') : 'us',
 			'timezone'		=> ($this->EE->config->item('default_site_timezone') && 
 								$this->EE->config->item('default_site_timezone') != '') ? 
-									$this->EE->config->item('default_site_timezone') : $this->EE->config->item('server_timezone'),
-			'daylight_savings' => ($this->EE->config->item('default_site_dst') && 
-									$this->EE->config->item('default_site_dst') != '') ? 
-										$this->EE->config->item('default_site_dst') : $this->EE->config->item('daylight_savings')	
+									$this->EE->config->item('default_site_timezone') : $this->EE->config->item('server_timezone')	
 		);
 		
 		// Set member group
@@ -494,15 +491,6 @@ class Member_register extends Member {
 			{
 				$data[$key] = $_POST[$value];
 			}
-		}
-
-		if ($this->EE->input->post('daylight_savings') == 'y')
-		{
-			$data['daylight_savings'] = 'y';
-		}
-		elseif ($this->EE->input->post('daylight_savings') == 'n')
-		{
-			$data['daylight_savings'] = 'n';
 		}
 		
 		// We generate an authorization code if the member needs to self-activate

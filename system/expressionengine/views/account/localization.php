@@ -11,12 +11,6 @@
 	</p>
 
 	<p>
-		<?=lang('daylight_savings_time', 'daylight_savings_time')?><br />
-		<?=form_radio('daylight_savings', 'y', $daylight_savings_y, 'id="daylight_savings_y"')?> <?=lang('yes').NBS.NBS.NBS.NBS.NBS ?>
-		<?=form_radio('daylight_savings', 'n', $daylight_savings_n, 'id="daylight_savings_n"')?> <?=lang('no')?>
-	</p>
-
-	<p>
 		<?=form_label(lang('time_format'), 'time_format')?>
 		<?=form_dropdown('time_format', $time_format_options, $time_format, 'id="time_format"')?>
 	</p>

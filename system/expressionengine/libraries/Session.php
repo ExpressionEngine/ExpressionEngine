@@ -603,7 +603,6 @@ class EE_Session {
 		if ($this->EE->config->item('allow_member_localization') == 'n')
 		{
 			$this->userdata['timezone'] = ($this->EE->config->item('default_site_timezone') && $this->EE->config->item('default_site_timezone') != '') ? $this->EE->config->item('default_site_timezone') : $this->EE->config->item('server_timezone');
-			$this->userdata['daylight_savings'] = ($this->EE->config->item('default_site_dst') && $this->EE->config->item('default_site_dst') != '') ? $this->EE->config->item('default_site_dst') : $this->EE->config->item('daylight_savings');
 			$this->userdata['time_format'] = ($this->EE->config->item('time_format') && $this->EE->config->item('time_format') != '') ? $this->EE->config->item('time_format') : 'us';
  		}
 						
@@ -1152,7 +1151,6 @@ class EE_Session {
 			'location'			=> $this->EE->input->cookie('my_location'),
 			'language'			=> '',
 			'timezone'			=> ($this->EE->config->item('default_site_timezone') && $this->EE->config->item('default_site_timezone') != '') ? $this->EE->config->item('default_site_timezone') : $this->EE->config->item('server_timezone'),
-			'daylight_savings'  => ($this->EE->config->item('default_site_dst') && $this->EE->config->item('default_site_dst') != '') ? $this->EE->config->item('default_site_dst') : $this->EE->config->item('daylight_savings'),
 			'time_format'		=> ($this->EE->config->item('time_format') && $this->EE->config->item('time_format') != '') ? $this->EE->config->item('time_format') : 'us',
 			'group_id'			=> '3',
 			'access_cp'			=>  0,

@@ -173,9 +173,6 @@ class Channel_standalone extends Channel {
 			
 			$field_query = $this->EE->channel_model->get_channel_fields($field_group);
 			
-			$dst_enabled = $this->EE->session->userdata('daylight_savings');
-			$dst_enabled = ( ! isset($_POST['dst_enabled'])) ? 'n' :  $dst_enabled;
-			
 			foreach ($field_query->result_array() as $row)
 			{
 				$field_data = '';
@@ -190,8 +187,7 @@ class Channel_standalone extends Channel {
 					'field_fmt'				=> $field_fmt,
 					'field_dt'				=> $field_dt,
 					'field_data'			=> $field_data,
-					'field_name'			=> 'field_id_'.$row['field_id'],
-					'dst_enabled'			=> $dst_enabled
+					'field_name'			=> 'field_id_'.$row['field_id']
 				);
 
 				$ft_settings = array();
@@ -878,16 +874,6 @@ class Channel_standalone extends Channel {
 					 		$channel_q->row('comment_system_enabled') != 'y') ? '' : "checked='checked'";
 				}
 
-				$tagdata = $this->EE->TMPL->swap_var_single($key, $checked, $tagdata);
-			}
-
-			/** ----------------------------------------
-			/**  {dst_enabled}
-			/** ----------------------------------------*/
-
-			if ($key == 'dst_enabled')
-			{
-				$checked = ($this->EE->session->userdata('daylight_savings') == 'y') ? "checked='checked'" : '';
 				$tagdata = $this->EE->TMPL->swap_var_single($key, $checked, $tagdata);
 			}
 

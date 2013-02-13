@@ -341,7 +341,6 @@ class EE_Schema {
 			  smart_notifications char(1) NOT NULL default 'y',
 			  language varchar(50) NOT NULL,
 			  timezone varchar(8) NOT NULL,
-			  daylight_savings char(1) default 'n' NOT NULL,
 			  localization_is_site_default char(1) NOT NULL default 'n',
 			  time_format char(2) default 'us' NOT NULL,
 			  cp_theme varchar(32) NULL DEFAULT NULL,
@@ -610,7 +609,6 @@ class EE_Schema {
 			 allow_comments varchar(1) NOT NULL default 'y',
 			 sticky varchar(1) NOT NULL default 'n',
 			 entry_date int(10) NOT NULL,
-			 dst_enabled varchar(1) NOT NULL default 'n',
 			 year char(4) NOT NULL,
 			 month char(2) NOT NULL,
 			 day char(3) NOT NULL,
@@ -651,7 +649,6 @@ class EE_Schema {
 			 allow_comments varchar(1) NOT NULL default 'y',
 			 sticky varchar(1) NOT NULL default 'n',
 			 entry_date int(10) NOT NULL,
-			 dst_enabled varchar(1) NOT NULL default 'n',
 			 year char(4) NOT NULL,
 			 month char(2) NOT NULL,
 			 day char(3) NOT NULL,
@@ -1372,8 +1369,8 @@ class EE_Schema {
 		//		$quick_link = 'My Site|'.$this->userdata['site_url'].$this->userdata['site_index'].'|1';
 		$quick_link = '';
 		
-		$Q[] = "INSERT INTO exp_members (group_id, username, password, unique_id, email, screen_name, join_date, ip_address, timezone, daylight_savings, quick_links, language) 
-				VALUES ('1', '".$this->EE->db->escape_str($this->userdata['username'])."', '".$this->userdata['password']."', '".$this->userdata['unique_id']."', '".$this->EE->db->escape_str($this->userdata['email_address'])."', '".$this->EE->db->escape_str($this->userdata['screen_name'])."', '".$this->now."', '".$this->EE->input->ip_address()."', '".$this->userdata['server_timezone']."', '".$this->userdata['daylight_savings']."', '$quick_link', '".$this->EE->db->escape_str($this->userdata['deft_lang'])."')";
+		$Q[] = "INSERT INTO exp_members (group_id, username, password, unique_id, email, screen_name, join_date, ip_address, timezone, quick_links, language) 
+				VALUES ('1', '".$this->EE->db->escape_str($this->userdata['username'])."', '".$this->userdata['password']."', '".$this->userdata['unique_id']."', '".$this->EE->db->escape_str($this->userdata['email_address'])."', '".$this->EE->db->escape_str($this->userdata['screen_name'])."', '".$this->now."', '".$this->EE->input->ip_address()."', '".$this->userdata['server_timezone']."', '$quick_link', '".$this->EE->db->escape_str($this->userdata['deft_lang'])."')";
 		
 		$Q[] = "INSERT INTO exp_member_homepage (member_id, recent_entries_order, recent_comments_order, site_statistics_order, notepad_order, pmachine_news_feed) 
 				VALUES ('1', '1', '2', '1', '2', 'l')";

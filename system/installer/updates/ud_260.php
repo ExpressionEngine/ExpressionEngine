@@ -48,6 +48,7 @@ class Updater {
 		$this->EE->load->dbforge();
 		
 		$this->_add_template_name_to_dev_log();
+		$this->_drop_dst();
 		
 		return TRUE;
 	}
@@ -94,6 +95,29 @@ class Updater {
 					)
 				)
 			);
+		}
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Drop DST columns!
+	 */
+	private function _drop_dst()
+	{
+		if ($this->EE->db->field_exists('daylight_savings', 'members'))
+		{
+			$this->EE->dbforge->drop_column('members', 'daylight_savings');
+		}
+
+		if ($this->EE->db->field_exists('dst_enabled', 'channel_titles'))
+		{
+			$this->EE->dbforge->drop_column('channel_titles', 'dst_enabled');
+		}
+
+		if ($this->EE->db->field_exists('dst_enabled', 'channel_entries_autosave'))
+		{
+			$this->EE->dbforge->drop_column('channel_entries_autosave', 'dst_enabled');
 		}
 	}
 }	
