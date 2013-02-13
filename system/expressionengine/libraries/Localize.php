@@ -24,8 +24,8 @@
  */
 class EE_Localize {
 
-	var $nowc = '';  // Local server time as GMT
-	var $format = array(
+	public $now = '';  // Local server time as GMT accounting for server offset
+	public $format = array(
 		'DATE_ATOM'		=> '%Y-%m-%dT%H:%i:%s%Q',
 		'DATE_COOKIE'	=> '%l, %d-%M-%y %H:%i:%s UTC',
 		'DATE_ISO8601'	=> '%Y-%m-%dT%H:%i:%s%Q',
