@@ -53,7 +53,7 @@ class EE_Exceptions extends CI_Exceptions {
 		if (defined('REQ') && REQ != 'CP')
 		{
 			$EE->load->library('logger');
-			$EE->logger->deprecate('2.6', 'Output::show_user_error()');
+			$EE->logger->deprecated('2.6', 'Output::show_user_error()');
 		}
 
 
