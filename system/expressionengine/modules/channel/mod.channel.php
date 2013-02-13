@@ -2201,7 +2201,8 @@ class Channel {
 					/*	PHP script this is the best approach possible.
 					/*  ---------------------------------*/
 
-					$loc_offset = $this->EE->localize->zones[$this->EE->config->item('server_timezone')] * 3600;
+					$timezones = timezones();
+					$loc_offset = $timezones[$this->EE->config->item('server_timezone')] * 3600;
 
 					if ($this->EE->TMPL->fetch_param('start_day') === 'Monday')
 					{
@@ -7037,7 +7038,8 @@ class Channel {
 		//  Build query
 
 		// Fetch the timezone array and calculate the offset so we can localize the month/year
-		$zones = $this->EE->localize->zones();
+		$this->EE->load->helper('date');
+		$zones = timezones();
 
 		$offset = ( ! isset($zones[$this->EE->session->userdata['timezone']]) OR $zones[$this->EE->session->userdata['timezone']] == '') ? 0 : ($zones[$this->EE->session->userdata['timezone']]*60*60);
 
