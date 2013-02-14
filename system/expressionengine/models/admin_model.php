@@ -129,7 +129,6 @@ class Admin_model extends CI_Model {
 										),
 			'localization_cfg'	=>	array(	 
 											'server_timezone'			=> array('f', 'timezone'),
-											'server_offset'				=> array('i', ''),
 											'time_format'				=> array('s', array('us' => 'united_states', 'eu' => 'european'))
 										  ),
 
