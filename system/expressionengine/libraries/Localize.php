@@ -62,7 +62,7 @@ class EE_Localize {
 	/**
 	 * String to Timestamp
 	 *
-	 * Converts a human-readble date (and possibly time) to a Unix timestamp
+	 * Converts a human-readable date (and possibly time) to a Unix timestamp
 	 * using the current member's locale
 	 *
 	 * @param	string	Human-readable date
@@ -92,9 +92,9 @@ class EE_Localize {
 	 * @param	bool	Return date localized or not
 	 * @return	string	Formatted date
 	 */
-	public function format_date($format, $timestamp = NULL, $localized = TRUE)
+	public function format_date($format, $timestamp = NULL, $localize = TRUE)
 	{
-		if ( ! ($dt = $this->_datetime($timestamp, $localized)))
+		if ( ! ($dt = $this->_datetime($timestamp, $localize)))
 		{
 			return FALSE;
 		}
@@ -118,13 +118,12 @@ class EE_Localize {
 	// --------------------------------------------------------------------
 	
 	/**
-	 * Given an EE date format and a Unix timestamp, returns the human-readable
-	 * date in the specified timezone or member's current timezone.
+	 * Given an date variable and a DateTime object, returns the associated
+	 * formatting for the date variable and DateTime object
 	 *
-	 * @param	string	Date format, like "%D, %F %d, %Y - %g:%i:%s"
-	 * @param	int		Unix timestamp
-	 * @param	string	Timezone
-	 * @return	string	Formatted date
+	 * @param	string		Date variable with percent sign prefix, like "%D"
+	 * @param	datetime	DateTime object on which to call format()
+	 * @return	string		Value of variable in DateTime object, translated
 	 */
 	private function _date_string_for_variable($var, $dt)
 	{
