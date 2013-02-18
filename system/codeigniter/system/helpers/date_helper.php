@@ -371,7 +371,7 @@ if ( ! function_exists('mysql_to_unix'))
 		$time = str_replace(' ', '', $time);
 
 		// YYYYMMDDHHMMSS
-		return  mktime(
+		return  gmmktime(
 						substr($time, 8, 2),
 						substr($time, 10, 2),
 						substr($time, 12, 2),
