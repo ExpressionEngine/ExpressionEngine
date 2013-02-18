@@ -490,7 +490,7 @@ class Rss {
 		$title		= $this->EE->config->item('site_name');
 		$link		= $this->EE->config->item('site_url');
 		$version	= APP_VER;
-		$pubdate	= date('D, d M Y H:i:s', $this->EE->localize->now).' GMT';
+		$pubdate	= $this->EE->localize->format_date('%D, %d %M %Y %H:%i:%s GMT', NULL, FALSE);
 		$content	= ($this->_debug === TRUE && $error != '') ? $error : $this->EE->lang->line('empty_feed');
 
 		return <<<HUMPTYDANCE
