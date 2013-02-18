@@ -1560,7 +1560,7 @@ class Member_settings extends Member {
 		return $this->_var_swap($this->_load_element('localization_form'),
 								array(
 										'path:update_localization'		=>	$this->_member_path('update_localization'),
-										'form:localization'				=>	timezone_menu(($query->row('timezone')  == '') ? 'UTC' : $query->row('timezone'), 'select', 'server_timezone')
+										'form:localization'				=>	timezone_menu(($query->row('timezone')  == '') ? 'UTC' : $query->row('timezone'), 'select', 'server_timezone'),
 										'form:time_format'				=>	$tf,
 										'form:language'					=>	$this->EE->functions->language_pack_names(($query->row('language')  == '') ? 'english' : $query->row('language') )
 									 )
