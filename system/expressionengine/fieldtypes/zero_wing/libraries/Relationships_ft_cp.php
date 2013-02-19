@@ -330,7 +330,7 @@ class Relationship_settings_form {
 		}
 
 		$data = array_intersect_key($data, $this->_fields);
-		$this->_selected = array_merge($this->_fields, $data);
+		$this->_selected = array_merge($this->_selected, $this->_fields, $data);
 
 		// array_merge_recursive($this->_fields, $data) without
 		// php's super weird recursive merging on on arrays

@@ -151,12 +151,43 @@ class Zero_wing_ft extends EE_Fieldtype {
 			$selected = array_map('array_pop', $related);
 		}
 
+		$limit_channels = $this->settings['channels'];
+		$limit_categories = $this->settings['categories'];
+		$limit_statuses = $this->settings['statuses'];
+		$limit_authors = $this->settings['authors'];
+		$limit = $this->settings['limit'];
 
 		// @todo - statuses, authors, categories, limit
 		$this->EE->db
-			->select('entry_id, title')
-			->where_in('channel_id', $this->settings['channels'])
+			->select('channel_titles.entry_id, channel_titles.title')
 			->order_by($this->settings['order_field'], $this->settings['order_dir']);
+
+		if ($limit)
+		{
+			$this->EE->db->limit($limit);
+		}
+
+		if (count($limit_channels))
+		{
+			$this->EE->db->where_in('channel_titles.channel_id', $limit_channels);
+		}
+
+		if (count($limit_categories))
+		{
+			$this->EE->db->from('category_posts');
+			$this->EE->db->where('exp_channel_titles.entry_id = exp_category_posts.entry_id', NULL, FALSE); // todo ick
+			$this->EE->db->where_in('category_posts.cat_id', $limit_categories);
+		}
+
+		if (count($limit_statuses))
+		{
+			// @todo TODO fix them
+		}
+
+		if (count($limit_authors))
+		{
+			// @todo TODO ick
+		}
 
 		if ($entry_id)
 		{
@@ -176,11 +207,38 @@ class Zero_wing_ft extends EE_Fieldtype {
 			return form_dropdown($field_name, $entries, key($selected));
 		}
 
+//		$entries = array_merge($entries, $entries, $entries, $entries, $entries); // 90
+//		$entries = array_merge($entries, $entries, $entries, $entries, $entries); // 450
+//		$entries = array_merge($entries, $entries, $entries, $entries, $entries); // 2250
+
+		$str = '';
+		$str .= $this->_active_div($entries, $selected, $field_name);
+		$str .= $this->_multi_div($entries, $selected, $field_name);
+
+		// The active section
+
+		if (count($entries))
+		{
+			$js = $this->_publish_js();
+			$js .= "EE.setup_multi_field('#${field_name}');";
+			$this->EE->javascript->output($js);
+		}
+
+		return $str;
+	}
+
+	public function _multi_div($entries, $selected, $field_name)
+	{
 		$class = 'class="multiselect ';
 		$class .= count($entries) ? 'force-scroll' : 'empty';
 		$class .= '"';
 
-		$str = '<div id="'.$field_name.'" '.$class.'>';
+		$str = '<div class="multiselect-filter js_show">';
+		$str .= form_input('', '', 'placeholder="'.lang('rel_ft_filter_by_title').'" id="'.$field_name.'-filter"');
+		$str .= '</div>';
+
+		$str .= '<div id="'.$field_name.'" '.$class.'>';
+
 		$str .= '<ul>';
 
 		foreach ($entries as $row)
@@ -200,12 +258,33 @@ class Zero_wing_ft extends EE_Fieldtype {
 		$str .= '</ul>';
 		$str .= '</div>';
 
-		if (count($entries))
+		return $str;
+	}
+
+	public function _active_div($entries, $selected, $field_name)
+	{
+		$class = 'class="multiselect-active ';
+		$class .= count($entries) ? 'force-scroll' : 'empty';
+		$class .= '"';
+
+		$str = '<div id="'.$field_name.'-active" '.$class.'>';
+		$str .= '<ul>';
+/*
+		foreach ($entries as $row)
 		{
-			$js = $this->_publish_js();
-			$js .= "EE.setup_multi_field('#${field_name}');";
-			$this->EE->javascript->output($js);
+			if (in_array($row['entry_id'], $selected))
+			{
+				$str .= '<li><span class="reorder-handle">&nbsp;</span>'.$row['title'].'</li>';
+			}
 		}
+*/
+		if ( ! count($entries))
+		{
+			$str .= '<li>'.lang('rel_ft_no_selections').'</li>';
+		}
+
+		$str .= '</ul>';
+		$str .= '</div>';
 
 		return $str;
 	}
@@ -244,7 +323,7 @@ class Zero_wing_ft extends EE_Fieldtype {
 	{
 		$this->EE->lang->loadfile('fieldtypes');
 
-		$form = $this->_form($data['field_type']);
+		$form = $this->_form();
 		$form->populate($data);
 
 		$this->EE->table->set_heading(array(
@@ -333,7 +412,7 @@ class Zero_wing_ft extends EE_Fieldtype {
 
 	public function save_settings($data)
 	{
-		$form = $this->_form($data['field_type']);
+		$form = $this->_form();
 		$form->populate($data);
 
 		return $form->values();
@@ -349,7 +428,7 @@ class Zero_wing_ft extends EE_Fieldtype {
 	 * @param	form prefix
 	 * @return	Object<Relationship_settings_form>
 	 */	
-	protected function _form($prefix)
+	protected function _form($prefix = 'zero_wing')
 	{
 		$this->EE->load->library('Relationships_ft_cp');
 		$util = $this->EE->relationships_ft_cp;
@@ -404,79 +483,7 @@ class Zero_wing_ft extends EE_Fieldtype {
 			return '';
 		}
 
-		$js = <<<JSS
-
-(function($) {
-
-	function ZeroWing(field) {
-		this.root = $(field);
-	}
-
-	ZeroWing.prototype = {
-
-		init: function() {
-
-			if (this.root.prop('scrollHeight') <= this.root.prop('clientHeight')) {
-				this.root.removeClass('force-scroll');
-			}
-
-			this._addClassOnSelect();
-			this._disallowClickSelection();
-
-		},
-
-		_addClassOnSelect: function() {
-			this.root.find('li').click(function(evt) {
-				evt.preventDefault();
-
-				var checked = $(this).find(':checkbox').is(':checked');
-
-				$(this).toggleClass('selected', !checked);
-				$(this).find(':checkbox').attr('checked', !checked);
-			});
-		},
-
-		// Quick clicking can sometimes lead to double and triple
-		// click selections. If we think that might have happened
-		// we'll simply remove them.
-
-		_disallowClickSelection: function() {
-			var cnt = 0,
-				self = this;
-
-			this.root
-				.dblclick(self._deselect)
-				.click(function() {
-					cnt++;
-					_.debounce(function() {
-						cnt = 0;
-					}, 500);
-
-					if (cnt >= 2) {
-						self._deselect();
-					}
-				}
-			);
-		},
-
-		_deselect: function() {
-			// Aren't you glad we wrote that rte and speak fluent range
-
-			if (window.getSelection) {
-				window.getSelection().removeAllRanges();
-			} else if (document.selection) {
-				document.selection.empty();
-			}
-		}
-	};
-
-	EE.setup_multi_field = function(el) {
-		new ZeroWing(el).init();
-	};
-
-})(jQuery);
-
-JSS;
+		$js = file_get_contents(PATH_FT.'zero_wing/javascript/cp.js');
 
 		$this->EE->session->cache(__CLASS__, 'js_loaded', TRUE);
 		return $js;
