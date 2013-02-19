@@ -4127,25 +4127,76 @@ div.pageContents,
 	.nanner img{ margin-right: 5px; position: relative; top: 2px; }
 
 
-.multiselect {
+.multiselect,
+.multiselect-active,
+.multiselect-filter {
+	width: 48%;
+}
+
+.multiselect,
+.multiselect-active {
 	background: #DDE2E5;
 	border: 1px solid #B6C0C2;
 	height: 240px;
-	width: 440px;
 	overflow: auto;
 }
 
-.multiselect li {
-	background: #fff;
-	padding: 5px 10px;
-	border-bottom: 1px solid #B6C0C2;
+.multiselect-active {
+	float: right;
+	height: 270px;		/* multiselect + filter box */
+	line-height: 160%;
 }
 
-.multiselect li:nth-child(even) {
+.multiselect-filter {
+	border: 1px solid #B6C0C2;
+	border-bottom: none;
+	margin: 0;
+}
+
+.multiselect-filter input,
+.multiselect-filter input:focus {
+	border-radius: 0;
+	border: none;
+	line-height: 1.5;
+	padding: 5px 10px;
+}
+
+.multiselect li,
+.multiselect-active li {
+	background: #fff;
+	border-bottom: 1px solid #B6C0C2;
+	padding: 5px 10px;
+	position: relative;
+	z-index: 0;
+}
+
+.multiselect li:nth-child(even),
+.multiselect-active li:nth-child(even) {
 	background: #F7FBFE;
 }
 
-.multiselect.empty li {
+.multiselect-active .reorder-handle {
+	background: url("../images/reorder-pull.png") center 10px no-repeat;
+	display: inline-block;
+	width: 8px;
+	padding-left: 10px;
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 100%;
+	width: 20px;
+	cursor: move;
+}
+
+.multiselect-active li {
+	vertical-align: baseline;
+	color: #2a7c10;
+	font-weight: bold;
+	padding-left: 30px;
+}
+
+.multiselect.empty li,
+.multiselect-active.empty li {
 	font-weight: bold;
 	font-size: 14px;
 	text-shadow: 0 1px 1px #EDF2F5;
@@ -4158,7 +4209,7 @@ div.pageContents,
 }
 
 .multiselect li label {
-	background: url("../images/relate-check.gif") 0 center no-repeat;
+	background: url("../images/relate-check.gif") 0 5px no-repeat;
 	background-size: 0 0;
 
 	-webkit-transition-property: padding, background-size;
@@ -4180,6 +4231,17 @@ div.pageContents,
 	overflow-y: scroll;
 }
 
+/* aggravating safari bug where position:ing or float:ing an element
+   will reduce the scrollbar box-shadow to a z-index of 0, never to
+   be seen again underneath element's the children..
+*/
+.force-scroll > *,
+.force-scroll > * {
+	box-sizing: border-box;
+	width: 100%;
+	border-right: 1px solid #B6C0C2;
+}
+
 .force-scroll::-webkit-scrollbar {
 	-webkit-appearance: none;
 	margin: 2px;
@@ -4189,7 +4251,9 @@ div.pageContents,
 
 .force-scroll::-webkit-scrollbar-track {
     background-color: #fff;
-	box-shadow: -1px 0 1px #B6C0C2; /* left border, cannot use border */
+    /* See comment on .force-scroll ul ... border-left does *not* work here either
+	box-shadow: 1px 0 1px #B6C0C2;
+	*/
 }
 
 .force-scroll::-webkit-scrollbar-thumb {
@@ -4197,5 +4261,5 @@ div.pageContents,
 	background-color: rgba(0,0,0,.3);
 	border-radius: 4px;
 	border-width: 0 2px 0 2px;
-	box-shadow: inset 0 0 0 2px #fff; /* reduce width of thumb */
+	box-shadow: inset 0 0 0 2px #fff;
 }
