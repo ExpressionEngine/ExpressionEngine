@@ -311,6 +311,13 @@ class Relationship_Parser
 		// branches from the root.  row[1] is the id of the relationship field
 		// that branches from the node at the second level, and so on.
 		$field_ids = $this->_get_needed_relationship_field_ids_from_template();
+
+		// If we have no relationships, then we don't need to be here.	 
+		if(empty($field_ids))
+		{
+			$this->variables = NULL;
+			return;
+		}
 	
 		// Find the shortest branch in our id array.	
 		$shortest_branch_length = $this->_find_shortest_branch($field_ids);	
@@ -392,7 +399,7 @@ class Relationship_Parser
 			}
 			elseif (array_key_exists($variable, $this->relationship_field_ids))
 			{
-				$field_ids[] = $this->relationship_field_ids[$variable];
+				$field_ids[] = array($this->relationship_field_ids[$variable]);
 			}
 		}
 
@@ -774,6 +781,12 @@ class Relationship_Parser
 	 */
 	public function parse_relationships($entry_id, $tagdata)
 	{
+		// If we have no relationships, then we can quietly bail out.
+		if ($this->variables == NULL)
+		{
+			return $tagdata;
+		}
+
 		$entry_data = $this->variables[$entry_id];
 		$tagdata = $this->template->parse_variables($tagdata, array(0=>$entry_data));
 		return $tagdata;
