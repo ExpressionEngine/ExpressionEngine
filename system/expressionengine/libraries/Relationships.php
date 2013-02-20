@@ -298,7 +298,14 @@ class Relationship_Parser
 
 
 	/**
-	 * TODO handle the case where we find no relationship tags
+	 * Find All Relationships of the Given Entries in the Template 
+	 *
+	 * Searches the template the parser was constructed with for relationship
+	 * tags and then builds a tree of all the requested related entries for
+	 * each of the entries passed in the array.
+	 *
+	 * @param	int[]	An array of entry ids who's relations we need
+	 *						to find.
 	 */
 	public function query_for_entries(array $entry_ids)
 	{
@@ -310,7 +317,7 @@ class Relationship_Parser
 		// path to a leaf.  So row[0] is id of the relationship field that
 		// branches from the root.  row[1] is the id of the relationship field
 		// that branches from the node at the second level, and so on.
-		$field_ids = $this->_get_needed_relationship_field_ids_from_template();
+		$field_ids = $this->_get_relationship_field_ids();
 
 		// If we have no relationships, then we don't need to be here.	 
 		if(empty($field_ids))
@@ -369,8 +376,10 @@ class Relationship_Parser
 	 * determine which relationship_field_ids we'll need to query
 	 * against.  Uses the instance of EE_Template passed in the 
 	 * constructor.
+	 *
+	 * TODO Still trying to decide what best to call this.
 	 */
-	protected function _get_needed_relationship_field_ids_from_template()
+	protected function _get_relationship_field_ids()
 	{
 		$field_ids = array();
 
@@ -639,6 +648,12 @@ class Relationship_Parser
  	 * Take the related entries we've retrieved, examine the tag data and then build the array 
 	 * of variables that we'll pass to TMPL->parse_variables() for replacing.  
 	 * 
+	 * @param	mixed[]	An array with three parts:
+	 * 					- tree => the tree of Relationship_Entry objects
+	 * 					- entry_lookup => a lookup table organized by id of the Relationship_Entry objects
+	 * 					- entry_ids => an array of entry_ids returned, for convience when populating the Relationship_Entry objects
+	 *
+	 * @return	mixed[]	An array of variables, formatted for parse_variables()
 	 */
 	protected function _build_variables_array($data)
 	{
@@ -697,7 +712,25 @@ class Relationship_Parser
 	}
 
 	/**
+	 * Recursively Build the Variables Array
 	 *
+	 * Build the variable array for the given relationship node and attach it
+	 * to the array reference passed.  The variable we're working with is
+	 * defined by $namespace and $variable, the namespace being the list of
+	 * relationships up until this point, and variable being the list after
+	 * this point.  The final colon separated value is the variable we are
+	 * actually trying to get to.  If we haven't reached that finale value,
+	 * this method will recurse.  Otherwise it will retrieve the appropriate
+	 * data and add it to the variables array.
+	 *
+	 * @param	Relationship_Entry	The node in the relationship tree we're working on.  The variables we'll
+	 *									be populating the array from should be below this node.
+	 * @param	mixed[]				A reference to the point in the array we're adding to.
+	 * @param	string				The namespace string up to this point.
+	 * @param	string				The variable string that remains, may contain namespaces we haven't removed
+	 * 									yet.
+	 *
+	 * @return 	void
 	 */
 	protected function _build_variables_array_recursive(Relationship_Entry $node, array &$pair, $namespace, $variable)
 	{ 	
@@ -744,6 +777,19 @@ class Relationship_Parser
 		$entry_row[$namespace . ':' . $variable] = $node->{$variable};
 	}
 
+	/**
+	 * Normalize The Keys of the Variable Array
+	 *
+	 * When adding variables from nested relationships to the relationships array
+	 * we use the entry_id as a key.  This allows us to easily avoid duplication.
+	 * However, parse_variables() expects the keys in the array passed to it to be
+	 * purely numeric and in order (0,1,2,etc).  So we need to normalize our
+	 * array recursively to ensure that this is the case.
+	 *
+	 * @param	mixed[]	The array of variables we'll be normalizing.
+	 *
+	 * @return 	mixed[]	The normalized array.
+ 	 */
 	protected function _normalize_array_keys($variables)
 	{
 		foreach($variables as $key => $value)
@@ -776,8 +822,13 @@ class Relationship_Parser
 	 * and parse any and all relationship variables in the tag data.
 	 * We'll need to have already run the query earlier and have the
 	 * data we retrieved from it cached.
-	 * 
-	 * TODO Do I work?
+	 *
+	 * @param	int		The id of the entry we're working with.
+	 * @param	string	The tagdata to replace relationship tags in.
+	 * 						With all normal entry tags already parsed.
+	 *
+	 * @return 	string	The parsed tagdata, with all relationship tags
+	 *						replaced.
 	 */
 	public function parse_relationships($entry_id, $tagdata)
 	{
@@ -805,8 +856,18 @@ class Relationship_Entry
 	protected $children = array();
 
 	protected $custom_fields;
-
-	public function print_entry() {
+	
+	/**
+	 * Print Entry
+	 *
+	 * Print this entry and all entries beneath it in the 
+	 * relationship tree in a readable format.  For debugging
+	 * purposes ONLY.
+	 *
+	 * @return void
+	 */
+	public function print_entry() 
+	{
 		static $depth = -1;
 
 		$depth++;
@@ -842,13 +903,28 @@ class Relationship_Entry
 		echo 'END ENTRY: ' . $this->entry_id . '(' .$this->data['title'] . ')<br />';
 		$depth--;
 	}
-	
+
+	/**
+	 * Construct this Entry in the Relationship Tree
+	 *
+	 * Construct a entry node in the relationship tree.
+	 * Give it its id and a mapping of the custom fields
+	 * to start with.  We can populate the data and 
+	 * children later.
+ 	 *
+	 * @param	int		An entry_id identifying this entry.
+	 * @param	mixed[]	A mapping of custom field names to id.	
+	 */	
 	public function __construct($entry_id, $custom_fields)
 	{		
 		$this->entry_id = $entry_id;
 		$this->custom_fields = $custom_fields;
 	}
 
+	/**
+	 * Magic method to access entry variables, custom fields and 
+	 * child relationships.
+	 */
 	public function __get($name)
 	{
 		if (isset($this->children[$name]))
@@ -871,33 +947,61 @@ class Relationship_Entry
 		throw new RuntimeException('Attempt to access a non-existent field!');
 	}
 
+	/**
+	 * A simple getter for the entry_id.
+	 */
 	public function get_entry_id()
 	{
 		return $this->entry_id;
 	}
 
+	/**
+	 * A simple getter to return all entry data.
+	 */
 	public function get_data()
 	{
 		return $this->data;
 	}
 
+	/**
+	 * A simple setter to set all entry data.
+	 */
 	public function set_data(array $data)
 	{
 		$this->data = $data;
 		return $this;
 	}
 
+	/**
+	 * A simple getter to get the array of all children.
+	 *
+	 * @return mixed[]
+	 */
 	public function get_children()
 	{
 		return $this->children;
 	}
 
+	/**
+	 * A simple setter to set the array of all children.
+	 */
 	public function set_children(array $children)
 	{
 		$this->children = $children;
 		return $this;
 	}
 
+	/**
+	 * Add a Child Entry Node to the Children Array
+	 *
+	 * Adds a node to the children array, keyed to the
+	 * given field.
+	 *
+	 * @param	string	The name of the field to key the child to.
+	 * @param	Relationship_Entry	The node to attach.
+	 *
+	 * @return void
+	 */
 	public function add_child($field, Relationship_Entry $child)
 	{
 		
