@@ -22,7 +22,7 @@
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class EE_Localize {
+class Localize {
 
 	public $now = '';  // Local server time as GMT accounting for server offset
 	public $format = array(
@@ -311,6 +311,67 @@ class EE_Localize {
 		}
 
 		return $dt;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Generates an HTML menu of timezones
+	 *
+	 * @param	string	Default timezone selection
+	 * @param	string	Name of dropdown form field element
+	 * @return	string	HTML for dropdown list
+	 */
+	public function timezone_menu($default = 'UTC', $name = 'server_timezone')
+	{
+		// For the installer
+		$this->EE->load->helper('language');
+
+		$timezone_ids = DateTimeZone::listIdentifiers();
+		
+		// If default selection isn't valid, it may be our legacy timezone format
+		if ( ! in_array($default, $timezone_ids))
+		{
+			$default = $this->_get_php_timezone($default);
+		}
+
+		// This is what we'll pass to the form helper
+		$timezones = array();
+
+		// We only want timezones with these prefixes
+		$continents = array('Africa', 'America', 'Antarctica', 'Arctic',
+			'Asia', 'Atlantic', 'Australia', 'Europe', 'Indian', 'Pacific');
+
+		foreach ($timezone_ids as $zone)
+		{
+			// Explode ID by slashes while replacing underscores with spaces
+			$zone_array = str_replace('_', ' ', explode('/', $zone));
+
+			// Exclude deprecated PHP timezones
+			if ( ! in_array($zone_array[0], $continents))
+			{
+				continue;
+			}
+
+			// Construct the localized zone name
+			if (isset($zone_array[1]))
+			{
+				$zone_name = lang($zone_array[1]);
+
+				if (isset($zone_array[2]))
+				{
+					$zone_name .= ' - ' . lang($zone_array[2]);
+				}
+
+				$timezones[lang($zone_array[0])][$zone] = $zone_name;
+			}
+		}
+
+		// Add UTC on the bottom
+		$timezones['UTC']['UTC'] = 'UTC';
+
+		$this->EE->load->helper('form');
+		return form_dropdown($name, $timezones, $default, 'class="select"');
 	}
 
 	// --------------------------------------------------------------------
@@ -812,24 +873,6 @@ class EE_Localize {
 		$this->EE->logger->deprecated('2.6');
 
 		return $tz;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Create timezone localization pull-down menu
-	 *
-	 * @access	public
-	 * @param	string
-	 * @return	string
-	 */
-	function timezone_menu($default = '')
-	{
-		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated('2.6', 'Date helper\'s timezone_menu()');
-
-		$this->EE->load->helper('date');
-		return timezone_menu($default, 'select', 'server_timezone');
 	}
 
 	// --------------------------------------------------------------------

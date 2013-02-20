@@ -219,7 +219,7 @@ class Member_register extends Member {
 									array(
 											'lang:username_length'	=> $un_min_len,
 											'lang:password_length'	=> $pw_min_len,
-											'form:localization'		=> timezone_menu('UTC', 'select', 'server_timezone'),
+											'form:localization'		=> $this->EE->localize->timezone_menu(),
 											'form:time_format'		=> $tf,
 											'form:language'			=> $this->EE->functions->language_pack_names('english')
 

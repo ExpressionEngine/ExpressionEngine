@@ -354,12 +354,8 @@ class Admin_system extends CP_Controller {
 							$selected = $value;
 							break;
 						case 'timezone'			:
-							$options[0] = 's';
-							foreach ($timezones as $k => $v)
-							{
-								$details[$k] = lang($k);
-							}
-							$selected = $value;
+							$options[0] = 'c';
+							$details = $this->localize->timezone_menu($value);
 							break;
 					}
 					break;

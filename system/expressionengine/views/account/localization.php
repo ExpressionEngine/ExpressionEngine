@@ -7,7 +7,7 @@
 
 	<p>
 		<?=form_label(lang('timezone'), 'timezone')?>
-		<?=timezone_menu($timezone)?>
+		<?=$timezone_menu?>
 	</p>
 
 	<p>

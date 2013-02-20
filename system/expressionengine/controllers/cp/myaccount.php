@@ -1362,7 +1362,6 @@ class MyAccount extends CP_Controller {
 			show_error(lang('localization_disallowed'));
 		}
 
-		$this->load->helper('date');
 		$this->load->model('language_model');
 
 		$vars['cp_page_title'] = lang('localization_settings');
@@ -1405,6 +1404,8 @@ class MyAccount extends CP_Controller {
 		}
 
 		$vars['language_options'] = $this->language_model->language_pack_names();
+
+		$vars['timezone_menu'] = $this->localize->timezone_menu($vars['timezone'], 'timezones');
 
 		$this->cp->render('account/localization', $vars);
 	}

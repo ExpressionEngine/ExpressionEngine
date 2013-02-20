@@ -146,7 +146,6 @@ class Tools_utilities extends CP_Controller {
 	 */	
 	private function _import_xml_form()
 	{
-		$this->load->helper('date');
 		$this->lang->loadfile('member_import');
 		$this->load->model('member_model');
 
@@ -162,6 +161,7 @@ class Tools_utilities extends CP_Controller {
 		$vars['language_options'] = array('None' => 'None', 'English' => 'English');
 		$vars['member_groups'] = $member_groups;
 		$vars['auto_custom_field_enabled'] = TRUE;
+		$vars['timezone_menu'] = $this->localize->timezone_menu('UTC', 'timezones');
 		
 		$this->cp->render('tools/import_from_xml', $vars);
 		

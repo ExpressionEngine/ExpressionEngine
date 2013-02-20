@@ -6,7 +6,7 @@
 	<?=form_label(lang('timezone'), 'timezone')?>
 </div>
 <ul>
-	<li><?=timezone_menu($timezone)?></li>
+	<li><?=$timezone_menu?></li>
 </ul>
 
 <div class="label">
