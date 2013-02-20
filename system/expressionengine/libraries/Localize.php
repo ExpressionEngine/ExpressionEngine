@@ -161,16 +161,16 @@ class EE_Localize {
 				case 'F':
 					if ($dt->format('F') == 'May' && $translate)
 					{
-						return $this->EE->lang->line('May_l');
+						return lang('May_l');
 					}
 					break;
 				// Concatenate the RFC 2822 format with translations
 				case 'r':
 					if ($translate)
 					{
-						$rfc = $this->EE->lang->line($dt->format('D'));		// Thu
+						$rfc = lang($dt->format('D'));		// Thu
 						$rfc .= $dt->format(', d ');						// , 21
-						$rfc .= $this->EE->lang->line($dt->format('M'));	// Dec
+						$rfc .= lang($dt->format('M'));	// Dec
 						$rfc .= $dt->format(' Y H:i:s O'); 					// 2000 16:01:07 +0200
 
 						return $rfc;
@@ -187,7 +187,7 @@ class EE_Localize {
 			// otherwise send it straight to DateTime::format
 			if ($translate && in_array($date_var, $translatable_date_vars))
 			{
-				return $this->EE->lang->line($dt->format($date_var));
+				return lang($dt->format($date_var));
 			}
 			else
 			{
