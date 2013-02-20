@@ -191,12 +191,12 @@ class Zero_wing_ft extends EE_Fieldtype {
 
 		if ($entry_id)
 		{
-			$this->EE->db->where('entry_id !=', $entry_id);
+			$this->EE->db->where('channel_titles.entry_id !=', $entry_id);
 		}
 
 		if (count($selected))
 		{
-			$this->EE->db->or_where_in('entry_id', $selected);
+			$this->EE->db->or_where_in('channel_titles.entry_id', $selected);
 		}
 
 		$entries = $this->EE->db->get('channel_titles')->result_array();
