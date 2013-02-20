@@ -194,7 +194,7 @@ class Date_ft extends EE_Fieldtype {
 
 		$fields['field_dt_'.$data['field_id']] = array(
 			'type' 			=> 'VARCHAR',
-			'constraint'	=> 8
+			'constraint'	=> 50
 			);			
 		
 		return $fields;
