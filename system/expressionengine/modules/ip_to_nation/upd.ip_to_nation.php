@@ -34,8 +34,6 @@ class Ip_to_nation_upd {
 	{
 		$this->EE =& get_instance();
 		$this->EE->load->dbforge();
-
-		$this->EE->load->model('ip_to_nation_data', 'ip_data');
 	}
 
 	// --------------------------------------------------------------------
