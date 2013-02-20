@@ -55,6 +55,8 @@ class Pagination_object {
 	public $cfields				= array();
 	public $type				= '';
 	public $dynamic_sql			= TRUE;
+	public $position			= '';
+	public $pagination_marker = "pagination_marker";
 	
 	public function __construct($classname)
 	{
@@ -114,11 +116,17 @@ class Pagination_object {
 			$this->paginate		= TRUE;
 			$this->template_data	= $paginate_match[1];
 			
+			// Determine if pagination needs to go at the top and/or bottom, or inline
+			$this->position = $this->EE->TMPL->fetch_param('paginate');
+			
+			// Create temporary marker for inline position
+			$replace_tag = ($this->position == 'inline') ? LD.$this->pagination_marker.RD : '';
+			
 			// Remove pagination tags from template since we'll just 
 			// append/prepend it later
 			$this->EE->TMPL->tagdata = preg_replace(
 				"/".LD."paginate".RD.".+?".LD.'\/'."paginate".RD."/s",
-				"",
+				$replace_tag,
 				$this->EE->TMPL->tagdata
 			);
 		}
@@ -436,10 +444,7 @@ class Pagination_object {
 			
 			// ----------------------------------------------------------------
 			
-			// Determine if pagination needs to go at the top and/or bottom
-			$position = ( ! $this->EE->TMPL->fetch_param('paginate')) ? '' : $this->EE->TMPL->fetch_param('paginate');
-			
-			switch ($position)
+			switch ($this->position)
 			{
 				case "top":
 					return $this->template_data.$return_data;
@@ -447,6 +452,15 @@ class Pagination_object {
 				case "both":
 					return $this->template_data.$return_data.$this->template_data;
 					break;
+				case "inline":
+					return $this->EE->TMPL->swap_var_single(
+						$this->pagination_marker,
+						$this->template_data,
+						$return_data
+					);
+					break;
+    			return $return_data;
+    			break;
 				case "bottom":
 				default:
 					return $return_data.$this->template_data;
