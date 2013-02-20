@@ -964,30 +964,37 @@ class Member_model extends CI_Model {
 	 */
 	function get_authors($author_id = FALSE, $limit = FALSE, $offset = FALSE)
 	{
-		$this->db->select('members.member_id, members.group_id, 
-						members.username, members.screen_name, members.in_authorlist');
-		$this->db->from('members');
-		$this->db->join('member_groups', 'member_groups.group_id = members.group_id');
-		
+		// Please don't combine these two queries. Mysql won't hit an index
+		// on any combination that I've tried; except with a subquery which
+		// is close enough to what we have here. -pk
+		$groups = $this->db
+			->select('group_id')
+			->where('include_in_authorlist', 'y')
+			->where('site_id', $this->config->item('site_id'))
+			->get('member_groups')
+			->result_array();
+
+		$groups = array_map('array_pop', $groups);
+
+
+		$this->db->select('member_id, group_id, username, screen_name, in_authorlist');
+
 		if ($author_id)
 		{
-			$this->db->where('members.member_id !=', $author_id);
+			$this->db->where('member_id !=', $author_id);
 		}
-		
-		$this->db->where('('.$this->db->dbprefix('members').'.in_authorlist = "y" OR
-		 						'.$this->db->dbprefix('member_groups').'.include_in_authorlist = "y")');
-		$this->db->where('members.group_id = '.$this->db->dbprefix('member_groups').'.group_id');
-		$this->db->where('member_groups.site_id', $this->config->item('site_id'));
 	
-		$this->db->order_by('members.screen_name', 'ASC');
-		$this->db->order_by('members.username', 'ASC');
+		$this->db->where('in_authorlist', 'y');
+		$this->db->or_where_in('group_id', $groups);
+		$this->db->order_by('screen_name', 'ASC');
+		$this->db->order_by('username', 'ASC');
 		
 		if ($limit)
 		{
 			$this->db->limit($limit, $offset);
 		}
 		
-		return $this->db->get();
+		return $this->db->get('members');
 	}
 	
 	// --------------------------------------------------------------------
