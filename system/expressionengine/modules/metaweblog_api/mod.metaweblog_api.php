@@ -404,11 +404,15 @@ class Metaweblog_api {
 		{
 			$errors = $this->EE->api_channel_entries->get_errors();
 
-			$response = array(
-				'errors' => array($errors, 'array')
-			);
+			$this->EE->lang->loadfile('content');
+			$mssg = "\n";
+			
+			foreach ($errors as $val)
+			{
+				$mssg .= lang($val)."\n";
+			}
 
-			return $this->EE->xmlrpc->send_response($response);
+			return $this->EE->xmlrpc->send_error_message('804', lang('new_entry_errors').$mssg);
 		}
 		
 		//Return Entry ID of new entry - defaults to string, so nothing fancy
