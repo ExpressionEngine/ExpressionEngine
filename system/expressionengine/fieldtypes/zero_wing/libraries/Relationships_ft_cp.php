@@ -220,11 +220,11 @@ class Relationships_ft_cp {
 		{
 			if (in_array($s->status, array('open', 'closed')))
 			{
-				$deft_statuses[$s->status_id] = lang($s->status);
+				$deft_statuses[$s->status] = lang($s->status);
 			}
 			else
 			{
-				$statuses[$s->status_id] = $s->status;
+				$statuses[$s->status] = $s->status;
 			}
 		}
 
@@ -242,8 +242,8 @@ class Relationships_ft_cp {
 	public function all_order_options()
 	{
 		return array(
-			'title' => lang('rel_ft_order_title'),
-			'date'	=> lang('rel_ft_order_date')
+			'title' 	 => lang('rel_ft_order_title'),
+			'entry_date' => lang('rel_ft_order_date')
 		);
 	}
 

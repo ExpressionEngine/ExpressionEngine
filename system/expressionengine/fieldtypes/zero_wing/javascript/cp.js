@@ -230,6 +230,21 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 				}
 			};
 
+			this.root.find(':checked').each(function() {
+
+				// Webkit won't use the custom scroll bar if you overflow before
+				// adding the class. So we add the class and remove it if it's not
+				// overflowing. Silly browsers.
+				that.active.addClass('force-scroll');
+
+				var li = $(this).closest('li'),
+					idx = that.listItems.index(li);
+
+				util.moveOver(idx);
+
+				that._checkScrollBars();
+			});
+
 			// bind the select event
 			this.root.on('click.moveover', 'li', function(evt) {
 
@@ -237,6 +252,7 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 				// adding the class. So we add the class and remove it if it's not
 				// overflowing. Silly browsers.
 				that.active.addClass('force-scroll');
+				
 
 				var box = $(this).find(':checkbox'),
 					idx = that.listItems.index(this);

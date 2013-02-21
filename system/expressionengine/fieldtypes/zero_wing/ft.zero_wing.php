@@ -156,8 +156,10 @@ class Zero_wing_ft extends EE_Fieldtype {
 		$limit_statuses = $this->settings['statuses'];
 		$limit_authors = $this->settings['authors'];
 		$limit = $this->settings['limit'];
+		
+		$show_expired = (bool) $this->settings['expired'];
+		$show_future = (bool) $this->settings['future'];
 
-		// @todo - statuses, authors, categories, limit
 		$this->EE->db
 			->select('channel_titles.entry_id, channel_titles.title')
 			->order_by($this->settings['order_field'], $this->settings['order_dir']);
@@ -181,7 +183,13 @@ class Zero_wing_ft extends EE_Fieldtype {
 
 		if (count($limit_statuses))
 		{
-			// @todo TODO fix them
+			$limit_statuses = str_replace(
+				array('Open', 'Closed'),
+				array('open', 'closed'),
+				$limit_statuses
+			);
+
+			$this->EE->db->where_in('channel_titles.status', $limit_statuses);
 		}
 
 		if (count($limit_authors))
@@ -215,11 +223,31 @@ class Zero_wing_ft extends EE_Fieldtype {
 			$this->EE->db->or_where_in('channel_titles.entry_id', $selected);
 		}
 
+		// Limit times
+		$now = $this->EE->localize->now;
+
+		if ( ! $show_future)
+		{
+			$this->EE->db->where('channel_titles.entry_date < ', $now);
+		}
+
+		if ( ! $show_expired)
+		{
+			$t = $this->EE->db->dbprefix('channel_titles');
+			$this->EE->db->where("(${t}.expiration_date = 0 OR ${t}.expiration_date > ${now})", NULL, FALSE);
+		}
+
 		$entries = $this->EE->db->get('channel_titles')->result_array();
 
 		if ($this->settings['allow_multiple'] == 0)
 		{
-			return form_dropdown($field_name, $entries, key($selected));
+			$options = array();
+			foreach ($entries as $entry)
+			{
+				$options[$entry['entry_id']] = $entry['title'];
+			}
+
+			return form_dropdown($field_name.'[]', $options, current($selected));
 		}
 
 //		$entries = array_merge($entries, $entries, $entries, $entries, $entries); // 90
@@ -428,7 +456,7 @@ class Zero_wing_ft extends EE_Fieldtype {
 		{
 			if (is_array($value) && count($value))
 			{
-				if (isset($value['--']))
+				if (in_array('--', $value))
 				{
 					$save[$field] = array();
 				}
