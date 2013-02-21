@@ -526,7 +526,7 @@ class Tools_model extends CI_Model {
 	 */
 	public function get_sql_info()
 	{
-		$this->load->helper('number');
+		$this->load->helper(array('date', 'number'));
 		
 		$info = array();
 		
@@ -583,7 +583,7 @@ class Tools_model extends CI_Model {
 			}		
 		}	
 
-		$info['database_uptime'] = $this->localize->format_timespan($res[$uptime]['Value']);
+		$info['database_uptime'] = timespan($this->localize->now - $res[$uptime]['Value']);
 		$info['total_queries'] = number_format($query->result_array[$queries]['Value']);	
 				
 		return $info;

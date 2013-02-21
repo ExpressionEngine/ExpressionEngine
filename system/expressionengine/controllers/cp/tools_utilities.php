@@ -146,7 +146,6 @@ class Tools_utilities extends CP_Controller {
 	 */	
 	private function _import_xml_form()
 	{
-		$this->load->helper('date');
 		$this->lang->loadfile('member_import');
 		$this->load->model('member_model');
 
@@ -162,6 +161,7 @@ class Tools_utilities extends CP_Controller {
 		$vars['language_options'] = array('None' => 'None', 'English' => 'English');
 		$vars['member_groups'] = $member_groups;
 		$vars['auto_custom_field_enabled'] = TRUE;
+		$vars['timezone_menu'] = $this->localize->timezone_menu('UTC', 'timezones');
 		
 		$this->cp->render('tools/import_from_xml', $vars);
 		
@@ -204,11 +204,6 @@ class Tools_utilities extends CP_Controller {
 			array(
 				 'field'   => 'time_format',
 				 'label'   => 'lang:time_format',
-				 'rules'   => ''
-			),
-			array(
-				 'field'   => 'daylight_savings',
-				 'label'   => 'lang:daylight_savings',
 				 'rules'   => ''
 			),
 			array(
@@ -265,7 +260,6 @@ class Tools_utilities extends CP_Controller {
 			'language' 			=> ($this->input->post('language') == lang('none')) ? '' : $this->input->post('language'),
 			'timezones' 		=> $this->input->post('timezones'),
 			'time_format' 		=> $this->input->post('time_format'),
-			'daylight_savings' 	=> ($this->input->post('daylight_savings') == 'y') ? 'y' : 'n',
 			'auto_custom_field' => ($this->input->post('auto_custom_field') == 'y') ? 'y' : 'n'
 		);
 					
@@ -276,7 +270,6 @@ class Tools_utilities extends CP_Controller {
 			'language' 			=> ($data['language'] == '') ? lang('none') : ucfirst($data['language']),
 			'timezones' 		=> lang($data['timezones']),
 			'time_format' 		=> ($data['time_format'] == 'us') ? lang('united_states') : lang('european'),
-			'daylight_savings' 	=> ($data['daylight_savings'] == 'y') ? lang('yes') : lang('no'),
 			'auto_custom_field' => ($data['auto_custom_field'] == 'y') ? lang('yes') : lang('no')
 		);
 				
@@ -380,7 +373,6 @@ class Tools_utilities extends CP_Controller {
 			'language' 			=> ($this->input->post('language') == lang('none')) ? '' : $this->input->post('language'),
 			'timezones' 		=> $this->input->post('timezones'),
 			'time_format' 		=> $this->input->post('time_format'),
-			'daylight_savings' 	=> ($this->input->post('daylight_savings') == 'y') ? 'y' : 'n',
 			'auto_custom_field' => ($this->input->post('auto_custom_field') == 'y') ? 'y' : 'n'
 		);
 					
@@ -391,7 +383,6 @@ class Tools_utilities extends CP_Controller {
 			'language' 			=> ($data['language'] == '') ? lang('none') : ucfirst($data['language']),
 			'timezones' 		=> lang($data['timezones']),
 			'time_format' 		=> ($data['time_format'] == 'us') ? lang('united_states') : lang('european'),
-			'daylight_savings' 	=> ($data['daylight_savings'] == 'y') ? lang('yes') : lang('no'),
 			'auto_custom_field' => ($data['auto_custom_field'] == 'y') ? lang('yes') : lang('no')
 		 );
 
@@ -933,7 +924,6 @@ class Tools_utilities extends CP_Controller {
 		$this->default_fields['language']			= ($this->input->post('language') == lang('none') OR $this->input->post('language') == '') ? 'english' : strtolower($this->input->post('language'));
 		$this->default_fields['timezone']			= ($this->input->post('timezones') && $this->input->post('timezones') != '') ? $this->input->post('timezones') : $this->config->item('server_timezone');
 		$this->default_fields['time_format']		= $this->input->post('time_format');
-		$this->default_fields['daylight_savings']	= ($this->input->post('daylight_savings') == 'y') ? 'y' : 'n';
 		$this->default_fields['ip_address']			= '0.0.0.0';
 		$this->default_fields['join_date']			= $this->localize->now;
 		
@@ -1842,11 +1832,7 @@ class Tools_utilities extends CP_Controller {
 		}
 		
 		$this->load->helper('download');
-		$now = $this->localize->set_localized_time();
-        
-        $filename = 'member_'.date('y', $now).date('m', $now).date('d', $now).'.xml';
-		
-		force_download($filename, $xml);
+		force_download('member_'.$this->localize->format_date('%y%m%d').'.xml', $xml);
 	}
 
 	// --------------------------------------------------------------------

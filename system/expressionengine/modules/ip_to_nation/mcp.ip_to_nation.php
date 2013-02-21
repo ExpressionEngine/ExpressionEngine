@@ -183,7 +183,7 @@ class Ip_to_nation_mcp {
 				$this->cp->masked_url('http://www.maxmind.com/app/geolite'),
 				lang('update_data_provider')
 			),
-			'last_update' => ($last_update) ? $this->localize->set_human_time($last_update) : FALSE
+			'last_update' => ($last_update) ? $this->localize->human_time($last_update) : FALSE
 		);
 
 		$this->cp->add_js_script('fp_module', 'ip_to_nation');

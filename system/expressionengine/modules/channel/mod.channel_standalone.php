@@ -162,7 +162,7 @@ class Channel_standalone extends Channel {
 			
 			if ( ! $this->EE->input->post('entry_date'))
 			{
-				$_POST['entry_date'] = $this->EE->localize->set_human_time($this->EE->localize->now);
+				$_POST['entry_date'] = $this->EE->localize->human_time($this->EE->localize->now);
 			}
 
 			$data = $_POST;
@@ -172,9 +172,6 @@ class Channel_standalone extends Channel {
 			// Rudimentary handling of custom fields
 			
 			$field_query = $this->EE->channel_model->get_channel_fields($field_group);
-			
-			$dst_enabled = $this->EE->session->userdata('daylight_savings');
-			$dst_enabled = ( ! isset($_POST['dst_enabled'])) ? 'n' :  $dst_enabled;
 			
 			foreach ($field_query->result_array() as $row)
 			{
@@ -190,8 +187,7 @@ class Channel_standalone extends Channel {
 					'field_fmt'				=> $field_fmt,
 					'field_dt'				=> $field_dt,
 					'field_data'			=> $field_data,
-					'field_name'			=> 'field_id_'.$row['field_id'],
-					'dst_enabled'			=> $dst_enabled
+					'field_name'			=> 'field_id_'.$row['field_id']
 				);
 
 				$ft_settings = array();
@@ -882,16 +878,6 @@ class Channel_standalone extends Channel {
 			}
 
 			/** ----------------------------------------
-			/**  {dst_enabled}
-			/** ----------------------------------------*/
-
-			if ($key == 'dst_enabled')
-			{
-				$checked = ($this->EE->session->userdata('daylight_savings') == 'y') ? "checked='checked'" : '';
-				$tagdata = $this->EE->TMPL->swap_var_single($key, $checked, $tagdata);
-			}
-
-			/** ----------------------------------------
 			/**  {sticky}
 			/** ----------------------------------------*/
 
@@ -922,7 +908,7 @@ class Channel_standalone extends Channel {
 			/** ----------------------------------------*/
 			if ($key == 'entry_date')
 			{
-				$entry_date = ( ! isset($_POST['entry_date'])) ? $this->EE->localize->set_human_time($this->EE->localize->now) : $_POST['entry_date'];
+				$entry_date = ( ! isset($_POST['entry_date'])) ? $this->EE->localize->human_time($this->EE->localize->now) : $_POST['entry_date'];
 
 				$tagdata = $this->EE->TMPL->swap_var_single($key, $entry_date, $tagdata);
 			}
@@ -954,7 +940,7 @@ class Channel_standalone extends Channel {
 					{
 						$comment_expiration_date = $channel_q->row('comment_expiration') * 86400;
 						$comment_expiration_date = $comment_expiration_date + $this->EE->localize->now;
-						$comment_expiration_date = $this->EE->localize->set_human_time($comment_expiration_date);
+						$comment_expiration_date = $this->EE->localize->human_time($comment_expiration_date);
 					}
 				}
 
@@ -1504,7 +1490,7 @@ class Channel_standalone extends Channel {
 
 				if (in_array($expl['1'], $date_fields))
 				{
-					$temp_date = $this->EE->localize->convert_human_date_to_gmt($_POST['field_id_'.$expl['1']]);
+					$temp_date = $this->EE->localize->string_to_timestamp($_POST['field_id_'.$expl['1']]);
 					$temp = $_POST['field_id_'.$expl['1']];
 					$cond[$fields['field_id_'.$expl['1']]['0']] =  $temp_date;
 				}
@@ -1944,23 +1930,17 @@ class Channel_standalone extends Channel {
 				}
 
 				$custom_date = '';
-				$localize = FALSE;
 				
 				if ($dtwhich != 'preview')
 				{
-					$localize = TRUE;
-
 					if ($field_data != '')
 					{
-						$custom_date = $this->EE->localize->set_human_time($field_data, $localize);						
+						$custom_date = $this->EE->localize->human_time($field_data);						
 					}
-
-					$cal_date = ($this->EE->localize->set_localized_time($custom_date) * 1000);
 				}
 				else
 				{
 					$custom_date = $_POST[$date_field];
-					$cal_date = ($custom_date != '') ? ($this->EE->localize->set_localized_time($this->EE->localize->convert_human_date_to_gmt($custom_date)) * 1000) : ($this->EE->localize->set_localized_time() * 1000);
 				}
 				
 				$temp_chunk = str_replace(LD.'temp_date'.RD, $date, $temp_chunk);

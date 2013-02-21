@@ -68,18 +68,17 @@ class Channel_calendar extends Channel {
 			{
 				$ex = explode('/', $match['1']);
 
-				$time = mktime(0, 0, 0, $ex['1'], 01, $ex['0']);
-				// $time = $this->EE->localize->set_localized_time(mktime(0, 0, 0, $ex['1'], 01, $ex['0']));
+				$time = gmmktime(0, 0, 0, $ex['1'], 01, $ex['0']);
 
-				$year  = date("Y", $time);
-				$month = date("m", $time);
+				$year = $this->EE->localize->format_date('%Y', $time, FALSE);
+				$month = $this->EE->localize->format_date('%m', $time, FALSE);
 			}
 			else
 			{
 				// Defaults to current month/year
 
-				$year  = date("Y", $this->EE->localize->set_localized_time($this->EE->localize->now));
-				$month = date("m", $this->EE->localize->set_localized_time($this->EE->localize->now));
+				$year = $this->EE->localize->format_date('%Y');
+				$month = $this->EE->localize->format_date('%m');
 			}
 		}
 
@@ -88,18 +87,19 @@ class Channel_calendar extends Channel {
 		/**  Set Unix timestamp for the given month/year
 		/** ----------------------------------------*/
 
-		$local_date = mktime(12, 0, 0, $month, 1, $year);
-		// $local_date = $this->EE->localize->set_localized_time($local_date);
+		$date = gmmktime(12, 0, 0, $month, 1, $year);
 
 		/** ----------------------------------------
 		/**  Determine the total days in the month
 		/** ----------------------------------------*/
-		$adjusted_date = $this->EE->localize->adjust_date($month, $year);
+		$this->EE->load->library('calendar');
+		$adjusted_date = $this->EE->calendar->adjust_date($month, $year);
 
 		$month	= $adjusted_date['month'];
 		$year	= $adjusted_date['year'];
 
-		$total_days = $this->EE->localize->fetch_days_in_month($month, $year);
+		$this->EE->load->helper('date');
+		$total_days = days_in_month($month, $year);
 
 		$previous_date 	= mktime(12, 0, 0, $month-1, 1, $year);
 		$next_date 		= mktime(12, 0, 0, $month+1, 1, $year);
@@ -108,12 +108,12 @@ class Channel_calendar extends Channel {
 		/**  Determine the total days of the previous month
 		/** ---------------------------------------*/
 
-		$adj_prev_date = $this->EE->localize->adjust_date($month-1, $year);
+		$adj_prev_date = $this->EE->calendar->adjust_date($month-1, $year);
 
 		$prev_month = $adj_prev_date['month'];
 		$prev_year = $adj_prev_date['year'];
 
-		$prev_total_days = $this->EE->localize->fetch_days_in_month($prev_month, $prev_year);
+		$prev_total_days = days_in_month($prev_month, $prev_year);
 
 		/** ----------------------------------------
 		/**  Set the starting day of the week
@@ -126,8 +126,7 @@ class Channel_calendar extends Channel {
 
 		$start_day = (isset($start_days[$this->EE->TMPL->fetch_param('start_day')])) ? $start_days[$this->EE->TMPL->fetch_param('start_day')]: 0;
 
-		$date = getdate($local_date);
-		$day  = $start_day + 1 - $date["wday"];
+		$day  = $start_day + 1 - $this->EE->localize->format_date('%w', $date);
 
 		while ($day > 1)
 		{
@@ -142,7 +141,7 @@ class Channel_calendar extends Channel {
 
 		if (preg_match_all("#".LD."previous_path=(.+?)".RD."#", $this->EE->TMPL->tagdata, $matches))
 		{
-			$adjusted_date = $this->EE->localize->adjust_date($month - 1, $year, TRUE);
+			$adjusted_date = $this->EE->calendar->adjust_date($month - 1, $year, TRUE);
 
 			foreach ($matches['1'] as $match)
 			{
@@ -160,7 +159,7 @@ class Channel_calendar extends Channel {
 
 		if (preg_match_all("#".LD."next_path=(.+?)".RD."#", $this->EE->TMPL->tagdata, $matches))
 		{
-			$adjusted_date = $this->EE->localize->adjust_date($month + 1, $year, TRUE);
+			$adjusted_date = $this->EE->calendar->adjust_date($month + 1, $year, TRUE);
 
 			foreach ($matches['1'] as $match)
 			{
@@ -181,7 +180,7 @@ class Channel_calendar extends Channel {
 		{
 			foreach ($matches['1'] as $match)
 			{
-				$this->EE->TMPL->tagdata = preg_replace("#".LD."date format=.+?".RD."#", $this->EE->localize->decode_date($match, $local_date), $this->EE->TMPL->tagdata, 1);
+				$this->EE->TMPL->tagdata = preg_replace("#".LD."date format=.+?".RD."#", $this->EE->localize->format_date($match, $date), $this->EE->TMPL->tagdata, 1);
 			}
 		}
 
@@ -196,7 +195,7 @@ class Channel_calendar extends Channel {
 		{
 			foreach ($matches['1'] as $match)
 			{
-				$this->EE->TMPL->tagdata = preg_replace("#".LD."previous_date format=.+?".RD."#", $this->EE->localize->decode_date($match, $previous_date), $this->EE->TMPL->tagdata, 1);
+				$this->EE->TMPL->tagdata = preg_replace("#".LD."previous_date format=.+?".RD."#", $this->EE->localize->format_date($match, $previous_date), $this->EE->TMPL->tagdata, 1);
 			}
 		}
 
@@ -211,7 +210,7 @@ class Channel_calendar extends Channel {
 		{
 			foreach ($matches['1'] as $match)
 			{
-				$this->EE->TMPL->tagdata = preg_replace("#".LD."next_date format=.+?".RD."#", $this->EE->localize->decode_date($match, $next_date), $this->EE->TMPL->tagdata, 1);
+				$this->EE->TMPL->tagdata = preg_replace("#".LD."next_date format=.+?".RD."#", $this->EE->localize->format_date($match, $next_date), $this->EE->TMPL->tagdata, 1);
 			}
 		}
 
@@ -313,7 +312,7 @@ class Channel_calendar extends Channel {
 				{
 					$matches['0'][$j] = str_replace(array(LD,RD), '', $matches['0'][$j]);
 
-					$entry_dates[$matches['0'][$j]] = $this->EE->localize->fetch_date_params($matches['1'][$j]);
+					$entry_dates[$matches['0'][$j]] = $matches['1'][$j];
 				}
 			}
 
@@ -469,20 +468,10 @@ class Channel_calendar extends Channel {
 					{
 						if (isset($entry_dates[$key]))
 						{
-							foreach ($entry_dates[$key] as $dvar)
-							{
-								$val = str_replace(
-									$dvar, 
-									$this->EE->localize->convert_timestamp(
-										$dvar, 
-										$row['entry_date'], 
-										TRUE
-									), 
-									$val
-								);
-							}
-							
-							$entry_date[$key] = $val;
+							$entry_date[$key] = $this->EE->localize->format_date(
+								$entry_date[$key], 
+								$row['entry_date']
+							);
 						}
 
 
@@ -590,21 +579,16 @@ class Channel_calendar extends Channel {
 
 						if (strncmp($key, 'day_path', 8) == 0)
 						{
-							$d = gmdate('d', $this->EE->localize->set_localized_time($row['entry_date']));
-							$m = gmdate('m', $this->EE->localize->set_localized_time($row['entry_date']));
-							$y = gmdate('Y', $this->EE->localize->set_localized_time($row['entry_date']));
+							$formatted_date_path = $this->EE->localize->format_date('%Y/%m/%d', $row['entry_date']);
 
-							if ($this->EE->functions->extract_path($key) != '' AND $this->EE->functions->extract_path($key) != 'SITE_INDEX')
+							if ($this->EE->functions->extract_path($key) != ''
+								AND $this->EE->functions->extract_path($key) != 'SITE_INDEX')
 							{
-								$path = $this->EE->functions->extract_path($key).'/'.$y.'/'.$m.'/'.$d;
-							}
-							else
-							{
-								$path = $y.'/'.$m.'/'.$d;
+								$formatted_date_path = $this->EE->functions->extract_path($key).'/'.$formatted_date_path;
 							}
 
 							$if_entries = str_replace(LD.$key.RD, LD.'day_path'.$val.RD, $if_entries);
-							$day_path[$key] = $this->EE->functions->create_url($path);
+							$day_path[$key] = $this->EE->functions->create_url($formatted_date_path);
 						}
 
 					}
@@ -615,7 +599,7 @@ class Channel_calendar extends Channel {
 					/**  Build Data Array
 					/** ----------------------------------------*/
 
-					$d = gmdate('d', $this->EE->localize->set_localized_time($row['entry_date']));
+					$d = $this->EE->localize->format_date('%d', $row['entry_date']);
 					
 					if (substr($d, 0, 1) == '0')
 					{
@@ -648,7 +632,11 @@ class Channel_calendar extends Channel {
 
 		$out = '';
 
-		$today = getdate($this->EE->localize->set_localized_time($this->EE->localize->now));
+		$today = array(
+			'mday' => $this->EE->localize->format_date('%j'),
+			'mon' => $this->EE->localize->format_date('%n'),
+			'year' => $this->EE->localize->format_date('%Y')
+		);
 
 		while ($day <= $total_days)
 		{

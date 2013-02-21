@@ -63,7 +63,10 @@
 				$label = lang($name, $name);
 				
 				$pref = form_password(array_merge($details['value'], array('id' => $name, 'class' => 'input fullfield', 'size' => 20, 'maxlength' => 120)));
-				break;		
+				break;
+			case 'c':
+				$label = lang($name, $name);
+				$pref = $details['value'];
 		}
 
 		$this->table->add_row(

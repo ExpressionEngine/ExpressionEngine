@@ -2502,8 +2502,7 @@ class Member {
 							m.bio,
 							m.join_date, m.last_visit, m.last_activity, m.last_entry_date, m.last_comment_date,
 							m.last_forum_post_date, m.total_entries, m.total_comments, m.total_forum_topics, m.total_forum_posts,
-							m.language, m.timezone, m.daylight_savings, m.bday_d, m.bday_m, m.bday_y,
-							g.group_title');
+							m.language, m.timezone, m.bday_d, m.bday_m, m.bday_y, g.group_title');
 		$this->EE->db->from(array('members m', 'member_groups g'));
 		$this->EE->db->where('m.member_id', $member_id);
 		$this->EE->db->where('g.site_id', $this->EE->config->item('site_id'));
@@ -2662,37 +2661,37 @@ class Member {
 				//  "last_visit"
 				if (strncmp($key, 'last_visit', 10) == 0)
 				{
-					$this->EE->TMPL->tagdata = $this->_var_swap_single($key, ($default_fields['last_visit'] > 0) ? $this->EE->localize->decode_date($val, $default_fields['last_visit']) : '', $this->EE->TMPL->tagdata);
+					$this->EE->TMPL->tagdata = $this->_var_swap_single($key, ($default_fields['last_visit'] > 0) ? $this->EE->localize->format_date($val, $default_fields['last_visit']) : '', $this->EE->TMPL->tagdata);
 				}
 
 				//  "last_activity"
 				if (strncmp($key, 'last_activity', 10) == 0)
 				{
-					$this->EE->TMPL->tagdata = $this->_var_swap_single($key, ($default_fields['last_activity'] > 0) ? $this->EE->localize->decode_date($val, $default_fields['last_activity']) : '', $this->EE->TMPL->tagdata);
+					$this->EE->TMPL->tagdata = $this->_var_swap_single($key, ($default_fields['last_activity'] > 0) ? $this->EE->localize->format_date($val, $default_fields['last_activity']) : '', $this->EE->TMPL->tagdata);
 				}
 				
 				//  "join_date"
 				if (strncmp($key, 'join_date', 9) == 0)
 				{
-					$this->EE->TMPL->tagdata = $this->_var_swap_single($key, ($default_fields['join_date'] > 0) ? $this->EE->localize->decode_date($val, $default_fields['join_date']) : '', $this->EE->TMPL->tagdata);
+					$this->EE->TMPL->tagdata = $this->_var_swap_single($key, ($default_fields['join_date'] > 0) ? $this->EE->localize->format_date($val, $default_fields['join_date']) : '', $this->EE->TMPL->tagdata);
 				}
 
 				//  "last_entry_date"
 				if (strncmp($key, 'last_entry_date', 15) == 0)
 				{
-					$this->EE->TMPL->tagdata = $this->_var_swap_single($key, ($default_fields['last_entry_date'] > 0) ? $this->EE->localize->decode_date($val, $default_fields['last_entry_date']) : '', $this->EE->TMPL->tagdata);
+					$this->EE->TMPL->tagdata = $this->_var_swap_single($key, ($default_fields['last_entry_date'] > 0) ? $this->EE->localize->format_date($val, $default_fields['last_entry_date']) : '', $this->EE->TMPL->tagdata);
 				}
 
 				//  "last_forum_post_date"
 				if (strncmp($key, 'last_forum_post_date', 20) == 0)
 				{
-					$this->EE->TMPL->tagdata = $this->_var_swap_single($key, ($default_fields['last_forum_post_date'] > 0) ? $this->EE->localize->decode_date($val, $default_fields['last_forum_post_date']) : '', $this->EE->TMPL->tagdata);
+					$this->EE->TMPL->tagdata = $this->_var_swap_single($key, ($default_fields['last_forum_post_date'] > 0) ? $this->EE->localize->format_date($val, $default_fields['last_forum_post_date']) : '', $this->EE->TMPL->tagdata);
 				}
 
 				//  parse "recent_comment"
 				if (strncmp($key, 'last_comment_date', 17) == 0)
 				{
-					$this->EE->TMPL->tagdata = $this->_var_swap_single($key, ($default_fields['last_comment_date'] > 0) ? $this->EE->localize->decode_date($val, $default_fields['last_comment_date']) : '', $this->EE->TMPL->tagdata);
+					$this->EE->TMPL->tagdata = $this->_var_swap_single($key, ($default_fields['last_comment_date'] > 0) ? $this->EE->localize->format_date($val, $default_fields['last_comment_date']) : '', $this->EE->TMPL->tagdata);
 				}
 
 				//  {name}
@@ -2765,18 +2764,17 @@ class Member {
 				//  {local_time}
 				if (strncmp($key, 'local_time', 10) == 0)
 				{
-					$time = $this->EE->localize->now;
+					$locale = FALSE;
 
 					if ($this->EE->session->userdata('member_id') != $this->cur_id)
 					{  
 						// Default is UTC?
-						$zone = ($default_fields['timezone'] == '') ? 'UTC' : $default_fields['timezone'];
-						$time = $this->EE->localize->set_localized_time($time, $zone, $default_fields['daylight_savings']);
+						$locale = ($default_fields['timezone'] == '') ? 'UTC' : $default_fields['timezone'];
 					}
 
 					$this->EE->TMPL->tagdata = $this->_var_swap_single(
 						$key,
-						$this->EE->localize->decode_date($val, $time, FALSE),
+						$this->EE->localize->format_date($val, NULL, $locale),
 						$this->EE->TMPL->tagdata
 					);
 				}

@@ -1175,7 +1175,7 @@ class Forum {
 				}
 				else
 				{
-					$str = str_replace($matches['0'][$j], $this->EE->localize->decode_date($matches['1'][$j], $this->EE->session->userdata['last_visit']), $str);
+					$str = str_replace($matches['0'][$j], $this->EE->localize->format_date($matches['1'][$j], $this->EE->session->userdata['last_visit']), $str);
 				}
 			}
 		}

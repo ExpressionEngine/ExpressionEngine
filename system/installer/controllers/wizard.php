@@ -107,7 +107,6 @@ class Wizard extends CI_Controller {
 		'deft_lang'				=> 'english',
 		'theme'					=> '01',
 		'server_timezone'		=> 'UTC',
-		'daylight_savings'		=> '',
 		'redirect_method'		=> 'redirect',
 		'upload_folder'			=> 'uploads/',
 		'image_path'			=> '',
@@ -685,6 +684,8 @@ class Wizard extends CI_Controller {
 		$this->load->library('javascript');
 		
 		$this->userdata['extra_header'] = $this->_install_form_extra_header($this->javascript->generate_json($this->theme_required_modules, TRUE));
+
+		$this->load->library('localize');
 		
 		// Display the form and pass the userdata array to it	
 		$this->_set_output('install_form', $this->userdata);
@@ -1209,9 +1210,6 @@ PAPAYA;
 		$prefs = array(
 			'db_conntype'		=> array(
 				'persistent' => array('persistent', 'nonpersistent')
-			),
-			'daylight_savings'	=> array(
-				'y' => array('dst1', 'dst2')
 			)
 		);
 		
@@ -2384,9 +2382,7 @@ PAPAYA;
 			'time_format'					=>	'us',
 			'server_timezone'				=>	$this->userdata['server_timezone'],
 			'server_offset'					=>	'',
-			'daylight_savings'				=>	$this->userdata['daylight_savings'],
 			'default_site_timezone'			=>	$this->userdata['server_timezone'],
-			'default_site_dst'				=>	$this->userdata['daylight_savings'],
 			'honor_entry_dst'				=>	'y',
 			'mail_protocol'					=>	'mail',
 			'smtp_server'					=>	'',
@@ -2540,9 +2536,7 @@ PAPAYA;
 			'time_format',
 			'server_timezone',
 			'server_offset',
-			'daylight_savings',
 			'default_site_timezone',
-			'default_site_dst',
 			'honor_entry_dst',
 			'mail_protocol',
 			'smtp_server',

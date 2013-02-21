@@ -361,7 +361,7 @@ class Comment_mcp {
 				$comment->email, '', 'class="less_important_link"'
 			);
 
-			$comment->comment_date = $this->EE->localize->set_human_time(
+			$comment->comment_date = $this->EE->localize->human_time(
 				$comment->comment_date
 			);
 

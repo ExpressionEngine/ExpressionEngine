@@ -90,11 +90,11 @@ class Member_settings extends Member {
 		return  $this->_var_swap($this->_load_element('home_page'),
 								array(
 										'email'						=> $query->row('email') ,
-										'join_date'					=> $this->EE->localize->decode_date($datecodes['long'], $query->row('join_date') ),
-										'last_visit_date'			=> ($query->row('last_activity')  == 0) ? '--' : $this->EE->localize->decode_date($datecodes['long'], $query->row('last_activity') ),
-										'recent_entry_date'			=> ($query->row('last_entry_date')  == 0) ? '--' : $this->EE->localize->decode_date($datecodes['long'], $query->row('last_entry_date') ),
-										'recent_comment_date'		=> ($query->row('last_comment_date')  == 0) ? '--' : $this->EE->localize->decode_date($datecodes['long'], $query->row('last_comment_date') ),
-										'recent_forum_post_date'	=> ($query->row('last_forum_post_date')  == 0) ? '--' : $this->EE->localize->decode_date($datecodes['long'], $query->row('last_forum_post_date') ),
+										'join_date'					=> $this->EE->localize->format_date($datecodes['long'], $query->row('join_date') ),
+										'last_visit_date'			=> ($query->row('last_activity')  == 0) ? '--' : $this->EE->localize->format_date($datecodes['long'], $query->row('last_activity') ),
+										'recent_entry_date'			=> ($query->row('last_entry_date')  == 0) ? '--' : $this->EE->localize->format_date($datecodes['long'], $query->row('last_entry_date') ),
+										'recent_comment_date'		=> ($query->row('last_comment_date')  == 0) ? '--' : $this->EE->localize->format_date($datecodes['long'], $query->row('last_comment_date') ),
+										'recent_forum_post_date'	=> ($query->row('last_forum_post_date')  == 0) ? '--' : $this->EE->localize->format_date($datecodes['long'], $query->row('last_forum_post_date') ),
 										'total_topics'				=> $query->row('total_forum_topics') ,
 										'total_posts'				=> $query->row('total_forum_posts')  + $query->row('total_forum_topics') ,
 										'total_replies'				=> $query->row('total_forum_posts') ,
@@ -138,7 +138,7 @@ class Member_settings extends Member {
 					m.icq, m.aol_im, m.yahoo_im, m.msn_im, m.bio, m.join_date, m.last_visit, 
 					m.last_activity, m.last_entry_date, m.last_comment_date, m.last_forum_post_date, 
 					m.total_entries, m.total_comments, m.total_forum_topics,
-					m.total_forum_posts, m.language, m.timezone, m.daylight_savings, 
+					m.total_forum_posts, m.language, m.timezone, 
 					m.bday_d, m.bday_m, m.bday_y, m.accept_user_email, m.accept_messages,
 					g.group_title, g.can_send_private_messages';
 
@@ -497,7 +497,7 @@ class Member_settings extends Member {
 
 			if (strncmp($key, 'last_visit', 10) == 0)
 			{
-				$content = $this->_var_swap_single($key, ($row['last_activity'] > 0) ? $this->EE->localize->decode_date($val, $row['last_activity'] ) : '', $content);
+				$content = $this->_var_swap_single($key, ($row['last_activity'] > 0) ? $this->EE->localize->format_date($val, $row['last_activity'] ) : '', $content);
 			}
 
 			/** ----------------------------------------
@@ -506,7 +506,7 @@ class Member_settings extends Member {
 
 			if (strncmp($key, 'join_date', 9) == 0)
 			{
-				$content = $this->_var_swap_single($key, ($row['join_date'] > 0) ? $this->EE->localize->decode_date($val, $row['join_date'] ) : '', $content);
+				$content = $this->_var_swap_single($key, ($row['join_date'] > 0) ? $this->EE->localize->format_date($val, $row['join_date'] ) : '', $content);
 			}
 
 			/** ----------------------------------------
@@ -515,7 +515,7 @@ class Member_settings extends Member {
 
 			if (strncmp($key, 'last_entry_date', 15) == 0)
 			{
-				$content = $this->_var_swap_single($key, ($row['last_entry_date']  > 0) ? $this->EE->localize->decode_date($val, $row['last_entry_date'] ) : '', $content);
+				$content = $this->_var_swap_single($key, ($row['last_entry_date']  > 0) ? $this->EE->localize->format_date($val, $row['last_entry_date'] ) : '', $content);
 			}
 
 			/** ----------------------------------------
@@ -524,7 +524,7 @@ class Member_settings extends Member {
 
 			if (strncmp($key, 'last_forum_post_date', 20) == 0)
 			{
-				$content = $this->_var_swap_single($key, ($row['last_forum_post_date']  > 0) ? $this->EE->localize->decode_date($val, $row['last_forum_post_date'] ) : '', $content);
+				$content = $this->_var_swap_single($key, ($row['last_forum_post_date']  > 0) ? $this->EE->localize->format_date($val, $row['last_forum_post_date'] ) : '', $content);
 			}
 
 			/** ----------------------------------------
@@ -533,7 +533,7 @@ class Member_settings extends Member {
 
 			if (strncmp($key, 'last_comment_date', 17) == 0)
 			{
-				$content = $this->_var_swap_single($key, ($row['last_comment_date']  > 0) ? $this->EE->localize->decode_date($val, $row['last_comment_date'] ) : '', $content);
+				$content = $this->_var_swap_single($key, ($row['last_comment_date']  > 0) ? $this->EE->localize->format_date($val, $row['last_comment_date'] ) : '', $content);
 			}
 
 			/** ----------------------
@@ -624,16 +624,19 @@ class Member_settings extends Member {
 
 			if (strncmp($key, 'local_time', 10) == 0)
 			{
-				$time = $this->EE->localize->now;
+				$locale = FALSE;
 
 				if ($this->EE->session->userdata('member_id') != $this->cur_id)
 				{  
 					// Default is UTC?
-					$zone = ($row['timezone']  == '') ? 'UTC' : $row['timezone'] ;
-					$time = $this->EE->localize->set_localized_time($time, $zone, $row['daylight_savings'] );
+					$locale = ($default_fields['timezone'] == '') ? 'UTC' : $default_fields['timezone'];
 				}
 
-				$content = $this->_var_swap_single($key, $this->EE->localize->decode_date($val, $time), $content);
+				$content = $this->_var_swap_single(
+					$key,
+					$this->EE->localize->format_date($val, NULL, $locale),
+					$content
+				);
 			}
 
 			/** ----------------------
@@ -1083,8 +1086,9 @@ class Member_settings extends Member {
 
 		if (is_numeric($data['bday_d']) AND is_numeric($data['bday_m']))
 		{
+			$this->EE->load->helper('date');
 			$year = ($data['bday_y'] != '') ? $data['bday_y'] : date('Y');
-			$mdays = $this->EE->localize->fetch_days_in_month($data['bday_m'], $year);
+			$mdays = days_in_month($data['bday_m'], $year);
 
 			if ($data['bday_d'] > $mdays)
 			{
@@ -1549,13 +1553,14 @@ class Member_settings extends Member {
 		$tf .= "</select>\n";
 
 
-		$query = $this->EE->db->query("SELECT language, timezone,daylight_savings FROM exp_members WHERE member_id = '".$this->EE->session->userdata('member_id')."'");
+		$query = $this->EE->db->query("SELECT language, timezone FROM exp_members WHERE member_id = '".$this->EE->session->userdata('member_id')."'");
+
+		$this->EE->load->helper('date_helper');
 
 		return $this->_var_swap($this->_load_element('localization_form'),
 								array(
 										'path:update_localization'		=>	$this->_member_path('update_localization'),
-										'form:localization'				=>	$this->EE->localize->timezone_menu(($query->row('timezone')  == '') ? 'UTC' : $query->row('timezone') ),
-										'state:daylight_savings'		=>	($query->row('daylight_savings')  == 'y') ? " checked='checked'" : '',
+										'form:localization'				=>	$this->EE->localize->timezone_menu(($query->row('timezone')  == '') ? 'UTC' : $query->row('timezone')),
 										'form:time_format'				=>	$tf,
 										'form:language'					=>	$this->EE->functions->language_pack_names(($query->row('language')  == '') ? 'english' : $query->row('language') )
 									 )
@@ -1592,8 +1597,6 @@ class Member_settings extends Member {
 		{
 			return $this->EE->output->show_user_error('general', array($this->EE->lang->line('invalid_action')));
 		}
-
-		$data['daylight_savings'] = ($this->EE->input->post('daylight_savings') == 'y') ? 'y' : 'n';
 
 		$this->EE->db->query($this->EE->db->update_string('exp_members', $data, "member_id = '".$this->EE->session->userdata('member_id')."'"));
 

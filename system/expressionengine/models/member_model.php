@@ -1516,16 +1516,13 @@ class Member_model extends CI_Model {
 	 */
 	function get_localization_default($get_id = FALSE)
 	{
-		$this->db->select('member_id, timezone, daylight_savings, time_format');
+		$this->db->select('member_id, timezone, time_format');
 		$this->db->where('localization_is_site_default', 'y');
 		$query = $this->db->get('members');
 
 		if ($query->num_rows() == 1)
 		{
-			$config = array(
-							'default_site_timezone' => $query->row('timezone'),
-							'default_site_dst'		=> $query->row('daylight_savings')
-							);
+			$config = array('default_site_timezone' => $query->row('timezone'));
 							
 			if ($get_id)
 			{
@@ -1534,10 +1531,8 @@ class Member_model extends CI_Model {
 		}
 		else
 		{
-			$config = array(
-							'default_site_timezone' => '',
-							'default_site_dst'		=> ''
-							);
+			$config = array('default_site_timezone' => '');
+
 			if ($get_id)
 			{
 				$config['member_id'] = '';

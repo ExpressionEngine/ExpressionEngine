@@ -122,7 +122,7 @@ class News_and_stats_acc {
 				$title = $feed->items[$i]['title'];
 
 				$date = $feed->items[$i]['dc']['date'];
-				$date = $this->EE->localize->set_human_time(strtotime(preg_replace(
+				$date = $this->EE->localize->human_time(strtotime(preg_replace(
 					"/(20[10][0-9]\-[0-9]{2}\-[0-9]{2})T([0-9]{2}:[0-9]{2}:[0-9]{2})Z/", 
 					'\\1 \\2 UTC',
 					$date

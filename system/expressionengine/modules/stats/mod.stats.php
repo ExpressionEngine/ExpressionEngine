@@ -132,7 +132,7 @@ class Stats {
 												$key, 
 												( ! $this->EE->stats->statdata($date) 
 													OR $this->EE->stats->statdata($date) == 0) ? '--' : 
-												$this->EE->localize->decode_date($val, 
+												$this->EE->localize->format_date($val, 
 																$this->EE->stats->statdata($date)), 
 												$this->EE->TMPL->tagdata
 											 );

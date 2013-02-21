@@ -1128,9 +1128,6 @@ $lang = array(
 "server_offset_explain" => 
 "Use the minus sign to subtract minutes: -15",
 
-"daylight_savings" =>
-"Daylight Saving Time",
-
 "cookie_cfg" => 
 "Cookie Settings",
 

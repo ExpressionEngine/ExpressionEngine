@@ -363,18 +363,7 @@ class EE_Template {
 		}		
 	
 		// Parse date format string "constants"		
-		$date_constants	= array('DATE_ATOM'		=>	'%Y-%m-%dT%H:%i:%s%Q',
-								'DATE_COOKIE'	=>	'%l, %d-%M-%y %H:%i:%s UTC',
-								'DATE_ISO8601'	=>	'%Y-%m-%dT%H:%i:%s%Q',
-								'DATE_RFC822'	=>	'%D, %d %M %y %H:%i:%s %O',
-								'DATE_RFC850'	=>	'%l, %d-%M-%y %H:%m:%i UTC',
-								'DATE_RFC1036'	=>	'%D, %d %M %y %H:%i:%s %O',
-								'DATE_RFC1123'	=>	'%D, %d %M %Y %H:%i:%s %O',
-								'DATE_RFC2822'	=>	'%D, %d %M %Y %H:%i:%s %O',
-								'DATE_RSS'		=>	'%D, %d %M %Y %H:%i:%s %O',
-								'DATE_W3C'		=>	'%Y-%m-%dT%H:%i:%s%Q'
-								);
-		foreach ($date_constants as $key => $val)
+		foreach ($this->EE->localize->format as $key => $val)
 		{
 			$this->template = str_replace(LD.$key.RD, $val, $this->template);
 		}
@@ -386,7 +375,7 @@ class EE_Template {
 		{	
 			for ($j = 0; $j < count($matches[0]); $j++)
 			{				
-				$this->template = str_replace($matches[0][$j], $this->EE->localize->decode_date($matches[2][$j], $this->template_edit_date), $this->template);				
+				$this->template = str_replace($matches[0][$j], $this->EE->localize->format_date($matches[2][$j], $this->template_edit_date), $this->template);				
 			}
 		}  
 
@@ -395,7 +384,7 @@ class EE_Template {
 		{				
 			for ($j = 0; $j < count($matches[0]); $j++)
 			{				
-				$this->template = str_replace($matches[0][$j], $this->EE->localize->decode_date($matches[2][$j], $this->EE->localize->now), $this->template);	
+				$this->template = str_replace($matches[0][$j], $this->EE->localize->format_date($matches[2][$j]), $this->template);	
 			}
 		}
 		
@@ -3681,9 +3670,8 @@ class EE_Template {
 		{
 			foreach ($this->date_vars[$name] as $dvar => $dval)
 			{
-				$val = array_shift($dval);
 				$string = str_replace(LD.$dvar.RD,
-									  str_replace($dval, $this->EE->localize->convert_timestamp($dval, $value, TRUE), $val),
+									  $this->EE->localize->format_date($dval, $value),
 									  $string);
 			}
 			
@@ -3921,7 +3909,7 @@ class EE_Template {
 			{
 				$matches[$j][0] = str_replace(array(LD,RD), '', $matches[$j][0]);
 
-				$this->date_vars[$matches[$j][1]][$matches[$j][0]] = array_merge(array($matches[$j][2]), $this->EE->localize->fetch_date_params($matches[$j][2]));
+				$this->date_vars[$matches[$j][1]][$matches[$j][0]] = $matches[$j][2];
 			}
 		}
 		else

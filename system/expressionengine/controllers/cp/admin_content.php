@@ -4806,6 +4806,9 @@ class Admin_content extends CP_Controller {
 			}
 		}
 
+		$this->load->helper('date');
+		$timezones = timezones();
+
 		foreach ($f_data as $name => $options)
 		{
 			$value = $this->config->item($name);
@@ -4900,7 +4903,7 @@ class Admin_content extends CP_Controller {
 							break;
 						case 'timezone'			:
 							$options[0] = 's';
-							foreach ($this->localize->zones as $k => $v)
+							foreach ($timezones as $k => $v)
 							{
 								$details[$k] = lang($k);
 							}

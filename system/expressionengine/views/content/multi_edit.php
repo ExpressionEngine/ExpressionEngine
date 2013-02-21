@@ -31,7 +31,7 @@
 		
 		$this->table->add_row(array(
 				lang('entry_date', 'entry_date['.$entry->entry_id.']'),
-				form_input('entry_date['.$entry->entry_id.']', $this->localize->set_human_time($entry->entry_date), 'class="entry_date entry_date_'.$entry->entry_id.'" id="entry_date['.$entry->entry_id.']"')
+				form_input('entry_date['.$entry->entry_id.']', $this->localize->human_time($entry->entry_date), 'class="entry_date entry_date_'.$entry->entry_id.'" id="entry_date['.$entry->entry_id.']"')
 			)
 		);
 		

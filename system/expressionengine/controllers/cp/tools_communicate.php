@@ -1067,7 +1067,7 @@ class Tools_communicate extends CP_Controller {
 		{
 			$rows[] = array(
 				'subject'		=> "<strong><a href='".BASE.AMP.'C=tools_communicate'.AMP.'M=view_email'.AMP.'id='.$email['cache_id']."'>{$email['subject']}</a></strong>",
-				'cache_date'	=> $this->localize->set_human_time($email['cache_date']),
+				'cache_date'	=> $this->localize->human_time($email['cache_date']),
 				'total_sent'	=> $email['total_sent'],
 				'status' => ($email['recipient_array'] == '') ? lang('complete') :
 					lang('incomplete').NBS.NBS.'<a href="'.BASE.AMP

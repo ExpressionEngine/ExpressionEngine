@@ -212,12 +212,14 @@ class Member_register extends Member {
 		$tf .= "<option value='eu'>".lang('european')."</option>\n";
 		$tf .= "</select>\n";
 
+		$this->EE->load->helper('date_helper');
+
 		// Parse languge lines
 		$reg_form = $this->_var_swap($reg_form,
 									array(
 											'lang:username_length'	=> $un_min_len,
 											'lang:password_length'	=> $pw_min_len,
-											'form:localization'		=> $this->EE->localize->timezone_menu('UTC'),
+											'form:localization'		=> $this->EE->localize->timezone_menu(),
 											'form:time_format'		=> $tf,
 											'form:language'			=> $this->EE->functions->language_pack_names('english')
 
@@ -452,10 +454,7 @@ class Member_register extends Member {
 									$this->EE->config->item('time_format') : 'us',
 			'timezone'		=> ($this->EE->config->item('default_site_timezone') && 
 								$this->EE->config->item('default_site_timezone') != '') ? 
-									$this->EE->config->item('default_site_timezone') : $this->EE->config->item('server_timezone'),
-			'daylight_savings' => ($this->EE->config->item('default_site_dst') && 
-									$this->EE->config->item('default_site_dst') != '') ? 
-										$this->EE->config->item('default_site_dst') : $this->EE->config->item('daylight_savings')	
+									$this->EE->config->item('default_site_timezone') : $this->EE->config->item('server_timezone')	
 		);
 		
 		// Set member group
@@ -492,15 +491,6 @@ class Member_register extends Member {
 			{
 				$data[$key] = $_POST[$value];
 			}
-		}
-
-		if ($this->EE->input->post('daylight_savings') == 'y')
-		{
-			$data['daylight_savings'] = 'y';
-		}
-		elseif ($this->EE->input->post('daylight_savings') == 'n')
-		{
-			$data['daylight_savings'] = 'n';
 		}
 		
 		// We generate an authorization code if the member needs to self-activate
