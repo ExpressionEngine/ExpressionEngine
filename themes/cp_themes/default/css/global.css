@@ -4222,6 +4222,7 @@ div.pageContents,
 	padding-top: 24%;
 	color: #aaa;
 	border-bottom: none;
+	background: transparent;
 }
 
 .multiselect li label {
