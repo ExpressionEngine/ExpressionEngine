@@ -25,7 +25,7 @@
 
 class Simple_commerce_upd {
 
-	var $version			= '2.0';
+	var $version			= '2.1';
 	
 	function Simple_commerce_upd()
 	{
@@ -185,6 +185,8 @@ class Simple_commerce_upd {
 	 */	
 	function update($current = '')
 	{
+		$this->EE->load->dbforge();
+		
 		if (version_compare($current, '2.0', '<'))
 		{
 			$this->EE->db->query("ALTER TABLE `exp_simple_commerce_purchases` CHANGE `paypal_details` `paypal_details` TEXT NULL DEFAULT NULL");			
@@ -199,6 +201,21 @@ class Simple_commerce_upd {
 			$this->EE->db->query("ALTER TABLE `exp_simple_commerce_purchases` ADD COLUMN `subscription_end_date`  int(10) NOT NULL default '0'");
 			
 		}
+		
+		if (version_compare($current, '2.1', '<'))
+		{
+			// This was left out of update, but added to install
+			if ( ! $this->EE->db->field_exists('member_group_unsubscribe', 'simple_commerce_items'))
+			{
+				$details = array('member_group_unsubscribe' => array(
+					'type' => 'INT',
+					'constraint' => 8,
+					'default' => 0					
+				));
+				
+				$this->EE->dbforge->add_column('simple_commerce_items', $details, 'new_member_group');
+			}
+		}		
 
 		return TRUE;
 	}
