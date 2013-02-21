@@ -4175,6 +4175,21 @@ div.pageContents,
 	background: #F7FBFE;
 }
 
+.multiselect-active .remove-item {
+	position: absolute;
+	top: 0;
+	right: 0;
+	padding: 4px 5px 5px 5px;
+	height: 100%;
+	font-size: 20px;
+	color: #E67174;
+	display: none;
+}
+
+.multiselect-active li:hover .remove-item {
+	display: inline-block;
+}
+
 .multiselect-active .reorder-handle {
 	background: url("../images/reorder-pull.png") center 10px no-repeat;
 	display: inline-block;
@@ -4193,6 +4208,7 @@ div.pageContents,
 	color: #2a7c10;
 	font-weight: bold;
 	padding-left: 30px;
+	cursor: pointer;
 }
 
 .multiselect.empty li,
@@ -4228,7 +4244,9 @@ div.pageContents,
 }
 
 .force-scroll {
+	overflow: scroll;
 	overflow-y: scroll;
+	overflow-x: hidden;
 }
 
 /* aggravating safari bug where position:ing or float:ing an element

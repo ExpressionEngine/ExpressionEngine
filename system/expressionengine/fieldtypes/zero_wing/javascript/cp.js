@@ -1,5 +1,7 @@
 (function($) {
 /*
+Some brainstorming with how yui does accent folding ... maybe in a future iteration.
+
 	var accented = {
 	    0: /[\u2070\u2080\u24EA\uFF10]/gi,
 	    1: /[\u00B9\u2081\u2460\uFF11]/gi,
@@ -47,39 +49,84 @@
 */
 
 
+
+
+	/**
+	 * Zero Wing Class
+	 *
+	 * This is not public, you must use EE.setup_multi_field to
+	 * instantiate it. Handles all of the progressive enhancement
+	 * on the zero wing cp frontend.
+	 *
+	 * The constructor does most of the precaching before handing
+	 * off to the class methods for interaction related things.
+	 */
 	function ZeroWing(field) {
+		// three main component per field
 		this.root = $(field);
 		this.active = $(field+'-active');
-		this.search_field = $(field+'-filter');
+		this.searchField = $(field+'-filter');
 
-		var default_list = this.root.find('li');
-
+		// cache a few things for search and access
+		this.activeMap = {};
+		this.listItems = this.root.find('li');
 		this.cache = _.map(this.root.find('label'), function(el, i) {
 			return $(el).text();
 		});
 
+		// create a templating function
+		this.createItem = _.template(this.active.data('template'));
+
 		// map indices to list items
-		this.default_obj = _.object(
-			_.range(default_list.length),
-			_.map(default_list, $) // [$(n1), $(n2), ...]
+		this.defaultList = _.object(
+			_.range(this.listItems.length),
+			_.map(this.listItems, $) // [$(n1), $(n2), ...]
 		);
 
+		// hookup sortable
 		this.active.find('ul').sortable({
 			axis: 'y',
 			handle: 'span'
 		});
+
+		// and off we go
+		this.init();
 	}
 
+	/**
+	 * Zero wing class methods
+	 */
 	ZeroWing.prototype = {
 
+		/**
+		 * Secondary setup code
+		 */
 		init: function() {
+			// visuals
 			this._checkScrollBars();
-			this._addClassOnSelect();
-			this._moveToActiveOnSelect();
 			this._disallowClickSelection();
+
+			// linked list interactions
+			this._bindSelectToClick();
+			this._bindDeselectToRemove();
+			this._bindAddActiveOnSelect();
+			this._bindScrollToActiveClick();
+
+			// filtering
 			this._setupFilter();
 		},
 
+		/**
+		 * Check the scrollbars on our two elements and remove the
+		 * forced scrollbar if the container is not overflowing.
+		 *
+		 * Due to a behavioral bug in safari we cannot create a check
+		 * for if we need scrollbars only if we do not. If you add scrollbars
+		 * to an already overflowing item in safari, it will fall back to the
+		 * invisible overlay scrollbar on OS X > Lion. So the solution is to
+		 * add the scrollbars before any dom changes, and then call this to
+		 * remove them again if the dom changes did not cause an overflow.
+		 */
 		_checkScrollBars: function() {
 			if (this.root.prop('scrollHeight') <= this.root.prop('clientHeight')) {
 				this.root.removeClass('force-scroll');
@@ -90,75 +137,145 @@
 			}
 		},
 
-		_addClassOnSelect: function() {
-			var self = this;
+		/**
+		 * Toggle the hidden checkbox and active class when an item in the
+		 * left list is clicked. Always refocus the search box for quick
+		 * consecutive filtering.
+		 */
+		_bindSelectToClick: function() {
+			var that = this;
 
 			this.root.on('click', 'li', function(evt) {
 				evt.preventDefault();
 
 				var box = $(this).find(':checkbox');
-					was_checked = box.is(':checked');
+					wasChecked = box.is(':checked');
 
-				$(this).toggleClass('selected', !was_checked);
-				box.attr('checked', !was_checked);
+				$(this).toggleClass('selected', ! wasChecked);
+				box.attr('checked', ! wasChecked);
 
 				// refocus the search after event bubbles
-				_.defer($.proxy(self.search_field, 'focus'));
+				_.defer($.proxy(that.searchField, 'focus'));
 			});
 		},
 
-		_moveToActiveOnSelect: function() {
-			var self = this,
-				active_map = {};
+		/**
+		 * When hitting the X on an item in the right list, we want to
+		 * remove it and then trigger a click on the corresponding left
+		 * hand list item to cleanly deselect it.
+		 */
+		_bindDeselectToRemove: function() {
+			var that = this;
 
-			var default_list = this.root.find('li');
+			this.active.on('click', '.remove-item', function() {
+				var idx = that._index(this);
+				that.listItems.eq(idx).trigger('click');
+				return false;
+			});
+		},
 
+		/**
+		 * Clicking on an item in the right hand side list should force
+		 * the left hand list to scroll it into view.
+		 */
+		_bindScrollToActiveClick: function() {
+			var that = this;
 
-			// bind the event
+			this.active.on('click', 'li', function() {
+				var idx = that._index(this),
+					scrollTo = that.listItems.eq(idx),
+					totalScroll, topOfScrollOffset;
+
+				totalScroll = $('html').scrollTop() + that.root.scrollTop();
+				topOfScrollOffset = that.root.offset().top - totalScroll;
+
+				// We're dealing with offsets relative to the document, so to
+				// get an absolute scroll position we compare these offsets.
+				that.root.animate({
+					scrollTop: scrollTo.offset().top - topOfScrollOffset
+				});
+			});
+		},
+
+		/**
+		 * Selecting an item on the left hand side should create a sortable
+		 * proxy of said item at the bottom of the right hand list. Deselecting
+		 * an item on the left, should remove it from the right hand list.
+		 */
+		_bindAddActiveOnSelect: function() {
+			var that = this,
+				listItems = this.listItems,
+				util;
+
+			// Utility methods for selecting and deselecting
+			util = {
+				moveOver: function(i) {
+					var newLi = $(
+						that.createItem({
+							title: that.cache[i]
+						})
+					);
+
+					newLi.data('list-index', i);
+					that.active.find('ul').append(newLi);
+
+					that.activeMap[i] = newLi;
+				},
+
+				moveBack: function(i) {
+					that.activeMap[i].remove();
+					delete that.activeMap[i];
+				}
+			};
+
+			// bind the select event
 			this.root.on('click.moveover', 'li', function(evt) {
+				var box = $(this).find(':checkbox'),
+					idx = that.listItems.index(this);
 
-				var box = $(this).find(':checkbox');
-					is_checked = box.is(':checked');
-
-				var idx = default_list.index(this);
-
-				if ( ! is_checked) {
-					active_map[idx].remove();
-					delete active_map[idx];
+				if ( ! box.is(':checked')) {
+					util.moveBack(idx);
 				} else {
-					var new_el = $('<li><span class="reorder-handle">&nbsp;</span>' + self.cache[idx] + '</li>');
-					$(self.active).find('ul').append(new_el);
-					active_map[idx] = new_el;
+					util.moveOver(idx);
 				}
 			});
-
-			// move exisiting selections over
-			var self = this;
-			this.root.find(':checkbox').filter(':checked').closest('li').each(function() {
-				var idx = $(this).index();
-				var new_el = $('<li><span class="reorder-handle">&nbsp;</span>' + self.cache[idx] + '</li>');
-				$(self.active).find('ul').append(new_el);
-				active_map[idx] = new_el;
-			});
 		},
 
+		/**
+		 * Utility method to find the left-list-index for any item
+		 * in the right list.
+		 */
+		_index: function(item) {
+			return $(item).closest('li').data('list-index');
+		},
+
+		/**
+		 * Bind an ee_interact event to start the filtering.
+		 * Throttle it slightly to avoid taking down the browser
+		 * on very long lists.
+		 */
 		_setupFilter: function() {
 
 			var ul = this.root.find('ul');
 
-			this.search_field.on(
+			this.searchField.on(
 				'interact',
 				_.debounce(
-					$.proxy(this, '_filterResults', this.default_obj, ul),
+					$.proxy(this, '_filterResults', this.defaultList, ul),
 					100
 				)
 			);
 		},
 
-		_filterResults: function(default_obj, ul, evt) {
-
-
-			var t1 = (new Date()).getTime();
+		/**
+		 * Handle the filtering event step by step.
+		 *
+		 * 1) Grab the search text
+		 * 2) Score it agains the cached texts
+		 * 3) Hide any that have a score of 0
+		 * 4) Sort them by score
+		 */
+		_filterResults: function(defaultList, ul, evt) {
 
 			// chrome won't use the custom scroll bar if you overflow before
 			// adding the class. So we add the class and remove it if it's not
@@ -167,25 +284,25 @@
 
 			// User input and the node we're working with
 			var search = evt.target.value.toLowerCase(),
-				search_length = search.length;
+				searchLength = search.length;
 
 			// We take the element off the dom temporarily for processing.
 			// This vastly improves performance at > 500 items.
 			// Normally that makes perfect sense, but I must admit
 			// in this case it's a little strange, since we move them off-dom
 			// individually to reorder them. Something about not forcing
-			// repaints every time? Not sure, but this this works, so it's
-			// staying.
+			// repaints every time? Not 100% sure, but this this works, so
+			// it's staying.
 			ul.find('li').detach();
 
 
 			// no search, show all, use default order
-			if (search_length == 0) {
-				_.each(default_obj, function(el) {
+			if (searchLength == 0) {
+				_.each(defaultList, function(el) {
 					el[0].style.display = '';
 				});
 
-				return this._insertInOrder(ul, default_obj);
+				return this._insertInOrder(ul, defaultList);
 			}
 
 			// compute a score for each item in the list
@@ -195,7 +312,7 @@
 			);
 
 			// Manually hide and unhide. Could be prettier, but can't be quicker.
-			_.each(default_obj, function(el, i) {
+			_.each(defaultList, function(el, i) {
 				if (scores[i] === 0) {
 					el[0].style.display = 'none';
 				} else {
@@ -212,7 +329,7 @@
 			);
 
 			// Move li's to the desired positions
-			this._insertInOrder(ul, default_obj, order);
+			this._insertInOrder(ul, defaultList, order);
 
 			// And finally show hide the scroll bar
 			this._checkScrollBars();
@@ -238,20 +355,18 @@
 			*/
 		},
 
-		/*
-		A cutesy attempt at best-match fuzzy matching. The fuzzy
-		matching part can actually be done quite simply with some
-		regex (see commented out portion at bottom of function).
-		The problem is that those results aren't the most natural
-		unless you can order them logically. This code tries to
-		do just that.
-		*/
-		// Search string, list item
+		/**
+		 * A cutesy attempt at best-match fuzzy matching. The fuzzy
+		 * matching part can actually be done quite simply with some
+		 * regex (see commented out portion at bottom of function).
+		 * The problem is that those results aren't the most natural
+		 * unless you can order them logically. This code tries to
+		 * do just that.
+		 */
 		_scoreString: function(search, item) {
 			var score = 0,
-				letter_offset = 1,
-				item_length = item.length,
-				search_length = search.length;
+				letterOffset = 1,
+				searchLength = search.length;
 
 			item = item.toLowerCase();
 
@@ -260,29 +375,43 @@
 				score += 1;
 			}
 
-			for (var i = 0; i < search_length; i++)
+			for (var i = 0; i < searchLength; i++)
 			{
-				var char_loc = item.indexOf(
+				var charLoc = item.indexOf(
 					search.charAt(i).toLowerCase()
 				);
 
-				switch (char_loc) {
+				switch (charLoc) {
 					case -1: return 0;				// not found, not our word
 					case  0: score += 0.6;			// first position, good
-						if (i == letter_offset)		// consecutive, better
+						if (i == letterOffset)		// consecutive, better
 							score += 0.4;
 						break;
-					default: score += 0.4 / letter_offset	// meh
+					default: score += 0.4 / letterOffset	//  scaled by how close it was
 				}
 
-				letter_offset += char_loc;
-				item = item.substr(char_loc + 1);
+				letterOffset += charLoc;
+				item = item.substr(charLoc + 1);
 			}
 
 			// Score per letter * letter per item letter looked at
-			return (score / search_length) * (search_length / letter_offset);
+			return (score / searchLength) * (searchLength / letterOffset);
 		},
 
+		/**
+		 * Takes a numerically indexed object of items and an array
+		 * of integers that represent the order. It then inserts the
+		 * items from the object into the given parent in the order that
+		 * the array specifies.
+		 *
+		 * items = {1:red, 2:blue, 3:orange}
+		 * order = [2,3,1]
+		 *
+		 * Parent after method:
+		 *		blue
+		 *		orange
+		 *		red
+		 */
 		_insertInOrder: function(parent, items, order) {
 
 			if ( ! order) {
@@ -302,12 +431,11 @@
 				childLength = children.length,
 				i = 0;
 
-
-			// Performance tweak, to make it feel more responsive. Appending
-			// even as a documentFragment requires a lot of style calculations
+			// Performance tweak, to make it feel more responsive. Appending,
+			// even as a documentFragment, requires a lot of style calculations
 			// that block the rendering process. Since the user never sees more
-			// than 20 items, we'll do the first 100 immediately and then defer
-			// on the others in steps of 100.
+			// than ~20 items, we'll do the first 100 immediately and then add
+			// the others piecemeal in steps of 100.
 
 			(function batch() {
 				parent.append(children.slice(i++, 100));
@@ -319,16 +447,17 @@
 		},
 
 
-		// Quick clicking can sometimes lead to double and triple
-		// click selections. If we think that might have happened
-		// we'll simply remove them.
-
+		/**
+		 * Quick clicking can sometimes lead to double and triple
+		 * click selections. If we think that might have happened
+		 * we'll simply remove them.
+		 */
 		_disallowClickSelection: function() {
 			var cnt = 0,
-				self = this;
+				that = this;
 
 			this.root
-				.dblclick(self._deselect)
+				.dblclick(that._deselect)
 				.click(function() {
 					cnt++;
 					_.debounce(function() {
@@ -336,12 +465,15 @@
 					}, 500);
 
 					if (cnt >= 2) {
-						self._deselect();
+						that._deselect();
 					}
 				}
 			);
 		},
 
+		/**
+		 * Utility method to remove the active selection
+		 */
 		_deselect: function() {
 			// Aren't you glad we wrote that rte and speak fluent range
 
@@ -353,8 +485,11 @@
 		}
 	};
 
+	/**
+	 * Public method to instantiate
+	 */
 	EE.setup_multi_field = function(el) {
-		new ZeroWing(el).init();
+		return new ZeroWing(el);
 	};
 
 })(jQuery);
