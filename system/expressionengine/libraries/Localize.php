@@ -213,15 +213,15 @@ class Localize {
 	 */
 	public function human_time($timestamp = NULL, $localize = TRUE, $seconds = FALSE)
 	{
-		if ( ! $seconds && $this->EE->config->item('include_seconds') == 'y')
-		{
-			$seconds = TRUE;
-		}
-
 		/* -------------------------------------------
 		/*	Hidden Configuration Variables
 		/*	- include_seconds => Determines whether to include seconds in our human time.
 		/* -------------------------------------------*/
+		if (func_num_args() != 3 && $this->EE->config->item('include_seconds') == 'y')
+		{
+			$seconds = TRUE;
+		}
+
 		$fmt = ($this->EE->session->userdata('time_format') != '')
 			? $this->EE->session->userdata('time_format') : $this->EE->config->item('time_format');
 
