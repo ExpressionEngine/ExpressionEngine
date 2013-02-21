@@ -62,12 +62,12 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 	 * off to the class methods for interaction related things.
 	 */
 	function ZeroWing(field) {
-		// three main component per field
+		// three main components per field
 		this.root = $(field);
 		this.active = $(field+'-active');
 		this.searchField = $(field+'-filter');
 
-		// cache a few things for search and access
+		// cache a few things for search and query-less access
 		this.activeMap = {};
 		this.listItems = this.root.find('li');
 		this.cache = _.map(this.root.find('label'), function(el, i) {
@@ -75,7 +75,9 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 		});
 
 		// create a templating function
-		this.createItem = _.template(this.active.data('template'));
+		this.createItem = _.template(
+			this.active.data('template')
+		);
 
 		// map indices to list items
 		this.defaultList = _.object(
@@ -176,7 +178,7 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 
 		/**
 		 * Clicking on an item in the right hand side list should force
-		 * the left hand list to scroll it into view.
+		 * the corresponding item on the left hand list to scroll into view.
 		 */
 		_bindScrollToActiveClick: function() {
 			var that = this;
@@ -200,7 +202,7 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 		/**
 		 * Selecting an item on the left hand side should create a sortable
 		 * proxy of said item at the bottom of the right hand list. Deselecting
-		 * an item on the left, should remove it from the right hand list.
+		 * an item on the left, should remove it from the right.
 		 */
 		_bindAddActiveOnSelect: function() {
 			var that = this,
@@ -230,6 +232,12 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 
 			// bind the select event
 			this.root.on('click.moveover', 'li', function(evt) {
+
+				// Webkit won't use the custom scroll bar if you overflow before
+				// adding the class. So we add the class and remove it if it's not
+				// overflowing. Silly browsers.
+				that.active.addClass('force-scroll');
+
 				var box = $(this).find(':checkbox'),
 					idx = that.listItems.index(this);
 
@@ -238,6 +246,8 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 				} else {
 					util.moveOver(idx);
 				}
+
+				that._checkScrollBars();
 			});
 		},
 
@@ -277,7 +287,7 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 		 */
 		_filterResults: function(defaultList, ul, evt) {
 
-			// chrome won't use the custom scroll bar if you overflow before
+			// Webkit won't use the custom scroll bar if you overflow before
 			// adding the class. So we add the class and remove it if it's not
 			// overflowing. Silly browsers.
 			this.root.addClass('force-scroll');
@@ -351,7 +361,7 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 				return show;
 			});
 
-			that._checkScrollBar();
+			that._checkScrollBars();
 			*/
 		},
 
