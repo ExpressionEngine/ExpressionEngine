@@ -169,7 +169,7 @@ class Ip_to_nation_mcp {
 		// their database in the next step.
 		if (count($this->_cache_files('csv')))
 		{
-			$this->session->set_flashdata('message_failure', lang('@todo cache full'));
+			$this->session->set_flashdata('message_failure', lang('cache_full'));
 			$this->functions->redirect($this->base_url.AMP.'method=index');
 		}
 
@@ -320,7 +320,12 @@ class Ip_to_nation_mcp {
 	{
 		$ext = '{'.str_replace(' ', '', $ext).'}';
 		$path = $this->_cache_path();
-		return glob($path.'*.'.$ext, GLOB_BRACE);
+		$matches = glob($path.'*.'.$ext, GLOB_BRACE);
+		
+        //On some systems it is impossible to distinguish between empty match and an error. 
+		$matches = ( ! is_array($matches)) ? array() : $matches;
+		
+		return $matches;
 	}
 
 	// ----------------------------------------------------------------------
