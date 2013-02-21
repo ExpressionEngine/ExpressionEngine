@@ -187,6 +187,22 @@ class Zero_wing_ft extends EE_Fieldtype {
 		if (count($limit_authors))
 		{
 			// @todo TODO ick
+			$groups = preg_filter('/^g_/', '', $limit_authors);
+			$members = preg_filter('/^m_/', '', $limit_authors);
+
+			$fn = 'where_in';
+
+			if (count($members))
+			{
+				$this->EE->db->where_in('channel_titles.author_id', $members);	
+				$fn = 'or_where_in';
+			}
+
+			if (count($groups))
+			{
+				$this->EE->db->join('members', 'members.member_id = channel_titles.author_id');
+				$this->EE->db->$fn('members.group_id', $groups);
+			}
 		}
 
 		if ($entry_id)
@@ -200,7 +216,6 @@ class Zero_wing_ft extends EE_Fieldtype {
 		}
 
 		$entries = $this->EE->db->get('channel_titles')->result_array();
-
 
 		if ($this->settings['allow_multiple'] == 0)
 		{
@@ -274,19 +289,6 @@ class Zero_wing_ft extends EE_Fieldtype {
 
 		$str = '<div id="'.$field_name.'-active" '.$class.' data-template="'.form_prep($active_template).'">';
 		$str .= '<ul>';
-/*
-		foreach ($entries as $row)
-		{
-			if (in_array($row['entry_id'], $selected))
-			{
-				$str .= '<li><span class="reorder-handle">&nbsp;</span>'.$row['title'].'</li>';
-			}
-		}
-*/
-		if ( ! count($entries))
-		{
-			$str .= '<li>'.lang('rel_ft_no_selections').'</li>';
-		}
 
 		$str .= '</ul>';
 		$str .= '</div>';
@@ -420,7 +422,20 @@ class Zero_wing_ft extends EE_Fieldtype {
 		$form = $this->_form();
 		$form->populate($data);
 
-		return $form->values();
+		$save = $form->values();
+
+		foreach ($save as $field => $value)
+		{
+			if (is_array($value) && count($value))
+			{
+				if (isset($value['--']))
+				{
+					$save[$field] = array();
+				}
+			}
+		}
+
+		return $save;
 	}
 
 	// --------------------------------------------------------------------

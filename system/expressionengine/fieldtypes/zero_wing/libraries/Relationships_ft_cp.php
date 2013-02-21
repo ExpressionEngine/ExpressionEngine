@@ -386,6 +386,11 @@ class Relationship_settings_form {
 				$full_name .= '[]';
 			}
 
+			if ( ! count($this->_selected[$name]))
+			{
+				$this->_selected[$name] = array('--');
+			}
+
 			$params = array(
 				$full_name,
 				$this->_options[$name],
