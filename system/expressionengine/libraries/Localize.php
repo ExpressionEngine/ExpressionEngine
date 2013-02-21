@@ -138,7 +138,7 @@ class Localize {
 		// These date variables have month or day names and need to be ran
 		// through the language library
 		$translatable_date_vars = array(
-			'a', 'A', 'D', 'F', 'l', 'M', 'r'
+			'a', 'A', 'D', 'F', 'l', 'M', 'r', 'S'
 		);
 
 		// If TRUE, the translatable date variables will be run through the
