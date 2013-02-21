@@ -267,7 +267,12 @@ class Zero_wing_ft extends EE_Fieldtype {
 		$class .= count($entries) ? 'force-scroll' : 'empty';
 		$class .= '"';
 
-		$str = '<div id="'.$field_name.'-active" '.$class.'>';
+		// underscore.js template string
+		$active_template = '<li><span class="reorder-handle">&nbsp;</span>';
+		$active_template .= '<%= title %>';
+		$active_template .= '<span class="remove-item">&times;</span></li>';
+
+		$str = '<div id="'.$field_name.'-active" '.$class.' data-template="'.form_prep($active_template).'">';
 		$str .= '<ul>';
 /*
 		foreach ($entries as $row)
