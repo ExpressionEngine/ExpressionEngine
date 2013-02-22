@@ -181,10 +181,9 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 			this.active.on('click', 'li', function() {
 				var idx = that._index(this),
 					scrollTo = that.listItems.eq(idx),
-					totalScroll, topOfScrollOffset;
+					topOfScrollOffset;
 
-				totalScroll = $('html').scrollTop() + that.root.scrollTop();
-				topOfScrollOffset = that.root.offset().top - totalScroll;
+				topOfScrollOffset = that.root.offset().top - that.root.scrollTop();
 
 				// We're dealing with offsets relative to the document, so to
 				// get an absolute scroll position we compare these offsets.
@@ -278,6 +277,10 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 			});
 		},
 
+		/**
+		 * Sorting the right list should update the hidden textareas in the
+		 * left list so that they display the relative sort.
+		 */
 		_bindSortable: function() {
 			var that = this,
 				previousPosition,

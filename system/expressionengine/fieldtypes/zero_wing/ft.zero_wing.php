@@ -268,7 +268,7 @@ class Zero_wing_ft extends EE_Fieldtype {
 //		$entries = array_merge($entries, $entries, $entries, $entries, $entries); // 2250
 
 		$str = '';
-		$str .= $this->_active_div($entries, $selected, $field_name);
+		$str .= $this->_active_div($field_name);
 		$str .= $this->_multi_div($entries, $selected, $field_name);
 
 		// The active section
@@ -321,11 +321,19 @@ class Zero_wing_ft extends EE_Fieldtype {
 		return $str;
 	}
 
-	public function _active_div($entries, $selected, $field_name)
+	// --------------------------------------------------------------------
+
+	/**
+	 * Draw the active/sortable half of the field
+	 *
+	 * @param
+	 *		entries - array of entry rows
+	 *		selected => value
+	 * @return	self
+	 */
+	public function _active_div($field_name)
 	{
-		$class = 'class="multiselect-active ';
-		$class .= count($entries) ? 'force-scroll' : 'empty';
-		$class .= '"';
+		$class = 'class="multiselect-active force-scroll"';
 
 		// underscore.js template string
 		$active_template = '<li><span class="reorder-handle">&nbsp;</span>';
