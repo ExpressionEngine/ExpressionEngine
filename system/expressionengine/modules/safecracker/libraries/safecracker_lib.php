@@ -1597,7 +1597,7 @@ class Safecracker_lib
 			$this->EE->security->delete_xid($this->EE->input->post('XID'));
 		}
 		
-		$return = ($this->_meta['return']) ? $this->EE->functions->create_url($this->EE->input->post('return', TRUE)) : $this->EE->functions->fetch_site_index();
+		$return = ($this->_meta['return']) ? $this->EE->functions->create_url($this->_meta['return']) : $this->EE->functions->fetch_site_index();
 		    
 		if (strpos($return, 'ENTRY_ID') !== FALSE)
 		{
