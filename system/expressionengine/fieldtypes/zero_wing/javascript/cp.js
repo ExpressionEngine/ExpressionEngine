@@ -85,12 +85,6 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 			_.map(this.listItems, $) // [$(n1), $(n2), ...]
 		);
 
-		// hookup sortable
-		this.active.find('ul').sortable({
-			axis: 'y',
-			handle: 'span'
-		});
-
 		// and off we go
 		this.init();
 	}
@@ -113,6 +107,7 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 			this._bindDeselectToRemove();
 			this._bindAddActiveOnSelect();
 			this._bindScrollToActiveClick();
+			this._bindSortable();
 
 			// filtering
 			this._setupFilter();
@@ -230,20 +225,37 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 				}
 			};
 
-			this.root.find(':checked').each(function() {
 
-				// Webkit won't use the custom scroll bar if you overflow before
-				// adding the class. So we add the class and remove it if it's not
-				// overflowing. Silly browsers.
-				that.active.addClass('force-scroll');
 
-				var li = $(this).closest('li'),
+			// Webkit won't use the custom scroll bar if you overflow before
+			// adding the class. So we add the class and remove it if it's not
+			// overflowing. Silly browsers.
+			that.active.addClass('force-scroll');
+
+			// find existing checked items
+			var checked = _.map(this.root.find(':checked'), function(el, i) {
+				var li = $(el).closest('li'),
+					text = li.find('input:text');
+
+				return [li, +text.val()];
+			});
+
+			// sort them by their order field
+			checked = _.sortBy(checked, function(el) {
+				return el[1];
+			});
+
+			_.each(checked, function(el, i) {
+				var li = el[0],
 					idx = that.listItems.index(li);
 
 				util.moveOver(idx);
-
-				that._checkScrollBars();
 			});
+
+			that._checkScrollBars();
+
+
+
 
 			// bind the select event
 			this.root.on('click.moveover', 'li', function(evt) {
@@ -253,7 +265,6 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 				// overflowing. Silly browsers.
 				that.active.addClass('force-scroll');
 				
-
 				var box = $(this).find(':checkbox'),
 					idx = that.listItems.index(this);
 
@@ -264,6 +275,52 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 				}
 
 				that._checkScrollBars();
+			});
+		},
+
+		_bindSortable: function() {
+			var that = this,
+				previousPosition,
+				getOrder, start, update;
+
+			getOrder = function(el) {
+				return +that.defaultList[ that._index(el) ].find('input:text').val();
+			};
+
+			start = function(evt, ui) {
+				previousPosition = getOrder(ui.item);
+			};
+
+			update = function(evt, ui) {
+				var li = ui.item,
+					newPosition = li.index(),
+					reSort, i;
+
+				if (newPosition == previousPosition) {
+					return;
+				}
+
+				// we don't need to process the entire list, only the subset
+				// that we disturbed.
+				if (newPosition < previousPosition) {
+					i = newPosition;
+					reSort = li.nextAll().andSelf(); //.addBack();
+				} else {
+					i = 0; // in theory we can start at previous, but then our numbers slowly get bigger
+					reSort = li.prevAll().andSelf(); // .addBack();
+				}
+
+				reSort.each(function() {
+					that.defaultList[ that._index(this) ].find('input:text').val(i++);
+				});
+			};
+
+			// hookup sortable
+			this.active.find('ul').sortable({
+				axis: 'y',
+				handle: '.reorder-handle',
+				start: start,
+				update: update
 			});
 		},
 

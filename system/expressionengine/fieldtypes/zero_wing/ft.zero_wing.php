@@ -59,7 +59,14 @@ class Zero_wing_ft extends EE_Fieldtype {
 	 */
 	public function save($data)
 	{
-		$this->EE->session->set_cache(__CLASS__, $this->field_name, $data);
+		$sort = $this->EE->input->post('sort_'.$this->field_name);
+		$this->EE->session->set_cache(__CLASS__, $this->field_name, array(
+			'data' => $data,
+			'sort' => $sort
+		));
+
+		unset($_POST['sort_'.$this->field_name]);
+
 		return '';
 	}
 
@@ -77,7 +84,10 @@ class Zero_wing_ft extends EE_Fieldtype {
 	{
 		$field_id = $this->field_id;
 		$entry_id = $this->settings['entry_id'];
-		$data = $this->EE->session->cache(__CLASS__, $this->field_name);
+		$post = $this->EE->session->cache(__CLASS__, $this->field_name);
+
+		$order = $post['sort'];
+		$data = $post['data'];
 
 		// clear old stuff
 		$this->EE->db
@@ -88,12 +98,13 @@ class Zero_wing_ft extends EE_Fieldtype {
 		// insert new stuff
 		$ships = array();
 
-		foreach ($data as $child_id)
+		foreach ($data as $i => $child_id)
 		{
 			$ships[] = array(
 				'parent_id'	=> $entry_id,
 				'child_id'	=> $child_id,
-				'field_id'	=> $field_id
+				'field_id'	=> $field_id,
+				'order'		=> $order[$i]
 			);
 		}
 
@@ -145,6 +156,7 @@ class Zero_wing_ft extends EE_Fieldtype {
 				->select('child_id')
 				->where('parent_id', $entry_id)
 				->where('field_id', $this->field_id)
+				->order_by('order', 'asc')
 				->get($this->_table)
 				->result_array();
 
@@ -250,6 +262,7 @@ class Zero_wing_ft extends EE_Fieldtype {
 			return form_dropdown($field_name.'[]', $options, current($selected));
 		}
 
+// Performance debug
 //		$entries = array_merge($entries, $entries, $entries, $entries, $entries); // 90
 //		$entries = array_merge($entries, $entries, $entries, $entries, $entries); // 450
 //		$entries = array_merge($entries, $entries, $entries, $entries, $entries); // 2250
@@ -272,6 +285,8 @@ class Zero_wing_ft extends EE_Fieldtype {
 
 	public function _multi_div($entries, $selected, $field_name)
 	{
+		$selected_lookup = array_flip($selected);
+
 		$class = 'class="multiselect ';
 		$class .= count($entries) ? 'force-scroll' : 'empty';
 		$class .= '"';
@@ -286,9 +301,11 @@ class Zero_wing_ft extends EE_Fieldtype {
 
 		foreach ($entries as $row)
 		{
-			$checked = in_array($row['entry_id'], $selected);
+			$checked = isset($selected_lookup[$row['entry_id']]);
+			$sort = $checked ? $selected_lookup[$row['entry_id']] : 0;
 
 			$str .= '<li'.($checked ? ' class="selected"' : '').'><label>';
+			$str .= form_input('sort_'.$field_name.'[]', $sort, 'class="js_hide"');
 			$str .= form_checkbox($field_name.'[]', $row['entry_id'], $checked, 'class="js_hide"');
 			$str .= $row['title'].'</label></li>';
 		}
@@ -316,9 +333,7 @@ class Zero_wing_ft extends EE_Fieldtype {
 		$active_template .= '<span class="remove-item">&times;</span></li>';
 
 		$str = '<div id="'.$field_name.'-active" '.$class.' data-template="'.form_prep($active_template).'">';
-		$str .= '<ul>';
-
-		$str .= '</ul>';
+		$str .= '<ul></ul>';
 		$str .= '</div>';
 
 		return $str;
@@ -566,6 +581,11 @@ class Zero_wing_ft extends EE_Fieldtype {
 				'unsigned'			=> TRUE
 			),
 			'field_id'  => array(
+				'type'				=> 'int',
+				'constraint'		=> 10,
+				'unsigned'			=> TRUE
+			),
+			'order' 	=> array(
 				'type'				=> 'int',
 				'constraint'		=> 10,
 				'unsigned'			=> TRUE
