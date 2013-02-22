@@ -152,11 +152,6 @@ if ( ! function_exists('timespan'))
 		$CI =& get_instance();
 		$CI->lang->load('date');
 
-		// things can get really screwy if a negative number is passed, which can happen
-		// in very rare load-balanced environments when the web servers' are not in
-		// perfect sync with one another
-		$seconds = abs($seconds);
-
 		if ( ! is_numeric($seconds))
 		{
 			$seconds = 1;
@@ -181,7 +176,7 @@ if ( ! function_exists('timespan'))
 
 		if ($years > 0)
 		{
-			$str .= $years.' '.$CI->lang->line((($years	> 1) ? 'years' : 'year')).', ';
+			$str .= $years.' '.$CI->lang->line((($years	> 1) ? 'date_years' : 'date_year')).', ';
 		}
 
 		$seconds -= $years * 31536000;
@@ -191,7 +186,7 @@ if ( ! function_exists('timespan'))
 		{
 			if ($months > 0)
 			{
-				$str .= $months.' '.$CI->lang->line((($months	> 1) ? 'months' : 'month')).', ';
+				$str .= $months.' '.$CI->lang->line((($months	> 1) ? 'date_months' : 'date_month')).', ';
 			}
 
 			$seconds -= $months * 2628000;
@@ -203,7 +198,7 @@ if ( ! function_exists('timespan'))
 		{
 			if ($weeks > 0)
 			{
-				$str .= $weeks.' '.$CI->lang->line((($weeks	> 1) ? 'weeks' : 'week')).', ';
+				$str .= $weeks.' '.$CI->lang->line((($weeks	> 1) ? 'date_weeks' : 'date_week')).', ';
 			}
 
 			$seconds -= $weeks * 604800;
@@ -215,7 +210,7 @@ if ( ! function_exists('timespan'))
 		{
 			if ($days > 0)
 			{
-				$str .= $days.' '.$CI->lang->line((($days	> 1) ? 'days' : 'day')).', ';
+				$str .= $days.' '.$CI->lang->line((($days	> 1) ? 'date_days' : 'date_day')).', ';
 			}
 
 			$seconds -= $days * 86400;
@@ -227,7 +222,7 @@ if ( ! function_exists('timespan'))
 		{
 			if ($hours > 0)
 			{
-				$str .= $hours.' '.$CI->lang->line((($hours	> 1) ? 'hours' : 'hour')).', ';
+				$str .= $hours.' '.$CI->lang->line((($hours	> 1) ? 'date_hours' : 'date_hour')).', ';
 			}
 
 			$seconds -= $hours * 3600;
@@ -239,7 +234,7 @@ if ( ! function_exists('timespan'))
 		{
 			if ($minutes > 0)
 			{
-				$str .= $minutes.' '.$CI->lang->line((($minutes	> 1) ? 'minutes' : 'minute')).', ';
+				$str .= $minutes.' '.$CI->lang->line((($minutes	> 1) ? 'date_minutes' : 'date_minute')).', ';
 			}
 
 			$seconds -= $minutes * 60;
@@ -247,7 +242,7 @@ if ( ! function_exists('timespan'))
 
 		if ($str == '')
 		{
-			$str .= $seconds.' '.$CI->lang->line((($seconds	> 1) ? 'seconds' : 'second')).', ';
+			$str .= $seconds.' '.$CI->lang->line((($seconds	> 1) ? 'date_seconds' : 'date_second')).', ';
 		}
 
 		return substr(trim($str), 0, -1);
@@ -371,7 +366,7 @@ if ( ! function_exists('mysql_to_unix'))
 		$time = str_replace(' ', '', $time);
 
 		// YYYYMMDDHHMMSS
-		return  gmmktime(
+		return  mktime(
 						substr($time, 8, 2),
 						substr($time, 10, 2),
 						substr($time, 12, 2),

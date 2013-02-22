@@ -25,19 +25,6 @@
 class CI_DB_mysql_forge extends CI_DB_forge {
 
 	/**
-	 * The names representing the variable storage engines
-	 * available in MySQL.
-	 */	
-	const ENGINE_INNODB = 'InnoDB';
-	CONST ENGINE_MYISAM = 'MyISAM';
-	const ENGINE_MEMORY = 'MEMORY';
-	const ENGINE_ARCHIVE = 'ARCHIVE';
-	/** 
-	 * The default engine to use when creating new tables.
-	 */
-	const ENGINE_DEFAULT = 'MyISAM';
-
-	/**
 	 * Create database
 	 *
 	 * @access	private
@@ -151,7 +138,7 @@ class CI_DB_mysql_forge extends CI_DB_forge {
 	 * @param	boolean	should 'IF NOT EXISTS' be added to the SQL
 	 * @return	bool
 	 */
-	function _create_table($table, $fields, $primary_keys, $keys, $if_not_exists, $engine=self::ENGINE_DEFAULT)
+	function _create_table($table, $fields, $primary_keys, $keys, $if_not_exists)
 	{
 		$sql = 'CREATE TABLE ';
 
@@ -190,9 +177,7 @@ class CI_DB_mysql_forge extends CI_DB_forge {
 			}
 		}
 
-		$sql .= "\n)";
-		$sql .= 'ENGINE=' . $engine . ' ';
-		$sql .= "DEFAULT CHARACTER SET {$this->db->char_set} COLLATE {$this->db->dbcollat};";
+		$sql .= "\n) DEFAULT CHARACTER SET {$this->db->char_set} COLLATE {$this->db->dbcollat};";
 
 		return $sql;
 	}
