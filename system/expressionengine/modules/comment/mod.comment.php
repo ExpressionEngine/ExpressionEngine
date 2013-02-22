@@ -3183,7 +3183,7 @@ class Comment {
 		$this->EE->db->from('comments');
 		$this->EE->db->from('channels');
 		$this->EE->db->from('channel_titles');
-		$this->EE->db->select('comments.author_id, comments.comment_date, channel_titles.author_id AS entry_author_id, channels.comment_text_formatting, channels.comment_html_formatting, channels.comment_allow_img_urls, channels.comment_auto_link_urls');
+		$this->EE->db->select('comments.author_id, comments.comment_date, channel_titles.author_id AS entry_author_id, channel_titles.entry_id, channels.channel_id, channels.comment_text_formatting, channels.comment_html_formatting, channels.comment_allow_img_urls, channels.comment_auto_link_urls');
 		$this->EE->db->where('comment_id', $this->EE->input->get_post('comment_id'));
 		$this->EE->db->where('comments.channel_id = '.$this->EE->db->dbprefix('channels').'.channel_id');
 		$this->EE->db->where('comments.entry_id = '.$this->EE->db->dbprefix('channel_titles').'.entry_id');
@@ -3209,6 +3209,9 @@ class Comment {
 			}
 
 			$data = array();
+			$author_id = $query->row('author_id');
+			$channel_id = $query->row('channel_id');
+			$entry_id = $query->row('entry_id');
 
 			if ($edited_status != FALSE & $can_moderate != FALSE)
 			{
@@ -3229,6 +3232,9 @@ class Comment {
 			
 				if ($edited_status != FALSE & $can_moderate != FALSE)
 				{
+					// We closed an entry, update our stats
+					$this->_update_comment_stats($entry_id, $channel_id, $author_id);
+					
 					// create new security hash and send it back with updated comment.
 				
 					$new_hash = $this->_new_hash();
@@ -3434,6 +3440,23 @@ CMT_EDIT_SCR;
 	
 	// --------------------------------------------------------------------
 	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Update Entry and Channel Stats
+	 *
+	 * @return	void
+	 */
+	private function _update_comment_stats($entry_id, $channel_id, $author_id)
+	{
+		$this->EE->stats->update_channel_title_comment_stats(array($entry_id));
+		$this->EE->stats->update_comment_stats($channel_id, '', FALSE);
+		$this->EE->stats->update_comment_stats();
+		$this->EE->stats->update_authors_comment_stats(array($author_id));
+
+		return;
+	}
+
 }
 // END CLASS
 

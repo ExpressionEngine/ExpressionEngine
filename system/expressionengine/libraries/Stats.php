@@ -437,7 +437,7 @@ class EE_Stats {
 			return FALSE;
 		}
 		
-		// Update
+		// Update an site's table comment stats
 		if ($global === TRUE)
 		{
 			$channel_ids = $this->_fetch_channel_ids();
@@ -480,9 +480,9 @@ class EE_Stats {
 			}
 			else
 			{
-				$this->EE->db->select('last_comment_date');
-				$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
-				$query = $this->EE->db->get('stats');
+				$query = $this->EE->db->select('last_comment_date')
+										->where('site_id', $this->EE->config->item('site_id'))
+										->get('stats');
 
 				$date = ($newtime > $query->row('last_comment_date') ) ? $newtime : $query->row('last_comment_date') ;
 			}
@@ -497,46 +497,136 @@ class EE_Stats {
 		}
 		
 		// Update exp_channel table
-
 		if ($channel_id != '')
 		{
-			$this->EE->db->where('status', 'o');
-			$this->EE->db->where('channel_id', $channel_id);
-			$this->EE->db->select('COUNT(comment_id) AS count');
-			$query = $this->EE->db->get('comments');
-			
-			$total = $query->row('count') ;
-			
-			if ($newtime == '')
-			{
-				$this->EE->db->where('status', 'o');
-				$this->EE->db->where('channel_id', $channel_id);
-				$this->EE->db->select_max('comment_date', 'max_date');
-				$query = $this->EE->db->get('comments');
-			
-				$date = ($query->num_rows() == 0 OR ! is_numeric($query->row('max_date') )) ? 0 : $query->row('max_date') ;
-			}
-			else
-			{
-				$this->EE->db->select('last_comment_date, site_id');
-				$this->EE->db->where('channel_id', $channel_id);
-				$query = $this->EE->db->get('channels');
-
-				$date = ($newtime > $query->row('last_comment_date') ) ? $newtime : $query->row('last_comment_date') ;
-			}
-			
-			$data = array(
-					'total_comments'	=> $total,
-					'last_comment_date'	=> $date
-				);
-
-			$this->EE->db->where('channel_id', $channel_id);
-			$this->EE->db->update('channels', $data);			
+			$this->update_channels_comment_stats($channel_id, $newtime);
 		}
-
+		
 		if ($this->cache_off)
 		{
 			$this->EE->db->cache_on();
+		}
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Update Channel's Comment Stats
+	 *
+	 * Updates exp_channels with recalculated comment totals and date
+	 *
+	 * @param 	integer		channel id
+	 * @param 	string		empty string or last comment date override
+	 * @access	public
+	 * @return	void
+	 */
+	function update_channels_comment_stats($channel_id, $newtime)
+	{
+		$query = $this->EE->db->where('status', 'o')
+					->where('channel_id', $channel_id)
+					->select('COUNT(comment_id) AS count')
+		 			->get('comments');
+			
+		$total = $query->row('count') ;
+		
+		if ($newtime == '')
+		{
+			$query = $this->EE->db->where('status', 'o')
+									->where('channel_id', $channel_id)
+									->select_max('comment_date', 'max_date')
+			 						->get('comments');
+			
+			$date = ($query->num_rows() == 0 OR ! is_numeric($query->row('max_date') )) ? 0 : $query->row('max_date') ;
+		}
+		else
+		{
+			$query = $this->EE->db->select('last_comment_date, site_id')
+									->where('channel_id', $channel_id)
+			 						->get('channels');
+
+			$date = ($newtime > $query->row('last_comment_date') ) ? $newtime : $query->row('last_comment_date') ;
+		}
+			
+		$data = array(
+					'total_comments'	=> $total,
+					'last_comment_date'	=> $date
+			);
+
+		$this->EE->db->where('channel_id', $channel_id)
+						->update('channels', $data);			
+	}
+
+
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Update Channel Title Stats
+	 *
+	 * Updates exp_channel_titles with recalculated comment totals and date
+	 * for each specified entry_id
+	 *
+	 * @param 	array		array of entry ids you want recalculated
+	 * @access	public
+	 * @return	void
+	 */
+	function update_channel_title_comment_stats($entry_ids)
+	{
+		foreach($entry_ids as $entry_id)
+		{
+			$comment_date = 0;
+			
+			$this->EE->db->where('entry_id', $entry_id);
+			$this->EE->db->where('status', 'o');
+			$comment_total = $this->EE->db->count_all_results('comments');
+
+			
+			if ($comment_total > 0)
+			{
+				$query = $this->EE->db->select_max('comment_date')
+					->where('entry_id', $entry_id)
+					->where('status', 'o')
+					->get('comments');
+					
+				$comment_date = ($query->num_rows() == 0 OR ! is_numeric($query->row('max_date') )) ? 0 : $query->row('max_date') ;
+			}
+
+			$this->EE->db->set('comment_total', $comment_total)
+							->set('recent_comment_date', $comment_date)
+							->where('entry_id', $entry_id)
+							->update('channel_titles');
+		}
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Update Author's Comment Stats
+	 *
+	 * Updates exp_members with recalculated comment totals and date
+	 *
+	 * @param 	array		array of member ids you want recalculated
+	 * @access	public
+	 * @return	void
+	 */
+	function update_authors_comment_stats($author_ids)
+	{
+		foreach($author_ids as $author_id)
+		{
+			// Note- query would not work with GROUP BY
+			$res = $this->EE->db->select('COUNT(comment_id) AS comment_total, MAX(comment_date) AS comment_date', FALSE)
+					->where('author_id', $author_id)
+					->get('comments');
+
+			$resrow = $res->row_array();
+
+			$comment_total = $resrow['comment_total'] ;
+			$comment_date  = ( ! empty($resrow['comment_date'])) ? $resrow['comment_date'] : 0;
+
+			$this->EE->db->set('total_comments', $comment_total)
+							->set('last_comment_date', $comment_date)
+							->where('member_id', $author_id)
+							->update('members');
 		}
 	}
 
