@@ -19,7 +19,7 @@
  *
  * Takes an array of field_ids that correspond to the ids of the
  * relationship fields that we need to pull entries from in the
- * relationship query. This array comes directly from the tag data.  For
+ * relationship query. This array comes directly from the tag data. For
  * example, if we have a channel set up like the following:
  * 
  * Seasons
@@ -63,7 +63,7 @@
  * 
  * Since the leaf tags also contain the names for each level above them,
  * we only need to pull the leaves out of the single_variables and from
- * that we can generate our array.  In our above example, the leaves would
+ * that we can generate our array. In our above example, the leaves would
  * be the following:
  * 
  * {games:home:title}
@@ -88,9 +88,9 @@
  * array(2, 5, 7, 10)
  * 
  * Since we're only interested in the relationship fields, we can trim off
- * the final field id.  Then we can flip the matrix to we get an array of
+ * the final field id. Then we can flip the matrix to we get an array of
  * the ids we need at each level of nesting and run array unique, so we
- * only get unique ids.  We don't need to retain the information about
+ * only get unique ids. We don't need to retain the information about
  * the tree structure, we only need the total list of the needed entries.
  * We still have information about the final tree structure, so we can
  * rebuild the tree from a generated list of entries using Pascal's tree
@@ -263,7 +263,7 @@ class Relationship_Parser
 	protected $template = NULL;
 
 	/**
-	 * A mapping of relationship fields.  Maps name => field_id.
+	 * A mapping of relationship fields. Maps name => field_id.
 	 */
 	protected $relationship_field_ids = array();
 	
@@ -309,18 +309,17 @@ class Relationship_Parser
 	 */
 	public function query_for_entries(array $entry_ids)
 	{
-
-		// Get the array of relationship field ids.  We'll need these when we
-		// go to query the database for the related entries.  We'll pull them
+		// Get the array of relationship field ids. We'll need these when we
+		// go to query the database for the related entries. We'll pull them
 		// from the template's single_vars array, which just has a list of
-		// single variables.  The returned array contains a single row for each
-		// path to a leaf.  So row[0] is id of the relationship field that
-		// branches from the root.  row[1] is the id of the relationship field
+		// single variables. The returned array contains a single row for each
+		// path to a leaf. So row[0] is id of the relationship field that
+		// branches from the root. row[1] is the id of the relationship field
 		// that branches from the node at the second level, and so on.
 		$field_ids = $this->_get_relationship_field_ids();
 
 		// If we have no relationships, then we don't need to be here.	 
-		if(empty($field_ids))
+		if (empty($field_ids))
 		{
 			$this->variables = NULL;
 			return;
@@ -330,7 +329,7 @@ class Relationship_Parser
 		$shortest_branch_length = $this->_find_shortest_branch($field_ids);	
 			
 		// Perform some transformations on the generated array of field ids to
-		// get it into the form we need to perform our query.  That is to say
+		// get it into the form we need to perform our query. That is to say
 		// an array of unique field ids grouped by nesting level.
 		$field_id_tree = array_map('array_unique', $this->_exchange_array_rows_with_columns($field_ids));
 
@@ -351,7 +350,7 @@ class Relationship_Parser
 
 		// Okay, now that we have our relationship data all formatted into a
 		// tree, let's going ahead and pull the data for the entries that are
-		// in our tree.  We'll just use our nice, concise list of entry ids.
+		// in our tree. We'll just use our nice, concise list of entry ids.
 		$entries_result = $db->query(get_instance()->channel_entries_model->get_entry_sql($data['entry_ids']));
 
 		// And then we need to use the lookup table in our data array to
@@ -374,7 +373,7 @@ class Relationship_Parser
 	 * 
 	 * Use the variables in EE_Template's single_var field to 
 	 * determine which relationship_field_ids we'll need to query
-	 * against.  Uses the instance of EE_Template passed in the 
+	 * against. Uses the instance of EE_Template passed in the 
 	 * constructor.
 	 *
 	 * TODO Still trying to decide what best to call this.
@@ -387,22 +386,26 @@ class Relationship_Parser
 		{
 			if (strpos($variable, ':') !== FALSE)
 			{
-				// If we have a colon we might have a relationship tag.  If the
+				// If we have a colon we might have a relationship tag. If the
 				// base of the tag is a relationship field, then we do.
 				$parts = explode(':', $variable);
+
 				if (array_key_exists($parts[0], $this->relationship_field_ids))
 				{
 					$depth_first_ids = array();
-					foreach($parts as $field_name) {
-						// We only care about the relationship fields.  The other field
+
+					foreach($parts as $field_name)
+					{
+						// We only care about the relationship fields. The other field
 						// type names should be the last element in the parts array, and
-						// we aren't interested in their ids for the moment.  We'll pick
+						// we aren't interested in their ids for the moment. We'll pick
 						// them up in the second query.
 						if (isset($this->relationship_field_ids[$field_name]))
 						{
 							$depth_first_ids[] = $this->relationship_field_ids[$field_name];
 						}
 					}
+
 					$field_ids[] = $depth_first_ids;
 				}
 			}
@@ -420,7 +423,7 @@ class Relationship_Parser
 	 *
 	 * Look at our field id matrix (which is actually a matrix where
 	 * each row is a path from root to leaf) and find the shortest
-	 * path.  We'll need that information when we query the database.
+	 * path. We'll need that information when we query the database.
 	 *
 	 * @param int[]	An array of field ids where each row is a path from root to leaf.
 	 * @return int	The length of the shortest path.
@@ -428,6 +431,7 @@ class Relationship_Parser
 	protected function _find_shortest_branch(array $field_ids)
 	{
 		$shortest_branch_length = 10000000000000; // Just an absurdly large number.
+
 		foreach ($field_ids as $leaf)
 		{
 			if (count($leaf) < $shortest_branch_length)
@@ -435,6 +439,7 @@ class Relationship_Parser
 				$shortest_branch_length = count($leaf);	
 			}
 		}
+
 		return $shortest_branch_length;
 	}
 
@@ -442,8 +447,8 @@ class Relationship_Parser
 	 * Perform an exchange of array rows and columns.
 	 * 
 	 * Takes a 2 dimensional input array and switches the rows
- 	 * an columns, performing essentially a matrix rotate.  Returns
-	 * the rotated result array.  Should be O(N).
+ 	 * an columns, performing essentially a matrix transpose. Returns
+	 * the transposed result array. Should be O(N).
  	 *
 	 * @param mixed[]  The target array.
 	 * @return mixed[] The input array rotated.
@@ -451,12 +456,14 @@ class Relationship_Parser
 	protected function _exchange_array_rows_with_columns(array $target)
 	{
 		$flipped = array();	
+
 		foreach ($target as $row)
 		{
 			$counter = 0;
+
 			foreach ($row as $item)
 			{
-				if (!isset($flipped[$counter]))
+				if ( ! isset($flipped[$counter]))
 				{
 					$flipped[$counter] = array($item);
 				}
@@ -464,9 +471,11 @@ class Relationship_Parser
 				{
 					$flipped[$counter][] = $item;
 				}
+
 				$counter++;
 			}
 		}
+
 		return $flipped;
 	}
 	
@@ -474,9 +483,9 @@ class Relationship_Parser
  	 * Get Paths to Leaves
 	 *
 	 * Runs a query against the database that will retrieve rows that consist of the
-	 * path from the root node to each leaf.  Should only have unique paths.  It pulls out
+	 * path from the root node to each leaf. Should only have unique paths. It pulls out
 	 * the data about which field we used to get to each entry node along the path, as well
-	 * as the entry_ids.  
+	 * as the entry_ids.
 	 *  
 	 * TODO handle siblings and parents
 	 *
@@ -539,7 +548,7 @@ class Relationship_Parser
 	 * Parse Paths to Leaves
 	 *
 	 * Takes the leaf paths data returned by _get_leaves() and turns it into a form
-	 * that's more useable by PHP.  It breaks each row down into arrays with keys
+	 * that's more useable by PHP. It breaks each row down into arrays with keys
 	 * that we can then use to build a tree.
 	 *
 	 * @param mixed[] The array of leaves with field and entry_ids and the database returned keys.
@@ -553,7 +562,7 @@ class Relationship_Parser
 			$leaf_result = array();
 			foreach ($leaf as $key => $id)
 			{
-				if($id == NULL)
+				if ($id == NULL)
 				{
 					continue;
 				}
@@ -605,13 +614,13 @@ class Relationship_Parser
 			$field_name = NULL;
 			foreach ($leaf as $l => $level)
 			{
-				if( ! isset($entries[$level['parent']]))
+				if ( ! isset($entries[$level['parent']]))
 				{
 					$entries[$level['parent']] = new Relationship_Entry($level['parent'], $this->custom_fields);
 				}
 				$parent = $entries[$level['parent']];
 				
-				if( ! isset($entries[$level['id']]))
+				if ( ! isset($entries[$level['id']]))
 				{
 					$entries[$level['id']] = new Relationship_Entry($level['id'], $this->custom_fields);
 				}
@@ -625,7 +634,7 @@ class Relationship_Parser
 				// We only want to add it to the tree if we haven't 
 				// already added it and this only belongs in the tree
 				// if it's level zero.
-				if($l==0 && ! isset($tree[$parent->get_entry_id()]))
+				if ($l==0 && ! isset($tree[$parent->get_entry_id()]))
 				{
 					$tree[$parent->get_entry_id()] = $parent;
 				}
@@ -646,7 +655,7 @@ class Relationship_Parser
 	 * Build Variables Array
 	 *
  	 * Take the related entries we've retrieved, examine the tag data and then build the array 
-	 * of variables that we'll pass to TMPL->parse_variables() for replacing.  
+	 * of variables that we'll pass to TMPL->parse_variables() for replacing.
 	 * 
 	 * @param	mixed[]	An array with three parts:
 	 * 					- tree => the tree of Relationship_Entry objects
@@ -666,18 +675,21 @@ class Relationship_Parser
 				$node = $entry;
 				$namespace = '';
 				$field = '';
-				$recursed = false;
-				while (strpos($variable, ':') !== false)
+				$recursed = FALSE;
+
+				while (strpos($variable, ':') !== FALSE)
 				{
 					$field = substr($variable, 0, strpos($variable, ':'));
+
 					if ($namespace !== '')
 					{
 						$namespace .= ':';
 					}
+
 					$namespace .= $field;
 					$variable = substr($variable, strpos($variable, ':')+1);
 	
-					// This is a variable in a pair.  We need
+					// This is a variable in a pair. We need
 					// to handle it somehow.	
 					if (is_array($node->{$field}))
 					{
@@ -686,11 +698,13 @@ class Relationship_Parser
 							$entry_row[$field] = array('normalize'=>true);
 						}
 						
-						$pair = &$entry_row[$field];
+						$pair =& $entry_row[$field];
+
 						foreach ($node->{$field} as $child)
 						{
 							$this->_build_variables_array_recursive($child, $pair, $namespace, $variable);
 						}
+
 						$recursed = TRUE;
 						break;
 					}
@@ -701,11 +715,13 @@ class Relationship_Parser
 						$node = $node->{$field};
 					}
 				}
+
 				if ($namespace !== '' && !$recursed)
 				{	
 					$entry_row[$namespace . ':' . $variable] = $node->{$variable};
 				}
 			}
+
 			$variables[$entry_id] = $entry_row;
 		}
 		return $this->_normalize_array_keys($variables);
@@ -715,15 +731,15 @@ class Relationship_Parser
 	 * Recursively Build the Variables Array
 	 *
 	 * Build the variable array for the given relationship node and attach it
-	 * to the array reference passed.  The variable we're working with is
+	 * to the array reference passed. The variable we're working with is
 	 * defined by $namespace and $variable, the namespace being the list of
 	 * relationships up until this point, and variable being the list after
-	 * this point.  The final colon separated value is the variable we are
-	 * actually trying to get to.  If we haven't reached that finale value,
-	 * this method will recurse.  Otherwise it will retrieve the appropriate
+	 * this point. The final colon separated value is the variable we are
+	 * actually trying to get to. If we haven't reached that finale value,
+	 * this method will recurse. Otherwise it will retrieve the appropriate
 	 * data and add it to the variables array.
 	 *
-	 * @param	Relationship_Entry	The node in the relationship tree we're working on.  The variables we'll
+	 * @param	Relationship_Entry	The node in the relationship tree we're working on. The variables we'll
 	 *									be populating the array from should be below this node.
 	 * @param	mixed[]				A reference to the point in the array we're adding to.
 	 * @param	string				The namespace string up to this point.
@@ -738,19 +754,22 @@ class Relationship_Parser
 		{
 			$pair[$node->get_entry_id()] = array();
 		}
-		$entry_row = &$pair[$node->get_entry_id()];
+
+		$entry_row =& $pair[$node->get_entry_id()];
 
 		while (strpos($variable, ':') !== FALSE)
 		{
 			$field = substr($variable, 0, strpos($variable, ':'));
+
 			if ($namespace !== '')
 			{
 				$namespace .= ':';
 			}
+
 			$namespace .= $field;
 			$variable = substr($variable, strpos($variable, ':')+1);
 
-			// This is a variable in a pair.  We need
+			// This is a variable in a pair. We need
 			// to handle it somehow.	
 			if (is_array($node->{$field}))
 			{
@@ -781,9 +800,9 @@ class Relationship_Parser
 	 * Normalize The Keys of the Variable Array
 	 *
 	 * When adding variables from nested relationships to the relationships array
-	 * we use the entry_id as a key.  This allows us to easily avoid duplication.
+	 * we use the entry_id as a key. This allows us to easily avoid duplication.
 	 * However, parse_variables() expects the keys in the array passed to it to be
-	 * purely numeric and in order (0,1,2,etc).  So we need to normalize our
+	 * purely numeric and in order (0,1,2,etc). So we need to normalize our
 	 * array recursively to ensure that this is the case.
 	 *
 	 * @param	mixed[]	The array of variables we'll be normalizing.
@@ -861,7 +880,7 @@ class Relationship_Entry
 	 * Print Entry
 	 *
 	 * Print this entry and all entries beneath it in the 
-	 * relationship tree in a readable format.  For debugging
+	 * relationship tree in a readable format. For debugging
 	 * purposes ONLY.
 	 *
 	 * @return void
@@ -880,12 +899,12 @@ class Relationship_Entry
 				echo "\t";
 			}
 			echo '-' .(is_array($entries) ? 'ARRAY() ' : '') . $field . ':<br />';
-			if( is_array($entries)) {
+			if ( is_array($entries)) {
 				foreach($entries as $child) {
 					$child->print_entry();
 				}
 			}
-			elseif( is_object($entries)){
+			elseif ( is_object($entries)){
 				$entries->print_entry();
 			}
 			else {
@@ -909,7 +928,7 @@ class Relationship_Entry
 	 *
 	 * Construct a entry node in the relationship tree.
 	 * Give it its id and a mapping of the custom fields
-	 * to start with.  We can populate the data and 
+	 * to start with. We can populate the data and 
 	 * children later.
  	 *
 	 * @param	int		An entry_id identifying this entry.
@@ -936,9 +955,11 @@ class Relationship_Entry
 			return $this->data[$name];
 		}
 	
-		if(isset($this->custom_fields[$name])) {	
+		if (isset($this->custom_fields[$name]))
+		{	
 			$field_id = $this->custom_fields[$name];
-			if(isset($this->data['field_id_' . $field_id]))
+
+			if (isset($this->data['field_id_' . $field_id]))
 			{
 				return $this->data['field_id_' . $field_id];
 			}
@@ -1005,12 +1026,13 @@ class Relationship_Entry
 	public function add_child($field, Relationship_Entry $child)
 	{
 		
-		if( ! isset($this->children[$field]))
+		if ( ! isset($this->children[$field]))
 		{
 			$this->children[$field] = $child;
 			return $this;
 		}
-		else if( ! is_array($this->children[$field]))
+		
+		if ( ! is_array($this->children[$field]))
 		{
 			if ($this->children[$field]->get_entry_id() !== $child->get_entry_id()) 
 			{
@@ -1018,9 +1040,11 @@ class Relationship_Entry
 					$this->children[$field]->get_entry_id() => $this->children[$field],
 					$child->get_entry_id() => $child
 				);
+
 				$this->children[$field] = $children;
 				return $this;	
 			}
+
 			return $this;
 		}
 
