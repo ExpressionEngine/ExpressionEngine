@@ -455,8 +455,28 @@ class Relationship_Parser
 	 */
 	protected function _exchange_array_rows_with_columns(array $target)
 	{
-		array_unshift($target, NULL);
-		return call_user_func_array('array_map', $target);
+		$flipped = array();	
+
+		foreach ($target as $row)
+		{
+			$counter = 0;
+
+			foreach ($row as $item)
+			{
+				if ( ! isset($flipped[$counter]))
+				{
+					$flipped[$counter] = array($item);
+				}
+				else 
+				{
+					$flipped[$counter][] = $item;
+				}
+
+				$counter++;
+			}
+		}
+
+		return $flipped;
 	}
 	
 	/**
