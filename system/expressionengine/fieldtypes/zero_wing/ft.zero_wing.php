@@ -263,9 +263,9 @@ class Zero_wing_ft extends EE_Fieldtype {
 		}
 
 // Performance debug
-//		$entries = array_merge($entries, $entries, $entries, $entries, $entries); // 90
-//		$entries = array_merge($entries, $entries, $entries, $entries, $entries); // 450
-//		$entries = array_merge($entries, $entries, $entries, $entries, $entries); // 2250
+//		$entries = array_merge($entries, $entries, $entries, $entries, $entries); // 5n
+//		$entries = array_merge($entries, $entries, $entries, $entries, $entries); // 25n
+//		$entries = array_merge($entries, $entries, $entries, $entries, $entries); // 125n
 
 		$str = '';
 		$str .= $this->_active_div($field_name);
@@ -283,6 +283,17 @@ class Zero_wing_ft extends EE_Fieldtype {
 		return $str;
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * Draw the active/sortable half of the field
+	 *
+	 * @param
+	 *		entries - [ [title, entry_id], [...] ]
+	 *		selected - array of entry ids
+	 *		field_name - custom field name
+	 * @return	interface string
+	 */
 	public function _multi_div($entries, $selected, $field_name)
 	{
 		$selected_lookup = array_flip($selected);
@@ -326,10 +337,8 @@ class Zero_wing_ft extends EE_Fieldtype {
 	/**
 	 * Draw the active/sortable half of the field
 	 *
-	 * @param
-	 *		entries - array of entry rows
-	 *		selected => value
-	 * @return	self
+	 * @param   custom field name
+	 * @return	interface string
 	 */
 	public function _active_div($field_name)
 	{

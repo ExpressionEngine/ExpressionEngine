@@ -225,6 +225,7 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 			};
 
 
+			// Move over existing ones
 
 			// Webkit won't use the custom scroll bar if you overflow before
 			// adding the class. So we add the class and remove it if it's not
@@ -236,7 +237,7 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 				var li = $(el).closest('li'),
 					text = li.find('input:text');
 
-				return [li, +text.val()];
+				return [li, +text.val()]; // (cons item int_text) 
 			});
 
 			// sort them by their order field
@@ -244,6 +245,7 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 				return el[1];
 			});
 
+			// move them over in the correct order
 			_.each(checked, function(el, i) {
 				var li = el[0],
 					idx = that.listItems.index(li);
@@ -252,8 +254,6 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 			});
 
 			that._checkScrollBars();
-
-
 
 
 			// bind the select event
@@ -419,26 +419,6 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 
 			// And finally show hide the scroll bar
 			this._checkScrollBars();
-			
-
-			/* Alternative sorting algorithm:
-
-			// Does fuzzy match but keeps the list alphabetic
-			// much easier implementation but doesn't always return
-			// the most intuitive result.
-
-			var textMatch = evt.target.value.replace(/\W/, '').split('').join('\\w*'),
-				reg = new RegExp(textMatch, 'i'),
-				that = this;
-
-			var matches = _.filter(this.cache, function(el, i) {
-				var show = !! el.replace(/\W/, '').match(reg);
-				that.root.find('li').eq(i).toggle(show);
-				return show;
-			});
-
-			that._checkScrollBars();
-			*/
 		},
 
 		/**
@@ -482,6 +462,25 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 
 			// Score per letter * letter per item letter looked at
 			return (score / searchLength) * (searchLength / letterOffset);
+
+
+			/* Alternative matching algorithm:
+
+			// Does fuzzy match but keeps the list alphabetic
+			// much easier implementation but doesn't always return
+			// the most intuitive result.
+
+			var textMatch = evt.target.value.replace(/\W/, '').split('').join('\\w*'),
+				reg = new RegExp(textMatch, 'i'),
+				that = this;
+
+			var matches = _.filter(this.cache, function(el, i) {
+				var show = !! el.replace(/\W/, '').match(reg);
+				that.root.find('li').eq(i).toggle(show);
+				return show;
+			});
+
+			*/
 		},
 
 		/**
