@@ -4176,14 +4176,14 @@ div.pageContents,
 }
 
 .multiselect-active .remove-item {
-	position: absolute;
-	top: 0;
-	right: 0;
-	padding: 5px;
-	height: 100%;
-	font-size: 20px;
 	color: #E67174;
 	display: none;
+	font-size: 20px;
+	height: 100%;
+	padding: 5px;
+	position: absolute;
+	right: 0;
+	top: 0;
 }
 
 .multiselect-active li:hover .remove-item {
@@ -4192,15 +4192,15 @@ div.pageContents,
 
 .multiselect-active .reorder-handle {
 	background: url("../images/reorder-pull.png") center 10px no-repeat;
+	cursor: move;
 	display: inline-block;
-	width: 8px;
+	height: 100%;
+	left: 0;
 	padding-left: 10px;
 	position: absolute;
 	top: 0;
-	left: 0;
-	height: 100%;
 	width: 20px;
-	cursor: move;
+	width: 8px;
 }
 
 .multiselect-active li {
@@ -4213,16 +4213,16 @@ div.pageContents,
 
 .multiselect.empty li,
 .multiselect-active.empty li {
-	font-weight: bold;
-	font-size: 14px;
-	text-shadow: 0 1px 1px #EDF2F5;
-	text-align: center;
-	margin: 0;
-	padding: 0;
-	padding-top: 24%;
-	color: #aaa;
-	border-bottom: none;
 	background: transparent;
+	border-bottom: none;
+	color: #aaa;
+	font-size: 14px;
+	font-weight: bold;
+	margin: 0;
+	padding-top: 24%;
+	padding: 0;
+	text-align: center;
+	text-shadow: 0 1px 1px #EDF2F5;
 }
 
 .multiselect li label {
@@ -4256,12 +4256,13 @@ div.pageContents,
 */
 .force-scroll > *,
 .force-scroll > * {
+	border-right: 1px solid #B6C0C2;
 	box-sizing: border-box;
 	width: 100%;
-	border-right: 1px solid #B6C0C2;
 }
 
-.force-scroll::-webkit-scrollbar {
+.force-scroll::-webkit-scrollbar,
+.force-scroll::-moz-scrollbar {
 	-webkit-appearance: none;
 	margin: 2px;
 	padding: 2px;
