@@ -105,7 +105,24 @@ class EE_Input extends CI_Input {
 		{
 			foreach($_GET as $key => $val)
 			{
-				$this->_clean_get_input_data($key, $val);					
+				$clean = $this->_clean_get_input_data($val);	
+				
+				if ( ! $clean)
+				{
+					// Only notify super admins of the offending data
+					if ($EE->session->userdata('group_id') == 1)
+					{
+						$data = ((int) config_item('debug') == 2) ? '<br>'.htmlentities($val) : '';
+							
+						set_status_header(503);
+						exit(sprintf("Invalid GET Data %s", $data));
+					}
+					// Otherwise, handle it more gracefully and just unset the variable
+					else
+					{
+						unset($_GET[$key]);
+					}
+				}				
 			}
 		}	
 	}
@@ -162,36 +179,29 @@ class EE_Input extends CI_Input {
 	 * @param	mixed Variable's value- may be string or array
 	 * @return	string
 	 */
-	function _clean_get_input_data($key, $str)
+	function _clean_get_input_data($str)
 	{
 		if (is_array($str))
 		{
-			$new_array = array();
-			
 			foreach ($str as $k => $v)
 			{
-				$new_array[$k] = $this->_clean_input_data($v);
+				$out = $this->_clean_get_input_data($v);
+				
+				if ($out == FALSE)
+				{
+					return FALSE;
+				}
 			}
 
-			return $new_array;
+			return TRUE;
 		}
-		
+
 		if (preg_match("#(;|exec\s*\(|system\s*\(|passthru\s*\(|cmd\s*\()#i", $str))
 		{
-			// Only notify super admins of the offending data
-			if ($EE->session->userdata('group_id') == 1)
-			{
-				$data = ((int) config_item('debug') == 2) ? '<br>'.htmlentities($str) : '';
-							
-				set_status_header(503);
-				exit(sprintf("Invalid GET Data %s", $data));
-			}
-			// Otherwise, handle it more gracefully and just unset the variable
-			else
-			{
-				unset($_GET[$key]);
-			}
+			return FALSE;
 		}
+		
+		return TRUE;
 	}
 }
 // END CLASS
