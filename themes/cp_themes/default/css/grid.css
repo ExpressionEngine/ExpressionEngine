@@ -1,0 +1,131 @@
+#grid_settings {
+	margin-top: 8px;
+}
+
+#grid_min_rows,
+#grid_max_rows {
+	float: left;
+	height: 27px;
+	margin: 3px 5px 3px 0;
+	position: relative;
+	text-align: center;
+	width: 47px;
+	vertical-align: text-top;
+}
+
+.grid_input_label_group {
+	float: left;
+	margin: 1px 0 3px 5px;
+}
+
+.instruction_text {
+	color: #859199;
+}
+
+.grid_col_setting_label {
+	border-bottom: 1px solid #d0d7df;
+	display: block;
+	font-size: 12px;
+	padding: 13px 0 7px 0;
+}
+
+.grid_col_setting_label.grid_data_type
+{
+	padding-top: 28px;
+}
+
+.grid_data_search
+{
+	padding: 8px 0 6px 0;
+}
+
+.grid_col_settings_labels {
+	float: left;
+	width: 97px;
+}
+
+.grid_col_settings {
+	background-color: #fff;
+	border: 1px solid #c9cfd4;
+	box-shadow: #dbdee2 2px 2px 0;
+	float: left;
+	margin-bottom: 14px;
+	margin-right: -1px;
+	width: 319px;
+}
+
+.grid_col_settings_section {
+	border-bottom: 1px solid #c0cfd6;
+	padding: 10px;
+}
+
+.grid_col_settings_section.text {
+	padding: 5px;
+}
+
+.grid_col_settings_section input[type=text] {
+	border-radius: 0;
+	border-color: #c8cfd8;
+	padding: 6px;
+}
+
+.grid_col_settings_section input[type=text]:focus {
+	background-color: #fbfaed;
+	border: 1px solid #a49745;
+}
+
+.grid_col_settings_section input[type=checkbox] {
+	margin-right: 8px
+}
+
+.grid_col_settings_section.alt {
+	background-color: #f5f6f5;
+}
+
+.grid_col_settings_section.grid_data_type {
+	padding: 16px 14px;
+	position: relative;
+}
+
+a.grid_col_settings_delete:link,
+a.grid_col_settings_delete:visited,
+a.grid_col_settings_delete:active,
+a.grid_col_settings_delete:hover {
+	background: url('../images/grid-sprite.png') no-repeat -21px 0;
+	display: none;
+	height: 17px;
+	position: absolute;
+	right: 9px;
+	text-indent: -9999px;
+	top: 17px;
+	width: 18px;
+}
+
+.grid_col_settings_section.grid_data_search {
+	padding: 8px 10px 9px;
+}
+
+.grid_col_settings_section.grid_data_search label {
+	margin-right: 17px;
+}
+
+div.grid_col_copy {
+	background-color: #fafcfb;
+	border-bottom: 0;
+	text-align: right;
+}
+
+a.grid_col_copy:link,
+a.grid_col_copy:visited,
+a.grid_col_copy:active,
+a.grid_col_copy:hover {
+	background: #f8fefa url('../images/grid-sprite.png') no-repeat 47px 9px;
+	border: 1px solid #c7ced5;
+	border-radius: 5px;
+	color: #67a036;
+	display: inline-block;
+	font-weight: bold;
+	padding: 8px 25px 8px 9px;
+	text-decoration: none;
+	text-transform: uppercase;
+}
