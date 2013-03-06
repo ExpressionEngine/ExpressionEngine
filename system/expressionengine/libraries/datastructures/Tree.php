@@ -235,6 +235,22 @@ class ImmutableTree {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Get the parent
+	 *
+	 * @param id of node whose parent tree to get [optional]
+	 * @return Object<ImmutableTree> with the parent at the root
+	 */
+	public function parent($id = 'root')
+	{
+		$parent_id = $this->_nodes[$id][$this->_parent_key];
+		$parent = $this->_prune_children(array($this->_nodes[$parent_id]));
+
+		return $parent[0];
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Move up a level in the tree
 	 *
 	 * @param id of node whose parent tree to get [optional]
@@ -270,6 +286,33 @@ class ImmutableTree {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Get an iterator of the flattened tree
+	 *
+	 * This is pretty much only useful if you're going to be constructing
+	 * a RecursiveIteratorIterator that isn't SELF_FIRST. Otherwise you
+	 * most definitely want Immutable_Tree:iterator()
+	 *
+	 * @return Object<TreeIterator>
+	 */
+	public function flat_iterator()
+	{
+		$root = $this->_nodes['root'];
+
+		if ($root == $this->_nodes[0])
+		{
+			$elements = $root['__children__'];
+		}
+		else
+		{
+			$elements = array($root);
+		}
+
+		return new TreeIterator($elements);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Get an iterator of the full tree
 	 *
 	 * Iterates root node first so that you can create nested
@@ -285,21 +328,10 @@ class ImmutableTree {
 	 *
 	 * @return Object<RecursiveIteratorIterator>
 	 */
-	public function iterator() // flat_iterator?
+	public function iterator()
 	{
-		$root = $this->_nodes['root'];
-
-		if ($root == $this->_nodes[0])
-		{
-			$elements = $root['__children__'];
-		}
-		else
-		{
-			$elements = array($root);
-		}
-
 		return new RecursiveIteratorIterator(
-			new TreeIterator($elements),
+			$this->flat_iterator(),
 			RecursiveIteratorIterator::SELF_FIRST
 		);
 	}
