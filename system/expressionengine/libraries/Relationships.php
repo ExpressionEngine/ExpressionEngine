@@ -477,8 +477,6 @@ class Relationship_Parser
 		);
 
 
-	//	$last_depth = 0;
-
 		foreach ($cit as $node)
 		{
 			$depth = $cit->getDepth();
@@ -496,9 +494,6 @@ class Relationship_Parser
 			$all_ids = array_merge($all_ids, $result_ids);
 		}
 
-		// recurse down to closure ids and rerun the query
-		// TODO @pk @todo
-
 		// For space savings and subtree closure querying each need node is
 		// pushed its own set of entry ids. For given parent ids.
 		//						 {[6, 7]}
@@ -515,6 +510,7 @@ class Relationship_Parser
 			new NodeTreeIterator(array($root)),
 			RecursiveIteratorIterator::SELF_FIRST
 		);
+
 
 		// add entry ids to the proper tree parse nodes
 		// L0 = root
@@ -539,20 +535,19 @@ class Relationship_Parser
 
 		// PARSE! FINALLY!
 
-		$var_id_lookup = array();
 		$variables = array();
 
 		foreach ($it as $node)
 		{
 			$depth = $it->getDepth();
 			$entry_ids = $node->entry_ids;
-			
+
 			if ($depth == 0)
 			{
 				foreach(array_unique($entry_ids) as $id)
 				{
 					$variables[$id] = $entry_lookup[$id];
-					$var_id_lookup[$id] =& $variables[$id];
+					$node->variables_location[$id] =& $variables[$id];
 				}
 
 				continue;
@@ -563,14 +558,15 @@ class Relationship_Parser
 				continue;
 			}
 
+			$name = $node->name;
 			foreach ($entry_ids as $parent => $children)
 			{
-				$name = $node->name;
-				$parent_node =& $var_id_lookup[$parent];
+				$parent_node = $node->parent();
+				$parent_variables =& $parent_node->variables_location[$parent];
 
-				if ( ! isset($parent_node[$name]))
+				if ( ! isset($parent_variables[$name]))
 				{
-					$parent_node[$name] = array();
+					$parent_variables[$name] = array();
 				}
 
 				foreach (array_unique($children) as $child_id)
@@ -583,12 +579,12 @@ class Relationship_Parser
 						$new_values[$name.':'.$k] = $v;
 					}
 
-					$l = count($parent_node[$name]);
+					$l = count($parent_variables[$name]);
 
-					$parent_node[$name][$l] = $new_values;
-					$var_id_lookup[$child_id] =& $parent_node[$name][$l];
+					$parent_variables[$name][$l] = $new_values;
+
+					$node->variables_location[$child_id] =& $parent_variables[$name][$l];
 				}
-
 			}
 		}
 
@@ -651,6 +647,26 @@ class Relationship_Parser
 						}
 					}
 				}
+			}
+			else
+			{
+				$siblings = array();
+				$possible_siblings = $node->parent()->entry_ids;
+
+				foreach ($possible_siblings as $parent => $children)
+				{
+					$children = array_unique($children);
+
+					// sibling permutations by rotation
+					for ($i = 0; $i < count($children); $i++)
+					{
+						$key = array_shift($children);
+						$siblings[$key] = $children;
+						array_push($children, $key);
+					}
+				}
+
+				$node->entry_ids = $siblings;
 			}
 		}
 
