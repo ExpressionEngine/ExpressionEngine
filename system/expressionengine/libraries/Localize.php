@@ -427,7 +427,7 @@ EOF;
 				lang('select_timezone'),
 				'-------------',
 				'us' => $countries['us'], // United States
-				'gb' => $countries['gb'], // Uniited Kingdom
+				'gb' => $countries['gb'], // United Kingdom
 				'au' => $countries['au'], // Australia
 				'ca' => $countries['ca'], // Canada
 				'fr' => $countries['fr'], // France
