@@ -257,26 +257,11 @@ class Relationships {
  */
 class Relationship_Parser 
 {
-	/**
-	 * The Template that we are currently parsing Relationships for.
-	 */
-	protected $template = NULL;
+	protected $template = NULL;							// The Template that we are currently parsing Relationships for
 
-	/**
-	 * A mapping of relationship fields. Maps name => field_id.
-	 */
-	protected $relationship_field_ids = array();
-	
-	/**
-	 * Another mapping of relationship fields going in the opposite direction.
-	 * Maps field_id => name.
-	 */ 
-	protected $relationship_field_names = array();
-
-	/**
-	 * Custom field id to name mapping.
-	 */
-	protected $custom_fields = array();
+	protected $custom_fields = array();					// Custom field id to name mapping
+	protected $relationship_field_ids = array();		// Relationship field map (name => field_id)
+	protected $relationship_field_names = array();		// Another relationship field map (field_id => name)
 
 	/**
 	 * An array of our relationship data in the format
@@ -291,11 +276,41 @@ class Relationship_Parser
 	public function __construct(EE_Template $template, array $relationship_fields, array $custom_fields)
 	{
 		$this->template = $template;
+		$this->custom_fields = $custom_fields;
 		$this->relationship_field_ids = $relationship_fields;
 		$this->relationship_field_names = array_flip($relationship_fields);
-		$this->custom_fields = $custom_fields;
 	}
 
+	/**
+	 * Check if a given tag name is a relationship field and if
+	 * so return its id.
+	 */
+	protected function _get_relationship_field_id($tag_name)
+	{
+		if ( ! $tag_name)
+		{
+			return FALSE;
+		}
+
+		// last segment
+		$tag_name = ':'.$tag_name;
+		$tag_name = substr(strrchr($tag_name, ':'), 1);
+
+		if (array_key_exists($tag_name, $this->relationship_field_ids))
+		{
+			return $this->relationship_field_ids[$tag_name];
+		}
+
+		if ($tag_name == 'sibling' ||
+			$tag_name == 'parent' ||
+			$tag_name == 'siblings' ||
+			$tag_name == 'parents')
+		{
+			return $tag_name;
+		}
+
+		return FALSE;
+	}
 
 	/**
 	 * Find All Relationships of the Given Entries in the Template 
@@ -309,239 +324,445 @@ class Relationship_Parser
 	 */
 	public function query_for_entries(array $entry_ids)
 	{
-		// Get the array of relationship field ids. We'll need these when we
-		// go to query the database for the related entries. We'll pull them
-		// from the template's single_vars array, which just has a list of
-		// single variables. The returned array contains a single row for each
-		// path to a leaf. So row[0] is id of the relationship field that
-		// branches from the root. row[1] is the id of the relationship field
-		// that branches from the node at the second level, and so on.
-		$field_ids = $this->_get_relationship_field_ids();
+		// hackity crackity tree thing coming up
 
-		// If we have no relationships, then we don't need to be here.	 
-		if (empty($field_ids))
+		$str = $this->template->tagdata;
+
+		// No variables?  No reason to continue...
+		if (strpos($str, '{') === FALSE OR ! preg_match_all("/".LD."([^{]+?)".RD."/", $str, $matches))
 		{
-			$this->variables = NULL;
-			return;
+			return array();
 		}
-	
-		// Find the shortest branch in our id array.	
-		$shortest_branch_length = $this->_find_shortest_branch($field_ids);	
-			
-		// Perform some transformations on the generated array of field ids to
-		// get it into the form we need to perform our query. That is to say
-		// an array of unique field ids grouped by nesting level.
-		$field_id_tree = array_map('array_unique', $this->_exchange_array_rows_with_columns($field_ids));
 
-		// Now that we have an array of entry_ids and a tree of field_ids in
-		// the format that we need it, as well as the length of the shortest
-		// branch in the field_id tree, we're all set to retrieve the list of
-		// paths to leaves from the database with all the data we need to build
-		// a tree of entries.
-		$data = $this->_build_entry_tree(
-			$this->_parse_leaves(
-				$this->_get_leaves($entry_ids, $field_id_tree, $shortest_branch_length)
-			)
+
+
+
+		//////////////////////////////////////////////
+		// Note to self:							//
+		// Proxy off the original uuid in the parse	//
+		// tree and simply connect things to that.	//
+		// Which means we will have:				//
+		// - parse_tree								//
+		// - db_ids_result	{uuid => @todo depth}	//
+		// - db_data		{entry_id => [data]}	//
+		//////////////////////////////////////////////
+
+
+
+
+
+
+		// I have a love hate relationship with this.
+		// I love that it works pretty easily, I hate that I
+		// once again have to resort to a node-list => tree
+		// strategy because building the tree directly was
+		// four times uglier. Yes, four times.
+
+		$reversed = array_reverse($matches[0]);
+		unset($matches);
+
+		$uuid = 0;
+		$nodes = array();
+		$id_stack = array();
+		$tag_stack = array();
+
+		foreach ($reversed as $tag)
+		{
+			$tag_name = substr($tag, 1, strcspn($tag, ' }', 1));
+
+			$is_closing = ($tag_name[0] == '/');
+			$tag_name = ltrim($tag_name, '/');
+
+			$field_id = $this->_get_relationship_field_id($tag_name);
+
+			if ( ! $field_id)
+			{
+				continue;
+			}
+
+			$uuid++;
+			$parent_id = end($id_stack);
+
+			if ($is_closing)
+			{
+				$id_stack[] = $uuid;
+				$tag_stack[] = $tag_name;
+			}
+			elseif ($tag_name == end($tag_stack))
+			{
+				array_pop($tag_stack);
+				$lookup_id = array_pop($id_stack);
+
+				$params = get_instance()->functions->assign_parameters($tag);
+
+				$nodes[$lookup_id]['params'] = $params ? $params : array();
+
+				continue;
+			}
+
+			$nodes[$uuid] = array(
+				'uuid' => $uuid,
+				'name' => $tag_name,
+				'parent_uuid' => $parent_id,
+				'field_id'	=> $field_id
+			);
+		}
+
+		// Doing our own parsing let's us do error checking
+		if (count($tag_stack))
+		{
+			// going backwards has the unfortunate side effect that we end up
+			// finding missmatched closing tags. Should be ok though - either
+			// way you'll be in the template looking for pairs.
+			throw new RuntimeException('Unmatched Closing Tag: "{/'.end($tag_stack).'}"');
+		}
+
+		// and load 'em up!
+		get_instance()->load->library('datastructures/tree'); // make iterators available
+
+		$tree = get_instance()->tree->load($nodes, array(
+			'key' => 'uuid',
+			'parent' => 'parent_uuid'
+		));
+
+
+		// Build the tree
+		// @todo merge this in with the above
+
+		$it = $tree->iterator();
+
+		$root = new QueryNode('__root__');
+		$nodes[0] = $root;
+
+		// we need a reference to node! php should do a copy-on-write, we never write
+		foreach ($it as $node)
+		{
+			$id = $node['uuid'];
+			$parent = $nodes[$node['parent_uuid']];
+
+			if (preg_match('/.*parents$/', $node['name']))
+			{
+				$new_node = new QueryNode($node['name'], $node);
+			}
+			else
+			{
+				$new_node = new ParseNode($node['name'], $node);
+			}
+
+			$nodes[$id] = $new_node;
+			$parent->addChild($new_node);
+		}
+
+
+
+
+
+
+		$all_ids = $entry_ids;
+
+
+
+		// This needs to happen in a loop for all query nodes on the tree!
+
+		$root_leave_paths = $this->_subtree_query($root, $entry_ids);
+
+		$unique_ids = $this->_unique_entry_ids($root, $root_leave_paths);
+		$all_ids = array_merge($all_ids, $unique_ids);
+		$root->entry_ids = $entry_ids;
+
+
+		$cit = new RecursiveIteratorIterator(
+			new ClosureTreeIterator(array($root)),
+			RecursiveIteratorIterator::SELF_FIRST
 		);
 
-		// Now we want to get the entry data for the child entries.
-		get_instance()->load->model('channel_entries_model');
-		$db = get_instance()->relationships->_isolate_db();
 
-		// Okay, now that we have our relationship data all formatted into a
-		// tree, let's going ahead and pull the data for the entries that are
-		// in our tree. We'll just use our nice, concise list of entry ids.
-		$entries_result = $db->query(get_instance()->channel_entries_model->get_entry_sql($data['entry_ids']));
+	//	$last_depth = 0;
+
+		foreach ($cit as $node)
+		{
+			$depth = $cit->getDepth();
+
+			if ($depth == 0 && $node->name == '__root__')
+			{
+				continue;
+			}
+
+			$ids = call_user_func_array('array_merge', $node->parent()->entry_ids);
+
+			// @todo reverse query for parent
+			$result_ids = $this->_parenttree_query($node, $ids);
+			$result_ids = $this->_unique_entry_ids($node, $result_ids);
+			$all_ids = array_merge($all_ids, $result_ids);
+		}
+
+		// recurse down to closure ids and rerun the query
+		// TODO @pk @todo
+
+		// For space savings and subtree closure querying each need node is
+		// pushed its own set of entry ids. For given parent ids.
+		//						 {[6, 7]}
+		//						/		\	
+		//		 {6:[2,4], 7:[8,9]}    	{6:[], 7:[2,5]}
+		//				/					\
+		//	  		...				  		 ...
+
+		// By pushing them down like this the subtree query is very simple.
+		// And when we parse we simply go through all of them and make that
+		// many copies of the node's tagdata.
+
+		$it = new RecursiveIteratorIterator(
+			new NodeTreeIterator(array($root)),
+			RecursiveIteratorIterator::SELF_FIRST
+		);
+
+		// add entry ids to the proper tree parse nodes
+		// L0 = root
+		// L1 = closure-depth=1 querynodes (match field names)
+		// ...
+
+		// ready set, main query.
+		$EE = get_instance();
+		$db = $EE->relationships->_isolate_db();
+
+		$EE->load->model('channel_entries_model');
+		$entries_result = $db->query($EE->channel_entries_model->get_entry_sql(array_unique($all_ids)));
+
+		$entry_lookup = array();
 
 		// And then we need to use the lookup table in our data array to
 		// populate our mostly empty entries with their data. 
 		foreach ($entries_result->result_array() as $entry)
 		{
-			$data['entry_lookup'][$entry['entry_id']]->set_data($entry);
+			$entry_lookup[$entry['entry_id']] = $entry;
 		}
-	
-		// Alright, now build and store the variables array
-		// that parse_variables() will be expecting for our
-		// relationships.
-		$this->variables = $this->_build_variables_array($data);
-		
-	
-	}
 
-	/**
-	 * Get the required Relationship Field Ids Out of the Template
-	 * 
-	 * Use the variables in EE_Template's single_var field to 
-	 * determine which relationship_field_ids we'll need to query
-	 * against. Uses the instance of EE_Template passed in the 
-	 * constructor.
-	 *
-	 * TODO Still trying to decide what best to call this.
-	 */
-	protected function _get_relationship_field_ids()
-	{
-		$field_ids = array();
+		// PARSE! FINALLY!
 
-		foreach ($this->template->var_single as $variable)
+		$var_id_lookup = array();
+		$variables = array();
+
+		foreach ($it as $node)
 		{
-			if (strpos($variable, ':') !== FALSE)
+			$depth = $it->getDepth();
+			$entry_ids = $node->entry_ids;
+
+			if ($depth == 0)
 			{
-				// If we have a colon we might have a relationship tag. If the
-				// base of the tag is a relationship field, then we do.
-				$parts = explode(':', $variable);
-
-				if (array_key_exists($parts[0], $this->relationship_field_ids))
+				foreach($entry_ids as $id)
 				{
-					$depth_first_ids = array();
+					$variables[$id] = $entry_lookup[$id];
+					$var_id_lookup[$id] =& $variables[$id];
+				}
 
-					foreach($parts as $field_name)
+				continue;
+			}
+
+			if ( ! is_array($entry_ids))
+			{
+				continue;
+			}
+
+			foreach ($entry_ids as $parent => $children)
+			{
+				$name = $node->name;
+				$parent_node =& $var_id_lookup[$parent];
+
+				if ( ! isset($parent_node[$name]))
+				{
+					$parent_node[$name] = array();
+				}
+
+				foreach ($children as $child_id)
+				{
+					$values = $entry_lookup[$child_id];
+					$new_values = array();
+
+					foreach ($values as $k => $v)
 					{
-						// We only care about the relationship fields. The other field
-						// type names should be the last element in the parts array, and
-						// we aren't interested in their ids for the moment. We'll pick
-						// them up in the second query.
-						if (isset($this->relationship_field_ids[$field_name]))
-						{
-							$depth_first_ids[] = $this->relationship_field_ids[$field_name];
-						}
+						$new_values[$name.':'.$k] = $v;
 					}
 
-					$field_ids[] = $depth_first_ids;
+					$l = count($parent_node[$name]);
+
+					$parent_node[$name][$l] = $new_values;
+					$var_id_lookup[$child_id] =& $parent_node[$name][$l];
 				}
-			}
-			elseif (array_key_exists($variable, $this->relationship_field_ids))
-			{
-				$field_ids[] = array($this->relationship_field_ids[$variable]);
+
 			}
 		}
 
-		return $field_ids;
+		$this->variables = $variables;
 	}
 
-	/**
-	 * Find the Shortest Branch in our Relationship Field Id Tree
-	 *
-	 * Look at our field id matrix (which is actually a matrix where
-	 * each row is a path from root to leaf) and find the shortest
-	 * path. We'll need that information when we query the database.
-	 *
-	 * @param int[]	An array of field ids where each row is a path from root to leaf.
-	 * @return int	The length of the shortest path.
-	 */	
-	protected function _find_shortest_branch(array $field_ids)
-	{
-		$shortest_branch_length = 10000000000000; // Just an absurdly large number.
 
-		foreach ($field_ids as $leaf)
+	protected function _unique_entry_ids($node, $leave_paths)
+	{
+
+		$it = new RecursiveIteratorIterator(
+			new NodeTreeIterator(array($node)),
+			RecursiveIteratorIterator::SELF_FIRST
+		);
+
+		// add entry ids to the proper tree parse nodes
+		// L0 = root
+		// L1 = closure-depth=1 querynodes (match field names)
+		// ...
+
+		$root_offset = 0;
+
+		$all_ids = array();
+		$leaves = $this->_parse_leaves($leave_paths);
+
+		foreach ($it as $node)
 		{
-			if (count($leaf) < $shortest_branch_length)
+			$depth = $it->getDepth();
+
+			if ($depth == 0 && $node->name == '__root__')
 			{
-				$shortest_branch_length = count($leaf);	
+				$root_offset = -1;
+				continue;
+			}
+
+
+			// the lookup below starts one up from the root @todo fix that!
+			$depth += $root_offset;
+			$field_id = $node->tag_info['field_id'];
+
+			if ($field_id == 'parents')
+			{
+				$field_id = $node->tag_info['params']['field_id'];
+			}
+
+			if ($field_id != 'siblings')
+			{
+				$node->entry_ids = array();
+
+				if (isset($leaves[$depth][$field_id])) // @pk @todo, this is the key to removing tags?
+				{
+					foreach ($leaves[$depth][$field_id] as $parent => $children)
+					{
+						$node->entry_ids[$parent] = array();
+
+						foreach ($children as $child)
+						{
+							$all_ids[] = $child['id'];
+							$node->entry_ids[$parent][] = $child['id'];
+						}
+					}
+				}
 			}
 		}
 
-		return $shortest_branch_length;
+		return $all_ids;
 	}
 
-	/**
-	 * Perform an exchange of array rows and columns.
-	 * 
-	 * Takes a 2 dimensional input array and switches the rows
- 	 * an columns, performing essentially a matrix transpose. Returns
-	 * the transposed result array. Should be O(N).
- 	 *
-	 * @param mixed[]  The target array.
-	 * @return mixed[] The input array rotated.
-	 */
-	protected function _exchange_array_rows_with_columns(array $target)
+
+	protected function _parenttree_query($root, $entry_ids)
 	{
-		$flipped = array();	
+		// tree branch length extrema
+		// @todo don't count siblings (should be collapsed above)
+		$depths = $this->_min_max_branches($root);
 
-		foreach ($target as $row)
-		{
-			$counter = 0;
+		$shortest_branch_length = $depths['shortest'];
+		$longest_branch_length = $depths['longest'];
 
-			foreach ($row as $item)
-			{
-				if ( ! isset($flipped[$counter]))
-				{
-					$flipped[$counter] = array($item);
-				}
-				else 
-				{
-					$flipped[$counter][] = $item;
-				}
-
-				$counter++;
-			}
-		}
-
-		return $flipped;
-	}
-	
-	/**
- 	 * Get Paths to Leaves
-	 *
-	 * Runs a query against the database that will retrieve rows that consist of the
-	 * path from the root node to each leaf. Should only have unique paths. It pulls out
-	 * the data about which field we used to get to each entry node along the path, as well
-	 * as the entry_ids.
-	 *  
-	 * TODO handle siblings and parents
-	 *
-	 * @param int[] The array of entry_ids that are the root nodes of our relationship tree.
-	 * @param int[]	The tree of field_ids that from the paths between entry nodes in our tree.
-	 * @param int	The length of the shortest distance to a leaf in our tree.
-	 */
-	protected function _get_leaves(array $entry_ids, array $field_ids, $shortest_branch_length)
-	{
 		$db = get_instance()->relationships->_isolate_db();
-	
+
 		$db->distinct();
+		$db->select('L0.field_id as L0_field');
+		$db->select('L0.child_id AS L0_parent');
+		$db->select('L0.parent_id as L0_id');
 		$db->from('exp_zero_wing as L0');
 
-		$level = 0;
-		foreach ($field_ids as $ids)
+
+		for ($level = 0; $level <= $longest_branch_length; $level++)
 		{
-			$branch = '';
-			foreach ($ids as $id)
-			{
-				if ($branch !== '')
-				{
-					$branch .= ' OR ';	
-				}
-				$branch .= 'L' . $level . '.field_id =' . $id;
-				if ($level >= $shortest_branch_length)
-				{
-					$branch .= ' OR L' . $level .'.field_id = NULL';
-				}
-			}
-			
 			$db->join('exp_zero_wing as L' . ($level+1), 
 				'L' . ($level) . '.child_id = L' . ($level+1) . '.parent_id' . (($level+1 >= $shortest_branch_length) ? ' OR L' . ($level+1) . '.parent_id = NULL' : ''), 
 				($level+1 >= $shortest_branch_length) ? 'left' : '');
 
-			// Now add the field ID from this level in.
-			foreach ($ids as $id)
+			if ($level > 0)
 			{
+				// Now add the field ID from this level in. We've already done level 0,
+				// so just skip it.
 				$db->select('L' . $level . '.field_id as L' . $level . '_field');
-			} 
-
-			// Add the aliased request for the entry_id to the fields section.		
-			$db->select('L' . $level . '.parent_id AS L' . $level . '_parent, L' . $level . '.child_id as L' . $level . '_id');
-			
-			$level++;
-
-
+				$db->select('L' . $level . '.parent_id AS L' . $level . '_parent');
+				$db->select('L' . $level . '.child_id as L' . $level . '_id');
+			}
 		}
-		
+
+		$db->where_in('L0.child_id', $entry_ids);
+
+		return $db->get()->result_array();
+	}
+
+	protected function _subtree_query($root, $entry_ids)
+	{
+		// tree branch length extrema
+		// @todo don't count siblings (should be collapsed above)
+		$depths = $this->_min_max_branches($root);
+
+		$shortest_branch_length = $depths['shortest'];
+		$longest_branch_length = $depths['longest'];
+
+		$db = get_instance()->relationships->_isolate_db();
+
+		$db->distinct();
+		$db->select('L0.field_id as L0_field');
+		$db->select('L0.parent_id AS L0_parent');
+		$db->select('L0.child_id as L0_id');
+		$db->from('exp_zero_wing as L0');
+
+
+		for ($level = 0; $level <= $longest_branch_length; $level++)
+		{
+			$db->join('exp_zero_wing as L' . ($level+1), 
+				'L' . ($level) . '.child_id = L' . ($level+1) . '.parent_id' . (($level+1 >= $shortest_branch_length) ? ' OR L' . ($level+1) . '.parent_id = NULL' : ''), 
+				($level+1 >= $shortest_branch_length) ? 'left' : '');
+
+			if ($level > 0)
+			{
+				// Now add the field ID from this level in. We've already done level 0,
+				// so just skip it.
+				$db->select('L' . $level . '.field_id as L' . $level . '_field');
+				$db->select('L' . $level . '.parent_id AS L' . $level . '_parent');
+				$db->select('L' . $level . '.child_id as L' . $level . '_id');
+			}
+		}
+
 		$db->where_in('L0.parent_id', $entry_ids);
 
-		$sql = $db->_compile_select();
+		return $db->get()->result_array();
+	}
 
-		$id_query = $db->query($sql);	
-	
-		return $id_query->result_array();
+
+	protected function _min_max_branches($tree)
+	{
+		$it = new RecursiveIteratorIterator(
+			new ClosureLimitedTreeIterator($tree->children()),
+			RecursiveIteratorIterator::LEAVES_ONLY
+		);
+
+		$shortest = 1E10;
+		$longest = 0;
+
+		foreach ($it as $leaf)
+		{
+			$depth = $it->getDepth();
+
+			if ($depth < $shortest)
+			{
+				$shortest = $depth;	
+			}
+
+			if ($depth > $longest)
+			{
+				$longest = $depth;
+			}
+		}
+
+		return compact('shortest', 'longest');
 	}
 	
 	/**
@@ -557,282 +778,48 @@ class Relationship_Parser
 	protected function _parse_leaves(array $leaves)
 	{
 		$parsed_leaves = array();
+
 		foreach ($leaves as $leaf)
 		{
-			$leaf_result = array();
-			foreach ($leaf as $key => $id)
+			$i = 0;
+			while (isset($leaf['L'.$i.'_field']))
 			{
-				if ($id == NULL)
+				$field_id = $leaf['L'.$i.'_field'];
+				$entry_id = $leaf['L'.$i.'_id'];
+				$parent_id = $leaf['L'.$i.'_parent'];
+
+				if ($entry_id == NULL)
 				{
-					continue;
-				}
-				$level = substr($key, 1, strpos($key, '_')-1);
-				$key = substr($key, strpos($key, '_')+1);	
-				
-				if ($key == 'field') 
-				{
-					$id = $this->relationship_field_names[$id];
+					break;
 				}
 
-				if ( ! isset($leaf_result[$level]))
+				$field_name = $this->relationship_field_names[$field_id];
+
+				if ( ! isset($parsed_leaves[$i]))
 				{
-					$leaf_result[$level] = array();
+					$parsed_leaves[$i] = array();
 				}
-	
-				$leaf_result[$level][$key] = $id;
+
+				if ( ! isset($parsed_leaves[$i][$field_id]))
+				{
+					$parsed_leaves[$i][$field_id] = array();
+				}
+
+				if ( ! isset($parsed_leaves[$i][$field_id][$parent_id]))
+				{
+					$parsed_leaves[$i][$field_id][$parent_id] = array();
+				}
+
+				$parsed_leaves[$i++][$field_id][$parent_id][] = array(
+					'id' => $entry_id,
+					'field' => $field_name,
+					'parent' => $parent_id
+				);
 			}
-			$parsed_leaves[] = $leaf_result;
 		}
+
 		return $parsed_leaves;
 	}
-
-	/**
-	 * Build a Tree of Related Entries
-	 *
-	 * Alright, take our leaves in reasonable PHP form and build a tree of
-	 * Relationship_Entries (unpopulated with the entry data itself) from it.
-	 * Initially the tree will be populated only with the entry ids and the
-	 * links between them in the tree (one way, from root to children). Returns
-	 * an array with three parts: the Tree, a lookup table organized by
-	 * Entry_id with references to each Relationship_Entry object in the tree
-	 * so we can easily access them (they can appear multiple times), and an
-	 * array of entry_ids.
-	 *
-	 * @param mixed[]	The leaf paths formatted by Relationship_Parser::_parse_leaves().
-	 * @return mixed[]	An array with three parts:
-	 * 					- tree => the tree of Relationship_Entry objects
-	 * 					- entry_lookup => a lookup table organized by id of the Relationship_Entry objects
-	 * 					- entry_ids => an array of entry_ids returned, for convience when populating the Relationship_Entry objects
-	 */
-	protected function _build_entry_tree(array $leaves)
-	{
-		$entries = array();
-		$tree = array();
-		foreach ($leaves as $leaf)
-		{
-			$parent = NULL;
-			$field_name = NULL;
-			foreach ($leaf as $l => $level)
-			{
-				if ( ! isset($entries[$level['parent']]))
-				{
-					$entries[$level['parent']] = new Relationship_Entry($level['parent'], $this->custom_fields);
-				}
-				$parent = $entries[$level['parent']];
-				
-				if ( ! isset($entries[$level['id']]))
-				{
-					$entries[$level['id']] = new Relationship_Entry($level['id'], $this->custom_fields);
-				}
-				$entry = $entries[$level['id']];
-
-				$field_name = $level['field'];
-				
-					
-				$parent->add_child($field_name, $entry);	
-
-				// We only want to add it to the tree if we haven't 
-				// already added it and this only belongs in the tree
-				// if it's level zero.
-				if ($l==0 && ! isset($tree[$parent->get_entry_id()]))
-				{
-					$tree[$parent->get_entry_id()] = $parent;
-				}
-			}
-
-		}
-
-		$data = array(
-			'entry_ids' => array_keys($entries),
-			'entry_lookup' => $entries,
-			'tree' => $tree
-		);
-
-		return $data;
-	}	
-
-	/**
-	 * Build Variables Array
-	 *
- 	 * Take the related entries we've retrieved, examine the tag data and then build the array 
-	 * of variables that we'll pass to TMPL->parse_variables() for replacing.
-	 * 
-	 * @param	mixed[]	An array with three parts:
-	 * 					- tree => the tree of Relationship_Entry objects
-	 * 					- entry_lookup => a lookup table organized by id of the Relationship_Entry objects
-	 * 					- entry_ids => an array of entry_ids returned, for convience when populating the Relationship_Entry objects
-	 *
-	 * @return	mixed[]	An array of variables, formatted for parse_variables()
-	 */
-	protected function _build_variables_array($data)
-	{
-		$variables = array();
-		foreach ($data['tree'] as $entry_id => $entry)
-		{
-			$entry_row = array();
-			foreach ($this->template->var_single as $variable)
-			{	
-				$node = $entry;
-				$namespace = '';
-				$field = '';
-				$recursed = FALSE;
-
-				while (strpos($variable, ':') !== FALSE)
-				{
-					$field = substr($variable, 0, strpos($variable, ':'));
-
-					if ($namespace !== '')
-					{
-						$namespace .= ':';
-					}
-
-					$namespace .= $field;
-					$variable = substr($variable, strpos($variable, ':')+1);
-	
-					// This is a variable in a pair. We need
-					// to handle it somehow.	
-					if (is_array($node->{$field}))
-					{
-						if ( ! isset($entry_row[$field]))
-						{
-							$entry_row[$field] = array('normalize'=>true);
-						}
-						
-						$pair =& $entry_row[$field];
-
-						foreach ($node->{$field} as $child)
-						{
-							$this->_build_variables_array_recursive($child, $pair, $namespace, $variable);
-						}
-
-						$recursed = TRUE;
-						break;
-					}
-					// This is a 1 to 1 relationship field.
-					// we can just bounce down to the next level.
-					else 
-					{
-						$node = $node->{$field};
-					}
-				}
-
-				if ($namespace !== '' && !$recursed)
-				{	
-					$entry_row[$namespace . ':' . $variable] = $node->{$variable};
-				}
-			}
-
-			$variables[$entry_id] = $entry_row;
-		}
-		return $this->_normalize_array_keys($variables);
-	}
-
-	/**
-	 * Recursively Build the Variables Array
-	 *
-	 * Build the variable array for the given relationship node and attach it
-	 * to the array reference passed. The variable we're working with is
-	 * defined by $namespace and $variable, the namespace being the list of
-	 * relationships up until this point, and variable being the list after
-	 * this point. The final colon separated value is the variable we are
-	 * actually trying to get to. If we haven't reached that finale value,
-	 * this method will recurse. Otherwise it will retrieve the appropriate
-	 * data and add it to the variables array.
-	 *
-	 * @param	Relationship_Entry	The node in the relationship tree we're working on. The variables we'll
-	 *									be populating the array from should be below this node.
-	 * @param	mixed[]				A reference to the point in the array we're adding to.
-	 * @param	string				The namespace string up to this point.
-	 * @param	string				The variable string that remains, may contain namespaces we haven't removed
-	 * 									yet.
-	 *
-	 * @return 	void
-	 */
-	protected function _build_variables_array_recursive(Relationship_Entry $node, array &$pair, $namespace, $variable)
-	{ 	
-		if ( ! isset($pair[$node->get_entry_id()]))
-		{
-			$pair[$node->get_entry_id()] = array();
-		}
-
-		$entry_row =& $pair[$node->get_entry_id()];
-
-		while (strpos($variable, ':') !== FALSE)
-		{
-			$field = substr($variable, 0, strpos($variable, ':'));
-
-			if ($namespace !== '')
-			{
-				$namespace .= ':';
-			}
-
-			$namespace .= $field;
-			$variable = substr($variable, strpos($variable, ':')+1);
-
-			// This is a variable in a pair. We need
-			// to handle it somehow.	
-			if (is_array($node->{$field}))
-			{
-				if ( ! isset($entry_row[$namespace]))
-				{
-					$entry_row[$namespace] = array('normalize' => true);
-				}
-				
-				$next_pair = &$entry_row[$namespace];
-				
-				foreach ($node->{$field} as $child)
-				{
-					$this->_build_variables_array_recursive($child, $next_pair, $namespace, $variable);
-				}
-				return;
-			}
-			// This is a 1 to 1 relationship field.
-			// we can just bounce down to the next level.
-			else 
-			{
-				$node = $node->{$field};
-			}
-		}	
-		$entry_row[$namespace . ':' . $variable] = $node->{$variable};
-	}
-
-	/**
-	 * Normalize The Keys of the Variable Array
-	 *
-	 * When adding variables from nested relationships to the relationships array
-	 * we use the entry_id as a key. This allows us to easily avoid duplication.
-	 * However, parse_variables() expects the keys in the array passed to it to be
-	 * purely numeric and in order (0,1,2,etc). So we need to normalize our
-	 * array recursively to ensure that this is the case.
-	 *
-	 * @param	mixed[]	The array of variables we'll be normalizing.
-	 *
-	 * @return 	mixed[]	The normalized array.
- 	 */
-	protected function _normalize_array_keys($variables)
-	{
-		foreach($variables as $key => $value)
-		{
-			if (is_array($value))
-			{
-				$variables[$key] = $this->_normalize_array_keys($value);
-			}
-		}	
-
-		if (isset ($variables['normalize']))
-		{
-			unset ($variables['normalize']);
-			$result = array();
-			foreach ($variables as $key => $value) 
-			{
-				$result[] = $value;
-			}
-			return $result;
-		}
-
-		return $variables;
-	}
-
 
  	// --------------------------------------------------------------------
 	
@@ -858,200 +845,203 @@ class Relationship_Parser
 		}
 
 		$entry_data = $this->variables[$entry_id];
-		$tagdata = $this->template->parse_variables($tagdata, array(0=>$entry_data));
+		$tagdata = $this->template->parse_variables_row($tagdata, $entry_data);
 		return $tagdata;
 	}
-
 }
 
-/**
- * An entity wrapper around our entries that can act as a node in a tree.
- * Trying to mess with array references was making my head spin.
- */
-class Relationship_Entry
-{
-	protected $entry_id;
-	protected $data = array();
-	protected $children = array();
 
-	protected $custom_fields;
-	
-	/**
-	 * Print Entry
-	 *
-	 * Print this entry and all entries beneath it in the 
-	 * relationship tree in a readable format. For debugging
-	 * purposes ONLY.
-	 *
-	 * @return void
-	 */
-	public function print_entry() 
+
+
+
+class TreeNode {
+	public $name;
+	private $parent;
+	private $children = array();
+
+	public function __construct($name)
 	{
-		static $depth = -1;
-
-		$depth++;
-		for($i = 0; $i < $depth; $i++) {
-			echo "\t";
-		}
-		echo 'BEGIN ENTRY: ' . $this->entry_id . '(' . $this->data['title'] . ')<br />';
-		foreach($this->children as $field => $entries) {
-			for($i = 0; $i < $depth; $i++) {
-				echo "\t";
-			}
-			echo '-' .(is_array($entries) ? 'ARRAY() ' : '') . $field . ':<br />';
-			if ( is_array($entries)) {
-				foreach($entries as $child) {
-					$child->print_entry();
-				}
-			}
-			elseif ( is_object($entries)){
-				$entries->print_entry();
-			}
-			else {
-				var_dump($entries);	
-			}
-				
-			for($i = 0; $i < $depth; $i++) {
-				echo "\t";
-			}
-			echo '-END ' . $field . '<br />';
-		}
-		for($i = 0; $i < $depth; $i++) {
-			echo "\t";
-		}
-		echo 'END ENTRY: ' . $this->entry_id . '(' .$this->data['title'] . ')<br />';
-		$depth--;
+		$this->name = $name;
 	}
 
-	/**
-	 * Construct this Entry in the Relationship Tree
-	 *
-	 * Construct a entry node in the relationship tree.
-	 * Give it its id and a mapping of the custom fields
-	 * to start with. We can populate the data and 
-	 * children later.
- 	 *
-	 * @param	int		An entry_id identifying this entry.
-	 * @param	mixed[]	A mapping of custom field names to id.	
-	 */	
-	public function __construct($entry_id, $custom_fields)
-	{		
-		$this->entry_id = $entry_id;
-		$this->custom_fields = $custom_fields;
-	}
-
-	/**
-	 * Magic method to access entry variables, custom fields and 
-	 * child relationships.
-	 */
-	public function __get($name)
+	public function addChild(TreeNode $child)
 	{
-		if (isset($this->children[$name]))
-		{
-			return $this->children[$name];
-		}
-		elseif (isset($this->data[$name]))
-		{
-			return $this->data[$name];
-		}
-	
-		if (isset($this->custom_fields[$name]))
-		{	
-			$field_id = $this->custom_fields[$name];
-
-			if (isset($this->data['field_id_' . $field_id]))
-			{
-				return $this->data['field_id_' . $field_id];
-			}
-		}
-
-		throw new RuntimeException('Attempt to access a non-existent field!');
+		$child->setParent($this);
+		$this->children[] = $child;
 	}
 
-	/**
-	 * A simple getter for the entry_id.
-	 */
-	public function get_entry_id()
-	{
-		return $this->entry_id;
-	}
-
-	/**
-	 * A simple getter to return all entry data.
-	 */
-	public function get_data()
-	{
-		return $this->data;
-	}
-
-	/**
-	 * A simple setter to set all entry data.
-	 */
-	public function set_data(array $data)
-	{
-		$this->data = $data;
-		return $this;
-	}
-
-	/**
-	 * A simple getter to get the array of all children.
-	 *
-	 * @return mixed[]
-	 */
-	public function get_children()
+	public function children()
 	{
 		return $this->children;
 	}
 
-	/**
-	 * A simple setter to set the array of all children.
-	 */
-	public function set_children(array $children)
+	public function setParent(TreeNode $parent)
 	{
-		$this->children = $children;
-		return $this;
+		$this->parent = $parent;
 	}
 
-	/**
-	 * Add a Child Entry Node to the Children Array
-	 *
-	 * Adds a node to the children array, keyed to the
-	 * given field.
-	 *
-	 * @param	string	The name of the field to key the child to.
-	 * @param	Relationship_Entry	The node to attach.
-	 *
-	 * @return void
-	 */
-	public function add_child($field, Relationship_Entry $child)
+	public function parent()
 	{
-		
-		if ( ! isset($this->children[$field]))
-		{
-			$this->children[$field] = $child;
-			return $this;
-		}
-		
-		if ( ! is_array($this->children[$field]))
-		{
-			if ($this->children[$field]->get_entry_id() !== $child->get_entry_id()) 
-			{
-				$children = array(
-					$this->children[$field]->get_entry_id() => $this->children[$field],
-					$child->get_entry_id() => $child
-				);
+		return $this->parent;
+	}
+}
 
-				$this->children[$field] = $children;
-				return $this;	
+class ParseNode extends TreeNode {
+
+	public $entry_ids;
+	public $tag_info;
+	private $childTags;				// namespaced tags underneath it that are not relationship tags, constructed from tagdata
+
+	public function __construct($name, array $tag_info = array()) // $tagInfo = array('name' => 'foo', 'params' => array(), 'full_tag' => 'baz')
+	{
+		parent::__construct($name);
+		$this->tag_info = $tag_info;
+	}
+
+	public function field_name()
+	{
+		$field_name = ':'.$this->name;
+		return substr($field_name, strrpos($field_name, ':') + 1);
+	}
+}
+
+/**
+ * We store a shortcut path to the kids that need their own queries:
+ * http://en.wikipedia.org/wiki/Transitive_closure
+ *
+ */
+class QueryNode extends ParseNode {
+
+	private $closureChildren = array();
+
+	// @override
+	public function setParent(TreeNode $p)
+	{
+		parent::setParent($p);
+
+		do
+		{
+			if ($p instanceOf QueryNode)
+			{
+				$p->addClosurePath($this);
+				break;
 			}
 
-			return $this;
+			$p = $p->parent();
 		}
-
-		$this->children[$field][$child->get_entry_id()] = $child;
-		return $this;
+		while ($p);
 	}
 
+	public function closureChildren()
+	{
+		return $this->closureChildren;
+	}
+
+	public function addClosurePath(QueryNode $closureChild)
+	{
+		$this->closureChildren[] = $closureChild;
+	}
+}
+
+
+class NodeTreeIterator extends RecursiveArrayIterator {
+
+	/**
+	 * Override RecursiveArrayIterator's child detection method.
+	 * We usually have data rows that are arrays so we really only
+	 * want to iterate over those that match our custom format.
+	 *
+	 * @return boolean
+	 */
+	public function hasChildren()
+	{
+		$current = $this->current();
+		$children = $current->children();
+		return ! empty($children);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Override RecursiveArrayIterator's get child method to skip
+	 * ahead into the __children__ array and not try to iterate
+	 * over the data row's individual columns.
+	 *
+	 * @return Object<TreeIterator>
+	 */
+	public function getChildren()
+	{
+		$current = $this->current();
+		$children = $current->children();
+
+		// Using ref as per PHP source
+		if (empty($this->ref))
+		{
+			$this->ref = new ReflectionClass($this);
+		}
+
+		return $this->ref->newInstance($children);
+	}
+}
+
+// Does not iterate into query nodes
+class ClosureLimitedTreeIterator extends NodeTreeIterator {
+
+	public function hasChildren()
+	{
+		if ($this->current() instanceOf QueryNode)
+		{
+			return FALSE;
+		}
+
+		return parent::hasChildren();
+	}
+}
+
+// Iterates only query nodes
+class ClosureTreeIterator extends NodeTreeIterator {
+
+	/**
+	 * Override RecursiveArrayIterator's child detection method.
+	 * We usually have data rows that are arrays so we really only
+	 * want to iterate over those that match our custom format.
+	 *
+	 * @return boolean
+	 */
+	public function hasChildren()
+	{
+		$current = $this->current();
+		if ( ! $current instanceOF QueryNode)
+		{
+			return FALSE;
+		}
+
+		$children = $current->closureChildren();
+		return ! empty($children);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Override RecursiveArrayIterator's get child method to skip
+	 * ahead into the __children__ array and not try to iterate
+	 * over the data row's individual columns.
+	 *
+	 * @return Object<TreeIterator>
+	 */
+	public function getChildren()
+	{
+		$current = $this->current();
+		$children = $current->closureChildren();
+
+		// Using ref as per PHP source
+		if (empty($this->ref))
+		{
+			$this->ref = new ReflectionClass($this);
+		}
+
+		return $this->ref->newInstance($children);
+	}
 }
 
 /* End of file Relationships.php */
