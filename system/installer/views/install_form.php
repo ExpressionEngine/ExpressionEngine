@@ -199,7 +199,7 @@ else
 
 <h5><?php echo $this->lang->line('timezone'); ?></h5>
 
-<p><?=$this->localize->timezone_menu($server_timezone, 'select', 'server_timezone')?></p>
+<p><?=$this->localize->timezone_menu($server_timezone, 'server_timezone')?></p>
 
 </div>
 

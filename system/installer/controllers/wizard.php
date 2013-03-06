@@ -686,6 +686,9 @@ class Wizard extends CI_Controller {
 		$this->userdata['extra_header'] = $this->_install_form_extra_header($this->javascript->generate_json($this->theme_required_modules, TRUE));
 
 		$this->load->library('localize');
+
+		// Preload server timezone
+		$this->userdata['server_timezone'] = date_default_timezone_get();
 		
 		// Display the form and pass the userdata array to it	
 		$this->_set_output('install_form', $this->userdata);
