@@ -546,10 +546,10 @@ class Relationship_Parser
 		{
 			$depth = $it->getDepth();
 			$entry_ids = $node->entry_ids;
-
+			
 			if ($depth == 0)
 			{
-				foreach($entry_ids as $id)
+				foreach(array_unique($entry_ids) as $id)
 				{
 					$variables[$id] = $entry_lookup[$id];
 					$var_id_lookup[$id] =& $variables[$id];
@@ -573,7 +573,7 @@ class Relationship_Parser
 					$parent_node[$name] = array();
 				}
 
-				foreach ($children as $child_id)
+				foreach (array_unique($children) as $child_id)
 				{
 					$values = $entry_lookup[$child_id];
 					$new_values = array();
@@ -661,7 +661,6 @@ class Relationship_Parser
 	protected function _parenttree_query($root, $entry_ids)
 	{
 		// tree branch length extrema
-		// @todo don't count siblings (should be collapsed above)
 		$depths = $this->_min_max_branches($root);
 
 		$shortest_branch_length = $depths['shortest'];
@@ -736,7 +735,7 @@ class Relationship_Parser
 		return $db->get()->result_array();
 	}
 
-
+	// @todo don't count siblings (should be collapsed before we get here)
 	protected function _min_max_branches($tree)
 	{
 		$it = new RecursiveIteratorIterator(
@@ -753,13 +752,19 @@ class Relationship_Parser
 
 			if ($depth < $shortest)
 			{
-				$shortest = $depth;	
+				$shortest = $depth;
 			}
 
 			if ($depth > $longest)
 			{
 				$longest = $depth;
 			}
+		}
+
+		// @todo not the best solution
+		if ($shortest > 1E9)
+		{
+			$shortest = 0;
 		}
 
 		return compact('shortest', 'longest');
