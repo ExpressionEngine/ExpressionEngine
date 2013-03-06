@@ -1280,6 +1280,11 @@ width:100%;
 	
 }
 
+#mainContent #registerUser span.timezone {
+	display: inline;
+	width: auto;
+}
+
 #mainContent #registerUser table label, #mainContent #registerUser table span {
 	display:			none;
 }

@@ -1238,6 +1238,11 @@ a#revealSidebarLink:link, a#revealSidebarLink:visited  {
 	float:				left;
 }
 
+#mainContent #registerUser span.timezone {
+	display: inline;
+	width: auto;
+}
+
 #mainContent #registerUser table label, 
 #mainContent #registerUser table span {
 	display:			none;
