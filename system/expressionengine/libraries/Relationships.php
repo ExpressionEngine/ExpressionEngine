@@ -471,7 +471,12 @@ class Relationship_Parser
 		$unique_ids = $this->_unique_entry_ids($root, $root_leave_paths);
 
 		$all_ids = array_merge($entry_ids, $unique_ids);
-		$root->entry_ids = $entry_ids;
+
+		// @todo @pk kinda silly
+		foreach ($entry_ids as $id)
+		{
+			$root->entry_ids[$id] = array($id);
+		}
 
 
 		$cit = new RecursiveIteratorIterator(
@@ -497,12 +502,12 @@ class Relationship_Parser
 			$all_ids = array_merge($all_ids, $result_ids);
 		}
 
-
+/*
 		$it = new RecursiveIteratorIterator(
 			new NodeTreeIterator(array($root)),
 			RecursiveIteratorIterator::SELF_FIRST
 		);
-
+*/
 
 		// add entry ids to the proper tree parse nodes
 		// L0 = root
@@ -526,7 +531,7 @@ class Relationship_Parser
 		}
 
 		// PARSE! FINALLY!
-
+/*
 		$variables = array();
 
 		foreach ($it as $node)
@@ -545,12 +550,12 @@ class Relationship_Parser
 				continue;
 			}
 
+			$name = $node->name;
+
 			if ( ! is_array($entry_ids))
 			{
 				continue;
 			}
-
-			$name = $node->name;
 
 			foreach ($entry_ids as $parent => $children)
 			{
@@ -580,8 +585,14 @@ class Relationship_Parser
 				}
 			}
 		}
+*/
 
-		$this->variables = $variables;
+		// @todo count, backspace, dates, etc
+
+		$this->variables = array(
+			'tree' => $root,
+			'lookup' => $entry_lookup
+		);
 	}
 
 
@@ -627,8 +638,7 @@ class Relationship_Parser
 			{				
 				$node->entry_ids = array();
 
-
-				if (isset($leaves[$depth][$field_id])) // @pk @todo, this is the key to removing tags?
+				if (isset($leaves[$depth][$field_id]))
 				{
 					foreach ($leaves[$depth][$field_id] as $parent => $children)
 					{
@@ -863,8 +873,53 @@ class Relationship_Parser
 			return $tagdata;
 		}
 
+		$tree = $this->variables['tree'];
+		$lookup = $this->variables['lookup'];
+
+		$tagdata = $tree->parse($entry_id, $tagdata, $lookup);
+		/*
+		$it = new RecursiveIteratorIterator(
+			new NodeTreeIterator($tree->children()),
+			RecursiveIteratorIterator::SELF_FIRST
+		);
+
+		// @todo count, backspace, dates, etc
+
+		foreach ($it as $node)
+		{
+			$id = $node->tag_info['id'];
+			$parent_node = $node->parent();
+
+			if ($it->getDepth() > 0)
+			{
+				$parent_ids = $parent_node->entry_ids[$id];
+			}
+			else
+			{
+				$parent_ids = array($entry_id);
+			}
+
+			// with the parents we can figure out which of the current
+			// node's potential entries we need to parse.
+			$parse_ids = array();
+
+			foreach ($parent_ids as $parent_id)
+			{
+				$parse_ids = array_merge($parse_ids, $node->entry_ids[$parent_id]);
+			}
+
+			$ids = $node->entry_ids;
+
+			var_dump($ids);
+		}
+*/
+/*
 		$entry_data = $this->variables[$entry_id];
 		$tagdata = $this->template->parse_variables_row($tagdata, $entry_data);
+
+		// @todo @pk hack to remove leftover tags. fixme
+		$tagdata = preg_replace('/{[^}]+}/i', '', $tagdata);
+*/
 		return $tagdata;
 	}
 }
@@ -921,6 +976,100 @@ class ParseNode extends TreeNode {
 	{
 		$field_name = ':'.$this->name;
 		return substr($field_name, strrpos($field_name, ':') + 1);
+	}
+
+	public function parse($id, $tagdata, array $entries_lookup)
+	{
+		if ( ! isset($this->entry_ids[$id]))
+		{
+			return $tagdata;
+		}
+
+		if ($this->name == '__root__')
+		{
+			foreach ($this->children() as $child)
+			{
+				$tagdata = $child->parse($id, $tagdata, $entries_lookup);
+			}
+
+			return $tagdata;
+		}
+
+		$this->entries_lookup = $entries_lookup;
+		$this->entries = array_unique($this->entry_ids[$id]);
+
+		$ident = preg_quote($this->name, '/');
+		return preg_replace_callback('/{'.$ident.'[^}:]*}(.+?){\/'.$ident.'}/is', array($this, '_replace'), $tagdata);
+	}
+
+	protected function _replace($matches)
+	{
+		$entries = $this->entries;
+		$entries_lookup = $this->entries_lookup;
+
+		$children = $this->children();
+
+		$tagdata = $matches[1];
+		$params = isset($this->tag_info['params']) ? $this->tag_info['params'] : array();
+
+		$result = '';
+		$name = $this->name;
+		$prefix = $name.':';
+		
+		// @todo backspace
+		$count = 0;
+		$total_results = count($entries);
+
+		foreach ($entries as $entry_id)
+		{
+			$count++;
+
+			$data = $entries_lookup[$entry_id];
+			$variables = array();
+			$cond_vars = array();
+
+			foreach ($data as $k => $v)
+			{
+				$cond_vars[$prefix.$k] = $v;
+				$variables['{'.$prefix.$k.'}'] = $v;
+			}
+
+			// special variables!
+			$cond_vars[$prefix.'count'] = $count;
+			$cond_vars[$prefix.'total_results'] = $total_results;
+
+			$variables['{'.$prefix.'count}'] = $count;
+			$variables['{'.$prefix.'total_results}'] = $total_results;
+
+			$tag_chunk = str_replace(
+				array_keys($variables),
+				array_values($variables),
+				$tagdata
+			);
+
+			// conditionals
+			$tag_chunk = get_instance()->functions->prep_conditionals($tag_chunk, $cond_vars);
+			unset($cond_vars);
+
+			foreach ($children as $child)
+			{
+				$tag_chunk = $child->parse($entry_id, $tag_chunk, $entries_lookup);
+			}
+
+			$result .= $tag_chunk;
+		}
+
+		// kill prefixed leftovers
+		$result = preg_replace('/{'.$prefix.'[^}]*}(.+?){\/'.$prefix.'[^}]*}/is', '', $result);
+		$result = preg_replace('/{\/?'.$prefix.'[^}]*}/i', '', $result);
+
+
+		if (isset($params['backspace']))
+		{
+			$result = substr($result, 0, -$params['backspace']);
+		}
+
+		return $result;
 	}
 }
 

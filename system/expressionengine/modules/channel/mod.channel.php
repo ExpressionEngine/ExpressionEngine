@@ -4156,6 +4156,9 @@ class Channel {
 			}
 			// END VARIABLE PAIRS
 
+			/** ZERO WING **/	
+			$tagdata = $relationship_parser->parse_relationships($row['entry_id'], $tagdata);
+
 			// We swap out the conditionals after pairs are parsed so they don't interfere
 			// with the string replace
 			$tagdata = $this->EE->functions->prep_conditionals($tagdata, $cond);
@@ -4806,9 +4809,7 @@ class Channel {
 				}
 			//
 			// -------------------------------------------
-			/** ZERO WING **/	
-			$tagdata = $relationship_parser->parse_relationships($row['entry_id'], $tagdata);
-			//echo 'Finished a round of parsing, what have we got? <br />';
+
 			$this->return_data .= $tagdata;
 
 		}
