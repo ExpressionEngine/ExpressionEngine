@@ -50,6 +50,7 @@ class Updater {
 		$this->_add_template_name_to_dev_log();
 		$this->_drop_dst();
 		$this->_update_timezone_column_lengths();
+		$this->_update_session_table();
 		
 		return TRUE;
 	}
@@ -169,6 +170,41 @@ class Updater {
 				);
 			}
 		}
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Update Session table
+	 * 
+	 * We duplicate this from the 2.5.4 update because the changes weren't
+	 * made to the schema file and therefore aren't present for new installs
+	 * of 2.5.4 or 2.5.5
+	 */
+	private function _update_session_table()
+	{
+		if ( ! $this->EE->db->field_exists('fingerprint', 'sessions'))
+		{
+			$this->EE->dbforge->add_column(
+				'sessions',
+				array(
+					'fingerprint' => array(
+						'type'			=> 'varchar',
+						'constraint'	=> 40
+					),
+					'sess_start' => array(
+						'type'			=> 'int',
+						'constraint'	=> 10,
+						'unsigned'		=> TRUE,
+						'default'		=> 0,
+						'null'			=> FALSE
+					)
+				),
+				'user_agent'
+			);	
+		}
+		
+		return TRUE;
 	}
 }	
 /* END CLASS */
