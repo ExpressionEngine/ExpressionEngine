@@ -455,19 +455,22 @@ class Relationship_Parser
 
 
 
+		// For space savings and subtree closure querying each need node is
+		// pushed its own set of entry ids. For given parent ids:
+		//						 {[6, 7]}
+		//						/		\	
+		//		 {6:[2,4], 7:[8,9]}    	{6:[], 7:[2,5]}
+		//				/					\
+		//	  		...				  		 ...
 
-
-
-		$all_ids = $entry_ids;
-
-
-
-		// This needs to happen in a loop for all query nodes on the tree!
+		// By pushing them down like this the subtree query is very simple.
+		// And when we parse we simply go through all of them and make that
+		// many copies of the node's tagdata.
 
 		$root_leave_paths = $this->_subtree_query($root, $entry_ids);
-
 		$unique_ids = $this->_unique_entry_ids($root, $root_leave_paths);
-		$all_ids = array_merge($all_ids, $unique_ids);
+
+		$all_ids = array_merge($entry_ids, $unique_ids);
 		$root->entry_ids = $entry_ids;
 
 
@@ -494,17 +497,6 @@ class Relationship_Parser
 			$all_ids = array_merge($all_ids, $result_ids);
 		}
 
-		// For space savings and subtree closure querying each need node is
-		// pushed its own set of entry ids. For given parent ids.
-		//						 {[6, 7]}
-		//						/		\	
-		//		 {6:[2,4], 7:[8,9]}    	{6:[], 7:[2,5]}
-		//				/					\
-		//	  		...				  		 ...
-
-		// By pushing them down like this the subtree query is very simple.
-		// And when we parse we simply go through all of them and make that
-		// many copies of the node's tagdata.
 
 		$it = new RecursiveIteratorIterator(
 			new NodeTreeIterator(array($root)),
@@ -559,6 +551,7 @@ class Relationship_Parser
 			}
 
 			$name = $node->name;
+
 			foreach ($entry_ids as $parent => $children)
 			{
 				$parent_node = $node->parent();
@@ -592,11 +585,11 @@ class Relationship_Parser
 	}
 
 
-	protected function _unique_entry_ids($node, $leave_paths)
+	protected function _unique_entry_ids($root, $leave_paths)
 	{
 
 		$it = new RecursiveIteratorIterator(
-			new NodeTreeIterator(array($node)),
+			new ClosureLimitedTreeIterator(array($root)),
 			RecursiveIteratorIterator::SELF_FIRST
 		);
 
@@ -620,8 +613,8 @@ class Relationship_Parser
 				continue;
 			}
 
-
 			// the lookup below starts one up from the root @todo fix that!
+			
 			$depth += $root_offset;
 			$field_id = $node->tag_info['field_id'];
 
@@ -631,8 +624,9 @@ class Relationship_Parser
 			}
 
 			if ($field_id != 'siblings')
-			{
+			{				
 				$node->entry_ids = array();
+
 
 				if (isset($leaves[$depth][$field_id])) // @pk @todo, this is the key to removing tags?
 				{
@@ -686,7 +680,7 @@ class Relationship_Parser
 
 		$db->distinct();
 		$db->select('L0.field_id as L0_field');
-		$db->select('L0.child_id AS L0_parent');
+		$db->select('L0.child_id AS L0_parent'); // switched to make the tree building algorithm easier
 		$db->select('L0.parent_id as L0_id');
 		$db->from('exp_zero_wing as L0');
 
@@ -718,8 +712,8 @@ class Relationship_Parser
 		// @todo don't count siblings (should be collapsed above)
 		$depths = $this->_min_max_branches($root);
 
-		$shortest_branch_length = $depths['shortest'];
 		$longest_branch_length = $depths['longest'];
+		$shortest_branch_length = $depths['shortest'];
 
 		$db = get_instance()->relationships->_isolate_db();
 
@@ -728,7 +722,6 @@ class Relationship_Parser
 		$db->select('L0.parent_id AS L0_parent');
 		$db->select('L0.child_id as L0_id');
 		$db->from('exp_zero_wing as L0');
-
 
 		for ($level = 0; $level <= $longest_branch_length; $level++)
 		{
@@ -755,7 +748,7 @@ class Relationship_Parser
 	protected function _min_max_branches($tree)
 	{
 		$it = new RecursiveIteratorIterator(
-			new ClosureLimitedTreeIterator($tree->children()),
+			new ClosureLimitedTreeIterator(array($tree)),
 			RecursiveIteratorIterator::LEAVES_ONLY
 		);
 
@@ -765,6 +758,11 @@ class Relationship_Parser
 		foreach ($it as $leaf)
 		{
 			$depth = $it->getDepth();
+
+			if ($tree->name == '__root__')
+			{
+				$depth -= 1;
+			}
 
 			if ($depth < $shortest)
 			{
@@ -1010,12 +1008,45 @@ class ClosureLimitedTreeIterator extends NodeTreeIterator {
 
 	public function hasChildren()
 	{
-		if ($this->current() instanceOf QueryNode)
+		if ( ! parent::hasChildren())
 		{
 			return FALSE;
 		}
 
-		return parent::hasChildren();
+		$current = $this->current();
+		$children = $current->children();
+
+		foreach ($children as $kid)
+		{
+			if ( ! $kid instanceOf QueryNode)
+			{
+				return TRUE;
+			}
+		}
+
+		return FALSE;
+	}
+
+	public function getChildren()
+	{
+		$current = $this->current();
+		$children = array();
+
+		foreach ($current->children() as $kid)
+		{
+			if ( ! $kid instanceOf QueryNode)
+			{
+				$children[] = $kid;
+			}
+		}
+
+		// Using ref as per PHP source
+		if (empty($this->ref))
+		{
+			$this->ref = new ReflectionClass($this);
+		}
+
+		return $this->ref->newInstance($children);
 	}
 }
 
@@ -1032,12 +1063,14 @@ class ClosureTreeIterator extends NodeTreeIterator {
 	public function hasChildren()
 	{
 		$current = $this->current();
-		if ( ! $current instanceOF QueryNode)
+
+		if ( ! $current instanceOf QueryNode)
 		{
 			return FALSE;
 		}
 
 		$children = $current->closureChildren();
+
 		return ! empty($children);
 	}
 
