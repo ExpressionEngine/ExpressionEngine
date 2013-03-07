@@ -16,7 +16,7 @@ $plugin_info = array(
  * @package			ExpressionEngine
  * @category		Plugin
  * @author			EllisLab Dev Team
- * @copyright		Copyright (c) 2004 - 2012, EllisLab, Inc.
+ * @copyright		Copyright (c) 2004 - 2013, EllisLab, Inc.
  * @link			http://ellislab.com
  */
 
