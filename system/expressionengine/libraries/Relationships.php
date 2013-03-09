@@ -502,12 +502,6 @@ class Relationship_Parser
 			$all_ids = array_merge($all_ids, $result_ids);
 		}
 
-/*
-		$it = new RecursiveIteratorIterator(
-			new NodeTreeIterator(array($root)),
-			RecursiveIteratorIterator::SELF_FIRST
-		);
-*/
 
 		// add entry ids to the proper tree parse nodes
 		// L0 = root
@@ -531,61 +525,6 @@ class Relationship_Parser
 		}
 
 		// PARSE! FINALLY!
-/*
-		$variables = array();
-
-		foreach ($it as $node)
-		{
-			$depth = $it->getDepth();
-			$entry_ids = $node->entry_ids;
-
-			if ($depth == 0)
-			{
-				foreach(array_unique($entry_ids) as $id)
-				{
-					$variables[$id] = $entry_lookup[$id];
-					$node->variables_location[$id] =& $variables[$id];
-				}
-
-				continue;
-			}
-
-			$name = $node->name;
-
-			if ( ! is_array($entry_ids))
-			{
-				continue;
-			}
-
-			foreach ($entry_ids as $parent => $children)
-			{
-				$parent_node = $node->parent();
-				$parent_variables =& $parent_node->variables_location[$parent];
-
-				if ( ! isset($parent_variables[$name]))
-				{
-					$parent_variables[$name] = array();
-				}
-
-				foreach (array_unique($children) as $child_id)
-				{
-					$values = $entry_lookup[$child_id];
-					$new_values = array();
-
-					foreach ($values as $k => $v)
-					{
-						$new_values[$name.':'.$k] = $v;
-					}
-
-					$l = count($parent_variables[$name]);
-
-					$parent_variables[$name][$l] = $new_values;
-
-					$node->variables_location[$child_id] =& $parent_variables[$name][$l];
-				}
-			}
-		}
-*/
 
 		// @todo count, backspace, dates, etc
 
@@ -697,9 +636,14 @@ class Relationship_Parser
 
 		for ($level = 0; $level <= $longest_branch_length; $level++)
 		{
-			$db->join('exp_zero_wing as L' . ($level+1), 
-				'L' . ($level) . '.child_id = L' . ($level+1) . '.parent_id' . (($level+1 >= $shortest_branch_length) ? ' OR L' . ($level+1) . '.parent_id = NULL' : ''), 
-				($level+1 >= $shortest_branch_length) ? 'left' : '');
+			if ($level == 0)
+				$db->join('exp_zero_wing as L' . ($level+1), 
+					'L' . ($level) . '.parent_id = L' . ($level+1) . '.parent_id' . (($level+1 >= $shortest_branch_length) ? ' OR L' . ($level+1) . '.child_id = NULL' : ''), 
+					($level+1 >= $shortest_branch_length) ? 'left' : '');
+			else
+				$db->join('exp_zero_wing as L' . ($level+1), 
+					'L' . ($level) . '.child_id = L' . ($level+1) . '.parent_id' . (($level+1 >= $shortest_branch_length) ? ' OR L' . ($level+1) . '.parent_id = NULL' : ''), 
+					($level+1 >= $shortest_branch_length) ? 'left' : '');
 
 			if ($level > 0)
 			{
@@ -877,49 +821,7 @@ class Relationship_Parser
 		$lookup = $this->variables['lookup'];
 
 		$tagdata = $tree->parse($entry_id, $tagdata, $lookup);
-		/*
-		$it = new RecursiveIteratorIterator(
-			new NodeTreeIterator($tree->children()),
-			RecursiveIteratorIterator::SELF_FIRST
-		);
 
-		// @todo count, backspace, dates, etc
-
-		foreach ($it as $node)
-		{
-			$id = $node->tag_info['id'];
-			$parent_node = $node->parent();
-
-			if ($it->getDepth() > 0)
-			{
-				$parent_ids = $parent_node->entry_ids[$id];
-			}
-			else
-			{
-				$parent_ids = array($entry_id);
-			}
-
-			// with the parents we can figure out which of the current
-			// node's potential entries we need to parse.
-			$parse_ids = array();
-
-			foreach ($parent_ids as $parent_id)
-			{
-				$parse_ids = array_merge($parse_ids, $node->entry_ids[$parent_id]);
-			}
-
-			$ids = $node->entry_ids;
-
-			var_dump($ids);
-		}
-*/
-/*
-		$entry_data = $this->variables[$entry_id];
-		$tagdata = $this->template->parse_variables_row($tagdata, $entry_data);
-
-		// @todo @pk hack to remove leftover tags. fixme
-		$tagdata = preg_replace('/{[^}]+}/i', '', $tagdata);
-*/
 		return $tagdata;
 	}
 }
@@ -959,6 +861,10 @@ class TreeNode {
 		return $this->parent;
 	}
 }
+
+
+
+
 
 class ParseNode extends TreeNode {
 
