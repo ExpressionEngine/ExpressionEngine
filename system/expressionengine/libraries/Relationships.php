@@ -329,19 +329,131 @@ class Relationship_Parser
 	{
 		// hackity crackity tree thing coming up
 
+		$root = $this->_build_tree($entry_ids);
+
+		if ($root === NULL)
+		{
+			return array();
+		}
+
+		// For space savings and subtree closure querying each need node is
+		// pushed its own set of entry ids. For given parent ids:
+		//						 {[6, 7]}
+		//						/		\	
+		//		 {6:[2,4], 7:[8,9]}    	{6:[], 7:[2,5]}
+		//				/					\
+		//	  		...				  		 ...
+
+		// By pushing them down like this the subtree query is very simple.
+		// And when we parse we simply go through all of them and make that
+		// many copies of the node's tagdata.
+
+		$root_leave_paths = $this->_subtree_query($root, $entry_ids);
+		$unique_ids = $this->_unique_entry_ids($root, $root_leave_paths);
+
+		$all_ids = array_merge($entry_ids, $unique_ids);
+
+
+		// the root ids are their own grandpa
+		// this is here just to keep the id loops parent => children
+		// it has no side-effects since all we really care about for
+		// the root node are the children.
+		foreach ($entry_ids as $id)
+		{
+			$root->add_entry_id($id, $id);
+		}
+
+
+		$cit = new RecursiveIteratorIterator(
+			new ClosureTreeIterator(array($root)),
+			RecursiveIteratorIterator::SELF_FIRST
+		);
+
+
+		foreach ($cit as $node)
+		{
+			$depth = $cit->getDepth();
+
+			if ($depth == 0 && $node->is_root())
+			{
+				continue;
+			}
+
+			// Get all of the parent node's ids, these will be the where_in
+			// for our query. They are taken from the direct parent of the
+			// node, *not* the closure parent of this iterator. That wouldn't
+			// make sense.
+			$ids = call_user_func_array('array_merge', $node->parent()->entry_ids);
+
+			// If it's a parent tag, we reverse the query, which flips that
+			// segment of the tree so that to the parser the parents simply
+			// look like children of the name "parents". Savvy?
+			if ($node->field_name() == 'parents')
+			{
+				$result_ids = $this->_parenttree_query($node, $ids);
+			}
+			elseif ($node->field_name() == 'siblings')
+			{
+				// @todo @pk top level siblings and their querynode > * counterparts
+				die('@todo');
+			}
+			else
+			{
+				// @todo @pk edgecases such as limit will go here
+				die('@todo');
+				$result_ids = $this->_subtree_query($node, $ids);
+			}
+
+			$result_ids = $this->_unique_entry_ids($node, $result_ids);
+
+			// Store flattened ids for the big entry query
+			$all_ids = array_merge($all_ids, $result_ids);
+		}
+
+
+		// add entry ids to the proper tree parse nodes
+		// L0 = root
+		// L1 = closure-depth=1 querynodes (match field names)
+		// ...
+
+		// ready set, main query.
+		$EE = get_instance();
+		$db = $EE->relationships->_isolate_db();
+
+		$EE->load->model('channel_entries_model');
+		$entries_result = $db->query($EE->channel_entries_model->get_entry_sql(array_unique($all_ids)));
+
+		$entry_lookup = array();
+
+		// And then we need to use the lookup table in our data array to
+		// populate our mostly empty entries with their data. 
+		foreach ($entries_result->result_array() as $entry)
+		{
+			$entry_lookup[$entry['entry_id']] = $entry;
+		}
+
+		// PARSE! FINALLY!
+
+		$this->variables = array(
+			'tree' => $root,
+			'lookup' => $entry_lookup
+		);
+	}
+
+
+	protected function _build_tree(array $entry_ids)
+	{
+		// hackity crackity tree thing coming up
+
 		$str = $this->template->tagdata;
 
 		// No variables?  No reason to continue...
 		if (strpos($str, '{') === FALSE OR ! preg_match_all("/".LD."([^{]+?)".RD."/", $str, $matches))
 		{
-			return array();
+			return NULL;
 		}
 
-		// I have a love hate relationship with this.
-		// I love that it works pretty easily, I hate that I
-		// once again have to resort to a node-list => tree
-		// strategy because building the tree directly was
-		// four times uglier. Yes, four times.
+		// Match up tag pairs and record their hierarchy
 
 		$reversed = array_reverse($matches[0]);
 		unset($matches);
@@ -413,18 +525,8 @@ class Relationship_Parser
 			// way you'll be in the template looking for pairs.
 			throw new RuntimeException('Unmatched Closing Tag: "{/'.end($tag_stack).'}"');
 		}
-/*
-		// and load 'em up!
-		get_instance()->load->library('datastructures/tree'); // make iterators available
 
-		$root = get_instance()->tree->from_list($nodes, array(
-			'id'			 => 'uuid',
-			'parent'		 => 'parent_uuid',
-			'class_name'	 => 'EE_QueryNode', // root
-			'class_name_key' => 'class_name'
-		));
-*/
-
+		// Build our tree
 		$root = new QueryNode('__root__');
 
 		foreach ($nodes as $data)
@@ -443,90 +545,12 @@ class Relationship_Parser
 			}
 		}
 
-		unset($nodes);
-
-		// For space savings and subtree closure querying each need node is
-		// pushed its own set of entry ids. For given parent ids:
-		//						 {[6, 7]}
-		//						/		\	
-		//		 {6:[2,4], 7:[8,9]}    	{6:[], 7:[2,5]}
-		//				/					\
-		//	  		...				  		 ...
-
-		// By pushing them down like this the subtree query is very simple.
-		// And when we parse we simply go through all of them and make that
-		// many copies of the node's tagdata.
-
-		$root_leave_paths = $this->_subtree_query($root, $entry_ids);
-		$unique_ids = $this->_unique_entry_ids($root, $root_leave_paths);
-
-		$all_ids = array_merge($entry_ids, $unique_ids);
-
-
-		// @todo @pk kinda silly
-		foreach ($entry_ids as $id)
-		{
-			$root->add_entry_id($id, $id);
-		}
-
-
-		$cit = new RecursiveIteratorIterator(
-			new ClosureTreeIterator(array($root)),
-			RecursiveIteratorIterator::SELF_FIRST
-		);
-
-
-		foreach ($cit as $node)
-		{
-			$depth = $cit->getDepth();
-
-			if ($depth == 0 && $node->is_root())
-			{
-				continue;
-			}
-
-			$ids = call_user_func_array('array_merge', $node->parent()->entry_ids);
-
-			// @todo reverse query for parent
-			$result_ids = $this->_parenttree_query($node, $ids);
-			$result_ids = $this->_unique_entry_ids($node, $result_ids);
-			$all_ids = array_merge($all_ids, $result_ids);
-		}
-
-
-		// add entry ids to the proper tree parse nodes
-		// L0 = root
-		// L1 = closure-depth=1 querynodes (match field names)
-		// ...
-
-		// ready set, main query.
-		$EE = get_instance();
-		$db = $EE->relationships->_isolate_db();
-
-		$EE->load->model('channel_entries_model');
-		$entries_result = $db->query($EE->channel_entries_model->get_entry_sql(array_unique($all_ids)));
-
-		$entry_lookup = array();
-
-		// And then we need to use the lookup table in our data array to
-		// populate our mostly empty entries with their data. 
-		foreach ($entries_result->result_array() as $entry)
-		{
-			$entry_lookup[$entry['entry_id']] = $entry;
-		}
-
-		// PARSE! FINALLY!
-
-		$this->variables = array(
-			'tree' => $root,
-			'lookup' => $entry_lookup
-		);
+		return $root;
 	}
 
 
 	protected function _unique_entry_ids($root, $leave_paths)
 	{
-
 		$it = new RecursiveIteratorIterator(
 			new ClosureLimitedTreeIterator(array($root)),
 			RecursiveIteratorIterator::SELF_FIRST
@@ -590,12 +614,9 @@ class Relationship_Parser
 					{
 						$key = array_shift($children);
 						$node->add_entry_id($key, $children);
-						// $siblings[$key] = $children;
 						array_push($children, $key);
 					}
 				}
-
-				// $node->entry_ids = $siblings;
 			}
 		}
 
@@ -716,8 +737,6 @@ class Relationship_Parser
 			}
 		}
 
-
-		// @todo not the best solution
 		if ($shortest > 1E9)
 		{
 			$shortest = 0;
@@ -819,8 +838,6 @@ class Relationship_Parser
 
 class ParseNode extends EE_TreeNode {
 
-//	public $entry_ids;
-//	public $tag_info;
 	private $childTags;				// namespaced tags underneath it that are not relationship tags, constructed from tagdata
 
 	protected $entries;
