@@ -522,22 +522,6 @@ class EE_TreeNode {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Get an iterator of the flattened tree
-	 *
-	 * This is pretty much only useful if you're going to be constructing
-	 * a RecursiveIteratorIterator that isn't SELF_FIRST. Otherwise you
-	 * most definitely want iterator()
-	 *
-	 * @return Object<TreeIterator>
-	 */
-	public function flat_iterator()
-	{
-		return new EE_TreeIterator(array($this));
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Preorder Tree Iterator
 	 *
 	 * Creates a preorder tree iterator from the current node down.
@@ -547,8 +531,25 @@ class EE_TreeNode {
 	public function preorder_iterator()
 	{
 		return new RecursiveIteratorIterator(
-			$this->flat_iterator(),
+			new EE_TreeIterator(array($this)),
 			RecursiveIteratorIterator::SELF_FIRST
+		);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Postorder Tree Iterator
+	 *
+	 * Creates a postorder tree iterator from the current node down.
+	 *
+	 * @return <RecursiveIteratorIterator> with CHILD_FIRST
+	 */
+	public function postorder_iterator()
+	{
+		return new RecursiveIteratorIterator(
+			new EE_TreeIterator(array($this)),
+			RecursiveIteratorIterator::CHILD_FIRST
 		);
 	}
 
@@ -564,7 +565,7 @@ class EE_TreeNode {
 	public function leaf_iterator()
 	{
 		return new RecursiveIteratorIterator(
-			$this->flat_iterator(),
+			new EE_TreeIterator(array($this)),
 			RecursiveIteratorIterator::LEAVES_ONLY
 		);
 	}
