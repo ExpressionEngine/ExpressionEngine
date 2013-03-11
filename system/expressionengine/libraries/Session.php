@@ -149,7 +149,6 @@ class EE_Session {
 				$this->sdata['session_id'] = ($this->EE->input->get('S')) ? $this->EE->input->get('S') : $this->EE->uri->session_id;
 				break;
 			case 'c'	:
-				$this->cookies_exist;
 				$this->sdata['session_id'] = $this->EE->input->cookie($this->c_session);
 				break;
 			case 'cs'	:
@@ -377,7 +376,18 @@ class EE_Session {
 		$crypt_key = $this->EE->db->select('crypt_key')
 			->get_where('members', array('member_id' => $member_id))
 			->row('crypt_key');
-
+		
+		// Create crypt key for member if one doesn't exist
+		if (empty($crypt_key))
+		{
+			$crypt_key = $this->EE->functions->random('encrypt', 16);
+			$this->EE->db->update(
+				'members',
+				array('crypt_key' => $crypt_key), 
+				array('member_id' => $member_id)
+			);
+		}
+		
 		$this->sdata['session_id'] 		= $this->EE->functions->random();  
 		$this->sdata['ip_address']  	= $this->EE->input->ip_address();
 		$this->sdata['user_agent']		= substr($this->EE->input->user_agent(), 0, 120);
@@ -564,25 +574,19 @@ class EE_Session {
 			else
 			{
 				// we don't add the session encryption key to userdata, to avoid accidental disclosure
-				if ($val == '')
-				{
-					// not set yet, so let's create one and udpate it for this user
-					$this->sess_crypt_key = $this->EE->functions->random('encrypt', 16);
-					$this->EE->db->update(
-						'members',
-						array('crypt_key' => $this->sess_crypt_key), 
-						array('member_id' => (int) $member_query->row('member_id'))
-					);
-				}
-				else
-				{
-					$this->sess_crypt_key = $val;
-				}
+				$this->sess_crypt_key = $val;
 			}
 		}
-		
+
+		// Remember me may have validated the user agent for us, if so create a fingerprint now that we
+		// can salt it properly for the user
+		if ($this->validation == 'c' && $this->EE->remember->exists())
+		{
+			$this->sdata['fingerprint'] = $this->_create_fingerprint($this->sess_crypt_key);
+		}
+
 		// validate the fingerprint as a last measure for 'c' and 's' sessions, since the fingerprint is only
-		// propogated in 'cs' sessions
+		// propogated in 'cs' sessions. Obviously this passes if Remember me validated for us
 		if ($this->sdata['fingerprint'] != $this->_create_fingerprint($this->sess_crypt_key))
 		{
 			$this->_initialize_session();
@@ -936,7 +940,7 @@ class EE_Session {
 		
 		if (REQ == 'PAGE')
 		{		
-			$this->EE->functions->set_cookie('tracker', serialize($tracker), '0');
+			$this->EE->functions->set_cookie('tracker', serialize($tracker), '0'); 
 		}
 		
 		return $tracker;
@@ -949,7 +953,7 @@ class EE_Session {
 	 */  
 	function update_cookies()
 	{
-		if ($this->cookies_exist == TRUE AND $this->EE->input->cookie($this->c_expire))
+		if ($$this->EE->input->cookie($this->c_expire))
 		{
 			$now 	= time() + 300;
 			$expire = 60*60*24*365;
