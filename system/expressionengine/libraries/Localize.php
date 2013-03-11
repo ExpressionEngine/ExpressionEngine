@@ -38,6 +38,10 @@ class Localize {
 		'DATE_W3C'		=> '%Y-%m-%dT%H:%i:%s%Q'
 	);
 
+	// Cached timezone and country data, properties not to be accessed directly
+	private $_countries = array();
+	private $_timezones_by_country = array();
+
 	/**
 	 * Constructor
 	 */
@@ -263,7 +267,7 @@ class Localize {
 		// Localize to member's timezone or leave as GMT
 		if (is_bool($timezone))
 		{
-			$timezone = ($timezone) ? $this->EE->session->userdata('timezone') : 'GMT';
+			$timezone = ($timezone) ? $this->EE->session->userdata('timezone') : 'UTC';
 		}
 
 		// If timezone isn't known by PHP, it may be our legacy timezone
@@ -322,56 +326,233 @@ class Localize {
 	 * @param	string	Name of dropdown form field element
 	 * @return	string	HTML for dropdown list
 	 */
-	public function timezone_menu($default = 'UTC', $name = 'server_timezone')
+	public function timezone_menu($default = NULL, $name = 'server_timezone')
 	{
 		// For the installer
 		$this->EE->load->helper('language');
-
-		$timezone_ids = DateTimeZone::listIdentifiers();
-		
-		// If default selection isn't valid, it may be our legacy timezone format
-		if ( ! in_array($default, $timezone_ids))
-		{
-			$default = $this->_get_php_timezone($default);
-		}
-
-		// This is what we'll pass to the form helper
-		$timezones = array();
 
 		// We only want timezones with these prefixes
 		$continents = array('Africa', 'America', 'Antarctica', 'Arctic',
 			'Asia', 'Atlantic', 'Australia', 'Europe', 'Indian', 'Pacific');
 
-		foreach ($timezone_ids as $zone)
-		{
-			// Explode ID by slashes while replacing underscores with spaces
-			$zone_array = str_replace('_', ' ', explode('/', $zone));
+		$zones_by_country = $this->_get_timezones_by_country();
+		$countries = $this->_get_countries();
 
-			// Exclude deprecated PHP timezones
-			if ( ! in_array($zone_array[0], $continents))
+		$timezones = array();
+
+		foreach ($countries as $code => $country)
+		{
+			// If country code does not match any timezones, skip the loop
+			if ( ! isset($zones_by_country[$code]))
 			{
 				continue;
 			}
 
-			// Construct the localized zone name
-			if (isset($zone_array[1]))
+			// We'll store timezones for the current country here
+			$local_zones = array();
+			
+			foreach ($zones_by_country[$code] as $zone)
 			{
-				$zone_name = lang($zone_array[1]);
+				// Explode ID by slashes while replacing underscores with spaces
+				$zone_array = str_replace('_', ' ', explode('/', $zone));
 
-				if (isset($zone_array[2]))
+				// Exclude deprecated PHP timezones
+				if ( ! in_array($zone_array[0], $continents))
 				{
-					$zone_name .= ' - ' . lang($zone_array[2]);
+					continue;
 				}
 
-				$timezones[lang($zone_array[0])][$zone] = $zone_name;
+				// Construct the localized zone name
+				if (isset($zone_array[1]))
+				{
+					$zone_name = lang($zone_array[1]);
+
+					if (isset($zone_array[2]))
+					{
+						$zone_name .= ' - ' . lang($zone_array[2]);
+					}
+
+					$local_zones[$zone] = $zone_name;
+				}
+			}
+
+			// Sort timezones by their new names
+			asort($local_zones);
+
+			$timezones[$code] = $local_zones;
+		}
+		
+		// Convert to JSON for fast switching of timezone dropdown
+		$timezone_json = json_encode($timezones);
+
+		$no_timezones_lang = lang('no_timezones');
+
+		// Start the output with some javascript to handle the timezone
+		// dropdown population based on the country dropdown
+		$output = <<<EOF
+
+			<script type="text/javascript">
+
+				var timezones = $timezone_json
+
+				function ee_tz_change(countryselect)
+				{
+					var timezoneselect = document.getElementById('timezone_select');
+					var countrycode = countryselect.options[countryselect.selectedIndex].value;
+
+					timezoneselect.options.length = 0;
+
+					if (timezones[countrycode] == '' || timezones[countrycode] == undefined)
+					{
+						timezoneselect.add(new Option('$no_timezones_lang', ''));
+
+						return;
+					}
+
+					for (var key in timezones[countrycode])
+					{
+						if (timezones[countrycode].hasOwnProperty(key))
+						{
+							timezoneselect.add(new Option(timezones[countrycode][key], key));
+						}
+					}
+				}
+
+			</script>
+EOF;
+		
+		// Prepend to the top of countries dropdown with common country selections
+		$countries = array_merge(
+			array(
+				lang('select_timezone'),
+				'-------------',
+				'us' => $countries['us'], // United States
+				'gb' => $countries['gb'], // United Kingdom
+				'au' => $countries['au'], // Australia
+				'ca' => $countries['ca'], // Canada
+				'fr' => $countries['fr'], // France
+				'ie' => $countries['ie'], // Ireland
+				'nz' => $countries['nz'], // New Zealand
+				'-------------'
+			),
+			$countries
+		);
+
+		// Get ready to load preselected values into the dropdowns if one exists
+		$selected_country = NULL;
+		$timezone_prepoplated = array('' => lang('no_timezones'));
+
+		if ( ! empty($default))
+		{
+			$timezone_ids = DateTimeZone::listIdentifiers();
+				
+			// If default selection isn't valid, it may be our legacy timezone format
+			if ( ! in_array($default, $timezone_ids))
+			{
+				$default = $this->_get_php_timezone($default);
+			}
+			
+			$selected_country = $this->_get_country_for_php_timezone($default);
+
+			// Preselect timezone if we got a valid country back
+			if ($selected_country)
+			{
+				$timezone_prepoplated = $timezones[$selected_country];
 			}
 		}
 
-		// Add UTC on the bottom
-		$timezones['UTC']['UTC'] = 'UTC';
-
+		// Construct the form
 		$this->EE->load->helper('form');
-		return form_dropdown($name, $timezones, $default, 'class="select"');
+		$output .= form_dropdown('tz_country', $countries, $selected_country, 'onchange="ee_tz_change(this)"');
+		$output .= '&nbsp;&nbsp;'; // NBS constant doesn't work in installer
+		$output .= form_dropdown($name, $timezone_prepoplated, $default, 'id="timezone_select"');
+
+		return $output;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Loads countries config file and creates localized array of country
+	 * codes corresponding to country names
+	 *
+	 * @access	private
+	 * @return	string
+	 */
+	private function _get_countries()
+	{
+		if ( ! empty($this->_countries))
+		{
+			return $this->_countries;
+		}
+
+		$countries_path = APPPATH.'config/countries.php';
+
+		if ( ! file_exists($countries_path))
+		{
+			$countries_path = EE_APPPATH.'config/countries.php';
+		}
+
+		if ( ! include($countries_path))
+		{
+			show_error(lang('countryfile_missing'));
+		}
+
+		foreach ($countries as $code => $country)
+		{
+			$countries[$code] = lang($country);
+		}
+
+		$this->_countries = $countries;
+
+		return $this->_countries;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Creates and returns a cached array of timezones by country.
+	 *
+	 * @access	private
+	 * @return	array 	Array of timezones by country code
+	 */
+	private function _get_timezones_by_country()
+	{
+		if ( ! empty($this->_timezones_by_country))
+		{
+			return $this->_timezones_by_country;
+		}
+
+		foreach ($this->_get_countries() as $code => $country)
+		{
+			$this->_timezones_by_country[$code] = DateTimeZone::listIdentifiers(
+				DateTimeZone::PER_COUNTRY, strtoupper($code)
+			);
+		}
+
+		return $this->_timezones_by_country;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Returns the country code for a given PHP timezone
+	 *
+	 * @access	private
+	 * @param	string	PHP timezone
+	 * @return	string	Two-letter country code for timezone
+	 */
+	private function _get_country_for_php_timezone($timezone)
+	{
+		foreach ($this->_get_timezones_by_country() as $code => $timezones)
+		{
+			if (in_array($timezone, $timezones))
+			{
+				return $code;
+			}
+		}
+
+		return FALSE;
 	}
 
 	// --------------------------------------------------------------------
@@ -396,7 +577,7 @@ class Localize {
 			'UM9'		=> 'America/Anchorage', 			// -9
 			'UM8'		=> 'America/Los_Angeles', 			// -8
 			'UM7'		=> 'America/Denver', 				// -7
-			'UM6'		=> 'America/Tegucigalpa', 			// -6
+			'UM6'		=> 'America/Chicago', 				// -6
 			'UM5'		=> 'America/New_York', 				// -5
 			'UM45'		=> 'America/Caracas',				// -4.5
 			'UM4'		=> 'America/Halifax', 				// -4
