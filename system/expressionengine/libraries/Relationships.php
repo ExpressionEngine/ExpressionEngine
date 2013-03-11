@@ -495,6 +495,8 @@ class Relationship_Parser
 				$node = $nodes[$lookup_id]['node'];
 				$node->params = $params ? $params : array();
 
+				$node->open_tag = $tag;
+
 				continue;
 			}
 
