@@ -408,7 +408,10 @@ class EE_TreeNode {
 		{
 			foreach ($this->parent()->children() as $sibling)
 			{
-				$siblings[] = $sibling;
+				if ($sibling != $this)
+				{
+					$siblings[] = $sibling;
+				}
 			}
 		}
 
@@ -541,11 +544,28 @@ class EE_TreeNode {
 	 *
 	 * @return <RecursiveIteratorIterator> with SELF_FIRST
 	 */
-	public function iterator()
+	public function preorder_iterator()
 	{
 		return new RecursiveIteratorIterator(
 			$this->flat_iterator(),
 			RecursiveIteratorIterator::SELF_FIRST
+		);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Leaf Iterator
+	 *
+	 * Iterates across all the leaf nodes
+	 *
+	 * @return <RecursiveIteratorIterator> with LEAVES_ONLY
+	 */
+	public function leaf_iterator()
+	{
+		return new RecursiveIteratorIterator(
+			$this->flat_iterator(),
+			RecursiveIteratorIterator::LEAVES_ONLY
 		);
 	}
 
