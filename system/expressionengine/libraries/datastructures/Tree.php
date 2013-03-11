@@ -17,9 +17,9 @@
 
  THIS FILE CONTAINS:
 
- EE_Tree		- singleton tree builder
- ImmutableTree	- main tree object (returned from EE_Tree::load)
- TreeIterator	- iteration helper (returned from ImmutableTree::iterator)
+ EE_Tree		 - singleton tree builder
+ EE_TreeNode	 - main tree object (returned from EE_Tree::load)
+ EE_TreeIterator - iteration helper (returned from EE_TreeNode::flat_iterator)
 
 */
 
@@ -36,8 +36,6 @@
  */
 class EE_Tree {
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Tree Factory
 	 *
@@ -51,182 +49,40 @@ class EE_Tree {
 	 *
 	 * @return Object<ImmutableTree>
 	 */
-	public function load($data, array $conf = NULL)
+	public function from_list($data, array $conf = NULL)
 	{
 		$conf = array_merge(
-			array('key' => 'id', 'parent' => 'parent_id'),
+			array(
+				'id'	 		 => 'id',
+				'parent' 	 	 => 'parent_id',
+				'class_name'	 => 'EE_TreeNode'
+			),
 			(array) $conf
 		);
 
-		return $this->_build_tree($data, $conf['key'], $conf['parent']);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Tree Builder
-	 *
-	 * Re-sorts the data from load() and turns it into two datastructures:
-	 *
-	 * An array of tree root nodes, with children in the __children__ key
-	 * of their respective parents. Thus forming a tree as a nested array.
-	 * 
-	 * A lookup table of id => row, where each item is actually a reference
-	 * into the tree. This way we can do quick by-index lookups and prevent
-	 * duplicate data between our lookup table and tree. This is important
-	 * because the lookup table is reused for all subtrees.
-	 *
-	 * @param data - array of array('unique_id' => x, 'parent_id' => y, ...data)
-	 * @param unique id key
-	 * @param parent id key
-	 *
-	 * @return Object<ImmutableTree>
-	 */
-	protected function _build_tree($data, $child_key, $parent_key)
-	{
-		$tree = array();
-		$nodes = array();
-
-		// data is an array of arrays, multipl items could be
-		// roots (indicated by parent_id of 0). In order to keep
-		// tree operations consistent, we'll create an artifical
-		// master root node.
-		$data[] = array(
-			$child_key => 0,
-			$parent_key => -1
-		);
-
-		// First we create a lookup table of id => row
-		// This lets us build the tree on references which
-		// will in turn allow for quick subtree lookup.
-		foreach ($data as &$node)
+		if ( ! isset($conf['name_key']))
 		{
-			$id = $node[$child_key];
-			$node['__children__'] = array();
-			$nodes[$id] =& $node;
+			$conf['name_key'] = $conf['id'];
 		}
 
-		// And now build the actual tree by assigning children
-		// and storing any root node references in the tree array.
-		foreach ($data as &$node)
-		{
-			$id = $node[$child_key];
-			$parent = $node[$parent_key];
-
-			if ($parent >= 0)
-			{
-				$nodes[$parent]['__children__'][$id] =& $node;
-			}
-			else
-			{
-				$tree[$id] =& $node;
-			}
-		}
-
-		// For sibling queries we need to be able to go up the tree
-		// a level. The original tree of course doesn't have siblings
-		// so in order to keep tree operations consistent we'll give
-		// our master root node a fake parent with no children. -pk
-
-		$nodes[-1] = array('__children__' => array());
-
-		return new ImmutableTree($nodes[0], $nodes, $parent_key);
-	}
-}
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine Tree Container Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core Datastructures
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		http://ellislab.com
- */
-class ImmutableTree {
-
-	protected $ref;
-	protected $_parent_key;
-	protected $_tree = array();
-	protected $_nodes = array();
-
-	/**
-	 * Constructor
-	 *
-	 * @param tree: array of roots with __children__ as their kids
-	 * @param nodes: lookup table of unique ids to tree nodes
-	 * @param parent id key
-	 *
-	 * @return Object<ImmutableTree>
-	 */
-	public function __construct($tree, $nodes, $parent_key)
-	{
-		$this->_tree = $tree;
-		$this->_nodes = $nodes;
-		$this->_parent_key = $parent_key;
-
-		// Each tree has a local root node, that way we can
-		// consistently use 'root' as a default for the current tree
-		// Unfortunately 0 was taken thanks to our db defaults forcing
-		// it to be the global root.
-
-		$this->_nodes['root'] = &$this->_tree;
-	}
-
-	// --------------------------------------------------------------------
-
-	// @todo TODO this or implement serializable?
-	public function __sleep() { }
-	public function __wakeup() { }
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Get Siblings
-	 *
-	 * @param id of child whose sibling to get [optional]
-	 * @return Array of sibling nodes
-	 */
-	public function siblings($id = 'root')
-	{
-		$parent_id = $this->_nodes[$id][$this->_parent_key];
-
-		return $this->children($parent_id);
+		return $this->_build_tree($data, $conf);
 	}
 
 	// --------------------------------------------------------------------
 
 	/**
-	 * Get Children
-	 *
-	 * @param id of node whose children to get [optional]
-	 * @return Array of child nodes
-	 */
-	public function children($id = 'root')
-	{
-		$node = $this->_nodes[$id];
-
-		return $this->_prune_children($node['__children__']);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Flatten the tree to its original array form.
+	 * Flatten the tree to a list of data objects.
 	 *
 	 * @return array similar to what was passed to EE_Tree::load
 	 */
-	public function flatten()
+	public function to_list(EE_TreeNode $tree)
 	{
 		$it = $this->iterator();
 		$result = array();
 
 		foreach ($it as $node)
 		{
-			unset($node['__children__']);
-			$result[] = $node;
+			$result[] = $node->data();
 		}
 
 		return $result;
@@ -235,52 +91,429 @@ class ImmutableTree {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Get the parent
+	 * Tree Builder
 	 *
-	 * @param id of node whose parent tree to get [optional]
-	 * @return Object<ImmutableTree> with the parent at the root
-	 */
-	public function parent($id = 'root')
-	{
-		$parent_id = $this->_nodes[$id][$this->_parent_key];
-		$parent = $this->_prune_children(array($this->_nodes[$parent_id]));
-
-		return $parent[0];
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Move up a level in the tree
+	 * Re-sorts the data from from_list() and turns it into two datastructures:
 	 *
-	 * @param id of node whose parent tree to get [optional]
-	 * @return Object<ImmutableTree> with the parent at the root
-	 */
-	public function parent_tree($id = 'root')
-	{
-		$parent_id = $this->_nodes[$id][$this->_parent_key];
-
-		return $this->_instance($parent_id);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Grab a subtree with the specified node at its root or the
-	 * subtree of the current node (which makes more sense if you
-	 * imagine they're iterating over the tree).
+	 * An array of tree root nodes, with children in the __children__ key
+	 * of their respective parents. Thus forming a tree as a nested array.
+	 * 
+	 * A lookup table of id => row, where each item is actually a reference
+	 * into the tree. This way we can do quick by-index lookups.
 	 *
-	 * @param id of node whose subtree to get [optional]
+	 * @param data - array of array('unique_id' => x, 'parent_id' => y, ...data)
+	 * @param unique id key
+	 * @param parent id key
+	 *
 	 * @return Object<ImmutableTree>
 	 */
-	public function subtree($id = 'root')
+	protected function _build_tree($data, $conf)
 	{
-		return $this->_instance($id);
+		$nodes = array();
+
+		$child_key = $conf['id'];
+		$parent_key = $conf['parent'];
+
+		$name = $conf['name_key'];
+		$klass = $conf['class_name'];
+
+		// First we create a lookup table of id => object
+		// This lets us build the tree on references which
+		// will in turn allow for quick subtree lookup.
+		foreach ($data as $row)
+		{
+			$id = $row[$child_key];
+			$nodes[$id] = new $klass($row[$name], $row);
+		}
+
+		$tree = new EE_TreeNode('__root__');
+
+		// And now build the actual tree by assigning children
+		foreach ($data as $row)
+		{
+			$parent = $row[$parent_key];
+			$node = $nodes[$row[$child_key]];
+
+			if (isset($nodes[$parent]))
+			{
+				$nodes[$parent]->add($node);
+			}
+			else
+			{
+				$tree->add($node);
+			}
+		}
+
+		return $tree;
+	}
+}
+
+// ------------------------------------------------------------------------
+
+/**
+ * ExpressionEngine Tree Node Class
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Core Datastructures
+ * @category	Core
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
+ *
+ * If you're completely new to this ideas:
+ * @see http://xlinux.nist.gov/dads/HTML/tree.html
+ */
+class EE_TreeNode {
+
+	protected $name;
+	protected $data;
+
+	protected $parent;
+	protected $children;
+	protected $children_names;
+
+	private $_frozen = FALSE;
+	
+	public function __construct($name, $payload = NULL)
+	{
+		$this->name = $name;
+		$this->data = $payload;
+
+		$this->children = array();
+		$this->children_names = array();
 	}
 
-	public function by_level_iterator()
+	// --------------------------------------------------------------------
+
+	/**
+	 * Retrieve the payload data.
+	 *
+	 * If they payload is an array we treat the entire object as an
+	 * accessor to the payload. Otherwise the key must be "data" to
+	 * mimic regular object access.
+	 *
+	 * @return void
+	 */
+	public function __get($key)
 	{
-		// @todo iterate with stack
+		if (is_array($this->data))
+		{
+			return $this->data[$key];
+		}
+		if ($key == 'data')
+		{
+			return $this->data;
+		}
+
+		throw new InvalidArgumentException('Payload cannot be retrieved.');
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Change the payload data.
+	 *
+	 * If they payload is an array we treat the entire object as an
+	 * accessor to the payload. Otherwise the key must be "data" to
+	 * mimic regular object access.
+	 *
+	 * @return void
+	 */
+	public function __set($key, $value)
+	{
+		if ($this->_frozen)
+		{
+			throw new RuntimeException('Cannot modify payload. Tree node is frozen.');
+		}
+
+		if (is_array($this->data))
+		{
+			$this->data[$key] = $value;
+		}
+		elseif ($key == 'data')
+		{
+			$this->data = $value;
+		}
+		else
+		{
+			throw new InvalidArgumentException('Payload cannot be modified.');
+		}
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Post-process node cloning
+	 *
+	 * Cloning needs to unfreeze the node for the benefit of the
+	 * subtree_copy method. Not to mention dev sanity.
+	 *
+	 * @return void
+	 */
+	public function __clone()
+	{
+		$this->_frozen = FALSE;
+	}
+
+	// Public Setters
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Add a child node to the current node.
+	 *
+	 * Notifies the child of its parent and adds the child name to
+	 * the child name array. Does not enforce unique names since it
+	 * may be desireable to have non-unique named children. It's on
+	 * the developer to not rely on the get() method in that case
+	 *
+	 * @return void
+	 */
+	public function add(EE_TreeNode $child)
+	{
+		if ($child == $this)
+		{
+			throw new RuntimeException('Cannot add tree node to itself.');
+		}
+
+		if ($this->_frozen)
+		{
+			throw new RuntimeException('Cannot add child. Tree node is frozen.');
+		}
+
+		$this->children[] = $child;
+		$this->children_names[$child->name] = $child;
+		$child->_set_parent($this);
+	}
+
+	// Getters
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Get the node's name
+	 *
+	 * @return <string?> name
+	 */
+	public function name()
+	{
+		return $this->name;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Get the node's payload
+	 *
+	 * @return <mixed> payload
+	 */
+	public function data()
+	{
+		return $this->data;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Get the node's depth relative to its root, where the root's
+	 * depth is 0.
+	 *
+	 * @return <Integer> depth
+	 */
+	public function depth()
+	{
+		if ($this->is_root())
+		{
+			return 0;
+		}
+
+		return 1 + $this->parent()->depth();
+	}
+
+	// Traversal
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Get all of the tree's root node
+	 *
+	 * If the current node is not a root node, we move our
+	 * way up until we have a root.
+	 *
+	 * @return <EE_TreeNode>
+	 */
+	public function root()
+	{
+		$root = $this;
+
+		while ( ! $root->is_root())
+		{
+			$root = $root->parent();
+		}
+
+		return $root;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Get all of the node's children
+	 *
+	 * @return array[<EE_TreeNode>s]
+	 */
+	public function children()
+	{
+		return $this->children;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Get the node's first child
+	 *
+	 * For the very common case where you only have one root. The tree
+	 * library always has to assume that you might have multiple roots when
+	 * it generates data from db results.
+	 *
+	 * @return <EE_TreeNode>
+	 */
+	public function first_child()
+	{
+		return $this->children[0];
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Get the node's parent
+	 *
+	 * @return <EE_TreeNode>
+	 */
+	public function parent()
+	{
+		return $this->parent;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Get all of a node's siblings
+	 *
+	 * @return array[<EE_TreeNode>s]
+	 */
+	public function siblings()
+	{
+		$siblings = array();
+
+		if ( ! $this->is_root())
+		{
+			foreach ($this->parent()->children() as $sibling)
+			{
+				$siblings[] = $sibling;
+			}
+		}
+
+		return $siblings;
+	}
+
+	// Utility
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Check if the node has parents
+	 *
+	 * @return boolean
+	 */
+	public function is_root()
+	{
+		return ! isset($this->parent);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Check if the node has children
+	 *
+	 * @return boolean
+	 */
+	public function is_leaf()
+	{
+		return count($this->children) == 0;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Freeze the node
+	 *
+	 * Prevents data and child manipulations. Cloning a frozen node will
+	 * unfreeze it.
+	 *
+	 * @return void
+	 */
+	public function freeze()
+	{
+		$this->_frozen = TRUE;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Get a child by name
+	 *
+	 * You are responsible for adding children with unique names. If you
+	 * do not, then this method will return the last child node of the
+	 * given name.
+	 *
+	 * @return <EE_TreeNode>
+	 */
+	public function get($name)
+	{
+		return $this->children_names[$name];
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Create a subtree on this node.
+	 *
+	 * Clones the current node to turn it into a root node off the
+	 * original tree.
+	 *
+	 * This is a *shallow* copy! The root node you receive is a clone, but
+	 * its children remain on the tree. If you need a clone for anything
+	 * other than traversal, consider using the subtree_copy() method instead.
+	 *
+	 * @return <EE_TreeNode>
+	 */
+	public function subtree()
+	{
+		$root = clone $this;
+		$root->parent = NULL;
+		return $root;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Create a full subtree copy from this node down.
+	 *
+	 * Clones the current node and all of its children. This is a deep
+	 * copy, everything will be cloned. If all you need is a new root
+	 * for traversal, consider using subtree() instead.
+	 *
+	 * @return <EE_TreeNode>
+	 */
+	public function subtree_copy()
+	{
+		$root = $this->subtree();
+
+		foreach ($root->children() as $node)
+		{
+			$root->add($node->subtree());
+		}
+
+		return $root;
 	}
 
 	// --------------------------------------------------------------------
@@ -290,43 +523,23 @@ class ImmutableTree {
 	 *
 	 * This is pretty much only useful if you're going to be constructing
 	 * a RecursiveIteratorIterator that isn't SELF_FIRST. Otherwise you
-	 * most definitely want Immutable_Tree:iterator()
+	 * most definitely want iterator()
 	 *
 	 * @return Object<TreeIterator>
 	 */
 	public function flat_iterator()
 	{
-		$root = $this->_nodes['root'];
-
-		if ($root == $this->_nodes[0])
-		{
-			$elements = $root['__children__'];
-		}
-		else
-		{
-			$elements = array($root);
-		}
-
-		return new TreeIterator($elements);
+		return new EE_TreeIterator(array($this));
 	}
 
 	// --------------------------------------------------------------------
 
 	/**
-	 * Get an iterator of the full tree
+	 * Preorder Tree Iterator
 	 *
-	 * Iterates root node first so that you can create nested
-	 * displays by doing things like:
+	 * Creates a preorder tree iterator from the current node down.
 	 *
-	 *		$it = $tree->iterator();
-	 *
-	 *		foreach ($it as $key => $element)
-	 *		{
-	 *		    $tab = str_repeat('--', $it->getDepth());
-	 *		    $str .= $tab.$element['title'].'<br>';
-	 *		}
-	 *
-	 * @return Object<RecursiveIteratorIterator>
+	 * @return <RecursiveIteratorIterator> with SELF_FIRST
 	 */
 	public function iterator()
 	{
@@ -339,50 +552,22 @@ class ImmutableTree {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Remove children from the top level array we're working on.
+	 * Set parent
 	 *
-	 * @param Array of nodes to clean
-	 * @return Cleaned array
-	 */
-	protected function _prune_children(array $items)
-	{
-		// We copy as well as unsetting to dereference the result
-		// array. The tree is built from references and we definitely
-		// don't want to return those to the user.
-		$result = array();
-
-		foreach ($items as $item)
-		{
-			unset($item['__children__']);
-			$result[] = $item;
-		}
-
-		return $result;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Get a new tree from a given node id
+	 * Links up the parent node for upwards traversal. Should only ever
+	 * be called from add() to maintain referential integrity.
+	 * 
+	 * In theory add() has access to the property directly, but sometimes
+	 * it's useful to override this with additional functionality.
 	 *
-	 * @param id of new root node
-	 * @return Object<ImmutableTree>
+	 * @param <EE_TreeNode> New parent node
+	 * @return void
 	 */
-	protected function _instance($node_id)
+	protected function _set_parent(EE_TreeNode $parent)
 	{
-		if (empty($this->ref))
-		{
-			$this->ref = new ReflectionClass($this);
-		}
-
-		return $this->ref->newInstance(
-			$this->_nodes[$node_id],
-			$this->_nodes,
-			$this->_parent_key
-		);
+		$this->parent = $parent;
 	}
 }
-
 
 // ------------------------------------------------------------------------
 
@@ -395,34 +580,31 @@ class ImmutableTree {
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class TreeIterator extends RecursiveArrayIterator {
+class EE_TreeIterator extends RecursiveArrayIterator {
 
 	/**
 	 * Override RecursiveArrayIterator's child detection method.
-	 * We usually have data rows that are arrays so we really only
-	 * want to iterate over those that match our custom format.
+	 * We really don't want to count object properties as children.
 	 *
 	 * @return boolean
 	 */
 	public function hasChildren()
 	{
-		$current = $this->current();
-		return isset($current['__children__']) && ! empty($current['__children__']);
+		return ! $this->current()->is_leaf();
 	}
 
 	// --------------------------------------------------------------------
 
 	/**
 	 * Override RecursiveArrayIterator's get child method to skip
-	 * ahead into the __children__ array and not try to iterate
-	 * over the data row's individual columns.
+	 * ahead into the children array and not try to iterate over the
+	 * over the public name property.
 	 *
-	 * @return Object<TreeIterator>
+	 * @return Object<EE_TreeIterator>
 	 */
 	public function getChildren()
 	{
-		$current = $this->current();
-		$children = $current['__children__'];
+		$children = $this->current()->children();
 
 		// Using ref as per PHP source
 		if (empty($this->ref))
@@ -433,6 +615,7 @@ class TreeIterator extends RecursiveArrayIterator {
 		return $this->ref->newInstance($children);
 	}
 }
+
 
 /* End of file Tree.php */
 /* Location: ./system/expressionengine/libraries/datastructures/Tree.php */

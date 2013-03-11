@@ -1,4 +1,7 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+require_once(APPPATH.'libraries/datastructures/Tree.php');
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -334,24 +337,6 @@ class Relationship_Parser
 			return array();
 		}
 
-
-
-
-		//////////////////////////////////////////////
-		// Note to self:							//
-		// Proxy off the original uuid in the parse	//
-		// tree and simply connect things to that.	//
-		// Which means we will have:				//
-		// - parse_tree								//
-		// - db_ids_result	{uuid => @todo depth}	//
-		// - db_data		{entry_id => [data]}	//
-		//////////////////////////////////////////////
-
-
-
-
-
-
 		// I have a love hate relationship with this.
 		// I love that it works pretty easily, I hate that I
 		// once again have to resort to a node-list => tree
@@ -395,16 +380,28 @@ class Relationship_Parser
 
 				$params = get_instance()->functions->assign_parameters($tag);
 
-				$nodes[$lookup_id]['params'] = $params ? $params : array();
+				$node = $nodes[$lookup_id]['node'];
+				$node->params = $params ? $params : array();
 
 				continue;
 			}
 
+			$klass = 'ParseNode';
+
+			if (preg_match('/.*parents$/', $tag_name))
+			{
+				$klass = 'QueryNode';
+			}
+
+			$node = new $klass($tag_name, array(
+				'field_id'	=> $field_id,
+				'tag_info'	=> array(),
+				'entry_ids'	=> array()
+			));
+
 			$nodes[$uuid] = array(
-				'uuid' => $uuid,
-				'name' => $tag_name,
-				'parent_uuid' => $parent_id,
-				'field_id'	=> $field_id
+				'node'		  => $node,
+				'parent_uuid' => $parent_id
 			);
 		}
 
@@ -416,44 +413,37 @@ class Relationship_Parser
 			// way you'll be in the template looking for pairs.
 			throw new RuntimeException('Unmatched Closing Tag: "{/'.end($tag_stack).'}"');
 		}
-
+/*
 		// and load 'em up!
 		get_instance()->load->library('datastructures/tree'); // make iterators available
 
-		$tree = get_instance()->tree->load($nodes, array(
-			'key' => 'uuid',
-			'parent' => 'parent_uuid'
+		$root = get_instance()->tree->from_list($nodes, array(
+			'id'			 => 'uuid',
+			'parent'		 => 'parent_uuid',
+			'class_name'	 => 'EE_QueryNode', // root
+			'class_name_key' => 'class_name'
 		));
-
-
-		// Build the tree
-		// @todo merge this in with the above
-
-		$it = $tree->iterator();
+*/
 
 		$root = new QueryNode('__root__');
-		$nodes[0] = $root;
 
-		// we need a reference to node! php should do a copy-on-write, we never write
-		foreach ($it as $node)
+		foreach ($nodes as $data)
 		{
-			$id = $node['uuid'];
-			$parent = $nodes[$node['parent_uuid']];
+			$node = $data['node'];
+			$parent_id = $data['parent_uuid'];
 
-			if (preg_match('/.*parents$/', $node['name']))
+			if (isset($nodes[$parent_id]))
 			{
-				$new_node = new QueryNode($node['name'], $node);
+				$parent = $nodes[$parent_id]['node'];
+				$parent->add($node);
 			}
 			else
 			{
-				$new_node = new ParseNode($node['name'], $node);
+				$root->add($node);
 			}
-
-			$nodes[$id] = $new_node;
-			$parent->addChild($new_node);
 		}
 
-
+		unset($nodes);
 
 		// For space savings and subtree closure querying each need node is
 		// pushed its own set of entry ids. For given parent ids:
@@ -472,10 +462,11 @@ class Relationship_Parser
 
 		$all_ids = array_merge($entry_ids, $unique_ids);
 
+
 		// @todo @pk kinda silly
 		foreach ($entry_ids as $id)
 		{
-			$root->entry_ids[$id] = array($id);
+			$root->add_entry_id($id, $id);
 		}
 
 
@@ -489,7 +480,7 @@ class Relationship_Parser
 		{
 			$depth = $cit->getDepth();
 
-			if ($depth == 0 && $node->name == '__root__')
+			if ($depth == 0 && $node->is_root())
 			{
 				continue;
 			}
@@ -526,8 +517,6 @@ class Relationship_Parser
 
 		// PARSE! FINALLY!
 
-		// @todo count, backspace, dates, etc
-
 		$this->variables = array(
 			'tree' => $root,
 			'lookup' => $entry_lookup
@@ -557,7 +546,7 @@ class Relationship_Parser
 		{
 			$depth = $it->getDepth();
 
-			if ($depth == 0 && $node->name == '__root__')
+			if ($depth == 0 && $node->is_root())
 			{
 				$root_offset = -1;
 				continue;
@@ -566,27 +555,23 @@ class Relationship_Parser
 			// the lookup below starts one up from the root @todo fix that!
 			
 			$depth += $root_offset;
-			$field_id = $node->tag_info['field_id'];
+			$field_id = $node->field_id;
 
 			if ($field_id == 'parents')
 			{
-				$field_id = $node->tag_info['params']['field_id'];
+				$field_id = $node->params['field_id'];
 			}
 
 			if ($field_id != 'siblings')
 			{				
-				$node->entry_ids = array();
-
 				if (isset($leaves[$depth][$field_id]))
 				{
 					foreach ($leaves[$depth][$field_id] as $parent => $children)
 					{
-						$node->entry_ids[$parent] = array();
-
 						foreach ($children as $child)
 						{
 							$all_ids[] = $child['id'];
-							$node->entry_ids[$parent][] = $child['id'];
+							$node->add_entry_id($parent, $child['id']);
 						}
 					}
 				}
@@ -600,16 +585,17 @@ class Relationship_Parser
 				{
 					$children = array_unique($children);
 
-					// sibling permutations by rotation
+					// find all sibling permutations by rotating the array
 					for ($i = 0; $i < count($children); $i++)
 					{
 						$key = array_shift($children);
-						$siblings[$key] = $children;
+						$node->add_entry_id($key, $children);
+						// $siblings[$key] = $children;
 						array_push($children, $key);
 					}
 				}
 
-				$node->entry_ids = $siblings;
+				// $node->entry_ids = $siblings;
 			}
 		}
 
@@ -637,16 +623,17 @@ class Relationship_Parser
 		for ($level = 0; $level <= $longest_branch_length; $level++)
 		{
 			if ($level == 0)
+			{
 				$db->join('exp_zero_wing as L' . ($level+1), 
 					'L' . ($level) . '.parent_id = L' . ($level+1) . '.parent_id' . (($level+1 >= $shortest_branch_length) ? ' OR L' . ($level+1) . '.child_id = NULL' : ''), 
 					($level+1 >= $shortest_branch_length) ? 'left' : '');
+			}
 			else
+			{
 				$db->join('exp_zero_wing as L' . ($level+1), 
 					'L' . ($level) . '.child_id = L' . ($level+1) . '.parent_id' . (($level+1 >= $shortest_branch_length) ? ' OR L' . ($level+1) . '.parent_id = NULL' : ''), 
 					($level+1 >= $shortest_branch_length) ? 'left' : '');
 
-			if ($level > 0)
-			{
 				// Now add the field ID from this level in. We've already done level 0,
 				// so just skip it.
 				$db->select('L' . $level . '.field_id as L' . $level . '_field');
@@ -713,7 +700,7 @@ class Relationship_Parser
 		{
 			$depth = $it->getDepth();
 
-			if ($tree->name == '__root__')
+			if ($tree->is_root())
 			{
 				$depth -= 1;
 			}
@@ -728,6 +715,7 @@ class Relationship_Parser
 				$longest = $depth;
 			}
 		}
+
 
 		// @todo not the best solution
 		if ($shortest > 1E9)
@@ -829,59 +817,39 @@ class Relationship_Parser
 
 
 
+class ParseNode extends EE_TreeNode {
 
-class TreeNode {
-	public $name;
-	private $parent;
-	private $children = array();
-
-	public function __construct($name)
-	{
-		$this->name = $name;
-	}
-
-	public function addChild(TreeNode $child)
-	{
-		$child->setParent($this);
-		$this->children[] = $child;
-	}
-
-	public function children()
-	{
-		return $this->children;
-	}
-
-	public function setParent(TreeNode $parent)
-	{
-		$this->parent = $parent;
-	}
-
-	public function parent()
-	{
-		return $this->parent;
-	}
-}
-
-
-
-
-
-class ParseNode extends TreeNode {
-
-	public $entry_ids;
-	public $tag_info;
+//	public $entry_ids;
+//	public $tag_info;
 	private $childTags;				// namespaced tags underneath it that are not relationship tags, constructed from tagdata
 
-	public function __construct($name, array $tag_info = array()) // $tagInfo = array('name' => 'foo', 'params' => array(), 'full_tag' => 'baz')
-	{
-		parent::__construct($name);
-		$this->tag_info = $tag_info;
-	}
+	protected $entries;
+	protected $entries_lookup;
 
 	public function field_name()
 	{
 		$field_name = ':'.$this->name;
 		return substr($field_name, strrpos($field_name, ':') + 1);
+	}
+
+	public function add_entry_id($parent, $child)
+	{
+		$ids =& $this->data['entry_ids'];
+
+		if ( ! isset($ids[$parent]))
+		{
+			$ids[$parent] = array();
+		}
+
+
+		if (is_array($child))
+		{
+			$ids[$parent] = array_merge($ids[$parent], $child);
+		}
+		else
+		{
+			$ids[$parent][] = $child;
+		}
 	}
 
 	public function parse($id, $tagdata, array $entries_lookup)
@@ -891,7 +859,7 @@ class ParseNode extends TreeNode {
 			return $tagdata;
 		}
 
-		if ($this->name == '__root__')
+		if ($this->is_root())
 		{
 			foreach ($this->children() as $child)
 			{
@@ -916,13 +884,13 @@ class ParseNode extends TreeNode {
 		$children = $this->children();
 
 		$tagdata = $matches[1];
-		$params = isset($this->tag_info['params']) ? $this->tag_info['params'] : array();
+		$params = $this->params;
 
 		$result = '';
 		$name = $this->name;
 		$prefix = $name.':';
 		
-		// @todo backspace
+		// @todo date formatting
 		$count = 0;
 		$total_results = count($entries);
 
@@ -957,6 +925,7 @@ class ParseNode extends TreeNode {
 			$tag_chunk = get_instance()->functions->prep_conditionals($tag_chunk, $cond_vars);
 			unset($cond_vars);
 
+			// child tags
 			foreach ($children as $child)
 			{
 				$tag_chunk = $child->parse($entry_id, $tag_chunk, $entries_lookup);
@@ -968,7 +937,6 @@ class ParseNode extends TreeNode {
 		// kill prefixed leftovers
 		$result = preg_replace('/{'.$prefix.'[^}]*}(.+?){\/'.$prefix.'[^}]*}/is', '', $result);
 		$result = preg_replace('/{\/?'.$prefix.'[^}]*}/i', '', $result);
-
 
 		if (isset($params['backspace']))
 		{
@@ -989,9 +957,9 @@ class QueryNode extends ParseNode {
 	private $closureChildren = array();
 
 	// @override
-	public function setParent(TreeNode $p)
+	protected function _set_parent(EE_TreeNode $p)
 	{
-		parent::setParent($p);
+		parent::_set_parent($p);
 
 		do
 		{
@@ -1018,48 +986,9 @@ class QueryNode extends ParseNode {
 }
 
 
-class NodeTreeIterator extends RecursiveArrayIterator {
-
-	/**
-	 * Override RecursiveArrayIterator's child detection method.
-	 * We usually have data rows that are arrays so we really only
-	 * want to iterate over those that match our custom format.
-	 *
-	 * @return boolean
-	 */
-	public function hasChildren()
-	{
-		$current = $this->current();
-		$children = $current->children();
-		return ! empty($children);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Override RecursiveArrayIterator's get child method to skip
-	 * ahead into the __children__ array and not try to iterate
-	 * over the data row's individual columns.
-	 *
-	 * @return Object<TreeIterator>
-	 */
-	public function getChildren()
-	{
-		$current = $this->current();
-		$children = $current->children();
-
-		// Using ref as per PHP source
-		if (empty($this->ref))
-		{
-			$this->ref = new ReflectionClass($this);
-		}
-
-		return $this->ref->newInstance($children);
-	}
-}
 
 // Does not iterate into query nodes
-class ClosureLimitedTreeIterator extends NodeTreeIterator {
+class ClosureLimitedTreeIterator extends EE_TreeIterator {
 
 	public function hasChildren()
 	{
@@ -1106,7 +1035,7 @@ class ClosureLimitedTreeIterator extends NodeTreeIterator {
 }
 
 // Iterates only query nodes
-class ClosureTreeIterator extends NodeTreeIterator {
+class ClosureTreeIterator extends EE_TreeIterator {
 
 	/**
 	 * Override RecursiveArrayIterator's child detection method.
