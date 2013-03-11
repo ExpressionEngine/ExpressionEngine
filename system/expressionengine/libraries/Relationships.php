@@ -365,7 +365,7 @@ class Relationship_Parser
 
 
 		$cit = new RecursiveIteratorIterator(
-			new ClosureTreeIterator(array($root)),
+			new QueryNodeIterator(array($root)),
 			RecursiveIteratorIterator::SELF_FIRST
 		);
 
@@ -500,14 +500,14 @@ class Relationship_Parser
 				continue;
 			}
 
-			$klass = 'ParseNode';
+			$node_class = 'ParseNode';
 
 			if (preg_match('/.*parents$/', $tag_name))
 			{
-				$klass = 'QueryNode';
+				$node_class = 'QueryNode';
 			}
 
-			$node = new $klass($tag_name, array(
+			$node = new $node_class($tag_name, array(
 				'field_id'	=> $field_id,
 				'tag_info'	=> array(),
 				'entry_ids'	=> array()
@@ -554,7 +554,7 @@ class Relationship_Parser
 	protected function _unique_entry_ids($root, $leave_paths)
 	{
 		$it = new RecursiveIteratorIterator(
-			new ClosureLimitedTreeIterator(array($root)),
+			new ParseNodeIterator(array($root)),
 			RecursiveIteratorIterator::SELF_FIRST
 		);
 
@@ -712,7 +712,7 @@ class Relationship_Parser
 	protected function _min_max_branches($tree)
 	{
 		$it = new RecursiveIteratorIterator(
-			new ClosureLimitedTreeIterator(array($tree)),
+			new ParseNodeIterator(array($tree)),
 			RecursiveIteratorIterator::LEAVES_ONLY
 		);
 
@@ -1007,7 +1007,7 @@ class QueryNode extends ParseNode {
 
 
 // Does not iterate into query nodes
-class ClosureLimitedTreeIterator extends EE_TreeIterator {
+class ParseNodeIterator extends EE_TreeIterator {
 
 	public function hasChildren()
 	{
@@ -1054,7 +1054,7 @@ class ClosureLimitedTreeIterator extends EE_TreeIterator {
 }
 
 // Iterates only query nodes
-class ClosureTreeIterator extends EE_TreeIterator {
+class QueryNodeIterator extends EE_TreeIterator {
 
 	/**
 	 * Override RecursiveArrayIterator's child detection method.
