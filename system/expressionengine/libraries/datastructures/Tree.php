@@ -115,7 +115,7 @@ class EE_Tree {
 		$parent_key = $conf['parent'];
 
 		$name = $conf['name_key'];
-		$klass = $conf['class_name'];
+		$class = $conf['class_name'];
 
 		// First we create a lookup table of id => object
 		// This lets us build the tree on references which
@@ -123,7 +123,7 @@ class EE_Tree {
 		foreach ($data as $row)
 		{
 			$id = $row[$child_key];
-			$nodes[$id] = new $klass($row[$name], $row);
+			$nodes[$id] = new $class($row[$name], $row);
 		}
 
 		$tree = new EE_TreeNode('__root__');
@@ -509,8 +509,8 @@ class EE_TreeNode {
 	 */
 	public function subtree_copy()
 	{
-		$klass = get_class($this);
-		$root = new $klass($this->name(), $this->data());
+		$class = get_class($this);
+		$root = new $class($this->name(), $this->data());
 
 		foreach ($this->children() as $node)
 		{
