@@ -17,14 +17,20 @@
 }
 
 #grid_min_rows,
-#grid_max_rows {
-	float: left;
+#grid_max_rows,
+#grid_settings .grid_input_text_small {
 	height: 27px;
-	margin: 3px 5px 3px 0;
+	margin: -6px 0 -5px 0;
 	position: relative;
 	text-align: center;
 	width: 47px;
 	vertical-align: text-top;
+}
+
+#grid_min_rows,
+#grid_max_rows {
+	float: left;
+	margin: 3px 5px 3px 0;
 }
 
 .grid_input_label_group {
@@ -96,6 +102,11 @@
 	position: relative;
 }
 
+.grid_col_setting_label_fixed_width {
+	display: inline-block;
+	width: 119px;
+}
+
 a.grid_col_settings_delete:link,
 a.grid_col_settings_delete:visited,
 a.grid_col_settings_delete:active,
@@ -116,6 +127,7 @@ a.grid_col_settings_delete:hover {
 
 .grid_col_settings_section.grid_data_search label {
 	margin-right: 17px;
+	text-transform: lowercase;
 }
 
 div.grid_col_copy {

@@ -414,9 +414,16 @@ class EE_Fieldtype {
 	
 	// --------------------------------------------------------------------
 	
+	/**
+	 * Field formatting row for Grid column settings
+	 *
+	 * @return string
+	 */
 	public function grid_field_formatting_row($data)
 	{
-		return form_label('Output formatting?').
+		return form_label(lang('grid_output_format'), NULL,
+				array('class' => 'grid_col_setting_label_fixed_width')
+			).
 			form_dropdown('field_fmt',
 				// TODO: Revisit list of plugin formatting, abstract out
 				// existing logic in channel fields API and confirm it's
@@ -424,6 +431,44 @@ class EE_Fieldtype {
 				$this->EE->addons_model->get_plugin_formatting(TRUE),
 				'none'
 			);
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Text direction row for Grid column settings
+	 *
+	 * @return string
+	 */
+	public function grid_text_direction_row($data)
+	{
+		return form_label(lang('grid_text_direction'), NULL,
+				array('class' => 'grid_col_setting_label_fixed_width')
+			).
+			form_dropdown('field_text_direction',
+				array(
+					'ltr' => lang('ltr'),
+					'rtl' => lang('rtl')
+				)
+			);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Field max length row for Grid column settings
+	 *
+	 * @return string
+	 */
+	public function grid_max_length_row($data)
+	{
+		return form_label(lang('grid_limit_input')).NBS.NBS.NBS.
+			form_input(array(
+				'name' => 'field_max_length',
+				'value' => '256',
+				'class' => 'grid_input_text_small'
+			)).NBS.NBS.NBS.
+			'<i class="instruction_text">'.lang('grid_chars_allowed').'</i>';
 	}
 }
 // END EE_Fieldtype class

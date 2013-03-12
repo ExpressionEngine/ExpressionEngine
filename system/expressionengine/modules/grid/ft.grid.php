@@ -73,7 +73,8 @@ class Grid_ft extends EE_Fieldtype {
 			form_input(array(
 				'name' => 'grid_min_rows',
 				'id' => 'grid_min_rows',
-				'value' => '0'
+				'value' => '0',
+				'class' => 'grid_input_text_small'
 			)).
 			'<div class="grid_input_label_group">'.
 			form_label(lang('grid_min_rows'), 'grid_min_rows').
@@ -85,7 +86,8 @@ class Grid_ft extends EE_Fieldtype {
 			form_input(array(
 				'name' => 'grid_max_rows',
 				'id' => 'grid_max_rows',
-				'value' => ''
+				'value' => '',
+				'class' => 'grid_input_text_small'
 			)).
 			'<div class="grid_input_label_group">'.
 			form_label(lang('grid_max_rows'), 'grid_max_rows').

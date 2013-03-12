@@ -36,8 +36,8 @@
 					<?=form_checkbox('column_searchable', 'column_searchable').form_label(lang('grid_col_searchable'), 'column_searchable')?>
 				</div>
 				<?php foreach ($settings as $key => $value): ?>
-					<?php foreach ($value as $setting): ?>
-						<div class="grid_col_settings_section">
+					<?php foreach ($value as $index => $setting): ?>
+						<div class="grid_col_settings_section <?=($index % 2) ? 'alt' : ''?>">
 							<?=$setting?>
 						</div>
 					<?php endforeach ?>
