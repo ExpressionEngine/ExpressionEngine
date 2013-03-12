@@ -82,7 +82,7 @@ class File_ft extends EE_Fieldtype {
 	{
 		$allowed_file_dirs		= (isset($this->settings['allowed_directories']) && $this->settings['allowed_directories'] != 'all') ? $this->settings['allowed_directories'] : '';
 		$content_type			= (isset($this->settings['field_content_type'])) ? $this->settings['field_content_type'] : 'all';
-		
+
 		return $this->EE->file_field->field(
 			$this->field_name,
 			$data,
@@ -130,6 +130,9 @@ class File_ft extends EE_Fieldtype {
 		{
 			return $file_info['raw_output'];
 		}
+		
+		$file_info = $this->_add_thumb_paths($file_info);
+		//print_r($file_info);
 		
 		// Make sure we have file_info to work with
 		if ($tagdata !== FALSE AND $file_info === FALSE)
@@ -229,7 +232,6 @@ class File_ft extends EE_Fieldtype {
 			AND $file_info['extension'] !== FALSE)
 		{
 			$full_path = $file_info['path'].$file_info['filename'].'.'.$file_info['extension'];
-
 			if (isset($params['wrap']))
 			{
 				if ($params['wrap'] == 'link')
@@ -254,6 +256,18 @@ class File_ft extends EE_Fieldtype {
 		}
 	}
 
+	function _add_thumb_paths($file_info)
+	{
+		return $file_info;
+		if (isset($file_info['path']) && isset($file_info['filename']) && isset($file_info['extension']))
+		{
+			$file_info['url:thumbs'] = $file_info['path'].'_thumbs/'.$file_info['filename'].'.'.$file_info['extension'];
+			$file_info[$this->field_name.':thumbs'] = $file_info['path'].'_thumbs/'.$file_info['filename'].'.'.$file_info['extension'];	
+		}	
+
+		return $file_info;
+	}
+
 	// --------------------------------------------------------------------
 	
 	/**
@@ -266,12 +280,19 @@ class File_ft extends EE_Fieldtype {
 	 */
 	function replace_tag_catchall($file_info, $params = array(), $tagdata = FALSE, $modifier)
 	{
-		if ($modifier AND isset($file_info['path']))
+		$file_info = $this->_add_thumb_paths($file_info);
+		
+		if ($modifier)
 		{
-			$file_info['path'] .= '_'.$modifier.'/';
+			$key = 'url:'.$modifier;
+		
+			if (isset($file_info[$key]))
+			{
+				echo $key.'  '.$file_info[$this->field_name.':'.$modifier];
+				//$file_info[$this->field_name.':'.$modifier] = $file_info[$key];	
+				//return $this->replace_tag($file_info, $params, $tagdata);
+			}
 		}
-
-		return $this->replace_tag($file_info, $params, $tagdata);
 	}
 
 	// --------------------------------------------------------------------
