@@ -953,7 +953,11 @@ class EE_Session {
 	 */  
 	function update_cookies()
 	{
-		if ($$this->EE->input->cookie($this->c_expire))
+		// both this method and the c_expire cookie are unused application wide
+		$this->EE->load->library('logger');
+		$this->EE->logger->deprecated('2.6');
+
+		if ($this->EE->input->cookie($this->c_expire))
 		{
 			$now 	= time() + 300;
 			$expire = 60*60*24*365;
