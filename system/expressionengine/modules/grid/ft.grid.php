@@ -92,10 +92,21 @@ class Grid_ft extends EE_Fieldtype {
 			'<br><i class="instruction_text">'.lang('grid_max_rows_desc').'</i></div>'
 		);
 
+		$this->EE->load->library('grid_lib');
+		$fieldtypes = $this->EE->grid_lib->get_grid_fieldtypes();
+
+		// Create a dropdown-frieldly array of available fieldtypes
+		$vars = array();
+		foreach ($fieldtypes as $key => $value)
+		{
+			$vars['fieldtypes'][$key] = $value['name'];
+		}
+
+		$vars['settings'] = $this->EE->grid_lib->get_grid_fieldtype_settings_forms();
+
+		// The big column configuration row, generated from the settings view
 		$this->EE->table->add_row(
-			form_label(lang('grid_config')).
-			'<br><i class="instruction_text">'.lang('grid_config_desc').'</i>'.
-			$this->EE->load->view('settings', NULL, TRUE)
+			$this->EE->load->view('settings', $vars, TRUE)
 		);
 
 		$this->EE->cp->add_to_head($this->EE->view->head_link('css/grid.css'));

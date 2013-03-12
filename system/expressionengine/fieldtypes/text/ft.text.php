@@ -184,8 +184,18 @@ class Text_ft extends EE_Fieldtype {
 			$(this).nextAll(".update_content_type").show();
 		});
 		');		
-		
-		
+	}
+
+	// --------------------------------------------------------------------
+	
+	public function grid_display_settings($data)
+	{
+		// These really need implementing
+		return array(
+			$this->grid_field_formatting_row($data),
+			//$this->grid_text_direction_row($data),
+			//$this->grid_max_length_row($data)
+		);
 	}
 	
 	// --------------------------------------------------------------------

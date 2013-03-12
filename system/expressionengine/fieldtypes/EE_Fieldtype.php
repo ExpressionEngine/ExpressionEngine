@@ -412,6 +412,19 @@ class EE_Fieldtype {
 		);
 	}
 	
+	// --------------------------------------------------------------------
+	
+	public function grid_field_formatting_row($data)
+	{
+		return form_label('Output formatting?').
+			form_dropdown('field_fmt',
+				// TODO: Revisit list of plugin formatting, abstract out
+				// existing logic in channel fields API and confirm it's
+				// correct, there's a bug report or two about it
+				$this->EE->addons_model->get_plugin_formatting(TRUE),
+				'none'
+			);
+	}
 }
 // END EE_Fieldtype class
 

@@ -2,6 +2,20 @@
 	margin-top: 8px;
 }
 
+#grid_col_settings_labels {
+	float: left;
+	width: 97px;
+}
+
+#grid_col_settings_container {
+	margin-right: 97px;
+	overflow: scroll;
+}
+
+#grid_col_settings_container_inner {
+	width: 2000px;
+}
+
 #grid_min_rows,
 #grid_max_rows {
 	float: left;
@@ -37,11 +51,6 @@
 .grid_data_search
 {
 	padding: 8px 0 6px 0;
-}
-
-.grid_col_settings_labels {
-	float: left;
-	width: 97px;
 }
 
 .grid_col_settings {
@@ -128,4 +137,23 @@ a.grid_col_copy:hover {
 	padding: 8px 25px 8px 9px;
 	text-decoration: none;
 	text-transform: uppercase;
+}
+
+a.grid_button_add:link,
+a.grid_button_add:visited,
+a.grid_button_add:active,
+a.grid_button_add:hover {
+	background: url('../images/grid-sprite.png') no-repeat -39px 8px;
+	border: 1px solid #c7ced3;
+	border-radius: 5px;
+	display: inline-block;
+	height: 29px;
+	text-indent: -9999px;
+	width: 30px;
+}
+
+#grid_settings a.grid_button_add {
+	left: 21px;
+	position: relative;
+	top: 172px;
 }
