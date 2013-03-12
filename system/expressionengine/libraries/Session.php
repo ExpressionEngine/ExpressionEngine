@@ -158,14 +158,8 @@ class EE_Session {
 				break;
 		}
 
-		// Check remember me
-		if ($this->EE->remember->exists())
-		{
-			$this->cookies_exist = TRUE;
-		}
-
 		// Did we find a session ID?
-		$session_id = ($this->sdata['session_id'] != '' OR ($this->validation == 'c' && $this->cookies_exist)) ? TRUE : FALSE;
+		$session_id = ($this->sdata['session_id'] != '' OR ($this->validation == 'c' && $this->EE->remember->exists())) ? TRUE : FALSE;
 
 		// Fetch Session Data		
 		// IMPORTANT: The session data must be fetched before the member data so don't move this.
@@ -951,7 +945,7 @@ class EE_Session {
 	 */  
 	function update_cookies()
 	{
-		// both this method and the c_expire cookie are unused application wide
+		// this method, cookies_exist, and the c_expire cookie are unused application wide
 		$this->EE->load->library('logger');
 		$this->EE->logger->deprecated('2.6');
 
