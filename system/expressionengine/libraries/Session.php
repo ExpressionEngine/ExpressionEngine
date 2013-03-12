@@ -203,9 +203,7 @@ class EE_Session {
 				}
 			}
 		}
-		
-		// Update cookies
-		$this->update_cookies();
+
 		$this->_prep_flashdata();
 		$this->EE->remember->refresh();
 		
