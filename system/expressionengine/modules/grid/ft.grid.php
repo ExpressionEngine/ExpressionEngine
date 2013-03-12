@@ -61,7 +61,7 @@ class Grid_ft extends EE_Fieldtype {
 	
 	function display_settings($data)
 	{
-		$this->EE->lang->loadfile('fieldtypes');
+		$this->EE->lang->loadfile('grid');
 
 		$this->EE->table->set_heading(array(
 			'data' => lang('grid_options'),
