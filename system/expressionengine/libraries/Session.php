@@ -159,23 +159,17 @@ class EE_Session {
 		}
 
 		// Did we find a session ID?
-		$session_id = ($this->sdata['session_id'] != '' OR ($this->validation == 'c' && $this->EE->remember->exists())) ? TRUE : FALSE;
+		$session_id = ($this->sdata['session_id'] != '') ? TRUE : FALSE;
 
 		// Fetch Session Data		
 		// IMPORTANT: The session data must be fetched before the member data so don't move this.
-		if ($session_id === TRUE)
+		if ($session_id === TRUE && $this->fetch_session_data() === TRUE)
 		{
-			if ($this->fetch_session_data() === TRUE) 
-			{
-				$this->session_exists = TRUE;
-			}
+			$this->session_exists = TRUE;
 		}
-
-		// Fetch Member Data
-		$member_data_exists = (bool) $this->fetch_member_data();
 		
-		// Update/Create Session
-		if ($session_id === FALSE OR $member_data_exists === FALSE)
+		// Update/Create Session and fetch member data
+		if ($session_id === FALSE OR $this->fetch_member_data() === FALSE)
 		{
 			$this->fetch_guest_data();
 		}
@@ -228,7 +222,6 @@ class EE_Session {
 		
 		unset($this->sdata);
 		unset($session_id);
-		unset($member_data_exists);
 	}
 
 	// --------------------------------------------------------------------				
