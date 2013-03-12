@@ -40,7 +40,7 @@ if ($EE_view_disable !== TRUE)
 			<?=lang('entry_date', 'entry_date['.$entry->entry_id.']')?>
 		</div>
 		<ul>
-			<li><?=form_input('entry_date['.$entry->entry_id.']', $this->localize->set_human_time($entry->entry_date), 'class="entry_date entry_date_'.$entry->entry_id.'" id="entry_date['.$entry->entry_id.']"')?></li>
+			<li><?=form_input('entry_date['.$entry->entry_id.']', $this->localize->human_time($entry->entry_date), 'class="entry_date entry_date_'.$entry->entry_id.'" id="entry_date['.$entry->entry_id.']"')?></li>
 		</ul>
 
 		<h3 class="pad"><?=lang('options')?></h3>

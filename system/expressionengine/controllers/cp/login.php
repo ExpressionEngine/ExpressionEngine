@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -47,6 +47,13 @@ class Login extends CP_Controller {
 	 */	
 	public function index()
 	{
+		// We don't want to allow access to the login screen to someone
+		// who is already logged in.
+		if ($this->session->userdata('member_id') !== 0)
+		{
+			return $this->functions->redirect(BASE);
+		}
+
 		// If an ajax request ends up here the user is probably logged out
 		if (AJAX_REQUEST)
 		{
@@ -56,26 +63,23 @@ class Login extends CP_Controller {
 		
 		$username = $this->session->flashdata('username');
 
-		$vars = array(
-			'return_path'	=> '',
-			'focus_field'	=> ($username) ? 'password' : 'username',
-			'username'		=> ($username) ? form_prep($username) : '',
-			'message'		=> ($this->input->get('auto_expire')) ? lang('session_auto_timeout') : $this->session->flashdata('message')
-		);
+		$this->view->return_path = '';
+		$this->view->focus_field = ($username) ? 'password' : 'username';
+		$this->view->username = ($username) ? form_prep($username) : '';
+		$this->view->message = ($this->input->get('auto_expire')) ? lang('session_auto_timeout') : $this->session->flashdata('message');
 		
 		if ($this->input->get('BK'))
 		{
-			$vars['return_path'] = base64_encode($this->input->get('BK'));
+			$this->view->return_path = base64_encode($this->input->get('BK'));
 		}
 		else if ($this->input->get('return'))
 		{
-			$vars['return_path'] = $this->input->get('return');
+			$this->view->return_path = $this->input->get('return');
 		}
 		
-		$this->view->return_path = SELF;
 		$this->view->cp_page_title = lang('login');
 
-		$this->load->view('account/login', $vars);
+		$this->view->render('account/login');
 	}
 	
 	// --------------------------------------------------------------------
@@ -184,7 +188,7 @@ class Login extends CP_Controller {
 	 * @param	string
 	 * @return	mixed
 	 */
-	function _un_pw_update_form($message = '')
+	public function _un_pw_update_form($message = '')
 	{
 		$this->lang->loadfile('member');
 		$this->load->helper('security');
@@ -560,7 +564,7 @@ class Login extends CP_Controller {
 		{
 			$this->load->library('form_validation');
 			
-			$this->form_validation->set_rules('password', 'lang:new_password', 'password|required');
+			$this->form_validation->set_rules('password', 'lang:new_password', 'valid_password|required');
 			$this->form_validation->set_rules('password_confirm', 'lang:new_password_confirm', 'matches[password]|required');
 
 			if($this->form_validation->run() !== FALSE)
@@ -658,7 +662,7 @@ class Login extends CP_Controller {
 	 *
 	 * Helper function to send them to a login error screen
 	 */
-	function _return_to_login($lang_key)
+	private function _return_to_login($lang_key)
 	{
 		if (AJAX_REQUEST)
 		{

@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -381,7 +381,7 @@ class Content_files extends CP_Controller {
 
 				$r['mime_type'] = $file['mime_type'];
 				$r['upload_location_name'] = $this->_upload_dirs[$file['upload_location_id']]['name'];
-				$r['upload_date'] = $this->localize->set_human_time($file['upload_date'], TRUE);
+				$r['upload_date'] = $this->localize->human_time($file['upload_date'], TRUE);
 
 				$action_base = BASE.AMP.'C=content_files'.AMP.'M=multi_edit_form'.AMP.'file_id='.$file['file_id'];
 				

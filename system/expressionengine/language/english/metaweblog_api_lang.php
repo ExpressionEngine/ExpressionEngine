@@ -43,6 +43,9 @@ password for a member account with permissions to post to at least one channel.'
 'invalid_access' =>
 'Invalid Access',
 
+'new_entry_errors' =>
+'Entry validation errors: ',
+
 'entry_uneditable' =>
 'You do not have permission to edit this entry. Please check member group permissions',
 

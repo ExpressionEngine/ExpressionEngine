@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -129,9 +129,7 @@ class Admin_model extends CI_Model {
 										),
 			'localization_cfg'	=>	array(	 
 											'server_timezone'			=> array('f', 'timezone'),
-											'server_offset'				=> array('i', ''),
-											'time_format'				=> array('s', array('us' => 'united_states', 'eu' => 'european')),
-											'daylight_savings'			=> array('r', array('y' => 'yes', 'n' => 'no'))
+											'time_format'				=> array('s', array('us' => 'united_states', 'eu' => 'european'))
 										  ),
 
 			'email_cfg'			=>	array(

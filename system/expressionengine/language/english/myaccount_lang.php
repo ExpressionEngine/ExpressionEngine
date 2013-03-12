@@ -224,9 +224,6 @@ $lang = array(
 'localization_updated' =>
 'Localization Updated',
 
-'daylight_savings_time' =>
-'Daylight Saving Time',
-
 'timezone' =>
 'Select Time Zone',
 

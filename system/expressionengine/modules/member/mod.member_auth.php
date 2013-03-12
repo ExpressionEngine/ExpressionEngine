@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -34,6 +34,12 @@ class Member_auth extends Member {
 	 */
 	public function profile_login_form($return = '-2')
 	{
+		// If they are already logged in then send them away.
+		if ($this->EE->session->userdata('member_id') !== 0)
+		{
+			return $this->EE->functions->redirect($this->EE->functions->fetch_site_index());
+		}
+
 		$login_form = $this->_load_element('login_form');
 
 		if ($this->EE->config->item('user_session_type') != 'c')
@@ -92,6 +98,12 @@ class Member_auth extends Member {
 	 */
 	public function member_login()
 	{
+		// If they are already logged in then send them away.
+		if ($this->EE->session->userdata('member_id') !== 0)
+		{
+			return $this->EE->functions->redirect($this->EE->functions->fetch_site_index());
+		}
+
 		$this->EE->load->library('auth');
 
 		/* -------------------------------------------

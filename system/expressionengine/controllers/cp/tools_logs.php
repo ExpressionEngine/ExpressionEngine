@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -139,7 +139,7 @@ class Tools_logs extends CP_Controller {
 				'member_id'	 => $log['member_id'],
 				'username'	 => "<strong><a href='".BASE.AMP.'C=myaccount'.AMP.'id='.$log['member_id']."'>{$log['username']}</a></strong>",
 				'ip_address' => $log['ip_address'],
-				'act_date'	 => $this->localize->set_human_time($log['act_date']),
+				'act_date'	 => $this->localize->human_time($log['act_date']),
 				'site_label' => $log['site_label'],
 				'action'	 => $log['action']
 			);
@@ -232,7 +232,7 @@ class Tools_logs extends CP_Controller {
 			$rows[] = array(
 				'screen_name'	=> $screen_name,
 				'ip_address'	=> $log['ip_address'],
-				'search_date'	=> $this->localize->set_human_time($log['search_date']),
+				'search_date'	=> $this->localize->human_time($log['search_date']),
 				'site_label'	=> $log['site_label'],
 				'search_type'	=> $log['search_type'],
 				'search_terms'	=> $log['search_terms']
@@ -353,7 +353,7 @@ class Tools_logs extends CP_Controller {
 			$rows[] = array(
 				'ip_address'	=> $log['ip_address'],
 				'hits'			=> $log['hits'],
-				'last_activity'	=> $this->localize->set_human_time($log['last_activity'])
+				'last_activity'	=> $this->localize->human_time($log['last_activity'])
 			);
 		}
 		
@@ -478,7 +478,7 @@ class Tools_logs extends CP_Controller {
 				'subject'		 => '<a href="'.BASE.AMP.'C=tools_logs'.AMP.'M=view_email'.AMP.'id='.$log['cache_id'].'">'.$log['subject'].'</a>',
 				'member_name'	 => '<a href="'.BASE.AMP.'C=myaccount'.AMP.'id='. $log['member_id'].'">'.$log['member_name'].'</a>',
 				'recipient_name' => $log['recipient_name'],
-				'cache_date'	 => $this->localize->set_human_time($log['cache_date']),
+				'cache_date'	 => $this->localize->human_time($log['cache_date']),
 				'_check'		 => form_checkbox(array(
 					'id'	=>'delete_box_'.$log['cache_id'],
 					'name'	=>'toggle[]',
@@ -515,7 +515,6 @@ class Tools_logs extends CP_Controller {
 		}
 		
 		$this->load->library('table');
-		
 		$this->table->set_base_url('C=tools_logs'.AMP.'M=view_developer_log');
 		$this->table->set_columns(array(
 			'log_id'		=> array('header' => lang('log_id')),
@@ -606,7 +605,7 @@ class Tools_logs extends CP_Controller {
 					'class'	=> $new
 				),
 				'description' => array(
-					'data'	=> (isset($log['function'])) ? $this->logger->build_deprecation_language($log) : $log['description'],
+					'data'	=> $this->logger->build_deprecation_language($log),
 					'class'	=> $new
 				),
 				'viewed' => $log['viewed'],

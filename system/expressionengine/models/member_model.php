@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -964,30 +964,37 @@ class Member_model extends CI_Model {
 	 */
 	function get_authors($author_id = FALSE, $limit = FALSE, $offset = FALSE)
 	{
-		$this->db->select('members.member_id, members.group_id, 
-						members.username, members.screen_name, members.in_authorlist');
-		$this->db->from('members');
-		$this->db->join('member_groups', 'member_groups.group_id = members.group_id');
-		
+		// Please don't combine these two queries. Mysql won't hit an index
+		// on any combination that I've tried; except with a subquery which
+		// is close enough to what we have here. -pk
+		$groups = $this->db
+			->select('group_id')
+			->where('include_in_authorlist', 'y')
+			->where('site_id', $this->config->item('site_id'))
+			->get('member_groups')
+			->result_array();
+
+		$groups = array_map('array_pop', $groups);
+
+
+		$this->db->select('member_id, group_id, username, screen_name, in_authorlist');
+
 		if ($author_id)
 		{
-			$this->db->where('members.member_id !=', $author_id);
+			$this->db->where('member_id !=', $author_id);
 		}
-		
-		$this->db->where('('.$this->db->dbprefix('members').'.in_authorlist = "y" OR
-		 						'.$this->db->dbprefix('member_groups').'.include_in_authorlist = "y")');
-		$this->db->where('members.group_id = '.$this->db->dbprefix('member_groups').'.group_id');
-		$this->db->where('member_groups.site_id', $this->config->item('site_id'));
 	
-		$this->db->order_by('members.screen_name', 'ASC');
-		$this->db->order_by('members.username', 'ASC');
+		$this->db->where('in_authorlist', 'y');
+		$this->db->or_where_in('group_id', $groups);
+		$this->db->order_by('screen_name', 'ASC');
+		$this->db->order_by('username', 'ASC');
 		
 		if ($limit)
 		{
 			$this->db->limit($limit, $offset);
 		}
 		
-		return $this->db->get();
+		return $this->db->get('members');
 	}
 	
 	// --------------------------------------------------------------------
@@ -1509,16 +1516,13 @@ class Member_model extends CI_Model {
 	 */
 	function get_localization_default($get_id = FALSE)
 	{
-		$this->db->select('member_id, timezone, daylight_savings, time_format');
+		$this->db->select('member_id, timezone, time_format');
 		$this->db->where('localization_is_site_default', 'y');
 		$query = $this->db->get('members');
 
 		if ($query->num_rows() == 1)
 		{
-			$config = array(
-							'default_site_timezone' => $query->row('timezone'),
-							'default_site_dst'		=> $query->row('daylight_savings')
-							);
+			$config = array('default_site_timezone' => $query->row('timezone'));
 							
 			if ($get_id)
 			{
@@ -1527,10 +1531,8 @@ class Member_model extends CI_Model {
 		}
 		else
 		{
-			$config = array(
-							'default_site_timezone' => '',
-							'default_site_dst'		=> ''
-							);
+			$config = array('default_site_timezone' => '');
+
 			if ($get_id)
 			{
 				$config['member_id'] = '';
