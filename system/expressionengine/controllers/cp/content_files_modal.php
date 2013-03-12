@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -147,7 +147,7 @@ class Content_files_modal extends CP_Controller {
 		// but before duplicate checking
 		
 		$file					= $this->_get_file($upload_response['file_id']);
-		$file['modified_date']	= $this->localize->set_human_time($file['modified_date']);
+		$file['modified_date']	= $this->localize->human_time($file['modified_date']);
 		$original_name			= $upload_response['orig_name'];
 		$cleaned_name			= basename($this->filemanager->clean_filename(
 			$original_name, 
@@ -199,7 +199,7 @@ class Content_files_modal extends CP_Controller {
 		$file = $this->_get_file($rename_file['file_id']);
 		
 		// Humanize Unix timestamp
-		$file['modified_date']	= $this->localize->set_human_time($file['modified_date']);
+		$file['modified_date']	= $this->localize->human_time($file['modified_date']);
 		
 		// Views need to know if the file was replaced
 		$file['replace'] = $rename_file['replace'];

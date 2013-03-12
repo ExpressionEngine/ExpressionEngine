@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -49,6 +49,13 @@ class EE_Exceptions extends CI_Exceptions {
 		}
 
 		$EE =& get_instance();
+
+		if (defined('REQ') && REQ != 'CP')
+		{
+			$EE->load->library('logger');
+			$EE->logger->deprecated('2.6', 'Output::show_user_error()');
+		}
+
 
 		// let's be kind if it's a submission error, and offer a back link
 		if ( ! empty($_POST) && ! AJAX_REQUEST)

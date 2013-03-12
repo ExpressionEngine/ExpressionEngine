@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -166,7 +166,7 @@ class Referrer {
 						}
 						else
   						{
-							$date = $this->EE->localize->decode_date($val, $row['ref_date']);
+							$date = $this->EE->localize->format_date($val, $row['ref_date']);
 						}
 						$tagdata = $this->EE->TMPL->swap_var_single($key, $date, $tagdata);
 					}					

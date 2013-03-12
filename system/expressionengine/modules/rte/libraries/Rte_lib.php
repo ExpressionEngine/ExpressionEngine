@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -422,11 +422,13 @@ class Rte_lib {
 		// decode double encoded code chunks
 		if (preg_match_all("/\[code\](.+?)\[\/code\]/si", $data, $matches))
 		{
+			$i = 0;
 			foreach ($matches[1] as $chunk)
 			{
 				$chunk = trim($chunk);
 				$chunk = html_entity_decode($chunk, ENT_QUOTES, 'UTF-8');
 				$data = str_replace($matches[0][$i], '[code]'.$chunk.'[/code]', $data);
+				$i++;
 			}
 		}
 

@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -1175,7 +1175,7 @@ class Forum {
 				}
 				else
 				{
-					$str = str_replace($matches['0'][$j], $this->EE->localize->decode_date($matches['1'][$j], $this->EE->session->userdata['last_visit']), $str);
+					$str = str_replace($matches['0'][$j], $this->EE->localize->format_date($matches['1'][$j], $this->EE->session->userdata['last_visit']), $str);
 				}
 			}
 		}

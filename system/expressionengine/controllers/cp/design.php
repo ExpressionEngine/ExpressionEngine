@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -79,8 +79,8 @@ class Design extends CP_Controller {
 			));
 		}
 
-		$this->view->wiki_installed = (bool) $this->db->table_exists('wikis'));
-		$this->view->forum_installed = (bool) $this->db->table_exists('forums'));
+		$this->view->wiki_installed = (bool) $this->db->table_exists('wikis');
+		$this->view->forum_installed = (bool) $this->db->table_exists('forums');
 	}
 	
 	// --------------------------------------------------------------------
@@ -1764,7 +1764,7 @@ class Design extends CP_Controller {
 			$datestr = '%Y-%m-%d %H:%i';
 		}
 
-		$vars['edit_date'] = $this->localize->decode_date($datestr, $query->row('edit_date'), TRUE);
+		$vars['edit_date'] = $this->localize->format_date($datestr, $query->row('edit_date'));
 
 		$mquery = $this->db->query("SELECT screen_name FROM exp_members WHERE member_id = ".$query->row('last_author_id'));
 
@@ -1826,7 +1826,7 @@ class Design extends CP_Controller {
 				$file_date = get_file_info($basepath, 'date');
 				if ($file_date !== FALSE)
 				{
-					$vars['last_file_edit'] = $this->localize->decode_date($datestr, $file_date['date'], TRUE);				
+					$vars['last_file_edit'] = $this->localize->format_date($datestr, $file_date['date']);				
 					if ($query->row('edit_date') < $file_date['date'])
 					{
 							$vars['file_synced'] = FALSE;
@@ -1862,7 +1862,7 @@ class Design extends CP_Controller {
 		{			 
 			foreach ($query->result_array() as $row)
 			{
-				$vars['revision_options'][$row['tracker_id']] = $this->localize->set_human_time($row['item_date']).' ('.$row['screen_name'].')';
+				$vars['revision_options'][$row['tracker_id']] = $this->localize->human_time($row['item_date']).' ('.$row['screen_name'].')';
 			}  
 
 			$vars['revision_options']['clear'] = lang('clear_revision_history');  
@@ -2439,7 +2439,7 @@ class Design extends CP_Controller {
 				$datestr = '%Y-%m-%d %H:%i';
 			}
 
-			$vars['revision_date'] = $this->localize->decode_date($datestr, $query->row('item_date'), TRUE);			
+			$vars['revision_date'] = $this->localize->format_date($datestr, $query->row('item_date'));			
 		}
 		else
 		{
@@ -4215,7 +4215,7 @@ class Design extends CP_Controller {
 					continue;
 				}
 				
-				$edit_date = $this->localize->decode_date($datestr, $row->edit_date, TRUE);
+				$edit_date = $this->localize->format_date($datestr, $row->edit_date);
 				
 				$existing[$row->group_name][$row->template_name.$this->api_template_structure->file_extensions($row->template_type)] =
 				 array('template_id' => $row->template_id, 
@@ -4276,7 +4276,7 @@ class Design extends CP_Controller {
 							$existing[$group_name][$template]['file_synced'] = TRUE;
 							$existing[$group_name][$template]['toggle'] = ''; 
 						}
-						$existing[$group_name][$template]['file_edit'] = $this->localize->decode_date($datestr, $file_date, TRUE);
+						$existing[$group_name][$template]['file_edit'] = $this->localize->format_date($datestr, $file_date);
 						$existing[$group_name][$template]['file_name'] = $template;
 						$existing[$group_name][$template]['toggle'] = form_checkbox('toggle[]', $existing[$group_name][$template]['template_id'], '', ' class="toggle" id="sync_box_'.$existing[$group_name][$template]['template_id'].'"');
 					}

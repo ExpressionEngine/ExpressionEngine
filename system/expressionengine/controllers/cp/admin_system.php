@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -175,6 +175,8 @@ class Admin_system extends CP_Controller {
 
 			if ($validated)
 			{
+				$this->_final_post_prep($type);
+				
 				$config_update = $this->config->update_site_prefs($_POST);
 		
 				if ( ! empty($config_update))
@@ -247,6 +249,8 @@ class Admin_system extends CP_Controller {
 			}
 		}
 
+		$this->load->helper('date');
+		$timezones = timezones();
 
 		foreach ($f_data as $name => $options)
 		{
@@ -352,12 +356,8 @@ class Admin_system extends CP_Controller {
 							$selected = $value;
 							break;
 						case 'timezone'			:
-							$options[0] = 's';
-							foreach ($this->localize->zones as $k => $v)
-							{
-								$details[$k] = lang($k);
-							}
-							$selected = $value;
+							$options[0] = 'c';
+							$details = $this->localize->timezone_menu($value);
 							break;
 					}
 					break;
@@ -378,6 +378,32 @@ class Admin_system extends CP_Controller {
 		return $vars;	
 	}
 
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Final POST Prep
+	 *
+	 * Any special tweaking before $_POST is inserted
+	 * can happen here
+	 *
+	 * @access	public
+	 * @return	void
+	 */
+	function _final_post_prep($type)
+	{
+		if ($type == 'localization_cfg')
+		{
+			$config = $this->member_model->get_localization_default(TRUE);
+			
+			// Do we need to set the localization defaults to match the server?
+			if ($config['member_id'] = '')
+			{
+				array_merge($_POST, array('default_site_timezone' => $this->input->post('server_timezone'), 
+										'default_site_dst' => $this->input->post('daylight_savings')));
+			}
+		}		
+	}
 
 
 	// --------------------------------------------------------------------

@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -254,8 +254,8 @@ class Members extends CP_Controller {
 				'username'		=> '<a href="'.BASE.AMP.'C=myaccount'.AMP.'id='.$member['member_id'].'">'.$member['username'].'</a>',
 				'screen_name'	=> $member['screen_name'],
 				'email'			=> '<a href="mailto:'.$member['email'].'">'.$member['email'].'</a>',
-				'join_date'		=> $this->localize->decode_date('%Y-%m-%d', $member['join_date']),
-				'last_visit'	=> ($member['last_visit'] == 0) ? ' - ' : $this->localize->set_human_time($member['last_visit']),
+				'join_date'		=> $this->localize->format_date('%Y-%m-%d', $member['join_date']),
+				'last_visit'	=> ($member['last_visit'] == 0) ? ' - ' : $this->localize->human_time($member['last_visit']),
 				'group_id'		=> $groups[$member['group_id']],		
 				'_check'		=> '<input class="toggle" type="checkbox" name="toggle[]" value="'.$member['member_id'].'" />'
 			);
@@ -2320,7 +2320,6 @@ class Members extends CP_Controller {
 		$data['join_date']	= $this->localize->now;
 		$data['language'] 	= $this->config->item('deft_lang');
 		$data['timezone'] 	= ($this->config->item('default_site_timezone') && $this->config->item('default_site_timezone') != '') ? $this->config->item('default_site_timezone') : $this->config->item('server_timezone');
-		$data['daylight_savings'] = ($this->config->item('default_site_dst') && $this->config->item('default_site_dst') != '') ? $this->config->item('default_site_dst') : $this->config->item('daylight_savings');
 		$data['time_format'] = ($this->config->item('time_format') && $this->config->item('time_format') != '') ? $this->config->item('time_format') : 'us';
 
 		// Was a member group ID submitted?
@@ -2337,8 +2336,9 @@ class Members extends CP_Controller {
 
 		if (is_numeric($data['bday_d']) && is_numeric($data['bday_m']))
 		{
+			$this->load->helper('date');
 			$year = ($data['bday_y'] != '') ? $data['bday_y'] : date('Y');
-			$mdays = $this->localize->fetch_days_in_month($data['bday_m'], $year);
+			$mdays = days_in_month($data['bday_m'], $year);
 
 			if ($data['bday_d'] > $mdays)
 			{

@@ -59,7 +59,7 @@ class Safecracker_file_ft extends File_ft
 		
 		$placeholder_data = set_value($this->field_name, '');
 		
-		$thumb_info = $this->EE->filemanager->get_thumb($data, $this->settings['safecracker_upload_dir']);
+		$thumb_info = $this->EE->filemanager->get_thumb($data, $this->settings['safecracker_upload_dir'], TRUE);
 		$thumb_src = $thumb_info['thumb'];
 		
 		$this->add_css();
@@ -630,8 +630,9 @@ class Safecracker_file_ft extends File_ft
 			return array();
 		}
 		
-		// Check to make sure the directory exists
-		$directory_info = $this->EE->file_upload_preferences_model->get_file_upload_preferences(NULL, $directory_id);
+		// Check to make sure the directory exists - check across all sites!
+		$directory_info = $this->EE->file_upload_preferences_model->get_file_upload_preferences(NULL, $directory_id, TRUE);
+		
 		if (count($directory_info) == 0)
 		{
 			show_error(lang('upload_destination_does_not_exist'));

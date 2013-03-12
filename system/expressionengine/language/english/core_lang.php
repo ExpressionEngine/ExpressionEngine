@@ -428,6 +428,11 @@ Confirm the fieldtype file is located in the expressionengine/third_party/ direc
 'UP13'		=>	'(UTC +13:00) Samoa Time Zone, Phoenix Islands Time, Tonga',
 'UP14'		=>	'(UTC +14:00) Line Islands',
 
+"select_timezone" =>
+"Select Timezone",
+
+"no_timezones" =>
+"No Timezones",
 
 // IGNORE
 ''=>'');

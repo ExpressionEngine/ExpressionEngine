@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -473,7 +473,10 @@ class EE_Core {
 		$this->EE->load->helper(array('url', 'form', 'quicktab'));
 
 		// Secure forms stuff
-		$this->EE->cp->secure_forms();
+		if( ! $this->EE->security->have_valid_xid())
+		{
+			return $this->EE->functions->redirect(BASE);
+		}
 		
 		// Certain variables will be included in every page, so we make sure they are set here
 		// Prevents possible PHP errors, if a developer forgets to set it explicitly.
