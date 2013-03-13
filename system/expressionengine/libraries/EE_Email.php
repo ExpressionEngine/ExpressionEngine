@@ -64,6 +64,7 @@ class EE_Email extends CI_Email {
 		/*	- email_newline => Default newline.
 		/*  - email_crlf => CRLF used in quoted-printable encoding
 		/*  - email_smtp_port => SMTP Port
+		/*  - email_smtp_crypto => Cryptographic protocol (Secure Sockets Layer or Transport Layer Security allowed) 
         /* -------------------------------------------*/
 		
 		if ($this->EE->config->item('email_newline') !== FALSE)
@@ -78,9 +79,14 @@ class EE_Email extends CI_Email {
 
 		if ($this->EE->config->item('email_smtp_port') !== FALSE)
 		{
-			$config['smtp_port'] = $this->EE->config->item('smtp_port');
+			$config['smtp_port'] = $this->EE->config->item('email_smtp_port');
 		}
 				
+		if ($this->EE->config->item('email_smtp_crypto') == 'tls' OR $this->EE->config->item('email_smtp_crypto') == 'ssl')
+		{
+			$config['smtp_crypto'] = $this->EE->config->item('email_smtp_crypto');
+		}
+		
 		$this->useragent = APP_NAME.' '.APP_VER;		
 
 		$this->initialize($config);

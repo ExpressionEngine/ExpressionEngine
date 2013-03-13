@@ -457,7 +457,7 @@ class Tools_communicate extends CP_Controller {
 
 			if ($error == TRUE)
 			{
-				show_error(lang('error_sending_email').BR.BR.implode(BR, $this->email->_debug_msg));
+				show_error(lang('error_sending_email').BR.BR.implode(BR, $this->email->print_debugger()));
 			}
 
 			// Save cache data
@@ -467,7 +467,7 @@ class Tools_communicate extends CP_Controller {
 			$this->communicate_model->save_cache_data($cache_data);
 
 			$this->cp->render('tools/email_sent', array(
-				'debug' => $this->email->_debug_msg
+				'debug' => $this->email->print_debugger()
 			));
 			
 			return;
@@ -597,7 +597,7 @@ class Tools_communicate extends CP_Controller {
 
 			if ($error == TRUE)
 			{
-				show_error(lang('error_sending_email').BR.BR.implode(BR, $this->email->_debug_msg));
+				show_error(lang('error_sending_email').BR.BR.implode(BR, $this->email->print_debugger()));
 			}
 
 			$total_sent = $this->_fetch_total($to, $cc, $bcc);
@@ -686,7 +686,7 @@ class Tools_communicate extends CP_Controller {
 					$recipient_array = array_slice($recipient_array, $total_sent);
 					$this->communicate_model->update_email_cache($total_sent, $recipient_array, $id);
 
-					show_error(lang('error_sending_email').BR.BR.implode(BR, $this->email->_debug_msg));
+					show_error(lang('error_sending_email').BR.BR.implode(BR, $this->email->print_debugger()));
 				}
 
 				$total_sent++;
@@ -698,7 +698,7 @@ class Tools_communicate extends CP_Controller {
 			$this->communicate_model->update_email_cache($total_sent, '', $id);
 
 			$this->cp->render('tools/email_sent', array(
-				'debug' => $this->email->_debug_msg,
+				'debug' => $this->email->print_debugger(),
 				'total_sent' => $total_sent
 			));
 			
@@ -917,7 +917,7 @@ class Tools_communicate extends CP_Controller {
 				$n = $total_sent + $i;
 				$this->communicate_model->update_email_cache($n, $recipient_array, $id);
 
-				show_error(lang('error_sending_email').BR.BR.implode(BR, $this->email->_debug_msg));
+				show_error(lang('error_sending_email').BR.BR.$this->email->print_debugger());
 			}
 
 			$i++;
@@ -963,7 +963,8 @@ class Tools_communicate extends CP_Controller {
 
 			$this->view->cp_page_title = lang('email_success');
 		
-			$this->cp->render('tools/email_sent', array('debug' => $this->email->_debug_msg, 'total_sent' => $total));
+			$this->cp->render('tools/email_sent', array('debug' => $this->email->print_debugger(), 'total_sent' => $total));
+			function print_debugger($include = array('headers', 'subject', 'body'))
 		}
 	}
 
