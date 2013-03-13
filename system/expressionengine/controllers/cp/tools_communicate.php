@@ -294,6 +294,12 @@ class Tools_communicate extends CP_Controller {
 	 */
 	function _attachment_handler()
 	{
+		// File Attachments?
+		if ( ! isset($_FILES['attachment']['name']) OR empty($_FILES['attachment']['name']))
+		{
+			return TRUE;
+		}
+
 		$this->load->library('upload');
 		$this->upload->initialize(array(
 			'allowed_types'	=> '*',
