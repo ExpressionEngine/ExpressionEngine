@@ -233,7 +233,7 @@ class EE_Core {
 			define('URL_THIRD_THEMES',	$this->EE->config->slash_item('theme_folder_url').'third_party/');
 		}
 
-		// ideally these won't query much
+		// Load the very, very base classes
 		$this->EE->load->library('functions');
 		$this->EE->load->library('extensions');
 
