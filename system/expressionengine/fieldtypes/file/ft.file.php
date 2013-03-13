@@ -131,9 +131,12 @@ class File_ft extends EE_Fieldtype {
 			return $file_info['raw_output'];
 		}
 		
-		$file_info = $this->_add_thumb_paths($file_info);
-		//print_r($file_info);
-		
+		// Let's allow our default thumbs to be used inside the tag pair
+		if (isset($file_info['path']) && isset($file_info['filename']) && isset($file_info['extension']))
+		{
+			$file_info['url:thumbs'] = $file_info['path'].'_thumbs/'.$file_info['filename'].'.'.$file_info['extension'];
+		}	
+
 		// Make sure we have file_info to work with
 		if ($tagdata !== FALSE AND $file_info === FALSE)
 		{
@@ -232,40 +235,14 @@ class File_ft extends EE_Fieldtype {
 			AND $file_info['extension'] !== FALSE)
 		{
 			$full_path = $file_info['path'].$file_info['filename'].'.'.$file_info['extension'];
+
 			if (isset($params['wrap']))
 			{
-				if ($params['wrap'] == 'link')
-				{
-					$this->EE->load->helper('url_helper');
-					
-					return $file_info['file_pre_format']
-						.anchor($full_path, $file_info['filename'], $file_info['file_properties'])
-						.$file_info['file_post_format'];
-				}
-				elseif ($params['wrap'] == 'image')
-				{
-					$properties = ( ! empty($file_info['image_properties'])) ? ' '.$file_info['image_properties'] : '';
-					
-					return $file_info['image_pre_format']
-						.'<img src="'.$full_path.'"'.$properties.' alt="'.$file_info['filename'].'" />'
-						.$file_info['image_post_format'];
-				}
+				return $this->_wrap_it($file_info, $params['wrap'], $full_path);
 			}
 
 			return $full_path;
 		}
-	}
-
-	function _add_thumb_paths($file_info)
-	{
-		return $file_info;
-		if (isset($file_info['path']) && isset($file_info['filename']) && isset($file_info['extension']))
-		{
-			$file_info['url:thumbs'] = $file_info['path'].'_thumbs/'.$file_info['filename'].'.'.$file_info['extension'];
-			$file_info[$this->field_name.':thumbs'] = $file_info['path'].'_thumbs/'.$file_info['filename'].'.'.$file_info['extension'];	
-		}	
-
-		return $file_info;
 	}
 
 	// --------------------------------------------------------------------
@@ -280,19 +257,59 @@ class File_ft extends EE_Fieldtype {
 	 */
 	function replace_tag_catchall($file_info, $params = array(), $tagdata = FALSE, $modifier)
 	{
-		$file_info = $this->_add_thumb_paths($file_info);
-		
+		// These are single variable tags only, so no need for replace_tag
 		if ($modifier)
 		{
 			$key = 'url:'.$modifier;
-		
-			if (isset($file_info[$key]))
+			
+			if ($modifier == 'thumbs')
 			{
-				echo $key.'  '.$file_info[$this->field_name.':'.$modifier];
-				//$file_info[$this->field_name.':'.$modifier] = $file_info[$key];	
-				//return $this->replace_tag($file_info, $params, $tagdata);
+				if (isset($file_info['path']) && isset($file_info['filename']) && isset($file_info['extension']))
+				{
+			 		$data = $file_info['path'].'_thumbs/'.$file_info['filename'].'.'.$file_info['extension'];	
+				}				
 			}
+			elseif (isset($file_info[$key]))
+			{
+				$data = $file_info[$key];
+			}
+			
+			if (isset($params['wrap']))
+			{
+				return $this->_wrap_it($file_info, $params['wrap'], $data);
+			}			
+			
+			return $data;
 		}
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Wrap it helper function
+	 *
+	 * @access	private
+	 */
+	function _wrap_it($file_info, $type, $full_path)
+	{
+		if ($type == 'link')
+		{
+			$this->EE->load->helper('url_helper');
+					
+			return $file_info['file_pre_format']
+				.anchor($full_path, $file_info['filename'], $file_info['file_properties'])
+				.$file_info['file_post_format'];
+		}
+		elseif ($type == 'image')
+		{
+			$properties = ( ! empty($file_info['image_properties'])) ? ' '.$file_info['image_properties'] : '';
+					
+			return $file_info['image_pre_format']
+				.'<img src="'.$full_path.'"'.$properties.' alt="'.$file_info['filename'].'" />'
+				.$file_info['image_post_format'];
+		}
+		
+		return $full_path;
 	}
 
 	// --------------------------------------------------------------------
