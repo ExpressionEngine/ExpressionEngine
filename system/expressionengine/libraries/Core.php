@@ -209,11 +209,30 @@ class EE_Core {
 		unset($theme_path);
 		
 		// Define Third Party Theme Path and URL
-		define('PATH_THIRD_THEMES',	PATH_THEMES.'third_party/');
-		define('URL_THIRD_THEMES',	$this->EE->config->slash_item('theme_folder_url').'third_party/');
+		if ($this->EE->config->item('path_third_themes'))
+		{
+			define(
+				'PATH_THIRD_THEMES',
+				rtrim(realpath($this->EE->config->item('path_third_themes')), '/').'/'
+			);
+		}
+		else
+		{
+			define('PATH_THIRD_THEMES',	PATH_THEMES.'third_party/');
+		}
+		
+		if ($this->EE->config->item('url_third_themes'))
+		{
+			define(
+				'URL_THIRD_THEMES',
+				rtrim($this->EE->config->item('url_third_themes'), '/').'/'
+			);
+		}
+		else
+		{
+			define('URL_THIRD_THEMES',	$this->EE->config->slash_item('theme_folder_url').'third_party/');
+		}
 
-
-		// Load the very, very base classes
 		// ideally these won't query much
 		$this->EE->load->library('functions');
 		$this->EE->load->library('extensions');

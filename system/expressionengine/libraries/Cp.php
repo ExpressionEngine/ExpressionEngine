@@ -737,7 +737,7 @@ class Cp {
 	function secure_forms()
 	{
 		$this->EE->load->library('logger');
-		$this->EE->logger->deprecate('2.6', 'EE_Security::have_valid_xid()');		
+		$this->EE->logger->deprecated('2.6', 'EE_Security::have_valid_xid()');
 		
 		$hash = '';
 		
