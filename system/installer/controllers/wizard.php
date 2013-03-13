@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -44,7 +44,7 @@ class Wizard extends CI_Controller {
 	var $content			= '';
 	var $title				= 'ExpressionEngine Installation and Update Wizard';
 	var $heading			= 'ExpressionEngine Installation and Update Wizard';
-	var $copyright			= 'Copyright 2003 - 2012 EllisLab, Inc. - All Rights Reserved';
+	var $copyright			= 'Copyright 2003 - 2013 EllisLab, Inc. - All Rights Reserved';
 	
 	var $now;
 	var $year;
@@ -107,7 +107,6 @@ class Wizard extends CI_Controller {
 		'deft_lang'				=> 'english',
 		'theme'					=> '01',
 		'server_timezone'		=> 'UTC',
-		'daylight_savings'		=> '',
 		'redirect_method'		=> 'redirect',
 		'upload_folder'			=> 'uploads/',
 		'image_path'			=> '',
@@ -685,6 +684,11 @@ class Wizard extends CI_Controller {
 		$this->load->library('javascript');
 		
 		$this->userdata['extra_header'] = $this->_install_form_extra_header($this->javascript->generate_json($this->theme_required_modules, TRUE));
+
+		$this->load->library('localize');
+
+		// Preload server timezone
+		$this->userdata['server_timezone'] = date_default_timezone_get();
 		
 		// Display the form and pass the userdata array to it	
 		$this->_set_output('install_form', $this->userdata);
@@ -1209,9 +1213,6 @@ PAPAYA;
 		$prefs = array(
 			'db_conntype'		=> array(
 				'persistent' => array('persistent', 'nonpersistent')
-			),
-			'daylight_savings'	=> array(
-				'y' => array('dst1', 'dst2')
 			)
 		);
 		
@@ -2385,9 +2386,7 @@ PAPAYA;
 			'time_format'					=>	'us',
 			'server_timezone'				=>	$this->userdata['server_timezone'],
 			'server_offset'					=>	'',
-			'daylight_savings'				=>	$this->userdata['daylight_savings'],
 			'default_site_timezone'			=>	$this->userdata['server_timezone'],
-			'default_site_dst'				=>	$this->userdata['daylight_savings'],
 			'honor_entry_dst'				=>	'y',
 			'mail_protocol'					=>	'mail',
 			'smtp_server'					=>	'',
@@ -2445,7 +2444,7 @@ PAPAYA;
 			'prv_msg_html_format'			=> 'safe',
 			'prv_msg_auto_links'			=> 'y',
 			'prv_msg_max_chars'				=> '6000',
-			'strict_urls'					=>	'n',
+			'strict_urls'					=>	'y',
 			'site_404'						=>	'',
 			'save_tmpl_revisions'			=>	'n',
 			'max_tmpl_revisions'			=>	'5',
@@ -2541,9 +2540,7 @@ PAPAYA;
 			'time_format',
 			'server_timezone',
 			'server_offset',
-			'daylight_savings',
 			'default_site_timezone',
-			'default_site_dst',
 			'honor_entry_dst',
 			'mail_protocol',
 			'smtp_server',

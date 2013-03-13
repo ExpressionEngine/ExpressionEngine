@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -361,7 +361,7 @@ class Comment_mcp {
 				$comment->email, '', 'class="less_important_link"'
 			);
 
-			$comment->comment_date = $this->EE->localize->set_human_time(
+			$comment->comment_date = $this->EE->localize->human_time(
 				$comment->comment_date
 			);
 
@@ -1622,19 +1622,7 @@ class Comment_mcp {
 	 */
 	public function update_stats($entry_ids, $channel_ids, $author_ids)
 	{
-		foreach($entry_ids as $entry_id)
-		{
-			$query = $this->EE->db->query("SELECT MAX(comment_date) AS max_date FROM exp_comments WHERE status = 'o' AND entry_id = '".$this->EE->db->escape_str($entry_id)."'");
-
-			$comment_date = ($query->num_rows() == 0 OR ! is_numeric($query->row('max_date') )) ? 0 : $query->row('max_date') ;
-
-			$query = $this->EE->db->query("SELECT COUNT(*) AS count FROM exp_comments WHERE entry_id = '".$this->EE->db->escape_str($entry_id)."' AND status = 'o'");
-
-			$this->EE->db->set('comment_total', $query->row('count'));
-			$this->EE->db->set('recent_comment_date', $comment_date);
-			$this->EE->db->where('entry_id', $entry_id);
-			$this->EE->db->update('channel_titles');
-		}
+		$this->EE->stats->update_channel_title_comment_stats($entry_ids);
 
 		// Quicker and updates just the channels
 		foreach($channel_ids as $channel_id)
@@ -1642,19 +1630,10 @@ class Comment_mcp {
 			$this->EE->stats->update_comment_stats($channel_id, '', FALSE);
 		}
 
-		// Updates the total stats
+		// Updates the total stats for the sites table
 		$this->EE->stats->update_comment_stats();
 
-		foreach($author_ids as $author_id)
-		{
-			$res = $this->EE->db->query("SELECT COUNT(comment_id) AS comment_total, MAX(comment_date) AS comment_date FROM exp_comments WHERE author_id = '$author_id'");
-			$resrow = $res->row_array();
-
-			$comment_total = $resrow['comment_total'] ;
-			$comment_date  = ( ! empty($resrow['comment_date'])) ? $resrow['comment_date'] : 0;
-
-			$this->EE->db->query($this->EE->db->update_string('exp_members', array('total_comments' => $comment_total, 'last_comment_date' => $comment_date), "member_id = '$author_id'"));
-		}
+		$this->EE->stats->update_authors_comment_stats($author_ids);
 
 		return;
 	}

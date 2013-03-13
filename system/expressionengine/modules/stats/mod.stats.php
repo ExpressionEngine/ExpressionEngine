@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -132,7 +132,7 @@ class Stats {
 												$key, 
 												( ! $this->EE->stats->statdata($date) 
 													OR $this->EE->stats->statdata($date) == 0) ? '--' : 
-												$this->EE->localize->decode_date($val, 
+												$this->EE->localize->format_date($val, 
 																$this->EE->stats->statdata($date)), 
 												$this->EE->TMPL->tagdata
 											 );

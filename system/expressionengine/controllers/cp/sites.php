@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -498,7 +498,7 @@ class Sites extends CP_Controller {
 			);
 			
 			// Short name change, possibly need to update the template file folder
-			if ($old->row('site_name') == $this->input->post('site_name'))
+			if ($old->row('site_name') != $this->input->post('site_name'))
 			{
 				$prefs = $old->row('site_template_preferences');
 				$prefs = unserialize(base64_decode($prefs));

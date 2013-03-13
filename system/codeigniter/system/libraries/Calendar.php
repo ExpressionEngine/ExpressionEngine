@@ -6,7 +6,7 @@
  *
  * @package		CodeIgniter
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2008 - 2013, EllisLab, Inc.
  * @license		http://codeigniter.com/user_guide/license.html
  * @link		http://codeigniter.com
  * @since		Version 1.0
@@ -334,7 +334,7 @@ class CI_Calendar {
 	 * @param	integer	the year
 	 * @return	array
 	 */
-	function adjust_date($month, $year)
+	function adjust_date($month, $year, $pad = FALSE)
 	{
 		$date = array();
 
@@ -353,7 +353,7 @@ class CI_Calendar {
 			$date['year']--;
 		}
 
-		if (strlen($date['month']) == 1)
+		if ($pad == TRUE AND strlen($date['month']) == 1)
 		{
 			$date['month'] = '0'.$date['month'];
 		}

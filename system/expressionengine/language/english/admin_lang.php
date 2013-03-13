@@ -1120,16 +1120,7 @@ $lang = array(
 "European",
 
 "server_timezone" => 
-"Server Time Zone",
-
-"server_offset" => 
-"Server Offset (in minutes)",
-
-"server_offset_explain" => 
-"Use the minus sign to subtract minutes: -15",
-
-"daylight_savings" =>
-"Daylight Saving Time",
+"Server Timezone",
 
 "cookie_cfg" => 
 "Cookie Settings",

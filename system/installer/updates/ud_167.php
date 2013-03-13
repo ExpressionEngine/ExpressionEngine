@@ -5,7 +5,7 @@
 -----------------------------------------------------
  http://ellislab.com/
 -----------------------------------------------------
- Copyright (c) 2003 - 2012, EllisLab, Inc.
+ Copyright (c) 2003 - 2013, EllisLab, Inc.
 =====================================================
  THIS IS COPYRIGHTED SOFTWARE
  PLEASE READ THE LICENSE AGREEMENT

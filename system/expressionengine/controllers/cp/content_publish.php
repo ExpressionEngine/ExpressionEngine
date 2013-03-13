@@ -7,7 +7,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -417,7 +417,7 @@ class Content_publish extends CP_Controller {
 		// @todo check for errors
 		
 		$msg = lang('autosave_success');
-		$time = $this->localize->set_human_time($this->localize->now);
+		$time = $this->localize->human_time($this->localize->now);
 		$time = trim(strstr($time, ' '));
 		
 		$this->output->send_ajax_response(array(
@@ -673,15 +673,10 @@ class Content_publish extends CP_Controller {
 				{
 					if ($resrow[$key] != 0)
 					{
-						$localize = TRUE;
-						$date = $resrow[$key];
-						if ($resrow['field_dt_'.$expl['1']] != '')
-						{
-							$date = $this->localize->simpl_offset($date, $resrow['field_dt_'.$expl['1']]);
-							$localize = FALSE;
-						}
+						$localize = ($resrow['field_dt_'.$expl['1']] != '')
+							? $resrow['field_dt_'.$expl['1']] : TRUE;
 
-						$r .= $this->localize->set_human_time($date, $localize);
+						$r .= $this->localize->human_time($resrow[$key], $localize);
 					}
 				}
 				else
@@ -1966,7 +1961,7 @@ class Content_publish extends CP_Controller {
 					
 					$this->table->add_row(array(
 							'<strong>' . lang('revision') . ' ' . $j . '</strong>',
-							$this->localize->set_human_time($row->version_date),
+							$this->localize->human_time($row->version_date),
 							$row->screen_name,
 							$revlink
 						)

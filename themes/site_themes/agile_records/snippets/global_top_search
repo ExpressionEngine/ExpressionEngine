@@ -1,12 +1,12 @@
-<!-- Simple Search Form: http://expressionengine.com/user_guide/modules/search/index.html#simple 
+<!-- Simple Search Form: http://ellislab.com/expressionengine/user-guide/modules/search/index.html#simple 
 
 The parameters here help to identify what templates to use and where to search:
 
-Results page - result_page: http://expressionengine.com/user_guide/modules/search/simple.html#par_result_page
+Results page - result_page: http://ellislab.com/expressionengine/user-guide/modules/search/simple.html#par_result_page
 
-No Results found: no_result_page: http://expressionengine.com/user_guide/modules/search/simple.html#par_no_result_page
+No Results found: no_result_page: http://ellislab.com/expressionengine/user-guide/modules/search/simple.html#par_no_result_page
 
-search_in - search in titles? titles and entries? titles, entries?  http://expressionengine.com/user_guide/modules/search/simple.html#par_search_in-->
+search_in - search in titles? titles and entries? titles, entries?  http://ellislab.com/expressionengine/user-guide/modules/search/simple.html#par_search_in-->
 
 {exp:search:simple_form channel="news" result_page="search/results" no_result_page="search/no_results" search_in="everywhere"}
 <fieldset>

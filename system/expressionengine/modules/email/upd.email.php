@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -53,7 +53,7 @@ class Email_upd {
 		sender_username varchar(50) NOT NULL ,
 		number_recipients int(4) unsigned default '1' NOT NULL,
 		PRIMARY KEY `email_id` (`email_id`) 
-		) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
+		) ENGINE=MyISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 		
 		foreach ($sql as $query)
 		{

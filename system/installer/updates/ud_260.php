@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.6
@@ -47,35 +47,13 @@ class Updater {
 	{
 		$this->EE->load->dbforge();
 		
-		$this->_change_member_totals_length();
+		$this->_add_template_name_to_dev_log();
+		$this->_drop_dst();
+		$this->_update_timezone_column_lengths();
 		$this->_update_session_table();
 		$this->_update_config_add_cookie_httponly();
 
 		return TRUE;
-	}
-	
-	// --------------------------------------------------------------------
-	
-	/**
-	 * Changes column type for `total_entries` and `total_comments` in the
-	 * members table from smallint to mediumint to match the columns in the
-	 * channels table and stats table.
-	 */
-	private function _change_member_totals_length()
-	{
-		$this->EE->dbforge->modify_column(
-			'members',
-			array(
-				'total_entries' => array(
-					'name' => 'total_entries',
-					'type' => 'mediumint(8)'
-				),
-				'total_comments' => array(
-					'name' => 'total_comments',
-					'type' => 'mediumint(8)'
-				),
-			)
-		);
 	}
 
 	// --------------------------------------------------------------------
@@ -84,6 +62,125 @@ class Updater {
 	 * update Session table
 	 *
 	 * @return TRUE
+	 */
+	private function _add_template_name_to_dev_log()
+	{
+		if ( ! $this->EE->db->field_exists('template_id', 'developer_log'))
+		{
+			$this->EE->dbforge->add_column(
+				'developer_log',
+				array(
+					'template_id' => array(
+						'type'			=> 'int',
+						'constraint'	=> 10,
+						'unsigned'		=> TRUE,
+						'default'		=> 0,
+						'null'			=> FALSE
+					),
+					'template_name' => array(
+						'type'			=> 'varchar',
+						'constraint'	=> 100
+					),
+					'template_group' => array(
+						'type'			=> 'varchar',
+						'constraint'	=> 100
+					),
+					'addon_module' => array(
+						'type'			=> 'varchar',
+						'constraint'	=> 100
+					),
+					'addon_method' => array(
+						'type'			=> 'varchar',
+						'constraint'	=> 100
+					),
+					'snippets' => array(
+						'type'			=> 'text'
+					)
+				)
+			);
+		}
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Drop DST columns!
+	 */
+	private function _drop_dst()
+	{
+		if ($this->EE->db->field_exists('daylight_savings', 'members'))
+		{
+			$this->EE->dbforge->drop_column('members', 'daylight_savings');
+		}
+
+		if ($this->EE->db->field_exists('dst_enabled', 'channel_titles'))
+		{
+			$this->EE->dbforge->drop_column('channel_titles', 'dst_enabled');
+		}
+
+		if ($this->EE->db->field_exists('dst_enabled', 'channel_entries_autosave'))
+		{
+			$this->EE->dbforge->drop_column('channel_entries_autosave', 'dst_enabled');
+		}
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * We need to store PHP timezone identifiers in the database instead of
+	 * our shorthand names so that PHP can properly localize dates, so we
+	 * need to increase the column lengths anywhere timezones are stored
+	 */
+	private function _update_timezone_column_lengths()
+	{
+		$this->EE->dbforge->modify_column(
+			'members',
+			array(
+				'timezone' => array(
+					'name' 			=> 'timezone',
+					'type' 			=> 'varchar',
+					'constraint' 	=> 50
+				)
+			)
+		);
+
+		// Get all date fields, we'll need to update their timezone column
+		// lengths in the channel_data table
+		$date_fields = $this->EE->db
+			->select('field_id')
+			->get_where(
+				'channel_fields',
+				array('field_type' => 'date')
+			)->result_array();
+
+		foreach ($date_fields as $field)
+		{
+			$field_name = 'field_dt_'.$field['field_id'];
+
+			if ($this->EE->db->field_exists($field_name, 'channel_data'))
+			{
+				$this->EE->dbforge->modify_column(
+					'channel_data',
+					array(
+						$field_name => array(
+							'name' 			=> $field_name,
+							'type' 			=> 'varchar',
+							'constraint' 	=> 50
+						)
+					)
+				);
+			}
+		}
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Update Session table
+	 * 
+	 * We duplicate this from the 2.5.4 update because the changes weren't
+	 * made to the schema file and therefore aren't present for new installs
+	 * of 2.5.4 or 2.5.5
 	 */
 	private function _update_session_table()
 	{

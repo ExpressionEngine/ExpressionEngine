@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -169,7 +169,7 @@ class Ip_to_nation_mcp {
 		// their database in the next step.
 		if (count($this->_cache_files('csv')))
 		{
-			$this->session->set_flashdata('message_failure', lang('@todo cache full'));
+			$this->session->set_flashdata('message_failure', lang('cache_full'));
 			$this->functions->redirect($this->base_url.AMP.'method=index');
 		}
 
@@ -183,7 +183,7 @@ class Ip_to_nation_mcp {
 				$this->cp->masked_url('http://www.maxmind.com/app/geolite'),
 				lang('update_data_provider')
 			),
-			'last_update' => ($last_update) ? $this->localize->set_human_time($last_update) : FALSE
+			'last_update' => ($last_update) ? $this->localize->human_time($last_update) : FALSE
 		);
 
 		$this->cp->add_js_script('fp_module', 'ip_to_nation');
@@ -320,7 +320,12 @@ class Ip_to_nation_mcp {
 	{
 		$ext = '{'.str_replace(' ', '', $ext).'}';
 		$path = $this->_cache_path();
-		return glob($path.'*.'.$ext, GLOB_BRACE);
+		$matches = glob($path.'*.'.$ext, GLOB_BRACE);
+		
+        //On some systems it is impossible to distinguish between empty match and an error. 
+		$matches = ( ! is_array($matches)) ? array() : $matches;
+		
+		return $matches;
 	}
 
 	// ----------------------------------------------------------------------

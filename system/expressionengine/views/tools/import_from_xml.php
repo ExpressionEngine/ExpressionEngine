@@ -35,7 +35,7 @@
 		</tr>
 		<tr class="even">
 			<td><?=lang('timezone', 'timezone')?></td>
-			<td><?=timezone_menu()?></td>
+			<td><?=$timezone_menu?></td>
 		</tr>
 		<tr class="odd">
 			<td><?=lang('time_format', 'time_format')?></td>
