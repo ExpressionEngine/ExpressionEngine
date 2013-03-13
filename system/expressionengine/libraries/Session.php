@@ -158,8 +158,11 @@ class EE_Session {
 				break;
 		}
 
+		// Check remember me
+		$remembered = (bool) $this->EE->remember->exists();
+
 		// Did we find a session ID?
-		$session_id = ($this->sdata['session_id'] != '') ? TRUE : FALSE;
+		$session_id = ($this->sdata['session_id'] != '' OR ($this->validation == 'c' && $remembered)) ? TRUE : FALSE;
 
 		// Fetch Session Data		
 		// IMPORTANT: The session data must be fetched before the member data so don't move this.
@@ -167,9 +170,11 @@ class EE_Session {
 		{
 			$this->session_exists = TRUE;
 		}
-		
+
+		$member_exists = (bool) $this->fetch_member_data();
+
 		// Update/Create Session and fetch member data
-		if ($session_id === FALSE OR $this->fetch_member_data() === FALSE)
+		if ($session_id === FALSE OR $member_exists === FALSE)
 		{
 			$this->fetch_guest_data();
 		}
@@ -222,6 +227,8 @@ class EE_Session {
 		
 		unset($this->sdata);
 		unset($session_id);
+		unset($rememebered);
+		unset($member_exists);
 	}
 
 	// --------------------------------------------------------------------				
@@ -1091,7 +1098,7 @@ class EE_Session {
 		$this->EE->db->from(array('members m', 'member_groups g'))
 			->where('g.site_id', (int) $this->EE->config->item('site_id'))
 			->where('m.group_id', ' g.group_id', FALSE);
-		
+
 		$member_id = $this->sdata['member_id'];
 		
 		// remember me
