@@ -1,4 +1,3 @@
-<?php $this->lang->loadfile('fieldtypes'); ?>
 
 <?=form_label(lang('grid_config'))?><br>
 <i class="instruction_text"><?=lang('grid_config_desc')?></i>
@@ -18,22 +17,22 @@
 
 			<div class="grid_col_settings">
 				<div class="grid_col_settings_section grid_data_type alt">
-					<?=form_dropdown('grid[cols]', $fieldtypes, NULL, 'class="grid_col_select"')?>
+					<?=form_dropdown('grid[cols][new][0][type]', $fieldtypes, NULL, 'class="grid_col_select"')?>
 
 					<a href="#" class="grid_col_settings_delete" title="Delete Column">Delete Column</a>
 				</div>
 				<div class="grid_col_settings_section text">
-					<?=form_input('column_name')?>
+					<?=form_input('grid[cols][new][0][name]')?>
 				</div>
 				<div class="grid_col_settings_section text alt">
-					<?=form_input('column_label')?>
+					<?=form_input('grid[cols][new][0][label]')?>
 				</div>
 				<div class="grid_col_settings_section text">
-					<?=form_input('column_instr')?>
+					<?=form_input('grid[cols][new][0][instr]')?>
 				</div>
 				<div class="grid_col_settings_section grid_data_search alt">
-					<?=form_checkbox('column_required', 'column_required').form_label(lang('grid_col_required'), 'column_required')?>
-					<?=form_checkbox('column_searchable', 'column_searchable').form_label(lang('grid_col_searchable'), 'column_searchable')?>
+					<?=form_checkbox('grid[cols][new][0][required]', 'column_required').form_label(lang('grid_col_required'))?>
+					<?=form_checkbox('grid[cols][new][0][searchable]', 'column_searchable').form_label(lang('grid_col_searchable'))?>
 				</div>
 				<?php foreach ($settings as $key => $value): ?>
 					<?php foreach ($value as $index => $setting): ?>

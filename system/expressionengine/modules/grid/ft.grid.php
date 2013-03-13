@@ -104,8 +104,22 @@ class Grid_ft extends EE_Fieldtype {
 			$vars['fieldtypes'][$key] = $value['name'];
 		}
 
+		// Fresh settings forms ready to be used for added columns
 		$vars['settings'] = $this->EE->grid_lib->get_grid_fieldtype_settings_forms();
 
+		// Go through each setting change input names to allow building of
+		// a POST array upon submission
+		foreach ($vars['settings'] as $key => $value)
+		{
+			// Searches for: name="field_setting_name" (single or double quotes)
+			// Replaces with: name="grid[cols][new][][options][field_setting_name]"
+			$vars['settings'][$key] = preg_replace(
+				'/(<[input|select][^>]*)name=["\']([^"]*)["\']/',
+				'$1name="grid[cols][new][0][options][$2]"',
+				$value
+			);
+		}
+		
 		// The big column configuration row, generated from the settings view
 		$this->EE->table->add_row(
 			$this->EE->load->view('settings', $vars, TRUE)
@@ -119,7 +133,10 @@ class Grid_ft extends EE_Fieldtype {
 	// --------------------------------------------------------------------
 
 	function save_settings($data)
-	{		
+	{
+		$data['grid'] = $this->EE->input->post('grid');
+		$data['field_fmt'] = 'none';
+		
 		return $data;
 	}	
 }
