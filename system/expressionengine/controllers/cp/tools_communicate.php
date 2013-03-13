@@ -964,7 +964,6 @@ class Tools_communicate extends CP_Controller {
 			$this->view->cp_page_title = lang('email_success');
 		
 			$this->cp->render('tools/email_sent', array('debug' => $this->email->print_debugger(), 'total_sent' => $total));
-			function print_debugger($include = array('headers', 'subject', 'body'))
 		}
 	}
 
