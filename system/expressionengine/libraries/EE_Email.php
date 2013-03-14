@@ -79,7 +79,10 @@ class EE_Email extends CI_Email {
 
 		if ($this->EE->config->item('email_smtp_port') !== FALSE)
 		{
-			$config['smtp_port'] = $this->EE->config->item('smtp_port');
+			$this->EE->load->library('logger');
+			$this->EE->logger->deprecated('2.6', '$config["smtp_port"] = "'.$this->EE->config->item('email_smtp_port').'";');
+
+			$config['smtp_port'] = $this->EE->config->item('email_smtp_port');
 		}
 				
 		$this->useragent = APP_NAME.' '.APP_VER;		
