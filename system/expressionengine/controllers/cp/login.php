@@ -563,6 +563,7 @@ class Login extends CP_Controller {
 		if ( ! empty($_POST))
 		{
 			$this->load->library('form_validation');
+			$this->lang->loadfile('myaccount');
 			
 			$this->form_validation->set_rules('password', 'lang:new_password', 'valid_password|required');
 			$this->form_validation->set_rules('password_confirm', 'lang:new_password_confirm', 'matches[password]|required');
