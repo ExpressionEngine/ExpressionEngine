@@ -12,8 +12,4 @@
 <p class="go_notice"><?=lang('total_emails_sent')?> <?=$total_sent?></p>
 <?php endif; ?>
 
-<?php if ($debug): ?>
-	<?php foreach ($debug as $message): ?>
-	<?=$message?><br />
-	<?php endforeach; ?>
-<?php endif; ?>
+<?=$debug?><br />
