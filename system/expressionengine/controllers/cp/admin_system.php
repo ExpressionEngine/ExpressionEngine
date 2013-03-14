@@ -127,9 +127,9 @@ class Admin_system extends CP_Controller {
 		{
 			show_error(lang('unauthorized_access'));
 		}
+
 		if (count($_POST))
 		{
-var_dump('here');
 			$this->load->helper('html');
 	
 			// Grab the field definitions for the settings of this type
