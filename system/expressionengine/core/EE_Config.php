@@ -450,6 +450,7 @@ class EE_Config Extends CI_Config {
 			'default_site_timezone',
 			'mail_protocol',
 			'smtp_server',
+			'smtp_port',
 			'smtp_username',
 			'smtp_password',
 			'email_debug',
