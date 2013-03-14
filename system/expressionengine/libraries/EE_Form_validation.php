@@ -782,7 +782,7 @@ class EE_Form_validation extends CI_Form_validation {
 			return FALSE;
 		}
 				
-		$path = $this->CI->functions->remove_double_slashes(PATH_DICT.$this->CI->config->item('name_of_dictionary_file'));
+		$path = reduce_double_slashes(PATH_DICT.$this->CI->config->item('name_of_dictionary_file'));
 		
 		if ( ! file_exists($path))
 		{

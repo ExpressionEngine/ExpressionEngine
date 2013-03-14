@@ -145,7 +145,7 @@ class EE_Functions {
  
 		$base = $this->fetch_site_index(0, $sess_id).'/'.trim_slashes($segment);
 		
-		$out = $this->remove_double_slashes($base);			
+		$out = reduce_double_slashes($base);			
 						
 		$this->cached_url[$full_segment] = $out;
 						
@@ -179,7 +179,7 @@ class EE_Functions {
            $base .= '/';
        }
        
-       $out = $this->remove_double_slashes($base);
+       $out = reduce_double_slashes($base);
                
        return $out;          
 	}
@@ -195,7 +195,7 @@ class EE_Functions {
 	 */
 	function fetch_current_uri()
 	{ 
-		return rtrim($this->remove_double_slashes($this->fetch_site_index(1).$this->EE->uri->uri_string), '/');
+		return rtrim(reduce_double_slashes($this->fetch_site_index(1).$this->EE->uri->uri_string), '/');
 	}
 
 	// --------------------------------------------------------------------
@@ -586,7 +586,7 @@ class EE_Functions {
 			{
 				if ($this->EE->session->tracker[$offset] != 'index')
 				{
-					return $this->remove_double_slashes($this->fetch_site_index().'/'.$this->EE->session->tracker[$offset]);
+					return reduce_double_slashes($this->fetch_site_index().'/'.$this->EE->session->tracker[$offset]);
 				}
 			}
 		}
@@ -660,7 +660,7 @@ class EE_Functions {
 			}			
 		} 
 		
-		return $this->remove_double_slashes($ret);
+		return reduce_double_slashes($ret);
 	}
 	
 	// --------------------------------------------------------------------
