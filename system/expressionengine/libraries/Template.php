@@ -1492,8 +1492,6 @@ class EE_Template {
 	 */
 	public function swap_var_single($search, $replace, $source)
 	{
-		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated('2.5');
 		return str_replace(LD.$search.RD, $replace, $source);  
 	}
 
@@ -1512,8 +1510,6 @@ class EE_Template {
 	 */
 	public function swap_var_pairs($open, $close, $source)
 	{
-		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated('2.5');
 		return preg_replace("/".LD.preg_quote($open).RD."(.*?)".LD.'\/'.$close.RD."/s", "\\1", $source); 
 	}
 
@@ -1532,8 +1528,6 @@ class EE_Template {
 	 */
 	public function delete_var_pairs($open, $close, $source)
 	{
-		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated('2.5');
 		return preg_replace("/".LD.preg_quote($open).RD."(.*?)".LD.'\/'.$close.RD."/s", "", $source); 
 	}
 
@@ -1551,9 +1545,6 @@ class EE_Template {
 	 */
 	public function fetch_data_between_var_pairs($str, $variable)
 	{
-		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated('2.5');
-
 		if ($str == '' OR $variable == '')
 			return;
 		
