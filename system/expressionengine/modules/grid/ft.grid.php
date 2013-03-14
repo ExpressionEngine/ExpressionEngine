@@ -28,38 +28,98 @@ class Grid_ft extends EE_Fieldtype {
 		'name'		=> 'Grid',
 		'version'	=> '1.0'
 	);
+
+	public function install()
+	{
+		$columns = array(
+			'col_id' => array(
+				'type'				=> 'int',
+				'constraint'		=> 10,
+				'unsigned'			=> TRUE,
+				'auto_increment'	=> TRUE
+			),
+			'field_id' => array(
+				'type'				=> 'int',
+				'constraint'		=> 10,
+				'unsigned'			=> TRUE
+			),
+			'col_order' => array(
+				'type'				=> 'int',
+				'constraint'		=> 3,
+				'unsigned'			=> TRUE
+			),
+			'col_type' => array(
+				'type'				=> 'varchar',
+				'constraint'		=> 50
+			),
+			'col_label' => array(
+				'type'				=> 'varchar',
+				'constraint'		=> 50
+			),
+			'col_name' => array(
+				'type'				=> 'varchar',
+				'constraint'		=> 32
+			),
+			'col_instructions' => array(
+				'type'				=> 'text'
+			),
+			'col_required' => array(
+				'type'				=> 'char',
+				'constraint'		=> 1
+			),
+			'col_search' => array(
+				'type'				=> 'char',
+				'constraint'		=> 1
+			),
+			'col_settings' => array(
+				'type'				=> 'text'
+			)
+		);
+
+		$this->EE->load->dbforge();
+		$this->EE->dbforge->add_field($columns);
+		$this->EE->dbforge->add_key('col_id', TRUE);
+		$this->EE->dbforge->create_table('grid_columns');
+	}
+
+	// --------------------------------------------------------------------
+	
+	public function uninstall()
+	{
+		// TODO: delete stuff
+	}
 	
 	// --------------------------------------------------------------------
 
-	function validate($data)
+	public function validate($data)
 	{
 		return TRUE;
 	}
 
 	// --------------------------------------------------------------------
 
-	function display_field($data)
+	public function display_field($data)
 	{
 		return 'yeah!';
 	}
 
 	// --------------------------------------------------------------------
 
-	function save($data)
+	public function save($data)
 	{
 		
 	}
 
 	// --------------------------------------------------------------------
 
-	function replace_tag($data, $params = '', $tagdata = '')
+	public function replace_tag($data, $params = '', $tagdata = '')
 	{
 		
 	}
 	
 	// --------------------------------------------------------------------
 	
-	function display_settings($data)
+	public function display_settings($data)
 	{
 		$this->EE->lang->loadfile('grid');
 
@@ -73,7 +133,7 @@ class Grid_ft extends EE_Fieldtype {
 			form_input(array(
 				'name' => 'grid_min_rows',
 				'id' => 'grid_min_rows',
-				'value' => '0',
+				'value' => (isset($data['grid_min_rows'])) ? $data['grid_min_rows'] : 0,
 				'class' => 'grid_input_text_small'
 			)).
 			'<div class="grid_input_label_group">'.
@@ -86,7 +146,7 @@ class Grid_ft extends EE_Fieldtype {
 			form_input(array(
 				'name' => 'grid_max_rows',
 				'id' => 'grid_max_rows',
-				'value' => '',
+				'value' => (isset($data['grid_max_rows'])) ? $data['grid_max_rows'] : '',
 				'class' => 'grid_input_text_small'
 			)).
 			'<div class="grid_input_label_group">'.
@@ -132,13 +192,22 @@ class Grid_ft extends EE_Fieldtype {
 	
 	// --------------------------------------------------------------------
 
-	function save_settings($data)
+	public function save_settings($data)
 	{
-		$data['grid'] = $this->EE->input->post('grid');
-		$data['field_fmt'] = 'none';
-		
 		return $data;
-	}	
+	}
+
+	public function post_save_settings($data)
+	{
+		$this->EE->load->library('grid_lib');
+
+		// Need to get the field ID of the possibly newly-created field, so
+		// we'll actually re-save the field settings in the Grid library
+		$data['field_id'] = key($this->EE->api_channel_fields->settings);
+		$data['grid'] = $this->EE->input->post('grid');
+
+		$this->EE->grid_lib->apply_settings($data);
+	}
 }
 
 /* End of file ft.grid.php */

@@ -27,6 +27,7 @@
 class Grid_lib {
 
 	private $_fieldtypes = array();
+	private $_table_prefix = 'grid_field_';
 	
 	public function __construct()
 	{
@@ -92,6 +93,73 @@ class Grid_lib {
 		}
 
 		return $settings;
+	}
+
+	// ------------------------------------------------------------------------
+	
+	public function apply_settings($settings)
+	{
+		$table_name = $this->_table_prefix . $settings['field_id'];
+
+		// Create field table if it doesn't exist
+		if ( ! $this->EE->db->table_exists($table_name))
+		{
+			$db_columns = array(
+				'row_id' => array(
+					'type'				=> 'int',
+					'constraint'		=> 10,
+					'unsigned'			=> TRUE,
+					'auto_increment'	=> TRUE
+				),
+				'row_order' => array(
+					'type'				=> 'int',
+					'constraint'		=> 10,
+					'unsigned'			=> TRUE
+				)
+			);
+
+			$this->EE->load->dbforge();
+			$this->EE->dbforge->add_field($db_columns);
+			$this->EE->dbforge->add_key('row_id', TRUE);
+			$this->EE->dbforge->create_table($table_name);
+		}
+
+		foreach ($settings['grid']['cols']['new'] as $key => $column)
+		{
+			$this->_add_column_to_field($column, $settings['field_id']);
+		}
+	}
+
+	private function _add_column_to_field($column, $field_id)
+	{
+		$ft_api = $this->EE->api_channel_fields;
+		$ft_api->setup_handler($column['type']);
+
+		$db_columns = array();
+
+		// TODO: insert into columns table, get insert_id for col_id
+		$col_id = 1;
+
+		if ($ft_api->check_method_exists('grid_settings_modify_column'))
+		{
+			$db_columns = array_merge(
+				$db_columns,
+				$ft_api->apply('grid_settings_modify_column', array($settings))
+			);
+		}
+		else
+		{
+			$db_columns['col_id_'.$col_id] = array(
+				'type' => 'text',
+				'null' => TRUE
+			);
+			$db_columns['col_ft_'.$col_id] = array(
+				'type' => 'tinytext',
+				'null' => TRUE
+			);
+		}
+
+		$this->EE->load->dbforge();
 	}
 }
 
