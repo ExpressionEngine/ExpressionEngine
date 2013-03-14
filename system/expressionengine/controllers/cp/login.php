@@ -560,10 +560,18 @@ class Login extends CP_Controller {
 			return show_error(lang('id_not_found'));
 		}
 
+		$member_id = $member_id_query->row('member_id');
+
 		if ( ! empty($_POST))
 		{
 			$this->load->library('form_validation');
 			$this->lang->loadfile('myaccount');
+
+			// Put username into $_POST for valid_password validation
+			$_POST['username'] = $this->db->select('username')
+				->where('member_id', $member_id)
+				->get('members')
+				->row('username');
 			
 			$this->form_validation->set_rules('password', 'lang:new_password', 'valid_password|required');
 			$this->form_validation->set_rules('password_confirm', 'lang:new_password_confirm', 'matches[password]|required');
@@ -573,14 +581,14 @@ class Login extends CP_Controller {
 				// Update the member row with the new password.
 				$this->load->library('auth');
 				$this->auth->update_password(
-					$member_id_query->row('member_id'),
+					$member_id,
 					$this->input->post('password')
 				);
 
 				// Invalidate the old token.  While we're at it, may as well wipe out expired
 				// tokens too, just to keep them from building up.
 				$this->db->where('date <', $a_day_ago)
-					->or_where('member_id', $member_id_query->row('member_id'))
+					->or_where('member_id', $member_id)
 					->delete('reset_password');
 
 				// Show them a success message with a link back to the login
