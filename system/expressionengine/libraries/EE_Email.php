@@ -151,6 +151,62 @@ class EE_Email extends CI_Email {
 		
 		return parent::_spool_email();
 	}
+	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Mime Types
+	 *
+	 * @param	string
+	 * @return	string
+	 */
+	protected function _mime_types($ext = '')
+	{
+		static $mimes;
+
+		$ext = strtolower($ext);
+
+		if ( ! is_array($mimes))
+		{
+			include(APPPATH.'config/mimes.php');			
+		}
+
+		if (isset($mimes[$ext]))
+		{
+			return is_array($mimes[$ext])
+				? current($mimes[$ext])
+				: $mimes[$ext];
+		}
+
+		return 'application/x-unknown-content-type';
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Removed from CI, here temporarily during deprecation period
+	 */
+	function _get_ip()
+	{
+		$this->EE->load->library('logger');
+		$this->EE->logger->deprecated('2.6', 'Email::_get_ip()');
+
+		// Why was this ever here?
+		return $this->EE->input->ip_address();
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Removed from CI, here temporarily during deprecation period
+	 */
+	function _set_header($header, $value)
+	{
+		$this->EE->load->library('logger');
+		$this->EE->logger->deprecated('2.6', 'Email::_set_header()');
+
+		$this->set_header($header, $value);
+	}
 }
 // END CLASS
 
