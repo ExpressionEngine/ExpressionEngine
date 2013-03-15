@@ -1720,7 +1720,7 @@ class Safecracker_lib
 	public function decrypt_input($input, $xss_clean = TRUE)
 	{
 		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated('2.5.6', 'safecracker_lib::decrypt_input()');
+		$this->EE->logger->deprecated('2.6.0');
 		
 		if (function_exists('mcrypt_encrypt'))
 		{
@@ -1805,7 +1805,7 @@ class Safecracker_lib
 	public function encrypt_input($input)
 	{
 		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated('2.5.6', 'Safecracker_lib::encrypt_input()');
+		$this->EE->logger->deprecated('2.6.0');
 		
 		if ( ! function_exists('mcrypt_encrypt'))
 		{
