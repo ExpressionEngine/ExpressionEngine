@@ -64,47 +64,39 @@ require_once(APPPATH.'libraries/datastructures/Tree.php');
  * 	{/exp:channel:entires}
  * 
  * 
- * Since the leaf tags also contain the names for each level above them,
- * we only need to pull the leaves out of the single_variables and from
- * that we can generate our array. In our above example, the leaves would
- * be the following:
- * 
- * {games:home:title}
- * {games:away:title}
- * {games:home:players;number}
- * {games:home:players:first_name}
- * {games:home:players:last_name}
- * {games:away:players:number}
- * {games:away:players:first_name}
- * {games:away:players:last_name}
- * 
- * Each section of those names corresponds to a field and thus a field_id.
- * We can replace the names with field_id and then explode to get arrays:
- * 
- * array(2, 3, 4)
- * array(2, 5, 6)
- * array(2, 3, 7, 8)
- * array(2, 3, 7, 9)
- * array(2, 3, 7, 10)
- * array(2, 5, 7, 8)
- * array(2, 5, 7, 9)
- * array(2, 5, 7, 10)
- * 
- * Since we're only interested in the relationship fields, we can trim off
- * the final field id. Then we can flip the matrix to we get an array of
- * the ids we need at each level of nesting and run array unique, so we
- * only get unique ids. We don't need to retain the information about
- * the tree structure, we only need the total list of the needed entries.
- * We still have information about the final tree structure, so we can
- * rebuild the tree from a generated list of entries using Pascal's tree
- * library. So our finally result array passed to build_level will look
- * like this:
+ * We're only interested in the relationship fields, but we want to maintain
+ * the parent child relationships of the tags, so we turn it into a tree
+ * hierachy such as this:
  *
- * array(
- * 	array(2),
- *  array(3,5),
- * 	array(7)
- * )
+ *					{games}
+ *		{games:home}		{games:away}
+ * {games:home:players}	{games:away:players}
+ * 
+ * 
+ * Using the branch depth of that structure, we can construct a join that will
+ * return all of the potential entry ids from our adjecency list table. More
+ * importantly, we can overlay this parent sibling information on our tree so
+ * that we end up with a set of ids for each parent at any given tag:
+ * 
+ * 				 {[6, 7]}
+ * 				/		\	
+ *  {6:[2,4], 7:[8,9]}    	{6:[], 7:[2,5]}
+ * 		/					\
+ * 	...				  		 ...
+ * 
+ * 
+ * This also means that we can query for most of the required data before the
+ * channel entries loop runs, thus vastly reducing the number of queries you
+ * would get from nesting channel entry tags or sitting on a spanish beach.
+ *
+ *
+ * There are a few edge cases that we need to consider in this approach.
+ * Since an entry can have multiple parents, some of which may not be on
+ * the current tree, we cannot rely on the tree to provide us with parent
+ * information. Instead we add a query with an inverted tree at those edge-
+ * case locations.
+ * 
+ * 
  *
  * @package		ExpressionEngine
  * @subpackage	Core
@@ -266,12 +258,7 @@ class Relationship_Parser
 	protected $relationship_field_ids = array();		// Relationship field map (name => field_id)
 	protected $relationship_field_names = array();		// Another relationship field map (field_id => name)
 
-	/**
-	 * An array of our relationship data in the format
-	 * that EE_Template::parse_variables() expects it to 
-	 * be in.
-	 */	
-	protected $variables = array();
+	protected $variables = array();						// A cache of the tree and lookup table for the main per entry parsing step
 	
 	/**
 	 * Create a relationship parser for the given Template.
@@ -304,9 +291,7 @@ class Relationship_Parser
 			return $this->relationship_field_ids[$tag_name];
 		}
 
-		if ($tag_name == 'sibling' ||
-			$tag_name == 'parent' ||
-			$tag_name == 'siblings' ||
+		if ($tag_name == 'siblings' ||
 			$tag_name == 'parents')
 		{
 			return $tag_name;
@@ -323,12 +308,11 @@ class Relationship_Parser
 	 * each of the entries passed in the array.
 	 *
 	 * @param	int[]	An array of entry ids who's relations we need
-	 *						to find.
+	 *					to find.
 	 */
 	public function query_for_entries(array $entry_ids)
 	{
-		// hackity crackity tree thing coming up
-
+		// first, we need a tree
 		$root = $this->_build_tree($entry_ids);
 
 		if ($root === NULL)
@@ -336,8 +320,9 @@ class Relationship_Parser
 			return array();
 		}
 
-		// For space savings and subtree closure querying each need node is
-		// pushed its own set of entry ids. For given parent ids:
+		// For space savings and subtree querying each node is pushed
+		// its own set of entry ids per parent ids:
+		//
 		//						 {[6, 7]}
 		//						/		\	
 		//		 {6:[2,4], 7:[8,9]}    	{6:[], 7:[2,5]}
@@ -354,25 +339,28 @@ class Relationship_Parser
 		$all_ids = array_merge($entry_ids, $unique_ids);
 
 
-		// the root ids are their own grandpa
-		// this is here just to keep the id loops parent => children
-		// it has no side-effects since all we really care about for
-		// the root node are the children.
+		// not strictly necessary, but keeps all the id loops parent => children
+		// it has no side-effects since all we really care about for the root
+		// node are the children.
 		foreach ($entry_ids as $id)
 		{
 			$root->add_entry_id($id, $id);
 		}
 
 
-		$cit = new RecursiveIteratorIterator(
+
+		// Ok, so now we need to repeat that process iteratively for
+		// all of the special snowflakes on our tree. This is fun!
+
+		$query_node_iter = new RecursiveIteratorIterator(
 			new QueryNodeIterator(array($root)),
 			RecursiveIteratorIterator::SELF_FIRST
 		);
 
 
-		foreach ($cit as $node)
+		foreach ($query_node_iter as $node)
 		{
-			$depth = $cit->getDepth();
+			$depth = $query_node_iter->getDepth();
 
 			if ($depth == 0 && $node->is_root())
 			{
@@ -390,18 +378,14 @@ class Relationship_Parser
 			// look like children of the name "parents". Savvy?
 			if ($node->field_name() == 'parents')
 			{
-				$result_ids = $this->_parenttree_query($node, $ids);
+				$result_ids = $this->_parent_tree_query($node, $ids);
 			}
 			elseif ($node->field_name() == 'siblings')
 			{
 				// @todo @pk top level siblings and their querynode > * counterparts
-				die('@todo');
-			}
-			else
-			{
-				// @todo @pk edgecases such as limit will go here
-				die('@todo');
-				$result_ids = $this->_subtree_query($node, $ids);
+				// need to push down parent ids if parent exists?
+				$ids = array_keys($node->parent()->entry_ids);
+				$result_ids = $this->_sibling_query($node, $ids);
 			}
 
 			$result_ids = $this->_unique_entry_ids($node, $result_ids);
@@ -411,29 +395,26 @@ class Relationship_Parser
 		}
 
 
-		// add entry ids to the proper tree parse nodes
-		// L0 = root
-		// L1 = closure-depth=1 querynodes (match field names)
-		// ...
-
 		// ready set, main query.
 		$EE = get_instance();
 		$db = $EE->relationships->_isolate_db();
 
 		$EE->load->model('channel_entries_model');
-		$entries_result = $db->query($EE->channel_entries_model->get_entry_sql(array_unique($all_ids)));
 
+		$sql = $EE->channel_entries_model->get_entry_sql(array_unique($all_ids));
+		$entries_result = $db->query($sql);
+
+
+		// Build an id => data map for quick retrieval during parsing
 		$entry_lookup = array();
 
-		// And then we need to use the lookup table in our data array to
-		// populate our mostly empty entries with their data. 
 		foreach ($entries_result->result_array() as $entry)
 		{
 			$entry_lookup[$entry['entry_id']] = $entry;
 		}
 
-		// PARSE! FINALLY!
 
+		// READY TO PARSE! FINALLY!
 		$this->variables = array(
 			'tree' => $root,
 			'lookup' => $entry_lookup
@@ -443,8 +424,7 @@ class Relationship_Parser
 
 	protected function _build_tree(array $entry_ids)
 	{
-		// hackity crackity tree thing coming up
-
+		// we build our tree straight from the tag hierarchy
 		$str = $this->template->tagdata;
 
 		// No variables?  No reason to continue...
@@ -453,7 +433,8 @@ class Relationship_Parser
 			return NULL;
 		}
 
-		// Match up tag pairs and record their hierarchy
+		// Match up tag pairs, record their hierarchy, and create a node
+		// instance for each tag.
 
 		$reversed = array_reverse($matches[0]);
 		unset($matches);
@@ -502,7 +483,8 @@ class Relationship_Parser
 
 			$node_class = 'ParseNode';
 
-			if (preg_match('/.*parents$/', $tag_name))
+			// @todo @pk a little more complicated than this with parameters?
+			if (preg_match('/.*parents$/', $tag_name) || $tag_name == 'siblings')
 			{
 				$node_class = 'QueryNode';
 			}
@@ -528,7 +510,8 @@ class Relationship_Parser
 			throw new RuntimeException('Unmatched Closing Tag: "{/'.end($tag_stack).'}"');
 		}
 
-		// Build our tree
+		// Now that we have node instances and their hierarchy, we
+		// can connect them into a tree shape
 		$root = new QueryNode('__root__');
 
 		foreach ($nodes as $data)
@@ -549,7 +532,6 @@ class Relationship_Parser
 
 		return $root;
 	}
-
 
 	protected function _unique_entry_ids($root, $leave_paths)
 	{
@@ -578,18 +560,39 @@ class Relationship_Parser
 				continue;
 			}
 
-			// the lookup below starts one up from the root @todo fix that!
-			
+			// the lookup below starts one up from the root
 			$depth += $root_offset;
 			$field_id = $node->field_id;
 
 			if ($field_id == 'parents')
 			{
-				$field_id = $node->params['field_id'];
+				$field_name = $node->param('field');
+
+				if ( ! $field_name)
+				{
+					throw new RuntimeException('Parent tag without field parameter.');
+				}
+
+				$field_id = $this->relationship_field_ids[$field_name];
 			}
 
-			if ($field_id != 'siblings')
-			{				
+			// @todo disgustingly unclear conditional
+			// the first check is if sibling is part of the tag, the second
+			// if sibling is the *entire* tag.
+			if ($field_id != 'siblings' OR $node->name() == 'siblings')
+			{
+				if ($node->name() == 'siblings')
+				{
+					$field_name = $node->param('field');
+
+					if ( ! $field_name)
+					{
+						throw new RuntimeException('Sibling tag without field parameter.');
+					}
+
+					$field_id = $this->relationship_field_ids[$field_name];
+				}
+
 				if (isset($leaves[$depth][$field_id]))
 				{
 					foreach ($leaves[$depth][$field_id] as $parent => $children)
@@ -626,7 +629,44 @@ class Relationship_Parser
 	}
 
 
-	protected function _parenttree_query($root, $entry_ids)
+	protected function _sibling_query($root, $entry_ids)
+	{
+		$depths = $this->_min_max_branches($root);
+
+		$longest_branch_length = $depths['longest'];
+		$shortest_branch_length = $depths['shortest'];
+
+		$db = get_instance()->relationships->_isolate_db();
+
+		$db->distinct();
+		$db->select('L0.field_id as L0_field');
+		$db->select('S.child_id AS L0_parent');	// the parent is the joined on child id from our entry_ids
+		$db->select('L0.child_id as L0_id');
+		$db->from('exp_zero_wing as L0');
+
+		for ($level = 0; $level <= $longest_branch_length; $level++)
+		{
+			$db->join('exp_zero_wing as L' . ($level+1), 
+				'L' . ($level) . '.child_id = L' . ($level+1) . '.parent_id' . (($level+1 >= $shortest_branch_length) ? ' OR L' . ($level+1) . '.parent_id = NULL' : ''), 
+				($level+1 >= $shortest_branch_length) ? 'left' : '');
+
+			if ($level > 0)
+			{
+				// Now add the field ID from this level in. We've already done level 0,
+				// so just skip it.
+				$db->select('L' . $level . '.field_id as L' . $level . '_field');
+				$db->select('L' . $level . '.parent_id AS L' . $level . '_parent');
+				$db->select('L' . $level . '.child_id as L' . $level . '_id');
+			}
+		}
+
+		$db->join('exp_zero_wing as S', 'L0.parent_id = S.parent_id');
+		$db->where_in('S.child_id', $entry_ids);
+
+		return $db->get()->result_array();
+	}
+
+	protected function _parent_tree_query($root, $entry_ids)
 	{
 		// tree branch length extrema
 		$depths = $this->_min_max_branches($root);
@@ -673,7 +713,6 @@ class Relationship_Parser
 	protected function _subtree_query($root, $entry_ids)
 	{
 		// tree branch length extrema
-		// @todo don't count siblings (should be collapsed above)
 		$depths = $this->_min_max_branches($root);
 
 		$longest_branch_length = $depths['longest'];
@@ -708,7 +747,7 @@ class Relationship_Parser
 		return $db->get()->result_array();
 	}
 
-	// @todo don't count siblings (should be collapsed before we get here)
+
 	protected function _min_max_branches($tree)
 	{
 		$it = new RecursiveIteratorIterator(
@@ -764,6 +803,7 @@ class Relationship_Parser
 		foreach ($leaves as $leaf)
 		{
 			$i = 0;
+
 			while (isset($leaf['L'.$i.'_field']))
 			{
 				$field_id = $leaf['L'.$i.'_field'];
@@ -818,7 +858,7 @@ class Relationship_Parser
 	 * @return 	string	The parsed tagdata, with all relationship tags
 	 *						replaced.
 	 */
-	public function parse_relationships($entry_id, $tagdata)
+	public function parse_relationships($entry_id, $tagdata, $channel)
 	{
 		// If we have no relationships, then we can quietly bail out.
 		if ($this->variables == NULL)
@@ -826,8 +866,13 @@ class Relationship_Parser
 			return $tagdata;
 		}
 
+		get_instance()->load->library('api');
+		get_instance()->api->instantiate('channel_fields');
+
 		$tree = $this->variables['tree'];
 		$lookup = $this->variables['lookup'];
+
+		get_instance()->session->set_cache('relationships', 'channel', $channel);
 
 		$tagdata = $tree->parse($entry_id, $tagdata, $lookup);
 
@@ -840,17 +885,65 @@ class Relationship_Parser
 
 class ParseNode extends EE_TreeNode {
 
-	private $childTags;				// namespaced tags underneath it that are not relationship tags, constructed from tagdata
-
 	protected $entries;
 	protected $entries_lookup;
 
+	private $childTags;				// namespaced tags underneath it that are not relationship tags, constructed from tagdata
+
+	
+	/**
+	 * Retrieve the field name
+	 *
+	 * Removes the namespace so that we're only left with the last
+	 * segment. If you need the full tag name, use `name()`
+	 *
+	 * @return 	string	The raw field name
+	 */
 	public function field_name()
 	{
 		$field_name = ':'.$this->name;
 		return substr($field_name, strrpos($field_name, ':') + 1);
 	}
 
+	/**
+	 * Set a parameter
+	 *
+	 * Params is theoretically accessible through __get, but we don't
+	 * return a reference so we can't modify it (except overriding it).
+	 *
+	 * @param 	string	The parameter name
+	 * @param	mixed	The parameter value
+	 * @return 	void
+	 */
+	public function set_param($key, $value = NULL)
+	{
+		$this->data['params'][$key] = $value;
+	}
+
+	/**
+	 * Get a parameter
+	 *
+	 * Accessor to avoid constantly doing isset checks.
+	 *
+	 * @param 	string	The parameter name
+	 * @param	mixed	a default to return if the parameter is not set
+	 * @return 	mixed	parameter value || default
+	 */
+	public function param($key, $default = NULL)
+	{
+		return isset($this->data['params'][$key]) ? $this->data['params'][$key] : $default;
+	}
+
+	/**
+	 * Make the node aware of a relationship
+	 *
+	 * Creates an internal parent->child relationship so that we can return
+	 * all child ids for any given incoming parent later.
+	 *
+	 * @param 	int		the parent entry id
+	 * @param	int		the child entry id
+	 * @return 	void
+	 */
 	public function add_entry_id($parent, $child)
 	{
 		$ids =& $this->data['entry_ids'];
@@ -859,7 +952,6 @@ class ParseNode extends EE_TreeNode {
 		{
 			$ids[$parent] = array();
 		}
-
 
 		if (is_array($child))
 		{
@@ -871,6 +963,16 @@ class ParseNode extends EE_TreeNode {
 		}
 	}
 
+	/**
+	 * Parse the tag's internal data (and all of its children)
+	 *
+	 * @todo Work in progress!
+	 *
+	 * @param 	int		the entry id
+	 * @param	string	the tag enclosed template string
+	 * @param	mixed	channel entries lookup {id => [data]}
+	 * @return 	string	parsed tagdata
+	 */
 	public function parse($id, $tagdata, array $entries_lookup)
 	{
 		if ( ! isset($this->entry_ids[$id]))
@@ -891,10 +993,32 @@ class ParseNode extends EE_TreeNode {
 		$this->entries_lookup = $entries_lookup;
 		$this->entries = array_unique($this->entry_ids[$id]);
 
-		$ident = preg_quote($this->name, '/');
+		$open_tag = preg_quote($this->open_tag, '/');
+		$close_tag = preg_quote($this->name, '/');
+
+//		preg_match_all('/'.$open_tag.'/is', $tagdata, $matches);
+	//	preg_match_all('/'.$open_tag.'(.+?){\/'.$close_tag.'}/is', $tagdata, $matches);
+	//	preg_match_all('/'.$open_tag.'/is', $tagdata, $matches);
+	//	preg_match_all('/{'.$close_tag.'[^}:]*}(.+?){\/'.$close_tag.'}/is', $tagdata, $matches);
+
+		$ident = $close_tag;
+
 		return preg_replace_callback('/{'.$ident.'[^}:]*}(.+?){\/'.$ident.'}/is', array($this, '_replace'), $tagdata);
+		return preg_replace_callback('/'.$open_tag.'(.+?){\/'.$close_tag.'}/is', array($this, '_replace'), $tagdata);
 	}
 
+	/**
+	 * preg_replace callback for parse()
+	 *
+	 * Does the actual data replacement, Handles all of the things you
+	 * would expect from EE such as conditionals, backspace, count
+	 * date formatting, etc.
+	 *
+	 * @todo Work in progress!
+	 *
+	 * @param 	mixed	regex matched template chunk
+	 * @return 	string	parsed chunk
+	 */
 	protected function _replace($matches)
 	{
 		$entries = $this->entries;
@@ -908,23 +1032,296 @@ class ParseNode extends EE_TreeNode {
 		$result = '';
 		$name = $this->name;
 		$prefix = $name.':';
+
+		$channel = get_instance()->session->cache('relationships', 'channel');
 		
 		// @todo date formatting
 		$count = 0;
 		$total_results = count($entries);
 
+		// reorder the ids
+		if ($this->param('orderby'))
+		{
+			$order_by = explode('|', $this->param('orderby'));
+			$sort = explode('|', $this->param('sort', 'desc'));
+
+			$columns = array_fill_keys($order_by, array());
+
+			foreach ($entries as $entry_id)
+			{
+				$data = $entries_lookup[$entry_id];
+
+				foreach ($order_by as $k)
+				{
+					$column[$k][] = $data[$k];
+				}
+			}
+
+			$sort = array_merge(
+				array_fill_keys(array_keys($order_by), 'desc'),
+				$sort
+			);
+
+			$sort_parameters = array();
+
+			foreach ($order_by as $i => $v)
+			{
+				$sort_parameters[] = $column[$v];
+				$sort_parameters[] = constant('SORT_'.strtoupper($sort[$i]));
+			}
+
+			$sort_parameters[] = &$entries;
+
+			call_user_func_array('array_multisort', $sort_parameters);
+		}
+
+
+		// enforce offset and limit
+		$offset = $this->param('offset');
+		$limit = $this->param('limit');
+
+		if ($limit)
+		{
+			$entries = array_slice($entries, $offset, $limit);
+		}
+
+
+		// limit entry ids to given tag
+		// @todo @pk do this when propagating query ids?
+		if ($this->param('entry_id') && ! $this->param('url_title'))
+		{
+			$allowed_ids = explode('|', $this->param('entry_id'));
+			$entries = array_intersect($entries, $allowed_ids);
+		}
+
+
+		// prefilter anything prefixed the same as this tag so that we don't
+		// go around building huge lists with custom field data only to toss
+		// it all because the tag isn't in the field.
+
+		$regex_prefix = '/^'.preg_quote($prefix, '/').'[^:]+( |$)/';
+		$singles = preg_grep($regex_prefix, array_keys(get_instance()->TMPL->var_single));
+		$doubles = preg_grep($regex_prefix, array_keys(get_instance()->TMPL->var_pair));
+
+
+		$ft_api = get_instance()->api_channel_fields;
+
+
+		$site_id = config_item('site_id');
+		$cfields = get_instance()->session->cache['channel']['custom_channel_fields'];
+		$pfields = get_instance()->session->cache['channel']['pair_custom_fields'];
+
+
+		$cfields = ($cfields && isset($cfields[$site_id])) ? $cfields[$site_id] : array();
+		$pfields = ($pfields && isset($pfields[$site_id])) ? $pfields[$site_id] : array();
+
+
+		// Extract and preloop the doubles
+		// @todo @pk pretty much straight rip from mod.channel 3441 - refactor
+		$pfield_names = array_intersect($cfields, array_keys($pfields));
+		$pfield_chunk = array();
+
+		// @todo reduce pfield names using $doubles
+		foreach($pfield_names as $field_name => $field_id)
+		{
+			$offset = 0;
+
+			while (($end = strpos($tagdata, LD.'/'.$prefix.$field_name.RD, $offset)) !== FALSE)
+			{
+				// This hurts soo much. Using custom fields as pair and single vars in the same
+				// channel tags could lead to something like this: {field}...{field}inner{/field}
+				// There's no efficient regex to match this case, so we'll find the last nested
+				// opening tag and re-cut the chunk.
+
+				if (preg_match("/".LD.$prefix.$field_name."(.*?)".RD."(.*?)".LD.'\/'.$prefix.$field_name."(.*?)".RD."/s", $tagdata, $matches, 0, $offset))
+				{
+					$chunk = $matches[0];
+					$params = $matches[1];
+					$inner = $matches[2];
+
+					// We might've sandwiched a single tag - no good, check again (:sigh:)
+					if ((strpos($chunk, LD.$field_name, 1) !== FALSE) && preg_match_all("/".LD."{$field_name}(.*?)".RD."/s", $chunk, $match))
+					{
+						// Let's start at the end
+						$idx = count($match[0]) - 1;
+						$tag = $match[0][$idx];
+						
+						// Reassign the parameter
+						$params = $match[1][$idx];
+
+						// Cut the chunk at the last opening tag (PHP5 could do this with strrpos :-( )
+						while (strpos($chunk, $tag, 1) !== FALSE)
+						{
+							$chunk = substr($chunk, 1);
+							$chunk = strstr($chunk, LD.$field_name);
+							$inner = substr($chunk, strlen($tag), -strlen(LD.'/'.$field_name.RD));
+						}
+					}
+					
+					$chunk_array = array($inner, get_instance()->functions->assign_parameters($params), $chunk);
+					
+					// Grab modifier if it exists and add it to the chunk array
+					if (substr($params, 0, 1) == ':')
+					{
+						$chunk_array[] = str_replace(':', '', $params);
+					}
+					
+					$pfield_chunk[$field_name][] = $chunk_array;
+				}
+				
+				$offset = $end + 1;
+			}
+		}
+
+		// parse them
 		foreach ($entries as $entry_id)
 		{
 			$count++;
 
 			$data = $entries_lookup[$entry_id];
+
+
+			// @todo date parameters (i.e. show_expired=) need a query up above?
+			// these may also need one, but for now this works
+			$filter_parameters = array('author_id', 'channel', 'url_title', 'username', 'group_id', 'status');
+
+			foreach ($filter_parameters as $p)
+			{
+				$filter_by = $this->param($p);
+
+				if ( ! $filter_by)
+				{
+					continue;
+				}
+
+				$not = FALSE;
+
+				if (strpos($filter_by, 'not ') === 0)
+				{
+					$not = TRUE;
+				}
+
+				// @todo support '&' inclusive stack
+				$filter_by = explode('|', $filter_by);
+
+				if ($p == 'channel')
+				{
+					$p = 'channel_name';
+				}
+
+				$data_matches = in_array($data[$p], $filter_by);
+
+				if (($data_matches && $not) OR
+					( ! $data_matches && ! $not))
+				{
+					continue 2;
+				}
+			}
+
 			$variables = array();
 			$cond_vars = array();
 
-			foreach ($data as $k => $v)
+			$data_to_parse = array();
+			$data_to_parse = $data;
+
+			$tagdata_chunk = $tagdata;
+
+
+			// mod.channel 3955
+			foreach ($doubles as $tag)
+			{
+				$field_name = substr($tag, strrpos($tag, ':') + 1);
+				$field_name = substr($field_name, 0, strpos($field_name, ' '));
+
+				if (isset($cfields[$field_name]) && isset($pfields[$cfields[$field_name]]))
+				{
+					$field_id = $cfields[$field_name];
+					$key_name = $pfields[$field_id];
+
+					if ($ft_api->setup_handler($field_id))
+					{
+						$ft_api->apply('_init', array(array('row' => $data)));
+						$pre_processed = $ft_api->apply('pre_process', array($data['field_id_'.$field_id]));
+
+
+						// Blast through all the chunks
+						if (isset($pfield_chunk[$field_name]))
+						{
+							foreach($pfield_chunk[$field_name] as $chk_data)
+							{
+								$tpl_chunk = '';
+								// Set up parse function name based on whether or not
+								// we have a modifier
+								$parse_fnc = (isset($chk_data[3]))
+									? 'replace_'.$chk_data[3] : 'replace_tag';
+
+								if ($ft_api->check_method_exists($parse_fnc))
+								{
+									$tpl_chunk = $ft_api->apply(
+										$parse_fnc,
+										array($pre_processed, $chk_data[1], $chk_data[0])
+									);
+								}
+								// Go to catchall and include modifier
+								elseif ($ft_api->check_method_exists($parse_fnc_catchall)
+									AND isset($chk_data[3]))
+								{
+									$tpl_chunk = $ft_api->apply(
+										$parse_fnc_catchall,
+										array($pre_processed, $chk_data[1], $chk_data[0], $chk_data[3])
+									);
+								}
+
+								$tagdata_chunk = str_replace($chk_data[2], $tpl_chunk, $tagdata_chunk);
+							}
+						}
+					}
+				}
+			}
+
+			// handle single custom field tags
+			// @todo tag modifiers
+			// @todo field-not-found fallback (mod.channel 4764)
+			foreach ($singles as $tag)
+			{
+				$unprefixed_tag = substr($tag, strrpos($tag, ':') + 1);
+				$field_name = substr($unprefixed_tag.' ', 0, strpos($unprefixed_tag, ' '));
+				$param_string = substr($unprefixed_tag.' ', strlen($field_name));
+
+				if (isset($cfields[$field_name]))
+				{
+					$field_id = $cfields[$field_name];
+
+					if ($ft_api->setup_handler($field_id))
+					{
+						$params = get_instance()->functions->assign_parameters($param_string);
+
+						$ft_api->apply('_init', array(array('row' => $data)));
+						$pre_processed = $ft_api->apply('pre_process', array($data['field_id_'.$field_id]));
+
+						$data_to_parse[$unprefixed_tag] = $ft_api->apply(
+							'replace_tag',
+							array($pre_processed, $params, FALSE)
+						);
+					}
+				}
+				elseif (isset($data[$field_name]))
+				{
+					$data_to_parse[$field_name] = $data[$field_name];
+				}
+				else
+				{
+					$data_to_parse[$unprefixed_tag] = '';
+				}
+			}
+
+
+			// Only parse the data that was asked for in the template
+			foreach ($data_to_parse as $k => $v)
 			{
 				$cond_vars[$prefix.$k] = $v;
 				$variables['{'.$prefix.$k.'}'] = $v;
+				$tagdata_chunk = $channel->parse_simple_variable($k, $k, $tagdata_chunk, $data, $prefix);
 			}
 
 			// special variables!
@@ -934,32 +1331,35 @@ class ParseNode extends EE_TreeNode {
 			$variables['{'.$prefix.'count}'] = $count;
 			$variables['{'.$prefix.'total_results}'] = $total_results;
 
-			$tag_chunk = str_replace(
+			$tagdata_chunk = str_replace(
 				array_keys($variables),
 				array_values($variables),
-				$tagdata
+				$tagdata_chunk
 			);
 
 			// conditionals
-			$tag_chunk = get_instance()->functions->prep_conditionals($tag_chunk, $cond_vars);
+			$tagdata_chunk = get_instance()->functions->prep_conditionals($tagdata_chunk, $cond_vars);
 			unset($cond_vars);
 
 			// child tags
 			foreach ($children as $child)
 			{
-				$tag_chunk = $child->parse($entry_id, $tag_chunk, $entries_lookup);
+				$tagdata_chunk = $child->parse($entry_id, $tagdata_chunk, $entries_lookup);
 			}
 
-			$result .= $tag_chunk;
+			$result .= $tagdata_chunk;
 		}
 
 		// kill prefixed leftovers
 		$result = preg_replace('/{'.$prefix.'[^}]*}(.+?){\/'.$prefix.'[^}]*}/is', '', $result);
 		$result = preg_replace('/{\/?'.$prefix.'[^}]*}/i', '', $result);
 
-		if (isset($params['backspace']))
+		// Lastly, handle the backspace parameter
+		$backspace = $this->param('backspace');
+
+		if ($backspace)
 		{
-			$result = substr($result, 0, -$params['backspace']);
+			$result = substr($result, 0, -$backspace);
 		}
 
 		return $result;
