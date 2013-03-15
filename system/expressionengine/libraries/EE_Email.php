@@ -189,7 +189,7 @@ class EE_Email extends CI_Email {
 	function _get_ip()
 	{
 		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated('2.6', 'Email::_get_ip()');
+		$this->EE->logger->deprecated('2.6', 'Input::ip_address()');
 
 		// Why was this ever here?
 		return $this->EE->input->ip_address();
@@ -203,7 +203,7 @@ class EE_Email extends CI_Email {
 	function _set_header($header, $value)
 	{
 		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated('2.6', 'Email::_set_header()');
+		$this->EE->logger->deprecated('2.6', 'Email::set_header()');
 
 		$this->set_header($header, $value);
 	}
