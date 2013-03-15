@@ -107,14 +107,19 @@ class Relationships_ft_cp {
 		$categories = $this->_form_any();
 
 		$this->load->library('datastructures/tree');
-		$cat_tree = $this->tree->from_list($cats, array('id' => 'cat_id'))->first_child();
-		$cat_it = $cat_tree->preorder_iterator();
+		$cat_tree = $this->tree->from_list($cats, array('id' => 'cat_id'));
 
-		$indent = str_repeat(NBS, 4);
-
-		foreach ($cat_it as $cat)
+		if ( ! $cat_tree->is_leaf())
 		{
-			$categories[$cat->cat_id] = str_repeat($indent, $cat_it->getDepth()).$cat->cat_name;
+			$cat_tree = $cat_tree->first_child();
+			$cat_it = $cat_tree->preorder_iterator();
+
+			$indent = str_repeat(NBS, 4);
+
+			foreach ($cat_it as $cat)
+			{
+				$categories[$cat->cat_id] = str_repeat($indent, $cat_it->getDepth()).$cat->cat_name;
+			}
 		}
 
 		return $categories;
