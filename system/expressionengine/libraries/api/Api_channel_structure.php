@@ -528,6 +528,7 @@ class Api_channel_structure extends Api {
 		}
 				
 		// check channel name availability
+		$this->EE->load->model('super_model');
 		$count = $this->EE->super_model->count('channels', array('site_id' => $site_id, 'channel_name' => $channel_name, 'channel_id !=' => $channel_id));
 	  
 		if ($count > 0)
