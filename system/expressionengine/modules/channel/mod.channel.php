@@ -6788,7 +6788,7 @@ class Channel {
 			$ids = $this->EE->functions->sql_andor_string($entry_id, 't.entry_id').' ';
 		}
 
-		$sql = 'SELECT t.entry_id, t.title, t.url_title
+		$sql = 'SELECT t.entry_id, t.title, t.url_title, w.channel_name, w.channel_title, w.comment_url, w.channel_url 
 				FROM (exp_channel_titles AS t)
 				LEFT JOIN exp_channels AS w ON w.channel_id = t.channel_id ';
 
@@ -6949,47 +6949,35 @@ class Channel {
 		/** ---------------------------------------*/
 
 		$this->EE->load->library('typography');
-
-		if (strpos($this->EE->TMPL->tagdata, LD.'path=') !== FALSE)
+		$comment_path = ($query->row('comment_url') == '') ? $query->row('comment_url') : $query->row('channel_url');
+		$title = $this->EE->typography->format_characters($query->row('title'));
+		
+		$vars['0'] = array(
+			'entry_id'						=> $query->row('entry_id'),
+			'id_path'						=> array($query->row('entry_id'), array('path_variable' => TRUE)),
+			'path'							=> array($query->row('url_title'), array('path_variable' => TRUE)),
+			'title'							=> $title,
+			'url_title'						=> $query->row('url_title'),
+			'channel_short_name'			=> $query->row('channel_name'),
+			'channel'						=> $query->row('channel_title'),
+			'channel_url'					=> $query->row('channel_url'),
+			'comment_entry_id_auto_path'	=> reduce_double_slashes($comment_path.'/'.$query->row('entry_id')),
+			'comment_url_title_auto_path'	=> reduce_double_slashes($comment_path.'/'.$query->row('url_title'))
+		);
+		
+		// Presumably this is legacy
+		if ($which == 'next')
 		{
-			$path  = (preg_match("#".LD."path=(.+?)".RD."#", $this->EE->TMPL->tagdata, $match)) ? $this->EE->functions->create_url($match[1]) : $this->EE->functions->create_url("SITE_INDEX");
-			$path .= '/'.$query->row('url_title');
-			$this->EE->TMPL->tagdata = preg_replace("#".LD."path=.+?".RD."#", reduce_double_slashes($path), $this->EE->TMPL->tagdata);
+			$vars['0']['next_entry->title'] = $title;
+		}
+		else
+		{
+			$vars['0']['prev_entry->title'] = $title;
 		}
 
-		if (strpos($this->EE->TMPL->tagdata, LD.'id_path=') !== FALSE)
-		{
-			$id_path  = (preg_match("#".LD."id_path=(.+?)".RD."#", $this->EE->TMPL->tagdata, $match)) ? $this->EE->functions->create_url($match[1]) : $this->EE->functions->create_url("SITE_INDEX");
-			$id_path .= '/'.$query->row('entry_id');
-
-			$this->EE->TMPL->tagdata = preg_replace("#".LD."id_path=.+?".RD."#", reduce_double_slashes($id_path), $this->EE->TMPL->tagdata);
-		}
-
-		if (strpos($this->EE->TMPL->tagdata, LD.'url_title') !== FALSE)
-		{
-			$this->EE->TMPL->tagdata = str_replace(LD.'url_title'.RD, $query->row('url_title'), $this->EE->TMPL->tagdata);
-		}
-
-		if (strpos($this->EE->TMPL->tagdata, LD.'entry_id') !== FALSE)
-		{
-			$this->EE->TMPL->tagdata = str_replace(LD.'entry_id'.RD, $query->row('entry_id'), $this->EE->TMPL->tagdata);
-		}
-
-		if (strpos($this->EE->TMPL->tagdata, LD.'title') !== FALSE)
-		{
-			$this->EE->TMPL->tagdata = str_replace(LD.'title'.RD, $this->EE->typography->format_characters($query->row('title')), $this->EE->TMPL->tagdata);
-		}
-
-		if (strpos($this->EE->TMPL->tagdata, '_entry->title') !== FALSE)
-		{
-			$this->EE->TMPL->tagdata = preg_replace('/'.LD.'(?:next|prev)_entry->title'.RD.'/', 
-													$this->EE->typography->format_characters($query->row('title')),
-													$this->EE->TMPL->tagdata);
-		}
-
-		return $this->EE->TMPL->tagdata;
+		return $this->EE->TMPL->parse_variables($this->EE->TMPL->tagdata, $vars);
 	}
-
+	
 	// ------------------------------------------------------------------------
 
 	/**
