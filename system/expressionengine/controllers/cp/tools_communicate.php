@@ -455,7 +455,7 @@ class Tools_communicate extends CP_Controller {
 
 			$error = FALSE;
 
-			if ( ! $this->email->send())
+			if ( ! $this->email->send(FALSE))
 			{
 				$error = TRUE;
 			}
@@ -597,7 +597,7 @@ class Tools_communicate extends CP_Controller {
 
 			$error = FALSE;
 
-			if ( ! $this->email->send())
+			if ( ! $this->email->send(FALSE))
 			{
 				$error = TRUE;
 			}
@@ -667,7 +667,7 @@ class Tools_communicate extends CP_Controller {
 					$val = $val['0'];
 				}
 
-				$this->email->EE_initialize();
+				$this->email->clear();
 				$this->email->to($val); 
 				$this->email->from($from, $name);
 				$this->email->subject($subject);
@@ -695,7 +695,7 @@ class Tools_communicate extends CP_Controller {
 
 				$this->email->message($msg, $msg_alt);	
 				
-				if ( ! $this->email->send())
+				if ( ! $this->email->send(FALSE))
 				{
 					// Let's adjust the recipient array up to this point
 					reset($recipient_array);
@@ -887,6 +887,7 @@ class Tools_communicate extends CP_Controller {
 
 			$screen_name = '';
 			$list_id = FALSE;
+			$this->email->clear();
 
 			if (is_array($val) AND substr($key, 0, 1) == 'm')
 			{
@@ -899,7 +900,6 @@ class Tools_communicate extends CP_Controller {
 				$val = $val['0'];
 			}
 
-			$this->email->EE_initialize();
 			$this->email->to($val); 
 			$this->email->from($from_email, $from_name);	
 			$this->email->subject($subject);
@@ -929,7 +929,7 @@ class Tools_communicate extends CP_Controller {
 
 			$error = FALSE;
 
-			if ( ! $this->email->send())
+			if ( ! $this->email->send(FALSE))
 			{
 				$error = TRUE;
 			}
