@@ -353,11 +353,17 @@ class Channel {
 		// FIXME Only call this if there are, in fact, values in rfields[1]
 		// TODO Make sure our multi-relationship fields find their way into rfields
 		/** ZERO WING **/
-		$this->EE->load->library('relationships');
-		$relationship_parser = $this->EE->relationships->get_relationship_parser($this->EE->TMPL, $this->zwfields[1], $this->cfields[1]);
-		$relationship_parser->query_for_entries($this->_entry_ids); 
+		$site_id = config_item('site_id');
 
-		$this->parse_channel_entries($relationship_parser);
+		if (isset($this->zwfields[$site_id]) && ! empty($this->zwfields[$site_id]))
+		{
+			$this->EE->load->library('relationships');
+			$relationship_parser = $this->EE->relationships->get_relationship_parser($this->EE->TMPL, $this->zwfields[$site_id], $this->cfields[$site_id]);
+			$relationship_parser->query_for_entries($this->_entry_ids); 
+
+			$this->parse_channel_entries($relationship_parser);
+		}
+
 
 		if ($this->enable['pagination'] == TRUE)
 		{
@@ -4153,8 +4159,11 @@ class Channel {
 			}
 			// END VARIABLE PAIRS
 
-			/** ZERO WING **/	
-			$tagdata = $relationship_parser->parse_relationships($row['entry_id'], $tagdata, $this);
+			/** ZERO WING **/
+			if (isset($relationship_parser))
+			{
+				$tagdata = $relationship_parser->parse_relationships($row['entry_id'], $tagdata, $this);
+			}
 
 			// We swap out the conditionals after pairs are parsed so they don't interfere
 			// with the string replace
