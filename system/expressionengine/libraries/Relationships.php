@@ -1285,7 +1285,7 @@ class ParseNode extends EE_TreeNode {
 			foreach ($singles as $tag)
 			{
 				$unprefixed_tag = substr($tag, strrpos($tag, ':') + 1);
-				$field_name = substr($unprefixed_tag.' ', 0, strpos($unprefixed_tag, ' '));
+				$field_name = substr($unprefixed_tag.' ', 0, strpos($unprefixed_tag.' ', ' '));
 				$param_string = substr($unprefixed_tag.' ', strlen($field_name));
 
 				if (isset($cfields[$field_name]))
