@@ -65,6 +65,7 @@ class EE_Email extends CI_Email {
 		/*	- email_newline => Default newline.
 		/*  - email_crlf => CRLF used in quoted-printable encoding
 		/*  - email_smtp_port => SMTP Port
+		/*  - email_smtp_crypto => Cryptographic protocol (Secure Sockets Layer or Transport Layer Security allowed) 
         /* -------------------------------------------*/
 		
 		if ($this->EE->config->item('email_newline') !== FALSE)
@@ -85,6 +86,11 @@ class EE_Email extends CI_Email {
 			$config['smtp_port'] = $this->EE->config->item('email_smtp_port');
 		}
 				
+		if ($this->EE->config->item('email_smtp_crypto') == 'tls' OR $this->EE->config->item('email_smtp_crypto') == 'ssl')
+		{
+			$config['smtp_crypto'] = $this->EE->config->item('email_smtp_crypto');
+		}
+		
 		$this->useragent = APP_NAME.' '.APP_VER;		
 
 		$this->initialize($config);
@@ -148,6 +154,62 @@ class EE_Email extends CI_Email {
 		// ------------------------------------------------------
 		
 		return parent::_spool_email();
+	}
+	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Mime Types
+	 *
+	 * @param	string
+	 * @return	string
+	 */
+	protected function _mime_types($ext = '')
+	{
+		static $mimes;
+
+		$ext = strtolower($ext);
+
+		if ( ! is_array($mimes))
+		{
+			include(APPPATH.'config/mimes.php');			
+		}
+
+		if (isset($mimes[$ext]))
+		{
+			return is_array($mimes[$ext])
+				? current($mimes[$ext])
+				: $mimes[$ext];
+		}
+
+		return 'application/x-unknown-content-type';
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Removed from CI, here temporarily during deprecation period
+	 */
+	function _get_ip()
+	{
+		$this->EE->load->library('logger');
+		$this->EE->logger->deprecated('2.6', 'Input::ip_address()');
+
+		// Why was this ever here?
+		return $this->EE->input->ip_address();
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Removed from CI, here temporarily during deprecation period
+	 */
+	function _set_header($header, $value)
+	{
+		$this->EE->load->library('logger');
+		$this->EE->logger->deprecated('2.6', 'Email::set_header()');
+
+		$this->set_header($header, $value);
 	}
 }
 // END CLASS
