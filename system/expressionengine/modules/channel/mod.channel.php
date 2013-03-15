@@ -361,9 +361,9 @@ class Channel {
 			$relationship_parser = $this->EE->relationships->get_relationship_parser($this->EE->TMPL, $this->zwfields[$site_id], $this->cfields[$site_id]);
 			$relationship_parser->query_for_entries($this->_entry_ids); 
 
-			$this->parse_channel_entries($relationship_parser);
 		}
 
+		$this->parse_channel_entries($relationship_parser);
 
 		if ($this->enable['pagination'] == TRUE)
 		{
