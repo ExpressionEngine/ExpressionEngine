@@ -149,7 +149,6 @@ class EE_Session {
 				$this->sdata['session_id'] = ($this->EE->input->get('S')) ? $this->EE->input->get('S') : $this->EE->uri->session_id;
 				break;
 			case 'c'	:
-				$this->cookies_exist;
 				$this->sdata['session_id'] = $this->EE->input->cookie($this->c_session);
 				break;
 			case 'cs'	:
@@ -160,29 +159,22 @@ class EE_Session {
 		}
 
 		// Check remember me
-		if ($this->EE->remember->exists())
-		{
-			$this->cookies_exist = TRUE;
-		}
+		$remembered = (bool) $this->EE->remember->exists();
 
 		// Did we find a session ID?
-		$session_id = ($this->sdata['session_id'] != '' OR ($this->validation == 'c' && $this->cookies_exist)) ? TRUE : FALSE;
+		$session_id = ($this->sdata['session_id'] != '' OR ($this->validation == 'c' && $remembered)) ? TRUE : FALSE;
 
 		// Fetch Session Data		
 		// IMPORTANT: The session data must be fetched before the member data so don't move this.
-		if ($session_id === TRUE)
+		if ($session_id === TRUE && $this->fetch_session_data() === TRUE)
 		{
-			if ($this->fetch_session_data() === TRUE) 
-			{
-				$this->session_exists = TRUE;
-			}
+			$this->session_exists = TRUE;
 		}
 
-		// Fetch Member Data
-		$member_data_exists = (bool) $this->fetch_member_data();
-		
-		// Update/Create Session
-		if ($session_id === FALSE OR $member_data_exists === FALSE)
+		$member_exists = (bool) $this->fetch_member_data();
+
+		// Update/Create Session and fetch member data
+		if ($session_id === FALSE OR $member_exists === FALSE)
 		{
 			$this->fetch_guest_data();
 		}
@@ -204,9 +196,7 @@ class EE_Session {
 				}
 			}
 		}
-		
-		// Update cookies
-		$this->update_cookies();
+
 		$this->_prep_flashdata();
 		$this->EE->remember->refresh();
 		
@@ -237,7 +227,8 @@ class EE_Session {
 		
 		unset($this->sdata);
 		unset($session_id);
-		unset($member_data_exists);
+		unset($rememebered);
+		unset($member_exists);
 	}
 
 	// --------------------------------------------------------------------				
@@ -377,7 +368,18 @@ class EE_Session {
 		$crypt_key = $this->EE->db->select('crypt_key')
 			->get_where('members', array('member_id' => $member_id))
 			->row('crypt_key');
-
+		
+		// Create crypt key for member if one doesn't exist
+		if (empty($crypt_key))
+		{
+			$crypt_key = $this->EE->functions->random('encrypt', 16);
+			$this->EE->db->update(
+				'members',
+				array('crypt_key' => $crypt_key), 
+				array('member_id' => $member_id)
+			);
+		}
+		
 		$this->sdata['session_id'] 		= $this->EE->functions->random();  
 		$this->sdata['ip_address']  	= $this->EE->input->ip_address();
 		$this->sdata['user_agent']		= substr($this->EE->input->user_agent(), 0, 120);
@@ -564,25 +566,19 @@ class EE_Session {
 			else
 			{
 				// we don't add the session encryption key to userdata, to avoid accidental disclosure
-				if ($val == '')
-				{
-					// not set yet, so let's create one and udpate it for this user
-					$this->sess_crypt_key = $this->EE->functions->random('encrypt', 16);
-					$this->EE->db->update(
-						'members',
-						array('crypt_key' => $this->sess_crypt_key), 
-						array('member_id' => (int) $member_query->row('member_id'))
-					);
-				}
-				else
-				{
-					$this->sess_crypt_key = $val;
-				}
+				$this->sess_crypt_key = $val;
 			}
 		}
-		
+
+		// Remember me may have validated the user agent for us, if so create a fingerprint now that we
+		// can salt it properly for the user
+		if ($this->validation == 'c' && $this->EE->remember->exists())
+		{
+			$this->sdata['fingerprint'] = $this->_create_fingerprint($this->sess_crypt_key);
+		}
+
 		// validate the fingerprint as a last measure for 'c' and 's' sessions, since the fingerprint is only
-		// propogated in 'cs' sessions
+		// propogated in 'cs' sessions. Obviously this passes if Remember me validated for us
 		if ($this->sdata['fingerprint'] != $this->_create_fingerprint($this->sess_crypt_key))
 		{
 			$this->_initialize_session();
@@ -936,7 +932,7 @@ class EE_Session {
 		
 		if (REQ == 'PAGE')
 		{		
-			$this->EE->functions->set_cookie('tracker', serialize($tracker), '0');
+			$this->EE->functions->set_cookie('tracker', serialize($tracker), '0'); 
 		}
 		
 		return $tracker;
@@ -949,7 +945,11 @@ class EE_Session {
 	 */  
 	function update_cookies()
 	{
-		if ($this->cookies_exist == TRUE AND $this->EE->input->cookie($this->c_expire))
+		// this method, cookies_exist, and the c_expire cookie are unused application wide
+		$this->EE->load->library('logger');
+		$this->EE->logger->deprecated('2.6');
+
+		if ($this->EE->input->cookie($this->c_expire))
 		{
 			$now 	= time() + 300;
 			$expire = 60*60*24*365;
@@ -1098,7 +1098,7 @@ class EE_Session {
 		$this->EE->db->from(array('members m', 'member_groups g'))
 			->where('g.site_id', (int) $this->EE->config->item('site_id'))
 			->where('m.group_id', ' g.group_id', FALSE);
-		
+
 		$member_id = $this->sdata['member_id'];
 		
 		// remember me
