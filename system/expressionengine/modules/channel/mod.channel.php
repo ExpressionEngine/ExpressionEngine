@@ -354,6 +354,7 @@ class Channel {
 		// TODO Make sure our multi-relationship fields find their way into rfields
 		/** ZERO WING **/
 		$site_id = config_item('site_id');
+		$relationship_parser = NULL;
 
 		if (isset($this->zwfields[$site_id]) && ! empty($this->zwfields[$site_id]))
 		{
