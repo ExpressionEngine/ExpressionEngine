@@ -25,7 +25,7 @@
 class Zero_wing_ft extends EE_Fieldtype {
 
 	public $info = array(
-		'name'		=> 'ZeroWing',
+		'name'		=> 'Relationships Dev Preview', // 'ZeroWing',
 		'version'	=> '1.0'
 	);
 	
