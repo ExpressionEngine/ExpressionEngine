@@ -52,12 +52,13 @@ class EE_Email extends CI_Email {
 	function EE_initialize()
 	{	
 		$config = array(
-						'protocol'		=> ( ! in_array( $this->EE->config->item('mail_protocol'), $this->_protocols)) ? 'mail' : $this->EE->config->item('mail_protocol'),
-						'charset'		=> ($this->EE->config->item('email_charset') == '') ? 'utf-8' : $this->EE->config->item('email_charset'),
-						'smtp_host'		=> $this->EE->config->item('smtp_server'),
-						'smtp_user'		=> $this->EE->config->item('smtp_username'),
-						'smtp_pass'		=> $this->EE->config->item('smtp_password')
-						);
+			'protocol'		=> ( ! in_array( $this->EE->config->item('mail_protocol'), $this->_protocols)) ? 'mail' : $this->EE->config->item('mail_protocol'),
+			'charset'		=> ($this->EE->config->item('email_charset') == '') ? 'utf-8' : $this->EE->config->item('email_charset'),
+			'smtp_host'		=> $this->EE->config->item('smtp_server'),
+			'smtp_port'		=> $this->EE->config->item('smtp_port'),
+			'smtp_user'		=> $this->EE->config->item('smtp_username'),
+			'smtp_pass'		=> $this->EE->config->item('smtp_password')
+		);
 		
 		/* -------------------------------------------
 		/*	Hidden Configuration Variables
@@ -79,6 +80,9 @@ class EE_Email extends CI_Email {
 
 		if ($this->EE->config->item('email_smtp_port') !== FALSE)
 		{
+			$this->EE->load->library('logger');
+			$this->EE->logger->deprecated('2.6', '$config["smtp_port"] = "'.$this->EE->config->item('email_smtp_port').'";');
+
 			$config['smtp_port'] = $this->EE->config->item('email_smtp_port');
 		}
 				

@@ -47,13 +47,14 @@ class Member {
 						'public_profile', 'memberlist', 'do_member_search', 
 						'member_search', 'register', 'smileys', 'login', 
 						'unpw_update', 'email_console', 'send_email', 
-						'aim_console', 'icq_console', 'forgot_password', 
-						'delete', 'member_mini_search', 'do_member_mini_search'
+						'aim_console', 'icq_console', 'forgot_password', 'reset_password',
+						'delete', 'member_mini_search', 'do_member_mini_search', 
 					);
 
 	var $no_login 			= array(
 						'public_profile', 'memberlist', 'do_member_search', 
-						'member_search', 'register', 'forgot_password', 'unpw_update'
+						'member_search', 'register', 'forgot_password', 'unpw_update', 
+						'reset_password'
 					);
 
 	var $id_override		= array(
@@ -95,6 +96,7 @@ class Member {
 	var $crumb_map 			= array(
 								'profile'				=>	'your_control_panel',
 								'delete'				=>	'mbr_delete',
+								'reset_password'		=>  'mbr_reset_password',
 								'forgot_password'		=>	'mbr_forgotten_password',
 								'login'					=>	'mbr_login',
 								'unpw_update'			=>  'settings_update',
@@ -347,6 +349,7 @@ class Member {
 			'icq_console',
 			'send_email',
 			'forgot_password',
+			'reset_password',
 			'smileys',
 			'messages',
 			'delete'
@@ -357,7 +360,7 @@ class Member {
 		{
 			$this->_show_404_template();
 		}
-
+		
 		// Call the requested function
 		if ($this->request == 'profile') $this->request = 'profile_main';
 		if ($this->request == 'register') $this->request = 'registration_form';
@@ -1029,7 +1032,7 @@ class Member {
 	/**
 	 * Retreive Forgotten Password
 	 */
-	public function retrieve_password()
+	public function send_reset_token()
 	{
 		if ( ! class_exists('Member_auth'))
 		{
@@ -1043,7 +1046,7 @@ class Member {
 			$MA->{$key} = $value;
 		}
 
-		$MA->retrieve_password();
+		$MA->send_reset_token();
 	}
 
 	// --------------------------------------------------------------------
@@ -1065,11 +1068,33 @@ class Member {
 			$MA->{$key} = $value;
 		}
 
-		$MA->reset_password();
+		return $MA->reset_password();
 	}
 
 	// --------------------------------------------------------------------
 
+	/**
+	 *
+	 */
+	public function process_reset_password()
+	{
+		if ( ! class_exists('Member_auth'))
+		{
+			require PATH_MOD.'member/mod.member_auth.php';
+		}
+
+		$MA = new Member_auth();
+
+		foreach(get_object_vars($this) as $key => $value)
+		{
+			$MA->{$key} = $value;
+		}
+
+		return $MA->process_reset_password();
+	}
+
+	// --------------------------------------------------------------------
+		
 	/**
 	 * Subscriptions Edit Form
 	 */

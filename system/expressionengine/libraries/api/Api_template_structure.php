@@ -135,6 +135,7 @@ class Api_template_structure extends Api {
 		}
 		
 		// check if it's taken, too
+		$this->EE->load->model('super_model');
 		$count = $this->EE->super_model->count('template_groups', array('site_id' => $site_id, 'group_name' => $group_name));
 		
 		if ($count > 0)

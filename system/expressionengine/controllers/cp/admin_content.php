@@ -153,7 +153,7 @@ class Admin_content extends CP_Controller {
 
 		$vars['cat_group_options'][''] = lang('none');
 
-		$groups = $this->category_model->get_categories('', $this->config->item('site_id'));
+		$groups = $this->category_model->get_category_groups('', $this->config->item('site_id'));
 
 		if ($groups->num_rows() > 0)
 		{
@@ -1057,7 +1057,7 @@ class Admin_content extends CP_Controller {
 		$cat_count = 1;
 		$vars['categories'] = array();
 
-		$categories = $this->category_model->get_categories('', FALSE);
+		$categories = $this->category_model->get_category_groups('', FALSE);
 
 		foreach($categories->result() as $row)
 		{
@@ -1473,7 +1473,7 @@ class Admin_content extends CP_Controller {
 		$zurl .= ($this->input->get_post('cat_group') !== FALSE) ? AMP.'cat_group='.$this->input->get_post('cat_group') : '';
 		$zurl .= ($this->input->get_post('integrated') !== FALSE) ? AMP.'integrated='.$this->input->get_post('integrated') : '';
 
-		$query = $this->category_model->get_categories($group_id, FALSE);
+		$query = $this->category_model->get_category_groups($group_id, FALSE);
 		
 		if ($query->num_rows() == 0)
 		{

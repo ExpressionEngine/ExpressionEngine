@@ -51,6 +51,8 @@ class Updater {
 		$this->_drop_dst();
 		$this->_update_timezone_column_lengths();
 		$this->_update_session_table();
+		$this->_update_actions_table();
+		$this->_update_specialty_templates();
 		
 		return TRUE;
 	}
@@ -205,6 +207,57 @@ class Updater {
 		}
 		
 		return TRUE;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Update the Actions Table
+	 *
+	 * Required for the changes to the reset password flow.  Removed
+	 * one old action and added two new ones.
+	 */
+	private function _update_actions_table()
+	{
+		// Update two old actions that we no longer need to be actions
+		// with the names of the new methods.
+
+		// For this one, the method was renamed.  It still mostly does
+		// the same thing and needs to be an action.
+		$this->EE->db->where('method', 'retrieve_password')
+			->update('actions', array('method'=>'send_reset_token'));
+		// For this one the method still exists, but is now a form.  It needs
+		// to be renamed to the new processing method.
+		$this->EE->db->where('method', 'reset_password')
+			->update('actions', array('method'=>'process_reset_password'));
+
+	} 
+
+	// -------------------------------------------------------------------
+
+	/**
+	 * Update Specialty Templates
+	 *
+	 * Required for the changes to the reset password flow.  We needed to 
+	 * slightly change the language of the related e-mail template to fit
+	 * the new flow.
+	 */
+	private function _update_specialty_templates()
+	{
+		$data = array(
+			'template_data'=>'{name},
+
+To reset your password, please go to the following page:
+
+{reset_url}
+
+If you do not wish to reset your password, ignore this message. It will expire in 24 hours.
+
+{site_name}
+{site_url}');	
+
+		$this->EE->db->where('template_name', 'forgot_password_instructions')
+			->update('specialty_templates', $data);
 	}
 }	
 /* END CLASS */

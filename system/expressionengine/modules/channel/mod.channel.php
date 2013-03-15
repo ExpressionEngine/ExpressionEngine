@@ -4808,7 +4808,7 @@ class Channel {
 		foreach ($entries_data as $row)
 		{
 			// Get array of custom fields for the row's current site
-			$custom_fields = $this->cfields[$row['site_id']];
+			$custom_fields = (isset($this->cfields[$row['site_id']])) ? $this->cfields[$row['site_id']] : array();
 			
 			foreach ($custom_fields as $field_name => $field_id)
 			{

@@ -1191,6 +1191,9 @@ $lang = array(
 "smtp_server" => 
 "SMTP Server Address",
 
+"smtp_port" =>
+"SMTP Server Port",
+
 "smtp_username" => 
 "SMTP Username",
 
