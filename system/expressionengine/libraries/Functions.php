@@ -2284,16 +2284,23 @@ class EE_Functions {
 
 		$open_stack = array();
 
-		foreach($temp_misc as $key => $item)
+		foreach($temp_misc as $open_key => $open_tag)
 		{
-			foreach($temp_close as $idx => $row)
+			
+			if (preg_match("#(.+?)(\s+|=)(.+?)#", $open_tag, $matches))
 			{
+				$open_tag = $matches[1];
+			}
+
+			foreach($temp_close as $close_key => $close_tag)
+			{
+				
 				// Find the closest (potential) closing tag following it
-				if (($idx > $key) && substr($item, 0, strlen($row)) == $row)
+				if (($close_key > $open_key) && $open_tag == $close_tag)
 				{
 					// There could be another opening tag between these
 					// so we create a stack of opening tag values
-					$open_stack[$idx][] = $key;
+					$open_stack[$close_key][] = $open_key;
 					continue;
 				}
 			}
@@ -2317,6 +2324,7 @@ class EE_Functions {
 		// Weed out the duplicatess
 		$temp_single	= array_unique($temp_single);
 		$temp_pair		= array_unique($temp_pair);
+
 
 		// Assign Single Variables
 		$var_single = array();

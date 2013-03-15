@@ -30,7 +30,9 @@ jQuery(document).ready(function () {
 		if ( ! _.has(options, 'error'))
 		{
 			jqXHR.error(function(data) {
-				throw [data.statusText, data.responseText];
+				_.defer(function() {
+					throw [data.statusText, data.responseText];
+				});
 			});
 		}
 	});

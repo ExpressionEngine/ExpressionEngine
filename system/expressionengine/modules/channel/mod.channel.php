@@ -33,6 +33,14 @@ class Channel {
 	public $query;
 	public $TYPE;
 	public $entry_id				= '';
+
+	/**
+	 * Cache of entry ids from the entries we just pulled, generated in
+	 * build_sql_query() and then sent to the Relationships library when
+	 * pulling relationships.
+ 	 */
+	protected $_entry_ids				= array();
+
 	public $uri						= '';
 	public $uristr					= '';
 	public $return_data				= '';	 	// Final data
@@ -41,6 +49,12 @@ class Channel {
 	public $cfields					= array();
 	public $dfields					= array();
 	public $rfields					= array();
+
+	/**
+	 * A mapping of field_name => field_id containing
+	 * only fields of the Zero Wing Relationship fieldtype.
+	 */
+	public $zwfields				= array();
 	public $mfields					= array();
 	public $pfields					= array();
 	public $categories				= array();
@@ -211,6 +225,7 @@ class Channel {
 	  */
 	public function entries()
 	{
+
 		// If the "related_categories" mode is enabled
 		// we'll call the "related_categories" function
 		// and bail out.
@@ -330,7 +345,19 @@ class Channel {
 			$this->fetch_categories();
 		}
 
-		$this->parse_channel_entries();
+		// At this point, check to see if we have any relationships.  If we do,
+		// we'll parse them ahead of the main channel parsing.  We can do this
+		// because all relationship tags will be namespaced.  We'll just pick em
+		// out, grab the data we need and then replace them.  We'll edit chunk.
+		//
+		// FIXME Only call this if there are, in fact, values in rfields[1]
+		// TODO Make sure our multi-relationship fields find their way into rfields
+		/** ZERO WING **/
+		$this->EE->load->library('relationships');
+		$relationship_parser = $this->EE->relationships->get_relationship_parser($this->EE->TMPL, $this->zwfields[1], $this->cfields[1]);
+		$relationship_parser->query_for_entries($this->_entry_ids); 
+
+		$this->parse_channel_entries($relationship_parser);
 
 		if ($this->enable['pagination'] == TRUE)
 		{
@@ -859,11 +886,13 @@ class Channel {
 	public function fetch_custom_channel_fields()
 	{
 		if (isset($this->EE->session->cache['channel']['custom_channel_fields']) && isset($this->EE->session->cache['channel']['date_fields'])
-			&& isset($this->EE->session->cache['channel']['relationship_fields'])  && isset($this->EE->session->cache['channel']['pair_custom_fields']))
+			&& isset($this->EE->session->cache['channel']['relationship_fields']) && isset($this->EE->session->cache['channel']['zero_wing_fields'])
+			&& isset($this->EE->session->cache['channel']['pair_custom_fields']))
 		{
 			$this->cfields = $this->EE->session->cache['channel']['custom_channel_fields'];
 			$this->dfields = $this->EE->session->cache['channel']['date_fields'];
 			$this->rfields = $this->EE->session->cache['channel']['relationship_fields'];
+			$this->zwfields = $this->EE->session->cache['channel']['zero_wing_fields'];
 			$this->pfields = $this->EE->session->cache['channel']['pair_custom_fields'];
 			return;
 		}
@@ -876,11 +905,13 @@ class Channel {
 		$this->cfields = $fields['custom_channel_fields'];
 		$this->dfields = $fields['date_fields'];
 		$this->rfields = $fields['relationship_fields'];
+		$this->zwfields = $fields['zero_wing_fields'];
 		$this->pfields = $fields['pair_custom_fields'];
 
   		$this->EE->session->cache['channel']['custom_channel_fields']	= $this->cfields;
 		$this->EE->session->cache['channel']['date_fields']				= $this->dfields;
 		$this->EE->session->cache['channel']['relationship_fields']		= $this->rfields;
+		$this->EE->session->cache['channel']['zero_wing_fields']		= $this->zwfields;
 		$this->EE->session->cache['channel']['pair_custom_fields']		= $this->pfields;
 	}
 
@@ -1036,10 +1067,10 @@ class Channel {
     *
     *****************************************************************/
 	/**
-		Generate the SQL for an exact query in field search.
-
-			search:field="=words|other words"	
-	*/
+	 *	Generate the SQL for an exact query in field search.
+	 *
+	 *	search:field="=words|other words"	
+	 */
 	private function _exact_field_search($terms, $field_name, $site_id)
 	{
 
@@ -1094,11 +1125,13 @@ class Channel {
 		return $add_search.' '.$conj.' (wd.site_id=' . $site_id . ' AND wd.field_id_'.$this->cfields[$site_id][$field_name].' = "")';
 	}
 
-	/**
-		Generate the SQL for a LIKE query in field search.
+	// ------------------------------------------------------------------------
 
-			search:field="words|other words|IS_EMPTY"
-	*/
+	/**
+	 * Generate the SQL for a LIKE query in field search.
+	 *
+	 * 		search:field="words|other words|IS_EMPTY"
+	 */
 	private function _field_search($terms, $field_name, $site_id)
 	{
 		$not = '';
@@ -1152,34 +1185,30 @@ class Channel {
 		return $search_sql;
 	}
 
+	// ------------------------------------------------------------------------
+
 	/**
-		Generate the SQL where condition to handle the {exp:channel:entries}
-		field search parameter -- search:field="".  There are two primary
-		syntax possibilities:
-
-			search:field="words|other words"
-		
-		and
-
-			search:field="=words|other words"
-
-		The first performs a LIKE "%words%" OR LIKE "%other words%".  The second
-		one performs an ="words" OR ="other words".  Other possibilities are
-		prepending "not" to negate the search:
-		
-			search:field="not words|other words"
-
-		And using IS_EMPTY to indicate an empty field.
-
-			search:field ="IS_EMPTY"
-			search:field="not IS_EMPTY"
-			search:field="=IS_EMPTY"
-			search:field="=not IS_EMPTY"
-
-		All of these may be combined:
-		
-			search:field="not IS_EMPTY|words"
-	*/
+	 * Generate the SQL where condition to handle the {exp:channel:entries}
+	 * field search parameter -- search:field="".  There are two primary
+	 * syntax possibilities:
+	 * 	search:field="words|other words"
+	 * 
+	 * and
+	 * 	search:field="=words|other words"
+	 * The first performs a LIKE "%words%" OR LIKE "%other words%".  The second
+	 * one performs an ="words" OR ="other words".  Other possibilities are
+	 * prepending "not" to negate the search:
+	 * 
+	 * 	search:field="not words|other words"
+	 * And using IS_EMPTY to indicate an empty field.
+	 * 	search:field ="IS_EMPTY"
+	 * 	search:field="not IS_EMPTY"
+	 * 	search:field="=IS_EMPTY"
+	 * 	search:field="=not IS_EMPTY"
+	 * All of these may be combined:
+	 * 
+	 * 	search:field="not IS_EMPTY|words"
+	 */
 	private function _generate_field_search_sql($search_fields, $site_ids) 
 	{	
 		$sql = '';
@@ -2839,7 +2868,8 @@ class Channel {
 			{
 				continue;
 			}
-
+			
+			$this->_entry_ids[] = $row['entry_id'];
 			$this->sql .= $row['entry_id'].',';
 		}
 
@@ -3201,7 +3231,7 @@ class Channel {
 	/**
 	  *  Parse channel entries
 	  */
-	public function parse_channel_entries()
+	public function parse_channel_entries($relationship_parser)
 	{
 		$switch = array();
 		$processed_member_fields = array();
@@ -3934,9 +3964,10 @@ class Channel {
 
 							$tagdata = $this->EE->TMPL->delete_var_pairs($key, $key_name, $tagdata);
 						}
-					}
-					else
+					}	
+					elseif ( ! isset($this->zwfields[$row['site_id']][$key_name]))
 					{
+						// don't want to clear pairs if we still have zw pairs
 						$tagdata = $this->EE->TMPL->delete_var_pairs($key, $key_name, $tagdata);
 					}
 				}
@@ -4122,6 +4153,9 @@ class Channel {
 			}
 			// END VARIABLE PAIRS
 
+			/** ZERO WING **/	
+			$tagdata = $relationship_parser->parse_relationships($row['entry_id'], $tagdata, $this);
+
 			// We swap out the conditionals after pairs are parsed so they don't interfere
 			// with the string replace
 			$tagdata = $this->EE->functions->prep_conditionals($tagdata, $cond);
@@ -4293,275 +4327,11 @@ class Channel {
 					$tagdata = $this->EE->TMPL->swap_var_single($key, $val, $tagdata);
 				}
 
-				//  parse profile path
-				if (strncmp($key, 'profile_path', 12) == 0)
-				{
-					$tagdata = $this->EE->TMPL->swap_var_single(
-														$key,
-														$this->EE->functions->create_url($this->EE->functions->extract_path($key).'/'.$row['member_id']),
-														$tagdata
-													 );
-				}
-
-				//  {member_search_path}
-				if (strncmp($key, 'member_search_path', 18) == 0)
-				{
-					$tagdata = $this->EE->TMPL->swap_var_single(
-														$key,
-														$search_link.$row['member_id'],
-														$tagdata
-													 );
-				}
-
-
-				//  parse comment_path
-				if (strncmp($key, 'comment_path', 12) == 0 OR strncmp($key, 'entry_id_path', 13) == 0)
-				{
-					$path = ($this->EE->functions->extract_path($key) != '' AND $this->EE->functions->extract_path($key) != 'SITE_INDEX') ? $this->EE->functions->extract_path($key).'/'.$row['entry_id'] : $row['entry_id'];
-
-					$tagdata = $this->EE->TMPL->swap_var_single(
-														$key,
-														$this->EE->functions->create_url($path),
-														$tagdata
-													 );
-				}
-
-				//  parse URL title path
-				if (strncmp($key, 'url_title_path', 14) == 0)
-				{
-					$path = ($this->EE->functions->extract_path($key) != '' AND $this->EE->functions->extract_path($key) != 'SITE_INDEX') ? $this->EE->functions->extract_path($key).'/'.$row['url_title'] : $row['url_title'];
-
-					$tagdata = $this->EE->TMPL->swap_var_single(
-														$key,
-														$this->EE->functions->create_url($path),
-														$tagdata
-													 );
-				}
-
-				//  parse title permalink
-				if (strncmp($key, 'title_permalink', 15) == 0)
-				{
-					$path = ($this->EE->functions->extract_path($key) != '' AND $this->EE->functions->extract_path($key) != 'SITE_INDEX') ? $this->EE->functions->extract_path($key).'/'.$row['url_title'] : $row['url_title'];
-
-					$tagdata = $this->EE->TMPL->swap_var_single(
-														$key,
-														$this->EE->functions->create_url($path, FALSE),
-														$tagdata
-													 );
-				}
-
-				//  parse permalink
-				if (strncmp($key, 'permalink', 9) == 0)
-				{
-					$path = ($this->EE->functions->extract_path($key) != '' AND $this->EE->functions->extract_path($key) != 'SITE_INDEX') ? $this->EE->functions->extract_path($key).'/'.$row['entry_id'] : $row['entry_id'];
-
-					$tagdata = $this->EE->TMPL->swap_var_single(
-														$key,
-														$this->EE->functions->create_url($path, FALSE),
-														$tagdata
-													 );
-				}
-
-
-				//  {comment_auto_path}
-				if ($key == "comment_auto_path")
-				{
-					$path = ($row['comment_url'] == '') ? $row['channel_url'] : $row['comment_url'];
-
-					$tagdata = $this->EE->TMPL->swap_var_single($key, $path, $tagdata);
-				}
-
-				//  {comment_url_title_auto_path}
-				if ($key == "comment_url_title_auto_path")
-				{
-					$path = ($row['comment_url'] == '') ? $row['channel_url'] : $row['comment_url'];
-
-					$tagdata = $this->EE->TMPL->swap_var_single(
-														$key,
-														reduce_double_slashes($path.'/'.$row['url_title']),
-														$tagdata
-													 );
-				}
-
-				//  {comment_entry_id_auto_path}
-				if ($key == "comment_entry_id_auto_path")
-				{
-					$path = ($row['comment_url'] == '') ? $row['channel_url'] : $row['comment_url'];
-
-					$tagdata = $this->EE->TMPL->swap_var_single(
-														$key,
-														reduce_double_slashes($path.'/'.$row['entry_id']),
-														$tagdata
-													 );
-				}
-
-				//  {author}
-				if ($key == "author")
-				{
-					$tagdata = $this->EE->TMPL->swap_var_single($val, ($row['screen_name'] != '') ? $row['screen_name'] : $row['username'], $tagdata);
-				}
-
-				//  {channel}
-				if ($key == "channel")
-				{
-					$tagdata = $this->EE->TMPL->swap_var_single($val, $row['channel_title'], $tagdata);
-				}
-
-				//  {channel_short_name}
-				if ($key == "channel_short_name")
-				{
-					$tagdata = $this->EE->TMPL->swap_var_single($val, $row['channel_name'], $tagdata);
-				}
-
-				//  {relative_date}
-
-				if ($key == "relative_date")
-				{
-					$tagdata = $this->EE->TMPL->swap_var_single($val, timespan($row['entry_date']), $tagdata);
-				}
-
-				//  {trimmed_url} - used by Atom feeds
-				if ($key == "trimmed_url")
-				{
-					$channel_url = (isset($row['channel_url']) AND $row['channel_url'] != '') ? $row['channel_url'] : '';
-
-					$channel_url = str_replace(array('http://','www.'), '', $channel_url);
-					$xe = explode("/", $channel_url);
-					$channel_url = current($xe);
-
-					$tagdata = $this->EE->TMPL->swap_var_single($val, $channel_url, $tagdata);
-				}
-
-				//  {relative_url} - used by Atom feeds
-				if ($key == "relative_url")
-				{
-					$channel_url = (isset($row['channel_url']) AND $row['channel_url'] != '') ? $row['channel_url'] : '';
-					$channel_url = str_replace('http://', '', $channel_url);
-
-					if ($x = strpos($channel_url, "/"))
-					{
-						$channel_url = substr($channel_url, $x + 1);
-					}
-
-					$channel_url = rtrim($channel_url, '/');
-
-					$tagdata = $this->EE->TMPL->swap_var_single($val, $channel_url, $tagdata);
-				}
-
-				//  {url_or_email}
-				if ($key == "url_or_email")
-				{
-					$tagdata = $this->EE->TMPL->swap_var_single($val, ($row['url'] != '') ? $row['url'] : $row['email'], $tagdata);
-				}
-
-				//  {url_or_email_as_author}
-				if ($key == "url_or_email_as_author")
-				{
-					$name = ($row['screen_name'] != '') ? $row['screen_name'] : $row['username'];
-
-					if ($row['url'] != '')
-					{
-						$tagdata = $this->EE->TMPL->swap_var_single($val, "<a href=\"".$row['url']."\">".$name."</a>", $tagdata);
-					}
-					else
-					{
-						$tagdata = $this->EE->TMPL->swap_var_single($val, $this->EE->typography->encode_email($row['email'], $name), $tagdata);
-					}
-				}
-
-
-				//  {url_or_email_as_link}
-				if ($key == "url_or_email_as_link")
-				{
-					if ($row['url'] != '')
-					{
-						$tagdata = $this->EE->TMPL->swap_var_single($val, "<a href=\"".$row['url']."\">".$row['url']."</a>", $tagdata);
-					}
-					else
-					{
-						$tagdata = $this->EE->TMPL->swap_var_single($val, $this->EE->typography->encode_email($row['email']), $tagdata);
-					}
-				}
-
-				//  {signature}
-				if ($key == "signature")
-				{
-					if ($this->EE->session->userdata('display_signatures') == 'n' OR $row['signature'] == '' OR $this->EE->session->userdata('display_signatures') == 'n')
-					{
-						$tagdata = $this->EE->TMPL->swap_var_single($key, '', $tagdata);
-					}
-					else
-					{
-						$tagdata = $this->EE->TMPL->swap_var_single($key,
-														$this->EE->typography->parse_type($row['signature'], array(
-																					'text_format'	=> 'xhtml',
-																					'html_format'	=> 'safe',
-																					'auto_links'	=> 'y',
-																					'allow_img_url' => $this->EE->config->item('sig_allow_img_hotlink')
-																				)
-																			), $tagdata);
-					}
-				}
-
-
-				if ($key == "signature_image_url")
-				{
-					if ($this->EE->session->userdata('display_signatures') == 'n' OR $row['sig_img_filename'] == ''  OR $this->EE->session->userdata('display_signatures') == 'n')
-					{
-						$tagdata = $this->EE->TMPL->swap_var_single($key, '', $tagdata);
-						$tagdata = $this->EE->TMPL->swap_var_single('signature_image_width', '', $tagdata);
-						$tagdata = $this->EE->TMPL->swap_var_single('signature_image_height', '', $tagdata);
-					}
-					else
-					{
-						$tagdata = $this->EE->TMPL->swap_var_single($key, $this->EE->config->slash_item('sig_img_url').$row['sig_img_filename'], $tagdata);
-						$tagdata = $this->EE->TMPL->swap_var_single('signature_image_width', $row['sig_img_width'], $tagdata);
-						$tagdata = $this->EE->TMPL->swap_var_single('signature_image_height', $row['sig_img_height'], $tagdata);
-					}
-				}
-
-				if ($key == "avatar_url")
-				{
-					if ($this->EE->session->userdata('display_avatars') == 'n' OR $row['avatar_filename'] == ''  OR $this->EE->session->userdata('display_avatars') == 'n')
-					{
-						$tagdata = $this->EE->TMPL->swap_var_single($key, '', $tagdata);
-						$tagdata = $this->EE->TMPL->swap_var_single('avatar_image_width', '', $tagdata);
-						$tagdata = $this->EE->TMPL->swap_var_single('avatar_image_height', '', $tagdata);
-					}
-					else
-					{
-						$tagdata = $this->EE->TMPL->swap_var_single($key, $this->EE->config->slash_item('avatar_url').$row['avatar_filename'], $tagdata);
-						$tagdata = $this->EE->TMPL->swap_var_single('avatar_image_width', $row['avatar_width'], $tagdata);
-						$tagdata = $this->EE->TMPL->swap_var_single('avatar_image_height', $row['avatar_height'], $tagdata);
-					}
-				}
-
-				if ($key == "photo_url")
-				{
-					if ($this->EE->session->userdata('display_photos') == 'n' OR $row['photo_filename'] == ''  OR $this->EE->session->userdata('display_photos') == 'n')
-					{
-						$tagdata = $this->EE->TMPL->swap_var_single($key, '', $tagdata);
-						$tagdata = $this->EE->TMPL->swap_var_single('photo_image_width', '', $tagdata);
-						$tagdata = $this->EE->TMPL->swap_var_single('photo_image_height', '', $tagdata);
-					}
-					else
-					{
-						$tagdata = $this->EE->TMPL->swap_var_single($key, $this->EE->config->slash_item('photo_url').$row['photo_filename'], $tagdata);
-						$tagdata = $this->EE->TMPL->swap_var_single('photo_image_width', $row['photo_width'], $tagdata);
-						$tagdata = $this->EE->TMPL->swap_var_single('photo_image_height', $row['photo_height'], $tagdata);
-					}
-				}
-
-				//  parse {title}
-				if ($key == 'title')
-				{
-					$row['title'] = str_replace(array('{', '}'), array('&#123;', '&#125;'), $row['title']);
-					$tagdata = $this->EE->TMPL->swap_var_single($val,  $this->EE->typography->format_characters($row['title']), $tagdata);
-				}
+				$tagdata = $this->parse_simple_variable($key, $val, $tagdata, $row);
 
 				//  parse basic fields (username, screen_name, etc.)
 				//  Use array_key_exists to handle null values
-				
+
 				if ($val AND array_key_exists($val, $row))
 				{
 					$tagdata = $this->EE->TMPL->swap_var_single($val, $row[$val], $tagdata);
@@ -4656,10 +4426,15 @@ class Channel {
 				
 				if (($cln = strpos($key, ':')) !== FALSE)
 				{
-					$modifier = substr($key, $cln + 1);
+					$first_term = substr($key, 0, $cln);
+					if ( ! isset($this->zwfields[$row['site_id']][$first_term])) 
+					{
+						$modifier = substr($key, $cln + 1);
+						
 
-					$parse_fnc = 'replace_'.$modifier;
-					$val = $key = substr($key, 0, $cln);
+						$parse_fnc = 'replace_'.$modifier;
+						$val = $key = $first_term;
+					}
 				}
 
 				if (isset($this->cfields[$row['site_id']][$key]))
@@ -4748,12 +4523,13 @@ class Channel {
 
 			}
 			// END SINGLE VARIABLES
-
+			
 			// do we need to replace any curly braces that we protected in custom fields?
 			if (strpos($tagdata, unique_marker('channel_bracket_open')) !== FALSE)
 			{
 				$tagdata = str_replace(array(unique_marker('channel_bracket_open'), unique_marker('channel_bracket_close')), array('{', '}'), $tagdata);
 			}
+		
 
 			// -------------------------------------------
 			// 'channel_entries_tagdata_end' hook.
@@ -4841,6 +4617,279 @@ class Channel {
 				}
 			}
 		}
+	}
+
+	public function parse_simple_variable($key, $val, $tagdata, $row, $prefix = '')
+	{		
+		//  parse profile path
+		if (strncmp($key, 'profile_path', 12) == 0)
+		{
+			$tagdata = $this->EE->TMPL->swap_var_single(
+												$prefix.$key,
+												$this->EE->functions->create_url($this->EE->functions->extract_path($key).'/'.$row['member_id']),
+												$tagdata
+											 );
+		}
+
+		//  {member_search_path}
+		elseif (strncmp($key, 'member_search_path', 18) == 0)
+		{
+			$tagdata = $this->EE->TMPL->swap_var_single(
+												$prefix.$key,
+												$search_link.$row['member_id'],
+												$tagdata
+											 );
+		}
+
+
+		//  parse comment_path
+		elseif (strncmp($key, 'comment_path', 12) == 0 OR strncmp($key, 'entry_id_path', 13) == 0)
+		{
+			$path = ($this->EE->functions->extract_path($key) != '' AND $this->EE->functions->extract_path($key) != 'SITE_INDEX') ? $this->EE->functions->extract_path($key).'/'.$row['entry_id'] : $row['entry_id'];
+
+			$tagdata = $this->EE->TMPL->swap_var_single(
+												$prefix.$key,
+												$this->EE->functions->create_url($path),
+												$tagdata
+											 );
+		}
+
+		//  parse URL title path
+		elseif (strncmp($key, 'url_title_path', 14) == 0)
+		{
+			$path = ($this->EE->functions->extract_path($key) != '' AND $this->EE->functions->extract_path($key) != 'SITE_INDEX') ? $this->EE->functions->extract_path($key).'/'.$row['url_title'] : $row['url_title'];
+
+			$tagdata = $this->EE->TMPL->swap_var_single(
+												$prefix.$key,
+												$this->EE->functions->create_url($path),
+												$tagdata
+											 );
+		}
+
+		//  parse title permalink
+		elseif (strncmp($key, 'title_permalink', 15) == 0)
+		{
+
+			$path = ($this->EE->functions->extract_path($key) != '' AND $this->EE->functions->extract_path($key) != 'SITE_INDEX') ? $this->EE->functions->extract_path($key).'/'.$row['url_title'] : $row['url_title'];
+			
+			$tagdata = $this->EE->TMPL->swap_var_single(
+												$prefix.$key,
+												$this->EE->functions->create_url($path, FALSE),
+												$tagdata
+											 );
+		}
+
+		//  parse permalink
+		elseif (strncmp($key, 'permalink', 9) == 0)
+		{
+			$path = ($this->EE->functions->extract_path($key) != '' AND $this->EE->functions->extract_path($key) != 'SITE_INDEX') ? $this->EE->functions->extract_path($key).'/'.$row['entry_id'] : $row['entry_id'];
+
+			$tagdata = $this->EE->TMPL->swap_var_single(
+												$prefix.$key,
+												$this->EE->functions->create_url($path, FALSE),
+												$tagdata
+											 );
+		}
+
+
+		//  {comment_auto_path}
+		elseif ($key == "comment_auto_path")
+		{
+			$path = ($row['comment_url'] == '') ? $row['channel_url'] : $row['comment_url'];
+
+			$tagdata = $this->EE->TMPL->swap_var_single($prefix.$key, $path, $tagdata);
+		}
+
+		//  {comment_url_title_auto_path}
+		elseif ($key == "comment_url_title_auto_path")
+		{
+			$path = ($row['comment_url'] == '') ? $row['channel_url'] : $row['comment_url'];
+
+			$tagdata = $this->EE->TMPL->swap_var_single(
+												$prefix.$key,
+												reduce_double_slashes($path.'/'.$row['url_title']),
+												$tagdata
+											 );
+		}
+
+		//  {comment_entry_id_auto_path}
+		elseif ($key == "comment_entry_id_auto_path")
+		{
+			$path = ($row['comment_url'] == '') ? $row['channel_url'] : $row['comment_url'];
+
+			$tagdata = $this->EE->TMPL->swap_var_single(
+												$prefix.$key,
+												reduce_double_slashes($path.'/'.$row['entry_id']),
+												$tagdata
+											 );
+		}
+
+		//  {author}
+		elseif ($key == "author")
+		{
+			$tagdata = $this->EE->TMPL->swap_var_single($val, ($row['screen_name'] != '') ? $row['screen_name'] : $row['username'], $tagdata);
+		}
+
+		//  {channel}
+		elseif ($key == "channel")
+		{
+			$tagdata = $this->EE->TMPL->swap_var_single($val, $row['channel_title'], $tagdata);
+		}
+
+		//  {channel_short_name}
+		elseif ($key == "channel_short_name")
+		{
+			$tagdata = $this->EE->TMPL->swap_var_single($val, $row['channel_name'], $tagdata);
+		}
+
+		//  {relative_date}
+
+		elseif ($key == "relative_date")
+		{
+			$tagdata = $this->EE->TMPL->swap_var_single($val, timespan($row['entry_date']), $tagdata);
+		}
+
+		//  {trimmed_url} - used by Atom feeds
+		elseif ($key == "trimmed_url")
+		{
+			$channel_url = (isset($row['channel_url']) AND $row['channel_url'] != '') ? $row['channel_url'] : '';
+
+			$channel_url = str_replace(array('http://','www.'), '', $channel_url);
+			$xe = explode("/", $channel_url);
+			$channel_url = current($xe);
+
+			$tagdata = $this->EE->TMPL->swap_var_single($val, $channel_url, $tagdata);
+		}
+
+		//  {relative_url} - used by Atom feeds
+		elseif ($key == "relative_url")
+		{
+			$channel_url = (isset($row['channel_url']) AND $row['channel_url'] != '') ? $row['channel_url'] : '';
+			$channel_url = str_replace('http://', '', $channel_url);
+
+			if ($x = strpos($channel_url, "/"))
+			{
+				$channel_url = substr($channel_url, $x + 1);
+			}
+
+			$channel_url = rtrim($channel_url, '/');
+
+			$tagdata = $this->EE->TMPL->swap_var_single($val, $channel_url, $tagdata);
+		}
+
+		//  {url_or_email}
+		elseif ($key == "url_or_email")
+		{
+			$tagdata = $this->EE->TMPL->swap_var_single($val, ($row['url'] != '') ? $row['url'] : $row['email'], $tagdata);
+		}
+
+		//  {url_or_email_as_author}
+		elseif ($key == "url_or_email_as_author")
+		{
+			$name = ($row['screen_name'] != '') ? $row['screen_name'] : $row['username'];
+
+			if ($row['url'] != '')
+			{
+				$tagdata = $this->EE->TMPL->swap_var_single($val, "<a href=\"".$row['url']."\">".$name."</a>", $tagdata);
+			}
+			else
+			{
+				$tagdata = $this->EE->TMPL->swap_var_single($val, $this->EE->typography->encode_email($row['email'], $name), $tagdata);
+			}
+		}
+
+
+		//  {url_or_email_as_link}
+		elseif ($key == "url_or_email_as_link")
+		{
+			if ($row['url'] != '')
+			{
+				$tagdata = $this->EE->TMPL->swap_var_single($val, "<a href=\"".$row['url']."\">".$row['url']."</a>", $tagdata);
+			}
+			else
+			{
+				$tagdata = $this->EE->TMPL->swap_var_single($val, $this->EE->typography->encode_email($row['email']), $tagdata);
+			}
+		}
+
+		//  {signature}
+		elseif ($key == "signature")
+		{
+			if ($this->EE->session->userdata('display_signatures') == 'n' OR $row['signature'] == '' OR $this->EE->session->userdata('display_signatures') == 'n')
+			{
+				$tagdata = $this->EE->TMPL->swap_var_single($prefix.$key, '', $tagdata);
+			}
+			else
+			{
+				$tagdata = $this->EE->TMPL->swap_var_single($prefix.$key,
+												$this->EE->typography->parse_type($row['signature'], array(
+																			'text_format'	=> 'xhtml',
+																			'html_format'	=> 'safe',
+																			'auto_links'	=> 'y',
+																			'allow_img_url' => $this->EE->config->item('sig_allow_img_hotlink')
+																		)
+																	), $tagdata);
+			}
+		}
+
+
+		elseif ($key == "signature_image_url")
+		{
+			if ($this->EE->session->userdata('display_signatures') == 'n' OR $row['sig_img_filename'] == ''  OR $this->EE->session->userdata('display_signatures') == 'n')
+			{
+				$tagdata = $this->EE->TMPL->swap_var_single($prefix.$key, '', $tagdata);
+				$tagdata = $this->EE->TMPL->swap_var_single($prefix.'signature_image_width', '', $tagdata);
+				$tagdata = $this->EE->TMPL->swap_var_single($prefix.'signature_image_height', '', $tagdata);
+			}
+			else
+			{
+				$tagdata = $this->EE->TMPL->swap_var_single($prefix.$key, $this->EE->config->slash_item('sig_img_url').$row['sig_img_filename'], $tagdata);
+				$tagdata = $this->EE->TMPL->swap_var_single($prefix.'signature_image_width', $row['sig_img_width'], $tagdata);
+				$tagdata = $this->EE->TMPL->swap_var_single($prefix.'signature_image_height', $row['sig_img_height'], $tagdata);
+			}
+		}
+
+		elseif ($key == "avatar_url")
+		{
+			if ($this->EE->session->userdata('display_avatars') == 'n' OR $row['avatar_filename'] == ''  OR $this->EE->session->userdata('display_avatars') == 'n')
+			{
+				$tagdata = $this->EE->TMPL->swap_var_single($prefix.$key, '', $tagdata);
+				$tagdata = $this->EE->TMPL->swap_var_single($prefix.'avatar_image_width', '', $tagdata);
+				$tagdata = $this->EE->TMPL->swap_var_single($prefix.'avatar_image_height', '', $tagdata);
+			}
+			else
+			{
+				$tagdata = $this->EE->TMPL->swap_var_single($prefix.$key, $this->EE->config->slash_item('avatar_url').$row['avatar_filename'], $tagdata);
+				$tagdata = $this->EE->TMPL->swap_var_single($prefix.'avatar_image_width', $row['avatar_width'], $tagdata);
+				$tagdata = $this->EE->TMPL->swap_var_single($prefix.'avatar_image_height', $row['avatar_height'], $tagdata);
+			}
+		}
+
+		elseif ($key == "photo_url")
+		{
+			if ($this->EE->session->userdata('display_photos') == 'n' OR $row['photo_filename'] == ''  OR $this->EE->session->userdata('display_photos') == 'n')
+			{
+				$tagdata = $this->EE->TMPL->swap_var_single($prefix.$key, '', $tagdata);
+				$tagdata = $this->EE->TMPL->swap_var_single($prefix.'photo_image_width', '', $tagdata);
+				$tagdata = $this->EE->TMPL->swap_var_single($prefix.'photo_image_height', '', $tagdata);
+			}
+			else
+			{
+				$tagdata = $this->EE->TMPL->swap_var_single($prefix.$key, $this->EE->config->slash_item('photo_url').$row['photo_filename'], $tagdata);
+				$tagdata = $this->EE->TMPL->swap_var_single($prefix.'photo_image_width', $row['photo_width'], $tagdata);
+				$tagdata = $this->EE->TMPL->swap_var_single($prefix.'photo_image_height', $row['photo_height'], $tagdata);
+			}
+		}
+
+		//  parse {title}
+		elseif ($key == 'title')
+		{
+			$row['title'] = str_replace(array('{', '}'), array('&#123;', '&#125;'), $row['title']);
+			//$tagdata = $this->EE->TMPL->swap_var_single($prefix.$val,  $this->EE->typography->format_characters($row['title']), $tagdata);
+			$tagdata = $this->EE->TMPL->swap_var_single($prefix.$key,  $this->EE->typography->format_characters($row['title']), $tagdata);
+		}
+
+		return $tagdata;
 	}
 
 	// ------------------------------------------------------------------------
