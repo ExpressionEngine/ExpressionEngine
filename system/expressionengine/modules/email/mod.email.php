@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -116,8 +116,7 @@ class Email {
 
 			if (strncmp($key, 'current_time', 12) == 0)
 			{
-				$now = $this->EE->localize->set_localized_time();
-				$tagdata = $this->EE->TMPL->swap_var_single($key, $this->EE->localize->decode_date($val,$now), $tagdata);
+				$tagdata = $this->EE->TMPL->swap_var_single($key, $this->EE->localize->format_date($val), $tagdata);
 			}
 
 			if (($key == 'author_email' OR $key == 'author_name') && ! isset($$key))
@@ -221,7 +220,7 @@ class Email {
 		{
 			$current_page = $match['1'];
 
-			$qstring = $this->EE->functions->remove_double_slashes(str_replace($match[0], '', $qstring));
+			$qstring = reduce_double_slashes(str_replace($match[0], '', $qstring));
 		}
 
 		// Remove "N"
@@ -229,7 +228,7 @@ class Email {
 		// It needs to be removed if presenst
 		if (preg_match("#/N(\d+)#", $qstring, $match))
 		{
-			$qstring = $this->EE->functions->remove_double_slashes(str_replace($match[0], '', $qstring));
+			$qstring = reduce_double_slashes(str_replace($match[0], '', $qstring));
 		}
 
 		/* -------------------------------------

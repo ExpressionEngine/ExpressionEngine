@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -320,10 +320,10 @@ class Addons_accessories extends CP_Controller {
 		$this->view->cp_page_title = lang('edit_accessory_preferences').': '.$acc->name;
 
 		// a bit of a breadcrumb override is needed
-		$this->cp->set_variable('cp_breadcrumbs', array(
+		$this->view->cp_breadcrumbs = array(
 			BASE.AMP.'C=addons' => lang('addons'),
 			BASE.AMP.'C=addons_accessories'=> lang('addons_accessories')
-		));
+		);
 
 		$this->load->library('table');
 		$this->load->model('member_model');

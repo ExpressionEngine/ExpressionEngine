@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -392,6 +392,19 @@ class Member_model extends CI_Model {
 	 */
 	function create_member($data = array(), $cdata = FALSE)
 	{
+		// ---------------------------------------------------------------
+		// 'member_create_start' hook.
+		// - Provides an opportunity for extra code to be executed upon
+		// member creation, and also gives the opportunity to modify the
+		// member data by altering the arrays of data that we pass to the
+		// hook.
+		if ($this->extensions->active_hook('member_create_start'))
+		{
+			list($data, $cdata) = $this->extensions->call('member_create_start', $member_id, $data, $cdata);
+		}
+		//
+		// ---------------------------------------------------------------
+
 		// Insert into the main table
 		$this->db->insert('members', $data);
 
@@ -411,6 +424,17 @@ class Member_model extends CI_Model {
 		// Create a record in the member homepage table
 		$this->db->insert('member_homepage', array('member_id' => $member_id));
 
+		// ---------------------------------------------------------------
+		// 'member_create_end' hook.
+		// - Provides an opportunity for extra code to be executed after
+		// member creation.
+		if ($this->extensions->active_hook('member_create_end'))
+		{
+			$this->extensions->call('member_create_end', $member_id, $data, $cdata);
+		}
+		//
+		// ---------------------------------------------------------------
+
 		return $member_id;
 	}
 
@@ -428,6 +452,20 @@ class Member_model extends CI_Model {
 	 */
 	function update_member($member_id = '', $data = array(), $additional_where = array())
 	{
+		// ---------------------------------------------------------------
+		// 'member_update_start' hook.
+		// - Provides an opportunity for extra code to be executed upon
+		// member update, and also gives the opportunity to modify the
+		// update for member data by altering the array of data that we
+		// pass to the hook.
+		//
+		if ($this->extensions->active_hook('member_update_start'))
+		{
+			$data = $this->extensions->call('member_update_start', $member_id, $data);
+		}
+		//
+		// ---------------------------------------------------------------
+
 		$default_null = array('bday_y',	'bday_m', 'bday_d');
 		
 		foreach($default_null as $val)
@@ -457,6 +495,18 @@ class Member_model extends CI_Model {
 				}
 			}
 		}
+
+		// ---------------------------------------------------------------
+		// 'member_update_end' hook.
+		// - Provides an opportunity for extra code to be executed after
+		// member update.
+		//
+		if ($this->extensions->active_hook('member_update_end'))
+		{
+			$this->extensions->call('member_update_end', $member_id, $data);
+		}
+		//
+		// ---------------------------------------------------------------
 
 		$this->db->where('member_id', $member_id);
 		$this->db->update('members', $data);
@@ -536,7 +586,7 @@ class Member_model extends CI_Model {
 		// Make sure $member_ids is an array
 		if ( ! is_array($member_ids))
 		{
-			$member_id = array((int) $member_ids);
+			$member_ids = array((int) $member_ids);
 		}
 		
 		// ---------------------------------------------------------------
@@ -914,30 +964,37 @@ class Member_model extends CI_Model {
 	 */
 	function get_authors($author_id = FALSE, $limit = FALSE, $offset = FALSE)
 	{
-		$this->db->select('members.member_id, members.group_id, 
-						members.username, members.screen_name, members.in_authorlist');
-		$this->db->from('members');
-		$this->db->join('member_groups', 'member_groups.group_id = members.group_id');
-		
+		// Please don't combine these two queries. Mysql won't hit an index
+		// on any combination that I've tried; except with a subquery which
+		// is close enough to what we have here. -pk
+		$groups = $this->db
+			->select('group_id')
+			->where('include_in_authorlist', 'y')
+			->where('site_id', $this->config->item('site_id'))
+			->get('member_groups')
+			->result_array();
+
+		$groups = array_map('array_pop', $groups);
+
+
+		$this->db->select('member_id, group_id, username, screen_name, in_authorlist');
+
 		if ($author_id)
 		{
-			$this->db->where('members.member_id !=', $author_id);
+			$this->db->where('member_id !=', $author_id);
 		}
-		
-		$this->db->where('('.$this->db->dbprefix('members').'.in_authorlist = "y" OR
-		 						'.$this->db->dbprefix('member_groups').'.include_in_authorlist = "y")');
-		$this->db->where('members.group_id = '.$this->db->dbprefix('member_groups').'.group_id');
-		$this->db->where('member_groups.site_id', $this->config->item('site_id'));
 	
-		$this->db->order_by('members.screen_name', 'ASC');
-		$this->db->order_by('members.username', 'ASC');
+		$this->db->where('in_authorlist', 'y');
+		$this->db->or_where_in('group_id', $groups);
+		$this->db->order_by('screen_name', 'ASC');
+		$this->db->order_by('username', 'ASC');
 		
 		if ($limit)
 		{
 			$this->db->limit($limit, $offset);
 		}
 		
-		return $this->db->get();
+		return $this->db->get('members');
 	}
 	
 	// --------------------------------------------------------------------
@@ -1459,16 +1516,13 @@ class Member_model extends CI_Model {
 	 */
 	function get_localization_default($get_id = FALSE)
 	{
-		$this->db->select('member_id, timezone, daylight_savings, time_format');
+		$this->db->select('member_id, timezone, time_format');
 		$this->db->where('localization_is_site_default', 'y');
 		$query = $this->db->get('members');
 
 		if ($query->num_rows() == 1)
 		{
-			$config = array(
-							'default_site_timezone' => $query->row('timezone'),
-							'default_site_dst'		=> $query->row('daylight_savings')
-							);
+			$config = array('default_site_timezone' => $query->row('timezone'));
 							
 			if ($get_id)
 			{
@@ -1477,10 +1531,8 @@ class Member_model extends CI_Model {
 		}
 		else
 		{
-			$config = array(
-							'default_site_timezone' => '',
-							'default_site_dst'		=> ''
-							);
+			$config = array('default_site_timezone' => '');
+
 			if ($get_id)
 			{
 				$config['member_id'] = '';

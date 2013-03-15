@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -271,7 +271,7 @@ class Forum_tab {
 					 $params['mod_data']['forum_body']
 				);
 				
-				$body 	= $this->_convert_forum_tags($this->EE->functions->remove_double_slashes($body));
+				$body 	= $this->_convert_forum_tags(reduce_double_slashes($body));
 				
 				$data = array(
 					'title'					=> $this->EE->security->xss_clean($title),

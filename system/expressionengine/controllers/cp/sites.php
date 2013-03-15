@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -87,7 +87,7 @@ class Sites extends CP_Controller {
 		
 		$vars['sites'] = $this->session->userdata('assigned_sites');
 
-		$this->cp->set_variable('cp_page_title', lang('switch_site'));
+		$this->view->cp_page_title = lang('switch_site');
 		$this->cp->set_breadcrumb(BASE.AMP.'C=sites', lang('site_management'));
 				
 		$vars['can_admin_sites'] = $this->cp->allowed_group('can_admin_sites');
@@ -155,10 +155,11 @@ class Sites extends CP_Controller {
 		// }
 		
 		// This is just way too simple.
-		
+
+		// We set the cookie before switching prefs to ensure it uses current settings
+		$this->functions->set_cookie('cp_last_site_id', $site_id, 0);		
+
 		$this->config->site_prefs('', $site_id);
-		
-		$this->functions->set_cookie('cp_last_site_id', $site_id, 0);
 		
 		$this->functions->redirect($page);
 	}
@@ -189,7 +190,7 @@ class Sites extends CP_Controller {
 		$this->load->library('table');
 		$this->load->model('site_model');
 
-		$this->cp->set_variable('cp_page_title', lang('site_management'));
+		$this->view->cp_page_title = lang('site_management');
 
 		$vars['msm_version'] = $this->version;
 		$vars['msm_build_number'] = $this->build_number;
@@ -243,7 +244,7 @@ class Sites extends CP_Controller {
 		$site_id = $this->input->get('site_id');
 		
 		$title = ($site_id) ? lang('edit_site') : lang('create_new_site');
-		$this->cp->set_variable('cp_page_title', $title);
+		$this->view->cp_page_title = $title;
 		
 		$this->load->model(array(
 			'site_model', 
@@ -497,7 +498,7 @@ class Sites extends CP_Controller {
 			);
 			
 			// Short name change, possibly need to update the template file folder
-			if ($old->row('site_name') == $this->input->post('site_name'))
+			if ($old->row('site_name') != $this->input->post('site_name'))
 			{
 				$prefs = $old->row('site_template_preferences');
 				$prefs = unserialize(base64_decode($prefs));
@@ -1658,6 +1659,10 @@ class Sites extends CP_Controller {
 										SET `field_id_".$this->db->escape_str($field_match[$row['field_id']])."` = ".
 										str_replace('a8bxdee', $row['field_id'], $file_string).
 											"WHERE channel_id = '".$this->db->escape_str($channel_id)."'");
+
+									$this->db->set('field_id_'.$row['field_id'], NULL);
+									$this->db->where('channel_id', $channel_id)
+										->update('channel_data');
 								}
 								else
 								{
@@ -1667,6 +1672,7 @@ class Sites extends CP_Controller {
 										'`field_id_'.$row['field_id'].'`', 
 										FALSE
 									);
+									$this->db->set('field_id_'.$row['field_id'], NULL);
 									$this->db->where('channel_id', $channel_id)
 										->update('channel_data');
 								}								
@@ -1676,6 +1682,7 @@ class Sites extends CP_Controller {
 									'`field_ft_'.$row['field_id'].'`', 
 									FALSE
 								);
+								$this->db->set('field_ft_'.$row['field_id'], NULL);
 								$this->db->where('channel_id', $channel_id)
 									->update('channel_data');
 
@@ -1687,6 +1694,7 @@ class Sites extends CP_Controller {
 										'`field_dt_'.$row['field_id'].'`', 
 										FALSE
 									);
+									$this->db->set('field_dt_'.$row['field_id'], NULL);
 									$this->db->where('channel_id', $channel_id)
 										->update('channel_data');
 								}
@@ -1853,7 +1861,7 @@ class Sites extends CP_Controller {
 			return FALSE;
 		}
 		
-		$this->cp->set_variable('cp_page_title', lang('delete_site'));
+		$this->view->cp_page_title = lang('delete_site');
 		
 		$vars['site_id'] = $site_id;
 		$vars['message'] = lang('delete_site_confirmation');

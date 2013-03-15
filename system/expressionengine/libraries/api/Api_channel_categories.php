@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -98,7 +98,7 @@ class Api_channel_categories extends Api {
 		
 		$order = ($order == 'a') ? "cat_name" : "cat_order";
 		
-		$query = $this->EE->db->select('cat_name, cat_id, parent_id, cat_image, cat_description, g.group_id, group_name')
+		$query = $this->EE->db->select('cat_name, cat_id, parent_id, cat_image, cat_description, g.group_id, group_name, cat_url_title')
 						->from('category_groups g, categories c')
 						->where('g.group_id', 'c.group_id', FALSE)
 						->where_in('g.group_id', $group_ids)
@@ -120,7 +120,8 @@ class Api_channel_categories extends Api {
 				$row['group_id'],
 				$row['group_name'],
 				$row['cat_image'],
-				$row['cat_description']
+				$row['cat_description'],
+				$row['cat_url_title']
 			);
 		}
 
@@ -133,7 +134,7 @@ class Api_channel_categories extends Api {
 				$sel = (isset($catarray[$key])) ? TRUE : FALSE;
 				$depth = 1;
 
-				$this->categories[$key] = array($key, $val[1], (int) $val[2], $val[3], $sel, $depth, FALSE, $val[4], $val[5]);
+				$this->categories[$key] = array($key, $val[1], (int) $val[2], $val[3], $sel, $depth, FALSE, $val[4], $val[5], $val[6]);
 				//$this->categories[$key] = array('cat_id' => $key, 'cat_name' => $val['1'], 'group_id' => $val['2'], 'group_name' => $val['3'], 'selected' => $sel, 'depth' => $depth);				
 				$this->_category_subtree($key, $cat_array, $depth, $selected);
 			}

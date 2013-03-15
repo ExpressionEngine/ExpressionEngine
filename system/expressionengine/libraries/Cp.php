@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -162,16 +162,6 @@ class Cp {
 		$this->EE->session->set_cache('table', 'cp_template', $cp_table_template);
 		$this->EE->session->set_cache('table', 'cp_pad_template', $cp_pad_table_template);
 		
-		if (isset($this->EE->table))
-		{
-			// @todo We have a code order issue with accessories.
-			// If an accessory changed the table template (this happens
-			// a lot due to differences in design), we set up the CP
-			// template. Otherwise this is set in the table lib constructor.
-			$this->EE->table->set_template($cp_table_template);
-		}
-		
-		
 		// we need these paths again in my account, so we'll keep track of them
 		// kind of hacky, but before it was accessing _ci_cache_vars, which is worse
 		
@@ -262,6 +252,17 @@ class Cp {
 		$this->_menu();
 		$this->_accessories();
 		$this->_sidebar();
+
+		if (isset($this->EE->table))
+		{
+			// We have a code order issue with accessories.
+			// If an accessory changed the table template (this happens
+			// a lot due to differences in design), we need to re-set the CP
+			// template. Otherwise this is set in the table lib constructor.
+			$this->EE->table->set_template(
+				$this->EE->session->cache('table', 'cp_template')
+			);
+		}
 
 		// add global end file
 		$this->_seal_combo_loader();
@@ -702,6 +703,9 @@ class Cp {
 	 */		
 	function set_variable($name, $value)
 	{	
+		$this->EE->load->library('logger');
+		$this->EE->logger->deprecated('2.6', 'view->$<var> = <value>;');
+		
 		$this->EE->view->$name = $value;
 	}
 	
@@ -726,11 +730,15 @@ class Cp {
 	/**
 	 * Validate and Enable Secure Forms for the Control Panel
 	 *
+	 * @deprecated 2.6
 	 * @access	public
 	 * @return	void
 	 */		
 	function secure_forms()
 	{
+		$this->EE->load->library('logger');
+		$this->EE->logger->deprecated('2.6', 'EE_Security::have_valid_xid()');
+		
 		$hash = '';
 		
 		if ($this->EE->config->item('secure_forms') == 'y')

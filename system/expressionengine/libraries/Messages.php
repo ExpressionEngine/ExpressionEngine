@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -192,11 +192,11 @@ class EE_Messages {
 	{
 		if ($this->allegiance == 'user')
 		{
-			return $this->EE->functions->remove_double_slashes($this->base_url.'/'.$uri);
+			return reduce_double_slashes($this->base_url.'/'.$uri);
 		}
 		else
 		{
-			return $this->EE->functions->remove_double_slashes($this->base_url.'/'.$uri.$hidden);
+			return reduce_double_slashes($this->base_url.'/'.$uri.$hidden);
 		}
 	}
 
@@ -977,7 +977,7 @@ class EE_Messages {
 			++$i;
 			$data = $row;
 			$data['msg_id']		  = 'd'.$row['message_id'];
-			$data['message_date'] = $this->EE->localize->set_human_time($data['message_date']);
+			$data['message_date'] = $this->EE->localize->human_time($data['message_date']);
 			$data['style']		  = ($i % 2) ? 'tableCellTwo' : 'tableCellOne';
 			$data['message_subject']  = ($censor === FALSE) ? $data['message_subject'] : $this->EE->typography->filter_censored_words($data['message_subject']);
 						
@@ -1263,7 +1263,7 @@ class EE_Messages {
 			$data['msg_id']	= ($row['message_read'] == 'n') ? 'u'.$row['msg_id'] : $row['msg_id'];
 			$data['buddy_list_link'] = '';
 			$data['block_list_link'] = '';
-			$data['message_date'] = $this->EE->localize->set_human_time($data['message_date']);
+			$data['message_date'] = $this->EE->localize->human_time($data['message_date']);
 			$data['style']		  = ($i % 2) ? 'tableCellTwo' : 'tableCellOne';
 			$data['message_subject']  = ($censor === FALSE) ? $data['message_subject'] : $this->EE->typography->filter_censored_words($data['message_subject']);
 			
@@ -2732,7 +2732,7 @@ DOH;
  		$data['recipients']  = str_replace('|', ', ', $data['recipients']);
  		$data['cc'] 		 = str_replace('|', ', ', $data['cc']);
  		$data['attachments'] = array();
- 		$data['date']		 = $this->EE->localize->set_human_time($data['date']);
+ 		$data['date']		 = $this->EE->localize->human_time($data['date']);
  		
  		$results = $this->EE->db->query("SELECT screen_name FROM exp_members WHERE member_id = '".$this->EE->db->escape_str($data['sender_id'])."'");
  		
@@ -3338,7 +3338,7 @@ DOH;
 			
 			$data['bulletin_message'] = ($censor === FALSE) ? $data['bulletin_message'] : $this->EE->typography->filter_censored_words($data['bulletin_message']);
 			$data['bulletin_sender'] = $row['screen_name'];
-			$data['bulletin_date'] = $this->EE->localize->set_human_time($row['bulletin_date']);
+			$data['bulletin_date'] = $this->EE->localize->human_time($row['bulletin_date']);
 			$data['style']			= ($i % 2) ? 'tableCellTwo' : 'tableCellOne';
 			
 			$r .= $this->_process_template($folder_rows_template, $data);
@@ -3421,8 +3421,8 @@ DOH;
 		
 		$this->single_parts['form']['form_declaration']['sending_bulletin'] = $this->EE->functions->form_declaration($form_details);
 		
-		$this->single_parts['input']['bulletin_date']	 = $this->EE->localize->set_human_time($this->EE->localize->now);
-		$this->single_parts['input']['bulletin_expires'] = $this->EE->localize->set_human_time($this->EE->localize->now + 30*24*60*60);
+		$this->single_parts['input']['bulletin_date']	 = $this->EE->localize->human_time($this->EE->localize->now);
+		$this->single_parts['input']['bulletin_expires'] = $this->EE->localize->human_time($this->EE->localize->now + 30*24*60*60);
 		
 		$this->single_parts['include']['message'] = $message;
 		
@@ -3528,8 +3528,8 @@ DOH;
 			return $this->send_bulletin();
 		}
 		
-		$begins  = $this->EE->localize->convert_human_date_to_gmt($_POST['bulletin_date']);
-		$expires = $this->EE->localize->convert_human_date_to_gmt($_POST['bulletin_expires']);
+		$begins  = $this->EE->localize->string_to_timestamp($_POST['bulletin_date']);
+		$expires = $this->EE->localize->string_to_timestamp($_POST['bulletin_expires']);
 		
 		if ($begins == 0)
 		{

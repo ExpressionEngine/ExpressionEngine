@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -404,11 +404,15 @@ class Metaweblog_api {
 		{
 			$errors = $this->EE->api_channel_entries->get_errors();
 
-			$response = array(
-				'errors' => array($errors, 'array')
-			);
+			$this->EE->lang->loadfile('content');
+			$mssg = "\n";
+			
+			foreach ($errors as $val)
+			{
+				$mssg .= lang($val)."\n";
+			}
 
-			return $this->EE->xmlrpc->send_response($response);
+			return $this->EE->xmlrpc->send_error_message('804', lang('new_entry_errors').$mssg);
 		}
 		
 		//Return Entry ID of new entry - defaults to string, so nothing fancy
@@ -811,7 +815,7 @@ class Metaweblog_api {
 		foreach($query->result_array() as $row)
 		{
 			$convert_breaks = 'none';
-			$link = $this->EE->functions->remove_double_slashes($this->comment_url.'/'.$query->row('url_title') .'/');
+			$link = reduce_double_slashes($this->comment_url.'/'.$query->row('url_title') .'/');
 			
 			// Fields:  Textarea and Text Input Only
 
@@ -1328,7 +1332,7 @@ class Metaweblog_api {
 			{
 				$cat = array();
 
-				$link = $this->EE->functions->remove_double_slashes($this->channel_url.'/C'.$row['cat_id'].'/');
+				$link = reduce_double_slashes($this->channel_url.'/C'.$row['cat_id'].'/');
 
 				$cat['categoryId']		= array($row['cat_id'],'string');
 		 		$cat['description']		= array(($row['cat_description'] == '') ? $row['cat_name'] : $row['cat_description'],'string');

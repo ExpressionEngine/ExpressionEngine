@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -83,7 +83,9 @@ class Admin_content extends CP_Controller {
 	{
 		$this->_restrict_prefs_access();
 
-        $this->cp->set_right_nav(array('create_new_channel' => BASE.AMP.'C=admin_content'.AMP.'M=channel_add'));
+        $this->cp->set_right_nav(array(
+        	'create_new_channel' => BASE.AMP.'C=admin_content'.AMP.'M=channel_add'
+        ));
 
 		$this->load->library('table');
 		$this->lang->loadfile('admin_content');
@@ -92,11 +94,12 @@ class Admin_content extends CP_Controller {
 		$this->jquery->tablesorter('.mainTable', '{
 			headers: {2: {sorter: false}, 3: {sorter: false}, 4: {sorter: false}},
 			widgets: ["zebra"]
-		}');		
-
-		$this->view->channel_data = $this->channel_model->get_channels();
+		}');
 
 		$this->view->cp_page_title = lang('channels');
+		$this->view->channel_data = $this->channel_model->get_channels();
+
+		$this->cp->add_js_script('file', 'cp/custom_fields');
 		$this->cp->render('admin/channel_management');
 	}
 
@@ -129,16 +132,12 @@ class Admin_content extends CP_Controller {
 		$this->cp->add_js_script('plugin', 'ee_url_title');
 
 		$this->javascript->output('
-			$("#edit_group_prefs").hide();
 			$("#channel_title").bind("keyup keydown", function() {
 				$(this).ee_url_title("#channel_name");
 			});
 		');
 
-		$this->javascript->click("#edit_group_prefs_y", '$("#edit_group_prefs").show();', FALSE);
-		$this->javascript->click("#edit_group_prefs_n", '$("#edit_group_prefs").hide();', FALSE);
-
-		$this->cp->set_variable('cp_page_title', lang('create_new_channel'));
+		$this->view->cp_page_title = lang('create_new_channel');
 
 		$channels = $this->channel_model->get_channels($this->config->item('site_id'), array('channel_id', 'channel_title'));
 
@@ -154,7 +153,7 @@ class Admin_content extends CP_Controller {
 
 		$vars['cat_group_options'][''] = lang('none');
 
-		$groups = $this->category_model->get_categories('', $this->config->item('site_id'));
+		$groups = $this->category_model->get_category_groups('', $this->config->item('site_id'));
 
 		if ($groups->num_rows() > 0)
 		{
@@ -461,22 +460,8 @@ class Admin_content extends CP_Controller {
 		// Load the layout Library & update the layouts
 		$this->load->library('layout');
 
-		$add_rss = (isset($_POST['add_rss'])) ? TRUE : FALSE;
-		unset($_POST['add_rss']);
-
 		$return = ($this->input->get_post('return')) ? TRUE : FALSE;
 		unset($_POST['return']);
-		$edit_group_prefs = TRUE;
-		
-		if ($this->input->get_post('edit_group_prefs') !== 'y')
-		{
-			unset($_POST['cat_group']);
-			unset($_POST['status_group']);
-			unset($_POST['field_group']);
-			$edit_group_prefs = FALSE;
-		}
-
-		unset($_POST['edit_group_prefs']);
 
 		$dupe_id = $this->input->get_post('duplicate_channel_prefs');
 		unset($_POST['duplicate_channel_prefs']);
@@ -485,67 +470,9 @@ class Admin_content extends CP_Controller {
 
 		$error = array();
 
-		 if (isset($_POST['comment_expiration']) && $_POST['comment_expiration'] == '')
-		 {
-			$_POST['comment_expiration'] = 0;
-		 }
-
-		// Template Error Trapping
-
-		if ($edit == FALSE)
+		if (isset($_POST['comment_expiration']) && $_POST['comment_expiration'] == '')
 		{
-			$create_templates	= ($this->input->get_post('create_templates') == FALSE OR $this->input->get_post('create_templates') == 'no') ? 'no' : $this->input->get_post('create_templates');
-			$old_group_id		= $this->input->get_post('old_group_id');
-			$group_name			= $this->input->post('group_name');
-
-			$template_theme	= $this->security->sanitize_filename($this->input->get_post('template_theme'));
-
-			unset($_POST['create_templates']);
-			unset($_POST['old_group_id']);
-			unset($_POST['group_name']);
-			unset($_POST['template_theme']);
-
-			if ($create_templates != 'no')
-			{
-				$this->lang->loadfile('design');
-
-				if ( ! $this->cp->allowed_group('can_admin_templates'))
-				{
-					show_error(lang('unauthorized_access'));
-				}
-
-				if ( ! $group_name)
-				{
-					show_error(lang('group_required'));
-				}
-
-				if ( ! preg_match("#^[a-zA-Z0-9_\-/]+$#i", $group_name))
-				{
-					show_error(lang('illegal_characters'));
-				}
-
-				$reserved[] = 'act';
-
-				if ($this->config->item("forum_is_installed") == 'y' AND $this->config->item("forum_trigger") != '')
-				{
-					$reserved[] = $this->config->item("forum_trigger");
-				}
-
-				if (in_array($group_name, $reserved))
-				{
-					show_error(lang('reserved_name'));
-				}
-
-				$this->db->where('site_id', $this->config->item('site_id'));
-				$this->db->where('group_name', $group_name);
-				
-				$count = $this->db->count_all_results('template_groups');
-
-				if ($count > 0)
-				{
-					show_error(lang('template_group_taken'));
-				}
-			}
+			$_POST['comment_expiration'] = 0;
 		}
 
 		if ($this->input->post('apply_comment_enabled_to_existing'))
@@ -609,7 +536,7 @@ class Admin_content extends CP_Controller {
 				
 				if ($query->num_rows() == 1)
 				{
-					$_POST['field_group'] = $query->row('group_id') ;
+					$_POST['field_group'] = $query->row('group_id');
 				}
 			}
 
@@ -685,23 +612,7 @@ class Admin_content extends CP_Controller {
 								case 'search_results_url':
 								case 'ping_return_url':
 								case 'rss_url':
-									if ($create_templates != 'no')
-									{
-										if ( ! isset($old_group_name))
-										{
-											$this->db->select('group_name');
-											$this->db->where('group_id', $old_group_id);
-											$gquery = $this->db->get('template_groups');
-
-											$old_group_name = $gquery->row('group_name');
-										}
-
-										$_POST[$key] = str_replace("/{$old_group_name}/", "/{$group_name}/", $val);
-									}
-									else
-									{
 										$_POST[$key] = $val;
-									}
 									break;
 								default :
 									$_POST[$key] = $val;
@@ -713,9 +624,9 @@ class Admin_content extends CP_Controller {
 			}
 
 
-			$_POST['default_entry_title'] = ( ! isset(	$_POST['default_entry_title'])) ? '' : $_POST['default_entry_title'];
-			$_POST['url_title_prefix'] = ( ! isset(	$_POST['url_title_prefix'])) ? '' : $_POST['url_title_prefix'];
-					
+			$_POST['default_entry_title'] = '';
+			$_POST['url_title_prefix'] = '';
+			
 			$this->db->insert('channels', $_POST);		
 						
 			$insert_id = $this->db->insert_id();
@@ -723,8 +634,7 @@ class Admin_content extends CP_Controller {
 			
 			// If they made the channel?  Give access to that channel to the member group?
 
-
-			if ($dupe_id !== FALSE AND is_numeric($dupe_id) && $edit_group_prefs == FALSE)
+			if ($dupe_id !== FALSE AND is_numeric($dupe_id))
 			{
 				// Duplicate layouts
 				$this->layout->duplicate_layout($dupe_id, $channel_id);
@@ -766,168 +676,6 @@ class Admin_content extends CP_Controller {
 			$channel_id = $this->db->escape_str($_POST['channel_id']);
 
 			$success_msg = lang('channel_updated');
-		}
-		
-		/** -----------------------------------------
-		/**  Create Templates
-		/** -----------------------------------------*/
-		if ($edit == FALSE)
-		{
-			if ($create_templates != 'no')
-			{
-				$query = $this->db->query("SELECT COUNT(*) AS count FROM exp_template_groups");
-				$group_order = $query->row('count')  +1;
-
-				$this->db->insert('template_groups', array(
-														 'group_name'	  => $group_name,
-														 'group_order'	 => $group_order,
-														 'is_site_default' => 'n',
-														 'site_id'			=> $this->config->item('site_id')
-														));
-
-				$group_id = $this->db->insert_id();
-
-				if ($create_templates == 'duplicate')
-				{
-					$this->db->select('group_name');
-					$this->db->where('group_id', $old_group_id);
-					$query = $this->db->get('template_groups');
-					$old_group_name = $query->row('group_name') ;
-
-					$this->db->select('template_name, template_data, template_type, 
-										template_notes, cache, refresh, no_auth_bounce, 
-										allow_php, php_parse_location');
-					$this->db->where('group_id', $old_group_id);
-					$query = $this->db->get('templates');
-
-					if ($query->num_rows() == 0)
-					{
-						$this->db->insert('templates', array(
-															'group_id'	  => $group_id,
-															'template_name' => 'index',
-															'edit_date'		=> $this->localize->now,
-															'site_id'		=> $this->config->item('site_id')
-														 ));
-					}
-					else
-					{
-						$old_channel_name = '';
-
-						foreach ($query->result_array() as $row)
-						{
-							if ($old_channel_name == '')
-							{
-								if (preg_match_all("/channel=[\"'](.+?)[\"']/", $row['template_data'], $matches))
-								{
-									for ($i = 0; $i < count($matches['1']); $i++)
-									{
-										if (substr($matches['1'][$i], 0, 1) != '{')
-										{
-											$old_channel_name = $matches['1'][$i];
-											break;
-										}
-									}
-								}
-							}
-
-							$temp = str_replace('channel="'.$old_channel_name.'"', 'channel="'.$_POST['channel_name'].'"', $row['template_data']);
-							$temp = str_replace("channel='".$old_channel_name."'", 'channel="'.$_POST['channel_name'].'"', $temp);
-							$temp = preg_replace("/{stylesheet=.+?\/(.+?)}/", "{stylesheet=".$group_name."/\\1}", $temp);
-
-							$temp = preg_replace("#preload_replace:master_channel_name=\".+?\"#", 'preload_replace:master_channel_name="'.$_POST['channel_name'].'"', $temp);
-							$temp = preg_replace("#preload_replace:master_channel_name=\'.+?\'#", "preload_replace:master_channel_name='".$_POST['channel_name']."'", $temp);
-							$temp = preg_replace('#preload_replace:my_template_group=(\042|\047)([^\\1]*?)\\1#', "preload_replace:my_template_group=\\1{$group_name}\\1", $temp);
-
-							$temp = preg_replace("#".$old_group_name."/(.+?)#", $group_name."/\\1", $temp);
-
-							$data = array(
-											'group_id'				=> $group_id,
-											'template_name'  		=> $row['template_name'],
-											'template_notes'  		=> $row['template_notes'],
-											'cache'  				=> $row['cache'],
-											'refresh'  				=> $row['refresh'],
-											'no_auth_bounce'  		=> $row['no_auth_bounce'],
-											'php_parse_location'	=> $row['php_parse_location'],
-											'allow_php'  			=> ($this->session->userdata['group_id'] == 1) ? $row['allow_php'] : 'n',
-											'template_type' 		=> $row['template_type'],
-											'template_data'  		=> $temp,
-											'edit_date'				=> $this->localize->now,
-											'last_author_id' 		=> 0,
-											'site_id'				=> $this->config->item('site_id')
-										 );
-
-									$this->db->insert('templates', $data);
-							}
-					}
-				}
-				else
-				{
-					$type = 'core';
-					if ($fp = @opendir(PATH_MOD))
-					{
-						while (FALSE !== ($file = readdir($fp)))
-						{
-							if (strpos($file, '.') === FALSE)
-							{
-								if ($file == 'mailinglist')
-								{
-									$type = 'full';
-									break;
-								}
-							}
-						}
-						closedir($fp);
-					}
-
-
-					require PATH_THEMES.'site_themes/'.$template_theme.'/'.$template_theme.'.php';
-
-					foreach ($template_matrix as $tmpl)
-					{
-						$Q[] = array($tmpl['0'](), "INSERT INTO exp_templates(group_id, template_name, template_type, template_data, edit_date, site_id)
-													VALUES ('$group_id', '".$this->db->escape_str($tmpl['0'])."', '".$this->db->escape_str($tmpl['1'])."', '{template}', '".$this->localize->now."', '".$this->db->escape_str($this->config->item('site_id'))."')");
-					}
-
-					if ($add_rss == TRUE)
-					{
-						require PATH_THEMES.'site_themes/rss/rss.php';
-						$Q[] = array(rss_2(), "INSERT INTO exp_templates(group_id, template_name, template_type, template_data, edit_date, site_id)
-												VALUES ('$group_id', 'rss_2.0', 'feed', '{template}', '".$this->db->escape_str($this->localize->now)."', '".$this->db->escape_str($this->config->item('site_id'))."')");
-
-						$Q[] = array(atom(), "INSERT INTO exp_templates(group_id, template_name, template_type, template_data, edit_date, site_id)
-											  VALUES ('$group_id', 'atom', 'feed', '{template}', '".$this->db->escape_str($this->localize->now)."', '".$this->db->escape_str($this->config->item('site_id'))."')");
-					}
-
-					foreach ($Q as $val)
-					{
-						$temp = $val['0'];
-
-						$temp = str_replace('channel="channel1"', 'channel="'.$_POST['channel_name'].'"', $temp);
-						$temp = str_replace("channel='channel1'", 'channel="'.$_POST['channel_name'].'"', $temp);
-						$temp = str_replace('my_channel="channel1"', 'my_channel="'.$_POST['channel_name'].'"', $temp);
-						$temp = str_replace("my_channel='channel1'", 'my_channel="'.$_POST['channel_name'].'"', $temp);
-
-						$temp = str_replace('channel="default_site"', 'channel="'.$_POST['channel_name'].'"', $temp);
-						$temp = str_replace("channel='default_site'", 'channel="'.$_POST['channel_name'].'"', $temp);
-						$temp = str_replace('my_channel="default_site"', 'my_channel="'.$_POST['channel_name'].'"', $temp);
-						$temp = str_replace("my_channel='default_site'", 'my_channel="'.$_POST['channel_name'].'"', $temp);
-
-						$temp = str_replace('my_template_group="site"', 'my_template_group="'.$group_name.'"', $temp);
-						$temp = str_replace("my_template_group='site'", 'my_template_group="'.$group_name.'"', $temp);
-
-						$temp = str_replace("{stylesheet=channel/channel_css}", "{stylesheet=".$group_name."/site_css}", $temp);
-						$temp = str_replace("{stylesheet=site/site_css}", "{stylesheet=".$group_name."/site_css}", $temp);
-
-						$temp = str_replace('preload_replace:master_channel_name="channel1"', 'preload_replace:master_channel_name="'.$_POST['channel_name'].'"', $temp);
-						$temp = preg_replace("#channel/(.+?)#", $group_name."/\\1", $temp);
-
-						$temp = addslashes($temp);
-						$sql  = str_replace('{template}', $temp, $val['1']);
-
-						$this->db->query($sql);
-					}
-				}
-			}
 		}
 
 		$cp_message = $success_msg.NBS.NBS.$_POST['channel_title'];
@@ -1172,7 +920,7 @@ class Admin_content extends CP_Controller {
 		$this->lang->loadfile('admin_content');
 		$this->load->model('channel_model');
 
-		$this->cp->set_variable('cp_page_title', lang('delete_channel'));
+		$this->view->cp_page_title = lang('delete_channel');
 		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=channel_management', lang('channels'));
 
 		$vars['form_action'] = 'C=admin_content'.AMP.'M=channel_delete';
@@ -1284,7 +1032,7 @@ class Admin_content extends CP_Controller {
 		$this->load->model('category_model');
 		$this->lang->loadfile('admin_content');
 
-		$this->cp->set_variable('cp_page_title', lang('categories'));
+		$this->view->cp_page_title = lang('categories');
 
 		$this->jquery->tablesorter('.mainTable', '{
 			headers: {2: {sorter: false}, 3: {sorter: false}, 4: {sorter: false}, 5: {sorter: false}},
@@ -1309,7 +1057,7 @@ class Admin_content extends CP_Controller {
 		$cat_count = 1;
 		$vars['categories'] = array();
 
-		$categories = $this->category_model->get_categories('', FALSE);
+		$categories = $this->category_model->get_category_groups('', FALSE);
 
 		foreach($categories->result() as $row)
 		{
@@ -1584,7 +1332,7 @@ class Admin_content extends CP_Controller {
 		$this->lang->loadfile('admin_content');
 		$this->load->model('category_model');
 
-		$this->cp->set_variable('cp_page_title', lang('delete_group'));
+		$this->view->cp_page_title = lang('delete_group');
 		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=category_management', lang('categories'));
 
 		$vars['form_action'] = 'C=admin_content'.AMP.'M=category_group_delete';
@@ -1725,7 +1473,7 @@ class Admin_content extends CP_Controller {
 		$zurl .= ($this->input->get_post('cat_group') !== FALSE) ? AMP.'cat_group='.$this->input->get_post('cat_group') : '';
 		$zurl .= ($this->input->get_post('integrated') !== FALSE) ? AMP.'integrated='.$this->input->get_post('integrated') : '';
 
-		$query = $this->category_model->get_categories($group_id, FALSE);
+		$query = $this->category_model->get_category_groups($group_id, FALSE);
 		
 		if ($query->num_rows() == 0)
 		{
@@ -1735,7 +1483,7 @@ class Admin_content extends CP_Controller {
 		$group_name = $query->row('group_name') ;
 		$sort_order = $query->row('sort_order') ;
 
-		$this->cp->set_variable('cp_page_title', $group_name);
+		$this->view->cp_page_title = $group_name;
 
 		if ($update != FALSE)
 		{
@@ -1797,7 +1545,6 @@ class Admin_content extends CP_Controller {
 
 		$this->load->model('category_model');
 		$this->lang->loadfile('admin_content');
-		$this->load->helper('string');
 		$this->load->library('form_validation');
 
 		$group_id = $this->input->get_post('group_id');
@@ -1871,7 +1618,7 @@ class Admin_content extends CP_Controller {
 		}
 
 		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=category_management', lang('categories'));
-		$this->cp->set_variable('cp_page_title', ($vars['cat_id'] == '') ? lang('new_category') : lang('edit_category'));
+		$this->view->cp_page_title = ($vars['cat_id'] == '') ? lang('new_category') : lang('edit_category');
 		
 		//	Create Foreign Character Conversion JS
 		include(APPPATH.'config/foreign_chars.php');
@@ -2063,7 +1810,7 @@ class Admin_content extends CP_Controller {
 		$this->lang->loadfile('admin_content');
 		$this->load->model('category_model');
 
-		$this->cp->set_variable('cp_page_title', lang('delete_category'));
+		$this->view->cp_page_title = lang('delete_category');
 		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=category_management', lang('categories'));
 
 		// Grab category_groups locations with this id
@@ -2533,7 +2280,7 @@ class Admin_content extends CP_Controller {
 		
 		$this->lang->loadfile('admin_content');
 		
-		$this->cp->set_variable('cp_page_title', lang('global_sort_order'));
+		$this->view->cp_page_title = lang('global_sort_order');
 		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=category_editor'.AMP.'group_id='.$group_id, lang('categories'));
 
 		$vars['form_action'] = 'C=admin_content'.AMP.'M=global_category_order'.AMP.'group_id='.$group_id;
@@ -2774,7 +2521,7 @@ class Admin_content extends CP_Controller {
 		$this->lang->loadfile('admin_content');
 		$this->load->model('category_model');
 
-		$this->cp->set_variable('cp_page_title', lang('custom_category_fields'));
+		$this->view->cp_page_title = lang('custom_category_fields');
 		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=category_management', lang('categories'));
 
 		// Fetch the name of the category group
@@ -2863,7 +2610,7 @@ class Admin_content extends CP_Controller {
 		if ($vars['field_id'] == '')
 		{
 			$vars['update_formatting'] = FALSE;
-			$this->cp->set_variable('cp_page_title', lang('create_new_cat_field'));
+			$this->view->cp_page_title = lang('create_new_cat_field');
 
 			$vars['submit_lang_key'] = 'submit';
 
@@ -2900,7 +2647,7 @@ class Admin_content extends CP_Controller {
 			
 			$this->javascript->output('$(".formatting_notice_info").hide();');
 			
-			$this->cp->set_variable('cp_page_title', lang('edit_cat_field'));
+			$this->view->cp_page_title = lang('edit_cat_field');
 
 			$vars['submit_lang_key'] = 'update';
 
@@ -3126,9 +2873,6 @@ class Admin_content extends CP_Controller {
 
 		if ($_POST['field_list_items'] != '')
 		{
-			// Load the string helper
-			$this->load->helper('string');
-
 			$_POST['field_list_items'] = quotes_to_entities($_POST['field_list_items']);
 		}
 
@@ -3222,7 +2966,7 @@ class Admin_content extends CP_Controller {
 		$this->lang->loadfile('admin_content');
 		$this->load->model('category_model');
 
-		$this->cp->set_variable('cp_page_title', lang('delete_field'));
+		$this->view->cp_page_title = lang('delete_field');
 		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=category_management', lang('categories'));
 
 		$vars['form_action'] = 'C=admin_content'.AMP.'M=delete_custom_category_field';
@@ -3308,7 +3052,7 @@ class Admin_content extends CP_Controller {
 		$this->load->model('field_model');
 		$this->lang->loadfile('admin_content');
 
-		$this->cp->set_variable('cp_page_title', lang('field_management'));
+		$this->view->cp_page_title = lang('field_management');
 		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content', lang('admin_content'));
 
 		$this->jquery->tablesorter('.mainTable', '{
@@ -3353,7 +3097,7 @@ class Admin_content extends CP_Controller {
 
 		if ($group_id != '')
 		{
-			$this->cp->set_variable('cp_page_title', lang('rename_group'));
+			$this->view->cp_page_title = lang('rename_group');
 
 			$vars['form_hidden']['group_id'] = $group_id;
 
@@ -3373,7 +3117,7 @@ class Admin_content extends CP_Controller {
 		}
 		else
 		{
-			$this->cp->set_variable('cp_page_title', lang('new_field_group'));
+			$this->view->cp_page_title = lang('new_field_group');
 			$vars['submit_lang_key'] = 'submit';
 		}
 
@@ -3404,7 +3148,7 @@ class Admin_content extends CP_Controller {
 		$this->lang->loadfile('admin_content');
 		$this->load->model('field_model');
 
-		$this->cp->set_variable('cp_page_title', lang('delete_group'));
+		$this->view->cp_page_title = lang('delete_group');
 		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=field_group_management', lang('field_management'));
 
 		$vars['form_action'] = 'C=admin_content'.AMP.'M=field_group_delete';
@@ -3607,7 +3351,7 @@ class Admin_content extends CP_Controller {
 		$query = $this->field_model->get_field_group($vars['group_id']);
 		$vars['group_name'] = $query->row('group_name');
 
-		$this->cp->set_variable('cp_page_title', lang('group').':'.NBS.$vars['group_name']);
+		$this->view->cp_page_title = lang('group').':'.NBS.$vars['group_name'];
 		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=field_group_management', lang('field_management'));
 
 		$custom_fields = $this->field_model->get_fields($vars['group_id'], array('site_id' => $this->config->item('site_id')));
@@ -3670,12 +3414,12 @@ class Admin_content extends CP_Controller {
 		if ($field_id == '')
 		{
 			$type = 'new';
-			$this->cp->set_variable('cp_page_title', lang('create_new_custom_field'));
+			$this->view->cp_page_title = lang('create_new_custom_field');
 		}
 		else
 		{
 			$type = 'edit';
-			$this->cp->set_variable('cp_page_title', lang('edit_field'));
+			$this->view->cp_page_title = lang('edit_field');
 		}
 		
 		$vars = $this->api_channel_fields->field_edit_vars($group_id, $field_id);
@@ -3829,7 +3573,7 @@ class Admin_content extends CP_Controller {
 		$this->lang->loadfile('admin_content');
 		$this->load->model('field_model');
 
-		$this->cp->set_variable('cp_page_title', lang('delete_field'));
+		$this->view->cp_page_title = lang('delete_field');
 		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=field_group_management', lang('field_management'));
 
 		$vars['form_action'] = 'C=admin_content'.AMP.'M=field_delete';
@@ -3939,7 +3683,7 @@ class Admin_content extends CP_Controller {
 			widgets: ["zebra"]
 		}');
 
-		$this->cp->set_variable('cp_page_title', lang('formatting_options'));
+		$this->view->cp_page_title = lang('formatting_options');
 		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=field_group_management', lang('field_management'));
 
 		$vars['form_action'] = 'C=admin_content'.AMP.'M=update_formatting_options'.AMP.'field_id='.$id.AMP.'group_id='.$group_id;
@@ -4028,7 +3772,7 @@ class Admin_content extends CP_Controller {
 		$this->load->model('status_model');
 		$this->lang->loadfile('admin_content');
 
-		$this->cp->set_variable('cp_page_title', lang('statuses'));
+		$this->view->cp_page_title = lang('statuses');
 		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content', lang('admin_content'));
 
 		$this->jquery->tablesorter('.mainTable', '{
@@ -4080,7 +3824,7 @@ class Admin_content extends CP_Controller {
 
 		if ($group_id != '')
 		{
-			$this->cp->set_variable('cp_page_title', lang('rename_group'));
+			$this->view->cp_page_title = lang('rename_group');
 
 			$vars['form_hidden']['group_id'] = $group_id;
 
@@ -4098,7 +3842,7 @@ class Admin_content extends CP_Controller {
 		}
 		else
 		{
-			$this->cp->set_variable('cp_page_title', lang('create_new_status_group'));
+			$this->view->cp_page_title = lang('create_new_status_group');
 		}
 		
 		$this->cp->render('admin/status_group_edit', $vars);
@@ -4128,7 +3872,7 @@ class Admin_content extends CP_Controller {
 		$this->lang->loadfile('admin_content');
 		$this->load->model('status_model');
 
-		$this->cp->set_variable('cp_page_title', lang('delete_group'));
+		$this->view->cp_page_title = lang('delete_group');
 		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=status_management'.AMP.'group_id='.$group_id, lang('statuses'));
 
 		$vars['form_action'] = 'C=admin_content'.AMP.'M=status_group_delete';
@@ -4302,7 +4046,7 @@ class Admin_content extends CP_Controller {
 
 		$group_name = $this->status_model->get_status_group($group_id);
 
-		$this->cp->set_variable('cp_page_title', lang('group').':'.NBS.$group_name->row('group_name'));
+		$this->view->cp_page_title = lang('group').':'.NBS.$group_name->row('group_name');
 		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=status_group_management', lang('statuses'));
 
 		$this->jquery->tablesorter('.mainTable', '{
@@ -4382,13 +4126,13 @@ class Admin_content extends CP_Controller {
 		{
 			$vars['submit_lang_key'] = 'submit';
 			$vars['form_hidden']['group_id'] = $this->input->get_post('group_id');
-			$this->cp->set_variable('cp_page_title', lang('status'));
+			$this->view->cp_page_title = lang('status');
 		}
 		else
 		{
 			$vars['form_hidden']['group_id'] = $query->row('group_id');
 			$vars['submit_lang_key'] = 'update';
-			$this->cp->set_variable('cp_page_title', ucfirst($vars['status']));
+			$this->view->cp_page_title = ucfirst($vars['status']);
 		}
 
 		if ($this->session->userdata['group_id'] == 1)
@@ -4564,7 +4308,7 @@ class Admin_content extends CP_Controller {
 		$this->lang->loadfile('admin_content');
 		$this->load->model('status_model');
 
-		$this->cp->set_variable('cp_page_title', lang('delete_status'));
+		$this->view->cp_page_title = lang('delete_status');
 		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=status_management', lang('statuses'));
 
 		$vars['form_action'] = 'C=admin_content'.AMP.'M=status_delete';
@@ -4677,12 +4421,12 @@ class Admin_content extends CP_Controller {
 
 		if ($id != 0)
 		{
-			$this->cp->set_variable('cp_page_title', lang('ping_servers'));
+			$this->view->cp_page_title = lang('ping_servers');
 			$vars['instructions'] = '';
 		}
 		else
 		{
-			$this->cp->set_variable('cp_page_title', lang('default_ping_servers'));
+			$this->view->cp_page_title = lang('default_ping_servers');
 			$vars['instructions'] = lang('define_ping_servers');
 		}
 
@@ -4846,7 +4590,7 @@ class Admin_content extends CP_Controller {
 			//show_error(lang('unauthorized_access'));
 		}
 
-		$this->cp->set_variable('cp_page_title', lang('default_html_buttons'));
+		$this->view->cp_page_title = lang('default_html_buttons');
 		
 		$this->cp->add_js_script(array('file' => 'cp/account_html_buttons'));
 
@@ -5062,6 +4806,9 @@ class Admin_content extends CP_Controller {
 			}
 		}
 
+		$this->load->helper('date');
+		$timezones = timezones();
+
 		foreach ($f_data as $name => $options)
 		{
 			$value = $this->config->item($name);
@@ -5156,7 +4903,7 @@ class Admin_content extends CP_Controller {
 							break;
 						case 'timezone'			:
 							$options[0] = 's';
-							foreach ($this->localize->zones as $k => $v)
+							foreach ($timezones as $k => $v)
 							{
 								$details[$k] = lang($k);
 							}

@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -76,7 +76,7 @@ class Simple_commerce_mcp {
 			'paypal_account'=> $this->EE->config->item('sc_paypal_account')
 		);
 
-		$base = $this->EE->functions->remove_double_slashes(str_replace('/public_html', '', substr(BASEPATH, 0, - strlen(SYSDIR.'/'))).'/encryption/');
+		$base = reduce_double_slashes(str_replace('/public_html', '', substr(BASEPATH, 0, - strlen(SYSDIR.'/'))).'/encryption/');
 
 		foreach (array('certificate_id', 'public_certificate', 'private_key', 'paypal_certificate', 'temp_path') as $val)
 		{
@@ -1082,21 +1082,20 @@ class Simple_commerce_mcp {
 		if ($new == 'y')
 		{
 			$vars['action_url'] = 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce'.AMP.'method=adding_purchase';
-			$now_date = ($this->EE->localize->set_localized_time() * 1000);
-
+			
 			foreach($purchase_ids as $id)
 			{
 				$vars['purchases'][$id]['txn_id'] = '';
 				$vars['purchases'][$id]['screen_name'] = '';
 				$vars['purchases'][$id]['item_id'] = '';
-				$vars['purchases'][$id]['purchase_date'] = $this->EE->localize->set_human_time();
+				$vars['purchases'][$id]['purchase_date'] = $this->EE->localize->human_time();
 				$vars['purchases'][$id]['subscription_end_date'] = 0;
 				$vars['purchases'][$id]['item_cost'] =  '';
 				$vars['purchases'][$id]['purchase_id'] =  0;
 
 			$this->EE->javascript->output('
-			$("#purchase_date_'.$id.'").datepicker({dateFormat: $.datepicker.W3C + date_obj_time, defaultDate: new Date('.$now_date.')});
-			$("#subscription_end_date_'.$id.'").datepicker({dateFormat: $.datepicker.W3C + date_obj_time, defaultDate: new Date('.$now_date.')});
+			$("#purchase_date_'.$id.'").datepicker({dateFormat: $.datepicker.W3C + date_obj_time, defaultDate: new Date('.$this->localize->format_date('%D %M %d %Y').')});
+			$("#subscription_end_date_'.$id.'").datepicker({dateFormat: $.datepicker.W3C + date_obj_time, defaultDate: new Date('.$this->localize->format_date('%D %M %d %Y').')});
 		');
 
 			}
@@ -1116,7 +1115,7 @@ class Simple_commerce_mcp {
 				$vars['purchases'][$row['purchase_id']]['txn_id'] = $row['txn_id'];
 				$vars['purchases'][$row['purchase_id']]['member_id']  = $row['member_id'];
 				$vars['purchases'][$row['purchase_id']]['item_id'] = $row['item_id'];
-				$vars['purchases'][$row['purchase_id']]['purchase_date'] = $this->EE->localize->set_human_time($row['purchase_date']);
+				$vars['purchases'][$row['purchase_id']]['purchase_date'] = $this->EE->localize->human_time($row['purchase_date']);
 
 				$vars['purchases'][$row['purchase_id']]['item_cost'] =  $row['item_cost'];
 				$vars['purchases'][$row['purchase_id']]['purchase_id'] = $row['purchase_id'];
@@ -1183,7 +1182,7 @@ class Simple_commerce_mcp {
 
 	function _valid_date($str, $key)
 	{
-		$str = $this->EE->localize->convert_human_date_to_gmt($str);
+		$str = $this->EE->localize->string_to_timestamp($str);
 
 		if ( ! is_numeric($str))
 		{
@@ -1197,7 +1196,7 @@ class Simple_commerce_mcp {
 
 	function _valid_sub_date($str, $key)
 	{
-		$str = ($str == '') ? 0 : $this->EE->localize->convert_human_date_to_gmt($str);
+		$str = ($str == '') ? 0 : $this->EE->localize->string_to_timestamp($str);
 
 		if ( ! is_numeric($str) OR ($str < 0))
 		{
@@ -1483,7 +1482,7 @@ class Simple_commerce_mcp {
 			
 			if ($purchase['subscription_end_date'] != 0)
 			{
-				$subscription_end_date = $this->EE->localize->set_human_time($purchase['subscription_end_date']);
+				$subscription_end_date = $this->EE->localize->human_time($purchase['subscription_end_date']);
 			}
 			elseif ($purchase['recurring'] == 'y')
 			{
@@ -1494,7 +1493,7 @@ class Simple_commerce_mcp {
 				'title'					=> '<a href="'.BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce'.
 					AMP.'method=edit_purchases'.AMP.'purchase_id='.$purchase['purchase_id'].'">'.$purchase['title'].'</a>',
 				'screen_name'			=> $purchase['screen_name'],
-				'purchase_date'			=> $this->EE->localize->set_human_time($purchase['purchase_date']),
+				'purchase_date'			=> $this->EE->localize->human_time($purchase['purchase_date']),
 				'subscription_end_date'	=> $subscription_end_date,
 				'item_cost'				=> $purchase['item_cost'],
 				'_check'				=> '<input class="toggle" id="edit_box_'.$purchase['purchase_id'].'" type="checkbox" name="toggle[]" value="'.$purchase['purchase_id'].'" />',
@@ -1527,9 +1526,7 @@ class Simple_commerce_mcp {
 		$cr	  = "\n";
 		$data = '';
 
-		$now = $this->EE->localize->set_localized_time();
-
-        $filename = $which.'_'.date('y', $now).date('m', $now).date('d', $now).'.txt';
+		$filename = $which.'_'.$this->EE->localize->format_date('%y%m%d').'.txt';
 
 		if ($which == 'items')
 		{
@@ -1838,7 +1835,7 @@ MAGIC;
 		// Load the search helper so we can filter the keywords
 		$this->EE->load->helper('search');
 
-		$this->EE->cp->set_variable('cp_page_title', lang('edit'));
+		$this->EE->view->cp_page_title = lang('edit');
 
 		$this->EE->cp->add_js_script('ui', 'datepicker');
 
@@ -2692,7 +2689,6 @@ MAGIC;
 				exp_channel_titles.author_id,
 				exp_channel_titles.status,
 				exp_channel_titles.entry_date,
-				exp_channel_titles.dst_enabled,
 				exp_channel_titles.comment_total,
 				exp_channels.live_look_template,
 				exp_members.username,
@@ -2825,7 +2821,7 @@ MAGIC;
 				$datestr = '%Y-%m-%d %H:%i';
 			}
 
-			$vars['entries'][$row['entry_id']][] = $this->EE->localize->decode_date($datestr, $row['entry_date'], TRUE);
+			$vars['entries'][$row['entry_id']][] = $this->EE->localize->format_date($datestr, $row['entry_date']);
 
 			// Channel
 			$vars['entries'][$row['entry_id']][] = (isset($w_array[$row['channel_id']])) ? '<div class="smallNoWrap">'. $w_array[$row['channel_id']].'</div>' : '';

@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -26,7 +26,7 @@
 
 class Forum_upd {
 
-	var $version			= '3.1.9';
+	var $version			= '3.1.10';
 	
 	function Forum_upd()
 	{
@@ -72,9 +72,6 @@ class Forum_upd {
 	/** ---------------------------------*/
 	function update_triggers()
 	{
-		// Load the string helper
-		$this->EE->load->helper('string');
-		
 		$query = $this->EE->db->query("SELECT site_id FROM exp_sites");
 		
 		foreach($query->result_array() as $row)

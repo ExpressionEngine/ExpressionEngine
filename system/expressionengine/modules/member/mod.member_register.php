@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -212,12 +212,14 @@ class Member_register extends Member {
 		$tf .= "<option value='eu'>".lang('european')."</option>\n";
 		$tf .= "</select>\n";
 
+		$this->EE->load->helper('date_helper');
+
 		// Parse languge lines
 		$reg_form = $this->_var_swap($reg_form,
 									array(
 											'lang:username_length'	=> $un_min_len,
 											'lang:password_length'	=> $pw_min_len,
-											'form:localization'		=> $this->EE->localize->timezone_menu('UTC'),
+											'form:localization'		=> $this->EE->localize->timezone_menu(),
 											'form:time_format'		=> $tf,
 											'form:language'			=> $this->EE->functions->language_pack_names('english')
 
@@ -307,8 +309,6 @@ class Member_register extends Member {
 		{
 			require APPPATH.'libraries/Validate.php';
 		}
-		
-		$this->EE->load->helper('string');
 
 		$VAL = new EE_Validate(array(
 			'member_id'			=> '',
@@ -454,10 +454,7 @@ class Member_register extends Member {
 									$this->EE->config->item('time_format') : 'us',
 			'timezone'		=> ($this->EE->config->item('default_site_timezone') && 
 								$this->EE->config->item('default_site_timezone') != '') ? 
-									$this->EE->config->item('default_site_timezone') : $this->EE->config->item('server_timezone'),
-			'daylight_savings' => ($this->EE->config->item('default_site_dst') && 
-									$this->EE->config->item('default_site_dst') != '') ? 
-										$this->EE->config->item('default_site_dst') : $this->EE->config->item('daylight_savings')	
+									$this->EE->config->item('default_site_timezone') : $this->EE->config->item('server_timezone')	
 		);
 		
 		// Set member group
@@ -494,15 +491,6 @@ class Member_register extends Member {
 			{
 				$data[$key] = $_POST[$value];
 			}
-		}
-
-		if ($this->EE->input->post('daylight_savings') == 'y')
-		{
-			$data['daylight_savings'] = 'y';
-		}
-		elseif ($this->EE->input->post('daylight_savings') == 'n')
-		{
-			$data['daylight_savings'] = 'n';
 		}
 		
 		// We generate an authorization code if the member needs to self-activate
@@ -625,8 +613,6 @@ class Member_register extends Member {
 			$template = $this->EE->functions->fetch_email_template('admin_notify_reg');
 			$email_tit = $this->_var_swap($template['title'], $swap);
 			$email_msg = $this->_var_swap($template['data'], $swap);
-
-			$this->EE->load->helper('string');
 
 			// Remove multiple commas
 			$notify_address = reduce_multiples($this->EE->config->item('mbr_notification_emails'), ',', TRUE);

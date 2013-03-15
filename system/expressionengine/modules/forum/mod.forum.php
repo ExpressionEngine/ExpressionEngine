@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -27,8 +27,8 @@
 class Forum {
 
 
-	public $version				= '3.1.9';
-	public $build				= '20120911';
+	public $version				= '3.1.10';
+	public $build				= '20121218';
 	public $use_site_profile	= FALSE;
 	public $search_limit		= 250; // Maximum number of search results (x2 since it can include this number of topics + this number of posts)
 	public $return_data 		= '';
@@ -400,9 +400,6 @@ class Forum {
 		{
 			$this->EE->uri->segments['1'] = $this->forum_trigger;
 		}
-
-		// Load the string helper
-		$this->EE->load->helper('string');
 		
 		if ($this->use_trigger())
 		{
@@ -444,7 +441,7 @@ class Forum {
 			{					
 				$this->current_page = $match['1'];	
 					
-				$this->current_id = $this->EE->functions->remove_double_slashes(str_replace($match['0'], '', $this->current_id));
+				$this->current_id = reduce_double_slashes(str_replace($match['0'], '', $this->current_id));
 			}
 		}
 	
@@ -934,11 +931,11 @@ class Forum {
 		{
 			if ($this->return_override != '')
 			{
-				$hidden['RET'] = $this->EE->functions->remove_double_slashes($this->forum_path($this->current_request.'/'.$this->return_override));				
+				$hidden['RET'] = reduce_double_slashes($this->forum_path($this->current_request.'/'.$this->return_override));				
 			}
 			else
 			{
-				$hidden['RET'] = $this->EE->functions->remove_double_slashes($this->forum_path($this->current_request.'/'.$this->current_id));
+				$hidden['RET'] = reduce_double_slashes($this->forum_path($this->current_request.'/'.$this->current_id));
 			}
 		}
 				
@@ -965,7 +962,7 @@ class Forum {
 		}
 		elseif($method == 'do_split')
 		{
-			$action = $this->EE->functions->remove_double_slashes($this->forum_path($this->current_request.'/'.$hidden['topic_id']));
+			$action = reduce_double_slashes($this->forum_path($this->current_request.'/'.$hidden['topic_id']));
 			//print_r(get_object_vars($this));
 		}
 	
@@ -1041,7 +1038,7 @@ class Forum {
 			$this->_forum_set_basepath();
 		}
 
-		return $this->EE->functions->remove_double_slashes($this->basepath.$uri.'/');
+		return reduce_double_slashes($this->basepath.$uri.'/');
 	}
 
 	// --------------------------------------------------------------------		
@@ -1178,7 +1175,7 @@ class Forum {
 				}
 				else
 				{
-					$str = str_replace($matches['0'][$j], $this->EE->localize->decode_date($matches['1'][$j], $this->EE->session->userdata['last_visit']), $str);
+					$str = str_replace($matches['0'][$j], $this->EE->localize->format_date($matches['1'][$j], $this->EE->session->userdata['last_visit']), $str);
 				}
 			}
 		}

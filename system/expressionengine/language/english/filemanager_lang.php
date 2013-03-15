@@ -134,6 +134,8 @@ $lang = array(
 'max_size' =>
 'Maximum File Size (in bytes)',
 
+'php_max_filesize'=>'Maximum upload size allowed by PHP is %s',
+
 'max_height' =>
 'Maximum Image Height (in pixels)',
 

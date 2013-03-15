@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -175,8 +175,9 @@ class Filemanager {
 	 * Get the upload directory preferences for an individual directory
 	 * 
 	 * @param integer $dir_id ID of the directory to get preferences for
+	 * @param	bool $ignore_site_id If TRUE, returns upload destinations for all sites
 	 */
-	function fetch_upload_dir_prefs($dir_id)
+	function fetch_upload_dir_prefs($dir_id, $ignore_site_id = FALSE)
 	{
 		if (isset($this->_upload_dir_prefs[$dir_id]))
 		{
@@ -188,7 +189,8 @@ class Filemanager {
 		// Figure out if the directory actually exists
 		$prefs = $this->EE->file_upload_preferences_model->get_file_upload_preferences(
 			'1', // Overriding the group ID to get all IDs
-			$dir_id
+			$dir_id,
+			$ignore_site_id
 		);
 		
 		if (count($prefs) == 0)
@@ -381,7 +383,7 @@ class Filemanager {
 		}
 		
 		// fetch preferences & merge with passed in prefs
-		$dir_prefs = $this->fetch_upload_dir_prefs($dir_id);
+		$dir_prefs = $this->fetch_upload_dir_prefs($dir_id, TRUE);
 		
 		if ( ! $dir_prefs)
 		{
@@ -810,10 +812,10 @@ class Filemanager {
 		
 		$filebrowser_html = $this->EE->load->ee_view('_shared/file/browser', $vars, TRUE);
 		
-		die($this->EE->javascript->generate_json(array(
+		$this->EE->output->send_ajax_response(array(
 			'manager'		=> str_replace(array("\n", "\t"), '', $filebrowser_html),	// reduces transfer size
 			'directories'	=> $vars['filemanager_directories']
-		)));
+		));
 	}
 	
 	public function datatables($first_dir = NULL)
@@ -974,11 +976,14 @@ class Filemanager {
 		{
 			$this->_initialize($this->config);
 		}
+
 		
 		if ( ! is_array($dirs))
 		{
 			$dirs = call_user_func($this->config['directories_callback']);
+
 		}
+		
 		
 		if ($return_all AND ! $ajax)	// safety - ajax calls can never get all info!
 		{
@@ -1548,11 +1553,12 @@ class Filemanager {
 	 * 	Optionally, you can use the file name in the event you don't have the
 	 * 	full response from save_file
 	 * @param integer $directory_id The ID of the upload directory the file is in
+	 * @param	bool $ignore_site_id If TRUE, returns upload destinations for all sites
 	 * @return string URL to the thumbnail
 	 */
-	public function get_thumb($file, $directory_id)
+	public function get_thumb($file, $directory_id, $ignore_site_id = FALSE)
 	{
-		$directory = $this->fetch_upload_dir_prefs($directory_id);
+		$directory = $this->fetch_upload_dir_prefs($directory_id, $ignore_site_id);
 		$thumb_info = array();
 		
 		// If the raw file name was passed in, figure out the mime_type
@@ -1618,7 +1624,7 @@ class Filemanager {
 				continue;
 			}
 			
-			$file['date'] = $this->EE->localize->set_human_time($file['modified_date'], TRUE);
+			$file['date'] = $this->EE->localize->human_time($file['modified_date'], TRUE);
 			//$file['size'] = number_format($file['file_size']/1000, 1).' '.lang('file_size_unit');
 			$file['has_thumb'] = (in_array('thumb_'.$file['file_name'], $map));
 		}
@@ -1761,7 +1767,9 @@ class Filemanager {
 		$this->EE->load->model('file_upload_preferences_model');
 		
 		$directories = $this->EE->file_upload_preferences_model->get_file_upload_preferences(
-			$this->EE->session->userdata('group_id')
+			$this->EE->session->userdata('group_id'),
+			NULL,
+			TRUE
 		);
 		
 		foreach($directories as $dir)
@@ -1857,7 +1865,7 @@ class Filemanager {
 			
 			$file['short_name']		= ellipsize($file['title'], 13, 0.5);
 			$file['file_size']		= byte_format($file['file_size']);
-			$file['date']			= date('F j, Y g:i a', $file['modified_date']);
+			$file['date']			= $this->EE->localize->format_date('%F %j, %Y %g:%i %a', $file['modified_date']);
 			$file['thumb'] 			= $thumb_info['thumb'];
 			$file['thumb_class']	= $thumb_info['thumb_class'];
 		}
@@ -2722,7 +2730,6 @@ class Filemanager {
 	 */
 	public function download_files($files, $zip_name='downloaded_files.zip')
 	{
-		$this->EE->load->helper('string');
 		$this->EE->load->model('file_upload_preferences_model');
 		
 		$upload_prefs = $this->EE->file_upload_preferences_model->get_file_upload_preferences(1);
@@ -2908,7 +2915,7 @@ class Filemanager {
 
 		// Clean up the filename and add the full path
 		$file_name = $this->EE->security->sanitize_filename(urldecode($file_name));
-		$file_path = $this->EE->functions->remove_double_slashes(
+		$file_path = reduce_double_slashes(
 			$upload_prefs['server_path'].DIRECTORY_SEPARATOR.$file_name
 		);
 

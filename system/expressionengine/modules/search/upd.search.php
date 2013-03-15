@@ -6,7 +6,7 @@
 -----------------------------------------------------
  http://ellislab.com/
 -----------------------------------------------------
- Copyright (c) 2003 - 2012, EllisLab, Inc.
+ Copyright (c) 2003 - 2013, EllisLab, Inc.
 =====================================================
  THIS IS COPYRIGHTED SOFTWARE
  PLEASE READ THE LICENSE AGREEMENT
@@ -72,7 +72,7 @@ class Search_upd {
 					search_terms varchar(200) NOT NULL,
 					PRIMARY KEY `id` (`id`),
 					KEY `site_id` (`site_id`)
-					) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci"; 
+					) ENGINE=MyISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci"; 
 	
 		foreach ($sql as $query)
 		{

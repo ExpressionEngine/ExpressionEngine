@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -47,13 +47,14 @@ class Member {
 						'public_profile', 'memberlist', 'do_member_search', 
 						'member_search', 'register', 'smileys', 'login', 
 						'unpw_update', 'email_console', 'send_email', 
-						'aim_console', 'icq_console', 'forgot_password', 
-						'delete', 'member_mini_search', 'do_member_mini_search'
+						'aim_console', 'icq_console', 'forgot_password', 'reset_password',
+						'delete', 'member_mini_search', 'do_member_mini_search', 
 					);
 
 	var $no_login 			= array(
 						'public_profile', 'memberlist', 'do_member_search', 
-						'member_search', 'register', 'forgot_password', 'unpw_update'
+						'member_search', 'register', 'forgot_password', 'unpw_update', 
+						'reset_password'
 					);
 
 	var $id_override		= array(
@@ -95,6 +96,7 @@ class Member {
 	var $crumb_map 			= array(
 								'profile'				=>	'your_control_panel',
 								'delete'				=>	'mbr_delete',
+								'reset_password'		=>  'mbr_reset_password',
 								'forgot_password'		=>	'mbr_forgotten_password',
 								'login'					=>	'mbr_login',
 								'unpw_update'			=>  'settings_update',
@@ -179,8 +181,6 @@ class Member {
 		// The second segment will be assigned to the $this->request variable.
 		// This determines what page is shown. Anything after that will normally
 		// be an ID number, so we'll assign it to the $this->cur_id variable.
-
-		$this->EE->load->helper('string');
 
 		$this->request = trim_slashes($this->EE->uri->uri_string);
 
@@ -349,6 +349,7 @@ class Member {
 			'icq_console',
 			'send_email',
 			'forgot_password',
+			'reset_password',
 			'smileys',
 			'messages',
 			'delete'
@@ -359,7 +360,7 @@ class Member {
 		{
 			$this->_show_404_template();
 		}
-
+		
 		// Call the requested function
 		if ($this->request == 'profile') $this->request = 'profile_main';
 		if ($this->request == 'register') $this->request = 'registration_form';
@@ -1031,7 +1032,7 @@ class Member {
 	/**
 	 * Retreive Forgotten Password
 	 */
-	public function retrieve_password()
+	public function send_reset_token()
 	{
 		if ( ! class_exists('Member_auth'))
 		{
@@ -1045,7 +1046,7 @@ class Member {
 			$MA->{$key} = $value;
 		}
 
-		$MA->retrieve_password();
+		$MA->send_reset_token();
 	}
 
 	// --------------------------------------------------------------------
@@ -1067,11 +1068,33 @@ class Member {
 			$MA->{$key} = $value;
 		}
 
-		$MA->reset_password();
+		return $MA->reset_password();
 	}
 
 	// --------------------------------------------------------------------
 
+	/**
+	 *
+	 */
+	public function process_reset_password()
+	{
+		if ( ! class_exists('Member_auth'))
+		{
+			require PATH_MOD.'member/mod.member_auth.php';
+		}
+
+		$MA = new Member_auth();
+
+		foreach(get_object_vars($this) as $key => $value)
+		{
+			$MA->{$key} = $value;
+		}
+
+		return $MA->process_reset_password();
+	}
+
+	// --------------------------------------------------------------------
+		
 	/**
 	 * Subscriptions Edit Form
 	 */
@@ -1396,7 +1419,6 @@ class Member {
 				$notify_address = str_replace($this->EE->session->userdata('email'), "", $notify_address);
 			}
 
-			$this->EE->load->helper('string');
 			// Remove multiple commas
 			$notify_address = reduce_multiples($notify_address, ',', TRUE);
 
@@ -2405,7 +2427,7 @@ class Member {
 			$this->_member_set_basepath();
 		}
 
-		return $this->EE->functions->remove_double_slashes($this->basepath.'/'.$uri);
+		return reduce_double_slashes($this->basepath.'/'.$uri);
 	}
 
 	// --------------------------------------------------------------------
@@ -2505,8 +2527,7 @@ class Member {
 							m.bio,
 							m.join_date, m.last_visit, m.last_activity, m.last_entry_date, m.last_comment_date,
 							m.last_forum_post_date, m.total_entries, m.total_comments, m.total_forum_topics, m.total_forum_posts,
-							m.language, m.timezone, m.daylight_savings, m.bday_d, m.bday_m, m.bday_y,
-							g.group_title');
+							m.language, m.timezone, m.bday_d, m.bday_m, m.bday_y, g.group_title');
 		$this->EE->db->from(array('members m', 'member_groups g'));
 		$this->EE->db->where('m.member_id', $member_id);
 		$this->EE->db->where('g.site_id', $this->EE->config->item('site_id'));
@@ -2665,37 +2686,37 @@ class Member {
 				//  "last_visit"
 				if (strncmp($key, 'last_visit', 10) == 0)
 				{
-					$this->EE->TMPL->tagdata = $this->_var_swap_single($key, ($default_fields['last_visit'] > 0) ? $this->EE->localize->decode_date($val, $default_fields['last_visit']) : '', $this->EE->TMPL->tagdata);
+					$this->EE->TMPL->tagdata = $this->_var_swap_single($key, ($default_fields['last_visit'] > 0) ? $this->EE->localize->format_date($val, $default_fields['last_visit']) : '', $this->EE->TMPL->tagdata);
 				}
 
 				//  "last_activity"
 				if (strncmp($key, 'last_activity', 10) == 0)
 				{
-					$this->EE->TMPL->tagdata = $this->_var_swap_single($key, ($default_fields['last_activity'] > 0) ? $this->EE->localize->decode_date($val, $default_fields['last_activity']) : '', $this->EE->TMPL->tagdata);
+					$this->EE->TMPL->tagdata = $this->_var_swap_single($key, ($default_fields['last_activity'] > 0) ? $this->EE->localize->format_date($val, $default_fields['last_activity']) : '', $this->EE->TMPL->tagdata);
 				}
 				
 				//  "join_date"
 				if (strncmp($key, 'join_date', 9) == 0)
 				{
-					$this->EE->TMPL->tagdata = $this->_var_swap_single($key, ($default_fields['join_date'] > 0) ? $this->EE->localize->decode_date($val, $default_fields['join_date']) : '', $this->EE->TMPL->tagdata);
+					$this->EE->TMPL->tagdata = $this->_var_swap_single($key, ($default_fields['join_date'] > 0) ? $this->EE->localize->format_date($val, $default_fields['join_date']) : '', $this->EE->TMPL->tagdata);
 				}
 
 				//  "last_entry_date"
 				if (strncmp($key, 'last_entry_date', 15) == 0)
 				{
-					$this->EE->TMPL->tagdata = $this->_var_swap_single($key, ($default_fields['last_entry_date'] > 0) ? $this->EE->localize->decode_date($val, $default_fields['last_entry_date']) : '', $this->EE->TMPL->tagdata);
+					$this->EE->TMPL->tagdata = $this->_var_swap_single($key, ($default_fields['last_entry_date'] > 0) ? $this->EE->localize->format_date($val, $default_fields['last_entry_date']) : '', $this->EE->TMPL->tagdata);
 				}
 
 				//  "last_forum_post_date"
 				if (strncmp($key, 'last_forum_post_date', 20) == 0)
 				{
-					$this->EE->TMPL->tagdata = $this->_var_swap_single($key, ($default_fields['last_forum_post_date'] > 0) ? $this->EE->localize->decode_date($val, $default_fields['last_forum_post_date']) : '', $this->EE->TMPL->tagdata);
+					$this->EE->TMPL->tagdata = $this->_var_swap_single($key, ($default_fields['last_forum_post_date'] > 0) ? $this->EE->localize->format_date($val, $default_fields['last_forum_post_date']) : '', $this->EE->TMPL->tagdata);
 				}
 
 				//  parse "recent_comment"
 				if (strncmp($key, 'last_comment_date', 17) == 0)
 				{
-					$this->EE->TMPL->tagdata = $this->_var_swap_single($key, ($default_fields['last_comment_date'] > 0) ? $this->EE->localize->decode_date($val, $default_fields['last_comment_date']) : '', $this->EE->TMPL->tagdata);
+					$this->EE->TMPL->tagdata = $this->_var_swap_single($key, ($default_fields['last_comment_date'] > 0) ? $this->EE->localize->format_date($val, $default_fields['last_comment_date']) : '', $this->EE->TMPL->tagdata);
 				}
 
 				//  {name}
@@ -2768,18 +2789,17 @@ class Member {
 				//  {local_time}
 				if (strncmp($key, 'local_time', 10) == 0)
 				{
-					$time = $this->EE->localize->now;
+					$locale = FALSE;
 
 					if ($this->EE->session->userdata('member_id') != $this->cur_id)
 					{  
 						// Default is UTC?
-						$zone = ($default_fields['timezone'] == '') ? 'UTC' : $default_fields['timezone'];
-						$time = $this->EE->localize->set_localized_time($time, $zone, $default_fields['daylight_savings']);
+						$locale = ($default_fields['timezone'] == '') ? 'UTC' : $default_fields['timezone'];
 					}
 
 					$this->EE->TMPL->tagdata = $this->_var_swap_single(
 						$key,
-						$this->EE->localize->decode_date($val, $time, FALSE),
+						$this->EE->localize->format_date($val, NULL, $locale),
 						$this->EE->TMPL->tagdata
 					);
 				}

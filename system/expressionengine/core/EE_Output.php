@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -338,7 +338,13 @@ class EE_Output extends CI_Output {
 	function show_user_error($type = 'submission', $errors, $heading = '')
 	{
 		$EE =& get_instance();
-		
+
+		if (defined('REQ') && REQ == 'CP')
+		{		
+			$EE->load->library('logger');
+			$EE->logger->deprecate('2.6', 'show_error()');
+		}
+
 		$this->set_header("Content-Type: text/html; charset=".$EE->config->item('charset'));
 		
 		if ($type != 'off')
@@ -408,7 +414,7 @@ class EE_Output extends CI_Output {
 		{
 			if (is_array($msg))
 			{
-				@header('Content-Type: application/json');
+				@header('Content-Type: application/json; charset=UTF-8');
 			}
 			else
 			{

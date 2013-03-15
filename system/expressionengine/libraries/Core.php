@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -31,7 +31,7 @@ class EE_Core {
 	/**
 	 * Constructor
 	 */	
-	function __construct()
+	public function __construct()
 	{
 		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();
@@ -52,10 +52,10 @@ class EE_Core {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Sets up the very bare system needed for things such
-	 * as cp css and stylesheet requests.
+	 * Sets constants, sets paths contants to appropriate directories, loads 
+	 * the database and generally prepares the system to run.
 	 */
-	function bootstrap()
+	public function bootstrap()
 	{
 		// Define the request type
 		// Note: admin.php defines REQ=CP
@@ -149,18 +149,20 @@ class EE_Core {
 		
 		$last_site_id = $this->EE->input->cookie('cp_last_site_id');
 		
-		if (REQ == 'CP' && ! empty($last_site_id) && is_numeric($last_site_id) &&
-			$last_site_id != $this->EE->config->item('site_id'))
+		if (REQ == 'CP' && $this->EE->config->item('multiple_sites_enabled') == 'y')
 		{
-			// If they are already setting cookies with a specified domain, keep using it in this backend
-			$current_cookie_domain = $this->EE->config->item('cookie_domain');
+			$cookie_prefix = $this->EE->config->item('cookie_prefix');
+			$cookie_path  = $this->EE->config->item('cookie_path');
+			$cookie_domain =  $this->EE->config->item('cookie_domain');		
 
-			$this->EE->config->site_prefs('', $last_site_id);
-
-			if ($current_cookie_domain != FALSE && $current_cookie_domain != '')
+			if (! empty($last_site_id) && is_numeric($last_site_id) && $last_site_id != $this->EE->config->item('site_id'))
 			{
-				$this->EE->config->cp_cookie_domain = $current_cookie_domain;
+				$this->EE->config->site_prefs('', $last_site_id);
 			}
+			
+			$this->EE->config->cp_cookie_prefix = $cookie_prefix;
+			$this->EE->config->cp_cookie_path  = $cookie_path;
+			$this->EE->config->cp_cookie_domain =  $cookie_domain;	
 		}
 		
 		// This allows CI compatibility
@@ -207,12 +209,31 @@ class EE_Core {
 		unset($theme_path);
 		
 		// Define Third Party Theme Path and URL
-		define('PATH_THIRD_THEMES',	PATH_THEMES.'third_party/');
-		define('URL_THIRD_THEMES',	$this->EE->config->slash_item('theme_folder_url').'third_party/');
-
+		if ($this->EE->config->item('path_third_themes'))
+		{
+			define(
+				'PATH_THIRD_THEMES',
+				rtrim(realpath($this->EE->config->item('path_third_themes')), '/').'/'
+			);
+		}
+		else
+		{
+			define('PATH_THIRD_THEMES',	PATH_THEMES.'third_party/');
+		}
+		
+		if ($this->EE->config->item('url_third_themes'))
+		{
+			define(
+				'URL_THIRD_THEMES',
+				rtrim($this->EE->config->item('url_third_themes'), '/').'/'
+			);
+		}
+		else
+		{
+			define('URL_THIRD_THEMES',	$this->EE->config->slash_item('theme_folder_url').'third_party/');
+		}
 
 		// Load the very, very base classes
-		// ideally these won't query much
 		$this->EE->load->library('functions');
 		$this->EE->load->library('extensions');
 
@@ -228,11 +249,13 @@ class EE_Core {
 
 	/**
 	 * Initialize EE
+	 * 
+	 * Called from EE_Controller to run EE's front end.
 	 *
-	 * @access	private
+	 * @access	public
 	 * @return	void
 	 */
-	function run_ee()
+	public function run_ee()
 	{
 		$this->native_plugins = array('magpie', 'xml_encode');
 		$this->native_modules = array(
@@ -355,10 +378,12 @@ class EE_Core {
 	/**
 	 * Generate Control Panel Request
 	 *
-	 * @access	private
+	 * Called from the EE_Controller to run EE's backend.
+	 *
+	 * @access public	
 	 * @return	void
 	 */	
-	function run_cp()
+	public function run_cp()
 	{
 		$s = 0;
 
@@ -452,7 +477,6 @@ class EE_Core {
 		{
 			// has their session Timed out and they are requesting a page?
 			// Grab the URL, base64_encode it and send them to the login screen.
-			
 			$safe_refresh = $this->EE->cp->get_safe_refresh();
 			$return_url = ($safe_refresh == 'C=homepage') ? '' : AMP.'return='.base64_encode($safe_refresh);
 			
@@ -471,7 +495,10 @@ class EE_Core {
 		$this->EE->load->helper(array('url', 'form', 'quicktab'));
 
 		// Secure forms stuff
-		$this->EE->cp->secure_forms();
+		if( ! $this->EE->security->have_valid_xid())
+		{
+			return $this->EE->functions->redirect(BASE);
+		}
 		
 		// Certain variables will be included in every page, so we make sure they are set here
 		// Prevents possible PHP errors, if a developer forgets to set it explicitly.

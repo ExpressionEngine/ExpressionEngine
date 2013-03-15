@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -191,7 +191,7 @@ class EE_Extensions {
 				$name = $this->EE->security->sanitize_filename(strtolower(substr($class, 0, -4))); // remove '_ext' suffix
 				
 				$path = $this->EE->addons->_packages[$name]['extension']['path'];
-				$extension_path = $this->EE->functions->remove_double_slashes($path.'/ext.'.$name.'.php');
+				$extension_path = reduce_double_slashes($path.'/ext.'.$name.'.php');
 
 				if (file_exists($extension_path))
 				{
@@ -223,9 +223,6 @@ class EE_Extensions {
 				}
 				else
 				{
-					// Load the string helper
-					$this->EE->load->helper('string');
-
 					$settings = ($metadata['1'] == '') ? '' : strip_slashes(unserialize($metadata['1']));
 					$this->s_cache[$class_name] = $settings;
 				}

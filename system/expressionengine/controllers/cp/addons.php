@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -84,7 +84,7 @@ class Addons extends CP_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 		
-		$this->cp->set_variable('cp_page_title', lang('package_settings'));
+		$this->view->cp_page_title = lang('package_settings');
 		
 		$components = $this->addons->_packages[$package];
 

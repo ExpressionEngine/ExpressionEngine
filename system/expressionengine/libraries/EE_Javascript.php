@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -115,7 +115,7 @@ class EE_Javascript extends CI_Javascript {
 			}
 		');
 
-		$this->CI->cp->set_variable('cp_global_js', $global_js);
+		$this->CI->view->cp_global_js = $global_js;
 	}
 }
 

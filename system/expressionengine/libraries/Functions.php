@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -142,13 +142,10 @@ class EE_Functions {
 			return $this->fetch_site_index(0, 0).$qs.'ACT='.$this->fetch_action_id('Member', 'member_logout');
 		}	
 		// END Specials
-
-		// Load the string helper
-		$this->EE->load->helper('string');
  
 		$base = $this->fetch_site_index(0, $sess_id).'/'.trim_slashes($segment);
 		
-		$out = $this->remove_double_slashes($base);			
+		$out = reduce_double_slashes($base);			
 						
 		$this->cached_url[$full_segment] = $out;
 						
@@ -165,9 +162,6 @@ class EE_Functions {
 	 */
 	function create_page_url($base_url, $segment, $trailing_slash = FALSE)
 	{
-		// Load the string helper
-		$this->EE->load->helper('string');       
-
 		if ($this->EE->config->item('force_query_string') == 'y')
 		{
 			if (strpos($base_url, $this->EE->config->item('index_page') . '/') !== FALSE)
@@ -185,7 +179,7 @@ class EE_Functions {
            $base .= '/';
        }
        
-       $out = $this->remove_double_slashes($base);
+       $out = reduce_double_slashes($base);
                
        return $out;          
 	}
@@ -201,7 +195,7 @@ class EE_Functions {
 	 */
 	function fetch_current_uri()
 	{ 
-		return rtrim($this->remove_double_slashes($this->fetch_site_index(1).$this->EE->uri->uri_string), '/');
+		return rtrim(reduce_double_slashes($this->fetch_site_index(1).$this->EE->uri->uri_string), '/');
 	}
 
 	// --------------------------------------------------------------------
@@ -285,7 +279,9 @@ class EE_Functions {
 	 */
 	function remove_double_slashes($str)
 	{
-		$this->EE->load->helper('string_helper');
+		$this->EE->load->library('logger');
+		$this->EE->logger->deprecated('2.6');
+
 		return reduce_double_slashes($str);
 	}
 	
@@ -311,9 +307,6 @@ class EE_Functions {
 			{
 				return $this->cached_path[$match[1]];
 			}
-
-			// Load the string helper
-			$this->EE->load->helper('string');
 
 			$path = trim_slashes(str_replace(array("'",'"'), "", $match[1]));
 			
@@ -371,7 +364,7 @@ class EE_Functions {
 	 * @param	string
 	 * @return	void
 	 */
-	function redirect($location, $method = FALSE)
+	function redirect($location, $method = FALSE, $status_code=NULL)
 	{
 		// Remove hard line breaks and carriage returns
 		$location = str_replace(array("\n", "\r"), '', $location);
@@ -403,14 +396,22 @@ class EE_Functions {
 		if ($method === FALSE)
 		{
 			$method = $this->EE->config->item('redirect_method');
-		}		
+		}	
 
 		switch($method)
 		{
-			case 'refresh'	: header("Refresh: 0;url=$location");
+			case 'refresh': 
+				$header = "Refresh: 0;url=$location";
 				break;
-			default			: header("Location: $location");
+			default: 
+				$header = "Location: $location";
 				break;
+		}
+
+		if($status_code !== NULL && $status_code >= 300 && $status_code <= 308) {
+			header($header, TRUE, $status_code);
+		} else {
+			header($header);
 		}
 
 		exit;
@@ -428,7 +429,6 @@ class EE_Functions {
 	 */
 	function random($type = 'encrypt', $len = 8)
 	{
-		$this->EE->load->helper('string');
 		return random_string($type, $len);
 	}
 
@@ -586,7 +586,7 @@ class EE_Functions {
 			{
 				if ($this->EE->session->tracker[$offset] != 'index')
 				{
-					return $this->remove_double_slashes($this->fetch_site_index().'/'.$this->EE->session->tracker[$offset]);
+					return reduce_double_slashes($this->fetch_site_index().'/'.$this->EE->session->tracker[$offset]);
 				}
 			}
 		}
@@ -660,7 +660,7 @@ class EE_Functions {
 			}			
 		} 
 		
-		return $this->remove_double_slashes($ret);
+		return reduce_double_slashes($ret);
 	}
 	
 	// --------------------------------------------------------------------
@@ -769,10 +769,14 @@ class EE_Functions {
 		
 		if (REQ == 'CP' && $this->EE->config->item('multiple_sites_enabled') == 'y')
 		{
-			$data['domain'] = $this->EE->config->cp_cookie_domain;
+			$data['prefix'] = ( ! $this->EE->config->cp_cookie_prefix) ? 'exp_' : $this->EE->config->cp_cookie_prefix;
+			$data['path']	= ( ! $this->EE->config->cp_cookie_path) ? '/' : $this->EE->config->cp_cookie_path;
+			$data['domain'] = ( ! $this->EE->config->cp_cookie_domain) ? '' : $this->EE->config->cp_cookie_domain;
 		}
 		else
 		{
+			$data['prefix'] = ( ! $this->EE->config->item('cookie_prefix')) ? 'exp_' : $this->EE->config->item('cookie_prefix').'_';
+			$data['path']	= ( ! $this->EE->config->item('cookie_path'))	? '/'	: $this->EE->config->item('cookie_path');
 			$data['domain'] = ( ! $this->EE->config->item('cookie_domain')) ? '' : $this->EE->config->item('cookie_domain');
 		}
 		
@@ -1404,7 +1408,7 @@ class EE_Functions {
 	{
 		if ($data['type'] == 'channel' OR ($reverse === TRUE && $parent_entry === FALSE))
 		{
-			$sql = "SELECT t.entry_id, t.channel_id, t.forum_topic_id, t.author_id, t.ip_address, t.title, t.url_title, t.status, t.dst_enabled, t.view_count_one, t.view_count_two, t.view_count_three, t.view_count_four, t.allow_comments, t.comment_expiration_date, t.sticky, t.entry_date, t.year, t.month, t.day, t.entry_date, t.edit_date, t.expiration_date, t.recent_comment_date, t.comment_total, t.site_id as entry_site_id,
+			$sql = "SELECT t.entry_id, t.channel_id, t.forum_topic_id, t.author_id, t.ip_address, t.title, t.url_title, t.status, t.view_count_one, t.view_count_two, t.view_count_three, t.view_count_four, t.allow_comments, t.comment_expiration_date, t.sticky, t.entry_date, t.year, t.month, t.day, t.entry_date, t.edit_date, t.expiration_date, t.recent_comment_date, t.comment_total, t.site_id as entry_site_id,
 					w.channel_title, w.channel_name, w.channel_url, w.comment_url, w.comment_moderate, w.channel_html_formatting, w.channel_allow_img_urls, w.channel_auto_link_urls, 
 					m.username, m.email, m.url, m.screen_name, m.location, m.occupation, m.interests, m.aol_im, m.yahoo_im, m.msn_im, m.icq, m.signature, m.sig_img_filename, m.sig_img_width, m.sig_img_height, m.avatar_filename, m.avatar_width, m.avatar_height, m.photo_filename, m.photo_width, m.photo_height, m.group_id, m.member_id, m.bday_d, m.bday_m, m.bday_y, m.bio,
 					md.*,
@@ -2280,16 +2284,23 @@ class EE_Functions {
 
 		$open_stack = array();
 
-		foreach($temp_misc as $key => $item)
+		foreach($temp_misc as $open_key => $open_tag)
 		{
-			foreach($temp_close as $idx => $row)
+			
+			if (preg_match("#(.+?)(\s+|=)(.+?)#", $open_tag, $matches))
 			{
+				$open_tag = $matches[1];
+			}
+
+			foreach($temp_close as $close_key => $close_tag)
+			{
+				
 				// Find the closest (potential) closing tag following it
-				if (($idx > $key) && substr($item, 0, strlen($row)) == $row)
+				if (($close_key > $open_key) && $open_tag == $close_tag)
 				{
 					// There could be another opening tag between these
 					// so we create a stack of opening tag values
-					$open_stack[$idx][] = $key;
+					$open_stack[$close_key][] = $open_key;
 					continue;
 				}
 			}
@@ -2313,6 +2324,7 @@ class EE_Functions {
 		// Weed out the duplicatess
 		$temp_single	= array_unique($temp_single);
 		$temp_pair		= array_unique($temp_pair);
+
 
 		// Assign Single Variables
 		$var_single = array();

@@ -59,6 +59,14 @@
 				$extra = ($name == 'license_number' && IS_CORE) ? array('value' => 'CORE LICENSE', 'disabled' => 'disabled') : array();
 				$pref = form_input(array_merge($details['value'], array('id' => $name, 'class' => 'input fullfield', 'size' => 20, 'maxlength' => 120), $extra));
 				break;
+			case 'p':
+				$label = lang($name, $name);
+				
+				$pref = form_password(array_merge($details['value'], array('id' => $name, 'class' => 'input fullfield', 'size' => 20, 'maxlength' => 120)));
+				break;
+			case 'c':
+				$label = lang($name, $name);
+				$pref = $details['value'];
 		}
 
 		$this->table->add_row(

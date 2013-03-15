@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -219,11 +219,11 @@ class Wiki {
 		
 		if ($this->EE->TMPL->fetch_param('profile_path') !== FALSE)
 		{
-			$this->profile_path = $this->EE->functions->remove_double_slashes('/'.$this->EE->TMPL->fetch_param('profile_path').'/'.$this->EE->config->item('profile_trigger').'/');
+			$this->profile_path = reduce_double_slashes('/'.$this->EE->TMPL->fetch_param('profile_path').'/'.$this->EE->config->item('profile_trigger').'/');
 		}
 		else
 		{
-			$this->profile_path = $this->EE->functions->remove_double_slashes('/'.$this->EE->config->item('profile_trigger').'/');
+			$this->profile_path = reduce_double_slashes('/'.$this->EE->config->item('profile_trigger').'/');
 		}
 		
 		/** ----------------------------------------
@@ -982,21 +982,22 @@ class Wiki {
 			{	
 				switch ($matches['1'][$j])
 				{
-					case 'upload_date' 		: $upload_date[$matches['0'][$j]] = array($matches['2'][$j], $this->EE->localize->fetch_date_params($matches['2'][$j]));
+					case 'upload_date' 		: $upload_date[$matches['0'][$j]] = $matches['2'][$j];
 						break;
 				}
 			}
 			
 			foreach($upload_date as $key => $value)
 			{
-				$temp_date = $value['0'];
-						
-				foreach ($value['1'] as $dvar)
-				{
-					$temp_date = str_replace($dvar, $this->EE->localize->convert_timestamp($dvar, $row['upload_date'], FALSE), $temp_date);		
-				}
-							
-				$this->return_data = str_replace($key, $temp_date, $this->return_data);
+				$this->return_data = str_replace(
+					$key,
+					$this->EE->localize->format_date(
+						$value,
+						$row['upload_date'],
+						FALSE
+					),
+					$this->return_data
+				);
 			}
 		}
 		
@@ -1408,17 +1409,10 @@ class Wiki {
 			{
 				foreach($dates['last_updated'] as $key => $value)
 				{
-					$temp_date = $value['0'];
-					
-					// Do this once here, to save energy
-					$row['revision_date'] = $this->EE->localize->set_localized_time($row['revision_date']);
-							
-					foreach ($value['1'] as $dvar)
-					{
-						$temp_date = str_replace($dvar, $this->EE->localize->convert_timestamp($dvar, $row['revision_date'], FALSE), $temp_date);		
-					}
-								
-					$data[$key] = $temp_date;
+					$data[$key] = $this->EE->localize->format_date(
+						$value,
+						$row['revision_date']
+					);
 				}
 			}
 
@@ -1556,14 +1550,14 @@ class Wiki {
 		{
 			foreach($dates['last_updated'] as $key => $value)
 			{
-				$temp_date = $value['0'];
-						
-				foreach ($value['1'] as $dvar)
-				{
-					$temp_date = str_replace($dvar, $this->EE->localize->convert_timestamp($dvar, $results->row('revision_date') , TRUE), $temp_date);		
-				}
-							
-				$this->return_data = str_replace($key, $temp_date, $this->return_data);
+				$this->return_data = str_replace(
+					$key,
+					$this->EE->localize->format_date(
+						$value,
+						$results->row('revision_date')
+					),
+					$this->return_data
+				);
 			}
 		}
 		
@@ -1571,14 +1565,15 @@ class Wiki {
 		{
 			foreach($dates['gmt_last_updated'] as $key => $value)
 			{
-				$temp_date = $value['0'];
-						
-				foreach ($value['1'] as $dvar)
-				{
-					$temp_date = str_replace($dvar, $this->EE->localize->convert_timestamp($dvar, $results->row('revision_date') , FALSE), $temp_date);		
-				}
-							
-				$this->return_data = str_replace($key, $temp_date, $this->return_data);
+				$this->return_data = str_replace(
+					$key,
+					$this->EE->localize->format_date(
+						$value,
+						$results->row('revision_date'),
+						FALSE
+					),
+					$this->return_data
+				);
 			}
 		}
 		
@@ -1636,14 +1631,10 @@ class Wiki {
 			{
 				foreach($dates['revision_date'] as $key => $value)
 				{
-					$temp_date = $value['0'];
-							
-					foreach ($value['1'] as $dvar)
-					{
-						$temp_date = str_replace($dvar, $this->EE->localize->convert_timestamp($dvar, $row['revision_date'], TRUE), $temp_date);		
-					}
-								
-					$data[$key] = $temp_date;
+					$data[$key] = $this->EE->localize->format_date(
+						$value,
+						$row['revision_date']
+					);
 				}
 			}
 			
@@ -1651,14 +1642,11 @@ class Wiki {
 			{
 				foreach($dates['gmt_revision_date'] as $key => $value)
 				{
-					$temp_date = $value['0'];
-							
-					foreach ($value['1'] as $dvar)
-					{
-						$temp_date = str_replace($dvar, $this->EE->localize->convert_timestamp($dvar, $row['revision_date'], FALSE), $temp_date);		
-					}
-								
-					$data[$key] = $temp_date;
+					$data[$key] = $this->EE->localize->format_date(
+						$value,
+						$row['revision_date'],
+						FALSE
+					);
 				}
 			}
 			
@@ -2682,7 +2670,7 @@ class Wiki {
 				
 				if (preg_match("/\{revision_date.*?format=[\"|'](.*?)[\"|'].*?\}/", $match['1'], $date))
 				{
-					$date_format = ($date['1'] == '') ? array() : $this->EE->localize->fetch_date_params(str_replace(array(LD, RD), '', $date['1']));
+					$date_format = ($date['1'] == '') ? '' : str_replace(array(LD, RD), '', $date['1']);
 				}
 				
 				/** ---------------------------------
@@ -2744,14 +2732,14 @@ class Wiki {
 										
 					if (isset($date_format))
 					{
-						$temp_date = $date['1'];
-						
-						foreach ($date_format as $dvar)
-						{
-							$temp_date = str_replace($dvar, $this->EE->localize->convert_timestamp($dvar, $row['revision_date'], TRUE), $temp_date);		
-						}
-							
-						$temp = str_replace($date['0'], $temp_date, $temp);
+						$temp = str_replace(
+							$date['0'],
+							$this->EE->localize->format_date(
+								$date_format,
+								$row['revision_date']
+							),
+							$temp
+						);
 					}
 		
 					$revisions .= $temp;
@@ -3477,13 +3465,13 @@ class Wiki {
 			{	
 				switch ($matches['1'][$j])
 				{
-					case 'gmt_last_updated' 	: $dates['gmt_last_updated'][$matches['0'][$j]] = array($matches['2'][$j], $this->EE->localize->fetch_date_params($matches['2'][$j]));
+					case 'gmt_last_updated' 	: $dates['gmt_last_updated'][$matches['0'][$j]] = $matches['2'][$j];
 						break;
-					case 'last_updated' 		: $dates['last_updated'][$matches['0'][$j]] = array($matches['2'][$j], $this->EE->localize->fetch_date_params($matches['2'][$j]));
+					case 'last_updated' 		: $dates['last_updated'][$matches['0'][$j]] = $matches['2'][$j];
 						break;
-					case 'gmt_revision_date'	: $dates['gmt_revision_date'][$matches['0'][$j]] = array($matches['2'][$j], $this->EE->localize->fetch_date_params($matches['2'][$j]));
+					case 'gmt_revision_date'	: $dates['gmt_revision_date'][$matches['0'][$j]] = $matches['2'][$j];
 						break;
-					case 'revision_date'		: $dates['revision_date'][$matches['0'][$j]] = array($matches['2'][$j], $this->EE->localize->fetch_date_params($matches['2'][$j]));
+					case 'revision_date'		: $dates['revision_date'][$matches['0'][$j]] = $matches['2'][$j];
 						break;
 				}
 			}
@@ -3600,21 +3588,21 @@ class Wiki {
 			{	
 				switch ($matches['1'][$j])
 				{
-					case 'revision_date'  : $revision_date[$matches['0'][$j]] = array($matches['2'][$j], $this->EE->localize->fetch_date_params($matches['2'][$j]));
+					case 'revision_date'  : $revision_date[$matches['0'][$j]] = $matches['2'][$j];
 						break;
 				}
 			}
 			
 			foreach($revision_date as $key => $value)
 			{
-				$temp_date = $value['0'];
-						
-				foreach ($value['1'] as $dvar)
-				{
-					$temp_date = str_replace($dvar, $this->EE->localize->convert_timestamp($dvar, $results->row('revision_date') , TRUE), $temp_date);		
-				}
-							
-				$this->return_data = str_replace($key, $temp_date, $this->return_data);
+				$this->return_data = str_replace(
+					$key,
+					$this->EE->localize->format_date(
+						$value,
+						$results->row('revision_date')
+					),
+					$this->return_data
+				);
 			}
 		}
 								
@@ -4701,14 +4689,14 @@ class Wiki {
 		{
 			foreach($dates['last_updated'] as $key => $value)
 			{
-				$temp_date = $value['0'];
-						
-				foreach ($value['1'] as $dvar)
-				{
-					$temp_date = str_replace($dvar, $this->EE->localize->convert_timestamp($dvar, $results->row('revision_date') , TRUE), $temp_date);		
-				}
-							
-				$this->return_data = str_replace($key, $temp_date, $this->return_data);
+				$this->return_data = str_replace(
+					$key,
+					$this->EE->localize->format_date(
+						$value,
+						$results->row('revision_date')
+					),
+					$this->return_data
+				);
 			}
 		}
 		
@@ -4716,14 +4704,15 @@ class Wiki {
 		{
 			foreach($dates['gmt_last_updated'] as $key => $value)
 			{
-				$temp_date = $value['0'];
-						
-				foreach ($value['1'] as $dvar)
-				{
-					$temp_date = str_replace($dvar, $this->EE->localize->convert_timestamp($dvar, $results->row('revision_date') , FALSE), $temp_date);		
-				}
-							
-				$this->return_data = str_replace($key, $temp_date, $this->return_data);
+				$this->return_data = str_replace(
+					$key,
+					$this->EE->localize->format_date(
+						$value,
+						$results->row('revision_date'),
+						FALSE
+					),
+					$this->return_data
+				);
 			}
 		}
 		
@@ -4843,14 +4832,10 @@ class Wiki {
 			{
 				foreach($dates['revision_date'] as $key => $value)
 				{
-					$temp_date = $value['0'];
-							
-					foreach ($value['1'] as $dvar)
-					{
-						$temp_date = str_replace($dvar, $this->EE->localize->convert_timestamp($dvar, $row['revision_date'], TRUE), $temp_date);		
-					}
-								
-					$data[$key] = $temp_date;
+					$data[$key] = $this->EE->localize->format_date(
+						$value,
+						$row['revision_date']
+					);
 				}
 			}
 			
@@ -4858,14 +4843,11 @@ class Wiki {
 			{
 				foreach($dates['gmt_revision_date'] as $key => $value)
 				{
-					$temp_date = $value['0'];
-							
-					foreach ($value['1'] as $dvar)
-					{
-						$temp_date = str_replace($dvar, $this->EE->localize->convert_timestamp($dvar, $row['revision_date'], FALSE), $temp_date);		
-					}
-								
-					$data[$key] = $temp_date;
+					$data[$key] = $this->EE->localize->format_date(
+						$value,
+						$row['revision_date'],
+						FALSE
+					);
 				}
 			}
 			
@@ -5049,7 +5031,7 @@ class Wiki {
 			{	
 				switch ($matches['1'][$j])
 				{
-					case 'upload_date' 		: $upload_date[$matches['0'][$j]] = array($matches['2'][$j], $this->EE->localize->fetch_date_params($matches['2'][$j]));
+					case 'upload_date' 		: $upload_date[$matches['0'][$j]] = $matches['2'][$j];
 						break;
 				}
 			}
@@ -5131,14 +5113,11 @@ class Wiki {
 			{
 				foreach($upload_date as $key => $value)
 				{
-					$temp_date = $value['0'];
-							
-					foreach ($value['1'] as $dvar)
-					{
-						$temp_date = str_replace($dvar, $this->EE->localize->convert_timestamp($dvar, $row['upload_date'], FALSE), $temp_date);		
-					}
-								
-					$data[$key] = $temp_date;
+					$data[$key] = $this->EE->localize->format_date(
+						$value,
+						$row['upload_date'],
+						FALSE
+					);
 				}
 			}
 			
@@ -5447,7 +5426,7 @@ class Wiki {
 			{					
 				$this->p_page = (isset($match['2'])) ? $match['2'] : $match['1'];	
 					
-				$base_path = $this->EE->functions->remove_double_slashes(str_replace($match['0'], '', $base_path));
+				$base_path = reduce_double_slashes(str_replace($match['0'], '', $base_path));
 			}
 			
 			$this->p_page = ($this->p_page == '' OR ($limit > 1 AND $this->p_page == 1)) ? 0 : $this->p_page;
@@ -5599,7 +5578,6 @@ class Wiki {
 		/** ------------------------------------*/
 		
 		$protected = array();
-		$this->EE->load->helper('string');
 		
 		$front_protect = unique_marker('wiki_front_protect');
 		$back_protect  = unique_marker('wiki_back_protect');

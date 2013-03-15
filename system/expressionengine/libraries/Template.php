@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -45,6 +45,10 @@ class EE_Template {
 	var $hit_lock			=  FALSE;		// Lets us lock the hit counter if sub-templates are contained in a template
 	var $parse_php			=  FALSE;		// Whether to parse PHP or not
 	var $protect_javascript =  TRUE;		// Protect javascript in conditionals
+
+	var $group_name			= '';			// Group of template being parsed
+	var $template_name		= '';			// Name of template being parsed
+	var $template_id		= 0;
 	
 	var $tag_data			= array();		// Data contained in tags
 	var $modules		 	= array();		// List of installed modules
@@ -359,18 +363,7 @@ class EE_Template {
 		}		
 	
 		// Parse date format string "constants"		
-		$date_constants	= array('DATE_ATOM'		=>	'%Y-%m-%dT%H:%i:%s%Q',
-								'DATE_COOKIE'	=>	'%l, %d-%M-%y %H:%i:%s UTC',
-								'DATE_ISO8601'	=>	'%Y-%m-%dT%H:%i:%s%Q',
-								'DATE_RFC822'	=>	'%D, %d %M %y %H:%i:%s %O',
-								'DATE_RFC850'	=>	'%l, %d-%M-%y %H:%m:%i UTC',
-								'DATE_RFC1036'	=>	'%D, %d %M %y %H:%i:%s %O',
-								'DATE_RFC1123'	=>	'%D, %d %M %Y %H:%i:%s %O',
-								'DATE_RFC2822'	=>	'%D, %d %M %Y %H:%i:%s %O',
-								'DATE_RSS'		=>	'%D, %d %M %Y %H:%i:%s %O',
-								'DATE_W3C'		=>	'%Y-%m-%dT%H:%i:%s%Q'
-								);
-		foreach ($date_constants as $key => $val)
+		foreach ($this->EE->localize->format as $key => $val)
 		{
 			$this->template = str_replace(LD.$key.RD, $val, $this->template);
 		}
@@ -382,7 +375,7 @@ class EE_Template {
 		{	
 			for ($j = 0; $j < count($matches[0]); $j++)
 			{				
-				$this->template = str_replace($matches[0][$j], $this->EE->localize->decode_date($matches[2][$j], $this->template_edit_date), $this->template);				
+				$this->template = str_replace($matches[0][$j], $this->EE->localize->format_date($matches[2][$j], $this->template_edit_date), $this->template);				
 			}
 		}  
 
@@ -391,7 +384,7 @@ class EE_Template {
 		{				
 			for ($j = 0; $j < count($matches[0]); $j++)
 			{				
-				$this->template = str_replace($matches[0][$j], $this->EE->localize->decode_date($matches[2][$j], $this->EE->localize->now), $this->template);	
+				$this->template = str_replace($matches[0][$j], $this->EE->localize->format_date($matches[2][$j]), $this->template);	
 			}
 		}
 		
@@ -549,9 +542,6 @@ class EE_Template {
 				$temp = str_replace($matches[0][$key], '', $temp);
 			}
 		}
-		
-		// Load the string helper
-		$this->EE->load->helper('string');
 
 		foreach($matches[2] as $key => $val)
 		{
@@ -1761,9 +1751,6 @@ class EE_Template {
         {
         	$this->strict_urls = ($this->EE->config->item('strict_urls') == 'y') ? TRUE : FALSE;
         }
-
-		// Load the string helper
-		$this->EE->load->helper('string');
 		
 		// At this point we know that we have at least one segment in the URI, so
 		// let's try to determine what template group/template we should show
@@ -1774,8 +1761,15 @@ class EE_Template {
 		$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
 		$query = $this->EE->db->get('template_groups');
 		
+		// This really shouldn't happen, but some addons have accidentally
+		// created duplicates so we cannot fail silently.
+		if ($query->num_rows() > 1)
+		{
+			$this->log_item("Duplicate Template Group: ".$this->EE->uri->segment(1));
+		}
+
 		// Template group found!
-		if ($query->num_rows() == 1)
+		elseif ($query->num_rows() == 1)
 		{
 			// Set the name of our template group
 			$template_group = $this->EE->uri->segment(1);
@@ -2155,27 +2149,30 @@ class EE_Template {
 		if ($query->row('enable_http_auth') != 'y' && $query->row('no_auth_bounce')  != '')
 		{
 			$this->log_item("Determining Template Access Privileges");
-		
-			$this->EE->db->select('COUNT(*) as count');
-			$this->EE->db->where('template_id', $query->row('template_id'));
-			$this->EE->db->where('member_group', $this->EE->session->userdata('group_id'));
-			$result = $this->EE->db->get('template_no_access');
 			
-			if ($result->row('count') > 0)
-			{ 
-				if ($this->depth > 0)
-				{
-					return '';
+			if ($this->EE->session->userdata('group_id') != 1)
+			{
+				$this->EE->db->select('COUNT(*) as count');
+				$this->EE->db->where('template_id', $query->row('template_id'));
+				$this->EE->db->where('member_group', $this->EE->session->userdata('group_id'));
+				$result = $this->EE->db->get('template_no_access');
+			
+				if ($result->row('count') > 0)
+				{ 
+					if ($this->depth > 0)
+					{
+						return '';
+					}
+			
+					$query = $this->EE->db->select('a.template_id, a.template_data,
+						a.template_name, a.template_type, a.edit_date,
+						a.save_template_file, a.cache, a.refresh, a.hits,
+						a.allow_php, a.php_parse_location, b.group_name')
+						->from('templates a')
+						->join('template_groups b', 'a.group_id = b.group_id')
+						->where('template_id', $query->row('no_auth_bounce'))
+						->get();
 				}
-			
-				$query = $this->EE->db->select('a.template_id, a.template_data,
-					a.template_name, a.template_type, a.edit_date,
-					a.save_template_file, a.cache, a.refresh, a.hits,
-					a.allow_php, a.php_parse_location, b.group_name')
-					->from('templates a')
-					->join('template_groups b', 'a.group_id = b.group_id')
-					->where('template_id', $query->row('no_auth_bounce'))
-					->get();
 			}
 		}
 		
@@ -2340,6 +2337,11 @@ class EE_Template {
 			}
 		//
 		// -------------------------------------------
+
+		// remember what template we're on
+		$this->group_name = $row['group_name'];
+		$this->template_id = $row['template_id'];
+		$this->template_name = $row['template_name'];
 
 		return $this->convert_xml_declaration($this->remove_ee_comments($row['template_data']));
 	}
@@ -2700,7 +2702,7 @@ class EE_Template {
 		// Redirect - if we have one of these, no need to go further     	
 		if (strpos($str, LD.'redirect') !== FALSE)
 		{
-			if (preg_match("/".LD."redirect\s*=\s*(\042|\047)([^\\1]*?)\\1".RD."/si", $str, $match))
+			if (preg_match("/".LD."redirect\s*=\s*(\042|\047)([^\\1]*?)\\1\s*(status_code\s*=\s*(\042|\047)([^\\4]*?)\\4)?".RD."/si", $str, $match))
 			{
 				if ($match['2'] == "404")
 				{
@@ -2723,8 +2725,19 @@ class EE_Template {
 				}
 				else
 				{
-					// Functions::redirect() exit;s on its own
-					$this->EE->functions->redirect($this->EE->functions->create_url($this->EE->functions->extract_path("=".$match['2'])));
+					// If we don't have a status code, we'll send NULL
+					// to redirect() which result in no status code being set and
+					// header using the default 302.
+					// If the status code isn't a 3xx redirect code, it will be ignored
+					// by redirect().
+					$status_code = NULL;
+					if(isset($match[5])) {
+						$status_code = $match[5];
+					} 
+
+					// Functions::redirect() exits on its own
+					$this->EE->functions->redirect($this->EE->functions->create_url($this->EE->functions->extract_path("=".$match['2'])), FALSE, $status_code);
+					
 				}
 			}
 		}
@@ -3113,8 +3126,7 @@ class EE_Template {
 		// Final Prep, Safety On		
 		$str = $this->EE->functions->prep_conditionals($str, array_merge($this->segment_vars, $this->embed_vars, $this->EE->config->_global_vars, $data), 'y');
 				
-		// Protect Already Existing Unparsed PHP		
-		$this->EE->load->helper('string');
+		// Protect Already Existing Unparsed PHP
 		
 		$opener = unique_marker('tmpl_php_open');
 		$closer = unique_marker('tmpl_php_close');
@@ -3652,9 +3664,8 @@ class EE_Template {
 		{
 			foreach ($this->date_vars[$name] as $dvar => $dval)
 			{
-				$val = array_shift($dval);
 				$string = str_replace(LD.$dvar.RD,
-									  str_replace($dval, $this->EE->localize->convert_timestamp($dval, $value, TRUE), $val),
+									  $this->EE->localize->format_date($dval, $value),
 									  $string);
 			}
 			
@@ -3886,13 +3897,13 @@ class EE_Template {
 	{
 		if (strpos($str, 'format=') === FALSE) return;
 		
-		if (preg_match_all("/".LD."([\w+]*)\s+format=[\"'](.*?)[\"']".RD."/", $str, $matches, PREG_SET_ORDER))
+		if (preg_match_all("/".LD."([\w:\-]+)\s+format=[\"'](.*?)[\"']".RD."/", $str, $matches, PREG_SET_ORDER))
 		{
 			for ($j = 0, $tot = count($matches); $j < $tot; $j++)
 			{
 				$matches[$j][0] = str_replace(array(LD,RD), '', $matches[$j][0]);
 
-				$this->date_vars[$matches[$j][1]][$matches[$j][0]] = array_merge(array($matches[$j][2]), $this->EE->localize->fetch_date_params($matches[$j][2]));
+				$this->date_vars[$matches[$j][1]][$matches[$j][0]] = $matches[$j][2];
 			}
 		}
 		else

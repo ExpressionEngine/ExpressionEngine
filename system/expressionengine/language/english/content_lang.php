@@ -66,9 +66,6 @@ $lang = array(
 'revision_saved' =>
 'Revision Saved',
 
-'dst_enabled' =>
-'DST Active on Date of Entry',
-
 'multi_entries_updated' =>
 'Entrie(s) have been Updated',
 
@@ -1015,6 +1012,10 @@ Confirm the fieldtype file is located in the expressionengine/third_party/ direc
 'menu_options'		=> 'Options',
 'menu_categories'	=> 'Categories',
 'menu_forum'		=> 'Forums',
+
+'rel_ft_no_entries'			=> 'No Entries',
+'rel_ft_filter_by_title'	=> 'Filter by Title',
+
 
 ''=>''
 );

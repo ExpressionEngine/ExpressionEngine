@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -508,7 +508,7 @@ class File {
 				if (preg_match("#^P(\d+)|/P(\d+)#", $this->query_string, $match))
 				{
 					$this->p_page = (isset($match[2])) ? $match[2] : $match[1];
-					$this->basepath = $this->EE->functions->remove_double_slashes(str_replace($match[0], '', $this->basepath));
+					$this->basepath = reduce_double_slashes(str_replace($match[0], '', $this->basepath));
 				}
 			}
 
@@ -554,9 +554,6 @@ class File {
 
 				if ($this->EE->TMPL->fetch_param('paginate_base'))
 				{
-					// Load the string helper
-					$this->EE->load->helper('string');
-
 					$this->basepath = $this->EE->functions->create_url(trim_slashes($this->EE->TMPL->fetch_param('paginate_base')));
 				}
 				

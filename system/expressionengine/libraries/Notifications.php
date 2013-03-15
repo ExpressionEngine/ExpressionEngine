@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -62,8 +62,8 @@ class Notifications {
 						'email'				=> $this->EE->session->userdata('email'),
 						'channel_name'		=> $c->row('channel_title'),
 						'entry_title'		=> $e->row('title'),
-						'entry_url'			=> $this->EE->functions->remove_double_slashes($c->row('channel_url').'/'.$e->row('url_title')),
-						'comment_url'		=> $this->EE->functions->remove_double_slashes($c->row('comment_url').'/'.$e->row('url_title'))
+						'entry_url'			=> reduce_double_slashes($c->row('channel_url').'/'.$e->row('url_title')),
+						'comment_url'		=> reduce_double_slashes($c->row('comment_url').'/'.$e->row('url_title'))
 		);
 		
 		$template = $this->EE->functions->fetch_email_template('admin_notify_entry');
@@ -79,7 +79,6 @@ class Notifications {
 			$notify_address = str_replace($this->EE->session->userdata('email'), "", $notify_address);
 		}
 
-		$this->EE->load->helper('string');
 		$notify_address = reduce_multiples($notify_address, ',', TRUE);
 
 		if ($notify_address != '')

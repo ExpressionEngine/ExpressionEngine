@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -303,11 +303,8 @@ class Search {
 		/** ----------------------------------------
 		/**  Redirect to search results page
 		/** ----------------------------------------*/
-
-		// Load the string helper
-		$this->EE->load->helper('string');
 			
-		$path = $this->EE->functions->remove_double_slashes(
+		$path = reduce_double_slashes(
 			$this->EE->functions->create_url(
 				trim_slashes($this->_meta['result_page'])
 			).'/'.$hash.'/'
@@ -331,7 +328,7 @@ class Search {
 			'channel'				=> $this->EE->TMPL->fetch_param('channel', ''),
 			'category'				=> $this->EE->TMPL->fetch_param('category', ''),
 			'search_in'				=> $this->EE->TMPL->fetch_param('search_in', ''),
-			'where'					=> $this->EE->TMPL->fetch_param('where', 'all'),
+			'where'					=> $this->EE->TMPL->fetch_param('where', ''),
 			'show_expired'			=> $this->EE->TMPL->fetch_param('show_expired', ''),
 			'show_future_entries'	=> $this->EE->TMPL->fetch_param('show_future_entries'),
 			'result_page'			=> $this->EE->TMPL->fetch_param('result_page', 'search/results'),
@@ -357,7 +354,6 @@ class Search {
 		{
 			$meta = $meta.md5($this->EE->db->username.$this->EE->db->password.$meta);
 		}
-		
 		
 		return base64_encode($meta);
 	}
@@ -417,6 +413,12 @@ class Search {
 				$this->_meta[$current_input] = $this->EE->input->post($current_input);
 			}
 		}
+
+		// Default 'where' to 'all' if it hasn't been specified
+		if ( ! isset($this->_meta['where']) OR $this->_meta['where'] === '')
+		{
+				$this->_meta['where'] = 'all';
+		}		
 	}
 	
 	// ------------------------------------------------------------------------
@@ -1102,7 +1104,7 @@ class Search {
 		
 		$end .= " ".$order;
 			
-		$sql = "SELECT DISTINCT(t.entry_id), t.entry_id, t.channel_id, t.forum_topic_id, t.author_id, t.ip_address, t.title, t.url_title, t.status, t.dst_enabled, t.view_count_one, t.view_count_two, t.view_count_three, t.view_count_four, t.allow_comments, t.comment_expiration_date, t.sticky, t.entry_date, t.year, t.month, t.day, t.entry_date, t.edit_date, t.expiration_date, t.recent_comment_date, t.comment_total, t.site_id as entry_site_id,
+		$sql = "SELECT DISTINCT(t.entry_id), t.entry_id, t.channel_id, t.forum_topic_id, t.author_id, t.ip_address, t.title, t.url_title, t.status, t.view_count_one, t.view_count_two, t.view_count_three, t.view_count_four, t.allow_comments, t.comment_expiration_date, t.sticky, t.entry_date, t.year, t.month, t.day, t.entry_date, t.edit_date, t.expiration_date, t.recent_comment_date, t.comment_total, t.site_id as entry_site_id,
 				w.channel_title, w.channel_name, w.search_results_url, w.search_excerpt, w.channel_url, w.comment_url, w.comment_moderate, w.channel_html_formatting, w.channel_allow_img_urls, w.channel_auto_link_urls, w.comment_system_enabled, 
 				m.username, m.email, m.url, m.screen_name, m.location, m.occupation, m.interests, m.aol_im, m.yahoo_im, m.msn_im, m.icq, m.signature, m.sig_img_filename, m.sig_img_width, m.sig_img_height, m.avatar_filename, m.avatar_width, m.avatar_height, m.photo_filename, m.photo_width, m.photo_height, m.group_id, m.member_id, m.bday_d, m.bday_m, m.bday_y, m.bio,
 				md.*,
@@ -1470,7 +1472,13 @@ class Search {
 				$format = ( ! isset($row['field_ft_'.$row['search_excerpt']])) ? 'xhtml' : $row['field_ft_'.$row['search_excerpt']];
 			
 				$full_text = $this->EE->typography->parse_type(
-					strip_tags($row['field_id_'.$row['search_excerpt']]),
+					// Replace block HTML tags with spaces so words don't run together in case
+					// they're saved with no spaces in between the markup
+					strip_tags(
+						preg_replace('/\s+/', ' ',
+							preg_replace('/<[\/?][p|br|div|h1|h2]*>/', ' ', $row['field_id_'.$row['search_excerpt']])
+						)
+					),
 					array(
 						'text_format'	=> $format,
 						'html_format'	=> 'safe',
@@ -1497,15 +1505,15 @@ class Search {
 			// Parse permalink path
 			$url = ($row['search_results_url'] != '') ? $row['search_results_url'] : $row['channel_url'];		
 			
-			$path = $this->EE->functions->remove_double_slashes($this->EE->functions->prep_query_string($url).'/'.$row['url_title']);
-			$idpath = $this->EE->functions->remove_double_slashes($this->EE->functions->prep_query_string($url).'/'.$row['entry_id']);
+			$path = reduce_double_slashes($this->EE->functions->prep_query_string($url).'/'.$row['url_title']);
+			$idpath = reduce_double_slashes($this->EE->functions->prep_query_string($url).'/'.$row['entry_id']);
 			
 			$switch = ($i++ % 2) ? $switch1 : $switch2;
 			$output = preg_replace("/".LD.'switch'.RD."/", $switch, $output, count(explode(LD.'switch'.RD, $this->EE->TMPL->tagdata)) - 1);
 			$output = preg_replace("/".LD.'auto_path'.RD."/", $path, $output, count(explode(LD.'auto_path'.RD, $this->EE->TMPL->tagdata)) - 1);
 			$output = preg_replace("/".LD.'id_auto_path'.RD."/", $idpath, $output, count(explode(LD.'id_auto_path'.RD, $this->EE->TMPL->tagdata)) - 1);
-			$output = preg_replace("/".LD.'excerpt'.RD."/", preg_quote($excerpt), $output, count(explode(LD.'excerpt'.RD, $this->EE->TMPL->tagdata)) - 1);
-			$output = preg_replace("/".LD.'full_text'.RD."/", preg_quote($full_text), $output, count(explode(LD.'full_text'.RD, $this->EE->TMPL->tagdata)) - 1);
+			$output = preg_replace("/".LD.'excerpt'.RD."/", $this->_escape_replacement_pattern($excerpt), $output, count(explode(LD.'excerpt'.RD, $this->EE->TMPL->tagdata)) - 1);
+			$output = preg_replace("/".LD.'full_text'.RD."/", $this->_escape_replacement_pattern($full_text), $output, count(explode(LD.'full_text'.RD, $this->EE->TMPL->tagdata)) - 1);
 		
 			// Parse member_path
 			
@@ -1581,6 +1589,18 @@ class Search {
 		}
 		
 		return $this->EE->TMPL->tagdata;
+	}
+
+	// --------------------------------------------------------------------------
+	
+	/**
+	 * For when preg_quote is too much, we just need to escape replacement patterns
+	 * @param  string	String to escape
+	 * @return string	Escaped string
+	 */
+	private function _escape_replacement_pattern($string)
+	{
+		return strtr($string, array('\\' => '\\\\', '$' => '\$'));
 	}
 	
 	// --------------------------------------------------------------------------

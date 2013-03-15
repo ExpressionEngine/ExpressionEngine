@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -33,6 +33,14 @@ class Channel {
 	public $query;
 	public $TYPE;
 	public $entry_id				= '';
+
+	/**
+	 * Cache of entry ids from the entries we just pulled, generated in
+	 * build_sql_query() and then sent to the Relationships library when
+	 * pulling relationships.
+ 	 */
+	protected $_entry_ids				= array();
+
 	public $uri						= '';
 	public $uristr					= '';
 	public $return_data				= '';	 	// Final data
@@ -41,6 +49,12 @@ class Channel {
 	public $cfields					= array();
 	public $dfields					= array();
 	public $rfields					= array();
+
+	/**
+	 * A mapping of field_name => field_id containing
+	 * only fields of the Zero Wing Relationship fieldtype.
+	 */
+	public $zwfields				= array();
 	public $mfields					= array();
 	public $pfields					= array();
 	public $categories				= array();
@@ -73,6 +87,9 @@ class Channel {
 	// Misc. - Class variable usable by extensions
 	public $misc					= FALSE;
 
+	// Array of parameters allowed to be set dynamically
+	private $_dynamic_parameters	= array();
+
 	/**
 	  * Constructor
 	  */
@@ -101,6 +118,12 @@ class Channel {
 		{
 			$this->_fetch_disable_param();
 		}
+
+		$this->_dynamic_parameters = array('channel', 'entry_id', 'category', 'orderby',
+			'sort', 'sticky', 'show_future_entries', 'show_expired', 'entry_id_from',
+			'entry_id_to', 'not_entry_id', 'start_on', 'stop_before', 'year', 'month',
+			'day', 'display_by', 'limit', 'username', 'status', 'group_id', 'cat_limit',
+			'month_limit', 'offset', 'author_id', 'url_title');
 	}
 
 	// ------------------------------------------------------------------------
@@ -127,7 +150,7 @@ class Channel {
 		{
 			foreach (explode('|', $this->EE->TMPL->fetch_param('dynamic_parameters')) as $var)
 			{
-				if (isset($_POST[$var]) && in_array($var, array('channel', 'entry_id', 'category', 'orderby', 'sort', 'sticky', 'show_future_entries', 'show_expired', 'entry_id_from', 'entry_id_to', 'not_entry_id', 'start_on', 'stop_before', 'year', 'month', 'day', 'display_by', 'limit', 'username', 'status', 'group_id', 'cat_limit', 'month_limit', 'offset', 'author_id')))
+				if (isset($_POST[$var]) && in_array($var, $this->_dynamic_parameters))
 				{
 					$tag .= $var.'="'.$_POST[$var].'"';
 				}
@@ -202,6 +225,7 @@ class Channel {
 	  */
 	public function entries()
 	{
+
 		// If the "related_categories" mode is enabled
 		// we'll call the "related_categories" function
 		// and bail out.
@@ -321,7 +345,25 @@ class Channel {
 			$this->fetch_categories();
 		}
 
-		$this->parse_channel_entries();
+		// At this point, check to see if we have any relationships.  If we do,
+		// we'll parse them ahead of the main channel parsing.  We can do this
+		// because all relationship tags will be namespaced.  We'll just pick em
+		// out, grab the data we need and then replace them.  We'll edit chunk.
+		//
+		// FIXME Only call this if there are, in fact, values in rfields[1]
+		// TODO Make sure our multi-relationship fields find their way into rfields
+		/** ZERO WING **/
+		$site_id = config_item('site_id');
+
+		if (isset($this->zwfields[$site_id]) && ! empty($this->zwfields[$site_id]))
+		{
+			$this->EE->load->library('relationships');
+			$relationship_parser = $this->EE->relationships->get_relationship_parser($this->EE->TMPL, $this->zwfields[$site_id], $this->cfields[$site_id]);
+			$relationship_parser->query_for_entries($this->_entry_ids); 
+
+		}
+
+		$this->parse_channel_entries($relationship_parser);
 
 		if ($this->enable['pagination'] == TRUE)
 		{
@@ -850,11 +892,13 @@ class Channel {
 	public function fetch_custom_channel_fields()
 	{
 		if (isset($this->EE->session->cache['channel']['custom_channel_fields']) && isset($this->EE->session->cache['channel']['date_fields'])
-			&& isset($this->EE->session->cache['channel']['relationship_fields'])  && isset($this->EE->session->cache['channel']['pair_custom_fields']))
+			&& isset($this->EE->session->cache['channel']['relationship_fields']) && isset($this->EE->session->cache['channel']['zero_wing_fields'])
+			&& isset($this->EE->session->cache['channel']['pair_custom_fields']))
 		{
 			$this->cfields = $this->EE->session->cache['channel']['custom_channel_fields'];
 			$this->dfields = $this->EE->session->cache['channel']['date_fields'];
 			$this->rfields = $this->EE->session->cache['channel']['relationship_fields'];
+			$this->zwfields = $this->EE->session->cache['channel']['zero_wing_fields'];
 			$this->pfields = $this->EE->session->cache['channel']['pair_custom_fields'];
 			return;
 		}
@@ -867,11 +911,13 @@ class Channel {
 		$this->cfields = $fields['custom_channel_fields'];
 		$this->dfields = $fields['date_fields'];
 		$this->rfields = $fields['relationship_fields'];
+		$this->zwfields = $fields['zero_wing_fields'];
 		$this->pfields = $fields['pair_custom_fields'];
 
   		$this->EE->session->cache['channel']['custom_channel_fields']	= $this->cfields;
 		$this->EE->session->cache['channel']['date_fields']				= $this->dfields;
 		$this->EE->session->cache['channel']['relationship_fields']		= $this->rfields;
+		$this->EE->session->cache['channel']['zero_wing_fields']		= $this->zwfields;
 		$this->EE->session->cache['channel']['pair_custom_fields']		= $this->pfields;
 	}
 
@@ -1027,10 +1073,10 @@ class Channel {
     *
     *****************************************************************/
 	/**
-		Generate the SQL for an exact query in field search.
-
-			search:field="=words|other words"	
-	*/
+	 *	Generate the SQL for an exact query in field search.
+	 *
+	 *	search:field="=words|other words"	
+	 */
 	private function _exact_field_search($terms, $field_name, $site_id)
 	{
 
@@ -1085,11 +1131,13 @@ class Channel {
 		return $add_search.' '.$conj.' (wd.site_id=' . $site_id . ' AND wd.field_id_'.$this->cfields[$site_id][$field_name].' = "")';
 	}
 
-	/**
-		Generate the SQL for a LIKE query in field search.
+	// ------------------------------------------------------------------------
 
-			search:field="words|other words|IS_EMPTY"
-	*/
+	/**
+	 * Generate the SQL for a LIKE query in field search.
+	 *
+	 * 		search:field="words|other words|IS_EMPTY"
+	 */
 	private function _field_search($terms, $field_name, $site_id)
 	{
 		$not = '';
@@ -1143,34 +1191,30 @@ class Channel {
 		return $search_sql;
 	}
 
+	// ------------------------------------------------------------------------
+
 	/**
-		Generate the SQL where condition to handle the {exp:channel:entries}
-		field search parameter -- search:field="".  There are two primary
-		syntax possibilities:
-
-			search:field="words|other words"
-		
-		and
-
-			search:field="=words|other words"
-
-		The first performs a LIKE "%words%" OR LIKE "%other words%".  The second
-		one performs an ="words" OR ="other words".  Other possibilities are
-		prepending "not" to negate the search:
-		
-			search:field="not words|other words"
-
-		And using IS_EMPTY to indicate an empty field.
-
-			search:field ="IS_EMPTY"
-			search:field="not IS_EMPTY"
-			search:field="=IS_EMPTY"
-			search:field="=not IS_EMPTY"
-
-		All of these may be combined:
-		
-			search:field="not IS_EMPTY|words"
-	*/
+	 * Generate the SQL where condition to handle the {exp:channel:entries}
+	 * field search parameter -- search:field="".  There are two primary
+	 * syntax possibilities:
+	 * 	search:field="words|other words"
+	 * 
+	 * and
+	 * 	search:field="=words|other words"
+	 * The first performs a LIKE "%words%" OR LIKE "%other words%".  The second
+	 * one performs an ="words" OR ="other words".  Other possibilities are
+	 * prepending "not" to negate the search:
+	 * 
+	 * 	search:field="not words|other words"
+	 * And using IS_EMPTY to indicate an empty field.
+	 * 	search:field ="IS_EMPTY"
+	 * 	search:field="not IS_EMPTY"
+	 * 	search:field="=IS_EMPTY"
+	 * 	search:field="=not IS_EMPTY"
+	 * All of these may be combined:
+	 * 
+	 * 	search:field="not IS_EMPTY|words"
+	 */
 	private function _generate_field_search_sql($search_fields, $site_ids) 
 	{	
 		$sql = '';
@@ -1185,6 +1229,16 @@ class Channel {
 			}
 
 			$fields_sql = '';
+			$search_terms = trim($search_terms);
+			
+			// Note- if a 'contains' search goes through with an empty string
+			// the resulting sql looks like: LIKE "%%"
+			// While it doesn't throw an error, there's no point in adding the overhead.
+			if ($search_terms == '' OR $search_terms == '=')
+			{
+				continue;
+			}
+			
 			$sites = ($site_ids ? $site_ids : array($this->EE->config->item('site_id'))); 
 			foreach ($sites as $site_name => $site_id) 
 			{
@@ -1261,7 +1315,7 @@ class Channel {
 		{
 			foreach (explode('|', $this->EE->TMPL->fetch_param('dynamic_parameters')) as $var)
 			{
-				if (isset($_POST[$var]) AND in_array($var, array('channel', 'entry_id', 'category', 'orderby', 'sort', 'sticky', 'show_future_entries', 'show_expired', 'entry_id_from', 'entry_id_to', 'not_entry_id', 'start_on', 'stop_before', 'year', 'month', 'day', 'display_by', 'limit', 'username', 'status', 'group_id', 'cat_limit', 'month_limit', 'offset', 'author_id')))
+				if (isset($_POST[$var]) AND in_array($var, $this->_dynamic_parameters))
 				{
 					$this->EE->TMPL->tagparams[$var] = $_POST[$var];
 				}
@@ -1305,9 +1359,6 @@ class Channel {
 			}
 			else
 			{
-				// Load the string helper
-				$this->EE->load->helper('string');
-
 				/** --------------------------------------
 				/**  Parse day
 				/** --------------------------------------*/
@@ -1360,9 +1411,9 @@ class Channel {
 				{
 					$this->pagination->offset = (isset($match[2])) ? $match[2] : $match[1];
 
-					$this->pagination->basepath = $this->EE->functions->remove_double_slashes(str_replace($match[0], '', $this->pagination->basepath));
+					$this->pagination->basepath = reduce_double_slashes(str_replace($match[0], '', $this->pagination->basepath));
 
-					$this->uristr  = $this->EE->functions->remove_double_slashes(str_replace($match[0], '', $this->uristr));
+					$this->uristr  = reduce_double_slashes(str_replace($match[0], '', $this->uristr));
 
 					$qstring = trim_slashes(str_replace($match[0], '', $qstring));
 
@@ -1486,7 +1537,7 @@ class Channel {
 
 				if (preg_match("#^N(\d+)|/N(\d+)#", $qstring, $match))
 				{
-					$this->uristr  = $this->EE->functions->remove_double_slashes(str_replace($match[0], '', $this->uristr));
+					$this->uristr  = reduce_double_slashes(str_replace($match[0], '', $this->uristr));
 
 					$qstring = trim_slashes(str_replace($match[0], '', $qstring));
 				}
@@ -1921,18 +1972,20 @@ class Channel {
 		/**------------*/
 		if ($this->EE->TMPL->fetch_param('start_on'))
 		{
-			$sql .= "AND t.entry_date >= '".$this->EE->localize->convert_human_date_to_gmt($this->EE->TMPL->fetch_param('start_on'))."' ";			
+			$sql .= "AND t.entry_date >= '".$this->EE->localize->string_to_timestamp($this->EE->TMPL->fetch_param('start_on'))."' ";			
 		}
 
 		if ($this->EE->TMPL->fetch_param('stop_before'))
 		{
-			$sql .= "AND t.entry_date < '".$this->EE->localize->convert_human_date_to_gmt($this->EE->TMPL->fetch_param('stop_before'))."' ";	
+			$sql .= "AND t.entry_date < '".$this->EE->localize->string_to_timestamp($this->EE->TMPL->fetch_param('stop_before'))."' ";	
 		}
 
 		/**-------------
 		/**  Limit query by date contained in tag parameters
 		/**-------------*/
 
+		$this->EE->load->helper('date');
+		
 		if ($this->EE->TMPL->fetch_param('year') OR $this->EE->TMPL->fetch_param('month') OR $this->EE->TMPL->fetch_param('day'))
 		{
 			$year	= ( ! is_numeric($this->EE->TMPL->fetch_param('year'))) 	? date('Y') : $this->EE->TMPL->fetch_param('year');
@@ -1959,7 +2012,7 @@ class Channel {
 			if ($day == '')
 			{
 				$sday = 1;
-				$eday = $this->EE->localize->fetch_days_in_month($emonth, $year);
+				$eday = days_in_month($emonth, $year);
 			}
 			else
 			{
@@ -1983,7 +2036,7 @@ class Channel {
 				if ($day == '')
 				{
 					$sday = 1;
-					$eday = $this->EE->localize->fetch_days_in_month($month, $year);
+					$eday = days_in_month($month, $year);
 				}
 				else
 				{
@@ -1991,30 +2044,8 @@ class Channel {
 					$eday = $day;
 				}
 
-				$stime = gmmktime(0, 0, 0, $month, $sday, $year);
-				$etime = gmmktime(23, 59, 59, $month, $eday, $year);
-
-				if (date("I", $this->EE->localize->now) AND ! date("I", $stime))
-				{
-					$stime -= 3600;
-				}
-				elseif ( ! date("I", $this->EE->localize->now) AND date("I", $stime))
-				{
-					$stime += 3600;
-				}
-
-				$stime += $this->EE->localize->set_localized_offset();
-
-				if (date("I", $this->EE->localize->now) AND ! date("I", $etime))
-				{
-					$etime -= 3600;
-				}
-				elseif ( ! date("I", $this->EE->localize->now) AND date("I", $etime))
-				{
-					$etime += 3600;
-				}
-
-				$etime += $this->EE->localize->set_localized_offset();
+				$stime = $this->EE->localize->string_to_timestamp($year.'-'.$month.'-'.$sday.' 00:00:00');
+				$etime = $this->EE->localize->string_to_timestamp($year.'-'.$month.'-'.$eday.' 23:59:59');
 
 				$sql .= " AND t.entry_date >= ".$stime." AND t.entry_date <= ".$etime." ";
 			}
@@ -2183,7 +2214,8 @@ class Channel {
 					/*	PHP script this is the best approach possible.
 					/*  ---------------------------------*/
 
-					$loc_offset = $this->EE->localize->zones[$this->EE->config->item('server_timezone')] * 3600;
+					$timezones = timezones();
+					$loc_offset = $timezones[$this->EE->config->item('server_timezone')] * 3600;
 
 					if ($this->EE->TMPL->fetch_param('start_day') === 'Monday')
 					{
@@ -2290,33 +2322,19 @@ class Channel {
 
 						if ($distinct != FALSE)
 						{
-							// A Rough Attempt to Get the Localized Offset Added On
-
-							$offset = $this->EE->localize->set_localized_offset();
-							$dst_on = (date("I", $this->EE->localize->now) === 1) ? TRUE : FALSE;
-
 							$sql .= "AND (";
 
 							foreach ($distinct as $val)
 							{
-								if ($dst_on === TRUE AND (substr($val, 4) < 13 OR substr($val, 4) >= 43))
-								{
-									$offset -= 3600;
-								}
-								elseif ($dst_on === FALSE AND (substr($val, 4) >= 13 AND substr($val, 4) < 43))
-								{
-									$offset += 3600;
-								}
-
-								$sql_offset = ($offset < 0) ? "- ".abs($offset) : "+ ".$offset;
+								$sql_offset = $timezones[$this->EE->config->item('server_timezone')] * 3600;
 
 								if ($this->EE->TMPL->fetch_param('start_day') === 'Monday')
 								{
-									$sql .= " DATE_FORMAT(FROM_UNIXTIME(entry_date {$sql_offset}), '%x%v') = '".$val."' OR";
+									$sql .= " DATE_FORMAT(FROM_UNIXTIME(entry_date + {$sql_offset}), '%x%v') = '".$val."' OR";
 								}
 								else
 								{
-									$sql .= " DATE_FORMAT(FROM_UNIXTIME(entry_date {$sql_offset}), '%X%V') = '".$val."' OR";
+									$sql .= " DATE_FORMAT(FROM_UNIXTIME(entry_date + {$sql_offset}), '%X%V') = '".$val."' OR";
 								}
 							}
 
@@ -2829,7 +2847,7 @@ class Channel {
 		// DO NOT CHANGE THE ORDER
 		// The exp_member_data table needs to be called before the exp_members table.
 
-		$this->sql .= " t.entry_id, t.channel_id, t.forum_topic_id, t.author_id, t.ip_address, t.title, t.url_title, t.status, t.dst_enabled, t.view_count_one, t.view_count_two, t.view_count_three, t.view_count_four, t.allow_comments, t.comment_expiration_date, t.sticky, t.entry_date, t.year, t.month, t.day, t.edit_date, t.expiration_date, t.recent_comment_date, t.comment_total, t.site_id as entry_site_id,
+		$this->sql .= " t.entry_id, t.channel_id, t.forum_topic_id, t.author_id, t.ip_address, t.title, t.url_title, t.status, t.view_count_one, t.view_count_two, t.view_count_three, t.view_count_four, t.allow_comments, t.comment_expiration_date, t.sticky, t.entry_date, t.year, t.month, t.day, t.edit_date, t.expiration_date, t.recent_comment_date, t.comment_total, t.site_id as entry_site_id,
 						w.channel_title, w.channel_name, w.channel_url, w.comment_url, w.comment_moderate, w.channel_html_formatting, w.channel_allow_img_urls, w.channel_auto_link_urls, w.comment_system_enabled, 
 						m.username, m.email, m.url, m.screen_name, m.location, m.occupation, m.interests, m.aol_im, m.yahoo_im, m.msn_im, m.icq, m.signature, m.sig_img_filename, m.sig_img_width, m.sig_img_height, m.avatar_filename, m.avatar_width, m.avatar_height, m.photo_filename, m.photo_width, m.photo_height, m.group_id, m.member_id, m.bday_d, m.bday_m, m.bday_y, m.bio,
 						md.*,
@@ -2856,7 +2874,8 @@ class Channel {
 			{
 				continue;
 			}
-
+			
+			$this->_entry_ids[] = $row['entry_id'];
 			$this->sql .= $row['entry_id'].',';
 		}
 
@@ -2924,6 +2943,8 @@ class Channel {
 
 		$parse_data = array();
 
+		$this->EE->load->helper('date');
+
 		foreach ($this->query->result_array() as $count => $row)
 		{
 			//$row['count']			= $count+1;
@@ -2937,15 +2958,6 @@ class Channel {
 			{
 				$row['page_uri'] = $site_pages[$row['site_id']]['uris'][$row['entry_id']];
 				$row['page_url'] = $this->EE->functions->create_page_url($site_pages[$row['site_id']]['url'], $site_pages[$row['site_id']]['uris'][$row['entry_id']]);
-			}
-
-			//  Adjust dates if needed
-			// If the "dst_enabled" item is set in any given entry
-			// we need to offset to the timestamp by an hour
-
-			if ( ! isset($row['dst_enabled']))
-			{
-				$row['dst_enabled'] = 'n';
 			}
 
 			//  More Variables, Mostly for Conditionals
@@ -2991,7 +3003,7 @@ class Channel {
 
 			if ( isset($existing_variables['relative_date']))
 			{
-				$row['relative_date']			= $this->EE->localize->format_timespan($this->EE->localize->now - $row['entry_date']);
+				$row['relative_date']			= timespan($row['entry_date']);
 			}
 
 			//  Date Variables
@@ -3011,7 +3023,7 @@ class Channel {
 
 				if (strtolower($this->EE->TMPL->fetch_param('start_day')) == 'monday')
 				{
-					$day_of_week = $this->EE->localize->convert_timestamp('%w', $row['entry_date'], TRUE);
+					$day_of_week = $this->EE->localize->format_date('%w', $row['entry_date']);
 
 					if ($day_of_week == '0')
 					{
@@ -3023,7 +3035,7 @@ class Channel {
 					}
 				}
 
-				$row['week_start_date'] = $row['entry_date'] - ($this->EE->localize->convert_timestamp('%w', $row['entry_date'], TRUE) * 60 * 60 * 24) + $offset;
+				$row['week_start_date'] = $row['entry_date'] - ($this->EE->localize->format_date('%w', $row['entry_date']) * 60 * 60 * 24) + $offset;
 			}
 
 			//  PATH Variables
@@ -3052,7 +3064,7 @@ class Channel {
 
 			if ( isset($existing_variables['relative_date']))
 			{
-				$row['relative_date'] = $this->EE->localize->format_timespan($this->EE->localize->now - $row['entry_date']);
+				$row['relative_date'] = timespan($row['entry_date']);
 			}
 
 			// Trimmed URL
@@ -3225,7 +3237,7 @@ class Channel {
 	/**
 	  *  Parse channel entries
 	  */
-	public function parse_channel_entries()
+	public function parse_channel_entries($relationship_parser)
 	{
 		$switch = array();
 		$processed_member_fields = array();
@@ -3272,6 +3284,8 @@ class Channel {
 		$date_vars = array('entry_date', 'gmt_date', 'gmt_entry_date', 'edit_date', 'gmt_edit_date', 'expiration_date', 'recent_comment_date', 'week_date');
 		$date_variables_exist = FALSE;
 
+		$this->EE->load->helper('date');
+
 		foreach ($date_vars as $val)
 		{
 			if (strpos($this->EE->TMPL->tagdata, LD.$val) === FALSE) continue;
@@ -3287,28 +3301,28 @@ class Channel {
 					switch ($val)
 					{
 						case 'entry_date': 
-							$entry_date[$matches[0][$j]] = $this->EE->localize->fetch_date_params($matches[2][$j]);
+							$entry_date[$matches[0][$j]] = $matches[2][$j];
 							break;
 						case 'gmt_date':
-							$gmt_date[$matches[0][$j]] = $this->EE->localize->fetch_date_params($matches[2][$j]);
+							$gmt_date[$matches[0][$j]] = $matches[2][$j];
 							break;
 						case 'gmt_entry_date':
-							$gmt_entry_date[$matches[0][$j]] = $this->EE->localize->fetch_date_params($matches[2][$j]);
+							$gmt_entry_date[$matches[0][$j]] = $matches[2][$j];
 							break;
 						case 'edit_date':
-							$edit_date[$matches[0][$j]] = $this->EE->localize->fetch_date_params($matches[2][$j]);
+							$edit_date[$matches[0][$j]] = $matches[2][$j];
 							break;
 						case 'gmt_edit_date':
-							$gmt_edit_date[$matches[0][$j]] = $this->EE->localize->fetch_date_params($matches[2][$j]);
+							$gmt_edit_date[$matches[0][$j]] = $matches[2][$j];
 							break;
 						case 'expiration_date':
-							$expiration_date[$matches[0][$j]] = $this->EE->localize->fetch_date_params($matches[2][$j]);
+							$expiration_date[$matches[0][$j]] = $matches[2][$j];
 							break;
 						case 'recent_comment_date':
-							$recent_comment_date[$matches[0][$j]] = $this->EE->localize->fetch_date_params($matches[2][$j]);
+							$recent_comment_date[$matches[0][$j]] = $matches[2][$j];
 							break;
 						case 'week_date':
-							$week_date[$matches[0][$j]] = $this->EE->localize->fetch_date_params($matches[2][$j]);
+							$week_date[$matches[0][$j]] = $matches[2][$j];
 							break;
 					}
 				}
@@ -3333,7 +3347,7 @@ class Channel {
 						{
 							$matches[0][$j] = str_replace(array(LD,RD), '', $matches[0][$j]);
 
-							$custom_date_fields[$matches[0][$j]] = $this->EE->localize->fetch_date_params($matches[1][$j]);
+							$custom_date_fields[$matches[0][$j]] = $matches[1][$j];
 						}
 					}
 				}
@@ -3563,13 +3577,6 @@ class Channel {
 			//
 			// -------------------------------------------
 
-			//  Adjust dates if needed
-			// If the "dst_enabled" item is set in any given entry
-			// we need to offset to the timestamp by an hour
-
-			if ( ! isset($row['dst_enabled']))
-				$row['dst_enabled'] = 'n';
-
 			/**--
 			/**  Reset custom date fields
 			/**--*/
@@ -3654,7 +3661,7 @@ class Channel {
 			$cond['signature_image_url']	= $this->EE->config->slash_item('sig_img_url').$row['sig_img_filename'];
 			$cond['signature_image_width']	= $row['sig_img_width'];
 			$cond['signature_image_height']	= $row['sig_img_height'];
-			$cond['relative_date']			= $this->EE->localize->format_timespan($this->EE->localize->now - $row['entry_date']);
+			$cond['relative_date']			= timespan($row['entry_date']);
 
 			if (isset($this->cfields[$row['site_id']]))
 			{
@@ -3772,11 +3779,11 @@ class Channel {
 									{
 										if ($this->use_category_names == TRUE)
 										{
-											$temp = preg_replace("#".LD."path=.+?".RD."#", $this->EE->functions->remove_double_slashes($this->EE->functions->create_url($match).'/'.$this->reserved_cat_segment.'/'.$v[6]), $temp, 1);
+											$temp = preg_replace("#".LD."path=.+?".RD."#", reduce_double_slashes($this->EE->functions->create_url($match).'/'.$this->reserved_cat_segment.'/'.$v[6]), $temp, 1);
 										}
 										else
 										{
-											$temp = preg_replace("#".LD."path=.+?".RD."#", $this->EE->functions->remove_double_slashes($this->EE->functions->create_url($match).'/C'.$v[0]), $temp, 1);
+											$temp = preg_replace("#".LD."path=.+?".RD."#", reduce_double_slashes($this->EE->functions->create_url($match).'/C'.$v[0]), $temp, 1);
 										}
 									}
 								}
@@ -3818,11 +3825,11 @@ class Channel {
 										LD.'parent_id'.RD
 									),
 									array($v[0],
-										$v[2],
+										$this->EE->functions->encode_ee_tags($v[2]),
 										$v[6],
 										$cat_image['url'],
 										(isset($v[5])) ? $v[5] : '',
-										(isset($v[4])) ? $v[4] : '',
+										(isset($v[4])) ? $this->EE->functions->encode_ee_tags($v[4]) : '',
 										$v[1]
 									),
 									$temp
@@ -3850,7 +3857,7 @@ class Channel {
 										$temp = str_replace(LD.$cv2['field_name'].RD, '', $temp);
 									}
 
-									$temp = $this->EE->functions->remove_double_slashes($temp);
+									$temp = reduce_double_slashes($temp);
 								}
 
 								$cats .= $temp;
@@ -3963,9 +3970,10 @@ class Channel {
 
 							$tagdata = $this->EE->TMPL->delete_var_pairs($key, $key_name, $tagdata);
 						}
-					}
-					else
+					}	
+					elseif ( ! isset($this->zwfields[$row['site_id']][$key_name]))
 					{
+						// don't want to clear pairs if we still have zw pairs
 						$tagdata = $this->EE->TMPL->delete_var_pairs($key, $key_name, $tagdata);
 					}
 				}
@@ -3982,7 +3990,7 @@ class Channel {
 					//  Hourly header
 					if ($display == 'hourly')
 					{
-						$heading_date_hourly = gmdate('YmdH', $this->EE->localize->set_localized_time($row['entry_date']));
+						$heading_date_hourly = $this->EE->localize->format_date('%Y%m%d%H', $row['entry_date']);
 
 						if ($heading_date_hourly == $heading_flag_hourly)
 						{
@@ -3998,20 +4006,18 @@ class Channel {
 					//  Weekly header
 					elseif ($display == 'weekly')
 					{
-						$temp_date = $this->EE->localize->set_localized_time($row['entry_date']);
+						$temp_date = $row['entry_date'];
 
 						// date()'s week variable 'W' starts weeks on Monday per ISO-8601.
 						// By default we start weeks on Sunday, so we need to do a little dance for
 						// entries made on Sundays to make sure they get placed in the right week heading
-						if (strtolower($this->EE->TMPL->fetch_param('start_day')) != 'monday' && gmdate('w', $this->EE->localize->set_localized_time($row['entry_date'])) == 0)
+						if (strtolower($this->EE->TMPL->fetch_param('start_day')) != 'monday' && $this->EE->localize->format_date('%w', $row['entry_date']) == 0)
 						{
 							// add 7 days to toss us into the next ISO-8601 week
-							$heading_date_weekly = gmdate('YW', $temp_date + 604800);
+							$temp_date = strtotime('+1 week', $temp_date);
 						}
-						else
-						{
-							$heading_date_weekly = gmdate('YW', $temp_date);
-						}
+
+						$heading_date_weekly = $this->EE->localize->format_date('%Y%W', $temp_date);
 
 						if ($heading_date_weekly == $heading_flag_weekly)
 						{
@@ -4027,7 +4033,7 @@ class Channel {
 					//  Monthly header
 					elseif ($display == 'monthly')
 					{
-						$heading_date_monthly = gmdate('Ym', $this->EE->localize->set_localized_time($row['entry_date']));
+						$heading_date_monthly = $this->EE->localize->format_date('%Y%m', $row['entry_date']);
 
 						if ($heading_date_monthly == $heading_flag_monthly)
 						{
@@ -4043,7 +4049,7 @@ class Channel {
 					//  Yearly header
 					elseif ($display == 'yearly')
 					{
-						$heading_date_yearly = gmdate('Y', $this->EE->localize->set_localized_time($row['entry_date']));
+						$heading_date_yearly = $this->EE->localize->format_date('%Y', $row['entry_date']);
 
 						if ($heading_date_yearly == $heading_flag_yearly)
 						{
@@ -4059,7 +4065,7 @@ class Channel {
 					//  Default (daily) header
 					else
 					{
-			 			$heading_date_daily = gmdate('Ymd', $this->EE->localize->set_localized_time($row['entry_date']));
+			 			$heading_date_daily = $this->EE->localize->format_date('%Y%m%d', $row['entry_date']);
 			
 						if ($heading_date_daily == $heading_flag_daily)
 						{
@@ -4086,7 +4092,7 @@ class Channel {
 					if ($display == 'hourly')
 					{
 						if ( ! isset($query_result[$row['count']]) OR
-							gmdate('YmdH', $this->EE->localize->set_localized_time($row['entry_date'])) != gmdate('YmdH', $this->EE->localize->set_localized_time($query_result[$row['count']]['entry_date'])))
+							$this->EE->localize->format_date('%Y%m%d%H', $row['entry_date']) != $this->EE->localize->format_date('%Y%m%d%H', $query_result[$row['count']]['entry_date']))
 						{
 							$tagdata = $this->EE->TMPL->swap_var_pairs($key, 'date_footer', $tagdata);
 						}
@@ -4099,7 +4105,7 @@ class Channel {
 					elseif ($display == 'weekly')
 					{
 						if ( ! isset($query_result[$row['count']]) OR
-							gmdate('YW', $this->EE->localize->set_localized_time($row['entry_date'])) != gmdate('YW', $this->EE->localize->set_localized_time($query_result[$row['count']]['entry_date'])))
+							$this->EE->localize->format_date('%Y%W', $row['entry_date']) != $this->EE->localize->format_date('%Y%W', $query_result[$row['count']]['entry_date']))
 						{
 							$tagdata = $this->EE->TMPL->swap_var_pairs($key, 'date_footer', $tagdata);
 						}
@@ -4112,7 +4118,7 @@ class Channel {
 					elseif ($display == 'monthly')
 					{
 						if ( ! isset($query_result[$row['count']]) OR
-							gmdate('Ym', $this->EE->localize->set_localized_time($row['entry_date'])) != gmdate('Ym', $this->EE->localize->set_localized_time($query_result[$row['count']]['entry_date'])))
+							$this->EE->localize->format_date('%Y%m', $row['entry_date']) != $this->EE->localize->format_date('%Y%m', $query_result[$row['count']]['entry_date']))
 						{
 							$tagdata = $this->EE->TMPL->swap_var_pairs($key, 'date_footer', $tagdata);
 						}
@@ -4125,7 +4131,7 @@ class Channel {
 					elseif ($display == 'yearly')
 					{
 						if ( ! isset($query_result[$row['count']]) OR
-							gmdate('Y', $this->EE->localize->set_localized_time($row['entry_date'])) != gmdate('Y', $this->EE->localize->set_localized_time($query_result[$row['count']]['entry_date'])))
+							$this->EE->localize->format_date('%Y', $row['entry_date']) != $this->EE->localize->format_date('%Y', $query_result[$row['count']]['entry_date']))
 						{
 							$tagdata = $this->EE->TMPL->swap_var_pairs($key, 'date_footer', $tagdata);
 						}
@@ -4138,7 +4144,7 @@ class Channel {
 					else
 					{
 						if ( ! isset($query_result[$row['count']]) OR
-							gmdate('Ymd', $this->EE->localize->set_localized_time($row['entry_date'])) != gmdate('Ymd', $this->EE->localize->set_localized_time($query_result[$row['count']]['entry_date'])))
+							$this->EE->localize->format_date('%Y%m%d', $row['entry_date']) != $this->EE->localize->format_date('%Y%m%d', $query_result[$row['count']]['entry_date']))
 						{
 							$tagdata = $this->EE->TMPL->swap_var_pairs($key, 'date_footer', $tagdata);
 						}
@@ -4152,6 +4158,12 @@ class Channel {
 
 			}
 			// END VARIABLE PAIRS
+
+			/** ZERO WING **/
+			if (isset($relationship_parser))
+			{
+				$tagdata = $relationship_parser->parse_relationships($row['entry_id'], $tagdata, $this);
+			}
 
 			// We swap out the conditionals after pairs are parsed so they don't interfere
 			// with the string replace
@@ -4225,7 +4237,7 @@ class Channel {
 				//  parse entry date
 				if (isset($entry_date[$key]))
 				{
-					$val = str_replace($entry_date[$key], $this->EE->localize->convert_timestamp($entry_date[$key], $row['entry_date'], TRUE), $val);
+					$val = str_replace($entry_date[$key], $this->EE->localize->format_date($entry_date[$key], $row['entry_date']), $val);
 
 					$tagdata = $this->EE->TMPL->swap_var_single($key, $val, $tagdata);
 				}
@@ -4235,7 +4247,7 @@ class Channel {
 				{
 					if ($row['recent_comment_date'] != 0)
 					{
-						$val = str_replace($recent_comment_date[$key], $this->EE->localize->convert_timestamp($recent_comment_date[$key], $row['recent_comment_date'], TRUE), $val);
+						$val = str_replace($recent_comment_date[$key], $this->EE->localize->format_date($recent_comment_date[$key], $row['recent_comment_date']), $val);
 
 						$tagdata = $this->EE->TMPL->swap_var_single($key, $val, $tagdata);
 					}
@@ -4249,14 +4261,14 @@ class Channel {
 				//  GMT date - entry date in GMT
 				if (isset($gmt_entry_date[$key]))
 				{
-					$val = str_replace($gmt_entry_date[$key], $this->EE->localize->convert_timestamp($gmt_entry_date[$key], $row['entry_date'], FALSE), $val);
+					$val = str_replace($gmt_entry_date[$key], $this->EE->localize->format_date($gmt_entry_date[$key], $row['entry_date'], FALSE), $val);
 
 					$tagdata = $this->EE->TMPL->swap_var_single($key, $val, $tagdata);
 				}
 
 				if (isset($gmt_date[$key]))
 				{
-					$val = str_replace($gmt_date[$key], $this->EE->localize->convert_timestamp($gmt_date[$key], $row['entry_date'], FALSE), $val);
+					$val = str_replace($gmt_date[$key], $this->EE->localize->format_date($gmt_date[$key], $row['entry_date'], FALSE), $val);
 
 					$tagdata = $this->EE->TMPL->swap_var_single($key, $val, $tagdata);
 				}
@@ -4264,7 +4276,7 @@ class Channel {
 				//  parse "last edit" date
 				if (isset($edit_date[$key]))
 				{
-					$val = str_replace($edit_date[$key], $this->EE->localize->convert_timestamp($edit_date[$key], $this->EE->localize->timestamp_to_gmt($row['edit_date']), TRUE), $val);
+					$val = str_replace($edit_date[$key], $this->EE->localize->format_date($edit_date[$key], mysql_to_unix($row['edit_date'])), $val);
 
 					$tagdata = $this->EE->TMPL->swap_var_single($key, $val, $tagdata);
 				}
@@ -4272,7 +4284,7 @@ class Channel {
 				//  "last edit" date as GMT
 				if (isset($gmt_edit_date[$key]))
 				{
-					$val = str_replace($gmt_edit_date[$key], $this->EE->localize->convert_timestamp($gmt_edit_date[$key], $this->EE->localize->timestamp_to_gmt($row['edit_date']), FALSE), $val);
+					$val = str_replace($gmt_edit_date[$key], $this->EE->localize->format_date($gmt_edit_date[$key], mysql_to_unix($row['edit_date']), FALSE), $val);
 
 					$tagdata = $this->EE->TMPL->swap_var_single($key, $val, $tagdata);
 				}
@@ -4283,7 +4295,7 @@ class Channel {
 				{
 					if ($row['expiration_date'] != 0)
 					{
-						$val = str_replace($expiration_date[$key], $this->EE->localize->convert_timestamp($expiration_date[$key], $row['expiration_date'], TRUE), $val);
+						$val = str_replace($expiration_date[$key], $this->EE->localize->format_date($expiration_date[$key], $row['expiration_date']), $val);
 
 						$tagdata = $this->EE->TMPL->swap_var_single($key, $val, $tagdata);
 					}
@@ -4305,7 +4317,7 @@ class Channel {
 
 					if (strtolower($this->EE->TMPL->fetch_param('start_day')) == 'monday')
 					{
-						$day_of_week = $this->EE->localize->convert_timestamp('%w', $row['entry_date'], TRUE);
+						$day_of_week = $this->EE->localize->format_date('%w', $row['entry_date']);
 
 						if ($day_of_week == '0')
 						{
@@ -4317,282 +4329,18 @@ class Channel {
 						}
 					}
 
-					$week_start_date = $row['entry_date'] - ($this->EE->localize->convert_timestamp('%w', $row['entry_date'], TRUE) * 60 * 60 * 24) + $offset;
+					$week_start_date = $row['entry_date'] - ($this->EE->localize->format_date('%w', $row['entry_date'], TRUE) * 60 * 60 * 24) + $offset;
 
-					$val = str_replace($week_date[$key], $this->EE->localize->convert_timestamp($week_date[$key], $week_start_date, TRUE), $val);
+					$val = str_replace($week_date[$key], $this->EE->localize->format_date($week_date[$key], $week_start_date), $val);
 
 					$tagdata = $this->EE->TMPL->swap_var_single($key, $val, $tagdata);
 				}
 
-				//  parse profile path
-				if (strncmp($key, 'profile_path', 12) == 0)
-				{
-					$tagdata = $this->EE->TMPL->swap_var_single(
-														$key,
-														$this->EE->functions->create_url($this->EE->functions->extract_path($key).'/'.$row['member_id']),
-														$tagdata
-													 );
-				}
-
-				//  {member_search_path}
-				if (strncmp($key, 'member_search_path', 18) == 0)
-				{
-					$tagdata = $this->EE->TMPL->swap_var_single(
-														$key,
-														$search_link.$row['member_id'],
-														$tagdata
-													 );
-				}
-
-
-				//  parse comment_path
-				if (strncmp($key, 'comment_path', 12) == 0 OR strncmp($key, 'entry_id_path', 13) == 0)
-				{
-					$path = ($this->EE->functions->extract_path($key) != '' AND $this->EE->functions->extract_path($key) != 'SITE_INDEX') ? $this->EE->functions->extract_path($key).'/'.$row['entry_id'] : $row['entry_id'];
-
-					$tagdata = $this->EE->TMPL->swap_var_single(
-														$key,
-														$this->EE->functions->create_url($path),
-														$tagdata
-													 );
-				}
-
-				//  parse URL title path
-				if (strncmp($key, 'url_title_path', 14) == 0)
-				{
-					$path = ($this->EE->functions->extract_path($key) != '' AND $this->EE->functions->extract_path($key) != 'SITE_INDEX') ? $this->EE->functions->extract_path($key).'/'.$row['url_title'] : $row['url_title'];
-
-					$tagdata = $this->EE->TMPL->swap_var_single(
-														$key,
-														$this->EE->functions->create_url($path),
-														$tagdata
-													 );
-				}
-
-				//  parse title permalink
-				if (strncmp($key, 'title_permalink', 15) == 0)
-				{
-					$path = ($this->EE->functions->extract_path($key) != '' AND $this->EE->functions->extract_path($key) != 'SITE_INDEX') ? $this->EE->functions->extract_path($key).'/'.$row['url_title'] : $row['url_title'];
-
-					$tagdata = $this->EE->TMPL->swap_var_single(
-														$key,
-														$this->EE->functions->create_url($path, FALSE),
-														$tagdata
-													 );
-				}
-
-				//  parse permalink
-				if (strncmp($key, 'permalink', 9) == 0)
-				{
-					$path = ($this->EE->functions->extract_path($key) != '' AND $this->EE->functions->extract_path($key) != 'SITE_INDEX') ? $this->EE->functions->extract_path($key).'/'.$row['entry_id'] : $row['entry_id'];
-
-					$tagdata = $this->EE->TMPL->swap_var_single(
-														$key,
-														$this->EE->functions->create_url($path, FALSE),
-														$tagdata
-													 );
-				}
-
-
-				//  {comment_auto_path}
-				if ($key == "comment_auto_path")
-				{
-					$path = ($row['comment_url'] == '') ? $row['channel_url'] : $row['comment_url'];
-
-					$tagdata = $this->EE->TMPL->swap_var_single($key, $path, $tagdata);
-				}
-
-				//  {comment_url_title_auto_path}
-				if ($key == "comment_url_title_auto_path")
-				{
-					$path = ($row['comment_url'] == '') ? $row['channel_url'] : $row['comment_url'];
-
-					$tagdata = $this->EE->TMPL->swap_var_single(
-														$key,
-														reduce_double_slashes($path.'/'.$row['url_title']),
-														$tagdata
-													 );
-				}
-
-				//  {comment_entry_id_auto_path}
-				if ($key == "comment_entry_id_auto_path")
-				{
-					$path = ($row['comment_url'] == '') ? $row['channel_url'] : $row['comment_url'];
-
-					$tagdata = $this->EE->TMPL->swap_var_single(
-														$key,
-														reduce_double_slashes($path.'/'.$row['entry_id']),
-														$tagdata
-													 );
-				}
-
-				//  {author}
-				if ($key == "author")
-				{
-					$tagdata = $this->EE->TMPL->swap_var_single($val, ($row['screen_name'] != '') ? $row['screen_name'] : $row['username'], $tagdata);
-				}
-
-				//  {channel}
-				if ($key == "channel")
-				{
-					$tagdata = $this->EE->TMPL->swap_var_single($val, $row['channel_title'], $tagdata);
-				}
-
-				//  {channel_short_name}
-				if ($key == "channel_short_name")
-				{
-					$tagdata = $this->EE->TMPL->swap_var_single($val, $row['channel_name'], $tagdata);
-				}
-
-				//  {relative_date}
-
-				if ($key == "relative_date")
-				{
-					$tagdata = $this->EE->TMPL->swap_var_single($val, $this->EE->localize->format_timespan($this->EE->localize->now - $row['entry_date']), $tagdata);
-				}
-
-				//  {trimmed_url} - used by Atom feeds
-				if ($key == "trimmed_url")
-				{
-					$channel_url = (isset($row['channel_url']) AND $row['channel_url'] != '') ? $row['channel_url'] : '';
-
-					$channel_url = str_replace(array('http://','www.'), '', $channel_url);
-					$xe = explode("/", $channel_url);
-					$channel_url = current($xe);
-
-					$tagdata = $this->EE->TMPL->swap_var_single($val, $channel_url, $tagdata);
-				}
-
-				//  {relative_url} - used by Atom feeds
-				if ($key == "relative_url")
-				{
-					$channel_url = (isset($row['channel_url']) AND $row['channel_url'] != '') ? $row['channel_url'] : '';
-					$channel_url = str_replace('http://', '', $channel_url);
-
-					if ($x = strpos($channel_url, "/"))
-					{
-						$channel_url = substr($channel_url, $x + 1);
-					}
-
-					$channel_url = rtrim($channel_url, '/');
-
-					$tagdata = $this->EE->TMPL->swap_var_single($val, $channel_url, $tagdata);
-				}
-
-				//  {url_or_email}
-				if ($key == "url_or_email")
-				{
-					$tagdata = $this->EE->TMPL->swap_var_single($val, ($row['url'] != '') ? $row['url'] : $row['email'], $tagdata);
-				}
-
-				//  {url_or_email_as_author}
-				if ($key == "url_or_email_as_author")
-				{
-					$name = ($row['screen_name'] != '') ? $row['screen_name'] : $row['username'];
-
-					if ($row['url'] != '')
-					{
-						$tagdata = $this->EE->TMPL->swap_var_single($val, "<a href=\"".$row['url']."\">".$name."</a>", $tagdata);
-					}
-					else
-					{
-						$tagdata = $this->EE->TMPL->swap_var_single($val, $this->EE->typography->encode_email($row['email'], $name), $tagdata);
-					}
-				}
-
-
-				//  {url_or_email_as_link}
-				if ($key == "url_or_email_as_link")
-				{
-					if ($row['url'] != '')
-					{
-						$tagdata = $this->EE->TMPL->swap_var_single($val, "<a href=\"".$row['url']."\">".$row['url']."</a>", $tagdata);
-					}
-					else
-					{
-						$tagdata = $this->EE->TMPL->swap_var_single($val, $this->EE->typography->encode_email($row['email']), $tagdata);
-					}
-				}
-
-				//  {signature}
-				if ($key == "signature")
-				{
-					if ($this->EE->session->userdata('display_signatures') == 'n' OR $row['signature'] == '' OR $this->EE->session->userdata('display_signatures') == 'n')
-					{
-						$tagdata = $this->EE->TMPL->swap_var_single($key, '', $tagdata);
-					}
-					else
-					{
-						$tagdata = $this->EE->TMPL->swap_var_single($key,
-														$this->EE->typography->parse_type($row['signature'], array(
-																					'text_format'	=> 'xhtml',
-																					'html_format'	=> 'safe',
-																					'auto_links'	=> 'y',
-																					'allow_img_url' => $this->EE->config->item('sig_allow_img_hotlink')
-																				)
-																			), $tagdata);
-					}
-				}
-
-
-				if ($key == "signature_image_url")
-				{
-					if ($this->EE->session->userdata('display_signatures') == 'n' OR $row['sig_img_filename'] == ''  OR $this->EE->session->userdata('display_signatures') == 'n')
-					{
-						$tagdata = $this->EE->TMPL->swap_var_single($key, '', $tagdata);
-						$tagdata = $this->EE->TMPL->swap_var_single('signature_image_width', '', $tagdata);
-						$tagdata = $this->EE->TMPL->swap_var_single('signature_image_height', '', $tagdata);
-					}
-					else
-					{
-						$tagdata = $this->EE->TMPL->swap_var_single($key, $this->EE->config->slash_item('sig_img_url').$row['sig_img_filename'], $tagdata);
-						$tagdata = $this->EE->TMPL->swap_var_single('signature_image_width', $row['sig_img_width'], $tagdata);
-						$tagdata = $this->EE->TMPL->swap_var_single('signature_image_height', $row['sig_img_height'], $tagdata);
-					}
-				}
-
-				if ($key == "avatar_url")
-				{
-					if ($this->EE->session->userdata('display_avatars') == 'n' OR $row['avatar_filename'] == ''  OR $this->EE->session->userdata('display_avatars') == 'n')
-					{
-						$tagdata = $this->EE->TMPL->swap_var_single($key, '', $tagdata);
-						$tagdata = $this->EE->TMPL->swap_var_single('avatar_image_width', '', $tagdata);
-						$tagdata = $this->EE->TMPL->swap_var_single('avatar_image_height', '', $tagdata);
-					}
-					else
-					{
-						$tagdata = $this->EE->TMPL->swap_var_single($key, $this->EE->config->slash_item('avatar_url').$row['avatar_filename'], $tagdata);
-						$tagdata = $this->EE->TMPL->swap_var_single('avatar_image_width', $row['avatar_width'], $tagdata);
-						$tagdata = $this->EE->TMPL->swap_var_single('avatar_image_height', $row['avatar_height'], $tagdata);
-					}
-				}
-
-				if ($key == "photo_url")
-				{
-					if ($this->EE->session->userdata('display_photos') == 'n' OR $row['photo_filename'] == ''  OR $this->EE->session->userdata('display_photos') == 'n')
-					{
-						$tagdata = $this->EE->TMPL->swap_var_single($key, '', $tagdata);
-						$tagdata = $this->EE->TMPL->swap_var_single('photo_image_width', '', $tagdata);
-						$tagdata = $this->EE->TMPL->swap_var_single('photo_image_height', '', $tagdata);
-					}
-					else
-					{
-						$tagdata = $this->EE->TMPL->swap_var_single($key, $this->EE->config->slash_item('photo_url').$row['photo_filename'], $tagdata);
-						$tagdata = $this->EE->TMPL->swap_var_single('photo_image_width', $row['photo_width'], $tagdata);
-						$tagdata = $this->EE->TMPL->swap_var_single('photo_image_height', $row['photo_height'], $tagdata);
-					}
-				}
-
-				//  parse {title}
-				if ($key == 'title')
-				{
-					$row['title'] = str_replace(array('{', '}'), array('&#123;', '&#125;'), $row['title']);
-					$tagdata = $this->EE->TMPL->swap_var_single($val,  $this->EE->typography->format_characters($row['title']), $tagdata);
-				}
+				$tagdata = $this->parse_simple_variable($key, $val, $tagdata, $row);
 
 				//  parse basic fields (username, screen_name, etc.)
 				//  Use array_key_exists to handle null values
-				
+
 				if ($val AND array_key_exists($val, $row))
 				{
 					$tagdata = $this->EE->TMPL->swap_var_single($val, $row[$val], $tagdata);
@@ -4612,25 +4360,20 @@ class Channel {
 							continue;
 						}
 
-						// use a temporary variable in case the custom date variable is used
-						// multiple times with different formats; prevents localization from
-						// occurring multiple times on the same value
-						$temp_val = $row['field_id_'.$dval];
+						// If date is fixed, get timezone to convert timestamp to,
+						// otherwise localize it normally
+						$localize = (isset($row['field_dt_'.$dval]) AND $row['field_dt_'.$dval] != '')
+							? $row['field_dt_'.$dval] : TRUE;
 
-						$localize = TRUE;
-						if (isset($row['field_dt_'.$dval]) AND $row['field_dt_'.$dval] != '')
-						{
-							$localize = TRUE;
-							if ($row['field_dt_'.$dval] != '')
-							{
-								$temp_val = $this->EE->localize->simpl_offset($temp_val, $row['field_dt_'.$dval]);
-								$localize = FALSE;
-							}
-						}
-
-						$val = str_replace($custom_date_fields[$key], $this->EE->localize->convert_timestamp($custom_date_fields[$key], $temp_val, $localize), $val);
-
-						$tagdata = $this->EE->TMPL->swap_var_single($key, $val, $tagdata);
+						$tagdata = $this->EE->TMPL->swap_var_single(
+							$key, 
+							$this->EE->localize->format_date(
+								$custom_date_fields[$key],
+								$row['field_id_'.$dval], 
+								$localize
+							),
+							$tagdata
+						);
 					}
 				}
 
@@ -4692,10 +4435,15 @@ class Channel {
 				
 				if (($cln = strpos($key, ':')) !== FALSE)
 				{
-					$modifier = substr($key, $cln + 1);
+					$first_term = substr($key, 0, $cln);
+					if ( ! isset($this->zwfields[$row['site_id']][$first_term])) 
+					{
+						$modifier = substr($key, $cln + 1);
+						
 
-					$parse_fnc = 'replace_'.$modifier;
-					$val = $key = substr($key, 0, $cln);
+						$parse_fnc = 'replace_'.$modifier;
+						$val = $key = $first_term;
+					}
 				}
 
 				if (isset($this->cfields[$row['site_id']][$key]))
@@ -4748,7 +4496,6 @@ class Channel {
 					// prevent accidental parsing of other channel variables in custom field data
 					if (strpos($entry, '{') !== FALSE)
 					{
-						$this->EE->load->helper('string');
 	                    $tagdata = $this->EE->TMPL->swap_var_single($replace, str_replace(array('{', '}'), array(unique_marker('channel_bracket_open'), unique_marker('channel_bracket_close')), $entry), $tagdata);
 					}
 					else
@@ -4785,12 +4532,13 @@ class Channel {
 
 			}
 			// END SINGLE VARIABLES
-
+			
 			// do we need to replace any curly braces that we protected in custom fields?
 			if (strpos($tagdata, unique_marker('channel_bracket_open')) !== FALSE)
 			{
 				$tagdata = str_replace(array(unique_marker('channel_bracket_open'), unique_marker('channel_bracket_close')), array('{', '}'), $tagdata);
 			}
+		
 
 			// -------------------------------------------
 			// 'channel_entries_tagdata_end' hook.
@@ -4845,7 +4593,7 @@ class Channel {
 		foreach ($entries_data as $row)
 		{
 			// Get array of custom fields for the row's current site
-			$custom_fields = $this->cfields[$row['site_id']];
+			$custom_fields = (isset($this->cfields[$row['site_id']])) ? $this->cfields[$row['site_id']] : array();
 			
 			foreach ($custom_fields as $field_name => $field_id)
 			{
@@ -4878,6 +4626,279 @@ class Channel {
 				}
 			}
 		}
+	}
+
+	public function parse_simple_variable($key, $val, $tagdata, $row, $prefix = '')
+	{		
+		//  parse profile path
+		if (strncmp($key, 'profile_path', 12) == 0)
+		{
+			$tagdata = $this->EE->TMPL->swap_var_single(
+												$prefix.$key,
+												$this->EE->functions->create_url($this->EE->functions->extract_path($key).'/'.$row['member_id']),
+												$tagdata
+											 );
+		}
+
+		//  {member_search_path}
+		elseif (strncmp($key, 'member_search_path', 18) == 0)
+		{
+			$tagdata = $this->EE->TMPL->swap_var_single(
+												$prefix.$key,
+												$search_link.$row['member_id'],
+												$tagdata
+											 );
+		}
+
+
+		//  parse comment_path
+		elseif (strncmp($key, 'comment_path', 12) == 0 OR strncmp($key, 'entry_id_path', 13) == 0)
+		{
+			$path = ($this->EE->functions->extract_path($key) != '' AND $this->EE->functions->extract_path($key) != 'SITE_INDEX') ? $this->EE->functions->extract_path($key).'/'.$row['entry_id'] : $row['entry_id'];
+
+			$tagdata = $this->EE->TMPL->swap_var_single(
+												$prefix.$key,
+												$this->EE->functions->create_url($path),
+												$tagdata
+											 );
+		}
+
+		//  parse URL title path
+		elseif (strncmp($key, 'url_title_path', 14) == 0)
+		{
+			$path = ($this->EE->functions->extract_path($key) != '' AND $this->EE->functions->extract_path($key) != 'SITE_INDEX') ? $this->EE->functions->extract_path($key).'/'.$row['url_title'] : $row['url_title'];
+
+			$tagdata = $this->EE->TMPL->swap_var_single(
+												$prefix.$key,
+												$this->EE->functions->create_url($path),
+												$tagdata
+											 );
+		}
+
+		//  parse title permalink
+		elseif (strncmp($key, 'title_permalink', 15) == 0)
+		{
+
+			$path = ($this->EE->functions->extract_path($key) != '' AND $this->EE->functions->extract_path($key) != 'SITE_INDEX') ? $this->EE->functions->extract_path($key).'/'.$row['url_title'] : $row['url_title'];
+			
+			$tagdata = $this->EE->TMPL->swap_var_single(
+												$prefix.$key,
+												$this->EE->functions->create_url($path, FALSE),
+												$tagdata
+											 );
+		}
+
+		//  parse permalink
+		elseif (strncmp($key, 'permalink', 9) == 0)
+		{
+			$path = ($this->EE->functions->extract_path($key) != '' AND $this->EE->functions->extract_path($key) != 'SITE_INDEX') ? $this->EE->functions->extract_path($key).'/'.$row['entry_id'] : $row['entry_id'];
+
+			$tagdata = $this->EE->TMPL->swap_var_single(
+												$prefix.$key,
+												$this->EE->functions->create_url($path, FALSE),
+												$tagdata
+											 );
+		}
+
+
+		//  {comment_auto_path}
+		elseif ($key == "comment_auto_path")
+		{
+			$path = ($row['comment_url'] == '') ? $row['channel_url'] : $row['comment_url'];
+
+			$tagdata = $this->EE->TMPL->swap_var_single($prefix.$key, $path, $tagdata);
+		}
+
+		//  {comment_url_title_auto_path}
+		elseif ($key == "comment_url_title_auto_path")
+		{
+			$path = ($row['comment_url'] == '') ? $row['channel_url'] : $row['comment_url'];
+
+			$tagdata = $this->EE->TMPL->swap_var_single(
+												$prefix.$key,
+												reduce_double_slashes($path.'/'.$row['url_title']),
+												$tagdata
+											 );
+		}
+
+		//  {comment_entry_id_auto_path}
+		elseif ($key == "comment_entry_id_auto_path")
+		{
+			$path = ($row['comment_url'] == '') ? $row['channel_url'] : $row['comment_url'];
+
+			$tagdata = $this->EE->TMPL->swap_var_single(
+												$prefix.$key,
+												reduce_double_slashes($path.'/'.$row['entry_id']),
+												$tagdata
+											 );
+		}
+
+		//  {author}
+		elseif ($key == "author")
+		{
+			$tagdata = $this->EE->TMPL->swap_var_single($val, ($row['screen_name'] != '') ? $row['screen_name'] : $row['username'], $tagdata);
+		}
+
+		//  {channel}
+		elseif ($key == "channel")
+		{
+			$tagdata = $this->EE->TMPL->swap_var_single($val, $row['channel_title'], $tagdata);
+		}
+
+		//  {channel_short_name}
+		elseif ($key == "channel_short_name")
+		{
+			$tagdata = $this->EE->TMPL->swap_var_single($val, $row['channel_name'], $tagdata);
+		}
+
+		//  {relative_date}
+
+		elseif ($key == "relative_date")
+		{
+			$tagdata = $this->EE->TMPL->swap_var_single($val, timespan($row['entry_date']), $tagdata);
+		}
+
+		//  {trimmed_url} - used by Atom feeds
+		elseif ($key == "trimmed_url")
+		{
+			$channel_url = (isset($row['channel_url']) AND $row['channel_url'] != '') ? $row['channel_url'] : '';
+
+			$channel_url = str_replace(array('http://','www.'), '', $channel_url);
+			$xe = explode("/", $channel_url);
+			$channel_url = current($xe);
+
+			$tagdata = $this->EE->TMPL->swap_var_single($val, $channel_url, $tagdata);
+		}
+
+		//  {relative_url} - used by Atom feeds
+		elseif ($key == "relative_url")
+		{
+			$channel_url = (isset($row['channel_url']) AND $row['channel_url'] != '') ? $row['channel_url'] : '';
+			$channel_url = str_replace('http://', '', $channel_url);
+
+			if ($x = strpos($channel_url, "/"))
+			{
+				$channel_url = substr($channel_url, $x + 1);
+			}
+
+			$channel_url = rtrim($channel_url, '/');
+
+			$tagdata = $this->EE->TMPL->swap_var_single($val, $channel_url, $tagdata);
+		}
+
+		//  {url_or_email}
+		elseif ($key == "url_or_email")
+		{
+			$tagdata = $this->EE->TMPL->swap_var_single($val, ($row['url'] != '') ? $row['url'] : $row['email'], $tagdata);
+		}
+
+		//  {url_or_email_as_author}
+		elseif ($key == "url_or_email_as_author")
+		{
+			$name = ($row['screen_name'] != '') ? $row['screen_name'] : $row['username'];
+
+			if ($row['url'] != '')
+			{
+				$tagdata = $this->EE->TMPL->swap_var_single($val, "<a href=\"".$row['url']."\">".$name."</a>", $tagdata);
+			}
+			else
+			{
+				$tagdata = $this->EE->TMPL->swap_var_single($val, $this->EE->typography->encode_email($row['email'], $name), $tagdata);
+			}
+		}
+
+
+		//  {url_or_email_as_link}
+		elseif ($key == "url_or_email_as_link")
+		{
+			if ($row['url'] != '')
+			{
+				$tagdata = $this->EE->TMPL->swap_var_single($val, "<a href=\"".$row['url']."\">".$row['url']."</a>", $tagdata);
+			}
+			else
+			{
+				$tagdata = $this->EE->TMPL->swap_var_single($val, $this->EE->typography->encode_email($row['email']), $tagdata);
+			}
+		}
+
+		//  {signature}
+		elseif ($key == "signature")
+		{
+			if ($this->EE->session->userdata('display_signatures') == 'n' OR $row['signature'] == '' OR $this->EE->session->userdata('display_signatures') == 'n')
+			{
+				$tagdata = $this->EE->TMPL->swap_var_single($prefix.$key, '', $tagdata);
+			}
+			else
+			{
+				$tagdata = $this->EE->TMPL->swap_var_single($prefix.$key,
+												$this->EE->typography->parse_type($row['signature'], array(
+																			'text_format'	=> 'xhtml',
+																			'html_format'	=> 'safe',
+																			'auto_links'	=> 'y',
+																			'allow_img_url' => $this->EE->config->item('sig_allow_img_hotlink')
+																		)
+																	), $tagdata);
+			}
+		}
+
+
+		elseif ($key == "signature_image_url")
+		{
+			if ($this->EE->session->userdata('display_signatures') == 'n' OR $row['sig_img_filename'] == ''  OR $this->EE->session->userdata('display_signatures') == 'n')
+			{
+				$tagdata = $this->EE->TMPL->swap_var_single($prefix.$key, '', $tagdata);
+				$tagdata = $this->EE->TMPL->swap_var_single($prefix.'signature_image_width', '', $tagdata);
+				$tagdata = $this->EE->TMPL->swap_var_single($prefix.'signature_image_height', '', $tagdata);
+			}
+			else
+			{
+				$tagdata = $this->EE->TMPL->swap_var_single($prefix.$key, $this->EE->config->slash_item('sig_img_url').$row['sig_img_filename'], $tagdata);
+				$tagdata = $this->EE->TMPL->swap_var_single($prefix.'signature_image_width', $row['sig_img_width'], $tagdata);
+				$tagdata = $this->EE->TMPL->swap_var_single($prefix.'signature_image_height', $row['sig_img_height'], $tagdata);
+			}
+		}
+
+		elseif ($key == "avatar_url")
+		{
+			if ($this->EE->session->userdata('display_avatars') == 'n' OR $row['avatar_filename'] == ''  OR $this->EE->session->userdata('display_avatars') == 'n')
+			{
+				$tagdata = $this->EE->TMPL->swap_var_single($prefix.$key, '', $tagdata);
+				$tagdata = $this->EE->TMPL->swap_var_single($prefix.'avatar_image_width', '', $tagdata);
+				$tagdata = $this->EE->TMPL->swap_var_single($prefix.'avatar_image_height', '', $tagdata);
+			}
+			else
+			{
+				$tagdata = $this->EE->TMPL->swap_var_single($prefix.$key, $this->EE->config->slash_item('avatar_url').$row['avatar_filename'], $tagdata);
+				$tagdata = $this->EE->TMPL->swap_var_single($prefix.'avatar_image_width', $row['avatar_width'], $tagdata);
+				$tagdata = $this->EE->TMPL->swap_var_single($prefix.'avatar_image_height', $row['avatar_height'], $tagdata);
+			}
+		}
+
+		elseif ($key == "photo_url")
+		{
+			if ($this->EE->session->userdata('display_photos') == 'n' OR $row['photo_filename'] == ''  OR $this->EE->session->userdata('display_photos') == 'n')
+			{
+				$tagdata = $this->EE->TMPL->swap_var_single($prefix.$key, '', $tagdata);
+				$tagdata = $this->EE->TMPL->swap_var_single($prefix.'photo_image_width', '', $tagdata);
+				$tagdata = $this->EE->TMPL->swap_var_single($prefix.'photo_image_height', '', $tagdata);
+			}
+			else
+			{
+				$tagdata = $this->EE->TMPL->swap_var_single($prefix.$key, $this->EE->config->slash_item('photo_url').$row['photo_filename'], $tagdata);
+				$tagdata = $this->EE->TMPL->swap_var_single($prefix.'photo_image_width', $row['photo_width'], $tagdata);
+				$tagdata = $this->EE->TMPL->swap_var_single($prefix.'photo_image_height', $row['photo_height'], $tagdata);
+			}
+		}
+
+		//  parse {title}
+		elseif ($key == 'title')
+		{
+			$row['title'] = str_replace(array('{', '}'), array('&#123;', '&#125;'), $row['title']);
+			//$tagdata = $this->EE->TMPL->swap_var_single($prefix.$val,  $this->EE->typography->format_characters($row['title']), $tagdata);
+			$tagdata = $this->EE->TMPL->swap_var_single($prefix.$key,  $this->EE->typography->format_characters($row['title']), $tagdata);
+		}
+
+		return $tagdata;
 	}
 
 	// ------------------------------------------------------------------------
@@ -5401,9 +5422,9 @@ class Channel {
 						LD.'parent_id'.RD
 					),
 					array(
-						$val[3],
+						$this->EE->functions->encode_ee_tags($val[3]),
 						$val[6],
-						$val[4],
+						$this->EE->functions->encode_ee_tags($val[4]),
 						$cat_image['url'],
 						$val[0],
 						$val[1]
@@ -5415,11 +5436,11 @@ class Channel {
 				{
 					if ($this->use_category_names == TRUE)
 					{
-						$chunk = str_replace($k, $this->EE->functions->remove_double_slashes($v.'/'.$this->reserved_cat_segment.'/'.$val[6]), $chunk);
+						$chunk = str_replace($k, reduce_double_slashes($v.'/'.$this->reserved_cat_segment.'/'.$val[6]), $chunk);
 					}
 					else
 					{
-						$chunk = str_replace($k, $this->EE->functions->remove_double_slashes($v.'/C'.$val[0]), $chunk);
+						$chunk = str_replace($k, reduce_double_slashes($v.'/C'.$val[0]), $chunk);
 					}
 				}
 
@@ -5661,7 +5682,7 @@ class Channel {
 			{
 				$matches[0][$i] = str_replace(array(LD,RD), '', $matches[0][$i]);
 
-				$entry_date[$matches[0][$i]] = $this->EE->localize->fetch_date_params($matches[2][$i]);
+				$entry_date[$matches[0][$i]] = $matches[2][$i];
 			}
 		}
 
@@ -5678,19 +5699,19 @@ class Channel {
 
 					foreach($t_path as $tkey => $tval)
 					{
-						$chunk = str_replace($tkey, $this->EE->functions->remove_double_slashes($tval.'/'.$row['url_title']), $chunk);
+						$chunk = str_replace($tkey, reduce_double_slashes($tval.'/'.$row['url_title']), $chunk);
 					}
 
 					foreach($id_path as $tkey => $tval)
 					{
-						$chunk = str_replace($tkey, $this->EE->functions->remove_double_slashes($tval.'/'.$row['entry_id']), $chunk);
+						$chunk = str_replace($tkey, reduce_double_slashes($tval.'/'.$row['entry_id']), $chunk);
 					}
 
 					foreach($this->EE->TMPL->var_single as $key => $val)
 					{
 						if (isset($entry_date[$key]))
 						{
-							$val = str_replace($entry_date[$key], $this->EE->localize->convert_timestamp($entry_date[$key], $row['entry_date'], TRUE), $val);
+							$val = str_replace($entry_date[$key], $this->EE->localize->format_date($entry_date[$key], $row['entry_date']), $val);
 							$chunk = $this->EE->TMPL->swap_var_single($key, $val, $chunk);
 						}
 
@@ -5868,17 +5889,17 @@ class Channel {
 													LD.'category_description'.RD,
 													LD.'parent_id'.RD),
 											  array($row['cat_id'],
-											  		$row['cat_name'],
+											  		$this->EE->functions->encode_ee_tags($row['cat_name']),
 													$row['cat_url_title'],
 											  		$cat_image['url'],
-											  		$row['cat_description'],
+											  		$this->EE->functions->encode_ee_tags($row['cat_description']),
 													$row['parent_id']),
 											  $chunk);
 
 						foreach($c_path as $ckey => $cval)
 						{
 							$cat_seg = ($this->use_category_names == TRUE) ? $this->reserved_cat_segment.'/'.$row['cat_url_title'] : 'C'.$row['cat_id'];
-							$chunk = str_replace($ckey, $this->EE->functions->remove_double_slashes($cval.'/'.$cat_seg), $chunk);
+							$chunk = str_replace($ckey, reduce_double_slashes($cval.'/'.$cat_seg), $chunk);
 						}
 
 						// parse custom fields
@@ -5925,19 +5946,19 @@ class Channel {
 
 							foreach($t_path as $tkey => $tval)
 							{
-								$chunk = str_replace($tkey, $this->EE->functions->remove_double_slashes($tval.'/'.$trow['url_title']), $chunk);
+								$chunk = str_replace($tkey, reduce_double_slashes($tval.'/'.$trow['url_title']), $chunk);
 							}
 
 							foreach($id_path as $tkey => $tval)
 							{
-								$chunk = str_replace($tkey, $this->EE->functions->remove_double_slashes($tval.'/'.$trow['entry_id']), $chunk);
+								$chunk = str_replace($tkey, reduce_double_slashes($tval.'/'.$trow['entry_id']), $chunk);
 							}
 
 							foreach($this->EE->TMPL->var_single as $key => $val)
 							{
 								if (isset($entry_date[$key]))
 								{
-									$val = str_replace($entry_date[$key], $this->EE->localize->convert_timestamp($entry_date[$key], $trow['entry_date'], TRUE), $val);
+									$val = str_replace($entry_date[$key], $this->EE->localize->format_date($entry_date[$key], $trow['entry_date']), $val);
 
 									$chunk = $this->EE->TMPL->swap_var_single($key, $val, $chunk);
 								}
@@ -6321,10 +6342,10 @@ class Channel {
 											LD.'category_description'.RD,
 											LD.'parent_id'.RD),
 									  array($key,
-									  		$val[1],
+									  		$this->EE->functions->encode_ee_tags($val[1]),
 											$val[4],
 									  		$cat_image['url'],
-									  		$val[3],
+									  		$this->EE->functions->encode_ee_tags($val[3]),
 											$val[0]),
 									  $chunk);
 
@@ -6332,11 +6353,11 @@ class Channel {
 				{
 					if ($this->use_category_names == TRUE)
 					{
-						$chunk = str_replace($pkey, $this->EE->functions->remove_double_slashes($pval.'/'.$this->reserved_cat_segment.'/'.$val[4]), $chunk);
+						$chunk = str_replace($pkey, reduce_double_slashes($pval.'/'.$this->reserved_cat_segment.'/'.$val[4]), $chunk);
 					}
 					else
 					{
-						$chunk = str_replace($pkey, $this->EE->functions->remove_double_slashes($pval.'/C'.$key), $chunk);
+						$chunk = str_replace($pkey, reduce_double_slashes($pval.'/C'.$key), $chunk);
 					}
 				}
 
@@ -6496,7 +6517,7 @@ class Channel {
 
 		if (preg_match("#/P\d+#", $qstring, $match))
 		{
-			$qstring = $this->EE->functions->remove_double_slashes(str_replace($match[0], '', $qstring));
+			$qstring = reduce_double_slashes(str_replace($match[0], '', $qstring));
 		}
 
 		/** --------------------------------------
@@ -6504,7 +6525,7 @@ class Channel {
 		/** --------------------------------------*/
 		if (preg_match("#/N(\d+)#", $qstring, $match))
 		{
-			$qstring = $this->EE->functions->remove_double_slashes(str_replace($match[0], '', $qstring));
+			$qstring = reduce_double_slashes(str_replace($match[0], '', $qstring));
 		}
 
 		// Is the category being specified by name?
@@ -6665,10 +6686,10 @@ class Channel {
 											LD.'category_description'.RD,
 											LD.'parent_id'.RD),
 							 	 	  array($match[2],
-											$query->row('cat_name'),
+											$this->EE->functions->encode_ee_tags($query->row('cat_name')),
 											$query->row('cat_url_title'),
 											$cat_image['url'],
-											$query->row('cat_description'),
+											$this->EE->functions->encode_ee_tags($query->row('cat_description')),
 											$query->row('parent_id')),
 							  		  $this->EE->TMPL->tagdata);
 
@@ -6746,7 +6767,7 @@ class Channel {
 
 			if (preg_match("#/P\d+#", $qstring, $match))
 			{
-				$qstring = $this->EE->functions->remove_double_slashes(str_replace($match[0], '', $qstring));
+				$qstring = reduce_double_slashes(str_replace($match[0], '', $qstring));
 			}
 
 			/** --------------------------------------
@@ -6755,7 +6776,7 @@ class Channel {
 
 			if (preg_match("#/N(\d+)#", $qstring, $match))
 			{
-				$qstring = $this->EE->functions->remove_double_slashes(str_replace($match[0], '', $qstring));
+				$qstring = reduce_double_slashes(str_replace($match[0], '', $qstring));
 			}
 
 			if (strpos($qstring, '/') !== FALSE)
@@ -6825,7 +6846,7 @@ class Channel {
 			$ids = $this->EE->functions->sql_andor_string($entry_id, 't.entry_id').' ';
 		}
 
-		$sql = 'SELECT t.entry_id, t.title, t.url_title
+		$sql = 'SELECT t.entry_id, t.title, t.url_title, w.channel_name, w.channel_title, w.comment_url, w.channel_url 
 				FROM (exp_channel_titles AS t)
 				LEFT JOIN exp_channels AS w ON w.channel_id = t.channel_id ';
 
@@ -6986,47 +7007,35 @@ class Channel {
 		/** ---------------------------------------*/
 
 		$this->EE->load->library('typography');
-
-		if (strpos($this->EE->TMPL->tagdata, LD.'path=') !== FALSE)
+		$comment_path = ($query->row('comment_url') == '') ? $query->row('comment_url') : $query->row('channel_url');
+		$title = $this->EE->typography->format_characters($query->row('title'));
+		
+		$vars['0'] = array(
+			'entry_id'						=> $query->row('entry_id'),
+			'id_path'						=> array($query->row('entry_id'), array('path_variable' => TRUE)),
+			'path'							=> array($query->row('url_title'), array('path_variable' => TRUE)),
+			'title'							=> $title,
+			'url_title'						=> $query->row('url_title'),
+			'channel_short_name'			=> $query->row('channel_name'),
+			'channel'						=> $query->row('channel_title'),
+			'channel_url'					=> $query->row('channel_url'),
+			'comment_entry_id_auto_path'	=> reduce_double_slashes($comment_path.'/'.$query->row('entry_id')),
+			'comment_url_title_auto_path'	=> reduce_double_slashes($comment_path.'/'.$query->row('url_title'))
+		);
+		
+		// Presumably this is legacy
+		if ($which == 'next')
 		{
-			$path  = (preg_match("#".LD."path=(.+?)".RD."#", $this->EE->TMPL->tagdata, $match)) ? $this->EE->functions->create_url($match[1]) : $this->EE->functions->create_url("SITE_INDEX");
-			$path .= '/'.$query->row('url_title');
-			$this->EE->TMPL->tagdata = preg_replace("#".LD."path=.+?".RD."#", $this->EE->functions->remove_double_slashes($path), $this->EE->TMPL->tagdata);
+			$vars['0']['next_entry->title'] = $title;
+		}
+		else
+		{
+			$vars['0']['prev_entry->title'] = $title;
 		}
 
-		if (strpos($this->EE->TMPL->tagdata, LD.'id_path=') !== FALSE)
-		{
-			$id_path  = (preg_match("#".LD."id_path=(.+?)".RD."#", $this->EE->TMPL->tagdata, $match)) ? $this->EE->functions->create_url($match[1]) : $this->EE->functions->create_url("SITE_INDEX");
-			$id_path .= '/'.$query->row('entry_id');
-
-			$this->EE->TMPL->tagdata = preg_replace("#".LD."id_path=.+?".RD."#", $this->EE->functions->remove_double_slashes($id_path), $this->EE->TMPL->tagdata);
-		}
-
-		if (strpos($this->EE->TMPL->tagdata, LD.'url_title') !== FALSE)
-		{
-			$this->EE->TMPL->tagdata = str_replace(LD.'url_title'.RD, $query->row('url_title'), $this->EE->TMPL->tagdata);
-		}
-
-		if (strpos($this->EE->TMPL->tagdata, LD.'entry_id') !== FALSE)
-		{
-			$this->EE->TMPL->tagdata = str_replace(LD.'entry_id'.RD, $query->row('entry_id'), $this->EE->TMPL->tagdata);
-		}
-
-		if (strpos($this->EE->TMPL->tagdata, LD.'title') !== FALSE)
-		{
-			$this->EE->TMPL->tagdata = str_replace(LD.'title'.RD, $this->EE->typography->format_characters($query->row('title')), $this->EE->TMPL->tagdata);
-		}
-
-		if (strpos($this->EE->TMPL->tagdata, '_entry->title') !== FALSE)
-		{
-			$this->EE->TMPL->tagdata = preg_replace('/'.LD.'(?:next|prev)_entry->title'.RD.'/', 
-													$this->EE->typography->format_characters($query->row('title')),
-													$this->EE->TMPL->tagdata);
-		}
-
-		return $this->EE->TMPL->tagdata;
+		return $this->EE->TMPL->parse_variables($this->EE->TMPL->tagdata, $vars);
 	}
-
+	
 	// ------------------------------------------------------------------------
 
 	/**
@@ -7039,7 +7048,8 @@ class Channel {
 		//  Build query
 
 		// Fetch the timezone array and calculate the offset so we can localize the month/year
-		$zones = $this->EE->localize->zones();
+		$this->EE->load->helper('date');
+		$zones = timezones();
 
 		$offset = ( ! isset($zones[$this->EE->session->userdata['timezone']]) OR $zones[$this->EE->session->userdata['timezone']] == '') ? 0 : ($zones[$this->EE->session->userdata['timezone']]*60*60);
 
@@ -7289,7 +7299,7 @@ class Channel {
 
 		if (preg_match("#/P\d+#", $qstring, $match))
 		{
-			$qstring = $this->EE->functions->remove_double_slashes(str_replace($match[0], '', $qstring));
+			$qstring = reduce_double_slashes(str_replace($match[0], '', $qstring));
 		}
 
 		/** --------------------------------------
@@ -7297,7 +7307,7 @@ class Channel {
 		/** --------------------------------------*/
 		if (preg_match("#/N(\d+)#", $qstring, $match))
 		{
-			$qstring = $this->EE->functions->remove_double_slashes(str_replace($match[0], '', $qstring));
+			$qstring = reduce_double_slashes(str_replace($match[0], '', $qstring));
 		}
 
 		/** --------------------------------------

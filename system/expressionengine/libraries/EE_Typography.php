@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -127,8 +127,6 @@ class EE_Typography extends CI_Typography {
 		$this->yes_no_syntax		= array('y', 'n');
 		$this->code_chunks			= array();
 		$this->code_counter			= 0;
-		
-		$this->EE->load->helper('string');
 		
 		$this->http_hidden 			= unique_marker('typography_url_protect'); // hash to protect URLs in [url] BBCode
 		$this->safe_img_src_end		= unique_marker('typography_img_src_end'); // hash to mark end of image URLs during sanitizing of image tags
@@ -1312,16 +1310,8 @@ class EE_Typography extends CI_Typography {
 
 		ob_start();
 
-/* CAREFUL
- *
- * This javascript currently breaks in the forum if it outputs curly brackets. 
- * Test if you change it.
- * 
- * Leave the comments in the while (--j >= 0) loop. They make sure that when 
- * the line breaks are removed EE doesn't see {if...
- *
- * Regex speed hat tip: http://blog.stevenlevithan.com/archives/faster-trim-javascript
-*/ ?>
+// Regex speed hat tip: http://blog.stevenlevithan.com/archives/faster-trim-javascript
+?>
 
 <span <?php echo $span_marker; ?>='1'>.<?php echo lang('encoded_email'); ?></span><script type="text/javascript">
 /*<![CDATA[*/
@@ -1332,17 +1322,11 @@ var out = '',
 	j = el.length;
 
 while (--i >= 0)
-{
 	out += unescape(l[i].replace(/^\s\s*/, '&#'));
-}
 
 while (--j >= 0)
-{/**/
 	if (el[j].getAttribute('<?php echo $span_marker ?>'))
-	{
 		el[j].innerHTML = out;
-	}
-}
 /*]]>*/
 </script><?php
 

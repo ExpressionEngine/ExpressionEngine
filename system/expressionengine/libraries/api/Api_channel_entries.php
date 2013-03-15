@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -142,11 +142,11 @@ class Api_channel_entries extends Api {
 			'title'						=> ($this->EE->config->item('auto_convert_high_ascii') == 'y') ? ascii_to_entities($data['title']) : $data['title'],
 			'url_title'					=> $data['url_title'],
 			'entry_date'				=> $data['entry_date'],
-			'edit_date'					=> $this->EE->localize->decode_date('%Y%m%d%H%i%s', $data['edit_date'], FALSE),
+			'edit_date'					=> $this->EE->localize->format_date('%Y%m%d%H%i%s', $data['edit_date'], FALSE),
 			'versioning_enabled'		=> $data['versioning_enabled'],
-			'year'						=> $this->EE->localize->decode_date('%Y', $data['entry_date'], TRUE),
-			'month'						=> $this->EE->localize->decode_date('%m', $data['entry_date'], TRUE),
-			'day'						=> $this->EE->localize->decode_date('%d', $data['entry_date'], TRUE),
+			'year'						=> $this->EE->localize->format_date('%Y', $data['entry_date']),
+			'month'						=> $this->EE->localize->format_date('%m', $data['entry_date']),
+			'day'						=> $this->EE->localize->format_date('%d', $data['entry_date']),
 			'expiration_date'			=> $data['expiration_date'],
 			'comment_expiration_date'	=> $data['comment_expiration_date'],
 			'sticky'					=> (isset($data['sticky']) && $data['sticky'] == 'y') ? 'y' : 'n',
@@ -1105,7 +1105,7 @@ class Api_channel_entries extends Api {
 			
 			if ($row['field_type'] == 'file')
 			{
-				if ($this->autosave && isset($data['field_id_'.$row['field_id'].'_hidden']))
+				if ($this->autosave && ! empty($data['field_id_'.$row['field_id'].'_hidden']))
 				{
 					$directory = $data['field_id_'.$row['field_id'].'_directory'];
 					$data['field_id_'.$row['field_id']] =  '{filedir_'.$directory.'}'.$data['field_id_'.$row['field_id'].'_hidden'];
@@ -1345,7 +1345,6 @@ class Api_channel_entries extends Api {
 		}
 		else
 		{
-			$this->_cache['dst_enabled'] = 'n';
 			
 			if ( ! isset($data['field_offset_'.$row['field_id']]))
 			{
@@ -1463,7 +1462,6 @@ class Api_channel_entries extends Api {
 		}
 		
 		
-		$this->_cache['dst_enabled'] = 'n';
 		
 		$this->instantiate('channel_fields');
 
@@ -1632,7 +1630,6 @@ class Api_channel_entries extends Api {
 	 */
 	function _insert_entry($meta, &$data, &$mod_data)
 	{
-		$meta['dst_enabled'] =  $this->_cache['dst_enabled'];
 		
 		if ($this->autosave)
 		{
@@ -1791,7 +1788,6 @@ class Api_channel_entries extends Api {
 	 */
 	function _update_entry($meta, &$data, &$mod_data)
 	{
-		$meta['dst_enabled'] =  $this->_cache['dst_enabled'];
 		
 		// See if the author changed and store the old author ID for updating stats later
 		$this->EE->db->select('author_id');

@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -109,13 +109,13 @@ class Tools_data extends CP_Controller {
 			$this->functions->redirect(BASE.AMP.'C=tools_data'.AMP.'M=clear_caching');
 		}
 
-		$this->cp->set_variable('cp_page_title', lang('clear_caching'));
+		$this->view->cp_page_title = lang('clear_caching');
 
 		// a bit of a breadcrumb override is needed
-		$this->cp->set_variable('cp_breadcrumbs', array(
+		$this->view->cp_breadcrumbs = array(
 			BASE.AMP.'C=tools' => lang('tools'),
 			BASE.AMP.'C=tools_data'=> lang('tools_data')
-		));
+		);
 
 		$this->cp->render('tools/clear_caching', $vars);
 	}
@@ -139,15 +139,15 @@ class Tools_data extends CP_Controller {
 
 		$sql_info = $this->tools_model->get_sql_info();
 
-		$this->cp->set_variable('cp_page_title', lang('sql_manager'));
+		$this->view->cp_page_title = lang('sql_manager');
 		
 		$this->cp->set_right_nav($this->sub_breadcrumbs);
 
 		// a bit of a breadcrumb override is needed
-		$this->cp->set_variable('cp_breadcrumbs', array(
+		$this->view->cp_breadcrumbs = array(
 			BASE.AMP.'C=tools' => lang('tools'),
 			BASE.AMP.'C=tools_data'=> lang('tools_data')
-		));
+		);
 
 		$this->load->library('table');
 
@@ -181,16 +181,16 @@ class Tools_data extends CP_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->cp->set_variable('cp_page_title', lang('sql_query_form'));
+		$this->view->cp_page_title = lang('sql_query_form');
 
 		$this->cp->set_right_nav($this->sub_breadcrumbs);
 
 		// a bit of a breadcrumb override is needed
-		$this->cp->set_variable('cp_breadcrumbs', array(
+		$this->view->cp_breadcrumbs = array(
 			BASE.AMP.'C=tools' => lang('tools'),
 			BASE.AMP.'C=tools_data'=> lang('tools_data'),
 			BASE.AMP.'C=tools_data'.AMP.'M=sql_manager' => lang('sql_manager')
-		));
+		);
 
 		$this->cp->render('tools/sql_query_form');
 	}
@@ -224,16 +224,16 @@ class Tools_data extends CP_Controller {
 
 		$details = $this->tools_model->get_table_status();
 
-		$this->cp->set_variable('cp_page_title', lang('sql_view_database'));
+		$this->view->cp_page_title = lang('sql_view_database');
 
 		$this->cp->set_right_nav($this->sub_breadcrumbs);
 
 		// a bit of a breadcrumb override is needed
-		$this->cp->set_variable('cp_breadcrumbs', array(
+		$this->view->cp_breadcrumbs = array(
 			BASE.AMP.'C=tools' => lang('tools'),
 			BASE.AMP.'C=tools_data'=> lang('tools_data'),
 			BASE.AMP.'C=tools_data'.AMP.'M=sql_manager' => lang('sql_manager')
-		));
+		);
 
 		$this->javascript->output('
 			$(".toggle_all").toggle(
@@ -307,16 +307,16 @@ class Tools_data extends CP_Controller {
 
 		$vars['action'] = strtolower($action);
 
-		$this->cp->set_variable('cp_page_title', lang($vars['action']));
+		$this->view->cp_page_title = lang($vars['action']);
 
 		$this->cp->set_right_nav($this->sub_breadcrumbs);
 
 		// a bit of a breadcrumb override is needed
-		$this->cp->set_variable('cp_breadcrumbs', array(
+		$this->view->cp_breadcrumbs = array(
 			BASE.AMP.'C=tools' => lang('tools'),
 			BASE.AMP.'C=tools_data'=> lang('tools_data'),
 			BASE.AMP.'C=tools_data'.AMP.'M=sql_manager'=> lang('sql_manager')
-		));
+		);
 
 		$this->cp->render('tools/sql_run_table_action', $vars);
 	}
@@ -401,13 +401,13 @@ class Tools_data extends CP_Controller {
 		}
 
 		// a bit of a breadcrumb override is needed
-		$this->cp->set_variable('cp_breadcrumbs', array(
+		$this->view->cp_breadcrumbs = array(
 			BASE.AMP.'C=tools' => lang('tools'),
 			BASE.AMP.'C=tools_data'=> lang('tools_data'),
 			BASE.AMP.'C=tools_data'.AMP.'M=sql_manager' => lang('sql_manager')
-		));
+		);
 
-		$this->cp->set_variable('cp_page_title', $title);
+		$this->view->cp_page_title = $title;
 
 		// some defaults for some view variables
 		$vars['write'] = FALSE;
@@ -555,13 +555,13 @@ class Tools_data extends CP_Controller {
 			$replaced = $this->_do_search_and_replace($search, $replace, $where);
 		}
 
-		$this->cp->set_variable('cp_page_title', lang('search_and_replace'));
+		$this->view->cp_page_title = lang('search_and_replace');
 
 		// a bit of a breadcrumb override is needed
-		$this->cp->set_variable('cp_breadcrumbs', array(
+		$this->view->cp_breadcrumbs = array(
 			BASE.AMP.'C=tools' => lang('tools'),
 			BASE.AMP.'C=tools_data'=> lang('tools_data')
-		));
+		);
 
 		$vars['save_tmpl_files'] = ($this->config->item('save_tmpl_files') == 'y') ? TRUE : FALSE;
 		$vars['replace_options'] = $this->tools_model->get_search_replace_options();
@@ -782,13 +782,13 @@ class Tools_data extends CP_Controller {
 			$this->functions->redirect(BASE.AMP.'C=tools_data'.AMP.'M=recount_stats');			
 		}
 
-		$this->cp->set_variable('cp_page_title', lang('recount_stats'));
+		$this->view->cp_page_title = lang('recount_stats');
 
 		// a bit of a breadcrumb override is needed
-		$this->cp->set_variable('cp_breadcrumbs', array(
+		$this->view->cp_breadcrumbs = array(
 			BASE.AMP.'C=tools' => lang('tools'),
 			BASE.AMP.'C=tools_data'=> lang('tools_data')
-		));
+		);
 
 		$this->cp->render('tools/recount_stats', $vars);
 	}

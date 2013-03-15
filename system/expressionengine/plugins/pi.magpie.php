@@ -6,7 +6,7 @@
 -----------------------------------------------------
  http://ellislab.com/
 -----------------------------------------------------
- Copyright (c) 2004 - 2012 EllisLab, Inc.
+ Copyright (c) 2004 - 2013 EllisLab, Inc.
 =====================================================
  THIS IS COPYRIGHTED SOFTWARE
  PLEASE READ THE LICENSE AGREEMENT
@@ -1956,7 +1956,7 @@ class RSSCache {
 	function file_name ($url)
 	{		
 		$filename = md5( $url );
-		return $this->EE->functions->remove_double_slashes(join( DIRECTORY_SEPARATOR, array( $this->BASE_CACHE, $filename)));
+		return reduce_double_slashes(join( DIRECTORY_SEPARATOR, array( $this->BASE_CACHE, $filename)));
 	}
 
 /*=======================================================================*\

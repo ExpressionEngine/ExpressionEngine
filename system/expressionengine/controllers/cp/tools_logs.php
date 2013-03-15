@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -105,13 +105,13 @@ class Tools_logs extends CP_Controller {
 				
 		$vars = $this->table->datasource('_cp_log_filter', $initial_state, $params);
 				
-		$this->cp->set_variable('cp_page_title', lang('view_cp_log'));
+		$this->view->cp_page_title = lang('view_cp_log');
 
 		// a bit of a breadcrumb override is needed
-		$this->cp->set_variable('cp_breadcrumbs', array(
+		$this->view->cp_breadcrumbs = array(
 			BASE.AMP.'C=tools' => lang('tools'),
 			BASE.AMP.'C=tools_logs'=> lang('tools_logs')
-		));
+		);
 				
 		$this->cp->render('tools/view_cp_log', $vars);
 	}
@@ -139,7 +139,7 @@ class Tools_logs extends CP_Controller {
 				'member_id'	 => $log['member_id'],
 				'username'	 => "<strong><a href='".BASE.AMP.'C=myaccount'.AMP.'id='.$log['member_id']."'>{$log['username']}</a></strong>",
 				'ip_address' => $log['ip_address'],
-				'act_date'	 => $this->localize->set_human_time($log['act_date']),
+				'act_date'	 => $this->localize->human_time($log['act_date']),
 				'site_label' => $log['site_label'],
 				'action'	 => $log['action']
 			);
@@ -195,13 +195,13 @@ class Tools_logs extends CP_Controller {
 		
 		$vars = $this->table->datasource('_search_log_filter', $initial_state, $params);
 
-		$this->cp->set_variable('cp_page_title', lang('view_search_log'));
+		$this->view->cp_page_title = lang('view_search_log');
 
 		// a bit of a breadcrumb override is needed
-		$this->cp->set_variable('cp_breadcrumbs', array(
+		$this->view->cp_breadcrumbs = array(
 			BASE.AMP.'C=tools' => lang('tools'),
 			BASE.AMP.'C=tools_logs'=> lang('tools_logs')
-		));
+		);
 
 		$this->cp->render('tools/view_search_log', $vars);
 	}
@@ -232,7 +232,7 @@ class Tools_logs extends CP_Controller {
 			$rows[] = array(
 				'screen_name'	=> $screen_name,
 				'ip_address'	=> $log['ip_address'],
-				'search_date'	=> $this->localize->set_human_time($log['search_date']),
+				'search_date'	=> $this->localize->human_time($log['search_date']),
 				'site_label'	=> $log['site_label'],
 				'search_type'	=> $log['search_type'],
 				'search_terms'	=> $log['search_terms']
@@ -298,13 +298,13 @@ class Tools_logs extends CP_Controller {
 		
 		$data = $this->table->datasource('_throttle_log_filter', $initial_state, $params);
 		
-		$this->cp->set_variable('cp_page_title', lang('view_throttle_log'));
+		$this->view->cp_page_title = lang('view_throttle_log');
 
 		// a bit of a breadcrumb override is needed
-		$this->cp->set_variable('cp_breadcrumbs', array(
+		$this->view->cp_breadcrumbs = array(
 			BASE.AMP.'C=tools' => lang('tools'),
 			BASE.AMP.'C=tools_logs'=> lang('tools_logs')
-		));
+		);
 		
 		// Blacklist Installed?
 		$this->db->where('module_name', 'Blacklist');
@@ -353,7 +353,7 @@ class Tools_logs extends CP_Controller {
 			$rows[] = array(
 				'ip_address'	=> $log['ip_address'],
 				'hits'			=> $log['hits'],
-				'last_activity'	=> $this->localize->set_human_time($log['last_activity'])
+				'last_activity'	=> $this->localize->human_time($log['last_activity'])
 			);
 		}
 		
@@ -420,13 +420,13 @@ class Tools_logs extends CP_Controller {
 		
 		$data = $this->table->datasource('_email_log_filter', $initial_state, $params);
 		
-		$this->cp->set_variable('cp_page_title', lang('view_email_logs'));
+		$this->view->cp_page_title = lang('view_email_logs');
 
 		// a bit of a breadcrumb override is needed
-		$this->cp->set_variable('cp_breadcrumbs', array(
+		$this->view->cp_breadcrumbs = array(
 			BASE.AMP.'C=tools' => lang('tools'),
 			BASE.AMP.'C=tools_logs'=> lang('tools_logs')
-		));
+		);
 
 		$this->javascript->output('
 			$("#toggle_all").toggle(
@@ -478,7 +478,7 @@ class Tools_logs extends CP_Controller {
 				'subject'		 => '<a href="'.BASE.AMP.'C=tools_logs'.AMP.'M=view_email'.AMP.'id='.$log['cache_id'].'">'.$log['subject'].'</a>',
 				'member_name'	 => '<a href="'.BASE.AMP.'C=myaccount'.AMP.'id='. $log['member_id'].'">'.$log['member_name'].'</a>',
 				'recipient_name' => $log['recipient_name'],
-				'cache_date'	 => $this->localize->set_human_time($log['cache_date']),
+				'cache_date'	 => $this->localize->human_time($log['cache_date']),
 				'_check'		 => form_checkbox(array(
 					'id'	=>'delete_box_'.$log['cache_id'],
 					'name'	=>'toggle[]',
@@ -515,7 +515,6 @@ class Tools_logs extends CP_Controller {
 		}
 		
 		$this->load->library('table');
-		
 		$this->table->set_base_url('C=tools_logs'.AMP.'M=view_developer_log');
 		$this->table->set_columns(array(
 			'log_id'		=> array('header' => lang('log_id')),
@@ -543,13 +542,13 @@ class Tools_logs extends CP_Controller {
 		
 		$vars = $this->table->datasource('_developer_log_filter', $initial_state, $params);
 
-		$this->cp->set_variable('cp_page_title', lang('view_developer_log'));
+		$this->view->cp_page_title = lang('view_developer_log');
 
 		// a bit of a breadcrumb override is needed
-		$this->cp->set_variable('cp_breadcrumbs', array(
+		$this->view->cp_breadcrumbs = array(
 			BASE.AMP.'C=tools' => lang('tools'),
 			BASE.AMP.'C=tools_logs'=> lang('tools_logs')
-		));
+		);
 		
 		$this->load->library('logger');
 		
@@ -606,7 +605,7 @@ class Tools_logs extends CP_Controller {
 					'class'	=> $new
 				),
 				'description' => array(
-					'data'	=> (isset($log['function'])) ? $this->logger->build_deprecation_language($log) : $log['description'],
+					'data'	=> $this->logger->build_deprecation_language($log),
 					'class'	=> $new
 				),
 				'viewed' => $log['viewed'],

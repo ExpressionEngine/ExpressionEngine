@@ -178,7 +178,7 @@ Confirm the fieldtype file is located in the expressionengine/third_party/ direc
 //----------------------------
 
 'forgotten_email_sent' => 
-'Instructions for resetting your password have just been emailed to you.',
+'If this email address is associated with an account, instructions for resetting your password have just been emailed to you.',
 
 'error_sending_email' => 
 'Unable to send email at this time.',
@@ -428,6 +428,11 @@ Confirm the fieldtype file is located in the expressionengine/third_party/ direc
 'UP13'		=>	'(UTC +13:00) Samoa Time Zone, Phoenix Islands Time, Tonga',
 'UP14'		=>	'(UTC +14:00) Line Islands',
 
+"select_timezone" =>
+"Select Timezone",
+
+"no_timezones" =>
+"No Timezones",
 
 // IGNORE
 ''=>'');

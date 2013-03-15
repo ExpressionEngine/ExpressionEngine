@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -324,7 +324,7 @@ EOF;
 			$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist');
 		}
 
-		$this->EE->load->helper(array('email','string'));
+		$this->EE->load->helper('email');
 
 		//  Fetch existing addresses
 		$subscribe = ($this->EE->input->get_post('sub_action') == 'unsubscribe') ? FALSE : TRUE;

@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -55,7 +55,7 @@ class Addons_plugins extends CP_Controller {
 	{
 		$this->load->library('table');
 
-		$this->cp->set_variable('cp_page_title', lang('plugins'));
+		$this->view->cp_page_title = lang('plugins');
 		$this->cp->set_breadcrumb(BASE.AMP.'C=addons', lang('addons'));
 
 		$this->jquery->tablesorter('.mainTable', '{
@@ -202,13 +202,13 @@ class Addons_plugins extends CP_Controller {
 
 		$plugin = $this->_get_plugin_info($name);
 
-		$this->cp->set_variable('cp_page_title', $plugin['pi_name']);
+		$this->view->cp_page_title = $plugin['pi_name'];
 
 		// a bit of a breadcrumb override is needed
-		$this->cp->set_variable('cp_breadcrumbs', array(
+		$this->view->cp_breadcrumbs = array(
 			BASE.AMP.'C=addons' => lang('addons'),
 			BASE.AMP.'C=addons_plugins'=> lang('addons_plugins')
-		));
+		);
 
 		$this->cp->render('addons/plugin_info', array('plugin' => $plugin));
 	}
@@ -233,7 +233,7 @@ class Addons_plugins extends CP_Controller {
 
 		$this->load->helper('file');
 
-		$this->cp->set_variable('cp_page_title', lang('plugin_delete_confirm'));
+		$this->view->cp_page_title = lang('plugin_delete_confirm');
 		$this->cp->set_breadcrumb(BASE.AMP.'C=addons', lang('addons'));
 
 		$hidden = $this->input->post('toggle');

@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -528,6 +528,7 @@ class Api_channel_structure extends Api {
 		}
 				
 		// check channel name availability
+		$this->EE->load->model('super_model');
 		$count = $this->EE->super_model->count('channels', array('site_id' => $site_id, 'channel_name' => $channel_name, 'channel_id !=' => $channel_id));
 	  
 		if ($count > 0)

@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -448,9 +448,15 @@ class Member_images extends Member {
 		$height	= $vals['1'];
 
 		// Update DB
-		$this->EE->db->where('member_id', $this->EE->session->userdata('member_id'));
-		$this->EE->db->update('members', array('avatar_filename' => $avatar, 'avatar_width' => $width, 'avatar_height' => $height));
-
+		$this->EE->load->model('member_model');
+		$this->EE->member_model->update_member(
+			$this->EE->session->userdata('member_id'),
+			array(
+				'avatar_filename' => $avatar, 
+				'avatar_width' => $width, 
+				'avatar_height' => $height
+			)
+		);
 
 		return $this->_var_swap($this->_load_element('success'),
 								array(

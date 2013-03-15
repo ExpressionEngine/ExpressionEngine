@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -37,6 +37,8 @@ class EE_Loader extends CI_Loader {
 	 * changing _ci_view_path. I tried doing a getter/setter, but since all
 	 * of CI's object references are stuck onto the loader when loading views
 	 * I get access errors left and right. -pk
+	 *
+	 * FIXME  What's deprecated?  The method clearly isn't, it's a core method!
 	 *
 	 * @deprecated
 	 * @access	public
@@ -132,10 +134,6 @@ class EE_Loader extends CI_Loader {
 		
 		if (strtolower($library) == 'security')
 		{
-			$this->library('logger');
-			get_instance()->logger->developer('A third-party add-on is calling $this->load->library(\'security\'),
-				which is deprecated as the CI_Security class has been moved to Core, so it is always loaded.', TRUE, 604800);
-			
 			return NULL;
 		}
 		
