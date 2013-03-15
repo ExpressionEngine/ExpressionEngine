@@ -77,7 +77,7 @@ class EE_Tree {
 	 */
 	public function to_list(EE_TreeNode $tree)
 	{
-		$it = $this->iterator();
+		$it = $this->preorder_iterator();
 		$result = array();
 
 		foreach ($it as $node)
