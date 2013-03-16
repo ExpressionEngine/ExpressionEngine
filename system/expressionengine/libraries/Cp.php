@@ -704,7 +704,7 @@ class Cp {
 	function set_variable($name, $value)
 	{	
 		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated('2.6', 'view->$<var> = <value>;');
+		$this->EE->logger->deprecated('2.6', 'view-&gt;$&lt;var&gt; = &lt;value&gt;;');
 		
 		$this->EE->view->$name = $value;
 	}
