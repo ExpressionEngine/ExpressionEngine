@@ -344,6 +344,12 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 
 			var ul = this.root.find('ul');
 
+			this.searchField.keydown(function(evt) {
+				if (evt.keyCode == 13) {
+					evt.preventDefault();
+				}
+			});
+
 			this.searchField.on(
 				'interact',
 				_.debounce(
