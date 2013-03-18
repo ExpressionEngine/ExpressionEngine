@@ -15,36 +15,9 @@
 
 		<div id="grid_col_settings_container_inner">
 
-			<div class="grid_col_settings">
-				<div class="grid_col_settings_section grid_data_type alt">
-					<?=form_dropdown('grid[cols][new][0][type]', $fieldtypes, NULL, 'class="grid_col_select"')?>
-
-					<a href="#" class="grid_col_settings_delete" title="Delete Column">Delete Column</a>
-				</div>
-				<div class="grid_col_settings_section text">
-					<?=form_input('grid[cols][new][0][name]')?>
-				</div>
-				<div class="grid_col_settings_section text alt">
-					<?=form_input('grid[cols][new][0][label]')?>
-				</div>
-				<div class="grid_col_settings_section text">
-					<?=form_input('grid[cols][new][0][instr]')?>
-				</div>
-				<div class="grid_col_settings_section grid_data_search alt">
-					<?=form_checkbox('grid[cols][new][0][required]', 'column_required').form_label(lang('grid_col_required'))?>
-					<?=form_checkbox('grid[cols][new][0][searchable]', 'column_searchable').form_label(lang('grid_col_searchable'))?>
-				</div>
-				<?php foreach ($settings as $key => $value): ?>
-					<?php foreach ($value as $index => $setting): ?>
-						<div class="grid_col_settings_section <?=($index % 2) ? 'alt' : ''?>">
-							<?=$setting?>
-						</div>
-					<?php endforeach ?>
-				<?php endforeach ?>
-				<div class="grid_col_settings_section grid_col_copy">
-					<a href="#" class="grid_col_copy">Copy</a>
-				</div>
-			</div>
+			<?php foreach ($columns as $column): ?>
+				<?=$column?>
+			<?php endforeach ?>
 
 			<a class="grid_button_add" href="#">Add Column</a>
 

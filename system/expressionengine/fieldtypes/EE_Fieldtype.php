@@ -429,7 +429,7 @@ class EE_Fieldtype {
 				// existing logic in channel fields API and confirm it's
 				// correct, there's a bug report or two about it
 				$this->EE->addons_model->get_plugin_formatting(TRUE),
-				'none'
+				(isset($data['field_fmt'])) ? $data['field_fmt'] : 'none'
 			);
 	}
 
@@ -449,7 +449,8 @@ class EE_Fieldtype {
 				array(
 					'ltr' => lang('ltr'),
 					'rtl' => lang('rtl')
-				)
+				),
+				(isset($data['field_text_direction'])) ? $data['field_text_direction'] : NULL
 			);
 	}
 
@@ -465,7 +466,7 @@ class EE_Fieldtype {
 		return form_label(lang('grid_limit_input')).NBS.NBS.NBS.
 			form_input(array(
 				'name' => 'field_max_length',
-				'value' => '256',
+				'value' => (isset($data['field_max_length'])) ? $data['field_max_length'] : 256,
 				'class' => 'grid_input_text_small'
 			)).NBS.NBS.NBS.
 			'<i class="instruction_text">'.lang('grid_chars_allowed').'</i>';

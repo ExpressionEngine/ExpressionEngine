@@ -79,9 +79,16 @@ class Grid_lib {
 	 *
 	 * @return	array	Array of settings for each Grid-enabled fieldtype
 	 */
-	public function get_grid_fieldtype_settings_forms()
+	public function get_grid_fieldtype_settings_forms($column = NULL)
 	{
 		$ft_api = $this->EE->api_channel_fields;
+
+		if ( ! empty($column))
+		{
+			$ft_api->setup_handler($column['col_type']);
+
+			return $ft_api->apply('grid_display_settings', array($column['col_settings']));
+		}
 
 		$settings = array();
 		foreach ($this->get_grid_fieldtypes() as $field_name => $data)
@@ -89,7 +96,7 @@ class Grid_lib {
 			$ft_api->setup_handler($field_name);
 
 			// Call grid_display_settings() on each field type
-			$settings[$field_name] = $ft_api->apply('grid_display_settings', array('something'));
+			$settings[$field_name] = $ft_api->apply('grid_display_settings', array(array()));
 		}
 
 		return $settings;
@@ -124,42 +131,83 @@ class Grid_lib {
 			$this->EE->dbforge->create_table($table_name);
 		}
 
-		foreach ($settings['grid']['cols']['new'] as $key => $column)
+		if (isset($settings['grid']['cols']['new']))
 		{
-			$this->_add_column_to_field($column, $settings['field_id']);
+			$this->_add_columns_to_field($settings['grid']['cols']['new'], $settings['field_id']);
 		}
 	}
 
-	private function _add_column_to_field($column, $field_id)
+	private function _add_columns_to_field($columns, $field_id)
 	{
 		$ft_api = $this->EE->api_channel_fields;
-		$ft_api->setup_handler($column['type']);
+		$table_name = $this->_table_prefix . $field_id;
 
 		$db_columns = array();
 
-		// TODO: insert into columns table, get insert_id for col_id
-		$col_id = 1;
+		foreach ($columns as $column)
+		{
+			$column['required'] = isset($column['required']) ? 'y' : 'n';
+			$column['searchable'] = isset($column['searchable']) ? 'y' : 'n';
 
-		if ($ft_api->check_method_exists('grid_settings_modify_column'))
-		{
-			$db_columns = array_merge(
-				$db_columns,
-				$ft_api->apply('grid_settings_modify_column', array($settings))
+			$column_data = array(
+				'field_id'			=> $field_id,
+				'col_order'			=> '0',
+				'col_type'			=> $column['type'],
+				'col_label'			=> $column['label'],
+				'col_name'			=> $column['name'],
+				'col_instructions'	=> $column['instr'],
+				'col_required'		=> $column['required'],
+				'col_search'		=> $column['searchable'],
+				'col_settings'		=> json_encode($column['settings'])
 			);
-		}
-		else
-		{
-			$db_columns['col_id_'.$col_id] = array(
-				'type' => 'text',
-				'null' => TRUE
-			);
-			$db_columns['col_ft_'.$col_id] = array(
-				'type' => 'tinytext',
-				'null' => TRUE
-			);
+
+			$this->EE->db->insert('grid_columns', $column_data);
+			$col_id = $this->EE->db->insert_id();
+
+			$ft_api->setup_handler($column['type']);
+
+			if ($ft_api->check_method_exists('grid_settings_modify_column'))
+			{
+				$db_columns = array_merge(
+					$db_columns,
+					$ft_api->apply('grid_settings_modify_column', array($settings))
+				);
+			}
+			else
+			{
+				$db_columns['col_id_'.$col_id] = array(
+					'type' => 'text',
+					'null' => TRUE
+				);
+				$db_columns['col_ft_'.$col_id] = array(
+					'type' => 'tinytext',
+					'null' => TRUE
+				);
+			}
 		}
 
 		$this->EE->load->dbforge();
+		$this->EE->dbforge->add_column($table_name, $db_columns);
+	}
+
+	public function get_columns_for_field($field_id, $settings_forms = FALSE)
+	{
+		$columns = $this->EE->db->get_where(
+			'grid_columns',
+			array('field_id' => $field_id))
+		->result_array();
+
+		foreach ($columns as &$column)
+		{
+			$column['col_settings'] = json_decode($column['col_settings'], TRUE);
+
+			if ($settings_forms)
+			{
+				$column['settings_form'] = $this->get_grid_fieldtype_settings_forms($column);
+			}
+		}
+
+		return $columns;
 	}
 }
 
