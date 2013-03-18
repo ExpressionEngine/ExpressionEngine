@@ -182,11 +182,11 @@ class EE_Logger {
 
 		// Information we are capturing from the incident
 		$deprecated = array(
-			'function'			=> $function.'()',	// Name of deprecated function
-			'line'				=> $line,			// Line where 'function' was called
-			'file'				=> $file,			// File where 'function' was called 
-			'deprecated_since'	=> $version,		// Version function was deprecated
-			'use_instead'		=> $use_instead		// Function to use instead
+			'function'			=> $function.'()',				// Name of deprecated function
+			'line'				=> $line,						// Line where 'function' was called
+			'file'				=> $file,						// File where 'function' was called 
+			'deprecated_since'	=> $version,					// Version function was deprecated
+			'use_instead'		=> htmlentities($use_instead)	// Function to use instead
 		);
 
 		// On page requests we need to check a bunch of other stuff

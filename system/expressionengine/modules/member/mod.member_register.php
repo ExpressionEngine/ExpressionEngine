@@ -438,7 +438,7 @@ class Member_register extends Member {
 		// Assign the base query data
 		$data = array(
 			'username'		=> trim_nbs($this->EE->input->post('username')),
-			'password'		=> do_hash($_POST['password']),
+			'password'		=> sha1($_POST['password']),
 			'ip_address'	=> $this->EE->input->ip_address(),
 			'unique_id'		=> $this->EE->functions->random('encrypt'),
 			'join_date'		=> $this->EE->localize->now,
