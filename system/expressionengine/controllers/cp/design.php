@@ -4646,6 +4646,12 @@ class Design extends CP_Controller {
 				// if the templates don't exist, make 'em!
 				foreach ($templates as $template)
 				{
+					// Skip hidden ._ files
+					if (substr($template, 0, 2) == '._')
+					{
+						continue;
+					}
+
 					// Skip subdirectories (such as those created by svn)
 					if (is_array($template))
 					{
