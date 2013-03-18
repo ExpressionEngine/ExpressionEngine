@@ -30,9 +30,6 @@
 	}
 	?>
 	
-	
-	<script src="http://www.google-analytics.com/ga.js"></script>
-
 </head>
 <body>
 <noscript>
