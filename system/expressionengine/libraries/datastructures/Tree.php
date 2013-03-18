@@ -574,11 +574,11 @@ class EE_TreeNode {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Leaf Iterator
+	 * Breadth First Iterator
 	 *
-	 * Iterates across all the leaf nodes
+	 * Iterates across all nodes in a level-by-level fashion
 	 *
-	 * @return <RecursiveIteratorIterator> with LEAVES_ONLY
+	 * @return <EE_BreadthFirstIterator>
 	 */
 	public function breadth_first_iterator()
 	{
