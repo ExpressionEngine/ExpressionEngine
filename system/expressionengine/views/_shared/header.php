@@ -13,12 +13,25 @@
 	<?php endif;?>
 	<!--[if lte IE 7]><?=$this->view->head_link('css/iefix.css')?><![endif]-->
 
+
+	<?php 
+	if (isset($cp_global_js))
+	{
+		echo $cp_global_js;
+	} ?>
+
+	<?=$this->view->script_tag('jquery/jquery.js')?>
+	
+
 	<?php
 	foreach ($this->cp->its_all_in_your_head as $item)
 	{
 		echo $item."\n";
 	}
 	?>
+	
+	
+	<script src="http://www.google-analytics.com/ga.js"></script>
 
 </head>
 <body>
