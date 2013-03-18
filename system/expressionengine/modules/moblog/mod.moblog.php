@@ -2071,7 +2071,7 @@ class Moblog {
 		
 		$this->EE->db->select('member_id, group_id');
 		$this->EE->db->where('username', $username);
-		$this->EE->db->where('password', do_hash(stripslashes($password)));
+		$this->EE->db->where('password', sha1(stripslashes($password)));
 		$query = $this->EE->db->get('members');
 
 		if ($query->num_rows() == 0)

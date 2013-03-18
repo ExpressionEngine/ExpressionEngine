@@ -1028,7 +1028,7 @@ PAPAYA;
 		
 		// Encrypt the password and unique ID
 		$this->userdata['unique_id'] = random_string('encrypt');
-		$this->userdata['password'] = do_hash($this->userdata['password']);
+		$this->userdata['password'] = sha1($this->userdata['password']);
 		
 		// --------------------------------------------------------------------
 		

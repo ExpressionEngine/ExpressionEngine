@@ -234,7 +234,7 @@ if ( ! function_exists('random_string'))
 						$CI =& get_instance();
 						$CI->load->helper('security');
 
-						return do_hash(uniqid(mt_rand(), TRUE), 'sha1');
+						return sha1(uniqid(mt_rand(), TRUE));
 				break;
 		}
 	}
