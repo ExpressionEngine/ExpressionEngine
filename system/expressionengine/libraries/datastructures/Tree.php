@@ -669,8 +669,6 @@ class EE_TreeIterator extends RecursiveArrayIterator {
 class EE_BreadthFirstIterator implements OuterIterator {
 
 	protected $_level;
-	protected $_level_size;
-
 	protected $_iterator;
 	protected $_first_iterator;	// needed for rewind
 
@@ -679,7 +677,6 @@ class EE_BreadthFirstIterator implements OuterIterator {
 	public function __construct(RecursiveIterator $it)
 	{
 		$this->_level = 0;
-		$this->_level_size = 0;
 		$this->_iterator = $it;
 		$this->_first_iterator = $it;
 	}
@@ -722,7 +719,7 @@ class EE_BreadthFirstIterator implements OuterIterator {
 	{
 		if ($this->_iterator->hasChildren())
 		{
-			$this->_queue[] = $this->_iterator->getChildren();
+			$this->_queue[] = array($this->_level + 1, $this->_iterator->getChildren());
 		}
 
 		$this->_iterator->next();
@@ -740,13 +737,11 @@ class EE_BreadthFirstIterator implements OuterIterator {
 	 */
 	public function rewind()
 	{
+		$this->_level = 0;
 		$this->_queue = array();
 
 		$this->_iterator->rewind();
 		$this->_iterator = $this->_first_iterator;
-
-		$this->_level = 0;
-		$this->_level_size = 0;
 	}
 
 	// --------------------------------------------------------------------
@@ -769,16 +764,9 @@ class EE_BreadthFirstIterator implements OuterIterator {
 
 		$this->_iterator->rewind(); // we're at the end, @todo this is a little sloppy
 
-		$queue_size = count($this->_queue);
-
-		if ($queue_size - $this->_level == 1)
-		{
-			$this->_level++;
-		}
-
 		if (count($this->_queue))
 		{
-			$this->_iterator = array_shift($this->_queue);
+			list($this->_level, $this->_iterator) = array_shift($this->_queue);
 			return $this->_iterator->valid();
 		}
 
