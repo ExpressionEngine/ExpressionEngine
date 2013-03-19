@@ -3,38 +3,38 @@
 		<?=form_dropdown(
 			'grid[cols]'.$field_name.'[type]',
 			$fieldtypes,
-			$column['col_type'],
+			isset($column['col_type']) ? $column['col_type'] : 'text',
 			'class="grid_col_select"')?>
 
 		<a href="#" class="grid_col_settings_delete" title="Delete Column">Delete Column</a>
 	</div>
 	<div class="grid_col_settings_section text">
-		<?=form_input('grid[cols]'.$field_name.'[label]', $column['col_label'])?>
+		<?=form_input('grid[cols]'.$field_name.'[label]', isset($column['col_label']) ? $column['col_label'] : '')?>
 	</div>
 	<div class="grid_col_settings_section text alt">
-		<?=form_input('grid[cols]'.$field_name.'[name]', $column['col_name'])?>
+		<?=form_input('grid[cols]'.$field_name.'[name]', isset($column['col_name']) ? $column['col_name'] : '')?>
 	</div>
 	<div class="grid_col_settings_section text">
-		<?=form_input('grid[cols]'.$field_name.'[instr]', $column['col_instructions'])?>
+		<?=form_input('grid[cols]'.$field_name.'[instr]', isset($column['col_instructions']) ? $column['col_instructions'] : '')?>
 	</div>
 	<div class="grid_col_settings_section grid_data_search alt">
 		<?=form_checkbox(
 			'grid[cols]'.$field_name.'[required]',
 			'column_required',
-			($column['col_required'] == 'y')
+			(isset($column['col_label']) && $column['col_required'] == 'y')
 		).form_label(lang('grid_col_required'))?>
 
 		<?=form_checkbox(
 			'grid[cols]'.$field_name.'[searchable]',
 			'column_searchable',
-			($column['col_search'] == 'y')
+			(isset($column['col_label']) && $column['col_search'] == 'y')
 		).form_label(lang('grid_col_searchable'))?>
 	</div>
-	<?php foreach ($column['settings_form'] as $index => $setting): ?>
-		<div class="grid_col_settings_section <?=($index % 2) ? 'alt' : ''?>">
-			<?=$setting?>
-		</div>
-	<?php endforeach ?>
+	<div class="grid_col_settings_custom">
+		<?php if (isset($column['settings_form'])): ?>
+			<?=$column['settings_form']?>
+		<?php endif ?>
+	</div>
 	<div class="grid_col_settings_section grid_col_copy">
 		<a href="#" class="grid_col_copy">Copy</a>
 	</div>

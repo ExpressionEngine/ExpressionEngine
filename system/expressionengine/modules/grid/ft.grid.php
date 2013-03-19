@@ -155,32 +155,11 @@ class Grid_ft extends EE_Fieldtype {
 		);
 
 		$this->EE->load->library('grid_lib');
-		$fieldtypes = $this->EE->grid_lib->get_grid_fieldtypes();
-
-		// Create a dropdown-frieldly array of available fieldtypes
-		$fieldtypes_dropdown = array();
-		foreach ($fieldtypes as $key => $value)
-		{
-			$fieldtypes_dropdown[$key] = $value['name'];
-		}
 
 		$vars = array();
 
 		// Fresh settings forms ready to be used for added columns
-		$vars['settings'] = $this->EE->grid_lib->get_grid_fieldtype_settings_forms();
-
-		// Go through each setting change input names to allow building of
-		// a POST array upon submission
-		foreach ($vars['settings'] as $key => $value)
-		{
-			// Searches for: name="field_setting_name" (single or double quotes)
-			// Replaces with: name="grid[cols][new][][options][field_setting_name]"
-			$vars['settings'][$key] = preg_replace(
-				'/(<[input|select][^>]*)name=["\']([^"]*)["\']/',
-				'$1name="grid[cols][new][0][settings][$2]"',
-				$value
-			);
-		}
+		$vars['settings_forms'] = $this->EE->grid_lib->get_settings_forms();
 
 		$vars['columns'] = array();
 
@@ -190,17 +169,12 @@ class Grid_ft extends EE_Fieldtype {
 
 			foreach ($columns as $column)
 			{
-				$vars['columns'][] = $this->EE->load->view(
-					'single_col_tmpl',
-					array(
-						'field_name'	=> '[col_id_'.$column['col_id'].']',
-						'column'		=> $column,
-						'fieldtypes'	=> $fieldtypes_dropdown
-					),
-					TRUE
-				);
+				$vars['columns'][] = $this->EE->grid_lib->view_for_column($column);
 			}
 		}
+
+		// Will be our template for newly-created columns
+		$vars['blank_col'] = $this->EE->grid_lib->view_for_column();
 		
 		// The big column configuration row, generated from the settings view
 		$this->EE->table->add_row(

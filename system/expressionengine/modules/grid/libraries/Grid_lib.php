@@ -75,19 +75,29 @@ class Grid_lib {
 	 * Constructs an array of fieltype short names correllated with the HTML
 	 * for each item in their grid settings forms
 	 *
-	 * TODO: Work with actual saved settings
-	 *
 	 * @return	array	Array of settings for each Grid-enabled fieldtype
 	 */
-	public function get_grid_fieldtype_settings_forms($column = NULL)
+	public function get_settings_forms($type = NULL, $column = NULL)
 	{
 		$ft_api = $this->EE->api_channel_fields;
 
-		if ( ! empty($column))
+		if ( ! empty($type) && empty($column))
 		{
-			$ft_api->setup_handler($column['col_type']);
+			$ft_api->setup_handler($type);
 
-			return $ft_api->apply('grid_display_settings', array($column['col_settings']));
+			return $this->_view_for_col_settings(
+				$type,
+				$ft_api->apply('grid_display_settings', array(array()))
+			);
+		}
+
+		if ( ! empty($type) && ! empty($column))
+		{
+			return $this->_view_for_col_settings(
+				$type,
+				$ft_api->apply('grid_display_settings', array($column['col_settings'])),
+				$column['col_id']
+			);
 		}
 
 		$settings = array();
@@ -96,7 +106,10 @@ class Grid_lib {
 			$ft_api->setup_handler($field_name);
 
 			// Call grid_display_settings() on each field type
-			$settings[$field_name] = $ft_api->apply('grid_display_settings', array(array()));
+			$settings[$field_name] = $this->_view_for_col_settings(
+				$field_name,
+				$ft_api->apply('grid_display_settings', array(array()))
+			);
 		}
 
 		return $settings;
@@ -203,11 +216,61 @@ class Grid_lib {
 
 			if ($settings_forms)
 			{
-				$column['settings_form'] = $this->get_grid_fieldtype_settings_forms($column);
+				$column['settings_form'] = $this->get_settings_forms($column['col_type'], $column);
 			}
 		}
 
 		return $columns;
+	}
+
+	public function view_for_column($column = NULL, $field_name = NULL)
+	{
+		$fieldtypes = $this->get_grid_fieldtypes();
+
+		// Create a dropdown-frieldly array of available fieldtypes
+		$fieldtypes_dropdown = array();
+		foreach ($fieldtypes as $key => $value)
+		{
+			$fieldtypes_dropdown[$key] = $value['name'];
+		}
+
+		$field_name = (empty($column)) ? '[new][0]' : '[col_id_'.$column['col_id'].']';
+
+		if (empty($column))
+		{
+			$column['settings_form'] = $this->get_settings_forms('text');
+		}
+
+		return $this->EE->load->view(
+			'col_tmpl',
+			array(
+				'field_name'	=> $field_name,
+				'column'		=> $column,
+				'fieldtypes'	=> $fieldtypes_dropdown
+			),
+			TRUE
+		);
+	}
+
+	private function _view_for_col_settings($col_type, $col_settings, $col_id = NULL)
+	{
+		$settings_view = $this->EE->load->view(
+			'col_settings_tmpl',
+			array(
+				'col_type'		=> $col_type,
+				'col_settings'	=> $col_settings
+			),
+			TRUE
+		);
+		
+		$col_id = (empty($col_id)) ? '[new][0]' : '[col_id_'.$col_id.']';
+
+		// Namespace form field names
+		return preg_replace(
+			'/(<[input|select][^>]*)name=["\']([^"]*)["\']/',
+			'$1name="grid[cols]'.$col_id.'[settings][$2]"',
+			$settings_view
+		);
 	}
 }
 

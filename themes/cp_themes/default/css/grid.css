@@ -169,3 +169,7 @@ a.grid_button_add:hover {
 	position: relative;
 	top: 172px;
 }
+
+.grid_col_settings_elements {
+	display: none;
+}

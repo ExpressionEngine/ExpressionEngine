@@ -24,3 +24,11 @@
 		</div>
 	</div>
 </div>
+
+<? /*<div class="grid_col_settings_elements">
+	<?=$blank_col?>
+
+	<?php foreach ($settings_forms as $form): ?>
+		<?=$form?>
+	<?php endforeach ?>
+</div>*/ ?>
