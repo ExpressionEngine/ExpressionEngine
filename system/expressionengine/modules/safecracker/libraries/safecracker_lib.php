@@ -339,7 +339,7 @@ class Safecracker_lib
 					');
 				}
 				
-				$custom_field_variables_row['field_data'] = $this->EE->localize->set_human_time($this->entry($field_name));
+				$custom_field_variables_row['field_data'] = $this->EE->localize->human_time($this->entry($field_name));
 			}
 			
 			$custom_field_variables[$field_name] = $custom_field_variables_row;
@@ -519,7 +519,7 @@ class Safecracker_lib
 				{
 					if (in_array($key, $this->date_fields) || $this->get_field_type($key) == 'date')
 					{
-						$this->parse_variables[$key] = ($this->entry($key)) ? $this->EE->localize->set_human_time($this->entry($key)) : '';
+						$this->parse_variables[$key] = ($this->entry($key)) ? $this->EE->localize->human_time($this->entry($key)) : '';
 					}
 					elseif (in_array($key, $this->checkboxes))
 					{
@@ -599,7 +599,7 @@ class Safecracker_lib
 		}
 		elseif ($this->channel('channel_id'))
 		{
-			$this->parse_variables['entry_date'] = $this->EE->localize->set_human_time();
+			$this->parse_variables['entry_date'] = $this->EE->localize->human_time();
 			
 			if ($this->datepicker)
 			{
@@ -1276,7 +1276,7 @@ class Safecracker_lib
 			{
 				if ($field['field_type'] == 'date')
 				{
-					$_POST['field_id_'.$field['field_id']] = $_POST[$field['field_name']] = $this->EE->localize->set_human_time($this->entry($field['field_name']));
+					$_POST['field_id_'.$field['field_id']] = $_POST[$field['field_name']] = $this->EE->localize->human_time($this->entry($field['field_name']));
 				}
 				else if ($field['field_required'] == 'y')
 				{
@@ -1377,11 +1377,11 @@ class Safecracker_lib
 				{
 					if ($this->entry($field))
 					{
-						$_POST[$field] = $this->EE->localize->set_human_time($this->entry($field));
+						$_POST[$field] = $this->EE->localize->human_time($this->entry($field));
 					}
 					else
 					{
-						$_POST[$field] = $this->EE->localize->set_human_time($this->EE->localize->now);
+						$_POST[$field] = $this->EE->localize->human_time();
 					}
 				}
 				elseif ($field == 'versioning_enabled' AND $this->channel['enable_versioning'] == 'y')
