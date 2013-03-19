@@ -2815,7 +2815,6 @@ class Safecracker_lib
 			'day',
 			'expiration_date',
 			'comment_expiration_date',
-			'edit_date',
 			'recent_comment_date',
 			'comment_total',
 		);
