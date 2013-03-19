@@ -1388,6 +1388,10 @@ class Safecracker_lib
 				{
 					$_POST[$field] = 'y';
 				}
+				elseif ($field == 'allow_comments')
+				{
+					$_POST[$field] = $this->_meta['allow_comments'];
+				}
 				else
 				{
 					if ($this->entry($field) !== FALSE)
@@ -2363,11 +2367,9 @@ class Safecracker_lib
 		$meta['channel_id'] = $this->channel('channel_id');  // channel_id is for THIS channel- use new_channel to change it
 		$meta['decrypt_check'] = TRUE;
 		
-		if ($this->channel('comment_system_enabled') != 'y')
-		{
-			$meta['allow_comments'] = 'n';
-		}
-
+		$meta['allow_comments'] = (isset($meta['allow_comments']))
+			? $meta['allow_comments'] : $this->channel('comment_system_enabled');
+		
 		$meta = serialize($meta);
 		
 		$this->EE->load->library('encrypt');
