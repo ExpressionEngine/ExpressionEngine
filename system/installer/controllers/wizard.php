@@ -195,9 +195,12 @@ class Wizard extends CI_Controller {
 		// Based on the users's choice we build the language into our URL string
 		// and use that info to load the desired language file on each page
 		
+		$this->load->library('logger');
+
 		$this->load->add_package_path(EE_APPPATH);
 		$this->_load_langauge();
 
+		$this->load->library('localize');
 		$this->load->library('cp');
 		
 		// Set the image URL				
@@ -515,6 +518,8 @@ class Wizard extends CI_Controller {
 			$vars['site_url'] = rtrim($this->userdata['site_url'], '/').'/'.$this->userdata['site_index'];
 			$vars['cp_url'] = $this->userdata['cp_url'];
 
+			$this->logger->log_update_message("Update complete. Now running version {$this->version}.");
+
 			$this->_set_output('uptodate', $vars);
 			return FALSE;
 		}
@@ -647,6 +652,8 @@ class Wizard extends CI_Controller {
 			{
 				$data['action'] = $this->set_qstr('do_update');
 			}
+
+			$this->logger->log_update_message("Preparing to update from {$this->installed_version} to {$this->version}. Awaiting acceptance of license terms.");
 		}
 		
 		$data['license'] = $this->_license_agreement();
@@ -1324,6 +1331,8 @@ PAPAYA;
 		$method = 'do_update';
 		
 		$this->load->library('smartforge');
+
+		$this->logger->log_update_message("Updating to {$next_version}");
 		
 		if ($this->config->item('ud_next_step') != FALSE)
 		{
