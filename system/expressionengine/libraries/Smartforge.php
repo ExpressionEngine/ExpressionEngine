@@ -36,6 +36,29 @@ class Smartforge {
 	// --------------------------------------------------------------------
 	
 	/**
+	 * Create table
+	 *
+	 * This will check to make sure the existing table doesn't exist before creating it.
+	 *
+	 * @access	public
+	 * @param	string	the old table name
+	 */
+	function create_table($table)
+	{
+		// Check to make sure table doesn't already exist
+		if ($this->EE->db->table_exists($table))
+		{
+			$this->EE->logger->updater("Could not create table '{$this->EE->db->dbprefix}$table'. Table already exists.", TRUE);
+
+			return FALSE;
+		}
+
+		return $this->EE->dbforge->create_table($table);
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
 	 * Rename table
 	 *
 	 * This will check to make sure the existing table name actually
