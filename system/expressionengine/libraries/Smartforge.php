@@ -50,7 +50,7 @@ class Smartforge {
 		// Check to make sure table exists
 		if ( ! $this->EE->db->table_exists($table))
 		{
-			$this->EE->logger->log_update_exception(__METHOD__." failed. Table '{$this->EE->db->dbprefix}$table' does not exist.");
+			$this->EE->logger->updater(__METHOD__." failed. Table '{$this->EE->db->dbprefix}$table' does not exist.", TRUE);
 
 			return FALSE;
 		}
@@ -60,7 +60,7 @@ class Smartforge {
 			return $this->EE->dbforge->rename_table($table, $new_table);
 		}
 
-		$this->EE->logger->log_update_exception("Could not rename '{$this->EE->db->dbprefix}$table' to '{$this->EE->db->dbprefix}$new_table'. Table '{$this->EE->db->dbprefix}$new_table' already exists.");
+		$this->EE->logger->updater("Could not rename '{$this->EE->db->dbprefix}$table' to '{$this->EE->db->dbprefix}$new_table'. Table '{$this->EE->db->dbprefix}$new_table' already exists.", TRUE);
 
 		return FALSE;
 	}
@@ -85,7 +85,7 @@ class Smartforge {
 		// Check to make sure table exists
 		if ( ! $this->EE->db->table_exists($table))
 		{
-			$this->EE->logger->log_update_exception(__METHOD__." failed. Table '{$this->EE->db->dbprefix}$table' does not exist.");
+			$this->EE->logger->updater(__METHOD__." failed. Table '{$this->EE->db->dbprefix}$table' does not exist.", TRUE);
 
 			return FALSE;
 		}
@@ -103,7 +103,7 @@ class Smartforge {
 			}
 			else
 			{
-				$this->EE->logger->log_update_exception("Could not add column '{$this->EE->db->dbprefix}$table.$k'. Column already exists.");
+				$this->EE->logger->updater("Could not add column '{$this->EE->db->dbprefix}$table.$k'. Column already exists.", TRUE);
 			}
 		}
 
@@ -127,7 +127,7 @@ class Smartforge {
 		// Check to make sure table exists
 		if ( ! $this->EE->db->table_exists($table))
 		{
-			$this->EE->logger->log_update_exception(__METHOD__." failed. Table '{$this->EE->db->dbprefix}$table' does not exist.");
+			$this->EE->logger->updater(__METHOD__." failed. Table '{$this->EE->db->dbprefix}$table' does not exist.", TRUE);
 
 			return FALSE;
 		}
@@ -137,7 +137,7 @@ class Smartforge {
 			return $this->EE->dbforge->drop_column($table, $column_name);
 		}
 
-		$this->EE->logger->log_update_exception("Could not drop column '{$this->EE->db->dbprefix}$table.$column_name'. Column does not exist.");
+		$this->EE->logger->updater("Could not drop column '{$this->EE->db->dbprefix}$table.$column_name'. Column does not exist.", TRUE);
 
 		return FALSE;
 	}
@@ -168,7 +168,7 @@ class Smartforge {
 		// Check to make sure table exists
 		if ( ! $this->EE->db->table_exists($table))
 		{
-			$this->EE->logger->log_update_exception(__METHOD__." failed. Table '{$this->EE->db->dbprefix}$table' does not exist.");
+			$this->EE->logger->updater(__METHOD__." failed. Table '{$this->EE->db->dbprefix}$table' does not exist.", TRUE);
 
 			return FALSE;
 		}
@@ -187,7 +187,7 @@ class Smartforge {
 					// Drop column A.
 					$this->EE->dbforge->drop_column($table, $k);
 
-					$this->EE->logger->log_update_exception("Could not rename column '{$this->EE->db->dbprefix}$table.$k' to '{$this->EE->db->dbprefix}$table.{$v['name']}' since it already exists. Column '{$this->EE->db->dbprefix}$table.$k' was removed to clean up.");
+					$this->EE->logger->updater("Could not rename column '{$this->EE->db->dbprefix}$table.$k' to '{$this->EE->db->dbprefix}$table.{$v['name']}' since it already exists. Column '{$this->EE->db->dbprefix}$table.$k' was removed to clean up.", TRUE);
 				}
 				else
 				{
@@ -201,7 +201,7 @@ class Smartforge {
 			}
 			else
 			{
-				$this->EE->logger->log_update_exception("Could not modify column '{$this->EE->db->dbprefix}$table.$k'. Column does not exist.");
+				$this->EE->logger->updater("Could not modify column '{$this->EE->db->dbprefix}$table.$k'. Column does not exist.", TRUE);
 			}
 
 
@@ -230,7 +230,7 @@ class Smartforge {
 		// Check to make sure table exists
 		if ( ! $this->EE->db->table_exists($table))
 		{
-			$this->EE->logger->log_update_exception(__METHOD__." failed. Table '{$this->EE->db->dbprefix}$table' does not exist.");
+			$this->EE->logger->updater(__METHOD__." failed. Table '{$this->EE->db->dbprefix}$table' does not exist.", TRUE);
 
 			return FALSE;
 		}
@@ -255,7 +255,7 @@ class Smartforge {
 				// in the DB, return FALSE since this set of values cannot
 				// be inserted.
 
-				$this->EE->logger->log_update_exception("Could not insert data since data set was not unique as required.");
+				$this->EE->logger->updater("Could not insert data since data set was not unique as required.", TRUE);
 
 				return FALSE;
 			}
@@ -285,7 +285,7 @@ class Smartforge {
 		// Check to make sure table exists
 		if ( ! $this->EE->db->table_exists($table))
 		{
-			$this->EE->logger->log_update_exception(__METHOD__." failed. Table '{$this->EE->db->dbprefix}$table' does not exist.");
+			$this->EE->logger->updater(__METHOD__." failed. Table '{$this->EE->db->dbprefix}$table' does not exist.", TRUE);
 
 			return FALSE;
 		}
@@ -309,7 +309,7 @@ class Smartforge {
 			}
 		}
 
-		$this->EE->logger->log_update_exception("Could not create index '$index_name' on table '{$this->EE->db->dbprefix}$table'. Index already exists.");
+		$this->EE->logger->updater("Could not create index '$index_name' on table '{$this->EE->db->dbprefix}$table'. Index already exists.", TRUE);
 
 		return FALSE;
 
@@ -331,7 +331,7 @@ class Smartforge {
 		// Check to make sure table exists
 		if ( ! $this->EE->db->table_exists($table))
 		{
-			$this->EE->logger->log_update_exception(__METHOD__." failed. Table '{$this->EE->db->dbprefix}$table' does not exist.");
+			$this->EE->logger->updater(__METHOD__." failed. Table '{$this->EE->db->dbprefix}$table' does not exist.", TRUE);
 
 			return FALSE;
 		}
@@ -350,7 +350,7 @@ class Smartforge {
 			}
 		}
 
-		$this->EE->logger->log_update_exception("Could not drop index '$index_name' from table '{$this->EE->db->dbprefix}$table'. Index does not exist.");
+		$this->EE->logger->updater("Could not drop index '$index_name' from table '{$this->EE->db->dbprefix}$table'. Index does not exist.", TRUE);
 
 		return FALSE;
 	}

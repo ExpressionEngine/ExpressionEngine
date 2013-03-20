@@ -344,9 +344,10 @@ class EE_Logger {
 	 * Log a message in the Updater log.
 	 *
 	 * @param	string		Message to add to the log.
+	 * @param	bool			If TRUE, add backtrace info to the log.
 	 * @return	void	
 	 */
-	public function log_update_message($log_message)
+	public function updater($log_message, $exception = FALSE)
 	{
 		$this->_setup_log();
 
@@ -355,30 +356,14 @@ class EE_Logger {
 			 'message'			=> $log_message,
 		);
 
-		$this->EE->db->insert('update_log', $data);
-	}
+		if ($exception === TRUE)
+		{
+			$backtrace			= element(1, debug_backtrace(FALSE));
 
-	// --------------------------------------------------------------------
-	
-	/**
-	 * Log an exception in the Updater log.
-	 *
-	 * @param	string		Message to add to the log.
-	 * @return	void	
-	 */
-	public function log_update_exception($log_message)
-	{
-		$this->_setup_log();
-
-		$backtrace = element(1, debug_backtrace(FALSE));
-
-		$data = array(
-			 'timestamp'		=> $this->EE->localize->now,
-			 'message'			=> $log_message,
-			 'method'				=> $backtrace['class'].'::'.$backtrace['function'],
-			 'line'					=> $backtrace['line'],
-			 'file'					=> $backtrace['file'],
-		);
+			$data['method']	= $backtrace['class'].'::'.$backtrace['function'];
+			$data['line']		= $backtrace['line'];
+			$data['file']		= $backtrace['file'];
+		}
 
 		$this->EE->db->insert('update_log', $data);
 	}

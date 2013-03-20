@@ -518,7 +518,7 @@ class Wizard extends CI_Controller {
 			$vars['site_url'] = rtrim($this->userdata['site_url'], '/').'/'.$this->userdata['site_index'];
 			$vars['cp_url'] = $this->userdata['cp_url'];
 
-			$this->logger->log_update_message("Update complete. Now running version {$this->version}.");
+			$this->logger->updater("Update complete. Now running version {$this->version}.");
 
 			$this->_set_output('uptodate', $vars);
 			return FALSE;
@@ -653,7 +653,7 @@ class Wizard extends CI_Controller {
 				$data['action'] = $this->set_qstr('do_update');
 			}
 
-			$this->logger->log_update_message("Preparing to update from {$this->installed_version} to {$this->version}. Awaiting acceptance of license terms.");
+			$this->logger->updater("Preparing to update from {$this->installed_version} to {$this->version}. Awaiting acceptance of license terms.");
 		}
 		
 		$data['license'] = $this->_license_agreement();
@@ -1332,7 +1332,7 @@ PAPAYA;
 		
 		$this->load->library('smartforge');
 
-		$this->logger->log_update_message("Updating to {$next_version}");
+		$this->logger->updater("Updating to {$next_version}");
 		
 		if ($this->config->item('ud_next_step') != FALSE)
 		{
