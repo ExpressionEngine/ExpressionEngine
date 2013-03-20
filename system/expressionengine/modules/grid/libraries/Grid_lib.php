@@ -75,13 +75,20 @@ class Grid_lib {
 	 * Constructs an array of fieltype short names correllated with the HTML
 	 * for each item in their grid settings forms
 	 *
-	 * @return	array	Array of settings for each Grid-enabled fieldtype
+	 * @param	string	Name of fieldtype to get settings form for
+	 * @param	array	Column data from database to populate settings form
+	 * @return	array	Rendered HTML settings form for given fieldtype and
+	 * 					column data, or blank settings forms for all fieldtypes
+	 * 					if parameter left blank
 	 */
-	public function get_settings_forms($type = NULL, $column = NULL)
+	public function get_settings_form($type, $column = NULL)
 	{
 		$ft_api = $this->EE->api_channel_fields;
 
-		if ( ! empty($type) && empty($column))
+		$ft_api->setup_handler($type);
+
+		// Returns blank settings form for a specific fieldtype
+		if (empty($column))
 		{
 			$ft_api->setup_handler($type);
 
@@ -91,28 +98,12 @@ class Grid_lib {
 			);
 		}
 
-		if ( ! empty($type) && ! empty($column))
-		{
-			return $this->_view_for_col_settings(
-				$type,
-				$ft_api->apply('grid_display_settings', array($column['col_settings'])),
-				$column['col_id']
-			);
-		}
-
-		$settings = array();
-		foreach ($this->get_grid_fieldtypes() as $field_name => $data)
-		{
-			$ft_api->setup_handler($field_name);
-
-			// Call grid_display_settings() on each field type
-			$settings[$field_name] = $this->_view_for_col_settings(
-				$field_name,
-				$ft_api->apply('grid_display_settings', array(array()))
-			);
-		}
-
-		return $settings;
+		// Otherwise, return the prepopulated settings form based on column settings
+		return $this->_view_for_col_settings(
+			$type,
+			$ft_api->apply('grid_display_settings', array($column['col_settings'])),
+			$column['col_id']
+		);
 	}
 
 	// ------------------------------------------------------------------------
@@ -239,7 +230,7 @@ class Grid_lib {
 
 			if ($settings_forms)
 			{
-				$column['settings_form'] = $this->get_settings_forms($column['col_type'], $column);
+				$column['settings_form'] = $this->get_settings_form($column['col_type'], $column);
 			}
 		}
 
@@ -261,7 +252,7 @@ class Grid_lib {
 
 		if (empty($column))
 		{
-			$column['settings_form'] = $this->get_settings_forms('text');
+			$column['settings_form'] = $this->get_settings_form('text');
 		}
 
 		return $this->EE->load->view(

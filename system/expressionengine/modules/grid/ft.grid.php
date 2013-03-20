@@ -121,6 +121,8 @@ class Grid_ft extends EE_Fieldtype {
 	
 	public function display_settings($data)
 	{
+		$field_id = isset($data['field_id']) ? $data['field_id'] : 0;
+		
 		$this->EE->lang->loadfile('grid');
 
 		$this->EE->table->set_heading(array(
@@ -159,13 +161,18 @@ class Grid_ft extends EE_Fieldtype {
 		$vars = array();
 
 		// Fresh settings forms ready to be used for added columns
-		$vars['settings_forms'] = $this->EE->grid_lib->get_settings_forms();
-
-		$vars['columns'] = array();
-
-		if ( ! empty($data['field_id']))
+		$vars['settings_forms'] = array();
+		foreach ($this->EE->grid_lib->get_grid_fieldtypes() as $field_name => $data)
 		{
-			$columns = $this->EE->grid_lib->get_columns_for_field($data['field_id'], TRUE);
+			$vars['settings_forms'][$field_name] = $this->EE->grid_lib->get_settings_form($field_name);
+		}
+
+		// Gather columns for current field
+		$vars['columns'] = array();
+		
+		if ( ! empty($field_id))
+		{
+			$columns = $this->EE->grid_lib->get_columns_for_field($field_id, TRUE);
 
 			foreach ($columns as $column)
 			{
