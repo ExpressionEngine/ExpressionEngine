@@ -175,6 +175,11 @@ class Grid_ft extends EE_Fieldtype {
 
 		// Will be our template for newly-created columns
 		$vars['blank_col'] = $this->EE->grid_lib->view_for_column();
+
+		if (empty($vars['columns']))
+		{
+			$vars['columns'][] = $vars['blank_col'];
+		}
 		
 		// The big column configuration row, generated from the settings view
 		$this->EE->table->add_row(

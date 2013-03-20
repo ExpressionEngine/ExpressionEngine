@@ -120,6 +120,7 @@ class Grid_lib {
 	public function apply_settings($settings)
 	{
 		$table_name = $this->_table_prefix . $settings['field_id'];
+		$ft_api = $this->EE->api_channel_fields;
 
 		// Create field table if it doesn't exist
 		if ( ! $this->EE->db->table_exists($table_name))
@@ -144,27 +145,20 @@ class Grid_lib {
 			$this->EE->dbforge->create_table($table_name);
 		}
 
-		if (isset($settings['grid']['cols']['new']))
+		$count = 0;
+
+		foreach ($settings['grid']['cols'] as $col_field => $column)
 		{
-			$this->_add_columns_to_field($settings['grid']['cols']['new'], $settings['field_id']);
-		}
-	}
+			$db_columns = array();
 
-	private function _add_columns_to_field($columns, $field_id)
-	{
-		$ft_api = $this->EE->api_channel_fields;
-		$table_name = $this->_table_prefix . $field_id;
+			$modify = (strpos($col_field, 'new_') === FALSE);
 
-		$db_columns = array();
-
-		foreach ($columns as $column)
-		{
 			$column['required'] = isset($column['required']) ? 'y' : 'n';
 			$column['searchable'] = isset($column['searchable']) ? 'y' : 'n';
 
 			$column_data = array(
-				'field_id'			=> $field_id,
-				'col_order'			=> '0',
+				'field_id'			=> $settings['field_id'],
+				'col_order'			=> $count,
 				'col_type'			=> $column['type'],
 				'col_label'			=> $column['label'],
 				'col_name'			=> $column['name'],
@@ -174,13 +168,26 @@ class Grid_lib {
 				'col_settings'		=> json_encode($column['settings'])
 			);
 
-			$this->EE->db->insert('grid_columns', $column_data);
-			$col_id = $this->EE->db->insert_id();
+			$col_id = 0;
+
+			if ($modify)
+			{
+				$col_id = str_replace('col_id_', '', $col_field);
+				$this->EE->db->where('col_id', $col_id);
+				$this->EE->db->update('grid_columns', $column_data);
+			}
+			else
+			{
+				$this->EE->db->insert('grid_columns', $column_data);
+				$col_id = $this->EE->db->insert_id();
+			}
 
 			$ft_api->setup_handler($column['type']);
 
 			if ($ft_api->check_method_exists('grid_settings_modify_column'))
 			{
+				$settings['col_id'] = $col_id;
+
 				$db_columns = array_merge(
 					$db_columns,
 					$ft_api->apply('grid_settings_modify_column', array($settings))
@@ -197,10 +204,26 @@ class Grid_lib {
 					'null' => TRUE
 				);
 			}
-		}
 
-		$this->EE->load->dbforge();
-		$this->EE->dbforge->add_column($table_name, $db_columns);
+			$this->EE->load->dbforge();
+
+			if ($modify)
+			{
+				foreach ($db_columns as $key => $value)
+				{
+					$db_columns[$key]['name'] = $key;
+				}
+				
+				$this->EE->dbforge->modify_column($table_name, $db_columns);
+			}
+			else
+			{
+				$this->EE->load->dbforge();
+				$this->EE->dbforge->add_column($table_name, $db_columns);
+			}
+
+			$count++;
+		}
 	}
 
 	public function get_columns_for_field($field_id, $settings_forms = FALSE)
@@ -234,7 +257,7 @@ class Grid_lib {
 			$fieldtypes_dropdown[$key] = $value['name'];
 		}
 
-		$field_name = (empty($column)) ? '[new][0]' : '[col_id_'.$column['col_id'].']';
+		$field_name = (empty($column)) ? '[new_0]' : '[col_id_'.$column['col_id'].']';
 
 		if (empty($column))
 		{
@@ -263,7 +286,7 @@ class Grid_lib {
 			TRUE
 		);
 		
-		$col_id = (empty($col_id)) ? '[new][0]' : '[col_id_'.$col_id.']';
+		$col_id = (empty($col_id)) ? '[new_0]' : '[col_id_'.$col_id.']';
 
 		// Namespace form field names
 		return preg_replace(
