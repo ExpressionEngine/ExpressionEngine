@@ -224,7 +224,7 @@ class Updater {
 		);
 		
 		$this->EE->dbforge->add_key('log_id', TRUE);
-		$this->EE->dbforge->create_table('developer_log', TRUE);
+		$this->EE->smartforge->create_table('developer_log');
 	}
 	
 	
@@ -291,7 +291,7 @@ class Updater {
 		$this->EE->dbforge->add_key('remember_me_id', TRUE);
 		$this->EE->dbforge->add_key('member_id');
 		
-		$this->EE->dbforge->create_table('remember_me', TRUE);
+		$this->EE->smartforge->create_table('remember_me');
 	}
 }	
 /* END CLASS */

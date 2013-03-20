@@ -113,7 +113,7 @@ class Updater {
 		);
 		
 		$this->EE->dbforge->add_key('fieldtype_id', TRUE);
-		$this->EE->dbforge->create_table('fieldtypes', TRUE);
+		$this->EE->smartforge->create_table('fieldtypes');
 		
 		// Install default field types
 		

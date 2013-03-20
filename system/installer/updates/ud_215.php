@@ -323,7 +323,7 @@ class Updater {
 
 		$this->EE->dbforge->add_field($watermark_fields);
 		$this->EE->dbforge->add_key('wm_id', TRUE);
-		$this->EE->dbforge->create_table('file_watermarks', TRUE);
+		$this->EE->smartforge->create_table('file_watermarks');
 
 		$dimension_fields = array(
 			'id' => array(
@@ -372,7 +372,7 @@ class Updater {
 		$this->EE->dbforge->add_field($dimension_fields);
 		$this->EE->dbforge->add_key('id', TRUE);
 		$this->EE->dbforge->add_key('upload_location_id');
-		$this->EE->dbforge->create_table('file_dimensions', TRUE);
+		$this->EE->smartforge->create_table('file_dimensions');
 
 		$categories_fields = array(
 			'file_id' => array(
@@ -400,7 +400,7 @@ class Updater {
 		
 		$this->EE->dbforge->add_field($categories_fields);
 		$this->EE->dbforge->add_key(array('file_id', 'cat_id'));
-		$this->EE->dbforge->create_table('file_categories', TRUE);
+		$this->EE->smartforge->create_table('file_categories');
 		
 		$files_fields = array(
 			'file_id' => array(
@@ -516,7 +516,7 @@ class Updater {
 		$this->EE->dbforge->add_field($files_fields);
 		$this->EE->dbforge->add_key('file_id', TRUE);
 		$this->EE->dbforge->add_key(array('upload_location_id', 'site_id'));
-		$this->EE->dbforge->create_table('files', TRUE);
+		$this->EE->smartforge->create_table('files');
 	}
 	
 	// ------------------------------------------------------------------------

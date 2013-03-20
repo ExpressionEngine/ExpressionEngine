@@ -108,7 +108,7 @@ class Updater {
 		$this->EE->dbforge->add_field($fields);
 		$this->EE->dbforge->add_key('subscription_id', TRUE);
 		$this->EE->dbforge->add_key(array('entry_id', 'member_id'));
-		$this->EE->dbforge->create_table('comment_subscriptions', TRUE);		
+		$this->EE->smartforge->create_table('comment_subscriptions');		
 
 
 		// this step can be a doozy.  Set time limit to infinity.
