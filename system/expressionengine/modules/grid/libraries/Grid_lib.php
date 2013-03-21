@@ -27,11 +27,97 @@
 class Grid_lib {
 
 	private $_fieldtypes = array();
+	private $_col_table = 'grid_columns';
 	private $_table_prefix = 'grid_field_';
 	
 	public function __construct()
 	{
 		$this->EE =& get_instance();
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Performs fieldtype install
+	 *
+	 * @return	void
+	 */
+	public function install()
+	{
+		$columns = array(
+			'col_id' => array(
+				'type'				=> 'int',
+				'constraint'		=> 10,
+				'unsigned'			=> TRUE,
+				'auto_increment'	=> TRUE
+			),
+			'field_id' => array(
+				'type'				=> 'int',
+				'constraint'		=> 10,
+				'unsigned'			=> TRUE
+			),
+			'col_order' => array(
+				'type'				=> 'int',
+				'constraint'		=> 3,
+				'unsigned'			=> TRUE
+			),
+			'col_type' => array(
+				'type'				=> 'varchar',
+				'constraint'		=> 50
+			),
+			'col_label' => array(
+				'type'				=> 'varchar',
+				'constraint'		=> 50
+			),
+			'col_name' => array(
+				'type'				=> 'varchar',
+				'constraint'		=> 32
+			),
+			'col_instructions' => array(
+				'type'				=> 'text'
+			),
+			'col_required' => array(
+				'type'				=> 'char',
+				'constraint'		=> 1
+			),
+			'col_search' => array(
+				'type'				=> 'char',
+				'constraint'		=> 1
+			),
+			'col_settings' => array(
+				'type'				=> 'text'
+			)
+		);
+
+		$this->EE->load->dbforge();
+		$this->EE->dbforge->add_field($columns);
+		$this->EE->dbforge->add_key('col_id', TRUE);
+		$this->EE->dbforge->create_table($this->_col_table);
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Performs fieldtype uninstall
+	 *
+	 * @return	void
+	 */
+	public function uninstall()
+	{
+		// Get field IDs to drop corresponding field table
+		$grid_fields = $this->EE->db->distinct('field_id')
+			->get($this->_col_table)
+			->result_array();
+
+		// Drop grid_field_n tables
+		foreach ($grid_fields as $row)
+		{
+			$this->delete_field($row['field_id']);
+		}
+
+		// Drop grid_columns table
+		$this->EE->load->dbforge();
+		$this->EE->dbforge->drop_table($this->_col_table);
 	}
 
 	// ------------------------------------------------------------------------
@@ -114,8 +200,6 @@ class Grid_lib {
 		// Go through ALL posted columns for this field
 		foreach ($settings['grid']['cols'] as $col_field => $column)
 		{
-			$db_columns = array();
-
 			// Look for a column field name prefixed with "new_" to see if we're
 			// creating a new column here or modifying an existing one
 			$modify = (strpos($col_field, 'new_') === FALSE);
@@ -143,15 +227,17 @@ class Grid_lib {
 			{
 				$col_id = str_replace('col_id_', '', $col_field);
 				$this->EE->db->where('col_id', $col_id);
-				$this->EE->db->update('grid_columns', $column_data);
+				$this->EE->db->update($this->_col_table, $column_data);
 			}
 			// This is a new field, insert it into the columns table and get
 			// the new column ID
 			else
 			{
-				$this->EE->db->insert('grid_columns', $column_data);
+				$this->EE->db->insert($this->_col_table, $column_data);
 				$col_id = $this->EE->db->insert_id();
 			}
+
+			$db_columns = array();
 
 			// Just as we do with regular fieldtypes, Grid fieldtypes can
 			// specify their own column settings
@@ -166,13 +252,18 @@ class Grid_lib {
 					$ft_api->apply('grid_settings_modify_column', array($settings))
 				);
 			}
-			// Stick with the defaults if they have no column handler set up
-			else
+
+			// Add default columns if they weren't supplied by fieldtype
+			if ( ! isset($db_columns['col_id_'.$col_id]))
 			{
 				$db_columns['col_id_'.$col_id] = array(
 					'type' => 'text',
 					'null' => TRUE
 				);
+			}
+
+			if ( ! isset($db_columns['col_ft_'.$col_id]))
+			{
 				$db_columns['col_ft_'.$col_id] = array(
 					'type' => 'tinytext',
 					'null' => TRUE
@@ -214,7 +305,7 @@ class Grid_lib {
 	public function get_columns_for_field($field_id)
 	{
 		$columns = $this->EE->db->get_where(
-			'grid_columns',
+			$this->_col_table,
 			array('field_id' => $field_id))
 		->result_array();
 
@@ -327,6 +418,28 @@ class Grid_lib {
 			'$1name="grid[cols]'.$col_id.'[settings][$2]"',
 			$settings_view
 		);
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Performs cleanup on our end if a Grid field is deleted from a channel:
+	 * drops field's table, removes column settings from grid_columns table
+	 *
+	 * @param	int		Field ID of field to delete
+	 * @return	void
+	 */
+	public function delete_field($field_id)
+	{
+		$table_name = $this->_table_prefix . $field_id;
+
+		if ($this->EE->db->table_exists($table_name))
+		{
+			$this->EE->load->dbforge();
+			$this->EE->dbforge->drop_table($table_name);
+		}
+
+		$this->EE->db->delete($this->_col_table, array('field_id' => $field_id));
 	}
 }
 

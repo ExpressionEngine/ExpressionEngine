@@ -31,62 +31,16 @@ class Grid_ft extends EE_Fieldtype {
 
 	public function install()
 	{
-		$columns = array(
-			'col_id' => array(
-				'type'				=> 'int',
-				'constraint'		=> 10,
-				'unsigned'			=> TRUE,
-				'auto_increment'	=> TRUE
-			),
-			'field_id' => array(
-				'type'				=> 'int',
-				'constraint'		=> 10,
-				'unsigned'			=> TRUE
-			),
-			'col_order' => array(
-				'type'				=> 'int',
-				'constraint'		=> 3,
-				'unsigned'			=> TRUE
-			),
-			'col_type' => array(
-				'type'				=> 'varchar',
-				'constraint'		=> 50
-			),
-			'col_label' => array(
-				'type'				=> 'varchar',
-				'constraint'		=> 50
-			),
-			'col_name' => array(
-				'type'				=> 'varchar',
-				'constraint'		=> 32
-			),
-			'col_instructions' => array(
-				'type'				=> 'text'
-			),
-			'col_required' => array(
-				'type'				=> 'char',
-				'constraint'		=> 1
-			),
-			'col_search' => array(
-				'type'				=> 'char',
-				'constraint'		=> 1
-			),
-			'col_settings' => array(
-				'type'				=> 'text'
-			)
-		);
-
-		$this->EE->load->dbforge();
-		$this->EE->dbforge->add_field($columns);
-		$this->EE->dbforge->add_key('col_id', TRUE);
-		$this->EE->dbforge->create_table('grid_columns');
+		$this->EE->load->library('grid_lib');
+		$this->EE->grid_lib->install();
 	}
 
 	// --------------------------------------------------------------------
 	
 	public function uninstall()
 	{
-		// TODO: delete stuff
+		$this->EE->load->library('grid_lib');
+		$this->EE->grid_lib->uninstall();
 	}
 	
 	// --------------------------------------------------------------------
@@ -215,6 +169,16 @@ class Grid_ft extends EE_Fieldtype {
 		$data['grid'] = $this->EE->input->post('grid');
 
 		$this->EE->grid_lib->apply_settings($data);
+	}
+
+	public function settings_modify_column($data)
+	{
+		if (isset($data['ee_action']) && $data['ee_action'] == 'delete')
+		{
+			$this->EE->load->library('grid_lib');
+			
+			$this->EE->grid_lib->delete_field($data['field_id']);
+		}
 	}
 }
 
