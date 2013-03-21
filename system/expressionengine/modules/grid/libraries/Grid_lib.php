@@ -123,6 +123,28 @@ class Grid_lib {
 	// ------------------------------------------------------------------------
 
 	/**
+	 * Performs cleanup on our end if a Grid field is deleted from a channel:
+	 * drops field's table, removes column settings from grid_columns table
+	 *
+	 * @param	int		Field ID of field to delete
+	 * @return	void
+	 */
+	public function delete_field($field_id)
+	{
+		$table_name = $this->_table_prefix . $field_id;
+
+		if ($this->EE->db->table_exists($table_name))
+		{
+			$this->EE->load->dbforge();
+			$this->EE->dbforge->drop_table($table_name);
+		}
+
+		$this->EE->db->delete($this->_col_table, array('field_id' => $field_id));
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
 	 * Gets a list of installed fieldtypes and filters them for ones enabled
 	 * for Grid
 	 *
@@ -418,28 +440,6 @@ class Grid_lib {
 			'$1name="grid[cols]'.$col_id.'[settings][$2]"',
 			$settings_view
 		);
-	}
-
-	// ------------------------------------------------------------------------
-
-	/**
-	 * Performs cleanup on our end if a Grid field is deleted from a channel:
-	 * drops field's table, removes column settings from grid_columns table
-	 *
-	 * @param	int		Field ID of field to delete
-	 * @return	void
-	 */
-	public function delete_field($field_id)
-	{
-		$table_name = $this->_table_prefix . $field_id;
-
-		if ($this->EE->db->table_exists($table_name))
-		{
-			$this->EE->load->dbforge();
-			$this->EE->dbforge->drop_table($table_name);
-		}
-
-		$this->EE->db->delete($this->_col_table, array('field_id' => $field_id));
 	}
 }
 
