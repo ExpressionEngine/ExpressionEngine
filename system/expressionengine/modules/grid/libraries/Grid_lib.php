@@ -27,7 +27,7 @@
 class Grid_lib {
 
 	private $_fieldtypes = array();
-	private $_col_table = 'grid_columns';
+	private $_table = 'grid_columns';
 	private $_table_prefix = 'grid_field_';
 	
 	public function __construct()
@@ -92,7 +92,7 @@ class Grid_lib {
 		$this->EE->load->dbforge();
 		$this->EE->dbforge->add_field($columns);
 		$this->EE->dbforge->add_key('col_id', TRUE);
-		$this->EE->dbforge->create_table($this->_col_table);
+		$this->EE->dbforge->create_table($this->_table);
 	}
 
 	// ------------------------------------------------------------------------
@@ -106,7 +106,7 @@ class Grid_lib {
 	{
 		// Get field IDs to drop corresponding field table
 		$grid_fields = $this->EE->db->distinct('field_id')
-			->get($this->_col_table)
+			->get($this->_table)
 			->result_array();
 
 		// Drop grid_field_n tables
@@ -117,7 +117,7 @@ class Grid_lib {
 
 		// Drop grid_columns table
 		$this->EE->load->dbforge();
-		$this->EE->dbforge->drop_table($this->_col_table);
+		$this->EE->dbforge->drop_table($this->_table);
 	}
 
 	// ------------------------------------------------------------------------
@@ -139,7 +139,7 @@ class Grid_lib {
 			$this->EE->dbforge->drop_table($table_name);
 		}
 
-		$this->EE->db->delete($this->_col_table, array('field_id' => $field_id));
+		$this->EE->db->delete($this->_table, array('field_id' => $field_id));
 	}
 
 	// ------------------------------------------------------------------------
@@ -191,8 +191,12 @@ class Grid_lib {
 		$table_name = $this->_table_prefix . $settings['field_id'];
 		$ft_api = $this->EE->api_channel_fields;
 
+		$modify_field = $this->EE->db->table_exists($table_name);
+
+		$this->EE->load->dbforge();
+
 		// Create field table if it doesn't exist
-		if ( ! $this->EE->db->table_exists($table_name))
+		if ( ! $modify_field)
 		{
 			// Every field table needs these two rows, we'll start here and
 			// add field columns as necessary
@@ -210,7 +214,6 @@ class Grid_lib {
 				)
 			);
 
-			$this->EE->load->dbforge();
 			$this->EE->dbforge->add_field($db_columns);
 			$this->EE->dbforge->add_key('row_id', TRUE);
 			$this->EE->dbforge->create_table($table_name);
@@ -218,6 +221,8 @@ class Grid_lib {
 
 		// We'll use the order of the posted fields to determine the column order
 		$count = 0;
+
+		$col_ids = array();
 
 		// Go through ALL posted columns for this field
 		foreach ($settings['grid']['cols'] as $col_field => $column)
@@ -249,50 +254,28 @@ class Grid_lib {
 			{
 				$col_id = str_replace('col_id_', '', $col_field);
 				$this->EE->db->where('col_id', $col_id);
-				$this->EE->db->update($this->_col_table, $column_data);
+				$this->EE->db->update($this->_table, $column_data);
 			}
 			// This is a new field, insert it into the columns table and get
 			// the new column ID
 			else
 			{
-				$this->EE->db->insert($this->_col_table, $column_data);
+				$this->EE->db->insert($this->_table, $column_data);
 				$col_id = $this->EE->db->insert_id();
 			}
 
+			$col_ids[] = $col_id;
+
 			$db_columns = array();
 
-			// Just as we do with regular fieldtypes, Grid fieldtypes can
-			// specify their own column settings
-			$ft_api->setup_handler($column['type']);
+			$settings['col_id'] = $col_id;
 
-			if ($ft_api->check_method_exists('grid_settings_modify_column'))
-			{
-				$settings['col_id'] = $col_id;
+			$db_columns = array_merge(
+				$db_columns,
+				$this->_get_fieldtype_col_settings($column['type'], $settings)
+			);
 
-				$db_columns = array_merge(
-					$db_columns,
-					$ft_api->apply('grid_settings_modify_column', array($settings))
-				);
-			}
-
-			// Add default columns if they weren't supplied by fieldtype
-			if ( ! isset($db_columns['col_id_'.$col_id]))
-			{
-				$db_columns['col_id_'.$col_id] = array(
-					'type' => 'text',
-					'null' => TRUE
-				);
-			}
-
-			if ( ! isset($db_columns['col_ft_'.$col_id]))
-			{
-				$db_columns['col_ft_'.$col_id] = array(
-					'type' => 'tinytext',
-					'null' => TRUE
-				);
-			}
-
-			$this->EE->load->dbforge();
+			// TODO: handle what happens if user changes column type
 
 			// Modify columns if this is an existing column
 			if ($modify)
@@ -308,12 +291,85 @@ class Grid_lib {
 			// Otherwise, add columns to this field's table
 			else
 			{
-				$this->EE->load->dbforge();
 				$this->EE->dbforge->add_column($table_name, $db_columns);
 			}
 
 			$count++;
 		}
+
+		// Delete columns that were not including in new field settings
+		if ($modify_field)
+		{
+			// Get current columns to compare to the new list of columns
+			$columns = $this->EE->db->select('col_id, col_type')
+				->where('field_id', $settings['field_id'])
+				->get($this->_table)
+				->result_array();
+
+			$old_cols = array();
+			foreach ($columns as $column)
+			{
+				$old_cols[$column['col_id']] = $column['col_type'];
+			}
+
+			// Compare columns in DB to ones we gathered from the settings array
+			$cols_to_delete = array_diff(array_keys($old_cols), $col_ids);
+
+			// If any columns are missing from the new settings, delete them
+			if ( ! empty($cols_to_delete))
+			{
+				$this->EE->db->where_in('col_id', $cols_to_delete);
+				$this->EE->db->delete($this->_table);
+
+				foreach ($cols_to_delete as $col_id)
+				{
+					$settings['col_id'] = $col_id;
+
+					// Get custom table column settings for fieldtype to make sure
+					// we delete all the columns
+					$db_columns = $this->_get_fieldtype_col_settings($old_cols[$col_id], $settings);
+
+					foreach ($db_columns as $col_name => $value)
+					{
+						if ($this->EE->db->field_exists($col_name, $table_name))
+						{
+							$this->EE->dbforge->drop_column($table_name, $col_name);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	private function _get_fieldtype_col_settings($type, $settings)
+	{
+		// Just as we do with regular fieldtypes, Grid fieldtypes can
+		// specify their own column settings
+		$this->EE->api_channel_fields->setup_handler($type);
+
+		if ($this->EE->api_channel_fields->check_method_exists('grid_settings_modify_column'))
+		{
+			$db_columns = $ft_api->apply('grid_settings_modify_column', array($settings));
+		}
+
+		// Add default columns if they weren't supplied by fieldtype
+		if ( ! isset($db_columns['col_id_'.$settings['col_id']]))
+		{
+			$db_columns['col_id_'.$settings['col_id']] = array(
+				'type' => 'text',
+				'null' => TRUE
+			);
+		}
+
+		if ( ! isset($db_columns['col_ft_'.$settings['col_id']]))
+		{
+			$db_columns['col_ft_'.$settings['col_id']] = array(
+				'type' => 'tinytext',
+				'null' => TRUE
+			);
+		}
+
+		return $db_columns;
 	}
 
 	// ------------------------------------------------------------------------
@@ -326,10 +382,10 @@ class Grid_lib {
 	 */
 	public function get_columns_for_field($field_id)
 	{
-		$columns = $this->EE->db->get_where(
-			$this->_col_table,
-			array('field_id' => $field_id))
-		->result_array();
+		$columns = $this->EE->db->where('field_id', $field_id)
+			->order_by('col_order')
+			->get($this->_table)
+			->result_array();
 
 		foreach ($columns as &$column)
 		{

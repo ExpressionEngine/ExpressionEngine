@@ -465,8 +465,8 @@ class EE_Fieldtype {
 	{
 		return form_label(lang('grid_limit_input')).NBS.NBS.NBS.
 			form_input(array(
-				'name' => 'field_max_length',
-				'value' => (isset($data['field_max_length'])) ? $data['field_max_length'] : 256,
+				'name' => 'field_maxl',
+				'value' => (isset($data['field_maxl'])) ? $data['field_maxl'] : 256,
 				'class' => 'grid_input_text_small'
 			)).NBS.NBS.NBS.
 			'<i class="instruction_text">'.lang('grid_chars_allowed').'</i>';

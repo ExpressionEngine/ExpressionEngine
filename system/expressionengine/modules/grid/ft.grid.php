@@ -148,6 +148,9 @@ class Grid_ft extends EE_Fieldtype {
 		);
 
 		$this->EE->cp->add_to_head($this->EE->view->head_link('css/grid.css'));
+
+		$this->EE->cp->add_to_foot($this->EE->view->script_tag('cp/grid_settings.js'));
+		$this->EE->javascript->output('EE.grid_settings();');
 		
 		return $this->EE->table->generate();
 	}

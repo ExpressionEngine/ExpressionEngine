@@ -10,6 +10,7 @@
 #grid_col_settings_container {
 	margin-right: 97px;
 	overflow: scroll;
+	padding-bottom: 15px;
 }
 
 #grid_col_settings_container_inner {
@@ -170,6 +171,6 @@ a.grid_button_add:hover {
 	top: 172px;
 }
 
-.grid_col_settings_elements {
+#grid_col_settings_elements {
 	display: none;
 }

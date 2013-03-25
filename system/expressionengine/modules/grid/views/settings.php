@@ -13,7 +13,7 @@
 
 	<div id="grid_col_settings_container">
 
-		<div id="grid_col_settings_container_inner">
+		<div id="grid_col_settings_container_inner" class="group">
 
 			<?php foreach ($columns as $column): ?>
 				<?=$column?>
@@ -25,10 +25,10 @@
 	</div>
 </div>
 
-<? /*<div class="grid_col_settings_elements">
+<div id="grid_col_settings_elements">
 	<?=$blank_col?>
 
 	<?php foreach ($settings_forms as $form): ?>
 		<?=$form?>
 	<?php endforeach ?>
-</div>*/ ?>
+</div>
