@@ -117,6 +117,27 @@ class EE_Javascript extends CI_Javascript {
 
 		$this->CI->view->cp_global_js = $global_js;
 	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Generate JSON
+	 *
+	 * Can be passed a database result or associative array and returns a JSON
+	 * formatted string
+	 * 
+	 * @param	mixed	result set or array
+	 * @param	bool	match array types (defaults to objects)
+	 * @return	string	a json formatted string
+	 */
+	public function generate_json($result = NULL, $match_array_type = FALSE)
+	{
+		$EE =& get_instance();
+		$EE->load->library('logger');
+		$EE->logger->deprecated('2.6', 'the native JSON extension (json_encode())');
+
+		return parent::generate_json($result, $match_array_type);
+	}
 }
 
 // END EE_Javascript

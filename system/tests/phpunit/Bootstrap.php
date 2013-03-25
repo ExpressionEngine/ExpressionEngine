@@ -14,6 +14,7 @@ define('APPPATH',		PROJECT_BASE.'expressionengine/');
 
 
 // Prep our test environment
+require_once $dir.'/vendor/autoload.php';
 require_once $dir.'/lib/common.php';
 require_once $dir.'/lib/ci_testcase.php';
 
