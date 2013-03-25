@@ -456,7 +456,7 @@ EE.cp.deprecation_meaning = function()
 		var deprecation_meaning_modal = $('<div class="alert">' + EE.developer_log.deprecation_meaning + ' </div>');
 		
 		deprecation_meaning_modal.dialog({
-			height: 260,
+			height: 300,
 			modal: true,
 			title: EE.developer_log.dev_log_help,
 			width: 460
