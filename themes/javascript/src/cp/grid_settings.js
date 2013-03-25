@@ -18,12 +18,11 @@
 			this._bindCopyButton();
 			this._bindDeleteButton();
 			this._toggleDeleteButtons();
+			this._bindColTypeChange();
 
 			// Disable input elements in our blank template container so they
 			// don't get submitted on form submission
-			this.colTemplateContainer
-				.find('input, select')
-				.attr('disabled', 'disabled');
+			this.colTemplateContainer.find(':input').attr('disabled', 'disabled');
 		},
 
 		_bindResize: function()
@@ -144,23 +143,94 @@
 			else
 			{
 				// Clone our example column
-				el = el.clone();
+				el_clone = el.clone();
+
+				// Data input by the user since the page was loaded may not have
+				// been cloned, so we have to manually repopulate the fields in
+				// the cloned column
+				el.find(":input").each(function()
+				{
+					// Find the new input in the cloned column for editing
+					var new_input = el_clone.find(":input[name='"+$(this).attr('name')+"']");
+
+					if ($(this).is("select"))
+					{
+						new_input
+							.find('option')
+							.removeAttr('selected')
+							.filter('[value="'+$(this).val()+'"]')
+							.attr('selected', 'selected');
+					}
+					// Handle checkboxes
+					else if ($(this).attr('type') == 'checkbox')
+					{
+						// .prop('checked', true) doesn't work, must set the attribute
+						new_input.attr('checked', $(this).attr('checked'));
+					}
+					// Handle radio buttons
+					else if ($(this).attr('type') == 'radio')
+					{
+						new_input
+							.removeAttr('selected')
+							.filter("[value='"+$(this).val()+"']")
+							.attr('checked', $(this).attr('checked'));
+					}
+					// Handle textareas
+					else if ($(this).is("textarea"))
+					{
+						new_input.html($(this).val());
+					}
+					// Everything else should handle the value attribute
+					else
+					{
+						// .val('new val') doesn't work, must set the attribute
+						new_input.attr('value', $(this).val());
+					}
+				});
+
+				el = el_clone;
 			}
 
-			var colCount = $('.grid_col_settings').size();
+			// Clear out column name field in new column because it has to be unique
+			el.find('input[name$="\\[name\\]"]').attr('value', '');
 
 			// Need to make sure the new columns field names are unique
 			el.html(
 				el.html().replace(
-					RegExp('(new_|col_id_)[0-9]{1,}', 'g'), 'new_' + colCount
+					RegExp('(new_|col_id_)[0-9]{1,}', 'g'), 'new_' + $('.grid_col_settings').size()
 				)
 			);
 
 			// Make sure inputs are enabled if creating blank column
-			el.find('input, select').removeAttr('disabled');
+			el.find(':input').removeAttr('disabled');
 
 			return el;
 		},
+
+		/**
+		 * Binds change listener to the data type columns dropdowns of each column
+		 * so we can load the correct settings form for the selected fieldtype
+		 */
+		_bindColTypeChange: function()
+		{
+			var that = this;
+
+			this.root.on('change', '.grid_data_type .grid_col_select', function(event)
+			{
+				// New, fresh settings form
+				var settings = that.colTemplateContainer
+					.find('.grid_col_settings_custom_field_'+$(this).val()+':last')
+					.clone();
+
+				// Enable inputs
+				settings.find(':input').removeAttr('disabled');
+
+				// Find the container holding the settings form, replace its contents
+				$(this).parents('.grid_col_settings')
+					.find('.grid_col_settings_custom')
+					.html(settings);
+			});
+		}
 	};
 
 	/**

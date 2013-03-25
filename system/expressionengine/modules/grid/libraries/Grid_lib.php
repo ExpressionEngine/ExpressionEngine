@@ -174,6 +174,8 @@ class Grid_lib {
 			}
 		}
 
+		ksort($this->_fieldtypes);
+
 		return $this->_fieldtypes;
 	}
 
@@ -483,7 +485,7 @@ class Grid_lib {
 			'col_settings_tmpl',
 			array(
 				'col_type'		=> $col_type,
-				'col_settings'	=> $col_settings
+				'col_settings'	=> (empty($col_settings)) ? array() : $col_settings
 			),
 			TRUE
 		);
