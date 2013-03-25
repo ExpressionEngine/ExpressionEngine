@@ -339,7 +339,7 @@ class Safecracker_lib
 					');
 				}
 				
-				$custom_field_variables_row['field_data'] = $this->EE->localize->set_human_time($this->entry($field_name));
+				$custom_field_variables_row['field_data'] = $this->EE->localize->human_time($this->entry($field_name));
 			}
 			
 			$custom_field_variables[$field_name] = $custom_field_variables_row;
@@ -519,7 +519,7 @@ class Safecracker_lib
 				{
 					if (in_array($key, $this->date_fields) || $this->get_field_type($key) == 'date')
 					{
-						$this->parse_variables[$key] = ($this->entry($key)) ? $this->EE->localize->set_human_time($this->entry($key)) : '';
+						$this->parse_variables[$key] = ($this->entry($key)) ? $this->EE->localize->human_time($this->entry($key)) : '';
 					}
 					elseif (in_array($key, $this->checkboxes))
 					{
@@ -599,7 +599,7 @@ class Safecracker_lib
 		}
 		elseif ($this->channel('channel_id'))
 		{
-			$this->parse_variables['entry_date'] = $this->EE->localize->set_human_time();
+			$this->parse_variables['entry_date'] = $this->EE->localize->human_time();
 			
 			if ($this->datepicker)
 			{
@@ -1276,7 +1276,7 @@ class Safecracker_lib
 			{
 				if ($field['field_type'] == 'date')
 				{
-					$_POST['field_id_'.$field['field_id']] = $_POST[$field['field_name']] = $this->EE->localize->set_human_time($this->entry($field['field_name']));
+					$_POST['field_id_'.$field['field_id']] = $_POST[$field['field_name']] = $this->EE->localize->human_time($this->entry($field['field_name']));
 				}
 				else if ($field['field_required'] == 'y')
 				{
@@ -1377,16 +1377,20 @@ class Safecracker_lib
 				{
 					if ($this->entry($field))
 					{
-						$_POST[$field] = $this->EE->localize->set_human_time($this->entry($field));
+						$_POST[$field] = $this->EE->localize->human_time($this->entry($field));
 					}
 					else
 					{
-						$_POST[$field] = $this->EE->localize->set_human_time($this->EE->localize->now);
+						$_POST[$field] = $this->EE->localize->human_time();
 					}
 				}
 				elseif ($field == 'versioning_enabled' AND $this->channel['enable_versioning'] == 'y')
 				{
 					$_POST[$field] = 'y';
+				}
+				elseif ($field == 'allow_comments')
+				{
+					$_POST[$field] = $this->_meta['allow_comments'];
 				}
 				else
 				{
@@ -1720,7 +1724,7 @@ class Safecracker_lib
 	public function decrypt_input($input, $xss_clean = TRUE)
 	{
 		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated('2.6.0', 'safecracker_lib::decrypt_input()');
+		$this->EE->logger->deprecated('2.6.0');
 		
 		if (function_exists('mcrypt_encrypt'))
 		{
@@ -1800,7 +1804,7 @@ class Safecracker_lib
 	public function encrypt_input($input)
 	{
 		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated('2.6.0', 'Safecracker_lib::encrypt_input()');
+		$this->EE->logger->deprecated('2.6.0');
 		
 		if ( ! function_exists('mcrypt_encrypt'))
 		{
@@ -2363,11 +2367,9 @@ class Safecracker_lib
 		$meta['channel_id'] = $this->channel('channel_id');  // channel_id is for THIS channel- use new_channel to change it
 		$meta['decrypt_check'] = TRUE;
 		
-		if ($this->channel('comment_system_enabled') != 'y')
-		{
-			$meta['allow_comments'] = 'n';
-		}
-
+		$meta['allow_comments'] = (isset($meta['allow_comments']))
+			? $meta['allow_comments'] : $this->channel('comment_system_enabled');
+		
 		$meta = serialize($meta);
 		
 		$this->EE->load->library('encrypt');
@@ -2815,7 +2817,6 @@ class Safecracker_lib
 			'day',
 			'expiration_date',
 			'comment_expiration_date',
-			'edit_date',
 			'recent_comment_date',
 			'comment_total',
 		);
