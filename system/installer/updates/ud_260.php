@@ -259,6 +259,105 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		$this->EE->db->where('template_name', 'forgot_password_instructions')
 			->update('specialty_templates', $data);
 	}
+
+
+	/**
+ 	 *
+	 */
+	private function _update_relationships_table()
+	{
+		// ALTER TABLE `exp_relationships` CHANGE COLUMN `rel_id` `relationship_id` int(10) unsigned NOT NULL DEFAULT 0;
+		$this->EE->dbforge->modify_column(
+			'relationships',
+			array(
+				'rel_id' => array(
+					'name'			=> 'relationship_id',
+					'type'			=> 'int',
+					'constraint'	=> 10,
+					'unsigned'		=> TRUE,
+				)
+			)
+		);
+
+		// ALTER TABLE `exp_relationships` CHANGE COLUMN `rel_parent_id` `parent_id` int(10) unsigned NOT NULL DEFAULT 0;
+		$this->EE->dbforge->modify_column(
+			'relationships',
+			array(
+				'rel_parent_id' => array(
+					'name'			=> 'parent_id',
+					'type'			=> 'int',
+					'constraint'	=> 10,
+					'unsigned'		=> TRUE,
+				)
+			)
+		);
+
+		// ALTER TABLE `exp_relationships` CHANGE COLUMN `rel_child_id` `child_id` int(10) unsigned NOT NULL DEFAULT 0; 	
+		$this->EE->dbforge->modify_column(
+			'relationships',
+			array(
+				'rel_child_id' => array(
+					'name'			=> 'child_id',
+					'type'			=> 'int',
+					'constraint'	=> 10,
+					'unsigned'		=> TRUE,
+				)
+			)
+		);
+
+		// ALTER TABLE `exp_relationships` DROP COLUMN `rel_type`;
+		$this->EE->dbforge->drop_column('relationships', 'rel_type');		
+
+		// ALTER TABLE `exp_relationships` DROP COLUMN `rel_data`;
+		$this->EE->dbforge->drop_column('relationships', 'rel_data');
+		
+		// ALTER TABLE `exp_relationships` DROP COLUMN `reverse_rel_data`;
+		$this->EE->dbforge->drop_column('relationships', 'reverse_rel_data');
+
+		// ALTER TABLE `exp_relationships` ADD COLUMN field_id int unsigned;
+		// ALTER TABLE exp_relationships ADD COLUMN `order` int unsigned;
+		$this->EE->dbforge->add_column(
+			'relationships',
+			array(
+				'field_id' => array(
+					'type'			=> 'int',
+					'constraint'	=> 10,
+					'unsigned'		=> TRUE
+				),
+				'order' => array(
+					'type' => 'int',
+					'constraint' => 10,
+					'unsigned' => TRUE
+				)
+			),
+			'child_id'
+		);
+
+		// alter table exp_relationships ADD KEY `field_id` (`field_id`);
+		$this->EE->dbforge->add_key('field_id', FALSE);
+	}
+
+	/**
+	 *
+	 */
+	private function _replace_relationship_tags()
+	{
+		// {related_entries id="field_short_name"} is easy
+		// it just becomes {field_short_name}
+
+		// {reverse_related_entries} is hard.
+		// Need to look at it and figure out how it is processed.
+	}
+
+	/**
+	 *
+	 */
+	private function _update_relationships_fields()
+	{
+		// This one is going to take some research.  I don't even know where to start.
+	}
+
+
 }	
 /* END CLASS */
 
