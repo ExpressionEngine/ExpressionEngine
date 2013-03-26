@@ -3,6 +3,8 @@
 	function GridSettings()
 	{
 		this.root = $('#grid_settings');
+		this.settingsScroller = this.root.find('#grid_col_settings_container');
+		this.settingsContainer = this.root.find('#grid_col_settings_container_inner');
 		this.colTemplateContainer = $('#grid_col_settings_elements');
 		this.blankColumn = this.colTemplateContainer.find('.grid_col_settings');
 
@@ -25,9 +27,52 @@
 			this.colTemplateContainer.find(':input').attr('disabled', 'disabled');
 		},
 
+		/**
+		 * Upon page load, we need to resize the column container to match the
+		 * width of the page, minus the width of the labels on the left
+		 */
 		_bindResize: function()
 		{
-			// I dunno, do something about the scrolling
+			var that = this;
+
+			$(document).ready(function()
+			{
+				that.settingsScroller.width(
+					that.root.width() - that.root.find('#grid_col_settings_labels').width()
+				);
+
+				// Now, resize the inner container to fit the number of columns
+				// we have ready on page load
+				that._resizeColContainer();
+			});
+		},
+
+		/**
+		 * Resizes column container based on how many columns it contains
+		 *
+		 * @param	{boolean}	animated	Whether or not to animate the resize
+		 */
+		_resizeColContainer: function(animated)
+		{
+			this.settingsContainer.animate(
+			{
+				width: this._getColumnsWidth()
+			},
+			(animated == true) ? 400 : 0);
+		},
+
+		/**
+		 * Calculates total width the columns in the container should take up,
+		 * plus a little padding for the Add button
+		 *
+		 * @return	{int}	Calculated width
+		 */
+		_getColumnsWidth: function()
+		{
+			var columns = this.root.find('.grid_col_settings');
+
+			// 75px of extra room for the add button
+			return columns.size() * columns.width() + 75;
 		},
 
 		/**
@@ -80,10 +125,32 @@
 			this.root.on('click', '.grid_col_settings_delete', function(event)
 			{
 				event.preventDefault();
-				
-				$(this).parents('.grid_col_settings').remove();
 
-				that._toggleDeleteButtons();
+				var settings = $(this).parents('.grid_col_settings');
+
+				// Only animate column deletion if we're not deleting the last column
+				if (settings.index() == $('#grid_settings .grid_col_settings:last').index())
+				{
+					settings.remove();
+					that._resizeColContainer(true);
+					that._toggleDeleteButtons();
+				}
+				else
+				{
+					settings.animate({
+						opacity: 0
+					}, 200, function()
+					{
+						settings.animate({
+							width: 0
+						}, 200, function()
+						{
+							settings.remove();
+							that._resizeColContainer(true);
+							that._toggleDeleteButtons();
+						});
+					});
+				}
 			});
 		},
 
@@ -116,15 +183,39 @@
 		 */
 		_insertColumn: function(column, insertAfter)
 		{
+			lastColumn = $('#grid_settings .grid_col_settings:last');
+
 			// Default to inserting after the last column
 			if (insertAfter == undefined)
 			{
-				insertAfter = $('#grid_settings .grid_col_settings:last');
+				insertAfter = lastColumn;
+			}
+
+			// If we're inserting a column in the middle of other columns,
+			// animate the insertion so it's clear where the new column is
+			if (insertAfter.index() != lastColumn.index())
+			{
+				column.css({ opacity: 0 })
 			}
 
 			column.insertAfter(insertAfter);
 
+			this._resizeColContainer();
 			this._toggleDeleteButtons();
+
+			// If we are inserting a column after the last column, scroll to
+			// the end of the column container
+			if (insertAfter.index() == lastColumn.index())
+			{
+				// Scroll container to the very end
+				this.settingsScroller.animate({
+					scrollLeft: this._getColumnsWidth()
+				}, 700);
+			}
+
+			column.animate({
+				opacity: 1
+			}, 400);
 		},
 
 		/**
