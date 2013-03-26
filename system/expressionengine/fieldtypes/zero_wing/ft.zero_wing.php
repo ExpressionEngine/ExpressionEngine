@@ -207,6 +207,7 @@ class Zero_wing_ft extends EE_Fieldtype {
 		if (count($limit_authors))
 		{
 			// @todo TODO ick
+			// @todo php 5.3 only! argh
 			$groups = preg_filter('/^g_/', '', $limit_authors);
 			$members = preg_filter('/^m_/', '', $limit_authors);
 
