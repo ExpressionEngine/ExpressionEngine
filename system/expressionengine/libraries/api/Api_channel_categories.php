@@ -63,7 +63,7 @@ class Api_channel_categories extends Api {
 	 *
 	 * @return 	mixed		FALSE if no results or cat array of results.
 	 */
-	public function category_tree($group_id, $selected = '', $order = 'c', $exclude="files")
+	public function category_tree($group_id, $selected = '', $order = 'c')
 	{
 		// reset $this->categories
 		$this->initialize(array(
