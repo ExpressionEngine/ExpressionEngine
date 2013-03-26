@@ -3158,7 +3158,7 @@ class Channel {
 				$tagdata = $row_parser->parse_simple_conditionals($key, $val, $tagdata);
 
 				// parse {switch} variable
-				$tagdata = $row_parser->parse_switch_variable($key, $tagdata);
+				$tagdata = $row_parser->parse_switch_variable($key, $tagdata, $count);
 
 				// parse non-custom dates ({entry_date}, {comment_date}, etc)
 				$tagdata = $row_parser->parse_date_variables($key, $val, $tagdata);
@@ -3179,7 +3179,7 @@ class Channel {
 				$tagdata = $row_parser->parse_custom_date_fields($key, $tagdata);
 
 				// parse custom channel fields
-				$tagdata = $row_parser->parse_custom_field($key, $tagdata);
+				$tagdata = $row_parser->parse_custom_field($key, $val, $tagdata);
 
 				// parse custom member fields
 				$tagdata = $row_parser->parse_custom_member_field($key, $val, $tagdata);

@@ -68,7 +68,7 @@ class EE_Channel_row_parser {
 		return strncmp($str, $tagname, strlen($tagname)) == 0;
 	}
 
-	public function parse_custom_field($tag, $tagdata)
+	public function parse_custom_field($tag, $val, $tagdata)
 	{
 		$data = $this->_data;
 		$prefix = $this->_prefix;
@@ -143,23 +143,25 @@ class EE_Channel_row_parser {
 		return $tagdata;
 	}
 
-	public function parse_switch_variable($tag, $tagdata)
+	//  parse {switch} variable
+	public function parse_switch_variable($tag, $tagdata, $count)
 	{
-		//  parse {switch} variable
-		if (preg_match("/^switch\s*=.+/i", $tag))
+		$prefix = $this->_prefix;
+
+		if (preg_match("/^".$prefix."switch\s*=.+/i", $tag))
 		{
 			$sparam = get_instance()->functions->assign_parameters($tag);
 
 			$sw = '';
 
-			if (isset($sparam['switch']))
+			if (isset($sparam[$prefix.'switch']))
 			{
-				$sopt = explode("|", $sparam['switch']);
+				$sopt = explode("|", $sparam[$prefix.'switch']);
 
 				$sw = $sopt[($count + count($sopt)) % count($sopt)];
 			}
 
-			$tagdata = str_replace(LD.$this->_prefix.$key.RD, $sw, $tagdata);
+			$tagdata = str_replace(LD.$tag.RD, $sw, $tagdata);
 		}
 
 		return $tagdata;
@@ -608,6 +610,7 @@ class EE_Channel_row_parser {
 	public function parse_date_variables($key, $val, $tagdata)
 	{
 		$data = $this->_data;
+		$prefix = $this->_prefix;
 
 		extract($this->_preparsed->date_vars);
 
@@ -616,7 +619,7 @@ class EE_Channel_row_parser {
 		{
 			$val = str_replace($entry_date[$key], get_instance()->localize->format_date($entry_date[$key], $data['entry_date']), $val);
 
-			$tagdata = str_replace($key, $val, $tagdata);
+			$tagdata = str_replace(LD.$key.RD, $val, $tagdata);
 		}
 
 		//  Recent Comment Date
@@ -626,7 +629,7 @@ class EE_Channel_row_parser {
 			{
 				$val = str_replace($recent_comment_date[$key], get_instance()->localize->format_date($recent_comment_date[$key], $data['recent_comment_date']), $val);
 
-				$tagdata = str_replace($key, $val, $tagdata);
+				$tagdata = str_replace(LD.$key.RD, $val, $tagdata);
 			}
 			else
 			{
@@ -639,14 +642,14 @@ class EE_Channel_row_parser {
 		{
 			$val = str_replace($gmt_entry_date[$key], get_instance()->localize->format_date($gmt_entry_date[$key], $data['entry_date'], FALSE), $val);
 
-			$tagdata = str_replace($key, $val, $tagdata);
+			$tagdata = str_replace(LD.$key.RD, $val, $tagdata);
 		}
 
 		elseif (isset($gmt_date[$key]))
 		{
 			$val = str_replace($gmt_date[$key], get_instance()->localize->format_date($gmt_date[$key], $data['entry_date'], FALSE), $val);
 
-			$tagdata = str_replace($key, $val, $tagdata);
+			$tagdata = str_replace(LD.$key.RD, $val, $tagdata);
 		}
 
 		//  parse "last edit" date
@@ -654,7 +657,7 @@ class EE_Channel_row_parser {
 		{
 			$val = str_replace($edit_date[$key], get_instance()->localize->format_date($edit_date[$key], mysql_to_unix($data['edit_date'])), $val);
 
-			$tagdata = str_replace($key, $val, $tagdata);
+			$tagdata = str_replace(LD.$key.RD, $val, $tagdata);
 		}
 
 		//  "last edit" date as GMT
@@ -662,7 +665,7 @@ class EE_Channel_row_parser {
 		{
 			$val = str_replace($gmt_edit_date[$key], get_instance()->localize->format_date($gmt_edit_date[$key], mysql_to_unix($data['edit_date']), FALSE), $val);
 
-			$tagdata = str_replace($key, $val, $tagdata);
+			$tagdata = str_replace(LD.$key.RD, $val, $tagdata);
 		}
 
 
@@ -673,7 +676,7 @@ class EE_Channel_row_parser {
 			{
 				$val = str_replace($expiration_date[$key], get_instance()->localize->format_date($expiration_date[$key], $data['expiration_date']), $val);
 
-				$tagdata = str_replace($key, $val, $tagdata);
+				$tagdata = str_replace(LD.$key.RD, $val, $tagdata);
 			}
 			else
 			{
@@ -709,7 +712,7 @@ class EE_Channel_row_parser {
 
 			$val = str_replace($week_date[$key], get_instance()->localize->format_date($week_date[$key], $week_start_date), $val);
 
-			$tagdata = str_replace($key, $val, $tagdata);
+			$tagdata = str_replace(LD.$key.RD, $val, $tagdata);
 		}
 
 		return $tagdata;
@@ -1284,9 +1287,9 @@ class EE_Channel_preparser {
 				continue;
 			}
 
-			$val = $prefix.$val;
+			$full_val = $prefix.$val;
 
-			if (preg_match_all("/".LD.$val."\s+format=([\"'])([^\\1]*?)\\1".RD."/s", $this->_tagdata, $matches))
+			if (preg_match_all("/".LD.$full_val."\s+format=([\"'])([^\\1]*?)\\1".RD."/s", $this->_tagdata, $matches))
 			{
 				for ($j = 0; $j < count($matches[0]); $j++)
 				{

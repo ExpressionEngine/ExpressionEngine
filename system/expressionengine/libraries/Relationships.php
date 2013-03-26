@@ -1120,9 +1120,23 @@ class ParseNode extends EE_TreeNode {
 		// go around building huge lists with custom field data only to toss
 		// it all because the tag isn't in the field.
 
+		$singles = array();
+		$doubles = array();
+
+		$var_pair = get_instance()->TMPL->var_pair;
+		$var_single = get_instance()->TMPL->var_single;
+
 		$regex_prefix = '/^'.preg_quote($prefix, '/').'[^:]+( |$)/';
-		$singles = preg_grep($regex_prefix, array_keys(get_instance()->TMPL->var_single));
-		$doubles = preg_grep($regex_prefix, array_keys(get_instance()->TMPL->var_pair));
+
+		foreach (preg_grep($regex_prefix, array_keys($var_single)) as $key)
+		{
+			$singles[$key] = $var_single[$key];
+		}
+
+		foreach (preg_grep($regex_prefix, array_keys($var_pair)) as $key)
+		{
+			$doubles[$key] = $var_pair[$key];
+		}
 
 		/*
 		// Extract and preloop the doubles
@@ -1192,7 +1206,7 @@ class ParseNode extends EE_TreeNode {
 			$tagdata_chunk = $tagdata;
 
 			// mod.channel 3357
-			foreach ($doubles as $tag)
+			foreach ($doubles as $tag => $val)
 			{
 				$tagdata_chunk = $row_parser->parse_categories($tag, $tagdata_chunk, $categories);
 				
@@ -1202,9 +1216,20 @@ class ParseNode extends EE_TreeNode {
 			// handle single custom field tags
 			// @todo tag modifiers
 			// @todo field-not-found fallback (mod.channel 4764)
-			foreach ($singles as $tag)
+			foreach ($singles as $tag => $val)
 			{
-				$tagdata_chunk = $row_parser->parse_custom_field($tag, $tagdata_chunk);
+				// parse {switch} variable
+				$tagdata_chunk = $row_parser->parse_switch_variable($tag, $tagdata_chunk, $count);
+
+				// parse non-custom dates ({entry_date}, {comment_date}, etc)
+				$tagdata = $row_parser->parse_date_variables($tag, $val, $tagdata);
+
+				// parse simple variables that have parameters or special processing,
+				// such as any of the paths, url_or_email, url_or_email_as_author, etc
+				$tagdata_chunk = $row_parser->parse_simple_variables($tag, $val, $tagdata_chunk);
+
+				// parse custom channel fields
+				$tagdata_chunk = $row_parser->parse_custom_field($tag, $val, $tagdata_chunk);
 			}
 
 			// Only parse the data that was asked for in the template
@@ -1212,7 +1237,7 @@ class ParseNode extends EE_TreeNode {
 			{
 				$cond_vars[$prefix.$k] = $v;
 				$variables['{'.$prefix.$k.'}'] = $v;
-				$tagdata_chunk = $row_parser->parse_simple_variables($k, $k, $tagdata_chunk);
+			//	$tagdata_chunk = $row_parser->parse_simple_variables($k, $k, $tagdata_chunk);
 			}
 
 			// special variables!
