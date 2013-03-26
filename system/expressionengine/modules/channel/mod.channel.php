@@ -2958,8 +2958,8 @@ class Channel {
 		$custom_date_fields = $preparsed->custom_date_fields;		// Are any of the custom fields dates?
 		$search_link		= $preparsed->search_link;				// "Search by Member" link		
 		$pfield_chunk		= $preparsed->pfield_chunks;			// Fetch Custom Field Chunks
+		$subscriber_totals	= $preparsed->subscriber_totals;		// Comment subscriber totals
 		$modified_conditionals = $preparsed->modified_conditionals;	// Custom fields with modifiers in conditionals
-
 
 		// If custom fields are enabled, notify them of the data we're about to send
 		if ( ! empty($this->cfields))
@@ -2980,7 +2980,8 @@ class Channel {
 			$row['total_results']		= $total_results;
 			$row['absolute_count']		= $this->pagination->offset + $row['count'];
 			$row['absolute_results']	= ($this->absolute_results === NULL) ? $total_results : $this->absolute_results;
-			
+			$row['comment_subscriber_total'] = (isset($subscriber_totals[$row['entry_id']])) ? $subscriber_totals[$row['entry_id']] : 0;
+
 			if ($site_pages !== FALSE && isset($site_pages[$row['site_id']]['uris'][$row['entry_id']]))
 			{
 				$row['page_uri'] = $site_pages[$row['site_id']]['uris'][$row['entry_id']];

@@ -1151,6 +1151,8 @@ class EE_Channel_preparser {
 		'week_date'			=> array()
 	);
 
+	public $subscriber_totals = array();
+
 	protected $_prefix;
 	protected $_tagdata;
 
@@ -1174,6 +1176,8 @@ class EE_Channel_preparser {
 
 		$this->pairs	= $this->_extract_prefixed(get_instance()->TMPL->var_pair);
 		$this->singles	= $this->_extract_prefixed(get_instance()->TMPL->var_single);
+
+		$this->subscriber_totals	= $this->_subscriber_totals();
 	}
 
 	public function tagdata()
@@ -1218,6 +1222,22 @@ class EE_Channel_preparser {
 		$end = strpos($this->_tagdata, LD.'/'.$this->_prefix.$tagname, $start);
 
 		return $end !== FALSE;
+	}
+
+	protected function _subscriber_totals()
+	{
+		$subscribers = array();
+		
+		if (strpos($this->_tagdata, LD.'comment_subscriber_total'.RD) !== FALSE
+			&& isset(get_instance()->session->cache['channel']['entry_ids'])
+			)
+		{
+			get_instance()->load->library('subscription');
+			get_instance()->subscription->init('comment');
+			$subscribers = get_instance()->subscription->get_subscription_totals('entry_id', get_instance()->session->cache['channel']['entry_ids']);
+		}
+
+		return $subscribers;
 	}
 
 	protected function _extract_prefixed(array $data)
