@@ -794,7 +794,7 @@ class EE_Typography extends CI_Typography {
 			$exceptions	 = array('http://', 'https://', 'irc://', 'feed://', 'ftp://', 'ftps://', 'mailto:', '/', '#');
 			$allowed	 = array('rel', 'title', 'class', 'style', 'target');
 
-			if (preg_match_all("/\[url(.*?)\](.*?)\[\/url\]/i", $str, $matches))
+			if (preg_match_all("/\[url(.*?)\](.*?)\[\/url\]/is", $str, $matches))
 			{
 				for($i=0, $s=count($matches['0']), $add=TRUE; $i < $s; ++$i)
 				{
@@ -898,7 +898,7 @@ class EE_Typography extends CI_Typography {
 			}
 			elseif($this->auto_links == 'y' && $this->html_format != 'none')
 			{
-				if (preg_match_all("/\[img\](.*?)\[\/img\]/i", $str, $matches))
+				if (preg_match_all("/\[img\](.*?)\[\/img\]/is", $str, $matches))
 				{
 					for($i=0, $s=count($matches['0']); $i < $s; ++$i)
 					{
@@ -999,11 +999,11 @@ class EE_Typography extends CI_Typography {
 		
 		// [email=your@yoursite]email[/email]
 
-		$str = preg_replace_callback("/\[email=(.*?)\](.*?)\[\/email\]/i", array($this, "create_mailto"),$str);
+		$str = preg_replace_callback("/\[email=(.*?)\](.*?)\[\/email\]/is", array($this, "create_mailto"),$str);
 		
 		// [email]joe@xyz.com[/email]
 
-		$str = preg_replace_callback("/\[email\](.*?)\[\/email\]/i", array($this, "create_mailto"),$str);
+		$str = preg_replace_callback("/\[email\](.*?)\[\/email\]/is", array($this, "create_mailto"),$str);
 		
 		return $str;
 	}
@@ -1015,8 +1015,16 @@ class EE_Typography extends CI_Typography {
 	 */
 	public function create_mailto($matches)
 	{	
+		if (($space = strpos($matches['1'], ' ')) != FALSE)
+		{
+			$matches['1'] = substr($matches['1'], 0, $space);
+		}
+
+		// get rid of surrounding quotes
+		$matches['1'] = preg_replace(array('/(^"|\')/', '/("|\'$)/'), '', $matches['1']);	
+		
 		$title = ( ! isset($matches['2'])) ? $matches['1'] : $matches['2'];
-	
+		
 		if ($this->encode_email == TRUE)
 		{
 			return $this->encode_email($matches['1'], $title, TRUE);
