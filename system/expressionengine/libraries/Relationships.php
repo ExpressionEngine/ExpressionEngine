@@ -1094,92 +1094,71 @@ class ParseNode extends EE_TreeNode {
 			$entries = array_intersect($entries, $allowed_ids);
 		}
 
+		get_instance()->load->model('category_model');
+		$categories = get_instance()->category_model->get_entry_categories($entries);
+
+		foreach ($categories as &$cats)
+		{
+			foreach ($cats as &$cat)
+			{
+				if ( ! empty($cat))
+				{
+					$cat = array(
+						$cat['cat_id'],
+						$cat['parent_id'],
+						$cat['cat_name'],
+						$cat['cat_image'],
+						$cat['cat_description'],
+						$cat['group_id'],
+						$cat['cat_url_title']
+					);
+				}
+			}
+		}
 
 		// prefilter anything prefixed the same as this tag so that we don't
 		// go around building huge lists with custom field data only to toss
 		// it all because the tag isn't in the field.
 
+		$singles = array();
+		$doubles = array();
+
+		$var_pair = get_instance()->TMPL->var_pair;
+		$var_single = get_instance()->TMPL->var_single;
+
 		$regex_prefix = '/^'.preg_quote($prefix, '/').'[^:]+( |$)/';
-		$singles = preg_grep($regex_prefix, array_keys(get_instance()->TMPL->var_single));
-		$doubles = preg_grep($regex_prefix, array_keys(get_instance()->TMPL->var_pair));
 
+		foreach (preg_grep($regex_prefix, array_keys($var_single)) as $key)
+		{
+			$singles[$key] = $var_single[$key];
+		}
 
-		$ft_api = get_instance()->api_channel_fields;
+		foreach (preg_grep($regex_prefix, array_keys($var_pair)) as $key)
+		{
+			$doubles[$key] = $var_pair[$key];
+		}
 
-
-		$site_id = config_item('site_id');
-		$cfields = get_instance()->session->cache['channel']['custom_channel_fields'];
-		$pfields = get_instance()->session->cache['channel']['pair_custom_fields'];
-
-
-		$cfields = ($cfields && isset($cfields[$site_id])) ? $cfields[$site_id] : array();
-		$pfields = ($pfields && isset($pfields[$site_id])) ? $pfields[$site_id] : array();
-
-
+		/*
 		// Extract and preloop the doubles
 		// @todo @pk pretty much straight rip from mod.channel 3441 - refactor
 		$pfield_names = array_intersect($cfields, array_keys($pfields));
 		$pfield_chunk = array();
 
-		// @todo reduce pfield names using $doubles
-		foreach($pfield_names as $field_name => $field_id)
-		{
-			$offset = 0;
+		// @todo reduce pfield names using $doubles?
+		*/
 
-			while (($end = strpos($tagdata, LD.'/'.$prefix.$field_name.RD, $offset)) !== FALSE)
-			{
-				// This hurts soo much. Using custom fields as pair and single vars in the same
-				// channel tags could lead to something like this: {field}...{field}inner{/field}
-				// There's no efficient regex to match this case, so we'll find the last nested
-				// opening tag and re-cut the chunk.
+		get_instance()->load->library('channel_entries_parser');
+		$parser = get_instance()->channel_entries_parser->create($tagdata, $prefix);
 
-				if (preg_match("/".LD.$prefix.$field_name."(.*?)".RD."(.*?)".LD.'\/'.$prefix.$field_name."(.*?)".RD."/s", $tagdata, $matches, 0, $offset))
-				{
-					$chunk = $matches[0];
-					$params = $matches[1];
-					$inner = $matches[2];
-
-					// We might've sandwiched a single tag - no good, check again (:sigh:)
-					if ((strpos($chunk, LD.$field_name, 1) !== FALSE) && preg_match_all("/".LD."{$field_name}(.*?)".RD."/s", $chunk, $match))
-					{
-						// Let's start at the end
-						$idx = count($match[0]) - 1;
-						$tag = $match[0][$idx];
-						
-						// Reassign the parameter
-						$params = $match[1][$idx];
-
-						// Cut the chunk at the last opening tag (PHP5 could do this with strrpos :-( )
-						while (strpos($chunk, $tag, 1) !== FALSE)
-						{
-							$chunk = substr($chunk, 1);
-							$chunk = strstr($chunk, LD.$field_name);
-							$inner = substr($chunk, strlen($tag), -strlen(LD.'/'.$field_name.RD));
-						}
-					}
-					
-					$chunk_array = array($inner, get_instance()->functions->assign_parameters($params), $chunk);
-					
-					// Grab modifier if it exists and add it to the chunk array
-					if (substr($params, 0, 1) == ':')
-					{
-						$chunk_array[] = str_replace(':', '', $params);
-					}
-					
-					$pfield_chunk[$field_name][] = $chunk_array;
-				}
-				
-				$offset = $end + 1;
-			}
-		}
+		$preparsed = $parser->pre_parser($channel);
 
 		// parse them
 		foreach ($entries as $entry_id)
 		{
 			$count++;
-
 			$data = $entries_lookup[$entry_id];
 
+			$row_parser = $parser->row_parser($preparsed, $data);
 
 			// @todo date parameters (i.e. show_expired=) need a query up above?
 			// these may also need one, but for now this works
@@ -1226,102 +1205,39 @@ class ParseNode extends EE_TreeNode {
 
 			$tagdata_chunk = $tagdata;
 
-
-			// mod.channel 3955
-			foreach ($doubles as $tag)
+			// mod.channel 3357
+			foreach ($doubles as $tag => $val)
 			{
-				$field_name = substr($tag, strrpos($tag, ':') + 1);
-				$field_name = substr($field_name, 0, strpos($field_name, ' '));
-
-				if (isset($cfields[$field_name]) && isset($pfields[$cfields[$field_name]]))
-				{
-					$field_id = $cfields[$field_name];
-					$key_name = $pfields[$field_id];
-
-					if ($ft_api->setup_handler($field_id))
-					{
-						$ft_api->apply('_init', array(array('row' => $data)));
-						$pre_processed = $ft_api->apply('pre_process', array($data['field_id_'.$field_id]));
-
-
-						// Blast through all the chunks
-						if (isset($pfield_chunk[$field_name]))
-						{
-							foreach($pfield_chunk[$field_name] as $chk_data)
-							{
-								$tpl_chunk = '';
-								// Set up parse function name based on whether or not
-								// we have a modifier
-								$parse_fnc = (isset($chk_data[3]))
-									? 'replace_'.$chk_data[3] : 'replace_tag';
-
-								if ($ft_api->check_method_exists($parse_fnc))
-								{
-									$tpl_chunk = $ft_api->apply(
-										$parse_fnc,
-										array($pre_processed, $chk_data[1], $chk_data[0])
-									);
-								}
-								// Go to catchall and include modifier
-								elseif ($ft_api->check_method_exists($parse_fnc_catchall)
-									AND isset($chk_data[3]))
-								{
-									$tpl_chunk = $ft_api->apply(
-										$parse_fnc_catchall,
-										array($pre_processed, $chk_data[1], $chk_data[0], $chk_data[3])
-									);
-								}
-
-								$tagdata_chunk = str_replace($chk_data[2], $tpl_chunk, $tagdata_chunk);
-							}
-						}
-					}
-				}
+				$tagdata_chunk = $row_parser->parse_categories($tag, $tagdata_chunk, $categories);
+				
+				$tagdata_chunk = $row_parser->parse_custom_field_pair($tag, $tagdata_chunk);
 			}
 
 			// handle single custom field tags
 			// @todo tag modifiers
 			// @todo field-not-found fallback (mod.channel 4764)
-			foreach ($singles as $tag)
+			foreach ($singles as $tag => $val)
 			{
-				$unprefixed_tag = substr($tag, strrpos($tag, ':') + 1);
-				$field_name = substr($unprefixed_tag.' ', 0, strpos($unprefixed_tag.' ', ' '));
-				$param_string = substr($unprefixed_tag.' ', strlen($field_name));
+				// parse {switch} variable
+				$tagdata_chunk = $row_parser->parse_switch_variable($tag, $tagdata_chunk, $count);
 
-				if (isset($cfields[$field_name]))
-				{
-					$field_id = $cfields[$field_name];
+				// parse non-custom dates ({entry_date}, {comment_date}, etc)
+				$tagdata = $row_parser->parse_date_variables($tag, $val, $tagdata);
 
-					if ($ft_api->setup_handler($field_id))
-					{
-						$params = get_instance()->functions->assign_parameters($param_string);
+				// parse simple variables that have parameters or special processing,
+				// such as any of the paths, url_or_email, url_or_email_as_author, etc
+				$tagdata_chunk = $row_parser->parse_simple_variables($tag, $val, $tagdata_chunk);
 
-						$ft_api->apply('_init', array(array('row' => $data)));
-						$pre_processed = $ft_api->apply('pre_process', array($data['field_id_'.$field_id]));
-
-						$data_to_parse[$unprefixed_tag] = $ft_api->apply(
-							'replace_tag',
-							array($pre_processed, $params, FALSE)
-						);
-					}
-				}
-				elseif (isset($data[$field_name]))
-				{
-					$data_to_parse[$field_name] = $data[$field_name];
-				}
-				else
-				{
-					$data_to_parse[$unprefixed_tag] = '';
-				}
+				// parse custom channel fields
+				$tagdata_chunk = $row_parser->parse_custom_field($tag, $val, $tagdata_chunk);
 			}
-
 
 			// Only parse the data that was asked for in the template
 			foreach ($data_to_parse as $k => $v)
 			{
 				$cond_vars[$prefix.$k] = $v;
 				$variables['{'.$prefix.$k.'}'] = $v;
-				$tagdata_chunk = $channel->parse_simple_variable($k, $k, $tagdata_chunk, $data, $prefix);
+			//	$tagdata_chunk = $row_parser->parse_simple_variables($k, $k, $tagdata_chunk);
 			}
 
 			// special variables!
