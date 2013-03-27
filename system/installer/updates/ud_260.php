@@ -260,6 +260,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 			->update('specialty_templates', $data);
 	}
 
+	// -------------------------------------------------------------------
 
 	/**
  	 *
@@ -337,17 +338,91 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		$this->EE->dbforge->add_key('field_id', FALSE);
 	}
 
+	// -------------------------------------------------------------------
+
 	/**
 	 *
 	 */
 	private function _replace_relationship_tags()
 	{
-		// {related_entries id="field_short_name"} is easy
-		// it just becomes {field_short_name}
 
-		// {reverse_related_entries} is hard.
-		// Need to look at it and figure out how it is processed.
+		$this->EE->load->model('template_model');
+		$templates = $this->EE->template_model->fetch(); 
+
+		// related_entries
+		// Foreach template
+		foreach($templates as $template)
+		{
+			// Find the {related_entries} tags (match pairs and wrapped tags)
+			$tags = $this->_find_related_entries_tags($template);
+
+			// parse out the field_short_name and any parameters
+			foreach ($tags as $tag => $contents)
+			{
+				$parsed_tag = $this->_parse_related_entries_tag($tag, $contents);
+
+				// replace the tag with the short name, 
+				// prefix any contained variables with the short name
+				// HARD - how do we tell which variables belong to the related_entry?
+				$this->_update_related_entries_tag($parsed_tag, $template);
+			}
+
+			// save the template
+			// if saving to file, save the file
+			$this->EE->template_model->save_entity($template);
+		}
+
+		// reverse_related_entries
+		// foreach template
+
+			// Find the {reverse_related_entries} tags (match pairs and wrapped tags)
+		
+			// parse out any parameters
+
+			// replace the tag with the {parents} tag.
+
+			// prefix contained variables with the "parents" tag
+			// HARD again, knowing which ones to prefix is gonna be a pain in the ass
+
+			// save hte template
+
+			// if saving to file, save the file
+
 	}
+
+	/**
+	 * Find all {related_entries} tags in the passed Template
+	 *
+	 * Searches a passed Template (in the form of a Template_Entity) for
+	 * {related_entries} tags and parses them out into an array where the keys
+	 * are the tag and the values are the contained text (and any child tags).
+	 *
+	 * @param Template_Entity	The template you wish to find tags in.
+	 *
+	 * @return string[]	An array in which the keys are the tag and the values
+	 *					are the enclosed text.
+	 */
+	private function _find_related_entries_tags(Template_Entity $template)
+	{
+	}
+
+	/**
+	 *
+	 */
+	private function _parse_related_entries_tag($tag)
+	{
+
+	}
+
+	/**
+	 *
+	 */
+	private function _update_related_entries_tag($parsed_tag, Template_Entity $template)
+	{
+	
+	}	
+
+	// --------------------------------------------------------------------------
 
 	/**
 	 *

@@ -24,6 +24,39 @@
  */
 class Template_model extends CI_Model {
 
+	// --------------------------------------------------
+	// These methods utilized the Template_Entity object.
+	// --------------------------------------------------
+
+	/**
+	 *
+	 */
+	public function fetch()
+	{
+		return $this->_entities_from_db_result($this->db->get('templates'));
+	}
+
+	/**
+	 *
+	 */
+	protected function _entities_from_db_result($result)
+	{
+		$entities = array();
+		foreach ($result->result_array() as $row)
+		{	
+			$entity = new Template_Entity();
+			foreach ($row as $name => $value)
+			{
+				$entity->{$name} = $value;
+			}	
+			$entites[] = $entity;
+		}
+		return $entities;
+	}
+		
+	
+
+	// -----------------------------------------------------------------
 	
 	/**
 	 * Get Template Group Metadata
@@ -702,6 +735,143 @@ class Template_model extends CI_Model {
 		$this->db->update('specialty_templates');
 		
 		return $this->db->affected_rows();
+	}
+
+}
+
+/**
+ *
+ */
+class Template_Entity 
+{
+	/**
+	 *
+	 */
+	protected $_template_id;
+	
+	/**
+	 *
+	 */
+	protected $_site_id;
+	
+	/**
+	 *
+	 */
+	protected $_group_id;
+	
+	/**
+	 *
+	 */
+	protected $_template_name;
+	
+	/**
+	 *
+	 */
+	protected $_save_template_file;
+	
+	/**
+	 *
+	 */
+	protected $_template_type;
+
+	/**
+	 *
+	 */
+	protected $_template_data;
+
+	/**
+	 *
+	 */
+	protected $_template_noes;
+
+	/**
+	 *
+	 */
+	protected $_edit_date;
+	
+	/**
+	 *
+	 */
+	protected $_last_author_id;
+	
+	/**
+	 *
+	 */
+	protected $_cache;
+	
+	/**
+	 *
+	 */
+	protected $_refresh;
+
+	/**
+	 *
+	 */
+	protected $_no_auth_bounce;
+	
+	/**
+	 *
+	 */
+	protected $_enable_http_auth;
+
+	/**
+	 *
+	 */
+	protected $_allow_php;
+	
+	/**
+	 *
+	 */
+	protected $_php_parse_location;
+
+	/**
+	 *
+	 */
+	protected $_hits;
+
+	/**
+	 *
+	 */
+	public function __construct(array $templates_row = array())
+	{
+		foreach ($templates_row as $property=>$value)
+		{
+			$property = '_' . $property;
+			if ( property_exists($property))
+			{
+				$this->{$property} = $value;
+			}
+		}
+	}
+
+	/**
+	 *
+	 */		
+	public function __get($name)
+	{
+		$name = '_' . $name;
+
+		if ( ! property_exists($this, $name))
+		{
+			throw new RuntimeException('Attempt to access a non-existent property!');
+		}
+
+		return $this->{$name};
+	}
+
+	/**
+	 *
+	 */
+	public function __set($name, $value)
+	{
+		$name = '_' . $name;
+
+		if ( ! property_exists($this, $name))
+		{
+			throw new RuntimeException('Attempt to access a non-existent property!');
+		}
+
+		$this->{$name} = $value;
 	}
 
 }
