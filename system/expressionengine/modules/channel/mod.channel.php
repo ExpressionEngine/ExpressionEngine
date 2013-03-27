@@ -2905,7 +2905,6 @@ class Channel {
 	  */
 	public function parse_channel_entries($relationship_parser)
 	{
-
 		// For our hook to work, we need to grab the result array
 		$query_result = $this->query->result_array();
 
@@ -2926,12 +2925,6 @@ class Channel {
 		//
 		// -------------------------------------------
 
-		$total_results = count($query_result);
-
-		$site_pages = $this->EE->config->item('site_pages');
-
-
-		$switch = array();
 		$processed_member_fields = array();
 
 		//  Set default date header variables
@@ -2948,35 +2941,27 @@ class Channel {
 		$this->EE->load->library('channel_entries_parser');
 		$parser = $this->EE->channel_entries_parser->create($this->EE->TMPL->tagdata/*, $prefix=''*/);
 
-		$preparsed = $parser->pre_parser($this);
-
 		// We'll process what we can before starting to replace things to
 		// avoid redundant processing cycles in the foreach loop below
+		$preparsed = $parser->pre_parser($this);
 
-		extract($preparsed->date_vars);								// Fetch all the date-related variables
-		$cat_chunk			= $preparsed->cat_chunks;				// Fetch the "category chunk(s)"
-		$custom_date_fields = $preparsed->custom_date_fields;		// Are any of the custom fields dates?
-		$search_link		= $preparsed->search_link;				// "Search by Member" link		
-		$pfield_chunk		= $preparsed->pfield_chunks;			// Fetch Custom Field Chunks
-		$subscriber_totals	= $preparsed->subscriber_totals;		// Comment subscriber totals
-		$modified_conditionals = $preparsed->modified_conditionals;	// Custom fields with modifiers in conditionals
+		$data_parser = $parser->data_parser($preparsed, $relationship_parser);
+		$this->return_data = $data_parser->parse(array(
+			'entries'			=> $query_result,
+			'categories'		=> $this->categories,
+			'absolute_results'	=> $this->absolute_results,
+			'absolute_offset'	=> $this->pagination->offset
+		));
 
-		// If custom fields are enabled, notify them of the data we're about to send
-		if ( ! empty($this->cfields))
-		{
-			$this->_send_custom_field_data_to_fieldtypes($query_result);
-		}
-		
+
 		// Start the main processing loop
 
-		foreach ($query_result as $count => $row)
+		foreach (/*$query_result*/ array() as $count => $row)
 		{
+			/*
 			// Fetch the tag block containing the variables that need to be parsed
 			$tagdata = $this->EE->TMPL->tagdata;
 
-			$row['count']				= $count+1;
-			$row['page_uri']			= '';
-			$row['page_url']			= '';
 			$row['total_results']		= $total_results;
 			$row['absolute_count']		= $this->pagination->offset + $row['count'];
 			$row['absolute_results']	= ($this->absolute_results === NULL) ? $total_results : $this->absolute_results;
@@ -2989,7 +2974,7 @@ class Channel {
 			}
 
 			$row_parser = $parser->row_parser($preparsed, $row);
-
+*/
 			// -------------------------------------------
 			// 'channel_entries_tagdata' hook.
 			//  - Take the entry data and tag data, do what you wish
@@ -3018,7 +3003,7 @@ class Channel {
 			/**--
 			/**  Reset custom date fields
 			/**--*/
-
+/*
 			// Since custom date fields columns are integer types by default, if they
 			// don't contain any data they return a zero.
 			// This creates a problem if conditionals are used with those fields.
@@ -3038,9 +3023,9 @@ class Channel {
 					}
 				}
 			}
-
+*/
 			// Conditionals
-
+/*
 			$cond = $row;
 			$cond['logged_in']			= ($this->EE->session->userdata('member_id') == 0) ? 'FALSE' : 'TRUE';
 			$cond['logged_out']			= ($this->EE->session->userdata('member_id') != 0) ? 'FALSE' : 'TRUE';
@@ -3082,7 +3067,7 @@ class Channel {
 			$cond['signature_image_width']	= $row['sig_img_width'];
 			$cond['signature_image_height']	= $row['sig_img_height'];
 			$cond['relative_date']			= timespan($row['entry_date']);
-
+*/
 			if (isset($this->cfields[$row['site_id']]))
 			{
 				foreach($this->cfields[$row['site_id']] as $key => $value)
@@ -3115,16 +3100,16 @@ class Channel {
 					}
 				}
 			}
-
+/*
 			foreach($this->mfields as $key => $value)
 			{
 				$cond[$key] = ( ! array_key_exists('m_field_id_'.$value[0], $row)) ? '' : $row['m_field_id_'.$value[0]];
 				//( ! isset($row['m_field_id_'.$value[0]])) ? '' : $row['m_field_id_'.$value[0]];
 			}
-
+*/
 			// Reset custom variable pair cache
 			$parsed_custom_pairs = array();
-
+/*
 			//  Parse Variable Pairs
 			foreach ($this->EE->TMPL->var_pair as $key => $val)
 			{
@@ -3137,24 +3122,27 @@ class Channel {
 				// parse {date_heading} and {date_footer}
 				$tagdata = $row_parser->parse_date_header_and_footer($key, $val, $tagdata);
 			}
+			*/
 			// END VARIABLE PAIRS
 
 			/** ZERO WING **/
+			/*
 			if (isset($relationship_parser))
 			{
 				$tagdata = $relationship_parser->parse_relationships($row['entry_id'], $tagdata, $this);
 			}
+			*/
 
 			// We swap out the conditionals after pairs are parsed so they don't interfere
 			// with the string replace
-			$tagdata = $this->EE->functions->prep_conditionals($tagdata, $cond);
-
+	//		$tagdata = $this->EE->functions->prep_conditionals($tagdata, $cond);
+/*
 			//  Parse "single" variables
 			foreach ($this->EE->TMPL->var_single as $key => $val)
 			{
 				/**--------
 				/**  parse simple conditionals: {body|more|summary}
-				/**--------*/
+				/**--------*
 
 				// Note:  This must happen first.
 				$tagdata = $row_parser->parse_simple_conditionals($key, $val, $tagdata);
@@ -3187,13 +3175,14 @@ class Channel {
 				$tagdata = $row_parser->parse_custom_member_field($key, $val, $tagdata);
 			}
 			// END SINGLE VARIABLES
-			
+			*/
+/*
 			// do we need to replace any curly braces that we protected in custom fields?
 			if (strpos($tagdata, unique_marker('channel_bracket_open')) !== FALSE)
 			{
 				$tagdata = str_replace(array(unique_marker('channel_bracket_open'), unique_marker('channel_bracket_close')), array('{', '}'), $tagdata);
 			}
-		
+		*/
 
 			// -------------------------------------------
 			// 'channel_entries_tagdata_end' hook.
@@ -3224,61 +3213,6 @@ class Channel {
 			if (is_numeric($back))
 			{
 				$this->return_data = substr($this->return_data, 0, - $back);
-			}
-		}
-	}
-	
-	/**
-	 * Sends custom field data to fieldtypes before the entries loop runs.
-	 * This is particularly helpful to fieldtypes that need to query the database
-	 * based on what they're passed, like the File field. This allows them to run
-	 * potentially a single query to gather needed data instead of a query for
-	 * each row.
-	 *
-	 * @param string $entries_data 
-	 * @return void
-	 */
-	private function _send_custom_field_data_to_fieldtypes($entries_data)
-	{
-		// We'll stick custom field data into this array in the form of:
-		//   field_id => array('data1', 'data2', ...);
-		$custom_field_data = array();
-		
-		// Loop through channel entry data
-		foreach ($entries_data as $row)
-		{
-			// Get array of custom fields for the row's current site
-			$custom_fields = (isset($this->cfields[$row['site_id']])) ? $this->cfields[$row['site_id']] : array();
-			
-			foreach ($custom_fields as $field_name => $field_id)
-			{
-				// If the field exists and isn't empty
-				if (isset($row['field_id_'.$field_id]))
-				{
-					if ( ! empty($row['field_id_'.$field_id]))
-					{
-						// Add the data to our custom field data array
-						$custom_field_data[$field_id][] = $row['field_id_'.$field_id];
-					}
-				}
-			}
-		}
-		
-		if ( ! empty($custom_field_data))
-		{
-			$this->EE->load->library('api');
-			$this->EE->api->instantiate('channel_fields');
-			
-			// For each custom field, notify its fieldtype class of the data we collected
-			foreach ($custom_field_data as $field_id => $data)
-			{
-				if ($this->EE->api_channel_fields->setup_handler($field_id))
-				{
-					if ($this->EE->api_channel_fields->check_method_exists('pre_loop'))
-					{
-						$this->EE->api_channel_fields->apply('pre_loop', array($data));
-					}
-				}
 			}
 		}
 	}

@@ -1013,21 +1013,7 @@ class ParseNode extends EE_TreeNode {
 	{
 		$entries = $this->entries;
 		$entries_lookup = $this->entries_lookup;
-
-		$children = $this->children();
-
 		$tagdata = $matches[1];
-		$params = $this->params;
-
-		$result = '';
-		$name = $this->name;
-		$prefix = $name.':';
-
-		$channel = get_instance()->session->cache('relationships', 'channel');
-		
-		// @todo date formatting
-		$count = 0;
-		$total_results = count($entries);
 
 		// reorder the ids
 		if ($this->param('orderby'))
@@ -1075,7 +1061,6 @@ class ParseNode extends EE_TreeNode {
 			$entries = array_slice($entries, $offset, $limit);
 		}
 
-
 		// limit entry ids to given tag
 		// @todo @pk do this when propagating query ids?
 		if ($this->param('entry_id') && ! $this->param('url_title'))
@@ -1110,38 +1095,12 @@ class ParseNode extends EE_TreeNode {
 		// go around building huge lists with custom field data only to toss
 		// it all because the tag isn't in the field.
 
-		$singles = array();
-		$doubles = array();
+		// reduce entry ids by filters
+		$rows = array();
 
-		$var_pair = get_instance()->TMPL->var_pair;
-		$var_single = get_instance()->TMPL->var_single;
-
-		$regex_prefix = '/^'.preg_quote($prefix, '/').'[^:]+( |$)/';
-
-		foreach (preg_grep($regex_prefix, array_keys($var_single)) as $key)
-		{
-			$singles[$key] = $var_single[$key];
-		}
-
-		foreach (preg_grep($regex_prefix, array_keys($var_pair)) as $key)
-		{
-			$doubles[$key] = $var_pair[$key];
-		}
-
-
-		// Prep the chunk
-		get_instance()->load->library('channel_entries_parser');
-		$parser = get_instance()->channel_entries_parser->create($tagdata, $prefix);
-
-		$preparsed = $parser->pre_parser($channel);
-
-		// parse them
 		foreach ($entries as $entry_id)
 		{
-			$count++;
 			$data = $entries_lookup[$entry_id];
-
-			$row_parser = $parser->row_parser($preparsed, $data);
 
 			// @todo date parameters (i.e. show_expired=) need a query up above?
 			// these may also need one, but for now this works
@@ -1180,72 +1139,39 @@ class ParseNode extends EE_TreeNode {
 				}
 			}
 
-			$variables = array();
-			$cond_vars = array();
-
-			$tagdata_chunk = $tagdata;
-
-			// mod.channel 3357
-			foreach ($doubles as $key => $val)
-			{
-				// parse {categories} pair
-				$tagdata_chunk = $row_parser->parse_categories($key, $tagdata_chunk, $categories);
-				
-				// parse custom field pairs (file, checkbox, multiselect)
-				$tagdata_chunk = $row_parser->parse_custom_field_pair($key, $tagdata_chunk);
-			}
-
-			// handle single custom field tags
-			// @todo tag modifiers
-			// @todo field-not-found fallback (mod.channel 4764)
-			foreach ($singles as $key => $val)
-			{
-				// parse {switch} variable
-				$tagdata_chunk = $row_parser->parse_switch_variable($key, $tagdata_chunk, $count);
-
-				// parse non-custom dates ({entry_date}, {comment_date}, etc)
-				$tagdata = $row_parser->parse_date_variables($key, $val, $tagdata);
-
-				// parse simple variables that have parameters or special processing,
-				// such as any of the paths, url_or_email, url_or_email_as_author, etc
-				$tagdata_chunk = $row_parser->parse_simple_variables($key, $val, $tagdata_chunk);
-
-				$replace = array();
-
-				if ($val AND array_key_exists($val, $data))
-				{
-					$tagdata_chunk = get_instance()->swap_var_single($val, $data[str_replace($prefix, '', $val)], $tagdata_chunk);
-				}
-
-				// parse custom channel fields
-				$tagdata_chunk = $row_parser->parse_custom_field($key, $val, $tagdata_chunk);
-			}
-
-			// special variables!
-			$cond_vars[$prefix.'count'] = $count;
-			$cond_vars[$prefix.'total_results'] = $total_results;
-
-			$variables['{'.$prefix.'count}'] = $count;
-			$variables['{'.$prefix.'total_results}'] = $total_results;
-
-			$tagdata_chunk = str_replace(
-				array_keys($variables),
-				array_values($variables),
-				$tagdata_chunk
-			);
-
-			// conditionals
-			$tagdata_chunk = get_instance()->functions->prep_conditionals($tagdata_chunk, $cond_vars);
-			unset($cond_vars);
-
-			// child tags
-			foreach ($children as $child)
-			{
-				$tagdata_chunk = $child->parse($entry_id, $tagdata_chunk, $entries_lookup);
-			}
-
-			$result .= $tagdata_chunk;
+			$rows[$entry_id] = $data;
 		}
+
+		$prefix = $this->name.':';
+		$channel = get_instance()->session->cache('relationships', 'channel');
+
+		// Load the parser
+		get_instance()->load->library('channel_entries_parser');
+		$parser = get_instance()->channel_entries_parser->create($tagdata, $prefix);
+
+		// Prep tag chunks
+		$preparsed = $parser->pre_parser($channel);
+
+		// Run create a data parser
+		$data_parser = $parser->data_parser($preparsed);
+
+		// Go go go
+
+		$data = array(
+			'entries' => $rows,
+			'categories' => $categories
+		);
+
+		$config = array(
+			'disable' => array(
+				'relationships'
+			),
+			'callbacks' => array(
+				'tagdata_loop_end' => array($this, 'callback_tagdata_loop_end')
+			)
+		);
+
+		$result = $data_parser->parse($data, $config);
 
 		// kill prefixed leftovers
 		$result = preg_replace('/{'.$prefix.'[^}]*}(.+?){\/'.$prefix.'[^}]*}/is', '', $result);
@@ -1260,6 +1186,17 @@ class ParseNode extends EE_TreeNode {
 		}
 
 		return $result;
+	}
+
+	public function callback_tagdata_loop_end($tagdata, $row)
+	{
+		// child tags
+		foreach ($this->children() as $child)
+		{
+			$tagdata = $child->parse($row['entry_id'], $tagdata, $this->entries_lookup);
+		}
+
+		return $tagdata;
 	}
 }
 

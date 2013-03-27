@@ -8,7 +8,6 @@ class EE_Channel_entries_parser {
 	}
 }
 
-
 class EE_Channel_parser {
 
 	protected $_prefix;
@@ -38,6 +37,344 @@ class EE_Channel_parser {
 	public function row_parser(EE_Channel_preparser $preparsed, array $data)
 	{
 		return new EE_Channel_row_parser($preparsed, $data);
+	}
+
+
+	public function data_parser(EE_Channel_preparser $pre, $relationship_parser = NULL)
+	{
+		return new EE_Channel_data_parser($pre, $relationship_parser);
+	}
+
+
+	/*
+
+	// short way
+	$p = new Parser($tagdata, $prefix);
+	$p->parse($channel, $entries, array( ... ));
+
+	// long way
+	$pre = $p->pre_parser($channel);
+	$parser = $p->data_parser($pre);
+
+	$parser->parse($entries, array(
+		'disable' => array('relationships', 'categories'),
+		'callbacks' => array(
+			'pre_loop' => array($this, 'method');
+		)
+	));
+
+	*/
+	public function parse(Channel $channel, array $entries, array $config = array())
+	{
+		$pre = $this->pre_parser($channel);
+		$parser = $this->data_parser($pre);
+
+		return $parser->parse($entries, $config);
+	}
+}
+
+
+class EE_Channel_data_parser {
+
+	protected $_preparsed;
+	protected $_relationship_parser;
+
+	public function __construct(EE_Channel_preparser $pre, $relationship_parser = NULL)
+	{
+		$this->_preparsed = $pre;
+		$this->_relationship_parser = $relationship_parser;
+	}
+
+	public function parse($data, $config = array())
+	{
+		// data options
+		$entries	= $data['entries'];
+
+		$categories		  = isset($data['categories']) ? $data['categories'] : array();
+		$absolute_offset  = isset($data['absolute_offset']) ? $data['absolute_offset'] : 0;
+		$absolute_results = isset($data['absolute_results']) ? $data['absolute_results'] : NULL;
+
+		// config options
+		$disabled	= isset($config['disable']) ? $config['disable'] : array();
+		$callbacks	= isset($config['callbacks']) ? $config['callbacks'] : array();
+
+		$pairs	 = $this->_preparsed->pairs;
+		$singles = $this->_preparsed->singles;
+
+		$prefix	 = $this->_preparsed->prefix();
+		$channel = $this->_preparsed->channel();
+		
+		$relationship_parser = $this->_relationship_parser;
+		$subscriber_totals = $this->_preparsed->subscriber_totals;
+
+		$total_results = count($entries);
+		$site_pages = config_item('site_pages');
+
+		$result = ''; // final template
+
+		// If custom fields are enabled, notify them of the data we're about to send
+		if ( ! empty($channel->cfields))
+		{
+			$this->_send_custom_field_data_to_fieldtypes($entries);
+		}
+
+		$count = 0;
+
+		foreach ($entries as $row)
+		{
+			$tagdata = $this->_preparsed->tagdata();
+
+			$row['count']				= $count + 1;
+			$row['page_uri']			= '';
+			$row['page_url']			= '';
+			$row['total_results']		= $total_results;
+			$row['absolute_count']		= $absolute_offset + $row['count'];
+			$row['absolute_results'] = ($absolute_results === NULL) ? $total_results : $absolute_results;
+			$row['comment_subscriber_total'] = (isset($subscriber_totals[$row['entry_id']])) ? $subscriber_totals[$row['entry_id']] : 0;
+
+			if ($site_pages !== FALSE && isset($site_pages[$row['site_id']]['uris'][$row['entry_id']]))
+			{
+				$row['page_uri'] = $site_pages[$row['site_id']]['uris'][$row['entry_id']];
+				$row['page_url'] = get_instance()->create_page_url($site_pages[$row['site_id']]['url'], $site_pages[$row['site_id']]['uris'][$row['entry_id']]);
+			}
+
+			$row_parser = new EE_Channel_row_parser($this->_preparsed, $row);
+
+
+			// -------------------------------------------
+			// @todo channel_entries_tagdata hook
+			// -------------------------------------------
+
+			// -------------------------------------------
+			// @todo channel_entries_row hook
+			// -------------------------------------------
+
+
+			// Reset custom date fields
+
+			// Since custom date fields columns are integer types by default, if they
+			// don't contain any data they return a zero.
+			// This creates a problem if conditionals are used with those fields.
+			// For example, if an admin has this in a template:  {if mydate == ''}
+			// Since the field contains a zero it would never evaluate TRUE.
+			// Therefore we'll reset any zero dates to nothing.
+
+			if (isset($channel->dfields[$row['site_id']]) && count($channel->dfields[$row['site_id']]) > 0)
+			{
+				foreach ($channel->dfields[$row['site_id']] as $dkey => $dval)
+				{
+					// While we're at it, kill any formatting
+					$row['field_ft_'.$dval] = 'none';
+					if (isset($row['field_id_'.$dval]) AND $row['field_id_'.$dval] == 0)
+					{
+						$row['field_id_'.$dval] = '';
+					}
+				}
+			}
+
+
+			// conditionals!
+			$cond = $this->_get_conditional_data($row, $prefix, $channel);
+
+
+			foreach ($channel->mfields as $key => $value)
+			{
+				$cond[$key] = ( ! array_key_exists('m_field_id_'.$value[0], $row)) ? '' : $row['m_field_id_'.$value[0]];
+			}
+
+			//  Parse Variable Pairs
+			foreach ($pairs as $key => $val)
+			{
+				// parse {categories} pair
+				$tagdata = $row_parser->parse_categories($key, $tagdata, $categories);
+
+				// parse custom field pairs (file, checkbox, multiselect)
+				$tagdata = $row_parser->parse_custom_field_pair($key, $tagdata);
+
+				// parse {date_heading} and {date_footer}
+				$tagdata = $row_parser->parse_date_header_and_footer($key, $val, $tagdata);
+			}
+			// END VARIABLE PAIRS
+
+
+			if ( ! in_array('relationships', $disabled) && isset($relationship_parser))
+			{
+				$tagdata = $relationship_parser->parse_relationships($row['entry_id'], $tagdata, $channel);
+			}
+
+
+			// We swap out the conditionals after pairs are parsed so they don't interfere
+			// with the string replace
+			$tagdata = get_instance()->functions->prep_conditionals($tagdata, $cond);
+
+
+			//  Parse "single" variables
+			foreach ($singles as $key => $val)
+			{
+				// Note:  This must happen first.
+				// Parse simple conditionals: {body|more|summary}
+				$tagdata = $row_parser->parse_simple_conditionals($key, $val, $tagdata);
+
+				// parse {switch} variable
+				$tagdata = $row_parser->parse_switch_variable($key, $tagdata, $count);
+
+				// parse non-custom dates ({entry_date}, {comment_date}, etc)
+				$tagdata = $row_parser->parse_date_variables($key, $val, $tagdata);
+
+				// parse simple variables that have parameters or special processing,
+				// such as any of the paths, url_or_email, url_or_email_as_author, etc
+				$tagdata = $row_parser->parse_simple_variables($key, $val, $tagdata);
+
+				//  parse custom date fields
+				$tagdata = $row_parser->parse_custom_date_fields($key, $tagdata);
+
+				// parse custom channel fields
+				$tagdata = $row_parser->parse_custom_field($key, $val, $tagdata);
+
+				// parse custom member fields
+				$tagdata = $row_parser->parse_custom_member_field($key, $val, $tagdata);
+			}
+			// END SINGLE VARIABLES
+
+			// do we need to replace any curly braces that we protected in custom fields?
+			if (strpos($tagdata, unique_marker('channel_bracket_open')) !== FALSE)
+			{
+				$tagdata = str_replace(
+					array(unique_marker('channel_bracket_open'), unique_marker('channel_bracket_close')),
+					array('{', '}'),
+					$tagdata
+				);
+			}
+
+			// -------------------------------------------------------
+			// Loop end callback. Do what you want.
+			// Used by relationships to parse children and by the
+			// channel module for the channel_entries_tagdata_end hook
+			// -------------------------------------------------------
+
+			if (isset($callbacks['tagdata_loop_end']))
+			{
+				$tagdata = call_user_func($callbacks['tagdata_loop_end'], $tagdata, $row);
+			}
+
+			$result .= $tagdata;
+			$count++;
+		}
+
+		return $result;
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Sends custom field data to fieldtypes before the entries loop runs.
+	 * This is particularly helpful to fieldtypes that need to query the database
+	 * based on what they're passed, like the File field. This allows them to run
+	 * potentially a single query to gather needed data instead of a query for
+	 * each row.
+	 *
+	 * @param string $entries_data 
+	 * @return void
+	 */
+	protected function _send_custom_field_data_to_fieldtypes($entries_data)
+	{
+		$channel = $this->_preparsed->channel();
+
+		// We'll stick custom field data into this array in the form of:
+		// field_id => array('data1', 'data2', ...);
+		$custom_field_data = array();
+		
+		// Loop through channel entry data
+		foreach ($entries_data as $row)
+		{
+			// Get array of custom fields for the row's current site
+			$custom_fields = (isset($channel->cfields[$row['site_id']])) ? $channel->cfields[$row['site_id']] : array();
+			
+			foreach ($custom_fields as $field_name => $field_id)
+			{
+				// If the field exists and isn't empty
+				if (isset($row['field_id_'.$field_id]))
+				{
+					if ( ! empty($row['field_id_'.$field_id]))
+					{
+						// Add the data to our custom field data array
+						$custom_field_data[$field_id][] = $row['field_id_'.$field_id];
+					}
+				}
+			}
+		}
+		
+		if ( ! empty($custom_field_data))
+		{
+			get_instance()->load->library('api');
+			get_instance()->api->instantiate('channel_fields');
+			
+			// For each custom field, notify its fieldtype class of the data we collected
+			foreach ($custom_field_data as $field_id => $data)
+			{
+				if (get_instance()->api_channel_fields->setup_handler($field_id))
+				{
+					if (get_instance()->api_channel_fields->check_method_exists('pre_loop'))
+					{
+						get_instance()->api_channel_fields->apply('pre_loop', array($data));
+					}
+				}
+			}
+		}
+	}
+
+	protected function _get_conditional_data($row, $prefix, $channel)
+	{
+		$cond = $row;
+		$cond['logged_in']			= (get_instance()->session->userdata('member_id') == 0) ? 'FALSE' : 'TRUE';
+		$cond['logged_out']			= (get_instance()->session->userdata('member_id') != 0) ? 'FALSE' : 'TRUE';
+
+		if ((($row['comment_expiration_date'] > 0 && get_instance()->localize->now > $row['comment_expiration_date']) && get_instance()->config->item('comment_moderation_override') !== 'y') OR $row['allow_comments'] == 'n' OR (isset($row['comment_system_enabled']) && $row['comment_system_enabled']  == 'n'))
+		{
+			$cond['allow_comments'] = 'FALSE';
+		}
+		else
+		{
+			$cond['allow_comments'] = 'TRUE';
+		}
+
+		foreach (array('avatar_filename', 'photo_filename', 'sig_img_filename') as $pv)
+		{
+			if ( ! isset($row[$pv]))
+			{
+				$row[$pv] = '';
+			}
+		}
+
+		$cond['signature_image']		= ($row['sig_img_filename'] == '' OR get_instance()->config->item('enable_signatures') == 'n' OR get_instance()->session->userdata('display_signatures') == 'n') ? 'FALSE' : 'TRUE';
+		$cond['avatar']					= ($row['avatar_filename'] == '' OR get_instance()->config->item('enable_avatars') == 'n' OR get_instance()->session->userdata('display_avatars') == 'n') ? 'FALSE' : 'TRUE';
+		$cond['photo']					= ($row['photo_filename'] == '' OR get_instance()->config->item('enable_photos') == 'n' OR get_instance()->session->userdata('display_photos') == 'n') ? 'FALSE' : 'TRUE';
+		$cond['forum_topic']			= (empty($row['forum_topic_id'])) ? 'FALSE' : 'TRUE';
+		$cond['not_forum_topic']		= ( ! empty($row['forum_topic_id'])) ? 'FALSE' : 'TRUE';
+		$cond['category_request']		= ($channel->cat_request === FALSE) ? 'FALSE' : 'TRUE';
+		$cond['not_category_request']	= ($channel->cat_request !== FALSE) ? 'FALSE' : 'TRUE';
+		$cond['channel']				= $row['channel_title'];
+		$cond['channel_short_name']		= $row['channel_name'];
+		$cond['author']					= ($row['screen_name'] != '') ? $row['screen_name'] : $row['username'];
+		$cond['photo_url']				= get_instance()->config->slash_item('photo_url').$row['photo_filename'];
+		$cond['photo_image_width']		= $row['photo_width'];
+		$cond['photo_image_height']		= $row['photo_height'];
+		$cond['avatar_url']				= get_instance()->config->slash_item('avatar_url').$row['avatar_filename'];
+		$cond['avatar_image_width']		= $row['avatar_width'];
+		$cond['avatar_image_height']	= $row['avatar_height'];
+		$cond['signature_image_url']	= get_instance()->config->slash_item('sig_img_url').$row['sig_img_filename'];
+		$cond['signature_image_width']	= $row['sig_img_width'];
+		$cond['signature_image_height']	= $row['sig_img_height'];
+		$cond['relative_date']			= timespan($row['entry_date']);
+
+		$prefixed_cond = array();
+
+		foreach ($cond as $k => $v)
+		{
+			$prefixed_cond[$prefix.$k] = $v;
+		}
+
+		return $prefixed_cond;
 	}
 }
 
@@ -753,7 +1090,7 @@ class EE_Channel_row_parser {
 
 				$tagdata = str_replace(
 					LD.$prefix.$tag.RD,
-					$this->EE->localize->format_date(
+					get_instance()->localize->format_date(
 						$custom_date_fields[$tag],
 						$data['field_id_'.$dval], 
 						$localize
@@ -1126,6 +1463,19 @@ class EE_Channel_row_parser {
 			);
 		}
 
+		//  parse basic fields (username, screen_name, etc.)
+		//  Use array_key_exists to handle null values
+
+		else
+		{
+			$raw_val = str_replace($prefix, '', $val);
+
+			if ($raw_val AND array_key_exists($raw_val, $data))
+			{
+				$tagdata = str_replace(LD.$val.RD, $data[$raw_val], $tagdata);
+			}
+		}
+
 		return $tagdata;
 	}
 }
@@ -1203,11 +1553,6 @@ class EE_Channel_preparser {
 		return $this->_parser;
 	}
 
-	public function row_parser($data)
-	{
-		return $this->_parser->row_parser($this, $data);
-	}
-
 	public function has_tag($tagname)
 	{
 		return strpos($this->_tagdata, LD.$this->_prefix.$tagname) !== FALSE;
@@ -1252,12 +1597,11 @@ class EE_Channel_preparser {
 
 		$filtered = array();
 
-		foreach ($data as $k => $v)
+		$regex_prefix = '/^'.preg_quote($this->_prefix, '/').'[^:]+( |$)/';
+
+		foreach (preg_grep($regex_prefix, array_keys($data)) as $key)
 		{
-			if (strpos($k, $this->_prefix) === 0)
-			{
-				$filtered[$k] = $v;
-			}
+			$filtered[$key] = $data[$key];
 		}
 
 		return $filtered;
