@@ -60,6 +60,8 @@ class Zero_wing_ft extends EE_Fieldtype {
 	public function save($data)
 	{
 		$sort = $this->EE->input->post('sort_'.$this->field_name);
+		$sort = array_filter($sort);
+
 		$this->EE->session->set_cache(__CLASS__, $this->field_name, array(
 			'data' => $data,
 			'sort' => $sort
@@ -86,7 +88,7 @@ class Zero_wing_ft extends EE_Fieldtype {
 		$entry_id = $this->settings['entry_id'];
 		$post = $this->EE->session->cache(__CLASS__, $this->field_name);
 
-		$order = $post['sort'];
+		$order = array_values($post['sort']);
 		$data = $post['data'];
 
 		// clear old stuff
@@ -147,20 +149,24 @@ class Zero_wing_ft extends EE_Fieldtype {
 		$field_name = $this->field_name;
 		$entry_id = $this->EE->input->get('entry_id');
 
+		$order = array();
 		$entries = array();
 		$selected = array();
 
 		if ($entry_id)
 		{
 			$related = $this->EE->db
-				->select('child_id')
+				->select('child_id, order')
 				->where('parent_id', $entry_id)
 				->where('field_id', $this->field_id)
-				->order_by('order', 'asc')
 				->get($this->_table)
-				->result_array();
+				->result();
 
-			$selected = array_map('array_pop', $related);
+			foreach ($related as $row)
+			{
+				$selected[] = $row->child_id;
+				$order[$row->child_id] = $row->order;
+			}
 		}
 
 		$limit_channels = $this->settings['channels'];
@@ -270,7 +276,7 @@ class Zero_wing_ft extends EE_Fieldtype {
 
 		$str = '';
 		$str .= $this->_active_div($field_name);
-		$str .= $this->_multi_div($entries, $selected, $field_name);
+		$str .= $this->_multi_div($entries, $selected, $order, $field_name);
 
 		// The active section
 
@@ -295,10 +301,8 @@ class Zero_wing_ft extends EE_Fieldtype {
 	 *		field_name - custom field name
 	 * @return	interface string
 	 */
-	public function _multi_div($entries, $selected, $field_name)
+	public function _multi_div($entries, $selected, $order, $field_name)
 	{
-		$selected_lookup = array_flip($selected);
-
 		$class = 'class="multiselect ';
 		$class .= count($entries) ? 'force-scroll' : 'empty';
 		$class .= '"';
@@ -313,8 +317,8 @@ class Zero_wing_ft extends EE_Fieldtype {
 
 		foreach ($entries as $row)
 		{
-			$checked = isset($selected_lookup[$row['entry_id']]);
-			$sort = $checked ? $selected_lookup[$row['entry_id']] : 0;
+			$checked = in_array($row['entry_id'], $selected);
+			$sort = $checked ? $order[$row['entry_id']] : 0;
 
 			$str .= '<li'.($checked ? ' class="selected"' : '').'><label>';
 			$str .= form_input('sort_'.$field_name.'[]', $sort, 'class="js_hide"');
