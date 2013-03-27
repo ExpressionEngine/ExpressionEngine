@@ -3128,6 +3128,7 @@ class Channel {
 			//  Parse Variable Pairs
 			foreach ($this->EE->TMPL->var_pair as $key => $val)
 			{
+				// parse {categories} pair
 				$tagdata = $row_parser->parse_categories($key, $tagdata, $this->categories);
 
 				// parse custom field pairs (file, checkbox, multiselect)

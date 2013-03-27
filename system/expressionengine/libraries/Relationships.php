@@ -992,19 +992,9 @@ class ParseNode extends EE_TreeNode {
 
 		$this->entries_lookup = $entries_lookup;
 		$this->entries = array_unique($this->entry_ids[$id]);
+		$tag = preg_quote($this->name, '/');
 
-		$open_tag = preg_quote($this->open_tag, '/');
-		$close_tag = preg_quote($this->name, '/');
-
-//		preg_match_all('/'.$open_tag.'/is', $tagdata, $matches);
-	//	preg_match_all('/'.$open_tag.'(.+?){\/'.$close_tag.'}/is', $tagdata, $matches);
-	//	preg_match_all('/'.$open_tag.'/is', $tagdata, $matches);
-	//	preg_match_all('/{'.$close_tag.'[^}:]*}(.+?){\/'.$close_tag.'}/is', $tagdata, $matches);
-
-		$ident = $close_tag;
-
-		return preg_replace_callback('/{'.$ident.'[^}:]*}(.+?){\/'.$ident.'}/is', array($this, '_replace'), $tagdata);
-		return preg_replace_callback('/'.$open_tag.'(.+?){\/'.$close_tag.'}/is', array($this, '_replace'), $tagdata);
+		return preg_replace_callback('/{'.$tag.'[^}:]*}(.+?){\/'.$tag.'}/is', array($this, '_replace'), $tagdata);
 	}
 
 	/**
@@ -1138,15 +1128,8 @@ class ParseNode extends EE_TreeNode {
 			$doubles[$key] = $var_pair[$key];
 		}
 
-		/*
-		// Extract and preloop the doubles
-		// @todo @pk pretty much straight rip from mod.channel 3441 - refactor
-		$pfield_names = array_intersect($cfields, array_keys($pfields));
-		$pfield_chunk = array();
 
-		// @todo reduce pfield names using $doubles?
-		*/
-
+		// Prep the chunk
 		get_instance()->load->library('channel_entries_parser');
 		$parser = get_instance()->channel_entries_parser->create($tagdata, $prefix);
 
@@ -1200,44 +1183,42 @@ class ParseNode extends EE_TreeNode {
 			$variables = array();
 			$cond_vars = array();
 
-			$data_to_parse = array();
-			$data_to_parse = $data;
-
 			$tagdata_chunk = $tagdata;
 
 			// mod.channel 3357
-			foreach ($doubles as $tag => $val)
+			foreach ($doubles as $key => $val)
 			{
-				$tagdata_chunk = $row_parser->parse_categories($tag, $tagdata_chunk, $categories);
+				// parse {categories} pair
+				$tagdata_chunk = $row_parser->parse_categories($key, $tagdata_chunk, $categories);
 				
-				$tagdata_chunk = $row_parser->parse_custom_field_pair($tag, $tagdata_chunk);
+				// parse custom field pairs (file, checkbox, multiselect)
+				$tagdata_chunk = $row_parser->parse_custom_field_pair($key, $tagdata_chunk);
 			}
 
 			// handle single custom field tags
 			// @todo tag modifiers
 			// @todo field-not-found fallback (mod.channel 4764)
-			foreach ($singles as $tag => $val)
+			foreach ($singles as $key => $val)
 			{
 				// parse {switch} variable
-				$tagdata_chunk = $row_parser->parse_switch_variable($tag, $tagdata_chunk, $count);
+				$tagdata_chunk = $row_parser->parse_switch_variable($key, $tagdata_chunk, $count);
 
 				// parse non-custom dates ({entry_date}, {comment_date}, etc)
-				$tagdata = $row_parser->parse_date_variables($tag, $val, $tagdata);
+				$tagdata = $row_parser->parse_date_variables($key, $val, $tagdata);
 
 				// parse simple variables that have parameters or special processing,
 				// such as any of the paths, url_or_email, url_or_email_as_author, etc
-				$tagdata_chunk = $row_parser->parse_simple_variables($tag, $val, $tagdata_chunk);
+				$tagdata_chunk = $row_parser->parse_simple_variables($key, $val, $tagdata_chunk);
+
+				$replace = array();
+
+				if ($val AND array_key_exists($val, $data))
+				{
+					$tagdata_chunk = get_instance()->swap_var_single($val, $data[str_replace($prefix, '', $val)], $tagdata_chunk);
+				}
 
 				// parse custom channel fields
-				$tagdata_chunk = $row_parser->parse_custom_field($tag, $val, $tagdata_chunk);
-			}
-
-			// Only parse the data that was asked for in the template
-			foreach ($data_to_parse as $k => $v)
-			{
-				$cond_vars[$prefix.$k] = $v;
-				$variables['{'.$prefix.$k.'}'] = $v;
-			//	$tagdata_chunk = $row_parser->parse_simple_variables($k, $k, $tagdata_chunk);
+				$tagdata_chunk = $row_parser->parse_custom_field($key, $val, $tagdata_chunk);
 			}
 
 			// special variables!
