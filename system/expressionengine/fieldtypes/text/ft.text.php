@@ -159,8 +159,6 @@ class Text_ft extends EE_Fieldtype {
 
 		$field_maxl = ($data['field_maxl'] == '') ? 128 : $data['field_maxl'];
 		
-		$field_content_options = array('all' => lang('all'), 'numeric' => lang('type_numeric'), 'integer' => lang('type_integer'), 'decimal' => lang('type_decimal'));
-		
 		$this->EE->table->add_row(
 			lang('field_max_length', $prefix.'field_max_length'),
 			form_input(array('id'=>$prefix.'field_max_length','name'=>'field_maxl', 'size'=>4,'value'=>$field_maxl))
@@ -171,7 +169,7 @@ class Text_ft extends EE_Fieldtype {
 
 		$this->EE->table->add_row(
 			lang('field_content_text', $prefix.'field_content_type'),
-			form_dropdown('text_field_content_type', $field_content_options, $data['field_content_type'], 'id="'.$prefix.'field_content_type"').$extra
+			form_dropdown('text_field_content_type', $this->_get_content_options(), $data['field_content_type'], 'id="'.$prefix.'field_content_type"').$extra
 		);
 
 		$this->field_show_smileys_row($data, $prefix);
@@ -192,8 +190,31 @@ class Text_ft extends EE_Fieldtype {
 	{
 		return array(
 			$this->grid_field_formatting_row($data),
+			$this->grid_dropdown_row(
+				lang('field_content_text'),
+				'field_content_type',
+				$this->_get_content_options(),
+				isset($data['field_content_type']) ? $data['field_content_type'] : NULL
+			),
 			$this->grid_text_direction_row($data),
 			$this->grid_max_length_row($data)
+		);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Returns allowed content types for the text fieldtype
+	 * 
+	 * @return	array
+	 */
+	private function _get_content_options()
+	{
+		return array(
+			'all'		=> lang('all'),
+			'numeric'	=> lang('type_numeric'),
+			'integer'	=> lang('type_integer'),
+			'decimal'	=> lang('type_decimal')
 		);
 	}
 	
@@ -206,7 +227,6 @@ class Text_ft extends EE_Fieldtype {
 			'field_content_type'	=> $this->EE->input->post('text_field_content_type')
 		);
 	}
-	
 
 	// --------------------------------------------------------------------
 	
@@ -215,23 +235,60 @@ class Text_ft extends EE_Fieldtype {
 
 		$settings = unserialize(base64_decode($data['field_settings']));
 
-		switch($settings['field_content_type'])
+		return $this->_get_column_settings($settings['field_content_type'], $settings['field_id']);
+	}
+
+	// --------------------------------------------------------------------
+
+	public function grid_settings_modify_column($data)
+	{
+		return $this->_get_column_settings(
+			isset($data['field_content_type']) ? $data['field_content_type'] : '',
+			$data['col_id'],
+			TRUE);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Returns database column setting for a particular text field configuration
+	 *
+	 * @param	string	Type of data to be stored in this text field
+	 * @param	int		Field/column ID to map settings to
+	 * @param	bool	Whether or not we're preparing these settings for
+	 * 					a Grid field
+	 * @return	array	Database column settings for this text field
+	 */
+	private function _get_column_settings($data_type, $field_id, $grid = FALSE)
+	{
+		$field_name = ($grid) ? 'col_id_'.$field_id : 'field_id_'.$field_id;
+
+		switch($data_type)
 		{
 			case 'numeric':
-				$fields['field_id_'.$data['field_id']]['type'] = 'FLOAT';
-				$fields['field_id_'.$data['field_id']]['default'] = 0;
+				$fields[$field_name] = array(
+					'type'		=> 'FLOAT',
+					'default'	=> 0
+				);
 				break;
 			case 'integer':
-				$fields['field_id_'.$data['field_id']]['type'] = 'INT';
-				$fields['field_id_'.$data['field_id']]['default'] = 0;
+				$fields[$field_name] = array(
+					'type'		=> 'INT',
+					'default'	=> 0
+				);
 				break;
 			case 'decimal':
-				$fields['field_id_'.$data['field_id']]['type'] = 'DECIMAL(10,4)';
-				$fields['field_id_'.$data['field_id']]['default'] = 0;
+				$fields[$field_name] = array(
+					'type'		=> 'DECIMAL(10,4)',
+					'default'	=> 0
+				);
 				break;
 			default:
-				$fields['field_id_'.$data['field_id']]['type'] = 'text';
-				$fields['field_id_'.$data['field_id']]['null'] = TRUE;
+				$fields[$field_name] = array(
+					'type'		=> 'text',
+					'null'		=> TRUE,
+					'default'	=> NULL
+				);
 		}
 		
 		return $fields;

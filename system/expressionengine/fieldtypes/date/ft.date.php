@@ -172,6 +172,11 @@ class Date_ft extends EE_Fieldtype {
 		return $date;
 	}
 
+	public function grid_display_settings($data)
+	{
+		return NULL;
+	}
+
 	function save_settings($data)
 	{
 		// Date or relationship types don't need formatting.
@@ -186,19 +191,35 @@ class Date_ft extends EE_Fieldtype {
 	
 	function settings_modify_column($data)
 	{
-		$fields['field_id_'.$data['field_id']] = array(
+		return $this->_get_column_settings($data['field_id']);
+	}
+
+	// --------------------------------------------------------------------
+
+	public function grid_settings_modify_column($data)
+	{
+		return $this->_get_column_settings($data['col_id'], TRUE);
+	}
+
+	// --------------------------------------------------------------------
+
+	private function _get_column_settings($field_id, $grid = FALSE)
+	{
+		$field_prefix = ($grid) ? 'col' : 'field';
+
+		$fields[$field_prefix.'_id_'.$field_id] = array(
 			'type' 			=> 'INT',
 			'constraint'	=> 10,
 			'default'		=> 0
-			);
+		);
 
-		$fields['field_dt_'.$data['field_id']] = array(
+		$fields[$field_prefix.'_dt_'.$field_id] = array(
 			'type' 			=> 'VARCHAR',
 			'constraint'	=> 50
-			);			
+		);			
 		
 		return $fields;
-	}	
+	}
 }
 
 // END Date_ft class

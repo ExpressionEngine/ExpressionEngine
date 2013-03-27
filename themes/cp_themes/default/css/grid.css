@@ -80,15 +80,30 @@
 	padding: 5px;
 }
 
-.grid_col_settings_section input[type=text] {
+.grid_col_settings_section input[type=text],
+.grid_col_settings_section textarea {
 	border-radius: 0;
 	border-color: #c8cfd8;
 	padding: 6px;
 }
 
-.grid_col_settings_section input[type=text]:focus {
+.grid_col_settings_section input[type=text]:focus,
+.grid_col_settings_section textarea:focus {
 	background-color: #fbfaed;
 	border: 1px solid #a49745;
+}
+
+.grid_col_settings_section textarea {
+	resize: none;
+	width: auto;
+}
+
+.grid_col_settings_section select.select {
+	max-width: 172px;
+}
+
+.grid_col_settings_section .right {
+	float: right;
 }
 
 .grid_col_settings_section input[type=checkbox] {

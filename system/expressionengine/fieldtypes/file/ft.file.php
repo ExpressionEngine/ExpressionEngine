@@ -30,6 +30,8 @@ class File_ft extends EE_Fieldtype {
 	);
 
 	var $has_array_data = TRUE;
+
+	var $_dirs = array();
 	
 	/**
 	 * Constructor
@@ -273,34 +275,85 @@ class File_ft extends EE_Fieldtype {
 	{
 		$prefix = 'file';
 
-		$this->EE->load->model('file_upload_preferences_model');
-		
-		$field_content_options = array('all' => lang('all'), 'image' => lang('type_image'));
-
 		$this->EE->table->add_row(
 			lang('field_content_file', $prefix.'field_content_type'),
-			form_dropdown('file_field_content_type', $field_content_options, $data['field_content_type'], 'id="'.$prefix.'field_content_type"')
+			form_dropdown(
+				'file_field_content_type',
+				$this->_field_content_options(),
+				$data['field_content_type'],
+				'id="'.$prefix.'field_content_type"'
+			)
 		);
-		
-		$directory_options['all'] = lang('all');
-		
-		$dirs = $this->EE->file_upload_preferences_model->get_file_upload_preferences(1);
-
-		foreach($dirs as $dir)
-		{
-			$directory_options[$dir['id']] = $dir['name'];
-		}
 		
 		$allowed_directories = ( ! isset($data['allowed_directories'])) ? 'all' : $data['allowed_directories'];
 
 		$this->EE->table->add_row(
 			lang('allowed_dirs_file', $prefix.'field_allowed_dirs'),
-			form_dropdown('file_allowed_directories', $directory_options, $allowed_directories, 'id="'.$prefix.'field_allowed_dirs"')
+			form_dropdown(
+				'file_allowed_directories',
+				$this->_allowed_directories_options(),
+				$allowed_directories,
+				'id="'.$prefix.'field_allowed_dirs"'
+			)
 		);		
 		
 	}
 	
+	// --------------------------------------------------------------------
 	
+	public function grid_display_settings($data)
+	{
+		$allowed_directories = ( ! isset($data['allowed_directories'])) ? 'all' : $data['allowed_directories'];
+
+		return array(
+			$this->grid_dropdown_row(
+				lang('field_content_file'),
+				'field_content_type',
+				$this->_field_content_options(),
+				isset($data['field_content_type']) ? $data['field_content_type'] : 'all'
+			),
+			$this->grid_dropdown_row(
+				lang('allowed_dirs_file'),
+				'allowed_directories',
+				$this->_allowed_directories_options(),
+				$allowed_directories
+			)
+		);
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Returns dropdown-ready array of allowed file types for upload
+	 */
+	private function _field_content_options()
+	{
+		return array('all' => lang('all'), 'image' => lang('type_image'));
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Returns dropdown-ready array of allowed upload directories
+	 */
+	private function _allowed_directories_options()
+	{
+		$this->EE->load->model('file_upload_preferences_model');
+
+		$directory_options['all'] = lang('all');
+		
+		if (empty($this->_dirs))
+		{
+			$this->_dirs = $this->EE->file_upload_preferences_model->get_file_upload_preferences(1);
+		}
+
+		foreach($this->_dirs as $dir)
+		{
+			$directory_options[$dir['id']] = $dir['name'];
+		}
+
+		return $directory_options;
+	}
 	
 	// --------------------------------------------------------------------
 
@@ -311,7 +364,7 @@ class File_ft extends EE_Fieldtype {
 			'allowed_directories'	=> $this->EE->input->post('file_allowed_directories'),
 			'field_fmt' 			=> 'none'
 		);
-	}	
+	}
 }
 
 // END File_ft class

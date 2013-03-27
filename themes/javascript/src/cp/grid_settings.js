@@ -141,6 +141,10 @@
 						opacity: 0
 					}, 200, function()
 					{
+						// Clear HTML before resize animation so contents don't
+						// push down bottom of column container while resizing
+						settings.html('');
+
 						settings.animate({
 							width: 0
 						}, 200, function()
@@ -288,7 +292,8 @@
 			// Need to make sure the new columns field names are unique
 			el.html(
 				el.html().replace(
-					RegExp('(new_|col_id_)[0-9]{1,}', 'g'), 'new_' + $('.grid_col_settings').size()
+					RegExp('(new_|col_id_)[0-9]{1,}', 'g'),
+					'new_' + $('.grid_col_settings').size()
 				)
 			);
 
@@ -316,10 +321,20 @@
 				// Enable inputs
 				settings.find(':input').removeAttr('disabled');
 
+				var customSettingsContainer = $(this)
+					.parents('.grid_col_settings')
+					.find('.grid_col_settings_custom');
+
+				// Namespace fieldnames for the current column
+				settings.html(
+					settings.html().replace(
+						RegExp('(new_|col_id_)[0-9]{1,}', 'g'),
+						customSettingsContainer.data('fieldName')
+					)
+				);
+
 				// Find the container holding the settings form, replace its contents
-				$(this).parents('.grid_col_settings')
-					.find('.grid_col_settings_custom')
-					.html(settings);
+				customSettingsContainer.html(settings);
 			});
 		}
 	};

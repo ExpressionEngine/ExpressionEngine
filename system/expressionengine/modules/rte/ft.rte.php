@@ -108,6 +108,16 @@ class Rte_ft extends EE_Fieldtype {
 			)
 		);
 	}
+
+	// --------------------------------------------------------------------
+	
+	public function grid_display_settings($data)
+	{
+		return array(
+			$this->grid_textarea_max_rows_row($data, 10),
+			$this->grid_text_direction_row($data)
+		);
+	}
 	
 	// --------------------------------------------------------------------
 

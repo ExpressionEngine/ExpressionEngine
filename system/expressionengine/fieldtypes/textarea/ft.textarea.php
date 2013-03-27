@@ -94,6 +94,17 @@ class Textarea_ft extends EE_Fieldtype {
 		$this->field_show_writemode_row($data, $prefix);
 		$this->field_show_file_selector_row($data, $prefix);
 	}
+
+	// --------------------------------------------------------------------
+	
+	public function grid_display_settings($data)
+	{
+		return array(
+			$this->grid_field_formatting_row($data),
+			$this->grid_text_direction_row($data),
+			$this->grid_textarea_max_rows_row($data)
+		);
+	}
 }
 
 // END Textarea_ft class

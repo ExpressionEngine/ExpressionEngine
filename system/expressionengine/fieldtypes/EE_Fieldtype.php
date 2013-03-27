@@ -411,6 +411,26 @@ class EE_Fieldtype {
 				lang('no', $prefix.$data_key.'_n')
 		);
 	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Creates a dropdown formatted for a Grid columns settings field
+	 *
+	 * @return string
+	 */
+	public function grid_dropdown_row($label, $name, $data, $selected = NULL)
+	{
+		return form_label($label, NULL,
+				array('class' => 'grid_col_setting_label_fixed_width')
+			).
+			form_dropdown(
+				$name,
+				$data,
+				$selected,
+				'class="select"'
+			);
+	}
 	
 	// --------------------------------------------------------------------
 	
@@ -421,16 +441,15 @@ class EE_Fieldtype {
 	 */
 	public function grid_field_formatting_row($data)
 	{
-		return form_label(lang('grid_output_format'), NULL,
-				array('class' => 'grid_col_setting_label_fixed_width')
-			).
-			form_dropdown('field_fmt',
-				// TODO: Revisit list of plugin formatting, abstract out
-				// existing logic in channel fields API and confirm it's
-				// correct, there's a bug report or two about it
-				$this->EE->addons_model->get_plugin_formatting(TRUE),
-				(isset($data['field_fmt'])) ? $data['field_fmt'] : 'none'
-			);
+		return $this->grid_dropdown_row(
+			lang('grid_output_format'),
+			'field_fmt',
+			// TODO: Revisit list of plugin formatting, abstract out
+			// existing logic in channel fields API and confirm it's
+			// correct, there's a bug report or two about it
+			$this->EE->addons_model->get_plugin_formatting(TRUE),
+			(isset($data['field_fmt'])) ? $data['field_fmt'] : 'none'
+		);
 	}
 
 	// --------------------------------------------------------------------
@@ -442,16 +461,15 @@ class EE_Fieldtype {
 	 */
 	public function grid_text_direction_row($data)
 	{
-		return form_label(lang('grid_text_direction'), NULL,
-				array('class' => 'grid_col_setting_label_fixed_width')
-			).
-			form_dropdown('field_text_direction',
-				array(
-					'ltr' => lang('ltr'),
-					'rtl' => lang('rtl')
-				),
-				(isset($data['field_text_direction'])) ? $data['field_text_direction'] : NULL
-			);
+		return $this->grid_dropdown_row(
+			lang('grid_text_direction'),
+			'field_text_direction',
+			array(
+				'ltr' => lang('ltr'),
+				'rtl' => lang('rtl')
+			),
+			(isset($data['field_text_direction'])) ? $data['field_text_direction'] : NULL
+		);
 	}
 
 	// --------------------------------------------------------------------
@@ -465,11 +483,51 @@ class EE_Fieldtype {
 	{
 		return form_label(lang('grid_limit_input')).NBS.NBS.NBS.
 			form_input(array(
-				'name' => 'field_maxl',
-				'value' => (isset($data['field_maxl'])) ? $data['field_maxl'] : 256,
-				'class' => 'grid_input_text_small'
+				'name'	=> 'field_maxl',
+				'value'	=> (isset($data['field_maxl'])) ? $data['field_maxl'] : 256,
+				'class'	=> 'grid_input_text_small'
 			)).NBS.NBS.NBS.
 			'<i class="instruction_text">'.lang('grid_chars_allowed').'</i>';
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Multiitem row for Grid column settings
+	 *
+	 * @return string
+	 */
+	public function grid_multi_item_row($data)
+	{
+		return form_textarea(array(
+				'name'	=> 'field_list_items',
+				'rows'	=> 10,
+				'cols'	=> 24,
+				'value'	=> isset($data['field_list_items']) ? $data['field_list_items'] : '',
+				'class'	=> 'right'
+			)).
+			form_label(lang('multi_list_items')).'<br>'.
+			'<i class="instruction_text">'.lang('field_list_instructions').'</i>';
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Max textarea rows for Grid column settings
+	 *
+	 * @return string
+	 */
+	public function grid_textarea_max_rows_row($data, $default = 6)
+	{
+		return form_label(lang('textarea_rows'), NULL,
+				array('class' => 'grid_col_setting_label_fixed_width')
+			).
+			form_input(array(
+				'name'	=> 'field_ta_rows',
+				'size'	=> 4,
+				'value'	=> isset($data['field_ta_rows']) ? $data['field_ta_rows'] : $default,
+				'class'	=> 'grid_input_text_small'
+			));
 	}
 }
 // END EE_Fieldtype class

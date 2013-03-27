@@ -109,6 +109,14 @@ class Select_ft extends EE_Fieldtype {
 		$this->multi_item_row($data, $prefix);
 	}
 
+	function grid_display_settings($data)
+	{
+		return array(
+			$this->grid_field_formatting_row($data),
+			$this->grid_multi_item_row($data)
+		);
+	}
+
 	// --------------------------------------------------------------------
 	
 	function _get_field_options($data)

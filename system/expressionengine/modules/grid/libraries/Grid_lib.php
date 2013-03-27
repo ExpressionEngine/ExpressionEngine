@@ -193,6 +193,17 @@ class Grid_lib {
 		$table_name = $this->_table_prefix . $settings['field_id'];
 		$ft_api = $this->EE->api_channel_fields;
 
+		// Our settings we need to pass along to the channel fields API when
+		// working with managing the data columns for our fieldtypes
+		$ft_api_settings = array(
+			'id_field'				=> 'col_id',
+			'type_field'			=> 'col_type',
+			'col_settings_method'	=> 'grid_settings_modify_column',
+			'col_prefix'			=> 'col',
+			'fields_table'			=> $this->_table,
+			'data_table'			=> $table_name,
+		);
+
 		$modify_field = $this->EE->db->table_exists($table_name);
 
 		$this->EE->load->dbforge();
@@ -236,6 +247,7 @@ class Grid_lib {
 			// Handle checkboxes
 			$column['required'] = isset($column['required']) ? 'y' : 'n';
 			$column['searchable'] = isset($column['searchable']) ? 'y' : 'n';
+			$column['settings'] = $this->_save_settings($column);
 
 			$column_data = array(
 				'field_id'			=> $settings['field_id'],
@@ -255,6 +267,14 @@ class Grid_lib {
 			if ($modify)
 			{
 				$col_id = str_replace('col_id_', '', $col_field);
+
+				// Make any column modifications necessary
+				$ft_api->edit_datatype(
+					$col_id,
+					$column['type'],
+					$column['settings'],
+					$ft_api_settings);
+
 				$this->EE->db->where('col_id', $col_id);
 				$this->EE->db->update($this->_table, $column_data);
 			}
@@ -264,37 +284,19 @@ class Grid_lib {
 			{
 				$this->EE->db->insert($this->_table, $column_data);
 				$col_id = $this->EE->db->insert_id();
+
+				// Add the fieldtype's columns to our data table
+				$ft_api->setup_handler($column['type']);
+				$ft_api->set_datatype(
+					$col_id,
+					$column['settings'],
+					array(),
+					TRUE,
+					FALSE,
+					$ft_api_settings);
 			}
 
 			$col_ids[] = $col_id;
-
-			$db_columns = array();
-
-			$settings['col_id'] = $col_id;
-
-			$db_columns = array_merge(
-				$db_columns,
-				$this->_get_fieldtype_col_settings($column['type'], $settings)
-			);
-
-			// TODO: handle what happens if user changes column type
-
-			// Modify columns if this is an existing column
-			if ($modify)
-			{
-				// Modify_column requires a name key
-				foreach ($db_columns as $key => $value)
-				{
-					$db_columns[$key]['name'] = $key;
-				}
-				
-				$this->EE->dbforge->modify_column($table_name, $db_columns);
-			}
-			// Otherwise, add columns to this field's table
-			else
-			{
-				$this->EE->dbforge->add_column($table_name, $db_columns);
-			}
 
 			$count++;
 		}
@@ -325,53 +327,35 @@ class Grid_lib {
 
 				foreach ($cols_to_delete as $col_id)
 				{
-					$settings['col_id'] = $col_id;
-
-					// Get custom table column settings for fieldtype to make sure
-					// we delete all the columns
-					$db_columns = $this->_get_fieldtype_col_settings($old_cols[$col_id], $settings);
-
-					foreach ($db_columns as $col_name => $value)
-					{
-						if ($this->EE->db->field_exists($col_name, $table_name))
-						{
-							$this->EE->dbforge->drop_column($table_name, $col_name);
-						}
-					}
+					// Delete columns from data table
+					$ft_api->setup_handler($old_cols[$col_id]);
+					$ft_api->delete_datatype($col_id, array(), $ft_api_settings);
 				}
 			}
 		}
 	}
 
-	private function _get_fieldtype_col_settings($type, $settings)
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Calls grid_save_settings() on fieldtypes to do any extra processing on
+	 * saved field settings
+	 *
+	 * @param	array	Column settings data
+	 * @return	array	Processed settings
+	 */
+	private function _save_settings($column)
 	{
-		// Just as we do with regular fieldtypes, Grid fieldtypes can
-		// specify their own column settings
-		$this->EE->api_channel_fields->setup_handler($type);
+		$ft_api = $this->EE->api_channel_fields;
 
-		if ($this->EE->api_channel_fields->check_method_exists('grid_settings_modify_column'))
+		$ft_api->setup_handler($column['type']);
+
+		if ($ft_api->check_method_exists('grid_save_settings'))
 		{
-			$db_columns = $ft_api->apply('grid_settings_modify_column', array($settings));
+			return $ft_api->apply('grid_save_settings', array($column['settings']));
 		}
 
-		// Add default columns if they weren't supplied by fieldtype
-		if ( ! isset($db_columns['col_id_'.$settings['col_id']]))
-		{
-			$db_columns['col_id_'.$settings['col_id']] = array(
-				'type' => 'text',
-				'null' => TRUE
-			);
-		}
-
-		if ( ! isset($db_columns['col_ft_'.$settings['col_id']]))
-		{
-			$db_columns['col_ft_'.$settings['col_id']] = array(
-				'type' => 'tinytext',
-				'null' => TRUE
-			);
-		}
-
-		return $db_columns;
+		return $column['settings'];
 	}
 
 	// ------------------------------------------------------------------------
@@ -416,7 +400,7 @@ class Grid_lib {
 			$fieldtypes_dropdown[$key] = $value['name'];
 		}
 
-		$field_name = (empty($column)) ? '[new_0]' : '[col_id_'.$column['col_id'].']';
+		$field_name = (empty($column)) ? 'new_0' : 'col_id_'.$column['col_id'];
 
 		$column['settings_form'] = (empty($column))
 			? $this->get_settings_form('text') : $this->get_settings_form($column['col_type'], $column);
@@ -490,12 +474,12 @@ class Grid_lib {
 			TRUE
 		);
 		
-		$col_id = (empty($col_id)) ? '[new_0]' : '[col_id_'.$col_id.']';
+		$col_id = (empty($col_id)) ? 'new_0' : 'col_id_'.$col_id;
 
 		// Namespace form field names
 		return preg_replace(
-			'/(<[input|select][^>]*)name=["\']([^"]*)["\']/',
-			'$1name="grid[cols]'.$col_id.'[settings][$2]"',
+			'/(<[input|select|textarea][^>]*)name=["\']([^"]*)["\']/',
+			'$1name="grid[cols]['.$col_id.'][settings][$2]"',
 			$settings_view
 		);
 	}
