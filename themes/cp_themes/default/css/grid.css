@@ -115,6 +115,7 @@
 }
 
 .grid_col_settings_section.grid_data_type {
+	cursor: move;
 	padding: 16px 14px;
 	position: relative;
 }

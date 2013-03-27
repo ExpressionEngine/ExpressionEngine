@@ -16,6 +16,7 @@
 		init: function()
 		{
 			this._bindResize();
+			this._bindSortable();
 			this._bindAddButton();
 			this._bindCopyButton();
 			this._bindDeleteButton();
@@ -73,6 +74,18 @@
 
 			// 75px of extra room for the add button
 			return columns.size() * columns.width() + 75;
+		},
+
+		/**
+		 * Allows columns to be reordered
+		 */
+		_bindSortable: function()
+		{
+			this.settingsContainer.sortable({
+				containment: 'parent',			// Contain to parent
+				handle: 'div.grid_data_type',	// Set drag handle to the top box
+				items: '.grid_col_settings'		// Only allow these to be sortable
+			});
 		},
 
 		/**
