@@ -871,94 +871,318 @@ BSH;
 	public function database_changes_new()
 	{
 		$this->EE->progress->update_state("Creating new database tables");
+		
+		// Add exp_snippets table
+		$this->EE->dbforge->add_field(
+			array(
+				'snippet_id' => array(
+					'type'						=> 'int',
+					'constraint'			=> 10,
+					'unsigned'				=> TRUE,
+					'null'						=> FALSE,
+					'auto_increment'	=> TRUE
+				),
+				'site_id' => array(
+					'type'				=> 'int',
+					'constraint'	=> 4,
+					'null'				=> FALSE
+				),
+				'snippet_name' => array(
+					'type'				=> 'varchar',
+					'constraint'	=> 75,
+					'null'				=> FALSE
+				),
+				'snippet_contents' => array(
+					'type'				=> 'text',
+					'null'				=> TRUE
+				)
+			)
+		);
+		
+		$this->EE->dbforge->add_key('snippet_id', TRUE);
+		$this->EE->dbforge->add_key('site_id');
+		$this->EE->smartforge->create_table('snippets');
 
-		$Q[] = "CREATE TABLE `exp_snippets` (
-				`snippet_id` int(10) unsigned NOT NULL auto_increment,
-				`site_id` int(4) NOT NULL,
-				`snippet_name` varchar(75) NOT NULL,
-				`snippet_contents` text NULL,
-				PRIMARY KEY (`snippet_id`),
-				KEY `site_id` (`site_id`)
-				)";
+		
+		// Add exp_accessories table
+		$this->EE->dbforge->add_field(
+			array(
+				'accessory_id' => array(
+					'type'						=> 'int',
+					'constraint'			=> 10,
+					'unsigned'				=> TRUE,
+					'null'						=> FALSE,
+					'auto_increment'	=> TRUE
+				),
+				'class' => array(
+					'type'				=> 'varchar',
+					'constraint'	=> 75,
+					'null'				=> FALSE,
+					'default'			=> '',
+				),
+				'member_groups' => array(
+					'type'				=> 'varchar',
+					'constraint'	=> 50,
+					'null'				=> FALSE,
+					'default'			=> 'all',
+				),
+				'controllers' => array(
+					'type'	=> 'text',
+					'null'	=> TRUE
+				),
+				'accessory_version' => array(
+					'type'				=> 'varchar',
+					'constraint'	=> 12,
+					'null'				=> FALSE,
+				),
+			)
+		);
+		
+		$this->EE->dbforge->add_key('accessory_id', TRUE);
+		$this->EE->smartforge->create_table('accessories');
 
-		$Q[] = "CREATE TABLE `exp_accessories` (
-				`accessory_id` int(10) unsigned NOT NULL auto_increment,
-				`class` varchar(75) NOT NULL default '',
-				`member_groups` varchar(50) NOT NULL default 'all',
-				`controllers` text NULL,
-				`accessory_version` VARCHAR(12) NOT NULL,
-				PRIMARY KEY `accessory_id` (`accessory_id`)
-				)";
 
 		// Layout Publish
-		// Custom layout for for the publish page.
-		$Q[] = "CREATE TABLE exp_layout_publish (
-			  layout_id int(10) UNSIGNED NOT NULL auto_increment,
-			  site_id int(4) UNSIGNED NOT NULL default 1,
-			  member_group int(4) UNSIGNED NOT NULL default 0,
-			  channel_id int(4) UNSIGNED NOT NULL default 0,
-			  field_layout text,
-			  PRIMARY KEY  (`layout_id`),
-			  KEY `site_id` (`site_id`),
-			  KEY `member_group` (`member_group`),
-			  KEY `channel_id` (`channel_id`)
-		)";
+		// Custom layout for for the publish page.		
+		// Add layout_publish table
+		$this->EE->dbforge->add_field(
+			array(
+				'layout_id' => array(
+					'type'						=> 'int',
+					'constraint'			=> 10,
+					'unsigned'				=> TRUE,
+					'null'						=> FALSE,
+					'auto_increment'	=> TRUE
+				),
+				'site_id' => array(
+					'type'				=> 'int',
+					'constraint'	=> 4,
+					'unsigned'		=> TRUE,
+					'null'				=> FALSE,
+					'default'			=> 1,
+				),
+				'member_group' => array(
+					'type'				=> 'int',
+					'constraint'	=> 4,
+					'unsigned'		=> TRUE,
+					'null'				=> FALSE,
+					'default'			=> 0,
+				),
+				'channel_id' => array(
+					'type'				=> 'int',
+					'constraint'	=> 4,
+					'unsigned'		=> TRUE,
+					'null'				=> FALSE,
+					'default'			=> 0,
+				),
+				'field_layout' => array(
+					'type'				=> 'text'
+				)
+			)
+		);
+		
+		$this->EE->dbforge->add_key('layout_id', TRUE);
+		$this->EE->dbforge->add_key('site_id');
+		$this->EE->dbforge->add_key('member_group');
+		$this->EE->dbforge->add_key('channel_id');
+		$this->EE->smartforge->create_table('layout_publish');
 
 		// CP Search Index
-		$Q[] = "CREATE TABLE `exp_cp_search_index` (
-				`search_id` int(10) UNSIGNED NOT NULL auto_increment, 
-				`controller` varchar(20) default NULL, 
-				`method` varchar(50) default NULL,
-				`language` varchar(20) default NULL, 
-				`access` varchar(50) default NULL, 
-				`keywords` text, 
-				PRIMARY KEY `search_id` (`search_id`),
-				FULLTEXT(`keywords`) 
-		) ENGINE=MyISAM ";
+		// (Can't use SmartForge because of FULLTEXT and ENGINE)
+		$this->EE->db->query(
+				"CREATE TABLE IF NOT EXISTS `exp_cp_search_index` (
+					`search_id` int(10) UNSIGNED NOT NULL auto_increment, 
+					`controller` varchar(20) default NULL, 
+					`method` varchar(50) default NULL,
+					`language` varchar(20) default NULL, 
+					`access` varchar(50) default NULL, 
+					`keywords` text, 
+					PRIMARY KEY `search_id` (`search_id`),
+					FULLTEXT(`keywords`) 
+			) ENGINE=MyISAM "
+		);
 
 		// Channel Titles Autosave
 		// Used for the autosave functionality
-		$Q[] = "CREATE TABLE exp_channel_entries_autosave (
-			 entry_id int(10) unsigned NOT NULL auto_increment,
-			 original_entry_id int(10) unsigned NOT NULL,
-			 site_id INT(4) UNSIGNED NOT NULL DEFAULT 1,
-			 channel_id int(4) unsigned NOT NULL,
-			 author_id int(10) unsigned NOT NULL default 0,
-			 pentry_id int(10) NOT NULL default 0,
-			 forum_topic_id int(10) unsigned NULL DEFAULT NULL,
-			 ip_address varchar(16) NOT NULL,
-			 title varchar(100) NOT NULL,
-			 url_title varchar(75) NOT NULL,
-			 status varchar(50) NOT NULL,
-			 versioning_enabled char(1) NOT NULL default 'n',
-			 view_count_one int(10) unsigned NOT NULL default 0,
-			 view_count_two int(10) unsigned NOT NULL default 0,
-			 view_count_three int(10) unsigned NOT NULL default 0,
-			 view_count_four int(10) unsigned NOT NULL default 0,
-			 allow_comments varchar(1) NOT NULL default 'y',
-			 sticky varchar(1) NOT NULL default 'n',
-			 entry_date int(10) NOT NULL,
-			 dst_enabled varchar(1) NOT NULL default 'n',
-			 year char(4) NOT NULL,
-			 month char(2) NOT NULL,
-			 day char(3) NOT NULL,
-			 expiration_date int(10) NOT NULL default 0,
-			 comment_expiration_date int(10) NOT NULL default 0,
-			 edit_date bigint(14),
-			 recent_comment_date int(10) NULL DEFAULT NULL,
-			 comment_total int(4) unsigned NOT NULL default 0,
-			 entry_data text NULL,
-			 PRIMARY KEY `entry_id` (`entry_id`),
-			 KEY `channel_id` (`channel_id`),
-			 KEY `author_id` (`author_id`),
-			 KEY `url_title` (`url_title`),
-			 KEY `status` (`status`),
-			 KEY `entry_date` (`entry_date`),
-			 KEY `expiration_date` (`expiration_date`),
-			 KEY `site_id` (`site_id`)
-		)";
-
-		$this->_run_queries('Adding new tables', $Q);
+		// Add exp_channel_entries_autosave table
+		$this->EE->dbforge->add_field(
+			array(
+				'entry_id' => array(
+					'type'						=> 'int',
+					'constraint'			=> 10,
+					'unsigned'				=> TRUE,
+					'null'						=> FALSE,
+					'auto_increment'	=> TRUE
+				),
+				'original_entry_id' => array(
+					'type'				=> 'int',
+					'constraint'	=> 10,
+					'unsigned'		=> TRUE,
+					'null'				=> FALSE,
+				),
+				'site_id' => array(
+					'type'				=> 'int',
+					'constraint'	=> 4,
+					'unsigned'		=> TRUE,
+					'null'				=> FALSE,
+					'default'			=> 1,
+				),
+				'channel_id' => array(
+					'type'				=> 'int',
+					'constraint'	=> 4,
+					'unsigned'		=> TRUE,
+					'null'				=> FALSE,
+				),
+				'author_id' => array(
+					'type'				=> 'int',
+					'constraint'	=> 10,
+					'unsigned'		=> TRUE,
+					'null'				=> FALSE,
+					'default'			=> 0,
+				),
+				'forum_topic_id' => array(
+					'type'				=> 'int',
+					'constraint'	=> 10,
+					'unsigned'		=> TRUE,
+					'null'				=> TRUE,
+				),
+				'ip_address' => array(
+					'type'				=> 'varchar',
+					'constraint'	=> 16,
+					'null'				=> FALSE,
+				),
+				'title' => array(
+					'type'				=> 'varchar',
+					'constraint'	=> 100,
+					'null'				=> FALSE,
+				),
+				'url_title' => array(
+					'type'				=> 'varchar',
+					'constraint'	=> 75,
+					'null'				=> FALSE,
+				),
+				'status' => array(
+					'type'				=> 'varchar',
+					'constraint'	=> 50,
+					'null'				=> FALSE,
+				),
+				'versioning_enabled' => array(
+					'type'				=> 'char',
+					'constraint'	=> 1,
+					'null'				=> FALSE,
+					'default'			=> 'n',
+				),
+				'view_count_one' => array(
+					'type'				=> 'int',
+					'constraint'	=> 10,
+					'unsigned'		=> TRUE,
+					'null'				=> FALSE,
+					'default'			=> 0,
+				),
+				'view_count_two' => array(
+					'type'				=> 'int',
+					'constraint'	=> 10,
+					'unsigned'		=> TRUE,
+					'null'				=> FALSE,
+					'default'			=> 0,
+				),
+				'view_count_three' => array(
+					'type'				=> 'int',
+					'constraint'	=> 10,
+					'unsigned'		=> TRUE,
+					'null'				=> FALSE,
+					'default'			=> 0,
+				),
+				'view_count_four' => array(
+					'type'				=> 'int',
+					'constraint'	=> 10,
+					'unsigned'		=> TRUE,
+					'null'				=> FALSE,
+					'default'			=> 0,
+				),
+				'allow_comments' => array(
+					'type'				=> 'varchar',
+					'constraint'	=> 1,
+					'null'				=> FALSE,
+					'default'			=> 'y',
+				),
+				'sticky' => array(
+					'type'				=> 'varchar',
+					'constraint'	=> 1,
+					'null'				=> FALSE,
+					'default'			=> 'n',
+				),
+				'entry_date' => array(
+					'type'				=> 'int',
+					'constraint'	=> 10,
+					'null'				=> FALSE,
+				),
+				'dst_enabled' => array(
+					'type'				=> 'varchar',
+					'constraint'	=> 1,
+					'null'				=> FALSE,
+					'default'			=> 'n',
+				),
+				'year' => array(
+					'type'				=> 'char',
+					'constraint'	=> 4,
+					'null'				=> FALSE,
+				),
+				'month' => array(
+					'type'				=> 'char',
+					'constraint'	=> 2,
+					'null'				=> FALSE,
+				),
+				'day' => array(
+					'type'				=> 'char',
+					'constraint'	=> 3,
+					'null'				=> FALSE,
+				),
+				'expiration_date' => array(
+					'type'				=> 'int',
+					'constraint'	=> 10,
+					'null'				=> FALSE,
+					'default'			=> 0,
+				),
+				'comment_expiration_date' => array(
+					'type'				=> 'int',
+					'constraint'	=> 10,
+					'null'				=> FALSE,
+					'default'			=> 0,
+				),
+				'edit_date' => array(
+					'type'				=> 'bigint',
+					'constraint'	=> 14,
+				),
+				'recent_comment_date' => array(
+					'type'				=> 'int',
+					'constraint'	=> 10,
+					'null'				=> TRUE,
+					'default'			=> TRUE,
+				),
+				'comment_total' => array(
+					'type'				=> 'int',
+					'constraint'	=> 4,
+					'unsigned'		=> TRUE,
+					'null'				=> FALSE,
+					'default'			=> 0,
+				),
+				'entry_data' => array(
+					'type'				=> 'text',
+					'null'				=> TRUE,
+				),
+			)
+		);
+		
+		$this->EE->dbforge->add_key('entry_id', TRUE);
+		$this->EE->dbforge->add_key('channel_id');
+		$this->EE->dbforge->add_key('author_id');
+		$this->EE->dbforge->add_key('url_title');
+		$this->EE->dbforge->add_key('status');
+		$this->EE->dbforge->add_key('entry_date');
+		$this->EE->dbforge->add_key('expiration_date');
+		$this->EE->dbforge->add_key('site_id');
+		$this->EE->smartforge->create_table('channel_entries_autosave');
 
 		return 'database_changes_members';
 	}
