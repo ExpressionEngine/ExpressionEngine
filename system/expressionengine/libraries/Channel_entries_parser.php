@@ -36,11 +36,40 @@ class EE_Channel_entries_parser {
 		$this->_plugins = new EE_Channel_parser_plugins();
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * The main parser factory
+	 *
+	 * @param tagdata - The chunk of template that the parser will process
+	 *					this is usually the content of the channel entries tag.
+	 *
+	 * @param prefix  - A prefix to apply to all data and tags.Allow for nesting
+	 *					of similar tags.
+	 * @return Object<EE_Channel_parser>
+	 */
 	public function create($tagdata, $prefix = '')
 	{
 		return new EE_Channel_parser($tagdata, $prefix, $this->_plugins);
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * Register a channel parser plugin
+	 *
+	 * These are for tags within the channel module. If you're a third
+	 * party reading this, think twice! You probably want a field type.
+	 * If you're really sure, please make your tag names obvious!
+	 *
+	 * @param type    - single|pair depending on whether or not this is a tag
+	 *					pair or a single tag. Tag pairs are done first.
+	 *
+	 * @param class   - Class name of the plugin. Must be included when this
+	 *					is called. Must implement the EE_Channel_parser_plugin
+	 *					interface found in channel_entries_parser/Plugins.php.
+	 * @return void
+	 */
 	public function register_plugin($type, $class)
 	{
 		switch ($type)
