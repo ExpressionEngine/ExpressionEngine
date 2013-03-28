@@ -36,27 +36,29 @@ class EE_Channel_custom_date_parser implements EE_Channel_parser_plugin {
 
 			$custom_date_fields = array();
 
-			if (count($channel->dfields) > 0)
+			if (count($channel->dfields) == 0)
 			{
-				foreach ($channel->dfields as $site_id => $dfields)
-				{
-		  			foreach($dfields as $key => $value)
-		  			{
-		  				if ( ! $pre->has_tag($key))
-		  				{
-		  					continue;
-		  				}
+				return $custom_date_fields;
+			}
 
-		  				$key = $prefix.$key;
+			foreach ($channel->dfields as $site_id => $dfields)
+			{
+	  			foreach($dfields as $key => $value)
+	  			{
+	  				if ( ! $pre->has_tag($key))
+	  				{
+	  					continue;
+	  				}
 
-						if (preg_match_all("/".LD.$key."\s+format=[\"'](.*?)[\"']".RD."/s", $tagdata, $matches))
+	  				$key = $prefix.$key;
+
+					if (preg_match_all("/".LD.$key."\s+format=[\"'](.*?)[\"']".RD."/s", $tagdata, $matches))
+					{
+						for ($j = 0; $j < count($matches[0]); $j++)
 						{
-							for ($j = 0; $j < count($matches[0]); $j++)
-							{
-								$matches[0][$j] = str_replace(array(LD,RD), '', $matches[0][$j]);
+							$matches[0][$j] = str_replace(array(LD,RD), '', $matches[0][$j]);
 
-								$custom_date_fields[$matches[0][$j]] = $matches[1][$j];
-							}
+							$custom_date_fields[$matches[0][$j]] = $matches[1][$j];
 						}
 					}
 				}
@@ -67,6 +69,11 @@ class EE_Channel_custom_date_parser implements EE_Channel_parser_plugin {
 
 	public function replace($tagdata, EE_Channel_data_parser $obj, $custom_date_fields)
 	{
+		if ( ! count($custom_date_fields))
+		{
+			return $tagdata;
+		}
+
 		$tag = $obj->tag();
 		$tag_options = $obj->tag_options();
 		$data = $obj->row();
@@ -76,28 +83,31 @@ class EE_Channel_custom_date_parser implements EE_Channel_parser_plugin {
 
 		if (isset($custom_date_fields[$tag]) && isset($dfields[$data['site_id']]))
 		{
-			$prefix = $this->_prefix;
-
 			foreach ($dfields[$data['site_id']] as $dtag => $dval)
 			{
-				if (strncmp($tag.' ', $dtag.' ', strlen($dtag.' ')) !== 0)
+				if (strncmp($tag.' ', $prefix.$dtag.' ', strlen($prefix.$dtag.' ')) !== 0)
 				{
 					continue;
 				}
 
+
 				if ($data['field_id_'.$dval] == 0 OR $data['field_id_'.$dval] == '')
 				{
-					$tagdata = str_replace(LD.$prefix.$tag.RD, '', $tagdata);
+					$tagdata = str_replace(LD.$tag.RD, '', $tagdata);
 					continue;
 				}
 
 				// If date is fixed, get timezone to convert timestamp to,
 				// otherwise localize it normally
-				$localize = (isset($data['field_dt_'.$dval]) AND $data['field_dt_'.$dval] != '')
-					? $data['field_dt_'.$dval] : TRUE;
+				$localize = TRUE;
+
+				if (isset($data['field_dt_'.$dval]) AND $data['field_dt_'.$dval] != '')
+				{
+					$localize = $data['field_dt_'.$dval];
+				}
 
 				$tagdata = str_replace(
-					LD.$prefix.$tag.RD,
+					LD.$tag.RD,
 					get_instance()->localize->format_date(
 						$custom_date_fields[$tag],
 						$data['field_id_'.$dval], 
