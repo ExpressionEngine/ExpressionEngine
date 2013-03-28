@@ -49,7 +49,7 @@ class Template_model extends CI_Model {
 			{
 				$entity->{$name} = $value;
 			}	
-			$entites[] = $entity;
+			$entities[] = $entity;
 		}
 		return $entities;
 	}
@@ -782,7 +782,7 @@ class Template_Entity
 	/**
 	 *
 	 */
-	protected $_template_noes;
+	protected $_template_notes;
 
 	/**
 	 *
@@ -853,7 +853,7 @@ class Template_Entity
 
 		if ( ! property_exists($this, $name))
 		{
-			throw new RuntimeException('Attempt to access a non-existent property!');
+			throw new RuntimeException('Attempt to access non-existent property "' . $name . '"');
 		}
 
 		return $this->{$name};
@@ -868,7 +868,7 @@ class Template_Entity
 
 		if ( ! property_exists($this, $name))
 		{
-			throw new RuntimeException('Attempt to access a non-existent property!');
+			throw new RuntimeException('Attempt to access non-existent property "' . $name . '"');
 		}
 
 		$this->{$name} = $value;

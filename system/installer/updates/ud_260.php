@@ -47,12 +47,15 @@ class Updater {
 	{
 		$this->EE->load->dbforge();
 		
-		$this->_add_template_name_to_dev_log();
+	/*	$this->_add_template_name_to_dev_log();
 		$this->_drop_dst();
 		$this->_update_timezone_column_lengths();
 		$this->_update_session_table();
 		$this->_update_actions_table();
-		$this->_update_specialty_templates();
+		$this->_update_specialty_templates(); */
+
+		$this->_replace_relationship_tags();
+		die('Killing Update.');
 		
 		return TRUE;
 	}
@@ -357,7 +360,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 			$tags = $this->_find_related_entries_tags($template);
 
 			// parse out the field_short_name and any parameters
-			foreach ($tags as $tag => $contents)
+			/*foreach ($tags as $tag => $contents)
 			{
 				$parsed_tag = $this->_parse_related_entries_tag($tag, $contents);
 
@@ -365,11 +368,11 @@ If you do not wish to reset your password, ignore this message. It will expire i
 				// prefix any contained variables with the short name
 				// HARD - how do we tell which variables belong to the related_entry?
 				$this->_update_related_entries_tag($parsed_tag, $template);
-			}
+			}*/
 
 			// save the template
 			// if saving to file, save the file
-			$this->EE->template_model->save_entity($template);
+			//$this->EE->template_model->save_entity($template);
 		}
 
 		// reverse_related_entries
@@ -404,6 +407,16 @@ If you do not wish to reset your password, ignore this message. It will expire i
 	 */
 	private function _find_related_entries_tags(Template_Entity $template)
 	{
+		require_once(APPPATH . '/libraries/Template.php');
+
+		$parser = new Installer_Template();
+		
+
+		var_dump($template->template_data);
+		$parser->assign_relationship_data($template->template_data);
+
+		var_dump($parser->related_data);
+		
 	}
 
 	/**
