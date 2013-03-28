@@ -337,7 +337,6 @@ class Relationship_Parser
 
 		$root_leave_paths = $this->_subtree_query($root, $entry_ids);
 		$unique_ids = $this->_unique_entry_ids($root, $root_leave_paths);
-		$this->_cache_categories($unique_ids);
 
 		$all_ids = array_merge($entry_ids, $unique_ids);
 
@@ -391,11 +390,13 @@ class Relationship_Parser
 			}
 
 			$result_ids = $this->_unique_entry_ids($node, $result_ids);
-			$this->_cache_categories($result_ids);
 
 			// Store flattened ids for the big entry query
 			$all_ids = array_merge($all_ids, $result_ids);
 		}
+
+		// @todo reduce to only those that have a categories pair or parameter
+		$this->_cache_categories($all_ids);
 
 
 		// ready set, main query.
@@ -428,9 +429,9 @@ class Relationship_Parser
 	{
 		$new_ids = array();
 
-		foreach ($ids as $id)
+		foreach (array_unique($ids) as $id)
 		{
-			if ( ! in_array($id, $this->categories))
+			if ( ! isset($this->categories[$id]))
 			{
 				$new_ids[] = $id;
 			}
@@ -444,7 +445,10 @@ class Relationship_Parser
 		get_instance()->load->model('category_model');
 		$categories = get_instance()->category_model->get_entry_categories($new_ids);
 
-		$this->categories = array_merge($this->categories, $categories);
+		foreach ($categories as $entry_id => $cats)
+		{
+			$this->categories[$entry_id] = $cats;
+		}
 	}
 
 	protected function _build_tree(array $entry_ids)
