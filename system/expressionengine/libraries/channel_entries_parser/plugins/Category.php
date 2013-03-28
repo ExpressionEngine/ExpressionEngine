@@ -33,22 +33,24 @@ class EE_Channel_category_parser implements EE_Channel_parser_plugin {
 	{
 		$cat_chunk = array();
 
-		$prefix = $pre->prefix();
-
-		if ($pre->has_tag_pair('categories'))
+		if ( ! $pre->has_tag_pair('categories'))
 		{
-			if (preg_match_all("/".LD.$prefix."categories(.*?)".RD."(.*?)".LD.'\/'.$prefix.'categories'.RD."/s", $tagdata, $matches))
-			{
-				for ($j = 0; $j < count($matches[0]); $j++)
-				{
-					$cat_chunk[] = array(
-						$matches[2][$j],
-						get_instance()->functions->assign_parameters($matches[1][$j]),
-						$matches[0][$j]
-					);
-				}
-	  		}
+			return $cat_chunk;
 		}
+
+		$prefix = $pre->prefix();
+		
+		if (preg_match_all("/".LD.$prefix."categories(.*?)".RD."(.*?)".LD.'\/'.$prefix.'categories'.RD."/s", $tagdata, $matches))
+		{
+			for ($j = 0; $j < count($matches[0]); $j++)
+			{
+				$cat_chunk[] = array(
+					$matches[2][$j],
+					get_instance()->functions->assign_parameters($matches[1][$j]),
+					$matches[0][$j]
+				);
+			}
+  		}
 
 		return $cat_chunk;
 	}
