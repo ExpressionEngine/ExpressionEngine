@@ -259,6 +259,8 @@ class Relationship_Parser
 	protected $relationship_field_names = array();		// Another relationship field map (field_id => name)
 
 	protected $variables = array();						// A cache of the tree and lookup table for the main per entry parsing step
+
+	protected $categories = array();
 	
 	/**
 	 * Create a relationship parser for the given Template.
@@ -335,6 +337,7 @@ class Relationship_Parser
 
 		$root_leave_paths = $this->_subtree_query($root, $entry_ids);
 		$unique_ids = $this->_unique_entry_ids($root, $root_leave_paths);
+		$this->_cache_categories($unique_ids);
 
 		$all_ids = array_merge($entry_ids, $unique_ids);
 
@@ -388,6 +391,7 @@ class Relationship_Parser
 			}
 
 			$result_ids = $this->_unique_entry_ids($node, $result_ids);
+			$this->_cache_categories($result_ids);
 
 			// Store flattened ids for the big entry query
 			$all_ids = array_merge($all_ids, $result_ids);
@@ -420,6 +424,28 @@ class Relationship_Parser
 		);
 	}
 
+	protected function _cache_categories($ids)
+	{
+		$new_ids = array();
+
+		foreach ($ids as $id)
+		{
+			if ( ! in_array($id, $this->categories))
+			{
+				$new_ids[] = $id;
+			}
+		}
+
+		if ( ! count($new_ids))
+		{
+			return;
+		}
+
+		get_instance()->load->model('category_model');
+		$categories = get_instance()->category_model->get_entry_categories($new_ids);
+
+		$this->categories = array_merge($this->categories, $categories);
+	}
 
 	protected function _build_tree(array $entry_ids)
 	{
@@ -873,7 +899,7 @@ class Relationship_Parser
 
 		get_instance()->session->set_cache('relationships', 'channel', $channel);
 
-		$tagdata = $tree->parse($entry_id, $tagdata, $lookup);
+		$tagdata = $tree->parse($entry_id, $tagdata, $lookup, $this->categories);
 
 		return $tagdata;
 	}
@@ -886,6 +912,7 @@ class ParseNode extends EE_TreeNode {
 
 	protected $entries;
 	protected $entries_lookup;
+	protected $category_lookup;
 
 	private $childTags;				// namespaced tags underneath it that are not relationship tags, constructed from tagdata
 
@@ -972,7 +999,7 @@ class ParseNode extends EE_TreeNode {
 	 * @param	mixed	channel entries lookup {id => [data]}
 	 * @return 	string	parsed tagdata
 	 */
-	public function parse($id, $tagdata, array $entries_lookup)
+	public function parse($id, $tagdata, array $entries_lookup, array $category_lookup)
 	{
 		if ( ! isset($this->entry_ids[$id]))
 		{
@@ -983,13 +1010,15 @@ class ParseNode extends EE_TreeNode {
 		{
 			foreach ($this->children() as $child)
 			{
-				$tagdata = $child->parse($id, $tagdata, $entries_lookup);
+				$tagdata = $child->parse($id, $tagdata, $entries_lookup, $category_lookup);
 			}
 
 			return $tagdata;
 		}
 
 		$this->entries_lookup = $entries_lookup;
+		$this->category_lookup = $category_lookup;
+
 		$this->entries = array_unique($this->entry_ids[$id]);
 		$tag = preg_quote($this->name, '/');
 
@@ -1068,34 +1097,13 @@ class ParseNode extends EE_TreeNode {
 			$entries = array_intersect($entries, $allowed_ids);
 		}
 
-		get_instance()->load->model('category_model');
-		$categories = get_instance()->category_model->get_entry_categories($entries);
-
-		foreach ($categories as &$cats)
-		{
-			foreach ($cats as &$cat)
-			{
-				if ( ! empty($cat))
-				{
-					$cat = array(
-						$cat['cat_id'],
-						$cat['parent_id'],
-						$cat['cat_name'],
-						$cat['cat_image'],
-						$cat['cat_description'],
-						$cat['group_id'],
-						$cat['cat_url_title']
-					);
-				}
-			}
-		}
-
 		// prefilter anything prefixed the same as this tag so that we don't
 		// go around building huge lists with custom field data only to toss
 		// it all because the tag isn't in the field.
 
 		// reduce entry ids by filters
 		$rows = array();
+		$categories = array();
 
 		foreach ($entries as $entry_id)
 		{
@@ -1139,6 +1147,31 @@ class ParseNode extends EE_TreeNode {
 			}
 
 			$rows[$entry_id] = $data;
+
+			if (isset($this->category_lookup[$entry_id]))
+			{
+				$categories[$entry_id] = $this->category_lookup[$entry_id];
+			}
+		}
+
+
+		foreach ($categories as &$cats)
+		{
+			foreach ($cats as &$cat)
+			{
+				if ( ! empty($cat))
+				{
+					$cat = array(
+						$cat['cat_id'],
+						$cat['parent_id'],
+						$cat['cat_name'],
+						$cat['cat_image'],
+						$cat['cat_description'],
+						$cat['group_id'],
+						$cat['cat_url_title']
+					);
+				}
+			}
 		}
 
 		$prefix = $this->name.':';
@@ -1195,7 +1228,7 @@ class ParseNode extends EE_TreeNode {
 		// child tags
 		foreach ($this->children() as $child)
 		{
-			$tagdata = $child->parse($row['entry_id'], $tagdata, $this->entries_lookup);
+			$tagdata = $child->parse($row['entry_id'], $tagdata, $this->entries_lookup, $this->category_lookup);
 		}
 
 		return $tagdata;
