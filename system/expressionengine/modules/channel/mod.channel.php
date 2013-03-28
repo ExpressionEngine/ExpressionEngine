@@ -2906,8 +2906,6 @@ class Channel {
 		//
 		// -------------------------------------------
 
-		$processed_member_fields = array();
-
 		//  Set default date header variables
 		$heading_date_hourly  = 0;
 		$heading_flag_hourly  = 0;

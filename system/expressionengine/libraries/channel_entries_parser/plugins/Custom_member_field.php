@@ -24,6 +24,8 @@
  */
 class EE_Channel_custom_member_field_parser implements EE_Channel_parser_plugin {
 
+	protected $processed_member_fields = array();
+
 	public function disabled(array $disabled)
 	{
 		return FALSE;
@@ -31,28 +33,36 @@ class EE_Channel_custom_member_field_parser implements EE_Channel_parser_plugin 
 
 	public function pre_process($tagdata, EE_Channel_preparser $pre)
 	{
+		$this->processed_member_fields = array();
 		return NULL;
 	}
 
 	public function replace($tagdata, EE_Channel_data_parser $obj, $pre)
 	{
 		$mfields = $obj->channel()->mfields;
+
+		if ( ! count($mfields))
+		{
+			return $tagdata;
+		}
+
 		$key = $obj->tag();
 		$val = $obj->tag_options();
+
 		$data = $obj->row();
 		$prefix = $obj->prefix();
 
-		//  parse custom member fields
-		if (isset($mfields[$val]) && array_key_exists('m_field_id_'.$mfields[$val][0], $data))
-		{
-			if ( ! isset($processed_member_fields[$data['member_id']]['m_field_id_'.$mfields[$val][0]]))
-			{
-				$processed_member_fields[$data['member_id']]['m_field_id_'.$mfields[$val][0]] =
+		$key = str_replace($prefix, '', $key);
 
-				get_instance()->typography->parse_type(
-					$data['m_field_id_'.$mfields[$val][0]],
+		//  parse custom member fields
+		if (isset($mfields[$key]) && array_key_exists('m_field_id_'.$mfields[$key][0], $data))
+		{
+			if ( ! isset($this->processed_member_fields[$data['member_id']]['m_field_id_'.$mfields[$key][0]]))
+			{
+				$this->processed_member_fields[$data['member_id']]['m_field_id_'.$mfields[$key][0]] = get_instance()->typography->parse_type(
+					$data['m_field_id_'.$mfields[$key][0]],
 					array(
-						'text_format'	=> $mfields[$val][1],
+						'text_format'	=> $mfields[$key][1],
 						'html_format'	=> 'safe',
 						'auto_links'	=> 'y',
 						'allow_img_url' => 'n'
@@ -61,8 +71,8 @@ class EE_Channel_custom_member_field_parser implements EE_Channel_parser_plugin 
 			}
 
 			$tagdata = str_replace(
-				LD.$prefix.$val.RD,
-				$processed_member_fields[$data['member_id']]['m_field_id_'.$mfields[$val][0]],
+				LD.$val.RD,
+				$this->processed_member_fields[$data['member_id']]['m_field_id_'.$mfields[$key][0]],
 				$tagdata
 			);
 		}
