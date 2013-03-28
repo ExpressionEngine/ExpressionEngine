@@ -979,11 +979,16 @@ class Cp {
 			'url_title', 'username', 'view_count_four', 'view_count_one',
 			'view_count_three', 'view_count_two'
 		);
+
+		$prefixes = array(
+			'parents', 'siblings'
+		);
 						
 		return array_unique(array_merge(
 			$channel_vars,
 			$global_vars,
-			$orderby_vars
+			$orderby_vars,
+			$prefixes
 		));
 	}
 
