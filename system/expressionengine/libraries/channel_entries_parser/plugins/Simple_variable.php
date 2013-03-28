@@ -21,7 +21,18 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_plugin {
 		return TRUE;
 	}
 
-	public function replace($tagdata, EE_Channel_data_parser $obj)
+	// Parse out $search_link for the {member_search_path} variable
+	public function pre_process($tagdata, EE_Channel_preparser $pre)
+	{
+		$prefix = $pre->prefix();
+
+		$result_path = (preg_match("/".LD.$prefix."member_search_path\s*=(.*?)".RD."/s", $tagdata, $match)) ? $match[1] : 'search/results';
+		$result_path = str_replace(array('"',"'"), "", $result_path);
+
+		return get_instance()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.get_instance()->functions->fetch_action_id('Search', 'do_search').'&amp;result_path='.$result_path.'&amp;mbr=';
+	}
+
+	public function replace($tagdata, EE_Channel_data_parser $obj, $search_link)
 	{
 		$tag = $obj->tag();
 		$tag_options = $obj->tag_options();
@@ -35,6 +46,96 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_plugin {
 		$key = $tag;
 		$val = $tag_options;
 
+		// I decided to split the huge if statement into educated guesses
+		// so we spend less time doing silly comparisons
+		if (strpos($key, '_path') !== FALSE OR strpos($key, 'permalink') !== FALSE)
+		{
+			return $this->_paths($data, $tagdata, $key, $prefix);
+		}
+
+		if (strpos($key, 'url') !== FALSE)
+		{
+			return $this->_urls($data, $tagdata, $key, $val, $prefix);
+		}
+
+		//  parse {title}
+		if ($prefix.$key == 'title')
+		{
+			$data['title'] = str_replace(array('{', '}'), array('&#123;', '&#125;'), $data['title']);
+
+			$tagdata = str_replace(
+				LD.$key.RD,
+				get_instance()->typography->format_characters($data['title']),
+				$tagdata
+			);
+		}
+
+		//  {author}
+		elseif ($prefix.$key == "author")
+		{
+			$tagdata = str_replace(LD.$val.RD, ($data['screen_name'] != '') ? $data['screen_name'] : $data['username'], $tagdata);
+		}
+
+		//  {channel}
+		elseif ($prefix.$key == "channel")
+		{
+			$tagdata = str_replace(LD.$val.RD, $data['channel_title'], $tagdata);
+		}
+
+		//  {channel_short_name}
+		elseif ($prefix.$key == "channel_short_name")
+		{
+			$tagdata = str_replace(LD.$val.RD, $data['channel_name'], $tagdata);
+		}
+
+		//  {relative_date}
+		elseif ($prefix.$key ==  "relative_date")
+		{
+			$tagdata = str_replace(LD.$val.RD, timespan($data['entry_date']), $tagdata);
+		}
+
+		//  {signature}
+		elseif ($prefix.$key == "signature")
+		{
+			if (get_instance()->session->userdata('display_signatures') == 'n' OR $data['signature'] == '' OR get_instance()->session->userdata('display_signatures') == 'n')
+			{
+				$tagdata = str_replace(LD.$key.RD, '', $tagdata);
+			}
+			else
+			{
+				$tagdata = str_replace(LD.$key.RD,
+					get_instance()->typography->parse_type($data['signature'],
+						array(
+							'text_format'	=> 'xhtml',
+							'html_format'	=> 'safe',
+							'auto_links'	=> 'y',
+							'allow_img_url' => get_instance()->config->item('sig_allow_img_hotlink')
+						)
+					),
+					$tagdata
+				);
+			}
+		}
+
+		//  parse basic fields (username, screen_name, etc.)
+		//  Use array_key_exists to handle null values
+
+		else
+		{
+			$raw_val = str_replace($prefix, '', $val);
+
+			if ($raw_val AND array_key_exists($raw_val, $data))
+			{
+				$tagdata = str_replace(LD.$val.RD, $data[$raw_val], $tagdata);
+			}
+		}
+
+		return $tagdata;
+	}
+
+
+	protected function _paths($data, $tagdata, $key, $prefix)
+	{
 		//  parse profile path
 		if ($this->starts_with($key, 'profile_path'))
 		{
@@ -50,7 +151,7 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_plugin {
 		{
 			$tagdata = str_replace(
 				LD.$key.RD,
-				$this->_preparsed->search_link.$data['member_id'],
+				$search_link.$data['member_id'],
 				$tagdata
 			);
 		}
@@ -136,37 +237,17 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_plugin {
 			);
 		}
 
-		//  {author}
-		elseif ($prefix.$key == "author")
-		{
-			$tagdata = str_replace(LD.$val.RD, ($data['screen_name'] != '') ? $data['screen_name'] : $data['username'], $tagdata);
-		}
+		return $tagdata;
+	}
 
-		//  {channel}
-		elseif ($prefix.$key == "channel")
-		{
-			$tagdata = str_replace(LD.$val.RD, $data['channel_title'], $tagdata);
-		}
-
-		//  {channel_short_name}
-		elseif ($prefix.$key == "channel_short_name")
-		{
-			$tagdata = str_replace(LD.$val.RD, $data['channel_name'], $tagdata);
-		}
-
-		//  {relative_date}
-
-		elseif ($prefix.$key ==  "relative_date")
-		{
-			$tagdata = str_replace(LD.$val.RD, timespan($data['entry_date']), $tagdata);
-		}
-
+	protected function _urls($data, $tagdata, $key, $val, $prefix)
+	{
 		//  {trimmed_url} - used by Atom feeds
-		elseif ($prefix.$key == "trimmed_url")
+		if ($prefix.$key == "trimmed_url")
 		{
 			$channel_url = (isset($data['channel_url']) AND $data['channel_url'] != '') ? $data['channel_url'] : '';
 
-			$channel_url = str_replace(array('http://','www.'), '', $channel_url);
+			$channel_url = str_replace(array('http://', 'www.'), '', $channel_url);
 			$xe = explode("/", $channel_url);
 			$channel_url = current($xe);
 
@@ -224,28 +305,6 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_plugin {
 			}
 		}
 
-		//  {signature}
-		elseif ($prefix.$key == "signature")
-		{
-			if (get_instance()->session->userdata('display_signatures') == 'n' OR $data['signature'] == '' OR get_instance()->session->userdata('display_signatures') == 'n')
-			{
-				$tagdata = str_replace(LD.$key.RD, '', $tagdata);
-			}
-			else
-			{
-				$tagdata = str_replace(LD.$key.RD,
-					get_instance()->typography->parse_type($data['signature'],
-						array(
-							'text_format'	=> 'xhtml',
-							'html_format'	=> 'safe',
-							'auto_links'	=> 'y',
-							'allow_img_url' => get_instance()->config->item('sig_allow_img_hotlink')
-						)
-					),
-					$tagdata
-				);
-			}
-		}
 
 		elseif ($prefix.$key == "signature_image_url")
 		{
@@ -292,31 +351,6 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_plugin {
 				$tagdata = str_replace(LD.$key.RD, get_instance()->config->slash_item('photo_url').$data['photo_filename'], $tagdata);
 				$tagdata = $this->replace_tag('photo_image_width', $data['photo_width'], $tagdata);
 				$tagdata = $this->replace_tag('photo_image_height', $data['photo_height'], $tagdata);
-			}
-		}
-
-		//  parse {title}
-		elseif ($prefix.$key == 'title')
-		{
-			$data['title'] = str_replace(array('{', '}'), array('&#123;', '&#125;'), $data['title']);
-
-			$tagdata = str_replace(
-				LD.$key.RD,
-				get_instance()->typography->format_characters($data['title']),
-				$tagdata
-			);
-		}
-
-		//  parse basic fields (username, screen_name, etc.)
-		//  Use array_key_exists to handle null values
-
-		else
-		{
-			$raw_val = str_replace($prefix, '', $val);
-
-			if ($raw_val AND array_key_exists($raw_val, $data))
-			{
-				$tagdata = str_replace(LD.$val.RD, $data[$raw_val], $tagdata);
 			}
 		}
 

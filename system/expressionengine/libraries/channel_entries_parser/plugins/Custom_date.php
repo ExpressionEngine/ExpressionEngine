@@ -8,7 +8,43 @@ class EE_Channel_custom_date_parser implements EE_Channel_parser_plugin {
 		return TRUE;
 	}
 
-	public function replace($tagdata, EE_Channel_data_parser $obj)
+	public function pre_process($tagdata, EE_Channel_preparser $pre)
+	{
+			$prefix = $pre->prefix();
+			$channel = $pre->channel();
+
+			$custom_date_fields = array();
+
+			if (count($channel->dfields) > 0)
+			{
+				foreach ($channel->dfields as $site_id => $dfields)
+				{
+		  			foreach($dfields as $key => $value)
+		  			{
+		  				if ( ! $pre->has_tag($key))
+		  				{
+		  					continue;
+		  				}
+
+		  				$key = $prefix.$key;
+
+						if (preg_match_all("/".LD.$key."\s+format=[\"'](.*?)[\"']".RD."/s", $_tagdata, $matches))
+						{
+							for ($j = 0; $j < count($matches[0]); $j++)
+							{
+								$matches[0][$j] = str_replace(array(LD,RD), '', $matches[0][$j]);
+
+								$custom_date_fields[$matches[0][$j]] = $matches[1][$j];
+							}
+						}
+					}
+				}
+			}
+
+			return $custom_date_fields;
+	}
+
+	public function replace($tagdata, EE_Channel_data_parser $obj, $custom_date_fields)
 	{
 		$tag = $obj->tag();
 		$tag_options = $obj->tag_options();
@@ -16,7 +52,6 @@ class EE_Channel_custom_date_parser implements EE_Channel_parser_plugin {
 		$prefix = $obj->prefix();
 
 		$dfields = $obj->channel()->dfields;
-		$custom_date_fields = $obj->preparsed()->custom_date_fields;
 
 		if (isset($custom_date_fields[$tag]) && isset($dfields[$data['site_id']]))
 		{
@@ -55,4 +90,3 @@ class EE_Channel_custom_date_parser implements EE_Channel_parser_plugin {
 		return $tagdata;
 	}
 }
-

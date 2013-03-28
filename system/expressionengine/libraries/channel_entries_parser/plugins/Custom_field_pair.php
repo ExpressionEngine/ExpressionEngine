@@ -7,8 +7,84 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_plugin {
 		return TRUE;
 	}
 
+	public function pre_process($tagdata, EE_Channel_preparser $pre)
+	{
+		$pfield_chunk = array();
+		$channel = $pre->channel();
 
-	public function replace($tagdata, EE_Channel_data_parser $obj)
+		if (count($channel->pfields) == 0)
+		{
+			return $pfield_chunk;
+		}
+
+		$prefix = $pre->prefix();
+
+		foreach ($channel->pfields as $site_id => $pfields)
+		{
+			$pfield_names = array_intersect($channel->cfields[$site_id], array_keys($pfields));
+
+			foreach($pfield_names as $field_name => $field_id)
+			{
+				if ( ! $pre->has_tag_pair($field_name))
+				{
+					continue;
+				}
+
+				$offset = 0;
+				$field_name = $prefix.$field_name;
+				
+				while (($end = strpos($tagdata, LD.'/'.$field_name.RD, $offset)) !== FALSE)
+				{
+					// This hurts soo much. Using custom fields as pair and single vars in the same
+					// channel tags could lead to something like this: {field}...{field}inner{/field}
+					// There's no efficient regex to match this case, so we'll find the last nested
+					// opening tag and re-cut the chunk.
+
+					if (preg_match("/".LD."{$field_name}(.*?)".RD."(.*?)".LD.'\/'."{$field_name}(.*?)".RD."/s", $tagdata, $matches, 0, $offset))
+					{
+						$chunk = $matches[0];
+						$params = $matches[1];
+						$inner = $matches[2];
+
+						// We might've sandwiched a single tag - no good, check again (:sigh:)
+						if ((strpos($chunk, LD.$field_name, 1) !== FALSE) && preg_match_all("/".LD."{$field_name}(.*?)".RD."/s", $chunk, $match))
+						{
+							// Let's start at the end
+							$idx = count($match[0]) - 1;
+							$tag = $match[0][$idx];
+							
+							// Reassign the parameter
+							$params = $match[1][$idx];
+
+							// Cut the chunk at the last opening tag (PHP5 could do this with strrpos :-( )
+							while (strpos($chunk, $tag, 1) !== FALSE)
+							{
+								$chunk = substr($chunk, 1);
+								$chunk = strstr($chunk, LD.$field_name);
+								$inner = substr($chunk, strlen($tag), -strlen(LD.'/'.$field_name.RD));
+							}
+						}
+						
+						$chunk_array = array($inner, get_instance()->functions->assign_parameters($params), $chunk);
+						
+						// Grab modifier if it exists and add it to the chunk array
+						if (substr($params, 0, 1) == ':')
+						{
+							$chunk_array[] = str_replace(':', '', $params);
+						}
+						
+						$pfield_chunk[$site_id][$field_name][] = $chunk_array;
+					}
+					
+					$offset = $end + 1;
+				}
+			}
+		}
+
+		return $pfield_chunk;
+	}
+
+	public function replace($tagdata, EE_Channel_data_parser $obj, $pfield_chunks)
 	{
 		$tag = $obj->tag();
 		$data = $obj->row();
@@ -18,8 +94,6 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_plugin {
 
 		$cfields = $obj->channel()->cfields[$site_id];
 		$pfields = $obj->channel()->pfields[$site_id];
-
-		$pfield_chunks = $obj->preparsed()->pfield_chunks;
 
 		if ( ! isset($pfield_chunks[$site_id]))
 		{

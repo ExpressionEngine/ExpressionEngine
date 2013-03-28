@@ -44,7 +44,7 @@ class EE_Channel_parser_plugins {
 interface EE_Channel_parser_plugin {
 
 	public function understands($tag); // return bool
-	public function replace($tagdata, EE_Channel_data_parser $obj); // return $tagdata
+	public function replace($tagdata, EE_Channel_data_parser $obj, $pre); // return $tagdata
 
 //	public function clear(); // remove leftovers?
 

@@ -5,30 +5,19 @@ class EE_Channel_preparser {
 	public $pairs = array();
 	public $singles = array();
 
-	public $cat_chunks = array();
-	public $pfield_chunks = array();
-
-	public $search_link = '';
-	public $custom_date_fields = array();
-	public $modified_conditionals = array();
-
-	public $date_vars = array(
-		'entry_date' 		=> array(),
-		'gmt_date' 			=> array(),
-		'gmt_entry_date'	=> array(),
-		'edit_date' 		=> array(),
-		'gmt_edit_date'		=> array(),
-		'expiration_date'	=> array(),
-		'week_date'			=> array()
-	);
-
 	public $subscriber_totals = array();
+	public $modified_conditionals = array();
 
 	protected $_prefix;
 	protected $_tagdata;
 
 	protected $_parser;
 	protected $_channel;
+
+	protected $_plugins;
+
+	protected $_pair_data;
+	protected $_single_data;
 
 	public function __construct(Channel $channel, EE_Channel_parser $parser)
 	{
@@ -38,22 +27,33 @@ class EE_Channel_preparser {
 		$this->_prefix = $parser->prefix();
 		$this->_tagdata = $parser->tagdata();
 
-		$this->date_vars			 = $this->_find_date_variables();
-		$this->cat_chunks			 = $this->_find_category_pairs();
-		$this->custom_date_fields	 = $this->_find_custom_date_fields();
-		$this->pfield_chunks		 = $this->_find_custom_field_pairs();
-		$this->modified_conditionals = $this->_find_modified_conditionals();
-		$this->search_link			 = $this->_member_search_link();
+		$plugins = $parser->plugins();
 
 		$this->pairs	= $this->_extract_prefixed(get_instance()->TMPL->var_pair);
 		$this->singles	= $this->_extract_prefixed(get_instance()->TMPL->var_single);
 
+		foreach ($plugins->pair() as $k => $plugin)
+		{
+			$this->_pair_data[$k] = $plugin->pre_process($this->_tagdata, $this);
+		}
+
+		foreach ($plugins->single() as $k => $plugin)
+		{
+			$this->_single_data[$k] = $plugin->pre_process($this->_tagdata, $this);
+		}
+
 		$this->subscriber_totals	= $this->_subscriber_totals();
+		$this->modified_conditionals = $this->_find_modified_conditionals();
 	}
 
-	public function tagdata()
+	public function pair_data($key)
 	{
-		return $this->_tagdata;
+		return $this->_pair_data[$key];
+	}
+
+	public function single_data($key)
+	{
+		return $this->_single_data[$key];
 	}
 
 	public function prefix()
@@ -125,206 +125,6 @@ class EE_Channel_preparser {
 		return $filtered;
 	}
 
-	protected function _find_category_pairs()
-	{
-		$cat_chunk = array();
-		$prefix = preg_quote($this->_prefix, '/');
-
-		if ($this->has_tag_pair('categories'))
-		{
-			if (preg_match_all("/".LD.$prefix."categories(.*?)".RD."(.*?)".LD.'\/'.$prefix.'categories'.RD."/s", $this->_tagdata, $matches))
-			{
-				for ($j = 0; $j < count($matches[0]); $j++)
-				{
-					$cat_chunk[] = array(
-						$matches[2][$j],
-						get_instance()->functions->assign_parameters($matches[1][$j]),
-						$matches[0][$j]
-					);
-				}
-	  		}
-		}
-
-		return $cat_chunk;
-	}
-
-
-	protected function _find_date_variables()
-	{
-		$prefix = $this->_prefix;
-
-		$entry_date 		= array();
-		$gmt_date 			= array();
-		$gmt_entry_date		= array();
-		$edit_date 			= array();
-		$gmt_edit_date		= array();
-		$expiration_date	= array();
-		$week_date			= array();
-
-		$date_vars = array('entry_date', 'gmt_date', 'gmt_entry_date', 'edit_date', 'gmt_edit_date', 'expiration_date', 'recent_comment_date', 'week_date');
-
-		get_instance()->load->helper('date');
-
-		foreach ($date_vars as $val)
-		{
-			if ( ! $this->has_tag($val))
-			{
-				continue;
-			}
-
-			$full_val = $prefix.$val;
-
-			if (preg_match_all("/".LD.$full_val."\s+format=([\"'])([^\\1]*?)\\1".RD."/s", $this->_tagdata, $matches))
-			{
-				for ($j = 0; $j < count($matches[0]); $j++)
-				{
-					$matches[0][$j] = str_replace(array(LD,RD), '', $matches[0][$j]);
-
-					switch ($val)
-					{
-						case 'entry_date': 
-							$entry_date[$matches[0][$j]] = $matches[2][$j];
-							break;
-						case 'gmt_date':
-							$gmt_date[$matches[0][$j]] = $matches[2][$j];
-							break;
-						case 'gmt_entry_date':
-							$gmt_entry_date[$matches[0][$j]] = $matches[2][$j];
-							break;
-						case 'edit_date':
-							$edit_date[$matches[0][$j]] = $matches[2][$j];
-							break;
-						case 'gmt_edit_date':
-							$gmt_edit_date[$matches[0][$j]] = $matches[2][$j];
-							break;
-						case 'expiration_date':
-							$expiration_date[$matches[0][$j]] = $matches[2][$j];
-							break;
-						case 'recent_comment_date':
-							$recent_comment_date[$matches[0][$j]] = $matches[2][$j];
-							break;
-						case 'week_date':
-							$week_date[$matches[0][$j]] = $matches[2][$j];
-							break;
-					}
-				}
-			}
-		}
-
-		return call_user_func_array('compact', $date_vars);
-	}
-
-
-
-	protected function _find_custom_date_fields()
-	{
-		$prefix = $this->_prefix;
-		$custom_date_fields = array();
-
-		if (count($this->_channel->dfields) > 0)
-		{
-			foreach ($this->_channel->dfields as $site_id => $dfields)
-			{
-	  			foreach($dfields as $key => $value)
-	  			{
-	  				if ( ! $this->has_tag($key))
-	  				{
-	  					continue;
-	  				}
-
-	  				$key = $prefix.$key;
-
-					if (preg_match_all("/".LD.$key."\s+format=[\"'](.*?)[\"']".RD."/s", $this->_tagdata, $matches))
-					{
-						for ($j = 0; $j < count($matches[0]); $j++)
-						{
-							$matches[0][$j] = str_replace(array(LD,RD), '', $matches[0][$j]);
-
-							$custom_date_fields[$matches[0][$j]] = $matches[1][$j];
-						}
-					}
-				}
-			}
-		}
-
-		return $custom_date_fields;
-	}
-
-	protected function _find_custom_field_pairs()
-	{
-		if (count($this->_channel->pfields) == 0)
-		{
-			return array();
-		}
-
-		$prefix = $this->_prefix;
-		$pfield_chunk = array();
-
-		foreach ($this->_channel->pfields as $site_id => $pfields)
-		{
-			$pfield_names = array_intersect($this->_channel->cfields[$site_id], array_keys($pfields));
-
-			foreach($pfield_names as $field_name => $field_id)
-			{
-				if ( ! $this->has_tag_pair($field_name))
-				{
-					continue;
-				}
-
-				$offset = 0;
-				$field_name = $prefix.$field_name;
-				
-				while (($end = strpos($this->_tagdata, LD.'/'.$field_name.RD, $offset)) !== FALSE)
-				{
-					// This hurts soo much. Using custom fields as pair and single vars in the same
-					// channel tags could lead to something like this: {field}...{field}inner{/field}
-					// There's no efficient regex to match this case, so we'll find the last nested
-					// opening tag and re-cut the chunk.
-
-					if (preg_match("/".LD."{$field_name}(.*?)".RD."(.*?)".LD.'\/'."{$field_name}(.*?)".RD."/s", $this->_tagdata, $matches, 0, $offset))
-					{
-						$chunk = $matches[0];
-						$params = $matches[1];
-						$inner = $matches[2];
-
-						// We might've sandwiched a single tag - no good, check again (:sigh:)
-						if ((strpos($chunk, LD.$field_name, 1) !== FALSE) && preg_match_all("/".LD."{$field_name}(.*?)".RD."/s", $chunk, $match))
-						{
-							// Let's start at the end
-							$idx = count($match[0]) - 1;
-							$tag = $match[0][$idx];
-							
-							// Reassign the parameter
-							$params = $match[1][$idx];
-
-							// Cut the chunk at the last opening tag (PHP5 could do this with strrpos :-( )
-							while (strpos($chunk, $tag, 1) !== FALSE)
-							{
-								$chunk = substr($chunk, 1);
-								$chunk = strstr($chunk, LD.$field_name);
-								$inner = substr($chunk, strlen($tag), -strlen(LD.'/'.$field_name.RD));
-							}
-						}
-						
-						$chunk_array = array($inner, get_instance()->functions->assign_parameters($params), $chunk);
-						
-						// Grab modifier if it exists and add it to the chunk array
-						if (substr($params, 0, 1) == ':')
-						{
-							$chunk_array[] = str_replace(':', '', $params);
-						}
-						
-						$pfield_chunk[$site_id][$field_name][] = $chunk_array;
-					}
-					
-					$offset = $end + 1;
-				}
-			}
-		}
-
-		return $pfield_chunk;
-	}
-
 	public function _find_modified_conditionals()
 	{
 		$prefix = $this->_prefix;
@@ -352,16 +152,5 @@ class EE_Channel_preparser {
 		}
 		
 		return array_map('array_unique', $modified_conditionals);
-	}
-
-	// We use this with the {member_search_path} variable
-	protected function _member_search_link()
-	{
-		$prefix = $this->_prefix;
-
-		$result_path = (preg_match("/".LD.$prefix."member_search_path\s*=(.*?)".RD."/s", $this->_tagdata, $match)) ? $match[1] : 'search/results';
-		$result_path = str_replace(array('"',"'"), "", $result_path);
-
-		return get_instance()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.get_instance()->functions->fetch_action_id('Search', 'do_search').'&amp;result_path='.$result_path.'&amp;mbr=';
 	}
 }

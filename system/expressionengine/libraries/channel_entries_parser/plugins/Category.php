@@ -8,7 +8,31 @@ class EE_Channel_category_parser implements EE_Channel_parser_plugin {
 		return TRUE;
 	}
 
-	public function replace($tagdata, EE_Channel_data_parser $obj)
+	public function pre_process($tagdata, EE_Channel_preparser $pre)
+	{
+		$cat_chunk = array();
+
+		$prefix = $pre->prefix();
+
+		if ($pre->has_tag_pair('categories'))
+		{
+			if (preg_match_all("/".LD.$prefix."categories(.*?)".RD."(.*?)".LD.'\/'.$prefix.'categories'.RD."/s", $tagdata, $matches))
+			{
+				for ($j = 0; $j < count($matches[0]); $j++)
+				{
+					$cat_chunk[] = array(
+						$matches[2][$j],
+						get_instance()->functions->assign_parameters($matches[1][$j]),
+						$matches[0][$j]
+					);
+				}
+	  		}
+		}
+
+		return $cat_chunk;
+	}
+
+	public function replace($tagdata, EE_Channel_data_parser $obj, $cat_chunk)
 	{
 		$tag = $obj->tag();
 		$data = $obj->row();
@@ -20,8 +44,6 @@ class EE_Channel_category_parser implements EE_Channel_parser_plugin {
 
 		if (strncmp($tag, $tagname, strlen($tagname)) == 0)
 		{
-			$cat_chunk = $obj->preparsed()->cat_chunks;
-
 			if (isset($categories[$data['entry_id']]) AND is_array($categories[$data['entry_id']]) AND count($cat_chunk) > 0)
 			{
 				// Get category ID from URL for {if active} conditional

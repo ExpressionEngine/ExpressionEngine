@@ -8,7 +8,72 @@ class EE_Channel_date_parser implements EE_Channel_parser_plugin {
 		return TRUE;
 	}
 
-	public function replace($tagdata, EE_Channel_data_parser $obj)
+	public function pre_process($tagdata, EE_Channel_preparser $pre)
+	{
+		$prefix = $pre->prefix();
+
+		$entry_date 		= array();
+		$gmt_date 			= array();
+		$gmt_entry_date		= array();
+		$edit_date 			= array();
+		$gmt_edit_date		= array();
+		$expiration_date	= array();
+		$week_date			= array();
+
+		$date_vars = array('entry_date', 'gmt_date', 'gmt_entry_date', 'edit_date', 'gmt_edit_date', 'expiration_date', 'recent_comment_date', 'week_date');
+
+		get_instance()->load->helper('date');
+
+		foreach ($date_vars as $val)
+		{
+			if ( ! $pre->has_tag($val))
+			{
+				continue;
+			}
+
+			$full_val = $prefix.$val;
+
+			if (preg_match_all("/".LD.$full_val."\s+format=([\"'])([^\\1]*?)\\1".RD."/s", $tagdata, $matches))
+			{
+				for ($j = 0; $j < count($matches[0]); $j++)
+				{
+					$matches[0][$j] = str_replace(array(LD,RD), '', $matches[0][$j]);
+
+					switch ($val)
+					{
+						case 'entry_date': 
+							$entry_date[$matches[0][$j]] = $matches[2][$j];
+							break;
+						case 'gmt_date':
+							$gmt_date[$matches[0][$j]] = $matches[2][$j];
+							break;
+						case 'gmt_entry_date':
+							$gmt_entry_date[$matches[0][$j]] = $matches[2][$j];
+							break;
+						case 'edit_date':
+							$edit_date[$matches[0][$j]] = $matches[2][$j];
+							break;
+						case 'gmt_edit_date':
+							$gmt_edit_date[$matches[0][$j]] = $matches[2][$j];
+							break;
+						case 'expiration_date':
+							$expiration_date[$matches[0][$j]] = $matches[2][$j];
+							break;
+						case 'recent_comment_date':
+							$recent_comment_date[$matches[0][$j]] = $matches[2][$j];
+							break;
+						case 'week_date':
+							$week_date[$matches[0][$j]] = $matches[2][$j];
+							break;
+					}
+				}
+			}
+		}
+
+		return call_user_func_array('compact', $date_vars);
+	}
+
+	public function replace($tagdata, EE_Channel_data_parser $obj, $date_vars)
 	{
 		$tag = $obj->tag();
 		$tag_options = $obj->tag_options();
@@ -19,7 +84,7 @@ class EE_Channel_date_parser implements EE_Channel_parser_plugin {
 		$key = $tag;
 		$val = $tag_options;
 
-		extract($obj->preparsed()->date_vars);
+		extract($date_vars);
 
 		//  parse entry date
 		if (isset($entry_date[$key]))

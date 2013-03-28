@@ -30,7 +30,7 @@ class EE_Channel_entries_parser {
 
 	public function create($tagdata, $prefix = '')
 	{
-		return new EE_Channel_parser($tagdata, $prefix);
+		return new EE_Channel_parser($tagdata, $prefix, $this->_plugins);
 	}
 
 	public function register_plugin($type, $class, $add_to_front = FALSE)
@@ -59,11 +59,15 @@ class EE_Channel_parser {
 
 	protected $_prefix;
 	protected $_tagdata;
+	protected $_plugins;
 
-	public function __construct($tagdata, $prefix)
+	protected $_preparser;
+
+	public function __construct($tagdata, $prefix, EE_Channel_parser_plugins $plugins)
 	{
 		$this->_prefix = $prefix;
 		$this->_tagdata = $tagdata;
+		$this->_plugins = $plugins;
 	}
 
 	public function tagdata()
@@ -76,6 +80,11 @@ class EE_Channel_parser {
 		return $this->_prefix;
 	}
 
+	public function plugins()
+	{
+		return $this->_plugins;
+	}
+
 	public function pre_parser(Channel $channel)
 	{
 		return new EE_Channel_preparser($channel, $this);
@@ -83,7 +92,7 @@ class EE_Channel_parser {
 
 	public function data_parser(EE_Channel_preparser $pre, $relationship_parser = NULL)
 	{
-		return new EE_Channel_data_parser($pre, $relationship_parser);
+		return new EE_Channel_data_parser($pre, $this, $relationship_parser);
 	}
 
 

@@ -3,7 +3,8 @@
 
 class EE_Channel_data_parser {
 
-	protected $_preparsed;
+	protected $_parser;
+	protected $_preparser;
 	protected $_relationship_parser;
 
 	protected $_data;
@@ -12,20 +13,22 @@ class EE_Channel_data_parser {
 	protected $_tag_options; // var_* value
 	protected $_row;
 
-	public function __construct(EE_Channel_preparser $pre, $relationship_parser = NULL)
+	public function __construct(EE_Channel_preparser $pre, EE_Channel_parser $parser, $relationship_parser = NULL)
 	{
-		$this->_preparsed = $pre;
+		$this->_preparser = $pre;
 		$this->_relationship_parser = $relationship_parser;
+
+		$this->_parser = $parser;
 	}
 
 	public function preparsed()
 	{
-		return $this->_preparsed;
+		return $this->_preparser;
 	}
 
 	public function channel()
 	{
-		return $this->_preparsed->channel();
+		return $this->_preparser->channel();
 	}
 
 	public function row()
@@ -56,13 +59,15 @@ class EE_Channel_data_parser {
 
 	public function prefix()
 	{
-		return $this->_preparsed->prefix();
+		return $this->_preparser->prefix();
 	}
 
 
 	public function parse($data, $config = array())
 	{
 		$this->_data = $data;
+
+		$pre = $this->_preparser;
 
 		// data options
 		$entries = $this->data('entries', array());
@@ -74,14 +79,14 @@ class EE_Channel_data_parser {
 		$disabled	= isset($config['disable']) ? $config['disable'] : array();
 		$callbacks	= isset($config['callbacks']) ? $config['callbacks'] : array();
 
-		$pairs	 = $this->_preparsed->pairs;
-		$singles = $this->_preparsed->singles;
+		$pairs	 = $pre->pairs;
+		$singles = $pre->singles;
 
-		$prefix	 = $this->_preparsed->prefix();
-		$channel = $this->_preparsed->channel();
+		$prefix	 = $pre->prefix();
+		$channel = $pre->channel();
 		
 		$relationship_parser = $this->_relationship_parser;
-		$subscriber_totals = $this->_preparsed->subscriber_totals;
+		$subscriber_totals = $pre->subscriber_totals;
 
 		$total_results = count($entries);
 		$site_pages = config_item('site_pages');
@@ -96,11 +101,12 @@ class EE_Channel_data_parser {
 
 		$count = 0;
 
-		$parser_plugins = get_instance()->channel_entries_parser->plugins();
+		$parser_plugins = $this->_parser->plugins();
+		$orig_tagdata = $this->_parser->tagdata();
 
 		foreach ($entries as $row)
 		{
-			$tagdata = $this->_preparsed->tagdata();
+			$tagdata = $orig_tagdata;
 
 			$this->_count = $count;
 
@@ -167,9 +173,9 @@ class EE_Channel_data_parser {
 				$this->_tag = $key;
 				$this->_tag_options = $val;
 
-				foreach ($parser_plugins->pair() as $plugin)
+				foreach ($parser_plugins->pair() as $k => $plugin)
 				{
-					$tagdata = $plugin->replace($tagdata, $this);
+					$tagdata = $plugin->replace($tagdata, $this, $pre->pair_data($k));
 				}
 			}
 			// END VARIABLE PAIRS
@@ -192,9 +198,9 @@ class EE_Channel_data_parser {
 				$this->_tag = $key;
 				$this->_tag_options = $val;
 
-				foreach ($parser_plugins->single() as $plugin)
+				foreach ($parser_plugins->single() as $k => $plugin)
 				{
-					$tagdata = $plugin->replace($tagdata, $this);
+					$tagdata = $plugin->replace($tagdata, $this, $pre->single_data($k));
 				}
 			}
 			// END SINGLE VARIABLES
@@ -241,7 +247,7 @@ class EE_Channel_data_parser {
 	 */
 	protected function _send_custom_field_data_to_fieldtypes($entries_data)
 	{
-		$channel = $this->_preparsed->channel();
+		$channel = $this->_preparser->channel();
 
 		// We'll stick custom field data into this array in the form of:
 		// field_id => array('data1', 'data2', ...);
@@ -271,15 +277,16 @@ class EE_Channel_data_parser {
 		{
 			get_instance()->load->library('api');
 			get_instance()->api->instantiate('channel_fields');
+			$ft_api = get_instance()->api_channel_fields;
 			
 			// For each custom field, notify its fieldtype class of the data we collected
 			foreach ($custom_field_data as $field_id => $data)
 			{
-				if (get_instance()->api_channel_fields->setup_handler($field_id))
+				if ($ft_api->setup_handler($field_id))
 				{
-					if (get_instance()->api_channel_fields->check_method_exists('pre_loop'))
+					if ($ft_api->check_method_exists('pre_loop'))
 					{
-						get_instance()->api_channel_fields->apply('pre_loop', array($data));
+						$ft_api->apply('pre_loop', array($data));
 					}
 				}
 			}

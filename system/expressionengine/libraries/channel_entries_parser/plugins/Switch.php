@@ -7,8 +7,13 @@ class EE_Channel_switch_parser implements EE_Channel_parser_plugin {
 	{
 		return TRUE;
 	}
+	
+	public function pre_process($tagdata, EE_Channel_preparser $pre)
+	{
+		return NULL;
+	}
 
-	public function replace($tagdata, EE_Channel_data_parser $obj)
+	public function replace($tagdata, EE_Channel_data_parser $obj, $pre)
 	{
 		$tag = $obj->tag();
 		$prefix = $obj->prefix();
