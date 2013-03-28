@@ -24,6 +24,38 @@
  */
 class Category_model extends CI_Model {
 
+
+	public function get_entry_categories($entry_ids)
+	{
+		$result = array();
+		$entry_ids = (array) $entry_ids;
+
+		if ( ! count($entry_ids))
+		{
+			return $result;
+		}
+
+		$sql = "SELECT c.cat_id, c.*, cp.entry_id
+				FROM exp_categories AS c
+				LEFT JOIN exp_category_posts AS cp ON c.cat_id = cp.cat_id
+				WHERE cp.entry_id IN (".implode(', ', $entry_ids).")
+				ORDER BY c.group_id, c.parent_id, c.cat_order";
+
+		$category_query = $this->db->query($sql);
+
+		foreach ($category_query->result_array() as $row)
+		{
+			if ( ! isset($result[$row['entry_id']]))
+			{
+				$result[$row['entry_id']] = array();
+			}
+
+			$result[$row['entry_id']][] = $row;
+		}
+
+		return $result;
+	}
+
 	/**
 	 * Get Categories
 	 *

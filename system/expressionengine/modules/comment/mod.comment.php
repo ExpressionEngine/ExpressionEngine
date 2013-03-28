@@ -3061,6 +3061,85 @@ class Comment {
 	// --------------------------------------------------------------------
 
 	/**
+	 * List of subscribers to an entry
+	 *
+	 *
+	 * @access	public
+	 * @return	string
+	 */
+	public function subscriber_list()
+	{
+		if (($entry_id = $this->EE->TMPL->fetch_param('entry_id')) === FALSE)
+		{
+			$entry_id = $this->_divine_entry_id();
+		}
+
+		// entry is required, and this is not the same as "no results for a valid entry"
+		// so return nada
+		if ( ! $entry_id)
+		{
+			return;
+		}
+
+		$anonymous = TRUE;
+		if ($this->EE->TMPL->fetch_param('exclude_guests') == 'yes')
+		{
+			$anonymous = FALSE;
+		}
+
+		$this->EE->load->library('subscription');
+		$this->EE->subscription->init('comment', array('entry_id' => $entry_id), $anonymous);
+		$subscribed = $this->EE->subscription->get_subscriptions(FALSE, TRUE);
+
+		if (empty($subscribed))
+		{
+			return $this->EE->TMPL->no_results();
+		}
+
+		// non-member comments will expose email addresses, so make sure the visitor should
+		// be able to see this data before including it
+		$expose_emails = ($this->EE->session->userdata('group_id') == 1) ? TRUE : FALSE;
+
+		$vars = array();
+		$total_results = count($subscribed);
+		$count = 0;
+		$guest_total = 0;
+		$member_total = 0;
+
+		foreach ($subscribed as $subscription_id => $subscription)
+		{
+			$vars[] = array(
+				'subscriber_member_id' => $subscription['member_id'],
+				'subscriber_screen_name' => $subscription['screen_name'],
+				'subscriber_email' => (($expose_emails && $anonymous) ? $subscription['email'] : ''),
+				'subscriber_is_member' => (($subscription['member_id'] == 0) ? FALSE : TRUE),
+				'subscriber_count' => ++$count,
+				'subscriber_total_results' => $total_results
+				);
+
+			if ($subscription['member_id'] == 0)
+			{
+				$guest_total++;
+			}
+			else
+			{
+				$member_total++;
+			}
+		}
+
+		// loop through again to add the final guest/subscribed tallies
+		foreach ($vars as $key => $val)
+		{
+			$vars[$key]['subscriber_guest_total'] = $guest_total;
+			$vars[$key]['subscriber_member_total'] = $member_total;
+		}
+
+		return $this->EE->TMPL->parse_variables($this->EE->TMPL->tagdata, $vars);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Comment subscription w/out commenting
 	 *
 	 *
@@ -3439,6 +3518,53 @@ CMT_EDIT_SCR;
 	}
 	
 	// --------------------------------------------------------------------
+
+	/**
+	 * Discover the entry ID for the current entry
+	 *
+	 *
+	 * @access	private
+	 * @return	int
+	 */
+	private function _divine_entry_id()
+	{
+		$entry_id = FALSE;
+		$qstring = $this->EE->uri->query_string;
+		$qstring_hash = md5($qstring);
+
+		if (isset($this->EE->session->cache['comment']['entry_id'][$qstring_hash]))
+		{
+			return $this->EE->session->cache['comment']['entry_id'][$qstring_hash];
+		}
+
+		if (preg_match("#(^|/)P(\d+)(/|$)#", $qstring, $match))
+		{
+			$qstring = trim($this->EE->functions->remove_double_slashes(str_replace($match['0'], '/', $qstring)), '/');
+		}
+
+		// Figure out the right entry ID
+		// If there is a slash in the entry ID we'll kill everything after it.
+		$entry_seg = trim($qstring); 
+		$entry_seg= preg_replace("#/.+#", "", $entry_seg);
+
+		if (is_numeric($entry_seg))
+		{
+			$entry_id = $entry_seg;
+		}
+		else
+		{
+			$this->EE->db->select('entry_id');
+			$query = $this->EE->db->get_where('channel_titles', array('url_title' => $entry_seg));
+			
+			if ($query->num_rows() == 1)
+			{
+   				$row = $query->row();
+  				$entry_id = $row->entry_id;
+			}
+		}
+
+		return $this->EE->session->cache['comment']['entry_id'][$qstring_hash] = $entry_id;
+	}
 	
 	// --------------------------------------------------------------------
 
