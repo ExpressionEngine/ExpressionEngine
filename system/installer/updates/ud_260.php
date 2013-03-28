@@ -348,6 +348,9 @@ If you do not wish to reset your password, ignore this message. It will expire i
 	 */
 	private function _replace_relationship_tags()
 	{
+		// We're gonna need this to be already loaded.
+		require_once(APPPATH . 'libraries/Functions.php');	
+		$this->EE->functions = new Installer_Functions();
 
 		$this->EE->load->model('template_model');
 		$templates = $this->EE->template_model->fetch(); 
@@ -357,18 +360,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		foreach($templates as $template)
 		{
 			// Find the {related_entries} tags (match pairs and wrapped tags)
-			$tags = $this->_find_related_entries_tags($template);
-
-			// parse out the field_short_name and any parameters
-			/*foreach ($tags as $tag => $contents)
-			{
-				$parsed_tag = $this->_parse_related_entries_tag($tag, $contents);
-
-				// replace the tag with the short name, 
-				// prefix any contained variables with the short name
-				// HARD - how do we tell which variables belong to the related_entry?
-				$this->_update_related_entries_tag($parsed_tag, $template);
-			}*/
+			$this->_update_related_entries_tags($template);
 
 			// save the template
 			// if saving to file, save the file
@@ -405,35 +397,27 @@ If you do not wish to reset your password, ignore this message. It will expire i
 	 * @return string[]	An array in which the keys are the tag and the values
 	 *					are the enclosed text.
 	 */
-	private function _find_related_entries_tags(Template_Entity $template)
+	private function _update_related_entries_tags(Template_Entity $template)
 	{
 		require_once(APPPATH . '/libraries/Template.php');
 
 		$parser = new Installer_Template();
-		
 
-		var_dump($template->template_data);
-		$parser->assign_relationship_data($template->template_data);
+		$template->template_data = $parser->assign_relationship_data($template->template_data);
 
-		var_dump($parser->related_data);
-		
+		foreach ($parser->related_data as $marker=>$relationship_tag)
+		{
+			$tagdata = $relationship_tag['tagdata'];
+			foreach ($relationship_tag['var_single'] as $variable)
+			{
+				$new_var = '{' . $relationship_tag['field_name'] . ':' . $variable . '}';
+				$tagdata = str_replace('{' . $variable . '}', $new_var, $tagdata);
+			}
+
+			$target = '{REL[' . $relationship_tag['field_name'] . ']' . $marker . 'REL}';
+			$template->template_data = str_replace($target, $tagdata, $template->template_data);
+		}	
 	}
-
-	/**
-	 *
-	 */
-	private function _parse_related_entries_tag($tag)
-	{
-
-	}
-
-	/**
-	 *
-	 */
-	private function _update_related_entries_tag($parsed_tag, Template_Entity $template)
-	{
-	
-	}	
 
 	// --------------------------------------------------------------------------
 
