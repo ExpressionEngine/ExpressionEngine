@@ -33,25 +33,7 @@ class EE_Channel_entries_parser {
 		require_once APPPATH.'libraries/channel_entries_parser/Parser.php';
 		require_once APPPATH.'libraries/channel_entries_parser/Plugins.php';
 
-		$plugins = new EE_Channel_parser_plugins();
-
-		// Dear third party devs, use register_plugin() for your own. Gracias.
-
-		// don't mess with the order, it matters!
-		$plugins->register_pair('EE_Channel_category_parser');
-		$plugins->register_pair('EE_Channel_custom_field_pair_parser');
-		$plugins->register_pair('EE_Channel_header_and_footer_parser');
-		$plugins->register_pair('EE_Channel_relationship_parser');
-
-		$plugins->register_single('EE_Channel_simple_conditional_parser');
-		$plugins->register_single('EE_Channel_switch_parser');
-		$plugins->register_single('EE_Channel_date_parser');
-		$plugins->register_single('EE_Channel_simple_variable_parser');
-		$plugins->register_single('EE_Channel_custom_date_parser');
-		$plugins->register_single('EE_Channel_custom_field_parser');
-		$plugins->register_single('EE_Channel_custom_member_field_parser');
-
-		$this->_plugins = $plugins;
+		$this->_plugins = new EE_Channel_parser_plugins();
 	}
 
 	public function create($tagdata, $prefix = '')
@@ -59,7 +41,7 @@ class EE_Channel_entries_parser {
 		return new EE_Channel_parser($tagdata, $prefix, $this->_plugins);
 	}
 
-	public function register_plugin($type, $class, $add_to_front = FALSE)
+	public function register_plugin($type, $class)
 	{
 		switch ($type)
 		{
@@ -72,11 +54,6 @@ class EE_Channel_entries_parser {
 		}
 
 		$this->_plugins->$fn($class, $add_to_front);
-	}
-
-	public function plugins()
-	{
-		return $this->_plugins;
 	}
 }
 

@@ -42,16 +42,34 @@ class EE_Channel_parser_plugins {
 	protected $pair_plugins = array();
 	protected $single_plugins = array();
 
-	public function register_pair($class, $add_to_front = FALSE)
+	public function __construct()
 	{
-		$fn = $add_to_front ? 'array_unshift' : 'array_push';
-		$fn($this->pair_plugins, new $class());
+		// Dear third party devs, use the register_plugin method on
+		// EE->channel_entries_parser for your own additions. Gracias.
+
+		// don't mess with the order, it matters!
+		$this->register_pair('EE_Channel_category_parser');
+		$this->register_pair('EE_Channel_custom_field_pair_parser');
+		$this->register_pair('EE_Channel_header_and_footer_parser');
+		$this->register_pair('EE_Channel_relationship_parser');
+
+		$this->register_single('EE_Channel_simple_conditional_parser');
+		$this->register_single('EE_Channel_switch_parser');
+		$this->register_single('EE_Channel_date_parser');
+		$this->register_single('EE_Channel_simple_variable_parser');
+		$this->register_single('EE_Channel_custom_date_parser');
+		$this->register_single('EE_Channel_custom_field_parser');
+		$this->register_single('EE_Channel_custom_member_field_parser');
 	}
 
-	public function register_single($class, $add_to_front = FALSE)
+	public function register_pair($class)
 	{
-		$fn = $add_to_front ? 'array_unshift' : 'array_push';
-		$fn($this->single_plugins, new $class());
+		$this->pair_plugins[] = new $class();
+	}
+
+	public function register_single($class)
+	{
+		$this->single_plugins[] = new $class();
 	}
 
 	public function pair()
