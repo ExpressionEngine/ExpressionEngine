@@ -1,10 +1,32 @@
 <?php
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
+ * @since		Version 2.0
+ * @filesource
+ */
+ 
+// ------------------------------------------------------------------------
 
+/**
+ * ExpressionEngine Channel Parser Plugin (Relationships)
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Core
+ * @category	Core
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
+ */
 class EE_Channel_relationship_parser implements EE_Channel_parser_plugin {
 
-	public function understands($tag)
+	public function disabled(array $disabled)
 	{
-		return TRUE;
+		return in_array('relationships', $disabled);
 	}
 	
 	public function pre_process($tagdata, EE_Channel_preparser $pre)

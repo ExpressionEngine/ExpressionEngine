@@ -1,5 +1,28 @@
 <?php
 
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
+ * @since		Version 2.0
+ * @filesource
+ */
+ 
+// ------------------------------------------------------------------------
+
+/**
+ * ExpressionEngine Channel Pre-Parser
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Core
+ * @category	Core
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
+ */
 class EE_Channel_preparser {
 
 	public $pairs = array();
@@ -16,7 +39,6 @@ class EE_Channel_preparser {
 	protected $_entry_ids;
 
 	protected $_plugins;
-	protected $_disabled;
 
 	protected $_pair_data;
 	protected $_single_data;
@@ -26,24 +48,25 @@ class EE_Channel_preparser {
 		$this->_parser = $parser;
 		$this->_channel = $channel;
 		$this->_entry_ids = $entry_ids;
-		$this->_disabled = isset($config['disable']) ? $config['disable'] : array();
+		
+		$disabled = isset($config['disable']) ? $config['disable'] : array();
+
+		$plugins = $parser->plugins();
 
 		$this->_prefix = $parser->prefix();
 		$this->_tagdata = $parser->tagdata();
-
-		$plugins = $parser->plugins();
 
 		$this->pairs	= $this->_extract_prefixed(get_instance()->TMPL->var_pair);
 		$this->singles	= $this->_extract_prefixed(get_instance()->TMPL->var_single);
 
 		foreach ($plugins->pair() as $k => $plugin)
 		{
-			if (is_a($plugin, 'EE_Channel_relationship_parser') && $this->disabled('relationships'))
+			if ($plugin->disabled($disabled))
 			{
 				$this->_pair_data[$k] = NULL;
 				continue;
 			}
-			
+
 			$this->_pair_data[$k] = $plugin->pre_process($this->_tagdata, $this);
 		}
 
@@ -54,11 +77,7 @@ class EE_Channel_preparser {
 
 		$this->subscriber_totals	= $this->_subscriber_totals();
 		$this->modified_conditionals = $this->_find_modified_conditionals();
-	}
 
-	public function disabled($key)
-	{
-		return in_array($key, $this->_disabled);
 	}
 
 	public function entry_ids()

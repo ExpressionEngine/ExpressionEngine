@@ -1,10 +1,32 @@
 <?php
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
+ * @since		Version 2.0
+ * @filesource
+ */
+ 
+// ------------------------------------------------------------------------
 
+/**
+ * ExpressionEngine Channel Parser Plugin (Header and Footer)
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Core
+ * @category	Core
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
+ */
 class EE_Channel_header_and_footer_parser implements EE_Channel_parser_plugin {
 
-	public function understands($tag)
+	public function disabled(array $disabled)
 	{
-		return TRUE;
+		return FALSE;
 	}
 
 	public function pre_process($tagdata, EE_Channel_preparser $pre)

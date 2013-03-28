@@ -2927,12 +2927,23 @@ class Channel {
 		$preparsed = $parser->pre_parser($this, $this->_entry_ids);
 
 		$data_parser = $parser->data_parser($preparsed);
-		$this->return_data = $data_parser->parse(array(
+
+		$data = array(
 			'entries'			=> $query_result,
 			'categories'		=> $this->categories,
 			'absolute_results'	=> $this->absolute_results,
 			'absolute_offset'	=> $this->pagination->offset
-		));
+		);
+
+		$config = array(
+			'callbacks' => array(
+				'entry_row_data'	 => array($this, 'callback_entry_row_data'),
+				'tagdata_loop_start' => array($this, 'callback_tagdata_loop_start'),
+				'tagdata_loop_end'	 => array($this, 'callback_tagdata_loop_end')
+			)
+		);
+
+		$this->return_data = $data_parser->parse($data, $config);
 
 
 		// Start the main processing loop
@@ -2940,115 +2951,13 @@ class Channel {
 		foreach (/*$query_result*/ array() as $count => $row)
 		{
 			/*
-			// Fetch the tag block containing the variables that need to be parsed
-			$tagdata = $this->EE->TMPL->tagdata;
+			...
 
-			$row['total_results']		= $total_results;
-			$row['absolute_count']		= $this->pagination->offset + $row['count'];
-			$row['absolute_results']	= ($this->absolute_results === NULL) ? $total_results : $this->absolute_results;
-			$row['comment_subscriber_total'] = (isset($subscriber_totals[$row['entry_id']])) ? $subscriber_totals[$row['entry_id']] : 0;
-
-			if ($site_pages !== FALSE && isset($site_pages[$row['site_id']]['uris'][$row['entry_id']]))
-			{
-				$row['page_uri'] = $site_pages[$row['site_id']]['uris'][$row['entry_id']];
-				$row['page_url'] = $this->EE->functions->create_page_url($site_pages[$row['site_id']]['url'], $site_pages[$row['site_id']]['uris'][$row['entry_id']]);
-			}
-
-			$row_parser = $parser->row_parser($preparsed, $row);
-*/
-			// -------------------------------------------
-			// 'channel_entries_tagdata' hook.
-			//  - Take the entry data and tag data, do what you wish
-			//
-				if ($this->EE->extensions->active_hook('channel_entries_tagdata') === TRUE)
-				{
-					$tagdata = $this->EE->extensions->call('channel_entries_tagdata', $tagdata, $row, $this);
-					if ($this->EE->extensions->end_script === TRUE) return $tagdata;
-				}
-			//
-			// -------------------------------------------
-
-			// -------------------------------------------
-			// 'channel_entries_row' hook.
-			//  - Take the entry data, do what you wish
-			//  - added 1.6.7
-			//
-				if ($this->EE->extensions->active_hook('channel_entries_row') === TRUE)
-				{
-					$row = $this->EE->extensions->call('channel_entries_row', $this, $row);
-					if ($this->EE->extensions->end_script === TRUE) return $tagdata;
-				}
-			//
-			// -------------------------------------------
-
-			/**--
-			/**  Reset custom date fields
-			/**--*/
-/*
-			// Since custom date fields columns are integer types by default, if they
-			// don't contain any data they return a zero.
-			// This creates a problem if conditionals are used with those fields.
-			// For example, if an admin has this in a template:  {if mydate == ''}
-			// Since the field contains a zero it would never evaluate TRUE.
-			// Therefore we'll reset any zero dates to nothing.
-
-			if (isset($this->dfields[$row['site_id']]) && count($this->dfields[$row['site_id']]) > 0)
-			{
-				foreach ($this->dfields[$row['site_id']] as $dkey => $dval)
-				{
-					// While we're at it, kill any formatting
-					$row['field_ft_'.$dval] = 'none';
-					if (isset($row['field_id_'.$dval]) AND $row['field_id_'.$dval] == 0)
-					{
-						$row['field_id_'.$dval] = '';
-					}
-				}
-			}
-*/
-			// Conditionals
-/*
-			$cond = $row;
-			$cond['logged_in']			= ($this->EE->session->userdata('member_id') == 0) ? 'FALSE' : 'TRUE';
-			$cond['logged_out']			= ($this->EE->session->userdata('member_id') != 0) ? 'FALSE' : 'TRUE';
-
-			if ((($row['comment_expiration_date'] > 0 && $this->EE->localize->now > $row['comment_expiration_date']) && $this->EE->config->item('comment_moderation_override') !== 'y') OR $row['allow_comments'] == 'n' OR (isset($row['comment_system_enabled']) && $row['comment_system_enabled']  == 'n'))
-			{
-				$cond['allow_comments'] = 'FALSE';
-			}
-			else
-			{
-				$cond['allow_comments'] = 'TRUE';
-			}
-
-			foreach (array('avatar_filename', 'photo_filename', 'sig_img_filename') as $pv)
-			{
-				if ( ! isset($row[$pv]))
-				{
-					$row[$pv] = '';
-				}
-			}
-
-			$cond['signature_image']		= ($row['sig_img_filename'] == '' OR $this->EE->config->item('enable_signatures') == 'n' OR $this->EE->session->userdata('display_signatures') == 'n') ? 'FALSE' : 'TRUE';
-			$cond['avatar']					= ($row['avatar_filename'] == '' OR $this->EE->config->item('enable_avatars') == 'n' OR $this->EE->session->userdata('display_avatars') == 'n') ? 'FALSE' : 'TRUE';
-			$cond['photo']					= ($row['photo_filename'] == '' OR $this->EE->config->item('enable_photos') == 'n' OR $this->EE->session->userdata('display_photos') == 'n') ? 'FALSE' : 'TRUE';
-			$cond['forum_topic']			= (empty($row['forum_topic_id'])) ? 'FALSE' : 'TRUE';
-			$cond['not_forum_topic']		= ( ! empty($row['forum_topic_id'])) ? 'FALSE' : 'TRUE';
-			$cond['category_request']		= ($this->cat_request === FALSE) ? 'FALSE' : 'TRUE';
-			$cond['not_category_request']	= ($this->cat_request !== FALSE) ? 'FALSE' : 'TRUE';
-			$cond['channel']				= $row['channel_title'];
-			$cond['channel_short_name']		= $row['channel_name'];
-			$cond['author']					= ($row['screen_name'] != '') ? $row['screen_name'] : $row['username'];
-			$cond['photo_url']				= $this->EE->config->slash_item('photo_url').$row['photo_filename'];
-			$cond['photo_image_width']		= $row['photo_width'];
-			$cond['photo_image_height']		= $row['photo_height'];
-			$cond['avatar_url']				= $this->EE->config->slash_item('avatar_url').$row['avatar_filename'];
-			$cond['avatar_image_width']		= $row['avatar_width'];
-			$cond['avatar_image_height']	= $row['avatar_height'];
 			$cond['signature_image_url']	= $this->EE->config->slash_item('sig_img_url').$row['sig_img_filename'];
 			$cond['signature_image_width']	= $row['sig_img_width'];
 			$cond['signature_image_height']	= $row['sig_img_height'];
 			$cond['relative_date']			= timespan($row['entry_date']);
-*/
+			*/
 			if (isset($this->cfields[$row['site_id']]))
 			{
 				foreach($this->cfields[$row['site_id']] as $key => $value)
@@ -3081,103 +2990,9 @@ class Channel {
 					}
 				}
 			}
-/*
-			foreach($this->mfields as $key => $value)
-			{
-				$cond[$key] = ( ! array_key_exists('m_field_id_'.$value[0], $row)) ? '' : $row['m_field_id_'.$value[0]];
-				//( ! isset($row['m_field_id_'.$value[0]])) ? '' : $row['m_field_id_'.$value[0]];
-			}
-*/
+
 			// Reset custom variable pair cache
 			$parsed_custom_pairs = array();
-/*
-			//  Parse Variable Pairs
-			foreach ($this->EE->TMPL->var_pair as $key => $val)
-			{
-				// parse {categories} pair
-				$tagdata = $row_parser->parse_categories($key, $tagdata, $this->categories);
-
-				// parse custom field pairs (file, checkbox, multiselect)
-				$tagdata = $row_parser->parse_custom_field_pair($key, $tagdata);
-
-				// parse {date_heading} and {date_footer}
-				$tagdata = $row_parser->parse_date_header_and_footer($key, $val, $tagdata);
-			}
-			*/
-			// END VARIABLE PAIRS
-
-			/** ZERO WING **/
-			/*
-			if (isset($relationship_parser))
-			{
-				$tagdata = $relationship_parser->parse_relationships($row['entry_id'], $tagdata, $this);
-			}
-			*/
-
-			// We swap out the conditionals after pairs are parsed so they don't interfere
-			// with the string replace
-	//		$tagdata = $this->EE->functions->prep_conditionals($tagdata, $cond);
-/*
-			//  Parse "single" variables
-			foreach ($this->EE->TMPL->var_single as $key => $val)
-			{
-				/**--------
-				/**  parse simple conditionals: {body|more|summary}
-				/**--------*
-
-				// Note:  This must happen first.
-				$tagdata = $row_parser->parse_simple_conditionals($key, $val, $tagdata);
-
-				// parse {switch} variable
-				$tagdata = $row_parser->parse_switch_variable($key, $tagdata, $count);
-
-				// parse non-custom dates ({entry_date}, {comment_date}, etc)
-				$tagdata = $row_parser->parse_date_variables($key, $val, $tagdata);
-
-				// parse simple variables that have parameters or special processing,
-				// such as any of the paths, url_or_email, url_or_email_as_author, etc
-				$tagdata = $row_parser->parse_simple_variables($key, $val, $tagdata);
-
-				//  parse basic fields (username, screen_name, etc.)
-				//  Use array_key_exists to handle null values
-
-				if ($val AND array_key_exists($val, $row))
-				{
-					$tagdata = $this->EE->TMPL->swap_var_single($val, $row[$val], $tagdata);
-				}
-
-				//  parse custom date fields
-				$tagdata = $row_parser->parse_custom_date_fields($key, $tagdata);
-
-				// parse custom channel fields
-				$tagdata = $row_parser->parse_custom_field($key, $val, $tagdata);
-
-				// parse custom member fields
-				$tagdata = $row_parser->parse_custom_member_field($key, $val, $tagdata);
-			}
-			// END SINGLE VARIABLES
-			*/
-/*
-			// do we need to replace any curly braces that we protected in custom fields?
-			if (strpos($tagdata, unique_marker('channel_bracket_open')) !== FALSE)
-			{
-				$tagdata = str_replace(array(unique_marker('channel_bracket_open'), unique_marker('channel_bracket_close')), array('{', '}'), $tagdata);
-			}
-		*/
-
-			// -------------------------------------------
-			// 'channel_entries_tagdata_end' hook.
-			//  - Take the final results of an entry's parsing and do what you wish
-			//
-				if ($this->EE->extensions->active_hook('channel_entries_tagdata_end') === TRUE)
-				{
-					$tagdata = $this->EE->extensions->call('channel_entries_tagdata_end', $tagdata, $row, $this);
-					if ($this->EE->extensions->end_script === TRUE) return $tagdata;
-				}
-			//
-			// -------------------------------------------
-
-			$this->return_data .= $tagdata;
 
 		}
 		// END FOREACH LOOP
@@ -3196,6 +3011,64 @@ class Channel {
 				$this->return_data = substr($this->return_data, 0, - $back);
 			}
 		}
+	}
+
+	// ------------------------------------------------------------------------
+
+	public function callback_entry_row_data($tagdata, $row)
+	{
+		// -------------------------------------------
+		// 'channel_entries_row' hook.
+		//  - Take the entry data, do what you wish
+		//  - added 1.6.7
+		//
+			if ($this->EE->extensions->active_hook('channel_entries_row') === TRUE)
+			{
+				$row = $this->EE->extensions->call('channel_entries_row', $this, $row);
+				//if ($this->EE->extensions->end_script === TRUE) return $tagdata;
+			}
+		//
+		// -------------------------------------------
+
+		return $row;
+	}
+
+	// ------------------------------------------------------------------------
+
+	public function callback_tagdata_loop_start($tagdata, $row)
+	{
+		// -------------------------------------------
+		// 'channel_entries_tagdata' hook.
+		//  - Take the entry data and tag data, do what you wish
+		//
+			if ($this->EE->extensions->active_hook('channel_entries_tagdata') === TRUE)
+			{
+				$tagdata = $this->EE->extensions->call('channel_entries_tagdata', $tagdata, $row, $this);
+			//	if ($this->EE->extensions->end_script === TRUE) return $tagdata;
+			}
+		//
+		// -------------------------------------------
+
+		return $tagdata;
+	}
+
+	// ------------------------------------------------------------------------
+
+	public function callback_tagdata_loop_end($tagdata, $row)
+	{
+		// -------------------------------------------
+		// 'channel_entries_tagdata_end' hook.
+		//  - Take the final results of an entry's parsing and do what you wish
+		//
+			if ($this->EE->extensions->active_hook('channel_entries_tagdata_end') === TRUE)
+			{
+				$tagdata = $this->EE->extensions->call('channel_entries_tagdata_end', $tagdata, $row, $this);
+			//	if ($this->EE->extensions->end_script === TRUE) return $tagdata;
+			}
+		//
+		// -------------------------------------------
+
+		return $tagdata;
 	}
 
 	// ------------------------------------------------------------------------

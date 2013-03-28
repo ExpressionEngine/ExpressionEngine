@@ -1,5 +1,29 @@
 <?php
 
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
+ * @since		Version 2.0
+ * @filesource
+ */
+ 
+// ------------------------------------------------------------------------
+
+/**
+ * ExpressionEngine Channel Parser Plugins
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Core
+ * @category	Core
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
+ */
+
 require_once APPPATH.'libraries/channel_entries_parser/plugins/Category.php';
 require_once APPPATH.'libraries/channel_entries_parser/plugins/Header_and_footer.php';
 require_once APPPATH.'libraries/channel_entries_parser/plugins/Custom_date.php';
@@ -44,7 +68,7 @@ class EE_Channel_parser_plugins {
 
 interface EE_Channel_parser_plugin {
 
-	public function understands($tag); // return bool
+	public function disabled(array $disabled); // return bool
 	public function replace($tagdata, EE_Channel_data_parser $obj, $pre); // return $tagdata
 
 //	public function clear(); // remove leftovers?

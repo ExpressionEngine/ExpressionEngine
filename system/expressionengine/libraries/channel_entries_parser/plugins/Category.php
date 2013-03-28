@@ -1,11 +1,32 @@
 <?php
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
+ * @since		Version 2.0
+ * @filesource
+ */
+ 
+// ------------------------------------------------------------------------
 
-//  parse categories
+/**
+ * ExpressionEngine Channel Parser Plugin (Categories)
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Core
+ * @category	Core
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
+ */
 class EE_Channel_category_parser implements EE_Channel_parser_plugin {
 
-	public function understands($tag)
+	public function disabled(array $disabled)
 	{
-		return TRUE;
+		return in_array('categories', $disabled);
 	}
 
 	public function pre_process($tagdata, EE_Channel_preparser $pre)
@@ -57,9 +78,6 @@ class EE_Channel_category_parser implements EE_Channel_parser_plugin {
 					
 					//  We do the pulling out of categories before the "prepping" of conditionals
 					//  So, we have to do it here again too.  How annoying...
-	// @todo conditionals
-	//				$catval[0] = get_instance()->functions->prep_conditionals($catval[0], $cond);
-	//				$catval[2] = get_instance()->functions->prep_conditionals($catval[2], $cond);
 
 					$not_these		  = array();
 					$these			  = array();

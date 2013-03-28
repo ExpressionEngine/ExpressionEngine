@@ -1,6 +1,28 @@
 <?php
 
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
+ * @since		Version 2.0
+ * @filesource
+ */
+ 
+// ------------------------------------------------------------------------
 
+/**
+ * ExpressionEngine Channel Parser
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Core
+ * @category	Core
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
+ */
 class EE_Channel_data_parser {
 
 	protected $_parser;
@@ -63,12 +85,10 @@ class EE_Channel_data_parser {
 	public function parse($data, $config = array())
 	{
 		$this->_data = $data;
-
 		$pre = $this->_preparser;
 
 		// data options
 		$entries = $this->data('entries', array());
-
 		$absolute_offset  = $this->data('absolute_offset', 0);
 		$absolute_results = $this->data('absolute_results');
 
@@ -120,16 +140,27 @@ class EE_Channel_data_parser {
 				$row['page_url'] = get_instance()->create_page_url($site_pages[$row['site_id']]['url'], $site_pages[$row['site_id']]['uris'][$row['entry_id']]);
 			}
 
-			$this->_row = $row;
+			// -------------------------------------------------------
+			// Loop start callback. Do what you want.
+			// Currently in use in the channel module for the
+			// channel_entries_tagdata hook.
+			// -------------------------------------------------------
 
-			// -------------------------------------------
-			// @todo channel_entries_tagdata hook
-			// -------------------------------------------
+			if (isset($callbacks['tagdata_loop_start']))
+			{
+				$tagdata = call_user_func($callbacks['tagdata_loop_start'], $tagdata, $row);
+			}
 
-			// -------------------------------------------
-			// @todo channel_entries_row hook
-			// -------------------------------------------
+			// -------------------------------------------------------
+			// Row data callback. Do what you want.
+			// Currently in use in the channel module for the
+			// channel_entries_row hook.
+			// -------------------------------------------------------
 
+			if (isset($callbacks['entry_row_data']))
+			{
+				$row = call_user_func($callbacks['entry_row_data'], $tagdata, $row);
+			}
 
 			// Reset custom date fields
 
@@ -153,6 +184,8 @@ class EE_Channel_data_parser {
 				}
 			}
 
+			$this->_row = $row;
+
 
 			// conditionals!
 			$cond = $this->_get_conditional_data($row, $prefix, $channel);
@@ -174,7 +207,7 @@ class EE_Channel_data_parser {
 					$tagdata = $plugin->replace($tagdata, $this, $pre->pair_data($k));
 				}
 			}
-			// END VARIABLE PAIRS
+
 
 			// We swap out the conditionals after pairs are parsed so they don't interfere
 			// with the string replace
@@ -192,7 +225,7 @@ class EE_Channel_data_parser {
 					$tagdata = $plugin->replace($tagdata, $this, $pre->single_data($k));
 				}
 			}
-			// END SINGLE VARIABLES
+
 
 			// do we need to replace any curly braces that we protected in custom fields?
 			if (strpos($tagdata, unique_marker('channel_bracket_open')) !== FALSE)
@@ -325,6 +358,13 @@ class EE_Channel_data_parser {
 		$cond['signature_image_width']	= $row['sig_img_width'];
 		$cond['signature_image_height']	= $row['sig_img_height'];
 		$cond['relative_date']			= timespan($row['entry_date']);
+
+
+		foreach($channel->mfields as $key => $value)
+		{
+			$cond[$key] = ( ! array_key_exists('m_field_id_'.$value[0], $row)) ? '' : $row['m_field_id_'.$value[0]];
+		}
+
 
 		$prefixed_cond = array();
 

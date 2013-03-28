@@ -1,5 +1,28 @@
 <?php
 
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
+ * @since		Version 2.0
+ * @filesource
+ */
+ 
+// ------------------------------------------------------------------------
+
+/**
+ * ExpressionEngine Channel Entry Parser Factory
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Core
+ * @category	Core
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
+ */
 class EE_Channel_entries_parser {
 
 	protected $_plugins;
@@ -11,6 +34,8 @@ class EE_Channel_entries_parser {
 		require_once APPPATH.'libraries/channel_entries_parser/Plugins.php';
 
 		$plugins = new EE_Channel_parser_plugins();
+
+		// Dear third party devs, use register_plugin() for your own. Gracias.
 
 		// don't mess with the order, it matters!
 		$plugins->register_pair('EE_Channel_category_parser');
@@ -56,13 +81,22 @@ class EE_Channel_entries_parser {
 }
 
 
+// ------------------------------------------------------------------------
+
+/**
+ * ExpressionEngine Channel Entry Parser
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Core
+ * @category	Core
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
+ */
 class EE_Channel_parser {
 
 	protected $_prefix;
 	protected $_tagdata;
 	protected $_plugins;
-
-	protected $_preparser;
 
 	public function __construct($tagdata, $prefix, EE_Channel_parser_plugins $plugins)
 	{
@@ -95,7 +129,6 @@ class EE_Channel_parser {
 	{
 		return new EE_Channel_data_parser($pre, $this);
 	}
-
 
 	/*
 
