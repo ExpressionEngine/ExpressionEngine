@@ -13,16 +13,20 @@ class EE_Channel_preparser {
 
 	protected $_parser;
 	protected $_channel;
+	protected $_entry_ids;
 
 	protected $_plugins;
+	protected $_disabled;
 
 	protected $_pair_data;
 	protected $_single_data;
 
-	public function __construct(Channel $channel, EE_Channel_parser $parser)
+	public function __construct(Channel $channel, EE_Channel_parser $parser, $entry_ids, $config)
 	{
 		$this->_parser = $parser;
 		$this->_channel = $channel;
+		$this->_entry_ids = $entry_ids;
+		$this->_disabled = isset($config['disable']) ? $config['disable'] : array();
 
 		$this->_prefix = $parser->prefix();
 		$this->_tagdata = $parser->tagdata();
@@ -34,6 +38,12 @@ class EE_Channel_preparser {
 
 		foreach ($plugins->pair() as $k => $plugin)
 		{
+			if (is_a($plugin, 'EE_Channel_relationship_parser') && $this->disabled('relationships'))
+			{
+				$this->_pair_data[$k] = NULL;
+				continue;
+			}
+			
 			$this->_pair_data[$k] = $plugin->pre_process($this->_tagdata, $this);
 		}
 
@@ -44,6 +54,16 @@ class EE_Channel_preparser {
 
 		$this->subscriber_totals	= $this->_subscriber_totals();
 		$this->modified_conditionals = $this->_find_modified_conditionals();
+	}
+
+	public function disabled($key)
+	{
+		return in_array($key, $this->_disabled);
+	}
+
+	public function entry_ids()
+	{
+		return $this->_entry_ids;
 	}
 
 	public function pair_data($key)

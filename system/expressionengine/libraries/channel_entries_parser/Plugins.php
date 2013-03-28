@@ -7,6 +7,7 @@ require_once APPPATH.'libraries/channel_entries_parser/plugins/Custom_field_pair
 require_once APPPATH.'libraries/channel_entries_parser/plugins/Custom_field.php';
 require_once APPPATH.'libraries/channel_entries_parser/plugins/Custom_member_field.php';
 require_once APPPATH.'libraries/channel_entries_parser/plugins/Date.php';
+require_once APPPATH.'libraries/channel_entries_parser/plugins/Relationship.php';
 require_once APPPATH.'libraries/channel_entries_parser/plugins/Simple_conditional.php';
 require_once APPPATH.'libraries/channel_entries_parser/plugins/Simple_variable.php';
 require_once APPPATH.'libraries/channel_entries_parser/plugins/Switch.php';

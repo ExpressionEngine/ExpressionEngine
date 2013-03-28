@@ -338,7 +338,6 @@ class Relationship_Parser
 
 		$all_ids = array_merge($entry_ids, $unique_ids);
 
-
 		// not strictly necessary, but keeps all the id loops parent => children
 		// it has no side-effects since all we really care about for the root
 		// node are the children.
@@ -1150,7 +1149,13 @@ class ParseNode extends EE_TreeNode {
 		$parser = get_instance()->channel_entries_parser->create($tagdata, $prefix);
 
 		// Prep tag chunks
-		$preparsed = $parser->pre_parser($channel);
+		$config = array(
+			'disable' => array(
+				'relationships'
+			)
+		);
+
+		$preparsed = $parser->pre_parser($channel, array_keys($rows), $config);
 
 		// Run create a data parser
 		$data_parser = $parser->data_parser($preparsed);
@@ -1163,9 +1168,6 @@ class ParseNode extends EE_TreeNode {
 		);
 
 		$config = array(
-			'disable' => array(
-				'relationships'
-			),
 			'callbacks' => array(
 				'tagdata_loop_end' => array($this, 'callback_tagdata_loop_end')
 			)

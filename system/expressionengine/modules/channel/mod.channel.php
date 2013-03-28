@@ -345,26 +345,7 @@ class Channel {
 			$this->fetch_categories();
 		}
 
-		// At this point, check to see if we have any relationships.  If we do,
-		// we'll parse them ahead of the main channel parsing.  We can do this
-		// because all relationship tags will be namespaced.  We'll just pick em
-		// out, grab the data we need and then replace them.  We'll edit chunk.
-		//
-		// FIXME Only call this if there are, in fact, values in rfields[1]
-		// TODO Make sure our multi-relationship fields find their way into rfields
-		/** ZERO WING **/
-		$site_id = config_item('site_id');
-		$relationship_parser = NULL;
-
-		if (isset($this->zwfields[$site_id]) && ! empty($this->zwfields[$site_id]))
-		{
-			$this->EE->load->library('relationships');
-			$relationship_parser = $this->EE->relationships->get_relationship_parser($this->EE->TMPL, $this->zwfields[$site_id], $this->cfields[$site_id]);
-			$relationship_parser->query_for_entries($this->_entry_ids); 
-
-		}
-
-		$this->parse_channel_entries($relationship_parser);
+		$this->parse_channel_entries();
 
 		if ($this->enable['pagination'] == TRUE)
 		{
@@ -2903,7 +2884,7 @@ class Channel {
 	/**
 	  *  Parse channel entries
 	  */
-	public function parse_channel_entries($relationship_parser)
+	public function parse_channel_entries()
 	{
 		// For our hook to work, we need to grab the result array
 		$query_result = $this->query->result_array();
@@ -2943,9 +2924,9 @@ class Channel {
 
 		// We'll process what we can before starting to replace things to
 		// avoid redundant processing cycles in the foreach loop below
-		$preparsed = $parser->pre_parser($this);
+		$preparsed = $parser->pre_parser($this, $this->_entry_ids);
 
-		$data_parser = $parser->data_parser($preparsed, $relationship_parser);
+		$data_parser = $parser->data_parser($preparsed);
 		$this->return_data = $data_parser->parse(array(
 			'entries'			=> $query_result,
 			'categories'		=> $this->categories,

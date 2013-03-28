@@ -5,7 +5,6 @@ class EE_Channel_data_parser {
 
 	protected $_parser;
 	protected $_preparser;
-	protected $_relationship_parser;
 
 	protected $_data;
 	protected $_count;
@@ -13,11 +12,9 @@ class EE_Channel_data_parser {
 	protected $_tag_options; // var_* value
 	protected $_row;
 
-	public function __construct(EE_Channel_preparser $pre, EE_Channel_parser $parser, $relationship_parser = NULL)
+	public function __construct(EE_Channel_preparser $pre, EE_Channel_parser $parser)
 	{
 		$this->_preparser = $pre;
-		$this->_relationship_parser = $relationship_parser;
-
 		$this->_parser = $parser;
 	}
 
@@ -85,7 +82,6 @@ class EE_Channel_data_parser {
 		$prefix	 = $pre->prefix();
 		$channel = $pre->channel();
 		
-		$relationship_parser = $this->_relationship_parser;
 		$subscriber_totals = $pre->subscriber_totals;
 
 		$total_results = count($entries);
@@ -179,13 +175,6 @@ class EE_Channel_data_parser {
 				}
 			}
 			// END VARIABLE PAIRS
-
-
-			if ( ! in_array('relationships', $disabled) && isset($relationship_parser))
-			{
-				$tagdata = $relationship_parser->parse_relationships($row['entry_id'], $tagdata, $channel);
-			}
-
 
 			// We swap out the conditionals after pairs are parsed so they don't interfere
 			// with the string replace

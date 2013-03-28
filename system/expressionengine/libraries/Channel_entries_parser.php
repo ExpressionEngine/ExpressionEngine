@@ -13,6 +13,11 @@ class EE_Channel_entries_parser {
 		$plugins = new EE_Channel_parser_plugins();
 
 		// don't mess with the order, it matters!
+		$plugins->register_pair('EE_Channel_category_parser');
+		$plugins->register_pair('EE_Channel_custom_field_pair_parser');
+		$plugins->register_pair('EE_Channel_header_and_footer_parser');
+		$plugins->register_pair('EE_Channel_relationship_parser');
+
 		$plugins->register_single('EE_Channel_simple_conditional_parser');
 		$plugins->register_single('EE_Channel_switch_parser');
 		$plugins->register_single('EE_Channel_date_parser');
@@ -20,10 +25,6 @@ class EE_Channel_entries_parser {
 		$plugins->register_single('EE_Channel_custom_date_parser');
 		$plugins->register_single('EE_Channel_custom_field_parser');
 		$plugins->register_single('EE_Channel_custom_member_field_parser');
-
-		$plugins->register_pair('EE_Channel_category_parser');
-		$plugins->register_pair('EE_Channel_custom_field_pair_parser');
-		$plugins->register_pair('EE_Channel_header_and_footer_parser');
 
 		$this->_plugins = $plugins;
 	}
@@ -85,14 +86,14 @@ class EE_Channel_parser {
 		return $this->_plugins;
 	}
 
-	public function pre_parser(Channel $channel)
+	public function pre_parser(Channel $channel, array $entry_ids, array $config = array())
 	{
-		return new EE_Channel_preparser($channel, $this);
+		return new EE_Channel_preparser($channel, $this, $entry_ids, $config);
 	}
 
-	public function data_parser(EE_Channel_preparser $pre, $relationship_parser = NULL)
+	public function data_parser(EE_Channel_preparser $pre)
 	{
-		return new EE_Channel_data_parser($pre, $this, $relationship_parser);
+		return new EE_Channel_data_parser($pre, $this);
 	}
 
 
@@ -116,7 +117,7 @@ class EE_Channel_parser {
 	*/
 	public function parse(Channel $channel, array $entries, array $config = array())
 	{
-		$pre = $this->pre_parser($channel);
+		$pre = $this->pre_parser($channel, array_keys($entries), $config);
 		$parser = $this->data_parser($pre);
 
 		return $parser->parse($entries, $config);
