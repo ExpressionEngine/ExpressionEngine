@@ -43,6 +43,33 @@ class EE_Channel_preparser {
 	protected $_pair_data;
 	protected $_single_data;
 
+	/**
+	 * The Preparser
+	 *
+	 * Instantiated by the pre_parser factory in EE_Channel_parser. Please
+	 * try to use that whenever possible.
+	 *
+	 * Parsing happens in two steps. We first take a look at the tagdata and
+	 * doing any required prep works. This lets us avoid heavy computation in
+	 * the replacement loop. The pre-parser is step one.
+	 *
+	 * @param channel   - The current channel object. Used to get access to the
+	 *					  custom fields. They are stored in public arrays so we
+	 *					  cannot assume they remain unchanged =( .
+	 *
+	 * @param parser	- A channel parser object which gives us access to the
+	 *					  tagdata, prefix information, and parser plugins.
+	 *
+	 * @param entry_ids - An array of entry ids. This can be used to retrieve
+	 *					  additional data ahead of time. A good example of that
+	 *					  would be the relationship parser.
+	 *
+	 * @param config    - A configuration array:
+	 *
+	 *	 disabled:	(array) Skip specific parsing steps
+	 *				Takes the same values as the channel module's disable
+	 *				parameter, which is one of its uses.
+	 */
 	public function __construct(Channel $channel, EE_Channel_parser $parser, $entry_ids, $config)
 	{
 		$this->_parser = $parser;
@@ -80,41 +107,119 @@ class EE_Channel_preparser {
 
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * Entry ids getter
+	 *
+	 * Returns the entry ids that this pre-parser is capable of processing.
+	 *
+	 * @return array	entry ids
+	 */
 	public function entry_ids()
 	{
 		return $this->_entry_ids;
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * Pair tag data getter
+	 *
+	 * Returns the data of the preprocessing step of a given plugin.
+	 *
+	 * @return mixed	Pair tag preprocessing results
+	 */
 	public function pair_data($key)
 	{
 		return $this->_pair_data[$key];
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * Single tag data getter
+	 *
+	 * Returns the data of the preprocessing step of a given plugin.
+	 *
+	 * @return mixed	Single tag preprocessing results
+	 */
 	public function single_data($key)
 	{
 		return $this->_single_data[$key];
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * Prefix getter
+	 *
+	 * @return string
+	 */
 	public function prefix()
 	{
 		return $this->_prefix;
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * Channel getter
+	 *
+	 * Returns the channel object that this parser is operating with.
+	 *
+	 * @return Object<Channel>
+	 */
 	public function channel()
 	{
 		return $this->_channel;
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * Parser getter
+	 *
+	 * Returns the parser object that this preparser is operating with.
+	 *
+	 * @return Object<EE_Channel_parser>
+	 */
 	public function parser()
 	{
 		return $this->_parser;
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * Tag lookup
+	 *
+	 * Utility method for plugins to check if a tag exists in their
+	 * preprocessing step. This frequently acts as a performance shortcut
+	 * to avoid unnecessary processing.
+	 *
+	 * Caution: Adds the prefix.
+	 *
+	 * @return Boolean	tag is in tagdata
+	 */
 	public function has_tag($tagname)
 	{
 		return strpos($this->_tagdata, LD.$this->_prefix.$tagname) !== FALSE;
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * Tag Pair lookup
+	 *
+	 * Utility method for plugins to check if a tag exists in their
+	 * preprocessing step. This frequently acts as a performance shortcut
+	 * to avoid unnecessary processing.
+	 *
+	 * Caution: Adds the prefix.
+	 *
+	 * @return Boolean	tag pair is in tagdata
+	 */
 	public function has_tag_pair($tagname)
 	{
 		$start = strpos($this->_tagdata, LD.$this->_prefix.$tagname);
@@ -129,22 +234,18 @@ class EE_Channel_preparser {
 		return $end !== FALSE;
 	}
 
-	protected function _subscriber_totals()
-	{
-		$subscribers = array();
-		
-		if (strpos($this->_tagdata, LD.'comment_subscriber_total'.RD) !== FALSE
-			&& isset(get_instance()->session->cache['channel']['entry_ids'])
-			)
-		{
-			get_instance()->load->library('subscription');
-			get_instance()->subscription->init('comment');
-			$subscribers = get_instance()->subscription->get_subscription_totals('entry_id', get_instance()->session->cache['channel']['entry_ids']);
-		}
+	// --------------------------------------------------------------------
 
-		return $subscribers;
-	}
-
+	/**
+	 * Extract prefixed keys
+	 *
+	 * Utility method to extract array data whose keys starts with the
+	 * current prefix. This is used on var_single and var_pair to reduce
+	 * the number of iterations done in the parser when most tags have
+	 * a different prefix.
+	 *
+	 * @return mixed	filtered array
+	 */
 	protected function _extract_prefixed(array $data)
 	{
 		if ( ! $this->_prefix)
@@ -164,6 +265,24 @@ class EE_Channel_preparser {
 		return $filtered;
 	}
 
+	// @todo (re-)move
+	protected function _subscriber_totals()
+	{
+		$subscribers = array();
+		
+		if (strpos($this->_tagdata, LD.'comment_subscriber_total'.RD) !== FALSE
+			&& isset(get_instance()->session->cache['channel']['entry_ids'])
+			)
+		{
+			get_instance()->load->library('subscription');
+			get_instance()->subscription->init('comment');
+			$subscribers = get_instance()->subscription->get_subscription_totals('entry_id', get_instance()->session->cache['channel']['entry_ids']);
+		}
+
+		return $subscribers;
+	}
+
+	// @todo (re-)move
 	public function _find_modified_conditionals()
 	{
 		$prefix = $this->_prefix;

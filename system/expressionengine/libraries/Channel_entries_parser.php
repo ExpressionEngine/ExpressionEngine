@@ -105,6 +105,10 @@ class EE_Channel_parser {
 	protected $_tagdata;
 	protected $_plugins;
 
+	/**
+	 * Instantiated by EE_Channel_entries_parser::create(), please use that
+	 * and refer to its documentation for parameter explanations.
+	 */
 	public function __construct($tagdata, $prefix, EE_Channel_parser_plugins $plugins)
 	{
 		$this->_prefix = $prefix;
@@ -182,7 +186,7 @@ class EE_Channel_parser {
 	 *	  disabled   => Skip specific parsing steps
 	 *	  callbacks  => Hook into certain parsing steps for more processing
 	 *
-	 * @return Object<EE_Channel_data_parser>
+	 * @return string	Parsed tagdata
 	 */
 	public function parse(Channel $channel, array $entries, array $config = array())
 	{
