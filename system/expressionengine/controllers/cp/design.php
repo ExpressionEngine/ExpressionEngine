@@ -2568,9 +2568,10 @@ class Design extends CP_Controller {
 			$basepath = $this->config->slash_item('tmpl_file_basepath');
 			$basepath .= $this->config->item('site_short_name').'/'.$vars['template_group'].'.group/'.$query->row('template_name').$this->api_template_structure->file_extensions($query->row('template_type'));
 
+			$this->load->helper('file_helper');
 			if (($file = read_file($basepath)) !== FALSE)
 			{		
-					$file = $basepath;
+				$file = $basepath;
 			}
 		}
 
@@ -4646,6 +4647,12 @@ class Design extends CP_Controller {
 				// if the templates don't exist, make 'em!
 				foreach ($templates as $template)
 				{
+					// Skip hidden ._ files
+					if (substr($template, 0, 2) == '._')
+					{
+						continue;
+					}
+
 					// Skip subdirectories (such as those created by svn)
 					if (is_array($template))
 					{

@@ -704,7 +704,7 @@ class Cp {
 	function set_variable($name, $value)
 	{	
 		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated('2.6', 'view->$<var> = <value>;');
+		$this->EE->logger->deprecated('2.6', 'view-><var> = <value>;');
 		
 		$this->EE->view->$name = $value;
 	}
@@ -813,7 +813,7 @@ class Cp {
 	{
 		$current_top_path = $this->EE->load->first_package_path();
 		$package = trim(str_replace(array(PATH_THIRD, 'views'), '', $current_top_path), '/');
-		$url = BASE.AMP.'C=css'.AMP.'M=third_party'.AMP.'package='.$package.AMP.'theme='.$this->cp->cp_theme.AMP.'file='.$file;
+		$url = BASE.AMP.'C=css'.AMP.'M=third_party'.AMP.'package='.$package.AMP.'theme='.$this->cp_theme.AMP.'file='.$file;
 		
 		$this->add_to_head('<link type="text/css" rel="stylesheet" href="'.$url.'" />');
 	}
@@ -979,11 +979,16 @@ class Cp {
 			'url_title', 'username', 'view_count_four', 'view_count_one',
 			'view_count_three', 'view_count_two'
 		);
+
+		$prefixes = array(
+			'parents', 'siblings'
+		);
 						
 		return array_unique(array_merge(
 			$channel_vars,
 			$global_vars,
-			$orderby_vars
+			$orderby_vars,
+			$prefixes
 		));
 	}
 

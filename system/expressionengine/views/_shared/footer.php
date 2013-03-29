@@ -31,6 +31,9 @@
 	</div>
 </div>
 
+<?php
+/* Moved to header to give third parties time to deprecate
+
 <?php 
 if (isset($cp_global_js))
 {
@@ -38,6 +41,9 @@ if (isset($cp_global_js))
 } ?>
 
 <?=$this->view->script_tag('jquery/jquery.js')?>
+
+*/
+?>
 
 <?php
 

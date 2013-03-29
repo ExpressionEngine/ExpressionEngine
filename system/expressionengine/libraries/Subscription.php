@@ -291,15 +291,49 @@ class EE_Subscription {
 	}
 	
 	// --------------------------------------------------------------------
-		
+
+	/**
+	 * Get subscription totals
+	 *
+	 * @access	public
+	 * @param	string	The db field identifier
+	 * @param	array	Array of identifier values
+	 * @return	Array	Total unique subscribers per publisher identifier
+	 */
+	public function get_subscription_totals($identifier, $identifier_ids)
+	{
+		$subscriber_query = $this->EE->db->select("COUNT(*) AS total")
+			->select($identifier)
+			->where_in($identifier, $identifier_ids)
+			->group_by($identifier)
+			->get($this->table);
+
+		if ($subscriber_query->num_rows() == 0)
+		{
+			return array();
+		}
+
+		$return = array();
+
+		foreach ($subscriber_query->result_array() as $subscription_total)
+		{
+			$return[$subscription_total['entry_id']] = $subscription_total['total'];
+		}
+
+		return $return;
+	}
+
+	// --------------------------------------------------------------------
+
 	/**
 	 * Get subscribers
 	 *
 	 * @access	public
 	 * @param	bool	Return array with member ids instead of looking up their emails (used internally)
+	 * @param	bool	Whether or not to join the member table and fetch screen names
 	 * @return	mixed	Array of email addresses
 	 */
-	function get_subscriptions($ignore = FALSE)
+	function get_subscriptions($ignore = FALSE, $include_screen_names = FALSE)
 	{
 		$emails		= array();
 		$member_ids	= array();
@@ -307,25 +341,33 @@ class EE_Subscription {
 		// Grab them all
 		if ($this->anonymous)
 		{
-			$this->EE->db->select('email');
+			$this->EE->db->select($this->table.'.email');
 		}
 		
 		if ($ignore)
 		{
 			if (is_numeric($ignore) && $ignore != 0)
 			{
-				$this->EE->db->where('member_id !=', $ignore);
+				$this->EE->db->where($this->table.'.member_id !=', $ignore);
 			}
 			elseif ($this->anonymous)
 			{
-				$this->EE->db->where('email !=', $ignore);
+				$this->EE->db->where($this->table.'.email !=', $ignore);
 			}
 		}
 		
-		$this->EE->db->select('subscription_id, member_id, notification_sent, hash');
+		$this->EE->db->select("{$this->table}.subscription_id, {$this->table}.member_id, {$this->table}.notification_sent, {$this->table}.hash");
+		$this->EE->db->from($this->table);
+
+		if ($include_screen_names)
+		{
+			$this->EE->db->select('m.screen_name');
+			$this->EE->db->join('members AS m', "m.member_id = {$this->table}.member_id", 'left');
+		}
+
 		$this->EE->db->where($this->publisher);
-		$query = $this->EE->db->get($this->table);
-		
+		$query = $this->EE->db->get();
+
 		if ( ! $query->num_rows())
 		{
 			return array();

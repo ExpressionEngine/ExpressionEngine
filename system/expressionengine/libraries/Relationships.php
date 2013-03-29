@@ -259,6 +259,8 @@ class Relationship_Parser
 	protected $relationship_field_names = array();		// Another relationship field map (field_id => name)
 
 	protected $variables = array();						// A cache of the tree and lookup table for the main per entry parsing step
+
+	protected $categories = array();
 	
 	/**
 	 * Create a relationship parser for the given Template.
@@ -338,7 +340,6 @@ class Relationship_Parser
 
 		$all_ids = array_merge($entry_ids, $unique_ids);
 
-
 		// not strictly necessary, but keeps all the id loops parent => children
 		// it has no side-effects since all we really care about for the root
 		// node are the children.
@@ -394,6 +395,9 @@ class Relationship_Parser
 			$all_ids = array_merge($all_ids, $result_ids);
 		}
 
+		// @todo reduce to only those that have a categories pair or parameter
+		$this->_cache_categories($all_ids);
+
 
 		// ready set, main query.
 		$EE = get_instance();
@@ -421,6 +425,31 @@ class Relationship_Parser
 		);
 	}
 
+	protected function _cache_categories($ids)
+	{
+		$new_ids = array();
+
+		foreach (array_unique($ids) as $id)
+		{
+			if ( ! isset($this->categories[$id]))
+			{
+				$new_ids[] = $id;
+			}
+		}
+
+		if ( ! count($new_ids))
+		{
+			return;
+		}
+
+		get_instance()->load->model('category_model');
+		$categories = get_instance()->category_model->get_entry_categories($new_ids);
+
+		foreach ($categories as $entry_id => $cats)
+		{
+			$this->categories[$entry_id] = $cats;
+		}
+	}
 
 	protected function _build_tree(array $entry_ids)
 	{
@@ -874,7 +903,7 @@ class Relationship_Parser
 
 		get_instance()->session->set_cache('relationships', 'channel', $channel);
 
-		$tagdata = $tree->parse($entry_id, $tagdata, $lookup);
+		$tagdata = $tree->parse($entry_id, $tagdata, $lookup, $this->categories);
 
 		return $tagdata;
 	}
@@ -887,6 +916,7 @@ class ParseNode extends EE_TreeNode {
 
 	protected $entries;
 	protected $entries_lookup;
+	protected $category_lookup;
 
 	private $childTags;				// namespaced tags underneath it that are not relationship tags, constructed from tagdata
 
@@ -973,7 +1003,7 @@ class ParseNode extends EE_TreeNode {
 	 * @param	mixed	channel entries lookup {id => [data]}
 	 * @return 	string	parsed tagdata
 	 */
-	public function parse($id, $tagdata, array $entries_lookup)
+	public function parse($id, $tagdata, array $entries_lookup, array $category_lookup)
 	{
 		if ( ! isset($this->entry_ids[$id]))
 		{
@@ -984,27 +1014,19 @@ class ParseNode extends EE_TreeNode {
 		{
 			foreach ($this->children() as $child)
 			{
-				$tagdata = $child->parse($id, $tagdata, $entries_lookup);
+				$tagdata = $child->parse($id, $tagdata, $entries_lookup, $category_lookup);
 			}
 
 			return $tagdata;
 		}
 
 		$this->entries_lookup = $entries_lookup;
+		$this->category_lookup = $category_lookup;
+
 		$this->entries = array_unique($this->entry_ids[$id]);
+		$tag = preg_quote($this->name, '/');
 
-		$open_tag = preg_quote($this->open_tag, '/');
-		$close_tag = preg_quote($this->name, '/');
-
-//		preg_match_all('/'.$open_tag.'/is', $tagdata, $matches);
-	//	preg_match_all('/'.$open_tag.'(.+?){\/'.$close_tag.'}/is', $tagdata, $matches);
-	//	preg_match_all('/'.$open_tag.'/is', $tagdata, $matches);
-	//	preg_match_all('/{'.$close_tag.'[^}:]*}(.+?){\/'.$close_tag.'}/is', $tagdata, $matches);
-
-		$ident = $close_tag;
-
-		return preg_replace_callback('/{'.$ident.'[^}:]*}(.+?){\/'.$ident.'}/is', array($this, '_replace'), $tagdata);
-		return preg_replace_callback('/'.$open_tag.'(.+?){\/'.$close_tag.'}/is', array($this, '_replace'), $tagdata);
+		return preg_replace_callback('/{'.$tag.'[^}:]*}(.+?){\/'.$tag.'}/is', array($this, '_replace'), $tagdata);
 	}
 
 	/**
@@ -1023,21 +1045,7 @@ class ParseNode extends EE_TreeNode {
 	{
 		$entries = $this->entries;
 		$entries_lookup = $this->entries_lookup;
-
-		$children = $this->children();
-
 		$tagdata = $matches[1];
-		$params = $this->params;
-
-		$result = '';
-		$name = $this->name;
-		$prefix = $name.':';
-
-		$channel = get_instance()->session->cache('relationships', 'channel');
-		
-		// @todo date formatting
-		$count = 0;
-		$total_results = count($entries);
 
 		// reorder the ids
 		if ($this->param('orderby'))
@@ -1085,7 +1093,6 @@ class ParseNode extends EE_TreeNode {
 			$entries = array_slice($entries, $offset, $limit);
 		}
 
-
 		// limit entry ids to given tag
 		// @todo @pk do this when propagating query ids?
 		if ($this->param('entry_id') && ! $this->param('url_title'))
@@ -1094,92 +1101,17 @@ class ParseNode extends EE_TreeNode {
 			$entries = array_intersect($entries, $allowed_ids);
 		}
 
-
 		// prefilter anything prefixed the same as this tag so that we don't
 		// go around building huge lists with custom field data only to toss
 		// it all because the tag isn't in the field.
 
-		$regex_prefix = '/^'.preg_quote($prefix, '/').'[^:]+( |$)/';
-		$singles = preg_grep($regex_prefix, array_keys(get_instance()->TMPL->var_single));
-		$doubles = preg_grep($regex_prefix, array_keys(get_instance()->TMPL->var_pair));
+		// reduce entry ids by filters
+		$rows = array();
+		$categories = array();
 
-
-		$ft_api = get_instance()->api_channel_fields;
-
-
-		$site_id = config_item('site_id');
-		$cfields = get_instance()->session->cache['channel']['custom_channel_fields'];
-		$pfields = get_instance()->session->cache['channel']['pair_custom_fields'];
-
-
-		$cfields = ($cfields && isset($cfields[$site_id])) ? $cfields[$site_id] : array();
-		$pfields = ($pfields && isset($pfields[$site_id])) ? $pfields[$site_id] : array();
-
-
-		// Extract and preloop the doubles
-		// @todo @pk pretty much straight rip from mod.channel 3441 - refactor
-		$pfield_names = array_intersect($cfields, array_keys($pfields));
-		$pfield_chunk = array();
-
-		// @todo reduce pfield names using $doubles
-		foreach($pfield_names as $field_name => $field_id)
-		{
-			$offset = 0;
-
-			while (($end = strpos($tagdata, LD.'/'.$prefix.$field_name.RD, $offset)) !== FALSE)
-			{
-				// This hurts soo much. Using custom fields as pair and single vars in the same
-				// channel tags could lead to something like this: {field}...{field}inner{/field}
-				// There's no efficient regex to match this case, so we'll find the last nested
-				// opening tag and re-cut the chunk.
-
-				if (preg_match("/".LD.$prefix.$field_name."(.*?)".RD."(.*?)".LD.'\/'.$prefix.$field_name."(.*?)".RD."/s", $tagdata, $matches, 0, $offset))
-				{
-					$chunk = $matches[0];
-					$params = $matches[1];
-					$inner = $matches[2];
-
-					// We might've sandwiched a single tag - no good, check again (:sigh:)
-					if ((strpos($chunk, LD.$field_name, 1) !== FALSE) && preg_match_all("/".LD."{$field_name}(.*?)".RD."/s", $chunk, $match))
-					{
-						// Let's start at the end
-						$idx = count($match[0]) - 1;
-						$tag = $match[0][$idx];
-						
-						// Reassign the parameter
-						$params = $match[1][$idx];
-
-						// Cut the chunk at the last opening tag (PHP5 could do this with strrpos :-( )
-						while (strpos($chunk, $tag, 1) !== FALSE)
-						{
-							$chunk = substr($chunk, 1);
-							$chunk = strstr($chunk, LD.$field_name);
-							$inner = substr($chunk, strlen($tag), -strlen(LD.'/'.$field_name.RD));
-						}
-					}
-					
-					$chunk_array = array($inner, get_instance()->functions->assign_parameters($params), $chunk);
-					
-					// Grab modifier if it exists and add it to the chunk array
-					if (substr($params, 0, 1) == ':')
-					{
-						$chunk_array[] = str_replace(':', '', $params);
-					}
-					
-					$pfield_chunk[$field_name][] = $chunk_array;
-				}
-				
-				$offset = $end + 1;
-			}
-		}
-
-		// parse them
 		foreach ($entries as $entry_id)
 		{
-			$count++;
-
 			$data = $entries_lookup[$entry_id];
-
 
 			// @todo date parameters (i.e. show_expired=) need a query up above?
 			// these may also need one, but for now this works
@@ -1218,137 +1150,67 @@ class ParseNode extends EE_TreeNode {
 				}
 			}
 
-			$variables = array();
-			$cond_vars = array();
+			$rows[$entry_id] = $data;
 
-			$data_to_parse = array();
-			$data_to_parse = $data;
-
-			$tagdata_chunk = $tagdata;
-
-
-			// mod.channel 3955
-			foreach ($doubles as $tag)
+			if (isset($this->category_lookup[$entry_id]))
 			{
-				$field_name = substr($tag, strrpos($tag, ':') + 1);
-				$field_name = substr($field_name, 0, strpos($field_name, ' '));
-
-				if (isset($cfields[$field_name]) && isset($pfields[$cfields[$field_name]]))
-				{
-					$field_id = $cfields[$field_name];
-					$key_name = $pfields[$field_id];
-
-					if ($ft_api->setup_handler($field_id))
-					{
-						$ft_api->apply('_init', array(array('row' => $data)));
-						$pre_processed = $ft_api->apply('pre_process', array($data['field_id_'.$field_id]));
-
-
-						// Blast through all the chunks
-						if (isset($pfield_chunk[$field_name]))
-						{
-							foreach($pfield_chunk[$field_name] as $chk_data)
-							{
-								$tpl_chunk = '';
-								// Set up parse function name based on whether or not
-								// we have a modifier
-								$parse_fnc = (isset($chk_data[3]))
-									? 'replace_'.$chk_data[3] : 'replace_tag';
-
-								if ($ft_api->check_method_exists($parse_fnc))
-								{
-									$tpl_chunk = $ft_api->apply(
-										$parse_fnc,
-										array($pre_processed, $chk_data[1], $chk_data[0])
-									);
-								}
-								// Go to catchall and include modifier
-								elseif ($ft_api->check_method_exists($parse_fnc_catchall)
-									AND isset($chk_data[3]))
-								{
-									$tpl_chunk = $ft_api->apply(
-										$parse_fnc_catchall,
-										array($pre_processed, $chk_data[1], $chk_data[0], $chk_data[3])
-									);
-								}
-
-								$tagdata_chunk = str_replace($chk_data[2], $tpl_chunk, $tagdata_chunk);
-							}
-						}
-					}
-				}
+				$categories[$entry_id] = $this->category_lookup[$entry_id];
 			}
-
-			// handle single custom field tags
-			// @todo tag modifiers
-			// @todo field-not-found fallback (mod.channel 4764)
-			foreach ($singles as $tag)
-			{
-				$unprefixed_tag = substr($tag, strrpos($tag, ':') + 1);
-				$field_name = substr($unprefixed_tag.' ', 0, strpos($unprefixed_tag, ' '));
-				$param_string = substr($unprefixed_tag.' ', strlen($field_name));
-
-				if (isset($cfields[$field_name]))
-				{
-					$field_id = $cfields[$field_name];
-
-					if ($ft_api->setup_handler($field_id))
-					{
-						$params = get_instance()->functions->assign_parameters($param_string);
-
-						$ft_api->apply('_init', array(array('row' => $data)));
-						$pre_processed = $ft_api->apply('pre_process', array($data['field_id_'.$field_id]));
-
-						$data_to_parse[$unprefixed_tag] = $ft_api->apply(
-							'replace_tag',
-							array($pre_processed, $params, FALSE)
-						);
-					}
-				}
-				elseif (isset($data[$field_name]))
-				{
-					$data_to_parse[$field_name] = $data[$field_name];
-				}
-				else
-				{
-					$data_to_parse[$unprefixed_tag] = '';
-				}
-			}
-
-
-			// Only parse the data that was asked for in the template
-			foreach ($data_to_parse as $k => $v)
-			{
-				$cond_vars[$prefix.$k] = $v;
-				$variables['{'.$prefix.$k.'}'] = $v;
-				$tagdata_chunk = $channel->parse_simple_variable($k, $k, $tagdata_chunk, $data, $prefix);
-			}
-
-			// special variables!
-			$cond_vars[$prefix.'count'] = $count;
-			$cond_vars[$prefix.'total_results'] = $total_results;
-
-			$variables['{'.$prefix.'count}'] = $count;
-			$variables['{'.$prefix.'total_results}'] = $total_results;
-
-			$tagdata_chunk = str_replace(
-				array_keys($variables),
-				array_values($variables),
-				$tagdata_chunk
-			);
-
-			// conditionals
-			$tagdata_chunk = get_instance()->functions->prep_conditionals($tagdata_chunk, $cond_vars);
-			unset($cond_vars);
-
-			// child tags
-			foreach ($children as $child)
-			{
-				$tagdata_chunk = $child->parse($entry_id, $tagdata_chunk, $entries_lookup);
-			}
-
-			$result .= $tagdata_chunk;
 		}
+
+
+		foreach ($categories as &$cats)
+		{
+			foreach ($cats as &$cat)
+			{
+				if ( ! empty($cat))
+				{
+					$cat = array(
+						$cat['cat_id'],
+						$cat['parent_id'],
+						$cat['cat_name'],
+						$cat['cat_image'],
+						$cat['cat_description'],
+						$cat['group_id'],
+						$cat['cat_url_title']
+					);
+				}
+			}
+		}
+
+		$prefix = $this->name.':';
+		$channel = get_instance()->session->cache('relationships', 'channel');
+
+		// Load the parser
+		get_instance()->load->library('channel_entries_parser');
+		$parser = get_instance()->channel_entries_parser->create($tagdata, $prefix);
+
+		// Prep tag chunks
+		$config = array(
+			'disable' => array(
+				'relationships'
+			)
+		);
+
+		$preparsed = $parser->pre_parser($channel, array_keys($rows), $config);
+
+		// Run create a data parser
+		$data_parser = $parser->data_parser($preparsed);
+
+		// Go go go
+
+		$data = array(
+			'entries' => $rows,
+			'categories' => $categories
+		);
+
+		$config = array(
+			'callbacks' => array(
+				'tagdata_loop_end' => array($this, 'callback_tagdata_loop_end')
+			)
+		);
+
+		$result = $data_parser->parse($data, $config);
 
 		// kill prefixed leftovers
 		$result = preg_replace('/{'.$prefix.'[^}]*}(.+?){\/'.$prefix.'[^}]*}/is', '', $result);
@@ -1363,6 +1225,17 @@ class ParseNode extends EE_TreeNode {
 		}
 
 		return $result;
+	}
+
+	public function callback_tagdata_loop_end($tagdata, $row)
+	{
+		// child tags
+		foreach ($this->children() as $child)
+		{
+			$tagdata = $child->parse($row['entry_id'], $tagdata, $this->entries_lookup, $this->category_lookup);
+		}
+
+		return $tagdata;
 	}
 }
 

@@ -296,7 +296,7 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 
 			update = function(evt, ui) {
 				var li = ui.item,
-					newPosition = li.index(),
+					newPosition = li.index() + 1,
 					reSort, i;
 
 				if (newPosition == previousPosition) {
@@ -309,7 +309,7 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 					i = newPosition;
 					reSort = li.nextAll().andSelf(); //.addBack();
 				} else {
-					i = 0; // in theory we can start at previous, but then our numbers slowly get bigger
+					i = 1; // in theory we can start at previous, but then our numbers slowly get bigger
 					reSort = li.prevAll().andSelf(); // .addBack();
 				}
 
@@ -343,6 +343,12 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 		_setupFilter: function() {
 
 			var ul = this.root.find('ul');
+
+			this.searchField.keydown(function(evt) {
+				if (evt.keyCode == 13) {
+					evt.preventDefault();
+				}
+			});
 
 			this.searchField.on(
 				'interact',
