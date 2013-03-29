@@ -82,8 +82,8 @@ class EE_Channel_preparser {
 		$this->_prefix	= $parser->prefix();
 		$this->_tagdata = $parser->tagdata();
 
-		$this->pairs	= $this->_extract_prefixed(get_instance()->TMPL->var_pair);
-		$this->singles	= $this->_extract_prefixed(get_instance()->TMPL->var_single);
+		$this->pairs	= $this->_extract_prefixed(ee()->TMPL->var_pair);
+		$this->singles	= $this->_extract_prefixed(ee()->TMPL->var_single);
 
 
 		// Run through component pre_processing steps, skipping any that
@@ -296,12 +296,12 @@ class EE_Channel_preparser {
 		$subscribers = array();
 		
 		if (strpos($this->_tagdata, LD.'comment_subscriber_total'.RD) !== FALSE
-			&& isset(get_instance()->session->cache['channel']['entry_ids'])
+			&& isset(ee()->session->cache['channel']['entry_ids'])
 			)
 		{
-			get_instance()->load->library('subscription');
-			get_instance()->subscription->init('comment');
-			$subscribers = get_instance()->subscription->get_subscription_totals('entry_id', get_instance()->session->cache['channel']['entry_ids']);
+			ee()->load->library('subscription');
+			ee()->subscription->init('comment');
+			$subscribers = ee()->subscription->get_subscription_totals('entry_id', ee()->session->cache['channel']['entry_ids']);
 		}
 
 		return $subscribers;

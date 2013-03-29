@@ -24,16 +24,43 @@
  */
 class EE_Channel_header_and_footer_parser implements EE_Channel_parser_component {
 
+	/**
+	 * Check if header/footer is enabled.
+	 *
+	 * @param array		A list of "disabled" features
+	 * @return Boolean	Is disabled?
+	 */
 	public function disabled(array $disabled, EE_Channel_preparser $pre)
 	{
 		return ! ($pre->has_tag_pair('date_heading') OR $pre->has_tag_pair('date_footer'));
 	}
 
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Find all header/footer chunks in the template.
+	 * ps. It's just not worth it. -pk
+	 *
+	 * @param String	The tagdata to be parsed
+	 * @param Object	The preparser object.
+	 * @return Array	Found header/footer tags.
+	 */
 	public function pre_process($tagdata, EE_Channel_preparser $pre)
 	{
 		return NULL;
 	}
 
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Replace all of the header/footer chunks.
+	 *
+	 * @param String	The tagdata to be parsed
+	 * @param Object	The channel parser object
+	 * @param Mixed		The results from the preparse method
+	 *
+	 * @return String	The processed tagdata
+	 */
 	public function replace($tagdata, EE_Channel_data_parser $obj, $pre)
 	{
 		$tag = $obj->tag();
@@ -55,15 +82,15 @@ class EE_Channel_header_and_footer_parser implements EE_Channel_parser_component
 			//  Hourly header
 			if ($display == 'hourly')
 			{
-				$heading_date_hourly = get_instance()->localize->format_date('%Y%m%d%H', $data['entry_date']);
+				$heading_date_hourly = ee()->localize->format_date('%Y%m%d%H', $data['entry_date']);
 
 				if ($heading_date_hourly == $heading_flag_hourly)
 				{
-					$tagdata = get_instance()->TMPL->delete_var_pairs($key, 'date_heading', $tagdata);
+					$tagdata = ee()->TMPL->delete_var_pairs($key, 'date_heading', $tagdata);
 				}
 				else
 				{
-					$tagdata = get_instance()->TMPL->swap_var_pairs($key, 'date_heading', $tagdata);
+					$tagdata = ee()->TMPL->swap_var_pairs($key, 'date_heading', $tagdata);
 
 					$heading_flag_hourly = $heading_date_hourly;
 				}
@@ -76,21 +103,21 @@ class EE_Channel_header_and_footer_parser implements EE_Channel_parser_component
 				// date()'s week variable 'W' starts weeks on Monday per ISO-8601.
 				// By default we start weeks on Sunday, so we need to do a little dance for
 				// entries made on Sundays to make sure they get placed in the right week heading
-				if (strtolower(get_instance()->TMPL->fetch_param('start_day')) != 'monday' && get_instance()->localize->format_date('%w', $data['entry_date']) == 0)
+				if (strtolower(ee()->TMPL->fetch_param('start_day')) != 'monday' && ee()->localize->format_date('%w', $data['entry_date']) == 0)
 				{
 					// add 7 days to toss us into the next ISO-8601 week
 					$temp_date = strtotime('+1 week', $temp_date);
 				}
 
-				$heading_date_weekly = get_instance()->localize->format_date('%Y%W', $temp_date);
+				$heading_date_weekly = ee()->localize->format_date('%Y%W', $temp_date);
 
 				if ($heading_date_weekly == $heading_flag_weekly)
 				{
-					$tagdata = get_instance()->TMPL->delete_var_pairs($key, 'date_heading', $tagdata);
+					$tagdata = ee()->TMPL->delete_var_pairs($key, 'date_heading', $tagdata);
 				}
 				else
 				{
-					$tagdata = get_instance()->TMPL->swap_var_pairs($key, 'date_heading', $tagdata);
+					$tagdata = ee()->TMPL->swap_var_pairs($key, 'date_heading', $tagdata);
 
 					$heading_flag_weekly = $heading_date_weekly;
 				}
@@ -98,15 +125,15 @@ class EE_Channel_header_and_footer_parser implements EE_Channel_parser_component
 			//  Monthly header
 			elseif ($display == 'monthly')
 			{
-				$heading_date_monthly = get_instance()->localize->format_date('%Y%m', $data['entry_date']);
+				$heading_date_monthly = ee()->localize->format_date('%Y%m', $data['entry_date']);
 
 				if ($heading_date_monthly == $heading_flag_monthly)
 				{
-					$tagdata = get_instance()->TMPL->delete_var_pairs($key, 'date_heading', $tagdata);
+					$tagdata = ee()->TMPL->delete_var_pairs($key, 'date_heading', $tagdata);
 				}
 				else
 				{
-					$tagdata = get_instance()->TMPL->swap_var_pairs($key, 'date_heading', $tagdata);
+					$tagdata = ee()->TMPL->swap_var_pairs($key, 'date_heading', $tagdata);
 
 					$heading_flag_monthly = $heading_date_monthly;
 				}
@@ -114,15 +141,15 @@ class EE_Channel_header_and_footer_parser implements EE_Channel_parser_component
 			//  Yearly header
 			elseif ($display == 'yearly')
 			{
-				$heading_date_yearly = get_instance()->localize->format_date('%Y', $data['entry_date']);
+				$heading_date_yearly = ee()->localize->format_date('%Y', $data['entry_date']);
 
 				if ($heading_date_yearly == $heading_flag_yearly)
 				{
-					$tagdata = get_instance()->TMPL->delete_var_pairs($key, 'date_heading', $tagdata);
+					$tagdata = ee()->TMPL->delete_var_pairs($key, 'date_heading', $tagdata);
 				}
 				else
 				{
-					$tagdata = get_instance()->TMPL->swap_var_pairs($key, 'date_heading', $tagdata);
+					$tagdata = ee()->TMPL->swap_var_pairs($key, 'date_heading', $tagdata);
 
 					$heading_flag_yearly = $heading_date_yearly;
 				}
@@ -130,15 +157,15 @@ class EE_Channel_header_and_footer_parser implements EE_Channel_parser_component
 			//  Default (daily) header
 			else
 			{
-	 			$heading_date_daily = get_instance()->localize->format_date('%Y%m%d', $data['entry_date']);
+	 			$heading_date_daily = ee()->localize->format_date('%Y%m%d', $data['entry_date']);
 
 				if ($heading_date_daily == $heading_flag_daily)
 				{
-					$tagdata = get_instance()->TMPL->delete_var_pairs($key, 'date_heading', $tagdata);
+					$tagdata = ee()->TMPL->delete_var_pairs($key, 'date_heading', $tagdata);
 				}
 				else
 				{
-					$tagdata = get_instance()->TMPL->swap_var_pairs($key, 'date_heading', $tagdata);
+					$tagdata = ee()->TMPL->swap_var_pairs($key, 'date_heading', $tagdata);
 
 					$heading_flag_daily = $heading_date_daily;
 				}
@@ -157,65 +184,65 @@ class EE_Channel_header_and_footer_parser implements EE_Channel_parser_component
 			if ($display == 'hourly')
 			{
 				if ( ! isset($query_result[$data['count']]) OR
-					get_instance()->localize->format_date('%Y%m%d%H', $data['entry_date']) != get_instance()->localize->format_date('%Y%m%d%H', $query_result[$data['count']]['entry_date']))
+					ee()->localize->format_date('%Y%m%d%H', $data['entry_date']) != ee()->localize->format_date('%Y%m%d%H', $query_result[$data['count']]['entry_date']))
 				{
-					$tagdata = get_instance()->TMPL->swap_var_pairs($key, 'date_footer', $tagdata);
+					$tagdata = ee()->TMPL->swap_var_pairs($key, 'date_footer', $tagdata);
 				}
 				else
 				{
-					$tagdata = get_instance()->TMPL->delete_var_pairs($key, 'date_footer', $tagdata);
+					$tagdata = ee()->TMPL->delete_var_pairs($key, 'date_footer', $tagdata);
 				}
 			}
 			//  Weekly footer
 			elseif ($display == 'weekly')
 			{
 				if ( ! isset($query_result[$data['count']]) OR
-					get_instance()->localize->format_date('%Y%W', $data['entry_date']) != get_instance()->localize->format_date('%Y%W', $query_result[$data['count']]['entry_date']))
+					ee()->localize->format_date('%Y%W', $data['entry_date']) != ee()->localize->format_date('%Y%W', $query_result[$data['count']]['entry_date']))
 				{
-					$tagdata = get_instance()->TMPL->swap_var_pairs($key, 'date_footer', $tagdata);
+					$tagdata = ee()->TMPL->swap_var_pairs($key, 'date_footer', $tagdata);
 				}
 				else
 				{
-					$tagdata = get_instance()->TMPL->delete_var_pairs($key, 'date_footer', $tagdata);
+					$tagdata = ee()->TMPL->delete_var_pairs($key, 'date_footer', $tagdata);
 				}
 			}
 			//  Monthly footer
 			elseif ($display == 'monthly')
 			{
 				if ( ! isset($query_result[$data['count']]) OR
-					get_instance()->localize->format_date('%Y%m', $data['entry_date']) != get_instance()->localize->format_date('%Y%m', $query_result[$data['count']]['entry_date']))
+					ee()->localize->format_date('%Y%m', $data['entry_date']) != ee()->localize->format_date('%Y%m', $query_result[$data['count']]['entry_date']))
 				{
-					$tagdata = get_instance()->TMPL->swap_var_pairs($key, 'date_footer', $tagdata);
+					$tagdata = ee()->TMPL->swap_var_pairs($key, 'date_footer', $tagdata);
 				}
 				else
 				{
-					$tagdata = get_instance()->TMPL->delete_var_pairs($key, 'date_footer', $tagdata);
+					$tagdata = ee()->TMPL->delete_var_pairs($key, 'date_footer', $tagdata);
 				}
 			}
 			//  Yearly footer
 			elseif ($display == 'yearly')
 			{
 				if ( ! isset($query_result[$data['count']]) OR
-					get_instance()->localize->format_date('%Y', $data['entry_date']) != get_instance()->localize->format_date('%Y', $query_result[$data['count']]['entry_date']))
+					ee()->localize->format_date('%Y', $data['entry_date']) != ee()->localize->format_date('%Y', $query_result[$data['count']]['entry_date']))
 				{
-					$tagdata = get_instance()->TMPL->swap_var_pairs($key, 'date_footer', $tagdata);
+					$tagdata = ee()->TMPL->swap_var_pairs($key, 'date_footer', $tagdata);
 				}
 				else
 				{
-					$tagdata = get_instance()->TMPL->delete_var_pairs($key, 'date_footer', $tagdata);
+					$tagdata = ee()->TMPL->delete_var_pairs($key, 'date_footer', $tagdata);
 				}
 			}
 			//  Default (daily) footer
 			else
 			{
 				if ( ! isset($query_result[$data['count']]) OR
-					get_instance()->localize->format_date('%Y%m%d', $data['entry_date']) != get_instance()->localize->format_date('%Y%m%d', $query_result[$data['count']]['entry_date']))
+					ee()->localize->format_date('%Y%m%d', $data['entry_date']) != ee()->localize->format_date('%Y%m%d', $query_result[$data['count']]['entry_date']))
 				{
-					$tagdata = get_instance()->TMPL->swap_var_pairs($key, 'date_footer', $tagdata);
+					$tagdata = ee()->TMPL->swap_var_pairs($key, 'date_footer', $tagdata);
 				}
 				else
 				{
-					$tagdata = get_instance()->TMPL->delete_var_pairs($key, 'date_footer', $tagdata);
+					$tagdata = ee()->TMPL->delete_var_pairs($key, 'date_footer', $tagdata);
 				}
 			}
 		}

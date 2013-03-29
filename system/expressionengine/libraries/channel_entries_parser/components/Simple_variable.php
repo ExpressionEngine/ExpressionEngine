@@ -24,21 +24,46 @@
  */
 class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 
+	/**
+	 * There are always simple variables. Let me tell you ...
+	 *
+	 * @param array		A list of "disabled" features
+	 * @return Boolean	Is disabled?
+	 */
 	public function disabled(array $disabled, EE_Channel_preparser $pre)
 	{
 		return FALSE;
 	}
 
-	// Parse out $search_link for the {member_search_path} variable
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Parse out $search_link for the {member_search_path} variable
+	 *
+	 * @param String	The tagdata to be parsed
+	 * @param Object	The preparser object.
+	 * @return String	The $search_link path
+	 */
 	public function pre_process($tagdata, EE_Channel_preparser $pre)
 	{
 		
 		$result_path = (preg_match("/".LD.$pre->prefix()."member_search_path\s*=(.*?)".RD."/s", $tagdata, $match)) ? $match[1] : 'search/results';
 		$result_path = str_replace(array('"',"'"), "", $result_path);
 
-		return get_instance()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.get_instance()->functions->fetch_action_id('Search', 'do_search').'&amp;result_path='.$result_path.'&amp;mbr=';
+		return ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.ee()->functions->fetch_action_id('Search', 'do_search').'&amp;result_path='.$result_path.'&amp;mbr=';
 	}
 
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Replace all variables.
+	 *
+	 * @param String	The tagdata to be parsed
+	 * @param Object	The channel parser object
+	 * @param Mixed		The results from the preparse method
+	 *
+	 * @return String	The processed tagdata
+	 */
 	public function replace($tagdata, EE_Channel_data_parser $obj, $search_link)
 	{
 		$tag = $obj->tag();
@@ -72,7 +97,7 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 
 			$tagdata = str_replace(
 				LD.$key.RD,
-				get_instance()->typography->format_characters($data['title']),
+				ee()->typography->format_characters($data['title']),
 				$tagdata
 			);
 		}
@@ -104,19 +129,19 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 		//  {signature}
 		elseif ($key == $prefix."signature")
 		{
-			if (get_instance()->session->userdata('display_signatures') == 'n' OR $data['signature'] == '' OR get_instance()->session->userdata('display_signatures') == 'n')
+			if (ee()->session->userdata('display_signatures') == 'n' OR $data['signature'] == '' OR ee()->session->userdata('display_signatures') == 'n')
 			{
 				$tagdata = str_replace(LD.$key.RD, '', $tagdata);
 			}
 			else
 			{
 				$tagdata = str_replace(LD.$key.RD,
-					get_instance()->typography->parse_type($data['signature'],
+					ee()->typography->parse_type($data['signature'],
 						array(
 							'text_format'	=> 'xhtml',
 							'html_format'	=> 'safe',
 							'auto_links'	=> 'y',
-							'allow_img_url' => get_instance()->config->item('sig_allow_img_hotlink')
+							'allow_img_url' => ee()->config->item('sig_allow_img_hotlink')
 						)
 					),
 					$tagdata
@@ -139,7 +164,18 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 		return $tagdata;
 	}
 
+	// ------------------------------------------------------------------------
 
+	/**
+	 * Handle variables that end in _path or contain "permalink".
+	 *
+	 * @param Array		The row data
+	 * @param String	The template text
+	 * @param String	The var_single key (tag name)
+	 * @param String	The current parsing prefix
+	 *
+	 * @return String	The processed tagdata
+	 */
 	protected function _paths($data, $tagdata, $key, $prefix)
 	{
 		$unprefixed = preg_replace('/^'.$prefix.'/', '', $key);
@@ -149,7 +185,7 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 		{
 			$tagdata = str_replace(
 				LD.$key.RD,
-				get_instance()->functions->create_url(get_instance()->functions->extract_path($key).'/'.$data['member_id']),
+				ee()->functions->create_url(ee()->functions->extract_path($key).'/'.$data['member_id']),
 				$tagdata
 			 );
 		}
@@ -167,11 +203,11 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 		//  parse comment_path
 		elseif ($unprefixed == 'comment_path' OR $unprefixed == 'entry_id_path')
 		{
-			$path = (get_instance()->functions->extract_path($key) != '' AND get_instance()->functions->extract_path($key) != 'SITE_INDEX') ? get_instance()->functions->extract_path($key).'/'.$data['entry_id'] : $data['entry_id'];
+			$path = (ee()->functions->extract_path($key) != '' AND ee()->functions->extract_path($key) != 'SITE_INDEX') ? ee()->functions->extract_path($key).'/'.$data['entry_id'] : $data['entry_id'];
 
 			$tagdata = str_replace(
 				LD.$key.RD,
-				get_instance()->functions->create_url($path),
+				ee()->functions->create_url($path),
 				$tagdata
 			);
 		}
@@ -179,11 +215,11 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 		//  parse URL title path
 		elseif ($unprefixed == 'url_title_path')
 		{
-			$path = (get_instance()->functions->extract_path($key) != '' AND get_instance()->functions->extract_path($key) != 'SITE_INDEX') ? get_instance()->functions->extract_path($key).'/'.$data['url_title'] : $data['url_title'];
+			$path = (ee()->functions->extract_path($key) != '' AND ee()->functions->extract_path($key) != 'SITE_INDEX') ? ee()->functions->extract_path($key).'/'.$data['url_title'] : $data['url_title'];
 
 			$tagdata = str_replace(
 				LD.$key.RD,
-				get_instance()->functions->create_url($path),
+				ee()->functions->create_url($path),
 				$tagdata
 			);
 		}
@@ -191,11 +227,11 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 		//  parse title permalink
 		elseif ($unprefixed == 'title_permalink')
 		{
-			$path = (get_instance()->functions->extract_path($key) != '' AND get_instance()->functions->extract_path($key) != 'SITE_INDEX') ? get_instance()->functions->extract_path($key).'/'.$data['url_title'] : $data['url_title'];
+			$path = (ee()->functions->extract_path($key) != '' AND ee()->functions->extract_path($key) != 'SITE_INDEX') ? ee()->functions->extract_path($key).'/'.$data['url_title'] : $data['url_title'];
 			
 			$tagdata = str_replace(
 				LD.$key.RD,
-				get_instance()->functions->create_url($path, FALSE),
+				ee()->functions->create_url($path, FALSE),
 				$tagdata
 			);
 		}
@@ -203,11 +239,11 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 		//  parse permalink
 		elseif ($unprefixed == 'permalink')
 		{
-			$path = (get_instance()->functions->extract_path($key) != '' AND get_instance()->functions->extract_path($key) != 'SITE_INDEX') ? get_instance()->functions->extract_path($key).'/'.$data['entry_id'] : $data['entry_id'];
+			$path = (ee()->functions->extract_path($key) != '' AND ee()->functions->extract_path($key) != 'SITE_INDEX') ? ee()->functions->extract_path($key).'/'.$data['entry_id'] : $data['entry_id'];
 
 			$tagdata = str_replace(
 				LD.$key.RD,
-				get_instance()->functions->create_url($path, FALSE),
+				ee()->functions->create_url($path, FALSE),
 				$tagdata
 			);
 		}
@@ -247,6 +283,19 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 		return $tagdata;
 	}
 
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Handle variables that end in _url.
+	 *
+	 * @param Array		The row data
+	 * @param String	The template text
+	 * @param String	The var_single key (tag name)
+	 * @param String	The var_single value
+	 * @param String	The current parsing prefix
+	 *
+	 * @return String	The processed tagdata
+	 */
 	protected function _urls($data, $tagdata, $key, $val, $prefix)
 	{
 		//  {trimmed_url} - used by Atom feeds
@@ -294,7 +343,7 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 			}
 			else
 			{
-				$tagdata = str_replace(LD.$val.RD, get_instance()->typography->encode_email($data['email'], $name), $tagdata);
+				$tagdata = str_replace(LD.$val.RD, ee()->typography->encode_email($data['email'], $name), $tagdata);
 			}
 		}
 
@@ -307,14 +356,14 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 			}
 			else
 			{
-				$tagdata = str_replace(LD.$val.RD, get_instance()->typography->encode_email($data['email']), $tagdata);
+				$tagdata = str_replace(LD.$val.RD, ee()->typography->encode_email($data['email']), $tagdata);
 			}
 		}
 
 
 		elseif ($key == $prefix."signature_image_url")
 		{
-			if (get_instance()->session->userdata('display_signatures') == 'n' OR $data['sig_img_filename'] == ''  OR get_instance()->session->userdata('display_signatures') == 'n')
+			if (ee()->session->userdata('display_signatures') == 'n' OR $data['sig_img_filename'] == ''  OR ee()->session->userdata('display_signatures') == 'n')
 			{
 				$tagdata = str_replace(LD.$key.RD, '', $tagdata);
 				$tagdata = str_replace(LD.$prefix.'signature_image_width'.RD, '', $tagdata);
@@ -322,7 +371,7 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 			}
 			else
 			{
-				$tagdata = str_replace(LD.$key.RD, get_instance()->config->slash_item('sig_img_url').$data['sig_img_filename'], $tagdata);
+				$tagdata = str_replace(LD.$key.RD, ee()->config->slash_item('sig_img_url').$data['sig_img_filename'], $tagdata);
 				$tagdata = str_replace(LD.$prefix.'signature_image_width'.RD, $data['sig_img_width'], $tagdata);
 				$tagdata = str_replace(LD.$prefix.'signature_image_height'.RD, $data['sig_img_height'], $tagdata);
 			}
@@ -330,7 +379,7 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 
 		elseif ($key == $prefix."avatar_url")
 		{
-			if (get_instance()->session->userdata('display_avatars') == 'n' OR $data['avatar_filename'] == ''  OR get_instance()->session->userdata('display_avatars') == 'n')
+			if (ee()->session->userdata('display_avatars') == 'n' OR $data['avatar_filename'] == ''  OR ee()->session->userdata('display_avatars') == 'n')
 			{
 				$tagdata = str_replace(LD.$key.RD, '', $tagdata);
 				$tagdata = str_replace(LD.$prefix.'avatar_image_width'.RD, '', $tagdata);
@@ -338,7 +387,7 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 			}
 			else
 			{
-				$tagdata = str_replace(LD.$key.RD, get_instance()->config->slash_item('avatar_url').$data['avatar_filename'], $tagdata);
+				$tagdata = str_replace(LD.$key.RD, ee()->config->slash_item('avatar_url').$data['avatar_filename'], $tagdata);
 				$tagdata = str_replace(LD.$prefix.'avatar_image_width'.RD, $data['avatar_width'], $tagdata);
 				$tagdata = str_replace(LD.$prefix.'avatar_image_height'.RD, $data['avatar_height'], $tagdata);
 			}
@@ -346,7 +395,7 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 
 		elseif ($key == $prefix."photo_url")
 		{
-			if (get_instance()->session->userdata('display_photos') == 'n' OR $data['photo_filename'] == ''  OR get_instance()->session->userdata('display_photos') == 'n')
+			if (ee()->session->userdata('display_photos') == 'n' OR $data['photo_filename'] == ''  OR ee()->session->userdata('display_photos') == 'n')
 			{
 				$tagdata = str_replace(LD.$key.RD, '', $tagdata);
 				$tagdata = str_replace(LD.$prefix.'photo_image_width'.RD, '', $tagdata);
@@ -354,7 +403,7 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 			}
 			else
 			{
-				$tagdata = str_replace(LD.$key.RD, get_instance()->config->slash_item('photo_url').$data['photo_filename'], $tagdata);
+				$tagdata = str_replace(LD.$key.RD, ee()->config->slash_item('photo_url').$data['photo_filename'], $tagdata);
 				$tagdata = str_replace(LD.$prefix.'photo_image_width'.RD, $data['photo_width'], $tagdata);
 				$tagdata = str_replace(LD.$prefix.'photo_image_height'.RD, $data['photo_height'], $tagdata);
 			}

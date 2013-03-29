@@ -24,11 +24,28 @@
  */
 class EE_Channel_relationship_parser implements EE_Channel_parser_component {
 
+	/**
+	 * Check if relationships are enabled.
+	 *
+	 * @param array		A list of "disabled" features
+	 * @return Boolean	Is disabled?
+	 */
 	public function disabled(array $disabled, EE_Channel_preparser $pre)
 	{
 		return empty($pre->channel()->zwfields) OR in_array('relationships', $disabled);
 	}
 	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Set up the relationship parser's tree and data pre-caching.
+	 *
+	 * The returned object will be passed to replace() as a third parameter.
+	 *
+	 * @param String	The tagdata to be parsed
+	 * @param Object	The preparser object.
+	 * @return Array	The relationship parser object
+	 */
 	public function pre_process($tagdata, EE_Channel_preparser $pre)
 	{
 		$channel = $pre->channel();
@@ -40,8 +57,8 @@ class EE_Channel_relationship_parser implements EE_Channel_parser_component {
 
 		if (isset($zwfields[$site_id]) && ! empty($zwfields[$site_id]))
 		{
-			get_instance()->load->library('relationships');
-			$relationship_parser = get_instance()->relationships->get_relationship_parser(get_instance()->TMPL, $zwfields[$site_id], $cfields[$site_id]);
+			ee()->load->library('relationships');
+			$relationship_parser = ee()->relationships->get_relationship_parser(ee()->TMPL, $zwfields[$site_id], $cfields[$site_id]);
 			$relationship_parser->query_for_entries($pre->entry_ids());
 
 			return $relationship_parser;
@@ -50,6 +67,17 @@ class EE_Channel_relationship_parser implements EE_Channel_parser_component {
 		return NULL;
 	}
 
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Replace all of the relationship fields in one fell swoop.
+	 *
+	 * @param String	The tagdata to be parsed
+	 * @param Object	The channel parser object
+	 * @param Mixed		The results from the preparse method
+	 *
+	 * @return String	The processed tagdata
+	 */
 	public function replace($tagdata, EE_Channel_data_parser $obj, $relationship_parser)
 	{
 		if ( ! isset($relationship_parser))

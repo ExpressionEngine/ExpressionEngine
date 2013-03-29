@@ -24,16 +24,42 @@
  */
 class EE_Channel_custom_field_parser implements EE_Channel_parser_component {
 
+	/**
+	 * Check if custom fields are enabled.
+	 *
+	 * @param array		A list of "disabled" features
+	 * @return Boolean	Is disabled?
+	 */
 	public function disabled(array $disabled, EE_Channel_preparser $pre)
 	{
 		return in_array('custom_fields', $disabled);
 	}
 
+	// ------------------------------------------------------------------------
+
+	/**
+	 * @todo Find all of the tags like the custom date fields?
+	 *
+	 * @param String	The tagdata to be parsed
+	 * @param Object	The preparser object.
+	 * @return Object	Channel fields api, to reduce a lookup (for now)
+	 */
 	public function pre_process($tagdata, EE_Channel_preparser $pre)
 	{
-		return get_instance()->api_channel_fields;
+		return ee()->api_channel_fields;
 	}
 
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Replace all of the custom channel fields.
+	 *
+	 * @param String	The tagdata to be parsed
+	 * @param Object	The channel parser object
+	 * @param Mixed		The results from the preparse method
+	 *
+	 * @return String	The processed tagdata
+	 */
 	public function replace($tagdata, EE_Channel_data_parser $obj, $ft_api)
 	{
 		$tag = $obj->tag();
@@ -59,7 +85,7 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component {
 
 				if ($param_string)
 				{
-					$params = get_instance()->functions->assign_parameters($param_string);
+					$params = ee()->functions->assign_parameters($param_string);
 				}
 
 				$obj = $ft_api->setup_handler($field_id, TRUE);
@@ -67,7 +93,7 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component {
 				if ($obj)
 				{
 					$_ft_path = $ft_api->ft_paths[$ft_api->field_type];
-					get_instance()->load->add_package_path($_ft_path, FALSE);
+					ee()->load->add_package_path($_ft_path, FALSE);
 
 					$obj->_init(array('row' => $data));
 
@@ -82,13 +108,13 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component {
 						$entry = $obj->replace_tag_catchall($data, $params, FALSE, $modifier);
 					}
 
-					get_instance()->load->remove_package_path($_ft_path);
+					ee()->load->remove_package_path($_ft_path);
 				}
 				else
 				{
 					// Couldn't find a fieldtype
-					$entry = get_instance()->typography->parse_type(
-						get_instance()->functions->encode_ee_tags($data['field_id_'.$field_id]),
+					$entry = ee()->typography->parse_type(
+						ee()->functions->encode_ee_tags($data['field_id_'.$field_id]),
 						array(
 							'text_format'	=> $data['field_ft_'.$field_id],
 							'html_format'	=> $data['channel_html_formatting'],

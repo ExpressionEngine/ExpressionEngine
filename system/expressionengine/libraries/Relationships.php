@@ -444,8 +444,8 @@ class Relationship_Parser
 			return;
 		}
 
-		get_instance()->load->model('category_model');
-		$categories = get_instance()->category_model->get_entry_categories($new_ids);
+		ee()->load->model('category_model');
+		$categories = ee()->category_model->get_entry_categories($new_ids);
 
 		foreach ($categories as $entry_id => $cats)
 		{
@@ -502,7 +502,7 @@ class Relationship_Parser
 				array_pop($tag_stack);
 				$lookup_id = array_pop($id_stack);
 
-				$params = get_instance()->functions->assign_parameters($tag);
+				$params = ee()->functions->assign_parameters($tag);
 
 				$node = $nodes[$lookup_id]['node'];
 				$node->params = $params ? $params : array();
@@ -667,7 +667,7 @@ class Relationship_Parser
 		$longest_branch_length = $depths['longest'];
 		$shortest_branch_length = $depths['shortest'];
 
-		$db = get_instance()->relationships->_isolate_db();
+		$db = ee()->relationships->_isolate_db();
 
 		$db->distinct();
 		$db->select('L0.field_id as L0_field');
@@ -705,7 +705,7 @@ class Relationship_Parser
 		$shortest_branch_length = $depths['shortest'];
 		$longest_branch_length = $depths['longest'];
 
-		$db = get_instance()->relationships->_isolate_db();
+		$db = ee()->relationships->_isolate_db();
 
 		$db->distinct();
 		$db->select('L0.field_id as L0_field');
@@ -749,7 +749,7 @@ class Relationship_Parser
 		$longest_branch_length = $depths['longest'];
 		$shortest_branch_length = $depths['shortest'];
 
-		$db = get_instance()->relationships->_isolate_db();
+		$db = ee()->relationships->_isolate_db();
 
 		$db->distinct();
 		$db->select('L0.field_id as L0_field');
@@ -897,13 +897,13 @@ class Relationship_Parser
 			return $tagdata;
 		}
 
-		get_instance()->load->library('api');
-		get_instance()->api->instantiate('channel_fields');
+		ee()->load->library('api');
+		ee()->api->instantiate('channel_fields');
 
 		$tree = $this->variables['tree'];
 		$lookup = $this->variables['lookup'];
 
-		get_instance()->session->set_cache('relationships', 'channel', $channel);
+		ee()->session->set_cache('relationships', 'channel', $channel);
 		
 		$tagdata = $tree->parse($entry_id, $tagdata, $lookup, $this->categories);
 
@@ -1182,11 +1182,11 @@ class ParseNode extends EE_TreeNode {
 		}
 
 		$prefix = $this->name.':';
-		$channel = get_instance()->session->cache('relationships', 'channel');
+		$channel = ee()->session->cache('relationships', 'channel');
 
 		// Load the parser
-		get_instance()->load->library('channel_entries_parser');
-		$parser = get_instance()->channel_entries_parser->create($tagdata, $prefix);
+		ee()->load->library('channel_entries_parser');
+		$parser = ee()->channel_entries_parser->create($tagdata, $prefix);
 
 		// Prep tag chunks
 		$config = array(

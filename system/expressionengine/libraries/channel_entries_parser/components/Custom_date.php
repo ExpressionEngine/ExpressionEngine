@@ -24,49 +24,76 @@
  */
 class EE_Channel_custom_date_parser implements EE_Channel_parser_component {
 
+	/**
+	 * Check if custom dates are enabled.
+	 *
+	 * @param array		A list of "disabled" features
+	 * @return Boolean	Is disabled?
+	 */
 	public function disabled(array $disabled, EE_Channel_preparser $pre)
 	{
-		return FALSE;
+		return empty($pre->channel()->dfields);
 	}
 
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Find all custom date variables in the template. The return value
+	 * will be passed to process for the main parsing loop.
+	 *
+	 * @param String	The tagdata to be parsed
+	 * @param Object	The preparser object.
+	 * @return Array	Found custom date tags.
+	 */
 	public function pre_process($tagdata, EE_Channel_preparser $pre)
 	{
-			$prefix = $pre->prefix();
-			$channel = $pre->channel();
+		$prefix = $pre->prefix();
+		$channel = $pre->channel();
 
-			$custom_date_fields = array();
+		$custom_date_fields = array();
 
-			if (count($channel->dfields) == 0)
-			{
-				return $custom_date_fields;
-			}
+		if (count($channel->dfields) == 0)
+		{
+			return $custom_date_fields;
+		}
 
-			foreach ($channel->dfields as $site_id => $dfields)
-			{
-	  			foreach($dfields as $key => $value)
-	  			{
-	  				if ( ! $pre->has_tag($key))
-	  				{
-	  					continue;
-	  				}
+		foreach ($channel->dfields as $site_id => $dfields)
+		{
+  			foreach($dfields as $key => $value)
+  			{
+  				if ( ! $pre->has_tag($key))
+  				{
+  					continue;
+  				}
 
-	  				$key = $prefix.$key;
+  				$key = $prefix.$key;
 
-					if (preg_match_all("/".LD.$key."\s+format=[\"'](.*?)[\"']".RD."/s", $tagdata, $matches))
+				if (preg_match_all("/".LD.$key."\s+format=[\"'](.*?)[\"']".RD."/s", $tagdata, $matches))
+				{
+					for ($j = 0; $j < count($matches[0]); $j++)
 					{
-						for ($j = 0; $j < count($matches[0]); $j++)
-						{
-							$matches[0][$j] = str_replace(array(LD, RD), '', $matches[0][$j]);
+						$matches[0][$j] = str_replace(array(LD, RD), '', $matches[0][$j]);
 
-							$custom_date_fields[$matches[0][$j]] = $matches[1][$j];
-						}
+						$custom_date_fields[$matches[0][$j]] = $matches[1][$j];
 					}
 				}
 			}
+		}
 
-			return $custom_date_fields;
+		return $custom_date_fields;
 	}
 
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Replace all of the custom date fields.
+	 *
+	 * @param String	The tagdata to be parsed
+	 * @param Object	The channel parser object
+	 * @param Mixed		The results from the preparse method
+	 *
+	 * @return String	The processed tagdata
+	 */
 	public function replace($tagdata, EE_Channel_data_parser $obj, $custom_date_fields)
 	{
 		if ( ! count($custom_date_fields))
@@ -107,7 +134,7 @@ class EE_Channel_custom_date_parser implements EE_Channel_parser_component {
 
 				$tagdata = str_replace(
 					LD.$tag.RD,
-					get_instance()->localize->format_date(
+					ee()->localize->format_date(
 						$custom_date_fields[$tag],
 						$data['field_id_'.$dval], 
 						$localize

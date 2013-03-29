@@ -24,11 +24,29 @@
  */
 class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component {
 
+	/**
+	 * Check if custom fields are enabled.
+	 *
+	 * @param array		A list of "disabled" features
+	 * @return Boolean	Is disabled?
+	 */
 	public function disabled(array $disabled, EE_Channel_preparser $pre)
 	{
 		return in_array('custom_fields', $disabled) OR empty($pre->channel()->pfields);
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * Find any {field} {/field} tag pair chunks in the template and
+	 * extract them for easier parsing in the main loop.
+	 *
+	 * The returned chunks will be passed to replace() as a third parameter.
+	 *
+	 * @param String	The tagdata to be parsed
+	 * @param Object	The preparser object.
+	 * @return Array	The found custom field pair chunks
+	 */
 	public function pre_process($tagdata, EE_Channel_preparser $pre)
 	{
 		$pfield_chunk = array();
@@ -82,7 +100,7 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
 							}
 						}
 						
-						$chunk_array = array($inner, get_instance()->functions->assign_parameters($params), $chunk);
+						$chunk_array = array($inner, ee()->functions->assign_parameters($params), $chunk);
 						
 						// Grab modifier if it exists and add it to the chunk array
 						if (substr($params, 0, 1) == ':')
@@ -101,6 +119,17 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
 		return $pfield_chunk;
 	}
 
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Replace all of the custom channel pair fields.
+	 *
+	 * @param String	The tagdata to be parsed
+	 * @param Object	The channel parser object
+	 * @param Mixed		The results from the preparse method
+	 *
+	 * @return String	The processed tagdata
+	 */
 	public function replace($tagdata, EE_Channel_data_parser $obj, $pfield_chunks)
 	{
 		$tag = $obj->tag();
@@ -122,7 +151,7 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
 		$field_name = preg_replace('/^'.$prefix.'/', '', $tag);
 		$field_name = substr($field_name, strpos($field_name, ' '));
 
-		$ft_api = get_instance()->api_channel_fields;
+		$ft_api = ee()->api_channel_fields;
 
 		if (isset($cfields[$field_name]) && isset($pfields[$cfields[$field_name]]))
 		{

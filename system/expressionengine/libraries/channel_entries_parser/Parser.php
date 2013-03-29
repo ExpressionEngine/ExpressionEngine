@@ -220,7 +220,7 @@ class EE_Channel_data_parser {
 			if ($site_pages !== FALSE && isset($site_pages[$row['site_id']]['uris'][$row['entry_id']]))
 			{
 				$row['page_uri'] = $site_pages[$row['site_id']]['uris'][$row['entry_id']];
-				$row['page_url'] = get_instance()->create_page_url($site_pages[$row['site_id']]['url'], $site_pages[$row['site_id']]['uris'][$row['entry_id']]);
+				$row['page_url'] = ee()->create_page_url($site_pages[$row['site_id']]['url'], $site_pages[$row['site_id']]['uris'][$row['entry_id']]);
 			}
 
 			// -------------------------------------------------------
@@ -301,7 +301,7 @@ class EE_Channel_data_parser {
 
 			// We swap out the conditionals after pairs are parsed so they don't interfere
 			// with the string replace
-			$tagdata = get_instance()->functions->prep_conditionals($tagdata, $cond);
+			$tagdata = ee()->functions->prep_conditionals($tagdata, $cond);
 
 
 			//  Parse individual variable tags
@@ -394,9 +394,9 @@ class EE_Channel_data_parser {
 		
 		if ( ! empty($custom_field_data))
 		{
-			get_instance()->load->library('api');
-			get_instance()->api->instantiate('channel_fields');
-			$ft_api = get_instance()->api_channel_fields;
+			ee()->load->library('api');
+			ee()->api->instantiate('channel_fields');
+			$ft_api = ee()->api_channel_fields;
 			
 			// For each custom field, notify its fieldtype class of the data we collected
 			foreach ($custom_field_data as $field_id => $data)
@@ -428,8 +428,8 @@ class EE_Channel_data_parser {
 	protected function _get_conditional_data($row, $prefix, $channel)
 	{
 		$cond = $row;
-		$cond['logged_in']			= (get_instance()->session->userdata('member_id') == 0) ? 'FALSE' : 'TRUE';
-		$cond['logged_out']			= (get_instance()->session->userdata('member_id') != 0) ? 'FALSE' : 'TRUE';
+		$cond['logged_in']			= (ee()->session->userdata('member_id') == 0) ? 'FALSE' : 'TRUE';
+		$cond['logged_out']			= (ee()->session->userdata('member_id') != 0) ? 'FALSE' : 'TRUE';
 
 		foreach (array('avatar_filename', 'photo_filename', 'sig_img_filename') as $pv)
 		{
@@ -440,9 +440,9 @@ class EE_Channel_data_parser {
 		}
 
 		$cond['allow_comments']			= $this->_commenting_allowed($row) ? 'TRUE' : 'FALSE';
-		$cond['signature_image']		= ($row['sig_img_filename'] == '' OR get_instance()->config->item('enable_signatures') == 'n' OR get_instance()->session->userdata('display_signatures') == 'n') ? 'FALSE' : 'TRUE';
-		$cond['avatar']					= ($row['avatar_filename'] == '' OR get_instance()->config->item('enable_avatars') == 'n' OR get_instance()->session->userdata('display_avatars') == 'n') ? 'FALSE' : 'TRUE';
-		$cond['photo']					= ($row['photo_filename'] == '' OR get_instance()->config->item('enable_photos') == 'n' OR get_instance()->session->userdata('display_photos') == 'n') ? 'FALSE' : 'TRUE';
+		$cond['signature_image']		= ($row['sig_img_filename'] == '' OR ee()->config->item('enable_signatures') == 'n' OR ee()->session->userdata('display_signatures') == 'n') ? 'FALSE' : 'TRUE';
+		$cond['avatar']					= ($row['avatar_filename'] == '' OR ee()->config->item('enable_avatars') == 'n' OR ee()->session->userdata('display_avatars') == 'n') ? 'FALSE' : 'TRUE';
+		$cond['photo']					= ($row['photo_filename'] == '' OR ee()->config->item('enable_photos') == 'n' OR ee()->session->userdata('display_photos') == 'n') ? 'FALSE' : 'TRUE';
 		$cond['forum_topic']			= (empty($row['forum_topic_id'])) ? 'FALSE' : 'TRUE';
 		$cond['not_forum_topic']		= ( ! empty($row['forum_topic_id'])) ? 'FALSE' : 'TRUE';
 		$cond['category_request']		= ($channel->cat_request === FALSE) ? 'FALSE' : 'TRUE';
@@ -450,13 +450,13 @@ class EE_Channel_data_parser {
 		$cond['channel']				= $row['channel_title'];
 		$cond['channel_short_name']		= $row['channel_name'];
 		$cond['author']					= ($row['screen_name'] != '') ? $row['screen_name'] : $row['username'];
-		$cond['photo_url']				= get_instance()->config->slash_item('photo_url').$row['photo_filename'];
+		$cond['photo_url']				= ee()->config->slash_item('photo_url').$row['photo_filename'];
 		$cond['photo_image_width']		= $row['photo_width'];
 		$cond['photo_image_height']		= $row['photo_height'];
-		$cond['avatar_url']				= get_instance()->config->slash_item('avatar_url').$row['avatar_filename'];
+		$cond['avatar_url']				= ee()->config->slash_item('avatar_url').$row['avatar_filename'];
 		$cond['avatar_image_width']		= $row['avatar_width'];
 		$cond['avatar_image_height']	= $row['avatar_height'];
-		$cond['signature_image_url']	= get_instance()->config->slash_item('sig_img_url').$row['sig_img_filename'];
+		$cond['signature_image_url']	= ee()->config->slash_item('sig_img_url').$row['sig_img_filename'];
 		$cond['signature_image_width']	= $row['sig_img_width'];
 		$cond['signature_image_height']	= $row['sig_img_height'];
 		$cond['relative_date']			= timespan($row['entry_date']);
@@ -504,7 +504,7 @@ class EE_Channel_data_parser {
 		{
 			return TRUE;
 		}
-		elseif ($row['comment_expiration_date'] > 0 && $row['comment_expiration_date'] < get_instance()->localize->now)
+		elseif ($row['comment_expiration_date'] > 0 && $row['comment_expiration_date'] < ee()->localize->now)
 		{
 			return FALSE;
 		}

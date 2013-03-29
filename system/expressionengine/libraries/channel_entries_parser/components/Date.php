@@ -24,11 +24,27 @@
  */
 class EE_Channel_date_parser implements EE_Channel_parser_component {
 
+	/**
+	 * Check if dates are enabled.
+	 *
+	 * @param array		A list of "disabled" features
+	 * @return Boolean	Is disabled?
+	 */
 	public function disabled(array $disabled, EE_Channel_preparser $pre)
 	{
 		return FALSE;
 	}
 
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Find all date variables in the template. The return value
+	 * will be passed to process for the main parsing loop.
+	 *
+	 * @param String	The tagdata to be parsed
+	 * @param Object	The preparser object.
+	 * @return Array	Found date tags.
+	 */
 	public function pre_process($tagdata, EE_Channel_preparser $pre)
 	{
 		$prefix = $pre->prefix();
@@ -43,7 +59,7 @@ class EE_Channel_date_parser implements EE_Channel_parser_component {
 
 		$date_vars = array('entry_date', 'gmt_date', 'gmt_entry_date', 'edit_date', 'gmt_edit_date', 'expiration_date', 'recent_comment_date', 'week_date');
 
-		get_instance()->load->helper('date');
+		ee()->load->helper('date');
 
 		foreach ($date_vars as $val)
 		{
@@ -94,6 +110,17 @@ class EE_Channel_date_parser implements EE_Channel_parser_component {
 		return call_user_func_array('compact', $date_vars);
 	}
 
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Replace all of the default date fields.
+	 *
+	 * @param String	The tagdata to be parsed
+	 * @param Object	The channel parser object
+	 * @param Mixed		The results from the preparse method
+	 *
+	 * @return String	The processed tagdata
+	 */
 	public function replace($tagdata, EE_Channel_data_parser $obj, $date_vars)
 	{
 		$tag = $obj->tag();
@@ -110,7 +137,7 @@ class EE_Channel_date_parser implements EE_Channel_parser_component {
 		//  parse entry date
 		if (isset($entry_date[$key]))
 		{
-			$val = str_replace($entry_date[$key], get_instance()->localize->format_date($entry_date[$key], $data['entry_date']), $val);
+			$val = str_replace($entry_date[$key], ee()->localize->format_date($entry_date[$key], $data['entry_date']), $val);
 
 			$tagdata = str_replace(LD.$key.RD, $val, $tagdata);
 		}
@@ -120,7 +147,7 @@ class EE_Channel_date_parser implements EE_Channel_parser_component {
 		{
 			if ($data['recent_comment_date'] != 0)
 			{
-				$val = str_replace($recent_comment_date[$key], get_instance()->localize->format_date($recent_comment_date[$key], $data['recent_comment_date']), $val);
+				$val = str_replace($recent_comment_date[$key], ee()->localize->format_date($recent_comment_date[$key], $data['recent_comment_date']), $val);
 
 				$tagdata = str_replace(LD.$key.RD, $val, $tagdata);
 			}
@@ -133,14 +160,14 @@ class EE_Channel_date_parser implements EE_Channel_parser_component {
 		//  GMT date - entry date in GMT
 		elseif (isset($gmt_entry_date[$key]))
 		{
-			$val = str_replace($gmt_entry_date[$key], get_instance()->localize->format_date($gmt_entry_date[$key], $data['entry_date'], FALSE), $val);
+			$val = str_replace($gmt_entry_date[$key], ee()->localize->format_date($gmt_entry_date[$key], $data['entry_date'], FALSE), $val);
 
 			$tagdata = str_replace(LD.$key.RD, $val, $tagdata);
 		}
 
 		elseif (isset($gmt_date[$key]))
 		{
-			$val = str_replace($gmt_date[$key], get_instance()->localize->format_date($gmt_date[$key], $data['entry_date'], FALSE), $val);
+			$val = str_replace($gmt_date[$key], ee()->localize->format_date($gmt_date[$key], $data['entry_date'], FALSE), $val);
 
 			$tagdata = str_replace(LD.$key.RD, $val, $tagdata);
 		}
@@ -148,7 +175,7 @@ class EE_Channel_date_parser implements EE_Channel_parser_component {
 		//  parse "last edit" date
 		elseif (isset($edit_date[$key]))
 		{
-			$val = str_replace($edit_date[$key], get_instance()->localize->format_date($edit_date[$key], mysql_to_unix($data['edit_date'])), $val);
+			$val = str_replace($edit_date[$key], ee()->localize->format_date($edit_date[$key], mysql_to_unix($data['edit_date'])), $val);
 
 			$tagdata = str_replace(LD.$key.RD, $val, $tagdata);
 		}
@@ -156,7 +183,7 @@ class EE_Channel_date_parser implements EE_Channel_parser_component {
 		//  "last edit" date as GMT
 		elseif (isset($gmt_edit_date[$key]))
 		{
-			$val = str_replace($gmt_edit_date[$key], get_instance()->localize->format_date($gmt_edit_date[$key], mysql_to_unix($data['edit_date']), FALSE), $val);
+			$val = str_replace($gmt_edit_date[$key], ee()->localize->format_date($gmt_edit_date[$key], mysql_to_unix($data['edit_date']), FALSE), $val);
 
 			$tagdata = str_replace(LD.$key.RD, $val, $tagdata);
 		}
@@ -167,7 +194,7 @@ class EE_Channel_date_parser implements EE_Channel_parser_component {
 		{
 			if ($data['expiration_date'] != 0)
 			{
-				$val = str_replace($expiration_date[$key], get_instance()->localize->format_date($expiration_date[$key], $data['expiration_date']), $val);
+				$val = str_replace($expiration_date[$key], ee()->localize->format_date($expiration_date[$key], $data['expiration_date']), $val);
 
 				$tagdata = str_replace(LD.$key.RD, $val, $tagdata);
 			}
@@ -187,9 +214,9 @@ class EE_Channel_date_parser implements EE_Channel_parser_component {
 
 			$offset = 0;
 
-			if (strtolower(get_instance()->TMPL->fetch_param('start_day')) == 'monday')
+			if (strtolower(ee()->TMPL->fetch_param('start_day')) == 'monday')
 			{
-				$day_of_week = get_instance()->localize->format_date('%w', $data['entry_date']);
+				$day_of_week = ee()->localize->format_date('%w', $data['entry_date']);
 
 				if ($day_of_week == '0')
 				{
@@ -201,9 +228,9 @@ class EE_Channel_date_parser implements EE_Channel_parser_component {
 				}
 			}
 
-			$week_start_date = $data['entry_date'] - (get_instance()->localize->format_date('%w', $data['entry_date'], TRUE) * 60 * 60 * 24) + $offset;
+			$week_start_date = $data['entry_date'] - (ee()->localize->format_date('%w', $data['entry_date'], TRUE) * 60 * 60 * 24) + $offset;
 
-			$val = str_replace($week_date[$key], get_instance()->localize->format_date($week_date[$key], $week_start_date), $val);
+			$val = str_replace($week_date[$key], ee()->localize->format_date($week_date[$key], $week_start_date), $val);
 
 			$tagdata = str_replace(LD.$key.RD, $val, $tagdata);
 		}

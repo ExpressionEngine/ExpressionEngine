@@ -24,11 +24,29 @@
  */
 class EE_Channel_category_parser implements EE_Channel_parser_component {
 
+	/**
+	 * Check if categories are enabled and requested in the template.
+	 *
+	 * @param array		A list of "disabled" features
+	 * @return Boolean	Is disabled?
+	 */
 	public function disabled(array $disabled, EE_Channel_preparser $pre)
 	{
 		return in_array('categories', $disabled) OR ! $pre->has_tag_pair('categories');
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * Find any {category} {/category} tag pair chunks in the template and
+	 * extract them for easier parsing in the main loop.
+	 *
+	 * The returned chunks will be passed to replace() as a third parameter.
+	 *
+	 * @param String	The tagdata to be parsed
+	 * @param Object	The preparser object.
+	 * @return Array	The found category chunks
+	 */
 	public function pre_process($tagdata, EE_Channel_preparser $pre)
 	{
 		$cat_chunk = array();
@@ -40,7 +58,7 @@ class EE_Channel_category_parser implements EE_Channel_parser_component {
 			{
 				$cat_chunk[] = array(
 					$matches[2][$j],
-					get_instance()->functions->assign_parameters($matches[1][$j]),
+					ee()->functions->assign_parameters($matches[1][$j]),
 					$matches[0][$j]
 				);
 			}
@@ -49,6 +67,17 @@ class EE_Channel_category_parser implements EE_Channel_parser_component {
 		return $cat_chunk;
 	}
 
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Replace all of the category pairs with the correct data.
+	 *
+	 * @param String	The tagdata to be parsed
+	 * @param Object	The channel parser object
+	 * @param Mixed		The results from the preparse method
+	 *
+	 * @return String	The processed tagdata
+	 */
 	public function replace($tagdata, EE_Channel_data_parser $obj, $cat_chunk)
 	{
 		$tag = $obj->tag();
@@ -64,7 +93,7 @@ class EE_Channel_category_parser implements EE_Channel_parser_component {
 			if (isset($categories[$data['entry_id']]) AND is_array($categories[$data['entry_id']]) AND count($cat_chunk) > 0)
 			{
 				// Get category ID from URL for {if active} conditional
-				get_instance()->load->helper('segment');
+				ee()->load->helper('segment');
 				$active_cat = ($obj->channel()->pagination->dynamic_sql && $obj->channel()->cat_request) ? parse_category($this->query_string) : FALSE;
 				
 				foreach ($cat_chunk as $catkey => $catval)
@@ -124,21 +153,21 @@ class EE_Channel_category_parser implements EE_Channel_parser_component {
 							{
 								if ($this->use_category_names == TRUE)
 								{
-									$temp = preg_replace("#".LD."path=.+?".RD."#", reduce_double_slashes(get_instance()->functions->create_url($match).'/'.$this->reserved_cat_segment.'/'.$v[6]), $temp, 1);
+									$temp = preg_replace("#".LD."path=.+?".RD."#", reduce_double_slashes(ee()->functions->create_url($match).'/'.$this->reserved_cat_segment.'/'.$v[6]), $temp, 1);
 								}
 								else
 								{
-									$temp = preg_replace("#".LD."path=.+?".RD."#", reduce_double_slashes(get_instance()->functions->create_url($match).'/C'.$v[0]), $temp, 1);
+									$temp = preg_replace("#".LD."path=.+?".RD."#", reduce_double_slashes(ee()->functions->create_url($match).'/C'.$v[0]), $temp, 1);
 								}
 							}
 						}
 						else
 						{
-							$temp = preg_replace("#".LD."path=.+?".RD."#", get_instance()->functions->create_url("SITE_INDEX"), $temp);
+							$temp = preg_replace("#".LD."path=.+?".RD."#", ee()->functions->create_url("SITE_INDEX"), $temp);
 						}
 						
-						get_instance()->load->library('file_field');
-						$cat_image = get_instance()->file_field->parse_field($v[3]);
+						ee()->load->library('file_field');
+						$cat_image = ee()->file_field->parse_field($v[3]);
 						
 						$cat_vars = array(
 							'category_name'			=> $v[2],
@@ -157,7 +186,7 @@ class EE_Channel_category_parser implements EE_Channel_parser_component {
 							$cat_vars[$cv['field_name']] = ( ! isset($v['field_id_'.$cv['field_id']])) ? '' : $v['field_id_'.$cv['field_id']];
 						}
 
-						$temp = get_instance()->functions->prep_conditionals($temp, $cat_vars);
+						$temp = ee()->functions->prep_conditionals($temp, $cat_vars);
 
 						$temp = str_replace(
 							array(
@@ -170,11 +199,11 @@ class EE_Channel_category_parser implements EE_Channel_parser_component {
 								LD.'parent_id'.RD
 							),
 							array($v[0],
-								get_instance()->functions->encode_ee_tags($v[2]),
+								ee()->functions->encode_ee_tags($v[2]),
 								$v[6],
 								$cat_image['url'],
 								(isset($v[5])) ? $v[5] : '',
-								(isset($v[4])) ? get_instance()->functions->encode_ee_tags($v[4]) : '',
+								(isset($v[4])) ? ee()->functions->encode_ee_tags($v[4]) : '',
 								$v[1]
 							),
 							$temp
@@ -184,7 +213,7 @@ class EE_Channel_category_parser implements EE_Channel_parser_component {
 						{
 							if (isset($v['field_id_'.$cv2['field_id']]) AND $v['field_id_'.$cv2['field_id']] != '')
 							{
-								$field_content = get_instance()->typography->parse_type(
+								$field_content = ee()->typography->parse_type(
 									$v['field_id_'.$cv2['field_id']],
 									array(
 										'text_format'		=> $v['field_ft_'.$cv2['field_id']],
@@ -221,8 +250,8 @@ class EE_Channel_category_parser implements EE_Channel_parser_component {
 					// Check to see if we need to parse {filedir_n}
 					if (strpos($cats, '{filedir_') !== FALSE)
 					{
-						get_instance()->load->library('file_field');
-						$cats = get_instance()->file_field->parse_string($cats);
+						ee()->load->library('file_field');
+						$cats = ee()->file_field->parse_string($cats);
 					}
 					
 					$tagdata = str_replace($catval[2], $cats, $tagdata);
@@ -230,7 +259,7 @@ class EE_Channel_category_parser implements EE_Channel_parser_component {
 			}
 			else
 			{
-				$tagdata = get_instance()->TMPL->delete_var_pairs($tag, 'categories', $tagdata);
+				$tagdata = ee()->TMPL->delete_var_pairs($tag, 'categories', $tagdata);
 			}
 		}
 
