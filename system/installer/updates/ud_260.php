@@ -46,13 +46,22 @@ class Updater {
 	public function do_update()
 	{
 		$this->EE->load->dbforge();
-		
-		$this->_add_template_name_to_dev_log();
-		$this->_drop_dst();
-		$this->_update_timezone_column_lengths();
-		$this->_update_session_table();
-		$this->_update_actions_table();
-		$this->_update_specialty_templates();
+
+		$steps = new ProgressIterator(
+			array(
+				'_add_template_name_to_dev_log',
+				'_drop_dst',
+				'_update_timezone_column_lengths',
+				'_update_session_table',
+				'_update_actions_table',
+				'_update_specialty_templates',
+			)
+		);
+
+		foreach ($steps as $k => $v)
+		{
+			$this->$v();
+		}
 		
 		return TRUE;
 	}
@@ -66,40 +75,37 @@ class Updater {
 	 */
 	private function _add_template_name_to_dev_log()
 	{
-		if ( ! $this->EE->db->field_exists('template_id', 'developer_log'))
-		{
-			$this->EE->dbforge->add_column(
-				'developer_log',
-				array(
-					'template_id' => array(
-						'type'			=> 'int',
-						'constraint'	=> 10,
-						'unsigned'		=> TRUE,
-						'default'		=> 0,
-						'null'			=> FALSE
-					),
-					'template_name' => array(
-						'type'			=> 'varchar',
-						'constraint'	=> 100
-					),
-					'template_group' => array(
-						'type'			=> 'varchar',
-						'constraint'	=> 100
-					),
-					'addon_module' => array(
-						'type'			=> 'varchar',
-						'constraint'	=> 100
-					),
-					'addon_method' => array(
-						'type'			=> 'varchar',
-						'constraint'	=> 100
-					),
-					'snippets' => array(
-						'type'			=> 'text'
-					)
+		$this->EE->smartforge->add_column(
+			'developer_log',
+			array(
+				'template_id' => array(
+					'type'			=> 'int',
+					'constraint'	=> 10,
+					'unsigned'		=> TRUE,
+					'default'		=> 0,
+					'null'			=> FALSE
+				),
+				'template_name' => array(
+					'type'			=> 'varchar',
+					'constraint'	=> 100
+				),
+				'template_group' => array(
+					'type'			=> 'varchar',
+					'constraint'	=> 100
+				),
+				'addon_module' => array(
+					'type'			=> 'varchar',
+					'constraint'	=> 100
+				),
+				'addon_method' => array(
+					'type'			=> 'varchar',
+					'constraint'	=> 100
+				),
+				'snippets' => array(
+					'type'			=> 'text'
 				)
-			);
-		}
+			)
+		);
 	}
 
 	// --------------------------------------------------------------------
@@ -109,20 +115,11 @@ class Updater {
 	 */
 	private function _drop_dst()
 	{
-		if ($this->EE->db->field_exists('daylight_savings', 'members'))
-		{
-			$this->EE->dbforge->drop_column('members', 'daylight_savings');
-		}
+			$this->EE->smartforge->drop_column('members', 'daylight_savings');
 
-		if ($this->EE->db->field_exists('dst_enabled', 'channel_titles'))
-		{
-			$this->EE->dbforge->drop_column('channel_titles', 'dst_enabled');
-		}
+			$this->EE->smartforge->drop_column('channel_titles', 'dst_enabled');
 
-		if ($this->EE->db->field_exists('dst_enabled', 'channel_entries_autosave'))
-		{
-			$this->EE->dbforge->drop_column('channel_entries_autosave', 'dst_enabled');
-		}
+			$this->EE->smartforge->drop_column('channel_entries_autosave', 'dst_enabled');
 	}
 
 	// --------------------------------------------------------------------
@@ -134,7 +131,7 @@ class Updater {
 	 */
 	private function _update_timezone_column_lengths()
 	{
-		$this->EE->dbforge->modify_column(
+		$this->EE->smartforge->modify_column(
 			'members',
 			array(
 				'timezone' => array(
@@ -158,19 +155,16 @@ class Updater {
 		{
 			$field_name = 'field_dt_'.$field['field_id'];
 
-			if ($this->EE->db->field_exists($field_name, 'channel_data'))
-			{
-				$this->EE->dbforge->modify_column(
-					'channel_data',
-					array(
-						$field_name => array(
-							'name' 			=> $field_name,
-							'type' 			=> 'varchar',
-							'constraint' 	=> 50
-						)
+			$this->EE->smartforge->modify_column(
+				'channel_data',
+				array(
+					$field_name => array(
+						'name' 			=> $field_name,
+						'type' 			=> 'varchar',
+						'constraint' 	=> 50
 					)
-				);
-			}
+				)
+			);
 		}
 	}
 
@@ -185,26 +179,23 @@ class Updater {
 	 */
 	private function _update_session_table()
 	{
-		if ( ! $this->EE->db->field_exists('fingerprint', 'sessions'))
-		{
-			$this->EE->dbforge->add_column(
-				'sessions',
-				array(
-					'fingerprint' => array(
-						'type'			=> 'varchar',
-						'constraint'	=> 40
-					),
-					'sess_start' => array(
-						'type'			=> 'int',
-						'constraint'	=> 10,
-						'unsigned'		=> TRUE,
-						'default'		=> 0,
-						'null'			=> FALSE
-					)
+		$this->EE->smartforge->add_column(
+			'sessions',
+			array(
+				'fingerprint' => array(
+					'type'			=> 'varchar',
+					'constraint'	=> 40
 				),
-				'user_agent'
-			);	
-		}
+				'sess_start' => array(
+					'type'			=> 'int',
+					'constraint'	=> 10,
+					'unsigned'		=> TRUE,
+					'default'		=> 0,
+					'null'			=> FALSE
+				)
+			),
+			'user_agent'
+		);
 		
 		return TRUE;
 	}

@@ -871,94 +871,318 @@ BSH;
 	public function database_changes_new()
 	{
 		$this->EE->progress->update_state("Creating new database tables");
+		
+		// Add exp_snippets table
+		$this->EE->dbforge->add_field(
+			array(
+				'snippet_id' => array(
+					'type'				=> 'int',
+					'constraint'		=> 10,
+					'unsigned'			=> TRUE,
+					'null'				=> FALSE,
+					'auto_increment'	=> TRUE
+				),
+				'site_id' => array(
+					'type'				=> 'int',
+					'constraint'		=> 4,
+					'null'				=> FALSE
+				),
+				'snippet_name' => array(
+					'type'				=> 'varchar',
+					'constraint'		=> 75,
+					'null'				=> FALSE
+				),
+				'snippet_contents' => array(
+					'type'				=> 'text',
+					'null'				=> TRUE
+				)
+			)
+		);
+		
+		$this->EE->dbforge->add_key('snippet_id', TRUE);
+		$this->EE->dbforge->add_key('site_id');
+		$this->EE->smartforge->create_table('snippets');
 
-		$Q[] = "CREATE TABLE `exp_snippets` (
-				`snippet_id` int(10) unsigned NOT NULL auto_increment,
-				`site_id` int(4) NOT NULL,
-				`snippet_name` varchar(75) NOT NULL,
-				`snippet_contents` text NULL,
-				PRIMARY KEY (`snippet_id`),
-				KEY `site_id` (`site_id`)
-				)";
+		
+		// Add exp_accessories table
+		$this->EE->dbforge->add_field(
+			array(
+				'accessory_id' => array(
+					'type'				=> 'int',
+					'constraint'		=> 10,
+					'unsigned'			=> TRUE,
+					'null'				=> FALSE,
+					'auto_increment'	=> TRUE
+				),
+				'class' => array(
+					'type'				=> 'varchar',
+					'constraint'		=> 75,
+					'null'				=> FALSE,
+					'default'			=> '',
+				),
+				'member_groups' => array(
+					'type'				=> 'varchar',
+					'constraint'		=> 50,
+					'null'				=> FALSE,
+					'default'			=> 'all',
+				),
+				'controllers' => array(
+					'type'				=> 'text',
+					'null'				=> TRUE
+				),
+				'accessory_version' => array(
+					'type'				=> 'varchar',
+					'constraint'		=> 12,
+					'null'				=> FALSE,
+				),
+			)
+		);
+		
+		$this->EE->dbforge->add_key('accessory_id', TRUE);
+		$this->EE->smartforge->create_table('accessories');
 
-		$Q[] = "CREATE TABLE `exp_accessories` (
-				`accessory_id` int(10) unsigned NOT NULL auto_increment,
-				`class` varchar(75) NOT NULL default '',
-				`member_groups` varchar(50) NOT NULL default 'all',
-				`controllers` text NULL,
-				`accessory_version` VARCHAR(12) NOT NULL,
-				PRIMARY KEY `accessory_id` (`accessory_id`)
-				)";
 
 		// Layout Publish
-		// Custom layout for for the publish page.
-		$Q[] = "CREATE TABLE exp_layout_publish (
-			  layout_id int(10) UNSIGNED NOT NULL auto_increment,
-			  site_id int(4) UNSIGNED NOT NULL default 1,
-			  member_group int(4) UNSIGNED NOT NULL default 0,
-			  channel_id int(4) UNSIGNED NOT NULL default 0,
-			  field_layout text,
-			  PRIMARY KEY  (`layout_id`),
-			  KEY `site_id` (`site_id`),
-			  KEY `member_group` (`member_group`),
-			  KEY `channel_id` (`channel_id`)
-		)";
+		// Custom layout for for the publish page.		
+		// Add layout_publish table
+		$this->EE->dbforge->add_field(
+			array(
+				'layout_id' => array(
+					'type'				=> 'int',
+					'constraint'		=> 10,
+					'unsigned'			=> TRUE,
+					'null'				=> FALSE,
+					'auto_increment'	=> TRUE
+				),
+				'site_id' => array(
+					'type'				=> 'int',
+					'constraint'		=> 4,
+					'unsigned'			=> TRUE,
+					'null'				=> FALSE,
+					'default'			=> 1,
+				),
+				'member_group' => array(
+					'type'				=> 'int',
+					'constraint'		=> 4,
+					'unsigned'			=> TRUE,
+					'null'				=> FALSE,
+					'default'			=> 0,
+				),
+				'channel_id' => array(
+					'type'				=> 'int',
+					'constraint'		=> 4,
+					'unsigned'			=> TRUE,
+					'null'				=> FALSE,
+					'default'			=> 0,
+				),
+				'field_layout' => array(
+					'type'				=> 'text'
+				)
+			)
+		);
+		
+		$this->EE->dbforge->add_key('layout_id', TRUE);
+		$this->EE->dbforge->add_key('site_id');
+		$this->EE->dbforge->add_key('member_group');
+		$this->EE->dbforge->add_key('channel_id');
+		$this->EE->smartforge->create_table('layout_publish');
 
 		// CP Search Index
-		$Q[] = "CREATE TABLE `exp_cp_search_index` (
-				`search_id` int(10) UNSIGNED NOT NULL auto_increment, 
-				`controller` varchar(20) default NULL, 
-				`method` varchar(50) default NULL,
-				`language` varchar(20) default NULL, 
-				`access` varchar(50) default NULL, 
-				`keywords` text, 
-				PRIMARY KEY `search_id` (`search_id`),
-				FULLTEXT(`keywords`) 
-		) ENGINE=MyISAM ";
+		// (Can't use SmartForge because of FULLTEXT and ENGINE)
+		$this->EE->db->query(
+				"CREATE TABLE IF NOT EXISTS `exp_cp_search_index` (
+					`search_id` int(10) UNSIGNED NOT NULL auto_increment, 
+					`controller` varchar(20) default NULL, 
+					`method` varchar(50) default NULL,
+					`language` varchar(20) default NULL, 
+					`access` varchar(50) default NULL, 
+					`keywords` text, 
+					PRIMARY KEY `search_id` (`search_id`),
+					FULLTEXT(`keywords`) 
+			) ENGINE=MyISAM "
+		);
 
 		// Channel Titles Autosave
 		// Used for the autosave functionality
-		$Q[] = "CREATE TABLE exp_channel_entries_autosave (
-			 entry_id int(10) unsigned NOT NULL auto_increment,
-			 original_entry_id int(10) unsigned NOT NULL,
-			 site_id INT(4) UNSIGNED NOT NULL DEFAULT 1,
-			 channel_id int(4) unsigned NOT NULL,
-			 author_id int(10) unsigned NOT NULL default 0,
-			 pentry_id int(10) NOT NULL default 0,
-			 forum_topic_id int(10) unsigned NULL DEFAULT NULL,
-			 ip_address varchar(16) NOT NULL,
-			 title varchar(100) NOT NULL,
-			 url_title varchar(75) NOT NULL,
-			 status varchar(50) NOT NULL,
-			 versioning_enabled char(1) NOT NULL default 'n',
-			 view_count_one int(10) unsigned NOT NULL default 0,
-			 view_count_two int(10) unsigned NOT NULL default 0,
-			 view_count_three int(10) unsigned NOT NULL default 0,
-			 view_count_four int(10) unsigned NOT NULL default 0,
-			 allow_comments varchar(1) NOT NULL default 'y',
-			 sticky varchar(1) NOT NULL default 'n',
-			 entry_date int(10) NOT NULL,
-			 dst_enabled varchar(1) NOT NULL default 'n',
-			 year char(4) NOT NULL,
-			 month char(2) NOT NULL,
-			 day char(3) NOT NULL,
-			 expiration_date int(10) NOT NULL default 0,
-			 comment_expiration_date int(10) NOT NULL default 0,
-			 edit_date bigint(14),
-			 recent_comment_date int(10) NULL DEFAULT NULL,
-			 comment_total int(4) unsigned NOT NULL default 0,
-			 entry_data text NULL,
-			 PRIMARY KEY `entry_id` (`entry_id`),
-			 KEY `channel_id` (`channel_id`),
-			 KEY `author_id` (`author_id`),
-			 KEY `url_title` (`url_title`),
-			 KEY `status` (`status`),
-			 KEY `entry_date` (`entry_date`),
-			 KEY `expiration_date` (`expiration_date`),
-			 KEY `site_id` (`site_id`)
-		)";
-
-		$this->_run_queries('Adding new tables', $Q);
+		// Add exp_channel_entries_autosave table
+		$this->EE->dbforge->add_field(
+			array(
+				'entry_id' => array(
+					'type'				=> 'int',
+					'constraint'		=> 10,
+					'unsigned'			=> TRUE,
+					'null'				=> FALSE,
+					'auto_increment'	=> TRUE
+				),
+				'original_entry_id' => array(
+					'type'				=> 'int',
+					'constraint'		=> 10,
+					'unsigned'			=> TRUE,
+					'null'				=> FALSE,
+				),
+				'site_id' => array(
+					'type'				=> 'int',
+					'constraint'		=> 4,
+					'unsigned'			=> TRUE,
+					'null'				=> FALSE,
+					'default'			=> 1,
+				),
+				'channel_id' => array(
+					'type'				=> 'int',
+					'constraint'		=> 4,
+					'unsigned'			=> TRUE,
+					'null'				=> FALSE,
+				),
+				'author_id' => array(
+					'type'				=> 'int',
+					'constraint'		=> 10,
+					'unsigned'			=> TRUE,
+					'null'				=> FALSE,
+					'default'			=> 0,
+				),
+				'forum_topic_id' => array(
+					'type'				=> 'int',
+					'constraint'		=> 10,
+					'unsigned'			=> TRUE,
+					'null'				=> TRUE,
+				),
+				'ip_address' => array(
+					'type'				=> 'varchar',
+					'constraint'		=> 16,
+					'null'				=> FALSE,
+				),
+				'title' => array(
+					'type'				=> 'varchar',
+					'constraint'		=> 100,
+					'null'				=> FALSE,
+				),
+				'url_title' => array(
+					'type'				=> 'varchar',
+					'constraint'		=> 75,
+					'null'				=> FALSE,
+				),
+				'status' => array(
+					'type'				=> 'varchar',
+					'constraint'		=> 50,
+					'null'				=> FALSE,
+				),
+				'versioning_enabled' => array(
+					'type'				=> 'char',
+					'constraint'		=> 1,
+					'null'				=> FALSE,
+					'default'			=> 'n',
+				),
+				'view_count_one' => array(
+					'type'				=> 'int',
+					'constraint'		=> 10,
+					'unsigned'			=> TRUE,
+					'null'				=> FALSE,
+					'default'			=> 0,
+				),
+				'view_count_two' => array(
+					'type'				=> 'int',
+					'constraint'		=> 10,
+					'unsigned'			=> TRUE,
+					'null'				=> FALSE,
+					'default'			=> 0,
+				),
+				'view_count_three' => array(
+					'type'				=> 'int',
+					'constraint'		=> 10,
+					'unsigned'			=> TRUE,
+					'null'				=> FALSE,
+					'default'			=> 0,
+				),
+				'view_count_four' => array(
+					'type'				=> 'int',
+					'constraint'		=> 10,
+					'unsigned'			=> TRUE,
+					'null'				=> FALSE,
+					'default'			=> 0,
+				),
+				'allow_comments' => array(
+					'type'				=> 'varchar',
+					'constraint'		=> 1,
+					'null'				=> FALSE,
+					'default'			=> 'y',
+				),
+				'sticky' => array(
+					'type'				=> 'varchar',
+					'constraint'		=> 1,
+					'null'				=> FALSE,
+					'default'			=> 'n',
+				),
+				'entry_date' => array(
+					'type'				=> 'int',
+					'constraint'		=> 10,
+					'null'				=> FALSE,
+				),
+				'dst_enabled' => array(
+					'type'				=> 'varchar',
+					'constraint'		=> 1,
+					'null'				=> FALSE,
+					'default'			=> 'n',
+				),
+				'year' => array(
+					'type'				=> 'char',
+					'constraint'		=> 4,
+					'null'				=> FALSE,
+				),
+				'month' => array(
+					'type'				=> 'char',
+					'constraint'		=> 2,
+					'null'				=> FALSE,
+				),
+				'day' => array(
+					'type'				=> 'char',
+					'constraint'		=> 3,
+					'null'				=> FALSE,
+				),
+				'expiration_date' => array(
+					'type'				=> 'int',
+					'constraint'		=> 10,
+					'null'				=> FALSE,
+					'default'			=> 0,
+				),
+				'comment_expiration_date' => array(
+					'type'				=> 'int',
+					'constraint'		=> 10,
+					'null'				=> FALSE,
+					'default'			=> 0,
+				),
+				'edit_date' => array(
+					'type'				=> 'bigint',
+					'constraint'		=> 14,
+				),
+				'recent_comment_date' => array(
+					'type'				=> 'int',
+					'constraint'		=> 10,
+					'null'				=> TRUE,
+					'default'			=> TRUE,
+				),
+				'comment_total' => array(
+					'type'				=> 'int',
+					'constraint'		=> 4,
+					'unsigned'			=> TRUE,
+					'null'				=> FALSE,
+					'default'			=> 0,
+				),
+				'entry_data' => array(
+					'type'				=> 'text',
+					'null'				=> TRUE,
+				),
+			)
+		);
+		
+		$this->EE->dbforge->add_key('entry_id', TRUE);
+		$this->EE->dbforge->add_key('channel_id');
+		$this->EE->dbforge->add_key('author_id');
+		$this->EE->dbforge->add_key('url_title');
+		$this->EE->dbforge->add_key('status');
+		$this->EE->dbforge->add_key('entry_date');
+		$this->EE->dbforge->add_key('expiration_date');
+		$this->EE->dbforge->add_key('site_id');
+		$this->EE->smartforge->create_table('channel_entries_autosave');
 
 		return 'database_changes_members';
 	}
@@ -970,69 +1194,598 @@ BSH;
 		$this->EE->progress->update_state("Updating member tables");
 	
 		// Update members table: parse_smileys and crypt_key
-		$Q[] = "ALTER TABLE `exp_members` ADD `parse_smileys` CHAR(1) NOT NULL DEFAULT 'y' AFTER `display_signatures`";
-		$Q[] = "ALTER TABLE `exp_members` ADD `crypt_key` varchar(40) NULL DEFAULT NULL AFTER `unique_id`";
+		$this->EE->smartforge->add_column(
+			'members',
+			array(
+				'parse_smileys' => array(
+					'type'			=> 'char',
+					'constraint'	=> 1,
+					'null'			=> FALSE,
+					'default'		=> 'y'
+				)
+			),
+			'display_signatures'
+		);
+
+		$this->EE->smartforge->add_column(
+			'members',
+			array(
+				'crypt_key' => array(
+					'type'			=> 'varchar',
+					'constraint'	=> 40,
+					'null'			=> TRUE
+				)
+			),
+			'unique_id'
+		);
 
 		// drop user weblog related fields
-		$Q[] = "ALTER TABLE `exp_members` DROP COLUMN `weblog_id`";
-		$Q[] = "ALTER TABLE `exp_members` DROP COLUMN `tmpl_group_id`";
-		$Q[] = "ALTER TABLE `exp_members` DROP COLUMN `upload_id`";
-		$Q[] = "ALTER TABLE `exp_template_groups` DROP COLUMN `is_user_blog`";
-		$Q[] = "ALTER TABLE `exp_weblogs` DROP COLUMN `is_user_blog`";
-		$Q[] = "ALTER TABLE `exp_global_variables` DROP COLUMN `user_blog_id`";
-		$Q[] = "ALTER TABLE `exp_online_users` DROP COLUMN `weblog_id`";
+		$this->EE->smartforge->drop_column('members', 'weblog_id');
+		$this->EE->smartforge->drop_column('members', 'tmpl_group_id');
+		$this->EE->smartforge->drop_column('members', 'upload_id');
+		$this->EE->smartforge->drop_column('template_groups', 'is_user_blog');
+		$this->EE->smartforge->drop_column('weblogs', 'is_user_blog');
+		$this->EE->smartforge->drop_column('global_variables', 'user_blog_id');
+		$this->EE->smartforge->drop_column('online_users', 'weblog_id');
 
 		// members table default tweaks
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `authcode` `authcode` varchar(10) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `url` `url` varchar(150) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `location` `location`  varchar(50) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `occupation` `occupation` varchar(80) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `interests` `interests` varchar(120) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `bday_d` `bday_d` int(2) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `bday_m` `bday_m` int(2) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `bday_y` `bday_y` int(4) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `aol_im` `aol_im` varchar(50) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `yahoo_im` `yahoo_im` varchar(50) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `msn_im` `msn_im` varchar(50) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `icq` `icq` varchar(50) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `bio` `bio` text NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `signature` `signature` text NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `avatar_filename` `avatar_filename` varchar(120) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `avatar_width` `avatar_width` int(4) unsigned NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `avatar_height` `avatar_height` int(4) unsigned NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `photo_filename` `photo_filename` varchar(120) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `photo_width` `photo_width` int(4) unsigned NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `photo_height` `photo_height` int(4) unsigned NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `sig_img_filename` `sig_img_filename` varchar(120) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `sig_img_width` `sig_img_width` int(4) unsigned NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `sig_img_height` `sig_img_height` int(4) unsigned NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `ignore_list` `ignore_list` text NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `cp_theme` `cp_theme` varchar(32) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `profile_theme` `profile_theme` varchar(32) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `forum_theme` `forum_theme` varchar(32) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `tracker` `tracker` text NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `notepad` `notepad` text NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `quick_links` `quick_links` text NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `quick_tabs` `quick_tabs` text NULL";
-		$Q[] = "UPDATE exp_members SET quick_tabs = ''";
+		$this->EE->smartforge->modify_column(
+			'members',
+			array(
+				'authcode' => array(
+					'name'			=> 'authcode',
+					'type'			=> 'varchar',
+					'constraint'	=> 10,
+					'null'			=> TRUE
+				)
+			)
+		);
 
-		$Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_content` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_cp`";
-		$Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_files` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_edit`";
-		$Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_addons` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_design`";
-		$Q[] = "ALTER TABLE `exp_member_groups` MODIFY COLUMN `can_access_modules` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_addons`";
-		$Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_extensions` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_modules`";
-		$Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_accessories` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_extensions`";
-		$Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_plugins` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_accessories`";	  
-		$Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_members` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_plugins`";  
-		$Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_sys_prefs` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_admin`";  
-		$Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_content_prefs` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_sys_prefs`";  
-		$Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_tools` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_content_prefs`";  
-		$Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_utilities` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_comm`";
-		$Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_data` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_utilities`";
-		$Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_logs` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_data`";
-		$Q[] = "ALTER TABLE `exp_member_groups` ADD `can_admin_design` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_admin_weblogs`";	 
+		$this->EE->smartforge->modify_column(
+			'members',
+			array(
+				'url' => array(
+					'name'			=> 'url',
+					'type'			=> 'varchar',
+					'constraint'	=> 150,
+					'null'			=> TRUE
+				)
+			)
+		);
 
-		$this->_run_queries('Updating member tables', $Q);
+		$this->EE->smartforge->modify_column(
+			'members',
+			array(
+				'location' => array(
+					'name'			=> 'location',
+					'type'			=> 'varchar',
+					'constraint'	=> 50,
+					'null'			=> TRUE
+				)
+			)
+		);
+
+		$this->EE->smartforge->modify_column(
+			'members',
+			array(
+				'occupation' => array(
+					'name'			=> 'occupation',
+					'type'			=> 'varchar',
+					'constraint'	=> 80,
+					'null'			=> TRUE
+				)
+			)
+		);
+
+		$this->EE->smartforge->modify_column(
+			'members',
+			array(
+				'interests' => array(
+					'name'			=> 'interests',
+					'type'			=> 'varchar',
+					'constraint'	=> 120,
+					'null'			=> TRUE
+				)
+			)
+		);
+
+		$this->EE->smartforge->modify_column(
+			'members',
+			array(
+				'bday_d' => array(
+					'name'			=> 'bday_d',
+					'type'			=> 'int',
+					'constraint'	=> 2,
+					'null'			=> TRUE
+				)
+			)
+		);
+
+		$this->EE->smartforge->modify_column(
+			'members',
+			array(
+				'bday_m' => array(
+					'name'			=> 'bday_m',
+					'type'			=> 'int',
+					'constraint'	=> 2,
+					'null'			=> TRUE
+				)
+			)
+		);
+
+		$this->EE->smartforge->modify_column(
+			'members',
+			array(
+				'bday_y' => array(
+					'name'			=> 'bday_y',
+					'type'			=> 'int',
+					'constraint'	=> 4,
+					'null'			=> TRUE
+				)
+			)
+		);
+
+		$this->EE->smartforge->modify_column(
+			'members',
+			array(
+				'aol_im' => array(
+					'name'			=> 'aol_im',
+					'type'			=> 'varchar',
+					'constraint'	=> 50,
+					'null'			=> TRUE
+				)
+			)
+		);
+
+		$this->EE->smartforge->modify_column(
+			'members',
+			array(
+				'yahoo_im' => array(
+					'name'			=> 'yahoo_im',
+					'type'			=> 'varchar',
+					'constraint'	=> 50,
+					'null'			=> TRUE
+				)
+			)
+		);
+
+		$this->EE->smartforge->modify_column(
+			'members',
+			array(
+				'msn_im' => array(
+					'name'			=> 'msn_im',
+					'type'			=> 'varchar',
+					'constraint'	=> 50,
+					'null'			=> TRUE
+				)
+			)
+		);
+
+		$this->EE->smartforge->modify_column(
+			'members',
+			array(
+				'icq' => array(
+					'name'			=> 'icq',
+					'type'			=> 'varchar',
+					'constraint'	=> 50,
+					'null'			=> TRUE
+				)
+			)
+		);
+
+		$this->EE->smartforge->modify_column(
+			'members',
+			array(
+				'bio' => array(
+					'name'			=> 'bio',
+					'type'			=> 'text',
+					'null'			=> TRUE
+				)
+			)
+		);
+
+		$this->EE->smartforge->modify_column(
+			'members',
+			array(
+				'signature' => array(
+					'name'			=> 'signature',
+					'type'			=> 'text',
+					'null'			=> TRUE
+				)
+			)
+		);
+
+		$this->EE->smartforge->modify_column(
+			'members',
+			array(
+				'avatar_filename' => array(
+					'name'			=> 'avatar_filename',
+					'type'			=> 'varchar',
+					'constraint'	=> 120,
+					'null'			=> TRUE
+				)
+			)
+		);
+
+		$this->EE->smartforge->modify_column(
+			'members',
+			array(
+				'avatar_width' => array(
+					'name'			=> 'avatar_width',
+					'type'			=> 'int',
+					'constraint'	=> 4,
+					'unsigned'		=> TRUE,
+					'null'			=> TRUE
+				)
+			)
+		);
+
+		$this->EE->smartforge->modify_column(
+			'members',
+			array(
+				'avatar_height' => array(
+					'name'			=> 'avatar_height',
+					'type'			=> 'int',
+					'constraint'	=> 4,
+					'unsigned'		=> TRUE,
+					'null'			=> TRUE
+				)
+			)
+		);
+
+		$this->EE->smartforge->modify_column(
+			'members',
+			array(
+				'photo_filename' => array(
+					'name'			=> 'photo_filename',
+					'type'			=> 'varchar',
+					'constraint'	=> 120,
+					'null'			=> TRUE
+				)
+			)
+		);
+
+		$this->EE->smartforge->modify_column(
+			'members',
+			array(
+				'photo_width' => array(
+					'name'			=> 'photo_width',
+					'type'			=> 'int',
+					'constraint'	=> 4,
+					'unsigned'		=> TRUE,
+					'null'			=> TRUE
+				)
+			)
+		);
+
+		$this->EE->smartforge->modify_column(
+			'members',
+			array(
+				'photo_height' => array(
+					'name'			=> 'photo_height',
+					'type'			=> 'int',
+					'constraint'	=> 4,
+					'unsigned'		=> TRUE,
+					'null'			=> TRUE
+				)
+			)
+		);
+
+		$this->EE->smartforge->modify_column(
+			'members',
+			array(
+				'sig_img_filename' => array(
+					'name'			=> 'sig_img_filename',
+					'type'			=> 'varchar',
+					'constraint'	=> 120,
+					'null'			=> TRUE
+				)
+			)
+		);
+
+		$this->EE->smartforge->modify_column(
+			'members',
+			array(
+				'sig_img_width' => array(
+					'name'			=> 'sig_img_width',
+					'type'			=> 'int',
+					'constraint'	=> 4,
+					'unsigned'		=> TRUE,
+					'null'			=> TRUE
+				)
+			)
+		);
+
+		$this->EE->smartforge->modify_column(
+			'members',
+			array(
+				'sig_img_height' => array(
+					'name'			=> 'sig_img_height',
+					'type'			=> 'int',
+					'constraint'	=> 4,
+					'unsigned'		=> TRUE,
+					'null'			=> TRUE
+				)
+			)
+		);
+
+		$this->EE->smartforge->modify_column(
+			'members',
+			array(
+				'ignore_list' => array(
+					'name'			=> 'ignore_list',
+					'type'			=> 'text',
+					'null'			=> TRUE
+				)
+			)
+		);
+
+		$this->EE->smartforge->modify_column(
+			'members',
+			array(
+				'cp_theme' => array(
+					'name'			=> 'cp_theme',
+					'type'			=> 'varchar',
+					'constraint'	=> 32,
+					'null'			=> TRUE
+				)
+			)
+		);
+
+		$this->EE->smartforge->modify_column(
+			'members',
+			array(
+				'profile_theme' => array(
+					'name'			=> 'profile_theme',
+					'type'			=> 'varchar',
+					'constraint'	=> 32,
+					'null'			=> TRUE
+				)
+			)
+		);
+
+		$this->EE->smartforge->modify_column(
+			'members',
+			array(
+				'forum_theme' => array(
+					'name'			=> 'forum_theme',
+					'type'			=> 'varchar',
+					'constraint'	=> 32,
+					'null'			=> TRUE
+				)
+			)
+		);
+
+		$this->EE->smartforge->modify_column(
+			'members',
+			array(
+				'tracker' => array(
+					'name'			=> 'tracker',
+					'type'			=> 'text',
+					'null'			=> TRUE
+				)
+			)
+		);
+
+		$this->EE->smartforge->modify_column(
+			'members',
+			array(
+				'notepad' => array(
+					'name'			=> 'notepad',
+					'type'			=> 'text',
+					'null'			=> TRUE
+				)
+			)
+		);
+
+		$this->EE->smartforge->modify_column(
+			'members',
+			array(
+				'quick_links' => array(
+					'name'			=> 'quick_links',
+					'type'			=> 'text',
+					'null'			=> TRUE
+				)
+			)
+		);
+
+		$this->EE->smartforge->modify_column(
+			'members',
+			array(
+				'quick_tabs' => array(
+					'name'			=> 'quick_tabs',
+					'type'			=> 'text',
+					'null'			=> TRUE
+				)
+			)
+		);
+
+		$this->EE->db->set('quick_tabs', ''); 
+		$this->EE->db->update('members');
+
+		$this->EE->smartforge->add_column(
+			'member_groups',
+			array(
+				'can_access_content' => array(
+					'type'			=> 'char',
+					'constraint'	=> 1,
+					'null'			=> FALSE,
+					'default'		=> 'n'
+				)
+			),
+			'can_access_cp'
+		);
+
+		$this->EE->smartforge->add_column(
+			'member_groups',
+			array(
+				'can_access_files' => array(
+					'type'			=> 'char',
+					'constraint'	=> 1,
+					'null'			=> FALSE,
+					'default'		=> 'n'
+				)
+			),
+			'can_access_edit'
+		);
+
+		$this->EE->smartforge->add_column(
+			'member_groups',
+			array(
+				'can_access_addons' => array(
+					'type'			=> 'char',
+					'constraint'	=> 1,
+					'null'			=> FALSE,
+					'default'		=> 'n'
+				)
+			),
+			'can_access_design'
+		);
+
+		$this->EE->db->query("ALTER TABLE `exp_member_groups` MODIFY COLUMN `can_access_modules` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_addons`");
+
+		$this->EE->smartforge->add_column(
+			'member_groups',
+			array(
+				'can_access_extensions' => array(
+					'type'			=> 'char',
+					'constraint'	=> 1,
+					'null'			=> FALSE,
+					'default'		=> 'n'
+				)
+			),
+			'can_access_modules'
+		);
+
+		$this->EE->smartforge->add_column(
+			'member_groups',
+			array(
+				'can_access_accessories' => array(
+					'type'			=> 'char',
+					'constraint'	=> 1,
+					'null'			=> FALSE,
+					'default'		=> 'n'
+				)
+			),
+			'can_access_extensions'
+		);
+
+		$this->EE->smartforge->add_column(
+			'member_groups',
+			array(
+				'can_access_plugins' => array(
+					'type'			=> 'char',
+					'constraint'	=> 1,
+					'null'			=> FALSE,
+					'default'		=> 'n'
+				)
+			),
+			'can_access_accessories'
+		);
+
+		$this->EE->smartforge->add_column(
+			'member_groups',
+			array(
+				'can_access_members' => array(
+					'type'			=> 'char',
+					'constraint'	=> 1,
+					'null'			=> FALSE,
+					'default'		=> 'n'
+				)
+			),
+			'can_access_plugins'
+		);
+
+		$this->EE->smartforge->add_column(
+			'member_groups',
+			array(
+				'can_access_sys_prefs' => array(
+					'type'			=> 'char',
+					'constraint'	=> 1,
+					'null'			=> FALSE,
+					'default'		=> 'n'
+				)
+			),
+			'can_access_admin'
+		);
+
+		$this->EE->smartforge->add_column(
+			'member_groups',
+			array(
+				'can_access_content_prefs' => array(
+					'type'			=> 'char',
+					'constraint'	=> 1,
+					'null'			=> FALSE,
+					'default'		=> 'n'
+				)
+			),
+			'can_access_sys_prefs'
+		);
+
+		$this->EE->smartforge->add_column(
+			'member_groups',
+			array(
+				'can_access_tools' => array(
+					'type'			=> 'char',
+					'constraint'	=> 1,
+					'null'			=> FALSE,
+					'default'		=> 'n'
+				)
+			),
+			'can_access_content_prefs'
+		);
+
+		$this->EE->smartforge->add_column(
+			'member_groups',
+			array(
+				'can_access_utilities' => array(
+					'type'			=> 'char',
+					'constraint'	=> 1,
+					'null'			=> FALSE,
+					'default'		=> 'n'
+				)
+			),
+			'can_access_comm'
+		);
+
+		$this->EE->smartforge->add_column(
+			'member_groups',
+			array(
+				'can_access_data' => array(
+					'type'			=> 'char',
+					'constraint'	=> 1,
+					'null'			=> FALSE,
+					'default'		=> 'n'
+				)
+			),
+			'can_access_utilities'
+		);
+
+		$this->EE->smartforge->add_column(
+			'member_groups',
+			array(
+				'can_access_logs' => array(
+					'type'			=> 'char',
+					'constraint'	=> 1,
+					'null'			=> FALSE,
+					'default'		=> 'n'
+				)
+			),
+			'can_access_data'
+		);
+
+		$this->EE->smartforge->add_column(
+			'member_groups',
+			array(
+				'can_admin_design' => array(
+					'type'			=> 'char',
+					'constraint'	=> 1,
+					'null'			=> FALSE,
+					'default'		=> 'n'
+				)
+			),
+			'can_admin_weblogs'
+		);
 
 		return 'database_changes_weblog';
 	}

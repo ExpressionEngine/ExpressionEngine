@@ -45,8 +45,17 @@ class Updater {
 	 */
 	public function do_update()
 	{
-		$this->_update_session_table();
-		$this->_fix_emoticon_config();
+		$steps = new ProgressIterator(
+			array(
+				'_update_session_table',
+				'_fix_emoticon_config',
+			)
+		);
+
+		foreach ($steps as $k => $v)
+		{
+			$this->$v();
+		}
 				
 		return TRUE;
 	}
@@ -61,11 +70,9 @@ class Updater {
 	 * @return 	void
 	 */
 	private function _update_session_table()
-	{
-		$this->EE->load->dbforge();
-		
+	{	
 		// Drop site_id
-		$this->EE->dbforge->drop_column('sessions', 'site_id');
+		$this->EE->smartforge->drop_column('sessions', 'site_id');
     }
 
 	// --------------------------------------------------------------------

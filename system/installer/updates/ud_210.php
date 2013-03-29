@@ -39,22 +39,27 @@ class Updater {
 		{
 			$this->EE->config->update_site_prefs(array('doc_url' => 'http://ellislab.com/expressionengine/user-guide/'), 1);
 		}
-		
-		if ( ! $this->EE->db->field_exists('can_access_fieldtypes', 'member_groups'))
-		{
-			$Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_fieldtypes` char(1) NOT NULL DEFAULT 'n' AFTER `can_access_files`";            
-		}
-		
-		$Q[] = 'UPDATE exp_member_groups SET can_access_fieldtypes = "y" WHERE group_id = 1';
-		$Q[] = 'UPDATE exp_actions SET class = "Channel" WHERE class = "channel"';
-		
-		$count = count($Q);
-		
-		foreach ($Q as $num => $sql)
-		{
-			$this->EE->progress->update_state("Running Query $num of $count");
-	        $this->EE->db->query($sql);
-		}
+
+		$this->EE->smartforge->add_column(
+			'member_groups',
+			array(
+				'can_access_fieldtypes' => array(
+					'type'			=> 'char',
+					'constraint'	=> 1,
+					'default'		=> 'n',
+					'null'			=> FALSE
+				)
+			),
+			'can_access_files'
+		);
+
+		$this->EE->db->set('can_access_fieldtypes', 'y');
+		$this->EE->db->where('group_id', '1');
+		$this->EE->db->update('member_groups');
+
+		$this->EE->db->set('class', 'Channel');
+		$this->EE->db->where('class', 'channel');
+		$this->EE->db->update('actions');
 		
 		return TRUE;
 	}

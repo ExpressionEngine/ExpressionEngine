@@ -42,10 +42,17 @@ class Updater {
 	 */
 	public function do_update()
 	{
-		$this->EE->load->dbforge();
-		
-		$this->_change_site_preferences_column_type();
-		$this->_truncate_tables();
+		$steps = new ProgressIterator(
+			array(
+				'_change_site_preferences_column_type',
+				'_truncate_tables',
+			)
+		);
+
+		foreach ($steps as $k => $v)
+		{
+			$this->$v();
+		}
 		
 		return TRUE;
 	}
@@ -58,7 +65,7 @@ class Updater {
 	 */
 	private function _change_site_preferences_column_type()
 	{
-		$this->EE->dbforge->modify_column(
+		$this->EE->smartforge->modify_column(
 			'sites',
 			array(
 				'site_system_preferences' => array(

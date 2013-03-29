@@ -337,6 +337,97 @@ class EE_Logger {
 		
 		return $message;
 	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Log a message in the Updater log.
+	 *
+	 * @access	public
+	 * @param	string		Message to add to the log.
+	 * @param	bool			If TRUE, add backtrace info to the log.
+	 * @return	void	
+	 */
+	public function updater($log_message, $exception = FALSE)
+	{
+		$this->_setup_log();
+
+		$data = array(
+			 'timestamp'	=> $this->EE->localize->now,
+			 'message'		=> $log_message,
+		);
+
+		if ($exception === TRUE)
+		{
+			$backtrace		= element(1, debug_backtrace(FALSE));
+
+			$data['method']	= $backtrace['class'].'::'.$backtrace['function'];
+			$data['line']	= $backtrace['line'];
+			$data['file']	= $backtrace['file'];
+		}
+
+		$this->EE->db->insert('update_log', $data);
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Create the update_log table if it doesn't already exist. Must be done
+	 * here rather than through the usual Updater since we need it available
+	 * when the Updater begins. Only creates the table if it doesn't already
+	 * exist.
+	 *
+	 * @access	private
+	 * @return	bool	
+	 */
+	private function _setup_log()
+	{
+		$table = 'update_log';
+
+		if ( ! $this->EE->db->table_exists($table))
+		{
+			$this->EE->load->dbforge();
+			
+			$fields = array(
+				'log_id' => array(
+					'type'				=> 'int',
+					'constraint'		=> 10,
+					'unsigned'			=> TRUE,
+					'auto_increment'	=> TRUE
+				),
+				'timestamp' => array(
+					'type'				=> 'int',
+					'constraint'		=> 10,
+					'unsigned'			=> TRUE
+				),
+				'message' => array(
+					'type'				=> 'text',
+					'null'				=> TRUE
+				),
+				'method' => array(
+					'type'				=> 'varchar',
+					'constraint'		=> 100,
+					'null'				=> TRUE
+				),
+				'line' => array(
+					'type'				=> 'int',
+					'constraint'		=> 10,
+					'unsigned'			=> TRUE,
+					'null'				=> TRUE
+				),
+				'file' => array(
+					'type'				=> 'varchar',
+					'constraint'		=> 255,
+					'null'				=> TRUE
+				)
+			);
+
+			$this->EE->dbforge->add_field($fields);
+			$this->EE->dbforge->add_key('log_id', TRUE);
+
+			$this->EE->dbforge->create_table($table);
+		}
+	}
 }
 // END CLASS
 

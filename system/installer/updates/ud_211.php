@@ -27,20 +27,19 @@ class Updater {
 
 	var $version_suffix = '';
 
-    function Updater()
-    {
-        $this->EE =& get_instance();
+	function Updater()
+	{
+		$this->EE =& get_instance();
 		$this->EE->load->library('progress');
 
-    }
+	}
 
-    function do_update()
-    {
+	function do_update()
+	{
 		// update channel_data table changing text fields to NOT NULL
 		
 		// Get all the text fields in the table
 		$fields = $this->EE->db->field_data('channel_data');
-		$Q = array();
 		
 		$fields_to_alter = array();
 
@@ -52,34 +51,46 @@ class Updater {
 			}
 		} 		
 
- 		if (count($fields_to_alter) > 0)
-        {
+		if (count($fields_to_alter) > 0)
+		{
 			foreach ($fields_to_alter as $row)
-            {
- 				// We'll switch null values to empty string for our text fields
-          		$Q[] = "UPDATE `exp_channel_data` SET {$row['0']} = '' WHERE {$row['0']} IS NULL";				
-        	}
+			{
+				// We'll switch null values to empty string for our text fields
+				$this->EE->db->query("UPDATE `exp_channel_data` SET {$row['0']} = '' WHERE {$row['0']} IS NULL");
+			}
 		}
 		
 		// There was a brief time where this was altered but installer still set to 50 characters
 		// so we update again to catch any from that window
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `email` `email` varchar(72) NOT NULL";		
+		$fields = array(
+			'email' => array(
+					'name'			=> 'email',
+					'type'			=> 'varchar',
+					'constraint'	=> 72,
+					'null'			=> FALSE
+				)
+			);
 
-		
-		$Q[] = "INSERT INTO exp_specialty_templates (template_name, data_title, template_data) values ('comments_opened_notification', 'New comments have been added', '".addslashes($this->comments_opened_notification())."')";
+		$this->EE->smartforge->modify_column('members', $fields);
 
-		$count = count($Q);
-		
-		foreach ($Q as $num => $sql)
-		{
-			$this->EE->progress->update_state("Running Query $num of $count");
-	        $this->EE->db->query($sql);
-		}
+		// If 'comments_opened_notification' isn't already in exp_specialty_templates, add it.
+		$values = array(
+			'template_name'	=> 'comments_opened_notification',
+			'data_title'	=> 'New comments have been added',
+			'template_data'	=> addslashes($this->comments_opened_notification()),
+		);
+
+		$unique = array(
+			'template_name'	=> 'comments_opened_notification'
+		);
+
+		$this->EE->smartforge->insert_set('specialty_templates', $values, $unique);
 		
 		// Do we need to move comment notifications?
-		if ( ! $this->EE->db->table_exists('exp_comments'))
+		// We should skip it if the Comments module isn't installed.
+		if ( ! $this->EE->db->table_exists('comments'))
 		{
-        	return TRUE;			
+			return TRUE;			
 		}		
 		
 		$this->EE->progress->update_state("Creating Comment Subscription Table");
@@ -98,20 +109,27 @@ class Updater {
 		$this->EE->dbforge->add_field($fields);
 		$this->EE->dbforge->add_key('subscription_id', TRUE);
 		$this->EE->dbforge->add_key(array('entry_id', 'member_id'));
-		$this->EE->dbforge->create_table('comment_subscriptions');		
+		$this->EE->smartforge->create_table('comment_subscriptions');		
 
 
 		// this step can be a doozy.  Set time limit to infinity.
-        // Server process timeouts are out of our control, unfortunately
-        @set_time_limit(0);
-        $this->EE->db->save_queries = FALSE;
-        
-        $this->EE->progress->update_state('Moving Comment Notifications to Subscriptions');
-                
-        $batch = 50;
+		// Server process timeouts are out of our control, unfortunately
+		@set_time_limit(0);
+		$this->EE->db->save_queries = FALSE;
+		
+		$this->EE->progress->update_state('Moving Comment Notifications to Subscriptions');
+				
+		$batch = 50;
 		$offset = 0;
 		$progress   = "Moving Comment Notifications: %s";
 		
+		// If the notify field doesn't exist anymore, we can move on
+		// to the next update file.
+		if ( ! $this->EE->db->field_exists('notify', 'comments'))
+		{
+		   return TRUE;
+		}
+
 		$this->EE->db->distinct();
 		$this->EE->db->select('entry_id, email, name, author_id');
 		$this->EE->db->where('notify', 'y');
@@ -121,8 +139,8 @@ class Updater {
 		if (count($total) > 0)
 		{
 			for ($i = 0; $i < $total; $i = $i + $batch)
-            {
-            	$this->EE->progress->update_state(str_replace('%s', "{$offset} of {$count} queries", $progress));	
+			{
+				$this->EE->progress->update_state(str_replace('%s', "{$offset} of {$count} queries", $progress));	
 
 				$data = array();
 		
@@ -135,45 +153,55 @@ class Updater {
 				$s_date = NULL;
 					
 				// convert to comments
-            	foreach($comment_data->result_array() as $row)
-            	{
+				foreach($comment_data->result_array() as $row)
+				{
 					$author_id = $row['author_id'];
 					$rand = $author_id.$this->random('alnum', 8);
 					$email = ($row['email'] == '') ? NULL : $row['email'];
 			
-               		$data[] = array(
-                    		'entry_id'       		=> $row['entry_id'],
-                    		'member_id'     		=> $author_id,
-                    		'email'        			=> $email,
-                    		'subscription_date'		=> $s_date,
-                    		'notification_sent'     => 'n',
-                    		'hash'           		=> $rand
-                			);
+					$data[] = array(
+						'entry_id'			=> $row['entry_id'],
+						'member_id'			=> $author_id,
+						'email'				=> $email,
+						'subscription_date'	=> $s_date,
+						'notification_sent'	=> 'n',
+						'hash'				=> $rand
+					);
 				}
 				
 				if (count($data) > 0)
 				{
-					$this->EE->db->insert_batch('comment_subscriptions', $data);
+					if ($this->EE->db->insert_batch('comment_subscriptions', $data))
+					{
+						// Remove the notify flag from comment in the
+						// comments table so that it won't be converted again
+						// in case the comment subscription conversion doesn't
+						// complete and has to be run again.
+						$this->EE->db->set('notify', '');
+						$this->EE->db->where('entry_id', $row['entry_id']);
+						$this->EE->db->where('email', $row['email']);
+						$this->EE->db->where('name', $row['name']);
+						$this->EE->db->where('author_id', $row['author_id']);
+						$this->EE->db->update('comments');
+					}
 				}
 				
 				$offset = $offset + $batch; 
 			}
 		}
 		
-	
 		//  Lastly- we get rid of the notify field
-		$this->EE->db->query("ALTER TABLE `exp_comments` DROP COLUMN `notify`");
+		$this->EE->smartforge->drop_column('comments', 'notify');
 		
 		return TRUE;
 	}
 
-    // ------------------------------------------------------------------------
+	// ------------------------------------------------------------------------
 
 
 	function comments_opened_notification()
 	{
 return <<<EOF
-
 Responses have been added to the entry you subscribed to at:
 {channel_name}
 
@@ -192,7 +220,7 @@ To stop receiving notifications for this entry, click here:
 EOF;
 	}
 	
-    // ------------------------------------------------------------------------
+	// ------------------------------------------------------------------------
 
 	function random($type = 'encrypt', $len = 8)
 	{

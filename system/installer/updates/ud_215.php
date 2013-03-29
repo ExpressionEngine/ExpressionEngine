@@ -46,32 +46,41 @@ class Updater {
 	public function do_update()
 	{
 		$this->EE->load->dbforge();
+
+		$steps = '';
 		
 		// Kill blogger
 		if ($this->EE->db->table_exists('blogger'))
 		{
-			$this->_transfer_blogger();
-			$this->_drop_blogger();
+			$steps[] = '_transfer_blogger';
+			$steps[] = '_drop_blogger';
 			// remove blogger
 		}
 		
 		// Add batch dir preference to exp_upload_prefs
-		$this->_do_upload_pref_update();
+		$steps[] = '_do_upload_pref_update';
 		
 		// Update category group
-		$this->_do_cat_group_update();
+		$steps[] = '_do_cat_group_update';
 		
 		// Build file-related tables
-		$this->_do_build_file_tables();
+		$steps[] = '_do_build_file_tables';
 		
 		// Permission changes
-		$this->_do_permissions_update();
+		$steps[] = '_do_permissions_update';
 		
 		// Move field_content_type to the channel_fields settings array
-		$this->_do_custom_field_update();		
+		$steps[] = '_do_custom_field_update';		
 		
 		// Add a MySQL index or three to help performance
-		$this->_do_add_indexes();
+		$steps[] = '_do_add_indexes';
+
+		$steps = new ProgressIterator($steps);
+
+		foreach ($steps as $k => $v)
+		{
+			$this->$v();
+		}
 
 		return TRUE;
 	}
@@ -157,26 +166,27 @@ class Updater {
 	private function _do_upload_pref_update()
 	{
 		$fields = array(
-					'batch_location' 	=> array(
-								'type'			=> 'VARCHAR',
-								'constraint'	=> 255,
-								),
-					'cat_group'			=> array(
-								'type'			=> 'VARCHAR',
-								'constraint'	=> 255
-					));
+			'batch_location' => array(
+				'type'			=> 'VARCHAR',
+				'constraint'	=> 255,
+			),
+			'cat_group' => array(
+				'type'			=> 'VARCHAR',
+				'constraint'	=> 255
+			)
+		);
 
-		$this->EE->dbforge->add_column('upload_prefs', $fields);
+		$this->EE->smartforge->add_column('upload_prefs', $fields);
 		
 		$fields = array(
-					'server_path'	=> array(
-								'name'			=> 'server_path',
-								'type'			=> 'VARCHAR',
-								'constraint'	=> 255
-					),
+			'server_path' => array(
+				'name'			=> 'server_path',
+				'type'			=> 'VARCHAR',
+				'constraint'	=> 255
+			),
 		);
 		
-		$this->EE->dbforge->modify_column('upload_prefs', $fields);
+		$this->EE->smartforge->modify_column('upload_prefs', $fields);
 	}
 	
 	// ------------------------------------------------------------------------
@@ -191,14 +201,15 @@ class Updater {
 	private function _do_cat_group_update()
 	{
 		$fields = array(
-					'exclude_group' 	=> array(
-								'type'			=> 'TINYINT',
-								'constraint'	=> 1,
-								'null'			=> FALSE,
-								'default'		=> 0
-								));
+			'exclude_group' => array(
+				'type'			=> 'TINYINT',
+				'constraint'	=> 1,
+				'null'			=> FALSE,
+				'default'		=> 0
+			)
+		);
 
-		$this->EE->dbforge->add_column('category_groups', $fields);		
+		$this->EE->smartforge->add_column('category_groups', $fields);		
 	}
 
 	// ------------------------------------------------------------------------	
@@ -314,7 +325,7 @@ class Updater {
 
 		$this->EE->dbforge->add_field($watermark_fields);
 		$this->EE->dbforge->add_key('wm_id', TRUE);
-		$this->EE->dbforge->create_table('file_watermarks');
+		$this->EE->smartforge->create_table('file_watermarks');
 
 		$dimension_fields = array(
 			'id' => array(
@@ -363,7 +374,7 @@ class Updater {
 		$this->EE->dbforge->add_field($dimension_fields);
 		$this->EE->dbforge->add_key('id', TRUE);
 		$this->EE->dbforge->add_key('upload_location_id');
-		$this->EE->dbforge->create_table('file_dimensions');
+		$this->EE->smartforge->create_table('file_dimensions');
 
 		$categories_fields = array(
 			'file_id' => array(
@@ -391,7 +402,7 @@ class Updater {
 		
 		$this->EE->dbforge->add_field($categories_fields);
 		$this->EE->dbforge->add_key(array('file_id', 'cat_id'));
-		$this->EE->dbforge->create_table('file_categories');
+		$this->EE->smartforge->create_table('file_categories');
 		
 		$files_fields = array(
 			'file_id' => array(
@@ -507,7 +518,7 @@ class Updater {
 		$this->EE->dbforge->add_field($files_fields);
 		$this->EE->dbforge->add_key('file_id', TRUE);
 		$this->EE->dbforge->add_key(array('upload_location_id', 'site_id'));
-		$this->EE->dbforge->create_table('files');
+		$this->EE->smartforge->create_table('files');
 	}
 	
 	// ------------------------------------------------------------------------
@@ -522,14 +533,15 @@ class Updater {
 	private function _do_permissions_update()
 	{
 		$fields = array(
-					'can_admin_upload_prefs' 	=> array(
-								'type'			=> 'CHAR',
-								'constraint'	=> 1,
-								'null'			=> FALSE,
-								'default'		=> 'n'
-								));
+			'can_admin_upload_prefs' 	=> array(
+				'type'			=> 'CHAR',
+				'constraint'	=> 1,
+				'null'			=> FALSE,
+				'default'		=> 'n'
+			)
+		);
 
-		$this->EE->dbforge->add_column('member_groups', $fields, 'can_admin_channels');		
+		$this->EE->smartforge->add_column('member_groups', $fields, 'can_admin_channels');		
 	}
 	
 	// ------------------------------------------------------------------------
@@ -568,13 +580,13 @@ class Updater {
 	private function _do_add_indexes()
 	{
 		// We do a ton of template lookups based off the template name.  How about indexing on it?
-		$this->EE->db->query("CREATE INDEX template_name on exp_templates(template_name)");
+		$this->EE->smartforge->create_index('templates', 'template_name');
 
 		// Same with the channel_name in exp_channels
-		$this->EE->db->query("CREATE INDEX channel_name on exp_channels(channel_name)");
+		$this->EE->smartforge->create_index('channels', 'channel_name');
 
 		// and the same for field_type on exp_channel_fields
-		$this->EE->db->query("CREATE INDEX field_type on exp_channel_fields(field_type)");
+		$this->EE->smartforge->create_index('channel_fields', 'field_type');
 	}
 
 	// --------------------------------------------------------------------	
