@@ -117,7 +117,7 @@ class EE_Channel_data_parser {
 
 		$count = 0;
 
-		$parser_plugins = $this->_parser->plugins();
+		$parser_components = $this->_parser->components();
 		$orig_tagdata = $this->_parser->tagdata();
 
 		foreach ($entries as $row)
@@ -202,14 +202,14 @@ class EE_Channel_data_parser {
 				$this->_tag = $key;
 				$this->_tag_options = $val;
 
-				foreach ($parser_plugins->pair() as $k => $plugin)
+				foreach ($parser_components->pair() as $k => $component)
 				{
-					if ( ! $pre->is_disabled($plugin))
+					if ( ! $pre->is_disabled($component))
 					{
-						$tagdata = $plugin->replace(
+						$tagdata = $component->replace(
 							$tagdata,
 							$this,
-							$pre->pair_data($plugin)
+							$pre->pair_data($component)
 						);
 					}
 				}
@@ -227,14 +227,14 @@ class EE_Channel_data_parser {
 				$this->_tag = $key;
 				$this->_tag_options = $val;
 
-				foreach ($parser_plugins->single() as $k => $plugin)
+				foreach ($parser_components->single() as $k => $component)
 				{
-					if ( ! $pre->is_disabled($plugin))
+					if ( ! $pre->is_disabled($component))
 					{
-						$tagdata = $plugin->replace(
+						$tagdata = $component->replace(
 							$tagdata,
 							$this,
-							$pre->single_data($plugin)
+							$pre->single_data($component)
 						);
 					}
 				}

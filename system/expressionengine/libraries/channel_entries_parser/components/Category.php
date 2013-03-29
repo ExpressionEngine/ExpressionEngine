@@ -14,7 +14,7 @@
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Channel Parser Plugin (Categories)
+ * ExpressionEngine Channel Parser Component (Categories)
  *
  * @package		ExpressionEngine
  * @subpackage	Core

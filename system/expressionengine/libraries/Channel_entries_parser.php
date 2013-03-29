@@ -25,7 +25,7 @@
  */
 class EE_Channel_entries_parser {
 
-	protected $_plugins;
+	protected $_components;
 
 	public function __construct()
 	{
@@ -33,7 +33,7 @@ class EE_Channel_entries_parser {
 		require_once APPPATH.'libraries/channel_entries_parser/Parser.php';
 		require_once APPPATH.'libraries/channel_entries_parser/Components.php';
 
-		$this->_plugins = new EE_Channel_parser_components();
+		$this->_components = new EE_Channel_parser_components();
 	}
 
 	// --------------------------------------------------------------------
@@ -51,13 +51,13 @@ class EE_Channel_entries_parser {
 	 */
 	public function create($tagdata, $prefix = '')
 	{
-		return new EE_Channel_parser($tagdata, $prefix, $this->_plugins);
+		return new EE_Channel_parser($tagdata, $prefix, $this->_components);
 	}
 
 	// --------------------------------------------------------------------
 
 	/**
-	 * Register a channel parser plugin
+	 * Register a channel parser component
 	 *
 	 * These are for tags within the channel module. If you're a third
 	 * party reading this, think twice! You probably want a field type.
@@ -66,12 +66,12 @@ class EE_Channel_entries_parser {
 	 * @param type    - single|pair depending on whether or not this is a tag
 	 *					pair or a single tag. Tag pairs are done first.
 	 *
-	 * @param class   - Class name of the plugin. Must be included when this
+	 * @param class   - Class name of the component. Must be included when this
 	 *					is called. Must implement the EE_Channel_parser_component
-	 *					interface found in channel_entries_parser/Plugins.php.
+	 *					interface found in channel_entries_parser/Components.php.
 	 * @return void
 	 */
-	public function register_plugin($type, $class)
+	public function register_component($type, $class)
 	{
 		switch ($type)
 		{
@@ -83,7 +83,7 @@ class EE_Channel_entries_parser {
 				throw new InvalidArgumentException('$type must be "single" or "pair"');
 		}
 
-		$this->_plugins->$fn($class, $add_to_front);
+		$this->_components->$fn($class, $add_to_front);
 	}
 }
 
@@ -103,17 +103,17 @@ class EE_Channel_parser {
 
 	protected $_prefix;
 	protected $_tagdata;
-	protected $_plugins;
+	protected $_components;
 
 	/**
 	 * Instantiated by EE_Channel_entries_parser::create(), please use that
 	 * and refer to its documentation for parameter explanations.
 	 */
-	public function __construct($tagdata, $prefix, EE_Channel_parser_components $plugins)
+	public function __construct($tagdata, $prefix, EE_Channel_parser_components $components)
 	{
 		$this->_prefix = $prefix;
 		$this->_tagdata = $tagdata;
-		$this->_plugins = $plugins;
+		$this->_components = $components;
 	}
 
 	// --------------------------------------------------------------------
@@ -147,16 +147,16 @@ class EE_Channel_parser {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Plugins getter
+	 * Components getter
 	 *
-	 * Plugins handle all of the actual heavy lifting. You can add your
-	 * own by calling EE->Channel_entries_parser->register_plugin().
+	 * Components handle all of the actual heavy lifting. You can add your
+	 * own by calling EE->Channel_entries_parser->register_component().
 	 *
 	 * @return Object<EE_Channel_parser_components>
 	 */
-	public function plugins()
+	public function components()
 	{
-		return $this->_plugins;
+		return $this->_components;
 	}
 
 	// --------------------------------------------------------------------
@@ -179,7 +179,7 @@ class EE_Channel_parser {
 	 *					used as the data for the template.
 	 *	  categories => array of {category_id => cat_data}
 	 *
-	 *	  Other keys as required by parsing plugins.
+	 *	  Other keys as required by parsing components.
 	 *
 	 * @param config  - Additional configuration options, such as
 	 *

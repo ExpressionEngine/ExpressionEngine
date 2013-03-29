@@ -14,7 +14,7 @@
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Channel Parser Plugin (Simple Conditionals)
+ * ExpressionEngine Channel Parser Component (Simple Conditionals)
  *
  * @package		ExpressionEngine
  * @subpackage	Core

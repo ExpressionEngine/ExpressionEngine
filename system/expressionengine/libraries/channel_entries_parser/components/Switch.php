@@ -14,7 +14,7 @@
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Channel Parser Plugin (Switch)
+ * ExpressionEngine Channel Parser Component (Switch)
  *
  * @package		ExpressionEngine
  * @subpackage	Core

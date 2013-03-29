@@ -28,7 +28,7 @@ require_once APPPATH.'libraries/channel_entries_parser/components/Switch.php';
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Channel Parser Plugins
+ * ExpressionEngine Channel Parser Components
  *
  * @package		ExpressionEngine
  * @subpackage	Core
@@ -46,14 +46,14 @@ class EE_Channel_parser_components {
 	 * replace.
 	 * You may encounter edge-case bugs if you try to parse single tags
 	 * before the tag pairs are out of the way, so you're encouraged
-	 * to use the correct type for your plugin.
+	 * to use the correct type for your component.
 	 */
 	protected $pair = array();
 	protected $single = array();
 
 	public function __construct()
 	{
-		// Dear third party devs, use the register_plugin method on
+		// Dear third party devs, use the register_component method on
 		// EE->channel_entries_parser for your own additions. Gracias.
 
 		// Prep built-in parsers. Don't mess with the order, it matters!
@@ -74,9 +74,9 @@ class EE_Channel_parser_components {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Register a plugin that parses a pair tag.
+	 * Register a component that parses a pair tag.
 	 *
-	 * @param String	Class name of new plugin
+	 * @param String	Class name of new component
 	 */
 	public function register_pair($class)
 	{
@@ -87,15 +87,15 @@ class EE_Channel_parser_components {
 			throw new InvalidArgumentException($class.' must implement the EE_Channel_parser_component interface.');
 		}
 
-		$this->pair_plugins[] = $obj;
+		$this->pair_components[] = $obj;
 	}
 
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Register a plugin that parses a single tag.
+	 * Register a component that parses a single tag.
 	 *
-	 * @param String	Class name of new plugin
+	 * @param String	Class name of new component
 	 */
 	public function register_single($class)
 	{
@@ -106,31 +106,31 @@ class EE_Channel_parser_components {
 			throw new InvalidArgumentException($class.' must implement the EE_Channel_parser_component interface.');
 		}
 
-		$this->single_plugins[] = $obj;
+		$this->single_components[] = $obj;
 	}
 
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Pair tag parsing plugins
+	 * Pair tag parsing components
 	 *
-	 * @return Array	List of pair tag parsing plugins
+	 * @return Array	List of pair tag parsing components
 	 */
 	public function pair()
 	{
-		return $this->pair_plugins;
+		return $this->pair_components;
 	}
 
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Single tag parsing plugins
+	 * Single tag parsing components
 	 *
-	 * @return Array	List of single tag parsing plugins
+	 * @return Array	List of single tag parsing components
 	 */
 	public function single()
 	{
-		return $this->single_plugins;
+		return $this->single_components;
 	}
 }
 
@@ -138,7 +138,7 @@ class EE_Channel_parser_components {
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Channel Parser Plugin Interface
+ * ExpressionEngine Channel Parser Component Interface
  *
  * @package		ExpressionEngine
  * @subpackage	Core
@@ -149,7 +149,7 @@ class EE_Channel_parser_components {
 interface EE_Channel_parser_component {
 
 	/**
-	 * Check if your plugin or something something parsed by it
+	 * Check if your component or something something parsed by it
 	 * is in the disable= parameter.
 	 *
 	 * @param array		A list of "disabled" features
@@ -175,7 +175,7 @@ interface EE_Channel_parser_component {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Replace all tags that this plugin can deal with.
+	 * Replace all tags that this component can deal with.
 	 *
 	 * @param String	The tagdata to be parsed
 	 * @param Object	The channel parser object

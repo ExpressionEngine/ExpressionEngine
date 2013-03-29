@@ -14,7 +14,7 @@
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Channel Parser Plugin (Header and Footer)
+ * ExpressionEngine Channel Parser Component (Header and Footer)
  *
  * @package		ExpressionEngine
  * @subpackage	Core

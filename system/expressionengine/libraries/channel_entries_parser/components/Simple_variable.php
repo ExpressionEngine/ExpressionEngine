@@ -14,7 +14,7 @@
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Channel Parser Plugin (Basic Varaibles)
+ * ExpressionEngine Channel Parser Component (Basic Varaibles)
  *
  * @package		ExpressionEngine
  * @subpackage	Core

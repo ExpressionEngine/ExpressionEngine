@@ -14,7 +14,7 @@
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Channel Parser Plugin (Custom Date Fields)
+ * ExpressionEngine Channel Parser Component (Custom Date Fields)
  *
  * @package		ExpressionEngine
  * @subpackage	Core

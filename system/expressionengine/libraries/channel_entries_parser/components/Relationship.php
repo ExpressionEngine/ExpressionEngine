@@ -14,7 +14,7 @@
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Channel Parser Plugin (Relationships)
+ * ExpressionEngine Channel Parser Component (Relationships)
  *
  * @package		ExpressionEngine
  * @subpackage	Core

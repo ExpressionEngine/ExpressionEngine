@@ -14,7 +14,7 @@
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Channel Parser Plugin (Custom Fields)
+ * ExpressionEngine Channel Parser Component (Custom Fields)
  *
  * @package		ExpressionEngine
  * @subpackage	Core

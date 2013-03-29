@@ -38,7 +38,7 @@ class EE_Channel_preparser {
 	protected $_channel;
 	protected $_entry_ids;
 
-	protected $_plugins;
+	protected $_components;
 
 	protected $_disabled;
 	protected $_pair_data;
@@ -59,7 +59,7 @@ class EE_Channel_preparser {
 	 *					  cannot assume they remain unchanged =( .
 	 *
 	 * @param parser	- A channel parser object which gives us access to the
-	 *					  tagdata, prefix information, and parser plugins.
+	 *					  tagdata, prefix information, and parser components.
 	 *
 	 * @param entry_ids - An array of entry ids. This can be used to retrieve
 	 *					  additional data ahead of time. A good example of that
@@ -86,29 +86,29 @@ class EE_Channel_preparser {
 		$this->singles	= $this->_extract_prefixed(get_instance()->TMPL->var_single);
 
 
-		// Run through plugin pre_processing steps, skipping any that
+		// Run through component pre_processing steps, skipping any that
 		// were specified as being disabled.
 
 		$tagdata  = $this->_tagdata;
-		$plugins  = $parser->plugins();
+		$components  = $parser->components();
 		$disabled = isset($config['disable']) ? $config['disable'] : array();
 
-		foreach ($plugins->pair() as $k => $plugin)
+		foreach ($components->pair() as $k => $component)
 		{
-			$skip	 = (bool) $plugin->disabled($disabled, $this);
-			$obj_key = spl_object_hash($plugin);
+			$skip	 = (bool) $component->disabled($disabled, $this);
+			$obj_key = spl_object_hash($component);
 
 			$this->_disabled[$obj_key]  = $skip;
-			$this->_pair_data[$obj_key] = $skip ? NULL : $plugin->pre_process($tagdata, $this);
+			$this->_pair_data[$obj_key] = $skip ? NULL : $component->pre_process($tagdata, $this);
 		}
 
-		foreach ($plugins->single() as $k => $plugin)
+		foreach ($components->single() as $k => $component)
 		{
-			$skip	 = (bool) $plugin->disabled($disabled, $this);
-			$obj_key = spl_object_hash($plugin);
+			$skip	 = (bool) $component->disabled($disabled, $this);
+			$obj_key = spl_object_hash($component);
 
 			$this->_disabled[$obj_key]	  = $skip;
-			$this->_single_data[$obj_key] = $skip ? NULL : $plugin->pre_process($tagdata, $this);
+			$this->_single_data[$obj_key] = $skip ? NULL : $component->pre_process($tagdata, $this);
 		}
 
 		// @todo these need to move elsewhere
@@ -135,7 +135,7 @@ class EE_Channel_preparser {
 	/**
 	 * Pair tag data getter
 	 *
-	 * Returns the data of the preprocessing step of a given plugin.
+	 * Returns the data of the preprocessing step of a given component.
 	 *
 	 * @return mixed	Pair tag preprocessing results
 	 */
@@ -149,7 +149,7 @@ class EE_Channel_preparser {
 	/**
 	 * Single tag data getter
 	 *
-	 * Returns the data of the preprocessing step of a given plugin.
+	 * Returns the data of the preprocessing step of a given component.
 	 *
 	 * @return mixed	Single tag preprocessing results
 	 */
@@ -203,11 +203,11 @@ class EE_Channel_preparser {
 	/**
 	 * Disabled lookup
 	 *
-	 * We skip processing on disabled plugins.
+	 * We skip processing on disabled components.
 	 *
-	 * @param Object<EE_Channel_parser_component> plugin to check
+	 * @param Object<EE_Channel_parser_component> component to check
 	 *
-	 * @return Boolean	Plugin is disabled
+	 * @return Boolean	Component is disabled
 	 */
 	public function is_disabled(EE_Channel_parser_component $obj)
 	{
@@ -219,7 +219,7 @@ class EE_Channel_preparser {
 	/**
 	 * Tag lookup
 	 *
-	 * Utility method for plugins to check if a tag exists in their
+	 * Utility method for components to check if a tag exists in their
 	 * preprocessing step. This frequently acts as a performance shortcut
 	 * to avoid unnecessary processing.
 	 *
@@ -237,7 +237,7 @@ class EE_Channel_preparser {
 	/**
 	 * Tag Pair lookup
 	 *
-	 * Utility method for plugins to check if a tag exists in their
+	 * Utility method for components to check if a tag exists in their
 	 * preprocessing step. This frequently acts as a performance shortcut
 	 * to avoid unnecessary processing.
 	 *

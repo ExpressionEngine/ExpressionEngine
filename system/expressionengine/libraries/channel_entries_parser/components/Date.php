@@ -14,7 +14,7 @@
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Channel Parser Plugin (Dates)
+ * ExpressionEngine Channel Parser Component (Dates)
  *
  * @package		ExpressionEngine
  * @subpackage	Core
