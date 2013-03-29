@@ -31,16 +31,6 @@ class EE_Fieldtype {
 
 	/**
 	 * Constructor
-	 */
-	public function __construct()
-	{
-		$this->EE =& get_instance();
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Constructor
 	 *
 	 * @access	public
 	 * @deprecated This is only here to maintain backwards compatibility
@@ -49,8 +39,6 @@ class EE_Fieldtype {
 	 */
 	function EE_Fieldtype()
 	{
-		$this->EE =& get_instance();
-	
 		// Log the deprecation.
 		ee()->load->library('logger');
 		ee()->logger->deprecated('2.6', 'EE_Fieldtype::__construct()');	
@@ -447,7 +435,7 @@ class EE_Fieldtype {
 			// TODO: Revisit list of plugin formatting, abstract out
 			// existing logic in channel fields API and confirm it's
 			// correct, there's a bug report or two about it
-			$this->EE->addons_model->get_plugin_formatting(TRUE),
+			ee()->addons_model->get_plugin_formatting(TRUE),
 			(isset($data['field_fmt'])) ? $data['field_fmt'] : 'none'
 		);
 	}

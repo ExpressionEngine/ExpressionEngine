@@ -376,13 +376,13 @@ class File_ft extends EE_Fieldtype {
 	 */
 	private function _allowed_directories_options()
 	{
-		$this->EE->load->model('file_upload_preferences_model');
+		ee()->load->model('file_upload_preferences_model');
 
 		$directory_options['all'] = lang('all');
 		
 		if (empty($this->_dirs))
 		{
-			$this->_dirs = $this->EE->file_upload_preferences_model->get_file_upload_preferences(1);
+			$this->_dirs = ee()->file_upload_preferences_model->get_file_upload_preferences(1);
 		}
 
 		foreach($this->_dirs as $dir)

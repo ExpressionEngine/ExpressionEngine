@@ -31,16 +31,16 @@ class Grid_ft extends EE_Fieldtype {
 
 	public function install()
 	{
-		$this->EE->load->library('grid_lib');
-		$this->EE->grid_lib->install();
+		ee()->load->library('grid_lib');
+		ee()->grid_lib->install();
 	}
 
 	// --------------------------------------------------------------------
 	
 	public function uninstall()
 	{
-		$this->EE->load->library('grid_lib');
-		$this->EE->grid_lib->uninstall();
+		ee()->load->library('grid_lib');
+		ee()->grid_lib->uninstall();
 	}
 	
 	// --------------------------------------------------------------------
@@ -54,7 +54,11 @@ class Grid_ft extends EE_Fieldtype {
 
 	public function display_field($data)
 	{
-		return 'yeah!';
+		ee()->load->library('grid_lib');
+
+		ee()->cp->add_to_head(ee()->view->head_link('css/grid.css'));
+
+		return ee()->grid_lib->display_field($data, $this->settings);
 	}
 
 	// --------------------------------------------------------------------
@@ -77,15 +81,15 @@ class Grid_ft extends EE_Fieldtype {
 	{
 		$field_id = isset($data['field_id']) ? $data['field_id'] : 0;
 
-		$this->EE->lang->loadfile('grid');
+		ee()->lang->loadfile('grid');
 
-		$this->EE->table->set_heading(array(
+		ee()->table->set_heading(array(
 			'data' => lang('grid_options'),
 			'colspan' => 2
 		));
 		
 		// Minimum rows field
-		$this->EE->table->add_row(
+		ee()->table->add_row(
 			form_input(array(
 				'name' => 'grid_min_rows',
 				'id' => 'grid_min_rows',
@@ -98,7 +102,7 @@ class Grid_ft extends EE_Fieldtype {
 		);
 
 		// Maximum rows field
-		$this->EE->table->add_row(
+		ee()->table->add_row(
 			form_input(array(
 				'name' => 'grid_max_rows',
 				'id' => 'grid_max_rows',
@@ -110,15 +114,15 @@ class Grid_ft extends EE_Fieldtype {
 			'<br><i class="instruction_text">'.lang('grid_max_rows_desc').'</i></div>'
 		);
 
-		$this->EE->load->library('grid_lib');
+		ee()->load->library('grid_lib');
 
 		$vars = array();
 
 		// Fresh settings forms ready to be used for added columns
 		$vars['settings_forms'] = array();
-		foreach ($this->EE->grid_lib->get_grid_fieldtypes() as $field_name => $data)
+		foreach (ee()->grid_lib->get_grid_fieldtypes() as $field_name => $data)
 		{
-			$vars['settings_forms'][$field_name] = $this->EE->grid_lib->get_settings_form($field_name);
+			$vars['settings_forms'][$field_name] = ee()->grid_lib->get_settings_form($field_name);
 		}
 
 		// Gather columns for current field
@@ -126,16 +130,16 @@ class Grid_ft extends EE_Fieldtype {
 		
 		if ( ! empty($field_id))
 		{
-			$columns = $this->EE->grid_lib->get_columns_for_field($field_id);
+			$columns = ee()->grid_lib->get_columns_for_field($field_id);
 
 			foreach ($columns as $column)
 			{
-				$vars['columns'][] = $this->EE->grid_lib->get_column_view($column);
+				$vars['columns'][] = ee()->grid_lib->get_column_view($column);
 			}
 		}
 
 		// Will be our template for newly-created columns
-		$vars['blank_col'] = $this->EE->grid_lib->get_column_view();
+		$vars['blank_col'] = ee()->grid_lib->get_column_view();
 
 		if (empty($vars['columns']))
 		{
@@ -143,16 +147,16 @@ class Grid_ft extends EE_Fieldtype {
 		}
 		
 		// The big column configuration row, generated from the settings view
-		$this->EE->table->add_row(
-			$this->EE->load->view('settings', $vars, TRUE)
+		ee()->table->add_row(
+			ee()->load->view('settings', $vars, TRUE)
 		);
 
-		$this->EE->cp->add_to_head($this->EE->view->head_link('css/grid.css'));
+		ee()->cp->add_to_head(ee()->view->head_link('css/grid.css'));
 
-		$this->EE->cp->add_to_foot($this->EE->view->script_tag('cp/grid_settings.js'));
-		$this->EE->javascript->output('EE.grid_settings();');
+		ee()->cp->add_to_foot(ee()->view->script_tag('cp/grid_settings.js'));
+		ee()->javascript->output('EE.grid_settings();');
 		
-		return $this->EE->table->generate();
+		return ee()->table->generate();
 	}
 	
 	// --------------------------------------------------------------------
@@ -164,23 +168,23 @@ class Grid_ft extends EE_Fieldtype {
 
 	public function post_save_settings($data)
 	{
-		$this->EE->load->library('grid_lib');
+		ee()->load->library('grid_lib');
 
 		// Need to get the field ID of the possibly newly-created field, so
 		// we'll actually re-save the field settings in the Grid library
-		$data['field_id'] = key($this->EE->api_channel_fields->settings);
-		$data['grid'] = $this->EE->input->post('grid');
+		$data['field_id'] = key(ee()->api_channel_fields->settings);
+		$data['grid'] = ee()->input->post('grid');
 
-		$this->EE->grid_lib->apply_settings($data);
+		ee()->grid_lib->apply_settings($data);
 	}
 
 	public function settings_modify_column($data)
 	{
 		if (isset($data['ee_action']) && $data['ee_action'] == 'delete')
 		{
-			$this->EE->load->library('grid_lib');
+			ee()->load->library('grid_lib');
 			
-			$this->EE->grid_lib->delete_field($data['field_id']);
+			ee()->grid_lib->delete_field($data['field_id']);
 		}
 	}
 }

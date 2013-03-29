@@ -1,3 +1,37 @@
+table.grid_field {
+	background-color: #fff;
+	border: 1px solid #c9cfd4;
+	box-shadow: #dbdee2 2px 2px 0;
+	margin: 9px 0 11px;
+}
+
+table.grid_field th {
+	color: #5F6C74;
+	font-weight: normal;
+	font-size: 12px;
+	padding: 9px 8px;
+	text-align: left;
+	vertical-align: top;
+	width: 314px;
+}
+
+table.grid_field th,
+table.grid_field td {
+	border-left: 1px solid #c9cfd4;
+}
+
+table.grid_field td {
+	border-top: 1px solid #c9cfd4;
+	font-size: 12px;
+	padding: 5px;
+	vertical-align: top;
+}
+
+table.grid_field th.first,
+table.grid_field td.first {
+	border-left: none;
+}
+
 #grid_settings {
 	margin-top: 8px;
 }
@@ -44,6 +78,12 @@
 	color: #859199;
 }
 
+span.instruction_text {
+	display: block;
+	font-size: 11px;
+	margin-top: 5px
+}
+
 .grid_col_setting_label {
 	border-bottom: 1px solid #d0d7df;
 	display: block;
@@ -80,6 +120,8 @@
 	padding: 5px;
 }
 
+.grid_field input[type=text],
+.grid_field textarea,
 .grid_col_settings_section input[type=text],
 .grid_col_settings_section textarea {
 	border-radius: 0;
@@ -87,6 +129,8 @@
 	padding: 6px;
 }
 
+.grid_field input[type=text]:focus,
+.grid_field textarea:focus,
 .grid_col_settings_section input[type=text]:focus,
 .grid_col_settings_section textarea:focus {
 	background-color: #fbfaed;
@@ -110,7 +154,8 @@
 	margin-right: 8px
 }
 
-.grid_col_settings_section.alt {
+.grid_col_settings_section.alt,
+table.grid_field th {
 	background-color: #f5f6f5;
 }
 

@@ -29,13 +29,6 @@ class Grid_lib {
 	private $_fieldtypes = array();
 	private $_table = 'grid_columns';
 	private $_table_prefix = 'grid_field_';
-	
-	public function __construct()
-	{
-		$this->EE =& get_instance();
-	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Performs fieldtype install
@@ -89,10 +82,10 @@ class Grid_lib {
 			)
 		);
 
-		$this->EE->load->dbforge();
-		$this->EE->dbforge->add_field($columns);
-		$this->EE->dbforge->add_key('col_id', TRUE);
-		$this->EE->dbforge->create_table($this->_table);
+		ee()->load->dbforge();
+		ee()->dbforge->add_field($columns);
+		ee()->dbforge->add_key('col_id', TRUE);
+		ee()->dbforge->create_table($this->_table);
 	}
 
 	// ------------------------------------------------------------------------
@@ -105,7 +98,7 @@ class Grid_lib {
 	public function uninstall()
 	{
 		// Get field IDs to drop corresponding field table
-		$grid_fields = $this->EE->db->distinct('field_id')
+		$grid_fields = ee()->db->distinct('field_id')
 			->get($this->_table)
 			->result_array();
 
@@ -116,8 +109,8 @@ class Grid_lib {
 		}
 
 		// Drop grid_columns table
-		$this->EE->load->dbforge();
-		$this->EE->dbforge->drop_table($this->_table);
+		ee()->load->dbforge();
+		ee()->dbforge->drop_table($this->_table);
 	}
 
 	// ------------------------------------------------------------------------
@@ -133,13 +126,49 @@ class Grid_lib {
 	{
 		$table_name = $this->_table_prefix . $field_id;
 
-		if ($this->EE->db->table_exists($table_name))
+		if (ee()->db->table_exists($table_name))
 		{
-			$this->EE->load->dbforge();
-			$this->EE->dbforge->drop_table($table_name);
+			ee()->load->dbforge();
+			ee()->dbforge->drop_table($table_name);
 		}
 
-		$this->EE->db->delete($this->_table, array('field_id' => $field_id));
+		ee()->db->delete($this->_table, array('field_id' => $field_id));
+	}
+
+	// ------------------------------------------------------------------------
+	
+	/**
+	 * Handles EE_Fieldtype's display_field for displaying the Grid field
+	 *
+	 * @param	int		Field ID of field to delete
+	 * @return	void
+	 */
+	public function display_field($data, $settings)
+	{
+		$ft_api = ee()->api_channel_fields;
+
+		// Get columns just for this field
+		$vars['columns'] = $this->get_columns_for_field($settings['field_id']);
+		
+		foreach ($vars['columns'] as &$column)
+		{
+			$fieldtype = $ft_api->setup_handler($column['col_type'], TRUE);
+
+			// Assign settings to fieldtype manually so they're available like
+			// normal field settings
+			$fieldtype->settings = $column['col_settings'];
+
+			// Developers can optionally implement grid_display_field, otherwise
+			// we will try to use display_field
+			$method = $ft_api->check_method_exists('grid_display_field')
+				? 'grid_display_field' : 'display_publish_field';
+
+			// Call the fieldtypes field display method and assign the output
+			// to our column array
+			$column['display_field'] = $ft_api->apply($method, array(''));
+		}
+
+		return ee()->load->view('publish', $vars, TRUE);
 	}
 
 	// ------------------------------------------------------------------------
@@ -158,7 +187,7 @@ class Grid_lib {
 		}
 
 		// Shorten some line lengths
-		$ft_api = $this->EE->api_channel_fields;
+		$ft_api = ee()->api_channel_fields;
 
 		$this->_fieldtypes = $ft_api->fetch_installed_fieldtypes();
 
@@ -191,7 +220,7 @@ class Grid_lib {
 	public function apply_settings($settings)
 	{
 		$table_name = $this->_table_prefix . $settings['field_id'];
-		$ft_api = $this->EE->api_channel_fields;
+		$ft_api = ee()->api_channel_fields;
 
 		// Our settings we need to pass along to the channel fields API when
 		// working with managing the data columns for our fieldtypes
@@ -204,9 +233,9 @@ class Grid_lib {
 			'data_table'			=> $table_name,
 		);
 
-		$modify_field = $this->EE->db->table_exists($table_name);
+		$modify_field = ee()->db->table_exists($table_name);
 
-		$this->EE->load->dbforge();
+		ee()->load->dbforge();
 
 		// Create field table if it doesn't exist
 		if ( ! $modify_field)
@@ -227,9 +256,9 @@ class Grid_lib {
 				)
 			);
 
-			$this->EE->dbforge->add_field($db_columns);
-			$this->EE->dbforge->add_key('row_id', TRUE);
-			$this->EE->dbforge->create_table($table_name);
+			ee()->dbforge->add_field($db_columns);
+			ee()->dbforge->add_key('row_id', TRUE);
+			ee()->dbforge->create_table($table_name);
 		}
 
 		// We'll use the order of the posted fields to determine the column order
@@ -275,15 +304,15 @@ class Grid_lib {
 					$column['settings'],
 					$ft_api_settings);
 
-				$this->EE->db->where('col_id', $col_id);
-				$this->EE->db->update($this->_table, $column_data);
+				ee()->db->where('col_id', $col_id);
+				ee()->db->update($this->_table, $column_data);
 			}
 			// This is a new field, insert it into the columns table and get
 			// the new column ID
 			else
 			{
-				$this->EE->db->insert($this->_table, $column_data);
-				$col_id = $this->EE->db->insert_id();
+				ee()->db->insert($this->_table, $column_data);
+				$col_id = ee()->db->insert_id();
 
 				// Add the fieldtype's columns to our data table
 				$ft_api->setup_handler($column['type']);
@@ -305,7 +334,7 @@ class Grid_lib {
 		if ($modify_field)
 		{
 			// Get current columns to compare to the new list of columns
-			$columns = $this->EE->db->select('col_id, col_type')
+			$columns = ee()->db->select('col_id, col_type')
 				->where('field_id', $settings['field_id'])
 				->get($this->_table)
 				->result_array();
@@ -322,8 +351,8 @@ class Grid_lib {
 			// If any columns are missing from the new settings, delete them
 			if ( ! empty($cols_to_delete))
 			{
-				$this->EE->db->where_in('col_id', $cols_to_delete);
-				$this->EE->db->delete($this->_table);
+				ee()->db->where_in('col_id', $cols_to_delete);
+				ee()->db->delete($this->_table);
 
 				foreach ($cols_to_delete as $col_id)
 				{
@@ -346,7 +375,7 @@ class Grid_lib {
 	 */
 	private function _save_settings($column)
 	{
-		$ft_api = $this->EE->api_channel_fields;
+		$ft_api = ee()->api_channel_fields;
 
 		$ft_api->setup_handler($column['type']);
 
@@ -368,7 +397,7 @@ class Grid_lib {
 	 */
 	public function get_columns_for_field($field_id)
 	{
-		$columns = $this->EE->db->where('field_id', $field_id)
+		$columns = ee()->db->where('field_id', $field_id)
 			->order_by('col_order')
 			->get($this->_table)
 			->result_array();
@@ -405,7 +434,7 @@ class Grid_lib {
 		$column['settings_form'] = (empty($column))
 			? $this->get_settings_form('text') : $this->get_settings_form($column['col_type'], $column);
 
-		return $this->EE->load->view(
+		return ee()->load->view(
 			'col_tmpl',
 			array(
 				'field_name'	=> $field_name,
@@ -428,7 +457,7 @@ class Grid_lib {
 	 */
 	public function get_settings_form($type, $column = NULL)
 	{
-		$ft_api = $this->EE->api_channel_fields;
+		$ft_api = ee()->api_channel_fields;
 
 		$ft_api->setup_handler($type);
 
@@ -465,7 +494,7 @@ class Grid_lib {
 	 */
 	private function _view_for_col_settings($col_type, $col_settings, $col_id = NULL)
 	{
-		$settings_view = $this->EE->load->view(
+		$settings_view = ee()->load->view(
 			'col_settings_tmpl',
 			array(
 				'col_type'		=> $col_type,
