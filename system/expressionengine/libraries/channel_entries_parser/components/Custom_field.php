@@ -31,10 +31,10 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component {
 
 	public function pre_process($tagdata, EE_Channel_preparser $pre)
 	{
-		return NULL;
+		return get_instance()->api_channel_fields;
 	}
 
-	public function replace($tagdata, EE_Channel_data_parser $obj, $pre)
+	public function replace($tagdata, EE_Channel_data_parser $obj, $ft_api)
 	{
 		$tag = $obj->tag();
 		$data = $obj->row();
@@ -42,8 +42,6 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component {
 
 		$site_id = $data['site_id'];
 		$cfields = $obj->channel()->cfields[$site_id];
-
-		$ft_api = get_instance()->api_channel_fields;
 
 		$unprefixed_tag	= preg_replace('/^'.$prefix.'/', '', $tag);
 		$field_name		= substr($unprefixed_tag.' ', 0, strpos($unprefixed_tag.' ', ' '));
@@ -58,26 +56,33 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component {
 			{
 				$params = array();
 				$parse_fnc = 'replace_tag';
-				$parse_fnc_catchall = 'replace_tag_catchall';
 
 				if ($param_string)
 				{
 					$params = get_instance()->functions->assign_parameters($param_string);
 				}
 
-				if ($ft_api->setup_handler($field_id))
-				{
-					$ft_api->apply('_init', array(array('row' => $data)));
-					$data = $ft_api->apply('pre_process', array($data['field_id_'.$field_id]));
+				$obj = $ft_api->setup_handler($field_id, TRUE);
 
-					if ($ft_api->check_method_exists($parse_fnc))
+				if ($obj)
+				{
+					$_ft_path = $ft_api->ft_paths[$ft_api->field_type];
+					get_instance()->load->add_package_path($_ft_path, FALSE);
+
+					$obj->_init(array('row' => $data));
+
+					$data = $obj->pre_process($data['field_id_'.$field_id]);
+
+					if (method_exists($obj, $parse_fnc))
 					{
-						$entry = $ft_api->apply($parse_fnc, array($data, $params, FALSE));
+						$entry = $obj->$parse_fnc($data, $params, FALSE);
 					}
-					elseif ($ft_api->check_method_exists($parse_fnc_catchall))
+					elseif (method_exists($obj, 'replace_tag_catchall'))
 					{
-						$entry = $ft_api->apply($parse_fnc_catchall, array($data, $params, FALSE, $modifier));
+						$entry = $obj->replace_tag_catchall($data, $params, FALSE, $modifier);
 					}
+
+					get_instance()->load->remove_package_path($_ft_path);
 				}
 				else
 				{
@@ -103,6 +108,7 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component {
 					);
 				}
 
+				$entry = '';
 				$tagdata = str_replace(LD.$tag.RD, $entry, $tagdata);
 			}
 		}
