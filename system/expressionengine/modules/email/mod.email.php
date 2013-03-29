@@ -781,7 +781,7 @@ class Email {
 		*/
 			if (ee()->extensions->active_hook('email_module_send_email_end') === TRUE)
 			{
-				$edata = ee()->extensions->call('email_module_send_email_end', $subject, $message, $approved_tos, $approved_recipients);
+				ee()->extensions->call('email_module_send_email_end', $subject, $message, $approved_tos, $approved_recipients);
 				if (ee()->extensions->end_script === TRUE) return;
 			}
 		/*

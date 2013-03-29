@@ -283,7 +283,7 @@ class Member_register extends Member {
 		//  - Take control of member registration routine
 		//  - Added EE 1.4.2
 		//
-			$edata = ee()->extensions->call('member_member_register_start');
+			ee()->extensions->call('member_member_register_start');
 			if (ee()->extensions->end_script === TRUE) return;
 		//
 		// -------------------------------------------
@@ -634,7 +634,7 @@ class Member_register extends Member {
 		//  - Additional processing when a member is created through the User Side
 		//  - $member_id added in 2.0.1
 		//
-			$edata = ee()->extensions->call('member_member_register', $data, $member_id);
+			ee()->extensions->call('member_member_register', $data, $member_id);
 			if (ee()->extensions->end_script === TRUE) return;
 		//
 		// -------------------------------------------
@@ -828,7 +828,7 @@ class Member_register extends Member {
 		//  - Added 1.5.2, 2006-12-28
 		//  - $member_id added 1.6.1
 		//
-			$edata = ee()->extensions->call('member_register_validate_members', $member_id);
+			ee()->extensions->call('member_register_validate_members', $member_id);
 			if (ee()->extensions->end_script === TRUE) return;
 		//
 		// -------------------------------------------

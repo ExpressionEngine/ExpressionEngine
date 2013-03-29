@@ -1215,7 +1215,7 @@ class Member_settings extends Member {
 		// 'member_update_preferences' hook.
 		//  - Allows updating of added preferences via user side preferences form
 		//
-			$edata = ee()->extensions->call('member_update_preferences', $data);
+			ee()->extensions->call('member_update_preferences', $data);
 			if (ee()->extensions->end_script === TRUE) return;
 		//
 		// -------------------------------------------

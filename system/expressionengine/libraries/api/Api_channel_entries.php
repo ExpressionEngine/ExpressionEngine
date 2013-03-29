@@ -509,7 +509,7 @@ class Api_channel_entries extends Api {
 			//  - Add additional processing for entry deletion in loop
 			//  - Added: 1.4.1
 			//
-				$edata = ee()->extensions->call('delete_entries_loop', $val, $channel_id);
+				ee()->extensions->call('delete_entries_loop', $val, $channel_id);
 				if (ee()->extensions->end_script === TRUE) return;
 			//
 			// -------------------------------------------
@@ -548,7 +548,7 @@ class Api_channel_entries extends Api {
 		// 'delete_entries_end' hook.
 		//  - Add additional processing for entry deletion
 		//
-			$edata = ee()->extensions->call('delete_entries_end');
+			ee()->extensions->call('delete_entries_end');
 			if (ee()->extensions->end_script === TRUE) return TRUE;
 		//
 		// -------------------------------------------

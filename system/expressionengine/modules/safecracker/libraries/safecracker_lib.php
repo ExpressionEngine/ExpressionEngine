@@ -1516,7 +1516,7 @@ class Safecracker_lib
 
 		if (ee()->extensions->active_hook('safecracker_submit_entry_end') === TRUE)
 		{
-			$edata = ee()->extensions->call('safecracker_submit_entry_end', $this);
+			ee()->extensions->call('safecracker_submit_entry_end', $this);
 			if (ee()->extensions->end_script === TRUE) return;
 		}
 		

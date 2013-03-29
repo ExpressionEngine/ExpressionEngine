@@ -987,7 +987,7 @@ class Comment_mcp {
 		// 'update_comment_additional' hook.
 		//  - Add additional processing on comment update.
 		//
-			$edata = ee()->extensions->call('update_comment_additional', $comment_id, $data);
+			ee()->extensions->call('update_comment_additional', $comment_id, $data);
 			if (ee()->extensions->end_script === TRUE) return;
 		//
 		// -------------------------------------------
@@ -1314,11 +1314,7 @@ class Comment_mcp {
 				// 'update_comment_additional' hook.
 				//  - Add additional processing on comment update.
 				//
-					$edata = ee()->extensions->call(
-													'update_comment_additional',
-													$row['comment_id'], $row
-												);
-
+					ee()->extensions->call('update_comment_additional', $row['comment_id'], $row);
 					if (ee()->extensions->end_script === TRUE) return;
 				//
 				// -------------------------------------------
@@ -1436,7 +1432,7 @@ class Comment_mcp {
 		// 'delete_comment_additional' hook.
 		//  - Add additional processing on comment delete
 		//
-			$edata = ee()->extensions->call('delete_comment_additional', $comment_ids);
+			ee()->extensions->call('delete_comment_additional', $comment_ids);
 			if (ee()->extensions->end_script === TRUE) return;
 		//
 		// -------------------------------------------

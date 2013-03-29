@@ -111,7 +111,7 @@ class Member_auth extends Member {
 		/*  - Take control of member login routine
 		/*  - Added EE 1.4.2
 		*/
-			$edata = ee()->extensions->call('member_member_login_start');
+			ee()->extensions->call('member_member_login_start');
 			if (ee()->extensions->end_script === TRUE) return;
 		/*
 		/* -------------------------------------------*/
@@ -550,7 +550,7 @@ class Member_auth extends Member {
 		/*  - Perform additional actions after logout
 		/*  - Added EE 1.6.1
 		*/
-			$edata = ee()->extensions->call('member_member_logout');
+			ee()->extensions->call('member_member_logout');
 			if (ee()->extensions->end_script === TRUE) return;
 		/*
 		/* -------------------------------------------*/

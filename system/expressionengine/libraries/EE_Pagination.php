@@ -105,7 +105,7 @@ class Pagination_object {
 			//
 				if (ee()->extensions->active_hook('channel_module_fetch_pagination_data') === TRUE)
 				{
-					$edata = ee()->extensions->universal_call('channel_module_fetch_pagination_data', $this);
+					ee()->extensions->universal_call('channel_module_fetch_pagination_data', $this);
 					if (ee()->extensions->end_script === TRUE) return;
 				}
 			//
@@ -159,7 +159,7 @@ class Pagination_object {
 		//
 			if (ee()->extensions->active_hook('channel_module_create_pagination') === TRUE)
 			{
-				$edata = ee()->extensions->universal_call('channel_module_create_pagination', $this, $count);
+				ee()->extensions->universal_call('channel_module_create_pagination', $this, $count);
 				if (ee()->extensions->end_script === TRUE) return;
 			}
 		//

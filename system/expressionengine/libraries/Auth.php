@@ -220,7 +220,7 @@ class Auth {
 			/*  - Take control of CP authentication routine
 			/*  - Added EE 1.4.2
 			*/
-				$edata = ee()->extensions->call('login_authenticate_start');
+				ee()->extensions->call('login_authenticate_start');
 				if (ee()->extensions->end_script === TRUE) return;
 			/*
 			/* -------------------------------------------*/
@@ -804,7 +804,7 @@ class Auth_result {
 			// 'cp_member_login' hook.
 			//  - Additional processing when a member is logging into CP
 			//
-				$edata = ee()->extensions->call('cp_member_login', $this->_hook_data());
+				ee()->extensions->call('cp_member_login', $this->_hook_data());
 				if (ee()->extensions->end_script === TRUE) return;
 			//
 			// -------------------------------------------
@@ -815,7 +815,7 @@ class Auth_result {
 			// 'member_member_login_multi' hook.
 			//  - Additional processing when a member is logging into multiple sites
 			//
-				$edata = ee()->extensions->call('member_member_login_multi', $this->_hook_data());
+				ee()->extensions->call('member_member_login_multi', $this->_hook_data());
 				if (ee()->extensions->end_script === TRUE) return;
 			//
 			// -------------------------------------------
@@ -826,7 +826,7 @@ class Auth_result {
 			// 'member_member_login_single' hook.
 			//  - Additional processing when a member is logging into single site
 			//
-				$edata = ee()->extensions->call('member_member_login_single', $this->_hook_data());
+				ee()->extensions->call('member_member_login_single', $this->_hook_data());
 				if (ee()->extensions->end_script === TRUE) return;
 			//
 			// -------------------------------------------

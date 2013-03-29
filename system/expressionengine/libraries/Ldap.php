@@ -120,7 +120,7 @@ class EE_LDAP {
 			if (ee()->extensions->active_hook('ldap_register_attributes') === TRUE)
 			{
 				$insert = ee()->extensions->call('ldap_register_attributes', $insert, $data);
-				if (ee()->extensions->end_script === TRUE) return $edata;
+				if (ee()->extensions->end_script === TRUE) return;
 			}	
 		//
 		// -------------------------------------------
@@ -196,7 +196,7 @@ class EE_LDAP {
 			if (ee()->extensions->active_hook('ldap_register_attributes') === TRUE)
 			{
 				$insert = ee()->extensions->call('ldap_register_attributes', $insert, $data);
-				if (ee()->extensions->end_script === TRUE) return $edata;
+				if (ee()->extensions->end_script === TRUE) return;
 			}	
 		//
 		// -------------------------------------------

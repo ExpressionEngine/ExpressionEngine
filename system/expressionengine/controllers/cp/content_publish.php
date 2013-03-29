@@ -1202,7 +1202,7 @@ class Content_publish extends CP_Controller {
 		/*  - Add More Stuff to do when you first submit an entry
 		/*  - Added 1.4.2
 		*/
-			$edata = $this->extensions->call('submit_new_entry_start');
+			$this->extensions->call('submit_new_entry_start');
 			if ($this->extensions->end_script === TRUE) return TRUE;
 		/*
 		/* -------------------------------------------*/

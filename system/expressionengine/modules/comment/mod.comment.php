@@ -2239,7 +2239,7 @@ class Comment {
 		//  - Allows complete rewrite of comment submission routine.
 		//  - Or could be used to modify the POST data before processing
 		//
-			$edata = ee()->extensions->call('insert_comment_start');
+			ee()->extensions->call('insert_comment_start');
 			if (ee()->extensions->end_script === TRUE) return;
 		//
 		// -------------------------------------------
@@ -2958,7 +2958,7 @@ class Comment {
 		//  - More emails, more processing, different redirect
 		//  - $comment_id added in 1.6.1
 		//
-			$edata = ee()->extensions->call('insert_comment_end', $data, $comment_moderate, $comment_id);
+			ee()->extensions->call('insert_comment_end', $data, $comment_moderate, $comment_id);
 			if (ee()->extensions->end_script === TRUE) return;
 		//
 		// -------------------------------------------
