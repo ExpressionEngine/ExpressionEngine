@@ -3187,25 +3187,6 @@ class Channel {
 	// ------------------------------------------------------------------------
 
 	/**
-	  *  Channel Category Totals
-	  *
-	  * Need to finish this function.  It lets a simple list of categories
-	  * appear along with the post total.
-	  */
-	public function category_totals()
-	{
-		$sql = "SELECT count( exp_category_posts.entry_id ) AS count,
-				exp_categories.cat_id,
-				exp_categories.cat_name
-				FROM exp_categories
-				LEFT JOIN exp_category_posts ON exp_category_posts.cat_id = exp_categories.cat_id
-				GROUP BY exp_categories.cat_id
-				ORDER BY group_id, parent_id, cat_order";
-	}
-
-	// ------------------------------------------------------------------------
-
-	/**
 	  *  Channel Categories
 	  */
 	public function categories()
