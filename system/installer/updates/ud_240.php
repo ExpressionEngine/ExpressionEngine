@@ -45,7 +45,7 @@ class Updater {
 	 */
 	public function do_update()
 	{
-		$this->EE->load->dbforge();
+		ee()->load->dbforge();
 
 		$steps = new ProgressIterator(
 			array(
@@ -77,7 +77,7 @@ class Updater {
 	private function _update_watermarks_table()
 	{
 		// Rename offset columns
-		$this->EE->smartforge->modify_column(
+		ee()->smartforge->modify_column(
 			'file_watermarks',
 			array(
 				'wm_x_offset' => array(
@@ -103,7 +103,7 @@ class Updater {
 	 */
 	private function _update_file_dimensions_table()
 	{
-		$this->EE->smartforge->add_column(
+		ee()->smartforge->add_column(
 			'file_dimensions',
 			array(
 				'site_id' => array(
@@ -128,7 +128,7 @@ class Updater {
 	 */
 	private function _update_files_table()
 	{
-		$this->EE->smartforge->add_column(
+		ee()->smartforge->add_column(
 			'files',
 			array(
 				'credit' => array(
@@ -143,7 +143,7 @@ class Updater {
 		);
 		
 		// Rename "caption" field to "description"
-		$this->EE->smartforge->modify_column(
+		ee()->smartforge->modify_column(
 			'files',
 			array(
 				'caption' => array(
@@ -156,13 +156,13 @@ class Updater {
 		// Drop the 6 custom fields
 		for ($i = 1; $i < 7; $i++)
 		{ 
-			$this->EE->smartforge->drop_column('files', 'field_'.$i);
-			$this->EE->smartforge->drop_column('files', 'field_'.$i.'_fmt');
+			ee()->smartforge->drop_column('files', 'field_'.$i);
+			ee()->smartforge->drop_column('files', 'field_'.$i.'_fmt');
 		}
 		
 		// Drop 'metadata' and 'status' fields
-		$this->EE->smartforge->drop_column('files', 'metadata');
-		$this->EE->smartforge->drop_column('files', 'status');
+		ee()->smartforge->drop_column('files', 'metadata');
+		ee()->smartforge->drop_column('files', 'status');
 	}
 	
 	// --------------------------------------------------------------------
@@ -174,7 +174,7 @@ class Updater {
 	 */
 	private function _add_developer_log_table()
 	{
-		$this->EE->dbforge->add_field(
+		ee()->dbforge->add_field(
 			array(
 				'log_id' => array(
 					'type'				=> 'int',
@@ -225,8 +225,8 @@ class Updater {
 			)
 		);
 		
-		$this->EE->dbforge->add_key('log_id', TRUE);
-		$this->EE->smartforge->create_table('developer_log');
+		ee()->dbforge->add_key('log_id', TRUE);
+		ee()->smartforge->create_table('developer_log');
 	}
 	
 	
@@ -241,13 +241,13 @@ class Updater {
 	private function _create_remember_me()
 	{
 		// Hotness coming up, drop it!
-		$this->EE->smartforge->drop_column('members', 'remember_me');
+		ee()->smartforge->drop_column('members', 'remember_me');
 
 		// This has the same structure as sessions, except for the
 		// primary key and "last_activity" fields. Also added site_id back
 		// for this table so that we can count active remember me's per
 		// member per site
-		$this->EE->dbforge->add_field(array(
+		ee()->dbforge->add_field(array(
 			'remember_me_id'	=> array(
 				'type'				=> 'VARCHAR',
 				'constraint'		=> 40,
@@ -290,10 +290,10 @@ class Updater {
 			)
 		));
 		
-		$this->EE->dbforge->add_key('remember_me_id', TRUE);
-		$this->EE->dbforge->add_key('member_id');
+		ee()->dbforge->add_key('remember_me_id', TRUE);
+		ee()->dbforge->add_key('member_id');
 		
-		$this->EE->smartforge->create_table('remember_me');
+		ee()->smartforge->create_table('remember_me');
 	}
 }	
 /* END CLASS */

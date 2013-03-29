@@ -45,7 +45,7 @@ class Updater {
 	 */
 	public function do_update()
 	{
-		$this->EE->load->dbforge();
+		ee()->load->dbforge();
 
 		$steps = new ProgressIterator(
 			array(
@@ -75,7 +75,7 @@ class Updater {
 	 */
 	private function _add_template_name_to_dev_log()
 	{
-		$this->EE->smartforge->add_column(
+		ee()->smartforge->add_column(
 			'developer_log',
 			array(
 				'template_id' => array(
@@ -115,11 +115,11 @@ class Updater {
 	 */
 	private function _drop_dst()
 	{
-			$this->EE->smartforge->drop_column('members', 'daylight_savings');
+			ee()->smartforge->drop_column('members', 'daylight_savings');
 
-			$this->EE->smartforge->drop_column('channel_titles', 'dst_enabled');
+			ee()->smartforge->drop_column('channel_titles', 'dst_enabled');
 
-			$this->EE->smartforge->drop_column('channel_entries_autosave', 'dst_enabled');
+			ee()->smartforge->drop_column('channel_entries_autosave', 'dst_enabled');
 	}
 
 	// --------------------------------------------------------------------
@@ -131,7 +131,7 @@ class Updater {
 	 */
 	private function _update_timezone_column_lengths()
 	{
-		$this->EE->smartforge->modify_column(
+		ee()->smartforge->modify_column(
 			'members',
 			array(
 				'timezone' => array(
@@ -144,7 +144,7 @@ class Updater {
 
 		// Get all date fields, we'll need to update their timezone column
 		// lengths in the channel_data table
-		$date_fields = $this->EE->db
+		$date_fields = ee()->db
 			->select('field_id')
 			->get_where(
 				'channel_fields',
@@ -155,7 +155,7 @@ class Updater {
 		{
 			$field_name = 'field_dt_'.$field['field_id'];
 
-			$this->EE->smartforge->modify_column(
+			ee()->smartforge->modify_column(
 				'channel_data',
 				array(
 					$field_name => array(
@@ -179,7 +179,7 @@ class Updater {
 	 */
 	private function _update_session_table()
 	{
-		$this->EE->smartforge->add_column(
+		ee()->smartforge->add_column(
 			'sessions',
 			array(
 				'fingerprint' => array(
@@ -215,11 +215,11 @@ class Updater {
 
 		// For this one, the method was renamed.  It still mostly does
 		// the same thing and needs to be an action.
-		$this->EE->db->where('method', 'retrieve_password')
+		ee()->db->where('method', 'retrieve_password')
 			->update('actions', array('method'=>'send_reset_token'));
 		// For this one the method still exists, but is now a form.  It needs
 		// to be renamed to the new processing method.
-		$this->EE->db->where('method', 'reset_password')
+		ee()->db->where('method', 'reset_password')
 			->update('actions', array('method'=>'process_reset_password'));
 
 	} 
@@ -247,7 +247,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 {site_name}
 {site_url}');	
 
-		$this->EE->db->where('template_name', 'forgot_password_instructions')
+		ee()->db->where('template_name', 'forgot_password_instructions')
 			->update('specialty_templates', $data);
 	}
 }	

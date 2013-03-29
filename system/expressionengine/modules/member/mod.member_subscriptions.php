@@ -32,7 +32,7 @@ class Member_subscriptions extends Member {
 	 */
 	public function edit_subscriptions()
 	{
-		$this->EE->load->library('members');
+		ee()->load->library('members');
 		
 		// Set some base values
 		
@@ -50,7 +50,7 @@ class Member_subscriptions extends Member {
 		// Set update path
 		$swap['path:update_subscriptions'] = $this->_member_path('update_subscriptions');
 		
-		$subscription_data = $this->EE->members->get_member_subscriptions($this->EE->session->userdata('member_id'), $rownum, $perpage);		
+		$subscription_data = ee()->members->get_member_subscriptions(ee()->session->userdata('member_id'), $rownum, $perpage);		
 
 		// No results?  Bah, how boring...
 		$total_rows = $subscription_data['total_results'];	
@@ -58,7 +58,7 @@ class Member_subscriptions extends Member {
 
 		if ($total_rows == 0)
 		{
-			$swap['subscription_results'] = $this->_var_swap($this->_load_element('no_subscriptions_message'), array('lang:no_subscriptions'=> $this->EE->lang->line('no_subscriptions')));
+			$swap['subscription_results'] = $this->_var_swap($this->_load_element('no_subscriptions_message'), array('lang:no_subscriptions'=> ee()->lang->line('no_subscriptions')));
 											
 			return $this->_var_swap($this->_load_element('subscriptions_form'), $swap);
 		}
@@ -79,29 +79,29 @@ class Member_subscriptions extends Member {
 		
 		if ($total_rows > $perpage)
 		{
-			$this->EE->load->library('pagination');
+			ee()->load->library('pagination');
 			
 			$config['base_url']		= $pageurl;
 			$config['prefix']		= 'R';
 			$config['total_rows'] 	= $total_rows;
 			$config['per_page']		= $perpage;
 			$config['cur_page']		= $rownum;
-			$config['first_link'] 	= $this->EE->lang->line('pag_first_link');
-			$config['last_link'] 	= $this->EE->lang->line('pag_last_link');
+			$config['first_link'] 	= ee()->lang->line('pag_first_link');
+			$config['last_link'] 	= ee()->lang->line('pag_last_link');
 
 			// Allows $config['cur_page'] to override
 			$config['uri_segment'] = 0;
 
-			$this->EE->pagination->initialize($config);
-			$page_links = $this->EE->pagination->create_links();			
+			ee()->pagination->initialize($config);
+			$page_links = ee()->pagination->create_links();			
 		}
 
 		// Build the result table...
 		$out = $this->_var_swap($this->_load_element('subscription_result_heading'),
 								array(
-										'lang:title'		=>	$this->EE->lang->line('title'),
-										'lang:type'		 =>	$this->EE->lang->line('type'),
-										'lang:unsubscribe'  =>	$this->EE->lang->line('unsubscribe')
+										'lang:title'		=>	ee()->lang->line('title'),
+										'lang:type'		 =>	ee()->lang->line('type'),
+										'lang:unsubscribe'  =>	ee()->lang->line('unsubscribe')
 									 )
 							);
 
@@ -123,7 +123,7 @@ class Member_subscriptions extends Member {
 		
 		$out .= $this->_var_swap($this->_load_element('subscription_pagination'),
 								 array('pagination' => $page_links,
-								 		'lang:unsubscribe' => $this->EE->lang->line('unsubscribe'),
+								 		'lang:unsubscribe' => ee()->lang->line('unsubscribe'),
 								 		'class' => ($i++ % 2) ? 'tableCellOne' : 'tableCellTwo'));
 
 	
@@ -141,22 +141,22 @@ class Member_subscriptions extends Member {
 	 */
 	function update_subscriptions()
 	{
-		if ( ! $this->EE->input->post('toggle'))
+		if ( ! ee()->input->post('toggle'))
 		{
-			$this->EE->functions->redirect($this->_member_path('edit_subscriptions'));
+			ee()->functions->redirect($this->_member_path('edit_subscriptions'));
 			exit;	
 		}
 				
-		$this->EE->load->library('subscription');
+		ee()->load->library('subscription');
 
 		foreach ($_POST['toggle'] as $key => $val)
 		{		
 			switch (substr($val, 0, 1))
 			{
-				case "b"	: $this->EE->subscription->init('comment', array('entry_id' => substr($val, 1)), TRUE);
-								$this->EE->subscription->unsubscribe($this->EE->session->userdata('member_id'));
+				case "b"	: ee()->subscription->init('comment', array('entry_id' => substr($val, 1)), TRUE);
+								ee()->subscription->unsubscribe(ee()->session->userdata('member_id'));
 					break;
-				case "f"	: $this->EE->db->query("DELETE FROM exp_forum_subscriptions WHERE topic_id = '".substr($val, 1)."' AND member_id = '{$this->EE->session->userdata['member_id']}'");
+				case "f"	: ee()->db->query("DELETE FROM exp_forum_subscriptions WHERE topic_id = '".substr($val, 1)."' AND member_id = '{ee()->session->userdata['member_id']}'");
 					break;
 			}
 		}
@@ -164,8 +164,8 @@ class Member_subscriptions extends Member {
 		// Success message	
 		return $this->_var_swap($this->_load_element('success'),
 								array(
-										'lang:heading'		=>	$this->EE->lang->line('subscriptions'),
-										'lang:message'		=>	$this->EE->lang->line('subscriptions_removed')
+										'lang:heading'		=>	ee()->lang->line('subscriptions'),
+										'lang:message'		=>	ee()->lang->line('subscriptions_removed')
 									 )
 								);
 	}

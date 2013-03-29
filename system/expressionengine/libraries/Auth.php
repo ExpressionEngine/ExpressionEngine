@@ -99,7 +99,7 @@ class Auth {
 	 */
 	public function authenticate_id($id, $password)
 	{
-		$member = $this->EE->db->get_where('members', array('member_id' => $id));
+		$member = ee()->db->get_where('members', array('member_id' => $id));
 		return $this->_authenticate($member, $password);
 	}
 	
@@ -112,7 +112,7 @@ class Auth {
 	 */
 	public function authenticate_email($email, $password)
 	{
-		$member = $this->EE->db->get_where('members', array('email' => $email));
+		$member = ee()->db->get_where('members', array('email' => $email));
 		return $this->_authenticate($member, $password);
 	}
 
@@ -125,7 +125,7 @@ class Auth {
 	 */
 	public function authenticate_username($username, $password)
 	{
-		$member = $this->EE->db->get_where('members', array('username' => $username));
+		$member = ee()->db->get_where('members', array('username' => $username));
 		return $this->_authenticate($member, $password);
 	}
 	
@@ -156,7 +156,7 @@ class Auth {
 		if ($authed === FALSE)
 		{
 			@header('WWW-Authenticate: Basic realm="'.$realm.'"');
-			$this->EE->output->set_status_header(401);
+			ee()->output->set_status_header(401);
 			@header("Date: ".gmdate("D, d M Y H:i:s")." GMT");
 			exit("HTTP/1.0 401 Unauthorized");
 		}
@@ -195,7 +195,7 @@ class Auth {
 	 */
 	public function verify()
 	{
-		$username = (string) $this->EE->input->post('username');
+		$username = (string) ee()->input->post('username');
 
 		// No username/password?  Bounce them...
 		if ( ! $username)
@@ -204,9 +204,9 @@ class Auth {
 			return FALSE;
 		}
 
-		$this->EE->session->set_flashdata('username', $username);
+		ee()->session->set_flashdata('username', $username);
 
-		if ( ! $this->EE->input->get_post('password'))
+		if ( ! ee()->input->get_post('password'))
 		{
 			$this->errors[] = 'no_password';
 			return FALSE;
@@ -220,56 +220,56 @@ class Auth {
 			/*  - Take control of CP authentication routine
 			/*  - Added EE 1.4.2
 			*/
-				$edata = $this->EE->extensions->call('login_authenticate_start');
-				if ($this->EE->extensions->end_script === TRUE) return;
+				$edata = ee()->extensions->call('login_authenticate_start');
+				if (ee()->extensions->end_script === TRUE) return;
 			/*
 			/* -------------------------------------------*/
 		}
 
 		// Is IP and User Agent required for login?	
-		if ( ! $this->EE->auth->check_require_ip())
+		if ( ! ee()->auth->check_require_ip())
 		{
 			$this->errors[] = 'unauthorized_request';
 			return FALSE;
 		}
 
 		// Check password lockout status
-		if ($this->EE->session->check_password_lockout($username) === TRUE)
+		if (ee()->session->check_password_lockout($username) === TRUE)
 		{
-			$this->EE->lang->loadfile('login');
+			ee()->lang->loadfile('login');
 			
 			$line = lang('password_lockout_in_effect');
-			$line = sprintf($line, $this->EE->config->item('password_lockout_interval'));
+			$line = sprintf($line, ee()->config->item('password_lockout_interval'));
 
 			if (AJAX_REQUEST)
 			{
-				$this->EE->output->send_ajax_response(array(
+				ee()->output->send_ajax_response(array(
 					'messageType'	=> 'logout'
 				));
 			}
 
-			$this->EE->session->set_flashdata('message', $line);
-			$this->EE->functions->redirect(BASE.AMP.'C=login');
+			ee()->session->set_flashdata('message', $line);
+			ee()->functions->redirect(BASE.AMP.'C=login');
 		}
 
 		//  Check credentials
 		// ----------------------------------------------------------------
-		$password = (string) $this->EE->input->post('password');
+		$password = (string) ee()->input->post('password');
 
 		// Allow users to register with Username
 		// ----------------------------------------------------------------
-		$incoming = $this->EE->auth->authenticate_username($username, $password);
+		$incoming = ee()->auth->authenticate_username($username, $password);
 
 		// Allow users to register with Email
 		// ----------------------------------------------------------------
 		if( ! $incoming) {
-			$incoming = $this->EE->auth->authenticate_email($username, $password);
+			$incoming = ee()->auth->authenticate_email($username, $password);
 		}
 		
 		// Not even close
 		if ( ! $incoming)
 		{
-			$this->EE->session->save_password_lockout($username);
+			ee()->session->save_password_lockout($username);
 			$this->errors[] = 'credential_missmatch';
 			return FALSE;
 		}
@@ -277,7 +277,7 @@ class Auth {
 		// Banned
 		if ($incoming->is_banned())
 		{
-			return $this->EE->output->fatal_error(lang('not_authorized'));
+			return ee()->output->fatal_error(lang('not_authorized'));
 		}
 
 		// No cp access
@@ -288,7 +288,7 @@ class Auth {
 		}
 
 		// Do we allow multiple logins on the same account?		
-		if ($this->EE->config->item('allow_multi_logins') == 'n')
+		if (ee()->config->item('allow_multi_logins') == 'n')
 		{
 			if ($incoming->has_other_session())
 			{
@@ -310,10 +310,10 @@ class Auth {
 	 */
 	public function check_require_ip()
 	{
-		if ($this->EE->config->item('require_ip_for_login') == 'y')
+		if (ee()->config->item('require_ip_for_login') == 'y')
 		{
-			if ($this->EE->session->userdata('ip_address') == '' OR 
-				$this->EE->session->userdata('user_agent') == '')
+			if (ee()->session->userdata('ip_address') == '' OR 
+				ee()->session->userdata('user_agent') == '')
 			{
 				return FALSE;
 			}
@@ -394,11 +394,11 @@ class Auth {
 	 */
 	public function update_username($member_id, $username)
 	{
-		$this->EE->db->where('member_id', (int) $member_id);
-		$this->EE->db->set('username', $username);
-		$this->EE->db->update('members');
+		ee()->db->where('member_id', (int) $member_id);
+		ee()->db->set('username', $username);
+		ee()->db->update('members');
 		
-		return (bool) $this->EE->db->affected_rows();
+		return (bool) ee()->db->affected_rows();
 	}
 	// --------------------------------------------------------------------
 
@@ -419,17 +419,17 @@ class Auth {
 		// remove old remember me's and sessions, so that
 		// changing your password effectively logs out people
 		// using the old one.
-		$this->EE->remember->delete_others();
+		ee()->remember->delete_others();
 		
-		$this->EE->db->where('member_id', (int) $member_id);
-		$this->EE->db->where('session_id !=', $this->EE->session->userdata('session_id'));
-		$this->EE->db->delete('sessions');
+		ee()->db->where('member_id', (int) $member_id);
+		ee()->db->where('session_id !=', ee()->session->userdata('session_id'));
+		ee()->db->delete('sessions');
 		
 		// update password in db
-		$this->EE->db->where('member_id', (int) $member_id);
-		$this->EE->db->update('members', $hashed_pair);
+		ee()->db->where('member_id', (int) $member_id);
+		ee()->db->update('members', $hashed_pair);
 		
-		return (bool) $this->EE->db->affected_rows();
+		return (bool) ee()->db->affected_rows();
 	}
 
 	// --------------------------------------------------------------------
@@ -450,7 +450,7 @@ class Auth {
 
 		if (in_array($member->row('group_id'), $always_disallowed))
 		{
-			return $this->EE->output->show_user_error('general', lang('mbr_account_not_active'));
+			return ee()->output->show_user_error('general', lang('mbr_account_not_active'));
 		}
 
 		$m_salt = $member->row('salt');
@@ -582,7 +582,7 @@ class Auth {
 		}
 
 		// Check password Lockout
-		if ($this->EE->session->check_password_lockout($user) === TRUE)
+		if (ee()->session->check_password_lockout($user) === TRUE)
 		{
 			return FALSE;	
 		}
@@ -626,9 +626,9 @@ class Auth_result {
 	{
 		if ( ! is_object($this->group))
 		{
-			$group_q = $this->EE->db->get_where('member_groups', array(
+			$group_q = ee()->db->get_where('member_groups', array(
 				'group_id' => $this->member('group_id'),
-				'site_id' => $this->EE->config->item('site_id'),
+				'site_id' => ee()->config->item('site_id'),
 			));
 			
 			$this->group = $group_q->row();
@@ -649,22 +649,22 @@ class Auth_result {
 	public function has_other_session()
 	{
 		// Kill old sessions first
-		$this->EE->session->gc_probability = 100;
-		$this->EE->session->delete_old_sessions();
+		ee()->session->gc_probability = 100;
+		ee()->session->delete_old_sessions();
 	
-		$expire = time() - $this->EE->session->session_length;
+		$expire = time() - ee()->session->session_length;
 		
 		// See if there is a current session
-		$this->EE->db->select('ip_address, user_agent');
-		$this->EE->db->where('member_id', $this->member('member_id'));
-		$this->EE->db->where('last_activity >', $expire);
-		$result = $this->EE->db->get('sessions');
+		ee()->db->select('ip_address, user_agent');
+		ee()->db->where('member_id', $this->member('member_id'));
+		ee()->db->where('last_activity >', $expire);
+		$result = ee()->db->get('sessions');
 		
 		// If a session exists, trigger the error message
 		if ($result->num_rows() == 1)
 		{
-			$ip = $this->EE->session->userdata['ip_address'];
-			$ua = $this->EE->session->userdata['user_agent'];
+			$ip = ee()->session->userdata['ip_address'];
+			$ua = ee()->session->userdata['user_agent'];
 			
 			if ($ip != $result->row('ip_address') OR 
 				$ua != $result->row('user_agent'))
@@ -701,7 +701,7 @@ class Auth_result {
 	{
 		if ($this->member('group_id') != 1)
 		{
-			return $this->EE->session->ban_check();
+			return ee()->session->ban_check();
 		}
 		
 		return FALSE;
@@ -748,46 +748,46 @@ class Auth_result {
 		if ($multi)
 		{
 			// multi login - we have a session
-			$this->EE->functions->set_cookie(
-				$this->EE->session->c_session,
+			ee()->functions->set_cookie(
+				ee()->session->c_session,
 				$this->session_id,
-				$this->EE->session->session_length
+				ee()->session->session_length
 			);
 
-			$this->EE->session->userdata['session_id'] = $this->session_id;
+			ee()->session->userdata['session_id'] = $this->session_id;
 		}
 		else
 		{
 			// Create a new session
-			$this->session_id = $this->EE->session->create_new_session(
+			$this->session_id = ee()->session->create_new_session(
 				$this->member('member_id'),
 				$cp_sess
 			);
 		}
 		
 		
-		if ($this->EE->config->item($sess_type) != 's')
+		if (ee()->config->item($sess_type) != 's')
 		{
-			$expire = $this->EE->remember->get_expiry();
+			$expire = ee()->remember->get_expiry();
 			
 			if ($this->anon)
 			{
-				$this->EE->functions->set_cookie($this->EE->session->c_anon, 1, $expire);
+				ee()->functions->set_cookie(ee()->session->c_anon, 1, $expire);
 			}
 			else
 			{
 				// Unset the anon cookie
-				$this->EE->functions->set_cookie($this->EE->session->c_anon);				
+				ee()->functions->set_cookie(ee()->session->c_anon);				
 			}
 			
 			// (un)set remember me
 			if ($this->remember_me)
 			{
-				$this->EE->remember->create();
+				ee()->remember->create();
 			}
 			else
 			{
-				$this->EE->remember->delete();
+				ee()->remember->delete();
 			}
 		}
 		
@@ -797,15 +797,15 @@ class Auth_result {
 
 			// We'll manually add the username to the Session array so
 			// the logger class can use it.
-			$this->EE->session->userdata['username'] = $this->member('username');
-			$this->EE->logger->log_action(lang('member_logged_in'));
+			ee()->session->userdata['username'] = $this->member('username');
+			ee()->logger->log_action(lang('member_logged_in'));
 
 			// -------------------------------------------
 			// 'cp_member_login' hook.
 			//  - Additional processing when a member is logging into CP
 			//
-				$edata = $this->EE->extensions->call('cp_member_login', $this->_hook_data());
-				if ($this->EE->extensions->end_script === TRUE) return;
+				$edata = ee()->extensions->call('cp_member_login', $this->_hook_data());
+				if (ee()->extensions->end_script === TRUE) return;
 			//
 			// -------------------------------------------
 		}
@@ -815,8 +815,8 @@ class Auth_result {
 			// 'member_member_login_multi' hook.
 			//  - Additional processing when a member is logging into multiple sites
 			//
-				$edata = $this->EE->extensions->call('member_member_login_multi', $this->_hook_data());
-				if ($this->EE->extensions->end_script === TRUE) return;
+				$edata = ee()->extensions->call('member_member_login_multi', $this->_hook_data());
+				if (ee()->extensions->end_script === TRUE) return;
 			//
 			// -------------------------------------------
 		}
@@ -826,14 +826,14 @@ class Auth_result {
 			// 'member_member_login_single' hook.
 			//  - Additional processing when a member is logging into single site
 			//
-				$edata = $this->EE->extensions->call('member_member_login_single', $this->_hook_data());
-				if ($this->EE->extensions->end_script === TRUE) return;
+				$edata = ee()->extensions->call('member_member_login_single', $this->_hook_data());
+				if (ee()->extensions->end_script === TRUE) return;
 			//
 			// -------------------------------------------
 		}
 
 		// Delete old password lockouts		
-		$this->EE->session->delete_password_lockout();
+		ee()->session->delete_password_lockout();
 	}
 	
 	// --------------------------------------------------------------------

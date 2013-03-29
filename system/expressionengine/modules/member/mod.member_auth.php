@@ -35,14 +35,14 @@ class Member_auth extends Member {
 	public function profile_login_form($return = '-2')
 	{
 		// If they are already logged in then send them away.
-		if ($this->EE->session->userdata('member_id') !== 0)
+		if (ee()->session->userdata('member_id') !== 0)
 		{
-			return $this->EE->functions->redirect($this->EE->functions->fetch_site_index());
+			return ee()->functions->redirect(ee()->functions->fetch_site_index());
 		}
 
 		$login_form = $this->_load_element('login_form');
 
-		if ($this->EE->config->item('user_session_type') != 'c')
+		if (ee()->config->item('user_session_type') != 'c')
 		{
 			$login_form = $this->_deny_if('auto_login', $login_form);
 		}
@@ -67,11 +67,11 @@ class Member_auth extends Member {
 			return;
 		}
 
-		$data['hidden_fields']['ACT']	= $this->EE->functions->fetch_action_id('Member', 'member_login');
+		$data['hidden_fields']['ACT']	= ee()->functions->fetch_action_id('Member', 'member_login');
 
 		if (isset($match['4']))
 		{
-			$data['hidden_fields']['RET'] = (substr($match['4'], 0, 4) !== 'http') ? $this->EE->functions->create_url($match['4']) : $match['4'];
+			$data['hidden_fields']['RET'] = (substr($match['4'], 0, 4) !== 'http') ? ee()->functions->create_url($match['4']) : $match['4'];
 		}
 		elseif ($this->in_forum == TRUE)
 		{
@@ -88,7 +88,7 @@ class Member_auth extends Member {
 		$this->_set_page_title(lang('member_login'));
 
 		return $this->_var_swap($login_form, array(
-					$match['1'] => $this->EE->functions->form_declaration($data)));
+					$match['1'] => ee()->functions->form_declaration($data)));
 	}
 
 	// --------------------------------------------------------------------
@@ -99,53 +99,53 @@ class Member_auth extends Member {
 	public function member_login()
 	{
 		// If they are already logged in then send them away.
-		if ($this->EE->session->userdata('member_id') !== 0)
+		if (ee()->session->userdata('member_id') !== 0)
 		{
-			return $this->EE->functions->redirect($this->EE->functions->fetch_site_index());
+			return ee()->functions->redirect(ee()->functions->fetch_site_index());
 		}
 
-		$this->EE->load->library('auth');
+		ee()->load->library('auth');
 
 		/* -------------------------------------------
 		/* 'member_member_login_start' hook.
 		/*  - Take control of member login routine
 		/*  - Added EE 1.4.2
 		*/
-			$edata = $this->EE->extensions->call('member_member_login_start');
-			if ($this->EE->extensions->end_script === TRUE) return;
+			$edata = ee()->extensions->call('member_member_login_start');
+			if (ee()->extensions->end_script === TRUE) return;
 		/*
 		/* -------------------------------------------*/
 		
 		// Figure out how many sites we're dealing with here
-		$sites = $this->EE->config->item('multi_login_sites');
+		$sites = ee()->config->item('multi_login_sites');
 		$sites_array = explode('|', $sites);
 		
 		// No username/password?  Bounce them...
-		$multi	  = ($this->EE->input->get('multi') && count($sites_array) > 0) ? 
-						$this->EE->input->get('multi') : 0;
-		$username = $this->EE->input->post('username');
-		$password = $this->EE->input->post('password');
+		$multi	  = (ee()->input->get('multi') && count($sites_array) > 0) ? 
+						ee()->input->get('multi') : 0;
+		$username = ee()->input->post('username');
+		$password = ee()->input->post('password');
 		
 		if ( ! $multi && ! ($username && $password))
 		{
-			return $this->EE->output->show_user_error('general', lang('mbr_form_empty'));
+			return ee()->output->show_user_error('general', lang('mbr_form_empty'));
 		}
 
 		// This should go in the auth lib.
-		if ( ! $this->EE->auth->check_require_ip())
+		if ( ! ee()->auth->check_require_ip())
 		{
-			return $this->EE->output->show_user_error('general', lang('unauthorized_request'));
+			return ee()->output->show_user_error('general', lang('unauthorized_request'));
 		}
 
 		// Check password lockout status
-		if (TRUE === $this->EE->session->check_password_lockout($username))
+		if (TRUE === ee()->session->check_password_lockout($username))
 		{
-			$this->EE->lang->loadfile('login');
+			ee()->lang->loadfile('login');
 			
 			$line = lang('password_lockout_in_effect');
-			$line = sprintf($line, $this->EE->config->item('password_lockout_interval'));
+			$line = sprintf($line, ee()->config->item('password_lockout_interval'));
 
-			$this->EE->output->show_user_error('general', $line);
+			ee()->output->show_user_error('general', $line);
 		}
 
 		$success = '';
@@ -157,7 +157,7 @@ class Member_auth extends Member {
 			$incoming = $this->_do_multi_auth($sites, $multi);
 			$success = '_build_multi_success_message';
 
-			$current_url = $this->EE->functions->fetch_site_index();
+			$current_url = ee()->functions->fetch_site_index();
 			$current_search_url = preg_replace('/\/S=.*$/', '', $current_url);
 			$current_idx = array_search($current_search_url, $sites_array);
 		}
@@ -167,13 +167,13 @@ class Member_auth extends Member {
 			$incoming = $this->_do_auth($username, $password);
 			$success = '_build_success_message';
 			
-			$current_url = $this->EE->functions->fetch_site_index();
+			$current_url = ee()->functions->fetch_site_index();
 			$current_search_url = preg_replace('/\/S=.*$/', '', $current_url);
 			$current_idx = array_search($current_search_url, $sites_array);
 		}
 		
 		// More sites?
-		if ($sites && $this->EE->config->item('allow_multi_logins') == 'y')
+		if ($sites && ee()->config->item('allow_multi_logins') == 'y')
 		{
 			$this->_redirect_next_site($sites, $current_idx, $current_url);
 		}
@@ -193,8 +193,8 @@ class Member_auth extends Member {
 	 */
 	private function _check_min_unpwd($member_obj, $username, $password)
 	{
-		$uml = $this->EE->config->item('un_min_len');
-		$pml = $this->EE->config->item('pw_min_len');
+		$uml = ee()->config->item('un_min_len');
+		$pml = ee()->config->item('pw_min_len');
 
 		$ulen = strlen($username);
 		$plen = strlen($password);
@@ -202,10 +202,10 @@ class Member_auth extends Member {
 		if ($ulen < $uml OR $plen < $pml)
 		{
 			$trigger = '';
-			if ($this->EE->input->get_post('FROM') == 'forum')
+			if (ee()->input->get_post('FROM') == 'forum')
 			{
-				$this->basepath = $this->EE->input->get_post('mbase');
-				$trigger = $this->EE->input->get_post('trigger');
+				$this->basepath = ee()->input->get_post('mbase');
+				$trigger = ee()->input->get_post('trigger');
 			}
 			
 			$path = 'unpw_update/' . $member_obj->member('member_id') . '_' . $ulen . '_' . $plen;
@@ -215,7 +215,7 @@ class Member_auth extends Member {
 				$path .= '/'.$trigger;
 			}
 
-			return $this->EE->functions->redirect($this->_member_path($path));
+			return ee()->functions->redirect($this->_member_path($path));
 		}		
 	}
 
@@ -230,35 +230,35 @@ class Member_auth extends Member {
 	 */
 	private function _do_auth($username, $password)
 	{
-		$sess = $this->EE->auth->authenticate_username($username, $password);
+		$sess = ee()->auth->authenticate_username($username, $password);
 
 		if ( ! $sess)
 		{
-			$this->EE->session->save_password_lockout($username);
+			ee()->session->save_password_lockout($username);
 
 			if (empty($username) OR empty($password))
 			{
-				return $this->EE->output->show_user_error('general', lang('mbr_form_empty'));
+				return ee()->output->show_user_error('general', lang('mbr_form_empty'));
 			}
 			else
 			{
-				return $this->EE->output->show_user_error('general', lang('invalid_existing_un_pw'));
+				return ee()->output->show_user_error('general', lang('invalid_existing_un_pw'));
 			}
 		}
 
 		// Banned
 		if ($sess->is_banned())
 		{
-			return $this->EE->output->show_user_error('general', lang('not_authorized'));
+			return ee()->output->show_user_error('general', lang('not_authorized'));
 		}
 
 		// Allow multiple logins?
 		// Do we allow multiple logins on the same account?		
-		if ($this->EE->config->item('allow_multi_logins') == 'n')
+		if (ee()->config->item('allow_multi_logins') == 'n')
 		{
 			if ($sess->has_other_session())
 			{
-				return $this->EE->output->show_user_error('general', lang('not_authorized'));
+				return ee()->output->show_user_error('general', lang('not_authorized'));
 			}
 		}
 
@@ -272,7 +272,7 @@ class Member_auth extends Member {
 			$sess->remember_me();
 		}
 
-		$anon = ($this->EE->input->post('anon') == 1) ? FALSE : TRUE;
+		$anon = (ee()->input->post('anon') == 1) ? FALSE : TRUE;
 
 		$sess->anon($anon);
 
@@ -292,17 +292,17 @@ class Member_auth extends Member {
 	 */
 	private function _do_multi_auth($sites, $session_id)
 	{
-		if ( ! $sites OR $this->EE->config->item('allow_multi_logins') == 'n')
+		if ( ! $sites OR ee()->config->item('allow_multi_logins') == 'n')
 		{
-			return $this->EE->output->show_user_error('general', lang('not_authorized'));
+			return ee()->output->show_user_error('general', lang('not_authorized'));
 		}
 		
 		// Kill old sessions first
-		$this->EE->session->gc_probability = 100;
-		$this->EE->session->delete_old_sessions();
+		ee()->session->gc_probability = 100;
+		ee()->session->delete_old_sessions();
 		
 		// Grab session
-		$sess_q = $this->EE->db->get_where('sessions', array(
+		$sess_q = ee()->db->get_where('sessions', array(
 			'session_id' => $session_id
 		));
 		
@@ -314,7 +314,7 @@ class Member_auth extends Member {
 		}
 		
 		// Grab member
-		$mem_q = $this->EE->db->get_where('members', array(
+		$mem_q = ee()->db->get_where('members', array(
 			'member_id' => $sess_q->row('member_id')
 		));
 		
@@ -336,7 +336,7 @@ class Member_auth extends Member {
 		$incoming->start_session();
 		
 		$new_row = $sess_q->row_array();
-		$some_row['site_id'] = $this->EE->config->item('site_id');
+		$some_row['site_id'] = ee()->config->item('site_id');
 
 		return $incoming;
 	}	
@@ -354,19 +354,19 @@ class Member_auth extends Member {
 	{
 		$sites = explode('|', $sites);
 		$num_sites = count($sites);
-		$orig_id = $this->EE->input->get('orig_site_id');
-		$orig_idx = $this->EE->input->get('orig');
-		$return = $this->EE->input->get('RET');
+		$orig_id = ee()->input->get('orig_site_id');
+		$orig_idx = ee()->input->get('orig');
+		$return = ee()->input->get('RET');
 		
 		$next_idx = $current_idx + 1;
 		
 		// first site, no qs yet
 		if ($orig_id === FALSE)
 		{
-			$orig_id = $this->EE->config->item('site_id');
+			$orig_id = ee()->config->item('site_id');
 			$orig_idx = $current_idx;
 			$next_idx = ($current_idx == '0') ? '1' : '0';
-			$return = reduce_double_slashes($this->EE->functions->form_backtrack());
+			$return = reduce_double_slashes(ee()->functions->form_backtrack());
 			$return = strtr(base64_encode($return), '/=', '_-');
 		}
 		elseif ($next_idx == $orig_idx)
@@ -377,7 +377,7 @@ class Member_auth extends Member {
 		// Do we have another?
 		if (isset($sites[$next_idx]))
 		{
-			$action_id = $this->EE->db->select('action_id')
+			$action_id = ee()->db->select('action_id')
 				->where('class', 'Member')
 				->where('method', 'member_login')
 				->get('actions');
@@ -388,13 +388,13 @@ class Member_auth extends Member {
 				'RET'	=> $return,
 				'cur'	=> $next_idx,
 				'orig'	=> $orig_idx,
-				'multi'	=> $this->EE->session->userdata('session_id'),
+				'multi'	=> ee()->session->userdata('session_id'),
 				'orig_site_id' => $orig_id,
 			);
 			
 			$next_url = $sites[$next_idx].'?'.http_build_query($next_qs);
 
-			return $this->EE->functions->redirect($next_url);
+			return ee()->functions->redirect($next_url);
 		}
 		
 	}
@@ -404,9 +404,9 @@ class Member_auth extends Member {
 	private function _build_multi_success_message($sites)
 	{
 		// Figure out return
-		if  ( ! $ret = $this->EE->input->get('RET'))
+		if  ( ! $ret = ee()->input->get('RET'))
 		{
-			$ret = $sites[$this->EE->input->get('orig')];
+			$ret = $sites[ee()->input->get('orig')];
 		}
 		else
 		{
@@ -424,12 +424,12 @@ class Member_auth extends Member {
 		);
 		
 		// Pull preferences for the original site
-		$orig_id = $this->EE->input->get('orig_site_id');
+		$orig_id = ee()->input->get('orig_site_id');
 		
 		if (is_numeric($orig_id))
 		{
-			$this->EE->db->select('site_name, site_id');
-			$query = $this->EE->db->get_where('sites', array(
+			ee()->db->select('site_name, site_id');
+			$query = ee()->db->get_where('sites', array(
 				'site_id' => (int) $orig_id
 			));
 			
@@ -438,11 +438,11 @@ class Member_auth extends Member {
 				$final_site_id = $query->row('site_id');
 				$final_site_name = $query->row('site_name');
 
-				$this->EE->config->site_prefs($final_site_name, $final_site_id);
+				ee()->config->site_prefs($final_site_name, $final_site_id);
 			}
 		}
 		
-		$this->EE->output->show_message($data);
+		ee()->output->show_message($data);
 	}
 
 	/**
@@ -451,23 +451,23 @@ class Member_auth extends Member {
 	private function _build_success_message($sites)
 	{
 		// Build success message
-		$site_name = ($this->EE->config->item('site_name') == '') ? lang('back') : stripslashes($this->EE->config->item('site_name'));
+		$site_name = (ee()->config->item('site_name') == '') ? lang('back') : stripslashes(ee()->config->item('site_name'));
 
-		$return = reduce_double_slashes($this->EE->functions->form_backtrack());
+		$return = reduce_double_slashes(ee()->functions->form_backtrack());
 
 		// Is this a forum request?
-		if ($this->EE->input->get_post('FROM') == 'forum')
+		if (ee()->input->get_post('FROM') == 'forum')
 		{
-			if ($this->EE->input->get_post('board_id') !== FALSE && 
-				is_numeric($this->EE->input->get_post('board_id')))
+			if (ee()->input->get_post('board_id') !== FALSE && 
+				is_numeric(ee()->input->get_post('board_id')))
 			{
-				$query = $this->EE->db->select('board_label')
-					->where('board_id', $this->EE->input->get_post('board_id'))
+				$query = ee()->db->select('board_label')
+					->where('board_id', ee()->input->get_post('board_id'))
 					->get('forum_boards');
 			}
 			else
 			{
-				$query = $this->EE->db->select('board_label')
+				$query = ee()->db->select('board_label')
 					->where('board_id', (int) 1)
 					->get('forum_boards');
 			}
@@ -484,7 +484,7 @@ class Member_auth extends Member {
 			'link'		=> array($return, $site_name)
 		);
 
-		$this->EE->output->show_message($data);
+		ee()->output->show_message($data);
 	}
 
 	// --------------------------------------------------------------------
@@ -494,36 +494,36 @@ class Member_auth extends Member {
 	 */
 	private function _update_online_user_stats()
 	{
-		if ($this->EE->config->item('enable_online_user_tracking') == 'n' OR
-			$this->EE->config->item('disable_all_tracking') == 'y')
+		if (ee()->config->item('enable_online_user_tracking') == 'n' OR
+			ee()->config->item('disable_all_tracking') == 'y')
 		{
 			return;
 		}
 
 		// Update stats
-		$cutoff = $this->EE->localize->now - (15 * 60);
-		$anon = ($this->EE->input->post('anon') == 1) ? '' : 'y';
+		$cutoff = ee()->localize->now - (15 * 60);
+		$anon = (ee()->input->post('anon') == 1) ? '' : 'y';
 
-		$in_forum = ($this->EE->input->get_post('FROM') == 'forum') ? 'y' : 'n';
+		$in_forum = (ee()->input->get_post('FROM') == 'forum') ? 'y' : 'n';
 
-		$escaped_ip = $this->EE->db->escape_str($this->EE->input->ip_address());
+		$escaped_ip = ee()->db->escape_str(ee()->input->ip_address());
 
-		$this->EE->db->where('site_id', $this->EE->config->item('site_id'))
+		ee()->db->where('site_id', ee()->config->item('site_id'))
 			->where("(ip_address = '".$escaped_ip."' AND member_id = '0')", '', FALSE)
 			->or_where('date < ', $cutoff)
 			->delete('online_users');
 
 		$data = array(
-			'member_id'		=> $this->EE->session->userdata('member_id'),
-			'name'			=> ($this->EE->session->userdata('screen_name') == '') ? $this->EE->session->userdata('username') : $this->EE->session->userdata('screen_name'),
-			'ip_address'	=> $this->EE->input->ip_address(),
+			'member_id'		=> ee()->session->userdata('member_id'),
+			'name'			=> (ee()->session->userdata('screen_name') == '') ? ee()->session->userdata('username') : ee()->session->userdata('screen_name'),
+			'ip_address'	=> ee()->input->ip_address(),
 			'in_forum'		=> $in_forum,
-			'date'			=> $this->EE->localize->now,
+			'date'			=> ee()->localize->now,
 			'anon'			=> $anon,
-			'site_id'		=> $this->EE->config->item('site_id')
+			'site_id'		=> ee()->config->item('site_id')
 		);
 
-		$this->EE->db->where('ip_address', $this->EE->input->ip_address())
+		ee()->db->where('ip_address', ee()->input->ip_address())
 			->where('member_id', $data['member_id'])
 			->update('online_users', $data);		
 	}
@@ -536,22 +536,22 @@ class Member_auth extends Member {
 	public function member_logout()
 	{
 		// Kill the session and cookies		
-		$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
-		$this->EE->db->where('ip_address', $this->EE->input->ip_address());
-		$this->EE->db->where('member_id', $this->EE->session->userdata('member_id'));
-		$this->EE->db->delete('online_users');		
+		ee()->db->where('site_id', ee()->config->item('site_id'));
+		ee()->db->where('ip_address', ee()->input->ip_address());
+		ee()->db->where('member_id', ee()->session->userdata('member_id'));
+		ee()->db->delete('online_users');		
 		
-		$this->EE->session->destroy();
+		ee()->session->destroy();
 
-		$this->EE->functions->set_cookie('read_topics');
+		ee()->functions->set_cookie('read_topics');
 
 		/* -------------------------------------------
 		/* 'member_member_logout' hook.
 		/*  - Perform additional actions after logout
 		/*  - Added EE 1.6.1
 		*/
-			$edata = $this->EE->extensions->call('member_member_logout');
-			if ($this->EE->extensions->end_script === TRUE) return;
+			$edata = ee()->extensions->call('member_member_logout');
+			if (ee()->extensions->end_script === TRUE) return;
 		/*
 		/* -------------------------------------------*/
 
@@ -559,18 +559,18 @@ class Member_auth extends Member {
 		$name = '';
 		unset($url);
 
-		if ($this->EE->input->get_post('FROM') == 'forum')
+		if (ee()->input->get_post('FROM') == 'forum')
 		{
-			if ($this->EE->input->get_post('board_id') !== FALSE && 
-				is_numeric($this->EE->input->get_post('board_id')))
+			if (ee()->input->get_post('board_id') !== FALSE && 
+				is_numeric(ee()->input->get_post('board_id')))
 			{
-				$query = $this->EE->db->select("board_forum_url, board_label")
-					->where('board_id', $this->EE->input->get_post('board_id'))
+				$query = ee()->db->select("board_forum_url, board_label")
+					->where('board_id', ee()->input->get_post('board_id'))
 					->get('forum_boards');
 			}
 			else
 			{
-				$query = $this->EE->db->select('board_forum_url, board_label')
+				$query = ee()->db->select('board_forum_url, board_label')
 					->where('board_id', (int) 1)
 					->get('forum_boards');
 			}
@@ -580,8 +580,8 @@ class Member_auth extends Member {
 		}
 
 		// Build success message
-		$url	= ( ! isset($url)) ? $this->EE->config->item('site_url')	: $url;
-		$name	= ( ! isset($url)) ? stripslashes($this->EE->config->item('site_name'))	: $name;
+		$url	= ( ! isset($url)) ? ee()->config->item('site_url')	: $url;
+		$name	= ( ! isset($url)) ? stripslashes(ee()->config->item('site_name'))	: $name;
 
 		$data = array(
 			'title' 	=> lang('mbr_login'),
@@ -591,7 +591,7 @@ class Member_auth extends Member {
 			'link'		=> array($url, $name)
 		);
 
-		$this->EE->output->show_message($data);
+		ee()->output->show_message($data);
 	}
 
 	// --------------------------------------------------------------------
@@ -609,15 +609,15 @@ class Member_auth extends Member {
 	{
 		// If the user is logged in already, then send them away.  They have no
 		// business here.
-		if ($this->EE->session->userdata('member_id') !== 0)
+		if (ee()->session->userdata('member_id') !== 0)
 		{
-			return $this->EE->functions->redirect($this->EE->functions->fetch_site_index());
+			return ee()->functions->redirect(ee()->functions->fetch_site_index());
 		}
 
 		$data = array(
 			'id'				=> 'forgot_password_form',
 			'hidden_fields'		=> array(
-				'ACT'	=> $this->EE->functions->fetch_action_id('Member', 'send_reset_token'),
+				'ACT'	=> ee()->functions->fetch_action_id('Member', 'send_reset_token'),
 				'FROM'	=> ($this->in_forum == TRUE) ? 'forum' : ''
 			)
 		);
@@ -632,7 +632,7 @@ class Member_auth extends Member {
 		return $this->_var_swap(
 			$this->_load_element('forgot_form'),
 			array(
-				'form_declaration' => $this->EE->functions->form_declaration($data)
+				'form_declaration' => ee()->functions->form_declaration($data)
 			)
 		);
 	}
@@ -652,38 +652,38 @@ class Member_auth extends Member {
 	public function send_reset_token()
 	{
 		// if this user is logged in, then send them away.
-		if ($this->EE->session->userdata('member_id') !== 0)
+		if (ee()->session->userdata('member_id') !== 0)
 		{
-			return $this->EE->functions->redirect($this->EE->functions->fetch_site_index());
+			return ee()->functions->redirect(ee()->functions->fetch_site_index());
 		}
 		
 		// Is user banned?
-		if ($this->EE->session->userdata('is_banned') === TRUE)
+		if (ee()->session->userdata('is_banned') === TRUE)
 		{
-			return $this->EE->output->show_user_error('general', array(lang('not_authorized')));
+			return ee()->output->show_user_error('general', array(lang('not_authorized')));
 		}
 
 		// Error trapping
-		if ( ! $address = $this->EE->input->post('email'))
+		if ( ! $address = ee()->input->post('email'))
 		{
-			return $this->EE->output->show_user_error('submission', array(lang('invalid_email_address')));
+			return ee()->output->show_user_error('submission', array(lang('invalid_email_address')));
 		}
 
-		$this->EE->load->helper('email');
+		ee()->load->helper('email');
 		if ( ! valid_email($address))
 		{
-			return $this->EE->output->show_user_error('submission', array(lang('invalid_email_address')));
+			return ee()->output->show_user_error('submission', array(lang('invalid_email_address')));
 		}
 
 		$address = strip_tags($address);
 
-		$memberQuery = $this->EE->db->select('member_id, username')
+		$memberQuery = ee()->db->select('member_id, username')
 			->where('email', $address)
 			->get('members');
 
 		if ($memberQuery->num_rows() == 0)
 		{
-			return $this->EE->output->show_user_error('submission', array(lang('no_email_found')));
+			return ee()->output->show_user_error('submission', array(lang('no_email_found')));
 		}
 
 		$member_id = $memberQuery->row('member_id') ;
@@ -691,28 +691,28 @@ class Member_auth extends Member {
 
 		// Kill old data from the reset_password field
 		$a_day_ago = time() - (60*60*24);
-		$this->EE->db->where('date <', $a_day_ago)
+		ee()->db->where('date <', $a_day_ago)
 			->or_where('member_id', $member_id)
 			->delete('reset_password');
 
 		// Create a new DB record with the temporary reset code
-		$rand = $this->EE->functions->random('alnum', 8);
+		$rand = ee()->functions->random('alnum', 8);
 		$data = array('member_id' => $member_id, 'resetcode' => $rand, 'date' => time());
-		$this->EE->db->query($this->EE->db->insert_string('exp_reset_password', $data));
+		ee()->db->query(ee()->db->insert_string('exp_reset_password', $data));
 
 		// Build the email message
-		if ($this->EE->input->get_post('FROM') == 'forum')
+		if (ee()->input->get_post('FROM') == 'forum')
 		{
-			if ($this->EE->input->get_post('board_id') !== FALSE && 
-				is_numeric($this->EE->input->get_post('board_id')))
+			if (ee()->input->get_post('board_id') !== FALSE && 
+				is_numeric(ee()->input->get_post('board_id')))
 			{
-				$query = $this->EE->db->select('board_forum_url, board_id, board_label')
-					->where('board_id', $this->EE->input->get_post('board_id'))
+				$query = ee()->db->select('board_forum_url, board_id, board_label')
+					->where('board_id', ee()->input->get_post('board_id'))
 					->get('forum_boards');
 			}
 			else
 			{
-				$query = $this->EE->db->select('board_forum_url, board_id, board_label')
+				$query = ee()->db->select('board_forum_url, board_id, board_label')
 					->where('board_id', (int) 1)
 					->get('forum_boards');
 			}
@@ -723,20 +723,20 @@ class Member_auth extends Member {
 		}
 		else
 		{
-			$site_name	= stripslashes($this->EE->config->item('site_name'));
-			$return 	= $this->EE->config->item('site_url');
+			$site_name	= stripslashes(ee()->config->item('site_name'));
+			$return 	= ee()->config->item('site_url');
 		}
 
-		$forum_id = ($this->EE->input->get_post('FROM') == 'forum') ? '&r=f&board_id='.$board_id : '';
+		$forum_id = (ee()->input->get_post('FROM') == 'forum') ? '&r=f&board_id='.$board_id : '';
 
 		$swap = array(
 			'name'		=> $username,
-			'reset_url'	=> $this->EE->functions->fetch_site_index(0, 0) . '/' . $this->EE->config->item('profile_trigger') . '/reset_password' .QUERY_MARKER.'&id='.$rand.$forum_id,
+			'reset_url'	=> ee()->functions->fetch_site_index(0, 0) . '/' . ee()->config->item('profile_trigger') . '/reset_password' .QUERY_MARKER.'&id='.$rand.$forum_id,
 			'site_name'	=> $site_name,
 			'site_url'	=> $return
 		);
 
-		$template = $this->EE->functions->fetch_email_template('forgot_password_instructions');
+		$template = ee()->functions->fetch_email_template('forgot_password_instructions');
 		
 		// _var_swap calls string replace on $template[] for each key in
 		// $swap.  If the key doesn't exist then no swapping happens.  
@@ -744,16 +744,16 @@ class Member_auth extends Member {
 		$email_msg = $this->_var_swap($template['data'], $swap);
 
 		// Instantiate the email class
-		$this->EE->load->library('email');
-		$this->EE->email->wordwrap = true;
-		$this->EE->email->from($this->EE->config->item('webmaster_email'), $this->EE->config->item('webmaster_name'));
-		$this->EE->email->to($address);
-		$this->EE->email->subject($email_tit);
-		$this->EE->email->message($email_msg);
+		ee()->load->library('email');
+		ee()->email->wordwrap = true;
+		ee()->email->from(ee()->config->item('webmaster_email'), ee()->config->item('webmaster_name'));
+		ee()->email->to($address);
+		ee()->email->subject($email_tit);
+		ee()->email->message($email_msg);
 
-		if ( ! $this->EE->email->send())
+		if ( ! ee()->email->send())
 		{
-			return $this->EE->output->show_user_error('submission', array(lang('error_sending_email')));
+			return ee()->output->show_user_error('submission', array(lang('error_sending_email')));
 		}
 
 		// Build success message
@@ -764,7 +764,7 @@ class Member_auth extends Member {
 			'link'		=> array($return, $site_name)
 		);
 
-		$this->EE->output->show_message($data);
+		ee()->output->show_message($data);
 	}
 
 	// --------------------------------------------------------------------
@@ -783,20 +783,20 @@ class Member_auth extends Member {
 	public function reset_password()
 	{
 		// if the use is logged in, then send them away
-		if ($this->EE->session->userdata('member_id') !== 0)
+		if (ee()->session->userdata('member_id') !== 0)
 		{
-			return $this->EE->functions->redirect($this->EE->functions->fetch_site_index());
+			return ee()->functions->redirect(ee()->functions->fetch_site_index());
 		}
 		// If the user is banned, send them away.
-		if ($this->EE->session->userdata('is_banned') === TRUE)
+		if (ee()->session->userdata('is_banned') === TRUE)
 		{
-			return $this->EE->output->show_user_error('general', array(lang('not_authorized')));
+			return ee()->output->show_user_error('general', array(lang('not_authorized')));
 		}
 
 		// They didn't include their token.  Give em an error.
-		if ( ! ($resetcode = $this->EE->input->get_post('id')))
+		if ( ! ($resetcode = ee()->input->get_post('id')))
 		{
-			return $this->EE->output->show_user_error('submission', array(lang('mbr_no_reset_id')));
+			return ee()->output->show_user_error('submission', array(lang('mbr_no_reset_id')));
 		}
 
 		// Check to see whether we're in the forum or not.
@@ -805,7 +805,7 @@ class Member_auth extends Member {
 		$data = array(
 			'id'				=> 'reset_password_form',
 			'hidden_fields'		=> array(
-				'ACT'	=> $this->EE->functions->fetch_action_id('Member', 'process_reset_password'),
+				'ACT'	=> ee()->functions->fetch_action_id('Member', 'process_reset_password'),
 				'FROM'	=> ($in_forum == TRUE) ? 'forum' : '',
 				'resetcode' => $resetcode
 			)
@@ -820,7 +820,7 @@ class Member_auth extends Member {
 
 		return $this->_var_swap(
 			$this->_load_element('reset_password_form'),
-			array('form_declaration' => $this->EE->functions->form_declaration($data))
+			array('form_declaration' => ee()->functions->form_declaration($data))
 		);
 	}
 
@@ -839,20 +839,20 @@ class Member_auth extends Member {
 	public function process_reset_password()
 	{
 		// if the user is logged in, then send them away
-		if ($this->EE->session->userdata('member_id') !== 0)
+		if (ee()->session->userdata('member_id') !== 0)
 		{
-			return $this->EE->functions->redirect($this->EE->functions->fetch_site_index());
+			return ee()->functions->redirect(ee()->functions->fetch_site_index());
 		}
 
 		// If the user is banned, send them away.
-		if ($this->EE->session->userdata('is_banned') === TRUE)
+		if (ee()->session->userdata('is_banned') === TRUE)
 		{
-			return $this->EE->output->show_user_error('general', array(lang('not_authorized')));
+			return ee()->output->show_user_error('general', array(lang('not_authorized')));
 		}
 
-		if ( ! ($resetcode = $this->EE->input->get_post('resetcode'))) 
+		if ( ! ($resetcode = ee()->input->get_post('resetcode'))) 
 		{
-			return $this->EE->output->show_user_error('submission', array(lang('mbr_no_reset_id')));
+			return ee()->output->show_user_error('submission', array(lang('mbr_no_reset_id')));
 		}
 	
 		// We'll use this in a couple of places to determine whether a token is still valid
@@ -860,25 +860,25 @@ class Member_auth extends Member {
 		$a_day_ago = time() - (60*60*24);		
 
 		// Make sure the token is valid and belongs to a member.	
-		$member_id_query = $this->EE->db->select('member_id')
+		$member_id_query = ee()->db->select('member_id')
 			->where('resetcode', $resetcode)
 			->where('date >', $a_day_ago)
 			->get('reset_password');
 
 		if ($member_id_query->num_rows() === 0) 
 		{
-			return $this->EE->output->show_user_error('submission', array(lang('mbr_id_not_found')));
+			return ee()->output->show_user_error('submission', array(lang('mbr_id_not_found')));
 		}
 
 		// Ensure the passwords match.
-		if ( ! ($password = $this->EE->input->get_post('password'))) 
+		if ( ! ($password = ee()->input->get_post('password'))) 
 		{
-			return $this->EE->output->show_user_error('submission', array(lang('mbr_missing_password')));
+			return ee()->output->show_user_error('submission', array(lang('mbr_missing_password')));
 		}
 
-		if ( ! ($password_confirm = $this->EE->input->get_post('password_confirm')))
+		if ( ! ($password_confirm = ee()->input->get_post('password_confirm')))
 		{
-			return $this->EE->output->show_user_error('submission', array(lang('mbr_missing_confirm')));
+			return ee()->output->show_user_error('submission', array(lang('mbr_missing_confirm')));
 		}
 
 		// Validate the password, using EE_Validate. This will also
@@ -897,40 +897,40 @@ class Member_auth extends Member {
 		$VAL->validate_password();
 		if (count($VAL->errors) > 0)
 		{
-			return $this->EE->output->show_user_error('submission', $VAL->errors);
+			return ee()->output->show_user_error('submission', $VAL->errors);
 		}
 
 		// Update the database with the new password.  Apply the appropriate salt first.
-		$this->EE->load->library('auth');
-		$this->EE->auth->update_password(
+		ee()->load->library('auth');
+		ee()->auth->update_password(
 			$member_id_query->row('member_id'),
 			$password
 		);
 
 		// Invalidate the old token.  While we're at it, may as well wipe out expired
 		// tokens too, just to keep them from building up.
-		$this->EE->db->where('date <', $a_day_ago)
+		ee()->db->where('date <', $a_day_ago)
 			->or_where('member_id', $member_id_query->row('member_id'))
 			->delete('reset_password');
 		
 
 		// If we can get their last URL from the tracker,
 		// then we'll use it.
-		if (isset($this->EE->session->tracker[3])) 
+		if (isset(ee()->session->tracker[3])) 
 		{
-			$site_name = stripslashes($this->EE->config->item('site_name'));
-			$return = $this->EE->functions->fetch_site_index() . '/' . $this->EE->session->tracker[3];
+			$site_name = stripslashes(ee()->config->item('site_name'));
+			$return = ee()->functions->fetch_site_index() . '/' . ee()->session->tracker[3];
 		}
 		// Otherwise, it's entirely possible they are clicking the e-mail link after
 		// their session has expired.  In that case, the only information we have
 		// about where they came from is in the POST data (where it came from the GET data).
 		// Use it to get them as close as possible to where they started.
-		else if ($this->EE->input->get_post('FROM') == 'forum')
+		else if (ee()->input->get_post('FROM') == 'forum')
 		{
-			$board_id = $this->EE->input->get_post('board_id');
+			$board_id = ee()->input->get_post('board_id');
 			$board_id = ($board_id === FALSE OR ! is_numeric($board_id)) ? 1 : $board_id;
 			
-			$forum_query = $this->EE->db->select('board_forum_url, board_label')
+			$forum_query = ee()->db->select('board_forum_url, board_label')
 				->where('board_id', (int)$board_id)
 				->get('forum_boards');
 		
@@ -939,8 +939,8 @@ class Member_auth extends Member {
 		}
 		else
 		{
-			$site_name = stripslashes($this->EE->config->item('site_name'));
-			$return = $this->EE->functions->fetch_site_index();
+			$site_name = stripslashes(ee()->config->item('site_name'));
+			$return = ee()->functions->fetch_site_index();
 		}
 	
 		// Build the success message that we'll show to the user.	
@@ -954,7 +954,7 @@ class Member_auth extends Member {
 
 		);
 
-		$this->EE->output->show_message($data);
+		ee()->output->show_message($data);
 	}
 	
 }

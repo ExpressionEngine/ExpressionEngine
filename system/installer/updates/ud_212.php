@@ -43,7 +43,7 @@ class Updater {
 			)
 		);
 
-		$this->EE->smartforge->add_column('members', $fields, 'quick_tabs');
+		ee()->smartforge->add_column('members', $fields, 'quick_tabs');
 
 
 		$fields = array(
@@ -55,7 +55,7 @@ class Updater {
 			)
 		);
 
-		$this->EE->smartforge->add_column('member_fields', $fields, 'm_field_reg');
+		ee()->smartforge->add_column('member_fields', $fields, 'm_field_reg');
 
 
 		$fields = array(
@@ -67,7 +67,7 @@ class Updater {
 			)
 		);
 
-		$this->EE->smartforge->modify_column('accessories', $fields);
+		ee()->smartforge->modify_column('accessories', $fields);
 
 
 		$fields = array(
@@ -79,22 +79,22 @@ class Updater {
 			)
 		);
 
-		$this->EE->smartforge->add_column('member_groups', $fields, 'can_view_profiles');
+		ee()->smartforge->add_column('member_groups', $fields, 'can_view_profiles');
 
-		$this->EE->db->set('can_edit_html_buttons', 'y');
-		$this->EE->db->where('can_access_cp', 'y');
-		$this->EE->db->update('member_groups');
+		ee()->db->set('can_edit_html_buttons', 'y');
+		ee()->db->where('can_access_cp', 'y');
+		ee()->db->update('member_groups');
 
 
-		if ($this->EE->db->table_exists('comments'))
+		if (ee()->db->table_exists('comments'))
 		{
-			$this->EE->db->set('location', '');
-			$this->EE->db->where('location', '0');
-			$this->EE->db->update('comments');
+			ee()->db->set('location', '');
+			ee()->db->where('location', '0');
+			ee()->db->update('comments');
 		}
 		
 		// Remove allow_multi_emails from config
-		$this->EE->config->_update_config(array(), array('allow_multi_emails' => ''));
+		ee()->config->_update_config(array(), array('allow_multi_emails' => ''));
 		
 		return TRUE;
 	}

@@ -48,7 +48,7 @@ class Member_memberlist extends Member {
 		/**  Is the user logged in?
 		/** ---------------------------------*/
 
-		if ($this->EE->session->userdata('member_id') == 0)
+		if (ee()->session->userdata('member_id') == 0)
 		{
 			return $this->profile_login_form($this->_member_path('self'));
 		}
@@ -57,13 +57,13 @@ class Member_memberlist extends Member {
 		/**  Is user allowed to send email?
 		/** ---------------------------------*/
 
-		if ($this->EE->session->userdata['can_email_from_profile'] == 'n')
+		if (ee()->session->userdata['can_email_from_profile'] == 'n')
 		{
-			return $this->EE->output->show_user_error('general', array($this->EE->lang->line('mbr_not_allowed_to_use_email_console')));
+			return ee()->output->show_user_error('general', array(ee()->lang->line('mbr_not_allowed_to_use_email_console')));
 		}
 
 
-		$query = $this->EE->db->query("SELECT screen_name, accept_user_email FROM exp_members WHERE member_id = '{$this->cur_id}'");
+		$query = ee()->db->query("SELECT screen_name, accept_user_email FROM exp_members WHERE member_id = '{$this->cur_id}'");
 
 		if ($query->num_rows() == 0)
 		{
@@ -75,7 +75,7 @@ class Member_memberlist extends Member {
 			return $this->_var_swap(
 				$this->_load_element('email_user_message'),
 				array(
-					'lang:message'	=>	$this->EE->lang->line('mbr_email_not_accepted'),
+					'lang:message'	=>	ee()->lang->line('mbr_email_not_accepted'),
 					'css_class'		=>	'highlight'
 				)
 			);
@@ -88,12 +88,12 @@ class Member_memberlist extends Member {
 
 		$data['id']		= 'email_console_form';
 
-		$this->_set_page_title($this->EE->lang->line('email_console'));
+		$this->_set_page_title(ee()->lang->line('email_console'));
 
 		return $this->_var_swap(
 			$this->_load_element('email_form'),
 			 array(
-				'form_declaration'	=>	$this->EE->functions->form_declaration($data),
+				'form_declaration'	=>	ee()->functions->form_declaration($data),
 				'name'				=>	$query->row('screen_name')
 			)
 		);
@@ -108,7 +108,7 @@ class Member_memberlist extends Member {
 	/** ----------------------------------*/
 	function send_email()
 	{
-		if ( ! $member_id = $this->EE->input->post('MID'))
+		if ( ! $member_id = ee()->input->post('MID'))
 		{
 			return FALSE;
 		}
@@ -117,7 +117,7 @@ class Member_memberlist extends Member {
 		/**  Is the user banned?
 		/** ----------------------------------------*/
 
-		if ($this->EE->session->userdata['is_banned'] == TRUE)
+		if (ee()->session->userdata['is_banned'] == TRUE)
 		{
 			return FALSE;
 		}
@@ -126,7 +126,7 @@ class Member_memberlist extends Member {
 		/**  Is the user logged in?
 		/** ---------------------------------*/
 
-		if ($this->EE->session->userdata('member_id') == 0)
+		if (ee()->session->userdata('member_id') == 0)
 		{
 			return $this->profile_login_form($this->_member_path('email_console/'.$member_id));
 		}
@@ -135,7 +135,7 @@ class Member_memberlist extends Member {
 		/**  Are we missing data?
 		/** ---------------------------------*/
 
-		if ( ! $member_id = $this->EE->input->post('MID'))
+		if ( ! $member_id = ee()->input->post('MID'))
 		{
 			return FALSE;
 		}
@@ -147,27 +147,27 @@ class Member_memberlist extends Member {
 
 		if ($_POST['subject'] == '' OR $_POST['message'] == '')
 		{
-			return $this->EE->output->show_user_error('submission', array($this->EE->lang->line('mbr_missing_fields')));
+			return ee()->output->show_user_error('submission', array(ee()->lang->line('mbr_missing_fields')));
 		}
 
 		/** ----------------------------------------
 		/**  Check Email Timelock
 		/** ----------------------------------------*/
 
-		if ($this->EE->session->userdata['group_id'] != 1)
+		if (ee()->session->userdata['group_id'] != 1)
 		{
-			$lock = $this->EE->config->item('email_console_timelock');
+			$lock = ee()->config->item('email_console_timelock');
 
 			if (is_numeric($lock) AND $lock != 0)
 			{
-				if (($this->EE->session->userdata['last_email_date'] + ($lock*60)) > $this->EE->localize->now)
+				if ((ee()->session->userdata['last_email_date'] + ($lock*60)) > ee()->localize->now)
 				{
 					return $this->_var_swap(
 						$this->_load_element('email_user_message'),
 						array(
-							'lang:message'			=>	str_replace("%x", $lock, $this->EE->lang->line('mbr_email_timelock_not_expired')),
+							'lang:message'			=>	str_replace("%x", $lock, ee()->lang->line('mbr_email_timelock_not_expired')),
 							'css_class'				=>	'highlight',
-							'lang:close_window'		=>	$this->EE->lang->line('mbr_close_window')
+							'lang:close_window'		=>	ee()->lang->line('mbr_close_window')
 						)
 					);
 				}
@@ -178,8 +178,8 @@ class Member_memberlist extends Member {
 		/**  Do we have a secure hash?
 		/** ---------------------------------*/
 
-		if ($this->EE->config->item('secure_forms') == 'y'
-			AND ! $this->EE->security->secure_forms_check($this->EE->input->post('XID')))
+		if (ee()->config->item('secure_forms') == 'y'
+			AND ! ee()->security->secure_forms_check(ee()->input->post('XID')))
 		{
 			return FALSE;
 		}
@@ -188,7 +188,7 @@ class Member_memberlist extends Member {
 		/**  Does the recipient accept email?
 		/** ---------------------------------*/
 
-		$query = $this->EE->db->query("SELECT email, screen_name, accept_user_email FROM exp_members WHERE member_id = '{$member_id}'");
+		$query = ee()->db->query("SELECT email, screen_name, accept_user_email FROM exp_members WHERE member_id = '{$member_id}'");
 
 		if ($query->num_rows() == 0)
 		{
@@ -200,26 +200,26 @@ class Member_memberlist extends Member {
 			return $this->_var_swap(
 				$this->_load_element('email_user_message'),
 				array(
-					'lang:message'	=>	$this->EE->lang->line('mbr_email_not_accepted'),
+					'lang:message'	=>	ee()->lang->line('mbr_email_not_accepted'),
 					'css_class'		=>	'highlight'
 				)
 			);
 		}
 
 		$message  = stripslashes($_POST['message'])."\n\n";
-		$message .= $this->EE->lang->line('mbr_email_forwarding')."\n";
-		$message .= $this->EE->config->item('site_url')."\n";
-		$message .= $this->EE->lang->line('mbr_email_forwarding_cont');
+		$message .= ee()->lang->line('mbr_email_forwarding')."\n";
+		$message .= ee()->config->item('site_url')."\n";
+		$message .= ee()->lang->line('mbr_email_forwarding_cont');
 
 		/** ----------------------------
 		/**  Send email
 		/** ----------------------------*/
 
-		$this->EE->load->library('email');
-		$this->EE->email->wordwrap = true;
-		$this->EE->email->from($this->EE->session->userdata['email']);
-		$this->EE->email->subject(stripslashes($_POST['subject']));
-		$this->EE->email->message($message);
+		ee()->load->library('email');
+		ee()->email->wordwrap = true;
+		ee()->email->from(ee()->session->userdata['email']);
+		ee()->email->subject(stripslashes($_POST['subject']));
+		ee()->email->message($message);
 
 		if (isset($_POST['self_copy']))
 		{
@@ -227,33 +227,33 @@ class Member_memberlist extends Member {
 				Because Rick says his filter blocks emails without a To: field
 			*/
 
-			$this->EE->email->to($this->EE->session->userdata['email']);
-			$this->EE->email->bcc($query->row('email') );
+			ee()->email->to(ee()->session->userdata['email']);
+			ee()->email->bcc($query->row('email') );
 		}
 		else
 		{
-			$this->EE->email->to($query->row('email') );
+			ee()->email->to($query->row('email') );
 		}
 
-		$swap['lang:close_window'] = $this->EE->lang->line('mbr_close_window');
+		$swap['lang:close_window'] = ee()->lang->line('mbr_close_window');
 
-		if ( ! $this->EE->email->send())
+		if ( ! ee()->email->send())
 		{
-			$swap['lang:message']	= $this->EE->lang->line('mbr_email_error');
+			$swap['lang:message']	= ee()->lang->line('mbr_email_error');
 			$swap['css_class'] 		= 'alert';
 		}
 		else
 		{
 			$this->log_email($query->row('email') , $query->row('screen_name') , $_POST['subject'], $_POST['message']);
 
-			$swap['lang:message']	= $this->EE->lang->line('mbr_good_email');
+			$swap['lang:message']	= ee()->lang->line('mbr_good_email');
 			$swap['css_class'] 		= 'success';
 
-			$this->EE->db->query("UPDATE exp_members SET last_email_date = '{$this->EE->localize->now}' WHERE member_id = '".$this->EE->session->userdata('member_id')."'");
+			ee()->db->query("UPDATE exp_members SET last_email_date = '{ee()->localize->now}' WHERE member_id = '".ee()->session->userdata('member_id')."'");
 
 		}
 
-		$this->_set_page_title($this->EE->lang->line('email_console'));
+		$this->_set_page_title(ee()->lang->line('email_console'));
 
 		return $this->_var_swap($this->_load_element('email_user_message'), $swap);
 	}
@@ -266,20 +266,20 @@ class Member_memberlist extends Member {
 	/** ---------------------------------*/
 	function log_email($recipient, $recipient_name, $subject, $message)
 	{
-		if ($this->EE->config->item('log_email_console_msgs') == 'y')
+		if (ee()->config->item('log_email_console_msgs') == 'y')
 		{
 			$data = array(
-				'cache_date'		=> $this->EE->localize->now,
-				'member_id'			=> $this->EE->session->userdata('member_id'),
-				'member_name'		=> $this->EE->session->userdata['screen_name'],
-				'ip_address'		=> $this->EE->input->ip_address(),
+				'cache_date'		=> ee()->localize->now,
+				'member_id'			=> ee()->session->userdata('member_id'),
+				'member_name'		=> ee()->session->userdata['screen_name'],
+				'ip_address'		=> ee()->input->ip_address(),
 				'recipient'			=> $recipient,
 				'recipient_name'	=> $recipient_name,
 				'subject'			=> $subject,
-				'message'			=> $this->EE->security->xss_clean($message)
+				'message'			=> ee()->security->xss_clean($message)
 			);
 
-			$this->EE->db->query($this->EE->db->insert_string('exp_email_console_cache', $data));
+			ee()->db->query(ee()->db->insert_string('exp_email_console_cache', $data));
 		}
 	}
 
@@ -291,20 +291,20 @@ class Member_memberlist extends Member {
 	/** ----------------------------------*/
 	function aim_console()
 	{
-		$query = $this->EE->db->query("SELECT aol_im FROM exp_members WHERE member_id = '".$this->EE->db->escape_str($this->cur_id)."'");
+		$query = ee()->db->query("SELECT aol_im FROM exp_members WHERE member_id = '".ee()->db->escape_str($this->cur_id)."'");
 
 		if ($query->num_rows() == 0)
 		{
 			return;
 		}
 
-		$this->_set_page_title($this->EE->lang->line('mbr_aim_console'));
+		$this->_set_page_title(ee()->lang->line('mbr_aim_console'));
 
 		return $this->_var_swap(
 			$this->_load_element('aim_console'),
 			array(
 				'aol_im'			=>	$query->row('aol_im') ,
-				'lang:close_window'	=>	$this->EE->lang->line('mbr_close_window')
+				'lang:close_window'	=>	ee()->lang->line('mbr_close_window')
 			 )
 		);
 	}
@@ -323,12 +323,12 @@ class Member_memberlist extends Member {
 		/**  Is the user logged in?
 		/** ---------------------------------*/
 
-		if ($this->EE->session->userdata('member_id') == 0)
+		if (ee()->session->userdata('member_id') == 0)
 		{
 			return $this->profile_login_form($this->_member_path('self'));
 		}
 
-		$query = $this->EE->db->query("SELECT screen_name, icq FROM exp_members WHERE member_id = '{$this->cur_id}'");
+		$query = ee()->db->query("SELECT screen_name, icq FROM exp_members WHERE member_id = '{$this->cur_id}'");
 
 		if ($query->num_rows() == 0)
 		{
@@ -338,7 +338,7 @@ class Member_memberlist extends Member {
 		$data = array(
 			'hidden_fields' => array(
 				'to'		=> $query->row('icq') ,
-				'from'		=> $this->EE->session->userdata['screen_name'],
+				'from'		=> ee()->session->userdata['screen_name'],
 				'fromemail'	=> ''
 			),
 			'action' 		=> 'http://wwp.icq.com/scripts/WWPMsg.dll',
@@ -346,18 +346,18 @@ class Member_memberlist extends Member {
 		);
 
 
-		$this->_set_page_title($this->EE->lang->line('mbr_icq_console'));
+		$this->_set_page_title(ee()->lang->line('mbr_icq_console'));
 
 		return $this->_var_swap(
 			$this->_load_element('icq_console'),
 			array(
-				'form_declaration'	=>	$this->EE->functions->form_declaration($data),
+				'form_declaration'	=>	ee()->functions->form_declaration($data),
 				'name'				=>	$query->row('screen_name') ,
 				'icq'				=>	$query->row('icq') ,
 				'icq_im'			=>	$query->row('icq') ,
-				'lang:recipient'	=>	$this->EE->lang->line('mbr_icq_recipient'),
-				'lang:subject'		=>	$this->EE->lang->line('mbr_icq_subject'),
-				'lang:message'		=>	$this->EE->lang->line('mbr_icq_message')
+				'lang:recipient'	=>	ee()->lang->line('mbr_icq_recipient'),
+				'lang:subject'		=>	ee()->lang->line('mbr_icq_subject'),
+				'lang:message'		=>	ee()->lang->line('mbr_icq_message')
 			 )
 		);
 	}
@@ -374,9 +374,9 @@ class Member_memberlist extends Member {
 		/**  Can the user view profiles?
 		/** ----------------------------------------*/
 
-		if ($this->EE->session->userdata['can_view_profiles'] == 'n')
+		if (ee()->session->userdata['can_view_profiles'] == 'n')
 		{
-			return $this->EE->output->show_user_error('general', array($this->EE->lang->line('mbr_not_allowed_to_view_profiles')));
+			return ee()->output->show_user_error('general', array(ee()->lang->line('mbr_not_allowed_to_view_profiles')));
 		}
 
 		/** ----------------------------------------
@@ -384,12 +384,12 @@ class Member_memberlist extends Member {
 		/** ----------------------------------------*/
 
 		$template = $this->_load_element('memberlist');
-		$vars = $this->EE->functions->assign_variables($template, '/');
-		$var_cond = $this->EE->functions->assign_conditional_variables($template, '/');
+		$vars = ee()->functions->assign_variables($template, '/');
+		$var_cond = ee()->functions->assign_conditional_variables($template, '/');
 
 		$memberlist_rows = $this->_load_element('memberlist_rows');
-		$mvars = $this->EE->functions->assign_variables($memberlist_rows, '/');
-		$mvar_cond = $this->EE->functions->assign_conditional_variables($memberlist_rows, '/');
+		$mvars = ee()->functions->assign_variables($memberlist_rows, '/');
+		$mvar_cond = ee()->functions->assign_conditional_variables($memberlist_rows, '/');
 
 		$this->var_cond		= array_merge($var_cond, $mvar_cond);
 		$this->var_single	= array_merge($vars['var_single'], $mvars['var_single']);
@@ -401,7 +401,7 @@ class Member_memberlist extends Member {
 
 		$fields = array();
 
-		$query = $this->EE->db->query("SELECT m_field_id, m_field_name FROM exp_member_fields");
+		$query = ee()->db->query("SELECT m_field_id, m_field_name FROM exp_member_fields");
 
 		if ($query->num_rows() > 0)
 		{
@@ -421,33 +421,33 @@ class Member_memberlist extends Member {
 	
 		$sort_orders = array('asc', 'desc');
 		
-		if (($group_id = (int) $this->EE->input->post('group_id')) === 0)
+		if (($group_id = (int) ee()->input->post('group_id')) === 0)
 		{
 			$group_id = 0;
 		}
 		
-		$sort_order = ( ! in_array($this->EE->input->post('sort_order'), $sort_orders)) ? $this->EE->config->item('memberlist_sort_order') : $this->EE->input->post('sort_order', 'post');
+		$sort_order = ( ! in_array(ee()->input->post('sort_order'), $sort_orders)) ? ee()->config->item('memberlist_sort_order') : ee()->input->post('sort_order', 'post');
 		
-		if (($row_limit = (int) $this->EE->input->post('row_limit')) === 0)
+		if (($row_limit = (int) ee()->input->post('row_limit')) === 0)
 		{
-			$row_limit = $this->EE->config->item('memberlist_row_limit');
+			$row_limit = ee()->config->item('memberlist_row_limit');
 		}	
 
-		if ($this->EE->input->post('order_by'))
+		if (ee()->input->post('order_by'))
 		{
-			$order_by = $this->EE->input->post('order_by', 'post');
+			$order_by = ee()->input->post('order_by', 'post');
 			
 			if ( ! in_array($order_by, $valid_order_bys))
 			{
-				$order_by = $this->EE->config->item('memberlist_order_by');
+				$order_by = ee()->config->item('memberlist_order_by');
 			}
 		}
 		else
 		{
-			$order_by = $this->EE->config->item('memberlist_order_by');
+			$order_by = ee()->config->item('memberlist_order_by');
 		}
 		
-		if (($row_count = (int) $this->EE->input->post('row_count')) === 0)
+		if (($row_count = (int) ee()->input->post('row_count')) === 0)
 		{
 			$row_count = 0;
 		}
@@ -463,9 +463,9 @@ class Member_memberlist extends Member {
 
 		$search_path = '';
 
-		if (preg_match("|\/([a-z0-9]{32})\/|i", '/'.$this->EE->uri->query_string.'/', $match))
+		if (preg_match("|\/([a-z0-9]{32})\/|i", '/'.ee()->uri->query_string.'/', $match))
 		{
-			foreach(explode('/', '/'.$this->EE->uri->query_string.'/') as $val)
+			foreach(explode('/', '/'.ee()->uri->query_string.'/') as $val)
 			{
 				if (isset($search_id))
 				{
@@ -498,7 +498,7 @@ class Member_memberlist extends Member {
 			$row_count	= $x['4'];
 			
 			// Which segment is this?  We need the NEXT segment to pass to pagination
-			$pag_uri_segment = array_search($this->cur_id, $this->EE->uri->segment_array()) + 1;
+			$pag_uri_segment = array_search($this->cur_id, ee()->uri->segment_array()) + 1;
 
 			//$row_count = ($this->uri_extra != '') ? $this->uri_extra : 0;
 		}
@@ -515,10 +515,10 @@ class Member_memberlist extends Member {
 					WHERE m.group_id = g.group_id
 					AND g.group_id != '3'
 					AND g.group_id != '4'
-					AND g.site_id = '".$this->EE->db->escape_str($this->EE->config->item('site_id'))."'
+					AND g.site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."'
 					AND g.include_in_memberlist = 'y' ";
 
-		if ($this->is_admin == FALSE OR $this->EE->session->userdata('group_id') != 1)
+		if ($this->is_admin == FALSE OR ee()->session->userdata('group_id') != 1)
 		{
 			$sql .= "AND g.group_id != '2' ";
 		}
@@ -551,9 +551,9 @@ class Member_memberlist extends Member {
 
 		for ($i=3; $i <= 5; ++ $i)
 		{
-			if (isset($this->EE->uri->segments[$i]) && strlen($this->EE->uri->segments[$i]) == 1 && preg_match("/[A-Z]{1}/", $this->EE->uri->segments[$i]))
+			if (isset(ee()->uri->segments[$i]) && strlen(ee()->uri->segments[$i]) == 1 && preg_match("/[A-Z]{1}/", ee()->uri->segments[$i]))
 			{
-				$first_letter = $this->EE->uri->segments[$i];
+				$first_letter = ee()->uri->segments[$i];
 				$sql .= " AND m.screen_name LIKE '{$first_letter}%' ";
 				break;
 			}
@@ -563,7 +563,7 @@ class Member_memberlist extends Member {
 		/**  Run "count" query for pagination
 		/** ----------------------------------------*/
 
-		$query = $this->EE->db->query($p_sql.$sql);
+		$query = ee()->db->query($p_sql.$sql);
 
 
  		if ($order_by == 'total_posts')
@@ -586,20 +586,20 @@ class Member_memberlist extends Member {
 		$total_pages  = ceil($query->row('count')  / $row_limit);
 
 		// Deprecate this
-		$page_count = $this->EE->lang->line('page').' '.$current_page.' '.$this->EE->lang->line('of').' '.$total_pages;
+		$page_count = ee()->lang->line('page').' '.$current_page.' '.ee()->lang->line('of').' '.$total_pages;
 
 		$pager = '';
 
 		if ($query->row('count')  > $row_limit)
 		{ 
-			$this->EE->load->library('pagination');
+			ee()->load->library('pagination');
 
 			$config['prefix'] = $search_path.$path.'-';
 			$config['base_url'] = $this->_member_path('memberlist', '');
 			$config['total_rows'] = $query->row('count');
 			$config['per_page'] = $row_limit;
-			$config['first_link'] = $this->EE->lang->line('first');
-			$config['last_link'] = $this->EE->lang->line('last');
+			$config['first_link'] = ee()->lang->line('first');
+			$config['last_link'] = ee()->lang->line('last');
 			//$config['uri_segment'] = $pag_uri_segment;
 			$config['suffix'] = ($first_letter != '') ? $first_letter.'/' : '';
 			$config['first_url'] = $this->_member_path('memberlist'.$search_path.$path.'-0');
@@ -624,11 +624,11 @@ class Member_memberlist extends Member {
 				$config['num_tag_close'] = '</div></td>';				
 			}			
 			
-			$this->EE->pagination->initialize($config);
+			ee()->pagination->initialize($config);
 			
 
-			$pager = $this->EE->pagination->create_links();
-			 //var_dump($this->EE->pagination); //exit;
+			$pager = ee()->pagination->create_links();
+			 //var_dump(ee()->pagination); //exit;
 			$sql .= " LIMIT ".$row_count.", ".$row_limit;
 
 		}
@@ -637,7 +637,7 @@ class Member_memberlist extends Member {
 		/**  Run the full query and process result
 		/** ----------------------------------------*/
 
-		$query = $this->EE->db->query($f_sql.$sql);
+		$query = ee()->db->query($f_sql.$sql);
 
 		$str = '';
 		$i = 0;
@@ -682,7 +682,7 @@ class Member_memberlist extends Member {
 					/**  Conditional statements
 					/** ----------------------------------------*/
 
-					$cond = $this->EE->functions->prep_conditional($val['0']);
+					$cond = ee()->functions->prep_conditional($val['0']);
 
 					$lcond	= substr($cond, 0, strpos($cond, ' '));
 					$rcond	= substr($cond, strpos($cond, ' '));
@@ -755,9 +755,9 @@ class Member_memberlist extends Member {
 					/** ----------------------------------------*/
 					if (preg_match("/^if\s+avatar.*/i", $val['0']))
 					{
-						if ($this->EE->config->item('enable_avatars') == 'y' AND $row['avatar_filename'] != '' AND $this->EE->session->userdata('display_avatars') == 'y' )
+						if (ee()->config->item('enable_avatars') == 'y' AND $row['avatar_filename'] != '' AND ee()->session->userdata('display_avatars') == 'y' )
 						{
-							$avatar_path	= $this->EE->config->slash_item('avatar_url').$row['avatar_filename'];
+							$avatar_path	= ee()->config->slash_item('avatar_url').$row['avatar_filename'];
 							$avatar_width	= $row['avatar_width'];
 							$avatar_height	= $row['avatar_height'];
 
@@ -791,7 +791,7 @@ class Member_memberlist extends Member {
 
 					if (strncmp($key, 'profile_path', 12) == 0)
 					{
-						$temp = $this->_var_swap_single($key, $this->EE->functions->create_url($this->EE->functions->extract_path($key).'/'.$row['member_id']), $temp);
+						$temp = $this->_var_swap_single($key, ee()->functions->create_url(ee()->functions->extract_path($key).'/'.$row['member_id']), $temp);
 					}
 
 					/** ----------------------------------------
@@ -809,7 +809,7 @@ class Member_memberlist extends Member {
 
 					if (strncmp($key, 'last_visit', 10) == 0)
 					{
-						$temp = $this->_var_swap_single($key, ($row['last_activity'] > 0) ? $this->EE->localize->format_date($val, $row['last_activity']) : '--', $temp);
+						$temp = $this->_var_swap_single($key, ($row['last_activity'] > 0) ? ee()->localize->format_date($val, $row['last_activity']) : '--', $temp);
 					}
 
 					/** ----------------------------------------
@@ -818,7 +818,7 @@ class Member_memberlist extends Member {
 
 					if (strncmp($key, 'join_date', 9) == 0)
 					{
-						$temp = $this->_var_swap_single($key, ($row['join_date'] > 0) ? $this->EE->localize->format_date($val, $row['join_date']) : '--', $temp);
+						$temp = $this->_var_swap_single($key, ($row['join_date'] > 0) ? ee()->localize->format_date($val, $row['join_date']) : '--', $temp);
 					}
 
 					/** ----------------------------------------
@@ -827,7 +827,7 @@ class Member_memberlist extends Member {
 
 					if (strncmp($key, 'last_entry_date', 15) == 0)
 					{
-						$temp = $this->_var_swap_single($key, ($row['last_entry_date'] > 0) ? $this->EE->localize->format_date($val, $row['last_entry_date']) : '--', $temp);
+						$temp = $this->_var_swap_single($key, ($row['last_entry_date'] > 0) ? ee()->localize->format_date($val, $row['last_entry_date']) : '--', $temp);
 					}
 
 					/** ----------------------------------------
@@ -836,7 +836,7 @@ class Member_memberlist extends Member {
 
 					if (strncmp($key, 'last_comment_date', 17) == 0)
 					{
-						$temp = $this->_var_swap_single($key, ($row['last_comment_date'] > 0) ? $this->EE->localize->format_date($val, $row['last_comment_date']) : '--', $temp);
+						$temp = $this->_var_swap_single($key, ($row['last_comment_date'] > 0) ? ee()->localize->format_date($val, $row['last_comment_date']) : '--', $temp);
 					}
 
 					/** ----------------------------------------
@@ -845,7 +845,7 @@ class Member_memberlist extends Member {
 
 					if (strncmp($key, 'last_forum_post_date', 20) == 0)
 					{
-						$temp = $this->_var_swap_single($key, ($row['last_forum_post_date'] > 0) ? $this->EE->localize->format_date($val, $row['last_forum_post_date']) : '--', $temp);
+						$temp = $this->_var_swap_single($key, ($row['last_forum_post_date'] > 0) ? ee()->localize->format_date($val, $row['last_forum_post_date']) : '--', $temp);
 					}
 
 					/** ----------------------------------------
@@ -914,20 +914,20 @@ class Member_memberlist extends Member {
 		$english = array('Guests', 'Banned', 'Members', 'Pending', 'Super Admins');
 
 		$sql = "SELECT group_id, group_title FROM exp_member_groups
-				WHERE include_in_memberlist = 'y' AND site_id = '".$this->EE->db->escape_str($this->EE->config->item('site_id'))."' AND group_id != '3' AND group_id != '4' ";
+				WHERE include_in_memberlist = 'y' AND site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."' AND group_id != '3' AND group_id != '4' ";
 
-		if ($this->is_admin == FALSE OR $this->EE->session->userdata('group_id') != 1)
+		if ($this->is_admin == FALSE OR ee()->session->userdata('group_id') != 1)
 		{
 			$sql .= "AND group_id != '2' ";
 		}
 
 		$sql .= " order by group_title";
 
-		$query = $this->EE->db->query($sql);
+		$query = ee()->db->query($sql);
 
 		$selected = ($group_id == 0) ? " selected='selected' " : '';
 
-		$menu = "<option value='0'".$selected.">".$this->EE->lang->line('mbr_all_member_groups')."</option>\n";
+		$menu = "<option value='0'".$selected.">".ee()->lang->line('mbr_all_member_groups')."</option>\n";
 
 		foreach ($query->result_array() as $row)
 		{
@@ -935,7 +935,7 @@ class Member_memberlist extends Member {
 
 			if (in_array($group_title, $english))
 			{
-				$group_title = $this->EE->lang->line(strtolower(str_replace(" ", "_", $group_title)));
+				$group_title = ee()->lang->line(strtolower(str_replace(" ", "_", $group_title)));
 			}
 
 			$selected = ($group_id == $row['group_id']) ? " selected='selected' " : '';
@@ -951,24 +951,24 @@ class Member_memberlist extends Member {
 		/** ----------------------------------------*/
 
 		$selected = ($order_by == 'screen_name') ? " selected='selected' " : '';
-		$menu = "<option value='screen_name'".$selected.">".$this->EE->lang->line('mbr_member_name')."</option>\n";
+		$menu = "<option value='screen_name'".$selected.">".ee()->lang->line('mbr_member_name')."</option>\n";
 
 		if ($this->in_forum == TRUE)
 		{
 			$selected = ($order_by == 'total_posts') ? " selected='selected' " : '';
-			$menu .= "<option value='total_posts'".$selected.">".$this->EE->lang->line('total_posts')."</option>\n";
+			$menu .= "<option value='total_posts'".$selected.">".ee()->lang->line('total_posts')."</option>\n";
 		}
 		else
 		{
 			$selected = ($order_by == 'total_comments') ? " selected='selected' " : '';
-			$menu .= "<option value='total_comments'".$selected.">".$this->EE->lang->line('mbr_total_comments')."</option>\n";
+			$menu .= "<option value='total_comments'".$selected.">".ee()->lang->line('mbr_total_comments')."</option>\n";
 
 			$selected = ($order_by == 'total_entries') ? " selected='selected' " : '';
-			$menu .= "<option value='total_entries'".$selected.">".$this->EE->lang->line('mbr_total_entries')."</option>\n";
+			$menu .= "<option value='total_entries'".$selected.">".ee()->lang->line('mbr_total_entries')."</option>\n";
 		}
 
 		$selected = ($order_by == 'join_date') ? " selected='selected' " : '';
-		$menu .= "<option value='join_date'".$selected.">".$this->EE->lang->line('join_date')."</option>\n";
+		$menu .= "<option value='join_date'".$selected.">".ee()->lang->line('join_date')."</option>\n";
 
 		$template = str_replace(LD.'order_by_options'.RD, $menu, $template);
 
@@ -977,10 +977,10 @@ class Member_memberlist extends Member {
 		/** ----------------------------------------*/
 
 		$selected = ($sort_order == 'asc') ? " selected='selected' " : '';
-		$menu = "<option value='asc'".$selected.">".$this->EE->lang->line('mbr_ascending')."</option>\n";
+		$menu = "<option value='asc'".$selected.">".ee()->lang->line('mbr_ascending')."</option>\n";
 
 		$selected = ($sort_order == 'desc') ? " selected='selected' " : '';
-		$menu .= "<option value='desc'".$selected.">".$this->EE->lang->line('mbr_descending')."</option>\n";
+		$menu .= "<option value='desc'".$selected.">".ee()->lang->line('mbr_descending')."</option>\n";
 
 		$template = str_replace(LD.'sort_order_options'.RD, $menu, $template);
 
@@ -1013,7 +1013,7 @@ class Member_memberlist extends Member {
 
 		$sql = "SELECT m_field_id, m_field_label FROM exp_member_fields WHERE m_field_public = 'y' ORDER BY m_field_order ";
 
-		$query = $this->EE->db->query($sql);
+		$query = ee()->db->query($sql);
 
 		$profile_options = '';
 
@@ -1067,7 +1067,7 @@ class Member_memberlist extends Member {
 
 	function fetch_search($search_id)
 	{
-		$query = $this->EE->db->query("SELECT * FROM exp_member_search WHERE search_id = '".$this->EE->db->escape_str($search_id)."'");
+		$query = ee()->db->query("SELECT * FROM exp_member_search WHERE search_id = '".ee()->db->escape_str($search_id)."'");
 
 		if ($query->num_rows() == 0)
 		{
@@ -1079,7 +1079,7 @@ class Member_memberlist extends Member {
 		$this->search_fields	= str_replace('|', ", ", $query->row('fields') );
 		$this->search_total		= $query->row('total_results') ;
 
-		$query = $this->EE->db->query($query->row('query') );
+		$query = ee()->db->query($query->row('query') );
 
 		$return = '';
 
@@ -1111,42 +1111,42 @@ class Member_memberlist extends Member {
 		/**  Fetch the search language file
 		/** ----------------------------------------*/
 
-		$this->EE->lang->loadfile('search');
+		ee()->lang->loadfile('search');
 
 		/** ----------------------------------------
 		/**  Is the current user allowed to search?
 		/** ----------------------------------------*/
-		if ($this->EE->session->userdata['can_search'] == 'n' AND $this->EE->session->userdata['group_id'] != 1)
+		if (ee()->session->userdata['can_search'] == 'n' AND ee()->session->userdata['group_id'] != 1)
 		{
-			return $this->EE->output->show_user_error('general', array($this->EE->lang->line('search_not_allowed')));
+			return ee()->output->show_user_error('general', array(ee()->lang->line('search_not_allowed')));
 		}
 
 		/** ----------------------------------------
 		/**  Flood control
 		/** ----------------------------------------*/
 
-		if ($this->EE->session->userdata['search_flood_control'] > 0 AND $this->EE->session->userdata['group_id'] != 1)
+		if (ee()->session->userdata['search_flood_control'] > 0 AND ee()->session->userdata['group_id'] != 1)
 		{
-			$cutoff = time() - $this->EE->session->userdata['search_flood_control'];
+			$cutoff = time() - ee()->session->userdata['search_flood_control'];
 
-			$sql = "SELECT search_id FROM exp_search WHERE site_id = '".$this->EE->db->escape_str($this->EE->config->item('site_id'))."' AND search_date > '{$cutoff}' AND ";
+			$sql = "SELECT search_id FROM exp_search WHERE site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."' AND search_date > '{$cutoff}' AND ";
 
-			if ($this->EE->session->userdata['member_id'] != 0)
+			if (ee()->session->userdata['member_id'] != 0)
 			{
-				$sql .= "(member_id='".$this->EE->db->escape_str($this->EE->session->userdata('member_id'))."' OR ip_address='".$this->EE->db->escape_str($this->EE->input->ip_address())."')";
+				$sql .= "(member_id='".ee()->db->escape_str(ee()->session->userdata('member_id'))."' OR ip_address='".ee()->db->escape_str(ee()->input->ip_address())."')";
 			}
 			else
 			{
-				$sql .= "ip_address='".$this->EE->db->escape_str($this->EE->input->ip_address())."'";
+				$sql .= "ip_address='".ee()->db->escape_str(ee()->input->ip_address())."'";
 			}
 
-			$query = $this->EE->db->query($sql);
+			$query = ee()->db->query($sql);
 
-			$text = str_replace("%x", $this->EE->session->userdata['search_flood_control'], $this->EE->lang->line('search_time_not_expired'));
+			$text = str_replace("%x", ee()->session->userdata['search_flood_control'], ee()->lang->line('search_time_not_expired'));
 
 			if ($query->num_rows() > 0)
 			{
-				return $this->EE->output->show_user_error('general', array($text));
+				return ee()->output->show_user_error('general', array($text));
 			}
 		}
 
@@ -1159,7 +1159,7 @@ class Member_memberlist extends Member {
 			'signature');
 
 		$custom_fields = FALSE;
-		$query = $this->EE->db->query("SELECT m_field_id, m_field_label FROM exp_member_fields WHERE m_field_public = 'y' ORDER BY m_field_order");
+		$query = ee()->db->query("SELECT m_field_id, m_field_label FROM exp_member_fields WHERE m_field_public = 'y' ORDER BY m_field_order");
 
 		if ($query->num_rows() > 0)
 		{
@@ -1211,7 +1211,7 @@ class Member_memberlist extends Member {
 		$keywords = array();
 		$fields	= array();
 
-		$xsql = ($this->is_admin == FALSE OR $this->EE->session->userdata('group_id') != 1) ? ",'2'" : "";
+		$xsql = ($this->is_admin == FALSE OR ee()->session->userdata('group_id') != 1) ? ",'2'" : "";
 
 		if ($custom_fields === FALSE)
 		{
@@ -1227,7 +1227,7 @@ class Member_memberlist extends Member {
 
 		if (isset($_POST['search_group_id']) && $_POST['search_group_id'] != '0')
 		{
-			$sql .= "AND m.group_id = '".$this->EE->db->escape_str($_POST['search_group_id'])."'";
+			$sql .= "AND m.group_id = '".ee()->db->escape_str($_POST['search_group_id'])."'";
 		}
 
 		foreach($search_array as $search)
@@ -1236,50 +1236,50 @@ class Member_memberlist extends Member {
 			{
 				$fields[] = $custom_fields[substr($search['0'], 11)];
 
-				$sql .= "AND md.".$search['0']." LIKE '%".$this->EE->db->escape_like_str($search['1'])."%' ";
+				$sql .= "AND md.".$search['0']." LIKE '%".ee()->db->escape_like_str($search['1'])."%' ";
 			}
 			else
 			{
-				$fields[] = $this->EE->lang->line($search['0']);
+				$fields[] = ee()->lang->line($search['0']);
 
-				$sql .= "AND m.".$search['0']." LIKE '%".$this->EE->db->escape_like_str($search['1'])."%' ";
+				$sql .= "AND m.".$search['0']." LIKE '%".ee()->db->escape_like_str($search['1'])."%' ";
 			}
 
 			$keywords[] = $search['1'];
 		}
 
-		$query = $this->EE->db->query($sql);
+		$query = ee()->db->query($sql);
 
 		if ($query->num_rows() == 0)
 		{
-			return $this->EE->output->show_user_error('off', array($this->EE->lang->line('search_no_result')), $this->EE->lang->line('search_result_heading'));
+			return ee()->output->show_user_error('off', array(ee()->lang->line('search_no_result')), ee()->lang->line('search_result_heading'));
 		}
 
 		/** ----------------------------------------
 		/**  If we have a result, cache it
 		/** ----------------------------------------*/
 
-		$hash = $this->EE->functions->random('md5');
+		$hash = ee()->functions->random('md5');
 
 		$data = array(
 			'search_id'		=> $hash,
-			'search_date'	=> $this->EE->localize->now,
-			'member_id'		=> $this->EE->session->userdata('member_id'),
+			'search_date'	=> ee()->localize->now,
+			'member_id'		=> ee()->session->userdata('member_id'),
 			'keywords'		=> implode('|', $keywords),
 			'fields'		=> implode('|', $fields),
-			'ip_address'	=> $this->EE->input->ip_address(),
+			'ip_address'	=> ee()->input->ip_address(),
 			'total_results'	=> $query->num_rows,
 			'query'			=> $sql,
-			'site_id'		=> $this->EE->config->item('site_id')
+			'site_id'		=> ee()->config->item('site_id')
 		);
 
-		$this->EE->db->query($this->EE->db->insert_string('exp_member_search', $data));
+		ee()->db->query(ee()->db->insert_string('exp_member_search', $data));
 
 		/** ----------------------------------------
 		/**  Redirect to search results page
 		/** ----------------------------------------*/
 
-		return $this->EE->functions->redirect(reduce_double_slashes($this->_member_path('member_search/'.$hash)));
+		return ee()->functions->redirect(reduce_double_slashes($this->_member_path('member_search/'.$hash)));
 	}
 }
 // END CLASS

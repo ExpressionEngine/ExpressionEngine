@@ -28,9 +28,9 @@ class Smartforge {
 	{
 		$this->EE =& get_instance();
 
-		$this->EE->load->dbforge();
-		$this->EE->load->library('logger');
-		$this->EE->load->helper('array');
+		ee()->load->dbforge();
+		ee()->load->library('logger');
+		ee()->load->helper('array');
 	}
 
 	// --------------------------------------------------------------------
@@ -46,14 +46,14 @@ class Smartforge {
 	public function create_table($table)
 	{
 		// Check to make sure table doesn't already exist
-		if ($this->EE->db->table_exists($table))
+		if (ee()->db->table_exists($table))
 		{
-			$this->EE->logger->updater("Could not create table '{$this->EE->db->dbprefix}$table'. Table already exists.", TRUE);
+			ee()->logger->updater("Could not create table '{ee()->db->dbprefix}$table'. Table already exists.", TRUE);
 
 			return FALSE;
 		}
 
-		return $this->EE->dbforge->create_table($table);
+		return ee()->dbforge->create_table($table);
 	}
 
 	// --------------------------------------------------------------------
@@ -71,19 +71,19 @@ class Smartforge {
 	public function rename_table($table, $new_table)
 	{
 		// Check to make sure table exists
-		if ( ! $this->EE->db->table_exists($table))
+		if ( ! ee()->db->table_exists($table))
 		{
-			$this->EE->logger->updater(__METHOD__." failed. Table '{$this->EE->db->dbprefix}$table' does not exist.", TRUE);
+			ee()->logger->updater(__METHOD__." failed. Table '{ee()->db->dbprefix}$table' does not exist.", TRUE);
 
 			return FALSE;
 		}
 
-		if ( ! $this->EE->db->table_exists($new_table))
+		if ( ! ee()->db->table_exists($new_table))
 		{
-			return $this->EE->dbforge->rename_table($table, $new_table);
+			return ee()->dbforge->rename_table($table, $new_table);
 		}
 
-		$this->EE->logger->updater("Could not rename '{$this->EE->db->dbprefix}$table' to '{$this->EE->db->dbprefix}$new_table'. Table '{$this->EE->db->dbprefix}$new_table' already exists.", TRUE);
+		ee()->logger->updater("Could not rename '{ee()->db->dbprefix}$table' to '{ee()->db->dbprefix}$new_table'. Table '{ee()->db->dbprefix}$new_table' already exists.", TRUE);
 
 		return FALSE;
 	}
@@ -106,9 +106,9 @@ class Smartforge {
 	public function add_column($table = '', $field = array(), $after_field = '')
 	{
 		// Check to make sure table exists
-		if ( ! $this->EE->db->table_exists($table))
+		if ( ! ee()->db->table_exists($table))
 		{
-			$this->EE->logger->updater(__METHOD__." failed. Table '{$this->EE->db->dbprefix}$table' does not exist.", TRUE);
+			ee()->logger->updater(__METHOD__." failed. Table '{ee()->db->dbprefix}$table' does not exist.", TRUE);
 
 			return FALSE;
 		}
@@ -117,16 +117,16 @@ class Smartforge {
 
 		foreach ($field as $k => $v)
 		{
-			if ( ! $this->EE->db->field_exists($k, $table))
+			if ( ! ee()->db->field_exists($k, $table))
 			{
-				if ($this->EE->dbforge->add_column($table, array($k => $field[$k]), $after_field))
+				if (ee()->dbforge->add_column($table, array($k => $field[$k]), $after_field))
 				{
 					$result = TRUE;
 				}
 			}
 			else
 			{
-				$this->EE->logger->updater("Could not add column '{$this->EE->db->dbprefix}$table.$k'. Column already exists.", TRUE);
+				ee()->logger->updater("Could not add column '{ee()->db->dbprefix}$table.$k'. Column already exists.", TRUE);
 			}
 		}
 
@@ -148,19 +148,19 @@ class Smartforge {
 	public function drop_column($table = '', $column_name = '')
 	{
 		// Check to make sure table exists
-		if ( ! $this->EE->db->table_exists($table))
+		if ( ! ee()->db->table_exists($table))
 		{
-			$this->EE->logger->updater(__METHOD__." failed. Table '{$this->EE->db->dbprefix}$table' does not exist.", TRUE);
+			ee()->logger->updater(__METHOD__." failed. Table '{ee()->db->dbprefix}$table' does not exist.", TRUE);
 
 			return FALSE;
 		}
 
-		if ($this->EE->db->field_exists($column_name, $table))
+		if (ee()->db->field_exists($column_name, $table))
 		{
-			return $this->EE->dbforge->drop_column($table, $column_name);
+			return ee()->dbforge->drop_column($table, $column_name);
 		}
 
-		$this->EE->logger->updater("Could not drop column '{$this->EE->db->dbprefix}$table.$column_name'. Column does not exist.", TRUE);
+		ee()->logger->updater("Could not drop column '{ee()->db->dbprefix}$table.$column_name'. Column does not exist.", TRUE);
 
 		return FALSE;
 	}
@@ -189,9 +189,9 @@ class Smartforge {
 	public function modify_column($table = '', $field = array())
 	{
 		// Check to make sure table exists
-		if ( ! $this->EE->db->table_exists($table))
+		if ( ! ee()->db->table_exists($table))
 		{
-			$this->EE->logger->updater(__METHOD__." failed. Table '{$this->EE->db->dbprefix}$table' does not exist.", TRUE);
+			ee()->logger->updater(__METHOD__." failed. Table '{ee()->db->dbprefix}$table' does not exist.", TRUE);
 
 			return FALSE;
 		}
@@ -201,21 +201,21 @@ class Smartforge {
 		foreach ($field as $k => $v)
 		{
 			// Check to make sure the column A exists.
-			if ($this->EE->db->field_exists($k, $table))
+			if (ee()->db->field_exists($k, $table))
 			{
 				// Check to see if the column is being renamed
 				// and if column B exists, too.
-				if ($k !== $v['name'] AND $this->EE->db->field_exists($v['name'], $table))
+				if ($k !== $v['name'] AND ee()->db->field_exists($v['name'], $table))
 				{
 					// Drop column A.
-					$this->EE->dbforge->drop_column($table, $k);
+					ee()->dbforge->drop_column($table, $k);
 
-					$this->EE->logger->updater("Could not rename column '{$this->EE->db->dbprefix}$table.$k' to '{$this->EE->db->dbprefix}$table.{$v['name']}' since it already exists. Column '{$this->EE->db->dbprefix}$table.$k' was removed to clean up.", TRUE);
+					ee()->logger->updater("Could not rename column '{ee()->db->dbprefix}$table.$k' to '{ee()->db->dbprefix}$table.{$v['name']}' since it already exists. Column '{ee()->db->dbprefix}$table.$k' was removed to clean up.", TRUE);
 				}
 				else
 				{
 					// Rename column A -> B.
-					if ($this->EE->dbforge->modify_column($table, array($k => $field[$k])))
+					if (ee()->dbforge->modify_column($table, array($k => $field[$k])))
 					{
 						$result = TRUE;
 					}
@@ -224,7 +224,7 @@ class Smartforge {
 			}
 			else
 			{
-				$this->EE->logger->updater("Could not modify column '{$this->EE->db->dbprefix}$table.$k'. Column does not exist.", TRUE);
+				ee()->logger->updater("Could not modify column '{ee()->db->dbprefix}$table.$k'. Column does not exist.", TRUE);
 			}
 
 
@@ -252,9 +252,9 @@ class Smartforge {
 	public function insert_set($table = '', $values = array(), $unique = array())
 	{
 		// Check to make sure table exists
-		if ( ! $this->EE->db->table_exists($table))
+		if ( ! ee()->db->table_exists($table))
 		{
-			$this->EE->logger->updater(__METHOD__." failed. Table '{$this->EE->db->dbprefix}$table' does not exist.", TRUE);
+			ee()->logger->updater(__METHOD__." failed. Table '{ee()->db->dbprefix}$table' does not exist.", TRUE);
 
 			return FALSE;
 		}
@@ -267,11 +267,11 @@ class Smartforge {
 			{
 				if (array_key_exists($k, $values))
 				{
-					$this->EE->db->where($k, $v);
+					ee()->db->where($k, $v);
 				}
 			}
 
-			$query = $this->EE->db->get($table);
+			$query = ee()->db->get($table);
 
 			if ($query->num_rows() > 0)
 			{
@@ -279,14 +279,14 @@ class Smartforge {
 				// in the DB, return FALSE since this set of values cannot
 				// be inserted.
 
-				$this->EE->logger->updater("Could not insert data since data set was not unique as required.", TRUE);
+				ee()->logger->updater("Could not insert data since data set was not unique as required.", TRUE);
 
 				return FALSE;
 			}
 		}
 		
-		$this->EE->db->set($values);			
-		$this->EE->db->insert($table);			
+		ee()->db->set($values);			
+		ee()->db->insert($table);			
 
 		return FALSE;
 
@@ -308,9 +308,9 @@ class Smartforge {
 	public function create_index($table = '', $index_col_name = '', $index_name = '')
 	{
 		// Check to make sure table exists
-		if ( ! $this->EE->db->table_exists($table))
+		if ( ! ee()->db->table_exists($table))
 		{
-			$this->EE->logger->updater(__METHOD__." failed. Table '{$this->EE->db->dbprefix}$table' does not exist.", TRUE);
+			ee()->logger->updater(__METHOD__." failed. Table '{ee()->db->dbprefix}$table' does not exist.", TRUE);
 
 			return FALSE;
 		}
@@ -321,20 +321,20 @@ class Smartforge {
 		}
 
 		// Check to make sure this index doesn't already exist.
-		$query = $this->EE->db->query("SHOW INDEX FROM ".$this->EE->db->dbprefix.$table." WHERE Key_name = '".$index_name."'");
+		$query = ee()->db->query("SHOW INDEX FROM ".ee()->db->dbprefix.$table." WHERE Key_name = '".$index_name."'");
 
 		if ($query->num_rows() == 0)
 		{
 			// Create index
-			$sql = "CREATE INDEX ".$index_name." on ".$this->EE->db->dbprefix.$table."(".$index_col_name.")";
+			$sql = "CREATE INDEX ".$index_name." on ".ee()->db->dbprefix.$table."(".$index_col_name.")";
 
-			if ($this->EE->db->query($sql) === TRUE)
+			if (ee()->db->query($sql) === TRUE)
 			{
 				return TRUE;
 			}
 		}
 
-		$this->EE->logger->updater("Could not create index '$index_name' on table '{$this->EE->db->dbprefix}$table'. Index already exists.", TRUE);
+		ee()->logger->updater("Could not create index '$index_name' on table '{ee()->db->dbprefix}$table'. Index already exists.", TRUE);
 
 		return FALSE;
 
@@ -355,28 +355,28 @@ class Smartforge {
 	public function drop_index($table = '', $index_name = '')
 	{
 		// Check to make sure table exists
-		if ( ! $this->EE->db->table_exists($table))
+		if ( ! ee()->db->table_exists($table))
 		{
-			$this->EE->logger->updater(__METHOD__." failed. Table '{$this->EE->db->dbprefix}$table' does not exist.", TRUE);
+			ee()->logger->updater(__METHOD__." failed. Table '{ee()->db->dbprefix}$table' does not exist.", TRUE);
 
 			return FALSE;
 		}
 
 		// Check to make sure this index exists.
-		$query = $this->EE->db->query("SHOW INDEX FROM ".$this->EE->db->dbprefix.$table." WHERE Key_name = '".$index_name."'");
+		$query = ee()->db->query("SHOW INDEX FROM ".ee()->db->dbprefix.$table." WHERE Key_name = '".$index_name."'");
 
 		if ($query->num_rows() !== 0)
 		{
 			// Create index
-			$sql = "DROP INDEX ".$index_name." on ".$this->EE->db->dbprefix.$table;
+			$sql = "DROP INDEX ".$index_name." on ".ee()->db->dbprefix.$table;
 
-			if ($this->EE->db->query($sql) === TRUE)
+			if (ee()->db->query($sql) === TRUE)
 			{
 				return TRUE;
 			}
 		}
 
-		$this->EE->logger->updater("Could not drop index '$index_name' from table '{$this->EE->db->dbprefix}$table'. Index does not exist.", TRUE);
+		ee()->logger->updater("Could not drop index '$index_name' from table '{ee()->db->dbprefix}$table'. Index does not exist.", TRUE);
 
 		return FALSE;
 	}

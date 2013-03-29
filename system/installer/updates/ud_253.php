@@ -65,7 +65,7 @@ class Updater {
 	 */
 	private function _change_site_preferences_column_type()
 	{
-		$this->EE->smartforge->modify_column(
+		ee()->smartforge->modify_column(
 			'sites',
 			array(
 				'site_system_preferences' => array(
@@ -87,8 +87,8 @@ class Updater {
 	 */
 	private function _truncate_tables()
 	{
-		$this->EE->db->truncate('security_hashes');
-		$this->EE->db->truncate('throttle');
+		ee()->db->truncate('security_hashes');
+		ee()->db->truncate('throttle');
 	}
 }	
 /* END CLASS */

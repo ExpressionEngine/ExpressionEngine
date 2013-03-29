@@ -54,7 +54,7 @@ class Bold_rte {
 	 */
 	function globals()
 	{
-		$this->EE->lang->loadfile('rte');
+		ee()->lang->loadfile('rte');
 		return array(
 			'rte.bold'	=> array(
 				'add'		=> lang('make_bold'),

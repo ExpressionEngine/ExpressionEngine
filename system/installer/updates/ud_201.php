@@ -35,7 +35,7 @@ class Updater {
     function do_update()
     {
         // Modules now have a tab setting
-		$this->EE->smartforge->add_column(
+		ee()->smartforge->add_column(
 			'modules',
 			array(
 				'has_publish_fields' => array(
@@ -50,12 +50,12 @@ class Updater {
 		// Everything else is the custom field conversion
 
 		// Rename option groups to checkboxes
-		$this->EE->db->set('field_type', 'checkboxes');
-		$this->EE->db->where('field_type', 'option_group');	
-		$this->EE->db->update('channel_fields');
+		ee()->db->set('field_type', 'checkboxes');
+		ee()->db->where('field_type', 'option_group');	
+		ee()->db->update('channel_fields');
 
 		// Add missing column
-		$this->EE->smartforge->add_column(
+		ee()->smartforge->add_column(
 			'channel_fields',
 			array(
 				'field_settings' => array(
@@ -66,7 +66,7 @@ class Updater {
 		);
 	    
 		// Increase fieldtype name length
-		$this->EE->smartforge->modify_column(
+		ee()->smartforge->modify_column(
 			'channel_fields',
 			array(
 				'field_type' => array(
@@ -81,7 +81,7 @@ class Updater {
 		
 		// Add fieldtype table
 
-		$this->EE->dbforge->add_field(
+		ee()->dbforge->add_field(
 			array(
 				'fieldtype_id' => array(
 					'type'				=> 'int',
@@ -112,8 +112,8 @@ class Updater {
 			)
 		);
 		
-		$this->EE->dbforge->add_key('fieldtype_id', TRUE);
-		$this->EE->smartforge->create_table('fieldtypes');
+		ee()->dbforge->add_key('fieldtype_id', TRUE);
+		ee()->smartforge->create_table('fieldtypes');
 		
 		// Install default field types
 		
@@ -128,21 +128,21 @@ class Updater {
 				'has_global_settings'	=> 'n'
 			);
 
-			$this->EE->smartforge->insert_set('fieldtypes', $values, $values);
+			ee()->smartforge->insert_set('fieldtypes', $values, $values);
 		}
 		
 		// Remove weblog from specialty_templates 
-		$this->EE->db->query("UPDATE `exp_specialty_templates` SET `template_data` = REPLACE(`template_data`, 'weblog_name', 'channel_name')");
+		ee()->db->query("UPDATE `exp_specialty_templates` SET `template_data` = REPLACE(`template_data`, 'weblog_name', 'channel_name')");
 		
 		// Ditch 
-		$this->EE->db->where('template_name', 'admin_notify_trackback');
-		$this->EE->db->delete('specialty_templates');
+		ee()->db->where('template_name', 'admin_notify_trackback');
+		ee()->db->delete('specialty_templates');
 
-		$this->EE->db->where('template_name', 'admin_notify_gallery_comment');
-		$this->EE->db->delete('specialty_templates');
+		ee()->db->where('template_name', 'admin_notify_gallery_comment');
+		ee()->db->delete('specialty_templates');
 
-		$this->EE->db->where('template_name', 'gallery_comment_notification');
-		$this->EE->db->delete('specialty_templates');
+		ee()->db->where('template_name', 'gallery_comment_notification');
+		ee()->db->delete('specialty_templates');
 		
 		
 		// Set settings to yes so nothing disappears
@@ -161,9 +161,9 @@ class Updater {
 				$final_settings['field_'.$name] = 'y';
 			}
 			
-			$this->EE->db->set('field_settings', base64_encode(serialize($final_settings)));
-			$this->EE->db->where('field_type', $fieldtype);
-			$this->EE->db->update('channel_fields');
+			ee()->db->set('field_settings', base64_encode(serialize($final_settings)));
+			ee()->db->where('field_type', $fieldtype);
+			ee()->db->update('channel_fields');
 		}
 
 		// Finished!

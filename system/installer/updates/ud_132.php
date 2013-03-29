@@ -61,13 +61,13 @@ class Updater {
 		// Run the queries
 		foreach ($Q as $sql)
 		{
-			$this->EE->db->query($sql);
+			ee()->db->query($sql);
 		}
 		
 	
 		$data['publish_tab_behavior'] = "hover";
 		
-		$this->EE->config->_append_config_1x($data);
+		ee()->config->_append_config_1x($data);
 		
 		return TRUE;
 	}

@@ -50,7 +50,7 @@ class Expressionengine_info_acc {
 	 */
 	 function set_sections()
 	{
-		$this->EE->lang->loadfile('expressionengine_info');
+		ee()->lang->loadfile('expressionengine_info');
 		
 		// localize Accessory display name
 		$this->name = lang('expressionengine_info');
@@ -72,9 +72,9 @@ class Expressionengine_info_acc {
 	{
 		return '
 		<ul>
-			<li><a href="'.$this->EE->cp->masked_url('http://ellislab.com/expressionengine/user-guide/').'">'.lang('documentation').'</a></li>
-			<li><a href="'.$this->EE->cp->masked_url('http://ellislab.com/support/').'">'.lang('support_resources').'</a></li>
-			<li><a href="'.$this->EE->cp->masked_url('https://store.ellislab.com/manage').'">'.lang('downloads').'</a></li>
+			<li><a href="'.ee()->cp->masked_url('http://ellislab.com/expressionengine/user-guide/').'">'.lang('documentation').'</a></li>
+			<li><a href="'.ee()->cp->masked_url('http://ellislab.com/support/').'">'.lang('support_resources').'</a></li>
+			<li><a href="'.ee()->cp->masked_url('https://store.ellislab.com/manage').'">'.lang('downloads').'</a></li>
 		</ul>
 		';
 	}
@@ -89,10 +89,10 @@ class Expressionengine_info_acc {
 	 */
 	function _fetch_version()
 	{
-		$this->EE->load->helper('version_helper');
+		ee()->load->helper('version_helper');
 			
 		$details = get_version_info();
-		$download_url = $this->EE->cp->masked_url('https://store.ellislab.com/manage');
+		$download_url = ee()->cp->masked_url('https://store.ellislab.com/manage');
 		
 		if ( ! $details)
 		{
@@ -104,7 +104,7 @@ class Expressionengine_info_acc {
 		
 		if ($latest_version[0] > APP_VER)
 		{
-			$instruct_url = $this->EE->cp->masked_url($this->EE->config->item('doc_url').'installation/update.html');
+			$instruct_url = ee()->cp->masked_url(ee()->config->item('doc_url').'installation/update.html');
 			
 			$str = '<p><strong>' . lang('version_update_available') . '</strong></p><br />';
 			$str .= '<ul>';
@@ -118,7 +118,7 @@ class Expressionengine_info_acc {
 /*
 		elseif($latest_version[1] > APP_BUILD)
 		{
-			$instruct_url = $this->EE->cp->masked_url($this->EE->config->item('doc_url').'installation/update_build.html');
+			$instruct_url = ee()->cp->masked_url(ee()->config->item('doc_url').'installation/update_build.html');
 			
 			$str = '<p><strong>' . lang('build_update_available') . '</strong></p><br />';
 			$str .= '<ul>';

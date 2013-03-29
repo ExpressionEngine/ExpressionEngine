@@ -46,7 +46,7 @@ class Updater {
 	public function do_update()
     {
 		// 2.1.3 was missing this from its schema
-		$this->EE->smartforge->add_column(
+		ee()->smartforge->add_column(
 			'member_groups',
 			array(
 				'can_access_fieldtypes' => array(
@@ -59,13 +59,13 @@ class Updater {
 			'can_access_files'
 		);
 
-		$this->EE->db->set('can_access_fieldtypes', 'y');
-		$this->EE->db->where('group_id', 1);
-		$this->EE->db->update('member_groups');
+		ee()->db->set('can_access_fieldtypes', 'y');
+		ee()->db->where('group_id', 1);
+		ee()->db->update('member_groups');
 
-		$this->EE->db->set('group_id', 4);
-		$this->EE->db->where('group_id', 0);
-		$this->EE->db->update('members');
+		ee()->db->set('group_id', 4);
+		ee()->db->where('group_id', 0);
+		ee()->db->update('members');
 		
 		return TRUE;
     }

@@ -43,12 +43,12 @@ class EE_Messages_send extends EE_Messages {
 		
 		if ($this->upload_path == '')
 		{
-			return $this->EE->lang->line('unable_to_recieve_attach');
+			return ee()->lang->line('unable_to_recieve_attach');
 		}
 
 		if ( ! @is_dir($this->upload_path) OR ! is_really_writable($this->upload_path))
 		{
-			return $this->EE->lang->line('unable_to_recieve_attach');
+			return ee()->lang->line('unable_to_recieve_attach');
 		}
 		
 		/** -------------------------------------
@@ -58,15 +58,15 @@ class EE_Messages_send extends EE_Messages {
 		$this->attachments = array();
 		$attachments_size  = 0;
 		
-		if ($this->EE->input->get_post('attach') !== FALSE && $this->EE->input->get_post('attach') != '')
+		if (ee()->input->get_post('attach') !== FALSE && ee()->input->get_post('attach') != '')
 		{
-			$this->EE->db->select('attachment_id, attachment_size, attachment_location');
-			$this->EE->db->where_in('attachment_id', str_replace('|',"','", $this->EE->input->get_post('attach')));
-			$query = $this->EE->db->get('message_attachments');
+			ee()->db->select('attachment_id, attachment_size, attachment_location');
+			ee()->db->where_in('attachment_id', str_replace('|',"','", ee()->input->get_post('attach')));
+			$query = ee()->db->get('message_attachments');
 			 			
  			if ($query->num_rows() + 1 > $this->max_attachments)
  			{
- 				return $this->EE->lang->line('no_more_attachments');
+ 				return ee()->lang->line('no_more_attachments');
  			}
  			elseif ($query->num_rows() > 0)
  			{
@@ -89,7 +89,7 @@ class EE_Messages_send extends EE_Messages {
 		
 		if ($this->attach_maxsize != 0 && ($attachments_size + ($_FILES['userfile']['size'] /1024)) > $this->attach_maxsize)
 		{
-			return $this->EE->lang->line('attach_too_large');
+			return ee()->lang->line('attach_too_large');
 		}
 		
 		/** -------------------------------------
@@ -97,21 +97,21 @@ class EE_Messages_send extends EE_Messages {
 		/** -------------------------------------*/
 		if ($this->attach_total != '0')
 		{
-			$this->EE->db->select('SUM(attachment_size) as total');
-			$this->EE->db->where('is_temp', 'y');
-			$query = $this->EE->db->get('message_attachments');
+			ee()->db->select('SUM(attachment_size) as total');
+			ee()->db->where('is_temp', 'y');
+			$query = ee()->db->get('message_attachments');
 			
 			if ($query->row('total') != NULL)
 			{	
 				// Is the size of the new file (along with the previous ones) too large?					
 				if (ceil($query->row('total')  + ($_FILES['userfile']['size']/1024)) > ($this->attach_total * 1000))
 				{
-					return $this->EE->lang->line('too_many_attachments');
+					return ee()->lang->line('too_many_attachments');
 				}
 			}
 		}
 
-		$filehash = $this->EE->functions->random('alnum', 20);
+		$filehash = ee()->functions->random('alnum', 20);
 		
 		/** -------------------------------------
 		/**  Upload the image
@@ -124,27 +124,27 @@ class EE_Messages_send extends EE_Messages {
 				'max_size'		=> $this->attach_maxsize
 			);
 	
-		if ($this->EE->config->item('xss_clean_uploads') == 'n')
+		if (ee()->config->item('xss_clean_uploads') == 'n')
 		{
 			$config['xss_clean'] = FALSE;
 		}
 		else
 		{
-			$config['xss_clean'] = ($this->EE->session->userdata('group_id') == 1) ? FALSE : TRUE;
+			$config['xss_clean'] = (ee()->session->userdata('group_id') == 1) ? FALSE : TRUE;
 		}
 
-		$this->EE->load->library('upload', $config);
+		ee()->load->library('upload', $config);
 	
-		if ($this->EE->upload->do_upload() === FALSE)
+		if (ee()->upload->do_upload() === FALSE)
 		{	
-			return $this->EE->upload->display_errors();
+			return ee()->upload->display_errors();
 		}
 	
-		$upload_data = $this->EE->upload->data();
+		$upload_data = ee()->upload->data();
 
 		@chmod($upload_data['full_path'], DIR_WRITE_MODE);
 
-		$this->temp_message_id = $this->EE->functions->random('nozero', 9);
+		$this->temp_message_id = ee()->functions->random('nozero', 9);
 
 		$data = array(
 					'sender_id'				=> $this->member_id,
@@ -153,12 +153,12 @@ class EE_Messages_send extends EE_Messages {
 					'attachment_hash'		=> $filehash,
 					'attachment_extension'  => $upload_data['file_ext'],
 					'attachment_location'	=> $upload_data['file_name'],
-					'attachment_date'		=> $this->EE->localize->now,
+					'attachment_date'		=> ee()->localize->now,
 					'attachment_size'		=> $upload_data['file_size']
 				);
 				
-		$this->EE->db->insert('message_attachments', $data);
-		$attach_id = $this->EE->db->insert_id();
+		ee()->db->insert('message_attachments', $data);
+		$attach_id = ee()->db->insert_id();
 	
 		/** -------------------------------------
 		/**  Load Attachment into array
@@ -176,12 +176,12 @@ class EE_Messages_send extends EE_Messages {
 		/*  is gone but the message remains.
 		/* -------------------------------------*/
 		
-		$expire = $this->EE->localize->now - 24*60*60;
+		$expire = ee()->localize->now - 24*60*60;
 		
-		$this->EE->db->select('attachment_location');
-		$this->EE->db->where('attachment_date < ', $expire);
-		$this->EE->db->where('is_temp', 'y');
-		$result = $this->EE->db->get('message_attachments');
+		ee()->db->select('attachment_location');
+		ee()->db->where('attachment_date < ', $expire);
+		ee()->db->where('is_temp', 'y');
+		$result = ee()->db->get('message_attachments');
 		
 		if ($result->num_rows() > 0)
 		{
@@ -190,9 +190,9 @@ class EE_Messages_send extends EE_Messages {
 				@unlink($row['attachment_location']);
 			}
 			
-			$this->EE->db->where('attachment_date <', $expire);
-			$this->EE->db->where('is_temp = "y"');
-			$this->EE->db->delete('message_attachments');			
+			ee()->db->where('attachment_date <', $expire);
+			ee()->db->where('is_temp = "y"');
+			ee()->db->delete('message_attachments');			
 		}
 		
 		return TRUE;
@@ -218,12 +218,12 @@ class EE_Messages_send extends EE_Messages {
 		
 		if ($this->upload_path == '')
 		{
-			return $this->EE->lang->line('unable_to_recieve_attach');
+			return ee()->lang->line('unable_to_recieve_attach');
 		}
 
 		if ( ! @is_dir($this->upload_path) OR ! is_really_writable($this->upload_path))
 		{
-			return $this->EE->lang->line('unable_to_recieve_attach');
+			return ee()->lang->line('unable_to_recieve_attach');
 		}
 		
 		/** -------------------------------------
@@ -231,7 +231,7 @@ class EE_Messages_send extends EE_Messages {
 		/** -------------------------------------*/
 		if ($this->attach_total != '0')
 		{
-			$query = $this->EE->db->query("SELECT SUM(attachment_size) AS total FROM exp_message_attachments WHERE is_temp != 'y'");
+			$query = ee()->db->query("SELECT SUM(attachment_size) AS total FROM exp_message_attachments WHERE is_temp != 'y'");
 			
 			if ($query->row('total') != NULL)
 			{
@@ -248,7 +248,7 @@ class EE_Messages_send extends EE_Messages {
 		/**  Get Attachment Data
 		/** -------------------------------------*/
  		
- 		$results = $this->EE->db->query("SELECT attachment_name, attachment_size,
+ 		$results = ee()->db->query("SELECT attachment_name, attachment_size,
  								attachment_location, attachment_extension
  								FROM exp_message_attachments
  								WHERE attachment_id IN ('".implode("','", $this->attachments)."')");
@@ -274,7 +274,7 @@ class EE_Messages_send extends EE_Messages {
 			{
 				if (ceil($total + $row['attachment_size']) > ($this->attach_total * 1000))
 				{
-					return $this->EE->lang->line('too_many_attachments');
+					return ee()->lang->line('too_many_attachments');
 				}
 			}
 			
@@ -282,7 +282,7 @@ class EE_Messages_send extends EE_Messages {
 			/**  Duplicate File
 			/** -------------------------------------*/
 			
-			$filehash = $this->EE->functions->random('alnum', 20);
+			$filehash = ee()->functions->random('alnum', 20);
 			
 			$new_name = $filehash.$row['attachment_extension'];
 			
@@ -297,7 +297,7 @@ class EE_Messages_send extends EE_Messages {
 			/**  Insert into Database
 			/** -------------------------------------*/
 			
-			$this->temp_message_id = $this->EE->functions->random('nozero', 10);
+			$this->temp_message_id = ee()->functions->random('nozero', 10);
 	  	
 	  		$data = array(
 	  						'sender_id'				=> $this->member_id,
@@ -306,12 +306,12 @@ class EE_Messages_send extends EE_Messages {
 	  						'attachment_hash'		=> $filehash,
 	  						'attachment_extension'  => $row['attachment_extension'],
 	  						'attachment_location'	=> $new_location,
-	  						'attachment_date'		=> $this->EE->localize->now,
+	  						'attachment_date'		=> ee()->localize->now,
 	  						'attachment_size'		=> $row['attachment_size']
 	  					);	  
 	  				
-			$this->EE->db->query($this->EE->db->insert_string('exp_message_attachments', $data));	
-			$attach_id = $this->EE->db->insert_id();
+			ee()->db->query(ee()->db->insert_string('exp_message_attachments', $data));	
+			$attach_id = ee()->db->insert_id();
 		
 		
 			/** -------------------------------------
@@ -333,7 +333,7 @@ class EE_Messages_send extends EE_Messages {
 					chmod($final_path, FILE_WRITE_MODE);
 				}
 				
-				$this->EE->db->query("UPDATE exp_message_attachments 
+				ee()->db->query("UPDATE exp_message_attachments 
 							SET attachment_hash = '{$final_name}', attachment_location = '{$final_path}' 
 							WHERE attachment_id = '{$attach_id}'");
 			}
@@ -357,9 +357,9 @@ class EE_Messages_send extends EE_Messages {
 	
 	function _remove_attachment($id)
 	{
-		$this->EE->db->select('attachment_location');
-		$this->EE->db->where(array('attachment_id' => $id, 'sender_id' => $this->EE->session->userdata['member_id']));
-		$query = $this->EE->db->get('message_attachments');
+		ee()->db->select('attachment_location');
+		ee()->db->where(array('attachment_id' => $id, 'sender_id' => ee()->session->userdata['member_id']));
+		$query = ee()->db->get('message_attachments');
 
 		if ($query->num_rows() == 0)
 		{
@@ -368,11 +368,11 @@ class EE_Messages_send extends EE_Messages {
 		
 		@unlink($query->row('attachment_location') );
 
-		$this->EE->db->query("DELETE FROM exp_message_attachments WHERE attachment_id = '{$id}'");
+		ee()->db->query("DELETE FROM exp_message_attachments WHERE attachment_id = '{$id}'");
 		
 		$this->attachments = array();
 		
-		$x = explode("|", $this->EE->input->get_post('attach'));
+		$x = explode("|", ee()->input->get_post('attach'));
 		
 		foreach ($x as $val)
 		{
@@ -396,7 +396,7 @@ class EE_Messages_send extends EE_Messages {
 		/**  Is the user banned?
 		/** ----------------------------------------*/
 		
-		if ($this->EE->session->userdata['is_banned'] === TRUE)
+		if (ee()->session->userdata['is_banned'] === TRUE)
 		{			
 			return $this->_error_page();
 		}
@@ -404,9 +404,9 @@ class EE_Messages_send extends EE_Messages {
 		/** ----------------------------------------
 		/**  Is the IP or User Agent unavalable?
 		/** ----------------------------------------*/
-		if ($this->EE->config->item('require_ip_for_posting') == 'y')
+		if (ee()->config->item('require_ip_for_posting') == 'y')
 		{
-			if ($this->EE->input->ip_address() == '0.0.0.0' OR $this->EE->session->userdata['user_agent'] == '')
+			if (ee()->input->ip_address() == '0.0.0.0' OR ee()->session->userdata['user_agent'] == '')
 			{			
 				return $this->_error_page();
 			}
@@ -416,11 +416,11 @@ class EE_Messages_send extends EE_Messages {
 		/**  Status Setting
 		/** -------------------------------------*/
 		
-		if ($this->EE->input->get_post('preview') OR $this->EE->input->get_post('remove'))
+		if (ee()->input->get_post('preview') OR ee()->input->get_post('remove'))
 		{
 			$status = 'preview';
 		}
-		elseif($this->EE->input->get_post('draft'))
+		elseif(ee()->input->get_post('draft'))
 		{
 			$status = 'draft';
 		}
@@ -433,13 +433,13 @@ class EE_Messages_send extends EE_Messages {
 		/**  Already Sent?
 		/** -------------------------------------*/
 		
-		if ($this->EE->input->get_post('message_id') !== FALSE && is_numeric($this->EE->input->get_post('message_id')))
+		if (ee()->input->get_post('message_id') !== FALSE && is_numeric(ee()->input->get_post('message_id')))
 		{
-			$query = $this->EE->db->query("SELECT message_status FROM exp_message_data WHERE message_id = '".$this->EE->db->escape_str($this->EE->input->get_post('message_id'))."'");
+			$query = ee()->db->query("SELECT message_status FROM exp_message_data WHERE message_id = '".ee()->db->escape_str(ee()->input->get_post('message_id'))."'");
 			
 			if ($query->num_rows() > 0 && $query->row('message_status')  == 'sent')
 			{
-				return $this->_error_page($this->EE->lang->line('messsage_already_sent'));
+				return $this->_error_page(ee()->lang->line('messsage_already_sent'));
 			}
 		}
 		
@@ -448,13 +448,13 @@ class EE_Messages_send extends EE_Messages {
 		/*	- prv_msg_waiting_period => How many hours after becoming a member until they can PM?
 		/* -------------------------------------------*/
 		
-		$waiting_period = ($this->EE->config->item('prv_msg_waiting_period') !== FALSE) ? (int) $this->EE->config->item('prv_msg_waiting_period') : 1;
+		$waiting_period = (ee()->config->item('prv_msg_waiting_period') !== FALSE) ? (int) ee()->config->item('prv_msg_waiting_period') : 1;
 		
-		if ($this->EE->session->userdata['group_id'] != 1 && $this->EE->session->userdata['join_date'] > ($this->EE->localize->now - $waiting_period * 60 * 60))
+		if (ee()->session->userdata['group_id'] != 1 && ee()->session->userdata['join_date'] > (ee()->localize->now - $waiting_period * 60 * 60))
 		{
 			return $this->_error_page(str_replace(array('%time%', '%email%', '%site%'), 
-												  array($waiting_period, $this->EE->functions->encode_email($this->EE->config->item('webmaster_email')), $this->EE->config->item('site_name')), 
-												  $this->EE->lang->line('waiting_period_not_reached')));
+												  array($waiting_period, ee()->functions->encode_email(ee()->config->item('webmaster_email')), ee()->config->item('site_name')), 
+												  ee()->lang->line('waiting_period_not_reached')));
 		}
 		
 		
@@ -463,18 +463,18 @@ class EE_Messages_send extends EE_Messages {
 		/*	- prv_msg_throttling_period => How many seconds between PMs?
 		/* -------------------------------------------*/
 		
-		if ($status == 'sent' && $this->EE->session->userdata['group_id'] != 1)
+		if ($status == 'sent' && ee()->session->userdata['group_id'] != 1)
 		{
-			$period = ($this->EE->config->item('prv_msg_throttling_period') !== FALSE) ? (int) $this->EE->config->item('prv_msg_throttling_period') : 30;
+			$period = (ee()->config->item('prv_msg_throttling_period') !== FALSE) ? (int) ee()->config->item('prv_msg_throttling_period') : 30;
 		
-			$query = $this->EE->db->query("SELECT COUNT(*) AS count FROM exp_message_data d
-								 WHERE d.sender_id = '".$this->EE->db->escape_str($this->member_id)."'
+			$query = ee()->db->query("SELECT COUNT(*) AS count FROM exp_message_data d
+								 WHERE d.sender_id = '".ee()->db->escape_str($this->member_id)."'
 								 AND d.message_status = 'sent'
-								 AND d.message_date > ".$this->EE->db->escape_str($this->EE->localize->now - $period));
+								 AND d.message_date > ".ee()->db->escape_str(ee()->localize->now - $period));
 								 
 			if ($query->row('count')  > 0)
 			{
-				return $this->_error_page(str_replace('%x', $period, $this->EE->lang->line('send_throttle')));
+				return $this->_error_page(str_replace('%x', $period, ee()->lang->line('send_throttle')));
 			}
 		}
 		
@@ -483,33 +483,33 @@ class EE_Messages_send extends EE_Messages {
 		/**  Is there a recipient, subject, and body?
 		/** ------------------------------------------*/
 		
-		if ($this->EE->input->get_post('recipients') == '' && $status == 'sent')
+		if (ee()->input->get_post('recipients') == '' && $status == 'sent')
 		{
-			$submission_error[] = $this->EE->lang->line('empty_recipients_field');
+			$submission_error[] = ee()->lang->line('empty_recipients_field');
 		}
-		elseif ($this->EE->input->get_post('subject') == '')
+		elseif (ee()->input->get_post('subject') == '')
 		{
-			$submission_error[] = $this->EE->lang->line('empty_subject_field');
+			$submission_error[] = ee()->lang->line('empty_subject_field');
 		}
-		elseif ($this->EE->input->get_post('body') == '')
+		elseif (ee()->input->get_post('body') == '')
 		{
-			$submission_error[] = $this->EE->lang->line('empty_body_field');
+			$submission_error[] = ee()->lang->line('empty_body_field');
 		}
 		
 		/** -------------------------------------------
 		/**  Deny Duplicate Data
 		/** -------------------------------------------*/
 		
-		if ($this->EE->config->item('deny_duplicate_data') == 'y')
+		if (ee()->config->item('deny_duplicate_data') == 'y')
 		{
-			$query = $this->EE->db->query("SELECT COUNT(*) AS count FROM exp_message_data d
-								 WHERE d.sender_id = '".$this->EE->db->escape_str($this->member_id)."'
+			$query = ee()->db->query("SELECT COUNT(*) AS count FROM exp_message_data d
+								 WHERE d.sender_id = '".ee()->db->escape_str($this->member_id)."'
 								 AND d.message_status = 'sent'
-								 AND d.message_body = '".$this->EE->db->escape_str($this->EE->security->xss_clean($this->EE->input->get_post('body')))."'");
+								 AND d.message_body = '".ee()->db->escape_str(ee()->security->xss_clean(ee()->input->get_post('body')))."'");
 								 
 			if ($query->row('count')  > 0)
 			{
-				return $this->_error_page($this->EE->lang->line('duplicate_message_sent'));
+				return $this->_error_page(ee()->lang->line('duplicate_message_sent'));
 			}
 		}
 		
@@ -517,9 +517,9 @@ class EE_Messages_send extends EE_Messages {
 		/**  Valid Recipients? - Only Checked on Sent
 		/** ------------------------------------------*/
 		
-		$recipients = $this->convert_recipients($this->EE->input->get_post('recipients'), 'array', 'member_id');
+		$recipients = $this->convert_recipients(ee()->input->get_post('recipients'), 'array', 'member_id');
 		
-		$cc = (trim($this->EE->input->get_post('cc')) == '') ? array() : $this->convert_recipients($this->EE->input->get_post('cc'), 'array', 'member_id');
+		$cc = (trim(ee()->input->get_post('cc')) == '') ? array() : $this->convert_recipients(ee()->input->get_post('cc'), 'array', 'member_id');
 		
 		$recip_orig	= count($recipients);
 		$cc_orig	= count($cc);
@@ -529,48 +529,48 @@ class EE_Messages_send extends EE_Messages {
 		
 		if(count($recipients) == 0 && $status == 'sent')
 		{
-			$submission_error[] = $this->EE->lang->line('empty_recipients_field');
+			$submission_error[] = ee()->lang->line('empty_recipients_field');
 		}
 		
 		if($this->invalid_name === TRUE)
 		{
-			$submission_error[] = $this->EE->lang->line('invalid_username');
+			$submission_error[] = ee()->lang->line('invalid_username');
 		}
 		
 		/** ------------------------------------------
 		/**  Too Big for Its Britches?
 		/** ------------------------------------------*/
 		
-		if ($this->max_chars != 0 && strlen($this->EE->input->get_post('body')) > $this->max_chars)
+		if ($this->max_chars != 0 && strlen(ee()->input->get_post('body')) > $this->max_chars)
 		{
-			$submission_error[] = str_replace('%max%', $this->max_chars, $this->EE->lang->line('message_too_large'));
+			$submission_error[] = str_replace('%max%', $this->max_chars, ee()->lang->line('message_too_large'));
 		}
 		
 		/** -------------------------------------
 		/**  Super Admins get a free pass
 		/** -------------------------------------*/
 		
-		if ($this->EE->session->userdata('group_id') != 1)
+		if (ee()->session->userdata('group_id') != 1)
 		{
 			/** ------------------------------------------
 			/**  Sender Allowed to Send More Messages?
 			/** ------------------------------------------*/
-			$query = $this->EE->db->query("SELECT COUNT(c.copy_id) AS count 
+			$query = ee()->db->query("SELECT COUNT(c.copy_id) AS count 
 								 FROM exp_message_copies c, exp_message_data d
 								 WHERE c.message_id = d.message_id
-								 AND c.sender_id = '".$this->EE->db->escape_str($this->member_id)."'
+								 AND c.sender_id = '".ee()->db->escape_str($this->member_id)."'
 								 AND d.message_status = 'sent'
-								 AND d.message_date > ".($this->EE->localize->now - 24*60*60));
+								 AND d.message_date > ".(ee()->localize->now - 24*60*60));
 
 			if (($query->row('count')  + count($recipients) + count($cc)) > $this->send_limit)
 			{
-				$submission_error[] = $this->EE->lang->line('sending_limit_warning');
+				$submission_error[] = ee()->lang->line('sending_limit_warning');
 			}
 
 			/** ------------------------------------------
 			/**  Sender Allowed to Store More Messages?
 			/** ------------------------------------------*/
-			if ($this->storage_limit != '0' && ($this->EE->input->get_post('sent_copy') !== FALSE && $this->EE->input->get_post('sent_copy') == 'y'))
+			if ($this->storage_limit != '0' && (ee()->input->get_post('sent_copy') !== FALSE && ee()->input->get_post('sent_copy') == 'y'))
 			{
 				if ($this->total_messages == '')
 				{
@@ -579,7 +579,7 @@ class EE_Messages_send extends EE_Messages {
 
 				if (($this->total_messages + 1) > $this->storage_limit)
 				{
-					$submission_error[] = $this->EE->lang->line('storage_limit_warning');
+					$submission_error[] = ee()->lang->line('storage_limit_warning');
 				}
 			}			
 		}
@@ -590,13 +590,13 @@ class EE_Messages_send extends EE_Messages {
 		
 		if ($this->upload_path == '' && (isset($_POST['remove']) OR (isset($_FILES['userfile']['name']) && $_FILES['userfile']['name'] != '')))
 		{
-			$submission_error[] = $this->EE->lang->line('unable_to_recieve_attach');
+			$submission_error[] = ee()->lang->line('unable_to_recieve_attach');
 		}
 		
 		/** -------------------------------------
 		/**  Attachments?
 		/** -------------------------------------*/
-		if ($this->EE->input->get_post('attach') !== FALSE && $this->EE->input->get_post('attach') != '')
+		if (ee()->input->get_post('attach') !== FALSE && ee()->input->get_post('attach') != '')
 		{
 			$this->attachments = explode('|', $_POST['attach']);
 		}
@@ -612,7 +612,7 @@ class EE_Messages_send extends EE_Messages {
 		/*  that is.
 		/* -------------------------------------*/
 		
-		if ($this->attach_allowed == 'y' && $this->upload_path != '' && count($this->attachments) > 0 && $this->EE->input->get_post('create_attach'))
+		if ($this->attach_allowed == 'y' && $this->upload_path != '' && count($this->attachments) > 0 && ee()->input->get_post('create_attach'))
 		{
 			if (($message = $this->_duplicate_files()) !== TRUE)
 			{
@@ -646,7 +646,7 @@ class EE_Messages_send extends EE_Messages {
 		{
 			if ($this->upload_path != '' AND isset($_FILES['userfile']['name']) AND $_FILES['userfile']['name'] != '')
 			{
-				$preview = ($this->EE->input->post('preview') !== FALSE) ? TRUE : FALSE;
+				$preview = (ee()->input->post('preview') !== FALSE) ? TRUE : FALSE;
 				
 				if (($message = $this->_attach_file()) !== TRUE)
 				{	
@@ -699,27 +699,27 @@ class EE_Messages_send extends EE_Messages {
 			/*  for error message
 			/* -------------------------------------*/
 			
-			$query = $this->EE->db->query("SELECT exp_members.screen_name, exp_members.email, exp_members.accept_messages, exp_member_groups.prv_msg_storage_limit
+			$query = ee()->db->query("SELECT exp_members.screen_name, exp_members.email, exp_members.accept_messages, exp_member_groups.prv_msg_storage_limit
 								 FROM exp_members
 								 LEFT JOIN exp_member_groups ON exp_member_groups.group_id = exp_members.group_id
 								 WHERE exp_members.member_id IN ('".implode("','",array_merge($details['overflow_recipients'], $details['overflow_cc']))."')
-								 AND exp_member_groups.site_id = '".$this->EE->db->escape_str($this->EE->config->item('site_id'))."'");
+								 AND exp_member_groups.site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."'");
 			
 			if ($query->num_rows() > 0)
 			{
-				$this->EE->load->library('email');
+				ee()->load->library('email');
 
-				$this->EE->email->wordwrap = true;
+				ee()->email->wordwrap = true;
 				
 				$swap = array(
-							  'sender_name'			=> $this->EE->session->userdata('screen_name'),
-							  'site_name'			=> stripslashes($this->EE->config->item('site_name')),
-							  'site_url'			=> $this->EE->config->item('site_url')
+							  'sender_name'			=> ee()->session->userdata('screen_name'),
+							  'site_name'			=> stripslashes(ee()->config->item('site_name')),
+							  'site_url'			=> ee()->config->item('site_url')
 							  );
 				
-				$template = $this->EE->functions->fetch_email_template('pm_inbox_full');
-				$email_tit = $this->EE->functions->var_swap($template['title'], $swap);
-				$email_msg = $this->EE->functions->var_swap($template['data'], $swap);
+				$template = ee()->functions->fetch_email_template('pm_inbox_full');
+				$email_tit = ee()->functions->var_swap($template['title'], $swap);
+				$email_msg = ee()->functions->var_swap($template['data'], $swap);
 
 				foreach($query->result_array() as $row)
 				{
@@ -730,16 +730,16 @@ class EE_Messages_send extends EE_Messages {
 						continue;
 					}
 					
-					$this->EE->email->EE_initialize();
-					$this->EE->email->from($this->EE->config->item('webmaster_email'), $this->EE->config->item('webmaster_name'));	
-					$this->EE->email->to($row['email']); 
-					$this->EE->email->subject($email_tit);	
-					$this->EE->email->message($this->EE->functions->var_swap($email_msg, array('recipient_name' => $row['screen_name'], 'pm_storage_limit' => $row['prv_msg_storage_limit'])));		
-					$this->EE->email->send();
+					ee()->email->EE_initialize();
+					ee()->email->from(ee()->config->item('webmaster_email'), ee()->config->item('webmaster_name'));	
+					ee()->email->to($row['email']); 
+					ee()->email->subject($email_tit);	
+					ee()->email->message(ee()->functions->var_swap($email_msg, array('recipient_name' => $row['screen_name'], 'pm_storage_limit' => $row['prv_msg_storage_limit'])));		
+					ee()->email->send();
 				}	
 			}
 			
-			$submission_error[] = str_replace('%overflow_names%', implode(', ', $overflow_names), $this->EE->lang->line('overflow_recipients'));
+			$submission_error[] = str_replace('%overflow_names%', implode(', ', $overflow_names), ee()->lang->line('overflow_recipients'));
 		}
 		
 		/** ----------------------------------------
@@ -777,7 +777,7 @@ class EE_Messages_send extends EE_Messages {
 			
 			$sql .= ")";
 				
-			$blocked = $this->EE->db->query($sql);
+			$blocked = ee()->db->query($sql);
 				
 			if ($blocked->num_rows() > 0)
 			{	
@@ -799,35 +799,35 @@ class EE_Messages_send extends EE_Messages {
 		/** -------------------------------------*/
 		
 		$data = array('sender_id' 			=> $this->member_id,
-					  'message_date' 		=> $this->EE->localize->now,
-					  'message_subject' 	=> $this->EE->security->xss_clean($this->EE->input->get_post('subject')),
-					  'message_body'		=> $this->EE->security->xss_clean($this->EE->input->get_post('body')),
-					  'message_tracking' 	=> ( ! $this->EE->input->get_post('tracking')) ? 'n' : 'y',
+					  'message_date' 		=> ee()->localize->now,
+					  'message_subject' 	=> ee()->security->xss_clean(ee()->input->get_post('subject')),
+					  'message_body'		=> ee()->security->xss_clean(ee()->input->get_post('body')),
+					  'message_tracking' 	=> ( ! ee()->input->get_post('tracking')) ? 'n' : 'y',
 					  'message_attachments' => (count($this->attachments) > 0) ? 'y' : 'n',
 					  'message_recipients'	=> implode('|', $recipients),
 					  'message_cc'			=> implode('|', $cc),
-					  'message_hide_cc'		=> ( ! $this->EE->input->get_post('hide_cc')) ? 'n' : 'y',
-					  'message_sent_copy'	=> ( ! $this->EE->input->get_post('sent_copy')) ? 'n' : 'y',
+					  'message_hide_cc'		=> ( ! ee()->input->get_post('hide_cc')) ? 'n' : 'y',
+					  'message_sent_copy'	=> ( ! ee()->input->get_post('sent_copy')) ? 'n' : 'y',
 					  'total_recipients'	=> (count($recipients) + count($cc)),
 					  'message_status'		=> $status);
 		
-		if ($this->EE->input->get_post('message_id') && is_numeric($this->EE->input->get_post('message_id')))
+		if (ee()->input->get_post('message_id') && is_numeric(ee()->input->get_post('message_id')))
 		{
 			/* -------------------------------------
 			/*  Preview or Draft previously submitted.
 			/*  So, we're updating an already existing message
 			/* -------------------------------------*/
 			
-			$message_id = $this->EE->input->get_post('message_id');
+			$message_id = ee()->input->get_post('message_id');
 			unset($data['message_id']);
 			
-			$this->EE->db->query($this->EE->db->update_string('exp_message_data', $data, "message_id = '".$this->EE->db->escape_str($message_id)."'"));
+			ee()->db->query(ee()->db->update_string('exp_message_data', $data, "message_id = '".ee()->db->escape_str($message_id)."'"));
 		}
 		else
 		{
-			$this->EE->db->query($this->EE->db->insert_string('exp_message_data', $data));
+			ee()->db->query(ee()->db->insert_string('exp_message_data', $data));
 		
-			$message_id = $this->EE->db->insert_id();
+			$message_id = ee()->db->insert_id();
 		}
 		
 		/** -----------------------------------------
@@ -846,85 +846,85 @@ class EE_Messages_send extends EE_Messages {
 			for($i=0, $size = count($recipients); $i < $size; $i++)
 			{
 				$copy_data['recipient_id'] 		= $recipients[$i];
-				$copy_data['message_authcode']	= $this->EE->functions->random('alnum', 10);
-				$this->EE->db->query($this->EE->db->insert_string('exp_message_copies', $copy_data));
+				$copy_data['message_authcode']	= ee()->functions->random('alnum', 10);
+				ee()->db->query(ee()->db->insert_string('exp_message_copies', $copy_data));
 			}
 			
 			for($i=0, $size = count($cc); $i < $size; $i++)
 			{
 				$copy_data['recipient_id']		= $cc[$i];
-				$copy_data['message_authcode']	= $this->EE->functions->random('alnum', 10);
-				$this->EE->db->query($this->EE->db->insert_string('exp_message_copies', $copy_data));
+				$copy_data['message_authcode']	= ee()->functions->random('alnum', 10);
+				ee()->db->query(ee()->db->insert_string('exp_message_copies', $copy_data));
 			}
 			
 			/** ----------------------------------
 			/**  Increment exp_members.private_messages
 			/** ----------------------------------*/
 			
-			$this->EE->db->query("UPDATE exp_members SET private_messages = private_messages + 1
+			ee()->db->query("UPDATE exp_members SET private_messages = private_messages + 1
 						WHERE member_id IN ('".implode("','",array_merge($recipients, $cc))."')");
 						
 			/** ----------------------------------
 			/**  Send Any and All Email Notifications
 			/** ----------------------------------*/
 			
-			$query = $this->EE->db->query("SELECT screen_name, email FROM exp_members
+			$query = ee()->db->query("SELECT screen_name, email FROM exp_members
 								 WHERE member_id IN ('".implode("','",array_merge($recipients, $cc))."')
 								 AND notify_of_pm = 'y'
 								 AND member_id != {$this->member_id}");
 								 
 			if ($query->num_rows() > 0)
 			{
-				$this->EE->load->library('typography');
-				$this->EE->typography->initialize(array(
+				ee()->load->library('typography');
+				ee()->typography->initialize(array(
  				 				'parse_images'		=> FALSE,
  				 				'smileys'			=> FALSE,
  				 				'highlight_code'	=> TRUE)
  				 				);
 
-				if ($this->EE->config->item('enable_censoring') == 'y' AND $this->EE->config->item('censored_words') != '')
+				if (ee()->config->item('enable_censoring') == 'y' AND ee()->config->item('censored_words') != '')
         		{
-					$subject = $this->EE->typography->filter_censored_words($this->EE->security->xss_clean($this->EE->input->get_post('subject')));
+					$subject = ee()->typography->filter_censored_words(ee()->security->xss_clean(ee()->input->get_post('subject')));
 				}
 				else
 				{
-					$subject = $this->EE->security->xss_clean($this->EE->input->get_post('subject'));
+					$subject = ee()->security->xss_clean(ee()->input->get_post('subject'));
 				}
 				
-				$body = $this->EE->typography->parse_type(stripslashes($this->EE->security->xss_clean($this->EE->input->get_post('body'))),
+				$body = ee()->typography->parse_type(stripslashes(ee()->security->xss_clean(ee()->input->get_post('body'))),
 														array('text_format'	=> 'none',
 																 'html_format'	=> 'none',
 																 'auto_links'	=> 'n',
 																 'allow_img_url' => 'n'
 																 ));
 				
-				$this->EE->load->library('email');
+				ee()->load->library('email');
 
-				$this->EE->email->wordwrap = true;
+				ee()->email->wordwrap = true;
 				
 				$swap = array(
-							  'sender_name'			=> $this->EE->session->userdata('screen_name'),
+							  'sender_name'			=> ee()->session->userdata('screen_name'),
 							  'message_subject'		=> $subject, 
 							  'message_content'		=> $body,
-							  'site_name'			=> stripslashes($this->EE->config->item('site_name')),
-							  'site_url'			=> $this->EE->config->item('site_url')
+							  'site_name'			=> stripslashes(ee()->config->item('site_name')),
+							  'site_url'			=> ee()->config->item('site_url')
 							  );
 				
-				$template = $this->EE->functions->fetch_email_template('private_message_notification');
-				$email_tit = $this->EE->functions->var_swap($template['title'], $swap);
-				$email_msg = $this->EE->functions->var_swap($template['data'], $swap);
+				$template = ee()->functions->fetch_email_template('private_message_notification');
+				$email_tit = ee()->functions->var_swap($template['title'], $swap);
+				$email_msg = ee()->functions->var_swap($template['data'], $swap);
 
 				// Load the text helper
-				$this->EE->load->helper('text');
+				ee()->load->helper('text');
 
 				foreach($query->result_array() as $row)
 				{	
-					$this->EE->email->EE_initialize();
-					$this->EE->email->from($this->EE->config->item('webmaster_email'), $this->EE->config->item('webmaster_name'));	
-					$this->EE->email->to($row['email']); 
-					$this->EE->email->subject($email_tit);	
-					$this->EE->email->message(entities_to_ascii($this->EE->functions->var_swap($email_msg, array('recipient_name' => $row['screen_name']))));		
-					$this->EE->email->send();
+					ee()->email->EE_initialize();
+					ee()->email->from(ee()->config->item('webmaster_email'), ee()->config->item('webmaster_name'));	
+					ee()->email->to($row['email']); 
+					ee()->email->subject($email_tit);	
+					ee()->email->message(entities_to_ascii(ee()->functions->var_swap($email_msg, array('recipient_name' => $row['screen_name']))));		
+					ee()->email->send();
 				}
 			}
 		}
@@ -936,22 +936,22 @@ class EE_Messages_send extends EE_Messages {
 		if ($status == 'sent' && $data['message_sent_copy'] == 'y')
 		{
 			$copy_data['recipient_id'] 		= $this->member_id;
-			$copy_data['message_authcode']	= $this->EE->functions->random('alnum', 10);
+			$copy_data['message_authcode']	= ee()->functions->random('alnum', 10);
 			$copy_data['message_folder']	= '2';  // Sent Message Folder
 			$copy_data['message_read']		= 'y';  // Already read automatically
-			$this->EE->db->query($this->EE->db->insert_string('exp_message_copies', $copy_data));
+			ee()->db->query(ee()->db->insert_string('exp_message_copies', $copy_data));
 		}
 		
 		/** -------------------------------------
 		/**  Replying or Forwarding?
 		/** -------------------------------------*/
 		
-		if ($status == 'sent' && ($this->EE->input->get_post('replying') !== FALSE OR $this->EE->input->get_post('forwarding') !== FALSE))
+		if ($status == 'sent' && (ee()->input->get_post('replying') !== FALSE OR ee()->input->get_post('forwarding') !== FALSE))
 		{
-			$copy_id = ($this->EE->input->get_post('replying') !== FALSE) ? $this->EE->input->get_post('replying') : $this->EE->input->get_post('forwarding');
-			$status  = ($this->EE->input->get_post('replying') !== FALSE) ? 'replied' : 'forwarded';
+			$copy_id = (ee()->input->get_post('replying') !== FALSE) ? ee()->input->get_post('replying') : ee()->input->get_post('forwarding');
+			$status  = (ee()->input->get_post('replying') !== FALSE) ? 'replied' : 'forwarded';
 			
-			$this->EE->db->query("UPDATE exp_message_copies SET message_status = '{$status}' WHERE copy_id = '{$copy_id}'");
+			ee()->db->query("UPDATE exp_message_copies SET message_status = '{$status}' WHERE copy_id = '{$copy_id}'");
 		}
 		
 		/** -------------------------------------
@@ -960,7 +960,7 @@ class EE_Messages_send extends EE_Messages {
 		
 		if (count($this->attachments) > 0)
 		{
-			$this->EE->db->query("UPDATE exp_message_attachments SET message_id = '{$message_id}' 
+			ee()->db->query("UPDATE exp_message_attachments SET message_id = '{$message_id}' 
 						WHERE attachment_id IN ('".implode("','", $this->attachments)."')");
 		}
 		
@@ -970,7 +970,7 @@ class EE_Messages_send extends EE_Messages {
 		
 		if ($status == 'sent')
 		{	
-			$this->EE->db->query("UPDATE exp_message_attachments SET is_temp = 'n' WHERE message_id = '{$message_id}'");
+			ee()->db->query("UPDATE exp_message_attachments SET is_temp = 'n' WHERE message_id = '{$message_id}'");
 		}
 		
 		/** -------------------------------------
@@ -987,7 +987,7 @@ class EE_Messages_send extends EE_Messages {
 		}
 		else
 		{
-			$this->EE->functions->redirect($this->_create_path('inbox'));
+			ee()->functions->redirect($this->_create_path('inbox'));
 		}
 	}
 

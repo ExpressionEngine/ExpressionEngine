@@ -54,7 +54,7 @@ class Headings_rte {
 	 */
 	function globals()
 	{
-		$this->EE->lang->loadfile('rte');
+		ee()->lang->loadfile('rte');
 		return array(
 			'rte.headings'	=> array(
 				'paragraph'		=> lang('paragraph'),

@@ -52,8 +52,8 @@ class EE_Fieldtype {
 		$this->EE =& get_instance();
 	
 		// Log the deprecation.
-		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated('2.6', 'EE_Fieldtype::__construct()');	
+		ee()->load->library('logger');
+		ee()->logger->deprecated('2.6', 'EE_Fieldtype::__construct()');	
 	}
 	
 	// --------------------------------------------------------------------
@@ -240,9 +240,9 @@ class EE_Fieldtype {
 	
 	function display_publish_field($data)
 	{
-		$vars['glossary_items'] = $this->EE->load->ee_view('content/_assets/glossary_items', '', TRUE);
+		$vars['glossary_items'] = ee()->load->ee_view('content/_assets/glossary_items', '', TRUE);
 
-		$this->EE->load->vars($vars);
+		ee()->load->vars($vars);
 		return $this->display_field($data);
 	}
 	
@@ -264,7 +264,7 @@ class EE_Fieldtype {
 			$extra .= '</p></div>';
 		}
 
-		$this->EE->table->add_row(
+		ee()->table->add_row(
 			lang('deft_field_formatting', $prefix.'field_fmt'),
 			form_dropdown($prefix.'field_fmt', $data['field_fmt_options'], $data['field_fmt'], 'id="'.$prefix.'field_fmt"').
 				NBS.$data['edit_format_link'].BR.BR.
@@ -276,7 +276,7 @@ class EE_Fieldtype {
 				$extra
 		);
 		
-		$this->EE->javascript->output('
+		ee()->javascript->output('
 		$("#'.$prefix.'field_fmt").change(function() {
 			$(this).nextAll(".update_formatting").show();
 		});
@@ -289,7 +289,7 @@ class EE_Fieldtype {
 	{
 		$prefix = ($prefix) ? $prefix.'_' : '';
 
-		$this->EE->table->add_row(
+		ee()->table->add_row(
 			'<strong>'.lang('text_direction').'</strong>',
 			form_radio($prefix.'field_text_direction', 'ltr', $data['field_text_direction_ltr'], 'id="'.$prefix.'field_text_direction_ltr"').NBS.
 				lang('ltr', $prefix.'field_text_direction_ltr').NBS.NBS.NBS.NBS.NBS.
@@ -315,12 +315,12 @@ class EE_Fieldtype {
 								$data['field_content_'.$suf]).'</p></div>';
 		}
 		
-		$this->EE->table->add_row(
+		ee()->table->add_row(
 			lang('field_content_'.$suf, 'field_content_'.$suf),
 			form_dropdown($prefix.'field_content_type', $data['field_content_options_'.$suf], $data['field_content_'.$suf], 'id="'.$prefix.'field_content_type"').$extra
 		);	
 		
-		$this->EE->javascript->output('
+		ee()->javascript->output('
 		$("#'.$prefix.'field_content_type").change(function() {
 			$(this).nextAll(".update_content_type").show();
 		});
@@ -334,7 +334,7 @@ class EE_Fieldtype {
 	{
 		$prefix = ($prefix) ? $prefix.'_' : '';
 
-		$this->EE->table->add_row(
+		ee()->table->add_row(
 			'<p class="field_format_option select_format">'.
 				form_radio($prefix.'field_pre_populate', 'n', $data['field_pre_populate_n'], 'id="'.$prefix.'field_pre_populate_n"').NBS.
 				lang('field_populate_manually', $prefix.'field_pre_populate_n').BR.
@@ -352,11 +352,11 @@ class EE_Fieldtype {
 			'</p>'
 		);
 	
-		$this->EE->javascript->click('#'.$prefix.'field_pre_populate_n', '$(".select_format_n").show();$(".select_format_y").hide();', FALSE);
-		$this->EE->javascript->click('#'.$prefix.'field_pre_populate_y', '$(".select_format_y").show();$(".select_format_n").hide();', FALSE);
+		ee()->javascript->click('#'.$prefix.'field_pre_populate_n', '$(".select_format_n").show();$(".select_format_y").hide();', FALSE);
+		ee()->javascript->click('#'.$prefix.'field_pre_populate_y', '$(".select_format_y").show();$(".select_format_n").hide();', FALSE);
 		
 		// When this field becomes active for the first time - hit the option we need
-		$this->EE->javascript->output('
+		ee()->javascript->output('
 			$("#ft_'.rtrim($prefix, '_').'").one("activate", function() {
 				$("#'.$prefix.'field_pre_populate_'.$data['field_pre_populate'].'").trigger("click");
 			});
@@ -403,7 +403,7 @@ class EE_Fieldtype {
 		
 		$val_is_y = ($data[$data_key] == 'y') ? TRUE : FALSE;
 		
-		$this->EE->table->add_row(
+		ee()->table->add_row(
 			'<strong>'.lang($lang).'</strong>',
 				form_radio($prefix.$data_key, 'y', $val_is_y, 'id="'.$prefix.$data_key.'_y"').NBS.
 				lang('yes', $prefix.$data_key.'_y').NBS.NBS.NBS.NBS.NBS.

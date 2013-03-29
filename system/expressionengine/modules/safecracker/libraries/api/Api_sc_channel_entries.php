@@ -22,12 +22,12 @@ class Api_sc_channel_entries extends Api_channel_entries
 	 */
 	public function _pre_prepare_data(&$data)
 	{
-		if ( ! $this->EE->safecracker->edit)
+		if ( ! ee()->safecracker->edit)
 		{
 			return;
 		}
 		
-		foreach($this->EE->safecracker->custom_fields as $field)
+		foreach(ee()->safecracker->custom_fields as $field)
 		{
 			if (empty($field['isset']))
 			{
@@ -49,7 +49,7 @@ class Api_sc_channel_entries extends Api_channel_entries
 		//remove unwanted keys
 		foreach ($data as $key => $value)
 		{
-			$fields = $this->EE->db->list_fields('channel_data');
+			$fields = ee()->db->list_fields('channel_data');
 		
 			if (preg_match('/^field_(id|ft|dt)/', $key) && ! in_array($key, $fields))
 			{
@@ -57,7 +57,7 @@ class Api_sc_channel_entries extends Api_channel_entries
 			}
 		}
 		
-		if ( ! $this->EE->safecracker->edit)
+		if ( ! ee()->safecracker->edit)
 		{
 			return;
 		}
@@ -65,12 +65,12 @@ class Api_sc_channel_entries extends Api_channel_entries
 		$rel_ids = array();
 		$checkbox_fields = isset($data['checkbox_fields']) ? explode('|', $data['checkbox_fields']) : array();
 		
-		foreach($this->EE->safecracker->custom_fields as $field)
+		foreach(ee()->safecracker->custom_fields as $field)
 		{
 			// Preserve off-screen checkboxes
 			if ($field['field_type'] == 'checkboxes')
 			{
-				if ($this->EE->safecracker->preserve_checkboxes)
+				if (ee()->safecracker->preserve_checkboxes)
 				{
 					// If a checkbox field was present on screen but has no value,
 					// assign a blank value to it so the database is updated
@@ -90,15 +90,15 @@ class Api_sc_channel_entries extends Api_channel_entries
 			// Preserve the original value if this field wasn't POSTed
 			if (empty($field['isset']))
 			{
-				$data['field_id_'.$field['field_id']] = ($this->EE->safecracker->entry($field['field_name']) !== FALSE)
-					? $this->EE->safecracker->entry($field['field_name']) : '';
+				$data['field_id_'.$field['field_id']] = (ee()->safecracker->entry($field['field_name']) !== FALSE)
+					? ee()->safecracker->entry($field['field_name']) : '';
 
 
 				// The entry API expects the rel_child_id from the exp_relationships field 
 				// rather than the rel_id stored in channel_data
-				if ($field['field_type'] == 'rel' && $this->EE->safecracker->entry($field['field_name']) !== FALSE)
+				if ($field['field_type'] == 'rel' && ee()->safecracker->entry($field['field_name']) !== FALSE)
 				{
-					$rel_ids[$this->EE->safecracker->entry($field['field_name'])] = 'field_id_'.$field['field_id'];
+					$rel_ids[ee()->safecracker->entry($field['field_name'])] = 'field_id_'.$field['field_id'];
 				}
 
 			}
@@ -106,7 +106,7 @@ class Api_sc_channel_entries extends Api_channel_entries
 
 		if ( ! empty($rel_ids))
 		{
-			$relationships = $this->EE->safecracker->api_safe_rel_ids(array_keys($rel_ids));
+			$relationships = ee()->safecracker->api_safe_rel_ids(array_keys($rel_ids));
 			
 			if ($relationships->num_rows() > 0)
 			{

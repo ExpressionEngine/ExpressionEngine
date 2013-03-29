@@ -35,13 +35,13 @@ class Updater {
 	function do_update() 
 	{ 
 
-		$this->EE->smartforge->drop_index('channel_data', 'weblog_id');
+		ee()->smartforge->drop_index('channel_data', 'weblog_id');
 
-		$this->EE->smartforge->create_index('channel_data', 'channel_id');
+		ee()->smartforge->create_index('channel_data', 'channel_id');
 
-		$this->EE->smartforge->drop_index('channel_titles', 'weblog_id');
+		ee()->smartforge->drop_index('channel_titles', 'weblog_id');
 
-		$this->EE->smartforge->create_index('channel_titles', 'channel_id');
+		ee()->smartforge->create_index('channel_titles', 'channel_id');
 		
 		return TRUE;
 	}

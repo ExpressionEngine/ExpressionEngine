@@ -55,7 +55,7 @@ class Quick_tips_acc {
 	{
 		
 		$this->EE =& get_instance();
-		$this->EE->load->helper('array');
+		ee()->load->helper('array');
 	}
 
 	function update()

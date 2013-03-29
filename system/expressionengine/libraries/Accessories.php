@@ -33,7 +33,7 @@ class EE_Accessories {
 	function __construct()
 	{
 		$this->EE =& get_instance();
-		$this->EE->load->library('addons');
+		ee()->load->library('addons');
 	}	
 
 	// --------------------------------------------------------------------	
@@ -51,11 +51,11 @@ class EE_Accessories {
 		$accessories = array();
 		$ext_len = strlen('.php');
 		
-		$controller	= $this->EE->router->fetch_class();
-		$member_group = $this->EE->session->userdata('group_id');
+		$controller	= ee()->router->fetch_class();
+		$member_group = ee()->session->userdata('group_id');
 
-		$files = $this->EE->addons->get_files('accessories');
-		$installed = $this->EE->addons->get_installed('accessories');
+		$files = ee()->addons->get_files('accessories');
+		$installed = ee()->addons->get_installed('accessories');
 
 		foreach ($files as $name => $info)
 		{						
@@ -100,7 +100,7 @@ class EE_Accessories {
 						if (array_key_exists('package', $info))
 						{
 							$third_party = TRUE;
-							$this->EE->load->add_package_path(PATH_THIRD.strtolower($name).'/');
+							ee()->load->add_package_path(PATH_THIRD.strtolower($name).'/');
 						}
 						
 						$obj = new $info['class']();
@@ -111,8 +111,8 @@ class EE_Accessories {
 							if ($obj->update() !== FALSE)
 							{
 								// Its up to the developer to return FALSE on failure, otherwise we'll assume it succeeded.
-								$this->EE->load->model('addons_model');
-								$this->EE->addons_model->update_accessory($info['class'], array('accessory_version'=>$obj->version));
+								ee()->load->model('addons_model');
+								ee()->addons_model->update_accessory($info['class'], array('accessory_version'=>$obj->version));
 							}
 						}
 
@@ -122,7 +122,7 @@ class EE_Accessories {
 						
 						if ($third_party === TRUE)
 						{
-							$this->EE->load->remove_package_path(PATH_THIRD.strtolower($name).'/');
+							ee()->load->remove_package_path(PATH_THIRD.strtolower($name).'/');
 						}
 					}
 					else
@@ -149,7 +149,7 @@ class EE_Accessories {
 	 */
 	function fetch_path_by_name($name)
 	{
-		$files = $this->EE->addons->get_files('accessories');
+		$files = ee()->addons->get_files('accessories');
 
 		if (isset($files[$name]))
 		{
@@ -176,11 +176,11 @@ class EE_Accessories {
 	{
 		if ($member_groups === FALSE && $controllers === FALSE)
 		{
-			$this->EE->load->model('member_model');
+			ee()->load->model('member_model');
 			
 			// all member groups by default
 			$member_groups = array();
-			$member_groups_query = $this->EE->member_model->get_member_groups();
+			$member_groups_query = ee()->member_model->get_member_groups();
 
 			foreach ($member_groups_query->result() as $group)
 			{
@@ -217,10 +217,10 @@ class EE_Accessories {
 			$data['controllers'] = implode('|', $controllers);
 		}
 
-		$this->EE->load->model('addons_model');
-		$this->EE->addons_model->update_accessory($acc_name, $data);
+		ee()->load->model('addons_model');
+		ee()->addons_model->update_accessory($acc_name, $data);
 
-		return ($this->EE->db->affected_rows() > 0) ? TRUE : FALSE;
+		return (ee()->db->affected_rows() > 0) ? TRUE : FALSE;
 	}
 
 	// --------------------------------------------------------------------
@@ -253,7 +253,7 @@ class EE_Accessories {
 		
 		if (strncmp($path, PATH_THIRD, strlen(PATH_THIRD)) == 0)
 		{
-			$this->EE->load->add_package_path(PATH_THIRD.strtolower($name).'/', FALSE);
+			ee()->load->add_package_path(PATH_THIRD.strtolower($name).'/', FALSE);
 		}
 		
 		return $class;

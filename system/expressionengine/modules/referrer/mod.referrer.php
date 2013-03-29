@@ -44,26 +44,26 @@ class Referrer {
 	{
 		$switch = array();
 		
-		$pop =  ($this->EE->TMPL->fetch_param('popup') == 'yes') ? ' target="_blank" ' : '';		
+		$pop =  (ee()->TMPL->fetch_param('popup') == 'yes') ? ' target="_blank" ' : '';		
 				
 
 		//  Build query
 		$sql = "SELECT * FROM exp_referrers ";
 
-		$sql .= "WHERE site_id = '".$this->EE->db->escape_str($this->EE->config->item('site_id'))."' ORDER BY ref_id desc ";
+		$sql .= "WHERE site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."' ORDER BY ref_id desc ";
 		
 	
-		if ( ! $this->EE->TMPL->fetch_param('limit'))
+		if ( ! ee()->TMPL->fetch_param('limit'))
 		{
 			$sql .= "LIMIT 100";
 		}
 		else
 		{
-			$sql .= "LIMIT ".$this->EE->TMPL->fetch_param('limit');
+			$sql .= "LIMIT ".ee()->TMPL->fetch_param('limit');
 		}
 
-		$query = $this->EE->db->query($sql);
-		$site_url = $this->EE->config->item('site_url');
+		$query = ee()->db->query($sql);
+		$site_url = ee()->config->item('site_url');
 		
 		//  Parse result
 		
@@ -71,16 +71,16 @@ class Referrer {
 		{
 			foreach ($query->result_array() as $row)
 			{
-				$tagdata = $this->EE->TMPL->tagdata; 
+				$tagdata = ee()->TMPL->tagdata; 
 
 				//  Parse "single" variables
 
-				foreach ($this->EE->TMPL->var_single as $key => $val)
+				foreach (ee()->TMPL->var_single as $key => $val)
 				{				
 					//  parse {switch} variable
 					if (strncmp($key, 'switch', 6) == 0)
 					{
-						$sparam = $this->EE->functions->assign_parameters($key);
+						$sparam = ee()->functions->assign_parameters($key);
 						
 						$sw = '';
 	
@@ -105,7 +105,7 @@ class Referrer {
 							}
 						}
 						
-						$tagdata = $this->EE->TMPL->swap_var_single($key, $sw, $tagdata);
+						$tagdata = ee()->TMPL->swap_var_single($key, $sw, $tagdata);
 					}
 								
 				
@@ -115,7 +115,7 @@ class Referrer {
 					{
 						$from = '<a href="'.$this->encode_ee_tags($row['ref_from']).'"'.$pop.'>'.$this->encode_ee_tags($row['ref_from']).'</a>';
 					
-						$tagdata = $this->EE->TMPL->swap_var_single($val, $from, $tagdata);
+						$tagdata = ee()->TMPL->swap_var_single($val, $from, $tagdata);
 					}
 
 					//  {ref_to}
@@ -126,7 +126,7 @@ class Referrer {
 					
 						$to  = '<a href="'.$this->encode_ee_tags($row['ref_to']).'">'.$this->encode_ee_tags($to_short).'</a>';
 					
-						$tagdata = $this->EE->TMPL->swap_var_single($val, $to, $tagdata);
+						$tagdata = ee()->TMPL->swap_var_single($val, $to, $tagdata);
 					}
 
 					//  {ref_ip}
@@ -135,7 +135,7 @@ class Referrer {
 					{
 						$ip = ( ! isset($row['ref_ip'])) ? '-' : $row['ref_ip'];
 						
-						$tagdata = $this->EE->TMPL->swap_var_single($val, $ip, $tagdata);
+						$tagdata = ee()->TMPL->swap_var_single($val, $ip, $tagdata);
 					}
 
 					//  {ref_agent}
@@ -144,7 +144,7 @@ class Referrer {
 					{
 						$agent = ( ! isset($row['ref_agent'])) ? '-' : $this->encode_ee_tags($row['ref_agent']);
 						
-						$tagdata = $this->EE->TMPL->swap_var_single($val, $agent, $tagdata);
+						$tagdata = ee()->TMPL->swap_var_single($val, $agent, $tagdata);
 					}
 
 					//  {ref_agent_short}
@@ -153,7 +153,7 @@ class Referrer {
 					{
 						$agent = ( ! isset($row['ref_agent'])) ? '-' : preg_replace("/(.+?)\s+.*/", "\\1", $this->encode_ee_tags($row['ref_agent']));
 						
-						$tagdata = $this->EE->TMPL->swap_var_single($val, $agent, $tagdata);
+						$tagdata = ee()->TMPL->swap_var_single($val, $agent, $tagdata);
 					}
 
 					//  {ref_date}
@@ -166,9 +166,9 @@ class Referrer {
 						}
 						else
   						{
-							$date = $this->EE->localize->format_date($val, $row['ref_date']);
+							$date = ee()->localize->format_date($val, $row['ref_date']);
 						}
-						$tagdata = $this->EE->TMPL->swap_var_single($key, $date, $tagdata);
+						$tagdata = ee()->TMPL->swap_var_single($key, $date, $tagdata);
 					}					
 				}
 				

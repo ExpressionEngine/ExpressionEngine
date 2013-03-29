@@ -36,27 +36,27 @@ class Updater {
     {
 
 		// Modules now have a tab setting
-		$this->EE->db->set('rel_type', 'channel');
-		$this->EE->db->where('rel_type', 'blog');
-		$this->EE->db->update('relationships');
+		ee()->db->set('rel_type', 'channel');
+		ee()->db->where('rel_type', 'blog');
+		ee()->db->update('relationships');
 
-		$this->EE->smartforge->drop_column('channels', 'show_url_title');
-		$this->EE->smartforge->drop_column('channels', 'show_ping_cluster');
-		$this->EE->smartforge->drop_column('channels', 'show_options_cluster');
-		$this->EE->smartforge->drop_column('channels', 'show_forum_cluster');
-		$this->EE->smartforge->drop_column('channels', 'show_show_all_cluster');
-		$this->EE->smartforge->drop_column('channels', 'show_status_menu');
-		$this->EE->smartforge->drop_column('channels', 'show_categories_menu');
-		$this->EE->smartforge->drop_column('channels', 'show_date_menu');
-		$this->EE->smartforge->drop_column('channels', 'show_pages_cluster');
-		$this->EE->smartforge->drop_column('channels', 'show_author_menu');
+		ee()->smartforge->drop_column('channels', 'show_url_title');
+		ee()->smartforge->drop_column('channels', 'show_ping_cluster');
+		ee()->smartforge->drop_column('channels', 'show_options_cluster');
+		ee()->smartforge->drop_column('channels', 'show_forum_cluster');
+		ee()->smartforge->drop_column('channels', 'show_show_all_cluster');
+		ee()->smartforge->drop_column('channels', 'show_status_menu');
+		ee()->smartforge->drop_column('channels', 'show_categories_menu');
+		ee()->smartforge->drop_column('channels', 'show_date_menu');
+		ee()->smartforge->drop_column('channels', 'show_pages_cluster');
+		ee()->smartforge->drop_column('channels', 'show_author_menu');
 
 		// Leftover trackback indication can go
-		$this->EE->db->where('module_name', 'Trackback');
-		$this->EE->db->delete('modules');
+		ee()->db->where('module_name', 'Trackback');
+		ee()->db->delete('modules');
 
 		// Email field size consistent with RFC2822 recommended header line limit of 78 (minus "from: ")
-		$this->EE->smartforge->modify_column(
+		ee()->smartforge->modify_column(
 			'members',
 			array(
 				'email' => array(
@@ -74,7 +74,7 @@ class Updater {
 			'method'	=> 'smiley_pop'
 		);
 
-		$this->EE->smartforge->insert_set('actions', $values, $values);
+		ee()->smartforge->insert_set('actions', $values, $values);
 
 
 		$values	= array(
@@ -82,21 +82,21 @@ class Updater {
 			'method'	=> 'filemanager_endpoint'
 		);
 
-		$this->EE->smartforge->insert_set('actions', $values, $values);
+		ee()->smartforge->insert_set('actions', $values, $values);
 
 
 		// If the action id is for the Weblog class, change it
-		$this->EE->db->set('class', 'Channel');
-		$this->EE->db->where('class', 'Weblog');	
-		$this->EE->db->update('actions');
+		ee()->db->set('class', 'Channel');
+		ee()->db->where('class', 'Weblog');	
+		ee()->db->update('actions');
 		
 
 		// If they have existing Pages, saved array needs to be updated to new format
-        if ($this->EE->db->field_exists('site_pages', 'sites'))
+        if (ee()->db->field_exists('site_pages', 'sites'))
 		{
-			$this->EE->db->select('site_id, site_pages, site_system_preferences');
-        	$this->EE->db->where('site_pages !=', '');
-        	$query = $this->EE->db->get('sites');
+			ee()->db->select('site_id, site_pages, site_system_preferences');
+        	ee()->db->where('site_pages !=', '');
+        	$query = ee()->db->get('sites');
 
         	if ($query->num_rows() > 0)
         	{
@@ -159,7 +159,7 @@ class Updater {
 						}
 					}
 					
-					$this->EE->db->query("UPDATE exp_sites SET site_pages = '".base64_encode(serialize($new_pages))."' WHERE site_id = '".$row['site_id']."'");
+					ee()->db->query("UPDATE exp_sites SET site_pages = '".base64_encode(serialize($new_pages))."' WHERE site_id = '".$row['site_id']."'");
 					
 					unset($new_pages);
 
@@ -167,7 +167,7 @@ class Updater {
 			}
 		}
 
-		$this->EE->smartforge->add_column(
+		ee()->smartforge->add_column(
 			'password_lockout',
 			array(
 				'username' => array(
@@ -181,8 +181,8 @@ class Updater {
 
 
 		// Drop enable image resize configuration option
-		$this->EE->db->select('site_channel_preferences');
-		$query = $this->EE->db->get('sites');
+		ee()->db->select('site_channel_preferences');
+		$query = ee()->db->get('sites');
 
 		foreach ($query->result() as $row)
 		{
@@ -193,8 +193,8 @@ class Updater {
 				unset($settings['enable_image_resizing']);
 			}
 
-			$this->EE->db->set('site_channel_preferences', base64_encode(serialize($settings)));
-			$this->EE->db->update('sites');
+			ee()->db->set('site_channel_preferences', base64_encode(serialize($settings)));
+			ee()->db->update('sites');
 		}
 		
 		// Unlink files on the ee_version/ and ee_info accessory because they have

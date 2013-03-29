@@ -58,11 +58,11 @@ class Textarea_ft extends EE_Fieldtype {
 		// Experimental parameter, do not use
 		if (isset($params['raw_output']) && $params['raw_output'] == 'yes')
 		{
-			return $this->EE->functions->encode_ee_tags($data);
+			return ee()->functions->encode_ee_tags($data);
 		}
 		
-		return $this->EE->typography->parse_type(
-			$this->EE->functions->encode_ee_tags($data),
+		return ee()->typography->parse_type(
+			ee()->functions->encode_ee_tags($data),
 			array(
 				'text_format'	=> $this->row['field_ft_'.$this->field_id],
 				'html_format'	=> $this->row['channel_html_formatting'],
@@ -80,7 +80,7 @@ class Textarea_ft extends EE_Fieldtype {
 
 		$field_rows	= ($data['field_ta_rows'] == '') ? 6 : $data['field_ta_rows'];
 		
-		$this->EE->table->add_row(
+		ee()->table->add_row(
 			lang('textarea_rows', 'field_ta_rows'),
 			form_input(array('id'=>'field_ta_rows','name'=>'field_ta_rows', 'size'=>4,'value'=>$field_rows))
 		);

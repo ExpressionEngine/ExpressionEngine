@@ -36,7 +36,7 @@ class EE_Upload extends CI_Upload
 		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();
 		
-		$this->EE->load->helper('xss');
+		ee()->load->helper('xss');
 		
 		$props['xss_clean'] = xss_check();
 

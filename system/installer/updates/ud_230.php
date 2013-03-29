@@ -72,7 +72,7 @@ class Updater {
 	private function _update_session_table()
 	{	
 		// Drop site_id
-		$this->EE->smartforge->drop_column('sessions', 'site_id');
+		ee()->smartforge->drop_column('sessions', 'site_id');
     }
 
 	// --------------------------------------------------------------------
@@ -84,9 +84,9 @@ class Updater {
 	 */
 	private function _fix_emoticon_config()
 	{
-		if ($emoticon_url = $this->EE->config->item('emoticon_path'))
+		if ($emoticon_url = ee()->config->item('emoticon_path'))
 		{
-			$this->EE->config->_update_config(array('emoticon_url' => $emoticon_url), array('emoticon_path' => ''));
+			ee()->config->_update_config(array('emoticon_url' => $emoticon_url), array('emoticon_path' => ''));
 		}
 	}
 }   

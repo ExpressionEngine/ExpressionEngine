@@ -55,16 +55,16 @@ class EE_Logger {
 			return;
 		}
 												
-		$this->EE->db->query(
-			$this->EE->db->insert_string(
+		ee()->db->query(
+			ee()->db->insert_string(
 				'exp_cp_log',
 				array(
-					'member_id'	=> $this->EE->session->userdata('member_id'),
-					'username'	=> $this->EE->session->userdata['username'],
-					'ip_address'=> $this->EE->input->ip_address(),
-					'act_date'	=> $this->EE->localize->now,
+					'member_id'	=> ee()->session->userdata('member_id'),
+					'username'	=> ee()->session->userdata['username'],
+					'ip_address'=> ee()->input->ip_address(),
+					'act_date'	=> ee()->localize->now,
 					'action'	=> $action,
-					'site_id'	=> $this->EE->config->item('site_id')
+					'site_id'	=> ee()->config->item('site_id')
 				)
 			)
 		);
@@ -111,21 +111,21 @@ class EE_Logger {
 		if ($update)
 		{
 			// Look to see if this exact log data is already in the database
-			$this->EE->db->where($log_data);
-			$this->EE->db->order_by('log_id', 'desc');
-			$duplicate = $this->EE->db->get('developer_log')->row_array();
+			ee()->db->where($log_data);
+			ee()->db->order_by('log_id', 'desc');
+			$duplicate = ee()->db->get('developer_log')->row_array();
 			
 			if (count($duplicate))
 			{
 				// If $expires is set, only update item if the duplicate is old enough
-				if ($this->EE->localize->now - $expires > $duplicate['timestamp'])
+				if (ee()->localize->now - $expires > $duplicate['timestamp'])
 				{
 					// Set log item as unviewed and update the timestamp
 					$duplicate['viewed'] = 'n';
-					$duplicate['timestamp'] = $this->EE->localize->now;
+					$duplicate['timestamp'] = ee()->localize->now;
 					
-					$this->EE->db->where('log_id', $duplicate['log_id']);
-					$this->EE->db->update('developer_log', $duplicate);
+					ee()->db->where('log_id', $duplicate['log_id']);
+					ee()->db->update('developer_log', $duplicate);
 					
 					$duplicate['updated'] = TRUE;
 				}
@@ -135,9 +135,9 @@ class EE_Logger {
 		}
 		
 		// If we got here, we're inserting a new item into the log
-		$log_data['timestamp'] = $this->EE->localize->now;
+		$log_data['timestamp'] = ee()->localize->now;
 		
-		$this->EE->db->insert('developer_log', $log_data);
+		ee()->db->insert('developer_log', $log_data);
 		
 		return $log_data;
 	}
@@ -165,7 +165,7 @@ class EE_Logger {
 	 */
 	function deprecated($version = NULL, $use_instead = NULL)
 	{
-		$this->EE->load->helper('array');
+		ee()->load->helper('array');
 
 		$backtrace = debug_backtrace();
 
@@ -217,7 +217,7 @@ class EE_Logger {
 						);
 
 						// check in snippets						
-						$global_vars = $this->EE->config->_global_vars;
+						$global_vars = ee()->config->_global_vars;
 
 						$regex = '/'.preg_quote($addon_tag, '/').'/';
 						$matched = preg_grep($regex, $global_vars);
@@ -239,13 +239,13 @@ class EE_Logger {
 		$deprecation_log = $this->developer($deprecated, TRUE, 604800);
 		
 		// Show and store flashdata only if we're in the CP, and only to Super Admins
-		if (REQ == 'CP' && isset($this->EE->session) && $this->EE->session instanceof EE_Session 
-			&& $this->EE->session->userdata('group_id') == 1)
+		if (REQ == 'CP' && isset(ee()->session) && ee()->session instanceof EE_Session 
+			&& ee()->session->userdata('group_id') == 1)
 		{
-			$this->EE->lang->loadfile('tools');
+			ee()->lang->loadfile('tools');
 			
 			// Set JS globals for "What does this mean?" modal
-			$this->EE->javascript->set_global(
+			ee()->javascript->set_global(
 				array(
 					'developer_log' => array(
 						'dev_log_help'			=> lang('dev_log_help'),
@@ -256,7 +256,7 @@ class EE_Logger {
 			
 			if (isset($deprecation_log['updated']))
 			{
-				$this->EE->session->set_flashdata(
+				ee()->session->set_flashdata(
 					'message_error',
 					lang('deprecation_detected').'<br />'.
 						'<a href="'.BASE.AMP.'C=tools_logs'.AMP.'M=view_developer_log">'.lang('dev_log_view_report').'</a>
@@ -276,7 +276,7 @@ class EE_Logger {
 	 */
 	function build_deprecation_language($deprecated)
 	{
-		$this->EE->lang->loadfile('tools');
+		ee()->lang->loadfile('tools');
 
 		if ( ! isset($deprecated['function']))
 		{
@@ -353,7 +353,7 @@ class EE_Logger {
 		$this->_setup_log();
 
 		$data = array(
-			 'timestamp'	=> $this->EE->localize->now,
+			 'timestamp'	=> ee()->localize->now,
 			 'message'		=> $log_message,
 		);
 
@@ -366,7 +366,7 @@ class EE_Logger {
 			$data['file']	= $backtrace['file'];
 		}
 
-		$this->EE->db->insert('update_log', $data);
+		ee()->db->insert('update_log', $data);
 	}
 
 	// --------------------------------------------------------------------
@@ -384,9 +384,9 @@ class EE_Logger {
 	{
 		$table = 'update_log';
 
-		if ( ! $this->EE->db->table_exists($table))
+		if ( ! ee()->db->table_exists($table))
 		{
-			$this->EE->load->dbforge();
+			ee()->load->dbforge();
 			
 			$fields = array(
 				'log_id' => array(
@@ -422,10 +422,10 @@ class EE_Logger {
 				)
 			);
 
-			$this->EE->dbforge->add_field($fields);
-			$this->EE->dbforge->add_key('log_id', TRUE);
+			ee()->dbforge->add_field($fields);
+			ee()->dbforge->add_key('log_id', TRUE);
 
-			$this->EE->dbforge->create_table($table);
+			ee()->dbforge->create_table($table);
 		}
 	}
 }

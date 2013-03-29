@@ -45,12 +45,12 @@ class Updater {
 	 */
 	public function do_update()
 	{
-		$this->EE->load->dbforge();
+		ee()->load->dbforge();
 
 		$steps = '';
 		
 		// Kill blogger
-		if ($this->EE->db->table_exists('blogger'))
+		if (ee()->db->table_exists('blogger'))
 		{
 			$steps[] = '_transfer_blogger';
 			$steps[] = '_drop_blogger';
@@ -94,20 +94,20 @@ class Updater {
 	 */
 	function _transfer_blogger()
 	{
-		if ( ! $this->EE->db->table_exists('metaweblog_api'))
+		if ( ! ee()->db->table_exists('metaweblog_api'))
 		{
 			require EE_APPPATH.'modules/metaweblog_api/upd.metaweblog_api.php';
 			$UPD = new Metaweblog_api_upd();
 			$UPD->install();
 		}
 		
-		$qry = $this->EE->db->get('blogger');
+		$qry = ee()->db->get('blogger');
 		
 		foreach ($qry->result() as $row)
 		{
 			list($channel_id, $custom_field_id) = explode(':', $row->blogger_field_id);
 			
-			$qry = $this->EE->db->select('field_group')
+			$qry = ee()->db->select('field_group')
 								->where('channel_id', $channel_id)
 								->get('channels');
 			
@@ -126,7 +126,7 @@ class Updater {
 				'metaweblog_parse_type'	=> $row->blogger_parse_type,
 			);
 			
-			$this->EE->db->insert('metaweblog_api', $data);
+			ee()->db->insert('metaweblog_api', $data);
 		}
 	}
 	
@@ -139,19 +139,19 @@ class Updater {
 	 */
 	function _drop_blogger()
 	{
-		$this->EE->db->select('module_id');
-		$query = $this->EE->db->get_where('modules', array('module_name' => 'Blogger_api'));
+		ee()->db->select('module_id');
+		$query = ee()->db->get_where('modules', array('module_name' => 'Blogger_api'));
 		
-		$this->EE->db->where('module_id', $query->row('module_id'));
-		$this->EE->db->delete('module_member_groups');
+		ee()->db->where('module_id', $query->row('module_id'));
+		ee()->db->delete('module_member_groups');
 		
-		$this->EE->db->where('module_name', 'Blogger_api');
-		$this->EE->db->delete('modules');
+		ee()->db->where('module_name', 'Blogger_api');
+		ee()->db->delete('modules');
 		
-		$this->EE->db->where('class', 'Blogger_api');
-		$this->EE->db->delete('actions');
+		ee()->db->where('class', 'Blogger_api');
+		ee()->db->delete('actions');
 		
-		$this->EE->dbforge->drop_table('blogger');
+		ee()->dbforge->drop_table('blogger');
 	}
 
 	// ------------------------------------------------------------------------
@@ -176,7 +176,7 @@ class Updater {
 			)
 		);
 
-		$this->EE->smartforge->add_column('upload_prefs', $fields);
+		ee()->smartforge->add_column('upload_prefs', $fields);
 		
 		$fields = array(
 			'server_path' => array(
@@ -186,7 +186,7 @@ class Updater {
 			),
 		);
 		
-		$this->EE->smartforge->modify_column('upload_prefs', $fields);
+		ee()->smartforge->modify_column('upload_prefs', $fields);
 	}
 	
 	// ------------------------------------------------------------------------
@@ -209,7 +209,7 @@ class Updater {
 			)
 		);
 
-		$this->EE->smartforge->add_column('category_groups', $fields);		
+		ee()->smartforge->add_column('category_groups', $fields);		
 	}
 
 	// ------------------------------------------------------------------------	
@@ -323,9 +323,9 @@ class Updater {
 			)
 		);
 
-		$this->EE->dbforge->add_field($watermark_fields);
-		$this->EE->dbforge->add_key('wm_id', TRUE);
-		$this->EE->smartforge->create_table('file_watermarks');
+		ee()->dbforge->add_field($watermark_fields);
+		ee()->dbforge->add_key('wm_id', TRUE);
+		ee()->smartforge->create_table('file_watermarks');
 
 		$dimension_fields = array(
 			'id' => array(
@@ -371,10 +371,10 @@ class Updater {
 			)
 		);
 		
-		$this->EE->dbforge->add_field($dimension_fields);
-		$this->EE->dbforge->add_key('id', TRUE);
-		$this->EE->dbforge->add_key('upload_location_id');
-		$this->EE->smartforge->create_table('file_dimensions');
+		ee()->dbforge->add_field($dimension_fields);
+		ee()->dbforge->add_key('id', TRUE);
+		ee()->dbforge->add_key('upload_location_id');
+		ee()->smartforge->create_table('file_dimensions');
 
 		$categories_fields = array(
 			'file_id' => array(
@@ -400,9 +400,9 @@ class Updater {
 			)
 		);
 		
-		$this->EE->dbforge->add_field($categories_fields);
-		$this->EE->dbforge->add_key(array('file_id', 'cat_id'));
-		$this->EE->smartforge->create_table('file_categories');
+		ee()->dbforge->add_field($categories_fields);
+		ee()->dbforge->add_key(array('file_id', 'cat_id'));
+		ee()->smartforge->create_table('file_categories');
 		
 		$files_fields = array(
 			'file_id' => array(
@@ -515,10 +515,10 @@ class Updater {
 			),			
 		);
 		
-		$this->EE->dbforge->add_field($files_fields);
-		$this->EE->dbforge->add_key('file_id', TRUE);
-		$this->EE->dbforge->add_key(array('upload_location_id', 'site_id'));
-		$this->EE->smartforge->create_table('files');
+		ee()->dbforge->add_field($files_fields);
+		ee()->dbforge->add_key('file_id', TRUE);
+		ee()->dbforge->add_key(array('upload_location_id', 'site_id'));
+		ee()->smartforge->create_table('files');
 	}
 	
 	// ------------------------------------------------------------------------
@@ -541,7 +541,7 @@ class Updater {
 			)
 		);
 
-		$this->EE->smartforge->add_column('member_groups', $fields, 'can_admin_channels');		
+		ee()->smartforge->add_column('member_groups', $fields, 'can_admin_channels');		
 	}
 	
 	// ------------------------------------------------------------------------
@@ -555,9 +555,9 @@ class Updater {
 	 */
 	private function _do_custom_field_update()
 	{
-		$this->EE->db->select('field_id, field_content_type, field_settings');
-		$this->EE->db->where_in('field_type', array('file', 'text'));
-		$qry = $this->EE->db->get('channel_fields');
+		ee()->db->select('field_id, field_content_type, field_settings');
+		ee()->db->where_in('field_type', array('file', 'text'));
+		$qry = ee()->db->get('channel_fields');
 		
 		foreach ($qry->result() as $row)
 		{
@@ -567,8 +567,8 @@ class Updater {
 			$settings = base64_encode(serialize($settings));
 			
 
-			$this->EE->db->where('field_id', $row->field_id);
-			$this->EE->db->update('channel_fields', array('field_settings' => $settings)); 
+			ee()->db->where('field_id', $row->field_id);
+			ee()->db->update('channel_fields', array('field_settings' => $settings)); 
 		}
 	}	
 
@@ -580,13 +580,13 @@ class Updater {
 	private function _do_add_indexes()
 	{
 		// We do a ton of template lookups based off the template name.  How about indexing on it?
-		$this->EE->smartforge->create_index('templates', 'template_name');
+		ee()->smartforge->create_index('templates', 'template_name');
 
 		// Same with the channel_name in exp_channels
-		$this->EE->smartforge->create_index('channels', 'channel_name');
+		ee()->smartforge->create_index('channels', 'channel_name');
 
 		// and the same for field_type on exp_channel_fields
-		$this->EE->smartforge->create_index('channel_fields', 'field_type');
+		ee()->smartforge->create_index('channel_fields', 'field_type');
 	}
 
 	// --------------------------------------------------------------------	

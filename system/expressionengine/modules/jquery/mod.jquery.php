@@ -36,7 +36,7 @@ class Jquery {
 
 		if ( ! defined('PATH_JQUERY'))
 		{
-			if ($this->EE->config->item('use_compressed_js') == 'n')
+			if (ee()->config->item('use_compressed_js') == 'n')
 			{
 				define('PATH_JQUERY', PATH_THEMES.'javascript/src/jquery/');
 			}
@@ -46,7 +46,7 @@ class Jquery {
 			}
 		}
 
-		$this->EE->lang->loadfile('jquery');
+		ee()->lang->loadfile('jquery');
 	}
 
 	// --------------------------------------------------------------------
@@ -62,14 +62,14 @@ class Jquery {
 	 */
 	function output_javascript()
 	{
-		$this->EE->output->enable_profiler(FALSE);
+		ee()->output->enable_profiler(FALSE);
 
 		// some options -- tag parameters have precedence over get/post
 		foreach (array('file', 'plugin', 'ui', 'effect') as $param)
 		{
-			if (isset($this->EE->TMPL) && is_object($this->EE->TMPL))
+			if (isset(ee()->TMPL) && is_object(ee()->TMPL))
 			{
-				${$param} = $this->EE->TMPL->fetch_param($param);
+				${$param} = ee()->TMPL->fetch_param($param);
 			}
 			else
 			{
@@ -79,21 +79,21 @@ class Jquery {
 
 		if ($file === FALSE)
 		{
-			if ($plugin !== FALSE OR ($plugin = $this->EE->input->get_post('plugin')) !== FALSE)
+			if ($plugin !== FALSE OR ($plugin = ee()->input->get_post('plugin')) !== FALSE)
 			{
-				$file = PATH_JQUERY.'plugins/'.$this->EE->security->sanitize_filename($plugin).'.js';
+				$file = PATH_JQUERY.'plugins/'.ee()->security->sanitize_filename($plugin).'.js';
 			}
-			elseif ($ui !== FALSE OR ($ui = $this->EE->input->get_post('ui')) !== FALSE)
+			elseif ($ui !== FALSE OR ($ui = ee()->input->get_post('ui')) !== FALSE)
 			{
-				$file = PATH_JQUERY.'ui/jquery.ui.'.$this->EE->security->sanitize_filename($ui).'.js';
+				$file = PATH_JQUERY.'ui/jquery.ui.'.ee()->security->sanitize_filename($ui).'.js';
 			}
-			elseif ($effect !== FALSE OR ($effect = $this->EE->input->get_post('effect')) !== FALSE)
+			elseif ($effect !== FALSE OR ($effect = ee()->input->get_post('effect')) !== FALSE)
 			{
-				$file = PATH_JQUERY.'ui/jquery.effects.'.$this->EE->security->sanitize_filename($effect).'.js';
+				$file = PATH_JQUERY.'ui/jquery.effects.'.ee()->security->sanitize_filename($effect).'.js';
 			}
-			elseif (($file = $this->EE->input->get_post('file')) !== FALSE)
+			elseif (($file = ee()->input->get_post('file')) !== FALSE)
 			{
-				$file = APPPATH.'javascript/'.$this->EE->security->sanitize_filename($file).'.js';
+				$file = APPPATH.'javascript/'.ee()->security->sanitize_filename($file).'.js';
 			}
 			else
 			{
@@ -102,15 +102,15 @@ class Jquery {
 		}
 		else
 		{
-			$file = APPPATH.'javascript/'.$this->EE->security->sanitize_filename($file).'.js';
+			$file = APPPATH.'javascript/'.ee()->security->sanitize_filename($file).'.js';
 		}
 
 		if ( ! file_exists($file))
 		{
 
-			if ($this->EE->config->item('debug') >= 1)
+			if (ee()->config->item('debug') >= 1)
 			{
-				$this->EE->output->fatal_error($this->EE->lang->line('missing_jquery_file'));
+				ee()->output->fatal_error(ee()->lang->line('missing_jquery_file'));
 			}
 			else
 			{
@@ -119,14 +119,14 @@ class Jquery {
 
 		}
 
-		$this->EE->output->send_cache_headers(filemtime($file));
+		ee()->output->send_cache_headers(filemtime($file));
 		
 		// Grab the file, content length and serve
 		// it up with the proper content type!
 
 		$contents = file_get_contents($file);
 
-		if ($this->EE->config->item('send_headers') == 'y')
+		if (ee()->config->item('send_headers') == 'y')
 		{
 			@header('Content-Length: '.strlen($contents));
 		}
@@ -149,14 +149,14 @@ class Jquery {
 	{
 		foreach (array('file', 'plugin', 'ui', 'effect') as $param)
 		{
-			if ((${$param} = $this->EE->TMPL->fetch_param($param)) !== FALSE)
+			if ((${$param} = ee()->TMPL->fetch_param($param)) !== FALSE)
 			{
-				return $this->return_data = $this->EE->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT=jquery&amp;'.$param.'='.${$param};
+				return $this->return_data = ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT=jquery&amp;'.$param.'='.${$param};
 			}
 		}
 		
 		// nothing?  Just drop a link to the main jQuery file
-		return $this->return_data = $this->EE->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT=jquery';
+		return $this->return_data = ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT=jquery';
 	}
 
 	// --------------------------------------------------------------------
@@ -175,14 +175,14 @@ class Jquery {
 		
 		foreach (array('file', 'plugin', 'ui', 'effect') as $param)
 		{
-			if ((${$param} = $this->EE->TMPL->fetch_param($param)) !== FALSE)
+			if ((${$param} = ee()->TMPL->fetch_param($param)) !== FALSE)
 			{
-				$src = $this->EE->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT=jquery&amp;'.$param.'='.${$param};
+				$src = ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT=jquery&amp;'.$param.'='.${$param};
 			}
 		}
 		
 		// nothing?  Just drop a link to the main jQuery file
-		$src = ($src == '') ? $this->return_data = $this->EE->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT=jquery' : $src;
+		$src = ($src == '') ? $this->return_data = ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT=jquery' : $src;
 		
 		return $this->return_data = '<script type="text/javascript" charset="utf-8" src="'.$src.'"></script>';
 	}

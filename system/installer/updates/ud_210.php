@@ -35,12 +35,12 @@ class Updater {
     function do_update()
     {
 		// update docs location
-		if ($this->EE->config->item('doc_url') == 'http://expressionengine.com/public_beta/docs/')
+		if (ee()->config->item('doc_url') == 'http://expressionengine.com/public_beta/docs/')
 		{
-			$this->EE->config->update_site_prefs(array('doc_url' => 'http://ellislab.com/expressionengine/user-guide/'), 1);
+			ee()->config->update_site_prefs(array('doc_url' => 'http://ellislab.com/expressionengine/user-guide/'), 1);
 		}
 
-		$this->EE->smartforge->add_column(
+		ee()->smartforge->add_column(
 			'member_groups',
 			array(
 				'can_access_fieldtypes' => array(
@@ -53,13 +53,13 @@ class Updater {
 			'can_access_files'
 		);
 
-		$this->EE->db->set('can_access_fieldtypes', 'y');
-		$this->EE->db->where('group_id', '1');
-		$this->EE->db->update('member_groups');
+		ee()->db->set('can_access_fieldtypes', 'y');
+		ee()->db->where('group_id', '1');
+		ee()->db->update('member_groups');
 
-		$this->EE->db->set('class', 'Channel');
-		$this->EE->db->where('class', 'channel');
-		$this->EE->db->update('actions');
+		ee()->db->set('class', 'Channel');
+		ee()->db->where('class', 'channel');
+		ee()->db->update('actions');
 		
 		return TRUE;
 	}

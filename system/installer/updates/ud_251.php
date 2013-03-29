@@ -62,7 +62,7 @@ class Updater {
 
 	private function _update_ip_address_length()
 	{
-		$this->EE->load->dbforge();
+		ee()->load->dbforge();
 
 		$tables = array('sessions', 'throttle', 'online_users', 
 			'security_hashes', 'captcha', 'password_lockout', 
@@ -87,7 +87,7 @@ class Updater {
 				unset($column_settings['ip_address']['null']);
 			}
 
-			$this->EE->smartforge->modify_column($table, $column_settings);
+			ee()->smartforge->modify_column($table, $column_settings);
 		}
 	}
 }	
