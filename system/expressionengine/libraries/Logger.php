@@ -343,6 +343,7 @@ class EE_Logger {
 	/**
 	 * Log a message in the Updater log.
 	 *
+	 * @access	public
 	 * @param	string		Message to add to the log.
 	 * @param	bool			If TRUE, add backtrace info to the log.
 	 * @return	void	
@@ -371,10 +372,12 @@ class EE_Logger {
 	// --------------------------------------------------------------------
 	
 	/**
-	 * Create the update_log table if it doesn't already exist. Must be done here rather
-	 * than through the usual Updater since we need it available when the Updater begins.
-	 * Only creates the table if it doesn't already exist.
+	 * Create the update_log table if it doesn't already exist. Must be done
+	 * here rather than through the usual Updater since we need it available
+	 * when the Updater begins. Only creates the table if it doesn't already
+	 * exist.
 	 *
+	 * @access	private
 	 * @return	bool	
 	 */
 	private function _setup_log()

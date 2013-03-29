@@ -43,7 +43,7 @@ class Smartforge {
 	 * @access	public
 	 * @param	string	the old table name
 	 */
-	function create_table($table)
+	public function create_table($table)
 	{
 		// Check to make sure table doesn't already exist
 		if ($this->EE->db->table_exists($table))
@@ -68,7 +68,7 @@ class Smartforge {
 	 * @param	string	the old table name
 	 * @param	string	the new table name
 	 */
-	function rename_table($table, $new_table)
+	public function rename_table($table, $new_table)
 	{
 		// Check to make sure table exists
 		if ( ! $this->EE->db->table_exists($table))
@@ -103,7 +103,7 @@ class Smartforge {
 	 * @param	string	the column name after which the new column will be added
 	 * @return	bool
 	 */
-	function add_column($table = '', $field = array(), $after_field = '')
+	public function add_column($table = '', $field = array(), $after_field = '')
 	{
 		// Check to make sure table exists
 		if ( ! $this->EE->db->table_exists($table))
@@ -145,7 +145,7 @@ class Smartforge {
 	 * @param	string	the column name
 	 * @return	bool
 	 */
-	function drop_column($table = '', $column_name = '')
+	public function drop_column($table = '', $column_name = '')
 	{
 		// Check to make sure table exists
 		if ( ! $this->EE->db->table_exists($table))
@@ -186,7 +186,7 @@ class Smartforge {
 	 * @param	string	the column definition
 	 * @return	bool
 	 */
-	function modify_column($table = '', $field = array())
+	public function modify_column($table = '', $field = array())
 	{
 		// Check to make sure table exists
 		if ( ! $this->EE->db->table_exists($table))
@@ -242,13 +242,14 @@ class Smartforge {
 	 * Insert values into the database, with optional unique
 	 * column name/values in a given column(s).
 	 *
+	 * @access	public
 	 * @param	string	table name
 	 * @param	array	associative array of column names => row values
 	 * @param	array	check for uniqueness, associative array of column
 	 *                  names => row values (can only include key/value pairs from $values)
 	 * @return	bool
 	 */
-	function insert_set($table = '', $values = array(), $unique = array())
+	public function insert_set($table = '', $values = array(), $unique = array())
 	{
 		// Check to make sure table exists
 		if ( ! $this->EE->db->table_exists($table))
@@ -298,12 +299,13 @@ class Smartforge {
 	 *
 	 * Add a new index to the given database table if it doesn't already exist.
 	 *
+	 * @access	public
 	 * @param	string	table name
 	 * @param	string	column to index
 	 * @param	string	index name (optional)
 	 * @return	bool
 	 */
-	function create_index($table = '', $index_col_name = '', $index_name = '')
+	public function create_index($table = '', $index_col_name = '', $index_name = '')
 	{
 		// Check to make sure table exists
 		if ( ! $this->EE->db->table_exists($table))
@@ -345,11 +347,12 @@ class Smartforge {
 	 *
 	 * Drop an index in the given database table if it exists.
 	 *
+	 * @access	public
 	 * @param	string	table name
 	 * @param	string	index name
 	 * @return	bool
 	 */
-	function drop_index($table = '', $index_name = '')
+	public function drop_index($table = '', $index_name = '')
 	{
 		// Check to make sure table exists
 		if ( ! $this->EE->db->table_exists($table))
