@@ -34,54 +34,137 @@ class EE_Channel_data_parser {
 	protected $_tag_options; // var_* value
 	protected $_row;
 
+	protected $_prefix;
+	protected $_channel;
+
 	public function __construct(EE_Channel_preparser $pre, EE_Channel_parser $parser)
 	{
 		$this->_preparser = $pre;
 		$this->_parser = $parser;
+
+		$this->_prefix = $pre->prefix();
+		$this->_channel = $pre->channel();
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * Preparser accessor
+	 *
+	 * @return	object	The preparser object
+	 */
 	public function preparsed()
 	{
 		return $this->_preparser;
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * Parser channel accessor
+	 *
+	 * @return	object	The bound channel object
+	 */
 	public function channel()
 	{
-		return $this->_preparser->channel();
+		return $this->_channel;
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * Iterator row accessor
+	 *
+	 * @return	array	The row of the current iteration
+	 */
 	public function row()
 	{
 		return $this->_row;
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * Data object accessor
+	 *
+	 * Several data items can be provided to the parser. This includes
+	 * the mandatory 'entries', but also optional values such as 'categories',
+	 * 'absolute_count', or 'absolute_results'.
+	 *
+	 * @param	string	The data element to retrieve
+	 * @param	string	The value to return if the key does not exist	
+	 * @return	mixed	The requested data element
+	 */
 	public function data($key, $default = NULL)
 	{
 		$data = $this->_data;
 		return isset($data[$key]) ? $data[$key] : $default;
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * Iterator count accessor
+	 *
+	 * @return	string	The step of the current iteration
+	 */
 	public function count()
 	{
 		return $this->_count;
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * TMPL->var_(pair|single) key accessor
+	 *
+	 * @return	string	The key of the current var_* key/value pair
+	 */
 	public function tag()
 	{
 		return $this->_tag;
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * TMPL->var_(pair|single) value accessor
+	 *
+	 * @return	mixed	The value of the current var_* key/value pair
+	 */
 	public function tag_options()
 	{
 		return $this->_tag_options;
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * Prefix accessor
+	 *
+	 * @return	string	The prefix
+	 */
 	public function prefix()
 	{
-		return $this->_preparser->prefix();
+		return $this->_prefix;
 	}
 
+	// --------------------------------------------------------------------
 
+	/**
+	 * Run the main parsing loop.
+	 *
+	 * Takes the data row, the preparsed tagdata, and any additonal
+	 * options and delegates to the proper parsing components.
+	 *
+	 * @param	array	The data row.
+ 	 * @param	array	Config items
+ 	 *		
+ 	 *		disable:   array of components to turn off
+ 	 *		callbacks: array of callbacks to register
+ 	 *
+	 * @return	string	Parsed tagdata
+	 */
 	public function parse($data, $config = array())
 	{
 		$this->_data = $data;
@@ -99,8 +182,8 @@ class EE_Channel_data_parser {
 		$pairs	 = $pre->pairs;
 		$singles = $pre->singles;
 
-		$prefix	 = $pre->prefix();
-		$channel = $pre->channel();
+		$prefix	 = $this->_prefix;
+		$channel = $this->_channel;
 		
 		$subscriber_totals = $pre->subscriber_totals;
 
@@ -117,8 +200,8 @@ class EE_Channel_data_parser {
 
 		$count = 0;
 
-		$parser_components = $this->_parser->components();
 		$orig_tagdata = $this->_parser->tagdata();
+		$parser_components = $this->_parser->components();
 
 		foreach ($entries as $row)
 		{
@@ -131,7 +214,7 @@ class EE_Channel_data_parser {
 			$row['page_url']			= '';
 			$row['total_results']		= $total_results;
 			$row['absolute_count']		= $absolute_offset + $row['count'];
-			$row['absolute_results'] = ($absolute_results === NULL) ? $total_results : $absolute_results;
+			$row['absolute_results']	= ($absolute_results === NULL) ? $total_results : $absolute_results;
 			$row['comment_subscriber_total'] = (isset($subscriber_totals[$row['entry_id']])) ? $subscriber_totals[$row['entry_id']] : 0;
 
 			if ($site_pages !== FALSE && isset($site_pages[$row['site_id']]['uris'][$row['entry_id']]))
@@ -329,6 +412,19 @@ class EE_Channel_data_parser {
 		}
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * Prepare the row for conditionals
+	 *
+	 * Retrieves a prefixed set of all the row data that can be passed
+	 * to prep_conditionals to allow for proper conditionals.
+	 *
+	 * @param	array	The data row.
+	 * @param	string	The prefix.
+ 	 * @param	object	A channel object to operate on
+	 * @return	array	Prefixed, prep-able data
+	 */
 	protected function _get_conditional_data($row, $prefix, $channel)
 	{
 		$cond = $row;
@@ -381,6 +477,17 @@ class EE_Channel_data_parser {
 		return $prefixed_cond;
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * Is commenting on this row allowed?
+	 *
+	 * A convenience function so that we don't have to deal with this as
+	 * a carzy conditional
+	 *
+	 * @param	array	The data row.
+	 * @return	bool	Can comment on this row?
+	 */
 	protected function _commenting_allowed($row)
 	{
 		if ($row['allow_comments'] == 'n')
