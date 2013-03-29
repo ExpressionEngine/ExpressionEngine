@@ -321,15 +321,6 @@ class EE_Channel_data_parser {
 		$cond['logged_in']			= (get_instance()->session->userdata('member_id') == 0) ? 'FALSE' : 'TRUE';
 		$cond['logged_out']			= (get_instance()->session->userdata('member_id') != 0) ? 'FALSE' : 'TRUE';
 
-		if ((($row['comment_expiration_date'] > 0 && get_instance()->localize->now > $row['comment_expiration_date']) && get_instance()->config->item('comment_moderation_override') !== 'y') OR $row['allow_comments'] == 'n' OR (isset($row['comment_system_enabled']) && $row['comment_system_enabled']  == 'n'))
-		{
-			$cond['allow_comments'] = 'FALSE';
-		}
-		else
-		{
-			$cond['allow_comments'] = 'TRUE';
-		}
-
 		foreach (array('avatar_filename', 'photo_filename', 'sig_img_filename') as $pv)
 		{
 			if ( ! isset($row[$pv]))
@@ -338,6 +329,7 @@ class EE_Channel_data_parser {
 			}
 		}
 
+		$cond['allow_comments']			= $this->_commenting_allowed($row) ? 'TRUE' : 'FALSE';
 		$cond['signature_image']		= ($row['sig_img_filename'] == '' OR get_instance()->config->item('enable_signatures') == 'n' OR get_instance()->session->userdata('display_signatures') == 'n') ? 'FALSE' : 'TRUE';
 		$cond['avatar']					= ($row['avatar_filename'] == '' OR get_instance()->config->item('enable_avatars') == 'n' OR get_instance()->session->userdata('display_avatars') == 'n') ? 'FALSE' : 'TRUE';
 		$cond['photo']					= ($row['photo_filename'] == '' OR get_instance()->config->item('enable_photos') == 'n' OR get_instance()->session->userdata('display_photos') == 'n') ? 'FALSE' : 'TRUE';
@@ -359,7 +351,6 @@ class EE_Channel_data_parser {
 		$cond['signature_image_height']	= $row['sig_img_height'];
 		$cond['relative_date']			= timespan($row['entry_date']);
 
-
 		foreach($channel->mfields as $key => $value)
 		{
 			$cond[$key] = ( ! array_key_exists('m_field_id_'.$value[0], $row)) ? '' : $row['m_field_id_'.$value[0]];
@@ -374,5 +365,29 @@ class EE_Channel_data_parser {
 		}
 
 		return $prefixed_cond;
+	}
+
+	protected function _commenting_allowed($row)
+	{
+		if ($row['allow_comments'] == 'n')
+		{
+			return FALSE;
+		}
+
+		if (isset($row['comment_system_enabled']) && $row['comment_system_enabled'] == 'n'))
+		{
+			return FALSE;
+		}
+
+		if (config_item('comment_moderation_override') === 'y')
+		{
+			return TRUE;
+		}
+		elseif ($row['comment_expiration_date'] > 0 && $row['comment_expiration_date'] < get_instance()->localize->now)
+		{
+			return FALSE;
+		}
+
+		return TRUE;
 	}
 }
