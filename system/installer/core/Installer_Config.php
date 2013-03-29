@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -160,12 +160,12 @@ class Installer_Config Extends EE_Config {
 		}
 		
 		// Preferences table won't exist pre-1.6
-		if ( ! $this->EE->db->table_exists($table_name))
+		if ( ! ee()->db->table_exists($table_name))
 		{
 			return;
 		}
 		
-		$query = $this->EE->db->query("SELECT `site_system_preferences` FROM $table_name WHERE site_id = '1'");
+		$query = ee()->db->query("SELECT `site_system_preferences` FROM $table_name WHERE site_id = '1'");
 
 		$all_preferences = unserialize($query->row('site_system_preferences'));
 
@@ -253,9 +253,9 @@ class Installer_Config Extends EE_Config {
 		
 		if ($return_loc !== FALSE)
 		{		
-			$override = ($this->EE->input->get('class_override') != '') ? AMP.'class_override='.$this->EE->input->get_post('class_override') : '';
+			$override = (ee()->input->get('class_override') != '') ? AMP.'class_override='.ee()->input->get_post('class_override') : '';
 		
-			$this->EE->functions->redirect($return_loc.$override);
+			ee()->functions->redirect($return_loc.$override);
 		}
 	}
 

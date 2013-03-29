@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -46,8 +46,8 @@ class File_integrity {
 	 */
 	function check_bootstrap_files($return_site_id = FALSE)
 	{
-		$this->EE->load->model('site_model');
-		$sites = $this->EE->site_model->get_site();
+		ee()->load->model('site_model');
+		$sites = ee()->site_model->get_site();
 		$sites = $sites->result_array();
 		
 		$bootstraps = array();
@@ -169,8 +169,8 @@ class File_integrity {
 
 		if (count($affected_paths))
 		{
-			$this->EE->load->library('notifications');
-			$this->EE->notifications->send_checksum_notification($affected_paths);
+			ee()->load->library('notifications');
+			ee()->notifications->send_checksum_notification($affected_paths);
 			
 			// add them to the existing emailed and update
 			$affected_paths = array_unique(array_merge($this->emailed, $affected_paths));
@@ -202,8 +202,8 @@ class File_integrity {
 	 */
 	function create_bootstrap_checksum($path = '', $site_id = '')
 	{
-		$checksums	= $this->EE->config->item('site_bootstrap_checksums');
-		$site_id	= ($site_id != '') ? $site_id : $this->EE->config->item('site_id');
+		$checksums	= ee()->config->item('site_bootstrap_checksums');
+		$site_id	= ($site_id != '') ? $site_id : ee()->config->item('site_id');
 		
 		if (REQ == 'CP' && $path && file_exists($path))
 		{
@@ -230,14 +230,14 @@ class File_integrity {
 	 */
 	function _update_config($checksums, $site_id)
 	{
-		if ($site_id == $this->EE->config->item('site_id'))
+		if ($site_id == ee()->config->item('site_id'))
 		{
-			$this->EE->config->config['site_bootstrap_checksums'] = $checksums;
+			ee()->config->config['site_bootstrap_checksums'] = $checksums;
 		}
 
-		$this->EE->db->query($this->EE->db->update_string('exp_sites', 
+		ee()->db->query(ee()->db->update_string('exp_sites', 
 									  array('site_bootstrap_checksums' => base64_encode(serialize($checksums))),
-									  "site_id = '".$this->EE->db->escape_str($site_id)."'"));
+									  "site_id = '".ee()->db->escape_str($site_id)."'"));
 	}
 }
 

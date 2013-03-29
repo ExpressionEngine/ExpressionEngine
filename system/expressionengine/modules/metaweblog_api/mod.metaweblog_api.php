@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -67,17 +67,17 @@ class Metaweblog_api {
 		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();
 
-		$this->EE->lang->loadfile('metaweblog_api');
+		ee()->lang->loadfile('metaweblog_api');
 
 		$id = ( isset($_GET['id']) && is_numeric($_GET['id'])) ? $_GET['id'] : '1';
 
-		$this->assign_parents = ($this->EE->config->item('auto_assign_cat_parents') == 'n') ? FALSE : TRUE;
+		$this->assign_parents = (ee()->config->item('auto_assign_cat_parents') == 'n') ? FALSE : TRUE;
 
 		/** ----------------------------------------
 		/**  Configuration Options
 		/** ----------------------------------------*/
 
-		$query = $this->EE->db->get_where('metaweblog_api', array('metaweblog_id' => $id));
+		$query = ee()->db->get_where('metaweblog_api', array('metaweblog_id' => $id));
 
 		if ($query->num_rows() > 0)
 		{
@@ -112,8 +112,8 @@ class Metaweblog_api {
 		/**  Load the XML-RPC Files
 		/** ---------------------------------*/
 
-		$this->EE->load->library('xmlrpc');
-		$this->EE->load->library('xmlrpcs');
+		ee()->load->library('xmlrpc');
+		ee()->load->library('xmlrpcs');
 
 		/* ---------------------------------
 		/*  Specify Functions
@@ -149,8 +149,8 @@ class Metaweblog_api {
 		/**  Instantiate the Server Class
 		/** ---------------------------------*/
 
-		$this->EE->xmlrpcs->initialize(array('functions' => $functions, 'object' => $this, 'xss_clean' => FALSE));
-		$this->EE->xmlrpcs->serve();
+		ee()->xmlrpcs->initialize(array('functions' => $functions, 'object' => $this, 'xss_clean' => FALSE));
+		ee()->xmlrpcs->serve();
 	}
 
 	// --------------------------------------------------------------------
@@ -168,7 +168,7 @@ class Metaweblog_api {
 
 		if ( ! $this->fetch_member_data($parameters['1'], $parameters['2']))
 		{
-			return $this->EE->xmlrpc->send_error_message('802', $this->EE->lang->line('invalid_access'));
+			return ee()->xmlrpc->send_error_message('802', ee()->lang->line('invalid_access'));
 		}
 
 		/** ---------------------------------------
@@ -190,14 +190,14 @@ class Metaweblog_api {
 		/**  Default Channel Data for channel_id
 		/** ---------------------------------------*/
 
-		$this->EE->db->select('deft_comments, cat_group, deft_category, channel_title, channel_url,
+		ee()->db->select('deft_comments, cat_group, deft_category, channel_title, channel_url,
 								channel_notify_emails, channel_notify, comment_url');
-		$this->EE->db->where('channel_id', $this->channel_id);
-		$query = $this->EE->db->get('channels');
+		ee()->db->where('channel_id', $this->channel_id);
+		$query = ee()->db->get('channels');
 
 		if ($query->num_rows() == 0)
 		{
-			return $this->EE->xmlrpc->send_error_message('802', $this->EE->lang->line('invalid_channel'));
+			return ee()->xmlrpc->send_error_message('802', ee()->lang->line('invalid_channel'));
 		}
 
 		foreach($query->row_array() as $key => $value)
@@ -260,7 +260,7 @@ class Metaweblog_api {
 		}
 		else
 		{
-			$entry_date = $this->EE->localize->now;
+			$entry_date = ee()->localize->now;
 		}
 		
 		/** ---------------------------------
@@ -271,7 +271,7 @@ class Metaweblog_api {
 							'channel_id'		=> $this->channel_id,
 							'author_id'			=> $this->userdata['member_id'],
 							'title'				=> $this->title,
-							'ip_address'		=> $this->EE->input->ip_address(),
+							'ip_address'		=> ee()->input->ip_address(),
 							'entry_date'		=> $entry_date,
 							'edit_date'			=> gmdate("YmdHis", $entry_date),
 							'year'				=> gmdate('Y', $entry_date),
@@ -385,8 +385,8 @@ class Metaweblog_api {
 			}
 		}
 
-		$this->EE->session->userdata = array_merge(
-			$this->EE->session->userdata,
+		ee()->session->userdata = array_merge(
+			ee()->session->userdata,
 			array(
 				'group_id'			=> $this->userdata['group_id'],
 				'member_id'			=> $this->userdata['member_id'],
@@ -394,17 +394,17 @@ class Metaweblog_api {
 			)
 		);
 
-		$this->EE->load->library('api');
-		$this->EE->api->instantiate('channel_entries');
-		$this->EE->api->instantiate('channel_fields');
+		ee()->load->library('api');
+		ee()->api->instantiate('channel_entries');
+		ee()->api->instantiate('channel_fields');
 
-		$this->EE->api_channel_fields->setup_entry_settings($this->channel_id, $data);
+		ee()->api_channel_fields->setup_entry_settings($this->channel_id, $data);
 				
-		if ( ! $this->EE->api_channel_entries->save_entry($data, $this->channel_id))
+		if ( ! ee()->api_channel_entries->save_entry($data, $this->channel_id))
 		{
-			$errors = $this->EE->api_channel_entries->get_errors();
+			$errors = ee()->api_channel_entries->get_errors();
 
-			$this->EE->lang->loadfile('content');
+			ee()->lang->loadfile('content');
 			$mssg = "\n";
 			
 			foreach ($errors as $val)
@@ -412,13 +412,13 @@ class Metaweblog_api {
 				$mssg .= lang($val)."\n";
 			}
 
-			return $this->EE->xmlrpc->send_error_message('804', lang('new_entry_errors').$mssg);
+			return ee()->xmlrpc->send_error_message('804', lang('new_entry_errors').$mssg);
 		}
 		
 		//Return Entry ID of new entry - defaults to string, so nothing fancy
-		$response = $this->EE->api_channel_entries->entry_id;
+		$response = ee()->api_channel_entries->entry_id;
 
-		return $this->EE->xmlrpc->send_response($response);
+		return ee()->xmlrpc->send_response($response);
 	}
 
 	// --------------------------------------------------------------------
@@ -436,12 +436,12 @@ class Metaweblog_api {
 
 		if ( ! $this->fetch_member_data($parameters['1'], $parameters['2']))
 		{
-			return $this->EE->xmlrpc->send_error_message('802', $this->EE->lang->line('invalid_access'));
+			return ee()->xmlrpc->send_error_message('802', ee()->lang->line('invalid_access'));
 		}
 
 		if ( ! $this->userdata['can_access_content'] && $this->userdata['group_id'] != '1')
 		{
-			return $this->EE->xmlrpc->send_error_message('803', $this->EE->lang->line('invalid_access'));
+			return ee()->xmlrpc->send_error_message('803', ee()->lang->line('invalid_access'));
 		}
 
 		if ( ! $this->userdata['can_edit_other_entries'] && $this->userdata['group_id'] != '1')
@@ -450,7 +450,7 @@ class Metaweblog_api {
 
 			if (count($this->userdata['assigned_channels']) == 0)
 			{
-				return $this->EE->xmlrpc->send_error_message('804', $this->EE->lang->line('invalid_access'));
+				return ee()->xmlrpc->send_error_message('804', ee()->lang->line('invalid_access'));
 			}
 		}
 
@@ -464,20 +464,20 @@ class Metaweblog_api {
 				wb.channel_title, wb.channel_url
 				FROM (exp_channel_titles wt, exp_channels wb)
 				WHERE wt.channel_id = wb.channel_id
-				AND wt.entry_id = '".$this->EE->db->escape_str($entry_id)."' ";
+				AND wt.entry_id = '".ee()->db->escape_str($entry_id)."' ";
 
-		$query = $this->EE->db->query($sql);
+		$query = ee()->db->query($sql);
 
 		if ($query->num_rows() == 0)
 		{
-			return $this->EE->xmlrpc->send_error_message('805', $this->EE->lang->line('no_entry_found'));
+			return ee()->xmlrpc->send_error_message('805', ee()->lang->line('no_entry_found'));
 		}
 
 		if ( ! $this->userdata['can_edit_other_entries'] && $this->userdata['group_id'] != '1')
 		{
 			if ($query->row('author_id')  != $this->userdata['member_id'])
 			{
-				return $this->EE->xmlrpc->send_error_message('806', $this->EE->lang->line('entry_uneditable'));
+				return ee()->xmlrpc->send_error_message('806', ee()->lang->line('entry_uneditable'));
 			}
 		}
 
@@ -515,7 +515,7 @@ class Metaweblog_api {
 		$metadata = array(
 							'entry_id'			=> $entry_id,
 							'title'				=> $this->title,
-							'ip_address'		=> $this->EE->input->ip_address(),
+							'ip_address'		=> ee()->input->ip_address(),
 							'status'			=> $this->status
 						  );
 
@@ -614,8 +614,8 @@ class Metaweblog_api {
 		/**  Update the entry data
 		/** ---------------------------------*/
 
-		$this->EE->db->query($this->EE->db->update_string('exp_channel_titles', $metadata, "entry_id = '$entry_id'"));
-		$this->EE->db->query($this->EE->db->update_string('exp_channel_data', $entry_data, "entry_id = '$entry_id'"));
+		ee()->db->query(ee()->db->update_string('exp_channel_titles', $metadata, "entry_id = '$entry_id'"));
+		ee()->db->query(ee()->db->update_string('exp_channel_data', $entry_data, "entry_id = '$entry_id'"));
 
 		/** ---------------------------------
 		/**  Insert Categories, if any
@@ -628,11 +628,11 @@ class Metaweblog_api {
 
 		if (count($this->categories) > 0)
 		{
-			$this->EE->db->query("DELETE FROM exp_category_posts WHERE entry_id = '$entry_id'");
+			ee()->db->query("DELETE FROM exp_category_posts WHERE entry_id = '$entry_id'");
 
 			foreach($this->categories as $cat_id => $cat_name)
 			{
-				$this->EE->db->query("INSERT INTO exp_category_posts
+				ee()->db->query("INSERT INTO exp_category_posts
 							(entry_id, cat_id)
 							VALUES
 							('".$entry_id."', '$cat_id')");
@@ -643,26 +643,26 @@ class Metaweblog_api {
 		/**  Clear caches if needed
 		/** ---------------------------------*/
 
-		if ($this->EE->config->item('new_posts_clear_caches') == 'y')
+		if (ee()->config->item('new_posts_clear_caches') == 'y')
 		{
-			$this->EE->functions->clear_caching('all');
+			ee()->functions->clear_caching('all');
 		}
 		else
 		{
-			$this->EE->functions->clear_caching('sql');
+			ee()->functions->clear_caching('sql');
 		}
 
 		/** ---------------------------------
 		/**  Count your chickens after they've hatched
 		/** ---------------------------------*/
 
-		$this->EE->stats->update_channel_stats($this->channel_id);
+		ee()->stats->update_channel_stats($this->channel_id);
 
 		/** ---------------------------------
 		/**  Return Boolean TRUE
 		/** ---------------------------------*/
 
-		return $this->EE->xmlrpc->send_response(array(1,'boolean'));
+		return ee()->xmlrpc->send_response(array(1,'boolean'));
 
 	}
 
@@ -681,20 +681,20 @@ class Metaweblog_api {
 		/**  Clear caches
 		/** ---------------------------------*/
 
-		if ($this->EE->config->item('new_posts_clear_caches') == 'y')
+		if (ee()->config->item('new_posts_clear_caches') == 'y')
 		{
-			$this->EE->functions->clear_caching('all');
+			ee()->functions->clear_caching('all');
 		}
 		else
 		{
-			$this->EE->functions->clear_caching('sql');
+			ee()->functions->clear_caching('sql');
 		}
 
 		/** ---------------------------------
 		/**  Return Boolean TRUE
 		/** ---------------------------------*/
 
-		return $this->EE->xmlrpc->send_response(array(1,'boolean'));
+		return ee()->xmlrpc->send_response(array(1,'boolean'));
 
 	}
 
@@ -729,12 +729,12 @@ class Metaweblog_api {
 
 		if ( ! $this->fetch_member_data($parameters['1'], $parameters['2']))
 		{
-			return $this->EE->xmlrpc->send_error_message('802', $this->EE->lang->line('invalid_access'));
+			return ee()->xmlrpc->send_error_message('802', ee()->lang->line('invalid_access'));
 		}
 
 		if ( ! $this->userdata['can_access_content'] && $this->userdata['group_id'] != '1')
 		{
-			return $this->EE->xmlrpc->send_error_message('803', $this->EE->lang->line('invalid_access'));
+			return ee()->xmlrpc->send_error_message('803', ee()->lang->line('invalid_access'));
 		}
 
 		/** ---------------------------------------
@@ -776,11 +776,11 @@ class Metaweblog_api {
 			$sql .= "ORDER BY entry_date desc LIMIT 0, {$limit}";
 		}
 
-		$query = $this->EE->db->query($sql);
+		$query = ee()->db->query($sql);
 
 		if ($query->num_rows() == 0)
 		{
-			return $this->EE->xmlrpc->send_error_message('805', $this->EE->lang->line('no_entries_found'));
+			return ee()->xmlrpc->send_error_message('805', ee()->lang->line('no_entries_found'));
 		}
 
 		if ($entry_id != '')
@@ -794,11 +794,11 @@ class Metaweblog_api {
 
 	  	if ($this->parse_type === TRUE)
 	  	{
-			$this->EE->load->library('typography');
-			$this->EE->typography->initialize(array(
+			ee()->load->library('typography');
+			ee()->typography->initialize(array(
 						'encode_email'	=> FALSE)
 						);
-			$this->EE->config->set_item('enable_emoticons', 'n');
+			ee()->config->set_item('enable_emoticons', 'n');
 		}
 
 		/** ---------------------------------------
@@ -827,7 +827,7 @@ class Metaweblog_api {
 	  			{
 	  				$settings['text_format'] = $row['field_ft_'.$this->excerpt_field];
 	  
-					$this->field_data['excerpt'] = $this->EE->typography->parse_type($row['field_id_'.$this->excerpt_field], $settings);
+					$this->field_data['excerpt'] = ee()->typography->parse_type($row['field_id_'.$this->excerpt_field], $settings);
 				}
 				else
 				{
@@ -843,7 +843,7 @@ class Metaweblog_api {
 	  			{
 	  				$settings['text_format'] = $row['field_ft_'.$this->content_field];
 	  
-					$this->field_data['content'] = $this->EE->typography->parse_type($row['field_id_'.$this->content_field], $settings);
+					$this->field_data['content'] = ee()->typography->parse_type($row['field_id_'.$this->content_field], $settings);
 				}
 				else
 				{
@@ -857,7 +857,7 @@ class Metaweblog_api {
 	  			{
 	  				$settings['text_format'] = $row['field_ft_'.$this->more_field];
 	  
-					$this->field_data['more'] = $this->EE->typography->parse_type($row['field_id_'.$this->more_field], $settings);
+					$this->field_data['more'] = ee()->typography->parse_type($row['field_id_'.$this->more_field], $settings);
 				}
 				else
 				{
@@ -871,7 +871,7 @@ class Metaweblog_api {
 	  			{
 	  				$settings['text_format'] = $row['field_ft_'.$this->keywords_field];
 	  
-					$this->field_data['keywords'] = $this->EE->typography->parse_type($row['field_id_'.$this->keywords_field], $settings);
+					$this->field_data['keywords'] = ee()->typography->parse_type($row['field_id_'.$this->keywords_field], $settings);
 				}
 				else
 				{
@@ -890,7 +890,7 @@ class Metaweblog_api {
 					AND		exp_category_posts.entry_id = '".$row['entry_id']."'
 					ORDER BY cat_id";
 
-			$results = $this->EE->db->query($sql);
+			$results = ee()->db->query($sql);
 
 			if ($results->num_rows() > 0)
 			{
@@ -942,11 +942,11 @@ class Metaweblog_api {
 
 		if ($entry_id != '')
 		{
-			return $this->EE->xmlrpc->send_response($entry_data);
+			return ee()->xmlrpc->send_response($entry_data);
 		}
 		else
 		{
-			return $this->EE->xmlrpc->send_response(array($response, 'array'));
+			return ee()->xmlrpc->send_response(array($response, 'array'));
 		}
 	}
 
@@ -966,12 +966,12 @@ class Metaweblog_api {
 
 		if ( ! $this->fetch_member_data($parameters['1'], $parameters['2']))
 		{
-			return $this->EE->xmlrpc->send_error_message('802', $this->EE->lang->line('invalid_access'));
+			return ee()->xmlrpc->send_error_message('802', ee()->lang->line('invalid_access'));
 		}
 
 		if ( ! $this->userdata['can_access_content'] && $this->userdata['group_id'] != '1')
 		{
-			return $this->EE->xmlrpc->send_error_message('803', $this->EE->lang->line('invalid_access'));
+			return ee()->xmlrpc->send_error_message('803', ee()->lang->line('invalid_access'));
 		}
 
 		/** ---------------------------------------
@@ -999,11 +999,11 @@ class Metaweblog_api {
 
 		$sql .= "ORDER BY entry_date desc LIMIT 0, {$limit}";
 
-		$query = $this->EE->db->query($sql);
+		$query = ee()->db->query($sql);
 
 		if ($query->num_rows() == 0)
 		{
-			return $this->EE->xmlrpc->send_error_message('805', $this->EE->lang->line('no_entries_found'));
+			return ee()->xmlrpc->send_error_message('805', ee()->lang->line('no_entries_found'));
 		}
 
 		/** ---------------------------------------
@@ -1031,7 +1031,7 @@ class Metaweblog_api {
 			array_push($response, $entry_data);
 		}
 
-		return $this->EE->xmlrpc->send_response(array($response, 'array'));
+		return ee()->xmlrpc->send_response(array($response, 'array'));
 	}
 
 	// --------------------------------------------------------------------
@@ -1049,20 +1049,20 @@ class Metaweblog_api {
 
 		if ( ! $this->fetch_member_data($parameters['1'], $parameters['2']))
 		{
-			return $this->EE->xmlrpc->send_error_message('802', $this->EE->lang->line('invalid_access'));
+			return ee()->xmlrpc->send_error_message('802', ee()->lang->line('invalid_access'));
 		}
 
-		$query = $this->EE->db->query("SELECT channel_id FROM exp_channel_titles
-							 WHERE entry_id = '".$this->EE->db->escape_str($parameters['0'])."'");
+		$query = ee()->db->query("SELECT channel_id FROM exp_channel_titles
+							 WHERE entry_id = '".ee()->db->escape_str($parameters['0'])."'");
 
 		if ($query->num_rows() == 0)
 		{
-			return $this->EE->xmlrpc->send_error_message('804', $this->EE->lang->line('invalid_channel'));
+			return ee()->xmlrpc->send_error_message('804', ee()->lang->line('invalid_channel'));
 		}
 
 		if ($this->userdata['group_id'] != '1' && ! in_array($query->row('channel_id') , $this->userdata['assigned_channels']))
 		{
-			return $this->EE->xmlrpc->send_error_message('803', $this->EE->lang->line('invalid_access'));
+			return ee()->xmlrpc->send_error_message('803', ee()->lang->line('invalid_access'));
 		}
 
 		$cats = array();
@@ -1070,10 +1070,10 @@ class Metaweblog_api {
 		$sql = "SELECT	exp_categories.cat_id, exp_categories.cat_name
 				FROM	exp_category_posts, exp_categories
 				WHERE	exp_category_posts.cat_id = exp_categories.cat_id
-				AND		exp_category_posts.entry_id = '".$this->EE->db->escape_str($parameters['0'])."'
+				AND		exp_category_posts.entry_id = '".ee()->db->escape_str($parameters['0'])."'
 				ORDER BY cat_id";
 
-		$query = $this->EE->db->query($sql);
+		$query = ee()->db->query($sql);
 
 		if ($query->num_rows() > 0)
 		{
@@ -1088,7 +1088,7 @@ class Metaweblog_api {
 			}
 		}
 
-		return $this->EE->xmlrpc->send_response(array($cats, 'array'));
+		return ee()->xmlrpc->send_response(array($cats, 'array'));
 	}
 
 	// --------------------------------------------------------------------
@@ -1106,12 +1106,12 @@ class Metaweblog_api {
 
 		if ( ! $this->fetch_member_data($parameters['1'], $parameters['2']))
 		{
-			return $this->EE->xmlrpc->send_error_message('802', $this->EE->lang->line('invalid_access'));
+			return ee()->xmlrpc->send_error_message('802', ee()->lang->line('invalid_access'));
 		}
 
 		if ( ! $this->userdata['can_access_content'] && $this->userdata['group_id'] != '1')
 		{
-			return $this->EE->xmlrpc->send_error_message('803', $this->EE->lang->line('invalid_access'));
+			return ee()->xmlrpc->send_error_message('803', ee()->lang->line('invalid_access'));
 		}
 
 		if ( ! $this->userdata['can_edit_other_entries'] && $this->userdata['group_id'] != '1')
@@ -1120,7 +1120,7 @@ class Metaweblog_api {
 
 			if (count($this->userdata['assigned_channels']) == 0)
 			{
-				return $this->EE->xmlrpc->send_error_message('804', $this->EE->lang->line('invalid_access'));
+				return ee()->xmlrpc->send_error_message('804', ee()->lang->line('invalid_access'));
 			}
 		}
 
@@ -1138,18 +1138,18 @@ class Metaweblog_api {
 				FROM exp_channel_titles
 				WHERE entry_id = '".$entry_id."' ";
 
-		$query = $this->EE->db->query($sql);
+		$query = ee()->db->query($sql);
 
 		if ($query->num_rows() == 0)
 		{
-			return $this->EE->xmlrpc->send_error_message('805', $this->EE->lang->line('no_entry_found'));
+			return ee()->xmlrpc->send_error_message('805', ee()->lang->line('no_entry_found'));
 		}
 
 		if ( ! $this->userdata['can_edit_other_entries'] && $this->userdata['group_id'] != '1')
 		{
 			if ($query->row('author_id')  != $this->userdata['member_id'])
 			{
-				return $this->EE->xmlrpc->send_error_message('806', $this->EE->lang->line('entry_uneditable'));
+				return ee()->xmlrpc->send_error_message('806', ee()->lang->line('entry_uneditable'));
 			}
 		}
 
@@ -1182,21 +1182,21 @@ class Metaweblog_api {
 		}
 		else
 		{
-			return $this->EE->xmlrpc->send_response(array(1,'boolean'));
-			//return $this->EE->xmlrpc->send_error_message('802', $this->EE->lang->line('entry_uneditable'));
+			return ee()->xmlrpc->send_response(array(1,'boolean'));
+			//return ee()->xmlrpc->send_error_message('802', ee()->lang->line('entry_uneditable'));
 		}
 
 		/** ---------------------------------
 		/**  Insert Categories, if any
 		/** ---------------------------------*/
 
-		$this->EE->db->query("DELETE FROM exp_category_posts WHERE entry_id = '$entry_id'");
+		ee()->db->query("DELETE FROM exp_category_posts WHERE entry_id = '$entry_id'");
 
 		if (count($this->categories) > 0)
 		{
 			foreach($this->categories as $cat_id => $cat_name)
 			{
-				$this->EE->db->query("INSERT INTO exp_category_posts
+				ee()->db->query("INSERT INTO exp_category_posts
 							(entry_id, cat_id)
 							VALUES
 							('".$entry_id."', '$cat_id')");
@@ -1207,20 +1207,20 @@ class Metaweblog_api {
 		/**  Clear caches if needed
 		/** ---------------------------------*/
 
-		if ($this->EE->config->item('new_posts_clear_caches') == 'y')
+		if (ee()->config->item('new_posts_clear_caches') == 'y')
 		{
-			$this->EE->functions->clear_caching('all');
+			ee()->functions->clear_caching('all');
 		}
 		else
 		{
-			$this->EE->functions->clear_caching('sql');
+			ee()->functions->clear_caching('sql');
 		}
 
 		/** ---------------------------------
 		/**  Return Boolean TRUE
 		/** ---------------------------------*/
 
-		return $this->EE->xmlrpc->send_response(array(1,'boolean'));
+		return ee()->xmlrpc->send_response(array(1,'boolean'));
 	}
 
 	// --------------------------------------------------------------------
@@ -1234,9 +1234,9 @@ class Metaweblog_api {
 	 */
 	function fetch_member_data($username, $password)
 	{
-		$this->EE->load->library('auth');
+		ee()->load->library('auth');
 		
-		if (FALSE == ($auth = $this->EE->auth->authenticate_username($username, $password)))
+		if (FALSE == ($auth = ee()->auth->authenticate_username($username, $password)))
 		{
 			return FALSE;
 		}
@@ -1248,7 +1248,7 @@ class Metaweblog_api {
 			$this->userdata[$member_item] = $auth->member($member_item);
 		}
 
-		foreach ($this->EE->db->list_fields('member_groups') as $field)
+		foreach (ee()->db->list_fields('member_groups') as $field)
 		{
 			$this->userdata[$field] = $auth->group($field);
 		}
@@ -1261,11 +1261,11 @@ class Metaweblog_api {
 
 		if ($this->userdata['group_id'] == 1)
 		{
-			$result = $this->EE->db->query("SELECT channel_id FROM exp_channels");
+			$result = ee()->db->query("SELECT channel_id FROM exp_channels");
 		}
 		else
 		{
-			$result = $this->EE->db->query("SELECT channel_id FROM exp_channel_member_groups WHERE group_id = '".$this->userdata['group_id']."'");
+			$result = ee()->db->query("SELECT channel_id FROM exp_channel_member_groups WHERE group_id = '".$this->userdata['group_id']."'");
 		}
 
 		if ($result->num_rows() > 0)
@@ -1284,8 +1284,8 @@ class Metaweblog_api {
 		$this->userdata['assigned_channels'] = $assigned_channels;
 
 
-		$this->EE->session->userdata = array_merge(
-			$this->EE->session->userdata,
+		ee()->session->userdata = array_merge(
+			ee()->session->userdata,
 			$this->userdata
 		);
 
@@ -1307,12 +1307,12 @@ class Metaweblog_api {
 
 		if ( ! $this->fetch_member_data($parameters['1'], $parameters['2']))
 		{
-			return $this->EE->xmlrpc->send_error_message('802', $this->EE->lang->line('invalid_access'));
+			return ee()->xmlrpc->send_error_message('802', ee()->lang->line('invalid_access'));
 		}
 
 		if ($this->userdata['group_id'] != '1' && ! in_array($parameters['0'], $this->userdata['assigned_channels']))
 		{
-			return $this->EE->xmlrpc->send_error_message('803', $this->EE->lang->line('invalid_channel'));
+			return ee()->xmlrpc->send_error_message('803', ee()->lang->line('invalid_channel'));
 		}
 
 		$this->parse_channel($parameters['0']);
@@ -1324,7 +1324,7 @@ class Metaweblog_api {
 				WHERE  FIND_IN_SET(exp_categories.group_id, REPLACE(exp_channels.cat_group, '|', ','))
 				AND exp_channels.channel_id = '{$this->channel_id}'";
 
-		$query = $this->EE->db->query($sql);
+		$query = ee()->db->query($sql);
 
 		if ($query->num_rows() > 0)
 		{
@@ -1344,7 +1344,7 @@ class Metaweblog_api {
 			}
 		}
 
-		return $this->EE->xmlrpc->send_response(array($cats, 'array'));
+		return ee()->xmlrpc->send_response(array($cats, 'array'));
 	}
 
 	// --------------------------------------------------------------------
@@ -1362,12 +1362,12 @@ class Metaweblog_api {
 
 		if ( ! $this->fetch_member_data($parameters['1'], $parameters['2']))
 		{
-			return $this->EE->xmlrpc->send_error_message('802', $this->EE->lang->line('invalid_access'));
+			return ee()->xmlrpc->send_error_message('802', ee()->lang->line('invalid_access'));
 		}
 
 		if ($this->userdata['group_id'] != '1' && ! in_array($parameters['0'], $this->userdata['assigned_channels']))
 		{
-			return $this->EE->xmlrpc->send_error_message('803', $this->EE->lang->line('invalid_channel'));
+			return ee()->xmlrpc->send_error_message('803', ee()->lang->line('invalid_channel'));
 		}
 
 		$this->parse_channel($parameters['0']);
@@ -1379,7 +1379,7 @@ class Metaweblog_api {
 				WHERE  FIND_IN_SET(exp_categories.group_id, REPLACE(exp_channels.cat_group, '|', ','))
 				AND exp_channels.channel_id = '{$this->channel_id}'";
 
-		$query = $this->EE->db->query($sql);
+		$query = ee()->db->query($sql);
 
 		if ($query->num_rows() > 0)
 		{
@@ -1394,7 +1394,7 @@ class Metaweblog_api {
 			}
 		}
 
-		return $this->EE->xmlrpc->send_response(array($cats, 'array'));
+		return ee()->xmlrpc->send_response(array($cats, 'array'));
 	}
 
 	// --------------------------------------------------------------------
@@ -1412,13 +1412,13 @@ class Metaweblog_api {
 		$this->status		= 'open';
 
 		$sql				= "SELECT channel_id, channel_url, comment_url, deft_category, channel_html_formatting, site_id FROM exp_channels WHERE ";
-		$this->channel_sql	= $this->EE->functions->sql_andor_string($channel_id, 'exp_channels.channel_id');
+		$this->channel_sql	= ee()->functions->sql_andor_string($channel_id, 'exp_channels.channel_id');
 			$sql				= (substr($this->channel_sql, 0, 3) == 'AND') ? $sql.substr($this->channel_sql, 3) : $sql.$this->channel_sql;
-		$query				= $this->EE->db->query($sql);
+		$query				= ee()->db->query($sql);
 
 		if ($query->num_rows() == 0)
 		{
-			return $this->EE->xmlrpc->send_error_message('804', $this->EE->lang->line('invalid_channel'));
+			return ee()->xmlrpc->send_error_message('804', ee()->lang->line('invalid_channel'));
 		}
 
 		$this->channel_id		= $query->row('channel_id');
@@ -1428,18 +1428,18 @@ class Metaweblog_api {
 		$this->html_format		= $query->row('channel_html_formatting');
 		$this->site_id			= $query->row('site_id');
 
-		if ($this->site_id != $this->EE->config->item('site_id'))
+		if ($this->site_id != ee()->config->item('site_id'))
 		{
-			$this->EE->config->site_prefs('', $this->site_id);
+			ee()->config->site_prefs('', $this->site_id);
 
-			$this->assign_parents = ($this->EE->config->item('auto_assign_cat_parents') == 'n') ? FALSE : TRUE;
+			$this->assign_parents = (ee()->config->item('auto_assign_cat_parents') == 'n') ? FALSE : TRUE;
 		}
 
 		foreach ($query->result_array() as $row)
 		{
 			if ( ! in_array($row['channel_id'], $this->userdata['assigned_channels']) && $this->userdata['group_id'] != '1')
 			{
-				return $this->EE->xmlrpc->send_error_message('803', $this->EE->lang->line('invalid_channel'));
+				return ee()->xmlrpc->send_error_message('803', ee()->lang->line('invalid_channel'));
 			}
 		}
 
@@ -1447,7 +1447,7 @@ class Metaweblog_api {
 		/**  Find Fields
 		/** ---------------------------------------*/
 
-		$query = $this->EE->db->query("SELECT field_name, field_id, field_type, field_fmt FROM exp_channel_fields, exp_channels
+		$query = ee()->db->query("SELECT field_name, field_id, field_type, field_fmt FROM exp_channel_fields, exp_channels
 							  WHERE exp_channels.field_group = exp_channel_fields.group_id
 							  {$this->channel_sql}
 							  ORDER BY field_order");
@@ -1476,11 +1476,11 @@ class Metaweblog_api {
 				WHERE  FIND_IN_SET(exp_categories.group_id, REPLACE(exp_channels.cat_group, '|', ','))
 				AND exp_channels.channel_id = '{$this->channel_id}'";
 
-		$query = $this->EE->db->query($sql);
+		$query = ee()->db->query($sql);
 
 		if ($query->num_rows() == 0)
 		{
-			return $this->EE->xmlrpc->send_error_message('807', $this->EE->lang->line('invalid_categories'));
+			return ee()->xmlrpc->send_error_message('807', ee()->lang->line('invalid_categories'));
 		}
 
 		$good		= 0;
@@ -1504,7 +1504,7 @@ class Metaweblog_api {
 
 		if ($good < count($this->categories))
 		{
-			return $this->EE->xmlrpc->send_error_message('807', $this->EE->lang->line('invalid_categories'));
+			return ee()->xmlrpc->send_error_message('807', ee()->lang->line('invalid_categories'));
 		}
 		else
 		{
@@ -1535,18 +1535,18 @@ class Metaweblog_api {
 
 		if ( ! $this->fetch_member_data($parameters['2'], $parameters['3']))
 		{
-			return $this->EE->xmlrpc->send_error_message('802', $this->EE->lang->line('invalid_access'));
+			return ee()->xmlrpc->send_error_message('802', ee()->lang->line('invalid_access'));
 		}
 
 		if (	$this->userdata['group_id'] != '1' AND
 			 ! $this->userdata['can_delete_self_entries'] AND
 			 ! $this->userdata['can_delete_all_entries'])
 		{
-			return $this->EE->xmlrpc->send_error_message('808', $this->EE->lang->line('invalid_access'));
+			return ee()->xmlrpc->send_error_message('808', ee()->lang->line('invalid_access'));
 		}
 		
-		$this->EE->session->userdata = array_merge(
-			$this->EE->session->userdata,
+		ee()->session->userdata = array_merge(
+			ee()->session->userdata,
 			array(
 				'group_id'			=> $this->userdata['group_id'],
 				'member_id'			=> $this->userdata['member_id'],
@@ -1555,20 +1555,20 @@ class Metaweblog_api {
 		);
 
 		// Delete the entry
-		$this->EE->load->library('api');
-		$this->EE->api->instantiate('channel_entries');
+		ee()->load->library('api');
+		ee()->api->instantiate('channel_entries');
 
-		$r = $this->EE->api_channel_entries->delete_entry($parameters['1']);
+		$r = ee()->api_channel_entries->delete_entry($parameters['1']);
 
 		if ( ! $r)
 		{
-			$errors = implode(', ', $this->EE->api_channel_entries->get_errors());
+			$errors = implode(', ', ee()->api_channel_entries->get_errors());
 
-			return $this->EE->xmlrpc->send_error_message('809', $errors);
+			return ee()->xmlrpc->send_error_message('809', $errors);
 		}
 		else
 		{
-			return $this->EE->xmlrpc->send_response(array(1,'boolean'));
+			return ee()->xmlrpc->send_response(array(1,'boolean'));
 		}
 	}
 
@@ -1589,49 +1589,49 @@ class Metaweblog_api {
 
 		if ($this->upload_dir == '')
 		{
-			return $this->EE->xmlrpc->send_error_message('801', $this->EE->lang->line('invalid_access'));
+			return ee()->xmlrpc->send_error_message('801', ee()->lang->line('invalid_access'));
 		}
 
 		if ( ! $this->fetch_member_data($parameters['1'], $parameters['2']))
 		{
-			return $this->EE->xmlrpc->send_error_message('802', $this->EE->lang->line('invalid_access'));
+			return ee()->xmlrpc->send_error_message('802', ee()->lang->line('invalid_access'));
 		}
 
 		if ($this->userdata['group_id'] != '1' && ! in_array($parameters['0'], $this->userdata['assigned_channels']))
 		{
-			return $this->EE->xmlrpc->send_error_message('803', $this->EE->lang->line('invalid_channel'));
+			return ee()->xmlrpc->send_error_message('803', ee()->lang->line('invalid_channel'));
 		}
 
 		if ($this->userdata['group_id'] != '1')
 		{
-			$this->EE->db->where('upload_id', $this->upload_dir);
-			$this->EE->db->where('member_group', $this->userdata['group_id']);
+			ee()->db->where('upload_id', $this->upload_dir);
+			ee()->db->where('member_group', $this->userdata['group_id']);
 
-			if ($this->EE->db->count_all_results('upload_no_access') != 0)
+			if (ee()->db->count_all_results('upload_no_access') != 0)
 			{
-				return $this->EE->xmlrpc->send_error_message('803', $this->EE->lang->line('invalid_access'));
+				return ee()->xmlrpc->send_error_message('803', ee()->lang->line('invalid_access'));
 			}
 		}
 
-		$this->EE->db->select('server_path, url');
-		$query = $this->EE->db->get_where('upload_prefs', array('id' => $this->upload_dir));
+		ee()->db->select('server_path, url');
+		$query = ee()->db->get_where('upload_prefs', array('id' => $this->upload_dir));
 
 		if ($query->num_rows() == 0)
 		{
-			return $this->EE->xmlrpc->send_error_message('803', $this->EE->lang->line('invalid_access'));
+			return ee()->xmlrpc->send_error_message('803', ee()->lang->line('invalid_access'));
 		}
 
 		/** -------------------------------------
 		/**  upload the image
 		/** -------------------------------------*/
 		
-		$this->EE->load->library('filemanager');
+		ee()->load->library('filemanager');
 		
 		// Disable XSS Filtering
-		$this->EE->filemanager->xss_clean_off();
+		ee()->filemanager->xss_clean_off();
 		
 		// Figure out the FULL file path
-		$file_path = $this->EE->filemanager->clean_filename(
+		$file_path = ee()->filemanager->clean_filename(
 			$parameters['3']['name'], 
 			$this->upload_dir,
 			array('ignore_dupes' => FALSE)
@@ -1649,14 +1649,14 @@ class Metaweblog_api {
 		// Upload the file and check for errors
 		if (file_put_contents($file_path, $parameters['3']['bits']) === FALSE)
 		{
-			return $this->EE->xmlrpc->send_error_message(
+			return ee()->xmlrpc->send_error_message(
 				'810', 
-				$this->EE->lang->line('unable_to_upload')
+				ee()->lang->line('unable_to_upload')
 			);
 		}
 		
 		// Send the file
-		$result = $this->EE->filemanager->save_file(
+		$result = ee()->filemanager->save_file(
 			$file_path, 
 			$this->upload_dir, 
 			array(
@@ -1669,7 +1669,7 @@ class Metaweblog_api {
 		// Check to see the result
 		if ($result['status'] === FALSE)
 		{
-			$this->EE->xmlrpc->send_error_message(
+			ee()->xmlrpc->send_error_message(
 				'810', 
 				$result['message']
 			);
@@ -1686,7 +1686,7 @@ class Metaweblog_api {
 			'struct'
 		);
 
-		return $this->EE->xmlrpc->send_response($response);
+		return ee()->xmlrpc->send_response($response);
 	}
 
 	// --------------------------------------------------------------------
@@ -1704,7 +1704,7 @@ class Metaweblog_api {
 
 		if ( ! $this->fetch_member_data($parameters['1'], $parameters['2']))
 		{
-			return $this->EE->xmlrpc->send_error_message('802', $this->EE->lang->line('invalid_access'));
+			return ee()->xmlrpc->send_error_message('802', ee()->lang->line('invalid_access'));
 		}
 
 		$response = array(array(
@@ -1723,7 +1723,7 @@ class Metaweblog_api {
 							  ),
 						'struct');
 
-		return $this->EE->xmlrpc->send_response($response);
+		return ee()->xmlrpc->send_response($response);
 	}
 
 	// --------------------------------------------------------------------
@@ -1741,17 +1741,17 @@ class Metaweblog_api {
 
 		if ( ! $this->fetch_member_data($parameters['1'], $parameters['2']))
 		{
-			return $this->EE->xmlrpc->send_error_message('802', $this->EE->lang->line('invalid_access'));
+			return ee()->xmlrpc->send_error_message('802', ee()->lang->line('invalid_access'));
 		}
 
-		$this->EE->db->select('channel_id, channel_title, channel_url');
-		$this->EE->db->where_in('channel_id', $this->userdata['assigned_channels']);
+		ee()->db->select('channel_id, channel_title, channel_url');
+		ee()->db->where_in('channel_id', $this->userdata['assigned_channels']);
 		
-		$query = $this->EE->db->get('channels');
+		$query = ee()->db->get('channels');
 
 		if ($query->num_rows() == 0)
 		{
-			return $this->EE->xmlrpc->send_error_message('804', $this->EE->lang->line('no_channels_found'));
+			return ee()->xmlrpc->send_error_message('804', ee()->lang->line('no_channels_found'));
 		}
 
 		$response = array();
@@ -1769,7 +1769,7 @@ class Metaweblog_api {
 			array_push($response, $channel);
 		}
 
-		return $this->EE->xmlrpc->send_response(array($response, 'array'));
+		return ee()->xmlrpc->send_response(array($response, 'array'));
 	}
 
 	// --------------------------------------------------------------------
@@ -1793,7 +1793,7 @@ class Metaweblog_api {
 			{
 				$t = gmmktime($regs[4], $regs[5], $regs[6], $regs[2], $regs[3], $regs[1]);
 
-				$time_difference = ($this->EE->config->item('server_offset') == '') ? 0 : $this->EE->config->item('server_offset');
+				$time_difference = (ee()->config->item('server_offset') == '') ? 0 : ee()->config->item('server_offset');
 
 				$server_time = time()+date('Z');
 				$offset_time = $server_time + $time_difference*60;
@@ -1834,11 +1834,11 @@ class Metaweblog_api {
 
 			if ($name == 'Br')
 			{
-				$name = $this->EE->lang->line('auto_br');
+				$name = ee()->lang->line('auto_br');
 			}
 			elseif ($name == 'Xhtml')
 			{
-				$name = $this->EE->lang->line('xhtml');
+				$name = ee()->lang->line('xhtml');
 			}
 
 			$plugin = array(array(  'key' => array($val,'string'),
@@ -1849,7 +1849,7 @@ class Metaweblog_api {
 			array_push($plugins, $plugin);
 		}
 
-		return $this->EE->xmlrpc->send_response(array($plugins, 'array'));
+		return ee()->xmlrpc->send_response(array($plugins, 'array'));
 	}
 
 	// --------------------------------------------------------------------
@@ -1866,9 +1866,9 @@ class Metaweblog_api {
 		$plugins = array('br', 'xhtml');
 		
 		// Additional first or third-party plugins
-		$this->EE->load->library('addons');
+		ee()->load->library('addons');
 
-		foreach ($this->EE->addons->get_files('plugins') as $plugin)
+		foreach (ee()->addons->get_files('plugins') as $plugin)
 		{
 			$plugins[] = strtolower($plugin['class']);
 		}
@@ -1892,15 +1892,15 @@ class Metaweblog_api {
 	 */
 	function get_settings($channel_id, $which = 'new')
 	{
-		$this->EE->load->model('channel_model');
-		$this->EE->load->library('api');
-		$this->EE->api->instantiate('channel_fields');
+		ee()->load->model('channel_model');
+		ee()->load->library('api');
+		ee()->api->instantiate('channel_fields');
 
-		$this->EE->db->select('field_group');
-		$this->EE->db->where('channel_id', $channel_id);
-		$field_group = $this->EE->db->get('channels');
+		ee()->db->select('field_group');
+		ee()->db->where('channel_id', $channel_id);
+		$field_group = ee()->db->get('channels');
 
-		$field_query = $this->EE->channel_model->get_channel_fields($field_group->row('field_group'));
+		$field_query = ee()->channel_model->get_channel_fields($field_group->row('field_group'));
 
 		foreach ($field_query->result_array() as $row)
 		{
@@ -1936,7 +1936,7 @@ class Metaweblog_api {
 
 			$settings = array_merge($row, $settings, $ft_settings);
 
-			$this->EE->api_channel_fields->set_settings($row['field_id'], $settings);
+			ee()->api_channel_fields->set_settings($row['field_id'], $settings);
 		}
 	}
 }

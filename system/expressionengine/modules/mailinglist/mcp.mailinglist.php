@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -34,7 +34,7 @@ class Mailinglist_mcp {
 		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();
 		
-		$this->EE->cp->set_right_nav(array(
+		ee()->cp->set_right_nav(array(
 			'ml_create_new' => BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist'.AMP.'method=edit_mailing_list', 
 			'mailinglist_preferences' => BASE.AMP.'C=admin_system'.AMP.'M=mailing_list_preferences'
 		));
@@ -48,17 +48,17 @@ class Mailinglist_mcp {
 	  */
 	function index()
 	{
-		$this->EE->load->library('table');
-		$this->EE->load->library('javascript');
-		$this->EE->load->helper('form');
+		ee()->load->library('table');
+		ee()->load->library('javascript');
+		ee()->load->helper('form');
 
-		$this->EE->cp->add_js_script(array('fp_module' => 'mailinglist'));
+		ee()->cp->add_js_script(array('fp_module' => 'mailinglist'));
 
-		$vars['cp_page_title'] = $this->EE->lang->line('ml_mailinglist');
+		$vars['cp_page_title'] = ee()->lang->line('ml_mailinglist');
 
-		$this->EE->load->model('mailinglist_model');
+		ee()->load->model('mailinglist_model');
 		
-		$mailinglists = $this->EE->mailinglist_model->get_mailinglists();
+		$mailinglists = ee()->mailinglist_model->get_mailinglists();
 
 		$vars['mailinglists'] = array();
 		$vars['list_id_options'] = array();
@@ -67,8 +67,8 @@ class Mailinglist_mcp {
 		{
 			$vars['mailinglists'][$list->list_id]['id'] = $list->list_id;
 
-			$this->EE->db->where('list_id', $list->list_id);
-			$vars['mailinglists'][$list->list_id]['count'] = $this->EE->db->count_all_results('mailing_list');
+			ee()->db->where('list_id', $list->list_id);
+			$vars['mailinglists'][$list->list_id]['count'] = ee()->db->count_all_results('mailing_list');
 
 			$vars['mailinglists'][$list->list_id]['shortname'] = $list->list_name;
 
@@ -83,9 +83,9 @@ class Mailinglist_mcp {
 			$vars['list_id_options'][$list->list_id] = $list->list_title;
 		}
 
-		$this->EE->javascript->compile();
+		ee()->javascript->compile();
 
-		return $this->EE->load->view('index', $vars, TRUE);
+		return ee()->load->view('index', $vars, TRUE);
 	}
 
 	// --------------------------------------------------------------------
@@ -111,24 +111,24 @@ EOF;
 	  */
 	function edit_mailing_list()
 	{
-		$this->EE->load->library('javascript');
-		$this->EE->load->library('form_validation');
-		$this->EE->load->helper('form');
-		$this->EE->load->model('mailinglist_model');
+		ee()->load->library('javascript');
+		ee()->load->library('form_validation');
+		ee()->load->helper('form');
+		ee()->load->model('mailinglist_model');
 		
-		$this->EE->form_validation->set_rules('list_name', 'lang:ml_mailinglist_short_name', 'required|alpha_dash|callback__unique_short_name');
-		$this->EE->form_validation->set_rules('list_title', 'lang:ml_mailinglist_long_name', 'required');
-		$this->EE->form_validation->set_message('alpha_dash', $this->EE->lang->line('ml_invalid_short_name'));
-		$this->EE->form_validation->set_error_delimiters('<span class="notice">', '</span>');
+		ee()->form_validation->set_rules('list_name', 'lang:ml_mailinglist_short_name', 'required|alpha_dash|callback__unique_short_name');
+		ee()->form_validation->set_rules('list_title', 'lang:ml_mailinglist_long_name', 'required');
+		ee()->form_validation->set_message('alpha_dash', ee()->lang->line('ml_invalid_short_name'));
+		ee()->form_validation->set_error_delimiters('<span class="notice">', '</span>');
 
 		$list_id			= 0;
 		$vars['list_name']	= '';
 		$vars['list_title']	= '';
 
-		if ($this->EE->input->get_post('list_id') != 0)
+		if (ee()->input->get_post('list_id') != 0)
 		{
-			$query = $this->EE->mailinglist_model->get_list_by_id(
-													$this->EE->input->get_post('list_id'),
+			$query = ee()->mailinglist_model->get_list_by_id(
+													ee()->input->get_post('list_id'),
 													'list_title, list_template, list_id, list_name');			
 
 			if ($query->num_rows() == 1)
@@ -137,37 +137,37 @@ EOF;
 				$vars['list_title'] = $query->row('list_title');
 				$vars['list_name'] = $query->row('list_name');
 				
-				$this->EE->form_validation->set_old_value('list_id', $list_id);
+				ee()->form_validation->set_old_value('list_id', $list_id);
 			}
 		}
 
-		if ($this->EE->form_validation->run() === FALSE)
+		if (ee()->form_validation->run() === FALSE)
 		{
-			$this->EE->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist', $this->EE->lang->line('ml_mailinglist'));
+			ee()->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist', ee()->lang->line('ml_mailinglist'));
 
-			$vars['cp_page_title'] = ($list_id == 0) ? $this->EE->lang->line('ml_create_new') : $this->EE->lang->line('ml_edit_list');
+			$vars['cp_page_title'] = ($list_id == 0) ? ee()->lang->line('ml_create_new') : ee()->lang->line('ml_edit_list');
 			$vars['form_action'] = 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist'.AMP.'method=edit_mailing_list';
 			$vars['form_hidden']['list_id'] = $list_id;
-			$vars['button_label'] = ($list_id == 0) ? $this->EE->lang->line('ml_create_new') : $this->EE->lang->line('update');
+			$vars['button_label'] = ($list_id == 0) ? ee()->lang->line('ml_create_new') : ee()->lang->line('update');
 
-			$this->EE->javascript->compile();
+			ee()->javascript->compile();
 
-			return $this->EE->load->view('update', $vars, TRUE);
+			return ee()->load->view('update', $vars, TRUE);
 		}
 		else
 		{
 			$data = array(
-							'list_name'		=> $this->EE->input->post('list_name'),
-							'list_title'	=> $this->EE->input->post('list_title'),
+							'list_name'		=> ee()->input->post('list_name'),
+							'list_title'	=> ee()->input->post('list_title'),
 							'list_template'	=> addslashes($this->default_template_data())
 						);
 
-			$this->EE->mailinglist_model->update_mailinglist($list_id, $data);
+			ee()->mailinglist_model->update_mailinglist($list_id, $data);
 			
-			$message = ($list_id == FALSE) ? $this->EE->lang->line('ml_mailinglist_created') : $this->EE->lang->line('ml_mailinglist_updated');
+			$message = ($list_id == FALSE) ? ee()->lang->line('ml_mailinglist_created') : ee()->lang->line('ml_mailinglist_updated');
 			
-			$this->EE->session->set_flashdata('message_success', $message);
-			$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist');
+			ee()->session->set_flashdata('message_success', $message);
+			ee()->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist');
 		}
 	}
 
@@ -178,11 +178,11 @@ EOF;
 	  */
 	function _unique_short_name($str)
 	{
-		$this->EE->load->model('mailinglist_model');
+		ee()->load->model('mailinglist_model');
 
-		if ( ! $this->EE->mailinglist_model->unique_shortname($this->EE->form_validation->old_value('list_id'), $str))
+		if ( ! ee()->mailinglist_model->unique_shortname(ee()->form_validation->old_value('list_id'), $str))
 		{
-			$this->EE->form_validation->set_message('_unique_short_name', $this->EE->lang->line('ml_short_name_taken'));
+			ee()->form_validation->set_message('_unique_short_name', ee()->lang->line('ml_short_name_taken'));
 			return FALSE;
 		}
 		
@@ -196,30 +196,30 @@ EOF;
 	  */
 	function edit_template()
 	{
-		$this->EE->load->helper('form');
+		ee()->load->helper('form');
 
-		if ( ! $list_id = $this->EE->input->get_post('list_id'))
+		if ( ! $list_id = ee()->input->get_post('list_id'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
 		
-		$this->EE->load->model('mailinglist_model');
+		ee()->load->model('mailinglist_model');
 		
-		$list = $this->EE->mailinglist_model->get_list_by_id($list_id, 'list_title, list_template');
+		$list = ee()->mailinglist_model->get_list_by_id($list_id, 'list_title, list_template');
 
 		if ($list->num_rows() == 0)
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
 
-		$this->EE->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist', $this->EE->lang->line('ml_mailinglist'));
+		ee()->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist', ee()->lang->line('ml_mailinglist'));
 
-		$vars['cp_page_title'] = $this->EE->lang->line('mailinglist_template');
+		$vars['cp_page_title'] = ee()->lang->line('mailinglist_template');
 		$vars['form_hidden']['list_id'] = $list_id;
 		$vars['list_title'] = $list->row('list_title');
 		$vars['template_data'] = $list->row('list_template');
 
-		return $this->EE->load->view('edit_template', $vars, TRUE);
+		return ee()->load->view('edit_template', $vars, TRUE);
 	}
 
 	// --------------------------------------------------------------------
@@ -229,9 +229,9 @@ EOF;
 	  */
 	function update_template()
 	{
-		if ( ! $list_id = $this->EE->input->get_post('list_id'))
+		if ( ! $list_id = ee()->input->get_post('list_id'))
 		{
-			show_error($this->EE->lang->line('ml_no_list_id'));
+			show_error(ee()->lang->line('ml_no_list_id'));
 		}
 
 		if ( ! isset($_POST['template_data']))
@@ -239,12 +239,12 @@ EOF;
 			return FALSE;
 		}
 		
-		$this->EE->load->model('mailinglist_model');
+		ee()->load->model('mailinglist_model');
 		
-		$this->EE->mailinglist_model->update_template($list_id, $this->EE->input->post('template_data'));
+		ee()->mailinglist_model->update_template($list_id, ee()->input->post('template_data'));
 		
-		$this->EE->session->set_flashdata('message_success', $this->EE->lang->line('template_updated'));
-		$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist');
+		ee()->session->set_flashdata('message_success', ee()->lang->line('template_updated'));
+		ee()->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist');
 	}
 
 	// --------------------------------------------------------------------
@@ -254,30 +254,30 @@ EOF;
 	  */
 	function delete_mailinglist_confirm()
 	{
-		if ( ! $this->EE->input->post('toggle'))
+		if ( ! ee()->input->post('toggle'))
 		{
-			$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist');
+			ee()->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist');
 		}
 
-		$this->EE->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist', $this->EE->lang->line('ml_mailinglist'));
+		ee()->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist', ee()->lang->line('ml_mailinglist'));
 
-		$vars['cp_page_title'] = $this->EE->lang->line('ml_delete_mailinglist');
+		$vars['cp_page_title'] = ee()->lang->line('ml_delete_mailinglist');
 
 		$vars['question_key'] = 'ml_delete_list_question';
-		$vars['message'] = $this->EE->lang->line('ml_all_data_nuked'); // an extra warning message
+		$vars['message'] = ee()->lang->line('ml_all_data_nuked'); // an extra warning message
 
 		$vars['form_action'] = 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist'.AMP.'method=delete_mailinglists';
 
-		$this->EE->load->helper('form');
+		ee()->load->helper('form');
 
 		foreach ($_POST['toggle'] as $key => $val)
 		{
 			$vars['damned'][] = $val;
 		}
 		
-		$this->EE->load->model('mailinglist_model');
+		ee()->load->model('mailinglist_model');
 		
-		$query = $this->EE->mailinglist_model->get_list_by_id($_POST['toggle'], 'list_title');
+		$query = ee()->mailinglist_model->get_list_by_id($_POST['toggle'], 'list_title');
 
 		$vars['list_names'] = array();
 
@@ -286,9 +286,9 @@ EOF;
 			$vars['list_names'][] = $row->list_title;
 		}
 
-		$this->EE->javascript->compile();
+		ee()->javascript->compile();
 
-		return $this->EE->load->view('delete_confirm', $vars, TRUE);
+		return ee()->load->view('delete_confirm', $vars, TRUE);
 	}
 
 	// --------------------------------------------------------------------
@@ -298,17 +298,17 @@ EOF;
 	  */
 	function delete_mailinglists()
 	{
-		if ($this->EE->input->post('delete') == '')
+		if (ee()->input->post('delete') == '')
 		{
-			$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist');
+			ee()->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist');
 		}
 
-		$this->EE->load->model('mailinglist_model');
+		ee()->load->model('mailinglist_model');
 		
-		$message = $this->EE->mailinglist_model->delete_mailinglist($_POST['delete']);
+		$message = ee()->mailinglist_model->delete_mailinglist($_POST['delete']);
 
-		$this->EE->session->set_flashdata('message_success', $message);
-		$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist');
+		ee()->session->set_flashdata('message_success', $message);
+		ee()->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist');
 	}
 
 	// --------------------------------------------------------------------
@@ -318,22 +318,22 @@ EOF;
 	  */
 	function subscribe()
 	{
-		if ($this->EE->input->post('addresses') == '')
+		if (ee()->input->post('addresses') == '')
 		{
-			$this->EE->session->set_flashdata('message_failure', $this->EE->lang->line('ml_missing_email'));
-			$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist');
+			ee()->session->set_flashdata('message_failure', ee()->lang->line('ml_missing_email'));
+			ee()->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist');
 		}
 
-		$this->EE->load->helper('email');
+		ee()->load->helper('email');
 
 		//  Fetch existing addresses
-		$subscribe = ($this->EE->input->get_post('sub_action') == 'unsubscribe') ? FALSE : TRUE;
+		$subscribe = (ee()->input->get_post('sub_action') == 'unsubscribe') ? FALSE : TRUE;
 
-		$list_id = $this->EE->input->get_post('list_id');
+		$list_id = ee()->input->get_post('list_id');
 		
-		$this->EE->load->model('mailinglist_model');
+		ee()->load->model('mailinglist_model');
 		
-		$query = $this->EE->mailinglist_model->get_emails_by_list($list_id, 'email');
+		$query = ee()->mailinglist_model->get_emails_by_list($list_id, 'email');
 
 		$current = array();
 
@@ -341,7 +341,7 @@ EOF;
 		{
 			if ($subscribe == FALSE)
 			{
-				$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist');
+				ee()->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist');
 			}
 		}
 		else
@@ -391,14 +391,14 @@ EOF;
 								'list_id'		=> $list_id,
 								'authcode'		=> random_string('alnum', 10),
 								'email'			=> $addr,
-								'ip_address'	=> $this->EE->input->ip_address()
+								'ip_address'	=> ee()->input->ip_address()
 							);
 				
-				$this->EE->mailinglist_model->insert_subscription($data);
+				ee()->mailinglist_model->insert_subscription($data);
 			}
 			else
 			{
-				$this->EE->mailinglist_model->delete_subscription($list_id, $addr);
+				ee()->mailinglist_model->delete_subscription($list_id, $addr);
 			}
 
 			$vars['good_email']++;
@@ -408,18 +408,18 @@ EOF;
 		{
 			if ($subscribe == TRUE)
 			{
-				$this->EE->session->set_flashdata('message_success', $this->EE->lang->line('ml_emails_imported'));
-				$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist');
+				ee()->session->set_flashdata('message_success', ee()->lang->line('ml_emails_imported'));
+				ee()->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist');
 			}
 			else
 			{
-				$this->EE->session->set_flashdata('message_success', $this->EE->lang->line('ml_emails_deleted'));
-				$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist');
+				ee()->session->set_flashdata('message_success', ee()->lang->line('ml_emails_deleted'));
+				ee()->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist');
 			}
 		}
 		
-		$vars['cp_page_title'] = $this->EE->lang->line('ml_batch_subscribe');
-		$this->EE->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist', $this->EE->lang->line('ml_mailinglist'));
+		$vars['cp_page_title'] = ee()->lang->line('ml_batch_subscribe');
+		ee()->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist', ee()->lang->line('ml_mailinglist'));
 
 		$vars['notice'] = '';
 
@@ -432,7 +432,7 @@ EOF;
 			$vars['notice_bad_email'] = ($subscribe == TRUE) ? 'ml_bad_email_heading' : 'ml_bad_email_del_heading';
 		}
 
-		return $this->EE->load->view('subscribe', $vars, TRUE);
+		return ee()->load->view('subscribe', $vars, TRUE);
 	}
 
 	// --------------------------------------------------------------------
@@ -442,12 +442,12 @@ EOF;
 	  */
 	function view()
 	{
-		$list_id = $this->EE->input->get_post('list_id');
+		$list_id = ee()->input->get_post('list_id');
 		
-		$this->EE->load->library('table');
+		ee()->load->library('table');
 		
-		$this->EE->table->set_base_url('C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist'.AMP.'method=view'.AMP.'list_id='.$list_id);
-		$this->EE->table->set_columns(array(
+		ee()->table->set_base_url('C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist'.AMP.'method=view'.AMP.'list_id='.$list_id);
+		ee()->table->set_columns(array(
 			'email'			=> array(),
 			'ip_address'	=> array('html' => FALSE, 'header' => lang('ip_address')),
 			'list_id'		=> array('html' => FALSE, 'header' => lang('ml_mailinglist'), 'sort' => FALSE), // @todo sort by name, not id
@@ -465,18 +465,18 @@ EOF;
 			'perpage'	=> $this->perpage
 		);
 		
-		$data = $this->EE->table->datasource('_mailinglist_filter', $initial_state, $params);
+		$data = ee()->table->datasource('_mailinglist_filter', $initial_state, $params);
 
 
 
-		$data['cp_page_title'] = $this->EE->lang->line('ml_view_mailinglist');
+		$data['cp_page_title'] = ee()->lang->line('ml_view_mailinglist');
 
-		$this->EE->cp->set_breadcrumb(
+		ee()->cp->set_breadcrumb(
 			BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist',
-			$this->EE->lang->line('ml_mailinglist'
+			ee()->lang->line('ml_mailinglist'
 		));
 
-		$this->EE->cp->add_js_script(array(
+		ee()->cp->add_js_script(array(
 			'fp_module' => 'mailinglist'
 		));
 
@@ -488,11 +488,11 @@ EOF;
 			$data['form_hidden']['list_id'] = $list_id;
 		}
 
-		$data['mailinglists'] = array('' => $this->EE->lang->line('all')) + $data['mailinglists'];
+		$data['mailinglists'] = array('' => ee()->lang->line('all')) + $data['mailinglists'];
 
-		$this->EE->javascript->compile();
+		ee()->javascript->compile();
 
-		return $this->EE->load->view('view', $data, TRUE);
+		return ee()->load->view('view', $data, TRUE);
 	}
 
 	// ------------------------------------------------------------------------
@@ -502,13 +502,13 @@ EOF;
 	 */
 	function _mailinglist_filter($state, $params)
 	{
-		$this->EE->load->model('mailinglist_model');
+		ee()->load->model('mailinglist_model');
 		
-		$email		= $this->EE->input->get_post('email');
-		$list_id	= $this->EE->input->get_post('list_id');
+		$email		= ee()->input->get_post('email');
+		$list_id	= ee()->input->get_post('list_id');
 		
-		$this->EE->db->select('list_id, list_title');
-		$res = $this->EE->db->get('mailing_lists');
+		ee()->db->select('list_id, list_title');
+		$res = ee()->db->get('mailing_lists');
 
 		$lists = array();
 
@@ -519,15 +519,15 @@ EOF;
 
 		if ($list_id != '')
 		{
-			$this->EE->db->where('list_id', $list_id);
-			$total = $this->EE->db->count_all_results('mailing_list');
+			ee()->db->where('list_id', $list_id);
+			$total = ee()->db->count_all_results('mailing_list');
 		}
 		else
 		{
-			$total = $this->EE->db->count_all('mailing_list');
+			$total = ee()->db->count_all('mailing_list');
 		}
 		
-		$mailing_q = $this->EE->mailinglist_model->mailinglist_search(
+		$mailing_q = ee()->mailinglist_model->mailinglist_search(
 			$list_id, $email, $state['sort'], $state['offset'], $params['perpage']
 		);
 		
@@ -566,27 +566,27 @@ EOF;
 	  */
 	function delete_confirm()
 	{
-		if ( ! $this->EE->input->post('toggle'))
+		if ( ! ee()->input->post('toggle'))
 		{
-			$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist'.AMP.'method=view');
+			ee()->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist'.AMP.'method=view');
 		}
 
-		$this->EE->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist', $this->EE->lang->line('ml_mailinglist'));
+		ee()->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist', ee()->lang->line('ml_mailinglist'));
 
-		$vars['cp_page_title'] = $this->EE->lang->line('ml_delete_confirm');
+		$vars['cp_page_title'] = ee()->lang->line('ml_delete_confirm');
 		$vars['question_key'] = 'ml_delete_question';
 		$vars['form_action'] = 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist'.AMP.'method=delete_email_addresses';
 
-		$this->EE->load->helper('form');
+		ee()->load->helper('form');
 
 		foreach ($_POST['toggle'] as $key => $val)
 		{
 			$vars['damned'][] = $val;
 		}
 
-		$this->EE->javascript->compile();
+		ee()->javascript->compile();
 
-		return $this->EE->load->view('delete_confirm', $vars, TRUE);
+		return ee()->load->view('delete_confirm', $vars, TRUE);
 	}
 
 	// --------------------------------------------------------------------
@@ -596,16 +596,16 @@ EOF;
 	  */
 	function delete_email_addresses()
 	{
-		if ($this->EE->input->post('delete') == '')
+		if (ee()->input->post('delete') == '')
 		{
-			$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist'.AMP.'method=view');
+			ee()->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist'.AMP.'method=view');
 		}
 
-		$this->EE->load->model('mailinglist_model');
-		$message = $this->EE->mailinglist_model->delete_email($_POST['delete']);
+		ee()->load->model('mailinglist_model');
+		$message = ee()->mailinglist_model->delete_email($_POST['delete']);
 
-		$this->EE->session->set_flashdata('message_success', $message);
-		$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist');
+		ee()->session->set_flashdata('message_success', $message);
+		ee()->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist');
 	}
 }
 // END CLASS

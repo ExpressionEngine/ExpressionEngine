@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -31,7 +31,7 @@ class Comment_upd {
 	{
 		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();
-		$this->EE->load->dbforge();
+		ee()->load->dbforge();
 	}
 
 	function tabs()
@@ -65,35 +65,35 @@ class Comment_upd {
 			'has_cp_backend' => 'y'
 		);
 
-		$this->EE->db->insert('modules', $data);
+		ee()->db->insert('modules', $data);
 
 		$data = array(
 			'class'		=> 'Comment' ,
 			'method'	=> 'insert_new_comment'
 		);
 
-		$this->EE->db->insert('actions', $data);
+		ee()->db->insert('actions', $data);
 
 		$data = array(
 			'class'		=> 'Comment_mcp' ,
 			'method'	=> 'delete_comment_notification'
 		);
 
-		$this->EE->db->insert('actions', $data);
+		ee()->db->insert('actions', $data);
 		
 		$data = array(
 			'class'		=> 'Comment' ,
 			'method'	=> 'comment_subscribe'
 		);
 
-		$this->EE->db->insert('actions', $data);
+		ee()->db->insert('actions', $data);
 		
 		$data = array(
 			'class'		=> 'Comment' ,
 			'method'	=> 'edit_comment'
 		);
 
-		$this->EE->db->insert('actions', $data);		
+		ee()->db->insert('actions', $data);		
 		
 
 		$fields = array(
@@ -129,10 +129,10 @@ class Comment_upd {
 						'comment'			 => array('type'	=> 'text')
 		);
 
-		$this->EE->dbforge->add_field($fields);
-		$this->EE->dbforge->add_key('comment_id', TRUE);
-		$this->EE->dbforge->add_key(array('entry_id', 'channel_id', 'author_id', 'status', 'site_id'));
-		$this->EE->dbforge->create_table('comments');
+		ee()->dbforge->add_field($fields);
+		ee()->dbforge->add_key('comment_id', TRUE);
+		ee()->dbforge->add_key(array('entry_id', 'channel_id', 'author_id', 'status', 'site_id'));
+		ee()->dbforge->create_table('comments');
 		
 		
 		$fields = array(
@@ -145,14 +145,14 @@ class Comment_upd {
 			'hash'				=> array('type' => 'varchar', 'constraint' => '15')
 		);
 		
-		$this->EE->dbforge->add_field($fields);
-		$this->EE->dbforge->add_key('subscription_id', TRUE);
-		$this->EE->dbforge->add_key(array('entry_id', 'member_id'));
-		$this->EE->dbforge->create_table('comment_subscriptions');
+		ee()->dbforge->add_field($fields);
+		ee()->dbforge->add_key('subscription_id', TRUE);
+		ee()->dbforge->add_key(array('entry_id', 'member_id'));
+		ee()->dbforge->create_table('comment_subscriptions');
 		
 
-		$this->EE->load->library('layout');
-		$this->EE->layout->add_layout_fields($this->tabs());
+		ee()->load->library('layout');
+		ee()->layout->add_layout_fields($this->tabs());
 		
 		return TRUE;
 	}
@@ -167,33 +167,33 @@ class Comment_upd {
 	 */
 	function uninstall()
 	{
-		$this->EE->db->select('module_id');
-		$query = $this->EE->db->get_where('modules', array('module_name' => 'Comment'));
+		ee()->db->select('module_id');
+		$query = ee()->db->get_where('modules', array('module_name' => 'Comment'));
 
-		$this->EE->db->where('module_id', $query->row('module_id'));
-		$this->EE->db->delete('module_member_groups');
+		ee()->db->where('module_id', $query->row('module_id'));
+		ee()->db->delete('module_member_groups');
 
-		$this->EE->db->where('module_name', 'Comment');
-		$this->EE->db->delete('modules');
+		ee()->db->where('module_name', 'Comment');
+		ee()->db->delete('modules');
 
-		$this->EE->db->where('class', 'Comment');
-		$this->EE->db->delete('actions');
+		ee()->db->where('class', 'Comment');
+		ee()->db->delete('actions');
 
-		$this->EE->db->where('class', 'Comment_mcp');
-		$this->EE->db->delete('actions');
+		ee()->db->where('class', 'Comment_mcp');
+		ee()->db->delete('actions');
 
-		$this->EE->dbforge->drop_table('comments');
-		$this->EE->dbforge->drop_table('comment_subscriptions');
+		ee()->dbforge->drop_table('comments');
+		ee()->dbforge->drop_table('comment_subscriptions');
 
-		$this->EE->db->update('channel_titles', array('comment_total' => 0, 'recent_comment_date' => 0));
+		ee()->db->update('channel_titles', array('comment_total' => 0, 'recent_comment_date' => 0));
 
 		//  Remove a couple items from the file
 		
-		$this->EE->config->_update_config(array(), array('comment_word_censoring' => '', 'comment_moderation_override' => '', 'comment_edit_time_limit' => ''));
+		ee()->config->_update_config(array(), array('comment_word_censoring' => '', 'comment_moderation_override' => '', 'comment_edit_time_limit' => ''));
 
 		
-		$this->EE->load->library('layout');
-		$this->EE->layout->delete_layout_fields('comment_expiration_date');
+		ee()->load->library('layout');
+		ee()->layout->delete_layout_fields('comment_expiration_date');
 
 		return TRUE;
 	}
@@ -211,33 +211,33 @@ class Comment_upd {
 	{
 		if (version_compare($current, '2.0', '<'))
 		{
-			$this->EE->db->query("ALTER TABLE `exp_comments` CHANGE `weblog_id` `channel_id` INT(4) UNSIGNED NOT NULL DEFAULT 1");
+			ee()->db->query("ALTER TABLE `exp_comments` CHANGE `weblog_id` `channel_id` INT(4) UNSIGNED NOT NULL DEFAULT 1");
 		}
 		
 		if (version_compare($current, '2.1', '<'))
 		{
-			$this->EE->db->query("UPDATE `exp_modules` SET `has_cp_backend` = 'y' WHERE module_name = 'comment'");
+			ee()->db->query("UPDATE `exp_modules` SET `has_cp_backend` = 'y' WHERE module_name = 'comment'");
 
 			$data = array(
 				'class'		=> 'Comment' ,
 				'method'	=> 'comment_subscribe'
 				);
 
-			$this->EE->db->insert('actions', $data);
+			ee()->db->insert('actions', $data);
 		
 			$data = array(
 				'class'		=> 'Comment' ,
 				'method'	=> 'edit_comment'
 				);
 
-			$this->EE->db->insert('actions', $data);
+			ee()->db->insert('actions', $data);
 			
 			// Note that the subscription table and notify migration occur in the ud_211.php file
 		}	
 		
 		if (version_compare($current, '2.2', '<'))
 		{
-			$query = $this->EE->db->query("SHOW INDEX FROM `exp_comments`");
+			$query = ee()->db->query("SHOW INDEX FROM `exp_comments`");
 			$indexes = array();
 		
 			foreach ($query->result_array() as $row)
@@ -248,21 +248,21 @@ class Comment_upd {
 			
 			if (in_array('weblog_id', $indexes))
 			{
-				$this->EE->db->query("ALTER TABLE `exp_comments` DROP KEY `weblog_id`");
+				ee()->db->query("ALTER TABLE `exp_comments` DROP KEY `weblog_id`");
 			}
 			
 			if ( ! in_array('channel_id', $indexes))
 			{
-				$this->EE->db->query("ALTER TABLE `exp_comments` ADD KEY (`channel_id`)");				
+				ee()->db->query("ALTER TABLE `exp_comments` ADD KEY (`channel_id`)");				
 			}
 		}	
 
 		if (version_compare($current, '2.3', '<'))
 		{
 			// Update ip_address column
-			$this->EE->load->dbforge();
+			ee()->load->dbforge();
 
-			$this->EE->dbforge->modify_column(
+			ee()->dbforge->modify_column(
 				'comments',
 				array(
 					'ip_address' => array(

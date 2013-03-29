@@ -6,7 +6,7 @@
  *
  * @package		CodeIgniter
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2008 - 2013, EllisLab, Inc.
  * @license		http://codeigniter.com/user_guide/license.html
  * @link		http://codeigniter.com
  * @since		Version 2.0
@@ -85,7 +85,7 @@ class CI_Utf8 {
 	{
 		if ($this->_is_ascii($str) === FALSE)
 		{
-			$str = @iconv('UTF-8', 'UTF-8', $str);
+			$str = @iconv('UTF-8', 'UTF-8//IGNORE', $str);
 		}
 
 		return $str;

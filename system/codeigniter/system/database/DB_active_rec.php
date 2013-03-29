@@ -6,7 +6,7 @@
  *
  * @package		CodeIgniter
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2008 - 2013, EllisLab, Inc.
  * @license		http://codeigniter.com/user_guide/license.html
  * @link		http://codeigniter.com
  * @since		Version 1.0
@@ -1434,10 +1434,6 @@ class CI_DB_active_record extends CI_DB_driver {
 				if ($k2 == $index)
 				{
 					$index_set = TRUE;
-				}
-				else
-				{
-					$not[] = $k.'-'.$v;
 				}
 
 				if ($escape === FALSE)

@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -34,8 +34,8 @@ class Publish
 	
 	public function build_categories_block($cat_group_ids, $entry_id, $selected_categories, $default_category = '', $file = FALSE)
 	{
-		$this->EE->load->library('api');
-		$this->EE->api->instantiate('channel_categories');
+		ee()->load->library('api');
+		ee()->api->instantiate('channel_categories');
 		
 		$default	= array(
 			'string_override'		=> lang('no_categories'),
@@ -70,7 +70,7 @@ class Publish
 			}
 		}
 		
-		$this->EE->api->instantiate('channel_categories');
+		ee()->api->instantiate('channel_categories');
 		
 		$catlist	= array();
 		$categories	= array();
@@ -97,20 +97,20 @@ class Publish
 		{
 			if ($file)
 			{
-				$this->EE->db->from(array('categories c', 'file_categories p'));
-				$this->EE->db->where('p.file_id', $entry_id);
+				ee()->db->from(array('categories c', 'file_categories p'));
+				ee()->db->where('p.file_id', $entry_id);
 			}
 			else
 			{
-				$this->EE->db->from(array('categories c', 'category_posts p'));
-				$this->EE->db->where('p.entry_id', $entry_id);
+				ee()->db->from(array('categories c', 'category_posts p'));
+				ee()->db->where('p.entry_id', $entry_id);
 			}
 			
-			$this->EE->db->select('c.cat_name, p.*');
-			$this->EE->db->where_in('c.group_id', $cat_group_ids);
-			$this->EE->db->where('c.cat_id = p.cat_id');
+			ee()->db->select('c.cat_name, p.*');
+			ee()->db->where_in('c.group_id', $cat_group_ids);
+			ee()->db->where('c.cat_id = p.cat_id');
 			
-			$qry = $this->EE->db->get();
+			$qry = ee()->db->get();
 
 			foreach ($qry->result() as $row)
 			{
@@ -126,12 +126,12 @@ class Publish
 		}
 		
 		// Figure out valid category options
-		$this->EE->api_channel_categories->category_tree($cat_group_ids, $catlist);
+		ee()->api_channel_categories->category_tree($cat_group_ids, $catlist);
 
-		if (count($this->EE->api_channel_categories->categories) > 0)
+		if (count(ee()->api_channel_categories->categories) > 0)
 		{  
 			// add categories in again, over-ride setting above
-			foreach ($this->EE->api_channel_categories->categories as $val)
+			foreach (ee()->api_channel_categories->categories as $val)
 			{
 				$categories[$val['3']][] = $val;
 			}
@@ -142,9 +142,9 @@ class Publish
 		// show the links to make that work
 		$edit_links = FALSE;
 		
-		if ($this->EE->session->userdata('can_edit_categories') == 'y')
+		if (ee()->session->userdata('can_edit_categories') == 'y')
 		{
-			$link_info = $this->EE->api_channel_categories->fetch_allowed_category_groups($cat_group_ids);
+			$link_info = ee()->api_channel_categories->fetch_allowed_category_groups($cat_group_ids);
 
 			if (is_array($link_info) && count($link_info))
 			{
@@ -161,8 +161,8 @@ class Publish
 		}
 		
 		// Load in necessary lang keys
-		$this->EE->lang->loadfile('admin_content');
-		$this->EE->javascript->set_global(array(
+		ee()->lang->loadfile('admin_content');
+		ee()->javascript->set_global(array(
 			'publish.lang' => array(
 				'update'		=> lang('update'),
 				'edit_category'	=> lang('edit_category')
@@ -175,7 +175,7 @@ class Publish
 		$data = compact('categories', 'edit_links');
 
 		$default['options']			= $categories;
-		$default['string_override'] = $this->EE->load->view('content/_assets/categories', $data, TRUE);
+		$default['string_override'] = ee()->load->view('content/_assets/categories', $data, TRUE);
 		
 		return array('category' => $default);
 	}

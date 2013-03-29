@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -60,7 +60,7 @@ class EE_Addons {
 				
 		if ( ! is_array($this->_map))
 		{
-			$this->EE->load->helper('directory');
+			ee()->load->helper('directory');
 			
 			// Initialize the _map array so if no addons of a certain type
 			// are found, we can still return _map[$type] without errors
@@ -112,7 +112,7 @@ class EE_Addons {
 		
 		if ( ! in_array($type, $_fp_read))
 		{
-			$this->EE->load->helper('file');
+			ee()->load->helper('file');
 
 			$ext_len = strlen('.php');
 			
@@ -271,11 +271,11 @@ class EE_Addons {
 		
 		$_installed[$type] = array();
 		
-		$this->EE->load->model('addons_model');
+		ee()->load->model('addons_model');
 		
 		if ($type == 'modules')
 		{
-			$query = $this->EE->addons_model->get_installed_modules();
+			$query = ee()->addons_model->get_installed_modules();
 			
 			if ($query->num_rows() > 0)
 			{
@@ -292,7 +292,7 @@ class EE_Addons {
 		}
 		elseif ($type == 'accessories')
 		{
-			$query = $this->EE->db->get('accessories');
+			$query = ee()->db->get('accessories');
 
 			if ($query->num_rows() > 0)
 			{
@@ -311,7 +311,7 @@ class EE_Addons {
 		}
 		elseif ($type == 'extensions')
 		{
-			$query = $this->EE->addons_model->get_installed_extensions();
+			$query = ee()->addons_model->get_installed_extensions();
 			
 			if ($query->num_rows() > 0)
 			{
@@ -330,7 +330,7 @@ class EE_Addons {
 		}
 		elseif ($type == 'fieldtypes')
 		{
-			$query = $this->EE->db->get('fieldtypes');
+			$query = ee()->db->get('fieldtypes');
 			
 			if ($query->num_rows() > 0)
 			{
@@ -349,7 +349,7 @@ class EE_Addons {
 		}
 		elseif ($type == 'rte_tools')
 		{
-			$query = $this->EE->db->get_where('rte_tools');
+			$query = ee()->db->get_where('rte_tools');
 			
 			if ($query->num_rows() > 0)
 			{

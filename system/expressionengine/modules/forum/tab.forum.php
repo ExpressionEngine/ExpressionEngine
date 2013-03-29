@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -47,7 +47,7 @@ class Forum_tab {
 		$settings = array();
 
 		// Get forum boards
-		$forumsq = $this->EE->db->select('f.forum_id, f.forum_name, b.board_label')
+		$forumsq = ee()->db->select('f.forum_id, f.forum_name, b.board_label')
 			->from('forums f, forum_boards b')
 			->where('f.forum_is_cat', 'n')
 			->where('b.board_id = f.board_id', NULL, FALSE)
@@ -74,7 +74,7 @@ class Forum_tab {
 			$forum_id['choices'][$row->forum_id] = $row->board_label . ': ' . $row->forum_name;
 		}
 		
-		$query = $this->EE->db->select('forum_topic_id')
+		$query = ee()->db->select('forum_topic_id')
 			->get_where('channel_titles', array('entry_id' => (int) $entry_id));
 		
 		if ($query->num_rows() > 0)
@@ -82,7 +82,7 @@ class Forum_tab {
 			$forum_topic_id = $query->row('forum_topic_id');
 			
 			
-			$frm_q = $this->EE->db->select('forum_id, title, body')
+			$frm_q = ee()->db->select('forum_id, title, body')
 				  ->where('topic_id', (int) $forum_topic_id)
 				  ->get('forum_topics');
 			
@@ -168,7 +168,7 @@ class Forum_tab {
 
 		foreach ($settings as $k => $v)
 		{
-			$this->EE->api_channel_fields->set_settings($k, $v);
+			ee()->api_channel_fields->set_settings($k, $v);
 		}
 		
 		return $settings;
@@ -184,7 +184,7 @@ class Forum_tab {
 	 */
 	public function validate_publish($params)
 	{
-        $this->EE->lang->loadfile('forum_cp');
+        ee()->lang->loadfile('forum_cp');
 
 		$errors = FALSE;
 		$edit = FALSE;
@@ -217,7 +217,7 @@ class Forum_tab {
 		}
 		elseif( ! empty($params['forum_topic_id']))
 		{
-			$frm_q = $this->EE->db->select('forum_id')
+			$frm_q = ee()->db->select('forum_id')
 				->where('topic_id', (int) $params['forum_topic_id'])
 				->get('forum_topics');
 			
@@ -248,7 +248,7 @@ class Forum_tab {
 	 */
 	public function publish_data_db($params)
 	{
-		$c_prefs = $this->EE->api_channel_entries->c_prefs;
+		$c_prefs = ee()->api_channel_entries->c_prefs;
 		
 		//mod_data[]
 		
@@ -256,7 +256,7 @@ class Forum_tab {
 					  $params['mod_data']['forum_id'])
 			&& $params['mod_data']['forum_title'] !== '' && $params['mod_data']['forum_body'] !== ''))
 		{
-			$query = $this->EE->db->select('board_id')
+			$query = ee()->db->select('board_id')
 				->get_where(
 					'forums',
 					array('forum_id' => (int) $params['mod_data']['forum_id'])
@@ -274,15 +274,15 @@ class Forum_tab {
 				$body 	= $this->_convert_forum_tags(reduce_double_slashes($body));
 				
 				$data = array(
-					'title'					=> $this->EE->security->xss_clean($title),
-					'body'					=> $this->EE->security->xss_clean($body),
+					'title'					=> ee()->security->xss_clean($title),
+					'body'					=> ee()->security->xss_clean($body),
 				);
 				
 				// This allows them to overwrite existing forum data- 1.x did not allow this
 				if ( ! empty($params['mod_data']['forum_topic_id']))
 				{
 					$topic_id = $params['mod_data']['forum_topic_id'];
-					$this->EE->db->where('topic_id', (int) $topic_id)
+					ee()->db->where('topic_id', (int) $topic_id)
 						 ->update('forum_topics', $data);
 				}
 				else
@@ -291,10 +291,10 @@ class Forum_tab {
 					$new_forum_topic_data = array(
 						'forum_id'				=> $params['mod_data']['forum_id'],
 						'board_id'				=> $query->row('board_id'),
-						'topic_date'			=> $this->EE->localize->now,
+						'topic_date'			=> ee()->localize->now,
 						'author_id'         	=> $params['meta']['author_id'],
-						'ip_address'			=> $this->EE->input->ip_address(),
-						'last_post_date'		=> $this->EE->localize->now,
+						'ip_address'			=> ee()->input->ip_address(),
+						'last_post_date'		=> ee()->localize->now,
 						'last_post_author_id'	=> $params['meta']['author_id'],
 						'sticky'				=> 'n',
 						'status'				=> 'o',
@@ -306,25 +306,25 @@ class Forum_tab {
 					
 					$data = array_merge($data, $new_forum_topic_data);
 					
-					$this->EE->db->insert('forum_topics', $data);
-					$topic_id = $this->EE->db->insert_id();
+					ee()->db->insert('forum_topics', $data);
+					$topic_id = ee()->db->insert_id();
 
-					$this->EE->db->insert('forum_subscriptions', array(
+					ee()->db->insert('forum_subscriptions', array(
 						'topic_id'			=> $topic_id,
 						'member_id'			=> $params['meta']['author_id'],
-						'subscription_date'	=> $this->EE->localize->now,
-						'hash'				=> $params['meta']['author_id'].$this->EE->functions->random('alpha', 8)
+						'subscription_date'	=> ee()->localize->now,
+						'hash'				=> $params['meta']['author_id'].ee()->functions->random('alpha', 8)
 					));
 
 					// Update member post total
-					$this->EE->db->where('member_id', $params['meta']['author_id'])
+					ee()->db->where('member_id', $params['meta']['author_id'])
 						->update(
 							'members', 
-							array('last_forum_post_date' => $this->EE->localize->now)
+							array('last_forum_post_date' => ee()->localize->now)
 						);
 				}
 				
-				$this->EE->db->where('entry_id', (int) $params['entry_id'])
+				ee()->db->where('entry_id', (int) $params['entry_id'])
 					 ->update('channel_titles', array('forum_topic_id' => (int) $topic_id));
 
 				// Update the forum stats
@@ -341,7 +341,7 @@ class Forum_tab {
 		{
 			$topic_id = $params['mod_data']['forum_topic_id'];
 			
-			$this->EE->db->where('entry_id', (int) $params['entry_id'])
+			ee()->db->where('entry_id', (int) $params['entry_id'])
 				->update('channel_titles', array('forum_topic_id' => (int) $topic_id));
 		}
 	}
@@ -350,15 +350,15 @@ class Forum_tab {
 	{
 		$allowed = array();
 		
-		$group_id = $this->EE->session->userdata('group_id');
-		$member_id = $this->EE->session->userdata('member_id');
+		$group_id = ee()->session->userdata('group_id');
+		$member_id = ee()->session->userdata('member_id');
 				
 		// Get Admins
 		$admins = array();
 		
 		if ($group_id != 1)
 		{
-			$adminq = $this->EE->db->get('forum_administrators');			
+			$adminq = ee()->db->get('forum_administrators');			
 
 			foreach ($adminq->result() as $row)
 			{
@@ -367,7 +367,7 @@ class Forum_tab {
 		}
 
 		// Get forums
-		$forums = $this->EE->db->select('f.forum_id, f.forum_permissions, f.board_id')
+		$forums = ee()->db->select('f.forum_id, f.forum_permissions, f.board_id')
 					   			->from('forums f')
 								->where('f.forum_is_cat', 'n')
 								->get();

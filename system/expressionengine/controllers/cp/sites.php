@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -24,8 +24,8 @@
  */
 class Sites extends CP_Controller {
 
-	var $version 			= '2.1.4';
-	var $build_number		= '20120911';
+	var $version 			= '2.1.5';
+	var $build_number		= '20130315';
 	var $allow_new_sites 	= FALSE;
 
 	/**

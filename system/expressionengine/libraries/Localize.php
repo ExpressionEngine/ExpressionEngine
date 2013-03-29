@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -38,6 +38,10 @@ class Localize {
 		'DATE_W3C'		=> '%Y-%m-%dT%H:%i:%s%Q'
 	);
 
+	// Cached timezone and country data, properties not to be accessed directly
+	private $_countries = array();
+	private $_timezones_by_country = array();
+
 	/**
 	 * Constructor
 	 */
@@ -50,7 +54,7 @@ class Localize {
 		$this->now = time();
 
 		// Apply server offset (in minutes) to $now
-		if (($offset = $this->EE->config->item('server_offset'))
+		if (($offset = ee()->config->item('server_offset'))
 			&& is_numeric($offset))
 		{
 			$this->now += $offset * 60;
@@ -143,9 +147,9 @@ class Localize {
 
 		// If TRUE, the translatable date variables will be run through the
 		// language library; this check has been brought over from legacy code
-		$translate = ! (isset($this->EE->TMPL)
-			&& is_object($this->EE->TMPL) 
-			&& $this->EE->TMPL->template_type == 'feed');
+		$translate = ! (isset(ee()->TMPL)
+			&& is_object(ee()->TMPL) 
+			&& ee()->TMPL->template_type == 'feed');
 		
 		// Remove percent sign for easy comparing and passing to DateTime::format
 		$date_var = str_replace('%', '', $var);
@@ -217,13 +221,13 @@ class Localize {
 		/*	Hidden Configuration Variables
 		/*	- include_seconds => Determines whether to include seconds in our human time.
 		/* -------------------------------------------*/
-		if (func_num_args() != 3 && $this->EE->config->item('include_seconds') == 'y')
+		if (func_num_args() != 3 && ee()->config->item('include_seconds') == 'y')
 		{
 			$seconds = TRUE;
 		}
 
-		$fmt = ($this->EE->session->userdata('time_format') != '')
-			? $this->EE->session->userdata('time_format') : $this->EE->config->item('time_format');
+		$fmt = (ee()->session->userdata('time_format') != '')
+			? ee()->session->userdata('time_format') : ee()->config->item('time_format');
 
 		// 2015-10-21
 		$format_string = '%Y-%m-%d ';
@@ -263,7 +267,7 @@ class Localize {
 		// Localize to member's timezone or leave as GMT
 		if (is_bool($timezone))
 		{
-			$timezone = ($timezone) ? $this->EE->session->userdata('timezone') : 'GMT';
+			$timezone = ($timezone) ? ee()->session->userdata('timezone') : 'UTC';
 		}
 
 		// If timezone isn't known by PHP, it may be our legacy timezone
@@ -303,7 +307,7 @@ class Localize {
 
 		// Apply server offset only
 		if (empty($date_string)
-			&& ($offset = $this->EE->config->item('server_offset'))
+			&& ($offset = ee()->config->item('server_offset'))
 			&& is_numeric($offset))
 		{
 			$offset = ($offset > 0) ? '+'.$offset : $offset;
@@ -322,56 +326,233 @@ class Localize {
 	 * @param	string	Name of dropdown form field element
 	 * @return	string	HTML for dropdown list
 	 */
-	public function timezone_menu($default = 'UTC', $name = 'server_timezone')
+	public function timezone_menu($default = NULL, $name = 'server_timezone')
 	{
 		// For the installer
-		$this->EE->load->helper('language');
-
-		$timezone_ids = DateTimeZone::listIdentifiers();
-		
-		// If default selection isn't valid, it may be our legacy timezone format
-		if ( ! in_array($default, $timezone_ids))
-		{
-			$default = $this->_get_php_timezone($default);
-		}
-
-		// This is what we'll pass to the form helper
-		$timezones = array();
+		ee()->load->helper('language');
 
 		// We only want timezones with these prefixes
 		$continents = array('Africa', 'America', 'Antarctica', 'Arctic',
 			'Asia', 'Atlantic', 'Australia', 'Europe', 'Indian', 'Pacific');
 
-		foreach ($timezone_ids as $zone)
-		{
-			// Explode ID by slashes while replacing underscores with spaces
-			$zone_array = str_replace('_', ' ', explode('/', $zone));
+		$zones_by_country = $this->_get_timezones_by_country();
+		$countries = $this->_get_countries();
 
-			// Exclude deprecated PHP timezones
-			if ( ! in_array($zone_array[0], $continents))
+		$timezones = array();
+
+		foreach ($countries as $code => $country)
+		{
+			// If country code does not match any timezones, skip the loop
+			if ( ! isset($zones_by_country[$code]))
 			{
 				continue;
 			}
 
-			// Construct the localized zone name
-			if (isset($zone_array[1]))
+			// We'll store timezones for the current country here
+			$local_zones = array();
+			
+			foreach ($zones_by_country[$code] as $zone)
 			{
-				$zone_name = lang($zone_array[1]);
+				// Explode ID by slashes while replacing underscores with spaces
+				$zone_array = str_replace('_', ' ', explode('/', $zone));
 
-				if (isset($zone_array[2]))
+				// Exclude deprecated PHP timezones
+				if ( ! in_array($zone_array[0], $continents))
 				{
-					$zone_name .= ' - ' . lang($zone_array[2]);
+					continue;
 				}
 
-				$timezones[lang($zone_array[0])][$zone] = $zone_name;
+				// Construct the localized zone name
+				if (isset($zone_array[1]))
+				{
+					$zone_name = lang($zone_array[1]);
+
+					if (isset($zone_array[2]))
+					{
+						$zone_name .= ' - ' . lang($zone_array[2]);
+					}
+
+					$local_zones[$zone] = $zone_name;
+				}
+			}
+
+			// Sort timezones by their new names
+			asort($local_zones);
+
+			$timezones[$code] = $local_zones;
+		}
+		
+		// Convert to JSON for fast switching of timezone dropdown
+		$timezone_json = json_encode($timezones);
+
+		$no_timezones_lang = lang('no_timezones');
+
+		// Start the output with some javascript to handle the timezone
+		// dropdown population based on the country dropdown
+		$output = <<<EOF
+
+			<script type="text/javascript">
+
+				var timezones = $timezone_json
+
+				function ee_tz_change(countryselect)
+				{
+					var timezoneselect = document.getElementById('timezone_select');
+					var countrycode = countryselect.options[countryselect.selectedIndex].value;
+
+					timezoneselect.options.length = 0;
+
+					if (timezones[countrycode] == '' || timezones[countrycode] == undefined)
+					{
+						timezoneselect.add(new Option('$no_timezones_lang', ''));
+
+						return;
+					}
+
+					for (var key in timezones[countrycode])
+					{
+						if (timezones[countrycode].hasOwnProperty(key))
+						{
+							timezoneselect.add(new Option(timezones[countrycode][key], key));
+						}
+					}
+				}
+
+			</script>
+EOF;
+		
+		// Prepend to the top of countries dropdown with common country selections
+		$countries = array_merge(
+			array(
+				lang('select_timezone'),
+				'-------------',
+				'us' => $countries['us'], // United States
+				'gb' => $countries['gb'], // United Kingdom
+				'au' => $countries['au'], // Australia
+				'ca' => $countries['ca'], // Canada
+				'fr' => $countries['fr'], // France
+				'ie' => $countries['ie'], // Ireland
+				'nz' => $countries['nz'], // New Zealand
+				'-------------'
+			),
+			$countries
+		);
+
+		// Get ready to load preselected values into the dropdowns if one exists
+		$selected_country = NULL;
+		$timezone_prepoplated = array('' => lang('no_timezones'));
+
+		if ( ! empty($default))
+		{
+			$timezone_ids = DateTimeZone::listIdentifiers();
+				
+			// If default selection isn't valid, it may be our legacy timezone format
+			if ( ! in_array($default, $timezone_ids))
+			{
+				$default = $this->_get_php_timezone($default);
+			}
+			
+			$selected_country = $this->_get_country_for_php_timezone($default);
+
+			// Preselect timezone if we got a valid country back
+			if ($selected_country)
+			{
+				$timezone_prepoplated = $timezones[$selected_country];
 			}
 		}
 
-		// Add UTC on the bottom
-		$timezones['UTC']['UTC'] = 'UTC';
+		// Construct the form
+		ee()->load->helper('form');
+		$output .= form_dropdown('tz_country', $countries, $selected_country, 'onchange="ee_tz_change(this)"');
+		$output .= '&nbsp;&nbsp;'; // NBS constant doesn't work in installer
+		$output .= form_dropdown($name, $timezone_prepoplated, $default, 'id="timezone_select"');
 
-		$this->EE->load->helper('form');
-		return form_dropdown($name, $timezones, $default, 'class="select"');
+		return $output;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Loads countries config file and creates localized array of country
+	 * codes corresponding to country names
+	 *
+	 * @access	private
+	 * @return	string
+	 */
+	private function _get_countries()
+	{
+		if ( ! empty($this->_countries))
+		{
+			return $this->_countries;
+		}
+
+		$countries_path = APPPATH.'config/countries.php';
+
+		if ( ! file_exists($countries_path))
+		{
+			$countries_path = EE_APPPATH.'config/countries.php';
+		}
+
+		if ( ! include($countries_path))
+		{
+			show_error(lang('countryfile_missing'));
+		}
+
+		foreach ($countries as $code => $country)
+		{
+			$countries[$code] = lang($country);
+		}
+
+		$this->_countries = $countries;
+
+		return $this->_countries;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Creates and returns a cached array of timezones by country.
+	 *
+	 * @access	private
+	 * @return	array 	Array of timezones by country code
+	 */
+	private function _get_timezones_by_country()
+	{
+		if ( ! empty($this->_timezones_by_country))
+		{
+			return $this->_timezones_by_country;
+		}
+
+		foreach ($this->_get_countries() as $code => $country)
+		{
+			$this->_timezones_by_country[$code] = DateTimeZone::listIdentifiers(
+				DateTimeZone::PER_COUNTRY, strtoupper($code)
+			);
+		}
+
+		return $this->_timezones_by_country;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Returns the country code for a given PHP timezone
+	 *
+	 * @access	private
+	 * @param	string	PHP timezone
+	 * @return	string	Two-letter country code for timezone
+	 */
+	private function _get_country_for_php_timezone($timezone)
+	{
+		foreach ($this->_get_timezones_by_country() as $code => $timezones)
+		{
+			if (in_array($timezone, $timezones))
+			{
+				return $code;
+			}
+		}
+
+		return FALSE;
 	}
 
 	// --------------------------------------------------------------------
@@ -396,7 +577,7 @@ class Localize {
 			'UM9'		=> 'America/Anchorage', 			// -9
 			'UM8'		=> 'America/Los_Angeles', 			// -8
 			'UM7'		=> 'America/Denver', 				// -7
-			'UM6'		=> 'America/Tegucigalpa', 			// -6
+			'UM6'		=> 'America/Chicago', 				// -6
 			'UM5'		=> 'America/New_York', 				// -5
 			'UM45'		=> 'America/Caracas',				// -4.5
 			'UM4'		=> 'America/Halifax', 				// -4
@@ -489,10 +670,10 @@ class Localize {
 	 */
 	public function timestamp_to_gmt($str = '')
 	{
-		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated('2.6', 'Date helper\'s mysql_to_unix()');
+		ee()->load->library('logger');
+		ee()->logger->deprecated('2.6', 'Date helper\'s mysql_to_unix()');
 
-		$this->EE->load->helper('date');
+		ee()->load->helper('date');
 		return mysql_to_unix($str);
 	}
 
@@ -511,10 +692,10 @@ class Localize {
 	 */
 	function set_localized_time($now = '', $timezone = '', $dst = '')
 	{
-		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated('2.6');
+		ee()->load->library('logger');
+		ee()->logger->deprecated('2.6');
 
-		$this->EE->load->helper('date');
+		ee()->load->helper('date');
 		$zones = timezones();
 
 		if ($now == '')
@@ -526,7 +707,7 @@ class Localize {
 		// Right now we only use this to show the local time of other users
 		if ($timezone == '')
 		{
-			$timezone = $this->EE->session->userdata['timezone'];
+			$timezone = ee()->session->userdata['timezone'];
 		}
 
 		// If the current user has not set localization preferences
@@ -540,7 +721,7 @@ class Localize {
 
 		if ($dst == '')
 		{
-			$dst = $this->EE->session->userdata('daylight_savings');
+			$dst = ee()->session->userdata('daylight_savings');
 		}
 
 		if ($dst == 'y')
@@ -564,10 +745,10 @@ class Localize {
 	 */
 	function set_server_time($now = '')
 	{
-		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated('2.6');
+		ee()->load->library('logger');
+		ee()->logger->deprecated('2.6');
 
-		$this->EE->load->helper('date');
+		ee()->load->helper('date');
 		$zones = timezones();
 
 		if ($now == '')
@@ -575,12 +756,12 @@ class Localize {
 			$now = $this->now;
 		}
 
-		if ($tz = $this->EE->config->item('server_timezone'))
+		if ($tz = ee()->config->item('server_timezone'))
 		{
 			$now += $zones[$tz] * 3600;
 		}
 
-		if ($this->EE->config->item('daylight_savings') == 'y')
+		if (ee()->config->item('daylight_savings') == 'y')
 		{
 			$now += 3600;
 		}
@@ -607,10 +788,10 @@ class Localize {
 	 */
 	function set_server_offset($time, $reverse = 0)
 	{
-		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated('2.6');
+		ee()->load->library('logger');
+		ee()->logger->deprecated('2.6');
 
-		$offset = ( ! $this->EE->config->item('server_offset')) ? 0 : $this->EE->config->item('server_offset') * 60;
+		$offset = ( ! ee()->config->item('server_offset')) ? 0 : ee()->config->item('server_offset') * 60;
 
 		if ($offset == 0)
 		{
@@ -645,31 +826,31 @@ class Localize {
 	 */
 	function set_localized_offset()
 	{
-		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated('2.6');
+		ee()->load->library('logger');
+		ee()->logger->deprecated('2.6');
 		
 		$offset = 0;
 
-		$this->EE->load->helper('date');
+		ee()->load->helper('date');
 		$zones = timezones();
 
-		if ($this->EE->session->userdata['timezone'] == '')
+		if (ee()->session->userdata['timezone'] == '')
 		{
-			if ($tz = $this->EE->config->item('server_timezone'))
+			if ($tz = ee()->config->item('server_timezone'))
 			{
 				$offset += $zones[$tz];
 			}
 
-			if ($this->EE->config->item('daylight_savings') == 'y')
+			if (ee()->config->item('daylight_savings') == 'y')
 			{
 				$offset += 1;
 			}
 		}
 		else
 		{
-			$offset += $zones[$this->EE->session->userdata['timezone']];
+			$offset += $zones[ee()->session->userdata['timezone']];
 
-			if ($this->EE->session->userdata['daylight_savings'] == 'y')
+			if (ee()->session->userdata['daylight_savings'] == 'y')
 			{
 				$offset += 1;
 			}
@@ -713,8 +894,8 @@ class Localize {
 	 */
 	function set_human_time($now = '', $localize = TRUE, $seconds = FALSE)
 	{
-		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated('2.6', 'Localize::human_time');
+		ee()->load->library('logger');
+		ee()->logger->deprecated('2.6', 'Localize::human_time');
 		
 		return $this->human_time($now, $localize, $seconds);
 	}
@@ -733,8 +914,8 @@ class Localize {
 	 */
 	function convert_human_date_to_gmt($datestr = '')
 	{
-		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated('2.6', 'Localize::string_to_timestamp');
+		ee()->load->library('logger');
+		ee()->logger->deprecated('2.6', 'Localize::string_to_timestamp');
 		
 		return $this->string_to_timestamp($datestr);
 	}
@@ -754,8 +935,8 @@ class Localize {
 	 */
 	function simpl_offset($time = '', $timezone = '')
 	{
-		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated('2.6');
+		ee()->load->library('logger');
+		ee()->logger->deprecated('2.6');
 
 		return $time;
 	}
@@ -773,10 +954,10 @@ class Localize {
 	 */
 	function format_timespan($seconds = '')
 	{
-		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated('2.6', 'Date helper\'s timespan()');
+		ee()->load->library('logger');
+		ee()->logger->deprecated('2.6', 'Date helper\'s timespan()');
 
-		$this->EE->load->helper('date');
+		ee()->load->helper('date');
 		return timespan($seconds);
 	}
 
@@ -791,8 +972,8 @@ class Localize {
 	 */
 	function fetch_date_params($datestr = '')
 	{
-		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated('2.6');
+		ee()->load->library('logger');
+		ee()->logger->deprecated('2.6');
 
 		if ($datestr == '')
 			return;
@@ -821,8 +1002,8 @@ class Localize {
 	 */
 	function decode_date($datestr = '', $unixtime = '', $localize = TRUE)
 	{
-		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated('2.6', 'Localize::format_date');
+		ee()->load->library('logger');
+		ee()->logger->deprecated('2.6', 'Localize::format_date');
 		
 		return $this->format_date($datestr, $unixtime, $localize);
 	}
@@ -842,8 +1023,8 @@ class Localize {
 	 */
 	function convert_timestamp($format = '', $time = '', $localize = TRUE, $prelocalized = FALSE)
 	{
-		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated('2.6', 'Localize::format_date');
+		ee()->load->library('logger');
+		ee()->logger->deprecated('2.6', 'Localize::format_date');
 		
 		$return_array = FALSE;
 
@@ -869,8 +1050,8 @@ class Localize {
 	 */
 	function zone_offset($tz = '')
 	{
-		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated('2.6');
+		ee()->load->library('logger');
+		ee()->logger->deprecated('2.6');
 
 		return $tz;
 	}
@@ -887,10 +1068,10 @@ class Localize {
 	 */
 	function zones()
 	{
-		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated('2.6', 'Date helper\'s timezones()');
+		ee()->load->library('logger');
+		ee()->logger->deprecated('2.6', 'Date helper\'s timezones()');
 
-		$this->EE->load->helper('date');
+		ee()->load->helper('date');
 		return timezones();
 	}
 
@@ -904,8 +1085,8 @@ class Localize {
 	 */
 	function set_localized_timezone()
 	{
-        $this->EE->load->library('logger');
-        $this->EE->logger->deprecated('2.6');
+        ee()->load->library('logger');
+        ee()->logger->deprecated('2.6');
 
 		return 'GMT';
 	}
@@ -925,10 +1106,10 @@ class Localize {
 	 */
 	function fetch_days_in_month($month, $year)
 	{
-		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated('2.6', 'Date helper\'s days_in_month()');
+		ee()->load->library('logger');
+		ee()->logger->deprecated('2.6', 'Date helper\'s days_in_month()');
 
-		$this->EE->load->helper('date');
+		ee()->load->helper('date');
 		return days_in_month($month, $year);
 	}
 
@@ -950,10 +1131,10 @@ class Localize {
 	 */
 	function adjust_date($month, $year, $pad = FALSE)
 	{
-		$this->EE->load->library(array('logger', 'calendar'));
-		$this->EE->logger->deprecated('2.6', 'Calendar::adjust_date');
+		ee()->load->library(array('logger', 'calendar'));
+		ee()->logger->deprecated('2.6', 'Calendar::adjust_date');
 		
-		return $this->EE->calendar->adjust_date($month, $year, $pad);
+		return ee()->calendar->adjust_date($month, $year, $pad);
 	}
 
 }

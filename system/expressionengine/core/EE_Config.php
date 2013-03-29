@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -450,6 +450,7 @@ class EE_Config Extends CI_Config {
 			'default_site_timezone',
 			'mail_protocol',
 			'smtp_server',
+			'smtp_port',
 			'smtp_username',
 			'smtp_password',
 			'email_debug',
@@ -603,7 +604,7 @@ class EE_Config Extends CI_Config {
 		{
 			$site_ids = array();
 
-			$site_ids_query = $this->EE->db->select('site_id')
+			$site_ids_query = ee()->db->select('site_id')
 				->get('sites');
 
 			foreach ($site_ids_query->result() as $site)
@@ -624,7 +625,7 @@ class EE_Config Extends CI_Config {
 		// Safety check for member profile trigger
 		if (isset($new_values['profile_trigger']) && $new_values['profile_trigger'] == '')
 		{
-			$this->EE->lang->loadfile('admin');
+			ee()->lang->loadfile('admin');
 			show_error(lang('empty_profile_trigger'));
 		}
 		
@@ -655,7 +656,7 @@ class EE_Config Extends CI_Config {
 			$new_values = $this->_rename_non_msm_site($site_id, $new_values, $find, $replace);
 
 			// Get site information
-			$query = $this->EE->db->get_where('sites', array('site_id' => $site_id));
+			$query = ee()->db->get_where('sites', array('site_id' => $site_id));
 
 			$this->_update_pages($site_id, $new_values, $query);
 			$new_values = $this->_update_preferences($site_id, $new_values, $query, $find, $replace);
@@ -688,9 +689,9 @@ class EE_Config Extends CI_Config {
 		// Category trigger matches template != biscuit	 (biscuits, Robin? Okay! --Derek)
 		if (isset($new_values['reserved_category_word']) AND $new_values['reserved_category_word'] != $this->item('reserved_category_word'))
 		{
-			$escaped_word = $this->EE->db->escape_str($new_values['reserved_category_word']);
+			$escaped_word = ee()->db->escape_str($new_values['reserved_category_word']);
 
-			$query = $this->EE->db->select('template_id, template_name, group_name')
+			$query = ee()->db->select('template_id, template_name, group_name')
 				->from('templates t')
 				->join('template_groups g', 't.group_id = g.group_id', 'left')
 				->where('t.site_id', $site_id)
@@ -758,7 +759,7 @@ class EE_Config Extends CI_Config {
 		// Rename the site_name ONLY IF MSM isn't installed
 		if ($this->item('multiple_sites_enabled') !== 'y' && isset($site_prefs['site_name']))
 		{
-			$this->EE->db->update(
+			ee()->db->update(
 				'sites',
 				array('site_label' => str_replace($find, $replace, $site_prefs['site_name'])),
 				array('site_id' => $site_id)
@@ -782,7 +783,7 @@ class EE_Config Extends CI_Config {
 	private function _update_pages($site_id, $site_prefs, $query)
 	{
 		// Because Pages is a special snowflake
-		if ($this->EE->config->item('site_pages') !== FALSE)
+		if (ee()->config->item('site_pages') !== FALSE)
 		{
 			if (isset($site_prefs['site_url']) OR isset($site_prefs['site_index']))
 			{
@@ -793,7 +794,7 @@ class EE_Config Extends CI_Config {
 				
 				$pages[$site_id]['url'] = reduce_double_slashes($url);
 
-				$this->EE->db->update(
+				ee()->db->update(
 					'sites',
 					array('site_pages' => base64_encode(serialize($pages))),
 					array('site_id' => $site_id)
@@ -840,7 +841,7 @@ class EE_Config Extends CI_Config {
 
 			if ($changes == 'y')
 			{
-				$this->EE->db->update(
+				ee()->db->update(
 					'sites',
 					array('site_'.$type.'_preferences' => base64_encode(serialize($prefs))),
 					array('site_id' => $site_id)

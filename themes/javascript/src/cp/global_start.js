@@ -9,7 +9,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -30,7 +30,9 @@ jQuery(document).ready(function () {
 		if ( ! _.has(options, 'error'))
 		{
 			jqXHR.error(function(data) {
-				throw [data.statusText, data.responseText];
+				_.defer(function() {
+					throw [data.statusText, data.responseText];
+				});
 			});
 		}
 	});
@@ -454,7 +456,7 @@ EE.cp.deprecation_meaning = function()
 		var deprecation_meaning_modal = $('<div class="alert">' + EE.developer_log.deprecation_meaning + ' </div>');
 		
 		deprecation_meaning_modal.dialog({
-			height: 260,
+			height: 300,
 			modal: true,
 			title: EE.developer_log.dev_log_help,
 			width: 460
@@ -476,3 +478,26 @@ EE.cp.zebra_tables = function(table) {
 		.end()
 		.filter(':odd').addClass('odd');
 };
+
+
+
+// First step in deprecating scripts in add_to_head().
+// Next release the message will be more visible/annoying.
+
+(function() {
+	var SCRIPT_COUNT = 2, // global_js, jquery
+		scripts = $('head script');
+
+	// anything but jquery and global_js shouldn't be there.
+	if (scripts.length > SCRIPT_COUNT) {
+
+		console.groupCollapsed('Found third party scripts in <head> tag.');
+		console.log('Please use cp->add_to_foot() to add scripts. jQuery and the EE global will be moved down in a future release.');
+
+		scripts.slice(SCRIPT_COUNT).each(function() {
+			console.log(this.src && this.src || '[Inline Script]');
+		});
+
+		console.groupEnd();
+	}
+})();

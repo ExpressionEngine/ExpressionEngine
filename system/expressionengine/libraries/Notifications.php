@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -33,8 +33,8 @@ class Notifications {
 		// Get EE superobject reference
 		$this->EE =& get_instance();
 		
-		$this->EE->load->library('api');
-		$this->EE->load->library('email');
+		ee()->load->library('api');
+		ee()->load->library('email');
 	}
 	
 	// --------------------------------------------------------------------
@@ -51,32 +51,32 @@ class Notifications {
 	 */
 	function send_admin_notification($notify_address, $channel_id, $entry_id)
 	{
-		$this->EE->api->instantiate('channel_structure');
-		$this->EE->load->model('channel_entries_model');
+		ee()->api->instantiate('channel_structure');
+		ee()->load->model('channel_entries_model');
 		
-		$e = $this->EE->channel_entries_model->get_entry($entry_id, $channel_id);
-		$c = $this->EE->api_channel_structure->get_channel_info($channel_id);
+		$e = ee()->channel_entries_model->get_entry($entry_id, $channel_id);
+		$c = ee()->api_channel_structure->get_channel_info($channel_id);
 		
 		$swap = array(
-						'name'				=> $this->EE->session->userdata('screen_name'),
-						'email'				=> $this->EE->session->userdata('email'),
+						'name'				=> ee()->session->userdata('screen_name'),
+						'email'				=> ee()->session->userdata('email'),
 						'channel_name'		=> $c->row('channel_title'),
 						'entry_title'		=> $e->row('title'),
 						'entry_url'			=> reduce_double_slashes($c->row('channel_url').'/'.$e->row('url_title')),
 						'comment_url'		=> reduce_double_slashes($c->row('comment_url').'/'.$e->row('url_title'))
 		);
 		
-		$template = $this->EE->functions->fetch_email_template('admin_notify_entry');
-		$email_tit = $this->EE->functions->var_swap($template['title'], $swap);
-		$email_msg = $this->EE->functions->var_swap($template['data'], $swap);
+		$template = ee()->functions->fetch_email_template('admin_notify_entry');
+		$email_tit = ee()->functions->var_swap($template['title'], $swap);
+		$email_msg = ee()->functions->var_swap($template['data'], $swap);
 
 
 		// We don't want to send a notification to the user
 		// triggering the event
 
-		if (strpos($notify_address, $this->EE->session->userdata('email')) !== FALSE)
+		if (strpos($notify_address, ee()->session->userdata('email')) !== FALSE)
 		{
-			$notify_address = str_replace($this->EE->session->userdata('email'), "", $notify_address);
+			$notify_address = str_replace(ee()->session->userdata('email'), "", $notify_address);
 		}
 
 		$notify_address = reduce_multiples($notify_address, ',', TRUE);
@@ -84,18 +84,18 @@ class Notifications {
 		if ($notify_address != '')
 		{
 			//	Send email
-			$this->EE->load->library('email');
+			ee()->load->library('email');
 
 			foreach (explode(',', $notify_address) as $addy)
 			{
-				$this->EE->email->EE_initialize();
-				$this->EE->email->wordwrap = false;
-				$this->EE->email->from($this->EE->config->item('webmaster_email'), $this->EE->config->item('webmaster_name'));
-				$this->EE->email->to($addy);
-				$this->EE->email->reply_to($this->EE->config->item('webmaster_email'));
-				$this->EE->email->subject($email_tit);
-				$this->EE->email->message(entities_to_ascii($email_msg));
-				$this->EE->email->send();
+				ee()->email->EE_initialize();
+				ee()->email->wordwrap = false;
+				ee()->email->from(ee()->config->item('webmaster_email'), ee()->config->item('webmaster_name'));
+				ee()->email->to($addy);
+				ee()->email->reply_to(ee()->config->item('webmaster_email'));
+				ee()->email->subject($email_tit);
+				ee()->email->message(entities_to_ascii($email_msg));
+				ee()->email->send();
 			}
 		}
 	}
@@ -116,26 +116,26 @@ class Notifications {
 	function send_checksum_notification($changed)
 	{
 		//	Send email
-		$this->EE->load->library('email');
-		$this->EE->load->helper('text');
+		ee()->load->library('email');
+		ee()->load->helper('text');
 
-		$subject = $this->EE->lang->line('checksum_email_subject');
-		$message = $this->EE->lang->line('checksum_email_message');
+		$subject = ee()->lang->line('checksum_email_subject');
+		$message = ee()->lang->line('checksum_email_message');
 		
 		$message = str_replace(
 			array('{url}', '{changed}'),
-			array($this->EE->config->item('base_url'), implode("\n", $changed)),
+			array(ee()->config->item('base_url'), implode("\n", $changed)),
 			$message
 		);
 		
-		$this->EE->email->EE_initialize();
-		$this->EE->email->wordwrap = false;
-		$this->EE->email->from($this->EE->config->item('webmaster_email'), $this->EE->config->item('webmaster_name'));
-		$this->EE->email->to($this->EE->config->item('webmaster_email'));
-		$this->EE->email->reply_to($this->EE->config->item('webmaster_email'));
-		$this->EE->email->subject($subject);
-		$this->EE->email->message(entities_to_ascii($message));
-		$this->EE->email->send();
+		ee()->email->EE_initialize();
+		ee()->email->wordwrap = false;
+		ee()->email->from(ee()->config->item('webmaster_email'), ee()->config->item('webmaster_name'));
+		ee()->email->to(ee()->config->item('webmaster_email'));
+		ee()->email->reply_to(ee()->config->item('webmaster_email'));
+		ee()->email->subject($subject);
+		ee()->email->message(entities_to_ascii($message));
+		ee()->email->send();
 	}
 }
 

@@ -43,17 +43,17 @@ class SC_Session extends EE_Session
 		
 		$this->userdata['assigned_channels'] = array();
 	 
-		$this->EE->db->select('exp_channels.channel_id, exp_channels.channel_title');
-		$this->EE->db->where('exp_channels.site_id', $this->EE->config->item('site_id'));
-		$this->EE->db->order_by('exp_channels.channel_title');
+		ee()->db->select('exp_channels.channel_id, exp_channels.channel_title');
+		ee()->db->where('exp_channels.site_id', ee()->config->item('site_id'));
+		ee()->db->order_by('exp_channels.channel_title');
 			
 		if ($this->userdata('group_id') != 1)
 		{
-			$this->EE->db->join('exp_channel_member_groups', 'exp_channel_member_groups.channel_id = exp_channels.channel_id');
-			$this->EE->db->where('exp_channel_member_groups.group_id', $this->userdata('group_id'));
+			ee()->db->join('exp_channel_member_groups', 'exp_channel_member_groups.channel_id = exp_channels.channel_id');
+			ee()->db->where('exp_channel_member_groups.group_id', $this->userdata('group_id'));
 		}
 		
-		$query = $this->EE->db->get('exp_channels');
+		$query = ee()->db->get('exp_channels');
 		
 		foreach ($query->result() as $row)
 		{

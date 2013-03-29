@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -37,7 +37,7 @@ class Cp_search {
 		$this->EE =& get_instance();
 		$this->_search_map();
 		
-		$this->EE->lang->loadfile('cp_search');
+		ee()->lang->loadfile('cp_search');
 	}
 	
 	// --------------------------------------------------------------------
@@ -57,16 +57,16 @@ class Cp_search {
 		$result = array();
 		
 		$sql = "SELECT *, MATCH(keywords) AGAINST (?) AS relevance 
-				FROM ".$this->EE->db->dbprefix('cp_search_index')." 
+				FROM ".ee()->db->dbprefix('cp_search_index')." 
 				WHERE MATCH(keywords) AGAINST (?) 
 				ORDER BY relevance DESC";
 
-		$query = $this->EE->db->query($sql, array($search, $search));
+		$query = ee()->db->query($sql, array($search, $search));
 		
 		foreach($query->result() as $row)
 		{
 			// Don't show things they cannot use
-			if ($row->access != 'all' && $this->EE->session->userdata['group_id'] != 1 && $this->EE->session->userdata[$row->access] != 'y')
+			if ($row->access != 'all' && ee()->session->userdata['group_id'] != 1 && ee()->session->userdata[$row->access] != 'y')
 			{
 				continue;
 			}
@@ -97,7 +97,7 @@ class Cp_search {
 		
 		if ( ! is_array($options) && substr($options, -4) == '_cfg')
 		{
-			return $this->EE->lang->line($options);
+			return ee()->lang->line($options);
 		}
 		
 		if (is_array($options))
@@ -108,7 +108,7 @@ class Cp_search {
 		
 		if (substr($options, -4) == '_cfg')
 		{
-			return $this->EE->lang->line($options);
+			return ee()->lang->line($options);
 		}
 		else
 		{
@@ -121,10 +121,10 @@ class Cp_search {
 	
 			if (strpos($method, $prefix) === 0)
 			{
-				return $this->EE->lang->line($method);
+				return ee()->lang->line($method);
 			}
 		
-			return $this->EE->lang->line($prefix.$method);
+			return ee()->lang->line($prefix.$method);
 		}
 	}
 
@@ -140,8 +140,8 @@ class Cp_search {
 	 */
 	function _check_index($language = 'english')
 	{
-		$this->EE->db->where('language', $language);
-		$count = $this->EE->db->count_all_results('cp_search_index');
+		ee()->db->where('language', $language);
+		$count = ee()->db->count_all_results('cp_search_index');
 		
 		return ($count > 0);
 	}
@@ -163,12 +163,12 @@ class Cp_search {
 		// PHP 4 redundancy dept. of redundancy
 		$this->EE =& get_instance();
 		
-		$this->EE->load->model('admin_model');
-		$this->EE->lang->loadfile('admin');
+		ee()->load->model('admin_model');
+		ee()->lang->loadfile('admin');
 
 		$data = array();
 
-		$subtext = $this->EE->admin_model->get_config_field_subtext();
+		$subtext = ee()->admin_model->get_config_field_subtext();
 
 		foreach($this->map as $controller => $method_map)
 		{
@@ -206,11 +206,11 @@ class Cp_search {
 				}
 				elseif (is_string($options) && substr($options, -4) == '_cfg')
 				{
-					$config = $this->EE->admin_model->get_config_fields($options);
+					$config = ee()->admin_model->get_config_fields($options);
 
 					foreach($config as $lang_key => $whatever)
 					{
-						$values[] = $this->EE->lang->line($lang_key);
+						$values[] = ee()->lang->line($lang_key);
 					}
 
 					if (isset($subtext[$options]))
@@ -250,7 +250,7 @@ class Cp_search {
 								'language'		=> $language
 								);
 
-				$this->EE->db->insert('cp_search_index', $data);
+				ee()->db->insert('cp_search_index', $data);
 			}
 		}
 
@@ -408,7 +408,7 @@ class Cp_search {
 		$nonsense = array('unauthorized_access', 'none', 'all', 'open', 'closed', 'and_more', 'install', 'uninstall', 'add', 'edit', 'delete');
 		
 		$langs = array();
-		$path = PATH_CP_THEME.$this->EE->config->item('cp_theme').'/'.$view.'.php';
+		$path = PATH_CP_THEME.ee()->config->item('cp_theme').'/'.$view.'.php';
 		
 		if ( ! file_exists($path))
 		{

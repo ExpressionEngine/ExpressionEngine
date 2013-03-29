@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -30,7 +30,7 @@ class Metaweblog_api_upd {
 	{
 		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();
-		$this->EE->load->dbforge();
+		ee()->load->dbforge();
 	}
 
 
@@ -49,13 +49,13 @@ class Metaweblog_api_upd {
 			'module_version' 	=> $this->version,
 			'has_cp_backend' 	=> 'y'
 		);
-		$this->EE->db->insert('modules', $data);
+		ee()->db->insert('modules', $data);
 
 		$data = array(
 			'class' 	=> 'Metaweblog_api',
 			'method' 	=> 'incoming'
 		);
-		$this->EE->db->insert('actions', $data);
+		ee()->db->insert('actions', $data);
 
 		$fields = array(
 						'metaweblog_id'	=> array(
@@ -127,16 +127,16 @@ class Metaweblog_api_upd {
 												),
 		);
 
-		$this->EE->dbforge->add_field($fields);
-		$this->EE->dbforge->add_key('metaweblog_id', TRUE);
-		$this->EE->dbforge->create_table('metaweblog_api', TRUE);
+		ee()->dbforge->add_field($fields);
+		ee()->dbforge->add_key('metaweblog_id', TRUE);
+		ee()->dbforge->create_table('metaweblog_api', TRUE);
 
 		$data = array(
 			'metaweblog_pref_name' 	=> 'Default',
 			'field_group_id' 	=> 1,
 			'content_field_id' 	=> 2
 		);
-		$this->EE->db->insert('metaweblog_api', $data);
+		ee()->db->insert('metaweblog_api', $data);
 
 		return TRUE;
 	}
@@ -153,19 +153,19 @@ class Metaweblog_api_upd {
 	 */
 	function uninstall()
 	{
-		$this->EE->db->select('module_id');
-		$query = $this->EE->db->get_where('modules', array('module_name' => 'Metaweblog_api'));
+		ee()->db->select('module_id');
+		$query = ee()->db->get_where('modules', array('module_name' => 'Metaweblog_api'));
 
-		$this->EE->db->where('module_id', $query->row('module_id'));
-		$this->EE->db->delete('module_member_groups');
+		ee()->db->where('module_id', $query->row('module_id'));
+		ee()->db->delete('module_member_groups');
 
-		$this->EE->db->where('module_name', 'Metaweblog_api');
-		$this->EE->db->delete('modules');
+		ee()->db->where('module_name', 'Metaweblog_api');
+		ee()->db->delete('modules');
 
-		$this->EE->db->where('class', 'Metaweblog_api');
-		$this->EE->db->delete('actions');
+		ee()->db->where('class', 'Metaweblog_api');
+		ee()->db->delete('actions');
 
-		$this->EE->dbforge->drop_table('metaweblog_api');
+		ee()->dbforge->drop_table('metaweblog_api');
 
 		return TRUE;
 	}
@@ -181,13 +181,13 @@ class Metaweblog_api_upd {
 
 	function update($version = '')
 	{
-		if (version_compare($version, '2', '<') && $this->EE->db->table_exists('exp_metaweblog_api'))
+		if (version_compare($version, '2', '<') && ee()->db->table_exists('exp_metaweblog_api'))
 		{
 			$existing_fields = array();
 
 			$new_fields = array('entry_status' => "`entry_status` varchar(50) NOT NULL default 'null' AFTER `metaweblog_parse_type`");
 
-			$query = $this->EE->db->query("SHOW COLUMNS FROM exp_metaweblog_api");
+			$query = ee()->db->query("SHOW COLUMNS FROM exp_metaweblog_api");
 
 			foreach($query->result_array() as $row)
 			{
@@ -198,7 +198,7 @@ class Metaweblog_api_upd {
 			{
 				if ( ! in_array($field, $existing_fields))
 				{
-					$this->EE->db->query("ALTER table exp_metaweblog_api ADD COLUMN {$alter}");
+					ee()->db->query("ALTER table exp_metaweblog_api ADD COLUMN {$alter}");
 				}
 			}
 		}

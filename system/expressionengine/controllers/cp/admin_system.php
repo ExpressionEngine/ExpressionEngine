@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -116,36 +116,17 @@ class Admin_system extends CP_Controller {
 		$this->load->library('form_validation');
 		$this->load->model('admin_model');
 
-		if ( ! in_array($type, array(
-									'general_cfg',
-									'cp_cfg',
-									'channel_cfg',
-									'member_cfg',
-									'output_cfg',
-									'debug_cfg',
-									'db_cfg',
-									'security_cfg',
-									'throttling_cfg',
-									'localization_cfg',
-									'email_cfg',
-									'cookie_cfg',
-									'image_cfg',
-									'captcha_cfg',
-									'template_cfg',
-									'censoring_cfg',
-									'mailinglist_cfg',
-									'emoticon_cfg',
-									'tracking_cfg',
-									'avatar_cfg',
-									'search_log_cfg',
-									'recount_prefs'
-									)
-						)
-		)
+		$config_pages = array('general_cfg', 'cp_cfg', 'channel_cfg', 
+			'member_cfg', 'output_cfg', 'debug_cfg', 'db_cfg', 'security_cfg', 
+			'throttling_cfg', 'localization_cfg', 'email_cfg', 'cookie_cfg', 
+			'image_cfg', 'captcha_cfg', 'template_cfg', 'censoring_cfg', 
+			'mailinglist_cfg', 'emoticon_cfg', 'tracking_cfg', 'avatar_cfg', 
+			'search_log_cfg', 'recount_prefs'
+		);
+		if ( ! in_array($type, $config_pages))
 		{
 			show_error(lang('unauthorized_access'));
 		}
-
 
 		if (count($_POST))
 		{

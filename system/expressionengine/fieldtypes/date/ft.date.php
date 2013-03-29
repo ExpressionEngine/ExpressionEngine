@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -36,7 +36,7 @@ class Date_ft extends EE_Fieldtype {
 	{
 		if ( ! is_numeric($data))
 		{
-			$data = $this->EE->localize->string_to_timestamp($data);
+			$data = ee()->localize->string_to_timestamp($data);
 		}
 
 		return $data;
@@ -54,7 +54,7 @@ class Date_ft extends EE_Fieldtype {
 	{
 		if ( ! is_numeric($data) && trim($data))
 		{
-			$data = $this->EE->localize->string_to_timestamp($data);
+			$data = ee()->localize->string_to_timestamp($data);
 		}
 
 		if ( ! is_numeric($data) && $data != '')
@@ -79,14 +79,14 @@ class Date_ft extends EE_Fieldtype {
 		$date_field = $this->field_name;
 		$date_local = 'field_offset_'.$this->field_id;
 
-		$date = $this->EE->localize->now;
+		$date = ee()->localize->now;
 		$custom_date = '';
 		$localize = TRUE;
 
 		if (isset($_POST[$date_field]) && ! is_numeric($_POST[$date_field]))
 		{
 			// probably had a validation error so repopulate as-is
-			$custom_date = $this->EE->input->post($date_field, TRUE);
+			$custom_date = ee()->input->post($date_field, TRUE);
 		}
 		else
 		{
@@ -96,7 +96,7 @@ class Date_ft extends EE_Fieldtype {
 
 				if (isset($this->settings['always_show_date']) && $this->settings['always_show_date'] == 'y')
 				{
-					$custom_date = $this->EE->localize->human_time();
+					$custom_date = ee()->localize->human_time();
 				}
 			}
 			else	// Everything else
@@ -111,18 +111,18 @@ class Date_ft extends EE_Fieldtype {
 				// shows the correct default.
 				if ($field_data)
 				{
-					$custom_date = $this->EE->localize->human_time($field_data, $localize);
+					$custom_date = ee()->localize->human_time($field_data, $localize);
 				}
 			}
 
 			$date = $field_data;
 		}
 		
-		$this->EE->javascript->set_global('date.include_seconds', $this->EE->config->item('include_seconds'));
+		ee()->javascript->set_global('date.include_seconds', ee()->config->item('include_seconds'));
 		
 		// Note- the JS will automatically localize the default date- but not necessarily in a way we want
 		// Hence we adjust default date to compensate for the coming localization
-		$this->EE->javascript->output('
+		ee()->javascript->output('
 			var d = new Date();
 			var jsCurrentUTC = d.getTimezoneOffset()*60;
 			var adjustedDefault = 1000*('.$date.'+jsCurrentUTC);
@@ -143,11 +143,11 @@ class Date_ft extends EE_Fieldtype {
 
 		if ( ! in_array($this->field_name, $special))
 		{
-			$localized = ( ! isset($_POST[$date_local])) ? (($localize === TRUE) ? 'y' : 'n') : $this->EE->input->post($date_local, TRUE);
+			$localized = ( ! isset($_POST[$date_local])) ? (($localize === TRUE) ? 'y' : 'n') : ee()->input->post($date_local, TRUE);
 
 			$localized_opts	= array(
-				'y' => $this->EE->lang->line('localized_date'),
-				'n' => $this->EE->lang->line('fixed_date')
+				'y' => ee()->lang->line('localized_date'),
+				'n' => ee()->lang->line('fixed_date')
 			);
 
 			$r .= NBS.NBS.NBS.NBS;

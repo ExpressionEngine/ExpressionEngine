@@ -6,7 +6,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team, 
  * 		- Original Development by Barrett Newton -- http://barrettnewton.com
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -49,7 +49,7 @@ class Safecracker_upd
 	 */
 	public function install()
 	{
-		$this->EE->db->insert(
+		ee()->db->insert(
 			'exp_modules',
 			array(
 				'module_name' => 'Safecracker',
@@ -59,7 +59,7 @@ class Safecracker_upd
 			)
 		);
 		
-		$this->EE->db->insert(
+		ee()->db->insert(
 			'exp_actions',
 			array(
 				'class' => 'Safecracker',
@@ -67,7 +67,7 @@ class Safecracker_upd
 			)
 		);
 		
-		$this->EE->db->insert(
+		ee()->db->insert(
 			'exp_actions',
 			array(
 				'class' => 'Safecracker',
@@ -77,7 +77,7 @@ class Safecracker_upd
 		
 
 		// Add Extension Hook
-		$this->EE->db->insert('extensions', array(
+		ee()->db->insert('extensions', array(
 			'class'    => 'Safecracker_ext',
 			'hook'     => 'form_declaration_modify_data',
 			'method'   => 'form_declaration_modify_data',
@@ -100,11 +100,11 @@ class Safecracker_upd
 	 */
 	public function validate()
 	{
-		$this->EE->lang->loadfile('safecracker');
+		ee()->lang->loadfile('safecracker');
 		
-		if ($this->EE->config->item('allow_extensions') != 'y')
+		if (ee()->config->item('allow_extensions') != 'y')
 		{
-			//$this->EE->output->show_user_error('general', lang('safecracker_extensions_disabled'));
+			//ee()->output->show_user_error('general', lang('safecracker_extensions_disabled'));
 		}
 		
 		//  Added to core with 2.1.5
@@ -120,22 +120,22 @@ class Safecracker_upd
 	 */
 	public function uninstall()
 	{
-		$query = $this->EE->db->get_where('modules', array('module_name' => 'Safecracker'));
+		$query = ee()->db->get_where('modules', array('module_name' => 'Safecracker'));
 		
 		if ($query->row('module_id'))
 		{
-			$this->EE->db->where('module_id', $query->row('module_id'));
-			$this->EE->db->delete('module_member_groups');
+			ee()->db->where('module_id', $query->row('module_id'));
+			ee()->db->delete('module_member_groups');
 		}
 
-		$this->EE->db->where('module_name', 'Safecracker');
-		$this->EE->db->delete('modules');
+		ee()->db->where('module_name', 'Safecracker');
+		ee()->db->delete('modules');
 
-		$this->EE->db->where('class', 'Safecracker');
-		$this->EE->db->delete('actions');
+		ee()->db->where('class', 'Safecracker');
+		ee()->db->delete('actions');
 		
 		// Disable extension
-		$this->EE->db->delete('extensions', array('class' => 'Safecracker_ext'));
+		ee()->db->delete('extensions', array('class' => 'Safecracker_ext'));
 
 		return TRUE;
 	}
@@ -157,7 +157,7 @@ class Safecracker_upd
 		
 		if (version_compare($current, '1.0.3', '<'))
 		{
-			$this->EE->db->insert(
+			ee()->db->insert(
 				'actions',
 				array(
 					'class' => 'Safecracker',
@@ -169,7 +169,7 @@ class Safecracker_upd
 		if (version_compare($current, '2.1', '<'))
 		{
 			// Update extension version number
-			$this->EE->db->update('extensions', array('version' => $this->version), array('class' => 'Safecracker_ext'));
+			ee()->db->update('extensions', array('version' => $this->version), array('class' => 'Safecracker_ext'));
 		}
 		
 		return TRUE;

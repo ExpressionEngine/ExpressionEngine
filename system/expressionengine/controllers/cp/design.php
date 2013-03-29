@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -1775,7 +1775,7 @@ class Design extends CP_Controller {
 		/*  - Allows complete takeover of the template editor
 		/*  - Added 1.6.0
 		*/  
-			$edata = $this->extensions->call('edit_template_start', $query, $template_id, $message);
+			$this->extensions->call('edit_template_start', $query, $template_id, $message);
 			if ($this->extensions->end_script === TRUE) return;
 		/*
 		/* -------------------------------------*/
@@ -2084,7 +2084,7 @@ class Design extends CP_Controller {
 		/*  - Add more things to do for template
 		/*  - Added 1.6.0
 		*/  
-			$edata = $this->extensions->call('update_template_end', $template_id, $message);
+			$this->extensions->call('update_template_end', $template_id, $message);
 			if ($this->extensions->end_script === TRUE) return;
 		/*
 		/* -------------------------------------*/
@@ -2568,9 +2568,10 @@ class Design extends CP_Controller {
 			$basepath = $this->config->slash_item('tmpl_file_basepath');
 			$basepath .= $this->config->item('site_short_name').'/'.$vars['template_group'].'.group/'.$query->row('template_name').$this->api_template_structure->file_extensions($query->row('template_type'));
 
+			$this->load->helper('file_helper');
 			if (($file = read_file($basepath)) !== FALSE)
 			{		
-					$file = $basepath;
+				$file = $basepath;
 			}
 		}
 
@@ -4646,6 +4647,12 @@ class Design extends CP_Controller {
 				// if the templates don't exist, make 'em!
 				foreach ($templates as $template)
 				{
+					// Skip hidden ._ files
+					if (substr($template, 0, 2) == '._')
+					{
+						continue;
+					}
+
 					// Skip subdirectories (such as those created by svn)
 					if (is_array($template))
 					{

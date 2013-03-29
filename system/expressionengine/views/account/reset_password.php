@@ -1,5 +1,7 @@
+<!DOCTYPE html>
 <html>
 <head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <title><?=$cp_page_title?> | ExpressionEngine</title>
 <style type="text/css">
 
@@ -15,9 +17,9 @@ body {
 
 #content  {
 	text-align:			left;
-	padding:			100px 20px 5px 20px;
+	padding:			160px 20px 5px 20px;
 	margin:				20px auto 0 auto;
-	width:				485px;
+	width:				440px;
 	background:			url('<?=$cp_theme_url?>images/ee_login_bg.gif') no-repeat center top;
 }
 
@@ -89,50 +91,38 @@ input.submit {
 	width:				auto;
 }
 
-.success, .error {
-	font-size:			14px;
-	color:				#007822;
-	background:			#e9fdd7 url('<?=$cp_theme_url?>images/success.png') no-repeat 8px 10px;
-	border:				1px solid #bce99a;
-	padding:			3px 15px 3px 30px;
-	margin:				0 0 20px 0;
-	width:				396px;
-	
-	-webkit-border-radius: 6px;
-	border-radius:		6px;
-}
-
-.error {
-	color:				#ce0000;
-	background:			#fdf5b2 url('<?=$cp_theme_url?>images/error.png') no-repeat 8px 10px;
-	border:				1px solid #f3d589;
-}
-
-.success p, .error p {
-	margin:				8px 0;
-}
-
 </style>
 </head>
 <body id="login" onload="<?=$cp_page_onload?>">
 
 <div id="branding"><a href="http://ellislab.com/"><img src="<?=PATH_CP_GBL_IMG?>ee_logo_branding.gif" width="250" height="28" alt="<?=lang('powered_by')?> ExpressionEngine" /></a></div>
 
-<div id="content">
+	<div id="content">
 	
-<div id="white">
-	<?php if ($message_success != ''):?>
-		<div class="success">
-			<p><?=$message_success?></p>
-		</div>
-	<?php elseif ($message_error != ''):?>
-		<div class="error">
-			<p><?=$message_error?></p>
-		</div>
-	<?php endif;?>
+<?php if ($message != ''):?>
+<div class='highlight'><?=$message?></div>
+<?php endif;?>
 
-	<p><a href="<?=BASE.AMP.'C=login'?>"><?=lang('return_to_login')?></a></p>
-</div>
+<?=form_open('C=login'.AMP.'M=reset_password')?>
+
+<?=form_hidden('resetcode', $resetcode)?>
+
+<dl>
+	<dt><?=lang('new_password')?>:</dt> 
+	<dd>
+		<?=form_password(array('style' => 'width:100%', 'size' => '35', 'dir' => 'ltr', 'name' => "password", 'id' => "password", 'maxlength' => 80, 'autocomplete' => 'off'))?>
+		<?=form_error('password')?>
+	</dd>
+	<dt><?=lang('new_password_confirm')?>:</dt>
+	<dd>
+		<?=form_password(array('style' => 'width:100%', 'size' => '35', 'dir' => 'ltr', 'name' => "password_confirm", 'id' => "password_confirm", 'maxlength' => 80, 'autocomplete' => 'off'))?>
+		<?=form_error('password_confirm')?>
+	</dd>
+</dl>
+
+<p><?=form_submit('submit', lang('submit'), 'class="submit"')?> <span><a href="<?=BASE.AMP.'C=login'?>"><?=lang('return_to_login')?></a></span></p>
+
+</form>
 
 </div>
 </body>

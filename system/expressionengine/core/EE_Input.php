@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -101,30 +101,29 @@ class EE_Input extends CI_Input {
 			}		
 		}
 	
-		if (isset($_GET))
+		if (isset($_GET) && $filter_keys == TRUE)
 		{
 			foreach($_GET as $key => $val)
 			{
-				if ($filter_keys == TRUE)
+				$clean = $this->_clean_get_input_data($val);	
+				
+				if ( ! $clean)
 				{
-					if (preg_match("#(;|exec\s*\(|system\s*\(|passthru\s*\(|cmd\s*\()#i", $val))
+					// Only notify super admins of the offending data
+					if ($EE->session->userdata('group_id') == 1)
 					{
-						// Only notify super admins of the offending data
-						if ($EE->session->userdata('group_id') == 1)
-						{
-							$data = ((int) config_item('debug') == 2) ? '<br>'.htmlentities($val) : '';
+						$data = ((int) config_item('debug') == 2) ? '<br>'.htmlentities($val) : '';
 							
-							set_status_header(503);
-							exit(sprintf("Invalid GET Data %s", $data));
-						}
-						// Otherwise, handle it more gracefully and just unset the variable
-						else
-						{
-							unset($_GET[$key]);
-						}
-					}   
-				}
-			}	
+						set_status_header(503);
+						exit(sprintf("Invalid GET Data %s", $data));
+					}
+					// Otherwise, handle it more gracefully and just unset the variable
+					else
+					{
+						unset($_GET[$key]);
+					}
+				}				
+			}
 		}	
 	}
 
@@ -167,7 +166,43 @@ class EE_Input extends CI_Input {
 			$_GET['css'] = remove_invisible_characters($_css);
 		}
 	}
+
+	// --------------------------------------------------------------------
 	
+	/**
+	 * Clean GET data
+	 *
+	 * If the GET value is disallowed, we show an error to superadmins
+	 * For non-super, we unset the variable and let them go on their merry way
+	 *
+	 * @param	string Variable's key
+	 * @param	mixed Variable's value- may be string or array
+	 * @return	string
+	 */
+	function _clean_get_input_data($str)
+	{
+		if (is_array($str))
+		{
+			foreach ($str as $k => $v)
+			{
+				$out = $this->_clean_get_input_data($v);
+				
+				if ($out == FALSE)
+				{
+					return FALSE;
+				}
+			}
+
+			return TRUE;
+		}
+
+		if (preg_match("#(;|exec\s*\(|system\s*\(|passthru\s*\(|cmd\s*\()#i", $str))
+		{
+			return FALSE;
+		}
+		
+		return TRUE;
+	}
 }
 // END CLASS
 

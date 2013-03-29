@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -35,9 +35,9 @@ class Rte_ft extends EE_Fieldtype {
 
 	function validate($data)
 	{
-		$this->EE->load->library('rte_lib');
+		ee()->load->library('rte_lib');
 		
-		if ($this->settings['field_required'] === 'y' && $this->EE->rte_lib->is_empty($data))
+		if ($this->settings['field_required'] === 'y' && ee()->rte_lib->is_empty($data))
 		{
 			return lang('required');
 		}
@@ -49,18 +49,18 @@ class Rte_ft extends EE_Fieldtype {
 
 	function display_field($data)
 	{
-		$this->EE->load->library('rte_lib');
+		ee()->load->library('rte_lib');
 		
-		return $this->EE->rte_lib->display_field($data, $this->field_name, $this->settings);
+		return ee()->rte_lib->display_field($data, $this->field_name, $this->settings);
 	}
 
 	// --------------------------------------------------------------------
 
 	function save($data)
 	{
-		$this->EE->load->library('rte_lib');
+		ee()->load->library('rte_lib');
 		
-		return $this->EE->rte_lib->save_field($data);
+		return ee()->rte_lib->save_field($data);
 	}
 
 	// --------------------------------------------------------------------
@@ -70,12 +70,12 @@ class Rte_ft extends EE_Fieldtype {
 		// Experimental parameter, do not use
 		if (isset($params['raw_output']) && $params['raw_output'] == 'yes')
 		{
-			return $this->EE->functions->encode_ee_tags($data);
+			return ee()->functions->encode_ee_tags($data);
 		}
 		
-		return $this->EE->typography->parse_type(
-			$this->EE->functions->encode_ee_tags(
-				$this->EE->typography->parse_file_paths($data)
+		return ee()->typography->parse_type(
+			ee()->functions->encode_ee_tags(
+				ee()->typography->parse_file_paths($data)
 			),
 			array(
 				'html_format'	=> $this->row['channel_html_formatting'],
@@ -97,7 +97,7 @@ class Rte_ft extends EE_Fieldtype {
 		// Textarea rows
 		$field_rows	= ($data['field_ta_rows'] == '') ? 10 : $data['field_ta_rows'];
 
-		$this->EE->table->add_row(
+		ee()->table->add_row(
 			lang('textarea_rows', $prefix.'_ta_rows'),
 			form_input(array(
 				'id'	=> $prefix.'_ta_rows',
@@ -125,7 +125,7 @@ class Rte_ft extends EE_Fieldtype {
 	{		
 		$data['field_type'] = 'rte';
 		$data['field_show_fmt'] = 'n';
-		$data['field_ta_rows'] = $this->EE->input->post('rte_ta_rows');
+		$data['field_ta_rows'] = ee()->input->post('rte_ta_rows');
 
 		return $data;
 	}	

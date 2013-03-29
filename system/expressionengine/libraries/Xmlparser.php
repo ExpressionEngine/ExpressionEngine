@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -57,7 +57,7 @@ class EE_XMLparser {
 		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();
 		// Load the XML Helper
-		$this->EE->load->helper('xml');
+		ee()->load->helper('xml');
 	}
 	
 	

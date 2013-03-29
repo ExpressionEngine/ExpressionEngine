@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -44,7 +44,7 @@ class Wizard extends CI_Controller {
 	var $content			= '';
 	var $title				= 'ExpressionEngine Installation and Update Wizard';
 	var $heading			= 'ExpressionEngine Installation and Update Wizard';
-	var $copyright			= 'Copyright 2003 - 2012 EllisLab, Inc. - All Rights Reserved';
+	var $copyright			= 'Copyright 2003 - 2013 EllisLab, Inc. - All Rights Reserved';
 	
 	var $now;
 	var $year;
@@ -195,9 +195,12 @@ class Wizard extends CI_Controller {
 		// Based on the users's choice we build the language into our URL string
 		// and use that info to load the desired language file on each page
 		
+		$this->load->library('logger');
+
 		$this->load->add_package_path(EE_APPPATH);
 		$this->_load_langauge();
 
+		$this->load->library('localize');
 		$this->load->library('cp');
 		
 		// Set the image URL				
@@ -515,6 +518,8 @@ class Wizard extends CI_Controller {
 			$vars['site_url'] = rtrim($this->userdata['site_url'], '/').'/'.$this->userdata['site_index'];
 			$vars['cp_url'] = $this->userdata['cp_url'];
 
+			$this->logger->updater("Update complete. Now running version {$this->version}.");
+
 			$this->_set_output('uptodate', $vars);
 			return FALSE;
 		}
@@ -647,6 +652,8 @@ class Wizard extends CI_Controller {
 			{
 				$data['action'] = $this->set_qstr('do_update');
 			}
+
+			$this->logger->updater("Preparing to update from {$this->installed_version} to {$this->version}. Awaiting acceptance of license terms.");
 		}
 		
 		$data['license'] = $this->_license_agreement();
@@ -686,6 +693,9 @@ class Wizard extends CI_Controller {
 		$this->userdata['extra_header'] = $this->_install_form_extra_header($this->javascript->generate_json($this->theme_required_modules, TRUE));
 
 		$this->load->library('localize');
+
+		// Preload server timezone
+		$this->userdata['server_timezone'] = date_default_timezone_get();
 		
 		// Display the form and pass the userdata array to it	
 		$this->_set_output('install_form', $this->userdata);
@@ -1025,7 +1035,7 @@ PAPAYA;
 		
 		// Encrypt the password and unique ID
 		$this->userdata['unique_id'] = random_string('encrypt');
-		$this->userdata['password'] = do_hash($this->userdata['password']);
+		$this->userdata['password'] = sha1($this->userdata['password']);
 		
 		// --------------------------------------------------------------------
 		
@@ -1308,6 +1318,9 @@ PAPAYA;
 				)
 			);
 		}
+			
+		// Clear any latent status messages still present in the PHP session
+		$this->progress->clear_state();
 		
 		// Set a liberal execution time limit, some of these
 		// updates are pretty big.
@@ -1316,6 +1329,10 @@ PAPAYA;
 		// Instantiate the updater class
 		$UD = new Updater;
 		$method = 'do_update';
+		
+		$this->load->library('smartforge');
+
+		$this->logger->updater("Updating to {$next_version}");
 		
 		if ($this->config->item('ud_next_step') != FALSE)
 		{

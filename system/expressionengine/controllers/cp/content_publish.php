@@ -7,7 +7,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -825,7 +825,7 @@ class Content_publish extends CP_Controller {
 		
 		$this->load->model('category_model');
 		
-		$query = $this->category_model->get_categories($group_id, FALSE);
+		$query = $this->category_model->get_category_groups($group_id, FALSE);
 		$this->api_channel_categories->category_tree($group_id, '', $query->row('sort_order'));
 
 		$data = array(
@@ -1202,7 +1202,7 @@ class Content_publish extends CP_Controller {
 		/*  - Add More Stuff to do when you first submit an entry
 		/*  - Added 1.4.2
 		*/
-			$edata = $this->extensions->call('submit_new_entry_start');
+			$this->extensions->call('submit_new_entry_start');
 			if ($this->extensions->end_script === TRUE) return TRUE;
 		/*
 		/* -------------------------------------------*/

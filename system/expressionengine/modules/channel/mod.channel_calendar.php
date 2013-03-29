@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -39,7 +39,7 @@ class Channel_calendar extends Channel {
 		// we have to reassign the var_cond array using the legacy conditional
 		// parser.  Bummer, but whatcha going to do?
 
-		$this->EE->TMPL->var_cond = $this->EE->functions->assign_conditional_variables($this->EE->TMPL->tagdata, '/', LD, RD);
+		ee()->TMPL->var_cond = ee()->functions->assign_conditional_variables(ee()->TMPL->tagdata, '/', LD, RD);
 
 		/** ----------------------------------------
 		/**  Determine the Month and Year
@@ -50,10 +50,10 @@ class Channel_calendar extends Channel {
 
 		// Hard-coded month/year via tag parameters
 
-		if ($this->EE->TMPL->fetch_param('month') AND $this->EE->TMPL->fetch_param('year'))
+		if (ee()->TMPL->fetch_param('month') AND ee()->TMPL->fetch_param('year'))
 		{
-			$year 	= $this->EE->TMPL->fetch_param('year');
-			$month	= $this->EE->TMPL->fetch_param('month');
+			$year 	= ee()->TMPL->fetch_param('year');
+			$month	= ee()->TMPL->fetch_param('month');
 
 			if (strlen($month) == 1)
 			{
@@ -64,21 +64,21 @@ class Channel_calendar extends Channel {
 		{
 			// Month/year in query string
 
-			if (preg_match("#(\d{4}/\d{2})#", $this->EE->uri->query_string, $match))
+			if (preg_match("#(\d{4}/\d{2})#", ee()->uri->query_string, $match))
 			{
 				$ex = explode('/', $match['1']);
 
 				$time = gmmktime(0, 0, 0, $ex['1'], 01, $ex['0']);
 
-				$year = $this->EE->localize->format_date('%Y', $time, FALSE);
-				$month = $this->EE->localize->format_date('%m', $time, FALSE);
+				$year = ee()->localize->format_date('%Y', $time, FALSE);
+				$month = ee()->localize->format_date('%m', $time, FALSE);
 			}
 			else
 			{
 				// Defaults to current month/year
 
-				$year = $this->EE->localize->format_date('%Y');
-				$month = $this->EE->localize->format_date('%m');
+				$year = ee()->localize->format_date('%Y');
+				$month = ee()->localize->format_date('%m');
 			}
 		}
 
@@ -92,13 +92,13 @@ class Channel_calendar extends Channel {
 		/** ----------------------------------------
 		/**  Determine the total days in the month
 		/** ----------------------------------------*/
-		$this->EE->load->library('calendar');
-		$adjusted_date = $this->EE->calendar->adjust_date($month, $year);
+		ee()->load->library('calendar');
+		$adjusted_date = ee()->calendar->adjust_date($month, $year);
 
 		$month	= $adjusted_date['month'];
 		$year	= $adjusted_date['year'];
 
-		$this->EE->load->helper('date');
+		ee()->load->helper('date');
 		$total_days = days_in_month($month, $year);
 
 		$previous_date 	= mktime(12, 0, 0, $month-1, 1, $year);
@@ -108,7 +108,7 @@ class Channel_calendar extends Channel {
 		/**  Determine the total days of the previous month
 		/** ---------------------------------------*/
 
-		$adj_prev_date = $this->EE->calendar->adjust_date($month-1, $year);
+		$adj_prev_date = ee()->calendar->adjust_date($month-1, $year);
 
 		$prev_month = $adj_prev_date['month'];
 		$prev_year = $adj_prev_date['year'];
@@ -124,9 +124,9 @@ class Channel_calendar extends Channel {
 
 		$start_days = array('sunday' => 0, 'monday' => 1, 'tuesday' => 2, 'wednesday' => 3, 'thursday' => 4, 'friday' => 5, 'saturday' => 6);
 
-		$start_day = (isset($start_days[$this->EE->TMPL->fetch_param('start_day')])) ? $start_days[$this->EE->TMPL->fetch_param('start_day')]: 0;
+		$start_day = (isset($start_days[ee()->TMPL->fetch_param('start_day')])) ? $start_days[ee()->TMPL->fetch_param('start_day')]: 0;
 
-		$day  = $start_day + 1 - $this->EE->localize->format_date('%w', $date);
+		$day  = $start_day + 1 - ee()->localize->format_date('%w', $date);
 
 		while ($day > 1)
 		{
@@ -139,15 +139,15 @@ class Channel_calendar extends Channel {
 
 		// This variables points to the previous month
 
-		if (preg_match_all("#".LD."previous_path=(.+?)".RD."#", $this->EE->TMPL->tagdata, $matches))
+		if (preg_match_all("#".LD."previous_path=(.+?)".RD."#", ee()->TMPL->tagdata, $matches))
 		{
-			$adjusted_date = $this->EE->calendar->adjust_date($month - 1, $year, TRUE);
+			$adjusted_date = ee()->calendar->adjust_date($month - 1, $year, TRUE);
 
 			foreach ($matches['1'] as $match)
 			{
-				$path = $this->EE->functions->create_url($match).'/'.$adjusted_date['year'].'/'.$adjusted_date['month'];
+				$path = ee()->functions->create_url($match).'/'.$adjusted_date['year'].'/'.$adjusted_date['month'];
 
-				$this->EE->TMPL->tagdata = preg_replace("#".LD."previous_path=.+?".RD."#", $path, $this->EE->TMPL->tagdata, 1);
+				ee()->TMPL->tagdata = preg_replace("#".LD."previous_path=.+?".RD."#", $path, ee()->TMPL->tagdata, 1);
 			}
 		}
 
@@ -157,15 +157,15 @@ class Channel_calendar extends Channel {
 
 		// This variables points to the next month
 
-		if (preg_match_all("#".LD."next_path=(.+?)".RD."#", $this->EE->TMPL->tagdata, $matches))
+		if (preg_match_all("#".LD."next_path=(.+?)".RD."#", ee()->TMPL->tagdata, $matches))
 		{
-			$adjusted_date = $this->EE->calendar->adjust_date($month + 1, $year, TRUE);
+			$adjusted_date = ee()->calendar->adjust_date($month + 1, $year, TRUE);
 
 			foreach ($matches['1'] as $match)
 			{
-				$path = $this->EE->functions->create_url($match).'/'.$adjusted_date['year'].'/'.$adjusted_date['month'];
+				$path = ee()->functions->create_url($match).'/'.$adjusted_date['year'].'/'.$adjusted_date['month'];
 
-				$this->EE->TMPL->tagdata = preg_replace("#".LD."next_path=.+?".RD."#", $path, $this->EE->TMPL->tagdata, 1);
+				ee()->TMPL->tagdata = preg_replace("#".LD."next_path=.+?".RD."#", $path, ee()->TMPL->tagdata, 1);
 			}
 		}
 
@@ -176,11 +176,11 @@ class Channel_calendar extends Channel {
 		// This variable is used in the heading of the calendar
 		// to show the month and year
 
-		if (preg_match_all("#".LD."date format=[\"|'](.+?)[\"|']".RD."#", $this->EE->TMPL->tagdata, $matches))
+		if (preg_match_all("#".LD."date format=[\"|'](.+?)[\"|']".RD."#", ee()->TMPL->tagdata, $matches))
 		{
 			foreach ($matches['1'] as $match)
 			{
-				$this->EE->TMPL->tagdata = preg_replace("#".LD."date format=.+?".RD."#", $this->EE->localize->format_date($match, $date), $this->EE->TMPL->tagdata, 1);
+				ee()->TMPL->tagdata = preg_replace("#".LD."date format=.+?".RD."#", ee()->localize->format_date($match, $date), ee()->TMPL->tagdata, 1);
 			}
 		}
 
@@ -191,11 +191,11 @@ class Channel_calendar extends Channel {
 		// This variable is used in the heading of the calendar
 		// to show the month and year
 
-		if (preg_match_all("#".LD."previous_date format=[\"|'](.+?)[\"|']".RD."#", $this->EE->TMPL->tagdata, $matches))
+		if (preg_match_all("#".LD."previous_date format=[\"|'](.+?)[\"|']".RD."#", ee()->TMPL->tagdata, $matches))
 		{
 			foreach ($matches['1'] as $match)
 			{
-				$this->EE->TMPL->tagdata = preg_replace("#".LD."previous_date format=.+?".RD."#", $this->EE->localize->format_date($match, $previous_date), $this->EE->TMPL->tagdata, 1);
+				ee()->TMPL->tagdata = preg_replace("#".LD."previous_date format=.+?".RD."#", ee()->localize->format_date($match, $previous_date), ee()->TMPL->tagdata, 1);
 			}
 		}
 
@@ -206,11 +206,11 @@ class Channel_calendar extends Channel {
 		// This variable is used in the heading of the calendar
 		// to show the month and year
 
-		if (preg_match_all("#".LD."next_date format=[\"|'](.+?)[\"|']".RD."#", $this->EE->TMPL->tagdata, $matches))
+		if (preg_match_all("#".LD."next_date format=[\"|'](.+?)[\"|']".RD."#", ee()->TMPL->tagdata, $matches))
 		{
 			foreach ($matches['1'] as $match)
 			{
-				$this->EE->TMPL->tagdata = preg_replace("#".LD."next_date format=.+?".RD."#", $this->EE->localize->format_date($match, $next_date), $this->EE->TMPL->tagdata, 1);
+				ee()->TMPL->tagdata = preg_replace("#".LD."next_date format=.+?".RD."#", ee()->localize->format_date($match, $next_date), ee()->TMPL->tagdata, 1);
 			}
 		}
 
@@ -236,20 +236,20 @@ class Channel_calendar extends Channel {
 
 		foreach (array('Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa') as $val)
 		{
-			$day_names_a[] = ( ! $this->EE->lang->line($val)) ? $val : $this->EE->lang->line($val);
+			$day_names_a[] = ( ! ee()->lang->line($val)) ? $val : ee()->lang->line($val);
 		}
 
 		foreach (array('Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat') as $val)
 		{
-			$day_names_s[] = ( ! $this->EE->lang->line($val)) ? $val : $this->EE->lang->line($val);
+			$day_names_s[] = ( ! ee()->lang->line($val)) ? $val : ee()->lang->line($val);
 		}
 
 		foreach (array('Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday') as $val)
 		{
-			$day_names_l[] = ( ! $this->EE->lang->line($val)) ? $val : $this->EE->lang->line($val);
+			$day_names_l[] = ( ! ee()->lang->line($val)) ? $val : ee()->lang->line($val);
 		}
 
-		if (preg_match("/".LD."calendar_heading".RD."(.*?)".LD.'\/'."calendar_heading".RD."/s", $this->EE->TMPL->tagdata, $match))
+		if (preg_match("/".LD."calendar_heading".RD."(.*?)".LD.'\/'."calendar_heading".RD."/s", ee()->TMPL->tagdata, $match))
 		{
 			$temp = '';
 
@@ -264,7 +264,7 @@ class Channel_calendar extends Channel {
 									  trim($match['1'])."\n");
 			}
 
-			$this->EE->TMPL->tagdata = preg_replace ("/".LD."calendar_heading".RD.".*?".LD.'\/'."calendar_heading".RD."/s", trim($temp), $this->EE->TMPL->tagdata);
+			ee()->TMPL->tagdata = preg_replace ("/".LD."calendar_heading".RD.".*?".LD.'\/'."calendar_heading".RD."/s", trim($temp), ee()->TMPL->tagdata);
 		}
 
 
@@ -300,7 +300,7 @@ class Channel_calendar extends Channel {
 		$if_blank_m			= '43HDueie4q7pa8dAAseit6';
 
 
-		if (preg_match("/".LD."calendar_rows".RD."(.*?)".LD.'\/'."calendar_rows".RD."/s", $this->EE->TMPL->tagdata, $match))
+		if (preg_match("/".LD."calendar_rows".RD."(.*?)".LD.'\/'."calendar_rows".RD."/s", ee()->TMPL->tagdata, $match))
 		{
 			$row_chunk = trim($match['1']);
 
@@ -330,7 +330,7 @@ class Channel_calendar extends Channel {
 				$row_chunk = trim(str_replace($match['0'], "", $row_chunk));
 			}
 
-			foreach ($this->EE->TMPL->var_cond as $key => $val)
+			foreach (ee()->TMPL->var_cond as $key => $val)
 			{
 				if ($val['3'] == 'today')
 				{
@@ -338,7 +338,7 @@ class Channel_calendar extends Channel {
 
 					$row_chunk = str_replace ($val['1'], $if_today_m, $row_chunk);
 
-					unset($this->EE->TMPL->var_cond[$key]);
+					unset(ee()->TMPL->var_cond[$key]);
 				}
 
 				if ($val['3'] == 'entries')
@@ -347,7 +347,7 @@ class Channel_calendar extends Channel {
 
 					$row_chunk = str_replace ($val['1'], $if_entries_m, $row_chunk);
 					
-					unset($this->EE->TMPL->var_cond[$key]);
+					unset(ee()->TMPL->var_cond[$key]);
 				}
 
 				if ($val['3'] == 'not_entries')
@@ -356,7 +356,7 @@ class Channel_calendar extends Channel {
 
 					$row_chunk = str_replace ($val['1'], $if_not_entries_m, $row_chunk);
 
-					unset($this->EE->TMPL->var_cond[$key]);
+					unset(ee()->TMPL->var_cond[$key]);
 				}
 
 				if ($val['3'] == 'blank')
@@ -365,7 +365,7 @@ class Channel_calendar extends Channel {
 
 					$row_chunk = str_replace ($val['1'], $if_blank_m, $row_chunk);
 
-					unset($this->EE->TMPL->var_cond[$key]);
+					unset(ee()->TMPL->var_cond[$key]);
 				}
 
 				if (preg_match("/".LD."entries".RD."(.*?)".LD.'\/'."entries".RD."/s", $if_entries, $match))
@@ -377,7 +377,7 @@ class Channel_calendar extends Channel {
 
 			}
 
-			$this->EE->TMPL->tagdata = preg_replace ("/".LD."calendar_rows".RD.".*?".LD.'\/'."calendar_rows".RD."/s", $row_chunk_m, $this->EE->TMPL->tagdata);
+			ee()->TMPL->tagdata = preg_replace ("/".LD."calendar_rows".RD.".*?".LD.'\/'."calendar_rows".RD."/s", $row_chunk_m, ee()->TMPL->tagdata);
 		}
 
 		/** ----------------------------------------
@@ -390,9 +390,9 @@ class Channel_calendar extends Channel {
 		$switch_t = '';
 		$switch_c = '';
 
-		if ($this->EE->TMPL->fetch_param('switch'))
+		if (ee()->TMPL->fetch_param('switch'))
 		{
-			$x = explode("|", $this->EE->TMPL->fetch_param('switch'));
+			$x = explode("|", ee()->TMPL->fetch_param('switch'));
 
 			if (count($x) == 2)
 			{
@@ -405,7 +405,7 @@ class Channel_calendar extends Channel {
 		/**  Set the day number numeric format
 		/** ---------------------------------------*/
 
-		$day_num_fmt = ($this->EE->TMPL->fetch_param('leading_zeroes') == 'yes') ? "%02d" : "%d";
+		$day_num_fmt = (ee()->TMPL->fetch_param('leading_zeroes') == 'yes') ? "%02d" : "%d";
 
 		/** ----------------------------------------
 		/**  Build the SQL query
@@ -417,7 +417,7 @@ class Channel_calendar extends Channel {
 
 		if ($this->sql != '')
 		{
-			$query = $this->EE->db->query($this->sql);
+			$query = ee()->db->query($this->sql);
 
 			$data = array();
 
@@ -425,8 +425,8 @@ class Channel_calendar extends Channel {
 			{  
 				// We'll need this later
 
-				$this->EE->load->library('typography');
-			 	$this->EE->typography->initialize(array(
+				ee()->load->library('typography');
+			 	ee()->typography->initialize(array(
  				 	'convert_curly'	=> FALSE
 				));
 
@@ -464,11 +464,11 @@ class Channel_calendar extends Channel {
 					/**  Single Variables
 					/** ---------------------------*/
 
-					foreach ($this->EE->TMPL->var_single as $key => $val)
+					foreach (ee()->TMPL->var_single as $key => $val)
 					{
 						if (isset($entry_dates[$key]))
 						{
-							$entry_date[$key] = $this->EE->localize->format_date(
+							$entry_date[$key] = ee()->localize->format_date(
 								$entry_date[$key], 
 								$row['entry_date']
 							);
@@ -481,16 +481,16 @@ class Channel_calendar extends Channel {
 
 						if (strncmp($key, 'permalink', 9) == 0)
 						{
-							if ($this->EE->functions->extract_path($key) != '' AND $this->EE->functions->extract_path($key) != 'SITE_INDEX')
+							if (ee()->functions->extract_path($key) != '' AND ee()->functions->extract_path($key) != 'SITE_INDEX')
 							{
-								$path = $this->EE->functions->extract_path($key).'/'.$row['entry_id'];
+								$path = ee()->functions->extract_path($key).'/'.$row['entry_id'];
 							}
 							else
 							{
 								$path = $row['entry_id'];
 							}
 
-							$permalink[$key] = $this->EE->functions->create_url($path);
+							$permalink[$key] = ee()->functions->create_url($path);
 						}
 
 						/** ----------------------------------------
@@ -499,16 +499,16 @@ class Channel_calendar extends Channel {
 
 						if (strncmp($key, 'title_permalink', 15) == 0 OR strncmp($key, 'url_title_path', 14) == 0)
 						{
-							if ($this->EE->functions->extract_path($key) != '' AND $this->EE->functions->extract_path($key) != 'SITE_INDEX')
+							if (ee()->functions->extract_path($key) != '' AND ee()->functions->extract_path($key) != 'SITE_INDEX')
 							{
-								$path = $this->EE->functions->extract_path($key).'/'.$row['url_title'];
+								$path = ee()->functions->extract_path($key).'/'.$row['url_title'];
 							}
 							else
 							{
 								$path = $row['url_title'];
 							}
 
-							$title_permalink[$key] = $this->EE->functions->create_url($path);
+							$title_permalink[$key] = ee()->functions->create_url($path);
 
 						}
 
@@ -552,7 +552,7 @@ class Channel_calendar extends Channel {
 
 						if (strncmp($key, 'profile_path', 12) == 0)
 						{
-							$profile_path[$key] = $this->EE->functions->create_url($this->EE->functions->extract_path($key).'/'.$row['member_id']);
+							$profile_path[$key] = ee()->functions->create_url(ee()->functions->extract_path($key).'/'.$row['member_id']);
 						}
 
 						/** ----------------------------------------
@@ -561,7 +561,7 @@ class Channel_calendar extends Channel {
 
 						if (strncmp($key, 'comment_path', 12) == 0 OR strncmp($key, 'entry_id_path', 13) == 0)
 						{
-							$id_path[$key] = $this->EE->functions->create_url($this->EE->functions->extract_path($key).'/'.$row['entry_id']);
+							$id_path[$key] = ee()->functions->create_url(ee()->functions->extract_path($key).'/'.$row['entry_id']);
 						}
 
 						/** ----------------------------------------
@@ -579,16 +579,16 @@ class Channel_calendar extends Channel {
 
 						if (strncmp($key, 'day_path', 8) == 0)
 						{
-							$formatted_date_path = $this->EE->localize->format_date('%Y/%m/%d', $row['entry_date']);
+							$formatted_date_path = ee()->localize->format_date('%Y/%m/%d', $row['entry_date']);
 
-							if ($this->EE->functions->extract_path($key) != ''
-								AND $this->EE->functions->extract_path($key) != 'SITE_INDEX')
+							if (ee()->functions->extract_path($key) != ''
+								AND ee()->functions->extract_path($key) != 'SITE_INDEX')
 							{
-								$formatted_date_path = $this->EE->functions->extract_path($key).'/'.$formatted_date_path;
+								$formatted_date_path = ee()->functions->extract_path($key).'/'.$formatted_date_path;
 							}
 
 							$if_entries = str_replace(LD.$key.RD, LD.'day_path'.$val.RD, $if_entries);
-							$day_path[$key] = $this->EE->functions->create_url($formatted_date_path);
+							$day_path[$key] = ee()->functions->create_url($formatted_date_path);
 						}
 
 					}
@@ -599,7 +599,7 @@ class Channel_calendar extends Channel {
 					/**  Build Data Array
 					/** ----------------------------------------*/
 
-					$d = $this->EE->localize->format_date('%d', $row['entry_date']);
+					$d = ee()->localize->format_date('%d', $row['entry_date']);
 					
 					if (substr($d, 0, 1) == '0')
 					{
@@ -607,7 +607,7 @@ class Channel_calendar extends Channel {
 					}
 					
 					$data[$d][] = array(
-						$this->EE->typography->parse_type($row['title'], array('text_format' => 'lite', 'html_format' => 'none', 'auto_links' => 'n', 'allow_img_url' => 'no')),
+						ee()->typography->parse_type($row['title'], array('text_format' => 'lite', 'html_format' => 'none', 'auto_links' => 'n', 'allow_img_url' => 'no')),
 						$row['url_title'],
 						$entry_date,
 						$permalink,
@@ -633,9 +633,9 @@ class Channel_calendar extends Channel {
 		$out = '';
 
 		$today = array(
-			'mday' => $this->EE->localize->format_date('%j'),
-			'mon' => $this->EE->localize->format_date('%n'),
-			'year' => $this->EE->localize->format_date('%Y')
+			'mday' => ee()->localize->format_date('%j'),
+			'mon' => ee()->localize->format_date('%n'),
+			'year' => ee()->localize->format_date('%Y')
 		);
 
 		while ($day <= $total_days)
@@ -698,7 +698,7 @@ class Channel_calendar extends Channel {
 			$out
 		);
 		
-		return str_replace ($row_chunk_m, $out, $this->EE->TMPL->tagdata);
+		return str_replace ($row_chunk_m, $out, ee()->TMPL->tagdata);
 	}
 
 

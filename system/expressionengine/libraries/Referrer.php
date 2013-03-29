@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -44,31 +44,31 @@ class EE_Referrer {
 	function log_referrer()
 	{  
 		// Is the nation of the user banend?
-		if ($this->EE->config->item('ip2nation') == 'y' &&
-			$this->EE->session->nation_ban_check(FALSE) === FALSE)
+		if (ee()->config->item('ip2nation') == 'y' &&
+			ee()->session->nation_ban_check(FALSE) === FALSE)
 		{
 			return;
 		}
 		
-		if ($this->EE->config->item('log_referrers') == 'n' OR ! isset($_SERVER['HTTP_REFERER']))
+		if (ee()->config->item('log_referrers') == 'n' OR ! isset($_SERVER['HTTP_REFERER']))
 		{
 			return;
 		}
 
 		// Load the typography helper so we can do entity_decode()
-		$this->EE->load->helper('typography');
+		ee()->load->helper('typography');
 
-		$site_url 	= $this->EE->config->item('site_url');
-		$ref 		= ( ! isset($_SERVER['HTTP_REFERER'])) ? '' : $this->EE->security->xss_clean(entity_decode($_SERVER['HTTP_REFERER']));
+		$site_url 	= ee()->config->item('site_url');
+		$ref 		= ( ! isset($_SERVER['HTTP_REFERER'])) ? '' : ee()->security->xss_clean(entity_decode($_SERVER['HTTP_REFERER']));
 		$test_ref	= strtolower($ref); // Yes, a copy, not a reference
-		$domain		= ( ! $this->EE->config->item('cookie_domain')) ? '' : $this->EE->config->item('cookie_domain');
+		$domain		= ( ! ee()->config->item('cookie_domain')) ? '' : ee()->config->item('cookie_domain');
 		
 		// Throttling - Ten hits a minute is the limit			
-		$query = $this->EE->db->query("SELECT COUNT(*) AS count 
+		$query = ee()->db->query("SELECT COUNT(*) AS count 
 							 FROM exp_referrers
-							 WHERE site_id = '".$this->EE->db->escape_str($this->EE->config->item('site_id'))."'
-							 AND (ref_from = '".$this->EE->db->escape_str($ref)."' OR ref_ip = '".$this->EE->input->ip_address()."')
-							 AND ref_date > '".($this->EE->localize->now-60)."'");
+							 WHERE site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."'
+							 AND (ref_from = '".ee()->db->escape_str($ref)."' OR ref_ip = '".ee()->input->ip_address()."')
+							 AND ref_date > '".(ee()->localize->now-60)."'");
 							 
 		if ($query->row('count')  > 10)
 		{
@@ -99,11 +99,11 @@ class EE_Referrer {
 		if ($test_ref != '' 
 			&& strncasecmp($test_ref, $site_url, strlen($site_url)) != 0
 			&& ($domain == '' OR stristr($test_ref, $domain) === FALSE)
-			&& ($this->EE->blacklist->whitelisted == 'y' OR $this->EE->blacklist->blacklisted == 'n'))
+			&& (ee()->blacklist->whitelisted == 'y' OR ee()->blacklist->blacklisted == 'n'))
 		{
 			
 			// INSERT into database
-			$ref_to = $this->EE->security->xss_clean($this->EE->functions->fetch_current_uri());
+			$ref_to = ee()->security->xss_clean(ee()->functions->fetch_current_uri());
 			
 			if (stristr($ref_to, '{') !== FALSE OR stristr($ref_to, '}') !== FALSE)
 			{
@@ -112,27 +112,27 @@ class EE_Referrer {
 			
 			$insert_data = array (  'ref_from' 		=> $ref,
 									'ref_to'  		=> $ref_to,
-									'ref_ip'		=> $this->EE->input->ip_address(),
-									'ref_date'		=> $this->EE->localize->now,
-									'ref_agent'		=> substr($this->EE->input->user_agent(), 0, 100), // db field is 100 chararacters, truncate for MySQL strict mode compat
-									'site_id'		=> $this->EE->config->item('site_id')
+									'ref_ip'		=> ee()->input->ip_address(),
+									'ref_date'		=> ee()->localize->now,
+									'ref_agent'		=> substr(ee()->input->user_agent(), 0, 100), // db field is 100 chararacters, truncate for MySQL strict mode compat
+									'site_id'		=> ee()->config->item('site_id')
 									);
 
-			$this->EE->db->query($this->EE->db->insert_string('exp_referrers', $insert_data));
+			ee()->db->query(ee()->db->insert_string('exp_referrers', $insert_data));
 			
 			// Prune Database
 			srand(time());
 			if ((rand() % 100) < 5) 
 			{		
-				$max = ( ! is_numeric($this->EE->config->item('max_referrers'))) ? 500 : $this->EE->config->item('max_referrers');
+				$max = ( ! is_numeric(ee()->config->item('max_referrers'))) ? 500 : ee()->config->item('max_referrers');
 		
-				$query = $this->EE->db->query("SELECT MAX(ref_id) as ref_id FROM exp_referrers WHERE site_id = '".$this->EE->db->escape_str($this->EE->config->item('site_id'))."'");
+				$query = ee()->db->query("SELECT MAX(ref_id) as ref_id FROM exp_referrers WHERE site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."'");
 				
 				$row = $query->row_array();
 				
 				if (isset($row['ref_id'] ) && $row['ref_id']  > $max)
 				{
-					$this->EE->db->query("DELETE FROM exp_referrers WHERE site_id = '".$this->EE->db->escape_str($this->EE->config->item('site_id'))."' AND ref_id < ".($row['ref_id'] -$max)."");
+					ee()->db->query("DELETE FROM exp_referrers WHERE site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."' AND ref_id < ".($row['ref_id'] -$max)."");
 				}
 			}
 		}

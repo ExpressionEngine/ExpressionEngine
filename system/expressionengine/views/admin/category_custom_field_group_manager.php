@@ -1,8 +1,5 @@
 <?php extend_template('default')?>
 
-<div class="cp_button"><a href="<?=BASE.AMP.'C=admin_content'.AMP.'M=edit_custom_category_field'.AMP.'group_id='.$group_id?>"><?=lang('create_new_cat_field')?></a></div>
-<div class="clear_left"></div>
-
 <h3><?=lang('category_group').': '.$group_name?></h3>
 
 <?php

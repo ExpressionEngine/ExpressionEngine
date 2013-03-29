@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -41,9 +41,9 @@ class Layout {
 
 	function duplicate_layout($dupe_id, $channel_id)
 	{
-		$this->EE->load->model('member_model');
+		ee()->load->model('member_model');
 		
-		$layouts = $this->EE->member_model->get_all_group_layouts(array($dupe_id));
+		$layouts = ee()->member_model->get_all_group_layouts(array($dupe_id));
 		
 		if (empty($layouts))
 		{
@@ -55,31 +55,31 @@ class Layout {
 		{
 			$layout['field_layout'];
 			
-			$this->EE->db->set("site_id", $layout['site_id']);
-			$this->EE->db->set("channel_id", $channel_id);
-			$this->EE->db->set("field_layout", $layout['field_layout']);
-			$this->EE->db->set("member_group", $layout['member_group']);
+			ee()->db->set("site_id", $layout['site_id']);
+			ee()->db->set("channel_id", $channel_id);
+			ee()->db->set("field_layout", $layout['field_layout']);
+			ee()->db->set("member_group", $layout['member_group']);
 
-			$this->EE->db->insert('layout_publish');
+			ee()->db->insert('layout_publish');
 		}			
 	}
 	
 	function delete_channel_layouts($channel_id)
 	{
-		$this->EE->load->model('member_model');
-		$this->EE->member_model->delete_group_layout('', $channel_id);
+		ee()->load->model('member_model');
+		ee()->member_model->delete_group_layout('', $channel_id);
 	}
 
 	function edit_layout_fields($field_info, $channel_id)
 	{
-		$this->EE->load->model('layout_model');
+		ee()->load->model('layout_model');
 		
 		if ( ! is_array($channel_id))
 		{
 			$channel_id = array($channel_id);
 		}
 		
-		$this->EE->layout_model->edit_layout_fields($field_info, 'edit_fields', $channel_id);
+		ee()->layout_model->edit_layout_fields($field_info, 'edit_fields', $channel_id);
 	}
 	
 	// --------------------------------------------------------------------
@@ -93,7 +93,7 @@ class Layout {
 	 */
 	function sync_layout($fields = array(), $channel_id = '', $changes_only = TRUE)
 	{
-		$this->EE->load->model('layout_model');
+		ee()->load->model('layout_model');
 
 		$new_settings = array();
 		$changed = array();
@@ -121,9 +121,9 @@ class Layout {
 			}
 		}
 		
-		$this->EE->db->select('enable_versioning, comment_system_enabled');
-		$this->EE->db->where('channel_id', $channel_id);
-		$current = $this->EE->db->get('channels');
+		ee()->db->select('enable_versioning, comment_system_enabled');
+		ee()->db->where('channel_id', $channel_id);
+		$current = ee()->db->get('channels');
 		
 		if ($current->num_rows() > 0)
 		{
@@ -173,19 +173,19 @@ class Layout {
 		
 		if ( ! empty($hide_tab_fields))
 		{
-			//$this->EE->layout_model->edit_layout_fields($hide_tab_fields, 'hide_tab_fields', $channel_id, TRUE);
-			$this->EE->layout_model->update_layouts($hide_tab_fields, 'delete_tabs', $channel_id);
+			//ee()->layout_model->edit_layout_fields($hide_tab_fields, 'hide_tab_fields', $channel_id, TRUE);
+			ee()->layout_model->update_layouts($hide_tab_fields, 'delete_tabs', $channel_id);
 		}
 		
 		if ( ! empty($show_tab_fields))
 		{
-			//$this->EE->layout_model->edit_layout_fields($show_tab_fields, 'show_tab_fields', $channel_id, TRUE);
-			$this->EE->layout_model->update_layouts($show_tab_fields, 'add_tabs', $channel_id);
+			//ee()->layout_model->edit_layout_fields($show_tab_fields, 'show_tab_fields', $channel_id, TRUE);
+			ee()->layout_model->update_layouts($show_tab_fields, 'add_tabs', $channel_id);
 		}
 
 		if ( ! empty($delete_fields))
 		{
-			$this->EE->layout_model->update_layouts($delete_fields, 'delete_fields', $channel_id);
+			ee()->layout_model->update_layouts($delete_fields, 'delete_fields', $channel_id);
 		}
 
 		return;
@@ -222,9 +222,9 @@ class Layout {
 			$clean_tabs[strtolower($key)] = $tabs[$key];
 		}
 		
-		$this->EE->load->model('layout_model');
+		ee()->load->model('layout_model');
 
-		return $this->EE->layout_model->update_layouts($clean_tabs, 'delete_tabs', $channel_id);
+		return ee()->layout_model->update_layouts($clean_tabs, 'delete_tabs', $channel_id);
 	}	
 
 	// --------------------------------------------------------------------
@@ -258,8 +258,8 @@ class Layout {
 		}
 
 
-		$this->EE->load->model('layout_model');
-		$this->EE->layout_model->update_layouts($clean_tabs, 'add_tabs', $channel_id);
+		ee()->load->model('layout_model');
+		ee()->layout_model->update_layouts($clean_tabs, 'add_tabs', $channel_id);
 	}
 
 
@@ -291,9 +291,9 @@ class Layout {
 			$clean_tabs[strtolower($key)] = $tabs[$key];
 		}
 
-		$this->EE->load->model('layout_model');
+		ee()->load->model('layout_model');
 		
-		return $this->EE->layout_model->update_layouts($clean_tabs, 'add_fields', $channel_id);
+		return ee()->layout_model->update_layouts($clean_tabs, 'add_fields', $channel_id);
 	}
 
 	// --------------------------------------------------------------------
@@ -343,9 +343,9 @@ class Layout {
 			}
 		}
 		
-		$this->EE->load->model('layout_model');
+		ee()->load->model('layout_model');
 	
-		return $this->EE->layout_model->update_layouts($clean_tabs, 'delete_fields', $channel_id);
+		return ee()->layout_model->update_layouts($clean_tabs, 'delete_fields', $channel_id);
 	}
 }
 // END CLASS

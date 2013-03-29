@@ -5,9 +5,11 @@
 
 	<?=form_open('C=myaccount'.AMP.'M=localization_update', '', $form_hidden)?>
 
-	<p>
+	<p class="cf">
 		<?=form_label(lang('timezone'), 'timezone')?>
-		<?=$timezone_menu?>
+		<span class="timezone">
+			<?=$timezone_menu?>
+		</span>
 	</p>
 
 	<p>

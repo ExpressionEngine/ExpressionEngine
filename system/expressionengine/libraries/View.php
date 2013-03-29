@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -59,8 +59,8 @@ class View {
 		
 		$this->_theme = $cp_theme;
 		
-		$this->EE->session->userdata['cp_theme'] = $cp_theme;
-		$this->EE->load->add_theme_cascade(PATH_CP_THEME.$cp_theme.'/');
+		ee()->session->userdata['cp_theme'] = $cp_theme;
+		ee()->load->add_theme_cascade(PATH_CP_THEME.$cp_theme.'/');
 	}
 
 	// --------------------------------------------------------------------
@@ -73,13 +73,13 @@ class View {
 	 */
 	public function render($view, $data = array(), $return = FALSE)
 	{
-		$this->EE->load->helper('view_helper');
-		$this->EE->javascript->compile();
+		ee()->load->helper('view_helper');
+		ee()->javascript->compile();
 
 		$data = array_merge($this->_data, $data);
 
 		// load up the inner
-		$rendered_view = $this->EE->load->view($view, $data, TRUE);
+		$rendered_view = ee()->load->view($view, $data, TRUE);
 
 		// traverse up the extensions
 		// we stop passing other data - it's cached in the loader
@@ -88,7 +88,7 @@ class View {
 			$view = $this->_extend;
 			$this->_extend = '';
 			$this->disable($this->_disable_up);
-			$rendered_view = $this->EE->load->view($view, array('EE_rendered_view' => $rendered_view), TRUE);
+			$rendered_view = ee()->load->view($view, array('EE_rendered_view' => $rendered_view), TRUE);
 		}
 
 		// clear for future calls
@@ -99,7 +99,7 @@ class View {
 			return $rendered_view;
 		}
 
-		$this->EE->output->set_output($rendered_view);
+		ee()->output->set_output($rendered_view);
 	}
 
 	// --------------------------------------------------------------------
@@ -184,7 +184,7 @@ class View {
 	 */
 	public function script_tag($file)
 	{
-		$src_dir = ($this->EE->config->item('use_compressed_js') == 'n') ? 'src/' : 'compressed/';
+		$src_dir = (ee()->config->item('use_compressed_js') == 'n') ? 'src/' : 'compressed/';
 		
 		$path = PATH_THEMES.'javascript/'.$src_dir.$file;
 		
@@ -195,7 +195,7 @@ class View {
 		
 		$filemtime = filemtime($path);
 		
-		$url = $this->EE->config->item('theme_folder_url') . 'javascript/' . $src_dir . $file . '?v=' . $filemtime;
+		$url = ee()->config->item('theme_folder_url') . 'javascript/' . $src_dir . $file . '?v=' . $filemtime;
 		
 		return '<script type="text/javascript" src="' . $url . '"></script>'.PHP_EOL;
 	}
@@ -262,7 +262,7 @@ class View {
 		
 		$theme_name = ltrim(strrchr($path, '/'), '/');
 
-		return $this->EE->config->item('theme_folder_url') . 'cp_themes/' . $theme_name . '/';		
+		return ee()->config->item('theme_folder_url') . 'cp_themes/' . $theme_name . '/';		
 	}
 
 	// --------------------------------------------------------------------

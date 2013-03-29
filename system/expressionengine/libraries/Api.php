@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -72,7 +72,7 @@ class Api {
 			if (in_array($api, $this->apis))
 			{
 				$api_driver = 'api_'.$api;
-				$this->EE->load->library('api/'.$api_driver);
+				ee()->load->library('api/'.$api_driver);
 			}
 		}
 	}
@@ -127,7 +127,7 @@ class Api {
 	 */
 	function _set_error($error_msg)
 	{
-		$this->errors[] = ($this->EE->lang->line($error_msg) != '') ? $this->EE->lang->line($error_msg) : str_replace('_', ' ', ucfirst($error_msg));
+		$this->errors[] = (ee()->lang->line($error_msg) != '') ? ee()->lang->line($error_msg) : str_replace('_', ' ', ucfirst($error_msg));
 	}
 
 	// --------------------------------------------------------------------
@@ -204,11 +204,11 @@ class Api {
 
 		if ($self_id != '')
 		{
-			$this->EE->db->where(array($self_field.' !=' => $self_id));
+			ee()->db->where(array($self_field.' !=' => $self_id));
 		}
 
-		$this->EE->db->where(array($url_title_field => $url_title, $type_field => $type_id));
-		$count = $this->EE->db->count_all_results($table);
+		ee()->db->where(array($url_title_field => $url_title, $type_field => $type_id));
+		$count = ee()->db->count_all_results($table);
 		
 		if ($count > 0)
 		{
@@ -220,26 +220,26 @@ class Api {
 				// Check again
 				if ($self_id != '')
 				{
-					$this->EE->db->where(array($self_field.' !=' => $self_id));
+					ee()->db->where(array($self_field.' !=' => $self_id));
 				}
 				
-				$this->EE->db->where(array($url_title_field => $url_title, $type_field => $type_id));
-				$count = $this->EE->db->count_all_results($table);
+				ee()->db->where(array($url_title_field => $url_title, $type_field => $type_id));
+				$count = ee()->db->count_all_results($table);
 			}
 			
 			while ($count > 0)
 			{
 				if ($self_id != '')
 				{
-					$this->EE->db->where(array($self_field.' !=' => $self_id));
+					ee()->db->where(array($self_field.' !=' => $self_id));
 				}
 			
-				$this->EE->db->select("{$url_title_field}, MID({$url_title_field}, ".(strlen($url_title) + 1).") + 1 AS next_suffix", FALSE);
-				$this->EE->db->where("{$url_title_field} REGEXP('".preg_quote($this->EE->db->escape_str($url_title))."[0-9]*$')");
-				$this->EE->db->where(array($type_field => $type_id));
-				$this->EE->db->order_by('next_suffix', 'DESC');
-				$this->EE->db->limit(1);
-				$query = $this->EE->db->get($table);
+				ee()->db->select("{$url_title_field}, MID({$url_title_field}, ".(strlen($url_title) + 1).") + 1 AS next_suffix", FALSE);
+				ee()->db->where("{$url_title_field} REGEXP('".preg_quote(ee()->db->escape_str($url_title))."[0-9]*$')");
+				ee()->db->where(array($type_field => $type_id));
+				ee()->db->order_by('next_suffix', 'DESC');
+				ee()->db->limit(1);
+				$query = ee()->db->get($table);
 				
 				// If no records found, we likely had to shorten the URL title (below)
 				// to give more space for numbers; so, we'll start the counting back
@@ -261,11 +261,11 @@ class Api {
 			
 				if ($self_id != '')
 				{
-					$this->EE->db->where(array($self_field.' !=' => $self_id));
+					ee()->db->where(array($self_field.' !=' => $self_id));
 				}
 			
-				$this->EE->db->where(array($url_title_field => $url_title, $type_field => $type_id));
-				$count = $this->EE->db->count_all_results($table);
+				ee()->db->where(array($url_title_field => $url_title, $type_field => $type_id));
+				$count = ee()->db->count_all_results($table);
 			
 				if ($count > 0)
 				{

@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -41,20 +41,20 @@ class Ip_to_nation {
 	{
 		if ($ip == '')
 		{
-			$ip = $this->EE->TMPL->tagdata;
+			$ip = ee()->TMPL->tagdata;
 		}
 
 		$ip = trim($ip);
 
-		if ( ! $this->EE->input->valid_ip($ip))
+		if ( ! ee()->input->valid_ip($ip))
 		{
 			$this->return_data = $ip;
 			return;
 		}
 
-		$this->EE->load->model('ip_to_nation_data', 'ip_data');
+		ee()->load->model('ip_to_nation_data', 'ip_data');
 
-		$c_code = $this->EE->ip_data->find($ip);
+		$c_code = ee()->ip_data->find($ip);
 
 		if ( ! $c_code)
 		{
@@ -64,13 +64,13 @@ class Ip_to_nation {
 
 		$country = $this->get_country($c_code);
 
-		if ($this->EE->TMPL->fetch_param('type') == 'text')
+		if (ee()->TMPL->fetch_param('type') == 'text')
 		{
 			$this->return_data = $country;
 		}
 		else
 		{
-			$this->return_data = '<img src="'.$this->EE->TMPL->fetch_param('image_url').'flag_'.$c_code.'.gif" width="18" height="12" alt="'.$country.'" title="'.$country.'" />';
+			$this->return_data = '<img src="'.ee()->TMPL->fetch_param('image_url').'flag_'.$c_code.'.gif" width="18" height="12" alt="'.$country.'" title="'.$country.'" />';
 		}
 
 		return $this->return_data;
@@ -83,23 +83,23 @@ class Ip_to_nation {
 	 */
 	function get_country($which = '')
 	{
-		if ( ! isset($this->EE->session->cache['ip_to_nation']['countries']))
+		if ( ! isset(ee()->session->cache['ip_to_nation']['countries']))
 		{
 			if ( ! include_once(APPPATH.'config/countries.php'))
 			{
-				$this->EE->TMPL->log_item("IP to Nation Module Error: Countries library file not found");
+				ee()->TMPL->log_item("IP to Nation Module Error: Countries library file not found");
 				return 'Unknown';
 			}
 
-			$this->EE->session->cache['ip_to_nation']['countries'] = $countries;
+			ee()->session->cache['ip_to_nation']['countries'] = $countries;
 		}
 
-		if ( ! isset($this->EE->session->cache['ip_to_nation']['countries'][$which]))
+		if ( ! isset(ee()->session->cache['ip_to_nation']['countries'][$which]))
 		{
 			return 'Unknown';
 		}
 
-		return $this->EE->session->cache['ip_to_nation']['countries'][$which];
+		return ee()->session->cache['ip_to_nation']['countries'][$which];
 	}
 }
 // END CLASS

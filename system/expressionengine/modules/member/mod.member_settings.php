@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -34,7 +34,7 @@ class Member_settings extends Member {
 	{
 		$menu = $this->_load_element('menu');
 
-		if ($this->EE->config->item('allow_member_localization') == 'n' AND $this->EE->session->userdata('group_id') != 1)
+		if (ee()->config->item('allow_member_localization') == 'n' AND ee()->session->userdata('group_id') != 1)
 		{
 			$menu = $this->_deny_if('allow_localization', $menu);
 		}
@@ -43,7 +43,7 @@ class Member_settings extends Member {
 			$menu = $this->_allow_if('allow_localization', $menu);
 		}
 
-		if ($this->EE->config->item('enable_photos') == 'y')
+		if (ee()->config->item('enable_photos') == 'y')
 		{
 			$menu = $this->_allow_if('enable_photos', $menu);
 		}
@@ -52,7 +52,7 @@ class Member_settings extends Member {
 			$menu = $this->_deny_if('enable_photos', $menu);
 		}
 		
-		if ($this->EE->config->item('enable_avatars') == 'y')
+		if (ee()->config->item('enable_avatars') == 'y')
 		{
 			$menu = $this->_allow_if('enable_avatars', $menu);			
 		}
@@ -82,19 +82,19 @@ class Member_settings extends Member {
 	/** ----------------------------------------*/
 	function profile_main()
 	{
-		$query = $this->EE->db->query("SELECT email, join_date, last_visit, last_activity, last_entry_date, last_comment_date, total_forum_topics, total_forum_posts, total_entries, total_comments, last_forum_post_date FROM exp_members WHERE member_id = '".$this->EE->session->userdata('member_id')."'");
+		$query = ee()->db->query("SELECT email, join_date, last_visit, last_activity, last_entry_date, last_comment_date, total_forum_topics, total_forum_posts, total_entries, total_comments, last_forum_post_date FROM exp_members WHERE member_id = '".ee()->session->userdata('member_id')."'");
 
-		$time_fmt = ($this->EE->session->userdata['time_format'] != '') ? $this->EE->session->userdata['time_format'] : $this->EE->config->item('time_format');
+		$time_fmt = (ee()->session->userdata['time_format'] != '') ? ee()->session->userdata['time_format'] : ee()->config->item('time_format');
 		$datecodes = ($time_fmt == 'us') ? $this->us_datecodes : $this->eu_datecodes;
 
 		return  $this->_var_swap($this->_load_element('home_page'),
 								array(
 										'email'						=> $query->row('email') ,
-										'join_date'					=> $this->EE->localize->format_date($datecodes['long'], $query->row('join_date') ),
-										'last_visit_date'			=> ($query->row('last_activity')  == 0) ? '--' : $this->EE->localize->format_date($datecodes['long'], $query->row('last_activity') ),
-										'recent_entry_date'			=> ($query->row('last_entry_date')  == 0) ? '--' : $this->EE->localize->format_date($datecodes['long'], $query->row('last_entry_date') ),
-										'recent_comment_date'		=> ($query->row('last_comment_date')  == 0) ? '--' : $this->EE->localize->format_date($datecodes['long'], $query->row('last_comment_date') ),
-										'recent_forum_post_date'	=> ($query->row('last_forum_post_date')  == 0) ? '--' : $this->EE->localize->format_date($datecodes['long'], $query->row('last_forum_post_date') ),
+										'join_date'					=> ee()->localize->format_date($datecodes['long'], $query->row('join_date') ),
+										'last_visit_date'			=> ($query->row('last_activity')  == 0) ? '--' : ee()->localize->format_date($datecodes['long'], $query->row('last_activity') ),
+										'recent_entry_date'			=> ($query->row('last_entry_date')  == 0) ? '--' : ee()->localize->format_date($datecodes['long'], $query->row('last_entry_date') ),
+										'recent_comment_date'		=> ($query->row('last_comment_date')  == 0) ? '--' : ee()->localize->format_date($datecodes['long'], $query->row('last_comment_date') ),
+										'recent_forum_post_date'	=> ($query->row('last_forum_post_date')  == 0) ? '--' : ee()->localize->format_date($datecodes['long'], $query->row('last_forum_post_date') ),
 										'total_topics'				=> $query->row('total_forum_topics') ,
 										'total_posts'				=> $query->row('total_forum_posts')  + $query->row('total_forum_topics') ,
 										'total_replies'				=> $query->row('total_forum_posts') ,
@@ -116,16 +116,16 @@ class Member_settings extends Member {
 		/**  Can the user view profiles?
 		/** ----------------------------------------*/
 
-		if ($this->EE->session->userdata('can_view_profiles') == 'n')
+		if (ee()->session->userdata('can_view_profiles') == 'n')
 		{
-			return $this->EE->output->show_user_error('general', 
-					array($this->EE->lang->line('mbr_not_allowed_to_view_profiles')));
+			return ee()->output->show_user_error('general', 
+					array(ee()->lang->line('mbr_not_allowed_to_view_profiles')));
 		}
 
 		// No member id, no view
 		if ($this->cur_id == '')
 		{
-			return $this->EE->output->show_user_error('general', array($this->EE->lang->line('profile_not_available')));
+			return ee()->output->show_user_error('general', array(ee()->lang->line('profile_not_available')));
 		}
 
 		/** ----------------------------------------
@@ -142,25 +142,25 @@ class Member_settings extends Member {
 					m.bday_d, m.bday_m, m.bday_y, m.accept_user_email, m.accept_messages,
 					g.group_title, g.can_send_private_messages';
 
-		$this->EE->db->select($select);
-		$this->EE->db->from(array('members m', 'member_groups g'));
-		$this->EE->db->where('m.member_id', (int)$this->cur_id);
-		$this->EE->db->where('g.site_id', $this->EE->config->item('site_id'));
-		$this->EE->db->where('m.group_id', 'g.group_id', FALSE);
+		ee()->db->select($select);
+		ee()->db->from(array('members m', 'member_groups g'));
+		ee()->db->where('m.member_id', (int)$this->cur_id);
+		ee()->db->where('g.site_id', ee()->config->item('site_id'));
+		ee()->db->where('m.group_id', 'g.group_id', FALSE);
 
-		if ($this->is_admin == FALSE OR $this->EE->session->userdata('group_id') != 1)
+		if ($this->is_admin == FALSE OR ee()->session->userdata('group_id') != 1)
 		{
-			$this->EE->db->where('m.group_id !=', 2);
+			ee()->db->where('m.group_id !=', 2);
 		}
 
-		$this->EE->db->where('m.group_id !=', 3);
-		$this->EE->db->where('m.group_id !=', 4);
+		ee()->db->where('m.group_id !=', 3);
+		ee()->db->where('m.group_id !=', 4);
 
-		$query = $this->EE->db->get();
+		$query = ee()->db->get();
 
 		if ($query->num_rows() == 0)
 		{
-			return $this->EE->output->show_user_error('general', array($this->EE->lang->line('profile_not_available')));
+			return ee()->output->show_user_error('general', array(ee()->lang->line('profile_not_available')));
 		}
 
 		// Fetch the row
@@ -176,9 +176,9 @@ class Member_settings extends Member {
 		/**  Is there an avatar?
 		/** ----------------------------------------*/
 
-		if ($this->EE->config->item('enable_avatars') == 'y' AND $row['avatar_filename']  != '')
+		if (ee()->config->item('enable_avatars') == 'y' AND $row['avatar_filename']  != '')
 		{
-			$avatar_path	= $this->EE->config->slash_item('avatar_url').$row['avatar_filename'] ;
+			$avatar_path	= ee()->config->slash_item('avatar_url').$row['avatar_filename'] ;
 			$avatar_width	= $row['avatar_width'] ;
 			$avatar_height	= $row['avatar_height'] ;
 
@@ -197,9 +197,9 @@ class Member_settings extends Member {
 		/**  Is there a member photo?
 		/** ----------------------------------------*/
 
-		if ($this->EE->config->item('enable_photos') == 'y' AND $row['photo_filename'] != '')
+		if (ee()->config->item('enable_photos') == 'y' AND $row['photo_filename'] != '')
 		{
-			$photo_path		= $this->EE->config->slash_item('photo_url').$row['photo_filename'] ;
+			$photo_path		= ee()->config->slash_item('photo_url').$row['photo_filename'] ;
 			$photo_width	= $row['photo_width'] ;
 			$photo_height	= $row['photo_height'] ;
 
@@ -228,8 +228,8 @@ class Member_settings extends Member {
 
 		if ($this->in_forum == TRUE)
 		{
-			$rank_query	 = $this->EE->db->query("SELECT rank_title, rank_min_posts, rank_stars FROM exp_forum_ranks ORDER BY rank_min_posts");
-			$mod_query	 = $this->EE->db->query("SELECT mod_member_id, mod_group_id FROM exp_forum_moderators");
+			$rank_query	 = ee()->db->query("SELECT rank_title, rank_min_posts, rank_stars FROM exp_forum_ranks ORDER BY rank_min_posts");
+			$mod_query	 = ee()->db->query("SELECT mod_member_id, mod_group_id FROM exp_forum_moderators");
 
 			$total_posts = ($row['total_forum_topics']  + $row['total_forum_posts'] );
 
@@ -282,7 +282,7 @@ class Member_settings extends Member {
 
 			// Is the user an admin?
 
-			$admin_query = $this->EE->db->query('SELECT admin_group_id, admin_member_id FROM exp_forum_administrators');
+			$admin_query = ee()->db->query('SELECT admin_group_id, admin_member_id FROM exp_forum_administrators');
 
 			$is_admin = FALSE;
 			if ($admin_query->num_rows() > 0)
@@ -313,7 +313,7 @@ class Member_settings extends Member {
 			{
 				$rankclass = 'rankAdmin';
 				$rank_class = 'rankAdmin';
-				$rank_title = $this->EE->lang->line('administrator');
+				$rank_title = ee()->lang->line('administrator');
 			}
 			else
 			{
@@ -324,7 +324,7 @@ class Member_settings extends Member {
 						if ($mod['mod_member_id'] == $this->cur_id OR $mod['mod_group_id'] == $row['group_id'] )
 						{
 							$rank_class = 'rankModerator';
-							$rank_title = $this->EE->lang->line('moderator');
+							$rank_title = ee()->lang->line('moderator');
 							break;
 						}
 					}
@@ -342,7 +342,7 @@ class Member_settings extends Member {
 		}
 		else
 		{
-			$search_path = $this->EE->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$this->EE->functions->fetch_action_id('Search', 'do_search').'&amp;mbr='.urlencode($row['member_id'] );
+			$search_path = ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.ee()->functions->fetch_action_id('Search', 'do_search').'&amp;mbr='.urlencode($row['member_id'] );
 		}
 
 		$ignore_form = array('hidden_fields'	=> array('toggle[]' => '', 'name' => '', 'daction' => ''),
@@ -350,7 +350,7 @@ class Member_settings extends Member {
 						 	  'id'				=> 'target'
 						 	  );
 
-		if ( ! in_array($row['member_id'] , $this->EE->session->userdata['ignore_list']))
+		if ( ! in_array($row['member_id'] , ee()->session->userdata['ignore_list']))
 		{
 			$ignore_button = "<div><a href='".$this->_member_path('edit_ignore_list')."' ".
 								"onclick='dynamic_action(\"add\");list_addition(\"".$row['screen_name'] ."\");return false;'>".
@@ -381,17 +381,17 @@ class Member_settings extends Member {
 												'rank_stars'			=> $stars,
 												'rank_title'			=> $rank_title,
 												'ignore_link'			=> $this->list_js().
-																			$this->EE->functions->form_declaration($ignore_form).
+																			ee()->functions->form_declaration($ignore_form).
 																			$ignore_button
 											)
 										);
 
 
-		$vars = $this->EE->functions->assign_variables($content, '/');
+		$vars = ee()->functions->assign_variables($content, '/');
 		$this->var_single	= $vars['var_single'];
 		$this->var_pair		= $vars['var_pair'];
 
-		$this->var_cond = $this->EE->functions->assign_conditional_variables($content, '/');
+		$this->var_cond = ee()->functions->assign_conditional_variables($content, '/');
 
 		/** ----------------------------------------
 		/**  Parse conditional pairs
@@ -402,7 +402,7 @@ class Member_settings extends Member {
 			/**  Conditional statements
 			/** ----------------------------------------*/
 
-			$cond = $this->EE->functions->prep_conditional($val['0']);
+			$cond = ee()->functions->prep_conditional($val['0']);
 
 			$lcond	= substr($cond, 0, strpos($cond, ' '));
 			$rcond	= substr($cond, strpos($cond, ' '));
@@ -461,7 +461,7 @@ class Member_settings extends Member {
 
 			if (stristr($val['0'], 'ignore'))
 			{
-				if ($row['member_id'] == $this->EE->session->userdata['member_id'])
+				if ($row['member_id'] == ee()->session->userdata['member_id'])
 				{
 					$content = $this->_deny_if('ignore', $content);
 				}
@@ -472,8 +472,8 @@ class Member_settings extends Member {
 			}
 		}
 		// END CONDITIONAL PAIRS
-		$this->EE->load->library('typography');
-		$this->EE->typography->initialize();
+		ee()->load->library('typography');
+		ee()->typography->initialize();
 
 		/** ----------------------------------------
 		/**  Parse "single" variables
@@ -497,7 +497,7 @@ class Member_settings extends Member {
 
 			if (strncmp($key, 'last_visit', 10) == 0)
 			{
-				$content = $this->_var_swap_single($key, ($row['last_activity'] > 0) ? $this->EE->localize->format_date($val, $row['last_activity'] ) : '', $content);
+				$content = $this->_var_swap_single($key, ($row['last_activity'] > 0) ? ee()->localize->format_date($val, $row['last_activity'] ) : '', $content);
 			}
 
 			/** ----------------------------------------
@@ -506,7 +506,7 @@ class Member_settings extends Member {
 
 			if (strncmp($key, 'join_date', 9) == 0)
 			{
-				$content = $this->_var_swap_single($key, ($row['join_date'] > 0) ? $this->EE->localize->format_date($val, $row['join_date'] ) : '', $content);
+				$content = $this->_var_swap_single($key, ($row['join_date'] > 0) ? ee()->localize->format_date($val, $row['join_date'] ) : '', $content);
 			}
 
 			/** ----------------------------------------
@@ -515,7 +515,7 @@ class Member_settings extends Member {
 
 			if (strncmp($key, 'last_entry_date', 15) == 0)
 			{
-				$content = $this->_var_swap_single($key, ($row['last_entry_date']  > 0) ? $this->EE->localize->format_date($val, $row['last_entry_date'] ) : '', $content);
+				$content = $this->_var_swap_single($key, ($row['last_entry_date']  > 0) ? ee()->localize->format_date($val, $row['last_entry_date'] ) : '', $content);
 			}
 
 			/** ----------------------------------------
@@ -524,7 +524,7 @@ class Member_settings extends Member {
 
 			if (strncmp($key, 'last_forum_post_date', 20) == 0)
 			{
-				$content = $this->_var_swap_single($key, ($row['last_forum_post_date']  > 0) ? $this->EE->localize->format_date($val, $row['last_forum_post_date'] ) : '', $content);
+				$content = $this->_var_swap_single($key, ($row['last_forum_post_date']  > 0) ? ee()->localize->format_date($val, $row['last_forum_post_date'] ) : '', $content);
 			}
 
 			/** ----------------------------------------
@@ -533,7 +533,7 @@ class Member_settings extends Member {
 
 			if (strncmp($key, 'last_comment_date', 17) == 0)
 			{
-				$content = $this->_var_swap_single($key, ($row['last_comment_date']  > 0) ? $this->EE->localize->format_date($val, $row['last_comment_date'] ) : '', $content);
+				$content = $this->_var_swap_single($key, ($row['last_comment_date']  > 0) ? ee()->localize->format_date($val, $row['last_comment_date'] ) : '', $content);
 			}
 
 			/** ----------------------
@@ -564,7 +564,7 @@ class Member_settings extends Member {
 
 			if ($key == "email")
 			{
-				$content = $this->_var_swap_single($val, $this->EE->typography->encode_email($row['email'] ), $content);
+				$content = $this->_var_swap_single($val, ee()->typography->encode_email($row['email'] ), $content);
 			}
 
 			/** ----------------------
@@ -579,9 +579,9 @@ class Member_settings extends Member {
 				{
 					$month = (strlen($row['bday_m'] ) == 1) ? '0'.$row['bday_m'] : $row['bday_m'];
 
-					$m = $this->EE->localize->localize_month($month);
+					$m = ee()->localize->localize_month($month);
 
-					$birthday .= $this->EE->lang->line($m['1']);
+					$birthday .= ee()->lang->line($m['1']);
 
 					if ($row['bday_d'] != '' AND $row['bday_d']  != 0)
 					{
@@ -613,7 +613,7 @@ class Member_settings extends Member {
 
 			if ($key == "timezone")
 			{
-				$timezone = ($row['timezone']  != '') ? $this->EE->lang->line($row['timezone'] ) : '';
+				$timezone = ($row['timezone']  != '') ? ee()->lang->line($row['timezone'] ) : '';
 
 				$content = $this->_var_swap_single($val, $timezone, $content);
 			}
@@ -626,7 +626,7 @@ class Member_settings extends Member {
 			{
 				$locale = FALSE;
 
-				if ($this->EE->session->userdata('member_id') != $this->cur_id)
+				if (ee()->session->userdata('member_id') != $this->cur_id)
 				{  
 					// Default is UTC?
 					$locale = ($default_fields['timezone'] == '') ? 'UTC' : $default_fields['timezone'];
@@ -634,7 +634,7 @@ class Member_settings extends Member {
 
 				$content = $this->_var_swap_single(
 					$key,
-					$this->EE->localize->format_date($val, NULL, $locale),
+					ee()->localize->format_date($val, NULL, $locale),
 					$content
 				);
 			}
@@ -645,7 +645,7 @@ class Member_settings extends Member {
 
 			if ($key == 'bio')
 			{
-				$bio = $this->EE->typography->parse_type($row[$val],
+				$bio = ee()->typography->parse_type($row[$val],
 															 array(
 																		'text_format'	=> 'xhtml',
 																		'html_format'	=> 'safe',
@@ -690,14 +690,14 @@ class Member_settings extends Member {
 
 		$sql = "SELECT m_field_id, m_field_name, m_field_label, m_field_description, m_field_fmt FROM  exp_member_fields ";
 
-		if ($this->EE->session->userdata['group_id'] != 1)
+		if (ee()->session->userdata['group_id'] != 1)
 		{
 			$sql .= " WHERE m_field_public = 'y' ";
 		}
 
 		$sql .= " ORDER BY m_field_order";
 
-		$query = $this->EE->db->query($sql);
+		$query = ee()->db->query($sql);
 
 		if ($query->num_rows() > 0)
 		{
@@ -708,7 +708,7 @@ class Member_settings extends Member {
 				$fnames[$row['m_field_name']] = $row['m_field_id'];
 			}
 
-			$result = $this->EE->db->query("SELECT * FROM exp_member_data WHERE member_id = '{$this->cur_id}'");
+			$result = ee()->db->query("SELECT * FROM exp_member_data WHERE member_id = '{$this->cur_id}'");
 
 			/** ----------------------------------------
 			/**  Parse conditionals for custom fields
@@ -720,7 +720,7 @@ class Member_settings extends Member {
 			{
 				// Prep the conditional
 
-				$cond = $this->EE->functions->prep_conditional($val['0']);
+				$cond = ee()->functions->prep_conditional($val['0']);
 
 				$lcond	= substr($cond, 0, strpos($cond, ' '));
 				$rcond	= substr($cond, strpos($cond, ' '));
@@ -762,7 +762,7 @@ class Member_settings extends Member {
 
 						if ($field_data != '')
 						{
-							$field_data = $this->EE->typography->parse_type($field_data,
+							$field_data = ee()->typography->parse_type($field_data,
 																		 array(
 																					'text_format'	=> $row['m_field_fmt'],
 																					'html_format'	=> 'none',
@@ -791,8 +791,8 @@ class Member_settings extends Member {
 			}
 			else
 			{
-				$this->EE->load->library('typography');
-				$this->EE->typography->initialize();
+				ee()->load->library('typography');
+				ee()->typography->initialize();
 
 				$str = '';
 
@@ -804,7 +804,7 @@ class Member_settings extends Member {
 
 					if ($field_data != '')
 					{
-						$field_data = $this->EE->typography->parse_type($field_data,
+						$field_data = ee()->typography->parse_type($field_data,
 																	 array(
 																				'text_format'	=> $row['m_field_fmt'],
 																				'html_format'	=> 'safe',
@@ -848,7 +848,7 @@ class Member_settings extends Member {
 	function edit_profile()
 	{
 		// Load the form helper
-		$this->EE->load->helper('form');
+		ee()->load->helper('form');
 
 		/** ----------------------------------------
 		/**  Build the custom profile fields
@@ -860,9 +860,9 @@ class Member_settings extends Member {
 		/**  Fetch the data
 		/** ----------------------------------------*/
 
-		$sql = "SELECT * FROM exp_member_data WHERE member_id = '".$this->EE->session->userdata('member_id')."'";
+		$sql = "SELECT * FROM exp_member_data WHERE member_id = '".ee()->session->userdata('member_id')."'";
 
-		$result = $this->EE->db->query($sql);
+		$result = ee()->db->query($sql);
 
 		if ($result->num_rows() > 0)
 		{
@@ -880,14 +880,14 @@ class Member_settings extends Member {
 
 		$sql = "SELECT *  FROM exp_member_fields ";
 
-		if ($this->EE->session->userdata['group_id'] != 1)
+		if (ee()->session->userdata['group_id'] != 1)
 		{
 			$sql .= " WHERE m_field_public = 'y' ";
 		}
 
 		$sql .= " ORDER BY m_field_order";
 
-		$query = $this->EE->db->query($sql);
+		$query = ee()->db->query($sql);
 
 		$result_row = $result->row_array();
 
@@ -972,7 +972,7 @@ class Member_settings extends Member {
 		/** ----------------------------------------
 		/**  Build the output data
 		/** ----------------------------------------*/
-		$query = $this->EE->db->query("SELECT bday_y, bday_m, bday_d, url, location, occupation, interests, aol_im, icq, yahoo_im, msn_im, bio FROM exp_members WHERE member_id = '".$this->EE->session->userdata('member_id')."'");
+		$query = ee()->db->query("SELECT bday_y, bday_m, bday_d, url, location, occupation, interests, aol_im, icq, yahoo_im, msn_im, bio FROM exp_members WHERE member_id = '".ee()->session->userdata('member_id')."'");
 
 		return  $this->_var_swap($this->_load_element('edit_profile_form'),
 								array(
@@ -1003,20 +1003,20 @@ class Member_settings extends Member {
 	/** ----------------------------------------*/
 	function update_profile()
 	{
-		$this->EE->load->model('member_model');
+		ee()->load->model('member_model');
 		
 		/** -------------------------------------
 		/**  Safety....
 		/** -------------------------------------*/
 		if (count($_POST) == 0)
 		{
-			return $this->EE->output->show_user_error('general', array($this->EE->lang->line('invalid_action')));
+			return ee()->output->show_user_error('general', array(ee()->lang->line('invalid_action')));
 		}
 
 		// Are any required custom fields empty?
-		$this->EE->db->select('m_field_id, m_field_label');
-		$this->EE->db->where('m_field_required = "y"');
-		$query = $this->EE->db->get('member_fields');
+		ee()->db->select('m_field_id, m_field_label');
+		ee()->db->where('m_field_required = "y"');
+		$query = ee()->db->get('member_fields');
 
 		 $errors = array();
 
@@ -1026,7 +1026,7 @@ class Member_settings extends Member {
 			{
 				if (isset($_POST['m_field_id_'.$row['m_field_id']]) AND $_POST['m_field_id_'.$row['m_field_id']] == '')
 				{
-					$errors[] = $this->EE->lang->line('mbr_custom_field_empty').'&nbsp;'.$row['m_field_label'];
+					$errors[] = ee()->lang->line('mbr_custom_field_empty').'&nbsp;'.$row['m_field_label'];
 				}
 			}
 		 }
@@ -1035,9 +1035,9 @@ class Member_settings extends Member {
 		/**  Blacklist/Whitelist Check
 		/** ----------------------------------------*/
 
-		if ($this->EE->blacklist->blacklisted == 'y' && $this->EE->blacklist->whitelisted == 'n')
+		if (ee()->blacklist->blacklisted == 'y' && ee()->blacklist->whitelisted == 'n')
 		{
-			return $this->EE->output->show_user_error('general', array($this->EE->lang->line('not_authorized')));
+			return ee()->output->show_user_error('general', array(ee()->lang->line('not_authorized')));
 		}
 
 		/** -------------------------------------
@@ -1045,7 +1045,7 @@ class Member_settings extends Member {
 		/** -------------------------------------*/
 		 if (count($errors) > 0)
 		 {
-			return $this->EE->output->show_user_error('submission', $errors);
+			return ee()->output->show_user_error('submission', $errors);
 		 }
 
 		/** -------------------------------------
@@ -1076,17 +1076,17 @@ class Member_settings extends Member {
 
 		foreach ($fields as $val)
 		{
-			$data[$val] = (isset($_POST[$val])) ? $this->EE->security->xss_clean($_POST[$val]) : '';
+			$data[$val] = (isset($_POST[$val])) ? ee()->security->xss_clean($_POST[$val]) : '';
 			unset($_POST[$val]);
 		}
 
-		$this->EE->load->helper('url');
+		ee()->load->helper('url');
 		$data['url'] = preg_replace('/[\'"]/is', '', $data['url']);
 		$data['url'] = prep_url($data['url']);
 
 		if (is_numeric($data['bday_d']) AND is_numeric($data['bday_m']))
 		{
-			$this->EE->load->helper('date');
+			ee()->load->helper('date');
 			$year = ($data['bday_y'] != '') ? $data['bday_y'] : date('Y');
 			$mdays = days_in_month($data['bday_m'], $year);
 
@@ -1100,7 +1100,7 @@ class Member_settings extends Member {
 
 		if (count($data) > 0)
 		{
-			$this->EE->member_model->update_member($this->EE->session->userdata('member_id'), $data);
+			ee()->member_model->update_member(ee()->session->userdata('member_id'), $data);
 		}
 
 		/** -------------------------------------
@@ -1115,13 +1115,13 @@ class Member_settings extends Member {
 			{
 				if (strncmp($key, 'm_field_id_', 11) == 0)
 				{
-					$m_data[$key] = $this->EE->security->xss_clean($val);
+					$m_data[$key] = ee()->security->xss_clean($val);
 				}
 			}
 
 			if (count($m_data) > 0)
 			{
-				$this->EE->member_model->update_member_data($this->EE->session->userdata('member_id'), $m_data);
+				ee()->member_model->update_member_data(ee()->session->userdata('member_id'), $m_data);
 			}
 		}
 
@@ -1131,15 +1131,15 @@ class Member_settings extends Member {
 
 		if ($data['location'] != "" OR $data['url'] != "")
 		{
-			if ($this->EE->db->table_exists('comments'))
+			if (ee()->db->table_exists('comments'))
 			{
 				$d = array(
 						'location'	=> $data['location'],
 						'url'		=> $data['url']
 					);
 				
-				$this->EE->db->where('author_id', $this->EE->session->userdata('member_id'));
-				$this->EE->db->update('comments', $d);
+				ee()->db->where('author_id', ee()->session->userdata('member_id'));
+				ee()->db->update('comments', $d);
 			}
 	  	}
 
@@ -1149,8 +1149,8 @@ class Member_settings extends Member {
 
 		return $this->_var_swap($this->_load_element('success'),
 								array(
-										'lang:heading'	=>	$this->EE->lang->line('profile_updated'),
-										'lang:message'	=>	$this->EE->lang->line('mbr_profile_has_been_updated')
+										'lang:heading'	=>	ee()->lang->line('profile_updated'),
+										'lang:message'	=>	ee()->lang->line('mbr_profile_has_been_updated')
 									 )
 								);
 	}
@@ -1162,7 +1162,7 @@ class Member_settings extends Member {
 	/** ----------------------------------------*/
 	function edit_preferences()
 	{
-		$query = $this->EE->db->query("SELECT display_avatars, display_signatures, smart_notifications, accept_messages, parse_smileys FROM exp_members WHERE member_id = '".$this->EE->session->userdata('member_id')."'");
+		$query = ee()->db->query("SELECT display_avatars, display_signatures, smart_notifications, accept_messages, parse_smileys FROM exp_members WHERE member_id = '".ee()->session->userdata('member_id')."'");
 	 
 	 	$element = $this->_load_element('edit_preferences');
 	 
@@ -1170,9 +1170,9 @@ class Member_settings extends Member {
 		// 'member_edit_preferences' hook.
 		//  - Allows adding of preferences to user side preferences form
 		//
-			if ($this->EE->extensions->active_hook('member_edit_preferences') === TRUE)
+			if (ee()->extensions->active_hook('member_edit_preferences') === TRUE)
 			{
-				$element = $this->EE->extensions->call('member_edit_preferences', $element);
+				$element = ee()->extensions->call('member_edit_preferences', $element);
 			}
 		//
 		// -------------------------------------------
@@ -1209,14 +1209,14 @@ class Member_settings extends Member {
 						'parse_smileys'			=> (isset($_POST['parse_smileys']))  ? 'y' : 'n'
 					  );
 
-		$this->EE->db->query($this->EE->db->update_string('exp_members', $data, "member_id = '".$this->EE->session->userdata('member_id')."'"));
+		ee()->db->query(ee()->db->update_string('exp_members', $data, "member_id = '".ee()->session->userdata('member_id')."'"));
 
 		// -------------------------------------------
 		// 'member_update_preferences' hook.
 		//  - Allows updating of added preferences via user side preferences form
 		//
-			$edata = $this->EE->extensions->call('member_update_preferences', $data);
-			if ($this->EE->extensions->end_script === TRUE) return;
+			ee()->extensions->call('member_update_preferences', $data);
+			if (ee()->extensions->end_script === TRUE) return;
 		//
 		// -------------------------------------------
 
@@ -1226,8 +1226,8 @@ class Member_settings extends Member {
 
 		return $this->_var_swap($this->_load_element('success'),
 								array(
-										'lang:heading'	=>	$this->EE->lang->line('mbr_preferences_updated'),
-										'lang:message'	=>	$this->EE->lang->line('mbr_prefereces_have_been_updated')
+										'lang:heading'	=>	ee()->lang->line('mbr_preferences_updated'),
+										'lang:message'	=>	ee()->lang->line('mbr_prefereces_have_been_updated')
 									 )
 							);
 	}
@@ -1239,7 +1239,7 @@ class Member_settings extends Member {
 	/** ----------------------------------------*/
 	function edit_email()
 	{
-		$query = $this->EE->db->query("SELECT email, accept_admin_email, accept_user_email, notify_by_default, notify_of_pm, smart_notifications FROM exp_members WHERE member_id = '".$this->EE->session->userdata('member_id')."'");
+		$query = ee()->db->query("SELECT email, accept_admin_email, accept_user_email, notify_by_default, notify_of_pm, smart_notifications FROM exp_members WHERE member_id = '".ee()->session->userdata('member_id')."'");
 	 
 		return $this->_var_swap($this->_load_element('email_prefs_form'),
 								array(
@@ -1267,16 +1267,16 @@ class Member_settings extends Member {
 
 		if ( ! isset($_POST['email']))
 		{
-			return $this->EE->output->show_user_error('general', array($this->EE->lang->line('invalid_action')));
+			return ee()->output->show_user_error('general', array(ee()->lang->line('invalid_action')));
 		}
 
 		/** ----------------------------------------
 		/**  Blacklist/Whitelist Check
 		/** ----------------------------------------*/
 
-		if ($this->EE->blacklist->blacklisted == 'y' && $this->EE->blacklist->whitelisted == 'n')
+		if (ee()->blacklist->blacklisted == 'y' && ee()->blacklist->whitelisted == 'n')
 		{
-			return $this->EE->output->show_user_error('general', array($this->EE->lang->line('not_authorized')));
+			return ee()->output->show_user_error('general', array(ee()->lang->line('not_authorized')));
 		}
 
 		/** -------------------------------------
@@ -1288,11 +1288,11 @@ class Member_settings extends Member {
 		}
 
 
-		$query = $this->EE->db->query("SELECT email, password FROM exp_members WHERE member_id = '".$this->EE->session->userdata('member_id')."'");
+		$query = ee()->db->query("SELECT email, password FROM exp_members WHERE member_id = '".ee()->session->userdata('member_id')."'");
 
 		$VAL = new EE_Validate(
 								array(
-										'member_id'		=> $this->EE->session->userdata('member_id'),
+										'member_id'		=> ee()->session->userdata('member_id'),
 										'val_type'		=> 'update', // new or update
 										'fetch_lang' 	=> TRUE,
 										'require_cpw' 	=> FALSE,
@@ -1312,7 +1312,7 @@ class Member_settings extends Member {
 
 		if (count($VAL->errors) > 0)
 		{
-			return $this->EE->output->show_user_error('submission', $VAL->errors);
+			return ee()->output->show_user_error('submission', $VAL->errors);
 		}
 
 		/** -------------------------------------
@@ -1328,7 +1328,7 @@ class Member_settings extends Member {
 						'smart_notifications'	=> (isset($_POST['smart_notifications']))  ? 'y' : 'n'
 					  );
 
-		$this->EE->db->query($this->EE->db->update_string('exp_members', $data, "member_id = '".$this->EE->session->userdata('member_id')."'"));
+		ee()->db->query(ee()->db->update_string('exp_members', $data, "member_id = '".ee()->session->userdata('member_id')."'"));
 
 		/** -------------------------------------
 		/**  Update comments and log email change
@@ -1336,7 +1336,7 @@ class Member_settings extends Member {
 
 		if ($query->row('email')  != $_POST['email'])
 		{
-			$this->EE->db->query($this->EE->db->update_string('exp_comments', array('email' => $_POST['email']), "author_id = '".$this->EE->session->userdata('member_id')."'"));
+			ee()->db->query(ee()->db->update_string('exp_comments', array('email' => $_POST['email']), "author_id = '".ee()->session->userdata('member_id')."'"));
 		}
 
 		/** -------------------------------------
@@ -1345,8 +1345,8 @@ class Member_settings extends Member {
 
 		return $this->_var_swap($this->_load_element('success'),
 								array(
-										'lang:heading'	=>	$this->EE->lang->line('mbr_email_updated'),
-										'lang:message'	=>	$this->EE->lang->line('mbr_email_has_been_updated')
+										'lang:heading'	=>	ee()->lang->line('mbr_email_updated'),
+										'lang:message'	=>	ee()->lang->line('mbr_email_has_been_updated')
 									 )
 							);
 	}
@@ -1359,13 +1359,13 @@ class Member_settings extends Member {
 	/** ----------------------------------------*/
 	function edit_userpass()
 	{
-		$query = $this->EE->db->query("SELECT username, screen_name FROM exp_members WHERE member_id = '".$this->EE->session->userdata('member_id')."'");
+		$query = ee()->db->query("SELECT username, screen_name FROM exp_members WHERE member_id = '".ee()->session->userdata('member_id')."'");
 
 		return $this->_var_swap(
 			$this->_load_element('username_password_form'),
 			array(
 				'row:username_form'				=>	
-					($this->EE->session->userdata['group_id'] == 1 OR $this->EE->config->item('allow_username_change') == 'y') ? 
+					(ee()->session->userdata['group_id'] == 1 OR ee()->config->item('allow_username_change') == 'y') ? 
 						$this->_load_element('username_row') : 
 						$this->_load_element('username_change_disallowed'),
 				'path:update_username_password'	=>	$this->_member_path('update_userpass'),
@@ -1382,18 +1382,18 @@ class Member_settings extends Member {
 	 */
 	function update_userpass()
 	{
-		$this->EE->load->library('auth');
+		ee()->load->library('auth');
 
 	  	// Safety. Prevents accessing this function unless
 	  	// the request came from the form submission
-		if ( ! $this->EE->input->post('current_password'))
+		if ( ! ee()->input->post('current_password'))
 		{
-			return $this->EE->output->show_user_error('general', array($this->EE->lang->line('current_password_required')));
+			return ee()->output->show_user_error('general', array(ee()->lang->line('current_password_required')));
 		}
 
-		$query = $this->EE->db->select('username, screen_name, password')
+		$query = ee()->db->select('username, screen_name, password')
 							  ->get_where('members', array(
-							  	'member_id'	=> (int) $this->EE->session->userdata('member_id')							
+							  	'member_id'	=> (int) ee()->session->userdata('member_id')							
 							  ));
 
 		if ( ! $query->num_rows())
@@ -1401,7 +1401,7 @@ class Member_settings extends Member {
 			return FALSE;
 		}
 
-		if ($this->EE->config->item('allow_username_change') != 'y')
+		if (ee()->config->item('allow_username_change') != 'y')
 		{
 			$_POST['username'] = $query->row('username');
 		}
@@ -1427,7 +1427,7 @@ class Member_settings extends Member {
 
 		$VAL = new EE_Validate(
 								array(
-										'member_id'			=> $this->EE->session->userdata('member_id'),
+										'member_id'			=> ee()->session->userdata('member_id'),
 										'val_type'			=> 'update', // new or update
 										'fetch_lang' 		=> TRUE,
 										'require_cpw' 		=> TRUE,
@@ -1444,7 +1444,7 @@ class Member_settings extends Member {
 
 		$VAL->validate_screen_name();
 
-		if ($this->EE->config->item('allow_username_change') == 'y')
+		if (ee()->config->item('allow_username_change') == 'y')
 		{
 			$VAL->validate_username();
 		}
@@ -1458,26 +1458,26 @@ class Member_settings extends Member {
 		// Display validation errors if there are any
 		if (count($VAL->errors) > 0)
 		{
-			return $this->EE->output->show_user_error('submission', $VAL->errors);
+			return ee()->output->show_user_error('submission', $VAL->errors);
 		}
 
 		// Finally, and most important of all, was their
 		// current password submitted correctly?
-		if ( ! $this->EE->auth->authenticate_id(
-			(int) $this->EE->session->userdata('member_id'),
-			$this->EE->input->post('current_password')))
+		if ( ! ee()->auth->authenticate_id(
+			(int) ee()->session->userdata('member_id'),
+			ee()->input->post('current_password')))
 		{
-			return $this->EE->output->show_user_error('general', array($this->EE->lang->line('current_password_incorrect')));
+			return ee()->output->show_user_error('general', array(ee()->lang->line('current_password_incorrect')));
 		}
 
 		/** -------------------------------------
 		/**  Update "last post" forum info if needed
 		/** -------------------------------------*/
 
-		if ($query->row('screen_name')  != $_POST['screen_name'] AND $this->EE->config->item('forum_is_installed') == "y" )
+		if ($query->row('screen_name')  != $_POST['screen_name'] AND ee()->config->item('forum_is_installed') == "y" )
 		{
-			$this->EE->db->query("UPDATE exp_forums SET forum_last_post_author = '".$this->EE->db->escape_str($_POST['screen_name'])."' WHERE forum_last_post_author_id = '".$this->EE->session->userdata('member_id')."'");
-			$this->EE->db->query("UPDATE exp_forum_moderators SET mod_member_name = '".$this->EE->db->escape_str($_POST['screen_name'])."' WHERE mod_member_id = '".$this->EE->session->userdata('member_id')."'");
+			ee()->db->query("UPDATE exp_forums SET forum_last_post_author = '".ee()->db->escape_str($_POST['screen_name'])."' WHERE forum_last_post_author_id = '".ee()->session->userdata('member_id')."'");
+			ee()->db->query("UPDATE exp_forum_moderators SET mod_member_name = '".ee()->db->escape_str($_POST['screen_name'])."' WHERE mod_member_id = '".ee()->session->userdata('member_id')."'");
 		}
 
 		/** -------------------------------------
@@ -1485,7 +1485,7 @@ class Member_settings extends Member {
 		/** -------------------------------------*/
 		$data['screen_name'] = $_POST['screen_name'];
 
-		if ($this->EE->config->item('allow_username_change') == 'y')
+		if (ee()->config->item('allow_username_change') == 'y')
 		{
 			$data['username'] = $_POST['username'];
 		}
@@ -1496,24 +1496,24 @@ class Member_settings extends Member {
 
 		if ($_POST['password'] != '')
 		{
-			$this->EE->auth->update_password($this->EE->session->userdata('member_id'),
-											 $this->EE->input->post('password'));
+			ee()->auth->update_password(ee()->session->userdata('member_id'),
+											 ee()->input->post('password'));
 
 			$pw_change = $this->_var_swap($this->_load_element('password_change_warning'),
-											array('lang:password_change_warning' => $this->EE->lang->line('password_change_warning'))
+											array('lang:password_change_warning' => ee()->lang->line('password_change_warning'))
 										);
 		}
 
-		$this->EE->db->query($this->EE->db->update_string('exp_members', $data, "member_id = '".$this->EE->session->userdata('member_id')."'"));
+		ee()->db->query(ee()->db->update_string('exp_members', $data, "member_id = '".ee()->session->userdata('member_id')."'"));
 
 		/** -------------------------------------
 		/**  Update comments if screen name has changed
 		/** -------------------------------------*/
 		if ($query->row('screen_name')  != $_POST['screen_name'])
 		{
-			$this->EE->db->query($this->EE->db->update_string('exp_comments', array('name' => $_POST['screen_name']), "author_id = '".$this->EE->session->userdata('member_id')."'"));
+			ee()->db->query(ee()->db->update_string('exp_comments', array('name' => $_POST['screen_name']), "author_id = '".ee()->session->userdata('member_id')."'"));
 
-			$this->EE->session->userdata['screen_name'] = stripslashes($_POST['screen_name']);
+			ee()->session->userdata['screen_name'] = stripslashes($_POST['screen_name']);
 		}
 
 		/** -------------------------------------
@@ -1521,8 +1521,8 @@ class Member_settings extends Member {
 		/** -------------------------------------*/
 		return $this->_var_swap($this->_load_element('success'),
 								array(
-										'lang:heading'	=>	$this->EE->lang->line('username_and_password'),
-										'lang:message'	=>	$this->EE->lang->line('mbr_settings_updated').$pw_change
+										'lang:heading'	=>	ee()->lang->line('username_and_password'),
+										'lang:message'	=>	ee()->lang->line('mbr_settings_updated').$pw_change
 									 )
 							);
 	}
@@ -1538,31 +1538,31 @@ class Member_settings extends Member {
 	{
 		// Are localizations enabled?
 
-		if ($this->EE->config->item('allow_member_localization') == 'n' AND $this->EE->session->userdata('group_id') != 1)
+		if (ee()->config->item('allow_member_localization') == 'n' AND ee()->session->userdata('group_id') != 1)
 		{
-			return $this->EE->output->show_user_error('general', array($this->EE->lang->line('localization_disallowed')));
+			return ee()->output->show_user_error('general', array(ee()->lang->line('localization_disallowed')));
 		}
 
 		// Time format selection menu
 
 		$tf = "<select name='time_format' class='select'>\n";
-		$selected = ($this->EE->session->userdata['time_format'] == 'us') ? " selected='selected'" : '';
-		$tf .= "<option value='us'{$selected}>".$this->EE->lang->line('united_states')."</option>\n";
-		$selected = ($this->EE->session->userdata['time_format'] == 'eu') ? " selected='selected'" : '';
-		$tf .= "<option value='eu'{$selected}>".$this->EE->lang->line('european')."</option>\n";
+		$selected = (ee()->session->userdata['time_format'] == 'us') ? " selected='selected'" : '';
+		$tf .= "<option value='us'{$selected}>".ee()->lang->line('united_states')."</option>\n";
+		$selected = (ee()->session->userdata['time_format'] == 'eu') ? " selected='selected'" : '';
+		$tf .= "<option value='eu'{$selected}>".ee()->lang->line('european')."</option>\n";
 		$tf .= "</select>\n";
 
 
-		$query = $this->EE->db->query("SELECT language, timezone FROM exp_members WHERE member_id = '".$this->EE->session->userdata('member_id')."'");
+		$query = ee()->db->query("SELECT language, timezone FROM exp_members WHERE member_id = '".ee()->session->userdata('member_id')."'");
 
-		$this->EE->load->helper('date_helper');
+		ee()->load->helper('date_helper');
 
 		return $this->_var_swap($this->_load_element('localization_form'),
 								array(
 										'path:update_localization'		=>	$this->_member_path('update_localization'),
-										'form:localization'				=>	$this->EE->localize->timezone_menu(($query->row('timezone')  == '') ? 'UTC' : $query->row('timezone')),
+										'form:localization'				=>	ee()->localize->timezone_menu(($query->row('timezone')  == '') ? 'UTC' : $query->row('timezone')),
 										'form:time_format'				=>	$tf,
-										'form:language'					=>	$this->EE->functions->language_pack_names(($query->row('language')  == '') ? 'english' : $query->row('language') )
+										'form:language'					=>	ee()->functions->language_pack_names(($query->row('language')  == '') ? 'english' : $query->row('language') )
 									 )
 								);
 	}
@@ -1579,26 +1579,26 @@ class Member_settings extends Member {
 	{
 		// Are localizations enabled?
 
-		if ($this->EE->config->item('allow_member_localization') == 'n' AND $this->EE->session->userdata('group_id') != 1)
+		if (ee()->config->item('allow_member_localization') == 'n' AND ee()->session->userdata('group_id') != 1)
 		{
-			return $this->EE->output->show_user_error('general', array($this->EE->lang->line('localization_disallowed')));
+			return ee()->output->show_user_error('general', array(ee()->lang->line('localization_disallowed')));
 		}
 
 		if ( ! isset($_POST['server_timezone']))
 		{
-			return $this->EE->output->show_user_error('general', array($this->EE->lang->line('invalid_action')));
+			return ee()->output->show_user_error('general', array(ee()->lang->line('invalid_action')));
 		}
 
-		$data['language']	= $this->EE->security->sanitize_filename($_POST['deft_lang']);
+		$data['language']	= ee()->security->sanitize_filename($_POST['deft_lang']);
 		$data['timezone']	= $_POST['server_timezone'];
 		$data['time_format'] = $_POST['time_format'];
 
 		if ( ! is_dir(APPPATH.'language/'.$data['language']))
 		{
-			return $this->EE->output->show_user_error('general', array($this->EE->lang->line('invalid_action')));
+			return ee()->output->show_user_error('general', array(ee()->lang->line('invalid_action')));
 		}
 
-		$this->EE->db->query($this->EE->db->update_string('exp_members', $data, "member_id = '".$this->EE->session->userdata('member_id')."'"));
+		ee()->db->query(ee()->db->update_string('exp_members', $data, "member_id = '".ee()->session->userdata('member_id')."'"));
 
 		/** -------------------------------------
 		/**  Success message
@@ -1606,8 +1606,8 @@ class Member_settings extends Member {
 
 		return $this->_var_swap($this->_load_element('success'),
 								array(
-										'lang:heading'	=>	$this->EE->lang->line('localization_settings'),
-										'lang:message'	=>	$this->EE->lang->line('mbr_localization_settings_updated')
+										'lang:heading'	=>	ee()->lang->line('localization_settings'),
+										'lang:message'	=>	ee()->lang->line('mbr_localization_settings_updated')
 									 )
 								);
 	}
@@ -1620,18 +1620,18 @@ class Member_settings extends Member {
 
 	function edit_ignore_list($msg = '')
 	{
-		$query = $this->EE->db->query("SELECT ignore_list FROM exp_members WHERE member_id = '".$this->EE->session->userdata['member_id']."'");
+		$query = ee()->db->query("SELECT ignore_list FROM exp_members WHERE member_id = '".ee()->session->userdata['member_id']."'");
 
 		if ($query->num_rows() == 0)
 		{
-			return $this->EE->output->show_user_error('general', array($this->EE->lang->line('not_authorized')));
+			return ee()->output->show_user_error('general', array(ee()->lang->line('not_authorized')));
 		}
 		else
 		{
 			$ignored = ($query->row('ignore_list')  == '') ? array() : explode('|', $query->row('ignore_list') );
 		}
 
-		$query = $this->EE->db->query("SELECT screen_name, member_id FROM exp_members WHERE member_id IN ('".implode("', '", $ignored)."') ORDER BY screen_name");
+		$query = ee()->db->query("SELECT screen_name, member_id FROM exp_members WHERE member_id IN ('".implode("', '", $ignored)."') ORDER BY screen_name");
 		$out = '';
 
 		if ($query->num_rows() == 0)
@@ -1662,15 +1662,15 @@ class Member_settings extends Member {
 						 	  'id'				=> 'target'
 						 	  );
 
-		$images_folder = $this->EE->config->slash_item('theme_folder_url').'cp_global_images/';
+		$images_folder = ee()->config->slash_item('theme_folder_url').'cp_global_images/';
 
 		$finalized = $this->_var_swap($this->_load_element('edit_ignore_list_form'),
 								array(
-										'form:form_declaration'			=> $this->EE->functions->form_declaration($form_details),
+										'form:form_declaration'			=> ee()->functions->form_declaration($form_details),
 										'include:edit_ignore_list_rows'	=> $out,
 										'include:member_search'			=> $this->member_search_js().
 																			'<a href="#" title="{lang:member_search}" onclick="member_search(); return false;">'.
-																			'<img src="'.$images_folder.'search_glass.gif" style="border: 0px" width="12" height="12" alt="'.$this->EE->lang->line('search_glass').'" />'.
+																			'<img src="'.$images_folder.'search_glass.gif" style="border: 0px" width="12" height="12" alt="'.ee()->lang->line('search_glass').'" />'.
 																			'</a>',
 										'include:toggle_js'				=> $this->toggle_js(),
 										'form:add_button'				=> $this->list_js().
@@ -1683,7 +1683,7 @@ class Member_settings extends Member {
 					 														"onclick='dynamic_action(\"delete\");'>".
 					 														"{lang:delete_member}</button> ",
 										'path:update_ignore_list'		=> $this->_member_path('update_ignore_list'),
-										'lang:message'					=> $this->EE->lang->line('ignore_list_updated')
+										'lang:message'					=> ee()->lang->line('ignore_list_updated')
 									)
 								);
 		if ($msg == '')
@@ -1706,18 +1706,18 @@ class Member_settings extends Member {
 
 	function update_ignore_list()
 	{
-		if ( ! ($action = $this->EE->input->post('daction')))
+		if ( ! ($action = ee()->input->post('daction')))
 		{
 			return $this->edit_ignore_list();
 		}
 
-		$ignored = array_flip($this->EE->session->userdata['ignore_list']);
+		$ignored = array_flip(ee()->session->userdata['ignore_list']);
 
 		if ($action == 'delete')
 		{
-			if ( ! ($member_ids = $this->EE->input->post('toggle')))
+			if ( ! ($member_ids = ee()->input->post('toggle')))
 			{
-				return $this->EE->output->show_user_error('general', array($this->EE->lang->line('not_authorized')));
+				return ee()->output->show_user_error('general', array(ee()->lang->line('not_authorized')));
 			}
 
 			foreach ($member_ids as $member_id)
@@ -1727,19 +1727,19 @@ class Member_settings extends Member {
 		}
 		else
 		{
-			if ( ! ($screen_name = $this->EE->input->post('name')))
+			if ( ! ($screen_name = ee()->input->post('name')))
 			{
-				return $this->EE->output->show_user_error('general', array($this->EE->lang->line('not_authorized')));
+				return ee()->output->show_user_error('general', array(ee()->lang->line('not_authorized')));
 			}
 
-			$query = $this->EE->db->query("SELECT member_id FROM exp_members WHERE screen_name = '".$this->EE->db->escape_str($screen_name)."'");
+			$query = ee()->db->query("SELECT member_id FROM exp_members WHERE screen_name = '".ee()->db->escape_str($screen_name)."'");
 
 			if ($query->num_rows() == 0)
 			{
 				return $this->_trigger_error('invalid_screen_name', 'invalid_screen_name_message');
 			}
 
-			if ($query->row('member_id')  == $this->EE->session->userdata['member_id'])
+			if ($query->row('member_id')  == ee()->session->userdata['member_id'])
 			{
 				return $this->_trigger_error('invalid_screen_name', 'can_not_ignore_self');
 			}
@@ -1752,7 +1752,7 @@ class Member_settings extends Member {
 
 		$ignored_list = implode('|', array_keys($ignored));
 
-		$this->EE->db->query($this->EE->db->update_string('exp_members', array('ignore_list' => $ignored_list), "member_id = '".$this->EE->session->userdata['member_id']."'"));
+		ee()->db->query(ee()->db->update_string('exp_members', array('ignore_list' => $ignored_list), "member_id = '".ee()->session->userdata['member_id']."'"));
 
 		return $this->edit_ignore_list('ignore_list_updated');
 	}
@@ -1771,7 +1771,7 @@ class Member_settings extends Member {
 
 		$group_opts = '';
 
-		$query = $this->EE->db->query("SELECT group_id, group_title FROM exp_member_groups WHERE site_id = '".$this->EE->db->escape_str($this->EE->config->item('site_id'))."' ORDER BY group_title");
+		$query = ee()->db->query("SELECT group_id, group_title FROM exp_member_groups WHERE site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."' ORDER BY group_title");
 
 		foreach ($query->result_array() as $row)
 		{
@@ -1780,7 +1780,7 @@ class Member_settings extends Member {
 
 		$template = $this->_var_swap($this->_load_element('search_members'),
 										array(
-												'form:form_declaration:do_member_search'	=> $this->EE->functions->form_declaration($form_details),
+												'form:form_declaration:do_member_search'	=> ee()->functions->form_declaration($form_details),
 												'include:message'							=> $msg,
 												'include:member_group_options'				=> $group_opts
 											)
@@ -1815,7 +1815,7 @@ class Member_settings extends Member {
 			$_POST['email'] 		== ''
 			)
 			{
-				$this->EE->functions->redirect($redirect_url);
+				ee()->functions->redirect($redirect_url);
 				exit;
 			}
 
@@ -1831,35 +1831,35 @@ class Member_settings extends Member {
 			{
 				if ($val != 'any')
 				{
-					$search_query[] = " group_id ='".$this->EE->db->escape_str($_POST['group_id'])."'";
+					$search_query[] = " group_id ='".ee()->db->escape_str($_POST['group_id'])."'";
 				}
 			}
 			else
 			{
 				if ($val != '')
 				{
-					$search_query[] = $key." LIKE '%".$this->EE->db->escape_like_str($val)."%'";
+					$search_query[] = $key." LIKE '%".ee()->db->escape_like_str($val)."%'";
 				}
 			}
 		}
 
 		if (count($search_query) < 1)
 		{
-			$this->EE->functions->redirect($redirect_url);
+			ee()->functions->redirect($redirect_url);
 			exit;
 		}
 
   		$Q = implode(" AND ", $search_query);
 
 		$sql = "SELECT DISTINCT exp_members.member_id, exp_members.screen_name FROM exp_members, exp_member_groups
-				WHERE exp_members.group_id = exp_member_groups.group_id AND exp_member_groups.site_id = '".$this->EE->db->escape_str($this->EE->config->item('site_id'))."'
+				WHERE exp_members.group_id = exp_member_groups.group_id AND exp_member_groups.site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."'
 				AND ".$Q;
 
-		$query = $this->EE->db->query($sql);
+		$query = ee()->db->query($sql);
 
 		if ($query->num_rows() == 0)
 		{
-			return $this->member_mini_search($this->EE->lang->line('no_search_results'));
+			return $this->member_mini_search(ee()->lang->line('no_search_results'));
 		}
 
 		$r = '';
@@ -2030,7 +2030,7 @@ UNGA;
 
 	function edit_notepad()
 	{
-		$query = $this->EE->db->query("SELECT notepad, notepad_size FROM exp_members WHERE member_id = '".$this->EE->session->userdata('member_id')."'");
+		$query = ee()->db->query("SELECT notepad, notepad_size FROM exp_members WHERE member_id = '".ee()->session->userdata('member_id')."'");
 									 
 		return $this->_var_swap($this->_load_element('notepad_form'),
 								array(
@@ -2051,12 +2051,12 @@ UNGA;
 	{
 		if ( ! isset($_POST['notepad']))
 		{
-			return $this->EE->functions->redirect($this->_member_path('edit_notepad'));
+			return ee()->functions->redirect($this->_member_path('edit_notepad'));
 		}
 
 		$notepad_size = ( ! is_numeric($_POST['notepad_size'])) ? 18 : $_POST['notepad_size'];
 
-		$this->EE->db->query("UPDATE exp_members SET notepad = '".$this->EE->db->escape_str($this->EE->security->xss_clean($_POST['notepad']))."', notepad_size = '".$notepad_size."' WHERE member_id ='".$this->EE->session->userdata('member_id')."'");
+		ee()->db->query("UPDATE exp_members SET notepad = '".ee()->db->escape_str(ee()->security->xss_clean($_POST['notepad']))."', notepad_size = '".$notepad_size."' WHERE member_id ='".ee()->session->userdata('member_id')."'");
 
 		/** -------------------------------------
 		/**  Success message
@@ -2064,8 +2064,8 @@ UNGA;
 
 		return $this->_var_swap($this->_load_element('success'),
 								array(
-										'lang:heading'	=>	$this->EE->lang->line('mbr_notepad'),
-										'lang:message'	=>	$this->EE->lang->line('mbr_notepad_updated')
+										'lang:heading'	=>	ee()->lang->line('mbr_notepad'),
+										'lang:message'	=>	ee()->lang->line('mbr_notepad_updated')
 									 )
 								);
 	}
@@ -2104,8 +2104,8 @@ UNGA;
 
 		$tmpl = $this->_load_element('update_un_pw_form');
 		
-		$uml = $this->EE->config->item('un_min_len');
-		$pml = $this->EE->config->item('pw_min_len');
+		$uml = ee()->config->item('un_min_len');
+		$pml = ee()->config->item('pw_min_len');
 
 
 		if ($ulen < $uml)
@@ -2123,12 +2123,12 @@ UNGA;
 		$tmpl = $this->_deny_if('invalid_password', $tmpl);
 
 
-		$data['hidden_fields']['ACT']	= $this->EE->functions->fetch_action_id('Member', 'update_un_pw');
+		$data['hidden_fields']['ACT']	= ee()->functions->fetch_action_id('Member', 'update_un_pw');
 		$data['hidden_fields']['FROM']	= ($this->in_forum == TRUE) ? 'forum' : '';
 
-		if ($this->EE->uri->segment(5))
+		if (ee()->uri->segment(5))
 		{
-			$data['action']	= $this->EE->functions->fetch_current_uri();
+			$data['action']	= ee()->functions->fetch_current_uri();
 		}
 
 		$this->_set_page_title(lang('member_login'));
@@ -2136,9 +2136,9 @@ UNGA;
 		return $this->_var_swap(
 			$tmpl,
 			array(
-				'form_declaration'		=> $this->EE->functions->form_declaration($data),
-				'lang:username_length'	=> sprintf(lang('un_len'), $this->EE->config->item('un_min_len')),
-				'lang:password_length'	=> sprintf(lang('pw_len'), $this->EE->config->item('pw_min_len'))
+				'form_declaration'		=> ee()->functions->form_declaration($data),
+				'lang:username_length'	=> sprintf(lang('un_len'), ee()->config->item('un_min_len')),
+				'lang:password_length'	=> sprintf(lang('pw_len'), ee()->config->item('pw_min_len'))
 			)
 		);
 	}
@@ -2151,14 +2151,14 @@ UNGA;
 
 	function update_un_pw()
 	{
-		$this->EE->load->library('auth');
+		ee()->load->library('auth');
 
 		// Run through basic verifications: authenticate, username and 
 		// password both exist, not banned, IP checking is okay
-		if ( ! ($verify_result = $this->EE->auth->verify()))
+		if ( ! ($verify_result = ee()->auth->verify()))
 		{
 			// In the event it's a string, send it to show_user_error
-			return $this->EE->output->show_user_error('submission', implode(', ', $this->EE->auth->errors));
+			return ee()->output->show_user_error('submission', implode(', ', ee()->auth->errors));
 		}
 
 		list($username, $password, $incoming) = $verify_result;
@@ -2172,9 +2172,9 @@ UNGA;
 			require APPPATH.'libraries/Validate.php';
 		}
 
-		$new_un  = (string) $this->EE->input->post('new_username');
-		$new_pw  = (string) $this->EE->input->post('new_password');
-		$new_pwc = (string) $this->EE->input->post('new_password_confirm');
+		$new_un  = (string) ee()->input->post('new_username');
+		$new_pw  = (string) ee()->input->post('new_password');
+		$new_pwc = (string) ee()->input->post('new_password_confirm');
 
 		$VAL = new EE_Validate(array(
 			'val_type'			=> 'new',
@@ -2206,40 +2206,40 @@ UNGA;
 
 		if (count($VAL->errors) > 0)
 		{		 
-			return $this->EE->output->show_user_error('submission', $VAL->errors);
+			return ee()->output->show_user_error('submission', $VAL->errors);
 		}
 		
 		if ($un_exists)
 		{
-			$this->EE->auth->update_username($member_id, $new_un);
+			ee()->auth->update_username($member_id, $new_un);
 		}
 		
 		if ($pw_exists)
 		{
-			$this->EE->auth->update_password($member_id, $new_pw);
+			ee()->auth->update_password($member_id, $new_pw);
 		}
 		
 		// Clear the tracker cookie since we're not sure where the redirect should go
-		$this->EE->functions->set_cookie('tracker');
+		ee()->functions->set_cookie('tracker');
 		
-		$return = $this->EE->functions->form_backtrack();
+		$return = ee()->functions->form_backtrack();
 		
-		if ($this->EE->config->item('user_session_type') != 'c')
+		if (ee()->config->item('user_session_type') != 'c')
 		{
-			if ($this->EE->config->item('force_query_string') == 'y' && substr($return, 0, -3) == "php")
+			if (ee()->config->item('force_query_string') == 'y' && substr($return, 0, -3) == "php")
 			{
 				$return .= '?';
 			}
 
-			if ($this->EE->session->userdata['session_id'] != '')
+			if (ee()->session->userdata['session_id'] != '')
 			{
-				$return .= "/S=".$this->EE->session->userdata['session_id']."/";
+				$return .= "/S=".ee()->session->userdata['session_id']."/";
 			}
 		}
 
-		if ($this->EE->uri->segment(5))
+		if (ee()->uri->segment(5))
 		{
-			$link = $this->EE->functions->create_url($this->EE->uri->segment(5));
+			$link = ee()->functions->create_url(ee()->uri->segment(5));
 			$line = lang('return_to_forum');
 		}
 		else
@@ -2256,7 +2256,7 @@ UNGA;
 			'link'		=> array($link, $line)
 		);
 
-		$this->EE->output->show_message($data);
+		ee()->output->show_message($data);
 	}
 }
 // END CLASS

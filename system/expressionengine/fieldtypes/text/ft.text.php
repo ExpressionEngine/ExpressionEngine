@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -44,8 +44,8 @@ class Text_ft extends EE_Fieldtype {
 		
 		if ( ! isset($this->field_content_types))
 		{
-			$this->EE->load->model('field_model');
-			$this->field_content_types = $this->EE->field_model->get_field_content_types();
+			ee()->load->model('field_model');
+			$this->field_content_types = ee()->field_model->get_field_content_types();
 		}
 
 		if ( ! isset($this->settings['field_content_type']))
@@ -60,23 +60,23 @@ class Text_ft extends EE_Fieldtype {
 			
 			if ($content_type == 'decimal')
 			{
-				if ( ! $this->EE->form_validation->numeric($data))
+				if ( ! ee()->form_validation->numeric($data))
 				{
-					return $this->EE->lang->line($content_type);
+					return ee()->lang->line($content_type);
 				}
 				
 				// Check if number exceeds mysql limits
 				if ($data >= 999999.9999)
 				{
-					return $this->EE->lang->line('number_exceeds_limit');
+					return ee()->lang->line('number_exceeds_limit');
 				}
 				
 				return TRUE;
 			}
 
-			if ( ! $this->EE->form_validation->$content_type($data))
+			if ( ! ee()->form_validation->$content_type($data))
 			{
-				return $this->EE->lang->line($content_type);
+				return ee()->lang->line($content_type);
 			}
 			
 			// Check if number exceeds mysql limits			
@@ -84,7 +84,7 @@ class Text_ft extends EE_Fieldtype {
 			{
 				if (($data < -2147483648) OR ($data > 2147483647))
 				{
-					return $this->EE->lang->line('number_exceeds_limit');
+					return ee()->lang->line('number_exceeds_limit');
 				}
 			}
 		}
@@ -122,7 +122,7 @@ class Text_ft extends EE_Fieldtype {
 		// Experimental parameter, do not use
 		if (isset($params['raw_output']) && $params['raw_output'] == 'yes')
 		{
-			return $this->EE->functions->encode_ee_tags($data);
+			return ee()->functions->encode_ee_tags($data);
 		}
 
 		$type		= isset($this->settings['field_content_type']) ? $this->settings['field_content_type'] : 'all';
@@ -130,8 +130,8 @@ class Text_ft extends EE_Fieldtype {
 		
 		$data = $this->_format_number($data, $type, $decimals);
 
-		return $this->EE->typography->parse_type(
-			$this->EE->functions->encode_ee_tags($data),
+		return ee()->typography->parse_type(
+			ee()->functions->encode_ee_tags($data),
 			array(
 				'text_format'	=> $this->row['field_ft_'.$this->field_id],
 				'html_format'	=> $this->row['channel_html_formatting'],
@@ -159,7 +159,7 @@ class Text_ft extends EE_Fieldtype {
 
 		$field_maxl = ($data['field_maxl'] == '') ? 128 : $data['field_maxl'];
 		
-		$this->EE->table->add_row(
+		ee()->table->add_row(
 			lang('field_max_length', $prefix.'field_max_length'),
 			form_input(array('id'=>$prefix.'field_max_length','name'=>'field_maxl', 'size'=>4,'value'=>$field_maxl))
 		);
@@ -167,7 +167,7 @@ class Text_ft extends EE_Fieldtype {
 		$this->field_formatting_row($data, $prefix);
 		$this->text_direction_row($data, $prefix);
 
-		$this->EE->table->add_row(
+		ee()->table->add_row(
 			lang('field_content_text', $prefix.'field_content_type'),
 			form_dropdown('text_field_content_type', $this->_get_content_options(), $data['field_content_type'], 'id="'.$prefix.'field_content_type"').$extra
 		);
@@ -177,7 +177,7 @@ class Text_ft extends EE_Fieldtype {
 		$this->field_show_spellcheck_row($data, $prefix);
 		$this->field_show_file_selector_row($data, $prefix);
 		
-		$this->EE->javascript->output('
+		ee()->javascript->output('
 		$("#text_field_content_type").change(function() {
 			$(this).nextAll(".update_content_type").show();
 		});
@@ -223,8 +223,8 @@ class Text_ft extends EE_Fieldtype {
 	function save_settings($data)
 	{		
 		return array(
-			'field_maxl'			=> $this->EE->input->post('field_maxl'),
-			'field_content_type'	=> $this->EE->input->post('text_field_content_type')
+			'field_maxl'			=> ee()->input->post('field_maxl'),
+			'field_content_type'	=> ee()->input->post('text_field_content_type')
 		);
 	}
 

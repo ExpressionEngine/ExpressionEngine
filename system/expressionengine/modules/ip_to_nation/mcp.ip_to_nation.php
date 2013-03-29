@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -428,7 +428,7 @@ class Ip_to_nation_mcp {
 	 */
 	function __get($key)
 	{
-		return get_instance()->$key;
+		return ee()->$key;
 	}
 }
 // END CLASS

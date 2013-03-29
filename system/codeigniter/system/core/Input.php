@@ -6,7 +6,7 @@
  *
  * @package		CodeIgniter
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2008 - 2013, EllisLab, Inc.
  * @license		http://codeigniter.com/user_guide/license.html
  * @link		http://codeigniter.com
  * @since		Version 1.0
@@ -635,7 +635,7 @@ class CI_Input {
 				}
 			}
 		}
-		
+
 		// Fix for PHP 5.2.4 bug #42699 where PHP_SELF string may be duplicated within itself
 		if (version_compare(PHP_VERSION, '5.2.4', '==') && strlen($_SERVER['PHP_SELF']) % 2 == 0)
 		{
@@ -651,7 +651,7 @@ class CI_Input {
 
 		// Sanitize PHP_SELF
 		$_SERVER['PHP_SELF'] = strip_tags($_SERVER['PHP_SELF']);
-		
+
 		// CSRF Protection check
 		if ($this->_enable_csrf == TRUE)
 		{

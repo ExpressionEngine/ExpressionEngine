@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -294,6 +294,12 @@ class Tools_communicate extends CP_Controller {
 	 */
 	function _attachment_handler()
 	{
+		// File Attachments?
+		if ( ! isset($_FILES['attachment']['name']) OR empty($_FILES['attachment']['name']))
+		{
+			return TRUE;
+		}
+
 		$this->load->library('upload');
 		$this->upload->initialize(array(
 			'allowed_types'	=> '*',
@@ -326,6 +332,7 @@ class Tools_communicate extends CP_Controller {
 	{
 		$this->load->library('email');
 		$this->view->cp_page_title = lang('email_success');
+		$debug_msg = '';
 
 		// Fetch $_POST data
 		// We'll turn the $_POST data into variables for simplicity
@@ -448,16 +455,18 @@ class Tools_communicate extends CP_Controller {
 
 			$error = FALSE;
 
-			if ( ! $this->email->send())
+			if ( ! $this->email->send(FALSE))
 			{
 				$error = TRUE;
 			}
+			
+			$debug_msg = $this->email->print_debugger(array());
 
 			$this->_delete_attachments(); // Remove attachments now
 
 			if ($error == TRUE)
 			{
-				show_error(lang('error_sending_email').BR.BR.implode(BR, $this->email->_debug_msg));
+				show_error(lang('error_sending_email').BR.BR.$debug_msg);
 			}
 
 			// Save cache data
@@ -466,8 +475,13 @@ class Tools_communicate extends CP_Controller {
 
 			$this->communicate_model->save_cache_data($cache_data);
 
+			$this->view->cp_breadcrumbs = array(
+				BASE.AMP.'C=tools' => lang('tools'),
+				BASE.AMP.'C=tools_communicate'=> lang('communicate')
+				);
+
 			$this->cp->render('tools/email_sent', array(
-				'debug' => $this->email->_debug_msg
+				'debug' => $debug_msg
 			));
 			
 			return;
@@ -583,10 +597,12 @@ class Tools_communicate extends CP_Controller {
 
 			$error = FALSE;
 
-			if ( ! $this->email->send())
+			if ( ! $this->email->send(FALSE))
 			{
 				$error = TRUE;
 			}
+			
+			$debug_msg = $this->email->print_debugger(array());
 			
 			// Remove attachments only if member groups or mailing lists
 			// don't need them
@@ -597,7 +613,7 @@ class Tools_communicate extends CP_Controller {
 
 			if ($error == TRUE)
 			{
-				show_error(lang('error_sending_email').BR.BR.implode(BR, $this->email->_debug_msg));
+				show_error(lang('error_sending_email').BR.BR.$debug_msg);
 			}
 
 			$total_sent = $this->_fetch_total($to, $cc, $bcc);
@@ -651,7 +667,7 @@ class Tools_communicate extends CP_Controller {
 					$val = $val['0'];
 				}
 
-				$this->email->EE_initialize();
+				$this->email->clear();
 				$this->email->to($val); 
 				$this->email->from($from, $name);
 				$this->email->subject($subject);
@@ -679,26 +695,35 @@ class Tools_communicate extends CP_Controller {
 
 				$this->email->message($msg, $msg_alt);	
 				
-				if ( ! $this->email->send())
+				if ( ! $this->email->send(FALSE))
 				{
 					// Let's adjust the recipient array up to this point
 					reset($recipient_array);
 					$recipient_array = array_slice($recipient_array, $total_sent);
 					$this->communicate_model->update_email_cache($total_sent, $recipient_array, $id);
+					
+					$debug_msg = $this->email->print_debugger(array());
 
-					show_error(lang('error_sending_email').BR.BR.implode(BR, $this->email->_debug_msg));
+					show_error(lang('error_sending_email').BR.BR.$debug_msg);
 				}
 
 				$total_sent++;
 			}
+			
+			$debug_msg = $this->email->print_debugger(array());
 
 			$this->_delete_attachments(); // Remove attachments now
 
 			//  Update email cache
 			$this->communicate_model->update_email_cache($total_sent, '', $id);
 
+			$this->view->cp_breadcrumbs = array(
+				BASE.AMP.'C=tools' => lang('tools'),
+				BASE.AMP.'C=tools_communicate'=> lang('communicate')
+			);
+			
 			$this->cp->render('tools/email_sent', array(
-				'debug' => $this->email->_debug_msg,
+				'debug' => $debug_msg,
 				'total_sent' => $total_sent
 			));
 			
@@ -715,6 +740,8 @@ class Tools_communicate extends CP_Controller {
 			'refresh_message'	=> lang('batchmode_ready_to_begin'),
 			'refresh_notice'	=> lang('batchmode_warning'),
 			'refresh_heading'	=> lang('sending_email'),
+			'EE_view_disable'	=> TRUE,
+			'maincontent_state'	=> ' style="width:100%; display:block"'
 		);
 		
 		$this->view->cp_page_title = lang('sending_email');
@@ -860,6 +887,7 @@ class Tools_communicate extends CP_Controller {
 
 			$screen_name = '';
 			$list_id = FALSE;
+			$this->email->clear();
 
 			if (is_array($val) AND substr($key, 0, 1) == 'm')
 			{
@@ -872,7 +900,6 @@ class Tools_communicate extends CP_Controller {
 				$val = $val['0'];
 			}
 
-			$this->email->EE_initialize();
 			$this->email->to($val); 
 			$this->email->from($from_email, $from_name);	
 			$this->email->subject($subject);
@@ -902,7 +929,7 @@ class Tools_communicate extends CP_Controller {
 
 			$error = FALSE;
 
-			if ( ! $this->email->send())
+			if ( ! $this->email->send(FALSE))
 			{
 				$error = TRUE;
 			}
@@ -917,7 +944,7 @@ class Tools_communicate extends CP_Controller {
 				$n = $total_sent + $i;
 				$this->communicate_model->update_email_cache($n, $recipient_array, $id);
 
-				show_error(lang('error_sending_email').BR.BR.implode(BR, $this->email->_debug_msg));
+				show_error(lang('error_sending_email').BR.BR.$this->email->print_debugger(array()));
 			}
 
 			$i++;
@@ -947,6 +974,10 @@ class Tools_communicate extends CP_Controller {
 			$vars['refresh_notice'] = lang('batchmode_warning');
 			$vars['refresh_message'] = $stats.BR.BR.lang('emails_remaining').NBS.NBS.$remaining;
 			$vars['refresh_heading'] = lang('sending_email');
+			$vars['EE_view_disable'] = TRUE;
+			$vars['maincontent_state'] = ' style="width:100%; display:block"';
+			
+			$this->view->cp_page_title = lang('sending_email');
 
 			$this->load->view('_shared/refresh_message', $vars);
 			return;
@@ -962,8 +993,13 @@ class Tools_communicate extends CP_Controller {
 			$total = $total_sent + $batch;
 
 			$this->view->cp_page_title = lang('email_success');
+
+			$this->view->cp_breadcrumbs = array(
+				BASE.AMP.'C=tools' => lang('tools'),
+				BASE.AMP.'C=tools_communicate'=> lang('communicate')
+			);
 		
-			$this->cp->render('tools/email_sent', array('debug' => $this->email->_debug_msg, 'total_sent' => $total));
+			$this->cp->render('tools/email_sent', array('debug' => $this->email->print_debugger(array()), 'total_sent' => $total));
 		}
 	}
 

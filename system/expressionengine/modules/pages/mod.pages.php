@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -48,8 +48,8 @@ class Pages {
 	 */
 	function load_site_pages()
 	{
-        $sites			= $this->EE->TMPL->fetch_param('site', '');
-		$current_site	= $this->EE->config->item('site_short_name');
+        $sites			= ee()->TMPL->fetch_param('site', '');
+		$current_site	= ee()->config->item('site_short_name');
 
 		// Always include the current site
 
@@ -62,9 +62,9 @@ class Pages {
 
 		// Fetch all pages
 
-		$this->EE->db->select('site_pages, site_name, site_id');
-		$this->EE->db->where_in('site_name', $site_names);
-		$query = $this->EE->db->get('sites');
+		ee()->db->select('site_pages, site_name, site_id');
+		ee()->db->where_in('site_name', $site_names);
+		$query = ee()->db->get('sites');
 
 		$new_pages = array();
 
@@ -83,7 +83,7 @@ class Pages {
 		
 		// Update config
 
-		$this->EE->config->set_item('site_pages', $new_pages);
+		ee()->config->set_item('site_pages', $new_pages);
 		
 		return '';
 	}

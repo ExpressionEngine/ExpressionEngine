@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -56,7 +56,7 @@ class EE_LDAP {
 		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();
 
-		if ($this->EE->config->item('ldap_enabled') === FALSE OR $this->EE->config->item('ldap_enabled') != 'y')
+		if (ee()->config->item('ldap_enabled') === FALSE OR ee()->config->item('ldap_enabled') != 'y')
 		{
 			return FALSE;
 		}
@@ -67,7 +67,7 @@ class EE_LDAP {
 			return FALSE;
 		}
 		
-		if ($this->EE->config->item('ldap_server') === FALSE OR $this->EE->config->item('ldap_server') == '')
+		if (ee()->config->item('ldap_server') === FALSE OR ee()->config->item('ldap_server') == '')
 		{
 			$this->output_error('Missing LDAP Settings');
 			return FALSE;
@@ -117,10 +117,10 @@ class EE_LDAP {
 		//  - Allows adding of attributes
 		//  - Added 1.4.2
 		//
-			if ($this->EE->extensions->active_hook('ldap_register_attributes') === TRUE)
+			if (ee()->extensions->active_hook('ldap_register_attributes') === TRUE)
 			{
-				$insert = $this->EE->extensions->call('ldap_register_attributes', $insert, $data);
-				if ($this->EE->extensions->end_script === TRUE) return $edata;
+				$insert = ee()->extensions->call('ldap_register_attributes', $insert, $data);
+				if (ee()->extensions->end_script === TRUE) return;
 			}	
 		//
 		// -------------------------------------------
@@ -129,7 +129,7 @@ class EE_LDAP {
 		/**  Add Data
 		/** -------------------------------------*/
 		
-		$dn = ($this->EE->config->item('ldap_base_dn') == '') ? 'cn='.$data['screen_name'] : 'cn='.$data['screen_name'].', '.$this->EE->config->item('ldap_base_dn');
+		$dn = (ee()->config->item('ldap_base_dn') == '') ? 'cn='.$data['screen_name'] : 'cn='.$data['screen_name'].', '.ee()->config->item('ldap_base_dn');
 		
 		if ( ! $result = @ldap_add ($this->conn, $dn, $insert))
 		{
@@ -193,10 +193,10 @@ class EE_LDAP {
 		//  - Allows adding of additional attributes
 		//  - Added 1.4.2
 		//
-			if ($this->EE->extensions->active_hook('ldap_register_attributes') === TRUE)
+			if (ee()->extensions->active_hook('ldap_register_attributes') === TRUE)
 			{
-				$insert = $this->EE->extensions->call('ldap_register_attributes', $insert, $data);
-				if ($this->EE->extensions->end_script === TRUE) return $edata;
+				$insert = ee()->extensions->call('ldap_register_attributes', $insert, $data);
+				if (ee()->extensions->end_script === TRUE) return;
 			}	
 		//
 		// -------------------------------------------
@@ -205,7 +205,7 @@ class EE_LDAP {
 		/**  Modify Data
 		/** -------------------------------------*/
 		
-		$dn = ($this->EE->config->item('ldap_base_dn') == '') ? 'cn='.$data['screen_name'] : 'cn='.$data['screen_name'].', '.$this->EE->config->item('ldap_base_dn');
+		$dn = (ee()->config->item('ldap_base_dn') == '') ? 'cn='.$data['screen_name'] : 'cn='.$data['screen_name'].', '.ee()->config->item('ldap_base_dn');
 		
 		if ( ! $result = @ldap_modify ($this->conn, $dn, $insert))
 		{
@@ -244,7 +244,7 @@ class EE_LDAP {
 			$attributes[] = 'exp_'.$value;
 		}
 		
-		if ( ! $result = @ldap_search ($this->conn, $this->EE->config->item('ldap_base_dn'), $search, $attributes))
+		if ( ! $result = @ldap_search ($this->conn, ee()->config->item('ldap_base_dn'), $search, $attributes))
 		{
 			$this->output_error();
 			return FALSE;
@@ -276,8 +276,8 @@ class EE_LDAP {
 	
 	function authenticate($username, $password)
 	{
-		$username = $this->EE->security->xss_clean($username);
-		$password = $this->EE->security->xss_clean($password);
+		$username = ee()->security->xss_clean($username);
+		$password = ee()->security->xss_clean($password);
 		
 		/** -------------------------------------
 		/**  Make a LDAP (Love Da Paul) Connection
@@ -328,7 +328,7 @@ class EE_LDAP {
 			}
 		}
 		
-		if ($this->EE->config->item('ldap_debugging') == 'y')
+		if (ee()->config->item('ldap_debugging') == 'y')
 		{
 			print_r($data);
 		}
@@ -363,9 +363,9 @@ class EE_LDAP {
 			return FALSE;
 		}
 		
-		$port = ($this->EE->config->item('ldap_port') === FALSE OR $this->EE->config->item('ldap_port') == '') ? 389 : $this->EE->config->item('ldap_port');
+		$port = (ee()->config->item('ldap_port') === FALSE OR ee()->config->item('ldap_port') == '') ? 389 : ee()->config->item('ldap_port');
 	
-		if ( ! $this->conn = @ldap_connect($this->EE->config->item('ldap_server'), $port))
+		if ( ! $this->conn = @ldap_connect(ee()->config->item('ldap_server'), $port))
 		{
 			$this->output_error();
 			return FALSE;
@@ -377,7 +377,7 @@ class EE_LDAP {
 		/**  Enable DLS
 		/** -------------------------------------*/
 		
-		if ($this->EE->config->item('ldap_enable_dls') == 'y')
+		if (ee()->config->item('ldap_enable_dls') == 'y')
 		{
 			if ( ! @ldap_start_tls($this->conn))
 			{
@@ -390,7 +390,7 @@ class EE_LDAP {
 		/**  Bind!
 		/** -------------------------------------*/
 		
-		if ( ! $this->EE->config->item('ldap_manager_dn') && ! $this->EE->config->item('ldap_manager_pass'))
+		if ( ! ee()->config->item('ldap_manager_dn') && ! ee()->config->item('ldap_manager_pass'))
 		{
 			if ( ! @ldap_bind($this->conn))
 			{
@@ -400,14 +400,14 @@ class EE_LDAP {
 		}
 		else
 		{
-			if ( ! preg_match('/^(\w+=\w+,)*\w+=\w+$/', $this->EE->config->item('ldap_manager_dn')))
+			if ( ! preg_match('/^(\w+=\w+,)*\w+=\w+$/', ee()->config->item('ldap_manager_dn')))
 			{
 				$this->output_error('Manager DN is invalidly formed');
 				return FALSE;
 			}
 		
 		
-			if ( ! @ldap_bind($this->conn, $this->EE->config->item('ldap_manager_dn'), $this->EE->config->item('ldap_manager_pass')))
+			if ( ! @ldap_bind($this->conn, ee()->config->item('ldap_manager_dn'), ee()->config->item('ldap_manager_pass')))
 			{
 				$this->output_error();
 				return FALSE;
@@ -423,7 +423,7 @@ class EE_LDAP {
 	
 	function output_error($error='')
 	{
-		if ($this->EE->config->item('ldap_debugging') == 'y')
+		if (ee()->config->item('ldap_debugging') == 'y')
 		{
 			$error_no = '';
 			

@@ -5,7 +5,7 @@
  *
  * @package     ExpressionEngine
  * @author      EllisLab Dev Team
- * @copyright   Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright   Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license     http://ellislab.com/expressionengine/user-guide/license.html
  * @link        http://ellislab.com
  * @since       Version 2.0
@@ -45,8 +45,17 @@ class Updater {
 	 */
 	public function do_update()
 	{
-		$this->_update_session_table();
-		$this->_fix_emoticon_config();
+		$steps = new ProgressIterator(
+			array(
+				'_update_session_table',
+				'_fix_emoticon_config',
+			)
+		);
+
+		foreach ($steps as $k => $v)
+		{
+			$this->$v();
+		}
 				
 		return TRUE;
 	}
@@ -61,11 +70,9 @@ class Updater {
 	 * @return 	void
 	 */
 	private function _update_session_table()
-	{
-		$this->EE->load->dbforge();
-		
+	{	
 		// Drop site_id
-		$this->EE->dbforge->drop_column('sessions', 'site_id');
+		ee()->smartforge->drop_column('sessions', 'site_id');
     }
 
 	// --------------------------------------------------------------------
@@ -77,9 +84,9 @@ class Updater {
 	 */
 	private function _fix_emoticon_config()
 	{
-		if ($emoticon_url = $this->EE->config->item('emoticon_path'))
+		if ($emoticon_url = ee()->config->item('emoticon_path'))
 		{
-			$this->EE->config->_update_config(array('emoticon_url' => $emoticon_url), array('emoticon_path' => ''));
+			ee()->config->_update_config(array('emoticon_url' => $emoticon_url), array('emoticon_path' => ''));
 		}
 	}
 }   

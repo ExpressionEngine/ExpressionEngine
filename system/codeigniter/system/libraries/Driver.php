@@ -6,7 +6,7 @@
  *
  * @package		CodeIgniter
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2006 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2006 - 2013, EllisLab, Inc.
  * @license		http://codeigniter.com/user_guide/license.html
  * @link		http://codeigniter.com
  * @since		Version 1.0
@@ -50,7 +50,7 @@ class CI_Driver_Library {
 			if ( ! class_exists($child_class))
 			{
 				// check application path first
-				foreach (get_instance()->load->get_package_paths(TRUE) as $path)
+				foreach (ee()->load->get_package_paths(TRUE) as $path)
 				{
 					// and check for case sensitivity of both the parent and child libs
 					foreach (array(ucfirst($this->lib_name), strtolower($this->lib_name)) as $lib)

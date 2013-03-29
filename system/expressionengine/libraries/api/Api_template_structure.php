@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -49,7 +49,7 @@ class Api_template_structure extends Api {
 	{
 		parent::__construct();
 		
-		$this->EE->load->model('template_model');
+		ee()->load->model('template_model');
 		
 		// initialize the reserved names array
 		$this->_load_reserved_groups();
@@ -78,7 +78,7 @@ class Api_template_structure extends Api {
 			return $this->group_info[$group_id];
 		}
 		
-		$query = $this->EE->template_model->get_group_info($group_id);
+		$query = ee()->template_model->get_group_info($group_id);
 		
 		if ($query->num_rows() == 0)
 		{
@@ -124,7 +124,7 @@ class Api_template_structure extends Api {
 			$this->_set_error('group_required');
 		}
 		
-		if ( ! $this->EE->api->is_url_safe($group_name))
+		if ( ! ee()->api->is_url_safe($group_name))
 		{
 			$this->_set_error('illegal_characters');
 		}			
@@ -135,7 +135,8 @@ class Api_template_structure extends Api {
 		}
 		
 		// check if it's taken, too
-		$count = $this->EE->super_model->count('template_groups', array('site_id' => $site_id, 'group_name' => $group_name));
+		ee()->load->model('super_model');
+		$count = ee()->super_model->count('template_groups', array('site_id' => $site_id, 'group_name' => $group_name));
 		
 		if ($count > 0)
 		{
@@ -160,14 +161,14 @@ class Api_template_structure extends Api {
 			}
 		}
 		
-		$group_id = $this->EE->template_model->create_group($data);
+		$group_id = ee()->template_model->create_group($data);
 		
 		$duplicate = FALSE;
 					
 		if (is_numeric($duplicate_group))
 		{
 			$fields = array('template_name', 'template_data', 'template_type', 'template_notes', 'cache', 'refresh', 'no_auth_bounce', 'allow_php', 'php_parse_location');
-			$query = $this->EE->template_model->get_templates($site_id, $fields, array('templates.group_id' => $duplicate_group));
+			$query = ee()->template_model->get_templates($site_id, $fields, array('templates.group_id' => $duplicate_group));
 		
 			if ($query->num_rows() > 0)
 			{
@@ -182,11 +183,11 @@ class Api_template_structure extends Api {
 			$template_data = array(
 									'group_id'	  	=> $group_id,
 									'template_name' => 'index',
-									'edit_date'		=> $this->EE->localize->now,
+									'edit_date'		=> ee()->localize->now,
 									'site_id'		=> $site_id
 								 );
 
-			$this->EE->template_model->create_template($template_data);			
+			ee()->template_model->create_template($template_data);			
 		}
 		else
 		{				
@@ -200,14 +201,14 @@ class Api_template_structure extends Api {
 								'refresh'  				=> $row->refresh,
 								'no_auth_bounce'  		=> $row->no_auth_bounce,
 								'php_parse_location'	=> $row->php_parse_location,
-								'allow_php'  			=> ($this->EE->session->userdata['group_id'] == 1) ? $row->allow_php : 'n',
+								'allow_php'  			=> (ee()->session->userdata['group_id'] == 1) ? $row->allow_php : 'n',
 								'template_type' 		=> $row->template_type,
 								'template_data'  		=> $row->template_data,
-								'edit_date'				=> $this->EE->localize->now,
-								'site_id'				=> $this->EE->config->item('site_id')
+								'edit_date'				=> ee()->localize->now,
+								'site_id'				=> ee()->config->item('site_id')
 							 );
 				
-				$this->EE->template_model->create_template($data);
+				ee()->template_model->create_template($data);
 			}
 		}
 		
@@ -227,24 +228,24 @@ class Api_template_structure extends Api {
 	 */
 	function _load_reserved_groups()
 	{
-		if ($this->EE->config->item("forum_is_installed") == 'y' && $this->EE->config->item("forum_trigger") != '')
+		if (ee()->config->item("forum_is_installed") == 'y' && ee()->config->item("forum_trigger") != '')
 		{
-			$this->reserved_names[] = $this->EE->config->item("forum_trigger");
+			$this->reserved_names[] = ee()->config->item("forum_trigger");
 		}
 
-		if ($this->EE->config->item("use_category_name") == 'y' && $this->EE->config->item("reserved_category_word") != '')
+		if (ee()->config->item("use_category_name") == 'y' && ee()->config->item("reserved_category_word") != '')
 		{
-			$this->reserved_names[] = $this->EE->config->item("reserved_category_word");
+			$this->reserved_names[] = ee()->config->item("reserved_category_word");
 		}
 
-		if ($this->EE->config->item("forum_is_installed") == 'y' && $this->EE->config->item("forum_trigger") != '')
+		if (ee()->config->item("forum_is_installed") == 'y' && ee()->config->item("forum_trigger") != '')
 		{
-			$this->reserved_names[] = $this->EE->config->item("forum_trigger");
+			$this->reserved_names[] = ee()->config->item("forum_trigger");
 		}
 
-		if ($this->EE->config->item("profile_trigger") != '')
+		if (ee()->config->item("profile_trigger") != '')
 		{
-			$this->reserved_names[] = $this->EE->config->item("profile_trigger");
+			$this->reserved_names[] = ee()->config->item("profile_trigger");
 		}
 	}
 
@@ -272,7 +273,7 @@ class Api_template_structure extends Api {
 			// 'template_types' hook.
 			//  - Provide information for custom template types.
 			//
-			$template_types = $this->EE->extensions->call('template_types', array());
+			$template_types = ee()->extensions->call('template_types', array());
 			//
 			// -------------------------------------------
 			

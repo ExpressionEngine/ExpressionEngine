@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -973,7 +973,7 @@ class Content_edit extends CP_Controller {
 		/* 'update_multi_entries_start' hook.
 		/*  - Perform additional actions before entries are updated
 		*/
-			$edata = $this->extensions->call('update_multi_entries_start');
+			$this->extensions->call('update_multi_entries_start');
 			if ($this->extensions->end_script === TRUE) return;
 		/*
 		/* -------------------------------------------*/
@@ -1111,7 +1111,7 @@ class Content_edit extends CP_Controller {
 			/* 'update_multi_entries_loop' hook.
 			/*  - Perform additional actions after each entry is updated
 			*/
-				$edata = $this->extensions->call('update_multi_entries_loop', $id, $data);
+				$this->extensions->call('update_multi_entries_loop', $id, $data);
 				if ($this->extensions->end_script === TRUE) return;
 			/*
 			/* -------------------------------------------*/
@@ -1503,7 +1503,7 @@ class Content_edit extends CP_Controller {
 		/* 'delete_entries_start' hook.
 		/*  - Perform actions prior to entry deletion / take over deletion
 		*/
-			$edata = $this->extensions->call('delete_entries_start');
+			$this->extensions->call('delete_entries_start');
 			if ($this->extensions->end_script === TRUE) return;
 		/*
 		/* -------------------------------------------*/
