@@ -352,17 +352,17 @@ class EE_Logger {
 		$this->_setup_log();
 
 		$data = array(
-			 'timestamp'		=> $this->EE->localize->now,
-			 'message'			=> $log_message,
+			 'timestamp'	=> $this->EE->localize->now,
+			 'message'		=> $log_message,
 		);
 
 		if ($exception === TRUE)
 		{
-			$backtrace			= element(1, debug_backtrace(FALSE));
+			$backtrace		= element(1, debug_backtrace(FALSE));
 
 			$data['method']	= $backtrace['class'].'::'.$backtrace['function'];
-			$data['line']		= $backtrace['line'];
-			$data['file']		= $backtrace['file'];
+			$data['line']	= $backtrace['line'];
+			$data['file']	= $backtrace['file'];
 		}
 
 		$this->EE->db->insert('update_log', $data);
@@ -386,38 +386,38 @@ class EE_Logger {
 			$this->EE->load->dbforge();
 			
 			$fields = array(
-							'log_id' => array(
-								'type'				=> 'int',
-								'constraint'		=> 10,
-								'unsigned'			=> TRUE,
-								'auto_increment'	=> TRUE
-							),
-							'timestamp' => array(
-								'type'				=> 'int',
-								'constraint'		=> 10,
-								'unsigned'			=> TRUE
-							),
-							'message' => array(
-								'type'				=> 'text',
-								'null'				=> TRUE
-							),
-							'method' => array(
-								'type'				=> 'varchar',
-								'constraint'		=> 100,
-								'null'				=> TRUE
-							),
-							'line' => array(
-								'type'				=> 'int',
-								'constraint'		=> 10,
-								'unsigned'			=> TRUE,
-								'null'				=> TRUE
-							),
-							'file' => array(
-								'type'				=> 'varchar',
-								'constraint'		=> 255,
-								'null'				=> TRUE
-							)
-				);
+				'log_id' => array(
+					'type'				=> 'int',
+					'constraint'		=> 10,
+					'unsigned'			=> TRUE,
+					'auto_increment'	=> TRUE
+				),
+				'timestamp' => array(
+					'type'				=> 'int',
+					'constraint'		=> 10,
+					'unsigned'			=> TRUE
+				),
+				'message' => array(
+					'type'				=> 'text',
+					'null'				=> TRUE
+				),
+				'method' => array(
+					'type'				=> 'varchar',
+					'constraint'		=> 100,
+					'null'				=> TRUE
+				),
+				'line' => array(
+					'type'				=> 'int',
+					'constraint'		=> 10,
+					'unsigned'			=> TRUE,
+					'null'				=> TRUE
+				),
+				'file' => array(
+					'type'				=> 'varchar',
+					'constraint'		=> 255,
+					'null'				=> TRUE
+				)
+			);
 
 			$this->EE->dbforge->add_field($fields);
 			$this->EE->dbforge->add_key('log_id', TRUE);

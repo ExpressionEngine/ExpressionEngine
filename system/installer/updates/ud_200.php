@@ -876,20 +876,20 @@ BSH;
 		$this->EE->dbforge->add_field(
 			array(
 				'snippet_id' => array(
-					'type'						=> 'int',
-					'constraint'			=> 10,
-					'unsigned'				=> TRUE,
-					'null'						=> FALSE,
+					'type'				=> 'int',
+					'constraint'		=> 10,
+					'unsigned'			=> TRUE,
+					'null'				=> FALSE,
 					'auto_increment'	=> TRUE
 				),
 				'site_id' => array(
 					'type'				=> 'int',
-					'constraint'	=> 4,
+					'constraint'		=> 4,
 					'null'				=> FALSE
 				),
 				'snippet_name' => array(
 					'type'				=> 'varchar',
-					'constraint'	=> 75,
+					'constraint'		=> 75,
 					'null'				=> FALSE
 				),
 				'snippet_contents' => array(
@@ -908,31 +908,31 @@ BSH;
 		$this->EE->dbforge->add_field(
 			array(
 				'accessory_id' => array(
-					'type'						=> 'int',
-					'constraint'			=> 10,
-					'unsigned'				=> TRUE,
-					'null'						=> FALSE,
+					'type'				=> 'int',
+					'constraint'		=> 10,
+					'unsigned'			=> TRUE,
+					'null'				=> FALSE,
 					'auto_increment'	=> TRUE
 				),
 				'class' => array(
 					'type'				=> 'varchar',
-					'constraint'	=> 75,
+					'constraint'		=> 75,
 					'null'				=> FALSE,
 					'default'			=> '',
 				),
 				'member_groups' => array(
 					'type'				=> 'varchar',
-					'constraint'	=> 50,
+					'constraint'		=> 50,
 					'null'				=> FALSE,
 					'default'			=> 'all',
 				),
 				'controllers' => array(
-					'type'	=> 'text',
-					'null'	=> TRUE
+					'type'				=> 'text',
+					'null'				=> TRUE
 				),
 				'accessory_version' => array(
 					'type'				=> 'varchar',
-					'constraint'	=> 12,
+					'constraint'		=> 12,
 					'null'				=> FALSE,
 				),
 			)
@@ -948,30 +948,30 @@ BSH;
 		$this->EE->dbforge->add_field(
 			array(
 				'layout_id' => array(
-					'type'						=> 'int',
-					'constraint'			=> 10,
-					'unsigned'				=> TRUE,
-					'null'						=> FALSE,
+					'type'				=> 'int',
+					'constraint'		=> 10,
+					'unsigned'			=> TRUE,
+					'null'				=> FALSE,
 					'auto_increment'	=> TRUE
 				),
 				'site_id' => array(
 					'type'				=> 'int',
-					'constraint'	=> 4,
-					'unsigned'		=> TRUE,
+					'constraint'		=> 4,
+					'unsigned'			=> TRUE,
 					'null'				=> FALSE,
 					'default'			=> 1,
 				),
 				'member_group' => array(
 					'type'				=> 'int',
-					'constraint'	=> 4,
-					'unsigned'		=> TRUE,
+					'constraint'		=> 4,
+					'unsigned'			=> TRUE,
 					'null'				=> FALSE,
 					'default'			=> 0,
 				),
 				'channel_id' => array(
 					'type'				=> 'int',
-					'constraint'	=> 4,
-					'unsigned'		=> TRUE,
+					'constraint'		=> 4,
+					'unsigned'			=> TRUE,
 					'null'				=> FALSE,
 					'default'			=> 0,
 				),
@@ -1008,162 +1008,162 @@ BSH;
 		$this->EE->dbforge->add_field(
 			array(
 				'entry_id' => array(
-					'type'						=> 'int',
-					'constraint'			=> 10,
-					'unsigned'				=> TRUE,
-					'null'						=> FALSE,
+					'type'				=> 'int',
+					'constraint'		=> 10,
+					'unsigned'			=> TRUE,
+					'null'				=> FALSE,
 					'auto_increment'	=> TRUE
 				),
 				'original_entry_id' => array(
 					'type'				=> 'int',
-					'constraint'	=> 10,
-					'unsigned'		=> TRUE,
+					'constraint'		=> 10,
+					'unsigned'			=> TRUE,
 					'null'				=> FALSE,
 				),
 				'site_id' => array(
 					'type'				=> 'int',
-					'constraint'	=> 4,
-					'unsigned'		=> TRUE,
+					'constraint'		=> 4,
+					'unsigned'			=> TRUE,
 					'null'				=> FALSE,
 					'default'			=> 1,
 				),
 				'channel_id' => array(
 					'type'				=> 'int',
-					'constraint'	=> 4,
-					'unsigned'		=> TRUE,
+					'constraint'		=> 4,
+					'unsigned'			=> TRUE,
 					'null'				=> FALSE,
 				),
 				'author_id' => array(
 					'type'				=> 'int',
-					'constraint'	=> 10,
-					'unsigned'		=> TRUE,
+					'constraint'		=> 10,
+					'unsigned'			=> TRUE,
 					'null'				=> FALSE,
 					'default'			=> 0,
 				),
 				'forum_topic_id' => array(
 					'type'				=> 'int',
-					'constraint'	=> 10,
-					'unsigned'		=> TRUE,
+					'constraint'		=> 10,
+					'unsigned'			=> TRUE,
 					'null'				=> TRUE,
 				),
 				'ip_address' => array(
 					'type'				=> 'varchar',
-					'constraint'	=> 16,
+					'constraint'		=> 16,
 					'null'				=> FALSE,
 				),
 				'title' => array(
 					'type'				=> 'varchar',
-					'constraint'	=> 100,
+					'constraint'		=> 100,
 					'null'				=> FALSE,
 				),
 				'url_title' => array(
 					'type'				=> 'varchar',
-					'constraint'	=> 75,
+					'constraint'		=> 75,
 					'null'				=> FALSE,
 				),
 				'status' => array(
 					'type'				=> 'varchar',
-					'constraint'	=> 50,
+					'constraint'		=> 50,
 					'null'				=> FALSE,
 				),
 				'versioning_enabled' => array(
 					'type'				=> 'char',
-					'constraint'	=> 1,
+					'constraint'		=> 1,
 					'null'				=> FALSE,
 					'default'			=> 'n',
 				),
 				'view_count_one' => array(
 					'type'				=> 'int',
-					'constraint'	=> 10,
-					'unsigned'		=> TRUE,
+					'constraint'		=> 10,
+					'unsigned'			=> TRUE,
 					'null'				=> FALSE,
 					'default'			=> 0,
 				),
 				'view_count_two' => array(
 					'type'				=> 'int',
-					'constraint'	=> 10,
-					'unsigned'		=> TRUE,
+					'constraint'		=> 10,
+					'unsigned'			=> TRUE,
 					'null'				=> FALSE,
 					'default'			=> 0,
 				),
 				'view_count_three' => array(
 					'type'				=> 'int',
-					'constraint'	=> 10,
-					'unsigned'		=> TRUE,
+					'constraint'		=> 10,
+					'unsigned'			=> TRUE,
 					'null'				=> FALSE,
 					'default'			=> 0,
 				),
 				'view_count_four' => array(
 					'type'				=> 'int',
-					'constraint'	=> 10,
-					'unsigned'		=> TRUE,
+					'constraint'		=> 10,
+					'unsigned'			=> TRUE,
 					'null'				=> FALSE,
 					'default'			=> 0,
 				),
 				'allow_comments' => array(
 					'type'				=> 'varchar',
-					'constraint'	=> 1,
+					'constraint'		=> 1,
 					'null'				=> FALSE,
 					'default'			=> 'y',
 				),
 				'sticky' => array(
 					'type'				=> 'varchar',
-					'constraint'	=> 1,
+					'constraint'		=> 1,
 					'null'				=> FALSE,
 					'default'			=> 'n',
 				),
 				'entry_date' => array(
 					'type'				=> 'int',
-					'constraint'	=> 10,
+					'constraint'		=> 10,
 					'null'				=> FALSE,
 				),
 				'dst_enabled' => array(
 					'type'				=> 'varchar',
-					'constraint'	=> 1,
+					'constraint'		=> 1,
 					'null'				=> FALSE,
 					'default'			=> 'n',
 				),
 				'year' => array(
 					'type'				=> 'char',
-					'constraint'	=> 4,
+					'constraint'		=> 4,
 					'null'				=> FALSE,
 				),
 				'month' => array(
 					'type'				=> 'char',
-					'constraint'	=> 2,
+					'constraint'		=> 2,
 					'null'				=> FALSE,
 				),
 				'day' => array(
 					'type'				=> 'char',
-					'constraint'	=> 3,
+					'constraint'		=> 3,
 					'null'				=> FALSE,
 				),
 				'expiration_date' => array(
 					'type'				=> 'int',
-					'constraint'	=> 10,
+					'constraint'		=> 10,
 					'null'				=> FALSE,
 					'default'			=> 0,
 				),
 				'comment_expiration_date' => array(
 					'type'				=> 'int',
-					'constraint'	=> 10,
+					'constraint'		=> 10,
 					'null'				=> FALSE,
 					'default'			=> 0,
 				),
 				'edit_date' => array(
 					'type'				=> 'bigint',
-					'constraint'	=> 14,
+					'constraint'		=> 14,
 				),
 				'recent_comment_date' => array(
 					'type'				=> 'int',
-					'constraint'	=> 10,
+					'constraint'		=> 10,
 					'null'				=> TRUE,
 					'default'			=> TRUE,
 				),
 				'comment_total' => array(
 					'type'				=> 'int',
-					'constraint'	=> 4,
-					'unsigned'		=> TRUE,
+					'constraint'		=> 4,
+					'unsigned'			=> TRUE,
 					'null'				=> FALSE,
 					'default'			=> 0,
 				),
@@ -1198,10 +1198,10 @@ BSH;
 			'members',
 			array(
 				'parse_smileys' => array(
-					'type'				=> 'char',
+					'type'			=> 'char',
 					'constraint'	=> 1,
-					'null'				=> FALSE,
-					'default'			=> 'y'
+					'null'			=> FALSE,
+					'default'		=> 'y'
 				)
 			),
 			'display_signatures'
@@ -1211,9 +1211,9 @@ BSH;
 			'members',
 			array(
 				'crypt_key' => array(
-					'type'				=> 'varchar',
+					'type'			=> 'varchar',
 					'constraint'	=> 40,
-					'null'				=> TRUE
+					'null'			=> TRUE
 				)
 			),
 			'unique_id'
@@ -1233,10 +1233,10 @@ BSH;
 			'members',
 			array(
 				'authcode' => array(
-					'name'				=> 'authcode',
-					'type'				=> 'varchar',
+					'name'			=> 'authcode',
+					'type'			=> 'varchar',
 					'constraint'	=> 10,
-					'null'				=> TRUE
+					'null'			=> TRUE
 				)
 			)
 		);
@@ -1245,10 +1245,10 @@ BSH;
 			'members',
 			array(
 				'url' => array(
-					'name'				=> 'url',
-					'type'				=> 'varchar',
+					'name'			=> 'url',
+					'type'			=> 'varchar',
 					'constraint'	=> 150,
-					'null'				=> TRUE
+					'null'			=> TRUE
 				)
 			)
 		);
@@ -1257,10 +1257,10 @@ BSH;
 			'members',
 			array(
 				'location' => array(
-					'name'				=> 'location',
-					'type'				=> 'varchar',
+					'name'			=> 'location',
+					'type'			=> 'varchar',
 					'constraint'	=> 50,
-					'null'				=> TRUE
+					'null'			=> TRUE
 				)
 			)
 		);
@@ -1269,10 +1269,10 @@ BSH;
 			'members',
 			array(
 				'occupation' => array(
-					'name'				=> 'occupation',
-					'type'				=> 'varchar',
+					'name'			=> 'occupation',
+					'type'			=> 'varchar',
 					'constraint'	=> 80,
-					'null'				=> TRUE
+					'null'			=> TRUE
 				)
 			)
 		);
@@ -1281,10 +1281,10 @@ BSH;
 			'members',
 			array(
 				'interests' => array(
-					'name'				=> 'interests',
-					'type'				=> 'varchar',
+					'name'			=> 'interests',
+					'type'			=> 'varchar',
 					'constraint'	=> 120,
-					'null'				=> TRUE
+					'null'			=> TRUE
 				)
 			)
 		);
@@ -1293,10 +1293,10 @@ BSH;
 			'members',
 			array(
 				'bday_d' => array(
-					'name'				=> 'bday_d',
-					'type'				=> 'int',
+					'name'			=> 'bday_d',
+					'type'			=> 'int',
 					'constraint'	=> 2,
-					'null'				=> TRUE
+					'null'			=> TRUE
 				)
 			)
 		);
@@ -1305,10 +1305,10 @@ BSH;
 			'members',
 			array(
 				'bday_m' => array(
-					'name'				=> 'bday_m',
-					'type'				=> 'int',
+					'name'			=> 'bday_m',
+					'type'			=> 'int',
 					'constraint'	=> 2,
-					'null'				=> TRUE
+					'null'			=> TRUE
 				)
 			)
 		);
@@ -1317,10 +1317,10 @@ BSH;
 			'members',
 			array(
 				'bday_y' => array(
-					'name'				=> 'bday_y',
-					'type'				=> 'int',
+					'name'			=> 'bday_y',
+					'type'			=> 'int',
 					'constraint'	=> 4,
-					'null'				=> TRUE
+					'null'			=> TRUE
 				)
 			)
 		);
@@ -1329,10 +1329,10 @@ BSH;
 			'members',
 			array(
 				'aol_im' => array(
-					'name'				=> 'aol_im',
-					'type'				=> 'varchar',
+					'name'			=> 'aol_im',
+					'type'			=> 'varchar',
 					'constraint'	=> 50,
-					'null'				=> TRUE
+					'null'			=> TRUE
 				)
 			)
 		);
@@ -1341,10 +1341,10 @@ BSH;
 			'members',
 			array(
 				'yahoo_im' => array(
-					'name'				=> 'yahoo_im',
-					'type'				=> 'varchar',
+					'name'			=> 'yahoo_im',
+					'type'			=> 'varchar',
 					'constraint'	=> 50,
-					'null'				=> TRUE
+					'null'			=> TRUE
 				)
 			)
 		);
@@ -1353,10 +1353,10 @@ BSH;
 			'members',
 			array(
 				'msn_im' => array(
-					'name'				=> 'msn_im',
-					'type'				=> 'varchar',
+					'name'			=> 'msn_im',
+					'type'			=> 'varchar',
 					'constraint'	=> 50,
-					'null'				=> TRUE
+					'null'			=> TRUE
 				)
 			)
 		);
@@ -1365,10 +1365,10 @@ BSH;
 			'members',
 			array(
 				'icq' => array(
-					'name'				=> 'icq',
-					'type'				=> 'varchar',
+					'name'			=> 'icq',
+					'type'			=> 'varchar',
 					'constraint'	=> 50,
-					'null'				=> TRUE
+					'null'			=> TRUE
 				)
 			)
 		);
@@ -1377,9 +1377,9 @@ BSH;
 			'members',
 			array(
 				'bio' => array(
-					'name'				=> 'bio',
-					'type'				=> 'text',
-					'null'				=> TRUE
+					'name'			=> 'bio',
+					'type'			=> 'text',
+					'null'			=> TRUE
 				)
 			)
 		);
@@ -1388,9 +1388,9 @@ BSH;
 			'members',
 			array(
 				'signature' => array(
-					'name'				=> 'signature',
-					'type'				=> 'text',
-					'null'				=> TRUE
+					'name'			=> 'signature',
+					'type'			=> 'text',
+					'null'			=> TRUE
 				)
 			)
 		);
@@ -1399,10 +1399,10 @@ BSH;
 			'members',
 			array(
 				'avatar_filename' => array(
-					'name'				=> 'avatar_filename',
-					'type'				=> 'varchar',
+					'name'			=> 'avatar_filename',
+					'type'			=> 'varchar',
 					'constraint'	=> 120,
-					'null'				=> TRUE
+					'null'			=> TRUE
 				)
 			)
 		);
@@ -1411,11 +1411,11 @@ BSH;
 			'members',
 			array(
 				'avatar_width' => array(
-					'name'				=> 'avatar_width',
-					'type'				=> 'int',
+					'name'			=> 'avatar_width',
+					'type'			=> 'int',
 					'constraint'	=> 4,
 					'unsigned'		=> TRUE,
-					'null'				=> TRUE
+					'null'			=> TRUE
 				)
 			)
 		);
@@ -1424,11 +1424,11 @@ BSH;
 			'members',
 			array(
 				'avatar_height' => array(
-					'name'				=> 'avatar_height',
-					'type'				=> 'int',
+					'name'			=> 'avatar_height',
+					'type'			=> 'int',
 					'constraint'	=> 4,
 					'unsigned'		=> TRUE,
-					'null'				=> TRUE
+					'null'			=> TRUE
 				)
 			)
 		);
@@ -1437,10 +1437,10 @@ BSH;
 			'members',
 			array(
 				'photo_filename' => array(
-					'name'				=> 'photo_filename',
-					'type'				=> 'varchar',
+					'name'			=> 'photo_filename',
+					'type'			=> 'varchar',
 					'constraint'	=> 120,
-					'null'				=> TRUE
+					'null'			=> TRUE
 				)
 			)
 		);
@@ -1449,11 +1449,11 @@ BSH;
 			'members',
 			array(
 				'photo_width' => array(
-					'name'				=> 'photo_width',
-					'type'				=> 'int',
+					'name'			=> 'photo_width',
+					'type'			=> 'int',
 					'constraint'	=> 4,
 					'unsigned'		=> TRUE,
-					'null'				=> TRUE
+					'null'			=> TRUE
 				)
 			)
 		);
@@ -1462,11 +1462,11 @@ BSH;
 			'members',
 			array(
 				'photo_height' => array(
-					'name'				=> 'photo_height',
-					'type'				=> 'int',
+					'name'			=> 'photo_height',
+					'type'			=> 'int',
 					'constraint'	=> 4,
 					'unsigned'		=> TRUE,
-					'null'				=> TRUE
+					'null'			=> TRUE
 				)
 			)
 		);
@@ -1475,10 +1475,10 @@ BSH;
 			'members',
 			array(
 				'sig_img_filename' => array(
-					'name'				=> 'sig_img_filename',
-					'type'				=> 'varchar',
+					'name'			=> 'sig_img_filename',
+					'type'			=> 'varchar',
 					'constraint'	=> 120,
-					'null'				=> TRUE
+					'null'			=> TRUE
 				)
 			)
 		);
@@ -1487,11 +1487,11 @@ BSH;
 			'members',
 			array(
 				'sig_img_width' => array(
-					'name'				=> 'sig_img_width',
-					'type'				=> 'int',
+					'name'			=> 'sig_img_width',
+					'type'			=> 'int',
 					'constraint'	=> 4,
 					'unsigned'		=> TRUE,
-					'null'				=> TRUE
+					'null'			=> TRUE
 				)
 			)
 		);
@@ -1500,11 +1500,11 @@ BSH;
 			'members',
 			array(
 				'sig_img_height' => array(
-					'name'				=> 'sig_img_height',
-					'type'				=> 'int',
+					'name'			=> 'sig_img_height',
+					'type'			=> 'int',
 					'constraint'	=> 4,
 					'unsigned'		=> TRUE,
-					'null'				=> TRUE
+					'null'			=> TRUE
 				)
 			)
 		);
@@ -1513,9 +1513,9 @@ BSH;
 			'members',
 			array(
 				'ignore_list' => array(
-					'name'				=> 'ignore_list',
-					'type'				=> 'text',
-					'null'				=> TRUE
+					'name'			=> 'ignore_list',
+					'type'			=> 'text',
+					'null'			=> TRUE
 				)
 			)
 		);
@@ -1524,10 +1524,10 @@ BSH;
 			'members',
 			array(
 				'cp_theme' => array(
-					'name'				=> 'cp_theme',
-					'type'				=> 'varchar',
+					'name'			=> 'cp_theme',
+					'type'			=> 'varchar',
 					'constraint'	=> 32,
-					'null'				=> TRUE
+					'null'			=> TRUE
 				)
 			)
 		);
@@ -1536,10 +1536,10 @@ BSH;
 			'members',
 			array(
 				'profile_theme' => array(
-					'name'				=> 'profile_theme',
-					'type'				=> 'varchar',
+					'name'			=> 'profile_theme',
+					'type'			=> 'varchar',
 					'constraint'	=> 32,
-					'null'				=> TRUE
+					'null'			=> TRUE
 				)
 			)
 		);
@@ -1548,10 +1548,10 @@ BSH;
 			'members',
 			array(
 				'forum_theme' => array(
-					'name'				=> 'forum_theme',
-					'type'				=> 'varchar',
+					'name'			=> 'forum_theme',
+					'type'			=> 'varchar',
 					'constraint'	=> 32,
-					'null'				=> TRUE
+					'null'			=> TRUE
 				)
 			)
 		);
@@ -1560,9 +1560,9 @@ BSH;
 			'members',
 			array(
 				'tracker' => array(
-					'name'				=> 'tracker',
-					'type'				=> 'text',
-					'null'				=> TRUE
+					'name'			=> 'tracker',
+					'type'			=> 'text',
+					'null'			=> TRUE
 				)
 			)
 		);
@@ -1571,9 +1571,9 @@ BSH;
 			'members',
 			array(
 				'notepad' => array(
-					'name'				=> 'notepad',
-					'type'				=> 'text',
-					'null'				=> TRUE
+					'name'			=> 'notepad',
+					'type'			=> 'text',
+					'null'			=> TRUE
 				)
 			)
 		);
@@ -1582,9 +1582,9 @@ BSH;
 			'members',
 			array(
 				'quick_links' => array(
-					'name'				=> 'quick_links',
-					'type'				=> 'text',
-					'null'				=> TRUE
+					'name'			=> 'quick_links',
+					'type'			=> 'text',
+					'null'			=> TRUE
 				)
 			)
 		);
@@ -1593,9 +1593,9 @@ BSH;
 			'members',
 			array(
 				'quick_tabs' => array(
-					'name'				=> 'quick_tabs',
-					'type'				=> 'text',
-					'null'				=> TRUE
+					'name'			=> 'quick_tabs',
+					'type'			=> 'text',
+					'null'			=> TRUE
 				)
 			)
 		);
@@ -1607,10 +1607,10 @@ BSH;
 			'member_groups',
 			array(
 				'can_access_content' => array(
-					'type'				=> 'char',
+					'type'			=> 'char',
 					'constraint'	=> 1,
-					'null'				=> FALSE,
-					'default'			=> 'n'
+					'null'			=> FALSE,
+					'default'		=> 'n'
 				)
 			),
 			'can_access_cp'
@@ -1620,10 +1620,10 @@ BSH;
 			'member_groups',
 			array(
 				'can_access_files' => array(
-					'type'				=> 'char',
+					'type'			=> 'char',
 					'constraint'	=> 1,
-					'null'				=> FALSE,
-					'default'			=> 'n'
+					'null'			=> FALSE,
+					'default'		=> 'n'
 				)
 			),
 			'can_access_edit'
@@ -1633,10 +1633,10 @@ BSH;
 			'member_groups',
 			array(
 				'can_access_addons' => array(
-					'type'				=> 'char',
+					'type'			=> 'char',
 					'constraint'	=> 1,
-					'null'				=> FALSE,
-					'default'			=> 'n'
+					'null'			=> FALSE,
+					'default'		=> 'n'
 				)
 			),
 			'can_access_design'
@@ -1648,10 +1648,10 @@ BSH;
 			'member_groups',
 			array(
 				'can_access_extensions' => array(
-					'type'				=> 'char',
+					'type'			=> 'char',
 					'constraint'	=> 1,
-					'null'				=> FALSE,
-					'default'			=> 'n'
+					'null'			=> FALSE,
+					'default'		=> 'n'
 				)
 			),
 			'can_access_modules'
@@ -1661,10 +1661,10 @@ BSH;
 			'member_groups',
 			array(
 				'can_access_accessories' => array(
-					'type'				=> 'char',
+					'type'			=> 'char',
 					'constraint'	=> 1,
-					'null'				=> FALSE,
-					'default'			=> 'n'
+					'null'			=> FALSE,
+					'default'		=> 'n'
 				)
 			),
 			'can_access_extensions'
@@ -1674,10 +1674,10 @@ BSH;
 			'member_groups',
 			array(
 				'can_access_plugins' => array(
-					'type'				=> 'char',
+					'type'			=> 'char',
 					'constraint'	=> 1,
-					'null'				=> FALSE,
-					'default'			=> 'n'
+					'null'			=> FALSE,
+					'default'		=> 'n'
 				)
 			),
 			'can_access_accessories'
@@ -1687,10 +1687,10 @@ BSH;
 			'member_groups',
 			array(
 				'can_access_members' => array(
-					'type'				=> 'char',
+					'type'			=> 'char',
 					'constraint'	=> 1,
-					'null'				=> FALSE,
-					'default'			=> 'n'
+					'null'			=> FALSE,
+					'default'		=> 'n'
 				)
 			),
 			'can_access_plugins'
@@ -1700,10 +1700,10 @@ BSH;
 			'member_groups',
 			array(
 				'can_access_sys_prefs' => array(
-					'type'				=> 'char',
+					'type'			=> 'char',
 					'constraint'	=> 1,
-					'null'				=> FALSE,
-					'default'			=> 'n'
+					'null'			=> FALSE,
+					'default'		=> 'n'
 				)
 			),
 			'can_access_admin'
@@ -1713,10 +1713,10 @@ BSH;
 			'member_groups',
 			array(
 				'can_access_content_prefs' => array(
-					'type'				=> 'char',
+					'type'			=> 'char',
 					'constraint'	=> 1,
-					'null'				=> FALSE,
-					'default'			=> 'n'
+					'null'			=> FALSE,
+					'default'		=> 'n'
 				)
 			),
 			'can_access_sys_prefs'
@@ -1726,10 +1726,10 @@ BSH;
 			'member_groups',
 			array(
 				'can_access_tools' => array(
-					'type'				=> 'char',
+					'type'			=> 'char',
 					'constraint'	=> 1,
-					'null'				=> FALSE,
-					'default'			=> 'n'
+					'null'			=> FALSE,
+					'default'		=> 'n'
 				)
 			),
 			'can_access_content_prefs'
@@ -1739,10 +1739,10 @@ BSH;
 			'member_groups',
 			array(
 				'can_access_utilities' => array(
-					'type'				=> 'char',
+					'type'			=> 'char',
 					'constraint'	=> 1,
-					'null'				=> FALSE,
-					'default'			=> 'n'
+					'null'			=> FALSE,
+					'default'		=> 'n'
 				)
 			),
 			'can_access_comm'
@@ -1752,10 +1752,10 @@ BSH;
 			'member_groups',
 			array(
 				'can_access_data' => array(
-					'type'				=> 'char',
+					'type'			=> 'char',
 					'constraint'	=> 1,
-					'null'				=> FALSE,
-					'default'			=> 'n'
+					'null'			=> FALSE,
+					'default'		=> 'n'
 				)
 			),
 			'can_access_utilities'
@@ -1765,10 +1765,10 @@ BSH;
 			'member_groups',
 			array(
 				'can_access_logs' => array(
-					'type'				=> 'char',
+					'type'			=> 'char',
 					'constraint'	=> 1,
-					'null'				=> FALSE,
-					'default'			=> 'n'
+					'null'			=> FALSE,
+					'default'		=> 'n'
 				)
 			),
 			'can_access_data'
@@ -1778,10 +1778,10 @@ BSH;
 			'member_groups',
 			array(
 				'can_admin_design' => array(
-					'type'				=> 'char',
+					'type'			=> 'char',
 					'constraint'	=> 1,
-					'null'				=> FALSE,
-					'default'			=> 'n'
+					'null'			=> FALSE,
+					'default'		=> 'n'
 				)
 			),
 			'can_admin_weblogs'

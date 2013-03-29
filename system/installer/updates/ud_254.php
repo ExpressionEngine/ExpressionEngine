@@ -44,12 +44,14 @@ class Updater {
 	 */
 	public function do_update()
 	{
-		$steps = new ProgressIterator(array(
-			'_change_member_totals_length',
-			'_update_session_table',
-			'_update_security_hashes_table',
-			'_update_docs_url',
-			));
+		$steps = new ProgressIterator(
+			array(
+				'_change_member_totals_length',
+				'_update_session_table',
+				'_update_security_hashes_table',
+				'_update_docs_url',
+			)
+		);
 
 		foreach ($steps as $k => $v)
 		{

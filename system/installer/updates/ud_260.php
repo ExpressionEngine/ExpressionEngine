@@ -47,14 +47,16 @@ class Updater {
 	{
 		$this->EE->load->dbforge();
 
-		$steps = new ProgressIterator(array(
-			'_add_template_name_to_dev_log',
-			'_drop_dst',
-			'_update_timezone_column_lengths',
-			'_update_session_table',
-			'_update_actions_table',
-			'_update_specialty_templates',
-			));
+		$steps = new ProgressIterator(
+			array(
+				'_add_template_name_to_dev_log',
+				'_drop_dst',
+				'_update_timezone_column_lengths',
+				'_update_session_table',
+				'_update_actions_table',
+				'_update_specialty_templates',
+			)
+		);
 
 		foreach ($steps as $k => $v)
 		{

@@ -44,9 +44,11 @@ class Updater {
 	 */
 	public function do_update()
 	{
-		$steps = new ProgressIterator(array(
-			'_update_ip_address_length',
-			));
+		$steps = new ProgressIterator(
+			array(
+				'_update_ip_address_length',
+			)
+		);
 
 		foreach ($steps as $k => $v)
 		{

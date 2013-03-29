@@ -70,17 +70,17 @@ class Updater {
 		
 		// If there is no action id, add it
 		$values = array(
-					'class'		=> 'channel',
-					'method'	=> 'smiley_pop'
-					);
+			'class'		=> 'channel',
+			'method'	=> 'smiley_pop'
+		);
 
 		$this->EE->smartforge->insert_set('actions', $values, $values);
 
 
-		$values = array(
-					'class'		=> 'channel',
-					'method'	=> 'filemanager_endpoint'
-					);
+		$values	= array(
+			'class'		=> 'channel',
+			'method'	=> 'filemanager_endpoint'
+		);
 
 		$this->EE->smartforge->insert_set('actions', $values, $values);
 

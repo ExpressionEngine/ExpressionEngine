@@ -42,10 +42,12 @@ class Updater {
 	 */
 	public function do_update()
 	{
-		$steps = new ProgressIterator(array(
-			'_change_site_preferences_column_type',
-			'_truncate_tables',
-			));
+		$steps = new ProgressIterator(
+			array(
+				'_change_site_preferences_column_type',
+				'_truncate_tables',
+			)
+		);
 
 		foreach ($steps as $k => $v)
 		{

@@ -45,15 +45,17 @@ class Updater {
 	 */
 	public function do_update()
 	{
-		$steps = new ProgressIterator(array(
-			'_update_session_table',
-			'_update_password_lockout_table',
-			'_update_members_table',
-			'_update_files_table',
-			'_update_comments_table',
-			'_update_template_groups',
-			'_alter_sidebar_deft',
-			));
+		$steps = new ProgressIterator(
+			array(
+				'_update_session_table',
+				'_update_password_lockout_table',
+				'_update_members_table',
+				'_update_files_table',
+				'_update_comments_table',
+				'_update_template_groups',
+				'_alter_sidebar_deft',
+			)
+		);
 
 		foreach ($steps as $k => $v)
 		{

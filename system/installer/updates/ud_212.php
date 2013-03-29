@@ -35,45 +35,49 @@ class Updater {
     function do_update()
     {
 		$fields = array(
-					'show_sidebar' 	=> array(
-								'type'			=> 'char',
-								'constraint'	=> 1,
-								'null'			=> FALSE,
-								'default'		=> 'y'
-								));
+			'show_sidebar' 	=> array(
+				'type'			=> 'char',
+				'constraint'	=> 1,
+				'null'			=> FALSE,
+				'default'		=> 'y'
+			)
+		);
 
 		$this->EE->smartforge->add_column('members', $fields, 'quick_tabs');
 
 
 		$fields = array(
-					'm_field_cp_reg' 	=> array(
-								'type'			=> 'char',
-								'constraint'	=> 1,
-								'null'			=> FALSE,
-								'default'		=> 'n'
-								));
+			'm_field_cp_reg' 	=> array(
+				'type'			=> 'char',
+				'constraint'	=> 1,
+				'null'			=> FALSE,
+				'default'		=> 'n'
+			)
+		);
 
 		$this->EE->smartforge->add_column('member_fields', $fields, 'm_field_reg');
 
 
 		$fields = array(
-					'member_groups' 	=> array(
-								'name'			=> 'member_groups',
-								'type'			=> 'varchar',
-								'constraint'	=> 255,
-								'null'			=> FALSE
-								));
+			'member_groups' 	=> array(
+				'name'			=> 'member_groups',
+				'type'			=> 'varchar',
+				'constraint'	=> 255,
+				'null'			=> FALSE
+			)
+		);
 
 		$this->EE->smartforge->modify_column('accessories', $fields);
 
 
 		$fields = array(
-					'can_edit_html_buttons' 	=> array(
-								'type'			=> 'char',
-								'constraint'	=> 1,
-								'null'			=> FALSE,
-								'default'		=> 'n'
-								));
+			'can_edit_html_buttons' 	=> array(
+				'type'			=> 'char',
+				'constraint'	=> 1,
+				'null'			=> FALSE,
+				'default'		=> 'n'
+			)
+		);
 
 		$this->EE->smartforge->add_column('member_groups', $fields, 'can_view_profiles');
 

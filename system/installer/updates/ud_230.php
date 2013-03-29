@@ -45,10 +45,12 @@ class Updater {
 	 */
 	public function do_update()
 	{
-		$steps = new ProgressIterator(array(
-			'_update_session_table',
-			'_fix_emoticon_config',
-			));
+		$steps = new ProgressIterator(
+			array(
+				'_update_session_table',
+				'_fix_emoticon_config',
+			)
+		);
 
 		foreach ($steps as $k => $v)
 		{

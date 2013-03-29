@@ -39,10 +39,10 @@ class Updater {
 			'modules',
 			array(
 				'has_publish_fields' => array(
-					'type'			=> 'char',
+					'type'				=> 'char',
 					'constraint'	=> 1,
-					'null'			=> FALSE,
-					'default'		=> 'n'
+					'null'				=> FALSE,
+					'default'			=> 'n'
 				)
 			)
 		);
@@ -122,11 +122,11 @@ class Updater {
 		foreach($default_fts as $name)
 		{
 			$values = array(
-						'name'					=> $name,
-						'version'				=> '1.0',
-						'settings'				=> 'YTowOnt9',
-						'has_global_settings'	=> 'n'
-						);
+				'name'					=> $name,
+				'version'				=> '1.0',
+				'settings'				=> 'YTowOnt9',
+				'has_global_settings'	=> 'n'
+			);
 
 			$this->EE->smartforge->insert_set('fieldtypes', $values, $values);
 		}

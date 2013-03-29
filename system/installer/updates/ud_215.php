@@ -166,23 +166,24 @@ class Updater {
 	private function _do_upload_pref_update()
 	{
 		$fields = array(
-					'batch_location' 	=> array(
-								'type'			=> 'VARCHAR',
-								'constraint'	=> 255,
-								),
-					'cat_group'			=> array(
-								'type'			=> 'VARCHAR',
-								'constraint'	=> 255
-					));
+			'batch_location' => array(
+				'type'			=> 'VARCHAR',
+				'constraint'	=> 255,
+			),
+			'cat_group' => array(
+				'type'			=> 'VARCHAR',
+				'constraint'	=> 255
+			)
+		);
 
 		$this->EE->smartforge->add_column('upload_prefs', $fields);
 		
 		$fields = array(
-					'server_path'	=> array(
-								'name'			=> 'server_path',
-								'type'			=> 'VARCHAR',
-								'constraint'	=> 255
-					),
+			'server_path' => array(
+				'name'			=> 'server_path',
+				'type'			=> 'VARCHAR',
+				'constraint'	=> 255
+			),
 		);
 		
 		$this->EE->smartforge->modify_column('upload_prefs', $fields);
@@ -200,12 +201,13 @@ class Updater {
 	private function _do_cat_group_update()
 	{
 		$fields = array(
-					'exclude_group' 	=> array(
-								'type'			=> 'TINYINT',
-								'constraint'	=> 1,
-								'null'			=> FALSE,
-								'default'		=> 0
-								));
+			'exclude_group' => array(
+				'type'			=> 'TINYINT',
+				'constraint'	=> 1,
+				'null'			=> FALSE,
+				'default'		=> 0
+			)
+		);
 
 		$this->EE->smartforge->add_column('category_groups', $fields);		
 	}
@@ -531,12 +533,13 @@ class Updater {
 	private function _do_permissions_update()
 	{
 		$fields = array(
-					'can_admin_upload_prefs' 	=> array(
-								'type'			=> 'CHAR',
-								'constraint'	=> 1,
-								'null'			=> FALSE,
-								'default'		=> 'n'
-								));
+			'can_admin_upload_prefs' 	=> array(
+				'type'			=> 'CHAR',
+				'constraint'	=> 1,
+				'null'			=> FALSE,
+				'default'		=> 'n'
+			)
+		);
 
 		$this->EE->smartforge->add_column('member_groups', $fields, 'can_admin_channels');		
 	}

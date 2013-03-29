@@ -27,15 +27,15 @@ class Updater {
 
 	var $version_suffix = '';
 
-    function Updater()
-    {
-        $this->EE =& get_instance();
+	function Updater()
+	{
+		$this->EE =& get_instance();
 		$this->EE->load->library('progress');
 
-    }
+	}
 
-    function do_update()
-    {
+	function do_update()
+	{
 		// update channel_data table changing text fields to NOT NULL
 		
 		// Get all the text fields in the table
@@ -51,37 +51,38 @@ class Updater {
 			}
 		} 		
 
- 		if (count($fields_to_alter) > 0)
-        {
+		if (count($fields_to_alter) > 0)
+		{
 			foreach ($fields_to_alter as $row)
-            {
- 				// We'll switch null values to empty string for our text fields
-          		$this->EE->db->query("UPDATE `exp_channel_data` SET {$row['0']} = '' WHERE {$row['0']} IS NULL");
-        	}
+			{
+				// We'll switch null values to empty string for our text fields
+				$this->EE->db->query("UPDATE `exp_channel_data` SET {$row['0']} = '' WHERE {$row['0']} IS NULL");
+			}
 		}
 		
 		// There was a brief time where this was altered but installer still set to 50 characters
 		// so we update again to catch any from that window
 		$fields = array(
-					'email' 	=> array(
-								'name'			=> 'email',
-								'type'			=> 'varchar',
-								'constraint'	=> 72,
-								'null'			=> FALSE
-								));
+			'email' => array(
+					'name'			=> 'email',
+					'type'			=> 'varchar',
+					'constraint'	=> 72,
+					'null'			=> FALSE
+				)
+			);
 
 		$this->EE->smartforge->modify_column('members', $fields);
 
 		// If 'comments_opened_notification' isn't already in exp_specialty_templates, add it.
 		$values = array(
-					'template_name'	=> 'comments_opened_notification',
-					'data_title'	=> 'New comments have been added',
-					'template_data'	=> addslashes($this->comments_opened_notification()),
-					);
+			'template_name'	=> 'comments_opened_notification',
+			'data_title'	=> 'New comments have been added',
+			'template_data'	=> addslashes($this->comments_opened_notification()),
+		);
 
 		$unique = array(
-					'template_name'	=> 'comments_opened_notification'
-					);
+			'template_name'	=> 'comments_opened_notification'
+		);
 
 		$this->EE->smartforge->insert_set('specialty_templates', $values, $unique);
 		
@@ -89,7 +90,7 @@ class Updater {
 		// We should skip it if the Comments module isn't installed.
 		if ( ! $this->EE->db->table_exists('comments'))
 		{
-        	return TRUE;			
+			return TRUE;			
 		}		
 		
 		$this->EE->progress->update_state("Creating Comment Subscription Table");
@@ -112,13 +113,13 @@ class Updater {
 
 
 		// this step can be a doozy.  Set time limit to infinity.
-        // Server process timeouts are out of our control, unfortunately
-        @set_time_limit(0);
-        $this->EE->db->save_queries = FALSE;
-        
-        $this->EE->progress->update_state('Moving Comment Notifications to Subscriptions');
-                
-        $batch = 50;
+		// Server process timeouts are out of our control, unfortunately
+		@set_time_limit(0);
+		$this->EE->db->save_queries = FALSE;
+		
+		$this->EE->progress->update_state('Moving Comment Notifications to Subscriptions');
+				
+		$batch = 50;
 		$offset = 0;
 		$progress   = "Moving Comment Notifications: %s";
 		
@@ -138,8 +139,8 @@ class Updater {
 		if (count($total) > 0)
 		{
 			for ($i = 0; $i < $total; $i = $i + $batch)
-            {
-            	$this->EE->progress->update_state(str_replace('%s', "{$offset} of {$count} queries", $progress));	
+			{
+				$this->EE->progress->update_state(str_replace('%s', "{$offset} of {$count} queries", $progress));	
 
 				$data = array();
 		
@@ -152,20 +153,20 @@ class Updater {
 				$s_date = NULL;
 					
 				// convert to comments
-            	foreach($comment_data->result_array() as $row)
-            	{
+				foreach($comment_data->result_array() as $row)
+				{
 					$author_id = $row['author_id'];
 					$rand = $author_id.$this->random('alnum', 8);
 					$email = ($row['email'] == '') ? NULL : $row['email'];
 			
-               		$data[] = array(
-                    		'entry_id'       		=> $row['entry_id'],
-                    		'member_id'     		=> $author_id,
-                    		'email'        			=> $email,
-                    		'subscription_date'		=> $s_date,
-                    		'notification_sent'     => 'n',
-                    		'hash'           		=> $rand
-                			);
+					$data[] = array(
+						'entry_id'			=> $row['entry_id'],
+						'member_id'			=> $author_id,
+						'email'				=> $email,
+						'subscription_date'	=> $s_date,
+						'notification_sent'	=> 'n',
+						'hash'				=> $rand
+					);
 				}
 				
 				if (count($data) > 0)
@@ -195,7 +196,7 @@ class Updater {
 		return TRUE;
 	}
 
-    // ------------------------------------------------------------------------
+	// ------------------------------------------------------------------------
 
 
 	function comments_opened_notification()
@@ -219,7 +220,7 @@ To stop receiving notifications for this entry, click here:
 EOF;
 	}
 	
-    // ------------------------------------------------------------------------
+	// ------------------------------------------------------------------------
 
 	function random($type = 'encrypt', $len = 8)
 	{
