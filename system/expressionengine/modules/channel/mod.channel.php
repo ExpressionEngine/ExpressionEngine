@@ -2905,7 +2905,7 @@ class Channel {
 			}
 		//
 		// -------------------------------------------
-
+/*
 		//  Set default date header variables
 		$heading_date_hourly  = 0;
 		$heading_flag_hourly  = 0;
@@ -2916,7 +2916,7 @@ class Channel {
 		$heading_flag_monthly = 0;
 		$heading_date_yearly  = 0;
 		$heading_flag_yearly  = 0;
-
+*/
 		$this->EE->load->library('channel_entries_parser');
 		$parser = $this->EE->channel_entries_parser->create($this->EE->TMPL->tagdata/*, $prefix=''*/);
 
@@ -2945,17 +2945,16 @@ class Channel {
 
 
 		// Start the main processing loop
-
-		foreach (/*$query_result*/ array() as $count => $row)
+/*
+		foreach $query_result as $count => $row)
 		{
-			/*
-			...
 
-			$cond['signature_image_url']	= $this->EE->config->slash_item('sig_img_url').$row['sig_img_filename'];
-			$cond['signature_image_width']	= $row['sig_img_width'];
-			$cond['signature_image_height']	= $row['sig_img_height'];
-			$cond['relative_date']			= timespan($row['entry_date']);
-			*/
+		//	...
+		//	$cond['signature_image_url']	= $this->EE->config->slash_item('sig_img_url').$row['sig_img_filename'];
+		//	$cond['signature_image_width']	= $row['sig_img_width'];
+		//	$cond['signature_image_height']	= $row['sig_img_height'];
+		//	$cond['relative_date']			= timespan($row['entry_date']);
+
 			if (isset($this->cfields[$row['site_id']]))
 			{
 				foreach($this->cfields[$row['site_id']] as $key => $value)
@@ -2994,7 +2993,7 @@ class Channel {
 
 		}
 		// END FOREACH LOOP
-
+*/
 		// Kill multi_field variable
 		if (strpos($this->return_data, 'multi_field=') !== FALSE)
 		{

@@ -22,13 +22,13 @@
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class EE_Channel_custom_member_field_parser implements EE_Channel_parser_plugin {
+class EE_Channel_custom_member_field_parser implements EE_Channel_parser_component {
 
 	protected $processed_member_fields = array();
 
 	public function disabled(array $disabled, EE_Channel_preparser $pre)
 	{
-		return empty($pre->channel()->mfields);
+		return in_array('member_data', $disabled) OR empty($pre->channel()->mfields);
 	}
 
 	public function pre_process($tagdata, EE_Channel_preparser $pre)
@@ -47,7 +47,7 @@ class EE_Channel_custom_member_field_parser implements EE_Channel_parser_plugin 
 		$data = $obj->row();
 		$prefix = $obj->prefix();
 
-		$key = str_replace($prefix, '', $key);
+		$key = preg_replace('/^'.$prefix.'/', '', $key);
 
 		//  parse custom member fields
 		if (isset($mfields[$key]) && array_key_exists('m_field_id_'.$mfields[$key][0], $data))

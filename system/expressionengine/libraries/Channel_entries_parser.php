@@ -31,9 +31,9 @@ class EE_Channel_entries_parser {
 	{
 		require_once APPPATH.'libraries/channel_entries_parser/Preparser.php';
 		require_once APPPATH.'libraries/channel_entries_parser/Parser.php';
-		require_once APPPATH.'libraries/channel_entries_parser/Plugins.php';
+		require_once APPPATH.'libraries/channel_entries_parser/Components.php';
 
-		$this->_plugins = new EE_Channel_parser_plugins();
+		$this->_plugins = new EE_Channel_parser_components();
 	}
 
 	// --------------------------------------------------------------------
@@ -67,7 +67,7 @@ class EE_Channel_entries_parser {
 	 *					pair or a single tag. Tag pairs are done first.
 	 *
 	 * @param class   - Class name of the plugin. Must be included when this
-	 *					is called. Must implement the EE_Channel_parser_plugin
+	 *					is called. Must implement the EE_Channel_parser_component
 	 *					interface found in channel_entries_parser/Plugins.php.
 	 * @return void
 	 */
@@ -109,7 +109,7 @@ class EE_Channel_parser {
 	 * Instantiated by EE_Channel_entries_parser::create(), please use that
 	 * and refer to its documentation for parameter explanations.
 	 */
-	public function __construct($tagdata, $prefix, EE_Channel_parser_plugins $plugins)
+	public function __construct($tagdata, $prefix, EE_Channel_parser_components $plugins)
 	{
 		$this->_prefix = $prefix;
 		$this->_tagdata = $tagdata;
@@ -152,7 +152,7 @@ class EE_Channel_parser {
 	 * Plugins handle all of the actual heavy lifting. You can add your
 	 * own by calling EE->Channel_entries_parser->register_plugin().
 	 *
-	 * @return Object<EE_Channel_parser_plugins>
+	 * @return Object<EE_Channel_parser_components>
 	 */
 	public function plugins()
 	{

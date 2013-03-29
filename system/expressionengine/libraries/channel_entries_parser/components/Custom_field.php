@@ -22,11 +22,11 @@
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class EE_Channel_custom_field_parser implements EE_Channel_parser_plugin {
+class EE_Channel_custom_field_parser implements EE_Channel_parser_component {
 
 	public function disabled(array $disabled, EE_Channel_preparser $pre)
 	{
-		return FALSE;
+		return in_array('custom_fields', $disabled);
 	}
 
 	public function pre_process($tagdata, EE_Channel_preparser $pre)

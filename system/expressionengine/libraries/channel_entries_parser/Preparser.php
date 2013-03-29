@@ -205,11 +205,11 @@ class EE_Channel_preparser {
 	 *
 	 * We skip processing on disabled plugins.
 	 *
-	 * @param Object<EE_Channel_parser_plugin> plugin to check
+	 * @param Object<EE_Channel_parser_component> plugin to check
 	 *
 	 * @return Boolean	Plugin is disabled
 	 */
-	public function is_disabled(EE_Channel_parser_plugin $obj)
+	public function is_disabled(EE_Channel_parser_component $obj)
 	{
 		return $this->_disabled[spl_object_hash($obj)];
 	}

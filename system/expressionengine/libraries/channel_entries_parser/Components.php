@@ -13,17 +13,17 @@
 
 // ------------------------------------------------------------------------
 
-require_once APPPATH.'libraries/channel_entries_parser/plugins/Category.php';
-require_once APPPATH.'libraries/channel_entries_parser/plugins/Header_and_footer.php';
-require_once APPPATH.'libraries/channel_entries_parser/plugins/Custom_date.php';
-require_once APPPATH.'libraries/channel_entries_parser/plugins/Custom_field_pair.php';
-require_once APPPATH.'libraries/channel_entries_parser/plugins/Custom_field.php';
-require_once APPPATH.'libraries/channel_entries_parser/plugins/Custom_member_field.php';
-require_once APPPATH.'libraries/channel_entries_parser/plugins/Date.php';
-require_once APPPATH.'libraries/channel_entries_parser/plugins/Relationship.php';
-require_once APPPATH.'libraries/channel_entries_parser/plugins/Simple_conditional.php';
-require_once APPPATH.'libraries/channel_entries_parser/plugins/Simple_variable.php';
-require_once APPPATH.'libraries/channel_entries_parser/plugins/Switch.php';
+require_once APPPATH.'libraries/channel_entries_parser/components/Category.php';
+require_once APPPATH.'libraries/channel_entries_parser/components/Header_and_footer.php';
+require_once APPPATH.'libraries/channel_entries_parser/components/Custom_date.php';
+require_once APPPATH.'libraries/channel_entries_parser/components/Custom_field_pair.php';
+require_once APPPATH.'libraries/channel_entries_parser/components/Custom_field.php';
+require_once APPPATH.'libraries/channel_entries_parser/components/Custom_member_field.php';
+require_once APPPATH.'libraries/channel_entries_parser/components/Date.php';
+require_once APPPATH.'libraries/channel_entries_parser/components/Relationship.php';
+require_once APPPATH.'libraries/channel_entries_parser/components/Simple_conditional.php';
+require_once APPPATH.'libraries/channel_entries_parser/components/Simple_variable.php';
+require_once APPPATH.'libraries/channel_entries_parser/components/Switch.php';
 
 // ------------------------------------------------------------------------
 
@@ -36,16 +36,20 @@ require_once APPPATH.'libraries/channel_entries_parser/plugins/Switch.php';
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class EE_Channel_parser_plugins {
+class EE_Channel_parser_components {
 
 	/**
-	 * These do not actually behave separately at present, but you
-	 * may encounter edge-case bugs if you try to parse single tags
+	 * The difference between these is in what variable array is passed
+	 * to them from the template->var_* arrays.
+	 * They also order differently. Pairs are done before all else to
+	 * discourage edge-case bugs where a pair's opening tag is accidentally
+	 * replace.
+	 * You may encounter edge-case bugs if you try to parse single tags
 	 * before the tag pairs are out of the way, so you're encouraged
 	 * to use the correct type for your plugin.
 	 */
-	protected $pair_plugins = array();
-	protected $single_plugins = array();
+	protected $pair = array();
+	protected $single = array();
 
 	public function __construct()
 	{
@@ -78,9 +82,9 @@ class EE_Channel_parser_plugins {
 	{
 		$obj = new $class;
 
-		if ( ! $obj instanceOf EE_Channel_parser_plugin)
+		if ( ! $obj instanceOf EE_Channel_parser_component)
 		{
-			throw new InvalidArgumentException($class.' must implement the EE_Channel_parser_plugin interface.');
+			throw new InvalidArgumentException($class.' must implement the EE_Channel_parser_component interface.');
 		}
 
 		$this->pair_plugins[] = $obj;
@@ -97,9 +101,9 @@ class EE_Channel_parser_plugins {
 	{
 		$obj = new $class;
 
-		if ( ! $obj instanceOf EE_Channel_parser_plugin)
+		if ( ! $obj instanceOf EE_Channel_parser_component)
 		{
-			throw new InvalidArgumentException($class.' must implement the EE_Channel_parser_plugin interface.');
+			throw new InvalidArgumentException($class.' must implement the EE_Channel_parser_component interface.');
 		}
 
 		$this->single_plugins[] = $obj;
@@ -142,7 +146,7 @@ class EE_Channel_parser_plugins {
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-interface EE_Channel_parser_plugin {
+interface EE_Channel_parser_component {
 
 	/**
 	 * Check if your plugin or something something parsed by it
