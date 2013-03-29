@@ -24,20 +24,14 @@
  */
 class EE_Channel_category_parser implements EE_Channel_parser_plugin {
 
-	public function disabled(array $disabled)
+	public function disabled(array $disabled, EE_Channel_preparser $pre)
 	{
-		return in_array('categories', $disabled);
+		return ! $pre->has_tag_pair('categories') OR in_array('categories', $disabled);
 	}
 
 	public function pre_process($tagdata, EE_Channel_preparser $pre)
 	{
 		$cat_chunk = array();
-
-		if ( ! $pre->has_tag_pair('categories'))
-		{
-			return $cat_chunk;
-		}
-
 		$prefix = $pre->prefix();
 		
 		if (preg_match_all("/".LD.$prefix."categories(.*?)".RD."(.*?)".LD.'\/'.$prefix.'categories'.RD."/s", $tagdata, $matches))

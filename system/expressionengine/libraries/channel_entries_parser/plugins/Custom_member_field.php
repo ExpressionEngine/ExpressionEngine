@@ -26,9 +26,9 @@ class EE_Channel_custom_member_field_parser implements EE_Channel_parser_plugin 
 
 	protected $processed_member_fields = array();
 
-	public function disabled(array $disabled)
+	public function disabled(array $disabled, EE_Channel_preparser $pre)
 	{
-		return FALSE;
+		return empty($pre->channel()->mfields);
 	}
 
 	public function pre_process($tagdata, EE_Channel_preparser $pre)
@@ -40,11 +40,6 @@ class EE_Channel_custom_member_field_parser implements EE_Channel_parser_plugin 
 	public function replace($tagdata, EE_Channel_data_parser $obj, $pre)
 	{
 		$mfields = $obj->channel()->mfields;
-
-		if ( ! count($mfields))
-		{
-			return $tagdata;
-		}
 
 		$key = $obj->tag();
 		$val = $obj->tag_options();

@@ -24,9 +24,9 @@
  */
 class EE_Channel_relationship_parser implements EE_Channel_parser_plugin {
 
-	public function disabled(array $disabled)
+	public function disabled(array $disabled, EE_Channel_preparser $pre)
 	{
-		return in_array('relationships', $disabled);
+		return empty($pre->channel()->zwfields) OR in_array('relationships', $disabled);
 	}
 	
 	public function pre_process($tagdata, EE_Channel_preparser $pre)

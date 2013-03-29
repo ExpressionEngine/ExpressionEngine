@@ -204,7 +204,14 @@ class EE_Channel_data_parser {
 
 				foreach ($parser_plugins->pair() as $k => $plugin)
 				{
-					$tagdata = $plugin->replace($tagdata, $this, $pre->pair_data($k));
+					if ( ! $pre->is_disabled($plugin))
+					{
+						$tagdata = $plugin->replace(
+							$tagdata,
+							$this,
+							$pre->pair_data($plugin)
+						);
+					}
 				}
 			}
 
@@ -214,7 +221,7 @@ class EE_Channel_data_parser {
 			$tagdata = get_instance()->functions->prep_conditionals($tagdata, $cond);
 
 
-			//  Parse "single" variables
+			//  Parse individual variable tags
 			foreach ($singles as $key => $val)
 			{
 				$this->_tag = $key;
@@ -222,7 +229,14 @@ class EE_Channel_data_parser {
 
 				foreach ($parser_plugins->single() as $k => $plugin)
 				{
-					$tagdata = $plugin->replace($tagdata, $this, $pre->single_data($k));
+					if ( ! $pre->is_disabled($plugin))
+					{
+						$tagdata = $plugin->replace(
+							$tagdata,
+							$this,
+							$pre->single_data($plugin)
+						);
+					}
 				}
 			}
 
@@ -374,7 +388,7 @@ class EE_Channel_data_parser {
 			return FALSE;
 		}
 
-		if (isset($row['comment_system_enabled']) && $row['comment_system_enabled'] == 'n'))
+		if (isset($row['comment_system_enabled']) && $row['comment_system_enabled'] == 'n')
 		{
 			return FALSE;
 		}

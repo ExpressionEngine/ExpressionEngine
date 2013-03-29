@@ -24,7 +24,7 @@
  */
 class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_plugin {
 
-	public function disabled(array $disabled)
+	public function disabled(array $disabled, EE_Channel_preparser $pre)
 	{
 		return FALSE;
 	}

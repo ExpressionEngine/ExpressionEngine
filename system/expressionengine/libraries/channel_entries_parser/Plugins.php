@@ -76,7 +76,14 @@ class EE_Channel_parser_plugins {
 	 */
 	public function register_pair($class)
 	{
-		$this->pair_plugins[] = new $class();
+		$obj = new $class;
+
+		if ( ! $obj instanceOf EE_Channel_parser_plugin)
+		{
+			throw new InvalidArgumentException($class.' must implement the EE_Channel_parser_plugin interface.');
+		}
+
+		$this->pair_plugins[] = $obj;
 	}
 
 	// ------------------------------------------------------------------------
@@ -88,7 +95,14 @@ class EE_Channel_parser_plugins {
 	 */
 	public function register_single($class)
 	{
-		$this->single_plugins[] = new $class();
+		$obj = new $class;
+
+		if ( ! $obj instanceOf EE_Channel_parser_plugin)
+		{
+			throw new InvalidArgumentException($class.' must implement the EE_Channel_parser_plugin interface.');
+		}
+
+		$this->single_plugins[] = $obj;
 	}
 
 	// ------------------------------------------------------------------------
@@ -137,7 +151,7 @@ interface EE_Channel_parser_plugin {
 	 * @param array		A list of "disabled" features
 	 * @return Boolean	Is disabled?
 	 */
-	public function disabled(array $disabled);
+	public function disabled(array $disabled, EE_Channel_preparser $pre);
 
 	// ------------------------------------------------------------------------
 

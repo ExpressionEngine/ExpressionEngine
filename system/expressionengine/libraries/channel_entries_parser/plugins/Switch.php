@@ -24,9 +24,9 @@
  */
 class EE_Channel_switch_parser implements EE_Channel_parser_plugin {
 
-	public function disabled(array $disabled)
+	public function disabled(array $disabled, EE_Channel_preparser $pre)
 	{
-		return FALSE; // can't be disabled
+		return ! $pre->has_tag('switch');
 	}
 	
 	public function pre_process($tagdata, EE_Channel_preparser $pre)

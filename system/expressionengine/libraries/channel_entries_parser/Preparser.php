@@ -40,6 +40,7 @@ class EE_Channel_preparser {
 
 	protected $_plugins;
 
+	protected $_disabled;
 	protected $_pair_data;
 	protected $_single_data;
 
@@ -87,30 +88,27 @@ class EE_Channel_preparser {
 
 		// Run through plugin pre_processing steps, skipping any that
 		// were specified as being disabled.
-		
+
+		$tagdata  = $this->_tagdata;
 		$plugins  = $parser->plugins();
 		$disabled = isset($config['disable']) ? $config['disable'] : array();
 
 		foreach ($plugins->pair() as $k => $plugin)
 		{
-			if ($plugin->disabled($disabled))
-			{
-				$this->_pair_data[$k] = NULL;
-				continue;
-			}
+			$skip	 = (bool) $plugin->disabled($disabled, $this);
+			$obj_key = spl_object_hash($plugin);
 
-			$this->_pair_data[$k] = $plugin->pre_process($this->_tagdata, $this);
+			$this->_disabled[$obj_key]  = $skip;
+			$this->_pair_data[$obj_key] = $skip ? NULL : $plugin->pre_process($tagdata, $this);
 		}
 
 		foreach ($plugins->single() as $k => $plugin)
 		{
-			if ($plugin->disabled($disabled))
-			{
-				$this->_pair_data[$k] = NULL;
-				continue;
-			}
+			$skip	 = (bool) $plugin->disabled($disabled, $this);
+			$obj_key = spl_object_hash($plugin);
 
-			$this->_single_data[$k] = $plugin->pre_process($this->_tagdata, $this);
+			$this->_disabled[$obj_key]	  = $skip;
+			$this->_single_data[$obj_key] = $skip ? NULL : $plugin->pre_process($tagdata, $this);
 		}
 
 		// @todo these need to move elsewhere
@@ -141,9 +139,9 @@ class EE_Channel_preparser {
 	 *
 	 * @return mixed	Pair tag preprocessing results
 	 */
-	public function pair_data($key)
+	public function pair_data($obj)
 	{
-		return $this->_pair_data[$key];
+		return $this->_pair_data[spl_object_hash($obj)];
 	}
 
 	// --------------------------------------------------------------------
@@ -155,9 +153,9 @@ class EE_Channel_preparser {
 	 *
 	 * @return mixed	Single tag preprocessing results
 	 */
-	public function single_data($key)
+	public function single_data($obj)
 	{
-		return $this->_single_data[$key];
+		return $this->_single_data[spl_object_hash($obj)];
 	}
 
 	// --------------------------------------------------------------------
@@ -198,6 +196,22 @@ class EE_Channel_preparser {
 	public function parser()
 	{
 		return $this->_parser;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Disabled lookup
+	 *
+	 * We skip processing on disabled plugins.
+	 *
+	 * @param Object<EE_Channel_parser_plugin> plugin to check
+	 *
+	 * @return Boolean	Plugin is disabled
+	 */
+	public function is_disabled(EE_Channel_parser_plugin $obj)
+	{
+		return $this->_disabled[spl_object_hash($obj)];
 	}
 
 	// --------------------------------------------------------------------
