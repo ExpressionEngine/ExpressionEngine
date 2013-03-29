@@ -72,19 +72,24 @@ class EE_Channel_preparser {
 	 */
 	public function __construct(Channel $channel, EE_Channel_parser $parser, $entry_ids, $config)
 	{
+		// Setup object state
+
 		$this->_parser = $parser;
 		$this->_channel = $channel;
 		$this->_entry_ids = $entry_ids;
 		
-		$disabled = isset($config['disable']) ? $config['disable'] : array();
-
-		$plugins = $parser->plugins();
-
-		$this->_prefix = $parser->prefix();
+		$this->_prefix	= $parser->prefix();
 		$this->_tagdata = $parser->tagdata();
 
 		$this->pairs	= $this->_extract_prefixed(get_instance()->TMPL->var_pair);
 		$this->singles	= $this->_extract_prefixed(get_instance()->TMPL->var_single);
+
+
+		// Run through plugin pre_processing steps, skipping any that
+		// were specified as being disabled.
+		
+		$plugins  = $parser->plugins();
+		$disabled = isset($config['disable']) ? $config['disable'] : array();
 
 		foreach ($plugins->pair() as $k => $plugin)
 		{
@@ -99,12 +104,18 @@ class EE_Channel_preparser {
 
 		foreach ($plugins->single() as $k => $plugin)
 		{
+			if ($plugin->disabled($disabled))
+			{
+				$this->_pair_data[$k] = NULL;
+				continue;
+			}
+
 			$this->_single_data[$k] = $plugin->pre_process($this->_tagdata, $this);
 		}
 
+		// @todo these need to move elsewhere
 		$this->subscriber_totals	= $this->_subscriber_totals();
 		$this->modified_conditionals = $this->_find_modified_conditionals();
-
 	}
 
 	// --------------------------------------------------------------------
