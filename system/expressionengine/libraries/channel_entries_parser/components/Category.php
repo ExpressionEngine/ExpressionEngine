@@ -26,7 +26,7 @@ class EE_Channel_category_parser implements EE_Channel_parser_component {
 
 	public function disabled(array $disabled, EE_Channel_preparser $pre)
 	{
-		return ! $pre->has_tag_pair('categories') OR in_array('categories', $disabled);
+		return in_array('categories', $disabled) OR ! $pre->has_tag_pair('categories');
 	}
 
 	public function pre_process($tagdata, EE_Channel_preparser $pre)

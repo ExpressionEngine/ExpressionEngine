@@ -32,6 +32,7 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 	// Parse out $search_link for the {member_search_path} variable
 	public function pre_process($tagdata, EE_Channel_preparser $pre)
 	{
+		
 		$result_path = (preg_match("/".LD.$pre->prefix()."member_search_path\s*=(.*?)".RD."/s", $tagdata, $match)) ? $match[1] : 'search/results';
 		$result_path = str_replace(array('"',"'"), "", $result_path);
 
@@ -46,23 +47,23 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 		$data = $obj->row();
 		$prefix = $obj->prefix();
 
-		$this->_prefix = $prefix; // @todo remove
+		// I decided to split the huge if statement into educated guesses
+		// so we spend less time doing silly comparisons
+		if (strpos($tag, '_path') !== FALSE OR strpos($tag, 'permalink') !== FALSE)
+		{
+			return $this->_paths($data, $tagdata, $tag, $prefix);
+		}
 
-		// @todo
+		if (strpos($tag, 'url') !== FALSE)
+		{
+			return $this->_urls($data, $tagdata, $tag, $tag_options, $prefix);
+		}
+
+
+		// @todo remove
 		$key = $tag;
 		$val = $tag_options;
 
-		// I decided to split the huge if statement into educated guesses
-		// so we spend less time doing silly comparisons
-		if (strpos($key, '_path') !== FALSE OR strpos($key, 'permalink') !== FALSE)
-		{
-			return $this->_paths($data, $tagdata, $key, $prefix);
-		}
-
-		if (strpos($key, 'url') !== FALSE)
-		{
-			return $this->_urls($data, $tagdata, $key, $val, $prefix);
-		}
 
 		//  parse {title}
 		if ($key == $prefix.'title')

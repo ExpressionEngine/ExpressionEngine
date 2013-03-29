@@ -56,7 +56,7 @@ class EE_Channel_custom_date_parser implements EE_Channel_parser_component {
 					{
 						for ($j = 0; $j < count($matches[0]); $j++)
 						{
-							$matches[0][$j] = str_replace(array(LD,RD), '', $matches[0][$j]);
+							$matches[0][$j] = str_replace(array(LD, RD), '', $matches[0][$j]);
 
 							$custom_date_fields[$matches[0][$j]] = $matches[1][$j];
 						}
@@ -75,7 +75,6 @@ class EE_Channel_custom_date_parser implements EE_Channel_parser_component {
 		}
 
 		$tag = $obj->tag();
-		$tag_options = $obj->tag_options();
 		$data = $obj->row();
 		$prefix = $obj->prefix();
 

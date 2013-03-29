@@ -2922,6 +2922,7 @@ class Channel {
 
 		// We'll process what we can before starting to replace things to
 		// avoid redundant processing cycles in the foreach loop below
+
 		$preparsed = $parser->pre_parser($this, $this->_entry_ids);
 
 		$data_parser = $parser->data_parser($preparsed);
@@ -2942,7 +2943,6 @@ class Channel {
 		);
 
 		$this->return_data = $data_parser->parse($data, $config);
-
 
 		// Start the main processing loop
 /*

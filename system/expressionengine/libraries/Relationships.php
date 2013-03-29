@@ -112,13 +112,15 @@ class Relationships {
  	// --------------------------------------------------------------------
 
 	/**
-	 * Get a relationship parser and query object, populated with the information
-	 * we'll need to parse out the relationships in this template.
+	 * Get a relationship parser and query object, populated with the
+	 * information we'll need to parse out the relationships in this template.
 	 *
-	 * @param int[] An array of entry ids for the entries we wish to pull the relationships of.
-	 * @param int[] The rfields array from the Channel Module at the time of parsing.
-	 * @param Template The template we are parsing.
-	 * @return Relationship_Query The query object populated with the data queried from the database.
+	 * @param	Template The template we are parsing.
+	 * @param	The rfields array from the Channel Module at the time of parsing.
+	 * @param	The cfields array from the Channel Module at the time of parsing.
+	 *
+	 * @return Relationship_Parser	The parser object with the parsed out
+	 *								hierarchy and all of the entry data.
 	 */
 	public function get_relationship_parser(EE_Template $template, array $relationship_fields, array $custom_fields)
 	{
@@ -902,7 +904,7 @@ class Relationship_Parser
 		$lookup = $this->variables['lookup'];
 
 		get_instance()->session->set_cache('relationships', 'channel', $channel);
-
+		
 		$tagdata = $tree->parse($entry_id, $tagdata, $lookup, $this->categories);
 
 		return $tagdata;
@@ -1026,7 +1028,8 @@ class ParseNode extends EE_TreeNode {
 		$this->entries = array_unique($this->entry_ids[$id]);
 		$tag = preg_quote($this->name, '/');
 
-		return preg_replace_callback('/{'.$tag.'[^}:]*}(.+?){\/'.$tag.'}/is', array($this, '_replace'), $tagdata);
+		$ret = preg_replace_callback('/{'.$tag.'[^}:]*}(.+?){\/'.$tag.'}/is', array($this, '_replace'), $tagdata);
+		return $ret;
 	}
 
 	/**
