@@ -31,6 +31,16 @@ class EE_Fieldtype {
 
 	/**
 	 * Constructor
+	 */
+	public function __construct()
+	{
+		$this->EE =& get_instance();
+	}
+	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Constructor
 	 *
 	 * @access	public
 	 * @deprecated This is only here to maintain backwards compatibility
@@ -39,6 +49,8 @@ class EE_Fieldtype {
 	 */
 	function EE_Fieldtype()
 	{
+		$this->EE =& get_instance();
+		
 		// Log the deprecation.
 		ee()->load->library('logger');
 		ee()->logger->deprecated('2.6', 'EE_Fieldtype::__construct()');	
