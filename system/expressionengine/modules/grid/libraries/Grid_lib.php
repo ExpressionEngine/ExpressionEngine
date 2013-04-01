@@ -26,9 +26,9 @@
 
 class Grid_lib {
 
-	private $_fieldtypes = array();
-	private $_table = 'grid_columns';
-	private $_table_prefix = 'grid_field_';
+	protected $_fieldtypes = array();
+	protected $_table = 'grid_columns';
+	protected $_table_prefix = 'grid_field_';
 
 	/**
 	 * Performs fieldtype install
@@ -373,7 +373,7 @@ class Grid_lib {
 	 * @param	array	Column settings data
 	 * @return	array	Processed settings
 	 */
-	private function _save_settings($column)
+	protected function _save_settings($column)
 	{
 		$ft_api = ee()->api_channel_fields;
 
@@ -492,7 +492,7 @@ class Grid_lib {
 	 * @return	array	Rendered HTML settings form for given fieldtype and
 	 * 					column data
 	 */
-	private function _view_for_col_settings($col_type, $col_settings, $col_id = NULL)
+	protected function _view_for_col_settings($col_type, $col_settings, $col_id = NULL)
 	{
 		$settings_view = ee()->load->view(
 			'col_settings_tmpl',
