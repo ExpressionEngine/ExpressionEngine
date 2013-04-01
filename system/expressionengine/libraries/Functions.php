@@ -770,7 +770,7 @@ class EE_Functions {
 		
 		if (REQ == 'CP' && ee()->config->item('multiple_sites_enabled') == 'y')
 		{
-			$data['prefix'] = ( ! ee()->config->cp_cookie_prefix) ? 'exp_' : ee()->config->cp_cookie_prefix;
+			$data['prefix'] = ( ! ee()->config->cp_cookie_prefix) ? 'exp_' : ee()->config->cp_cookie_prefix.'_';;
 			$data['path']	= ( ! ee()->config->cp_cookie_path) ? '/' : ee()->config->cp_cookie_path;
 			$data['domain'] = ( ! ee()->config->cp_cookie_domain) ? '' : ee()->config->cp_cookie_domain;
 		}
