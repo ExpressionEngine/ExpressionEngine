@@ -1152,11 +1152,14 @@ class Api_channel_fields extends Api {
 		{
 			$this->errors[] = lang('invalid_characters').': '.$field_data['field_name'];
 		}
+		
+		// Truncated field name to test against duplicates
+		$trunc_field_name = substr(element('field_name', $field_data), 0, 32);
 
 		// Is the field name taken?
 		ee()->db->where(array(
 			'site_id' => ee()->config->item('site_id'),
-			'field_name' => element('field_name', $field_data),
+			'field_name' => $trunc_field_name,
 		));
 
 		if ($edit == TRUE)
@@ -1166,7 +1169,14 @@ class Api_channel_fields extends Api {
 
 		if (ee()->db->count_all_results('channel_fields') > 0)
 		{
-			$this->_set_error('duplicate_field_name');
+			if ($trunc_field_name != element('field_name', $field_data))
+			{
+				$this->_set_error('duplicate_truncated_field_name');
+			}
+			else
+			{
+				$this->_set_error('duplicate_field_name');
+			}
 		}
 
 		$field_type = $field_data['field_type'];
