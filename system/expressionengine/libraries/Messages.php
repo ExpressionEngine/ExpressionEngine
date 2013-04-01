@@ -103,14 +103,14 @@ class EE_Messages {
 		/**  A Few Things to Define, Batman
 		/** -----------------------------------*/
 		
-		$this->member_id	  = $this->EE->session->userdata['member_id'];
-		$this->allow_pm		  = ($this->EE->session->userdata['group_id'] == '1') ? 'y' : $this->EE->session->userdata['can_send_private_messages'];
-		$this->allow_pm		  = ($this->allow_pm == 'y' && $this->EE->session->userdata['accept_messages'] == 'y') ? 'y' : 'n';
+		$this->member_id	  = ee()->session->userdata['member_id'];
+		$this->allow_pm		  = (ee()->session->userdata['group_id'] == '1') ? 'y' : ee()->session->userdata['can_send_private_messages'];
+		$this->allow_pm		  = ($this->allow_pm == 'y' && ee()->session->userdata['accept_messages'] == 'y') ? 'y' : 'n';
 		
-		$this->attach_allowed = $this->EE->session->userdata('can_attach_in_private_messages');
+		$this->attach_allowed = ee()->session->userdata('can_attach_in_private_messages');
 		
-		$this->storage_limit	= ($this->EE->session->userdata['group_id'] == '1') ? 0 : $this->EE->session->userdata['prv_msg_storage_limit'];
-		$this->send_limit		= $this->EE->session->userdata['prv_msg_send_limit'];
+		$this->storage_limit	= (ee()->session->userdata['group_id'] == '1') ? 0 : ee()->session->userdata['prv_msg_storage_limit'];
+		$this->send_limit		= ee()->session->userdata['prv_msg_send_limit'];
 
 		if ( ! defined('AMP')) define('AMP', '&amp;');
 		if ( ! defined('BR'))  define('BR',  '<br />');
@@ -127,7 +127,7 @@ class EE_Messages {
 						
 		for($i=0, $t = count($prefs); $i < $t; ++$i)
 		{
-			if (FALSE !== ($value = $this->EE->config->item($prefs[$i])))
+			if (FALSE !== ($value = ee()->config->item($prefs[$i])))
 			{
 				$name = str_replace('prv_msg_', '', $prefs[$i]);
 				
@@ -135,19 +135,19 @@ class EE_Messages {
 			}
 		}		
 
-		$this->upload_path	 = $this->EE->config->slash_item('prv_msg_upload_path');
+		$this->upload_path	 = ee()->config->slash_item('prv_msg_upload_path');
 				
 		// -----------------------------------
 		//  Nearly every page requires this, 
 		//  so just load it for all of them
 		// -----------------------------------
 		
-		$this->EE->lang->loadfile('messages');
+		ee()->lang->loadfile('messages');
 		
-		$this->title = $this->EE->lang->line('private_messages');
-		$this->crumb = $this->EE->lang->line('private_messages');
+		$this->title = ee()->lang->line('private_messages');
+		$this->crumb = ee()->lang->line('private_messages');
 		
-		$this->images_folder = $this->EE->config->slash_item('theme_folder_url').'cp_global_images/';
+		$this->images_folder = ee()->config->slash_item('theme_folder_url').'cp_global_images/';
 		
 		$this->single_parts['path']['image_url'] = $this->images_folder;
 		
@@ -174,7 +174,7 @@ class EE_Messages {
 		{
 			$this->base_url = BASE.AMP.'C=myaccount'.AMP.'M=messages'.AMP.'P=';
 			$this->form_url = 'C=myaccount'.AMP.'M=messages'.AMP.'P=';
-			$this->request = ($this->EE->input->get_post('P') !== FALSE) ? $this->EE->input->get_post('P') : 'inbox';
+			$this->request = (ee()->input->get_post('P') !== FALSE) ? ee()->input->get_post('P') : 'inbox';
 		}
 		else
 		{
@@ -266,7 +266,7 @@ class EE_Messages {
 						{
 							if ($key == 'input' && $key2 == 'body')
 							{
-								$value2 = $this->EE->functions->encode_ee_tags($value2, TRUE);
+								$value2 = ee()->functions->encode_ee_tags($value2, TRUE);
 							}
 							
 							$template = str_replace(LD.$key.':'.$key2.RD, 
@@ -288,9 +288,9 @@ class EE_Messages {
 		/**  Finally, process all language text
 		/** -------------------------------------*/
 		
-		if (isset($this->EE->lang->language) && is_array($this->EE->lang->language) && count($this->EE->lang->language) > 0)
+		if (isset(ee()->lang->language) && is_array(ee()->lang->language) && count(ee()->lang->language) > 0)
 		{
-			foreach($this->EE->lang->language as $key => $value)
+			foreach(ee()->lang->language as $key => $value)
 			{
 				$template = str_replace(LD.'lang:'.$key.RD, $value, $template);
 			}
@@ -321,7 +321,7 @@ class EE_Messages {
 		
 		if ($this->disable_emoticons == 'y')
 		{
-			$this->EE->config->set_item('enable_emoticons', 'n');
+			ee()->config->set_item('enable_emoticons', 'n');
 		}
 	
 			/** -----------------------------------
@@ -382,7 +382,7 @@ class EE_Messages {
 		
 		$extra = ($which != '') ? "AND l.listed_type = '{$which}'" : '';
 		
-		$query = $this->EE->db->query("SELECT l.*, m.username, m.screen_name, m.member_id 
+		$query = ee()->db->query("SELECT l.*, m.username, m.screen_name, m.member_id 
 							 FROM exp_message_listed l, exp_members m
 							 WHERE l.listed_member = m.member_id
 							 AND l.member_id = '{$this->member_id}' 
@@ -421,11 +421,11 @@ class EE_Messages {
 	{
 		$this->folders = array();
 		
-		$query = $this->EE->db->query("SELECT * FROM exp_message_folders WHERE member_id = '{$this->member_id}'");
+		$query = ee()->db->query("SELECT * FROM exp_message_folders WHERE member_id = '{$this->member_id}'");
 		
 		if ($query->num_rows() == 0)
 		{
-			$this->EE->db->query($this->EE->db->insert_string('exp_message_folders', array('member_id' => $this->member_id)));
+			ee()->db->query(ee()->db->insert_string('exp_message_folders', array('member_id' => $this->member_id)));
 			
 			$this->folders['1'] = array($this->default_folders['0'], '0');
 			$this->folders['2'] = array($this->default_folders['1'], '0');
@@ -448,7 +448,7 @@ class EE_Messages {
 			
 			$this->folders = $required + $this->folders;
 			
-			$results = $this->EE->db->query("SELECT COUNT(*) AS count, message_folder FROM exp_message_copies 
+			$results = ee()->db->query("SELECT COUNT(*) AS count, message_folder FROM exp_message_copies 
 									WHERE recipient_id = '{$this->member_id}' 
 									AND message_deleted = 'n'
 									GROUP BY message_folder");
@@ -479,7 +479,7 @@ class EE_Messages {
 						 	  'secure'	=> ($this->allegiance == 'cp') ? FALSE : TRUE
 						 	  );  	
 		
-		$this->single_parts['form']['form_declaration']['edit_folders'] = $this->EE->functions->form_declaration($form_details);
+		$this->single_parts['form']['form_declaration']['edit_folders'] = ee()->functions->form_declaration($form_details);
 		$this->single_parts['include']['current_folders'] = '';
 		$this->single_parts['include']['new_folder']	  = '';
 		
@@ -502,7 +502,7 @@ class EE_Messages {
 			}
 			
 			$t++;
-			$this->single_parts['lang']['required']		= ($key < 3) ? $this->EE->lang->line('folder_required') : '';
+			$this->single_parts['lang']['required']		= ($key < 3) ? ee()->lang->line('folder_required') : '';
 			$this->single_parts['input']['folder_name']	= $value['0'];
 			$this->single_parts['input']['folder_id']	= $key;
 			$this->single_parts['style']				= ($t % 2) ? 'tableCellOne' : 'tableCellTwo';
@@ -529,8 +529,8 @@ class EE_Messages {
 		/**  Return the Folder's Contents
 		/** ----------------------------------------*/
 		
-		$this->title = $this->EE->lang->line('edit_folders');
-		$this->crumb = $this->EE->lang->line('edit_folders');
+		$this->title = ee()->lang->line('edit_folders');
+		$this->crumb = ee()->lang->line('edit_folders');
 		$this->return_data = $this->_process_template($template);
 	}
 
@@ -561,14 +561,14 @@ class EE_Messages {
 			if ( ! isset($_POST['folder_'.$i]) OR $_POST['folder_'.$i] == '')
 			{
 				$data['folder'.$i.'_name'] = '';
-				$this->EE->db->query("UPDATE exp_message_copies SET message_deleted = 'y' 
+				ee()->db->query("UPDATE exp_message_copies SET message_deleted = 'y' 
 							WHERE recipient_id = '{$this->member_id}' AND message_folder = '{$i}'");
 							
 				if ( ! isset($empty)) $empty = 'folder'.$i.'_name';
 			}
 			else
 			{
-				$data['folder'.$i.'_name'] = $this->EE->security->xss_clean($_POST['folder_'.$i]);
+				$data['folder'.$i.'_name'] = ee()->security->xss_clean($_POST['folder_'.$i]);
 			}
 		}
 		
@@ -578,10 +578,10 @@ class EE_Messages {
 		
 		if (isset($_POST['folder_new']) && $_POST['folder_new'] != '' && isset($empty))
 		{
-			$data[$empty] = $this->EE->security->xss_clean($_POST['folder_new']);
+			$data[$empty] = ee()->security->xss_clean($_POST['folder_new']);
 		}
 		
-		$this->EE->db->query($this->EE->db->update_string('exp_message_folders', $data, "member_id = '{$this->member_id}'"));
+		ee()->db->query(ee()->db->update_string('exp_message_folders', $data, "member_id = '{$this->member_id}'"));
 		
 		$this->fetch_folders();
 		
@@ -589,7 +589,7 @@ class EE_Messages {
 		/**  Success Message
 		/** -----------------------------------*/
 		
-		$this->single_parts['lang']['message'] = $this->EE->lang->line('folders_updated');
+		$this->single_parts['lang']['message'] = ee()->lang->line('folders_updated');
 		$this->single_parts['include']['success_message'] = $this->_process_template($this->retrieve_template('message_success'));
 		
 		/** ----------------------------------------
@@ -608,9 +608,9 @@ class EE_Messages {
 		/**  Bulletin Board
 		/** ------------------------------*/
 		
-		$style = ($this->EE->session->userdata['last_view_bulletins'] <= $this->EE->session->userdata['last_bulletin_date']) ? 'defaultBold' : '';
+		$style = (ee()->session->userdata['last_view_bulletins'] <= ee()->session->userdata['last_bulletin_date']) ? 'defaultBold' : '';
 		
-		$this->menu_items['single_items']['bulletin_board'] = array('text' => $this->EE->lang->line('bulletin_board'),
+		$this->menu_items['single_items']['bulletin_board'] = array('text' => ee()->lang->line('bulletin_board'),
 																	'link' => $this->_create_path('bulletin_board'),
 																	'image' => '',
 																	'style' => $style);
@@ -619,7 +619,7 @@ class EE_Messages {
 		/**  Compose New Message
 		/** ------------------------*/
 		
-		$this->menu_items['single_items']['compose_message'] = array('text' => $this->EE->lang->line('compose_message'),
+		$this->menu_items['single_items']['compose_message'] = array('text' => ee()->lang->line('compose_message'),
 						 											 'link' => $this->_create_path('compose'),
 						 											 'image' => '',
 																	 'style' => 'defaultBold');
@@ -629,13 +629,13 @@ class EE_Messages {
 		/**  Drafts Folder
 		/** ------------------------*/
 		
-		$query = $this->EE->db->query("SELECT COUNT(*) AS count FROM exp_message_data 
+		$query = ee()->db->query("SELECT COUNT(*) AS count FROM exp_message_data 
 							 WHERE sender_id = '{$this->member_id}' 
 							 AND message_status = 'draft'");
 		
 		if ($query->row('count')  > 0)
 		{
-			$this->menu_items['repeat_items']['folders'][] = array('text' => $this->EE->lang->line('draft_messages') .' ('.$query->row('count') .')',
+			$this->menu_items['repeat_items']['folders'][] = array('text' => ee()->lang->line('draft_messages') .' ('.$query->row('count') .')',
 																	'link' => $this->_create_path('drafts'),
 																	'image' => '',
 																	'style' => '');
@@ -675,11 +675,11 @@ class EE_Messages {
 		/**  Deleted Folder
 		/** ------------------------*/
 		
-		$query = $this->EE->db->query("SELECT COUNT(*) AS count FROM exp_message_copies 
+		$query = ee()->db->query("SELECT COUNT(*) AS count FROM exp_message_copies 
 							 WHERE recipient_id = '{$this->member_id}'
 							 AND message_deleted = 'y'");
 		
-		$this->menu_items['repeat_items']['folders'][] = array('text' => $this->EE->lang->line('deleted_messages').' ('.$query->row('count') .')',
+		$this->menu_items['repeat_items']['folders'][] = array('text' => ee()->lang->line('deleted_messages').' ('.$query->row('count') .')',
 																'link' => $this->_create_path('deleted'),
 																'image' => '',
 																'style' => '');
@@ -688,7 +688,7 @@ class EE_Messages {
 		// Message Tracking
 		// ------------------------
 		
-		$this->menu_items['single_items']['track_messages'] = array('text' => $this->EE->lang->line('track_messages'),
+		$this->menu_items['single_items']['track_messages'] = array('text' => ee()->lang->line('track_messages'),
 																	'link' => $this->_create_path('track'),
 																	'image' => '',
 																	'style' => '');
@@ -697,7 +697,7 @@ class EE_Messages {
 		/**  Edit Message Folders
 		/** ------------------------*/
 		
-		$this->menu_items['single_items']['edit_folders'] = array('text' => $this->EE->lang->line('edit_folders'),
+		$this->menu_items['single_items']['edit_folders'] = array('text' => ee()->lang->line('edit_folders'),
 																  'link' => $this->_create_path('folders'),
 																  'image' => '',
 																  'style' => '');
@@ -705,7 +705,7 @@ class EE_Messages {
 		/** ------------------------
 		/**  Buddy List
 		/** ------------------------*/
-		$this->menu_items['single_items']['buddy_list'] = array('text' => $this->EE->lang->line('buddy_list'),
+		$this->menu_items['single_items']['buddy_list'] = array('text' => ee()->lang->line('buddy_list'),
 																'link' => $this->_create_path('buddies'),
 																'image' => '',
 																'style' => '');
@@ -714,7 +714,7 @@ class EE_Messages {
 		/**  Block List
 		/** ------------------------*/
 		
-		$this->menu_items['single_items']['block_list'] = array('text' => $this->EE->lang->line('blocked_list'),
+		$this->menu_items['single_items']['block_list'] = array('text' => ee()->lang->line('blocked_list'),
 																'link' => $this->_create_path('blocked'),
 																'image' => '',
 																'style' => '');
@@ -752,7 +752,7 @@ class EE_Messages {
 		/**  Open/Close JavaScript
 		/** --------------------------------*/
 		
-		if ($this->EE->input->cookie('myaccount_messages') !== FALSE && $this->EE->input->cookie('myaccount_messages') == 'on')
+		if (ee()->input->cookie('myaccount_messages') !== FALSE && ee()->input->cookie('myaccount_messages') == 'on')
 		{
 			$text		  = '[-]';
 			$hidden_style = '';
@@ -843,7 +843,7 @@ class EE_Messages {
 		}
 		else
 		{
-			$row_count = ($this->EE->input->get_post('page') === false) ? 0 : $this->EE->input->get_post('page');
+			$row_count = (ee()->input->get_post('page') === false) ? 0 : ee()->input->get_post('page');
 		}
 		
 		if ( ! is_numeric($row_count))
@@ -852,7 +852,7 @@ class EE_Messages {
 		}
 		
 		$this->single_parts['lang']['folder_id']	= '1';
-		$this->single_parts['lang']['folder_name'] = $this->EE->lang->line('draft_messages');
+		$this->single_parts['lang']['folder_name'] = ee()->lang->line('draft_messages');
 		$this->conditionals['paginate'] = 'n';
 		
 		$this->conditionals['drafts_folder']	= 'y';
@@ -885,7 +885,7 @@ class EE_Messages {
 		/**  Run "count" query for pagination
 		/** ----------------------------------------*/
 		
-		$query = $this->EE->db->query("SELECT COUNT(exp_message_data.message_id) AS count ".$sql);
+		$query = ee()->db->query("SELECT COUNT(exp_message_data.message_id) AS count ".$sql);
 		
 		/** ----------------------------------------
 		/**  If No Messages, we say so.
@@ -893,8 +893,8 @@ class EE_Messages {
 		
 		if ($query->row('count')  == 0)
 		{
-			$this->title = $this->EE->lang->line('draft_messages');
-			$this->crumb = $this->EE->lang->line('draft_messages');
+			$this->title = ee()->lang->line('draft_messages');
+			$this->crumb = ee()->lang->line('draft_messages');
 			
 			$this->single_parts['include']['folder_rows']  = $this->retrieve_template('message_no_folder_rows');
 			$this->single_parts['form']['form_declaration']['modify_messages'] = '';
@@ -917,7 +917,7 @@ class EE_Messages {
 			$total_pages++;
 		}
 		
-		$this->single_parts['include']['page_count'] = $this->EE->lang->line('folder_page').' '.$current_page.' '.$this->EE->lang->line('of').' '.$total_pages;
+		$this->single_parts['include']['page_count'] = ee()->lang->line('folder_page').' '.$current_page.' '.ee()->lang->line('of').' '.$total_pages;
 		
 		/** -----------------------------
 		/**  Do we need pagination?
@@ -927,7 +927,7 @@ class EE_Messages {
 		
 		if ($query->row('count')  > $this->per_page)
 		{ 											
-			$this->EE->load->library('pagination');
+			ee()->load->library('pagination');
 			
 			if ($this->allegiance == 'user')
 			{
@@ -943,11 +943,11 @@ class EE_Messages {
 			$config['total_rows'] 	= $query->row('count');
 			$config['per_page']		= $this->per_page;
 			$config['cur_page']		= $row_count;			
-			$config['first_link'] 	= $this->EE->lang->line('pag_first_link');
-			$config['last_link'] 	= $this->EE->lang->line('pag_last_link');			
+			$config['first_link'] 	= ee()->lang->line('pag_first_link');
+			$config['last_link'] 	= ee()->lang->line('pag_last_link');			
 			
-			$this->EE->pagination->initialize($config);
-			$this->single_parts['include']['pagination_link'] = $this->EE->pagination->create_links();
+			ee()->pagination->initialize($config);
+			$this->single_parts['include']['pagination_link'] = ee()->pagination->create_links();
 
 			$this->conditionals['paginate'] = 'y';
 			 
@@ -963,23 +963,23 @@ class EE_Messages {
 		$i = 0;
 		$censor = FALSE;
         
-		if ($this->EE->config->item('enable_censoring') == 'y' && $this->EE->config->item('censored_words') != '')
+		if (ee()->config->item('enable_censoring') == 'y' && ee()->config->item('censored_words') != '')
         {
-			$this->EE->load->library('typography');
-			$this->EE->typography->initialize();
+			ee()->load->library('typography');
+			ee()->typography->initialize();
 			$censor = TRUE;
 		}
 				
-		$query = $this->EE->db->query($dql.$sql);
+		$query = ee()->db->query($dql.$sql);
 		
 		foreach($query->result_array() as $row)
 		{
 			++$i;
 			$data = $row;
 			$data['msg_id']		  = 'd'.$row['message_id'];
-			$data['message_date'] = $this->EE->localize->human_time($data['message_date']);
+			$data['message_date'] = ee()->localize->human_time($data['message_date']);
 			$data['style']		  = ($i % 2) ? 'tableCellTwo' : 'tableCellOne';
-			$data['message_subject']  = ($censor === FALSE) ? $data['message_subject'] : $this->EE->typography->filter_censored_words($data['message_subject']);
+			$data['message_subject']  = ($censor === FALSE) ? $data['message_subject'] : ee()->typography->filter_censored_words($data['message_subject']);
 						
 			if ($this->allegiance == 'user')
 			{
@@ -1014,8 +1014,8 @@ class EE_Messages {
 		/**  Return the Folder's Contents
 		/** ----------------------------------------*/
 		
-		$this->title = $this->EE->lang->line('draft_messages');
-		$this->crumb = $this->EE->lang->line('draft_messages');
+		$this->title = ee()->lang->line('draft_messages');
+		$this->crumb = ee()->lang->line('draft_messages');
 		$this->return_data = $this->folder_wrapper('y', 'n', 'n');
  	}
 
@@ -1028,8 +1028,8 @@ class EE_Messages {
 	{
 		// ---------------------------------
 		// Find Requested Folder ID
-		// $this->EE->uri->query_string - User
-		// $this->EE->input->get_post('folder') - CP
+		// ee()->uri->query_string - User
+		// ee()->input->get_post('folder') - CP
 		// ---------------------------------
 		
 		$row_count = 0;  // How many rows shown this far (i.e. offset)
@@ -1057,8 +1057,8 @@ class EE_Messages {
 			}
 			else
 			{
-				$folder_id = ($this->EE->input->get_post('folder') === false) ? '1' : $this->EE->input->get_post('folder');
-				$row_count = ($this->EE->input->get_post('page') === false) ? 0 : $this->EE->input->get_post('page');
+				$folder_id = (ee()->input->get_post('folder') === false) ? '1' : ee()->input->get_post('folder');
+				$row_count = (ee()->input->get_post('page') === false) ? 0 : ee()->input->get_post('page');
 			}
 		}
 		
@@ -1079,7 +1079,7 @@ class EE_Messages {
 		
 		if ($folder_id == '0')
 		{
-			$folder_name = $this->EE->lang->line('deleted_messages');
+			$folder_name = ee()->lang->line('deleted_messages');
 		}
 		elseif ( ! isset($this->folders[$folder_id]['0']) OR $this->folders[$folder_id]['0'] == '')
 		{
@@ -1089,7 +1089,7 @@ class EE_Messages {
 			}
 			else
 			{
-				return $this->EE->output->show_user_error('general', array($this->EE->lang->line('not_authorized')));
+				return ee()->output->show_user_error('general', array(ee()->lang->line('not_authorized')));
 			}
 		}
 		else
@@ -1097,7 +1097,7 @@ class EE_Messages {
 			$folder_name = $this->folders[$folder_id]['0'];
 		}
 		
-		$this->single_parts['lang']['folder_name'] = $this->EE->lang->line('messages_folder').' - '.$folder_name;
+		$this->single_parts['lang']['folder_name'] = ee()->lang->line('messages_folder').' - '.$folder_name;
 		$this->single_parts['lang']['folder_id'] = $folder_id;
 		$this->current_folder = $folder_id;
 		$this->conditionals['paginate'] = 'n';
@@ -1164,7 +1164,7 @@ class EE_Messages {
 		/**  Run "count" query for pagination
 		/** ----------------------------------------*/
 		
-		$query = $this->EE->db->query("SELECT COUNT(exp_message_copies.copy_id) AS count ".$sql);
+		$query = ee()->db->query("SELECT COUNT(exp_message_copies.copy_id) AS count ".$sql);
 		
 		/** ----------------------------------------
 		/**  If No Messages, we say so.
@@ -1196,7 +1196,7 @@ class EE_Messages {
 			$total_pages++;
 		}
 		
-		$this->single_parts['include']['page_count'] = $this->EE->lang->line('folder_page').' '.$current_page.' '.$this->EE->lang->line('of').' '.$total_pages;
+		$this->single_parts['include']['page_count'] = ee()->lang->line('folder_page').' '.$current_page.' '.ee()->lang->line('of').' '.$total_pages;
 		
 		/** -----------------------------
 		/**  Do we need pagination?
@@ -1206,7 +1206,7 @@ class EE_Messages {
 		
 		if ($query->row('count')  > $this->per_page)
 		{ 											
-			$this->EE->load->library('pagination');
+			ee()->load->library('pagination');
 			
 			if ($this->allegiance == 'user')
 			{
@@ -1224,11 +1224,11 @@ class EE_Messages {
 			$config['total_rows'] 	= $query->row('count');
 			$config['per_page']		= $this->per_page;
 			$config['cur_page']		= $row_count;		
-			$config['first_link'] 	= $this->EE->lang->line('pag_first_link');
-			$config['last_link'] 	= $this->EE->lang->line('pag_last_link');
+			$config['first_link'] 	= ee()->lang->line('pag_first_link');
+			$config['last_link'] 	= ee()->lang->line('pag_last_link');
 						
-			$this->EE->pagination->initialize($config);
-			$this->single_parts['include']['pagination_link'] = $this->EE->pagination->create_links();
+			ee()->pagination->initialize($config);
+			$this->single_parts['include']['pagination_link'] = ee()->pagination->create_links();
 
 			$this->conditionals['paginate'] = 'y';
 			 
@@ -1245,14 +1245,14 @@ class EE_Messages {
 		$r = '';
 		$censor = FALSE;
         
-		if ($this->EE->config->item('enable_censoring') == 'y' && $this->EE->config->item('censored_words') != '')
+		if (ee()->config->item('enable_censoring') == 'y' && ee()->config->item('censored_words') != '')
         {
-			$this->EE->load->library('typography');
-			$this->EE->typography->initialize();
+			ee()->load->library('typography');
+			ee()->typography->initialize();
 			$censor = TRUE;
 		}		
 
-		$query = $this->EE->db->query($dql.$sql);
+		$query = ee()->db->query($dql.$sql);
 		
 		foreach($query->result_array() as $row)
 		{
@@ -1263,9 +1263,9 @@ class EE_Messages {
 			$data['msg_id']	= ($row['message_read'] == 'n') ? 'u'.$row['msg_id'] : $row['msg_id'];
 			$data['buddy_list_link'] = '';
 			$data['block_list_link'] = '';
-			$data['message_date'] = $this->EE->localize->human_time($data['message_date']);
+			$data['message_date'] = ee()->localize->human_time($data['message_date']);
 			$data['style']		  = ($i % 2) ? 'tableCellTwo' : 'tableCellOne';
-			$data['message_subject']  = ($censor === FALSE) ? $data['message_subject'] : $this->EE->typography->filter_censored_words($data['message_subject']);
+			$data['message_subject']  = ($censor === FALSE) ? $data['message_subject'] : ee()->typography->filter_censored_words($data['message_subject']);
 			
 			if ($this->allegiance == 'user')
 			{
@@ -1328,7 +1328,7 @@ class EE_Messages {
 		
 		if (count($message_ids) > 0 && $this->block_tracking == 'n')
 		{
-			$this->EE->db->query("UPDATE exp_message_copies SET message_received = 'y' 
+			ee()->db->query("UPDATE exp_message_copies SET message_received = 'y' 
 						WHERE recipient_id = '{$this->member_id}'
 						AND message_id IN ('".implode("','",$message_ids)."')");
 		}
@@ -1369,7 +1369,7 @@ class EE_Messages {
 						 'secure'			=> ($this->allegiance == 'cp') ? FALSE : TRUE
 						 );  	
 		
-		$this->single_parts['form']['form_declaration']['modify_messages']  = $this->EE->functions->form_declaration($details);
+		$this->single_parts['form']['form_declaration']['modify_messages']  = ee()->functions->form_declaration($details);
 
 		/** ---------------------------------
 		/**  Move, Copy, Delete Buttons
@@ -1499,20 +1499,20 @@ class EE_Messages {
 //echo '<pre>';print_r($debug[1]);echo'</pre>';exit;
 		if ($this->theme_path == '')
 		{
-			$theme = ($this->EE->config->item('member_theme') == '') ? 'default' : $this->EE->config->item('member_theme');
+			$theme = (ee()->config->item('member_theme') == '') ? 'default' : ee()->config->item('member_theme');
 			$this->theme_path = PATH_MBR_THEMES."{$theme}/";			
 		}
 
 		if ( ! file_exists($this->theme_path.$which.'.html'))
 		{
-			$data = array(	'title' 	=> $this->EE->lang->line('error'),
-							'heading'	=> $this->EE->lang->line('general_error'),
-							'content'	=> $this->EE->lang->line('nonexistent_page'),
+			$data = array(	'title' 	=> ee()->lang->line('error'),
+							'heading'	=> ee()->lang->line('general_error'),
+							'content'	=> ee()->lang->line('nonexistent_page'),
 							'redirect'	=> '',
-							'link'		=> array($this->EE->config->item('site_url'), stripslashes($this->EE->config->item('site_name')))
+							'link'		=> array(ee()->config->item('site_url'), stripslashes(ee()->config->item('site_name')))
 						 );
 
-			return $this->EE->output->show_message($data, 0);			
+			return ee()->output->show_message($data, 0);			
 		}
 	
 		return $this->MS->_prep_element(trim(file_get_contents($this->theme_path.$which.'.html')));
@@ -1581,14 +1581,14 @@ DOH;
 		
 		$this->single_parts['include']['folder_pulldown']['move'] = '<div id="movemenu" class="tableCellOne" style="border: 1px solid #666; position:absolute;visibility:hidden;">'.
 																	'<select name="moveto" class="select" onchange="this.form.submit();">'.
-																	'<option value="none">'.$this->EE->lang->line('choose_folder').'</option>'.NL.
+																	'<option value="none">'.ee()->lang->line('choose_folder').'</option>'.NL.
 																	$str2.
 																	'</div>'.NL.
 																	$move_js;
 		
 		$this->single_parts['include']['folder_pulldown']['copy'] = '<div id="copymenu" class="tableCellOne" style="border: 1px solid #666; position:absolute;visibility:hidden;">'.
 																	'<select name="copyto" class="select" onchange="this.form.submit();">'.
-																	'<option value="none">'.$this->EE->lang->line('choose_folder').'</option>'.NL.
+																	'<option value="none">'.ee()->lang->line('choose_folder').'</option>'.NL.
 																	$str2.
 																	'</div>'.NL.
 																	$copy_js;
@@ -1608,7 +1608,7 @@ DOH;
 		
 		if ($this->allegiance == 'cp')
 		{
-			$which_field = ( ! $this->EE->input->get_post('field')) ? 'recipients' : $this->EE->input->get_post('field');
+			$which_field = ( ! ee()->input->get_post('field')) ? 'recipients' : ee()->input->get_post('field');
 		}
 		else
 		{
@@ -1620,7 +1620,7 @@ DOH;
 						 	  'secure'	=> ($this->allegiance == 'cp') ? FALSE : TRUE
 						 	  );
 		
-		$this->single_parts['form']['form_declaration']['do_member_search'] = $this->EE->functions->form_declaration($form_details);
+		$this->single_parts['form']['form_declaration']['do_member_search'] = ee()->functions->form_declaration($form_details);
 		$this->single_parts['include']['message'] = $message;
 		
 		$this->conditionals['message'] = ($message != '') ? 'y' : 'n';
@@ -1629,7 +1629,7 @@ DOH;
 		
 		$this->single_parts['include']['member_group_options'] = '';
 
-		$query = $this->EE->db->query("SELECT group_id, group_title FROM exp_member_groups WHERE site_id = '".$this->EE->db->escape_str($this->EE->config->item('site_id'))."' AND include_in_memberlist = 'y' ORDER BY group_title");
+		$query = ee()->db->query("SELECT group_id, group_title FROM exp_member_groups WHERE site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."' AND include_in_memberlist = 'y' ORDER BY group_title");
 			  
 		foreach ($query->result_array() as $row)
 		{								
@@ -1650,12 +1650,12 @@ DOH;
 		$this->title = ''; 
 		$this->crumb = '';
 		
-		$which_field = ( ! $this->EE->input->get_post('which_field')) ? 'recipients' : $this->EE->input->get_post('which_field');
+		$which_field = ( ! ee()->input->get_post('which_field')) ? 'recipients' : ee()->input->get_post('which_field');
 		
 		if ($this->allegiance == 'cp')
 		{
-			$s = ($this->EE->config->item('admin_session_type') != 'c') ? $this->EE->session->userdata['session_id'] : 0;
-			$redirect_url = $this->EE->config->item('cp_url', FALSE).'?S='.$s.
+			$s = (ee()->config->item('admin_session_type') != 'c') ? ee()->session->userdata['session_id'] : 0;
+			$redirect_url = ee()->config->item('cp_url', FALSE).'?S='.$s.
 							AMP.'C=myaccount'.
 							AMP.'M=messages'.
 							AMP.'P=member_search'.
@@ -1678,7 +1678,7 @@ DOH;
 			$_POST['email'] 		== ''
 			) 
 		{
-			$this->EE->functions->redirect($redirect_url);
+			ee()->functions->redirect($redirect_url);
 		}
 			
 		$search_query = array();
@@ -1693,37 +1693,37 @@ DOH;
 			{
 				if ($val != 'any')
 				{
-					$search_query[] = " exp_member_groups.group_id ='".$this->EE->db->escape_str($_POST['group_id'])."'";
+					$search_query[] = " exp_member_groups.group_id ='".ee()->db->escape_str($_POST['group_id'])."'";
 				}
 			}
 			else
 			{
 				if ($val != '')
 				{
-					$search_query[] = $key." LIKE '%".$this->EE->db->escape_like_str($val)."%'";
+					$search_query[] = $key." LIKE '%".ee()->db->escape_like_str($val)."%'";
 				}
 			}
 		}
 		
 		if (count($search_query) < 1)
 		{
-			$this->EE->functions->redirect($redirect_url);
+			ee()->functions->redirect($redirect_url);
 		}
 						
   		$Q = implode(" AND ", $search_query);
 				
 		$sql = "SELECT DISTINCT exp_members.screen_name FROM exp_members, exp_member_groups 
 				WHERE exp_members.group_id = exp_member_groups.group_id 
-				AND exp_member_groups.site_id = '".$this->EE->db->escape_str($this->EE->config->item('site_id'))."' AND include_in_memberlist = 'y'
+				AND exp_member_groups.site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."' AND include_in_memberlist = 'y'
 				AND ".$Q;				 
 		
-		$query = $this->EE->db->query($sql);
+		$query = ee()->db->query($sql);
 		
 		$total_count = $query->num_rows;
 		
 		if ($total_count == 0)
 		{
-			return $this->member_search($this->EE->lang->line('no_search_results'));
+			return $this->member_search(ee()->lang->line('no_search_results'));
 		}
 		
 		$this->single_parts['include']['search_results'] = '';
@@ -1751,7 +1751,7 @@ DOH;
 		
 		if ($this->allegiance == 'cp')
 		{
-			$which = ( ! $this->EE->input->get_post('which')) ? 'buddy' : $this->EE->input->get_post('which');
+			$which = ( ! ee()->input->get_post('which')) ? 'buddy' : ee()->input->get_post('which');
 		}
 		else
 		{
@@ -1763,7 +1763,7 @@ DOH;
 						 	  'secure'	=> ($this->allegiance == 'cp') ? FALSE : TRUE
 						 	  );
 		
-		$this->single_parts['form']['form_declaration']['do_member_search'] = $this->EE->functions->form_declaration($form_details);
+		$this->single_parts['form']['form_declaration']['do_member_search'] = ee()->functions->form_declaration($form_details);
 		$this->single_parts['include']['message'] = $message;
 		
 		$this->conditionals['message'] = ($message != '') ? 'y' : 'n';
@@ -1772,7 +1772,7 @@ DOH;
 		
 		$this->single_parts['include']['member_group_options'] = '';
 
-		$query = $this->EE->db->query("SELECT group_id, group_title FROM exp_member_groups WHERE site_id = '".$this->EE->db->escape_str($this->EE->config->item('site_id'))."' AND include_in_memberlist = 'y' ORDER BY group_title");
+		$query = ee()->db->query("SELECT group_id, group_title FROM exp_member_groups WHERE site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."' AND include_in_memberlist = 'y' ORDER BY group_title");
 			  
 		foreach ($query->result_array() as $row)
 		{								
@@ -1793,12 +1793,12 @@ DOH;
 		$this->title = ''; 
 		$this->crumb = '';
 		
-		$which = ( ! $this->EE->input->get_post('which')) ? 'buddy' : $this->EE->input->get_post('which');
+		$which = ( ! ee()->input->get_post('which')) ? 'buddy' : ee()->input->get_post('which');
 		
 		if ($this->allegiance == 'cp')
 		{
-			$s = ($this->EE->config->item('admin_session_type') != 'c') ? $this->EE->session->userdata['session_id'] : 0;
-			$redirect_url = $this->EE->config->item('cp_url', FALSE).'?S='.$s.
+			$s = (ee()->config->item('admin_session_type') != 'c') ? ee()->session->userdata['session_id'] : 0;
+			$redirect_url = ee()->config->item('cp_url', FALSE).'?S='.$s.
 							AMP.'C=myaccount'.
 							AMP.'M=messages'.
 							AMP.'P=buddy_search'.
@@ -1821,7 +1821,7 @@ DOH;
 			$_POST['email'] 		== ''
 			) 
 			{
-				$this->EE->functions->redirect($redirect_url);
+				ee()->functions->redirect($redirect_url);
 			}
 			
 		$search_query = array();
@@ -1836,37 +1836,37 @@ DOH;
 			{
 				if ($val != 'any')
 				{
-					$search_query[] = " group_id ='".$this->EE->db->escape_str($_POST['group_id'])."'";
+					$search_query[] = " group_id ='".ee()->db->escape_str($_POST['group_id'])."'";
 				}
 			}
 			else
 			{
 				if ($val != '')
 				{
-					$search_query[] = $key." LIKE '%".$this->EE->db->escape_like_str($val)."%'";
+					$search_query[] = $key." LIKE '%".ee()->db->escape_like_str($val)."%'";
 				}
 			}
 		}
 		
 		if (count($search_query) < 1)
 		{
-			$this->EE->functions->redirect($redirect_url);
+			ee()->functions->redirect($redirect_url);
 		}
 						
   		$Q = implode(" AND ", $search_query);
 				
 		$sql = "SELECT DISTINCT exp_members.member_id, exp_members.screen_name FROM exp_members, exp_member_groups 
 				WHERE exp_members.group_id = exp_member_groups.group_id 
-				AND exp_member_groups.site_id = '".$this->EE->db->escape_str($this->EE->config->item('site_id'))."' AND include_in_memberlist = 'y'
+				AND exp_member_groups.site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."' AND include_in_memberlist = 'y'
 				AND ".$Q;				 
 		
-		$query = $this->EE->db->query($sql);
+		$query = ee()->db->query($sql);
 		
 		$total_count = $query->num_rows;
 		
 		if ($total_count == 0)
 		{
-			return $this->buddy_search($this->EE->lang->line('no_search_results'));
+			return $this->buddy_search(ee()->lang->line('no_search_results'));
 		}
 		
 		$r = '';
@@ -1904,8 +1904,8 @@ DOH;
 				WHERE exp_message_data.sender_id = '{$this->member_id}'
 				AND exp_message_data.message_status = 'draft'";
 				
-		$query	= $this->EE->db->query($sql);
-		$results = $this->EE->db->query($tql);
+		$query	= ee()->db->query($sql);
+		$results = ee()->db->query($tql);
 		
 		$this->total_messages = $query->row('count') ; + $results->row('count') ;
  	}
@@ -1927,7 +1927,7 @@ DOH;
 		/** ----------------------*/
 		
 		$this->single_parts['lang']['total_messages']	= $this->total_messages;
-		$this->single_parts['lang']['max_messages']		= ($this->storage_limit == '0') ? $this->EE->lang->line('unlimited_messages') : $this->storage_limit;
+		$this->single_parts['lang']['max_messages']		= ($this->storage_limit == '0') ? ee()->lang->line('unlimited_messages') : $this->storage_limit;
 		$this->single_parts['lang']['usage_percent']	= '0';
 		
 		$this->single_parts['image']['messages_graph']['width']		= '1';
@@ -1956,8 +1956,8 @@ DOH;
  			}
  		}
  		
- 		$this->single_parts['lang']['storage_status']		= str_replace(array('%x', '%y'), array($this->single_parts['lang']['total_messages'], $this->single_parts['lang']['max_messages']), $this->EE->lang->line('storage_status'));
-		$this->single_parts['lang']['storage_percentage']	= str_replace('%x', $this->single_parts['lang']['usage_percent'], $this->EE->lang->line('storage_percentage'));
+ 		$this->single_parts['lang']['storage_status']		= str_replace(array('%x', '%y'), array($this->single_parts['lang']['total_messages'], $this->single_parts['lang']['max_messages']), ee()->lang->line('storage_status'));
+		$this->single_parts['lang']['storage_percentage']	= str_replace('%x', $this->single_parts['lang']['usage_percent'], ee()->lang->line('storage_percentage'));
  	}
 
 
@@ -1967,9 +1967,9 @@ DOH;
 	/** -----------------------------------*/
 	function modify_messages()
 	{
-		if ( ! $this->EE->input->post('toggle'))
+		if ( ! ee()->input->post('toggle'))
 		{
-			$folder_id = ( ! $this->EE->input->get_post('this_folder')) ? 1 : $this->EE->input->get_post('this_folder');
+			$folder_id = ( ! ee()->input->get_post('this_folder')) ? 1 : ee()->input->get_post('this_folder');
 			
 			return $this->view_folder($folder_id);
 		}
@@ -1985,86 +1985,86 @@ DOH;
 				$val = substr($val, 1);
 			}
 			
-			if ($this->EE->input->post('daction') == 'delete')
+			if (ee()->input->post('daction') == 'delete')
 			{
 				if (substr($val, 0, 1) == 'd')
 				{
 					// We're deleting a draft
-					$this->EE->db->query("DELETE FROM exp_message_data
+					ee()->db->query("DELETE FROM exp_message_data
 								WHERE sender_id = '{$this->member_id}'
-								AND message_id = '".$this->EE->db->escape_str(substr($val, 1))."'
+								AND message_id = '".ee()->db->escape_str(substr($val, 1))."'
 								AND message_status = 'draft'");
 				}
 				else
 				{
-					$this->EE->db->query("UPDATE exp_message_copies SET message_deleted = 'y', message_read = 'y'
+					ee()->db->query("UPDATE exp_message_copies SET message_deleted = 'y', message_read = 'y'
 								WHERE recipient_id = '{$this->member_id}'
-								AND copy_id = '".$this->EE->db->escape_str($val)."'");
+								AND copy_id = '".ee()->db->escape_str($val)."'");
 								
 					/** ----------------------------------
 					/**  Reduce exp_members.private_messages
 					/** ----------------------------------*/
 					
 					// quick sanity check juuuuust in case
-					if ($this->EE->session->userdata['private_messages'] > 0 && $unread === TRUE)
+					if (ee()->session->userdata['private_messages'] > 0 && $unread === TRUE)
 					{
-						$this->EE->db->query("UPDATE exp_members SET private_messages = private_messages - 1
+						ee()->db->query("UPDATE exp_members SET private_messages = private_messages - 1
 											WHERE member_id = '{$this->member_id}'");
 					
-						$this->EE->session->userdata['private_messages']--;
+						ee()->session->userdata['private_messages']--;
 					}
 				}
 			}
-			elseif ($this->EE->input->post('daction') == 'reply')
+			elseif (ee()->input->post('daction') == 'reply')
 			{
 				$this->hide_preview = TRUE;
 				return $this->compose($val);
 			}
-			elseif ($this->EE->input->post('daction')  == 'reply_all')
+			elseif (ee()->input->post('daction')  == 'reply_all')
 			{
 				$this->hide_preview = TRUE;
 				return $this->compose($val);
 			}
-			elseif ($this->EE->input->post('daction') == 'forward')
+			elseif (ee()->input->post('daction') == 'forward')
 			{
 				$this->hide_preview = TRUE;
 				return $this->compose($val);
 			}
-			elseif ($this->EE->input->post('moveto') && $this->EE->input->get_post('moveto') != 'none')
+			elseif (ee()->input->post('moveto') && ee()->input->get_post('moveto') != 'none')
 			{
-				$folder_id = $this->EE->input->post('moveto');
+				$folder_id = ee()->input->post('moveto');
 				
 				if (is_numeric($folder_id) && $folder_id <= $this->max_folders && isset($this->folders[$folder_id]))
 				{
-					$this->EE->db->query("UPDATE exp_message_copies 
+					ee()->db->query("UPDATE exp_message_copies 
 								SET message_deleted = 'n',
-								message_folder = '".$this->EE->db->escape_str($folder_id)."'
+								message_folder = '".ee()->db->escape_str($folder_id)."'
 								WHERE recipient_id = '{$this->member_id}'
-								AND copy_id = '".$this->EE->db->escape_str($val)."'");
+								AND copy_id = '".ee()->db->escape_str($val)."'");
 				}
 			}
-			elseif ($this->EE->input->post('copyto') && $this->EE->input->get_post('copyto') != 'none')
+			elseif (ee()->input->post('copyto') && ee()->input->get_post('copyto') != 'none')
 			{
-				$folder_id = $this->EE->input->post('copyto');
+				$folder_id = ee()->input->post('copyto');
 				
 				if (is_numeric($folder_id) && $folder_id <= $this->max_folders && isset($this->folders[$folder_id]))
 				{
-					$query = $this->EE->db->query("SELECT * FROM exp_message_copies 
+					$query = ee()->db->query("SELECT * FROM exp_message_copies 
 										 WHERE recipient_id = '{$this->member_id}'
-										 AND copy_id = '".$this->EE->db->escape_str($val)."'");
+										 AND copy_id = '".ee()->db->escape_str($val)."'");
 					
 					$row = $query->row_array();
 					
 					$row['copy_id']  = '';
-					$row['message_folder']   = $this->EE->db->escape_str($folder_id);
+					$row['message_folder']   = ee()->db->escape_str($folder_id);
 					$row['message_deleted']  = 'n';
 					
-					$this->EE->db->query($this->EE->db->insert_string('exp_message_copies', $row), TRUE);
+					ee()->db->query(ee()->db->insert_string('exp_message_copies', $row), TRUE);
 				}
 			}
 		}
 		
-		$which = ($this->EE->input->post('this_folder') === FALSE) ? '1' : $this->EE->input->post('this_folder');
+		$which = (ee()->input->post('this_folder') === FALSE) ? '1' : ee()->input->post('this_folder');
 		
 		if ($this->allegiance == 'user')
 		{
@@ -2075,7 +2075,7 @@ DOH;
 			$url = $this->base_url.'view_folder'.AMP.'folder='.$which;
 		}
 		
-		$this->EE->functions->redirect($url);
+		ee()->functions->redirect($url);
  	}
 
  	
@@ -2093,13 +2093,13 @@ DOH;
 		
 		if (is_array($delete) && count($delete) > 0)
 		{
-			$query = $this->EE->db->query("SELECT message_id, copy_id FROM exp_message_copies 
+			$query = ee()->db->query("SELECT message_id, copy_id FROM exp_message_copies 
 								 WHERE recipient_id = '{$this->member_id}'
 								 AND copy_id IN ('".implode("','", $delete)."')");
 		}
 		else
 		{
-			$query = $this->EE->db->query("SELECT message_id, copy_id FROM exp_message_copies 
+			$query = ee()->db->query("SELECT message_id, copy_id FROM exp_message_copies 
 								 WHERE recipient_id = '{$this->member_id}'
 								 AND message_deleted = 'y'");
 		}
@@ -2122,8 +2122,8 @@ DOH;
 					exp_message_data table should have this message removed.
 				*/
 				
-				$results = $this->EE->db->query("SELECT COUNT(*) AS count FROM exp_message_copies
-										WHERE message_id = '".$this->EE->db->escape_str($row['message_id'])."'
+				$results = ee()->db->query("SELECT COUNT(*) AS count FROM exp_message_copies
+										WHERE message_id = '".ee()->db->escape_str($row['message_id'])."'
 										AND copy_id NOT IN ('".implode("','", $copy_ids)."')");
 				
 				if ($results->row('count')  == 0)
@@ -2134,11 +2134,11 @@ DOH;
 		
 			if (count($message_ids) > 0)
 			{
-				$this->EE->db->query("DELETE FROM exp_message_data WHERE message_id IN ('".implode("','", $message_ids)."')");
+				ee()->db->query("DELETE FROM exp_message_data WHERE message_id IN ('".implode("','", $message_ids)."')");
 				
 				// Remove any attachments as well
 				
-				$query = $this->EE->db->query("SELECT attachment_location FROM exp_message_attachments WHERE message_id IN ('".implode("','", $message_ids)."')");
+				$query = ee()->db->query("SELECT attachment_location FROM exp_message_attachments WHERE message_id IN ('".implode("','", $message_ids)."')");
 							  
 				if ($query->num_rows() > 0)
 				{
@@ -2147,22 +2147,22 @@ DOH;
 						@unlink($row['attachment_location']);
 					}
 					
-					$this->EE->db->query("DELETE FROM exp_message_attachments WHERE message_id IN ('".implode("','", $message_ids)."')");			
+					ee()->db->query("DELETE FROM exp_message_attachments WHERE message_id IN ('".implode("','", $message_ids)."')");			
 				}
 			}
 		
-			$this->EE->db->query("DELETE FROM exp_message_copies WHERE copy_id IN ('".implode("','", $copy_ids)."')");		
+			ee()->db->query("DELETE FROM exp_message_copies WHERE copy_id IN ('".implode("','", $copy_ids)."')");		
 		}
 		
 		/** ---------------------------------------
 		/**  UPDATE Unread Message Count
 		/** ---------------------------------------*/
 		
-		$query = $this->EE->db->query("SELECT COUNT(*) AS count FROM exp_message_copies 
+		$query = ee()->db->query("SELECT COUNT(*) AS count FROM exp_message_copies 
 							 WHERE recipient_id = '{$this->member_id}'
 							 AND message_read = 'n'");
 							 
-		$results = $this->EE->db->query("UPDATE exp_members SET private_messages = '".$this->EE->db->escape_str($query->row('count') )."'
+		$results = ee()->db->query("UPDATE exp_members SET private_messages = '".ee()->db->escape_str($query->row('count') )."'
 								WHERE member_id = '{$this->member_id}'");
 		
 		
@@ -2175,7 +2175,7 @@ DOH;
 		/**  Redirect Back to Inbox
 		/** ----------------------------------------*/
 		
-		$this->EE->functions->redirect($this->_create_path('inbox'));
+		ee()->functions->redirect($this->_create_path('inbox'));
  	}
 
  	
@@ -2226,7 +2226,7 @@ DOH;
 		{
 			if(trim($temp_list[$i]) != '')
 			{
-				$list[] = $this->EE->db->escape_str($temp_list[$i]);
+				$list[] = ee()->db->escape_str($temp_list[$i]);
 			}
 		}
 		
@@ -2250,17 +2250,17 @@ DOH;
 		
 		if ( ! is_numeric($list['0']))
 		{
-			$query = $this->EE->db->query("SELECT {$by} FROM exp_members 
+			$query = ee()->db->query("SELECT {$by} FROM exp_members 
 								 WHERE screen_name IN ('".implode("','", $list)."')");
 		}
 		else
 		{
-			$query = $this->EE->db->query("SELECT {$by} FROM exp_members 
+			$query = ee()->db->query("SELECT {$by} FROM exp_members 
 								 WHERE member_id IN ('".implode("','", $list)."')");
 
 			if ($query->num_rows() == 0)
 			{
-				$query = $this->EE->db->query("SELECT {$by} FROM exp_members 
+				$query = ee()->db->query("SELECT {$by} FROM exp_members 
 								 WHERE screen_name IN ('".implode("','", $list)."')");			
 			}
 		}
@@ -2316,10 +2316,10 @@ DOH;
 		$sql = "SELECT exp_member_groups.group_id, exp_member_groups.can_send_private_messages, exp_member_groups.prv_msg_storage_limit, exp_members.accept_messages
 				FROM exp_members, exp_member_groups
 				WHERE exp_members.group_id = exp_member_groups.group_id
-				AND exp_member_groups.site_id = '".$this->EE->db->escape_str($this->EE->config->item('site_id'))."'
-				AND exp_members.member_id = '".$this->EE->db->escape_str($id)."'";
+				AND exp_member_groups.site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."'
+				AND exp_members.member_id = '".ee()->db->escape_str($id)."'";
 				
-		$query = $this->EE->db->query($sql);
+		$query = ee()->db->query($sql);
 		
 		if ($query->num_rows() > 0)
 		{
@@ -2354,7 +2354,7 @@ DOH;
 				WHERE exp_message_copies.recipient_id = '{$id}'
 				AND exp_message_copies.message_deleted = 'n'";
 				
-		$query = $this->EE->db->query($sql);
+		$query = ee()->db->query($sql);
 
 		if ($query->row('count')  >= $user_storage_limit)
 		{
@@ -2370,9 +2370,9 @@ DOH;
 	/** -----------------------------------*/
 	function pm()
 	{
-		if ($this->allegiance == 'cp' && $this->EE->input->get_post('mid') !== FALSE && is_numeric($this->EE->input->get_post('mid')))
+		if ($this->allegiance == 'cp' && ee()->input->get_post('mid') !== FALSE && is_numeric(ee()->input->get_post('mid')))
 		{
-			$_GET['recipients'] = $this->EE->input->get_post('mid');
+			$_GET['recipients'] = ee()->input->get_post('mid');
 		}
 		elseif ($this->allegiance == 'user' && $this->cur_id != '' && is_numeric($this->cur_id))
 		{
@@ -2393,9 +2393,9 @@ DOH;
 	{
 		if ($id == '')
 		{
-			if ($this->allegiance == 'cp' && $this->EE->input->get_post('msg') !== FALSE && is_numeric($this->EE->input->get_post('msg')))
+			if ($this->allegiance == 'cp' && ee()->input->get_post('msg') !== FALSE && is_numeric(ee()->input->get_post('msg')))
 			{
-				$id = $this->EE->input->get_post('msg');
+				$id = ee()->input->get_post('msg');
 				$this->hide_preview = TRUE;
 			}
 			elseif ($this->allegiance == 'user' && $this->cur_id != '' && is_numeric($this->cur_id))
@@ -2413,24 +2413,24 @@ DOH;
 		
 		$hidden = array();
 		
-		if ($id != '' && $this->EE->input->get_post('daction') != 'forward' && $this->EE->input->get_post('daction') != 'reply' && $this->EE->input->get_post('daction') != 'reply_all')
+		if ($id != '' && ee()->input->get_post('daction') != 'forward' && ee()->input->get_post('daction') != 'reply' && ee()->input->get_post('daction') != 'reply_all')
 		{
 			$hidden['message_id'] = $id;
 		}
 		
-		if ($this->EE->input->get_post('daction') == 'forward')
+		if (ee()->input->get_post('daction') == 'forward')
 		{
 			$hidden['create_attach'] = 'y';
 		}
 		
-		if ($this->EE->input->get_post('daction') == 'forward' OR $this->EE->input->get_post('forwarding') !== FALSE)
+		if (ee()->input->get_post('daction') == 'forward' OR ee()->input->get_post('forwarding') !== FALSE)
 		{
-			$hidden['forwarding'] = ($this->EE->input->get_post('daction') == 'forward') ? $id : $this->EE->input->get_post('forwarding');
+			$hidden['forwarding'] = (ee()->input->get_post('daction') == 'forward') ? $id : ee()->input->get_post('forwarding');
 		}
 		
-		if ($this->EE->input->get_post('daction') == 'reply_all' OR $this->EE->input->get_post('daction') == 'reply' OR $this->EE->input->get_post('replying') !== FALSE)
+		if (ee()->input->get_post('daction') == 'reply_all' OR ee()->input->get_post('daction') == 'reply' OR ee()->input->get_post('replying') !== FALSE)
 		{
-			$hidden['replying'] = ($this->EE->input->get_post('daction') == 'reply' OR $this->EE->input->get_post('daction') == 'reply_all') ?  $id : $this->EE->input->get_post('replying');
+			$hidden['replying'] = (ee()->input->get_post('daction') == 'reply' OR ee()->input->get_post('daction') == 'reply_all') ?  $id : ee()->input->get_post('replying');
 		}
 		
 		
@@ -2447,7 +2447,7 @@ DOH;
 		$this->single_parts['include']['emoticons']	= $this->emoticons(); 
 		$this->single_parts['include']['hidden_js']	= $this->hidden_js();
 		
-		$this->single_parts['image']['search_glass']	= '<img src="'.$this->images_folder.'search_glass.gif" style="border: 0px" width="12" height="12" alt="'.$this->EE->lang->line('search_glass').'" />';
+		$this->single_parts['image']['search_glass']	= '<img src="'.$this->images_folder.'search_glass.gif" style="border: 0px" width="12" height="12" alt="'.ee()->lang->line('search_glass').'" />';
 		$this->single_parts['include']['search']['recipients']  = '<a href="#" title="{lang:member_search}" onclick="perform_search(1); return false;">'.$this->single_parts['image']['search_glass'].'</a>';
 		$this->single_parts['include']['search']['cc']			= '<a href="#" title="{lang:member_search}" onclick="perform_search(2); return false;">'.$this->single_parts['image']['search_glass'].'</a>';
 		$this->single_parts['include']['search_js']				= $this->search_js();
@@ -2512,17 +2512,17 @@ DOH;
 		
 		if ($id != '' && is_numeric($id))
 		{
-			if ($this->EE->input->post('daction') !== FALSE && ($this->EE->input->get_post('daction') == 'reply' OR $this->EE->input->get_post('daction') == 'reply_all' OR $this->EE->input->get_post('daction') == 'forward'))
+			if (ee()->input->post('daction') !== FALSE && (ee()->input->get_post('daction') == 'reply' OR ee()->input->get_post('daction') == 'reply_all' OR ee()->input->get_post('daction') == 'forward'))
 			{
 				$data = $this->_message_data($id, '', $this->member_id);
 	
-				if ($this->EE->config->item('enable_censoring') == 'y' && $this->EE->config->item('censored_words') != '')
+				if (ee()->config->item('enable_censoring') == 'y' && ee()->config->item('censored_words') != '')
         		{
-					$this->EE->load->library('typography');
-					$this->EE->typography->initialize();
+					ee()->load->library('typography');
+					ee()->typography->initialize();
 
-					$subject = ($data === FALSE) ? '' : $this->EE->typography->filter_censored_words($data['subject']);
-					$body = ($data === FALSE) ? '' : $this->EE->typography->filter_censored_words($data['body']);
+					$subject = ($data === FALSE) ? '' : ee()->typography->filter_censored_words($data['subject']);
+					$body = ($data === FALSE) ? '' : ee()->typography->filter_censored_words($data['body']);
 				}
 				else
 				{
@@ -2532,20 +2532,20 @@ DOH;
 				
 				$booger['hidden_fields'] = array('message_id' => $data['id'], 'forward' => 'y');
 				
-				$prefix = ($this->EE->input->post('daction') == 'forward') ? 'forward_prefix' : 'reply_prefix';
-				$prefix = (substr($data['subject'], 0, strlen($this->EE->lang->line($prefix))) == $this->EE->lang->line($prefix)) ? '' : '{lang:'.$prefix.'}';
+				$prefix = (ee()->input->post('daction') == 'forward') ? 'forward_prefix' : 'reply_prefix';
+				$prefix = (substr($data['subject'], 0, strlen(ee()->lang->line($prefix))) == ee()->lang->line($prefix)) ? '' : '{lang:'.$prefix.'}';
 				
 				$this->single_parts['input']['subject']				= ($data === FALSE) ? '' : $prefix.$subject;
 				$this->single_parts['input']['body'] 				= '';
 
 				if ($data !== FALSE)
 				{
-					if ($this->EE->input->post('daction') == 'forward')
+					if (ee()->input->post('daction') == 'forward')
 					{
-						$forward_message = NL.NL.NL.$this->EE->lang->line('forward_header').NL;
-						$forward_message .= $this->EE->lang->line('forward_from').$data['sender'].NL;
-						$forward_message .= $this->EE->lang->line('forward_date').$data['date'].NL;
-						$forward_message .= $this->EE->lang->line('forward_subject').$data['subject'];
+						$forward_message = NL.NL.NL.ee()->lang->line('forward_header').NL;
+						$forward_message .= ee()->lang->line('forward_from').$data['sender'].NL;
+						$forward_message .= ee()->lang->line('forward_date').$data['date'].NL;
+						$forward_message .= ee()->lang->line('forward_subject').$data['subject'];
 						
 						$this->single_parts['input']['body'] .= $forward_message;
 					}
@@ -2553,9 +2553,9 @@ DOH;
 					$this->single_parts['input']['body'] .= NL.NL.NL.'[quote]'.NL.$body.NL.'[/quote]';
 				}
 			
-				$this->single_parts['input']['recipients']			= ($data === FALSE OR $this->EE->input->post('daction') == 'forward') ? '' : $this->convert_recipients($data['sender_id']);
+				$this->single_parts['input']['recipients']			= ($data === FALSE OR ee()->input->post('daction') == 'forward') ? '' : $this->convert_recipients($data['sender_id']);
 				
-				if ($data === FALSE OR $this->EE->input->post('daction') != 'reply_all')
+				if ($data === FALSE OR ee()->input->post('daction') != 'reply_all')
 				{
 					$this->single_parts['input']['cc'] = '';
 				}
@@ -2573,7 +2573,7 @@ DOH;
 				
 				$this->single_parts['include']['preview_message'] 	= '';	
 				
-				if ($this->EE->input->post('daction') == 'forward' && $data !== FALSE && count($data['attachments']) > 0)
+				if (ee()->input->post('daction') == 'forward' && $data !== FALSE && count($data['attachments']) > 0)
 				{
 					$this->conditionals['attachments_allowed']		= (count($data['attachments']) >= $this->max_attachments) ? 'n' : 'y';
 					$this->conditionals['attachments_exist']		= 'y';
@@ -2586,13 +2586,13 @@ DOH;
 			{
 				$data = $this->_message_data($id, $this->member_id);
 		
-				if ($this->EE->config->item('enable_censoring') == 'y' && $this->EE->config->item('censored_words') != '')
+				if (ee()->config->item('enable_censoring') == 'y' && ee()->config->item('censored_words') != '')
         		{
-					$this->EE->load->library('typography');
-					$this->EE->typography->initialize();
+					ee()->load->library('typography');
+					ee()->typography->initialize();
 
-					$subject = ($data === FALSE) ? '' : $this->EE->typography->filter_censored_words($data['subject']);
-					$body = ($data === FALSE) ? '' : $this->EE->typography->filter_censored_words($data['body']);
+					$subject = ($data === FALSE) ? '' : ee()->typography->filter_censored_words($data['subject']);
+					$body = ($data === FALSE) ? '' : ee()->typography->filter_censored_words($data['body']);
 				}
 				else
 				{
@@ -2622,16 +2622,16 @@ DOH;
 		}
 		else
 		{
-			$this->single_parts['input']['subject']			  = ( ! $this->EE->input->get_post('subject')) ? '' : 'sss'.$this->EE->input->get_post('subject');
-			$this->single_parts['input']['body']			  = ( ! $this->EE->input->get_post('body')) ? '' :  $this->EE->input->get_post('body');
+			$this->single_parts['input']['subject']			  = ( ! ee()->input->get_post('subject')) ? '' : 'sss'.ee()->input->get_post('subject');
+			$this->single_parts['input']['body']			  = ( ! ee()->input->get_post('body')) ? '' :  ee()->input->get_post('body');
 			$this->single_parts['input']['cc']				  = '';
-			$this->single_parts['input']['recipients']		  = ( ! $this->EE->input->get_post('recipients')) ? '' : $this->convert_recipients($this->EE->input->get_post('recipients'));
+			$this->single_parts['input']['recipients']		  = ( ! ee()->input->get_post('recipients')) ? '' : $this->convert_recipients(ee()->input->get_post('recipients'));
 			$this->single_parts['include']['preview_message'] = '';		
  		}
  		
  		$details['hidden_fields'] = $hidden;
  		
- 		$this->single_parts['form']['form_declaration']['messages'] = $this->EE->functions->form_declaration($details);
+ 		$this->single_parts['form']['form_declaration']['messages'] = ee()->functions->form_declaration($details);
  		
  		// --------------------------------------------
  		//  If upload path is not specified we 
@@ -2660,8 +2660,8 @@ DOH;
 		/**  Return the Compose Form Contents
 		/** ----------------------------------------*/
 		
-		$this->title = $this->EE->lang->line('compose_message');
-		$this->crumb = $this->EE->lang->line('compose_message');
+		$this->title = ee()->lang->line('compose_message');
+		$this->crumb = ee()->lang->line('compose_message');
 		$this->return_data = $this->_process_template($template);
  	
  	}
@@ -2686,9 +2686,9 @@ DOH;
  		
  		if ($recipient != '' && is_numeric($recipient))
  		{
- 			$query = $this->EE->db->query("SELECT message_id, message_folder, message_read FROM exp_message_copies 
- 								 WHERE copy_id = '".$this->EE->db->escape_str($id)."'
- 								 AND recipient_id = '".$this->EE->db->escape_str($recipient)."'");
+ 			$query = ee()->db->query("SELECT message_id, message_folder, message_read FROM exp_message_copies 
+ 								 WHERE copy_id = '".ee()->db->escape_str($id)."'
+ 								 AND recipient_id = '".ee()->db->escape_str($recipient)."'");
  								 
  			if ($query->num_rows() == 0)
  			{
@@ -2704,14 +2704,14 @@ DOH;
  			$mid = $id;
  		}
  		
- 		$sql = "SELECT * FROM exp_message_data WHERE message_id = '".$this->EE->db->escape_str($mid)."'";
+ 		$sql = "SELECT * FROM exp_message_data WHERE message_id = '".ee()->db->escape_str($mid)."'";
  		
  		if ($sender != '' && is_numeric($sender))
  		{
- 			$sql .= " AND sender_id = '".$this->EE->db->escape_str($sender)."'";
+ 			$sql .= " AND sender_id = '".ee()->db->escape_str($sender)."'";
  		}
  							 
- 		$query = $this->EE->db->query($sql);
+ 		$query = ee()->db->query($sql);
  				
  		if ($query->num_rows() == 0)
  		{
@@ -2732,9 +2732,9 @@ DOH;
  		$data['recipients']  = str_replace('|', ', ', $data['recipients']);
  		$data['cc'] 		 = str_replace('|', ', ', $data['cc']);
  		$data['attachments'] = array();
- 		$data['date']		 = $this->EE->localize->human_time($data['date']);
+ 		$data['date']		 = ee()->localize->human_time($data['date']);
  		
- 		$results = $this->EE->db->query("SELECT screen_name FROM exp_members WHERE member_id = '".$this->EE->db->escape_str($data['sender_id'])."'");
+ 		$results = ee()->db->query("SELECT screen_name FROM exp_members WHERE member_id = '".ee()->db->escape_str($data['sender_id'])."'");
  		
  		$data['sender'] = $results->row('screen_name') ;
  		
@@ -2742,12 +2742,12 @@ DOH;
  		/**  Create Preview of Message
  		/** ---------------------------------*/
  		
-		$this->EE->load->library('typography');
-		$this->EE->typography->initialize(array(
+		ee()->load->library('typography');
+		ee()->typography->initialize(array(
 				'highlight_code'	=> TRUE)
 				);
 
-		$this->single_parts['include']['parsed_message'] = $this->EE->typography->parse_type(stripslashes($data['body']), 
+		$this->single_parts['include']['parsed_message'] = ee()->typography->parse_type(stripslashes($data['body']), 
 									 		 								  array(
 									 		 								  'text_format'	=> 'xhtml',
 									 		 								  'html_format'	=> $this->html_format,
@@ -2763,9 +2763,9 @@ DOH;
  							 
  		if ($query->row('message_attachments')  == 'y')
  		{
- 			$results = $this->EE->db->query("SELECT attachment_name, attachment_id, attachment_size, attachment_hash
+ 			$results = ee()->db->query("SELECT attachment_name, attachment_id, attachment_size, attachment_hash
  									FROM exp_message_attachments
- 									WHERE message_id = '".$this->EE->db->escape_str($mid)."'");
+ 									WHERE message_id = '".ee()->db->escape_str($mid)."'");
  									
  			if ($results->num_rows() > 0)
  			{
@@ -2882,9 +2882,9 @@ DOH;
 		
 		if ($copy_id == '')
 		{
-			if ($this->allegiance == 'cp' && $this->EE->input->get_post('msg') !== FALSE && is_numeric($this->EE->input->get_post('msg')))
+			if ($this->allegiance == 'cp' && ee()->input->get_post('msg') !== FALSE && is_numeric(ee()->input->get_post('msg')))
 			{
-				$copy_id = $this->EE->input->get_post('msg');
+				$copy_id = ee()->input->get_post('msg');
 			}
 			elseif ($this->allegiance == 'user' && $this->cur_id != '' && is_numeric($this->cur_id))
 			{
@@ -2903,17 +2903,17 @@ DOH;
 			return $this->_error_page('invalid_message');
 		}
 
-		if ($this->EE->config->item('enable_censoring') == 'y' && $this->EE->config->item('censored_words') != '')
+		if (ee()->config->item('enable_censoring') == 'y' && ee()->config->item('censored_words') != '')
         {
-			$this->EE->load->library('typography');
-			$this->EE->typography->initialize();
+			ee()->load->library('typography');
+			ee()->typography->initialize();
 			
-			$data['subject'] = $this->EE->typography->filter_censored_words($data['subject']);
-			$data['body'] = $this->EE->typography->filter_censored_words($data['body']);
+			$data['subject'] = ee()->typography->filter_censored_words($data['subject']);
+			$data['body'] = ee()->typography->filter_censored_words($data['body']);
 		}
 
 		// Load the XML Helper
-		$this->EE->load->helper('xml');
+		ee()->load->helper('xml');
 		
 		$this->single_parts['include']['subject']				= $data['subject'];
 		$this->single_parts['include']['body']					= $data['body'];
@@ -2923,14 +2923,14 @@ DOH;
 		$this->single_parts['include']['date'] 					= $data['date'];
 		$this->conditionals['attachments_exist']				= 'n';
 		
-		if ($data['sender'] == $this->EE->session->userdata['screen_name'] && isset($data['folder_id']) && $data['folder_id'] == 2)
+		if ($data['sender'] == ee()->session->userdata['screen_name'] && isset($data['folder_id']) && $data['folder_id'] == 2)
 		{
 			$this->conditionals['show_cc'] = 'y';
 		}
 		elseif(in_array($this->member_id, explode(', ',$data['cc'])))
 		{	
 			$this->conditionals['show_cc'] = 'y';
-			$this->single_parts['include']['cc'] = $this->EE->session->userdata['screen_name'];
+			$this->single_parts['include']['cc'] = ee()->session->userdata['screen_name'];
 		}
 		elseif($data['hide_cc'] == 'y' OR $data['cc'] == '')
 		{
@@ -2961,7 +2961,7 @@ DOH;
 						 'secure'			=> ($this->allegiance == 'cp') ? FALSE : TRUE
 						 );  	
 		
-		$this->single_parts['form']['form_declaration']['view_message']  = $this->EE->functions->form_declaration($details);
+		$this->single_parts['form']['form_declaration']['view_message']  = ee()->functions->form_declaration($details);
 		
 		/** ----------------------------------- 
 		/**  Various Components
@@ -2976,11 +2976,11 @@ DOH;
 		/**  Reduce exp_members.private_messages
 		/** ----------------------------------*/
 		
-		if ($data['message_read'] == 'n' && $this->EE->session->userdata['private_messages'] > 0)
+		if ($data['message_read'] == 'n' && ee()->session->userdata['private_messages'] > 0)
 		{
-			$this->EE->db->query("UPDATE exp_members SET private_messages = private_messages - 1
+			ee()->db->query("UPDATE exp_members SET private_messages = private_messages - 1
 						WHERE member_id = '{$this->member_id}'");
-			$this->EE->session->userdata['private_messages']--;
+			ee()->session->userdata['private_messages']--;
 		}
 		
 		/** ----------------------------------- 
@@ -2989,16 +2989,16 @@ DOH;
 		
 		if ($data['message_read'] == 'n')
 		{
-			$udata = array('message_read' => 'y', 'message_time_read' =>  $this->EE->localize->now);
-			$this->EE->db->query($this->EE->db->update_string('exp_message_copies', $udata, "copy_id = {$copy_id}"));
+			$udata = array('message_read' => 'y', 'message_time_read' =>  ee()->localize->now);
+			ee()->db->query(ee()->db->update_string('exp_message_copies', $udata, "copy_id = {$copy_id}"));
 		}
 		
 		/** ----------------------------------------
 		/**  Return the Compose Form Contents
 		/** ----------------------------------------*/
 		
-		$this->title = $this->EE->lang->line('private_message').' - '.$this->EE->functions->word_limiter($data['subject'], 10);
-		$this->crumb = $this->EE->lang->line('private_message');
+		$this->title = ee()->lang->line('private_message').' - '.ee()->functions->word_limiter($data['subject'], 10);
+		$this->crumb = ee()->lang->line('private_message');
 		$this->return_data = $this->_process_template($this->retrieve_template('view_message'));
  		
  	}
@@ -3012,7 +3012,7 @@ DOH;
 	{
 		if ($this->allegiance == 'cp')
 		{
-			$attach_hash = $this->EE->input->get_post('aid');
+			$attach_hash = ee()->input->get_post('aid');
 		}
 		else
 		{
@@ -3022,30 +3022,30 @@ DOH;
 		/** ---------------------------
 		/**  Valid ID?
 		/** ---------------------------*/
-		$this->EE->db->select('attachment_location, attachment_name, attachment_extension, message_id');
-		$this->EE->db->where('attachment_hash', $attach_hash);
-		$query = $this->EE->db->get('message_attachments');
+		ee()->db->select('attachment_location, attachment_name, attachment_extension, message_id');
+		ee()->db->where('attachment_hash', $attach_hash);
+		$query = ee()->db->get('message_attachments');
 		
 		if ($query->num_rows() == 0)
 		{
-			$this->EE->output->show_user_error('submission', $this->EE->lang->line('not_authorized'));
+			ee()->output->show_user_error('submission', ee()->lang->line('not_authorized'));
 		}
 		
 		/** ---------------------------
 		/**  Attachment for User?
 		/** ---------------------------*/
 		
-		$this->EE->db->select('COUNT(*) as count');
-		$this->EE->db->where('message_id', $query->row('message_id'));
-		$this->EE->db->where('recipient_id', $this->member_id);
-		$results = $this->EE->db->get('message_copies');
+		ee()->db->select('COUNT(*) as count');
+		ee()->db->where('message_id', $query->row('message_id'));
+		ee()->db->where('recipient_id', $this->member_id);
+		$results = ee()->db->get('message_copies');
 		
 		if ($results->row('count')  == 0)
 		{
-			$this->EE->output->show_user_error('submission', $this->EE->lang->line('not_authorized'));
+			ee()->output->show_user_error('submission', ee()->lang->line('not_authorized'));
 		}
 
-		$base_path = (substr($this->EE->config->item('prv_msg_upload_path'), -1) == '/') ? $this->EE->config->item('prv_msg_upload_path') : $this->EE->config->item('prv_msg_upload_path') . '/';
+		$base_path = (substr(ee()->config->item('prv_msg_upload_path'), -1) == '/') ? ee()->config->item('prv_msg_upload_path') : ee()->config->item('prv_msg_upload_path') . '/';
 
 		$filepath = $base_path.$query->row('attachment_location') ;
 		
@@ -3069,23 +3069,23 @@ DOH;
 			
 		if ( ! file_exists($filepath) OR ! isset($mime))
 		{
-			$this->EE->output->show_user_error('submission', $this->EE->lang->line('not_authorized'));
+			ee()->output->show_user_error('submission', ee()->lang->line('not_authorized'));
 		}
 		
-		$this->EE->db->set('attachment_downloaded = "y"');
-		$this->EE->db->where('message_id', $query->row('message_id'));
-		$this->EE->db->where('recipient_id', $this->member_id);
-		$this->EE->db->update('message_copies');
+		ee()->db->set('attachment_downloaded = "y"');
+		ee()->db->where('message_id', $query->row('message_id'));
+		ee()->db->where('recipient_id', $this->member_id);
+		ee()->db->update('message_copies');
 							
 		header('Content-Disposition: filename="'.$query->row('attachment_name') .'"');		
 		header('Content-Type: '.$mime);
 		header('Content-Transfer-Encoding: binary');
 		header('Content-Length: '.filesize($filepath));
-		header('Last-Modified: '.gmdate('D, d M Y H:i:s', $this->EE->localize->now).' GMT');
+		header('Last-Modified: '.gmdate('D, d M Y H:i:s', ee()->localize->now).' GMT');
 			
 		if ( ! $fp = @fopen($filepath, FOPEN_READ))
 		{
-			$this->EE->output->show_user_error('submission', $this->EE->lang->line('not_authorized'));
+			ee()->output->show_user_error('submission', ee()->lang->line('not_authorized'));
 		}
 		
 		fpassthru($fp);
@@ -3107,11 +3107,11 @@ DOH;
 						 	  'secure'		  => ($this->allegiance == 'cp') ? FALSE : TRUE
 						 	  );  	
 		
-		$this->single_parts['form']['form_declaration']['list'] = $this->EE->functions->form_declaration($form_details);
-		$this->single_parts['lang']['list_title'] =	$this->EE->lang->line('buddy_list');
+		$this->single_parts['form']['form_declaration']['list'] = ee()->functions->form_declaration($form_details);
+		$this->single_parts['lang']['list_title'] =	ee()->lang->line('buddy_list');
 		$this->single_parts['include']['toggle_js'] = $this->toggle_js();
 		$this->single_parts['include']['buddy_search_js'] =  $this->buddy_search_js();
-		$this->single_parts['image']['search_glass'] = '<img src="'.$this->images_folder.'search_glass.gif" style="border: 0px" width="12" height="12" alt="'.$this->EE->lang->line('search_glass').'" />';
+		$this->single_parts['image']['search_glass'] = '<img src="'.$this->images_folder.'search_glass.gif" style="border: 0px" width="12" height="12" alt="'.ee()->lang->line('search_glass').'" />';
 		$this->single_parts['include']['member_search'] = '<a href="#" title="{lang:member_search}" onclick="buddy_search(1); return false;">'.$this->single_parts['image']['search_glass'].'</a>';
 		
 		
@@ -3162,8 +3162,8 @@ DOH;
 		/**  Return the Trackable Messages
 		/** ----------------------------------------*/
 		
-		$this->title = $this->EE->lang->line('buddy_list');
-		$this->crumb = $this->EE->lang->line('buddy_list');
+		$this->title = ee()->lang->line('buddy_list');
+		$this->crumb = ee()->lang->line('buddy_list');
 		$this->return_data = $this->_process_template($template);
 	}
 
@@ -3175,15 +3175,15 @@ DOH;
 	
 	function bulletin_board($message='')
 	{
-			$this->EE->db->query("UPDATE exp_members SET last_view_bulletins = '".$this->EE->localize->now."' WHERE member_id = '{$this->member_id}'");
+			ee()->db->query("UPDATE exp_members SET last_view_bulletins = '".ee()->localize->now."' WHERE member_id = '{$this->member_id}'");
 			
-			$this->title = $this->EE->lang->line('bulletin_board');
-		$this->crumb = $this->EE->lang->line('bulletin_board');
+			$this->title = ee()->lang->line('bulletin_board');
+		$this->crumb = ee()->lang->line('bulletin_board');
 		
 		$this->conditionals['bulletins']		= 'n';
 		$this->conditionals['no_bulletins']		 = 'y';
 		$this->conditionals['paginate']			 = 'n';
-		$this->conditionals['can_post_bulletin'] = ($this->EE->session->userdata['can_send_bulletins'] == 'y') ? 'y' : 'n';
+		$this->conditionals['can_post_bulletin'] = (ee()->session->userdata['can_send_bulletins'] == 'y') ? 'y' : 'n';
 		
 		$this->single_parts['include']['message'] = $message;
 		
@@ -3199,11 +3199,11 @@ DOH;
 		
 		$sql =  "FROM exp_member_bulletin_board b, exp_members m
 				 WHERE b.sender_id = m.member_id
-				 AND b.bulletin_group = ".$this->EE->db->escape_str($this->EE->session->userdata['group_id'])."
-				 AND bulletin_date < ".$this->EE->localize->now."
+				 AND b.bulletin_group = ".ee()->db->escape_str(ee()->session->userdata['group_id'])."
+				 AND bulletin_date < ".ee()->localize->now."
 				 AND 
 				 (
-				 	b.bulletin_expires > ".$this->EE->localize->now."
+				 	b.bulletin_expires > ".ee()->localize->now."
 				 	OR
 				 	b.bulletin_expires = 0
 				 )
@@ -3213,7 +3213,7 @@ DOH;
 		/**  Run "count" query for pagination
 		/** ----------------------------------------*/
 		
-		$query = $this->EE->db->query("SELECT COUNT(b.bulletin_id) AS count ".$sql);
+		$query = ee()->db->query("SELECT COUNT(b.bulletin_id) AS count ".$sql);
 		
 		/** ----------------------------------------
 		/**  If No Messages, we say so.
@@ -3221,7 +3221,7 @@ DOH;
 		
 		if ($query->row('count')  == 0)
 		{
-			$this->single_parts['include']['bulletins'] = $this->EE->lang->line('message_no_bulletins');
+			$this->single_parts['include']['bulletins'] = ee()->lang->line('message_no_bulletins');
 			$this->return_data = $this->_process_template($this->retrieve_template('bulletin_board'));
 			return;
 		}
@@ -3238,7 +3238,7 @@ DOH;
 		}
 		else
 		{
-			$row_count = ($this->EE->input->get_post('page') === false) ? 0 : $this->EE->input->get_post('page');
+			$row_count = (ee()->input->get_post('page') === false) ? 0 : ee()->input->get_post('page');
 		}
 		
 		if ( ! is_numeric($row_count))
@@ -3257,7 +3257,7 @@ DOH;
 			$total_pages++;
 		}
 		
-		$this->single_parts['include']['page_count'] = $current_page.' '.$this->EE->lang->line('of').' '.$total_pages;
+		$this->single_parts['include']['page_count'] = $current_page.' '.ee()->lang->line('of').' '.$total_pages;
 		
 		/** -----------------------------
 		/**  Do we need pagination?
@@ -3267,7 +3267,7 @@ DOH;
 		
 		if ($query->row('count')  > $this->per_page)
 		{ 											
-			$this->EE->load->library('pagination');
+			ee()->load->library('pagination');
 			
 			if ($this->allegiance == 'user')
 			{
@@ -3283,11 +3283,11 @@ DOH;
 			$config['total_rows'] 	= $query->row('count');
 			$config['per_page']		= $this->per_page;
 			$config['cur_page']		= $row_count;
-			$config['first_link'] 	= $this->EE->lang->line('pag_first_link');
-			$config['last_link'] 	= $this->EE->lang->line('pag_last_link');
+			$config['first_link'] 	= ee()->lang->line('pag_first_link');
+			$config['last_link'] 	= ee()->lang->line('pag_last_link');
 
-			$this->EE->pagination->initialize($config);
-			$this->single_parts['include']['pagination_link'] = $this->EE->pagination->create_links();
+			ee()->pagination->initialize($config);
+			$this->single_parts['include']['pagination_link'] = ee()->pagination->create_links();
 
 			$this->conditionals['paginate'] = 'y';
 			 
@@ -3306,18 +3306,18 @@ DOH;
 		$r = '';
 		$censor = FALSE;
         
-		if ($this->EE->config->item('enable_censoring') == 'y' && $this->EE->config->item('censored_words') != '')
+		if (ee()->config->item('enable_censoring') == 'y' && ee()->config->item('censored_words') != '')
         {
-			$this->EE->load->library('typography');
-			$this->EE->typography->initialize();
+			ee()->load->library('typography');
+			ee()->typography->initialize();
 			$censor = TRUE;
 		}
 		
-		$query = $this->EE->db->query($dql.$sql);
+		$query = ee()->db->query($dql.$sql);
 		
-		if ($query->row('bulletin_date')  != $this->EE->session->userdata['last_bulletin_date'])
+		if ($query->row('bulletin_date')  != ee()->session->userdata['last_bulletin_date'])
 		{
-			$this->EE->db->query($this->EE->db->update_string('exp_members', array('last_bulletin_date' => $query->row('bulletin_date') ), "group_id = '".$this->EE->db->escape_str($this->EE->session->userdata['group_id'])."'"));
+			ee()->db->query(ee()->db->update_string('exp_members', array('last_bulletin_date' => $query->row('bulletin_date') ), "group_id = '".ee()->db->escape_str(ee()->session->userdata['group_id'])."'"));
 		}
 		
 		foreach($query->result_array() as $row)
@@ -3325,7 +3325,7 @@ DOH;
 			++$i;
 			$data = $row;
 			
-			$this->conditionals['can_delete_bulletin']		= ($this->EE->session->userdata['group_id'] == 1 OR $row['sender_id'] == $this->EE->session->userdata['member_id']) ? 'y' : 'n';
+			$this->conditionals['can_delete_bulletin']		= (ee()->session->userdata['group_id'] == 1 OR $row['sender_id'] == ee()->session->userdata['member_id']) ? 'y' : 'n';
 			
 			if ($this->allegiance == 'cp')
 			{
@@ -3336,9 +3336,9 @@ DOH;
 				$this->single_parts['path']['delete_bulletin']	= $this->_create_path('delete_bulletin').'/'.$row['bulletin_id'];
 			}
 			
-			$data['bulletin_message'] = ($censor === FALSE) ? $data['bulletin_message'] : $this->EE->typography->filter_censored_words($data['bulletin_message']);
+			$data['bulletin_message'] = ($censor === FALSE) ? $data['bulletin_message'] : ee()->typography->filter_censored_words($data['bulletin_message']);
 			$data['bulletin_sender'] = $row['screen_name'];
-			$data['bulletin_date'] = $this->EE->localize->human_time($row['bulletin_date']);
+			$data['bulletin_date'] = ee()->localize->human_time($row['bulletin_date']);
 			$data['style']			= ($i % 2) ? 'tableCellTwo' : 'tableCellOne';
 			
 			$r .= $this->_process_template($folder_rows_template, $data);
@@ -3362,32 +3362,32 @@ DOH;
 	{
 			if ($this->allegiance == 'cp')
 		{
-			if ($this->EE->input->get_post('bulletin_id') === FALSE)
+			if (ee()->input->get_post('bulletin_id') === FALSE)
 			{
 				return $this->bulletin_board();
 			}
 			
-			$this->cur_id = $this->EE->input->get_post('bulletin_id');
+			$this->cur_id = ee()->input->get_post('bulletin_id');
 		}
 			
 			$sql = "SELECT b.sender_id, b.bulletin_id, b.hash
 					FROM exp_member_bulletin_board b
-				WHERE b.bulletin_id = '".$this->EE->db->escape_str($this->cur_id)."'";
+				WHERE b.bulletin_id = '".ee()->db->escape_str($this->cur_id)."'";
 		
-		$query = $this->EE->db->query($sql);
+		$query = ee()->db->query($sql);
 		
 		if ($query->num_rows() == 0)
 		{
 			return $this->bulletin_board();
 		}
-		elseif($this->EE->session->userdata['group_id'] != 1 && $query->row('sender_id')  != $this->EE->session->userdata['member_id'])
+		elseif(ee()->session->userdata['group_id'] != 1 && $query->row('sender_id')  != ee()->session->userdata['member_id'])
 		{
 			return $this->bulletin_board();
 		}
 			
-			$this->EE->db->query("DELETE FROM exp_member_bulletin_board WHERE hash = '".$this->EE->db->escape_str($query->row('hash') )."'");
+			ee()->db->query("DELETE FROM exp_member_bulletin_board WHERE hash = '".ee()->db->escape_str($query->row('hash') )."'");
 			
-			return $this->bulletin_board($this->EE->lang->line('bulletin_deleted'));
+			return $this->bulletin_board(ee()->lang->line('bulletin_deleted'));
 		}
 
 	
@@ -3402,13 +3402,13 @@ DOH;
 		/**  Nasty Little Hobbits! No Sending!
 		/** -----------------------------------*/
 			
-			if ($this->EE->session->userdata['can_send_bulletins'] != 'y')
+			if (ee()->session->userdata['can_send_bulletins'] != 'y')
 			{
 				return FALSE;
 			}
 			
-			$this->title = $this->EE->lang->line('send_bulletin');
-		$this->crumb = $this->EE->lang->line('send_bulletin');
+			$this->title = ee()->lang->line('send_bulletin');
+		$this->crumb = ee()->lang->line('send_bulletin');
 		
 		/** ----------------------------------------
 		/**  Some Form Data
@@ -3419,10 +3419,10 @@ DOH;
 						 	  'secure'	=> ($this->allegiance == 'cp') ? FALSE : TRUE
 						 	  );  	
 		
-		$this->single_parts['form']['form_declaration']['sending_bulletin'] = $this->EE->functions->form_declaration($form_details);
+		$this->single_parts['form']['form_declaration']['sending_bulletin'] = ee()->functions->form_declaration($form_details);
 		
-		$this->single_parts['input']['bulletin_date']	 = $this->EE->localize->human_time($this->EE->localize->now);
-		$this->single_parts['input']['bulletin_expires'] = $this->EE->localize->human_time($this->EE->localize->now + 30*24*60*60);
+		$this->single_parts['input']['bulletin_date']	 = ee()->localize->human_time(ee()->localize->now);
+		$this->single_parts['input']['bulletin_expires'] = ee()->localize->human_time(ee()->localize->now + 30*24*60*60);
 		
 		$this->single_parts['include']['message'] = $message;
 		
@@ -3432,18 +3432,18 @@ DOH;
 		
 		$english = array('Members', 'Super Admins');
 		
-		$sql = "SELECT group_id, group_title FROM exp_member_groups WHERE site_id = '".$this->EE->db->escape_str($this->EE->config->item('site_id'))."' AND include_in_memberlist = 'y' AND group_id NOT IN ('2', '3', '4') ";
+		$sql = "SELECT group_id, group_title FROM exp_member_groups WHERE site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."' AND include_in_memberlist = 'y' AND group_id NOT IN ('2', '3', '4') ";
 		
-		if ($this->EE->session->userdata('group_id') != 1)
+		if (ee()->session->userdata('group_id') != 1)
 		{
 			$sql .= "AND group_id != '1' ";
 		}
 		
 		$sql .= " ORDER BY group_title";
 		
-		$query = $this->EE->db->query($sql);
+		$query = ee()->db->query($sql);
 
-		$menu = "<option value='0'>".$this->EE->lang->line('mbr_all_member_groups')."</option>\n";
+		$menu = "<option value='0'>".ee()->lang->line('mbr_all_member_groups')."</option>\n";
 				
 		foreach ($query->result_array() as $row)
 		{
@@ -3451,7 +3451,7 @@ DOH;
 		
 			if (in_array($group_title, $english))
 			{
-				$group_title = $this->EE->lang->line(strtolower(str_replace(" ", "_", $group_title)));
+				$group_title = ee()->lang->line(strtolower(str_replace(" ", "_", $group_title)));
 			}
 					
 			$menu .= "<option value='".$row['group_id']."'>".$group_title."</option>\n";
@@ -3479,7 +3479,7 @@ DOH;
 		/**  Nasty Little Hobbits! No Sending!
 		/** -----------------------------------*/
 			
-			if ($this->EE->session->userdata['can_send_bulletins'] != 'y')
+			if (ee()->session->userdata['can_send_bulletins'] != 'y')
 			{
 				return FALSE;
 			}
@@ -3498,16 +3498,16 @@ DOH;
 		/**  Valid Member Groups for User
 		/** ----------------------------------------*/
 		
-		$sql = "SELECT group_id FROM exp_member_groups WHERE site_id = '".$this->EE->db->escape_str($this->EE->config->item('site_id'))."' AND include_in_memberlist = 'y' AND group_id NOT IN ('2', '3', '4') ";
+		$sql = "SELECT group_id FROM exp_member_groups WHERE site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."' AND include_in_memberlist = 'y' AND group_id NOT IN ('2', '3', '4') ";
 		
-		if ($this->EE->session->userdata('group_id') != 1)
+		if (ee()->session->userdata('group_id') != 1)
 		{
 			$sql .= "AND group_id != '1' ";
 		}
 		
 		$sql .= " ORDER BY group_title";
 		
-		$query = $this->EE->db->query($sql);
+		$query = ee()->db->query($sql);
 		
 		$group = array();
 				
@@ -3528,22 +3528,22 @@ DOH;
 			return $this->send_bulletin();
 		}
 		
-		$begins  = $this->EE->localize->string_to_timestamp($_POST['bulletin_date']);
-		$expires = $this->EE->localize->string_to_timestamp($_POST['bulletin_expires']);
+		$begins  = ee()->localize->string_to_timestamp($_POST['bulletin_date']);
+		$expires = ee()->localize->string_to_timestamp($_POST['bulletin_expires']);
 		
 		if ($begins == 0)
 		{
-			$begins = $this->EE->localize->now;
+			$begins = ee()->localize->now;
 		}
 		
 		if ($expires == 0)
 		{
-			$expires = $this->EE->localize->now + 30*24*60*60;
+			$expires = ee()->localize->now + 30*24*60*60;
 		}
 		
 		$data = array(	'sender_id'			=> $this->member_id,
 						'bulletin_date'		=> $begins,
-						'hash'				=> $this->EE->functions->random('alnum', 10),
+						'hash'				=> ee()->functions->random('alnum', 10),
 						'bulletin_expires'	=> $expires,
 						'bulletin_message'	=> $_POST['bulletin_message']
 					 );
@@ -3552,11 +3552,11 @@ DOH;
 		{
 			$data['bulletin_group'] = $group_id;
 			
-			$this->EE->db->query($this->EE->db->insert_string('exp_member_bulletin_board', $data));
+			ee()->db->query(ee()->db->insert_string('exp_member_bulletin_board', $data));
 			
-			if ($this->EE->localize->now >= $begins)
+			if (ee()->localize->now >= $begins)
 			{
-				$this->EE->db->query($this->EE->db->update_string('exp_members', array('last_bulletin_date' => $this->EE->localize->now), "group_id = '".$this->EE->db->escape_str($group_id)."'"));
+				ee()->db->query(ee()->db->update_string('exp_members', array('last_bulletin_date' => ee()->localize->now), "group_id = '".ee()->db->escape_str($group_id)."'"));
 			}
 		}
 		
@@ -3564,7 +3564,7 @@ DOH;
 		/**  Return with Success Message
 		/** ----------------------------------------*/
 		
-		$this->send_bulletin($this->EE->lang->line('bulletin_success'));
+		$this->send_bulletin(ee()->lang->line('bulletin_success'));
 	}
 
 	
@@ -3575,7 +3575,7 @@ DOH;
 	
 	function edit_list()
 	{
-		if ($this->EE->input->get_post('which') === FALSE OR $this->EE->input->get_post('which') == 'buddy')
+		if (ee()->input->get_post('which') === FALSE OR ee()->input->get_post('which') == 'buddy')
 		{
 			$which = 'buddy';
 		}
@@ -3588,9 +3588,9 @@ DOH;
 		/**  Add to List
 		/** -----------------------------------*/
 		
-		if ( ! $this->EE->input->post('toggle'))
+		if ( ! ee()->input->post('toggle'))
 		{
-			if ($this->EE->input->get_post('name') === FALSE OR $this->EE->input->get_post('description') === FALSE OR $this->EE->input->get_post('name') == '')
+			if (ee()->input->get_post('name') === FALSE OR ee()->input->get_post('description') === FALSE OR ee()->input->get_post('name') == '')
 			{
 				if ($which == 'blocked')
 				{
@@ -3602,7 +3602,7 @@ DOH;
 				}
 			}
 			
-			$person = $this->convert_recipients($this->EE->input->get_post('name'), 'array', 'member_id');
+			$person = $this->convert_recipients(ee()->input->get_post('name'), 'array', 'member_id');
 			
 			if (count($person) == 0)
 			{
@@ -3617,7 +3617,7 @@ DOH;
 			}
 			
 			$data = array('member_id'			=> $this->member_id,
-						  'listed_description'	=> $this->EE->functions->char_limiter($_POST['description'], 50),
+						  'listed_description'	=> ee()->functions->char_limiter($_POST['description'], 50),
 						  'listed_type'			=> $which);
 			
 			for ($i=0, $s = count($person); $i < $s; ++$i)
@@ -3636,12 +3636,12 @@ DOH;
 				}
 				
 				$data['listed_member'] = $person[$i]; 
-				$this->EE->db->query($this->EE->db->insert_string('exp_message_listed', $data));
+				ee()->db->query(ee()->db->insert_string('exp_message_listed', $data));
 				
 				if ($which == 'blocked')
 				{
-					$this->EE->db->query("DELETE FROM exp_message_copies 
-								WHERE sender_id = '".$this->EE->db->escape_str($person[$i])."'
+					ee()->db->query("DELETE FROM exp_message_copies 
+								WHERE sender_id = '".ee()->db->escape_str($person[$i])."'
 								AND recipient_id = '{$this->member_id}'");
 				}
 			}
@@ -3664,11 +3664,11 @@ DOH;
 		
 		foreach ($_POST['toggle'] as $key => $val)
 		{ 
-			if ($this->EE->input->post('daction') == 'delete')
+			if (ee()->input->post('daction') == 'delete')
 			{
-				$this->EE->db->query("DELETE FROM exp_message_listed
+				ee()->db->query("DELETE FROM exp_message_listed
 							WHERE member_id = '{$this->member_id}'
-							AND listed_id = '".$this->EE->db->escape_str($val)."'");
+							AND listed_id = '".ee()->db->escape_str($val)."'");
 			}
 		}
 				
@@ -3696,7 +3696,7 @@ DOH;
 			$this->fetch_lists('buddy');
 		}
 		
-		return $this->add_list_member('buddy', ($this->allegiance == 'user') ? $this->cur_id : $this->EE->input->get_post('mid'));
+		return $this->add_list_member('buddy', ($this->allegiance == 'user') ? $this->cur_id : ee()->input->get_post('mid'));
 	}
 
 	
@@ -3712,7 +3712,7 @@ DOH;
 			$this->fetch_lists('blocked');
 		}
 		
-		return $this->add_list_member('blocked', ($this->allegiance == 'user') ? $this->cur_id : $this->EE->input->get_post('mid'));
+		return $this->add_list_member('blocked', ($this->allegiance == 'user') ? $this->cur_id : ee()->input->get_post('mid'));
 	}
 
 	
@@ -3772,12 +3772,12 @@ DOH;
 			}
 				
 			$data['listed_member'] = $person[$i]; 
-			$this->EE->db->query($this->EE->db->insert_string('exp_message_listed', $data));
+			ee()->db->query(ee()->db->insert_string('exp_message_listed', $data));
 				
 			if ($which == 'blocked')
 			{
-				$this->EE->db->query("DELETE FROM exp_message_copies 
-							WHERE sender_id = '".$this->EE->db->escape_str($person[$i])."'
+				ee()->db->query("DELETE FROM exp_message_copies 
+							WHERE sender_id = '".ee()->db->escape_str($person[$i])."'
 							AND recipient_id = '{$this->member_id}'");
 			}
 		}
@@ -3810,11 +3810,11 @@ DOH;
 						 	  'secure'		  => ($this->allegiance == 'cp') ? FALSE : TRUE
 						 	  );  	
 		
-		$this->single_parts['form']['form_declaration']['list'] = $this->EE->functions->form_declaration($form_details);
-		$this->single_parts['lang']['list_title'] =	$this->EE->lang->line('blocked_list');
+		$this->single_parts['form']['form_declaration']['list'] = ee()->functions->form_declaration($form_details);
+		$this->single_parts['lang']['list_title'] =	ee()->lang->line('blocked_list');
 		$this->single_parts['include']['toggle_js'] = $this->toggle_js();
 		$this->single_parts['include']['buddy_search_js'] =  $this->buddy_search_js();
-		$this->single_parts['image']['search_glass'] = '<img src="'.$this->images_folder.'search_glass.gif" style="border: 0px" width="12" height="12" alt="'.$this->EE->lang->line('search_glass').'" />';
+		$this->single_parts['image']['search_glass'] = '<img src="'.$this->images_folder.'search_glass.gif" style="border: 0px" width="12" height="12" alt="'.ee()->lang->line('search_glass').'" />';
 		$this->single_parts['include']['member_search'] = '<a href="#" title="{lang:member_search}" onclick="buddy_search(2); return false;">'.$this->single_parts['image']['search_glass'].'</a>';
 
 		$this->single_parts['include']['list_rows'] = '';
@@ -3864,8 +3864,8 @@ DOH;
 		/**  Return the Trackable Messages
 		/** ----------------------------------------*/
 		
-		$this->title = $this->EE->lang->line('blocked_list');
-		$this->crumb = $this->EE->lang->line('blocked_list');
+		$this->title = ee()->lang->line('blocked_list');
+		$this->crumb = ee()->lang->line('blocked_list');
 		$this->return_data = $this->_process_template($template);
  	}
 
@@ -3877,7 +3877,7 @@ DOH;
 	
 	function _error_page($msg = 'not_authorized', $replace = array())
 	{
-		$error = ( ! isset($this->EE->lang->language[$msg])) ? $msg : $this->EE->lang->line($msg);
+		$error = ( ! isset(ee()->lang->language[$msg])) ? $msg : ee()->lang->line($msg);
 		
 		if (count($replace) > 0)
 		{
@@ -3888,11 +3888,11 @@ DOH;
 		}
 		
 		
-		$this->single_parts['lang']['heading'] = $this->EE->lang->line('error');
+		$this->single_parts['lang']['heading'] = ee()->lang->line('error');
 		$this->single_parts['lang']['message'] = $error;
 	
-		$this->title = $this->EE->lang->line('error');
-		$this->crumb = $this->EE->lang->line('error');
+		$this->title = ee()->lang->line('error');
+		$this->crumb = ee()->lang->line('error');
 
 		$this->return_data = $this->_process_template($this->retrieve_template('message_error'));		
 		return;
@@ -3909,11 +3909,11 @@ DOH;
 
 	function maintenance()
 	{
-		$deletion_time = $this->EE->localize->now - ($this->delete_expiration*24*60*60);
+		$deletion_time = ee()->localize->now - ($this->delete_expiration*24*60*60);
 		
 		// Erase old deleted messages
 		
-		$query = $this->EE->db->query("SELECT copy_id FROM exp_message_copies 
+		$query = ee()->db->query("SELECT copy_id FROM exp_message_copies 
 							 WHERE recipient_id = '{$this->member_id}'
 							 AND message_deleted = 'y'
 							 AND message_time_read < $deletion_time");
@@ -3932,7 +3932,7 @@ DOH;
 		
 		// Erase old, unused sent messages
 		
-		$query = $this->EE->db->query("SELECT d.message_id FROM exp_message_data d
+		$query = ee()->db->query("SELECT d.message_id FROM exp_message_data d
 							 LEFT JOIN exp_message_copies c ON (d.message_id = c.message_id)
 							 WHERE d.sender_id = '{$this->member_id}'
 							 AND d.message_status = 'sent'
@@ -3950,7 +3950,7 @@ DOH;
 			
 			if (count($delete) > 0)
 			{
-				$this->EE->db->query("DELETE FROM exp_message_data WHERE message_id IN ('".implode("','", $delete)."')");
+				ee()->db->query("DELETE FROM exp_message_data WHERE message_id IN ('".implode("','", $delete)."')");
 			}
 		}
  	}
@@ -4516,9 +4516,9 @@ MRT;
  	function showhide_js()
  	{
  		
- 		$prefix = ( ! $this->EE->config->item('cookie_prefix')) ? 'exp_' : $this->EE->config->item('cookie_prefix').'_';
-		$path	= ( ! $this->EE->config->item('cookie_path'))	? '/'	: $this->EE->config->item('cookie_path');
-		$domain = ( ! $this->EE->config->item('cookie_domain')) ? ''	 : $this->EE->config->item('cookie_domain');
+ 		$prefix = ( ! ee()->config->item('cookie_prefix')) ? 'exp_' : ee()->config->item('cookie_prefix').'_';
+		$path	= ( ! ee()->config->item('cookie_path'))	? '/'	: ee()->config->item('cookie_path');
+		$domain = ( ! ee()->config->item('cookie_domain')) ? ''	 : ee()->config->item('cookie_domain');
 		$domain = ($domain == '') ? '' : 'domain='.$domain;
  		
 $str = <<<EOT
@@ -4575,7 +4575,7 @@ EOT;
 		}
 		
 		
-		$path = $this->EE->config->slash_item('emoticon_url');
+		$path = ee()->config->slash_item('emoticon_url');
 				
 		$i = 1;
 		
@@ -4731,9 +4731,9 @@ EWOK;
 	{
 		if ($this->allegiance == 'cp')
 		{
-			$s = ($this->EE->config->item('admin_session_type') != 'c') ? $this->EE->session->userdata['session_id'] : 0;
+			$s = (ee()->config->item('admin_session_type') != 'c') ? ee()->session->userdata['session_id'] : 0;
 				
-			$url = $this->EE->config->item('cp_url', FALSE).'?S='.$s.'&C=myaccount&M=messages&P=member_search&Z=1';
+			$url = ee()->config->item('cp_url', FALSE).'?S='.$s.'&C=myaccount&M=messages&P=member_search&Z=1';
 			$field = "&field='+which_field";
 		}
 		else
@@ -4781,9 +4781,9 @@ MRI;
 	{
 		if ($this->allegiance == 'cp')
 		{
-			$s = ($this->EE->config->item('admin_session_type') != 'c') ? $this->EE->session->userdata['session_id'] : 0;
+			$s = (ee()->config->item('admin_session_type') != 'c') ? ee()->session->userdata['session_id'] : 0;
 				
-			$url = $this->EE->config->item('cp_url', FALSE).'?S='.$s.'&C=myaccount&M=messages&P=buddy_search&Z=1';
+			$url = ee()->config->item('cp_url', FALSE).'?S='.$s.'&C=myaccount&M=messages&P=buddy_search&Z=1';
 			$which = "&which='+which";
 		}
 		else

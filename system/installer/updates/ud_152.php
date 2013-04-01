@@ -44,7 +44,7 @@ class Updater {
 		$Q[] = "ALTER TABLE exp_templates ADD `edit_date` int(10) default 0 AFTER `template_notes`";
 		$Q[] = "UPDATE exp_templates SET edit_date = '".$LOC->now."'";
 		
-		$query = $this->EE->db->query("SELECT item_id, MAX(item_date) as max_date FROM `exp_revision_tracker` GROUP BY item_id");
+		$query = ee()->db->query("SELECT item_id, MAX(item_date) as max_date FROM `exp_revision_tracker` GROUP BY item_id");
 		
 		if ($query->num_rows() > 0)
 		{
@@ -63,7 +63,7 @@ class Updater {
 		$Q[] = "ALTER TABLE `exp_member_bulletin_board` ADD `hash` varchar(10) default '' AFTER `bulletin_date`";
 		$Q[] = "ALTER TABLE `exp_member_bulletin_board` ADD INDEX (`hash`)";
 		
-		$query = $this->EE->db->query("SELECT DISTINCT bulletin_date, bulletin_message, sender_id FROM `exp_member_bulletin_board`");
+		$query = ee()->db->query("SELECT DISTINCT bulletin_date, bulletin_message, sender_id FROM `exp_member_bulletin_board`");
 		
 		if ($query->num_rows() > 0)
 		{
@@ -82,7 +82,7 @@ class Updater {
 		// run the queries
 		foreach ($Q as $sql)
 		{
-			$this->EE->db->query($sql);
+			ee()->db->query($sql);
 		}
 		
 		return TRUE;

@@ -49,7 +49,7 @@ class Checkboxes_ft extends EE_Fieldtype {
 	function __construct()
 	{
 		parent::__construct();
-		$this->EE->load->helper('custom_field');
+		ee()->load->helper('custom_field');
 	}
 	
 	// --------------------------------------------------------------------
@@ -64,7 +64,7 @@ class Checkboxes_ft extends EE_Fieldtype {
 		$field_options	= $this->_get_field_options($data);
 
 		// If they've selected something we'll make sure that it's a valid choice
-		$selected = $this->EE->input->post('field_id_'.$this->settings['field_id']);
+		$selected = ee()->input->post('field_id_'.$this->settings['field_id']);
 	
 		if ($selected)
 		{
@@ -127,7 +127,7 @@ class Checkboxes_ft extends EE_Fieldtype {
 	
 	function replace_tag($data, $params = array(), $tagdata = FALSE)
 	{
-		$this->EE->load->helper('custom_field');
+		ee()->load->helper('custom_field');
 		$data = decode_multi_field($data);
 		
 		if ($tagdata)
@@ -175,11 +175,11 @@ class Checkboxes_ft extends EE_Fieldtype {
 		// Experimental parameter, do not use
 		if (isset($params['raw_output']) && $params['raw_output'] == 'yes')
 		{
-			return $this->EE->functions->encode_ee_tags($entry);
+			return ee()->functions->encode_ee_tags($entry);
 		}
 
-		return $this->EE->typography->parse_type(
-				$this->EE->functions->encode_ee_tags($entry),
+		return ee()->typography->parse_type(
+				ee()->functions->encode_ee_tags($entry),
 				array(
 						'text_format'	=> $this->row['field_ft_'.$this->field_id],
 						'html_format'	=> $this->row['channel_html_formatting'],
@@ -209,8 +209,8 @@ class Checkboxes_ft extends EE_Fieldtype {
 				$vars['item'] = $item;
 				$vars['count'] = $key + 1;	// {count} parameter
 
-				$tmp = $this->EE->functions->prep_conditionals($tagdata, $vars);
-				$chunk .= $this->EE->functions->var_swap($tmp, $vars);
+				$tmp = ee()->functions->prep_conditionals($tagdata, $vars);
+				$chunk .= ee()->functions->var_swap($tmp, $vars);
 			}
 			else
 			{
@@ -227,12 +227,12 @@ class Checkboxes_ft extends EE_Fieldtype {
 		// Experimental parameter, do not use
 		if (isset($params['raw_output']) && $params['raw_output'] == 'yes')
 		{
-			return $this->EE->functions->encode_ee_tags($chunk);
+			return ee()->functions->encode_ee_tags($chunk);
 		}
 
 		// Typography!
-		return $this->EE->typography->parse_type(
-						$this->EE->functions->encode_ee_tags($chunk),
+		return ee()->typography->parse_type(
+						ee()->functions->encode_ee_tags($chunk),
 						array(
 								'text_format'	=> $this->row['field_ft_'.$this->field_id],
 								'html_format'	=> $this->row['channel_html_formatting'],
@@ -271,9 +271,9 @@ class Checkboxes_ft extends EE_Fieldtype {
 		{
 			// We need to pre-populate this menu from an another channel custom field
 
-			$this->EE->db->select('field_id_'.$this->settings['field_pre_field_id']);
-			$this->EE->db->where('channel_id', $this->settings['field_pre_channel_id']);
-			$pop_query = $this->EE->db->get('channel_data');
+			ee()->db->select('field_id_'.$this->settings['field_pre_field_id']);
+			ee()->db->where('channel_id', $this->settings['field_pre_channel_id']);
+			$pop_query = ee()->db->get('channel_data');
 
 			if ($pop_query->num_rows() > 0)
 			{

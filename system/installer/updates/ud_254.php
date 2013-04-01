@@ -44,12 +44,19 @@ class Updater {
 	 */
 	public function do_update()
 	{
-		$this->EE->load->dbforge();
-		
-		$this->_change_member_totals_length();
-		$this->_update_session_table();
-		$this->_update_security_hashes_table();
-		$this->_update_docs_url();
+		$steps = new ProgressIterator(
+			array(
+				'_change_member_totals_length',
+				'_update_session_table',
+				'_update_security_hashes_table',
+				'_update_docs_url',
+			)
+		);
+
+		foreach ($steps as $k => $v)
+		{
+			$this->$v();
+		}
 		
 		return TRUE;
 	}
@@ -63,7 +70,7 @@ class Updater {
 	 */
 	private function _change_member_totals_length()
 	{
-		$this->EE->dbforge->modify_column(
+		ee()->smartforge->modify_column(
 			'members',
 			array(
 				'total_entries' => array(
@@ -85,7 +92,7 @@ class Updater {
 	 */
 	private function _xss_clean_custom_links()
 	{
-		$members = $this->EE->db->select('member_id, quick_links, quick_tabs')
+		$members = ee()->db->select('member_id, quick_links, quick_tabs')
 			->where('quick_links IS NOT NULL')
 			->or_where('quick_tabs IS NOT NULL')
 			->get('members')
@@ -99,7 +106,7 @@ class Updater {
 			$members[$index]['quick_tabs'] = $this->_sanitize_custom_links($data['quick_tabs']);
 		}
 
-		$this->EE->db->update_batch('members', $members, 'member_id');
+		ee()->db->update_batch('members', $members, 'member_id');
 	}
 
 	/**
@@ -122,7 +129,7 @@ class Updater {
 			// Each link is three parts, the first being the name (which is 
 			// where we're concerned about XSS cleaning), the link, the order
 			$links = explode('|', $line);
-			$links[0] = $this->EE->security->xss_clean($links[0]);	
+			$links[0] = ee()->security->xss_clean($links[0]);	
 			$lines[$index] = implode('|', $links);
 		}
 		
@@ -138,26 +145,23 @@ class Updater {
 	 */
 	private function _update_session_table()
 	{
-		if ( ! $this->EE->db->field_exists('fingerprint', 'sessions'))
-		{
-			$this->EE->dbforge->add_column(
-				'sessions',
-				array(
-					'fingerprint' => array(
-						'type'			=> 'varchar',
-						'constraint'	=> 40
-					),
-					'sess_start' => array(
-						'type'			=> 'int',
-						'constraint'	=> 10,
-						'unsigned'		=> TRUE,
-						'default'		=> 0,
-						'null'			=> FALSE
-					)
+		ee()->smartforge->add_column(
+			'sessions',
+			array(
+				'fingerprint' => array(
+					'type'			=> 'varchar',
+					'constraint'	=> 40
 				),
-				'user_agent'
-			);	
-		}
+				'sess_start' => array(
+					'type'			=> 'int',
+					'constraint'	=> 10,
+					'unsigned'		=> TRUE,
+					'default'		=> 0,
+					'null'			=> FALSE
+				)
+			),
+			'user_agent'
+		);
 		
 		return TRUE;
 	}
@@ -169,21 +173,18 @@ class Updater {
 	 */
 	private function _update_security_hashes_table()
 	{
-		if ( ! $this->EE->db->field_exists('session_id', 'security_hashes'))
-		{
-			$this->EE->dbforge->modify_column(
-				'security_hashes',
-				array(
-					'ip_address' => array(
-						'name' 			=> 'session_id',
-						'type' 			=> 'varchar',
-						'constraint' 	=> 40
-					)
+		ee()->smartforge->modify_column(
+			'security_hashes',
+			array(
+				'ip_address' => array(
+					'name' 			=> 'session_id',
+					'type' 			=> 'varchar',
+					'constraint' 	=> 40
 				)
-			);
+			)
+		);
 
-			$this->EE->db->truncate('security_hashes');
-		}
+		ee()->db->truncate('security_hashes');
 		
 		return TRUE;
 	}
@@ -195,9 +196,9 @@ class Updater {
 	 */
 	private function _update_docs_url()
 	{
-		if (strpos($this->EE->config->item('doc_url'), 'expressionengine.com') !== FALSE)
+		if (strpos(ee()->config->item('doc_url'), 'expressionengine.com') !== FALSE)
 		{
-			$this->EE->config->_update_config(
+			ee()->config->_update_config(
 				array(
 					'doc_url' => 'http://ellislab.com/expressionengine/user-guide/'
 				)

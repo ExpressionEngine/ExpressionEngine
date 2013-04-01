@@ -54,8 +54,8 @@ class Updated_sites {
 	function incoming()
 	{
 		//  Load the XML-RPC Files
-		$this->EE->load->library('xmlrpc');
-		$this->EE->load->library('xmlrpcs');
+		ee()->load->library('xmlrpc');
+		ee()->load->library('xmlrpcs');
 
 		//  Specify Functions
 
@@ -70,8 +70,8 @@ class Updated_sites {
 							);
 
 		//  Instantiate the Server Class
-		$this->EE->xmlrpcs->initialize(array('functions' => $functions, 'object' => $this));
-		$this->EE->xmlrpcs->serve();
+		ee()->xmlrpcs->initialize(array('functions' => $functions, 'object' => $this));
+		ee()->xmlrpcs->serve();
 	}
 
 	// ------------------------------------------------------------------------
@@ -86,11 +86,11 @@ class Updated_sites {
 	  */
 	function _load_config()
 	{
-		$this->EE->lang->loadfile('updated_sites');
+		ee()->lang->loadfile('updated_sites');
 		
-		$this->id = ( ! $this->EE->input->get('id')) ? '1' : $this->EE->input->get_post('id');
+		$this->id = ( ! ee()->input->get('id')) ? '1' : ee()->input->get_post('id');
 		
-		$query = $this->EE->db->get_where('updated_sites', array('updated_sites_id' => $this->id));
+		$query = ee()->db->get_where('updated_sites', array('updated_sites_id' => $this->id));
 		
 		if ($query->num_rows() > 0)
 		{
@@ -120,23 +120,23 @@ class Updated_sites {
 		
 		if ($this->check_urls(array($parameters['1'], $parameters['2'], $parameters['3'])) !== TRUE)
 		{
-			return $this->error($this->EE->lang->line('invalid_access'));
+			return $this->error(ee()->lang->line('invalid_access'));
 		}
 		
 		if ($this->throttle_check($parameters['1']) !== TRUE)
 		{
-			return $this->error(str_replace('%X', $this->throttle, $this->EE->lang->line('too_many_pings')));
+			return $this->error(str_replace('%X', $this->throttle, ee()->lang->line('too_many_pings')));
 		}
 		
-		$data = array('ping_site_name'	=> $this->EE->security->xss_clean(strip_tags($parameters['0'])),
-					  'ping_site_url'	=> $this->EE->security->xss_clean(strip_tags($parameters['1'])),
-					  'ping_site_check'	=> $this->EE->security->xss_clean(strip_tags($parameters['2'])),
-					  'ping_site_rss'	=> $this->EE->security->xss_clean(strip_tags($parameters['3'])),
-					  'ping_date'		=> $this->EE->localize->now,
-					  'ping_ipaddress'	=> $this->EE->input->ip_address(),
+		$data = array('ping_site_name'	=> ee()->security->xss_clean(strip_tags($parameters['0'])),
+					  'ping_site_url'	=> ee()->security->xss_clean(strip_tags($parameters['1'])),
+					  'ping_site_check'	=> ee()->security->xss_clean(strip_tags($parameters['2'])),
+					  'ping_site_rss'	=> ee()->security->xss_clean(strip_tags($parameters['3'])),
+					  'ping_date'		=> ee()->localize->now,
+					  'ping_ipaddress'	=> ee()->input->ip_address(),
 					  'ping_config_id'	=> $this->id);
 					  
-		$this->EE->db->insert('updated_site_pings', $data); 
+		ee()->db->insert('updated_site_pings', $data); 
 		
 		return $this->success();
 	}
@@ -160,21 +160,21 @@ class Updated_sites {
 		
 		if ($this->check_urls(array($parameters['1'])) !== TRUE)
 		{
-			return $this->error($this->EE->lang->line('invalid_access'));
+			return $this->error(ee()->lang->line('invalid_access'));
 		}
 		
 		if ($this->throttle_check($parameters['1']) !== TRUE)
 		{
-			return $this->error(str_replace('%X', $this->throttle, $this->EE->lang->line('too_many_pings')));
+			return $this->error(str_replace('%X', $this->throttle, ee()->lang->line('too_many_pings')));
 		}
 		
-		$data = array('ping_site_name'	=> $this->EE->security->xss_clean(strip_tags($parameters['0'])),
-					  'ping_site_url'	=> $this->EE->security->xss_clean(strip_tags($parameters['1'])),
-					  'ping_date'		=> $this->EE->localize->now,
-					  'ping_ipaddress'	=> $this->EE->input->ip_address(),
+		$data = array('ping_site_name'	=> ee()->security->xss_clean(strip_tags($parameters['0'])),
+					  'ping_site_url'	=> ee()->security->xss_clean(strip_tags($parameters['1'])),
+					  'ping_date'		=> ee()->localize->now,
+					  'ping_ipaddress'	=> ee()->input->ip_address(),
 					  'ping_config_id'	=> $this->id);
 					  
-		$this->EE->db->insert('updated_site_pings', $data); 
+		ee()->db->insert('updated_site_pings', $data); 
 		
 		return $this->success();
 	}
@@ -245,13 +245,13 @@ class Updated_sites {
 	{
 
 		//  Throttling - Only one ping every X minutes
-		$or = "(ping_site_url = '".$this->EE->db->escape_str($url)."' OR ping_ipaddress = '".$this->EE->input->ip_address()."')";
+		$or = "(ping_site_url = '".ee()->db->escape_str($url)."' OR ping_ipaddress = '".ee()->input->ip_address()."')";
 
-		$this->EE->db->where($or, NULL, FALSE);
-		$this->EE->db->where('ping_date >', $this->EE->localize->now-($this->throttle*60));
-		$this->EE->db->from('updated_site_pings');
+		ee()->db->where($or, NULL, FALSE);
+		ee()->db->where('ping_date >', ee()->localize->now-($this->throttle*60));
+		ee()->db->from('updated_site_pings');
 		
-		$count = $this->EE->db->count_all_results();
+		$count = ee()->db->count_all_results();
 		
 							 
 		if ($count > 0)
@@ -275,7 +275,7 @@ class Updated_sites {
 	  */
 	function error($message)
 	{
-		return $this->EE->xmlrpc->send_error_message('401', $message);
+		return ee()->xmlrpc->send_error_message('401', $message);
 	}
 
 	// ------------------------------------------------------------------------
@@ -303,15 +303,15 @@ class Updated_sites {
 				$this->prune = 500;
 			}
 
-			$this->EE->db->select_max('ping_id');
-			$query = $this->EE->db->get('updated_site_pings');
+			ee()->db->select_max('ping_id');
+			$query = ee()->db->get('updated_site_pings');
 			
 			if ($query->num_rows() > 0)
 			{
    				$row = $query->row_array();
 
-				$this->EE->db->where('ping_id <', $row['ping_id'] -$this->prune);
-				$this->EE->db->delete('updated_site_pings');
+				ee()->db->where('ping_id <', $row['ping_id'] -$this->prune);
+				ee()->db->delete('updated_site_pings');
 			}
 		}
 
@@ -319,11 +319,11 @@ class Updated_sites {
 		$response = array(
                  array(
                         'flerror' => array(FALSE, 'boolean'),
-                        'message' => array($this->EE->lang->line('successful_ping'), 'string')
+                        'message' => array(ee()->lang->line('successful_ping'), 'string')
                      ),
                  'struct');
 		
-		return $this->EE->xmlrpc->send_response($response);
+		return ee()->xmlrpc->send_response($response);
 	}
 
 	// ------------------------------------------------------------------------
@@ -342,13 +342,13 @@ class Updated_sites {
 		$sql = "SELECT m.* FROM exp_updated_site_pings m, exp_updated_sites s
 				WHERE m.ping_config_id = s.updated_sites_id ";
 				
-		if ($which = $this->EE->TMPL->fetch_param('which'))
+		if ($which = ee()->TMPL->fetch_param('which'))
 		{
-			$sql .= $this->EE->functions->sql_andor_string($which, 'updated_sites_short_name', 's');
+			$sql .= ee()->functions->sql_andor_string($which, 'updated_sites_short_name', 's');
 		}
 			
-		$order  = $this->EE->TMPL->fetch_param('orderby');
-		$sort	= $this->EE->TMPL->fetch_param('sort');
+		$order  = ee()->TMPL->fetch_param('orderby');
+		$sort	= ee()->TMPL->fetch_param('sort');
 		
 		switch($order)
 		{
@@ -374,44 +374,44 @@ class Updated_sites {
 		$sql .= $sort;
 		
 	
-		if ( ! $this->EE->TMPL->fetch_param('limit'))
+		if ( ! ee()->TMPL->fetch_param('limit'))
 		{
 			$sql .= " LIMIT 100";
 		}
 		else
 		{
-			$sql .= " LIMIT ".$this->EE->TMPL->fetch_param('limit');
+			$sql .= " LIMIT ".ee()->TMPL->fetch_param('limit');
 		}
 
-		$query = $this->EE->db->query($sql);
+		$query = ee()->db->query($sql);
 		
 			if ($query->num_rows() == 0)
 		{
-			return $this->EE->TMPL->no_results();
+			return ee()->TMPL->no_results();
 		}
 		
 		$total_results = count($query->result_array());
 	
 		foreach($query->result_array() as $count => $row)
 		{
-			$tagdata = $this->EE->TMPL->tagdata;
+			$tagdata = ee()->TMPL->tagdata;
 		
 			$row['count']			= $count+1;
 			$row['total_results']	= $total_results;
 
 			// Conditionals
 
-			$tagdata = $this->EE->functions->prep_conditionals($tagdata, $row);
+			$tagdata = ee()->functions->prep_conditionals($tagdata, $row);
 
 			// Parse "single" variables
 
-			foreach ($this->EE->TMPL->var_single as $key => $val)
+			foreach (ee()->TMPL->var_single as $key => $val)
 			{
 				// parse {switch} variable
 
 				if (strncmp($key, 'switch', 6) == 0)
 				{
-					$sparam = $this->EE->functions->assign_parameters($key);
+					$sparam = ee()->functions->assign_parameters($key);
 					$sw = '';
 					
 					if (isset($sparam['switch']))
@@ -435,7 +435,7 @@ class Updated_sites {
 						}
 					}
 					
-					$tagdata = $this->EE->TMPL->swap_var_single($key, $sw, $tagdata);
+					$tagdata = ee()->TMPL->swap_var_single($key, $sw, $tagdata);
 				}
 
 				// {ping_date}
@@ -448,10 +448,10 @@ class Updated_sites {
 					}
 					else
   					{
-						$date = $this->EE->localize->format_date($val, $row['ping_date']);
+						$date = ee()->localize->format_date($val, $row['ping_date']);
 					}
 				
-					$tagdata = $this->EE->TMPL->swap_var_single($key, $date, $tagdata);
+					$tagdata = ee()->TMPL->swap_var_single($key, $date, $tagdata);
 				}
 
 				// Remaining Data
@@ -460,7 +460,7 @@ class Updated_sites {
 				{
 					$rdata = ( ! isset($row[$key]) OR $row[$key] == '') ? '-' : $row[$key];
 				
-					$tagdata = $this->EE->TMPL->swap_var_single($val, $rdata, $tagdata);
+					$tagdata = ee()->TMPL->swap_var_single($val, $rdata, $tagdata);
 				}
 			}
 			

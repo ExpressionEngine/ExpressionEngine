@@ -33,11 +33,11 @@ class Utf8_db_convert {
 		$this->EE =& get_instance();
 		
 		@set_time_limit(0);
-        $this->EE->db->save_queries = FALSE;
+        ee()->db->save_queries = FALSE;
 		
         // make sure STRICT MODEs aren't in use, 
 		// at least on servers that don't default to that
-        $this->EE->db->query('SET SESSION sql_mode=""');
+        ee()->db->query('SET SESSION sql_mode=""');
 	}
 	
 	// ------------------------------------------------------------------------	
@@ -67,7 +67,7 @@ class Utf8_db_convert {
 		
 		foreach ($tables as $table)
 		{
-			$count  = $this->EE->db->count_all($table);
+			$count  = ee()->db->count_all($table);
 			$offset = 0;
 			$batch  = 100;
 			
@@ -76,14 +76,14 @@ class Utf8_db_convert {
 				for ($i = 0; $i < $count; $i = $i + $batch)
 				{
 					// set charset to latin1 to read 1.x's written values properly
-					$this->EE->db->db_set_charset('latin1', 'latin1_swedish_ci');
+					ee()->db->db_set_charset('latin1', 'latin1_swedish_ci');
 					
-					$query = $this->EE->db->get($table, $offset, $batch);
+					$query = ee()->db->get($table, $offset, $batch);
 					$data = $query->result_array();
 					$query->free_result();
 
 					// set charset to utf8 to write them back to the database properly
-					$this->EE->db->db_set_charset('utf8', 'utf8_general_ci');
+					ee()->db->db_set_charset('utf8', 'utf8_general_ci');
 
 					foreach ($data as $row)
 					{
@@ -112,8 +112,8 @@ class Utf8_db_convert {
 
 						if ($update === TRUE)
 						{
-							$this->EE->db->where($where);
-							$this->EE->db->update($table, $row, $where);    
+							ee()->db->where($where);
+							ee()->db->update($table, $row, $where);    
 						}
 					}
 
@@ -122,7 +122,7 @@ class Utf8_db_convert {
 			}
 			
 			// finally, set the table's charset and collation in MySQL to utf8
-			$this->EE->db->query("ALTER TABLE {$table} CONVERT TO CHARACTER 
+			ee()->db->query("ALTER TABLE {$table} CONVERT TO CHARACTER 
 								  SET utf8 COLLATE utf8_general_ci");
 		}
 		

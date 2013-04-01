@@ -54,7 +54,7 @@ class Localize {
 		$this->now = time();
 
 		// Apply server offset (in minutes) to $now
-		if (($offset = $this->EE->config->item('server_offset'))
+		if (($offset = ee()->config->item('server_offset'))
 			&& is_numeric($offset))
 		{
 			$this->now += $offset * 60;
@@ -147,9 +147,9 @@ class Localize {
 
 		// If TRUE, the translatable date variables will be run through the
 		// language library; this check has been brought over from legacy code
-		$translate = ! (isset($this->EE->TMPL)
-			&& is_object($this->EE->TMPL) 
-			&& $this->EE->TMPL->template_type == 'feed');
+		$translate = ! (isset(ee()->TMPL)
+			&& is_object(ee()->TMPL) 
+			&& ee()->TMPL->template_type == 'feed');
 		
 		// Remove percent sign for easy comparing and passing to DateTime::format
 		$date_var = str_replace('%', '', $var);
@@ -221,13 +221,13 @@ class Localize {
 		/*	Hidden Configuration Variables
 		/*	- include_seconds => Determines whether to include seconds in our human time.
 		/* -------------------------------------------*/
-		if (func_num_args() != 3 && $this->EE->config->item('include_seconds') == 'y')
+		if (func_num_args() != 3 && ee()->config->item('include_seconds') == 'y')
 		{
 			$seconds = TRUE;
 		}
 
-		$fmt = ($this->EE->session->userdata('time_format') != '')
-			? $this->EE->session->userdata('time_format') : $this->EE->config->item('time_format');
+		$fmt = (ee()->session->userdata('time_format') != '')
+			? ee()->session->userdata('time_format') : ee()->config->item('time_format');
 
 		// 2015-10-21
 		$format_string = '%Y-%m-%d ';
@@ -267,7 +267,7 @@ class Localize {
 		// Localize to member's timezone or leave as GMT
 		if (is_bool($timezone))
 		{
-			$timezone = ($timezone) ? $this->EE->session->userdata('timezone') : 'UTC';
+			$timezone = ($timezone) ? ee()->session->userdata('timezone') : 'UTC';
 		}
 
 		// If timezone isn't known by PHP, it may be our legacy timezone
@@ -307,7 +307,7 @@ class Localize {
 
 		// Apply server offset only
 		if (empty($date_string)
-			&& ($offset = $this->EE->config->item('server_offset'))
+			&& ($offset = ee()->config->item('server_offset'))
 			&& is_numeric($offset))
 		{
 			$offset = ($offset > 0) ? '+'.$offset : $offset;
@@ -329,7 +329,7 @@ class Localize {
 	public function timezone_menu($default = NULL, $name = 'server_timezone')
 	{
 		// For the installer
-		$this->EE->load->helper('language');
+		ee()->load->helper('language');
 
 		// We only want timezones with these prefixes
 		$continents = array('Africa', 'America', 'Antarctica', 'Arctic',
@@ -462,7 +462,7 @@ EOF;
 		}
 
 		// Construct the form
-		$this->EE->load->helper('form');
+		ee()->load->helper('form');
 		$output .= form_dropdown('tz_country', $countries, $selected_country, 'onchange="ee_tz_change(this)"');
 		$output .= '&nbsp;&nbsp;'; // NBS constant doesn't work in installer
 		$output .= form_dropdown($name, $timezone_prepoplated, $default, 'id="timezone_select"');
@@ -670,10 +670,10 @@ EOF;
 	 */
 	public function timestamp_to_gmt($str = '')
 	{
-		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated('2.6', 'Date helper\'s mysql_to_unix()');
+		ee()->load->library('logger');
+		ee()->logger->deprecated('2.6', 'Date helper\'s mysql_to_unix()');
 
-		$this->EE->load->helper('date');
+		ee()->load->helper('date');
 		return mysql_to_unix($str);
 	}
 
@@ -692,10 +692,10 @@ EOF;
 	 */
 	function set_localized_time($now = '', $timezone = '', $dst = '')
 	{
-		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated('2.6');
+		ee()->load->library('logger');
+		ee()->logger->deprecated('2.6');
 
-		$this->EE->load->helper('date');
+		ee()->load->helper('date');
 		$zones = timezones();
 
 		if ($now == '')
@@ -707,7 +707,7 @@ EOF;
 		// Right now we only use this to show the local time of other users
 		if ($timezone == '')
 		{
-			$timezone = $this->EE->session->userdata['timezone'];
+			$timezone = ee()->session->userdata['timezone'];
 		}
 
 		// If the current user has not set localization preferences
@@ -721,7 +721,7 @@ EOF;
 
 		if ($dst == '')
 		{
-			$dst = $this->EE->session->userdata('daylight_savings');
+			$dst = ee()->session->userdata('daylight_savings');
 		}
 
 		if ($dst == 'y')
@@ -745,10 +745,10 @@ EOF;
 	 */
 	function set_server_time($now = '')
 	{
-		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated('2.6');
+		ee()->load->library('logger');
+		ee()->logger->deprecated('2.6');
 
-		$this->EE->load->helper('date');
+		ee()->load->helper('date');
 		$zones = timezones();
 
 		if ($now == '')
@@ -756,12 +756,12 @@ EOF;
 			$now = $this->now;
 		}
 
-		if ($tz = $this->EE->config->item('server_timezone'))
+		if ($tz = ee()->config->item('server_timezone'))
 		{
 			$now += $zones[$tz] * 3600;
 		}
 
-		if ($this->EE->config->item('daylight_savings') == 'y')
+		if (ee()->config->item('daylight_savings') == 'y')
 		{
 			$now += 3600;
 		}
@@ -788,10 +788,10 @@ EOF;
 	 */
 	function set_server_offset($time, $reverse = 0)
 	{
-		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated('2.6');
+		ee()->load->library('logger');
+		ee()->logger->deprecated('2.6');
 
-		$offset = ( ! $this->EE->config->item('server_offset')) ? 0 : $this->EE->config->item('server_offset') * 60;
+		$offset = ( ! ee()->config->item('server_offset')) ? 0 : ee()->config->item('server_offset') * 60;
 
 		if ($offset == 0)
 		{
@@ -826,31 +826,31 @@ EOF;
 	 */
 	function set_localized_offset()
 	{
-		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated('2.6');
+		ee()->load->library('logger');
+		ee()->logger->deprecated('2.6');
 		
 		$offset = 0;
 
-		$this->EE->load->helper('date');
+		ee()->load->helper('date');
 		$zones = timezones();
 
-		if ($this->EE->session->userdata['timezone'] == '')
+		if (ee()->session->userdata['timezone'] == '')
 		{
-			if ($tz = $this->EE->config->item('server_timezone'))
+			if ($tz = ee()->config->item('server_timezone'))
 			{
 				$offset += $zones[$tz];
 			}
 
-			if ($this->EE->config->item('daylight_savings') == 'y')
+			if (ee()->config->item('daylight_savings') == 'y')
 			{
 				$offset += 1;
 			}
 		}
 		else
 		{
-			$offset += $zones[$this->EE->session->userdata['timezone']];
+			$offset += $zones[ee()->session->userdata['timezone']];
 
-			if ($this->EE->session->userdata['daylight_savings'] == 'y')
+			if (ee()->session->userdata['daylight_savings'] == 'y')
 			{
 				$offset += 1;
 			}
@@ -894,8 +894,8 @@ EOF;
 	 */
 	function set_human_time($now = '', $localize = TRUE, $seconds = FALSE)
 	{
-		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated('2.6', 'Localize::human_time');
+		ee()->load->library('logger');
+		ee()->logger->deprecated('2.6', 'Localize::human_time');
 		
 		return $this->human_time($now, $localize, $seconds);
 	}
@@ -914,8 +914,8 @@ EOF;
 	 */
 	function convert_human_date_to_gmt($datestr = '')
 	{
-		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated('2.6', 'Localize::string_to_timestamp');
+		ee()->load->library('logger');
+		ee()->logger->deprecated('2.6', 'Localize::string_to_timestamp');
 		
 		return $this->string_to_timestamp($datestr);
 	}
@@ -935,8 +935,8 @@ EOF;
 	 */
 	function simpl_offset($time = '', $timezone = '')
 	{
-		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated('2.6');
+		ee()->load->library('logger');
+		ee()->logger->deprecated('2.6');
 
 		return $time;
 	}
@@ -954,10 +954,10 @@ EOF;
 	 */
 	function format_timespan($seconds = '')
 	{
-		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated('2.6', 'Date helper\'s timespan()');
+		ee()->load->library('logger');
+		ee()->logger->deprecated('2.6', 'Date helper\'s timespan()');
 
-		$this->EE->load->helper('date');
+		ee()->load->helper('date');
 		return timespan($seconds);
 	}
 
@@ -972,8 +972,8 @@ EOF;
 	 */
 	function fetch_date_params($datestr = '')
 	{
-		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated('2.6');
+		ee()->load->library('logger');
+		ee()->logger->deprecated('2.6');
 
 		if ($datestr == '')
 			return;
@@ -1002,8 +1002,8 @@ EOF;
 	 */
 	function decode_date($datestr = '', $unixtime = '', $localize = TRUE)
 	{
-		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated('2.6', 'Localize::format_date');
+		ee()->load->library('logger');
+		ee()->logger->deprecated('2.6', 'Localize::format_date');
 		
 		return $this->format_date($datestr, $unixtime, $localize);
 	}
@@ -1023,8 +1023,8 @@ EOF;
 	 */
 	function convert_timestamp($format = '', $time = '', $localize = TRUE, $prelocalized = FALSE)
 	{
-		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated('2.6', 'Localize::format_date');
+		ee()->load->library('logger');
+		ee()->logger->deprecated('2.6', 'Localize::format_date');
 		
 		$return_array = FALSE;
 
@@ -1050,8 +1050,8 @@ EOF;
 	 */
 	function zone_offset($tz = '')
 	{
-		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated('2.6');
+		ee()->load->library('logger');
+		ee()->logger->deprecated('2.6');
 
 		return $tz;
 	}
@@ -1068,10 +1068,10 @@ EOF;
 	 */
 	function zones()
 	{
-		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated('2.6', 'Date helper\'s timezones()');
+		ee()->load->library('logger');
+		ee()->logger->deprecated('2.6', 'Date helper\'s timezones()');
 
-		$this->EE->load->helper('date');
+		ee()->load->helper('date');
 		return timezones();
 	}
 
@@ -1085,8 +1085,8 @@ EOF;
 	 */
 	function set_localized_timezone()
 	{
-        $this->EE->load->library('logger');
-        $this->EE->logger->deprecated('2.6');
+        ee()->load->library('logger');
+        ee()->logger->deprecated('2.6');
 
 		return 'GMT';
 	}
@@ -1106,10 +1106,10 @@ EOF;
 	 */
 	function fetch_days_in_month($month, $year)
 	{
-		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated('2.6', 'Date helper\'s days_in_month()');
+		ee()->load->library('logger');
+		ee()->logger->deprecated('2.6', 'Date helper\'s days_in_month()');
 
-		$this->EE->load->helper('date');
+		ee()->load->helper('date');
 		return days_in_month($month, $year);
 	}
 
@@ -1131,10 +1131,10 @@ EOF;
 	 */
 	function adjust_date($month, $year, $pad = FALSE)
 	{
-		$this->EE->load->library(array('logger', 'calendar'));
-		$this->EE->logger->deprecated('2.6', 'Calendar::adjust_date');
+		ee()->load->library(array('logger', 'calendar'));
+		ee()->logger->deprecated('2.6', 'Calendar::adjust_date');
 		
-		return $this->EE->calendar->adjust_date($month, $year, $pad);
+		return ee()->calendar->adjust_date($month, $year, $pad);
 	}
 
 }

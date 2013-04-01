@@ -35,7 +35,7 @@ class Debug_acc {
 	 */
 	public function process_run()
 	{
-		$source = get_instance()->input->post('code');
+		$source = ee()->input->post('code');
 		$code = $this->_parse_code($source);
 
 		ob_start();

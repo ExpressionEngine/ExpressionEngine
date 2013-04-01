@@ -70,9 +70,9 @@ EOT;
 	 */
 	function index()
 	{
-		$this->EE->load->library('table');
+		ee()->load->library('table');
 
-		$this->EE->table->set_columns(array(
+		ee()->table->set_columns(array(
 			'moblog_id'			=> array('header' => array('data' => lang('id'), 'width' => '4%')),
 		    'moblog_full_name'  => array('header' => lang('moblog_view')),
 		    'check_moblog'  	=> array('header' => lang('check_moblog'), 'sort' => FALSE),
@@ -90,7 +90,7 @@ EOT;
 			'per_page'	=> 100
 		);
 
-		$data = $this->EE->table->datasource('_table_datasource', $defaults, $params);
+		$data = ee()->table->datasource('_table_datasource', $defaults, $params);
 
 		$vars = array(
 			'table_html' 		=> $data['table_html'],
@@ -99,12 +99,12 @@ EOT;
 			'cp_page_title' 	=> lang('moblog')
 		);
 
-		$this->EE->cp->set_right_nav(array(
+		ee()->cp->set_right_nav(array(
 			'create_moblog' => BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=moblog'.AMP.'method=create_modify'
 			)
 		);
 
-		return $this->EE->load->view('index', $vars, TRUE);
+		return ee()->load->view('index', $vars, TRUE);
 	}
 
 
@@ -120,14 +120,14 @@ EOT;
 	 */
 	public function _table_datasource($state, $params)
 	{
-		$this->EE->db->select('moblog_full_name, moblog_id, moblog_enabled');
+		ee()->db->select('moblog_full_name, moblog_id, moblog_enabled');
 
 		foreach($state['sort'] as $col => $dir)
 		{
-			$this->EE->db->order_by($col, $dir);
+			ee()->db->order_by($col, $dir);
 		}
 
-		$data = $this->EE->db->get('moblogs', $params['per_page'], $state['offset'])->result_array();
+		$data = ee()->db->get('moblogs', $params['per_page'], $state['offset'])->result_array();
 
 		foreach($data as &$row)
 		{
@@ -142,7 +142,7 @@ EOT;
 		    'rows'		 => $data,
 		    'pagination' => array(
 		        'per_page'   => $params['per_page'],
-		        'total_rows' => $this->EE->db->count_all_results('moblogs'),
+		        'total_rows' => ee()->db->count_all_results('moblogs'),
 		    ),
 		);
 	}
@@ -159,18 +159,18 @@ EOT;
 	 */
 	function create_modify()
 	{
-		$this->EE->load->helper('form');
-		$this->EE->load->library('form_validation');
-		$this->EE->load->library('api');
-		$this->EE->api->instantiate('channel_categories');
+		ee()->load->helper('form');
+		ee()->load->library('form_validation');
+		ee()->load->library('api');
+		ee()->api->instantiate('channel_categories');
 		
-		$id		= ( ! $this->EE->input->get_post('id')) ? '' : $this->EE->input->get_post('id');
-		$basis	= ( ! $this->EE->input->post('basis'))  ? '' : $this->EE->input->post('basis');
+		$id		= ( ! ee()->input->get_post('id')) ? '' : ee()->input->get_post('id');
+		$basis	= ( ! ee()->input->post('basis'))  ? '' : ee()->input->post('basis');
 		
-		$count = $this->EE->db->count_all('moblogs');
+		$count = ee()->db->count_all('moblogs');
 
 		$vars['hidden_fields'] = array('id' => $id, 'basis' => $basis);
-		$this->EE->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=moblog', lang('moblog'));
+		ee()->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=moblog', lang('moblog'));
 
 		if ($id != '')
 		{
@@ -185,8 +185,8 @@ EOT;
 
 		if ($basis == '' && $count > 0 && $id == '')
 		{
-			$this->EE->db->select('moblog_id, moblog_full_name');
-			$query = $this->EE->db->get('moblogs');
+			ee()->db->select('moblog_id, moblog_full_name');
+			$query = ee()->db->get('moblogs');
 			
 			$options['none'] = lang('none');
 			
@@ -195,7 +195,7 @@ EOT;
 				$options[$row['moblog_id']] = $row['moblog_full_name'];
 			}
 
-			return $this->EE->load->view('choose', array('options' => $options), TRUE);
+			return ee()->load->view('choose', array('options' => $options), TRUE);
 		}
 		
 
@@ -203,24 +203,24 @@ EOT;
 		
 		$channel_array = array();
 		
-		$this->EE->db->select('channel_id, channel_title, site_label');
-		$this->EE->db->from(array('channels', 'sites'));
-		$this->EE->db->where('channels.site_id = '.$this->EE->db->dbprefix('sites.site_id'));
+		ee()->db->select('channel_id, channel_title, site_label');
+		ee()->db->from(array('channels', 'sites'));
+		ee()->db->where('channels.site_id = '.ee()->db->dbprefix('sites.site_id'));
 
-		if ($this->EE->config->item('multiple_sites_enabled') !== 'y')
+		if (ee()->config->item('multiple_sites_enabled') !== 'y')
 		{
-			$this->EE->db->where('channels.site_id', '1');
+			ee()->db->where('channels.site_id', '1');
 		}
 		
 		$channel_array['null'] = lang('channel_id');
 		
-		$result = $this->EE->db->get();
+		$result = ee()->db->get();
 
 		if ($result->num_rows() > 0)
 		{
 			foreach ($result->result_array() as $rez)
 			{
-				$channel_array[$rez['channel_id']] = ($this->EE->config->item('multiple_sites_enabled') === 'y') ? $rez['site_label'].NBS.'-'.NBS.$rez['channel_title'] : $rez['channel_title'];
+				$channel_array[$rez['channel_id']] = (ee()->config->item('multiple_sites_enabled') === 'y') ? $rez['site_label'].NBS.'-'.NBS.$rez['channel_title'] : $rez['channel_title'];
 			}
 		}
 
@@ -230,11 +230,11 @@ EOT;
 		
 		$upload_array = array('0' => lang('none'));
 		
-		$this->EE->load->model(array('file_model', 'file_upload_preferences_model'));
+		ee()->load->model(array('file_model', 'file_upload_preferences_model'));
 
-		$upload_prefs = $this->EE->file_upload_preferences_model->get_file_upload_preferences($this->EE->session->userdata['group_id']);
+		$upload_prefs = ee()->file_upload_preferences_model->get_file_upload_preferences(ee()->session->userdata['group_id']);
 		
-		$sizes_q = $this->EE->file_model->get_dimensions_by_dir_id(1);
+		$sizes_q = ee()->file_model->get_dimensions_by_dir_id(1);
 		$sizes = array();
 		
 		foreach ($upload_prefs as $row)
@@ -263,7 +263,7 @@ EOT;
 						'field_id'					=> array(array('none'=> lang('none')), 'none'),
 						'status'					=> array(array('none'=> lang('none'), 'open' => lang('open'), 'closed' => lang('closed')), 'none'),
 						'author_id'					=> array(array('none'=> lang('none'),
-																$this->EE->session->userdata['member_id'] => ($this->EE->session->userdata['screen_name'] == '') ? $this->EE->session->userdata['username'] : $this->EE->session->userdata['screen_name']),
+																ee()->session->userdata['member_id'] => (ee()->session->userdata['screen_name'] == '') ? ee()->session->userdata['username'] : ee()->session->userdata['screen_name']),
 																'none'),
 						'moblog_sticky_entry'		=> 'n',
 						'moblog_allow_overrides'	=> 'y',
@@ -291,52 +291,52 @@ EOT;
 		// Filtering Javascript
 		
 		$this->_filtering_menus('moblog_create');
-		$this->EE->javascript->compile();
+		ee()->javascript->compile();
 
 
 		// Validation Rules
 
-		$this->EE->form_validation->set_rules('moblog_full_name',			'lang:moblog_full_name',		'required|callback__check_duplicate[moblog_full_name]');
-		$this->EE->form_validation->set_rules('moblog_short_name',			'lang:moblog_short_name',		'required|alpha_dash|callback__check_duplicate');
-		$this->EE->form_validation->set_rules('moblog_auth_required',		'lang:moblog_auth_required',	'required|enum[y,n]');
-		$this->EE->form_validation->set_rules('moblog_auth_delete',			'lang:moblog_auth_delete',		'required|enum[y,n]');
-		$this->EE->form_validation->set_rules('moblog_email_type',			'lang:moblog_email_type',		'required');
-		$this->EE->form_validation->set_rules('moblog_email_address',		'lang:moblog_email_address',	'required');
-		$this->EE->form_validation->set_rules('moblog_email_server',		'lang:moblog_email_server',		'required');
-		$this->EE->form_validation->set_rules('moblog_email_login',			'lang:moblog_email_login',		'required');
-		$this->EE->form_validation->set_rules('moblog_email_password',		'lang:moblog_email_password',	'required');
-		$this->EE->form_validation->set_rules('moblog_time_interval',		'lang:moblog_time_interval',	'required');
-		$this->EE->form_validation->set_rules('moblog_enabled',				'lang:moblog_enabled',			'required|enum[y,n]');
+		ee()->form_validation->set_rules('moblog_full_name',			'lang:moblog_full_name',		'required|callback__check_duplicate[moblog_full_name]');
+		ee()->form_validation->set_rules('moblog_short_name',			'lang:moblog_short_name',		'required|alpha_dash|callback__check_duplicate');
+		ee()->form_validation->set_rules('moblog_auth_required',		'lang:moblog_auth_required',	'required|enum[y,n]');
+		ee()->form_validation->set_rules('moblog_auth_delete',			'lang:moblog_auth_delete',		'required|enum[y,n]');
+		ee()->form_validation->set_rules('moblog_email_type',			'lang:moblog_email_type',		'required');
+		ee()->form_validation->set_rules('moblog_email_address',		'lang:moblog_email_address',	'required');
+		ee()->form_validation->set_rules('moblog_email_server',		'lang:moblog_email_server',		'required');
+		ee()->form_validation->set_rules('moblog_email_login',			'lang:moblog_email_login',		'required');
+		ee()->form_validation->set_rules('moblog_email_password',		'lang:moblog_email_password',	'required');
+		ee()->form_validation->set_rules('moblog_time_interval',		'lang:moblog_time_interval',	'required');
+		ee()->form_validation->set_rules('moblog_enabled',				'lang:moblog_enabled',			'required|enum[y,n]');
 		
 		// All the non-required fields...sighs
-		$this->EE->form_validation->set_rules('moblog_valid_from',			'lang:moblog_valid_from',		'prep_list[,]|valid_emails');
+		ee()->form_validation->set_rules('moblog_valid_from',			'lang:moblog_valid_from',		'prep_list[,]|valid_emails');
 		
-		$this->EE->form_validation->set_rules('channel_id',					'lang:channel_id',				'');
-		$this->EE->form_validation->set_rules('cat_id[]',					'lang:cat_id',					'');
-		$this->EE->form_validation->set_rules('field_id',					'lang:field_id',				'');
-		$this->EE->form_validation->set_rules('status',						'lang:status',					'');
-		$this->EE->form_validation->set_rules('author_id',					'lang:author_id',				'');
+		ee()->form_validation->set_rules('channel_id',					'lang:channel_id',				'');
+		ee()->form_validation->set_rules('cat_id[]',					'lang:cat_id',					'');
+		ee()->form_validation->set_rules('field_id',					'lang:field_id',				'');
+		ee()->form_validation->set_rules('status',						'lang:status',					'');
+		ee()->form_validation->set_rules('author_id',					'lang:author_id',				'');
 
-		$this->EE->form_validation->set_rules('moblog_subject_prefix',		'lang:moblog_subject_prefix',	'');
-		$this->EE->form_validation->set_rules('moblog_ignore_text',			'lang:moblog_ignore_text',		'');
-		$this->EE->form_validation->set_rules('moblog_template',			'lang:moblog_template',			'');
-		$this->EE->form_validation->set_rules('moblog_allow_overrides',		'lang:moblog_allow_overrides',	'enum[y,n]');
-		$this->EE->form_validation->set_rules('moblog_sticky_entry',		'lang:moblog_sticky_entry',		'enum[y,n]');
+		ee()->form_validation->set_rules('moblog_subject_prefix',		'lang:moblog_subject_prefix',	'');
+		ee()->form_validation->set_rules('moblog_ignore_text',			'lang:moblog_ignore_text',		'');
+		ee()->form_validation->set_rules('moblog_template',			'lang:moblog_template',			'');
+		ee()->form_validation->set_rules('moblog_allow_overrides',		'lang:moblog_allow_overrides',	'enum[y,n]');
+		ee()->form_validation->set_rules('moblog_sticky_entry',		'lang:moblog_sticky_entry',		'enum[y,n]');
 		
-		$this->EE->form_validation->set_rules('moblog_upload_directory',	'lang:moblog_upload_directory',	'required');
-		$this->EE->form_validation->set_rules('moblog_image_size',			'lang:moblog_image_size',		'is_natural');
-		$this->EE->form_validation->set_rules('moblog_thumb_size',			'lang:moblog_thumb_size',		'is_natural');
+		ee()->form_validation->set_rules('moblog_upload_directory',	'lang:moblog_upload_directory',	'required');
+		ee()->form_validation->set_rules('moblog_image_size',			'lang:moblog_image_size',		'is_natural');
+		ee()->form_validation->set_rules('moblog_thumb_size',			'lang:moblog_thumb_size',		'is_natural');
 		
-		$this->EE->form_validation->set_error_delimiters('<p class="notice">', '</p>');
+		ee()->form_validation->set_error_delimiters('<p class="notice">', '</p>');
 
-		if ($edit_id = $this->EE->input->post('id'))
+		if ($edit_id = ee()->input->post('id'))
 		{
-			$this->EE->form_validation->set_old_value('id', $edit_id);
+			ee()->form_validation->set_old_value('id', $edit_id);
 		}
 
 		// Data
 		
-		$data = array('author_id' => $this->EE->session->userdata['member_id']);
+		$data = array('author_id' => ee()->session->userdata['member_id']);
 		
 		$form_data['moblog_upload_directory'] = array($upload_array, '');
 		
@@ -344,7 +344,7 @@ EOT;
 		{
 			$moblog_id = ($basis != '') ? $basis : $id;  
 			
-			$query = $this->EE->db->get_where('moblogs', array('moblog_id' => $moblog_id));
+			$query = ee()->db->get_where('moblogs', array('moblog_id' => $moblog_id));
 			
 			// Fetch a single row
 			
@@ -354,7 +354,7 @@ EOT;
 		
 			if ( ! isset($upload_array[$row['moblog_upload_directory']]))
 			{
-				$upload_prefs = $this->EE->file_upload_preferences_model->get_file_upload_preferences(1, $row['moblog_upload_directory']);
+				$upload_prefs = ee()->file_upload_preferences_model->get_file_upload_preferences(1, $row['moblog_upload_directory']);
 				
 				if (count($upload_prefs) > 0)
 				{
@@ -440,15 +440,15 @@ EOT;
 				
 				$new_array = array('none'=> lang('none'));
 				
-				foreach($this->EE->api_channel_categories->cat_array as $key => $val)
+				foreach(ee()->api_channel_categories->cat_array as $key => $val)
 				{
 					if (is_array($val) && ! in_array($val['0'], explode('|', $this->channel_array[$query->row('moblog_channel_id')]['1'])))
 					{
-						unset($this->EE->api_channel_categories->cat_array[$key]);
+						unset(ee()->api_channel_categories->cat_array[$key]);
 					}
 				}
 
-				if (count($this->EE->api_channel_categories->cat_array > 0))
+				if (count(ee()->api_channel_categories->cat_array > 0))
 				{
 					$new_array = array('all'=> lang('all'));
 				}
@@ -456,16 +456,16 @@ EOT;
 				$new_array = array('none'=> lang('none'));
 				$i=0;
 
-				foreach ($this->EE->api_channel_categories->cat_array as $ckey => $cat)
+				foreach (ee()->api_channel_categories->cat_array as $ckey => $cat)
 				{
-					if ($ckey-1 < 0 OR ! isset($this->EE->api_channel_categories->cat_array[$ckey-1]))
+					if ($ckey-1 < 0 OR ! isset(ee()->api_channel_categories->cat_array[$ckey-1]))
 					{
 						$new_array['NULL_'.$i] = '-------';
 					}
 
 					$new_array[$cat['1']] = (str_replace("!-!","&nbsp;",$cat['2']));
 
-					if (isset($this->EE->api_channel_categories->cat_array[$ckey+1]) && $this->EE->api_channel_categories->cat_array[$ckey+1]['0'] != $cat['0'])
+					if (isset(ee()->api_channel_categories->cat_array[$ckey+1]) && ee()->api_channel_categories->cat_array[$ckey+1]['0'] != $cat['0'])
 					{
 						$new_array['NULL_'.$i] = '-------';
 					}
@@ -540,17 +540,17 @@ EOT;
 
 		$vars['values'] = $form_data;
 
-		if ($this->EE->form_validation->run() === FALSE)
+		if (ee()->form_validation->run() === FALSE)
 		{
 			// If the "basis_flag" $_POST is set, it means they have come from the form 
 			// that asks if they want to build this moblog based on another one. We need
 			// to unset the form validation error messages.
-			if ($this->EE->input->post('basis_flag'))
+			if (ee()->input->post('basis_flag'))
 			{
-				unset($this->EE->form_validation->_field_data);
+				unset(ee()->form_validation->_field_data);
 			}
 
-			return $this->EE->load->view('update', $vars, TRUE);
+			return ee()->load->view('update', $vars, TRUE);
 		}
 		
 		$this->update_moblog();
@@ -576,20 +576,20 @@ EOT;
 		/**  Allowed Channels
 		/** -----------------------------*/
 		
-		$allowed_channels = $this->EE->functions->fetch_assigned_channels(TRUE);
+		$allowed_channels = ee()->functions->fetch_assigned_channels(TRUE);
 
 		if (count($allowed_channels) > 0)
 		{
 			// Fetch channel titles
-			$this->EE->db->select('channel_title, channel_id, cat_group, status_group, field_group');
+			ee()->db->select('channel_title, channel_id, cat_group, status_group, field_group');
 					
-			if ( ! $this->EE->cp->allowed_group('can_edit_other_entries'))
+			if ( ! ee()->cp->allowed_group('can_edit_other_entries'))
 			{
-				$this->EE->db->where_in('channel_id', $allowed_channels);
+				ee()->db->where_in('channel_id', $allowed_channels);
 			}
 			
-			$this->EE->db->order_by('channel_title');
-			$query = $this->EE->db->get('channels');
+			ee()->db->order_by('channel_title');
+			$query = ee()->db->get('channels');
 
 			foreach ($query->result_array() as $row)
 			{
@@ -599,15 +599,15 @@ EOT;
 		
 
 		//  Category Tree
-		$cat_array = $this->EE->api_channel_categories->category_form_tree('y', FALSE, 'all');
+		$cat_array = ee()->api_channel_categories->category_form_tree('y', FALSE, 'all');
 		  
 		/** ----------------------------- 
 		/**  Entry Statuses
 		/** -----------------------------*/
 		
-		$this->EE->db->select('group_id, status');
-		$this->EE->db->order_by('status_order');
-		$query = $this->EE->db->get('statuses');
+		ee()->db->select('group_id, status');
+		ee()->db->order_by('status_order');
+		$query = ee()->db->get('statuses');
 		
 		if ($query->num_rows() > 0)
 		{
@@ -627,15 +627,15 @@ EOT;
 		/*	for custom fields in the moblog module (y/n)
 		/* -------------------------------------*/
 
-		$this->EE->db->select('group_id, field_label, field_id');
-		$this->EE->db->order_by('field_label');
+		ee()->db->select('group_id, field_label, field_id');
+		ee()->db->order_by('field_label');
 		
-		if ($this->EE->config->item('moblog_allow_nontextareas') != 'y')
+		if (ee()->config->item('moblog_allow_nontextareas') != 'y')
 		{
-			$this->EE->db->where('channel_fields.field_type', 'textarea');
+			ee()->db->where('channel_fields.field_type', 'textarea');
 		}
 		
-		$query = $this->EE->db->get('channel_fields');
+		$query = ee()->db->get('channel_fields');
 		
 		if ($query->num_rows() > 0)
 		{
@@ -649,9 +649,9 @@ EOT;
 		/**  SuperAdmins
 		/** -----------------------------*/
 		
-		$this->EE->db->select('member_id, username, screen_name');
-		$this->EE->db->where('group_id', '1');
-		$query = $this->EE->db->get('members');
+		ee()->db->select('member_id, username, screen_name');
+		ee()->db->where('group_id', '1');
+		$query = ee()->db->get('members');
 		
 		foreach ($query->result_array() as $row)
 			{
@@ -666,14 +666,14 @@ EOT;
 		/** ----------------------------- 
 		/**  Assignable Channel Authors
 		/** -----------------------------*/
-		$dbp = $this->EE->db->dbprefix;
+		$dbp = ee()->db->dbprefix;
 		
-		$this->EE->db->select('channels.channel_id, members.member_id, members.group_id, members.username, members.screen_name');
-		$this->EE->db->from(array('channels', 'members', 'channel_member_groups'));
-		$this->EE->db->where("({$dbp}channel_member_groups.channel_id = {$dbp}channels.channel_id OR {$dbp}channel_member_groups.channel_id IS NULL)");
-		$this->EE->db->where("{$dbp}members.group_id", "{$dbp}channel_member_groups.group_id", FALSE);
+		ee()->db->select('channels.channel_id, members.member_id, members.group_id, members.username, members.screen_name');
+		ee()->db->from(array('channels', 'members', 'channel_member_groups'));
+		ee()->db->where("({$dbp}channel_member_groups.channel_id = {$dbp}channels.channel_id OR {$dbp}channel_member_groups.channel_id IS NULL)");
+		ee()->db->where("{$dbp}members.group_id", "{$dbp}channel_member_groups.group_id", FALSE);
 
-		$query = $this->EE->db->get();
+		$query = ee()->db->get();
 		
 		if ($query->num_rows() > 0)
 		{
@@ -794,7 +794,7 @@ EOT;
 			$channel_info[$key]['authors'] = $authors;
 		}
 
-		$channel_info = $this->EE->javascript->generate_json($channel_info, TRUE);
+		$channel_info = ee()->javascript->generate_json($channel_info, TRUE);
 		$none_text = lang('none');
 
 		$javascript = <<<MAGIC
@@ -860,9 +860,9 @@ MAGIC;
 		$this->image_dim_array = array('0' => $this->upload_loc_array);
 		
 		// Fetch Upload Directories		
-		$this->EE->load->model(array('file_model', 'file_upload_preferences_model'));
+		ee()->load->model(array('file_model', 'file_upload_preferences_model'));
 		
-		$sizes_q = $this->EE->file_model->get_dimensions_by_dir_id();
+		$sizes_q = ee()->file_model->get_dimensions_by_dir_id();
 		$sizes_array = array();
 		
 		foreach ($sizes_q->result_array() as $row)
@@ -870,7 +870,7 @@ MAGIC;
 			$sizes_array[$row['upload_location_id']][$row['id']] = $row['title'];
 		}
 		
-		$upload_q = $this->EE->file_upload_preferences_model->get_file_upload_preferences($this->EE->session->userdata['group_id']);
+		$upload_q = ee()->file_upload_preferences_model->get_file_upload_preferences(ee()->session->userdata['group_id']);
 		
 		foreach ($upload_q as $row)
 		{
@@ -887,7 +887,7 @@ MAGIC;
 			}
 		}
 		
-		$upload_info = $this->EE->javascript->generate_json($this->image_dim_array, TRUE);
+		$upload_info = ee()->javascript->generate_json($this->image_dim_array, TRUE);
 		
 		$javascript .= <<<MAGIC
 
@@ -932,7 +932,7 @@ MAGIC;
 
 		
 		
-		$this->EE->javascript->output($javascript);
+		ee()->javascript->output($javascript);
 	}
 
 	// --------------------------------------------------------------------
@@ -945,23 +945,23 @@ MAGIC;
 	 */
 	function _check_duplicate($str, $which = 'moblog_short_name')
 	{
-		if ($edit_id = $this->EE->form_validation->old_value('id'))
+		if ($edit_id = ee()->form_validation->old_value('id'))
 		{
-			$this->EE->db->start_cache();
-			$this->EE->db->where('moblog_id !=', $edit_id);
-			$this->EE->db->stop_cache();
+			ee()->db->start_cache();
+			ee()->db->where('moblog_id !=', $edit_id);
+			ee()->db->stop_cache();
 		}
 		
 		if ($which == 'moblog_short_name')
 		{
 			// Short Name Check - Zzzzz...
 			
-			$this->EE->db->where('moblog_short_name', $str);
-			$count = $this->EE->db->count_all_results('moblogs');
+			ee()->db->where('moblog_short_name', $str);
+			$count = ee()->db->count_all_results('moblogs');
 
 			if ($count > 0)
 			{
-				$this->EE->form_validation->set_message('_check_duplicate', lang('moblog_taken_short_name'));
+				ee()->form_validation->set_message('_check_duplicate', lang('moblog_taken_short_name'));
 				return FALSE;
 			}
 		}
@@ -969,14 +969,14 @@ MAGIC;
 		{
 			// Full Name Check
 
-			$this->EE->db->where('moblog_full_name', $str);
-			$count = $this->EE->db->count_all_results('moblogs');
+			ee()->db->where('moblog_full_name', $str);
+			$count = ee()->db->count_all_results('moblogs');
 
-			$this->EE->db->flush_cache();
+			ee()->db->flush_cache();
 
 			if ($count > 0)
 			{
-				$this->EE->form_validation->set_message('_check_duplicate', lang('moblog_taken_name'));
+				ee()->form_validation->set_message('_check_duplicate', lang('moblog_taken_name'));
 				return FALSE;
 			}
 		}
@@ -1014,7 +1014,7 @@ MAGIC;
 		
 		if (isset($_POST['moblog_valid_from']))
 		{
-			$from_emails = explode(",", $this->EE->input->post('moblog_valid_from'));
+			$from_emails = explode(",", ee()->input->post('moblog_valid_from'));
 			
 			if (count($from_emails) > 0)
 			{	
@@ -1077,19 +1077,19 @@ MAGIC;
 
 		if ( ! isset($_POST['id']))
 		{
-			$sql = $this->EE->db->insert_string('exp_moblogs', $post_data);
-			$this->EE->db->query($sql);
+			$sql = ee()->db->insert_string('exp_moblogs', $post_data);
+			ee()->db->query($sql);
 			$message = lang('moblog_created');
 		}
 		else
 		{
-			$sql = $this->EE->db->update_string('exp_moblogs', $post_data, "moblog_id = '".$this->EE->db->escape_str($_POST['id'])."'");
-			$this->EE->db->query($sql);
+			$sql = ee()->db->update_string('exp_moblogs', $post_data, "moblog_id = '".ee()->db->escape_str($_POST['id'])."'");
+			ee()->db->query($sql);
 			$message = lang('moblog_updated');
 		}
 		
-		$this->EE->session->set_flashdata('message_success', $message);
-		$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=moblog');
+		ee()->session->set_flashdata('message_success', $message);
+		ee()->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=moblog');
 	}
 	
 	
@@ -1098,16 +1098,16 @@ MAGIC;
 	/** -------------------------------------------*/
 	function delete_confirm()
 	{
-		if ( ! $this->EE->input->post('toggle'))
+		if ( ! ee()->input->post('toggle'))
 		{
-			$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=moblog');
+			ee()->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=moblog');
 		}
 
-		$this->EE->load->helper('form');
+		ee()->load->helper('form');
 
 		$vars['cp_page_title'] = lang('moblog_delete_confirm_title');
 		
-		$this->EE->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=moblog', lang('moblog'));
+		ee()->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=moblog', lang('moblog'));
 		$vars['form_action'] = 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=moblog'.AMP.'method=delete_moblogs';
 		
 		foreach ($_POST['toggle'] as $val)
@@ -1115,7 +1115,7 @@ MAGIC;
 			$vars['damned'][] = $val;
 		}
 		
-		return $this->EE->load->view('delete_confirm', $vars, TRUE);
+		return ee()->load->view('delete_confirm', $vars, TRUE);
 	}
 	
 	/** -------------------------------------------
@@ -1123,22 +1123,22 @@ MAGIC;
 	/** -------------------------------------------*/
 	function delete_moblogs()
 	{
-		if ( ! $this->EE->input->post('delete'))
+		if ( ! ee()->input->post('delete'))
 		{
-			$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=moblog');
+			ee()->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=moblog');
 		}
 
 		foreach ($_POST['delete'] as $key => $val)
 		{
-			$this->EE->db->or_where('moblog_id', $val);
+			ee()->db->or_where('moblog_id', $val);
 		}
 
-		$this->EE->db->delete('moblogs');
+		ee()->db->delete('moblogs');
 	
 		$message = (count($_POST['delete']) == 1) ? lang('moblog_deleted') : lang('moblogs_deleted');
 
-		$this->EE->session->set_flashdata('message_success', $message);
-		$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=moblog');
+		ee()->session->set_flashdata('message_success', $message);
+		ee()->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=moblog');
 	}
 
 	
@@ -1148,7 +1148,7 @@ MAGIC;
 	
 	function check_moblog()
 	{
-		if ( ! $id = $this->EE->input->get('moblog_id'))
+		if ( ! $id = ee()->input->get('moblog_id'))
 		{			
 			return FALSE;
 		}
@@ -1158,11 +1158,11 @@ MAGIC;
 			'moblog_id'			=> $id
 		);
 		
-		$query = $this->EE->db->get_where('moblogs', $where);
+		$query = ee()->db->get_where('moblogs', $where);
 
 		if ($query->num_rows() == 0)
 		{
-			return $this->EE->output->show_user_error('submission', array(lang('invalid_moblog')));
+			return ee()->output->show_user_error('submission', array(lang('invalid_moblog')));
 		}
 		
 		if ( ! class_exists('Moblog'))
@@ -1186,7 +1186,7 @@ MAGIC;
 					$cp_message .= lang($val).'<br>';
 				}
 
-				$this->EE->session->set_flashdata('message_failure', $cp_message);
+				ee()->session->set_flashdata('message_failure', $cp_message);
 			}
 			else
 			{
@@ -1201,8 +1201,8 @@ MAGIC;
 					$error = TRUE;
 				}
 				
-				$this->EE->session->set_flashdata(array('message' => $message, 'error' => $error));
-				$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=moblog');
+				ee()->session->set_flashdata(array('message' => $message, 'error' => $error));
+				ee()->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=moblog');
 			}
 		}
 		else
@@ -1217,7 +1217,7 @@ MAGIC;
 					$cp_message .= lang($val).'<br>';
 				}
 
-				$this->EE->session->set_flashdata('message_failure', $cp_message);				
+				ee()->session->set_flashdata('message_failure', $cp_message);				
 			}
 			else
 			{
@@ -1232,13 +1232,13 @@ MAGIC;
 					$error = TRUE;
 				}
 
-				$this->EE->session->set_flashdata(array('message' => $message, 'error' => $error));
-				$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=moblog');
+				ee()->session->set_flashdata(array('message' => $message, 'error' => $error));
+				ee()->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=moblog');
 			}			
 		}
 
-		$this->EE->session->set_flashdata(array('message' => $MP->errors(), 'error' => TRUE));
-		$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=moblog');
+		ee()->session->set_flashdata(array('message' => $MP->errors(), 'error' => TRUE));
+		ee()->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=moblog');
 	}	
 }
 // END CLASS

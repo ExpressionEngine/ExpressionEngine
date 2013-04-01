@@ -32,7 +32,7 @@ class Rte_upd {
 	public function __construct()
 	{
 		$this->EE =& get_instance();
-		$this->EE->load->dbforge();
+		ee()->load->dbforge();
 	}
 
 	// --------------------------------------------------------------------
@@ -45,7 +45,7 @@ class Rte_upd {
 	public function install()
 	{
 		// module
-		$this->EE->db->insert(
+		ee()->db->insert(
 			'modules',
 			array(
 				'module_name'		=> $this->name,
@@ -55,7 +55,7 @@ class Rte_upd {
 		);
 		
 		// Actions
-		$this->EE->db->insert_batch(
+		ee()->db->insert_batch(
 			'actions',
 			array(
 				// Build the Toolset JS
@@ -92,10 +92,10 @@ class Rte_upd {
 				'default'			=> 'y'
 			)
 		);
-		$this->EE->dbforge->add_field($fields);
-		$this->EE->dbforge->add_key('toolset_id', TRUE);
-		$this->EE->dbforge->add_key(array('member_id','enabled'));
-		$this->EE->dbforge->create_table('rte_toolsets');
+		ee()->dbforge->add_field($fields);
+		ee()->dbforge->add_key('toolset_id', TRUE);
+		ee()->dbforge->add_key(array('member_id','enabled'));
+		ee()->dbforge->create_table('rte_toolsets');
 		
 		// RTE Tools Table
 		$fields = array(
@@ -119,17 +119,17 @@ class Rte_upd {
 				'default'			=> 'y'
 			)
 		);
-		$this->EE->dbforge->add_field($fields);
-		$this->EE->dbforge->add_key('tool_id', TRUE);
-		$this->EE->dbforge->add_key(array('enabled'));
-		$this->EE->dbforge->create_table('rte_tools');
+		ee()->dbforge->add_field($fields);
+		ee()->dbforge->add_key('tool_id', TRUE);
+		ee()->dbforge->add_key(array('enabled'));
+		ee()->dbforge->create_table('rte_tools');
 		
 		// Load the default toolsets
-		$this->EE->load->model('rte_toolset_model');
-		$this->EE->rte_toolset_model->load_default_toolsets();
+		ee()->load->model('rte_toolset_model');
+		ee()->rte_toolset_model->load_default_toolsets();
 		
 		// Install the extension
-		$this->EE->db->insert_batch(
+		ee()->db->insert_batch(
 			'extensions',
 			array(
 				array(
@@ -163,7 +163,7 @@ class Rte_upd {
 		);
 		
 		// Add the member columns
-		$this->EE->dbforge->add_column(
+		ee()->dbforge->add_column(
 			'members',
 			array(
 				'rte_enabled'		=> array(
@@ -180,7 +180,7 @@ class Rte_upd {
 		);
 				
 		// Update the config
-		$this->EE->config->update_site_prefs(
+		ee()->config->update_site_prefs(
 			array(
 				'rte_enabled' 				=> 'y',
 				'rte_default_toolset_id' 	=> 1
@@ -201,43 +201,43 @@ class Rte_upd {
 	 */
 	public function uninstall()
 	{
-		$module_id = $this->EE->db->select('module_id')
+		$module_id = ee()->db->select('module_id')
 			->get_where('modules', array( 'module_name' => $this->name ))
 			->row('module_id');
 		
 		// Member access
-		$this->EE->db->delete(
+		ee()->db->delete(
 			'module_member_groups',
 			array('module_id' => $module_id)
 		);		
 		
 		// Module
-		$this->EE->db->delete(
+		ee()->db->delete(
 			'modules',
 			array('module_name' => $this->name)
 		);
 
 		// Actions
-		$this->EE->db->where('class', $this->name)
+		ee()->db->where('class', $this->name)
 			->or_where('class', $this->name . '_mcp')
 			->delete('actions');
 		
 		// Extension
-		$this->EE->db->delete(
+		ee()->db->delete(
 			'extensions',
 			array('class' => $this->name.'_ext')
 		);
 		
 		// Tables
-		$this->EE->dbforge->drop_table('rte_toolsets');
-		$this->EE->dbforge->drop_table('rte_tools');
+		ee()->dbforge->drop_table('rte_toolsets');
+		ee()->dbforge->drop_table('rte_tools');
 
 		// Remove the member columns
-		$this->EE->dbforge->drop_column('members', 'rte_enabled');
-		$this->EE->dbforge->drop_column('members', 'rte_toolset_id');
+		ee()->dbforge->drop_column('members', 'rte_enabled');
+		ee()->dbforge->drop_column('members', 'rte_toolset_id');
 				
 		// Update the config
-		$this->EE->config->update_site_prefs(
+		ee()->config->update_site_prefs(
 			array(
 				'rte_enabled' 				=> 'n',
 				'rte_default_toolset_id' 	=> 1

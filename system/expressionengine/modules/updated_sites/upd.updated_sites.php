@@ -79,7 +79,7 @@ class Updated_sites_upd {
 
 		foreach ($sql as $query)
 		{
-			$this->EE->db->query($query);
+			ee()->db->query($query);
 		}
 		
 		return TRUE;
@@ -97,7 +97,7 @@ class Updated_sites_upd {
 	 */	
 	function uninstall()
 	{
-		$query = $this->EE->db->query("SELECT module_id FROM exp_modules WHERE module_name = 'Updated_sites'"); 
+		$query = ee()->db->query("SELECT module_id FROM exp_modules WHERE module_name = 'Updated_sites'"); 
 				
 		$sql[] = "DELETE FROM exp_module_member_groups WHERE module_id = '".$query->row('module_id') ."'";		
 		$sql[] = "DELETE FROM exp_modules WHERE module_name = 'Updated_sites'";
@@ -107,7 +107,7 @@ class Updated_sites_upd {
 
 		foreach ($sql as $query)
 		{
-			$this->EE->db->query($query);
+			ee()->db->query($query);
 		}
 
 		return TRUE;

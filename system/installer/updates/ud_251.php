@@ -44,7 +44,16 @@ class Updater {
 	 */
 	public function do_update()
 	{
-		$this->_update_ip_address_length();
+		$steps = new ProgressIterator(
+			array(
+				'_update_ip_address_length',
+			)
+		);
+
+		foreach ($steps as $k => $v)
+		{
+			$this->$v();
+		}
 
 		return TRUE;
 	}
@@ -53,7 +62,7 @@ class Updater {
 
 	private function _update_ip_address_length()
 	{
-		$this->EE->load->dbforge();
+		ee()->load->dbforge();
 
 		$tables = array('sessions', 'throttle', 'online_users', 
 			'security_hashes', 'captcha', 'password_lockout', 
@@ -78,7 +87,7 @@ class Updater {
 				unset($column_settings['ip_address']['null']);
 			}
 
-			$this->EE->dbforge->modify_column($table, $column_settings);
+			ee()->smartforge->modify_column($table, $column_settings);
 		}
 	}
 }	

@@ -1775,7 +1775,7 @@ class Design extends CP_Controller {
 		/*  - Allows complete takeover of the template editor
 		/*  - Added 1.6.0
 		*/  
-			$edata = $this->extensions->call('edit_template_start', $query, $template_id, $message);
+			$this->extensions->call('edit_template_start', $query, $template_id, $message);
 			if ($this->extensions->end_script === TRUE) return;
 		/*
 		/* -------------------------------------*/
@@ -2084,7 +2084,7 @@ class Design extends CP_Controller {
 		/*  - Add more things to do for template
 		/*  - Added 1.6.0
 		*/  
-			$edata = $this->extensions->call('update_template_end', $template_id, $message);
+			$this->extensions->call('update_template_end', $template_id, $message);
 			if ($this->extensions->end_script === TRUE) return;
 		/*
 		/* -------------------------------------*/

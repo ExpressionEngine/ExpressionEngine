@@ -54,7 +54,7 @@ class Ordered_list_rte {
 	 */
 	function globals()
 	{
-		$this->EE->lang->loadfile('rte');
+		ee()->lang->loadfile('rte');
 		return array(
 			'rte.ordered_list'	=> array(
 				'add'		=> lang('make_ol'),

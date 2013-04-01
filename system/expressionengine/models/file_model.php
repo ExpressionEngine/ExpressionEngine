@@ -671,7 +671,7 @@ class File_model extends CI_Model {
 		/* 'files_after_delete' hook.
 		/*  - Add additional processing after file deletion
 		*/
-			$edata = $this->extensions->call('files_after_delete', $deleted);
+			$this->extensions->call('files_after_delete', $deleted);
 			if ($this->extensions->end_script === TRUE) return;
 		/*
 		/* -------------------------------------------*/

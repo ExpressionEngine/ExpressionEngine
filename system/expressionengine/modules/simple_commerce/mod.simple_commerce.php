@@ -62,27 +62,27 @@ class Simple_commerce {
 									 'payer_id', 'payer_status', 'member_id',
 									 'verify_sign', 'test_ipn');
 									 
-		if ($this->EE->config->item('sc_encrypt_buttons') === 'y' && function_exists('openssl_pkcs7_sign'))
+		if (ee()->config->item('sc_encrypt_buttons') === 'y' && function_exists('openssl_pkcs7_sign'))
 		{
 			$this->encrypt = TRUE;
 			
 			foreach(array('certificate_id', 'public_certificate', 'private_key', 'paypal_certificate') as $val)
 			{
-				if ($this->EE->config->item('sc_'.$val) === FALSE OR $this->EE->config->item('sc_'.$val) == '')
+				if (ee()->config->item('sc_'.$val) === FALSE OR ee()->config->item('sc_'.$val) == '')
 				{
 					$this->encrypt = FALSE;
 					break;
 				}
 				else
 				{
-					$this->$val = $this->EE->config->item('sc_'.$val);
+					$this->$val = ee()->config->item('sc_'.$val);
 				}
 			}
 			
 			// Not required
-			if ($this->encrypt === TRUE && $this->EE->config->item('sc_temp_path') !== FALSE)
+			if ($this->encrypt === TRUE && ee()->config->item('sc_temp_path') !== FALSE)
 			{
-				$this->temp_path = $this->EE->config->item('sc_temp_path');
+				$this->temp_path = ee()->config->item('sc_temp_path');
 			}
 			
 		}
@@ -95,32 +95,32 @@ class Simple_commerce {
 	/** ----------------------------------------*/
 	function purchase()
 	{
-		if (($entry_id = $this->EE->TMPL->fetch_param('entry_id')) === FALSE) return;
-		if (($success = $this->EE->TMPL->fetch_param('success')) === FALSE) return;
+		if (($entry_id = ee()->TMPL->fetch_param('entry_id')) === FALSE) return;
+		if (($success = ee()->TMPL->fetch_param('success')) === FALSE) return;
 		$cached = FALSE;
 
-		$paypal_account = ( ! $this->EE->config->item('sc_paypal_account')) ? $this->EE->config->item('webmaster_email') : $this->EE->config->item('sc_paypal_account');
-		$cancel	 		= ( ! $this->EE->TMPL->fetch_param('cancel'))  ? $this->EE->functions->fetch_site_index() : $this->EE->TMPL->fetch_param('cancel');
-		$currency		= ( ! $this->EE->TMPL->fetch_param('currency'))  ? 'USD' : $this->EE->TMPL->fetch_param('currency');
-		$country_code	= ( ! $this->EE->TMPL->fetch_param('country_code')) ? 'US' : strtoupper($this->EE->TMPL->fetch_param('country_code'));
-		$show_disabled  = ( $this->EE->TMPL->fetch_param('show_disabled') == 'yes') ? TRUE : FALSE;
+		$paypal_account = ( ! ee()->config->item('sc_paypal_account')) ? ee()->config->item('webmaster_email') : ee()->config->item('sc_paypal_account');
+		$cancel	 		= ( ! ee()->TMPL->fetch_param('cancel'))  ? ee()->functions->fetch_site_index() : ee()->TMPL->fetch_param('cancel');
+		$currency		= ( ! ee()->TMPL->fetch_param('currency'))  ? 'USD' : ee()->TMPL->fetch_param('currency');
+		$country_code	= ( ! ee()->TMPL->fetch_param('country_code')) ? 'US' : strtoupper(ee()->TMPL->fetch_param('country_code'));
+		$show_disabled  = ( ee()->TMPL->fetch_param('show_disabled') == 'yes') ? TRUE : FALSE;
 		
 		if (substr($success, 0, 4) !== 'http')
 		{
-			$success = $this->EE->functions->create_url($success);
+			$success = ee()->functions->create_url($success);
 		}
 		
 		if (substr($cancel, 0, 4) !== 'http')
 		{
-			$cancel = $this->EE->functions->create_url($cancel);
+			$cancel = ee()->functions->create_url($cancel);
 		}
 		
 		if ($show_disabled !== TRUE)
 		{
-			$this->EE->db->where('simple_commerce_items.item_enabled', 'y');
+			ee()->db->where('simple_commerce_items.item_enabled', 'y');
 		}
 							
-		$query = $this->EE->db->select('t.title as item_name, simple_commerce_items.*')
+		$query = ee()->db->select('t.title as item_name, simple_commerce_items.*')
 		  		->where('simple_commerce_items.entry_id', $entry_id)
 				->where('simple_commerce_items.entry_id = t.entry_id', NULL, FALSE)
 		  		->from('simple_commerce_items')
@@ -158,7 +158,7 @@ class Simple_commerce {
 										'amount'			=> ($row['item_use_sale']  == 'y') ? $row['item_sale_price']  : $row['item_regular_price'] ,
 										'lc'				=> $country_code,
 										'currency_code'		=> $currency,
-										'custom'			=> $this->EE->session->userdata['member_id']
+										'custom'			=> ee()->session->userdata['member_id']
 										);
 		
 		if ($this->encrypt === TRUE)
@@ -197,7 +197,7 @@ class Simple_commerce {
 										'src'				=> 1,
 										'lc'				=> $country_code,
 										'currency_code'		=> $currency,
-										'custom'			=> $this->EE->session->userdata['member_id']
+										'custom'			=> ee()->session->userdata['member_id']
 										);
 		
 		if ($this->encrypt === TRUE)
@@ -232,7 +232,7 @@ class Simple_commerce {
 												'amount'			=> ($row['item_use_sale'] == 'y') ? $row['item_sale_price'] : $row['item_regular_price'],
 												'lc'				=> $country_code,
 												'currency_code'		=> $currency,
-												'custom'			=> $this->EE->session->userdata['member_id']
+												'custom'			=> ee()->session->userdata['member_id']
 												);
 										
 		if ($this->encrypt === TRUE)
@@ -279,10 +279,10 @@ class Simple_commerce {
 
 		$variables[] = $variable_row;
 		
-		$output = $this->EE->TMPL->parse_variables($this->EE->TMPL->tagdata, $variables); 
+		$output = ee()->TMPL->parse_variables(ee()->TMPL->tagdata, $variables); 
 		
 		
-		foreach ($this->EE->TMPL->var_pair as $key => $val)
+		foreach (ee()->TMPL->var_pair as $key => $val)
 		{	 
 			$data = array();
 			
@@ -300,14 +300,14 @@ class Simple_commerce {
 			}
 			else
 			{
-				$output = $this->EE->TMPL->delete_var_pairs($key, $key, $output);
+				$output = ee()->TMPL->delete_var_pairs($key, $key, $output);
 				continue;
 			}
 			
 			$data['id']		= 'paypal_form_'.$row['item_id'].'_'.$key;
 			$data['secure'] = FALSE;
 			
-			$form	= $this->EE->functions->form_declaration($data).
+			$form	= ee()->functions->form_declaration($data).
 					  '<input type="submit" name="submit" value="\\1" class="paypal_button" />'."\n".
 					  '</form>'."\n\n";
 					  
@@ -324,11 +324,11 @@ class Simple_commerce {
 	function button_form($id, $type, $hidden='')
 	{
 			$data['id']		= 'paypal_form_'.$row['item_id'].'_'.$type;
-			$data['class']	= $this->EE->TMPL->form_class;
+			$data['class']	= ee()->TMPL->form_class;
 			$data['secure'] = FALSE;
 			$data = $hidden;
 			
-			$form	= $this->EE->functions->form_declaration($data).
+			$form	= ee()->functions->form_declaration($data).
 					  '<input type="submit" name="submit" value="\\1" class="paypal_button" />'."\n".
 					  '</form>'."\n\n";
 			return 'dude';		
@@ -340,7 +340,7 @@ class Simple_commerce {
 	
 	function round_money($value, $dec=2)
 	{
-		$decimal = ($this->EE->TMPL->fetch_param('decimal') == ',')  ? ',' : '.';
+		$decimal = (ee()->TMPL->fetch_param('decimal') == ',')  ? ',' : '.';
 		
 		$value += 0.0;
 		$unit	= floor($value * pow(10, $dec+1)) / 10;
@@ -361,16 +361,16 @@ class Simple_commerce {
 			$msg = ob_get_contents();
 			ob_end_clean();
 
-			$this->EE->load->library('email');
-			$debug_to = ($this->debug_email_address == '') ? $this->EE->config->item('webmaster_email') : $this->debug_email_address;
+			ee()->load->library('email');
+			$debug_to = ($this->debug_email_address == '') ? ee()->config->item('webmaster_email') : $this->debug_email_address;
 			
-			$this->EE->email->from($this->EE->config->item('webmaster_email'), 
-										$this->EE->config->item('site_name'));
-			$this->EE->email->to($debug_to);
-			$this->EE->email->subject('EE Debug: Incoming IPN Response');
-			$this->EE->email->message($msg);
-			$this->EE->email->send();
-			$this->EE->email->EE_initialize();			
+			ee()->email->from(ee()->config->item('webmaster_email'), 
+										ee()->config->item('site_name'));
+			ee()->email->to($debug_to);
+			ee()->email->subject('EE Debug: Incoming IPN Response');
+			ee()->email->message($msg);
+			ee()->email->send();
+			ee()->email->EE_initialize();			
 
 		}
 
@@ -388,7 +388,7 @@ class Simple_commerce {
 		}
 		
 		
-		$paypal_account = ( ! $this->EE->config->item('sc_paypal_account')) ? $this->EE->config->item('webmaster_email') : $this->EE->config->item('sc_paypal_account');
+		$paypal_account = ( ! ee()->config->item('sc_paypal_account')) ? ee()->config->item('webmaster_email') : ee()->config->item('sc_paypal_account');
 		
 		/** ----------------------------------------
 		/**  Prep, Prep, Prep
@@ -401,7 +401,7 @@ class Simple_commerce {
 		
 		foreach($_POST as $key => $value)
 		{
-			$this->post[$key] = $this->EE->security->xss_clean($value);
+			$this->post[$key] = ee()->security->xss_clean($value);
 		}
 		
 		if ($this->debug === TRUE)
@@ -437,10 +437,10 @@ class Simple_commerce {
 		/*  - IPN confirmation
 		/*  - Added EE 1.5.1
 		*/  
-			if ($this->EE->extensions->active_hook('simple_commerce_evaluate_ipn_response') === TRUE)
+			if (ee()->extensions->active_hook('simple_commerce_evaluate_ipn_response') === TRUE)
 			{
-				$result = $this->EE->extensions->universal_call('simple_commerce_evaluate_ipn_response', $this, $result);
-				if ($this->EE->extensions->end_script === TRUE) return;
+				$result = ee()->extensions->universal_call('simple_commerce_evaluate_ipn_response', $this, $result);
+				if (ee()->extensions->end_script === TRUE) return;
 			}
 		/*
 		/* -------------------------------------*/
@@ -465,7 +465,7 @@ class Simple_commerce {
 			}
 			
 			//  User Valid?
-			$query = $this->EE->db->select('screen_name')
+			$query = ee()->db->select('screen_name')
 						->where('member_id', $this->post['custom'])
 						->get('members');
 			
@@ -497,10 +497,10 @@ class Simple_commerce {
 				//  Is this a repeat, perhaps?
 				//  Note- subscription signups do not have a txn_id so we check only non-subscriptions
 								 
-				$this->EE->db->where('txn_id', $this->post['txn_id']); 
-				$this->EE->db->from('simple_commerce_purchases');
+				ee()->db->where('txn_id', $this->post['txn_id']); 
+				ee()->db->from('simple_commerce_purchases');
 
-				if ($this->EE->db->count_all_results()  > 0) return FALSE;
+				if (ee()->db->count_all_results()  > 0) return FALSE;
 
 				//A regular purchase should be completed at this point
 				if (trim($this->post['payment_status']) != 'Completed')
@@ -512,7 +512,7 @@ class Simple_commerce {
 				{
 					for($i=1; $i <= $this->post['num_cart_items']; ++$i)
 					{
-						if (($item_id = $this->EE->input->get_post('item_number'.$i)) !== FALSE)
+						if (($item_id = ee()->input->get_post('item_number'.$i)) !== FALSE)
 						{
 							$qnty	  = (isset($_POST['quantity'.$i]) && is_numeric($_POST['quantity'.$i])) ? $_POST['quantity'.$i] : 1;
 							$subtotal = (isset($_POST['mc_gross_'.$i]) && is_numeric(str_replace('.', '', $_POST['mc_gross_'.$i]))) ? $_POST['mc_gross_'.$i] : 0;
@@ -661,7 +661,7 @@ class Simple_commerce {
 	/** ----------------------------------------*/
 	function perform_actions($item_id, $qnty, $subtotal, $num_in_cart='', $type='')
 	{
-		$query = $this->EE->db->select('t.title as item_name, simple_commerce_items.*')
+		$query = ee()->db->select('t.title as item_name, simple_commerce_items.*')
 		  		->where('simple_commerce_items.entry_id = t.entry_id', NULL, FALSE)
 		  		->where('simple_commerce_items.item_id', $item_id)
 		  		->from('simple_commerce_items')
@@ -733,10 +733,10 @@ class Simple_commerce {
 		/*  - After a purchase is recorded, do more processing before EE's processing
 		/*  - Added EE 1.5.1
 		*/  
-			if ($this->EE->extensions->active_hook('simple_commerce_perform_actions_start') === TRUE)
+			if (ee()->extensions->active_hook('simple_commerce_perform_actions_start') === TRUE)
 			{
-				$edata = $this->EE->extensions->universal_call('simple_commerce_perform_actions_start', $this, $query->row());
-				if ($this->EE->extensions->end_script === TRUE) return;
+				ee()->extensions->universal_call('simple_commerce_perform_actions_start', $this, $query->row());
+				if (ee()->extensions->end_script === TRUE) return;
 			}
 		/*
 		/* -------------------------------------*/	
@@ -761,28 +761,28 @@ class Simple_commerce {
 			$data = array('txn_id' 			=> $this->post['txn_id'],
 					  'member_id' 		=> $this->post['custom'],
 					  'item_id'			=> $row->item_id,
-					  'purchase_date'	=> $this->EE->localize->now,
+					  'purchase_date'	=> ee()->localize->now,
 					  'item_cost'		=> $cost,
 					  'paypal_details'	=> serialize($this->post));
 			
 			if ( ! is_numeric($qnty) OR $qnty == 1)
 			{
-				$this->EE->db->insert('simple_commerce_purchases', $data);
+				ee()->db->insert('simple_commerce_purchases', $data);
 
-				$this->EE->db->where('item_id', $item_id);
-				$this->EE->db->set('item_purchases', "item_purchases + 1", FALSE);
-				$this->EE->db->update('simple_commerce_items'); 				
+				ee()->db->where('item_id', $item_id);
+				ee()->db->set('item_purchases', "item_purchases + 1", FALSE);
+				ee()->db->update('simple_commerce_items'); 				
 			}
 			else
 			{
 				for($i=0;  $i < $qnty; ++$i)
 				{
-					$this->EE->db->insert('simple_commerce_purchases', $data); 	
+					ee()->db->insert('simple_commerce_purchases', $data); 	
 				}
 				
-				$this->EE->db->where('item_id', $item_id);
-				$this->EE->db->set('item_purchases', "item_purchases + {$qnty}", FALSE);
-				$this->EE->db->update('simple_commerce_items'); 				
+				ee()->db->where('item_id', $item_id);
+				ee()->db->set('item_purchases', "item_purchases + {$qnty}", FALSE);
+				ee()->db->update('simple_commerce_items'); 				
 			}
 		}  // end non-sub entry
 		
@@ -790,26 +790,26 @@ class Simple_commerce {
 		//  New Member Group
 		if ($new_member_group != '' && $new_member_group != 0)
 		{
-			$this->EE->db->where('member_id', $this->post['custom']);
-			$this->EE->db->where('group_id !=', 1);
-			$this->EE->db->update('members', array('group_id' => $new_member_group)); 
+			ee()->db->where('member_id', $this->post['custom']);
+			ee()->db->where('group_id !=', 1);
+			ee()->db->update('members', array('group_id' => $new_member_group)); 
 		}
 			
 
 		//  Send Emails!
 
-		$this->EE->load->library('email');
+		ee()->load->library('email');
 			
 		if ($customer_email_template != '' && $customer_email_template != 0)
 		{
-			$this->EE->db->select('email');
-			$result = $this->EE->db->get_where('members', array('member_id' => $this->post['custom']));
+			ee()->db->select('email');
+			$result = ee()->db->get_where('members', array('member_id' => $this->post['custom']));
 
 			$cust_row = $result->row();
 			$to = $cust_row->email;
 								
-			$this->EE->db->select('email_subject, email_body');
-			$result = $this->EE->db->get_where('simple_commerce_emails', array('email_id' => $customer_email_template));
+			ee()->db->select('email_subject, email_body');
+			$result = ee()->db->get_where('simple_commerce_emails', array('email_id' => $customer_email_template));
 						
 			if ($result->num_rows() > 0)
 			{
@@ -824,22 +824,22 @@ class Simple_commerce {
 				}
 
 				// Load the text helper
-				$this->EE->load->helper('text');
+				ee()->load->helper('text');
 				
-				$this->EE->email->from($this->EE->config->item('webmaster_email'), 
-										$this->EE->config->item('site_name'));
-				$this->EE->email->to($to);
-				$this->EE->email->subject($subject);
-				$this->EE->email->message(entities_to_ascii($message));
-				$this->EE->email->send();
-				$this->EE->email->EE_initialize();
+				ee()->email->from(ee()->config->item('webmaster_email'), 
+										ee()->config->item('site_name'));
+				ee()->email->to($to);
+				ee()->email->subject($subject);
+				ee()->email->message(entities_to_ascii($message));
+				ee()->email->send();
+				ee()->email->EE_initialize();
 			}
 		}
 			
 		if ($row->admin_email_address != '' && $admin_email_template != '' && $admin_email_template != 0)
 		{	
-			$this->EE->db->select('email_subject, email_body');
-			$result = $this->EE->db->get_where('simple_commerce_emails', array('email_id' => $admin_email_template));									
+			ee()->db->select('email_subject, email_body');
+			$result = ee()->db->get_where('simple_commerce_emails', array('email_id' => $admin_email_template));									
 									
 				
 			if ($result->num_rows() > 0)
@@ -855,15 +855,15 @@ class Simple_commerce {
 				}
 
 				// Load the text helper
-				$this->EE->load->helper('text');
+				ee()->load->helper('text');
 					
-				$this->EE->email->from($this->EE->config->item('webmaster_email'), 
-										$this->EE->config->item('site_name'));
-				$this->EE->email->to($row->admin_email_address);
-				$this->EE->email->subject($subject);
-				$this->EE->email->message(entities_to_ascii($message));
-				$this->EE->email->send();
-				$this->EE->email->EE_initialize();
+				ee()->email->from(ee()->config->item('webmaster_email'), 
+										ee()->config->item('site_name'));
+				ee()->email->to($row->admin_email_address);
+				ee()->email->subject($subject);
+				ee()->email->message(entities_to_ascii($message));
+				ee()->email->send();
+				ee()->email->EE_initialize();
 			}
 		}
 			
@@ -874,10 +874,10 @@ class Simple_commerce {
 		/*  - After a purchase is recorded, do more processing
 		/*  - Added EE 1.5.1
 		*/  
-			if ($this->EE->extensions->active_hook('simple_commerce_perform_actions_end') === TRUE)
+			if (ee()->extensions->active_hook('simple_commerce_perform_actions_end') === TRUE)
 			{
-				$edata = $this->EE->extensions->universal_call('simple_commerce_perform_actions_end', $this, $query->row());
-				if ($this->EE->extensions->end_script === TRUE) return;
+				ee()->extensions->universal_call('simple_commerce_perform_actions_end', $this, $query->row());
+				if (ee()->extensions->end_script === TRUE) return;
 			}
 		/*
 		/* -------------------------------------*/			
@@ -893,7 +893,7 @@ class Simple_commerce {
     function end_subscription()
     {
         //  Check for Subscription
-		$query = $this->EE->db->select('purchase_id, item_id')
+		$query = ee()->db->select('purchase_id, item_id')
 					->where('member_id', $this->post['custom'])
 					->where('paypal_subscriber_id', $this->post['subscr_id'])
 					->get('simple_commerce_purchases');
@@ -909,14 +909,14 @@ class Simple_commerce {
         	return FALSE;
         }
  	
-		$data = array('subscription_end_date' => $this->EE->localize->now);
+		$data = array('subscription_end_date' => ee()->localize->now);
 
-		$this->EE->db->where('purchase_id', $query->row('purchase_id'));
-		$this->EE->db->update('simple_commerce_purchases', $data); 		
+		ee()->db->where('purchase_id', $query->row('purchase_id'));
+		ee()->db->update('simple_commerce_purchases', $data); 		
 		
-		$this->EE->db->where('item_id', $query->row('item_id'));
-		$this->EE->db->set('current_subscriptions', "current_subscriptions - 1 ", FALSE);
-		$this->EE->db->update('simple_commerce_items'); 
+		ee()->db->where('item_id', $query->row('item_id'));
+		ee()->db->set('current_subscriptions', "current_subscriptions - 1 ", FALSE);
+		ee()->db->update('simple_commerce_items'); 
 
 		return TRUE;
     }
@@ -965,12 +965,12 @@ class Simple_commerce {
 		$data = array('txn_id' 					=> 'pending',
 					  'member_id' 				=> $this->post['custom'],
 					  'item_id'					=> $row->item_id,
-					  'purchase_date'			=> $this->EE->localize->now,
+					  'purchase_date'			=> ee()->localize->now,
 					  'item_cost'				=> $this->post['mc_amount3'],
 					  'paypal_details'			=> serialize($this->post),
 					  'paypal_subscriber_id'	=> $this->post['subscr_id']);
 		
-		$this->EE->db->insert('simple_commerce_purchases', $data);
+		ee()->db->insert('simple_commerce_purchases', $data);
 		
 		// Don't update count until it's paid
     
@@ -982,10 +982,10 @@ class Simple_commerce {
 	function subscription_payment($row)
 	{
         //  Check for Subscription Sign-up
-		$this->EE->db->select('purchase_id, item_id');
-		$this->EE->db->where('member_id', $this->post['custom']);
-		$this->EE->db->where('paypal_subscriber_id', $this->post['subscr_id']);
-		$query = $this->EE->db->get('simple_commerce_purchases');
+		ee()->db->select('purchase_id, item_id');
+		ee()->db->where('member_id', $this->post['custom']);
+		ee()->db->where('paypal_subscriber_id', $this->post['subscr_id']);
+		$query = ee()->db->get('simple_commerce_purchases');
 
 		// What if multiple subscriptions?  
 		// Note that paypal_subscriber_id is unique to each subscription despite the way it sounds
@@ -1004,13 +1004,13 @@ class Simple_commerce {
 		$data = array('txn_id' => $this->post['txn_id']);
 		
 
-		$this->EE->db->where('paypal_subscriber_id', $this->post['subscr_id']);
-		$this->EE->db->update('simple_commerce_purchases', $data);
+		ee()->db->where('paypal_subscriber_id', $this->post['subscr_id']);
+		ee()->db->update('simple_commerce_purchases', $data);
 
-		$this->EE->db->where('item_id', $row->item_id);
-		$this->EE->db->set('item_purchases', "item_purchases + 1", FALSE);
-		$this->EE->db->set('current_subscriptions', "current_subscriptions + 1", FALSE);		
-		$this->EE->db->update('simple_commerce_items');	
+		ee()->db->where('item_id', $row->item_id);
+		ee()->db->set('item_purchases', "item_purchases + 1", FALSE);
+		ee()->db->set('current_subscriptions', "current_subscriptions + 1", FALSE);		
+		ee()->db->update('simple_commerce_items');	
 		
 		return TRUE;
 		
@@ -1124,7 +1124,7 @@ class Simple_commerce {
 		// workaround for encrypted form data.
 
 		// Load the typography helper so we can do entity_decode()
-		$this->EE->load->helper('typography');
+		ee()->load->helper('typography');
 
 		$str = str_replace('&amp;', '&', $str);
 		$str = urlencode(utf8_decode(entity_decode($str, 'utf-8')));

@@ -18,19 +18,19 @@ class js_calendar {
 		/**  Set-up our preferences
 		/** -------------------------------------*/
 			
-		$fmt = ($this->EE->session->userdata['time_format'] != '') ? $this->EE->session->userdata['time_format'] : $this->EE->config->item('time_format');
+		$fmt = (ee()->session->userdata['time_format'] != '') ? ee()->session->userdata['time_format'] : ee()->config->item('time_format');
 		
 		$days = '';
 		foreach (array ('Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa') as $val)
 		{
-			$days .= "'".$this->EE->lang->line($val)."',";
+			$days .= "'".ee()->lang->line($val)."',";
 		}
 		$days .= substr($days, 0, -1);
 		
 		$months = '';
 		foreach (array('January','February','March','April','May_l','June','July','August','September','October','November','December') as $val)
 		{
-			$months .= "'".$this->EE->lang->line($val)."',";		
+			$months .= "'".ee()->lang->line($val)."',";		
 		}
 		$months .= substr($months, 0, -1);
 	

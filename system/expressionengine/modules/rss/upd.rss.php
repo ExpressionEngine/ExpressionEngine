@@ -45,7 +45,7 @@ class Rss_upd {
 	
 		foreach ($sql as $query)
 		{
-			$this->EE->db->query($query);
+			ee()->db->query($query);
 		}
 		
 		return TRUE;
@@ -60,7 +60,7 @@ class Rss_upd {
 	 */	
 	public function uninstall()
 	{
-		$query = $this->EE->db->query("SELECT module_id FROM exp_modules WHERE module_name = 'Rss'"); 
+		$query = ee()->db->query("SELECT module_id FROM exp_modules WHERE module_name = 'Rss'"); 
 				
 		$sql[] = "DELETE FROM exp_module_member_groups WHERE module_id = '".$query->row('module_id') ."'";		
 		$sql[] = "DELETE FROM exp_modules WHERE module_name = 'Rss'";
@@ -69,7 +69,7 @@ class Rss_upd {
 
 		foreach ($sql as $query)
 		{
-			$this->EE->db->query($query);
+			ee()->db->query($query);
 		}
 
 		return TRUE;

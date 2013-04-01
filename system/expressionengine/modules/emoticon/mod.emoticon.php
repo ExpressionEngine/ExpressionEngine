@@ -60,17 +60,17 @@ class Emoticon {
 			return FALSE;
 		}
 
-		if ($this->EE->config->item('enable_emoticons') == 'n')
+		if (ee()->config->item('enable_emoticons') == 'n')
 		{
 			return FALSE;
 		}
 
 
-		$path = $this->EE->config->slash_item('emoticon_url');
+		$path = ee()->config->slash_item('emoticon_url');
 
-		$columns  = ( ! $this->EE->TMPL->fetch_param('columns'))  ? '4' : $this->EE->TMPL->fetch_param('columns');
+		$columns  = ( ! ee()->TMPL->fetch_param('columns'))  ? '4' : ee()->TMPL->fetch_param('columns');
 
-		$tagdata = $this->EE->TMPL->tagdata;
+		$tagdata = ee()->TMPL->tagdata;
 
 		//  Extract the relevant stuff from the tag
 

@@ -39,9 +39,9 @@ class EE_Stats {
 	{
 		$this->EE =& get_instance();
 
-		if ($this->EE->db->cache_on === TRUE)
+		if (ee()->db->cache_on === TRUE)
 		{
-			$this->EE->db->cache_off();
+			ee()->db->cache_off();
 			$this->cache_off = TRUE;
 		}
 	}
@@ -61,35 +61,35 @@ class EE_Stats {
 
 		//  Fetch current user's name
 		$name = '';
-		if ($this->EE->session->userdata('member_id') != 0)
+		if (ee()->session->userdata('member_id') != 0)
 		{
-			$name = ($this->EE->session->userdata('screen_name') == '') ? $this->EE->session->userdata('username') : $this->EE->session->userdata('screen_name');
+			$name = (ee()->session->userdata('screen_name') == '') ? ee()->session->userdata('username') : ee()->session->userdata('screen_name');
 		}
 
 		// Is user browsing anonymously?
-		$anon = ( ! $this->EE->input->cookie('anon')) ? '' : 'y';
+		$anon = ( ! ee()->input->cookie('anon')) ? '' : 'y';
 
 		//  Fetch online users
 
-		$cutoff = $this->EE->localize->now - ($time_limit * 60);
+		$cutoff = ee()->localize->now - ($time_limit * 60);
 
-		$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
-		$this->EE->db->where('date >', $cutoff);
-		$this->EE->db->order_by('name');
-		$query = $this->EE->db->get('online_users');
+		ee()->db->where('site_id', ee()->config->item('site_id'));
+		ee()->db->where('date >', $cutoff);
+		ee()->db->order_by('name');
+		$query = ee()->db->get('online_users');
 
-		if ($this->EE->config->item('dynamic_tracking_disabling') !== FALSE 
-			&& $this->EE->config->item('dynamic_tracking_disabling') != '' 
-			&& $query->num_rows() > $this->EE->config->item('dynamic_tracking_disabling'))
+		if (ee()->config->item('dynamic_tracking_disabling') !== FALSE 
+			&& ee()->config->item('dynamic_tracking_disabling') != '' 
+			&& $query->num_rows() > ee()->config->item('dynamic_tracking_disabling'))
 		{
 			// disable tracking!
-			$this->EE->config->disable_tracking();
+			ee()->config->disable_tracking();
 
-			if ((mt_rand() % 100) < $this->EE->session->gc_probability) 
+			if ((mt_rand() % 100) < ee()->session->gc_probability) 
 			{
-				$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
-				$this->EE->db->where('date <', $cutoff);
-				$this->EE->db->delete('online_users');
+				ee()->db->where('site_id', ee()->config->item('site_id'));
+				ee()->db->where('date <', $cutoff);
+				ee()->db->delete('online_users');
 			}
 
 			return;
@@ -106,8 +106,8 @@ class EE_Stats {
 		{
 			foreach ($query->result_array() as $row)
 			{
-				if ($row['member_id'] == $this->EE->session->userdata('member_id')  
-					&& $row['ip_address'] == $this->EE->input->ip_address() 
+				if ($row['member_id'] == ee()->session->userdata('member_id')  
+					&& $row['ip_address'] == ee()->input->ip_address() 
 					&& $row['name'] == $name)
 				{
 					$update = TRUE;
@@ -145,9 +145,9 @@ class EE_Stats {
 		}
 		else
 		{
-			if ($this->EE->session->userdata('member_id') != 0)
+			if (ee()->session->userdata('member_id') != 0)
 			{
-				$current_names[$this->EE->session->userdata('member_id')] = array($name, $anon);
+				$current_names[ee()->session->userdata('member_id')] = array($name, $anon);
 			
 				$total_logged++;
 			}
@@ -161,30 +161,30 @@ class EE_Stats {
 
 		//  Update online_users table
 		$data = array(
-						'member_id'		=> $this->EE->session->userdata('member_id'),
+						'member_id'		=> ee()->session->userdata('member_id'),
 						'name'			=> $name,
-						'ip_address'	=> $this->EE->input->ip_address(),
-						'date'			=> $this->EE->localize->now,
+						'ip_address'	=> ee()->input->ip_address(),
+						'date'			=> ee()->localize->now,
 						'anon'			=> $anon,
-						'site_id'		=> $this->EE->config->item('site_id')
+						'site_id'		=> ee()->config->item('site_id')
 					);
 
 		if ($update == FALSE)
 		{
-			$this->EE->db->query($this->EE->db->insert_string('exp_online_users', $data));
+			ee()->db->query(ee()->db->insert_string('exp_online_users', $data));
 		}
 		else
 		{
-			$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
-			$this->EE->db->where('ip_address', $this->EE->input->ip_address());
-			$this->EE->db->where('member_id', $data['member_id']);
-			$this->EE->db->update('online_users', $data);
+			ee()->db->where('site_id', ee()->config->item('site_id'));
+			ee()->db->where('ip_address', ee()->input->ip_address());
+			ee()->db->where('member_id', $data['member_id']);
+			ee()->db->update('online_users', $data);
 		}
 		
 		unset($data);
 
-		$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
-		$query = $this->EE->db->get('stats');
+		ee()->db->where('site_id', ee()->config->item('site_id'));
+		$query = ee()->db->get('stats');
 
 		$row = $query->row_array();
 
@@ -192,23 +192,23 @@ class EE_Stats {
 		if ($total_visitors > $query->row('most_visitors') )			
 		{
 			$row['most_visitors'] 	= $total_visitors;
-			$row['most_visitor_date'] 	= $this->EE->localize->now;
+			$row['most_visitor_date'] 	= ee()->localize->now;
 			
 			$data = array(
 					'most_visitors'		=> $total_visitors,
-					'most_visitor_date'	=> $this->EE->localize->now,
-					'last_visitor_date'	=> $this->EE->localize->now,		
+					'most_visitor_date'	=> ee()->localize->now,
+					'last_visitor_date'	=> ee()->localize->now,		
 				);
 			
-			$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
-			$this->EE->db->update('stats', $data);
+			ee()->db->where('site_id', ee()->config->item('site_id'));
+			ee()->db->update('stats', $data);
 		}
 		else
 		{
-			$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
-			$this->EE->db->update('stats', 
+			ee()->db->where('site_id', ee()->config->item('site_id'));
+			ee()->db->update('stats', 
 									array(
-											'last_visitor_date' => $this->EE->localize->now
+											'last_visitor_date' => ee()->localize->now
 									)
 								);
 		}
@@ -238,16 +238,16 @@ class EE_Stats {
 		unset($query);
 
 		srand(time());
-		if ((rand() % 100) < $this->EE->session->gc_probability) 
+		if ((rand() % 100) < ee()->session->gc_probability) 
 		{
-			$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
-			$this->EE->db->where('date <', $cutoff);
-			$this->EE->db->delete('online_users');
+			ee()->db->where('site_id', ee()->config->item('site_id'));
+			ee()->db->where('date <', $cutoff);
+			ee()->db->delete('online_users');
 		}	
 		
 		if ($this->cache_off)
 		{
-			$this->EE->db->cache_on();
+			ee()->db->cache_on();
 		}
 	}
 
@@ -263,9 +263,9 @@ class EE_Stats {
 	 */
 	protected function _fetch_channel_ids()
 	{	
-		$this->EE->db->select('channel_id');
-		$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
-		$query = $this->EE->db->get('channels');
+		ee()->db->select('channel_id');
+		ee()->db->where('site_id', ee()->config->item('site_id'));
+		$query = ee()->db->get('channels');
 		
 		if ($query->num_rows() == 0)
 		{
@@ -293,17 +293,17 @@ class EE_Stats {
 	 */
 	function update_member_stats()
 	{
-		$query = $this->EE->db->select_max('member_id', 'max_id')
+		$query = ee()->db->select_max('member_id', 'max_id')
 							  ->get('members');
 		
-		$query = $this->EE->db->select('screen_name, member_id')
+		$query = ee()->db->select('screen_name, member_id')
 							  ->where('member_id', $query->row('max_id'))
 							  ->get('members');
 
 		$name = $query->row('screen_name');
 		$mid  = $query->row('member_id');
 		
-		$query = $this->EE->db->where_not_in('group_id', array('4', '2'))
+		$query = ee()->db->where_not_in('group_id', array('4', '2'))
 							  ->select('COUNT(*) as count')
 							  ->get('members');
 
@@ -313,11 +313,11 @@ class EE_Stats {
 				'recent_member_id'	=> $mid
 			);
 		
-		$this->EE->db->update('stats', $data);
+		ee()->db->update('stats', $data);
 
 		if ($this->cache_off)
 		{
-			$this->EE->db->cache_on();
+			ee()->db->cache_on();
 		}
 	}
 
@@ -336,38 +336,38 @@ class EE_Stats {
 		// Update
 		$channel_ids = $this->_fetch_channel_ids();
 		
-		$this->EE->db->select('COUNT(*) as count');
+		ee()->db->select('COUNT(*) as count');
 		
 		if ($channel_ids !== FALSE)
 		{
-			$this->EE->db->where_in('channel_id', $channel_ids);
+			ee()->db->where_in('channel_id', $channel_ids);
 		}
 		else
 		{
-			$this->EE->db->where('channel_id', (int) 0);			
+			ee()->db->where('channel_id', (int) 0);			
 		}
 		
-		$now = $this->EE->localize->now;
+		$now = ee()->localize->now;
 		
-		$query = $this->EE->db->where('entry_date <', $now)
+		$query = ee()->db->where('entry_date <', $now)
 							  ->where('(expiration_date = 0 OR expiration_date > '.$now.')')
 							  ->where('status !=', 'closed')
 							  ->get('channel_titles');
 		
 		$total = $query->row('count');
 				
-		$this->EE->db->select('MAX(entry_date) as max_date');
+		ee()->db->select('MAX(entry_date) as max_date');
 		
 		if ($channel_ids !== FALSE)
 		{
-			$this->EE->db->where_in('channel_id', $channel_ids);
+			ee()->db->where_in('channel_id', $channel_ids);
 		}
 		else
 		{
-			$this->EE->db->where('channel_id', (int) 0);			
+			ee()->db->where('channel_id', (int) 0);			
 		}
 
-		$query = $this->EE->db->where('entry_date <', $now)
+		$query = ee()->db->where('entry_date <', $now)
 							  ->where('(expiration_date = 0 OR expiration_date > '.$now.')')
 							  ->where('status !=', 'closed')
 							  ->get('channel_titles');
@@ -379,18 +379,18 @@ class EE_Stats {
 				'last_entry_date'	=> $date
 			);
 
-		$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
-		$this->EE->db->update('stats', $d);
+		ee()->db->where('site_id', ee()->config->item('site_id'));
+		ee()->db->update('stats', $d);
 								
 		// Update exp_channel table
 		if ($channel_id != '')
 		{
-			$this->EE->db->select('site_id');
-			$query = $this->EE->db->get_where('channels', array('channel_id' => $channel_id));
+			ee()->db->select('site_id');
+			$query = ee()->db->get_where('channels', array('channel_id' => $channel_id));
 			
 			$site_id = $query->row('site_id') ;
 
-			$query = $this->EE->db->select('COUNT(*) as count, MAX(entry_date) as max_date')
+			$query = ee()->db->select('COUNT(*) as count, MAX(entry_date) as max_date')
 								  ->where('channel_id', (int) $channel_id)
 								  ->where('entry_date <', $now)
 								  ->where('(expiration_date = 0 OR expiration_date > '.$now.')')
@@ -406,14 +406,14 @@ class EE_Stats {
 					'last_entry_date'	=> $date
 				);
 			
-			$this->EE->db->where('site_id', $site_id)
+			ee()->db->where('site_id', $site_id)
 						 ->where('channel_id', $channel_id)
 						 ->update('channels', $d);
 		}
 
 		if ($this->cache_off)
 		{
-			$this->EE->db->cache_on();
+			ee()->db->cache_on();
 		}
 	}
 
@@ -432,7 +432,7 @@ class EE_Stats {
 	function update_comment_stats($channel_id = '', $newtime = '', $global=TRUE)
 	{
 		// Is the comments module installed?  Bail out if not.
-		if ( ! $this->EE->db->table_exists('comments'))
+		if ( ! ee()->db->table_exists('comments'))
 		{
 			return FALSE;
 		}
@@ -442,46 +442,46 @@ class EE_Stats {
 		{
 			$channel_ids = $this->_fetch_channel_ids();
 
-			$this->EE->db->select('COUNT(comment_id) as count');
-			$this->EE->db->where('status', 'o');
+			ee()->db->select('COUNT(comment_id) as count');
+			ee()->db->where('status', 'o');
 
 			if ($channel_ids !== FALSE)
 			{
-				$this->EE->db->where_in('channel_id', $channel_ids);
+				ee()->db->where_in('channel_id', $channel_ids);
 			}
 			else
 			{
-				$this->EE->db->where('channel_id', (int) 0);
+				ee()->db->where('channel_id', (int) 0);
 			}
 			
-			$query = $this->EE->db->get('comments');
+			$query = ee()->db->get('comments');
 			// 
-			// $query = $this->EE->db->query("SELECT COUNT(comment_id) AS count FROM exp_comments WHERE status = 'o' AND ".$channel_ids);
+			// $query = ee()->db->query("SELECT COUNT(comment_id) AS count FROM exp_comments WHERE status = 'o' AND ".$channel_ids);
 		
 			$total = $query->row('count') ;
 		
 			if ($newtime == '')
 			{
-				$this->EE->db->select('MAX(comment_date) AS max_date');
-				$this->EE->db->where('status', 'o');
+				ee()->db->select('MAX(comment_date) AS max_date');
+				ee()->db->where('status', 'o');
 				
 				if ($channel_ids !== FALSE)
 				{
-					$this->EE->db->where_in('channel_id', $channel_ids);
+					ee()->db->where_in('channel_id', $channel_ids);
 				}
 				else
 				{
-					$this->EE->db->where('channel_id', (int) 0);
+					ee()->db->where('channel_id', (int) 0);
 				}
 				
-				$query = $this->EE->db->get('comments');
+				$query = ee()->db->get('comments');
 			
 				$date = ($query->num_rows() == 0 OR ! is_numeric($query->row('max_date') )) ? 0 : $query->row('max_date') ;
 			}
 			else
 			{
-				$query = $this->EE->db->select('last_comment_date')
-										->where('site_id', $this->EE->config->item('site_id'))
+				$query = ee()->db->select('last_comment_date')
+										->where('site_id', ee()->config->item('site_id'))
 										->get('stats');
 
 				$date = ($newtime > $query->row('last_comment_date') ) ? $newtime : $query->row('last_comment_date') ;
@@ -492,8 +492,8 @@ class EE_Stats {
 				'last_comment_date'	=> $date
 			);
 		
-			$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
-			$this->EE->db->update('stats', $data);
+			ee()->db->where('site_id', ee()->config->item('site_id'));
+			ee()->db->update('stats', $data);
 		}
 		
 		// Update exp_channel table
@@ -504,7 +504,7 @@ class EE_Stats {
 		
 		if ($this->cache_off)
 		{
-			$this->EE->db->cache_on();
+			ee()->db->cache_on();
 		}
 	}
 
@@ -522,7 +522,7 @@ class EE_Stats {
 	 */
 	function update_channels_comment_stats($channel_id, $newtime)
 	{
-		$query = $this->EE->db->where('status', 'o')
+		$query = ee()->db->where('status', 'o')
 					->where('channel_id', $channel_id)
 					->select('COUNT(comment_id) AS count')
 		 			->get('comments');
@@ -531,7 +531,7 @@ class EE_Stats {
 		
 		if ($newtime == '')
 		{
-			$query = $this->EE->db->where('status', 'o')
+			$query = ee()->db->where('status', 'o')
 									->where('channel_id', $channel_id)
 									->select_max('comment_date', 'max_date')
 			 						->get('comments');
@@ -540,7 +540,7 @@ class EE_Stats {
 		}
 		else
 		{
-			$query = $this->EE->db->select('last_comment_date, site_id')
+			$query = ee()->db->select('last_comment_date, site_id')
 									->where('channel_id', $channel_id)
 			 						->get('channels');
 
@@ -552,7 +552,7 @@ class EE_Stats {
 					'last_comment_date'	=> $date
 			);
 
-		$this->EE->db->where('channel_id', $channel_id)
+		ee()->db->where('channel_id', $channel_id)
 						->update('channels', $data);			
 	}
 
@@ -576,14 +576,14 @@ class EE_Stats {
 		{
 			$comment_date = 0;
 			
-			$this->EE->db->where('entry_id', $entry_id);
-			$this->EE->db->where('status', 'o');
-			$comment_total = $this->EE->db->count_all_results('comments');
+			ee()->db->where('entry_id', $entry_id);
+			ee()->db->where('status', 'o');
+			$comment_total = ee()->db->count_all_results('comments');
 
 			
 			if ($comment_total > 0)
 			{
-				$query = $this->EE->db->select_max('comment_date')
+				$query = ee()->db->select_max('comment_date')
 					->where('entry_id', $entry_id)
 					->where('status', 'o')
 					->get('comments');
@@ -591,7 +591,7 @@ class EE_Stats {
 				$comment_date = ($query->num_rows() == 0 OR ! is_numeric($query->row('max_date') )) ? 0 : $query->row('max_date') ;
 			}
 
-			$this->EE->db->set('comment_total', $comment_total)
+			ee()->db->set('comment_total', $comment_total)
 							->set('recent_comment_date', $comment_date)
 							->where('entry_id', $entry_id)
 							->update('channel_titles');
@@ -614,7 +614,7 @@ class EE_Stats {
 		foreach($author_ids as $author_id)
 		{
 			// Note- query would not work with GROUP BY
-			$res = $this->EE->db->select('COUNT(comment_id) AS comment_total, MAX(comment_date) AS comment_date', FALSE)
+			$res = ee()->db->select('COUNT(comment_id) AS comment_total, MAX(comment_date) AS comment_date', FALSE)
 					->where('author_id', $author_id)
 					->get('comments');
 
@@ -623,7 +623,7 @@ class EE_Stats {
 			$comment_total = $resrow['comment_total'] ;
 			$comment_date  = ( ! empty($resrow['comment_date'])) ? $resrow['comment_date'] : 0;
 
-			$this->EE->db->set('total_comments', $comment_total)
+			ee()->db->set('total_comments', $comment_total)
 							->set('last_comment_date', $comment_date)
 							->where('member_id', $author_id)
 							->update('members');
@@ -653,22 +653,22 @@ class EE_Stats {
 		// Fetch current user's name
 		$name = '';
 		
-		if ($this->EE->session->userdata('member_id') != 0)
+		if (ee()->session->userdata('member_id') != 0)
 		{
-			$name = ($this->EE->session->userdata('screen_name') == '') ? 
-				$this->EE->session->userdata('username') : $this->EE->session->userdata('screen_name');
+			$name = (ee()->session->userdata('screen_name') == '') ? 
+				ee()->session->userdata('username') : ee()->session->userdata('screen_name');
 		}
 
 		// Is user browsing anonymously?
-		$anon = ( ! $this->EE->input->cookie('anon')) ? '' : 'y';
+		$anon = ( ! ee()->input->cookie('anon')) ? '' : 'y';
 
 		// Fetch online users
-		$cutoff = $this->EE->localize->now - ($time_limit * 60);
+		$cutoff = ee()->localize->now - ($time_limit * 60);
 
-		$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
-		$this->EE->db->where('date >', $cutoff);
-		$this->EE->db->order_by('name');
-		$query = $this->EE->db->get('online_users');
+		ee()->db->where('site_id', ee()->config->item('site_id'));
+		ee()->db->where('date >', $cutoff);
+		ee()->db->order_by('name');
+		$query = ee()->db->get('online_users');
 
 		// Assign users to a multi-dimensional array
 		$total_logged	= 0;
@@ -681,8 +681,8 @@ class EE_Stats {
 		{
 			foreach ($query->result_array() as $row)
 			{
-				if ($row['member_id'] == $this->EE->session->userdata('member_id')
-					&& $row['ip_address'] == $this->EE->input->ip_address() 
+				if ($row['member_id'] == ee()->session->userdata('member_id')
+					&& $row['ip_address'] == ee()->input->ip_address() 
 					&& $row['name'] == $name)
 				{
 					$update = TRUE;
@@ -720,9 +720,9 @@ class EE_Stats {
 		}
 		else
 		{
-			if ($this->EE->session->userdata('member_id') != 0)
+			if (ee()->session->userdata('member_id') != 0)
 			{
-				$current_names[$this->EE->session->userdata('member_id')] = array($name, $anon);
+				$current_names[ee()->session->userdata('member_id')] = array($name, $anon);
 			
 				$total_logged++;
 			}
@@ -734,7 +734,7 @@ class EE_Stats {
 			$total_visitors = $query->num_rows() + 1;
 		}
 		
-		$query = $this->EE->db->get_where('stats', array('site_id' => $this->EE->config->item('site_id')));
+		$query = ee()->db->get_where('stats', array('site_id' => ee()->config->item('site_id')));
 
 		$this->_statdata = array(
 					'recent_member'				=> $query->row('recent_member'),
@@ -761,7 +761,7 @@ class EE_Stats {
 
 		if ($this->cache_off)
 		{
-			$this->EE->db->cache_on();
+			ee()->db->cache_on();
 		}
 	}
 	
