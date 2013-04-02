@@ -20,6 +20,12 @@ $lang = array(
 'grid_text_direction'	=> 'Text direction?',
 'grid_limit_input'		=> 'Limit input?',
 'grid_chars_allowed'	=> 'Characters allowed.',
+'grid_add_some_data'	=> 'You have not added any rows of data yet. <a href="#" class="grid_link_add">Add some data?</a>',
+'grid_add_row'			=> 'Add Row',
+'grid_add_column'		=> 'Add Column',
+'grid_delete_row'		=> 'Delete Row',
+'grid_delete_column'	=> 'Delete Column',
+'grid_copy_column'		=> 'Copy',
 
 // IGNORE
 ''=>'');

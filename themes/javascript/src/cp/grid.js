@@ -4,6 +4,7 @@
 	{
 		this.root = $(field);
 		this.blankRow = this.root.find('tr.blank_row');
+		this.emptyField = this.root.find('tr.empty_field');
 		this.rowContainer = this.root.find('.grid_row_container');
 		this.settings = settings;
 		this.init();
@@ -16,6 +17,7 @@
 			this._addMinimumRows();
 			this._bindSortable();
 			this._bindAddButton();
+			this._toggleDeleteButtons();
 
 			// Disable input elements in our blank template container so they
 			// don't get submitted on form submission
@@ -38,9 +40,17 @@
 
 		_addMinimumRows: function()
 		{
-			// Figure out how many rows we need to add, plus 1 to account for
-			// the blank template row we already have
-			var neededRows = this.settings.grid_min_rows - this.rowContainer.find('tr').size() + 1;
+			// Figure out how many rows we need to add, plus 2 to account for
+			// the blank template row and empty field row
+			var rowsCount = this._getNumberOfRows(),
+				neededRows = this.settings.grid_min_rows - rowsCount;
+
+			// Show empty field message if field is empty and no rows are needed
+			if (rowsCount == 0 && neededRows == 0)
+			{
+				this.emptyField.show();
+				this.find
+			}
 
 			while (neededRows > 0)
 			{
@@ -51,6 +61,33 @@
 		},
 
 		/**
+		 * Looks at current row count, and if it's above the minimum rows setting,
+		 * shows the delete buttons; otherwise, hides the delete buttons
+		 */
+		_toggleDeleteButtons: function()
+		{
+			var rowCount = this._getNumberOfRows();
+			var deleteButtons = this.root.find('.grid_button_delete');
+
+			if (rowCount <= this.settings.grid_min_rows)
+			{
+				deleteButtons.hide();
+			}
+			else
+			{
+				deleteButtons.show();
+			}
+		},
+
+		/**
+		 * Returns current number of data rows in the Grid field
+		 */
+		_getNumberOfRows: function()
+		{
+			return this.rowContainer.find('tr').not(this.blankRow.add(this.emptyField)).size()
+		},
+
+		/**
 		 * Binds click listener to Add button to insert a new row at the bottom
 		 * of the field
 		 */
@@ -58,7 +95,7 @@
 		{
 			var that = this;
 
-			this.root.siblings('.grid_button_add').on('click', function(event)
+			this.root.find('.grid_button_add, .grid_link_add').on('click', function(event)
 			{
 				event.preventDefault();
 
@@ -88,8 +125,15 @@
 			// Enable inputs
 			el.find(':input').removeAttr('disabled');
 
-			// Finally, append the row to the end of the row container
+			// Append the row to the end of the row container
 			this.rowContainer.append(el);
+
+			// Make sure empty field message is hidden
+			this.emptyField.hide();
+
+			// Hide/show delete buttons depending on minimum row setting
+			// TODO: Handle max rows
+			this._toggleDeleteButtons();
 
 			// TODO: fire JS event so fieldtypes can bind listeners and things
 		}

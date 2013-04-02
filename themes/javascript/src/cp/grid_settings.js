@@ -82,11 +82,11 @@
 		_bindSortable: function()
 		{
 			this.settingsContainer.sortable({
-				axis: 'x',
+				axis: 'x',						// Only allow horizontal dragging
 				containment: 'parent',			// Contain to parent
 				handle: 'div.grid_data_type',	// Set drag handle to the top box
-				items: '.grid_col_settings',		// Only allow these to be sortable
-				sort: EE.sortable_sort_helper
+				items: '.grid_col_settings',	// Only allow these to be sortable
+				sort: EE.sortable_sort_helper	// Custom sort handler
 			});
 		},
 
@@ -137,7 +137,7 @@
 		{
 			var that = this;
 
-			this.root.on('click', '.grid_col_settings_delete', function(event)
+			this.root.on('click', '.grid_button_delete', function(event)
 			{
 				event.preventDefault();
 
@@ -180,8 +180,8 @@
 		 */
 		_toggleDeleteButtons: function()
 		{
-			var colCount = this.root.find('.grid_col_settings').size();
-			var deleteButtons = this.root.find('.grid_col_settings_delete');
+			var colCount = this.root.find('.grid_col_settings').size(),
+				deleteButtons = this.root.find('.grid_button_delete');
 
 			if (colCount < 2)
 			{
@@ -202,7 +202,7 @@
 		 */
 		_insertColumn: function(column, insertAfter)
 		{
-			lastColumn = $('#grid_settings .grid_col_settings:last');
+			var lastColumn = $('#grid_settings .grid_col_settings:last');
 
 			// Default to inserting after the last column
 			if (insertAfter == undefined)

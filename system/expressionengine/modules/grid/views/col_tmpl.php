@@ -6,7 +6,7 @@
 			isset($column['col_type']) ? $column['col_type'] : 'text',
 			'class="grid_col_select"')?>
 
-		<a href="#" class="grid_col_settings_delete" title="Delete Column">Delete Column</a>
+		<a href="#" class="grid_button_delete" title="<?=lang('grid_delete_column')?>"><?=lang('grid_delete_column')?></a>
 	</div>
 	<div class="grid_col_settings_section text">
 		<?=form_input('grid[cols]['.$field_name.'][label]', isset($column['col_label']) ? $column['col_label'] : '')?>
@@ -36,6 +36,6 @@
 		<?php endif ?>
 	</div>
 	<div class="grid_col_settings_section grid_col_copy">
-		<a href="#" class="grid_col_copy">Copy</a>
+		<a href="#" class="grid_col_copy"><?=lang('grid_copy_column')?></a>
 	</div>
 </div>

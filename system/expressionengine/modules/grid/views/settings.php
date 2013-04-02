@@ -19,7 +19,7 @@
 				<?=$column?>
 			<?php endforeach ?>
 
-			<a class="grid_button_add" href="#">Add Column</a>
+			<a class="grid_button_add" href="#" title="<?=lang('grid_add_column')?>"><?=lang('grid_add_column')?></a>
 
 		</div>
 	</div>

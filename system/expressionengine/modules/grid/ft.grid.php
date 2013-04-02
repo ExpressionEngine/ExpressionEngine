@@ -55,6 +55,7 @@ class Grid_ft extends EE_Fieldtype {
 	public function display_field($data)
 	{
 		ee()->load->library('grid_lib');
+		ee()->lang->loadfile('grid');
 
 		ee()->cp->add_to_head(ee()->view->head_link('css/grid.css'));
 

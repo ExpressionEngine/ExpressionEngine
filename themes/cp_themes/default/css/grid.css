@@ -1,3 +1,17 @@
+table.grid_field_container {
+	table-layout: fixed;
+	width: 100%;
+}
+
+table.grid_field_container td.grid_delete_row_gutter {
+	width: 40px;
+}
+
+table.grid_field_container td.grid_field_container_cell {
+	position: relative;
+	width: 100%;
+}
+
 table.grid_field {
 	background-color: #fff;
 	border: 1px solid #c9cfd4;
@@ -25,6 +39,7 @@ table.grid_field td {
 	border-top: 1px solid #c9cfd4;
 	font-size: 12px;
 	padding: 5px;
+	position: relative;
 	vertical-align: top;
 }
 
@@ -38,8 +53,34 @@ table.grid_field td.grid_handle {
 	width: 5px;
 }
 
-table.grid_field tr.blank_row {
+table.grid_field tr.blank_row,
+table.grid_field tr.empty_field {
 	display: none;
+}
+
+table.grid_field td.empty_field {
+	border-left: none;
+	padding: 17px;
+	text-align: center;
+}
+
+table.grid_field td.empty_field a:link,
+table.grid_field td.empty_field a:visited,
+table.grid_field td.empty_field a:hover,
+table.grid_field td.empty_field a:active {
+	color: #E11842;
+	text-decoration: none;
+}
+
+table.grid_field td.empty_field a:hover {
+	text-decoration: underline;
+}
+
+table.grid_field a.grid_button_delete {
+	display: none;
+	position: absolute;
+	right: -29px;
+	top: 0px;
 }
 
 #grid_settings {
@@ -185,18 +226,22 @@ table.grid_field td.grid_handle {
 	width: 119px;
 }
 
-a.grid_col_settings_delete:link,
-a.grid_col_settings_delete:visited,
-a.grid_col_settings_delete:active,
-a.grid_col_settings_delete:hover {
+a.grid_button_delete:link,
+a.grid_button_delete:visited,
+a.grid_button_delete:active,
+a.grid_button_delete:hover {
 	background: url('../images/grid-sprite.png') no-repeat -21px 0;
-	display: none;
+	display: inline-block;
 	height: 17px;
+	text-indent: -9999px;
+	width: 18px;
+}
+
+.grid_col_settings_section.grid_data_type a.grid_button_delete {
+	display: none;
 	position: absolute;
 	right: 9px;
-	text-indent: -9999px;
 	top: 17px;
-	width: 18px;
 }
 
 .grid_col_settings_section.grid_data_search {
