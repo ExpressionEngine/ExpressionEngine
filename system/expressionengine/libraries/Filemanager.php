@@ -2660,7 +2660,7 @@ class Filemanager {
 
 	function directory_files_map($source_dir, $directory_depth = 0, $hidden = false, $allowed_types = 'all')
 	{
-		ee()->load->helper('file');
+		ee()->load->helper(array('file', 'directory'));
 
 		if ($allowed_types == 'img')
 		{
