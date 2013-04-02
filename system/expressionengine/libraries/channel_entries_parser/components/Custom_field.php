@@ -78,6 +78,7 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component {
 			$entry = '';
 			$field_id = $cfields[$field_name];
 
+
 			if (isset($data['field_id_'.$field_id]) && $data['field_id_'.$field_id] != '')
 			{
 				$params = array();
@@ -134,7 +135,6 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component {
 					);
 				}
 
-				$entry = '';
 				$tagdata = str_replace(LD.$tag.RD, $entry, $tagdata);
 			}
 		}

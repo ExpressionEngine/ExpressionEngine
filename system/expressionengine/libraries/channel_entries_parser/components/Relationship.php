@@ -51,14 +51,13 @@ class EE_Channel_relationship_parser implements EE_Channel_parser_component {
 		$channel = $pre->channel();
 
 		$zwfields = $channel->zwfields;
-		$cfields = $channel->cfields;
 
 		$site_id = config_item('site_id');
 
 		if (isset($zwfields[$site_id]) && ! empty($zwfields[$site_id]))
 		{
 			ee()->load->library('relationships');
-			$relationship_parser = ee()->relationships->get_relationship_parser(ee()->TMPL, $zwfields[$site_id], $cfields[$site_id]);
+			$relationship_parser = ee()->relationships->get_relationship_parser($zwfields[$site_id]);
 			$relationship_parser->query_for_entries($pre->entry_ids());
 
 			return $relationship_parser;

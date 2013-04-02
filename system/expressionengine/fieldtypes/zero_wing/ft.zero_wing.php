@@ -59,7 +59,9 @@ class Zero_wing_ft extends EE_Fieldtype {
 	 */
 	public function save($data)
 	{
-		$sort = ee()->input->post('sort_'.$this->field_name);
+		$sort = isset($data['sort']) ? $data['sort'] : array();
+		$data = isset($data['data']) ? $data['data'] : array();
+
 		$sort = array_filter($sort);
 
 		ee()->session->set_cache(__CLASS__, $this->field_name, array(
@@ -303,6 +305,9 @@ class Zero_wing_ft extends EE_Fieldtype {
 	 */
 	public function _multi_div($entries, $selected, $order, $field_name)
 	{
+		$input_sort = $field_name.'[sort]';
+		$input_field = $field_name.'[data]';
+
 		$class = 'class="multiselect ';
 		$class .= count($entries) ? 'force-scroll' : 'empty';
 		$class .= '"';
@@ -321,8 +326,8 @@ class Zero_wing_ft extends EE_Fieldtype {
 			$sort = $checked ? $order[$row['entry_id']] : 0;
 
 			$str .= '<li'.($checked ? ' class="selected"' : '').'><label>';
-			$str .= form_input('sort_'.$field_name.'[]', $sort, 'class="js_hide"');
-			$str .= form_checkbox($field_name.'[]', $row['entry_id'], $checked, 'class="js_hide"');
+			$str .= form_input($input_sort.'[]', $sort, 'class="js_hide"');
+			$str .= form_checkbox($input_field.'[]', $row['entry_id'], $checked, 'class="js_hide"');
 			$str .= $row['title'].'</label></li>';
 		}
 

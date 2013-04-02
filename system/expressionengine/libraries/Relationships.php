@@ -115,16 +115,14 @@ class Relationships {
 	 * Get a relationship parser and query object, populated with the
 	 * information we'll need to parse out the relationships in this template.
 	 *
-	 * @param	Template The template we are parsing.
 	 * @param	The rfields array from the Channel Module at the time of parsing.
-	 * @param	The cfields array from the Channel Module at the time of parsing.
 	 *
 	 * @return Relationship_Parser	The parser object with the parsed out
 	 *								hierarchy and all of the entry data.
 	 */
-	public function get_relationship_parser(EE_Template $template, array $relationship_fields, array $custom_fields)
+	public function get_relationship_parser(array $relationship_fields)
 	{
-		return new Relationship_Parser($template, $relationship_fields, $custom_fields);
+		return new Relationship_Parser($relationship_fields);
 	}
 
  	// --------------------------------------------------------------------
@@ -238,9 +236,7 @@ class Relationships {
  	 */
  	public function _isolate_db()
  	{
- 		$EE = get_instance();
-
- 		$db = clone $EE->db;
+ 		$db = clone ee()->db;
 
  		$db->_reset_write();
  		$db->_reset_select();
@@ -256,21 +252,17 @@ class Relationship_Parser
 {
 	protected $template = NULL;							// The Template that we are currently parsing Relationships for
 
-	protected $custom_fields = array();					// Custom field id to name mapping
 	protected $relationship_field_ids = array();		// Relationship field map (name => field_id)
 	protected $relationship_field_names = array();		// Another relationship field map (field_id => name)
 
 	protected $variables = array();						// A cache of the tree and lookup table for the main per entry parsing step
-
-	protected $categories = array();
 	
 	/**
 	 * Create a relationship parser for the given Template.
 	 */
-	public function __construct(EE_Template $template, array $relationship_fields, array $custom_fields)
+	public function __construct(array $relationship_fields)
 	{
-		$this->template = $template;
-		$this->custom_fields = $custom_fields;
+		$this->template = ee()->TMPL;
 		$this->relationship_field_ids = $relationship_fields;
 		$this->relationship_field_names = array_flip($relationship_fields);
 	}
@@ -398,16 +390,15 @@ class Relationship_Parser
 		}
 
 		// @todo reduce to only those that have a categories pair or parameter
-		$this->_cache_categories($all_ids);
+		$categories = $this->_get_categories($all_ids);
 
 
 		// ready set, main query.
-		$EE = get_instance();
-		$db = $EE->relationships->_isolate_db();
+		$db = ee()->relationships->_isolate_db();
 
-		$EE->load->model('channel_entries_model');
+		ee()->load->model('channel_entries_model');
 
-		$sql = $EE->channel_entries_model->get_entry_sql(array_unique($all_ids));
+		$sql = ee()->channel_entries_model->get_entry_sql(array_unique($all_ids));
 		$entries_result = $db->query($sql);
 
 
@@ -423,34 +414,15 @@ class Relationship_Parser
 		// READY TO PARSE! FINALLY!
 		$this->variables = array(
 			'tree' => $root,
-			'lookup' => $entry_lookup
+			'lookup' => $entry_lookup,
+			'categories' => $categories
 		);
 	}
 
-	protected function _cache_categories($ids)
+	protected function _get_categories($ids)
 	{
-		$new_ids = array();
-
-		foreach (array_unique($ids) as $id)
-		{
-			if ( ! isset($this->categories[$id]))
-			{
-				$new_ids[] = $id;
-			}
-		}
-
-		if ( ! count($new_ids))
-		{
-			return;
-		}
-
 		ee()->load->model('category_model');
-		$categories = ee()->category_model->get_entry_categories($new_ids);
-
-		foreach ($categories as $entry_id => $cats)
-		{
-			$this->categories[$entry_id] = $cats;
-		}
+		return ee()->category_model->get_entry_categories($ids);
 	}
 
 	protected function _build_tree(array $entry_ids)
@@ -786,7 +758,7 @@ class Relationship_Parser
 			RecursiveIteratorIterator::LEAVES_ONLY
 		);
 
-		$shortest = 1E10;
+		$shortest = INF;
 		$longest = 0;
 
 		foreach ($it as $leaf)
@@ -809,7 +781,7 @@ class Relationship_Parser
 			}
 		}
 
-		if ($shortest > 1E9)
+		if (is_infinite($shortest))
 		{
 			$shortest = 0;
 		}
@@ -902,10 +874,11 @@ class Relationship_Parser
 
 		$tree = $this->variables['tree'];
 		$lookup = $this->variables['lookup'];
+		$categories = $this->variables['categories'];
 
 		ee()->session->set_cache('relationships', 'channel', $channel);
 		
-		$tagdata = $tree->parse($entry_id, $tagdata, $lookup, $this->categories);
+		$tagdata = $tree->parse($entry_id, $tagdata, $lookup, $categories);
 
 		return $tagdata;
 	}
@@ -937,6 +910,8 @@ class ParseNode extends EE_TreeNode {
 		return substr($field_name, strrpos($field_name, ':') + 1);
 	}
 
+	// --------------------------------------------------------------------
+
 	/**
 	 * Set a parameter
 	 *
@@ -952,6 +927,8 @@ class ParseNode extends EE_TreeNode {
 		$this->data['params'][$key] = $value;
 	}
 
+	// --------------------------------------------------------------------
+
 	/**
 	 * Get a parameter
 	 *
@@ -965,6 +942,8 @@ class ParseNode extends EE_TreeNode {
 	{
 		return isset($this->data['params'][$key]) ? $this->data['params'][$key] : $default;
 	}
+
+	// --------------------------------------------------------------------
 
 	/**
 	 * Make the node aware of a relationship
@@ -993,7 +972,10 @@ class ParseNode extends EE_TreeNode {
 		{
 			$ids[$parent][] = $child;
 		}
+
 	}
+
+	// --------------------------------------------------------------------
 
 	/**
 	 * Parse the tag's internal data (and all of its children)
@@ -1031,6 +1013,8 @@ class ParseNode extends EE_TreeNode {
 		$ret = preg_replace_callback('/{'.$tag.'[^}:]*}(.+?){\/'.$tag.'}/is', array($this, '_replace'), $tagdata);
 		return $ret;
 	}
+
+	// --------------------------------------------------------------------
 
 	/**
 	 * preg_replace callback for parse()
@@ -1229,6 +1213,8 @@ class ParseNode extends EE_TreeNode {
 
 		return $result;
 	}
+
+	// --------------------------------------------------------------------
 
 	public function callback_tagdata_loop_end($tagdata, $row)
 	{
