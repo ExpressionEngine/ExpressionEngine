@@ -97,13 +97,14 @@ class Member_subscriptions extends Member {
 		}
 
 		// Build the result table...
-		$out = $this->_var_swap($this->_load_element('subscription_result_heading'),
-								array(
-										'lang:title'		=>	ee()->lang->line('title'),
-										'lang:type'		 =>	ee()->lang->line('type'),
-										'lang:unsubscribe'  =>	ee()->lang->line('unsubscribe')
-									 )
-							);
+		$out = $this->_var_swap(
+			$this->_load_element('subscription_result_heading'),
+			array(
+					'lang:title'		=>	ee()->lang->line('title'),
+					'lang:type'		 =>	ee()->lang->line('type'),
+					'lang:unsubscribe'  =>	ee()->lang->line('unsubscribe')
+				 )
+		);
 
 
 		$i = 0;
@@ -121,17 +122,21 @@ class Member_subscriptions extends Member {
 			$out .= $rowtemp;
 		}
 		
-		$out .= $this->_var_swap($this->_load_element('subscription_pagination'),
-								 array('pagination' => $page_links,
-								 		'lang:unsubscribe' => ee()->lang->line('unsubscribe'),
-								 		'class' => ($i++ % 2) ? 'tableCellOne' : 'tableCellTwo'));
+		$out .= $this->_var_swap(
+			$this->_load_element('subscription_pagination'),
+			array(
+				'pagination' => $page_links,
+				'lang:unsubscribe' => ee()->lang->line('unsubscribe'),
+				'class' => ($i++ % 2) ? 'tableCellOne' : 'tableCellTwo'
+			)
+		);
 
 	
 		$swap['subscription_results'] = $out;
 				
 		return $this->_var_swap(
-									$this->_load_element('subscriptions_form'), $swap
-								);
+			$this->_load_element('subscriptions_form'), $swap
+		);
 	}
 
 	// --------------------------------------------------------------------
@@ -154,20 +159,21 @@ class Member_subscriptions extends Member {
 			switch (substr($val, 0, 1))
 			{
 				case "b"	: ee()->subscription->init('comment', array('entry_id' => substr($val, 1)), TRUE);
-								ee()->subscription->unsubscribe(ee()->session->userdata('member_id'));
+							  ee()->subscription->unsubscribe(ee()->session->userdata('member_id'));
 					break;
-				case "f"	: ee()->db->query("DELETE FROM exp_forum_subscriptions WHERE topic_id = '".substr($val, 1)."' AND member_id = '{ee()->session->userdata['member_id']}'");
+				case "f"	: ee()->db->query("DELETE FROM exp_forum_subscriptions WHERE topic_id = '".substr($val, 1)."' AND member_id = '".ee()->session->userdata['member_id']."'");
 					break;
 			}
 		}
 
 		// Success message	
-		return $this->_var_swap($this->_load_element('success'),
-								array(
-										'lang:heading'		=>	ee()->lang->line('subscriptions'),
-										'lang:message'		=>	ee()->lang->line('subscriptions_removed')
-									 )
-								);
+		return $this->_var_swap(
+			$this->_load_element('success'),
+			array(
+				'lang:heading'		=>	ee()->lang->line('subscriptions'),
+				'lang:message'		=>	ee()->lang->line('subscriptions_removed')
+			 )
+		);
 	}
 }
 // END CLASS
