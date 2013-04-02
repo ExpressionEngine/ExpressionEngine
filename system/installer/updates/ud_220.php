@@ -80,7 +80,7 @@ class Updater {
 	private function _update_session_table()
 	{
 		// Add an index on last_activity
-		ee()->smartforge->create_index('sessions', 'last_activity', 'last_activity_idx');
+		ee()->smartforge->add_key('sessions', 'last_activity', 'last_activity_idx');
 
 		$field = array(
 			'user_agent'	=> array(
@@ -190,7 +190,7 @@ class Updater {
 	 */
 	private function _update_comments_table()
 	{
-		ee()->smartforge->create_index('comments', 'comment_date', 'comment_date_idx');
+		ee()->smartforge->add_key('comments', 'comment_date', 'comment_date_idx');
 	}
 
 	// --------------------------------------------------------------------
@@ -200,8 +200,8 @@ class Updater {
 	 */
 	private function _update_template_groups()
 	{
-		ee()->smartforge->create_index('template_groups', 'group_name', 'group_name_idx');
-		ee()->smartforge->create_index('template_groups', 'group_order', 'group_order_idx');
+		ee()->smartforge->add_key('template_groups', 'group_name', 'group_name_idx');
+		ee()->smartforge->add_key('template_groups', 'group_order', 'group_order_idx');
 	}
 
 	// --------------------------------------------------------------------	
