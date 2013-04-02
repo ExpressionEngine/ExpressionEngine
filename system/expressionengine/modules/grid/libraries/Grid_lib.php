@@ -143,32 +143,91 @@ class Grid_lib {
 	 * @param	int		Field ID of field to delete
 	 * @return	void
 	 */
-	public function display_field($data, $settings)
+	public function display_field($entry_id, $data, $settings)
 	{
 		$ft_api = ee()->api_channel_fields;
 
+		$table_name = $this->_table_prefix . $settings['field_id'];
+
 		// Get columns just for this field
 		$vars['columns'] = $this->get_columns_for_field($settings['field_id']);
-		
-		foreach ($vars['columns'] as &$column)
+
+		// TODO: Move DB stuff like this into a model?
+		$rows = ee()->db->where('entry_id', $entry_id)
+			->order_by('row_order')
+			->get($table_name)
+			->result_array();
+
+		$vars['rows'] = array();
+
+		// Loop through row data and construct an array of publish field HTML
+		// for the supplied field data
+		foreach ($rows as $row)
 		{
-			$fieldtype = $ft_api->setup_handler($column['col_type'], TRUE);
-
-			// Assign settings to fieldtype manually so they're available like
-			// normal field settings
-			$fieldtype->settings = $column['col_settings'];
-
-			// Developers can optionally implement grid_display_field, otherwise
-			// we will try to use display_field
-			$method = $ft_api->check_method_exists('grid_display_field')
-				? 'grid_display_field' : 'display_publish_field';
-
-			// Call the fieldtypes field display method and assign the output
-			// to our column array
-			$column['display_field'] = $ft_api->apply($method, array(''));
+			foreach ($vars['columns'] as $column)
+			{
+				$vars['rows'][$row['row_id']]['col_id_'.$column['col_id']] = $this->_publish_field_cell(
+					$settings['field_name'],
+					$column,
+					$row
+				);
+			}
 		}
 
+		// Create a blank row for cloning to enter more data
+		foreach ($vars['columns'] as $column)
+		{
+			$vars['blank_row']['col_id_'.$column['col_id']] = $this->_publish_field_cell(
+				$settings['field_name'],
+				$column
+			);
+		}
+
+		$vars['field_id'] = $settings['field_name'];
+
 		return ee()->load->view('publish', $vars, TRUE);
+	}
+
+	// ------------------------------------------------------------------------
+	
+	/**
+	 * Returns publish field HTML for a given cell
+	 *
+	 * @param	string	Field name for input field namespacing
+	 * @param	array	Column data
+	 * @param	array	Data for current row
+	 * @return	string	HTML for specified cell's publish field
+	 */
+	protected function _publish_field_cell($field_name, $column, $row_data = NULL)
+	{
+		$ft_api = ee()->api_channel_fields;
+
+		// Instantiate fieldtype
+		$fieldtype = $ft_api->setup_handler($column['col_type'], TRUE);
+
+		// Assign settings to fieldtype manually so they're available like
+		// normal field settings
+		$fieldtype->field_id = $column['col_id'];
+		$fieldtype->field_name = $column['col_name'];
+		$fieldtype->settings = $column['col_settings'];
+
+		// Developers can optionally implement grid_display_field, otherwise
+		// we will try to use display_field
+		$method = $ft_api->check_method_exists('grid_display_field')
+			? 'grid_display_field' : 'display_publish_field';
+
+		// Call the fieldtypes field display method and capture the output
+		$display_field = $ft_api->apply($method, array($row_data['col_id_'.$column['col_id']]));
+
+		// How we'll namespace new and existing rows
+		$row_id = (empty($row_data)) ? 'new_row_0' : 'row_id_'.$row_data['row_id'];
+
+		// Return the publish field HTML with namespaced form field names
+		return preg_replace(
+			'/(<[input|select|textarea][^>]*)name=["\']([^"]*)["\']/',
+			'$1name="'.$field_name.'[rows]['.$row_id.'][col_id_'.$column['col_id'].'][$2]"',
+			$display_field
+		);
 	}
 
 	// ------------------------------------------------------------------------
@@ -248,6 +307,11 @@ class Grid_lib {
 					'constraint'		=> 10,
 					'unsigned'			=> TRUE,
 					'auto_increment'	=> TRUE
+				),
+				'entry_id' => array(
+					'type'				=> 'int',
+					'constraint'		=> 10,
+					'unsigned'			=> TRUE
 				),
 				'row_order' => array(
 					'type'				=> 'int',

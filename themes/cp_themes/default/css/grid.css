@@ -3,6 +3,8 @@ table.grid_field {
 	border: 1px solid #c9cfd4;
 	box-shadow: #dbdee2 2px 2px 0;
 	margin: 9px 0 11px;
+	table-layout: fixed;
+	width: 100%;
 }
 
 table.grid_field th {
@@ -12,7 +14,6 @@ table.grid_field th {
 	padding: 9px 8px;
 	text-align: left;
 	vertical-align: top;
-	width: 314px;
 }
 
 table.grid_field th,
@@ -27,9 +28,18 @@ table.grid_field td {
 	vertical-align: top;
 }
 
-table.grid_field th.first,
-table.grid_field td.first {
+table.grid_field tr {
+	background-color: #fff;
+}
+
+table.grid_field th.grid_handle,
+table.grid_field td.grid_handle {
 	border-left: none;
+	width: 5px;
+}
+
+table.grid_field tr.blank_row {
+	display: none;
 }
 
 #grid_settings {
@@ -157,6 +167,11 @@ span.instruction_text {
 .grid_col_settings_section.alt,
 table.grid_field th {
 	background-color: #f5f6f5;
+}
+
+table.grid_field td.grid_handle {
+	background: #f5f6f5 url('../images/grid-sprite.png') no-repeat -65px 7px;
+	cursor: move;
 }
 
 .grid_col_settings_section.grid_data_type {

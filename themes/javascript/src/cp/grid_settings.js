@@ -82,9 +82,11 @@
 		_bindSortable: function()
 		{
 			this.settingsContainer.sortable({
+				axis: 'x',
 				containment: 'parent',			// Contain to parent
 				handle: 'div.grid_data_type',	// Set drag handle to the top box
-				items: '.grid_col_settings'		// Only allow these to be sortable
+				items: '.grid_col_settings',		// Only allow these to be sortable
+				sort: EE.sortable_sort_helper
 			});
 		},
 

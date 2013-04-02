@@ -58,7 +58,21 @@ class Grid_ft extends EE_Fieldtype {
 
 		ee()->cp->add_to_head(ee()->view->head_link('css/grid.css'));
 
-		return ee()->grid_lib->display_field($data, $this->settings);
+		ee()->cp->add_to_foot(ee()->view->script_tag('cp/sort_helper.js'));
+		ee()->cp->add_to_foot(ee()->view->script_tag('cp/grid.js'));
+
+		$settings = array(
+			'grid_min_rows' => $this->settings['grid_min_rows'],
+			'grid_max_rows' => $this->settings['grid_max_rows']
+		);
+
+		ee()->javascript->output('EE.grid("#'.$this->field_name.'", '.json_encode($settings).');');
+
+		return ee()->grid_lib->display_field(
+			$this->EE->input->get('entry_id'),
+			$data,
+			$this->settings
+		);
 	}
 
 	// --------------------------------------------------------------------
@@ -153,6 +167,7 @@ class Grid_ft extends EE_Fieldtype {
 
 		ee()->cp->add_to_head(ee()->view->head_link('css/grid.css'));
 
+		ee()->cp->add_to_foot(ee()->view->script_tag('cp/sort_helper.js'));
 		ee()->cp->add_to_foot(ee()->view->script_tag('cp/grid_settings.js'));
 		ee()->javascript->output('EE.grid_settings();');
 		
@@ -169,10 +184,10 @@ class Grid_ft extends EE_Fieldtype {
 	public function post_save_settings($data)
 	{
 		ee()->load->library('grid_lib');
-
+		
 		// Need to get the field ID of the possibly newly-created field, so
 		// we'll actually re-save the field settings in the Grid library
-		$data['field_id'] = key(ee()->api_channel_fields->settings);
+		$data['field_id'] = $this->settings['field_id'];
 		$data['grid'] = ee()->input->post('grid');
 
 		ee()->grid_lib->apply_settings($data);
