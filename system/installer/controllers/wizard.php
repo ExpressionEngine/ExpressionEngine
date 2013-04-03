@@ -1367,7 +1367,7 @@ PAPAYA;
 
 				foreach ($this->survey->fetch_anon_server_data() as $key => $val)
 				{
-					if ($key == 'php_extensions')
+					if (in_array($key, array('php_extensions', 'addons')))
 					{
 						$val = implode(', ', json_decode($val));
 					}
