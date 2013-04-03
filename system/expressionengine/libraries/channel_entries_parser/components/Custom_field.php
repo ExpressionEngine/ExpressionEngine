@@ -134,7 +134,6 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component {
 					);
 				}
 
-				$entry = '';
 				$tagdata = str_replace(LD.$tag.RD, $entry, $tagdata);
 			}
 		}

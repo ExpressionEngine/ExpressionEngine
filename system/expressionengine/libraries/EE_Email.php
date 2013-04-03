@@ -147,6 +147,7 @@ class EE_Email extends CI_Email {
 			
 			if (ee()->extensions->end_script === TRUE)
 			{
+				ee()->extensions->end_script = FALSE;
 				return $ret;
 			}
 		}

@@ -373,7 +373,7 @@ class EE_Table extends CI_Table {
 			'rows'			=> $this->raw_data
 		);
 		
-		$table_config_data = 'data-table_config="'.form_prep(ee()->javascript->generate_json($jq_config, TRUE)).'"';
+		$table_config_data = 'data-table_config="'.form_prep(json_encode($jq_config)).'"';
 		$this->template['table_open'] = str_replace(
 			'<table',
 			'<table '.$table_config_data,

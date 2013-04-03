@@ -811,11 +811,11 @@ class Safecracker_lib
 				{
 					$value['XID'] = '{XID_HASH}';
 					
-					$this->head .= 'if (typeof EE == "undefined" || ! EE) { '."\n".'var EE = '.ee()->javascript->generate_json($value, TRUE).';}'."\n";
+					$this->head .= 'if (typeof EE == "undefined" || ! EE) { '."\n".'var EE = '.json_encode($value).';}'."\n";
 				}
 				else 
 				{
-					$this->head .= $key.' = '.ee()->javascript->generate_json($value, TRUE).';'."\n";
+					$this->head .= $key.' = '.json_encode($value).';'."\n";
 				}
 				
 				$first = FALSE;

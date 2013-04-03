@@ -39,10 +39,11 @@ class EE_Channel_preparser {
 	protected $_entry_ids;
 
 	protected $_components;
-
 	protected $_disabled;
+
 	protected $_pair_data;
 	protected $_single_data;
+	protected $_once_data;
 
 	/**
 	 * The Preparser
@@ -84,6 +85,11 @@ class EE_Channel_preparser {
 
 		$this->pairs	= $this->_extract_prefixed(ee()->TMPL->var_pair);
 		$this->singles	= $this->_extract_prefixed(ee()->TMPL->var_single);
+/*
+		$this->pairs	= $this->_extract_prefixed(ee()->TMPL->var_pair);
+		$this->singles	= $this->_extract_prefixed(ee()->TMPL->var_single);
+*/
+
 
 
 		// Run through component pre_processing steps, skipping any that
@@ -93,22 +99,18 @@ class EE_Channel_preparser {
 		$components  = $parser->components();
 		$disabled = isset($config['disable']) ? $config['disable'] : array();
 
-		foreach ($components->pair() as $k => $component)
+		foreach (array('pair', 'once', 'single') as $fn)
 		{
-			$skip	 = (bool) $component->disabled($disabled, $this);
-			$obj_key = spl_object_hash($component);
+			foreach ($components->$fn() as $k => $component)
+			{
+				$skip	 = (bool) $component->disabled($disabled, $this);
+				$obj_key = spl_object_hash($component);
 
-			$this->_disabled[$obj_key]  = $skip;
-			$this->_pair_data[$obj_key] = $skip ? NULL : $component->pre_process($tagdata, $this);
-		}
+				$var = '_'.$fn.'_data';
+				$this->_disabled[$obj_key]  = $skip;
+				$this->{$var}[$obj_key] = $skip ? NULL : $component->pre_process($tagdata, $this);
+			}
 
-		foreach ($components->single() as $k => $component)
-		{
-			$skip	 = (bool) $component->disabled($disabled, $this);
-			$obj_key = spl_object_hash($component);
-
-			$this->_disabled[$obj_key]	  = $skip;
-			$this->_single_data[$obj_key] = $skip ? NULL : $component->pre_process($tagdata, $this);
 		}
 
 		// @todo these need to move elsewhere
@@ -156,6 +158,20 @@ class EE_Channel_preparser {
 	public function single_data($obj)
 	{
 		return $this->_single_data[spl_object_hash($obj)];
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Single tag data getter
+	 *
+	 * Returns the data of the preprocessing step of a given component.
+	 *
+	 * @return mixed	Single tag preprocessing results
+	 */
+	public function once_data($obj)
+	{
+		return $this->_once_data[spl_object_hash($obj)];
 	}
 
 	// --------------------------------------------------------------------
@@ -277,9 +293,9 @@ class EE_Channel_preparser {
 		{
 			return $data;
 		}
-
+   
 		$filtered = array();
-
+		$tagdata  = $this->_tagdata;
 		$regex_prefix = '/^'.preg_quote($this->_prefix, '/').'[^:]+( |$)/';
 
 		foreach (preg_grep($regex_prefix, array_keys($data)) as $key)

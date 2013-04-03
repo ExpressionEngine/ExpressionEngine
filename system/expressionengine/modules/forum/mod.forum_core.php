@@ -7313,7 +7313,7 @@ class Forum_Core extends Forum {
 		if ($query->row('count')  == 0)
 		{	
 			$rand = ee()->session->userdata('member_id').ee()->functions->random('alnum', 8);
-			ee()->db->query("INSERT INTO exp_forum_subscriptions (topic_id, board_id, member_id, subscription_date, hash) VALUES ('{$this->current_id}', '{$this->preferences['board_id']}', '".ee()->session->userdata('member_id')."', '{ee()->localize->now}', '{$rand}')");
+			ee()->db->query("INSERT INTO exp_forum_subscriptions (topic_id, board_id, member_id, subscription_date, hash) VALUES ('{$this->current_id}', '{$this->preferences['board_id']}', '".ee()->session->userdata('member_id')."', '".ee()->localize->now."', '{$rand}')");
 		}
 		
 

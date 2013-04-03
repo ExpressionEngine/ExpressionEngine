@@ -38,16 +38,27 @@ class EE_Channel_header_and_footer_parser implements EE_Channel_parser_component
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Find all header/footer chunks in the template.
-	 * ps. It's just not worth it. -pk
+	 * Reset flags for this tag chunk. Using an object so that we can
+	 * modify it between loops.
 	 *
 	 * @param String	The tagdata to be parsed
 	 * @param Object	The preparser object.
-	 * @return Array	Found header/footer tags.
+	 * @return Array	Flags for this template
 	 */
 	public function pre_process($tagdata, EE_Channel_preparser $pre)
 	{
-		return NULL;
+		//  Set default date header variables
+		$c = new StdClass;
+		$c->heading_date_hourly  = 0;
+		$c->heading_flag_hourly  = 0;
+		$c->heading_flag_weekly  = 1;
+		$c->heading_date_daily	 = 0;
+		$c->heading_flag_daily	 = 0;
+		$c->heading_date_monthly = 0;
+		$c->heading_flag_monthly = 0;
+		$c->heading_date_yearly  = 0;
+		$c->heading_flag_yearly  = 0;
+		return $c;
 	}
 
 	// ------------------------------------------------------------------------
@@ -61,7 +72,7 @@ class EE_Channel_header_and_footer_parser implements EE_Channel_parser_component
 	 *
 	 * @return String	The processed tagdata
 	 */
-	public function replace($tagdata, EE_Channel_data_parser $obj, $pre)
+	public function replace($tagdata, EE_Channel_data_parser $obj, $flag_obj)
 	{
 		$tag = $obj->tag();
 		$tag_options = $obj->tag_options();
@@ -69,11 +80,10 @@ class EE_Channel_header_and_footer_parser implements EE_Channel_parser_component
 		$prefix = $obj->prefix();
 
 		// @todo
-		$key = $tag;
 		$val = $tag_options;
 
 		//  parse date heading
-		if (strncmp($key, 'date_heading', 12) == 0)
+		if (strncmp($tag, 'date_heading', 12) == 0)
 		{
 			// Set the display preference
 
@@ -82,17 +92,17 @@ class EE_Channel_header_and_footer_parser implements EE_Channel_parser_component
 			//  Hourly header
 			if ($display == 'hourly')
 			{
-				$heading_date_hourly = ee()->localize->format_date('%Y%m%d%H', $data['entry_date']);
+				$flag_obj->heading_date_hourly = ee()->localize->format_date('%Y%m%d%H', $data['entry_date']);
 
-				if ($heading_date_hourly == $heading_flag_hourly)
+				if ($flag_obj->heading_date_hourly == $flag_obj->heading_flag_hourly)
 				{
-					$tagdata = ee()->TMPL->delete_var_pairs($key, 'date_heading', $tagdata);
+					$tagdata = ee()->TMPL->delete_var_pairs($tag, 'date_heading', $tagdata);
 				}
 				else
 				{
-					$tagdata = ee()->TMPL->swap_var_pairs($key, 'date_heading', $tagdata);
+					$tagdata = ee()->TMPL->swap_var_pairs($tag, 'date_heading', $tagdata);
 
-					$heading_flag_hourly = $heading_date_hourly;
+					$flag_obj->heading_flag_hourly = $flag_obj->heading_date_hourly;
 				}
 			}
 			//  Weekly header
@@ -109,72 +119,72 @@ class EE_Channel_header_and_footer_parser implements EE_Channel_parser_component
 					$temp_date = strtotime('+1 week', $temp_date);
 				}
 
-				$heading_date_weekly = ee()->localize->format_date('%Y%W', $temp_date);
+				$flag_obj->heading_date_weekly = ee()->localize->format_date('%Y%W', $temp_date);
 
-				if ($heading_date_weekly == $heading_flag_weekly)
+				if ($flag_obj->heading_date_weekly == $flag_obj->heading_flag_weekly)
 				{
-					$tagdata = ee()->TMPL->delete_var_pairs($key, 'date_heading', $tagdata);
+					$tagdata = ee()->TMPL->delete_var_pairs($tag, 'date_heading', $tagdata);
 				}
 				else
 				{
-					$tagdata = ee()->TMPL->swap_var_pairs($key, 'date_heading', $tagdata);
+					$tagdata = ee()->TMPL->swap_var_pairs($tag, 'date_heading', $tagdata);
 
-					$heading_flag_weekly = $heading_date_weekly;
+					$flag_obj->heading_flag_weekly = $flag_obj->heading_date_weekly;
 				}
 			}
 			//  Monthly header
 			elseif ($display == 'monthly')
 			{
-				$heading_date_monthly = ee()->localize->format_date('%Y%m', $data['entry_date']);
+				$flag_obj->heading_date_monthly = ee()->localize->format_date('%Y%m', $data['entry_date']);
 
-				if ($heading_date_monthly == $heading_flag_monthly)
+				if ($flag_obj->heading_date_monthly == $flag_obj->heading_flag_monthly)
 				{
-					$tagdata = ee()->TMPL->delete_var_pairs($key, 'date_heading', $tagdata);
+					$tagdata = ee()->TMPL->delete_var_pairs($tag, 'date_heading', $tagdata);
 				}
 				else
 				{
-					$tagdata = ee()->TMPL->swap_var_pairs($key, 'date_heading', $tagdata);
+					$tagdata = ee()->TMPL->swap_var_pairs($tag, 'date_heading', $tagdata);
 
-					$heading_flag_monthly = $heading_date_monthly;
+					$flag_obj->heading_flag_monthly = $flag_obj->heading_date_monthly;
 				}
 			}
 			//  Yearly header
 			elseif ($display == 'yearly')
 			{
-				$heading_date_yearly = ee()->localize->format_date('%Y', $data['entry_date']);
+				$flag_obj->heading_date_yearly = ee()->localize->format_date('%Y', $data['entry_date']);
 
-				if ($heading_date_yearly == $heading_flag_yearly)
+				if ($flag_obj->heading_date_yearly == $flag_obj->heading_flag_yearly)
 				{
-					$tagdata = ee()->TMPL->delete_var_pairs($key, 'date_heading', $tagdata);
+					$tagdata = ee()->TMPL->delete_var_pairs($tag, 'date_heading', $tagdata);
 				}
 				else
 				{
-					$tagdata = ee()->TMPL->swap_var_pairs($key, 'date_heading', $tagdata);
+					$tagdata = ee()->TMPL->swap_var_pairs($tag, 'date_heading', $tagdata);
 
-					$heading_flag_yearly = $heading_date_yearly;
+					$flag_obj->heading_flag_yearly = $flag_obj->heading_date_yearly;
 				}
 			}
 			//  Default (daily) header
 			else
 			{
-	 			$heading_date_daily = ee()->localize->format_date('%Y%m%d', $data['entry_date']);
+	 			$flag_obj->heading_date_daily = ee()->localize->format_date('%Y%m%d', $data['entry_date']);
 
-				if ($heading_date_daily == $heading_flag_daily)
+				if ($flag_obj->heading_date_daily == $flag_obj->heading_flag_daily)
 				{
-					$tagdata = ee()->TMPL->delete_var_pairs($key, 'date_heading', $tagdata);
+					$tagdata = ee()->TMPL->delete_var_pairs($tag, 'date_heading', $tagdata);
 				}
 				else
 				{
-					$tagdata = ee()->TMPL->swap_var_pairs($key, 'date_heading', $tagdata);
+					$tagdata = ee()->TMPL->swap_var_pairs($tag, 'date_heading', $tagdata);
 
-					$heading_flag_daily = $heading_date_daily;
+					$flag_obj->heading_flag_daily = $flag_obj->heading_date_daily;
 				}
 			}
 		}
 		// END DATE HEADING
 
 		//  parse date footer
-		if (strncmp($key, 'date_footer', 11) == 0)
+		if (strncmp($tag, 'date_footer', 11) == 0)
 		{
 			// Set the display preference
 
@@ -186,11 +196,11 @@ class EE_Channel_header_and_footer_parser implements EE_Channel_parser_component
 				if ( ! isset($query_result[$data['count']]) OR
 					ee()->localize->format_date('%Y%m%d%H', $data['entry_date']) != ee()->localize->format_date('%Y%m%d%H', $query_result[$data['count']]['entry_date']))
 				{
-					$tagdata = ee()->TMPL->swap_var_pairs($key, 'date_footer', $tagdata);
+					$tagdata = ee()->TMPL->swap_var_pairs($tag, 'date_footer', $tagdata);
 				}
 				else
 				{
-					$tagdata = ee()->TMPL->delete_var_pairs($key, 'date_footer', $tagdata);
+					$tagdata = ee()->TMPL->delete_var_pairs($tag, 'date_footer', $tagdata);
 				}
 			}
 			//  Weekly footer
@@ -199,11 +209,11 @@ class EE_Channel_header_and_footer_parser implements EE_Channel_parser_component
 				if ( ! isset($query_result[$data['count']]) OR
 					ee()->localize->format_date('%Y%W', $data['entry_date']) != ee()->localize->format_date('%Y%W', $query_result[$data['count']]['entry_date']))
 				{
-					$tagdata = ee()->TMPL->swap_var_pairs($key, 'date_footer', $tagdata);
+					$tagdata = ee()->TMPL->swap_var_pairs($tag, 'date_footer', $tagdata);
 				}
 				else
 				{
-					$tagdata = ee()->TMPL->delete_var_pairs($key, 'date_footer', $tagdata);
+					$tagdata = ee()->TMPL->delete_var_pairs($tag, 'date_footer', $tagdata);
 				}
 			}
 			//  Monthly footer
@@ -212,11 +222,11 @@ class EE_Channel_header_and_footer_parser implements EE_Channel_parser_component
 				if ( ! isset($query_result[$data['count']]) OR
 					ee()->localize->format_date('%Y%m', $data['entry_date']) != ee()->localize->format_date('%Y%m', $query_result[$data['count']]['entry_date']))
 				{
-					$tagdata = ee()->TMPL->swap_var_pairs($key, 'date_footer', $tagdata);
+					$tagdata = ee()->TMPL->swap_var_pairs($tag, 'date_footer', $tagdata);
 				}
 				else
 				{
-					$tagdata = ee()->TMPL->delete_var_pairs($key, 'date_footer', $tagdata);
+					$tagdata = ee()->TMPL->delete_var_pairs($tag, 'date_footer', $tagdata);
 				}
 			}
 			//  Yearly footer
@@ -225,11 +235,11 @@ class EE_Channel_header_and_footer_parser implements EE_Channel_parser_component
 				if ( ! isset($query_result[$data['count']]) OR
 					ee()->localize->format_date('%Y', $data['entry_date']) != ee()->localize->format_date('%Y', $query_result[$data['count']]['entry_date']))
 				{
-					$tagdata = ee()->TMPL->swap_var_pairs($key, 'date_footer', $tagdata);
+					$tagdata = ee()->TMPL->swap_var_pairs($tag, 'date_footer', $tagdata);
 				}
 				else
 				{
-					$tagdata = ee()->TMPL->delete_var_pairs($key, 'date_footer', $tagdata);
+					$tagdata = ee()->TMPL->delete_var_pairs($tag, 'date_footer', $tagdata);
 				}
 			}
 			//  Default (daily) footer
@@ -238,11 +248,11 @@ class EE_Channel_header_and_footer_parser implements EE_Channel_parser_component
 				if ( ! isset($query_result[$data['count']]) OR
 					ee()->localize->format_date('%Y%m%d', $data['entry_date']) != ee()->localize->format_date('%Y%m%d', $query_result[$data['count']]['entry_date']))
 				{
-					$tagdata = ee()->TMPL->swap_var_pairs($key, 'date_footer', $tagdata);
+					$tagdata = ee()->TMPL->swap_var_pairs($tag, 'date_footer', $tagdata);
 				}
 				else
 				{
-					$tagdata = ee()->TMPL->delete_var_pairs($key, 'date_footer', $tagdata);
+					$tagdata = ee()->TMPL->delete_var_pairs($tag, 'date_footer', $tagdata);
 				}
 			}
 		}

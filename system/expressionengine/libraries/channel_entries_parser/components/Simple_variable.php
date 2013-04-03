@@ -178,7 +178,8 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 	 */
 	protected function _paths($data, $tagdata, $key, $prefix)
 	{
-		$unprefixed = preg_replace('/^'.$prefix.'/', '', $key);
+		$unprefixed = substr($key, 0, strcspn($key, ' ='));
+		$unprefixed = preg_replace('/^'.$prefix.'/', '', $unprefixed);
 
 		//  parse profile path
 		if ($unprefixed == 'profile_path')
@@ -203,7 +204,8 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 		//  parse comment_path
 		elseif ($unprefixed == 'comment_path' OR $unprefixed == 'entry_id_path')
 		{
-			$path = (ee()->functions->extract_path($key) != '' AND ee()->functions->extract_path($key) != 'SITE_INDEX') ? ee()->functions->extract_path($key).'/'.$data['entry_id'] : $data['entry_id'];
+			$extracted_path = ee()->functions->extract_path($key);
+			$path = ($extracted_path != '' AND $extracted_path != 'SITE_INDEX') ? $extracted_path.'/'.$data['entry_id'] : $data['entry_id'];
 
 			$tagdata = str_replace(
 				LD.$key.RD,
@@ -215,7 +217,8 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 		//  parse URL title path
 		elseif ($unprefixed == 'url_title_path')
 		{
-			$path = (ee()->functions->extract_path($key) != '' AND ee()->functions->extract_path($key) != 'SITE_INDEX') ? ee()->functions->extract_path($key).'/'.$data['url_title'] : $data['url_title'];
+			$extracted_path = ee()->functions->extract_path($key);
+			$path = ($extracted_path != '' AND $extracted_path != 'SITE_INDEX') ? $extracted_path.'/'.$data['url_title'] : $data['url_title'];
 
 			$tagdata = str_replace(
 				LD.$key.RD,
@@ -227,7 +230,8 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 		//  parse title permalink
 		elseif ($unprefixed == 'title_permalink')
 		{
-			$path = (ee()->functions->extract_path($key) != '' AND ee()->functions->extract_path($key) != 'SITE_INDEX') ? ee()->functions->extract_path($key).'/'.$data['url_title'] : $data['url_title'];
+			$extracted_path = ee()->functions->extract_path($key);
+			$path = ($extracted_path != '' AND $extracted_path != 'SITE_INDEX') ? $extracted_path.'/'.$data['url_title'] : $data['url_title'];
 			
 			$tagdata = str_replace(
 				LD.$key.RD,
@@ -239,7 +243,8 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 		//  parse permalink
 		elseif ($unprefixed == 'permalink')
 		{
-			$path = (ee()->functions->extract_path($key) != '' AND ee()->functions->extract_path($key) != 'SITE_INDEX') ? ee()->functions->extract_path($key).'/'.$data['entry_id'] : $data['entry_id'];
+			$extracted_path = ee()->functions->extract_path($key);
+			$path = ($extracted_path != '' AND $extracted_path != 'SITE_INDEX') ? $extracted_path.'/'.$data['entry_id'] : $data['entry_id'];
 
 			$tagdata = str_replace(
 				LD.$key.RD,

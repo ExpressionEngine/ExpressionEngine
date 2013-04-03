@@ -455,7 +455,14 @@ class EE_Session {
 	 * Destroy session. Essentially logging a user off.
 	 */
 	public function destroy()
-	{		
+	{
+		if ($this->userdata['session_id'] == 0)
+		{
+			// just to be sure
+			$this->fetch_guest_data();
+			return;
+		}
+
 		ee()->db->where('session_id', $this->userdata['session_id']);
 		ee()->db->delete('sessions');
 		

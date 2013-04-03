@@ -895,6 +895,9 @@ $lang = array(
 'duplicate_field_name' =>
 'The field name you chose is already taken',
 
+'duplicate_truncated_field_name' =>
+'The field name you chose is too long and the truncated name is already taken.',
+
 'taken_field_group_name' =>
 'The name you have chosen is already taken',
 

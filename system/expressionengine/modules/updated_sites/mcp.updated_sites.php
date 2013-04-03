@@ -568,7 +568,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		}		
 
 		$j_response['aaData'] = $tdata;	
-		$sOutput = ee()->javascript->generate_json($j_response, TRUE);
+		$sOutput = json_encode($j_response);
 	
 		die($sOutput);
 	}

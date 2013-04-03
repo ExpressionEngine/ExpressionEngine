@@ -1714,6 +1714,7 @@ class Content_edit extends CP_Controller {
 
 		$c_row = FALSE;
 		$cat_group = '';
+		$status_group = '';
 		$channel_id = $this->input->get_post('channel_id');
 
 		if (count($channels) == 1)
@@ -1729,6 +1730,7 @@ class Content_edit extends CP_Controller {
 		{
 			$channel_id = $c_row->channel_id;
 			$cat_group = $c_row->cat_group;
+			$status_group = $c_row->status_group;
 		}
 		
 		$vars['channel_selected'] = $this->input->get_post('channel_id');
@@ -1798,16 +1800,12 @@ class Content_edit extends CP_Controller {
 		$vars['status_select_options'][''] = lang('filter_by_status');
 		$vars['status_select_options']['all'] = lang('all');
 
-		if ($cat_group != '')
+		if ($status_group != '')
 		{
-			$c_status = $this->channel_model->get_channel_info($channel_id, array('status_group'));
-			
 			$status_q = $this->db->select('status')
-				->where('group_id', $c_status->row('status_group'))
+				->where('group_id', $status_group)
 				->order_by('status_order')
 				->get('statuses');				
-
-			$c_status->free_result();
 
 			foreach ($status_q->result_array() as $row)
 			{

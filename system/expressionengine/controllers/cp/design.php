@@ -2759,7 +2759,7 @@ class Design extends CP_Controller {
 		}
 
 		$this->javascript->output('
-			$("#template_data").markItUp('.$this->javascript->generate_json($markItUp).');
+			$("#template_data").markItUp('.json_encode($markItUp).');
 		');
 			
 		// check what the message is also, as this method could throw itself
@@ -2829,7 +2829,7 @@ class Design extends CP_Controller {
 		}
 
 		$this->javascript->output('
-			$("#template_data").markItUp('.$this->javascript->generate_json($markItUp).');
+			$("#template_data").markItUp('.json_encode($markItUp).');
 		');
 
 		if ($template_id)
@@ -2929,7 +2929,7 @@ class Design extends CP_Controller {
 		}
 
 		$this->javascript->output('
-			$("#template_data").markItUp('.$this->javascript->generate_json($markItUp).');
+			$("#template_data").markItUp('.json_encode($markItUp).');
 		');
 		
 		$vars = array(
@@ -3121,7 +3121,7 @@ class Design extends CP_Controller {
 		}
 
 		$this->javascript->output('
-			$("#template_data").markItUp('.$this->javascript->generate_json($markItUp).');
+			$("#template_data").markItUp('.json_encode($markItUp).');
 		');
 
 		$this->cp->render('design/edit_theme_template', $vars);
@@ -3463,7 +3463,7 @@ class Design extends CP_Controller {
 			}
 		}
 		
-		$prefs_json = $this->javascript->generate_json($prefs_json);
+		$prefs_json = json_encode($prefs_json);
 		
 		$this->javascript->output("EE.pref_json = $prefs_json");
 		$this->javascript->output('$("#template_group_'.$vars['first_template'].'").addClass("selected");');

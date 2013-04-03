@@ -145,8 +145,8 @@ EE.file_manager.finish_sync = function(upload_directory_id) {
 			'errors':          EE.file_manager.sync_errors,
 			'error_count':     EE.file_manager.sync_errors.length
 		};
-	
-		$.tmpl('sync_complete_template', sync_complete).appendTo($('#sync'));
+		
+		$.tmpl('sync_complete_template', sync_complete).appendTo('#sync');
 
         // You can't have a conditional template in a table because Firefox ignores anything in a table that's untablelike
         if (sync_complete.error_count == 0) {

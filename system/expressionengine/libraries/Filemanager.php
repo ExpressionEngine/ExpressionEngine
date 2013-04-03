@@ -949,7 +949,7 @@ class Filemanager {
 		
 		if ($ajax)
 		{
-			die(ee()->javascript->generate_json($return));
+			die(json_encode($return));
 		}
 		
 		return $return;
@@ -1041,7 +1041,7 @@ class Filemanager {
 			}
 			
 			$data['id'] = $dir_id;
-			echo ee()->javascript->generate_json($data, TRUE);
+			echo json_encode($data);
 		}
 		exit;
 	}
@@ -1065,7 +1065,7 @@ class Filemanager {
 		else
 		{
 			$data['id'] = $dir_id;
-			echo ee()->javascript->generate_json($data, TRUE);
+			echo json_encode($data);
 		}
 		exit;
 	}
@@ -1087,7 +1087,7 @@ class Filemanager {
 		}
 		else
 		{
-			echo ee()->javascript->generate_json($data, TRUE);
+			echo json_encode($data);
 		}
 		exit;
 	}
@@ -2660,7 +2660,7 @@ class Filemanager {
 
 	function directory_files_map($source_dir, $directory_depth = 0, $hidden = false, $allowed_types = 'all')
 	{
-		ee()->load->helper('file');
+		ee()->load->helper(array('file', 'directory'));
 
 		if ($allowed_types == 'img')
 		{

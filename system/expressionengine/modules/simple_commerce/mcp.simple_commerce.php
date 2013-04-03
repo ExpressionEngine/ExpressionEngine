@@ -1729,7 +1729,7 @@ class Simple_commerce_mcp {
 			$channel_info[$key]['statuses'] = $statuses;
 		}
 
-		$channel_info = ee()->javascript->generate_json($channel_info, TRUE);
+		$channel_info = json_encode($channel_info);
 
 		$javascript = <<<MAGIC
 

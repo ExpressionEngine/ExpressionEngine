@@ -203,6 +203,9 @@ class EE_Channel_data_parser {
 		$orig_tagdata = $this->_parser->tagdata();
 		$parser_components = $this->_parser->components();
 
+
+		$dt = 0;
+
 		foreach ($entries as $row)
 		{
 			$tagdata = $orig_tagdata;
@@ -245,6 +248,7 @@ class EE_Channel_data_parser {
 				$row = call_user_func($callbacks['entry_row_data'], $tagdata, $row);
 			}
 
+
 			// Reset custom date fields
 
 			// Since custom date fields columns are integer types by default, if they
@@ -268,7 +272,6 @@ class EE_Channel_data_parser {
 			}
 
 			$this->_row = $row;
-
 
 			// conditionals!
 			$cond = $this->_get_conditional_data($row, $prefix, $channel);
@@ -295,6 +298,20 @@ class EE_Channel_data_parser {
 							$pre->pair_data($component)
 						);
 					}
+				}
+			}
+
+
+			// Run parsers that just process tagdata once (relationships, for example)
+			foreach ($parser_components->once() as $k => $component)
+			{
+				if ( ! $pre->is_disabled($component))
+				{
+					$tagdata = $component->replace(
+						$tagdata,
+						$this,
+						$pre->once_data($component)
+					);
 				}
 			}
 
@@ -466,6 +483,10 @@ class EE_Channel_data_parser {
 			$cond[$key] = ( ! array_key_exists('m_field_id_'.$value[0], $row)) ? '' : $row['m_field_id_'.$value[0]];
 		}
 
+		if ( ! $prefix)
+		{
+			return $cond;
+		}
 
 		$prefixed_cond = array();
 

@@ -556,7 +556,7 @@ class Metaweblog_api_mcp {
 			$channel_info[$key]['fields'] = $fields;
 		}
 
-		$channel_info = ee()->javascript->generate_json($channel_info, TRUE);
+		$channel_info = json_encode($channel_info);
 		$none_text = ee()->lang->line('none');
 		
 		$javascript = <<<MAGIC

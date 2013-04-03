@@ -794,7 +794,7 @@ EOT;
 			$channel_info[$key]['authors'] = $authors;
 		}
 
-		$channel_info = ee()->javascript->generate_json($channel_info, TRUE);
+		$channel_info = json_encode($channel_info);
 		$none_text = lang('none');
 
 		$javascript = <<<MAGIC
@@ -887,7 +887,7 @@ MAGIC;
 			}
 		}
 		
-		$upload_info = ee()->javascript->generate_json($this->image_dim_array, TRUE);
+		$upload_info = json_encode($this->image_dim_array);
 		
 		$javascript .= <<<MAGIC
 

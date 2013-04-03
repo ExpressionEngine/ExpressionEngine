@@ -57,7 +57,7 @@ jQuery(document).ready(function() {
 			}
 			
 			moving = false;
-		}, 60);	// remember, IE timeouts step in 15ms
+		}, 100);	// remember, IE timeouts step in 15ms
 	};
 
 	EE.navigation.mouse_listen = function() {
