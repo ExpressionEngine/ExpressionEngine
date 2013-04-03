@@ -471,7 +471,7 @@ class Updater {
 		}
 		
 		// And update the database to use utf8 in the future
-		ee()->db->query("ALTER DATABASE `{ee()->db->database}` CHARACTER SET utf8 COLLATE utf8_general_ci;");
+		ee()->db->query("ALTER DATABASE `".ee()->db->database."` CHARACTER SET utf8 COLLATE utf8_general_ci;");
 
 		// more work to do
 		return 'standardize_datetime';
@@ -549,11 +549,11 @@ class Updater {
 			$queries[] = "ALTER TABLE `{$table}` CHARACTER SET utf8 COLLATE utf8_general_ci;";
 		}
 		
-		$queries[] = "ALTER DATABASE `{ee()->db->database}` CHARACTER SET utf8 COLLATE utf8_general_ci;";
+		$queries[] = "ALTER DATABASE `".ee()->db->database."` CHARACTER SET utf8 COLLATE utf8_general_ci;";
 		
 		
 		// Lastly, create a table to indicate a successful update
-		$queries[] = "CREATE TABLE {ee()->db->dbprefix}large_db_update_completed(`id` int);";
+		$queries[] = "CREATE TABLE ".ee()->db->dbprefix."large_db_update_completed(`id` int);";
 		
 		
 		// Write bash file
@@ -576,20 +576,20 @@ class Updater {
 echo "Starting Large Database Conversion"
 
 echo "UTF-8 Conversion (Step 1: Dumping database with current charset)"
-mysqldump -h {ee()->db->hostname} -u {ee()->db->username} \
+mysqldump -h ".ee()->db->hostname." -u ".ee()->db->username." \
 	{$password_parameter} --opt --quote-names --skip-set-charset \
-	--default-character-set=latin1 {ee()->db->database} \
+	--default-character-set=latin1 ".ee()->db->database." \
 	{$tables} \
-	> {ee()->db->database}-pre-upgrade-dump.sql
+	> ".ee()->db->database."-pre-upgrade-dump.sql
 
 echo "UTF-8 Conversion (Step 2: Importing database with UTF-8 charset)"
-mysql -h {ee()->db->hostname} -u {ee()->db->username} \
+mysql -h ".ee()->db->hostname." -u ".ee()->db->username." \
 	{$password_parameter} --default-character-set=utf8 \
-	{ee()->db->database} < {ee()->db->database}-pre-upgrade-dump.sql
+	".ee()->db->database." < ".ee()->db->database."-pre-upgrade-dump.sql
 
 
 echo "UTF-8 Conversion (Step 3: Removing database dump)"
-rm {ee()->db->database}-pre-upgrade-dump.sql
+rm ".ee()->db->database."-pre-upgrade-dump.sql
 
 
 ##
@@ -608,8 +608,8 @@ echo "DST Conversion (Step 2: Writing temporary SQL file)"
 echo "\${Queries}" > temp.sql
 
 echo "DST Conversion (Step 3: Importing temp file, this may take several minutes)"
-mysql -h {ee()->db->hostname} -u {ee()->db->username} \
-	{$password_parameter} {ee()->db->database} < temp.sql
+mysql -h ".ee()->db->hostname." -u ".ee()->db->username." \
+	{$password_parameter} ".ee()->db->database." < temp.sql
 
 echo "DST Conversion (Step 4: Removing temp file)"
 rm temp.sql
@@ -2503,7 +2503,7 @@ BSH;
 	private function _fetch_db_size()
 	{
 		// db records and size
-		$query = ee()->db->query("SHOW TABLE STATUS FROM `{ee()->db->database}`");
+		$query = ee()->db->query("SHOW TABLE STATUS FROM `".ee()->db->database."`");
 
 		$totsize = 0;
 		$records = 0;
