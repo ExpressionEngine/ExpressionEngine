@@ -50,6 +50,7 @@ class EE_Channel_parser_components {
 	 */
 	protected $pair = array();
 	protected $single = array();
+	protected $once = array();
 
 	public function __construct()
 	{
@@ -57,10 +58,11 @@ class EE_Channel_parser_components {
 		// EE->channel_entries_parser for your own additions. Gracias.
 
 		// Prep built-in parsers. Don't mess with the order, it matters!
-		$this->register_pair('EE_Channel_category_parser');
-		$this->register_pair('EE_Channel_custom_field_pair_parser');
 		$this->register_pair('EE_Channel_header_and_footer_parser');
-		$this->register_pair('EE_Channel_relationship_parser');
+
+		$this->register_once('EE_Channel_category_parser');
+		$this->register_once('EE_Channel_custom_field_pair_parser');
+		$this->register_once('EE_Channel_relationship_parser');
 
 		$this->register_single('EE_Channel_simple_conditional_parser');
 		$this->register_single('EE_Channel_switch_parser');
@@ -87,7 +89,7 @@ class EE_Channel_parser_components {
 			throw new InvalidArgumentException($class.' must implement the EE_Channel_parser_component interface.');
 		}
 
-		$this->pair_components[] = $obj;
+		$this->pair[] = $obj;
 	}
 
 	// ------------------------------------------------------------------------
@@ -106,7 +108,26 @@ class EE_Channel_parser_components {
 			throw new InvalidArgumentException($class.' must implement the EE_Channel_parser_component interface.');
 		}
 
-		$this->single_components[] = $obj;
+		$this->single[] = $obj;
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Register a component that only runs once regardless of tag names.
+	 *
+	 * @param String	Class name of new component
+	 */
+	public function register_once($class)
+	{
+		$obj = new $class;
+
+		if ( ! $obj instanceOf EE_Channel_parser_component)
+		{
+			throw new InvalidArgumentException($class.' must implement the EE_Channel_parser_component interface.');
+		}
+
+		$this->once[] = $obj;
 	}
 
 	// ------------------------------------------------------------------------
@@ -118,7 +139,7 @@ class EE_Channel_parser_components {
 	 */
 	public function pair()
 	{
-		return $this->pair_components;
+		return $this->pair;
 	}
 
 	// ------------------------------------------------------------------------
@@ -130,7 +151,19 @@ class EE_Channel_parser_components {
 	 */
 	public function single()
 	{
-		return $this->single_components;
+		return $this->single;
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Single tag parsing components
+	 *
+	 * @return Array	List of single tag parsing components
+	 */
+	public function once()
+	{
+		return $this->once;
 	}
 }
 
