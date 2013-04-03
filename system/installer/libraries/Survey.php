@@ -110,7 +110,7 @@ class Survey {
 			$ch = curl_init();
 			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
 			curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
-			curl_setopt($ch, CURLOPT_URL, 'http://ellislab.survey/');
+			curl_setopt($ch, CURLOPT_URL, 'http://survey-collector.ellislab.com/');
 			curl_setopt($ch, CURLOPT_POST, 1); 
 			curl_setopt($ch, CURLOPT_POSTFIELDS, $postdata);
 			
@@ -122,7 +122,7 @@ class Survey {
 		}
 		else
 		{
-			$fp = @fsockopen('ellislab.survey', 80, $error_num, $error_str, 5);
+			$fp = @fsockopen('survey-collector.ellislab.com', 80, $error_num, $error_str, 5);
 
 			if (is_resource($fp))
 			{
