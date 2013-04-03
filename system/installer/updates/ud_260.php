@@ -352,50 +352,39 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		require_once(APPPATH . 'libraries/Functions.php');	
 		$this->EE->functions = new Installer_Functions();
 
+		// We need to figure out which template to load.
+		// Need to check the edit date.
 		$this->EE->load->model('template_model');
-		$templates = $this->EE->template_model->fetch(); 
+		$templates = $this->EE->template_model->fetch_last_edit(); 
 
 		// related_entries
 		// Foreach template
 		foreach($templates as $template)
 		{
-			// Find the {related_entries} tags (match pairs and wrapped tags)
+			// Find the {related_entries} and {reverse_related_entries} tags 
+			// (match pairs and wrapped tags)
 			$this->_update_related_entries_tags($template);
 
 			// save the template
 			// if saving to file, save the file
-			//$this->EE->template_model->save_entity($template);
+			$this->EE->template_model->save_entity($template);
 		}
-
-		// reverse_related_entries
-		// foreach template
-
-			// Find the {reverse_related_entries} tags (match pairs and wrapped tags)
 		
-			// parse out any parameters
-
-			// replace the tag with the {parents} tag.
-
-			// prefix contained variables with the "parents" tag
-			// HARD again, knowing which ones to prefix is gonna be a pain in the ass
-
-			// save hte template
-
-			// if saving to file, save the file
-
+		return true;
 	}
 
 	/**
 	 * Find all {related_entries} tags in the passed Template
 	 *
-	 * Searches a passed Template (in the form of a Template_Entity) for
-	 * {related_entries} tags and parses them out into an array where the keys
-	 * are the tag and the values are the contained text (and any child tags).
+	 * Takes a passed Template_Entity and searches the template for
+	 * instances of {related_entries} and {reverse_related_entries}.
+	 * It then replaces them with the proper child tag or parents tag
+	 * respectively.  It does the replace in the entity object, allowing
+	 * the template to be saved by simply saving the entity.
 	 *
 	 * @param Template_Entity	The template you wish to find tags in.
 	 *
-	 * @return string[]	An array in which the keys are the tag and the values
-	 *					are the enclosed text.
+	 * @return void
 	 */
 	private function _update_related_entries_tags(Template_Entity $template)
 	{
@@ -405,6 +394,13 @@ If you do not wish to reset your password, ignore this message. It will expire i
 
 		$template->template_data = $parser->assign_relationship_data($template->template_data);
 
+		// First deal with {related_entries} tags.  Since these are
+		// just a single entry relationship, we can replace the child
+		// variables with the single entry short-cut
+		//
+		// NOTE If we don't use a tag pair, we have no where for parameters
+		// to go.  Maybe check for parameters and make the decision to 
+		// use tag pair vs single entry then?
 		foreach ($parser->related_data as $marker=>$relationship_tag)
 		{
 			$tagdata = $relationship_tag['tagdata'];
@@ -417,18 +413,34 @@ If you do not wish to reset your password, ignore this message. It will expire i
 			$target = '{REL[' . $relationship_tag['field_name'] . ']' . $marker . 'REL}';
 			$template->template_data = str_replace($target, $tagdata, $template->template_data);
 		}	
+
+		// Now deal with {reverse_related_entries}, just replace each
+		// tag pair with a {parents} tag pair and put the parameters from
+		// the original tag onto the {parents} tag.
+		foreach ($parser->reverse_related_data as $marker=>$relationship_tag)
+		{
+			$tagdata = $relatioship_tag['tagdata'];
+			foreach($relationship_tag['var_single'] as $variable)
+			{
+				$new_var = '{parents:' . $variable . '}';
+				$tagdata = str_replace('{' . $variable . '}', $new_var, $tagdata);
+			}
+
+			$parentTag = 'parents ';
+			foreach ($relationship_tag['params'] as $param=>$value)
+			{
+				$parentTag .= $param . '="' . $value .'" ';
+			}
+
+			$tagdata = '{' . $parentTag . '}' . $tagdata . '{/parents}';
+
+			$target = '{REL[' . $relationship_tag['field_name'] . ']' . $marker . 'REL}';
+			$template->template_data = str_replace($target, $tagdata, $template->template_data);
+		}
 	}
+
 
 	// --------------------------------------------------------------------------
-
-	/**
-	 *
-	 */
-	private function _update_relationships_fields()
-	{
-		// This one is going to take some research.  I don't even know where to start.
-	}
-
 
 }	
 /* END CLASS */

@@ -28,16 +28,156 @@ class Template_model extends CI_Model {
 	// These methods utilized the Template_Entity object.
 	// --------------------------------------------------
 
+	// Private on purpose, no one should know or override,
+	// this hopefully won't be there long.
+	// Temporary stand in cache of site preferences, to be
+	// used with multi-site manager.  Just here until we
+	// can rewrite EE_Config to do this properly.  
+	private $site_prefs_cache = array();
+
 	/**
+	 * Fetch Templates and return Template_Entities
+	 *
+	 * Fetches templates from the database (loading the data from
+	 * a saved file if appropriate) and returns an array of
+	 * populated Template_Entity objects.
+	 * 
+	 * @param	mixed[] Optional. An array of fields and values that can be
+	 *					used to filter the entities returned. Any field from
+	 *					Template_Entity may be used.  The key of the array is
+	 *					the field name and the values of the array are the
+	 *					values to check.  Values are only checked for exact
+	 *					equality and will be connected with 'AND'.  	
+	 *
+	 * @return	Template_Entity[]
+	 */
+	public function fetch(array $fields=array())
+	{
+		$templates = $this->fetch_from_db($fields);
+		foreach($templates as $template)
+		{
+			if ($template->save_template_file) 
+			{
+				$this->_load_template_file($template);
+			}
+		}
+	}
+
+	/**
+	 * Load the Template from the Appropriate File
+	 *
+	 * Takes a populated Template_Entity and finds the file in which the
+	 * template has been saved.  It then loads the file's content into
+	 * Template_Entity::template_data.  If the $only_load_last_edit parameter
+ 	 * is passed as TRUE, then it will only load the file if the file was 
+	 * edited more recently than the template in the database. Otherwise
+	 * it will bail out.
+	 * 
+	 * @param	Template_Entity	The populated template object you wish to load
+	 *							from a file.
+	 * @param	boolean			When passed as TRUE, will only load the file
+	 * 							if the file was edited more recently than
+	 * 							the database.			
+	 *
+	 * @return	void
+	 */
+	protected function _load_template_file(Template_Entity $template, $only_load_last_edit=FALSE)
+	{
+	
+		// FIXME  Why on EARTH was this done in the Template parser and not
+		// originally written right into EE_Config?  Why is EE_Config not
+		// itself capable of caching preferences when used with MSM
+		$site_switch = FALSE;
+		if ($this->EE->config->item('site_id') != $template->site_id)
+		{
+			$site_switch = $this->EE->config->config;
+			
+			if (isset($this->site_prefs_cache[$template->site_id]))
+			{
+				$this->EE->config->config = $this->site_prefs_cache[$template->site_id];
+			}
+			else
+			{
+				$this->EE->config->site_prefs('', $template->site_id);
+				$this->site_prefs_cache[$template->site_id] = $this->EE->config->config;
+			}
+		}
+
+		// Get the filepath to the template's saved file.
+		$this->load->library('api');
+		$this->api->instantiate('template_structure');
+		$basepath = rtrim($this->config->item('tmpl_file_basepath'), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+		
+		$filepath = $basepath . $this->config->item('site_short_name') . DIRECTORY_SEPARATOR 
+			. $template->group_name . '.group' . DIRECTORY_SEPARATOR . $template->template_name
+			. $this->api_template_structure->file_extensions($row['template_type']);
+	
+		// We don't need the other site's configuration values anymore, so
+		// reset them.  If we do this here we only have to do it once,
+		// otherwise we have to do it everywhere we bail out.  	
+		if ($site_switch !== FALSE)
+		{
+			$this->EE->config->config = $site_switch;
+		}
+
+		if (file_exists($basepath))
+		{
+			if ($only_load_last_edit) 
+			{
+				$this->load->helper('file');
+				$file_date = get_file_info($basepath, 'date');
+				if ($file_date !== FALSE && $template->edit_date >= $file_date['date'])
+				{
+					return;
+				}
+			}
+			
+			$template->template_data = file_get_contents($basepath);
+			$template->loaded_from_file = TRUE;
+		}
+
+	}
+
+	// ----------------------------------------------------------------
+
+	/**
+	 * Fetch Template Entities from the Database
+	 *
+	 * Queries the database and returns an array of populated Template_Entity
+	 * objects.  Does not load the files associated with those entities (if
+	 * there are any), only loads the template stored in the database.
+	 *
+	 * @param	mixed[] Optional. An array of fields and values that can be
+	 *					used to filter the entities returned. Any field from
+	 *					Template_Entity may be used.  The key of the array is
+	 *					the field name and the values of the array are the
+	 *					values to check.  Values are only checked for exact
+	 *					equality and will be connected with 'AND'.  	
+	 *
+	 * @return	Template_Entity[]
 	 *
 	 */
-	public function fetch()
+	public function fetch_from_db(array $fields=array()) 
 	{
+		foreach ($fields as $field=>$value)
+		{
+			$this->db->where($field, $value);
+		}
+
 		return $this->_entities_from_db_result($this->db->get('templates'));
 	}
 
 	/**
+	 * Convert Database Result Into Entity Objects
 	 *
+	 * Takes a database result object and returns an array of Template_Entity
+	 * objects. Database result must be a query against the templates table. If
+	 * no rows are found in the result, an empty array will be returned.
+	 *
+	 * @param	DB_result	The result object from a query against the templates
+	 *						table.
+	 *
+	 * @return	Template_Entity[]
 	 */
 	protected function _entities_from_db_result($result)
 	{
@@ -53,8 +193,161 @@ class Template_model extends CI_Model {
 		}
 		return $entities;
 	}
+
+	// ----------------------------------------------------------------
+
+	/**
+	 * Fetch the Most Recently Edited Version of the Template (File or DB)
+	 *
+	 * Load the template entities from the database and, in the case that the
+	 * saved file was editted more recently than the version in the database,
+	 * override the entity's content with the version in the file.
+	 *
+	 * @param	mixed[] Optional. An array of fields and values that can be
+	 *					used to filter the entities returned. Any field from
+	 *					Template_Entity may be used.  The key of the array is
+	 *					the field name and the values of the array are the
+	 *					values to check.  Values are only checked for exact
+	 *					equality and will be connected with 'AND'.  	
+	 *
+	 * @return	Template_Entity[]
+	 */
+	public function fetch_last_edit(array $fields=array())
+	{
+		$templates = $this->fetch_from_db($fields);
+		foreach($templates as $template)
+		{
+			if ($template->save_template_file) 
+			{
+				$this->_load_template_file($template, TRUE);
+			}
+		}
+	}
+
+	// ----------------------------------------------------------------
+
+	/**
+	 * Saves an Entity to the Database/File
+	 *
+	 * Saves an entity to the database and, if file saving is enabled for that
+	 * template, saves it to the appropriate file.
+	 *
+	 * @param Template_Entity The template you want to save.
+	 */
+	public function save_entity(Template_Entity $entity)
+	{
+		$this->save_to_database($entity);
 		
-	
+		if ($entity->save_template_file)
+		{
+			$this->save_to_file($entity);
+		} 
+	}		
+
+	// -----------------------------------------------------------------
+
+	/**
+	 * 
+	 */	
+	public function save_to_file(Template_Entity $entity)
+	{
+		// check the main template path
+		$basepath = $this->config->slash_item('tmpl_file_basepath');
+
+		if ( ! is_dir($basepath) OR ! is_really_writable($basepath))
+		{
+			return FALSE;
+		}
+		
+		$this->load->library('api');
+		$this->api->instantiate('template_structure');
+		
+		// add a site short name folder, in case MSM uses the same template path, and repeat
+		$basepath .= $this->config->item('site_short_name');
+		
+		if ( ! is_dir($basepath))
+		{
+			if ( ! mkdir($basepath, DIR_WRITE_MODE))
+			{
+				return FALSE;
+			}
+			chmod($basepath, DIR_WRITE_MODE);
+		}
+		
+		// and finally with our template group
+		$basepath .= '/'.$entity->template_group.'.group';
+
+		if ( ! is_dir($basepath))
+		{
+			if ( ! mkdir($basepath, DIR_WRITE_MODE))
+			{
+				return FALSE;
+			}
+			chmod($basepath, DIR_WRITE_MODE); 
+		}
+		
+		$filename = $entity->template_name . $this->api_template_structure->file_extensions($entity->template_type);
+		
+		if ( ! $fp = fopen($basepath.'/'.$filename, FOPEN_WRITE_CREATE_DESTRUCTIVE))
+		{
+			return FALSE;
+		}
+		else
+		{
+			flock($fp, LOCK_EX);
+			fwrite($fp, $entity->template_data);
+			flock($fp, LOCK_UN);
+			fclose($fp);
+			
+			chmod($basepath.'/'.$filename, FILE_WRITE_MODE); 
+		}
+
+		return TRUE;
+	}
+
+	// -----------------------------------------------------------------
+
+	/**
+ 	 *
+	 */
+	public function save_to_database(Template_Entity $entity)
+	{
+		if ($entity->template_id)
+		{
+			$this->create_template($this->_entity_to_db_array($entity));
+		}		
+		else 
+		{
+			$this->update_template_ajax($entity->template_id, $this->_entity_to_db_array($entity));
+		}
+	}
+
+	/**
+	 *
+	 */
+	protected function _entity_to_db_array(Template_Entity $entity)
+	{	
+		$data = array(
+			'template_id' => $entity->template_id,
+			'site_id' => $entity->site_id,
+			'group_id' => $entity->group_id,
+			'template_name' => $entity->template_name,
+			'save_template_file' => $entity->save_template_file,
+			'template_type' => $entity->template_type,
+			'template_data' => $entity->template_data,
+			'template_notes' => $entity->template_notes,
+			'edit_date' => $entity->edit_date,
+			'last_author_id' => $entity->last_author_id,
+			'cache' => $entity->cache,
+			'refresh' => $entity->refresh,
+			'no_auth_bounce' => $entity->no_auth_bounce,
+			'enable_http_auth' => $entity->enable_http_auth,
+			'allow_php' => $entity->allow_php,
+			'php_parse_location' => $entity->php_parse_location,
+			'hits' => $entity->hits
+		);
+		return $data;
+	}
 
 	// -----------------------------------------------------------------
 	
@@ -747,87 +1040,97 @@ class Template_Entity
 	/**
 	 *
 	 */
-	protected $_template_id;
+	protected $template_id;
 	
 	/**
 	 *
 	 */
-	protected $_site_id;
+	protected $site_id;
 	
 	/**
 	 *
 	 */
-	protected $_group_id;
-	
-	/**
-	 *
-	 */
-	protected $_template_name;
-	
-	/**
-	 *
-	 */
-	protected $_save_template_file;
-	
-	/**
-	 *
-	 */
-	protected $_template_type;
+	protected $group_id;
 
 	/**
 	 *
 	 */
-	protected $_template_data;
-
-	/**
-	 *
-	 */
-	protected $_template_notes;
-
-	/**
-	 *
-	 */
-	protected $_edit_date;
+	protected $template_name;
 	
 	/**
 	 *
 	 */
-	protected $_last_author_id;
+	protected $save_template_file;
 	
 	/**
 	 *
 	 */
-	protected $_cache;
-	
-	/**
-	 *
-	 */
-	protected $_refresh;
+	protected $template_type;
 
 	/**
 	 *
 	 */
-	protected $_no_auth_bounce;
-	
-	/**
-	 *
-	 */
-	protected $_enable_http_auth;
+	protected $template_data;
 
 	/**
 	 *
 	 */
-	protected $_allow_php;
-	
-	/**
-	 *
-	 */
-	protected $_php_parse_location;
+	protected $template_notes;
 
 	/**
 	 *
 	 */
-	protected $_hits;
+	protected $edit_date;
+	
+	/**
+	 *
+	 */
+	protected $last_author_id;
+	
+	/**
+	 *
+	 */
+	protected $cache;
+	
+	/**
+	 *
+	 */
+	protected $refresh;
+
+	/**
+	 *
+	 */
+	protected $no_auth_bounce;
+	
+	/**
+	 *
+	 */
+	protected $enable_http_auth;
+
+	/**
+	 *
+	 */
+	protected $allow_php;
+	
+	/**
+	 *
+	 */
+	protected $php_parse_location;
+
+	/**
+	 *
+	 */
+	protected $hits;
+
+	/**
+	 * Non-Database
+	 *
+	 * An entity only property that indicates whether this
+	 * entity was loaded from a file or just the database. If
+	 * TRUE then this template was loaded from a file, otherwise
+	 * it was loaded from the database.
+	 */
+	protected $loaded_from_file = FALSE;
 
 	/**
 	 *
@@ -836,7 +1139,6 @@ class Template_Entity
 	{
 		foreach ($templates_row as $property=>$value)
 		{
-			$property = '_' . $property;
 			if ( property_exists($property))
 			{
 				$this->{$property} = $value;
@@ -849,9 +1151,7 @@ class Template_Entity
 	 */		
 	public function __get($name)
 	{
-		$name = '_' . $name;
-
-		if ( ! property_exists($this, $name))
+		if ( strpos('_', $name) === 0  OR ! property_exists($this, $name))
 		{
 			throw new RuntimeException('Attempt to access non-existent property "' . $name . '"');
 		}
@@ -864,9 +1164,7 @@ class Template_Entity
 	 */
 	public function __set($name, $value)
 	{
-		$name = '_' . $name;
-
-		if ( ! property_exists($this, $name))
+		if ( strpos('_', $name) === 0 OR ! property_exists($this, $name))
 		{
 			throw new RuntimeException('Attempt to access non-existent property "' . $name . '"');
 		}
