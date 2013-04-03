@@ -48,19 +48,26 @@ class EE_Channel_relationship_parser implements EE_Channel_parser_component {
 	 */
 	public function pre_process($tagdata, EE_Channel_preparser $pre)
 	{
-		$channel = $pre->channel();
-
-		$zwfields = $channel->zwfields;
-
+		$zwfields = $pre->channel()->zwfields;
 		$site_id = config_item('site_id');
 
-		if (isset($zwfields[$site_id]) && ! empty($zwfields[$site_id]))
+		if ( ! isset($zwfields[$site_id]) OR empty($zwfields[$site_id]))
 		{
-			ee()->load->library('relationships');
-			$relationship_parser = ee()->relationships->get_relationship_parser($zwfields[$site_id]);
-			$relationship_parser->query_for_entries($pre->entry_ids());
+			return NULL;
+		}
 
-			return $relationship_parser;
+		ee()->load->library('relationships');
+
+		try
+		{
+			return ee()->relationships->get_relationship_parser(
+				$zwfields[$site_id],
+				$pre->entry_ids()
+			);
+		}
+		catch (RelationshipException $e)
+		{
+			ee()->TMPL->log_item($e->getMessage());
 		}
 
 		return NULL;
@@ -87,6 +94,13 @@ class EE_Channel_relationship_parser implements EE_Channel_parser_component {
 		$row = $obj->row();
 		$channel = $obj->channel();
 
-		return $relationship_parser->parse_relationships($row['entry_id'], $tagdata, $channel);
+		try
+		{
+			return $relationship_parser->parse($row['entry_id'], $tagdata, $channel);
+		}
+		catch (RelationshipException $e)
+		{
+			return $tagdata;
+		}
 	}
 }
