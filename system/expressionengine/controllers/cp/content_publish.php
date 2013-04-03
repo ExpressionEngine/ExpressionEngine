@@ -449,11 +449,6 @@ class Content_publish extends CP_Controller {
 
 		$this->api->instantiate('channel_fields');
 
-		if ( ! function_exists('json_decode'))
-		{
-			$this->load->library('Services_json');
-		}
-
 		$this->output->enable_profiler(FALSE);
 		$error 				= array();
 		$valid_name_error 	= array();
