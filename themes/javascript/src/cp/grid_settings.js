@@ -130,8 +130,7 @@
 		},
 
 		/**
-		 * Binds click listener to Copy button in each column to clone the column
-		 * and insert it after the column being cloned
+		 * Binds click listener to Delete button in each column to delete the column
 		 */
 		_bindDeleteButton: function()
 		{
@@ -183,14 +182,7 @@
 			var colCount = this.root.find('.grid_col_settings').size(),
 				deleteButtons = this.root.find('.grid_button_delete');
 
-			if (colCount < 2)
-			{
-				deleteButtons.hide();
-			}
-			else
-			{
-				deleteButtons.show();
-			}
+			deleteButtons.toggle(colCount > 1);
 		},
 
 		/**

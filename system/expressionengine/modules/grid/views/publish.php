@@ -17,7 +17,7 @@
 				</thead>
 				<tbody class="grid_row_container">
 					<?php foreach ($rows as $row): ?>
-						<tr>
+						<tr class="grid_row">
 							<td class="grid_handle">&nbsp;</td>
 							<?php foreach ($columns as $column): ?>
 								<td width="33%">
@@ -26,7 +26,7 @@
 							<?php endforeach ?>
 						</tr>
 					<?php endforeach ?>
-					<tr class="blank_row">
+					<tr class="grid_row blank_row">
 						<td class="grid_handle">&nbsp;</td>
 						<?php foreach ($columns as $column): ?>
 							<td width="33%">

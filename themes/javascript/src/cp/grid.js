@@ -17,7 +17,8 @@
 			this._addMinimumRows();
 			this._bindSortable();
 			this._bindAddButton();
-			this._toggleDeleteButtons();
+			this._bindDeleteButton();
+			this._toggleRowManipulationButtons();
 
 			// Disable input elements in our blank template container so they
 			// don't get submitted on form submission
@@ -49,7 +50,6 @@
 			if (rowsCount == 0 && neededRows == 0)
 			{
 				this.emptyField.show();
-				this.find
 			}
 
 			while (neededRows > 0)
@@ -61,21 +61,27 @@
 		},
 
 		/**
-		 * Looks at current row count, and if it's above the minimum rows setting,
-		 * shows the delete buttons; otherwise, hides the delete buttons
+		 * Toggles the visibility of the Add button and Delete buttons for rows
+		 * based on the number of rows present and the max and min rows settings
 		 */
-		_toggleDeleteButtons: function()
+		_toggleRowManipulationButtons: function()
 		{
 			var rowCount = this._getNumberOfRows();
-			var deleteButtons = this.root.find('.grid_button_delete');
 
-			if (rowCount <= this.settings.grid_min_rows)
+			if (this.settings.grid_max_rows !== '')
 			{
-				deleteButtons.hide();
+				var addButton = this.root.find('.grid_button_add');
+
+				// Show add button if row count is below the max rows setting
+				addButton.toggle(rowCount < this.settings.grid_max_rows);
 			}
-			else
+
+			if (this.settings.grid_min_rows !== '')
 			{
-				deleteButtons.show();
+				var deleteButtons = this.root.find('.grid_button_delete');
+
+				// Show delete buttons if the row count is above the min rows setting
+				deleteButtons.toggle(rowCount > this.settings.grid_min_rows);
 			}
 		},
 
@@ -84,7 +90,10 @@
 		 */
 		_getNumberOfRows: function()
 		{
-			return this.rowContainer.find('tr').not(this.blankRow.add(this.emptyField)).size()
+			return this.rowContainer
+				.find('tr.grid_row')
+				.not(this.blankRow.add(this.emptyField))
+				.size()
 		},
 
 		/**
@@ -111,8 +120,7 @@
 			// Clone our blank row
 			el = this.blankRow.clone();
 
-			// Remove any classes, such as 'blank_row'
-			el.removeClass();
+			el.removeClass('blank_row');
 
 			// Increment namespacing on inputs
 			el.html(
@@ -132,11 +140,34 @@
 			this.emptyField.hide();
 
 			// Hide/show delete buttons depending on minimum row setting
-			// TODO: Handle max rows
-			this._toggleDeleteButtons();
+			this._toggleRowManipulationButtons();
 
 			// TODO: fire JS event so fieldtypes can bind listeners and things
-		}
+		},
+
+		/**
+		 * Binds click listener to Delete button in row column to delete the row
+		 */
+		_bindDeleteButton: function()
+		{
+			var that = this;
+
+			this.root.on('click', '.grid_button_delete', function(event)
+			{
+				event.preventDefault();
+
+				// Remove the row
+				$(this).parents('tr.grid_row').remove();
+
+				that._toggleRowManipulationButtons();
+
+				// Show our empty field message if we have no rows left
+				if (that._getNumberOfRows() == 0)
+				{
+					that.emptyField.show();
+				}
+			});
+		},
 	};
 
 	/**

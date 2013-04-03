@@ -179,6 +179,12 @@ class Grid_ft extends EE_Fieldtype {
 
 	public function save_settings($data)
 	{
+		// Make sure grid_min_rows is at least zero
+		if (empty($data['grid_min_rows']))
+		{
+			$data['grid_min_rows'] = 0;
+		}
+		
 		return $data;
 	}
 
