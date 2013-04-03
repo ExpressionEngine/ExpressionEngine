@@ -190,9 +190,10 @@ class EE_Channel_parser {
 	 */
 	public function parse(Channel $channel, array $entries, array $config = array())
 	{
-		$pre = $this->pre_parser($channel, array_keys($entries), $config);
-		$parser = $this->data_parser($pre);
-
+		$parser = $this->data_parser(
+			$this->pre_parser($channel, array_keys($entries), $config)
+		);
+		
 		return $parser->parse($entries, $config);
 	}
 
