@@ -132,14 +132,12 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
 	 */
 	public function replace($tagdata, EE_Channel_data_parser $obj, $pfield_chunks)
 	{
-		$tag = $obj->tag();
 		$data = $obj->row();
 		$prefix = $obj->prefix();
 
 		$site_id = $data['site_id'];
 
 		$cfields = $obj->channel()->cfields[$site_id];
-		$pfields = $obj->channel()->pfields[$site_id];
 
 		if ( ! isset($pfield_chunks[$site_id]))
 		{
@@ -147,53 +145,45 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
 		}
 
 		$pfield_chunk = $pfield_chunks[$site_id];
-
-		$field_name = preg_replace('/^'.$prefix.'/', '', $tag);
-		$field_name = substr($field_name, strpos($field_name, ' '));
-
 		$ft_api = ee()->api_channel_fields;
 
-		if (isset($cfields[$field_name]) && isset($pfields[$cfields[$field_name]]))
+		foreach ($pfield_chunk as $tag_name => $chunks)
 		{
+			$field_name = preg_replace('/^'.$prefix.'/', '', $tag_name);
+			$field_name = substr($field_name, strpos($field_name, ' '));
 			$field_id = $cfields[$field_name];
-			$key_name = $pfields[$field_id];
 
-			if ($ft_api->setup_handler($field_id))
+			$obj = $ft_api->setup_handler($field_id, TRUE);
+
+			if ($obj)
 			{
-				$ft_api->apply('_init', array(array('row' => $data)));
-				$pre_processed = $ft_api->apply('pre_process', array($data['field_id_'.$field_id]));
+				$_ft_path = $ft_api->ft_paths[$ft_api->field_type];
+				ee()->load->add_package_path($_ft_path, FALSE);
 
-				// Blast through all the chunks
-				if (isset($pfield_chunk[$prefix.$field_name]))
+				$obj->_init(array('row' => $data));
+				$pre_processed = $obj->pre_process($data['field_id_'.$field_id]);
+
+				foreach($chunks as $chk_data)
 				{
-					foreach($pfield_chunk[$prefix.$field_name] as $chk_data)
+					$tpl_chunk = '';
+					// Set up parse function name based on whether or not
+					// we have a modifier
+					$parse_fnc = (isset($chk_data[3])) ? 'replace_'.$chk_data[3] : 'replace_tag';
+
+					if (method_exists($obj, $parse_fnc))
 					{
-						$tpl_chunk = '';
-						// Set up parse function name based on whether or not
-						// we have a modifier
-						$parse_fnc = (isset($chk_data[3]))
-							? 'replace_'.$chk_data[3] : 'replace_tag';
-
-						if ($ft_api->check_method_exists($parse_fnc))
-						{
-							$tpl_chunk = $ft_api->apply(
-								$parse_fnc,
-								array($pre_processed, $chk_data[1], $chk_data[0])
-							);
-						}
-						// Go to catchall and include modifier
-						elseif ($ft_api->check_method_exists($parse_fnc_catchall)
-							AND isset($chk_data[3]))
-						{
-							$tpl_chunk = $ft_api->apply(
-								$parse_fnc_catchall,
-								array($pre_processed, $chk_data[1], $chk_data[0], $chk_data[3])
-							);
-						}
-
-						$tagdata = str_replace($chk_data[2], $tpl_chunk, $tagdata);
+						$tpl_chunk = $obj->$parse_fnc($pre_processed, $chk_data[1], $chk_data[0]);
 					}
+					// Go to catchall and include modifier
+					elseif (method_exists($obj, 'replace_tag_catchall') AND isset($chk_data[3]))
+					{
+						$tpl_chunk = $obj->replace_tag_catchall($pre_processed, $chk_data[1], $chk_data[0], $chk_data[3]);
+					}
+
+					$tagdata = str_replace($chk_data[2], $tpl_chunk, $tagdata);
 				}
+
+				ee()->load->remove_package_path($_ft_path);
 			}
 		}
 
