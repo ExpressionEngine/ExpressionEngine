@@ -2905,18 +2905,7 @@ class Channel {
 			}
 		//
 		// -------------------------------------------
-/*
-		//  Set default date header variables
-		$heading_date_hourly  = 0;
-		$heading_flag_hourly  = 0;
-		$heading_flag_weekly  = 1;
-		$heading_date_daily	  = 0;
-		$heading_flag_daily	  = 0;
-		$heading_date_monthly = 0;
-		$heading_flag_monthly = 0;
-		$heading_date_yearly  = 0;
-		$heading_flag_yearly  = 0;
-*/
+
 		ee()->load->library('channel_entries_parser');
 		$parser = ee()->channel_entries_parser->create(ee()->TMPL->tagdata/*, $prefix=''*/);
 
