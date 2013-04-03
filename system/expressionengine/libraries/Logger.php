@@ -186,7 +186,8 @@ class EE_Logger {
 			'line'				=> $line,						// Line where 'function' was called
 			'file'				=> $file,						// File where 'function' was called 
 			'deprecated_since'	=> $version,					// Version function was deprecated
-			'use_instead'		=> htmlentities($use_instead)	// Function to use instead
+			'use_instead'		=> ( ! empty($use_instead))		// Function to use instead
+				? htmlentities($use_instead) : NULL
 		);
 
 		// On page requests we need to check a bunch of other stuff
