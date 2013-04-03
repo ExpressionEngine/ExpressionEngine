@@ -16,20 +16,6 @@
 	
 	<div id="survey_body">
 		<hr />
-		
-		<div class="pad">
-			<p><?=lang('would_you_recommend', 'would_you_recommend')?></p>
-			<?=lang('unlikely')?>&nbsp;&nbsp;&nbsp;&nbsp;
-			<?php for ($i = 0; $i <= 10; $i ++):?>
-				<?=form_radio('would_you_recommend', $i, FALSE, 'id="would_you_recommend_'.$i.'"')?> <label for="would_you_recommend_<?=$i?>"><?=$i?></label> &nbsp;&nbsp;
-			<?php endfor;?>
-			&nbsp;&nbsp;<?=lang('highly_likely')?>
-		</div>
-		
-		<div class="pad">
-			<p><?=lang('additional_comments', 'additional_comments')?></p>
-			<?=form_textarea('additional_comments')?>
-		</div>
 
 		<div class="pad">
 			<p><?=lang('send_anonymous_server_data', 'send_anonymous_server_data')?></p>

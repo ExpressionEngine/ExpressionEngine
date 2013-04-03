@@ -1346,7 +1346,6 @@ PAPAYA;
 		}
 
 		// is there a survey for this version?
-		/*
 		if (file_exists(APPPATH.'views/surveys/survey_'.$this->next_update.EXT))
 		{
 			$this->load->library('survey');
@@ -1356,21 +1355,21 @@ PAPAYA;
 			{
 				$this->load->helper('language');
 				$data = array(
-								'action_url'			=> $this->set_qstr('do_update&agree=yes'),
-								'participate_in_survey'	=> array(
-																	'name'		=> 'participate_in_survey',
-																	'id'		=> 'participate_in_survey',
-																	'value'		=> 'y',
-																	'checked'	=> TRUE
-																),
-								'ee_version'			=> $this->next_update
-							);
-		
+					'action_url'			=> $this->set_qstr('do_update&agree=yes'),
+					'participate_in_survey'	=> array(
+						'name'		=> 'participate_in_survey',
+						'id'		=> 'participate_in_survey',
+						'value'		=> 'y',
+						'checked'	=> TRUE
+					),
+					'ee_version'			=> $this->next_update
+				);
+
 				foreach ($this->survey->fetch_anon_server_data() as $key => $val)
 				{
 					if ($key == 'php_extensions')
 					{
-						$val = implode(', ', unserialize($val));
+						$val = implode(', ', json_decode($val));
 					}
 
 					$data['anonymous_server_data'][$key] = $val;
@@ -1384,13 +1383,12 @@ PAPAYA;
 				// if any preprocessing needs to be done on the POST data, we do it here
 				if (method_exists($UD, 'pre_process_survey'))
 				{
-					$UD->pre_process_survey();					
+					$UD->pre_process_survey();
 				}
 
 				$this->survey->send_survey($this->next_update);
 			}
 		}
-		*/
 		
 		if (($status = $UD->{$method}()) === FALSE)
 		{
