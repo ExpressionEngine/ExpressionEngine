@@ -389,8 +389,7 @@ class EE_Functions {
 
 				ee()->load->library('javascript');
 
-					die(ee()->javascript->generate_json(
-								ee()->session->flashdata));
+					die(json_encode(ee()->session->flashdata));
 			}
 		}
 

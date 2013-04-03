@@ -2600,9 +2600,9 @@ class Content_publish extends CP_Controller {
 		$this->cp->add_js_script(array("
 			<script type=\"text/javascript\" charset=\"utf-8\">
 			// <![CDATA[
-			mySettings = ".$this->javascript->generate_json($markItUp, TRUE).";
-			myNobuttonSettings = ".$this->javascript->generate_json($markItUp_nobtns, TRUE).";
-			myWritemodeSettings = ".$this->javascript->generate_json($markItUp_writemode, TRUE).";
+			mySettings = ".json_encode($markItUp).";
+			myNobuttonSettings = ".json_encode($markItUp_nobtns).";
+			myWritemodeSettings = ".json_encode($markItUp_writemode).";
 			// ]]>
 			</script>
 

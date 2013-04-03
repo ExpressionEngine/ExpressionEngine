@@ -585,7 +585,7 @@ class Wiki_mcp {
 		}
 
 		ee()->javascript->output('
-			$("#template_data").markItUp('.ee()->javascript->generate_json($markItUp).');
+			$("#template_data").markItUp('.json_encode($markItUp).');
 		');
 
 		ee()->javascript->compile();

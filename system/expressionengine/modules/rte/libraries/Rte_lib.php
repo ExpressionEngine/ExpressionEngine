@@ -333,7 +333,7 @@ class Rte_lib {
 		// kick off the JS
 		$js = '
 		(function(){
-			var EE = ' . ee()->javascript->generate_json(ee()->javascript->global_vars) . ';' .
+			var EE = ' . json_encode(ee()->javascript->global_vars) . ';' .
 			'
 			// make sure we have jQuery
 			var interval = null;
@@ -382,7 +382,7 @@ class Rte_lib {
 				$("' . $selector . '")
 					.addClass("WysiHat-field")
 					.wysihat({
-						buttons: '.ee()->javascript->generate_json($bits['buttons'], TRUE).'
+						buttons: '.json_encode($bits['buttons']).'
 					});
 			}
 		})();';
@@ -688,7 +688,7 @@ class Rte_lib {
 		
 		if (count($globals))
 		{
-			$js .= 'var EE = ' . ee()->javascript->generate_json($globals) . ';';
+			$js .= 'var EE = ' . json_encode($globals) . ';';
 		}
 		
 		return $js;

@@ -961,12 +961,12 @@ class Channel_standalone extends Channel {
 					if ($js == 'EE')
 					{
 						$js .= 'if (typeof EE == "undefined" || ! EE) {'."\n".
-							'var EE = '.ee()->javascript->generate_json($val, TRUE)."\n".
+							'var EE = '.json_encode($val)."\n".
 							"}\n";
 					}
 					else 
 					{
-						$js .= ee()->javascript->generate_json($val, TRUE);
+						$js .= json_encode($val);
 					}
 				}
 
@@ -998,11 +998,11 @@ class Channel_standalone extends Channel {
 			{
 				if ($key == 'EE')
 				{
-					$res .= 'if (typeof EE == "undefined" || ! EE) { var EE = '.ee()->javascript->generate_json($val).";}\n";
+					$res .= 'if (typeof EE == "undefined" || ! EE) { var EE = '.json_encode($val).";}\n";
 				}
 				else 
 				{
-					$res .= $key.' = ' . ee()->javascript->generate_json($val, TRUE) . ";\n";
+					$res .= $key.' = ' . json_encode($val) . ";\n";
 				}
 			}
 			
