@@ -2676,33 +2676,33 @@ class EE_Functions {
 		
 			// Prep the data array to remove characters we do not want
 			// And also just add the quotes around the value for good measure.
-			while (list($key) = each($data))
+			foreach ($data as $key => &$value)
 			{
-				if ( is_array($data[$key])) continue;
+				if ( is_array($value)) continue;
 			
 				// TRUE AND FALSE values are for short hand conditionals,
 				// like {if logged_in} and so we have no need to remove
 				// unwanted characters and we do not quote it.
 				
-				if ($data[$key] != 'TRUE' && $data[$key] != 'FALSE' && ($key != $data[$key] OR $embedded_tags !== TRUE))
+				if ($value != 'TRUE' && $value != 'FALSE' && ($key != $value OR $embedded_tags !== TRUE))
 				{
-					$data[$key] = '"'.
+					$value = '"'.
 								  str_replace(array("'", '"', '(', ')', '$', '{', '}', "\n", "\r", '\\'), 
 											  array('&#39;', '&#34;', '&#40;', '&#41;', '&#36;', '', '', '', '', '&#92;'), 
-											  (strlen($data[$key]) > 100) ? substr(htmlspecialchars($data[$key]), 0, 100) : $data[$key]
+											  (strlen($value) > 100) ? substr(htmlspecialchars($value), 0, 100) : $value
 											  ).
 								  '"';
 				}
 				
 				$md5_key = (string) hexdec($prep_id.md5($key));
 				$protect[$key] = $md5_key;
-				$switch[$md5_key] = $data[$key];
+				$switch[$md5_key] = $value;
 				
 				if ($prefix != '')
 				{
 					$md5_key = (string) hexdec($prep_id.md5($prefix.$key));
 					$protect[$prefix.$key] = $md5_key;
-					$switch[$md5_key] = $data[$key];
+					$switch[$md5_key] = $value;
 				}
 			}
 			
