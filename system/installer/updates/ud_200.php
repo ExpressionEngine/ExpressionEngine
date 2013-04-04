@@ -1819,10 +1819,10 @@ BSH;
 			'weblog_fields',
 			array(
 				'field_content_type' => array(
-					'type'				=> 'varchar',
+					'type'			=> 'varchar',
 					'constraint'	=> 20,
-					'null'				=> FALSE,
-					'default'			=> 'any'
+					'null'			=> FALSE,
+					'default'		=> 'any'
 				)
 			)
 		);
@@ -1835,9 +1835,9 @@ BSH;
 			'html_buttons',
 			array(
 				'classname' => array(
-					'type'				=> 'varchar',
+					'type'			=> 'varchar',
 					'constraint'	=> 20,
-					'null'				=> TRUE
+					'null'			=> TRUE
 				)
 			)
 		);
