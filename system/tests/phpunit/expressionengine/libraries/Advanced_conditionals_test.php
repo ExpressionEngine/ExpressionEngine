@@ -195,8 +195,6 @@ class Advanced_conditionals_test extends CI_TestCase {
 	 */
 	public function test_in_group($str, $pre_prep_expected, $final_expected)
 	{
-		$str = "{if in_group('1')}yes{/if}";
-
 		// make sure the input gets converted correctly
 		$this->_func_stub
 			->expects($this->any())
