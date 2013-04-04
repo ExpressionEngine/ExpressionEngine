@@ -22,16 +22,16 @@
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Zero_wing_ft extends EE_Fieldtype {
+class Relationship_ft extends EE_Fieldtype {
 
 	public $info = array(
-		'name'		=> 'Relationships Dev Preview', // 'ZeroWing',
+		'name'		=> 'Relationships',
 		'version'	=> '1.0'
 	);
 	
 	public $has_array_data = FALSE;
 
-	private $_table = 'zero_wing';
+	private $_table = 'relationships';
 
 	/**
 	 * Validate Field
@@ -285,7 +285,7 @@ class Zero_wing_ft extends EE_Fieldtype {
 		if (count($entries))
 		{
 			$js = $this->_publish_js();
-			$js .= "EE.setup_multi_field('#${field_name}');";
+			$js .= "EE.setup_relationship_field('#${field_name}');";
 			ee()->javascript->output($js);
 		}
 
@@ -518,7 +518,7 @@ class Zero_wing_ft extends EE_Fieldtype {
 	 * @param	form prefix
 	 * @return	Object<Relationship_settings_form>
 	 */	
-	protected function _form($prefix = 'zero_wing')
+	protected function _form($prefix = 'relationship')
 	{
 		ee()->load->library('Relationships_ft_cp');
 		$util = ee()->relationships_ft_cp;
@@ -573,7 +573,7 @@ class Zero_wing_ft extends EE_Fieldtype {
 			return '';
 		}
 
-		$js = file_get_contents(PATH_FT.'zero_wing/javascript/cp.js');
+		$js = file_get_contents(PATH_FT.'relationship/javascript/cp.js');
 
 		ee()->session->cache(__CLASS__, 'js_loaded', TRUE);
 		return $js;
@@ -677,7 +677,7 @@ class Zero_wing_ft extends EE_Fieldtype {
 	}
 }
 
-// END Zero_wing_ft class
+// END Relationship_ft class
 
-/* End of file ft.zero_wing.php */
-/* Location: ./system/expressionengine/fieldtypes/ft.zero_wing.php */
+/* End of file ft.relationship.php */
+/* Location: ./system/expressionengine/fieldtypes/ft.relationship.php */

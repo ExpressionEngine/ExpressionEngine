@@ -613,7 +613,7 @@ class Channel {
 	public function fetch_custom_channel_fields()
 	{
 		if (isset(ee()->session->cache['channel']['custom_channel_fields']) && isset(ee()->session->cache['channel']['date_fields'])
-			&& isset(ee()->session->cache['channel']['relationship_fields']) && isset(ee()->session->cache['channel']['zero_wing_fields'])
+			&& isset(ee()->session->cache['channel']['relationship_fields'])
 			&& isset(ee()->session->cache['channel']['pair_custom_fields']))
 		{
 			$this->cfields = ee()->session->cache['channel']['custom_channel_fields'];

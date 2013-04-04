@@ -28,7 +28,7 @@ class Relationship_model extends CI_Model {
 	const PARENT = 2;
 	const SIBLING = 3;
 
-	protected $_table = 'zero_wing';
+	protected $_table = 'relationships';
 
  	// --------------------------------------------------------------------
 	
