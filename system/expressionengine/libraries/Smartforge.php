@@ -300,9 +300,10 @@ class Smartforge {
 	 * Add a new key to the given database table if it doesn't already exist.
 	 *
 	 * @access	public
-	 * @param	string	table name
-	 * @param	string	column to index
-	 * @param	string	key name (optional)
+	 * @param	string			table name
+	 * @param	string/array	column to index, creates composite primary key
+	 *                          if array and key name is PRIMARY
+	 * @param	string			key name (optional)
 	 * @return	bool
 	 */
 	public function add_key($table = '', $col_name = '', $key_name = '')
@@ -315,9 +316,14 @@ class Smartforge {
 			return FALSE;
 		}
 
-		if ($key_name == '')
+		if ($key_name == '' AND ! is_array($col_name))
 		{
 			$key_name = $col_name;
+		}
+
+		if (is_array($col_name))
+		{
+			$col_name = implode("`, `", $col_name);
 		}
 
 		// Check to make sure this key doesn't already exist.
@@ -328,11 +334,11 @@ class Smartforge {
 			// Create key
 			if ($key_name == 'PRIMARY')
 			{
-				$sql = "ALTER TABLE {ee()->db->dbprefix}.$table ADD PRIMARY KEY ({$col_name})";
+				$sql = "ALTER TABLE `{ee()->db->dbprefix}.$table` ADD PRIMARY KEY (`{$col_name}`)";
 			}
 			else
 			{
-				$sql = "ALTER TABLE {ee()->db->dbprefix}.$table ADD INDEX {$key_name} ({$col_name})";
+				$sql = "ALTER TABLE `{ee()->db->dbprefix}.$table` ADD INDEX {$key_name} (`{$col_name}`)";
 			}			
 
 			if (ee()->db->query($sql) === TRUE)
