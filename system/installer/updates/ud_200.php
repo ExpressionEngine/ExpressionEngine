@@ -2541,19 +2541,40 @@ BSH;
 		ee()->progress->update_state("Updating custom field tables");
 		
 		// Update category custom fields to allow null
-		$query = ee()->db->query("SELECT field_id FROM exp_category_fields");
+		$query = ee()->db->select('field_id')->get('category_fields');
 
 		if ($query->num_rows() > 0)
 		{
 			foreach ($query->result() as $row)
 			{
-				$Q[] = "ALTER TABLE `exp_category_field_data` CHANGE `field_id_{$row->field_id}` `field_id_{$row->field_id}` text NULL";
-				$Q[] = "ALTER TABLE `exp_category_field_data` CHANGE `field_ft_{$row->field_id}` `field_ft_{$row->field_id}` varchar(40) NULL DEFAULT 'none'";
+				ee()->smartforge->modify_column(
+					'category_field_data',
+					array(
+						'field_id_'.$row->field_id => array(
+							'name'			=> 'field_id_'.$row->field_id,
+							'type'			=> 'text',
+							'null'			=> TRUE
+						)
+					)
+				);
+
+				ee()->smartforge->modify_column(
+					'category_field_data',
+					array(
+						'field_ft_'.$row->field_id => array(
+							'name'			=> 'field_ft_'.$row->field_id,
+							'type'			=> 'varchar',
+							'constraint'	=> 40,
+							'null'			=> TRUE,
+							'default'		=> 'none'
+						)
+					)
+				);
 			}
 		}
 
 		// Update custom fields to allow null
-		$query = ee()->db->query("SELECT field_id, field_type FROM exp_weblog_fields");
+		$query = ee()->db->select('field_id, field_type')->get('weblog_fields');
 
 		if ($query->num_rows() > 0)
 		{
@@ -2561,21 +2582,49 @@ BSH;
 			{
 				if ($row->field_type == 'date' OR $row->field_type == 'rel')
 				{
-					$Q[] = "ALTER TABLE `exp_weblog_data` CHANGE `field_id_{$row->field_id}` `field_id_{$row->field_id}` int(10) NOT NULL DEFAULT 0";
+					ee()->smartforge->modify_column(
+						'weblog_data',
+						array(
+							'field_id_'.$row->field_id => array(
+								'name'			=> 'field_id_'.$row->field_id,
+								'type'			=> 'int',
+								'constraint'	=> 10,
+								'null'			=> FALSE,
+								'default'		=> 0
+							)
+						)
+					);
 
 					if ($row->field_type == 'date')
 					{
-						$Q[] = "ALTER TABLE `exp_weblog_data` CHANGE `field_dt_{$row->field_id}` `field_dt_{$row->field_id}` varchar(8) NULL";  
+						ee()->smartforge->modify_column(
+							'weblog_data',
+							array(
+								'field_dt_'.$row->field_id => array(
+									'name'			=> 'field_dt_'.$row->field_id,
+									'type'			=> 'varchar',
+									'constraint'	=> 8,
+									'null'			=> NULL
+								)
+							)
+						);
 					}
 				}
 				else
 				{
-					$Q[] = "ALTER TABLE `exp_weblog_data` CHANGE `field_id_{$row->field_id}` `field_id_{$row->field_id}` text NULL";
+					ee()->smartforge->modify_column(
+						'weblog_data',
+						array(
+							'field_id_'.$row->field_id => array(
+								'name'			=> 'field_id_'.$row->field_id,
+								'type'			=> 'text',
+								'null'			=> NULL
+							)
+						)
+					);
 				}
 			}
 		}
-
-		$this->_run_queries('Updating custom fields', $Q);
 
 		return 'resync_member_groups';
 	}
