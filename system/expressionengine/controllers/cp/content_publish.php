@@ -660,7 +660,7 @@ class Content_publish extends CP_Controller {
 
 		foreach ($fields as $key => $val)
 		{
-			if (isset($resrow[$key]) AND $val != 'rel' and $resrow[$key] != '')
+			if (isset($resrow[$key]) AND $val != 'relationship' and $resrow[$key] != '')
 			{
 				$expl = explode('field_id_', $key);
 

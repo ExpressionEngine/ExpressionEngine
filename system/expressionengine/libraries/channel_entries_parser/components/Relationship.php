@@ -32,7 +32,7 @@ class EE_Channel_relationship_parser implements EE_Channel_parser_component {
 	 */
 	public function disabled(array $disabled, EE_Channel_preparser $pre)
 	{
-		return empty($pre->channel()->zwfields) OR in_array('relationships', $disabled);
+		return empty($pre->channel()->rfields) OR in_array('relationships', $disabled);
 	}
 	
 	// --------------------------------------------------------------------
@@ -48,10 +48,10 @@ class EE_Channel_relationship_parser implements EE_Channel_parser_component {
 	 */
 	public function pre_process($tagdata, EE_Channel_preparser $pre)
 	{
-		$zwfields = $pre->channel()->zwfields;
+		$rfields = $pre->channel()->rfields;
 		$site_id = config_item('site_id');
 
-		if ( ! isset($zwfields[$site_id]) OR empty($zwfields[$site_id]))
+		if ( ! isset($rfields[$site_id]) OR empty($rfields[$site_id]))
 		{
 			return NULL;
 		}
@@ -61,7 +61,7 @@ class EE_Channel_relationship_parser implements EE_Channel_parser_component {
 		try
 		{
 			return ee()->relationships->get_relationship_parser(
-				$zwfields[$site_id],
+				$rfields[$site_id],
 				$pre->entry_ids()
 			);
 		}

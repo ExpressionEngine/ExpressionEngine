@@ -49,12 +49,6 @@ class Channel {
 	public $cfields					= array();
 	public $dfields					= array();
 	public $rfields					= array();
-
-	/**
-	 * A mapping of field_name => field_id containing
-	 * only fields of the Zero Wing Relationship fieldtype.
-	 */
-	public $zwfields				= array();
 	public $mfields					= array();
 	public $pfields					= array();
 	public $categories				= array();
@@ -625,7 +619,6 @@ class Channel {
 			$this->cfields = ee()->session->cache['channel']['custom_channel_fields'];
 			$this->dfields = ee()->session->cache['channel']['date_fields'];
 			$this->rfields = ee()->session->cache['channel']['relationship_fields'];
-			$this->zwfields = ee()->session->cache['channel']['zero_wing_fields'];
 			$this->pfields = ee()->session->cache['channel']['pair_custom_fields'];
 			return;
 		}
@@ -638,13 +631,11 @@ class Channel {
 		$this->cfields = $fields['custom_channel_fields'];
 		$this->dfields = $fields['date_fields'];
 		$this->rfields = $fields['relationship_fields'];
-		$this->zwfields = $fields['zero_wing_fields'];
 		$this->pfields = $fields['pair_custom_fields'];
 
   		ee()->session->cache['channel']['custom_channel_fields']	= $this->cfields;
 		ee()->session->cache['channel']['date_fields']				= $this->dfields;
 		ee()->session->cache['channel']['relationship_fields']		= $this->rfields;
-		ee()->session->cache['channel']['zero_wing_fields']		= $this->zwfields;
 		ee()->session->cache['channel']['pair_custom_fields']		= $this->pfields;
 	}
 
