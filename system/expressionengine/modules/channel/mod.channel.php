@@ -61,8 +61,6 @@ class Channel {
 	public $catfields				= array();
 	public $channel_name	 		= array();
 	public $channels_array			= array();
-	public $related_entries			= array();
-	public $reverse_related_entries = array();
 	public $reserved_cat_segment 	= '';
 	public $use_category_names		= FALSE;
 	public $cat_request				= FALSE;
@@ -232,7 +230,7 @@ class Channel {
 
 		if (ee()->TMPL->fetch_param('related_categories_mode') == 'yes')
 		{
-			return $this->related_entries();
+			return $this->related_category_entries();
 		}
 		// Onward...
 
@@ -352,133 +350,7 @@ class Channel {
 			$this->return_data = $this->pagination->render($this->return_data);
 		}
 
-		// Does the tag contain "related entries" that we need to parse out?
-
-		if (count(ee()->TMPL->related_data) > 0 && count($this->related_entries) > 0)
-		{
-			$this->parse_related_entries();
-		}
-
-		if (count(ee()->TMPL->reverse_related_data) > 0 && count($this->reverse_related_entries) > 0)
-		{
-			$this->parse_reverse_related_entries();
-		}
-
 		return $this->return_data;
-	}
-
-	// ------------------------------------------------------------------------
-
-	/**
-	  *  Process related entries
-	  */
-	public function parse_related_entries()
-	{
-		$sql = "SELECT rel_id, rel_parent_id, rel_child_id, rel_type, rel_data
-				FROM exp_relationships
-				WHERE rel_id IN (";
-
-		$templates = array();
-		foreach ($this->related_entries as $val)
-		{
-			$x = explode('_', $val);
-			$sql .= "'".$x[0]."',";
-			$templates[] = array($x[0], $x[1], ee()->TMPL->related_data[$x[1]]);
-		}
-
-		$sql = substr($sql, 0, -1).')';
-		$query = ee()->db->query($sql);
-
-		if ($query->num_rows() == 0)
-			return;
-
-		// --------------------------------
-		//  Without this the Related Entries were inheriting the parameters of
-		//  the enclosing Channel Entries tag.  Sometime in the future we will
-		//  likely allow Related Entries to have their own parameters
-		// --------------------------------
-
-		$return_data = $this->return_data;
-
-		foreach ($templates as $temp)
-		{
-			foreach ($query->result_array() as $row)
-			{
-				if ($row['rel_id'] != $temp[0])
-					continue;
-
-				// --------------------------------------
-				//  If the data is emptied (cache cleared), then we
-				//  rebuild it with fresh data so processing can continue.
-				// --------------------------------------
-
-				if (trim($row['rel_data']) == '')
-				{
-					$rewrite = array(
-									 'type'			=> $row['rel_type'],
-									 'parent_id'	=> $row['rel_parent_id'],
-									 'child_id'		=> $row['rel_child_id'],
-									 'related_id'	=> $row['rel_id']
-								);
-
-					ee()->functions->compile_relationship($rewrite, FALSE);
-
-					$results = ee()->db->query("SELECT rel_data FROM exp_relationships WHERE rel_id = '".$row['rel_id']."'");
-					$row['rel_data'] = $results->row('rel_data') ;
-				}
-
-				//  Begin Processing
-
-				$this->initialize();
-
-				if ($reldata = @unserialize($row['rel_data']))
-				{
-					ee()->TMPL->var_single	= $temp[2]['var_single'];
-					ee()->TMPL->var_pair		= $temp[2]['var_pair'];
-					ee()->TMPL->var_cond		= $temp[2]['var_cond'];
-					ee()->TMPL->tagdata		= $temp[2]['tagdata'];
-
-					if ($row['rel_type'] == 'channel')
-					{
-						// Bug fix for when categories were not being inserted
-						// correctly for related channel entries.  Bummer.
-
-						if (count($reldata['categories'] == 0) && ! isset($reldata['cats_fixed']))
-						{
-							$fixdata = array(
-											'type'			=> $row['rel_type'],
-											'parent_id'		=> $row['rel_parent_id'],
-											'child_id'		=> $row['rel_child_id'],
-											'related_id'	=> $row['rel_id']
-										);
-
-							ee()->functions->compile_relationship($fixdata, FALSE);
-							$reldata['categories'] = ee()->functions->cat_array;
-							$reldata['category_fields'] = ee()->functions->catfields;
-						}
-
-						$this->query = $reldata['query'];
-						
-						if ($this->query->num_rows != 0)
-						{
-							$this->categories = array($this->query->row('entry_id')  => $reldata['categories']);
-
-							if (isset($reldata['category_fields']))
-							{
-								$this->catfields = array($this->query->row('entry_id') => $reldata['category_fields']);
-							}							
-						}
-
-						$this->parse_channel_entries();
-
-						$marker = LD."REL[".$row['rel_id']."][".$temp[2]['field_name']."]".$temp[1]."REL".RD;
-						$return_data = str_replace($marker, $this->return_data, $return_data);
-					}
-				}
-			}
-		}
-
-		$this->return_data = $return_data;
 	}
 
 	// ------------------------------------------------------------------------
@@ -488,88 +360,6 @@ class Channel {
 	  */
 	public function parse_reverse_related_entries()
 	{
-		ee()->db->select('rel_id, rel_parent_id, rel_child_id, rel_type, reverse_rel_data');
-		ee()->db->where_in('rel_child_id', array_keys($this->reverse_related_entries));
-		ee()->db->where('rel_type', 'channel');
-		$query = ee()->db->get('relationships');
-		
-		if ($query->num_rows() == 0)
-		{
-			// remove Reverse Related tags for these entries
-
-			foreach ($this->reverse_related_entries as $entry_id => $templates)
-			{
-				foreach($templates as $tkey => $template)
-				{
-					$this->return_data = str_replace(LD."REV_REL[".ee()->TMPL->reverse_related_data[$template]['marker']."][".$entry_id."]REV_REL".RD, ee()->TMPL->reverse_related_data[$template]['no_rev_content'], $this->return_data);
-				}
-			}
-
-			return;
-		}
-
-		//  Data Processing Time
-		$entry_data = array();
-
-		for ($i = 0, $total = count($query->result_array()); $i < $total; $i++)
-		{
-    		$row = array_shift($query->result_array);
-
-			//  If the data is emptied (cache cleared or first process), then we
-			//  rebuild it with fresh data so processing can continue.
-
-			if (trim($row['reverse_rel_data']) == '')
-			{
-				$rewrite = array(
-								 'type'			=> $row['rel_type'],
-								 'parent_id'	=> $row['rel_parent_id'],
-								 'child_id'		=> $row['rel_child_id'],
-								 'related_id'	=> $row['rel_id']
-							);
-
-				ee()->functions->compile_relationship($rewrite, FALSE, TRUE);
-
-				ee()->db->select('reverse_rel_data');
-				ee()->db->where('rel_parent_id', $row['rel_parent_id']);
-				$results = ee()->db->get('relationships');
-				$row['reverse_rel_data'] = $results->row('reverse_rel_data');
-			}
-
-			//  Unserialize the entries data, please
-
-			if ($revreldata = @unserialize($row['reverse_rel_data']))
-			{
-				$entry_data[$row['rel_child_id']][$row['rel_parent_id']] = $revreldata;
-			}
-		}
-		
-		//  Without this the Reverse Related Entries were inheriting the parameters of
-		//  the enclosing Channel Entries tag, which is not appropriate.
-
-		$return_data = $this->return_data;
-
-		foreach ($this->reverse_related_entries as $entry_id => $templates)
-		{
-			//  No Entries?  Remove Reverse Related Tags and Continue to Next Entry
-
-			if ( ! isset($entry_data[$entry_id]))
-			{
-				foreach($templates as $tkey => $template)
-				{
-					$return_data = str_replace(LD."REV_REL[".ee()->TMPL->reverse_related_data[$template]['marker']."][".$entry_id."]REV_REL".RD, ee()->TMPL->reverse_related_data[$template]['no_rev_content'], $return_data);
-				}
-
-				continue;
-			}
-
-			//  Process Our Reverse Related Templates
-
-			foreach($templates as $tkey => $template)
-			{
-				$i = 0;
-				$cats = array();
-
-				$params = ee()->TMPL->reverse_related_data[$template]['params'];
 
 				if ( ! is_array($params))
 				{
@@ -783,51 +573,6 @@ class Channel {
 				}
 				
 				$output_data[$entry_id] = array_slice($new, $offset, $limit);
-
-				if (count($output_data[$entry_id]) == 0)
-				{
-					$return_data = str_replace(LD."REV_REL[".ee()->TMPL->reverse_related_data[$template]['marker']."][".$entry_id."]REV_REL".RD, ee()->TMPL->reverse_related_data[$template]['no_rev_content'], $return_data);
-					continue;
-				}
-
-				//  Finally!  We get to process our parents
-
-				foreach($output_data[$entry_id] as $relating_data)
-				{
-					if ($i == 0)
-					{
-						$query = clone $relating_data['query'];
-					}
-					else
-					{
-						$query->result_array[] = $relating_data['query']->row_array();
-					}
-
-					$cats[$relating_data['query']->row('entry_id') ] = $relating_data['categories'];
-
-					++$i;
-				}
-
-				$query->num_rows = $i;
-
-				$this->initialize();
-
-				ee()->TMPL->var_single	= ee()->TMPL->reverse_related_data[$template]['var_single'];
-				ee()->TMPL->var_pair		= ee()->TMPL->reverse_related_data[$template]['var_pair'];
-				ee()->TMPL->var_cond		= ee()->TMPL->reverse_related_data[$template]['var_cond'];
-				ee()->TMPL->tagdata		= ee()->TMPL->reverse_related_data[$template]['tagdata'];
-
-				$this->query = $query;
-				$this->categories = $cats;
-				$this->parse_channel_entries();
-
-				$return_data = str_replace(	LD."REV_REL[".ee()->TMPL->reverse_related_data[$template]['marker']."][".$entry_id."]REV_REL".RD,
-											$this->return_data,
-											$return_data);
-			}
-		}
-		
-		$this->return_data = $return_data;
 	}
 
 	// ------------------------------------------------------------------------
@@ -5422,6 +5167,14 @@ class Channel {
 	  * related_categories_mode="on"
 	  */
 	public function related_entries()
+	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated('2.6', 'Channel::related_category_entries()');
+
+		return $this->related_category_entries();
+	}
+
+	public function related_category_entries()
 	{
 		if ($this->query_string == '')
 		{
