@@ -1391,7 +1391,7 @@ class Admin_content extends CP_Controller {
 
 		$this->logger->log_action(lang('category_group_deleted').NBS.NBS.$name);
 
-		$this->functions->clear_caching('all', '', TRUE);
+		$this->functions->clear_caching('all', '');
 
 		$this->session->set_flashdata('message_success', lang('category_group_deleted').NBS.NBS.$name);
 		$this->functions->redirect(BASE.AMP.'C=admin_content'.AMP.'M=category_management');
@@ -2966,7 +2966,7 @@ class Admin_content extends CP_Controller {
 			$cp_message = lang('cat_field_created');
 		}
 
-		$this->functions->clear_caching('all', '', TRUE);
+		$this->functions->clear_caching('all', '');
 
 		$this->session->set_flashdata('message_success', $cp_message.' '.$field_name);
 		$this->functions->redirect(BASE.AMP.'C=admin_content'.AMP.'M=category_custom_field_group_manager'.AMP.'group_id='.$group_id);
@@ -3063,7 +3063,7 @@ class Admin_content extends CP_Controller {
 		$cp_message = lang('cat_field_deleted').NBS.$query->row('field_label');
 		$this->logger->log_action($cp_message);
 
-		$this->functions->clear_caching('all', '', TRUE);
+		$this->functions->clear_caching('all', '');
 
 		$this->session->set_flashdata('message_success', $cp_message);
 		$this->functions->redirect(BASE.AMP.'C=admin_content'.AMP.'M=category_custom_field_group_manager'.AMP.'group_id='.$group_id);
@@ -3249,7 +3249,7 @@ class Admin_content extends CP_Controller {
 			$this->layout->delete_layout_fields($deleted['field_ids'], $channel_ids);
 		}
 		
-		$this->functions->clear_caching('all', '', TRUE);
+		$this->functions->clear_caching('all', '');
 
 		$cp_message = lang('field_group_deleted').NBS.NBS.$group_name->row('group_name');
 
@@ -3672,7 +3672,7 @@ class Admin_content extends CP_Controller {
 
 		$this->logger->log_action($cp_message);
 
-		$this->functions->clear_caching('all', '', TRUE);
+		$this->functions->clear_caching('all', '');
 
 		$this->session->set_flashdata('message_success', $cp_message);
 		$this->functions->redirect(BASE.AMP.'C=admin_content'.AMP.'M=field_management'.AMP.'group_id='.$deleted['group_id']);
@@ -3965,7 +3965,7 @@ class Admin_content extends CP_Controller {
 
 		$this->logger->log_action($cp_message);
 
-		$this->functions->clear_caching('all', '', TRUE);
+		$this->functions->clear_caching('all', '');
 
 		$this->session->set_flashdata('message_success', $cp_message);
 		$this->functions->redirect(BASE.AMP.'C=admin_content'.AMP.'M=status_group_management');

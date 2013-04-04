@@ -1136,11 +1136,11 @@ class Content_edit extends CP_Controller {
 
 		if ($this->config->item('new_posts_clear_caches') == 'y')
 		{
-			$this->functions->clear_caching('all', '', $clear_rel);
+			$this->functions->clear_caching('all', '');
 		}
 		else
 		{
-			$this->functions->clear_caching('sql', '', $clear_rel);
+			$this->functions->clear_caching('sql', '');
 		}
 
 
