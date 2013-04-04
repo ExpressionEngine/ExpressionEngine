@@ -2144,8 +2144,6 @@ class Admin_content extends CP_Controller {
 			$this->db->query($this->db->update_string('exp_category_field_data', $fields, array('cat_id' => $cat_id)));
 		}
 
-		$this->functions->clear_caching('relationships');
-
 		$this->session->set_flashdata('message_success', lang('preference_updated'));
 		$this->functions->redirect(BASE.AMP.'C=admin_content'.AMP.'M=category_editor'.AMP."group_id={$group_id}");
 	}
