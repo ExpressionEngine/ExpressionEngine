@@ -1798,27 +1798,66 @@ BSH;
 
 		$has_duplicates = ( ! isset($this->config['table_duplicates'])) ? array() : explode('|', $this->config['table_duplicates']);
 
-		$Q[] = "INSERT INTO `exp_actions` (`class`, `method`) VALUES ('Jquery', 'output_javascript')";
+		// If there is no action id, add it
+		$values = array(
+			'class'		=> 'Jquery',
+			'method'	=> 'output_javascript'
+		);
 
-		$Q[] = "UPDATE `exp_templates` SET template_type = 'feed' WHERE template_type = 'rss'";
+		ee()->smartforge->insert_set('actions', $values, $values);
+
+
+		$data = array(
+			'template_type'		=> 'feed'
+		);
+
+		ee()->db->where('template_type', 'rss');
+		ee()->db->update('templates', $data); 
 
 		// Channel fields can now have content restrictions
-		$Q[] = "ALTER TABLE `exp_weblog_fields` ADD COLUMN `field_content_type` VARCHAR(20) NOT NULL default 'any'";
+		ee()->smartforge->add_column(
+			'weblog_fields',
+			array(
+				'field_content_type' => array(
+					'type'				=> 'varchar',
+					'constraint'	=> 20,
+					'null'				=> FALSE,
+					'default'			=> 'any'
+				)
+			)
+		);
 
-		// get rid of 'blog_encoding from exp_weblogs' - everything's utf-8 now
-		$Q[] = "ALTER TABLE `exp_weblogs` DROP COLUMN `blog_encoding`";
+		// get rid of 'blog_encoding from exp_weblogs' - everything's utf-8 now	
+		ee()->smartforge->drop_column('weblogs', 'blog_encoding');
 
 		// HTML buttons now have an identifying classname
-		$Q[] = "ALTER TABLE `exp_html_buttons` ADD `classname` varchar(20) NULL DEFAULT NULL";
+		ee()->smartforge->add_column(
+			'html_buttons',
+			array(
+				'classname' => array(
+					'type'				=> 'varchar',
+					'constraint'	=> 20,
+					'null'				=> TRUE
+				)
+			)
+		);
 
 		// The sites table now stores bootstrap file checksums
-		$Q[] = "ALTER TABLE `exp_sites` ADD `site_bootstrap_checksums` text NOT NULL";
+		ee()->smartforge->add_column(
+			'sites',
+			array(
+				'site_bootstrap_checksums' => array(
+					'type'	=> 'text',
+					'null'	=> FALSE
+				)
+			)
+		);
 
 		// insert default buttons
 		include(EE_APPPATH.'config/html_buttons.php');
 
 		// Remove EE 1.6.X default button set
-		$Q[] = "DELETE FROM `exp_html_buttons` WHERE `member_id`=0";
+		ee()->db->delete('html_buttons', array('member_id' => 0));
 		
 		$site_query = ee()->db->query("SELECT site_id FROM `exp_sites`");
 		
@@ -1847,28 +1886,52 @@ BSH;
 		}
 
 		// increase path fields to 150 characters
-		$Q[] = "ALTER TABLE `exp_upload_prefs` CHANGE `server_path` `server_path` VARCHAR(150) NOT NULL default ''";
-		$Q[] = "ALTER TABLE `exp_message_attachments` CHANGE `attachment_location` `attachment_location` VARCHAR(150) NOT NULL default ''";		 
+		ee()->smartforge->modify_column(
+			'upload_prefs',
+			array(
+				'server_path' => array(
+					'name'			=> 'server_path',
+					'type'			=> 'varchar',
+					'constraint'	=> 150,
+					'null'			=> FALSE,
+					'default'		=> ''
+				)
+			)
+		);
+
+		ee()->smartforge->modify_column(
+			'message_attachments',
+			array(
+				'attachment_location' => array(
+					'name'			=> 'attachment_location',
+					'type'			=> 'varchar',
+					'constraint'	=> 150,
+					'null'			=> FALSE,
+					'default'		=> ''
+				)
+			)
+		);
 
 		// drop trackback related fields
-		$Q[] = "ALTER TABLE `exp_stats` DROP COLUMN `total_trackbacks`";
-		$Q[] = "ALTER TABLE `exp_stats` DROP COLUMN `last_trackback_date`";
-		$Q[] = "ALTER TABLE `exp_weblogs` DROP COLUMN `total_trackbacks`";
-		$Q[] = "ALTER TABLE `exp_weblogs` DROP COLUMN `last_trackback_date`";
-		$Q[] = "ALTER TABLE `exp_weblogs` DROP COLUMN `enable_trackbacks`";
-		$Q[] = "ALTER TABLE `exp_weblogs` DROP COLUMN `trackback_use_url_title`";
-		$Q[] = "ALTER TABLE `exp_weblogs` DROP COLUMN `trackback_max_hits`";
-		$Q[] = "ALTER TABLE `exp_weblogs` DROP COLUMN `trackback_field`";
-		$Q[] = "ALTER TABLE `exp_weblogs` DROP COLUMN `deft_trackbacks`";
-		$Q[] = "ALTER TABLE `exp_weblogs` DROP COLUMN `trackback_system_enabled`";
-		$Q[] = "ALTER TABLE `exp_weblogs` DROP COLUMN `show_trackback_field`";
-		$Q[] = "ALTER TABLE `exp_weblogs` DROP COLUMN `trackback_use_captcha`";
-		$Q[] = "ALTER TABLE `exp_weblogs` DROP COLUMN `tb_return_url`";
-		$Q[] = "ALTER TABLE `exp_weblog_titles` DROP COLUMN `allow_trackbacks`";
-		$Q[] = "ALTER TABLE `exp_weblog_titles` DROP COLUMN `trackback_total`";
-		$Q[] = "ALTER TABLE `exp_weblog_titles` DROP COLUMN `sent_trackbacks`";
-		$Q[] = "ALTER TABLE `exp_weblog_titles` DROP COLUMN `recent_trackback_date`";
-		$Q[] = "DROP TABLE IF EXISTS `exp_trackbacks`";
+		ee()->smartforge->drop_column('stats', 'total_trackbacks');
+		ee()->smartforge->drop_column('stats', 'last_trackback_date');
+		ee()->smartforge->drop_column('weblogs', 'total_trackbacks');
+		ee()->smartforge->drop_column('weblogs', 'last_trackback_date');
+		ee()->smartforge->drop_column('weblogs', 'enable_trackbacks');
+		ee()->smartforge->drop_column('weblogs', 'trackback_use_url_title');
+		ee()->smartforge->drop_column('weblogs', 'trackback_max_hits');
+		ee()->smartforge->drop_column('weblogs', 'trackback_field');
+		ee()->smartforge->drop_column('weblogs', 'deft_trackbacks');
+		ee()->smartforge->drop_column('weblogs', 'trackback_system_enabled');
+		ee()->smartforge->drop_column('weblogs', 'show_trackback_field');
+		ee()->smartforge->drop_column('weblogs', 'trackback_use_captcha');
+		ee()->smartforge->drop_column('weblogs', 'tb_return_url');
+		ee()->smartforge->drop_column('weblog_titles', 'allow_trackbacks');
+		ee()->smartforge->drop_column('weblog_titles', 'trackback_total');
+		ee()->smartforge->drop_column('weblog_titles', 'sent_trackbacks');
+		ee()->smartforge->drop_column('weblog_titles', 'recent_trackback_date');
+
+		ee()->dbforge->drop_table('trackbacks');
 
 		// Add primary keys as needed for normalization of all tables
 		$Q[] = "ALTER TABLE `exp_throttle` ADD COLUMN `throttle_id` int(10) UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY FIRST";
