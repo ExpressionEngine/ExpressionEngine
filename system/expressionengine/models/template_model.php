@@ -64,6 +64,7 @@ class Template_model extends CI_Model {
 				$this->_load_template_file($template);
 			}
 		}
+		return $templates;
 	}
 
 	/**
@@ -113,7 +114,7 @@ class Template_model extends CI_Model {
 		
 		$filepath = $basepath . $this->config->item('site_short_name') . DIRECTORY_SEPARATOR 
 			. $template->getGroup()->group_name . '.group' . DIRECTORY_SEPARATOR . $template->template_name
-			. $this->api_template_structure->file_extensions($row['template_type']);
+			. $this->api_template_structure->file_extensions($template->template_type);
 	
 		// We don't need the other site's configuration values anymore, so
 		// reset them.  If we do this here we only have to do it once,
@@ -178,7 +179,7 @@ class Template_model extends CI_Model {
 			$this->db->where($field, $value);
 		}
 
-		return $this->_entities_from_db_result($this->db->get(), $load_groups);
+		return $this->entities_from_db_result($this->db->get(), $load_groups);
 	}
 
 	/**
@@ -196,7 +197,7 @@ class Template_model extends CI_Model {
 	 *
 	 * @return	Template_Entity[]
 	 */
-	protected function _entities_from_db_result($result, $load_groups=FALSE)
+	public function entities_from_db_result($result, $load_groups=FALSE)
 	{
 		$entities = array();
 		foreach ($result->result_array() as $row)
@@ -226,12 +227,15 @@ class Template_model extends CI_Model {
 	 *					the field name and the values of the array are the
 	 *					values to check.  Values are only checked for exact
 	 *					equality and will be connected with 'AND'.  	
+	 * @param	boolean	Optional. If set, then associated Template_Group_Entity
+	 *					objects Will be loaded and set on the returned
+	 *					Template_Entity objects.
 	 *
 	 * @return	Template_Entity[]
 	 */
-	public function fetch_last_edit(array $fields=array())
+	public function fetch_last_edit(array $fields=array(), $load_groups=FALSE)
 	{
-		$templates = $this->fetch_from_db($fields);
+		$templates = $this->fetch_from_db($fields, $load_groups);
 		foreach($templates as $template)
 		{
 			if ($template->save_template_file) 
@@ -239,6 +243,7 @@ class Template_model extends CI_Model {
 				$this->_load_template_file($template, TRUE);
 			}
 		}
+		return $templates;
 	}
 
 	// ----------------------------------------------------------------
@@ -332,11 +337,11 @@ class Template_model extends CI_Model {
 	{
 		if ($entity->template_id)
 		{
-			$this->create_template($this->_entity_to_db_array($entity));
+			$this->update_template_ajax($entity->template_id, $this->_entity_to_db_array($entity));
 		}		
 		else 
 		{
-			$this->update_template_ajax($entity->template_id, $this->_entity_to_db_array($entity));
+			$this->create_template($this->_entity_to_db_array($entity));
 		}
 	}
 
@@ -1261,7 +1266,7 @@ class Template_Group_Entity
 	 */
 	public function __construct(array $groups_row = array())
 	{
-		foreach ($templates_row as $property=>$value)
+		foreach ($groups_row as $property=>$value)
 		{
 			if ( property_exists($this, $property))
 			{

@@ -352,10 +352,13 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		require_once(APPPATH . 'libraries/Functions.php');	
 		$this->EE->functions = new Installer_Functions();
 
+		require_once(APPPATH . 'libraries/Extensions.php');
+		$this->EE->extensions = new Installer_Extensions();
+
 		// We need to figure out which template to load.
 		// Need to check the edit date.
 		$this->EE->load->model('template_model');
-		$templates = $this->EE->template_model->fetch_last_edit(); 
+		$templates = $this->EE->template_model->fetch_last_edit(array(), TRUE); 
 
 		// related_entries
 		// Foreach template
@@ -367,7 +370,14 @@ If you do not wish to reset your password, ignore this message. It will expire i
 
 			// save the template
 			// if saving to file, save the file
-			$this->EE->template_model->save_entity($template);
+			if ($template->loaded_from_file)
+			{
+				$this->EE->template_model->save_to_file($template);
+			}
+			else
+			{
+				$this->EE->template_model->save_to_database($template);
+			}
 		}
 		
 		return true;
@@ -417,9 +427,10 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		// Now deal with {reverse_related_entries}, just replace each
 		// tag pair with a {parents} tag pair and put the parameters from
 		// the original tag onto the {parents} tag.
+		var_dump($parser->reverse_related_data);
 		foreach ($parser->reverse_related_data as $marker=>$relationship_tag)
 		{
-			$tagdata = $relatioship_tag['tagdata'];
+			$tagdata = $relationship_tag['tagdata'];
 			foreach($relationship_tag['var_single'] as $variable)
 			{
 				$new_var = '{parents:' . $variable . '}';
