@@ -2638,68 +2638,77 @@ BSH;
 		//  Update access priveleges for 2.0
 		// resync member groups.  In 1.x, a bug existed where deleting a member group would only delete it from the currently logged in site,
 		// leaving orphaned member groups in the member groups table.
-		$query = ee()->db->query("SELECT group_id, site_id, can_access_publish, can_access_edit, can_access_modules, can_admin_utilities, can_admin_members, can_admin_preferences, can_access_admin, can_access_comm FROM exp_member_groups");
+		$query = ee()->db->select('group_id, site_id, can_access_publish, can_access_edit, can_access_modules, can_admin_utilities, can_admin_members, can_admin_preferences, can_access_admin, can_access_comm')->get('member_groups');
+
 		$groups = array();
 
 		foreach ($query->result() as $row)
 		{
-			$new_privs = '';
+			$new_privs = array();
 
 			if ($row->can_admin_utilities == 'y')
 			{
-				$new_privs .= "`can_access_addons` = 'y', `can_access_extensions` = 'y', `can_access_plugins` = 'y', `can_access_tools` = 'y', `can_access_utilities` = 'y', `can_access_data` = 'y', `can_access_logs` = 'y', ";
+				$new_privs['can_access_addons']		= 'y';
+				$new_privs['can_access_extensions']	= 'y';
+				$new_privs['can_access_plugins']	= 'y';
+				$new_privs['can_access_tools']		= 'y';
+				$new_privs['can_access_utilities']	= 'y'; 
+				$new_privs['can_access_data']		= 'y';
+				$new_privs['can_access_logs']		= 'y';
 			}
 			elseif ($row->can_access_comm == 'y')
 			{
-				$new_privs .= "`can_access_tools` = 'y', "; 
+				$new_privs['can_access_tools']	= 'y'; 
 			}
 
 			if ($row->can_access_modules == 'y')
 			{
-				$new_privs .= "`can_access_addons` = 'y', ";
+				$new_privs['can_access_addons']	= 'y';
 			}
 
 			if ($row->can_access_publish == 'y' OR $row->can_access_edit == 'y')
 			{
-				$new_privs .= "`can_access_content` = 'y', ";
+				$new_privs['can_access_content']	= 'y';
 			}
 
 			if ($row->can_admin_members == 'y')
 			{
-				$new_privs .= "`can_access_members` = 'y', ";
+				$new_privs['can_access_members']	= 'y';
 			}
 
 			if ($row->can_admin_preferences == 'y')
 			{
-				$new_privs .= "`can_access_sys_prefs` = 'y', ";			 
-				$new_privs .= "`can_admin_design` = 'y', "; 
+				$new_privs['can_access_sys_prefs']	= 'y';			 
+				$new_privs['can_admin_design']		= 'y'; 
 			}
 
 			if ($row->can_access_admin == 'y')
 			{
-				$new_privs .= "`can_access_content_prefs` = 'y', ";			 
+				$new_privs['can_access_content_prefs']	= 'y';			 
 			}
 
 			if ($row->group_id == 1)
 			{
-				$new_privs .= "`can_access_accessories` = 'y', `can_access_files` = 'y', `can_edit_categories` = 'y', `can_delete_categories` = 'y', ";			 
+				$new_privs['can_access_accessories']	= 'y';
+				$new_privs['can_access_files']			= 'y';
+				$new_privs['can_edit_categories']		= 'y';
+				$new_privs['can_delete_categories']		= 'y';
 			}
-
 
 			if ($new_privs != '')
 			{
-				$new_privs = substr($new_privs, 0, -2);
-
-				$Q[] = "UPDATE `exp_member_groups` SET {$new_privs} WHERE `group_id` = '{$row->group_id}'";
+				ee()->db->set($new_privs);
+				ee()->db->where('group_id', $row->group_id);			
+				ee()->db->update('member_groups');
 			}
 
 			$groups[$row->group_id][] = $row->site_id;
 		}
 
-		$Q[] = "ALTER TABLE `exp_member_groups` DROP COLUMN `can_admin_preferences`";
-		$Q[] = "ALTER TABLE `exp_member_groups` DROP COLUMN `can_admin_utilities`"; 
+		ee()->smartforge->drop_column('member_groups', 'can_admin_preferences');
+		ee()->smartforge->drop_column('member_groups', 'can_admin_utilities');
 
-		$query = ee()->db->query("SELECT site_id FROM exp_sites");
+		$query = ee()->db->select('site_id')->get('sites');
 
 		foreach ($query->result() as $row)
 		{
@@ -2708,13 +2717,10 @@ BSH;
 				if ( ! in_array($row->site_id, $group_site_ids))
 				{
 					// vanquish!
-					ee()->db->query("DELETE FROM exp_member_groups WHERE group_id = {$group_id}");
+					ee()->db->delete('member_groups', array('group_id' => $group_id));
 				}
 			}
 		}
-
-		// Run the queries
-		$this->_run_queries('Synchronizing member groups', $Q);
 
 		return 'convert_fresh_variables';
 	}
