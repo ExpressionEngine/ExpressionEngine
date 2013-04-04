@@ -360,7 +360,6 @@ class Relationship_tree_builder {
 
 			$node_class = 'ParseNode';
 
-			// @todo @pk a little more complicated than this with parameters?
 			if ($field_id == 'parents' || $tag_name == 'siblings')
 			{
 				$node_class = 'QueryNode';
@@ -424,7 +423,7 @@ class Relationship_tree_builder {
 
 	protected function _propagate_ids($root, $leave_paths)
 	{
-		$it = new RecursiveIteratorIterator(
+		$parse_node_iterator = new RecursiveIteratorIterator(
 			new ParseNodeIterator(array($root)),
 			RecursiveIteratorIterator::SELF_FIRST
 		);
@@ -434,19 +433,23 @@ class Relationship_tree_builder {
 		$all_entry_ids = array();
 		$leaves = $this->_parse_leaves($leave_paths);
 
-		foreach ($it as $node)
+		foreach ($parse_node_iterator as $node)
 		{
-			$depth = $it->getDepth();
+			$depth = $parse_node_iterator->getDepth();
 
-			if ($depth == 0 && $node->is_root())
+			if ($node->is_root())
 			{
 				$root_offset = -1;
 				continue;
 			}
 
-			// if the tag is prefixed:sibling, then we already have the ids
+			$is_root_sibling = ($node->name() == 'siblings'); // unprefixed {sibling}
+
+			// If the tag is prefixed:sibling, then we already have the ids
 			// on the parent since our query is not limited in breadth.
-			if ($node->field_id == 'siblings' && $node->name() != 'siblings')
+			// This does not apply to an un-prefixed sibling tag which is
+			// handled as regular subtree below.
+			if ($node->field_id == 'siblings' &&  ! $is_root_sibling)
 			{
 				$siblings = array();
 				$possible_siblings = $node->parent()->entry_ids;
@@ -505,8 +508,15 @@ class Relationship_tree_builder {
 					{
 						foreach ($children as $child)
 						{
-							$all_entry_ids[] = $child['id'];
-							$node->add_entry_id($parent, $child['id']);
+							$child_id = $child['id'];
+
+							if ($is_root_sibling && $parent == $child_id)
+							{
+								continue;
+							}
+
+							$all_entry_ids[] = $child_id;
+							$node->add_entry_id($parent, $child_id);
 						}
 					}
 				}
@@ -740,11 +750,11 @@ class Relationship_parser {
 		}
 
 		// limit entry ids to given tag
-		if ($node->param('entry_id') && ! $node->param('url_title'))
-		{
-			$allowed_ids = explode('|', $node->param('entry_id'));
-			$entry_ids = array_intersect($entry_ids, $allowed_ids);
-		}
+	//	if ($node->param('entry_id') && ! $node->param('url_title'))
+	//	{
+	//		$allowed_ids = explode('|', $node->param('entry_id'));
+	//		$entry_ids = array_intersect($entry_ids, $allowed_ids);
+	//	}
 
 		// prefilter anything prefixed the same as this tag so that we don't
 		// go around building huge lists with custom field data only to toss
@@ -754,7 +764,7 @@ class Relationship_parser {
 		$categories = array();
 
 		$filter_parameters = array(
-			'entry_id', 'author_id', 'channel', 'url_title', 'username', 'group_id', 'status'
+			'author_id', 'channel', 'url_title', 'username', 'group_id', 'status'
 		);
 
 		foreach ($entry_ids as $entry_id)
@@ -1014,6 +1024,24 @@ class ParseNode extends EE_TreeNode {
 		else
 		{
 			$ids[$parent][] = $child;
+		}
+
+		$parameter = $this->param('entry_id');
+
+		if ($parameter)
+		{
+			$not = FALSE;
+
+			if (strncasecmp($parameter, 'not ', 4) == 0)
+			{
+				$not = TRUE;
+				$parameter = substr($parameter, 4);
+			}
+
+			$parameter = trim($parameter, " |\r\n\t");
+			$fn = $not ? 'array_diff' : 'array_intersect';
+
+			$ids[$parent] = $fn($ids[$parent], explode('|', $parameter));
 		}
 	}
 
