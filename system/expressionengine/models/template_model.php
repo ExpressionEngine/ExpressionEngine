@@ -48,12 +48,15 @@ class Template_model extends CI_Model {
 	 *					the field name and the values of the array are the
 	 *					values to check.  Values are only checked for exact
 	 *					equality and will be connected with 'AND'.  	
+	 * @param	boolean	Optional. If set, then associated Template_Group_Entity
+	 *					objects Will be loaded and set on the returned
+	 *					Template_Entity objects.
 	 *
 	 * @return	Template_Entity[]
 	 */
-	public function fetch(array $fields=array())
+	public function fetch(array $fields=array(), $load_groups=FALSE)
 	{
-		$templates = $this->fetch_from_db($fields);
+		$templates = $this->fetch_from_db($fields, $load_groups);
 		foreach($templates as $template)
 		{
 			if ($template->save_template_file) 
@@ -88,18 +91,18 @@ class Template_model extends CI_Model {
 		// originally written right into EE_Config?  Why is EE_Config not
 		// itself capable of caching preferences when used with MSM
 		$site_switch = FALSE;
-		if ($this->EE->config->item('site_id') != $template->site_id)
+		if ($this->config->item('site_id') != $template->site_id)
 		{
-			$site_switch = $this->EE->config->config;
+			$site_switch = $this->config->config;
 			
 			if (isset($this->site_prefs_cache[$template->site_id]))
 			{
-				$this->EE->config->config = $this->site_prefs_cache[$template->site_id];
+				$this->config->config = $this->site_prefs_cache[$template->site_id];
 			}
 			else
 			{
-				$this->EE->config->site_prefs('', $template->site_id);
-				$this->site_prefs_cache[$template->site_id] = $this->EE->config->config;
+				$this->config->site_prefs('', $template->site_id);
+				$this->site_prefs_cache[$template->site_id] = $this->config->config;
 			}
 		}
 
@@ -109,7 +112,7 @@ class Template_model extends CI_Model {
 		$basepath = rtrim($this->config->item('tmpl_file_basepath'), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
 		
 		$filepath = $basepath . $this->config->item('site_short_name') . DIRECTORY_SEPARATOR 
-			. $template->group_name . '.group' . DIRECTORY_SEPARATOR . $template->template_name
+			. $template->getGroup()->group_name . '.group' . DIRECTORY_SEPARATOR . $template->template_name
 			. $this->api_template_structure->file_extensions($row['template_type']);
 	
 		// We don't need the other site's configuration values anymore, so
@@ -117,7 +120,7 @@ class Template_model extends CI_Model {
 		// otherwise we have to do it everywhere we bail out.  	
 		if ($site_switch !== FALSE)
 		{
-			$this->EE->config->config = $site_switch;
+			$this->config->config = $site_switch;
 		}
 
 		if (file_exists($basepath))
@@ -153,18 +156,29 @@ class Template_model extends CI_Model {
 	 *					the field name and the values of the array are the
 	 *					values to check.  Values are only checked for exact
 	 *					equality and will be connected with 'AND'.  	
+	 * @param	boolean	Optional. If set, then associated Template_Group_Entity
+	 *					objects Will be loaded and set on the returned
+	 *					Template_Entity objects.
 	 *
 	 * @return	Template_Entity[]
 	 *
 	 */
-	public function fetch_from_db(array $fields=array()) 
+	public function fetch_from_db(array $fields=array(), $load_groups=FALSE) 
 	{
+		$this->db->select();
+		$this->db->from('templates');
+
+		if ($load_groups) 
+		{
+			$this->db->join('template_groups', 'templates.group_id = template_groups.group_id');
+		}
+
 		foreach ($fields as $field=>$value)
 		{
 			$this->db->where($field, $value);
 		}
 
-		return $this->_entities_from_db_result($this->db->get('templates'));
+		return $this->_entities_from_db_result($this->db->get(), $load_groups);
 	}
 
 	/**
@@ -176,19 +190,22 @@ class Template_model extends CI_Model {
 	 *
 	 * @param	DB_result	The result object from a query against the templates
 	 *						table.
+	 * @param	boolean	Optional. If set, then associated Template_Group_Entity
+	 *					objects Will be loaded and set on the returned
+	 *					Template_Entity objects.
 	 *
 	 * @return	Template_Entity[]
 	 */
-	protected function _entities_from_db_result($result)
+	protected function _entities_from_db_result($result, $load_groups=FALSE)
 	{
 		$entities = array();
 		foreach ($result->result_array() as $row)
 		{	
-			$entity = new Template_Entity();
-			foreach ($row as $name => $value)
+			$entity = new Template_Entity($row);
+			if ($load_groups)
 			{
-				$entity->{$name} = $value;
-			}	
+				$entity->setGroup(new Template_Group_Entity($row));
+			}
 			$entities[] = $entity;
 		}
 		return $entities;
@@ -258,6 +275,7 @@ class Template_model extends CI_Model {
 		{
 			return FALSE;
 		}
+		$this->load->library('extensions');
 		
 		$this->load->library('api');
 		$this->api->instantiate('template_structure');
@@ -275,7 +293,7 @@ class Template_model extends CI_Model {
 		}
 		
 		// and finally with our template group
-		$basepath .= '/'.$entity->template_group.'.group';
+		$basepath .= '/'.$entity->getGroup()->template_group.'.group';
 
 		if ( ! is_dir($basepath))
 		{
@@ -348,6 +366,10 @@ class Template_model extends CI_Model {
 		);
 		return $data;
 	}
+
+	// -----------------------------------------------------------------
+	//		End of Entity using methods
+	// -----------------------------------------------------------------
 
 	// -----------------------------------------------------------------
 	
@@ -1122,15 +1144,27 @@ class Template_Entity
 	 */
 	protected $hits;
 
+
+	// ----------------------------------------------------
+	//		Non-Database Properties
+	// ----------------------------------------------------
+
 	/**
-	 * Non-Database
-	 *
 	 * An entity only property that indicates whether this
 	 * entity was loaded from a file or just the database. If
 	 * TRUE then this template was loaded from a file, otherwise
 	 * it was loaded from the database.
 	 */
 	protected $loaded_from_file = FALSE;
+
+	// ----------------------------------------------------
+	// 		Associated Entities
+	// ----------------------------------------------------
+
+	/**
+	 *
+	 */
+	protected $template_group;
 
 	/**
 	 *
@@ -1139,7 +1173,97 @@ class Template_Entity
 	{
 		foreach ($templates_row as $property=>$value)
 		{
-			if ( property_exists($property))
+			if ( property_exists($this, $property))
+			{
+				$this->{$property} = $value;
+			}
+		}
+	}
+
+	/**
+	 *
+	 */		
+	public function __get($name)
+	{
+		if ( strpos('_', $name) === 0  OR ! property_exists($this, $name))
+		{
+			throw new RuntimeException('Attempt to access non-existent property "' . $name . '"');
+		}
+
+		return $this->{$name};
+	}
+
+	/**
+	 *
+	 */
+	public function __set($name, $value)
+	{
+		if ( strpos('_', $name) === 0 OR ! property_exists($this, $name))
+		{
+			throw new RuntimeException('Attempt to access non-existent property "' . $name . '"');
+		}
+
+		$this->{$name} = $value;
+	}
+
+
+	/**
+	 *
+	 */
+	public function getGroup()
+	{
+		return $this->template_group;
+	}
+
+	/**
+	 *
+	 */
+	public function setGroup(Template_Group_Entity $group)
+	{
+		$this->template_group = $group;
+		$this->group_id = $group->group_id;
+		return $this;
+	}
+}
+
+/**
+ *
+ */
+class Template_Group_Entity
+{
+	/**
+	 *
+	 */
+	private $group_id;
+
+	/**
+	 *
+	 */
+	private $site_id;
+	
+	/**
+	 *
+	 */
+	private $group_name;
+
+	/**
+	 *
+	 */
+	private $group_order;
+	
+	/**
+	 *
+	 */
+	private $is_site_default;
+
+	/**
+	 *
+	 */
+	public function __construct(array $groups_row = array())
+	{
+		foreach ($templates_row as $property=>$value)
+		{
+			if ( property_exists($this, $property))
 			{
 				$this->{$property} = $value;
 			}

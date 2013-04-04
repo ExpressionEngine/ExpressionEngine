@@ -55,7 +55,8 @@ class Updater {
 		$this->_update_specialty_templates(); 
 		$this->_update_relationships_table();
 		$this->_replace_relationship_tags();
-		
+	
+		die('End of Update.');	
 		return TRUE;
 	}
 
