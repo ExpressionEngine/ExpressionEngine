@@ -35,7 +35,7 @@ class Category_model extends CI_Model {
 			return $result;
 		}
 
-		$sql = "SELECT c.cat_id, c.*, cp.entry_id
+		$sql = "SELECT c.*, cp.entry_id
 				FROM exp_categories AS c
 				LEFT JOIN exp_category_posts AS cp ON c.cat_id = cp.cat_id
 				WHERE cp.entry_id IN (".implode(', ', $entry_ids).")
