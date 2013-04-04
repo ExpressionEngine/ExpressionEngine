@@ -43,7 +43,6 @@ $lang = array(
 'page_caching' 			=> 'Page (template) cache files',
 'tag_caching' 			=> 'Tag cache files',
 'db_caching' 			=> 'Database cache files',
-'cached_relationships' 	=> 'Cached Relationship Entries',
 'all_caching' 			=> 'All caches',
 
 'sandr_instructions' 	=> 'These forms enable you to search for specific text and replace it with different text',
