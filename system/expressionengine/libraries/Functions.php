@@ -1060,9 +1060,9 @@ class EE_Functions {
 	 * @param	string
 	 * @return	string
 	 */
-	function clear_caching($which, $sub_dir = '', $relationships=FALSE)
+	function clear_caching($which, $sub_dir = '')
 	{
-		$actions = array('page', 'tag', 'db', 'sql', 'relationships', 'all');
+		$actions = array('page', 'tag', 'db', 'sql', 'all');
 		
 		if ( ! in_array($which, $actions))
 		{
@@ -1113,8 +1113,6 @@ class EE_Functions {
 				break;
 			case 'sql'  : $this->delete_directory(APPPATH.'cache/sql_cache'.$sub_dir);
 				break;
-			case 'relationships' : ee()->db->query("UPDATE exp_relationships SET rel_data = '', reverse_rel_data = ''");
-				break;
 			case 'all'  : 
 						$this->delete_directory(APPPATH.'cache/page_cache'.$sub_dir);
 						$this->delete_directory(APPPATH.'cache/db_cache_'.ee()->config->item('site_id').$db_path);
@@ -1123,11 +1121,6 @@ class EE_Functions {
 						if (ee()->config->item('disable_tag_caching') != 'y')
 						{
 							$this->delete_directory(APPPATH.'cache/tag_cache'.$sub_dir);
-						}
-												  
-						if ($relationships === TRUE)
-						{
-							ee()->db->query("UPDATE exp_relationships SET rel_data = '', reverse_rel_data = ''");
 						}
 				break;
 		}			
@@ -1406,58 +1399,8 @@ class EE_Functions {
 	 */
 	function compile_relationship($data, $parent_entry = TRUE, $reverse = FALSE)
 	{
-		if ($data['type'] == 'channel' OR ($reverse === TRUE && $parent_entry === FALSE))
-		{
-			$sql = "SELECT t.entry_id, t.channel_id, t.forum_topic_id, t.author_id, t.ip_address, t.title, t.url_title, t.status, t.view_count_one, t.view_count_two, t.view_count_three, t.view_count_four, t.allow_comments, t.comment_expiration_date, t.sticky, t.entry_date, t.year, t.month, t.day, t.entry_date, t.edit_date, t.expiration_date, t.recent_comment_date, t.comment_total, t.site_id as entry_site_id,
-					w.channel_title, w.channel_name, w.channel_url, w.comment_url, w.comment_moderate, w.channel_html_formatting, w.channel_allow_img_urls, w.channel_auto_link_urls, 
-					m.username, m.email, m.url, m.screen_name, m.location, m.occupation, m.interests, m.aol_im, m.yahoo_im, m.msn_im, m.icq, m.signature, m.sig_img_filename, m.sig_img_width, m.sig_img_height, m.avatar_filename, m.avatar_width, m.avatar_height, m.photo_filename, m.photo_width, m.photo_height, m.group_id, m.member_id, m.bday_d, m.bday_m, m.bday_y, m.bio,
-					md.*,
-					wd.*
-			FROM exp_channel_titles		AS t
-			LEFT JOIN exp_channels 		AS w  ON t.channel_id = w.channel_id 
-			LEFT JOIN exp_channel_data	AS wd ON t.entry_id = wd.entry_id 
-			LEFT JOIN exp_members		AS m  ON m.member_id = t.author_id 
-			LEFT JOIN exp_member_data	AS md ON md.member_id = m.member_id 
-			WHERE t.entry_id = '".(($reverse === TRUE && $parent_entry === FALSE) ? $data['parent_id'] : $data['child_id'])."'";
-			
-			$entry_query = ee()->db->query($sql);
-	
-			// Is there a category group associated with this channel?
-			$query = ee()->db->query("SELECT cat_group FROM  exp_channels WHERE channel_id = '".$entry_query->row('channel_id') ."'");	 
-			$cat_group = (trim($query->row('cat_group')) == '') ? FALSE : $query->row('cat_group');
-
-			$this->cat_array = array();
-			$cat_array = array();
-	
-			if ($cat_group !== FALSE)
-			{
-				$this->get_categories($cat_group, ($reverse === TRUE && $parent_entry === FALSE) ? $data['parent_id'] : $data['child_id']);
-			}
-			$cat_array = $this->cat_array;
-			
-			if ($parent_entry == TRUE)
-			{
-				ee()->db->query("INSERT INTO exp_relationships (rel_parent_id, rel_child_id, rel_type, rel_data, reverse_rel_data) 
-							VALUES ('".$data['parent_id']."', '".$data['child_id']."', '".$data['type']."',
-									'".addslashes(serialize(array('query' => $entry_query, 'cats_fixed' => '1', 'categories' => $cat_array)))."', '')");
-				return ee()->db->insert_id();
-			}
-			else
-			{
-				if ($reverse === TRUE)
-				{
-					ee()->db->query("UPDATE exp_relationships 
-								SET reverse_rel_data = '".addslashes(serialize(array('query' => $entry_query, 'cats_fixed' => '1', 'categories' => $cat_array)))."' 
-								WHERE rel_type = '".ee()->db->escape_str($data['type'])."' AND rel_parent_id = '".$data['parent_id']."'");
-				}
-				else
-				{
-					ee()->db->query("UPDATE exp_relationships 
-								SET rel_data = '".addslashes(serialize(array('query' => $entry_query, 'cats_fixed' => '1', 'categories' => $cat_array)))."' 
-								WHERE rel_type = 'channel' AND rel_child_id = '".$data['child_id']."'");
-				}
-			}		
-		}
+		ee()->load->library('logger');
+		ee()->logger->deprecated('2.6');
 	}
 	
 	// --------------------------------------------------------------------
