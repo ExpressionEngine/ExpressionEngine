@@ -99,7 +99,7 @@ class Channel {
 		$this->EE =& get_instance();
 
 		ee()->load->library('pagination');
-		$this->pagination = new Pagination_object(__CLASS__);
+		$this->pagination = ee()->pagination->create(__CLASS__);
 		// $this->pagination->per_page = $this->limit;
 		
 		// Used by pagination to determine whether we're coming from the cache
