@@ -1860,6 +1860,8 @@ BSH;
 		ee()->db->delete('html_buttons', array('member_id' => 0));
 		
 		$site_query = ee()->db->query("SELECT site_id FROM `exp_sites`");
+
+		$Q = array();
 		
 		foreach ($site_query->result() as $site)
 		{
@@ -1884,6 +1886,9 @@ BSH;
 			$Q[] = "UPDATE `exp_html_buttons` SET `classname`='btn_".str_replace(array('<', '>'), array(''), $button)."' WHERE `tag_name`='".$button."'";
 			$Q[] = "UPDATE `exp_html_buttons` SET `tag_name`='".str_replace(array('<', '>'), array('&lt;', '&gt;'), $button)."' WHERE `tag_name`='".$button."'";
 		}
+
+		// Run the queries
+		$this->_run_queries('Updating weblog tables', $Q);
 
 		// increase path fields to 150 characters
 		ee()->smartforge->modify_column(
@@ -1934,108 +1939,575 @@ BSH;
 		ee()->dbforge->drop_table('trackbacks');
 
 		// Add primary keys as needed for normalization of all tables
-		$Q[] = "ALTER TABLE `exp_throttle` ADD COLUMN `throttle_id` int(10) UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY FIRST";
-		$Q[] = "ALTER TABLE `exp_stats` ADD COLUMN `stat_id` int(10) UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY FIRST";
-		$Q[] = "ALTER TABLE `exp_online_users` ADD COLUMN `online_id` int(10) UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY FIRST";
-		$Q[] = "ALTER TABLE `exp_security_hashes` ADD COLUMN `hash_id` int(10) UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY FIRST";
-		$Q[] = "ALTER TABLE `exp_password_lockout` ADD COLUMN `lockout_id` int(10) UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY FIRST";
-		$Q[] = "ALTER TABLE `exp_reset_password` ADD COLUMN `reset_id` int(10) UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY FIRST";
-		$Q[] = "ALTER TABLE `exp_email_cache_mg` DROP KEY `cache_id`";
-		$Q[] = "ALTER TABLE `exp_email_cache_mg` ADD PRIMARY KEY `cache_id_group_id` (`cache_id`, `group_id`)";
-		$Q[] = "ALTER TABLE `exp_email_cache_ml` DROP KEY `cache_id`";
-		$Q[] = "ALTER TABLE `exp_email_cache_ml` ADD PRIMARY KEY `cache_id_list_id` (`cache_id`, `list_id`)";
-		$Q[] = "ALTER TABLE `exp_member_homepage` DROP KEY `member_id`";
-		$Q[] = "ALTER TABLE `exp_member_homepage` ADD PRIMARY KEY `member_id` (`member_id`)";
-		$Q[] = "ALTER TABLE `exp_member_groups` DROP KEY `group_id`";
-		$Q[] = "ALTER TABLE `exp_member_groups` DROP KEY `site_id`";
-		$Q[] = "ALTER TABLE `exp_member_groups` ADD PRIMARY KEY `group_id_site_id` (`group_id`, `site_id`)";
-		$Q[] = "ALTER TABLE `exp_weblog_member_groups` DROP KEY `group_id`";
-		$Q[] = "ALTER TABLE `exp_weblog_member_groups` ADD PRIMARY KEY `group_id_weblog_id` (`group_id`, `weblog_id`)";
-		$Q[] = "ALTER TABLE `exp_module_member_groups` DROP KEY `group_id`";
-		$Q[] = "ALTER TABLE `exp_module_member_groups` ADD PRIMARY KEY `group_id_module_id` (`group_id`, `module_id`)";
-		$Q[] = "ALTER TABLE `exp_template_member_groups` DROP KEY `group_id`";
-		$Q[] = "ALTER TABLE `exp_template_member_groups` ADD PRIMARY KEY `group_id_template_group_id` (`group_id`, `template_group_id`)";
-		$Q[] = "ALTER TABLE `exp_member_data` DROP KEY `member_id`";
-		$Q[] = "ALTER TABLE `exp_member_data` ADD PRIMARY KEY `member_id` (`member_id`)";
-		$Q[] = "ALTER TABLE `exp_field_formatting` DROP KEY `field_id`";
-		$Q[] = "ALTER TABLE `exp_field_formatting` ADD COLUMN `formatting_id` int(10) UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY FIRST";
-		$Q[] = "ALTER TABLE `exp_weblog_data` DROP KEY `entry_id`";
-		$Q[] = "ALTER TABLE `exp_weblog_data` ADD PRIMARY KEY `entry_id` (`entry_id`)";
-		$Q[] = "ALTER TABLE `exp_entry_ping_status` ADD PRIMARY KEY `entry_id_ping_id` (`entry_id`, `ping_id`)";
-		$Q[] = "ALTER TABLE `exp_status_no_access` ADD PRIMARY KEY `status_id_member_group` (`status_id`, `member_group`)";
+		// Can't use SmartForge since DB Forge doesn't support FIRST.
+
+		ee()->smartforge->drop_key('field_formatting', 'field_id');
+
+		$fields = array(
+			// 'table_name' => 'field_name'
+			'throttle'			=> 'throttle_id',
+			'stats'				=> 'stat_id',
+			'online_users'		=> 'online_id',
+			'security_hashes'	=> 'hash_id',
+			'password_lockout'	=> 'lockout_id',
+			'reset_password'	=> 'reset_id',
+			'field_formatting'	=> 'formatting_id',
+		);
+		
+		$Q = array();
+
+		foreach ($fields as $k => $v)
+		{
+			// Check to make sure the table exists and the field doesn't yet.
+			if (ee()->db->table_exists($k) AND  ! ee()->db->field_exists($v, $k))
+			{
+				$Q[] = "ALTER TABLE `exp_{$k}` ADD COLUMN `{$v}` int(10) UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY FIRST";
+			}
+		}
+
+		// Run the queries
+		$this->_run_queries('Updating weblog tables', $Q);
+
+		ee()->smartforge->drop_key('email_cache_mg', 'cache_id');
+		ee()->smartforge->add_key('email_cache_mg', array('cache_id', 'group_id'), 'PRIMARY');
+
+		ee()->smartforge->drop_key('email_cache_ml', 'cache_id');
+		ee()->smartforge->add_key('email_cache_ml', array('cache_id', 'list_id'), 'PRIMARY');
+
+		ee()->smartforge->drop_key('member_homepage', 'member_id');
+		ee()->smartforge->add_key('member_homepage', 'member_id', 'PRIMARY');
+
+		ee()->smartforge->drop_key('member_groups', 'group_id');
+		ee()->smartforge->drop_key('member_groups', 'site_id');
+		ee()->smartforge->add_key('member_groups', array('group_id', 'site_id'), 'PRIMARY');
+
+		ee()->smartforge->drop_key('weblog_member_groups', 'group_id');
+		ee()->smartforge->add_key('weblog_member_groups', array('group_id', 'weblog_id'), 'PRIMARY');
+
+		ee()->smartforge->drop_key('module_member_groups', 'group_id');
+		ee()->smartforge->add_key('module_member_groups', array('group_id', 'module_id'), 'PRIMARY');
+
+		ee()->smartforge->drop_key('template_member_groups', 'group_id');
+		ee()->smartforge->add_key('template_member_groups', array('group_id', 'template_group_id'), 'PRIMARY');
+
+		ee()->smartforge->drop_key('member_data', 'member_id');
+		ee()->smartforge->add_key('member_data', 'member_id', 'PRIMARY');
+
+		ee()->smartforge->drop_key('weblog_data', 'entry_id');
+		ee()->smartforge->add_key('weblog_data', 'entry_id', 'PRIMARY');
+
+		ee()->smartforge->add_key('entry_ping_status', array('entry_id', 'ping_id'), 'PRIMARY');
+
+		ee()->smartforge->add_key('status_no_access', array('status_id', 'member_group'), 'PRIMARY');
 
 		if ( ! in_array('category_posts', $has_duplicates))
 		{
-			$Q[] = "ALTER TABLE `exp_category_posts` DROP KEY `entry_id`";
-			$Q[] = "ALTER TABLE `exp_category_posts` DROP KEY `cat_id`";
+			ee()->smartforge->drop_key('category_posts', 'entry_id');
+			ee()->smartforge->drop_key('category_posts', 'cat_id');
 		}
 
-		$Q[] = "ALTER TABLE `exp_category_posts` ADD PRIMARY KEY `entry_id_cat_id` (`entry_id`, `cat_id`)";
-		$Q[] = "ALTER TABLE `exp_template_no_access` DROP KEY `template_id`";
-		$Q[] = "ALTER TABLE `exp_template_no_access` ADD PRIMARY KEY `template_id_member_group` (`template_id`, `member_group`)";
-		$Q[] = "ALTER TABLE `exp_upload_no_access` ADD PRIMARY KEY `upload_id_member_group` (`upload_id`, `member_group`)";
+		ee()->smartforge->add_key('category_posts', array('entry_id', 'cat_id'), 'PRIMARY');
+
+		ee()->smartforge->drop_key('template_no_access', 'template_id');
+		ee()->smartforge->add_key('template_no_access', array('template_id', 'member_group'), 'PRIMARY');
+
+		ee()->smartforge->add_key('upload_no_access', array('upload_id', 'member_group'), 'PRIMARY');
 
 		if ( ! in_array('message_folders', $has_duplicates))
 		{
-			$Q[] = "ALTER TABLE `exp_message_folders` DROP KEY `member_id`";
+			ee()->smartforge->drop_key('message_folders', 'member_id');
 		}
 
-		$Q[] = "ALTER TABLE `exp_message_folders` ADD PRIMARY KEY `member_id` (`member_id`)";
+		ee()->smartforge->add_key('message_folders', 'member_id', 'PRIMARY');
 
 		// Add default values for a few columns and switch some to NULL
-		$Q[] = "ALTER TABLE `exp_templates` CHANGE `template_data` `template_data` MEDIUMTEXT NULL";
-		$Q[] = "ALTER TABLE `exp_templates` CHANGE `template_notes` `template_notes` TEXT NULL";
-		$Q[] = "ALTER TABLE `exp_templates` CHANGE `last_author_id` `last_author_id` INT(10) NOT NULL DEFAULT 0";
-		$Q[] = "ALTER TABLE `exp_templates` CHANGE `refresh` `refresh` INT(6) UNSIGNED NOT NULL DEFAULT 0";
-		$Q[] = "ALTER TABLE `exp_templates` CHANGE `no_auth_bounce` `no_auth_bounce` VARCHAR(50) NOT NULL DEFAULT ''";
-		$Q[] = "ALTER TABLE `exp_templates` CHANGE `hits` `hits` INT(10) UNSIGNED NOT NULL DEFAULT 0";
-		$Q[] = "ALTER TABLE `exp_member_groups` CHANGE `mbr_delete_notify_emails` `mbr_delete_notify_emails` varchar(255) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_weblog_fields` CHANGE `field_pre_field_id` `field_pre_field_id` int(6) unsigned NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_weblog_titles` CHANGE `recent_comment_date` `recent_comment_date` int(10) NULL DEFAULT NULL";
+		ee()->progress->update_state("Updating weblog tables");
 
-		// Add moar!
-		$Q[] = "ALTER TABLE `exp_sites` CHANGE `site_description` `site_description` TEXT NULL";
-		$Q[] = "ALTER TABLE `exp_category_groups` CHANGE `can_edit_categories` `can_edit_categories` TEXT NULL";
-		$Q[] = "ALTER TABLE `exp_category_groups` CHANGE `can_delete_categories` `can_delete_categories` TEXT NULL";
-		$Q[] = "ALTER TABLE `exp_categories` CHANGE `cat_description` `cat_description` TEXT NULL";
-		$Q[] = "ALTER TABLE `exp_categories` CHANGE `cat_image` `cat_image` varchar(120) NULL";
-		$Q[] = "ALTER TABLE `exp_upload_prefs` CHANGE `max_size` `max_size` varchar(16) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_upload_prefs` CHANGE `max_height` `max_height` varchar(6) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_upload_prefs` CHANGE `max_width` `max_width` varchar(6) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_upload_prefs` CHANGE `properties` `properties` varchar(120) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_upload_prefs` CHANGE `pre_format` `pre_format` varchar(120) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_upload_prefs` CHANGE `post_format` `post_format` varchar(120) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_upload_prefs` CHANGE `file_properties` `file_properties` varchar(120) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_upload_prefs` CHANGE `file_pre_format` `file_pre_format` varchar(120) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_upload_prefs` CHANGE `file_post_format` `file_post_format` varchar(120) NULL DEFAULT NULL";
+		ee()->smartforge->modify_column(
+			'templates',
+			array(
+				'template_data' => array(
+					'name'			=> 'template_data',
+					'type'			=> 'mediumtext',
+					'null'			=> TRUE
+				)
+			)
+		);
 
-		$Q[] = "ALTER TABLE `exp_weblog_fields` CHANGE `field_instructions` `field_instructions` TEXT NULL";
-		$Q[] = "ALTER TABLE `exp_weblog_fields` CHANGE `field_pre_field_id` `field_pre_field_id` int(6) unsigned NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_weblog_fields` CHANGE `field_maxl` `field_maxl` smallint(3) NULL DEFAULT NULL";
+		ee()->smartforge->modify_column(
+			'templates',
+			array(
+				'template_notes' => array(
+					'name'			=> 'template_notes',
+					'type'			=> 'text',
+					'null'			=> TRUE
+				)
+			)
+		);
 
-		$Q[] = "ALTER TABLE `exp_weblog_titles` CHANGE `forum_topic_id` `forum_topic_id` int(10) unsigned NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_weblog_titles` CHANGE `recent_comment_date` `recent_comment_date` int(10) NULL DEFAULT NULL";		  
+		ee()->smartforge->modify_column(
+			'templates',
+			array(
+				'last_author_id' => array(
+					'name'			=> 'last_author_id',
+					'type'			=> 'int',
+					'constraint'	=> 10,
+					'null'			=> FALSE,
+					'default'		=> 0
+				)
+			)
+		);
 
-		$Q[] = "ALTER TABLE `exp_weblogs` CHANGE `cat_group` `cat_group` varchar(225) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_weblogs` CHANGE `status_group` `status_group` int(4) unsigned NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_weblogs` CHANGE `field_group` `field_group` int(4) unsigned NULL DEFAULT NULL";
+		ee()->smartforge->modify_column(
+			'templates',
+			array(
+				'refresh' => array(
+					'name'			=> 'refresh',
+					'type'			=> 'int',
+					'constraint'	=> 6,
+					'unsigned'		=> TRUE,
+					'null'			=> FALSE,
+					'default'		=> 0
+				)
+			)
+		);
 
-		$Q[] = "ALTER TABLE `exp_weblogs` CHANGE `search_excerpt` `search_excerpt` int(4) unsigned NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_weblogs` CHANGE `deft_category` `deft_category` varchar(60) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_weblogs` CHANGE `comment_url` `comment_url` varchar(80) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_weblogs` CHANGE `comment_max_chars` `comment_max_chars` int(5) unsigned NULL DEFAULT '5000'";
-		$Q[] = "ALTER TABLE `exp_weblogs` CHANGE `comment_notify_emails` `comment_notify_emails` varchar(255) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_weblogs` CHANGE `search_results_url` `search_results_url` varchar(80) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_weblogs` CHANGE `ping_return_url` `ping_return_url` varchar(80) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_weblogs` CHANGE `rss_url` `rss_url` varchar(80) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_weblogs` DROP COLUMN `enable_qucksave_versioning`";
+		ee()->smartforge->modify_column(
+			'templates',
+			array(
+				'no_auth_bounce' => array(
+					'name'			=> 'no_auth_bounce',
+					'type'			=> 'varchar',
+					'constraint'	=> 50,
+					'null'			=> FALSE,
+					'default'		=> ''
+				)
+			)
+		);
+
+		ee()->smartforge->modify_column(
+			'templates',
+			array(
+				'hits' => array(
+					'name'			=> 'hits',
+					'type'			=> 'int',
+					'constraint'	=> 10,
+					'unsigned'		=> TRUE,
+					'null'			=> FALSE,
+					'default'		=> 0
+				)
+			)
+		);
+
+		ee()->smartforge->modify_column(
+			'member_groups',
+			array(
+				'mbr_delete_notify_emails' => array(
+					'name'			=> 'mbr_delete_notify_emails',
+					'type'			=> 'varchar',
+					'constraint'	=> 255,
+					'null'			=> TRUE
+				)
+			)
+		);
+
+		ee()->smartforge->modify_column(
+			'weblog_fields',
+			array(
+				'field_pre_field_id' => array(
+					'name'			=> 'field_pre_field_id',
+					'type'			=> 'int',
+					'constraint'	=> 6,
+					'unsigned'		=> TRUE,
+					'null'			=> TRUE
+				)
+			)
+		);
+
+		ee()->smartforge->modify_column(
+			'weblog_titles',
+			array(
+				'recent_comment_date' => array(
+					'name'			=> 'recent_comment_date',
+					'type'			=> 'int',
+					'constraint'	=> 10,
+					'null'			=> TRUE
+				)
+			)
+		);
+
+		ee()->smartforge->modify_column(
+			'sites',
+			array(
+				'site_description' => array(
+					'name'			=> 'site_description',
+					'type'			=> 'text',
+					'null'			=> TRUE
+				)
+			)
+		);
+
+		ee()->smartforge->modify_column(
+			'category_groups',
+			array(
+				'can_edit_categories' => array(
+					'name'			=> 'can_edit_categories',
+					'type'			=> 'text',
+					'null'			=> TRUE
+				)
+			)
+		);
+
+		ee()->smartforge->modify_column(
+			'category_groups',
+			array(
+				'can_delete_categories' => array(
+					'name'			=> 'can_delete_categories',
+					'type'			=> 'text',
+					'null'			=> TRUE
+				)
+			)
+		);
+
+		ee()->smartforge->modify_column(
+			'categories',
+			array(
+				'cat_description' => array(
+					'name'			=> 'cat_description',
+					'type'			=> 'text',
+					'null'			=> TRUE
+				)
+			)
+		);
+
+		ee()->smartforge->modify_column(
+			'categories',
+			array(
+				'cat_image' => array(
+					'name'			=> 'cat_image',
+					'type'			=> 'varchar',
+					'constraint'	=> 120,
+					'null'			=> TRUE
+				)
+			)
+		);
+
+		ee()->smartforge->modify_column(
+			'upload_prefs',
+			array(
+				'max_size' => array(
+					'name'			=> 'max_size',
+					'type'			=> 'varchar',
+					'constraint'	=> 16,
+					'null'			=> TRUE
+				)
+			)
+		);
+
+		ee()->smartforge->modify_column(
+			'upload_prefs',
+			array(
+				'max_height' => array(
+					'name'			=> 'max_height',
+					'type'			=> 'varchar',
+					'constraint'	=> 6,
+					'null'			=> TRUE
+				)
+			)
+		);
+
+		ee()->smartforge->modify_column(
+			'upload_prefs',
+			array(
+				'max_width' => array(
+					'name'			=> 'max_width',
+					'type'			=> 'varchar',
+					'constraint'	=> 6,
+					'null'			=> TRUE
+				)
+			)
+		);
+
+		ee()->smartforge->modify_column(
+			'upload_prefs',
+			array(
+				'properties' => array(
+					'name'			=> 'properties',
+					'type'			=> 'varchar',
+					'constraint'	=> 120,
+					'null'			=> TRUE
+				)
+			)
+		);
+
+		ee()->smartforge->modify_column(
+			'upload_prefs',
+			array(
+				'pre_format' => array(
+					'name'			=> 'pre_format',
+					'type'			=> 'varchar',
+					'constraint'	=> 120,
+					'null'			=> TRUE
+				)
+			)
+		);
+
+		ee()->smartforge->modify_column(
+			'upload_prefs',
+			array(
+				'post_format' => array(
+					'name'			=> 'post_format',
+					'type'			=> 'varchar',
+					'constraint'	=> 120,
+					'null'			=> TRUE
+				)
+			)
+		);
+
+		ee()->smartforge->modify_column(
+			'upload_prefs',
+			array(
+				'file_properties' => array(
+					'name'			=> 'file_properties',
+					'type'			=> 'varchar',
+					'constraint'	=> 120,
+					'null'			=> TRUE
+				)
+			)
+		);
+
+		ee()->smartforge->modify_column(
+			'upload_prefs',
+			array(
+				'file_pre_format' => array(
+					'name'			=> 'file_pre_format',
+					'type'			=> 'varchar',
+					'constraint'	=> 120,
+					'null'			=> TRUE
+				)
+			)
+		);
+
+		ee()->smartforge->modify_column(
+			'upload_prefs',
+			array(
+				'file_post_format' => array(
+					'name'			=> 'file_post_format',
+					'type'			=> 'varchar',
+					'constraint'	=> 120,
+					'null'			=> TRUE
+				)
+			)
+		);
+
+		ee()->smartforge->modify_column(
+			'weblog_fields',
+			array(
+				'field_instructions' => array(
+					'name'			=> 'field_instructions',
+					'type'			=> 'text',
+					'null'			=> TRUE
+				)
+			)
+		);
+
+		ee()->smartforge->modify_column(
+			'weblog_fields',
+			array(
+				'field_pre_field_id' => array(
+					'name'			=> 'field_pre_field_id',
+					'type'			=> 'int',
+					'constraint'	=> 6,
+					'unsigned'		=> TRUE,
+					'null'			=> TRUE
+				)
+			)
+		);
+
+		ee()->smartforge->modify_column(
+			'weblog_fields',
+			array(
+				'field_maxl' => array(
+					'name'			=> 'field_maxl',
+					'type'			=> 'smallint',
+					'constraint'	=> 3,
+					'null'			=> TRUE
+				)
+			)
+		);
+
+		ee()->smartforge->modify_column(
+			'weblog_titles',
+			array(
+				'forum_topic_id' => array(
+					'name'			=> 'forum_topic_id',
+					'type'			=> 'int',
+					'constraint'	=> 10,
+					'unsigned'		=> TRUE,
+					'null'			=> TRUE
+				)
+			)
+		);
+
+		ee()->smartforge->modify_column(
+			'weblog_titles',
+			array(
+				'recent_comment_date' => array(
+					'name'			=> 'recent_comment_date',
+					'type'			=> 'int',
+					'constraint'	=> 10,
+					'null'			=> TRUE
+				)
+			)
+		);
+
+		ee()->smartforge->modify_column(
+			'weblogs',
+			array(
+				'cat_group' => array(
+					'name'			=> 'cat_group',
+					'type'			=> 'varchar',
+					'constraint'	=> 255,
+					'null'			=> TRUE
+				)
+			)
+		);
+
+		ee()->smartforge->modify_column(
+			'weblogs',
+			array(
+				'status_group' => array(
+					'name'			=> 'status_group',
+					'type'			=> 'int',
+					'constraint'	=> 4,
+					'unsigned'		=> TRUE,
+					'null'			=> TRUE
+				)
+			)
+		);
+
+		ee()->smartforge->modify_column(
+			'weblogs',
+			array(
+				'field_group' => array(
+					'name'			=> 'field_group',
+					'type'			=> 'int',
+					'constraint'	=> 4,
+					'unsigned'		=> TRUE,
+					'null'			=> TRUE
+				)
+			)
+		);
+
+		ee()->smartforge->modify_column(
+			'weblogs',
+			array(
+				'search_excerpt' => array(
+					'name'			=> 'search_excerpt',
+					'type'			=> 'int',
+					'constraint'	=> 4,
+					'unsigned'		=> TRUE,
+					'null'			=> TRUE
+				)
+			)
+		);
+
+		ee()->smartforge->modify_column(
+			'weblogs',
+			array(
+				'deft_category' => array(
+					'name'			=> 'deft_category',
+					'type'			=> 'varchar',
+					'constraint'	=> 60,
+					'null'			=> TRUE
+				)
+			)
+		);
+
+		ee()->smartforge->modify_column(
+			'weblogs',
+			array(
+				'comment_url' => array(
+					'name'			=> 'comment_url',
+					'type'			=> 'varchar',
+					'constraint'	=> 80,
+					'null'			=> TRUE
+				)
+			)
+		);
+
+		ee()->smartforge->modify_column(
+			'weblogs',
+			array(
+				'comment_max_chars' => array(
+					'name'			=> 'comment_max_chars',
+					'type'			=> 'int',
+					'constraint'	=> 5,
+					'unsigned'		=> TRUE,
+					'null'			=> TRUE,
+					'default'		=> 5000
+				)
+			)
+		);
+
+		ee()->smartforge->modify_column(
+			'weblogs',
+			array(
+				'comment_notify_emails' => array(
+					'name'			=> 'comment_notify_emails',
+					'type'			=> 'varchar',
+					'constraint'	=> 255,
+					'null'			=> TRUE
+				)
+			)
+		);
+
+		ee()->smartforge->modify_column(
+			'weblogs',
+			array(
+				'search_results_url' => array(
+					'name'			=> 'search_results_url',
+					'type'			=> 'varchar',
+					'constraint'	=> 80,
+					'null'			=> TRUE
+				)
+			)
+		);
+
+		ee()->smartforge->modify_column(
+			'weblogs',
+			array(
+				'ping_return_url' => array(
+					'name'			=> 'ping_return_url',
+					'type'			=> 'varchar',
+					'constraint'	=> 80,
+					'null'			=> TRUE
+				)
+			)
+		);
+
+		ee()->smartforge->modify_column(
+			'weblogs',
+			array(
+				'rss_url' => array(
+					'name'			=> 'rss_url',
+					'type'			=> 'varchar',
+					'constraint'	=> 80,
+					'null'			=> TRUE
+				)
+			)
+		);
+
+		ee()->smartforge->drop_column('weblogs', 'enable_qucksave_versioning');
+
+		ee()->progress->update_state("Updating weblog tables");
 
 		// Remove trackback actions
-		$Q[] = "DELETE FROM `exp_actions` WHERE `class` = 'Trackback'";
-		$Q[] = "DELETE FROM `exp_actions` WHERE `class` = 'Trackback_CP'";
+		ee()->db->delete('actions', array('class' => 'Trackback'));
+		ee()->db->delete('actions', array('class' => 'Trackback_CP'));
 
 		// Update CP action names
-		$query = ee()->db->query("SELECT action_id, class FROM exp_actions");
+		$query = ee()->db->select('action_id, class')->get('actions');
 
 		if ($query->num_rows() > 0)
 		{
@@ -2043,13 +2515,12 @@ BSH;
 			{
 				if (substr($row->class, -3) == '_CP')
 				{
-					$Q[] = "UPDATE `exp_actions` SET `class` = '".substr($row->class, 0, -3)."_mcp' WHERE `action_id` = '{$row->action_id}'";
+					ee()->db->set('class', substr($row->class, 0, -3).'_mcp');
+					ee()->db->where('action_id', $row->action_id);			
+					ee()->db->update('actions');
 				}
 			}
 		}
-
-		// Run the queries
-		$this->_run_queries('Updating weblog tables', $Q);
 
 		ee()->progress->update_state("Installing default Accessories");
 		ee()->_install_accessories();  
