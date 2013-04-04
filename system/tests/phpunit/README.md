@@ -1,54 +1,25 @@
-# CodeIgniter Unit Tests #
-
-*Do not merge to default until these issues have been addressed*
-
-- Clean up naming conventions
-- Figure out config stuff
-- Figure out database testing
-
-### Introduction:
-
-This is the preliminary CodeIgniter testing documentation. It
-will cover both internal as well as external APIs and the reasoning
-behind their implemenation, where appropriate. As with all CodeIgniter
-documentation, this file should maintain a mostly human readable
-format to facilitate clean api design. [see http://arrenbrecht.ch/testing/]
-
-*First public draft: everything is subject to change*
+# ExpressionEngine and CI Unit Tests
 
 ### Requirements
 
-PHP Unit >= 3.5.6
+Composer
 
-	pear channel-discover pear.phpunit.de
-	pear install phpunit/PHPUnit
+	Download: http://getcomposer.org/
 
-vfsStream
+		OR
 
-	pear channel-discover pear.bovigo.org
-	pear install bovigo/vfsStream-beta
+	brew install composer
 
-#### Installation of PEAR and PHPUnit on Ubuntu
 
-  Installation on Ubuntu requires a few steps. Depending on your setup you may
-  need to use 'sudo' to install these. Mileage may vary but these steps are a
-  good start.
+PHP Unit and vfsStream
 
-	# Install the PEAR package
-	sudo apt-get install php-pear
+	composer update
 
-	# Add a few sources to PEAR
-	pear channel-discover pear.phpunit.de
-	pear channel-discover pear.symfony-project.com
-	pear channel-discover components.ez.no
-	pear channel-discover pear.php-tools.net 
 
-	# Finally install PHPUnit and vfsStream (including dependencies)
-	pear install --alldeps phpunit/PHPUnit
-	pear install --alldeps pat/vfsStream-alpha
+## Known Issues
 
-	# Finally, run 'phpunit' from within the ./tests directory
-	# and you should be on your way!
+PHPUnit does not work with mb_override. If your stacktraces look broken, turn
+it off!
 
 ## Test Suites:
 
