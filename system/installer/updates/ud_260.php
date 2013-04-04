@@ -47,15 +47,14 @@ class Updater {
 	{
 		$this->EE->load->dbforge();
 		
-	/*	$this->_add_template_name_to_dev_log();
+		$this->_add_template_name_to_dev_log();
 		$this->_drop_dst();
 		$this->_update_timezone_column_lengths();
 		$this->_update_session_table();
 		$this->_update_actions_table();
-		$this->_update_specialty_templates(); */
-
+		$this->_update_specialty_templates(); 
+		$this->_update_relationships_table();
 		$this->_replace_relationship_tags();
-		die('Killing Update.');
 		
 		return TRUE;
 	}
