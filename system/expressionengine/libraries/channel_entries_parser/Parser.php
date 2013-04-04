@@ -223,7 +223,7 @@ class EE_Channel_data_parser {
 			if ($site_pages !== FALSE && isset($site_pages[$row['site_id']]['uris'][$row['entry_id']]))
 			{
 				$row['page_uri'] = $site_pages[$row['site_id']]['uris'][$row['entry_id']];
-				$row['page_url'] = ee()->create_page_url($site_pages[$row['site_id']]['url'], $site_pages[$row['site_id']]['uris'][$row['entry_id']]);
+				$row['page_url'] = ee()->functions->create_page_url($site_pages[$row['site_id']]['url'], $site_pages[$row['site_id']]['uris'][$row['entry_id']]);
 			}
 
 			// -------------------------------------------------------
