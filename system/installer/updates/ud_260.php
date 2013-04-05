@@ -71,7 +71,6 @@ class Updater {
 		{
 			$this->$v();
 		}
-
 		return TRUE;
 	}
 
@@ -296,10 +295,6 @@ If you do not wish to reset your password, ignore this message. It will expire i
 					
 		} 
 
-		ee()->smartforge->drop_column(
-			array(
-				'field_related_to', 'field_related_id', 'field_related_max',
-				'field_related_orderby', 'field_related_sort'));
 	}
 
 	/**
@@ -380,6 +375,28 @@ If you do not wish to reset your password, ignore this message. It will expire i
 			'child_id'
 		);
 
+		ee()->db->where('field_type', 'relationship');
+		$fields = ee()->db->get('channel_fields');
+		$data = ee()->db->get('channel_data');
+
+		foreach ($data->result_array() as $entry)
+		{
+			foreach ($fields->result_array() as $field)
+			{
+				if (empty($entry['field_id_' . $field['field_id']]))
+				{
+					continue;
+				}
+				ee()->db->where('relationship_id', $entry['field_id_' . $field['field_id']]);
+				ee()->db->update('relationships', array('field_id' => $field['field_id']));	
+			}
+		}
+	
+		// Wipe out the old, unsed relationship data.
+		ee()->smartforge->drop_column(
+			array(
+				'field_related_to', 'field_related_id', 'field_related_max',
+				'field_related_orderby', 'field_related_sort'));
 	}
 
 	// -------------------------------------------------------------------
