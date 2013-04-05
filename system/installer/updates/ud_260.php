@@ -268,8 +268,12 @@ If you do not wish to reset your password, ignore this message. It will expire i
 	 */
 	private function _update_relationships_table()
 	{
+		// UPDATE TABLE `exp_fieldtypes` SET name='relationships' WHERE name='rel';
+		ee()->db->where('name', 'rel');
+		ee()->db->update('fieldtypes', array('name'=>'relationships'));
+ 
 		// ALTER TABLE `exp_relationships` CHANGE COLUMN `rel_id` `relationship_id` int(10) unsigned NOT NULL DEFAULT 0;
-		ee()->dbforge->modify_column(
+		ee()->smartforge->modify_column(
 			'relationships',
 			array(
 				'rel_id' => array(
@@ -282,7 +286,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		);
 
 		// ALTER TABLE `exp_relationships` CHANGE COLUMN `rel_parent_id` `parent_id` int(10) unsigned NOT NULL DEFAULT 0;
-		ee()->dbforge->modify_column(
+		ee()->smartforge->modify_column(
 			'relationships',
 			array(
 				'rel_parent_id' => array(
@@ -295,7 +299,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		);
 
 		// ALTER TABLE `exp_relationships` CHANGE COLUMN `rel_child_id` `child_id` int(10) unsigned NOT NULL DEFAULT 0; 	
-		ee()->dbforge->modify_column(
+		ee()->smartforge->modify_column(
 			'relationships',
 			array(
 				'rel_child_id' => array(
@@ -308,17 +312,17 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		);
 
 		// ALTER TABLE `exp_relationships` DROP COLUMN `rel_type`;
-		ee()->dbforge->drop_column('relationships', 'rel_type');		
+		ee()->smartforge->drop_column('relationships', 'rel_type');		
 
 		// ALTER TABLE `exp_relationships` DROP COLUMN `rel_data`;
-		ee()->dbforge->drop_column('relationships', 'rel_data');
+		ee()->smartforge->drop_column('relationships', 'rel_data');
 		
 		// ALTER TABLE `exp_relationships` DROP COLUMN `reverse_rel_data`;
-		ee()->dbforge->drop_column('relationships', 'reverse_rel_data');
+		ee()->smartforge->drop_column('relationships', 'reverse_rel_data');
 
 		// ALTER TABLE `exp_relationships` ADD COLUMN field_id int unsigned;
 		// ALTER TABLE exp_relationships ADD COLUMN `order` int unsigned;
-		ee()->dbforge->add_column(
+		ee()->smartforge->add_column(
 			'relationships',
 			array(
 				'field_id' => array(
@@ -336,7 +340,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		);
 
 		// alter table exp_relationships ADD KEY `field_id` (`field_id`);
-		ee()->dbforge->add_key('field_id', FALSE);
+		ee()->smartforge->add_key('field_id', FALSE);
 	}
 
 	// -------------------------------------------------------------------
