@@ -108,7 +108,7 @@ class Relationship_ft extends EE_Fieldtype {
 				'parent_id'	=> $entry_id,
 				'child_id'	=> $child_id,
 				'field_id'	=> $field_id,
-				'order'		=> $order[$i]
+				'order'		=> isset($order[$i]) ? $order[$i] : 0
 			);
 		}
 
@@ -268,7 +268,7 @@ class Relationship_ft extends EE_Fieldtype {
 				$options[$entry['entry_id']] = $entry['title'];
 			}
 
-			return form_dropdown($field_name.'[]', $options, current($selected));
+			return form_dropdown($field_name.'[data][]', $options, current($selected));
 		}
 
 // Performance debug

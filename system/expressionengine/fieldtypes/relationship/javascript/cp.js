@@ -205,6 +205,8 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 
 			// Utility methods for selecting and deselecting
 			util = {
+				activeLength: 0,
+
 				moveOver: function(i) {
 					var newLi = $(
 						that.createItem({
@@ -216,9 +218,26 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 					that.active.find('ul').append(newLi);
 
 					that.activeMap[i] = newLi;
+					this.activeLength++;
+					that.defaultList[i].find('input:text').val(this.activeLength);
 				},
 
 				moveBack: function(i) {
+					var old_value = that.defaultList[i].find('input:text').val();
+
+					if (old_value < this.activeLength)
+					{
+						var li = that.activeMap[i],
+							idx = li.index() + 1,
+							reSort = li.nextAll();
+
+						reSort.each(function() {
+							that.defaultList[ that._index(this) ].find('input:text').val(idx++);
+						});
+					}
+
+					this.activeLength--;
+					that.defaultList[i].find('input:text').val(0);
 					that.activeMap[i].remove();
 					delete that.activeMap[i];
 				}
