@@ -31,6 +31,11 @@ class EE_Pagination extends CI_Pagination {
 		$this->EE =& get_instance();
 		parent::__construct();
 	}
+
+	public function create($classname)
+	{
+		return new Pagination_object($classname);
+	}
 	
 }
 

@@ -132,7 +132,6 @@ class Api_channel_entries extends Api {
 		}
 
 		$this->_prepare_data($data, $mod_data, $autosave);
-		$this->_build_relationships($data);
 		
 		$meta = array(
 			'channel_id'				=> $this->channel_id,
@@ -428,37 +427,6 @@ class Api_channel_entries extends Api {
 					$ft_to_ids[$ft][] = $val;
 				}
 			}
-			
-			
-			// Check for silly relationship children
-			
-			// We do the regular relationship data in the relationship
-			// fieldtype, but we have no way of knowing that a child
-			// exists until we check. So it happens here.
-			
-			ee()->db->select('rel_id');
-			$child_results = ee()->db->get_where('relationships', array('rel_child_id' => $val));
-
-			if ($child_results->num_rows() > 0)
-			{
-				// We have children, so we need to do a bit of housekeeping
-				// so parent entries don't continue to try to reference them
-				$cids = array();
-
-				foreach ($child_results->result_array() as $row)
-				{
-					$cids[] = $row['rel_id'];
-				}
-
-				foreach($fquery->result_array() as $row)
-				{
-					$field = 'field_id_'.$row['field_id'];
-					ee()->db->where_in($field, $cids);
-					ee()->db->update('channel_data', array($field => '0'));
-				}
-
-				ee()->db->delete('relationships', array('rel_child_id' => $val));
-			}
 
 
 			// Correct member post count
@@ -542,7 +510,7 @@ class Api_channel_entries extends Api {
 		ee()->api_channel_fields->get_module_methods($methods, $params);
 		
 		// Clear caches
-		ee()->functions->clear_caching('all', '', TRUE);
+		ee()->functions->clear_caching('all', '');
 
 		// -------------------------------------------
 		// 'delete_entries_end' hook.
@@ -584,56 +552,6 @@ class Api_channel_entries extends Api {
 		$this->_cache['orig_author_id'] = $query->row('author_id');
 		
 		return TRUE;
-	}
-	
-	// --------------------------------------------------------------------
-	
-	/**
-	 * Update Relationship Cache
-	 *
-	 * Updates the relationship cache
-	 *
-	 * @access	public
-	 * @param	int
-	 * @return	void
-	 */
-	function update_related_cache($entry_id)
-	{
-		// Is this entry a child of another parent?
-		//
-		// If the entry being submitted is a "child" of another parent
-		// we need to re-compile and cache the data.  Confused?	 Me too...
-
-		ee()->db->where('rel_type', 'channel');
-		ee()->db->where('rel_child_id', $entry_id);
-		$count = ee()->db->count_all_results('relationships');
-
-		if ($count > 0)
-		{
-			$reldata = array(
-							'type'		=> 'channel',
-							'child_id'	=> $entry_id
-			);
-
-			ee()->functions->compile_relationship($reldata, FALSE);
-		}
-
-
-		//	Is this entry a parent of a child?
-
-		ee()->db->where('rel_parent_id', $entry_id);
-		ee()->db->where('reverse_rel_data !=', '');
-		$count = ee()->db->count_all_results('relationships');
-
-		if ($count > 0)
-		{
-			$reldata = array(
-							'type'		=> 'channel',
-							'parent_id' => $entry_id
-			);
-
-			ee()->functions->compile_relationship($reldata, FALSE, TRUE);
-		}
 	}
 	
 	// --------------------------------------------------------------------
@@ -1515,110 +1433,6 @@ class Api_channel_entries extends Api {
 	// --------------------------------------------------------------------
 	
 	/**
-	 * Build Relationships
-	 *
-	 * Build the relationships for our entry
-	 *
-	 * @access	private
-	 * @param	mixed
-	 * @return	void
-	 */
-	function _build_relationships(&$data)
-	{
-		if ($this->autosave)
-		{
-			return;
-		}
-
-		ee()->db->select('field_id, field_related_to, field_related_id');
-		$query = ee()->db->get_where('channel_fields', array('field_type' => 'rel'));
-		
-		// No results, bail out early
-		if ( ! $query->num_rows())
-		{
-			$this->_cache['rel_updates'] = array();
-			return;
-		}
-
-		$rel_updates = array();
-		
-		foreach ($query->result_array() as $row)
-		{
-			$field_id = $row['field_id'];
-
-			// No field - skip
-			if ( ! isset($data['field_id_'.$field_id]))
-			{
-				continue;
-			}
-
-			$data['field_ft_'.$field_id] = 'none';
-			$rel_exists = FALSE;
-
-			// If editing an existing entry....
-			// Does an existing relationship exist? If so, we may not need to recompile the data
-					
-			if ($this->entry_id)
-			{
-				// First we fetch the previously stored related child id.
-
-				ee()->db->select('field_id_'.$field_id.', rel_child_id, rel_id');
-				ee()->db->from('channel_data');
-				ee()->db->join('relationships', 'field_id_'.$field_id.' = rel_id', 'left');
-				ee()->db->where('entry_id', $this->entry_id);
-				$rel_data = ee()->db->get();
-						
-				$current_related = FALSE;
-				$rel_id = FALSE;
-						
-				if ($rel_data->num_rows() > 0)
-				{
-					foreach ($rel_data->result() as $r)
-					{
-						$current_related = $r->rel_child_id;
-						$rel_id = $r->rel_id;
-					}
-				}
-												
-				// If the previous ID matches the current ID being submitted it means that
-				// the existing relationship has not changed so there's no need to recompile.
-				// If it has changed we'll clear the old relationship.
-
-				if ($current_related  == $data['field_id_'.$field_id])
-				{
-					$rel_exists = TRUE;
-					$data['field_id_'.$field_id] = $rel_id;
-				}
-				elseif ($rel_id)
-				{
-					ee()->db->where('rel_id', $rel_id);
-					ee()->db->delete('relationships');
-				}
-			}
-
-			if (is_numeric($data['field_id_'.$field_id]) && $data['field_id_'.$field_id] != '0' && $rel_exists == FALSE)
-			{
-				$reldata = array(
-					'type'			=> $row['field_related_to'],
-					'parent_id'		=> $this->entry_id, // we may have an empty entry_id at this point, if so, zero for now, gets updated below
-					'child_id'		=> $data['field_id_'.$field_id]
-				);
-
-				$data['field_id_'.$field_id] = ee()->functions->compile_relationship($reldata, TRUE);
-				$rel_updates[] = $data['field_id_'.$field_id];
-			}
-			elseif($data['field_id_'.$field_id] == '')
-			{
-				$data['field_id_'.$field_id] = 0;
-			}
-		}
-		
-		$this->_cache['rel_updates'] = $rel_updates;
-	}
-	
-	// --------------------------------------------------------------------
-	
-	/**
 	 * Insert Entry
 	 *
 	 * Creates primary data for a new entry
@@ -1656,16 +1470,6 @@ class Api_channel_entries extends Api {
 			ee()->db->insert('channel_titles', $meta);
 			$this->entry_id = ee()->db->insert_id();
 		}		
-		
-		// Update Relationships (autosave skips this)
-		
-		if ( ! $this->autosave && count($this->_cache['rel_updates']) > 0)
-		{
-			ee()->db->set('rel_parent_id', $this->entry_id);
-			ee()->db->where_in('rel_id', $this->_cache['rel_updates']);
-			ee()->db->update('relationships');
-		}
-		
 		
 		// Insert custom field data
 		
@@ -1988,9 +1792,6 @@ class Api_channel_entries extends Api {
 				}
 			}
 		}
-
-		// Recompile Relationships
-		$this->update_related_cache($this->entry_id);
 		
 		// Save revisions if needed
 		

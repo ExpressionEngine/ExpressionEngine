@@ -137,7 +137,6 @@ class Api_channel_fields extends Api {
 		$dfields = array();
 		$rfields = array();
 		$pfields = array();
-		$zwfields = array();
 		
 		foreach ($query->result_array() as $row)
 		{
@@ -152,13 +151,9 @@ class Api_channel_fields extends Api {
 			{
 				$dfields[$row['site_id']][$row['field_name']] = $row['field_id'];
 			}
-			elseif ($row['field_type'] == 'rel')
+			elseif ($row['field_type'] == 'relationship')
 			{
 				$rfields[$row['site_id']][$row['field_name']] = $row['field_id'];
-			}
-			else if ($row['field_type'] == 'zero_wing')
-			{
-				$zwfields[$row['site_id']][$row['field_name']] = $row['field_id'];
 			}
 			else
 			{
@@ -191,7 +186,6 @@ class Api_channel_fields extends Api {
 			'custom_channel_fields'	=> $cfields,
 			'date_fields'			=> $dfields,
 			'relationship_fields'	=> $rfields,
-			'zero_wing_fields'		=> $zwfields,
 			'pair_custom_fields'	=> $pfields
 		);
 	}
@@ -1498,7 +1492,7 @@ class Api_channel_fields extends Api {
 		$this->setup_handler($native_settings['field_id']);
 		$this->apply('post_save_settings', array($_posted));
 
-		ee()->functions->clear_caching('all', '', TRUE);
+		ee()->functions->clear_caching('all', '');
 		
 		return $native_settings['field_id'];
 	}

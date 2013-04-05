@@ -34,16 +34,6 @@
 	<p>
 		<?php
 		$data = array(
-		  'name'        => 'type',
-		  'id'          => 'relationships',
-		  'value'       => 'relationships'
-		);
-		echo form_radio($data);?>
-		<?=lang('cached_relationships', 'relationships')?>
-	</p>
-	<p>
-		<?php
-		$data = array(
 			'name'		=> 'type',
 			'id'		=> 'all',
 			'value'		=> 'all',

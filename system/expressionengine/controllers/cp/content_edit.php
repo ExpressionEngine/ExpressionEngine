@@ -1119,28 +1119,13 @@ class Content_edit extends CP_Controller {
 
 		// Clear caches if needed
 
-		$entry_ids = "'";
-
-		foreach($_POST['entry_id'] as $id)
-		{
-			$entry_ids .= $this->db->escape_str($id)."', '";
-		}
-
-		$entry_ids = substr($entry_ids, 0, -3);
-
-		$query = $this->db->query("SELECT COUNT(*) AS count FROM exp_relationships
-							WHERE rel_parent_id IN ({$entry_ids})
-							OR rel_child_id IN ({$entry_ids})");
-
-		$clear_rel = ($query->row('count')	> 0) ? TRUE : FALSE;
-
 		if ($this->config->item('new_posts_clear_caches') == 'y')
 		{
-			$this->functions->clear_caching('all', '', $clear_rel);
+			$this->functions->clear_caching('all', '');
 		}
 		else
 		{
-			$this->functions->clear_caching('sql', '', $clear_rel);
+			$this->functions->clear_caching('sql', '');
 		}
 
 

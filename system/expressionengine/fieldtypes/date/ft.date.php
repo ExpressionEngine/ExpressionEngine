@@ -52,12 +52,12 @@ class Date_ft extends EE_Fieldtype {
 	 */
 	function validate($data)
 	{
-		if ( ! is_numeric($data) && trim($data))
+		if ( ! is_numeric($data) && trim($data) && ! empty($data))
 		{
 			$data = ee()->localize->string_to_timestamp($data);
 		}
 
-		if ( ! is_numeric($data) && $data != '')
+		if ($data === FALSE)
 		{
 			return lang('invalid_date');
 		}

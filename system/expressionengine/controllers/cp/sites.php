@@ -1253,7 +1253,7 @@ class Sites extends CP_Controller {
 									$field_match[$old_field_id] = $field_id;
 									
 									// Channel Data Field Creation, Whee!
-									if ($row['field_type'] == 'date' OR $row['field_type'] == 'rel')
+									if ($row['field_type'] == 'date' OR $row['field_type'] == 'relationship')
 									{
 										$columns = array(
 											'field_id_'.$field_id => array(
@@ -1699,7 +1699,7 @@ class Sites extends CP_Controller {
 										->update('channel_data');
 								}
 								
-								if ($row['field_type'] == 'rel' && $row['field_related_to'] == 'channel')
+								if ($row['field_type'] == 'relationship' && $row['field_related_to'] == 'channel')
 								{
 									$related_fields[] = 'field_ft_'.$field_match[$row['field_id']];  // We used this for moved relationships, see above
 								}
@@ -1947,7 +1947,7 @@ class Sites extends CP_Controller {
 			{
 				// gather related fields
 				$this->db->select('field_id');
-				$this->db->where('field_type', 'rel');
+				$this->db->where('field_type', 'relationship');
 				$fquery = $this->db->get('channel_fields');
 
 				// We have children, so we need to do a bit of housekeeping
