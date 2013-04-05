@@ -28,8 +28,7 @@ define('RD', '}');
  */
 class Updater {
 	
-	private $EE;
-	var $version_suffix = '';
+	public $version_suffix = '';
 
 	private $related_data = array();
 	private $reverse_related_data = array();
@@ -41,7 +40,6 @@ class Updater {
 	 */
 	public function __construct()
 	{
-		ee() =& get_instance();
 	}
 	
 	// --------------------------------------------------------------------
@@ -63,7 +61,8 @@ class Updater {
 				'_update_session_table',
 				'_update_actions_table',
 				'_update_specialty_templates',
-				'_update_relationships_table',
+				'_update_relationship_fieldtype',
+				'_update_relationship_table',
 				'_replace_relationship_tags'
 			)
 		);
@@ -263,14 +262,22 @@ If you do not wish to reset your password, ignore this message. It will expire i
 
 	// -------------------------------------------------------------------
 
-	/**
- 	 *
-	 */
-	private function _update_relationships_table()
+	private function _update_relationship_fieldtype()
 	{
 		// UPDATE TABLE `exp_fieldtypes` SET name='relationships' WHERE name='rel';
 		ee()->db->where('name', 'rel');
-		ee()->db->update('fieldtypes', array('name'=>'relationships'));
+		ee()->db->update('fieldtypes', array('name'=>'relationship'));
+
+		// UPDATE TABLE `exp_channel_fields` set field_type='relationships' where field_type='rel';
+		ee()->db->where('field_type', 'rel');
+		ee()->db->update('channel_fields', array('field_type'=>'relationship'));
+	}
+
+	/**
+ 	 *
+	 */
+	private function _update_relationship_table()
+	{
  
 		// ALTER TABLE `exp_relationships` CHANGE COLUMN `rel_id` `relationship_id` int(10) unsigned NOT NULL DEFAULT 0;
 		ee()->smartforge->modify_column(
@@ -320,6 +327,10 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		// ALTER TABLE `exp_relationships` DROP COLUMN `reverse_rel_data`;
 		ee()->smartforge->drop_column('relationships', 'reverse_rel_data');
 
+		// FIXME No way to do this with DB_forge at the moment it seems.
+		// alter table exp_relationships ADD KEY `field_id` (`field_id`);
+		// ee()->smartforge->add_key('field_id', FALSE);
+
 		// ALTER TABLE `exp_relationships` ADD COLUMN field_id int unsigned;
 		// ALTER TABLE exp_relationships ADD COLUMN `order` int unsigned;
 		ee()->smartforge->add_column(
@@ -339,8 +350,6 @@ If you do not wish to reset your password, ignore this message. It will expire i
 			'child_id'
 		);
 
-		// alter table exp_relationships ADD KEY `field_id` (`field_id`);
-		ee()->smartforge->add_key('field_id', FALSE);
 	}
 
 	// -------------------------------------------------------------------
