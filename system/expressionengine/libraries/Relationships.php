@@ -201,7 +201,7 @@ class Relationship_tree_builder {
 		// node are the children.
 		foreach ($entry_ids as $id)
 		{
-			$root->add_entry_id($id, $id);
+			$root->add_entry_id((int)$id, (int)$id);
 		}
 
 		$all_entry_ids = array($entry_ids);
@@ -233,7 +233,8 @@ class Relationship_tree_builder {
 		}
 
 		$this->_unique_ids = array_unique(
-			call_user_func_array('array_merge', $all_entry_ids)
+			call_user_func_array('array_merge', $all_entry_ids),
+			SORT_NUMERIC
 		);
 
 		return $root;
@@ -393,6 +394,15 @@ class Relationship_tree_builder {
 
 	// --------------------------------------------------------------------
 
+	/**
+	 * Turn the node list into a proper tree
+	 *
+	 * Simply connects the nodes from _build_node_list() into a
+	 * proper tree using their parent_id properties.
+	 *
+	 * @param	array	Node list ([[node, parent], [node2, parent2], ... ])
+	 * @return	object	Root node of the final tree
+	 */
 	protected function _build_tree(array $nodes = NULL)
 	{
 		if ( ! isset($nodes) OR ! count($nodes))
@@ -423,7 +433,18 @@ class Relationship_tree_builder {
 
 	// --------------------------------------------------------------------
 
-	protected function _propagate_ids($root, $leave_paths)
+	/**
+	 * Push the id graph onto the tag graph.
+	 *
+	 * Given the possible ids of a query node and the leave paths of
+	 * all of its children, we can generate parent > children pairs
+	 * for all of the descendent parse nodes.
+	 *
+	 * @param	object	Root query node whose subtree to process
+	 * @param	array	Leave path array as created by _parse_leaves
+	 * @return	array	All unique entry ids processed.
+	 */
+	protected function _propagate_ids(QueryNode $root, array $leave_paths)
 	{
 		$parse_node_iterator = new RecursiveIteratorIterator(
 			new ParseNodeIterator(array($root)),
@@ -515,15 +536,21 @@ class Relationship_tree_builder {
 								continue;
 							}
 
-							$all_entry_ids[] = $child_id;
 							$node->add_entry_id($parent, $child_id);
 						}
 					}
 				}
 			}
+
+			$all_entry_ids[] = call_user_func_array('array_merge', $node->entry_ids());
 		}
 
-		return $all_entry_ids;
+		if ( ! count($all_entry_ids))
+		{
+			return array();
+		}
+
+		return call_user_func_array('array_merge', $all_entry_ids);
 	}
 
 	// --------------------------------------------------------------------
@@ -549,8 +576,8 @@ class Relationship_tree_builder {
 			while (isset($leaf['L'.$i.'_field']))
 			{
 				$field_id = $leaf['L'.$i.'_field'];
-				$entry_id = $leaf['L'.$i.'_id'];
-				$parent_id = $leaf['L'.$i.'_parent'];
+				$entry_id = (int) $leaf['L'.$i.'_id'];
+				$parent_id = (int) $leaf['L'.$i.'_parent'];
 
 				if ($entry_id == NULL)
 				{
@@ -943,6 +970,32 @@ class ParseNode extends EE_TreeNode {
 
 	private $_dirty;
 	private $_parser;
+	private $_entry_id_fn;
+	private $_entry_id_opts;
+
+	public function __construct($name, $payload)
+	{
+		parent::__construct($name, $payload);
+
+		// if entry_id="4|5|6" was given, we filter them here
+		$parameter = $this->param('entry_id');
+
+		if ($parameter)
+		{
+			$this->_entry_id_fn = 'array_intersect';
+
+			if (strncasecmp($parameter, 'not ', 4) == 0)
+			{
+				$this->_entry_id_fn = 'array_diff';
+				$parameter = substr($parameter, 4);
+			}
+
+			$parameter = trim($parameter, " |\r\n\t");
+			$this->_entry_id_opts = explode('|', $parameter);
+		}
+	}
+
+	// --------------------------------------------------------------------
 
 	/**
 	 * Retrieve the field name
@@ -1034,7 +1087,7 @@ class ParseNode extends EE_TreeNode {
 	 * quite an expensive operation.
 	 *
 	 * @param 	int		the parent entry id
-	 * @return 	[int]	child ids
+	 * @return 	[int]	child ids | flattened if no parent_id was given
 	 */
 	public function entry_ids()
 	{
@@ -1042,31 +1095,26 @@ class ParseNode extends EE_TreeNode {
 
 		if ($this->_dirty)
 		{
-			// if entry_id="4|5|6" was given, we filter them here
-			$parameter = $this->param('entry_id');
-
-			if ($parameter)
+			if (isset($this->_entry_id_opts))
 			{
-				$not = FALSE;
-
-				if (strncasecmp($parameter, 'not ', 4) == 0)
-				{
-					$not = TRUE;
-					$parameter = substr($parameter, 4);
-				}
-
-				$parameter = trim($parameter, " |\r\n\t");
-				$fn = $not ? 'array_diff' : 'array_intersect';
+				$fn = $this->_entry_id_fn;
+				$opts = $this->_entry_id_opts;
 
 				foreach ($ids as $parent => $children)
 				{
 					$ids[$parent] = array_unique(
-						$fn($children, explode('|', $parameter))
+						$fn($children, $opts),
+						SORT_NUMERIC
 					);
 				}
 			}
 
 			$this->_dirty = FALSE;
+		}
+
+		if (isset($parent_id))
+		{
+			return isset($ids[$parent_id]) ? $ids[$parent_id] : NULL;
 		}
 
 		return $ids;
