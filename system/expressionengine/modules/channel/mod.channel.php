@@ -2660,7 +2660,7 @@ class Channel {
 		// We'll process what we can before starting to replace things to
 		// avoid redundant processing cycles in the foreach loop below
 
-		$preparsed = $parser->pre_parser($this, $this->_entry_ids);
+		$preparsed = $parser->pre_parser($this, $this->_entry_ids, compact('disable'));
 
 		$data_parser = $parser->data_parser($preparsed);
 
@@ -2676,8 +2676,7 @@ class Channel {
 				'entry_row_data'	 => array($this, 'callback_entry_row_data'),
 				'tagdata_loop_start' => array($this, 'callback_tagdata_loop_start'),
 				'tagdata_loop_end'	 => array($this, 'callback_tagdata_loop_end')
-			),
-			'disable' => $disable
+			)
 		);
 
 		$this->return_data = $data_parser->parse($data, $config);
