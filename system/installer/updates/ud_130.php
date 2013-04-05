@@ -30,7 +30,7 @@ class Updater {
 		$this->EE =& get_instance();
 	
 		// Grab the config file
-		if ( ! @include($this->EE->config->config_path))
+		if ( ! @include(ee()->config->config_path))
 		{
 			show_error('Your config'.EXT.' file is unreadable. Please make sure the file exists and that the file permissions to 666 on the following file: expressionengine/config/config.php');
 		}
@@ -177,7 +177,7 @@ class Updater {
 		$Q[] = "ALTER TABLE exp_weblogs ADD COLUMN rss_url varchar(80) NOT NULL";				
 						
 			
-		$query = $this->EE->db->query("SELECT screen_name, member_id FROM exp_members ORDER BY member_id DESC LIMIT 1");
+		$query = ee()->db->query("SELECT screen_name, member_id FROM exp_members ORDER BY member_id DESC LIMIT 1");
 		$Q[] = "UPDATE exp_stats SET recent_member = '".$DB->escape_str($query->row('screen_name'))."', recent_member_id = '".$query->row('member_id')."' WHERE weblog_id ='0'";
 		$Q[] = "UPDATE exp_stats SET last_cache_clear = '".time()."' WHERE weblog_id ='0'";
 
@@ -192,20 +192,20 @@ class Updater {
 		
 		foreach ($Q as $sql)
 		{
-			$this->EE->db->query($sql);
+			ee()->db->query($sql);
 		}
 						
 			
 		// Update message template
 		
-		$query = $this->EE->db->query("SELECT template_data FROM exp_specialty_templates WHERE template_name = 'message_template'");		
+		$query = ee()->db->query("SELECT template_data FROM exp_specialty_templates WHERE template_name = 'message_template'");		
 		$template = str_replace("'", "\'", $query->row('template_data'));
 			
 		if ( ! preg_match("/<h1>{heading}<\/h1>/", $template))
 		{
 			$template = str_replace('{heading}', '<h1>{heading}</h1>', $template);
 			$template = str_replace('{link}', "<p>{link}</p>", $template);
-			$this->EE->db->query("UPDATE exp_specialty_templates SET template_data = '".$DB->escape_str($template)."' WHERE template_name = 'message_template'");
+			ee()->db->query("UPDATE exp_specialty_templates SET template_data = '".$DB->escape_str($template)."' WHERE template_name = 'message_template'");
 		}
 
 		
@@ -252,13 +252,13 @@ class Updater {
 		$data['email_module_captchas'] 		= "n";
 		$data['enable_throttling'] 			= "y";
 				
-		$this->EE->config->_append_config_1x($data);
+		ee()->config->_append_config_1x($data);
 
 		unset($data);
 		
 		$data['cp_theme'] = 'default';  // Change the name of the default CSS file
 		
-		$this->EE->config->_update_config_1x($data);
+		ee()->config->_update_config_1x($data);
 				
 		return TRUE;
 	}

@@ -34,54 +34,137 @@ class EE_Channel_data_parser {
 	protected $_tag_options; // var_* value
 	protected $_row;
 
+	protected $_prefix;
+	protected $_channel;
+
 	public function __construct(EE_Channel_preparser $pre, EE_Channel_parser $parser)
 	{
 		$this->_preparser = $pre;
 		$this->_parser = $parser;
+
+		$this->_prefix = $pre->prefix();
+		$this->_channel = $pre->channel();
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * Preparser accessor
+	 *
+	 * @return	object	The preparser object
+	 */
 	public function preparsed()
 	{
 		return $this->_preparser;
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * Parser channel accessor
+	 *
+	 * @return	object	The bound channel object
+	 */
 	public function channel()
 	{
-		return $this->_preparser->channel();
+		return $this->_channel;
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * Iterator row accessor
+	 *
+	 * @return	array	The row of the current iteration
+	 */
 	public function row()
 	{
 		return $this->_row;
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * Data object accessor
+	 *
+	 * Several data items can be provided to the parser. This includes
+	 * the mandatory 'entries', but also optional values such as 'categories',
+	 * 'absolute_count', or 'absolute_results'.
+	 *
+	 * @param	string	The data element to retrieve
+	 * @param	string	The value to return if the key does not exist	
+	 * @return	mixed	The requested data element
+	 */
 	public function data($key, $default = NULL)
 	{
 		$data = $this->_data;
 		return isset($data[$key]) ? $data[$key] : $default;
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * Iterator count accessor
+	 *
+	 * @return	string	The step of the current iteration
+	 */
 	public function count()
 	{
 		return $this->_count;
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * TMPL->var_(pair|single) key accessor
+	 *
+	 * @return	string	The key of the current var_* key/value pair
+	 */
 	public function tag()
 	{
 		return $this->_tag;
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * TMPL->var_(pair|single) value accessor
+	 *
+	 * @return	mixed	The value of the current var_* key/value pair
+	 */
 	public function tag_options()
 	{
 		return $this->_tag_options;
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * Prefix accessor
+	 *
+	 * @return	string	The prefix
+	 */
 	public function prefix()
 	{
-		return $this->_preparser->prefix();
+		return $this->_prefix;
 	}
 
+	// --------------------------------------------------------------------
 
+	/**
+	 * Run the main parsing loop.
+	 *
+	 * Takes the data row, the preparsed tagdata, and any additonal
+	 * options and delegates to the proper parsing components.
+	 *
+	 * @param	array	The data row.
+ 	 * @param	array	Config items
+ 	 *		
+ 	 *		disable:   array of components to turn off
+ 	 *		callbacks: array of callbacks to register
+ 	 *
+	 * @return	string	Parsed tagdata
+	 */
 	public function parse($data, $config = array())
 	{
 		$this->_data = $data;
@@ -99,8 +182,8 @@ class EE_Channel_data_parser {
 		$pairs	 = $pre->pairs;
 		$singles = $pre->singles;
 
-		$prefix	 = $pre->prefix();
-		$channel = $pre->channel();
+		$prefix	 = $this->_prefix;
+		$channel = $this->_channel;
 		
 		$subscriber_totals = $pre->subscriber_totals;
 
@@ -117,8 +200,11 @@ class EE_Channel_data_parser {
 
 		$count = 0;
 
-		$parser_plugins = $this->_parser->plugins();
 		$orig_tagdata = $this->_parser->tagdata();
+		$parser_components = $this->_parser->components();
+
+
+		$dt = 0;
 
 		foreach ($entries as $row)
 		{
@@ -131,13 +217,13 @@ class EE_Channel_data_parser {
 			$row['page_url']			= '';
 			$row['total_results']		= $total_results;
 			$row['absolute_count']		= $absolute_offset + $row['count'];
-			$row['absolute_results'] = ($absolute_results === NULL) ? $total_results : $absolute_results;
+			$row['absolute_results']	= ($absolute_results === NULL) ? $total_results : $absolute_results;
 			$row['comment_subscriber_total'] = (isset($subscriber_totals[$row['entry_id']])) ? $subscriber_totals[$row['entry_id']] : 0;
 
 			if ($site_pages !== FALSE && isset($site_pages[$row['site_id']]['uris'][$row['entry_id']]))
 			{
 				$row['page_uri'] = $site_pages[$row['site_id']]['uris'][$row['entry_id']];
-				$row['page_url'] = get_instance()->create_page_url($site_pages[$row['site_id']]['url'], $site_pages[$row['site_id']]['uris'][$row['entry_id']]);
+				$row['page_url'] = ee()->functions->create_page_url($site_pages[$row['site_id']]['url'], $site_pages[$row['site_id']]['uris'][$row['entry_id']]);
 			}
 
 			// -------------------------------------------------------
@@ -161,6 +247,7 @@ class EE_Channel_data_parser {
 			{
 				$row = call_user_func($callbacks['entry_row_data'], $tagdata, $row);
 			}
+
 
 			// Reset custom date fields
 
@@ -186,7 +273,6 @@ class EE_Channel_data_parser {
 
 			$this->_row = $row;
 
-
 			// conditionals!
 			$cond = $this->_get_conditional_data($row, $prefix, $channel);
 
@@ -202,27 +288,55 @@ class EE_Channel_data_parser {
 				$this->_tag = $key;
 				$this->_tag_options = $val;
 
-				foreach ($parser_plugins->pair() as $k => $plugin)
+				foreach ($parser_components->pair() as $k => $component)
 				{
-					$tagdata = $plugin->replace($tagdata, $this, $pre->pair_data($k));
+					if ( ! $pre->is_disabled($component))
+					{
+						$tagdata = $component->replace(
+							$tagdata,
+							$this,
+							$pre->pair_data($component)
+						);
+					}
+				}
+			}
+
+
+			// Run parsers that just process tagdata once (relationships, for example)
+			foreach ($parser_components->once() as $k => $component)
+			{
+				if ( ! $pre->is_disabled($component))
+				{
+					$tagdata = $component->replace(
+						$tagdata,
+						$this,
+						$pre->once_data($component)
+					);
 				}
 			}
 
 
 			// We swap out the conditionals after pairs are parsed so they don't interfere
 			// with the string replace
-			$tagdata = get_instance()->functions->prep_conditionals($tagdata, $cond);
+			$tagdata = ee()->functions->prep_conditionals($tagdata, $cond);
 
 
-			//  Parse "single" variables
+			//  Parse individual variable tags
 			foreach ($singles as $key => $val)
 			{
 				$this->_tag = $key;
 				$this->_tag_options = $val;
 
-				foreach ($parser_plugins->single() as $k => $plugin)
+				foreach ($parser_components->single() as $k => $component)
 				{
-					$tagdata = $plugin->replace($tagdata, $this, $pre->single_data($k));
+					if ( ! $pre->is_disabled($component))
+					{
+						$tagdata = $component->replace(
+							$tagdata,
+							$this,
+							$pre->single_data($component)
+						);
+					}
 				}
 			}
 
@@ -297,9 +411,9 @@ class EE_Channel_data_parser {
 		
 		if ( ! empty($custom_field_data))
 		{
-			get_instance()->load->library('api');
-			get_instance()->api->instantiate('channel_fields');
-			$ft_api = get_instance()->api_channel_fields;
+			ee()->load->library('api');
+			ee()->api->instantiate('channel_fields');
+			$ft_api = ee()->api_channel_fields;
 			
 			// For each custom field, notify its fieldtype class of the data we collected
 			foreach ($custom_field_data as $field_id => $data)
@@ -315,20 +429,24 @@ class EE_Channel_data_parser {
 		}
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * Prepare the row for conditionals
+	 *
+	 * Retrieves a prefixed set of all the row data that can be passed
+	 * to prep_conditionals to allow for proper conditionals.
+	 *
+	 * @param	array	The data row.
+	 * @param	string	The prefix.
+ 	 * @param	object	A channel object to operate on
+	 * @return	array	Prefixed, prep-able data
+	 */
 	protected function _get_conditional_data($row, $prefix, $channel)
 	{
 		$cond = $row;
-		$cond['logged_in']			= (get_instance()->session->userdata('member_id') == 0) ? 'FALSE' : 'TRUE';
-		$cond['logged_out']			= (get_instance()->session->userdata('member_id') != 0) ? 'FALSE' : 'TRUE';
-
-		if ((($row['comment_expiration_date'] > 0 && get_instance()->localize->now > $row['comment_expiration_date']) && get_instance()->config->item('comment_moderation_override') !== 'y') OR $row['allow_comments'] == 'n' OR (isset($row['comment_system_enabled']) && $row['comment_system_enabled']  == 'n'))
-		{
-			$cond['allow_comments'] = 'FALSE';
-		}
-		else
-		{
-			$cond['allow_comments'] = 'TRUE';
-		}
+		$cond['logged_in']			= (ee()->session->userdata('member_id') == 0) ? 'FALSE' : 'TRUE';
+		$cond['logged_out']			= (ee()->session->userdata('member_id') != 0) ? 'FALSE' : 'TRUE';
 
 		foreach (array('avatar_filename', 'photo_filename', 'sig_img_filename') as $pv)
 		{
@@ -338,9 +456,10 @@ class EE_Channel_data_parser {
 			}
 		}
 
-		$cond['signature_image']		= ($row['sig_img_filename'] == '' OR get_instance()->config->item('enable_signatures') == 'n' OR get_instance()->session->userdata('display_signatures') == 'n') ? 'FALSE' : 'TRUE';
-		$cond['avatar']					= ($row['avatar_filename'] == '' OR get_instance()->config->item('enable_avatars') == 'n' OR get_instance()->session->userdata('display_avatars') == 'n') ? 'FALSE' : 'TRUE';
-		$cond['photo']					= ($row['photo_filename'] == '' OR get_instance()->config->item('enable_photos') == 'n' OR get_instance()->session->userdata('display_photos') == 'n') ? 'FALSE' : 'TRUE';
+		$cond['allow_comments']			= $this->_commenting_allowed($row) ? 'TRUE' : 'FALSE';
+		$cond['signature_image']		= ($row['sig_img_filename'] == '' OR ee()->config->item('enable_signatures') == 'n' OR ee()->session->userdata('display_signatures') == 'n') ? 'FALSE' : 'TRUE';
+		$cond['avatar']					= ($row['avatar_filename'] == '' OR ee()->config->item('enable_avatars') == 'n' OR ee()->session->userdata('display_avatars') == 'n') ? 'FALSE' : 'TRUE';
+		$cond['photo']					= ($row['photo_filename'] == '' OR ee()->config->item('enable_photos') == 'n' OR ee()->session->userdata('display_photos') == 'n') ? 'FALSE' : 'TRUE';
 		$cond['forum_topic']			= (empty($row['forum_topic_id'])) ? 'FALSE' : 'TRUE';
 		$cond['not_forum_topic']		= ( ! empty($row['forum_topic_id'])) ? 'FALSE' : 'TRUE';
 		$cond['category_request']		= ($channel->cat_request === FALSE) ? 'FALSE' : 'TRUE';
@@ -348,23 +467,26 @@ class EE_Channel_data_parser {
 		$cond['channel']				= $row['channel_title'];
 		$cond['channel_short_name']		= $row['channel_name'];
 		$cond['author']					= ($row['screen_name'] != '') ? $row['screen_name'] : $row['username'];
-		$cond['photo_url']				= get_instance()->config->slash_item('photo_url').$row['photo_filename'];
+		$cond['photo_url']				= ee()->config->slash_item('photo_url').$row['photo_filename'];
 		$cond['photo_image_width']		= $row['photo_width'];
 		$cond['photo_image_height']		= $row['photo_height'];
-		$cond['avatar_url']				= get_instance()->config->slash_item('avatar_url').$row['avatar_filename'];
+		$cond['avatar_url']				= ee()->config->slash_item('avatar_url').$row['avatar_filename'];
 		$cond['avatar_image_width']		= $row['avatar_width'];
 		$cond['avatar_image_height']	= $row['avatar_height'];
-		$cond['signature_image_url']	= get_instance()->config->slash_item('sig_img_url').$row['sig_img_filename'];
+		$cond['signature_image_url']	= ee()->config->slash_item('sig_img_url').$row['sig_img_filename'];
 		$cond['signature_image_width']	= $row['sig_img_width'];
 		$cond['signature_image_height']	= $row['sig_img_height'];
 		$cond['relative_date']			= timespan($row['entry_date']);
-
 
 		foreach($channel->mfields as $key => $value)
 		{
 			$cond[$key] = ( ! array_key_exists('m_field_id_'.$value[0], $row)) ? '' : $row['m_field_id_'.$value[0]];
 		}
 
+		if ( ! $prefix)
+		{
+			return $cond;
+		}
 
 		$prefixed_cond = array();
 
@@ -374,5 +496,40 @@ class EE_Channel_data_parser {
 		}
 
 		return $prefixed_cond;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Is commenting on this row allowed?
+	 *
+	 * A convenience function so that we don't have to deal with this as
+	 * a carzy conditional
+	 *
+	 * @param	array	The data row.
+	 * @return	bool	Can comment on this row?
+	 */
+	protected function _commenting_allowed($row)
+	{
+		if ($row['allow_comments'] == 'n')
+		{
+			return FALSE;
+		}
+
+		if (isset($row['comment_system_enabled']) && $row['comment_system_enabled'] == 'n')
+		{
+			return FALSE;
+		}
+
+		if (config_item('comment_moderation_override') === 'y')
+		{
+			return TRUE;
+		}
+		elseif ($row['comment_expiration_date'] > 0 && $row['comment_expiration_date'] < ee()->localize->now)
+		{
+			return FALSE;
+		}
+
+		return TRUE;
 	}
 }

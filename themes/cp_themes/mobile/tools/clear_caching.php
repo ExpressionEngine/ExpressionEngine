@@ -50,14 +50,6 @@ if ($EE_view_disable !== TRUE)
 			<?php
 				$data = array(
 					'name'        => 'type',
-					'id'          => 'relationships',
-					'value'       => 'relationships'
-				);
-			?>			
-			<li><?=form_radio($data)?> <?=lang('cached_relationships')?></li>
-			<?php
-				$data = array(
-					'name'        => 'type',
 					'id'          => 'all',
 					'value'       => 'all',
 					'checked'	=> TRUE	

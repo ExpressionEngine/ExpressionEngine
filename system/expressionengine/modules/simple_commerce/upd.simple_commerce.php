@@ -102,13 +102,13 @@ class Simple_commerce_upd {
 
 		foreach ($sql as $query)
 		{
-			$this->EE->db->query($query);
+			ee()->db->query($query);
 		}
 		
 		// update the config file based on whether this install is from the CP or the install wizard
-		if (method_exists($this->EE->config, 'divination'))
+		if (method_exists(ee()->config, 'divination'))
 		{
-			$this->EE->config->_update_config(array('sc_paypal_account' 	=> '',
+			ee()->config->_update_config(array('sc_paypal_account' 	=> '',
 											'sc_encrypt_buttons' 	=> 'n',
 											'sc_certificate_id'		=> '',
 											'sc_public_certificate' => '', 
@@ -118,7 +118,7 @@ class Simple_commerce_upd {
 		}
 		else
 		{
-			$this->EE->config->_assign_to_config(array('sc_paypal_account' 	=> '',
+			ee()->config->_assign_to_config(array('sc_paypal_account' 	=> '',
 												'sc_encrypt_buttons' 	=> 'n',
 												'sc_certificate_id'		=> '',
 												'sc_public_certificate' => '', 
@@ -144,7 +144,7 @@ class Simple_commerce_upd {
 	 */	
 	function uninstall()
 	{
-		$query = $this->EE->db->query("SELECT module_id FROM exp_modules WHERE module_name = 'Simple_commerce'"); 
+		$query = ee()->db->query("SELECT module_id FROM exp_modules WHERE module_name = 'Simple_commerce'"); 
 				
 		$sql[] = "DELETE FROM exp_module_member_groups WHERE module_id = '".$query->row('module_id') ."'";		
 		$sql[] = "DELETE FROM exp_modules WHERE module_name = 'Simple_commerce'";
@@ -156,14 +156,14 @@ class Simple_commerce_upd {
 
 		foreach ($sql as $query)
 		{
-			$this->EE->db->query($query);
+			ee()->db->query($query);
 		}
 		
 		/** ----------------------------------------
 		/**  Remove a couple items to the config file
 		/** ----------------------------------------*/
 	  
-		$this->EE->config->_update_config('', array('sc_paypal_account' => '',
+		ee()->config->_update_config('', array('sc_paypal_account' => '',
 											'sc_encrypt_buttons' => '',
 											'sc_certificate_id' => '',
 											'sc_public_certificate' => '', 
@@ -185,27 +185,27 @@ class Simple_commerce_upd {
 	 */	
 	function update($current = '')
 	{
-		$this->EE->load->dbforge();
+		ee()->load->dbforge();
 		
 		if (version_compare($current, '2.0', '<'))
 		{
-			$this->EE->db->query("ALTER TABLE `exp_simple_commerce_purchases` CHANGE `paypal_details` `paypal_details` TEXT NULL DEFAULT NULL");			
+			ee()->db->query("ALTER TABLE `exp_simple_commerce_purchases` CHANGE `paypal_details` `paypal_details` TEXT NULL DEFAULT NULL");			
 
 
-			$this->EE->db->query("ALTER TABLE `exp_simple_commerce_items` ADD COLUMN `recurring` char(1) NOT NULL default 'n'");
-			$this->EE->db->query("ALTER TABLE `exp_simple_commerce_items` ADD COLUMN `subscription_frequency` int(10) unsigned NULL default NULL");
-			$this->EE->db->query("ALTER TABLE `exp_simple_commerce_items` ADD COLUMN `subscription_frequency_unit` varchar(10) NULL default NULL");
-			$this->EE->db->query("ALTER TABLE `exp_simple_commerce_items` ADD COLUMN `current_subscriptions` int(8) NOT NULL default '0'");
-			$this->EE->db->query("ALTER TABLE `exp_simple_commerce_items` ADD COLUMN `admin_email_template_unsubscribe`  int(5) default '0'");
-			$this->EE->db->query("ALTER TABLE `exp_simple_commerce_items` ADD COLUMN `customer_email_template_unsubscribe`  int(5) default '0'");
-			$this->EE->db->query("ALTER TABLE `exp_simple_commerce_purchases` ADD COLUMN `subscription_end_date`  int(10) NOT NULL default '0'");
+			ee()->db->query("ALTER TABLE `exp_simple_commerce_items` ADD COLUMN `recurring` char(1) NOT NULL default 'n'");
+			ee()->db->query("ALTER TABLE `exp_simple_commerce_items` ADD COLUMN `subscription_frequency` int(10) unsigned NULL default NULL");
+			ee()->db->query("ALTER TABLE `exp_simple_commerce_items` ADD COLUMN `subscription_frequency_unit` varchar(10) NULL default NULL");
+			ee()->db->query("ALTER TABLE `exp_simple_commerce_items` ADD COLUMN `current_subscriptions` int(8) NOT NULL default '0'");
+			ee()->db->query("ALTER TABLE `exp_simple_commerce_items` ADD COLUMN `admin_email_template_unsubscribe`  int(5) default '0'");
+			ee()->db->query("ALTER TABLE `exp_simple_commerce_items` ADD COLUMN `customer_email_template_unsubscribe`  int(5) default '0'");
+			ee()->db->query("ALTER TABLE `exp_simple_commerce_purchases` ADD COLUMN `subscription_end_date`  int(10) NOT NULL default '0'");
 			
 		}
 		
 		if (version_compare($current, '2.1', '<'))
 		{
 			// This was left out of update, but added to install
-			if ( ! $this->EE->db->field_exists('member_group_unsubscribe', 'simple_commerce_items'))
+			if ( ! ee()->db->field_exists('member_group_unsubscribe', 'simple_commerce_items'))
 			{
 				$details = array('member_group_unsubscribe' => array(
 					'type' => 'INT',
@@ -213,7 +213,7 @@ class Simple_commerce_upd {
 					'default' => 0					
 				));
 				
-				$this->EE->dbforge->add_column('simple_commerce_items', $details, 'new_member_group');
+				ee()->dbforge->add_column('simple_commerce_items', $details, 'new_member_group');
 			}
 		}		
 

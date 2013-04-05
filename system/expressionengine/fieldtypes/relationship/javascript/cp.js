@@ -52,11 +52,11 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 
 
 	/**
-	 * Zero Wing Class
+	 * Relationship Class
 	 *
-	 * This is not public, you must use EE.setup_multi_field to
-	 * instantiate it. Handles all of the progressive enhancement
-	 * on the zero wing cp frontend.
+	 * This is not public, you must use EE.setup_relationship_field
+	 * to instantiate it. Handles all of the progressive enhancement
+	 * on the relationship cp frontend.
 	 *
 	 * The constructor does most of the precaching before handing
 	 * off to the class methods for interaction related things.
@@ -579,7 +579,7 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 	/**
 	 * Public method to instantiate
 	 */
-	EE.setup_multi_field = function(el) {
+	EE.setup_relationship_field = function(el) {
 		return new ZeroWing(el);
 	};
 

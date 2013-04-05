@@ -34,57 +34,14 @@ class Updater {
 
 	function do_update() 
 	{ 
-		// IDEK
-		$Q = array();
-		
-		// Channel Data
-		$query = $this->EE->db->query("SHOW INDEX FROM `exp_channel_data`");
-		$indexes = array();
-		
-		foreach ($query->result_array() as $row)
-		{
-			$indexes[] = $row['Key_name'];
-		}
-			
-		if (in_array('weblog_id', $indexes))
-		{
-			$Q[] = "ALTER TABLE `exp_channel_data` DROP KEY `weblog_id`";
-		}
-			
-		if ( ! in_array('channel_id', $indexes))
-		{
-			$Q[] = "ALTER TABLE `exp_channel_data` ADD KEY (`channel_id`)";				
-		}
-		
-		// Channel Titles
-		$query = $this->EE->db->query("SHOW INDEX FROM `exp_channel_titles`");
-		$indexes = array();
-		
-		foreach ($query->result_array() as $row)
-		{
-			$indexes[] = $row['Key_name'];
-		}
-			
-		if (in_array('weblog_id', $indexes))
-		{
-			$Q[] = "ALTER TABLE `exp_channel_titles` DROP KEY `weblog_id`";
-		}
-			
-		if ( ! in_array('channel_id', $indexes))
-		{
-			$Q[] = "ALTER TABLE `exp_channel_titles` ADD KEY (`channel_id`)";				
-		}
 
-		$count = count($Q);
-		
-		if ($count > 0)
-		{
-			foreach ($Q as $num => $sql)
-			{
-				$this->EE->progress->update_state("Running Query $num of $count");
-	        	$this->EE->db->query($sql);
-			}
-		}
+		ee()->smartforge->drop_index('channel_data', 'weblog_id');
+
+		ee()->smartforge->create_index('channel_data', 'channel_id');
+
+		ee()->smartforge->drop_index('channel_titles', 'weblog_id');
+
+		ee()->smartforge->create_index('channel_titles', 'channel_id');
 		
 		return TRUE;
 	}

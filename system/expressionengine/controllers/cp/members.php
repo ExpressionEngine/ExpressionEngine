@@ -827,7 +827,7 @@ class Members extends CP_Controller {
 		/* 'cp_members_member_delete_end' hook.
 		/*  - Additional processing when a member is deleted through the CP
 		*/
-			$edata = $this->extensions->call('cp_members_member_delete_end', $member_ids);
+			$this->extensions->call('cp_members_member_delete_end', $member_ids);
 			if ($this->extensions->end_script === TRUE) return;
 		/*
 		/* -------------------------------------------*/
@@ -2295,7 +2295,7 @@ class Members extends CP_Controller {
 		//  - Take over member creation when done through the CP
 		//  - Added 1.4.2
 		//
-			$edata = $this->extensions->call('cp_members_member_create_start');
+			$this->extensions->call('cp_members_member_create_start');
 			if ($this->extensions->end_script === TRUE) return;
 		//
 		// -------------------------------------------
@@ -2386,7 +2386,7 @@ class Members extends CP_Controller {
 		// 'cp_members_member_create' hook.
 		//  - Additional processing when a member is created through the CP
 		//
-			$edata = $this->extensions->call('cp_members_member_create', $member_id, $data);
+			$this->extensions->call('cp_members_member_create', $member_id, $data);
 			if ($this->extensions->end_script === TRUE) return;
 		//
 		// -------------------------------------------
@@ -3497,7 +3497,7 @@ class Members extends CP_Controller {
 		/*  - Additional processing when member(s) are validated in the CP
 		/*  - Added 1.5.2, 2006-12-28
 		*/
-			$edata = $this->extensions->call('cp_members_validate_members');
+			$this->extensions->call('cp_members_validate_members');
 			if ($this->extensions->end_script === TRUE) return;
 		/*
 		/* -------------------------------------------*/

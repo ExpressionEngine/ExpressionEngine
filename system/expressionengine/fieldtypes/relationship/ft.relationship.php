@@ -22,16 +22,16 @@
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Zero_wing_ft extends EE_Fieldtype {
+class Relationship_ft extends EE_Fieldtype {
 
 	public $info = array(
-		'name'		=> 'Relationships Dev Preview', // 'ZeroWing',
+		'name'		=> 'Relationships',
 		'version'	=> '1.0'
 	);
 	
 	public $has_array_data = FALSE;
 
-	private $_table = 'zero_wing';
+	private $_table = 'relationships';
 
 	/**
 	 * Validate Field
@@ -59,10 +59,12 @@ class Zero_wing_ft extends EE_Fieldtype {
 	 */
 	public function save($data)
 	{
-		$sort = $this->EE->input->post('sort_'.$this->field_name);
+		$sort = isset($data['sort']) ? $data['sort'] : array();
+		$data = isset($data['data']) ? $data['data'] : array();
+
 		$sort = array_filter($sort);
 
-		$this->EE->session->set_cache(__CLASS__, $this->field_name, array(
+		ee()->session->set_cache(__CLASS__, $this->field_name, array(
 			'data' => $data,
 			'sort' => $sort
 		));
@@ -86,13 +88,13 @@ class Zero_wing_ft extends EE_Fieldtype {
 	{
 		$field_id = $this->field_id;
 		$entry_id = $this->settings['entry_id'];
-		$post = $this->EE->session->cache(__CLASS__, $this->field_name);
+		$post = ee()->session->cache(__CLASS__, $this->field_name);
 
 		$order = array_values($post['sort']);
 		$data = $post['data'];
 
 		// clear old stuff
-		$this->EE->db
+		ee()->db
 			->where('parent_id', $entry_id)
 			->where('field_id', $field_id)
 			->delete($this->_table);
@@ -112,7 +114,7 @@ class Zero_wing_ft extends EE_Fieldtype {
 
 		if (count($ships))
 		{
-			$this->EE->db->insert_batch($this->_table, $ships);
+			ee()->db->insert_batch($this->_table, $ships);
 		}
 	}
 
@@ -126,7 +128,7 @@ class Zero_wing_ft extends EE_Fieldtype {
 	 */
 	public function delete($ids)
 	{
-		$this->EE->db
+		ee()->db
 			->where_in('parent_id', $ids)
 			->or_where_in('child_id', $ids)
 			->delete($this->_table);
@@ -147,7 +149,7 @@ class Zero_wing_ft extends EE_Fieldtype {
 	public function display_field($data)
 	{
 		$field_name = $this->field_name;
-		$entry_id = $this->EE->input->get('entry_id');
+		$entry_id = ee()->input->get('entry_id');
 
 		$order = array();
 		$entries = array();
@@ -155,7 +157,7 @@ class Zero_wing_ft extends EE_Fieldtype {
 
 		if ($entry_id)
 		{
-			$related = $this->EE->db
+			$related = ee()->db
 				->select('child_id, order')
 				->where('parent_id', $entry_id)
 				->where('field_id', $this->field_id)
@@ -178,25 +180,25 @@ class Zero_wing_ft extends EE_Fieldtype {
 		$show_expired = (bool) $this->settings['expired'];
 		$show_future = (bool) $this->settings['future'];
 
-		$this->EE->db
+		ee()->db
 			->select('channel_titles.entry_id, channel_titles.title')
 			->order_by($this->settings['order_field'], $this->settings['order_dir']);
 
 		if ($limit)
 		{
-			$this->EE->db->limit($limit);
+			ee()->db->limit($limit);
 		}
 
 		if (count($limit_channels))
 		{
-			$this->EE->db->where_in('channel_titles.channel_id', $limit_channels);
+			ee()->db->where_in('channel_titles.channel_id', $limit_channels);
 		}
 
 		if (count($limit_categories))
 		{
-			$this->EE->db->from('category_posts');
-			$this->EE->db->where('exp_channel_titles.entry_id = exp_category_posts.entry_id', NULL, FALSE); // todo ick
-			$this->EE->db->where_in('category_posts.cat_id', $limit_categories);
+			ee()->db->from('category_posts');
+			ee()->db->where('exp_channel_titles.entry_id = exp_category_posts.entry_id', NULL, FALSE); // todo ick
+			ee()->db->where_in('category_posts.cat_id', $limit_categories);
 		}
 
 		if (count($limit_statuses))
@@ -207,7 +209,7 @@ class Zero_wing_ft extends EE_Fieldtype {
 				$limit_statuses
 			);
 
-			$this->EE->db->where_in('channel_titles.status', $limit_statuses);
+			ee()->db->where_in('channel_titles.status', $limit_statuses);
 		}
 
 		if (count($limit_authors))
@@ -221,42 +223,42 @@ class Zero_wing_ft extends EE_Fieldtype {
 
 			if (count($members))
 			{
-				$this->EE->db->where_in('channel_titles.author_id', $members);	
+				ee()->db->where_in('channel_titles.author_id', $members);	
 				$fn = 'or_where_in';
 			}
 
 			if (count($groups))
 			{
-				$this->EE->db->join('members', 'members.member_id = channel_titles.author_id');
-				$this->EE->db->$fn('members.group_id', $groups);
+				ee()->db->join('members', 'members.member_id = channel_titles.author_id');
+				ee()->db->$fn('members.group_id', $groups);
 			}
 		}
 
 		if ($entry_id)
 		{
-			$this->EE->db->where('channel_titles.entry_id !=', $entry_id);
+			ee()->db->where('channel_titles.entry_id !=', $entry_id);
 		}
 
 		if (count($selected))
 		{
-			$this->EE->db->or_where_in('channel_titles.entry_id', $selected);
+			ee()->db->or_where_in('channel_titles.entry_id', $selected);
 		}
 
 		// Limit times
-		$now = $this->EE->localize->now;
+		$now = ee()->localize->now;
 
 		if ( ! $show_future)
 		{
-			$this->EE->db->where('channel_titles.entry_date < ', $now);
+			ee()->db->where('channel_titles.entry_date < ', $now);
 		}
 
 		if ( ! $show_expired)
 		{
-			$t = $this->EE->db->dbprefix('channel_titles');
-			$this->EE->db->where("(${t}.expiration_date = 0 OR ${t}.expiration_date > ${now})", NULL, FALSE);
+			$t = ee()->db->dbprefix('channel_titles');
+			ee()->db->where("(${t}.expiration_date = 0 OR ${t}.expiration_date > ${now})", NULL, FALSE);
 		}
 
-		$entries = $this->EE->db->get('channel_titles')->result_array();
+		$entries = ee()->db->get('channel_titles')->result_array();
 
 		if ($this->settings['allow_multiple'] == 0)
 		{
@@ -283,8 +285,8 @@ class Zero_wing_ft extends EE_Fieldtype {
 		if (count($entries))
 		{
 			$js = $this->_publish_js();
-			$js .= "EE.setup_multi_field('#${field_name}');";
-			$this->EE->javascript->output($js);
+			$js .= "EE.setup_relationship_field('#${field_name}');";
+			ee()->javascript->output($js);
 		}
 
 		return $str;
@@ -303,6 +305,9 @@ class Zero_wing_ft extends EE_Fieldtype {
 	 */
 	public function _multi_div($entries, $selected, $order, $field_name)
 	{
+		$input_sort = $field_name.'[sort]';
+		$input_field = $field_name.'[data]';
+
 		$class = 'class="multiselect ';
 		$class .= count($entries) ? 'force-scroll' : 'empty';
 		$class .= '"';
@@ -321,8 +326,8 @@ class Zero_wing_ft extends EE_Fieldtype {
 			$sort = $checked ? $order[$row['entry_id']] : 0;
 
 			$str .= '<li'.($checked ? ' class="selected"' : '').'><label>';
-			$str .= form_input('sort_'.$field_name.'[]', $sort, 'class="js_hide"');
-			$str .= form_checkbox($field_name.'[]', $row['entry_id'], $checked, 'class="js_hide"');
+			$str .= form_input($input_sort.'[]', $sort, 'class="js_hide"');
+			$str .= form_checkbox($input_field.'[]', $row['entry_id'], $checked, 'class="js_hide"');
 			$str .= $row['title'].'</label></li>';
 		}
 
@@ -393,12 +398,12 @@ class Zero_wing_ft extends EE_Fieldtype {
 	 */	
 	public function display_settings($data)
 	{
-		$this->EE->lang->loadfile('fieldtypes');
+		ee()->lang->loadfile('fieldtypes');
 
 		$form = $this->_form();
 		$form->populate($data);
 
-		$this->EE->table->set_heading(array(
+		ee()->table->set_heading(array(
 			'data' => lang('rel_ft_options'),
 			'colspan' => 2
 		));
@@ -448,7 +453,7 @@ class Zero_wing_ft extends EE_Fieldtype {
 			'<label>'.$form->checkbox('allow_multiple').' '.lang('yes').' </label> <i class="instruction_text">('.lang('rel_ft_allow_multi_subtext').')</i>'
 		);
 
-		return $this->EE->table->generate();
+		return ee()->table->generate();
 	}
 
 	// --------------------------------------------------------------------
@@ -469,13 +474,13 @@ class Zero_wing_ft extends EE_Fieldtype {
 	{
 		if ( ! $cell2)
 		{
-			$this->EE->table->add_row(
+			ee()->table->add_row(
 				array('data' => $cell1, 'colspan' => 2)
 			);
 		}
 		else
 		{
-			$this->EE->table->add_row(
+			ee()->table->add_row(
 				array('data' => '<strong>'.$cell1.'</strong>', 'width' => '170px', 'valign' => $valign),
 				array('data' => $cell2, 'class' => 'id')
 			);
@@ -513,10 +518,10 @@ class Zero_wing_ft extends EE_Fieldtype {
 	 * @param	form prefix
 	 * @return	Object<Relationship_settings_form>
 	 */	
-	protected function _form($prefix = 'zero_wing')
+	protected function _form($prefix = 'relationship')
 	{
-		$this->EE->load->library('Relationships_ft_cp');
-		$util = $this->EE->relationships_ft_cp;
+		ee()->load->library('Relationships_ft_cp');
+		$util = ee()->relationships_ft_cp;
 
 		$field_empty_values = array(
 			'channels'		=> array(),
@@ -563,14 +568,14 @@ class Zero_wing_ft extends EE_Fieldtype {
 	 */	
 	protected function _publish_js()
 	{
-		if ($this->EE->session->cache(__CLASS__, 'js_loaded') === TRUE)
+		if (ee()->session->cache(__CLASS__, 'js_loaded') === TRUE)
 		{
 			return '';
 		}
 
-		$js = file_get_contents(PATH_FT.'zero_wing/javascript/cp.js');
+		$js = file_get_contents(PATH_FT.'relationship/javascript/cp.js');
 
-		$this->EE->session->cache(__CLASS__, 'js_loaded', TRUE);
+		ee()->session->cache(__CLASS__, 'js_loaded', TRUE);
 		return $js;
 	}
 
@@ -583,7 +588,7 @@ class Zero_wing_ft extends EE_Fieldtype {
 	 */	
 	public function install()
 	{
-		$this->EE->load->dbforge();
+		ee()->load->dbforge();
 
 		$fields = array(
 			'relationship_id' => array(
@@ -614,17 +619,17 @@ class Zero_wing_ft extends EE_Fieldtype {
 			)
 		);
 
-		$this->EE->dbforge->add_field($fields);
+		ee()->dbforge->add_field($fields);
 
 		// Worthless primary key
-		$this->EE->dbforge->add_key('relationship_id', TRUE);
+		ee()->dbforge->add_key('relationship_id', TRUE);
 
 		// Keyed table is keyed
-		$this->EE->dbforge->add_key('parent_id');
-		$this->EE->dbforge->add_key('child_id');
-		$this->EE->dbforge->add_key('field_id');
+		ee()->dbforge->add_key('parent_id');
+		ee()->dbforge->add_key('child_id');
+		ee()->dbforge->add_key('field_id');
 
-		$this->EE->dbforge->create_table($this->_table);
+		ee()->dbforge->create_table($this->_table);
 	}
 
 	// --------------------------------------------------------------------
@@ -636,8 +641,8 @@ class Zero_wing_ft extends EE_Fieldtype {
 	 */	
 	public function uninstall()
 	{
-		$this->EE->load->dbforge();
-		$this->EE->dbforge->drop_table($this->_table);
+		ee()->load->dbforge();
+		ee()->dbforge->drop_table($this->_table);
 	}
 
 	// --------------------------------------------------------------------
@@ -655,7 +660,7 @@ class Zero_wing_ft extends EE_Fieldtype {
 		if ($data['ee_action'] == 'delete')
 		{
 			// remove relationships
-			$this->EE->db
+			ee()->db
 				->where('field_id', $data['field_id'])
 				->delete($this->_table);
 		}
@@ -672,7 +677,7 @@ class Zero_wing_ft extends EE_Fieldtype {
 	}
 }
 
-// END Zero_wing_ft class
+// END Relationship_ft class
 
-/* End of file ft.zero_wing.php */
-/* Location: ./system/expressionengine/fieldtypes/ft.zero_wing.php */
+/* End of file ft.relationship.php */
+/* Location: ./system/expressionengine/fieldtypes/ft.relationship.php */

@@ -46,9 +46,9 @@ class Moblog_upd {
 
 	function install()
 	{
-		$this->EE->load->dbforge();
+		ee()->load->dbforge();
 
-		$this->EE->db->insert('modules', array(
+		ee()->db->insert('modules', array(
 			'module_name'		=> 'Moblog',
 			'module_version'	=> $this->version,
 			'has_cp_backend'	=> 'y'	
@@ -91,9 +91,9 @@ class Moblog_upd {
 			'moblog_ping_servers'		=> array('type' => 'varchar', 'constraint' => 50, 'default' => ''),
 		);
 		
-		$this->EE->dbforge->add_field($fields);
-		$this->EE->dbforge->add_key('moblog_id', TRUE);
-		$this->EE->dbforge->create_table('moblogs');
+		ee()->dbforge->add_field($fields);
+		ee()->dbforge->add_key('moblog_id', TRUE);
+		ee()->dbforge->create_table('moblogs');
 		
 		return TRUE;
 	}
@@ -111,18 +111,18 @@ class Moblog_upd {
 	function uninstall()
 	{
 		// Get the module ID from modules
-		$qry = $this->EE->db->select('module_id')
+		$qry = ee()->db->select('module_id')
 							->get_where('modules', array('module_name' => 'Moblog'));
 
 		// Delete all mentions of the moblog from other tables
-		$this->EE->db->delete('module_member_groups', array('module_id' => $qry->row('module_id')));
-		$this->EE->db->delete('modules', array('module_name' => 'Moblog'));
-		$this->EE->db->delete('actions', array('class' => 'Moblog'));
-		$this->EE->db->delete('actions', array('class' => 'Moblog_mcp'));
+		ee()->db->delete('module_member_groups', array('module_id' => $qry->row('module_id')));
+		ee()->db->delete('modules', array('module_name' => 'Moblog'));
+		ee()->db->delete('actions', array('class' => 'Moblog'));
+		ee()->db->delete('actions', array('class' => 'Moblog_mcp'));
 
 		// Drop the table
-		$this->EE->load->dbforge();
-		$this->EE->dbforge->drop_table('moblogs');
+		ee()->load->dbforge();
+		ee()->dbforge->drop_table('moblogs');
 
 		return TRUE;
 	}
@@ -190,12 +190,12 @@ class Moblog_upd {
 
 		if (version_compare($current, '3.0', '<'))
 		{
-			$this->EE->load->dbforge();
+			ee()->load->dbforge();
 
 			// @confrim- should be able to drop is_user_blog as well?
-			$this->EE->dbforge->drop_column('moblogs', 'is_user_blog');
-			$this->EE->dbforge->drop_column('moblogs', 'user_blog_id');
-			$this->EE->dbforge->modify_column('moblogs', array(
+			ee()->dbforge->drop_column('moblogs', 'is_user_blog');
+			ee()->dbforge->drop_column('moblogs', 'user_blog_id');
+			ee()->dbforge->modify_column('moblogs', array(
 				'moblog_weblog_id' => array(
 					'name'			=> 'moblog_channel_id',
 					'type'			=> 'int',
@@ -242,10 +242,10 @@ class Moblog_upd {
 	 */	
 	function _add_fields($new_fields)
 	{
-		$this->EE->load->dbforge();
+		ee()->load->dbforge();
 		
 		// Get a list of the current fields
-		$existing_fields = $this->EE->db->list_fields('moblogs');
+		$existing_fields = ee()->db->list_fields('moblogs');
 
 		// Add fields that don't exist
 		foreach($new_fields AS $new_field_name => $new_field_data)
@@ -255,7 +255,7 @@ class Moblog_upd {
 				$after = $new_field_data['after'] ? $new_field_data['after'] : ''; 
 				$field = array($new_field_name => $new_field_data['alter']);
 				
-				$this->EE->dbforge->add_column('moblogs', $field, $after);
+				ee()->dbforge->add_column('moblogs', $field, $after);
 			}
 		}
 	}	
@@ -269,14 +269,14 @@ class Moblog_upd {
 	 */
 	function _drop_columns($columns)
 	{
-		$this->EE->load->dbforge();
+		ee()->load->dbforge();
 		
 		// Delete old fields
 		foreach($existing_fields AS $existing_field)
 		{
 			if (array_key_exists($existing_field, $deleted_fields))
 			{
-				$this->EE->dbforge->drop_column('moblogs', $existing_field);
+				ee()->dbforge->drop_column('moblogs', $existing_field);
 			}
 		}
 	}	
@@ -293,7 +293,7 @@ class Moblog_upd {
 		$thumb_id = 0;
 
 		// Figure out existing sizes and if they're valid or not (not equal to 0)
-		$qry = $this->EE->db->get('moblogs');
+		$qry = ee()->db->get('moblogs');
 
 		// If they are valid, figure uot the upload directory moblog_upload_directory
 		foreach ($qry->result() as $row)
@@ -319,7 +319,7 @@ class Moblog_upd {
 			}		
 
 			// Make those the image_size and thumb_size
-			$this->EE->db->update(
+			ee()->db->update(
 				'moblogs', 
 				array(
 					'moblog_image_size' => $image_id,
@@ -344,17 +344,17 @@ class Moblog_upd {
 	private function _create_new_upload_size($size_name, $width, $height, $upload_id)
 	{
 		// Check to see if upload size already exists for upload_location, height and width
-		$this->EE->db->where(array(
+		ee()->db->where(array(
 			'upload_location_id'	=> $upload_id,
 			'width'					=> $width,
 			'height'				=> $height
 		));
 
-		$qry = $this->EE->db->get('file_dimensions');
+		$qry = ee()->db->get('file_dimensions');
 
 		if ( ! $qry->num_rows())
 		{
-			$this->EE->db->insert('file_dimensions', array(
+			ee()->db->insert('file_dimensions', array(
 				'upload_location_id'	=> $upload_id,
 				'title'					=> $size_name,
 				'short_name'			=> $size_name,
@@ -364,7 +364,7 @@ class Moblog_upd {
 				'watermark_id'			=> 0
 			));
 
-			return $this->EE->db->insert_id();
+			return ee()->db->insert_id();
 		}
 
 		return $qry->row('id');

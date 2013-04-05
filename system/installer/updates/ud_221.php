@@ -46,24 +46,26 @@ class Updater {
 	public function do_update()
     {
 		// 2.1.3 was missing this from its schema
-		if ( ! $this->EE->db->field_exists('can_access_fieldtypes', 'member_groups'))
-		{
-			$Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_fieldtypes` char(1) NOT NULL DEFAULT 'n' AFTER `can_access_files`";            
-		}
+		ee()->smartforge->add_column(
+			'member_groups',
+			array(
+				'can_access_fieldtypes' => array(
+					'type'			=> 'char',
+					'constraint'	=> 1,
+					'default'		=> 'n',
+					'null'			=> FALSE
+				)
+			),
+			'can_access_files'
+		);
 
-		$Q[] = "UPDATE `exp_member_groups` SET `can_access_fieldtypes` = 'y' WHERE `group_id` = 1";
-		$Q[] = "UPDATE `exp_members` SET `group_id` = 4 WHERE `group_id` = 0";
-		
+		ee()->db->set('can_access_fieldtypes', 'y');
+		ee()->db->where('group_id', 1);
+		ee()->db->update('member_groups');
 
-		$count = count($Q);
-		$num = 1;
-		
-		foreach ($Q as $sql)
-		{
-			$this->EE->progress->update_state("Running Query $num of $count");
-	        $this->EE->db->query($sql);
-			$num++;
-		}
+		ee()->db->set('group_id', 4);
+		ee()->db->where('group_id', 0);
+		ee()->db->update('members');
 		
 		return TRUE;
     }

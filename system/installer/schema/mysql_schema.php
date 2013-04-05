@@ -29,7 +29,7 @@ class EE_Schema {
 	 */	
 	function sql_find_like()
 	{
-		return "SHOW tables LIKE '".$this->EE->db->escape_like_str($this->userdata['db_prefix'])."%'";
+		return "SHOW tables LIKE '".ee()->db->escape_like_str($this->userdata['db_prefix'])."%'";
 	}
 	
 	// --------------------------------------------------------------------
@@ -1370,7 +1370,7 @@ class EE_Schema {
 		$quick_link = '';
 		
 		$Q[] = "INSERT INTO exp_members (group_id, username, password, unique_id, email, screen_name, join_date, ip_address, timezone, quick_links, language) 
-				VALUES ('1', '".$this->EE->db->escape_str($this->userdata['username'])."', '".$this->userdata['password']."', '".$this->userdata['unique_id']."', '".$this->EE->db->escape_str($this->userdata['email_address'])."', '".$this->EE->db->escape_str($this->userdata['screen_name'])."', '".$this->now."', '".$this->EE->input->ip_address()."', '".$this->userdata['server_timezone']."', '$quick_link', '".$this->EE->db->escape_str($this->userdata['deft_lang'])."')";
+				VALUES ('1', '".ee()->db->escape_str($this->userdata['username'])."', '".$this->userdata['password']."', '".$this->userdata['unique_id']."', '".ee()->db->escape_str($this->userdata['email_address'])."', '".ee()->db->escape_str($this->userdata['screen_name'])."', '".$this->now."', '".ee()->input->ip_address()."', '".$this->userdata['server_timezone']."', '$quick_link', '".ee()->db->escape_str($this->userdata['deft_lang'])."')";
 		
 		$Q[] = "INSERT INTO exp_member_homepage (member_id, recent_entries_order, recent_comments_order, site_statistics_order, notepad_order, pmachine_news_feed) 
 				VALUES ('1', '1', '2', '1', '2', 'l')";
@@ -1380,7 +1380,7 @@ class EE_Schema {
 		// Default system stats
 		
 		$Q[] = "INSERT INTO exp_stats (total_members, total_entries, last_entry_date, recent_member, recent_member_id, last_cache_clear)
-				VALUES ('1', '1', '".$this->now."', '".$this->EE->db->escape_str($this->userdata['screen_name'])."', '1', '".$this->now."')";
+				VALUES ('1', '1', '".$this->now."', '".ee()->db->escape_str($this->userdata['screen_name'])."', '1', '".$this->now."')";
 		
 		// --------------------------------------------------------------------
 		// --------------------------------------------------------------------
@@ -1401,7 +1401,7 @@ class EE_Schema {
 						'site_bootstrap_checksums'		=> ''
 					);
 						
-		$Q[] = $this->EE->db->insert_string('sites', $site);
+		$Q[] = ee()->db->insert_string('sites', $site);
 				
 		$Q[] = "INSERT INTO exp_member_groups VALUES ('1', 1, 'Super Admins', '', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y',  'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', '', 'y', 'y', 'y', '0', 'y', '20', '60', 'y', 'y', 'y', 'y', 'y')";
 		$Q[] = "INSERT INTO exp_member_groups VALUES ('2', 1, 'Banned', '', 'y', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n',  'n', 'n', '', 'n', 'n', 'n', '60', 'n', '20', '60', 'n', 'n', 'n', 'n', 'n')";
@@ -1440,9 +1440,9 @@ class EE_Schema {
 		// --------------------------------------------------------------------
 		// --------------------------------------------------------------------
 		
-		foreach($this->EE->db->list_tables(TRUE) as $kill)
+		foreach(ee()->db->list_tables(TRUE) as $kill)
 		{
-			$this->EE->db->query('DROP TABLE IF EXISTS '.$kill);
+			ee()->db->query('DROP TABLE IF EXISTS '.$kill);
 		}
 				
 		foreach($Q as $sql)
@@ -1453,15 +1453,15 @@ class EE_Schema {
 
 				if (UTF8_ENABLED === TRUE)
 				{
-					$sql .= 'DEFAULT CHARACTER SET '.$this->EE->db->escape_str($this->EE->db->char_set).' COLLATE '.$this->EE->db->escape_str($this->EE->db->dbcollat);
+					$sql .= 'DEFAULT CHARACTER SET '.ee()->db->escape_str(ee()->db->char_set).' COLLATE '.ee()->db->escape_str(ee()->db->dbcollat);
 				}
 			}
 			
-			if ($this->EE->db->query($sql) === FALSE)
+			if (ee()->db->query($sql) === FALSE)
 			{
 				foreach($this->DB->list_tables(TRUE) as $kill)
 				{
-					$this->EE->db->query('DROP TABLE IF EXISTS '.$kill);
+					ee()->db->query('DROP TABLE IF EXISTS '.$kill);
 				}
 				
 				return FALSE;

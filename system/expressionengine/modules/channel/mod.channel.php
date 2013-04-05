@@ -49,20 +49,12 @@ class Channel {
 	public $cfields					= array();
 	public $dfields					= array();
 	public $rfields					= array();
-
-	/**
-	 * A mapping of field_name => field_id containing
-	 * only fields of the Zero Wing Relationship fieldtype.
-	 */
-	public $zwfields				= array();
 	public $mfields					= array();
 	public $pfields					= array();
 	public $categories				= array();
 	public $catfields				= array();
 	public $channel_name	 		= array();
 	public $channels_array			= array();
-	public $related_entries			= array();
-	public $reverse_related_entries = array();
 	public $reserved_cat_segment 	= '';
 	public $use_category_names		= FALSE;
 	public $cat_request				= FALSE;
@@ -98,23 +90,23 @@ class Channel {
 		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();
 
-		$this->EE->load->library('pagination');
-		$this->pagination = new Pagination_object(__CLASS__);
+		ee()->load->library('pagination');
+		$this->pagination = ee()->pagination->create(__CLASS__);
 		// $this->pagination->per_page = $this->limit;
 		
 		// Used by pagination to determine whether we're coming from the cache
 		$this->pagination->dynamic_sql = FALSE;
 
-		$this->query_string = ($this->EE->uri->page_query_string != '') ? $this->EE->uri->page_query_string : $this->EE->uri->query_string;
+		$this->query_string = (ee()->uri->page_query_string != '') ? ee()->uri->page_query_string : ee()->uri->query_string;
 
-		if ($this->EE->config->item("use_category_name") == 'y' && $this->EE->config->item("reserved_category_word") != '')
+		if (ee()->config->item("use_category_name") == 'y' && ee()->config->item("reserved_category_word") != '')
 		{
-			$this->use_category_names	= $this->EE->config->item("use_category_name");
-			$this->reserved_cat_segment	= $this->EE->config->item("reserved_category_word");
+			$this->use_category_names	= ee()->config->item("use_category_name");
+			$this->reserved_cat_segment	= ee()->config->item("reserved_category_word");
 		}
 
 		// a number of tags utilize the disable= parameter, set it here
-		if (isset($this->EE->TMPL) && is_object($this->EE->TMPL))
+		if (isset(ee()->TMPL) && is_object(ee()->TMPL))
 		{
 			$this->_fetch_disable_param();
 		}
@@ -144,11 +136,11 @@ class Channel {
 	  */
 	public function fetch_cache($identifier = '')
 	{
-		$tag = ($identifier == '') ? $this->EE->TMPL->tagproper : $this->EE->TMPL->tagproper.$identifier;
+		$tag = ($identifier == '') ? ee()->TMPL->tagproper : ee()->TMPL->tagproper.$identifier;
 
-		if ($this->EE->TMPL->fetch_param('dynamic_parameters') !== FALSE && isset($_POST) && count($_POST) > 0)
+		if (ee()->TMPL->fetch_param('dynamic_parameters') !== FALSE && isset($_POST) && count($_POST) > 0)
 		{
-			foreach (explode('|', $this->EE->TMPL->fetch_param('dynamic_parameters')) as $var)
+			foreach (explode('|', ee()->TMPL->fetch_param('dynamic_parameters')) as $var)
 			{
 				if (isset($_POST[$var]) && in_array($var, $this->_dynamic_parameters))
 				{
@@ -184,7 +176,7 @@ class Channel {
 	  */
 	public function save_cache($sql, $identifier = '')
 	{
-		$tag = ($identifier == '') ? $this->EE->TMPL->tagproper : $this->EE->TMPL->tagproper.$identifier;
+		$tag = ($identifier == '') ? ee()->TMPL->tagproper : ee()->TMPL->tagproper.$identifier;
 
 		$cache_dir  = APPPATH.'cache/'.$this->sql_cache_dir;
 		$cache_file = $cache_dir.md5($tag.$this->uri);
@@ -230,9 +222,9 @@ class Channel {
 		// we'll call the "related_categories" function
 		// and bail out.
 
-		if ($this->EE->TMPL->fetch_param('related_categories_mode') == 'yes')
+		if (ee()->TMPL->fetch_param('related_categories_mode') == 'yes')
 		{
-			return $this->related_entries();
+			return $this->related_category_entries();
 		}
 		// Onward...
 
@@ -257,7 +249,7 @@ class Channel {
 
 		$save_cache = FALSE;
 		
-		if ($this->EE->config->item('enable_sql_caching') == 'y' && $this->EE->TMPL->fetch_param('author_id') != 'CURRENT_USER')
+		if (ee()->config->item('enable_sql_caching') == 'y' && ee()->TMPL->fetch_param('author_id') != 'CURRENT_USER')
 		{
 			if (FALSE == ($this->sql = $this->fetch_cache()))
 			{
@@ -265,7 +257,7 @@ class Channel {
 			}
 			else
 			{
-				if ($this->EE->TMPL->fetch_param('dynamic') != 'no')
+				if (ee()->TMPL->fetch_param('dynamic') != 'no')
 				{
 					if (preg_match("#(^|\/)C(\d+)#", $this->query_string, $match) OR in_array($this->reserved_cat_segment, explode("/", $this->query_string)))
 					{
@@ -283,7 +275,7 @@ class Channel {
 						$this->pagination->paginate = TRUE;
 						$this->pagination->field_pagination = TRUE;
 						$this->pagination->cfields = $this->cfields;
-						$this->pagination->build(trim($cache), $this->sql, $this->EE->db->query(trim($pg_query)));
+						$this->pagination->build(trim($cache), $this->sql, ee()->db->query(trim($pg_query)));
 					}
 				}
 				else
@@ -301,7 +293,7 @@ class Channel {
 
 		if ($this->sql == '')
 		{
-			return $this->EE->TMPL->no_results();
+			return ee()->TMPL->no_results();
 		}
 
 		if ($save_cache == TRUE)
@@ -309,11 +301,11 @@ class Channel {
 			$this->save_cache($this->sql);
 		}
 
-		$this->query = $this->EE->db->query($this->sql);
+		$this->query = ee()->db->query($this->sql);
 
 		if ($this->query->num_rows() == 0)
 		{
-			return $this->EE->TMPL->no_results();
+			return ee()->TMPL->no_results();
 		}
 
 		// -------------------------------------
@@ -328,15 +320,15 @@ class Channel {
 		//  - relaxed_track_views => Allow view tracking on non-dynamic
 		//  	single entries (y/n)
 		// -------------------------------------
-		if ($this->EE->config->item('relaxed_track_views') === 'y' && $this->query->num_rows() == 1)
+		if (ee()->config->item('relaxed_track_views') === 'y' && $this->query->num_rows() == 1)
 		{
 			$this->hit_tracking_id = $this->query->row('entry_id') ;
 		}
 
 		$this->track_views();
 
-		$this->EE->load->library('typography');
-		$this->EE->typography->initialize(array(
+		ee()->load->library('typography');
+		ee()->typography->initialize(array(
 			'convert_curly'	=> FALSE
 		));
 
@@ -352,133 +344,7 @@ class Channel {
 			$this->return_data = $this->pagination->render($this->return_data);
 		}
 
-		// Does the tag contain "related entries" that we need to parse out?
-
-		if (count($this->EE->TMPL->related_data) > 0 && count($this->related_entries) > 0)
-		{
-			$this->parse_related_entries();
-		}
-
-		if (count($this->EE->TMPL->reverse_related_data) > 0 && count($this->reverse_related_entries) > 0)
-		{
-			$this->parse_reverse_related_entries();
-		}
-
 		return $this->return_data;
-	}
-
-	// ------------------------------------------------------------------------
-
-	/**
-	  *  Process related entries
-	  */
-	public function parse_related_entries()
-	{
-		$sql = "SELECT rel_id, rel_parent_id, rel_child_id, rel_type, rel_data
-				FROM exp_relationships
-				WHERE rel_id IN (";
-
-		$templates = array();
-		foreach ($this->related_entries as $val)
-		{
-			$x = explode('_', $val);
-			$sql .= "'".$x[0]."',";
-			$templates[] = array($x[0], $x[1], $this->EE->TMPL->related_data[$x[1]]);
-		}
-
-		$sql = substr($sql, 0, -1).')';
-		$query = $this->EE->db->query($sql);
-
-		if ($query->num_rows() == 0)
-			return;
-
-		// --------------------------------
-		//  Without this the Related Entries were inheriting the parameters of
-		//  the enclosing Channel Entries tag.  Sometime in the future we will
-		//  likely allow Related Entries to have their own parameters
-		// --------------------------------
-
-		$return_data = $this->return_data;
-
-		foreach ($templates as $temp)
-		{
-			foreach ($query->result_array() as $row)
-			{
-				if ($row['rel_id'] != $temp[0])
-					continue;
-
-				// --------------------------------------
-				//  If the data is emptied (cache cleared), then we
-				//  rebuild it with fresh data so processing can continue.
-				// --------------------------------------
-
-				if (trim($row['rel_data']) == '')
-				{
-					$rewrite = array(
-									 'type'			=> $row['rel_type'],
-									 'parent_id'	=> $row['rel_parent_id'],
-									 'child_id'		=> $row['rel_child_id'],
-									 'related_id'	=> $row['rel_id']
-								);
-
-					$this->EE->functions->compile_relationship($rewrite, FALSE);
-
-					$results = $this->EE->db->query("SELECT rel_data FROM exp_relationships WHERE rel_id = '".$row['rel_id']."'");
-					$row['rel_data'] = $results->row('rel_data') ;
-				}
-
-				//  Begin Processing
-
-				$this->initialize();
-
-				if ($reldata = @unserialize($row['rel_data']))
-				{
-					$this->EE->TMPL->var_single	= $temp[2]['var_single'];
-					$this->EE->TMPL->var_pair		= $temp[2]['var_pair'];
-					$this->EE->TMPL->var_cond		= $temp[2]['var_cond'];
-					$this->EE->TMPL->tagdata		= $temp[2]['tagdata'];
-
-					if ($row['rel_type'] == 'channel')
-					{
-						// Bug fix for when categories were not being inserted
-						// correctly for related channel entries.  Bummer.
-
-						if (count($reldata['categories'] == 0) && ! isset($reldata['cats_fixed']))
-						{
-							$fixdata = array(
-											'type'			=> $row['rel_type'],
-											'parent_id'		=> $row['rel_parent_id'],
-											'child_id'		=> $row['rel_child_id'],
-											'related_id'	=> $row['rel_id']
-										);
-
-							$this->EE->functions->compile_relationship($fixdata, FALSE);
-							$reldata['categories'] = $this->EE->functions->cat_array;
-							$reldata['category_fields'] = $this->EE->functions->catfields;
-						}
-
-						$this->query = $reldata['query'];
-						
-						if ($this->query->num_rows != 0)
-						{
-							$this->categories = array($this->query->row('entry_id')  => $reldata['categories']);
-
-							if (isset($reldata['category_fields']))
-							{
-								$this->catfields = array($this->query->row('entry_id') => $reldata['category_fields']);
-							}							
-						}
-
-						$this->parse_channel_entries();
-
-						$marker = LD."REL[".$row['rel_id']."][".$temp[2]['field_name']."]".$temp[1]."REL".RD;
-						$return_data = str_replace($marker, $this->return_data, $return_data);
-					}
-				}
-			}
-		}
-
-		$this->return_data = $return_data;
 	}
 
 	// ------------------------------------------------------------------------
@@ -488,88 +354,6 @@ class Channel {
 	  */
 	public function parse_reverse_related_entries()
 	{
-		$this->EE->db->select('rel_id, rel_parent_id, rel_child_id, rel_type, reverse_rel_data');
-		$this->EE->db->where_in('rel_child_id', array_keys($this->reverse_related_entries));
-		$this->EE->db->where('rel_type', 'channel');
-		$query = $this->EE->db->get('relationships');
-		
-		if ($query->num_rows() == 0)
-		{
-			// remove Reverse Related tags for these entries
-
-			foreach ($this->reverse_related_entries as $entry_id => $templates)
-			{
-				foreach($templates as $tkey => $template)
-				{
-					$this->return_data = str_replace(LD."REV_REL[".$this->EE->TMPL->reverse_related_data[$template]['marker']."][".$entry_id."]REV_REL".RD, $this->EE->TMPL->reverse_related_data[$template]['no_rev_content'], $this->return_data);
-				}
-			}
-
-			return;
-		}
-
-		//  Data Processing Time
-		$entry_data = array();
-
-		for ($i = 0, $total = count($query->result_array()); $i < $total; $i++)
-		{
-    		$row = array_shift($query->result_array);
-
-			//  If the data is emptied (cache cleared or first process), then we
-			//  rebuild it with fresh data so processing can continue.
-
-			if (trim($row['reverse_rel_data']) == '')
-			{
-				$rewrite = array(
-								 'type'			=> $row['rel_type'],
-								 'parent_id'	=> $row['rel_parent_id'],
-								 'child_id'		=> $row['rel_child_id'],
-								 'related_id'	=> $row['rel_id']
-							);
-
-				$this->EE->functions->compile_relationship($rewrite, FALSE, TRUE);
-
-				$this->EE->db->select('reverse_rel_data');
-				$this->EE->db->where('rel_parent_id', $row['rel_parent_id']);
-				$results = $this->EE->db->get('relationships');
-				$row['reverse_rel_data'] = $results->row('reverse_rel_data');
-			}
-
-			//  Unserialize the entries data, please
-
-			if ($revreldata = @unserialize($row['reverse_rel_data']))
-			{
-				$entry_data[$row['rel_child_id']][$row['rel_parent_id']] = $revreldata;
-			}
-		}
-		
-		//  Without this the Reverse Related Entries were inheriting the parameters of
-		//  the enclosing Channel Entries tag, which is not appropriate.
-
-		$return_data = $this->return_data;
-
-		foreach ($this->reverse_related_entries as $entry_id => $templates)
-		{
-			//  No Entries?  Remove Reverse Related Tags and Continue to Next Entry
-
-			if ( ! isset($entry_data[$entry_id]))
-			{
-				foreach($templates as $tkey => $template)
-				{
-					$return_data = str_replace(LD."REV_REL[".$this->EE->TMPL->reverse_related_data[$template]['marker']."][".$entry_id."]REV_REL".RD, $this->EE->TMPL->reverse_related_data[$template]['no_rev_content'], $return_data);
-				}
-
-				continue;
-			}
-
-			//  Process Our Reverse Related Templates
-
-			foreach($templates as $tkey => $template)
-			{
-				$i = 0;
-				$cats = array();
-
-				$params = $this->EE->TMPL->reverse_related_data[$template]['params'];
 
 				if ( ! is_array($params))
 				{
@@ -627,9 +411,9 @@ class Channel {
 				{
 					if (count($this->channels_array) == 0)
 					{
-						$this->EE->db->select('channel_id, channel_name');
-						$this->EE->db->where_in('site_id', $this->EE->TMPL->site_ids);
-						$results = $this->EE->db->get('channels');
+						ee()->db->select('channel_id, channel_name');
+						ee()->db->where_in('site_id', ee()->TMPL->site_ids);
+						$results = ee()->db->get('channels');
 
 						foreach($results->result_array() as $row)
 						{
@@ -742,9 +526,9 @@ class Channel {
 				// Check if the custom field to sort on is numeric, sort numericaly if it is
 				if (strncmp($order, 'field_id_', 9) === 0)
 				{
-					$this->EE->load->library('api');
-					$this->EE->api->instantiate('channel_fields');
-					$field_settings = $this->EE->api_channel_fields->get_settings(substr($order, 9));
+					ee()->load->library('api');
+					ee()->api->instantiate('channel_fields');
+					$field_settings = ee()->api_channel_fields->get_settings(substr($order, 9));
 					if (isset($field_settings['field_content_type']) && in_array($field_settings['field_content_type'], array('numeric', 'integer', 'decimal')))
 					{
 						$sort_flags = SORT_NUMERIC;
@@ -783,51 +567,6 @@ class Channel {
 				}
 				
 				$output_data[$entry_id] = array_slice($new, $offset, $limit);
-
-				if (count($output_data[$entry_id]) == 0)
-				{
-					$return_data = str_replace(LD."REV_REL[".$this->EE->TMPL->reverse_related_data[$template]['marker']."][".$entry_id."]REV_REL".RD, $this->EE->TMPL->reverse_related_data[$template]['no_rev_content'], $return_data);
-					continue;
-				}
-
-				//  Finally!  We get to process our parents
-
-				foreach($output_data[$entry_id] as $relating_data)
-				{
-					if ($i == 0)
-					{
-						$query = clone $relating_data['query'];
-					}
-					else
-					{
-						$query->result_array[] = $relating_data['query']->row_array();
-					}
-
-					$cats[$relating_data['query']->row('entry_id') ] = $relating_data['categories'];
-
-					++$i;
-				}
-
-				$query->num_rows = $i;
-
-				$this->initialize();
-
-				$this->EE->TMPL->var_single	= $this->EE->TMPL->reverse_related_data[$template]['var_single'];
-				$this->EE->TMPL->var_pair		= $this->EE->TMPL->reverse_related_data[$template]['var_pair'];
-				$this->EE->TMPL->var_cond		= $this->EE->TMPL->reverse_related_data[$template]['var_cond'];
-				$this->EE->TMPL->tagdata		= $this->EE->TMPL->reverse_related_data[$template]['tagdata'];
-
-				$this->query = $query;
-				$this->categories = $cats;
-				$this->parse_channel_entries();
-
-				$return_data = str_replace(	LD."REV_REL[".$this->EE->TMPL->reverse_related_data[$template]['marker']."][".$entry_id."]REV_REL".RD,
-											$this->return_data,
-											$return_data);
-			}
-		}
-		
-		$this->return_data = $return_data;
 	}
 
 	// ------------------------------------------------------------------------
@@ -837,12 +576,12 @@ class Channel {
 	  */
 	public function track_views()
 	{
-		if ($this->EE->config->item('enable_entry_view_tracking') == 'n')
+		if (ee()->config->item('enable_entry_view_tracking') == 'n')
 		{
 			return;
 		}
 		
-		if ( ! $this->EE->TMPL->fetch_param('track_views') OR $this->hit_tracking_id === FALSE)
+		if ( ! ee()->TMPL->fetch_param('track_views') OR $this->hit_tracking_id === FALSE)
 		{
 			return;
 		}
@@ -852,7 +591,7 @@ class Channel {
 			return;
 		}
 
-		foreach (explode('|', $this->EE->TMPL->fetch_param('track_views')) as $view)
+		foreach (explode('|', ee()->TMPL->fetch_param('track_views')) as $view)
 		{
 			if ( ! in_array(strtolower($view), array("one", "two", "three", "four")))
 			{
@@ -860,9 +599,9 @@ class Channel {
 			}
 
 			$sql = "UPDATE exp_channel_titles SET view_count_{$view} = (view_count_{$view} + 1) WHERE ";
-			$sql .= (is_numeric($this->hit_tracking_id)) ? "entry_id = {$this->hit_tracking_id}" : "url_title = '".$this->EE->db->escape_str($this->hit_tracking_id)."'";
+			$sql .= (is_numeric($this->hit_tracking_id)) ? "entry_id = {$this->hit_tracking_id}" : "url_title = '".ee()->db->escape_str($this->hit_tracking_id)."'";
 
-			$this->EE->db->query($sql);
+			ee()->db->query($sql);
 		}
 	}
 
@@ -873,34 +612,32 @@ class Channel {
 	  */
 	public function fetch_custom_channel_fields()
 	{
-		if (isset($this->EE->session->cache['channel']['custom_channel_fields']) && isset($this->EE->session->cache['channel']['date_fields'])
-			&& isset($this->EE->session->cache['channel']['relationship_fields']) && isset($this->EE->session->cache['channel']['zero_wing_fields'])
-			&& isset($this->EE->session->cache['channel']['pair_custom_fields']))
+		if (isset(ee()->session->cache['channel']['custom_channel_fields']) &&
+			isset(ee()->session->cache['channel']['date_fields']) &&
+			isset(ee()->session->cache['channel']['relationship_fields']) &&
+			isset(ee()->session->cache['channel']['pair_custom_fields']))
 		{
-			$this->cfields = $this->EE->session->cache['channel']['custom_channel_fields'];
-			$this->dfields = $this->EE->session->cache['channel']['date_fields'];
-			$this->rfields = $this->EE->session->cache['channel']['relationship_fields'];
-			$this->zwfields = $this->EE->session->cache['channel']['zero_wing_fields'];
-			$this->pfields = $this->EE->session->cache['channel']['pair_custom_fields'];
+			$this->cfields = ee()->session->cache['channel']['custom_channel_fields'];
+			$this->dfields = ee()->session->cache['channel']['date_fields'];
+			$this->rfields = ee()->session->cache['channel']['relationship_fields'];
+			$this->pfields = ee()->session->cache['channel']['pair_custom_fields'];
 			return;
 		}
 		
-		$this->EE->load->library('api');
-		$this->EE->api->instantiate('channel_fields');
+		ee()->load->library('api');
+		ee()->api->instantiate('channel_fields');
 
-		$fields = $this->EE->api_channel_fields->fetch_custom_channel_fields();
+		$fields = ee()->api_channel_fields->fetch_custom_channel_fields();
 
 		$this->cfields = $fields['custom_channel_fields'];
 		$this->dfields = $fields['date_fields'];
 		$this->rfields = $fields['relationship_fields'];
-		$this->zwfields = $fields['zero_wing_fields'];
 		$this->pfields = $fields['pair_custom_fields'];
 
-  		$this->EE->session->cache['channel']['custom_channel_fields']	= $this->cfields;
-		$this->EE->session->cache['channel']['date_fields']				= $this->dfields;
-		$this->EE->session->cache['channel']['relationship_fields']		= $this->rfields;
-		$this->EE->session->cache['channel']['zero_wing_fields']		= $this->zwfields;
-		$this->EE->session->cache['channel']['pair_custom_fields']		= $this->pfields;
+  		ee()->session->cache['channel']['custom_channel_fields']	= $this->cfields;
+		ee()->session->cache['channel']['date_fields']				= $this->dfields;
+		ee()->session->cache['channel']['relationship_fields']		= $this->rfields;
+		ee()->session->cache['channel']['pair_custom_fields']		= $this->pfields;
 	}
 
 	// ------------------------------------------------------------------------
@@ -910,8 +647,8 @@ class Channel {
 	  */
 	public function fetch_custom_member_fields()
 	{
-		$this->EE->db->select('m_field_id, m_field_name, m_field_fmt');
-		$query = $this->EE->db->get('member_fields');
+		ee()->db->select('m_field_id, m_field_name, m_field_fmt');
+		$query = ee()->db->get('member_fields');
 
 		$fields_present = FALSE;
 
@@ -919,7 +656,7 @@ class Channel {
 
 		foreach ($query->result_array() as $row)
 		{
-			if (strpos($this->EE->TMPL->tagdata, $row['m_field_name']) !== FALSE)
+			if (strpos(ee()->TMPL->tagdata, $row['m_field_name']) !== FALSE)
 			{
 				$fields_present = TRUE;
 			}
@@ -944,7 +681,7 @@ class Channel {
 	{
 		if ($this->enable['category_fields'] === TRUE)
 		{
-			$query = $this->EE->db->query("SELECT field_id, field_name FROM exp_category_fields WHERE site_id IN ('".implode("','", $this->EE->TMPL->site_ids)."')");
+			$query = ee()->db->query("SELECT field_id, field_name FROM exp_category_fields WHERE site_id IN ('".implode("','", ee()->TMPL->site_ids)."')");
 
 			if ($query->num_rows() > 0)
 			{
@@ -984,7 +721,7 @@ class Channel {
 
 		$sql .= " ORDER BY c.group_id, c.parent_id, c.cat_order";
 
-		$query = $this->EE->db->query($sql);
+		$query = ee()->db->query($sql);
 
 		if ($query->num_rows() == 0)
 		{
@@ -1065,7 +802,7 @@ class Channel {
 		// Trivial case, we don't have special IS_EMPTY handling.
 		if(strpos($terms, 'IS_EMPTY') === FALSE) 
 		{
-			return substr($this->EE->functions->sql_andor_string($terms, 'wd.field_id_'.$this->cfields[$site_id][$field_name]), 3).' ';
+			return substr(ee()->functions->sql_andor_string($terms, 'wd.field_id_'.$this->cfields[$site_id][$field_name]), 3).' ';
 		}
 
 		// Did this because I don't like repeatedly checking
@@ -1096,8 +833,8 @@ class Channel {
 		{
 			// [cont:1]...it makes this a little hacky.  Gonna leave it for the moment,
 			// but may come back to it.
-			$add_search = $this->EE->functions->sql_andor_string(($not ? 'not ' . $terms : $terms), 'wd.field_id_'.$this->cfields[$site_id][$field_name]);
-			// remove the first AND output by $this->EE->functions->sql_andor_string() so we can parenthesize this clause
+			$add_search = ee()->functions->sql_andor_string(($not ? 'not ' . $terms : $terms), 'wd.field_id_'.$this->cfields[$site_id][$field_name]);
+			// remove the first AND output by ee()->functions->sql_andor_string() so we can parenthesize this clause
 			$add_search = '(wd.site_id=' . $site_id . ' AND ' . substr($add_search, 3) . ')';
 											
 			$conj = ($add_search != '' && ! $not) ? 'OR' : 'AND';
@@ -1160,13 +897,13 @@ class Channel {
 
 				$search_sql .= ' (wd.site_id=' . $site_id 
 					. ' AND wd.field_id_' . $this->cfields[$site_id][$field_name] . ' ' . $not 
-					. ' REGEXP "' . $this->EE->db->escape_str($term).'") ';
+					. ' REGEXP "' . ee()->db->escape_str($term).'") ';
 			}
 			else
 			{	
 				$search_sql .= ' (wd.site_id=' . $site_id 
 					. ' AND wd.field_id_' . $this->cfields[$site_id][$field_name] . ' '
-					. $not . ' LIKE "%' . $this->EE->db->escape_like_str($term) . '%") ';
+					. $not . ' LIKE "%' . ee()->db->escape_like_str($term) . '%") ';
 			}
 		}
 
@@ -1206,7 +943,7 @@ class Channel {
 			// Log empty terms to notify the user. 
 			if(empty($search_terms) || $search_terms === '=')
 			{
-				$this->EE->TMPL->log_item('WARNING: Field search parameter for field "' . $field_name . '" was empty.  If you wish to search for an empty field, use IS_EMPTY.');
+				ee()->TMPL->log_item('WARNING: Field search parameter for field "' . $field_name . '" was empty.  If you wish to search for an empty field, use IS_EMPTY.');
 				continue;
 			}
 
@@ -1221,7 +958,7 @@ class Channel {
 				continue;
 			}
 			
-			$sites = ($site_ids ? $site_ids : array($this->EE->config->item('site_id'))); 
+			$sites = ($site_ids ? $site_ids : array(ee()->config->item('site_id'))); 
 			foreach ($sites as $site_name => $site_id) 
 			{
 				// If fields_sql isn't empty then this isn't a first
@@ -1285,7 +1022,7 @@ class Channel {
 
 		// If so, we'll override all dynamically set variables
 
-		if ($this->EE->TMPL->fetch_param('dynamic') == 'no')
+		if (ee()->TMPL->fetch_param('dynamic') == 'no')
 		{
 			$dynamic = FALSE;
 		}
@@ -1293,18 +1030,18 @@ class Channel {
 		/**------
 		/**  Do we allow dynamic POST variables to set parameters?
 		/**------*/
-		if ($this->EE->TMPL->fetch_param('dynamic_parameters') !== FALSE AND isset($_POST) AND count($_POST) > 0)
+		if (ee()->TMPL->fetch_param('dynamic_parameters') !== FALSE AND isset($_POST) AND count($_POST) > 0)
 		{
-			foreach (explode('|', $this->EE->TMPL->fetch_param('dynamic_parameters')) as $var)
+			foreach (explode('|', ee()->TMPL->fetch_param('dynamic_parameters')) as $var)
 			{
 				if (isset($_POST[$var]) AND in_array($var, $this->_dynamic_parameters))
 				{
-					$this->EE->TMPL->tagparams[$var] = $_POST[$var];
+					ee()->TMPL->tagparams[$var] = $_POST[$var];
 				}
 
 				if (isset($_POST[$var]) && strncmp($var, 'search:', 7) == 0)
 				{
-					$this->EE->TMPL->search_fields[substr($var, 7)] = $_POST[$var];
+					ee()->TMPL->search_fields[substr($var, 7)] = $_POST[$var];
 				}
 			}
 		}
@@ -1313,18 +1050,18 @@ class Channel {
 		/**  Parse the URL query string
 		/**------*/
 
-		$this->uristr = $this->EE->uri->uri_string;
+		$this->uristr = ee()->uri->uri_string;
 
 		if ($qstring == '')
 		{
 			$qstring = $this->query_string;
 		}
 		
-		$this->pagination->basepath = $this->EE->functions->create_url($this->uristr);
+		$this->pagination->basepath = ee()->functions->create_url($this->uristr);
 
 		if ($qstring == '')
 		{
-			if ($this->EE->TMPL->fetch_param('require_entry') == 'yes')
+			if (ee()->TMPL->fetch_param('require_entry') == 'yes')
 			{
 				return '';
 			}
@@ -1389,7 +1126,7 @@ class Channel {
 				/**  Parse page number
 				/** --------------------------------------*/
 
-				if (($dynamic OR $this->EE->TMPL->fetch_param('paginate')) && preg_match("#^P(\d+)|/P(\d+)#", $qstring, $match)) 
+				if (($dynamic OR ee()->TMPL->fetch_param('paginate')) && preg_match("#^P(\d+)|/P(\d+)#", $qstring, $match)) 
 				{
 					$this->pagination->offset = (isset($match[2])) ? $match[2] : $match[1];
 
@@ -1408,19 +1145,19 @@ class Channel {
 
 				// Text version of the category
 
-				if ($qstring != '' AND $this->reserved_cat_segment != '' AND in_array($this->reserved_cat_segment, explode("/", $qstring)) AND $dynamic AND $this->EE->TMPL->fetch_param('channel'))
+				if ($qstring != '' AND $this->reserved_cat_segment != '' AND in_array($this->reserved_cat_segment, explode("/", $qstring)) AND $dynamic AND ee()->TMPL->fetch_param('channel'))
 				{
 					$qstring = preg_replace("/(.*?)\/".preg_quote($this->reserved_cat_segment)."\//i", '', '/'.$qstring);
 
-					$sql = "SELECT DISTINCT cat_group FROM exp_channels WHERE site_id IN ('".implode("','", $this->EE->TMPL->site_ids)."') AND ";
+					$sql = "SELECT DISTINCT cat_group FROM exp_channels WHERE site_id IN ('".implode("','", ee()->TMPL->site_ids)."') AND ";
 
-					$xsql = $this->EE->functions->sql_andor_string($this->EE->TMPL->fetch_param('channel'), 'channel_name');
+					$xsql = ee()->functions->sql_andor_string(ee()->TMPL->fetch_param('channel'), 'channel_name');
 
 					if (substr($xsql, 0, 3) == 'AND') $xsql = substr($xsql, 3);
 
 					$sql .= ' '.$xsql;
 
-					$query = $this->EE->db->query($sql);
+					$query = ee()->db->query($sql);
 
 					if ($query->num_rows() > 0)
 					{
@@ -1429,7 +1166,7 @@ class Channel {
 
 						foreach($query->result_array() as $row)
 						{
-							if ($this->EE->TMPL->fetch_param('relaxed_categories') == 'yes')
+							if (ee()->TMPL->fetch_param('relaxed_categories') == 'yes')
 							{
 								$valid_cats = array_merge($valid_cats, explode('|', $row['cat_group']));
 							}
@@ -1466,8 +1203,8 @@ class Channel {
 						$cut_qstring = array_shift($arr);
 						unset($arr);
 
-						$result = $this->EE->db->query("SELECT cat_id FROM exp_categories
-							WHERE cat_url_title='".$this->EE->db->escape_str($cut_qstring)."'
+						$result = ee()->db->query("SELECT cat_id FROM exp_categories
+							WHERE cat_url_title='".ee()->db->escape_str($cut_qstring)."'
 							AND group_id IN ('".implode("','", $valid_cats)."')");
 
 						if ($result->num_rows() == 1)
@@ -1478,8 +1215,8 @@ class Channel {
 						else
 						{
 							// give it one more try using the whole $qstring
-							$result = $this->EE->db->query("SELECT cat_id FROM exp_categories
-								WHERE cat_url_title='".$this->EE->db->escape_str($qstring)."'
+							$result = ee()->db->query("SELECT cat_id FROM exp_categories
+								WHERE cat_url_title='".ee()->db->escape_str($qstring)."'
 								AND group_id IN ('".implode("','", $valid_cats)."')");
 
 							if ($result->num_rows() == 1)
@@ -1494,7 +1231,7 @@ class Channel {
 				// If we got here, category may be numeric
 				if (empty($cat_id))
 				{
-					$this->EE->load->helper('segment');
+					ee()->load->helper('segment');
 					$cat_id = parse_category($this->query_string);
 				}
 				
@@ -1527,7 +1264,7 @@ class Channel {
 				/** --------------------------------------
 				/**  Parse URL title
 				/** --------------------------------------*/
-				if (($cat_id == '' AND $year == '') OR $this->EE->TMPL->fetch_param('require_entry') == 'yes')
+				if (($cat_id == '' AND $year == '') OR ee()->TMPL->fetch_param('require_entry') == 'yes')
 				{
 					if (strpos($qstring, '/') !== FALSE)
 					{
@@ -1543,20 +1280,20 @@ class Channel {
 
 						if ($entry_id != '')
 						{
-							$sql .= " AND exp_channel_titles.entry_id = '".$this->EE->db->escape_str($entry_id)."'";							
+							$sql .= " AND exp_channel_titles.entry_id = '".ee()->db->escape_str($entry_id)."'";							
 						}
 						else
 						{
-							$sql .= " AND exp_channel_titles.url_title = '".$this->EE->db->escape_str($qstring)."'";
+							$sql .= " AND exp_channel_titles.url_title = '".ee()->db->escape_str($qstring)."'";
 						}
 
-						$sql .= " AND exp_channels.site_id IN ('".implode("','", $this->EE->TMPL->site_ids)."') ";
+						$sql .= " AND exp_channels.site_id IN ('".implode("','", ee()->TMPL->site_ids)."') ";
 
-						$query = $this->EE->db->query($sql);
+						$query = ee()->db->query($sql);
 
 						if ($query->row('count')  == 0)
 						{
-							if ($this->EE->TMPL->fetch_param('require_entry') == 'yes')
+							if (ee()->TMPL->fetch_param('require_entry') == 'yes')
 							{
 								return '';
 							}
@@ -1580,16 +1317,16 @@ class Channel {
 		// If the "entry ID" was hard-coded, use it instead of
 		// using the dynamically set one above
 
-		if ($this->EE->TMPL->fetch_param('entry_id'))
+		if (ee()->TMPL->fetch_param('entry_id'))
 		{
-			$entry_id = $this->EE->TMPL->fetch_param('entry_id');
+			$entry_id = ee()->TMPL->fetch_param('entry_id');
 		}
 
 		/**------
 		/**  Only Entries with Pages
 		/**------*/
 
-		if ($this->EE->TMPL->fetch_param('show_pages') !== FALSE && in_array($this->EE->TMPL->fetch_param('show_pages'), array('only', 'no')) && ($pages = $this->EE->config->item('site_pages')) !== FALSE)
+		if (ee()->TMPL->fetch_param('show_pages') !== FALSE && in_array(ee()->TMPL->fetch_param('show_pages'), array('only', 'no')) && ($pages = ee()->config->item('site_pages')) !== FALSE)
 		{
 			$pages_uris = array();
 			
@@ -1598,10 +1335,10 @@ class Channel {
 				$pages_uris += $data['uris'];
 			}
 			
-			if (count($pages_uris) > 0 OR $this->EE->TMPL->fetch_param('show_pages') == 'only')
+			if (count($pages_uris) > 0 OR ee()->TMPL->fetch_param('show_pages') == 'only')
 			{
 				// consider entry_id
-				if ($this->EE->TMPL->fetch_param('entry_id') !== FALSE)
+				if (ee()->TMPL->fetch_param('entry_id') !== FALSE)
 				{
 					$not = FALSE;
 
@@ -1613,7 +1350,7 @@ class Channel {
 
 					$ids = explode('|', $entry_id);
 
-					if ($this->EE->TMPL->fetch_param('show_pages') == 'only')
+					if (ee()->TMPL->fetch_param('show_pages') == 'only')
 					{
 						if ($not === TRUE)
 						{
@@ -1638,11 +1375,11 @@ class Channel {
 				}
 				else
 				{
-					$entry_id = (($this->EE->TMPL->fetch_param('show_pages') == 'no') ? 'not ' : '').implode('|', array_flip($pages_uris));
+					$entry_id = ((ee()->TMPL->fetch_param('show_pages') == 'no') ? 'not ' : '').implode('|', array_flip($pages_uris));
 				}
 			
 				//  No pages and show_pages only
-				if ($entry_id == '' && $this->EE->TMPL->fetch_param('show_pages') == 'only')
+				if ($entry_id == '' && ee()->TMPL->fetch_param('show_pages') == 'only')
 				{
 					$this->sql = '';
 					return;
@@ -1654,9 +1391,9 @@ class Channel {
 		/**  Assing the order variables
 		/**------*/
 
-		$order  = $this->EE->TMPL->fetch_param('orderby');
-		$sort	= $this->EE->TMPL->fetch_param('sort');
-		$sticky = $this->EE->TMPL->fetch_param('sticky');
+		$order  = ee()->TMPL->fetch_param('orderby');
+		$sort	= ee()->TMPL->fetch_param('sort');
+		$sticky = ee()->TMPL->fetch_param('sticky');
 
 		/** -------------------------------------
 		/**  Multiple Orders and Sorts...
@@ -1708,9 +1445,9 @@ class Channel {
 					{
 						$order_parts = explode(':', $order, 2);
 
-						if (isset($this->EE->TMPL->site_ids[$order_parts[0]]) && isset($this->cfields[$this->EE->TMPL->site_ids[$order_parts[0]]][$order_parts[1]]))
+						if (isset(ee()->TMPL->site_ids[$order_parts[0]]) && isset($this->cfields[ee()->TMPL->site_ids[$order_parts[0]]][$order_parts[1]]))
 						{
-							$corder[$key] = $this->cfields[$this->EE->TMPL->site_ids[$order_parts[0]]][$order_parts[1]];
+							$corder[$key] = $this->cfields[ee()->TMPL->site_ids[$order_parts[0]]][$order_parts[1]];
 							$order_array[$key] = 'custom_field';
 							$set = 'y';
 						}
@@ -1726,7 +1463,7 @@ class Channel {
 						foreach($this->cfields as $site_id => $cfields)
 						{
 							// Only those sites specified
-							if ( ! in_array($site_id, $this->EE->TMPL->site_ids))
+							if ( ! in_array($site_id, ee()->TMPL->site_ids))
 							{
 								continue;
 							}
@@ -1769,7 +1506,7 @@ class Channel {
 		}
 
 		// fixed entry id ordering
-		if (($fixed_order = $this->EE->TMPL->fetch_param('fixed_order')) === FALSE OR preg_match('/[^0-9\|]/', $fixed_order))
+		if (($fixed_order = ee()->TMPL->fetch_param('fixed_order')) === FALSE OR preg_match('/[^0-9\|]/', $fixed_order))
 		{
 			$fixed_order = FALSE;
 		}
@@ -1797,7 +1534,7 @@ class Channel {
 
 		$sql_a = "SELECT ";
 
-		$sql_b = ($this->EE->TMPL->fetch_param('category') OR $this->EE->TMPL->fetch_param('category_group') OR $cat_id != '' OR $order_array[0] == 'random') ? "DISTINCT(t.entry_id) " : "t.entry_id ";
+		$sql_b = (ee()->TMPL->fetch_param('category') OR ee()->TMPL->fetch_param('category_group') OR $cat_id != '' OR $order_array[0] == 'random') ? "DISTINCT(t.entry_id) " : "t.entry_id ";
 
 		if ($this->pagination->field_pagination == TRUE)
 		{
@@ -1817,7 +1554,7 @@ class Channel {
 		{
 			$sql .= "LEFT JOIN exp_channel_data AS wd ON t.entry_id = wd.entry_id ";
 		}
-		elseif ( ! empty($this->EE->TMPL->search_fields))
+		elseif ( ! empty(ee()->TMPL->search_fields))
 		{
 			$sql .= "LEFT JOIN exp_channel_data AS wd ON wd.entry_id = t.entry_id ";
 		}
@@ -1825,14 +1562,14 @@ class Channel {
 		$sql .= "LEFT JOIN exp_members AS m ON m.member_id = t.author_id ";
 
 
-		if ($this->EE->TMPL->fetch_param('category') OR $this->EE->TMPL->fetch_param('category_group') OR ($cat_id != '' && $dynamic == TRUE))
+		if (ee()->TMPL->fetch_param('category') OR ee()->TMPL->fetch_param('category_group') OR ($cat_id != '' && $dynamic == TRUE))
 		{
 			/* --------------------------------
 			/*  We use LEFT JOIN when there is a 'not' so that we get
 			/*  entries that are not assigned to a category.
 			/* --------------------------------*/
 
-			if ((substr($this->EE->TMPL->fetch_param('category_group'), 0, 3) == 'not' OR substr($this->EE->TMPL->fetch_param('category'), 0, 3) == 'not') && $this->EE->TMPL->fetch_param('uncategorized_entries') !== 'no')
+			if ((substr(ee()->TMPL->fetch_param('category_group'), 0, 3) == 'not' OR substr(ee()->TMPL->fetch_param('category'), 0, 3) == 'not') && ee()->TMPL->fetch_param('uncategorized_entries') !== 'no')
 			{
 				$sql .= "LEFT JOIN exp_category_posts ON t.entry_id = exp_category_posts.entry_id
 						 LEFT JOIN exp_categories ON exp_category_posts.cat_id = exp_categories.cat_id ";
@@ -1844,20 +1581,20 @@ class Channel {
 			}
 		}
 
-		$sql .= "WHERE t.entry_id !='' AND t.site_id IN ('".implode("','", $this->EE->TMPL->site_ids)."') ";
+		$sql .= "WHERE t.entry_id !='' AND t.site_id IN ('".implode("','", ee()->TMPL->site_ids)."') ";
 
 		/**------
 		/**  We only select entries that have not expired
 		/**------*/
 		
-		$timestamp = ($this->EE->TMPL->cache_timestamp != '') ? $this->EE->TMPL->cache_timestamp : $this->EE->localize->now;
+		$timestamp = (ee()->TMPL->cache_timestamp != '') ? ee()->TMPL->cache_timestamp : ee()->localize->now;
 
-		if ($this->EE->TMPL->fetch_param('show_future_entries') != 'yes')
+		if (ee()->TMPL->fetch_param('show_future_entries') != 'yes')
 		{
 			$sql .= " AND t.entry_date < ".$timestamp." ";
 		}
 
-		if ($this->EE->TMPL->fetch_param('show_expired') != 'yes')
+		if (ee()->TMPL->fetch_param('show_expired') != 'yes')
 		{
 			$sql .= " AND (t.expiration_date = 0 OR t.expiration_date > ".$timestamp.") ";
 		}
@@ -1868,28 +1605,28 @@ class Channel {
 
 		if ($entry_id != '')
 		{
-			$sql .= $this->EE->functions->sql_andor_string($entry_id, 't.entry_id').' ';
+			$sql .= ee()->functions->sql_andor_string($entry_id, 't.entry_id').' ';
 		}
 
 		/**------
 		/**  Limit query by post url_title for individual entries
 		/**------*/
 
-		if ($url_title = $this->EE->TMPL->fetch_param('url_title'))
+		if ($url_title = ee()->TMPL->fetch_param('url_title'))
 		{
-			$sql .= $this->EE->functions->sql_andor_string($url_title, 't.url_title').' ';
+			$sql .= ee()->functions->sql_andor_string($url_title, 't.url_title').' ';
 		}
 
 		/**------
 		/**  Limit query by entry_id range
 		/**------*/
 
-		if ($entry_id_from = $this->EE->TMPL->fetch_param('entry_id_from'))
+		if ($entry_id_from = ee()->TMPL->fetch_param('entry_id_from'))
 		{
 			$sql .= "AND t.entry_id >= '$entry_id_from' ";
 		}
 
-		if ($entry_id_to = $this->EE->TMPL->fetch_param('entry_id_to'))
+		if ($entry_id_to = ee()->TMPL->fetch_param('entry_id_to'))
 		{
 			$sql .= "AND t.entry_id <= '$entry_id_to' ";
 		}
@@ -1897,7 +1634,7 @@ class Channel {
 		/**------
 		/**  Exclude an individual entry
 		/**------*/
-		if ($not_entry_id = $this->EE->TMPL->fetch_param('not_entry_id'))
+		if ($not_entry_id = ee()->TMPL->fetch_param('not_entry_id'))
 		{
 			$sql .= ( ! is_numeric($not_entry_id))
 					? "AND t.url_title != '{$not_entry_id}' "
@@ -1908,11 +1645,11 @@ class Channel {
 		/**  Limit to/exclude specific channels
 		/**------*/
 
-		if ($channel = $this->EE->TMPL->fetch_param('channel'))
+		if ($channel = ee()->TMPL->fetch_param('channel'))
 		{
 			$xql = "SELECT channel_id FROM exp_channels WHERE ";
 
-			$str = $this->EE->functions->sql_andor_string($channel, 'channel_name');
+			$str = ee()->functions->sql_andor_string($channel, 'channel_name');
 
 			if (substr($str, 0, 3) == 'AND')
 			{
@@ -1921,7 +1658,7 @@ class Channel {
 
 			$xql .= $str;
 
-			$query = $this->EE->db->query($xql);
+			$query = ee()->db->query($xql);
 
 			if ($query->num_rows() == 0)
 			{
@@ -1952,30 +1689,30 @@ class Channel {
 		/**------------
 		/**  Limit query by date range given in tag parameters
 		/**------------*/
-		if ($this->EE->TMPL->fetch_param('start_on'))
+		if (ee()->TMPL->fetch_param('start_on'))
 		{
-			$sql .= "AND t.entry_date >= '".$this->EE->localize->string_to_timestamp($this->EE->TMPL->fetch_param('start_on'))."' ";			
+			$sql .= "AND t.entry_date >= '".ee()->localize->string_to_timestamp(ee()->TMPL->fetch_param('start_on'))."' ";			
 		}
 
-		if ($this->EE->TMPL->fetch_param('stop_before'))
+		if (ee()->TMPL->fetch_param('stop_before'))
 		{
-			$sql .= "AND t.entry_date < '".$this->EE->localize->string_to_timestamp($this->EE->TMPL->fetch_param('stop_before'))."' ";	
+			$sql .= "AND t.entry_date < '".ee()->localize->string_to_timestamp(ee()->TMPL->fetch_param('stop_before'))."' ";	
 		}
 
 		/**-------------
 		/**  Limit query by date contained in tag parameters
 		/**-------------*/
 
-		$this->EE->load->helper('date');
+		ee()->load->helper('date');
 		
-		if ($this->EE->TMPL->fetch_param('year') OR $this->EE->TMPL->fetch_param('month') OR $this->EE->TMPL->fetch_param('day'))
+		if (ee()->TMPL->fetch_param('year') OR ee()->TMPL->fetch_param('month') OR ee()->TMPL->fetch_param('day'))
 		{
-			$year	= ( ! is_numeric($this->EE->TMPL->fetch_param('year'))) 	? date('Y') : $this->EE->TMPL->fetch_param('year');
-			$smonth	= ( ! is_numeric($this->EE->TMPL->fetch_param('month')))	? '01' : $this->EE->TMPL->fetch_param('month');
-			$emonth	= ( ! is_numeric($this->EE->TMPL->fetch_param('month')))	? '12':  $this->EE->TMPL->fetch_param('month');
-			$day	= ( ! is_numeric($this->EE->TMPL->fetch_param('day')))		? '' : $this->EE->TMPL->fetch_param('day');
+			$year	= ( ! is_numeric(ee()->TMPL->fetch_param('year'))) 	? date('Y') : ee()->TMPL->fetch_param('year');
+			$smonth	= ( ! is_numeric(ee()->TMPL->fetch_param('month')))	? '01' : ee()->TMPL->fetch_param('month');
+			$emonth	= ( ! is_numeric(ee()->TMPL->fetch_param('month')))	? '12':  ee()->TMPL->fetch_param('month');
+			$day	= ( ! is_numeric(ee()->TMPL->fetch_param('day')))		? '' : ee()->TMPL->fetch_param('day');
 
-			if ($day != '' AND ! is_numeric($this->EE->TMPL->fetch_param('month')))
+			if ($day != '' AND ! is_numeric(ee()->TMPL->fetch_param('month')))
 			{
 				$smonth = date('m');
 				$emonth = date('m');
@@ -2026,16 +1763,16 @@ class Channel {
 					$eday = $day;
 				}
 
-				$stime = $this->EE->localize->string_to_timestamp($year.'-'.$month.'-'.$sday.' 00:00:00');
-				$etime = $this->EE->localize->string_to_timestamp($year.'-'.$month.'-'.$eday.' 23:59:59');
+				$stime = ee()->localize->string_to_timestamp($year.'-'.$month.'-'.$sday.' 00:00:00');
+				$etime = ee()->localize->string_to_timestamp($year.'-'.$month.'-'.$eday.' 23:59:59');
 
 				$sql .= " AND t.entry_date >= ".$stime." AND t.entry_date <= ".$etime." ";
 			}
 			else
 			{
-				$this->display_by = $this->EE->TMPL->fetch_param('display_by');
+				$this->display_by = ee()->TMPL->fetch_param('display_by');
 
-				$lim = ( ! is_numeric($this->EE->TMPL->fetch_param('limit'))) ? '1' : $this->EE->TMPL->fetch_param('limit');
+				$lim = ( ! is_numeric(ee()->TMPL->fetch_param('limit'))) ? '1' : ee()->TMPL->fetch_param('limit');
 
 				/**---
 				/**  If display_by = "month"
@@ -2051,12 +1788,12 @@ class Channel {
 					/**  Add status declaration
 					/**------*/
 
-					if ($status = $this->EE->TMPL->fetch_param('status'))
+					if ($status = ee()->TMPL->fetch_param('status'))
 					{
 						$status = str_replace('Open',	'open',	$status);
 						$status = str_replace('Closed', 'closed', $status);
 
-						$sstr = $this->EE->functions->sql_andor_string($status, 't.status');
+						$sstr = ee()->functions->sql_andor_string($status, 't.status');
 
 						if (stristr($sstr, "'closed'") === FALSE)
 						{
@@ -2070,7 +1807,7 @@ class Channel {
 						$dql .= "AND t.status = 'open' ";
 					}
 
-					$query = $this->EE->db->query($dql);
+					$query = ee()->db->query($dql);
 
 					$distinct = array();
 
@@ -2125,12 +1862,12 @@ class Channel {
 					/**  Add status declaration
 					/**------*/
 
-					if ($status = $this->EE->TMPL->fetch_param('status'))
+					if ($status = ee()->TMPL->fetch_param('status'))
 					{
 						$status = str_replace('Open',	'open',	$status);
 						$status = str_replace('Closed', 'closed', $status);
 
-						$sstr = $this->EE->functions->sql_andor_string($status, 't.status');
+						$sstr = ee()->functions->sql_andor_string($status, 't.status');
 
 						if (stristr($sstr, "'closed'") === FALSE)
 						{
@@ -2144,7 +1881,7 @@ class Channel {
 						$dql .= "AND t.status = 'open' ";
 					}
 
-					$query = $this->EE->db->query($dql);
+					$query = ee()->db->query($dql);
 
 					$distinct = array();
 
@@ -2197,9 +1934,9 @@ class Channel {
 					/*  ---------------------------------*/
 
 					$timezones = timezones();
-					$loc_offset = $timezones[$this->EE->config->item('server_timezone')] * 3600;
+					$loc_offset = $timezones[ee()->config->item('server_timezone')] * 3600;
 
-					if ($this->EE->TMPL->fetch_param('start_day') === 'Monday')
+					if (ee()->TMPL->fetch_param('start_day') === 'Monday')
 					{
 						$yearweek = "DATE_FORMAT(FROM_UNIXTIME(entry_date + {$loc_offset}), '%x%v') AS yearweek ";
 						$dql = 'SELECT '.$yearweek.$sql;
@@ -2214,12 +1951,12 @@ class Channel {
 					/**  Add status declaration
 					/**------*/
 
-					if ($status = $this->EE->TMPL->fetch_param('status'))
+					if ($status = ee()->TMPL->fetch_param('status'))
 					{
 						$status = str_replace('Open',	'open',	$status);
 						$status = str_replace('Closed', 'closed', $status);
 
-						$sstr = $this->EE->functions->sql_andor_string($status, 't.status');
+						$sstr = ee()->functions->sql_andor_string($status, 't.status');
 
 						if (stristr($sstr, "'closed'") === FALSE)
 						{
@@ -2233,7 +1970,7 @@ class Channel {
 						$dql .= "AND t.status = 'open' ";
 					}
 
-					$query = $this->EE->db->query($dql);
+					$query = ee()->db->query($dql);
 
 					$distinct = array();
 
@@ -2244,7 +1981,7 @@ class Channel {
 						/*	oldest to newest in the week, which is how you would expect.
 						/*  ---------------------------------*/
 
-						if ($this->EE->TMPL->fetch_param('sort') === FALSE)
+						if (ee()->TMPL->fetch_param('sort') === FALSE)
 						{
 							$sort_array[0] = 'asc';
 						}
@@ -2259,7 +1996,7 @@ class Channel {
 
 						/* Old code, did nothing
 						*
-						if ($this->EE->TMPL->fetch_param('week_sort') == 'desc')
+						if (ee()->TMPL->fetch_param('week_sort') == 'desc')
 						{
 							$distinct = array_reverse($distinct);
 						}
@@ -2274,15 +2011,15 @@ class Channel {
 						/*	 all pagination correctly set and ready to roll, if used.
 						/*  ---------------------------------*/
 
-						if ($this->EE->TMPL->fetch_param('show_current_week') === 'yes' && $this->pagination->offset == '')
+						if (ee()->TMPL->fetch_param('show_current_week') === 'yes' && $this->pagination->offset == '')
 						{
-							if ($this->EE->TMPL->fetch_param('start_day') === 'Monday')
+							if (ee()->TMPL->fetch_param('start_day') === 'Monday')
 							{
-								$query = $this->EE->db->query("SELECT DATE_FORMAT(CURDATE(), '%x%v') AS thisWeek");
+								$query = ee()->db->query("SELECT DATE_FORMAT(CURDATE(), '%x%v') AS thisWeek");
 							}
 							else
 							{
-								$query = $this->EE->db->query("SELECT DATE_FORMAT(CURDATE(), '%X%V') AS thisWeek");
+								$query = ee()->db->query("SELECT DATE_FORMAT(CURDATE(), '%X%V') AS thisWeek");
 							}
 
 							foreach($distinct as $key => $week)
@@ -2308,9 +2045,9 @@ class Channel {
 
 							foreach ($distinct as $val)
 							{
-								$sql_offset = $timezones[$this->EE->config->item('server_timezone')] * 3600;
+								$sql_offset = $timezones[ee()->config->item('server_timezone')] * 3600;
 
-								if ($this->EE->TMPL->fetch_param('start_day') === 'Monday')
+								if (ee()->TMPL->fetch_param('start_day') === 'Monday')
 								{
 									$sql .= " DATE_FORMAT(FROM_UNIXTIME(entry_date + {$sql_offset}), '%x%v') = '".$val."' OR";
 								}
@@ -2334,7 +2071,7 @@ class Channel {
 
 		if ($qtitle != '' AND $dynamic)
 		{
-			$sql .= "AND t.url_title = '".$this->EE->db->escape_str($qtitle)."' ";
+			$sql .= "AND t.url_title = '".ee()->db->escape_str($qtitle)."' ";
 
 			// We use this with hit tracking....
 
@@ -2352,23 +2089,23 @@ class Channel {
 		/**  Limit query by category
 		/**------*/
 
-		if ($this->EE->TMPL->fetch_param('category'))
+		if (ee()->TMPL->fetch_param('category'))
 		{
-			if (stristr($this->EE->TMPL->fetch_param('category'), '&'))
+			if (stristr(ee()->TMPL->fetch_param('category'), '&'))
 			{
 				/** --------------------------------------
 				/**  First, we find all entries with these categories
 				/** --------------------------------------*/
 
-				$for_sql = (substr($this->EE->TMPL->fetch_param('category'), 0, 3) == 'not') ? trim(substr($this->EE->TMPL->fetch_param('category'), 3)) : $this->EE->TMPL->fetch_param('category');
+				$for_sql = (substr(ee()->TMPL->fetch_param('category'), 0, 3) == 'not') ? trim(substr(ee()->TMPL->fetch_param('category'), 3)) : ee()->TMPL->fetch_param('category');
 
 				$csql = "SELECT exp_category_posts.entry_id, exp_category_posts.cat_id ".
 						$sql.
-						$this->EE->functions->sql_andor_string(str_replace('&', '|', $for_sql), 'exp_categories.cat_id');
+						ee()->functions->sql_andor_string(str_replace('&', '|', $for_sql), 'exp_categories.cat_id');
 
 				//exit($csql);
 
-				$results = $this->EE->db->query($csql);
+				$results = ee()->db->query($csql);
 
 				if ($results->num_rows() == 0)
 				{
@@ -2376,7 +2113,7 @@ class Channel {
 				}
 
 				$type = 'IN';
-				$categories	 = explode('&', $this->EE->TMPL->fetch_param('category'));
+				$categories	 = explode('&', ee()->TMPL->fetch_param('category'));
 				$entry_array = array();
 
 				if (substr($categories[0], 0, 3) == 'not')
@@ -2407,34 +2144,34 @@ class Channel {
 			}
 			else
 			{
-				if (substr($this->EE->TMPL->fetch_param('category'), 0, 3) == 'not' && $this->EE->TMPL->fetch_param('uncategorized_entries') !== 'no')
+				if (substr(ee()->TMPL->fetch_param('category'), 0, 3) == 'not' && ee()->TMPL->fetch_param('uncategorized_entries') !== 'no')
 				{
-					$sql .= $this->EE->functions->sql_andor_string($this->EE->TMPL->fetch_param('category'), 'exp_categories.cat_id', '', TRUE)." ";
+					$sql .= ee()->functions->sql_andor_string(ee()->TMPL->fetch_param('category'), 'exp_categories.cat_id', '', TRUE)." ";
 				}
 				else
 				{
-					$sql .= $this->EE->functions->sql_andor_string($this->EE->TMPL->fetch_param('category'), 'exp_categories.cat_id')." ";
+					$sql .= ee()->functions->sql_andor_string(ee()->TMPL->fetch_param('category'), 'exp_categories.cat_id')." ";
 				}
 			}
 		}
 
-		if ($this->EE->TMPL->fetch_param('category_group'))
+		if (ee()->TMPL->fetch_param('category_group'))
 		{
-			if (substr($this->EE->TMPL->fetch_param('category_group'), 0, 3) == 'not' && $this->EE->TMPL->fetch_param('uncategorized_entries') !== 'no')
+			if (substr(ee()->TMPL->fetch_param('category_group'), 0, 3) == 'not' && ee()->TMPL->fetch_param('uncategorized_entries') !== 'no')
 			{
-				$sql .= $this->EE->functions->sql_andor_string($this->EE->TMPL->fetch_param('category_group'), 'exp_categories.group_id', '', TRUE)." ";
+				$sql .= ee()->functions->sql_andor_string(ee()->TMPL->fetch_param('category_group'), 'exp_categories.group_id', '', TRUE)." ";
 			}
 			else
 			{
-				$sql .= $this->EE->functions->sql_andor_string($this->EE->TMPL->fetch_param('category_group'), 'exp_categories.group_id')." ";
+				$sql .= ee()->functions->sql_andor_string(ee()->TMPL->fetch_param('category_group'), 'exp_categories.group_id')." ";
 			}
 		}
 
-		if ($this->EE->TMPL->fetch_param('category') === FALSE && $this->EE->TMPL->fetch_param('category_group') === FALSE)
+		if (ee()->TMPL->fetch_param('category') === FALSE && ee()->TMPL->fetch_param('category_group') === FALSE)
 		{
 			if ($cat_id != '' AND $dynamic)
 			{
-				$sql .= " AND exp_categories.cat_id = '".$this->EE->db->escape_str($cat_id)."' ";
+				$sql .= " AND exp_categories.cat_id = '".ee()->db->escape_str($cat_id)."' ";
 			}
 		}
 
@@ -2442,21 +2179,21 @@ class Channel {
 		/**  Limit to (or exclude) specific users
 		/**------*/
 
-		if ($username = $this->EE->TMPL->fetch_param('username'))
+		if ($username = ee()->TMPL->fetch_param('username'))
 		{
 			// Shows entries ONLY for currently logged in user
 
 			if ($username == 'CURRENT_USER')
 			{
-				$sql .=  "AND m.member_id = '".$this->EE->session->userdata('member_id')."' ";
+				$sql .=  "AND m.member_id = '".ee()->session->userdata('member_id')."' ";
 			}
 			elseif ($username == 'NOT_CURRENT_USER')
 			{
-				$sql .=  "AND m.member_id != '".$this->EE->session->userdata('member_id')."' ";
+				$sql .=  "AND m.member_id != '".ee()->session->userdata('member_id')."' ";
 			}
 			else
 			{
-				$sql .= $this->EE->functions->sql_andor_string($username, 'm.username');
+				$sql .= ee()->functions->sql_andor_string($username, 'm.username');
 			}
 		}
 
@@ -2464,21 +2201,21 @@ class Channel {
         /**  Limit to (or exclude) specific author id(s)
         /**------*/
 
-        if ($author_id = $this->EE->TMPL->fetch_param('author_id'))
+        if ($author_id = ee()->TMPL->fetch_param('author_id'))
 		{
 			// Shows entries ONLY for currently logged in user
 
 			if ($author_id == 'CURRENT_USER')
 			{
-				$sql .=  "AND m.member_id = '".$this->EE->session->userdata('member_id')."' ";
+				$sql .=  "AND m.member_id = '".ee()->session->userdata('member_id')."' ";
 			}
 			elseif ($author_id == 'NOT_CURRENT_USER')
 			{
-				$sql .=  "AND m.member_id != '".$this->EE->session->userdata('member_id')."' ";
+				$sql .=  "AND m.member_id != '".ee()->session->userdata('member_id')."' ";
 			}
 			else
 			{
-				$sql .= $this->EE->functions->sql_andor_string($author_id, 'm.member_id');
+				$sql .= ee()->functions->sql_andor_string($author_id, 'm.member_id');
 			}
 		}
 
@@ -2486,12 +2223,12 @@ class Channel {
 		/**  Add status declaration
 		/**------*/
 
-		if ($status = $this->EE->TMPL->fetch_param('status'))
+		if ($status = ee()->TMPL->fetch_param('status'))
 		{
 			$status = str_replace('Open',	'open',	$status);
 			$status = str_replace('Closed', 'closed', $status);
 
-			$sstr = $this->EE->functions->sql_andor_string($status, 't.status');
+			$sstr = ee()->functions->sql_andor_string($status, 't.status');
 
 			if (stristr($sstr, "'closed'") === FALSE)
 			{
@@ -2509,18 +2246,18 @@ class Channel {
 		/**  Add Group ID clause
 		/**------*/
 
-		if ($group_id = $this->EE->TMPL->fetch_param('group_id'))
+		if ($group_id = ee()->TMPL->fetch_param('group_id'))
 		{
-			$sql .= $this->EE->functions->sql_andor_string($group_id, 'm.group_id');
+			$sql .= ee()->functions->sql_andor_string($group_id, 'm.group_id');
 		}
 
     	/** ---------------------------------------
     	/**  Field searching
     	/** ---------------------------------------*/
 
-		if ( ! empty($this->EE->TMPL->search_fields))
+		if ( ! empty(ee()->TMPL->search_fields))
 		{
-            $sql .= $this->_generate_field_search_sql($this->EE->TMPL->search_fields, $this->EE->TMPL->site_ids);
+            $sql .= $this->_generate_field_search_sql(ee()->TMPL->search_fields, ee()->TMPL->site_ids);
 		}
 
 		/**----------
@@ -2691,24 +2428,24 @@ class Channel {
 		// we need it to help create our pagination links so we'll
 		// set it here
 
-		if ($cat_id  != '' AND is_numeric($this->EE->TMPL->fetch_param('cat_limit')))
+		if ($cat_id  != '' AND is_numeric(ee()->TMPL->fetch_param('cat_limit')))
 		{
-			$this->pagination->per_page = $this->EE->TMPL->fetch_param('cat_limit');
+			$this->pagination->per_page = ee()->TMPL->fetch_param('cat_limit');
 		}
-		elseif ($month != '' AND is_numeric($this->EE->TMPL->fetch_param('month_limit')))
+		elseif ($month != '' AND is_numeric(ee()->TMPL->fetch_param('month_limit')))
 		{
-			$this->pagination->per_page = $this->EE->TMPL->fetch_param('month_limit');
+			$this->pagination->per_page = ee()->TMPL->fetch_param('month_limit');
 		}
 		else
 		{
-			$this->pagination->per_page  = ( ! is_numeric($this->EE->TMPL->fetch_param('limit')))  ? $this->limit : $this->EE->TMPL->fetch_param('limit');
+			$this->pagination->per_page  = ( ! is_numeric(ee()->TMPL->fetch_param('limit')))  ? $this->limit : ee()->TMPL->fetch_param('limit');
 		}
 
 		/**------
 		/**  Is there an offset?
 		/**------*/
 		// We do this hear so we can use the offset into next, then later one as well
-		$offset = ( ! $this->EE->TMPL->fetch_param('offset') OR ! is_numeric($this->EE->TMPL->fetch_param('offset'))) ? '0' : $this->EE->TMPL->fetch_param('offset');
+		$offset = ( ! ee()->TMPL->fetch_param('offset') OR ! is_numeric(ee()->TMPL->fetch_param('offset'))) ? '0' : ee()->TMPL->fetch_param('offset');
 
 		//  Do we need pagination?
 		// We'll run the query to find out
@@ -2720,7 +2457,7 @@ class Channel {
 			if ($this->pagination->field_pagination == FALSE)
 			{
 				$this->pager_sql = $sql_a.$sql_b.$sql;
-				$query = $this->EE->db->query($this->pager_sql);
+				$query = ee()->db->query($this->pager_sql);
 				$total = $query->num_rows;
 				$this->absolute_results = $total;
 
@@ -2738,7 +2475,7 @@ class Channel {
 			{
 				$this->pager_sql = $sql_a.$sql_b.$sql;
 
-				$query = $this->EE->db->query($this->pager_sql);
+				$query = ee()->db->query($this->pager_sql);
 
 				$total = $query->num_rows;
 				$this->absolute_results = $total;
@@ -2746,14 +2483,14 @@ class Channel {
 				$this->pagination->cfields = $this->cfields;
 				$this->pagination->build($total, $this->sql, $query);
 
-				if ($this->EE->config->item('enable_sql_caching') == 'y')
+				if (ee()->config->item('enable_sql_caching') == 'y')
 				{
 					$this->save_cache($this->pager_sql, 'pagination_query');
 					$this->save_cache('1', 'field_pagination');
 				}
 			}
 
-			if ($this->EE->config->item('enable_sql_caching') == 'y')
+			if (ee()->config->item('enable_sql_caching') == 'y')
 			{
 				$this->save_cache($total, 'pagination_count');
 			}
@@ -2796,7 +2533,7 @@ class Channel {
 		/**  Fetch the entry_id numbers
 		/**------*/
 
-		$query = $this->EE->db->query($sql_a.$sql_b.$sql);
+		$query = ee()->db->query($sql_a.$sql_b.$sql);
 
 		//exit($sql_a.$sql_b.$sql);
 
@@ -2812,7 +2549,7 @@ class Channel {
 
 		$this->sql = "SELECT ";
 
-		if ($this->EE->TMPL->fetch_param('category') OR $this->EE->TMPL->fetch_param('category_group') OR $cat_id != '')
+		if (ee()->TMPL->fetch_param('category') OR ee()->TMPL->fetch_param('category_group') OR $cat_id != '')
 		{
 			// Using DISTINCT like this is bogus but since
 			// FULL OUTER JOINs are not supported in older versions
@@ -2862,7 +2599,7 @@ class Channel {
 		}
 
 		//cache the entry_id
-		$this->EE->session->cache['channel']['entry_ids']	= array_keys($entries);
+		ee()->session->cache['channel']['entry_ids']	= array_keys($entries);
 		
 		unset($query);
 		unset($entries);
@@ -2872,7 +2609,7 @@ class Channel {
 		// modify the ORDER BY if displaying by week
 		if ($this->display_by == 'week' && isset($yearweek))
 		{
-			$weeksort = ($this->EE->TMPL->fetch_param('week_sort') == 'desc') ? 'DESC' : 'ASC';
+			$weeksort = (ee()->TMPL->fetch_param('week_sort') == 'desc') ? 'DESC' : 'ASC';
 			$end = str_replace('ORDER BY ', 'ORDER BY yearweek '.$weeksort.', ', $end);
 		}
 
@@ -2898,32 +2635,20 @@ class Channel {
 		//  - Take the whole query result array, do what you wish
 		//  - added 1.6.7
 		//
-			if ($this->EE->extensions->active_hook('channel_entries_query_result') === TRUE)
+			if (ee()->extensions->active_hook('channel_entries_query_result') === TRUE)
 			{
-				$query_result = $this->EE->extensions->call('channel_entries_query_result', $this, $query_result);
-				if ($this->EE->extensions->end_script === TRUE) return $this->EE->TMPL->tagdata;
+				$query_result = ee()->extensions->call('channel_entries_query_result', $this, $query_result);
+				if (ee()->extensions->end_script === TRUE) return ee()->TMPL->tagdata;
 			}
 		//
 		// -------------------------------------------
 
-		$processed_member_fields = array();
-
-		//  Set default date header variables
-		$heading_date_hourly  = 0;
-		$heading_flag_hourly  = 0;
-		$heading_flag_weekly  = 1;
-		$heading_date_daily	  = 0;
-		$heading_flag_daily	  = 0;
-		$heading_date_monthly = 0;
-		$heading_flag_monthly = 0;
-		$heading_date_yearly  = 0;
-		$heading_flag_yearly  = 0;
-
-		$this->EE->load->library('channel_entries_parser');
-		$parser = $this->EE->channel_entries_parser->create($this->EE->TMPL->tagdata/*, $prefix=''*/);
+		ee()->load->library('channel_entries_parser');
+		$parser = ee()->channel_entries_parser->create(ee()->TMPL->tagdata/*, $prefix=''*/);
 
 		// We'll process what we can before starting to replace things to
 		// avoid redundant processing cycles in the foreach loop below
+
 		$preparsed = $parser->pre_parser($this, $this->_entry_ids);
 
 		$data_parser = $parser->data_parser($preparsed);
@@ -2945,19 +2670,17 @@ class Channel {
 
 		$this->return_data = $data_parser->parse($data, $config);
 
-
 		// Start the main processing loop
-
-		foreach (/*$query_result*/ array() as $count => $row)
+/*
+		foreach $query_result as $count => $row)
 		{
-			/*
-			...
 
-			$cond['signature_image_url']	= $this->EE->config->slash_item('sig_img_url').$row['sig_img_filename'];
-			$cond['signature_image_width']	= $row['sig_img_width'];
-			$cond['signature_image_height']	= $row['sig_img_height'];
-			$cond['relative_date']			= timespan($row['entry_date']);
-			*/
+		//	...
+		//	$cond['signature_image_url']	= ee()->config->slash_item('sig_img_url').$row['sig_img_filename'];
+		//	$cond['signature_image_width']	= $row['sig_img_width'];
+		//	$cond['signature_image_height']	= $row['sig_img_height'];
+		//	$cond['relative_date']			= timespan($row['entry_date']);
+
 			if (isset($this->cfields[$row['site_id']]))
 			{
 				foreach($this->cfields[$row['site_id']] as $key => $value)
@@ -2967,23 +2690,23 @@ class Channel {
 					// Is this field used with a modifier anywhere?
 					if (isset($modified_conditionals[$key]) && count($modified_conditionals[$key]))
 					{
-						$this->EE->load->library('api');
-						$this->EE->api->instantiate('channel_fields');
+						ee()->load->library('api');
+						ee()->api->instantiate('channel_fields');
 
-						if ($this->EE->api_channel_fields->setup_handler($value))
+						if (ee()->api_channel_fields->setup_handler($value))
 						{
 							foreach($modified_conditionals[$key] as $modifier)
 							{
-								$this->EE->api_channel_fields->apply('_init', array(array('row' => $row)));
-								$data = $this->EE->api_channel_fields->apply('pre_process', array($cond[$key]));
-								if ($this->EE->api_channel_fields->check_method_exists('replace_'.$modifier))
+								ee()->api_channel_fields->apply('_init', array(array('row' => $row)));
+								$data = ee()->api_channel_fields->apply('pre_process', array($cond[$key]));
+								if (ee()->api_channel_fields->check_method_exists('replace_'.$modifier))
 								{
-									$cond[$key.':'.$modifier] = $this->EE->api_channel_fields->apply('replace_'.$modifier, array($data, array(), FALSE));
+									$cond[$key.':'.$modifier] = ee()->api_channel_fields->apply('replace_'.$modifier, array($data, array(), FALSE));
 								}
 								else
 								{							
 									$cond[$key.':'.$modifier] = FALSE;
-									$this->EE->TMPL->log_item('Unable to find parse type for custom field conditional: '.$key.':'.$modifier);
+									ee()->TMPL->log_item('Unable to find parse type for custom field conditional: '.$key.':'.$modifier);
 								}
 							}
 						}
@@ -2996,7 +2719,7 @@ class Channel {
 
 		}
 		// END FOREACH LOOP
-
+*/
 		// Kill multi_field variable
 		if (strpos($this->return_data, 'multi_field=') !== FALSE)
 		{
@@ -3004,7 +2727,7 @@ class Channel {
 		}
 
 		// Do we have backspacing?
-		if ($back = $this->EE->TMPL->fetch_param('backspace'))
+		if ($back = ee()->TMPL->fetch_param('backspace'))
 		{
 			if (is_numeric($back))
 			{
@@ -3022,10 +2745,10 @@ class Channel {
 		//  - Take the entry data, do what you wish
 		//  - added 1.6.7
 		//
-			if ($this->EE->extensions->active_hook('channel_entries_row') === TRUE)
+			if (ee()->extensions->active_hook('channel_entries_row') === TRUE)
 			{
-				$row = $this->EE->extensions->call('channel_entries_row', $this, $row);
-				//if ($this->EE->extensions->end_script === TRUE) return $tagdata;
+				$row = ee()->extensions->call('channel_entries_row', $this, $row);
+				//if (ee()->extensions->end_script === TRUE) return $tagdata;
 			}
 		//
 		// -------------------------------------------
@@ -3041,10 +2764,10 @@ class Channel {
 		// 'channel_entries_tagdata' hook.
 		//  - Take the entry data and tag data, do what you wish
 		//
-			if ($this->EE->extensions->active_hook('channel_entries_tagdata') === TRUE)
+			if (ee()->extensions->active_hook('channel_entries_tagdata') === TRUE)
 			{
-				$tagdata = $this->EE->extensions->call('channel_entries_tagdata', $tagdata, $row, $this);
-			//	if ($this->EE->extensions->end_script === TRUE) return $tagdata;
+				$tagdata = ee()->extensions->call('channel_entries_tagdata', $tagdata, $row, $this);
+			//	if (ee()->extensions->end_script === TRUE) return $tagdata;
 			}
 		//
 		// -------------------------------------------
@@ -3060,10 +2783,10 @@ class Channel {
 		// 'channel_entries_tagdata_end' hook.
 		//  - Take the final results of an entry's parsing and do what you wish
 		//
-			if ($this->EE->extensions->active_hook('channel_entries_tagdata_end') === TRUE)
+			if (ee()->extensions->active_hook('channel_entries_tagdata_end') === TRUE)
 			{
-				$tagdata = $this->EE->extensions->call('channel_entries_tagdata_end', $tagdata, $row, $this);
-			//	if ($this->EE->extensions->end_script === TRUE) return $tagdata;
+				$tagdata = ee()->extensions->call('channel_entries_tagdata_end', $tagdata, $row, $this);
+			//	if (ee()->extensions->end_script === TRUE) return $tagdata;
 			}
 		//
 		// -------------------------------------------
@@ -3078,12 +2801,12 @@ class Channel {
 	  */
 	public function info()
 	{
-		if ( ! $channel_name = $this->EE->TMPL->fetch_param('channel'))
+		if ( ! $channel_name = ee()->TMPL->fetch_param('channel'))
 		{
 			return '';
 		}
 
-		if (count($this->EE->TMPL->var_single) == 0)
+		if (count(ee()->TMPL->var_single) == 0)
 		{
 			return '';
 		}
@@ -3097,9 +2820,9 @@ class Channel {
 
 		$q = '';
 		$tags = FALSE;
-		$charset = $this->EE->config->item('charset');
+		$charset = ee()->config->item('charset');
 		
-		foreach ($this->EE->TMPL->var_single as $val)
+		foreach (ee()->TMPL->var_single as $val)
 		{			
 			if (in_array($val, $params))
 			{
@@ -3121,14 +2844,14 @@ class Channel {
 
 		$sql = "SELECT ".$q." FROM exp_channels ";
 
-		$sql .= " WHERE site_id IN ('".implode("','", $this->EE->TMPL->site_ids)."') ";
+		$sql .= " WHERE site_id IN ('".implode("','", ee()->TMPL->site_ids)."') ";
 
 		if ($channel_name != '')
 		{
-			$sql .= " AND channel_name = '".$this->EE->db->escape_str($channel_name)."'";
+			$sql .= " AND channel_name = '".ee()->db->escape_str($channel_name)."'";
 		}
 
-		$query = $this->EE->db->query($sql);
+		$query = ee()->db->query($sql);
 
 		if ($query->num_rows() != 1)
 		{
@@ -3138,16 +2861,16 @@ class Channel {
 		// We add in the channel_encoding
 		$cond_vars = array_merge($query->row_array(), array('channel_encoding' => $charset));
 		
-		$this->EE->TMPL->tagdata = $this->EE->functions->prep_conditionals($this->EE->TMPL->tagdata, $cond_vars);
+		ee()->TMPL->tagdata = ee()->functions->prep_conditionals(ee()->TMPL->tagdata, $cond_vars);
 
 		foreach ($query->row_array() as $key => $val)
 		{
-			$this->EE->TMPL->tagdata = str_replace(LD.$key.RD, $val, $this->EE->TMPL->tagdata);
+			ee()->TMPL->tagdata = str_replace(LD.$key.RD, $val, ee()->TMPL->tagdata);
 		}
 		
-		$this->EE->TMPL->tagdata = str_replace(LD.'channel_encoding'.RD, $charset, $this->EE->TMPL->tagdata);
+		ee()->TMPL->tagdata = str_replace(LD.'channel_encoding'.RD, $charset, ee()->TMPL->tagdata);
 
-		return $this->EE->TMPL->tagdata;
+		return ee()->TMPL->tagdata;
 	}
 
 	// ------------------------------------------------------------------------
@@ -3157,7 +2880,7 @@ class Channel {
 	  */
 	public function channel_name()
 	{
-		$channel_name = $this->EE->TMPL->fetch_param('channel');
+		$channel_name = ee()->TMPL->fetch_param('channel');
 
 		if (isset($this->channel_name[$channel_name]))
 		{
@@ -3166,14 +2889,14 @@ class Channel {
 
 		$sql = "SELECT channel_title FROM exp_channels ";
 
-		$sql .= " WHERE site_id IN ('".implode("','", $this->EE->TMPL->site_ids)."') ";
+		$sql .= " WHERE site_id IN ('".implode("','", ee()->TMPL->site_ids)."') ";
 
 		if ($channel_name != '')
 		{
-			$sql .= " AND channel_name = '".$this->EE->db->escape_str($channel_name)."'";
+			$sql .= " AND channel_name = '".ee()->db->escape_str($channel_name)."'";
 		}
 
-		$query = $this->EE->db->query($sql);
+		$query = ee()->db->query($sql);
 
 		if ($query->num_rows() == 1)
 		{
@@ -3190,25 +2913,6 @@ class Channel {
 	// ------------------------------------------------------------------------
 
 	/**
-	  *  Channel Category Totals
-	  *
-	  * Need to finish this function.  It lets a simple list of categories
-	  * appear along with the post total.
-	  */
-	public function category_totals()
-	{
-		$sql = "SELECT count( exp_category_posts.entry_id ) AS count,
-				exp_categories.cat_id,
-				exp_categories.cat_name
-				FROM exp_categories
-				LEFT JOIN exp_category_posts ON exp_category_posts.cat_id = exp_categories.cat_id
-				GROUP BY exp_categories.cat_id
-				ORDER BY group_id, parent_id, cat_order";
-	}
-
-	// ------------------------------------------------------------------------
-
-	/**
 	  *  Channel Categories
 	  */
 	public function categories()
@@ -3217,21 +2921,21 @@ class Channel {
 		// 'channel_module_categories_start' hook.
 		//  - Rewrite the displaying of categories, if you dare!
 		//
-			if ($this->EE->extensions->active_hook('channel_module_categories_start') === TRUE)
+			if (ee()->extensions->active_hook('channel_module_categories_start') === TRUE)
 			{
-				return $this->EE->extensions->call('channel_module_categories_start');
+				return ee()->extensions->call('channel_module_categories_start');
 			}
 		//
 		// -------------------------------------------
 		
-		$sql = "SELECT DISTINCT cat_group, channel_id FROM exp_channels WHERE site_id IN ('".implode("','", $this->EE->TMPL->site_ids)."') ";
+		$sql = "SELECT DISTINCT cat_group, channel_id FROM exp_channels WHERE site_id IN ('".implode("','", ee()->TMPL->site_ids)."') ";
 
-		if ($channel = $this->EE->TMPL->fetch_param('channel'))
+		if ($channel = ee()->TMPL->fetch_param('channel'))
 		{
-			$sql .= $this->EE->functions->sql_andor_string($this->EE->TMPL->fetch_param('channel'), 'channel_name');
+			$sql .= ee()->functions->sql_andor_string(ee()->TMPL->fetch_param('channel'), 'channel_name');
 		}
 
-		$cat_groups = $this->EE->db->query($sql);
+		$cat_groups = ee()->db->query($sql);
 		
 		if ($cat_groups->num_rows() == 0)
 		{
@@ -3249,7 +2953,7 @@ class Channel {
 		// Combine the group IDs from multiple channels into a string
 		$group_ids = implode('|', $group_ids);
 		
-		if ($category_group = $this->EE->TMPL->fetch_param('category_group'))
+		if ($category_group = ee()->TMPL->fetch_param('category_group'))
 		{
 			if (substr($category_group, 0, 4) == 'not ')
 			{
@@ -3274,34 +2978,34 @@ class Channel {
 			}
 		}
 
-		$parent_only = ($this->EE->TMPL->fetch_param('parent_only') == 'yes') ? TRUE : FALSE;
+		$parent_only = (ee()->TMPL->fetch_param('parent_only') == 'yes') ? TRUE : FALSE;
 
 		$path = array();
 
-		if (preg_match_all("#".LD."path(=.+?)".RD."#", $this->EE->TMPL->tagdata, $matches))
+		if (preg_match_all("#".LD."path(=.+?)".RD."#", ee()->TMPL->tagdata, $matches))
 		{
 			for ($i = 0; $i < count($matches[0]); $i++)
 			{
 				if ( ! isset($path[$matches[0][$i]]))
 				{
-					$path[$matches[0][$i]] = $this->EE->functions->create_url($this->EE->functions->extract_path($matches[1][$i]));
+					$path[$matches[0][$i]] = ee()->functions->create_url(ee()->functions->extract_path($matches[1][$i]));
 				}
 			}
 		}
 
 		$str = '';
-		$strict_empty = ($this->EE->TMPL->fetch_param('restrict_channel') == 'no') ? 'no' : 'yes';
+		$strict_empty = (ee()->TMPL->fetch_param('restrict_channel') == 'no') ? 'no' : 'yes';
 
-		if ($this->EE->TMPL->fetch_param('style') == '' OR $this->EE->TMPL->fetch_param('style') == 'nested')
+		if (ee()->TMPL->fetch_param('style') == '' OR ee()->TMPL->fetch_param('style') == 'nested')
 		{
 			$this->category_tree(array(
 				'group_id'		=> $group_ids,
 				'channel_ids'	=> $channel_ids,
-				'template'		=> $this->EE->TMPL->tagdata,
+				'template'		=> ee()->TMPL->tagdata,
 				'path'			=> $path,
 				'channel_array'	=> '',
 				'parent_only'	=> $parent_only,
-				'show_empty'	=> $this->EE->TMPL->fetch_param('show_empty'),
+				'show_empty'	=> ee()->TMPL->fetch_param('show_empty'),
 				'strict_empty'	=> $strict_empty
 			));
 
@@ -3310,8 +3014,8 @@ class Channel {
 			{
 				$i = 0;
 
-				$id_name = ( ! $this->EE->TMPL->fetch_param('id')) ? 'nav_categories' : $this->EE->TMPL->fetch_param('id');
-				$class_name = ( ! $this->EE->TMPL->fetch_param('class')) ? 'nav_categories' : $this->EE->TMPL->fetch_param('class');
+				$id_name = ( ! ee()->TMPL->fetch_param('id')) ? 'nav_categories' : ee()->TMPL->fetch_param('id');
+				$class_name = ( ! ee()->TMPL->fetch_param('class')) ? 'nav_categories' : ee()->TMPL->fetch_param('class');
 
 				$this->category_list[0] = '<ul id="'.$id_name.'" class="'.$class_name.'">'."\n";
 
@@ -3327,9 +3031,9 @@ class Channel {
 
 			if ($this->enable['category_fields'] === TRUE)
 			{
-				$query = $this->EE->db->query("SELECT field_id, field_name FROM exp_category_fields
-									WHERE site_id IN ('".implode("','", $this->EE->TMPL->site_ids)."')
-									AND group_id IN ('".str_replace('|', "','", $this->EE->db->escape_str($group_ids))."')");
+				$query = ee()->db->query("SELECT field_id, field_name FROM exp_category_fields
+									WHERE site_id IN ('".implode("','", ee()->TMPL->site_ids)."')
+									AND group_id IN ('".str_replace('|', "','", ee()->db->escape_str($group_ids))."')");
 
 				if ($query->num_rows() > 0)
 				{
@@ -3349,15 +3053,15 @@ class Channel {
 				$field_sqlb = '';
 			}
 
-			$show_empty = $this->EE->TMPL->fetch_param('show_empty');
+			$show_empty = ee()->TMPL->fetch_param('show_empty');
 
 			if ($show_empty == 'no')
 			{
 				// First we'll grab all category ID numbers
 
-				$query = $this->EE->db->query("SELECT cat_id, parent_id
+				$query = ee()->db->query("SELECT cat_id, parent_id
 									 FROM exp_categories
-									 WHERE group_id IN ('".str_replace('|', "','", $this->EE->db->escape_str($group_ids))."')
+									 WHERE group_id IN ('".str_replace('|', "','", ee()->db->escape_str($group_ids))."')
 									 ORDER BY group_id, parent_id, cat_order");
 
 				$all = array();
@@ -3378,7 +3082,7 @@ class Channel {
 				$sql = "SELECT DISTINCT(exp_categories.cat_id), parent_id FROM exp_categories
 						LEFT JOIN exp_category_posts ON exp_categories.cat_id = exp_category_posts.cat_id
 						LEFT JOIN exp_channel_titles ON exp_category_posts.entry_id = exp_channel_titles.entry_id
-						WHERE group_id IN ('".str_replace('|', "','", $this->EE->db->escape_str($group_ids))."') ";
+						WHERE group_id IN ('".str_replace('|', "','", ee()->db->escape_str($group_ids))."') ";
 		        
 
 				$sql .= "AND exp_category_posts.cat_id IS NOT NULL ";
@@ -3389,13 +3093,13 @@ class Channel {
 				}
 				else
 				{
-					$sql .= "AND exp_channel_titles.site_id IN ('".implode("','", $this->EE->TMPL->site_ids)."') ";
+					$sql .= "AND exp_channel_titles.site_id IN ('".implode("','", ee()->TMPL->site_ids)."') ";
 				}
 
-		        if (($status = $this->EE->TMPL->fetch_param('status')) !== FALSE)
+		        if (($status = ee()->TMPL->fetch_param('status')) !== FALSE)
 		        {
 					$status = str_replace(array('Open', 'Closed'), array('open', 'closed'), $status);
-		            $sql .= $this->EE->functions->sql_andor_string($status, 'exp_channel_titles.status');
+		            $sql .= ee()->functions->sql_andor_string($status, 'exp_channel_titles.status');
 		        }
 		        else
 		        {
@@ -3406,14 +3110,14 @@ class Channel {
 				/**  We only select entries that have not expired
 				/**------*/
 
-				$timestamp = ($this->EE->TMPL->cache_timestamp != '') ? $this->EE->TMPL->cache_timestamp : $this->EE->localize->now;
+				$timestamp = (ee()->TMPL->cache_timestamp != '') ? ee()->TMPL->cache_timestamp : ee()->localize->now;
 
-				if ($this->EE->TMPL->fetch_param('show_future_entries') != 'yes')
+				if (ee()->TMPL->fetch_param('show_future_entries') != 'yes')
 				{
 					$sql .= " AND exp_channel_titles.entry_date < ".$timestamp." ";
 				}
 
-				if ($this->EE->TMPL->fetch_param('show_expired') != 'yes')
+				if (ee()->TMPL->fetch_param('show_expired') != 'yes')
 				{
 					$sql .= " AND (exp_channel_titles.expiration_date = 0 OR exp_channel_titles.expiration_date > ".$timestamp.") ";
 				}
@@ -3425,7 +3129,7 @@ class Channel {
 
 				$sql .= " ORDER BY group_id, parent_id, cat_order";
 
-				$query = $this->EE->db->query($sql);
+				$query = ee()->db->query($sql);
 
 				if ($query->num_rows() == 0)
 				{
@@ -3460,7 +3164,7 @@ class Channel {
 
 				$sql .= " ORDER BY c.group_id, c.parent_id, c.cat_order";
 
-				$query = $this->EE->db->query($sql);
+				$query = ee()->db->query($sql);
 
 				if ($query->num_rows() == 0)
 				{
@@ -3472,7 +3176,7 @@ class Channel {
 				$sql = "SELECT c.cat_name, c.cat_url_title, c.cat_image, c.cat_description, c.cat_id, c.parent_id {$field_sqla}
 						FROM exp_categories AS c
 						{$field_sqlb}
-						WHERE c.group_id IN ('".str_replace('|', "','", $this->EE->db->escape_str($group_ids))."') ";
+						WHERE c.group_id IN ('".str_replace('|', "','", ee()->db->escape_str($group_ids))."') ";
 
 				if ($parent_only === TRUE)
 				{
@@ -3481,7 +3185,7 @@ class Channel {
 
 				$sql .= " ORDER BY c.group_id, c.parent_id, c.cat_order";
 
-				$query = $this->EE->db->query($sql);
+				$query = ee()->db->query($sql);
 
 				if ($query->num_rows() == 0)
 				{
@@ -3496,15 +3200,15 @@ class Channel {
 			// request categories while also not having a problem with having a
 			// child but not a parent.  As we all know, categories are not asexual.
 
-			if ($this->EE->TMPL->fetch_param('show') !== FALSE)
+			if (ee()->TMPL->fetch_param('show') !== FALSE)
 			{
-				if (strncmp($this->EE->TMPL->fetch_param('show'), 'not ', 4) == 0)
+				if (strncmp(ee()->TMPL->fetch_param('show'), 'not ', 4) == 0)
 				{
-					$not_these = explode('|', trim(substr($this->EE->TMPL->fetch_param('show'), 3)));
+					$not_these = explode('|', trim(substr(ee()->TMPL->fetch_param('show'), 3)));
 				}
 				else
 				{
-					$these = explode('|', trim($this->EE->TMPL->fetch_param('show')));
+					$these = explode('|', trim(ee()->TMPL->fetch_param('show')));
 				}
 			}
 
@@ -3541,8 +3245,8 @@ class Channel {
 
 			unset($this->temp_array);
 
-			$this->EE->load->library('typography');
-			$this->EE->typography->initialize(array(
+			ee()->load->library('typography');
+			ee()->typography->initialize(array(
 				'convert_curly'	=> FALSE
 			));
 
@@ -3550,15 +3254,15 @@ class Channel {
 			$total_results = count($this->cat_array);
 
 			// Get category ID from URL for {if active} conditional
-			$this->EE->load->helper('segment');
+			ee()->load->helper('segment');
 			$active_cat = parse_category($this->query_string);
 			
 			foreach ($this->cat_array as $key => $val)
 			{
-				$chunk = $this->EE->TMPL->tagdata;
+				$chunk = ee()->TMPL->tagdata;
 				
-				$this->EE->load->library('file_field');
-				$cat_image = $this->EE->file_field->parse_field($val[5]);
+				ee()->load->library('file_field');
+				$cat_image = ee()->file_field->parse_field($val[5]);
 				
 				$cat_vars = array(
 					'category_name'			=> $val[3],
@@ -3580,7 +3284,7 @@ class Channel {
 				$cat_vars['count'] = ++$this->category_count;
 				$cat_vars['total_results'] = $total_results;
 
-				$chunk = $this->EE->functions->prep_conditionals($chunk, $cat_vars);
+				$chunk = ee()->functions->prep_conditionals($chunk, $cat_vars);
 				
 				$chunk = str_replace(
 					array(
@@ -3592,9 +3296,9 @@ class Channel {
 						LD.'parent_id'.RD
 					),
 					array(
-						$this->EE->functions->encode_ee_tags($val[3]),
+						ee()->functions->encode_ee_tags($val[3]),
 						$val[6],
-						$this->EE->functions->encode_ee_tags($val[4]),
+						ee()->functions->encode_ee_tags($val[4]),
 						$cat_image['url'],
 						$val[0],
 						$val[1]
@@ -3619,7 +3323,7 @@ class Channel {
 				{
 					if (isset($val['field_id_'.$cv['field_id']]) AND $val['field_id_'.$cv['field_id']] != '')
 					{
-						$field_content = $this->EE->typography->parse_type(
+						$field_content = ee()->typography->parse_type(
 							$val['field_id_'.$cv['field_id']],
 							array(
 								'text_format'		=> $val['field_ft_'.$cv['field_id']],
@@ -3658,16 +3362,16 @@ class Channel {
 				$str .= $chunk;
 			}
 
-			if ($this->EE->TMPL->fetch_param('backspace'))
+			if (ee()->TMPL->fetch_param('backspace'))
 			{
-				$str = substr($str, 0, - $this->EE->TMPL->fetch_param('backspace'));
+				$str = substr($str, 0, - ee()->TMPL->fetch_param('backspace'));
 			}
 		}
 
 		if (strpos($str, '{filedir_') !== FALSE)
 		{
-			$this->EE->load->library('file_field');
-			$str = $this->EE->file_field->parse_string($str);
+			ee()->load->library('file_field');
+			$str = ee()->file_field->parse_string($str);
 		}
 		
 		return $str;
@@ -3697,14 +3401,14 @@ class Channel {
 	  */
 	public function category_archive()
 	{
-		$sql = "SELECT DISTINCT cat_group, channel_id FROM exp_channels WHERE site_id IN ('".implode("','", $this->EE->TMPL->site_ids)."') ";
+		$sql = "SELECT DISTINCT cat_group, channel_id FROM exp_channels WHERE site_id IN ('".implode("','", ee()->TMPL->site_ids)."') ";
 
-		if ($channel = $this->EE->TMPL->fetch_param('channel'))
+		if ($channel = ee()->TMPL->fetch_param('channel'))
 		{
-			$sql .= $this->EE->functions->sql_andor_string($this->EE->TMPL->fetch_param('channel'), 'channel_name');
+			$sql .= ee()->functions->sql_andor_string(ee()->TMPL->fetch_param('channel'), 'channel_name');
 		}
 		
-		$cat_groups = $this->EE->db->query($sql);
+		$cat_groups = ee()->db->query($sql);
 		
 		if ($cat_groups->num_rows() == 0)
 		{
@@ -3729,39 +3433,39 @@ class Channel {
 				WHERE channel_id IN ('".implode("','", $channel_ids)."')
 				AND exp_channel_titles.entry_id = exp_category_posts.entry_id ";
 
-		$timestamp = ($this->EE->TMPL->cache_timestamp != '') ? $this->EE->TMPL->cache_timestamp : $this->EE->localize->now;
+		$timestamp = (ee()->TMPL->cache_timestamp != '') ? ee()->TMPL->cache_timestamp : ee()->localize->now;
 
-		if ($this->EE->TMPL->fetch_param('show_future_entries') != 'yes')
+		if (ee()->TMPL->fetch_param('show_future_entries') != 'yes')
 		{
 			$sql .= "AND exp_channel_titles.entry_date < ".$timestamp." ";
 		}
 
-		if ($this->EE->TMPL->fetch_param('show_expired') != 'yes')
+		if (ee()->TMPL->fetch_param('show_expired') != 'yes')
 		{
 			$sql .= "AND (exp_channel_titles.expiration_date = 0 OR exp_channel_titles.expiration_date > ".$timestamp.") ";
 		}
 
 		$sql .= "AND exp_channel_titles.status != 'closed' ";
 
-		if ($status = $this->EE->TMPL->fetch_param('status'))
+		if ($status = ee()->TMPL->fetch_param('status'))
 		{
 			$status = str_replace('Open',	'open',	$status);
 			$status = str_replace('Closed', 'closed', $status);
 
-			$sql .= $this->EE->functions->sql_andor_string($status, 'exp_channel_titles.status');
+			$sql .= ee()->functions->sql_andor_string($status, 'exp_channel_titles.status');
 		}
 		else
 		{
 			$sql .= "AND exp_channel_titles.status = 'open' ";
 		}
 
-		if ($this->EE->TMPL->fetch_param('show') !== FALSE)
+		if (ee()->TMPL->fetch_param('show') !== FALSE)
 		{
-			$sql .= $this->EE->functions->sql_andor_string($this->EE->TMPL->fetch_param('show'), 'exp_category_posts.cat_id').' ';
+			$sql .= ee()->functions->sql_andor_string(ee()->TMPL->fetch_param('show'), 'exp_category_posts.cat_id').' ';
 		}
 
 
-		$orderby  = $this->EE->TMPL->fetch_param('orderby');
+		$orderby  = ee()->TMPL->fetch_param('orderby');
 
 		switch ($orderby)
 		{
@@ -3785,7 +3489,7 @@ class Channel {
 				break;
 		}
 
-		$sort = $this->EE->TMPL->fetch_param('sort');
+		$sort = ee()->TMPL->fetch_param('sort');
 
 		switch ($sort)
 		{
@@ -3800,16 +3504,16 @@ class Channel {
 				break;
 		}
 
-		$result = $this->EE->db->query($sql);
+		$result = ee()->db->query($sql);
 		$channel_array = array();
 
-		$parent_only = ($this->EE->TMPL->fetch_param('parent_only') == 'yes') ? TRUE : FALSE;
+		$parent_only = (ee()->TMPL->fetch_param('parent_only') == 'yes') ? TRUE : FALSE;
 		
 		// Gather patterns for parsing and replacement of variable pairs
 		$categories_pattern = "/".LD."categories\s*".RD."(.*?)".LD.'\/'."categories\s*".RD."/s";
 		$titles_pattern = "/".LD."entry_titles\s*".RD."(.*?)".LD.'\/'."entry_titles\s*".RD."/s";
 		
-		$cat_chunk  = (preg_match($categories_pattern, $this->EE->TMPL->tagdata, $match)) ? $match[1] : '';
+		$cat_chunk  = (preg_match($categories_pattern, ee()->TMPL->tagdata, $match)) ? $match[1] : '';
 
 		$c_path = array();
 
@@ -3817,11 +3521,11 @@ class Channel {
 		{
 			for ($i = 0; $i < count($matches[0]); $i++)
 			{
-				$c_path[$matches[0][$i]] = $this->EE->functions->create_url($this->EE->functions->extract_path($matches[1][$i]));
+				$c_path[$matches[0][$i]] = ee()->functions->create_url(ee()->functions->extract_path($matches[1][$i]));
 			}
 		}
 
-		$title_chunk = (preg_match($titles_pattern, $this->EE->TMPL->tagdata, $match)) ? $match[1] : '';
+		$title_chunk = (preg_match($titles_pattern, ee()->TMPL->tagdata, $match)) ? $match[1] : '';
 
 		$t_path = array();
 
@@ -3829,7 +3533,7 @@ class Channel {
 		{
 			for ($i = 0; $i < count($matches[0]); $i++)
 			{
-				$t_path[$matches[0][$i]] = $this->EE->functions->create_url($this->EE->functions->extract_path($matches[1][$i]));
+				$t_path[$matches[0][$i]] = ee()->functions->create_url(ee()->functions->extract_path($matches[1][$i]));
 			}
 		}
 
@@ -3839,7 +3543,7 @@ class Channel {
 		{
 			for ($i = 0; $i < count($matches[0]); $i++)
 			{
-				$id_path[$matches[0][$i]] = $this->EE->functions->create_url($this->EE->functions->extract_path($matches[1][$i]));
+				$id_path[$matches[0][$i]] = ee()->functions->create_url(ee()->functions->extract_path($matches[1][$i]));
 			}
 		}
 
@@ -3858,7 +3562,7 @@ class Channel {
 
 		$return_data = '';
 
-		if ($this->EE->TMPL->fetch_param('style') == '' OR $this->EE->TMPL->fetch_param('style') == 'nested')
+		if (ee()->TMPL->fetch_param('style') == '' OR ee()->TMPL->fetch_param('style') == 'nested')
 		{
 			if ($result->num_rows() > 0 && $title_chunk != '')
 			{
@@ -3877,12 +3581,12 @@ class Channel {
 						$chunk = str_replace($tkey, reduce_double_slashes($tval.'/'.$row['entry_id']), $chunk);
 					}
 
-					foreach($this->EE->TMPL->var_single as $key => $val)
+					foreach(ee()->TMPL->var_single as $key => $val)
 					{
 						if (isset($entry_date[$key]))
 						{
-							$val = str_replace($entry_date[$key], $this->EE->localize->format_date($entry_date[$key], $row['entry_date']), $val);
-							$chunk = $this->EE->TMPL->swap_var_single($key, $val, $chunk);
+							$val = str_replace($entry_date[$key], ee()->localize->format_date($entry_date[$key], $row['entry_date']), $val);
+							$chunk = ee()->TMPL->swap_var_single($key, $val, $chunk);
 						}
 
 					}
@@ -3899,14 +3603,14 @@ class Channel {
 				'template'		=> $cat_chunk,
 				'channel_array' => $channel_array,
 				'parent_only'	=> $parent_only,
-				'show_empty'	=> $this->EE->TMPL->fetch_param('show_empty'),
+				'show_empty'	=> ee()->TMPL->fetch_param('show_empty'),
 				'strict_empty'	=> 'yes'
 			));
 
 			if (count($this->category_list) > 0)
 			{
-				$id_name = ($this->EE->TMPL->fetch_param('id') === FALSE) ? 'nav_cat_archive' : $this->EE->TMPL->fetch_param('id');
-				$class_name = ($this->EE->TMPL->fetch_param('class') === FALSE) ? 'nav_cat_archive' : $this->EE->TMPL->fetch_param('class');
+				$id_name = (ee()->TMPL->fetch_param('id') === FALSE) ? 'nav_cat_archive' : ee()->TMPL->fetch_param('id');
+				$class_name = (ee()->TMPL->fetch_param('class') === FALSE) ? 'nav_cat_archive' : ee()->TMPL->fetch_param('class');
 
 				$this->category_list[0] = '<ul id="'.$id_name.'" class="'.$class_name.'">'."\n";
 				
@@ -3922,9 +3626,9 @@ class Channel {
 
 			if ($this->enable['category_fields'] === TRUE)
 			{
-				$query = $this->EE->db->query("SELECT field_id, field_name FROM exp_category_fields
-									WHERE site_id IN ('".implode("','", $this->EE->TMPL->site_ids)."')
-									AND group_id IN ('".str_replace('|', "','", $this->EE->db->escape_str($group_ids))."')");
+				$query = ee()->db->query("SELECT field_id, field_name FROM exp_category_fields
+									WHERE site_id IN ('".implode("','", ee()->TMPL->site_ids)."')
+									AND group_id IN ('".str_replace('|', "','", ee()->db->escape_str($group_ids))."')");
 
 				if ($query->num_rows() > 0)
 				{
@@ -3947,14 +3651,14 @@ class Channel {
 			$sql = "SELECT DISTINCT (c.cat_id), c.cat_name, c.cat_url_title, c.cat_description, c.cat_image, c.parent_id {$field_sqla}
 					FROM (exp_categories AS c";
 
-			if ($this->EE->TMPL->fetch_param('show_empty') != 'no' AND count($channel_ids))
+			if (ee()->TMPL->fetch_param('show_empty') != 'no' AND count($channel_ids))
 			{
 				$sql .= ", exp_category_posts ";
 			}
 
 			$sql .= ") {$field_sqlb}";
 
-			if ($this->EE->TMPL->fetch_param('show_empty') == 'no')
+			if (ee()->TMPL->fetch_param('show_empty') == 'no')
 			{
 				$sql .= " LEFT JOIN exp_category_posts ON c.cat_id = exp_category_posts.cat_id ";
 
@@ -3964,9 +3668,9 @@ class Channel {
 				}
 			}
 
-			$sql .= " WHERE c.group_id IN ('".str_replace('|', "','", $this->EE->db->escape_str($group_ids))."') ";
+			$sql .= " WHERE c.group_id IN ('".str_replace('|', "','", ee()->db->escape_str($group_ids))."') ";
 
-			if ($this->EE->TMPL->fetch_param('show_empty') == 'no')
+			if (ee()->TMPL->fetch_param('show_empty') == 'no')
 			{
 				if (count($channel_ids))
 				{
@@ -3974,30 +3678,30 @@ class Channel {
 				}
 				else
 				{
-					$sql .= " AND exp_channel_titles.site_id IN ('".implode("','", $this->EE->TMPL->site_ids)."') ";
+					$sql .= " AND exp_channel_titles.site_id IN ('".implode("','", ee()->TMPL->site_ids)."') ";
 				}
 
-				if ($status = $this->EE->TMPL->fetch_param('status'))
+				if ($status = ee()->TMPL->fetch_param('status'))
 				{
 					$status = str_replace('Open',	'open',	$status);
 					$status = str_replace('Closed', 'closed', $status);
 
-					$sql .= $this->EE->functions->sql_andor_string($status, 'exp_channel_titles.status');
+					$sql .= ee()->functions->sql_andor_string($status, 'exp_channel_titles.status');
 				}
 				else
 				{
 					$sql .= "AND exp_channel_titles.status = 'open' ";
 				}
 
-				if ($this->EE->TMPL->fetch_param('show_empty') == 'no')
+				if (ee()->TMPL->fetch_param('show_empty') == 'no')
 				{
 					$sql .= "AND exp_category_posts.cat_id IS NOT NULL ";
 				}
 			}
 
-			if ($this->EE->TMPL->fetch_param('show') !== FALSE)
+			if (ee()->TMPL->fetch_param('show') !== FALSE)
 			{
-				$sql .= $this->EE->functions->sql_andor_string($this->EE->TMPL->fetch_param('show'), 'c.cat_id').' ';
+				$sql .= ee()->functions->sql_andor_string(ee()->TMPL->fetch_param('show'), 'c.cat_id').' ';
 			}
 
 			if ($parent_only == TRUE)
@@ -4006,19 +3710,19 @@ class Channel {
 			}
 
 			$sql .= " ORDER BY c.group_id, c.parent_id, c.cat_order";
-		 	$query = $this->EE->db->query($sql);
+		 	$query = ee()->db->query($sql);
 			
 			if ($query->num_rows() > 0)
 			{
-				$this->EE->load->library('typography');
-				$this->EE->typography->initialize(array(
+				ee()->load->library('typography');
+				ee()->typography->initialize(array(
 								'convert_curly'	=> FALSE)
 								);
 
 				$used = array();
 				
 				// Get category ID from URL for {if active} conditional
-				$this->EE->load->helper('segment');
+				ee()->load->helper('segment');
 				$active_cat = parse_category($this->query_string);
 				
 				foreach($query->result_array() as $row)
@@ -4032,8 +3736,8 @@ class Channel {
 					{
 						$chunk = $cat_chunk;
 						
-						$this->EE->load->library('file_field');
-						$cat_image = $this->EE->file_field->parse_field($row['cat_image']);
+						ee()->load->library('file_field');
+						$cat_image = ee()->file_field->parse_field($row['cat_image']);
 						
 						$cat_vars = array('category_name'			=> $row['cat_name'],
 										  'category_url_title'		=> $row['cat_url_title'],
@@ -4050,7 +3754,7 @@ class Channel {
 							$cat_vars[$v['field_name']] = ( ! isset($row['field_id_'.$v['field_id']])) ? '' : $row['field_id_'.$v['field_id']];
 						}
 
-						$chunk = $this->EE->functions->prep_conditionals($chunk, $cat_vars);
+						$chunk = ee()->functions->prep_conditionals($chunk, $cat_vars);
 
 						$chunk = str_replace( array(LD.'category_id'.RD,
 													LD.'category_name'.RD,
@@ -4059,10 +3763,10 @@ class Channel {
 													LD.'category_description'.RD,
 													LD.'parent_id'.RD),
 											  array($row['cat_id'],
-											  		$this->EE->functions->encode_ee_tags($row['cat_name']),
+											  		ee()->functions->encode_ee_tags($row['cat_name']),
 													$row['cat_url_title'],
 											  		$cat_image['url'],
-											  		$this->EE->functions->encode_ee_tags($row['cat_description']),
+											  		ee()->functions->encode_ee_tags($row['cat_description']),
 													$row['parent_id']),
 											  $chunk);
 
@@ -4078,7 +3782,7 @@ class Channel {
 						{
 							if (isset($row['field_id_'.$cfv['field_id']]) AND $row['field_id_'.$cfv['field_id']] != '')
 							{
-								$field_content = $this->EE->typography->parse_type($row['field_id_'.$cfv['field_id']],
+								$field_content = ee()->typography->parse_type($row['field_id_'.$cfv['field_id']],
 																			array(
 																				  'text_format'		=> $row['field_ft_'.$cfv['field_id']],
 																				  'html_format'		=> $row['field_html_formatting'],
@@ -4098,8 +3802,8 @@ class Channel {
 						// Check to see if we need to parse {filedir_n}
 						if (strpos($chunk, '{filedir_') !== FALSE)
 						{
-							$this->EE->load->library('file_field');
-							$chunk = $this->EE->file_field->parse_string($chunk);
+							ee()->load->library('file_field');
+							$chunk = ee()->file_field->parse_string($chunk);
 						}
 						
 						$categories_parsed .= $chunk;
@@ -4124,13 +3828,13 @@ class Channel {
 								$chunk = str_replace($tkey, reduce_double_slashes($tval.'/'.$trow['entry_id']), $chunk);
 							}
 
-							foreach($this->EE->TMPL->var_single as $key => $val)
+							foreach(ee()->TMPL->var_single as $key => $val)
 							{
 								if (isset($entry_date[$key]))
 								{
-									$val = str_replace($entry_date[$key], $this->EE->localize->format_date($entry_date[$key], $trow['entry_date']), $val);
+									$val = str_replace($entry_date[$key], ee()->localize->format_date($entry_date[$key], $trow['entry_date']), $val);
 
-									$chunk = $this->EE->TMPL->swap_var_single($key, $val, $chunk);
+									$chunk = ee()->TMPL->swap_var_single($key, $val, $chunk);
 								}
 
 							}
@@ -4140,15 +3844,15 @@ class Channel {
 					}
 					
 					// Parse row then concatenate on $return_data
-					$parsed_row = preg_replace($categories_pattern, $categories_parsed, $this->EE->TMPL->tagdata);
+					$parsed_row = preg_replace($categories_pattern, $categories_parsed, ee()->TMPL->tagdata);
 					$parsed_row = preg_replace($titles_pattern, $titles_parsed, $parsed_row);
 					
 					$return_data .= $parsed_row;
 				}
 				
-				if ($this->EE->TMPL->fetch_param('backspace'))
+				if (ee()->TMPL->fetch_param('backspace'))
 				{
-					$return_data = substr($return_data, 0, - $this->EE->TMPL->fetch_param('backspace'));
+					$return_data = substr($return_data, 0, - ee()->TMPL->fetch_param('backspace'));
 				}
 			}
 		}
@@ -4202,10 +3906,10 @@ class Channel {
 
 		if ($this->enable['category_fields'] === TRUE)
 		{
-			$query = $this->EE->db->query("SELECT field_id, field_name
+			$query = ee()->db->query("SELECT field_id, field_name
 								FROM exp_category_fields
-								WHERE site_id IN ('".implode("','", $this->EE->TMPL->site_ids)."')
-								AND group_id IN ('".str_replace('|', "','", $this->EE->db->escape_str($group_id))."')");
+								WHERE site_id IN ('".implode("','", ee()->TMPL->site_ids)."')
+								AND group_id IN ('".str_replace('|', "','", ee()->db->escape_str($group_id))."')");
 
 			if ($query->num_rows() > 0)
 			{
@@ -4243,8 +3947,8 @@ class Channel {
 		{
 			// First we'll grab all category ID numbers
 
-			$query = $this->EE->db->query("SELECT cat_id, parent_id FROM exp_categories
-								 WHERE group_id IN ('".str_replace('|', "','", $this->EE->db->escape_str($group_id))."')
+			$query = ee()->db->query("SELECT cat_id, parent_id FROM exp_categories
+								 WHERE group_id IN ('".str_replace('|', "','", ee()->db->escape_str($group_id))."')
 								 ORDER BY group_id, parent_id, cat_order");
 
 			$all = array();
@@ -4267,7 +3971,7 @@ class Channel {
 					LEFT JOIN exp_category_posts ON exp_categories.cat_id = exp_category_posts.cat_id
 					LEFT JOIN exp_channel_titles ON exp_category_posts.entry_id = exp_channel_titles.entry_id ";
 
-			$sql .= "WHERE group_id IN ('".str_replace('|', "','", $this->EE->db->escape_str($group_id))."') ";
+			$sql .= "WHERE group_id IN ('".str_replace('|', "','", ee()->db->escape_str($group_id))."') ";
 
 			$sql .= "AND exp_category_posts.cat_id IS NOT NULL ";
 
@@ -4277,13 +3981,13 @@ class Channel {
 			}
 			else
 			{
-				$sql .= "AND exp_channel_titles.site_id IN ('".implode("','", $this->EE->TMPL->site_ids)."') ";
+				$sql .= "AND exp_channel_titles.site_id IN ('".implode("','", ee()->TMPL->site_ids)."') ";
 			}
 
-			if (($status = $this->EE->TMPL->fetch_param('status')) !== FALSE)
+			if (($status = ee()->TMPL->fetch_param('status')) !== FALSE)
 	        {
 				$status = str_replace(array('Open', 'Closed'), array('open', 'closed'), $status);
-	            $sql .= $this->EE->functions->sql_andor_string($status, 'exp_channel_titles.status');
+	            $sql .= ee()->functions->sql_andor_string($status, 'exp_channel_titles.status');
 	        }
 	        else
 	        {
@@ -4294,14 +3998,14 @@ class Channel {
 			/**  We only select entries that have not expired
 			/**------*/
 
-			$timestamp = ($this->EE->TMPL->cache_timestamp != '') ? $this->EE->TMPL->cache_timestamp : $this->EE->localize->now;
+			$timestamp = (ee()->TMPL->cache_timestamp != '') ? ee()->TMPL->cache_timestamp : ee()->localize->now;
 
-			if ($this->EE->TMPL->fetch_param('show_future_entries') != 'yes')
+			if (ee()->TMPL->fetch_param('show_future_entries') != 'yes')
 			{
 				$sql .= " AND exp_channel_titles.entry_date < ".$timestamp." ";
 			}
 
-			if ($this->EE->TMPL->fetch_param('show_expired') != 'yes')
+			if (ee()->TMPL->fetch_param('show_expired') != 'yes')
 			{
 				$sql .= " AND (exp_channel_titles.expiration_date = 0 OR exp_channel_titles.expiration_date > ".$timestamp.") ";
 			}
@@ -4313,7 +4017,7 @@ class Channel {
 
 			$sql .= " ORDER BY group_id, parent_id, cat_order";
 
-			$query = $this->EE->db->query($sql);
+			$query = ee()->db->query($sql);
 
 			if ($query->num_rows() == 0)
 			{
@@ -4348,7 +4052,7 @@ class Channel {
 
 			$sql .= " ORDER BY c.group_id, c.parent_id, c.cat_order";
 
-			$query = $this->EE->db->query($sql);
+			$query = ee()->db->query($sql);
 
 			if ($query->num_rows() == 0)
 			{
@@ -4360,7 +4064,7 @@ class Channel {
 			$sql = "SELECT DISTINCT(c.cat_id), c.parent_id, c.cat_name, c.cat_url_title, c.cat_image, c.cat_description {$field_sqla}
 					FROM exp_categories AS c
 					{$field_sqlb}
-					WHERE c.group_id IN ('".str_replace('|', "','", $this->EE->db->escape_str($group_id))."') ";
+					WHERE c.group_id IN ('".str_replace('|', "','", ee()->db->escape_str($group_id))."') ";
 
 			if ($parent_only === TRUE)
 			{
@@ -4369,7 +4073,7 @@ class Channel {
 
 			$sql .= " ORDER BY c.group_id, c.parent_id, c.cat_order";
 
-			$query = $this->EE->db->query($sql);
+			$query = ee()->db->query($sql);
 
 			if ($query->num_rows() == 0)
 			{
@@ -4384,15 +4088,15 @@ class Channel {
 		// request categories while also not having a problem with having a
 		// child but not a parent.  As we all know, categories are not asexual
 
-		if ($this->EE->TMPL->fetch_param('show') !== FALSE)
+		if (ee()->TMPL->fetch_param('show') !== FALSE)
 		{
-			if (strncmp($this->EE->TMPL->fetch_param('show'), 'not ', 4) == 0)
+			if (strncmp(ee()->TMPL->fetch_param('show'), 'not ', 4) == 0)
 			{
-				$not_these = explode('|', trim(substr($this->EE->TMPL->fetch_param('show'), 3)));
+				$not_these = explode('|', trim(substr(ee()->TMPL->fetch_param('show'), 3)));
 			}
 			else
 			{
-				$these = explode('|', trim($this->EE->TMPL->fetch_param('show')));
+				$these = explode('|', trim(ee()->TMPL->fetch_param('show')));
 			}
 		}
 
@@ -4422,8 +4126,8 @@ class Channel {
 
 		$open = 0;
 
-		$this->EE->load->library('typography');
-		$this->EE->typography->initialize(array(
+		ee()->load->library('typography');
+		ee()->typography->initialize(array(
 				'convert_curly'	=> FALSE)
 				);
 
@@ -4431,7 +4135,7 @@ class Channel {
 		$total_results = count($this->cat_array);
 		
 		// Get category ID from URL for {if active} conditional
-		$this->EE->load->helper('segment');
+		ee()->load->helper('segment');
 		$active_cat = parse_category($this->query_string);
 		
 		$this->category_subtree(array(
@@ -4468,7 +4172,7 @@ class Channel {
 		$total_results = count($this->cat_array);
 		
 		// Get category ID from URL for {if active} conditional
-		$this->EE->load->helper('segment');
+		ee()->load->helper('segment');
 		$active_cat = parse_category($this->query_string);
 
 		foreach($this->cat_array as $key => $val)
@@ -4483,8 +4187,8 @@ class Channel {
 
 				$chunk = $template;
 				
-				$this->EE->load->library('file_field');
-				$cat_image = $this->EE->file_field->parse_field($val[2]);
+				ee()->load->library('file_field');
+				$cat_image = ee()->file_field->parse_field($val[2]);
 				
 				$cat_vars = array('category_name'			=> $val[1],
 								  'category_url_title'		=> $val[4],
@@ -4503,7 +4207,7 @@ class Channel {
 				$cat_vars['count'] = ++$this->category_count;
 				$cat_vars['total_results'] = $total_results;
 
-				$chunk = $this->EE->functions->prep_conditionals($chunk, $cat_vars);
+				$chunk = ee()->functions->prep_conditionals($chunk, $cat_vars);
 
 				$chunk = str_replace( array(LD.'category_id'.RD,
 											LD.'category_name'.RD,
@@ -4512,10 +4216,10 @@ class Channel {
 											LD.'category_description'.RD,
 											LD.'parent_id'.RD),
 									  array($key,
-									  		$this->EE->functions->encode_ee_tags($val[1]),
+									  		ee()->functions->encode_ee_tags($val[1]),
 											$val[4],
 									  		$cat_image['url'],
-									  		$this->EE->functions->encode_ee_tags($val[3]),
+									  		ee()->functions->encode_ee_tags($val[3]),
 											$val[0]),
 									  $chunk);
 
@@ -4536,7 +4240,7 @@ class Channel {
 				{
 					if (isset($val['field_id_'.$ccv['field_id']]) AND $val['field_id_'.$ccv['field_id']] != '')
 					{
-						$field_content = $this->EE->typography->parse_type($val['field_id_'.$ccv['field_id']],
+						$field_content = ee()->typography->parse_type($val['field_id_'.$ccv['field_id']],
 																	array(
 																		  'text_format'		=> $val['field_ft_'.$ccv['field_id']],
 																		  'html_format'		=> $val['field_html_formatting'],
@@ -4671,10 +4375,10 @@ class Channel {
 		// 'channel_module_category_heading_start' hook.
 		//  - Rewrite the displaying of category headings, if you dare!
 		//
-			if ($this->EE->extensions->active_hook('channel_module_category_heading_start') === TRUE)
+			if (ee()->extensions->active_hook('channel_module_category_heading_start') === TRUE)
 			{
-				$this->EE->TMPL->tagdata = $this->EE->extensions->call('channel_module_category_heading_start');
-				if ($this->EE->extensions->end_script === TRUE) return $this->EE->TMPL->tagdata;
+				ee()->TMPL->tagdata = ee()->extensions->call('channel_module_category_heading_start');
+				if (ee()->extensions->end_script === TRUE) return ee()->TMPL->tagdata;
 			}
 		//
 		// -------------------------------------------
@@ -4700,19 +4404,19 @@ class Channel {
 
 		// Is the category being specified by name?
 
-		if ($qstring != '' AND $this->reserved_cat_segment != '' AND in_array($this->reserved_cat_segment, explode("/", $qstring)) AND $this->EE->TMPL->fetch_param('channel'))
+		if ($qstring != '' AND $this->reserved_cat_segment != '' AND in_array($this->reserved_cat_segment, explode("/", $qstring)) AND ee()->TMPL->fetch_param('channel'))
 		{
 			$qstring = preg_replace("/(.*?)\/".preg_quote($this->reserved_cat_segment)."\//i", '', '/'.$qstring);
 			
-			$sql = "SELECT DISTINCT cat_group FROM exp_channels WHERE site_id IN ('".implode("','", $this->EE->TMPL->site_ids)."') AND ";
+			$sql = "SELECT DISTINCT cat_group FROM exp_channels WHERE site_id IN ('".implode("','", ee()->TMPL->site_ids)."') AND ";
 
-			$xsql = $this->EE->functions->sql_andor_string($this->EE->TMPL->fetch_param('channel'), 'channel_name');
+			$xsql = ee()->functions->sql_andor_string(ee()->TMPL->fetch_param('channel'), 'channel_name');
 
 			if (substr($xsql, 0, 3) == 'AND') $xsql = substr($xsql, 3);
 
 			$sql .= ' '.$xsql;
 
-			$query = $this->EE->db->query($sql);
+			$query = ee()->db->query($sql);
 
 			if ($query->num_rows() > 0)
 			{
@@ -4721,7 +4425,7 @@ class Channel {
 
 				foreach($query->result_array() as $row)
 				{
-					if ($this->EE->TMPL->fetch_param('relaxed_categories') == 'yes')
+					if (ee()->TMPL->fetch_param('relaxed_categories') == 'yes')
 					{
 						$valid_cats = array_merge($valid_cats, explode('|', $row['cat_group']));
 					}
@@ -4755,8 +4459,8 @@ class Channel {
 
 				$cut_qstring = array_shift($temp = explode('/', $qstring));
 
-				$result = $this->EE->db->query("SELECT cat_id FROM exp_categories
-									  WHERE cat_url_title='".$this->EE->db->escape_str($cut_qstring)."'
+				$result = ee()->db->query("SELECT cat_id FROM exp_categories
+									  WHERE cat_url_title='".ee()->db->escape_str($cut_qstring)."'
 									  AND group_id IN ('".implode("','", $valid_cats)."')");
 
 				if ($result->num_rows() == 1)
@@ -4766,8 +4470,8 @@ class Channel {
 				else
 				{
 					// give it one more try using the whole $qstring
-					$result = $this->EE->db->query("SELECT cat_id FROM exp_categories
-										  WHERE cat_url_title='".$this->EE->db->escape_str($qstring)."'
+					$result = ee()->db->query("SELECT cat_id FROM exp_categories
+										  WHERE cat_url_title='".ee()->db->escape_str($qstring)."'
 										  AND group_id IN ('".implode("','", $valid_cats)."')");
 
 					if ($result->num_rows() == 1)
@@ -4782,7 +4486,7 @@ class Channel {
 
 		if ( ! preg_match("#(^|\/)C(\d+)#", $qstring, $match))
 		{
-			return $this->EE->TMPL->no_results();
+			return ee()->TMPL->no_results();
 		}
 
 		// fetch category field names and id's
@@ -4790,16 +4494,16 @@ class Channel {
 		if ($this->enable['category_fields'] === TRUE)
 		{
 			// limit to correct category group
-			$gquery = $this->EE->db->query("SELECT group_id FROM exp_categories WHERE cat_id = '".$this->EE->db->escape_str($match[2])."'");
+			$gquery = ee()->db->query("SELECT group_id FROM exp_categories WHERE cat_id = '".ee()->db->escape_str($match[2])."'");
 
 			if ($gquery->num_rows() == 0)
 			{
-				return $this->EE->TMPL->no_results();
+				return ee()->TMPL->no_results();
 			}
 
-			$query = $this->EE->db->query("SELECT field_id, field_name
+			$query = ee()->db->query("SELECT field_id, field_name
 								FROM exp_category_fields
-								WHERE site_id IN ('".implode("','", $this->EE->TMPL->site_ids)."')
+								WHERE site_id IN ('".implode("','", ee()->TMPL->site_ids)."')
 								AND group_id = '".$gquery->row('group_id')."'");
 
 			if ($query->num_rows() > 0)
@@ -4820,20 +4524,20 @@ class Channel {
 			$field_sqlb = '';
 		}
 
-		$query = $this->EE->db->query("SELECT c.cat_name, c.parent_id, c.cat_url_title, c.cat_description, c.cat_image {$field_sqla}
+		$query = ee()->db->query("SELECT c.cat_name, c.parent_id, c.cat_url_title, c.cat_description, c.cat_image {$field_sqla}
 							FROM exp_categories AS c
 							{$field_sqlb}
-							WHERE c.cat_id = '".$this->EE->db->escape_str($match[2])."'");
+							WHERE c.cat_id = '".ee()->db->escape_str($match[2])."'");
 
 		if ($query->num_rows() == 0)
 		{
-			return $this->EE->TMPL->no_results();
+			return ee()->TMPL->no_results();
 		}
 
 		$row = $query->row_array();
 
-		$this->EE->load->library('file_field');
-		$cat_image = $this->EE->file_field->parse_field($query->row('cat_image'));
+		ee()->load->library('file_field');
+		$cat_image = ee()->file_field->parse_field($query->row('cat_image'));
 		
 		$cat_vars = array('category_name'			=> $query->row('cat_name'),
 						  'category_description'	=> $query->row('cat_description'),
@@ -4847,32 +4551,32 @@ class Channel {
 			$cat_vars[$v['field_name']] = ($query->row('field_id_'.$v['field_id'])) ? $query->row('field_id_'.$v['field_id']) : '';
 		}
 
-		$this->EE->TMPL->tagdata = $this->EE->functions->prep_conditionals($this->EE->TMPL->tagdata, $cat_vars);
+		ee()->TMPL->tagdata = ee()->functions->prep_conditionals(ee()->TMPL->tagdata, $cat_vars);
 		
-		$this->EE->TMPL->tagdata = str_replace( array(LD.'category_id'.RD,
+		ee()->TMPL->tagdata = str_replace( array(LD.'category_id'.RD,
 											LD.'category_name'.RD,
 											LD.'category_url_title'.RD,
 											LD.'category_image'.RD,
 											LD.'category_description'.RD,
 											LD.'parent_id'.RD),
 							 	 	  array($match[2],
-											$this->EE->functions->encode_ee_tags($query->row('cat_name')),
+											ee()->functions->encode_ee_tags($query->row('cat_name')),
 											$query->row('cat_url_title'),
 											$cat_image['url'],
-											$this->EE->functions->encode_ee_tags($query->row('cat_description')),
+											ee()->functions->encode_ee_tags($query->row('cat_description')),
 											$query->row('parent_id')),
-							  		  $this->EE->TMPL->tagdata);
+							  		  ee()->TMPL->tagdata);
 
 		// Check to see if we need to parse {filedir_n}
-		if (strpos($this->EE->TMPL->tagdata, '{filedir_') !== FALSE)
+		if (strpos(ee()->TMPL->tagdata, '{filedir_') !== FALSE)
 		{
-			$this->EE->load->library('file_field');
-			$this->EE->TMPL->tagdata = $this->EE->file_field->parse_string($this->EE->TMPL->tagdata);
+			ee()->load->library('file_field');
+			ee()->TMPL->tagdata = ee()->file_field->parse_string(ee()->TMPL->tagdata);
 		}
 		
 		// parse custom fields
-		$this->EE->load->library('typography');
-		$this->EE->typography->initialize(array(
+		ee()->load->library('typography');
+		ee()->typography->initialize(array(
 				'convert_curly'	=> FALSE)
 				);
 
@@ -4881,7 +4585,7 @@ class Channel {
 		{
 			if ($query->row('field_id_'.$ccv['field_id']) AND $query->row('field_id_'.$ccv['field_id']) != '')
 			{
-				$field_content = $this->EE->typography->parse_type($query->row('field_id_'.$ccv['field_id']),
+				$field_content = ee()->typography->parse_type($query->row('field_id_'.$ccv['field_id']),
 															array(
 																  'text_format'		=> $query->row('field_ft_'.$ccv['field_id']),
 																  'html_format'		=> $query->row('field_html_formatting'),
@@ -4889,16 +4593,16 @@ class Channel {
 																  'allow_img_url'	=> 'y'
 																)
 														);
-				$this->EE->TMPL->tagdata = str_replace(LD.$ccv['field_name'].RD, $field_content, $this->EE->TMPL->tagdata);
+				ee()->TMPL->tagdata = str_replace(LD.$ccv['field_name'].RD, $field_content, ee()->TMPL->tagdata);
 			}
 			else
 			{
 				// garbage collection
-				$this->EE->TMPL->tagdata = str_replace(LD.$ccv['field_name'].RD, '', $this->EE->TMPL->tagdata);
+				ee()->TMPL->tagdata = str_replace(LD.$ccv['field_name'].RD, '', ee()->TMPL->tagdata);
 			}
 		}
 
-		return $this->EE->TMPL->tagdata;
+		return ee()->TMPL->tagdata;
 	}
 
 	// ------------------------------------------------------------------------
@@ -4923,7 +4627,7 @@ class Channel {
 		$sort = ($which == 'next') ? 'ASC' : 'DESC';
 
 		// Don't repeat our work if we already know the single entry page details
-		if ( ! isset($this->EE->session->cache['channel']['single_entry_id']) OR ! isset($this->EE->session->cache['channel']['single_entry_date']))
+		if ( ! isset(ee()->session->cache['channel']['single_entry_id']) OR ! isset(ee()->session->cache['channel']['single_entry_date']))
 		{
 			// no query string?  Nothing to do...
 			if (($qstring = $this->query_string) == '')
@@ -4958,50 +4662,50 @@ class Channel {
 			/**  Query for the entry id and date
 			/** ---------------------------------------*/
 			
-			$this->EE->db->select('t.entry_id, t.entry_date');
-			$this->EE->db->from('channel_titles AS t');
-			$this->EE->db->join('channels AS w', 'w.channel_id = t.channel_id', 'left');
+			ee()->db->select('t.entry_id, t.entry_date');
+			ee()->db->from('channel_titles AS t');
+			ee()->db->join('channels AS w', 'w.channel_id = t.channel_id', 'left');
 			
 			// url_title parameter
-			if ($url_title = $this->EE->TMPL->fetch_param('url_title'))
+			if ($url_title = ee()->TMPL->fetch_param('url_title'))
 			{
-				$this->EE->db->where('t.url_title', $url_title);
+				ee()->db->where('t.url_title', $url_title);
 			}
 			else
 			{
 				// Found entry ID in query string
 				if (is_numeric($qstring))
 				{
-					$this->EE->db->where('t.entry_id', $qstring);
+					ee()->db->where('t.entry_id', $qstring);
 				}
 				// Found URL title in query string
 				else
 				{
-					$this->EE->db->where('t.url_title', $qstring);
+					ee()->db->where('t.url_title', $qstring);
 				}
 			}
 			
-			$this->EE->db->where_in('w.site_id', $this->EE->TMPL->site_ids);
+			ee()->db->where_in('w.site_id', ee()->TMPL->site_ids);
 			
 			// Channel paremter
-			if ($channel_name = $this->EE->TMPL->fetch_param('channel'))
+			if ($channel_name = ee()->TMPL->fetch_param('channel'))
 			{
-				$this->EE->functions->ar_andor_string($channel_name, 'channel_name', 'w');
+				ee()->functions->ar_andor_string($channel_name, 'channel_name', 'w');
 			}
 			
-			$query = $this->EE->db->get();
+			$query = ee()->db->get();
 			
 			// no results or more than one result?  Buh bye!
 			if ($query->num_rows() != 1)
 			{
-				$this->EE->TMPL->log_item('Channel Next/Prev Entry tag error: Could not resolve single entry page id.');
+				ee()->TMPL->log_item('Channel Next/Prev Entry tag error: Could not resolve single entry page id.');
 				return;
 			}
 
 			$row = $query->row_array();
 
-			$this->EE->session->cache['channel']['single_entry_id'] = $row['entry_id'];
-			$this->EE->session->cache['channel']['single_entry_date'] = $row['entry_date'];
+			ee()->session->cache['channel']['single_entry_id'] = $row['entry_id'];
+			ee()->session->cache['channel']['single_entry_date'] = $row['entry_date'];
 		}
 
 		/** ---------------------------------------
@@ -5011,9 +4715,9 @@ class Channel {
 		$ids = '';
 
 		// Get included or excluded entry ids from entry_id parameter
-		if (($entry_id = $this->EE->TMPL->fetch_param('entry_id')) != FALSE)
+		if (($entry_id = ee()->TMPL->fetch_param('entry_id')) != FALSE)
 		{
-			$ids = $this->EE->functions->sql_andor_string($entry_id, 't.entry_id').' ';
+			$ids = ee()->functions->sql_andor_string($entry_id, 't.entry_id').' ';
 		}
 
 		$sql = 'SELECT t.entry_id, t.title, t.url_title, w.channel_name, w.channel_title, w.comment_url, w.channel_url 
@@ -5025,22 +4729,22 @@ class Channel {
 		/*  entries that are not assigned to a category.
 		/* --------------------------------*/
 
-		if ((substr($this->EE->TMPL->fetch_param('category_group'), 0, 3) == 'not' OR substr($this->EE->TMPL->fetch_param('category'), 0, 3) == 'not') && $this->EE->TMPL->fetch_param('uncategorized_entries') !== 'no')
+		if ((substr(ee()->TMPL->fetch_param('category_group'), 0, 3) == 'not' OR substr(ee()->TMPL->fetch_param('category'), 0, 3) == 'not') && ee()->TMPL->fetch_param('uncategorized_entries') !== 'no')
 		{
 			$sql .= 'LEFT JOIN exp_category_posts ON t.entry_id = exp_category_posts.entry_id
 					 LEFT JOIN exp_categories ON exp_category_posts.cat_id = exp_categories.cat_id ';
 		}
-		elseif($this->EE->TMPL->fetch_param('category_group') OR $this->EE->TMPL->fetch_param('category'))
+		elseif(ee()->TMPL->fetch_param('category_group') OR ee()->TMPL->fetch_param('category'))
 		{
 			$sql .= 'INNER JOIN exp_category_posts ON t.entry_id = exp_category_posts.entry_id
 					 INNER JOIN exp_categories ON exp_category_posts.cat_id = exp_categories.cat_id ';
 		}
 
-		$sql .= ' WHERE t.entry_id != '.$this->EE->session->cache['channel']['single_entry_id'].' '.$ids;
+		$sql .= ' WHERE t.entry_id != '.ee()->session->cache['channel']['single_entry_id'].' '.$ids;
 
-		$timestamp = ($this->EE->TMPL->cache_timestamp != '') ? $this->EE->TMPL->cache_timestamp : $this->EE->localize->now;
+		$timestamp = (ee()->TMPL->cache_timestamp != '') ? ee()->TMPL->cache_timestamp : ee()->localize->now;
 
-	    if ($this->EE->TMPL->fetch_param('show_future_entries') != 'yes')
+	    if (ee()->TMPL->fetch_param('show_future_entries') != 'yes')
 	    {
 	    	$sql .= " AND t.entry_date < {$timestamp} ";
 	    }
@@ -5048,33 +4752,33 @@ class Channel {
 		// constrain by date depending on whether this is a 'next' or 'prev' tag
 		if ($which == 'next')
 		{
-			$sql .= ' AND t.entry_date >= '.$this->EE->session->cache['channel']['single_entry_date'].' ';
-			$sql .= ' AND IF (t.entry_date = '.$this->EE->session->cache['channel']['single_entry_date'].', t.entry_id > '.$this->EE->session->cache['channel']['single_entry_id'].', 1) ';
+			$sql .= ' AND t.entry_date >= '.ee()->session->cache['channel']['single_entry_date'].' ';
+			$sql .= ' AND IF (t.entry_date = '.ee()->session->cache['channel']['single_entry_date'].', t.entry_id > '.ee()->session->cache['channel']['single_entry_id'].', 1) ';
 		}
 		else
 		{
-			$sql .= ' AND t.entry_date <= '.$this->EE->session->cache['channel']['single_entry_date'].' ';
-			$sql .= ' AND IF (t.entry_date = '.$this->EE->session->cache['channel']['single_entry_date'].', t.entry_id < '.$this->EE->session->cache['channel']['single_entry_id'].', 1) ';
+			$sql .= ' AND t.entry_date <= '.ee()->session->cache['channel']['single_entry_date'].' ';
+			$sql .= ' AND IF (t.entry_date = '.ee()->session->cache['channel']['single_entry_date'].', t.entry_id < '.ee()->session->cache['channel']['single_entry_id'].', 1) ';
 		}
 
-	    if ($this->EE->TMPL->fetch_param('show_expired') != 'yes')
+	    if (ee()->TMPL->fetch_param('show_expired') != 'yes')
 	    {
 			$sql .= " AND (t.expiration_date = 0 OR t.expiration_date > {$timestamp}) ";
 	    }
 
-		$sql .= " AND w.site_id IN ('".implode("','", $this->EE->TMPL->site_ids)."') ";
+		$sql .= " AND w.site_id IN ('".implode("','", ee()->TMPL->site_ids)."') ";
 
-		if ($channel_name = $this->EE->TMPL->fetch_param('channel'))
+		if ($channel_name = ee()->TMPL->fetch_param('channel'))
 		{
-			$sql .= $this->EE->functions->sql_andor_string($channel_name, 'channel_name', 'w')." ";
+			$sql .= ee()->functions->sql_andor_string($channel_name, 'channel_name', 'w')." ";
 		}
 
-		if ($status = $this->EE->TMPL->fetch_param('status'))
+		if ($status = ee()->TMPL->fetch_param('status'))
 	    {
 			$status = str_replace('Open',   'open',   $status);
 			$status = str_replace('Closed', 'closed', $status);
 
-			$sql .= $this->EE->functions->sql_andor_string($status, 't.status')." ";
+			$sql .= ee()->functions->sql_andor_string($status, 't.status')." ";
 		}
 		else
 		{
@@ -5085,23 +4789,23 @@ class Channel {
 	    /**  Limit query by category
 	    /**------*/
 
-	    if ($this->EE->TMPL->fetch_param('category'))
+	    if (ee()->TMPL->fetch_param('category'))
 	    {
-	    	if (stristr($this->EE->TMPL->fetch_param('category'), '&'))
+	    	if (stristr(ee()->TMPL->fetch_param('category'), '&'))
 	    	{
 	    		/** --------------------------------------
 	    		/**  First, we find all entries with these categories
 	    		/** --------------------------------------*/
 
-	    		$for_sql = (substr($this->EE->TMPL->fetch_param('category'), 0, 3) == 'not') ? trim(substr($this->EE->TMPL->fetch_param('category'), 3)) : $this->EE->TMPL->fetch_param('category');
+	    		$for_sql = (substr(ee()->TMPL->fetch_param('category'), 0, 3) == 'not') ? trim(substr(ee()->TMPL->fetch_param('category'), 3)) : ee()->TMPL->fetch_param('category');
 
 	    		$csql = "SELECT exp_category_posts.entry_id, exp_category_posts.cat_id, ".
 						str_replace('SELECT', '', $sql).						
-						$this->EE->functions->sql_andor_string(str_replace('&', '|', $for_sql), 'exp_categories.cat_id');
+						ee()->functions->sql_andor_string(str_replace('&', '|', $for_sql), 'exp_categories.cat_id');
 
 	    		//exit($csql);
 
-	    		$results = $this->EE->db->query($csql);
+	    		$results = ee()->db->query($csql);
 
 	    		if ($results->num_rows() == 0)
 	    		{
@@ -5109,7 +4813,7 @@ class Channel {
 	    		}
 
 	    		$type = 'IN';
-	    		$categories	 = explode('&', $this->EE->TMPL->fetch_param('category'));
+	    		$categories	 = explode('&', ee()->TMPL->fetch_param('category'));
 	    		$entry_array = array();
 
 	    		if (substr($categories[0], 0, 3) == 'not')
@@ -5140,32 +4844,32 @@ class Channel {
 	    	}
 	    	else
 	    	{
-	    		if (substr($this->EE->TMPL->fetch_param('category'), 0, 3) == 'not' && $this->EE->TMPL->fetch_param('uncategorized_entries') !== 'no')
+	    		if (substr(ee()->TMPL->fetch_param('category'), 0, 3) == 'not' && ee()->TMPL->fetch_param('uncategorized_entries') !== 'no')
 	    		{
-	    			$sql .= $this->EE->functions->sql_andor_string($this->EE->TMPL->fetch_param('category'), 'exp_categories.cat_id', '', TRUE)." ";
+	    			$sql .= ee()->functions->sql_andor_string(ee()->TMPL->fetch_param('category'), 'exp_categories.cat_id', '', TRUE)." ";
 	    		}
 	    		else
 	    		{
-	    			$sql .= $this->EE->functions->sql_andor_string($this->EE->TMPL->fetch_param('category'), 'exp_categories.cat_id')." ";
+	    			$sql .= ee()->functions->sql_andor_string(ee()->TMPL->fetch_param('category'), 'exp_categories.cat_id')." ";
 	    		}
 	    	}
 	    }
 
-	    if ($this->EE->TMPL->fetch_param('category_group'))
+	    if (ee()->TMPL->fetch_param('category_group'))
 	    {
-	        if (substr($this->EE->TMPL->fetch_param('category_group'), 0, 3) == 'not' && $this->EE->TMPL->fetch_param('uncategorized_entries') !== 'no')
+	        if (substr(ee()->TMPL->fetch_param('category_group'), 0, 3) == 'not' && ee()->TMPL->fetch_param('uncategorized_entries') !== 'no')
 			{
-				$sql .= $this->EE->functions->sql_andor_string($this->EE->TMPL->fetch_param('category_group'), 'exp_categories.group_id', '', TRUE)." ";
+				$sql .= ee()->functions->sql_andor_string(ee()->TMPL->fetch_param('category_group'), 'exp_categories.group_id', '', TRUE)." ";
 			}
 			else
 			{
-				$sql .= $this->EE->functions->sql_andor_string($this->EE->TMPL->fetch_param('category_group'), 'exp_categories.group_id')." ";
+				$sql .= ee()->functions->sql_andor_string(ee()->TMPL->fetch_param('category_group'), 'exp_categories.group_id')." ";
 			}
 	    }
 
 		$sql .= " ORDER BY t.entry_date {$sort}, t.entry_id {$sort} LIMIT 1";
 
-		$query = $this->EE->db->query($sql);
+		$query = ee()->db->query($sql);
 
 		if ($query->num_rows() == 0)
 		{
@@ -5176,9 +4880,9 @@ class Channel {
 		/**  Replace variables
 		/** ---------------------------------------*/
 
-		$this->EE->load->library('typography');
+		ee()->load->library('typography');
 		$comment_path = ($query->row('comment_url') == '') ? $query->row('comment_url') : $query->row('channel_url');
-		$title = $this->EE->typography->format_characters($query->row('title'));
+		$title = ee()->typography->format_characters($query->row('title'));
 		
 		$vars['0'] = array(
 			'entry_id'						=> $query->row('entry_id'),
@@ -5203,7 +4907,7 @@ class Channel {
 			$vars['0']['prev_entry->title'] = $title;
 		}
 
-		return $this->EE->TMPL->parse_variables($this->EE->TMPL->tagdata, $vars);
+		return ee()->TMPL->parse_variables(ee()->TMPL->tagdata, $vars);
 	}
 	
 	// ------------------------------------------------------------------------
@@ -5218,10 +4922,10 @@ class Channel {
 		//  Build query
 
 		// Fetch the timezone array and calculate the offset so we can localize the month/year
-		$this->EE->load->helper('date');
+		ee()->load->helper('date');
 		$zones = timezones();
 
-		$offset = ( ! isset($zones[$this->EE->session->userdata['timezone']]) OR $zones[$this->EE->session->userdata['timezone']] == '') ? 0 : ($zones[$this->EE->session->userdata['timezone']]*60*60);
+		$offset = ( ! isset($zones[ee()->session->userdata['timezone']]) OR $zones[ee()->session->userdata['timezone']] == '') ? 0 : ($zones[ee()->session->userdata['timezone']]*60*60);
 
 		if (substr($offset, 0, 1) == '-')
 		{
@@ -5240,17 +4944,17 @@ class Channel {
 						MONTH(FROM_UNIXTIME(".$calc.")) AS month
 						FROM exp_channel_titles
 						WHERE entry_id != ''
-						AND site_id IN ('".implode("','", $this->EE->TMPL->site_ids)."') ";
+						AND site_id IN ('".implode("','", ee()->TMPL->site_ids)."') ";
 
 
-		$timestamp = ($this->EE->TMPL->cache_timestamp != '') ? $this->EE->TMPL->cache_timestamp : $this->EE->localize->now;
+		$timestamp = (ee()->TMPL->cache_timestamp != '') ? ee()->TMPL->cache_timestamp : ee()->localize->now;
 
-		if ($this->EE->TMPL->fetch_param('show_future_entries') != 'yes')
+		if (ee()->TMPL->fetch_param('show_future_entries') != 'yes')
 		{
 			$sql .= " AND exp_channel_titles.entry_date < ".$timestamp." ";
 		}
 
-		if ($this->EE->TMPL->fetch_param('show_expired') != 'yes')
+		if (ee()->TMPL->fetch_param('show_expired') != 'yes')
 		{
 			$sql .= " AND (exp_channel_titles.expiration_date = 0 OR exp_channel_titles.expiration_date > ".$timestamp.") ";
 		}
@@ -5259,13 +4963,13 @@ class Channel {
 		/**  Limit to/exclude specific channels
 		/**------*/
 
-		if ($channel = $this->EE->TMPL->fetch_param('channel'))
+		if ($channel = ee()->TMPL->fetch_param('channel'))
 		{
-			$wsql = "SELECT channel_id FROM exp_channels WHERE site_id IN ('".implode("','", $this->EE->TMPL->site_ids)."') ";
+			$wsql = "SELECT channel_id FROM exp_channels WHERE site_id IN ('".implode("','", ee()->TMPL->site_ids)."') ";
 
-			$wsql .= $this->EE->functions->sql_andor_string($channel, 'channel_name');
+			$wsql .= ee()->functions->sql_andor_string($channel, 'channel_name');
 
-			$query = $this->EE->db->query($wsql);
+			$query = ee()->db->query($wsql);
 
 			if ($query->num_rows() > 0)
 			{
@@ -5295,12 +4999,12 @@ class Channel {
 		/**  Add status declaration
 		/**------*/
 
-		if ($status = $this->EE->TMPL->fetch_param('status'))
+		if ($status = ee()->TMPL->fetch_param('status'))
 		{
 			$status = str_replace('Open',	'open',	$status);
 			$status = str_replace('Closed', 'closed', $status);
 
-			$sstr = $this->EE->functions->sql_andor_string($status, 'status');
+			$sstr = ee()->functions->sql_andor_string($status, 'status');
 
 			if (stristr($sstr, "'closed'") === FALSE)
 			{
@@ -5316,7 +5020,7 @@ class Channel {
 
 		$sql .= " ORDER BY entry_date";
 
-		switch ($this->EE->TMPL->fetch_param('sort'))
+		switch (ee()->TMPL->fetch_param('sort'))
 		{
 			case 'asc'	: $sql .= " asc";
 				break;
@@ -5326,41 +5030,41 @@ class Channel {
 				break;
 		}
 
-		if (is_numeric($this->EE->TMPL->fetch_param('limit')))
+		if (is_numeric(ee()->TMPL->fetch_param('limit')))
 		{
-			$sql .= " LIMIT ".$this->EE->TMPL->fetch_param('limit');
+			$sql .= " LIMIT ".ee()->TMPL->fetch_param('limit');
 		}
 
-		$query = $this->EE->db->query($sql);
+		$query = ee()->db->query($sql);
 
 		if ($query->num_rows() == 0)
 		{
 			return '';
 		}
 
-		$year_limit	= (is_numeric($this->EE->TMPL->fetch_param('year_limit'))) ? $this->EE->TMPL->fetch_param('year_limit') : 50;
+		$year_limit	= (is_numeric(ee()->TMPL->fetch_param('year_limit'))) ? ee()->TMPL->fetch_param('year_limit') : 50;
 		$total_years  = 0;
 		$current_year = '';
 
 		foreach ($query->result_array() as $row)
 		{
-			$tagdata = $this->EE->TMPL->tagdata;
+			$tagdata = ee()->TMPL->tagdata;
 
 			$month = (strlen($row['month']) == 1) ? '0'.$row['month'] : $row['month'];
 			$year  = $row['year'];
 
-			$month_name = $this->EE->localize->localize_month($month);
+			$month_name = ee()->localize->localize_month($month);
 
 			//  Dealing with {year_heading}
-			if (isset($this->EE->TMPL->var_pair['year_heading']))
+			if (isset(ee()->TMPL->var_pair['year_heading']))
 			{
 				if ($year == $current_year)
 				{
-					$tagdata = $this->EE->TMPL->delete_var_pairs('year_heading', 'year_heading', $tagdata);
+					$tagdata = ee()->TMPL->delete_var_pairs('year_heading', 'year_heading', $tagdata);
 				}
 				else
 				{
-					$tagdata = $this->EE->TMPL->swap_var_pairs('year_heading', 'year_heading', $tagdata);
+					$tagdata = ee()->TMPL->swap_var_pairs('year_heading', 'year_heading', $tagdata);
 
 					$total_years++;
 
@@ -5379,22 +5083,22 @@ class Channel {
 
 			$cond = array();
 
-			$cond['month']			= $this->EE->lang->line($month_name[1]);
-			$cond['month_short']	= $this->EE->lang->line($month_name[0]);
+			$cond['month']			= ee()->lang->line($month_name[1]);
+			$cond['month_short']	= ee()->lang->line($month_name[0]);
 			$cond['month_num']		= $month;
 			$cond['year']			= $year;
 			$cond['year_short']		= substr($year, 2);
 
-			$tagdata = $this->EE->functions->prep_conditionals($tagdata, $cond);
+			$tagdata = ee()->functions->prep_conditionals($tagdata, $cond);
 
 			//  parse path
-			foreach ($this->EE->TMPL->var_single as $key => $val)
+			foreach (ee()->TMPL->var_single as $key => $val)
 			{
 				if (strncmp($key, 'path', 4) == 0)
 				{
-					$tagdata = $this->EE->TMPL->swap_var_single(
+					$tagdata = ee()->TMPL->swap_var_single(
 														$val,
-														$this->EE->functions->create_url($this->EE->functions->extract_path($key).'/'.$year.'/'.$month),
+														ee()->functions->create_url(ee()->functions->extract_path($key).'/'.$year.'/'.$month),
 														$tagdata
 													  );
 				}
@@ -5402,31 +5106,31 @@ class Channel {
 				//  parse month (long)
 				if ($key == 'month')
 				{
-					$tagdata = $this->EE->TMPL->swap_var_single($key, $this->EE->lang->line($month_name[1]), $tagdata);
+					$tagdata = ee()->TMPL->swap_var_single($key, ee()->lang->line($month_name[1]), $tagdata);
 				}
 
 				//  parse month (short)
 				if ($key == 'month_short')
 				{
-					$tagdata = $this->EE->TMPL->swap_var_single($key, $this->EE->lang->line($month_name[0]), $tagdata);
+					$tagdata = ee()->TMPL->swap_var_single($key, ee()->lang->line($month_name[0]), $tagdata);
 				}
 
 				//  parse month (numeric)
 				if ($key == 'month_num')
 				{
-					$tagdata = $this->EE->TMPL->swap_var_single($key, $month, $tagdata);
+					$tagdata = ee()->TMPL->swap_var_single($key, $month, $tagdata);
 				}
 
 				//  parse year
 				if ($key == 'year')
 				{
-					$tagdata = $this->EE->TMPL->swap_var_single($key, $year, $tagdata);
+					$tagdata = ee()->TMPL->swap_var_single($key, $year, $tagdata);
 				}
 
 				//  parse year (short)
 				if ($key == 'year_short')
 				{
-					$tagdata = $this->EE->TMPL->swap_var_single($key, substr($year, 2), $tagdata);
+					$tagdata = ee()->TMPL->swap_var_single($key, substr($year, 2), $tagdata);
 				}
 			 }
 
@@ -5455,6 +5159,14 @@ class Channel {
 	  * related_categories_mode="on"
 	  */
 	public function related_entries()
+	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated('2.6', 'Channel::related_category_entries()');
+
+		return $this->related_category_entries();
+	}
+
+	public function related_category_entries()
 	{
 		if ($this->query_string == '')
 		{
@@ -5498,15 +5210,15 @@ class Channel {
 				INNER JOIN exp_category_posts ON exp_channel_titles.entry_id = exp_category_posts.entry_id
 				INNER JOIN exp_categories ON exp_category_posts.cat_id = exp_categories.cat_id
 				WHERE exp_categories.cat_id IS NOT NULL
-				AND exp_channel_titles.site_id IN ('".implode("','", $this->EE->TMPL->site_ids)."') ";
+				AND exp_channel_titles.site_id IN ('".implode("','", ee()->TMPL->site_ids)."') ";
 
-		$sql .= ( ! is_numeric($qstring)) ? "AND exp_channel_titles.url_title = '".$this->EE->db->escape_str($qstring)."' " : "AND exp_channel_titles.entry_id = '".$this->EE->db->escape_str($qstring)."' ";
+		$sql .= ( ! is_numeric($qstring)) ? "AND exp_channel_titles.url_title = '".ee()->db->escape_str($qstring)."' " : "AND exp_channel_titles.entry_id = '".ee()->db->escape_str($qstring)."' ";
 
-		$query = $this->EE->db->query($sql);
+		$query = ee()->db->query($sql);
 
 		if ($query->num_rows() == 0)
 		{
-			return $this->EE->TMPL->no_results();
+			return ee()->TMPL->no_results();
 		}
 
 		/** ----------------------------------
@@ -5516,7 +5228,7 @@ class Channel {
 		$cat_array = array();
 
 		// We allow the option of adding or subtracting cat_id's
-		$categories = ( ! $this->EE->TMPL->fetch_param('category'))  ? '' : $this->EE->TMPL->fetch_param('category');
+		$categories = ( ! ee()->TMPL->fetch_param('category'))  ? '' : ee()->TMPL->fetch_param('category');
 
 		if (strncmp($categories, 'not ', 4) == 0)
 		{
@@ -5551,7 +5263,7 @@ class Channel {
 
 		if (count($cat_array) == 0)
 		{
-			return $this->EE->TMPL->no_results();
+			return ee()->TMPL->no_results();
 		}
 
 		/** ----------------------------------
@@ -5573,9 +5285,9 @@ class Channel {
 		/**  Manually set paramters
 		/** ----------------------------------*/
 
-		$this->EE->TMPL->tagparams['category']		= $cats;
-		$this->EE->TMPL->tagparams['dynamic']			= 'off';
-		$this->EE->TMPL->tagparams['not_entry_id']	= $qstring; // Exclude the current entry
+		ee()->TMPL->tagparams['category']		= $cats;
+		ee()->TMPL->tagparams['dynamic']			= 'off';
+		ee()->TMPL->tagparams['not_entry_id']	= $qstring; // Exclude the current entry
 
 		// Set user submitted paramters
 
@@ -5583,15 +5295,15 @@ class Channel {
 
 		foreach ($params as $val)
 		{
-			if ($this->EE->TMPL->fetch_param($val) != FALSE)
+			if (ee()->TMPL->fetch_param($val) != FALSE)
 			{
-				$this->EE->TMPL->tagparams[$val] = $this->EE->TMPL->fetch_param($val);
+				ee()->TMPL->tagparams[$val] = ee()->TMPL->fetch_param($val);
 			}
 		}
 
-		if ( ! is_numeric($this->EE->TMPL->fetch_param('limit')))
+		if ( ! is_numeric(ee()->TMPL->fetch_param('limit')))
 		{
-			$this->EE->TMPL->tagparams['limit'] = 10;
+			ee()->TMPL->tagparams['limit'] = 10;
 		}
 
 		/** ----------------------------------
@@ -5602,7 +5314,7 @@ class Channel {
 		$this->entry_id 	= '';
 		$qstring 			= '';
 
-		if ($this->enable['custom_fields'] == TRUE && $this->EE->TMPL->fetch_param('custom_fields') == 'yes')
+		if ($this->enable['custom_fields'] == TRUE && ee()->TMPL->fetch_param('custom_fields') == 'yes')
 		{
 			$this->fetch_custom_channel_fields();
 		}
@@ -5611,22 +5323,22 @@ class Channel {
 
 		if ($this->sql == '')
 		{
-			return $this->EE->TMPL->no_results();
+			return ee()->TMPL->no_results();
 		}
 
-		$this->query = $this->EE->db->query($this->sql);
+		$this->query = ee()->db->query($this->sql);
 
 		if ($this->query->num_rows() == 0)
 		{
-			return $this->EE->TMPL->no_results();
+			return ee()->TMPL->no_results();
 		}
 
-		$this->EE->load->library('typography');
-		$this->EE->typography->initialize(array(
+		ee()->load->library('typography');
+		ee()->typography->initialize(array(
 				'convert_curly'	=> FALSE)
 				);
 
-		if ($this->EE->TMPL->fetch_param('member_data') !== FALSE && $this->EE->TMPL->fetch_param('member_data') == 'yes')
+		if (ee()->TMPL->fetch_param('member_data') !== FALSE && ee()->TMPL->fetch_param('member_data') == 'yes')
 		{
 			$this->fetch_custom_member_fields();
 		}
@@ -5651,7 +5363,7 @@ class Channel {
 							'pagination' 		=> TRUE,
 							);
 
-		if ($disable = $this->EE->TMPL->fetch_param('disable'))
+		if ($disable = ee()->TMPL->fetch_param('disable'))
 		{
 			if (strpos($disable, '|') !== FALSE)
 			{
@@ -5681,10 +5393,10 @@ class Channel {
 		// 'channel_module_calendar_start' hook.
 		//  - Rewrite the displaying of the calendar tag
 		//
-			if ($this->EE->extensions->active_hook('channel_module_calendar_start') === TRUE)
+			if (ee()->extensions->active_hook('channel_module_calendar_start') === TRUE)
 			{
-				$edata = $this->EE->extensions->call('channel_module_calendar_start');
-				if ($this->EE->extensions->end_script === TRUE) return $edata;
+				$edata = ee()->extensions->call('channel_module_calendar_start');
+				if (ee()->extensions->end_script === TRUE) return $edata;
 			}
 		//
 		// -------------------------------------------
@@ -5728,20 +5440,20 @@ class Channel {
 
 	public function filemanager_endpoint($function = '', $params = array())
 	{
-		$this->EE->load->library('filemanager');
-		$this->EE->lang->loadfile('content');
-		//$this->EE->load->library('cp');
+		ee()->load->library('filemanager');
+		ee()->lang->loadfile('content');
+		//ee()->load->library('cp');
 		
 		$config = array();
 		
 		if ($function)
 		{
-			$this->EE->filemanager->_initialize($config);
+			ee()->filemanager->_initialize($config);
 			
 			return call_user_func_array(array($this->filemanager, $function), $params);
 		}
 
-		$this->EE->filemanager->process_request($config);		
+		ee()->filemanager->process_request($config);		
 	}	
 	
 	// ------------------------------------------------------------------------
@@ -5754,16 +5466,16 @@ class Channel {
 
 	public function smiley_pop()
 	{	
-		if ($this->EE->session->userdata('member_id') == 0)
+		if (ee()->session->userdata('member_id') == 0)
 		{
-			return $this->EE->output->fatal_error($this->EE->lang->line('must_be_logged_in'));
+			return ee()->output->fatal_error(ee()->lang->line('must_be_logged_in'));
 		}
 		
 		$class_path = PATH_MOD.'emoticon/emoticons.php';
 		
 		if ( ! is_file($class_path) OR ! @include_once($class_path))
 		{
-			return $this->EE->output->fatal_error('Unable to locate the smiley images');
+			return ee()->output->fatal_error('Unable to locate the smiley images');
 		}
 		
 		if ( ! is_array($smileys))
@@ -5771,7 +5483,7 @@ class Channel {
 			return;
 		}
 		
-		$path = $this->EE->config->slash_item('emoticon_url');
+		$path = ee()->config->slash_item('emoticon_url');
 				
 		ob_start();
 		?>			 

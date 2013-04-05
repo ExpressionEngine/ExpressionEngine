@@ -225,6 +225,14 @@
 	}
 
 
+	function ee()
+	{
+		static $EE;
+		if ( ! $EE) $EE = get_instance();
+		return $EE;
+	}
+
+
 	if (file_exists(APPPATH.'core/'.$CFG->config['subclass_prefix'].'Controller.php'))
 	{
 		require APPPATH.'core/'.$CFG->config['subclass_prefix'].'Controller.php';

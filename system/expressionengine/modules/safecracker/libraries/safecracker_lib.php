@@ -90,7 +90,7 @@ class Safecracker_lib
 		$this->EE =& get_instance();
 		
 		//set a global object
-		$this->EE->safecracker = $this;
+		ee()->safecracker = $this;
 	}
 	
 	// --------------------------------------------------------------------
@@ -103,16 +103,16 @@ class Safecracker_lib
 	public function entry_form()
 	{
 		//can't be used in a form action
-		if ( ! isset($this->EE->TMPL))
+		if ( ! isset(ee()->TMPL))
 		{
 			return '';
 		}
 		
-		$this->EE->lang->loadfile('safecracker');
+		ee()->lang->loadfile('safecracker');
 		
-		if ( ! isset($this->EE->extensions->extensions['form_declaration_modify_data'][10]['Safecracker_ext']))
+		if ( ! isset(ee()->extensions->extensions['form_declaration_modify_data'][10]['Safecracker_ext']))
 		{
-			return $this->EE->output->show_user_error(FALSE, lang('safecracker_extension_not_installed'));
+			return ee()->output->show_user_error(FALSE, lang('safecracker_extension_not_installed'));
 		}
 		
 		// -------------------------------------------
@@ -121,53 +121,53 @@ class Safecracker_lib
 		//	to use a reference on func call.
 		//
 
-		if ($this->EE->extensions->active_hook('safecracker_entry_form_absolute_start') === TRUE)
+		if (ee()->extensions->active_hook('safecracker_entry_form_absolute_start') === TRUE)
 		{
-			$this->EE->extensions->call('safecracker_entry_form_absolute_start');
-			if ($this->EE->extensions->end_script === TRUE) return;
+			ee()->extensions->call('safecracker_entry_form_absolute_start');
+			if (ee()->extensions->end_script === TRUE) return;
 		}
 		
-		$this->fetch_site($this->EE->TMPL->fetch_param('site'));
+		$this->fetch_site(ee()->TMPL->fetch_param('site'));
 		
 		$this->initialize(empty($this->form_error));
 		
-		$this->EE->load->helper('form');
-		$this->EE->router->set_class('cp');
-		$this->EE->load->library('cp');
-		$this->EE->router->set_class('ee');
-		$this->EE->load->library('javascript');
-		$this->EE->load->library('api');
-		$this->EE->load->library('form_validation');
-		$this->EE->api->instantiate('channel_fields');
+		ee()->load->helper('form');
+		ee()->router->set_class('cp');
+		ee()->load->library('cp');
+		ee()->router->set_class('ee');
+		ee()->load->library('javascript');
+		ee()->load->library('api');
+		ee()->load->library('form_validation');
+		ee()->api->instantiate('channel_fields');
 		$this->load_channel_standalone();
 		
-		$this->EE->lang->loadfile('content');
-		$this->EE->lang->loadfile('upload');
+		ee()->lang->loadfile('content');
+		ee()->lang->loadfile('upload');
 		
-		$this->EE->javascript->output('if (typeof SafeCracker == "undefined" || ! SafeCracker) { var SafeCracker = {markItUpFields:{}};}');
+		ee()->javascript->output('if (typeof SafeCracker == "undefined" || ! SafeCracker) { var SafeCracker = {markItUpFields:{}};}');
 		
 		// Figure out what channel we're working with
-		$this->fetch_channel($this->EE->TMPL->fetch_param('channel_id'), $this->EE->TMPL->fetch_param('channel'));
+		$this->fetch_channel(ee()->TMPL->fetch_param('channel_id'), ee()->TMPL->fetch_param('channel'));
 		
 		if ( ! $this->channel)
 		{
-			return $this->EE->output->show_user_error('submission', lang('safecracker_no_channel'));
+			return ee()->output->show_user_error('submission', lang('safecracker_no_channel'));
 		}
 		
 		//get the entry data, if an entry was specified
-		$this->fetch_entry($this->EE->TMPL->fetch_param('entry_id'), $this->EE->TMPL->fetch_param('url_title'));
+		$this->fetch_entry(ee()->TMPL->fetch_param('entry_id'), ee()->TMPL->fetch_param('url_title'));
 		
-		$this->entry_match_check(array('entry_id' => $this->EE->TMPL->fetch_param('entry_id'), 'url_title' => $this->EE->TMPL->fetch_param('url_title')));
+		$this->entry_match_check(array('entry_id' => ee()->TMPL->fetch_param('entry_id'), 'url_title' => ee()->TMPL->fetch_param('url_title')));
 		
 		// @added rev 57
-		if ( ! $this->entry('entry_id') && $this->bool_string($this->EE->TMPL->fetch_param('require_entry')))
+		if ( ! $this->entry('entry_id') && $this->bool_string(ee()->TMPL->fetch_param('require_entry')))
 		{
-			if ($this->EE->TMPL->no_results())
+			if (ee()->TMPL->no_results())
 			{
-				return $this->EE->TMPL->no_results();
+				return ee()->TMPL->no_results();
 			}
 			
-			return $this->EE->output->show_user_error(FALSE, lang('safecracker_require_entry'));
+			return ee()->output->show_user_error(FALSE, lang('safecracker_require_entry'));
 		}
 		
 		if ($this->entry('entry_id') && ! $this->form_error)
@@ -176,9 +176,9 @@ class Safecracker_lib
 		}
 		
 		// @added rev 57
-		if ($this->edit && $this->bool_string($this->EE->TMPL->fetch_param('author_only')) && $this->entry('author_id') != $this->EE->session->userdata('member_id'))
+		if ($this->edit && $this->bool_string(ee()->TMPL->fetch_param('author_only')) && $this->entry('author_id') != ee()->session->userdata('member_id'))
 		{
-			return $this->EE->output->show_user_error(FALSE, lang('safecracker_author_only'));
+			return ee()->output->show_user_error(FALSE, lang('safecracker_author_only'));
 		}
 		
 		if (is_array($this->entry('category')))
@@ -191,37 +191,37 @@ class Safecracker_lib
 		//add hidden field data
 		$this->form_hidden(
 			array(
-				'ACT' => $this->EE->functions->fetch_action_id('Safecracker', 'submit_entry'),
+				'ACT' => ee()->functions->fetch_action_id('Safecracker', 'submit_entry'),
 				'meta' => $meta
 			)
 		);
 		
-		unset($this->EE->TMPL->tagparams['allow_comments']);
+		unset(ee()->TMPL->tagparams['allow_comments']);
 		
 		//add form attributes
 		$this->form_attribute(
 			array(
-				'onsubmit' => $this->EE->TMPL->fetch_param('onsubmit'),
-				'name' => $this->EE->TMPL->fetch_param('name'),
-				'class' => $this->EE->TMPL->fetch_param('class'),
-				'id' => $this->EE->TMPL->fetch_param('id')
+				'onsubmit' => ee()->TMPL->fetch_param('onsubmit'),
+				'name' => ee()->TMPL->fetch_param('name'),
+				'class' => ee()->TMPL->fetch_param('class'),
+				'id' => ee()->TMPL->fetch_param('id')
 			)
 		);
 		
-		if ($this->EE->TMPL->fetch_param('datepicker'))
+		if (ee()->TMPL->fetch_param('datepicker'))
 		{
-			$this->datepicker = $this->bool_string($this->EE->TMPL->fetch_param('datepicker'), $this->datepicker);
+			$this->datepicker = $this->bool_string(ee()->TMPL->fetch_param('datepicker'), $this->datepicker);
 		}
 		
 		if ($this->datepicker)
 		{
-			$this->EE->javascript->output('$.datepicker.setDefaults({dateFormat:$.datepicker.W3C+EE.date_obj_time});');
+			ee()->javascript->output('$.datepicker.setDefaults({dateFormat:$.datepicker.W3C+EE.date_obj_time});');
 		}
 		
 		//decide which fields to show, based on pipe delimited list of field id's and/or field short names
-		if ($this->EE->TMPL->fetch_param('show_fields'))
+		if (ee()->TMPL->fetch_param('show_fields'))
 		{
-			if (preg_match('/not (.*)/', $this->EE->TMPL->fetch_param('show_fields'), $match))
+			if (preg_match('/not (.*)/', ee()->TMPL->fetch_param('show_fields'), $match))
 			{
 				foreach ($this->custom_fields as $field_name => $field)
 				{
@@ -245,7 +245,7 @@ class Safecracker_lib
 			}
 			else
 			{
-				foreach (explode('|', $this->EE->TMPL->fetch_param('show_fields')) as $field_name)
+				foreach (explode('|', ee()->TMPL->fetch_param('show_fields')) as $field_name)
 				{
 					if (is_numeric($field_name))
 					{
@@ -266,10 +266,10 @@ class Safecracker_lib
 		//	to use a reference on func call.
 		//
 
-		if ($this->EE->extensions->active_hook('safecracker_entry_form_tagdata_start') === TRUE)
+		if (ee()->extensions->active_hook('safecracker_entry_form_tagdata_start') === TRUE)
 		{
-			$this->EE->TMPL->tagdata = $this->EE->extensions->call('safecracker_entry_form_tagdata_start', $this->EE->TMPL->tagdata, $this);
-			if ($this->EE->extensions->end_script === TRUE) return;
+			ee()->TMPL->tagdata = ee()->extensions->call('safecracker_entry_form_tagdata_start', ee()->TMPL->tagdata, $this);
+			if (ee()->extensions->end_script === TRUE) return;
 		}
 		
 		// build custom field variables
@@ -278,9 +278,9 @@ class Safecracker_lib
 		foreach ($this->custom_fields as $field_name => $field)
 		{
 			/*
-			if ($this->EE->TMPL->fetch_param($field_name))
+			if (ee()->TMPL->fetch_param($field_name))
 			{
-				$this->form_hidden($field_name, $this->EE->TMPL->fetch_param($field_name));
+				$this->form_hidden($field_name, ee()->TMPL->fetch_param($field_name));
 			}
 			*/
 			
@@ -307,7 +307,7 @@ class Safecracker_lib
 			
 			$custom_field_variables_row = array_merge($field, $custom_field_variables_row);
 			
-			$fieldtypes = $this->EE->api_channel_fields->fetch_installed_fieldtypes();
+			$fieldtypes = ee()->api_channel_fields->fetch_installed_fieldtypes();
 			
 			//add a negative conditional based on fieldtype
 			foreach ($fieldtypes as $type => $fieldtype)
@@ -330,8 +330,8 @@ class Safecracker_lib
 			{
 				if ($this->datepicker)
 				{
-					$default_date = (($this->entry($field_name)) ? $this->entry($field_name) : $this->EE->localize->now) * 1000;
-					$this->EE->javascript->output('
+					$default_date = (($this->entry($field_name)) ? $this->entry($field_name) : ee()->localize->now) * 1000;
+					ee()->javascript->output('
 						$(\'input[name="'.$field_name.'"]\').datepicker({
 							constrainInput: false,
 							defaultDate: new Date('.$default_date.')
@@ -339,14 +339,14 @@ class Safecracker_lib
 					');
 				}
 				
-				$custom_field_variables_row['field_data'] = $this->EE->localize->human_time($this->entry($field_name));
+				$custom_field_variables_row['field_data'] = ee()->localize->human_time($this->entry($field_name));
 			}
 			
 			$custom_field_variables[$field_name] = $custom_field_variables_row;
 		}
 		
 		// parse custom fields loop
-		if (preg_match('/'.LD.'custom_fields'.RD.'(.*)'.LD.'\/custom_fields'.RD.'/s', $this->EE->TMPL->tagdata, $match))
+		if (preg_match('/'.LD.'custom_fields'.RD.'(.*)'.LD.'\/custom_fields'.RD.'/s', ee()->TMPL->tagdata, $match))
 		{
 			$custom_field_output = '';
 			
@@ -364,12 +364,12 @@ class Safecracker_lib
 				if ($formatting_buttons && $custom_field_variables_row['field_show_formatting_btns'])
 				{
 					$this->markitup = TRUE;
-					$this->EE->javascript->output('SafeCracker.markItUpFields["'.$field_name.'"] = '.$custom_field_variables_row['field_id'].';');
+					ee()->javascript->output('SafeCracker.markItUpFields["'.$field_name.'"] = '.$custom_field_variables_row['field_id'].';');
 				}
 				
 				$temp = $tagdata;
 				
-				$temp = $this->EE->functions->prep_conditionals($temp, $custom_field_variables_row);
+				$temp = ee()->functions->prep_conditionals($temp, $custom_field_variables_row);
 				
 				if (strpos($temp, LD.'display_field'.RD) !== FALSE)
 				{
@@ -390,7 +390,7 @@ class Safecracker_lib
 					// don't use our conditionals as vars
 					else if ( ! is_int($value))
 					{
-						$temp = $this->EE->TMPL->swap_var_single($key, $value, $temp);
+						$temp = ee()->TMPL->swap_var_single($key, $value, $temp);
 					}
 				}
 				
@@ -402,12 +402,12 @@ class Safecracker_lib
 				$custom_field_output .= $temp;
 			}
 			
-			$this->EE->TMPL->tagdata = str_replace($match[0], $custom_field_output, $this->EE->TMPL->tagdata);
+			ee()->TMPL->tagdata = str_replace($match[0], $custom_field_output, ee()->TMPL->tagdata);
 		}
 		
 		if ( ! empty($this->markitup))
 		{
-			$this->EE->javascript->output('$.each(SafeCracker.markItUpFields,function(a){$("#"+a).markItUp(mySettings);});');
+			ee()->javascript->output('$.each(SafeCracker.markItUpFields,function(a){$("#"+a).markItUp(mySettings);});');
 		}
 		
 		// We'll store all checkbox fieldnames in here, so that in case one
@@ -416,13 +416,13 @@ class Safecracker_lib
 		// updated while preserving the checkboxes that aren't on screen
 		$checkbox_fields = array();
 		
-		foreach ($this->EE->TMPL->var_pair as $tag_pair_open => $tagparams)
+		foreach (ee()->TMPL->var_pair as $tag_pair_open => $tagparams)
 		{
 			$tag_name = current(preg_split('/\s/', $tag_pair_open));
 			
 			if ($tag_name == 'categories')
 			{
-				$this->EE->TMPL->tagdata = $this->swap_var_pair($tag_pair_open, $this->categories($tagparams), $this->EE->TMPL->tagdata, $tag_name, ! empty($tagparams['backspace']) ? $tagparams['backspace'] : FALSE);
+				ee()->TMPL->tagdata = $this->swap_var_pair($tag_pair_open, $this->categories($tagparams), ee()->TMPL->tagdata, $tag_name, ! empty($tagparams['backspace']) ? $tagparams['backspace'] : FALSE);
 				//$this->parse_variables['categories'] = $this->categories($tagparams);
 			}
 			
@@ -436,11 +436,11 @@ class Safecracker_lib
 			//custom field pair parsing with replace_tag
 			else if (isset($this->custom_fields[$tag_name]))
 			{
-				if (preg_match_all('/'.LD.preg_quote($tag_pair_open).RD.'(.*)'.LD.'\/'.$tag_name.RD.'/s', $this->EE->TMPL->tagdata, $matches))
+				if (preg_match_all('/'.LD.preg_quote($tag_pair_open).RD.'(.*)'.LD.'\/'.$tag_name.RD.'/s', ee()->TMPL->tagdata, $matches))
 				{	
 					foreach ($matches[1] as $match_index => $var_pair_tagdata)
 					{
-						$this->EE->TMPL->tagdata = str_replace($matches[0][$match_index], $this->replace_tag($tag_name, $this->entry($tag_name), $tagparams, $var_pair_tagdata), $this->EE->TMPL->tagdata);
+						ee()->TMPL->tagdata = str_replace($matches[0][$match_index], $this->replace_tag($tag_name, $this->entry($tag_name), $tagparams, $var_pair_tagdata), ee()->TMPL->tagdata);
 					}
 				}
 			}
@@ -490,36 +490,36 @@ class Safecracker_lib
 		if ($this->entry)
 		{
 			//not necessary for edit forms
-			$this->EE->TMPL->tagparams['use_live_url'] = 'no';
+			ee()->TMPL->tagparams['use_live_url'] = 'no';
 			
-			$expiration_date = ($this->entry('expiration_date')) ? $this->entry('expiration_date')*1000 : $this->EE->localize->now*1000;
-			$comment_expiration_date = ($this->entry('comment_expiration_date')) ? $this->entry('comment_expiration_date')*1000 : $this->EE->localize->now*1000;
+			$expiration_date = ($this->entry('expiration_date')) ? $this->entry('expiration_date')*1000 : ee()->localize->now*1000;
+			$comment_expiration_date = ($this->entry('comment_expiration_date')) ? $this->entry('comment_expiration_date')*1000 : ee()->localize->now*1000;
 			
 			if ($this->datepicker)
 			{
-				if (strpos($this->EE->TMPL->tagdata, 'entry_date') !== FALSE)
+				if (strpos(ee()->TMPL->tagdata, 'entry_date') !== FALSE)
 				{
-					$this->EE->javascript->output('$("input[name=entry_date]").datepicker({defaultDate: new Date('.($this->entry('entry_date')*1000).')});');
+					ee()->javascript->output('$("input[name=entry_date]").datepicker({defaultDate: new Date('.($this->entry('entry_date')*1000).')});');
 				}
 				
-				if (strpos($this->EE->TMPL->tagdata, 'expiration_date') !== FALSE)
+				if (strpos(ee()->TMPL->tagdata, 'expiration_date') !== FALSE)
 				{
-					$this->EE->javascript->output('$("input[name=expiration_date]").datepicker({defaultDate: new Date('.$expiration_date.')});');
+					ee()->javascript->output('$("input[name=expiration_date]").datepicker({defaultDate: new Date('.$expiration_date.')});');
 				}
 				
-				if (strpos($this->EE->TMPL->tagdata, 'comment_expiration_date') !== FALSE)
+				if (strpos(ee()->TMPL->tagdata, 'comment_expiration_date') !== FALSE)
 				{
-					$this->EE->javascript->output('$("input[name=comment_expiration_date]").datepicker({defaultDate: new Date('.$comment_expiration_date.')});');
+					ee()->javascript->output('$("input[name=comment_expiration_date]").datepicker({defaultDate: new Date('.$comment_expiration_date.')});');
 				}
 			}
 		
-			foreach ($this->EE->TMPL->var_single as $key)
+			foreach (ee()->TMPL->var_single as $key)
 			{
 				if ($this->entry($key) !== FALSE)
 				{
 					if (in_array($key, $this->date_fields) || $this->get_field_type($key) == 'date')
 					{
-						$this->parse_variables[$key] = ($this->entry($key)) ? $this->EE->localize->human_time($this->entry($key)) : '';
+						$this->parse_variables[$key] = ($this->entry($key)) ? ee()->localize->human_time($this->entry($key)) : '';
 					}
 					elseif (in_array($key, $this->checkboxes))
 					{
@@ -533,12 +533,12 @@ class Safecracker_lib
 				
 				else if (preg_match('/entry_id_path=([\042\047])?([^\042\047]*)[\042\047]?/', $key, $match))
 				{
-					$this->parse_variables[$match[0]] = $this->EE->functions->create_url($match[2].'/'.$this->entry('entry_id'));
+					$this->parse_variables[$match[0]] = ee()->functions->create_url($match[2].'/'.$this->entry('entry_id'));
 				}
 				
 				else if (preg_match('/(url_title_path|title_permalink)=[\042\047]?([^\042\047]*)[\042\047]?/', $key, $match))
 				{
-					$this->parse_variables[$match[0]] = $this->EE->functions->create_url($match[2].'/'.$this->entry('url_title'));
+					$this->parse_variables[$match[0]] = ee()->functions->create_url($match[2].'/'.$this->entry('url_title'));
 				}
 				
 				// use fieldtype display_field method
@@ -591,7 +591,7 @@ class Safecracker_lib
 			$this->form_hidden(
 				array(
 				      'entry_id' => $this->entry('entry_id'),
-				      'unique_url_title' => ($this->bool_string($this->EE->TMPL->fetch_param('unique_url_title'))) ? '1' : '',
+				      'unique_url_title' => ($this->bool_string(ee()->TMPL->fetch_param('unique_url_title'))) ? '1' : '',
 				      'author_id'=> $this->entry('author_id')
 				)	
 			);
@@ -599,31 +599,31 @@ class Safecracker_lib
 		}
 		elseif ($this->channel('channel_id'))
 		{
-			$this->parse_variables['entry_date'] = $this->EE->localize->human_time();
+			$this->parse_variables['entry_date'] = ee()->localize->human_time();
 			
 			if ($this->datepicker)
 			{
-				$this->EE->javascript->output('$.datepicker.setDefaults({defaultDate: new Date('.($this->EE->localize->now*1000).')});');
+				ee()->javascript->output('$.datepicker.setDefaults({defaultDate: new Date('.(ee()->localize->now*1000).')});');
 
-				if (strpos($this->EE->TMPL->tagdata, 'entry_date') !== FALSE)
+				if (strpos(ee()->TMPL->tagdata, 'entry_date') !== FALSE)
 				{
-					$this->EE->javascript->output('$("input[name=entry_date]").datepicker();');
+					ee()->javascript->output('$("input[name=entry_date]").datepicker();');
 				}
 				
-				if (strpos($this->EE->TMPL->tagdata, 'expiration_date') !== FALSE)
+				if (strpos(ee()->TMPL->tagdata, 'expiration_date') !== FALSE)
 				{
-					$this->EE->javascript->output('$("input[name=expiration_date]").datepicker();');
+					ee()->javascript->output('$("input[name=expiration_date]").datepicker();');
 				}
 				
-				if (strpos($this->EE->TMPL->tagdata, 'comment_expiration_date') !== FALSE)
+				if (strpos(ee()->TMPL->tagdata, 'comment_expiration_date') !== FALSE)
 				{
-					$this->EE->javascript->output('$("input[name=comment_expiration_date]").datepicker();');
+					ee()->javascript->output('$("input[name=comment_expiration_date]").datepicker();');
 				}
 			}
 			
 			foreach ($this->custom_fields as $field)
 			{
-				foreach ($this->EE->TMPL->var_pair as $tag_pair_open => $tagparams)
+				foreach (ee()->TMPL->var_pair as $tag_pair_open => $tagparams)
 				{
 					$tag_name = current(preg_split('/\s/', $tag_pair_open));
 					
@@ -632,7 +632,7 @@ class Safecracker_lib
 						//special parsing here for catchall fieldtype, pls keep this in
 						if ($field['field_type'] === 'catchall')
 						{
-							if (preg_match_all('/'.LD.$tag_pair_open.RD.'(.*)'.LD.'\/'.$field['field_name'].RD.'/s', $this->EE->TMPL->tagdata, $matches))
+							if (preg_match_all('/'.LD.$tag_pair_open.RD.'(.*)'.LD.'\/'.$field['field_name'].RD.'/s', ee()->TMPL->tagdata, $matches))
 							{
 								foreach ($matches[1] as $match_index => $var_pair_tagdata)
 								{
@@ -646,7 +646,7 @@ class Safecracker_lib
 							
 									$var_pair_tagdata = preg_replace('/'.LD.'([^\s]*)'.RD.'/s', '', $var_pair_tagdata);
 									
-									$this->EE->TMPL->tagdata = str_replace($matches[0][$match_index], $var_pair_tagdata, $this->EE->TMPL->tagdata);
+									ee()->TMPL->tagdata = str_replace($matches[0][$match_index], $var_pair_tagdata, ee()->TMPL->tagdata);
 								}
 							}
 						}
@@ -671,7 +671,7 @@ class Safecracker_lib
 				$this->parse_variables['error:'.$field['field_name']] = ( ! empty($this->field_errors[$field['field_name']])) ? $this->field_errors[$field['field_name']] : '';
 				
 				//let's not needlessly call this, otherwise we could get duplicate fields rendering
-				if (strpos($this->EE->TMPL->tagdata, LD.'field:'.$field['field_name'].RD) !== FALSE)
+				if (strpos(ee()->TMPL->tagdata, LD.'field:'.$field['field_name'].RD) !== FALSE)
 				{
 					$this->parse_variables['field:'.$field['field_name']] = (array_key_exists($field['field_name'], $this->custom_fields)) ? $this->display_field($field['field_name']) : '';
 				}
@@ -680,7 +680,7 @@ class Safecracker_lib
 
 		foreach ($this->title_fields as $field)
 		{
-			if (isset($this->EE->TMPL->var_single['error:'.$field]))
+			if (isset(ee()->TMPL->var_single['error:'.$field]))
 			{
 				$this->parse_variables['error:'.$field] = ( ! empty($this->field_errors[$field])) ? $this->field_errors[$field] : '';
 			}
@@ -733,89 +733,89 @@ class Safecracker_lib
 		}
 		
 		//load member data for logged out member
-		$this->fetch_logged_out_member($this->EE->TMPL->fetch_param('logged_out_member_id'));
+		$this->fetch_logged_out_member(ee()->TMPL->fetch_param('logged_out_member_id'));
 
 		// Parse captcha conditional
 		$captcha_conditional = array(
-			'captcha' => ($this->channel('channel_id') && $this->logged_out_member_id && ! empty($this->settings['require_captcha'][$this->EE->config->item('site_id')][$this->channel('channel_id')]))
+			'captcha' => ($this->channel('channel_id') && $this->logged_out_member_id && ! empty($this->settings['require_captcha'][ee()->config->item('site_id')][$this->channel('channel_id')]))
 		);
 
 		// Parse conditionals
 		// $this->parse_variables['error:title'] = TRUE;
-		$this->EE->TMPL->tagdata = $this->EE->functions->prep_conditionals(
-			$this->EE->TMPL->tagdata, 
+		ee()->TMPL->tagdata = ee()->functions->prep_conditionals(
+			ee()->TMPL->tagdata, 
 			array_merge($conditional_errors, $captcha_conditional)
 		);
 		
 		// Make sure {captcha_word} is blank
-		$this->EE->TMPL->tagdata = $this->EE->TMPL->swap_var_single('captcha_word', '', $this->EE->TMPL->tagdata);
+		ee()->TMPL->tagdata = ee()->TMPL->swap_var_single('captcha_word', '', ee()->TMPL->tagdata);
 		
 		// Replace {captcha} with actual captcha
-		$this->EE->TMPL->tagdata = $this->EE->TMPL->swap_var_single('captcha', $this->EE->functions->create_captcha(), $this->EE->TMPL->tagdata);
+		ee()->TMPL->tagdata = ee()->TMPL->swap_var_single('captcha', ee()->functions->create_captcha(), ee()->TMPL->tagdata);
 		
 		// Parse the variables
 		if ($this->parse_variables)
 		{
-			$this->EE->TMPL->tagdata = $this->EE->TMPL->parse_variables($this->EE->TMPL->tagdata, array($this->parse_variables));
+			ee()->TMPL->tagdata = ee()->TMPL->parse_variables(ee()->TMPL->tagdata, array($this->parse_variables));
 		}
 			
 		if ($this->file)
 		{
-			$this->EE->session->cache['safecracker']['enctype'] = 'enctype="multipart/form-data"';
+			ee()->session->cache['safecracker']['enctype'] = 'enctype="multipart/form-data"';
 		}
 				
 		
 		//add class to form
-		if ($this->EE->TMPL->fetch_param('class'))
+		if (ee()->TMPL->fetch_param('class'))
 		{
-			$this->EE->TMPL->tagparams['form_class'] = $this->EE->TMPL->fetch_param('class');
+			ee()->TMPL->tagparams['form_class'] = ee()->TMPL->fetch_param('class');
 		}
 		
 		$this->load_session_override();
 		
 		//set group-based return url
-		$this->form_hidden('return', ($this->EE->TMPL->fetch_param('return_'.$this->EE->session->userdata['group_id'])) ? $this->EE->TMPL->fetch_param('return_'.$this->EE->session->userdata['group_id']) : $this->EE->TMPL->fetch_param('return'));
+		$this->form_hidden('return', (ee()->TMPL->fetch_param('return_'.ee()->session->userdata['group_id'])) ? ee()->TMPL->fetch_param('return_'.ee()->session->userdata['group_id']) : ee()->TMPL->fetch_param('return'));
 		
 		//get rid of the saef_javascript variable, we don't want that parsing in channel_standalone
-		if (($array_search = array_search('saef_javascript', $this->EE->TMPL->var_single)) !== FALSE)
+		if (($array_search = array_search('saef_javascript', ee()->TMPL->var_single)) !== FALSE)
 		{
-			unset($this->EE->TMPL->var_single[$array_search]);
+			unset(ee()->TMPL->var_single[$array_search]);
 		}
 		
-		$this->EE->session->cache['safecracker']['form_declaration'] = TRUE;
+		ee()->session->cache['safecracker']['form_declaration'] = TRUE;
 		
 		//temporarily set the site_id for cross-site saef
-		$current_site_id = $this->EE->config->item('site_id');
+		$current_site_id = ee()->config->item('site_id');
 		
-		$this->EE->config->set_item('site_id', $this->site_id);
+		ee()->config->set_item('site_id', $this->site_id);
 		
-		$include_jquery = $this->EE->TMPL->fetch_param('include_jquery');
+		$include_jquery = ee()->TMPL->fetch_param('include_jquery');
 		
 		//force include to no, for channel_standalone parsing
-		$this->EE->TMPL->tagparams['include_jquery'] = 'no';
+		ee()->TMPL->tagparams['include_jquery'] = 'no';
 		
-		$return = $this->channel_standalone->entry_form(TRUE, $this->EE->functions->cached_captcha);
+		$return = $this->channel_standalone->entry_form(TRUE, ee()->functions->cached_captcha);
 		
 		// Channel standalone will return nothing if member doesn't have permission
 		$this->form_loaded = ( ! empty($return));
 
-		$this->EE->config->set_item('site_id', $current_site_id);
+		ee()->config->set_item('site_id', $current_site_id);
 		
-		if (isset($this->EE->session->cache['safecracker']['channel_standalone_output_js']))
+		if (isset(ee()->session->cache['safecracker']['channel_standalone_output_js']))
 		{
 			$this->head .= '<script type="text/javascript" charset="utf-8">// <![CDATA[ '."\n";
 			
-			foreach ($this->EE->session->cache['safecracker']['channel_standalone_output_js']['json'] as $key => $value)
+			foreach (ee()->session->cache['safecracker']['channel_standalone_output_js']['json'] as $key => $value)
 			{
 				if ($key == 'EE')
 				{
 					$value['XID'] = '{XID_HASH}';
 					
-					$this->head .= 'if (typeof EE == "undefined" || ! EE) { '."\n".'var EE = '.$this->EE->javascript->generate_json($value, TRUE).';}'."\n";
+					$this->head .= 'if (typeof EE == "undefined" || ! EE) { '."\n".'var EE = '.json_encode($value).';}'."\n";
 				}
 				else 
 				{
-					$this->head .= $key.' = '.$this->EE->javascript->generate_json($value, TRUE).';'."\n";
+					$this->head .= $key.' = '.json_encode($value).';'."\n";
 				}
 				
 				$first = FALSE;
@@ -845,18 +845,18 @@ class Safecracker_lib
 		{
 			foreach ($files as $file)
 			{
-				if ( ! isset($this->EE->cp->js_files[$type]))
+				if ( ! isset(ee()->cp->js_files[$type]))
 				{
-					$this->EE->cp->js_files[$type] = array();
+					ee()->cp->js_files[$type] = array();
 				}
-				else if (is_string($this->EE->cp->js_files[$type]))
+				else if (is_string(ee()->cp->js_files[$type]))
 				{
-					$this->EE->cp->js_files[$type] = explode(',', $this->EE->cp->js_files[$type]);
+					ee()->cp->js_files[$type] = explode(',', ee()->cp->js_files[$type]);
 				}
 				
-				if ( ! in_array($file, $this->EE->cp->js_files[$type]))
+				if ( ! in_array($file, ee()->cp->js_files[$type]))
 				{
-					$this->EE->cp->js_files[$type][] = $file;
+					ee()->cp->js_files[$type][] = $file;
 				}
 			}
 		}
@@ -882,7 +882,7 @@ class Safecracker_lib
 			'effects' => array('core'),
 		);
 		
-		foreach ($this->EE->cp->js_files as $type => $files)
+		foreach (ee()->cp->js_files as $type => $files)
 		{
 			//let's get the order right
 			if ($type == 'ui')
@@ -911,34 +911,34 @@ class Safecracker_lib
 			
 			if (empty($files))
 			{
-				unset($this->EE->cp->js_files[$type]);
+				unset(ee()->cp->js_files[$type]);
 			}
 			else
 			{
-				$mtime[] = $this->EE->cp->_get_js_mtime($type, $files);
-				$this->EE->cp->js_files[$type] = implode(',', $files);
+				$mtime[] = ee()->cp->_get_js_mtime($type, $files);
+				ee()->cp->js_files[$type] = implode(',', $files);
 			}
 		}
 		
 		if (empty($mtime))
 		{
-			$mtime = array($this->EE->localize->now);
+			$mtime = array(ee()->localize->now);
 		}
 		
-		$use_live_url = ($this->bool_string($this->EE->TMPL->fetch_param('use_live_url'), TRUE)) ? '&use_live_url=y' : '';
+		$use_live_url = ($this->bool_string(ee()->TMPL->fetch_param('use_live_url'), TRUE)) ? '&use_live_url=y' : '';
 		
 		$include_jquery = ($this->bool_string($include_jquery, TRUE)) ? '&include_jquery=y' : '';
 
 		// RTE Selector parameter?
-		$rte_selector = $this->EE->TMPL->fetch_param('rte_selector');
+		$rte_selector = ee()->TMPL->fetch_param('rte_selector');
 
 		if ($rte_selector)
 		{
 			// toolset id specified?
-			$rte_toolset_id = (int)$this->EE->TMPL->fetch_param('rte_toolset_id');
+			$rte_toolset_id = (int)ee()->TMPL->fetch_param('rte_toolset_id');
 
-			$js_url = $this->EE->functions->fetch_site_index().QUERY_MARKER
-				.'ACT='.$this->EE->functions->fetch_action_id('Rte', 'get_js')
+			$js_url = ee()->functions->fetch_site_index().QUERY_MARKER
+				.'ACT='.ee()->functions->fetch_action_id('Rte', 'get_js')
 				.'&toolset_id='.$rte_toolset_id
 				.'&selector='.urlencode($rte_selector)
 				.'&include=jquery_ui';
@@ -946,16 +946,16 @@ class Safecracker_lib
 			$this->head .= '<script type="text/javascript" src="'.$js_url.'"></script>'."\n";
 		}
 
-		$this->head .= '<script type="text/javascript" charset="utf-8" src="'.$this->EE->functions->fetch_site_index().QUERY_MARKER.'ACT='.$this->EE->functions->fetch_action_id('Safecracker', 'combo_loader').'&'.str_replace('%2C', ',', http_build_query($this->EE->cp->js_files)).'&v='.max($mtime).$use_live_url.$include_jquery.'"></script>'."\n";
+		$this->head .= '<script type="text/javascript" charset="utf-8" src="'.ee()->functions->fetch_site_index().QUERY_MARKER.'ACT='.ee()->functions->fetch_action_id('Safecracker', 'combo_loader').'&'.str_replace('%2C', ',', http_build_query(ee()->cp->js_files)).'&v='.max($mtime).$use_live_url.$include_jquery.'"></script>'."\n";
 
 		//add fieldtype styles
-		foreach ($this->EE->cp->its_all_in_your_head as $item)
+		foreach (ee()->cp->its_all_in_your_head as $item)
 		{
 			$this->head .= $item."\n";
 		}
 		
 		//add fieldtype scripts
-		foreach ($this->EE->cp->footer_item as $item)
+		foreach (ee()->cp->footer_item as $item)
 		{
 			$this->head .= $item."\n";
 		}
@@ -963,22 +963,22 @@ class Safecracker_lib
 		$this->unload_session_override();
 		
 		//add loaded JS
-		$this->EE->javascript->compile();
+		ee()->javascript->compile();
 
-		if ( ! empty($this->EE->jquery->jquery_code_for_compile))
+		if ( ! empty(ee()->jquery->jquery_code_for_compile))
 		{
 			$script = '$(document).ready(function() {' . "\n";
-			$script .= implode('', $this->EE->jquery->jquery_code_for_compile);
+			$script .= implode('', ee()->jquery->jquery_code_for_compile);
 			$script .= '});';
 			$script = preg_replace('/\s*eeSpell\.init\(\);\s*/', '', $script);
 
-			$this->head .= $this->EE->javascript->inline($script);
+			$this->head .= ee()->javascript->inline($script);
 			
-			$this->EE->jquery->jquery_code_for_compile = array();
+			ee()->jquery->jquery_code_for_compile = array();
 		}
-		//if (isset($this->EE->load->_ci_cached_vars['script_foot']))
+		//if (isset(ee()->load->_ci_cached_vars['script_foot']))
 		//{
-			//$script = $this->EE->load->_ci_cached_vars['script_foot'];
+			//$script = ee()->load->_ci_cached_vars['script_foot'];
 			
 			//$script = preg_replace('/\s*eeSpell\.init\(\);\s*/', '', $script);
 			
@@ -988,10 +988,10 @@ class Safecracker_lib
 		//add datepicker class
 		if ($this->datepicker)
 		{
-			$date_fmt = $this->EE->session->userdata('time_format');
-			$date_fmt = $date_fmt ? $date_fmt : $this->EE->config->item('time_format');
+			$date_fmt = ee()->session->userdata('time_format');
+			$date_fmt = $date_fmt ? $date_fmt : ee()->config->item('time_format');
 
-			$this->head .= '<style type="text/css">.hasDatepicker{background:#fff url('.$this->EE->config->item('theme_folder_url').'cp_themes/default/images/calendar_bg.gif) no-repeat 98% 2px;background-repeat:no-repeat;background-position:99%;}</style>';
+			$this->head .= '<style type="text/css">.hasDatepicker{background:#fff url('.ee()->config->item('theme_folder_url').'cp_themes/default/images/calendar_bg.gif) no-repeat 98% 2px;background-repeat:no-repeat;background-position:99%;}</style>';
 			$this->head .= trim('
 				<script type="text/javascript">
 					$.createDatepickerTime=function(){
@@ -1031,24 +1031,24 @@ class Safecracker_lib
 		//make head appear by default
 		if (preg_match('/'.LD.'safecracker_head'.RD.'/', $return))
 		{
-			$return = $this->EE->TMPL->swap_var_single('safecracker_head', $this->head, $return);
+			$return = ee()->TMPL->swap_var_single('safecracker_head', $this->head, $return);
 		}
 		// Head should only be there if the param is there and there is a valid member_id
 		else if (
-			$this->bool_string($this->EE->TMPL->fetch_param('safecracker_head'), TRUE) AND
-			($this->logged_out_member_id OR $this->EE->session->userdata('member_id'))
+			$this->bool_string(ee()->TMPL->fetch_param('safecracker_head'), TRUE) AND
+			($this->logged_out_member_id OR ee()->session->userdata('member_id'))
 		)
 		{
 			$return .= $this->head;
 		}
 		
 		//added in 1.0.3
-		if ($this->bool_string($this->EE->TMPL->fetch_param('secure_action')))
+		if ($this->bool_string(ee()->TMPL->fetch_param('secure_action')))
 		{
 			$return = preg_replace('/(<form.*?action=")http:/', '\\1https:', $return);
 		}
 		
-		$return = $this->EE->functions->insert_action_ids($return);
+		$return = ee()->functions->insert_action_ids($return);
 		
 		
 		// -------------------------------------------
@@ -1057,10 +1057,10 @@ class Safecracker_lib
 		//	to use a reference on func call.
 		//
 
-		if ($this->EE->extensions->active_hook('safecracker_entry_form_tagdata_end') === TRUE)
+		if (ee()->extensions->active_hook('safecracker_entry_form_tagdata_end') === TRUE)
 		{
-			$return = $this->EE->extensions->call('safecracker_entry_form_tagdata_end', $return, $this);
-			if ($this->EE->extensions->end_script === TRUE) return;
+			$return = ee()->extensions->call('safecracker_entry_form_tagdata_end', $return, $this);
+			if (ee()->extensions->end_script === TRUE) return;
 		}
 		
 		return $return;
@@ -1090,30 +1090,30 @@ class Safecracker_lib
 		
 		$this->fetch_channel($this->_meta['channel_id']);
 		
-		$this->EE->load->helper(array('url', 'form'));
-		$this->EE->load->library('api');
-		$this->EE->api->instantiate('channel_fields');
-		$this->EE->load->library('filemanager');
-		$this->EE->load->library('form_validation');
-		$this->EE->load->library('localize');
-		$this->EE->load->model(array('field_model', 'tools_model'));
+		ee()->load->helper(array('url', 'form'));
+		ee()->load->library('api');
+		ee()->api->instantiate('channel_fields');
+		ee()->load->library('filemanager');
+		ee()->load->library('form_validation');
+		ee()->load->library('localize');
+		ee()->load->model(array('field_model', 'tools_model'));
 		
-		$this->EE->filemanager->_initialize(array());
+		ee()->filemanager->_initialize(array());
 				
-		$this->EE->lang->loadfile('content');
-		$this->EE->lang->loadfile('form_validation');
-		$this->EE->lang->loadfile('safecracker');
+		ee()->lang->loadfile('content');
+		ee()->lang->loadfile('form_validation');
+		ee()->lang->loadfile('safecracker');
 		
-		$this->EE->router->set_class('cp');
-		$this->EE->load->library('cp');
-		$this->EE->router->set_class('ee');
+		ee()->router->set_class('cp');
+		ee()->load->library('cp');
+		ee()->router->set_class('ee');
 		
 		$rules = $this->_meta['rules'];
 		
 		//just to prevent any errors
 		if ( ! defined('BASE'))
 		{
-			$s = ($this->EE->config->item('admin_session_type') != 'c') ? $this->EE->session->userdata('session_id') : 0;
+			$s = (ee()->config->item('admin_session_type') != 'c') ? ee()->session->userdata('session_id') : 0;
 			define('BASE', SELF.'?S='.$s.'&amp;D=cp');
 		}
 		
@@ -1126,52 +1126,52 @@ class Safecracker_lib
 		//	to use a reference on func call.
 		//
 
-		if ($this->EE->extensions->active_hook('safecracker_submit_entry_start') === TRUE)
+		if (ee()->extensions->active_hook('safecracker_submit_entry_start') === TRUE)
 		{
-			$this->EE->extensions->call('safecracker_submit_entry_start', $this);
-			if ($this->EE->extensions->end_script === TRUE) return;
+			ee()->extensions->call('safecracker_submit_entry_start', $this);
+			if (ee()->extensions->end_script === TRUE) return;
 		}
 		
 		$logged_out_member_id = FALSE;
 		
-		if ( ! $this->EE->session->userdata('member_id') && $this->_meta['logged_out_member_id'])
+		if ( ! ee()->session->userdata('member_id') && $this->_meta['logged_out_member_id'])
 		{
 			if ($logged_out_member_id = $this->_meta['logged_out_member_id'])
 			{
 				$this->fetch_logged_out_member($logged_out_member_id);
 			}
 		}
-		else if ($this->channel('channel_id') && ! $this->EE->session->userdata('member_id') &&  ! empty($this->settings['logged_out_member_id'][$this->EE->config->item('site_id')][$this->channel('channel_id')]))
+		else if ($this->channel('channel_id') && ! ee()->session->userdata('member_id') &&  ! empty($this->settings['logged_out_member_id'][ee()->config->item('site_id')][$this->channel('channel_id')]))
 		{
-			$this->fetch_logged_out_member($this->settings['logged_out_member_id'][$this->EE->config->item('site_id')][$this->channel('channel_id')]);
+			$this->fetch_logged_out_member($this->settings['logged_out_member_id'][ee()->config->item('site_id')][$this->channel('channel_id')]);
 		}
 		
 		//captcha check
-		if ($this->channel('channel_id') && ! empty($this->logged_out_member_id) && ! empty($this->settings['require_captcha'][$this->EE->config->item('site_id')][$this->_meta['channel_id']]))
+		if ($this->channel('channel_id') && ! empty($this->logged_out_member_id) && ! empty($this->settings['require_captcha'][ee()->config->item('site_id')][$this->_meta['channel_id']]))
 		{
-			if ( ! $this->EE->input->post('captcha'))
+			if ( ! ee()->input->post('captcha'))
 			{
 				$this->errors[] = lang('captcha_required');
 			}
 			
-			$this->EE->db->where('word', $this->EE->input->post('captcha', TRUE));
-			$this->EE->db->where('ip_address', $this->EE->input->ip_address());
-			$this->EE->db->where('date > ', '(UNIX_TIMESTAMP()-7200)', FALSE);
+			ee()->db->where('word', ee()->input->post('captcha', TRUE));
+			ee()->db->where('ip_address', ee()->input->ip_address());
+			ee()->db->where('date > ', '(UNIX_TIMESTAMP()-7200)', FALSE);
 		    
-			if ( ! $this->EE->db->count_all_results('captcha'))
+			if ( ! ee()->db->count_all_results('captcha'))
 			{
 				$this->errors[] = lang('captcha_incorrect');
 			}
 			
-			$this->EE->db->where('word', $this->EE->input->post('captcha', TRUE));
-			$this->EE->db->where('ip_address', $this->EE->input->ip_address());
-			$this->EE->db->where('date < ', '(UNIX_TIMESTAMP()-7200)', FALSE);
+			ee()->db->where('word', ee()->input->post('captcha', TRUE));
+			ee()->db->where('ip_address', ee()->input->ip_address());
+			ee()->db->where('date < ', '(UNIX_TIMESTAMP()-7200)', FALSE);
 			
-			$this->EE->db->delete('captcha');
+			ee()->db->delete('captcha');
 		}
 		
 		// Status Check to prevent post overrides
-		$status = $this->EE->input->post('status');
+		$status = ee()->input->post('status');
 		
 		if ($status)
 		{
@@ -1199,17 +1199,17 @@ class Safecracker_lib
 			
 			$this->fetch_entry($this->_meta['entry_id']);
 			
-			if ($this->EE->input->post('category') === FALSE && $this->entry('categories'))
+			if (ee()->input->post('category') === FALSE && $this->entry('categories'))
 			{
 				$_POST['category'] = $this->entry('categories');
 			}
 		}
 		else
 		{
-			if ($this->EE->input->post('unique_url_title', TRUE))
+			if (ee()->input->post('unique_url_title', TRUE))
 			{
-				$_POST['url_title'] = uniqid($this->_meta['url_title'] ? $this->_meta['url_title'] : url_title($this->EE->input->post('title', TRUE)), TRUE);
-				$this->_meta['url_title'] = uniqid($this->_meta['url_title'] ? $this->_meta['url_title'] : url_title($this->EE->input->post('title', TRUE)), TRUE);
+				$_POST['url_title'] = uniqid($this->_meta['url_title'] ? $this->_meta['url_title'] : url_title(ee()->input->post('title', TRUE)), TRUE);
+				$this->_meta['url_title'] = uniqid($this->_meta['url_title'] ? $this->_meta['url_title'] : url_title(ee()->input->post('title', TRUE)), TRUE);
 			}
 		}
 		
@@ -1270,13 +1270,13 @@ class Safecracker_lib
 					array_unshift($field_rules, 'required');
 				}
 				
-				$this->EE->form_validation->set_rules($field['field_name'], $field['field_label'], implode('|', $field_rules));
+				ee()->form_validation->set_rules($field['field_name'], $field['field_label'], implode('|', $field_rules));
 			}
 			else
 			{
 				if ($field['field_type'] == 'date')
 				{
-					$_POST['field_id_'.$field['field_id']] = $_POST[$field['field_name']] = $this->EE->localize->human_time($this->entry($field['field_name']));
+					$_POST['field_id_'.$field['field_id']] = $_POST[$field['field_name']] = ee()->localize->human_time($this->entry($field['field_name']));
 				}
 				else if ($field['field_required'] == 'y')
 				{
@@ -1286,7 +1286,7 @@ class Safecracker_lib
 				}
 			}
 			
-			//$this->EE->form_validation->set_rules($field['field_name'], $field['field_label'], implode('|', $field_rules));
+			//ee()->form_validation->set_rules($field['field_name'], $field['field_label'], implode('|', $field_rules));
 			
 			foreach ($_POST as $key => $value)
 			{
@@ -1299,18 +1299,18 @@ class Safecracker_lib
 					//i had some people complain about not being able to submit <object>'s
 					$xss_clean = ( ! in_array($field['field_id'], $this->skip_xss_field_ids) && ! in_array($field['field_type'], $this->skip_xss_fieldtypes));
 					
-					$_POST['field_id_'.$field['field_id']] = $this->EE->input->post($key, $xss_clean);
+					$_POST['field_id_'.$field['field_id']] = ee()->input->post($key, $xss_clean);
 					
 					//auto set format if not POSTed
 					$fmt = $field['field_fmt'];
 					
-					if ($this->EE->input->post('field_ft_'.$field['field_id']) !== FALSE)
+					if (ee()->input->post('field_ft_'.$field['field_id']) !== FALSE)
 					{
-						$fmt = $this->EE->input->post('field_ft_'.$field['field_id'], TRUE);
+						$fmt = ee()->input->post('field_ft_'.$field['field_id'], TRUE);
 					}
-					elseif ($this->EE->input->post($field['field_name'].'_ft') !== FALSE)
+					elseif (ee()->input->post($field['field_name'].'_ft') !== FALSE)
 					{
-						$fmt = $this->EE->input->post($field['field_name'].'_ft', TRUE);
+						$fmt = ee()->input->post($field['field_name'].'_ft', TRUE);
 					}
 					
 					$_POST['field_ft_'.$field['field_id']] = $fmt;
@@ -1318,7 +1318,7 @@ class Safecracker_lib
 				else if (preg_match('/^'.$field['field_name'].'_(.+)/', $key, $match))
 				{
 					//also change utility POST fields, ie my_field_field_directory to field_id_X_directory
-					$_POST['field_id_'.$field['field_id'].'_'.$match[1]] = $this->EE->input->post($key, TRUE);
+					$_POST['field_id_'.$field['field_id'].'_'.$match[1]] = ee()->input->post($key, TRUE);
 				}
 			}
 			
@@ -1362,14 +1362,14 @@ class Safecracker_lib
 		{
 			if (isset($this->default_fields[$field]))
 			{
-				$this->EE->api_channel_fields->set_settings($field, $this->default_fields[$field]);
+				ee()->api_channel_fields->set_settings($field, $this->default_fields[$field]);
 				
-				$this->EE->form_validation->set_rules($field, $this->default_fields[$field]['field_label'], $this->default_fields[$field]['rules']);
+				ee()->form_validation->set_rules($field, $this->default_fields[$field]['field_label'], $this->default_fields[$field]['rules']);
 			}
 			
-			if ($this->EE->input->post($field) !== FALSE)
+			if (ee()->input->post($field) !== FALSE)
 			{
-				$_POST[$field] = $this->EE->input->post($field, TRUE);
+				$_POST[$field] = ee()->input->post($field, TRUE);
 			}
 			else
 			{
@@ -1377,11 +1377,11 @@ class Safecracker_lib
 				{
 					if ($this->entry($field))
 					{
-						$_POST[$field] = $this->EE->localize->human_time($this->entry($field));
+						$_POST[$field] = ee()->localize->human_time($this->entry($field));
 					}
 					else
 					{
-						$_POST[$field] = $this->EE->localize->human_time();
+						$_POST[$field] = ee()->localize->human_time();
 					}
 				}
 				elseif ($field == 'versioning_enabled' AND $this->channel['enable_versioning'] == 'y')
@@ -1406,12 +1406,12 @@ class Safecracker_lib
 		}
 		
 		//don't override status on edit, only on publish
-		if ( ! $this->edit && ! empty($this->settings['override_status'][$this->EE->config->item('site_id')][$this->EE->input->post('channel_id')]))
+		if ( ! $this->edit && ! empty($this->settings['override_status'][ee()->config->item('site_id')][ee()->input->post('channel_id')]))
 		{
-			$_POST['status'] = $this->settings['override_status'][$this->EE->config->item('site_id')][$this->_meta['channel_id']];
+			$_POST['status'] = $this->settings['override_status'][ee()->config->item('site_id')][$this->_meta['channel_id']];
 		}
 		
-		$_POST['ping_servers'] = (is_array($this->EE->input->post('ping'))) ? $this->EE->input->post('ping', TRUE) : array();
+		$_POST['ping_servers'] = (is_array(ee()->input->post('ping'))) ? ee()->input->post('ping', TRUE) : array();
 		
 		$_POST['ping_errors'] = FALSE;
 		
@@ -1420,17 +1420,17 @@ class Safecracker_lib
 		$this->load_session_override();
 		
 		//added for EE2.1.2
-		$this->EE->api->instantiate(array('channel_categories'));
-		$this->EE->load->library('api/api_sc_channel_entries');
+		ee()->api->instantiate(array('channel_categories'));
+		ee()->load->library('api/api_sc_channel_entries');
 				
 		foreach ($this->form_validation_methods as $method)
 		{
-			$this->EE->form_validation->set_message($method, lang('safecracker_'.$method));
+			ee()->form_validation->set_message($method, lang('safecracker_'.$method));
 		}
 		
-		if ($this->EE->input->post('dynamic_title'))
+		if (ee()->input->post('dynamic_title'))
 		{
-			$dynamic_title = base64_decode($this->EE->input->post('dynamic_title'));
+			$dynamic_title = base64_decode(ee()->input->post('dynamic_title'));
 			
 			foreach ($_POST as $key => $value)
 			{
@@ -1443,7 +1443,7 @@ class Safecracker_lib
 			$_POST['title'] = $dynamic_title;
 		}
 		
-		foreach ($this->EE->api_channel_fields->settings as $field_id => $settings)
+		foreach (ee()->api_channel_fields->settings as $field_id => $settings)
 		{
 			$settings['field_name'] = 'field_id_'.$field_id;
 			
@@ -1452,44 +1452,44 @@ class Safecracker_lib
 				$settings = array_merge($settings, $this->unserialize($settings['field_settings'], TRUE));
 			}
 			
-			$this->EE->api_channel_fields->settings[$field_id] = $this->EE->session->cache['safecracker']['field_settings'][$field_id] = $settings;
+			ee()->api_channel_fields->settings[$field_id] = ee()->session->cache['safecracker']['field_settings'][$field_id] = $settings;
 		}
 		
 		//moved to before custom field processing,
 		//since we are now using the call_field_validation rule
-		if ( ! $this->EE->form_validation->run())
+		if ( ! ee()->form_validation->run())
 		{
-			$this->field_errors = $this->EE->form_validation->_error_array;
+			$this->field_errors = ee()->form_validation->_error_array;
 
 		}
 		
-		if ( ! $this->EE->security->check_xid($this->EE->input->post('XID')))
+		if ( ! ee()->security->check_xid(ee()->input->post('XID')))
 		{
-			$this->EE->functions->redirect(stripslashes($this->EE->input->post('RET')));		
+			ee()->functions->redirect(stripslashes(ee()->input->post('RET')));		
 		}
 		
 		if (empty($this->field_errors) && empty($this->errors))
 		{
 			//temporarily change site_id for cross-site forms
 			//channel_entries api doesn't allow you to specifically set site_id
-			$current_site_id = $this->EE->config->item('site_id');
+			$current_site_id = ee()->config->item('site_id');
 			
-			$this->EE->config->set_item('site_id', $this->site_id);
+			ee()->config->set_item('site_id', $this->site_id);
 			
-			if (in_array($this->channel('channel_id'), $this->EE->functions->fetch_assigned_channels()))
+			if (in_array($this->channel('channel_id'), ee()->functions->fetch_assigned_channels()))
 			{
 				if ($this->entry('entry_id'))
 				{
-					$submit = $this->EE->api_sc_channel_entries->save_entry($_POST, NULL, $this->entry('entry_id'));
+					$submit = ee()->api_sc_channel_entries->save_entry($_POST, NULL, $this->entry('entry_id'));
 				}
 				else
 				{
-					$submit = $this->EE->api_sc_channel_entries->save_entry($_POST, $this->channel('channel_id'));
+					$submit = ee()->api_sc_channel_entries->save_entry($_POST, $this->channel('channel_id'));
 				}
 				
 				if ( ! $submit)
 				{
-					$this->errors = $this->EE->api_sc_channel_entries->errors;
+					$this->errors = ee()->api_sc_channel_entries->errors;
 				}
 			}
 			else
@@ -1498,12 +1498,12 @@ class Safecracker_lib
 				$this->errors[] = lang('unauthorized_for_this_channel');
 			}
 			
-			$this->EE->config->set_item('site_id', $current_site_id);
+			ee()->config->set_item('site_id', $current_site_id);
 			
 			$this->clear_entry();
 			
 			//load the just created entry into memory
-			$this->fetch_entry($this->EE->api_sc_channel_entries->entry_id);
+			$this->fetch_entry(ee()->api_sc_channel_entries->entry_id);
 		}
 		
 		$this->unload_session_override();
@@ -1514,10 +1514,10 @@ class Safecracker_lib
 		//	to use a reference on func call.
 		//
 
-		if ($this->EE->extensions->active_hook('safecracker_submit_entry_end') === TRUE)
+		if (ee()->extensions->active_hook('safecracker_submit_entry_end') === TRUE)
 		{
-			$edata = $this->EE->extensions->call('safecracker_submit_entry_end', $this);
-			if ($this->EE->extensions->end_script === TRUE) return;
+			ee()->extensions->call('safecracker_submit_entry_end', $this);
+			if (ee()->extensions->end_script === TRUE) return;
 		}
 		
 		if (is_array($this->errors))
@@ -1561,17 +1561,17 @@ class Safecracker_lib
 			{
 				if ($this->entry($field) && ! is_numeric($this->entry($field)))
 				{
-					$this->entry[$field] = $this->EE->localize->string_to_timestamp($this->entry($field));
+					$this->entry[$field] = ee()->localize->string_to_timestamp($this->entry($field));
 				}
 			}
 			
 			if (version_compare(APP_VER, '2.1.3', '>'))
 			{
-				$this->EE->core->generate_page();
+				ee()->core->generate_page();
 			}
 			else
 			{
-				$this->EE->core->_generate_page();
+				ee()->core->_generate_page();
 			}
 			
 			return;
@@ -1593,15 +1593,15 @@ class Safecracker_lib
 		
 		if ($this->errors OR $this->field_errors)
 		{
-			return $this->EE->output->show_user_error(FALSE, array_merge($this->errors, $this->field_errors));
+			return ee()->output->show_user_error(FALSE, array_merge($this->errors, $this->field_errors));
 		}
 		
 		if ( ! AJAX_REQUEST)
 		{
-			$this->EE->security->delete_xid($this->EE->input->post('XID'));
+			ee()->security->delete_xid(ee()->input->post('XID'));
 		}
 		
-		$return = ($this->_meta['return']) ? $this->EE->functions->create_url($this->_meta['return']) : $this->EE->functions->fetch_site_index();
+		$return = ($this->_meta['return']) ? ee()->functions->create_url($this->_meta['return']) : ee()->functions->fetch_site_index();
 		    
 		if (strpos($return, 'ENTRY_ID') !== FALSE)
 		{
@@ -1613,7 +1613,7 @@ class Safecracker_lib
 			$return = str_replace('URL_TITLE', $this->entry('url_title'), $return);
 		}
 		
-		if ($hook_return = $this->EE->api_sc_channel_entries->trigger_hook('entry_submission_redirect', $return))
+		if ($hook_return = ee()->api_sc_channel_entries->trigger_hook('entry_submission_redirect', $return))
 		{
 			$return = $hook_return;
 		}
@@ -1623,7 +1623,7 @@ class Safecracker_lib
 			$return = preg_replace('/^http:/', 'https:', $return);
 		}
 		
-		$this->EE->functions->redirect($return);
+		ee()->functions->redirect($return);
 	}
 
 	// --------------------------------------------------------------------
@@ -1662,7 +1662,7 @@ class Safecracker_lib
 	{
 		$this->fetch_categories();
 		
-		$this->EE->load->library('data_sorter');
+		ee()->load->library('data_sorter');
 		
 		if ( ! $categories = $this->categories)
 		{
@@ -1676,12 +1676,12 @@ class Safecracker_lib
 		
 		if ( ! empty($params['group_id']))
 		{
-			$this->EE->data_sorter->filter($categories, 'category_group_id', $params['group_id'], 'in_array');
+			ee()->data_sorter->filter($categories, 'category_group_id', $params['group_id'], 'in_array');
 		}
 		
 		if ( ! empty($params['order_by']))
 		{
-			$this->EE->data_sorter->sort($categories, $params['order_by'], @$params['sort']);
+			ee()->data_sorter->sort($categories, $params['order_by'], @$params['sort']);
 		}
 		
 		//reset array indices
@@ -1723,15 +1723,15 @@ class Safecracker_lib
 	 */
 	public function decrypt_input($input, $xss_clean = TRUE)
 	{
-		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated('2.6.0');
+		ee()->load->library('logger');
+		ee()->logger->deprecated('2.6.0');
 		
 		if (function_exists('mcrypt_encrypt'))
 		{
 			$decoded = rtrim(
 				mcrypt_decrypt(
 					MCRYPT_RIJNDAEL_256,
-					md5($this->EE->session->sess_crypt_key),
+					md5(ee()->session->sess_crypt_key),
 					base64_decode($input),
 					MCRYPT_MODE_ECB,
 					mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND)
@@ -1745,13 +1745,13 @@ class Safecracker_lib
 			
 			$decoded = substr($raw, 0, -32);
 	
-			if (substr($raw, -32) !== md5($this->EE->session->sess_crypt_key.$decoded))
+			if (substr($raw, -32) !== md5(ee()->session->sess_crypt_key.$decoded))
 			{
 				return FALSE;
 			}
 		}
 		
-		return ($xss_clean) ? $this->EE->security->xss_clean($decoded) : $decoded;
+		return ($xss_clean) ? ee()->security->xss_clean($decoded) : $decoded;
 	}
 
 	// --------------------------------------------------------------------
@@ -1764,33 +1764,33 @@ class Safecracker_lib
 	 */
 	public function display_field($field_name)
 	{
-		$this->EE->load->library('api');
+		ee()->load->library('api');
 		
-		$this->EE->load->helper('custom_field');
+		ee()->load->helper('custom_field');
 		
-		$this->EE->load->model('tools_model');
+		ee()->load->model('tools_model');
 		
-		$this->EE->load->library('javascript');
+		ee()->load->library('javascript');
 		
 		if (isset($this->extra_js[$this->get_field_type($field_name)]))
 		{
-			$this->EE->javascript->output($this->extra_js[$this->get_field_type($field_name)]);
+			ee()->javascript->output($this->extra_js[$this->get_field_type($field_name)]);
 		}
 		
-		$this->EE->api->instantiate('channel_fields');
+		ee()->api->instantiate('channel_fields');
 		
-		$this->EE->api_channel_fields->field_type = $this->get_field_type($field_name);
+		ee()->api_channel_fields->field_type = $this->get_field_type($field_name);
 		
-		$this->EE->api_channel_fields->field_types[$this->EE->api_channel_fields->field_type]->field_name = $field_name;
+		ee()->api_channel_fields->field_types[ee()->api_channel_fields->field_type]->field_name = $field_name;
 		
-		$this->EE->api_channel_fields->field_types[$this->EE->api_channel_fields->field_type]->field_id = $this->get_field_id($field_name);
+		ee()->api_channel_fields->field_types[ee()->api_channel_fields->field_type]->field_id = $this->get_field_id($field_name);
 		
-		$this->EE->api_channel_fields->field_types[$this->EE->api_channel_fields->field_type]->settings = array_merge($this->get_field_settings($field_name), $this->get_field_data($field_name), $this->EE->api_channel_fields->get_global_settings($this->EE->api_channel_fields->field_type));
+		ee()->api_channel_fields->field_types[ee()->api_channel_fields->field_type]->settings = array_merge($this->get_field_settings($field_name), $this->get_field_data($field_name), ee()->api_channel_fields->get_global_settings(ee()->api_channel_fields->field_type));
 		
 		$_GET['entry_id'] = $this->entry('entry_id');
 		$_GET['channel_id'] = $this->entry('channel_id');
 		
-		return $this->EE->api_channel_fields->apply('display_field', array('data' => $this->entry($field_name)));
+		return ee()->api_channel_fields->apply('display_field', array('data' => $this->entry($field_name)));
 	}
 
 	// --------------------------------------------------------------------
@@ -1803,17 +1803,17 @@ class Safecracker_lib
 	 */
 	public function encrypt_input($input)
 	{
-		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated('2.6.0');
+		ee()->load->library('logger');
+		ee()->logger->deprecated('2.6.0');
 		
 		if ( ! function_exists('mcrypt_encrypt'))
 		{
-			return base64_encode($input.md5($this->EE->session->sess_crypt_key.$input));
+			return base64_encode($input.md5(ee()->session->sess_crypt_key.$input));
 		}
 		
 		return base64_encode(mcrypt_encrypt(
 			MCRYPT_RIJNDAEL_256,
-			md5($this->EE->session->sess_crypt_key),
+			md5(ee()->session->sess_crypt_key),
 			$input,
 			MCRYPT_MODE_ECB,
 			mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND)
@@ -1854,9 +1854,9 @@ class Safecracker_lib
 		}
 
 		// Load up the library and figure out what belongs and what's selected
-		$this->EE->load->library(array('api', 'file_field'));
-		$this->EE->api->instantiate('channel_categories');
-		$category_list = $this->EE->api_channel_categories->category_tree(
+		ee()->load->library(array('api', 'file_field'));
+		ee()->api->instantiate('channel_categories');
+		$category_list = ee()->api_channel_categories->category_tree(
 			$this->channel('cat_group'),
 			$this->entry('categories')
 		);
@@ -1873,7 +1873,7 @@ class Safecracker_lib
 			$selected = ($category_info[4] === TRUE) ? ' selected="selected"' : '';
 			$checked = ($category_info[4] === TRUE) ? ' checked="checked"' : '';
 			
-			$category_image = $this->EE->file_field->parse_field($category_info[7]);
+			$category_image = ee()->file_field->parse_field($category_info[7]);
 
 			// Translate response from API to something parse variables can understand
 			$categories[$category_id] = array(
@@ -1914,21 +1914,21 @@ class Safecracker_lib
 		
 		if ($channel_id)
 		{
-			$this->EE->db->where('exp_channels.channel_id', $this->EE->security->xss_clean($channel_id));
+			ee()->db->where('exp_channels.channel_id', ee()->security->xss_clean($channel_id));
 		}
 		elseif ($channel_name)
 		{
-			$this->EE->db->where('exp_channels.channel_name', $this->EE->security->xss_clean($channel_name));
+			ee()->db->where('exp_channels.channel_name', ee()->security->xss_clean($channel_name));
 		}
 		elseif ($entry_id)
 		{
-			$this->EE->db->join('exp_channel_titles', 'exp_channel_titles.channel_id = exp_channels.channel_id');
-			$this->EE->db->where('exp_channel_titles.entry_id', $this->EE->security->xss_clean($entry_id));
+			ee()->db->join('exp_channel_titles', 'exp_channel_titles.channel_id = exp_channels.channel_id');
+			ee()->db->where('exp_channel_titles.entry_id', ee()->security->xss_clean($entry_id));
 		}
 		elseif ($url_title)
 		{
-			$this->EE->db->join('exp_channel_titles', 'exp_channel_titles.channel_id = exp_channels.channel_id');
-			$this->EE->db->where('exp_channel_titles.url_title', $this->EE->security->xss_clean($url_title));
+			ee()->db->join('exp_channel_titles', 'exp_channel_titles.channel_id = exp_channels.channel_id');
+			ee()->db->where('exp_channel_titles.url_title', ee()->security->xss_clean($url_title));
 		}
 		else
 		{
@@ -1936,10 +1936,10 @@ class Safecracker_lib
 		}
 		
 		//get field group and limit
-		$this->EE->db->where('channels.site_id', $this->site_id);
-		$this->EE->db->limit(1);
+		ee()->db->where('channels.site_id', $this->site_id);
+		ee()->db->limit(1);
 
-		$query = $this->EE->db->get('channels');
+		$query = ee()->db->get('channels');
 		
 		if ( ! $query->num_rows())
 		{
@@ -1948,9 +1948,9 @@ class Safecracker_lib
 		
 		$this->channel = $query->row_array();
 		
-		if ( ! empty($this->EE->TMPL))
+		if ( ! empty(ee()->TMPL))
 		{
-			$this->EE->TMPL->tagparams['channel'] = $this->channel('channel_name');
+			ee()->TMPL->tagparams['channel'] = $this->channel('channel_name');
 		}
 		
 		$this->fetch_custom_fields();
@@ -1971,9 +1971,9 @@ class Safecracker_lib
 			return;
 		}
 		
-		$this->EE->load->model('channel_model');
+		ee()->load->model('channel_model');
 	
-		$query = $this->EE->channel_model->get_channel_fields($this->channel('field_group'));
+		$query = ee()->channel_model->get_channel_fields($this->channel('field_group'));
 		
 		foreach ($query->result_array() as $row)
 		{
@@ -1995,22 +1995,22 @@ class Safecracker_lib
 		//prepare the channel fields api
 		//which is use to trigger fieldtype methods,
 		//namely save and display_field
-		$this->EE->load->library('api');
+		ee()->load->library('api');
 		
-		$this->EE->api->instantiate(array('channel_fields'));
+		ee()->api->instantiate(array('channel_fields'));
 		
 		foreach ($this->custom_fields as $field)
 		{
-			if ( ! array_key_exists($field['field_type'], $this->EE->api_channel_fields->field_types))
+			if ( ! array_key_exists($field['field_type'], ee()->api_channel_fields->field_types))
 			{
-				$this->EE->api_channel_fields->field_types[$field['field_type']] = $this->EE->api_channel_fields->include_handler($field['field_type']);
+				ee()->api_channel_fields->field_types[$field['field_type']] = ee()->api_channel_fields->include_handler($field['field_type']);
 			}
 
-			$this->EE->api_channel_fields->custom_fields[$field['field_id']] = $field['field_type'];
+			ee()->api_channel_fields->custom_fields[$field['field_id']] = $field['field_type'];
 			
-			$this->EE->api_channel_fields->set_settings($field['field_id'], $field);
+			ee()->api_channel_fields->set_settings($field['field_id'], $field);
 			
-			$this->EE->api_channel_fields->setup_handler($field['field_id']);
+			ee()->api_channel_fields->setup_handler($field['field_id']);
 		}
 	}
 
@@ -2045,15 +2045,15 @@ class Safecracker_lib
 			$select .= ', exp_channel_data.`field_id_'.$field['field_id'].'` as `'.$field['field_name'].'`';
 		}
 		
-		$this->EE->db->select($select, FALSE);
-		$this->EE->db->from('exp_channel_titles');
-		$this->EE->db->join('exp_channel_data', 'exp_channel_titles.entry_id = exp_channel_data.entry_id');
-		$this->EE->db->where('exp_channel_titles.site_id', $this->site_id);
-		$this->EE->db->where('exp_channel_titles.'.(($entry_id) ? 'entry_id' : 'url_title'), $this->EE->security->xss_clean(($entry_id) ? $entry_id : $url_title));
-		$this->EE->db->where('exp_channel_data.channel_id', $this->channel('channel_id'));
-		$this->EE->db->limit(1);
+		ee()->db->select($select, FALSE);
+		ee()->db->from('exp_channel_titles');
+		ee()->db->join('exp_channel_data', 'exp_channel_titles.entry_id = exp_channel_data.entry_id');
+		ee()->db->where('exp_channel_titles.site_id', $this->site_id);
+		ee()->db->where('exp_channel_titles.'.(($entry_id) ? 'entry_id' : 'url_title'), ee()->security->xss_clean(($entry_id) ? $entry_id : $url_title));
+		ee()->db->where('exp_channel_data.channel_id', $this->channel('channel_id'));
+		ee()->db->limit(1);
 		
-		$query = $this->EE->db->get();
+		$query = ee()->db->get();
 		
 		if ($query->num_rows())
 		{
@@ -2061,24 +2061,24 @@ class Safecracker_lib
 			
 			$row['categories'] = array();
 			
-			$this->EE->db->select('cat_id');
+			ee()->db->select('cat_id');
 			
-			$this->EE->db->where('entry_id', $row['entry_id']);
+			ee()->db->where('entry_id', $row['entry_id']);
 			
-			$cat_query = $this->EE->db->get('exp_category_posts');
+			$cat_query = ee()->db->get('exp_category_posts');
 			
 			foreach ($cat_query->result_array() as $cat_row)
 			{
 				$row['categories'][] = $cat_row['cat_id'];
 			}
 
-			$this->EE->api->instantiate('channel_fields');
+			ee()->api->instantiate('channel_fields');
 			
 			foreach ($this->custom_fields as $field=>$definition)
 			{
 				if($definition['field_type'] == 'text') {
-					$this->EE->api_channel_fields->include_handler($definition['field_type']);
-					$handler = $this->EE->api_channel_fields->setup_handler($definition['field_type'], TRUE);
+					ee()->api_channel_fields->include_handler($definition['field_type']);
+					$handler = ee()->api_channel_fields->setup_handler($definition['field_type'], TRUE);
 					$row[$field] = $handler->_format_number($row[$field], $definition['field_content_type']);	
 				}
 			}			
@@ -2098,29 +2098,29 @@ class Safecracker_lib
 	 */
 	public function fetch_logged_out_member($logged_out_member_id = FALSE)
 	{
-		if ($this->EE->session->userdata('member_id') || $this->logged_out_member_id)
+		if (ee()->session->userdata('member_id') || $this->logged_out_member_id)
 		{
 			return;
 		}
 		
-		if ( ! $logged_out_member_id && $this->channel('channel_id') && ! empty($this->settings['allow_guests'][$this->EE->config->item('site_id')][$this->channel('channel_id')]) && ! empty($this->settings['logged_out_member_id'][$this->EE->config->item('site_id')][$this->channel('channel_id')]))
+		if ( ! $logged_out_member_id && $this->channel('channel_id') && ! empty($this->settings['allow_guests'][ee()->config->item('site_id')][$this->channel('channel_id')]) && ! empty($this->settings['logged_out_member_id'][ee()->config->item('site_id')][$this->channel('channel_id')]))
 		{
-			$logged_out_member_id = $this->settings['logged_out_member_id'][$this->EE->config->item('site_id')][$this->channel('channel_id')];
+			$logged_out_member_id = $this->settings['logged_out_member_id'][ee()->config->item('site_id')][$this->channel('channel_id')];
 		}
 		
 		$logged_out_member_id = $this->sanitize_int($logged_out_member_id);
 		
 		if ($logged_out_member_id)
 		{
-			$this->EE->db->select('member_id, group_id');
-			$this->EE->db->where('member_id', $logged_out_member_id);
+			ee()->db->select('member_id, group_id');
+			ee()->db->where('member_id', $logged_out_member_id);
 			
-			$query = $this->EE->db->get('members');
+			$query = ee()->db->get('members');
 			
 			if ($query->num_rows() == 0)
 			{
 				// Invalid guest member id was specified
-				return $this->EE->output->show_user_error('general', lang('safecracker_invalid_guest_member_id'));
+				return ee()->output->show_user_error('general', lang('safecracker_invalid_guest_member_id'));
 			}
 
 			$this->logged_out_member_id = $query->row('member_id');
@@ -2139,11 +2139,11 @@ class Safecracker_lib
 	{
 		if ($this->settings === NULL)
 		{
-			$this->EE->db->select('settings');
-			$this->EE->db->where('class', 'Safecracker_ext');
-			$this->EE->db->limit(1);
+			ee()->db->select('settings');
+			ee()->db->where('class', 'Safecracker_ext');
+			ee()->db->limit(1);
 			
-			$query = $this->EE->db->get('extensions');
+			$query = ee()->db->get('extensions');
 			
 			$this->settings = ($query->row('settings')) ?
 				$this->unserialize($query->row('settings')) : FALSE;
@@ -2161,13 +2161,13 @@ class Safecracker_lib
 	{
 		if ($site_name)
 		{
-			$query = $this->EE->db->select('site_id')->from('sites')->where('site_name', $site_name)->limit(1)->get();
+			$query = ee()->db->select('site_id')->from('sites')->where('site_name', $site_name)->limit(1)->get();
 		
-			$this->site_id = ($query->num_rows()) ? $query->row('site_id') : $this->EE->config->item('site_id');
+			$this->site_id = ($query->num_rows()) ? $query->row('site_id') : ee()->config->item('site_id');
 		}
 		else
 		{
-			$this->site_id = ($site_id) ? $site_id : $this->EE->config->item('site_id');
+			$this->site_id = ($site_id) ? $site_id : ee()->config->item('site_id');
 		}
 	}
 
@@ -2186,13 +2186,13 @@ class Safecracker_lib
 			return;
 		}
 		
-		$this->EE->load->model('channel_model');
+		ee()->load->model('channel_model');
 	
-		$query = $this->EE->channel_model->get_channel_statuses($this->channel('status_group'));
+		$query = ee()->channel_model->get_channel_statuses($this->channel('status_group'));
 		
 		$this->statuses = $query->result_array();
 		
-		$this->EE->lang->loadfile('content');
+		ee()->lang->loadfile('content');
 		
 		foreach ($this->statuses as $index => $status)
 		{
@@ -2203,9 +2203,9 @@ class Safecracker_lib
 
 		// Remove statuses the member does not have access to.
 		// hat tip to @litzinger for the fix.
-		if ($this->EE->session->userdata('member_id') != 0)
+		if (ee()->session->userdata('member_id') != 0)
 		{
-			$member_group_id = $this->EE->session->userdata('group_id');
+			$member_group_id = ee()->session->userdata('group_id');
 		}
 		// In the event the person isn't logged in, figure out what group_id 
 		// we're supposed to be using
@@ -2214,7 +2214,7 @@ class Safecracker_lib
 			$this->fetch_logged_out_member();
 			$member_group_id = $this->logged_out_group_id;
 		}
-		$no_access = $this->EE->db->where('member_group', $member_group_id)
+		$no_access = ee()->db->where('member_group', $member_group_id)
 								  ->get('status_no_access')
 								  ->result_array();
 		$remove = array();
@@ -2259,7 +2259,7 @@ class Safecracker_lib
 			return;
 		}
 		
-		$this->EE->session->cache['safecracker']['form_declaration_data'][$name] = $value;
+		ee()->session->cache['safecracker']['form_declaration_data'][$name] = $value;
 	}
 
 	// --------------------------------------------------------------------
@@ -2288,7 +2288,7 @@ class Safecracker_lib
 			return;
 		}
 		
-		$this->EE->session->cache['safecracker']['form_declaration_hidden_fields'][$name] = $value;
+		ee()->session->cache['safecracker']['form_declaration_hidden_fields'][$name] = $value;
 	}
 
 
@@ -2307,12 +2307,12 @@ class Safecracker_lib
 			($params['url_title'] != '' && $this->entry('url_title') != $params['url_title'])
 		)
 		{
-			if ($this->EE->TMPL->no_results())
+			if (ee()->TMPL->no_results())
 			{
-				return $this->EE->TMPL->no_results();
+				return ee()->TMPL->no_results();
 			}
 			
-			return $this->EE->output->show_user_error(FALSE, lang('safecracker_require_entry'));
+			return ee()->output->show_user_error(FALSE, lang('safecracker_require_entry'));
 		}
 	}
 
@@ -2325,10 +2325,10 @@ class Safecracker_lib
 		$bool_variable = array('secure_return', 'json', 'author_only');
 		// required, channel, return
 		
-		$m_group_id = $this->EE->session->userdata('group_id');
+		$m_group_id = ee()->session->userdata('group_id');
 		
 		// We'll just take all of the parameters and put then in an array
-		$params = array_merge(array_keys($this->EE->TMPL->tagparams), $bool_variable);
+		$params = array_merge(array_keys(ee()->TMPL->tagparams), $bool_variable);
 		
 		// Add in the rules:
 		$meta['rules'] = array();
@@ -2338,11 +2338,11 @@ class Safecracker_lib
 		{
 			if (preg_match('/^rules:(.+)/', $name, $match))
 			{
-				$meta['rules'][$match[1]] = $this->EE->TMPL->fetch_param($name);
+				$meta['rules'][$match[1]] = ee()->TMPL->fetch_param($name);
 			}
 			else
 			{
-				$meta[$name] = $this->EE->TMPL->fetch_param($name);
+				$meta[$name] = ee()->TMPL->fetch_param($name);
 			}
 		}
 		
@@ -2372,8 +2372,8 @@ class Safecracker_lib
 		
 		$meta = serialize($meta);
 		
-		$this->EE->load->library('encrypt');
-		return $this->EE->encrypt->encode($meta, $this->EE->db->username.$this->EE->db->password);
+		ee()->load->library('encrypt');
+		return ee()->encrypt->encode($meta, ee()->db->username.ee()->db->password);
 	}
 
 
@@ -2391,17 +2391,17 @@ class Safecracker_lib
 		
 		if (empty($meta))
 		{
-			$this->EE->output->show_user_error(FALSE, lang('form_decryption_failed'));
+			ee()->output->show_user_error(FALSE, lang('form_decryption_failed'));
 		}
 		
-		$this->EE->load->library('encrypt');
-		$meta = $this->EE->encrypt->decode($meta, $this->EE->db->username.$this->EE->db->password);
+		ee()->load->library('encrypt');
+		$meta = ee()->encrypt->decode($meta, ee()->db->username.ee()->db->password);
 
 		$this->_meta = unserialize($meta);
 		
 		if ( ! isset($this->_meta['decrypt_check']))
 		{
-			$this->EE->output->show_user_error(FALSE, lang('form_decryption_failed'));
+			ee()->output->show_user_error(FALSE, lang('form_decryption_failed'));
 		}
 
 		// Check for Overrides in POST- only allow if param not set
@@ -2409,9 +2409,9 @@ class Safecracker_lib
 		
 		foreach ($valid_inputs as $current_input) 
 		{
-			if (empty($this->_meta[$current_input]) && $this->EE->input->post($current_input))
+			if (empty($this->_meta[$current_input]) && ee()->input->post($current_input))
 			{
-				$this->_meta[$current_input] = $this->EE->input->post($current_input);
+				$this->_meta[$current_input] = ee()->input->post($current_input);
 			}
 		}
 
@@ -2436,11 +2436,11 @@ class Safecracker_lib
 		// Check for author_only setting
 		if ($this->_meta['entry_id'] != FALSE && 
 				(isset($this->_meta['author_only']) && $this->_meta['author_only'] != FALSE) &&
-				($this->entry('author_id') != $this->EE->session->userdata('member_id'))
+				($this->entry('author_id') != ee()->session->userdata('member_id'))
 			)
 			
 		{
-			$this->EE->output->show_user_error(FALSE, lang('safecracker_author_only'));
+			ee()->output->show_user_error(FALSE, lang('safecracker_author_only'));
 		}
 		
 		// Debates- not necessary, but might be good to have in post?  IDK.
@@ -2527,7 +2527,7 @@ class Safecracker_lib
 		{
 			if ($field['field_pre_populate'] == 'y')
 			{
-				$query = $this->EE->db->select('field_id_'.$field['field_pre_field_id'])
+				$query = ee()->db->select('field_id_'.$field['field_pre_field_id'])
 						->distinct()
 						->from('channel_data')
 						->where('channel_id', $field['field_pre_channel_id'])
@@ -2602,11 +2602,11 @@ class Safecracker_lib
 				}
 				else
 				{
-					$this->EE->db->select('rel_child_id');
-					$this->EE->db->where('rel_id', $this->entry($field_name));
-					$this->EE->db->where('rel_parent_id', $this->entry('entry_id'));
+					ee()->db->select('rel_child_id');
+					ee()->db->where('rel_id', $this->entry($field_name));
+					ee()->db->where('rel_parent_id', $this->entry('entry_id'));
 					
-					$query = $this->EE->db->get('relationships');
+					$query = ee()->db->get('relationships');
 					
 					$rel_child_id = $query->row('rel_child_id');
 				}
@@ -2619,16 +2619,16 @@ class Safecracker_lib
 				$orderby = 'entry_'.$orderby;						
 			}
 
-			$this->EE->db->select('entry_id, title');
-			$this->EE->db->where('channel_id', $this->get_field_data($field_name, 'field_related_id'));
-			$this->EE->db->order_by($orderby, $this->get_field_data($field_name, 'field_related_sort'));
+			ee()->db->select('entry_id, title');
+			ee()->db->where('channel_id', $this->get_field_data($field_name, 'field_related_id'));
+			ee()->db->order_by($orderby, $this->get_field_data($field_name, 'field_related_sort'));
 
 			if ($this->get_field_data($field_name, 'field_related_max'))
 			{
-				$this->EE->db->limit($this->get_field_data($field_name, 'field_related_max'));
+				ee()->db->limit($this->get_field_data($field_name, 'field_related_max'));
 			}
 
-			$query = $this->EE->db->get('channel_titles');
+			$query = ee()->db->get('channel_titles');
 			
 			foreach ($query->result() as $row)
 			{
@@ -2829,33 +2829,33 @@ class Safecracker_lib
 		
 		$this->option_fields = $this->native_option_fields;
 		
-		$this->EE->config->load('config');
+		ee()->config->load('config');
 		
-		if (is_array($this->EE->config->item('safecracker_option_fields')))
+		if (is_array(ee()->config->item('safecracker_option_fields')))
 		{
-			$this->custom_option_fields = $this->EE->config->item('safecracker_option_fields');
+			$this->custom_option_fields = ee()->config->item('safecracker_option_fields');
 			
 			$this->option_fields = array_merge($this->option_fields, $this->custom_option_fields);
 		}
 		
-		if (is_array($this->EE->config->item('safecracker_post_error_callbacks')))
+		if (is_array(ee()->config->item('safecracker_post_error_callbacks')))
 		{
-			$this->post_error_callbacks = array_merge($this->post_error_callbacks, $this->EE->config->item('safecracker_post_error_callbacks'));
+			$this->post_error_callbacks = array_merge($this->post_error_callbacks, ee()->config->item('safecracker_post_error_callbacks'));
 		}
 		
-		if (is_array($this->EE->config->item('safecracker_file_fields')))
+		if (is_array(ee()->config->item('safecracker_file_fields')))
 		{
-			$this->file_fields = array_merge($this->file_fields, $this->EE->config->item('safecracker_file_fields'));
+			$this->file_fields = array_merge($this->file_fields, ee()->config->item('safecracker_file_fields'));
 		}
 		
-		if (is_array($this->EE->config->item('safecracker_require_save_call')))
+		if (is_array(ee()->config->item('safecracker_require_save_call')))
 		{
-			$this->require_save_call = $this->EE->config->item('safecracker_require_save_call');
+			$this->require_save_call = ee()->config->item('safecracker_require_save_call');
 		}
 		
-		if (is_array($this->EE->config->item('safecracker_field_extra_js')))
+		if (is_array(ee()->config->item('safecracker_field_extra_js')))
 		{
-			$this->extra_js = $this->EE->config->item('safecracker_field_extra_js');
+			$this->extra_js = ee()->config->item('safecracker_field_extra_js');
 		}
 	}
 
@@ -2889,14 +2889,14 @@ class Safecracker_lib
 			return;
 		}
 		
-		$this->temp_session = $this->EE->session;
+		$this->temp_session = ee()->session;
 		
 		if ( ! class_exists('SC_Session'))
 		{
 			require_once PATH_MOD.'safecracker/libraries/SC_Session.php';
 		}
 		
-		$this->EE->session = new SC_Session(array(
+		ee()->session = new SC_Session(array(
 			'session_object' => $this->temp_session,
 			'logged_out_member_id' => $this->logged_out_member_id,
 			'logged_out_group_id' => $this->logged_out_group_id
@@ -2926,23 +2926,23 @@ class Safecracker_lib
 			return $tagdata;
 		}
 	
-		$this->EE->load->library('api');
+		ee()->load->library('api');
 		
-		$this->EE->load->helper('custom_field');
+		ee()->load->helper('custom_field');
 		
-		$this->EE->api->instantiate('channel_fields');
+		ee()->api->instantiate('channel_fields');
 		
-		$this->EE->api_channel_fields->field_type = $this->get_field_type($field_name);
+		ee()->api_channel_fields->field_type = $this->get_field_type($field_name);
 		
-		$this->EE->api_channel_fields->field_types[$this->EE->api_channel_fields->field_type]->settings = array_merge($this->get_field_settings($field_name), $this->get_field_data($field_name), $this->EE->api_channel_fields->get_global_settings($this->EE->api_channel_fields->field_type));
+		ee()->api_channel_fields->field_types[ee()->api_channel_fields->field_type]->settings = array_merge($this->get_field_settings($field_name), $this->get_field_data($field_name), ee()->api_channel_fields->get_global_settings(ee()->api_channel_fields->field_type));
 		
 		$_GET['entry_id'] = $this->entry('entry_id');
 		
-		$this->EE->api_channel_fields->apply('_init', array(array('row' => $this->entry)));
+		ee()->api_channel_fields->apply('_init', array(array('row' => $this->entry)));
 
-		$data = $this->EE->api_channel_fields->apply('pre_process', array($data));
+		$data = ee()->api_channel_fields->apply('pre_process', array($data));
 		
-		return $this->EE->api_channel_fields->apply('replace_tag', array('data' => $data, 'params' => $params, 'tagdata' => $tagdata));
+		return ee()->api_channel_fields->apply('replace_tag', array('data' => $data, 'params' => $params, 'tagdata' => $tagdata));
 	}
 
 	// --------------------------------------------------------------------
@@ -2969,17 +2969,17 @@ class Safecracker_lib
 	
 	public function send_ajax_response($msg, $error = FALSE)
 	{
-		if ($this->EE->config->item('send_headers') == 'y')
+		if (ee()->config->item('send_headers') == 'y')
 		{
 			//so the output class doesn't try to send any headers
 			//we are taking over
-			$this->EE->config->config['send_headers'] = NULL;
+			ee()->config->config['send_headers'] = NULL;
 			
-			$this->EE->load->library('user_agent', array(), 'user_agent');
+			ee()->load->library('user_agent', array(), 'user_agent');
 			
 			//many browsers do not consistently like this content type
 			//array('Firefox', 'Mozilla', 'Netscape', 'Camino', 'Firebird')
-			if (is_array($msg) && in_array($this->EE->user_agent->browser(), array('Safari', 'Chrome')))
+			if (is_array($msg) && in_array(ee()->user_agent->browser(), array('Safari', 'Chrome')))
 			{
 				@header('Content-Type: application/json');
 			}
@@ -2989,7 +2989,7 @@ class Safecracker_lib
 			}
 		}
 		
-		$this->EE->output->send_ajax_response($msg, $error);
+		ee()->output->send_ajax_response($msg, $error);
 	}
 
 	// --------------------------------------------------------------------
@@ -3003,7 +3003,7 @@ class Safecracker_lib
 	 */
 	public function swap_conditionals($tagdata, $conditionals)
 	{
-		$tagdata = $this->EE->functions->prep_conditionals($tagdata, $conditionals);
+		$tagdata = ee()->functions->prep_conditionals($tagdata, $conditionals);
 		
 		$tagdata = preg_replace('/\{if\s+[\042\047]*0[\042\047]*\}(.+?)\{\/if\}/si', '', $tagdata);
 		
@@ -3040,7 +3040,7 @@ class Safecracker_lib
 					
 					foreach ($row as $k => $v)
 					{
-						$row_output = $this->EE->TMPL->swap_var_single($k, $v, $row_output);
+						$row_output = ee()->TMPL->swap_var_single($k, $v, $row_output);
 					}
 					
 					$output .= $row_output."\n";
@@ -3072,7 +3072,7 @@ class Safecracker_lib
 			return;
 		}
 		
-		$this->EE->session = $this->temp_session;
+		ee()->session = $this->temp_session;
 		
 		unset($this->temp_session);
 	}
@@ -3108,9 +3108,9 @@ class Safecracker_lib
 	 */
 	public function api_safe_rel_ids($rel_ids)
 	{
-		$this->EE->db->select('rel_id, rel_parent_id, rel_child_id');
-		$this->EE->db->where_in('rel_id', $rel_ids);
-		$query = $this->EE->db->get('relationships');		
+		ee()->db->select('rel_id, rel_parent_id, rel_child_id');
+		ee()->db->where_in('rel_id', $rel_ids);
+		$query = ee()->db->get('relationships');		
 
 		return $query;		
 	}

@@ -14,7 +14,7 @@
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Channel Parser Plugin (Custom Fields)
+ * ExpressionEngine Channel Parser Component (Custom Fields)
  *
  * @package		ExpressionEngine
  * @subpackage	Core
@@ -22,19 +22,45 @@
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class EE_Channel_custom_field_parser implements EE_Channel_parser_plugin {
+class EE_Channel_custom_field_parser implements EE_Channel_parser_component {
 
-	public function disabled(array $disabled)
+	/**
+	 * Check if custom fields are enabled.
+	 *
+	 * @param array		A list of "disabled" features
+	 * @return Boolean	Is disabled?
+	 */
+	public function disabled(array $disabled, EE_Channel_preparser $pre)
 	{
-		return FALSE;
+		return in_array('custom_fields', $disabled);
 	}
 
+	// ------------------------------------------------------------------------
+
+	/**
+	 * @todo Find all of the tags like the custom date fields?
+	 *
+	 * @param String	The tagdata to be parsed
+	 * @param Object	The preparser object.
+	 * @return Object	Channel fields api, to reduce a lookup (for now)
+	 */
 	public function pre_process($tagdata, EE_Channel_preparser $pre)
 	{
-		return NULL;
+		return ee()->api_channel_fields;
 	}
 
-	public function replace($tagdata, EE_Channel_data_parser $obj, $pre)
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Replace all of the custom channel fields.
+	 *
+	 * @param String	The tagdata to be parsed
+	 * @param Object	The channel parser object
+	 * @param Mixed		The results from the preparse method
+	 *
+	 * @return String	The processed tagdata
+	 */
+	public function replace($tagdata, EE_Channel_data_parser $obj, $ft_api)
 	{
 		$tag = $obj->tag();
 		$data = $obj->row();
@@ -42,8 +68,6 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_plugin {
 
 		$site_id = $data['site_id'];
 		$cfields = $obj->channel()->cfields[$site_id];
-
-		$ft_api = get_instance()->api_channel_fields;
 
 		$unprefixed_tag	= preg_replace('/^'.$prefix.'/', '', $tag);
 		$field_name		= substr($unprefixed_tag.' ', 0, strpos($unprefixed_tag.' ', ' '));
@@ -58,32 +82,39 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_plugin {
 			{
 				$params = array();
 				$parse_fnc = 'replace_tag';
-				$parse_fnc_catchall = 'replace_tag_catchall';
 
 				if ($param_string)
 				{
-					$params = get_instance()->functions->assign_parameters($param_string);
+					$params = ee()->functions->assign_parameters($param_string);
 				}
 
-				if ($ft_api->setup_handler($field_id))
-				{
-					$ft_api->apply('_init', array(array('row' => $data)));
-					$data = $ft_api->apply('pre_process', array($data['field_id_'.$field_id]));
+				$obj = $ft_api->setup_handler($field_id, TRUE);
 
-					if ($ft_api->check_method_exists($parse_fnc))
+				if ($obj)
+				{
+					$_ft_path = $ft_api->ft_paths[$ft_api->field_type];
+					ee()->load->add_package_path($_ft_path, FALSE);
+
+					$obj->_init(array('row' => $data));
+
+					$data = $obj->pre_process($data['field_id_'.$field_id]);
+
+					if (method_exists($obj, $parse_fnc))
 					{
-						$entry = $ft_api->apply($parse_fnc, array($data, $params, FALSE));
+						$entry = $obj->$parse_fnc($data, $params, FALSE);
 					}
-					elseif ($ft_api->check_method_exists($parse_fnc_catchall))
+					elseif (method_exists($obj, 'replace_tag_catchall'))
 					{
-						$entry = $ft_api->apply($parse_fnc_catchall, array($data, $params, FALSE, $modifier));
+						$entry = $obj->replace_tag_catchall($data, $params, FALSE, $modifier);
 					}
+
+					ee()->load->remove_package_path($_ft_path);
 				}
 				else
 				{
 					// Couldn't find a fieldtype
-					$entry = get_instance()->typography->parse_type(
-						get_instance()->functions->encode_ee_tags($data['field_id_'.$field_id]),
+					$entry = ee()->typography->parse_type(
+						ee()->functions->encode_ee_tags($data['field_id_'.$field_id]),
 						array(
 							'text_format'	=> $data['field_ft_'.$field_id],
 							'html_format'	=> $data['channel_html_formatting'],

@@ -47,7 +47,7 @@ class Emoticon_upd {
 					'has_cp_backend' => 'n'
 					);
 
-		$this->EE->db->insert('modules', $data);
+		ee()->db->insert('modules', $data);
 		
 		return TRUE;
 	}
@@ -62,20 +62,20 @@ class Emoticon_upd {
 	 */
 	function uninstall()
 	{
-		$this->EE->db->select('module_id');
-		$query = $this->EE->db->get_where('modules', array('module_name' => 'Emoticon'));
+		ee()->db->select('module_id');
+		$query = ee()->db->get_where('modules', array('module_name' => 'Emoticon'));
 
-		$this->EE->db->where('module_id', $query->row('module_id'));
-		$this->EE->db->delete('module_member_groups');
+		ee()->db->where('module_id', $query->row('module_id'));
+		ee()->db->delete('module_member_groups');
 
-		$this->EE->db->where('module_name', 'Emoticon');
-		$this->EE->db->delete('modules');
+		ee()->db->where('module_name', 'Emoticon');
+		ee()->db->delete('modules');
 
-		$this->EE->db->where('class', 'Emoticon');
-		$this->EE->db->delete('actions');
+		ee()->db->where('class', 'Emoticon');
+		ee()->db->delete('actions');
 
-		$this->EE->db->where('class', 'Emoticon_mcp');
-		$this->EE->db->delete('actions');
+		ee()->db->where('class', 'Emoticon_mcp');
+		ee()->db->delete('actions');
 
 		return TRUE;
 	}

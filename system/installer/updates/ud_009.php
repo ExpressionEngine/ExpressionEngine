@@ -31,13 +31,13 @@ class Updater {
 
 	function do_update()
 	{		
-		$query = $this->EE->db->query("SELECT COUNT(*) AS count FROM exp_template_groups");
+		$query = ee()->db->query("SELECT COUNT(*) AS count FROM exp_template_groups");
 		
 		$num = $query->row('count') + 1;
 		
-		$this->EE->db->query("insert into exp_template_groups(group_name, group_order) values ('search', '$num')");
+		ee()->db->query("insert into exp_template_groups(group_name, group_order) values ('search', '$num')");
 		
-		$id = $this->EE->db->insert_id();
+		$id = ee()->db->insert_id();
 		
 		$Q[] = "insert into exp_templates(group_id, template_name, template_data) values ('$id', 'index', '".addslashes(search_index())."')";
 		$Q[] = "insert into exp_templates(group_id, template_name, template_data) values ('$id', 'results', '".addslashes(search_results())."')";
@@ -109,24 +109,24 @@ class Updater {
 		
 		foreach ($Q as $sql)
 		{
-			$this->EE->db->query($sql);
+			ee()->db->query($sql);
 		}
 			
 		/** -----------------------------------------
 		/**  Update Member Groups with search prefs
 		/** -----------------------------------------*/
 
-		$query = $this->EE->db->query("SELECT group_id FROM exp_member_groups ORDER BY group_id");
+		$query = ee()->db->query("SELECT group_id FROM exp_member_groups ORDER BY group_id");
 
 		foreach ($query->result_array() as $row)
 		{
 			$flood = ($row['group_id'] == 1) ? '0' : '30';
 		
-			$this->EE->db->query("UPDATE exp_member_groups SET can_search = 'y', search_flood_control = '$flood' WHERE group_id = '".$row['group_id']."'");
+			ee()->db->query("UPDATE exp_member_groups SET can_search = 'y', search_flood_control = '$flood' WHERE group_id = '".$row['group_id']."'");
 		
 			$st = ($row['group_id'] == 1) ? 'y' : 'n';
 		
-			$this->EE->db->query("UPDATE exp_member_groups SET can_moderate_comments = '$st' WHERE group_id = '".$row['group_id']."'");
+			ee()->db->query("UPDATE exp_member_groups SET can_moderate_comments = '$st' WHERE group_id = '".$row['group_id']."'");
 		}
 
 
@@ -136,30 +136,30 @@ class Updater {
 		
         // Do we have custom fields?
         
-        $query = $this->EE->db->query("SELECT COUNT(*) AS count FROM exp_member_data");
+        $query = ee()->db->query("SELECT COUNT(*) AS count FROM exp_member_data");
         
         $md_exists = ($query->row('count') > 0) ? TRUE : FALSE;
 		
 		// We need to run through the member table and add two fields if they are missing
 
-		$query = $this->EE->db->query("SELECT member_id FROM exp_members");
+		$query = ee()->db->query("SELECT member_id FROM exp_members");
 
 		foreach ($query->result_array() as $row)
 		{
 			$member_id = $row['member_id'];
 			
-			$res = $this->EE->db->query("SELECT member_id FROM exp_member_homepage WHERE member_id = '$member_id'");
+			$res = ee()->db->query("SELECT member_id FROM exp_member_homepage WHERE member_id = '$member_id'");
 			
 			if ($res->num_rows() == 0)
-				$this->EE->db->query("INSERT INTO exp_member_homepage (member_id) VALUES ('$member_id')");
+				ee()->db->query("INSERT INTO exp_member_homepage (member_id) VALUES ('$member_id')");
 	
 			if ($md_exists == TRUE)
 			{
-				$res = $this->EE->db->query("SELECT member_id FROM exp_member_data WHERE member_id = '$member_id'");
+				$res = ee()->db->query("SELECT member_id FROM exp_member_data WHERE member_id = '$member_id'");
 	
 				if ($res->num_rows() == 0)
 				{
-					$this->EE->db->query("INSERT INTO exp_member_data (member_id) VALUES ('$member_id')");
+					ee()->db->query("INSERT INTO exp_member_data (member_id) VALUES ('$member_id')");
 				}
 			}
 		}
@@ -174,7 +174,7 @@ class Updater {
 						'license_number'	=> ''
 					);
 								
-		$this->EE->config->_append_config_1x($data);
+		ee()->config->_append_config_1x($data);
 
 		return TRUE;
 	}

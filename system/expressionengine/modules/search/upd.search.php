@@ -76,7 +76,7 @@ class Search_upd {
 	
 		foreach ($sql as $query)
 		{
-			$this->EE->db->query($query);
+			ee()->db->query($query);
 		}
 	
 		return TRUE;
@@ -93,21 +93,21 @@ class Search_upd {
 	 */	
 	function uninstall()
 	{
-		$this->EE->load->dbforge();
+		ee()->load->dbforge();
 		
-		$query = $this->EE->db->query("SELECT module_id FROM exp_modules WHERE module_name = 'Search'"); 
+		$query = ee()->db->query("SELECT module_id FROM exp_modules WHERE module_name = 'Search'"); 
 				
 		$sql[] = "DELETE FROM exp_module_member_groups WHERE module_id = '".$query->row('module_id') ."'";
 		$sql[] = "DELETE FROM exp_modules WHERE module_name = 'Search'";
 		$sql[] = "DELETE FROM exp_actions WHERE class = 'Search'";
 		$sql[] = "DELETE FROM exp_actions WHERE class = 'Search_mcp'";
 		
-		$this->EE->dbforge->drop_table('search');
-		$this->EE->dbforge->drop_table('search_log');
+		ee()->dbforge->drop_table('search');
+		ee()->dbforge->drop_table('search_log');
 	
 		foreach ($sql as $query)
 		{
-			$this->EE->db->query($query);
+			ee()->db->query($query);
 		}
 
 		return TRUE;
@@ -127,9 +127,9 @@ class Search_upd {
 	{
 		if (version_compare($current, '2.1', '<'))
 		{
-			$this->EE->load->library('utf8_db_convert');			
+			ee()->load->library('utf8_db_convert');			
 			
-			$this->EE->utf8_db_convert->do_conversion(array(
+			ee()->utf8_db_convert->do_conversion(array(
 				'exp_search_log', 'exp_search'
 			));
 		}
@@ -137,7 +137,7 @@ class Search_upd {
 		if (version_compare($current, '2.2', '<'))
 		{
 			// Update ip_address column
-			$this->EE->load->dbforge();
+			ee()->load->dbforge();
 
 			$tables = array('search', 'search_log');
 
@@ -158,7 +158,7 @@ class Search_upd {
 					unset($column_settings['ip_address']['default']);
 				}
 
-				$this->EE->dbforge->modify_column($table, $column_settings);	
+				ee()->dbforge->modify_column($table, $column_settings);	
 			}
 		}
 		

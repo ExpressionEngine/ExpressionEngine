@@ -14,7 +14,7 @@
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Channel Parser Plugin (Simple Conditionals)
+ * ExpressionEngine Channel Parser Component (Simple Conditionals)
  *
  * @package		ExpressionEngine
  * @subpackage	Core
@@ -22,18 +22,44 @@
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class EE_Channel_simple_conditional_parser implements EE_Channel_parser_plugin {
+class EE_Channel_simple_conditional_parser implements EE_Channel_parser_component {
 
-	public function disabled(array $disabled)
+	/**
+	 * @todo Fast check for simple conditionals?
+	 *
+	 * @param array		A list of "disabled" features
+	 * @return Boolean	Is disabled?
+	 */
+	public function disabled(array $disabled, EE_Channel_preparser $pre)
 	{
 		return FALSE;
 	}
 
+	// ------------------------------------------------------------------------
+
+	/**
+	 * No preprocessing required.
+	 *
+	 * @param String	The tagdata to be parsed
+	 * @param Object	The preparser object.
+	 * @return void
+	 */
 	public function pre_process($tagdata, EE_Channel_preparser $pre)
 	{
 		return NULL;
 	}
 
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Replace all of the simple conditionals
+	 *
+	 * @param String	The tagdata to be parsed
+	 * @param Object	The channel parser object
+	 * @param Mixed		The results from the preparse method
+	 *
+	 * @return String	The processed tagdata
+	 */
 	public function replace($tagdata, EE_Channel_data_parser $obj, $pre)
 	{
 		$tag = $obj->tag();
@@ -63,7 +89,7 @@ class EE_Channel_simple_conditional_parser implements EE_Channel_parser_plugin {
 
 				if ( isset( $this->cfields[$data['site_id']][$item] ) AND isset( $data['field_id_'.$cfields[$data['site_id']][$item]] ) AND $data['field_id_'.$cfields[$data['site_id']][$item]] != "")
 				{
-					$entry = get_instance()->typography->parse_type(
+					$entry = ee()->typography->parse_type(
 						$data['field_id_'.$cfields[$data['site_id']][$item]],
 						array(
 								'text_format'	=> $data['field_ft_'.$cfields[$data['site_id']][$item]],

@@ -973,7 +973,7 @@ class Content_edit extends CP_Controller {
 		/* 'update_multi_entries_start' hook.
 		/*  - Perform additional actions before entries are updated
 		*/
-			$edata = $this->extensions->call('update_multi_entries_start');
+			$this->extensions->call('update_multi_entries_start');
 			if ($this->extensions->end_script === TRUE) return;
 		/*
 		/* -------------------------------------------*/
@@ -1111,7 +1111,7 @@ class Content_edit extends CP_Controller {
 			/* 'update_multi_entries_loop' hook.
 			/*  - Perform additional actions after each entry is updated
 			*/
-				$edata = $this->extensions->call('update_multi_entries_loop', $id, $data);
+				$this->extensions->call('update_multi_entries_loop', $id, $data);
 				if ($this->extensions->end_script === TRUE) return;
 			/*
 			/* -------------------------------------------*/
@@ -1119,28 +1119,13 @@ class Content_edit extends CP_Controller {
 
 		// Clear caches if needed
 
-		$entry_ids = "'";
-
-		foreach($_POST['entry_id'] as $id)
-		{
-			$entry_ids .= $this->db->escape_str($id)."', '";
-		}
-
-		$entry_ids = substr($entry_ids, 0, -3);
-
-		$query = $this->db->query("SELECT COUNT(*) AS count FROM exp_relationships
-							WHERE rel_parent_id IN ({$entry_ids})
-							OR rel_child_id IN ({$entry_ids})");
-
-		$clear_rel = ($query->row('count')	> 0) ? TRUE : FALSE;
-
 		if ($this->config->item('new_posts_clear_caches') == 'y')
 		{
-			$this->functions->clear_caching('all', '', $clear_rel);
+			$this->functions->clear_caching('all', '');
 		}
 		else
 		{
-			$this->functions->clear_caching('sql', '', $clear_rel);
+			$this->functions->clear_caching('sql', '');
 		}
 
 
@@ -1503,7 +1488,7 @@ class Content_edit extends CP_Controller {
 		/* 'delete_entries_start' hook.
 		/*  - Perform actions prior to entry deletion / take over deletion
 		*/
-			$edata = $this->extensions->call('delete_entries_start');
+			$this->extensions->call('delete_entries_start');
 			if ($this->extensions->end_script === TRUE) return;
 		/*
 		/* -------------------------------------------*/
@@ -1714,6 +1699,7 @@ class Content_edit extends CP_Controller {
 
 		$c_row = FALSE;
 		$cat_group = '';
+		$status_group = '';
 		$channel_id = $this->input->get_post('channel_id');
 
 		if (count($channels) == 1)
@@ -1729,6 +1715,7 @@ class Content_edit extends CP_Controller {
 		{
 			$channel_id = $c_row->channel_id;
 			$cat_group = $c_row->cat_group;
+			$status_group = $c_row->status_group;
 		}
 		
 		$vars['channel_selected'] = $this->input->get_post('channel_id');
@@ -1798,16 +1785,12 @@ class Content_edit extends CP_Controller {
 		$vars['status_select_options'][''] = lang('filter_by_status');
 		$vars['status_select_options']['all'] = lang('all');
 
-		if ($cat_group != '')
+		if ($status_group != '')
 		{
-			$c_status = $this->channel_model->get_channel_info($channel_id, array('status_group'));
-			
 			$status_q = $this->db->select('status')
-				->where('group_id', $c_status->row('status_group'))
+				->where('group_id', $status_group)
 				->order_by('status_order')
 				->get('statuses');				
-
-			$c_status->free_result();
 
 			foreach ($status_q->result_array() as $row)
 			{

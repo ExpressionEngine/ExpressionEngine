@@ -34,24 +34,24 @@ class EE_Spellcheck {
 		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();
 
-		$this->EE->lang->loadfile('spellcheck');
+		ee()->lang->loadfile('spellcheck');
 		
 		if (function_exists('pspell_new') OR function_exists('curl_init') OR extension_loaded('openssl'))
 		{
-			$this->EE->load->library('javascript', array('autoload' => FALSE));
+			ee()->load->library('javascript', array('autoload' => FALSE));
 
 			$this->enabled = TRUE;
 			
 			// Is this a CP or front end request?
 			if (REQ == 'CP') {
-				$this->EE->cp->add_to_foot($this->EE->javascript->inline($this->javascript()));
+				ee()->cp->add_to_foot(ee()->javascript->inline($this->javascript()));
 			}			
 			
-			$this->EE->javascript->output('eeSpell.init();');
-			$this->EE->load->helper('spellcheck');
+			ee()->javascript->output('eeSpell.init();');
+			ee()->load->helper('spellcheck');
 		}
 
-		$this->EE->load->vars(array('spell_enabled' => $this->enabled));
+		ee()->load->vars(array('spell_enabled' => $this->enabled));
 	}
 
 	// --------------------------------------------------------------------
@@ -72,11 +72,11 @@ class EE_Spellcheck {
 			return '';
 		}
 
-		$spell_save_edit		= $this->EE->lang->line('spell_save_edit');
-		$spell_edit_word		= $this->EE->lang->line('spell_edit_word');
-		$unsupported_browser	= $this->EE->lang->line('unsupported_browser');
-		$no_spelling_errors		= $this->EE->lang->line('no_spelling_errors');
-		$spellcheck_in_progress	= $this->EE->lang->line('spellcheck_in_progress');
+		$spell_save_edit		= ee()->lang->line('spell_save_edit');
+		$spell_edit_word		= ee()->lang->line('spell_edit_word');
+		$unsupported_browser	= ee()->lang->line('unsupported_browser');
+		$no_spelling_errors		= ee()->lang->line('no_spelling_errors');
+		$spellcheck_in_progress	= ee()->lang->line('spellcheck_in_progress');
 		$XID_SECURE_HASH		= (defined('XID_SECURE_HASH')) ? XID_SECURE_HASH : '{XID_SECURE_HASH}';
 		$is_frontend			= 'true';
 
@@ -1136,9 +1136,9 @@ EOT;
 		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();
 
-		$this->EE->session->tracker = array_shift($this->EE->session->tracker);
+		ee()->session->tracker = array_shift(ee()->session->tracker);
 
-		$this->EE->functions->set_cookie('tracker', serialize($this->EE->session->tracker), '0');
+		ee()->functions->set_cookie('tracker', serialize(ee()->session->tracker), '0');
 
   		if ( ! defined('AMP')) define('AMP', '&amp;');
 		if ( ! defined('BR'))  define('BR',  '<br />');
@@ -1152,7 +1152,7 @@ EOT;
 		"\"http://www.w3.org/TR/html4/loose.dtd\">\n\n".
 		"<head>\n".
 		"<title>".APP_NAME." | Spell Check</title>\n\n".		
-		"<meta http-equiv='content-type' content='text/html; charset=".$this->EE->config->item('output_charset')."'>\n".
+		"<meta http-equiv='content-type' content='text/html; charset=".ee()->config->item('output_charset')."'>\n".
 		"<meta name='MSSmartTagsPreventParsing' content='TRUE'>\n".
 		"<meta http-equiv='expires' content='-1'>\n".
 		"<meta http-equiv='expires' content='Mon, 01 Jan 1970 23:59:59 GMT'>\n".		
@@ -1160,7 +1160,7 @@ EOT;
 		
 		if (REQ == 'CP')
 		{
-			$header .= $this->EE->view->head_link('css/spellcheck_frame.css');			
+			$header .= ee()->view->head_link('css/spellcheck_frame.css');			
 		}
 		else
 		{
@@ -1221,9 +1221,9 @@ EOH;
 		/*	  code for the spellcheck (ex: en, es, de)
 		/* -------------------------------------------*/
 		
-		if ($this->EE->config->item('spellcheck_language_code') !== FALSE && strlen($this->EE->config->item('spellcheck_language_code')) == 2)
+		if (ee()->config->item('spellcheck_language_code') !== FALSE && strlen(ee()->config->item('spellcheck_language_code')) == 2)
 		{
-			$lang = $this->EE->config->item('spellcheck_language_code');
+			$lang = ee()->config->item('spellcheck_language_code');
 		}
 		
 		// ----------------------------------
@@ -1250,7 +1250,7 @@ EOH;
 		// We are also removing any HTML code and HTML code entities so that we
 		// do not process them as misspelled words.
 		
-		$content = preg_replace("|<.*?".">|", '', rawurldecode($this->EE->security->xss_clean($this->EE->input->get_post('q'))));
+		$content = preg_replace("|<.*?".">|", '', rawurldecode(ee()->security->xss_clean(ee()->input->get_post('q'))));
 		$content = str_replace(array('&amp;', '&lt;', '&gt;'), '', $content);
 		
 		$str = '<?xml version="1.0" encoding="UTF-8"?'.">\n<items>\n";
@@ -1280,7 +1280,7 @@ EOH;
 			
 			if ($data == '')
 			{
-				$this->EE->output->set_status_header(404);
+				ee()->output->set_status_header(404);
 				@header("Date: ".gmdate("D, d M Y H:i:s")." GMT");
 				exit('Unable to connect to spellcheck');
 			}

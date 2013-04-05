@@ -41,7 +41,7 @@ class Updater {
 	 */
 	public function __construct()
 	{
-		$this->EE =& get_instance();
+		ee() =& get_instance();
 	}
 	
 	// --------------------------------------------------------------------
@@ -53,16 +53,25 @@ class Updater {
 	 */
 	public function do_update()
 	{
-		$this->EE->load->dbforge();
-		
-		$this->_add_template_name_to_dev_log();
-		$this->_drop_dst();
-		$this->_update_timezone_column_lengths();
-		$this->_update_session_table();
-		$this->_update_actions_table();
-		$this->_update_specialty_templates(); 
-		$this->_update_relationships_table();
-		$this->_replace_relationship_tags();
+		ee()->load->dbforge();
+
+		$steps = new ProgressIterator(
+			array(
+				'_add_template_name_to_dev_log',
+				'_drop_dst',
+				'_update_timezone_column_lengths',
+				'_update_session_table',
+				'_update_actions_table',
+				'_update_specialty_templates',
+				'_update_relationships_table',
+				'_replace_relationship_tags'
+			)
+		);
+
+		foreach ($steps as $k => $v)
+		{
+			$this->$v();
+		}
 		
 		return TRUE;
 	}
@@ -76,40 +85,37 @@ class Updater {
 	 */
 	private function _add_template_name_to_dev_log()
 	{
-		if ( ! $this->EE->db->field_exists('template_id', 'developer_log'))
-		{
-			$this->EE->dbforge->add_column(
-				'developer_log',
-				array(
-					'template_id' => array(
-						'type'			=> 'int',
-						'constraint'	=> 10,
-						'unsigned'		=> TRUE,
-						'default'		=> 0,
-						'null'			=> FALSE
-					),
-					'template_name' => array(
-						'type'			=> 'varchar',
-						'constraint'	=> 100
-					),
-					'template_group' => array(
-						'type'			=> 'varchar',
-						'constraint'	=> 100
-					),
-					'addon_module' => array(
-						'type'			=> 'varchar',
-						'constraint'	=> 100
-					),
-					'addon_method' => array(
-						'type'			=> 'varchar',
-						'constraint'	=> 100
-					),
-					'snippets' => array(
-						'type'			=> 'text'
-					)
+		ee()->smartforge->add_column(
+			'developer_log',
+			array(
+				'template_id' => array(
+					'type'			=> 'int',
+					'constraint'	=> 10,
+					'unsigned'		=> TRUE,
+					'default'		=> 0,
+					'null'			=> FALSE
+				),
+				'template_name' => array(
+					'type'			=> 'varchar',
+					'constraint'	=> 100
+				),
+				'template_group' => array(
+					'type'			=> 'varchar',
+					'constraint'	=> 100
+				),
+				'addon_module' => array(
+					'type'			=> 'varchar',
+					'constraint'	=> 100
+				),
+				'addon_method' => array(
+					'type'			=> 'varchar',
+					'constraint'	=> 100
+				),
+				'snippets' => array(
+					'type'			=> 'text'
 				)
-			);
-		}
+			)
+		);
 	}
 
 	// --------------------------------------------------------------------
@@ -119,20 +125,11 @@ class Updater {
 	 */
 	private function _drop_dst()
 	{
-		if ($this->EE->db->field_exists('daylight_savings', 'members'))
-		{
-			$this->EE->dbforge->drop_column('members', 'daylight_savings');
-		}
+			ee()->smartforge->drop_column('members', 'daylight_savings');
 
-		if ($this->EE->db->field_exists('dst_enabled', 'channel_titles'))
-		{
-			$this->EE->dbforge->drop_column('channel_titles', 'dst_enabled');
-		}
+			ee()->smartforge->drop_column('channel_titles', 'dst_enabled');
 
-		if ($this->EE->db->field_exists('dst_enabled', 'channel_entries_autosave'))
-		{
-			$this->EE->dbforge->drop_column('channel_entries_autosave', 'dst_enabled');
-		}
+			ee()->smartforge->drop_column('channel_entries_autosave', 'dst_enabled');
 	}
 
 	// --------------------------------------------------------------------
@@ -144,7 +141,7 @@ class Updater {
 	 */
 	private function _update_timezone_column_lengths()
 	{
-		$this->EE->dbforge->modify_column(
+		ee()->smartforge->modify_column(
 			'members',
 			array(
 				'timezone' => array(
@@ -157,7 +154,7 @@ class Updater {
 
 		// Get all date fields, we'll need to update their timezone column
 		// lengths in the channel_data table
-		$date_fields = $this->EE->db
+		$date_fields = ee()->db
 			->select('field_id')
 			->get_where(
 				'channel_fields',
@@ -168,19 +165,16 @@ class Updater {
 		{
 			$field_name = 'field_dt_'.$field['field_id'];
 
-			if ($this->EE->db->field_exists($field_name, 'channel_data'))
-			{
-				$this->EE->dbforge->modify_column(
-					'channel_data',
-					array(
-						$field_name => array(
-							'name' 			=> $field_name,
-							'type' 			=> 'varchar',
-							'constraint' 	=> 50
-						)
+			ee()->smartforge->modify_column(
+				'channel_data',
+				array(
+					$field_name => array(
+						'name' 			=> $field_name,
+						'type' 			=> 'varchar',
+						'constraint' 	=> 50
 					)
-				);
-			}
+				)
+			);
 		}
 	}
 
@@ -195,26 +189,23 @@ class Updater {
 	 */
 	private function _update_session_table()
 	{
-		if ( ! $this->EE->db->field_exists('fingerprint', 'sessions'))
-		{
-			$this->EE->dbforge->add_column(
-				'sessions',
-				array(
-					'fingerprint' => array(
-						'type'			=> 'varchar',
-						'constraint'	=> 40
-					),
-					'sess_start' => array(
-						'type'			=> 'int',
-						'constraint'	=> 10,
-						'unsigned'		=> TRUE,
-						'default'		=> 0,
-						'null'			=> FALSE
-					)
+		ee()->smartforge->add_column(
+			'sessions',
+			array(
+				'fingerprint' => array(
+					'type'			=> 'varchar',
+					'constraint'	=> 40
 				),
-				'user_agent'
-			);	
-		}
+				'sess_start' => array(
+					'type'			=> 'int',
+					'constraint'	=> 10,
+					'unsigned'		=> TRUE,
+					'default'		=> 0,
+					'null'			=> FALSE
+				)
+			),
+			'user_agent'
+		);
 		
 		return TRUE;
 	}
@@ -234,11 +225,11 @@ class Updater {
 
 		// For this one, the method was renamed.  It still mostly does
 		// the same thing and needs to be an action.
-		$this->EE->db->where('method', 'retrieve_password')
+		ee()->db->where('method', 'retrieve_password')
 			->update('actions', array('method'=>'send_reset_token'));
 		// For this one the method still exists, but is now a form.  It needs
 		// to be renamed to the new processing method.
-		$this->EE->db->where('method', 'reset_password')
+		ee()->db->where('method', 'reset_password')
 			->update('actions', array('method'=>'process_reset_password'));
 
 	} 
@@ -266,7 +257,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 {site_name}
 {site_url}');	
 
-		$this->EE->db->where('template_name', 'forgot_password_instructions')
+		ee()->db->where('template_name', 'forgot_password_instructions')
 			->update('specialty_templates', $data);
 	}
 
@@ -278,7 +269,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 	private function _update_relationships_table()
 	{
 		// ALTER TABLE `exp_relationships` CHANGE COLUMN `rel_id` `relationship_id` int(10) unsigned NOT NULL DEFAULT 0;
-		$this->EE->dbforge->modify_column(
+		ee()->dbforge->modify_column(
 			'relationships',
 			array(
 				'rel_id' => array(
@@ -291,7 +282,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		);
 
 		// ALTER TABLE `exp_relationships` CHANGE COLUMN `rel_parent_id` `parent_id` int(10) unsigned NOT NULL DEFAULT 0;
-		$this->EE->dbforge->modify_column(
+		ee()->dbforge->modify_column(
 			'relationships',
 			array(
 				'rel_parent_id' => array(
@@ -304,7 +295,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		);
 
 		// ALTER TABLE `exp_relationships` CHANGE COLUMN `rel_child_id` `child_id` int(10) unsigned NOT NULL DEFAULT 0; 	
-		$this->EE->dbforge->modify_column(
+		ee()->dbforge->modify_column(
 			'relationships',
 			array(
 				'rel_child_id' => array(
@@ -317,17 +308,17 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		);
 
 		// ALTER TABLE `exp_relationships` DROP COLUMN `rel_type`;
-		$this->EE->dbforge->drop_column('relationships', 'rel_type');		
+		ee()->dbforge->drop_column('relationships', 'rel_type');		
 
 		// ALTER TABLE `exp_relationships` DROP COLUMN `rel_data`;
-		$this->EE->dbforge->drop_column('relationships', 'rel_data');
+		ee()->dbforge->drop_column('relationships', 'rel_data');
 		
 		// ALTER TABLE `exp_relationships` DROP COLUMN `reverse_rel_data`;
-		$this->EE->dbforge->drop_column('relationships', 'reverse_rel_data');
+		ee()->dbforge->drop_column('relationships', 'reverse_rel_data');
 
 		// ALTER TABLE `exp_relationships` ADD COLUMN field_id int unsigned;
 		// ALTER TABLE exp_relationships ADD COLUMN `order` int unsigned;
-		$this->EE->dbforge->add_column(
+		ee()->dbforge->add_column(
 			'relationships',
 			array(
 				'field_id' => array(
@@ -345,7 +336,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		);
 
 		// alter table exp_relationships ADD KEY `field_id` (`field_id`);
-		$this->EE->dbforge->add_key('field_id', FALSE);
+		ee()->dbforge->add_key('field_id', FALSE);
 	}
 
 	// -------------------------------------------------------------------
@@ -357,15 +348,15 @@ If you do not wish to reset your password, ignore this message. It will expire i
 	{
 		// We're gonna need this to be already loaded.
 		require_once(APPPATH . 'libraries/Functions.php');	
-		$this->EE->functions = new Installer_Functions();
+		ee()->functions = new Installer_Functions();
 
 		require_once(APPPATH . 'libraries/Extensions.php');
-		$this->EE->extensions = new Installer_Extensions();
+		ee()->extensions = new Installer_Extensions();
 
 		// We need to figure out which template to load.
 		// Need to check the edit date.
-		$this->EE->load->model('template_model');
-		$templates = $this->EE->template_model->fetch_last_edit(array(), TRUE); 
+		ee()->load->model('template_model');
+		$templates = ee()->template_model->fetch_last_edit(array(), TRUE); 
 	
 		// related_entries
 		// Foreach template
@@ -379,11 +370,11 @@ If you do not wish to reset your password, ignore this message. It will expire i
 			// if saving to file, save the file
 			if ($template->loaded_from_file)
 			{
-				$this->EE->template_model->save_to_file($template);
+				ee()->template_model->save_to_file($template);
 			}
 			else
 			{
-				$this->EE->template_model->save_to_database($template);
+				ee()->template_model->save_to_database($template);
 			}
 		}
 		
@@ -459,7 +450,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 	 * We'll extract the related tag data, stash it away in an array, and
 	 * replace it with a marker string so that the template parser
 	 * doesn't see it.  In the channel class we'll check to see if the 
-	 * $this->EE->TMPL->related_data array contains anything.  If so, we'll celebrate
+	 * ee()->TMPL->related_data array contains anything.  If so, we'll celebrate
 	 * wildly.
 	 *
 	 * @param	string
@@ -475,7 +466,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 			
 			for ($j = 0; $j < count($matches[0]); $j++)
 			{
-				$rand = $this->EE->functions->random('alnum', 8);
+				$rand = ee()->functions->random('alnum', 8);
 				$marker = LD.'REL['.$matches[1][$j].']'.$rand.'REL'.RD;
 				
 				if (preg_match("/".LD."if no_related_entries".RD."(.*?)".LD.'\/'."if".RD."/s", $matches[2][$j], $no_rel_match)) 
@@ -484,14 +475,14 @@ If you do not wish to reset your password, ignore this message. It will expire i
 					
 					if (stristr($no_rel_match[1], LD.'if'))
 					{
-						$match[0] = $this->EE->functions->full_tag($no_rel_match[0], $matches[2][$j], LD.'if', LD.'\/'."if".RD);
+						$match[0] = ee()->functions->full_tag($no_rel_match[0], $matches[2][$j], LD.'if', LD.'\/'."if".RD);
 					}
 					
 					$no_rel_content = substr($no_rel_match[0], strlen(LD."if no_related_entries".RD), -strlen(LD.'/'."if".RD));
 				}
 				
 				$this->related_markers[] = $matches[1][$j];
-				$vars = $this->EE->functions->assign_variables($matches[2][$j]);
+				$vars = ee()->functions->assign_variables($matches[2][$j]);
 				$this->related_id = $matches[1][$j];
 				$this->related_data[$rand] = array(
 											'marker'			=> $rand,
@@ -499,7 +490,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 											'tagdata'			=> $matches[2][$j],
 											'var_single'		=> $vars['var_single'],
 											'var_pair' 			=> $vars['var_pair'],
-											'var_cond'			=> $this->EE->functions->assign_conditional_variables($matches[2][$j], '\/', LD, RD),
+											'var_cond'			=> ee()->functions->assign_conditional_variables($matches[2][$j], '\/', LD, RD),
 											'no_rel_content'	=> $no_rel_content
 										);
 										
@@ -511,9 +502,9 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		{  		
 			for ($j = 0; $j < count($matches[0]); $j++)
 			{
-				$rand = $this->EE->functions->random('alnum', 8);
+				$rand = ee()->functions->random('alnum', 8);
 				$marker = LD.'REV_REL['.$rand.']REV_REL'.RD;
-				$vars = $this->EE->functions->assign_variables($matches[2][$j]);
+				$vars = ee()->functions->assign_variables($matches[2][$j]);
 				
 				$no_rev_content = '';
 
@@ -523,7 +514,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 					
 					if (stristr($no_rev_match[1], LD.'if'))
 					{
-						$match[0] = $this->EE->functions->full_tag($no_rev_match[0], $matches[2][$j], LD.'if', LD.'\/'."if".RD);
+						$match[0] = ee()->functions->full_tag($no_rev_match[0], $matches[2][$j], LD.'if', LD.'\/'."if".RD);
 					}
 					
 					$no_rev_content = substr($no_rev_match[0], strlen(LD."if no_reverse_related_entries".RD), -strlen(LD.'/'."if".RD));
@@ -534,8 +525,8 @@ If you do not wish to reset your password, ignore this message. It will expire i
 															'tagdata'			=> $matches[2][$j],
 															'var_single'		=> $vars['var_single'],
 															'var_pair' 			=> $vars['var_pair'],
-															'var_cond'			=> $this->EE->functions->assign_conditional_variables($matches[2][$j], '\/', LD, RD),
-															'params'			=> $this->EE->functions->assign_parameters($matches[1][$j]),
+															'var_cond'			=> ee()->functions->assign_conditional_variables($matches[2][$j], '\/', LD, RD),
+															'params'			=> ee()->functions->assign_parameters($matches[1][$j]),
 															'no_rev_content'	=> $no_rev_content
 														);
 										
