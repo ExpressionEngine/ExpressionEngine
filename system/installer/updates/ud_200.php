@@ -2786,53 +2786,306 @@ BSH;
 	{
 		ee()->progress->update_state("Replacing weblog with channel.");
 
-		$Q[] = "ALTER TABLE `exp_sites` CHANGE `site_weblog_preferences` `site_channel_preferences` TEXT NOT NULL";
-		$Q[] = "ALTER TABLE `exp_member_groups` CHANGE `can_admin_weblogs` `can_admin_channels` CHAR(1) NOT NULL DEFAULT 'n'";
-		$Q[] = "ALTER TABLE `exp_weblog_member_groups` CHANGE `weblog_id` `channel_id` INT(6) UNSIGNED NOT NULL";
-		$Q[] = "ALTER TABLE `exp_weblog_member_groups` RENAME TO `exp_channel_member_groups`";
-		$Q[] = "ALTER TABLE `exp_weblogs` CHANGE `weblog_id` `channel_id` int(6) unsigned NOT NULL auto_increment";
-		$Q[] = "ALTER TABLE `exp_weblogs` CHANGE `blog_name` `channel_name` varchar(40) NOT NULL";
-		$Q[] = "ALTER TABLE `exp_weblogs` CHANGE `blog_title` `channel_title` varchar(100) NOT NULL";
-		$Q[] = "ALTER TABLE `exp_weblogs` CHANGE `blog_url` `channel_url` varchar(100) NOT NULL";
-		$Q[] = "ALTER TABLE `exp_weblogs` CHANGE `blog_description` `channel_description` varchar(225) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_weblogs` CHANGE `blog_lang` `channel_lang` varchar(12) NOT NULL";
-		$Q[] = "ALTER TABLE `exp_weblogs` CHANGE `weblog_max_chars` `channel_max_chars` int(5) unsigned NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_weblogs` CHANGE `weblog_notify` `channel_notify` CHAR(1) NOT NULL default 'n'";
-		$Q[] = "ALTER TABLE `exp_weblogs` CHANGE `weblog_require_membership` `channel_require_membership` char(1) NOT NULL default 'y'";
-		$Q[] = "ALTER TABLE `exp_weblogs` CHANGE `weblog_html_formatting` `channel_html_formatting` char(4) NOT NULL default 'all'";
-		$Q[] = "ALTER TABLE `exp_weblogs` CHANGE `weblog_allow_img_urls` `channel_allow_img_urls` char(1) NOT NULL default 'y'";
-		$Q[] = "ALTER TABLE `exp_weblogs` CHANGE `weblog_auto_link_urls` `channel_auto_link_urls` char(1) NOT NULL default 'y'";
-		$Q[] = "ALTER TABLE `exp_weblogs` CHANGE `weblog_notify_emails` `channel_notify_emails` varchar(255) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_weblogs` RENAME TO `exp_channels`";
-		$Q[] = "ALTER TABLE `exp_weblog_titles` CHANGE `weblog_id` `channel_id` int(4) unsigned NOT NULL";
-		$Q[] = "ALTER TABLE `exp_weblog_titles` RENAME TO `exp_channel_titles`";
-		$Q[] = "ALTER TABLE `exp_entry_versioning` CHANGE `weblog_id` `channel_id` int(4) unsigned NOT NULL";
-		$Q[] = "ALTER TABLE `exp_weblog_fields` CHANGE `field_pre_blog_id` `field_pre_channel_id` int(6) unsigned NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_weblog_fields` CHANGE `field_related_to` `field_related_to` varchar(12) NOT NULL default 'channel'";
+		ee()->smartforge->modify_column(
+			'sites',
+			array(
+				'site_weblog_preferences' => array(
+					'name'			=> 'site_channel_preferences',
+					'type'			=> 'text',
+					'null'			=> FALSE,
+				)
+			)
+		);
 
-		// @todo DROP column field_related_to once gallery is gone
-		$Q[] = "UPDATE `exp_weblog_fields` SET `field_related_to` = 'channel' WHERE `field_related_to` = 'blog'";
-		$Q[] = "ALTER TABLE `exp_weblog_fields` RENAME TO `exp_channel_fields`";
-		$Q[] = "ALTER TABLE `exp_weblog_data` CHANGE `weblog_id` `channel_id` int(4) unsigned NOT NULL";
-		$Q[] = "ALTER TABLE `exp_weblog_data` RENAME TO `exp_channel_data`";
-		$Q[] = "UPDATE `exp_templates` SET `template_data` = REPLACE(`template_data`, 'weblog:weblog_name', 'channel:channel_name')";
-		$Q[] = "UPDATE `exp_templates` SET `template_data` = REPLACE(`template_data`, 'exp:weblog', 'exp:channel')";
-		$Q[] = "UPDATE `exp_templates` SET `template_data` = REPLACE(`template_data`, '{assign_variable:', '{preload_replace:')";	// this is necessary before the following query
-		$Q[] = "UPDATE `exp_templates` SET `template_data` = REPLACE(`template_data`, '{preload_replace:my_weblog=', '{preload_replace:my_channel=')";
-		$Q[] = "UPDATE `exp_templates` SET `template_data` = REPLACE(`template_data`, '{my_weblog}', '{my_channel}')";
-		$Q[] = "UPDATE `exp_templates` SET `template_data` = REPLACE(`template_data`, '{weblog}', '{channel}')";
-		$Q[] = "UPDATE `exp_templates` SET `template_data` = REPLACE(`template_data`, 'weblog_', 'channel_')";
-		$Q[] = "UPDATE `exp_templates` SET `template_data` = REPLACE(`template_data`, '_weblog', '_channel')";
-		$Q[] = "UPDATE `exp_templates` SET `template_data` = REPLACE(`template_data`, 'weblog=', 'channel=')";
-		$Q[] = "UPDATE `exp_templates` SET `template_data` = REPLACE(`template_data`, '{blog_title}', '{channel_title}')";
-		$Q[] = "UPDATE `exp_templates` SET `template_data` = REPLACE(`template_data`, '{blog_description}', '{channel_description}')";
-		$Q[] = "UPDATE `exp_templates` SET `template_data` = REPLACE(`template_data`, '{blog_encoding}', '{channel_encoding}')";
-		$Q[] = "UPDATE `exp_templates` SET `template_data` = REPLACE(`template_data`, '{blog_lang}', '{channel_lang}')";
-		$Q[] = "UPDATE `exp_templates` SET `template_data` = REPLACE(`template_data`, '{blog_url}', '{channel_url}')";
-		$Q[] = "UPDATE `exp_modules` SET `module_name` = 'Channel' WHERE `module_name` = 'Weblog'";
+		ee()->smartforge->modify_column(
+			'member_groups',
+			array(
+				'can_admin_weblogs' => array(
+					'name'			=> 'can_admin_channels',
+					'type'			=> 'char',
+					'constraint'	=> 1,
+					'null'			=> FALSE,
+					'default'		=> 'n'
+				)
+			)
+		);
 
+		ee()->smartforge->modify_column(
+			'weblog_member_groups',
+			array(
+				'weblog_id' => array(
+					'name'			=> 'channel_id',
+					'type'			=> 'int',
+					'constraint'	=> 6,
+					'unsigned'		=> TRUE,
+					'null'			=> FALSE
+				)
+			)
+		);
 
-		$this->_run_queries('Replacing weblog with channel', $Q);
+		ee()->smartforge->rename_table('weblog_member_groups', 'channel_member_groups');
+
+		ee()->smartforge->modify_column(
+			'weblogs',
+			array(
+				'weblog_id' => array(
+					'name'				=> 'channel_id',
+					'type'				=> 'int',
+					'constraint'		=> 6,
+					'unsigned'			=> TRUE,
+					'null'				=> FALSE,
+					'auto_increment'	=> TRUE,
+				)
+			)
+		);
+
+		ee()->smartforge->modify_column(
+			'weblogs',
+			array(
+				'blog_name' => array(
+					'name'			=> 'channel_name',
+					'type'			=> 'varchar',
+					'constraint'	=> 40,
+					'null'			=> FALSE
+				)
+			)
+		);
+
+		ee()->smartforge->modify_column(
+			'weblogs',
+			array(
+				'blog_title' => array(
+					'name'			=> 'channel_title',
+					'type'			=> 'varchar',
+					'constraint'	=> 100,
+					'null'			=> FALSE
+				)
+			)
+		);
+
+		ee()->smartforge->modify_column(
+			'weblogs',
+			array(
+				'blog_url' => array(
+					'name'			=> 'channel_url',
+					'type'			=> 'varchar',
+					'constraint'	=> 100,
+					'null'			=> FALSE
+				)
+			)
+		);
+
+		ee()->smartforge->modify_column(
+			'weblogs',
+			array(
+				'blog_description' => array(
+					'name'			=> 'channel_description',
+					'type'			=> 'varchar',
+					'constraint'	=> 255,
+					'null'			=> TRUE
+				)
+			)
+		);
+
+		ee()->smartforge->modify_column(
+			'weblogs',
+			array(
+				'blog_lang' => array(
+					'name'			=> 'channel_lang',
+					'type'			=> 'varchar',
+					'constraint'	=> 12,
+					'null'			=> FALSE
+				)
+			)
+		);
+
+		ee()->smartforge->modify_column(
+			'weblogs',
+			array(
+				'weblog_max_chars' => array(
+					'name'			=> 'channel_max_chars',
+					'type'			=> 'int',
+					'constraint'	=> 5,
+					'unsigned'		=> TRUE,
+					'null'			=> TRUE
+				)
+			)
+		);
+
+		ee()->smartforge->modify_column(
+			'weblogs',
+			array(
+				'weblog_notify' => array(
+					'name'			=> 'channel_notify',
+					'type'			=> 'char',
+					'constraint'	=> 1,
+					'null'			=> FALSE,
+					'default'		=> 'n'
+				)
+			)
+		);
+
+		ee()->smartforge->modify_column(
+			'weblogs',
+			array(
+				'weblog_require_membership' => array(
+					'name'			=> 'channel_require_membership',
+					'type'			=> 'char',
+					'constraint'	=> 1,
+					'null'			=> FALSE,
+					'default'		=> 'y'
+				)
+			)
+		);
+
+		ee()->smartforge->modify_column(
+			'weblogs',
+			array(
+				'weblog_html_formatting' => array(
+					'name'			=> 'channel_html_formatting',
+					'type'			=> 'char',
+					'constraint'	=> 4,
+					'null'			=> FALSE,
+					'default'		=> 'all'
+				)
+			)
+		);
+
+		ee()->smartforge->modify_column(
+			'weblogs',
+			array(
+				'weblog_allow_img_urls' => array(
+					'name'			=> 'channel_allow_img_urls',
+					'type'			=> 'char',
+					'constraint'	=> 1,
+					'null'			=> FALSE,
+					'default'		=> 'y'
+				)
+			)
+		);
+
+		ee()->smartforge->modify_column(
+			'weblogs',
+			array(
+				'weblog_auto_link_urls' => array(
+					'name'			=> 'channel_auto_link_urls',
+					'type'			=> 'char',
+					'constraint'	=> 1,
+					'null'			=> FALSE,
+					'default'		=> 'y'
+				)
+			)
+		);
+
+		ee()->smartforge->modify_column(
+			'weblogs',
+			array(
+				'weblog_notify_emails' => array(
+					'name'			=> 'channel_notify_emails',
+					'type'			=> 'varchar',
+					'constraint'	=> 255,
+					'null'			=> TRUE
+				)
+			)
+		);
+
+		ee()->smartforge->rename_table('weblogs', 'channels');
+
+		ee()->smartforge->modify_column(
+			'weblog_titles',
+			array(
+				'weblog_id' => array(
+					'name'			=> 'channel_id',
+					'type'			=> 'int',
+					'constraint'	=> 4,
+					'unsigned'		=> TRUE,
+					'null'			=> FALSE
+				)
+			)
+		);
+
+		ee()->smartforge->rename_table('weblog_titles', 'channel_titles');
+
+		ee()->smartforge->modify_column(
+			'entry_versioning',
+			array(
+				'weblog_id' => array(
+					'name'			=> 'channel_id',
+					'type'			=> 'int',
+					'constraint'	=> 4,
+					'unsigned'		=> TRUE,
+					'null'			=> FALSE
+				)
+			)
+		);
+
+		ee()->smartforge->modify_column(
+			'weblog_fields',
+			array(
+				'field_pre_blog_id' => array(
+					'name'			=> 'field_pre_channel_id',
+					'type'			=> 'int',
+					'constraint'	=> 6,
+					'unsigned'		=> TRUE,
+					'null'			=> TRUE
+				)
+			)
+		);
+
+		ee()->smartforge->modify_column(
+			'weblog_fields',
+			array(
+				'field_related_to' => array(
+					'name'			=> 'field_related_to',
+					'type'			=> 'varchar',
+					'constraint'	=> 12,
+					'null'			=> FALSE,
+					'default'		=> 'channel'
+				)
+			)
+		);
+
+		ee()->db->set('field_related_to', 'channel');
+		ee()->db->where('field_related_to', 'blog');
+		ee()->db->update('weblog_fields');
+
+		ee()->smartforge->rename_table('weblog_fields', 'channel_fields');
+
+		ee()->smartforge->modify_column(
+			'weblog_data',
+			array(
+				'weblog_id' => array(
+					'name'			=> 'channel_id',
+					'type'			=> 'int',
+					'constraint'	=> 4,
+					'unsigned'		=> TRUE,
+					'null'			=> FALSE
+				)
+			)
+		);
+
+		ee()->smartforge->rename_table('weblog_data', 'channel_data');
+
+		ee()->db->set('template_data', "REPLACE(`template_data`, 'weblog:weblog_name', 'channel:channel_name')");
+		ee()->db->set('template_data', "REPLACE(`template_data`, 'exp:weblog', 'exp:channel')");
+		ee()->db->set('template_data', "REPLACE(`template_data`, '{assign_variable:', '{preload_replace:')");	// this is necessary before the following query
+		ee()->db->set('template_data', "REPLACE(`template_data`, '{preload_replace:my_weblog=', '{preload_replace:my_channel=')");
+		ee()->db->set('template_data', "REPLACE(`template_data`, '{my_weblog}', '{my_channel}')");
+		ee()->db->set('template_data', "REPLACE(`template_data`, '{weblog}', '{channel}')");
+		ee()->db->set('template_data', "REPLACE(`template_data`, 'weblog_', 'channel_')");
+		ee()->db->set('template_data', "REPLACE(`template_data`, '_weblog', '_channel')");
+		ee()->db->set('template_data', "REPLACE(`template_data`, 'weblog=', 'channel=')");
+		ee()->db->set('template_data', "REPLACE(`template_data`, '{blog_title}', '{channel_title}')");
+		ee()->db->set('template_data', "REPLACE(`template_data`, '{blog_description}', '{channel_description}')");
+		ee()->db->set('template_data', "REPLACE(`template_data`, '{blog_encoding}', '{channel_encoding}')");
+		ee()->db->set('template_data', "REPLACE(`template_data`, '{blog_lang}', '{channel_lang}')");
+		ee()->db->set('template_data', "REPLACE(`template_data`, '{blog_url}', '{channel_url}')");
+		ee()->db->update('templates');
+
+		
+		ee()->db->set('module_name', 'Channel');
+		ee()->db->where('module_name', 'Weblog');
+		ee()->db->update('modules');
 		
 		// Finished!
 		return TRUE;
