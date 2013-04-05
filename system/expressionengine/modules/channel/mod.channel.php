@@ -2646,6 +2646,17 @@ class Channel {
 		ee()->load->library('channel_entries_parser');
 		$parser = ee()->channel_entries_parser->create(ee()->TMPL->tagdata/*, $prefix=''*/);
 
+
+		$disable = array();
+
+		foreach ($this->enable as $k => $v)
+		{
+			if ($v === FALSE)
+			{
+				$disable[] = $k;
+			}
+		}
+
 		// We'll process what we can before starting to replace things to
 		// avoid redundant processing cycles in the foreach loop below
 
@@ -2665,7 +2676,8 @@ class Channel {
 				'entry_row_data'	 => array($this, 'callback_entry_row_data'),
 				'tagdata_loop_start' => array($this, 'callback_tagdata_loop_start'),
 				'tagdata_loop_end'	 => array($this, 'callback_tagdata_loop_end')
-			)
+			),
+			'disable' => $disable
 		);
 
 		$this->return_data = $data_parser->parse($data, $config);
@@ -5356,12 +5368,13 @@ class Channel {
 	function _fetch_disable_param()
 	{
 		$this->enable = array(
-							'categories' 		=> TRUE,
-							'category_fields'	=> TRUE,
-							'custom_fields'		=> TRUE,
-							'member_data'		=> TRUE,
-							'pagination' 		=> TRUE,
-							);
+			'categories' 		=> TRUE,
+			'category_fields'	=> TRUE,
+			'custom_fields'		=> TRUE,
+			'member_data'		=> TRUE,
+			'pagination' 		=> TRUE,
+			'relationships'		=> TRUE
+		);
 
 		if ($disable = ee()->TMPL->fetch_param('disable'))
 		{
