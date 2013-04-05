@@ -2731,6 +2731,7 @@ BSH;
 	{
 		// port over old Fresh Variables to Snippets?
 		ee()->progress->update_state('Checking for Fresh Variables');
+		
 		ee()->db->select('settings');
 		ee()->db->where('class', 'Fresh_variables');
 		$query = ee()->db->get('extensions', 1);
@@ -2749,13 +2750,14 @@ BSH;
 				foreach ($vars as $var)
 				{
 					ee()->progress->update_state('Adding Snippet: '.$var['var_name']);
+
 					$data = array(
 						'site_id'			=> ($site_id == 'all') ? 0 : $site_id,
 						'snippet_name'		=> $var['var_name'],
 						'snippet_contents'	=> $var['var_value']
 					);
 
-					ee()->db->insert('snippets', $data);
+					ee()->smartforge->insert_set('snippets', $data, $data);
 				}
 			}
 
@@ -2764,12 +2766,15 @@ BSH;
 			ee()->progress->update_state('Deleting Fresh Variables');
 
 			// uninstall Fresh Variables
-			ee()->db->query("DELETE FROM exp_extensions WHERE class = 'Fresh_variables'");
-			$query = ee()->db->query("SELECT module_id FROM exp_modules WHERE module_name = 'Fresh_variables'"); 
+			ee()->db->delete('extensions', array('class' => 'Fresh_variables'));
 
-			ee()->db->query("DELETE FROM exp_module_member_groups WHERE module_id = '".$query->row('module_id')."'");
-			ee()->db->query("DELETE FROM exp_modules WHERE module_name = 'Fresh_variables'");
-			ee()->db->query("DELETE FROM exp_actions WHERE class = 'Fresh_variables'");
+			$query = ee()->db->select('module_id')
+				->where('module_name', 'Fresh_variables')
+				->get('modules'); 
+
+			ee()->db->delete('module_member_groups', array('module_id' => $query->row('module_id')));
+			ee()->db->delete('modules', array('module_name' => 'Fresh_variables'));
+			ee()->db->delete('actions', array('class' => 'Fresh_variables'));
 		}
 
 		return 'weblog_terminology_changes';
