@@ -335,14 +335,22 @@ class Template_model extends CI_Model {
 	 */
 	public function save_to_database(Template_Entity $entity)
 	{
+		$data = $this->_entity_to_db_array($entity);
 		if ($entity->template_id)
 		{
-			$this->update_template_ajax($entity->template_id, $this->_entity_to_db_array($entity));
+			$this->db->where('site_id', $entity->site_id);
+			$this->db->where('template_id', $entity->template_id);
+
+			$this->db->update('templates', $data);
+			return TRUE;
 		}		
 		else 
 		{
-			$this->create_template($this->_entity_to_db_array($entity));
+			$this->db->insert('templates', $data);
+			$entity->template_id = $this->db->insert_id();
+			return TRUE;
 		}
+		throw new RuntimeException('Attempt to save a template to the database apparently failed.');
 	}
 
 	/**

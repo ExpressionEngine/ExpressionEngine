@@ -11,6 +11,9 @@
  * @since		Version 2.6
  * @filesource
  */
+
+define('LD', '{');
+define('RD', '}');
  
 // ------------------------------------------------------------------------
 
@@ -27,6 +30,11 @@ class Updater {
 	
 	private $EE;
 	var $version_suffix = '';
+
+	private $related_data = array();
+	private $reverse_related_data = array();
+	private $related_id;
+	private $related_markers = array();
 	
 	/**
 	 * Constructor
@@ -55,8 +63,7 @@ class Updater {
 		$this->_update_specialty_templates(); 
 		$this->_update_relationships_table();
 		$this->_replace_relationship_tags();
-	
-		die('End of Update.');	
+		
 		return TRUE;
 	}
 
@@ -359,7 +366,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		// Need to check the edit date.
 		$this->EE->load->model('template_model');
 		$templates = $this->EE->template_model->fetch_last_edit(array(), TRUE); 
-
+	
 		// related_entries
 		// Foreach template
 		foreach($templates as $template)
@@ -398,11 +405,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 	 */
 	private function _update_related_entries_tags(Template_Entity $template)
 	{
-		require_once(APPPATH . '/libraries/Template.php');
-
-		$parser = new Installer_Template();
-
-		$template->template_data = $parser->assign_relationship_data($template->template_data);
+		$template->template_data = $this->_assign_relationship_data($template->template_data);
 
 		// First deal with {related_entries} tags.  Since these are
 		// just a single entry relationship, we can replace the child
@@ -411,7 +414,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		// NOTE If we don't use a tag pair, we have no where for parameters
 		// to go.  Maybe check for parameters and make the decision to 
 		// use tag pair vs single entry then?
-		foreach ($parser->related_data as $marker=>$relationship_tag)
+		foreach ($this->related_data as $marker=>$relationship_tag)
 		{
 			$tagdata = $relationship_tag['tagdata'];
 			foreach ($relationship_tag['var_single'] as $variable)
@@ -427,8 +430,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		// Now deal with {reverse_related_entries}, just replace each
 		// tag pair with a {parents} tag pair and put the parameters from
 		// the original tag onto the {parents} tag.
-		var_dump($parser->reverse_related_data);
-		foreach ($parser->reverse_related_data as $marker=>$relationship_tag)
+		foreach ($this->reverse_related_data as $marker=>$relationship_tag)
 		{
 			$tagdata = $relationship_tag['tagdata'];
 			foreach($relationship_tag['var_single'] as $variable)
@@ -445,11 +447,104 @@ If you do not wish to reset your password, ignore this message. It will expire i
 
 			$tagdata = '{' . $parentTag . '}' . $tagdata . '{/parents}';
 
-			$target = '{REL[' . $relationship_tag['field_name'] . ']' . $marker . 'REL}';
+			$target = '{REV_REL[' . $marker . ']' . 'REV_REL}';
 			$template->template_data = str_replace($target, $tagdata, $template->template_data);
 		}
 	}
 
+	/**
+	 * Process Tags
+	 *
+	 * Channel entries can have related entries embedded within them.
+	 * We'll extract the related tag data, stash it away in an array, and
+	 * replace it with a marker string so that the template parser
+	 * doesn't see it.  In the channel class we'll check to see if the 
+	 * $this->EE->TMPL->related_data array contains anything.  If so, we'll celebrate
+	 * wildly.
+	 *
+	 * @param	string
+	 * @return	string
+	 */	
+	private function _assign_relationship_data($chunk)
+	{
+		$this->related_markers = array();
+		
+		if (preg_match_all("/".LD."related_entries\s+id\s*=\s*[\"\'](.+?)[\"\']".RD."(.+?)".LD.'\/'."related_entries".RD."/is", $chunk, $matches))
+		{  		
+			$no_rel_content = '';
+			
+			for ($j = 0; $j < count($matches[0]); $j++)
+			{
+				$rand = $this->EE->functions->random('alnum', 8);
+				$marker = LD.'REL['.$matches[1][$j].']'.$rand.'REL'.RD;
+				
+				if (preg_match("/".LD."if no_related_entries".RD."(.*?)".LD.'\/'."if".RD."/s", $matches[2][$j], $no_rel_match)) 
+				{
+					// Match the entirety of the conditional
+					
+					if (stristr($no_rel_match[1], LD.'if'))
+					{
+						$match[0] = $this->EE->functions->full_tag($no_rel_match[0], $matches[2][$j], LD.'if', LD.'\/'."if".RD);
+					}
+					
+					$no_rel_content = substr($no_rel_match[0], strlen(LD."if no_related_entries".RD), -strlen(LD.'/'."if".RD));
+				}
+				
+				$this->related_markers[] = $matches[1][$j];
+				$vars = $this->EE->functions->assign_variables($matches[2][$j]);
+				$this->related_id = $matches[1][$j];
+				$this->related_data[$rand] = array(
+											'marker'			=> $rand,
+											'field_name'		=> $matches[1][$j],
+											'tagdata'			=> $matches[2][$j],
+											'var_single'		=> $vars['var_single'],
+											'var_pair' 			=> $vars['var_pair'],
+											'var_cond'			=> $this->EE->functions->assign_conditional_variables($matches[2][$j], '\/', LD, RD),
+											'no_rel_content'	=> $no_rel_content
+										);
+										
+				$chunk = str_replace($matches[0][$j], $marker, $chunk);					
+			}
+		}
+
+		if (preg_match_all("/".LD."reverse_related_entries\s*(.*?)".RD."(.+?)".LD.'\/'."reverse_related_entries".RD."/is", $chunk, $matches))
+		{  		
+			for ($j = 0; $j < count($matches[0]); $j++)
+			{
+				$rand = $this->EE->functions->random('alnum', 8);
+				$marker = LD.'REV_REL['.$rand.']REV_REL'.RD;
+				$vars = $this->EE->functions->assign_variables($matches[2][$j]);
+				
+				$no_rev_content = '';
+
+				if (preg_match("/".LD."if no_reverse_related_entries".RD."(.*?)".LD.'\/'."if".RD."/s", $matches[2][$j], $no_rev_match)) 
+				{
+					// Match the entirety of the conditional
+					
+					if (stristr($no_rev_match[1], LD.'if'))
+					{
+						$match[0] = $this->EE->functions->full_tag($no_rev_match[0], $matches[2][$j], LD.'if', LD.'\/'."if".RD);
+					}
+					
+					$no_rev_content = substr($no_rev_match[0], strlen(LD."if no_reverse_related_entries".RD), -strlen(LD.'/'."if".RD));
+				}
+				
+				$this->reverse_related_data[$rand] = array(
+															'marker'			=> $rand,
+															'tagdata'			=> $matches[2][$j],
+															'var_single'		=> $vars['var_single'],
+															'var_pair' 			=> $vars['var_pair'],
+															'var_cond'			=> $this->EE->functions->assign_conditional_variables($matches[2][$j], '\/', LD, RD),
+															'params'			=> $this->EE->functions->assign_parameters($matches[1][$j]),
+															'no_rev_content'	=> $no_rev_content
+														);
+										
+				$chunk = str_replace($matches[0][$j], $marker, $chunk);					
+			}
+		}
+	
+		return $chunk;
+	}
 
 	// --------------------------------------------------------------------------
 
