@@ -2695,7 +2695,7 @@ BSH;
 				$new_privs['can_delete_categories']		= 'y';
 			}
 
-			if ($new_privs != '')
+			if ( ! empty($new_privs))
 			{
 				ee()->db->set($new_privs);
 				ee()->db->where('group_id', $row->group_id);			
