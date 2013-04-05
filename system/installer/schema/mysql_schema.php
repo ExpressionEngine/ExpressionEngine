@@ -1427,7 +1427,7 @@ class EE_Schema {
 		}
 	
 		// Default field types
-		$default_fts = array('select', 'text', 'textarea', 'date', 'file', 'multi_select', 'checkboxes', 'radio', 'rel', 'rte');
+		$default_fts = array('select', 'text', 'textarea', 'date', 'file', 'multi_select', 'checkboxes', 'radio', 'relationship', 'rte');
 		
 		foreach($default_fts as $name)
 		{
