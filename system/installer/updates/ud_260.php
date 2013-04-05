@@ -71,7 +71,7 @@ class Updater {
 		{
 			$this->$v();
 		}
-		
+
 		return TRUE;
 	}
 
@@ -271,6 +271,35 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		// UPDATE TABLE `exp_channel_fields` set field_type='relationships' where field_type='rel';
 		ee()->db->where('field_type', 'rel');
 		ee()->db->update('channel_fields', array('field_type'=>'relationship'));
+	
+		ee()->db->where('field_type', 'relationship');	
+		$channel_fields = ee()->db->get('channel_fields');
+		foreach ($channel_fields->result_array() as $channel_field)
+		{
+			$settings = array(
+				'channels'		=> array($channel_field['field_related_id']),
+				'expired'		=> 0,
+				'future'		=> 0,
+				'categories'	=> array(),
+				'authors'		=> array(),
+				'statuses'		=> array(),
+				'limit'			=> $channel_field['field_related_max'],
+				'order_field'	=> $channel_field['field_related_orderby'],
+				'order_dir'		=> $channel_field['field_related_sort'],
+				'allow_multiple'	=> 0
+			);
+			
+			ee()->db->where('field_id', $channel_field['field_id']);
+			ee()->db->update(
+				'channel_fields', 
+				array('field_settings'=>base64_encode(serialize($settings)))); 
+					
+		} 
+
+		ee()->smartforge->drop_column(
+			array(
+				'field_related_to', 'field_related_id', 'field_related_max',
+				'field_related_orderby', 'field_related_sort'));
 	}
 
 	/**
@@ -288,6 +317,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 					'type'			=> 'int',
 					'constraint'	=> 10,
 					'unsigned'		=> TRUE,
+					'auto_increment'=> TRUE
 				)
 			)
 		);
@@ -426,7 +456,8 @@ If you do not wish to reset your password, ignore this message. It will expire i
 				$new_var = '{' . $relationship_tag['field_name'] . ':' . $variable . '}';
 				$tagdata = str_replace('{' . $variable . '}', $new_var, $tagdata);
 			}
-
+		
+			$tagdata = '{' . $relationship_tag['field_name'] . '}' . $tagdata . '{/' . $relationship_tag['field_name'] . '}';
 			$target = '{REL[' . $relationship_tag['field_name'] . ']' . $marker . 'REL}';
 			$template->template_data = str_replace($target, $tagdata, $template->template_data);
 		}	
