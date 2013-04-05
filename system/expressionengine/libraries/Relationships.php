@@ -221,7 +221,7 @@ class Relationship_tree_builder {
 			// parents, and thus the where_in for our query.
 			if ( ! $node->is_root())
 			{
-				$entry_ids = $node->parent()->entry_ids;
+				$entry_ids = $node->parent()->entry_ids();
 				$entry_ids = call_user_func_array('array_merge', $entry_ids);
 			}
 
@@ -261,6 +261,8 @@ class Relationship_tree_builder {
 		{
 			$entry_lookup[$entry['entry_id']] = $entry;
 		}
+
+		$entries_result->free_result();
 
 		return new Relationship_parser($root, $entry_lookup, $category_lookup);
 	}
@@ -452,12 +454,10 @@ class Relationship_tree_builder {
 			if ($node->field_id == 'siblings' &&  ! $is_root_sibling)
 			{
 				$siblings = array();
-				$possible_siblings = $node->parent()->entry_ids;
+				$possible_siblings = $node->parent()->entry_ids();
 
 				foreach ($possible_siblings as $parent => $children)
 				{
-					$children = array_unique($children);
-
 					// find all sibling permutations by rotating the array
 					for ($i = 0; $i < count($children); $i++)
 					{
@@ -732,7 +732,8 @@ class Relationship_parser {
 		// we use this to parse child nodes from the parser
 		$node->parser = $this;
 
-		$entry_ids = array_unique($node->entry_ids[$parent_id]);
+		$entry_ids = $node->entry_ids();
+		$entry_ids = $entry_ids[$parent_id];
 
 		// reorder the ids
 		if ($node->param('orderby'))
@@ -748,13 +749,6 @@ class Relationship_parser {
 		{
 			$entry_ids = array_slice($entry_ids, $offset, $limit);
 		}
-
-		// limit entry ids to given tag
-	//	if ($node->param('entry_id') && ! $node->param('url_title'))
-	//	{
-	//		$allowed_ids = explode('|', $node->param('entry_id'));
-	//		$entry_ids = array_intersect($entry_ids, $allowed_ids);
-	//	}
 
 		// prefilter anything prefixed the same as this tag so that we don't
 		// go around building huge lists with custom field data only to toss
@@ -947,6 +941,7 @@ class Relationship_parser {
 
 class ParseNode extends EE_TreeNode {
 
+	private $_dirty;
 	private $_parser;
 
 	/**
@@ -1026,23 +1021,55 @@ class ParseNode extends EE_TreeNode {
 			$ids[$parent][] = $child;
 		}
 
-		$parameter = $this->param('entry_id');
+		$this->_dirty = TRUE;
+	}
 
-		if ($parameter)
+	// --------------------------------------------------------------------
+
+	/**
+	 * Entry id accessor
+	 *
+	 * Ensures that only ids that are allowed by the entry_id= parameter
+	 * are processed. This used to be in the setter, but it ends up being
+	 * quite an expensive operation.
+	 *
+	 * @param 	int		the parent entry id
+	 * @return 	[int]	child ids
+	 */
+	public function entry_ids()
+	{
+		$ids =& $this->data['entry_ids'];
+
+		if ($this->_dirty)
 		{
-			$not = FALSE;
+			// if entry_id="4|5|6" was given, we filter them here
+			$parameter = $this->param('entry_id');
 
-			if (strncasecmp($parameter, 'not ', 4) == 0)
+			if ($parameter)
 			{
-				$not = TRUE;
-				$parameter = substr($parameter, 4);
+				$not = FALSE;
+
+				if (strncasecmp($parameter, 'not ', 4) == 0)
+				{
+					$not = TRUE;
+					$parameter = substr($parameter, 4);
+				}
+
+				$parameter = trim($parameter, " |\r\n\t");
+				$fn = $not ? 'array_diff' : 'array_intersect';
+
+				foreach ($ids as $parent => $children)
+				{
+					$ids[$parent] = array_unique(
+						$fn($children, explode('|', $parameter))
+					);
+				}
 			}
 
-			$parameter = trim($parameter, " |\r\n\t");
-			$fn = $not ? 'array_diff' : 'array_intersect';
-
-			$ids[$parent] = $fn($ids[$parent], explode('|', $parameter));
+			$this->_dirty = FALSE;
 		}
+
+		return $ids;
 	}
 
 	// --------------------------------------------------------------------
