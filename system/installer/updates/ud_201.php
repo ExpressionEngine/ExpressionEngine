@@ -40,7 +40,7 @@ class Updater {
 			array(
 				'has_publish_fields' => array(
 					'type'				=> 'char',
-					'constraint'	=> 1,
+					'constraint'		=> 1,
 					'null'				=> FALSE,
 					'default'			=> 'n'
 				)
