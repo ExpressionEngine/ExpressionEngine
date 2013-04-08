@@ -973,7 +973,7 @@ class ParseNode extends EE_TreeNode {
 	private $_entry_id_fn;
 	private $_entry_id_opts;
 
-	public function __construct($name, $payload=NULL)
+	public function __construct($name, $payload = NULL)
 	{
 		parent::__construct($name, $payload);
 
