@@ -1196,33 +1196,18 @@ BSH;
 		// Update members table: parse_smileys and crypt_key
 		$add_columns = array(
 			array(
-				'members',
-				array(
-					'parse_smileys' => array(
-						'type'			=> 'char',
-						'constraint'	=> 1,
-						'null'			=> FALSE,
-						'default'		=> 'y'
-					)
-				),
-				'display_signatures'
+				'field'			=> array('parse_smileys'	=> array('type' => 'char',		'constraint' => 1,	'null' => FALSE,	'default' => 'y')),
+				'after_field'	=> 'display_signatures',
 			),
 			array(
-				'members',
-				array(
-					'crypt_key' => array(
-						'type'			=> 'varchar',
-						'constraint'	=> 40,
-						'null'			=> TRUE
-					)
-				),
-				'unique_id'
+				'field'			=> array('crypt_key'		=> array('type' => 'varchar',	'constraint' => 40,	'null' => TRUE)),
+				'after_field'	=> 'unique_id',
 			)
 		);
 
 		foreach ($add_columns as $v)
 		{
-			ee()->smartforge->add_column($v[0], $v[1], $v[2]);
+			ee()->smartforge->add_column('members', $v['field'], $v['after_field']);
 		}
 
 		// drop user weblog related fields
@@ -1235,376 +1220,41 @@ BSH;
 		ee()->smartforge->drop_column('online_users', 'weblog_id');
 
 		// members table default tweaks
-		ee()->smartforge->modify_column(
-			'members',
-			array(
-				'authcode' => array(
-					'name'			=> 'authcode',
-					'type'			=> 'varchar',
-					'constraint'	=> 10,
-					'null'			=> TRUE
-				)
-			)
+		$fields = array(
+			'authcode'			=> array('name' => 'authcode',			'type' => 'varchar',	'constraint' => 10,		'null' => TRUE),
+			'url'				=> array('name' => 'url',				'type' => 'varchar',	'constraint' => 150,	'null' => TRUE),
+			'location'			=> array('name' => 'location',			'type' => 'varchar',	'constraint' => 50,		'null' => TRUE),
+			'occupation'		=> array('name' => 'occupation',		'type' => 'varchar',	'constraint' => 80,		'null' => TRUE),
+			'interests'			=> array('name' => 'interests',			'type' => 'varchar',	'constraint' => 120,	'null' => TRUE),
+			'bday_d'			=> array('name' => 'bday_d',			'type' => 'int',		'constraint' => 2,		'null' => TRUE),
+			'bday_m'			=> array('name' => 'bday_m',			'type' => 'int',		'constraint' => 2,		'null' => TRUE),
+			'bday_y'			=> array('name' => 'bday_y',			'type' => 'int',		'constraint' => 4,		'null' => TRUE),
+			'aol_im'			=> array('name' => 'aol_im',			'type' => 'varchar',	'constraint' => 50,		'null' => TRUE),
+			'yahoo_im'			=> array('name' => 'yahoo_im',			'type' => 'varchar',	'constraint' => 50,		'null' => TRUE),
+			'msn_im'			=> array('name' => 'msn_im',			'type' => 'varchar',	'constraint' => 50,		'null' => TRUE),
+			'icq'				=> array('name' => 'icq',				'type' => 'varchar',	'constraint' => 50,		'null' => TRUE),
+			'bio'				=> array('name' => 'bio',				'type' => 'text',		'null' => TRUE),
+			'signature'			=> array('name' => 'signature',			'type' => 'text',		'null' => TRUE),
+			'avatar_filename'	=> array('name' => 'avatar_filename',	'type' => 'varchar',	'constraint' => 120,	'null' => TRUE),
+			'avatar_width'		=> array('name' => 'avatar_width',		'type' => 'int',		'constraint' => 4,		'unsigned' => TRUE,	'null' => TRUE),
+			'avatar_height'		=> array('name' => 'avatar_height',		'type' => 'int',		'constraint' => 4,		'unsigned' => TRUE,	'null' => TRUE),
+			'photo_filename'	=> array('name' => 'photo_filename',	'type' => 'varchar',	'constraint' => 120,	'null' => TRUE),
+			'photo_width'		=> array('name' => 'photo_width',		'type' => 'int',		'constraint' => 4,		'unsigned' => TRUE,	'null' => TRUE),
+			'photo_height'		=> array('name' => 'photo_height',		'type' => 'int',		'constraint' => 4,		'unsigned' => TRUE,	'null' => TRUE),
+			'sig_img_filename'	=> array('name' => 'sig_img_filename',	'type' => 'varchar',	'constraint' => 120,	'null' => TRUE),
+			'sig_img_width'		=> array('name' => 'sig_img_width',		'type' => 'int',		'constraint' => 4,		'unsigned' => TRUE,	'null' => TRUE),
+			'sig_img_height'	=> array('name' => 'sig_img_height',	'type' => 'int',		'constraint' => 4,		'unsigned' => TRUE,	'null' => TRUE),
+			'ignore_list'		=> array('name' => 'ignore_list',		'type' => 'text',		'null' => TRUE),
+			'cp_theme'			=> array('name' => 'cp_theme',			'type' => 'varchar',	'constraint' => 32,		'null' => TRUE),
+			'profile_theme'		=> array('name' => 'profile_theme',		'type' => 'varchar',	'constraint' => 32,		'null' => TRUE),
+			'forum_theme'		=> array('name' => 'forum_theme',		'type' => 'varchar',	'constraint' => 32,		'null' => TRUE),
+			'tracker'			=> array('name' => 'tracker',			'type' => 'text',		'null' => TRUE),
+			'notepad'			=> array('name' => 'notepad',			'type' => 'text',		'null' => TRUE),
+			'quick_links'		=> array('name' => 'quick_links',		'type' => 'text',		'null' => TRUE),
+			'quick_tabs'		=> array('name' => 'quick_tabs',		'type' => 'text',		'null' => TRUE)
 		);
 
-		ee()->smartforge->modify_column(
-			'members',
-			array(
-				'url' => array(
-					'name'			=> 'url',
-					'type'			=> 'varchar',
-					'constraint'	=> 150,
-					'null'			=> TRUE
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'members',
-			array(
-				'location' => array(
-					'name'			=> 'location',
-					'type'			=> 'varchar',
-					'constraint'	=> 50,
-					'null'			=> TRUE
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'members',
-			array(
-				'occupation' => array(
-					'name'			=> 'occupation',
-					'type'			=> 'varchar',
-					'constraint'	=> 80,
-					'null'			=> TRUE
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'members',
-			array(
-				'interests' => array(
-					'name'			=> 'interests',
-					'type'			=> 'varchar',
-					'constraint'	=> 120,
-					'null'			=> TRUE
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'members',
-			array(
-				'bday_d' => array(
-					'name'			=> 'bday_d',
-					'type'			=> 'int',
-					'constraint'	=> 2,
-					'null'			=> TRUE
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'members',
-			array(
-				'bday_m' => array(
-					'name'			=> 'bday_m',
-					'type'			=> 'int',
-					'constraint'	=> 2,
-					'null'			=> TRUE
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'members',
-			array(
-				'bday_y' => array(
-					'name'			=> 'bday_y',
-					'type'			=> 'int',
-					'constraint'	=> 4,
-					'null'			=> TRUE
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'members',
-			array(
-				'aol_im' => array(
-					'name'			=> 'aol_im',
-					'type'			=> 'varchar',
-					'constraint'	=> 50,
-					'null'			=> TRUE
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'members',
-			array(
-				'yahoo_im' => array(
-					'name'			=> 'yahoo_im',
-					'type'			=> 'varchar',
-					'constraint'	=> 50,
-					'null'			=> TRUE
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'members',
-			array(
-				'msn_im' => array(
-					'name'			=> 'msn_im',
-					'type'			=> 'varchar',
-					'constraint'	=> 50,
-					'null'			=> TRUE
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'members',
-			array(
-				'icq' => array(
-					'name'			=> 'icq',
-					'type'			=> 'varchar',
-					'constraint'	=> 50,
-					'null'			=> TRUE
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'members',
-			array(
-				'bio' => array(
-					'name'			=> 'bio',
-					'type'			=> 'text',
-					'null'			=> TRUE
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'members',
-			array(
-				'signature' => array(
-					'name'			=> 'signature',
-					'type'			=> 'text',
-					'null'			=> TRUE
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'members',
-			array(
-				'avatar_filename' => array(
-					'name'			=> 'avatar_filename',
-					'type'			=> 'varchar',
-					'constraint'	=> 120,
-					'null'			=> TRUE
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'members',
-			array(
-				'avatar_width' => array(
-					'name'			=> 'avatar_width',
-					'type'			=> 'int',
-					'constraint'	=> 4,
-					'unsigned'		=> TRUE,
-					'null'			=> TRUE
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'members',
-			array(
-				'avatar_height' => array(
-					'name'			=> 'avatar_height',
-					'type'			=> 'int',
-					'constraint'	=> 4,
-					'unsigned'		=> TRUE,
-					'null'			=> TRUE
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'members',
-			array(
-				'photo_filename' => array(
-					'name'			=> 'photo_filename',
-					'type'			=> 'varchar',
-					'constraint'	=> 120,
-					'null'			=> TRUE
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'members',
-			array(
-				'photo_width' => array(
-					'name'			=> 'photo_width',
-					'type'			=> 'int',
-					'constraint'	=> 4,
-					'unsigned'		=> TRUE,
-					'null'			=> TRUE
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'members',
-			array(
-				'photo_height' => array(
-					'name'			=> 'photo_height',
-					'type'			=> 'int',
-					'constraint'	=> 4,
-					'unsigned'		=> TRUE,
-					'null'			=> TRUE
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'members',
-			array(
-				'sig_img_filename' => array(
-					'name'			=> 'sig_img_filename',
-					'type'			=> 'varchar',
-					'constraint'	=> 120,
-					'null'			=> TRUE
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'members',
-			array(
-				'sig_img_width' => array(
-					'name'			=> 'sig_img_width',
-					'type'			=> 'int',
-					'constraint'	=> 4,
-					'unsigned'		=> TRUE,
-					'null'			=> TRUE
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'members',
-			array(
-				'sig_img_height' => array(
-					'name'			=> 'sig_img_height',
-					'type'			=> 'int',
-					'constraint'	=> 4,
-					'unsigned'		=> TRUE,
-					'null'			=> TRUE
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'members',
-			array(
-				'ignore_list' => array(
-					'name'			=> 'ignore_list',
-					'type'			=> 'text',
-					'null'			=> TRUE
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'members',
-			array(
-				'cp_theme' => array(
-					'name'			=> 'cp_theme',
-					'type'			=> 'varchar',
-					'constraint'	=> 32,
-					'null'			=> TRUE
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'members',
-			array(
-				'profile_theme' => array(
-					'name'			=> 'profile_theme',
-					'type'			=> 'varchar',
-					'constraint'	=> 32,
-					'null'			=> TRUE
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'members',
-			array(
-				'forum_theme' => array(
-					'name'			=> 'forum_theme',
-					'type'			=> 'varchar',
-					'constraint'	=> 32,
-					'null'			=> TRUE
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'members',
-			array(
-				'tracker' => array(
-					'name'			=> 'tracker',
-					'type'			=> 'text',
-					'null'			=> TRUE
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'members',
-			array(
-				'notepad' => array(
-					'name'			=> 'notepad',
-					'type'			=> 'text',
-					'null'			=> TRUE
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'members',
-			array(
-				'quick_links' => array(
-					'name'			=> 'quick_links',
-					'type'			=> 'text',
-					'null'			=> TRUE
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'members',
-			array(
-				'quick_tabs' => array(
-					'name'			=> 'quick_tabs',
-					'type'			=> 'text',
-					'null'			=> TRUE
-				)
-			)
-		);
+		ee()->smartforge->modify_column('members', $fields);
 
 		ee()->db->set('quick_tabs', ''); 
 		ee()->db->update('members');
