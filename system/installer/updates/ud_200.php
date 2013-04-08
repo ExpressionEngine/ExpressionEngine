@@ -1194,30 +1194,36 @@ BSH;
 		ee()->progress->update_state("Updating member tables");
 	
 		// Update members table: parse_smileys and crypt_key
-		ee()->smartforge->add_column(
-			'members',
+		$add_columns = array(
 			array(
-				'parse_smileys' => array(
-					'type'			=> 'char',
-					'constraint'	=> 1,
-					'null'			=> FALSE,
-					'default'		=> 'y'
-				)
+				'members',
+				array(
+					'parse_smileys' => array(
+						'type'			=> 'char',
+						'constraint'	=> 1,
+						'null'			=> FALSE,
+						'default'		=> 'y'
+					)
+				),
+				'display_signatures'
 			),
-			'display_signatures'
+			array(
+				'members',
+				array(
+					'crypt_key' => array(
+						'type'			=> 'varchar',
+						'constraint'	=> 40,
+						'null'			=> TRUE
+					)
+				),
+				'unique_id'
+			)
 		);
 
-		ee()->smartforge->add_column(
-			'members',
-			array(
-				'crypt_key' => array(
-					'type'			=> 'varchar',
-					'constraint'	=> 40,
-					'null'			=> TRUE
-				)
-			),
-			'unique_id'
-		);
+		foreach ($add_columns as $v)
+		{
+			ee()->smartforge->add_column($v[0], $v[1], $v[2]);
+		}
 
 		// drop user weblog related fields
 		ee()->smartforge->drop_column('members', 'weblog_id');
