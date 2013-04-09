@@ -2731,13 +2731,18 @@ class EE_Template {
 					// If the status code isn't a 3xx redirect code, it will be ignored
 					// by redirect().
 					$status_code = NULL;
-					if(isset($match[5])) {
+
+					if (isset($match[5]))
+					{
 						$status_code = $match[5];
-					} 
+					}
 
 					// Functions::redirect() exits on its own
-					ee()->functions->redirect(ee()->functions->create_url(ee()->functions->extract_path("=".$match['2'])), FALSE, $status_code);
-					
+					ee()->functions->redirect(
+						ee()->functions->create_url(ee()->functions->extract_path("=".$match['2'])),
+						FALSE,
+						$status_code
+					);
 				}
 			}
 		}
