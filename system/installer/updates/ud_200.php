@@ -1259,189 +1259,79 @@ BSH;
 		ee()->db->set('quick_tabs', ''); 
 		ee()->db->update('members');
 
-		ee()->smartforge->add_column(
-			'member_groups',
+		$add_columns = array(
 			array(
-				'can_access_content' => array(
-					'type'			=> 'char',
-					'constraint'	=> 1,
-					'null'			=> FALSE,
-					'default'		=> 'n'
-				)
+				'field'			=> array('can_access_content'	=> array('type' => 'char',	'constraint' => 1,	'null' => FALSE,	'default' => 'n')),
+				'after_field'	=> 'can_access_cp',
 			),
-			'can_access_cp'
+			array(
+				'field'			=> array('can_access_files'		=> array('type' => 'char',	'constraint' => 1,	'null' => FALSE,	'default' => 'n')),
+				'after_field'	=> 'can_access_edit',
+			),
+			array(
+				'field'			=> array('can_access_addons'	=> array('type' => 'char',	'constraint' => 1,	'null' => FALSE,	'default' => 'n')),
+				'after_field'	=> 'can_access_design',
+			)
 		);
 
-		ee()->smartforge->add_column(
-			'member_groups',
-			array(
-				'can_access_files' => array(
-					'type'			=> 'char',
-					'constraint'	=> 1,
-					'null'			=> FALSE,
-					'default'		=> 'n'
-				)
-			),
-			'can_access_edit'
-		);
-
-		ee()->smartforge->add_column(
-			'member_groups',
-			array(
-				'can_access_addons' => array(
-					'type'			=> 'char',
-					'constraint'	=> 1,
-					'null'			=> FALSE,
-					'default'		=> 'n'
-				)
-			),
-			'can_access_design'
-		);
+		foreach ($add_columns as $v)
+		{
+			ee()->smartforge->add_column('member_groups', $v['field'], $v['after_field']);
+		}
 
 		ee()->db->query("ALTER TABLE `exp_member_groups` MODIFY COLUMN `can_access_modules` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_addons`");
 
-		ee()->smartforge->add_column(
-			'member_groups',
+		$add_columns = array(
 			array(
-				'can_access_extensions' => array(
-					'type'			=> 'char',
-					'constraint'	=> 1,
-					'null'			=> FALSE,
-					'default'		=> 'n'
-				)
+				'field'			=> array('can_access_extensions'	=> array('type' => 'char',	'constraint' => 1,	'null' => FALSE,	'default' => 'n')),
+				'after_field'	=> 'can_access_modules',
 			),
-			'can_access_modules'
+			array(
+				'field'			=> array('can_access_accessories'	=> array('type' => 'char',	'constraint' => 1,	'null' => FALSE,	'default' => 'n')),
+				'after_field'	=> 'can_access_extensions',
+			),
+			array(
+				'field'			=> array('can_access_plugins'		=> array('type' => 'char',	'constraint' => 1,	'null' => FALSE,	'default' => 'n')),
+				'after_field'	=> 'can_access_accessories',
+			),
+			array(
+				'field'			=> array('can_access_members'		=> array('type' => 'char',	'constraint' => 1,	'null' => FALSE,	'default' => 'n')),
+				'after_field'	=> 'can_access_plugins',
+			),
+			array(
+				'field'			=> array('can_access_sys_prefs'		=> array('type' => 'char',	'constraint' => 1,	'null' => FALSE,	'default' => 'n')),
+				'after_field'	=> 'can_access_admin',
+			),
+			array(
+				'field'			=> array('can_access_content_prefs'	=> array('type' => 'char',	'constraint' => 1,	'null' => FALSE,	'default' => 'n')),
+				'after_field'	=> 'can_access_sys_prefs',
+			),
+			array(
+				'field'			=> array('can_access_tools'			=> array('type' => 'char',	'constraint' => 1,	'null' => FALSE,	'default' => 'n')),
+				'after_field'	=> 'can_access_content_prefs',
+			),
+			array(
+				'field'			=> array('can_access_utilities'		=> array('type' => 'char',	'constraint' => 1,	'null' => FALSE,	'default' => 'n')),
+				'after_field'	=> 'can_access_comm',
+			),
+			array(
+				'field'			=> array('can_access_data'			=> array('type' => 'char',	'constraint' => 1,	'null' => FALSE,	'default' => 'n')),
+				'after_field'	=> 'can_access_utilities',
+			),
+			array(
+				'field'			=> array('can_access_logs'			=> array('type' => 'char',	'constraint' => 1,	'null' => FALSE,	'default' => 'n')),
+				'after_field'	=> 'can_access_data',
+			),
+			array(
+				'field'			=> array('can_admin_design'			=> array('type' => 'char',	'constraint' => 1,	'null' => FALSE,	'default' => 'n')),
+				'after_field'	=> 'can_admin_weblogs',
+			)
 		);
 
-		ee()->smartforge->add_column(
-			'member_groups',
-			array(
-				'can_access_accessories' => array(
-					'type'			=> 'char',
-					'constraint'	=> 1,
-					'null'			=> FALSE,
-					'default'		=> 'n'
-				)
-			),
-			'can_access_extensions'
-		);
-
-		ee()->smartforge->add_column(
-			'member_groups',
-			array(
-				'can_access_plugins' => array(
-					'type'			=> 'char',
-					'constraint'	=> 1,
-					'null'			=> FALSE,
-					'default'		=> 'n'
-				)
-			),
-			'can_access_accessories'
-		);
-
-		ee()->smartforge->add_column(
-			'member_groups',
-			array(
-				'can_access_members' => array(
-					'type'			=> 'char',
-					'constraint'	=> 1,
-					'null'			=> FALSE,
-					'default'		=> 'n'
-				)
-			),
-			'can_access_plugins'
-		);
-
-		ee()->smartforge->add_column(
-			'member_groups',
-			array(
-				'can_access_sys_prefs' => array(
-					'type'			=> 'char',
-					'constraint'	=> 1,
-					'null'			=> FALSE,
-					'default'		=> 'n'
-				)
-			),
-			'can_access_admin'
-		);
-
-		ee()->smartforge->add_column(
-			'member_groups',
-			array(
-				'can_access_content_prefs' => array(
-					'type'			=> 'char',
-					'constraint'	=> 1,
-					'null'			=> FALSE,
-					'default'		=> 'n'
-				)
-			),
-			'can_access_sys_prefs'
-		);
-
-		ee()->smartforge->add_column(
-			'member_groups',
-			array(
-				'can_access_tools' => array(
-					'type'			=> 'char',
-					'constraint'	=> 1,
-					'null'			=> FALSE,
-					'default'		=> 'n'
-				)
-			),
-			'can_access_content_prefs'
-		);
-
-		ee()->smartforge->add_column(
-			'member_groups',
-			array(
-				'can_access_utilities' => array(
-					'type'			=> 'char',
-					'constraint'	=> 1,
-					'null'			=> FALSE,
-					'default'		=> 'n'
-				)
-			),
-			'can_access_comm'
-		);
-
-		ee()->smartforge->add_column(
-			'member_groups',
-			array(
-				'can_access_data' => array(
-					'type'			=> 'char',
-					'constraint'	=> 1,
-					'null'			=> FALSE,
-					'default'		=> 'n'
-				)
-			),
-			'can_access_utilities'
-		);
-
-		ee()->smartforge->add_column(
-			'member_groups',
-			array(
-				'can_access_logs' => array(
-					'type'			=> 'char',
-					'constraint'	=> 1,
-					'null'			=> FALSE,
-					'default'		=> 'n'
-				)
-			),
-			'can_access_data'
-		);
-
-		ee()->smartforge->add_column(
-			'member_groups',
-			array(
-				'can_admin_design' => array(
-					'type'			=> 'char',
-					'constraint'	=> 1,
-					'null'			=> FALSE,
-					'default'		=> 'n'
-				)
-			),
-			'can_admin_weblogs'
-		);
+		foreach ($add_columns as $v)
+		{
+			ee()->smartforge->add_column('member_groups', $v['field'], $v['after_field']);
+		}
 
 		return 'database_changes_weblog';
 	}
