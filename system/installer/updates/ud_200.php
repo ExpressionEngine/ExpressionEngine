@@ -1519,24 +1519,8 @@ BSH;
 				ee()->smartforge->modify_column(
 					'category_field_data',
 					array(
-						'field_id_'.$row->field_id => array(
-							'name'			=> 'field_id_'.$row->field_id,
-							'type'			=> 'text',
-							'null'			=> TRUE
-						)
-					)
-				);
-
-				ee()->smartforge->modify_column(
-					'category_field_data',
-					array(
-						'field_ft_'.$row->field_id => array(
-							'name'			=> 'field_ft_'.$row->field_id,
-							'type'			=> 'varchar',
-							'constraint'	=> 40,
-							'null'			=> TRUE,
-							'default'		=> 'none'
-						)
+						'field_id_'.$row->field_id => array('type' => 'text',		'null' => TRUE),
+						'field_ft_'.$row->field_id => array('type' => 'varchar',	'constraint' => 40,	'null' => TRUE,	'default' => 'none')
 					)
 				);
 			}
@@ -1554,13 +1538,7 @@ BSH;
 					ee()->smartforge->modify_column(
 						'weblog_data',
 						array(
-							'field_id_'.$row->field_id => array(
-								'name'			=> 'field_id_'.$row->field_id,
-								'type'			=> 'int',
-								'constraint'	=> 10,
-								'null'			=> FALSE,
-								'default'		=> 0
-							)
+							'field_id_'.$row->field_id => array('type' => 'int',	'constraint' => 10,	'null' => FALSE,	'default' => 0)
 						)
 					);
 
@@ -1569,12 +1547,7 @@ BSH;
 						ee()->smartforge->modify_column(
 							'weblog_data',
 							array(
-								'field_dt_'.$row->field_id => array(
-									'name'			=> 'field_dt_'.$row->field_id,
-									'type'			=> 'varchar',
-									'constraint'	=> 8,
-									'null'			=> NULL
-								)
+								'field_dt_'.$row->field_id => array('type' => 'varchar',	'constraint' => 8,	'null' => NULL)
 							)
 						);
 					}
@@ -1584,11 +1557,7 @@ BSH;
 					ee()->smartforge->modify_column(
 						'weblog_data',
 						array(
-							'field_id_'.$row->field_id => array(
-								'name'			=> 'field_id_'.$row->field_id,
-								'type'			=> 'text',
-								'null'			=> NULL
-							)
+							'field_id_'.$row->field_id => array('type' => 'text',	'null' => NULL)
 						)
 					);
 				}
