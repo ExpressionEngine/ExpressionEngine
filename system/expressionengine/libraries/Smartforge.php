@@ -198,11 +198,18 @@ class Smartforge {
 
 		$result = FALSE;
 
-		foreach ($field as $k => $v)
+		foreach ($field as $k => &$v)
 		{
 			// Check to make sure the column A exists.
 			if (ee()->db->field_exists($k, $table))
 			{
+				// If the column name wasn't included in the field's array,
+				// just use the column name as defined by the key.
+				if ( ! isset($v['name']))
+				{
+					$v['name'] = $k;
+				}
+
 				// Check to see if the column is being renamed
 				// and if column B exists, too.
 				if ($k !== $v['name'] AND ee()->db->field_exists($v['name'], $table))
