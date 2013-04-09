@@ -1371,475 +1371,99 @@ BSH;
 		ee()->smartforge->modify_column(
 			'templates',
 			array(
-				'template_data' => array(
-					'name'			=> 'template_data',
-					'type'			=> 'mediumtext',
-					'null'			=> TRUE
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'templates',
-			array(
-				'template_notes' => array(
-					'name'			=> 'template_notes',
-					'type'			=> 'text',
-					'null'			=> TRUE
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'templates',
-			array(
-				'last_author_id' => array(
-					'name'			=> 'last_author_id',
-					'type'			=> 'int',
-					'constraint'	=> 10,
-					'null'			=> FALSE,
-					'default'		=> 0
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'templates',
-			array(
-				'refresh' => array(
-					'name'			=> 'refresh',
-					'type'			=> 'int',
-					'constraint'	=> 6,
-					'unsigned'		=> TRUE,
-					'null'			=> FALSE,
-					'default'		=> 0
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'templates',
-			array(
-				'no_auth_bounce' => array(
-					'name'			=> 'no_auth_bounce',
-					'type'			=> 'varchar',
-					'constraint'	=> 50,
-					'null'			=> FALSE,
-					'default'		=> ''
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'templates',
-			array(
-				'hits' => array(
-					'name'			=> 'hits',
-					'type'			=> 'int',
-					'constraint'	=> 10,
-					'unsigned'		=> TRUE,
-					'null'			=> FALSE,
-					'default'		=> 0
-				)
+				'template_data'		=> array('type' => 'mediumtext',	'null' => TRUE),
+				'template_notes'	=> array('type' => 'text',			'null' => TRUE),
+				'last_author_id'	=> array('type' => 'int',			'constraint' => 10,	'null' => FALSE,	'default' => 0),
+				'refresh'			=> array('type' => 'int',			'constraint' => 6,	'unsigned' => TRUE,	'null' => FALSE,	'default' => 0),
+				'no_auth_bounce'	=> array('type' => 'varchar',		'constraint' => 50,	'null' => FALSE,	'default' => ''),
+				'hits'				=> array('type' => 'int',			'constraint' => 10,	'unsigned' => TRUE,	'null' => FALSE, 'default' => 0)
 			)
 		);
 
 		ee()->smartforge->modify_column(
 			'member_groups',
 			array(
-				'mbr_delete_notify_emails' => array(
-					'name'			=> 'mbr_delete_notify_emails',
-					'type'			=> 'varchar',
-					'constraint'	=> 255,
-					'null'			=> TRUE
-				)
+				'mbr_delete_notify_emails'	=> array('type' => 'varchar',	'constraint' => 255,	'null' => TRUE)
 			)
 		);
 
 		ee()->smartforge->modify_column(
 			'weblog_fields',
 			array(
-				'field_pre_field_id' => array(
-					'name'			=> 'field_pre_field_id',
-					'type'			=> 'int',
-					'constraint'	=> 6,
-					'unsigned'		=> TRUE,
-					'null'			=> TRUE
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'weblog_titles',
-			array(
-				'recent_comment_date' => array(
-					'name'			=> 'recent_comment_date',
-					'type'			=> 'int',
-					'constraint'	=> 10,
-					'null'			=> TRUE
-				)
+				'field_pre_field_id'	=> array('type' => 'int',	'constraint' => 6,	'unsigned' => TRUE,	'null' => TRUE),
+				'recent_comment_date'	=> array('type' => 'int',	'constraint' => 10,	'null' => TRUE)
 			)
 		);
 
 		ee()->smartforge->modify_column(
 			'sites',
 			array(
-				'site_description' => array(
-					'name'			=> 'site_description',
-					'type'			=> 'text',
-					'null'			=> TRUE
-				)
+				'site_description'	=> array('type' => 'text',	'null' => TRUE)
 			)
 		);
 
 		ee()->smartforge->modify_column(
 			'category_groups',
 			array(
-				'can_edit_categories' => array(
-					'name'			=> 'can_edit_categories',
-					'type'			=> 'text',
-					'null'			=> TRUE
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'category_groups',
-			array(
-				'can_delete_categories' => array(
-					'name'			=> 'can_delete_categories',
-					'type'			=> 'text',
-					'null'			=> TRUE
-				)
+				'can_edit_categories'	=> array('type' => 'text',	'null' => TRUE),
+				'can_delete_categories'	=> array('type' => 'text',	'null' => TRUE)
 			)
 		);
 
 		ee()->smartforge->modify_column(
 			'categories',
 			array(
-				'cat_description' => array(
-					'name'			=> 'cat_description',
-					'type'			=> 'text',
-					'null'			=> TRUE
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'categories',
-			array(
-				'cat_image' => array(
-					'name'			=> 'cat_image',
-					'type'			=> 'varchar',
-					'constraint'	=> 120,
-					'null'			=> TRUE
-				)
+				'cat_description'		=> array('type' => 'text',		'null' => TRUE),
+				'cat_image'				=> array('type' => 'varchar',	'constraint' => 120,	'null' => TRUE)
 			)
 		);
 
 		ee()->smartforge->modify_column(
 			'upload_prefs',
 			array(
-				'max_size' => array(
-					'name'			=> 'max_size',
-					'type'			=> 'varchar',
-					'constraint'	=> 16,
-					'null'			=> TRUE
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'upload_prefs',
-			array(
-				'max_height' => array(
-					'name'			=> 'max_height',
-					'type'			=> 'varchar',
-					'constraint'	=> 6,
-					'null'			=> TRUE
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'upload_prefs',
-			array(
-				'max_width' => array(
-					'name'			=> 'max_width',
-					'type'			=> 'varchar',
-					'constraint'	=> 6,
-					'null'			=> TRUE
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'upload_prefs',
-			array(
-				'properties' => array(
-					'name'			=> 'properties',
-					'type'			=> 'varchar',
-					'constraint'	=> 120,
-					'null'			=> TRUE
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'upload_prefs',
-			array(
-				'pre_format' => array(
-					'name'			=> 'pre_format',
-					'type'			=> 'varchar',
-					'constraint'	=> 120,
-					'null'			=> TRUE
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'upload_prefs',
-			array(
-				'post_format' => array(
-					'name'			=> 'post_format',
-					'type'			=> 'varchar',
-					'constraint'	=> 120,
-					'null'			=> TRUE
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'upload_prefs',
-			array(
-				'file_properties' => array(
-					'name'			=> 'file_properties',
-					'type'			=> 'varchar',
-					'constraint'	=> 120,
-					'null'			=> TRUE
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'upload_prefs',
-			array(
-				'file_pre_format' => array(
-					'name'			=> 'file_pre_format',
-					'type'			=> 'varchar',
-					'constraint'	=> 120,
-					'null'			=> TRUE
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'upload_prefs',
-			array(
-				'file_post_format' => array(
-					'name'			=> 'file_post_format',
-					'type'			=> 'varchar',
-					'constraint'	=> 120,
-					'null'			=> TRUE
-				)
+				'max_size'			=> array('type' => 'varchar',	'constraint' => 16,		'null' => TRUE),
+				'max_height'		=> array('type' => 'varchar',	'constraint' => 6,		'null' => TRUE),
+				'max_width'			=> array('type' => 'varchar',	'constraint' => 6,		'null' => TRUE),
+				'properties'		=> array('type' => 'varchar',	'constraint' => 120,	'null' => TRUE),
+				'pre_format'		=> array('type' => 'varchar',	'constraint' => 120,	'null' => TRUE),
+				'post_format'		=> array('type' => 'varchar',	'constraint' => 120,	'null' => TRUE),
+				'file_properties'	=> array('type' => 'varchar',	'constraint' => 120,	'null' => TRUE),
+				'file_pre_format'	=> array('type' => 'varchar',	'constraint' => 120,	'null' => TRUE),
+				'file_post_format'	=> array('type' => 'varchar',	'constraint' => 120,	'null' => TRUE)
 			)
 		);
 
 		ee()->smartforge->modify_column(
 			'weblog_fields',
 			array(
-				'field_instructions' => array(
-					'name'			=> 'field_instructions',
-					'type'			=> 'text',
-					'null'			=> TRUE
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'weblog_fields',
-			array(
-				'field_pre_field_id' => array(
-					'name'			=> 'field_pre_field_id',
-					'type'			=> 'int',
-					'constraint'	=> 6,
-					'unsigned'		=> TRUE,
-					'null'			=> TRUE
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'weblog_fields',
-			array(
-				'field_maxl' => array(
-					'name'			=> 'field_maxl',
-					'type'			=> 'smallint',
-					'constraint'	=> 3,
-					'null'			=> TRUE
-				)
+				'field_instructions'	=> array('type' => 'text',		'null' => TRUE),
+				'field_pre_field_id'	=> array('type' => 'int',		'constraint' => 6,	'unsigned' => TRUE,	'null' => TRUE),
+				'field_maxl'			=> array('type' => 'smallint',	'constraint' => 3,	'null' => TRUE)
 			)
 		);
 
 		ee()->smartforge->modify_column(
 			'weblog_titles',
 			array(
-				'forum_topic_id' => array(
-					'name'			=> 'forum_topic_id',
-					'type'			=> 'int',
-					'constraint'	=> 10,
-					'unsigned'		=> TRUE,
-					'null'			=> TRUE
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'weblog_titles',
-			array(
-				'recent_comment_date' => array(
-					'name'			=> 'recent_comment_date',
-					'type'			=> 'int',
-					'constraint'	=> 10,
-					'null'			=> TRUE
-				)
+				'forum_topic_id'		=> array('type' => 'int',	'constraint' => 10,	'unsigned' => TRUE,	'null' => TRUE),
+				'recent_comment_date'	=> array('type' => 'int',	'constraint' => 10,	'null' => TRUE)
 			)
 		);
 
 		ee()->smartforge->modify_column(
 			'weblogs',
 			array(
-				'cat_group' => array(
-					'name'			=> 'cat_group',
-					'type'			=> 'varchar',
-					'constraint'	=> 255,
-					'null'			=> TRUE
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'weblogs',
-			array(
-				'status_group' => array(
-					'name'			=> 'status_group',
-					'type'			=> 'int',
-					'constraint'	=> 4,
-					'unsigned'		=> TRUE,
-					'null'			=> TRUE
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'weblogs',
-			array(
-				'field_group' => array(
-					'name'			=> 'field_group',
-					'type'			=> 'int',
-					'constraint'	=> 4,
-					'unsigned'		=> TRUE,
-					'null'			=> TRUE
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'weblogs',
-			array(
-				'search_excerpt' => array(
-					'name'			=> 'search_excerpt',
-					'type'			=> 'int',
-					'constraint'	=> 4,
-					'unsigned'		=> TRUE,
-					'null'			=> TRUE
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'weblogs',
-			array(
-				'deft_category' => array(
-					'name'			=> 'deft_category',
-					'type'			=> 'varchar',
-					'constraint'	=> 60,
-					'null'			=> TRUE
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'weblogs',
-			array(
-				'comment_url' => array(
-					'name'			=> 'comment_url',
-					'type'			=> 'varchar',
-					'constraint'	=> 80,
-					'null'			=> TRUE
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'weblogs',
-			array(
-				'comment_max_chars' => array(
-					'name'			=> 'comment_max_chars',
-					'type'			=> 'int',
-					'constraint'	=> 5,
-					'unsigned'		=> TRUE,
-					'null'			=> TRUE,
-					'default'		=> 5000
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'weblogs',
-			array(
-				'comment_notify_emails' => array(
-					'name'			=> 'comment_notify_emails',
-					'type'			=> 'varchar',
-					'constraint'	=> 255,
-					'null'			=> TRUE
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'weblogs',
-			array(
-				'search_results_url' => array(
-					'name'			=> 'search_results_url',
-					'type'			=> 'varchar',
-					'constraint'	=> 80,
-					'null'			=> TRUE
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'weblogs',
-			array(
-				'ping_return_url' => array(
-					'name'			=> 'ping_return_url',
-					'type'			=> 'varchar',
-					'constraint'	=> 80,
-					'null'			=> TRUE
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'weblogs',
-			array(
-				'rss_url' => array(
-					'name'			=> 'rss_url',
-					'type'			=> 'varchar',
-					'constraint'	=> 80,
-					'null'			=> TRUE
-				)
+				'cat_group'				=> array('type' => 'varchar',	'constraint' => 255,	'null' => TRUE),
+				'status_group'			=> array('type' => 'int',		'constraint' => 4,		'unsigned' => TRUE,	'null' => TRUE),
+				'field_group'			=> array('type' => 'int',		'constraint' => 4,		'unsigned' => TRUE,	'null' => TRUE),
+				'search_excerpt'		=> array('type' => 'int',		'constraint' => 4,		'unsigned' => TRUE,	'null' => TRUE),
+				'deft_category'			=> array('type' => 'varchar',	'constraint' => 60,		'null' => TRUE),
+				'comment_url'			=> array('type' => 'varchar',	'constraint' => 80,		'null' => TRUE),
+				'comment_max_chars'		=> array('type' => 'int',		'constraint' => 5,		'unsigned' => TRUE,	'null' => TRUE,	'default' => 5000),
+				'comment_notify_emails'	=> array('type' => 'varchar',	'constraint' => 255,	'null' => TRUE),
+				'search_results_url'	=> array('type' => 'varchar',	'constraint' => 80,		'null' => TRUE),
+				'ping_return_url'		=> array('type' => 'varchar',	'constraint' => 80,		'null' => TRUE),
+				'rss_url'				=> array('type' => 'varchar',	'constraint' => 80,		'null' => TRUE)
 			)
 		);
 
