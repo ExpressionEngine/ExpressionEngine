@@ -187,9 +187,7 @@ class Relationship_tree_builder {
 	public function build_tree(array $entry_ids)
 	{
 		// first, we need a tree
-		$root = $this->_build_tree(
-			$this->_build_node_list($entry_ids)
-		);
+		$root = $this->_build_tree($entry_ids);
 
 		if ($root === NULL)
 		{
@@ -271,161 +269,141 @@ class Relationship_tree_builder {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Check if a given tag name is a relationship field and if
-	 * so return its id.
+	 * Turn the tagdata hierarchy into a tree
+	 *
+	 * Looks through the tagdata string to find all of the relationship
+	 * tags that we might use and constructs a tree hierachy from them.
+	 *
+	 * @param	array	Entry ids
+	 * @return	object	Root node of the final tree
 	 */
-	protected function _get_relationship_field_id($tag_name)
-	{
-		if ( ! $tag_name)
-		{
-			return FALSE;
-		}
 
-		// last segment
-		$tag_name = ':'.$tag_name;
-		$tag_name = substr(strrchr($tag_name, ':'), 1);
-
-		if (array_key_exists($tag_name, $this->relationship_field_ids))
-		{
-			return $this->relationship_field_ids[$tag_name];
-		}
-
-		if ($tag_name == 'siblings' ||
-			$tag_name == 'parents')
-		{
-			return $tag_name;
-		}
-
-		return FALSE;
-	}
-
-	// --------------------------------------------------------------------
-
-	protected function _build_node_list(array $entry_ids)
+	protected function _build_tree(array $entry_ids)
 	{
 		// extract the relationship tags straight from the channel
 		// tagdata so that we can process it all in one fell swoop.
 		$str = ee()->TMPL->tagdata;
 
 		// No variables?  No reason to continue...
-		if (strpos($str, '{') === FALSE OR ! preg_match_all("/".LD."([^{]+?)".RD."/", $str, $matches))
+		if (strpos($str, '{') === FALSE)
 		{
 			return NULL;
 		}
 
-		// Match up tag pairs, record their hierarchy, and create a node
-		// instance for each tag.
+		$all_fields = $this->relationship_field_names;
+		$all_fields = implode('|', $all_fields).'|parents|siblings';
 
-		$reversed = array_reverse($matches[0]);
-		unset($matches);
+		// Regex to separate out the relationship prefix part from the rest
+		// {rel:pre:fix:tag:modified param="value"}
+		// 0 => full_match
+		// 1 => rel:pre:fix:
+		// 2 => tag:modified param="value"
 
-		$uuid = 0;
-		$nodes = array();
-		$id_stack = array();
-		$tag_stack = array();
-
-		foreach ($reversed as $tag)
+		if ( ! preg_match_all("/".LD.'\/?((?:(?:'.$all_fields.'):?)+)\b([^}{]*)?'.RD."/", $str, $matches, PREG_SET_ORDER))
 		{
-			$tag_name = substr($tag, 1, strcspn($tag, ' }', 1));
+			return NULL;
+		}
 
-			$is_closing = ($tag_name[0] == '/');
-			$tag_name = ltrim($tag_name, '/');
+		// nesting trackers
+		// this code would probably be a little prettier with a state machine
+		// instead of the crazy regex.
+		$uuid = 1;
+		$id_stack = array(0);
+		$rel_stack = array();
 
-			$field_id = $this->_get_relationship_field_id($tag_name);
+		$root = new QueryNode('__root__');
+		$nodes = array($root);
 
-			if ( ! $field_id)
-			{
-				continue;
-			}
+		foreach ($matches as $match)
+		{
+			$relationship_prefix = $match[1];
 
-			$uuid++;
-			$parent_id = end($id_stack);
+			// some helpful booleans
+			$is_closing				= ($match[0][1] == '/');
+			$is_only_relationship	= (substr($relationship_prefix, -1) != ':');
 
+			// catch closing tags right away, we don't need them
 			if ($is_closing)
 			{
-				$id_stack[] = $uuid;
-				$tag_stack[] = $tag_name;
-			}
-			elseif ($tag_name == end($tag_stack))
-			{
-				array_pop($tag_stack);
-				$lookup_id = array_pop($id_stack);
-
-				$params = ee()->functions->assign_parameters($tag);
-
-				$node = $nodes[$lookup_id]['node'];
-				$node->params = $params ? $params : array();
-
-				$node->open_tag = $tag;
+				// closing a relationship tag - pop the stacks
+				if ($is_only_relationship)
+				{
+					array_pop($rel_stack);
+					array_pop($id_stack);
+				}
 
 				continue;
 			}
 
+			$tag_name = rtrim($relationship_prefix, ':');
+
+			// Opening tags are a little harder, it's a shortcut if it has
+			// a non prefix portion and the prefix does not yet exist on the
+			// stack. Otherwise it's a field we can safely skip.
+			// Of course, if it has no tag, it's definitely a relationship
+			// field and we have to track it.
+
+			if ( ! $is_only_relationship && in_array($tag_name, $rel_stack))
+			{
+				continue;
+			}
+
+
+			list($tag, $parameters) = preg_split("/\s+/", $match[2].' ', 2);
+			$parent_id = end($id_stack);
+
+			// no closing tag tracking for shortcuts
+			if ($is_only_relationship)
+			{
+				$id_stack[] = ++$uuid;
+				$rel_stack[] = $tag_name;
+			}
+
+			// extract the full name and determining relationship
+			$last_colon = strrpos($tag_name, ':');
+
+			if ($last_colon === FALSE)
+			{
+				$determinant_relationship = $tag_name;
+			}
+			else
+			{
+				$determinant_relationship = substr($tag_name, $last_colon + 1);
+			}
+
+			// prep parameters
+			$params = ee()->functions->assign_parameters($parameters);
+			$params = $params ? $params : array();
+
+			// setup node type
+			// if it's a root sibling tag, or the determining relationship
+			// is parents then we need to do a new query for them
 			$node_class = 'ParseNode';
 
-			if ($field_id == 'parents' || $tag_name == 'siblings')
+			if ($determinant_relationship == 'parents' OR $tag_name == 'siblings')
 			{
 				$node_class = 'QueryNode';
 			}
 
+			// instantiate and hook to tree
 			$node = new $node_class($tag_name, array(
-				'field_id'	=> $field_id,
+				'field_name'=> $determinant_relationship,
 				'tag_info'	=> array(),
-				'entry_ids'	=> array()
+				'entry_ids'	=> array(),
+				'params'	=> $params,
+				'shortcut'	=> $is_only_relationship ? FALSE : $tag,
+				'open_tag'	=> $match[0]
 			));
 
-			$nodes[$uuid] = array(
-				'node'		  => $node,
-				'parent_uuid' => $parent_id
-			);
+			$nodes[$uuid] = $node;
+			$parent = $nodes[$parent_id];
+			$parent->add($node);
 		}
 
 		// Doing our own parsing let's us do error checking
-		if (count($tag_stack))
+		if (count($rel_stack))
 		{
-			// going backwards has the unfortunate side effect that we end up
-			// finding missmatched closing tags. Should be ok though - either
-			// way you'll be in the template looking for pairs.
-			throw new RelationshipException('Unmatched Closing Tag: "{/'.end($tag_stack).'}"');
-		}
-
-		return $nodes;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Turn the node list into a proper tree
-	 *
-	 * Simply connects the nodes from _build_node_list() into a
-	 * proper tree using their parent_id properties.
-	 *
-	 * @param	array	Node list ([[node, parent], [node2, parent2], ... ])
-	 * @return	object	Root node of the final tree
-	 */
-	protected function _build_tree(array $nodes = NULL)
-	{
-		if ( ! isset($nodes) OR ! count($nodes))
-		{
-			return NULL;
-		}
-
-		$root = new QueryNode('__root__');
-
-		foreach ($nodes as $data)
-		{
-			$node = $data['node'];
-			$parent_id = $data['parent_uuid'];
-
-			if (isset($nodes[$parent_id]))
-			{
-				$parent = $nodes[$parent_id]['node'];
-				$parent->add($node);
-			}
-			else
-			{
-				$root->add($node);
-			}
+			throw new RelationshipException('Unmatched Relationship Tag: "{'.end($rel_stack).'}"');
 		}
 
 		return $root;
@@ -472,7 +450,7 @@ class Relationship_tree_builder {
 			// on the parent since our query is not limited in breadth.
 			// This does not apply to an un-prefixed sibling tag which is
 			// handled as regular subtree below.
-			if ($node->field_id == 'siblings' &&  ! $is_root_sibling)
+			if ($node->field_name == 'siblings' &&  ! $is_root_sibling)
 			{
 				$siblings = array();
 				$possible_siblings = $node->parent()->entry_ids();
@@ -497,7 +475,7 @@ class Relationship_tree_builder {
 
 			// if the field contains parent or is siblings, we need to check
 			// for the optional field= parameter.
-			if ($node->field_id == 'parents' OR $node->field_id == 'siblings')
+			if ($node->field_name == 'parents' OR $node->field_name == 'siblings')
 			{
 				$field_ids = array();
 				$field_name = $node->param('field');
@@ -517,7 +495,9 @@ class Relationship_tree_builder {
 			}
 			else
 			{
-				$field_ids = array($node->field_id);
+				$field_ids = array(
+					$this->relationship_field_ids[$node->field_name]
+				);
 			}
 
 			// propogate the ids
@@ -716,7 +696,7 @@ class Relationship_parser {
 	 * @return 	string	The parsed tagdata.
 	 */
 	public function parse_node($node, $parent_id, $tagdata)
-	{
+	{		
 		if ( ! isset($node->entry_ids[$parent_id]))
 		{
 			return $tagdata;
@@ -724,12 +704,65 @@ class Relationship_parser {
 
 		$tag = preg_quote($node->name(), '/');
 
-		if ( ! preg_match_all('/{'.$tag.'[^}:]*}(.+?){\/'.$tag.'}/is', $tagdata, $matches, PREG_SET_ORDER))
+		if ($node->shortcut)
 		{
-			return $tagdata;
-		}
+			if (preg_match_all('/'.$node->open_tag.'(.+?){\/'.$tag.':'.$node->shortcut.'}/is', $tagdata, $matches, PREG_SET_ORDER))
+			{
+				foreach ($matches as &$match)
+				{
+					$match = array($match[0], $match[0]);
+				}
+			}
+			else
+			{
+				$matches = array(array($node->open_tag, $node->open_tag));
+			}
 
-		$data = $this->process_parameters($node, $parent_id);
+			$entry_ids = $node->entry_ids();
+			$entry_id = reset($entry_ids[$parent_id]);
+
+			$categories = array();
+
+			if (isset($this->_categories[$entry_id]))
+			{
+				$categories[$entry_id] = $this->category($entry_id);
+			}
+
+			// put categories into the weird form the channel module uses
+			// @todo take db results directly
+			foreach ($categories as &$cats)
+			{
+				foreach ($cats as &$cat)
+				{
+					if ( ! empty($cat))
+					{
+						$cat = array(
+							$cat['cat_id'],
+							$cat['parent_id'],
+							$cat['cat_name'],
+							$cat['cat_image'],
+							$cat['cat_description'],
+							$cat['group_id'],
+							$cat['cat_url_title']
+						);
+					}
+				}
+			}
+
+			$data = array(
+				'entries' => array($entry_id => $this->entry($entry_id)),
+				'categories' => $categories
+			);
+		}
+		else
+		{
+			if ( ! preg_match_all('/'.$node->open_tag.'(.+?){\/'.$tag.'}/is', $tagdata, $matches, PREG_SET_ORDER))
+			{
+				return $tagdata;
+			}
+
+			$data = $this->process_parameters($node, $parent_id);
+		}
 
 		foreach ($matches as $match)
 		{
@@ -835,7 +868,7 @@ class Relationship_parser {
 
 			$rows[$entry_id] = $data;
 
-			if (isset($this->category[$entry_id]))
+			if (isset($this->_categories[$entry_id]))
 			{
 				$categories[$entry_id] = $this->category($entry_id);
 			}
