@@ -1727,37 +1727,21 @@ BSH;
 		ee()->smartforge->modify_column(
 			'sites',
 			array(
-				'site_weblog_preferences' => array(
-					'name'			=> 'site_channel_preferences',
-					'type'			=> 'text',
-					'null'			=> FALSE,
-				)
+				'site_weblog_preferences'	=> array('name' => 'site_channel_preferences',	'type' => 'text',	'null' => FALSE)
 			)
 		);
 
 		ee()->smartforge->modify_column(
 			'member_groups',
 			array(
-				'can_admin_weblogs' => array(
-					'name'			=> 'can_admin_channels',
-					'type'			=> 'char',
-					'constraint'	=> 1,
-					'null'			=> FALSE,
-					'default'		=> 'n'
-				)
+				'can_admin_weblogs'	=> array('name' => 'can_admin_channels',	'type' => 'char',	'constraint' => 1,	'null' => FALSE,	'default' => 'n')
 			)
 		);
 
 		ee()->smartforge->modify_column(
 			'weblog_member_groups',
 			array(
-				'weblog_id' => array(
-					'name'			=> 'channel_id',
-					'type'			=> 'int',
-					'constraint'	=> 6,
-					'unsigned'		=> TRUE,
-					'null'			=> FALSE
-				)
+				'weblog_id'	=> array('name' => 'channel_id',	'type' => 'int',	'constraint' => 6,	'unsigned' => TRUE,	'null' => FALSE)
 			)
 		);
 
@@ -1766,164 +1750,19 @@ BSH;
 		ee()->smartforge->modify_column(
 			'weblogs',
 			array(
-				'weblog_id' => array(
-					'name'				=> 'channel_id',
-					'type'				=> 'int',
-					'constraint'		=> 6,
-					'unsigned'			=> TRUE,
-					'null'				=> FALSE,
-					'auto_increment'	=> TRUE,
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'weblogs',
-			array(
-				'blog_name' => array(
-					'name'			=> 'channel_name',
-					'type'			=> 'varchar',
-					'constraint'	=> 40,
-					'null'			=> FALSE
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'weblogs',
-			array(
-				'blog_title' => array(
-					'name'			=> 'channel_title',
-					'type'			=> 'varchar',
-					'constraint'	=> 100,
-					'null'			=> FALSE
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'weblogs',
-			array(
-				'blog_url' => array(
-					'name'			=> 'channel_url',
-					'type'			=> 'varchar',
-					'constraint'	=> 100,
-					'null'			=> FALSE
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'weblogs',
-			array(
-				'blog_description' => array(
-					'name'			=> 'channel_description',
-					'type'			=> 'varchar',
-					'constraint'	=> 255,
-					'null'			=> TRUE
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'weblogs',
-			array(
-				'blog_lang' => array(
-					'name'			=> 'channel_lang',
-					'type'			=> 'varchar',
-					'constraint'	=> 12,
-					'null'			=> FALSE
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'weblogs',
-			array(
-				'weblog_max_chars' => array(
-					'name'			=> 'channel_max_chars',
-					'type'			=> 'int',
-					'constraint'	=> 5,
-					'unsigned'		=> TRUE,
-					'null'			=> TRUE
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'weblogs',
-			array(
-				'weblog_notify' => array(
-					'name'			=> 'channel_notify',
-					'type'			=> 'char',
-					'constraint'	=> 1,
-					'null'			=> FALSE,
-					'default'		=> 'n'
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'weblogs',
-			array(
-				'weblog_require_membership' => array(
-					'name'			=> 'channel_require_membership',
-					'type'			=> 'char',
-					'constraint'	=> 1,
-					'null'			=> FALSE,
-					'default'		=> 'y'
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'weblogs',
-			array(
-				'weblog_html_formatting' => array(
-					'name'			=> 'channel_html_formatting',
-					'type'			=> 'char',
-					'constraint'	=> 4,
-					'null'			=> FALSE,
-					'default'		=> 'all'
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'weblogs',
-			array(
-				'weblog_allow_img_urls' => array(
-					'name'			=> 'channel_allow_img_urls',
-					'type'			=> 'char',
-					'constraint'	=> 1,
-					'null'			=> FALSE,
-					'default'		=> 'y'
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'weblogs',
-			array(
-				'weblog_auto_link_urls' => array(
-					'name'			=> 'channel_auto_link_urls',
-					'type'			=> 'char',
-					'constraint'	=> 1,
-					'null'			=> FALSE,
-					'default'		=> 'y'
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'weblogs',
-			array(
-				'weblog_notify_emails' => array(
-					'name'			=> 'channel_notify_emails',
-					'type'			=> 'varchar',
-					'constraint'	=> 255,
-					'null'			=> TRUE
-				)
+				'weblog_id'					=> array('name' => 'channel_id',					'type' => 'int',		'constraint' => 6,		'unsigned' => TRUE,	'null' => FALSE,	'auto_increment' => TRUE),
+				'blog_name'					=> array('name' => 'channel_name',					'type' => 'varchar',	'constraint' => 40,		'null' => FALSE),
+				'blog_title'				=> array('name' => 'channel_title',					'type' => 'varchar',	'constraint' => 100,	'null' => FALSE),
+				'blog_url'					=> array('name' => 'channel_url',					'type' => 'varchar',	'constraint' => 100,	'null' => FALSE),
+				'blog_description'			=> array('name' => 'channel_description',			'type' => 'varchar',	'constraint' => 255,	'null' => TRUE),
+				'blog_lang'					=> array('name' => 'channel_lang',					'type' => 'varchar',	'constraint' => 12,		'null' => FALSE),
+				'weblog_max_chars'			=> array('name' => 'channel_max_chars',				'type' => 'int',		'constraint' => 5,		'unsigned' => TRUE,	'null' => TRUE),
+				'weblog_notify'				=> array('name' => 'channel_notify',				'type' => 'char',		'constraint' => 1,		'null' => FALSE,	'default' => 'n'),
+				'weblog_require_membership'	=> array('name' => 'channel_require_membership',	'type' => 'char',		'constraint' => 1,		'null' => FALSE,	'default' => 'y'),
+				'weblog_html_formatting'	=> array('name' => 'channel_html_formatting', 		'type' => 'char',		'constraint' => 4,		'null' => FALSE,	'default' => 'all'),
+				'weblog_allow_img_urls'		=> array('name' => 'channel_allow_img_urls',		'type' => 'char',		'constraint' => 1,		'null' => FALSE,	'default' => 'y'),
+				'weblog_auto_link_urls'		=> array('name' => 'channel_auto_link_urls',		'type' => 'char',		'constraint' => 1,		'null' => FALSE,	'default' => 'y'),
+				'weblog_notify_emails'		=> array('name' => 'channel_notify_emails',			'type' => 'varchar',	'constraint' => 255,	'null' => TRUE)
 			)
 		);
 
@@ -1932,13 +1771,7 @@ BSH;
 		ee()->smartforge->modify_column(
 			'weblog_titles',
 			array(
-				'weblog_id' => array(
-					'name'			=> 'channel_id',
-					'type'			=> 'int',
-					'constraint'	=> 4,
-					'unsigned'		=> TRUE,
-					'null'			=> FALSE
-				)
+				'weblog_id'	=> array('name' => 'channel_id',	'type' => 'int',	'constraint' => 4,	'unsigned' => TRUE,	'null' => FALSE)
 			)
 		);
 
@@ -1947,39 +1780,15 @@ BSH;
 		ee()->smartforge->modify_column(
 			'entry_versioning',
 			array(
-				'weblog_id' => array(
-					'name'			=> 'channel_id',
-					'type'			=> 'int',
-					'constraint'	=> 4,
-					'unsigned'		=> TRUE,
-					'null'			=> FALSE
-				)
+				'weblog_id'	=> array('name' => 'channel_id',	'type' => 'int',	'constraint' => 4,	'unsigned' => TRUE,	'null' => FALSE)
 			)
 		);
 
 		ee()->smartforge->modify_column(
 			'weblog_fields',
 			array(
-				'field_pre_blog_id' => array(
-					'name'			=> 'field_pre_channel_id',
-					'type'			=> 'int',
-					'constraint'	=> 6,
-					'unsigned'		=> TRUE,
-					'null'			=> TRUE
-				)
-			)
-		);
-
-		ee()->smartforge->modify_column(
-			'weblog_fields',
-			array(
-				'field_related_to' => array(
-					'name'			=> 'field_related_to',
-					'type'			=> 'varchar',
-					'constraint'	=> 12,
-					'null'			=> FALSE,
-					'default'		=> 'channel'
-				)
+				'field_pre_blog_id'	=> array('name' => 'field_pre_channel_id',	'type' => 'int',		'constraint' => 6,	'unsigned' => TRUE,	'null' => TRUE),
+				'field_related_to'	=> array('name' => 'field_related_to',		'type' => 'varchar',	'constraint' => 12,	'null' => FALSE,	'default' => 'channel')
 			)
 		);
 
@@ -1992,13 +1801,7 @@ BSH;
 		ee()->smartforge->modify_column(
 			'weblog_data',
 			array(
-				'weblog_id' => array(
-					'name'			=> 'channel_id',
-					'type'			=> 'int',
-					'constraint'	=> 4,
-					'unsigned'		=> TRUE,
-					'null'			=> FALSE
-				)
+				'weblog_id'	=> array('name' => 'channel_id',	'type' => 'int',	'constraint'	=> 4,	'unsigned' => TRUE,	'null' => FALSE)
 			)
 		);
 
