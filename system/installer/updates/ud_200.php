@@ -875,27 +875,10 @@ BSH;
 		// Add exp_snippets table
 		ee()->dbforge->add_field(
 			array(
-				'snippet_id' => array(
-					'type'				=> 'int',
-					'constraint'		=> 10,
-					'unsigned'			=> TRUE,
-					'null'				=> FALSE,
-					'auto_increment'	=> TRUE
-				),
-				'site_id' => array(
-					'type'				=> 'int',
-					'constraint'		=> 4,
-					'null'				=> FALSE
-				),
-				'snippet_name' => array(
-					'type'				=> 'varchar',
-					'constraint'		=> 75,
-					'null'				=> FALSE
-				),
-				'snippet_contents' => array(
-					'type'				=> 'text',
-					'null'				=> TRUE
-				)
+				'snippet_id'		=> array('type' => 'int',		'constraint' => 10,	'unsigned' => TRUE,	'null' => FALSE,	'auto_increment' => TRUE),
+				'site_id'			=> array('type' => 'int',		'constraint' => 4,	'null' => FALSE ),
+				'snippet_name'		=> array('type' => 'varchar',	'constraint' => 75,	'null' => FALSE ),
+				'snippet_contents'	=> array('type' => 'text',		'null' => TRUE)
 			)
 		);
 		
@@ -907,34 +890,11 @@ BSH;
 		// Add exp_accessories table
 		ee()->dbforge->add_field(
 			array(
-				'accessory_id' => array(
-					'type'				=> 'int',
-					'constraint'		=> 10,
-					'unsigned'			=> TRUE,
-					'null'				=> FALSE,
-					'auto_increment'	=> TRUE
-				),
-				'class' => array(
-					'type'				=> 'varchar',
-					'constraint'		=> 75,
-					'null'				=> FALSE,
-					'default'			=> '',
-				),
-				'member_groups' => array(
-					'type'				=> 'varchar',
-					'constraint'		=> 50,
-					'null'				=> FALSE,
-					'default'			=> 'all',
-				),
-				'controllers' => array(
-					'type'				=> 'text',
-					'null'				=> TRUE
-				),
-				'accessory_version' => array(
-					'type'				=> 'varchar',
-					'constraint'		=> 12,
-					'null'				=> FALSE,
-				),
+				'accessory_id'		=> array('type' => 'int',		'constraint' => 10,	'unsigned' => TRUE,	'null' => FALSE,	'auto_increment' => TRUE),
+				'class'				=> array('type' => 'varchar',	'constraint' => 75,	'null' => FALSE,	'default' => ''),
+				'member_groups'		=> array('type' => 'varchar',	'constraint' => 50,	'null' => FALSE,	'default' => 'all'),
+				'controllers'		=> array('type' => 'text',		'null' => TRUE ),
+				'accessory_version'	=> array('type' => 'varchar',	'constraint' => 12,	'null' => FALSE),
 			)
 		);
 		
@@ -947,37 +907,11 @@ BSH;
 		// Add layout_publish table
 		ee()->dbforge->add_field(
 			array(
-				'layout_id' => array(
-					'type'				=> 'int',
-					'constraint'		=> 10,
-					'unsigned'			=> TRUE,
-					'null'				=> FALSE,
-					'auto_increment'	=> TRUE
-				),
-				'site_id' => array(
-					'type'				=> 'int',
-					'constraint'		=> 4,
-					'unsigned'			=> TRUE,
-					'null'				=> FALSE,
-					'default'			=> 1,
-				),
-				'member_group' => array(
-					'type'				=> 'int',
-					'constraint'		=> 4,
-					'unsigned'			=> TRUE,
-					'null'				=> FALSE,
-					'default'			=> 0,
-				),
-				'channel_id' => array(
-					'type'				=> 'int',
-					'constraint'		=> 4,
-					'unsigned'			=> TRUE,
-					'null'				=> FALSE,
-					'default'			=> 0,
-				),
-				'field_layout' => array(
-					'type'				=> 'text'
-				)
+				'layout_id'		=> array('type' => 'int',	'constraint' => 10,	'unsigned' => TRUE,	'null' => FALSE,	'auto_increment' => TRUE),
+				'site_id'		=> array('type' => 'int',	'constraint' => 4,	'unsigned' => TRUE,	'null' => FALSE,	'default' => 1),
+				'member_group'	=> array('type' => 'int',	'constraint' => 4,	'unsigned' => TRUE,	'null' => FALSE,	'default' => 0),
+				'channel_id'	=> array('type' => 'int',	'constraint' => 4,	'unsigned' => TRUE,	'null' => FALSE,	'default' => 0),
+				'field_layout'	=> array('type' => 'text')
 			)
 		);
 		
@@ -1007,170 +941,35 @@ BSH;
 		// Add exp_channel_entries_autosave table
 		ee()->dbforge->add_field(
 			array(
-				'entry_id' => array(
-					'type'				=> 'int',
-					'constraint'		=> 10,
-					'unsigned'			=> TRUE,
-					'null'				=> FALSE,
-					'auto_increment'	=> TRUE
+				'entry_id'					=> array('type' => 'int',		'constraint' => 10,		'unsigned' => TRUE,	'null' => FALSE,	'auto_increment' => TRUE),
+				'original_entry_id'			=> array('type' => 'int',		'constraint' => 10,		'unsigned' => TRUE,	'null' => FALSE),
+				'site_id'					=> array('type' => 'int',		'constraint' => 4,		'unsigned' => TRUE,	'null' => FALSE,	'default' => 1),
+				'channel_id'				=> array('type' => 'int',		'constraint' => 4,		'unsigned' => TRUE,	'null' => FALSE),
+				'author_id'					=> array('type' => 'int',		'constraint' => 10,		'unsigned' => TRUE,	'null' => FALSE,	'default' => 0),
+				'forum_topic_id'			=> array('type' => 'int',		'constraint' => 10,		'unsigned' => TRUE,	'null' => TRUE),
+				'ip_address'				=> array('type' => 'varchar',	'constraint' => 16,		'null' => FALSE),
+				'title'						=> array('type' => 'varchar',	'constraint' => 100,	'null' => FALSE),
+				'url_title'					=> array('type' => 'varchar',	'constraint' => 75,		'null' => FALSE),
+				'status'					=> array('type' => 'varchar',	'constraint' => 50,		'null' => FALSE),
+				'versioning_enabled'		=> array('type' => 'char',		'constraint' => 1,		'null' => FALSE,	'default' => 'n'),
+				'view_count_one'			=> array('type' => 'int',		'constraint' => 10,		'unsigned' => TRUE,	'null' => FALSE,	'default' => 0),
+				'view_count_two'			=> array('type' => 'int',		'constraint' => 10,		'unsigned' => TRUE,	'null' => FALSE,	'default' => 0),
+				'view_count_three'			=> array('type' => 'int',		'constraint' => 10,		'unsigned' => TRUE,	'null' => FALSE,	'default' => 0),
+				'view_count_four'			=> array('type' => 'int',		'constraint' => 10,		'unsigned' => TRUE,	'null' => FALSE,	'default' => 0),
+				'allow_comments'			=> array('type' => 'varchar',	'constraint' => 1,		'null' => FALSE,	'default' => 'y'),
+				'sticky'					=> array('type' => 'varchar',	'constraint' => 1,		'null' => FALSE,	'default' => 'n'),
+				'entry_date'				=> array('type' => 'int',		'constraint' => 10,		'null' => FALSE),
+				'dst_enabled'				=> array('type' => 'varchar',	'constraint' => 1,		'null' => FALSE,	'default' => 'n',
 				),
-				'original_entry_id' => array(
-					'type'				=> 'int',
-					'constraint'		=> 10,
-					'unsigned'			=> TRUE,
-					'null'				=> FALSE,
-				),
-				'site_id' => array(
-					'type'				=> 'int',
-					'constraint'		=> 4,
-					'unsigned'			=> TRUE,
-					'null'				=> FALSE,
-					'default'			=> 1,
-				),
-				'channel_id' => array(
-					'type'				=> 'int',
-					'constraint'		=> 4,
-					'unsigned'			=> TRUE,
-					'null'				=> FALSE,
-				),
-				'author_id' => array(
-					'type'				=> 'int',
-					'constraint'		=> 10,
-					'unsigned'			=> TRUE,
-					'null'				=> FALSE,
-					'default'			=> 0,
-				),
-				'forum_topic_id' => array(
-					'type'				=> 'int',
-					'constraint'		=> 10,
-					'unsigned'			=> TRUE,
-					'null'				=> TRUE,
-				),
-				'ip_address' => array(
-					'type'				=> 'varchar',
-					'constraint'		=> 16,
-					'null'				=> FALSE,
-				),
-				'title' => array(
-					'type'				=> 'varchar',
-					'constraint'		=> 100,
-					'null'				=> FALSE,
-				),
-				'url_title' => array(
-					'type'				=> 'varchar',
-					'constraint'		=> 75,
-					'null'				=> FALSE,
-				),
-				'status' => array(
-					'type'				=> 'varchar',
-					'constraint'		=> 50,
-					'null'				=> FALSE,
-				),
-				'versioning_enabled' => array(
-					'type'				=> 'char',
-					'constraint'		=> 1,
-					'null'				=> FALSE,
-					'default'			=> 'n',
-				),
-				'view_count_one' => array(
-					'type'				=> 'int',
-					'constraint'		=> 10,
-					'unsigned'			=> TRUE,
-					'null'				=> FALSE,
-					'default'			=> 0,
-				),
-				'view_count_two' => array(
-					'type'				=> 'int',
-					'constraint'		=> 10,
-					'unsigned'			=> TRUE,
-					'null'				=> FALSE,
-					'default'			=> 0,
-				),
-				'view_count_three' => array(
-					'type'				=> 'int',
-					'constraint'		=> 10,
-					'unsigned'			=> TRUE,
-					'null'				=> FALSE,
-					'default'			=> 0,
-				),
-				'view_count_four' => array(
-					'type'				=> 'int',
-					'constraint'		=> 10,
-					'unsigned'			=> TRUE,
-					'null'				=> FALSE,
-					'default'			=> 0,
-				),
-				'allow_comments' => array(
-					'type'				=> 'varchar',
-					'constraint'		=> 1,
-					'null'				=> FALSE,
-					'default'			=> 'y',
-				),
-				'sticky' => array(
-					'type'				=> 'varchar',
-					'constraint'		=> 1,
-					'null'				=> FALSE,
-					'default'			=> 'n',
-				),
-				'entry_date' => array(
-					'type'				=> 'int',
-					'constraint'		=> 10,
-					'null'				=> FALSE,
-				),
-				'dst_enabled' => array(
-					'type'				=> 'varchar',
-					'constraint'		=> 1,
-					'null'				=> FALSE,
-					'default'			=> 'n',
-				),
-				'year' => array(
-					'type'				=> 'char',
-					'constraint'		=> 4,
-					'null'				=> FALSE,
-				),
-				'month' => array(
-					'type'				=> 'char',
-					'constraint'		=> 2,
-					'null'				=> FALSE,
-				),
-				'day' => array(
-					'type'				=> 'char',
-					'constraint'		=> 3,
-					'null'				=> FALSE,
-				),
-				'expiration_date' => array(
-					'type'				=> 'int',
-					'constraint'		=> 10,
-					'null'				=> FALSE,
-					'default'			=> 0,
-				),
-				'comment_expiration_date' => array(
-					'type'				=> 'int',
-					'constraint'		=> 10,
-					'null'				=> FALSE,
-					'default'			=> 0,
-				),
-				'edit_date' => array(
-					'type'				=> 'bigint',
-					'constraint'		=> 14,
-				),
-				'recent_comment_date' => array(
-					'type'				=> 'int',
-					'constraint'		=> 10,
-					'null'				=> TRUE,
-					'default'			=> TRUE,
-				),
-				'comment_total' => array(
-					'type'				=> 'int',
-					'constraint'		=> 4,
-					'unsigned'			=> TRUE,
-					'null'				=> FALSE,
-					'default'			=> 0,
-				),
-				'entry_data' => array(
-					'type'				=> 'text',
-					'null'				=> TRUE,
-				),
+				'year'						=> array('type' => 'char',		'constraint' => 4,		'null' => FALSE),
+				'month'						=> array('type' => 'char',		'constraint' => 2,		'null' => FALSE),
+				'day'						=> array('type' => 'char',		'constraint' => 3,		'null' => FALSE),
+				'expiration_date'			=> array('type' => 'int',		'constraint' => 10,		'null' => FALSE,	'default' => 0),
+				'comment_expiration_date'	=> array('type' => 'int',		'constraint' => 10,		'null' => FALSE,	'default' => 0),
+				'edit_date'					=> array('type' => 'bigint',	'constraint' => 14),
+				'recent_comment_date'		=> array('type' => 'int',		'constraint' => 10,		'null' => TRUE,		'default' => TRUE),
+				'comment_total'				=> array('type' => 'int',		'constraint' => 4,		'unsigned' => TRUE,	'null' => FALSE,	'default' => 0),
+				'entry_data'				=> array('type' => 'text',		'null' => TRUE),
 			)
 		);
 		
