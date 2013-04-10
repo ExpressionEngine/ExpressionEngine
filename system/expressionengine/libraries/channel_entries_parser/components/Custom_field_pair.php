@@ -68,21 +68,22 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
 				$offset = 0;
 				$field_name = $prefix.$field_name;
 				
-				while (($end = strpos($tagdata, LD.'/'.$field_name.RD, $offset)) !== FALSE)
+				while (($end = strpos($tagdata, LD.'/'.$field_name, $offset)) !== FALSE)
 				{
 					// This hurts soo much. Using custom fields as pair and single vars in the same
 					// channel tags could lead to something like this: {field}...{field}inner{/field}
 					// There's no efficient regex to match this case, so we'll find the last nested
 					// opening tag and re-cut the chunk.
 
-					if (preg_match("/".LD."{$field_name}((:\S+|\s).*?)?".RD."(.*?)".LD.'\/'."{$field_name}".RD."/s", $tagdata, $matches, 0, $offset))
+					if (preg_match("/".LD."{$field_name}((?::\S+)?)(\s.*?)?".RD."(.*?)".LD.'\/'."{$field_name}\\1".RD."/s", $tagdata, $matches, 0, $offset))
 					{
 						$chunk = $matches[0];
-						$params = $matches[1];
-						$inner = $matches[2];
+						$modifier = $matches[1];
+						$params = $matches[2];
+						$content = $matches[3];
 
 						// We might've sandwiched a single tag - no good, check again (:sigh:)
-						if ((strpos($chunk, LD.$field_name, 1) !== FALSE) && preg_match_all("/".LD."{$field_name}((:\S+|\s).*?)?".RD."/s", $chunk, $match))
+						if ((strpos($chunk, LD.$field_name, 1) !== FALSE) && preg_match_all("/".LD."{$field_name}{$modifier}(.*?)".RD."/s", $chunk, $match))
 						{
 							// Let's start at the end
 							$idx = count($match[0]) - 1;
@@ -91,23 +92,23 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
 							// Reassign the parameter
 							$params = $match[1][$idx];
 
-							// Cut the chunk at the last opening tag (PHP5 could do this with strrpos :-( )
-							while (strpos($chunk, $tag, 1) !== FALSE)
-							{
-								$chunk = substr($chunk, 1);
-								$chunk = strstr($chunk, LD.$field_name);
-								$inner = substr($chunk, strlen($tag), -strlen(LD.'/'.$field_name.RD));
-							}
+							// Cut the chunk at the last opening tag
+							$offset = strrpos($chunk, $tag);
+							$chunk = substr($chunk, $offset);
+							$chunk = strstr($chunk, LD.$field_name);
+							$content = substr($chunk, strlen($tag), -strlen(LD.'/'.$field_name.RD));
 						}
 						
-						$chunk_array = array($inner, ee()->functions->assign_parameters($params), $chunk);
-						
-						// Grab modifier if it exists and add it to the chunk array
-						if (substr($params, 0, 1) == ':')
-						{
-							$chunk_array[] = str_replace(':', '', $params);
-						}
-						
+						$params = ee()->functions->assign_parameters($params);
+						$params = $params ? $params : array();
+
+						$chunk_array = array(
+							ltrim($modifier, ':'),
+							$content,
+							$params,
+							$chunk
+						);
+
 						$pfield_chunk[$site_id][$field_name][] = $chunk_array;
 					}
 					
@@ -165,22 +166,24 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
 
 				foreach($chunks as $chk_data)
 				{
+					list($modifier, $content, $params, $chunk) = $chk_data;
+
 					$tpl_chunk = '';
 					// Set up parse function name based on whether or not
 					// we have a modifier
-					$parse_fnc = (isset($chk_data[3])) ? 'replace_'.$chk_data[3] : 'replace_tag';
+					$parse_fnc = ($modifier) ? 'replace_'.$modifier : 'replace_tag';
 
 					if (method_exists($obj, $parse_fnc))
 					{
-						$tpl_chunk = $obj->$parse_fnc($pre_processed, $chk_data[1], $chk_data[0]);
+						$tpl_chunk = $obj->$parse_fnc($pre_processed, $params, $chunk);
 					}
 					// Go to catchall and include modifier
-					elseif (method_exists($obj, 'replace_tag_catchall') AND isset($chk_data[3]))
+					elseif (method_exists($obj, 'replace_tag_catchall') AND $modifier !== '')
 					{
-						$tpl_chunk = $obj->replace_tag_catchall($pre_processed, $chk_data[1], $chk_data[0], $chk_data[3]);
+						$tpl_chunk = $obj->replace_tag_catchall($pre_processed, $params, $chunk, $modifier);
 					}
 
-					$tagdata = str_replace($chk_data[2], $tpl_chunk, $tagdata);
+					$tagdata = str_replace($chunk, $tpl_chunk, $tagdata);
 				}
 
 				ee()->load->remove_package_path($_ft_path);
