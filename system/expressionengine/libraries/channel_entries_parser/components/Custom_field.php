@@ -68,10 +68,21 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component {
 
 		$site_id = $data['site_id'];
 		$cfields = $obj->channel()->cfields[$site_id];
+		$rfields = $obj->channel()->rfields[$site_id];
+		$cfields = array_diff_key($cfields, $rfields);
 
 		$unprefixed_tag	= preg_replace('/^'.$prefix.'/', '', $tag);
 		$field_name		= substr($unprefixed_tag.' ', 0, strpos($unprefixed_tag.' ', ' '));
 		$param_string	= substr($unprefixed_tag.' ', strlen($field_name));
+
+		$modifier = '';
+		$modifier_loc = strpos($field_name, ':');
+
+		if ($modifier_loc !== FALSE)
+		{
+			$modifier = substr($field_name, $modifier_loc + 1);
+			$field_name = substr($field_name, 0, $modifier_loc);
+		}
 
 		if (isset($cfields[$field_name]))
 		{
@@ -81,7 +92,7 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component {
 			if (isset($data['field_id_'.$field_id]) && $data['field_id_'.$field_id] != '')
 			{
 				$params = array();
-				$parse_fnc = 'replace_tag';
+				$parse_fnc = ($modifier) ? 'replace_'.$modifier : 'replace_tag';
 
 				if ($param_string)
 				{

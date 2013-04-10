@@ -296,7 +296,7 @@ class EE_Channel_preparser {
    
 		$filtered = array();
 		$tagdata  = $this->_tagdata;
-		$regex_prefix = '/^'.preg_quote($this->_prefix, '/').'[^:]+( |$)/';
+		$regex_prefix = '/^'.preg_quote($this->_prefix, '/').'.*+( |$)/';
 
 		foreach (preg_grep($regex_prefix, array_keys($data)) as $key)
 		{
