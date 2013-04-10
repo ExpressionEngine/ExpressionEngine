@@ -175,12 +175,12 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
 
 					if (method_exists($obj, $parse_fnc))
 					{
-						$tpl_chunk = $obj->$parse_fnc($pre_processed, $params, $chunk);
+						$tpl_chunk = $obj->$parse_fnc($pre_processed, $params, $content);
 					}
 					// Go to catchall and include modifier
 					elseif (method_exists($obj, 'replace_tag_catchall') AND $modifier !== '')
 					{
-						$tpl_chunk = $obj->replace_tag_catchall($pre_processed, $params, $chunk, $modifier);
+						$tpl_chunk = $obj->replace_tag_catchall($pre_processed, $params, $content, $modifier);
 					}
 
 					$tagdata = str_replace($chunk, $tpl_chunk, $tagdata);
