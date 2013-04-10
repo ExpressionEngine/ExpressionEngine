@@ -11,8 +11,7 @@
  * @filesource
  */
 
-// ------------------------------------------------------------------------
-
+// ------------------------------------------------------------------------ 
 /**
  * ExpressionEngine Template Model
  *
@@ -202,6 +201,7 @@ class Template_model extends CI_Model {
 		$entities = array();
 		foreach ($result->result_array() as $row)
 		{	
+			$row['save_template_file'] = ($row['save_template_file'] == 'y' ? TRUE : FALSE);
 			$entity = new Template_Entity($row);
 			if ($load_groups)
 			{
@@ -363,7 +363,7 @@ class Template_model extends CI_Model {
 			'site_id' => $entity->site_id,
 			'group_id' => $entity->group_id,
 			'template_name' => $entity->template_name,
-			'save_template_file' => $entity->save_template_file,
+			'save_template_file' => ($entity->save_template_file ? 'y' : 'n'),
 			'template_type' => $entity->template_type,
 			'template_data' => $entity->template_data,
 			'template_notes' => $entity->template_notes,
