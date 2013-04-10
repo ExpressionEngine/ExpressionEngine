@@ -75,14 +75,14 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
 					// There's no efficient regex to match this case, so we'll find the last nested
 					// opening tag and re-cut the chunk.
 
-					if (preg_match("/".LD."{$field_name}(.*?)".RD."(.*?)".LD.'\/'."{$field_name}(.*?)".RD."/s", $tagdata, $matches, 0, $offset))
+					if (preg_match("/".LD."{$field_name}((:\S+|\s).*?)?".RD."(.*?)".LD.'\/'."{$field_name}".RD."/s", $tagdata, $matches, 0, $offset))
 					{
 						$chunk = $matches[0];
 						$params = $matches[1];
 						$inner = $matches[2];
 
 						// We might've sandwiched a single tag - no good, check again (:sigh:)
-						if ((strpos($chunk, LD.$field_name, 1) !== FALSE) && preg_match_all("/".LD."{$field_name}(.*?)".RD."/s", $chunk, $match))
+						if ((strpos($chunk, LD.$field_name, 1) !== FALSE) && preg_match_all("/".LD."{$field_name}((:\S+|\s).*?)?".RD."/s", $chunk, $match))
 						{
 							// Let's start at the end
 							$idx = count($match[0]) - 1;
