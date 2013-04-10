@@ -934,7 +934,7 @@ class Relationship_parser {
 		$result = $parser->parse($channel, $data, $config);
 
 		// kill prefixed leftovers
-		$result = preg_replace('/{'.$prefix.'[^}]*}(.+?){\/'.$prefix.'[^}]*}/is', '', $result);
+	//	$result = preg_replace('/{'.$prefix.'[^}]*}(.+?){\/'.$prefix.'[^}]*}/is', '', $result);
 		$result = preg_replace('/{\/?'.$prefix.'[^}]*}/i', '', $result);
 
 		// Lastly, handle the backspace parameter
