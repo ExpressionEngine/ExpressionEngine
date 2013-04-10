@@ -131,7 +131,6 @@ class Relationship_model extends CI_Model {
 
 		$db->where_in($relative_parent, $entry_ids);
 
-		// @todo cache unique ids
 		return $db->get()->result_array();
 	}
 
