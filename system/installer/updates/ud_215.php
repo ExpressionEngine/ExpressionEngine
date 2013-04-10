@@ -580,13 +580,13 @@ class Updater {
 	private function _do_add_indexes()
 	{
 		// We do a ton of template lookups based off the template name.  How about indexing on it?
-		ee()->smartforge->create_index('templates', 'template_name');
+		ee()->smartforge->add_key('templates', 'template_name');
 
 		// Same with the channel_name in exp_channels
-		ee()->smartforge->create_index('channels', 'channel_name');
+		ee()->smartforge->add_key('channels', 'channel_name');
 
 		// and the same for field_type on exp_channel_fields
-		ee()->smartforge->create_index('channel_fields', 'field_type');
+		ee()->smartforge->add_key('channel_fields', 'field_type');
 	}
 
 	// --------------------------------------------------------------------	

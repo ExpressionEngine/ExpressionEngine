@@ -39,7 +39,7 @@ class Updater {
 				'type'			=> 'char',
 				'constraint'	=> 1,
 				'null'			=> FALSE,
-				'default'		=> 'y'
+				'default'		=> 'n'
 			)
 		);
 
