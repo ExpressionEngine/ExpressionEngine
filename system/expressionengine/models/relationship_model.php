@@ -50,7 +50,6 @@ class Relationship_model extends CI_Model {
 		$entry_ids = array_unique($entry_ids);
 		$result_ids = $this->_run_node_query($node, $entry_ids);
 
-		// @todo check node for categories
 		return $result_ids;
 	}
 
@@ -116,8 +115,11 @@ class Relationship_model extends CI_Model {
 				);
 			}
 
+			$db->order_by('L0.order', 'asc');
+
 			if ($level > 0)
 			{
+				$db->order_by('L'.$level.'.order', 'asc');
 				$db->select('L' . $level . '.field_id as L' . $level . '_field');
 				$db->select('L' . $level . '.parent_id AS L' . $level . '_parent');
 				$db->select('L' . $level . '.child_id as L' . $level . '_id');
@@ -131,7 +133,6 @@ class Relationship_model extends CI_Model {
 
 		$db->where_in($relative_parent, $entry_ids);
 
-		// @todo cache unique ids
 		return $db->get()->result_array();
 	}
 

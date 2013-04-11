@@ -447,7 +447,7 @@ class Safecracker_lib
 			
 			//options:field_name tag pair parsing
 			else if (preg_match('/^options:(.*)/', $tag_name, $match) && ($field_type_match = $this->get_field_type($match[1])) && 
-						(in_array($field_type_match, $this->option_fields) OR $field_type_match == 'rel'))
+						(in_array($field_type_match, $this->option_fields) OR $field_type_match == 'relationship'))
 			{
 				$checkbox_fields[] = $match[1];
 				
@@ -553,7 +553,7 @@ class Safecracker_lib
 				}
 				
 				else if (preg_match('/^selected_option:(.*?)(:label)?$/', $key, $match) && ($field_type_match = $this->get_field_type($match[1])) && 
-							(in_array($field_type_match, $this->option_fields) OR $field_type_match == 'rel'))
+							(in_array($field_type_match, $this->option_fields) OR $field_type_match == 'relationship'))
 				{
 					$options = (isset($custom_field_variables[$match[1]]['options'])) ? $custom_field_variables[$match[1]]['options'] : array();
 					
@@ -656,7 +656,7 @@ class Safecracker_lib
 						}
 					}
 					elseif ($tag_name == 'options:'.$field['field_name'] && ($field_type_match = $this->get_field_type($field['field_name'])) && 
-							(in_array($field_type_match, $this->option_fields) OR $field_type_match == 'rel'))
+							(in_array($field_type_match, $this->option_fields) OR $field_type_match == 'relationship'))
 					{
 						$this->parse_variables['options:'.$field['field_name']] = (isset($custom_field_variables[$field['field_name']]['options'])) ? $custom_field_variables[$field['field_name']]['options'] : '';
 					}
@@ -2590,54 +2590,152 @@ class Safecracker_lib
 			}
 		}
 		
-		else if ($field['field_type'] == 'rel')
+		else if ($field['field_type'] == 'relationship')
 		{
-			$rel_child_id = '';
-			
-			if ($this->entry($field_name))
+			$order = array();
+			$entries = array();
+			$selected = array();
+
+			if ($this->entry('entry_id'))
 			{
 				if ($this->form_error)
 				{
-					$rel_child_id = $this->entry($field_name);
+					$related = $this->entry($field_name);
 				}
 				else
 				{
-					ee()->db->select('rel_child_id');
-					ee()->db->where('rel_id', $this->entry($field_name));
-					ee()->db->where('rel_parent_id', $this->entry('entry_id'));
-					
-					$query = ee()->db->get('relationships');
-					
-					$rel_child_id = $query->row('rel_child_id');
+					$related = ee()->db
+						->select('child_id, order')
+						->where('parent_id', $this->entry('entry_id'))
+						->where('field_id', $this->get_field_id($field_name))
+						->get('relationships')
+						->result();
+
+					foreach ($related as $row)
+					{
+						$selected[] = $row->child_id;
+						$order[$row->child_id] = $row->order;
+					}
 				}
 			}
+
+			$settings = $this->get_field_data($field_name);
+
+
+			$limit_channels = $settings['channels'];
+			$limit_categories = $settings['categories'];
+			$limit_statuses = $settings['statuses'];
+			$limit_authors = $settings['authors'];
+			$limit = $settings['limit'];
 			
-			$orderby = $this->get_field_data($field_name, 'field_related_orderby');
-			
-			if ($orderby == 'date')
+			$show_expired = (bool) $settings['expired'];
+			$show_future = (bool) $settings['future'];
+
+			ee()->db
+				->select('channel_titles.entry_id, channel_titles.title')
+				->order_by($settings['order_field'], $settings['order_dir']);
+
+			if ($limit)
 			{
-				$orderby = 'entry_'.$orderby;						
+				ee()->db->limit($limit);
 			}
 
-			ee()->db->select('entry_id, title');
-			ee()->db->where('channel_id', $this->get_field_data($field_name, 'field_related_id'));
-			ee()->db->order_by($orderby, $this->get_field_data($field_name, 'field_related_sort'));
-
-			if ($this->get_field_data($field_name, 'field_related_max'))
+			if (count($limit_channels))
 			{
-				ee()->db->limit($this->get_field_data($field_name, 'field_related_max'));
+				ee()->db->where_in('channel_titles.channel_id', $limit_channels);
 			}
 
-			$query = ee()->db->get('channel_titles');
-			
-			foreach ($query->result() as $row)
+			if (count($limit_categories))
 			{
-				$options[] = array(
-					'option_value' => $row->entry_id,
-					'option_name' => $row->title,
-					'selected' => ($row->entry_id == $rel_child_id) ? ' selected="selected"' : '',
-					'checked' => ($row->entry_id == $rel_child_id) ? ' checked="checked"' : '',
+				ee()->db->from('category_posts');
+				ee()->db->where('exp_channel_titles.entry_id = exp_category_posts.entry_id', NULL, FALSE); // todo ick
+				ee()->db->where_in('category_posts.cat_id', $limit_categories);
+			}
+
+			if (count($limit_statuses))
+			{
+				$limit_statuses = str_replace(
+					array('Open', 'Closed'),
+					array('open', 'closed'),
+					$limit_statuses
 				);
+
+				ee()->db->where_in('channel_titles.status', $limit_statuses);
+			}
+
+			if (count($limit_authors))
+			{
+				// @todo TODO ick
+				// @todo php 5.3 only! argh
+				$groups = preg_filter('/^g_/', '', $limit_authors);
+				$members = preg_filter('/^m_/', '', $limit_authors);
+
+				$fn = 'where_in';
+
+				if (count($members))
+				{
+					ee()->db->where_in('channel_titles.author_id', $members);	
+					$fn = 'or_where_in';
+				}
+
+				if (count($groups))
+				{
+					ee()->db->join('members', 'members.member_id = channel_titles.author_id');
+					ee()->db->$fn('members.group_id', $groups);
+				}
+			}
+
+			if ($this->entry('entry_id'))
+			{
+				ee()->db->where('channel_titles.entry_id !=', $this->entry('entry_id'));
+			}
+
+			if (count($selected))
+			{
+				ee()->db->or_where_in('channel_titles.entry_id', $selected);
+			}
+
+			// Limit times
+			$now = ee()->localize->now;
+
+			if ( ! $show_future)
+			{
+				ee()->db->where('channel_titles.entry_date < ', $now);
+			}
+
+			if ( ! $show_expired)
+			{
+				$t = ee()->db->dbprefix('channel_titles');
+				ee()->db->where("(${t}.expiration_date = 0 OR ${t}.expiration_date > ${now})", NULL, FALSE);
+			}
+
+			$entries = ee()->db->get('channel_titles')->result_array();
+
+			$options = array();
+
+			if ($settings['allow_multiple'] == 0)
+			{
+				foreach ($entries as $entry)
+				{
+					$options[$entry['entry_id']] = $entry['title'];
+				}
+			}
+			else
+			{
+				$options = array();
+				foreach ($entries as $entry)
+				{
+					$checked = in_array($entry['entry_id'], $selected);
+					$sort = $checked ? $order[$entry['entry_id']] : 0;
+
+					$options[] = array(
+						'option_value' => $entry['entry_id'],
+						'option_name' => $entry['title'],
+						'option_order' => $sort,
+						'selected' => $checked ? ' selected="selected"' : '',
+						'checked' => $checked ? ' checked="checked"' : '',
+					);
+				}
 			}
 		}
 		

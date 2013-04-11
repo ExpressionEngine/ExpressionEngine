@@ -277,7 +277,6 @@ class Relationship_tree_builder {
 	 * @param	array	Entry ids
 	 * @return	object	Root node of the final tree
 	 */
-
 	protected function _build_tree(array $entry_ids)
 	{
 		// extract the relationship tags straight from the channel
@@ -457,12 +456,14 @@ class Relationship_tree_builder {
 
 				foreach ($possible_siblings as $parent => $children)
 				{
-					// find all sibling permutations by rotating the array
+					$children = array_unique($children);
+
+					// find all sibling permutations
 					for ($i = 0; $i < count($children); $i++)
 					{
-						$key = array_shift($children);
-						$node->add_entry_id($key, $children);
-						array_push($children, $key);
+						$no_sibs = $children;
+						list($key) = array_splice($no_sibs, $i, 1);
+						$node->add_entry_id($key, $no_sibs);
 					}
 				}
 
@@ -933,7 +934,7 @@ class Relationship_parser {
 		$result = $parser->parse($channel, $data, $config);
 
 		// kill prefixed leftovers
-		$result = preg_replace('/{'.$prefix.'[^}]*}(.+?){\/'.$prefix.'[^}]*}/is', '', $result);
+	//	$result = preg_replace('/{'.$prefix.'[^}]*}(.+?){\/'.$prefix.'[^}]*}/is', '', $result);
 		$result = preg_replace('/{\/?'.$prefix.'[^}]*}/i', '', $result);
 
 		// Lastly, handle the backspace parameter

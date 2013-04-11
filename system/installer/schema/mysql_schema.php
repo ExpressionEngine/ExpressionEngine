@@ -729,15 +729,15 @@ class EE_Schema {
 		// Relationships table
 		
 		$Q[] = "CREATE TABLE exp_relationships (
-			 rel_id int(6) unsigned NOT NULL auto_increment,
-			 rel_parent_id int(10) NOT NULL default 0,
-			 rel_child_id int(10) NOT NULL default 0,
-			 rel_type varchar(12) NOT NULL,
-			 rel_data mediumtext NOT NULL,
-			 reverse_rel_data mediumtext NOT NULL,
-			 PRIMARY KEY `rel_id` (`rel_id`),
-			 KEY `rel_parent_id` (`rel_parent_id`),
-			 KEY `rel_child_id` (`rel_child_id`)
+			 relationship_id int(6) unsigned NOT NULL auto_increment,
+			 parent_id int(10) NOT NULL default 0,
+			 child_id int(10) NOT NULL default 0,
+			 field_id int(10) NOT NULL default 0,
+			 order int(10) NOT NULL default 0,
+			 PRIMARY KEY `relationship_id` (`relationship_id`),
+			 KEY `parent_id` (`parent_id`),
+			 KEY `child_id` (`child_id`),
+			 KEY `field_id` (`field_id`)
 			)";
 		
 		

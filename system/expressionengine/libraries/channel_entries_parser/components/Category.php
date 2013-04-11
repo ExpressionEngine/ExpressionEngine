@@ -97,9 +97,6 @@ class EE_Channel_category_parser implements EE_Channel_parser_component {
 			{
 				$cats = '';
 				$i = 0;
-				
-				//  We do the pulling out of categories before the "prepping" of conditionals
-				//  So, we have to do it here again too.  How annoying...
 
 				$not_these		  = array();
 				$these			  = array();

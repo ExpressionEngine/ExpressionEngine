@@ -24,14 +24,6 @@
  */
 class Relationships_ft_cp {
 
-	public function __get($key)
-	{
-		$EE =& get_instance();
-		return $EE->$key;
-	}
-
-	// --------------------------------------------------------------------
-
 	/**
 	 * Create a settings form object
 	 *
@@ -55,9 +47,9 @@ class Relationships_ft_cp {
 	 */	
 	public function all_channels()
 	{
-		$from_all_sites = ($this->config->item('multiple_sites_enabled') == 'y');
+		$from_all_sites = (ee()->config->item('multiple_sites_enabled') == 'y');
 
-		$this->db
+		ee()->db
 			->from('channels c, sites s')
 			->select('channel_id, channel_title, site_label')
 			->where('c.site_id = s.site_id', NULL, FALSE)
@@ -65,10 +57,10 @@ class Relationships_ft_cp {
 
 		if ( ! $from_all_sites)
 		{
-			$this->db->where('c.site_id', '1');
+			ee()->db->where('c.site_id', '1');
 		}
 
-		$cs = $this->db->get()->result_array();
+		$cs = ee()->db->get()->result_array();
 
 		$channels = $this->_form_any();
 
@@ -89,9 +81,9 @@ class Relationships_ft_cp {
 	 */	
 	public function all_categories()
 	{
-		$from_all_sites = ($this->config->item('multiple_sites_enabled') == 'y');
+		$from_all_sites = (ee()->config->item('multiple_sites_enabled') == 'y');
 
-		$this->db
+		ee()->db
 			->select('cat_id, cat_name, parent_id, g.group_id')
 			->from('category_groups g, categories c')
 			->where('g.group_id', 'c.group_id', FALSE)
@@ -99,15 +91,15 @@ class Relationships_ft_cp {
 
 		if ( ! $from_all_sites)
 		{
-			$this->db->where('c.site_id', '1');
+			ee()->db->where('c.site_id', '1');
 		}
 
-		$cats = $this->db->get()->result_array();
+		$cats = ee()->db->get()->result_array();
 
 		$categories = $this->_form_any();
 
-		$this->load->library('datastructures/tree');
-		$cat_tree = $this->tree->from_list($cats, array('id' => 'cat_id'));
+		ee()->load->library('datastructures/tree');
+		$cat_tree = ee()->tree->from_list($cats, array('id' => 'cat_id'));
 
 		if ( ! $cat_tree->is_leaf())
 		{
@@ -135,17 +127,17 @@ class Relationships_ft_cp {
 	 */	
 	public function all_authors()
 	{
-		$from_all_sites = ($this->config->item('multiple_sites_enabled') == 'y');
+		$from_all_sites = (ee()->config->item('multiple_sites_enabled') == 'y');
 
-		$prefix = $this->db->dbprefix;
+		$prefix = ee()->db->dbprefix;
 
 		if ( ! $from_all_sites)
 		{
-			$this->db->where('site_id', '1');
+			ee()->db->where('site_id', '1');
 		}
 
 		// First the author groups
-		$groups = $this->db
+		$groups = ee()->db
 			->select('group_id, group_title')
 			->where('include_in_authorlist', 'y')
 			->order_by('group_title ASC')
@@ -159,7 +151,7 @@ class Relationships_ft_cp {
 		}
 
 		// Then all authors who are in those groups or who have author access
-		$members = $this->db
+		$members = ee()->db
 			->select('member_id, group_id, username, screen_name')
 			->where('in_authorlist', 'y')
 			->or_where_in('group_id', $group_ids)
@@ -201,14 +193,14 @@ class Relationships_ft_cp {
 	 */	
 	public function all_statuses()
 	{
-		$from_all_sites = ($this->config->item('multiple_sites_enabled') == 'y');
+		$from_all_sites = (ee()->config->item('multiple_sites_enabled') == 'y');
 
 		if ( ! $from_all_sites)
 		{
-			$this->db->where('site_id', '1');
+			ee()->db->where('site_id', '1');
 		}
 
-		$stats = $this->db
+		$stats = ee()->db
 			->select('status_id, status')
 			->order_by('status_id') // puts open before closed
 			->get('statuses')->result();
