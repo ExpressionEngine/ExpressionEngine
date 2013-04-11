@@ -186,8 +186,8 @@ class Relationship_tree_builder {
 	 */
 	public function build_tree(array $entry_ids)
 	{
-		// first, we need a tree
-		$root = $this->_build_tree($entry_ids);
+		// first, we need a tag tree
+		$root = $this->_build_tree();
 
 		if ($root === NULL)
 		{
@@ -277,7 +277,7 @@ class Relationship_tree_builder {
 	 * @param	array	Entry ids
 	 * @return	object	Root node of the final tree
 	 */
-	protected function _build_tree(array $entry_ids)
+	protected function _build_tree()
 	{
 		// extract the relationship tags straight from the channel
 		// tagdata so that we can process it all in one fell swoop.
@@ -657,17 +657,17 @@ class Relationship_parser {
 	 */
 	public function parse($entry_id, $tagdata, $channel)
 	{
+		$node = $this->_tree;
+
 		// If we have no relationships, then we can quietly bail out.
 		if (empty($this->_entries))
 		{
-			return $tagdata;
+			return $this->clear_node_tagdata($node, $tagdata);
 		}
 
 		ee()->load->library('api');
 		ee()->api->instantiate('channel_fields');
 		ee()->session->set_cache('relationships', 'channel', $channel);
-
-		$node = $this->_tree;
 
 		// push the root node down right away
 		if ( ! $node->is_root())
@@ -697,10 +697,10 @@ class Relationship_parser {
 	 * @return 	string	The parsed tagdata.
 	 */
 	public function parse_node($node, $parent_id, $tagdata)
-	{		
+	{
 		if ( ! isset($node->entry_ids[$parent_id]))
 		{
-			return $tagdata;
+			return $this->clear_node_tagdata($node, $tagdata);
 		}
 
 		$tag = preg_quote($node->name(), '/');
@@ -775,6 +775,26 @@ class Relationship_parser {
 		}
 
 		return $tagdata;
+	}
+
+ 	// --------------------------------------------------------------------
+	
+	/**
+	 * Deletes the node tags from the given template.
+	 *
+	 * Used for empty nodes so that we don't end up with unparsed tags
+	 * all over the place.
+	 *
+	 * @param	object	The tree node of this tag pair
+	 * @param	string	The tagdata to delete the tags from.
+	 * @return 	string	The cleaned tagdata
+	 */
+	public function clear_node_tagdata($node, $tagdata)
+	{
+		$tag = preg_quote($node->name(), '/');
+		
+		$tagdata = preg_replace('/'.$node->open_tag.'(.+?){\/'.$tag.'}/is', '', $tagdata);
+		return str_replace($node->open_tag, '', $tagdata);
 	}
 
  	// --------------------------------------------------------------------
@@ -932,10 +952,6 @@ class Relationship_parser {
 		);
 
 		$result = $parser->parse($channel, $data, $config);
-
-		// kill prefixed leftovers
-	//	$result = preg_replace('/{'.$prefix.'[^}]*}(.+?){\/'.$prefix.'[^}]*}/is', '', $result);
-		$result = preg_replace('/{\/?'.$prefix.'[^}]*}/i', '', $result);
 
 		// Lastly, handle the backspace parameter
 		$backspace = $node->param('backspace');

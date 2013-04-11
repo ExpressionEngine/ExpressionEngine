@@ -152,6 +152,8 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component {
 
 				$tagdata = str_replace(LD.$tag.RD, $entry, $tagdata);
 			}
+
+			$tagdata = str_replace(LD.$tag.RD, '', $tagdata);
 		}
 
 		return $tagdata;
