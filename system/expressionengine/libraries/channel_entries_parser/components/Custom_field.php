@@ -71,6 +71,11 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component {
 		$rfields = $obj->channel()->rfields[$site_id];
 		$cfields = array_diff_key($cfields, $rfields);
 
+		if ( ! count($cfields))
+		{
+			return $tagdata;
+		}
+
 		$unprefixed_tag	= preg_replace('/^'.$prefix.'/', '', $tag);
 		$field_name		= substr($unprefixed_tag.' ', 0, strpos($unprefixed_tag.' ', ' '));
 		$param_string	= substr($unprefixed_tag.' ', strlen($field_name));
