@@ -3206,11 +3206,11 @@ class Safecracker_lib
 	 */
 	public function api_safe_rel_ids($rel_ids)
 	{
-		ee()->db->select('rel_id, rel_parent_id, rel_child_id');
-		ee()->db->where_in('rel_id', $rel_ids);
-		$query = ee()->db->get('relationships');		
+		ee()->db->select('relationship_id, parent_id, child_id');
+		ee()->db->where_in('relationship_id', $rel_ids);
+		$query = ee()->db->get('relationships');
 
-		return $query;		
+		return $query;
 	}
 }
 

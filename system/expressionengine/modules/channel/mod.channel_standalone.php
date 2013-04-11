@@ -1879,13 +1879,13 @@ class Channel_standalone extends Channel {
 					$relentry_id = '';
 					if ( ! isset($_POST['field_id_'.$row['field_id']]))
 					{
-						ee()->db->select('rel_child_id');
-						ee()->db->where('rel_id', $field_data);
+						ee()->db->select('child_id');
+						ee()->db->where('relationship_id', $field_data);
 						$relentry = ee()->db->get('relationships');
 
 						if ($relentry->num_rows() == 1)
 						{
-							$relentry_id = $relentry->row('rel_child_id') ;
+							$relentry_id = $relentry->row('child_id') ;
 						}
 					}
 					else

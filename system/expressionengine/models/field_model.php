@@ -238,7 +238,7 @@ class Field_model extends CI_Model {
 			//  Get rid of any stray relationship data
 			if (count($rel_ids) > 0)
 			{
-				$this->db->where_in('rel_id', $rel_ids);
+				$this->db->where_in('relationship_id', $rel_ids);
 				$this->db->delete('relationships'); 
 			}
 		}
