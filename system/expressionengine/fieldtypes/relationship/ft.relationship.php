@@ -168,28 +168,43 @@ class Relationship_ft extends EE_Fieldtype {
 
 		if ($entry_id)
 		{
-			$related = ee()->db
+			ee()->db
 				->select('child_id, order')
+				->from($this->_table)
 				->where('parent_id', $entry_id)
-				->where('field_id', $this->field_id)
-				->get($this->_table)
-				->result();
+				->where('field_id', $this->field_id);
 
 			// -------------------------------------------
 			// 'relationships_display_field' hook.
 			// - Allow developers to perform their own queries to modify which entries are retrieved
+			// 
+			// 	There are 3 ways to use this hook:
+			// 	 	1) Add to the existing Active Record call, e.g. ee()->db->where('foo', 'bar');
+			// 	 	2) Call ee()->db->_reset_select(); to terminate this AR call and start a new one
+			// 	 	3) Call ee()->db->_reset_select(); and modify the currently compiled SQL string
+			//   
+			//   All 3 require a returned query result array.
 			//
 			if (ee()->extensions->active_hook('relationships_display_field') === TRUE)
 			{
-				$related = ee()->extensions->call('relationships_display_field', $entry_id, $this->field_id);
+				$related = ee()->extensions->call(
+					'relationships_display_field',
+					$entry_id,
+					$this->field_id,
+					ee()->db->_compile_select()
+				);
+			}
+			else
+			{
+				$related = ee()->db->get()->result_array();
 			}
 			//
 			// -------------------------------------------
 
 			foreach ($related as $row)
 			{
-				$selected[] = $row->child_id;
-				$order[$row->child_id] = $row->order;
+				$selected[] = $row['child_id'];
+				$order[$row['child_id']] = $row['order'];
 			}
 		}
 

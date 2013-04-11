@@ -138,15 +138,21 @@ class Relationship_model extends CI_Model {
 		// - Use entry_ids and depths to reconstruct the above query as needed.
 		// 
 		// 	 There are 3 ways to use this hook:
-		// 	 	1) Add to the existing Active Record call, e.g. $this->EE->db->where('foo', 'bar');
-		// 	 	2) Call $this->EE->db->_reset_select(); to terminate this AR call and start a new one
-		// 	 	3) Call $this->EE->db->_reset_select(); and modify the currently compiled SQL string
+		// 	 	1) Add to the existing Active Record call, e.g. ee()->db->where('foo', 'bar');
+		// 	 	2) Call ee()->db->_reset_select(); to terminate this AR call and start a new one
+		// 	 	3) Call ee()->db->_reset_select(); and modify the currently compiled SQL string
 		//   
 		//   All 3 require a returned query result array.
 		//
 			if (ee()->extensions->active_hook('relationships_query') === TRUE)
 			{
-				$result = ee()->extensions->call('relationships_query', $node->field_name(), $entry_ids, $depths, $db->_compile_select());
+				$result = ee()->extensions->call(
+					'relationships_query',
+					$node->field_name(),
+					$entry_ids,
+					$depths,
+					$db->_compile_select()
+				);
 			}
 			else
 			{
