@@ -2665,34 +2665,38 @@ class Safecracker_lib
 
 			if (count($limit_authors))
 			{
-				// @todo TODO ick
-				// @todo php 5.3 only! argh
-				$groups = preg_filter('/^g_/', '', $limit_authors);
-				$members = preg_filter('/^m_/', '', $limit_authors);
+				$groups = array();
+				$members = array();
 
-				$fn = 'where_in';
+				foreach ($limit_authors as $author)
+				{
+					switch ($author[0])
+					{
+						case 'g': $groups[] = substr($author, 2);
+							break;
+						case 'm': $members[] = substr($author, 2);
+							break;
+					}
+				}
+
+				$where = '';
 
 				if (count($members))
 				{
-					ee()->db->where_in('channel_titles.author_id', $members);	
-					$fn = 'or_where_in';
+					$where .= ee()->db->dbprefix('channel_titles').'.author_id IN ('.implode(', ', $members).')';
 				}
 
 				if (count($groups))
 				{
+					$where .= $where ? ' OR ' : '';
+					$where .= ee()->db->dbprefix('members').'.group_id IN ('.implode(', ', $members).')';
 					ee()->db->join('members', 'members.member_id = channel_titles.author_id');
-					ee()->db->$fn('members.group_id', $groups);
 				}
-			}
 
-			if ($this->entry('entry_id'))
-			{
-				ee()->db->where('channel_titles.entry_id !=', $this->entry('entry_id'));
-			}
-
-			if (count($selected))
-			{
-				ee()->db->or_where_in('channel_titles.entry_id', $selected);
+				if ($where)
+				{
+					ee()->db->where("({$where})");
+				}
 			}
 
 			// Limit times
@@ -2707,6 +2711,16 @@ class Safecracker_lib
 			{
 				$t = ee()->db->dbprefix('channel_titles');
 				ee()->db->where("(${t}.expiration_date = 0 OR ${t}.expiration_date > ${now})", NULL, FALSE);
+			}
+
+			if ($this->entry('entry_id'))
+			{
+				ee()->db->where('channel_titles.entry_id !=', $this->entry('entry_id'));
+			}
+
+			if (count($selected))
+			{
+				ee()->db->or_where_in('channel_titles.entry_id', $selected);
 			}
 
 			$entries = ee()->db->get('channel_titles')->result_array();
