@@ -38,15 +38,15 @@ class EE_Loader extends CI_Loader {
 	 * of CI's object references are stuck onto the loader when loading views
 	 * I get access errors left and right. -pk
 	 *
-	 * FIXME  What's deprecated?  The method clearly isn't, it's a core method!
-	 *
-	 * @deprecated
-	 * @access	public
+	 * @deprecated 2.6
 	 */
 	public function view($view, $vars = array(), $return = FALSE)
 	{
 		if ($this->ee_view_depth === 0 && $this->_ci_view_path != '')
 		{
+			ee()->load->library('logger');
+			ee()->logger->deprecated('2.6', 'load::add_package_path()');
+
 			$this->_ci_view_paths = array($this->_ci_view_path => FALSE) + $this->_ci_view_paths;
 		}
 		
@@ -134,6 +134,8 @@ class EE_Loader extends CI_Loader {
 		
 		if (strtolower($library) == 'security')
 		{
+			ee()->load->library('logger');
+			ee()->logger->deprecated('2.6', 'The security library is always loaded.');
 			return NULL;
 		}
 		

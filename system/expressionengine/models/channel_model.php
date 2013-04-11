@@ -341,12 +341,12 @@ class Channel_model extends CI_Model {
 			$this->db->delete('category_posts');
 
 			// delete parents
-			$this->db->where_in('rel_parent_id', $entries);
+			$this->db->where_in('parent_id', $entries);
 			$this->db->delete('relationships');
 			
 			// are there children?
-			$this->db->select('rel_id');
-			$this->db->where_in('rel_child_id', $entries);
+			$this->db->select('relationship_id');
+			$this->db->where_in('child_id', $entries);
 			$child_results = $this->db->get('relationships');
 
 			if ($child_results->num_rows() > 0)
@@ -362,7 +362,7 @@ class Channel_model extends CI_Model {
 
 				foreach ($child_results->result_array() as $row)
 				{
-					$cids[] = $row['rel_id'];
+					$cids[] = $row['relationship_id'];
 				}
 
 				foreach($fquery->result_array() as $row)
@@ -373,7 +373,7 @@ class Channel_model extends CI_Model {
 			}
 
 			// aaaand delete
-			$this->db->where_in('rel_child_id', $entries);
+			$this->db->where_in('child_id', $entries);
 			$this->db->delete('relationships');
 		}
 
