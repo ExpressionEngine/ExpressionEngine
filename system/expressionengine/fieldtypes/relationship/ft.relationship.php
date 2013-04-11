@@ -112,6 +112,17 @@ class Relationship_ft extends EE_Fieldtype {
 			);
 		}
 
+		// -------------------------------------------
+		// 'relationships_post_save' hook.
+		//  - Allow developers to modify or add to the relationships array before saving
+		//
+			if (ee()->extensions->active_hook('relationships_post_save') === TRUE)
+			{
+				$ships = ee()->extensions->call('relationships_post_save', $ships, $entry_id, $field_id);
+			}
+		//
+		// -------------------------------------------
+
 		if (count($ships))
 		{
 			ee()->db->insert_batch($this->_table, $ships);
@@ -163,6 +174,17 @@ class Relationship_ft extends EE_Fieldtype {
 				->where('field_id', $this->field_id)
 				->get($this->_table)
 				->result();
+
+			// -------------------------------------------
+			// 'relationships_display_field' hook.
+			// - Allow developers to perform their own queries to modify which entries are retrieved
+			//
+			if (ee()->extensions->active_hook('relationships_display_field') === TRUE)
+			{
+				$related = ee()->extensions->call('relationships_display_field', $entry_id, $this->field_id);
+			}
+			//
+			// -------------------------------------------
 
 			foreach ($related as $row)
 			{
