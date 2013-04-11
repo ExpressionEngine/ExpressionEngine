@@ -285,16 +285,6 @@ class Relationship_ft extends EE_Fieldtype {
 			}
 		}
 
-		if ($entry_id)
-		{
-			ee()->db->where('channel_titles.entry_id !=', $entry_id);
-		}
-
-		if (count($selected))
-		{
-			ee()->db->or_where_in('channel_titles.entry_id', $selected);
-		}
-
 		// Limit times
 		$now = ee()->localize->now;
 
@@ -307,6 +297,16 @@ class Relationship_ft extends EE_Fieldtype {
 		{
 			$t = ee()->db->dbprefix('channel_titles');
 			ee()->db->where("(${t}.expiration_date = 0 OR ${t}.expiration_date > ${now})", NULL, FALSE);
+		}
+
+		if ($entry_id)
+		{
+			ee()->db->where('channel_titles.entry_id !=', $entry_id);
+		}
+
+		if (count($selected))
+		{
+			ee()->db->or_where_in('channel_titles.entry_id', $selected);
 		}
 
 		$entries = ee()->db->get('channel_titles')->result_array();
