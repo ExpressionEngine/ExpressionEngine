@@ -963,7 +963,7 @@ class Safecracker_lib
 		$this->unload_session_override();
 		
 		//add loaded JS
-		ee()->javascript->compile();
+		ee()->jquery->_compile();
 
 		if ( ! empty(ee()->jquery->jquery_code_for_compile))
 		{
