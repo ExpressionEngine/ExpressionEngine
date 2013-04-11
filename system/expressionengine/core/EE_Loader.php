@@ -49,6 +49,11 @@ class EE_Loader extends CI_Loader {
 
 			$this->_ci_view_paths = array($this->_ci_view_path => FALSE) + $this->_ci_view_paths;
 		}
+
+		if (isset($vars['cp_page_title']))
+		{
+			ee()->view->cp_page_title = $vars['cp_page_title'];
+		}
 		
 		$this->ee_view_depth++;
 		
