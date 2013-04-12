@@ -1091,12 +1091,28 @@ class Relationship_parser {
 		$order_by = explode('|', $node->param('orderby'));
 		$sort = explode('|', $node->param('sort', 'desc'));
 
+		// random
 		if ($order_by[0] == 'random')
 		{
 			shuffle($entry_ids);
 			return $entry_ids;
 		}
 
+		// custom field
+		$channel = ee()->session->cache('relationships', 'channel');
+
+		foreach($channel->cfields as $site_id => $cfields)
+		{
+			foreach ($order_by as &$key)
+			{
+				if (isset($cfields[$key]))
+				{
+					$key = 'field_id_'.$cfields[$key];
+				}
+			}
+		}
+
+		// split into columns
 		$columns = array_fill_keys($order_by, array());
 
 		foreach ($entry_ids as $entry_id)
@@ -1109,11 +1125,13 @@ class Relationship_parser {
 			}
 		}
 
+		// default everyting to desc
 		$sort = array_merge(
 			array_fill_keys(array_keys($order_by), 'desc'),
 			$sort
 		);
 
+		// fill array_multisort parameters
 		$sort_parameters = array();
 
 		foreach ($order_by as $i => $v)
@@ -1254,8 +1272,7 @@ class ParseNode extends EE_TreeNode {
 	 * are processed. This used to be in the setter, but it ends up being
 	 * quite an expensive operation.
 	 *
-	 * @param 	int		the parent entry id
-	 * @return 	[int]	child ids | flattened if no parent_id was given
+	 * @return 	[int]	parent => [child ids]
 	 */
 	public function entry_ids()
 	{
@@ -1278,11 +1295,6 @@ class ParseNode extends EE_TreeNode {
 			}
 
 			$this->_dirty = FALSE;
-		}
-
-		if (isset($parent_id))
-		{
-			return isset($ids[$parent_id]) ? $ids[$parent_id] : NULL;
 		}
 
 		return $ids;
