@@ -733,7 +733,7 @@ class EE_Schema {
 			 parent_id int(10) NOT NULL default 0,
 			 child_id int(10) NOT NULL default 0,
 			 field_id int(10) NOT NULL default 0,
-			 order int(10) NOT NULL default 0,
+			 `order` int(10) NOT NULL default 0,
 			 PRIMARY KEY `relationship_id` (`relationship_id`),
 			 KEY `parent_id` (`parent_id`),
 			 KEY `child_id` (`child_id`),

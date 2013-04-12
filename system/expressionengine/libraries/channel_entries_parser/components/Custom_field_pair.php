@@ -83,7 +83,7 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
 						$content = $matches[3];
 
 						// We might've sandwiched a single tag - no good, check again (:sigh:)
-						if ((strpos($chunk, LD.$field_name, 1) !== FALSE) && preg_match_all("/".LD."{$field_name}{$modifier}(.*?)".RD."/s", $chunk, $match))
+						if ((strpos($chunk, LD.$field_name.$modifier, 1) !== FALSE) && preg_match_all("/".LD."{$field_name}{$modifier}(\s.*?)?".RD."/s", $chunk, $match))
 						{
 							// Let's start at the end
 							$idx = count($match[0]) - 1;
@@ -98,7 +98,7 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
 							$chunk = strstr($chunk, LD.$field_name);
 							$content = substr($chunk, strlen($tag), -strlen(LD.'/'.$field_name.RD));
 						}
-						
+
 						$params = ee()->functions->assign_parameters($params);
 						$params = $params ? $params : array();
 
@@ -138,9 +138,10 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
 
 		$site_id = $data['site_id'];
 
-		$cfields = $obj->channel()->cfields[$site_id];
+		$cfields = $obj->channel()->cfields;
+		$cfields = isset($cfields[$site_id]) ? $cfields[$site_id] : array();
 
-		if ( ! isset($pfield_chunks[$site_id]))
+		if (empty($cfields) OR ! isset($pfield_chunks[$site_id]))
 		{
 			return $tagdata;
 		}

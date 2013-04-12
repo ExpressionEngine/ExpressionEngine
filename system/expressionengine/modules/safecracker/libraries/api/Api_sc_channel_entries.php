@@ -94,7 +94,7 @@ class Api_sc_channel_entries extends Api_channel_entries
 					? ee()->safecracker->entry($field['field_name']) : '';
 
 
-				// The entry API expects the rel_child_id from the exp_relationships field 
+				// The entry API expects the child_id from the exp_relationships field 
 				// rather than the rel_id stored in channel_data
 				if ($field['field_type'] == 'rel' && ee()->safecracker->entry($field['field_name']) !== FALSE)
 				{
@@ -112,7 +112,7 @@ class Api_sc_channel_entries extends Api_channel_entries
 			{
 				foreach ($relationships->result_array() as $row)
 				{
-					 $data[$rel_ids[$row['rel_id']]] = $row['rel_child_id'];
+					 $data[$rel_ids[$row['relationship_id']]] = $row['child_id'];
 					
 				}
 				
