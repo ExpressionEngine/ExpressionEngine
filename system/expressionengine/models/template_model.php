@@ -86,7 +86,6 @@ class Template_model extends CI_Model {
 	 */
 	protected function _load_template_file(Template_Entity $template, $only_load_last_edit=FALSE)
 	{
-	
 		// FIXME  Why on EARTH was this done in the Template parser and not
 		// originally written right into EE_Config?  Why is EE_Config not
 		// itself capable of caching preferences when used with MSM
@@ -114,6 +113,7 @@ class Template_model extends CI_Model {
 		$filepath = $basepath . $this->config->item('site_short_name') . DIRECTORY_SEPARATOR 
 			. $template->getGroup()->group_name . '.group' . DIRECTORY_SEPARATOR . $template->template_name
 			. $this->api_template_structure->file_extensions($template->template_type);
+
 	
 		// We don't need the other site's configuration values anymore, so
 		// reset them.  If we do this here we only have to do it once,
@@ -123,19 +123,19 @@ class Template_model extends CI_Model {
 			$this->config->config = $site_switch;
 		}
 
-		if (file_exists($basepath))
+		if (file_exists($filepath))
 		{
 			if ($only_load_last_edit) 
 			{
 				$this->load->helper('file');
-				$file_date = get_file_info($basepath, 'date');
+				$file_date = get_file_info($filepath, 'date');
 				if ($file_date !== FALSE && $template->edit_date >= $file_date['date'])
 				{
 					return;
 				}
 			}
-			
-			$template->template_data = file_get_contents($basepath);
+				
+			$template->template_data = file_get_contents($filepath);
 			$template->loaded_from_file = TRUE;
 		}
 

@@ -63,7 +63,7 @@ class Updater {
 				'_update_specialty_templates',
 				'_update_relationship_fieldtype',
 				'_update_relationship_table',
-				'_replace_relationship_tags'
+				'_update_relationship_tags'
 			)
 		);
 
@@ -404,7 +404,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 	/**
 	 *
 	 */
-	private function _replace_relationship_tags()
+	private function _update_relationship_tags()
 	{
 		// We're gonna need this to be already loaded.
 		require_once(APPPATH . 'libraries/Functions.php');	
@@ -412,6 +412,9 @@ If you do not wish to reset your password, ignore this message. It will expire i
 
 		require_once(APPPATH . 'libraries/Extensions.php');
 		ee()->extensions = new Installer_Extensions();
+
+		$installer_config = ee()->config;
+		ee()->config = new MSM_Config();
 
 		// We need to figure out which template to load.
 		// Need to check the edit date.
@@ -424,7 +427,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		{
 			// Find the {related_entries} and {reverse_related_entries} tags 
 			// (match pairs and wrapped tags)
-			$this->_update_related_entries_tags($template);
+			$this->_replace_related_entries_tags($template);
 
 			// save the template
 			// if saving to file, save the file
@@ -437,6 +440,8 @@ If you do not wish to reset your password, ignore this message. It will expire i
 				ee()->template_model->save_to_database($template);
 			}
 		}
+
+		ee()->config = $installer_config;
 		
 		return true;
 	}
@@ -454,7 +459,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 	 *
 	 * @return void
 	 */
-	private function _update_related_entries_tags(Template_Entity $template)
+	private function _replace_related_entries_tags(Template_Entity $template)
 	{
 		$template->template_data = $this->_assign_relationship_data($template->template_data);
 
