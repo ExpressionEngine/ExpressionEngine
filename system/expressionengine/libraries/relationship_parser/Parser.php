@@ -90,13 +90,6 @@ class EE_relationship_data_parser {
 			throw new EE_Relationship_exception('Invalid Relationship Tree');
 		}
 
-		// If we have no relationships, then we can quietly bail out.
-		if (empty($this->_entries))
-		{
-			$this->find_no_results($node, $tagdata);
-			return $this->clear_node_tagdata($node, $tagdata, $no_results);
-		}
-
 		ee()->load->library('api');
 		ee()->api->instantiate('channel_fields');
 		ee()->session->set_cache('relationships', 'channel', $channel);
