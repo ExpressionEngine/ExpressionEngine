@@ -1,9 +1,4 @@
-<?php
-
-require_once APPPATH.'libraries/datastructures/Tree.php';
-require_once APPPATH.'libraries/relationship_parser/Nodes.php';
-require_once APPPATH.'libraries/relationship_parser/Iterators.php';
-
+<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 /**
  * ExpressionEngine - by EllisLab
@@ -17,6 +12,12 @@ require_once APPPATH.'libraries/relationship_parser/Iterators.php';
  * @filesource
  */
  
+// ------------------------------------------------------------------------
+
+ require_once APPPATH.'libraries/datastructures/Tree.php';
+ require_once APPPATH.'libraries/relationship_parser/Nodes.php';
+ require_once APPPATH.'libraries/relationship_parser/Iterators.php';
+
 // ------------------------------------------------------------------------
 
 /**
