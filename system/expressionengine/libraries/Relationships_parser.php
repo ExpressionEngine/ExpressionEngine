@@ -1,8 +1,5 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-require_once APPPATH.'libraries/relationship_parser/Exceptions.php';
-require_once APPPATH.'libraries/relationship_parser/Tree_builder.php';
-
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -15,6 +12,11 @@ require_once APPPATH.'libraries/relationship_parser/Tree_builder.php';
  * @filesource
  */
  
+// ------------------------------------------------------------------------
+
+require_once APPPATH.'libraries/relationship_parser/Exceptions.php';
+require_once APPPATH.'libraries/relationship_parser/Tree_builder.php';
+
 // ------------------------------------------------------------------------
 
 /**
@@ -100,7 +102,7 @@ require_once APPPATH.'libraries/relationship_parser/Tree_builder.php';
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Relationships {
+class EE_Relationships_parser {
 
 	public function __construct()
 	{
@@ -118,7 +120,7 @@ class Relationships {
 	 * @return Relationship_Parser	The parser object with the parsed out
 	 *								hierarchy and all of the entry data.
 	 */
-	public function get_relationship_parser(array $relationship_fields, array $entry_ids)
+	public function create(array $relationship_fields, array $entry_ids)
 	{
 		$builder = new EE_relationship_tree_builder($relationship_fields);
 
