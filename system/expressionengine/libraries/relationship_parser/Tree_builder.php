@@ -140,24 +140,27 @@ class EE_relationship_tree_builder {
 	{
 		$unique_entry_ids = $this->_unique_ids;
 
-		// @todo reduce to only those that have a categories pair or parameter
-		ee()->load->model('category_model');
-		$category_lookup = ee()->category_model->get_entry_categories($unique_entry_ids);
+		$category_lookup = array();
+		$entries_result = array();
 
-		// ready set, main query.
-		ee()->load->model('channel_entries_model');
-		$sql = ee()->channel_entries_model->get_entry_sql($unique_entry_ids);
-		$entries_result = ee()->db->query($sql);
+		if ( ! empty($unique_entry_ids))
+		{
+			// @todo reduce to only those that have a categories pair or parameter
+			ee()->load->model('category_model');
+			$category_lookup = ee()->category_model->get_entry_categories($unique_entry_ids);
+
+			// ready set, main query.
+			ee()->load->model('channel_entries_model');
+			$entries_result = ee()->channel_entries_model->get_entry_data($unique_entry_ids);			
+		}
 
 		// Build an id => data map for quick retrieval during parsing
 		$entry_lookup = array();
 
-		foreach ($entries_result->result_array() as $entry)
+		foreach ($entries_result as $entry)
 		{
 			$entry_lookup[$entry['entry_id']] = $entry;
 		}
-
-		$entries_result->free_result();
 
 		if ( ! class_exists('EE_relationship_data_parser'))
 		{
