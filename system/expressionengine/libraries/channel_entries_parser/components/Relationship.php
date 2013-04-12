@@ -65,7 +65,7 @@ class EE_Channel_relationship_parser implements EE_Channel_parser_component {
 				$pre->entry_ids()
 			);
 		}
-		catch (RelationshipException $e)
+		catch (EE_Relationship_exception $e)
 		{
 			ee()->TMPL->log_item($e->getMessage());
 		}
@@ -98,7 +98,7 @@ class EE_Channel_relationship_parser implements EE_Channel_parser_component {
 		{
 			return $relationship_parser->parse($row['entry_id'], $tagdata, $channel);
 		}
-		catch (RelationshipException $e)
+		catch (EE_Relationship_exception $e)
 		{
 			return $tagdata;
 		}
