@@ -413,7 +413,8 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 					el[0].style.display = '';
 				});
 
-				return this._insertInOrder(ul, defaultList);
+				this._insertInOrder(ul, defaultList);
+				return this._checkScrollBars();
 			}
 
 			// compute a score for each item in the list
