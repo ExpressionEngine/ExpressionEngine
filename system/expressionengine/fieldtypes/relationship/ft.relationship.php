@@ -166,6 +166,15 @@ class Relationship_ft extends EE_Fieldtype {
 		$entries = array();
 		$selected = array();
 
+		if (isset($data['data']) && ! empty($data['data'])) // autosave
+		{
+			foreach ($data['data'] as $k => $id)
+			{
+				$selected[$k] = $id;
+				$order[$id] = isset($data['sort'][$k]) ? $data['sort'][$k] : 0;
+			}
+		}
+
 		if ($entry_id)
 		{
 			ee()->db
