@@ -199,14 +199,13 @@ class Relationship_tree_builder {
 
 		$all_entry_ids = array($entry_ids);
 
-		// Ok, so now we need to repeat that process iteratively for
-		// all of the special snowflakes on our tree. This is fun!
-
 		$query_node_iterator = new RecursiveIteratorIterator(
 			new QueryNodeIterator(array($root)),
 			RecursiveIteratorIterator::SELF_FIRST
 		);
 
+		// For every query node we now run the query and push the ids
+		// down onto their subtrees.
 		foreach ($query_node_iterator as $node)
 		{
 			// the root uses the main entry ids, all others use all
@@ -709,9 +708,10 @@ class Relationship_parser {
 	 */
 	public function parse_node($node, $parent_id, $tagdata)
 	{
+		$this->find_no_results($node, $tagdata);
+
 		if ( ! isset($node->entry_ids[$parent_id]))
 		{
-			$this->find_no_results($node, $tagdata);
 			return $this->clear_node_tagdata($node, $tagdata);
 		}
 
@@ -775,6 +775,11 @@ class Relationship_parser {
 			}
 
 			$data = $this->process_parameters($node, $parent_id);
+
+			if ( ! count($data['entries']))
+			{
+				return $this->clear_node_tagdata($node, $tagdata);
+			}
 		}
 
 		foreach ($matches as $match)
@@ -823,6 +828,48 @@ class Relationship_parser {
 		$node->no_results = FALSE;
 	}
 
+ 	// --------------------------------------------------------------------
+	
+	/**
+	 * Call the channel entries parser for this node and its tagchunk.
+	 *
+	 * @param	object	The tree node of this tag pair
+	 * @param	int		The chunk of template to process.
+	 * @param 	array	The data array that the channel parser expects.
+	 *
+	 * @return	string	The parsed chunk
+	 */
+	public function replace($node, $tagdata, $data)
+	{
+		$prefix = $node->name().':';
+		$channel = ee()->session->cache('relationships', 'channel');
+
+		// Load the parser
+		ee()->load->library('channel_entries_parser');
+		$parser = ee()->channel_entries_parser->create($tagdata, $prefix);
+		
+		$config = array(
+			'callbacks' => array(
+				'tagdata_loop_end' => array($node, 'callback_tagdata_loop_end')
+			),
+			'disable' => array(
+				'relationships'
+			)
+		);
+
+		$result = $parser->parse($channel, $data, $config);
+
+		// Lastly, handle the backspace parameter
+		$backspace = $node->param('backspace');
+
+		if ($backspace)
+		{
+			$result = substr($result, 0, -$backspace);
+		}
+
+		return $this->cleanup_no_results_tag($node, $result);
+	}
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -855,6 +902,31 @@ class Relationship_parser {
 
 		$tagdata = preg_replace('/'.$node->open_tag.'(.+?){\/'.$tag.'}/is', '', $tagdata);
 		return str_replace($node->open_tag, '', $tagdata);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Deletes the node tags from the given template and replace it with
+	 * the no_results tag if it exists.
+	 *
+	 * Used for empty nodes so that we don't end up with unparsed tags
+	 * all over the place.
+	 *
+	 * @param	object	The tree node of this tag pair
+	 * @param	string	The tagdata to delete the tags from.
+	 * @return 	string	The cleaned tagdata
+	 */
+	public function cleanup_no_results_tag($node, $tagdata)
+	{
+		$no_results = $node->no_results;
+
+		if ( ! empty($no_results))
+		{
+			$tagdata = str_replace($no_results[0], '', $tagdata);
+		}
+
+		return $tagdata;
 	}
 
  	// --------------------------------------------------------------------
@@ -906,39 +978,61 @@ class Relationship_parser {
 		{
 			$data = $this->entry($entry_id);
 
-			// @todo date parameters (i.e. show_expired=) need a query up above?
-			// these may also need one, but for now this works
-
-			foreach ($node->params as $p)
+			if ($node->param('show_future_entries') != 'yes')
 			{
+				if ($data['entry_date'] > ee()->localize->now)
+				{
+					continue;
+				}
+			}
+
+			if ($node->param('show_expired') != 'yes')
+			{
+				if ($data['expiration_date'] != 0 AND $data['expiration_date'] < ee()->localize->now)
+				{
+					continue;
+				}
+			}
+
+			foreach ($node->params as $p => $value)
+			{
+				if ($p == 'start_on' OR $p == 'stop_before')
+				{
+					$sign = ($p == 'start_on') ? -1 : 1;
+					$diff = $data['entry_date'] - ee()->localize->string_to_timestamp($value);
+
+					if ($diff * $sign > 0)
+					{
+						continue 2;
+					}
+				}
+
 				if ( ! in_array($p, $filter_parameters))
 				{
 					continue;
 				}
 
-				$filter_by = $node->param($p);
-
-				if ( ! $filter_by)
+				if ( ! $value)
 				{
 					continue;
 				}
 
 				$not = FALSE;
 
-				if (strpos($filter_by, 'not ') === 0)
+				if (strpos($value, 'not ') === 0)
 				{
 					$not = TRUE;
 				}
 
 				// @todo support '&' inclusive stack
-				$filter_by = explode('|', $filter_by);
+				$value = explode('|', $value);
 
 				if ($p == 'channel')
 				{
 					$p = 'channel_name';
 				}
 
-				$data_matches = in_array($data[$p], $filter_by);
+				$data_matches = in_array($data[$p], $value);
 
 				if (($data_matches && $not) OR
 					( ! $data_matches && ! $not))
@@ -985,48 +1079,6 @@ class Relationship_parser {
  	// --------------------------------------------------------------------
 	
 	/**
-	 * Call the channel entries parser for this node and its tagchunk.
-	 *
-	 * @param	object	The tree node of this tag pair
-	 * @param	int		The chunk of template to process.
-	 * @param 	array	The data array that the channel parser expects.
-	 *
-	 * @return	string	The parsed chunk
-	 */
-	public function replace($node, $tagdata, $data)
-	{
-		$prefix = $node->name().':';
-		$channel = ee()->session->cache('relationships', 'channel');
-
-		// Load the parser
-		ee()->load->library('channel_entries_parser');
-		$parser = ee()->channel_entries_parser->create($tagdata, $prefix);
-		
-		$config = array(
-			'callbacks' => array(
-				'tagdata_loop_end' => array($node, 'callback_tagdata_loop_end')
-			),
-			'disable' => array(
-				'relationships'
-			)
-		);
-
-		$result = $parser->parse($channel, $data, $config);
-
-		// Lastly, handle the backspace parameter
-		$backspace = $node->param('backspace');
-
-		if ($backspace)
-		{
-			$result = substr($result, 0, -$backspace);
-		}
-
-		return $result;
-	}
-
- 	// --------------------------------------------------------------------
-	
-	/**
 	 * Utility method to do the row sorting in PHP.
 	 *
 	 * @param	object	The current tree node
@@ -1047,7 +1099,7 @@ class Relationship_parser {
 
 			foreach ($order_by as $k)
 			{
-				$column[$k][] = $data[$k];
+				$columns[$k][] = $data[$k];
 			}
 		}
 
@@ -1060,7 +1112,7 @@ class Relationship_parser {
 
 		foreach ($order_by as $i => $v)
 		{
-			$sort_parameters[] = $column[$v];
+			$sort_parameters[] = $columns[$v];
 			$sort_parameters[] = constant('SORT_'.strtoupper($sort[$i]));
 		}
 
