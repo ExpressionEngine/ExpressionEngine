@@ -1,4 +1,5 @@
-<?php
+<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -56,11 +57,11 @@ class EE_Channel_relationship_parser implements EE_Channel_parser_component {
 			return NULL;
 		}
 
-		ee()->load->library('relationships');
+		ee()->load->library('relationships_parser');
 
 		try
 		{
-			return ee()->relationships->get_relationship_parser(
+			return ee()->relationships_parser->create(
 				$rfields[$site_id],
 				$pre->entry_ids()
 			);
