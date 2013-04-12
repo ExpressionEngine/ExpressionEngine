@@ -92,7 +92,7 @@ class EE_Channel_category_parser implements EE_Channel_parser_component {
 		{
 			// Get category ID from URL for {if active} conditional
 			ee()->load->helper('segment');
-			$active_cat = ($obj->channel()->pagination->dynamic_sql && $obj->channel()->cat_request) ? parse_category($this->query_string) : FALSE;
+			$active_cat = ($obj->channel()->pagination->dynamic_sql && $obj->channel()->cat_request) ? parse_category($obj->channel()->query_string) : FALSE;
 			
 			foreach ($cat_chunk as $catkey => $catval)
 			{
@@ -146,9 +146,9 @@ class EE_Channel_category_parser implements EE_Channel_parser_component {
 					{
 						foreach ($matches[1] as $match)
 						{
-							if ($this->use_category_names == TRUE)
+							if ($obj->channel()->use_category_names == TRUE)
 							{
-								$temp = preg_replace("#".LD."path=.+?".RD."#", reduce_double_slashes(ee()->functions->create_url($match).'/'.$this->reserved_cat_segment.'/'.$v[6]), $temp, 1);
+								$temp = preg_replace("#".LD."path=.+?".RD."#", reduce_double_slashes(ee()->functions->create_url($match).'/'.$obj->channel()->reserved_cat_segment.'/'.$v[6]), $temp, 1);
 							}
 							else
 							{
