@@ -523,7 +523,12 @@ class Relationship_tree_builder {
 				}
 			}
 
-			$all_entry_ids[] = call_user_func_array('array_merge', $node->entry_ids());
+			$entry_ids = $node->entry_ids;
+
+			if ( ! empty($entry_ids))
+			{
+				$all_entry_ids[] = call_user_func_array('array_merge', $entry_ids);
+			}
 		}
 
 		if ( ! count($all_entry_ids))
