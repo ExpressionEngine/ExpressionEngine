@@ -67,11 +67,15 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component {
 		$prefix = $obj->prefix();
 
 		$site_id = $data['site_id'];
-		$cfields = $obj->channel()->cfields[$site_id];
-		$rfields = $obj->channel()->rfields[$site_id];
+		$cfields = $obj->channel()->cfields;
+		$rfields = $obj->channel()->rfields;
+
+		$rfields = isset($rfields[$site_id]) ? $rfields[$site_id] : array();
+		$cfields = isset($cfields[$site_id]) ? $cfields[$site_id] : array();
+
 		$cfields = array_diff_key($cfields, $rfields);
 
-		if ( ! count($cfields))
+		if (empty($cfields))
 		{
 			return $tagdata;
 		}

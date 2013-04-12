@@ -138,9 +138,10 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
 
 		$site_id = $data['site_id'];
 
-		$cfields = $obj->channel()->cfields[$site_id];
+		$cfields = $obj->channel()->cfields;
+		$cfields = isset($cfields[$site_id]) ? $cfields[$site_id] : array();
 
-		if ( ! isset($pfield_chunks[$site_id]))
+		if (empty($cfields) OR ! isset($pfield_chunks[$site_id]))
 		{
 			return $tagdata;
 		}
