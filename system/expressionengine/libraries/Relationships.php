@@ -1091,6 +1091,12 @@ class Relationship_parser {
 		$order_by = explode('|', $node->param('orderby'));
 		$sort = explode('|', $node->param('sort', 'desc'));
 
+		if ($order_by[0] == 'random')
+		{
+			shuffle($entry_ids);
+			return $entry_ids;
+		}
+
 		$columns = array_fill_keys($order_by, array());
 
 		foreach ($entry_ids as $entry_id)
