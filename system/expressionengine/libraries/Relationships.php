@@ -86,16 +86,11 @@ require_once(APPPATH.'libraries/datastructures/Tree.php');
  * 
  * 
  * This also means that we can query for most of the required data before the
- * channel entries loop runs, thus vastly reducing the number of queries you
- * would get from nesting channel entry tags or sitting on a spanish beach.
- *
- *
- * There are a few edge cases that we need to consider in this approach.
- * Since an entry can have multiple parents, some of which may not be on
- * the current tree, we cannot rely on the tree to provide us with parent
- * information. Instead we add a query with an inverted tree at those edge-
- * case locations.
- * 
+ * channel entries loop runs. There are a few edge cases that we need to
+ * consider in this approach. Since an entry can have multiple parents, some
+ * of which may not be on the current tree, we cannot rely on the tree to
+ * provide us with parent information. Instead we add a query with an inverted
+ * tree at those edge-case locations.
  * 
  *
  * @package		ExpressionEngine
@@ -240,6 +235,16 @@ class Relationship_tree_builder {
 
 	// --------------------------------------------------------------------
 
+	/**
+	 * Create a parser from our collected tree.
+	 *
+	 * Runs the queries using our id information, builds lookup tables,
+	 * and finally stick it all onto an object that knows what to do with
+	 * it.
+	 *
+	 * @param	object	Root query node of the relationship tree
+	 * @return	object	The new relationships parser
+	 */
 	public function get_parser(EE_TreeNode $root)
 	{
 		$unique_entry_ids = $this->_unique_ids;
@@ -664,21 +669,22 @@ class Relationship_parser {
 	{
 		$node = $this->_tree;
 
-		// If we have no relationships, then we can quietly bail out.
-		if (empty($this->_entries))
-		{
-			return $this->clear_node_tagdata($node, $tagdata);
-		}
-
-		ee()->load->library('api');
-		ee()->api->instantiate('channel_fields');
-		ee()->session->set_cache('relationships', 'channel', $channel);
-
 		// push the root node down right away
 		if ( ! $node->is_root())
 		{
 			throw new RelationshipException('Invalid Relationship Tree');
 		}
+
+		// If we have no relationships, then we can quietly bail out.
+		if (empty($this->_entries))
+		{
+			$this->find_no_results($node, $tagdata);
+			return $this->clear_node_tagdata($node, $tagdata, $no_results);
+		}
+
+		ee()->load->library('api');
+		ee()->api->instantiate('channel_fields');
+		ee()->session->set_cache('relationships', 'channel', $channel);
 
 		foreach ($node->children() as $child)
 		{
@@ -705,6 +711,7 @@ class Relationship_parser {
 	{
 		if ( ! isset($node->entry_ids[$parent_id]))
 		{
+			$this->find_no_results($node, $tagdata);
 			return $this->clear_node_tagdata($node, $tagdata);
 		}
 
@@ -785,7 +792,42 @@ class Relationship_parser {
  	// --------------------------------------------------------------------
 	
 	/**
-	 * Deletes the node tags from the given template.
+	 * Assign no results data to the node.
+	 *
+	 * Find the no_results tag once per node. This is more future proofing
+	 * than anything, currently it makes very little difference where we
+	 * pull it out.
+	 *
+	 * @param	object	The tree node of this tag pair
+	 * @param	string	The tagdata to delete the tags from.
+	 * @return 	void
+	 */
+	public function find_no_results($node, $tagdata)
+	{
+		if (isset($node->no_results))
+		{
+			return;
+		}
+
+		$tag = preg_quote($node->name(), '/');
+
+		// Find no results chunks
+		$has_no_results = strpos($tagdata, 'if '.$node->name().':no_results') !== FALSE;
+
+		if ($has_no_results && preg_match("/".LD."if {$tag}:no_results".RD."(.*?)".LD.'\/'."if".RD."/s", $tagdata, $match))
+		{
+			$node->no_results = $match;
+			return;
+		}
+
+		$node->no_results = FALSE;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Deletes the node tags from the given template and replace it with
+	 * the no_results tag if it exists.
 	 *
 	 * Used for empty nodes so that we don't end up with unparsed tags
 	 * all over the place.
@@ -797,7 +839,20 @@ class Relationship_parser {
 	public function clear_node_tagdata($node, $tagdata)
 	{
 		$tag = preg_quote($node->name(), '/');
-		
+
+		if ( ! preg_match_all('/'.$node->open_tag.'(.+?){\/'.$tag.'}/is', $tagdata, $matches, PREG_SET_ORDER))
+		{
+			return $tagdata;
+		}
+
+		$no_results = $node->no_results;
+		$no_results = empty($no_results) ? '' : $node->no_results[1];
+
+		foreach ($matches as $match)
+		{
+			$tagdata = substr_replace($tagdata, $no_results, strpos($tagdata, $match[0]), strlen($match[0]));
+		}
+
 		$tagdata = preg_replace('/'.$node->open_tag.'(.+?){\/'.$tag.'}/is', '', $tagdata);
 		return str_replace($node->open_tag, '', $tagdata);
 	}
