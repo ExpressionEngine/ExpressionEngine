@@ -461,6 +461,39 @@ If you do not wish to reset your password, ignore this message. It will expire i
 	 */
 	private function _replace_related_entries_tags(Template_Entity $template)
 	{
+
+		ee()->db->select('field_id, field_name');
+		$query = ee()->db->get('channel_fields');
+	
+		$channel_custom_fields = array();	
+		foreach ($query->result_array() as $field) 
+		{
+			$channel_custom_fields[] = $field['field_name'];
+		}
+
+
+		$channel_single_variables = array(
+    		'absolute_count', 'absolute_results', 'aol_im', 'author',
+			'author_id', 'avatar_image_height', 'avatar_image_width', 'avatar_url', 'bio',
+			'channel', 'channel_id', 'channel_short_name', 'yahoo_im', 'comment_auto_path',
+			'comment_entry_id_auto_path', 'comment_total', 'comment_url_title_auto_path',
+			'count', 'edit_date', 'email', 'entry_date', 'entry_id', 'entry_id_path',
+			'entry_site_id', 'expiration_date', 'forum_topic_id', 'gmt_entry_date',
+			'gmt_edit_date', 'icq', 'interests', 'ip_address', 'location',
+			'member_search_path', 'msn_im', 'occupation', 'page_uri', 'page_url',
+			'permalink', 'photo_url', 'photo_image_height', 'photo_image_width',
+			'profile_path', 'recent_comment_date', 'relative_url', 'relative_date',
+			'screen_name', 'signature', 'signature_image_height', 'signature_image_url',
+			'signature_image_width', 'status', 'switch=', 'title', 'title_permalink',
+			'total_results', 'trimmed_url', 'url', 'url_or_email',
+			'url_or_email_as_author', 'url_or_email_as_link', 'url_title',
+			'url_title_path', 'username', 'week_date'
+		);
+	
+		$channel_pair_variables = array(
+			'date_header', 'date_footer', 'categories'
+		);
+
 		$template->template_data = $this->_assign_relationship_data($template->template_data);
 
 		// First deal with {related_entries} tags.  Since these are
@@ -473,10 +506,36 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		foreach ($this->related_data as $marker=>$relationship_tag)
 		{
 			$tagdata = $relationship_tag['tagdata'];
-			foreach ($relationship_tag['var_single'] as $variable)
+			if (isset($relationship_tag['var_single']))
 			{
-				$new_var = '{' . $relationship_tag['field_name'] . ':' . $variable . '}';
-				$tagdata = str_replace('{' . $variable . '}', $new_var, $tagdata);
+				foreach ($relationship_tag['var_single'] as $variable)
+				{
+					// Make sure this is a channel variable, or a custom field variable.  We
+					// don't want to replace globals.  That would be silly.
+					if( ! in_array($variable, $channel_single_variables) && ! in_array($variable, $channel_custom_fields))
+					{
+						continue;
+					}
+					// Just replace the front of the tag.  This way any paramters are left where they are.
+					$new_var = '{' . $relationship_tag['field_name'] . ':' . $variable; 
+					$tagdata = str_replace('{' . $variable, $new_var, $tagdata);
+				}
+			}
+
+			if (isset($relationship_tag['var_pair']))
+			{
+				foreach($relationship_tag['var_pair'] as $variable=>$params)
+				{
+					if( ! in_array($variable, $channel_pair_variables) && ! in_array($variable, $channel_custom_fields))
+					{
+						continue;
+					}
+					// Just the front of the tag, leave parameters in place.
+					$new_var = $relationship_tag['field_name'] . ':' . $variable; 
+					$tagdata = str_replace('{' . $variable, '{' . $new_var, $tagdata);
+					// For pairs, we have to replace the closing tag as well.
+					$tagdata = str_replace('{/' . $variable, '{/' . $new_var, $tagdata);
+				}
 			}
 		
 			$tagdata = '{' . $relationship_tag['field_name'] . '}' . $tagdata . '{/' . $relationship_tag['field_name'] . '}';
@@ -490,10 +549,32 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		foreach ($this->reverse_related_data as $marker=>$relationship_tag)
 		{
 			$tagdata = $relationship_tag['tagdata'];
-			foreach($relationship_tag['var_single'] as $variable)
+
+			if (isset($relationship_tag['var_single']))
 			{
-				$new_var = '{parents:' . $variable . '}';
-				$tagdata = str_replace('{' . $variable . '}', $new_var, $tagdata);
+				foreach($relationship_tag['var_single'] as $variable)
+				{
+					if( ! in_array($variable, $channel_single_variables) && ! in_array($variable, $channel_custom_fields))
+					{
+						continue;
+					}
+					$new_var = '{parents:' . $variable;
+					$tagdata = str_replace('{' . $variable, $new_var, $tagdata);
+				}
+			}
+
+			if (isset($relationship_tag['var_pair']))
+			{
+				foreach($relationship_tag['var_pair'] as $variable=>$params)
+				{
+					if( ! in_array($variable, $channel_pair_variables) && ! in_array($variable, $channel_custom_fields))
+					{
+						continue;
+					}
+					$new_var = 'parents:' . $variable;
+					$tagdata = str_replace('{' . $variable, '{' . $new_var, $tagdata);
+					$tagdata = str_replace('{/' . $variable, '{/' . $new_var, $tagdata); 
+				}
 			}
 
 			$parentTag = 'parents ';
@@ -525,6 +606,9 @@ If you do not wish to reset your password, ignore this message. It will expire i
 	private function _assign_relationship_data($chunk)
 	{
 		$this->related_markers = array();
+		$this->related_data = array();
+		$this->reverse_related_data = array();
+		$this->related_id = NULL;
 		
 		if (preg_match_all("/".LD."related_entries\s+id\s*=\s*[\"\'](.+?)[\"\']".RD."(.+?)".LD.'\/'."related_entries".RD."/is", $chunk, $matches))
 		{  		
