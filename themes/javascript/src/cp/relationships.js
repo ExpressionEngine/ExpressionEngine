@@ -61,7 +61,7 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 	 * The constructor does most of the precaching before handing
 	 * off to the class methods for interaction related things.
 	 */
-	function ZeroWing(field) {
+	function RelationshipField(field) {
 		// three main components per field
 		this.root = $(field);
 		this.active = $(field+'-active');
@@ -90,9 +90,9 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 	}
 
 	/**
-	 * Zero wing class methods
+	 * RelationshipField class methods
 	 */
-	ZeroWing.prototype = {
+	RelationshipField.prototype = {
 
 		/**
 		 * Secondary setup code
@@ -413,7 +413,8 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 					el[0].style.display = '';
 				});
 
-				return this._insertInOrder(ul, defaultList);
+				this._insertInOrder(ul, defaultList);
+				return this._checkScrollBars();
 			}
 
 			// compute a score for each item in the list
@@ -599,7 +600,7 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 	 * Public method to instantiate
 	 */
 	EE.setup_relationship_field = function(el) {
-		return new ZeroWing(el);
+		return new RelationshipField(el);
 	};
 
 })(jQuery);

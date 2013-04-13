@@ -284,7 +284,7 @@ class Relationship_ft extends EE_Fieldtype {
 			if (count($groups))
 			{
 				$where .= $where ? ' OR ' : '';
-				$where .= ee()->db->dbprefix('members').'.group_id IN ('.implode(', ', $members).')';
+				$where .= ee()->db->dbprefix('members').'.group_id IN ('.implode(', ', $groups).')';
 				ee()->db->join('members', 'members.member_id = channel_titles.author_id');
 			}
 
@@ -344,9 +344,8 @@ class Relationship_ft extends EE_Fieldtype {
 
 		if (count($entries))
 		{
-			$js = $this->_publish_js();
-			$js .= "EE.setup_relationship_field('#${field_name}');";
-			ee()->javascript->output($js);
+			ee()->cp->add_js_script('file', 'cp/relationships');
+			ee()->javascript->output("EE.setup_relationship_field('#${field_name}');");
 		}
 
 		return $str;
@@ -547,6 +546,17 @@ class Relationship_ft extends EE_Fieldtype {
 		}
 	}
 
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Save Settings
+	 *
+	 * Save the settings page. Populates the defaults, adds the user
+	 * settings and sends that off to be serialized.
+	 *
+	 * @return	array	settings
+	 */	
 	public function save_settings($data)
 	{
 		$form = $this->_form();
@@ -615,28 +625,6 @@ class Relationship_ft extends EE_Fieldtype {
 		$form->populate($default_values);
 
 		return $form;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Javascript
-	 *
-	 * Create the required javascript
-	 *
-	 * @return	void
-	 */	
-	protected function _publish_js()
-	{
-		if (ee()->session->cache(__CLASS__, 'js_loaded') === TRUE)
-		{
-			return '';
-		}
-
-		$js = file_get_contents(PATH_FT.'relationship/javascript/cp.js');
-
-		ee()->session->cache(__CLASS__, 'js_loaded', TRUE);
-		return $js;
 	}
 
 	// --------------------------------------------------------------------
