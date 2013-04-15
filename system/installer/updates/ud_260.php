@@ -63,7 +63,8 @@ class Updater {
 				'_update_specialty_templates',
 				'_update_relationship_fieldtype',
 				'_update_relationship_table',
-				'_update_relationship_tags'
+				'_update_relationship_tags',
+				'_schema_cleanup'
 			)
 		);
 
@@ -444,6 +445,141 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		ee()->config = $installer_config;
 		
 		return true;
+	}
+
+	// -------------------------------------------------------------------
+
+	/**
+	 *
+	 * Cleaning up some discrepancies between a fresh installation and an
+	 * upgraded installation.
+	 * 
+	 */
+	private function _schema_cleanup()
+	{
+		$fields = array(
+			'member_groups'	=> array('type' => 'varchar',	'constraint' => 255,	'null' => FALSE,	'default'=> 'all')
+		);
+
+		ee()->smartforge->modify_column('accessories', $fields);
+
+
+		$fields = array(
+				'channel_description'		=> array('type' => 'varchar',	'constraint' => 255,	'null' => TRUE),
+				'channel_auto_link_urls'	=> array('type' => 'char',		'constraint' => 1,		'null' => FALSE,	'default' => 'n'),
+				'default_entry_title'		=> array('type' => 'varchar',	'constraint' => 100,	'null' => TRUE),
+				'url_title_prefix'			=> array('type' => 'varchar',	'constraint' => 80,		'null' => TRUE),
+		);
+
+		ee()->smartforge->modify_column('channels', $fields);
+
+
+		$fields = array(
+				'recent_comment_date'		=> array('type' => 'int',		'constraint' => 10,		'null' => TRUE),
+		);
+
+		ee()->smartforge->modify_column('channel_entries_autosave', $fields);
+
+
+		$drop_column = array(
+			'category_groups'			=> 'is_user_blog',
+			'channel_titles'			=> 'pentry_id',
+			'channel_entries_autosave'	=> 'pentry_id',
+			'forum_topics'				=> 'pentry_id',
+		);
+
+		foreach ($drop_column as $k => $v)
+		{
+			ee()->smartforge->drop_column($k, $v);
+		}
+
+
+		$fields = array(
+			'timestamp'	=> array('type' => 'int',	'constraint' => 10,	'unsigned' => TRUE,	'null' => FALSE),
+			'viewed'	=> array('type' => 'char',	'constraint' => 1,	'null' => FALSE,	'default' => 'n')
+		);
+
+		ee()->smartforge->modify_column('developer_log', $fields);
+
+
+		$fields = array(
+			'wm_hor_offset'	=> array('type' => 'int',	'constraint' => 4,	'unsigned' => TRUE),
+			'wm_vrt_offset'	=> array('type' => 'int',	'constraint' => 4,	'unsigned' => TRUE)
+		);
+
+		ee()->smartforge->modify_column('file_watermarks', $fields);
+
+
+		$fields = array(
+			'file_hw_original' => array('type' => 'varchar',	'constraint' => 20, 'null' => FALSE, 'default' => '')
+		);
+
+		ee()->smartforge->modify_column('files', $fields);
+
+
+		$fields = array(
+			'can_admin_accessories' => array('type' => 'char',	'constraint' => 1, 'null' => FALSE, 'default' => 'n')
+		);
+
+		ee()->smartforge->modify_column('member_groups', $fields);
+
+
+		$fields = array(
+			'user_agent'	=> array('type' => 'VARCHAR',	'constraint' => 120,	'null' => FALSE)
+		);
+
+		ee()->smartforge->modify_column('password_lockout', $fields);
+
+		$fields = array(
+			'password'			=> array('type' => 'VARCHAR',	'constraint' => 128,	'null' => FALSE),
+			'total_entries'		=> array('type' => 'mediumint',	'constraint' => 8,		'unsigned' => TRUE,	'null' => FALSE, 'default' => 0),
+			'total_comments'	=> array('type' => 'mediumint',	'constraint' => 8,		'unsigned' => TRUE,	'null' => FALSE, 'default' => 0),
+		);
+
+		ee()->smartforge->modify_column('members', $fields);
+
+
+		$fields = array(
+			'session_id'	=> array('type' => 'VARCHAR',	'constraint' => 40,	'null' => FALSE,	'default' => 0)
+		);
+
+		ee()->smartforge->modify_column('security_hashes', $fields);
+
+
+		$fields = array(
+			'user_agent'	=> array('type' => 'VARCHAR',	'constraint' => 120,	'null' => FALSE),
+			'fingerprint'	=> array('type' => 'VARCHAR',	'constraint' => 40,		'null' => FALSE),
+		);
+
+		ee()->smartforge->modify_column('sessions', $fields);
+
+
+		$fields = array(
+			'site_system_preferences'	=> array('type' => 'mediumtext',	'null' => FALSE),
+		);
+
+		ee()->smartforge->modify_column('sites', $fields);
+
+
+		ee()->smartforge->add_key('template_groups', 'group_name', 'group_name_idx');
+		ee()->smartforge->add_key('template_groups', 'group_order', 'group_order_idx');
+
+
+		$fields = array(
+			'last_author_id'	=> array('type' => 'int',	'constraint' => 10,	'unsigned' => TRUE,	'null' => FALSE, 'default' => 0),
+		);
+
+		ee()->smartforge->modify_column('templates', $fields);
+
+
+		ee()->smartforge->drop_column('upload_prefs', 'is_user_blog');
+
+
+		$fields = array(
+			'server_path'	=> array('type' => 'varchar',	'constraint' => 255,	'null' => FALSE, 'default' => ''),
+		);
+
+		ee()->smartforge->modify_column('upload_prefs', $fields);
 	}
 
 	/**

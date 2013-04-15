@@ -146,7 +146,7 @@ class EE_Schema {
 		$Q[] = "CREATE TABLE `exp_accessories` (
 				`accessory_id` int(10) unsigned NOT NULL auto_increment,
 				`class` varchar(75) NOT NULL default '',
-				`member_groups` varchar(50) NOT NULL default 'all',
+				`member_groups` varchar(255) NOT NULL default 'all',
 				`controllers` text NULL,
 				`accessory_version` VARCHAR(12) NOT NULL,
 				PRIMARY KEY `accessory_id` (`accessory_id`)
@@ -347,7 +347,7 @@ class EE_Schema {
 			  profile_theme varchar(32) NULL DEFAULT NULL,
 			  forum_theme varchar(32) NULL DEFAULT NULL,
 			  tracker text NULL,
-			  template_size varchar(2) NOT NULL default '20',
+			  template_size varchar(2) NOT NULL default '28',
 			  notepad text NULL,
 			  notepad_size varchar(2) NOT NULL default '18',
 			  quick_links text NULL,
@@ -534,7 +534,7 @@ class EE_Schema {
 			 channel_name varchar(40) NOT NULL,
 			 channel_title varchar(100) NOT NULL,
 			 channel_url varchar(100) NOT NULL,
-			 channel_description varchar(225) NULL DEFAULT NULL,
+			 channel_description varchar(255) NULL DEFAULT NULL,
 			 channel_lang varchar(12) NOT NULL,
 			 total_entries mediumint(8) default '0' NOT NULL,
 			 total_comments mediumint(8) default '0' NOT NULL,
@@ -595,9 +595,8 @@ class EE_Schema {
 			 site_id INT(4) UNSIGNED NOT NULL DEFAULT 1,
 			 channel_id int(4) unsigned NOT NULL,
 			 author_id int(10) unsigned NOT NULL default 0,
-			 pentry_id int(10) NOT NULL default 0,
 			 forum_topic_id int(10) unsigned NULL DEFAULT NULL,
-			 ip_address varchar(45) NOT NULL,
+			 ip_address varchar(45) default '0' NOT NULL,
 			 title varchar(100) NOT NULL,
 			 url_title varchar(75) NOT NULL,
 			 status varchar(50) NOT NULL,
@@ -635,9 +634,8 @@ class EE_Schema {
 			 site_id INT(4) UNSIGNED NOT NULL DEFAULT 1,
 			 channel_id int(4) unsigned NOT NULL,
 			 author_id int(10) unsigned NOT NULL default 0,
-			 pentry_id int(10) NOT NULL default 0,
 			 forum_topic_id int(10) unsigned NULL DEFAULT NULL,
-			 ip_address varchar(45) NOT NULL,
+			 ip_address varchar(45) default '0' NOT NULL,
 			 title varchar(100) NOT NULL,
 			 url_title varchar(75) NOT NULL,
 			 status varchar(50) NOT NULL,
@@ -950,7 +948,9 @@ class EE_Schema {
 			  is_default char(1) NOT NULL default 'y',
 			  server_order int(3) unsigned NOT NULL,
 			  PRIMARY KEY `id` (`id`),
-			  KEY `site_id` (`site_id`)
+			  KEY `site_id` (`site_id`),
+			  KEY `group_name_idx` (`group_name`),
+			  KEY `group_order_idx` (`group_order`)
 			)";		
 		
 		// Template Groups
@@ -1194,7 +1194,7 @@ class EE_Schema {
 			 `keywords` varchar(200) NOT NULL,
 			 `fields` varchar(200) NOT NULL,
 			 `member_id` int(10) unsigned NOT NULL,
-			 `ip_address` varchar(45) NOT NULL,
+			 `ip_address` varchar(45) default '0' NOT NULL,
 			 `total_results` int(8) unsigned NOT NULL,
 			 `query` text NOT NULL,
 			 PRIMARY KEY `search_id` (`search_id`),
@@ -1261,7 +1261,7 @@ class EE_Schema {
 		
 		$Q[] = "CREATE TABLE `exp_file_dimensions` (
 				`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-				`site_id` int(4) unsigned DEFAULT '1',
+				`site_id` int(4) unsigned NOT NULL DEFAULT '1',
 				`upload_location_id` int(4) unsigned DEFAULT NULL,
   				`title` varchar(255) DEFAULT '',
 				`short_name` varchar(255) DEFAULT '',

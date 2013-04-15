@@ -48,7 +48,7 @@ class Email_upd {
 		$sql[] = "CREATE TABLE IF NOT EXISTS exp_email_tracker (
 		email_id int(10) unsigned NOT NULL auto_increment,
 		email_date int(10) unsigned default '0' NOT NULL,
-		sender_ip varchar(16) NOT NULL,
+		sender_ip varchar(45) NOT NULL,
 		sender_email varchar(75) NOT NULL ,
 		sender_username varchar(50) NOT NULL ,
 		number_recipients int(4) unsigned default '1' NOT NULL,

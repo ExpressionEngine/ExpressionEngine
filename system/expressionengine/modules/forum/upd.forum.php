@@ -26,7 +26,7 @@
 
 class Forum_upd {
 
-	var $version			= '3.1.10';
+	var $version			= '3.1.11';
 	
 	function Forum_upd()
 	{
@@ -257,7 +257,6 @@ class Forum_upd {
 			topic_id int(10) unsigned NOT NULL auto_increment,
 			forum_id int(6) unsigned NOT NULL,
 			board_id int(6) unsigned NOT NULL DEFAULT '1',
-			pentry_id int(10) unsigned NOT NULL default '0',
 			moved_forum_id int(6) unsigned NOT NULL default '0',
 			author_id int(10) unsigned NOT NULL default '0',
 			ip_address varchar(45) NOT NULL,
@@ -941,6 +940,11 @@ class Forum_upd {
 					)
 				);	
 			}
+		}
+		
+		if (version_compare($current, '3.1.11', '<'))
+		{
+			ee()->smartforge->drop_column('forum_topics', 'pentry_id');
 		}
 		
 		return TRUE;		
