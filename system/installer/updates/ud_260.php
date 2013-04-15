@@ -481,19 +481,6 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		ee()->smartforge->modify_column('channel_entries_autosave', $fields);
 
 
-		$drop_column = array(
-			'category_groups'			=> 'is_user_blog',
-			'channel_titles'			=> 'pentry_id',
-			'channel_entries_autosave'	=> 'pentry_id',
-			'forum_topics'				=> 'pentry_id',
-		);
-
-		foreach ($drop_column as $k => $v)
-		{
-			ee()->smartforge->drop_column($k, $v);
-		}
-
-
 		$fields = array(
 			'timestamp'	=> array('type' => 'int',	'constraint' => 10,	'unsigned' => TRUE,	'null' => FALSE),
 			'viewed'	=> array('type' => 'char',	'constraint' => 1,	'null' => FALSE,	'default' => 'n')
@@ -561,10 +548,6 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		ee()->smartforge->modify_column('sites', $fields);
 
 
-		ee()->smartforge->add_key('template_groups', 'group_name', 'group_name_idx');
-		ee()->smartforge->add_key('template_groups', 'group_order', 'group_order_idx');
-
-
 		$fields = array(
 			'last_author_id'	=> array('type' => 'int',	'constraint' => 10,	'unsigned' => TRUE,	'null' => FALSE, 'default' => 0),
 		);
@@ -572,14 +555,29 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		ee()->smartforge->modify_column('templates', $fields);
 
 
-		ee()->smartforge->drop_column('upload_prefs', 'is_user_blog');
-
-
 		$fields = array(
 			'server_path'	=> array('type' => 'varchar',	'constraint' => 255,	'null' => FALSE, 'default' => ''),
 		);
 
 		ee()->smartforge->modify_column('upload_prefs', $fields);
+
+
+		ee()->smartforge->add_key('template_groups', 'group_name', 'group_name_idx');
+		ee()->smartforge->add_key('template_groups', 'group_order', 'group_order_idx');
+
+
+		$drop_column = array(
+			'category_groups'			=> 'is_user_blog',
+			'channel_titles'			=> 'pentry_id',
+			'channel_entries_autosave'	=> 'pentry_id',
+			'forum_topics'				=> 'pentry_id',
+			'upload_prefs'				=> 'is_user_blog',
+		);
+
+		foreach ($drop_column as $k => $v)
+		{
+			ee()->smartforge->drop_column($k, $v);
+		}
 	}
 
 	/**
