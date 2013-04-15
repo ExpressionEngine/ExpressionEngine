@@ -484,7 +484,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 			'permalink', 'photo_url', 'photo_image_height', 'photo_image_width',
 			'profile_path', 'recent_comment_date', 'relative_url', 'relative_date',
 			'screen_name', 'signature', 'signature_image_height', 'signature_image_url',
-			'signature_image_width', 'status', 'switch=', 'title', 'title_permalink',
+			'signature_image_width', 'status', 'switch', 'title', 'title_permalink',
 			'total_results', 'trimmed_url', 'url', 'url_or_email',
 			'url_or_email_as_author', 'url_or_email_as_link', 'url_title',
 			'url_title_path', 'username', 'week_date'
