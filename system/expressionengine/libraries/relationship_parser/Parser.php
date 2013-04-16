@@ -22,7 +22,7 @@
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class EE_relationship_data_parser {
+class EE_Relationship_data_parser {
 
 	protected $_tree;
 	protected $_entries;

@@ -162,12 +162,12 @@ class EE_relationship_tree_builder {
 			$entry_lookup[$entry['entry_id']] = $entry;
 		}
 
-		if ( ! class_exists('EE_relationship_data_parser'))
+		if ( ! class_exists('EE_Relationship_data_parser'))
 		{
 			require_once APPPATH.'libraries/relationship_parser/Parser.php';
 		}
 
-		return new EE_relationship_data_parser($root, $entry_lookup, $category_lookup);
+		return new EE_Relationship_data_parser($root, $entry_lookup, $category_lookup);
 	}
 
 	// --------------------------------------------------------------------
