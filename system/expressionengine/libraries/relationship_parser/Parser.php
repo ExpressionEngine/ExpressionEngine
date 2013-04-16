@@ -528,17 +528,16 @@ class EE_Relationship_data_parser {
 		{
 			$data = $this->entry($entry_id);
 
-			foreach ($order_by as $k)
+			foreach ($order_by as &$k)
 			{
+				$k = ($k == 'date') ? 'entry_date' : $k;
+
 				$columns[$k][] = $data[$k];
 			}
 		}
 
 		// default everyting to desc
-		$sort = array_merge(
-			array_fill_keys(array_keys($order_by), 'desc'),
-			$sort
-		);
+		$sort = $sort + array_fill_keys(array_keys($order_by), 'desc');
 
 		// fill array_multisort parameters
 		$sort_parameters = array();
