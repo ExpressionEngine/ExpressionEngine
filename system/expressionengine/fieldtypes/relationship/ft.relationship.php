@@ -168,6 +168,7 @@ class Relationship_ft extends EE_Fieldtype {
 
 		if (isset($data['data']) && ! empty($data['data'])) // autosave
 		{
+			var_dump($data['data']);
 			foreach ($data['data'] as $k => $id)
 			{
 				$selected[$k] = $id;

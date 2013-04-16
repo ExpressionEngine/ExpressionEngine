@@ -30,6 +30,8 @@ class Updater {
 	
 	public $version_suffix = '';
 
+
+	// Used by assign_relationship_data()
 	private $related_data = array();
 	private $reverse_related_data = array();
 	private $related_id;
@@ -205,8 +207,6 @@ class Updater {
 			),
 			'user_agent'
 		);
-		
-		return TRUE;
 	}
 
 	// --------------------------------------------------------------------
@@ -230,6 +230,7 @@ class Updater {
 		// to be renamed to the new processing method.
 		ee()->db->where('method', 'reset_password')
 			->update('actions', array('method'=>'process_reset_password'));
+
 
 	} 
 
@@ -258,10 +259,20 @@ If you do not wish to reset your password, ignore this message. It will expire i
 
 		ee()->db->where('template_name', 'forgot_password_instructions')
 			->update('specialty_templates', $data);
+		
 	}
 
 	// -------------------------------------------------------------------
 
+	/**
+	 * Update the Fieldtype and Channel Fields Tables for Relationships 
+ 	 *
+	 * Updates the fieldtypes and channel_fields tables to
+	 * use the new relationships field, instead of the old one.
+	 * Does its best to hang on to the settings of the old field.
+	 * 
+	 * @return	void
+	 */
 	private function _update_relationship_fieldtype()
 	{
 		// UPDATE TABLE `exp_fieldtypes` SET name='relationships' WHERE name='rel';
@@ -298,8 +309,16 @@ If you do not wish to reset your password, ignore this message. It will expire i
 
 	}
 
+	// -------------------------------------------------------------------
+
 	/**
- 	 *
+ 	 * Update the Relationships Table
+	 *
+	 * Update the relationships table for the new Relationships.  Pull
+	 * data from Channel_data, and while we're at it, clean out the
+	 * old relationships data that we no longer use.
+	 *
+	 * @return	void	
 	 */
 	private function _update_relationship_table()
 	{
@@ -378,6 +397,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 
 		ee()->db->where('field_type', 'relationship');
 		$fields = ee()->db->get('channel_fields');
+
 		$data = ee()->db->get('channel_data');
 
 		foreach ($data->result_array() as $entry)
@@ -388,8 +408,12 @@ If you do not wish to reset your password, ignore this message. It will expire i
 				{
 					continue;
 				}
+				// Update the relationships table with the field_id.
 				ee()->db->where('relationship_id', $entry['field_id_' . $field['field_id']]);
 				ee()->db->update('relationships', array('field_id' => $field['field_id']));	
+
+				// While we're at it, wipe out the old data.	
+				ee()->db->update('channel_data', array('field_id_' . $field['field_id']=> NULL));
 			}
 		}
 	
@@ -398,12 +422,21 @@ If you do not wish to reset your password, ignore this message. It will expire i
 			array(
 				'field_related_to', 'field_related_id', 'field_related_max',
 				'field_related_orderby', 'field_related_sort'));
+	
 	}
 
 	// -------------------------------------------------------------------
 
 	/**
+	 * Update all Relationship Tags in All Templates
 	 *
+	 * Examine the templates saved in the database and in file.  Search for all
+	 * instances of 'related_entries' and 'reverse_related_entries' replacing
+	 * them with the appropriate new Relationships tag.  'related_entries' tags
+	 * are replaced by the named field pair and 'reverse_related_entries' are
+	 * replaced by a 'parents' tag.
+	 *
+	 * @return void 
 	 */
 	private function _update_relationship_tags()
 	{
@@ -443,19 +476,20 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		}
 
 		ee()->config = $installer_config;
-		
-		return true;
 	}
 
 
 	/**
 	 * Find all {related_entries} tags in the passed Template
 	 *
-	 * Takes a passed Template_Entity and searches the template for
-	 * instances of {related_entries} and {reverse_related_entries}.
-	 * It then replaces them with the proper child tag or parents tag
-	 * respectively.  It does the replace in the entity object, allowing
-	 * the template to be saved by simply saving the entity.
+	 * Takes a passed Template_Entity and searches the template for instances
+	 * of {related_entries} and {reverse_related_entries}.  It then replaces
+	 * them with the proper child tag or parents tag respectively.  It does the
+	 * replace in the entity object, allowing the template to be saved by
+	 * simply saving the entity.
+	 *
+	 * This is a helper method called by _update_relationship_tags(), not to be
+	 * called in do_update().
 	 *
 	 * @param Template_Entity	The template you wish to find tags in.
 	 *
@@ -595,15 +629,21 @@ If you do not wish to reset your password, ignore this message. It will expire i
 	/**
 	 * Process Tags
 	 *
-	 * Channel entries can have related entries embedded within them.
-	 * We'll extract the related tag data, stash it away in an array, and
-	 * replace it with a marker string so that the template parser
-	 * doesn't see it.  In the channel class we'll check to see if the 
-	 * ee()->TMPL->related_data array contains anything.  If so, we'll celebrate
-	 * wildly.
+	 * Channel entries can have related entries embedded within them.  We'll
+	 * extract the related tag data, stash it away in an array, and replace it
+	 * with a marker string so that the template parser doesn't see it. 
 	 *
-	 * @param	string
-	 * @return	string
+	 * This is a helper method called by _replace_related_entries_tags(), not
+	 * to be called by do_update().
+	 *
+	 * This method has multiple side effects and makes use of the following
+	 * class variables:
+	 * 		$related_data, $reverse_related_data, 
+	 *		$related_id, $related_markers
+	 *
+	 * @param	string The template chunk to be chekd for relationship tags.
+	 *
+	 * @return	string The parsed template chunk, with relationship tags removed.
 	 */	
 	private function _assign_relationship_data($chunk)
 	{
