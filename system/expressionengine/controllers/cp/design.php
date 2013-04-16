@@ -1147,7 +1147,7 @@ class Design extends CP_Controller {
 
 				if ($current_group != 0)
 				{
-					$vars['templates']['template_group_div_'.$current_group]['select'] = form_multiselect('template_group_'.$row['group_id'].'[]', $tmpl, '', "size='8' class='multiselect' style='width:45%'");
+					$vars['templates']['template_group_div_'.$current_group]['select'] = form_multiselect('template_group_'.$row['group_id'].'[]', $tmpl, '', "size='8' style='width:45%'");
 					$vars['templates']['template_group_div_'.$current_group]['active'] = ($current_group == $group_id) ? TRUE : FALSE;
 					$tmpl = array();
 				}
@@ -1157,9 +1157,9 @@ class Design extends CP_Controller {
 			$current_group = $row['group_id'];
 		}
 
-		$groups = form_multiselect('template_groups', $groups, $group_id, "id='template_groups' size='10' class='multiselect' style='width:160px'");
+		$groups = form_multiselect('template_groups', $groups, $group_id, "id='template_groups' size='10' style='width:160px'");
 		
-		$vars['templates']['template_group_div_'.$current_group]['select'] = form_multiselect('template_group_'.$row['group_id'].'[]', $tmpl, '', "size='8' class='multiselect' style='width:45%'");
+		$vars['templates']['template_group_div_'.$current_group]['select'] = form_multiselect('template_group_'.$row['group_id'].'[]', $tmpl, '', "size='8' style='width:45%'");
 		$vars['templates']['template_group_div_'.$current_group]['active'] = ($current_group == $group_id) ? TRUE : FALSE;
 
 		$vars['groups'] = $groups;
