@@ -22,7 +22,7 @@
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class EE_relationship_data_parser {
+class EE_Relationship_data_parser {
 
 	protected $_tree;
 	protected $_entries;
@@ -372,6 +372,12 @@ class EE_relationship_data_parser {
 			$entry_ids = array_slice($entry_ids, $offset, $limit);
 		}
 
+		// make sure defaults are set
+		if ( ! $node->param('status'))
+		{
+			$node->set_param('status', 'open');
+		}
+
 		// prefilter anything prefixed the same as this tag so that we don't
 		// go around building huge lists with custom field data only to toss
 		// it all because the tag isn't in the field.
@@ -433,7 +439,7 @@ class EE_relationship_data_parser {
 					$not = TRUE;
 				}
 
-				// @todo support '&' inclusive stack
+				$value = trim($value,  " |\t\n\r");
 				$value = explode('|', $value);
 
 				if ($p == 'channel')
@@ -528,17 +534,16 @@ class EE_relationship_data_parser {
 		{
 			$data = $this->entry($entry_id);
 
-			foreach ($order_by as $k)
+			foreach ($order_by as &$k)
 			{
+				$k = ($k == 'date') ? 'entry_date' : $k;
+
 				$columns[$k][] = $data[$k];
 			}
 		}
 
 		// default everyting to desc
-		$sort = array_merge(
-			array_fill_keys(array_keys($order_by), 'desc'),
-			$sort
-		);
+		$sort = $sort + array_fill_keys(array_keys($order_by), 'desc');
 
 		// fill array_multisort parameters
 		$sort_parameters = array();

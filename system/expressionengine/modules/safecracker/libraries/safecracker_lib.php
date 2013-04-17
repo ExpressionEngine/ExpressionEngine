@@ -2689,7 +2689,7 @@ class Safecracker_lib
 				if (count($groups))
 				{
 					$where .= $where ? ' OR ' : '';
-					$where .= ee()->db->dbprefix('members').'.group_id IN ('.implode(', ', $members).')';
+					$where .= ee()->db->dbprefix('members').'.group_id IN ('.implode(', ', $groups).')';
 					ee()->db->join('members', 'members.member_id = channel_titles.author_id');
 				}
 

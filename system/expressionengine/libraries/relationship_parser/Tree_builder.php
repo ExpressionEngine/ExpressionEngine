@@ -162,12 +162,12 @@ class EE_relationship_tree_builder {
 			$entry_lookup[$entry['entry_id']] = $entry;
 		}
 
-		if ( ! class_exists('EE_relationship_data_parser'))
+		if ( ! class_exists('EE_Relationship_data_parser'))
 		{
 			require_once APPPATH.'libraries/relationship_parser/Parser.php';
 		}
 
-		return new EE_relationship_data_parser($root, $entry_lookup, $category_lookup);
+		return new EE_Relationship_data_parser($root, $entry_lookup, $category_lookup);
 	}
 
 	// --------------------------------------------------------------------
@@ -298,7 +298,11 @@ class EE_relationship_tree_builder {
 				'open_tag'	=> $match[0]
 			));
 
-			$nodes[$uuid] = $node;
+			if ($is_only_relationship)
+			{
+				$nodes[$uuid] = $node;
+			}
+
 			$parent = $nodes[$parent_id];
 			$parent->add($node);
 		}
