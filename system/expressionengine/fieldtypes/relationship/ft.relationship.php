@@ -641,29 +641,33 @@ class Relationship_ft extends EE_Fieldtype {
 		$fields = array(
 			'relationship_id' => array(
 				'type'				=> 'int',
-				'constraint'		=> 10,
+				'constraint'		=> 6,
 				'unsigned'			=> TRUE,
 				'auto_increment'	=> TRUE
 			),
 			'parent_id'	=> array(
 				'type'				=> 'int',
 				'constraint'		=> 10,
-				'unsigned'			=> TRUE
+				'unsigned'			=> TRUE,
+				'default'			=> 0
 			),
 			'child_id'  => array(
 				'type'				=> 'int',
 				'constraint'		=> 10,
-				'unsigned'			=> TRUE
+				'unsigned'			=> TRUE,
+				'default'			=> 0
 			),
 			'field_id'  => array(
 				'type'				=> 'int',
 				'constraint'		=> 10,
-				'unsigned'			=> TRUE
+				'unsigned'			=> TRUE,
+				'default'			=> 0
 			),
 			'order' 	=> array(
 				'type'				=> 'int',
 				'constraint'		=> 10,
-				'unsigned'			=> TRUE
+				'unsigned'			=> TRUE,
+				'default'			=> 0
 			)
 		);
 
