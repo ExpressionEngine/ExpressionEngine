@@ -705,7 +705,11 @@ class Cp {
 	{	
 		ee()->load->library('logger');
 		ee()->logger->deprecated('2.6', 'view-><var> = <value>;');
-		
+
+		// workaround for setting globals
+		ee()->load->vars($name, $value);
+
+		// the future!
 		ee()->view->$name = $value;
 	}
 	
