@@ -125,10 +125,11 @@ class EE_Relationship_data_parser {
 		}
 
 		$tag = preg_quote($node->name(), '/');
+		$open_tag = preg_quote($node->open_tag, '/');
 
 		if ($node->shortcut)
 		{
-			if (preg_match_all('/'.$node->open_tag.'(.+?){\/'.$tag.':'.$node->shortcut.'}/is', $tagdata, $matches, PREG_SET_ORDER))
+			if (preg_match_all('/'.$open_tag.'(.+?){\/'.$tag.':'.$node->shortcut.'}/is', $tagdata, $matches, PREG_SET_ORDER))
 			{
 				foreach ($matches as &$match)
 				{
@@ -178,7 +179,7 @@ class EE_Relationship_data_parser {
 		}
 		else
 		{
-			if ( ! preg_match_all('/'.$node->open_tag.'(.+?){\/'.$tag.'}/is', $tagdata, $matches, PREG_SET_ORDER))
+			if ( ! preg_match_all('/'.$open_tag.'(.+?){\/'.$tag.'}/is', $tagdata, $matches, PREG_SET_ORDER))
 			{
 				return $tagdata;
 			}
@@ -295,8 +296,9 @@ class EE_Relationship_data_parser {
 	public function clear_node_tagdata($node, $tagdata)
 	{
 		$tag = preg_quote($node->name(), '/');
+		$open_tag = preg_quote($node->open_tag, '/');
 
-		if ( ! preg_match_all('/'.$node->open_tag.'(.+?){\/'.$tag.'}/is', $tagdata, $matches, PREG_SET_ORDER))
+		if ( ! preg_match_all('/'.$open_tag.'(.+?){\/'.$tag.'}/is', $tagdata, $matches, PREG_SET_ORDER))
 		{
 			return $tagdata;
 		}
@@ -309,7 +311,7 @@ class EE_Relationship_data_parser {
 			$tagdata = substr_replace($tagdata, $no_results, strpos($tagdata, $match[0]), strlen($match[0]));
 		}
 
-		$tagdata = preg_replace('/'.$node->open_tag.'(.+?){\/'.$tag.'}/is', '', $tagdata);
+		$tagdata = preg_replace('/'.$open_tag.'(.+?){\/'.$tag.'}/is', '', $tagdata);
 		return str_replace($node->open_tag, '', $tagdata);
 	}
 
