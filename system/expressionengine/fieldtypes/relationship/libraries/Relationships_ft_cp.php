@@ -103,14 +103,18 @@ class Relationships_ft_cp {
 
 		if ( ! $cat_tree->is_leaf())
 		{
-			$cat_tree = $cat_tree->first_child();
 			$cat_it = $cat_tree->preorder_iterator();
 
 			$indent = str_repeat(NBS, 4);
 
 			foreach ($cat_it as $cat)
 			{
-				$categories[$cat->cat_id] = str_repeat($indent, $cat_it->getDepth()).$cat->cat_name;
+				if ($cat->is_root())
+				{
+					continue;
+				}
+
+				$categories[$cat->cat_id] = str_repeat($indent, $cat_it->getDepth() - 1).$cat->cat_name;
 			}
 		}
 
