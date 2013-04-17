@@ -145,7 +145,7 @@ class Smartforge {
 	 * @param	string	the column name
 	 * @return	bool
 	 */
-	public function drop_column($table = '', $column_name = '')
+	public function drop_column($table, $column_name)
 	{
 		// Check to make sure table exists
 		if ( ! ee()->db->table_exists($table))

@@ -149,7 +149,8 @@ class Updater {
 				'timezone' => array(
 					'name' 			=> 'timezone',
 					'type' 			=> 'varchar',
-					'constraint' 	=> 50
+					'constraint' 	=> 50,
+					'null'			=> FALSE
 				)
 			)
 		);
@@ -331,7 +332,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 				'rel_id' => array(
 					'name'			=> 'relationship_id',
 					'type'			=> 'int',
-					'constraint'	=> 10,
+					'constraint'	=> 6,
 					'unsigned'		=> TRUE,
 					'auto_increment'=> TRUE
 				)
@@ -347,6 +348,8 @@ If you do not wish to reset your password, ignore this message. It will expire i
 					'type'			=> 'int',
 					'constraint'	=> 10,
 					'unsigned'		=> TRUE,
+					'default'		=> 0,
+					'null'			=> FALSE
 				)
 			)
 		);
@@ -360,6 +363,8 @@ If you do not wish to reset your password, ignore this message. It will expire i
 					'type'			=> 'int',
 					'constraint'	=> 10,
 					'unsigned'		=> TRUE,
+					'default'		=> 0,
+					'null'			=> FALSE
 				)
 			)
 		);
@@ -375,7 +380,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 
 		// FIXME No way to do this with DB_forge at the moment it seems.
 		// alter table exp_relationships ADD KEY `field_id` (`field_id`);
-		// ee()->smartforge->add_key('field_id', FALSE);
+		ee()->smartforge->add_key('relationships', 'field_id');
 
 		// ALTER TABLE `exp_relationships` ADD COLUMN field_id int unsigned;
 		// ALTER TABLE exp_relationships ADD COLUMN `order` int unsigned;
@@ -385,23 +390,27 @@ If you do not wish to reset your password, ignore this message. It will expire i
 				'field_id' => array(
 					'type'			=> 'int',
 					'constraint'	=> 10,
-					'unsigned'		=> TRUE
+					'unsigned'		=> TRUE,
+					'default'		=> '0',
+					'null'			=> FALSE
 				),
 				'order' => array(
-					'type' => 'int',
-					'constraint' => 10,
-					'unsigned' => TRUE
+					'type'			=> 'int',
+					'constraint'	=> 10,
+					'unsigned'		=> TRUE,
+					'default'		=> '0',
+					'null'			=> FALSE
 				)
 			),
 			'child_id'
 		);
 	
 		// Wipe out the old, unsed relationship data.
-		ee()->smartforge->drop_column(
-			array(
-				'field_related_to', 'field_related_id', 'field_related_max',
-				'field_related_orderby', 'field_related_sort'));
-	
+		foreach (array( 'field_related_to', 'field_related_id', 'field_related_max',
+			'field_related_orderby', 'field_related_sort') as $column)
+		{
+			ee()->smartforge->drop_column('channel_fields', $column);
+		}
 	}
 
 	// -------------------------------------------------------------------
