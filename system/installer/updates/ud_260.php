@@ -419,23 +419,17 @@ If you do not wish to reset your password, ignore this message. It will expire i
 
 	private function _update_single_relationship_field(array $field)
 	{
-		ee()->db->where('field_id_' . $field['field_id'] . ' != 0');
-		$data = ee()->db->get('channel_data');
+		$relationships = ee()->db->dbprefix('relationships');
+		$channel_data = ee()->db->dbprefix('channel_data');
 
-		foreach ($data->result_array() as $entry)
-		{
-			// Update the relationships table with the field_id.
-			ee()->db->where('relationship_id', $entry['field_id_' . $field['field_id']]);
-			ee()->db->update('relationships', array('field_id' => $field['field_id']));	
+		$sql = 'UPDATE ' . $relationships . '
+			JOIN ' . $channel_data . '
+			ON (' . $relationships . '.relationship_id = ' . $channel_data . '.field_id_' . $field['field_id'] . ')
+			SET ' . $relationships . '.field_id = ' . $field['field_id'];
+		ee()->db->query($sql); 
 
-			// While we're at it, wipe out the old data.	
-			ee()->db->update('channel_data', array('field_id_' . $field['field_id']=> NULL));
-		}
-	
-		// PHP should be smart enough to garbage collect this on its 
-		// own.  But since memory is such an issue here, let's make it
-		// extra clear we want this wiped.  Just for good measure.	
-		unset($data);
+			
+		ee()->db->update('channel_data', array('field_id_' . $field['field_id']=> NULL));
 	}
 
 	// -------------------------------------------------------------------
