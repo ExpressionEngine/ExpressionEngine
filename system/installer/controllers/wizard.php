@@ -499,6 +499,8 @@ class Wizard extends CI_Controller {
 		// We will show the "you are running the most current version" template
 		if ($this->next_update === FALSE)
 		{
+			$this->_assign_install_values();
+			
 			$vars['installer_path'] = '/'.SYSDIR.'/installer';
 
 			// Set the path to the site and CP
