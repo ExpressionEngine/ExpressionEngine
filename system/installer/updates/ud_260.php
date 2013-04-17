@@ -65,6 +65,7 @@ class Updater {
 				'_update_specialty_templates',
 				'_update_relationship_fieldtype',
 				'_update_relationship_table',
+				'_update_relationship_data',
 				'_update_relationship_tags',
 				'_schema_cleanup'
 			)
@@ -394,28 +395,6 @@ If you do not wish to reset your password, ignore this message. It will expire i
 			),
 			'child_id'
 		);
-
-		ee()->db->where('field_type', 'relationship');
-		$fields = ee()->db->get('channel_fields');
-
-		$data = ee()->db->get('channel_data');
-
-		foreach ($data->result_array() as $entry)
-		{
-			foreach ($fields->result_array() as $field)
-			{
-				if (empty($entry['field_id_' . $field['field_id']]))
-				{
-					continue;
-				}
-				// Update the relationships table with the field_id.
-				ee()->db->where('relationship_id', $entry['field_id_' . $field['field_id']]);
-				ee()->db->update('relationships', array('field_id' => $field['field_id']));	
-
-				// While we're at it, wipe out the old data.	
-				ee()->db->update('channel_data', array('field_id_' . $field['field_id']=> NULL));
-			}
-		}
 	
 		// Wipe out the old, unsed relationship data.
 		ee()->smartforge->drop_column(
@@ -423,6 +402,40 @@ If you do not wish to reset your password, ignore this message. It will expire i
 				'field_related_to', 'field_related_id', 'field_related_max',
 				'field_related_orderby', 'field_related_sort'));
 	
+	}
+
+	// -------------------------------------------------------------------
+
+	private function _update_relationship_data()
+	{
+		ee()->db->where('field_type', 'relationship');
+		$fields = ee()->db->get('channel_fields');
+
+		foreach ($fields->result_array() as $field)
+		{
+			$this->_update_single_relationship_field($field);
+		}
+	}
+
+	private function _update_single_relationship_field(array $field)
+	{
+		ee()->db->where('field_id_' . $field['field_id'] . ' != 0');
+		$data = ee()->db->get('channel_data');
+
+		foreach ($data->result_array() as $entry)
+		{
+			// Update the relationships table with the field_id.
+			ee()->db->where('relationship_id', $entry['field_id_' . $field['field_id']]);
+			ee()->db->update('relationships', array('field_id' => $field['field_id']));	
+
+			// While we're at it, wipe out the old data.	
+			ee()->db->update('channel_data', array('field_id_' . $field['field_id']=> NULL));
+		}
+	
+		// PHP should be smart enough to garbage collect this on its 
+		// own.  But since memory is such an issue here, let's make it
+		// extra clear we want this wiped.  Just for good measure.	
+		unset($data);
 	}
 
 	// -------------------------------------------------------------------
