@@ -948,9 +948,7 @@ class EE_Schema {
 			  is_default char(1) NOT NULL default 'y',
 			  server_order int(3) unsigned NOT NULL,
 			  PRIMARY KEY `id` (`id`),
-			  KEY `site_id` (`site_id`),
-			  KEY `group_name_idx` (`group_name`),
-			  KEY `group_order_idx` (`group_order`)
+			  KEY `site_id` (`site_id`)
 			)";		
 		
 		// Template Groups
@@ -962,7 +960,9 @@ class EE_Schema {
 			 group_order int(3) unsigned NOT NULL,
 			 is_site_default char(1) NOT NULL default 'n',
 			 PRIMARY KEY `group_id` (`group_id`),
-			 KEY `site_id` (`site_id`)
+			 KEY `site_id` (`site_id`),
+			 KEY `group_name_idx` (`group_name`),
+			 KEY `group_order_idx` (`group_order`)
 			)";
 		
 		// Template data
