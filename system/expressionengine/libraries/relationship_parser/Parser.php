@@ -372,6 +372,12 @@ class EE_Relationship_data_parser {
 			$entry_ids = array_slice($entry_ids, $offset, $limit);
 		}
 
+		// make sure defaults are set
+		if ( ! $node->param('status'))
+		{
+			$node->set_param('status', 'open');
+		}
+
 		// prefilter anything prefixed the same as this tag so that we don't
 		// go around building huge lists with custom field data only to toss
 		// it all because the tag isn't in the field.
@@ -433,7 +439,7 @@ class EE_Relationship_data_parser {
 					$not = TRUE;
 				}
 
-				// @todo support '&' inclusive stack
+				$value = trim($value,  " |\t\n\r");
 				$value = explode('|', $value);
 
 				if ($p == 'channel')
