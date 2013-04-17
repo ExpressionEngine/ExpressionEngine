@@ -298,7 +298,11 @@ class EE_relationship_tree_builder {
 				'open_tag'	=> $match[0]
 			));
 
-			$nodes[$uuid] = $node;
+			if ($is_only_relationship)
+			{
+				$nodes[$uuid] = $node;
+			}
+
 			$parent = $nodes[$parent_id];
 			$parent->add($node);
 		}
