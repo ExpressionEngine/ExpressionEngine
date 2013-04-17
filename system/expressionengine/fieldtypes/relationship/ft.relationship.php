@@ -112,6 +112,17 @@ class Relationship_ft extends EE_Fieldtype {
 			);
 		}
 
+		// -------------------------------------------
+		// 'relationships_post_save' hook.
+		//  - Allow developers to modify or add to the relationships array before saving
+		//
+			if (ee()->extensions->active_hook('relationships_post_save') === TRUE)
+			{
+				$ships = ee()->extensions->call('relationships_post_save', $ships, $entry_id, $field_id);
+			}
+		//
+		// -------------------------------------------
+
 		if (count($ships))
 		{
 			ee()->db->insert_batch($this->_table, $ships);
@@ -155,19 +166,54 @@ class Relationship_ft extends EE_Fieldtype {
 		$entries = array();
 		$selected = array();
 
+		if (isset($data['data']) && ! empty($data['data'])) // autosave
+		{
+			foreach ($data['data'] as $k => $id)
+			{
+				$selected[$k] = $id;
+				$order[$id] = isset($data['sort'][$k]) ? $data['sort'][$k] : 0;
+			}
+		}
+
 		if ($entry_id)
 		{
-			$related = ee()->db
+			ee()->db
 				->select('child_id, order')
+				->from($this->_table)
 				->where('parent_id', $entry_id)
-				->where('field_id', $this->field_id)
-				->get($this->_table)
-				->result();
+				->where('field_id', $this->field_id);
+
+			// -------------------------------------------
+			// 'relationships_display_field' hook.
+			// - Allow developers to perform their own queries to modify which entries are retrieved
+			// 
+			// 	There are 3 ways to use this hook:
+			// 	 	1) Add to the existing Active Record call, e.g. ee()->db->where('foo', 'bar');
+			// 	 	2) Call ee()->db->_reset_select(); to terminate this AR call and start a new one
+			// 	 	3) Call ee()->db->_reset_select(); and modify the currently compiled SQL string
+			//   
+			//   All 3 require a returned query result array.
+			//
+			if (ee()->extensions->active_hook('relationships_display_field') === TRUE)
+			{
+				$related = ee()->extensions->call(
+					'relationships_display_field',
+					$entry_id,
+					$this->field_id,
+					ee()->db->_compile_select()
+				);
+			}
+			else
+			{
+				$related = ee()->db->get()->result_array();
+			}
+			//
+			// -------------------------------------------
 
 			foreach ($related as $row)
 			{
-				$selected[] = $row->child_id;
-				$order[$row->child_id] = $row->order;
+				$selected[] = $row['child_id'];
+				$order[$row['child_id']] = $row['order'];
 			}
 		}
 
@@ -214,34 +260,38 @@ class Relationship_ft extends EE_Fieldtype {
 
 		if (count($limit_authors))
 		{
-			// @todo TODO ick
-			// @todo php 5.3 only! argh
-			$groups = preg_filter('/^g_/', '', $limit_authors);
-			$members = preg_filter('/^m_/', '', $limit_authors);
+			$groups = array();
+			$members = array();
 
-			$fn = 'where_in';
+			foreach ($limit_authors as $author)
+			{
+				switch ($author[0])
+				{
+					case 'g': $groups[] = substr($author, 2);
+						break;
+					case 'm': $members[] = substr($author, 2);
+						break;
+				}
+			}
+
+			$where = '';
 
 			if (count($members))
 			{
-				ee()->db->where_in('channel_titles.author_id', $members);	
-				$fn = 'or_where_in';
+				$where .= ee()->db->dbprefix('channel_titles').'.author_id IN ('.implode(', ', $members).')';
 			}
 
 			if (count($groups))
 			{
+				$where .= $where ? ' OR ' : '';
+				$where .= ee()->db->dbprefix('members').'.group_id IN ('.implode(', ', $groups).')';
 				ee()->db->join('members', 'members.member_id = channel_titles.author_id');
-				ee()->db->$fn('members.group_id', $groups);
 			}
-		}
 
-		if ($entry_id)
-		{
-			ee()->db->where('channel_titles.entry_id !=', $entry_id);
-		}
-
-		if (count($selected))
-		{
-			ee()->db->or_where_in('channel_titles.entry_id', $selected);
+			if ($where)
+			{
+				ee()->db->where("({$where})");
+			}
 		}
 
 		// Limit times
@@ -256,6 +306,16 @@ class Relationship_ft extends EE_Fieldtype {
 		{
 			$t = ee()->db->dbprefix('channel_titles');
 			ee()->db->where("(${t}.expiration_date = 0 OR ${t}.expiration_date > ${now})", NULL, FALSE);
+		}
+
+		if ($entry_id)
+		{
+			ee()->db->where('channel_titles.entry_id !=', $entry_id);
+		}
+
+		if (count($selected))
+		{
+			ee()->db->or_where_in('channel_titles.entry_id', $selected);
 		}
 
 		$entries = ee()->db->get('channel_titles')->result_array();
@@ -284,9 +344,8 @@ class Relationship_ft extends EE_Fieldtype {
 
 		if (count($entries))
 		{
-			$js = $this->_publish_js();
-			$js .= "EE.setup_relationship_field('#${field_name}');";
-			ee()->javascript->output($js);
+			ee()->cp->add_js_script('file', 'cp/relationships');
+			ee()->javascript->output("EE.setup_relationship_field('#${field_name}');");
 		}
 
 		return $str;
@@ -487,6 +546,17 @@ class Relationship_ft extends EE_Fieldtype {
 		}
 	}
 
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Save Settings
+	 *
+	 * Save the settings page. Populates the defaults, adds the user
+	 * settings and sends that off to be serialized.
+	 *
+	 * @return	array	settings
+	 */	
 	public function save_settings($data)
 	{
 		$form = $this->_form();
@@ -555,28 +625,6 @@ class Relationship_ft extends EE_Fieldtype {
 		$form->populate($default_values);
 
 		return $form;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Javascript
-	 *
-	 * Create the required javascript
-	 *
-	 * @return	void
-	 */	
-	protected function _publish_js()
-	{
-		if (ee()->session->cache(__CLASS__, 'js_loaded') === TRUE)
-		{
-			return '';
-		}
-
-		$js = file_get_contents(PATH_FT.'relationship/javascript/cp.js');
-
-		ee()->session->cache(__CLASS__, 'js_loaded', TRUE);
-		return $js;
 	}
 
 	// --------------------------------------------------------------------

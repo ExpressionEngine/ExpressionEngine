@@ -1807,22 +1807,28 @@ BSH;
 
 		ee()->smartforge->rename_table('weblog_data', 'channel_data');
 
-		ee()->db->set('template_data', "REPLACE(`template_data`, 'weblog:weblog_name', 'channel:channel_name')");
-		ee()->db->set('template_data', "REPLACE(`template_data`, 'exp:weblog', 'exp:channel')");
-		ee()->db->set('template_data', "REPLACE(`template_data`, '{assign_variable:', '{preload_replace:')");	// this is necessary before the following query
-		ee()->db->set('template_data', "REPLACE(`template_data`, '{preload_replace:my_weblog=', '{preload_replace:my_channel=')");
-		ee()->db->set('template_data', "REPLACE(`template_data`, '{my_weblog}', '{my_channel}')");
-		ee()->db->set('template_data', "REPLACE(`template_data`, '{weblog}', '{channel}')");
-		ee()->db->set('template_data', "REPLACE(`template_data`, 'weblog_', 'channel_')");
-		ee()->db->set('template_data', "REPLACE(`template_data`, '_weblog', '_channel')");
-		ee()->db->set('template_data', "REPLACE(`template_data`, 'weblog=', 'channel=')");
-		ee()->db->set('template_data', "REPLACE(`template_data`, '{blog_title}', '{channel_title}')");
-		ee()->db->set('template_data', "REPLACE(`template_data`, '{blog_description}', '{channel_description}')");
-		ee()->db->set('template_data', "REPLACE(`template_data`, '{blog_encoding}', '{channel_encoding}')");
-		ee()->db->set('template_data', "REPLACE(`template_data`, '{blog_lang}', '{channel_lang}')");
-		ee()->db->set('template_data', "REPLACE(`template_data`, '{blog_url}', '{channel_url}')");
-		ee()->db->update('templates');
-
+		$template_replacements = array(
+			'weblog:weblog_name'			=> 'channel:channel_name',
+			'exp:weblog'					=> 'exp:channel',
+			'{assign_variable:'				=> '{preload_replace:',	// this is necessary before the following query
+			'{preload_replace:my_weblog='	=> '{preload_replace:my_channel=',
+			'{my_weblog}'					=> '{my_channel}',
+			'{weblog}'						=> '{channel}',
+			'weblog_'						=> 'channel_',
+			'_weblog'						=> '_channel',
+			'weblog='						=> 'channel=',
+			'{blog_title}'					=> '{channel_title}',
+			'{blog_description}'			=> '{channel_description}',
+			'{blog_encoding}'				=> '{channel_encoding}',
+			'{blog_lang}'					=> '{channel_lang}',
+			'{blog_url}'					=> '{channel_url}',			
+		);
+		
+		foreach ($template_replacements as $k => $v)
+		{
+			ee()->db->set('template_data', "REPLACE(`template_data`, '{$k}', '{$v}')", FALSE);
+			ee()->db->update('templates');
+		}
 		
 		ee()->db->set('module_name', 'Channel');
 		ee()->db->where('module_name', 'Weblog');

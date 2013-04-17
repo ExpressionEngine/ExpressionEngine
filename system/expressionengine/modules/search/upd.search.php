@@ -25,7 +25,7 @@ if ( ! defined('EXT'))
 
 class Search_upd {
 
-	var $version = '2.2';
+	var $version = '2.2.1';
 	
 	function Search_upd()
 	{
@@ -58,7 +58,8 @@ class Search_upd {
 					 query mediumtext NULL DEFAULT NULL,
 					 custom_fields mediumtext NULL DEFAULT NULL,
 					 result_page varchar(70) NOT NULL,
-					 PRIMARY KEY `search_id` (`search_id`)
+					 PRIMARY KEY `search_id` (`search_id`),
+					 KEY `site_id` (`site_id`)
 					) ENGINE=MyISAM CHARACTER SET utf8 COLLATE utf8_general_ci";
 														
 		$sql[] = "CREATE TABLE IF NOT EXISTS exp_search_log (
@@ -160,6 +161,20 @@ class Search_upd {
 
 				ee()->dbforge->modify_column($table, $column_settings);	
 			}
+		}
+
+		if (version_compare($current, '2.2.1', '<'))
+		{
+			ee()->load->library('smartforge');
+
+			$fields = array(
+				'site_id'		=> array('type' => 'int',		'constraint' => '4',	'null' => FALSE,	'default' => 1),
+				'per_page'		=> array('type' => 'tinyint',	'constraint' => '3',	'unsigned' => TRUE,	'null' => FALSE),
+			);
+
+			ee()->smartforge->modify_column('search', $fields);
+
+			ee()->smartforge->add_key('search', 'site_id');
 		}
 		
 		return TRUE;

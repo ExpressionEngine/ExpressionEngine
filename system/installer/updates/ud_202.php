@@ -36,9 +36,13 @@ class Updater {
     {
 
 		// Modules now have a tab setting
-		ee()->db->set('rel_type', 'channel');
-		ee()->db->where('rel_type', 'blog');
-		ee()->db->update('relationships');
+		if (ee()->db->table_exists('relationships')
+			AND ee()->db->field_exists('rel_type', 'relationships'))
+		{
+			ee()->db->set('rel_type', 'channel');
+			ee()->db->where('rel_type', 'blog');
+			ee()->db->update('relationships');
+		}
 
 		ee()->smartforge->drop_column('channels', 'show_url_title');
 		ee()->smartforge->drop_column('channels', 'show_ping_cluster');

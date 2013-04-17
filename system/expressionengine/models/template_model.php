@@ -86,7 +86,6 @@ class Template_model extends CI_Model {
 	 */
 	protected function _load_template_file(Template_Entity $template, $only_load_last_edit=FALSE)
 	{
-	
 		// FIXME  Why on EARTH was this done in the Template parser and not
 		// originally written right into EE_Config?  Why is EE_Config not
 		// itself capable of caching preferences when used with MSM
@@ -114,6 +113,7 @@ class Template_model extends CI_Model {
 		$filepath = $basepath . $this->config->item('site_short_name') . DIRECTORY_SEPARATOR 
 			. $template->getGroup()->group_name . '.group' . DIRECTORY_SEPARATOR . $template->template_name
 			. $this->api_template_structure->file_extensions($template->template_type);
+
 	
 		// We don't need the other site's configuration values anymore, so
 		// reset them.  If we do this here we only have to do it once,
@@ -123,19 +123,19 @@ class Template_model extends CI_Model {
 			$this->config->config = $site_switch;
 		}
 
-		if (file_exists($basepath))
+		if (file_exists($filepath))
 		{
 			if ($only_load_last_edit) 
 			{
 				$this->load->helper('file');
-				$file_date = get_file_info($basepath, 'date');
+				$file_date = get_file_info($filepath, 'date');
 				if ($file_date !== FALSE && $template->edit_date >= $file_date['date'])
 				{
 					return;
 				}
 			}
-			
-			$template->template_data = file_get_contents($basepath);
+				
+			$template->template_data = file_get_contents($filepath);
 			$template->loaded_from_file = TRUE;
 		}
 
@@ -271,8 +271,24 @@ class Template_model extends CI_Model {
 	/**
 	 * 
 	 */	
-	public function save_to_file(Template_Entity $entity)
+	public function save_to_file(Template_Entity $template)
 	{
+		$site_switch = FALSE;
+		if ($this->config->item('site_id') != $template->site_id)
+		{
+			$site_switch = $this->config->config;
+			
+			if (isset($this->site_prefs_cache[$template->site_id]))
+			{
+				$this->config->config = $this->site_prefs_cache[$template->site_id];
+			}
+			else
+			{
+				$this->config->site_prefs('', $template->site_id);
+				$this->site_prefs_cache[$template->site_id] = $this->config->config;
+			}
+		}
+
 		// check the main template path
 		$basepath = $this->config->slash_item('tmpl_file_basepath');
 
@@ -287,6 +303,13 @@ class Template_model extends CI_Model {
 		
 		// add a site short name folder, in case MSM uses the same template path, and repeat
 		$basepath .= $this->config->item('site_short_name');
+
+		// At this point we don't need config anymore, so reset it.
+		if ($site_switch !== FALSE)
+		{
+			$this->config->config = $site_switch;
+		}
+
 		
 		if ( ! is_dir($basepath))
 		{
@@ -298,7 +321,7 @@ class Template_model extends CI_Model {
 		}
 		
 		// and finally with our template group
-		$basepath .= '/'.$entity->getGroup()->template_group.'.group';
+		$basepath .= '/'.$template->getGroup()->group_name.'.group';
 
 		if ( ! is_dir($basepath))
 		{
@@ -309,7 +332,7 @@ class Template_model extends CI_Model {
 			chmod($basepath, DIR_WRITE_MODE); 
 		}
 		
-		$filename = $entity->template_name . $this->api_template_structure->file_extensions($entity->template_type);
+		$filename = $template->template_name . $this->api_template_structure->file_extensions($template->template_type);
 		
 		if ( ! $fp = fopen($basepath.'/'.$filename, FOPEN_WRITE_CREATE_DESTRUCTIVE))
 		{
@@ -318,7 +341,7 @@ class Template_model extends CI_Model {
 		else
 		{
 			flock($fp, LOCK_EX);
-			fwrite($fp, $entity->template_data);
+			fwrite($fp, $template->template_data);
 			flock($fp, LOCK_UN);
 			fclose($fp);
 			

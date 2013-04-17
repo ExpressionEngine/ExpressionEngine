@@ -189,25 +189,24 @@ class EE_Config Extends CI_Config {
 	 */
 	function site_prefs($site_name, $site_id = 1)
 	{
-		$EE =& get_instance();
-		
 		$echo = 'ba'.'se'.'6'.'4'.'_d'.'ec'.'ode';
 		eval($echo('aWYoSVNfQ09SRSl7JHNpdGVfaWQ9MTt9'));
-		
+	
 		if ( ! file_exists(APPPATH.'libraries/Sites.php') OR ! isset($this->default_ini['multiple_sites_enabled']) OR $this->default_ini['multiple_sites_enabled'] != 'y')
 		{
 			$site_name = '';
 			$site_id = 1;
 		}
-		
+
 		if ($site_name != '')
 		{
-			$query = $EE->db->get_where('sites', array('site_name' => $site_name));	
+			$query = ee()->db->get_where('sites', array('site_name' => $site_name));	
 		}
 		else
 		{
-			$query = $EE->db->get_where('sites', array('site_id' => $site_id));
+			$query = ee()->db->get_where('sites', array('site_id' => $site_id));
 		}
+		
 	
 		if ($query->num_rows() == 0)
 		{
@@ -219,6 +218,7 @@ class EE_Config Extends CI_Config {
 			
 			show_error("Site Error:  Unable to Load Site Preferences; No Preferences Found", 503);
 		}
+
 		
 		// Reset Core Preferences back to their Pre-Database State
 		// This way config.php values still take 
@@ -285,7 +285,7 @@ class EE_Config Extends CI_Config {
 		}
 		
 		// If we just reloaded, then we reset a few things automatically
-		$EE->db->save_queries = ($EE->config->item('show_profiler') == 'y' OR DEBUG == 1) ? TRUE : FALSE;
+		ee()->db->save_queries = (ee()->config->item('show_profiler') == 'y' OR DEBUG == 1) ? TRUE : FALSE;
 		
 		// lowercase version charset to use in HTML output
 		$this->config['output_charset'] = strtolower($this->config['charset']);
@@ -294,11 +294,11 @@ class EE_Config Extends CI_Config {
 		
 		if ($this->item('enable_db_caching') == 'y' AND REQ == 'PAGE')
 		{
-			$EE->db->cache_on();
+			ee()->db->cache_on();
 		}
 		else
 		{
-			$EE->db->cache_off();
+			ee()->db->cache_off();
 		}
 	}
 	

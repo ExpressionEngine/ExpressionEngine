@@ -30,7 +30,7 @@ class Channel_entries_model extends CI_Model {
 	/**
 	 *
 	 */
-	public function get_entry_sql(array $entries)
+	public function get_entry_data(array $entries)
 	{
 		$sql = 'SELECT t.entry_id, t.channel_id, t.forum_topic_id, t.author_id, t.ip_address, t.title, t.url_title, t.status, t.view_count_one, t.view_count_two, t.view_count_three, t.view_count_four, t.allow_comments, t.comment_expiration_date, t.sticky, t.entry_date, t.year, t.month, t.day, t.edit_date, t.expiration_date, t.recent_comment_date, t.comment_total, t.site_id as entry_site_id,
 				  w.channel_title, w.channel_name, w.channel_url, w.comment_url, w.comment_moderate, w.channel_html_formatting, w.channel_allow_img_urls, w.channel_auto_link_urls, w.comment_system_enabled, 
@@ -45,7 +45,10 @@ class Channel_entries_model extends CI_Model {
 
 		$sql .= 'WHERE t.entry_id IN ('.implode(',', $entries).')';
 
-		return $sql;
+		$query_result = ee()->db->query($sql);
+		$entries = $query_result->result_array();
+		$query_result->free_result();
+		return $entries;
 	}
 
 	// --------------------------------------------------------------------

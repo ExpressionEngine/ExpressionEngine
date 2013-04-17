@@ -1,4 +1,5 @@
-<?php
+<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -67,9 +68,18 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component {
 		$prefix = $obj->prefix();
 
 		$site_id = $data['site_id'];
-		$cfields = $obj->channel()->cfields[$site_id];
-		$rfields = $obj->channel()->rfields[$site_id];
+		$cfields = $obj->channel()->cfields;
+		$rfields = $obj->channel()->rfields;
+
+		$rfields = isset($rfields[$site_id]) ? $rfields[$site_id] : array();
+		$cfields = isset($cfields[$site_id]) ? $cfields[$site_id] : array();
+
 		$cfields = array_diff_key($cfields, $rfields);
+
+		if (empty($cfields))
+		{
+			return $tagdata;
+		}
 
 		$unprefixed_tag	= preg_replace('/^'.$prefix.'/', '', $tag);
 		$field_name		= substr($unprefixed_tag.' ', 0, strpos($unprefixed_tag.' ', ' '));
@@ -147,6 +157,8 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component {
 
 				$tagdata = str_replace(LD.$tag.RD, $entry, $tagdata);
 			}
+
+			$tagdata = str_replace(LD.$tag.RD, '', $tagdata);
 		}
 
 		return $tagdata;
