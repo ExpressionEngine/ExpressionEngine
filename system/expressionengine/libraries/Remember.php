@@ -199,7 +199,7 @@ class Remember {
 			$id = $this->_generate_id();
 			
 			// push the expiration date ahead by as much as we've lost
-			$adjust_expire = $this->data['last_refresh'] - ee()->localize->now;
+			$adjust_expire =  ee()->localize->now - $this->data['last_refresh'];
 			
 			// refresh all the data
 			$this->data['last_refresh'] = ee()->localize->now;
