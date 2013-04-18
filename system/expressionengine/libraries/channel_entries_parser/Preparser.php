@@ -85,12 +85,6 @@ class EE_Channel_preparser {
 
 		$this->pairs	= $this->_extract_prefixed(ee()->TMPL->var_pair);
 		$this->singles	= $this->_extract_prefixed(ee()->TMPL->var_single);
-/*
-		$this->pairs	= $this->_extract_prefixed(ee()->TMPL->var_pair);
-		$this->singles	= $this->_extract_prefixed(ee()->TMPL->var_single);
-*/
-
-
 
 		// Run through component pre_processing steps, skipping any that
 		// were specified as being disabled.
