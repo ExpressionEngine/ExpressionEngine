@@ -341,6 +341,16 @@ class Safecracker_lib
 				
 				$custom_field_variables_row['field_data'] = ee()->localize->human_time($this->entry($field_name));
 			}
+
+			if ($field['field_type'] == 'relationship')
+			{
+				$settings = $this->get_field_data($field_name);
+				$custom_field_variables_row['allow_multiple'] = 0;
+				if (isset($settings['allow_multiple']))
+				{
+					$custom_field_variables_row['allow_multiple'] = ($settings['allow_multiple'] == 0) ? 0 : 1;
+				}
+			}
 			
 			$custom_field_variables[$field_name] = $custom_field_variables_row;
 		}
@@ -2723,33 +2733,22 @@ class Safecracker_lib
 				ee()->db->or_where_in('channel_titles.entry_id', $selected);
 			}
 
+			ee()->db->distinct();
 			$entries = ee()->db->get('channel_titles')->result_array();
 
 			$options = array();
-
-			if ($settings['allow_multiple'] == 0)
+			foreach ($entries as $entry)
 			{
-				foreach ($entries as $entry)
-				{
-					$options[$entry['entry_id']] = $entry['title'];
-				}
-			}
-			else
-			{
-				$options = array();
-				foreach ($entries as $entry)
-				{
-					$checked = in_array($entry['entry_id'], $selected);
-					$sort = $checked ? $order[$entry['entry_id']] : 0;
+				$checked = in_array($entry['entry_id'], $selected);
+				$sort = $checked ? $order[$entry['entry_id']] : 0;
 
-					$options[] = array(
-						'option_value' => $entry['entry_id'],
-						'option_name' => $entry['title'],
-						'option_order' => $sort,
-						'selected' => $checked ? ' selected="selected"' : '',
-						'checked' => $checked ? ' checked="checked"' : '',
-					);
-				}
+				$options[] = array(
+					'option_value' => $entry['entry_id'],
+					'option_name' => $entry['title'],
+					'option_order' => $sort,
+					'selected' => $checked ? ' selected="selected"' : '',
+					'checked' => $checked ? ' checked="checked"' : '',
+				);
 			}
 		}
 		
