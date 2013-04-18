@@ -43,6 +43,28 @@ class Relationship_ft extends EE_Fieldtype {
 	 */
 	public function validate($data)
 	{
+		$data = isset($data['data']) ? $data['data'] : array();
+
+		$set = array();
+
+		foreach ($data as $i => $child_id)
+		{
+			if ( ! $child_id)
+			{
+				continue;
+			}
+
+			$set[] = $child_id;
+		}
+
+		if ($this->settings['field_required'] == 'y')
+		{
+			if ( ! count($set))
+			{
+				return lang('required');
+			}
+		}
+
 		return TRUE;
 	}
 

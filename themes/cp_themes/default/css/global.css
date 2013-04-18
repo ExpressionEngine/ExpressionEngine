@@ -4150,7 +4150,7 @@ div.pageContents,
 .multiselect-filter {
 	border: 1px solid #B6C0C2;
 	border-bottom: none;
-	margin: 0;
+	margin: 7px 0 0 0;
 }
 
 .multiselect-filter input,
