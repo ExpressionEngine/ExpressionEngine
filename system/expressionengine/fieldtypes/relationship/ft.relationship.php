@@ -123,7 +123,9 @@ class Relationship_ft extends EE_Fieldtype {
 		//
 		// -------------------------------------------
 
-		if (count($ships))
+		
+		// If child_id is empty, they are deleting a single relationship
+		if (count($ships) && ! empty($ships[0]['child_id']))
 		{
 			ee()->db->insert_batch($this->_table, $ships);
 		}
@@ -322,7 +324,8 @@ class Relationship_ft extends EE_Fieldtype {
 
 		if ($this->settings['allow_multiple'] == 0)
 		{
-			$options = array();
+			$options[''] = '--';
+			
 			foreach ($entries as $entry)
 			{
 				$options[$entry['entry_id']] = $entry['title'];
