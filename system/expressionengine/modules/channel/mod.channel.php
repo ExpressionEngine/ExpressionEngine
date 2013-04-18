@@ -33,14 +33,6 @@ class Channel {
 	public $query;
 	public $TYPE;
 	public $entry_id				= '';
-
-	/**
-	 * Cache of entry ids from the entries we just pulled, generated in
-	 * build_sql_query() and then sent to the Relationships library when
-	 * pulling relationships.
- 	 */
-	protected $_entry_ids				= array();
-
 	public $uri						= '';
 	public $uristr					= '';
 	public $return_data				= '';	 	// Final data
@@ -2372,7 +2364,6 @@ class Channel {
 				continue;
 			}
 			
-			$this->_entry_ids[] = $row['entry_id'];
 			$this->sql .= $row['entry_id'].',';
 		}
 
@@ -2435,15 +2426,17 @@ class Channel {
 			}
 		}
 
-		// We'll process what we can before starting to replace things to
-		// avoid redundant processing cycles in the foreach loop below
+		// Relate entry_ids to their entries for quick lookup and then parse
+		$entries = array();
 
-		$preparsed = $parser->pre_parser($this, $this->_entry_ids, compact('disable'));
-
-		$data_parser = $parser->data_parser($preparsed);
+		foreach ($query_result as $i => $row)
+		{
+			unset($query_result[$i]);
+			$entries[$row['entry_id']] = $row;
+		}
 
 		$data = array(
-			'entries'			=> $query_result,
+			'entries'			=> $entries,
 			'categories'		=> $this->categories,
 			'absolute_results'	=> $this->absolute_results,
 			'absolute_offset'	=> $this->pagination->offset
@@ -2454,10 +2447,11 @@ class Channel {
 				'entry_row_data'	 => array($this, 'callback_entry_row_data'),
 				'tagdata_loop_start' => array($this, 'callback_tagdata_loop_start'),
 				'tagdata_loop_end'	 => array($this, 'callback_tagdata_loop_end')
-			)
+			),
+			'disable' => compact('disable')
 		);
 
-		$this->return_data = $data_parser->parse($data, $config);
+		$this->return_data = $parser->parse($this, $data, $config);
 
 		// Kill multi_field variable
 		if (strpos($this->return_data, 'multi_field=') !== FALSE)
@@ -4877,6 +4871,22 @@ class Channel {
 		 }
 
 		return $return;
+	}
+
+	// ------------------------------------------------------------------------
+
+	// The old relationship functions. No longer needed, stop calling them.
+	
+	public function parse_reverse_related_entries()
+	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated('2.6');
+	}
+
+	public function parse_related_entries()
+	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated('2.6');
 	}
 
 	// ------------------------------------------------------------------------
