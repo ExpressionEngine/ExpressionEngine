@@ -1633,7 +1633,7 @@ class Sites extends CP_Controller {
 				
 					foreach($moved as $channel_id => $field_group)
 					{
-						$query = $this->db->select('field_id, field_type, field_related_to')
+						$query = $this->db->select('field_id, field_type')
 							->get_where(
 								'channel_fields',
 								array('group_id' => $field_group)
@@ -1699,7 +1699,7 @@ class Sites extends CP_Controller {
 										->update('channel_data');
 								}
 								
-								if ($row['field_type'] == 'relationship' && $row['field_related_to'] == 'channel')
+								if ($row['field_type'] == 'relationship')
 								{
 									$related_fields[] = 'field_ft_'.$field_match[$row['field_id']];  // We used this for moved relationships, see above
 								}
