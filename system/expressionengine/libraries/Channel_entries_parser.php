@@ -173,7 +173,7 @@ class EE_Channel_parser {
 	 *					custom fields. They are stored in public arrays so we
 	 *					cannot assume they remain unchanged =( .
 	 *
-	 * @param entries - An array of data arrays. Required: 'entries'.
+	 * @param data - An array of data arrays. Required: 'entries'.
 	 *
 	 *	  entries	 =>	array of {entry_id => row_data} that should be
 	 *					used as the data for the template.
@@ -188,13 +188,13 @@ class EE_Channel_parser {
 	 *
 	 * @return string	Parsed tagdata
 	 */
-	public function parse(Channel $channel, array $entries, array $config = array())
+	public function parse(Channel $channel, array $data, array $config = array())
 	{
 		$parser = $this->data_parser(
-			$this->pre_parser($channel, array_keys($entries), $config)
+			$this->pre_parser($channel, array_keys($data['entries']), $config)
 		);
 		
-		return $parser->parse($entries, $config);
+		return $parser->parse($data, $config);
 	}
 
 	// --------------------------------------------------------------------
