@@ -2459,56 +2459,6 @@ class Channel {
 
 		$this->return_data = $data_parser->parse($data, $config);
 
-		// Start the main processing loop
-/*
-		foreach $query_result as $count => $row)
-		{
-
-		//	...
-		//	$cond['signature_image_url']	= ee()->config->slash_item('sig_img_url').$row['sig_img_filename'];
-		//	$cond['signature_image_width']	= $row['sig_img_width'];
-		//	$cond['signature_image_height']	= $row['sig_img_height'];
-		//	$cond['relative_date']			= timespan($row['entry_date']);
-
-			if (isset($this->cfields[$row['site_id']]))
-			{
-				foreach($this->cfields[$row['site_id']] as $key => $value)
-				{
-					$cond[$key] = ( ! isset($row['field_id_'.$value])) ? '' : $row['field_id_'.$value];
-					
-					// Is this field used with a modifier anywhere?
-					if (isset($modified_conditionals[$key]) && count($modified_conditionals[$key]))
-					{
-						ee()->load->library('api');
-						ee()->api->instantiate('channel_fields');
-
-						if (ee()->api_channel_fields->setup_handler($value))
-						{
-							foreach($modified_conditionals[$key] as $modifier)
-							{
-								ee()->api_channel_fields->apply('_init', array(array('row' => $row)));
-								$data = ee()->api_channel_fields->apply('pre_process', array($cond[$key]));
-								if (ee()->api_channel_fields->check_method_exists('replace_'.$modifier))
-								{
-									$cond[$key.':'.$modifier] = ee()->api_channel_fields->apply('replace_'.$modifier, array($data, array(), FALSE));
-								}
-								else
-								{							
-									$cond[$key.':'.$modifier] = FALSE;
-									ee()->TMPL->log_item('Unable to find parse type for custom field conditional: '.$key.':'.$modifier);
-								}
-							}
-						}
-					}
-				}
-			}
-
-			// Reset custom variable pair cache
-			$parsed_custom_pairs = array();
-
-		}
-		// END FOREACH LOOP
-*/
 		// Kill multi_field variable
 		if (strpos($this->return_data, 'multi_field=') !== FALSE)
 		{

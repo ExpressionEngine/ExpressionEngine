@@ -325,8 +325,9 @@ class Relationship_ft extends EE_Fieldtype {
 			ee()->db->or_where_in('channel_titles.entry_id', $selected);
 		}
 
+		ee()->db->distinct();
 		$entries = ee()->db->get('channel_titles')->result_array();
-
+		
 		if ($this->settings['allow_multiple'] == 0)
 		{
 			$options[''] = '--';
@@ -338,6 +339,7 @@ class Relationship_ft extends EE_Fieldtype {
 
 			return form_dropdown($field_name.'[data][]', $options, current($selected));
 		}
+
 
 // Performance debug
 //		$entries = array_merge($entries, $entries, $entries, $entries, $entries); // 5n
