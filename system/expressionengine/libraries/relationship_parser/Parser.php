@@ -312,6 +312,11 @@ class EE_Relationship_data_parser {
 		$tag = preg_quote($node->name(), '/');
 		$open_tag = preg_quote($node->open_tag, '/');
 
+		if ($node->shortcut)
+		{
+			$tagdata = str_replace($node->open_tag, '', $tagdata);
+		}
+
 		if ( ! preg_match_all('/'.$open_tag.'(.+?){\/'.$tag.'}/is', $tagdata, $matches, PREG_SET_ORDER))
 		{
 			return $tagdata;
