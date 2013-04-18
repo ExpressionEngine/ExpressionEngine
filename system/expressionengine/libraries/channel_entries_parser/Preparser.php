@@ -113,8 +113,8 @@ class EE_Channel_preparser {
 
 		}
 
-		// @todo these need to move elsewhere
-		$this->subscriber_totals	= $this->_subscriber_totals();
+		// Some more pre-processing work.
+		$this->subscriber_totals	 = $this->_subscriber_totals();
 		$this->modified_conditionals = $this->_find_modified_conditionals();
 	}
 
@@ -306,7 +306,16 @@ class EE_Channel_preparser {
 		return $filtered;
 	}
 
-	// @todo (re-)move
+	// --------------------------------------------------------------------
+
+	/**
+	 * Comment subscriber lookup
+	 *
+	 * Not entirely sure this should be here. It falls into a similar realm
+	 * as categories, so we might be able to do it earlier. It's fine for now.
+	 *
+	 * @return subscriber information
+	 */
 	protected function _subscriber_totals()
 	{
 		$subscribers = array();
@@ -323,7 +332,17 @@ class EE_Channel_preparser {
 		return $subscribers;
 	}
 
-	// @todo (re-)move
+	// --------------------------------------------------------------------
+
+	/**
+	 * Find modified conditionals
+	 *
+	 * The regular custom field conditional prep does not correctly identify
+	 * custom fields with modifiers in conditionals ie. {if image:small}, so
+	 * we grab those separately.
+	 *
+	 * @return list of modified variables in conditionals
+	 */
 	public function _find_modified_conditionals()
 	{
 		$prefix = $this->_prefix;
