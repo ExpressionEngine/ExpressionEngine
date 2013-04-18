@@ -2631,7 +2631,6 @@ class Safecracker_lib
 
 			$settings = $this->get_field_data($field_name);
 
-
 			$limit_channels = $settings['channels'];
 			$limit_categories = $settings['categories'];
 			$limit_statuses = $settings['statuses'];
@@ -2737,6 +2736,18 @@ class Safecracker_lib
 			$entries = ee()->db->get('channel_titles')->result_array();
 
 			$options = array();
+			
+			if (empty($settings['allow_multiple']))
+			{
+				$options[] = array(
+					'option_value' => '',
+					'option_name' => '--',
+					'option_order' => 0,
+					'selected' => '',
+					'checked' => ''
+				);
+			}
+			
 			foreach ($entries as $entry)
 			{
 				$checked = in_array($entry['entry_id'], $selected);
@@ -2749,6 +2760,8 @@ class Safecracker_lib
 					'selected' => $checked ? ' selected="selected"' : '',
 					'checked' => $checked ? ' checked="checked"' : '',
 				);
+				
+
 			}
 		}
 		
