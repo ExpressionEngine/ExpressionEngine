@@ -129,6 +129,10 @@ class EE_Relationship_data_parser {
 
 		if ($node->shortcut)
 		{
+			$entry_ids = $node->entry_ids();
+			$entry_ids = array_unique($entry_ids[$parent_id]);
+			$entry_id = reset($entry_ids);
+
 			if (preg_match_all('/'.$open_tag.'(.+?){\/'.$tag.':'.$node->shortcut.'}/is', $tagdata, $matches, PREG_SET_ORDER))
 			{
 				foreach ($matches as &$match)
@@ -138,11 +142,21 @@ class EE_Relationship_data_parser {
 			}
 			else
 			{
+				// Common single tag used outside the loop tag, we do it
+				// here because the parser only gets one entry for shortcut
+				// pairs. It's also much faster compared to spinning up the
+				// channel entries parser.
+				if ($node->shortcut == 'total_results')
+				{
+					return str_replace(
+						$node->open_tag,
+						count($entry_ids),
+						$tagdata
+					);
+				}
+
 				$matches = array(array($node->open_tag, $node->open_tag));
 			}
-
-			$entry_ids = $node->entry_ids();
-			$entry_id = reset($entry_ids[$parent_id]);
 
 			$categories = array();
 
