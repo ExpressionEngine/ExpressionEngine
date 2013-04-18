@@ -1238,7 +1238,6 @@ class Api_channel_fields extends Api {
 		}
 		
 		// Set some defaults
-		$native_settings['field_related_id']		= ($tmp = $this->_get_ft_data($field_type, 'field_related_channel_id', $field_data)) ? $tmp : '0';
 		$native_settings['field_list_items']		= ($tmp = $this->_get_ft_data($field_type, 'field_list_items', $field_data)) ? $tmp : '';
 				
 		$native_settings['field_text_direction']	= ($native_settings['field_text_direction'] !== FALSE) ? $native_settings['field_text_direction'] : 'ltr';
