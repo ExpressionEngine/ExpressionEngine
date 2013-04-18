@@ -104,6 +104,11 @@ class Relationship_ft extends EE_Fieldtype {
 
 		foreach ($data as $i => $child_id)
 		{
+			if ( ! $child_id)
+			{
+				continue;
+			}
+
 			$ships[] = array(
 				'parent_id'	=> $entry_id,
 				'child_id'	=> $child_id,
@@ -125,7 +130,7 @@ class Relationship_ft extends EE_Fieldtype {
 
 		
 		// If child_id is empty, they are deleting a single relationship
-		if (count($ships) && ! empty($ships[0]['child_id']))
+		if (count($ships))
 		{
 			ee()->db->insert_batch($this->_table, $ships);
 		}
