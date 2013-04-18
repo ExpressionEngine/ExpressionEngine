@@ -173,7 +173,7 @@ class Relationship_ft extends EE_Fieldtype {
 		$entries = array();
 		$selected = array();
 
-		if (isset($data['data']) && ! empty($data['data'])) // autosave
+		if (is_array($data) && isset($data['data']) && ! empty($data['data'])) // autosave
 		{
 			foreach ($data['data'] as $k => $id)
 			{
