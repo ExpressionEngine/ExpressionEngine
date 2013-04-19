@@ -28,6 +28,8 @@ class EE_Relationship_data_parser {
 	protected $_entries;
 	protected $_categories;
 
+	protected $_channel;
+
 	public function __construct($tree, $entries, $categories)
 	{
 		$this->_tree = $tree;
@@ -83,6 +85,7 @@ class EE_Relationship_data_parser {
 	public function parse($entry_id, $tagdata, $channel)
 	{
 		$node = $this->_tree;
+		$this->_channel = $channel;
 
 		// push the root node down right away
 		if ( ! $node->is_root())
@@ -92,7 +95,6 @@ class EE_Relationship_data_parser {
 
 		ee()->load->library('api');
 		ee()->api->instantiate('channel_fields');
-		ee()->session->set_cache('relationships', 'channel', $channel);
 
 		foreach ($node->children() as $child)
 		{
@@ -266,7 +268,7 @@ class EE_Relationship_data_parser {
 	public function replace($node, $tagdata, $data)
 	{
 		$prefix = $node->name().':';
-		$channel = ee()->session->cache('relationships', 'channel');
+		$channel = $this->_channel;
 
 		// Load the parser
 		ee()->load->library('channel_entries_parser');
@@ -535,7 +537,7 @@ class EE_Relationship_data_parser {
 		}
 
 		// custom field
-		$channel = ee()->session->cache('relationships', 'channel');
+		$channel = $this->_channel;
 
 		foreach($channel->cfields as $site_id => $cfields)
 		{
