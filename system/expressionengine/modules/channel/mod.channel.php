@@ -209,7 +209,6 @@ class Channel {
 	  */
 	public function entries()
 	{
-
 		// If the "related_categories" mode is enabled
 		// we'll call the "related_categories" function
 		// and bail out.
@@ -2452,6 +2451,14 @@ class Channel {
 		);
 
 		$this->return_data = $parser->parse($this, $data, $config);
+
+
+		unset($parser, $entries, $data);
+
+		if (function_exists('gc_collect_cycles'))
+		{
+			gc_collect_cycles();
+		}
 
 		// Kill multi_field variable
 		if (strpos($this->return_data, 'multi_field=') !== FALSE)
