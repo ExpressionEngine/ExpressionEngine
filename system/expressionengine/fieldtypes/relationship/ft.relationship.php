@@ -668,6 +668,11 @@ class Relationship_ft extends EE_Fieldtype {
 	 */	
 	public function install()
 	{
+		if (ee()->db->table_exists($this->_table))
+		{
+			return;
+		}
+		
 		ee()->load->dbforge();
 
 		$fields = array(
