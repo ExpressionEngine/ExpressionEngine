@@ -588,7 +588,10 @@ If you do not wish to reset your password, ignore this message. It will expire i
 					$tagdata = str_replace('{/' . $variable, '{/' . $new_var, $tagdata);
 				}
 			}
-		
+
+			// If no_related_entries no longer works.  It's been replaced by prefix:no_results
+			str_replace('{if no_related_entries}', '{if ' . $relationship_tag['field_name'] . ':no_results}', $tagdata);	
+				
 			$tagdata = '{' . $relationship_tag['field_name'] . '}' . $tagdata . '{/' . $relationship_tag['field_name'] . '}';
 			$target = '{REL[' . $relationship_tag['field_name'] . ']' . $marker . 'REL}';
 			$template->template_data = str_replace($target, $tagdata, $template->template_data);
@@ -627,6 +630,9 @@ If you do not wish to reset your password, ignore this message. It will expire i
 					$tagdata = str_replace('{/' . $variable, '{/' . $new_var, $tagdata); 
 				}
 			}
+		
+			// If no_reverse_related_entries doesn't work anymore.  Replace with no_results.	
+			str_replace('{if no_reverse_related_entries}', '{if parents:no_results}', $tagdata);
 
 			$parentTag = 'parents ';
 			foreach ($relationship_tag['params'] as $param=>$value)
