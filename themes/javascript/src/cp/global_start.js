@@ -492,7 +492,7 @@ EE.cp.zebra_tables = function(table) {
 	if (scripts.length > SCRIPT_COUNT) {
 
 		var fn = console.groupCollapsed || console.log;
-		fn('Found third party scripts in <head> tag.');
+		fn.call(console, 'Found third party scripts in <head> tag.');
 		console.log('Please use cp->add_to_foot() to add scripts. jQuery and the EE global will be moved down in a future release.');
 
 		scripts.slice(SCRIPT_COUNT).each(function() {
