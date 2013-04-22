@@ -1702,8 +1702,7 @@ class Channel {
 					/*	PHP script this is the best approach possible.
 					/*  ---------------------------------*/
 
-					$timezones = timezones();
-					$loc_offset = $timezones[ee()->config->item('server_timezone')] * 3600;
+					$loc_offset = $this->_get_timezone_offset();
 
 					if (ee()->TMPL->fetch_param('start_day') === 'Monday')
 					{
@@ -1814,7 +1813,7 @@ class Channel {
 
 							foreach ($distinct as $val)
 							{
-								$sql_offset = $timezones[ee()->config->item('server_timezone')] * 3600;
+								$sql_offset = $this->_get_timezone_offset();
 
 								if (ee()->TMPL->fetch_param('start_day') === 'Monday')
 								{
@@ -2382,6 +2381,40 @@ class Channel {
 		}
 
 		$this->sql .= $end;
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Gets timezone offset for use in SQL queries for the display_by parameter
+	 * 
+	 * @return int
+	 */
+	private function _get_timezone_offset()
+	{
+		ee()->load->helper('date');
+
+		$offset = 0;
+		$timezones = timezones();
+		$timezone = ee()->config->item('server_timezone');
+
+		// Check legacy timezone formats
+		if (isset($timezones[$timezone]))
+		{
+			$offset = $timezones[$timezone] * 3600;
+		}
+		// Otherwise, get the offset from DateTime
+		else
+		{
+			$dt = new DateTime('now', new DateTimeZone($timezone));
+
+			if ($dt)
+			{
+				$offset = $dt->getOffset();
+			}
+		}
+
+		return $offset;
 	}
 
 	// ------------------------------------------------------------------------
