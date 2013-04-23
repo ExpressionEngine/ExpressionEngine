@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -39,7 +39,7 @@ class File_ft extends EE_Fieldtype {
 	function __construct()
 	{
 		parent::__construct();
-		$this->EE->load->library('file_field');
+		ee()->load->library('file_field');
 	}
 	
 	// --------------------------------------------------------------------
@@ -51,8 +51,8 @@ class File_ft extends EE_Fieldtype {
 	 */
 	function save($data)
 	{
-		$directory = $this->EE->input->post($this->field_name.'_hidden_dir');
-		return $this->EE->file_field->format_data(urldecode($data), $directory);
+		$directory = ee()->input->post($this->field_name.'_hidden_dir');
+		return ee()->file_field->format_data(urldecode($data), $directory);
 	}
 	
 	// --------------------------------------------------------------------
@@ -64,7 +64,7 @@ class File_ft extends EE_Fieldtype {
 	 */
 	function validate($data)
 	{
-		return $this->EE->file_field->validate(
+		return ee()->file_field->validate(
 			$data, 
 			$this->field_name,
 			$this->settings['field_required']
@@ -82,8 +82,8 @@ class File_ft extends EE_Fieldtype {
 	{
 		$allowed_file_dirs		= (isset($this->settings['allowed_directories']) && $this->settings['allowed_directories'] != 'all') ? $this->settings['allowed_directories'] : '';
 		$content_type			= (isset($this->settings['field_content_type'])) ? $this->settings['field_content_type'] : 'all';
-		
-		return $this->EE->file_field->field(
+
+		return ee()->file_field->field(
 			$this->field_name,
 			$data,
 			$allowed_file_dirs,
@@ -100,7 +100,7 @@ class File_ft extends EE_Fieldtype {
 	 */
 	function pre_process($data)
 	{
-		return $this->EE->file_field->parse_field($data);
+		return ee()->file_field->parse_field($data);
 	}
 	
 	// --------------------------------------------------------------------
@@ -113,7 +113,7 @@ class File_ft extends EE_Fieldtype {
 	 */
 	function pre_loop($data)
 	{
-		$this->EE->file_field->cache_data($data);
+		ee()->file_field->cache_data($data);
 	}
 	
 	// --------------------------------------------------------------------
@@ -131,14 +131,20 @@ class File_ft extends EE_Fieldtype {
 			return $file_info['raw_output'];
 		}
 		
+		// Let's allow our default thumbs to be used inside the tag pair
+		if (isset($file_info['path']) && isset($file_info['filename']) && isset($file_info['extension']))
+		{
+			$file_info['url:thumbs'] = $file_info['path'].'_thumbs/'.$file_info['filename'].'.'.$file_info['extension'];
+		}	
+
 		// Make sure we have file_info to work with
 		if ($tagdata !== FALSE AND $file_info === FALSE)
 		{
-			$tagdata = $this->EE->functions->prep_conditionals($tagdata, array());
+			$tagdata = ee()->functions->prep_conditionals($tagdata, array());
 		}
 		else if ($tagdata !== FALSE)
 		{
-			$tagdata = $this->EE->functions->prep_conditionals($tagdata, $file_info);
+			$tagdata = ee()->functions->prep_conditionals($tagdata, $file_info);
 
 			// -----------------------------
 			// Any date variables to format?
@@ -150,7 +156,7 @@ class File_ft extends EE_Fieldtype {
 
 			foreach ($date_vars as $val)
 			{
-				if (preg_match_all("/".LD.$val."\s+format=[\"'](.*?)[\"']".RD."/s", $this->EE->TMPL->tagdata, $matches))
+				if (preg_match_all("/".LD.$val."\s+format=[\"'](.*?)[\"']".RD."/s", ee()->TMPL->tagdata, $matches))
 				{
 					for ($j = 0; $j < count($matches['0']); $j++)
 					{
@@ -160,61 +166,49 @@ class File_ft extends EE_Fieldtype {
 						switch ($val)
 						{
 							case 'upload_date':
-								$upload_date[$matches['0'][$j]] = $this->EE->localize->fetch_date_params($matches['1'][$j]);
+								$upload_date[$matches['0'][$j]] = $matches['1'][$j];
 								break;
 							case 'modified_date':
-								$modified_date[$matches['0'][$j]] = $this->EE->localize->fetch_date_params($matches['1'][$j]);
+								$modified_date[$matches['0'][$j]] = $matches['1'][$j];
 								break;
 						}
 					}
 				}
 			}
 
-			foreach ($this->EE->TMPL->var_single as $key => $val)
+			foreach (ee()->TMPL->var_single as $key => $val)
 			{
 				// Format {upload_date}
 				if (isset($upload_date[$key]))
 				{
-					foreach ($upload_date[$key] as $dvar)
-					{
-						$val = str_replace(
-							$dvar, 
-							$this->EE->localize->convert_timestamp(
-								$dvar, 
-								$file_info['upload_date'], 
-								TRUE
-							), 
-							$val
-						);
-					}
-
-					$tagdata = $this->EE->TMPL->swap_var_single($key, $val, $tagdata);
+					$tagdata = ee()->TMPL->swap_var_single(
+						$key,
+						ee()->localize->format_date(
+							$upload_date[$key], 
+							$file_info['upload_date']
+						),
+						$tagdata
+					);
 				}
 
 				// Format {modified_date}
 				if (isset($modified_date[$key]))
 				{
-					foreach ($modified_date[$key] as $dvar)
-					{
-						$val = str_replace(
-							$dvar, 
-							$this->EE->localize->convert_timestamp(
-								$dvar, 
-								$file_info['modified_date'], 
-								TRUE
-							),
-							$val
-						);
-					}
-
-					$tagdata = $this->EE->TMPL->swap_var_single($key, $val, $tagdata);
+					$tagdata = ee()->TMPL->swap_var_single(
+						$key,
+						ee()->localize->format_date(
+							$modified_date[$key], 
+							$file_info['modified_date']
+						),
+						$tagdata
+					);
 				}
 			}
 
 			// ---------------
 			// Parse the rest!
 			// ---------------
-			$tagdata = $this->EE->functions->var_swap($tagdata, $file_info);
+			$tagdata = ee()->functions->var_swap($tagdata, $file_info);
 			
 			// More an example than anything else - not particularly useful in this context
 			if (isset($params['backspace']))
@@ -232,22 +226,7 @@ class File_ft extends EE_Fieldtype {
 
 			if (isset($params['wrap']))
 			{
-				if ($params['wrap'] == 'link')
-				{
-					$this->EE->load->helper('url_helper');
-					
-					return $file_info['file_pre_format']
-						.anchor($full_path, $file_info['filename'], $file_info['file_properties'])
-						.$file_info['file_post_format'];
-				}
-				elseif ($params['wrap'] == 'image')
-				{
-					$properties = ( ! empty($file_info['image_properties'])) ? ' '.$file_info['image_properties'] : '';
-					
-					return $file_info['image_pre_format']
-						.'<img src="'.$full_path.'"'.$properties.' alt="'.$file_info['filename'].'" />'
-						.$file_info['image_post_format'];
-				}
+				return $this->_wrap_it($file_info, $params['wrap'], $full_path);
 			}
 
 			return $full_path;
@@ -266,12 +245,64 @@ class File_ft extends EE_Fieldtype {
 	 */
 	function replace_tag_catchall($file_info, $params = array(), $tagdata = FALSE, $modifier)
 	{
-		if ($modifier AND isset($file_info['path']))
+		// These are single variable tags only, so no need for replace_tag
+		if ($modifier)
 		{
-			$file_info['path'] .= '_'.$modifier.'/';
-		}
+			$key = 'url:'.$modifier;
+			
+			if ($modifier == 'thumbs')
+			{
+				if (isset($file_info['path']) && isset($file_info['filename']) && isset($file_info['extension']))
+				{
+			 		$data = $file_info['path'].'_thumbs/'.$file_info['filename'].'.'.$file_info['extension'];	
+				}				
+			}
+			elseif (isset($file_info[$key]))
+			{
+				$data = $file_info[$key];
+			}
 
-		return $this->replace_tag($file_info, $params, $tagdata);
+			if (empty($data))
+			{
+				return $tagdata;
+			}
+			
+			if (isset($params['wrap']))
+			{
+				return $this->_wrap_it($file_info, $params['wrap'], $data);
+			}
+			
+			return $data;
+		}
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Wrap it helper function
+	 *
+	 * @access	private
+	 */
+	function _wrap_it($file_info, $type, $full_path)
+	{
+		if ($type == 'link')
+		{
+			ee()->load->helper('url_helper');
+					
+			return $file_info['file_pre_format']
+				.anchor($full_path, $file_info['filename'], $file_info['file_properties'])
+				.$file_info['file_post_format'];
+		}
+		elseif ($type == 'image')
+		{
+			$properties = ( ! empty($file_info['image_properties'])) ? ' '.$file_info['image_properties'] : '';
+					
+			return $file_info['image_pre_format']
+				.'<img src="'.$full_path.'"'.$properties.' alt="'.$file_info['filename'].'" />'
+				.$file_info['image_post_format'];
+		}
+		
+		return $full_path;
 	}
 
 	// --------------------------------------------------------------------
@@ -285,18 +316,18 @@ class File_ft extends EE_Fieldtype {
 	{
 		$prefix = 'file';
 
-		$this->EE->load->model('file_upload_preferences_model');
+		ee()->load->model('file_upload_preferences_model');
 		
 		$field_content_options = array('all' => lang('all'), 'image' => lang('type_image'));
 
-		$this->EE->table->add_row(
+		ee()->table->add_row(
 			lang('field_content_file', $prefix.'field_content_type'),
 			form_dropdown('file_field_content_type', $field_content_options, $data['field_content_type'], 'id="'.$prefix.'field_content_type"')
 		);
 		
 		$directory_options['all'] = lang('all');
 		
-		$dirs = $this->EE->file_upload_preferences_model->get_file_upload_preferences(1);
+		$dirs = ee()->file_upload_preferences_model->get_file_upload_preferences(1);
 
 		foreach($dirs as $dir)
 		{
@@ -305,7 +336,7 @@ class File_ft extends EE_Fieldtype {
 		
 		$allowed_directories = ( ! isset($data['allowed_directories'])) ? 'all' : $data['allowed_directories'];
 
-		$this->EE->table->add_row(
+		ee()->table->add_row(
 			lang('allowed_dirs_file', $prefix.'field_allowed_dirs'),
 			form_dropdown('file_allowed_directories', $directory_options, $allowed_directories, 'id="'.$prefix.'field_allowed_dirs"')
 		);		
@@ -319,8 +350,8 @@ class File_ft extends EE_Fieldtype {
 	function save_settings($data)
 	{		
 		return array(
-			'field_content_type'	=> $this->EE->input->post('file_field_content_type'),
-			'allowed_directories'	=> $this->EE->input->post('file_allowed_directories'),
+			'field_content_type'	=> ee()->input->post('file_field_content_type'),
+			'allowed_directories'	=> ee()->input->post('file_allowed_directories'),
 			'field_fmt' 			=> 'none'
 		);
 	}	

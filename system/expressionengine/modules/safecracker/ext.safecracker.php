@@ -6,7 +6,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team, 
  * 		- Original Development by Barrett Newton -- http://barrettnewton.com
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -116,13 +116,13 @@ class Safecracker_ext
 		$this->fetch_member_groups();
 		$this->fetch_fieldtypes();
 		
-		$this->EE->load->library('javascript');
-		$this->EE->load->library('table');
-		$this->EE->load->helper('form');
+		ee()->load->library('javascript');
+		ee()->load->library('table');
+		ee()->load->helper('form');
 		
-		$this->EE->cp->set_variable('cp_page_title', lang('safecracker_module_name'));
+		ee()->view->cp_page_title = lang('safecracker_module_name');
 		
-		$this->EE->cp->add_to_head('
+		ee()->cp->add_to_head('
 	<script type="text/javascript" charset="utf-8">
 // <![CDATA[
 
@@ -151,7 +151,7 @@ class Safecracker_ext
 </script>
 		');
 		
-		$this->EE->javascript->output("
+		ee()->javascript->output("
 			$('.safecracker_member_list').change(function(){
 				if ($(this).val() == '{NEXT}') {
 					$.SafeCracker.memberListOptions.offset += 100;
@@ -182,7 +182,7 @@ class Safecracker_ext
 		");
 
 		$vars = array(
-			'site_id' => $this->EE->config->item('site_id'),
+			'site_id' => ee()->config->item('site_id'),
 			'action_url' => 'C=addons_extensions'.AMP.'M=save_extension_settings'.AMP.'file=safecracker',
 			'settings' => $this->settings,
 			'channels' => $this->channels,
@@ -192,7 +192,7 @@ class Safecracker_ext
 			'fieldtypes' => $this->fieldtypes
 		);
 		
-		return $this->EE->load->view('index', $vars, TRUE);
+		return ee()->load->view('index', $vars, TRUE);
 	}
 
 	// --------------------------------------------------------------------
@@ -207,7 +207,7 @@ class Safecracker_ext
 		$this->fetch_channels();
 		$this->fetch_settings();
 
-		$site_id = $this->EE->config->item('site_id');
+		$site_id = ee()->config->item('site_id');
 
 		// We should be able to just check override_status in order
 		// to determine whether we've initialized the settings for
@@ -220,7 +220,7 @@ class Safecracker_ext
 			$this->settings['require_captcha'][$site_id] = array();
 		}
 
-		$post = $this->EE->security->xss_clean($_POST);
+		$post = ee()->security->xss_clean($_POST);
 		foreach ($this->channels as $row)
 		{
 			// Just make things a little clearer.
@@ -262,13 +262,13 @@ class Safecracker_ext
 		}
 		
 
-		$this->EE->db->update(
+		ee()->db->update(
 			'extensions',
 			array('settings' => serialize($this->settings)),
 			array('class' => 'Safecracker_ext')
 		);
 		
-		$this->EE->functions->redirect(BASE.AMP.'C=addons_extensions'.AMP.'M=extension_settings'.AMP.'file=safecracker');
+		ee()->functions->redirect(BASE.AMP.'C=addons_extensions'.AMP.'M=extension_settings'.AMP.'file=safecracker');
 	}
 
 	// --------------------------------------------------------------------
@@ -285,11 +285,11 @@ class Safecracker_ext
 			return;
 		}
 		
-		$this->EE->db->select('settings');
-		$this->EE->db->where('class', 'Safecracker_ext');
-		$this->EE->db->limit(1);
+		ee()->db->select('settings');
+		ee()->db->where('class', 'Safecracker_ext');
+		ee()->db->limit(1);
 		
-		$query = $this->EE->db->get('extensions');
+		$query = ee()->db->get('extensions');
 		
 		$this->settings = ($query->row('settings')) ? $this->unserialize($query->row('settings')) : NULL;
 
@@ -321,9 +321,9 @@ class Safecracker_ext
 			return;
 		}
 		
-		$this->EE->load->model('channel_model');
+		ee()->load->model('channel_model');
 		
-		$query = $this->EE->channel_model->get_channels();
+		$query = ee()->channel_model->get_channels();
 			
 		$this->channels = $query->result_array();
 			
@@ -344,11 +344,11 @@ class Safecracker_ext
 			return;
 		}
 		
-		$this->EE->load->library('api');
+		ee()->load->library('api');
 		
-		$this->EE->api->instantiate('channel_fields');
+		ee()->api->instantiate('channel_fields');
 		
-		$this->fieldtypes = $this->EE->api_channel_fields->fetch_installed_fieldtypes();
+		$this->fieldtypes = ee()->api_channel_fields->fetch_installed_fieldtypes();
 	}
 
 	// --------------------------------------------------------------------
@@ -367,9 +367,9 @@ class Safecracker_ext
 		
 		$this->members = array();
 		
-		$this->EE->load->model('member_model');
+		ee()->load->model('member_model');
 		
-		$query = $this->EE->member_model->get_members('', 101);
+		$query = ee()->member_model->get_members('', 101);
 		
 		if ( ! $query)
 		{
@@ -416,9 +416,9 @@ class Safecracker_ext
 			return;
 		}
 		
-		$this->EE->load->model('member_model');
+		ee()->load->model('member_model');
 		
-		$query = $this->EE->member_model->get_member_groups();
+		$query = ee()->member_model->get_member_groups();
 		
 		$this->member_groups[''] = lang('safecracker_select_member_group');
 		
@@ -449,7 +449,7 @@ class Safecracker_ext
 		
 		$this->statuses = array();
 		
-		$this->EE->lang->loadfile('content');
+		ee()->lang->loadfile('content');
 		
 		foreach ($this->channels as $channel)
 		{
@@ -457,10 +457,10 @@ class Safecracker_ext
 			
 			if ( ! empty($channel['status_group']) && empty($this->statuses[$channel['channel_id']]))
 			{
-				$this->EE->db->select('status');
-				$this->EE->db->where('group_id', $channel['status_group']);
+				ee()->db->select('status');
+				ee()->db->where('group_id', $channel['status_group']);
 				
-				$query = $this->EE->db->get('statuses');
+				$query = ee()->db->get('statuses');
 				
 				foreach ($query->result() as $row)
 				{
@@ -503,48 +503,48 @@ class Safecracker_ext
 	 */
 	public function form_declaration_modify_data($data)
 	{
-		if (is_array($this->EE->extensions->last_call))
+		if (is_array(ee()->extensions->last_call))
 		{
-			$data = $this->EE->extensions->last_call;
+			$data = ee()->extensions->last_call;
 		}
 		
-		if (isset($this->EE->TMPL)
-			AND is_object($this->EE->TMPL)
-			AND ! empty($this->EE->session->cache['safecracker']['form_declaration'])
-			AND $this->EE->safecracker->form_loaded)
+		if (isset(ee()->TMPL)
+			AND is_object(ee()->TMPL)
+			AND ! empty(ee()->session->cache['safecracker']['form_declaration'])
+			AND ee()->safecracker->form_loaded)
 		{
-			unset($this->EE->session->cache['safecracker']['form_declaration']);
+			unset(ee()->session->cache['safecracker']['form_declaration']);
 			
 			// a hack to retrieve the output_js array from channel standalone
-			if (isset($this->EE->safecracker->channel_standalone->output_js))
+			if (isset(ee()->safecracker->channel_standalone->output_js))
 			{
-				$this->EE->session->cache['safecracker']['channel_standalone_output_js'] = $this->EE->safecracker->channel_standalone->output_js;
+				ee()->session->cache['safecracker']['channel_standalone_output_js'] = ee()->safecracker->channel_standalone->output_js;
 				
-				unset($this->EE->safecracker->channel_standalone->output_js);
+				unset(ee()->safecracker->channel_standalone->output_js);
 			}
 			
-			if (isset($this->EE->session->cache['safecracker']['enctype']))
+			if (isset(ee()->session->cache['safecracker']['enctype']))
 			{
-				$data['enctype'] = $this->EE->session->cache['safecracker']['enctype'];
+				$data['enctype'] = ee()->session->cache['safecracker']['enctype'];
 			
-				unset($this->EE->session->cache['safecracker']['enctype']);
+				unset(ee()->session->cache['safecracker']['enctype']);
 			}
 			
-			if (isset($this->EE->session->cache['safecracker']['form_declaration_hidden_fields']))
+			if (isset(ee()->session->cache['safecracker']['form_declaration_hidden_fields']))
 			{
-				$data['hidden_fields'] = array_merge($data['hidden_fields'], $this->EE->session->cache['safecracker']['form_declaration_hidden_fields']);
+				$data['hidden_fields'] = array_merge($data['hidden_fields'], ee()->session->cache['safecracker']['form_declaration_hidden_fields']);
 				
 				//@TODO
 				unset($data['hidden_fields']['PRV']);
 				
-				unset($this->EE->session->cache['safecracker']['form_declaration_hidden_fields']);
+				unset(ee()->session->cache['safecracker']['form_declaration_hidden_fields']);
 			}
 			
-			if (isset($this->EE->session->cache['safecracker']['form_declaration_data']))
+			if (isset(ee()->session->cache['safecracker']['form_declaration_data']))
 			{
-				$data = array_merge($data, $this->EE->session->cache['safecracker']['form_declaration_data']);
+				$data = array_merge($data, ee()->session->cache['safecracker']['form_declaration_data']);
 				
-				unset($this->EE->session->cache['safecracker']['form_declaration_data']);
+				unset(ee()->session->cache['safecracker']['form_declaration_data']);
 			}
 		}
 		

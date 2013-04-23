@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -47,7 +47,7 @@ class EE_Blacklist {
 		// Check the Referrer Too				
 		if (isset($_SERVER['HTTP_REFERER']) && $_SERVER['HTTP_REFERER'] != '')
 		{
-			$test_ref = $this->EE->security->xss_clean($_SERVER['HTTP_REFERER']);
+			$test_ref = ee()->security->xss_clean($_SERVER['HTTP_REFERER']);
 					
 			if ( ! preg_match("#^http://\w+\.\w+\.\w*#", $test_ref))
 			{
@@ -60,7 +60,7 @@ class EE_Blacklist {
 			$_POST['HTTP_REFERER'] = $test_ref;
 		}	
 		
-		if (count($_POST) == 0 OR ! $this->EE->db->table_exists('exp_blacklisted'))
+		if (count($_POST) == 0 OR ! ee()->db->table_exists('exp_blacklisted'))
 		{
 			unset($_POST['HTTP_REFERER']);
 			return TRUE;
@@ -71,9 +71,9 @@ class EE_Blacklist {
 		$whitelisted_url	= array();
 		$whitelisted_agent	= array();
 		
-		if ($this->EE->db->table_exists('exp_whitelisted'))
+		if (ee()->db->table_exists('exp_whitelisted'))
 		{
-			$results = $this->EE->db->query("SELECT whitelisted_type, whitelisted_value FROM exp_whitelisted 
+			$results = ee()->db->query("SELECT whitelisted_type, whitelisted_value FROM exp_whitelisted 
 											 WHERE whitelisted_value != ''");
 		
 			if ($results->num_rows() > 0)
@@ -96,12 +96,12 @@ class EE_Blacklist {
 			}
 		}
 		
-		if ($this->EE->config->item('cookie_domain') !== FALSE && $this->EE->config->item('cookie_domain') != '')
+		if (ee()->config->item('cookie_domain') !== FALSE && ee()->config->item('cookie_domain') != '')
 		{
-			$whitelisted_url[] = $this->EE->config->item('cookie_domain');
+			$whitelisted_url[] = ee()->config->item('cookie_domain');
 		}
 		
-		$site_url = $this->EE->config->item('site_url');
+		$site_url = ee()->config->item('site_url');
 		
 		$whitelisted_url[] = $site_url;
 		
@@ -117,7 +117,7 @@ class EE_Blacklist {
 		$domains = array('net','com','org','info', 'name','biz','us','de', 'uk');		
 		
 		// Blacklisted Checking		
-		$query	= $this->EE->db->query("SELECT blacklisted_type, blacklisted_value FROM exp_blacklisted");
+		$query	= ee()->db->query("SELECT blacklisted_type, blacklisted_value FROM exp_blacklisted");
 		
 		if ($query->num_rows() == 0)
 		{
@@ -126,7 +126,7 @@ class EE_Blacklist {
 		}
 
 		// Load the typography helper so we can do entity_decode()
-		$this->EE->load->helper('typography');
+		ee()->load->helper('typography');
 		
 		foreach($query->result_array() as $row)
 		{
@@ -194,7 +194,7 @@ class EE_Blacklist {
 									{
 										foreach($whitelisted_ip as $pure)
 										{
-											if ($pure != '' && strpos($this->EE->input->ip_address(), $pure) !== FALSE)
+											if ($pure != '' && strpos(ee()->input->ip_address(), $pure) !== FALSE)
 											{
 												$bad = 'n';												
 												$this->whitelisted = 'y';												
@@ -235,7 +235,7 @@ class EE_Blacklist {
 				
 				foreach($blacklist_values as $bad_ip)
 				{
-					if ($bad_ip != '' && strpos($this->EE->input->ip_address(), $bad_ip) === 0) 
+					if ($bad_ip != '' && strpos(ee()->input->ip_address(), $bad_ip) === 0) 
 					{
 						$bad = 'y';
 						
@@ -243,7 +243,7 @@ class EE_Blacklist {
 						{
 							foreach($whitelisted_ip as $pure)
 							{
-								if ($pure != '' && strpos($this->EE->input->ip_address(), $pure) !== FALSE)
+								if ($pure != '' && strpos(ee()->input->ip_address(), $pure) !== FALSE)
 								{
 									$bad = 'n';
 									$this->whitelisted = 'y';
@@ -265,7 +265,7 @@ class EE_Blacklist {
 					}
 				}				
 			}
-			elseif($row['blacklisted_type'] == 'agent' && $row['blacklisted_value'] != '' && $this->EE->input->user_agent() != '' && $this->whitelisted != 'y')
+			elseif($row['blacklisted_type'] == 'agent' && $row['blacklisted_value'] != '' && ee()->input->user_agent() != '' && $this->whitelisted != 'y')
 			{
 				$blacklist_values = explode('|', $row['blacklisted_value']);
 				
@@ -276,7 +276,7 @@ class EE_Blacklist {
 				
 				foreach($blacklist_values as $bad_agent)
 				{
-					if ($bad_agent != '' && stristr($this->EE->input->user_agent(), $bad_agent) !== FALSE)
+					if ($bad_agent != '' && stristr(ee()->input->user_agent(), $bad_agent) !== FALSE)
 					{
 						$bad = 'y';
 						
@@ -284,7 +284,7 @@ class EE_Blacklist {
 						{
 							foreach($whitelisted_ip as $pure)
 							{
-								if ($pure != '' && strpos($this->EE->input->user_agent(), $pure) !== FALSE)
+								if ($pure != '' && strpos(ee()->input->user_agent(), $pure) !== FALSE)
 								{
 									$bad = 'n';
 									$this->whitelisted = 'y';
@@ -297,7 +297,7 @@ class EE_Blacklist {
 						{
 							foreach($whitelisted_agent as $pure)
 							{
-								if ($pure != '' && strpos($this->EE->input->agent, $pure) !== FALSE)
+								if ($pure != '' && strpos(ee()->input->agent, $pure) !== FALSE)
 								{
 									$bad = 'n';
 									$this->whitelisted = 'y';

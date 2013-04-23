@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -29,7 +29,7 @@ class Updater {
 		$this->EE =& get_instance();
 	
 		// Grab the config file
-		if ( ! @include($this->EE->config->config_path))
+		if ( ! @include(ee()->config->config_path))
 		{
 			show_error('Your config'.EXT.' file is unreadable. Please make sure the file exists and that the file permissions to 666 on the following file: expressionengine/config/config.php');
 		}
@@ -101,13 +101,13 @@ class Updater {
 		/**  Is the Forum module installed?
 		/** -------------------------------*/
 		
-        $query = $this->EE->db->query("SELECT COUNT(*) AS count FROM exp_modules WHERE module_name = 'Forum'");
+        $query = ee()->db->query("SELECT COUNT(*) AS count FROM exp_modules WHERE module_name = 'Forum'");
         
         if ($query->row('count') > 0)
         {
         	$Q[] = "ALTER TABLE exp_forum_topics ADD INDEX(last_post_author_id);";
         
-        	$query = $this->EE->db->query("SELECT forum_permissions, forum_id FROM exp_forums");
+        	$query = ee()->db->query("SELECT forum_permissions, forum_id FROM exp_forums");
         	
         	foreach($query->result_array() as $row)
         	{
@@ -115,7 +115,7 @@ class Updater {
         		
         		$perms['can_post_reply'] = $perms['can_post_topics'];
         		
-				$this->EE->db->query("UPDATE exp_forums SET forum_permissions = '".addslashes(serialize($perms))."' 
+				ee()->db->query("UPDATE exp_forums SET forum_permissions = '".addslashes(serialize($perms))."' 
 							WHERE forum_id = '".$DB->escape_str($row['forum_id'])."'");
 
         	}
@@ -124,7 +124,7 @@ class Updater {
 		/** -------------------------------
 		/**  Is the Gallery module installed?
 		/** -------------------------------*/
-        $query = $this->EE->db->query("SELECT COUNT(*) AS count FROM exp_modules WHERE module_name = 'Gallery'");
+        $query = ee()->db->query("SELECT COUNT(*) AS count FROM exp_modules WHERE module_name = 'Gallery'");
         
         if ($query->row('count') > 0)
         {
@@ -213,24 +213,24 @@ class Updater {
 		// Run the queries
 		foreach ($Q as $sql)
 		{
-			$this->EE->db->query($sql);
+			ee()->db->query($sql);
 		}
 
 		
 		// Update mailing list templates			
-        $query = $this->EE->db->query("SELECT COUNT(*) AS count FROM exp_modules WHERE module_name = 'Mailinglist'");
+        $query = ee()->db->query("SELECT COUNT(*) AS count FROM exp_modules WHERE module_name = 'Mailinglist'");
         
         if ($query->row('count') > 0)
         {
-			$this->EE->db->query("ALTER TABLE exp_mailing_lists ADD COLUMN list_template text NOT NULL");			
+			ee()->db->query("ALTER TABLE exp_mailing_lists ADD COLUMN list_template text NOT NULL");			
         
-			$query = $this->EE->db->query("SELECT list_id FROM exp_mailing_lists");
+			$query = ee()->db->query("SELECT list_id FROM exp_mailing_lists");
 			
 			if ($query->num_rows() > 0)
 			{
 				foreach ($query->result_array() as $row)
 				{
-					$this->EE->db->query("UPDATE exp_mailing_lists SET list_template ='".addslashes(mailinglist_template())."' WHERE list_id = '".$row['list_id']."'");
+					ee()->db->query("UPDATE exp_mailing_lists SET list_template ='".addslashes(mailinglist_template())."' WHERE list_id = '".$row['list_id']."'");
 				}
 			}
 		}
@@ -270,12 +270,12 @@ class Updater {
 		$data['memberlist_sort_order'] = "desc";
 		$data['memberlist_row_limit'] = "20";
 		
-		$this->EE->config->_append_config_1x($data);
+		ee()->config->_append_config_1x($data);
 		
 		unset($config);
 		unset($conf);
 		
-		include($this->EE->config->config_path);
+		include(ee()->config->config_path);
 		
 		if (isset($conf))
 		{
@@ -285,7 +285,7 @@ class Updater {
 		// This config item is no longer needed
 		unset($config['tmpl_display_mode']);
 		
-		$this->EE->config->_update_config_1x(array(), $config);
+		ee()->config->_update_config_1x(array(), $config);
 		
 		
 		return TRUE;

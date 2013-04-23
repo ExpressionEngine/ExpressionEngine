@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -22,7 +22,7 @@
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class MyAccount extends CI_Controller {
+class MyAccount extends CP_Controller {
 
 	var $id			= '';
 	var $username	= '';
@@ -62,11 +62,11 @@ class MyAccount extends CI_Controller {
 			');
 		}
 
-		$this->cp->set_variable('message', '');
-		$this->cp->set_variable('id', $this->id);
+		$this->view->message = '';
+		$this->view->id = $this->id;
 
 		$this->username = ($query->row('screen_name')  == '') ? $query->row('username') : $query->row('screen_name');
-		$this->cp->set_variable('member_username', $this->username);
+		$this->view->member_username = $this->username;
 
 		// Set self_edit to determine whether or not someone else is editing
 		$this->self_edit = ((int) $this->id === (int) $this->session->userdata('member_id')) ? TRUE : FALSE;
@@ -84,10 +84,6 @@ class MyAccount extends CI_Controller {
 	{
 		$vars['cp_page_title'] = lang('my_account');
 
-		$this->javascript->output('');
-
-		$this->javascript->compile();
-
 		$vars = array_merge($this->_account_menu_setup(), $vars);
 
 		$query = $this->member_model->get_member_data($this->id, array('email', 'ip_address', 'join_date', 'last_visit', 'total_entries', 'total_comments', 'last_entry_date', 'last_comment_date', 'last_forum_post_date', 'total_forum_topics', 'total_forum_posts'));
@@ -98,25 +94,25 @@ class MyAccount extends CI_Controller {
 
 			$vars['fields'] = array(
 				'email'				=> mailto($query->row('email'), $query->row('email')),
-				'join_date'			=> $this->localize->set_human_time($query->row('join_date')),
-				'last_visit'		=> ($query->row('last_visit') == 0 OR $query->row('last_visit') == '') ? '--' : $this->localize->set_human_time($query->row('last_visit')),
+				'join_date'			=> $this->localize->human_time($query->row('join_date')),
+				'last_visit'		=> ($query->row('last_visit') == 0 OR $query->row('last_visit') == '') ? '--' : $this->localize->human_time($query->row('last_visit')),
 				'total_entries'		=> $query->row('total_entries'),
 				'total_comments'	=> $query->row('total_comments'),
-				'last_entry_date'	=> ($query->row('last_entry_date') == 0 OR $query->row('last_entry_date') == '') ? '--' : $this->localize->set_human_time($query->row('last_entry_date')),
-				'last_comment_date' => ($query->row('last_comment_date') == 0 OR $query->row('last_comment_date') == '') ? '--' : $this->localize->set_human_time($query->row('last_comment_date')),
+				'last_entry_date'	=> ($query->row('last_entry_date') == 0 OR $query->row('last_entry_date') == '') ? '--' : $this->localize->human_time($query->row('last_entry_date')),
+				'last_comment_date' => ($query->row('last_comment_date') == 0 OR $query->row('last_comment_date') == '') ? '--' : $this->localize->human_time($query->row('last_comment_date')),
 				'user_ip_address'	=> $query->row('ip_address')
 			);
 
 			if ($this->config->item('forum_is_installed') == "y")
 			{
-				$fields['last_forum_post_date'] = ($query->row('last_forum_post_date') == 0) ? '--' : $this->localize->set_human_time($query->row('last_forum_post_date'));
+				$fields['last_forum_post_date'] = ($query->row('last_forum_post_date') == 0) ? '--' : $this->localize->human_time($query->row('last_forum_post_date'));
 				$fields['total_forum_topics']	= $query->row('total_forum_topics');
 				$fields['total_forum_replies']	= $query->row('total_forum_posts');
 				$fields['total_forum_posts']	= $query->row('total_forum_posts') + $query->row('total_forum_topics');
 			}
 		}
 
-		$this->load->view('account/index', $vars);
+		$this->cp->render('account/index', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -276,10 +272,6 @@ class MyAccount extends CI_Controller {
 
 		$vars['cp_page_title'] = lang('edit_profile');
 
-		$this->javascript->output('');
-
-		$this->javascript->compile();
-
 		$vars = array_merge($this->_account_menu_setup(), $vars);
 
 		$vars['screen_name']	= '';
@@ -389,7 +381,7 @@ class MyAccount extends CI_Controller {
 			}
 		}
 
-		$this->load->view('account/edit_profile', $vars);
+		$this->cp->render('account/edit_profile', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -441,8 +433,9 @@ class MyAccount extends CI_Controller {
 
 		if (is_numeric($data['bday_d']) && is_numeric($data['bday_m']))
 		{
+			$this->load->helper('date');
 			$year = ($data['bday_y'] != '') ? $data['bday_y'] : date('Y');
-			$mdays = $this->localize->fetch_days_in_month($data['bday_m'], $year);
+			$mdays = days_in_month($data['bday_m'], $year);
 
 			if ($data['bday_d'] > $mdays)
 			{
@@ -491,10 +484,6 @@ class MyAccount extends CI_Controller {
 
 		$vars['cp_page_title'] = lang('email_settings');
 
-		$this->javascript->output('');
-
-		$this->javascript->compile();
-
 		$vars = array_merge($this->_account_menu_setup(), $vars);
 
 		// Fetch member data
@@ -509,7 +498,7 @@ class MyAccount extends CI_Controller {
 
 		$vars['checkboxes'] = array('accept_admin_email', 'accept_user_email', 'notify_by_default', 'notify_of_pm', 'smart_notifications');
 
-		$this->load->view('account/email_settings', $vars);
+		$this->cp->render('account/email_settings', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -592,10 +581,6 @@ class MyAccount extends CI_Controller {
 
 		$vars['cp_page_title'] = lang('edit_preferences');
 
-		$this->javascript->output('');
-
-		$this->javascript->compile();
-
 		$vars = array_merge($this->_account_menu_setup(), $vars);
 
 		// Fetch member data
@@ -610,7 +595,7 @@ class MyAccount extends CI_Controller {
 
 		$vars['checkboxes'] = array('accept_messages', 'display_avatars', 'display_signatures', 'parse_smileys');
 
-		$this->load->view('account/edit_preferences', $vars);
+		$this->cp->render('account/edit_preferences', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -648,10 +633,6 @@ class MyAccount extends CI_Controller {
 	{
 		$vars['cp_page_title'] = lang('username_and_password');
 
-		$this->javascript->output('');
-
-		$this->javascript->compile();
-
 		$vars = array_merge($this->_account_menu_setup(), $vars);
 
 		// Fetch member data
@@ -666,7 +647,7 @@ class MyAccount extends CI_Controller {
 
 		$vars['self_edit'] = $this->self_edit;
 
-		$this->load->view('account/username_password', $vars);
+		$this->cp->render('account/username_password', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -960,13 +941,11 @@ class MyAccount extends CI_Controller {
 			setup_js_page();
 		');
 
-		$this->javascript->compile();
-
 		$this->cp->add_to_head('<style type="text/css">.tablesize{height:45px!important;}</style>');
 
 		$vars = array_merge($this->_account_menu_setup(), $vars);
 
-		$this->load->view('account/ping_servers', $vars);
+		$this->cp->render('account/ping_servers', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -1050,7 +1029,6 @@ class MyAccount extends CI_Controller {
 		$vars = array_merge($this->_account_menu_setup(), $vars);
 		
 		$this->cp->add_js_script(array('file' => 'cp/account_html_buttons'));
-		$this->javascript->compile();
 
 		$this->cp->add_to_head('<style type="text/css">.cp_button{display:none;}</style>');
 
@@ -1142,7 +1120,7 @@ class MyAccount extends CI_Controller {
 		$vars['member_id'] = $this->id;
 		$vars['i'] = 1;
 
-		$this->load->view('account/html_buttons', $vars);
+		$this->cp->render('account/html_buttons', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -1208,10 +1186,6 @@ class MyAccount extends CI_Controller {
 		$vars['cp_page_title'] = lang('cp_theme');
 		$this->cp->add_to_head('<meta http-equiv="pragma" content="no-cache">');
 
-		$this->javascript->output('');
-
-		$this->javascript->compile();
-
 		$vars = array_merge($this->_account_menu_setup(), $vars);
 
 		$vars['form_hidden']['id'] = $this->id;
@@ -1229,7 +1203,7 @@ class MyAccount extends CI_Controller {
 
 		$vars['cp_theme_options'] =	 $this->admin_model->get_cp_theme_list();
 
-		$this->load->view('account/cp_theme', $vars);
+		$this->cp->render('account/cp_theme', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -1259,7 +1233,7 @@ class MyAccount extends CI_Controller {
 	  */
 	function subscriptions()
 	{
-		$this->load->helper(array('snippets', 'string'));
+		$this->load->helper('snippets');
 		$this->load->library('table');
 		$this->load->library('pagination');
 		$this->load->library('members');
@@ -1286,8 +1260,6 @@ class MyAccount extends CI_Controller {
 				}
 			);
 		');
-
-		$this->javascript->compile();
 
 		$vars = array_merge($this->_account_menu_setup(), $vars);
 
@@ -1330,7 +1302,7 @@ class MyAccount extends CI_Controller {
 		$this->pagination->initialize($config);
 		$vars['pagination'] = $this->pagination->create_links();
 
-		$this->load->view('account/subscriptions', $vars);
+		$this->cp->render('account/subscriptions', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -1390,7 +1362,6 @@ class MyAccount extends CI_Controller {
 			show_error(lang('localization_disallowed'));
 		}
 
-		$this->load->helper('date');
 		$this->load->model('language_model');
 
 		$vars['cp_page_title'] = lang('localization_settings');
@@ -1400,15 +1371,11 @@ class MyAccount extends CI_Controller {
 			$vars['message'] = lang('localization_updated');
 		}
 
-		$this->javascript->output('');
-
-		$this->javascript->compile();
-
 		$vars = array_merge($this->_account_menu_setup(), $vars);
 
 		$vars['form_hidden']['id'] = $this->id;
 
-		$fields = array('timezone', 'daylight_savings', 'language', 'time_format');
+		$fields = array('timezone', 'language', 'time_format');
 		
 		// Fetch profile data
 		$query = $this->member_model->get_member_data($this->id, $fields);
@@ -1430,9 +1397,6 @@ class MyAccount extends CI_Controller {
 
 		$vars['time_format_options']['us'] = lang('united_states');
 		$vars['time_format_options']['eu'] = lang('european');
-		
-		$vars['daylight_savings_y'] = ($vars['daylight_savings'] == 'y') ? TRUE : FALSE;
-		$vars['daylight_savings_n'] = ($vars['daylight_savings'] == 'y') ? FALSE : TRUE;
 
 		if ($vars['language'] == '')
 		{
@@ -1441,7 +1405,9 @@ class MyAccount extends CI_Controller {
 
 		$vars['language_options'] = $this->language_model->language_pack_names();
 
-		$this->load->view('account/localization', $vars);
+		$vars['timezone_menu'] = $this->localize->timezone_menu($vars['timezone'], 'timezones');
+
+		$this->cp->render('account/localization', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -1466,7 +1432,6 @@ class MyAccount extends CI_Controller {
 		$data['language']	= $this->security->sanitize_filename($this->input->post('language'));
 		$data['timezone']	= $this->input->post('timezones');
 		$data['time_format'] = $this->input->post('time_format');
-		$data['daylight_savings'] = ($this->input->post('daylight_savings') == 'y') ? 'y' : 'n';
 
 		if ( ! is_dir(APPPATH.'language/'.$data['language']))
 		{
@@ -1481,16 +1446,7 @@ class MyAccount extends CI_Controller {
 		if ($config['member_id'] == $this->id)
 		{
 			unset($config['member_id']);
-			$query = $this->site_model->get_site_system_preferences($this->config->item('site_id'));
-
-			$prefs = unserialize(base64_decode($query->row('site_system_preferences')));
-
-			foreach($config as $key => $value)
-			{
-				$prefs[$key] = $value;
-			}
-
-			$this->site_model->update_site_system_preferences($prefs, $this->config->item('site_id'));
+			$config_update = $this->config->update_site_prefs($config);
 		}
 
 		$this->session->set_flashdata('message_success', lang('settings_updated'));
@@ -1507,10 +1463,6 @@ class MyAccount extends CI_Controller {
 	function edit_signature()
 	{
 		$vars['cp_page_title'] = lang('edit_signature');
-
-		$this->javascript->output('');
-
-		$this->javascript->compile();
 
 		$vars = array_merge($this->_account_menu_setup(), $vars);
 
@@ -1545,7 +1497,7 @@ class MyAccount extends CI_Controller {
 			}
 		}
 
-		$this->load->view('account/edit_signature', $vars);
+		$this->cp->render('account/edit_signature', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -1673,8 +1625,7 @@ class MyAccount extends CI_Controller {
 
 		$vars['avatar_image_remove'] = ($this->config->item('allow_avatar_uploads') == 'y' AND $cur_avatar_url != '') ? TRUE : FALSE;
 
-		$this->javascript->compile();
-		$this->load->view('account/edit_avatar', $vars);
+		$this->cp->render('account/edit_avatar', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -1693,10 +1644,6 @@ class MyAccount extends CI_Controller {
 		$this->load->language('number');
 
 		$vars['cp_page_title'] = lang('edit_photo');
-
-		$this->javascript->output('');
-
-		$this->javascript->compile();
 
 		$vars = array_merge($this->_account_menu_setup(), $vars);
 
@@ -1731,7 +1678,7 @@ class MyAccount extends CI_Controller {
 
 		$vars['remove_photo'] = ($cur_photo_url != '') ? TRUE : FALSE;
 
-		$this->load->view('account/edit_photo', $vars);
+		$this->cp->render('account/edit_photo', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -1769,8 +1716,6 @@ class MyAccount extends CI_Controller {
 				$("#browse_avatar_form").submit();
 			});
 		');
-
-		$this->javascript->compile();
 
 		$vars = array_merge($this->_account_menu_setup(), $vars);
 
@@ -1819,7 +1764,7 @@ class MyAccount extends CI_Controller {
 						'cell_alt_start' => '<td style="width:30%">'
 					));
 
-		$this->load->view('account/browse_avatars', $vars);
+		$this->cp->render('account/browse_avatars', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -2004,10 +1949,6 @@ class MyAccount extends CI_Controller {
 
 		$vars['cp_page_title'] = lang('administrative_options');
 
-		$this->javascript->output('');
-
-		$this->javascript->compile();
-
 		$vars = array_merge($this->_account_menu_setup(), $vars);
 
 		$query = $this->member_model->get_member_data($this->id, array('ip_address', 'in_authorlist', 'group_id', 'localization_is_site_default'));
@@ -2045,7 +1986,7 @@ class MyAccount extends CI_Controller {
 			}
 		}
 
-		$this->load->view('account/member_preferences', $vars);
+		$this->cp->render('account/member_preferences', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -2156,10 +2097,6 @@ class MyAccount extends CI_Controller {
 
 		$this->jquery->tablesorter('.mainTable', '{widgets: ["zebra"]}');
 
-		$this->javascript->output('');
-
-		$this->javascript->compile();
-
 		$vars = array_merge($this->_account_menu_setup(), $vars);
 
 		if ($this->input->get('U'))
@@ -2171,7 +2108,7 @@ class MyAccount extends CI_Controller {
 
 		$vars['blank_count'] = count($vars['quicklinks'])+1;
 
-		$this->load->view('account/quicklinks', $vars);
+		$this->cp->render('account/quicklinks', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -2320,11 +2257,7 @@ class MyAccount extends CI_Controller {
 			}');
 		}
 
-		$this->javascript->output('');
-
-		$this->javascript->compile();
-
-		$this->load->view('account/main_menu_manager', $vars);
+		$this->cp->render('account/main_menu_manager', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -2563,8 +2496,7 @@ class MyAccount extends CI_Controller {
 			$vars['bm_link'] = "javascript:bm=$type;void(bmentry=window.open('".$path."title='+encodeURI(document.title)+'&tb_url='+encodeURI(window.location.href)+'&".$field_id."='+encodeURI(bm),'bmentry',''))";
 		}
 
-		$this->javascript->compile();
-		$this->load->view('account/bookmarklet', $vars);
+		$this->cp->render('account/bookmarklet', $vars);
 	}
 
 	/** -----------------------------------
@@ -2604,7 +2536,7 @@ class MyAccount extends CI_Controller {
 	  */
 	function ignore_list()
 	{
-		$this->load->helper(array('snippets', 'string'));
+		$this->load->helper('snippets');
 		$this->load->library('table');
 
 		$vars['cp_page_title'] = lang('ignore_list');
@@ -2634,8 +2566,6 @@ class MyAccount extends CI_Controller {
 			$(".cp_button").show();
 			$(".cp_button a").click(function () {$("#add_member").slideDown();return false;});
 		');
-
-		$this->javascript->compile();
 
 		$vars = array_merge($this->_account_menu_setup(), $vars);
 
@@ -2712,7 +2642,7 @@ class MyAccount extends CI_Controller {
 			}
 		}
 
-		$this->load->view('account/ignore_list', $vars);
+		$this->cp->render('account/ignore_list', $vars);
 	}
 	
 	/**
@@ -2751,7 +2681,7 @@ class MyAccount extends CI_Controller {
 		$vars['action'] = 'C=myaccount'.AMP.'M=custom_screen_save'.AMP.'extension='.$extension.AMP.'method='.$method.AMP.'method_save='.$method_save;
 
 		// load the view wrapper
-		$this->load->view('account/custom_screen', $vars);
+		$this->cp->render('account/custom_screen', $vars);
 	}
 
 	// -------------------------------------------------------------------------

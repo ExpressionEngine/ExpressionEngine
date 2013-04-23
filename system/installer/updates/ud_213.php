@@ -5,7 +5,7 @@
  *
  * @package     ExpressionEngine
  * @author      EllisLab Dev Team
- * @copyright   Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright   Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license     http://ellislab.com/expressionengine/user-guide/license.html
  * @link        http://ellislab.com
  * @since       Version 2.0
@@ -34,9 +34,9 @@ class Updater {
 
     function do_update()
     {
-		$this->EE->load->library('layout');
+		ee()->load->library('layout');
 		
-		$layouts = $this->EE->db->get('layout_publish');
+		$layouts = ee()->db->get('layout_publish');
 		
 		if ($layouts->num_rows() === 0)
 		{
@@ -68,7 +68,7 @@ class Updater {
 
 		}
 		
-		$this->EE->db->update_batch('layout_publish', $layouts, 'layout_id');
+		ee()->db->update_batch('layout_publish', $layouts, 'layout_id');
 		
 		return TRUE;
 	}

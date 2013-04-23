@@ -1,36 +1,24 @@
-<?php
-if ($EE_view_disable !== TRUE)
-{
-	$this->load->view('_shared/header');
-	$this->load->view('_shared/main_menu');
-	$this->load->view('_shared/sidebar');
-	$this->load->view('_shared/breadcrumbs');
-}
-?>
-
-<div id="mainContent"<?=$maincontent_state?>>
-	<?php $this->load->view('_shared/right_nav')?>
-	<div class="contents">
+<?php extend_template('basic') ?>
 		<div class="formArea">
 			<div>
-					<div class="templateEditorTop">
-						<h2><?=lang('template_management')?></h2>
+				<div class="templateEditorTop">
+					<h2><?=lang('template_management')?></h2>
 
-						<div class="search">
-							<?=form_open('C=design'.AMP.'M=manager')?>
-								<input type="text" id="template_keywords" name="template_keywords" value="<?=set_value('template_keywords')?>" placeholder="<?=lang('search_template')?>" maxlength="80" class="input" />
-								<?php if ($search_terms):?>
-								<div id="template_keywords_reset"><span></span></div>
-								<?php endif;?>
-							</form>
-						</div>
-						<?php if ($search_terms):?>
-						<div class="templateSearchResults">
-							<h3><?=lang('search_terms')?></h3>
-							<div><strong class="notice"><?=$search_terms?></strong></div>
-							<?=$result_count_lang?>
-						</div><?php endif;?>
+					<div class="search">
+						<?=form_open('C=design'.AMP.'M=manager')?>
+							<input type="text" id="template_keywords" name="template_keywords" value="<?=set_value('template_keywords')?>" placeholder="<?=lang('search_template')?>" maxlength="80" class="input" />
+							<?php if ($search_terms):?>
+							<div id="template_keywords_reset"><span></span></div>
+							<?php endif;?>
+						</form>
 					</div>
+					<?php if ($search_terms):?>
+					<div class="templateSearchResults">
+						<h3><?=lang('search_terms')?></h3>
+						<div><strong class="notice"><?=$search_terms?></strong></div>
+						<?=$result_count_lang?>
+					</div><?php endif;?>
+				</div>
 			</div>
 
 
@@ -214,19 +202,5 @@ if ($EE_view_disable !== TRUE)
 					?>
 				</div>
 			</div>
-			
-		<div class="clear_left">&nbsp;</div>
-		</div>
 
-	</div> <!-- contents -->
-</div> <!-- mainContent -->
-
-<?php
-if ($EE_view_disable !== TRUE)
-{
-	$this->load->view('_shared/accessories');
-	$this->load->view('_shared/footer');
-}
-
-/* End of file manager.php */
-/* Location: ./themes/cp_themes/default/design/manager.php */
+			<div class="clear_left">&nbsp;</div>

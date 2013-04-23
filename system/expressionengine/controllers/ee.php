@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -17,7 +17,7 @@
  * This class doesn't do much work.  Most of the heavy lifting is done via
  * libraries/Core.php, which runs automatically behind the scenes.  
  */
-class EE extends CI_Controller {
+class EE extends EE_Controller {
 
 	/**
 	 * Index

@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -62,6 +62,22 @@ class Progress {
 	// --------------------------------------------------------------------
 	
 	/**
+	 * Clear State
+	 *
+	 * Clears any latent status message still present in the PHP session
+	 *
+	 * @return	string
+	 */
+	public function clear_state()
+	{
+		session_start();
+		unset ($_SESSION['_progress_state']);
+		session_write_close();
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
 	 * Gets the proper js and meta tag
 	 *
 	 * Use this on the intermediate page to make it non-js compatible
@@ -77,6 +93,27 @@ class Progress {
 }
 
 // END Progress class
+
+class ProgressIterator extends ArrayIterator {
+
+	public function __construct($arr)
+	{
+		parent::__construct($arr);
+		$this->EE =& get_instance();
+	}
+
+	public function current()
+	{
+		$current_step = $this->key();
+		$total_steps = $this->count();
+
+		ee()->progress->update_state("Step $current_step of $total_steps");
+
+		return parent::current();
+	}
+}
+
+// END ProgressIterator class
 
 
 /* End of file Progress.php */

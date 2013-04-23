@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -44,7 +44,7 @@ class Referrer_upd {
 	 */	
 	function install()
 	{
-		$this->EE->load->dbforge();
+		ee()->load->dbforge();
 		
 		$fields = array(
 						'ref_id'			  => array(	'type' 			 => 'int',
@@ -66,27 +66,27 @@ class Referrer_upd {
 						'ref_agent'			  => array('type' => 'varchar' , 'constraint' => '100'),
 		);
 		
-		$this->EE->dbforge->add_field($fields);
-		$this->EE->dbforge->add_key(array('ref_id'), TRUE);
-		$this->EE->dbforge->add_key(array('site_id'));
-		$this->EE->dbforge->create_table('referrers');
+		ee()->dbforge->add_field($fields);
+		ee()->dbforge->add_key(array('ref_id'), TRUE);
+		ee()->dbforge->add_key(array('site_id'));
+		ee()->dbforge->create_table('referrers');
 		
 		$sql[] = "INSERT INTO exp_modules (module_name, module_version, has_cp_backend) VALUES ('Referrer', '$this->version', 'y')";
 	
 		foreach ($sql as $query)
 		{
-			$this->EE->db->query($query);
+			ee()->db->query($query);
 		}
 		
 		// turn on referrer tracking
-		if ($this->EE->config->item('site_id') === FALSE)
+		if (ee()->config->item('site_id') === FALSE)
 		{
 			// site_id will not be defined in the application installation wizard
-			$this->EE->config->update_site_prefs(array('log_referrers' => 'y'), 1);
+			ee()->config->update_site_prefs(array('log_referrers' => 'y'), 1);
 		}
 		else
 		{
-			$this->EE->config->update_site_prefs(array('log_referrers' => 'y'));
+			ee()->config->update_site_prefs(array('log_referrers' => 'y'));
 		}
 
 		
@@ -105,11 +105,11 @@ class Referrer_upd {
 	 */	
 	function uninstall()
 	{
-		$this->EE->load->dbforge();
+		ee()->load->dbforge();
 		
-		$this->EE->dbforge->drop_table('referrers');
+		ee()->dbforge->drop_table('referrers');
 		
-		$query = $this->EE->db->query("SELECT module_id FROM exp_modules WHERE module_name = 'Referrer'"); 
+		$query = ee()->db->query("SELECT module_id FROM exp_modules WHERE module_name = 'Referrer'"); 
 				
 		$sql[] = "DELETE FROM exp_module_member_groups WHERE module_id = '".$query->row('module_id') ."'";
 		$sql[] = "DELETE FROM exp_modules WHERE module_name = 'Referrer'";
@@ -118,11 +118,11 @@ class Referrer_upd {
 
 		foreach ($sql as $query)
 		{
-			$this->EE->db->query($query);
+			ee()->db->query($query);
 		}
 
 		// turn off referrer tracking
-   		$this->EE->config->update_site_prefs(array('log_referrers' => 'n'), 'all');
+   		ee()->config->update_site_prefs(array('log_referrers' => 'n'), 'all');
 
 		return TRUE;
 	}
@@ -146,14 +146,14 @@ class Referrer_upd {
 		
 		if (version_compare($current, '2.0', '<'))
 		{
-			$this->EE->db->query("ALTER TABLE `exp_referrers` DROP COLUMN `user_blog`");
-			$this->EE->db->query("ALTER TABLE `exp_referrers` CHANGE `ref_from` `ref_from` VARCHAR(150) NOT NULL");
+			ee()->db->query("ALTER TABLE `exp_referrers` DROP COLUMN `user_blog`");
+			ee()->db->query("ALTER TABLE `exp_referrers` CHANGE `ref_from` `ref_from` VARCHAR(150) NOT NULL");
 		}
 	
 		if (version_compare($current, '2.1.1', '<'))
 		{
 			// Update ip_address column
-			$this->EE->dbforge->modify_column(
+			ee()->dbforge->modify_column(
 				'referrers',
 				array(
 					'ref_ip' => array(

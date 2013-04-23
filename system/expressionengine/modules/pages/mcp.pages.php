@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -36,9 +36,9 @@ class Pages_mcp {
 		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();
 		
-		$this->EE->load->model('pages_model');
+		ee()->load->model('pages_model');
 		
-		$query = $this->EE->pages_model->fetch_configuration();
+		$query = ee()->pages_model->fetch_configuration();
 
 
 		$default_channel = 0;
@@ -62,7 +62,7 @@ class Pages_mcp {
 			$new_page_location = AMP.'M=entry_form'.AMP.'channel_id='.$default_channel;
 		}		
 		
-		$this->EE->cp->set_right_nav(array(
+		ee()->cp->set_right_nav(array(
 				'create_page'			=> BASE.AMP.'C=content_publish'.$new_page_location,
 				'pages_configuration'	=> BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=pages'.AMP.'method=configuration'
 			));
@@ -75,16 +75,16 @@ class Pages_mcp {
 	  */
 	function index()
 	{
-	    $this->EE->load->model('pages_model');
+	    ee()->load->model('pages_model');
 	    
-		$vars['cp_page_title'] = $this->EE->lang->line('pages_module_name');
+		$vars['cp_page_title'] = ee()->lang->line('pages_module_name');
 		$vars['new_page_location'] = '';
 
-		$this->EE->load->library('table');
-		$this->EE->load->library('javascript');
-		$this->EE->load->helper('form');
+		ee()->load->library('table');
+		ee()->load->library('javascript');
+		ee()->load->helper('form');
 
-		$this->EE->javascript->output(array(
+		ee()->javascript->output(array(
 				'$(".toggle_all").toggle(
 					function(){
 						$("input.toggle").each(function() {
@@ -100,16 +100,16 @@ class Pages_mcp {
 			)
 		);
 
-		$this->EE->javascript->compile();
+		ee()->javascript->compile();
 
-		$pages = $this->EE->config->item('site_pages');
+		$pages = ee()->config->item('site_pages');
 
-		if ($pages === FALSE OR count($pages[$this->EE->config->item('site_id')]['uris']) == 0)
+		if ($pages === FALSE OR count($pages[ee()->config->item('site_id')]['uris']) == 0)
 		{
-			return $this->EE->load->view('index', $vars, TRUE);
+			return ee()->load->view('index', $vars, TRUE);
 		}
 
-		natcasesort($pages[$this->EE->config->item('site_id')]['uris']);
+		natcasesort($pages[ee()->config->item('site_id')]['uris']);
 		$vars['pages'] = array();
 
 		//  Our Pages
@@ -119,13 +119,13 @@ class Pages_mcp {
 		$spcr = '<img src="'.PATH_CP_GBL_IMG.'clear.gif" border="0"  width="24" height="14" alt="" title="" />';
 		$indent = $spcr.'<img src="'.PATH_CP_GBL_IMG.'cat_marker.gif" border="0"  width="18" height="14" alt="" title="" />';
 
-		foreach($pages[$this->EE->config->item('site_id')]['uris'] as $entry_id => $url)
+		foreach($pages[ee()->config->item('site_id')]['uris'] as $entry_id => $url)
 		{
 			$url = ($url == '/') ? '/' : '/'.trim($url, '/');
 
 			$vars['pages'][$entry_id]['entry_id'] = $entry_id;
 			$vars['pages'][$entry_id]['entry_id'] = $entry_id;
-			$vars['pages'][$entry_id]['view_url'] = $this->EE->functions->fetch_site_index().QUERY_MARKER.'URL='.urlencode($this->EE->functions->create_url($url));
+			$vars['pages'][$entry_id]['view_url'] = ee()->functions->fetch_site_index().QUERY_MARKER.'URL='.urlencode(ee()->functions->create_url($url));
 			$vars['pages'][$entry_id]['page'] = $url;
 			$vars['pages'][$entry_id]['indent'] = '';
 
@@ -156,7 +156,7 @@ class Pages_mcp {
 
 		}
 
-		return $this->EE->load->view('index', $vars, TRUE);
+		return ee()->load->view('index', $vars, TRUE);
 	}
 
 
@@ -180,49 +180,49 @@ class Pages_mcp {
 	  */
 	function configuration()
 	{
-	    $this->EE->load->model('pages_model');
+	    ee()->load->model('pages_model');
 	    
-		if ( ! $this->EE->cp->allowed_group('can_admin_channels'))
+		if ( ! ee()->cp->allowed_group('can_admin_channels'))
 		{
-			show_error($this->EE->lang->line('unauthorized_access'));
+			show_error(ee()->lang->line('unauthorized_access'));
 		}		
         
-        $this->EE->load->library('table');
+        ee()->load->library('table');
 
-		$vars['cp_page_title'] = $this->EE->lang->line('pages_configuration');
+		$vars['cp_page_title'] = ee()->lang->line('pages_configuration');
 
-		$this->EE->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=pages', 
-		                              $this->EE->lang->line('pages_module_name'));
+		ee()->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=pages', 
+		                              ee()->lang->line('pages_module_name'));
 
-		$this->EE->load->helper('form');
+		ee()->load->helper('form');
 
 		//  Get Channels
-        $this->EE->load->model('channel_model');
-		$wquery = $this->EE->channel_model->get_channels($this->EE->config->item('site_id'));
+        ee()->load->model('channel_model');
+		$wquery = ee()->channel_model->get_channels(ee()->config->item('site_id'));
 
         // Get Templates
-        $this->EE->load->model('template_model');
-        $tquery = $this->EE->template_model->get_templates($this->EE->config->item('site_id'));
+        ee()->load->model('template_model');
+        $tquery = ee()->template_model->get_templates(ee()->config->item('site_id'));
 
 		//  Our Configuration Options
 		$vars['configuration_fields'] = array('homepage_display'	=>
 									  array('type'			=> 'display_pulldown',
-									  		'label'			=> $this->EE->lang->line('pages_display_on_homepage'),
+									  		'label'			=> ee()->lang->line('pages_display_on_homepage'),
 									  		'value'			=> ''),
 									  
 									  'default_channel'		=>
 									   array('type' 		=> 'other',
-									   		 'label'		=> $this->EE->lang->line('default_for_page_creation'),
+									   		 'label'		=> ee()->lang->line('default_for_page_creation'),
 									   		 'value'		=> '')								
 									);
 
 		foreach($wquery->result_array() as $row)
 		{
-			$vars['configuration_fields']['template_channel_'.$row['channel_id']] = array('type' => "channel", 'label' => $this->EE->lang->line("default_template").':'.NBS.$row['channel_title'], 'value' => '');
+			$vars['configuration_fields']['template_channel_'.$row['channel_id']] = array('type' => "channel", 'label' => ee()->lang->line("default_template").':'.NBS.$row['channel_title'], 'value' => '');
 		}
 
 		//  Existing Configuration Data
-		$data_query = $this->EE->pages_model->fetch_site_pages_config();
+		$data_query = ee()->pages_model->fetch_site_pages_config();
 
 		if ($data_query->num_rows() > 0)
 		{
@@ -240,7 +240,7 @@ class Pages_mcp {
 			$vars['configuration_fields'][$field_name]['field_name'] = $field_name;
 			if ($field_data['type'] == 'channel')
 			{
-				$vars['configuration_fields'][$field_name]['options'][0] = $this->EE->lang->line('no_default');
+				$vars['configuration_fields'][$field_name]['options'][0] = ee()->lang->line('no_default');
 				foreach ($tquery->result_array() as $template)
 				{
 					$vars['configuration_fields'][$field_name]['options'][$template['template_id']] = $template['group_name'].'/'.$template['template_name'];
@@ -249,13 +249,13 @@ class Pages_mcp {
 			elseif($field_data['type'] == 'display_pulldown')
             {
 				$vars['configuration_fields'][$field_name]['options'] = array(
-																				'not_nested' => $this->EE->lang->line('not_nested'),
-																				'nested' => $this->EE->lang->line('nested')
+																				'not_nested' => ee()->lang->line('not_nested'),
+																				'nested' => ee()->lang->line('nested')
 																			);
             }
 			else
 			{
-				$vars['configuration_fields'][$field_name]['options'][0] = $this->EE->lang->line('no_default');
+				$vars['configuration_fields'][$field_name]['options'][0] = ee()->lang->line('no_default');
 
 				foreach ($wquery->result_array() as $row)
 				{
@@ -264,7 +264,7 @@ class Pages_mcp {
 			}
 		}
 
-		return $this->EE->load->view('configuration', $vars, TRUE);
+		return ee()->load->view('configuration', $vars, TRUE);
 	}
 
 	// --------------------------------------------------------------------
@@ -274,7 +274,7 @@ class Pages_mcp {
 	  */
 	function save_configuration()
 	{
-	    $this->EE->load->model('pages_model');
+	    ee()->load->model('pages_model');
 	    
 		$data = array();
 
@@ -292,11 +292,11 @@ class Pages_mcp {
 
 		if (count($data) > 0)
 		{
-		    $this->EE->pages_model->update_pages_configuration($data);
+		    ee()->pages_model->update_pages_configuration($data);
 		}
 
-		$this->EE->session->set_flashdata('message_success', $this->EE->lang->line('configuration_updated'));
-		$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=pages');
+		ee()->session->set_flashdata('message_success', ee()->lang->line('configuration_updated'));
+		ee()->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=pages');
 	}
 
 	// --------------------------------------------------------------------
@@ -306,18 +306,18 @@ class Pages_mcp {
 	  */
 	function delete_confirm()
 	{
-	    $this->EE->load->model('pages_model');
+	    ee()->load->model('pages_model');
 	    
-		if ( ! $this->EE->input->post('toggle'))
+		if ( ! ee()->input->post('toggle'))
 		{
 			return $this->index();
 		}
 
-		$this->EE->load->helper('form');
+		ee()->load->helper('form');
 
-		$this->EE->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=pages', $this->EE->lang->line('pages_module_name'));
+		ee()->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=pages', ee()->lang->line('pages_module_name'));
 
-		$vars['cp_page_title'] = $this->EE->lang->line('pages_delete_confirm');
+		$vars['cp_page_title'] = ee()->lang->line('pages_delete_confirm');
 
 		foreach ($_POST['toggle'] as $key => $val)
 		{
@@ -326,7 +326,7 @@ class Pages_mcp {
 
 		$vars['form_hidden']['groups'] = 'n';
 
-		return $this->EE->load->view('delete_confirm', $vars, TRUE);
+		return ee()->load->view('delete_confirm', $vars, TRUE);
 	}
 
 	// --------------------------------------------------------------------
@@ -336,9 +336,9 @@ class Pages_mcp {
 	  */
 	function delete()
 	{
-	    $this->EE->load->model('pages_model');
+	    ee()->load->model('pages_model');
 	    
-		if ( ! $this->EE->input->post('delete'))
+		if ( ! ee()->input->post('delete'))
 		{
 			return $this->index();
 		}
@@ -351,7 +351,7 @@ class Pages_mcp {
 		}
 
         // Delete Pages & give us the number deleted.
-        $delete_pages = $this->EE->pages_model->delete_site_pages($ids);
+        $delete_pages = ee()->pages_model->delete_site_pages($ids);
 		
 		if ($delete_pages === FALSE)
 		{
@@ -360,10 +360,10 @@ class Pages_mcp {
 		else
 		{
     		$message = ($delete_pages > 1) ? 
-    		                $this->EE->lang->line('pages_deleted') : $this->EE->lang->line('page_deleted');
+    		                ee()->lang->line('pages_deleted') : ee()->lang->line('page_deleted');
 
-    		$this->EE->session->set_flashdata('message_success', $message);
-    	    $this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=pages');
+    		ee()->session->set_flashdata('message_success', $message);
+    	    ee()->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=pages');
 		}
 	}
 }

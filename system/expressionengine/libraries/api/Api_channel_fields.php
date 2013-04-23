@@ -102,8 +102,8 @@ class Api_channel_fields extends Api {
 	 */
 	function _fetch_fts($method)
 	{
-		$this->EE->load->library('addons');
-		$fts = $this->EE->addons->$method('fieldtypes');
+		ee()->load->library('addons');
+		$fts = ee()->addons->$method('fieldtypes');
 		
 		foreach($fts as $key => $data)
 		{
@@ -130,8 +130,8 @@ class Api_channel_fields extends Api {
 	 */
 	function fetch_custom_channel_fields()
 	{
-		$this->EE->db->select('field_id, field_type, field_fmt, field_name, site_id, field_settings');
-		$query = $this->EE->db->get('channel_fields');
+		ee()->db->select('field_id, field_type, field_fmt, field_name, site_id, field_settings');
+		$query = ee()->db->get('channel_fields');
 		
 		$cfields = array();
 		$dfields = array();
@@ -151,7 +151,7 @@ class Api_channel_fields extends Api {
 			{
 				$dfields[$row['site_id']][$row['field_name']] = $row['field_id'];
 			}
-			elseif ($row['field_type'] == 'rel')
+			elseif ($row['field_type'] == 'relationship')
 			{
 				$rfields[$row['site_id']][$row['field_name']] = $row['field_id'];
 			}
@@ -208,22 +208,35 @@ class Api_channel_fields extends Api {
 		if ( ! isset($this->field_types[$field_type]))
 		{
 			$file = 'ft.'.$field_type.'.php';
-			$path = PATH_FT.$field_type.'/';
+			$paths = array(PATH_FT.$field_type.'/');
+		
+			ee()->load->library('addons');
+			
+			$fts = ee()->addons->get_files('fieldtypes');
 
-			if ( ! file_exists($path.$file))
+			if (isset($fts[$field_type]))
 			{
-				$path = PATH_THIRD.$field_type.'/';
-				
-				if ( ! file_exists($path.$file))
+				$paths[] = PATH_THIRD.$fts[$field_type]['package'].'/';
+			}
+			
+			$paths[] = PATH_MOD.$field_type.'/';
+			
+			$found_path = FALSE;
+			
+			foreach ($paths as $path)
+			{
+				if (file_exists($path.$file))
 				{
-					$path = PATH_MOD.$field_type.'/';
-
-					if ( ! file_exists($path.$file))
-					{
-						show_error(sprintf($this->EE->lang->line('unable_to_load_field_type'),
-						 						strtolower($file)));
-					}
+					$found_path = TRUE;
+					
+					break;
 				}
+			}
+
+			if ( ! $found_path)
+			{
+				show_error(sprintf(ee()->lang->line('unable_to_load_field_type'),
+										strtolower($file)));
 			}
 			
 			require_once $path.$file;
@@ -323,11 +336,11 @@ class Api_channel_fields extends Api {
 		$class		= $this->field_types[$field_type];
 		$_ft_path	= $this->ft_paths[$field_type];
 		
-		$this->EE->load->add_package_path($_ft_path, FALSE);
+		ee()->load->add_package_path($_ft_path, FALSE);
 		
 		$obj = new $class();
 		
-		$this->EE->load->remove_package_path($_ft_path);
+		ee()->load->remove_package_path($_ft_path);
 		
 		return $obj;
 	}
@@ -348,11 +361,11 @@ class Api_channel_fields extends Api {
 	{
 		$_ft_path = $this->ft_paths[$this->field_type];
 		
-		$this->EE->load->add_package_path($_ft_path, FALSE);
+		ee()->load->add_package_path($_ft_path, FALSE);
 		
 		$res = call_user_func_array(array(&$this->field_types[$this->field_type], $method), $parameters);
 
-		$this->EE->load->remove_package_path($_ft_path);
+		ee()->load->remove_package_path($_ft_path);
 		
 		return $res;
 	}
@@ -426,12 +439,12 @@ class Api_channel_fields extends Api {
 			$fields['field_ft_'.$field_id] = '';
 		}		
 
-		$this->EE->load->dbforge();
+		ee()->load->dbforge();
 		$delete_fields = array_keys($fields);
 				
 		foreach ($delete_fields as $col)
 		{
-			$this->EE->dbforge->drop_column('channel_data', $col);
+			ee()->dbforge->drop_column('channel_data', $col);
 		}
 	}	
 	
@@ -455,7 +468,7 @@ class Api_channel_fields extends Api {
 		$old_fields = array();
 		
 		// First we get the data
-		$query = $this->EE->db->get_where('channel_fields', array('field_id' => $field_id));
+		$query = ee()->db->get_where('channel_fields', array('field_id' => $field_id));
 		
 		$this->setup_handler($query->row('field_type'));
 		
@@ -488,7 +501,7 @@ class Api_channel_fields extends Api {
 		// Delete extra fields
 		if ($type == 'delete')
 		{
-			$this->EE->load->dbforge();
+			ee()->load->dbforge();
 			$delete_fields = array_keys($old_fields);
 				
 			foreach ($delete_fields as $col)
@@ -498,7 +511,7 @@ class Api_channel_fields extends Api {
 					continue;
 				}
 
-				$this->EE->dbforge->drop_column('channel_data', $col);
+				ee()->dbforge->drop_column('channel_data', $col);
 			}
 			
 		}
@@ -527,7 +540,7 @@ class Api_channel_fields extends Api {
 	 */
 	function set_datatype($field_id, $data, $old_fields = array(), $new = TRUE, $type_change = FALSE)
 	{		
-		$this->EE->load->dbforge();
+		ee()->load->dbforge();
 		
 		// merge in a few variables to the data array
 		$data['field_id'] = $field_id;
@@ -575,10 +588,10 @@ class Api_channel_fields extends Api {
 					}
 				}
 				
-				$this->EE->dbforge->add_column('channel_data', array($field => $prefs));
+				ee()->dbforge->add_column('channel_data', array($field => $prefs));
 				
 				// Make sure the value is an empty string
-				$this->EE->db->update(
+				ee()->db->update(
 					'channel_data',
 					array(
 						$field => (isset($prefs['default'])) ? $prefs['default'] : ''
@@ -593,7 +606,7 @@ class Api_channel_fields extends Api {
 			$mod['field_id_'.$field_id] = $fields['field_id_'.$field_id];
 			$mod['field_id_'.$field_id]['name'] = 'field_id_'.$field_id;
 			
-			$this->EE->dbforge->modify_column('channel_data', $mod);
+			ee()->dbforge->modify_column('channel_data', $mod);
 		}
 	}
 
@@ -607,15 +620,15 @@ class Api_channel_fields extends Api {
 	 */	
 	function get_required_fields($channel_id)
 	{
-		$this->EE->load->model('channel_model');
+		ee()->load->model('channel_model');
 		$required = array('title', 'entry_date');
 		
-		$query = $this->EE->channel_model->get_channel_info($channel_id, array('field_group'));
+		$query = ee()->channel_model->get_channel_info($channel_id, array('field_group'));
 		
 		if ($query->num_rows() > 0)
 		{
 			$row = $query->row();
-			$fields = $this->EE->channel_model->get_required_fields($row->field_group);
+			$fields = ee()->channel_model->get_required_fields($row->field_group);
 		
 			if ($fields->num_rows() > 0)
 			{
@@ -671,7 +684,7 @@ class Api_channel_fields extends Api {
 			
 			$mod_base_path = $this->_include_tab_file($directory);
 
-			$this->EE->load->add_package_path($mod_base_path, FALSE);
+			ee()->load->add_package_path($mod_base_path, FALSE);
 
 			$OBJ = new $class_name();
 
@@ -699,7 +712,7 @@ class Api_channel_fields extends Api {
 			}
 
 		// restore our package and view paths
-		$this->EE->load->remove_package_path($mod_base_path);
+		ee()->load->remove_package_path($mod_base_path);
 		
 		}
 		
@@ -737,7 +750,7 @@ class Api_channel_fields extends Api {
 			
 			$mod_base_path = $this->_include_tab_file($directory);
 
-			$this->EE->load->add_package_path($mod_base_path, FALSE);
+			ee()->load->add_package_path($mod_base_path, FALSE);
 
 			$OBJ = new $class_name();
 
@@ -780,7 +793,7 @@ class Api_channel_fields extends Api {
 			}
 		
 			// restore our package and view paths
-			$this->EE->load->remove_package_path($mod_base_path);
+			ee()->load->remove_package_path($mod_base_path);
 		
 		}
 
@@ -821,7 +834,7 @@ class Api_channel_fields extends Api {
 			{
 				if ( ! isset($paths[$name]))
 				{
-					show_error(sprintf($this->EE->lang->line('unable_to_load_tab'), 'tab.'.$name.'.php'));
+					show_error(sprintf(ee()->lang->line('unable_to_load_tab'), 'tab.'.$name.'.php'));
 				}
 				
 				include_once($paths[$name].'tab.'.$name.'.php');
@@ -880,10 +893,10 @@ class Api_channel_fields extends Api {
 	function get_modules()
 	{
 		// Do we have modules in play
-		$this->EE->load->model('addons_model');
+		ee()->load->model('addons_model');
 		$custom_field_modules = FALSE;
 		
-		$mquery = $this->EE->addons_model->get_installed_modules(FALSE, TRUE);
+		$mquery = ee()->addons_model->get_installed_modules(FALSE, TRUE);
 			
 		if ($mquery->num_rows() > 0)
 		{
@@ -901,9 +914,9 @@ class Api_channel_fields extends Api {
 	function setup_entry_settings($channel_id, $entry_data, $bookmarklet = FALSE)
 	{
 		// Let's grab our channel data- note should be cached if already called via api
-		$this->EE->api->instantiate('channel_structure');
+		ee()->api->instantiate('channel_structure');
 
-		$channel_query = $this->EE->api_channel_structure->get_channel_info($channel_id);
+		$channel_query = ee()->api_channel_structure->get_channel_info($channel_id);
 		
 		if ($channel_query->num_rows() == 0)
 		{
@@ -912,7 +925,6 @@ class Api_channel_fields extends Api {
 		
 		$channel_data = $channel_query->row_array();
 		
-		$dst_enabled = ($this->EE->session->userdata('daylight_savings') == 'y' ? TRUE : FALSE);		
 		
 		// We start by setting our default fields
 		
@@ -964,7 +976,6 @@ class Api_channel_fields extends Api {
 				'always_show_date'		=> 'y',
 				'default_offset'		=> 0,
 				'selected'				=> 'y',
-				'dst_enabled'			=> $dst_enabled				
 			),
 			'expiration_date' => array(
 				'field_id'				=> 'expiration_date',
@@ -978,15 +989,12 @@ class Api_channel_fields extends Api {
 				'field_show_fmt'		=> 'n',
 				'default_offset'		=> 0,
 				'selected'				=> 'y',
-				'dst_enabled'			=> $dst_enabled				
 			)	
 		);
 
-//wtf dst_enabled?		
-		
 		
 		// comment expiry here.
-		if (isset($this->EE->cp->installed_modules['comment']))
+		if (isset(ee()->cp->installed_modules['comment']))
 		{
 			$deft_fields['comment_expiration_date'] = array(
 				'field_id'				=> 'comment_expiration_date',
@@ -1000,7 +1008,6 @@ class Api_channel_fields extends Api {
 				'field_show_fmt'		=> 'n',
 				'default_offset'		=> $channel_data['comment_expiration'] * 86400,
 				'selected'				=> 'y',
-				'dst_enabled'			=> $dst_enabled
 			);
 		}
 		
@@ -1013,7 +1020,7 @@ class Api_channel_fields extends Api {
 		// Now we set our custom fields
 		
 		// Get Channel fields in the field group
-		$channel_fields = $this->EE->channel_model->get_channel_fields($channel_data['field_group']);
+		$channel_fields = ee()->channel_model->get_channel_fields($channel_data['field_group']);
 
 		
 
@@ -1024,14 +1031,13 @@ class Api_channel_fields extends Api {
 			$field_fmt 		= $row['field_fmt'];
 			$field_dt 		= '';
 			$field_data		= '';
-			$dst_enabled	= '';
 						
 			if ($bookmarklet)
 			{
 				// Bookmarklet data perhaps?
-				if (($field_data = $this->EE->input->get('field_id_'.$row['field_id'])) !== FALSE)
+				if (($field_data = ee()->input->get('field_id_'.$row['field_id'])) !== FALSE)
 				{
-					$field_data = $this->EE->functions->bm_qstr_decode($this->EE->input->get('tb_url')."\n\n".$field_data );
+					$field_data = ee()->functions->bm_qstr_decode(ee()->input->get('tb_url')."\n\n".$field_data );
 				}
 			}
 			else
@@ -1048,7 +1054,6 @@ class Api_channel_fields extends Api {
 				'field_dt'				=> $field_dt,
 				'field_data'			=> $field_data,
 				'field_name'			=> 'field_id_'.$row['field_id'],
-				'dst_enabled'			=> $dst_enabled
 			);
 			
 			$ft_settings = array();
@@ -1059,7 +1064,7 @@ class Api_channel_fields extends Api {
 			}
 			
 			$settings = array_merge($row, $settings, $ft_settings);
-			$this->EE->api_channel_fields->set_settings($row['field_id'], $settings);
+			ee()->api_channel_fields->set_settings($row['field_id'], $settings);
 			
 			$field_settings[$settings['field_name']] = $settings;
 		}
@@ -1087,7 +1092,7 @@ class Api_channel_fields extends Api {
 	{
 		$this->errors = array();
 		
-		$this->EE->load->helper('array');
+		ee()->load->helper('array');
 		
 		if ( ! isset($field_data['group_id']))
 		{
@@ -1096,7 +1101,7 @@ class Api_channel_fields extends Api {
 			return FALSE;
 		}
 		
-		$this->EE->lang->loadfile('admin_content');
+		ee()->lang->loadfile('admin_content');
 
 		// If the $field_id variable has data we are editing an
 		// existing group, otherwise we are creating a new one
@@ -1110,11 +1115,11 @@ class Api_channel_fields extends Api {
 		// Check for required fields
 
 		$error = array();
-		$this->EE->load->model('field_model');
+		ee()->load->model('field_model');
 
 		// little check in case they switched sites in MSM after leaving a window open.
 		// otherwise the landing page will be extremely confusing
-		if ( ! isset($field_data['site_id']) OR $field_data['site_id'] != $this->EE->config->item('site_id'))
+		if ( ! isset($field_data['site_id']) OR $field_data['site_id'] != ee()->config->item('site_id'))
 		{
 			$this->_set_error('site_id_mismatch');
 		}
@@ -1125,7 +1130,7 @@ class Api_channel_fields extends Api {
 			$this->_set_error('no_field_name');
 		}
 		// Is the field one of the reserved words?
-		else if (in_array($field_data['field_name'], $this->EE->cp->invalid_custom_field_names()))
+		else if (in_array($field_data['field_name'], ee()->cp->invalid_custom_field_names()))
 		{
 			$this->_set_error('reserved_word');
 		}
@@ -1141,21 +1146,31 @@ class Api_channel_fields extends Api {
 		{
 			$this->errors[] = lang('invalid_characters').': '.$field_data['field_name'];
 		}
+		
+		// Truncated field name to test against duplicates
+		$trunc_field_name = substr(element('field_name', $field_data), 0, 32);
 
 		// Is the field name taken?
-		$this->EE->db->where(array(
-			'site_id' => $this->EE->config->item('site_id'),
-			'field_name' => element('field_name', $field_data),
+		ee()->db->where(array(
+			'site_id' => ee()->config->item('site_id'),
+			'field_name' => $trunc_field_name,
 		));
 
 		if ($edit == TRUE)
 		{
-			$this->EE->db->where('field_id !=', element('field_id', $field_data));
+			ee()->db->where('field_id !=', element('field_id', $field_data));
 		}
 
-		if ($this->EE->db->count_all_results('channel_fields') > 0)
+		if (ee()->db->count_all_results('channel_fields') > 0)
 		{
-			$this->_set_error('duplicate_field_name');
+			if ($trunc_field_name != element('field_name', $field_data))
+			{
+				$this->_set_error('duplicate_truncated_field_name');
+			}
+			else
+			{
+				$this->_set_error('duplicate_field_name');
+			}
 		}
 
 		$field_type = $field_data['field_type'];
@@ -1163,13 +1178,13 @@ class Api_channel_fields extends Api {
 		// If they are setting a file type, ensure there is at least one upload directory available
 		if ($field_type == 'file')
 		{
-			$this->EE->load->model('file_upload_preferences_model');
-			$upload_dir_prefs = $this->EE->file_upload_preferences_model->get_file_upload_preferences();
+			ee()->load->model('file_upload_preferences_model');
+			$upload_dir_prefs = ee()->file_upload_preferences_model->get_file_upload_preferences();
 			
 			// count upload dirs
 			if (count($upload_dir_prefs) === 0)
 			{
-				$this->EE->lang->loadfile('filemanager');
+				ee()->lang->loadfile('filemanager');
 				$this->_set_error('please_add_upload');
 			}
 		}
@@ -1186,7 +1201,6 @@ class Api_channel_fields extends Api {
 			'field_name', 'field_label', 'field_instructions',
 			'field_type', 'field_list_items', 'field_pre_populate',
 			'field_pre_channel_id', 'field_pre_field_id',
-			'field_related_id', 'field_related_orderby', 'field_related_sort', 'field_related_max',
 			'field_ta_rows', 'field_maxl', 'field_required',
 			'field_text_direction', 'field_search', 'field_is_hidden', 'field_fmt', 'field_show_fmt',
 			'field_order'
@@ -1224,7 +1238,6 @@ class Api_channel_fields extends Api {
 		}
 		
 		// Set some defaults
-		$native_settings['field_related_id']		= ($tmp = $this->_get_ft_data($field_type, 'field_related_channel_id', $field_data)) ? $tmp : '0';
 		$native_settings['field_list_items']		= ($tmp = $this->_get_ft_data($field_type, 'field_list_items', $field_data)) ? $tmp : '';
 				
 		$native_settings['field_text_direction']	= ($native_settings['field_text_direction'] !== FALSE) ? $native_settings['field_text_direction'] : 'ltr';
@@ -1234,7 +1247,6 @@ class Api_channel_fields extends Api {
 		if ($native_settings['field_list_items'] != '')
 		{
 			// This results in double encoding later on
-			//$this->load->helper('string');
 			//$native_settings['field_list_items'] = quotes_to_entities($native_settings['field_list_items']);
 		}
 		
@@ -1260,8 +1272,8 @@ class Api_channel_fields extends Api {
 
 		if ($field_data['field_order'] == 0 OR $field_data['field_order'] == '')
 		{
-			$query = $this->EE->db->select('MAX(field_order) as max')
-					      ->where('site_id', $this->EE->config->item('site_id'))
+			$query = ee()->db->select('MAX(field_order) as max')
+					      ->where('site_id', ee()->config->item('site_id'))
 					      ->where('group_id', (int) $group_id)
 					      ->get('channel_fields');
 				
@@ -1281,7 +1293,7 @@ class Api_channel_fields extends Api {
 			// Update the formatting for all existing entries
 			if ($this->_get_ft_data($field_type, 'update_formatting', $field_data) == 'y')
 			{
-				$this->EE->db->update(
+				ee()->db->update(
 					'channel_data',
 					array('field_ft_'.$native_settings['field_id'] => $native_settings['field_fmt'])
 				);
@@ -1297,9 +1309,9 @@ class Api_channel_fields extends Api {
 			
 			unset($native_settings['group_id']);
 			
-			$this->EE->db->where('field_id', $native_settings['field_id']);
-			$this->EE->db->where('group_id', $group_id);
-			$this->EE->db->update('channel_fields', $native_settings);
+			ee()->db->where('field_id', $native_settings['field_id']);
+			ee()->db->where('group_id', $group_id);
+			ee()->db->update('channel_fields', $native_settings);
 
 			// Update saved layouts if necessary
 			$collapse = ($native_settings['field_is_hidden'] == 'y') ? TRUE : FALSE;
@@ -1310,25 +1322,25 @@ class Api_channel_fields extends Api {
 			// Then using the list of channels, figure out the layouts associated with those channels
 			// Then update each layout individually
 			
-			$channels_for_group = $this->EE->field_model->get_assigned_channels($group_id);
+			$channels_for_group = ee()->field_model->get_assigned_channels($group_id);
 			
 			if ($channels_for_group->num_rows() > 0)
 			{
-				$this->EE->load->model('layout_model');
+				ee()->load->model('layout_model');
 				
 				foreach ($channels_for_group->result() as $channel)
 				{
 					$channel_ids[] = $channel->channel_id;
 				}
 				
-				$this->EE->db->select('layout_id');
-				$this->EE->db->where_in('channel_id', $channel_ids);
-				$layouts_for_group = $this->EE->db->get('layout_publish');
+				ee()->db->select('layout_id');
+				ee()->db->where_in('channel_id', $channel_ids);
+				$layouts_for_group = ee()->db->get('layout_publish');
 				
 				foreach ($layouts_for_group->result() as $layout) 
 				{
 					// Figure out visibility for the field in the layout
-					$layout_settings = $this->EE->layout_model->get_layout_settings(array('layout_id' => $layout->layout_id), TRUE);
+					$layout_settings = ee()->layout_model->get_layout_settings(array('layout_id' => $layout->layout_id), TRUE);
 					
 					$visibility = TRUE;
 					$width = '100%';
@@ -1353,7 +1365,7 @@ class Api_channel_fields extends Api {
 						'width'       => $width
 					);
 					
-					$this->EE->layout_model->edit_layout_group_fields($field_info, $layout->layout_id);
+					ee()->layout_model->edit_layout_group_fields($field_info, $layout->layout_id);
 				}
 			}
 		}
@@ -1367,9 +1379,9 @@ class Api_channel_fields extends Api {
 			// as its new, there will be no field id, unset it to prevent an empty string from attempting to pass
 			unset($native_settings['field_id']);
 
-			$this->EE->db->insert('channel_fields', $native_settings);
+			ee()->db->insert('channel_fields', $native_settings);
 
-			$insert_id = $this->EE->db->insert_id();
+			$insert_id = ee()->db->insert_id();
 			$native_settings['field_id'] = $insert_id;
 
 			$this->add_datatype(
@@ -1377,7 +1389,7 @@ class Api_channel_fields extends Api {
 				$native_settings
 			);
 
-			$this->EE->db->update('channel_data', array('field_ft_'.$insert_id => $native_settings['field_fmt'])); 
+			ee()->db->update('channel_data', array('field_ft_'.$insert_id => $native_settings['field_fmt'])); 
 
 			$field_formatting = array('none', 'br', 'xhtml');
 			
@@ -1390,7 +1402,7 @@ class Api_channel_fields extends Api {
 			foreach ($field_formatting as $val)
 			{
 				$f_data = array('field_id' => $insert_id, 'field_fmt' => $val);
-				$this->EE->db->insert('field_formatting', $f_data); 
+				ee()->db->insert('field_formatting', $f_data); 
 			}
 			
 			$collapse = ($native_settings['field_is_hidden'] == 'y') ? TRUE : FALSE;
@@ -1404,7 +1416,7 @@ class Api_channel_fields extends Api {
 			);
 			
 			// Add to any custom layouts
-			$query = $this->EE->field_model->get_assigned_channels($group_id);
+			$query = ee()->field_model->get_assigned_channels($group_id);
 			
 			if ($query->num_rows() > 0)
 			{
@@ -1413,8 +1425,8 @@ class Api_channel_fields extends Api {
 					$channel_ids[] = $row->channel_id;
 				}
 				
-				$this->EE->load->library('layout');
-				$this->EE->layout->add_layout_fields($field_info, $channel_ids);
+				ee()->load->library('layout');
+				ee()->layout->add_layout_fields($field_info, $channel_ids);
 			}
 		}
 		
@@ -1425,7 +1437,7 @@ class Api_channel_fields extends Api {
 		$this->setup_handler($native_settings['field_id']);
 		$this->apply('post_save_settings', array($_posted));
 
-		$this->EE->functions->clear_caching('all', '', TRUE);
+		ee()->functions->clear_caching('all', '');
 		
 		return $native_settings['field_id'];
 	}
@@ -1467,22 +1479,22 @@ class Api_channel_fields extends Api {
 	{
 		$this->errors = array();
 		
-		$this->EE->load->library('table');
+		ee()->load->library('table');
 
-		$this->EE->load->model('field_model');
+		ee()->load->model('field_model');
 		
 		$vars = array(
 			'group_id' => $group_id,
 			'field_id' => $field_id,
 		);
 		
-		$this->EE->db->select('f.*');
-		$this->EE->db->from('channel_fields AS f, field_groups AS g');
-		$this->EE->db->where('f.group_id = g.group_id');
-		$this->EE->db->where('g.site_id', $this->EE->config->item('site_id'));
-		$this->EE->db->where('f.field_id', $vars['field_id']);
+		ee()->db->select('f.*');
+		ee()->db->from('channel_fields AS f, field_groups AS g');
+		ee()->db->where('f.group_id = g.group_id');
+		ee()->db->where('g.site_id', ee()->config->item('site_id'));
+		ee()->db->where('f.field_id', $vars['field_id']);
 		
-		$field_query = $this->EE->db->get();
+		$field_query = ee()->db->get();
 		
 		if ($field_id == '')
 		{
@@ -1496,10 +1508,10 @@ class Api_channel_fields extends Api {
 				}
 			}
 
-			$this->EE->db->select('group_id');
-			$this->EE->db->where('group_id', $vars['group_id']);
-			$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
-			$query = $this->EE->db->get('channel_fields');
+			ee()->db->select('group_id');
+			ee()->db->where('group_id', $vars['group_id']);
+			ee()->db->where('site_id', ee()->config->item('site_id'));
+			$query = ee()->db->get('channel_fields');
 
 			$vars['field_order'] = $query->num_rows() + 1;
 
@@ -1510,10 +1522,10 @@ class Api_channel_fields extends Api {
 			else
 			{
 				// if there are no existing fields yet for this group, this allows us to still validate the group_id
-				$this->EE->db->where('group_id', $vars['group_id']);
-				$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
+				ee()->db->where('group_id', $vars['group_id']);
+				ee()->db->where('site_id', ee()->config->item('site_id'));
 
-				if ($this->EE->db->count_all_results('field_groups') != 1)
+				if (ee()->db->count_all_results('field_groups') != 1)
 				{
 					$this->_set_error('unauthorized_access');
 					
@@ -1552,27 +1564,27 @@ class Api_channel_fields extends Api {
 		extract($vars);
 		
 		// Fetch the name of the group
-		$query = $this->EE->field_model->get_field_group($group_id);
+		$query = ee()->field_model->get_field_group($group_id);
 		
 		$vars['group_name']			= $query->row('group_name');
 		$vars['submit_lang_key']	= ($type == 'new') ? 'submit' : 'update';
 
 		// Fetch the channel names
 
-		$this->EE->db->select('channel_id, channel_title, field_group');
-		$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
-		$this->EE->db->order_by('channel_title', 'asc');
-		$query = $this->EE->db->get('channels');
+		ee()->db->select('channel_id, channel_title, field_group');
+		ee()->db->where('site_id', ee()->config->item('site_id'));
+		ee()->db->order_by('channel_title', 'asc');
+		$query = ee()->db->get('channels');
 
 		$vars['field_pre_populate_id_options'] = array();
 
 		foreach ($query->result_array() as $row)
 		{
 			// Fetch the field names
-			$this->EE->db->select('field_id, field_label');
-			$this->EE->db->where('group_id', $row['field_group']);
-			$this->EE->db->order_by('field_label','ASC');
-			$rez = $this->EE->db->get('channel_fields');
+			ee()->db->select('field_id, field_label');
+			ee()->db->where('group_id', $row['field_group']);
+			ee()->db->order_by('field_label','ASC');
+			$rez = ee()->db->get('channel_fields');
 
 			if ($rez->num_rows() > 0)
 			{
@@ -1592,19 +1604,19 @@ class Api_channel_fields extends Api {
 		{
 			$vars['edit_format_link'] = '';
 			
-			$this->EE->load->model('addons_model');
+			ee()->load->model('addons_model');
 			
-			$vars['field_fmt_options'] = $this->EE->addons_model->get_plugin_formatting(TRUE);
+			$vars['field_fmt_options'] = ee()->addons_model->get_plugin_formatting(TRUE);
 		}
 		else
 		{
 			$confirm = "onclick=\"if( !confirm('".lang('list_edit_warning')."')) return false;\"";
 			$vars['edit_format_link'] = '<strong><a '.$confirm.' href="'.BASE.AMP.'C=admin_content'.AMP.'M=edit_formatting_options'.AMP.'id='.$field_id.'" title="'.lang('edit_list').'">'.lang('edit_list').'</a></strong>';
 
-			$this->EE->db->select('field_fmt');
-			$this->EE->db->where('field_id', $field_id);
-			$this->EE->db->order_by('field_fmt');
-			$query = $this->EE->db->get('field_formatting');
+			ee()->db->select('field_fmt');
+			ee()->db->where('field_id', $field_id);
+			ee()->db->order_by('field_fmt');
+			$query = ee()->db->get('field_formatting');
 
 			if ($query->num_rows() > 0)
 			{
@@ -1687,7 +1699,7 @@ class Api_channel_fields extends Api {
 			
 			$settings['field_type'] = $key;
 			
-			$this->EE->table->clear();
+			ee()->table->clear();
 			
 			$this->set_settings($key, $settings);
 			$this->setup_handler($key);
@@ -1697,9 +1709,9 @@ class Api_channel_fields extends Api {
 			$vars['field_type_tables'][$key]	= $str;
 			$vars['field_type_options'][$key]	= $attr['name'];
 			
-			if (count($this->EE->table->rows))
+			if (count(ee()->table->rows))
 			{
-				$vars['field_type_tables'][$key] = $this->EE->table->rows;
+				$vars['field_type_tables'][$key] = ee()->table->rows;
 			}
 		}
 
@@ -1708,7 +1720,7 @@ class Api_channel_fields extends Api {
 		$vars['form_hidden'] = array(
 			'group_id'		=> $group_id,
 			'field_id'		=> $field_id,
-			'site_id'		=> $this->EE->config->item('site_id')
+			'site_id'		=> ee()->config->item('site_id')
 		);
 
 		$vars['ft_selector'] = "#ft_".implode(", #ft_", array_keys($fts));

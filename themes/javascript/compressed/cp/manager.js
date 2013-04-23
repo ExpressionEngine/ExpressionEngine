@@ -3,7 +3,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -11,7 +11,7 @@
  */
 
 function _access_edit_ajax(a,b,g,c){var i="";switch(c){case "no_auth_bounce":i=jQuery.param({template_id:b,no_auth_bounce:a.val()});break;case "enable_http_auth":i=jQuery.param({template_id:b,enable_http_auth:a.val()});break;case "access":c=!$(a).closest(".accessTable").length?$(".no_auth_bounce").val():$(a).closest(".accessTable").find(".no_auth_bounce").val(),i=jQuery.param({template_id:b,member_group_id:g,new_status:a.val(),no_auth_bounce:c})}$.ajax({type:"POST",url:EE.access_edit_url,data:"is_ajax=TRUE&XID="+
-EE.XID+"&"+i,success:function(a){""!==a&&$.ee_notice(a,{duration:3E3,type:"success"})},error:function(a){""!==a.responseText&&$.ee_notice(a.responseText,{duration:3E3,type:"error"})}})}function refresh_prefs_ajax(a){$.ajax({type:"GET",url:EE.template_prefs_url,data:"is_ajax=TRUE&group_id="+a,success:function(a){EE.pref_json=a}})}
+EE.XID+"&"+i,success:function(a){""!==a&&$.ee_notice(a,{duration:3E3,type:"success"})},error:function(a){""!==a.responseText&&$.ee_notice(a.responseText,{duration:3E3,type:"error"})}})}function refresh_prefs_ajax(a){$.ajax({type:"GET",url:EE.template_prefs_url,data:"is_ajax=TRUE&group_id="+a,dataType:"json",success:function(a){EE.pref_json=a}})}
 function access_edit_ajax(a){var b,g;"no_auth_bounce"===a.attr("name").substr(0,14)?(g=a.attr("name").substr(15)?a.attr("name").substr(15):$("input:hidden[name=template_id]").val(),_access_edit_ajax(a,g,"","no_auth_bounce")):"enable_http_auth"===a.attr("name").substr(0,16)?(g=a.attr("name").substr(17)?a.attr("name").substr(17):$("input:hidden[name=template_id]").val(),_access_edit_ajax(a,g,"","enable_http_auth")):(b=a.attr("name").replace("access_","").split("_"),g=2>b.length?$("input:hidden[name=template_id]").val():
 b[1],_access_edit_ajax(a,g,b[0],"access"))}
 function template_edit_ajax(){var a=$(this).closest(".accessRowHeader"),b,g,c,i,l,d,j,k,f,m;1>a.length&&(a=$(this).closest(".templateEditorTable"));b=a.data("ajax_ids");if(!b)return $(this).hasClass("ignore_radio")?!1:access_edit_ajax($(this));g=b.id;b=b.group_id;c=a.find(".template_name").val();i=a.find("select[name^=template_type]").val();l=a.find("select[name^=cache]").val();d=a.find(".refresh").val();j=a.find("select[name^=allow_php]").val();k=a.find("select[name^=php_parse_location]").val();f=

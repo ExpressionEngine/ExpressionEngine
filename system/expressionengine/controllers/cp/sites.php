@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -22,10 +22,10 @@
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Sites extends CI_Controller {
+class Sites extends CP_Controller {
 
-	var $version 			= '2.1.4';
-	var $build_number		= '20120911';
+	var $version 			= '2.1.5';
+	var $build_number		= '20130410';
 	var $allow_new_sites 	= FALSE;
 
 	/**
@@ -85,22 +85,18 @@ class Sites extends CI_Controller {
 		$this->load->library('table');
 		$this->lang->loadfile('sites_cp');
 		
-		$this->javascript->compile();
-		
 		$vars['sites'] = $this->session->userdata('assigned_sites');
 
-		$this->cp->set_variable('cp_page_title', lang('switch_site'));
+		$this->view->cp_page_title = lang('switch_site');
 		$this->cp->set_breadcrumb(BASE.AMP.'C=sites', lang('site_management'));
 				
 		$vars['can_admin_sites'] = $this->cp->allowed_group('can_admin_sites');
 
 		$vars['message'] = $message;
 
-		$this->javascript->compile();
-
 		$this->cp->set_right_nav(array('edit_sites' => BASE.AMP.'C=sites'.AMP.'M=manage_sites'));
 		
-		$this->load->view('sites/switch', $vars);
+		$this->cp->render('sites/switch', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -159,10 +155,11 @@ class Sites extends CI_Controller {
 		// }
 		
 		// This is just way too simple.
-		
+
+		// We set the cookie before switching prefs to ensure it uses current settings
+		$this->functions->set_cookie('cp_last_site_id', $site_id, 0);		
+
 		$this->config->site_prefs('', $site_id);
-		
-		$this->functions->set_cookie('cp_last_site_id', $site_id, 0);
 		
 		$this->functions->redirect($page);
 	}
@@ -193,7 +190,7 @@ class Sites extends CI_Controller {
 		$this->load->library('table');
 		$this->load->model('site_model');
 
-		$this->cp->set_variable('cp_page_title', lang('site_management'));
+		$this->view->cp_page_title = lang('site_management');
 
 		$vars['msm_version'] = $this->version;
 		$vars['msm_build_number'] = $this->build_number;
@@ -201,8 +198,6 @@ class Sites extends CI_Controller {
 		$this->jquery->tablesorter('.mainTable', '{
 			widgets: ["zebra"]
 		}');
-
-		$this->javascript->compile();
 
 		if ($created_id = $this->input->get('created_id'))
 		{
@@ -224,11 +219,9 @@ class Sites extends CI_Controller {
 		$vars['site_data'] = $this->site_model->get_site();
 		$vars['message'] = $message;
 		
-		$this->javascript->compile();
-		
 		$this->cp->set_right_nav(array('create_new_site' => BASE.AMP.'C=sites'.AMP.'M=add_edit_site'));
 		
-		$this->load->view('sites/list_sites', $vars);
+		$this->cp->render('sites/list_sites', $vars);
 	}
 	
 	// --------------------------------------------------------------------
@@ -251,7 +244,7 @@ class Sites extends CI_Controller {
 		$site_id = $this->input->get('site_id');
 		
 		$title = ($site_id) ? lang('edit_site') : lang('create_new_site');
-		$this->cp->set_variable('cp_page_title', $title);
+		$this->view->cp_page_title = $title;
 		
 		$this->load->model(array(
 			'site_model', 
@@ -343,8 +336,7 @@ class Sites extends CI_Controller {
 			$vars['form_url'] .= AMP.'site_id='.$site_id;
 		}
 
-		$this->javascript->compile();
-		$this->load->view('sites/edit_form', $vars);		
+		$this->cp->render('sites/edit_form', $vars);		
 	}
 	
 
@@ -506,7 +498,7 @@ class Sites extends CI_Controller {
 			);
 			
 			// Short name change, possibly need to update the template file folder
-			if ($old->row('site_name') == $this->input->post('site_name'))
+			if ($old->row('site_name') != $this->input->post('site_name'))
 			{
 				$prefs = $old->row('site_template_preferences');
 				$prefs = unserialize(base64_decode($prefs));
@@ -1261,7 +1253,7 @@ class Sites extends CI_Controller {
 									$field_match[$old_field_id] = $field_id;
 									
 									// Channel Data Field Creation, Whee!
-									if ($row['field_type'] == 'date' OR $row['field_type'] == 'rel')
+									if ($row['field_type'] == 'date' OR $row['field_type'] == 'relationship')
 									{
 										$columns = array(
 											'field_id_'.$field_id => array(
@@ -1592,7 +1584,7 @@ class Sites extends CI_Controller {
 						// Find Relationships for Old Entry IDs That Have Been Moveed
 						if ($rel_check)
 						{
-							$query = $this->db->where_in('rel_parent_id', array_flip($complete_entries))
+							$query = $this->db->where_in('parent_id', array_flip($complete_entries))
 								->get('relationships');
 						
 							if ($query->num_rows() > 0)
@@ -1601,12 +1593,12 @@ class Sites extends CI_Controller {
 								{
 									// Only If Child Moveed As Well...
 								
-									if (isset($complete_entries[$row['rel_child_id']]))
+									if (isset($complete_entries[$row['child_id']]))
 									{
-										$old_rel_id 		  = $row['rel_id'];
-										unset($row['rel_id']);
-										$row['rel_child_id']  = $complete_entries[$row['rel_child_id']];
-										$row['rel_parent_id'] = $complete_entries[$row['rel_parent_id']];
+										$old_rel_id = $row['relationship_id'];
+										unset($row['relationship_id']);
+										$row['child_id'] = $complete_entries[$row['child_id']];
+										$row['parent_id'] = $complete_entries[$row['parent_id']];
 									
 										$this->db->insert('relationships', $row);
 									
@@ -1641,7 +1633,7 @@ class Sites extends CI_Controller {
 				
 					foreach($moved as $channel_id => $field_group)
 					{
-						$query = $this->db->select('field_id, field_type, field_related_to')
+						$query = $this->db->select('field_id, field_type')
 							->get_where(
 								'channel_fields',
 								array('group_id' => $field_group)
@@ -1667,6 +1659,10 @@ class Sites extends CI_Controller {
 										SET `field_id_".$this->db->escape_str($field_match[$row['field_id']])."` = ".
 										str_replace('a8bxdee', $row['field_id'], $file_string).
 											"WHERE channel_id = '".$this->db->escape_str($channel_id)."'");
+
+									$this->db->set('field_id_'.$row['field_id'], NULL);
+									$this->db->where('channel_id', $channel_id)
+										->update('channel_data');
 								}
 								else
 								{
@@ -1676,6 +1672,7 @@ class Sites extends CI_Controller {
 										'`field_id_'.$row['field_id'].'`', 
 										FALSE
 									);
+									$this->db->set('field_id_'.$row['field_id'], NULL);
 									$this->db->where('channel_id', $channel_id)
 										->update('channel_data');
 								}								
@@ -1685,6 +1682,7 @@ class Sites extends CI_Controller {
 									'`field_ft_'.$row['field_id'].'`', 
 									FALSE
 								);
+								$this->db->set('field_ft_'.$row['field_id'], NULL);
 								$this->db->where('channel_id', $channel_id)
 									->update('channel_data');
 
@@ -1696,11 +1694,12 @@ class Sites extends CI_Controller {
 										'`field_dt_'.$row['field_id'].'`', 
 										FALSE
 									);
+									$this->db->set('field_dt_'.$row['field_id'], NULL);
 									$this->db->where('channel_id', $channel_id)
 										->update('channel_data');
 								}
 								
-								if ($row['field_type'] == 'rel' && $row['field_related_to'] == 'channel')
+								if ($row['field_type'] == 'relationship')
 								{
 									$related_fields[] = 'field_ft_'.$field_match[$row['field_id']];  // We used this for moved relationships, see above
 								}
@@ -1862,13 +1861,12 @@ class Sites extends CI_Controller {
 			return FALSE;
 		}
 		
-		$this->cp->set_variable('cp_page_title', lang('delete_site'));
+		$this->view->cp_page_title = lang('delete_site');
 		
 		$vars['site_id'] = $site_id;
 		$vars['message'] = lang('delete_site_confirmation');
 		
-		$this->javascript->compile();
-		$this->load->view('sites/delete_confirm', $vars);
+		$this->cp->render('sites/delete_confirm', $vars);
 	}
 	
 	// --------------------------------------------------------------------
@@ -1937,19 +1935,19 @@ class Sites extends CI_Controller {
 			$this->db->delete('category_posts');
 
 			// delete parents
-			$this->db->where_in('rel_parent_id', $entries);
+			$this->db->where_in('parent_id', $entries);
 			$this->db->delete('relationships');
 			
 			// are there children?
-			$this->db->select('rel_id');
-			$this->db->where_in('rel_child_id', $entries);
+			$this->db->select('relationship_id');
+			$this->db->where_in('child_id', $entries);
 			$child_results = $this->db->get('relationships');
 
 			if ($child_results->num_rows() > 0)
 			{
 				// gather related fields
 				$this->db->select('field_id');
-				$this->db->where('field_type', 'rel');
+				$this->db->where('field_type', 'relationship');
 				$fquery = $this->db->get('channel_fields');
 
 				// We have children, so we need to do a bit of housekeeping
@@ -1958,7 +1956,7 @@ class Sites extends CI_Controller {
 
 				foreach ($child_results->result_array() as $row)
 				{
-					$cids[] = $row['rel_id'];
+					$cids[] = $row['relationship_id'];
 				}
 
 				foreach($fquery->result_array() as $row)
@@ -1969,7 +1967,7 @@ class Sites extends CI_Controller {
 			}
 
 			// aaaand delete
-			$this->db->where_in('rel_child_id', $entries);
+			$this->db->where_in('child_id', $entries);
 			$this->db->delete('relationships');
 		}
 

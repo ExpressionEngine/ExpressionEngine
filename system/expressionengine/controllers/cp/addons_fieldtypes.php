@@ -1,6 +1,28 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
+ * @since		Version 2.0
+ * @filesource
+ */
+ 
+// ------------------------------------------------------------------------
 
-class Addons_fieldtypes extends CI_Controller {
+/**
+ * ExpressionEngine Fieldtype Administration Class
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Control Panel
+ * @category	Control Panel
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
+ */
+class Addons_fieldtypes extends CP_Controller {
 
 
 	/**
@@ -19,7 +41,7 @@ class Addons_fieldtypes extends CI_Controller {
 		$this->load->library('table');
 		$this->api->instantiate('channel_fields');
 		
-		$this->cp->set_variable('cp_page_title', lang('addons_fieldtypes'));
+		$this->view->cp_page_title = lang('addons_fieldtypes');
 		
 		$this->jquery->tablesorter('.mainTable', '{
         	textExtraction: "complex",			
@@ -101,10 +123,9 @@ class Addons_fieldtypes extends CI_Controller {
 			$id++;
 		}
 
-		$this->javascript->compile();
 		$this->cp->set_breadcrumb(BASE.AMP.'C=addons', lang('addons'));
 		
-		$this->load->view('addons/fieldtypes', $vars);
+		$this->cp->render('addons/fieldtypes', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -173,9 +194,9 @@ class Addons_fieldtypes extends CI_Controller {
 			}
 		}
 		
-		$this->cp->set_variable('cp_page_title', lang('delete_fieldtype'));
+		$this->view->cp_page_title = lang('delete_fieldtype');
 		
-		return $this->load->view('addons/fieldtype_delete_confirm', array('form_action' => 'C=addons_fieldtypes'.AMP.'M=uninstall'.AMP.'ft='.$ft));
+		return $this->cp->render('addons/fieldtype_delete_confirm', array('form_action' => 'C=addons_fieldtypes'.AMP.'M=uninstall'.AMP.'ft='.$ft));
 	}
 		
 	// --------------------------------------------------------------------
@@ -245,10 +266,8 @@ class Addons_fieldtypes extends CI_Controller {
 			'_ft_settings_body'	=> $this->api_channel_fields->apply('display_global_settings'),
 			'_ft_name'			=> $ft
 		);
-		$this->cp->set_variable('cp_page_title', $FT->info['name']);
-		
-		$this->javascript->compile();
-		$this->load->view('addons/fieldtype_global_settings', $vars);
+		$this->view->cp_page_title = $FT->info['name'];
+		$this->cp->render('addons/fieldtype_global_settings', $vars);
 	}
 }
 

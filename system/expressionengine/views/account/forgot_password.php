@@ -67,7 +67,7 @@ input, .error {
 	font-size:			16px;
 	border:				none;
 	-webkit-border-radius: 6px;
-	-moz-border-radius:	6px;
+	border-radius:		6px;
 	padding:			10px;
 	width:				430px;
 	margin-right:		5px;
@@ -103,7 +103,7 @@ input.submit {
 <div class='highlight'><?=$message?></div>
 <?php endif;?>
 
-<?=form_open('C=login'.AMP.'M=request_new_password')?>
+<?=form_open('C=login'.AMP.'M=send_reset_token')?>
 
 <dl>
 	<dt><?=lang('submit_email_address')?>:</dt>

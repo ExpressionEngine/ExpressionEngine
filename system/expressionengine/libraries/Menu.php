@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -32,7 +32,7 @@ class EE_Menu {
 	function __construct()
 	{
 		$this->EE =& get_instance();
-		$this->EE->load->library('api');
+		ee()->load->library('api');
 	}	
 
 	// --------------------------------------------------------------------
@@ -47,7 +47,7 @@ class EE_Menu {
 	 */	 
 	function generate_menu($permissions = '')
 	{
-		if ( ! $this->EE->cp->allowed_group('can_access_cp'))
+		if ( ! ee()->cp->allowed_group('can_access_cp'))
 		{
 			return;
 		}
@@ -169,21 +169,21 @@ class EE_Menu {
 		);
 
 		// Only show Search Log menu item if Search Module is installed
-		if ($this->EE->db->table_exists('search_log'))
+		if (ee()->db->table_exists('search_log'))
 		{
 			$menu['tools']['tools_logs']['view_search_log'] = BASE.AMP.'C=tools_logs'.AMP.'M=view_search_log';
 		}
 		
 		// Show Developer Log for Super Admins only
-		if ($this->EE->session->userdata('group_id') == 1)
+		if (ee()->session->userdata('group_id') == 1)
 		{
 			$menu['tools']['tools_logs']['view_developer_log'] = BASE.AMP.'C=tools_logs'.AMP.'M=view_developer_log';
 		}
 		
 		// Add channels
 
-		$this->EE->api->instantiate('channel_structure');
-		$channels = $this->EE->api_channel_structure->get_channels();
+		ee()->api->instantiate('channel_structure');
+		$channels = ee()->api_channel_structure->get_channels();
 
 		if ($channels != FALSE AND $channels->num_rows() > 0)
 		{
@@ -205,22 +205,22 @@ class EE_Menu {
 		
 		// Add Templates and Themes
 		
-		$this->EE->load->model('template_model');
+		ee()->load->model('template_model');
 
 		// Grab all the groups a user is assigned to
-		$allowed_groups = $this->EE->session->userdata('assigned_template_groups');
+		$allowed_groups = ee()->session->userdata('assigned_template_groups');
 
 		// Grab all of the template groups in their desired order
-		$template_groups = $this->EE->template_model->get_template_groups();
+		$template_groups = ee()->template_model->get_template_groups();
 		$template_groups = $template_groups->result_array();
 		
 		// If there are allowed groups or the user is a Super Admin, go through with it
-		if (count($allowed_groups) OR $this->EE->session->userdata('group_id') == 1)
+		if (count($allowed_groups) OR ee()->session->userdata('group_id') == 1)
 		{
 			// In the event $allowed_groups has information in it, build a where clause for them
 			$additional_where = count($allowed_groups) ? array('template_groups.group_id' => array_keys($allowed_groups)) : array();
 			
-			$templates = $this->EE->template_model->get_templates(NULL, array('template_groups.group_id'), $additional_where);
+			$templates = ee()->template_model->get_templates(NULL, array('template_groups.group_id'), $additional_where);
 			
 			if ($templates->num_rows() > 0)
 			{
@@ -268,12 +268,12 @@ class EE_Menu {
 			unset($menu['design']['edit_templates']);
 		}
 
-		if ($this->EE->db->table_exists('forums'))
+		if (ee()->db->table_exists('forums'))
 		{
 			$menu['design']['themes']['forum_themes'] = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=forum'.AMP.'method=forum_templates';
 		}
 		
-		if ($this->EE->db->table_exists('wikis'))
+		if (ee()->db->table_exists('wikis'))
 		{
 			$menu['design']['themes']['wiki_themes'] = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=wiki'.AMP.'method=list_themes';
 		}
@@ -291,18 +291,18 @@ class EE_Menu {
 		/*  - Modify menu array
 		/*  - Added: 2.1.5
 		*/
-			if ($this->EE->extensions->active_hook('cp_menu_array') === TRUE)
+			if (ee()->extensions->active_hook('cp_menu_array') === TRUE)
 			{
-				$menu = $this->EE->extensions->call('cp_menu_array', $menu);
+				$menu = ee()->extensions->call('cp_menu_array', $menu);
 			}
 		/*
 		/* -------------------------------------------*/
 		
 
 		// Only get the views once
-		$this->menu_parent	= $this->EE->load->view('_shared/menu/item_parent', '', TRUE);
-		$this->menu_item	= $this->EE->load->view('_shared/menu/item', '', TRUE);
-		$this->menu_divider	= $this->EE->load->view('_shared/menu/item_divider', '', TRUE);
+		$this->menu_parent	= ee()->load->view('_shared/menu/item_parent', '', TRUE);
+		$this->menu_item	= ee()->load->view('_shared/menu/item', '', TRUE);
+		$this->menu_divider	= ee()->load->view('_shared/menu/item_divider', '', TRUE);
 
 		// Main menu, custom tabs, help link - in that order
 		$menu_string  = $this->_process_menu($menu);
@@ -312,7 +312,7 @@ class EE_Menu {
 		// Visit Site / MSM Switcher gets an extra class
 		$menu_string .= $this->_process_menu($this->_fetch_site_list(), 0, FALSE, 'msm_sites');
 
-		$this->EE->load->vars('menu_string', $menu_string);
+		ee()->load->vars('menu_string', $menu_string);
 		
 		return $menu;
 	}
@@ -442,34 +442,34 @@ class EE_Menu {
 	 */
 	function _remove_blocked_menu_items($menu)
 	{
-		if ($this->EE->session->userdata('group_id') == 1)
+		if (ee()->session->userdata('group_id') == 1)
 		{
 			return $menu;
 		}
 
-		if ( ! $this->EE->cp->allowed_group('can_access_content'))
+		if ( ! ee()->cp->allowed_group('can_access_content'))
 		{
 			unset($menu['content']);
 		}
 		else
 		{
-			if ( ! $this->EE->cp->allowed_group('can_access_publish'))
+			if ( ! ee()->cp->allowed_group('can_access_publish'))
 			{
 				unset($menu['content']['publish']);
 			}
 
-			if ( ! $this->EE->cp->allowed_group('can_access_edit'))
+			if ( ! ee()->cp->allowed_group('can_access_edit'))
 			{
 				unset($menu['content']['edit']);
 			}
 			
-			if ( ! $this->EE->cp->allowed_group('can_access_files'))
+			if ( ! ee()->cp->allowed_group('can_access_files'))
 			{
 				unset($menu['content']['files']);
 			}
 			else
 			{
-				if ( ! $this->EE->cp->allowed_group('can_admin_upload_prefs'))
+				if ( ! ee()->cp->allowed_group('can_admin_upload_prefs'))
 				{
 					unset($menu['content']['files'][0]);
 					unset($menu['content']['files']['file_upload_preferences']);
@@ -478,20 +478,20 @@ class EE_Menu {
 			}
 		}
 
-		if ( ! $this->EE->cp->allowed_group('can_access_design'))
+		if ( ! ee()->cp->allowed_group('can_access_design'))
 		{
 			unset($menu['design']);
 		}
 		else // Unset module themes they do not have access to
 		{
-			if ( ! $this->EE->cp->allowed_group('can_admin_modules'))
+			if ( ! ee()->cp->allowed_group('can_admin_modules'))
 			{
 				unset($menu['design']['themes']['forum_themes']);
 				unset($menu['design']['themes']['wiki_themes']);
 			}
-			elseif ($this->EE->session->userdata('group_id') != 1)
+			elseif (ee()->session->userdata('group_id') != 1)
 			{
-				$allowed_modules = array_keys($this->EE->session->userdata('assigned_modules'));
+				$allowed_modules = array_keys(ee()->session->userdata('assigned_modules'));
 				
 				if (count($allowed_modules) == 0)
 				{
@@ -501,9 +501,9 @@ class EE_Menu {
 				else
 				{
 					$m_names = array();
-					$this->EE->db->select('module_name');
-					$this->EE->db->where_in('module_id', $allowed_modules);
-					$query = $this->EE->db->get('modules');
+					ee()->db->select('module_name');
+					ee()->db->where_in('module_id', $allowed_modules);
+					$query = ee()->db->get('modules');
 					
 					
 					foreach ($query->result_array() as $row)
@@ -523,7 +523,7 @@ class EE_Menu {
 				}
 			}
 			
-			if ( ! $this->EE->cp->allowed_group('can_admin_mbr_templates'))
+			if ( ! ee()->cp->allowed_group('can_admin_mbr_templates'))
 			{
 				unset($menu['design']['themes']['member_profile_templates']);
 
@@ -533,14 +533,14 @@ class EE_Menu {
 				}
 			}
 			
-			if ( ! $this->EE->cp->allowed_group('can_admin_design'))
+			if ( ! ee()->cp->allowed_group('can_admin_design'))
 			{
 				unset($menu['design']['message_pages']);
 				unset($menu['design']['templates']['template_preferences']);				
 				unset($menu['design']['templates']['global_preferences']);
 			}			
 
-			if ( ! $this->EE->cp->allowed_group('can_admin_templates'))
+			if ( ! ee()->cp->allowed_group('can_admin_templates'))
 			{
 				unset($menu['design']['templates']['edit_templates'][lang('nav_create_template')]);
 				unset($menu['design']['templates']['edit_templates'][0]);
@@ -552,39 +552,39 @@ class EE_Menu {
 			}
 		}
 
-		if ( ! $this->EE->cp->allowed_group('can_access_addons'))
+		if ( ! ee()->cp->allowed_group('can_access_addons'))
 		{
 			unset($menu['addons']);
 		}
 		else
 		{
-			if ( ! $this->EE->cp->allowed_group('can_access_modules'))
+			if ( ! ee()->cp->allowed_group('can_access_modules'))
 			{
 				unset($menu['addons']['modules']);
 			}
 		
-			if ( ! $this->EE->cp->allowed_group('can_access_accessories'))
+			if ( ! ee()->cp->allowed_group('can_access_accessories'))
 			{
 				unset($menu['addons']['accessories']);
 			}
 		
-			if ( ! $this->EE->cp->allowed_group('can_access_extensions'))
+			if ( ! ee()->cp->allowed_group('can_access_extensions'))
 			{
 				unset($menu['addons']['extensions']);
 			}
 		
-			if ( ! $this->EE->cp->allowed_group('can_access_plugins'))
+			if ( ! ee()->cp->allowed_group('can_access_plugins'))
 			{
 				unset($menu['addons']['plugins']);
 			}
 			
-			if ( ! $this->EE->cp->allowed_group('can_access_fieldtypes'))
+			if ( ! ee()->cp->allowed_group('can_access_fieldtypes'))
 			{
 				unset($menu['addons']['fieldtypes']);
 			}
 		}
 		
-		if ( ! $this->EE->cp->allowed_group('can_access_members'))
+		if ( ! ee()->cp->allowed_group('can_access_members'))
 		{
 			unset($menu['members']);
 		}
@@ -593,7 +593,7 @@ class EE_Menu {
 			$member_divider_3 = TRUE;
 			$unset_count = 0;
 			
-			if ( ! $this->EE->cp->allowed_group('can_admin_members'))
+			if ( ! ee()->cp->allowed_group('can_admin_members'))
 			{
 				unset($menu['members']['ip_search']);
 				unset($menu['members']['register_member']);
@@ -607,7 +607,7 @@ class EE_Menu {
 				$member_divider_3 = FALSE;								
 			}
 
-			if ( ! $this->EE->cp->allowed_group('can_ban_users'))
+			if ( ! ee()->cp->allowed_group('can_ban_users'))
 			{
 				unset($menu['members']['user_banning']);
 				$unset_count++;
@@ -618,7 +618,7 @@ class EE_Menu {
 				}
 			}
 
-			if ( ! $this->EE->cp->allowed_group('can_admin_mbr_groups'))
+			if ( ! ee()->cp->allowed_group('can_admin_mbr_groups'))
 			{
 				unset($menu['members']['member_groups']);
 				$unset_count++;
@@ -630,13 +630,13 @@ class EE_Menu {
 			}
 		}
 
-		if ( ! $this->EE->cp->allowed_group('can_access_admin'))
+		if ( ! ee()->cp->allowed_group('can_access_admin'))
 		{
 			unset($menu['admin']);
 		}
 		else
 		{
-			if ( ! $this->EE->cp->allowed_group('can_access_sys_prefs'))
+			if ( ! ee()->cp->allowed_group('can_access_sys_prefs'))
 			{
 				unset($menu['admin']['general_configuration']);
 				unset($menu['admin']['localization_settings']);
@@ -647,7 +647,7 @@ class EE_Menu {
 				unset($menu['admin'][1]);	
 			}
 		
-			if ( ! $this->EE->cp->allowed_group('can_access_content_prefs'))
+			if ( ! ee()->cp->allowed_group('can_access_content_prefs'))
 			{
 				unset($menu['admin']['channel_management']);
 				unset($menu['admin']['admin_content']);
@@ -655,7 +655,7 @@ class EE_Menu {
 			}
 			else
 			{
-				if ( ! $this->EE->cp->allowed_group('can_admin_channels'))
+				if ( ! ee()->cp->allowed_group('can_admin_channels'))
 				{
 					unset($menu['admin']['channel_management']);
 					unset($menu['admin']['admin_content']);
@@ -664,7 +664,7 @@ class EE_Menu {
 			}
 		}
 
-		if ( ! $this->EE->cp->allowed_group('can_access_tools'))
+		if ( ! ee()->cp->allowed_group('can_access_tools'))
 		{
 			unset($menu['tools']);
 		}
@@ -672,13 +672,13 @@ class EE_Menu {
 		{
 			$tools_divider = FALSE;
 			
-			if ( ! $this->EE->cp->allowed_group('can_access_comm'))
+			if ( ! ee()->cp->allowed_group('can_access_comm'))
 			{
 				unset($menu['tools']['tools_communicate']);	
 				unset($menu['tools'][0]);							
 			}			
 
-			if ( ! $this->EE->cp->allowed_group('can_access_data'))
+			if ( ! ee()->cp->allowed_group('can_access_data'))
 			{
 				unset($menu['tools']['tools_data']);
 			}
@@ -687,7 +687,7 @@ class EE_Menu {
 				$tools_divider = TRUE;
 			}
 			
-			if ( ! $this->EE->cp->allowed_group('can_access_utilities'))
+			if ( ! ee()->cp->allowed_group('can_access_utilities'))
 			{
 				unset($menu['tools']['tools_utilities']);
 			}
@@ -696,7 +696,7 @@ class EE_Menu {
 				$tools_divider = TRUE;
 			}
 			
-			if ( ! $this->EE->cp->allowed_group('can_access_logs'))
+			if ( ! ee()->cp->allowed_group('can_access_logs'))
 			{
 				unset($menu['tools']['tools_logs']);
 			}
@@ -728,9 +728,9 @@ class EE_Menu {
 	{
 		$tabs = array();
 
-		if (isset($this->EE->session->userdata['quick_tabs']) && $this->EE->session->userdata['quick_tabs'] != '')
+		if (isset(ee()->session->userdata['quick_tabs']) && ee()->session->userdata['quick_tabs'] != '')
 		{
-			foreach (explode("\n", $this->EE->session->userdata['quick_tabs']) as $row)
+			foreach (explode("\n", ee()->session->userdata['quick_tabs']) as $row)
 			{
 				$x = explode('|', $row);
 
@@ -766,16 +766,16 @@ class EE_Menu {
 	function _fetch_site_list()
 	{
 		// Add MSM Site Switcher
-		$this->EE->load->model('site_model');
+		ee()->load->model('site_model');
 		
-		$site_list = $this->EE->session->userdata('assigned_sites'); 
-		$site_list = ($this->EE->config->item('multiple_sites_enabled') === 'y' && ! IS_CORE) ? $site_list : FALSE;
+		$site_list = ee()->session->userdata('assigned_sites'); 
+		$site_list = (ee()->config->item('multiple_sites_enabled') === 'y' && ! IS_CORE) ? $site_list : FALSE;
 
 		$menu = array();
 
 		if ($site_list)
 		{
-			$site_backlink = $this->EE->cp->get_safe_refresh();
+			$site_backlink = ee()->cp->get_safe_refresh();
 
 			if ($site_backlink)
 			{
@@ -783,23 +783,23 @@ class EE_Menu {
 				$site_backlink = AMP."page=".strtr(base64_encode($site_backlink), '+=', '-_');
 			}
 			
-			$menu[$this->EE->config->item('site_name')][lang('view_site')] = $this->EE->functions->fetch_site_index(0, 0).QUERY_MARKER.'URL='.$this->EE->functions->fetch_site_index();
+			$menu[ee()->config->item('site_name')][lang('view_site')] = ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'URL='.ee()->functions->fetch_site_index();
 			
-			if ($this->EE->cp->allowed_group('can_admin_sites'))
+			if (ee()->cp->allowed_group('can_admin_sites'))
 			{
-				$menu[$this->EE->config->item('site_name')][lang('edit_sites')] = BASE.AMP.'C=sites'.AMP.'M=manage_sites';
+				$menu[ee()->config->item('site_name')][lang('edit_sites')] = BASE.AMP.'C=sites'.AMP.'M=manage_sites';
 			}
 			
-			$menu[$this->EE->config->item('site_name')][] = '----';
+			$menu[ee()->config->item('site_name')][] = '----';
 			
 			foreach($site_list as $site_id => $site_name)
 			{
-				$menu[$this->EE->config->item('site_name')][$site_name] = BASE.AMP.'C=sites'.AMP.'site_id='.$site_id.$site_backlink;
+				$menu[ee()->config->item('site_name')][$site_name] = BASE.AMP.'C=sites'.AMP.'site_id='.$site_id.$site_backlink;
 			}
 		}
 		else
 		{
-			$menu[$this->EE->config->item('site_name')] = $this->EE->config->item('base_url').$this->EE->config->item('site_index').'?URL='.$this->EE->config->item('base_url').$this->EE->config->item('site_index');
+			$menu[ee()->config->item('site_name')] = ee()->config->item('base_url').ee()->config->item('site_index').'?URL='.ee()->config->item('base_url').ee()->config->item('site_index');
 		}
 		
 		return $menu;
@@ -819,12 +819,12 @@ class EE_Menu {
 	{
 		if ($class == '')
 		{
-			$class = $this->EE->router->class;
+			$class = ee()->router->class;
 		}
 
 		if ($method == '')
 		{
-			$method = $this->EE->router->method;
+			$method = ee()->router->method;
 		}
 
 		$help_map = array(
@@ -1023,7 +1023,7 @@ class EE_Menu {
 			)
 		);
 		
-		$page = $this->EE->config->item('doc_url');
+		$page = ee()->config->item('doc_url');
 		
 		if ( ! isset($help_map[$class]))
 		{
@@ -1042,22 +1042,22 @@ class EE_Menu {
 			$help_map['admin'] = array_merge($help_map['admin_content'], $help_map['admin_system']);
 		}
 
-		if ($class == 'addons_modules' && ($module !== FALSE OR ($module = $this->EE->input->get('module')) !== FALSE))
+		if ($class == 'addons_modules' && ($module !== FALSE OR ($module = ee()->input->get('module')) !== FALSE))
 		{
 			// check for native / third-party, build link accordingly
-			if (in_array($module, $this->EE->core->native_modules))
+			if (in_array($module, ee()->core->native_modules))
 			{
 				// gotta love matching naming schemes!
 				$page .= "modules/".$module."/index.html";
 			}
 			else
 			{
-				$module = $this->EE->security->sanitize_filename($module);
+				$module = ee()->security->sanitize_filename($module);
 
 				if (file_exists(PATH_THIRD.$module.'/config/help_menu.php'))
 				{
 					require_once PATH_THIRD.$module.'/config/help_menu.php';
-					$method = ($this->EE->input->get('method') !== FALSE) ? $this->EE->input->get('method') : 'index';
+					$method = (ee()->input->get('method') !== FALSE) ? ee()->input->get('method') : 'index';
 					$page = (isset($help_menu[$method])) ? $help_menu[$method] : $page.$help_map['addons_modules'];
 				}
 				else

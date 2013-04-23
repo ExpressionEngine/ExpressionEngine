@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -22,7 +22,7 @@
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Tools_utilities extends CI_Controller {
+class Tools_utilities extends CP_Controller {
 
 	private $errors					= array();
 	private $members				= array();
@@ -61,13 +61,10 @@ class Tools_utilities extends CI_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->cp->set_variable('cp_page_title', lang('tools_utilities'));
+		$this->view->cp_page_title = lang('tools_utilities');
+		$this->view->controller = 'tools/tools_utilities';
 
-		$this->javascript->compile();
-
-		$this->load->vars(array('controller'=>'tools/tools_utilities'));
-
-		$this->load->view('_shared/overview');
+		$this->cp->render('_shared/overview');
 	}
 
 	// --------------------------------------------------------------------
@@ -86,11 +83,8 @@ class Tools_utilities extends CI_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->cp->set_variable('cp_page_title', lang('import_utilities'));
-
-		$this->javascript->compile();
-
-		$this->load->view('tools/import_utilities');
+		$this->view->cp_page_title = lang('import_utilities');
+		$this->cp->render('tools/import_utilities');
 	}
 	
 	// --------------------------------------------------------------------
@@ -113,11 +107,9 @@ class Tools_utilities extends CI_Controller {
 
 		$this->lang->loadfile('member_import');
 
-		$this->cp->set_variable('cp_page_title', lang('member_import'));
+		$this->view->cp_page_title = lang('member_import');
 
-		$this->javascript->compile();
-
-		$this->load->view('tools/member_import');
+		$this->cp->render('tools/member_import');
 	}
 	
 	// --------------------------------------------------------------------
@@ -154,13 +146,10 @@ class Tools_utilities extends CI_Controller {
 	 */	
 	private function _import_xml_form()
 	{
-		$this->load->helper('date');
 		$this->lang->loadfile('member_import');
 		$this->load->model('member_model');
 
-		$this->cp->set_variable('cp_page_title', lang('import_from_xml'));
-
-		$this->javascript->compile();
+		$this->view->cp_page_title = lang('import_from_xml');
 		
 		$get_groups = $this->member_model->get_member_groups(); 
 		
@@ -171,10 +160,10 @@ class Tools_utilities extends CI_Controller {
 
 		$vars['language_options'] = array('None' => 'None', 'English' => 'English');
 		$vars['member_groups'] = $member_groups;
-		$vars['dst_enabled'] = $this->config->item('daylight_savings');  
 		$vars['auto_custom_field_enabled'] = TRUE;
+		$vars['timezone_menu'] = $this->localize->timezone_menu('UTC', 'timezones');
 		
-		$this->load->view('tools/import_from_xml', $vars);
+		$this->cp->render('tools/import_from_xml', $vars);
 		
 	}
 
@@ -215,11 +204,6 @@ class Tools_utilities extends CI_Controller {
 			array(
 				 'field'   => 'time_format',
 				 'label'   => 'lang:time_format',
-				 'rules'   => ''
-			),
-			array(
-				 'field'   => 'daylight_savings',
-				 'label'   => 'lang:daylight_savings',
 				 'rules'   => ''
 			),
 			array(
@@ -269,8 +253,6 @@ class Tools_utilities extends CI_Controller {
 			$row = $query->row_array();
 			$group_name = $row['group_title'];			
 		}
-
-		$this->javascript->compile();
 					
 		$data = array(
 			'xml_file'   		=> $this->input->post('xml_file'),
@@ -278,7 +260,6 @@ class Tools_utilities extends CI_Controller {
 			'language' 			=> ($this->input->post('language') == lang('none')) ? '' : $this->input->post('language'),
 			'timezones' 		=> $this->input->post('timezones'),
 			'time_format' 		=> $this->input->post('time_format'),
-			'daylight_savings' 	=> ($this->input->post('daylight_savings') == 'y') ? 'y' : 'n',
 			'auto_custom_field' => ($this->input->post('auto_custom_field') == 'y') ? 'y' : 'n'
 		);
 					
@@ -289,7 +270,6 @@ class Tools_utilities extends CI_Controller {
 			'language' 			=> ($data['language'] == '') ? lang('none') : ucfirst($data['language']),
 			'timezones' 		=> lang($data['timezones']),
 			'time_format' 		=> ($data['time_format'] == 'us') ? lang('united_states') : lang('european'),
-			'daylight_savings' 	=> ($data['daylight_savings'] == 'y') ? lang('yes') : lang('no'),
 			'auto_custom_field' => ($data['auto_custom_field'] == 'y') ? lang('yes') : lang('no')
 		);
 				
@@ -334,13 +314,13 @@ class Tools_utilities extends CI_Controller {
 		$this->load->library('table');
 		$this->load->helper('date');
 
-		$this->cp->set_variable('cp_page_title', lang('confirm_details'));
+		$this->view->cp_page_title = lang('confirm_details');
 		$this->cp->set_breadcrumb(BASE.AMP.'C=tools_utilities'.AMP.'M=member_import', lang('member_import_utility'));
 		$this->cp->set_breadcrumb(BASE.AMP.'C=tools_utilities'.AMP.'M=import_from_xml', lang('import_from_xml'));
 	
 		$vars['post_url'] = 'C=tools_utilities'.AMP.'M=process_xml';
 
-		$this->load->view('tools/confirm_import_xml', $vars);		
+		$this->cp->render('tools/confirm_import_xml', $vars);		
 	}
 	
 	// --------------------------------------------------------------------
@@ -387,15 +367,12 @@ class Tools_utilities extends CI_Controller {
 			$group_name = ' -- ';
 		}
 		
-		$this->javascript->compile();
-
 		$data = array(
 			'xml_file'   		=> $this->input->post('xml_file'),
 			'group_id' 			=> $this->input->post('group_id'),
 			'language' 			=> ($this->input->post('language') == lang('none')) ? '' : $this->input->post('language'),
 			'timezones' 		=> $this->input->post('timezones'),
 			'time_format' 		=> $this->input->post('time_format'),
-			'daylight_savings' 	=> ($this->input->post('daylight_savings') == 'y') ? 'y' : 'n',
 			'auto_custom_field' => ($this->input->post('auto_custom_field') == 'y') ? 'y' : 'n'
 		);
 					
@@ -406,7 +383,6 @@ class Tools_utilities extends CI_Controller {
 			'language' 			=> ($data['language'] == '') ? lang('none') : ucfirst($data['language']),
 			'timezones' 		=> lang($data['timezones']),
 			'time_format' 		=> ($data['time_format'] == 'us') ? lang('united_states') : lang('european'),
-			'daylight_savings' 	=> ($data['daylight_savings'] == 'y') ? lang('yes') : lang('no'),
 			'auto_custom_field' => ($data['auto_custom_field'] == 'y') ? lang('yes') : lang('no')
 		 );
 
@@ -417,7 +393,7 @@ class Tools_utilities extends CI_Controller {
 		$this->load->library('table');
 		$this->load->helper('date');
 
-		$this->cp->set_variable('cp_page_title', lang('confirm_details'));
+		$this->view->cp_page_title = lang('confirm_details');
 		$this->cp->set_breadcrumb(BASE.AMP.'C=tools_utilities'.AMP.'M=member_import', lang('member_import_utility'));
 		$this->cp->set_breadcrumb(BASE.AMP.'C=tools_utilities'.AMP.'M=import_from_xml', lang('import_from_xml'));
 	
@@ -425,7 +401,7 @@ class Tools_utilities extends CI_Controller {
 		
 		$vars['added_fields'] = $this->input->post('added_fields');
 
-		$this->load->view('tools/confirm_import_xml', $vars);		
+		$this->cp->render('tools/confirm_import_xml', $vars);		
 		
 	
 	}
@@ -460,8 +436,6 @@ class Tools_utilities extends CI_Controller {
 					}
 				);')
 			);	
-
-		$this->javascript->compile();			
 				
 		$vars['form_hidden']['new'] = $new_custom_fields['new'];
 		$vars['xml_fields'] = $new_custom_fields['xml_fields'];
@@ -490,7 +464,7 @@ class Tools_utilities extends CI_Controller {
 		$vars['m_field_fmt'] = '';
 
 				
-		return $this->load->view('tools/custom_field_form', $vars);				
+		return $this->cp->render('tools/custom_field_form', $vars);				
 	}
 	
 	// --------------------------------------------------------------------
@@ -695,7 +669,6 @@ class Tools_utilities extends CI_Controller {
 			
 		$this->lang->loadfile('member_import');
 		$this->load->library('validate');
-		$this->load->helper('security');
 		
 		$this->validate->member_id			= '';
 		$this->validate->val_type			= 'new';
@@ -849,7 +822,7 @@ class Tools_utilities extends CI_Controller {
 								}
 
 								// encode password if it is type="text"
-								$this->members[$i][$tag->tag] = ($tag->attributes['type'] == 'text') ? do_hash($tag->value) : $tag->value;
+								$this->members[$i][$tag->tag] = ($tag->attributes['type'] == 'text') ? sha1($tag->value) : $tag->value;
 								break;
 						}
 					}
@@ -905,7 +878,7 @@ class Tools_utilities extends CI_Controller {
 					
 					if ( ! isset($this->members[$i]['password']))
 					{
-						$this->members[$i]['password'] = do_hash(mt_rand());
+						$this->members[$i]['password'] = sha1(mt_rand());
 					}
 					$i++;
 				}
@@ -950,7 +923,6 @@ class Tools_utilities extends CI_Controller {
 		$this->default_fields['language']			= ($this->input->post('language') == lang('none') OR $this->input->post('language') == '') ? 'english' : strtolower($this->input->post('language'));
 		$this->default_fields['timezone']			= ($this->input->post('timezones') && $this->input->post('timezones') != '') ? $this->input->post('timezones') : $this->config->item('server_timezone');
 		$this->default_fields['time_format']		= $this->input->post('time_format');
-		$this->default_fields['daylight_savings']	= ($this->input->post('daylight_savings') == 'y') ? 'y' : 'n';
 		$this->default_fields['ip_address']			= '0.0.0.0';
 		$this->default_fields['join_date']			= $this->localize->now;
 		
@@ -1294,7 +1266,7 @@ class Tools_utilities extends CI_Controller {
 	 */	
 	private function _convert_from_delimited_form()
 	{
-		$this->cp->set_variable('cp_page_title', lang('convert_from_delimited'));
+		$this->view->cp_page_title = lang('convert_from_delimited');
 		$this->cp->set_breadcrumb(BASE.AMP.'C=tools_utilities'.AMP.'M=member_import', lang('member_import_utility'));
 
 		$this->javascript->output('
@@ -1307,8 +1279,7 @@ class Tools_utilities extends CI_Controller {
 					
 		');
 
-		$this->javascript->compile();
-		$this->load->view('tools/convert_from_delimited');
+		$this->cp->render('tools/convert_from_delimited');
 	}
 
 	
@@ -1402,11 +1373,11 @@ class Tools_utilities extends CI_Controller {
 				
 		$vars['encrypt'] = '';
 		
-		$this->cp->set_variable('cp_page_title', lang('assign_fields'));
+		$this->view->cp_page_title = lang('assign_fields');
 		$this->cp->set_breadcrumb(BASE.AMP.'C=tools_utilities'.AMP.'M=member_import', lang('member_import_utility'));
 
 		
-		$this->load->view('tools/convert_xml_pairs', $vars);
+		$this->cp->render('tools/convert_xml_pairs', $vars);
 
 	}
 
@@ -1677,10 +1648,10 @@ class Tools_utilities extends CI_Controller {
 		$vars['type_view'] = FALSE;
 		$vars['type_download'] = TRUE;		
 
-		$this->cp->set_variable('cp_page_title', lang('confirm_field_assignment'));
+		$this->view->cp_page_title = lang('confirm_field_assignment');
 		$this->cp->set_breadcrumb(BASE.AMP.'C=tools_utilities'.AMP.'M=member_import', lang('member_import_utility'));
 		
-		$this->load->view('tools/confirm_convert_xml', $vars);
+		$this->cp->render('tools/confirm_convert_xml', $vars);
 	}	
 	
 	// --------------------------------------------------------------------
@@ -1786,10 +1757,8 @@ class Tools_utilities extends CI_Controller {
 		{
 			show_error(lang('unauthorized_access'));
 		}
-
-		$this->load->helper('string');
 		
-		$this->cp->set_variable('cp_page_title', lang('view_xml'));
+		$this->view->cp_page_title = lang('view_xml');
 		$this->cp->set_breadcrumb(BASE.AMP.'C=tools_utilities'.AMP.'M=member_import', lang('member_import_utility'));
 
 		
@@ -1798,7 +1767,7 @@ class Tools_utilities extends CI_Controller {
 		$vars['output'] = $xml;
 		$vars['heading'] = lang('view_xml');
 
-		$this->load->view('tools/view_xml', $vars);
+		$this->cp->render('tools/view_xml', $vars);
 	}
 	
 	// --------------------------------------------------------------------
@@ -1816,10 +1785,8 @@ class Tools_utilities extends CI_Controller {
 		{
 			show_error(lang('unauthorized_access'));
 		}
-
-		$this->load->helper('string');
 			
-		$this->cp->set_variable('cp_page_title', lang('parse_error'));
+		$this->view->cp_page_title = lang('parse_error');
 		$this->cp->set_breadcrumb(BASE.AMP.'C=tools_utilities'.AMP.'M=member_import', lang('member_import_utility'));
 
 		$out = '<ul>';
@@ -1844,7 +1811,7 @@ class Tools_utilities extends CI_Controller {
 
 		$vars['message'] = ($message == '') ? NULL : $message;
 
-		$this->load->view('tools/view_xml', $vars);
+		$this->cp->render('tools/view_xml', $vars);
 	}	
 
 	// --------------------------------------------------------------------
@@ -1864,11 +1831,7 @@ class Tools_utilities extends CI_Controller {
 		}
 		
 		$this->load->helper('download');
-		$now = $this->localize->set_localized_time();
-        
-        $filename = 'member_'.date('y', $now).date('m', $now).date('d', $now).'.xml';
-		
-		force_download($filename, $xml);
+		force_download('member_'.$this->localize->format_date('%y%m%d').'.xml', $xml);
 	}
 
 	// --------------------------------------------------------------------
@@ -1892,7 +1855,7 @@ class Tools_utilities extends CI_Controller {
 			$not_writeable = lang('translation_dir_unwritable');
 		}
 
-		$this->cp->set_variable('cp_page_title', lang('translation_tool'));
+		$this->view->cp_page_title = lang('translation_tool');
 		$this->load->model('tools_model');
 		
 		$data = array(
@@ -1900,10 +1863,8 @@ class Tools_utilities extends CI_Controller {
 			'message'			=> $message,
 			'language_files'	=> $this->tools_model->get_language_filelist()
 		);
-		
-		$this->javascript->compile();
-		
-		$this->load->view('tools/translation_tool', $data);
+				
+		$this->cp->render('tools/translation_tool', $data);
 	}
 
 	// --------------------------------------------------------------------
@@ -1926,15 +1887,13 @@ class Tools_utilities extends CI_Controller {
 		$this->load->model('tools_model');
 		$language_file = $this->input->get_post('language_file');
 		
-		$this->cp->set_variable('cp_page_title', $language_file);
+		$this->view->cp_page_title = $language_file;
 		$this->cp->set_breadcrumb(BASE.AMP.'C=tools_utilities'.AMP.'M=translation_tool', lang('translation_tool'));
 
 		$this->jquery->tablesorter('.mainTable', '{
 			headers: {1: {sorter: false}},
 			widgets: ["zebra"]
 		}');
-
-		$this->javascript->compile();
 
 		$lang_list = $this->tools_model->get_language_list($language_file);
 
@@ -1945,7 +1904,7 @@ class Tools_utilities extends CI_Controller {
 			'language_list'	=> (count($lang_list) === 0) ? FALSE : $lang_list
 		);
 		
-		$this->load->view('tools/translate', $data);
+		$this->cp->render('tools/translate', $data);
 	}
 
 	// --------------------------------------------------------------------
@@ -2075,13 +2034,12 @@ class Tools_utilities extends CI_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 		
-		$this->cp->set_variable('cp_page_title', lang('php_info'));
-		$this->javascript->compile();
+		$this->view->cp_page_title = lang('php_info');
 		// a bit of a breadcrumb override is needed
-		$this->cp->set_variable('cp_breadcrumbs', array(
+		$this->view->cp_breadcrumbs = array(
 			BASE.AMP.'C=tools' => lang('tools'),
 			BASE.AMP.'C=tools_utilities'=> lang('tools_utilities')
-		));
+		);
 
 		ob_start();
 
@@ -2112,7 +2070,7 @@ class Tools_utilities extends CI_Controller {
 
 		$vars['php_info'] = $output;
 
-		$this->load->view('tools/php_info', $vars);
+		$this->cp->render('tools/php_info', $vars);
 	}
 }
 

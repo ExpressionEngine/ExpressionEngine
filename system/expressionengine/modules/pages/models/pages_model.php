@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -75,9 +75,6 @@ class Pages_model extends CI_Model {
 		$this->db->select('site_pages');
 		$this->db->where('site_id', $this->config->item('site_id'));
         $query = $this->db->get('sites');
-        
-        // Load the string helper
-		$this->load->helper('string');
 
 		return unserialize(base64_decode($query->row('site_pages') ));
 	}

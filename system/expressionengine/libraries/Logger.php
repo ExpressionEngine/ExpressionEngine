@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -55,16 +55,16 @@ class EE_Logger {
 			return;
 		}
 												
-		$this->EE->db->query(
-			$this->EE->db->insert_string(
+		ee()->db->query(
+			ee()->db->insert_string(
 				'exp_cp_log',
 				array(
-					'member_id'	=> $this->EE->session->userdata('member_id'),
-					'username'	=> $this->EE->session->userdata['username'],
-					'ip_address'=> $this->EE->input->ip_address(),
-					'act_date'	=> $this->EE->localize->now,
+					'member_id'	=> ee()->session->userdata('member_id'),
+					'username'	=> ee()->session->userdata['username'],
+					'ip_address'=> ee()->input->ip_address(),
+					'act_date'	=> ee()->localize->now,
 					'action'	=> $action,
-					'site_id'	=> $this->EE->config->item('site_id')
+					'site_id'	=> ee()->config->item('site_id')
 				)
 			)
 		);
@@ -111,21 +111,21 @@ class EE_Logger {
 		if ($update)
 		{
 			// Look to see if this exact log data is already in the database
-			$this->EE->db->where($log_data);
-			$this->EE->db->order_by('log_id', 'desc');
-			$duplicate = $this->EE->db->get('developer_log')->row_array();
+			ee()->db->where($log_data);
+			ee()->db->order_by('log_id', 'desc');
+			$duplicate = ee()->db->get('developer_log')->row_array();
 			
 			if (count($duplicate))
 			{
 				// If $expires is set, only update item if the duplicate is old enough
-				if ($this->EE->localize->now - $expires > $duplicate['timestamp'])
+				if (ee()->localize->now - $expires > $duplicate['timestamp'])
 				{
 					// Set log item as unviewed and update the timestamp
 					$duplicate['viewed'] = 'n';
-					$duplicate['timestamp'] = $this->EE->localize->now;
+					$duplicate['timestamp'] = ee()->localize->now;
 					
-					$this->EE->db->where('log_id', $duplicate['log_id']);
-					$this->EE->db->update('developer_log', $duplicate);
+					ee()->db->where('log_id', $duplicate['log_id']);
+					ee()->db->update('developer_log', $duplicate);
 					
 					$duplicate['updated'] = TRUE;
 				}
@@ -135,9 +135,9 @@ class EE_Logger {
 		}
 		
 		// If we got here, we're inserting a new item into the log
-		$log_data['timestamp'] = $this->EE->localize->now;
+		$log_data['timestamp'] = ee()->localize->now;
 		
-		$this->EE->db->insert('developer_log', $log_data);
+		ee()->db->insert('developer_log', $log_data);
 		
 		return $log_data;
 	}
@@ -165,33 +165,88 @@ class EE_Logger {
 	 */
 	function deprecated($version = NULL, $use_instead = NULL)
 	{
-		// debug_backtrace() will tell us what method is deprecated and what called it
+		ee()->load->helper('array');
+
 		$backtrace = debug_backtrace();
-		
-		// Make sure the keys exist
-		$function = (isset($backtrace[1]['function'])) ? $backtrace[1]['function'] : '';
-		$line = (isset($backtrace[1]['line'])) ? $backtrace[1]['line'] : 0;
-		$file = (isset($backtrace[1]['file'])) ? $backtrace[1]['file'] : '';
-		
+
+		// find the call site
+		$callee = element(1, $backtrace, array());
+
+		// make sure the items are set
+		$line = element('line', $callee, 0);
+		$file = element('file', $callee, '');
+		$function = element('function', $callee, '');
+
+		// if we're inside the system folder we don't care about the parent path
+		$file = str_replace(APPPATH, 'system/expressionengine/', $file);
+
 		// Information we are capturing from the incident
 		$deprecated = array(
-			'function'			=> $function.'()',	// Name of deprecated function
-			'line'				=> $line,			// Line where 'function' was called
-			'file'				=> $file,			// File where 'function' was called 
-			'deprecated_since'	=> $version,		// Version function was deprecated
-			'use_instead'		=> $use_instead		// Function to use instead
+			'function'			=> $function.'()',				// Name of deprecated function
+			'line'				=> $line,						// Line where 'function' was called
+			'file'				=> $file,						// File where 'function' was called 
+			'deprecated_since'	=> $version,					// Version function was deprecated
+			'use_instead'		=> ( ! empty($use_instead))		// Function to use instead
+				? htmlentities($use_instead) : NULL
 		);
+
+		// On page requests we need to check a bunch of other stuff
+		if (REQ == 'PAGE')
+		{
+			foreach ($backtrace as $i => $call)
+			{
+				if (isset($backtrace[$i + 1]))
+				{
+					$next = $backtrace[$i + 1];
+
+					if (is_a(element('object', $next, ''), 'EE_Template') && element('function', $next) == 'process_tags')
+					{
+						// found our parent tag
+						$addon_module = element('class', $call, '');
+						$addon_method = element('function', $call, '');
+
+						$deprecated += compact('addon_module', 'addon_method');
+
+						// grab our full tag name
+						$template_obj = $next['object'];
+						$addon_tag = $template_obj->tagproper;
+
+						$deprecated += array(
+							'template_id' => $template_obj->template_id,
+							'template_group' => $template_obj->group_name,
+							'template_name' => $template_obj->template_name
+						);
+
+						// check in snippets						
+						$global_vars = ee()->config->_global_vars;
+
+						$regex = '/'.preg_quote($addon_tag, '/').'/';
+						$matched = preg_grep($regex, $global_vars);
+
+						// Found in a snippet
+						if (count($matched))
+						{
+							$matched = array_keys($matched);
+							$deprecated += array('snippets' => implode('|', $matched));
+						}
+
+						break;
+					}
+				}
+			}
+		}
 		
 		// Only bug the user about this again after a week, or 604800 seconds
 		$deprecation_log = $this->developer($deprecated, TRUE, 604800);
 		
 		// Show and store flashdata only if we're in the CP, and only to Super Admins
-		if (REQ == 'CP' AND $this->EE->session->userdata('group_id') == 1)
+		if (REQ == 'CP' && isset(ee()->session) && ee()->session instanceof EE_Session 
+			&& ee()->session->userdata('group_id') == 1)
 		{
-			$this->EE->lang->loadfile('tools');
+			ee()->lang->loadfile('tools');
 			
 			// Set JS globals for "What does this mean?" modal
-			$this->EE->javascript->set_global(
+			ee()->javascript->set_global(
 				array(
 					'developer_log' => array(
 						'dev_log_help'			=> lang('dev_log_help'),
@@ -202,7 +257,7 @@ class EE_Logger {
 			
 			if (isset($deprecation_log['updated']))
 			{
-				$this->EE->session->set_flashdata(
+				ee()->session->set_flashdata(
 					'message_error',
 					lang('deprecation_detected').'<br />'.
 						'<a href="'.BASE.AMP.'C=tools_logs'.AMP.'M=view_developer_log">'.lang('dev_log_view_report').'</a>
@@ -222,18 +277,44 @@ class EE_Logger {
 	 */
 	function build_deprecation_language($deprecated)
 	{
-		$this->EE->lang->loadfile('tools');
-		
-		// "The system has detected an add-on that is using outdated code..." and "What does this mean?" link
-		$message = lang('deprecation_detected').NBS.'<a href="#" class="deprecation_meaning">'.lang('dev_log_help').'</a><br />';
-		
+		ee()->lang->loadfile('tools');
+
+		if ( ! isset($deprecated['function']))
+		{
+			return $deprecated['description'];
+		}
+
 		// "Deprecated function %s called"
-		$message .= sprintf(lang('deprecated_function'), $deprecated['function']);
+		$message = sprintf(lang('deprecated_function'), $deprecated['function']);
 		
 		// "in %s on line %d."
 		if (isset($deprecated['file']) && isset($deprecated['line']))
 		{
 			$message .= NBS.sprintf(lang('deprecated_on_line'), $deprecated['file'], $deprecated['line']);
+		}
+
+		// "from template tag: %s in template %s"
+		if (isset($deprecated['addon_module']) && isset($deprecated['addon_method']))
+		{
+			$message .= '<br />';
+			$message .= sprintf(
+				lang('deprecated_template'),
+				'<code>exp:'.strtolower($deprecated['addon_module']).':'.$deprecated['addon_method'].'</code>',
+				'<a href="'.BASE.AMP.'C=design'.AMP.'M=edit_template'.AMP.'id='.$deprecated['template_id'].'">'.$deprecated['template_group'].'/'.$deprecated['template_name'].'</a>'
+			);
+
+			if ($deprecated['snippets'])
+			{
+				$snippets = explode('|', $deprecated['snippets']);
+
+				foreach ($snippets as &$snip)
+				{
+					$snip = '<a href="'.BASE.AMP.'C=design'.AMP.'M=snippets_edit'.AMP.'snippet='.$snip.'">{'.$snip.'}</a>';
+				}
+
+				$message .= '<br />';
+				$message .= sprintf(lang('deprecated_snippets'), implode(', ', $snippets));
+			}
 		}
 		
 		if (isset($deprecated['deprecated_since']) 
@@ -256,6 +337,97 @@ class EE_Logger {
 		}
 		
 		return $message;
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Log a message in the Updater log.
+	 *
+	 * @access	public
+	 * @param	string		Message to add to the log.
+	 * @param	bool			If TRUE, add backtrace info to the log.
+	 * @return	void	
+	 */
+	public function updater($log_message, $exception = FALSE)
+	{
+		$this->_setup_log();
+
+		$data = array(
+			 'timestamp'	=> ee()->localize->now,
+			 'message'		=> $log_message,
+		);
+
+		if ($exception === TRUE)
+		{
+			$backtrace		= element(1, debug_backtrace(FALSE));
+
+			$data['method']	= $backtrace['class'].'::'.$backtrace['function'];
+			$data['line']	= $backtrace['line'];
+			$data['file']	= $backtrace['file'];
+		}
+
+		ee()->db->insert('update_log', $data);
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Create the update_log table if it doesn't already exist. Must be done
+	 * here rather than through the usual Updater since we need it available
+	 * when the Updater begins. Only creates the table if it doesn't already
+	 * exist.
+	 *
+	 * @access	private
+	 * @return	bool	
+	 */
+	private function _setup_log()
+	{
+		$table = 'update_log';
+
+		if ( ! ee()->db->table_exists($table))
+		{
+			ee()->load->dbforge();
+			
+			$fields = array(
+				'log_id' => array(
+					'type'				=> 'int',
+					'constraint'		=> 10,
+					'unsigned'			=> TRUE,
+					'auto_increment'	=> TRUE
+				),
+				'timestamp' => array(
+					'type'				=> 'int',
+					'constraint'		=> 10,
+					'unsigned'			=> TRUE
+				),
+				'message' => array(
+					'type'				=> 'text',
+					'null'				=> TRUE
+				),
+				'method' => array(
+					'type'				=> 'varchar',
+					'constraint'		=> 100,
+					'null'				=> TRUE
+				),
+				'line' => array(
+					'type'				=> 'int',
+					'constraint'		=> 10,
+					'unsigned'			=> TRUE,
+					'null'				=> TRUE
+				),
+				'file' => array(
+					'type'				=> 'varchar',
+					'constraint'		=> 255,
+					'null'				=> TRUE
+				)
+			);
+
+			ee()->dbforge->add_field($fields);
+			ee()->dbforge->add_key('log_id', TRUE);
+
+			ee()->dbforge->create_table($table);
+		}
 	}
 }
 // END CLASS

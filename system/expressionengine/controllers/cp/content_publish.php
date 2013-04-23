@@ -7,7 +7,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -25,7 +25,7 @@
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Content_publish extends CI_Controller {
+class Content_publish extends CP_Controller {
 
 	private $_tab_labels		= array();
 	private $_module_tabs		= array();
@@ -45,7 +45,7 @@ class Content_publish extends CI_Controller {
 	{
 		parent::__construct();
 
-		if ( ! $this->cp->allowed_group('can_access_content', 'can_access_publish'))
+		if ( ! $this->cp->allowed_group('can_access_content'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -87,7 +87,7 @@ class Content_publish extends CI_Controller {
 			);
 		}
 		
-		$this->cp->set_variable('cp_page_title', $title);
+		$this->view->cp_page_title = $title;
 
 		$this->load->model('channel_model');
 		$channels = $this->channel_model->get_channels();
@@ -110,8 +110,7 @@ class Content_publish extends CI_Controller {
 			$this->functions->redirect($base_url.key($data['assigned_channels']));
 		}
 
-		$this->javascript->compile();
-		$this->load->view('content/channel_select_list', $data);
+		$this->cp->render('content/channel_select_list', $data);
 	}
 	
 	// --------------------------------------------------------------------
@@ -139,6 +138,12 @@ class Content_publish extends CI_Controller {
 
 		$entry_id	= (int) $this->input->get_post('entry_id');
 		$channel_id	= (int) $this->input->get_post('channel_id');
+
+		// Prevent publishing new entries if disallowed
+		if ( ! $this->cp->allowed_group('can_access_content', 'can_access_publish') AND $entry_id == 0)
+		{
+			show_error(lang('unauthorized_access'));
+		}
 		
 		$autosave	= ($this->input->get_post('use_autosave') == 'y');
 		
@@ -343,11 +348,13 @@ class Content_publish extends CI_Controller {
 			
 			'preview_url'	=> $preview_url
 		);
-
-		$this->cp->set_breadcrumb(BASE.AMP.'C=content_publish', lang('publish'));
 		
-		$this->javascript->compile();
-		$this->load->view('content/publish', $data);
+		if ($this->cp->allowed_group('can_access_publish'))
+		{
+			$this->cp->set_breadcrumb(BASE.AMP.'C=content_publish', lang('publish'));
+		}
+		
+		$this->cp->render('content/publish', $data);
 	}
 	
 	// --------------------------------------------------------------------
@@ -410,7 +417,7 @@ class Content_publish extends CI_Controller {
 		// @todo check for errors
 		
 		$msg = lang('autosave_success');
-		$time = $this->localize->set_human_time($this->localize->now);
+		$time = $this->localize->human_time($this->localize->now);
 		$time = trim(strstr($time, ' '));
 		
 		$this->output->send_ajax_response(array(
@@ -441,11 +448,6 @@ class Content_publish extends CI_Controller {
 		}
 
 		$this->api->instantiate('channel_fields');
-
-		if ( ! function_exists('json_decode'))
-		{
-			$this->load->library('Services_json');
-		}
 
 		$this->output->enable_profiler(FALSE);
 		$error 				= array();
@@ -658,7 +660,7 @@ class Content_publish extends CI_Controller {
 
 		foreach ($fields as $key => $val)
 		{
-			if (isset($resrow[$key]) AND $val != 'rel' and $resrow[$key] != '')
+			if (isset($resrow[$key]) AND $val != 'relationship' and $resrow[$key] != '')
 			{
 				$expl = explode('field_id_', $key);
 
@@ -666,15 +668,10 @@ class Content_publish extends CI_Controller {
 				{
 					if ($resrow[$key] != 0)
 					{
-						$localize = TRUE;
-						$date = $resrow[$key];
-						if ($resrow['field_dt_'.$expl['1']] != '')
-						{
-							$date = $this->localize->simpl_offset($date, $resrow['field_dt_'.$expl['1']]);
-							$localize = FALSE;
-						}
+						$localize = ($resrow['field_dt_'.$expl['1']] != '')
+							? $resrow['field_dt_'.$expl['1']] : TRUE;
 
-						$r .= $this->localize->set_human_time($date, $localize);
+						$r .= $this->localize->human_time($resrow[$key], $localize);
 					}
 				}
 				else
@@ -762,10 +759,8 @@ class Content_publish extends CI_Controller {
 			'entry_contents'		=> $r
 		);
 		
-		$this->javascript->compile();
-
-		$this->cp->set_variable('cp_page_title', lang('view_entry'));
-		$this->load->view('content/view_entry', $data);
+		$this->view->cp_page_title = lang('view_entry');
+		$this->cp->render('content/view_entry', $data);
 	}
 	
 	// --------------------------------------------------------------------
@@ -825,7 +820,7 @@ class Content_publish extends CI_Controller {
 		
 		$this->load->model('category_model');
 		
-		$query = $this->category_model->get_categories($group_id, FALSE);
+		$query = $this->category_model->get_category_groups($group_id, FALSE);
 		$this->api_channel_categories->category_tree($group_id, '', $query->row('sort_order'));
 
 		$data = array(
@@ -913,7 +908,6 @@ class Content_publish extends CI_Controller {
 		// Get Channel fields in the field group
 		$channel_fields = $this->channel_model->get_channel_fields($this->_channel_data['field_group']);
 
-		$this->_dst_enabled = ($this->session->userdata('daylight_savings') == 'y' ? TRUE : FALSE);
 
 		$field_settings = array();
 
@@ -922,7 +916,6 @@ class Content_publish extends CI_Controller {
 			$field_fmt 		= $row['field_fmt'];
 			$field_dt 		= '';
 			$field_data		= '';
-			$dst_enabled	= '';
 						
 			if ($entry_id === 0)
 			{
@@ -946,7 +939,6 @@ class Content_publish extends CI_Controller {
 				'field_dt'				=> $field_dt,
 				'field_data'			=> $field_data,
 				'field_name'			=> 'field_id_'.$row['field_id'],
-				'dst_enabled'			=> $this->_dst_enabled
 			);
 			
 			$ft_settings = array();
@@ -1205,7 +1197,7 @@ class Content_publish extends CI_Controller {
 		/*  - Add More Stuff to do when you first submit an entry
 		/*  - Added 1.4.2
 		*/
-			$edata = $this->extensions->call('submit_new_entry_start');
+			$this->extensions->call('submit_new_entry_start');
 			if ($this->extensions->end_script === TRUE) return TRUE;
 		/*
 		/* -------------------------------------------*/
@@ -1253,13 +1245,13 @@ class Content_publish extends CI_Controller {
 		{
 			$type		= '';
 			$page_title	= 'entry_has_been_updated';
-			$success	= $this->api_channel_entries->update_entry($entry_id, $data);
+			$success	= $this->api_channel_entries->save_entry($data, NULL, $entry_id);
 		}
 		else
 		{
 			$type		= 'new';
 			$page_title	= 'entry_has_been_added';
-			$success	= $this->api_channel_entries->submit_new_entry($_POST['channel_id'], $data);
+			$success	= $this->api_channel_entries->save_entry($data, $_POST['channel_id']);
 		}
 		
 		
@@ -1315,7 +1307,7 @@ class Content_publish extends CI_Controller {
 			
 			$data['cp_page_title'] = lang('xmlrpc_ping_errors');
 			
-			$this->load->view('content/ping_errors', $data);
+			$this->cp->render('content/ping_errors', $data);
 			
 			return TRUE;	// tricking it into not publish again
 		}
@@ -1964,7 +1956,7 @@ class Content_publish extends CI_Controller {
 					
 					$this->table->add_row(array(
 							'<strong>' . lang('revision') . ' ' . $j . '</strong>',
-							$this->localize->set_human_time($row->version_date),
+							$this->localize->human_time($row->version_date),
 							$row->screen_name,
 							$revlink
 						)
@@ -2303,7 +2295,6 @@ class Content_publish extends CI_Controller {
 				'always_show_date'		=> 'y',
 				'default_offset'		=> 0,
 				'selected'				=> 'y',
-				'dst_enabled'			=> $this->_dst_enabled				
 			),
 			'expiration_date' => array(
 				'field_id'				=> 'expiration_date',
@@ -2317,7 +2308,6 @@ class Content_publish extends CI_Controller {
 				'field_show_fmt'		=> 'n',
 				'default_offset'		=> 0,
 				'selected'				=> 'y',
-				'dst_enabled'			=> $this->_dst_enabled				
 			)	
 		);
 		
@@ -2336,7 +2326,6 @@ class Content_publish extends CI_Controller {
 				'field_show_fmt'		=> 'n',
 				'default_offset'		=> $this->_channel_data['comment_expiration'] * 86400,
 				'selected'				=> 'y',
-				'dst_enabled'			=> $this->_dst_enabled
 			);
 		}
 		
@@ -2606,9 +2595,9 @@ class Content_publish extends CI_Controller {
 		$this->cp->add_js_script(array("
 			<script type=\"text/javascript\" charset=\"utf-8\">
 			// <![CDATA[
-			mySettings = ".$this->javascript->generate_json($markItUp, TRUE).";
-			myNobuttonSettings = ".$this->javascript->generate_json($markItUp_nobtns, TRUE).";
-			myWritemodeSettings = ".$this->javascript->generate_json($markItUp_writemode, TRUE).";
+			mySettings = ".json_encode($markItUp).";
+			myNobuttonSettings = ".json_encode($markItUp_nobtns).";
+			myWritemodeSettings = ".json_encode($markItUp_writemode).";
 			// ]]>
 			</script>
 

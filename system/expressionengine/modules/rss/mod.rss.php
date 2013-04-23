@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -40,27 +40,27 @@ class Rss {
 	{
 		$this->EE =& get_instance();
 		
-		$this->EE->TMPL->encode_email = FALSE;
+		ee()->TMPL->encode_email = FALSE;
 		
-		if ($this->EE->TMPL->fetch_param('debug') == 'yes')
+		if (ee()->TMPL->fetch_param('debug') == 'yes')
 		{
 			$this->_debug = TRUE;
 		}
 		
-		if ( ! $channel = $this->EE->TMPL->fetch_param('channel'))
+		if ( ! $channel = ee()->TMPL->fetch_param('channel'))
 		{
-			$this->EE->lang->loadfile('rss');
-			return $this->_empty_feed($this->EE->lang->line('no_weblog_specified'));
+			ee()->lang->loadfile('rss');
+			return $this->_empty_feed(ee()->lang->line('no_weblog_specified'));
 		}
 
-		$this->EE->db->select('channel_id');
-		$this->EE->functions->ar_andor_string($channel, 'channel_name');
-		$query = $this->EE->db->get('channels');
+		ee()->db->select('channel_id');
+		ee()->functions->ar_andor_string($channel, 'channel_name');
+		$query = ee()->db->get('channels');
 
 		if ($query->num_rows() === 0)
 		{
-			$this->EE->lang->loadfile('rss');
-			return $this->_empty_feed($this->EE->lang->line('rss_invalid_channel'));
+			ee()->lang->loadfile('rss');
+			return $this->_empty_feed(ee()->lang->line('rss_invalid_channel'));
 		}
 		
 		$tmp = $this->_setup_meta_query($query);		
@@ -71,13 +71,13 @@ class Rss {
 		
 		if ($query->num_rows() === 0)
 		{
-			$this->EE->lang->loadfile('rss');
-			return $this->_empty_feed($this->EE->lang->line('no_matching_entries'));
+			ee()->lang->loadfile('rss');
+			return $this->_empty_feed(ee()->lang->line('no_matching_entries'));
 		}
 		
 		$query = $this->_feed_vars_query($query->row('entry_id'));
 		
-		$request 		= $this->EE->input->request_headers(TRUE);
+		$request 		= ee()->input->request_headers(TRUE);
 		$start_on 		= '';
 		$diffe_request 	= FALSE;
 		$feed_request	= FALSE;
@@ -85,13 +85,13 @@ class Rss {
 		// Check for 'diff -e' request
 		if (isset($request['A-IM']) && stristr($request['A-IM'], 'diffe') !== FALSE)
 		{
-			$items_start = strpos($this->EE->TMPL->tagdata, '{exp:channel:entries');
+			$items_start = strpos(ee()->TMPL->tagdata, '{exp:channel:entries');
 			
 			if ($items_start !== FALSE)
 			{
 				// We add three, for three line breaks added later in the script
 				$diffe_request = count(preg_split("/(\r\n)|(\r)|(\n)/",
-										trim(substr($this->EE->TMPL->tagdata, 0, $items_start)))) + 3;
+										trim(substr(ee()->TMPL->tagdata, 0, $items_start)))) + 3;
 			}
 		}
 
@@ -103,7 +103,7 @@ class Rss {
 		}
 
 		//  Check for the 'If-Modified-Since' Header
-		if ($this->EE->config->item('send_headers') == 'y' 
+		if (ee()->config->item('send_headers') == 'y' 
 			&& isset($request['If-Modified-Since']) 
 			&& trim($request['If-Modified-Since']) != '')
 		{
@@ -122,7 +122,7 @@ class Rss {
 			{
 				if ($diffe_request !== FALSE OR $feed_request !== FALSE)
 				{
-					$start_on = gmdate('Y-m-d h:i A',$this->EE->localize->set_localized_time($modify_tstamp));
+					$start_on = ee()->localize->format_date('%Y-%m-%d %h:%i %A', $modify_tstamp);
 				}
 			}
 		}
@@ -131,11 +131,11 @@ class Rss {
 		$marker = 'H94e99Perdkie0393e89vqpp'; 
 
 		if (preg_match_all("/{exp:channel:entries.+?{".'\/'."exp:channel:entries}/s", 
-							$this->EE->TMPL->tagdata, $matches))
+							ee()->TMPL->tagdata, $matches))
 		{
 			for($i = 0; $i < count($matches[0]); $i++)
 			{
-				$this->EE->TMPL->tagdata = str_replace($matches[0][$i], $marker.$i, $this->EE->TMPL->tagdata);
+				ee()->TMPL->tagdata = str_replace($matches[0][$i], $marker.$i, ee()->TMPL->tagdata);
 
 				// Remove limit if we have a start_on and dynamic_start
 				if ($start_on != '' && stristr($matches[0][$i],'dynamic_start="yes"'))
@@ -163,7 +163,7 @@ class Rss {
 
 		foreach ($date_vars as $val)
 		{					
-			if (preg_match_all("/".LD.$val."\s+format=[\"'](.*?)[\"']".RD."/s", $this->EE->TMPL->tagdata, $matches))
+			if (preg_match_all("/".LD.$val."\s+format=[\"'](.*?)[\"']".RD."/s", ee()->TMPL->tagdata, $matches))
 			{
 				for ($j = 0; $j < count($matches[0]); $j++)
 				{
@@ -172,74 +172,89 @@ class Rss {
 
 					switch ($val)
 					{
-						case 'date' 			: $entry_date_array[$matches[0][$j]] = $this->EE->localize->fetch_date_params($matches[1][$j]);
+						case 'date' 			: $entry_date_array[$matches[0][$j]] = $matches[1][$j];
 							break;
-						case 'gmt_date'			: $gmt_date_array[$matches[0][$j]] = $this->EE->localize->fetch_date_params($matches[1][$j]);
+						case 'gmt_date'			: $gmt_date_array[$matches[0][$j]] = $matches[1][$j];
 							break;
-						case 'gmt_entry_date'	: $gmt_entry_date_array[$matches[0][$j]] = $this->EE->localize->fetch_date_params($matches[1][$j]);
+						case 'gmt_entry_date'	: $gmt_entry_date_array[$matches[0][$j]] = $matches[1][$j];
 							break;
-						case 'edit_date' 		: $edit_date_array[$matches[0][$j]] = $this->EE->localize->fetch_date_params($matches[1][$j]);
+						case 'edit_date' 		: $edit_date_array[$matches[0][$j]] = $matches[1][$j];
 							break;
-						case 'gmt_edit_date'	: $gmt_edit_date_array[$matches[0][$j]] = $this->EE->localize->fetch_date_params($matches[1][$j]);
+						case 'gmt_edit_date'	: $gmt_edit_date_array[$matches[0][$j]] = $matches[1][$j];
 							break;
 					}
 				}
 			}
 		}
 
-		foreach ($this->EE->TMPL->var_single as $key => $val)
+		ee()->load->helper('date');
+
+		foreach (ee()->TMPL->var_single as $key => $val)
 		{
 			//  {date}
 			if (isset($entry_date_array[$key]))
 			{
-				foreach ($entry_date_array[$key] as $dvar)
-				{
-					$val = str_replace($dvar, $this->EE->localize->convert_timestamp($dvar, $entry_date, TRUE), $val);					
-				}
-
-				$this->EE->TMPL->tagdata = $this->EE->TMPL->swap_var_single($key, $val, $this->EE->TMPL->tagdata);					
+				ee()->TMPL->tagdata = ee()->TMPL->swap_var_single(
+					$key,
+					ee()->localize->format_date(
+						$entry_date_array[$key],
+						$entry_date
+					),
+					ee()->TMPL->tagdata
+				);					
 			}
 
 			//  GMT date - entry date in GMT
 			if (isset($gmt_entry_date_array[$key]))
 			{
-				foreach ($gmt_entry_date_array[$key] as $dvar)
-				{
-					$val = str_replace($dvar, $this->EE->localize->convert_timestamp($dvar, $entry_date, FALSE), $val);					
-				}
-
-				$this->EE->TMPL->tagdata = $this->EE->TMPL->swap_var_single($key, $val, $this->EE->TMPL->tagdata);					
+				ee()->TMPL->tagdata = ee()->TMPL->swap_var_single(
+					$key,
+					ee()->localize->format_date(
+						$gmt_entry_date_array[$key],
+						$entry_date,
+						FALSE
+					),
+					ee()->TMPL->tagdata
+				);				
 			}
 
 			if (isset($gmt_date_array[$key]))
 			{
-				foreach ($gmt_date_array[$key] as $dvar)
-				{
-					$val = str_replace($dvar, $this->EE->localize->convert_timestamp($dvar, $entry_date, FALSE), $val);
-				}
-
-				$this->EE->TMPL->tagdata = $this->EE->TMPL->swap_var_single($key, $val, $this->EE->TMPL->tagdata);					
+				ee()->TMPL->tagdata = ee()->TMPL->swap_var_single(
+					$key,
+					ee()->localize->format_date(
+						$gmt_date_array[$key],
+						$entry_date,
+						FALSE
+					),
+					ee()->TMPL->tagdata
+				);
 			}
 
 			//  parse "last edit" date
 			if (isset($edit_date_array[$key]))
 			{
-				foreach ($edit_date_array[$key] as $dvar)
-				{
-					$val = str_replace($dvar, $this->EE->localize->convert_timestamp($dvar, $edit_date, TRUE), $val);					
-				}
-				$this->EE->TMPL->tagdata = $this->EE->TMPL->swap_var_single($key, $val, $this->EE->TMPL->tagdata);					
+				ee()->TMPL->tagdata = ee()->TMPL->swap_var_single(
+					$key,
+					ee()->localize->format_date(
+						$edit_date_array[$key],
+						mysql_to_unix($edit_date)
+					),
+					ee()->TMPL->tagdata
+				);				
 			}
 
 			//  "last edit" date as GMT
 			if (isset($gmt_edit_date_array[$key]))
 			{
-				foreach ($gmt_edit_date_array[$key] as $dvar)
-				{
-					$val = str_replace($dvar, $this->EE->localize->convert_timestamp($dvar, $this->EE->localize->timestamp_to_gmt($edit_date), FALSE), $val);					
-				}
-
-				$this->EE->TMPL->tagdata = $this->EE->TMPL->swap_var_single($key, $val, $this->EE->TMPL->tagdata);					
+				ee()->TMPL->tagdata = ee()->TMPL->swap_var_single(
+					$key,
+					ee()->localize->format_date(
+						$gmt_edit_date_array[$key],
+						mysql_to_unix($edit_date)
+					),
+					ee()->TMPL->tagdata
+				);
 			}			
 		}
 		
@@ -255,7 +270,7 @@ class Rss {
 		$vars = array(
 			array(
 				'channel_id'			=> $query->row('channel_id'),
-				'encoding'				=> $this->EE->config->item('output_charset'),
+				'encoding'				=> ee()->config->item('output_charset'),
 				'channel_language'		=> $query->row('channel_lang'),
 				'channel_description'	=> $query->row('channel_description'),
 				'channel_url'			=> $query->row('channel_url'),
@@ -268,32 +283,32 @@ class Rss {
 			)
 		);
 		
-		$this->EE->TMPL->tagdata = $this->EE->TMPL->parse_variables($this->EE->TMPL->tagdata, $vars);
+		ee()->TMPL->tagdata = ee()->TMPL->parse_variables(ee()->TMPL->tagdata, $vars);
 
 		if (count($chunks) > 0)
 		{			
 			$diff_top = ($start_on != '' && $diffe_request !== false) ? "1,".($diffe_request-1)."c\n" : '';
 
 			// Last Update Time
-			$this->EE->TMPL->tagdata = '<ee:last_update>'.$last_update."</ee:last_update>\n\n".$diff_top.trim($this->EE->TMPL->tagdata);
+			ee()->TMPL->tagdata = '<ee:last_update>'.$last_update."</ee:last_update>\n\n".$diff_top.trim(ee()->TMPL->tagdata);
 
 			// Diffe stuff before items
 			if ($diffe_request !== FALSE)
 			{
-				$this->EE->TMPL->tagdata = str_replace($marker.'0', "\n.\n".$diffe_request."a\n".$marker.'0', $this->EE->TMPL->tagdata);
-				$this->EE->TMPL->tagdata = str_replace($marker.(count($chunks)-1), $marker.(count($chunks)-1)."\n.\n$\n-1\n;c\n", $this->EE->TMPL->tagdata);
+				ee()->TMPL->tagdata = str_replace($marker.'0', "\n.\n".$diffe_request."a\n".$marker.'0', ee()->TMPL->tagdata);
+				ee()->TMPL->tagdata = str_replace($marker.(count($chunks)-1), $marker.(count($chunks)-1)."\n.\n$\n-1\n;c\n", ee()->TMPL->tagdata);
 			}
 
 			foreach ($chunks as $key => $val)
 			{
-				$this->EE->TMPL->tagdata = str_replace($key, $val, $this->EE->TMPL->tagdata);	
+				ee()->TMPL->tagdata = str_replace($key, $val, ee()->TMPL->tagdata);	
 			}
 		}
 
 		// 'ed' input mode is terminated by entering a single period  (.) on a line
-		$this->EE->TMPL->tagdata = ($diffe_request !== false) ? trim($this->EE->TMPL->tagdata)."\n.\n" : trim($this->EE->TMPL->tagdata);
+		ee()->TMPL->tagdata = ($diffe_request !== false) ? trim(ee()->TMPL->tagdata)."\n.\n" : trim(ee()->TMPL->tagdata);
 		
-		return $this->EE->TMPL->tagdata;
+		return ee()->TMPL->tagdata;
 	}
 
 	// --------------------------------------------------------------------
@@ -320,7 +335,7 @@ class Rss {
 				LEFT JOIN exp_channels ON exp_channel_titles.channel_id = exp_channels.channel_id 
 				LEFT JOIN exp_members ON exp_members.member_id = exp_channel_titles.author_id
 				WHERE exp_channel_titles.entry_id !=''
-				AND exp_channels.site_id IN ('".implode("','", $this->EE->TMPL->site_ids)."') ";
+				AND exp_channels.site_id IN ('".implode("','", ee()->TMPL->site_ids)."') ";
 		
 		if ($query->num_rows() == 1)
 		{
@@ -341,14 +356,14 @@ class Rss {
 		}
 
 		//  We only select entries that have not expired 
-		$timestamp = ($this->EE->TMPL->cache_timestamp != '') ? $this->EE->TMPL->cache_timestamp : $this->EE->localize->now;
+		$timestamp = (ee()->TMPL->cache_timestamp != '') ? ee()->TMPL->cache_timestamp : ee()->localize->now;
 
-		if ($this->EE->TMPL->fetch_param('show_future_entries') != 'yes')
+		if (ee()->TMPL->fetch_param('show_future_entries') != 'yes')
 		{
 			$sql .= " AND exp_channel_titles.entry_date < ".$timestamp." ";
 		}
 
-		if ($this->EE->TMPL->fetch_param('show_expired') != 'yes')
+		if (ee()->TMPL->fetch_param('show_expired') != 'yes')
 		{
 			$sql .= " AND (exp_channel_titles.expiration_date = 0 OR exp_channel_titles.expiration_date > ".$timestamp.") ";
 		}
@@ -356,12 +371,12 @@ class Rss {
 		//  Add status declaration
 		$sql .= "AND exp_channel_titles.status != 'closed' ";
 
-		if ($status = $this->EE->TMPL->fetch_param('status'))
+		if ($status = ee()->TMPL->fetch_param('status'))
 		{
 			$status = str_replace('Open',	'open',	$status);
 			$status = str_replace('Closed', 'closed', $status);
 
-			$sql .= $this->EE->functions->sql_andor_string($status, 'exp_channel_titles.status');
+			$sql .= ee()->functions->sql_andor_string($status, 'exp_channel_titles.status');
 		}
 		else
 		{
@@ -369,25 +384,25 @@ class Rss {
 		}
 
 		//  Limit to (or exclude) specific users
-		if ($username = $this->EE->TMPL->fetch_param('username'))
+		if ($username = ee()->TMPL->fetch_param('username'))
 		{
 			// Shows entries ONLY for currently logged in user
 			if ($username == 'CURRENT_USER')
 			{
-				$sql .=  "AND exp_members.member_id = '".$this->EE->session->userdata['member_id']."' ";
+				$sql .=  "AND exp_members.member_id = '".ee()->session->userdata['member_id']."' ";
 			}
 			elseif ($username == 'NOT_CURRENT_USER')
 			{
-				$sql .=  "AND exp_members.member_id != '".$this->EE->session->userdata['member_id']."' ";
+				$sql .=  "AND exp_members.member_id != '".ee()->session->userdata['member_id']."' ";
 			}
 			else
 			{				
-				$sql .= $this->EE->functions->sql_andor_string($username, 'exp_members.username');
+				$sql .= ee()->functions->sql_andor_string($username, 'exp_members.username');
 			}
 		}
 
 		// Find Edit Date
-		$query = $this->EE->db->query($sql." ORDER BY last_update desc LIMIT 1");
+		$query = ee()->db->query($sql." ORDER BY last_update desc LIMIT 1");
 
 		$last_update = '';
 		$edit_date = '';
@@ -395,14 +410,14 @@ class Rss {
 
 		if ($query->num_rows() > 0)
 		{
-			$last_update = $query->row('last_update')  + ($this->EE->localize->set_server_time() - $this->EE->localize->now);
+			$last_update = $query->row('last_update');
 			$edit_date = $query->row('edit_date') ;
 			$entry_date = $query->row('entry_date') ;
 		}
 
 		$sql .= " ORDER BY exp_channel_titles.entry_date desc LIMIT 1";
 
-		$query = $this->EE->db->query($sql);
+		$query = ee()->db->query($sql);
 
 		return array($query, $last_update, $edit_date, $entry_date);
 	}
@@ -417,14 +432,14 @@ class Rss {
 	 */
 	protected function _feed_vars_query($entry_id)
 	{
-		return $this->EE->db->select('c.channel_id, c.channel_title, c.channel_url, c.channel_lang, 
+		return ee()->db->select('c.channel_id, c.channel_title, c.channel_url, c.channel_lang, 
 									c.channel_description, ct.entry_date, m.email, m.username, 
 									m.screen_name, m.url')
 							->from('channel_titles ct')
 							->join('channels c', 'ct.channel_id = c.channel_id', 'left')
 							->join('members m', 'm.member_id = ct.author_id', 'left')
 							->where('ct.entry_id', (int) $entry_id)
-							->where_in('c.site_id', $this->EE->TMPL->site_ids)
+							->where_in('c.site_id', ee()->TMPL->site_ids)
 							->get();
 	}
 
@@ -437,16 +452,16 @@ class Rss {
 	{
 		if ($error !== NULL)
 		{
-			$this->EE->TMPL->log_item($error);
+			ee()->TMPL->log_item($error);
 		}
 
 		$empty_feed = '';
 
-		if (preg_match("/".LD."if empty_feed".RD."(.*?)".LD.'\/'."if".RD."/s", $this->EE->TMPL->tagdata, $match)) 
+		if (preg_match("/".LD."if empty_feed".RD."(.*?)".LD.'\/'."if".RD."/s", ee()->TMPL->tagdata, $match)) 
 		{			
 			if (stristr($match[1], LD.'if'))
 			{
-				$match[0] = $this->EE->functions->full_tag($match[0], $this->EE->TMPL->tagdata, LD.'if', LD.'\/'."if".RD);
+				$match[0] = ee()->functions->full_tag($match[0], ee()->TMPL->tagdata, LD.'if', LD.'\/'."if".RD);
 			}
 
 			$empty_feed = substr($match[0], strlen(LD."if empty_feed".RD), -strlen(LD.'/'."if".RD));
@@ -469,14 +484,14 @@ class Rss {
 	  */
 	protected function _default_empty_feed($error = '')
 	{
-		$this->EE->lang->loadfile('rss');
+		ee()->lang->loadfile('rss');
 
-		$encoding	= $this->EE->config->item('charset');
-		$title		= $this->EE->config->item('site_name');
-		$link		= $this->EE->config->item('site_url');
+		$encoding	= ee()->config->item('charset');
+		$title		= ee()->config->item('site_name');
+		$link		= ee()->config->item('site_url');
 		$version	= APP_VER;
-		$pubdate	= date('D, d M Y H:i:s', $this->EE->localize->now).' GMT';
-		$content	= ($this->_debug === TRUE && $error != '') ? $error : $this->EE->lang->line('empty_feed');
+		$pubdate	= ee()->localize->format_date('%D, %d %M %Y %H:%i:%s GMT', NULL, FALSE);
+		$content	= ($this->_debug === TRUE && $error != '') ? $error : ee()->lang->line('empty_feed');
 
 		return <<<HUMPTYDANCE
 <?xml version="1.0" encoding="{$encoding}"?>

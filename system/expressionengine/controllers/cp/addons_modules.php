@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -23,7 +23,7 @@
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Addons_modules extends CI_Controller {
+class Addons_modules extends CP_Controller {
 
 	var $_mcp_reference;
 
@@ -57,8 +57,7 @@ class Addons_modules extends CI_Controller {
 		// Set access status
 		$can_admin = ( ! $this->cp->allowed_group('can_admin_modules')) ? FALSE : TRUE;
 
-		$this->load->library('table');
-		$this->load->library('addons');
+		$this->load->library(array('addons', 'table', 'typography'));
 		$this->load->helper('directory');
 
 		$this->cp->set_right_nav(array('update_modules' => BASE.AMP.'C=addons_modules'.AMP.'check_updates=y'));
@@ -114,7 +113,7 @@ class Addons_modules extends CI_Controller {
 		$names	 = array();
 		$data	 = array();
 		$updated = array();
-
+		
 		foreach ($modules as $module => $module_info)
 		{
 			if (IS_CORE && in_array($module, $this->core->standard_modules))
@@ -145,7 +144,14 @@ class Addons_modules extends CI_Controller {
 			
 
 			// Module Description
-			$data[$modcount][] = lang(strtolower($module).'_module_description');
+			$data[$modcount][] = $this->typography->parse_type(
+				lang(strtolower($module).'_module_description'),
+				array(
+					'text_format'	=> 'none',
+					'html_format'	=> 'safe',
+					'auto_links'	=> 'y'
+				)
+			);
 
 			// Module Version
 			$version = ( ! isset($this->installed_modules[$module])) ?  '--' : $this->installed_modules[$module]['module_version'];
@@ -230,11 +236,10 @@ class Addons_modules extends CI_Controller {
 		}
 
 
-		$this->cp->set_variable('cp_page_title', lang('modules'));
+		$this->view->cp_page_title = lang('modules');
 		$this->cp->set_breadcrumb(BASE.AMP.'C=addons', lang('addons'));
 
-		$this->javascript->compile();
-		$this->load->view('addons/modules', $vars);
+		$this->cp->render('addons/modules', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -253,14 +258,13 @@ class Addons_modules extends CI_Controller {
 		$this->load->library('addons');
 		
 		// These can be overriden by individual modules
-		$this->cp->set_variable('cp_page_title', lang('modules'));
-		$this->cp->set_breadcrumb(BASE.AMP.'C=addons_modules', lang('modules'));
+		$this->view->cp_page_title = lang('modules');
 
 		// a bit of a breadcrumb override is needed
-		$this->cp->set_variable('cp_breadcrumb', array(
+		$this->view->cp_breadcrumbs = array(
 			BASE.AMP.'C=addons' => lang('addons'),
 			BASE.AMP.'C=addons_modules'=> lang('addons_modules')
-		));
+		);
 
 		$module = $this->input->get_post('module');
 		$module = $this->security->sanitize_filename(strtolower($module));
@@ -363,9 +367,7 @@ class Addons_modules extends CI_Controller {
 		// remove package paths
 		$this->load->remove_package_path($installed[$module]['path']);
 
-		$this->javascript->compile();
-	
-		$this->load->view('addons/module_cp_container', $vars);
+		$this->cp->render('addons/module_cp_container', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -417,15 +419,14 @@ class Addons_modules extends CI_Controller {
 		$vars['form_hidden'] = array('module' => $module, 'confirm' => 'delete');
 		$vars['module_name'] = (lang($module.'_module_name') == FALSE) ? ucwords(str_replace('_', ' ', $module)) : lang($module.'_module_name');
 
-		$this->cp->set_variable('cp_page_title', lang('delete_module'));
+		$this->view->cp_page_title = lang('delete_module');
 		
-		$this->cp->set_variable('cp_breadcrumbs', array(
+		$this->view->cp_breadcrumbs = array(
 			BASE.AMP.'C=addons' => lang('addons'),
 			BASE.AMP.'C=addons_modules'=> lang('modules')
-		));
+		);
 		
-		$this->javascript->compile();
-		$this->load->view('addons/module_delete_confirm', $vars);
+		$this->cp->render('addons/module_delete_confirm', $vars);
 	}
 
 	// --------------------------------------------------------------------

@@ -22,7 +22,7 @@ $lang = array(
 'You are not allowed to access any modules',
 
 'delete_module' =>
-'De-install Module',
+'Uninstall Module',
 
 'delete_module_confirm' =>
 'Are you sure you want to remove the following module:',

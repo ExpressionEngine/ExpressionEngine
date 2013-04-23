@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -22,7 +22,7 @@
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Addons_plugins extends CI_Controller {
+class Addons_plugins extends CP_Controller {
 
 	var $paths = array();
 
@@ -55,7 +55,7 @@ class Addons_plugins extends CI_Controller {
 	{
 		$this->load->library('table');
 
-		$this->cp->set_variable('cp_page_title', lang('plugins'));
+		$this->view->cp_page_title = lang('plugins');
 		$this->cp->set_breadcrumb(BASE.AMP.'C=addons', lang('addons'));
 
 		$this->jquery->tablesorter('.mainTable', '{
@@ -167,7 +167,7 @@ class Addons_plugins extends CI_Controller {
 		$vars['plugins'] = $plugins;
 		$vars['remote'] = $remote;
 
-		$this->load->view('addons/plugin_manager', $vars);
+		$this->cp->render('addons/plugin_manager', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -202,15 +202,15 @@ class Addons_plugins extends CI_Controller {
 
 		$plugin = $this->_get_plugin_info($name);
 
-		$this->cp->set_variable('cp_page_title', $plugin['pi_name']);
+		$this->view->cp_page_title = $plugin['pi_name'];
 
 		// a bit of a breadcrumb override is needed
-		$this->cp->set_variable('cp_breadcrumbs', array(
+		$this->view->cp_breadcrumbs = array(
 			BASE.AMP.'C=addons' => lang('addons'),
 			BASE.AMP.'C=addons_plugins'=> lang('addons_plugins')
-		));
+		);
 
-		$this->load->view('addons/plugin_info', array('plugin' => $plugin));
+		$this->cp->render('addons/plugin_info', array('plugin' => $plugin));
 	}
 
 
@@ -233,7 +233,7 @@ class Addons_plugins extends CI_Controller {
 
 		$this->load->helper('file');
 
-		$this->cp->set_variable('cp_page_title', lang('plugin_delete_confirm'));
+		$this->view->cp_page_title = lang('plugin_delete_confirm');
 		$this->cp->set_breadcrumb(BASE.AMP.'C=addons', lang('addons'));
 
 		$hidden = $this->input->post('toggle');
@@ -246,7 +246,7 @@ class Addons_plugins extends CI_Controller {
 		$vars['message'] = (count($hidden) > 1) ? 'plugin_multiple_confirm' : 'plugin_single_confirm';
 		$vars['hidden'] = $hidden;
 
-		$this->load->view('addons/plugin_delete', $vars);
+		$this->cp->render('addons/plugin_delete', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -530,7 +530,7 @@ class Addons_plugins extends CI_Controller {
 	 */
 	function _get_installed_plugins()
 	{
-		$this->load->helper('file');
+		$this->load->helper(array('file', 'directory'));
 
 		$ext_len = strlen('.php');
 
@@ -678,7 +678,7 @@ class Addons_plugins extends CI_Controller {
 			eval(substr($contents, $start, $length));
 		}
 		
-		@include_once($path);
+		include_once($path);
 
 		if ( ! isset($plugin_info) OR ! is_array($plugin_info))
 		{

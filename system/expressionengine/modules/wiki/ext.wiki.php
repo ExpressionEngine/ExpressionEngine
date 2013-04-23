@@ -32,11 +32,11 @@ class Wiki_ext {
 			$names[] = $row->file_name;
 		}
 		
-		$this->EE->db->where_in('file_name', $names);
-		$this->EE->db->delete('wiki_uploads');
+		ee()->db->where_in('file_name', $names);
+		ee()->db->delete('wiki_uploads');
 							
 		// Clear wiki cache
-		$this->EE->functions->clear_caching('db');
+		ee()->functions->clear_caching('db');
 	}
 	
 

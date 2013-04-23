@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -23,6 +23,9 @@
  * @link		http://ellislab.com
  */
 class Cp {
+
+	private $EE;
+	private $view;
 	
 	var $cp_theme				= '';
 	var $cp_theme_url			= '';	// base URL to the CP theme folder
@@ -52,7 +55,7 @@ class Cp {
 	{
 		$this->EE =& get_instance();
 		
-		if ($this->EE->router->fetch_class() == 'ee')
+		if (ee()->router->fetch_class() == 'ee')
 		{
 			show_error("The CP library is only available on Control Panel requests.");
 		}
@@ -60,16 +63,16 @@ class Cp {
 		// Cannot set these in the installer
 		if ( ! defined('EE_APPPATH'))
 		{
-			$this->cp_theme	= ( ! $this->EE->session->userdata('cp_theme')) ? $this->EE->config->item('cp_theme') : $this->EE->session->userdata('cp_theme'); 
-			$this->cp_theme_url = $this->EE->config->slash_item('theme_folder_url').'cp_themes/'.$this->cp_theme.'/';
+			$this->cp_theme	= ( ! ee()->session->userdata('cp_theme')) ? ee()->config->item('cp_theme') : ee()->session->userdata('cp_theme'); 
+			$this->cp_theme_url = ee()->config->slash_item('theme_folder_url').'cp_themes/'.$this->cp_theme.'/';
 
-			$this->EE->load->vars(array(
+			ee()->load->vars(array(
 				'cp_theme_url'	=> $this->cp_theme_url
 			));
 		}
 
 		// Make sure all requests to iframe the CP are denied
-		$this->EE->output->set_header('X-Frame-Options: SameOrigin');
+		ee()->output->set_header('X-Frame-Options: SameOrigin');
 	}
 
 	
@@ -83,8 +86,8 @@ class Cp {
 	 */		
 	function set_default_view_variables()
 	{
-		$js_folder	= ($this->EE->config->item('use_compressed_js') == 'n') ? 'src' : 'compressed';		
-		$langfile	= substr($this->EE->router->class, 0, strcspn($this->EE->router->class, '_'));
+		$js_folder	= (ee()->config->item('use_compressed_js') == 'n') ? 'src' : 'compressed';		
+		$langfile	= substr(ee()->router->class, 0, strcspn(ee()->router->class, '_'));
 		
 		// Javascript Path Constants
 		
@@ -93,22 +96,20 @@ class Cp {
 		define('JS_FOLDER', $js_folder);
 
 
-		$this->EE->load->library('menu');
-		$this->EE->load->library('accessories');
-		$this->EE->load->library('javascript', array('autoload' => FALSE));
+		ee()->load->library('javascript', array('autoload' => FALSE));
 
-		$this->EE->load->model('member_model'); // for screen_name, quicklinks
+		ee()->load->model('member_model'); // for screen_name, quicklinks
 		
-		$this->EE->lang->loadfile($langfile);
+		ee()->lang->loadfile($langfile);
 		
 
 		// Success/failure messages
 		
 		$cp_messages = array();
 		
-		foreach(array('message_success', 'message_notice', 'message_error', 'message_failure') as $flash_key)
+		foreach (array('message_success', 'message_notice', 'message_error', 'message_failure') as $flash_key)
 		{
-			if ($message = $this->EE->session->flashdata($flash_key))
+			if ($message = ee()->session->flashdata($flash_key))
 			{
 				$flash_key = ($flash_key == 'message_failure') ? 'error' : substr($flash_key, 8);
 				$cp_messages[$flash_key] = $message;
@@ -123,8 +124,8 @@ class Cp {
 			'table_open' => '<table class="mainTable padTable" border="0" cellspacing="0" cellpadding="0">'
 		);
 
-		$user_q = $this->EE->member_model->get_member_data(
-			$this->EE->session->userdata('member_id'), 
+		$user_q = ee()->member_model->get_member_data(
+			ee()->session->userdata('member_id'), 
 			array(
 				'screen_name', 'notepad', 'quick_links',
 				'avatar_filename', 'avatar_width', 'avatar_height'
@@ -145,81 +146,33 @@ class Cp {
 			'cp_table_template'		=> $cp_table_template,
 			'cp_pad_table_template'	=> $cp_pad_table_template,
 			'cp_theme_url'			=> $this->cp_theme_url,
-			'cp_current_site_label'	=> $this->EE->config->item('site_name'),
+			'cp_current_site_label'	=> ee()->config->item('site_name'),
 			'cp_screen_name'		=> $user_q->row('screen_name'),
-			'cp_avatar_path'		=> $user_q->row('avatar_filename') ? $this->EE->config->slash_item('avatar_url').$user_q->row('avatar_filename') : '',
+			'cp_avatar_path'		=> $user_q->row('avatar_filename') ? ee()->config->slash_item('avatar_url').$user_q->row('avatar_filename') : '',
 			'cp_avatar_width'		=> $user_q->row('avatar_filename') ? $user_q->row('avatar_width') : '',
 			'cp_avatar_height'		=> $user_q->row('avatar_filename') ? $user_q->row('avatar_height') : '',
 			'cp_quicklinks'			=> $this->_get_quicklinks($user_q->row('quick_links')),
 			
 			'EE_view_disable'		=> FALSE,
-			'is_super_admin'		=> ($this->EE->session->userdata['group_id'] == 1) ? TRUE : FALSE,	// for conditional use in view files
-								
-			// Menu
-			'cp_menu_items'			=> $this->EE->menu->generate_menu(),
-			'cp_accessories'		=> $this->EE->accessories->generate_accessories(),
-			
-			// Sidebar state (overwritten below if needed)
-			'sidebar_state'			=> '',
-			'maincontent_state'		=> '',
+			'is_super_admin'		=> (ee()->session->userdata['group_id'] == 1) ? TRUE : FALSE,	// for conditional use in view files
 		);
 		
 		
 		// global table data
-		$this->EE->session->set_cache('table', 'cp_template', $cp_table_template);
-		$this->EE->session->set_cache('table', 'cp_pad_template', $cp_pad_table_template);
-		
-		if (isset($this->EE->table))
-		{
-			// @todo We have a code order issue with accessories.
-			// If an accessory changed the table template (this happens
-			// a lot due to differences in design), we set up the CP
-			// template. Otherwise this is set in the table lib constructor.
-			$this->EE->table->set_template($cp_table_template);
-		}
-		
+		ee()->session->set_cache('table', 'cp_template', $cp_table_template);
+		ee()->session->set_cache('table', 'cp_pad_template', $cp_pad_table_template);
 		
 		// we need these paths again in my account, so we'll keep track of them
 		// kind of hacky, but before it was accessing _ci_cache_vars, which is worse
 		
-		$this->EE->session->set_cache('cp_sidebar', 'cp_avatar_path', $vars['cp_avatar_path'])
+		ee()->session->set_cache('cp_sidebar', 'cp_avatar_path', $vars['cp_avatar_path'])
 						  ->set_cache('cp_sidebar', 'cp_avatar_width', $vars['cp_avatar_width'])
 						  ->set_cache('cp_sidebar', 'cp_avatar_height', $vars['cp_avatar_height']);
 
-		$css_paths = array(
-			PATH_CP_THEME.$this->cp_theme.'/',
-			PATH_CP_THEME.'default/'
-		);
-	
-		if ($this->cp_theme !== 'default')
+		if (ee()->router->method != 'index')
 		{
-			array_shift($css_paths);
+			$this->set_breadcrumb(BASE.AMP.'C='.ee()->router->class, lang(ee()->router->class));
 		}
-
-		foreach ($css_paths as $a_path)
-		{
-			$file = $a_path.'css/advanced.css';
-			
-			if (file_exists($file))
-			{
-				break;
-			}
-		}
-		
-		$vars['advanced_css_mtime'] = (file_exists($file)) ? filemtime($file) : FALSE;
-		
-		
-		if ($this->EE->router->method != 'index')
-		{
-			$this->set_breadcrumb(BASE.AMP.'C='.$this->EE->router->class, lang($this->EE->router->class));
-		}
-		
-		if ($this->EE->session->userdata('show_sidebar') == 'n')
-		{
-			$vars['sidebar_state']		= ' style="display:none"';
-			$vars['maincontent_state']	= ' style="width:100%; display:block"';
-        }
-		
 		
 		// The base javascript variables that will be available globally through EE.varname
 		// this really could be made easier - ideally it would show up right below the main
@@ -242,28 +195,27 @@ class Cp {
 		/*	- login_reminder => y/n  to turn the CP Login Reminder On or Off.  Default is 'y'
         /* -------------------------------------------*/
 		
-		if ($this->EE->config->item('login_reminder') != 'n')
+		if (ee()->config->item('login_reminder') != 'n')
 		{
 			$js_lang_keys['session_expiring'] = lang('session_expiring');
 			$js_lang_keys['username'] = lang('username');
 			$js_lang_keys['password'] = lang('password');
 			$js_lang_keys['login'] = lang('login');
 			
-			$this->EE->javascript->set_global(array(
-				'SESS_TIMEOUT'		=> $this->EE->session->cpan_session_len * 1000,
+			ee()->javascript->set_global(array(
+				'SESS_TIMEOUT'		=> ee()->session->cpan_session_len * 1000,
 				'XID_TIMEOUT'		=> $this->xid_ttl * 1000,
-				'SESS_TYPE'			=> $this->EE->config->item('admin_session_type')	
+				'SESS_TYPE'			=> ee()->config->item('admin_session_type')	
 			));			
 		}
 		
-		$this->EE->javascript->set_global(array(
+		ee()->javascript->set_global(array(
 			'BASE'				=> str_replace(AMP, '&', BASE),
 			'XID'				=> XID_SECURE_HASH,
 			'PATH_CP_GBL_IMG'	=> PATH_CP_GBL_IMG,
-			'CP_SIDEBAR_STATE'	=> $this->EE->session->userdata('show_sidebar'),
-			//'flashdata'			=> $this->EE->session->flashdata,
-			'username'			=> $this->EE->session->userdata('username'),
-			'router_class'		=> $this->EE->router->class, // advanced css
+			'CP_SIDEBAR_STATE'	=> ee()->session->userdata('show_sidebar'),
+			'username'			=> ee()->session->userdata('username'),
+			'router_class'		=> ee()->router->class, // advanced css
 			'lang'				=> $js_lang_keys,
 			'THEME_URL'			=> $this->cp_theme_url
 		));
@@ -271,10 +223,9 @@ class Cp {
 		// Combo-load the javascript files we need for every request
 
 		$js_scripts = array(
-			'effect'	=> 'core',
 			'ui'		=> array('core', 'widget', 'mouse', 'position', 'sortable', 'dialog'),
 			'plugin'	=> array('ee_focus', 'ee_interact.event', 'ee_notice', 'ee_txtarea', 'tablesorter', 'ee_toggle_all'),
-			'file'		=> 'cp/global_start'
+			'file'		=> array('json2', 'underscore', 'cp/global_start')
 		);
 
 		if ($this->cp_theme != 'mobile')
@@ -285,8 +236,105 @@ class Cp {
 		$this->add_js_script($js_scripts);
 		$this->_seal_combo_loader();		
 		
-		$this->EE->load->vars($vars);
-		$this->EE->javascript->compile();
+		ee()->load->vars($vars);
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Render output (html)
+	 *
+	 * @access public
+	 * @return void
+	 */
+	public function render($view, $data = array(), $return = FALSE)
+	{
+		$this->_menu();
+		$this->_accessories();
+		$this->_sidebar();
+
+		if (isset(ee()->table))
+		{
+			// We have a code order issue with accessories.
+			// If an accessory changed the table template (this happens
+			// a lot due to differences in design), we need to re-set the CP
+			// template. Otherwise this is set in the table lib constructor.
+			ee()->table->set_template(
+				ee()->session->cache('table', 'cp_template')
+			);
+		}
+
+		// add global end file
+		$this->_seal_combo_loader();
+		$this->add_js_script('file', 'cp/global_end');
+
+		return ee()->view->render($view, $data, $return);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Load up accessories for our view
+	 *
+	 * @access public
+	 * @return void
+	 */
+	protected function _accessories()
+	{
+		if (ee()->view->disabled('ee_accessories'))
+		{
+			return;
+		}
+
+		ee()->load->library('accessories');
+		ee()->view->cp_accessories = ee()->accessories->generate_accessories();
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Load up the menu for our view
+	 *
+	 * @access public
+	 * @return void
+	 */
+	protected function _menu()
+	{
+		if (ee()->view->disabled('ee_menu'))
+		{
+			return;
+		}
+
+		ee()->load->library('menu');
+		ee()->view->cp_menu_items = ee()->menu->generate_menu();
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Load up the sidebar for our view
+	 *
+	 * @access public
+	 * @return void
+	 */
+	protected function _sidebar()
+	{
+		ee()->view->sidebar_state = '';
+		ee()->view->maincontent_state = '';
+
+		if (ee()->session->userdata('show_sidebar') == 'n')
+		{
+			ee()->view->sidebar_state = ' style="display:none"';
+			ee()->view->maincontent_state = ' style="width:100%; display:block"';
+        }
+
+        if (ee()->view->disabled('ee_sidebar'))
+		{
+			return;
+		}
+
+		// @todo move over sidebar content from set_default_view_vars
+		// has a member query & session cache dependency
 	}
 
 	// --------------------------------------------------------------------
@@ -303,7 +351,7 @@ class Cp {
 	 */
 	function masked_url($url)
 	{
-		return $this->EE->functions->fetch_site_index(0,0).QUERY_MARKER.'URL='.urlencode($url);
+		return ee()->functions->fetch_site_index(0,0).QUERY_MARKER.'URL='.urlencode($url);
 	}
 
 	// --------------------------------------------------------------------
@@ -364,10 +412,6 @@ class Cp {
 	 */
 	function render_footer_js()
 	{
-		// add global end file
-		$this->_seal_combo_loader();
-		$this->add_js_script('file', 'cp/global_end');
-		
 		$str = '';
 		$requests = $this->_seal_combo_loader();
 		
@@ -376,7 +420,7 @@ class Cp {
 			$str .= '<script type="text/javascript" charset="utf-8" src="'.BASE.AMP.'C=javascript'.AMP.'M=combo_load'.$req.'"></script>';
 		}
 		
-		if ($this->EE->extensions->active_hook('cp_js_end') === TRUE)
+		if (ee()->extensions->active_hook('cp_js_end') === TRUE)
 		{
 			$str .= '<script type="text/javascript" src="'.BASE.AMP.'C=javascript'.AMP.'M=load'.AMP.'file=ext_scripts"></script>';			
 		}
@@ -456,7 +500,7 @@ class Cp {
 			return max($mtimes);
 		}
 		
-		$folder = $this->EE->config->item('use_compressed_js') == 'n' ? 'src' : 'compressed';
+		$folder = ee()->config->item('use_compressed_js') == 'n' ? 'src' : 'compressed';
 		
 		switch($type)
 		{
@@ -489,13 +533,13 @@ class Cp {
 	 */
 	function set_right_nav($nav = array())
 	{
-		$this->EE->load->vars('cp_right_nav', array_reverse($nav));
+		ee()->view->cp_right_nav = array_reverse($nav);
 	}
 	
 	// --------------------------------------------------------------------
 	
 	/**
-	 * Set the right navigation
+	 * Set the in-header navigation
 	 *
 	 * @access	public
 	 * @param	array
@@ -504,7 +548,7 @@ class Cp {
 	 */
 	function set_action_nav($nav = array())
 	{
-		$this->EE->load->vars('cp_action_nav', array_reverse($nav));
+		ee()->view->cp_action_nav = array_reverse($nav);
 	}
 
 	// --------------------------------------------------------------------
@@ -518,45 +562,11 @@ class Cp {
 	 */
 	function delete_layout_tabs($tabs = array(), $namespace = '', $channel_id = array())
 	{
-		$this->EE->load->library('layout');
-		return $this->EE->layout->delete_layout_tabs($tabs, $namespace, $channel_id);
-	}	
+		ee()->load->library('logger');
+		ee()->logger->deprecated('2.6', 'Layout::delete_layout_tabs()');
 
-	// --------------------------------------------------------------------
-	
-	/**
-	 * Deprecated Add new tabs and associated fields to saved publish layouts
-	 *
-	 * @access	public
-	 * @param	array
-	 * @return	bool
-	 */
-	function add_layout_tabs($tabs = array(), $namespace = '', $channel_id = array())
-	{
-		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated(NULL, 'Layout::add_layout_tabs()');
-		
-		$this->EE->load->library('layout');
-		$this->EE->layout->add_layout_tabs($tabs, $namespace, $channel_id);
-	}
-
-	// --------------------------------------------------------------------
-	
-	/**
-	 * Deprecated Adds new fields to the saved publish layouts, creating the default tab if required
-	 *
-	 * @access	public
-	 * @param	array
-	 * @param	int
-	 * @return	bool
-	 */
-	function add_layout_fields($tabs = array(), $channel_id = array())
-	{
-		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated(NULL, 'Layout::add_layout_fields()');
-		
-		$this->EE->load->library('layout');
-		return $this->EE->layout->add_layout_fields($tabs, $channel_id);
+		ee()->load->library('layout');
+		return ee()->layout->delete_layout_tabs($tabs, $namespace, $channel_id);
 	}
 
 	// --------------------------------------------------------------------
@@ -571,8 +581,11 @@ class Cp {
 	 */
 	function delete_layout_fields($tabs, $channel_id = array())
 	{
-		$this->EE->load->library('layout');
-		return $this->EE->layout->delete_layout_fields($tabs, $channel_id);
+		ee()->load->library('logger');
+		ee()->logger->deprecated('2.6', 'Layout::delete_layout_fields()');
+
+		ee()->load->library('layout');
+		return ee()->layout->delete_layout_fields($tabs, $channel_id);
 	}
 
 	// --------------------------------------------------------------------
@@ -646,7 +659,7 @@ class Cp {
 
 		$quick_links = $quicklinks;
 
-		$len = strlen($this->EE->config->item('cp_url'));
+		$len = strlen(ee()->config->item('cp_url'));
 		
 		$link = array();
 		
@@ -654,9 +667,9 @@ class Cp {
 		
 		foreach ($quick_links as $ql)
 		{
-			if (strncmp($ql['link'], $this->EE->config->item('cp_url'), $len) == 0)
+			if (strncmp($ql['link'], ee()->config->item('cp_url'), $len) == 0)
 			{
-				$l = str_replace($this->EE->config->item('cp_url'), '', $ql['link']);
+				$l = str_replace(ee()->config->item('cp_url'), '', $ql['link']);
 				$l = preg_replace('/\?S=[a-zA-Z0-9]+&D=cp&/', '', $l);
 
 				$link[$count] = array(
@@ -690,7 +703,14 @@ class Cp {
 	 */		
 	function set_variable($name, $value)
 	{	
-		$this->EE->load->vars(array($name => $value));
+		ee()->load->library('logger');
+		ee()->logger->deprecated('2.6', 'view-><var> = <value>;');
+
+		// workaround for setting globals
+		ee()->load->vars($name, $value);
+
+		// the future!
+		ee()->view->$name = $value;
 	}
 	
 	// --------------------------------------------------------------------
@@ -706,8 +726,7 @@ class Cp {
 		static $_crumbs = array();
 		
 		$_crumbs[$link] = $title;
-		
-		$this->EE->load->vars(array('cp_breadcrumbs' => $_crumbs));
+		ee()->view->cp_breadcrumbs = $_crumbs;
 	}
 	
 	// --------------------------------------------------------------------
@@ -715,27 +734,31 @@ class Cp {
 	/**
 	 * Validate and Enable Secure Forms for the Control Panel
 	 *
+	 * @deprecated 2.6
 	 * @access	public
 	 * @return	void
 	 */		
 	function secure_forms()
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated('2.6', 'EE_Security::have_valid_xid()');
+		
 		$hash = '';
 		
-		if ($this->EE->config->item('secure_forms') == 'y')
+		if (ee()->config->item('secure_forms') == 'y')
 		{
 			if (count($_POST) > 0)
 			{
 				if ( ! isset($_POST['XID'])
-					OR ! $this->EE->security->secure_forms_check($_POST['XID']))
+					OR ! ee()->security->secure_forms_check($_POST['XID']))
 				{
-					$this->EE->functions->redirect(BASE);
+					ee()->functions->redirect(BASE);
 				}
 				
 				unset($_POST['XID']);
 			}
 			
-			$hash = $this->EE->security->generate_xid();
+			$hash = ee()->security->generate_xid();
 		}
 		
 		define('XID_SECURE_HASH', $hash);
@@ -754,8 +777,11 @@ class Cp {
 	 */
 	function fetch_cp_themes()
 	{
-		$this->EE->load->model('admin_model');
-		return $this->EE->admin_model->get_cp_theme_list();
+		ee()->load->library('logger');
+		ee()->logger->deprecated('2.6', 'Admin_model::get_cp_theme_list()');
+
+		ee()->load->model('admin_model');
+		return ee()->admin_model->get_cp_theme_list();
 	}
 	
 	// --------------------------------------------------------------------
@@ -771,9 +797,9 @@ class Cp {
 	 */
 	function load_package_js($file)
 	{
-		$current_top_path = $this->EE->load->first_package_path();
+		$current_top_path = ee()->load->first_package_path();
 		$package = trim(str_replace(array(PATH_THIRD, 'views'), '', $current_top_path), '/');
-		$this->EE->jquery->plugin(BASE.AMP.'C=javascript'.AMP.'M=load'.AMP.'package='.$package.AMP.'file='.$file, TRUE);
+		ee()->jquery->plugin(BASE.AMP.'C=javascript'.AMP.'M=load'.AMP.'package='.$package.AMP.'file='.$file, TRUE);
 	}
 	
 	// --------------------------------------------------------------------
@@ -789,9 +815,9 @@ class Cp {
 	 */
 	function load_package_css($file)
 	{
-		$current_top_path = $this->EE->load->first_package_path();
+		$current_top_path = ee()->load->first_package_path();
 		$package = trim(str_replace(array(PATH_THIRD, 'views'), '', $current_top_path), '/');
-		$url = BASE.AMP.'C=css'.AMP.'M=third_party'.AMP.'package='.$package.AMP.'file='.$file;
+		$url = BASE.AMP.'C=css'.AMP.'M=third_party'.AMP.'package='.$package.AMP.'theme='.$this->cp_theme.AMP.'file='.$file;
 		
 		$this->add_to_head('<link type="text/css" rel="stylesheet" href="'.$url.'" />');
 	}
@@ -849,14 +875,14 @@ class Cp {
 		}	
 		
 		// Super Admins always have access					
-		if ($this->EE->session->userdata('group_id') == 1)
+		if (ee()->session->userdata('group_id') == 1)
 		{
 			return TRUE;
 		}
 	
 		foreach ($which as $w)
 		{
-			$k = $this->EE->session->userdata($w);
+			$k = ee()->session->userdata($w);
 			
 			if ( ! $k OR $k !== 'y')
 			{
@@ -877,16 +903,15 @@ class Cp {
 	 * @access public
 	 * @return array
 	 */
-
 	function get_installed_modules()
 	{
 	    if ( ! is_array($this->installed_modules))
 	    {
 	        $this->installed_modules = array();
 
-	        $this->EE->db->select('LOWER(module_name) AS name');
-	        $this->EE->db->order_by('module_name');
-	        $query = $this->EE->db->get('modules');
+	        ee()->db->select('LOWER(module_name) AS name');
+	        ee()->db->order_by('module_name');
+	        $query = ee()->db->get('modules');
 
 	        if ($query->num_rows())
 	        {
@@ -920,47 +945,55 @@ class Cp {
 		}
 		
 		$channel_vars = array(
-								'aol_im', 'author', 'author_id', 'avatar_image_height',
-								'avatar_image_width', 'avatar_url', 'bday_d', 'bday_m',
-								'bday_y', 'bio', 'comment_auto_path',
-								'comment_entry_id_auto_path', 
-								'comment_total', 'comment_url_title_path', 'count',
-								'edit_date', 'email', 'entry_date', 'entry_id',
-								'entry_id_path', 'expiration_date', 'forum_topic_id',
-								'gmt_edit_date', 'gmt_entry_date', 'icq', 'interests',
-								'ip_address', 'location', 'member_search_path', 'month', 
-								'msn_im', 'occupation', 'permalink', 'photo_image_height',
-								'photo_image_width', 'photo_url', 'profile_path',
-								'recent_comment_date', 'relative_date', 'relative_url',
-								'screen_name', 'signature', 'signature_image_height',
-								'signature_image_url', 'signature_image_width', 'status',
-								'switch', 'title', 'title_permalink', 'total_results',
-								'trimmed_url', 'url', 'url_as_email_as_link', 'url_or_email', 
-								'url_or_email_as_author', 'url_title', 'url_title_path', 
-								'username', 'channel', 'channel_id', 'yahoo_im', 'year' 
-							);
+			'aol_im', 'author', 'author_id', 'avatar_image_height',
+			'avatar_image_width', 'avatar_url', 'bday_d', 'bday_m',
+			'bday_y', 'bio', 'comment_auto_path',
+			'comment_entry_id_auto_path', 
+			'comment_total', 'comment_url_title_path', 'count',
+			'edit_date', 'email', 'entry_date', 'entry_id',
+			'entry_id_path', 'expiration_date', 'forum_topic_id',
+			'gmt_edit_date', 'gmt_entry_date', 'icq', 'interests',
+			'ip_address', 'location', 'member_search_path', 'month', 
+			'msn_im', 'occupation', 'permalink', 'photo_image_height',
+			'photo_image_width', 'photo_url', 'profile_path',
+			'recent_comment_date', 'relative_date', 'relative_url',
+			'screen_name', 'signature', 'signature_image_height',
+			'signature_image_url', 'signature_image_width', 'status',
+			'switch', 'title', 'title_permalink', 'total_results',
+			'trimmed_url', 'url', 'url_as_email_as_link', 'url_or_email', 
+			'url_or_email_as_author', 'url_title', 'url_title_path', 
+			'username', 'channel', 'channel_id', 'yahoo_im', 'year' 
+		);
 							
 		$global_vars = array(
-								'app_version', 'captcha', 'charset', 'current_time',
-								'debug_mode', 'elapsed_time', 'email', 'embed', 'encode',
-								'group_description', 'group_id', 'gzip_mode', 'hits',
-								'homepage', 'ip_address', 'ip_hostname', 'lang', 'location',
-								'member_group', 'member_id', 'member_profile_link', 'path',
-								'private_messages', 'screen_name', 'site_index', 'site_name',
-								'site_url', 'stylesheet', 'total_comments', 'total_entries',
-								'total_forum_posts', 'total_forum_topics', 'total_queries',
-								'username', 'webmaster_email', 'version'
-							);
+			'app_version', 'captcha', 'charset', 'current_time',
+			'debug_mode', 'elapsed_time', 'email', 'embed', 'encode',
+			'group_description', 'group_id', 'gzip_mode', 'hits',
+			'homepage', 'ip_address', 'ip_hostname', 'lang', 'location',
+			'member_group', 'member_id', 'member_profile_link', 'path',
+			'private_messages', 'screen_name', 'site_index', 'site_name',
+			'site_url', 'stylesheet', 'total_comments', 'total_entries',
+			'total_forum_posts', 'total_forum_topics', 'total_queries',
+			'username', 'webmaster_email', 'version'
+		);
 		
 		$orderby_vars = array(
-								'comment_total', 'date', 'edit_date', 'expiration_date',
-								'most_recent_comment', 'random', 'screen_name', 'title',
-								'url_title', 'username', 'view_count_four', 'view_count_one',
-								'view_count_three', 'view_count_two'
-						 	 );
+			'comment_total', 'date', 'edit_date', 'expiration_date',
+			'most_recent_comment', 'random', 'screen_name', 'title',
+			'url_title', 'username', 'view_count_four', 'view_count_one',
+			'view_count_three', 'view_count_two'
+		);
+
+		$prefixes = array(
+			'parents', 'siblings'
+		);
 						
-		$invalid_fields = array_unique(array_merge($channel_vars, $global_vars, $orderby_vars));
-		return $invalid_fields;
+		return array_unique(array_merge(
+			$channel_vars,
+			$global_vars,
+			$orderby_vars,
+			$prefixes
+		));
 	}
 
 	// --------------------------------------------------------------------
@@ -975,10 +1008,10 @@ class Cp {
 	 */
 	function fetch_action_id($class, $method)
 	{
-		$this->EE->db->select('action_id');
-		$this->EE->db->where('class', $class);
-		$this->EE->db->where('method', $method);
-		$query = $this->EE->db->get('actions');
+		ee()->db->select('action_id');
+		ee()->db->where('class', $class);
+		ee()->db->where('method', $method);
+		$query = ee()->db->get('actions');
 		
 		if ($query->num_rows() == 0)
 		{

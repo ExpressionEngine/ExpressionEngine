@@ -16,7 +16,7 @@ $plugin_info = array(
  * @package			ExpressionEngine
  * @category		Plugin
  * @author			EllisLab Dev Team
- * @copyright		Copyright (c) 2004 - 2012, EllisLab, Inc.
+ * @copyright		Copyright (c) 2004 - 2013, EllisLab, Inc.
  * @link			http://ellislab.com
  */
 
@@ -33,12 +33,12 @@ class Xml_encode {
 	{
 		$this->EE =& get_instance();
 		
-		$protect_all = ($this->EE->TMPL->fetch_param('protect_entities') === 'yes') ? TRUE : FALSE;
+		$protect_all = (ee()->TMPL->fetch_param('protect_entities') === 'yes') ? TRUE : FALSE;
 		
-		$str = ($str == '') ? $this->EE->TMPL->tagdata : $str;
+		$str = ($str == '') ? ee()->TMPL->tagdata : $str;
 		
 		// Load the XML Helper
-		$this->EE->load->helper('xml');
+		ee()->load->helper('xml');
 		
 		$str = xml_convert(strip_tags($str), $protect_all);
 		

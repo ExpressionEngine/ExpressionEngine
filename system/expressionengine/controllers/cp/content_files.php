@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -23,7 +23,7 @@
  * @link		http://ellislab.com
  */
 
-class Content_files extends CI_Controller {
+class Content_files extends CP_Controller {
 
 	private $_upload_dirs	= array();
 	private $_allowed_dirs	= array();
@@ -50,6 +50,7 @@ class Content_files extends CI_Controller {
 		}
 
 		$this->lang->loadfile('filemanager');
+		$this->load->library('api');
 		$this->load->library('filemanager');
 		$this->load->model('file_model');
 		$this->load->model('file_upload_preferences_model');
@@ -91,7 +92,7 @@ class Content_files extends CI_Controller {
 	public function index()
 	{
 		$this->load->library('table');
-		$this->load->helper(array('string', 'search'));
+		$this->load->helper('search');
 		$this->api->instantiate('channel_categories');
 		
 		$this->table->set_base_url('C=content_files');
@@ -209,7 +210,7 @@ class Content_files extends CI_Controller {
 		
 		
 		// Page Title
-		$this->cp->set_variable('cp_page_title', lang('content_files'));
+		$this->view->cp_page_title = lang('content_files');
 		
 		// both filebrowser and fileuploader need to be loaded because 
 		// fileuploader depends on filebrowser's methods
@@ -269,8 +270,7 @@ class Content_files extends CI_Controller {
 			'upload_dirs_options' 	=> $upload_dirs_options
 		));
 
-		$this->javascript->compile();
-		$this->load->view('content/files/index', $data);
+		$this->cp->render('content/files/index', $data);
 	}
 
 	// --------------------------------------------------------------------
@@ -363,7 +363,7 @@ class Content_files extends CI_Controller {
 
 				$file_location = rtrim($this->_upload_dirs[$file['upload_location_id']]['url'], '/').'/'.rawurlencode($file['file_name']);
 
-				$file_path = $this->functions->remove_double_slashes(
+				$file_path = reduce_double_slashes(
 					$this->_upload_dirs[$file['upload_location_id']]['server_path'].'/'.$file['file_name']
 				);
 
@@ -381,7 +381,7 @@ class Content_files extends CI_Controller {
 
 				$r['mime_type'] = $file['mime_type'];
 				$r['upload_location_name'] = $this->_upload_dirs[$file['upload_location_id']]['name'];
-				$r['upload_date'] = $this->localize->set_human_time($file['upload_date'], TRUE);
+				$r['upload_date'] = $this->localize->human_time($file['upload_date'], TRUE);
 
 				$action_base = BASE.AMP.'C=content_files'.AMP.'M=multi_edit_form'.AMP.'file_id='.$file['file_id'];
 				
@@ -678,9 +678,9 @@ class Content_files extends CI_Controller {
 			'del_notice'	=> (count($files) == 1) ? 'confirm_del_file' : 'confirm_del_files'
 		);
 
-		$this->cp->set_variable('cp_page_title', lang('delete_selected_files'));
+		$this->view->cp_page_title = lang('delete_selected_files');
 
-		$this->load->view('content/files/confirm_file_delete', $data);
+		$this->cp->render('content/files/confirm_file_delete', $data);
 	}
 
 	// ------------------------------------------------------------------------
@@ -841,10 +841,8 @@ class Content_files extends CI_Controller {
 			'ui'		=> array('droppable'),
 			'file'		=> array('cp/publish_tabs')
 		));
-		
-		$this->javascript->compile();
-		
-		$this->load->view('content/files/edit_file', $data);
+				
+		$this->cp->render('content/files/edit_file', $data);
 	}
 	
 	// ------------------------------------------------------------------------
@@ -957,9 +955,7 @@ class Content_files extends CI_Controller {
 			});
 		');
 		
-		$this->javascript->compile();
-
-		$this->load->view('content/files/edit_image', $data);
+		$this->cp->render('content/files/edit_image', $data);
 	}
 
 	// ------------------------------------------------------------------------
@@ -980,7 +976,7 @@ class Content_files extends CI_Controller {
 	private function _edit_setup($page_title_lang_key)
 	{
 		// Page Title
-		$this->cp->set_variable('cp_page_title', lang($page_title_lang_key));
+		$this->view->cp_page_title = lang($page_title_lang_key);
 		$this->cp->set_breadcrumb(BASE.AMP.'C=content_files', lang('file_manager'));
 
 		// Do some basic permissions checking
@@ -1011,8 +1007,8 @@ class Content_files extends CI_Controller {
 		
 		// Some vars for later
 		$file_name	= $file['file_name'];
-		$file_url	= $this->_upload_dirs[$file_dir]['url'].urldecode($file_name);
-		$file_path	= $this->_upload_dirs[$file_dir]['server_path'].urldecode($file_name);
+		$file_url	= $this->_upload_dirs[$file_dir]['url'].rawurldecode($file_name);
+		$file_path	= $this->_upload_dirs[$file_dir]['server_path'].rawurldecode($file_name);
 
 		// Does this file exist?
 		if ( ! file_exists($file_path))
@@ -1157,7 +1153,7 @@ class Content_files extends CI_Controller {
 			)
 		));
 
-		$this->cp->set_variable('cp_page_title', $this->_upload_dirs[$cid]['name']);
+		$this->view->cp_page_title = $this->_upload_dirs[$cid]['name'];
 
 		$this->cp->set_breadcrumb(BASE.AMP.'C=content_files', lang('file_manager'));			
 		$this->cp->set_breadcrumb(
@@ -1165,8 +1161,7 @@ class Content_files extends CI_Controller {
 			lang('file_upload_prefs')
 		);
 		
-		$this->javascript->compile();
-		$this->load->view('content/files/sync', $vars);
+		$this->cp->render('content/files/sync', $vars);
 
 
 		// process file array - move to own method?
@@ -1358,11 +1353,11 @@ class Content_files extends CI_Controller {
 				continue;
 			}
 			
-			$file_location = $this->functions->remove_double_slashes(
+			$file_location = reduce_double_slashes(
 				$dir_data['url'].'/'.$file['name']
 			);
 
-			$file_path = $this->functions->remove_double_slashes(
+			$file_path = reduce_double_slashes(
 				$dir_data['server_path'].'/'.$file['name']
 			);
 
@@ -1448,7 +1443,7 @@ class Content_files extends CI_Controller {
 		$this->load->library('table');
 		$this->load->model('file_model');
 
-		$this->cp->set_variable('cp_page_title', lang('watermark_prefs'));
+		$this->view->cp_page_title = lang('watermark_prefs');
 		$this->cp->set_breadcrumb($this->_base_url, lang('file_manager'));		
 		
 
@@ -1459,11 +1454,9 @@ class Content_files extends CI_Controller {
 
 		$vars['watermarks'] = $this->file_model->get_watermark_preferences();
 
-		$this->javascript->compile();
-
 		$this->cp->set_action_nav(array('create_new_wm_pref' => BASE.AMP.'C=content_files'.AMP.'M=edit_watermark_preferences'));
 
-		$this->load->view('content/files/watermark_preferences', $vars);
+		$this->cp->render('content/files/watermark_preferences', $vars);
 
 
 	}
@@ -1491,7 +1484,7 @@ class Content_files extends CI_Controller {
 		$id = $this->input->get_post('id');
 		$type = ($id) ? 'edit' : 'new';	
 		
-		$this->cp->set_variable('cp_page_title', lang('wm_'.$type));
+		$this->view->cp_page_title = lang('wm_'.$type);
 		$this->cp->set_breadcrumb($this->_base_url, lang('file_manager'));
 		$this->cp->set_breadcrumb($this->_base_url.AMP.'M=watermark_preferences', lang('watermark_prefs'));
 
@@ -1650,11 +1643,9 @@ class Content_files extends CI_Controller {
 							  ->set_rules($config);
 		$this->form_validation->set_old_value('wm_id', $id);
 
-		$this->javascript->compile();
-
 		if ( ! $this->form_validation->run())
 		{
-			$this->load->view('content/files/watermark_settings', $vars);
+			$this->cp->render('content/files/watermark_settings', $vars);
 		}
 		else
 		{
@@ -1768,7 +1759,7 @@ class Content_files extends CI_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->cp->set_variable('cp_page_title', lang('delete_wm_preference'));
+		$this->view->cp_page_title = lang('delete_wm_preference');
 
 
 		$this->cp->set_breadcrumb($this->_base_url, lang('file_manager'));
@@ -1794,8 +1785,7 @@ class Content_files extends CI_Controller {
 			$data['items'][] = $item->wm_name;
 		}
 
-		$this->javascript->compile();
-		$this->load->view('content/files/pref_delete_confirm', $data);
+		$this->cp->render('content/files/pref_delete_confirm', $data);
 
 	}
 
@@ -1852,7 +1842,7 @@ class Content_files extends CI_Controller {
 
 		$this->load->library('table');
 
-		$this->cp->set_variable('cp_page_title', lang('file_upload_prefs'));
+		$this->view->cp_page_title = lang('file_upload_prefs');
 		$this->cp->set_breadcrumb(BASE.AMP.'C=content_files', lang('file_manager'));
 
 		$this->jquery->tablesorter('.mainTable', '{
@@ -1863,19 +1853,11 @@ class Content_files extends CI_Controller {
 		$vars['message'] = $message;
 		$vars['upload_locations'] = $this->file_upload_preferences_model->get_file_upload_preferences($this->session->userdata('group_id'));
 
-		$this->javascript->compile();
 
 		$this->cp->set_action_nav(array('create_new_upload_pref' => BASE.AMP.'C=content_files'.AMP.'M=edit_upload_preferences'));
 
-		$this->load->view('content/files/file_upload_preferences', $vars);
+		$this->cp->render('content/files/file_upload_preferences', $vars);
 	}
-
-
-	function delete_dimension()
-	{
-
-	}
-
 
 	// --------------------------------------------------------------------
 
@@ -2023,7 +2005,7 @@ class Content_files extends CI_Controller {
 
 		$title = ($type == 'edit') ? 'edit_file_upload_preferences' : 'new_file_upload_preferences';
 
-		$this->cp->set_variable('cp_page_title', lang($title));
+		$this->view->cp_page_title = lang($title);
 		$data['lang_line'] = ($type == 'edit') ? 'update' : 'submit';
 
 		$this->cp->set_breadcrumb($this->_base_url.AMP.'M=file_upload_preferences',
@@ -2118,8 +2100,7 @@ class Content_files extends CI_Controller {
 
 		if ( ! $this->form_validation->run())
 		{
-			$this->javascript->compile();
-			$this->load->view('content/files/file_upload_create', $data);
+			$this->cp->render('content/files/file_upload_create', $data);
 		}
 		else
 		{
@@ -2375,7 +2356,7 @@ class Content_files extends CI_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->cp->set_variable('cp_page_title', lang('delete_upload_preference'));
+		$this->view->cp_page_title = lang('delete_upload_preference');
 		$this->cp->set_breadcrumb(BASE.AMP.'C=content_files', lang('file_manager'));
 		$this->cp->set_breadcrumb(BASE.AMP.'C=content_files'.AMP.'M=file_upload_preferences',
 								lang('file_upload_preferences'));
@@ -2398,8 +2379,7 @@ class Content_files extends CI_Controller {
 			$data['items'][] = $items['name'];
 		}
 
-		$this->javascript->compile();
-		$this->load->view('content/files/pref_delete_confirm', $data);
+		$this->cp->render('content/files/pref_delete_confirm', $data);
 	}
 
 	// --------------------------------------------------------------------
@@ -2453,7 +2433,7 @@ class Content_files extends CI_Controller {
 			$this->_process_batch_upload();
 		}
 
-		$this->cp->set_variable('cp_page_title', lang('batch_upload'));
+		$this->view->cp_page_title = lang('batch_upload');
 		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=file_upload_preferences',
 								lang('file_upload_preferences'));
 
@@ -2486,7 +2466,7 @@ class Content_files extends CI_Controller {
 			)
 		);
 
-		$this->load->view('content/files/batch_upload_index', $data);
+		$this->cp->render('content/files/batch_upload_index', $data);
 	}
 
 	// --------------------------------------------------------------------
@@ -2671,7 +2651,7 @@ class Content_files extends CI_Controller {
 			}
 		}
 
-		$this->cp->set_variable('cp_page_title', lang('batch_upload'));
+		$this->view->cp_page_title = lang('batch_upload');
 
 		$data = array(
 			'count_lang'			=> sprintf(lang('files_count_lang'),
@@ -2685,7 +2665,7 @@ class Content_files extends CI_Controller {
 
 		);
 
-		$this->load->view('content/files/manual_batch', $data);
+		$this->cp->render('content/files/manual_batch', $data);
 	}
 
 	// --------------------------------------------------------------------

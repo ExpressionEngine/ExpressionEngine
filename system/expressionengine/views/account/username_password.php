@@ -1,37 +1,36 @@
-<?php $this->load->view('account/_account_header');?>
+<?php extend_view('account/_wrapper') ?>
 
-	<div>
-		<h3><?=lang('username_and_password')?></h3>
+<div>
+	<h3><?=lang('username_and_password')?></h3>
 
-		<?=form_open('C=myaccount'.AMP.'M=update_username_password', '', $form_hidden)?>
+	<?=form_open('C=myaccount'.AMP.'M=update_username_password', '', $form_hidden)?>
 
-		<?php if ($allow_username_change):?>
+	<?php if ($allow_username_change):?>
+	<p>
+		<?=lang('username', 'username')?>
+		<?=form_input(array('id'=>'username','name'=>'username','class'=>'field','value'=>$username,'maxlength'=>50))?>
+	</p>
+	<?php endif;?>
+
+	<p>
+		<?=lang('screen_name', 'screen_name')?>
+		<?=form_input(array('id'=>'screen_name','name'=>'screen_name','class'=>'field','value'=>$screen_name,'maxlength'=>50))?>
+	</p>
+
+	<fieldset>
+		<legend><?=lang('password_change')?></legend>
+		
+		<div class="notice"><?=lang('password_change_exp')?></div>
+
 		<p>
-			<?=lang('username', 'username')?>
-			<?=form_input(array('id' => 'username', 'name' => 'username', 'class' => 'field', 'value' => $username, 'maxlength' => 50))?>
+			<?=lang('new_password', 'password')?>
+			<?=form_password(array('id' => 'password', 'name' => 'password', 'class' => 'field', 'value' => '', 'maxlength' => 40, 'autocomplete' => 'off'))?>
 		</p>
-		<?php endif;?>
 
 		<p>
-			<?=lang('screen_name', 'screen_name')?>
-			<?=form_input(array('id' => 'screen_name', 'name' => 'screen_name', 'class' => 'field', 'value' => $screen_name, 'maxlength' => 50))?>
+			<?=lang('new_password_confirm', 'password_confirm')?>
+			<?=form_password(array('id' => 'password_confirm', 'name' => 'password_confirm', 'class' => 'field', 'value' => '', 'maxlength' => 40, 'autocomplete' => 'off'))?>
 		</p>
-
-		<fieldset>
-			<legend><?=lang('password_change')?></legend>
-
-			<div class="notice"><?=lang('password_change_exp')?></div>
-
-			<p>
-				<?=lang('new_password', 'password')?>
-				<?=form_password(array('id' => 'password', 'name' => 'password', 'class' => 'field', 'value' => '', 'maxlength' => 40, 'autocomplete' => 'off'))?>
-			</p>
-
-			<p>
-				<?=lang('new_password_confirm', 'password_confirm')?>
-				<?=form_password(array('id' => 'password_confirm', 'name' => 'password_confirm', 'class' => 'field', 'value' => '', 'maxlength' => 40, 'autocomplete' => 'off'))?>
-			</p>
-		</fieldset>
 
 		<div class="notice">
 			<?php if ($self_edit): ?>
@@ -46,9 +45,9 @@
 			<?=form_password(array('id' => 'current_password', 'name' => 'current_password', 'class' => 'field', 'value' => '', 'maxlength' => 40, 'autocomplete' => 'off'))?>
 		</p>
 
-		<p class="submit"><?=form_submit('username_password', lang('update'), 'class="submit"')?></p>
+	</fieldset>
 
-		<?=form_close()?>
-	</div>
+	<p class="submit"><?=form_submit('username_password', lang('update'), 'class="submit"')?></p>
 
-<?php $this->load->view('account/_account_footer');
+	<?=form_close()?>
+</div>

@@ -3,7 +3,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -57,7 +57,7 @@ jQuery(document).ready(function() {
 			}
 			
 			moving = false;
-		}, 60);	// remember, IE timeouts step in 15ms
+		}, 100);	// remember, IE timeouts step in 15ms
 	};
 
 	EE.navigation.mouse_listen = function() {

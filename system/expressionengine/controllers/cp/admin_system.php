@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -22,7 +22,7 @@
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Admin_system extends CI_Controller {
+class Admin_system extends CP_Controller {
 
 	/**
 	 * Constructor
@@ -45,9 +45,10 @@ class Admin_system extends CI_Controller {
 	{
 		$this->_restrict_prefs_access();
 
-		$this->cp->set_variable('cp_page_title', lang('admin_system'));
-		
-		$this->load->view('_shared/overview', array('controller' => 'admin'));
+		$this->view->controller = 'admin';
+		$this->view->cp_page_title = lang('admin_system');
+
+		$this->cp->render('_shared/overview');
 	}
 
 	// --------------------------------------------------------------------
@@ -109,44 +110,23 @@ class Admin_system extends CI_Controller {
 			}
 		}');
 
-		$this->javascript->compile();
-
-		$this->cp->set_variable('cp_page_title', lang($type));
+		$this->view->cp_page_title = lang($type);
 
 		$this->load->library('table');
 		$this->load->library('form_validation');
 		$this->load->model('admin_model');
 
-		if ( ! in_array($type, array(
-									'general_cfg',
-									'cp_cfg',
-									'channel_cfg',
-									'member_cfg',
-									'output_cfg',
-									'debug_cfg',
-									'db_cfg',
-									'security_cfg',
-									'throttling_cfg',
-									'localization_cfg',
-									'email_cfg',
-									'cookie_cfg',
-									'image_cfg',
-									'captcha_cfg',
-									'template_cfg',
-									'censoring_cfg',
-									'mailinglist_cfg',
-									'emoticon_cfg',
-									'tracking_cfg',
-									'avatar_cfg',
-									'search_log_cfg',
-									'recount_prefs'
-									)
-						)
-		)
+		$config_pages = array('general_cfg', 'cp_cfg', 'channel_cfg', 
+			'member_cfg', 'output_cfg', 'debug_cfg', 'db_cfg', 'security_cfg', 
+			'throttling_cfg', 'localization_cfg', 'email_cfg', 'cookie_cfg', 
+			'image_cfg', 'captcha_cfg', 'template_cfg', 'censoring_cfg', 
+			'mailinglist_cfg', 'emoticon_cfg', 'tracking_cfg', 'avatar_cfg', 
+			'search_log_cfg', 'recount_prefs'
+		);
+		if ( ! in_array($type, $config_pages))
 		{
 			show_error(lang('unauthorized_access'));
 		}
-
 
 		if (count($_POST))
 		{
@@ -176,6 +156,8 @@ class Admin_system extends CI_Controller {
 
 			if ($validated)
 			{
+				$this->_final_post_prep($type);
+				
 				$config_update = $this->config->update_site_prefs($_POST);
 		
 				if ( ! empty($config_update))
@@ -193,7 +175,7 @@ class Admin_system extends CI_Controller {
 			{
 				$vars['cp_messages']['error'] = $this->form_validation->error_string('', '');
 	
-				$this->load->view('admin/config_pages', $vars);
+				$this->cp->render('admin/config_pages', $vars);
 	
 				return;
 			}
@@ -204,7 +186,7 @@ class Admin_system extends CI_Controller {
 		$vars = $this->_prep_view_vars($type);
 		$vars['form_action'] = 'C=admin_system'.AMP.'M='.$return_loc;
 
-		$this->load->view('admin/config_pages', $vars);
+		$this->cp->render('admin/config_pages', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -248,6 +230,8 @@ class Admin_system extends CI_Controller {
 			}
 		}
 
+		$this->load->helper('date');
+		$timezones = timezones();
 
 		foreach ($f_data as $name => $options)
 		{
@@ -353,20 +337,18 @@ class Admin_system extends CI_Controller {
 							$selected = $value;
 							break;
 						case 'timezone'			:
-							$options[0] = 's';
-							foreach ($this->localize->zones as $k => $v)
-							{
-								$details[$k] = lang($k);
-							}
-							$selected = $value;
+							$options[0] = 'c';
+							$details = $this->localize->timezone_menu($value);
 							break;
 					}
 					break;
+				case 'p': // Fall through intended.
 				case 'i':
 					// Input fields
 					$details = array('name' => $name, 'value' => $this->form_validation->set_value($name, $value), 'id' => $name);
 
 					break;
+				
 			}
 
 			$vars['fields'][$name] = array('type' => $options[0], 'value' => $details, 'subtext' => $sub, 'selected' => $selected);
@@ -377,6 +359,32 @@ class Admin_system extends CI_Controller {
 		return $vars;	
 	}
 
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Final POST Prep
+	 *
+	 * Any special tweaking before $_POST is inserted
+	 * can happen here
+	 *
+	 * @access	public
+	 * @return	void
+	 */
+	function _final_post_prep($type)
+	{
+		if ($type == 'localization_cfg')
+		{
+			$config = $this->member_model->get_localization_default(TRUE);
+			
+			// Do we need to set the localization defaults to match the server?
+			if ($config['member_id'] = '')
+			{
+				array_merge($_POST, array('default_site_timezone' => $this->input->post('server_timezone'), 
+										'default_site_dst' => $this->input->post('daylight_savings')));
+			}
+		}		
+	}
 
 
 	// --------------------------------------------------------------------
@@ -481,12 +489,9 @@ class Admin_system extends CI_Controller {
 		if (isset($modules['mailinglist']))
 		{
 			$this->lang->loadfile('mailinglist');
-			$this->cp->set_variable(
-				'cp_breadcrumbs',
-				array(
-					BASE.AMP.'C=addons_modules' => lang('nav_modules'),
-					BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist' => lang('mailinglist_module_name')
-				)
+			$this->view->cp_breadcrumbs = array(
+				BASE.AMP.'C=addons_modules' => lang('nav_modules'),
+				BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist' => lang('mailinglist_module_name')
 			);
 		}
 
@@ -624,8 +629,7 @@ class Admin_system extends CI_Controller {
 	{
 		$this->_restrict_prefs_access();
 
-		$this->load->helper('string');
-		$this->cp->set_variable('cp_page_title', lang('config_editor'));
+		$this->view->cp_page_title = lang('config_editor');
 
 		$vars['config_items'] = $this->config->default_ini;
 		ksort($vars['config_items']);
@@ -657,9 +661,7 @@ class Admin_system extends CI_Controller {
 			$("table tbody tr:visible:odd").addClass("odd");
 		');
 
-		$this->javascript->compile();
-
-		$this->load->view('admin/config_editor', $vars);
+		$this->cp->render('admin/config_editor', $vars);
 	}
 
 	// --------------------------------------------------------------------

@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.5.3
@@ -42,10 +42,17 @@ class Updater {
 	 */
 	public function do_update()
 	{
-		$this->EE->load->dbforge();
-		
-		$this->_change_site_preferences_column_type();
-		$this->_truncate_tables();
+		$steps = new ProgressIterator(
+			array(
+				'_change_site_preferences_column_type',
+				'_truncate_tables',
+			)
+		);
+
+		foreach ($steps as $k => $v)
+		{
+			$this->$v();
+		}
 		
 		return TRUE;
 	}
@@ -58,7 +65,7 @@ class Updater {
 	 */
 	private function _change_site_preferences_column_type()
 	{
-		$this->EE->dbforge->modify_column(
+		ee()->smartforge->modify_column(
 			'sites',
 			array(
 				'site_system_preferences' => array(
@@ -80,8 +87,8 @@ class Updater {
 	 */
 	private function _truncate_tables()
 	{
-		$this->EE->db->truncate('security_hashes');
-		$this->EE->db->truncate('throttle');
+		ee()->db->truncate('security_hashes');
+		ee()->db->truncate('throttle');
 	}
 }	
 /* END CLASS */

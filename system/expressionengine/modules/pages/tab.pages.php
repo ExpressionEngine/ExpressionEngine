@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -34,13 +34,13 @@ class Pages_tab {
 	
 	public function publish_tabs($channel_id, $entry_id = '')
 	{
-		$this->EE->lang->loadfile('pages');
+		ee()->lang->loadfile('pages');
 	
-		$site_id			= $this->EE->config->item('site_id');
+		$site_id			= ee()->config->item('site_id');
 		$settings 			= array();
 	
 		$no_templates 		= NULL;		
-		$pages 				= $this->EE->config->item('site_pages');
+		$pages 				= ee()->config->item('site_pages');
 		
 		$pages_template_id 	= 0;
 		$pages_dropdown 	= array();
@@ -60,7 +60,7 @@ class Pages_tab {
 		}
 		else
 		{
-			$qry = $this->EE->db->select('configuration_value')
+			$qry = ee()->db->select('configuration_value')
 								->where('configuration_name', 'template_channel_'.$channel_id)
 								->where('site_id', (int) $site_id)
 								->get('pages_configuration');
@@ -73,9 +73,9 @@ class Pages_tab {
 	
 		if ($pages_uri == '')
 		{
-			$this->EE->javascript->set_global('publish.pages.pagesUri', lang('example_uri'));
+			ee()->javascript->set_global('publish.pages.pagesUri', lang('example_uri'));
 			
-			$qry = $this->EE->db->select('configuration_value')
+			$qry = ee()->db->select('configuration_value')
 								->where('configuration_name', 'template_channel_'.$channel_id)
 								->where('site_id', (int) $site_id)
 								->get('pages_configuration');
@@ -87,10 +87,11 @@ class Pages_tab {
 		}
 		else
 		{
-			$this->EE->javascript->set_global('publish.pages.pageUri', $pages_uri);
+			ee()->javascript->set_global('publish.pages.pageUri', $pages_uri);
 		}
 		
-		$templates = $this->EE->template_model->get_templates($site_id);
+		ee()->load->model('template_model');
+		$templates = ee()->template_model->get_templates($site_id);
 		
 		foreach ($templates->result() as $template)
 		{
@@ -132,7 +133,7 @@ class Pages_tab {
 		
 		foreach ($settings as $k => $v)
 		{
-			$this->EE->api_channel_fields->set_settings($k, $v);
+			ee()->api_channel_fields->set_settings($k, $v);
 		}
 		
 		return $settings;
@@ -154,7 +155,7 @@ class Pages_tab {
         $params = $params[0];
 		$pages_uri = (isset($params['pages_uri'])) ? $params['pages_uri'] : '';
 
-        $pages = $this->EE->config->item('site_pages');
+        $pages = ee()->config->item('site_pages');
 
         
         if ($pages !== FALSE && $pages_uri != '' && $pages_uri !== lang('example_uri'))
@@ -169,7 +170,7 @@ class Pages_tab {
         }
         
         $c_page_uri = preg_replace("#[^a-zA-Z0-9_\-/\.]+$#i", '',
-                    str_replace($this->EE->config->item('site_url'), '', $pages_uri));
+                    str_replace(ee()->config->item('site_url'), '', $pages_uri));
         
         if ($c_page_uri !== $pages_uri)
         {
@@ -186,8 +187,8 @@ class Pages_tab {
     	}
     	
     	// Check if duplicate uri
-    	$static_pages = $this->EE->config->item('site_pages');
-    	$uris = $static_pages[$this->EE->config->item('site_id')]['uris'];
+    	$static_pages = ee()->config->item('site_pages');
+    	$uris = $static_pages[ee()->config->item('site_id')]['uris'];
 
 		if ( ! isset($params['entry_id']))
 		{
@@ -218,9 +219,9 @@ class Pages_tab {
 	 */	
 	public function publish_data_db($params)
 	{
-	    $site_id    = $this->EE->config->item('site_id');
+	    $site_id    = ee()->config->item('site_id');
 	    $mod_data   = (isset($params['mod_data'])) ? $params['mod_data'] : NULL;
-	    $site_pages = $this->EE->config->item('site_pages');
+	    $site_pages = ee()->config->item('site_pages');
 		
         if ($site_pages !== FALSE
             && isset($mod_data['pages_uri']) 
@@ -231,7 +232,7 @@ class Pages_tab {
                 && is_numeric($mod_data['pages_template_id']))
             {
 				$page = preg_replace("#[^a-zA-Z0-9_\-/\.]+$#i", '',
-				                    str_replace($this->EE->config->item('site_url'), '',
+				                    str_replace(ee()->config->item('site_url'), '',
 				                                $mod_data['pages_uri']));
 				
 				$page = '/' . trim($page, '/');
@@ -245,8 +246,8 @@ class Pages_tab {
 					$site_pages[$site_id]['uris'][$params['entry_id']] = '/';
 				}
 				
-				$this->EE->config->set_item('site_pages', $site_pages);
-				$this->EE->db->where('site_id', (int) $site_id)
+				ee()->config->set_item('site_pages', $site_pages);
+				ee()->db->where('site_id', (int) $site_id)
 							->update('sites', array(
 								'site_pages' => base64_encode(serialize($site_pages))
 							)
@@ -265,8 +266,8 @@ class Pages_tab {
 	 */
 	public function publish_data_delete_db($params)
 	{
-		$site_pages = $this->EE->config->item('site_pages');
-		$site_id	= $this->EE->config->item('site_id');
+		$site_pages = ee()->config->item('site_pages');
+		$site_id	= ee()->config->item('site_id');
 		
 		foreach ($params['entry_ids'] as $entry_id)
 		{
@@ -274,7 +275,7 @@ class Pages_tab {
 			unset($site_pages[$site_id]['templates'][$entry_id]);
 		}
 
-		$this->EE->db->where('site_id', (int) $site_id)
+		ee()->db->where('site_id', (int) $site_id)
 					 ->update('sites', array(
 					 			'site_pages'	=> 
 									base64_encode(serialize($site_pages))

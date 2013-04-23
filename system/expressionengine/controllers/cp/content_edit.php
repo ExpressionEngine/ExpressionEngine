@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -22,7 +22,7 @@
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Content_edit extends CI_Controller {
+class Content_edit extends CP_Controller {
 
 	private $publish_base_uri;
 	private $publish_base_url;
@@ -183,7 +183,7 @@ class Content_edit extends CI_Controller {
 		$vars['search_form']	= 'C=content_edit';
 		$vars['entries_form']	= 'C=content_edit'.AMP.'M=multi_edit_form';
 		
-		$this->cp->set_variable('cp_page_title', lang('edit'));
+		$this->view->cp_page_title = lang('edit');
 		
 		$this->cp->add_js_script(array(
 			'ui'		=> 'datepicker',
@@ -191,8 +191,7 @@ class Content_edit extends CI_Controller {
 		));
 
 		$this->javascript->set_global('autosave_map', $vars['autosave_array']);
-		$this->javascript->compile();
-		$this->load->view('content/edit', $vars);
+		$this->cp->render('content/edit', $vars);
 	}
 	
 	
@@ -357,7 +356,7 @@ class Content_edit extends CI_Controller {
 		// ----------------------------------------------------------------
 		
 		$this->prune_autosave();
-		$this->db->select('entry_id, original_entry_id, channel_id, title, author_id, status, entry_date, dst_enabled, comment_total');
+		$this->db->select('entry_id, original_entry_id, channel_id, title, author_id, status, entry_date,  comment_total');
 		$autosave = $this->db->get('channel_entries_autosave');
 		
 		$autosave_array = array();
@@ -415,7 +414,7 @@ class Content_edit extends CI_Controller {
 			$row['title'] = anchor(BASE.AMP.$url, $row['title']);
 			$row['view'] = '---';
 			$row['channel_name'] = $channels[$row['channel_id']]->channel_title;
-			$row['entry_date'] = $this->localize->decode_date($datestr, $row['entry_date'], TRUE);
+			$row['entry_date'] = $this->localize->format_date($datestr, $row['entry_date']);
 			$row['_check'] = form_checkbox('toggle[]', $row['entry_id'], '', ' class="toggle" id="delete_box_'.$row['entry_id'].'"');
 
 			// autosave indicator
@@ -594,7 +593,7 @@ class Content_edit extends CI_Controller {
 		// Build and run the query
 		// -----------------------------
 
-		$this->db->select('entry_id, exp_channel_titles.channel_id, author_id, title, url_title, entry_date, dst_enabled, status, allow_comments, sticky, comment_system_enabled');
+		$this->db->select('entry_id, exp_channel_titles.channel_id, author_id, title, url_title, entry_date, status, allow_comments, sticky, comment_system_enabled');
 		$this->db->from('exp_channel_titles');
 		$this->db->join('exp_channels', 'exp_channels.channel_id = exp_channel_titles.channel_id');
 		$this->db->where_in('exp_channel_titles.entry_id', $entry_ids);
@@ -646,7 +645,7 @@ class Content_edit extends CI_Controller {
 			unset($query);
 
 			// Run the query one more time with the proper IDs.
-			$this->db->select('entry_id, exp_channel_titles.channel_id, author_id, title, url_title, entry_date, dst_enabled, status, allow_comments, sticky, comment_system_enabled');
+			$this->db->select('entry_id, exp_channel_titles.channel_id, author_id, title, url_title, entry_date, status, allow_comments, sticky, comment_system_enabled');
 			$this->db->from('exp_channel_titles');
 			$this->db->join('exp_channels', 'exp_channels.channel_id = exp_channel_titles.channel_id');
 			$this->db->where_in('exp_channel_titles.entry_id', $new_ids);
@@ -784,7 +783,7 @@ class Content_edit extends CI_Controller {
 
 			// Set up date js
 			$this->javascript->output('
-				$(".entry_date_'.$entry_id.'").datepicker({constrainInput: false, dateFormat: $.datepicker.W3C + date_obj_time, defaultDate: new Date('.($this->localize->set_localized_time($row['entry_date']) * 1000).')});
+				$(".entry_date_'.$entry_id.'").datepicker({constrainInput: false, dateFormat: $.datepicker.W3C + date_obj_time, defaultDate: new Date("'.$this->localize->format_date('%D %M %d %Y', $row['entry_date']).'")});
 			');
 
 			// Sticky
@@ -812,16 +811,14 @@ class Content_edit extends CI_Controller {
 			}
 		}
 
-		$this->javascript->compile();
-
-		$this->cp->set_variable('cp_page_title', lang('multi_entry_editor'));
 		// A bit of a breadcrumb override is needed
-		$this->cp->set_variable('cp_breadcrumbs', array(
+		$this->view->cp_breadcrumbs = array(
 			BASE.AMP.'C=content' => lang('content'),
 			BASE.AMP.'C=content_edit'=> lang('edit')
-		));
+		);
 
-		$this->load->view('content/multi_edit', $vars);
+		$this->view->cp_page_title = lang('multi_entry_editor');
+		$this->cp->render('content/multi_edit', $vars);
 	}
 	
 	// --------------------------------------------------------------------
@@ -871,7 +868,7 @@ class Content_edit extends CI_Controller {
 		}
 		
 		$this->cp->set_breadcrumb($this->edit_base_url, lang('edit'));
-		$this->load->view('content/autosave', $data);
+		$this->cp->render('content/autosave', $data);
 	}
 	
 	// --------------------------------------------------------------------
@@ -976,7 +973,7 @@ class Content_edit extends CI_Controller {
 		/* 'update_multi_entries_start' hook.
 		/*  - Perform additional actions before entries are updated
 		*/
-			$edata = $this->extensions->call('update_multi_entries_start');
+			$this->extensions->call('update_multi_entries_start');
 			if ($this->extensions->end_script === TRUE) return;
 		/*
 		/* -------------------------------------------*/
@@ -1075,11 +1072,10 @@ class Content_edit extends CI_Controller {
 			}
 			
 			// Convert the date to a Unix timestamp
-			$data['entry_date'] = $this->localize->convert_human_date_to_gmt($data['entry_date']);
+			$data['entry_date'] = $this->localize->string_to_timestamp($data['entry_date']);
 			
 			if ( ! is_numeric($data['entry_date'])) 
 			{ 
-				// Localize::convert_human_date_to_gmt() returns verbose errors
 				if ($data['entry_date'] !== FALSE)
 				{
 					$error[] = $data['entry_date'];
@@ -1104,9 +1100,9 @@ class Content_edit extends CI_Controller {
 			 }
 
 			// Day, Month, and Year Fields
-			$data['year']	= $this->localize->decode_date('%Y', $data['entry_date'], TRUE);
-			$data['month']	= $this->localize->decode_date('%m', $data['entry_date'], TRUE);
-			$data['day']	= $this->localize->decode_date('%d', $data['entry_date'], TRUE);
+			$data['year']	= $this->localize->format_date('%Y', $data['entry_date']);
+			$data['month']	= $this->localize->format_date('%m', $data['entry_date']);
+			$data['day']	= $this->localize->format_date('%d', $data['entry_date']);
 
 			// Update the entry
 			$this->db->query($this->db->update_string('exp_channel_titles', $data, "entry_id = '$id'"));
@@ -1115,7 +1111,7 @@ class Content_edit extends CI_Controller {
 			/* 'update_multi_entries_loop' hook.
 			/*  - Perform additional actions after each entry is updated
 			*/
-				$edata = $this->extensions->call('update_multi_entries_loop', $id, $data);
+				$this->extensions->call('update_multi_entries_loop', $id, $data);
 				if ($this->extensions->end_script === TRUE) return;
 			/*
 			/* -------------------------------------------*/
@@ -1123,28 +1119,13 @@ class Content_edit extends CI_Controller {
 
 		// Clear caches if needed
 
-		$entry_ids = "'";
-
-		foreach($_POST['entry_id'] as $id)
-		{
-			$entry_ids .= $this->db->escape_str($id)."', '";
-		}
-
-		$entry_ids = substr($entry_ids, 0, -3);
-
-		$query = $this->db->query("SELECT COUNT(*) AS count FROM exp_relationships
-							WHERE rel_parent_id IN ({$entry_ids})
-							OR rel_child_id IN ({$entry_ids})");
-
-		$clear_rel = ($query->row('count')	> 0) ? TRUE : FALSE;
-
 		if ($this->config->item('new_posts_clear_caches') == 'y')
 		{
-			$this->functions->clear_caching('all', '', $clear_rel);
+			$this->functions->clear_caching('all', '');
 		}
 		else
 		{
-			$this->functions->clear_caching('sql', '', $clear_rel);
+			$this->functions->clear_caching('sql', '');
 		}
 
 
@@ -1190,7 +1171,7 @@ class Content_edit extends CI_Controller {
 		/** -----------------------------*/
 		
 		/* Available from $query:	entry_id, channel_id, author_id, title, url_title, 
-									entry_date, dst_enabled, status, allow_comments, 
+									entry_date, status, allow_comments, 
 									sticky
 		*/
 
@@ -1276,10 +1257,9 @@ class Content_edit extends CI_Controller {
 
 		$vars['type'] = $type;
 	
-		$this->cp->set_variable('cp_page_title', lang('multi_entry_category_editor'));
+		$this->view->cp_page_title = lang('multi_entry_category_editor');
 
-		$this->javascript->compile();
-		$this->load->view('content/multi_cat_edit', $vars);
+		$this->cp->render('content/multi_cat_edit', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -1475,10 +1455,9 @@ class Content_edit extends CI_Controller {
 			}
 		}
 
-		$this->cp->set_variable('cp_page_title', lang('delete_confirm'));
+		$this->view->cp_page_title = lang('delete_confirm');
 
-		$this->javascript->compile();
-		$this->load->view('content/delete_confirm', $vars);
+		$this->cp->render('content/delete_confirm', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -1509,7 +1488,7 @@ class Content_edit extends CI_Controller {
 		/* 'delete_entries_start' hook.
 		/*  - Perform actions prior to entry deletion / take over deletion
 		*/
-			$edata = $this->extensions->call('delete_entries_start');
+			$this->extensions->call('delete_entries_start');
 			if ($this->extensions->end_script === TRUE) return;
 		/*
 		/* -------------------------------------------*/
@@ -1637,24 +1616,6 @@ class Content_edit extends CI_Controller {
 
 		$this->javascript->set_global('edit.channelInfo', $channel_info);
 	}
-	
-	// --------------------------------------------------------------------
-	
-	/**
-	 * Custom dates
-	 */
-	public function custom_dates()
-	{
-		if ( ! $this->cp->allowed_group('can_access_content'))
-		{
-			show_error(lang('unauthorized_access'));
-		}
-
-		$this->output->enable_profiler(FALSE);
-
-		// load the javascript view, as its just a variable, no html template needed
-		$this->load->view('_shared/javascript');
-	}
 
 	// --------------------------------------------------------------------
 
@@ -1676,7 +1637,7 @@ class Content_edit extends CI_Controller {
 		$this->load->model('channel_entries_model');
 		$this->lang->loadfile('homepage');
 		
-		$this->cp->set_variable('cp_page_title', lang('most_recent_entries'));
+		$this->view->cp_page_title = lang('most_recent_entries');
 		
 		$count = $this->input->get('count');
 		$vars = array('entries' => array());
@@ -1708,8 +1669,7 @@ class Content_edit extends CI_Controller {
 		$vars['left_column'] = lang('most_recent_entries');
 		$vars['right_column'] = lang('comments');
 		
-		$this->javascript->compile();
-		$this->load->view('content/recent_list', $vars);
+		$this->cp->render('content/recent_list', $vars);
 	}
 	
 	/**
@@ -1739,6 +1699,7 @@ class Content_edit extends CI_Controller {
 
 		$c_row = FALSE;
 		$cat_group = '';
+		$status_group = '';
 		$channel_id = $this->input->get_post('channel_id');
 
 		if (count($channels) == 1)
@@ -1754,6 +1715,7 @@ class Content_edit extends CI_Controller {
 		{
 			$channel_id = $c_row->channel_id;
 			$cat_group = $c_row->cat_group;
+			$status_group = $c_row->status_group;
 		}
 		
 		$vars['channel_selected'] = $this->input->get_post('channel_id');
@@ -1823,16 +1785,12 @@ class Content_edit extends CI_Controller {
 		$vars['status_select_options'][''] = lang('filter_by_status');
 		$vars['status_select_options']['all'] = lang('all');
 
-		if ($cat_group != '')
+		if ($status_group != '')
 		{
-			$c_status = $this->channel_model->get_channel_info($channel_id, array('status_group'));
-			
 			$status_q = $this->db->select('status')
-				->where('group_id', $c_status->row('status_group'))
+				->where('group_id', $status_group)
 				->order_by('status_order')
 				->get('statuses');				
-
-			$c_status->free_result();
 
 			foreach ($status_q->result_array() as $row)
 			{

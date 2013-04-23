@@ -1,5 +1,6 @@
 .DS_Store
 Thumbs.db
+env_local.rb
 system/expressionengine/config/config.php
 system/expressionengine/config/database.php
 system/expressionengine/config/config1x.php
@@ -13,6 +14,8 @@ themes/solspace_themes/
 themes/third_party/
 *.swp
 code_coverage/
+system/tests/phpunit/vendor/
+system/tests/phpunit/composer.lock
 
 images/test1/
 
@@ -30,10 +33,12 @@ system/expressionengine/third_party/*
 !system/expressionengine/third_party/google_maps
 !system/expressionengine/third_party/js_tool
 !system/expressionengine/third_party/testage
+!system/expressionengine/third_party/debug
 !system/expressionengine/third_party/safecracker_file
 !system/expressionengine/third_party/cookie_check
 !system/expressionengine/third_party/cookie_consent
 !system/expressionengine/third_party/nannerbanner
+!system/expressionengine/third_party/ellislab_high_ascii_decode
 
 system/expressionengine/language/deutsch/*
 

@@ -20,7 +20,7 @@ class Safecracker_file_ft extends File_ft
 	{
 		parent::__construct();
 		
-		$this->EE->lang->loadfile('safecracker_file');
+		ee()->lang->loadfile('safecracker_file');
 	}
 
 	// --------------------------------------------------------------------
@@ -38,7 +38,7 @@ class Safecracker_file_ft extends File_ft
 			return lang('no_upload_dir');
 		}
 		
-		$this->EE->load->library('filemanager');
+		ee()->load->library('filemanager');
 		
 		$this->add_js();
 		
@@ -48,10 +48,10 @@ class Safecracker_file_ft extends File_ft
 		{
 			$data = '';
 			
-			if (isset($this->EE->session->cache['safecracker_file']['field_data'][$this->field_id]))
+			if (isset(ee()->session->cache['safecracker_file']['field_data'][$this->field_id]))
 			{
-				$data = $this->EE->session->cache['safecracker_file']['field_data'][$this->field_id];
-				//unset($this->EE->session->cache['safecracker_file']['field_data'][$this->field_name]);
+				$data = ee()->session->cache['safecracker_file']['field_data'][$this->field_id];
+				//unset(ee()->session->cache['safecracker_file']['field_data'][$this->field_name]);
 			}
 		}
 		
@@ -59,7 +59,7 @@ class Safecracker_file_ft extends File_ft
 		
 		$placeholder_data = set_value($this->field_name, '');
 		
-		$thumb_info = $this->EE->filemanager->get_thumb($data, $this->settings['safecracker_upload_dir']);
+		$thumb_info = ee()->filemanager->get_thumb($data, $this->settings['safecracker_upload_dir'], TRUE);
 		$thumb_src = $thumb_info['thumb'];
 		
 		$this->add_css();
@@ -84,11 +84,11 @@ class Safecracker_file_ft extends File_ft
 			'thumb_src' => $thumb_src
 		);
 		
-		$this->EE->load->add_package_path(PATH_THIRD.'safecracker_file');
+		ee()->load->add_package_path(PATH_THIRD.'safecracker_file');
 
-		$display_field = $this->EE->load->view('display_field', $vars, TRUE);
+		$display_field = ee()->load->view('display_field', $vars, TRUE);
 		
-		$this->EE->load->remove_package_path(PATH_THIRD.'safecracker_file');
+		ee()->load->remove_package_path(PATH_THIRD.'safecracker_file');
 
 		return $display_field;
 	}
@@ -112,12 +112,12 @@ class Safecracker_file_ft extends File_ft
 			$this->settings = array_merge($this->settings, $field_settings);
 		}
 		
-		$this->EE->session->cache['safecracker']['field_settings'][$this->field_id] = $this->settings;
+		ee()->session->cache['safecracker']['field_settings'][$this->field_id] = $this->settings;
 		
 		//get rid of placeholder
 		unset($_POST[$field_name]);
 		
-		if ($this->EE->input->post($field_name.'_remove') || $this->EE->input->post('field_id_'.$this->field_id.'_remove'))
+		if (ee()->input->post($field_name.'_remove') || ee()->input->post('field_id_'.$this->field_id.'_remove'))
 		{
 			unset($_POST[$field_name.'_remove'], $_POST['field_id_'.$this->field_id.'_remove']);
 			
@@ -129,14 +129,14 @@ class Safecracker_file_ft extends File_ft
 		
 		if (isset($_FILES[$field_name]) && $_FILES[$field_name]['size'] > 0)
 		{
-			$this->EE->load->add_package_path(PATH_THIRD.'safecracker_file/');
-			$this->EE->load->library('Filemanager');
+			ee()->load->add_package_path(PATH_THIRD.'safecracker_file/');
+			ee()->load->library('Filemanager');
 			
-			$data = $this->EE->filemanager->upload_file($this->settings['safecracker_upload_dir'], $field_name);
+			$data = ee()->filemanager->upload_file($this->settings['safecracker_upload_dir'], $field_name);
 			
 			if (array_key_exists('error', $data))
 			{
-				$this->EE->lang->loadfile('safecracker_file');
+				ee()->lang->loadfile('safecracker_file');
 				
 				$valid = lang(trim(strip_tags($data['error'])));
 				
@@ -147,29 +147,29 @@ class Safecracker_file_ft extends File_ft
 			}
 			else
 			{
-				$this->EE->session->cache['safecracker_file']['field_data'][$this->field_id] = $this->data = $_POST[$field_name] = $data['file_name'];
+				ee()->session->cache['safecracker_file']['field_data'][$this->field_id] = $this->data = $_POST[$field_name] = $data['file_name'];
 			}
 		}
-		elseif ($this->EE->input->post($field_name.'_existing'))
+		elseif (ee()->input->post($field_name.'_existing'))
 		{
 			//use existing file name
-			$this->EE->session->cache['safecracker_file']['field_data'][$this->field_id] = $this->data = $_POST[$field_name] = $this->EE->input->post($field_name.'_existing', TRUE);
+			ee()->session->cache['safecracker_file']['field_data'][$this->field_id] = $this->data = $_POST[$field_name] = ee()->input->post($field_name.'_existing', TRUE);
 		}
-		elseif ($this->EE->input->post($field_name.'_hidden'))
+		elseif (ee()->input->post($field_name.'_hidden'))
 		{
 			//use existing file name
-			$this->EE->session->cache['safecracker_file']['field_data'][$this->field_id] = $this->data = $_POST[$field_name] = $this->EE->input->post($field_name.'_hidden', TRUE);
+			ee()->session->cache['safecracker_file']['field_data'][$this->field_id] = $this->data = $_POST[$field_name] = ee()->input->post($field_name.'_hidden', TRUE);
 		}
 		else
 		{
 			//blank
-			$this->EE->session->cache['safecracker_file']['field_data'][$this->field_id] = $this->data = $_POST[$field_name] = '';
+			ee()->session->cache['safecracker_file']['field_data'][$this->field_id] = $this->data = $_POST[$field_name] = '';
 		}
 		
 		//clear hidden file name
 		unset($_POST[$field_name.'_hidden'], $_POST[$field_name.'_existing']);
 		
-		if ($valid === TRUE && @$this->settings['field_required'] == 'y' && ! $this->EE->input->post($field_name))
+		if ($valid === TRUE && @$this->settings['field_required'] == 'y' && ! ee()->input->post($field_name))
 		{
 			$valid = (REQ == 'CP') ? lang('required') : array('value' => '', 'error' => lang('required'));
 		}
@@ -187,9 +187,9 @@ class Safecracker_file_ft extends File_ft
 	 */
 	public function save($data)
 	{
-		if (isset($this->EE->session->cache['safecracker']['field_settings'][$this->field_id]))
+		if (isset(ee()->session->cache['safecracker']['field_settings'][$this->field_id]))
 		{
-			$this->settings = $this->EE->session->cache['safecracker']['field_settings'][$this->field_id];
+			$this->settings = ee()->session->cache['safecracker']['field_settings'][$this->field_id];
 		}
 		
 		if (isset($this->settings['field_settings']) && $field_settings = @unserialize(base64_decode($this->settings['field_settings'])))
@@ -197,9 +197,9 @@ class Safecracker_file_ft extends File_ft
 			$this->settings = array_merge($this->settings, $field_settings);
 		}
 		
-		if (isset($this->EE->session->cache['safecracker_file']['field_data'][$this->field_id]))
+		if (isset(ee()->session->cache['safecracker_file']['field_data'][$this->field_id]))
 		{
-			$data = $this->EE->session->cache['safecracker_file']['field_data'][$this->field_id];
+			$data = ee()->session->cache['safecracker_file']['field_data'][$this->field_id];
 		}
 		
 		$output = ($data && isset($this->settings['safecracker_upload_dir']) && $data !== 'NULL') ? '{filedir_'.$this->settings['safecracker_upload_dir'].'}'.$data : '';
@@ -219,7 +219,7 @@ class Safecracker_file_ft extends File_ft
 	{
 		foreach ($this->_display_settings($data) as $row)
 		{
-			$this->EE->table->add_row($row[0], $row[1]);
+			ee()->table->add_row($row[0], $row[1]);
 		}
 	}
 
@@ -233,11 +233,11 @@ class Safecracker_file_ft extends File_ft
 	 */
 	public function _display_settings($data)
 	{
-		$this->EE->lang->loadfile('safecracker_file');
+		ee()->lang->loadfile('safecracker_file');
 		
-		$this->EE->load->model(array('file_upload_preferences_model', 'field_model'));
+		ee()->load->model(array('file_upload_preferences_model', 'field_model'));
 		
-		$upload_paths = $this->EE->file_upload_preferences_model->get_dropdown_array($this->EE->session->userdata('group_id'));
+		$upload_paths = ee()->file_upload_preferences_model->get_dropdown_array(ee()->session->userdata('group_id'));
 		
 		$defaults = array(
 			'field_content_options_file' => array(),
@@ -252,7 +252,7 @@ class Safecracker_file_ft extends File_ft
 		
 		if ( ! $data['field_content_options_file'])
 		{
-			$content_types = $this->EE->field_model->get_field_content_types('file');
+			$content_types = ee()->field_model->get_field_content_types('file');
 			
 			$data['field_content_options_file']['any'] = lang('any');
 			
@@ -304,10 +304,10 @@ class Safecracker_file_ft extends File_ft
 	public function save_settings()
 	{
 		return array(
-			'file_field_content_type' 	=> $this->EE->input->post('safecracker_file_field_content_type'),
-			'safecracker_upload_dir' 	=> $this->EE->input->post('safecracker_upload_dir'),
-			'safecracker_show_existing'	=> $this->EE->input->post('safecracker_show_existing'),
-			'safecracker_num_existing' 	=> $this->EE->input->post('safecracker_num_existing'),
+			'file_field_content_type' 	=> ee()->input->post('safecracker_file_field_content_type'),
+			'safecracker_upload_dir' 	=> ee()->input->post('safecracker_upload_dir'),
+			'safecracker_show_existing'	=> ee()->input->post('safecracker_show_existing'),
+			'safecracker_num_existing' 	=> ee()->input->post('safecracker_num_existing'),
 		);
 	}
 
@@ -354,14 +354,14 @@ class Safecracker_file_ft extends File_ft
 	 */
 	public function add_js($cell = FALSE)
 	{	
-		$this->EE->load->library('javascript');
+		ee()->load->library('javascript');
 		
-		if (empty($this->EE->session->cache['safecracker']['add_js']))
+		if (empty(ee()->session->cache['safecracker']['add_js']))
 		{
-			$this->EE->session->cache['safecracker']['add_js'] = TRUE;
+			ee()->session->cache['safecracker']['add_js'] = TRUE;
 			
-			$this->EE->javascript->output('$(".safecracker_file_remove_button").live("click",function(){fs=$(this).parents(".safecracker_file_set");fs.find(".safecracker_file_thumb, .safecracker_file_input, .safecracker_file_existing").toggle();fs.find(".safecracker_file_input input").attr("disabled", false);fs.find(".safecracker_file_remove input").click();h=fs.find(".safecracker_file_hidden input").val();p=(h&&$(this).is(":checked"))?h:"NULL";fs.find(".safecracker_file_placeholder_input input").val(p);return false;});');
-			$this->EE->javascript->output('$(".safecracker_file_undo_button").live("click",function(){fs=$(this).parents(".safecracker_file_set");fs.find(".safecracker_file_thumb, .safecracker_file_input, .safecracker_file_existing").toggle();fs.find(".safecracker_file_input input").attr("disabled","disabled");fs.find(".safecracker_file_remove input").click();return false;});');
+			ee()->javascript->output('$(".safecracker_file_remove_button").live("click",function(){fs=$(this).parents(".safecracker_file_set");fs.find(".safecracker_file_thumb, .safecracker_file_input, .safecracker_file_existing").toggle();fs.find(".safecracker_file_input input").attr("disabled", false);fs.find(".safecracker_file_remove input").click();h=fs.find(".safecracker_file_hidden input").val();p=(h&&$(this).is(":checked"))?h:"NULL";fs.find(".safecracker_file_placeholder_input input").val(p);return false;});');
+			ee()->javascript->output('$(".safecracker_file_undo_button").live("click",function(){fs=$(this).parents(".safecracker_file_set");fs.find(".safecracker_file_thumb, .safecracker_file_input, .safecracker_file_existing").toggle();fs.find(".safecracker_file_input input").attr("disabled","disabled");fs.find(".safecracker_file_remove input").click();return false;});');
 			/*
 				$(".safecracker_file_remove_button").click(function(){
 					var file_set = $(this).parents(".safecracker_file_set")[0];
@@ -386,13 +386,13 @@ class Safecracker_file_ft extends File_ft
 			*/
 		}
 		
-		if (0 && $cell && empty($this->EE->session->cache['safecracker']['cell_js'][$this->field_name]))
+		if (0 && $cell && empty(ee()->session->cache['safecracker']['cell_js'][$this->field_name]))
 		{
-			$this->EE->session->cache['safecracker']['cell_js'][$this->field_name] = TRUE;
+			ee()->session->cache['safecracker']['cell_js'][$this->field_name] = TRUE;
 			
-			$this->EE->javascript->output('$("#'.$this->field_name.' .matrix-btn").live("click",function(){h=$("#'.$this->field_name.' .matrix-last .safecracker_file_hidden input").attr("name").replace(/\]$/, "_hidden]");$("#'.$this->field_name.' .matrix-last .safecracker_file_hidden input").attr("name", h);});');
+			ee()->javascript->output('$("#'.$this->field_name.' .matrix-btn").live("click",function(){h=$("#'.$this->field_name.' .matrix-last .safecracker_file_hidden input").attr("name").replace(/\]$/, "_hidden]");$("#'.$this->field_name.' .matrix-last .safecracker_file_hidden input").attr("name", h);});');
 			/*
-			$this->EE->javascript->output('
+			ee()->javascript->output('
 				$("#'.$this->field_name.' .matrix-btn").click(function(){
 					var hidden_name = $("#'.$this->field_name.' .matrix-last .safecracker_file_hidden input").attr("name").replace(/\]$/, "_hidden]");
 					$("#'.$this->field_name.' .matrix-last .safecracker_file_hidden input").attr("name", hidden_name);
@@ -412,11 +412,11 @@ class Safecracker_file_ft extends File_ft
 	 */
 	public function add_css()
 	{
-		if (empty($this->EE->session->cache['safecracker']['add_css']))
+		if (empty(ee()->session->cache['safecracker']['add_css']))
 		{
-			$this->EE->session->cache['safecracker']['add_css'] = TRUE;
+			ee()->session->cache['safecracker']['add_css'] = TRUE;
 			
-			$this->EE->cp->add_to_head('<style type="text/css">.safecracker_file_set{color:#5F6C74;font-family:Helvetica, Arial, sans-serif;font-size:12px} .safecracker_file_thumb{border:1px solid #B6C0C2;position:relative;text-align:center;float:left;margin:6px 0 5px 6px;padding:5px} .safecracker_file_undo_button{color:#5F6C74;font-family:Helvetica, Arial, sans-serif;font-size:12px;text-decoration:underline;display:block;margin:0 0 8px;padding:0} .safecracker_file_thumb img{display:block} .safecracker_file_thumb p{margin:4px 0 0;padding:0} .safecracker_file_remove_button{position:absolute;top:-6px;left:-6px} .safecracker_file_existing{margin:4px 0 0;} .clear{clear:both}</style>');
+			ee()->cp->add_to_head('<style type="text/css">.safecracker_file_set{color:#5F6C74;font-family:Helvetica, Arial, sans-serif;font-size:12px} .safecracker_file_thumb{border:1px solid #B6C0C2;position:relative;text-align:center;float:left;margin:6px 0 5px 6px;padding:5px} .safecracker_file_undo_button{color:#5F6C74;font-family:Helvetica, Arial, sans-serif;font-size:12px;text-decoration:underline;display:block;margin:0 0 8px;padding:0} .safecracker_file_thumb img{display:block} .safecracker_file_thumb p{margin:4px 0 0;padding:0} .safecracker_file_remove_button{position:absolute;top:-6px;left:-6px} .safecracker_file_existing{margin:4px 0 0;} .clear{clear:both}</style>');
 			/*
 			<style type="text/css">
 			.safecracker_file_set {
@@ -493,13 +493,13 @@ class Safecracker_file_ft extends File_ft
 	 */
 	public function display_cell($data)
 	{
-		$this->EE->load->library('filemanager');
+		ee()->load->library('filemanager');
 		
 		$this->parse_cell_name();
 		
 		if ($data)
 		{
-			unset($this->EE->session->cache['safecracker_file']['saved_cell'][$data]);
+			unset(ee()->session->cache['safecracker_file']['saved_cell'][$data]);
 		}
 		
 		if (isset($_POST[$this->field_name]))
@@ -522,18 +522,18 @@ class Safecracker_file_ft extends File_ft
 		//preserve fields if you encounter a submit error
 		if (preg_match('/^'.preg_quote($this->field_name).'\[row_new_\d+\]\[col_id_\d+\]$/', $data))
 		{
-			if (isset($this->EE->session->cache['safecracker_file']['cells'][$this->field_id][$this->cell_name]))
+			if (isset(ee()->session->cache['safecracker_file']['cells'][$this->field_id][$this->cell_name]))
 			{
-				$data = $this->EE->session->cache['safecracker_file']['cells'][$this->field_id][$this->cell_name];
+				$data = ee()->session->cache['safecracker_file']['cells'][$this->field_id][$this->cell_name];
 			}
 			else
 			{
-				$data = $this->EE->session->cache['safecracker_file']['saved_cell'][$data] = $this->save_cell($data);
+				$data = ee()->session->cache['safecracker_file']['saved_cell'][$data] = $this->save_cell($data);
 			}
 		}
 		else if (preg_match('/^'.preg_quote($this->field_name).'\[(row_id_\d+)\]\[(col_id_\d+)\]$/', $data, $match))
 		{
-			if ($field_data = $this->EE->input->post($this->field_name, TRUE))
+			if ($field_data = ee()->input->post($this->field_name, TRUE))
 			{
 				if (isset($field_data[$match[1]][$match[2].'_hidden']))
 				{
@@ -541,19 +541,19 @@ class Safecracker_file_ft extends File_ft
 				}
 				else
 				{
-					$data = $this->EE->session->cache['safecracker']['saved_cell'][$data] = $this->save_cell($data);
+					$data = ee()->session->cache['safecracker']['saved_cell'][$data] = $this->save_cell($data);
 				}
 			}
 		}
 		else if ($data == 'NULL')
 		{
-			if ($field_data = $this->EE->input->post($this->field_name, TRUE))
+			if ($field_data = ee()->input->post($this->field_name, TRUE))
 			{
-				$data = $this->EE->session->cache['safecracker']['saved_cell'][$data] = $this->save_cell($data);
+				$data = ee()->session->cache['safecracker']['saved_cell'][$data] = $this->save_cell($data);
 			}
 		}
 		
-		$this->EE->load->add_package_path(PATH_THIRD.'safecracker_file/');
+		ee()->load->add_package_path(PATH_THIRD.'safecracker_file/');
 		
 		$this->add_js($this->cell_name == '{DEFAULT}');
 		
@@ -564,7 +564,7 @@ class Safecracker_file_ft extends File_ft
 			$data = '';
 		}
 		
-		$thumb_info = $this->EE->filemanager->get_thumb($data, $this->settings['safecracker_upload_dir']);
+		$thumb_info = ee()->filemanager->get_thumb($data, $this->settings['safecracker_upload_dir']);
 		$thumb_src = $thumb_info['thumb'];
 		
 		$form_upload = array('name' => $this->cell_name);
@@ -574,9 +574,9 @@ class Safecracker_file_ft extends File_ft
 			$form_upload['disabled'] = 'disabled';
 		}
 		
-		$this->EE->load->library('javascript');
+		ee()->load->library('javascript');
 		
-		$this->EE->javascript->output('
+		ee()->javascript->output('
 			Matrix.bind("safecracker_file", "display", function(cell){
 				if (cell.row.isNew) {
 					$.each(["hidden", "remove", "existing"], function (i, value) {
@@ -606,9 +606,9 @@ class Safecracker_file_ft extends File_ft
 		
 		$this->add_css();
 
-		$view = $this->EE->load->view('display_field', $vars, TRUE);
+		$view = ee()->load->view('display_field', $vars, TRUE);
 		
-		$this->EE->load->remove_package_path(PATH_THIRD.'safecracker_file/');
+		ee()->load->remove_package_path(PATH_THIRD.'safecracker_file/');
 				
 		return $view;
 	}
@@ -623,15 +623,16 @@ class Safecracker_file_ft extends File_ft
 	 */
 	public function existing_files($directory_id)
 	{
-		$this->EE->load->model('file_model');
+		ee()->load->model('file_model');
 		
 		if ( ! $this->settings('safecracker_show_existing'))
 		{
 			return array();
 		}
 		
-		// Check to make sure the directory exists
-		$directory_info = $this->EE->file_upload_preferences_model->get_file_upload_preferences(NULL, $directory_id);
+		// Check to make sure the directory exists - check across all sites!
+		$directory_info = ee()->file_upload_preferences_model->get_file_upload_preferences(NULL, $directory_id, TRUE);
+		
 		if (count($directory_info) == 0)
 		{
 			show_error(lang('upload_destination_does_not_exist'));
@@ -648,7 +649,7 @@ class Safecracker_file_ft extends File_ft
 		);
 		
 		// Load files in from database
-		$files_from_db = $this->EE->file_model->get_files(
+		$files_from_db = ee()->file_model->get_files(
 			$directory_id, 
 			array(
 				'limit' => $this->settings['safecracker_num_existing'],
@@ -689,14 +690,14 @@ class Safecracker_file_ft extends File_ft
 		//if we encountered an error, the file was already saved
 		//and we don't need to run this a second time
 		//let's just pass the cached value and be done
-		if ( ! empty($this->EE->session->cache['safecracker_file']['saved_cell'][$cell_name]))
+		if ( ! empty(ee()->session->cache['safecracker_file']['saved_cell'][$cell_name]))
 		{
-			$cell = $this->EE->session->cache['safecracker_file']['saved_cell'][$cell_name];
-			unset($this->EE->session->cache['safecracker_file']['saved_cell'][$cell_name]);
+			$cell = ee()->session->cache['safecracker_file']['saved_cell'][$cell_name];
+			unset(ee()->session->cache['safecracker_file']['saved_cell'][$cell_name]);
 			return $cell;
 		}
 		
-		$field_data = $this->EE->input->post($this->settings['field_name'], TRUE);
+		$field_data = ee()->input->post($this->settings['field_name'], TRUE);
 		
 		if ( ! empty($field_data[$this->settings['row_name']][$this->settings['col_name'].'_existing']))
 		{
@@ -717,11 +718,11 @@ class Safecracker_file_ft extends File_ft
 				$_FILES[$this->settings['field_name']][$key] = $value[$this->settings['row_name']][$this->settings['col_name']];
 			}
 			
-			$this->EE->load->add_package_path(PATH_THIRD.'safecracker_file/');
+			ee()->load->add_package_path(PATH_THIRD.'safecracker_file/');
 			
 			//do file upload
-			$this->EE->load->library('Filemanager');
-			$data = $this->EE->filemanager->upload_file($this->settings['safecracker_upload_dir'], $this->settings['field_name']);
+			ee()->load->library('Filemanager');
+			$data = ee()->filemanager->upload_file($this->settings['safecracker_upload_dir'], $this->settings['field_name']);
 			
 			//restore
 			$_FILES = $_files;
@@ -732,7 +733,7 @@ class Safecracker_file_ft extends File_ft
 			}
 			else
 			{
-				$this->EE->session->cache['safecracker_file']['cells'][$this->field_id][$cell_name] = '{filedir_'.$this->settings['safecracker_upload_dir'].'}'.$data['file_name'];
+				ee()->session->cache['safecracker_file']['cells'][$this->field_id][$cell_name] = '{filedir_'.$this->settings['safecracker_upload_dir'].'}'.$data['file_name'];
 				
 				return '{filedir_'.$this->settings['safecracker_upload_dir'].'}'.$data['file_name'];
 			}

@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -23,7 +23,7 @@
  * @link		http://ellislab.com
  */
 
-class Content_files_modal extends CI_Controller {
+class Content_files_modal extends CP_Controller {
 
 	private $_upload_dirs    = array();
 	private $_base_url       = '';
@@ -147,7 +147,7 @@ class Content_files_modal extends CI_Controller {
 		// but before duplicate checking
 		
 		$file					= $this->_get_file($upload_response['file_id']);
-		$file['modified_date']	= $this->localize->set_human_time($file['modified_date']);
+		$file['modified_date']	= $this->localize->human_time($file['modified_date']);
 		$original_name			= $upload_response['orig_name'];
 		$cleaned_name			= basename($this->filemanager->clean_filename(
 			$original_name, 
@@ -199,7 +199,7 @@ class Content_files_modal extends CI_Controller {
 		$file = $this->_get_file($rename_file['file_id']);
 		
 		// Humanize Unix timestamp
-		$file['modified_date']	= $this->localize->set_human_time($file['modified_date']);
+		$file['modified_date']	= $this->localize->human_time($file['modified_date']);
 		
 		// Views need to know if the file was replaced
 		$file['replace'] = $rename_file['replace'];
@@ -342,7 +342,7 @@ class Content_files_modal extends CI_Controller {
 		$original_name	= implode('.', $original_name);
 		
 		return array(
-			'file_json'			=> $this->javascript->generate_json($file, TRUE),
+			'file_json'			=> json_encode($file),
 			'file_extension'	=> $file_extension,
 			'original_name'		=> $original_name,
 			'hidden' => array(
@@ -368,7 +368,7 @@ class Content_files_modal extends CI_Controller {
 		return array(
 			'file'		=> $file,
 			'file_id'	=> $file['file_id'],
-			'file_json'	=> $this->javascript->generate_json($file, TRUE)
+			'file_json'	=> json_encode($file)
 		);
 	}
 	

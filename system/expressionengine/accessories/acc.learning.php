@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -52,23 +52,23 @@ class Learning_acc {
 	{
 		$this->sections = array(
 			
-			$this->EE->lang->line('community_tutorials')	 => 	'<ul>
-						<li><a href="'.$this->EE->cp->masked_url('http://train-ee.com/').'" title="'.$this->EE->lang->line('train_ee').'">'.$this->EE->lang->line('train_ee').'</a></li>
-						<li><a href="'.$this->EE->cp->masked_url('http://www.eescreencasts.com/').'" title="'.$this->EE->lang->line('ee_screencasts').'">'.$this->EE->lang->line('ee_screencasts').'</a></li>
-						<li><a href="'.$this->EE->cp->masked_url('http://loweblog.com/freelance/article/ee-search-bookmarklet/').'" title="'.$this->EE->lang->line('ee_seach_bookmarklet').'">'.$this->EE->lang->line('ee_seach_bookmarklet').'</a></li>
+			ee()->lang->line('community_tutorials')	 => 	'<ul>
+						<li><a href="'.ee()->cp->masked_url('http://train-ee.com/').'" title="'.ee()->lang->line('train_ee').'">'.ee()->lang->line('train_ee').'</a></li>
+						<li><a href="'.ee()->cp->masked_url('http://www.eescreencasts.com/').'" title="'.ee()->lang->line('ee_screencasts').'">'.ee()->lang->line('ee_screencasts').'</a></li>
+						<li><a href="'.ee()->cp->masked_url('http://loweblog.com/freelance/article/ee-search-bookmarklet/').'" title="'.ee()->lang->line('ee_seach_bookmarklet').'">'.ee()->lang->line('ee_seach_bookmarklet').'</a></li>
 					</ul>'
 						,
 						
-			$this->EE->lang->line('community_resources') => '<ul>
-						<li><a href="'.$this->EE->cp->masked_url('http://eeinsider.com/').'" title="'.$this->EE->lang->line('ee_insider').'">'.$this->EE->lang->line('ee_insider').'</a></li>
-						<li><a href="'.$this->EE->cp->masked_url('http://devot-ee.com/').'" title="'.$this->EE->lang->line('devot_ee').'">'.$this->EE->lang->line('devot_ee').'</a></li>
-						<li><a href="'.$this->EE->cp->masked_url('http://ee-podcast.com/').'" title="'.$this->EE->lang->line('ee_podcast').'">'.$this->EE->lang->line('ee_podcast').'</a></li>
-						<li><a href="'.$this->EE->cp->masked_url('http://show-ee.com/').'" title="Show-EE">Show-EE</a></li>
+			ee()->lang->line('community_resources') => '<ul>
+						<li><a href="'.ee()->cp->masked_url('http://eeinsider.com/').'" title="'.ee()->lang->line('ee_insider').'">'.ee()->lang->line('ee_insider').'</a></li>
+						<li><a href="'.ee()->cp->masked_url('http://devot-ee.com/').'" title="'.ee()->lang->line('devot_ee').'">'.ee()->lang->line('devot_ee').'</a></li>
+						<li><a href="'.ee()->cp->masked_url('http://ee-podcast.com/').'" title="'.ee()->lang->line('ee_podcast').'">'.ee()->lang->line('ee_podcast').'</a></li>
+						<li><a href="'.ee()->cp->masked_url('http://show-ee.com/').'" title="Show-EE">Show-EE</a></li>
 					</ul>
 			',
-			$this->EE->lang->line('support') => '<ul>
-						<li><a href="'.$this->EE->cp->masked_url($this->EE->config->item('doc_url')).'" title="'.$this->EE->lang->line('documentation').'">'.$this->EE->lang->line('documentation').'</a></li>
-						<li><a href="'.$this->EE->cp->masked_url('http://ellislab.com/forums/').'" title="'.$this->EE->lang->line('support_forums').'">'.$this->EE->lang->line('support_forums').'</a></li>
+			ee()->lang->line('support') => '<ul>
+						<li><a href="'.ee()->cp->masked_url(ee()->config->item('doc_url')).'" title="'.ee()->lang->line('documentation').'">'.ee()->lang->line('documentation').'</a></li>
+						<li><a href="'.ee()->cp->masked_url('http://ellislab.com/forums/').'" title="'.ee()->lang->line('support_forums').'">'.ee()->lang->line('support_forums').'</a></li>
 					</ul>'			
 		);
 	}

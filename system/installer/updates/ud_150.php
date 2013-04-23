@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -29,7 +29,7 @@ class Updater {
 		$this->EE =& get_instance();
 	
 		// Grab the config file
-		if ( ! @include($this->EE->config->config_path))
+		if ( ! @include(ee()->config->config_path))
 		{
 			show_error('Your config'.EXT.' file is unreadable. Please make sure the file exists and that the file permissions to 666 on the following file: expressionengine/config/config.php');
 		}
@@ -143,19 +143,19 @@ class Updater {
 		// Run the queries
 		foreach ($Q as $sql)
 		{
-			$this->EE->db->query($sql);
+			ee()->db->query($sql);
 		}
 
 		// Update config data
 		$data['xss_clean_uploads'] = "y";
 		$data['template_debugging'] = "n";
 		
-		$this->EE->config->_append_config_1x($data);
+		ee()->config->_append_config_1x($data);
 		
 		unset($config);
 		unset($conf);
 		
-		include($this->EE->config->config_path);
+		include(ee()->config->config_path);
 		
 		if (isset($conf))
 		{
@@ -166,7 +166,7 @@ class Updater {
 		unset($config['prv_msg_send_limit']);
 		unset($config['prv_msg_storage_limit']);
 		
-		$this->EE->config->_update_config_1x(array(), $config);
+		ee()->config->_update_config_1x(array(), $config);
 
 		return TRUE;
 	}

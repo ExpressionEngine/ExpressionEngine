@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.5
@@ -42,7 +42,7 @@ class Rte_ext {
 	{
 		$this->EE =& get_instance();
 
-		$this->EE->load->library('rte_lib');
+		ee()->load->library('rte_lib');
 	}
 
 	// --------------------------------------------------------------------
@@ -55,11 +55,11 @@ class Rte_ext {
 	function myaccount_nav_setup()
 	{
 		// Check for the last_call
-		$additional_nav = ($this->EE->extensions->last_call) ? 
-			$this->EE->extensions->last_call :
+		$additional_nav = (ee()->extensions->last_call) ? 
+			ee()->extensions->last_call :
 			array();
 
-		$this->EE->lang->loadfile($this->module);
+		ee()->lang->loadfile($this->module);
 		return array_merge_recursive(
 			$additional_nav,
 			array(
@@ -83,14 +83,14 @@ class Rte_ext {
 	 */
 	public function myaccount_settings($member_id)
 	{
-		$this->EE->load->library('javascript');
-		$this->EE->load->model('rte_toolset_model');
+		ee()->load->library('javascript');
+		ee()->load->model('rte_toolset_model');
 
 		// get member preferences
-		$prefs = $this->EE->rte_toolset_model->get_member_prefs($member_id);
+		$prefs = ee()->rte_toolset_model->get_member_prefs($member_id);
 
 		// get available toolsets
-		$toolsets = $this->EE->rte_toolset_model->get_member_toolsets($member_id);
+		$toolsets = ee()->rte_toolset_model->get_member_toolsets($member_id);
 
 		// assume we don't have a custom toolset to begin with
 		$my_toolset_id = 0;
@@ -111,7 +111,7 @@ class Rte_ext {
 		}
 
 		// insert our custom toolset at the beginning of the list
-		if ($member_id == $this->EE->session->userdata('member_id'))
+		if ($member_id == ee()->session->userdata('member_id'))
 		{
 			$options = array($my_toolset_id => lang('my_toolset')) + $options;
 		}
@@ -119,7 +119,7 @@ class Rte_ext {
 		// Check the rte_toolset_id, if it's not defined, opt for the 
 		// install default
 		$selected_toolset_id = ($prefs['rte_toolset_id'] == 0) ?  
-			$this->EE->config->item('rte_default_toolset_id'):
+			ee()->config->item('rte_default_toolset_id'):
 			$prefs['rte_toolset_id'];
 		
 		// setup the page
@@ -131,7 +131,7 @@ class Rte_ext {
 		);
 		
 		// JS stuff
-		$this->EE->javascript->set_global(array(
+		ee()->javascript->set_global(array(
 			'rte'	=> array(
 				'lang' => array(
 					'edit_my_toolset'	=> lang('edit_my_toolset')
@@ -143,18 +143,18 @@ class Rte_ext {
 			)
 		));
 
-		$this->EE->cp->add_js_script(array(
+		ee()->cp->add_js_script(array(
 			'file'	=> 'cp/rte',
 			'ui'	=> 'dialog'
 		));
 
-		$this->EE->javascript->compile();
+		ee()->javascript->compile();
 		
 		// add the CSS
-		$this->EE->cp->add_to_head($this->EE->view->head_link('css/rte.css'));
+		ee()->cp->add_to_head(ee()->view->head_link('css/rte.css'));
 		
 		// return the page
-		return $this->EE->load->view('myaccount_settings', $vars, TRUE);
+		return ee()->load->view('myaccount_settings', $vars, TRUE);
 	}
 	
 	// -------------------------------------------------------------------------
@@ -168,37 +168,37 @@ class Rte_ext {
 	public function myaccount_settings_save($member_id)
 	{
 		// set up the validation
-		$this->EE->load->library('form_validation');
-		$this->EE->lang->loadfile('rte');
-		$this->EE->form_validation->set_rules(
+		ee()->load->library('form_validation');
+		ee()->lang->loadfile('rte');
+		ee()->form_validation->set_rules(
 			'rte_enabled',
 			lang('enabled_question'),
 			'required|enum[y,n]'
 		);
-		$this->EE->form_validation->set_rules(
+		ee()->form_validation->set_rules(
 			'toolset_id',
 			lang('default_toolset'),
 			'required|is_numeric'
 		);
 		
 		// success
-		if ($this->EE->form_validation->run())
+		if (ee()->form_validation->run())
 		{
 			// update the prefs
-			$this->EE->db->update(
+			ee()->db->update(
 				'members',
 				array(
-					'rte_enabled'		=> $this->EE->input->get_post('rte_enabled'),
-					'rte_toolset_id'	=> $this->EE->input->get_post('toolset_id')
+					'rte_enabled'		=> ee()->input->get_post('rte_enabled'),
+					'rte_toolset_id'	=> ee()->input->get_post('toolset_id')
 				),
 				array('member_id' => $member_id)
 			);
 			
-			$this->EE->session->set_flashdata('message_success', lang('settings_saved'));
+			ee()->session->set_flashdata('message_success', lang('settings_saved'));
 		}
 		else
 		{
-			$this->EE->session->set_flashdata('message_failure', lang('settings_not_saved'));
+			ee()->session->set_flashdata('message_failure', lang('settings_not_saved'));
 		}
 
 		return TRUE;
@@ -213,8 +213,8 @@ class Rte_ext {
 	 */
 	public function edit_toolset()
 	{
-		$this->EE->rte_lib->form_url = 'C=myaccount'.AMP.'M=custom_action'.AMP.'extension=rte'.AMP.'method=save_toolset';
-		return $this->EE->rte_lib->edit_toolset();
+		ee()->rte_lib->form_url = 'C=myaccount'.AMP.'M=custom_action'.AMP.'extension=rte'.AMP.'method=save_toolset';
+		return ee()->rte_lib->edit_toolset();
 	}
 
 	// --------------------------------------------------------------------
@@ -224,7 +224,7 @@ class Rte_ext {
 	 */
 	public function save_toolset()
 	{
-		$this->EE->rte_lib->save_toolset();
+		ee()->rte_lib->save_toolset();
 	}
 
 	// --------------------------------------------------------------------
@@ -237,33 +237,33 @@ class Rte_ext {
 	 */
 	function cp_menu_array($menu)
 	{
-		if ($this->EE->extensions->last_call !== FALSE)
+		if (ee()->extensions->last_call !== FALSE)
 		{
-			$menu = $this->EE->extensions->last_call;
+			$menu = ee()->extensions->last_call;
 		}
 
 		// If this isn't a Super Admin, let's check to see if they can modify 
 		// the RTE module
-		if ($this->EE->session->userdata('group_id') != 1)
+		if (ee()->session->userdata('group_id') != 1)
 		{
-			$access = (bool) $this->EE->db->select('COUNT(m.module_id) AS count')
+			$access = (bool) ee()->db->select('COUNT(m.module_id) AS count')
 				->from('modules m')
 				->join('module_member_groups mmg', 'm.module_id = mmg.module_id')
 				->where(array(
-					'mmg.group_id' 	=> $this->EE->session->userdata('group_id'),
+					'mmg.group_id' 	=> ee()->session->userdata('group_id'),
 					'm.module_name' => ucfirst($this->module)
 				))
 				->get()
 				->row('count');
 
 			$has_access = $access 
-				AND $this->EE->cp->allowed_group('can_access_addons') 
-				AND $this->EE->cp->allowed_group('can_access_modules');
+				AND ee()->cp->allowed_group('can_access_addons') 
+				AND ee()->cp->allowed_group('can_access_modules');
 		}
 		
-		if ($this->EE->session->userdata('group_id') == 1 OR $has_access)
+		if (ee()->session->userdata('group_id') == 1 OR $has_access)
 		{
-			$this->EE->lang->loadfile($this->module);
+			ee()->lang->loadfile($this->module);
 			$menu['admin']['admin_content']['rte_settings'] = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module='.$this->module;	
 		}
 		
@@ -281,8 +281,8 @@ class Rte_ext {
 	function publish_form_entry_data($results)
 	{
 		// Build toolset JS and include CP-only tools
-		$this->EE->javascript->output(
-			$this->EE->rte_lib->build_js(0, '.WysiHat-field', NULL, TRUE)
+		ee()->javascript->output(
+			ee()->rte_lib->build_js(0, '.WysiHat-field', NULL, TRUE)
 		);
 		
 		return $results;

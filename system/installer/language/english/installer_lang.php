@@ -62,7 +62,8 @@ $lang['screen_name_info'] = 'This is the name that will appear on your channel e
 $lang['site_label'] = 'Name of your site';
 $lang['local_settings'] = 'Localization Settings';
 $lang['timezone'] = 'Your Timezone';
-$lang['dst_active'] = 'Are you currently observing Daylight Saving Time?';
+$lang['select_timezone'] = 'Select Timezone';
+$lang['no_timezones'] = 'No Timezones';
 $lang['yes'] = 'Yes';
 $lang['no'] = 'No';
 $lang['optional_modules'] = 'Optional Modules';
@@ -124,7 +125,7 @@ $lang['site_located_here'] = 'Your Website is located here';
 $lang['running_current'] = 'You are now running the most current version of ExpressionEngine!';
 $lang['version_warning'] = 'Error: In order to install ExpressionEngine, your server must be running PHP version %x or newer.';
 $lang['version_running'] = 'Your server is current running PHP version:';
-$lang['switch_hosts'] = 'If you would like to switch to a host that provides more current software, please consider <a href="http://www.enginehosting.com/">EngineHosting</a>';
+$lang['switch_hosts'] = 'Contact your hosting provider to see if newer software is available for your server.';
 
 $lang['trackback_removal_options'] = 'Trackback Conversion and Archiving Options';
 $lang['trackback_gone_in_200'] = 'The Trackback module has been removed in ExpressionEngine 2.  You can choose to convert existing trackbacks to comments and/or generate a zip archive containing all existing trackbacks.';
@@ -148,7 +149,10 @@ $lang['what_server_data_is_sent'] = '<p>What data is sent?  Answering yes to thi
 										<li>PHP version and available extensions</li>
 										<li>MySQL version, server operating system</li>
 										<li>Server software name</li>
-										<li>...and whether or not you are using forced query strings on your server</li>
+										<li>Whether or not you are using forced query strings on your server</li>
+										<li>A list of the add-ons in your third party directory</li>
+										<li>Whether or not you have Discussion Forums installed</li>
+										<li>Whether or not you have Multiple Site Manager installed</li>
 									</ul>
 									<p>All data is transmitted anonymously and cannot be associated with your local machine, ExpressionEngine user
 									account, your site, or your host.</p>';

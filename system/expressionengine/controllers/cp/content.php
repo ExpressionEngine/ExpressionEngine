@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -22,7 +22,7 @@
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Content extends CI_Controller {
+class Content extends CP_Controller {
 
 	/**
 	 * Constructor
@@ -56,15 +56,14 @@ class Content extends CI_Controller {
 
 		$this->lang->loadfile('content');
 
-		$this->cp->set_variable('cp_page_title', lang('content'));
+		$this->javascript->output(
+			$this->javascript->slidedown("#adminTemplatesSubmenu")
+		);
 		
-		$this->javascript->output($this->javascript->slidedown("#adminTemplatesSubmenu"));
+		$this->view->cp_page_title = lang('content');
+		$this->view->controller = 'content';
 
-		$this->javascript->compile();
-
-		$this->load->vars(array('controller'=>'content'));
-
-		$this->load->view('_shared/overview');
+		$this->cp->render('_shared/overview');
 	}
 	
 	

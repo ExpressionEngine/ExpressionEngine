@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -128,8 +128,6 @@ class EE_Typography extends CI_Typography {
 		$this->code_chunks			= array();
 		$this->code_counter			= 0;
 		
-		$this->EE->load->helper('string');
-		
 		$this->http_hidden 			= unique_marker('typography_url_protect'); // hash to protect URLs in [url] BBCode
 		$this->safe_img_src_end		= unique_marker('typography_img_src_end'); // hash to mark end of image URLs during sanitizing of image tags
 
@@ -176,7 +174,7 @@ class EE_Typography extends CI_Typography {
 		/**  Fetch emoticon prefs
 		/** -------------------------------------*/
 		
-		if ($this->EE->config->item('enable_emoticons') == 'y')
+		if (ee()->config->item('enable_emoticons') == 'y')
 		{
 			$this->_fetch_emotions_prefs();
 		}
@@ -186,16 +184,16 @@ class EE_Typography extends CI_Typography {
 		/*	- popup_link => Have links created by Typography class open in a new window (y/n)
 		/* -------------------------------------------*/
 		
-		if ($this->EE->config->item('popup_link') !== FALSE)
+		if (ee()->config->item('popup_link') !== FALSE)
 		{
-			$this->popup_links = ($this->EE->config->item('popup_link') == 'y') ? TRUE : FALSE;
+			$this->popup_links = (ee()->config->item('popup_link') == 'y') ? TRUE : FALSE;
 		}
 
 		/** -------------------------------------
 		/**  Fetch word censoring prefs
 		/** -------------------------------------*/
 		
-		if ($this->EE->config->item('enable_censoring') == 'y')
+		if (ee()->config->item('enable_censoring') == 'y')
 		{
 			$this->_fetch_word_censor_prefs();
 		}
@@ -204,8 +202,8 @@ class EE_Typography extends CI_Typography {
 		/**  Fetch plugins
 		/** -------------------------------------*/
 		
-		$this->EE->load->model('addons_model');
-		$this->text_fmt_plugins = $this->EE->addons_model->get_plugin_formatting();
+		ee()->load->model('addons_model');
+		$this->text_fmt_plugins = ee()->addons_model->get_plugin_formatting();
 	}
 
 	// --------------------------------------------------------------------
@@ -222,7 +220,7 @@ class EE_Typography extends CI_Typography {
 			return $str;
 		}
 
-		foreach ($this->EE->functions->fetch_file_paths() as $key => $val)
+		foreach (ee()->functions->fetch_file_paths() as $key => $val)
 		{
 			$str = str_replace(array("{filedir_{$key}}", "&#123;filedir_{$key}&#125;"), $val, $str);
 		}
@@ -244,7 +242,7 @@ class EE_Typography extends CI_Typography {
 	{
 		if ($this->parse_images === TRUE)
         {
-            $this->file_paths = $this->EE->functions->fetch_file_paths();
+            $this->file_paths = ee()->functions->fetch_file_paths();
         }
         
 		// In the future, we might think about caching all of this processing, ya know.
@@ -261,9 +259,9 @@ class EE_Typography extends CI_Typography {
 		// 'typography_parse_type_start' hook.
 		//  - Modify string prior to all other typography processing
 		//
-			if ($this->EE->extensions->active_hook('typography_parse_type_start') === TRUE)
+			if (ee()->extensions->active_hook('typography_parse_type_start') === TRUE)
 			{
-				$str = $this->EE->extensions->call('typography_parse_type_start', $str, $this, $prefs);
+				$str = ee()->extensions->call('typography_parse_type_start', $str, $this, $prefs);
 			}	
 		//
 		// -------------------------------------------
@@ -277,7 +275,7 @@ class EE_Typography extends CI_Typography {
 		// Since you can enable templates to parse PHP, it would open up a security
 		// hole to leave PHP submitted in entries and comments intact.
 		
-		$this->EE->load->helper('security');
+		ee()->load->helper('security');
 		
 		$str = encode_php_tags($str);
 
@@ -287,7 +285,7 @@ class EE_Typography extends CI_Typography {
 		
 		// Next, we need to encode EE tags contained in entries, comments, etc. so that they don't get parsed.
 				
-		$str = $this->EE->functions->encode_ee_tags($str, $this->convert_curly);  
+		$str = ee()->functions->encode_ee_tags($str, $this->convert_curly);  
 			
 		/** -------------------------------------
 		/**  Set up our preferences
@@ -390,7 +388,7 @@ class EE_Typography extends CI_Typography {
 		// as redirects, to prevent the control panel address from showing up in referrer logs
 		// except when sending emails, where we don't want created links piped through the site
 
-		if (REQ == 'CP' && $this->EE->input->get('M') != 'send_email' && strpos($str, 'href=') !== FALSE)
+		if (REQ == 'CP' && ee()->input->get('M') != 'send_email' && strpos($str, 'href=') !== FALSE)
 		{
 			$str = preg_replace("#<a\s+(.*?)href=(\042|\047)([^\\2]*?)\\2(.*?)\>(.*?)</a>#si", "[url=\"\\3\"\\1\\4]\\5[/url]", $str);
 		}
@@ -417,14 +415,14 @@ class EE_Typography extends CI_Typography {
 			if ( ! class_exists('EE_Template'))
 			{
 				require APPPATH.'libraries/Template.php';
-				$this->EE->TMPL = new EE_Template();
+				ee()->TMPL = new EE_Template();
 			}			
 			
 			$plugin = ucfirst($this->text_format);
 			
 			if ( ! class_exists($plugin))
 			{	
-				if (in_array($this->text_format, $this->EE->core->native_plugins))
+				if (in_array($this->text_format, ee()->core->native_plugins))
 				{
 					require_once PATH_PI.'pi.'.$this->text_format.'.php';
 				}
@@ -454,7 +452,7 @@ class EE_Typography extends CI_Typography {
 		//  Parse censored words
 		if ($this->word_censor === TRUE && count($this->censored_words > 0))
 		{
-			$this->EE->load->helper('text');
+			ee()->load->helper('text');
 			$str = word_censor($str, $this->censored_words, $this->censored_replace);			
 		}
 
@@ -473,7 +471,7 @@ class EE_Typography extends CI_Typography {
 			{	
 				for ($j = 0; $j < count($matches['0']); $j++)
 				{	
-					$str = str_replace($matches['0'][$j], $this->EE->functions->encode_email($matches['1'][$j]), $str);
+					$str = str_replace($matches['0'][$j], ee()->functions->encode_email($matches['1'][$j]), $str);
 				}
 			}  		
 		}
@@ -488,9 +486,9 @@ class EE_Typography extends CI_Typography {
 		// 'typography_parse_type_end' hook.
 		//  - Modify string after all other typography processing
 		//
-			if ($this->EE->extensions->active_hook('typography_parse_type_end') === TRUE)
+			if (ee()->extensions->active_hook('typography_parse_type_end') === TRUE)
 			{
-				$str = $this->EE->extensions->call('typography_parse_type_end', $str, $this, $prefs);
+				$str = ee()->extensions->call('typography_parse_type_end', $str, $this, $prefs);
 			}	
 		//
 		// -------------------------------------------
@@ -528,7 +526,7 @@ class EE_Typography extends CI_Typography {
 		/**  Permit only safe HTML
 		/** -------------------------------------*/
 		
-		$str = $this->EE->security->xss_clean($str);
+		$str = ee()->security->xss_clean($str);
 		
 		// We strip any JavaScript event handlers from image links or anchors
 		// This prevents cross-site scripting hacks.
@@ -628,10 +626,10 @@ class EE_Typography extends CI_Typography {
 		// logs, this would be a bad thing. So, we'll point all links to the 
 		// "bounce server"
 		
-		if ((REQ == 'CP' && $this->EE->input->get('M') != 'send_email') OR
-			$this->EE->config->item('redirect_submitted_links') == 'y')
+		if ((REQ == 'CP' && ee()->input->get('M') != 'send_email') OR
+			ee()->config->item('redirect_submitted_links') == 'y')
 		{
-			$this->bounce = $this->EE->functions->fetch_site_index().QUERY_MARKER.'URL=';
+			$this->bounce = ee()->functions->fetch_site_index().QUERY_MARKER.'URL=';
 		}
 		
 		// Protect URLs that are already in [url] BBCode
@@ -789,14 +787,14 @@ class EE_Typography extends CI_Typography {
 		
 		if (stripos($str, '[url') !== FALSE)
 		{			
-			$bounce	= ((REQ == 'CP' && $this->EE->input->get('M') != 'send_email') OR $this->EE->config->item('redirect_submitted_links') == 'y') ? $this->EE->functions->fetch_site_index().QUERY_MARKER.'URL=' : '';
+			$bounce	= ((REQ == 'CP' && ee()->input->get('M') != 'send_email') OR ee()->config->item('redirect_submitted_links') == 'y') ? ee()->functions->fetch_site_index().QUERY_MARKER.'URL=' : '';
 
 			$bad_things	 = array("'",'"', ';', '[', '(', ')', '!', '*', '>', '<', "\t", "\r", "\n", 'document.cookie'); // everything else
 			$bad_things2 = array('[', '(', ')', '!', '*', '>', '<', "\t", 'document.cookie'); // style,title attributes
 			$exceptions	 = array('http://', 'https://', 'irc://', 'feed://', 'ftp://', 'ftps://', 'mailto:', '/', '#');
 			$allowed	 = array('rel', 'title', 'class', 'style', 'target');
 
-			if (preg_match_all("/\[url(.*?)\](.*?)\[\/url\]/i", $str, $matches))
+			if (preg_match_all("/\[url(.*?)\](.*?)\[\/url\]/is", $str, $matches))
 			{
 				for($i=0, $s=count($matches['0']), $add=TRUE; $i < $s; ++$i)
 				{
@@ -900,7 +898,7 @@ class EE_Typography extends CI_Typography {
 			}
 			elseif($this->auto_links == 'y' && $this->html_format != 'none')
 			{
-				if (preg_match_all("/\[img\](.*?)\[\/img\]/i", $str, $matches))
+				if (preg_match_all("/\[img\](.*?)\[\/img\]/is", $str, $matches))
 				{
 					for($i=0, $s=count($matches['0']); $i < $s; ++$i)
 					{
@@ -1001,11 +999,11 @@ class EE_Typography extends CI_Typography {
 		
 		// [email=your@yoursite]email[/email]
 
-		$str = preg_replace_callback("/\[email=(.*?)\](.*?)\[\/email\]/i", array($this, "create_mailto"),$str);
+		$str = preg_replace_callback("/\[email=(.*?)\](.*?)\[\/email\]/is", array($this, "create_mailto"),$str);
 		
 		// [email]joe@xyz.com[/email]
 
-		$str = preg_replace_callback("/\[email\](.*?)\[\/email\]/i", array($this, "create_mailto"),$str);
+		$str = preg_replace_callback("/\[email\](.*?)\[\/email\]/is", array($this, "create_mailto"),$str);
 		
 		return $str;
 	}
@@ -1017,8 +1015,16 @@ class EE_Typography extends CI_Typography {
 	 */
 	public function create_mailto($matches)
 	{	
+		if (($space = strpos($matches['1'], ' ')) != FALSE)
+		{
+			$matches['1'] = substr($matches['1'], 0, $space);
+		}
+
+		// get rid of surrounding quotes
+		$matches['1'] = preg_replace(array('/(^"|\')/', '/("|\'$)/'), '', $matches['1']);	
+		
 		$title = ( ! isset($matches['2'])) ? $matches['1'] : $matches['2'];
-	
+		
 		if ($this->encode_email == TRUE)
 		{
 			return $this->encode_email($matches['1'], $title, TRUE);
@@ -1088,7 +1094,7 @@ class EE_Typography extends CI_Typography {
 	 */
 	public function emoticon_replace($str)
 	{
-		if ($this->smiley_array === FALSE OR $this->parse_smileys === FALSE OR $this->EE->session->userdata('parse_smileys') == 'n')
+		if ($this->smiley_array === FALSE OR $this->parse_smileys === FALSE OR ee()->session->userdata('parse_smileys') == 'n')
 		{
 			return $str;
 		}
@@ -1147,7 +1153,7 @@ class EE_Typography extends CI_Typography {
             return $str;    
         }
 		
-		$this->EE->load->helper('text');
+		ee()->load->helper('text');
 		return word_censor($str, $this->censored_words, $this->censored_replace);
 	}
 
@@ -1236,28 +1242,13 @@ class EE_Typography extends CI_Typography {
 	// --------------------------------------------------------------------	
 
 	/**
-	 * Auto XHTML Typography
-	 *
-	 * @deprecated in 2.1.5 and will be removed at a later date.
-	 */
-    function xhtml_typography($str)
-    {
-		$this->EE->load->library('logger');
-		$this->EE->logger->deprecated('2.1.5', 'EE_Typography::auto_typography()');
-		
-		return $this->auto_typography($str);
-    }
-
-	// --------------------------------------------------------------------	
-
-	/**
 	 * Encode Email Address
 	 */
 	public function encode_email($email, $title = '', $anchor = TRUE)
 	{
-		if (isset($this->EE->TMPL) && is_object($this->EE->TMPL) && 
-			isset($this->EE->TMPL->encode_email) && 
-			$this->EE->TMPL->encode_email == FALSE)
+		if (isset(ee()->TMPL) && is_object(ee()->TMPL) && 
+			isset(ee()->TMPL->encode_email) && 
+			ee()->TMPL->encode_email == FALSE)
 		{
 			return $email;
 		}
@@ -1266,7 +1257,7 @@ class EE_Typography extends CI_Typography {
 		
 		if (isset($this->encode_type) && $this->encode_type == 'noscript')
 		{
-			$email = str_replace(array('@', '.'), array(' '.$this->EE->lang->line('at').' ', ' '.$this->EE->lang->line('dot').' '), $email);
+			$email = str_replace(array('@', '.'), array(' '.ee()->lang->line('at').' ', ' '.ee()->lang->line('dot').' '), $email);
 			return $email;
 		}
 		
@@ -1323,20 +1314,12 @@ class EE_Typography extends CI_Typography {
 		}
 		
 		$bit = array_reverse($bit);
-		$span_marker = 'data-eeEncEmail_'.$this->EE->functions->random('alpha', 10);
+		$span_marker = 'data-eeEncEmail_'.ee()->functions->random('alpha', 10);
 
 		ob_start();
 
-/* CAREFUL
- *
- * This javascript currently breaks in the forum if it outputs curly brackets. 
- * Test if you change it.
- * 
- * Leave the comments in the while (--j >= 0) loop. They make sure that when 
- * the line breaks are removed EE doesn't see {if...
- *
- * Regex speed hat tip: http://blog.stevenlevithan.com/archives/faster-trim-javascript
-*/ ?>
+// Regex speed hat tip: http://blog.stevenlevithan.com/archives/faster-trim-javascript
+?>
 
 <span <?php echo $span_marker; ?>='1'>.<?php echo lang('encoded_email'); ?></span><script type="text/javascript">
 /*<![CDATA[*/
@@ -1347,17 +1330,11 @@ var out = '',
 	j = el.length;
 
 while (--i >= 0)
-{
 	out += unescape(l[i].replace(/^\s\s*/, '&#'));
-}
 
 while (--j >= 0)
-{/**/
 	if (el[j].getAttribute('<?php echo $span_marker ?>'))
-	{
 		el[j].innerHTML = out;
-	}
-}
 /*]]>*/
 </script><?php
 
@@ -1381,7 +1358,7 @@ while (--j >= 0)
 			if (is_array($smileys))
 			{
 				$this->smiley_array = $smileys;
-				$this->emoticon_url = $this->EE->config->slash_item('emoticon_url');
+				$this->emoticon_url = ee()->config->slash_item('emoticon_url');
 			}
 		}
 	}
@@ -1395,14 +1372,14 @@ while (--j >= 0)
 	{
 		$this->word_censor = TRUE;
 		
-		if ($this->word_censor == TRUE && $this->EE->config->item('censored_words') != '')
+		if ($this->word_censor == TRUE && ee()->config->item('censored_words') != '')
 		{	
-			if ($this->EE->config->item('censor_replacement') !== FALSE)
+			if (ee()->config->item('censor_replacement') !== FALSE)
 			{
-				$this->censored_replace = $this->EE->config->item('censor_replacement');
+				$this->censored_replace = ee()->config->item('censor_replacement');
 			}
 			
-			$words = str_replace('OR', '|', trim($this->EE->config->item('censored_words')));
+			$words = str_replace('OR', '|', trim(ee()->config->item('censored_words')));
 	
 			if (substr($words, -1) == "|")
 			{

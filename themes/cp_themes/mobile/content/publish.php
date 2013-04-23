@@ -150,8 +150,7 @@ if ($EE_view_disable !== TRUE)
 								{
 									case 'options':
 										$f['string_override'] = '<label><input type="checkbox" name="sticky" value="y" id="sticky"  /> Make Entry Sticky</label><br />
-										<label><input type="checkbox" name="allow_comments" value="y" checked="checked" id="allow_comments"  /> Allow Comments</label><label><br />
-										<input type="checkbox" name="dst_enabled" value="y" checked="checked" id="dst_enabled"  /> DST Active on Date of Entry</label>';
+										<label><input type="checkbox" name="allow_comments" value="y" checked="checked" id="allow_comments"  /> Allow Comments</label>';
 										break;
 									case 'category':
 										$f['string_override'] = str_replace('</p>', '', $f['string_override']);

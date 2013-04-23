@@ -1,8 +1,34 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
+ * @since		Version 2.0
+ * @filesource
+ */
+ 
+// ------------------------------------------------------------------------
 
-/** -------------------------------------
- *  Required field indicator
- * --------------------------------------
+/**
+ * ExpressionEngine Segment Helper
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Helpers
+ * @category	Helpers
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
+ */
+
+// ------------------------------------------------------------------------
+
+/**
+ * Required field indicator
+ *
+ * @param string
  */
 function required($blurb = '')
 {
@@ -14,6 +40,16 @@ function required($blurb = '')
 	return "<em class='required'>* </em>".$blurb."\n";
 }
 
+// ------------------------------------------------------------------------
+
+/**
+ * Get Layout Preview Links
+ *
+ * Creates the proper html list for the layout preview options.
+ *
+ * @access	public
+ * @return	string
+ */
 function layout_preview_links($data, $channel_id)
 {
 	$EE =& get_instance();

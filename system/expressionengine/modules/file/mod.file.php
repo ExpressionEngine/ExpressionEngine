@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -15,7 +15,7 @@
 // --------------------------------------------------------------------
 
 /**
- * ExpressionEngine Channel Module
+ * ExpressionEngine File Module
  *
  * @package		ExpressionEngine
  * @subpackage	Modules
@@ -61,12 +61,12 @@ class File {
 
 		$this->limit = $this->limit;
 
-		$this->query_string = ($this->EE->uri->page_query_string != '') ? $this->EE->uri->page_query_string : $this->EE->uri->query_string;
+		$this->query_string = (ee()->uri->page_query_string != '') ? ee()->uri->page_query_string : ee()->uri->query_string;
 
-		if ($this->EE->config->item("use_category_name") == 'y' && $this->EE->config->item("reserved_category_word") != '')
+		if (ee()->config->item("use_category_name") == 'y' && ee()->config->item("reserved_category_word") != '')
 		{
-			$this->use_category_names	= $this->EE->config->item("use_category_name");
-			$this->reserved_cat_segment	= $this->EE->config->item("reserved_category_word");
+			$this->use_category_names	= ee()->config->item("use_category_name");
+			$this->reserved_cat_segment	= ee()->config->item("reserved_category_word");
 		}
 
 	}
@@ -89,18 +89,18 @@ class File {
 		
 		if (empty($this->sql))
 		{
-			return $this->EE->TMPL->no_results();
+			return ee()->TMPL->no_results();
 		}
 
 		$this->query = $this->sql;
 
 		if ($this->query->num_rows() == 0)
 		{
-			return $this->EE->TMPL->no_results();
+			return ee()->TMPL->no_results();
 		}
 
-		$this->EE->load->library('typography');
-		$this->EE->typography->initialize(array(
+		ee()->load->library('typography');
+		ee()->typography->initialize(array(
 				'convert_curly'	=> FALSE)
 				);
 
@@ -132,22 +132,22 @@ class File {
 		$dynamic		= TRUE;
 
 		// If dynamic is off, we'll override all dynamically set variables
-		if ($this->EE->TMPL->fetch_param('dynamic') == 'no')
+		if (ee()->TMPL->fetch_param('dynamic') == 'no')
 		{
 			$dynamic = FALSE;
 		}
 
-		$this->limit = ( ! is_numeric($this->EE->TMPL->fetch_param('limit')))  ? $this->limit : $this->EE->TMPL->fetch_param('limit');
+		$this->limit = ( ! is_numeric(ee()->TMPL->fetch_param('limit')))  ? $this->limit : ee()->TMPL->fetch_param('limit');
 
 		// Parse the URL query string
-		$this->uristr = $this->EE->uri->uri_string;
+		$this->uristr = ee()->uri->uri_string;
 
 		if ($qstring == '')
 		{
 			$qstring = $this->query_string;
 		}
 
-		$this->basepath = $this->EE->functions->create_url($this->uristr);
+		$this->basepath = ee()->functions->create_url($this->uristr);
 
 		if ($qstring != '')
 		{
@@ -160,7 +160,7 @@ class File {
 
 // Man- this is way redundant.  Maybe move some to url helper or some such??
 
-				$this->EE->load->helper('segment');
+				ee()->load->helper('segment');
 			
 				// Parse ID
 				if ($dynamic)
@@ -171,7 +171,7 @@ class File {
 				}
 				
 				// Parse page number
-				if ($dynamic OR $this->EE->TMPL->fetch_param('paginate'))
+				if ($dynamic OR ee()->TMPL->fetch_param('paginate'))
 				{
 					$seg = parse_page_number($qstring, $this->basepath, $this->uristr);
 					$this->p_page = $seg['p_page'];
@@ -193,11 +193,11 @@ class File {
 				{
 					$qstring = preg_replace("/(.*?)\/".preg_quote($this->reserved_cat_segment)."\//i", '', '/'.$qstring);
 
-					$this->EE->db->distinct();
-					$this->EE->db->select('cat_group');
-					$this->EE->db->where_in('site_id', $this->EE->TMPL->site_ids);
-					$this->EE->functions->ar_andor_string($this->EE->TMPL->fetch_param('directory_id'), 'id');
-					$query = $this->EE->db->get('upload_prefs');
+					ee()->db->distinct();
+					ee()->db->select('cat_group');
+					ee()->db->where_in('site_id', ee()->TMPL->site_ids);
+					ee()->functions->ar_andor_string(ee()->TMPL->fetch_param('directory_id'), 'id');
+					$query = ee()->db->get('upload_prefs');
 
 					if ($query->num_rows() > 0)
 					{
@@ -207,7 +207,7 @@ class File {
 
 						foreach($query->result_array() as $row)
 						{
-							if ($this->EE->TMPL->fetch_param('relaxed_categories') == 'yes')
+							if (ee()->TMPL->fetch_param('relaxed_categories') == 'yes')
 							{
 								$valid_cats = array_merge($valid_cats, explode('|', $row['cat_group']));
 							}
@@ -244,7 +244,7 @@ class File {
 						$cut_qstring = array_shift($arr);
 						unset($arr);
 
-						$result = $this->EE->db->select('cat_id')
+						$result = ee()->db->select('cat_id')
 								->where('cat_url_title', $cut_qstring)
 								->where_in('group_id', $valid_cats)
 								->get('categories');
@@ -255,7 +255,7 @@ class File {
 						}
 						else
 						{
-							$result = $this->EE->db->select('cat_id')
+							$result = ee()->db->select('cat_id')
 								->where('cat_url_title', $qstring)
 								->where_in('group_id', $valid_cats)
 								->get('categories');
@@ -297,15 +297,15 @@ class File {
 		// If the "File ID" was hard-coded, use it instead of
 		// using the dynamically set one above
 
-		if ($this->EE->TMPL->fetch_param('file_id'))
+		if (ee()->TMPL->fetch_param('file_id'))
 		{
-			$file_id = $this->EE->TMPL->fetch_param('file_id');
+			$file_id = ee()->TMPL->fetch_param('file_id');
 		}
 
 		// Setup Orderby
 		$allowed_sorts = array('date', 'upload_date', 'random');
-		$order_by = $this->EE->TMPL->fetch_param('orderby', 'upload_date');
-		$sort = $this->EE->TMPL->fetch_param('sort', 'desc');
+		$order_by = ee()->TMPL->fetch_param('orderby', 'upload_date');
+		$sort = ee()->TMPL->fetch_param('sort', 'desc');
 		
 		$random = ($order_by == 'random') ? TRUE : FALSE;
 		$order_by  = ($order_by == 'date' OR ! in_array($order_by, $allowed_sorts))  ? 'upload_date' : $order_by;
@@ -315,97 +315,97 @@ class File {
 		//$dir_ids = array();
 
 		// Start the cache so we can use for pagination
-		$this->EE->db->start_cache();
+		ee()->db->start_cache();
 
 		//  Fetch the file ids
 
-		if ($this->EE->TMPL->fetch_param('category') OR $this->EE->TMPL->fetch_param('category_group') OR $cat_id != '')
+		if (ee()->TMPL->fetch_param('category') OR ee()->TMPL->fetch_param('category_group') OR $cat_id != '')
 		{
-			$this->EE->db->distinct();
+			ee()->db->distinct();
 
 			//  We use 'LEFT' JOIN when there is a 'not' so that we get
 			//  entries that are not assigned to a category.
 
-			if ((substr($this->EE->TMPL->fetch_param('category_group'), 0, 3) == 'not' OR substr($this->EE->TMPL->fetch_param('category'), 0, 3) == 'not') && $this->EE->TMPL->fetch_param('uncategorized_entries') !== 'n')
+			if ((substr(ee()->TMPL->fetch_param('category_group'), 0, 3) == 'not' OR substr(ee()->TMPL->fetch_param('category'), 0, 3) == 'not') && ee()->TMPL->fetch_param('uncategorized_entries') !== 'n')
 			{
-				$this->EE->db->join('file_categories', 'exp_files.file_id = exp_file_categories.file_id', 'LEFT');
-				$this->EE->db->join('categories', 'exp_file_categories.cat_id = exp_categories.cat_id', 'LEFT');
+				ee()->db->join('file_categories', 'exp_files.file_id = exp_file_categories.file_id', 'LEFT');
+				ee()->db->join('categories', 'exp_file_categories.cat_id = exp_categories.cat_id', 'LEFT');
 			}
 			else
 			{
-				$this->EE->db->join('file_categories', 'exp_files.file_id = exp_file_categories.file_id', 'INNER');
-				$this->EE->db->join('categories', 'exp_file_categories.cat_id = exp_categories.cat_id', 'INNER');
+				ee()->db->join('file_categories', 'exp_files.file_id = exp_file_categories.file_id', 'INNER');
+				ee()->db->join('categories', 'exp_file_categories.cat_id = exp_categories.cat_id', 'INNER');
 			}
 		}
 
 
-		$this->EE->db->select('exp_files.file_id');
-		$this->EE->db->from('files');
+		ee()->db->select('exp_files.file_id');
+		ee()->db->from('files');
 
 		if ($file_id != '')
 		{
-			$this->EE->functions->ar_andor_string($file_id, 'exp_files.file_id').' ';
+			ee()->functions->ar_andor_string($file_id, 'exp_files.file_id').' ';
 		}
 		
 		// If directory_id is set in template
-		if (($directory_ids = $this->EE->TMPL->fetch_param('directory_id')) != FALSE)
+		if (($directory_ids = ee()->TMPL->fetch_param('directory_id')) != FALSE)
 		{
-			$this->EE->functions->ar_andor_string($directory_ids, 'upload_location_id');
+			ee()->functions->ar_andor_string($directory_ids, 'upload_location_id');
 		}
 		// If no directory_id is set, restrict files to current site
 		else
 		{
-			$this->EE->db->where_in('exp_files.site_id', $this->EE->TMPL->site_ids);
+			ee()->db->where_in('exp_files.site_id', ee()->TMPL->site_ids);
 		}
 		
 		//  Limit query by category
-		if ($this->EE->TMPL->fetch_param('category'))
+		if (ee()->TMPL->fetch_param('category'))
 		{
 			// Doing a simplified version for now- no & allowed ??
-			if (stristr($this->EE->TMPL->fetch_param('category'), '&'))
+			if (stristr(ee()->TMPL->fetch_param('category'), '&'))
 			{
 			}
 			else
 			{
-				if (substr($this->EE->TMPL->fetch_param('category'), 0, 3) == 'not' && $this->EE->TMPL->fetch_param('uncategorized_entries') !== 'n')
+				if (substr(ee()->TMPL->fetch_param('category'), 0, 3) == 'not' && ee()->TMPL->fetch_param('uncategorized_entries') !== 'n')
 				{
 					// $str, $field, $prefix = '', $null=FALSE
-					$this->EE->functions->ar_andor_string($this->EE->TMPL->fetch_param('category'), 'exp_categories.cat_id', '', TRUE);
+					ee()->functions->ar_andor_string(ee()->TMPL->fetch_param('category'), 'exp_categories.cat_id', '', TRUE);
 				}
 				else
 				{
-					$this->EE->functions->ar_andor_string($this->EE->TMPL->fetch_param('category'), 'exp_categories.cat_id');
+					ee()->functions->ar_andor_string(ee()->TMPL->fetch_param('category'), 'exp_categories.cat_id');
 				}
 			}
 		}
 
 
-		if ($this->EE->TMPL->fetch_param('category_group'))
+		if (ee()->TMPL->fetch_param('category_group'))
 		{
-			if (substr($this->EE->TMPL->fetch_param('category_group'), 0, 3) == 'not' && $this->EE->TMPL->fetch_param('uncategorized_entries') !== 'n')
+			if (substr(ee()->TMPL->fetch_param('category_group'), 0, 3) == 'not' && ee()->TMPL->fetch_param('uncategorized_entries') !== 'n')
 			{
-				$this->EE->functions->ar_andor_string($this->EE->TMPL->fetch_param('category_group'), 'exp_categories.group_id', '', TRUE);
+				ee()->functions->ar_andor_string(ee()->TMPL->fetch_param('category_group'), 'exp_categories.group_id', '', TRUE);
 			}
 			else
 			{
-				$this->EE->functions->ar_andor_string($this->EE->TMPL->fetch_param('category_group'), 'exp_categories.group_id');
+				ee()->functions->ar_andor_string(ee()->TMPL->fetch_param('category_group'), 'exp_categories.group_id');
 			}
 		}
 
-		if ($this->EE->TMPL->fetch_param('category') === FALSE && $this->EE->TMPL->fetch_param('category_group') === FALSE)
+		if (ee()->TMPL->fetch_param('category') === FALSE && ee()->TMPL->fetch_param('category_group') === FALSE)
 		{
 			if ($cat_id != '' AND $dynamic)
 			{
-				$this->EE->db->where('exp_categories.cat_id', $cat_id);
+				ee()->db->where('exp_categories.cat_id', $cat_id);
 			}
 		}
 
-		$this->EE->db->stop_cache();
+		ee()->db->stop_cache();
 
 		if ($this->paginate == TRUE)
 		{
-			//$this->EE->db->select('exp_files.file_id');
-			$total = $this->EE->db->count_all_results();
+			//ee()->db->select('exp_files.file_id');
+			$total = ee()->db->count_all_results();
 			$this->absolute_results = $total;
 
 			$this->create_pagination($total);
@@ -414,23 +414,23 @@ class File {
 		// We do the select down here as it could have been lost from cache anyway
 		if ($this->paginate == TRUE)
 		{
-			$this->EE->db->select('exp_files.file_id');
+			ee()->db->select('exp_files.file_id');
 		}
 
 		// Add sorting
 		$this_sort = ($random) ? 'random' : strtolower($sort);
 
-		$this->EE->db->order_by($order_by, $this_sort);		
+		ee()->db->order_by($order_by, $this_sort);		
 
 		// Add the limit
 		$this_page = ($this->p_page == '' OR ($this->limit > 1 AND $this->p_page == 1)) ? 0 : $this->p_page;
-		$this->EE->db->limit($this->limit, $this_page);
+		ee()->db->limit($this->limit, $this_page);
 		
 		
 		//Fetch the file_id numbers
-		$query = $this->EE->db->get();
+		$query = ee()->db->get();
 		
-		$this->EE->db->flush_cache();
+		ee()->db->flush_cache();
 		
 		if ($query->num_rows() == 0)
 		{
@@ -444,13 +444,13 @@ class File {
 		}
 			
 		//  Build the full SQL query
-		$this->EE->db->select('*');
-		$this->EE->db->from('files');
-		$this->EE->db->join('upload_prefs', 'upload_prefs.id = files.upload_location_id', 'LEFT');
-		$this->EE->db->where_in('file_id', $file_ids);
-		$this->EE->db->order_by($order_by, $this_sort);	
+		ee()->db->select('*');
+		ee()->db->from('files');
+		ee()->db->join('upload_prefs', 'upload_prefs.id = files.upload_location_id', 'LEFT');
+		ee()->db->where_in('file_id', $file_ids);
+		ee()->db->order_by($order_by, $this_sort);	
 		
-		$this->sql = $this->EE->db->get();
+		$this->sql = ee()->db->get();
 		
 	}
 
@@ -466,17 +466,17 @@ class File {
 	  */
 	function fetch_pagination_data()
 	{
-		if (strpos($this->EE->TMPL->tagdata, LD.'paginate'.RD) === FALSE) 
+		if (strpos(ee()->TMPL->tagdata, LD.'paginate'.RD) === FALSE) 
 		{
 			return;
 		}
 
-		if (preg_match("/".LD."paginate".RD."(.+?)".LD.'\/'."paginate".RD."/s", $this->EE->TMPL->tagdata, $match))
+		if (preg_match("/".LD."paginate".RD."(.+?)".LD.'\/'."paginate".RD."/s", ee()->TMPL->tagdata, $match))
 		{
 			$this->paginate	= TRUE;
 			$this->paginate_data = $match[1];
 
-			$this->EE->TMPL->tagdata = preg_replace("/".LD."paginate".RD.".+?".LD.'\/'."paginate".RD."/s", "", $this->EE->TMPL->tagdata);
+			ee()->TMPL->tagdata = preg_replace("/".LD."paginate".RD.".+?".LD.'\/'."paginate".RD."/s", "", ee()->TMPL->tagdata);
 		}
 	}
 
@@ -496,19 +496,19 @@ class File {
 			/*  that the template group and template are specified.
 			/* --------------------------------------*/
 
-			if (($this->EE->uri->uri_string == '' OR $this->EE->uri->uri_string == '/') && $this->EE->config->item('template_group') != '' && $this->EE->config->item('template') != '')
+			if ((ee()->uri->uri_string == '' OR ee()->uri->uri_string == '/') && ee()->config->item('template_group') != '' && ee()->config->item('template') != '')
 			{
-				$this->basepath = $this->EE->functions->create_url($this->EE->config->slash_item('template_group').'/'.$this->EE->config->item('template'));
+				$this->basepath = ee()->functions->create_url(ee()->config->slash_item('template_group').'/'.ee()->config->item('template'));
 			}
 			
 			if ($this->basepath == '')
 			{
-				$this->basepath = $this->EE->functions->create_url($this->EE->uri->uri_string);
+				$this->basepath = ee()->functions->create_url(ee()->uri->uri_string);
 
 				if (preg_match("#^P(\d+)|/P(\d+)#", $this->query_string, $match))
 				{
 					$this->p_page = (isset($match[2])) ? $match[2] : $match[1];
-					$this->basepath = $this->EE->functions->remove_double_slashes(str_replace($match[0], '', $this->basepath));
+					$this->basepath = reduce_double_slashes(str_replace($match[0], '', $this->basepath));
 				}
 			}
 
@@ -545,19 +545,16 @@ class File {
 
 			if ($this->total_rows > $this->limit)
 			{
-				$this->EE->load->library('pagination');
+				ee()->load->library('pagination');
 
-				if (strpos($this->basepath, SELF) === FALSE && $this->EE->config->item('site_index') != '')
+				if (strpos($this->basepath, SELF) === FALSE && ee()->config->item('site_index') != '')
 				{
 					$this->basepath .= SELF;
 				}
 
-				if ($this->EE->TMPL->fetch_param('paginate_base'))
+				if (ee()->TMPL->fetch_param('paginate_base'))
 				{
-					// Load the string helper
-					$this->EE->load->helper('string');
-
-					$this->basepath = $this->EE->functions->create_url(trim_slashes($this->EE->TMPL->fetch_param('paginate_base')));
+					$this->basepath = ee()->functions->create_url(trim_slashes(ee()->TMPL->fetch_param('paginate_base')));
 				}
 				
 				$config['base_url']		= $this->basepath;
@@ -565,14 +562,14 @@ class File {
 				$config['total_rows'] 	= $this->total_rows;
 				$config['per_page']		= $this->limit;
 				$config['cur_page']		= $this->p_page;
-				$config['first_link'] 	= $this->EE->lang->line('pag_first_link');
-				$config['last_link'] 	= $this->EE->lang->line('pag_last_link');
+				$config['first_link'] 	= ee()->lang->line('pag_first_link');
+				$config['last_link'] 	= ee()->lang->line('pag_last_link');
 				
 				// Allows $config['cur_page'] to override
 				$config['uri_segment'] = 0;
 
-				$this->EE->pagination->initialize($config);
-				$this->pagination_links = $this->EE->pagination->create_links();				
+				ee()->pagination->initialize($config);
+				$this->pagination_links = ee()->pagination->create_links();				
 
 
 				if ((($this->total_pages * $this->limit) - $this->limit) > $this->p_page)
@@ -647,9 +644,9 @@ class File {
 				}
 			}
 			
-			$this->paginate_data = $this->EE->functions->prep_conditionals($this->paginate_data, array('total_pages' => $this->total_pages));
+			$this->paginate_data = ee()->functions->prep_conditionals($this->paginate_data, array('total_pages' => $this->total_pages));
 
-			$position = ( ! $this->EE->TMPL->fetch_param('paginate')) ? '' : $this->EE->TMPL->fetch_param('paginate');
+			$position = ( ! ee()->TMPL->fetch_param('paginate')) ? '' : ee()->TMPL->fetch_param('paginate');
 
 			switch ($position)
 			{
@@ -674,11 +671,11 @@ class File {
 	function fetch_categories()
 	{
 
-			 $this->EE->db->select('field_id, field_name')
+			 ee()->db->select('field_id, field_name')
 				->from('category_fields')
-				->where_in('site_id', $this->EE->TMPL->site_ids);
+				->where_in('site_id', ee()->TMPL->site_ids);
 				
-			$query = $this->EE->db->get();
+			$query = ee()->db->get();
 
 			if ($query->num_rows() > 0)
 			{
@@ -697,7 +694,7 @@ class File {
 		}
 
 
-		$sql = $this->EE->db->select('c.cat_name, c.cat_url_title, c.cat_id, c.cat_image, c.cat_description,
+		$sql = ee()->db->select('c.cat_name, c.cat_url_title, c.cat_id, c.cat_image, c.cat_description,
 		 							c.parent_id, p.cat_id, p.file_id, c.group_id, cg.field_html_formatting, fd.*')
 					->from('exp_categories AS c, exp_file_categories AS p')
 					->join('category_field_data AS fd', 'fd.cat_id = c.cat_id', 'LEFT')
@@ -707,7 +704,7 @@ class File {
 					->order_by('c.group_id, c.parent_id, c.cat_order');
 		
 
-		$query = $this->EE->db->get();
+		$query = ee()->db->get();
 
 		if ($query->num_rows() == 0)
 		{
@@ -794,19 +791,19 @@ class File {
 	  */
 	function fetch_valid_thumbs()
 	{
-		$this->EE->db->select('upload_location_id, short_name');
-		$this->EE->db->from('upload_prefs');
+		ee()->db->select('upload_location_id, short_name');
+		ee()->db->from('upload_prefs');
 
-		$this->EE->db->join('file_dimensions', 'upload_prefs.id = file_dimensions.upload_location_id');
+		ee()->db->join('file_dimensions', 'upload_prefs.id = file_dimensions.upload_location_id');
 		
-		$this->EE->db->where_in('upload_prefs.site_id', $this->EE->TMPL->site_ids);
+		ee()->db->where_in('upload_prefs.site_id', ee()->TMPL->site_ids);
 		
-		if (($directory_ids = $this->EE->TMPL->fetch_param('directory_id')) != FALSE)
+		if (($directory_ids = ee()->TMPL->fetch_param('directory_id')) != FALSE)
 		{		
-			$this->EE->functions->ar_andor_string($directory_ids, 'upload_location_id');
+			ee()->functions->ar_andor_string($directory_ids, 'upload_location_id');
 		}
 		
-		$sql = $this->EE->db->get();
+		$sql = ee()->db->get();
 		
 		if ($sql->num_rows() == 0)
 		{
@@ -833,13 +830,13 @@ class File {
 
 		$cat_chunk = array();
 
-		if (strpos($this->EE->TMPL->tagdata, LD.'/categories'.RD) !== FALSE)
+		if (strpos(ee()->TMPL->tagdata, LD.'/categories'.RD) !== FALSE)
 		{
-			if (preg_match_all("/".LD."categories(.*?)".RD."(.*?)".LD.'\/'.'categories'.RD."/s", $this->EE->TMPL->tagdata, $matches))
+			if (preg_match_all("/".LD."categories(.*?)".RD."(.*?)".LD.'\/'.'categories'.RD."/s", ee()->TMPL->tagdata, $matches))
 			{
 				for ($j = 0; $j < count($matches[0]); $j++)
 				{
-					$cat_chunk[] = array($matches[2][$j], $this->EE->functions->assign_parameters($matches[1][$j]), $matches[0][$j]);
+					$cat_chunk[] = array($matches[2][$j], ee()->functions->assign_parameters($matches[1][$j]), $matches[0][$j]);
 				}
 	  		}
 		}
@@ -851,8 +848,8 @@ class File {
 		
 		$default_variables = array('description', 'caption', 'title');
 
-		$this->EE->load->model('file_upload_preferences_model');
-		$upload_prefs = $this->EE->file_upload_preferences_model->get_file_upload_preferences(1, NULL, TRUE);
+		ee()->load->model('file_upload_preferences_model');
+		$upload_prefs = ee()->file_upload_preferences_model->get_file_upload_preferences(1, NULL, TRUE);
 
 		foreach ($this->query->result_array() as $count => $row)
 		{
@@ -861,8 +858,8 @@ class File {
 			$row['absolute_count']	= $this->p_page + $count + 1;
 
 			//  More Variables, Mostly for Conditionals
-			$row['logged_in'] 		= ($this->EE->session->userdata('member_id') == 0) ? 'FALSE' : 'TRUE';
-			$row['logged_out'] 		= ($this->EE->session->userdata('member_id') != 0) ? 'FALSE' : 'TRUE';
+			$row['logged_in'] 		= (ee()->session->userdata('member_id') == 0) ? 'FALSE' : 'TRUE';
+			$row['logged_out'] 		= (ee()->session->userdata('member_id') != 0) ? 'FALSE' : 'TRUE';
 			$row['entry_date']		= $row['upload_date'];
 			$row['edit_date']		= $row['modified_date'];
 			$row['directory_id']	= $row['id'];
@@ -876,10 +873,10 @@ class File {
 			$row['id_path'] = array('/'.$row['file_id'], array('path_variable' => TRUE));
 
 			// typography on title?
-			$row['title']			= $this->EE->typography->format_characters($row['title']);
+			$row['title']			= ee()->typography->format_characters($row['title']);
 			
 			// typography on caption
-			$this->EE->typography->parse_type($row['description'],
+			ee()->typography->parse_type($row['description'],
 				array(
 					'text_format'	=> 'xhtml',
 					'html_format'	=> 'safe',
@@ -932,7 +929,7 @@ class File {
 			$parse_data[] = $row;
 		}
 		
-		$this->return_data = $this->EE->TMPL->parse_variables( $this->EE->TMPL->tagdata, $parse_data);		
+		$this->return_data = ee()->TMPL->parse_variables( ee()->TMPL->tagdata, $parse_data);		
 		
 	}
 	
@@ -958,7 +955,7 @@ class File {
 	 */
 	function get_file_sizes($file_path)
 	{	
-		$this->EE->load->helper('file');
+		ee()->load->helper('file');
 		$filedata = array('height' => '', 'width' => '');
 		
 		$filedata['is_image'] = $this->is_viewable_image($file_path);
@@ -993,7 +990,7 @@ class File {
 							'pagination' 		=> TRUE,
 							);
 
-		if ($disable = $this->EE->TMPL->fetch_param('disable'))
+		if ($disable = ee()->TMPL->fetch_param('disable'))
 		{
 			if (strpos($disable, '|') !== FALSE)
 			{

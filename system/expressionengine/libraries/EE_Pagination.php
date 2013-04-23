@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.4
@@ -31,6 +31,11 @@ class EE_Pagination extends CI_Pagination {
 		$this->EE =& get_instance();
 		parent::__construct();
 	}
+
+	public function create($classname)
+	{
+		return new Pagination_object($classname);
+	}
 	
 }
 
@@ -55,12 +60,14 @@ class Pagination_object {
 	public $cfields				= array();
 	public $type				= '';
 	public $dynamic_sql			= TRUE;
+	public $position			= '';
+	public $pagination_marker = "pagination_marker";
 	
 	public function __construct($classname)
 	{
 		$this->type = $classname;
 		$this->EE =& get_instance();
-		$this->EE->load->library('pagination');
+		ee()->load->library('pagination');
 	}
 	
 	// ------------------------------------------------------------------------
@@ -79,18 +86,18 @@ class Pagination_object {
 	function get_template()
 	{
 		// Quick check to see if {paginate} even exists
-		if (strpos($this->EE->TMPL->tagdata, LD.'paginate'.RD) === FALSE) return;
+		if (strpos(ee()->TMPL->tagdata, LD.'paginate'.RD) === FALSE) return;
 		
-		if (preg_match("/".LD."paginate".RD."(.+?)".LD.'\/'."paginate".RD."/s", $this->EE->TMPL->tagdata, $paginate_match))
+		if (preg_match("/".LD."paginate".RD."(.+?)".LD.'\/'."paginate".RD."/s", ee()->TMPL->tagdata, $paginate_match))
 		{
-			if ($this->EE->TMPL->fetch_param('paginate_type') == 'field')
+			if (ee()->TMPL->fetch_param('paginate_type') == 'field')
 			{
 				// If we're supposed to paginate over fields, check to see if
 				// {multi_field="..."} exists. If it does capture the conetents
 				// and flag this as field_pagination.
-				if (preg_match("/".LD."multi_field\=[\"'](.+?)[\"']".RD."/s", $this->EE->TMPL->tagdata, $multi_field_match))
+				if (preg_match("/".LD."multi_field\=[\"'](.+?)[\"']".RD."/s", ee()->TMPL->tagdata, $multi_field_match))
 				{
-					$this->multi_fields		= $this->EE->functions->fetch_simple_conditions($multi_field_match[1]);
+					$this->multi_fields		= ee()->functions->fetch_simple_conditions($multi_field_match[1]);
 					$this->field_pagination	= TRUE;
 				}
 			}
@@ -101,10 +108,10 @@ class Pagination_object {
 			//  - Developers, if you want to modify the $this object remember
 			//	to use a reference on function call.
 			//
-				if ($this->EE->extensions->active_hook('channel_module_fetch_pagination_data') === TRUE)
+				if (ee()->extensions->active_hook('channel_module_fetch_pagination_data') === TRUE)
 				{
-					$edata = $this->EE->extensions->universal_call('channel_module_fetch_pagination_data', $this);
-					if ($this->EE->extensions->end_script === TRUE) return;
+					ee()->extensions->universal_call('channel_module_fetch_pagination_data', $this);
+					if (ee()->extensions->end_script === TRUE) return;
 				}
 			//
 			// -------------------------------------------
@@ -114,12 +121,18 @@ class Pagination_object {
 			$this->paginate		= TRUE;
 			$this->template_data	= $paginate_match[1];
 			
+			// Determine if pagination needs to go at the top and/or bottom, or inline
+			$this->position = ee()->TMPL->fetch_param('paginate');
+			
+			// Create temporary marker for inline position
+			$replace_tag = ($this->position == 'inline') ? LD.$this->pagination_marker.RD : '';
+			
 			// Remove pagination tags from template since we'll just 
 			// append/prepend it later
-			$this->EE->TMPL->tagdata = preg_replace(
+			ee()->TMPL->tagdata = preg_replace(
 				"/".LD."paginate".RD.".+?".LD.'\/'."paginate".RD."/s",
-				"",
-				$this->EE->TMPL->tagdata
+				$replace_tag,
+				ee()->TMPL->tagdata
 			);
 		}
 	}
@@ -149,10 +162,10 @@ class Pagination_object {
 		//  - Could be used to expand the kind of pagination available
 		//  - Paginate via field length, for example
 		//
-			if ($this->EE->extensions->active_hook('channel_module_create_pagination') === TRUE)
+			if (ee()->extensions->active_hook('channel_module_create_pagination') === TRUE)
 			{
-				$edata = $this->EE->extensions->universal_call('channel_module_create_pagination', $this, $count);
-				if ($this->EE->extensions->end_script === TRUE) return;
+				ee()->extensions->universal_call('channel_module_create_pagination', $this, $count);
+				if (ee()->extensions->end_script === TRUE) return;
 			}
 		//
 		// -------------------------------------------
@@ -162,25 +175,25 @@ class Pagination_object {
 		{
 			// If template_group and template are being specified in the 
 			// index.php and there's no other URI string, specify the basepath
-			if (($this->EE->uri->uri_string == '' OR $this->EE->uri->uri_string == '/') 
-				&& $this->EE->config->item('template_group') != '' 
-				&& $this->EE->config->item('template') != '')
+			if ((ee()->uri->uri_string == '' OR ee()->uri->uri_string == '/') 
+				&& ee()->config->item('template_group') != '' 
+				&& ee()->config->item('template') != '')
 			{
-				$this->basepath = $this->EE->functions->create_url(
-					$this->EE->config->slash_item('template_group').'/'.$this->EE->config->item('template')
+				$this->basepath = ee()->functions->create_url(
+					ee()->config->slash_item('template_group').'/'.ee()->config->item('template')
 				);
 			}
 			
 			// If basepath is still nothing, create the url from the uri_string
 			if ($this->basepath == '')
 			{
-				$this->basepath = $this->EE->functions->create_url($this->EE->uri->uri_string);
-				$query_string = ($this->EE->uri->page_query_string != '') ? $this->EE->uri->page_query_string : $this->EE->uri->query_string;
+				$this->basepath = ee()->functions->create_url(ee()->uri->uri_string);
+				$query_string = (ee()->uri->page_query_string != '') ? ee()->uri->page_query_string : ee()->uri->query_string;
 				
 				if (preg_match("#^P(\d+)|/P(\d+)#", $query_string, $match))
 				{
 					$this->offset = (isset($match[2])) ? $match[2] : $match[1];
-					$this->basepath = $this->EE->functions->remove_double_slashes(
+					$this->basepath = reduce_double_slashes(
 						str_replace($match[0], '', $this->basepath)
 					);
 				}
@@ -192,7 +205,7 @@ class Pagination_object {
 				// If we're not displaying by something, then we'll need 
 				// something to paginate, otherwise if we're displaying by
 				// something (week, day) it's okay for it to be empty
-				if ($this->type === "Channel" AND $this->EE->TMPL->fetch_param('display_by') == '')
+				if ($this->type === "Channel" AND ee()->TMPL->fetch_param('display_by') == '')
 				{
 					// If we're doing standard pagination and not using 
 					// display_by, clear out the query and get out of here
@@ -216,23 +229,23 @@ class Pagination_object {
 					$cat_limit = FALSE;
 					if (
 						(
-							in_array($this->EE->config->item("reserved_category_word"), explode("/", $this->EE->uri->uri_string)) 
-							OR preg_match("#(^|\/)C(\d+)#", $this->EE->uri->uri_string, $match)
+							in_array(ee()->config->item("reserved_category_word"), explode("/", ee()->uri->uri_string)) 
+							OR preg_match("#(^|\/)C(\d+)#", ee()->uri->uri_string, $match)
 						)
-						AND $this->EE->TMPL->fetch_param('dynamic') != 'no'
-						AND $this->EE->TMPL->fetch_param('channel')
+						AND ee()->TMPL->fetch_param('dynamic') != 'no'
+						AND ee()->TMPL->fetch_param('channel')
 					)
 					{
 						$cat_limit = TRUE;
 					}
 
-					if ($cat_limit AND is_numeric($this->EE->TMPL->fetch_param('cat_limit')))
+					if ($cat_limit AND is_numeric(ee()->TMPL->fetch_param('cat_limit')))
 					{
-						$this->per_page = $this->EE->TMPL->fetch_param('cat_limit');
+						$this->per_page = ee()->TMPL->fetch_param('cat_limit');
 					}
 					else
 					{
-						$this->per_page  = ( ! is_numeric($this->EE->TMPL->fetch_param('limit')))  ? '100' : $this->EE->TMPL->fetch_param('limit');
+						$this->per_page  = ( ! is_numeric(ee()->TMPL->fetch_param('limit')))  ? '100' : ee()->TMPL->fetch_param('limit');
 					}
 				}
 				
@@ -298,8 +311,8 @@ class Pagination_object {
 
 				if (isset($m_fields[$this->offset]))
 				{
-					$this->EE->TMPL->tagdata = preg_replace("/".LD."multi_field\=[\"'].+?[\"']".RD."/s", LD.$m_fields[$this->offset].RD, $this->EE->TMPL->tagdata);
-					$this->EE->TMPL->var_single[$m_fields[$this->offset]] = $m_fields[$this->offset];
+					ee()->TMPL->tagdata = preg_replace("/".LD."multi_field\=[\"'].+?[\"']".RD."/s", LD.$m_fields[$this->offset].RD, ee()->TMPL->tagdata);
+					ee()->TMPL->var_single[$m_fields[$this->offset]] = $m_fields[$this->offset];
 				}
 			}
 
@@ -315,18 +328,16 @@ class Pagination_object {
 			// Last check to make sure we actually need to paginate
 			if ($this->total_rows > $this->per_page)
 			{
-				if (strpos($this->basepath, SELF) === FALSE && $this->EE->config->item('site_index') != '')
+				if (strpos($this->basepath, SELF) === FALSE && ee()->config->item('site_index') != '')
 				{
 					$this->basepath .= SELF;
 				}
 				
 				// Check to see if a paginate_base was provided
-				if ($this->EE->TMPL->fetch_param('paginate_base'))
+				if (ee()->TMPL->fetch_param('paginate_base'))
 				{
-					$this->EE->load->helper('string');
-
-					$this->basepath = $this->EE->functions->create_url(
-						trim_slashes($this->EE->TMPL->fetch_param('paginate_base'))
+					$this->basepath = ee()->functions->create_url(
+						trim_slashes(ee()->TMPL->fetch_param('paginate_base'))
 					);
 				}
 				
@@ -341,10 +352,10 @@ class Pagination_object {
 				$config['last_link'] 	= lang('pag_last_link');
 				$config['uri_segment']	= 0; // Allows $config['cur_page'] to override
 
-				$this->EE->pagination->initialize($config);
-				$this->page_links = $this->EE->pagination->create_links();
-				$this->EE->pagination->initialize($config); // Re-initialize to reset config
-				$this->page_array = $this->EE->pagination->create_link_array();
+				ee()->pagination->initialize($config);
+				$this->page_links = ee()->pagination->create_links();
+				ee()->pagination->initialize($config); // Re-initialize to reset config
+				$this->page_array = ee()->pagination->create_link_array();
 
 				// If a page_next should exist, create it
 				if ((($this->total_pages * $this->per_page) - $this->per_page) > $this->offset)
@@ -416,7 +427,7 @@ class Pagination_object {
 			$parse_array['total_pages']		= $this->total_pages;
 			
 			// Parse current_page and total_pages
-			$this->template_data = $this->EE->TMPL->parse_variables(
+			$this->template_data = ee()->TMPL->parse_variables(
 				$this->template_data,
 				array($parse_array),
 				FALSE // Disable backspace parameter so pagination markup is protected
@@ -431,17 +442,14 @@ class Pagination_object {
 			// ----------------------------------------------------------------
 			
 			// Parse if total_pages conditionals
-			$this->template_data = $this->EE->functions->prep_conditionals(
+			$this->template_data = ee()->functions->prep_conditionals(
 				$this->template_data, 
 				array('total_pages' => $this->total_pages)
 			);
 			
 			// ----------------------------------------------------------------
 			
-			// Determine if pagination needs to go at the top and/or bottom
-			$position = ( ! $this->EE->TMPL->fetch_param('paginate')) ? '' : $this->EE->TMPL->fetch_param('paginate');
-			
-			switch ($position)
+			switch ($this->position)
 			{
 				case "top":
 					return $this->template_data.$return_data;
@@ -449,6 +457,15 @@ class Pagination_object {
 				case "both":
 					return $this->template_data.$return_data.$this->template_data;
 					break;
+				case "inline":
+					return ee()->TMPL->swap_var_single(
+						$this->pagination_marker,
+						$this->template_data,
+						$return_data
+					);
+					break;
+    			return $return_data;
+    			break;
 				case "bottom":
 				default:
 					return $return_data.$this->template_data;

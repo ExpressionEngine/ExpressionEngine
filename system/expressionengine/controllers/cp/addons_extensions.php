@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -22,7 +22,7 @@
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Addons_extensions extends CI_Controller {
+class Addons_extensions extends CP_Controller {
 
 	/**
 	 * Constructor
@@ -55,14 +55,12 @@ class Addons_extensions extends CI_Controller {
 		$this->load->library('extensions');
 		$this->load->library('table');
 
-		$this->cp->set_variable('cp_page_title', lang('extensions'));
+		$this->view->cp_page_title = lang('extensions');
 		$this->cp->set_breadcrumb(BASE.AMP.'C=addons', lang('addons'));
 
 		$this->jquery->tablesorter('.mainTable', '{
 			widgets: ["zebra"]
 		}');
-		
-		$this->javascript->compile();
 
 		$this->load->model('addons_model');
 
@@ -175,7 +173,7 @@ class Addons_extensions extends CI_Controller {
 		        $extensions_toggle => BASE.AMP.'C=addons_extensions'.AMP.'M=toggle_extension_confirm'
 		    ));
 
-		$this->load->view('addons/extensions', $vars);
+		$this->cp->render('addons/extensions', $vars);
 	}
 	
 	// --------------------------------------------------------------------
@@ -199,15 +197,14 @@ class Addons_extensions extends CI_Controller {
 		$vars['form_hidden'] = array('which' => 'all');
 		$vars['message'] = lang($message);
 
-		$this->cp->set_variable('cp_page_title', lang($message));
+		$this->view->cp_page_title = lang($message);
 		
-		$this->cp->set_variable('cp_breadcrumbs', array(
+		$this->view->cp_breadcrumbs = array(
 			BASE.AMP.'C=addons' => lang('addons'),
 			BASE.AMP.'C=addons_extensions'=> lang('extensions')
-		));
+		);
 		
-		$this->javascript->compile();
-		$this->load->view('addons/toggle_confirm', $vars);
+		$this->cp->render('addons/toggle_confirm', $vars);
 	}
 	
 	// --------------------------------------------------------------------
@@ -289,7 +286,7 @@ class Addons_extensions extends CI_Controller {
 		$this->lang->loadfile('admin');
 		$this->load->library('table');
 				
-		$this->cp->set_variable('cp_page_title', lang('extension_settings'));
+		$this->view->cp_page_title = lang('extension_settings');
 		$this->cp->set_breadcrumb(BASE.AMP.'C=addons_extensions', lang('extensions'));
 		
 		$vars['message'] = $message;
@@ -309,9 +306,6 @@ class Addons_extensions extends CI_Controller {
 		
 		if ($query->num_rows() > 0 && $query->row('settings')  != '')
 		{
-			// Load the string helper
-			$this->load->helper('string');
-
 			$current = strip_slashes(unserialize($query->row('settings') ));
 		}
 		
@@ -389,8 +383,8 @@ class Addons_extensions extends CI_Controller {
 
 
 			// load it up, kapowpow!
-			$this->javascript->compile();
-			$this->load->view('addons/extensions_settings_custom', $vars);
+			$this->view->cp_heading = lang('extension_settings').': '.$name;
+			$this->cp->render('addons/extensions_settings_custom', $vars);
 			return;
 		}
 
@@ -482,11 +476,9 @@ class Addons_extensions extends CI_Controller {
 			$vars['fields'][$key] = array('type' => $options[0], 'value' => $details, 'subtext' => $sub, 'selected' => $selected);
 		}
 		
-		$vars['hidden'] = array('file' => $vars['file']);
-
-		$this->javascript->compile();
-
-		$this->load->view('addons/extensions_settings', $vars);
+		$this->view->hidden = array('file' => $vars['file']);
+		$this->view->cp_heading = lang('extension_settings').': '.$name;
+		$this->cp->render('addons/extensions_settings', $vars);
 	}
 	
 	// --------------------------------------------------------------------
@@ -512,7 +504,7 @@ class Addons_extensions extends CI_Controller {
 
 		$this->lang->loadfile('admin');
 		
-		$this->cp->set_variable('cp_page_title', lang('extension_settings'));
+		$this->view->cp_page_title = lang('extension_settings');
 						
 		$vars['file'] = $this->input->get_post('file');
 		$class_name = ucfirst($vars['file']).'_ext';
@@ -522,6 +514,7 @@ class Addons_extensions extends CI_Controller {
 		/** -----------------------------*/
 		
 		$name = strtolower($vars['file']);
+		$this->addons->get_files('extensions');
 		$ext_path = $this->addons->_packages[$name]['extension']['path'];
 		
 

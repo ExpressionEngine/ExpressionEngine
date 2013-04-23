@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -22,7 +22,7 @@
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Search extends CI_Controller {
+class Search extends CP_Controller {
 
 	/**
 	 * Constructor
@@ -49,7 +49,7 @@ class Search extends CI_Controller {
 		$this->load->helper('search');
 		
 		$vars['cp_page_title'] = lang('search_results');
-		$this->cp->set_variable('cp_page_title', $vars['cp_page_title']);
+		$this->view->cp_page_title = $vars['cp_page_title'];
 		
 		// Saved search
 		if ($search = $this->input->get('saved'))
@@ -90,8 +90,7 @@ class Search extends CI_Controller {
 			exit;
 		}
 		
-		$this->javascript->compile();
-		$this->load->view('search/results', $vars);
+		$this->cp->render('search/results', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -117,12 +116,12 @@ class Search extends CI_Controller {
 		if ( ! $flag)
 		{
 			$vars['cp_page_title'] = 'Rebuilding Index';
-			$this->cp->set_variable('cp_page_title', $vars['cp_page_title']);
+			$this->view->cp_page_title = $vars['cp_page_title'];
 			
 			// Meta refresh to start the process
 			$meta = '<meta http-equiv="refresh" content="1;url='.BASE.AMP.'C=search'.AMP.'M=build_index'.AMP.'language='.$language.AMP.'working=y'.$saved.'" />';
 			$this->cp->add_to_head($meta);
-			$this->load->view('search/rebuild', $vars);
+			$this->cp->render('search/rebuild', $vars);
 		}
 		elseif ($flag == 'y')
 		{

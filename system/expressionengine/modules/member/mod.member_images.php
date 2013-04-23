@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -31,7 +31,7 @@ class Member_images extends Member {
 	public function edit_signature()
 	{
 		// Are signatures allowed?
-		if ($this->EE->config->item('allow_signatures') == 'n')
+		if (ee()->config->item('allow_signatures') == 'n')
 		{
 			return $this->_trigger_error('edit_signature', 'signatures_not_allowed');
 		}
@@ -39,18 +39,18 @@ class Member_images extends Member {
 		// Create the HTML formatting buttons
 		$buttons = '';
 
-		$this->EE->load->library('html_buttons');
+		ee()->load->library('html_buttons');
 
-		$this->EE->html_buttons->allow_img = ($this->EE->config->item('sig_allow_img_hotlink') == 'y') ? TRUE : FALSE;
-		$buttons = $this->EE->html_buttons->create_buttons();
+		ee()->html_buttons->allow_img = (ee()->config->item('sig_allow_img_hotlink') == 'y') ? TRUE : FALSE;
+		$buttons = ee()->html_buttons->create_buttons();
 
-		$query = $this->EE->db->select("signature, sig_img_filename, sig_img_width, sig_img_height")
-							  ->where('member_id', (int) $this->EE->session->userdata('member_id'))
+		$query = ee()->db->select("signature, sig_img_filename, sig_img_width, sig_img_height")
+							  ->where('member_id', (int) ee()->session->userdata('member_id'))
 							  ->get('members');
 
 		$template = $this->_load_element('signature_form');
 
-		if ($this->EE->config->item('sig_allow_img_upload') == 'y')
+		if (ee()->config->item('sig_allow_img_upload') == 'y')
 		{
 			$template = $this->_allow_if('upload_allowed', $template);
 			$template = $this->_deny_if('upload_not_allowed', $template);
@@ -60,7 +60,7 @@ class Member_images extends Member {
 			$template = $this->_allow_if('upload_not_allowed', $template);
 			$template = $this->_deny_if('upload_allowed', $template);
 		}
-		if ($query->row('sig_img_filename')  == '' OR $this->EE->config->item('sig_allow_img_upload') == 'n')
+		if ($query->row('sig_img_filename')  == '' OR ee()->config->item('sig_allow_img_upload') == 'n')
 		{
 			$template = $this->_deny_if('image', $template);
 			$template = $this->_allow_if('no_image', $template);
@@ -71,9 +71,9 @@ class Member_images extends Member {
 			$template = $this->_deny_if('no_image', $template);
 		}
 
-		$max_kb = ($this->EE->config->item('sig_img_max_kb') == '' OR $this->EE->config->item('sig_img_max_kb') == 0) ? 50 : $this->EE->config->item('sig_img_max_kb');
-		$max_w  = ($this->EE->config->item('sig_img_max_width') == '' OR $this->EE->config->item('sig_img_max_width') == 0) ? 100 : $this->EE->config->item('sig_img_max_width');
-		$max_h  = ($this->EE->config->item('sig_img_max_height') == '' OR $this->EE->config->item('sig_img_max_height') == 0) ? 100 : $this->EE->config->item('sig_img_max_height');
+		$max_kb = (ee()->config->item('sig_img_max_kb') == '' OR ee()->config->item('sig_img_max_kb') == 0) ? 50 : ee()->config->item('sig_img_max_kb');
+		$max_w  = (ee()->config->item('sig_img_max_width') == '' OR ee()->config->item('sig_img_max_width') == 0) ? 100 : ee()->config->item('sig_img_max_width');
+		$max_h  = (ee()->config->item('sig_img_max_height') == '' OR ee()->config->item('sig_img_max_height') == 0) ? 100 : ee()->config->item('sig_img_max_height');
 		$max_size = str_replace('%x', $max_w, lang('max_image_size'));
 		$max_size = str_replace('%y', $max_h, $max_size);
 		$max_size .= ' - '.$max_kb.'KB';
@@ -86,13 +86,13 @@ class Member_images extends Member {
 
 		return $this->_var_swap($template,
 			array(
-					'form_declaration'			=> $this->EE->functions->form_declaration($data),
-					'path:signature_image'		=> 	$this->EE->config->slash_item('sig_img_url').$query->row('sig_img_filename') ,
+					'form_declaration'			=> ee()->functions->form_declaration($data),
+					'path:signature_image'		=> 	ee()->config->slash_item('sig_img_url').$query->row('sig_img_filename') ,
 					'signature_image_width'		=> 	$query->row('sig_img_width') ,
 					'signature_image_height'	=> 	$query->row('sig_img_height') ,
 					'signature'					=>	$query->row('signature') ,
 					'lang:max_image_size'		=>  $max_size,
-					'maxchars'					=> ($this->EE->config->item('sig_maxlength') == 0) ? 10000 : $this->EE->config->item('sig_maxlength'),
+					'maxchars'					=> (ee()->config->item('sig_maxlength') == 0) ? 10000 : ee()->config->item('sig_maxlength'),
 					'include:html_formatting_buttons' => $buttons,
 				 )
 			);
@@ -106,21 +106,21 @@ class Member_images extends Member {
 	public function update_signature()
 	{
 		// Are signatures allowed?
-		if ($this->EE->config->item('allow_signatures') == 'n')
+		if (ee()->config->item('allow_signatures') == 'n')
 		{
 			return $this->_trigger_error('edit_signature', 'signatures_not_allowed');
 		}
 
-		$_POST['body'] = $this->EE->db->escape_str($this->EE->security->xss_clean($_POST['body']));
+		$_POST['body'] = ee()->db->escape_str(ee()->security->xss_clean($_POST['body']));
 
-		$maxlength = ($this->EE->config->item('sig_maxlength') == 0) ? 10000 : $this->EE->config->item('sig_maxlength');
+		$maxlength = (ee()->config->item('sig_maxlength') == 0) ? 10000 : ee()->config->item('sig_maxlength');
 
 		if (strlen($_POST['body']) > $maxlength)
 		{
-			return $this->EE->output->show_user_error('submission', str_replace('%x', $maxlength, lang('sig_too_big')));
+			return ee()->output->show_user_error('submission', str_replace('%x', $maxlength, lang('sig_too_big')));
 		}
 
-		$this->EE->db->query("UPDATE exp_members SET signature = '".$_POST['body']."' WHERE member_id ='".$this->EE->session->userdata('member_id')."'");
+		ee()->db->query("UPDATE exp_members SET signature = '".$_POST['body']."' WHERE member_id ='".ee()->session->userdata('member_id')."'");
 
 		// Is there an image to upload or remove?
 		if ((isset($_FILES['userfile']) AND 
@@ -147,7 +147,7 @@ class Member_images extends Member {
 	public function edit_avatar()
 	{
 		// Are avatars enabled?
-		if ($this->EE->config->item('enable_avatars') == 'n')
+		if (ee()->config->item('enable_avatars') == 'n')
 		{
 			return $this->_trigger_error('edit_avatar', 'avatars_not_enabled');
 		}
@@ -156,8 +156,8 @@ class Member_images extends Member {
 		$template = $this->_load_element('edit_avatar');
 
 		// Does the current user have an avatar?
-		$query = $this->EE->db->select("avatar_filename, avatar_width, avatar_height")
-							  ->where('member_id', (int) $this->EE->session->userdata('member_id'))
+		$query = ee()->db->select("avatar_filename, avatar_width, avatar_height")
+							  ->where('member_id', (int) ee()->session->userdata('member_id'))
 							  ->get('members');
 
 		if ($query->row('avatar_filename')  == '')
@@ -174,13 +174,13 @@ class Member_images extends Member {
 			$template = $this->_allow_if('avatar', $template);
 			$template = $this->_deny_if('no_avatar', $template);
 
-			$cur_avatar_url = $this->EE->config->slash_item('avatar_url').$query->row('avatar_filename') ;
+			$cur_avatar_url = ee()->config->slash_item('avatar_url').$query->row('avatar_filename') ;
 			$avatar_width 	= $query->row('avatar_width') ;
 			$avatar_height 	= $query->row('avatar_height') ;
 		}
 
 		// Can users upload their own images?
-		if ($this->EE->config->item('allow_avatar_uploads') == 'y')
+		if (ee()->config->item('allow_avatar_uploads') == 'y')
 		{
 			$template = $this->_allow_if('can_upload_avatar', $template);
 		}
@@ -195,7 +195,7 @@ class Member_images extends Member {
 		// then check each one to see if they contain images.  If so
 		// we will add it to the list
 
-		$avatar_path = $this->EE->config->slash_item('avatar_path');
+		$avatar_path = ee()->config->slash_item('avatar_path');
 
 		$extensions = array('.gif', '.jpg', '.jpeg', '.png');
 
@@ -255,9 +255,9 @@ class Member_images extends Member {
 		}
 
 		// Set the default image meta values
-		$max_kb = ($this->EE->config->item('avatar_max_kb') == '' OR $this->EE->config->item('avatar_max_kb') == 0) ? 50 : $this->EE->config->item('avatar_max_kb');
-		$max_w  = ($this->EE->config->item('avatar_max_width') == '' OR $this->EE->config->item('avatar_max_width') == 0) ? 100 : $this->EE->config->item('avatar_max_width');
-		$max_h  = ($this->EE->config->item('avatar_max_height') == '' OR $this->EE->config->item('avatar_max_height') == 0) ? 100 : $this->EE->config->item('avatar_max_height');
+		$max_kb = (ee()->config->item('avatar_max_kb') == '' OR ee()->config->item('avatar_max_kb') == 0) ? 50 : ee()->config->item('avatar_max_kb');
+		$max_w  = (ee()->config->item('avatar_max_width') == '' OR ee()->config->item('avatar_max_width') == 0) ? 100 : ee()->config->item('avatar_max_width');
+		$max_h  = (ee()->config->item('avatar_max_height') == '' OR ee()->config->item('avatar_max_height') == 0) ? 100 : ee()->config->item('avatar_max_height');
 		$max_size = str_replace('%x', $max_w, lang('max_image_size'));
 		$max_size = str_replace('%y', $max_h, $max_size);
 		$max_size .= ' - '.$max_kb.'KB';
@@ -265,7 +265,7 @@ class Member_images extends Member {
 		// Finalize the template
 		return $this->_var_swap($template,
 			array(
-				'form_declaration'		=> $this->EE->functions->form_declaration(
+				'form_declaration'		=> ee()->functions->form_declaration(
 					array(
 						'action' 		=> $this->_member_path('upload_avatar'),
 						'enctype'		=> 'multi'
@@ -287,14 +287,14 @@ class Member_images extends Member {
 	public function browse_avatars()
 	{
 		// Are avatars enabled?
-		if ($this->EE->config->item('enable_avatars') == 'n')
+		if (ee()->config->item('enable_avatars') == 'n')
 		{
 			return $this->_trigger_error('edit_avatar', 'avatars_not_enabled');
 		}
 
 		// Define the paths and get the images
-		$avatar_path = $this->EE->config->slash_item('avatar_path').$this->EE->security->sanitize_filename($this->cur_id).'/';
-		$avatar_url  = $this->EE->config->slash_item('avatar_url').$this->EE->security->sanitize_filename($this->cur_id).'/';
+		$avatar_path = ee()->config->slash_item('avatar_path').ee()->security->sanitize_filename($this->cur_id).'/';
+		$avatar_url  = ee()->config->slash_item('avatar_url').ee()->security->sanitize_filename($this->cur_id).'/';
 
 		$avatars = $this->_get_avatars($avatar_path);
 
@@ -323,7 +323,7 @@ class Member_images extends Member {
 		{
 			$avatars = array_slice($avatars, $rownum, $perpage);
 
-			$this->EE->load->library('pagination');
+			ee()->load->library('pagination');
 
 			$config['base_url']		= $base_url;
 			$config['total_rows'] 	= $total_rows;
@@ -332,8 +332,8 @@ class Member_images extends Member {
 			$config['first_link'] 	= lang('pag_first_link');
 			$config['last_link'] 	= lang('pag_last_link');
 				
-			$this->EE->pagination->initialize($config);
-			$pagination = $this->EE->pagination->create_links();			
+			ee()->pagination->initialize($config);
+			$pagination = ee()->pagination->create_links();			
 
 			// We add this for use later
 
@@ -392,7 +392,7 @@ class Member_images extends Member {
 
 		return $this->_var_swap($template,
 			array(
-			'form_declaration'		=> $this->EE->functions->form_declaration(
+			'form_declaration'		=> ee()->functions->form_declaration(
 				array(
 					'action' 		=> $this->_member_path('select_avatar'),
 					'hidden_fields'	=> array('referrer' => $base_url, 'folder' => $this->cur_id)
@@ -413,21 +413,21 @@ class Member_images extends Member {
 	public function select_avatar()
 	{
 		// Are avatars enabled?
-		if ($this->EE->config->item('enable_avatars') == 'n')
+		if (ee()->config->item('enable_avatars') == 'n')
 		{
 			return $this->_trigger_error('edit_avatar', 'avatars_not_enabled');
 		}
 
-		if ($this->EE->input->get_post('avatar') === FALSE OR 
-			$this->EE->input->get_post('folder') === FALSE)
+		if (ee()->input->get_post('avatar') === FALSE OR 
+			ee()->input->get_post('folder') === FALSE)
 		{
-			return $this->EE->functions->redirect($this->EE->input->get_post('referrer'));
+			return ee()->functions->redirect(ee()->input->get_post('referrer'));
 		}
 
-		$folder	= $this->EE->security->sanitize_filename($this->EE->input->get_post('folder'));
-		$file	= $this->EE->security->sanitize_filename($this->EE->input->get_post('avatar'));
+		$folder	= ee()->security->sanitize_filename(ee()->input->get_post('folder'));
+		$file	= ee()->security->sanitize_filename(ee()->input->get_post('avatar'));
 		
-		$basepath 	= $this->EE->config->slash_item('avatar_path');
+		$basepath 	= ee()->config->slash_item('avatar_path');
 		$avatar		= $avatar	= $folder.'/'.$file;
 
 		$allowed = $this->_get_avatars($basepath.$folder);
@@ -448,9 +448,15 @@ class Member_images extends Member {
 		$height	= $vals['1'];
 
 		// Update DB
-		$this->EE->db->where('member_id', $this->EE->session->userdata('member_id'));
-		$this->EE->db->update('members', array('avatar_filename' => $avatar, 'avatar_width' => $width, 'avatar_height' => $height));
-
+		ee()->load->model('member_model');
+		ee()->member_model->update_member(
+			ee()->session->userdata('member_id'),
+			array(
+				'avatar_filename' => $avatar, 
+				'avatar_width' => $width, 
+				'avatar_height' => $height
+			)
+		);
 
 		return $this->_var_swap($this->_load_element('success'),
 								array(
@@ -532,9 +538,9 @@ class Member_images extends Member {
 	 */
 	function _upload_image($type = 'avatar')
 	{
-		$this->EE->load->library('members');
+		ee()->load->library('members');
 		
-		$upload = $this->EE->members->upload_member_images($type, $this->EE->session->userdata('member_id'));
+		$upload = ee()->members->upload_member_images($type, ee()->session->userdata('member_id'));
 
 		if (is_array($upload))
 		{
@@ -545,7 +551,7 @@ class Member_images extends Member {
 					$updated = $upload[2];
 					break;
 				case 'redirect':
-					return $this->EE->functions->redirect($this->_member_path($upload[1][0]));
+					return ee()->functions->redirect($this->_member_path($upload[1][0]));
 					break;
 				case 'var_swap':
 					return $this->_var_swap($this->_load_element($upload[1][0]), $upload[1][1]);
@@ -573,7 +579,7 @@ class Member_images extends Member {
 	public function edit_photo()
 	{
 		// Are photos enabled?
-		if ($this->EE->config->item('enable_photos') == 'n')
+		if (ee()->config->item('enable_photos') == 'n')
 		{
 			return $this->_trigger_error('edit_photo', 'photos_not_enabled');
 		}
@@ -582,8 +588,8 @@ class Member_images extends Member {
 		$template = $this->_load_element('edit_photo');
 
 		// Does the current user have a photo?
-		$query = $this->EE->db->select('photo_filename, photo_width, photo_height')
-							  ->where('member_id', (int) $this->EE->session->userdata('member_id'))
+		$query = ee()->db->select('photo_filename, photo_width, photo_height')
+							  ->where('member_id', (int) ee()->session->userdata('member_id'))
 							  ->get('members');
 
 		if ($query->row('photo_filename')  == '')
@@ -600,15 +606,15 @@ class Member_images extends Member {
 			$template = $this->_allow_if('photo', $template);
 			$template = $this->_deny_if('no_photo', $template);
 
-			$cur_photo_url = $this->EE->config->slash_item('photo_url').$query->row('photo_filename') ;
+			$cur_photo_url = ee()->config->slash_item('photo_url').$query->row('photo_filename') ;
 			$photo_width 	= $query->row('photo_width') ;
 			$photo_height 	= $query->row('photo_height') ;
 		}
 
 		// Set the default image meta values
-		$max_kb = ($this->EE->config->item('photo_max_kb') == '' OR $this->EE->config->item('photo_max_kb') == 0) ? 50 : $this->EE->config->item('photo_max_kb');
-		$max_w  = ($this->EE->config->item('photo_max_width') == '' OR $this->EE->config->item('photo_max_width') == 0) ? 100 : $this->EE->config->item('photo_max_width');
-		$max_h  = ($this->EE->config->item('photo_max_height') == '' OR $this->EE->config->item('photo_max_height') == 0) ? 100 : $this->EE->config->item('photo_max_height');
+		$max_kb = (ee()->config->item('photo_max_kb') == '' OR ee()->config->item('photo_max_kb') == 0) ? 50 : ee()->config->item('photo_max_kb');
+		$max_w  = (ee()->config->item('photo_max_width') == '' OR ee()->config->item('photo_max_width') == 0) ? 100 : ee()->config->item('photo_max_width');
+		$max_h  = (ee()->config->item('photo_max_height') == '' OR ee()->config->item('photo_max_height') == 0) ? 100 : ee()->config->item('photo_max_height');
 		$max_size = str_replace('%x', $max_w, lang('max_image_size'));
 		$max_size = str_replace('%y', $max_h, $max_size);
 		$max_size .= ' - '.$max_kb.'KB';
@@ -616,7 +622,7 @@ class Member_images extends Member {
 		// Finalize the template
 		return $this->_var_swap($template,
 				array(
-					'form_declaration'		=> $this->EE->functions->form_declaration(
+					'form_declaration'		=> ee()->functions->form_declaration(
 						array(
 							'action' 		=> $this->_member_path('upload_photo'),
 							'enctype'		=> 'multi'

@@ -9,7 +9,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -22,6 +22,21 @@ jQuery(document).ready(function () {
 	var $ = jQuery;
 
 	// Setup Global Ajax Events
+
+	// Ajax Errors can be hard to debug so we'll always add a simple
+	// error handler if none were specified.
+	$.ajaxPrefilter(function(options, originalOptions, jqXHR) {
+
+		if ( ! _.has(options, 'error'))
+		{
+			jqXHR.error(function(data) {
+				_.defer(function() {
+					throw [data.statusText, data.responseText];
+				});
+			});
+		}
+	});
+
 	// A 401 in combination with a url indicates a redirect, we use this
 	// on the login page to catch periodic ajax requests (e.g. autosave)
 
@@ -31,6 +46,8 @@ jQuery(document).ready(function () {
 		}
 	});
 
+	// call the input placeholder polyfill early so that we don't get
+	// weird flashes of content
 	if ( ! 'placeholder' in document.createElement('input')) 
 	{
 		EE.insert_placeholders();
@@ -439,13 +456,13 @@ EE.cp.deprecation_meaning = function()
 		var deprecation_meaning_modal = $('<div class="alert">' + EE.developer_log.deprecation_meaning + ' </div>');
 		
 		deprecation_meaning_modal.dialog({
-			height: 260,
+			height: 300,
 			modal: true,
 			title: EE.developer_log.dev_log_help,
 			width: 460
 		});
 	});
-}
+};
 
 EE.cp.zebra_tables = function(table) {
 	table = table || $('table');
@@ -460,4 +477,30 @@ EE.cp.zebra_tables = function(table) {
 		.filter(':even').addClass('even')
 		.end()
 		.filter(':odd').addClass('odd');
-}
+};
+
+
+
+// First step in deprecating scripts in add_to_head().
+// Next release the message will be more visible/annoying.
+
+(function() {
+	var SCRIPT_COUNT = 2, // global_js, jquery
+		scripts = $('head script');
+
+	// anything but jquery and global_js shouldn't be there.
+	if (scripts.length > SCRIPT_COUNT) {
+
+		var fn = console.groupCollapsed || console.log;
+		fn.call(console, 'Found third party scripts in <head> tag.');
+		console.log('Please use cp->add_to_foot() to add scripts. jQuery and the EE global will be moved down in a future release.');
+
+		scripts.slice(SCRIPT_COUNT).each(function() {
+			console.log(this.src && this.src || '[Inline Script]');
+		});
+
+		if (fn == console.groupCollapsed) {
+			console.groupEnd();
+		}
+	}
+})();

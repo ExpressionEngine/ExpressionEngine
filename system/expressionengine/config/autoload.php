@@ -39,7 +39,7 @@
 |	$autoload['libraries'] = array('database', 'session', 'xmlrpc');
 */
 
-$autoload['libraries'] = array('core');
+$autoload['libraries'] = array();
 
 
 /*
@@ -51,7 +51,7 @@ $autoload['libraries'] = array('core');
 |	$autoload['helper'] = array('url', 'file');
 */
 
-$autoload['helper'] = array('language');
+$autoload['helper'] = array('language', 'string');
 
 
 /*

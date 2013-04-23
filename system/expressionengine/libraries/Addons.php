@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -60,7 +60,7 @@ class EE_Addons {
 				
 		if ( ! is_array($this->_map))
 		{
-			$this->EE->load->helper('directory');
+			ee()->load->helper('directory');
 			
 			// Initialize the _map array so if no addons of a certain type
 			// are found, we can still return _map[$type] without errors
@@ -112,7 +112,7 @@ class EE_Addons {
 		
 		if ( ! in_array($type, $_fp_read))
 		{
-			$this->EE->load->helper('file');
+			ee()->load->helper('file');
 
 			$ext_len = strlen('.php');
 			
@@ -190,11 +190,11 @@ class EE_Addons {
    		$type = ($type == '') ? '' : $type.'/';
 
 		foreach ($map as $pkg_name => $files)
-    	{
-    		if ( ! is_array($files))
-    		{
-    			$files = array($files);
-    		}
+		{
+			if ( ! is_array($files))
+			{
+				$files = array($files);
+			}
 
 			foreach ($files as $file)
 			{
@@ -206,30 +206,48 @@ class EE_Addons {
 
 				foreach($type_ident as $addon_type => $ident)
 				{
-					if ($file == $ident.'.'.$pkg_name.'.php')
+					// Fieldtypes can have names that do not match the $pkg_name
+					$valid = ($ident === 'ft') ? preg_match('/^'.$ident.'\.(.*?)\.php$/', $file, $match) : ($file == $ident.'.'.$pkg_name.'.php');
+
+					if ($valid)
 					{
+						$name = ($ident === 'ft') ? $match[1] : $pkg_name;
+						
 						// Plugin classes don't have a suffix
-						$class = ($ident == 'pi') ? ucfirst($pkg_name) : ucfirst($pkg_name).'_'.$ident;
+						$class = ($ident == 'pi') ? ucfirst($name) : ucfirst($name).'_'.$ident;
 						$path = ($native) ? APPPATH.$type.$pkg_name.'/' : PATH_THIRD.$pkg_name.'/';
 						$author = ($native) ? 'native' : 'third_party';
 
-						$this->_map[$addon_type][$pkg_name] = array(
+						$this->_map[$addon_type][$name] = array(
 							'path'	=> $path,
 							'file'	=> $file,
-							'name'	=> ucwords(str_replace('_', ' ', $pkg_name)),
+							'name'	=> ucwords(str_replace('_', ' ', $name)),
 							'class'	=> $class,
 							'package' => $pkg_name,
 							'type' => $author
 						);
 
 						// Add cross-reference for package lookups - singular keys
-						$this->_packages[$pkg_name][$_plural_map[$addon_type]] =& $this->_map[$addon_type][$pkg_name];
+						if ($ident === 'ft')
+						{
+							// For fieldtypes, _packages is an array, since there can be multiple fieldtypes per package
+							if ( ! isset($this->_packages[$pkg_name][$_plural_map[$addon_type]]))
+							{
+								$this->_packages[$pkg_name][$_plural_map[$addon_type]] = array();
+							}
 
-    					break;
-    				}
-    			}
-    		}
-    	}			    
+							$this->_packages[$pkg_name][$_plural_map[$addon_type]][$name] =& $this->_map[$addon_type][$name];
+						}
+						else
+						{
+							$this->_packages[$pkg_name][$_plural_map[$addon_type]] =& $this->_map[$addon_type][$pkg_name];
+						}
+						
+						break;
+					}
+				}
+			}
+		}
 	}
 
 
@@ -253,11 +271,11 @@ class EE_Addons {
 		
 		$_installed[$type] = array();
 		
-		$this->EE->load->model('addons_model');
+		ee()->load->model('addons_model');
 		
 		if ($type == 'modules')
 		{
-			$query = $this->EE->addons_model->get_installed_modules();
+			$query = ee()->addons_model->get_installed_modules();
 			
 			if ($query->num_rows() > 0)
 			{
@@ -274,7 +292,7 @@ class EE_Addons {
 		}
 		elseif ($type == 'accessories')
 		{
-			$query = $this->EE->db->get('accessories');
+			$query = ee()->db->get('accessories');
 
 			if ($query->num_rows() > 0)
 			{
@@ -293,7 +311,7 @@ class EE_Addons {
 		}
 		elseif ($type == 'extensions')
 		{
-			$query = $this->EE->addons_model->get_installed_extensions();
+			$query = ee()->addons_model->get_installed_extensions();
 			
 			if ($query->num_rows() > 0)
 			{
@@ -312,7 +330,7 @@ class EE_Addons {
 		}
 		elseif ($type == 'fieldtypes')
 		{
-			$query = $this->EE->db->get('fieldtypes');
+			$query = ee()->db->get('fieldtypes');
 			
 			if ($query->num_rows() > 0)
 			{
@@ -331,7 +349,7 @@ class EE_Addons {
 		}
 		elseif ($type == 'rte_tools')
 		{
-			$query = $this->EE->db->get_where('rte_tools');
+			$query = ee()->db->get_where('rte_tools');
 			
 			if ($query->num_rows() > 0)
 			{

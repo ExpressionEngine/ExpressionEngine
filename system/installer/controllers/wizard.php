@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -24,9 +24,9 @@
  */
 class Wizard extends CI_Controller {
 
-	var $version			= '2.5.5';	// The version being installed
+	var $version			= '2.6.0';	// The version being installed
 	var $installed_version	= ''; 		// The version the user is currently running (assuming they are running EE)
-	var $minimum_php		= '5.1.6';	// Minimum version required to run EE
+	var $minimum_php		= '5.2.4';	// Minimum version required to run EE
 	var $schema				= NULL;		// This will contain the schema object with our queries	
 	var $languages			= array(); 	// Available languages the installer supports (set dynamically based on what is in the "languages" folder)
 	var $mylang				= 'english';// Set dynamically by the user when they run the installer
@@ -44,7 +44,7 @@ class Wizard extends CI_Controller {
 	var $content			= '';
 	var $title				= 'ExpressionEngine Installation and Update Wizard';
 	var $heading			= 'ExpressionEngine Installation and Update Wizard';
-	var $copyright			= 'Copyright 2003 - 2012 EllisLab, Inc. - All Rights Reserved';
+	var $copyright			= 'Copyright 2003 - 2013 EllisLab, Inc. - All Rights Reserved';
 	
 	var $now;
 	var $year;
@@ -107,7 +107,6 @@ class Wizard extends CI_Controller {
 		'deft_lang'				=> 'english',
 		'theme'					=> '01',
 		'server_timezone'		=> 'UTC',
-		'daylight_savings'		=> '',
 		'redirect_method'		=> 'redirect',
 		'upload_folder'			=> 'uploads/',
 		'image_path'			=> '',
@@ -196,9 +195,12 @@ class Wizard extends CI_Controller {
 		// Based on the users's choice we build the language into our URL string
 		// and use that info to load the desired language file on each page
 		
+		$this->load->library('logger');
+
 		$this->load->add_package_path(EE_APPPATH);
 		$this->_load_langauge();
 
+		$this->load->library('localize');
 		$this->load->library('cp');
 		
 		// Set the image URL				
@@ -233,6 +235,7 @@ class Wizard extends CI_Controller {
 		$this->year		= gmdate('Y', $this->now);
 		$this->month	= gmdate('m', $this->now);
 		$this->day		= gmdate('d', $this->now);	
+		
 	}
 
 	// --------------------------------------------------------------------
@@ -273,7 +276,7 @@ class Wizard extends CI_Controller {
 		{
 			show_error($this->lang->line('invalid_action'));
 		}
-
+		
 		// Call the action
 		$this->$action();		
 	}
@@ -298,7 +301,7 @@ class Wizard extends CI_Controller {
 		}
 
 		// Is the config file readable?
-		if ( ! @include($this->config->config_path))
+		if ( ! include($this->config->config_path))
 		{			
 			$this->_set_output('error', array('error' => $this->lang->line('unreadable_config')));
 			return FALSE;
@@ -312,7 +315,7 @@ class Wizard extends CI_Controller {
 		}
 
 		// Is the database.php file readable?
-		if ( ! @include($this->config->database_path))
+		if ( ! include($this->config->database_path))
 		{
 			$this->_set_output('error', array('error' => $this->lang->line('unreadable_database')));
 			return FALSE;
@@ -336,7 +339,7 @@ class Wizard extends CI_Controller {
 		// Prior to 2.0 the config array was named $conf.  This has changed to $config for 2.0
 		if (isset($conf))
 		{
-			$config = array_merge($config, $conf);
+			$config = $conf;
 		}
 		
 		// No config AND db arrays?  This means it's a first time install...hopefully. 
@@ -496,6 +499,8 @@ class Wizard extends CI_Controller {
 		// We will show the "you are running the most current version" template
 		if ($this->next_update === FALSE)
 		{
+			$this->_assign_install_values();
+			
 			$vars['installer_path'] = '/'.SYSDIR.'/installer';
 
 			// Set the path to the site and CP
@@ -515,6 +520,8 @@ class Wizard extends CI_Controller {
 
 			$vars['site_url'] = rtrim($this->userdata['site_url'], '/').'/'.$this->userdata['site_index'];
 			$vars['cp_url'] = $this->userdata['cp_url'];
+
+			$this->logger->updater("Update complete. Now running version {$this->version}.");
 
 			$this->_set_output('uptodate', $vars);
 			return FALSE;
@@ -562,7 +569,7 @@ class Wizard extends CI_Controller {
 		}
 
 		// Before moving on, let's load the update file to make sure it's readable
-		if ( ! @include(APPPATH.'updates/ud_'.$this->next_update.EXT))
+		if ( ! include(APPPATH.'updates/ud_'.$this->next_update.EXT))
 		{
 			$this->_set_output('error', array('error' => $this->lang->line('unreadable_files')));
 			return FALSE;
@@ -614,6 +621,7 @@ class Wizard extends CI_Controller {
 		$data['is_installed'] = $this->is_installed;
 
 		return $this->_set_output('optionselect', $data);
+
 	}
 	
 	// --------------------------------------------------------------------
@@ -648,6 +656,8 @@ class Wizard extends CI_Controller {
 			{
 				$data['action'] = $this->set_qstr('do_update');
 			}
+
+			$this->logger->updater("Preparing to update from {$this->installed_version} to {$this->version}. Awaiting acceptance of license terms.");
 		}
 		
 		$data['license'] = $this->_license_agreement();
@@ -684,7 +694,12 @@ class Wizard extends CI_Controller {
 		$template_module_vars = '';
 		$this->load->library('javascript');
 		
-		$this->userdata['extra_header'] = $this->_install_form_extra_header($this->javascript->generate_json($this->theme_required_modules, TRUE));
+		$this->userdata['extra_header'] = $this->_install_form_extra_header(json_encode($this->theme_required_modules));
+
+		$this->load->library('localize');
+
+		// Preload server timezone
+		$this->userdata['server_timezone'] = date_default_timezone_get();
 		
 		// Display the form and pass the userdata array to it	
 		$this->_set_output('install_form', $this->userdata);
@@ -942,7 +957,7 @@ PAPAYA;
 		
 			$this->userdata['errors'] = $str;
 
-			$this->userdata['extra_header'] = $this->_install_form_extra_header($this->javascript->generate_json($this->theme_required_modules, TRUE));
+			$this->userdata['extra_header'] = $this->_install_form_extra_header(json_encode($this->theme_required_modules));
 			
 			$this->_set_output('install_form', $this->userdata);
 			return FALSE;
@@ -1024,7 +1039,7 @@ PAPAYA;
 		
 		// Encrypt the password and unique ID
 		$this->userdata['unique_id'] = random_string('encrypt');
-		$this->userdata['password'] = do_hash($this->userdata['password']);
+		$this->userdata['password'] = sha1($this->userdata['password']);
 		
 		// --------------------------------------------------------------------
 		
@@ -1209,9 +1224,6 @@ PAPAYA;
 		$prefs = array(
 			'db_conntype'		=> array(
 				'persistent' => array('persistent', 'nonpersistent')
-			),
-			'daylight_savings'	=> array(
-				'y' => array('dst1', 'dst2')
 			)
 		);
 		
@@ -1310,6 +1322,9 @@ PAPAYA;
 				)
 			);
 		}
+			
+		// Clear any latent status messages still present in the PHP session
+		$this->progress->clear_state();
 		
 		// Set a liberal execution time limit, some of these
 		// updates are pretty big.
@@ -1318,6 +1333,10 @@ PAPAYA;
 		// Instantiate the updater class
 		$UD = new Updater;
 		$method = 'do_update';
+		
+		$this->load->library('smartforge');
+
+		$this->logger->updater("Updating to {$next_version}");
 		
 		if ($this->config->item('ud_next_step') != FALSE)
 		{
@@ -1331,7 +1350,6 @@ PAPAYA;
 		}
 
 		// is there a survey for this version?
-		/*
 		if (file_exists(APPPATH.'views/surveys/survey_'.$this->next_update.EXT))
 		{
 			$this->load->library('survey');
@@ -1341,21 +1359,21 @@ PAPAYA;
 			{
 				$this->load->helper('language');
 				$data = array(
-								'action_url'			=> $this->set_qstr('do_update&agree=yes'),
-								'participate_in_survey'	=> array(
-																	'name'		=> 'participate_in_survey',
-																	'id'		=> 'participate_in_survey',
-																	'value'		=> 'y',
-																	'checked'	=> TRUE
-																),
-								'ee_version'			=> $this->next_update
-							);
-		
+					'action_url'			=> $this->set_qstr('do_update&agree=yes'),
+					'participate_in_survey'	=> array(
+						'name'		=> 'participate_in_survey',
+						'id'		=> 'participate_in_survey',
+						'value'		=> 'y',
+						'checked'	=> TRUE
+					),
+					'ee_version'			=> $this->next_update
+				);
+
 				foreach ($this->survey->fetch_anon_server_data() as $key => $val)
 				{
-					if ($key == 'php_extensions')
+					if (in_array($key, array('php_extensions', 'addons')))
 					{
-						$val = implode(', ', unserialize($val));
+						$val = implode(', ', json_decode($val));
 					}
 
 					$data['anonymous_server_data'][$key] = $val;
@@ -1369,13 +1387,12 @@ PAPAYA;
 				// if any preprocessing needs to be done on the POST data, we do it here
 				if (method_exists($UD, 'pre_process_survey'))
 				{
-					$UD->pre_process_survey();					
+					$UD->pre_process_survey();
 				}
 
 				$this->survey->send_survey($this->next_update);
 			}
 		}
-		*/
 		
 		if (($status = $UD->{$method}()) === FALSE)
 		{
@@ -1465,7 +1482,7 @@ PAPAYA;
 	 */			
 	function _fetch_updates($current_version = 0)
 	{	
-		if ( ! $fp = @opendir(APPPATH.'updates/'))
+		if ( ! $fp = opendir(APPPATH.'updates/'))
 		{
 			return FALSE;
 		}
@@ -1717,7 +1734,7 @@ PAPAYA;
 	{
 		$modules = array();
 
-		if ($fp = @opendir(EE_APPPATH.'/modules/')) 
+		if ($fp = opendir(EE_APPPATH.'/modules/')) 
 		{
 			while (FALSE !== ($file = readdir($fp))) 
 			{
@@ -1786,7 +1803,7 @@ PAPAYA;
 	{						
 		$themes = array();
 
-		if ($fp = @opendir($this->theme_path)) 
+		if ($fp = opendir($this->theme_path)) 
 		{ 
 			while (false !== ($folder = readdir($fp))) 
 			{ 
@@ -1942,11 +1959,11 @@ PAPAYA;
 			'php'  => 'webpage',
 		);
 
-		if ($this->userdata['theme'] != '' && $this->userdata['theme'] != 'none' && ($fp = @opendir($this->theme_path.$this->userdata['theme'])))
+		if ($this->userdata['theme'] != '' && $this->userdata['theme'] != 'none' && ($fp = opendir($this->theme_path.$this->userdata['theme'])))
 		{
 			while (FALSE !== ($folder = readdir($fp))) 
 			{	
-				if (@is_dir($this->theme_path.$this->userdata['theme'].'/'.$folder) && substr($folder, -6) == '.group')
+				if (is_dir($this->theme_path.$this->userdata['theme'].'/'.$folder) && substr($folder, -6) == '.group')
 				{
 					++$i;
 					
@@ -1965,7 +1982,7 @@ PAPAYA;
 					
 					$templates = array('index.html' => 'index.html');  // Required
 					
-					if ($tgfp = @opendir($this->theme_path.$this->userdata['theme'].'/'.$folder))
+					if ($tgfp = opendir($this->theme_path.$this->userdata['theme'].'/'.$folder))
 					{
 						while (FALSE !== ($file = readdir($tgfp)))
 						{
@@ -2014,7 +2031,7 @@ PAPAYA;
 							'group_id'			=> $i,
 							'template_name'		=> $name,
 							'template_type'		=> $type,
-							'template_data'		=> @file_get_contents($this->theme_path.$this->userdata['theme'].'/'.$folder.'/'.$file),
+							'template_data'		=> file_get_contents($this->theme_path.$this->userdata['theme'].'/'.$folder.'/'.$file),
 							'edit_date'			=> $this->now,
 							'last_author_id'	=> 1
 						);
@@ -2108,7 +2125,7 @@ PAPAYA;
 					$vars = array();
 
 					// can't use get_filenames() since it doesn't read hidden files
-					if ($fp = @opendir($dir))
+					if ($fp = opendir($dir))
 					{
 						while (FALSE !== ($file = readdir($fp)))
 						{
@@ -2384,9 +2401,7 @@ PAPAYA;
 			'time_format'					=>	'us',
 			'server_timezone'				=>	$this->userdata['server_timezone'],
 			'server_offset'					=>	'',
-			'daylight_savings'				=>	$this->userdata['daylight_savings'],
 			'default_site_timezone'			=>	$this->userdata['server_timezone'],
-			'default_site_dst'				=>	$this->userdata['daylight_savings'],
 			'honor_entry_dst'				=>	'y',
 			'mail_protocol'					=>	'mail',
 			'smtp_server'					=>	'',
@@ -2444,7 +2459,7 @@ PAPAYA;
 			'prv_msg_html_format'			=> 'safe',
 			'prv_msg_auto_links'			=> 'y',
 			'prv_msg_max_chars'				=> '6000',
-			'strict_urls'					=>	'n',
+			'strict_urls'					=>	'y',
 			'site_404'						=>	'',
 			'save_tmpl_revisions'			=>	'n',
 			'max_tmpl_revisions'			=>	'5',
@@ -2540,9 +2555,7 @@ PAPAYA;
 			'time_format',
 			'server_timezone',
 			'server_offset',
-			'daylight_savings',
 			'default_site_timezone',
-			'default_site_dst',
 			'honor_entry_dst',
 			'mail_protocol',
 			'smtp_server',
@@ -2930,7 +2943,7 @@ PAPAYA;
 /* Location: ./system/expressionengine/config/database.php */';
 			 
 	
-		if ( ! $fp = @fopen($this->config->database_path, FOPEN_WRITE_CREATE_DESTRUCTIVE))
+		if ( ! $fp = fopen($this->config->database_path, FOPEN_WRITE_CREATE_DESTRUCTIVE))
 		{
 			return FALSE;
 		}                

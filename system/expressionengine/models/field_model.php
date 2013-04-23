@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -238,7 +238,7 @@ class Field_model extends CI_Model {
 			//  Get rid of any stray relationship data
 			if (count($rel_ids) > 0)
 			{
-				$this->db->where_in('rel_id', $rel_ids);
+				$this->db->where_in('relationship_id', $rel_ids);
 				$this->db->delete('relationships'); 
 			}
 		}

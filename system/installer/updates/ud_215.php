@@ -5,7 +5,7 @@
  *
  * @package     ExpressionEngine
  * @author      EllisLab Dev Team
- * @copyright   Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright   Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license     http://ellislab.com/expressionengine/user-guide/license.html
  * @link        http://ellislab.com
  * @since       Version 2.0
@@ -45,33 +45,42 @@ class Updater {
 	 */
 	public function do_update()
 	{
-		$this->EE->load->dbforge();
+		ee()->load->dbforge();
+
+		$steps = '';
 		
 		// Kill blogger
-		if ($this->EE->db->table_exists('blogger'))
+		if (ee()->db->table_exists('blogger'))
 		{
-			$this->_transfer_blogger();
-			$this->_drop_blogger();
+			$steps[] = '_transfer_blogger';
+			$steps[] = '_drop_blogger';
 			// remove blogger
 		}
 		
 		// Add batch dir preference to exp_upload_prefs
-		$this->_do_upload_pref_update();
+		$steps[] = '_do_upload_pref_update';
 		
 		// Update category group
-		$this->_do_cat_group_update();
+		$steps[] = '_do_cat_group_update';
 		
 		// Build file-related tables
-		$this->_do_build_file_tables();
+		$steps[] = '_do_build_file_tables';
 		
 		// Permission changes
-		$this->_do_permissions_update();
+		$steps[] = '_do_permissions_update';
 		
 		// Move field_content_type to the channel_fields settings array
-		$this->_do_custom_field_update();		
+		$steps[] = '_do_custom_field_update';		
 		
 		// Add a MySQL index or three to help performance
-		$this->_do_add_indexes();
+		$steps[] = '_do_add_indexes';
+
+		$steps = new ProgressIterator($steps);
+
+		foreach ($steps as $k => $v)
+		{
+			$this->$v();
+		}
 
 		return TRUE;
 	}
@@ -85,20 +94,20 @@ class Updater {
 	 */
 	function _transfer_blogger()
 	{
-		if ( ! $this->EE->db->table_exists('metaweblog_api'))
+		if ( ! ee()->db->table_exists('metaweblog_api'))
 		{
 			require EE_APPPATH.'modules/metaweblog_api/upd.metaweblog_api.php';
 			$UPD = new Metaweblog_api_upd();
 			$UPD->install();
 		}
 		
-		$qry = $this->EE->db->get('blogger');
+		$qry = ee()->db->get('blogger');
 		
 		foreach ($qry->result() as $row)
 		{
 			list($channel_id, $custom_field_id) = explode(':', $row->blogger_field_id);
 			
-			$qry = $this->EE->db->select('field_group')
+			$qry = ee()->db->select('field_group')
 								->where('channel_id', $channel_id)
 								->get('channels');
 			
@@ -117,7 +126,7 @@ class Updater {
 				'metaweblog_parse_type'	=> $row->blogger_parse_type,
 			);
 			
-			$this->EE->db->insert('metaweblog_api', $data);
+			ee()->db->insert('metaweblog_api', $data);
 		}
 	}
 	
@@ -130,19 +139,19 @@ class Updater {
 	 */
 	function _drop_blogger()
 	{
-		$this->EE->db->select('module_id');
-		$query = $this->EE->db->get_where('modules', array('module_name' => 'Blogger_api'));
+		ee()->db->select('module_id');
+		$query = ee()->db->get_where('modules', array('module_name' => 'Blogger_api'));
 		
-		$this->EE->db->where('module_id', $query->row('module_id'));
-		$this->EE->db->delete('module_member_groups');
+		ee()->db->where('module_id', $query->row('module_id'));
+		ee()->db->delete('module_member_groups');
 		
-		$this->EE->db->where('module_name', 'Blogger_api');
-		$this->EE->db->delete('modules');
+		ee()->db->where('module_name', 'Blogger_api');
+		ee()->db->delete('modules');
 		
-		$this->EE->db->where('class', 'Blogger_api');
-		$this->EE->db->delete('actions');
+		ee()->db->where('class', 'Blogger_api');
+		ee()->db->delete('actions');
 		
-		$this->EE->dbforge->drop_table('blogger');
+		ee()->dbforge->drop_table('blogger');
 	}
 
 	// ------------------------------------------------------------------------
@@ -157,26 +166,27 @@ class Updater {
 	private function _do_upload_pref_update()
 	{
 		$fields = array(
-					'batch_location' 	=> array(
-								'type'			=> 'VARCHAR',
-								'constraint'	=> 255,
-								),
-					'cat_group'			=> array(
-								'type'			=> 'VARCHAR',
-								'constraint'	=> 255
-					));
+			'batch_location' => array(
+				'type'			=> 'VARCHAR',
+				'constraint'	=> 255,
+			),
+			'cat_group' => array(
+				'type'			=> 'VARCHAR',
+				'constraint'	=> 255
+			)
+		);
 
-		$this->EE->dbforge->add_column('upload_prefs', $fields);
+		ee()->smartforge->add_column('upload_prefs', $fields);
 		
 		$fields = array(
-					'server_path'	=> array(
-								'name'			=> 'server_path',
-								'type'			=> 'VARCHAR',
-								'constraint'	=> 255
-					),
+			'server_path' => array(
+				'name'			=> 'server_path',
+				'type'			=> 'VARCHAR',
+				'constraint'	=> 255
+			),
 		);
 		
-		$this->EE->dbforge->modify_column('upload_prefs', $fields);
+		ee()->smartforge->modify_column('upload_prefs', $fields);
 	}
 	
 	// ------------------------------------------------------------------------
@@ -191,14 +201,15 @@ class Updater {
 	private function _do_cat_group_update()
 	{
 		$fields = array(
-					'exclude_group' 	=> array(
-								'type'			=> 'TINYINT',
-								'constraint'	=> 1,
-								'null'			=> FALSE,
-								'default'		=> 0
-								));
+			'exclude_group' => array(
+				'type'			=> 'TINYINT',
+				'constraint'	=> 1,
+				'null'			=> FALSE,
+				'default'		=> 0
+			)
+		);
 
-		$this->EE->dbforge->add_column('category_groups', $fields);		
+		ee()->smartforge->add_column('category_groups', $fields);		
 	}
 
 	// ------------------------------------------------------------------------	
@@ -312,9 +323,9 @@ class Updater {
 			)
 		);
 
-		$this->EE->dbforge->add_field($watermark_fields);
-		$this->EE->dbforge->add_key('wm_id', TRUE);
-		$this->EE->dbforge->create_table('file_watermarks');
+		ee()->dbforge->add_field($watermark_fields);
+		ee()->dbforge->add_key('wm_id', TRUE);
+		ee()->smartforge->create_table('file_watermarks');
 
 		$dimension_fields = array(
 			'id' => array(
@@ -360,10 +371,10 @@ class Updater {
 			)
 		);
 		
-		$this->EE->dbforge->add_field($dimension_fields);
-		$this->EE->dbforge->add_key('id', TRUE);
-		$this->EE->dbforge->add_key('upload_location_id');
-		$this->EE->dbforge->create_table('file_dimensions');
+		ee()->dbforge->add_field($dimension_fields);
+		ee()->dbforge->add_key('id', TRUE);
+		ee()->dbforge->add_key('upload_location_id');
+		ee()->smartforge->create_table('file_dimensions');
 
 		$categories_fields = array(
 			'file_id' => array(
@@ -389,9 +400,9 @@ class Updater {
 			)
 		);
 		
-		$this->EE->dbforge->add_field($categories_fields);
-		$this->EE->dbforge->add_key(array('file_id', 'cat_id'));
-		$this->EE->dbforge->create_table('file_categories');
+		ee()->dbforge->add_field($categories_fields);
+		ee()->dbforge->add_key(array('file_id', 'cat_id'));
+		ee()->smartforge->create_table('file_categories');
 		
 		$files_fields = array(
 			'file_id' => array(
@@ -504,10 +515,10 @@ class Updater {
 			),			
 		);
 		
-		$this->EE->dbforge->add_field($files_fields);
-		$this->EE->dbforge->add_key('file_id', TRUE);
-		$this->EE->dbforge->add_key(array('upload_location_id', 'site_id'));
-		$this->EE->dbforge->create_table('files');
+		ee()->dbforge->add_field($files_fields);
+		ee()->dbforge->add_key('file_id', TRUE);
+		ee()->dbforge->add_key(array('upload_location_id', 'site_id'));
+		ee()->smartforge->create_table('files');
 	}
 	
 	// ------------------------------------------------------------------------
@@ -522,14 +533,15 @@ class Updater {
 	private function _do_permissions_update()
 	{
 		$fields = array(
-					'can_admin_upload_prefs' 	=> array(
-								'type'			=> 'CHAR',
-								'constraint'	=> 1,
-								'null'			=> FALSE,
-								'default'		=> 'n'
-								));
+			'can_admin_upload_prefs' 	=> array(
+				'type'			=> 'CHAR',
+				'constraint'	=> 1,
+				'null'			=> FALSE,
+				'default'		=> 'n'
+			)
+		);
 
-		$this->EE->dbforge->add_column('member_groups', $fields, 'can_admin_channels');		
+		ee()->smartforge->add_column('member_groups', $fields, 'can_admin_channels');		
 	}
 	
 	// ------------------------------------------------------------------------
@@ -543,9 +555,9 @@ class Updater {
 	 */
 	private function _do_custom_field_update()
 	{
-		$this->EE->db->select('field_id, field_content_type, field_settings');
-		$this->EE->db->where_in('field_type', array('file', 'text'));
-		$qry = $this->EE->db->get('channel_fields');
+		ee()->db->select('field_id, field_content_type, field_settings');
+		ee()->db->where_in('field_type', array('file', 'text'));
+		$qry = ee()->db->get('channel_fields');
 		
 		foreach ($qry->result() as $row)
 		{
@@ -555,8 +567,8 @@ class Updater {
 			$settings = base64_encode(serialize($settings));
 			
 
-			$this->EE->db->where('field_id', $row->field_id);
-			$this->EE->db->update('channel_fields', array('field_settings' => $settings)); 
+			ee()->db->where('field_id', $row->field_id);
+			ee()->db->update('channel_fields', array('field_settings' => $settings)); 
 		}
 	}	
 
@@ -568,13 +580,13 @@ class Updater {
 	private function _do_add_indexes()
 	{
 		// We do a ton of template lookups based off the template name.  How about indexing on it?
-		$this->EE->db->query("CREATE INDEX template_name on exp_templates(template_name)");
+		ee()->smartforge->add_key('templates', 'template_name');
 
 		// Same with the channel_name in exp_channels
-		$this->EE->db->query("CREATE INDEX channel_name on exp_channels(channel_name)");
+		ee()->smartforge->add_key('channels', 'channel_name');
 
 		// and the same for field_type on exp_channel_fields
-		$this->EE->db->query("CREATE INDEX field_type on exp_channel_fields(field_type)");
+		ee()->smartforge->add_key('channel_fields', 'field_type');
 	}
 
 	// --------------------------------------------------------------------	

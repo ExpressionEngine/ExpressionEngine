@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -38,14 +38,21 @@ class EE_Loader extends CI_Loader {
 	 * of CI's object references are stuck onto the loader when loading views
 	 * I get access errors left and right. -pk
 	 *
-	 * @deprecated
-	 * @access	public
+	 * @deprecated 2.6
 	 */
 	public function view($view, $vars = array(), $return = FALSE)
 	{
 		if ($this->ee_view_depth === 0 && $this->_ci_view_path != '')
 		{
+			ee()->load->library('logger');
+			ee()->logger->deprecated('2.6', 'load::add_package_path()');
+
 			$this->_ci_view_paths = array($this->_ci_view_path => FALSE) + $this->_ci_view_paths;
+		}
+
+		if (isset($vars['cp_page_title']))
+		{
+			ee()->view->cp_page_title = $vars['cp_page_title'];
 		}
 		
 		$this->ee_view_depth++;
@@ -132,10 +139,8 @@ class EE_Loader extends CI_Loader {
 		
 		if (strtolower($library) == 'security')
 		{
-			$this->library('logger');
-			get_instance()->logger->developer('A third-party add-on is calling $this->load->library(\'security\'),
-				which is deprecated as the CI_Security class has been moved to Core, so it is always loaded.', TRUE, 604800);
-			
+			ee()->load->library('logger');
+			ee()->logger->deprecated('2.6', 'The security library is always loaded.');
 			return NULL;
 		}
 		

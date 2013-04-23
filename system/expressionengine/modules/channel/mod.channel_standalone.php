@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2012, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2013, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -47,14 +47,14 @@ class Channel_standalone extends Channel {
 	 */
 	function run_filemanager($function = '', $params = array())
 	{
-		$this->EE->load->library('filemanager');
-		$this->EE->lang->loadfile('content');
+		ee()->load->library('filemanager');
+		ee()->lang->loadfile('content');
 		
 		$config = array();
 		
-		$this->EE->filemanager->_initialize($config);
+		ee()->filemanager->_initialize($config);
 		
-		return call_user_func_array(array($this->EE->filemanager, $function), $params);
+		return call_user_func_array(array(ee()->filemanager, $function), $params);
 	}
 
 	// --------------------------------------------------------------------	
@@ -68,18 +68,18 @@ class Channel_standalone extends Channel {
 	 */
 	function insert_new_entry()
 	{
-		$this->EE->lang->loadfile('channel');
-		$this->EE->lang->loadfile('content');
-		$this->EE->load->model('field_model');
-		$this->EE->load->model('channel_model');
+		ee()->lang->loadfile('channel');
+		ee()->lang->loadfile('content');
+		ee()->load->model('field_model');
+		ee()->load->model('channel_model');
 
 		// Ya gotta be logged-in billy bob...
-		if ($this->EE->session->userdata('member_id') == 0)
+		if (ee()->session->userdata('member_id') == 0)
 		{
-			return $this->EE->output->show_user_error('general', $this->EE->lang->line('channel_must_be_logged_in'));
+			return ee()->output->show_user_error('general', ee()->lang->line('channel_must_be_logged_in'));
 		}
 
-		if ( ! $channel_id = $this->EE->input->post('channel_id') OR ! is_numeric($channel_id))
+		if ( ! $channel_id = ee()->input->post('channel_id') OR ! is_numeric($channel_id))
 		{
 			return false;
 		}
@@ -87,20 +87,20 @@ class Channel_standalone extends Channel {
 		// Prep file fields
 		$file_fields = array();
 		
-		$this->EE->db->select('field_group');
-		$this->EE->db->where('channel_id', $channel_id);
-		$query = $this->EE->db->get('channels');
+		ee()->db->select('field_group');
+		ee()->db->where('channel_id', $channel_id);
+		$query = ee()->db->get('channels');
 		
 		if ($query->num_rows() > 0)
 		{
 			$row = $query->row();
 			$field_group =  $row->field_group;
 		
-			$this->EE->db->select('field_id');
-			$this->EE->db->where('group_id', $field_group);
-			$this->EE->db->where('field_type', 'file');
+			ee()->db->select('field_id');
+			ee()->db->where('group_id', $field_group);
+			ee()->db->where('field_type', 'file');
 			
-			$f_query = $this->EE->db->get('channel_fields');
+			$f_query = ee()->db->get('channel_fields');
 			
 			if ($f_query->num_rows() > 0)
 			{
@@ -116,7 +116,7 @@ class Channel_standalone extends Channel {
 			if (isset($_POST['field_id_'.$v.'_hidden']))
 			{
 				$_POST['field_id_'.$v] = $_POST['field_id_'.$v.'_hidden'];
-				if ( ! $this->EE->input->post('preview'))
+				if ( ! ee()->input->post('preview'))
 				{
 					unset($_POST['field_id_'.$v.'_hidden']);
 				}
@@ -135,7 +135,7 @@ class Channel_standalone extends Channel {
 				{
 					$_POST['field_id_'.$v] = $data['name'];
 					
-					if ($this->EE->input->post('preview') !== FALSE)
+					if (ee()->input->post('preview') !== FALSE)
 					{
 						$_POST['field_id_'.$v.'_hidden'] = $data['name'];
 					}
@@ -146,23 +146,23 @@ class Channel_standalone extends Channel {
 		/** ----------------------------------------
 		/**  Prep data for insertion
 		/** ----------------------------------------*/
-		if ( ! $this->EE->input->post('preview'))
+		if ( ! ee()->input->post('preview'))
 		{
-			$this->EE->load->library('api');
-			$this->EE->api->instantiate(array('channel_entries', 'channel_categories', 'channel_fields'));
+			ee()->load->library('api');
+			ee()->api->instantiate(array('channel_entries', 'channel_categories', 'channel_fields'));
 			
 			unset($_POST['hidden_pings']);
 			unset($_POST['status_id']);
 			unset($_POST['allow_cmts']);
 			unset($_POST['sticky_entry']);
 			
-			$return_url	= ( ! $this->EE->input->post('return_url')) ? '' : $this->EE->input->get_post('return_url');
+			$return_url	= ( ! ee()->input->post('return_url')) ? '' : ee()->input->get_post('return_url');
 			unset($_POST['return_url']);
 
 			
-			if ( ! $this->EE->input->post('entry_date'))
+			if ( ! ee()->input->post('entry_date'))
 			{
-				$_POST['entry_date'] = $this->EE->localize->set_human_time($this->EE->localize->now);
+				$_POST['entry_date'] = ee()->localize->human_time(ee()->localize->now);
 			}
 
 			$data = $_POST;
@@ -171,10 +171,7 @@ class Channel_standalone extends Channel {
 			
 			// Rudimentary handling of custom fields
 			
-			$field_query = $this->EE->channel_model->get_channel_fields($field_group);
-			
-			$dst_enabled = $this->EE->session->userdata('daylight_savings');
-			$dst_enabled = ( ! isset($_POST['dst_enabled'])) ? 'n' :  $dst_enabled;
+			$field_query = ee()->channel_model->get_channel_fields($field_group);
 			
 			foreach ($field_query->result_array() as $row)
 			{
@@ -190,8 +187,7 @@ class Channel_standalone extends Channel {
 					'field_fmt'				=> $field_fmt,
 					'field_dt'				=> $field_dt,
 					'field_data'			=> $field_data,
-					'field_name'			=> 'field_id_'.$row['field_id'],
-					'dst_enabled'			=> $dst_enabled
+					'field_name'			=> 'field_id_'.$row['field_id']
 				);
 
 				$ft_settings = array();
@@ -203,7 +199,7 @@ class Channel_standalone extends Channel {
 
 				$settings = array_merge($row, $settings, $ft_settings);
 
-				$this->EE->api_channel_fields->set_settings($row['field_id'], $settings);
+				ee()->api_channel_fields->set_settings($row['field_id'], $settings);
 			}
 			
 			
@@ -224,24 +220,24 @@ class Channel_standalone extends Channel {
 		
 			$data = array_merge($extra, $data);
 	
-			$success = $this->EE->api_channel_entries->submit_new_entry($channel_id, $data);
+			$success = ee()->api_channel_entries->save_entry($data, $channel_id);
 
 			if ( ! $success)
 			{
-				$errors = $this->EE->api_channel_entries->errors;
-				return $this->EE->output->show_user_error('general', $errors);
+				$errors = ee()->api_channel_entries->errors;
+				return ee()->output->show_user_error('general', $errors);
 			}
 		
-			if ($this->EE->api_channel_entries->get_errors('pings'))
+			if (ee()->api_channel_entries->get_errors('pings'))
 			{
 				return FALSE;
 			}
 
-			$loc = ($return_url == '') ? $this->EE->functions->fetch_site_index() : $this->EE->functions->create_url($return_url, 1, 0);
+			$loc = ($return_url == '') ? ee()->functions->fetch_site_index() : ee()->functions->create_url($return_url, 1, 0);
 
-			$loc = $this->EE->api_channel_entries->trigger_hook('entry_submission_redirect', $loc);
+			$loc = ee()->api_channel_entries->trigger_hook('entry_submission_redirect', $loc);
 
-			$this->EE->functions->redirect($loc);
+			ee()->functions->redirect($loc);
 		} // END Insert
 
 
@@ -249,20 +245,20 @@ class Channel_standalone extends Channel {
 		/**  Preview Entry
 		/** ----------------------------------------*/
 
-		if ($this->EE->input->post('PRV') == '')
+		if (ee()->input->post('PRV') == '')
 		{
-			$this->EE->lang->loadfile('channel');
+			ee()->lang->loadfile('channel');
 
-			return $this->EE->output->show_user_error('general', $this->EE->lang->line('channel_no_preview_template'));
+			return ee()->output->show_user_error('general', ee()->lang->line('channel_no_preview_template'));
 		}
 
-		$this->EE->functions->clear_caching('all', $_POST['PRV']);
+		ee()->functions->clear_caching('all', $_POST['PRV']);
 
 		require APPPATH.'libraries/Template.php';
 
-		$this->EE->TMPL = new EE_Template();
+		ee()->TMPL = new EE_Template();
 
-		$preview = ( ! $this->EE->input->post('PRV')) ? '' : $this->EE->input->get_post('PRV');
+		$preview = ( ! ee()->input->post('PRV')) ? '' : ee()->input->get_post('PRV');
 
 		if (strpos($preview, '/') === FALSE)
 		{
@@ -276,7 +272,7 @@ class Channel_standalone extends Channel {
 			return FALSE;
 		}
 
-		$this->EE->TMPL->run_template_engine($ex['0'], $ex['1']);
+		ee()->TMPL->run_template_engine($ex['0'], $ex['1']);
 	}
 
 	// --------------------------------------------------------------------	
@@ -297,41 +293,41 @@ class Channel_standalone extends Channel {
 		$url_title 		= '';
 		
 		// No loggy? No looky...
-		if ($this->EE->session->userdata('member_id') == 0) { 
+		if (ee()->session->userdata('member_id') == 0) { 
 			return; 
 		}
 	  
-		if ( ! $channel = $this->EE->TMPL->fetch_param('channel'))
+		if ( ! $channel = ee()->TMPL->fetch_param('channel'))
 		{
-			return $this->EE->output->show_user_error('general', $this->EE->lang->line('channel_not_specified'));
+			return ee()->output->show_user_error('general', ee()->lang->line('channel_not_specified'));
 	  	}
 	  
 	  	// Fetch the action ID number.  Even though we don't need it until later
 	  	// we'll grab it here.  If not found it means the action table doesn't
 	  	// contain the ID, which means the user has not updated properly.  Ya know?
-	  	if ( ! $insert_action = $this->EE->functions->fetch_action_id('Channel', 'insert_new_entry'))
+	  	if ( ! $insert_action = ee()->functions->fetch_action_id('Channel', 'insert_new_entry'))
 	  	{
-			return $this->EE->output->show_user_error('general', $this->EE->lang->line('channel_no_action_found'));
+			return ee()->output->show_user_error('general', ee()->lang->line('channel_no_action_found'));
 	  	}
 	
-		$this->theme_url = $this->EE->config->item('theme_folder_url').'cp_themes/'.$this->EE->config->item('cp_theme').'/';
+		$this->theme_url = ee()->config->item('theme_folder_url').'cp_themes/'.ee()->config->item('cp_theme').'/';
 	
 		// Load some helpers, language files & libraries.
 		// Doing this after error checking since it makes no sense 
 		// To load a bunch of things up if we're just going to error
-		$this->EE->lang->loadfile('channel');
-		$this->EE->load->helper('form');
-		$this->EE->load->library('spellcheck');
+		ee()->lang->loadfile('channel');
+		ee()->load->helper('form');
+		ee()->load->library('spellcheck');
 		
-		$assigned_channels = $this->EE->functions->fetch_assigned_channels();
-		$channel_id = ( ! $this->EE->TMPL->fetch_param('channel')) ? '' : $this->EE->TMPL->fetch_param('channel');
+		$assigned_channels = ee()->functions->fetch_assigned_channels();
+		$channel_id = ( ! ee()->TMPL->fetch_param('channel')) ? '' : ee()->TMPL->fetch_param('channel');
 		
 		if ($channel_id != '')
 		{
-			$this->EE->db->select('channel_id');
-			$this->EE->db->where_in('site_id', $this->EE->TMPL->site_ids);
-			$this->EE->db->where('channel_name', $channel);
-			$query = $this->EE->db->get('channels');
+			ee()->db->select('channel_id');
+			ee()->db->where_in('site_id', ee()->TMPL->site_ids);
+			ee()->db->where('channel_name', $channel);
+			$query = ee()->db->get('channels');
 			
 			if ($query->num_rows() == 1)
 			{
@@ -342,12 +338,12 @@ class Channel_standalone extends Channel {
 		// Security Check
 		if ( ! in_array($channel_id, $assigned_channels))
 		{
-			return $this->EE->TMPL->no_results();
+			return ee()->TMPL->no_results();
 		}
 
 		// Fetch Channel Preferences
-		$this->EE->db->where('channel_id', $channel_id);
-		$channel_q = $this->EE->db->get('channels');
+		ee()->db->where('channel_id', $channel_id);
+		$channel_q = ee()->db->get('channels');
 	
 		if ( ! isset($_POST['channel_id']))
 		{
@@ -363,34 +359,34 @@ class Channel_standalone extends Channel {
 		{
 			$nc = '{{NOCACHE_CHANNEL_FORM ';
 
-			if (count($this->EE->TMPL->tagparams) > 0)
+			if (count(ee()->TMPL->tagparams) > 0)
 			{
-				foreach ($this->EE->TMPL->tagparams as $key => $val)
+				foreach (ee()->TMPL->tagparams as $key => $val)
 				{
 					$nc .= ' '.$key.'="'.$val.'" ';
 				}
 			}
 			
-			$nc .= '}}'.$this->EE->TMPL->tagdata.'{{/NOCACHE_FORM}}';
+			$nc .= '}}'.ee()->TMPL->tagdata.'{{/NOCACHE_FORM}}';
 
 			return $nc;
 		}
 		
 		$default_entry_title = form_prep($channel_q->row('default_entry_title'));
 		
-		$action_id = $this->EE->functions->fetch_action_id('Channel', 'filemanager_endpoint');
+		$action_id = ee()->functions->fetch_action_id('Channel', 'filemanager_endpoint');
 		$endpoint = 'ACT='.$action_id;
 		
-		$this->EE->load->library('filemanager');
-		$this->EE->load->library('javascript');
-		$this->EE->load->model('admin_model');
-		$this->EE->load->model('file_upload_preferences_model');
-		$this->EE->load->model('channel_model');
+		ee()->load->library('filemanager');
+		ee()->load->library('javascript');
+		ee()->load->model('admin_model');
+		ee()->load->model('file_upload_preferences_model');
+		ee()->load->model('channel_model');
 		
 		// Onward...
-		$which = ($this->EE->input->post('preview')) ? 'preview' : 'new';
+		$which = (ee()->input->post('preview')) ? 'preview' : 'new';
 		
-		$upload_directories = $this->EE->file_upload_preferences_model->get_file_upload_preferences($this->EE->session->userdata('group_id'));
+		$upload_directories = ee()->file_upload_preferences_model->get_file_upload_preferences(ee()->session->userdata('group_id'));
 
 		$file_list = array();
 		$directories = array();
@@ -405,18 +401,18 @@ class Channel_standalone extends Channel {
 		}
 
 		// Fetch Custom Fields
-		// $field_query = $this->EE->channel_model->get_channel_fields($field_group);
+		// $field_query = ee()->channel_model->get_channel_fields($field_group);
 		
-		if ( ! $this->EE->session->cache(__CLASS__, 'html_buttons'))
+		if ( ! ee()->session->cache(__CLASS__, 'html_buttons'))
 		{
-			$this->EE->session->set_cache(
+			ee()->session->set_cache(
 				__CLASS__,
 				'html_buttons',
-				$this->EE->admin_model->get_html_buttons($this->EE->session->userdata('member_id'))
+				ee()->admin_model->get_html_buttons(ee()->session->userdata('member_id'))
 			);
 		}
 		
-		$html_buttons = $this->EE->session->cache(__CLASS__, 'html_buttons');
+		$html_buttons = ee()->session->cache(__CLASS__, 'html_buttons');
 		$button_js = array();
 
 		foreach ($html_buttons->result() as $button)
@@ -464,17 +460,17 @@ class Channel_standalone extends Channel {
 		/*	- allow_textarea_tabs => Add tab preservation to all textareas or disable completely
 		/* -------------------------------------------*/
 		
-		if ($this->EE->config->item('allow_textarea_tabs') == 'y')
+		if (ee()->config->item('allow_textarea_tabs') == 'y')
 		{
 			$markItUp['onTab'] = array('keepDefault' => FALSE, 'replaceWith' => "\t");
 			$markItUp_writemode['onTab'] = array('keepDefault' => FALSE, 'replaceWith' => "\t");
 		}
-		elseif ($this->EE->config->item('allow_textarea_tabs') != 'n')
+		elseif (ee()->config->item('allow_textarea_tabs') != 'n')
 		{
 			$markItUp_writemode['onTab'] = array('keepDefault' => FALSE, 'replaceWith' => "\t");
 		}
 		
-		$this->_installed_mods['smileys'] = array_key_exists('Emoticon', $this->EE->TMPL->module_data);
+		$this->_installed_mods['smileys'] = array_key_exists('Emoticon', ee()->TMPL->module_data);
 		
 		// -------------------------------------------
 		//	Publish Page Title Focus - makes the title field gain focus when the page is loaded
@@ -483,24 +479,24 @@ class Channel_standalone extends Channel {
 		$addt_js = array(
 				'publish'		=> array(
 							'show_write_mode' 	=> (($channel_q->row('show_button_cluster') == 'y') ? TRUE : FALSE),
-							'title_focus'		=> (($which != 'edit' && $this->EE->config->item('publish_page_title_focus') !== 'n') ? TRUE : FALSE),
+							'title_focus'		=> (($which != 'edit' && ee()->config->item('publish_page_title_focus') !== 'n') ? TRUE : FALSE),
 							'smileys'			=> ($this->_installed_mods['smileys']) ? TRUE : FALSE),
 							
-				'user_id'		=> $this->EE->session->userdata('member_id'),
+				'user_id'		=> ee()->session->userdata('member_id'),
 				'lang'			=> array(
-							'confirm_exit'			=> $this->EE->lang->line('confirm_exit'),
-							'add_new_html_button'	=> $this->EE->lang->line('add_new_html_button')
+							'confirm_exit'			=> ee()->lang->line('confirm_exit'),
+							'add_new_html_button'	=> ee()->lang->line('add_new_html_button')
 					)		
 			);
 		
-		$this->EE->lang->loadfile('content');
+		ee()->lang->loadfile('content');
 		$this->_setup_js($endpoint, $markItUp, $markItUp_writemode, $addt_js);
 		
 		/** ----------------------------------------
 		/**  Compile form declaration and hidden fields
 		/** ----------------------------------------*/
 
-		$RET = (isset($_POST['RET'])) ? $_POST['RET'] : $this->EE->functions->fetch_current_uri();
+		$RET = (isset($_POST['RET'])) ? $_POST['RET'] : ee()->functions->fetch_current_uri();
 		$XID = ( ! isset($_POST['XID'])) ? '' : $_POST['XID'];
 		$PRV = (isset($_POST['PRV'])) ? $_POST['PRV'] : '{PREVIEW_TEMPLATE}';
 
@@ -508,24 +504,24 @@ class Channel_standalone extends Channel {
 								'ACT'	  				=> $insert_action,
 								'RET'	  				=> $RET,
 								'PRV'	  				=> $PRV,
-								'URI'	  				=> ($this->EE->uri->uri_string == '') ? 'index' : $this->EE->uri->uri_string,
+								'URI'	  				=> (ee()->uri->uri_string == '') ? 'index' : ee()->uri->uri_string,
 								'XID'	  				=> $XID,
-								'return_url'			=> (isset($_POST['return_url'])) ? $_POST['return_url'] : $this->EE->TMPL->fetch_param('return'),
-								'author_id'				=> $this->EE->session->userdata('member_id'),
+								'return_url'			=> (isset($_POST['return_url'])) ? $_POST['return_url'] : ee()->TMPL->fetch_param('return'),
+								'author_id'				=> ee()->session->userdata('member_id'),
 								'channel_id'			=> $channel_id,
 								'entry_id'				=> 0
 							  );
 		
-		$status_id = ( ! isset($_POST['status_id'])) ? $this->EE->TMPL->fetch_param('status') : $_POST['status_id'];
+		$status_id = ( ! isset($_POST['status_id'])) ? ee()->TMPL->fetch_param('status') : $_POST['status_id'];
 
 		if ($status_id == 'Open' OR $status_id == 'Closed')
 		{
 			$status_id = strtolower($status_id);			
 		}
 
-		$this->EE->db->where('group_id', $channel_q->row('status_group'));
-		$this->EE->db->order_by('status_order');
-		$status_query = $this->EE->db->get('statuses');
+		ee()->db->where('group_id', $channel_q->row('status_group'));
+		ee()->db->order_by('status_order');
+		$status_query = ee()->db->get('statuses');
 
 		if ($status_id != '')
 		{
@@ -547,14 +543,14 @@ class Channel_standalone extends Channel {
 		/**  Add "allow" options
 		/** ----------------------------------------*/
 
-		$allow_cmts = ( ! isset($_POST['allow_cmts'])) ? $this->EE->TMPL->fetch_param('allow_comments') : $_POST['allow_cmts'];
+		$allow_cmts = ( ! isset($_POST['allow_cmts'])) ? ee()->TMPL->fetch_param('allow_comments') : $_POST['allow_cmts'];
 
 		if ($allow_cmts != '' && $channel_q->row('comment_system_enabled') == 'y')
 		{
 			$hidden_fields['allow_comments'] = ($allow_cmts == 'yes') ? 'y' : 'n';
 		}
 
-		$sticky_entry = ( ! isset($_POST['sticky_entry'])) ? $this->EE->TMPL->fetch_param('sticky_entry') : $_POST['sticky_entry'];
+		$sticky_entry = ( ! isset($_POST['sticky_entry'])) ? ee()->TMPL->fetch_param('sticky_entry') : $_POST['sticky_entry'];
 
 		if ($sticky_entry != '')
 		{
@@ -564,7 +560,7 @@ class Channel_standalone extends Channel {
 		/** ----------------------------------------
 		/**  Add categories to hidden fields
 		/** ----------------------------------------*/
-		if ($category_id = $this->EE->TMPL->fetch_param('category'))
+		if ($category_id = ee()->TMPL->fetch_param('category'))
 		{
 			if (isset($_POST['category']))
 			{
@@ -602,7 +598,7 @@ class Channel_standalone extends Channel {
 		/**  Add pings to hidden fields
 		/** ----------------------------------------*/
 
-		$hidden_pings = ( ! isset($_POST['hidden_pings'])) ? $this->EE->TMPL->fetch_param('hidden_pings') : $_POST['hidden_pings'];
+		$hidden_pings = ( ! isset($_POST['hidden_pings'])) ? ee()->TMPL->fetch_param('hidden_pings') : $_POST['hidden_pings'];
 
 		if ($hidden_pings == 'yes')
 		{
@@ -624,24 +620,24 @@ class Channel_standalone extends Channel {
 		}
 		
 		// Parse out the tag
-		$tagdata = $this->EE->TMPL->tagdata;	
+		$tagdata = ee()->TMPL->tagdata;	
 
 		// Fetch Custom Fields
-		if ($this->EE->TMPL->fetch_param('show_fields') !== FALSE)
+		if (ee()->TMPL->fetch_param('show_fields') !== FALSE)
 		{
-			if (strncmp($this->EE->TMPL->fetch_param('show_fields'), 'not ', 4) == 0)
+			if (strncmp(ee()->TMPL->fetch_param('show_fields'), 'not ', 4) == 0)
 			{
-				$this->EE->db->where_not_in('field_name', explode('|', trim(substr($this->EE->TMPL->fetch_param('show_fields'), 3))));			
+				ee()->db->where_not_in('field_name', explode('|', trim(substr(ee()->TMPL->fetch_param('show_fields'), 3))));			
 			}
 			else
 			{
-				$this->EE->db->where_in('field_name', explode('|', trim($this->EE->TMPL->fetch_param('show_fields'))));
+				ee()->db->where_in('field_name', explode('|', trim(ee()->TMPL->fetch_param('show_fields'))));
 			}
 		}
 
-		$this->EE->db->where('group_id', $channel_q->row('field_group'));
-		$this->EE->db->order_by('field_order');
-		$cf_query = $this->EE->db->get('channel_fields');
+		ee()->db->where('group_id', $channel_q->row('field_group'));
+		ee()->db->order_by('field_order');
+		$cf_query = ee()->db->get('channel_fields');
 
 		$fields = array();
 		$date_fields = array();
@@ -776,11 +772,11 @@ class Channel_standalone extends Channel {
 
 			$no_status_access = array();
 
-			if ($this->EE->session->userdata['group_id'] != 1)
+			if (ee()->session->userdata['group_id'] != 1)
 			{
-				$this->EE->db->select('status_id');
-				$this->EE->db->where('member_group', $this->EE->session->userdata('group_id'));
-				$status_na_q = $this->EE->db->get('status_no_access');
+				ee()->db->select('status_id');
+				ee()->db->where('member_group', ee()->session->userdata('group_id'));
+				$status_na_q = ee()->db->get('status_no_access');
 				
 				if ($status_na_q->num_rows() > 0)
 				{
@@ -800,14 +796,14 @@ class Channel_standalone extends Channel {
 			if ($status_query->num_rows() == 0)
 			{
 				// if there is no status group assigned, only Super Admins can create 'open' entries
-				if ($this->EE->session->userdata['group_id'] == 1)
+				if (ee()->session->userdata['group_id'] == 1)
 				{
 					$selected = ($status == 'open') ? " selected='selected'" : '';
-					$r .= "<option value='open'".$selected.">".$this->EE->lang->line('open')."</option>";
+					$r .= "<option value='open'".$selected.">".ee()->lang->line('open')."</option>";
 				}
 
 				$selected = ($status == 'closed') ? " selected='selected'" : '';
-				$r .= "<option value='closed'".$selected.">".$this->EE->lang->line('closed')."</option>";
+				$r .= "<option value='closed'".$selected.">".ee()->lang->line('closed')."</option>";
 			}
 			else
 			{
@@ -827,7 +823,7 @@ class Channel_standalone extends Channel {
 
 					$no_status_flag = FALSE;
 
-					$status_name = ($row['status'] == 'open' OR $row['status'] == 'closed') ? $this->EE->lang->line($row['status']) : $row['status'];
+					$status_name = ($row['status'] == 'open' OR $row['status'] == 'closed') ? ee()->lang->line($row['status']) : $row['status'];
 
 					$r .= "<option value='".form_prep($row['status'])."'".$selected.">". form_prep($status_name)."</option>\n";
 				}
@@ -843,7 +839,7 @@ class Channel_standalone extends Channel {
 			$tagdata = str_replace ($match['0'], $match['1'], $tagdata);
 		}
 		
-		foreach ($this->EE->TMPL->var_single as $key => $val)
+		foreach (ee()->TMPL->var_single as $key => $val)
 		{
 			/** ----------------------------------------
 			/**  {title}
@@ -853,9 +849,9 @@ class Channel_standalone extends Channel {
 			{
 				$title = ( ! isset($_POST['title'])) ? $title : $_POST['title'];
 
-				$tagdata = $this->EE->TMPL->swap_var_single($key, form_prep($title), $tagdata);
+				$tagdata = ee()->TMPL->swap_var_single($key, form_prep($title), $tagdata);
 				
-				if ($this->EE->TMPL->fetch_param('use_live_url') == 'no')
+				if (ee()->TMPL->fetch_param('use_live_url') == 'no')
 				{
 					$tagdata = str_replace('liveUrlTitle();', '', $tagdata);
 				}
@@ -878,17 +874,7 @@ class Channel_standalone extends Channel {
 					 		$channel_q->row('comment_system_enabled') != 'y') ? '' : "checked='checked'";
 				}
 
-				$tagdata = $this->EE->TMPL->swap_var_single($key, $checked, $tagdata);
-			}
-
-			/** ----------------------------------------
-			/**  {dst_enabled}
-			/** ----------------------------------------*/
-
-			if ($key == 'dst_enabled')
-			{
-				$checked = ($this->EE->session->userdata('daylight_savings') == 'y') ? "checked='checked'" : '';
-				$tagdata = $this->EE->TMPL->swap_var_single($key, $checked, $tagdata);
+				$tagdata = ee()->TMPL->swap_var_single($key, $checked, $tagdata);
 			}
 
 			/** ----------------------------------------
@@ -904,7 +890,7 @@ class Channel_standalone extends Channel {
 					$checked = ( ! isset($_POST['sticky'])) ? '' : "checked='checked'";
 				}
 
-				$tagdata = $this->EE->TMPL->swap_var_single($key, $checked, $tagdata);
+				$tagdata = ee()->TMPL->swap_var_single($key, $checked, $tagdata);
 			}
 
 			/** ----------------------------------------
@@ -914,7 +900,7 @@ class Channel_standalone extends Channel {
 			{
 				$url_title = ( ! isset($_POST['url_title'])) ? $url_title : $_POST['url_title'];
 
-				$tagdata = $this->EE->TMPL->swap_var_single($key, $url_title, $tagdata);
+				$tagdata = ee()->TMPL->swap_var_single($key, $url_title, $tagdata);
 			}
 
 			/** ----------------------------------------
@@ -922,9 +908,9 @@ class Channel_standalone extends Channel {
 			/** ----------------------------------------*/
 			if ($key == 'entry_date')
 			{
-				$entry_date = ( ! isset($_POST['entry_date'])) ? $this->EE->localize->set_human_time($this->EE->localize->now) : $_POST['entry_date'];
+				$entry_date = ( ! isset($_POST['entry_date'])) ? ee()->localize->human_time(ee()->localize->now) : $_POST['entry_date'];
 
-				$tagdata = $this->EE->TMPL->swap_var_single($key, $entry_date, $tagdata);
+				$tagdata = ee()->TMPL->swap_var_single($key, $entry_date, $tagdata);
 			}
 
 			/** ----------------------------------------
@@ -934,7 +920,7 @@ class Channel_standalone extends Channel {
 			{
 				$expiration_date = ( ! isset($_POST['expiration_date'])) ? '': $_POST['expiration_date'];
 
-				$tagdata = $this->EE->TMPL->swap_var_single($key, $expiration_date, $tagdata);
+				$tagdata = ee()->TMPL->swap_var_single($key, $expiration_date, $tagdata);
 			}
 
 			/** ----------------------------------------
@@ -953,12 +939,12 @@ class Channel_standalone extends Channel {
 					if ($channel_q->row('comment_expiration') > 0)
 					{
 						$comment_expiration_date = $channel_q->row('comment_expiration') * 86400;
-						$comment_expiration_date = $comment_expiration_date + $this->EE->localize->now;
-						$comment_expiration_date = $this->EE->localize->set_human_time($comment_expiration_date);
+						$comment_expiration_date = $comment_expiration_date + ee()->localize->now;
+						$comment_expiration_date = ee()->localize->human_time($comment_expiration_date);
 					}
 				}
 
-				$tagdata = $this->EE->TMPL->swap_var_single($key, $comment_expiration_date, $tagdata);
+				$tagdata = ee()->TMPL->swap_var_single($key, $comment_expiration_date, $tagdata);
 
 			}
 			
@@ -975,19 +961,19 @@ class Channel_standalone extends Channel {
 					if ($js == 'EE')
 					{
 						$js .= 'if (typeof EE == "undefined" || ! EE) {'."\n".
-							'var EE = '.$this->EE->javascript->generate_json($val, TRUE)."\n".
+							'var EE = '.json_encode($val)."\n".
 							"}\n";
 					}
 					else 
 					{
-						$js .= $this->EE->javascript->generate_json($val, TRUE);
+						$js .= json_encode($val);
 					}
 				}
 
 				$js .= "\n".' // ]]>'."\n".'</script>';
 				$js .= $this->output_js['str'];
 				
-				$tagdata = $this->EE->TMPL->swap_var_single($key, $js, $tagdata);
+				$tagdata = ee()->TMPL->swap_var_single($key, $js, $tagdata);
 				unset($this->output_js);
 			}
 			
@@ -997,11 +983,11 @@ class Channel_standalone extends Channel {
 						'hidden_fields' => $hidden_fields,
 						'action'		=> $RET,
 						'id'			=> 'publishForm',
-						'class'			=> $this->EE->TMPL->form_class,
+						'class'			=> ee()->TMPL->form_class,
 						'enctype' 		=> 'multi'
 						);
 
-		$res  = $this->EE->functions->form_declaration($data);
+		$res  = ee()->functions->form_declaration($data);
 		
 		// our Json string will go here if it hasn't been put in by {saef_javascript}
 		if (isset($this->output_js))
@@ -1012,11 +998,11 @@ class Channel_standalone extends Channel {
 			{
 				if ($key == 'EE')
 				{
-					$res .= 'if (typeof EE == "undefined" || ! EE) { var EE = '.$this->EE->javascript->generate_json($val).";}\n";
+					$res .= 'if (typeof EE == "undefined" || ! EE) { var EE = '.json_encode($val).";}\n";
 				}
 				else 
 				{
-					$res .= $key.' = ' . $this->EE->javascript->generate_json($val, TRUE) . ";\n";
+					$res .= $key.' = ' . json_encode($val) . ";\n";
 				}
 			}
 			
@@ -1051,7 +1037,7 @@ class Channel_standalone extends Channel {
 		// Fetch category group ID number
 		if ($group_id == '')
 		{
-			if ( ! $group_id = $this->EE->input->get_post('group_id'))
+			if ( ! $group_id = ee()->input->get_post('group_id'))
 			{
 				return FALSE;
 			}
@@ -1092,10 +1078,10 @@ class Channel_standalone extends Channel {
 		// Fetch category groups
 		$group_ids = explode('|', $group_id);
 		
-		$this->EE->db->select('cat_name, cat_id, parent_id');
-		$this->EE->db->where_in('group_id', $group_ids);
-		$this->EE->db->order_by('group_id, parent_id, cat_order');
-		$kitty_query = $this->EE->db->get('categories');
+		ee()->db->select('cat_name, cat_id, parent_id');
+		ee()->db->where_in('group_id', $group_ids);
+		ee()->db->order_by('group_id, parent_id, cat_order');
+		$kitty_query = ee()->db->get('categories');
 
 		if ($kitty_query->num_rows() == 0)
 		{
@@ -1238,18 +1224,18 @@ class Channel_standalone extends Channel {
 	 */
 	function fetch_ping_servers($which = 'new')
 	{
-		$this->EE->db->select('COUNT(*) as count');
-		$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
-		$this->EE->db->where('member_id', $this->EE->session->userdata('member_id'));
-		$pingq = $this->EE->db->get('ping_servers');
+		ee()->db->select('COUNT(*) as count');
+		ee()->db->where('site_id', ee()->config->item('site_id'));
+		ee()->db->where('member_id', ee()->session->userdata('member_id'));
+		$pingq = ee()->db->get('ping_servers');
 		
-		$member_id = ($pingq->row('count')  == 0) ? 0 : $this->EE->session->userdata('member_id');
+		$member_id = ($pingq->row('count')  == 0) ? 0 : ee()->session->userdata('member_id');
 
-		$this->EE->db->select('id, server_name, is_default');
-		$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
-		$this->EE->db->where('member_id', $member_id);
-		$this->EE->db->order_by('server_order');
-		$pingq = $this->EE->db->get('ping_servers');
+		ee()->db->select('id, server_name, is_default');
+		ee()->db->where('site_id', ee()->config->item('site_id'));
+		ee()->db->where('member_id', $member_id);
+		ee()->db->order_by('server_order');
+		$pingq = ee()->db->get('ping_servers');
 
 		if ($pingq->num_rows() == 0)
 		{
@@ -1304,7 +1290,7 @@ class Channel_standalone extends Channel {
 										'thickbox')
 			);
 
-		$type = ($this->EE->config->item('use_compressed_js') == 'n') ? 'src' : 'compressed';
+		$type = (ee()->config->item('use_compressed_js') == 'n') ? 'src' : 'compressed';
 
 		if ( ! defined('PATH_JQUERY'))
 		{			
@@ -1323,22 +1309,22 @@ class Channel_standalone extends Channel {
 			}
 		}
 		
-		if ($this->EE->input->get('use_live_url') == 'y')
+		if (ee()->input->get('use_live_url') == 'y')
 		{
 			$output .= $this->_url_title_js();
 		}
 		
-		$this->EE->load->helper('smiley');
+		ee()->load->helper('smiley');
 		
-		$output .= ($this->EE->config->item('use_compressed_js') != 'n') ? str_replace(array("\n", "\t"), '', smiley_js('', '', FALSE)) : smiley_js('', '', FALSE);
+		$output .= (ee()->config->item('use_compressed_js') != 'n') ? str_replace(array("\n", "\t"), '', smiley_js('', '', FALSE)) : smiley_js('', '', FALSE);
 
 		$output .= file_get_contents(PATH_THEMES.'javascript/'.$type.'/saef.js');
 
-		$this->EE->output->out_type = 'cp_asset';
-		$this->EE->output->set_header("Content-Type: text/javascript");
+		ee()->output->out_type = 'cp_asset';
+		ee()->output->set_header("Content-Type: text/javascript");
 		
-		$this->EE->output->set_header('Content-Length: '.strlen($output));
-		$this->EE->output->set_output($output);
+		ee()->output->set_header('Content-Length: '.strlen($output));
+		ee()->output->set_output($output);
 	}
 	
 	// --------------------------------------------------------------------
@@ -1348,11 +1334,11 @@ class Channel_standalone extends Channel {
 	 */
 	function _setup_js($endpoint, $markItUp, $markItUp_writemode, $addt_js)
 	{
-		$include_jquery = ($this->EE->TMPL->fetch_param('include_jquery') == 'no') ? FALSE : TRUE;
+		$include_jquery = (ee()->TMPL->fetch_param('include_jquery') == 'no') ? FALSE : TRUE;
 
-		$this->EE->load->library('filemanager');
+		ee()->load->library('filemanager');
 		
-		$js = $this->EE->filemanager->frontend_filebrowser($endpoint, $include_jquery);
+		$js = ee()->filemanager->frontend_filebrowser($endpoint, $include_jquery);
 
 		$json = array_merge_recursive($js['json'], $addt_js);
 
@@ -1409,7 +1395,7 @@ class Channel_standalone extends Channel {
 						}
 
 						$pfield_chunk['field_id_'.$field_info['1']][] = array($inner,
-							 										$this->EE->functions->assign_parameters($params), $chunk);
+							 										ee()->functions->assign_parameters($params), $chunk);
 					}
 				}
 			}
@@ -1419,14 +1405,14 @@ class Channel_standalone extends Channel {
 		/**  Instantiate Typography class
 		/** ----------------------------------------*/
 
-		$this->EE->load->library('typography');
-		$this->EE->typography->initialize(array(
+		ee()->load->library('typography');
+		ee()->typography->initialize(array(
 				'convert_curly'	=> FALSE)
 				);
 
-		$file_dirs = $this->EE->functions->fetch_file_paths();
+		$file_dirs = ee()->functions->fetch_file_paths();
 
-		$match['1'] = str_replace(LD.'title'.RD, stripslashes($this->EE->input->post('title')), $match['1']);
+		$match['1'] = str_replace(LD.'title'.RD, stripslashes(ee()->input->post('title')), $match['1']);
 
 		// We need to grab each
 		$str = '';
@@ -1461,8 +1447,8 @@ class Channel_standalone extends Channel {
 								$vars['item'] = $item;
 								$vars['count'] = $k + 1;	// {count} parameter
 
-								$tmp = $this->EE->functions->prep_conditionals($chk_data[0], $vars);
-								$tpl_chunk .= $this->EE->functions->var_swap($tmp, $vars);
+								$tmp = ee()->functions->prep_conditionals($chk_data[0], $vars);
+								$tpl_chunk .= ee()->functions->var_swap($tmp, $vars);
 							}
 							else
 							{
@@ -1479,8 +1465,8 @@ class Channel_standalone extends Channel {
 					}
 					
 					// Typography!
-					$tpl_chunk = $this->EE->typography->parse_type(
-										$this->EE->functions->encode_ee_tags($tpl_chunk),
+					$tpl_chunk = ee()->typography->parse_type(
+										ee()->functions->encode_ee_tags($tpl_chunk),
 								 		array(
 											'text_format'   => $txt_fmt,
 											'html_format'   => $channel_q->row('channel_html_formatting'),
@@ -1504,7 +1490,7 @@ class Channel_standalone extends Channel {
 
 				if (in_array($expl['1'], $date_fields))
 				{
-					$temp_date = $this->EE->localize->convert_human_date_to_gmt($_POST['field_id_'.$expl['1']]);
+					$temp_date = ee()->localize->string_to_timestamp($_POST['field_id_'.$expl['1']]);
 					$temp = $_POST['field_id_'.$expl['1']];
 					$cond[$fields['field_id_'.$expl['1']]['0']] =  $temp_date;
 				}
@@ -1540,7 +1526,7 @@ class Channel_standalone extends Channel {
 							}
 							else
 							{
-								$params = $this->EE->functions->assign_parameters($pmatches['1'][$id]);
+								$params = ee()->functions->assign_parameters($pmatches['1'][$id]);
 								
 								if (isset($params['wrap']) && $params['wrap'] == 'link')
 								{
@@ -1580,7 +1566,7 @@ class Channel_standalone extends Channel {
 							}
 							else
 							{
-								$params = $this->EE->functions->assign_parameters($pmatches['1'][$id]);
+								$params = ee()->functions->assign_parameters($pmatches['1'][$id]);
 
 								if (isset($params['limit']))
 								{
@@ -1607,8 +1593,8 @@ class Channel_standalone extends Channel {
 								}
 							}
 
-							$entry = $this->EE->typography->parse_type(
-									$this->EE->functions->encode_ee_tags($entry),
+							$entry = ee()->typography->parse_type(
+									ee()->functions->encode_ee_tags($entry),
 								 		array(
 											'text_format'   => $txt_fmt,
 											'html_format'   => $channel_q->row('channel_html_formatting'),
@@ -1632,7 +1618,7 @@ class Channel_standalone extends Channel {
 
 						$txt_fmt = ( ! isset($_POST['field_ft_'.$expl['1']])) ? 'xhtml' : $_POST['field_ft_'.$expl['1']];
 
-						$temp = $this->EE->typography->parse_type( stripslashes($val),
+						$temp = ee()->typography->parse_type( stripslashes($val),
 									 		array(
 												'text_format'   => $txt_fmt,
 												'html_format'   => $channel_q->row('channel_html_formatting'),
@@ -1657,7 +1643,7 @@ class Channel_standalone extends Channel {
 		}
 
 		$match['1'] = str_replace(LD.'display_custom_fields'.RD, $str, $match['1']);
-		$match['1'] = $this->EE->functions->prep_conditionals($match['1'], $cond);
+		$match['1'] = ee()->functions->prep_conditionals($match['1'], $cond);
 		$tagdata = str_replace ($match['0'], $match['1'], $tagdata);
 
 		
@@ -1847,9 +1833,9 @@ class Channel_standalone extends Channel {
 					$file = '<div class="publish_field">';
 					$file .= '<div class="file_set js_hide">';
 					$file .= '<p class="filename">';
-					$file .= '<img src="'.$this->EE->config->item('theme_folder_url').'/cp_global_images/default.png" alt="default thumbnail" />';
+					$file .= '<img src="'.ee()->config->item('theme_folder_url').'/cp_global_images/default.png" alt="default thumbnail" />';
 					$file .= '</p>';
-					$file .= '<p class="sub_filename"><a href="#" class="remove_file">'.$this->EE->lang->line('remove_file').'</a></p>';
+					$file .= '<p class="sub_filename"><a href="#" class="remove_file">'.ee()->lang->line('remove_file').'</a></p>';
 					$file .= '<p><input type="hidden" name="field_id_'.$row['field_id'].'_hidden" value="'.$field_data.'" /></p>';
 					$file .= '</div>'; 
 					$file .= '<div class="no_file js_hide">';
@@ -1858,7 +1844,7 @@ class Channel_standalone extends Channel {
 					
 					$file .= '</div>';
 					$file .= '<div class="modifiers js_show">';
-					$file .= '<p class="sub_filename"><a href="#" class="choose_file">'.$this->EE->lang->line('add_file').'</a></p>';
+					$file .= '<p class="sub_filename"><a href="#" class="choose_file">'.ee()->lang->line('add_file').'</a></p>';
 					$file .= '</div></div>';
 
 					$temp_chunk = str_replace(LD.'temp_file'.RD, $file, $temp_chunk);
@@ -1877,29 +1863,29 @@ class Channel_standalone extends Channel {
 					$row['field_related_orderby'] = 'entry_date';						
 				}
 
-				$this->EE->db->select('entry_id, title');
-				$this->EE->db->where('channel_id', $row['field_related_id']);
-				$this->EE->db->order_by($row['field_related_orderby'], $row['field_related_sort']);
+				ee()->db->select('entry_id, title');
+				ee()->db->where('channel_id', $row['field_related_id']);
+				ee()->db->order_by($row['field_related_orderby'], $row['field_related_sort']);
 
 				if ($row['field_related_max'] > 0)
 				{
-					$this->EE->db->limit($row['field_related_max']);
+					ee()->db->limit($row['field_related_max']);
 				}
 
-				$relquery = $this->EE->db->get('channel_titles');
+				$relquery = ee()->db->get('channel_titles');
 
 				if ($relquery->num_rows() > 0)
 				{
 					$relentry_id = '';
 					if ( ! isset($_POST['field_id_'.$row['field_id']]))
 					{
-						$this->EE->db->select('rel_child_id');
-						$this->EE->db->where('rel_id', $field_data);
-						$relentry = $this->EE->db->get('relationships');
+						ee()->db->select('child_id');
+						ee()->db->where('relationship_id', $field_data);
+						$relentry = ee()->db->get('relationships');
 
 						if ($relentry->num_rows() == 1)
 						{
-							$relentry_id = $relentry->row('rel_child_id') ;
+							$relentry_id = $relentry->row('child_id') ;
 						}
 					}
 					else
@@ -1944,23 +1930,17 @@ class Channel_standalone extends Channel {
 				}
 
 				$custom_date = '';
-				$localize = FALSE;
 				
 				if ($dtwhich != 'preview')
 				{
-					$localize = TRUE;
-
 					if ($field_data != '')
 					{
-						$custom_date = $this->EE->localize->set_human_time($field_data, $localize);						
+						$custom_date = ee()->localize->human_time($field_data);						
 					}
-
-					$cal_date = ($this->EE->localize->set_localized_time($custom_date) * 1000);
 				}
 				else
 				{
 					$custom_date = $_POST[$date_field];
-					$cal_date = ($custom_date != '') ? ($this->EE->localize->set_localized_time($this->EE->localize->convert_human_date_to_gmt($custom_date)) * 1000) : ($this->EE->localize->set_localized_time() * 1000);
 				}
 				
 				$temp_chunk = str_replace(LD.'temp_date'.RD, $date, $temp_chunk);
@@ -2000,10 +1980,10 @@ class Channel_standalone extends Channel {
 				else
 				{
 					// We need to pre-populate this menu from an another channel custom field
-					$this->EE->db->select('field_id_'.$row['field_pre_field_id']);
-					$this->EE->db->where('channel_id', $row['field_pre_channel_id']);
-					$this->EE->db->where('field_id_'.$row['field_pre_field_id'].' != ""');
-					$pop_query = $this->EE->db->get('channel_data');
+					ee()->db->select('field_id_'.$row['field_pre_field_id']);
+					ee()->db->where('channel_id', $row['field_pre_channel_id']);
+					ee()->db->where('field_id_'.$row['field_pre_field_id'].' != ""');
+					$pop_query = ee()->db->get('channel_data');
 
 					if ($pop_query->num_rows() > 0)
 					{
@@ -2064,10 +2044,10 @@ class Channel_standalone extends Channel {
 				else
 				{
 					// We need to pre-populate this menu from an another channel custom field
-					$this->EE->db->select('field_id_'.$row['field_pre_field_id']);
-					$this->EE->db->where('channel_id', $row['field_pre_channel_id']);
-					$this->EE->db->where('field_id_'.$row['field_pre_field_id'].' != ""');
-					$pop_query = $this->EE->db->get('channel_data');
+					ee()->db->select('field_id_'.$row['field_pre_field_id']);
+					ee()->db->where('channel_id', $row['field_pre_channel_id']);
+					ee()->db->where('field_id_'.$row['field_pre_field_id'].' != ""');
+					$pop_query = ee()->db->get('channel_data');
 
 					if ($pop_query->num_rows() > 0)
 					{
@@ -2124,10 +2104,10 @@ class Channel_standalone extends Channel {
 				else
 				{
 					// We need to pre-populate this menu from an another channel custom field
-					$this->EE->db->select('field_id_'.$row['field_pre_field_id']);
-					$this->EE->db->where('channel_id', $row['field_pre_channel_id']);
-					$this->EE->db->where('field_id_'.$row['field_pre_field_id'].' != ""');
-					$pop_query = $this->EE->db->get('channel_data');
+					ee()->db->select('field_id_'.$row['field_pre_field_id']);
+					ee()->db->where('channel_id', $row['field_pre_channel_id']);
+					ee()->db->where('field_id_'.$row['field_pre_field_id'].' != ""');
+					$pop_query = ee()->db->get('channel_data');
 
 					if ($pop_query->num_rows() > 0)
 					{
@@ -2175,10 +2155,10 @@ class Channel_standalone extends Channel {
 				else
 				{
 					// We need to pre-populate this menu from an another channel custom field
-					$this->EE->db->select('field_id_'.$row['field_pre_field_id']);
-					$this->EE->db->where('channel_id', $row['field_pre_channel_id']);
-					$this->EE->db->where('field_id_'.$row['field_pre_field_id'].' != ""');
-					$pop_query = $this->EE->db->get('channel_data');
+					ee()->db->select('field_id_'.$row['field_pre_field_id']);
+					ee()->db->where('channel_id', $row['field_pre_channel_id']);
+					ee()->db->where('field_id_'.$row['field_pre_field_id'].' != ""');
+					$pop_query = ee()->db->get('channel_data');
 
 					if ($pop_query->num_rows() > 0)
 					{
@@ -2223,7 +2203,7 @@ class Channel_standalone extends Channel {
 			}
 
 			$temp_chunk = str_replace(LD.'path:cp_global_img'.RD,
-						$this->EE->config->item('theme_folder_url').'/cp_global_images/', $temp_chunk);
+						ee()->config->item('theme_folder_url').'/cp_global_images/', $temp_chunk);
 			$temp_chunk = str_replace(LD.'formatting_buttons'.RD, '', $temp_chunk);
 			$temp_chunk = str_replace(LD.'spellcheck'.RD, '', $temp_chunk);
 			$temp_chunk = str_replace(LD.'temp_date'.RD, '', $temp_chunk);
@@ -2356,19 +2336,19 @@ class Channel_standalone extends Channel {
 		
 		if ($this->_installed_mods['smileys'])
 		{
-			$this->EE->load->helper('smiley');
-			$this->EE->load->library('table');
+			ee()->load->helper('smiley');
+			ee()->load->library('table');
 			
 			$output .= '<a href="#" id="smiley_link_'.$row['field_id'].'" class="smiley_link" title="'.lang('emotions').'">'.lang('emotions').'</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
-			$image_array = get_clickable_smileys($path = $this->EE->config->slash_item('emoticon_url'), 'field_id_'.$row['field_id']);
-			$col_array = $this->EE->table->make_columns($image_array, 8);
-			$output .= '<div id="smiley_table_'.$row['field_id'].'" class="smileyContent" style="display: none;">'.$this->EE->table->generate($col_array).'</div>';
-			$this->EE->table->clear(); // clear out tables for the next smiley
+			$image_array = get_clickable_smileys($path = ee()->config->slash_item('emoticon_url'), 'field_id_'.$row['field_id']);
+			$col_array = ee()->table->make_columns($image_array, 8);
+			$output .= '<div id="smiley_table_'.$row['field_id'].'" class="smileyContent" style="display: none;">'.ee()->table->generate($col_array).'</div>';
+			ee()->table->clear(); // clear out tables for the next smiley
 		}
 		
 		if (isset($settings['field_show_glossary']))
 		{
-			$output .= $this->EE->load->ee_view('content/_assets/glossary_items', '', TRUE);
+			$output .= ee()->load->ee_view('content/_assets/glossary_items', '', TRUE);
 		}
 		
 		$output .= '</div>';
@@ -2390,8 +2370,8 @@ class Channel_standalone extends Channel {
 	function _url_title_js()
 	{
 		// js for URL Title
-		$convert_ascii = ($this->EE->config->item('auto_convert_high_ascii') == 'y') ? TRUE : FALSE;
-		$word_separator = $this->EE->config->item('word_separator') != "dash" ? '_' : '-';
+		$convert_ascii = (ee()->config->item('auto_convert_high_ascii') == 'y') ? TRUE : FALSE;
+		$word_separator = ee()->config->item('word_separator') != "dash" ? '_' : '-';
 
 		// Foreign Character Conversion Javascript
 		include(APPPATH.'config/foreign_chars.php');
@@ -2480,7 +2460,7 @@ YOYOYO;
 
 		$ret = $url_title_js;
 
-		if ($this->EE->config->item('use_compressed_js') != 'n')
+		if (ee()->config->item('use_compressed_js') != 'n')
 		{
 			return str_replace(array("\n", "\t"), '', $ret);			
 		}
