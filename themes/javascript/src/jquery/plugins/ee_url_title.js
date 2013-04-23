@@ -15,9 +15,9 @@
  * @filesource
  */
 
-"use strict";
-
 (function ($) {
+
+"use strict";
 	
 	EE.namespace('EE.publish');
 	$.fn.ee_url_title = function (url_title, remove_periods) {

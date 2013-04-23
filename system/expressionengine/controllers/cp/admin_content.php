@@ -1391,7 +1391,7 @@ class Admin_content extends CP_Controller {
 
 		$this->logger->log_action(lang('category_group_deleted').NBS.NBS.$name);
 
-		$this->functions->clear_caching('all', '', TRUE);
+		$this->functions->clear_caching('all', '');
 
 		$this->session->set_flashdata('message_success', lang('category_group_deleted').NBS.NBS.$name);
 		$this->functions->redirect(BASE.AMP.'C=admin_content'.AMP.'M=category_management');
@@ -1620,21 +1620,7 @@ class Admin_content extends CP_Controller {
 		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=category_management', lang('categories'));
 		$this->view->cp_page_title = ($vars['cat_id'] == '') ? lang('new_category') : lang('edit_category');
 		
-		//	Create Foreign Character Conversion JS
-		include(APPPATH.'config/foreign_chars.php');
-		
-		/* -------------------------------------
-		/*  'foreign_character_conversion_array' hook.
-		/*  - Allows you to use your own foreign character conversion array
-		/*  - Added 1.6.0
-		* 	- Note: in 2.0, you can edit the foreign_chars.php config file as well
-		*/  
-			if (isset($this->extensions->extensions['foreign_character_conversion_array']))
-			{
-				$foreign_characters = $this->extensions->call('foreign_character_conversion_array');
-			}
-		/*
-		/* -------------------------------------*/
+		$foreign_characters = $this->_get_foreign_characters();
 		
 		// New entry gets URL title js
 		if ($vars['submit_lang_key'] == 'submit')
@@ -2158,10 +2144,34 @@ class Admin_content extends CP_Controller {
 			$this->db->query($this->db->update_string('exp_category_field_data', $fields, array('cat_id' => $cat_id)));
 		}
 
-		$this->functions->clear_caching('relationships');
-
 		$this->session->set_flashdata('message_success', lang('preference_updated'));
 		$this->functions->redirect(BASE.AMP.'C=admin_content'.AMP.'M=category_editor'.AMP."group_id={$group_id}");
+	}
+
+	function _get_foreign_characters()
+	{
+		$foreign_characters = FALSE;
+		
+	/* -------------------------------------
+		/*  'foreign_character_conversion_array' hook.
+		/*  - Allows you to use your own foreign character conversion array
+		/*  - Added 1.6.0
+		* 	- Note: in 2.0, you can edit the foreign_chars.php config file as well
+		*/  
+			if (isset($this->extensions->extensions['foreign_character_conversion_array']))
+			{
+				$foreign_characters = $this->extensions->call('foreign_character_conversion_array');
+			}
+		/*
+		/* -------------------------------------*/
+		
+		if ( ! $foreign_characters)
+		{
+			//	Create Foreign Character Conversion JS
+			include(APPPATH.'config/foreign_chars.php');
+		}
+		
+		return $foreign_characters;
 	}
 
 	// --------------------------------------------------------------------
@@ -2523,7 +2533,7 @@ class Admin_content extends CP_Controller {
 
 		$this->view->cp_page_title = lang('custom_category_fields');
 		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=category_management', lang('categories'));
-
+		
 		// Fetch the name of the category group
 		$query = $this->category_model->get_category_group_name($vars['group_id']);
 		$vars['group_name'] = $query->row('group_name');
@@ -2563,6 +2573,10 @@ class Admin_content extends CP_Controller {
 			headers: {3: {sorter: false}},
 			widgets: ["zebra"]
 		}');
+		
+		$this->cp->set_right_nav(array(
+        	'create_new_cat_field' => BASE.AMP.'C=admin_content'.AMP.'M=edit_custom_category_field'.AMP.'group_id='.$vars['group_id']
+        ));
 
 		$this->cp->render('admin/category_custom_field_group_manager', $vars);
 	}
@@ -2606,6 +2620,25 @@ class Admin_content extends CP_Controller {
 			// reveal selected option
 			$("#"+$(this).val()+"_format").show();
 		');
+
+		// New entry gets URL title js
+		if ($vars['field_id'] == '')
+		{	
+			$foreign_characters = $this->_get_foreign_characters();
+			
+			// Pipe in necessary globals
+			$this->javascript->set_global(array(
+				'publish.word_separator'	=> $this->config->item('word_separator') != "dash" ? '_' : '-',
+				'publish.foreignChars'		=> $foreign_characters,
+			));
+			
+			// Load in necessary js files
+			$this->cp->add_js_script(array(
+				'plugin'	=> array('ee_url_title')
+			));
+			
+			$this->javascript->keyup('#field_label', '$("#field_label").ee_url_title($("#field_name"));');
+		}
 
 		if ($vars['field_id'] == '')
 		{
@@ -2931,7 +2964,7 @@ class Admin_content extends CP_Controller {
 			$cp_message = lang('cat_field_created');
 		}
 
-		$this->functions->clear_caching('all', '', TRUE);
+		$this->functions->clear_caching('all', '');
 
 		$this->session->set_flashdata('message_success', $cp_message.' '.$field_name);
 		$this->functions->redirect(BASE.AMP.'C=admin_content'.AMP.'M=category_custom_field_group_manager'.AMP.'group_id='.$group_id);
@@ -3028,7 +3061,7 @@ class Admin_content extends CP_Controller {
 		$cp_message = lang('cat_field_deleted').NBS.$query->row('field_label');
 		$this->logger->log_action($cp_message);
 
-		$this->functions->clear_caching('all', '', TRUE);
+		$this->functions->clear_caching('all', '');
 
 		$this->session->set_flashdata('message_success', $cp_message);
 		$this->functions->redirect(BASE.AMP.'C=admin_content'.AMP.'M=category_custom_field_group_manager'.AMP.'group_id='.$group_id);
@@ -3214,7 +3247,7 @@ class Admin_content extends CP_Controller {
 			$this->layout->delete_layout_fields($deleted['field_ids'], $channel_ids);
 		}
 		
-		$this->functions->clear_caching('all', '', TRUE);
+		$this->functions->clear_caching('all', '');
 
 		$cp_message = lang('field_group_deleted').NBS.NBS.$group_name->row('group_name');
 
@@ -3637,7 +3670,7 @@ class Admin_content extends CP_Controller {
 
 		$this->logger->log_action($cp_message);
 
-		$this->functions->clear_caching('all', '', TRUE);
+		$this->functions->clear_caching('all', '');
 
 		$this->session->set_flashdata('message_success', $cp_message);
 		$this->functions->redirect(BASE.AMP.'C=admin_content'.AMP.'M=field_management'.AMP.'group_id='.$deleted['group_id']);
@@ -3930,7 +3963,7 @@ class Admin_content extends CP_Controller {
 
 		$this->logger->log_action($cp_message);
 
-		$this->functions->clear_caching('all', '', TRUE);
+		$this->functions->clear_caching('all', '');
 
 		$this->session->set_flashdata('message_success', $cp_message);
 		$this->functions->redirect(BASE.AMP.'C=admin_content'.AMP.'M=status_group_management');

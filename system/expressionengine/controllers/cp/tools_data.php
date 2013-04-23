@@ -104,7 +104,7 @@ class Tools_data extends CP_Controller {
 
 		if (isset($_POST['type']))
 		{
-			$this->functions->clear_caching($_POST['type'], '', TRUE);
+			$this->functions->clear_caching($_POST['type'], '');
 			$this->session->set_flashdata('message_success', lang('cache_deleted'));
 			$this->functions->redirect(BASE.AMP.'C=tools_data'.AMP.'M=clear_caching');
 		}

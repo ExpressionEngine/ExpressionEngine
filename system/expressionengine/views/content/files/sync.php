@@ -1,6 +1,8 @@
 <?php extend_template('default') ?>
 
+<div id="sync">
 <?=form_open('C=content_files'.AMP.'M=do_sync_files')?>
+
 	<table class="mainTable padTable" border="0" cellspacing="0" cellpadding="0">
 		<thead>
 			<tr>
@@ -58,6 +60,8 @@
 		</div>
 	</div>
 <?=form_close()?>
+</div>
+
 
 <script type="text/x-jquery-tmpl" id="sync_complete_template">
 	<div id="sync_complete">

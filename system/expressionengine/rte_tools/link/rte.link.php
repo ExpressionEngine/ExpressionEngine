@@ -54,7 +54,7 @@ class Link_rte {
 	 */
 	function globals()
 	{
-		$this->EE->lang->loadfile('rte');
+		ee()->lang->loadfile('rte');
 		return array(
 			'rte.link'	=> array(
 				'add'		=> lang('link'),

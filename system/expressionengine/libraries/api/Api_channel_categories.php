@@ -42,8 +42,8 @@ class Api_channel_categories extends Api {
 	{
 		parent::__construct();
 		
-		$this->EE->load->model('channel_model');
-		$this->assign_cat_parent = ($this->EE->config->item('auto_assign_cat_parents') == 'n') ? FALSE : TRUE; 
+		ee()->load->model('channel_model');
+		$this->assign_cat_parent = (ee()->config->item('auto_assign_cat_parents') == 'n') ? FALSE : TRUE; 
 	}
 
 	// --------------------------------------------------------------------
@@ -63,7 +63,7 @@ class Api_channel_categories extends Api {
 	 *
 	 * @return 	mixed		FALSE if no results or cat array of results.
 	 */
-	public function category_tree($group_id, $selected = '', $order = 'c', $exclude="files")
+	public function category_tree($group_id, $selected = '', $order = 'c')
 	{
 		// reset $this->categories
 		$this->initialize(array(
@@ -98,7 +98,7 @@ class Api_channel_categories extends Api {
 		
 		$order = ($order == 'a') ? "cat_name" : "cat_order";
 		
-		$query = $this->EE->db->select('cat_name, cat_id, parent_id, cat_image, cat_description, g.group_id, group_name, cat_url_title')
+		$query = ee()->db->select('cat_name, cat_id, parent_id, cat_image, cat_description, g.group_id, group_name, cat_url_title')
 						->from('category_groups g, categories c')
 						->where('g.group_id', 'c.group_id', FALSE)
 						->where_in('g.group_id', $group_ids)
@@ -198,12 +198,12 @@ class Api_channel_categories extends Api {
 	{
 		$order  = ($nested == 'y') ? 'group_id, parent_id, cat_name' : 'cat_name';
 
-		$this->EE->db->select('categories.group_id, categories.parent_id, categories.cat_id, categories.cat_name');
-		$this->EE->db->from('categories');
+		ee()->db->select('categories.group_id, categories.parent_id, categories.cat_id, categories.cat_name');
+		ee()->db->from('categories');
 		
 		if ($sites == FALSE)
 		{
-			$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
+			ee()->db->where('site_id', ee()->config->item('site_id'));
 		}
 		elseif ($sites != 'all')
 		{
@@ -212,7 +212,7 @@ class Api_channel_categories extends Api {
 				$sites = implode('|', $sites);
 			}
 			
-			$this->EE->functions->ar_andor_string($sites, 'site_id');
+			ee()->functions->ar_andor_string($sites, 'site_id');
 		}		
 			
 		
@@ -223,15 +223,15 @@ class Api_channel_categories extends Api {
 				$categories = implode('|', $categories);
 			}
 			
-			$this->EE->functions->ar_andor_string($categories, 'cat_id', 'exp_categories');
+			ee()->functions->ar_andor_string($categories, 'cat_id', 'exp_categories');
 		}
 				
-		$this->EE->db->order_by($order);
+		ee()->db->order_by($order);
 		
-		$query = $this->EE->db->get();
+		$query = ee()->db->get();
 
 		// Load the text helper
-		$this->EE->load->helper('text');
+		ee()->load->helper('text');
 				
 		if ($query->num_rows() > 0)
 		{
@@ -318,7 +318,7 @@ class Api_channel_categories extends Api {
 			return;
 		}
 
-		$sql = "SELECT parent_id FROM exp_categories WHERE site_id = '".$this->EE->db->escape_str($this->EE->config->item('site_id'))."' AND (";
+		$sql = "SELECT parent_id FROM exp_categories WHERE site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."' AND (";
 
 		foreach($cat_array as $val)
 		{
@@ -327,7 +327,7 @@ class Api_channel_categories extends Api {
 
 		$sql = substr($sql, 0, -3).")";
 
-		$query = $this->EE->db->query($sql);
+		$query = ee()->db->query($sql);
 
 		if ($query->num_rows() == 0)
 		{
@@ -359,15 +359,15 @@ class Api_channel_categories extends Api {
 	 */
 	public function fetch_allowed_category_groups($cat_group)
 	{	
-		if ($this->EE->cp->allowed_group('can_admin_channels') OR $this->EE->cp->allowed_group('can_edit_categories'))
+		if (ee()->cp->allowed_group('can_admin_channels') OR ee()->cp->allowed_group('can_edit_categories'))
 		{
 			if (! is_array($cat_group))
 			{
 				$cat_group = explode('|', $cat_group);
 			}
 			
-			$this->EE->load->model('category_model');
-			$catg_query = $this->EE->category_model->get_category_group_name($cat_group);
+			ee()->load->model('category_model');
+			$catg_query = ee()->category_model->get_category_group_name($cat_group);
 
 			$link_info = array();
 

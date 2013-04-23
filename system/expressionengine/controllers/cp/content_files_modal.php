@@ -342,7 +342,7 @@ class Content_files_modal extends CP_Controller {
 		$original_name	= implode('.', $original_name);
 		
 		return array(
-			'file_json'			=> $this->javascript->generate_json($file, TRUE),
+			'file_json'			=> json_encode($file),
 			'file_extension'	=> $file_extension,
 			'original_name'		=> $original_name,
 			'hidden' => array(
@@ -368,7 +368,7 @@ class Content_files_modal extends CP_Controller {
 		return array(
 			'file'		=> $file,
 			'file_id'	=> $file['file_id'],
-			'file_json'	=> $this->javascript->generate_json($file, TRUE)
+			'file_json'	=> json_encode($file)
 		);
 	}
 	

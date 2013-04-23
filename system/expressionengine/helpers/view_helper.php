@@ -30,7 +30,7 @@
  */
 function extend_template($which, $disable = array())
 {
-	get_instance()->view->extend('_templates/'.$which, $disable);
+	ee()->view->extend('_templates/'.$which, $disable);
 }
 
 // ------------------------------------------------------------------------
@@ -41,7 +41,7 @@ function extend_template($which, $disable = array())
  */
 function extend_view($which, $disable = array())
 {
-	get_instance()->view->extend($which, $disable);
+	ee()->view->extend($which, $disable);
 }
 
 // ------------------------------------------------------------------------
@@ -51,7 +51,7 @@ function extend_view($which, $disable = array())
  */
 function disabled($which)
 {
-	return get_instance()->view->disabled($which);
+	return ee()->view->disabled($which);
 }
 
 // ------------------------------------------------------------------------
@@ -61,7 +61,7 @@ function disabled($which)
  */
 function enabled($which)
 {
-	return ! get_instance()->view->disabled($which);
+	return ! ee()->view->disabled($which);
 }
 
 /* End of file */

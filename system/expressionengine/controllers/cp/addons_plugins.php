@@ -678,7 +678,7 @@ class Addons_plugins extends CP_Controller {
 			eval(substr($contents, $start, $length));
 		}
 		
-		@include_once($path);
+		include_once($path);
 
 		if ( ! isset($plugin_info) OR ! is_array($plugin_info))
 		{

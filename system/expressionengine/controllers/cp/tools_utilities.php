@@ -669,7 +669,6 @@ class Tools_utilities extends CP_Controller {
 			
 		$this->lang->loadfile('member_import');
 		$this->load->library('validate');
-		$this->load->helper('security');
 		
 		$this->validate->member_id			= '';
 		$this->validate->val_type			= 'new';
@@ -823,7 +822,7 @@ class Tools_utilities extends CP_Controller {
 								}
 
 								// encode password if it is type="text"
-								$this->members[$i][$tag->tag] = ($tag->attributes['type'] == 'text') ? do_hash($tag->value) : $tag->value;
+								$this->members[$i][$tag->tag] = ($tag->attributes['type'] == 'text') ? sha1($tag->value) : $tag->value;
 								break;
 						}
 					}
@@ -879,7 +878,7 @@ class Tools_utilities extends CP_Controller {
 					
 					if ( ! isset($this->members[$i]['password']))
 					{
-						$this->members[$i]['password'] = do_hash(mt_rand());
+						$this->members[$i]['password'] = sha1(mt_rand());
 					}
 					$i++;
 				}

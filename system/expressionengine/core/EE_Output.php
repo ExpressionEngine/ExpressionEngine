@@ -342,7 +342,7 @@ class EE_Output extends CI_Output {
 		if (defined('REQ') && REQ == 'CP')
 		{		
 			$EE->load->library('logger');
-			$EE->logger->deprecate('2.6', 'show_error()');
+			$EE->logger->deprecated('2.6', 'show_error()');
 		}
 
 		$this->set_header("Content-Type: text/html; charset=".$EE->config->item('charset'));
@@ -423,7 +423,7 @@ class EE_Output extends CI_Output {
 		}
 		
 		$EE->load->library('javascript');
-		exit($EE->javascript->generate_json($msg, TRUE));
+		exit(json_encode($msg));
 	}
 
 	// --------------------------------------------------------------------

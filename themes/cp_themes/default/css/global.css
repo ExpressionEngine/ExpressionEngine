@@ -2460,7 +2460,7 @@ label.hide_field {
 	font-weight:		normal;
 }
 
-.instruction_text p {
+.instruction_text {
 	color:				#859199;
 	font-size:			11px;
 }
@@ -4063,11 +4063,6 @@ div.alert li {
  * a designer taking a look. For now it's moved.
  */
 
-/* There is also .js_show. Use these instead of show() hide(), muuuch faster! */
-.js_hide {
-	display: none;
-}
-
 .button a,
 .cp_button a,
 #search form,
@@ -4130,3 +4125,160 @@ div.pageContents,
 	.nanner p{ text-align: center; }
 
 	.nanner img{ margin-right: 5px; position: relative; top: 2px; }
+
+
+.multiselect,
+.multiselect-active,
+.multiselect-filter {
+	width: 48%;
+}
+
+.multiselect,
+.multiselect-active {
+	background: #DDE2E5;
+	border: 1px solid #B6C0C2;
+	height: 240px;
+	overflow: auto;
+}
+
+.multiselect-active {
+	float: right;
+	height: 270px;		/* multiselect + filter box */
+	line-height: 160%;
+}
+
+.multiselect-filter {
+	border: 1px solid #B6C0C2;
+	border-bottom: none;
+	margin: 7px 0 0 0;
+}
+
+.multiselect-filter input,
+.multiselect-filter input:focus {
+	border-radius: 0;
+	border: none;
+	line-height: 1.5;
+	padding: 5px 10px;
+}
+
+.multiselect li,
+.multiselect-active li {
+	background: #fff;
+	border-bottom: 1px solid #B6C0C2;
+	padding: 5px 10px;
+	position: relative;
+	z-index: 0;
+}
+
+.multiselect li:nth-child(even),
+.multiselect-active li:nth-child(even) {
+	background: #F7FBFE;
+}
+
+.multiselect-active .remove-item {
+	color: #E67174;
+	display: none;
+	font-size: 20px;
+	height: 100%;
+	padding: 5px;
+	position: absolute;
+	right: 0;
+	top: 0;
+}
+
+.multiselect-active li:hover .remove-item {
+	display: inline-block;
+}
+
+.multiselect-active .reorder-handle {
+	background: url("../images/reorder-pull.png") center 10px no-repeat;
+	cursor: move;
+	display: inline-block;
+	height: 100%;
+	left: 0;
+	padding-left: 10px;
+	position: absolute;
+	top: 0;
+	width: 20px;
+	width: 8px;
+}
+
+.multiselect-active li {
+	vertical-align: baseline;
+	color: #2a7c10;
+	font-weight: bold;
+	padding-left: 30px;
+	cursor: pointer;
+}
+
+.multiselect.empty li,
+.multiselect-active.empty li {
+	background: transparent;
+	border-bottom: none;
+	color: #aaa;
+	font-size: 14px;
+	font-weight: bold;
+	margin: 0;
+	padding: 24% 0 0 0;
+	text-align: center;
+	text-shadow: 0 1px 1px #EDF2F5;
+}
+
+.multiselect li label {
+	background: url("../images/relate-check.gif") 0 5px no-repeat;
+	background-size: 0 0;
+
+	-webkit-transition-property: padding, background-size;
+	-webkit-transition-duration: .1s, .1s;
+}
+
+.multiselect li.selected {
+	background-color: #FFFADD;
+}
+
+.multiselect li.selected label {
+	background-size: 11px 8px;
+	color: #2a7c10;
+	font-weight: bold;
+	padding-left: 20px;
+}
+
+.force-scroll {
+	overflow: scroll;
+	overflow-y: scroll;
+	overflow-x: hidden;
+}
+
+/* aggravating safari bug where position:ing or float:ing an element
+   will reduce the scrollbar box-shadow to a z-index of 0, never to
+   be seen again underneath element's the children..
+*/
+.force-scroll > *,
+.force-scroll > * {
+	border-right: 1px solid #B6C0C2;
+	box-sizing: border-box;
+	width: 100%;
+}
+
+.force-scroll::-webkit-scrollbar,
+.force-scroll::-moz-scrollbar {
+	-webkit-appearance: none;
+	margin: 2px;
+	padding: 2px;
+	width: 9px;
+}
+
+.force-scroll::-webkit-scrollbar-track {
+    background-color: #fff;
+    /* See comment on .force-scroll ul ... border-left does *not* work here either
+	box-shadow: 1px 0 1px #B6C0C2;
+	*/
+}
+
+.force-scroll::-webkit-scrollbar-thumb {
+	background-clip: padding-box;
+	background-color: rgba(0,0,0,.3);
+	border-radius: 4px;
+	border-width: 0 2px 0 2px;
+	box-shadow: inset 0 0 0 2px #fff;
+}

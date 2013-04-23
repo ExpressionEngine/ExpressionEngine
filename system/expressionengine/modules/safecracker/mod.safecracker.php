@@ -38,12 +38,12 @@ class Safecracker
 	{
 		$this->EE = get_instance();
 		
-		$this->EE->load->library('safecracker_lib');
+		ee()->load->library('safecracker_lib');
 		
 		//proceed if called from a template
-		if ( ! empty($this->EE->TMPL))
+		if ( ! empty(ee()->TMPL))
 		{
-			$this->return_data = $this->EE->safecracker->entry_form();
+			$this->return_data = ee()->safecracker->entry_form();
 		}
 	}
 
@@ -57,12 +57,12 @@ class Safecracker
 	public function submit_entry()
 	{
 		//exit if not called as an action
-		if ( ! empty($this->EE->TMPL) || ! $this->EE->input->get_post('ACT'))
+		if ( ! empty(ee()->TMPL) || ! ee()->input->get_post('ACT'))
 		{
 			return '';
 		}
 		
-		$this->EE->safecracker->submit_entry();
+		ee()->safecracker->submit_entry();
 	}
 
 	// --------------------------------------------------------------------	
@@ -74,8 +74,8 @@ class Safecracker
 	 */
 	public function combo_loader()
 	{
-		$this->EE->load->library('SC_Javascript', array('instance' => $this->EE), 'sc_javascript');
-		return $this->EE->sc_javascript->combo_load();
+		ee()->load->library('SC_Javascript', array('instance' => $this->EE), 'sc_javascript');
+		return ee()->sc_javascript->combo_load();
 	}
 }
 

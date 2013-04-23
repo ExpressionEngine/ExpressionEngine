@@ -39,7 +39,7 @@ class File_ft extends EE_Fieldtype {
 	function __construct()
 	{
 		parent::__construct();
-		$this->EE->load->library('file_field');
+		ee()->load->library('file_field');
 	}
 	
 	// --------------------------------------------------------------------
@@ -51,8 +51,8 @@ class File_ft extends EE_Fieldtype {
 	 */
 	function save($data)
 	{
-		$directory = $this->EE->input->post($this->field_name.'_hidden_dir');
-		return $this->EE->file_field->format_data(urldecode($data), $directory);
+		$directory = ee()->input->post($this->field_name.'_hidden_dir');
+		return ee()->file_field->format_data(urldecode($data), $directory);
 	}
 	
 	// --------------------------------------------------------------------
@@ -64,7 +64,7 @@ class File_ft extends EE_Fieldtype {
 	 */
 	function validate($data)
 	{
-		return $this->EE->file_field->validate(
+		return ee()->file_field->validate(
 			$data, 
 			$this->field_name,
 			$this->settings['field_required']
@@ -83,7 +83,7 @@ class File_ft extends EE_Fieldtype {
 		$allowed_file_dirs		= (isset($this->settings['allowed_directories']) && $this->settings['allowed_directories'] != 'all') ? $this->settings['allowed_directories'] : '';
 		$content_type			= (isset($this->settings['field_content_type'])) ? $this->settings['field_content_type'] : 'all';
 
-		return $this->EE->file_field->field(
+		return ee()->file_field->field(
 			$this->field_name,
 			$data,
 			$allowed_file_dirs,
@@ -100,7 +100,7 @@ class File_ft extends EE_Fieldtype {
 	 */
 	function pre_process($data)
 	{
-		return $this->EE->file_field->parse_field($data);
+		return ee()->file_field->parse_field($data);
 	}
 	
 	// --------------------------------------------------------------------
@@ -113,7 +113,7 @@ class File_ft extends EE_Fieldtype {
 	 */
 	function pre_loop($data)
 	{
-		$this->EE->file_field->cache_data($data);
+		ee()->file_field->cache_data($data);
 	}
 	
 	// --------------------------------------------------------------------
@@ -140,11 +140,11 @@ class File_ft extends EE_Fieldtype {
 		// Make sure we have file_info to work with
 		if ($tagdata !== FALSE AND $file_info === FALSE)
 		{
-			$tagdata = $this->EE->functions->prep_conditionals($tagdata, array());
+			$tagdata = ee()->functions->prep_conditionals($tagdata, array());
 		}
 		else if ($tagdata !== FALSE)
 		{
-			$tagdata = $this->EE->functions->prep_conditionals($tagdata, $file_info);
+			$tagdata = ee()->functions->prep_conditionals($tagdata, $file_info);
 
 			// -----------------------------
 			// Any date variables to format?
@@ -156,7 +156,7 @@ class File_ft extends EE_Fieldtype {
 
 			foreach ($date_vars as $val)
 			{
-				if (preg_match_all("/".LD.$val."\s+format=[\"'](.*?)[\"']".RD."/s", $this->EE->TMPL->tagdata, $matches))
+				if (preg_match_all("/".LD.$val."\s+format=[\"'](.*?)[\"']".RD."/s", ee()->TMPL->tagdata, $matches))
 				{
 					for ($j = 0; $j < count($matches['0']); $j++)
 					{
@@ -176,14 +176,14 @@ class File_ft extends EE_Fieldtype {
 				}
 			}
 
-			foreach ($this->EE->TMPL->var_single as $key => $val)
+			foreach (ee()->TMPL->var_single as $key => $val)
 			{
 				// Format {upload_date}
 				if (isset($upload_date[$key]))
 				{
-					$tagdata = $this->EE->TMPL->swap_var_single(
+					$tagdata = ee()->TMPL->swap_var_single(
 						$key,
-						$this->EE->localize->format_date(
+						ee()->localize->format_date(
 							$upload_date[$key], 
 							$file_info['upload_date']
 						),
@@ -194,9 +194,9 @@ class File_ft extends EE_Fieldtype {
 				// Format {modified_date}
 				if (isset($modified_date[$key]))
 				{
-					$tagdata = $this->EE->TMPL->swap_var_single(
+					$tagdata = ee()->TMPL->swap_var_single(
 						$key,
-						$this->EE->localize->format_date(
+						ee()->localize->format_date(
 							$modified_date[$key], 
 							$file_info['modified_date']
 						),
@@ -208,7 +208,7 @@ class File_ft extends EE_Fieldtype {
 			// ---------------
 			// Parse the rest!
 			// ---------------
-			$tagdata = $this->EE->functions->var_swap($tagdata, $file_info);
+			$tagdata = ee()->functions->var_swap($tagdata, $file_info);
 			
 			// More an example than anything else - not particularly useful in this context
 			if (isset($params['backspace']))
@@ -261,11 +261,16 @@ class File_ft extends EE_Fieldtype {
 			{
 				$data = $file_info[$key];
 			}
+
+			if (empty($data))
+			{
+				return $tagdata;
+			}
 			
 			if (isset($params['wrap']))
 			{
 				return $this->_wrap_it($file_info, $params['wrap'], $data);
-			}			
+			}
 			
 			return $data;
 		}
@@ -282,7 +287,7 @@ class File_ft extends EE_Fieldtype {
 	{
 		if ($type == 'link')
 		{
-			$this->EE->load->helper('url_helper');
+			ee()->load->helper('url_helper');
 					
 			return $file_info['file_pre_format']
 				.anchor($full_path, $file_info['filename'], $file_info['file_properties'])
@@ -311,18 +316,18 @@ class File_ft extends EE_Fieldtype {
 	{
 		$prefix = 'file';
 
-		$this->EE->load->model('file_upload_preferences_model');
+		ee()->load->model('file_upload_preferences_model');
 		
 		$field_content_options = array('all' => lang('all'), 'image' => lang('type_image'));
 
-		$this->EE->table->add_row(
+		ee()->table->add_row(
 			lang('field_content_file', $prefix.'field_content_type'),
 			form_dropdown('file_field_content_type', $field_content_options, $data['field_content_type'], 'id="'.$prefix.'field_content_type"')
 		);
 		
 		$directory_options['all'] = lang('all');
 		
-		$dirs = $this->EE->file_upload_preferences_model->get_file_upload_preferences(1);
+		$dirs = ee()->file_upload_preferences_model->get_file_upload_preferences(1);
 
 		foreach($dirs as $dir)
 		{
@@ -331,7 +336,7 @@ class File_ft extends EE_Fieldtype {
 		
 		$allowed_directories = ( ! isset($data['allowed_directories'])) ? 'all' : $data['allowed_directories'];
 
-		$this->EE->table->add_row(
+		ee()->table->add_row(
 			lang('allowed_dirs_file', $prefix.'field_allowed_dirs'),
 			form_dropdown('file_allowed_directories', $directory_options, $allowed_directories, 'id="'.$prefix.'field_allowed_dirs"')
 		);		
@@ -345,8 +350,8 @@ class File_ft extends EE_Fieldtype {
 	function save_settings($data)
 	{		
 		return array(
-			'field_content_type'	=> $this->EE->input->post('file_field_content_type'),
-			'allowed_directories'	=> $this->EE->input->post('file_allowed_directories'),
+			'field_content_type'	=> ee()->input->post('file_field_content_type'),
+			'allowed_directories'	=> ee()->input->post('file_allowed_directories'),
 			'field_fmt' 			=> 'none'
 		);
 	}	

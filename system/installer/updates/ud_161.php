@@ -30,7 +30,7 @@ class Updater {
 		$this->EE =& get_instance();
 	
 		// Grab the config file
-		if ( ! @include($this->EE->config->config_path))
+		if ( ! @include(ee()->config->config_path))
 		{
 			show_error('Your config'.EXT.' file is unreadable. Please make sure the file exists and that the file permissions to 666 on the following file: expressionengine/config/config.php');
 		}
@@ -51,7 +51,7 @@ class Updater {
 
 	function do_update()
 	{
-		$query = $this->EE->db->query("SHOW tables LIKE 'exp_mailing_list'");
+		$query = ee()->db->query("SHOW tables LIKE 'exp_mailing_list'");
 		
 		if ($query->num_rows() > 0)
 		{
@@ -73,6 +73,10 @@ class Updater {
 		
 		// Show All Tab in the Publish Area
 		$Q[] = "ALTER TABLE `exp_weblogs` ADD `show_show_all_cluster` CHAR( 1 ) NOT NULL DEFAULT 'y' AFTER `show_pages_cluster`;";
+
+		// "live" preview modifications
+		$Q[] = "ALTER TABLE `exp_weblogs` ADD `live_look_template` INT(10) UNSIGNED NOT NULL DEFAULT '0' AFTER `url_title_prefix`";
+		
 	
 		
 		/** ---------------------------------------
@@ -81,7 +85,7 @@ class Updater {
 		
 		foreach ($Q as $sql)
 		{
-			$this->EE->db->query($sql);
+			ee()->db->query($sql);
 		}
 		
 	

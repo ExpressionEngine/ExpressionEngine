@@ -375,7 +375,7 @@ class Login extends CP_Controller {
 		/*  - Perform additional actions after logout
 		/*  - Added EE 1.6.1
 		*/
-			$edata = $this->extensions->call('cp_member_logout');
+			$this->extensions->call('cp_member_logout');
 			if ($this->extensions->end_script === TRUE) return;
 		/*
 		/* -------------------------------------------*/

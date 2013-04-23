@@ -77,11 +77,11 @@ class EE_Xmlrpc extends CI_Xmlrpc {
 				$this->request(array(
 					$name,
 					$blog_url,
-					$this->EE->config->item('site_index'),
+					ee()->config->item('site_index'),
 					$rss_url
 				));
 				
-				if ( ! $this->EE->xmlrpc->send_request())
+				if ( ! ee()->xmlrpc->send_request())
 				{
 					$this->method('weblogUpdates.ping');
 					$this->request(array(
@@ -105,10 +105,10 @@ class EE_Xmlrpc extends CI_Xmlrpc {
 		}
 		else
 		{
-			if ( ! $license = $this->EE->config->item('license_number'))
+			if ( ! $license = ee()->config->item('license_number'))
 			{
-				$this->EE->lang->loadfile('xmlrpc');
-				$this->error = $this->EE->lang->line('invalid_license');
+				ee()->lang->loadfile('xmlrpc');
+				$this->error = ee()->lang->line('invalid_license');
 				return $this->display_error();
 			}
 			

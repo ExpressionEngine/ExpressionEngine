@@ -487,7 +487,7 @@ foreach ($this->buttons as $val)
 /*	- remove_close_all_button => Remove the Close All button from the Publish/Edit page (y/n)
 /*	  Useful because most browsers no longer need it and Admins might want it gone
 /* -------------------------------------------*/
-if ($this->EE->config->item('remove_close_all_button') !== 'y')
+if (ee()->config->item('remove_close_all_button') !== 'y')
 {
 ?>
 

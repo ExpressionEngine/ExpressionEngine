@@ -72,7 +72,7 @@ class Radio_ft extends EE_Fieldtype {
 		
 		if ( ! $valid)
 		{
-			return $this->EE->lang->line('invalid_selection');
+			return ee()->lang->line('invalid_selection');
 		}
 	}
 	
@@ -88,7 +88,7 @@ class Radio_ft extends EE_Fieldtype {
 		
 		// If they've selected something we'll make sure that it's a valid choice
 		$selected = $data;
-//$this->EE->input->post($this->field_name);
+//ee()->input->post($this->field_name);
 		
 		$r = form_fieldset('');
 
@@ -108,11 +108,11 @@ class Radio_ft extends EE_Fieldtype {
 		// Experimental parameter, do not use
 		if (isset($params['raw_output']) && $params['raw_output'] == 'yes')
 		{
-			return $this->EE->functions->encode_ee_tags($data);
+			return ee()->functions->encode_ee_tags($data);
 		}
 
-		return $this->EE->typography->parse_type(
-			$this->EE->functions->encode_ee_tags($data),
+		return ee()->typography->parse_type(
+			ee()->functions->encode_ee_tags($data),
 			array(
 				'text_format'	=> $this->row['field_ft_'.$this->field_id],
 				'html_format'	=> $this->row['channel_html_formatting'],
@@ -153,9 +153,9 @@ class Radio_ft extends EE_Fieldtype {
 		{
 			// We need to pre-populate this menu from an another channel custom field
 
-			$this->EE->db->select('field_id_'.$this->settings['field_pre_field_id']);
-			$this->EE->db->where('channel_id', $this->settings['field_pre_channel_id']);
-			$pop_query = $this->EE->db->get('channel_data');
+			ee()->db->select('field_id_'.$this->settings['field_pre_field_id']);
+			ee()->db->where('channel_id', $this->settings['field_pre_channel_id']);
+			$pop_query = ee()->db->get('channel_data');
 
 			$field_options[''] = '--';
 

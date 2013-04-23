@@ -1147,7 +1147,7 @@ class Design extends CP_Controller {
 
 				if ($current_group != 0)
 				{
-					$vars['templates']['template_group_div_'.$current_group]['select'] = form_multiselect('template_group_'.$row['group_id'].'[]', $tmpl, '', "size='8' class='multiselect' style='width:45%'");
+					$vars['templates']['template_group_div_'.$current_group]['select'] = form_multiselect('template_group_'.$row['group_id'].'[]', $tmpl, '', "size='8' style='width:45%'");
 					$vars['templates']['template_group_div_'.$current_group]['active'] = ($current_group == $group_id) ? TRUE : FALSE;
 					$tmpl = array();
 				}
@@ -1157,9 +1157,9 @@ class Design extends CP_Controller {
 			$current_group = $row['group_id'];
 		}
 
-		$groups = form_multiselect('template_groups', $groups, $group_id, "id='template_groups' size='10' class='multiselect' style='width:160px'");
+		$groups = form_multiselect('template_groups', $groups, $group_id, "id='template_groups' size='10' style='width:160px'");
 		
-		$vars['templates']['template_group_div_'.$current_group]['select'] = form_multiselect('template_group_'.$row['group_id'].'[]', $tmpl, '', "size='8' class='multiselect' style='width:45%'");
+		$vars['templates']['template_group_div_'.$current_group]['select'] = form_multiselect('template_group_'.$row['group_id'].'[]', $tmpl, '', "size='8' style='width:45%'");
 		$vars['templates']['template_group_div_'.$current_group]['active'] = ($current_group == $group_id) ? TRUE : FALSE;
 
 		$vars['groups'] = $groups;
@@ -1775,7 +1775,7 @@ class Design extends CP_Controller {
 		/*  - Allows complete takeover of the template editor
 		/*  - Added 1.6.0
 		*/  
-			$edata = $this->extensions->call('edit_template_start', $query, $template_id, $message);
+			$this->extensions->call('edit_template_start', $query, $template_id, $message);
 			if ($this->extensions->end_script === TRUE) return;
 		/*
 		/* -------------------------------------*/
@@ -2084,7 +2084,7 @@ class Design extends CP_Controller {
 		/*  - Add more things to do for template
 		/*  - Added 1.6.0
 		*/  
-			$edata = $this->extensions->call('update_template_end', $template_id, $message);
+			$this->extensions->call('update_template_end', $template_id, $message);
 			if ($this->extensions->end_script === TRUE) return;
 		/*
 		/* -------------------------------------*/
@@ -2759,7 +2759,7 @@ class Design extends CP_Controller {
 		}
 
 		$this->javascript->output('
-			$("#template_data").markItUp('.$this->javascript->generate_json($markItUp).');
+			$("#template_data").markItUp('.json_encode($markItUp).');
 		');
 			
 		// check what the message is also, as this method could throw itself
@@ -2829,7 +2829,7 @@ class Design extends CP_Controller {
 		}
 
 		$this->javascript->output('
-			$("#template_data").markItUp('.$this->javascript->generate_json($markItUp).');
+			$("#template_data").markItUp('.json_encode($markItUp).');
 		');
 
 		if ($template_id)
@@ -2929,7 +2929,7 @@ class Design extends CP_Controller {
 		}
 
 		$this->javascript->output('
-			$("#template_data").markItUp('.$this->javascript->generate_json($markItUp).');
+			$("#template_data").markItUp('.json_encode($markItUp).');
 		');
 		
 		$vars = array(
@@ -3121,7 +3121,7 @@ class Design extends CP_Controller {
 		}
 
 		$this->javascript->output('
-			$("#template_data").markItUp('.$this->javascript->generate_json($markItUp).');
+			$("#template_data").markItUp('.json_encode($markItUp).');
 		');
 
 		$this->cp->render('design/edit_theme_template', $vars);
@@ -3463,7 +3463,7 @@ class Design extends CP_Controller {
 			}
 		}
 		
-		$prefs_json = $this->javascript->generate_json($prefs_json);
+		$prefs_json = json_encode($prefs_json);
 		
 		$this->javascript->output("EE.pref_json = $prefs_json");
 		$this->javascript->output('$("#template_group_'.$vars['first_template'].'").addClass("selected");');
@@ -4659,6 +4659,12 @@ class Design extends CP_Controller {
 						continue;
 					}
 					
+					// Skip hidden ._ files
+					if (substr($template, 0, 2) == '._')
+					{
+						continue;
+					}
+
 					// If the last occurance is the first position?  We skip that too.
 					if (strrpos($template, '.') == FALSE)
 					{

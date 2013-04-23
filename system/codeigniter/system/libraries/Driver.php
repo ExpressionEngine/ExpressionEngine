@@ -50,7 +50,7 @@ class CI_Driver_Library {
 			if ( ! class_exists($child_class))
 			{
 				// check application path first
-				foreach (get_instance()->load->get_package_paths(TRUE) as $path)
+				foreach (ee()->load->get_package_paths(TRUE) as $path)
 				{
 					// and check for case sensitivity of both the parent and child libs
 					foreach (array(ucfirst($this->lib_name), strtolower($this->lib_name)) as $lib)

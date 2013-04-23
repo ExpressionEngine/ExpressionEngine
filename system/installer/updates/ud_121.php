@@ -34,7 +34,7 @@ class Updater {
         $Q[] = "INSERT INTO exp_actions (class, method) VALUES ('Channel', 'insert_new_entry')";
 
         $DB->fetch_fields = TRUE;
-        $query = $this->EE->db->query("SELECT * FROM exp_member_groups");
+        $query = ee()->db->query("SELECT * FROM exp_member_groups");
         $flag = FALSE;
         
 		foreach ($query->fields as $field)
@@ -56,7 +56,7 @@ class Updater {
 		
 		foreach ($Q as $sql)
 		{
-			$this->EE->db->query($sql);
+			ee()->db->query($sql);
 		}
 	
 		/** -----------------------------------------
@@ -72,7 +72,7 @@ class Updater {
                     		'max_referrers'		=> '500'
 					);
 													
-		$this->EE->config->_append_config_1x($data);
+		ee()->config->_append_config_1x($data);
 		
 		return TRUE;
 	}

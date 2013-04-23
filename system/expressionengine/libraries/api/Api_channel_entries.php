@@ -43,7 +43,7 @@ class Api_channel_entries extends Api {
 	function __construct()
 	{
 		parent::__construct();
-		$this->EE->load->model('channel_entries_model');
+		ee()->load->model('channel_entries_model');
 	}
 
 	// --------------------------------------------------------------------
@@ -132,21 +132,20 @@ class Api_channel_entries extends Api {
 		}
 
 		$this->_prepare_data($data, $mod_data, $autosave);
-		$this->_build_relationships($data);
 		
 		$meta = array(
 			'channel_id'				=> $this->channel_id,
 			'author_id'					=> $data['author_id'],
-			'site_id'					=> $this->EE->config->item('site_id'),
-			'ip_address'				=> $this->EE->input->ip_address(),
-			'title'						=> ($this->EE->config->item('auto_convert_high_ascii') == 'y') ? ascii_to_entities($data['title']) : $data['title'],
+			'site_id'					=> ee()->config->item('site_id'),
+			'ip_address'				=> ee()->input->ip_address(),
+			'title'						=> (ee()->config->item('auto_convert_high_ascii') == 'y') ? ascii_to_entities($data['title']) : $data['title'],
 			'url_title'					=> $data['url_title'],
 			'entry_date'				=> $data['entry_date'],
-			'edit_date'					=> $this->EE->localize->format_date('%Y%m%d%H%i%s', $data['edit_date'], FALSE),
+			'edit_date'					=> ee()->localize->format_date('%Y%m%d%H%i%s', $data['edit_date'], FALSE),
 			'versioning_enabled'		=> $data['versioning_enabled'],
-			'year'						=> $this->EE->localize->format_date('%Y', $data['entry_date']),
-			'month'						=> $this->EE->localize->format_date('%m', $data['entry_date']),
-			'day'						=> $this->EE->localize->format_date('%d', $data['entry_date']),
+			'year'						=> ee()->localize->format_date('%Y', $data['entry_date']),
+			'month'						=> ee()->localize->format_date('%m', $data['entry_date']),
+			'day'						=> ee()->localize->format_date('%d', $data['entry_date']),
 			'expiration_date'			=> $data['expiration_date'],
 			'comment_expiration_date'	=> $data['comment_expiration_date'],
 			'sticky'					=> (isset($data['sticky']) && $data['sticky'] == 'y') ? 'y' : 'n',
@@ -204,20 +203,20 @@ class Api_channel_entries extends Api {
 			$this->send_pings($data['ping_servers'], $this->channel_id, $entry_id);
 		}
 
-		$this->EE->stats->update_channel_stats($this->channel_id);
+		ee()->stats->update_channel_stats($this->channel_id);
 
 		if (isset($data['old_channel']))
 		{
-			$this->EE->stats->update_channel_stats($data['old_channel']);
+			ee()->stats->update_channel_stats($data['old_channel']);
 		}
 
-		if ($this->EE->config->item('new_posts_clear_caches') == 'y')
+		if (ee()->config->item('new_posts_clear_caches') == 'y')
 		{
-			$this->EE->functions->clear_caching('all');
+			ee()->functions->clear_caching('all');
 		}
 		else
 		{
-			$this->EE->functions->clear_caching('sql');
+			ee()->functions->clear_caching('sql');
 		}
 
 		// I know this looks redundant in July of 2009, but if the code moves
@@ -290,7 +289,7 @@ class Api_channel_entries extends Api {
 			// new entry
 			if ( ! $data['title'])
 			{
-				$data['title'] = 'autosave_'.$this->EE->localize->now;
+				$data['title'] = 'autosave_'.ee()->localize->now;
 			}
 			
 			return $this->submit_new_entry($data['channel_id'], $data, TRUE);
@@ -312,16 +311,16 @@ class Api_channel_entries extends Api {
 	 */
 	function delete_entry($entry_ids)
 	{
-		$this->EE->load->library('api');
-		$this->EE->load->library('addons');
-		$this->EE->api->instantiate('channel_fields');
+		ee()->load->library('api');
+		ee()->load->library('addons');
+		ee()->api->instantiate('channel_fields');
 
 		if ( ! is_array($entry_ids))
 		{
 			$entry_ids = array($entry_ids);
 		}
 		
-		if (array_key_exists('comment', $this->EE->addons->get_installed('modules')))
+		if (array_key_exists('comment', ee()->addons->get_installed('modules')))
 		{
 			$comments_installed = TRUE;
 		}
@@ -331,19 +330,19 @@ class Api_channel_entries extends Api {
 		}
 
 		// grab entry meta data
-		$this->EE->db->select('channel_id, author_id, entry_id');
-		$this->EE->db->from('channel_titles');
-		$this->EE->db->where_in('entry_id', $entry_ids);
-		$query = $this->EE->db->get();
+		ee()->db->select('channel_id, author_id, entry_id');
+		ee()->db->from('channel_titles');
+		ee()->db->where_in('entry_id', $entry_ids);
+		$query = ee()->db->get();
 
 		
 		// Check permissions
-		$allowed_channels = $this->EE->functions->fetch_assigned_channels();
+		$allowed_channels = ee()->functions->fetch_assigned_channels();
 		$authors = array();
 
 		foreach ($query->result_array() as $row)
 		{
-			if ($this->EE->session->userdata('group_id') != 1)
+			if (ee()->session->userdata('group_id') != 1)
 			{
 				if ( ! in_array($row['channel_id'], $allowed_channels))
 				{
@@ -351,16 +350,16 @@ class Api_channel_entries extends Api {
 				}
 			}
 
-			if ($row['author_id'] == $this->EE->session->userdata('member_id'))
+			if ($row['author_id'] == ee()->session->userdata('member_id'))
 			{
-				if ($this->EE->session->userdata('can_delete_self_entries') != 'y')
+				if (ee()->session->userdata('can_delete_self_entries') != 'y')
 				{
 					return $this->_set_error('unauthorized_to_delete_self');
 				}
 			}
 			else
 			{
-				if ($this->EE->session->userdata('can_delete_all_entries') != 'y')
+				if (ee()->session->userdata('can_delete_all_entries') != 'y')
 				{
 					return $this->_set_error('unauthorized_to_delete_others');
 				}
@@ -371,8 +370,8 @@ class Api_channel_entries extends Api {
 		
 		
 		// grab channel field groups
-		$this->EE->db->select('channel_id, field_group');
-		$cquery = $this->EE->db->get('channels');
+		ee()->db->select('channel_id, field_group');
+		$cquery = ee()->db->get('channels');
 		
 		$channel_groups = array();
 		
@@ -383,8 +382,8 @@ class Api_channel_entries extends Api {
 
 
 		// grab fields and order by group
-		$this->EE->db->select('field_id, field_type, group_id');
-		$fquery = $this->EE->db->get('channel_fields');
+		ee()->db->select('field_id, field_type, group_id');
+		$fquery = ee()->db->get('channel_fields');
 		
 		$group_fields = array();
 		
@@ -395,8 +394,8 @@ class Api_channel_entries extends Api {
 		
 
 		// Delete primary data
-		$this->EE->db->where_in('entry_id', $entry_ids);
-		$this->EE->db->delete(array('channel_titles', 'channel_data', 'category_posts'));
+		ee()->db->where_in('entry_id', $entry_ids);
+		ee()->db->delete(array('channel_titles', 'channel_data', 'category_posts'));
 
 
 		$entries = array();
@@ -428,42 +427,11 @@ class Api_channel_entries extends Api {
 					$ft_to_ids[$ft][] = $val;
 				}
 			}
-			
-			
-			// Check for silly relationship children
-			
-			// We do the regular relationship data in the relationship
-			// fieldtype, but we have no way of knowing that a child
-			// exists until we check. So it happens here.
-			
-			$this->EE->db->select('rel_id');
-			$child_results = $this->EE->db->get_where('relationships', array('rel_child_id' => $val));
-
-			if ($child_results->num_rows() > 0)
-			{
-				// We have children, so we need to do a bit of housekeeping
-				// so parent entries don't continue to try to reference them
-				$cids = array();
-
-				foreach ($child_results->result_array() as $row)
-				{
-					$cids[] = $row['rel_id'];
-				}
-
-				foreach($fquery->result_array() as $row)
-				{
-					$field = 'field_id_'.$row['field_id'];
-					$this->EE->db->where_in($field, $cids);
-					$this->EE->db->update('channel_data', array($field => '0'));
-				}
-
-				$this->EE->db->delete('relationships', array('rel_child_id' => $val));
-			}
 
 
 			// Correct member post count
-			$this->EE->db->select('total_entries');
-			$mquery = $this->EE->db->get_where('members', array('member_id' => $authors[$val]));
+			ee()->db->select('total_entries');
+			$mquery = ee()->db->get_where('members', array('member_id' => $authors[$val]));
 
 			$tot = $mquery->row('total_entries');
 
@@ -472,35 +440,35 @@ class Api_channel_entries extends Api {
 				$tot -= 1;
 			}
 
-			$this->EE->db->where('member_id', $authors[$val]);
-			$this->EE->db->update('members', array('total_entries' => $tot));
+			ee()->db->where('member_id', $authors[$val]);
+			ee()->db->update('members', array('total_entries' => $tot));
 
 			if ($comments_installed)
 			{
-				$this->EE->db->where('status', 'o');
-				$this->EE->db->where('entry_id', $val);
-				$this->EE->db->where('author_id', $authors[$val]);
-				$count = $this->EE->db->count_all_results('comments');
+				ee()->db->where('status', 'o');
+				ee()->db->where('entry_id', $val);
+				ee()->db->where('author_id', $authors[$val]);
+				$count = ee()->db->count_all_results('comments');
 
 				if ($count > 0)
 				{
-					$this->EE->db->select('total_comments');
-					$mc_query = $this->EE->db->get_where('members', array('member_id' => $authors[$val]));
+					ee()->db->select('total_comments');
+					$mc_query = ee()->db->get_where('members', array('member_id' => $authors[$val]));
 
-					$this->EE->db->where('member_id', $authors[$val]);
-					$this->EE->db->update('members', array('total_comments' => ($mc_query->row('total_comments') - $count)));
+					ee()->db->where('member_id', $authors[$val]);
+					ee()->db->update('members', array('total_comments' => ($mc_query->row('total_comments') - $count)));
 				}
 
-				$this->EE->db->delete('comments', array('entry_id' => $val));
-				$this->EE->db->delete('comment_subscriptions', array('entry_id' => $val));
+				ee()->db->delete('comments', array('entry_id' => $val));
+				ee()->db->delete('comment_subscriptions', array('entry_id' => $val));
 			}
 			
 			// Delete entries in the channel_entries_autosave table
-			$this->EE->db->where('original_entry_id', $val)
+			ee()->db->where('original_entry_id', $val)
 						 ->delete('channel_entries_autosave');
 			
 			// Delete entries from the versions table
-			$this->EE->db->where('entry_id', $val)
+			ee()->db->where('entry_id', $val)
 						 ->delete('entry_versioning');
 
 
@@ -509,29 +477,29 @@ class Api_channel_entries extends Api {
 			//  - Add additional processing for entry deletion in loop
 			//  - Added: 1.4.1
 			//
-				$edata = $this->EE->extensions->call('delete_entries_loop', $val, $channel_id);
-				if ($this->EE->extensions->end_script === TRUE) return;
+				ee()->extensions->call('delete_entries_loop', $val, $channel_id);
+				if (ee()->extensions->end_script === TRUE) return;
 			//
 			// -------------------------------------------
 
 			// Update statistics
-			$this->EE->stats->update_channel_stats($channel_id);
+			ee()->stats->update_channel_stats($channel_id);
 			
 			if ($comments_installed)
 			{
-				$this->EE->stats->update_comment_stats($channel_id);
+				ee()->stats->update_comment_stats($channel_id);
 			}
 
 			$entries[] = $val;
 		}
 		
-		$fts = $this->EE->api_channel_fields->fetch_installed_fieldtypes();
+		$fts = ee()->api_channel_fields->fetch_installed_fieldtypes();
 		
 		// Pass to custom fields
 		foreach($ft_to_ids as $fieldtype => $ids)
 		{
-			$this->EE->api_channel_fields->setup_handler($fieldtype);
-			$this->EE->api_channel_fields->apply('delete', array($ids));
+			ee()->api_channel_fields->setup_handler($fieldtype);
+			ee()->api_channel_fields->apply('delete', array($ids));
 		}
 		
 		
@@ -539,17 +507,17 @@ class Api_channel_entries extends Api {
 		$methods = array('publish_data_delete_db');
 		$params = array('publish_data_delete_db' => array('entry_ids' => $entry_ids));
 		
-		$this->EE->api_channel_fields->get_module_methods($methods, $params);
+		ee()->api_channel_fields->get_module_methods($methods, $params);
 		
 		// Clear caches
-		$this->EE->functions->clear_caching('all', '', TRUE);
+		ee()->functions->clear_caching('all', '');
 
 		// -------------------------------------------
 		// 'delete_entries_end' hook.
 		//  - Add additional processing for entry deletion
 		//
-			$edata = $this->EE->extensions->call('delete_entries_end');
-			if ($this->EE->extensions->end_script === TRUE) return TRUE;
+			ee()->extensions->call('delete_entries_end');
+			if (ee()->extensions->end_script === TRUE) return TRUE;
 		//
 		// -------------------------------------------
 
@@ -574,7 +542,7 @@ class Api_channel_entries extends Api {
 			return FALSE;
 		}
 
-		$query = $this->EE->channel_entries_model->get_entry($entry_id);
+		$query = ee()->channel_entries_model->get_entry($entry_id);
 		
 		if ($query->num_rows() == 0)
 		{
@@ -584,56 +552,6 @@ class Api_channel_entries extends Api {
 		$this->_cache['orig_author_id'] = $query->row('author_id');
 		
 		return TRUE;
-	}
-	
-	// --------------------------------------------------------------------
-	
-	/**
-	 * Update Relationship Cache
-	 *
-	 * Updates the relationship cache
-	 *
-	 * @access	public
-	 * @param	int
-	 * @return	void
-	 */
-	function update_related_cache($entry_id)
-	{
-		// Is this entry a child of another parent?
-		//
-		// If the entry being submitted is a "child" of another parent
-		// we need to re-compile and cache the data.  Confused?	 Me too...
-
-		$this->EE->db->where('rel_type', 'channel');
-		$this->EE->db->where('rel_child_id', $entry_id);
-		$count = $this->EE->db->count_all_results('relationships');
-
-		if ($count > 0)
-		{
-			$reldata = array(
-							'type'		=> 'channel',
-							'child_id'	=> $entry_id
-			);
-
-			$this->EE->functions->compile_relationship($reldata, FALSE);
-		}
-
-
-		//	Is this entry a parent of a child?
-
-		$this->EE->db->where('rel_parent_id', $entry_id);
-		$this->EE->db->where('reverse_rel_data !=', '');
-		$count = $this->EE->db->count_all_results('relationships');
-
-		if ($count > 0)
-		{
-			$reldata = array(
-							'type'		=> 'channel',
-							'parent_id' => $entry_id
-			);
-
-			$this->EE->functions->compile_relationship($reldata, FALSE, TRUE);
-		}
 	}
 	
 	// --------------------------------------------------------------------
@@ -676,14 +594,14 @@ class Api_channel_entries extends Api {
 		}
 			
 		//	Save ping button state
-		$this->EE->db->delete('entry_ping_status', array('entry_id' => $entry_id));
+		ee()->db->delete('entry_ping_status', array('entry_id' => $entry_id));
 
 		foreach ($ping_servers as $val)
 		{
 			$ping_data['entry_id'] = $entry_id;
 			$ping_data['ping_id'] = $val;
 
-			$this->EE->db->insert('entry_ping_status', $ping_data); 
+			ee()->db->insert('entry_ping_status', $ping_data); 
 		}
 
 		return $result;
@@ -730,7 +648,7 @@ class Api_channel_entries extends Api {
 
 		if ($orig_var !== NULL)
 		{
-			if ($this->EE->extensions->active_hook($hook) !== TRUE)
+			if (ee()->extensions->active_hook($hook) !== TRUE)
 			{
 				return $orig_var;
 			}
@@ -741,30 +659,30 @@ class Api_channel_entries extends Api {
 		switch($hook)
 		{
 			case 'entry_submission_start':
-					$this->EE->extensions->call('entry_submission_start', $this->channel_id, $this->autosave);
+					ee()->extensions->call('entry_submission_start', $this->channel_id, $this->autosave);
 					break;
 			case 'entry_submission_ready':
-					$this->EE->extensions->call('entry_submission_ready', $this->meta, $this->data, $this->autosave);
+					ee()->extensions->call('entry_submission_ready', $this->meta, $this->data, $this->autosave);
 					break;
 			case 'entry_submission_redirect':	
-					$loc = $this->EE->extensions->call('entry_submission_redirect', $this->entry_id, $this->meta, $this->data, $cp_call, $orig_var);
-					if ($this->EE->extensions->end_script === TRUE)
+					$loc = ee()->extensions->call('entry_submission_redirect', $this->entry_id, $this->meta, $this->data, $cp_call, $orig_var);
+					if (ee()->extensions->end_script === TRUE)
 					{
 						return $loc;
 					}
 					return $loc;
 				break;
 			case 'entry_submission_absolute_end':
-					$this->EE->extensions->call('entry_submission_absolute_end', $this->entry_id, $this->meta, $this->data, $orig_var);
+					ee()->extensions->call('entry_submission_absolute_end', $this->entry_id, $this->meta, $this->data, $orig_var);
 				break;
 			case 'entry_submission_end':
-					$this->EE->extensions->call('entry_submission_end', $this->entry_id, $this->meta, $this->data);
+					ee()->extensions->call('entry_submission_end', $this->entry_id, $this->meta, $this->data);
 				break;
 			default:
 				return FALSE;
 		}
 
-		if ($this->EE->extensions->end_script === TRUE)
+		if (ee()->extensions->end_script === TRUE)
 		{
 			return TRUE;
 		}
@@ -791,7 +709,7 @@ class Api_channel_entries extends Api {
 			}
 			else
 			{
-				$this->errors[$field] = $this->EE->lang->line($err);
+				$this->errors[$field] = ee()->lang->line($err);
 			}
 		}
 		else
@@ -802,7 +720,7 @@ class Api_channel_entries extends Api {
 			}
 			else
 			{
-				$this->errors[] = $this->EE->lang->line($err);
+				$this->errors[] = ee()->lang->line($err);
 			}
 		}
 
@@ -822,24 +740,24 @@ class Api_channel_entries extends Api {
 	 */
 	function _base_prep(&$data)
 	{	
-		$this->EE->lang->loadfile('admin_content');
+		ee()->lang->loadfile('admin_content');
 		
 		// Sanity Check
 		if ( ! is_array($data) OR ! isset($data['channel_id']) OR ! is_numeric($data['channel_id']))
 		{
-			show_error($this->EE->lang->line('invalid_api_parameter'));
+			show_error(ee()->lang->line('invalid_api_parameter'));
 		}
 
 		$this->channel_id = $data['channel_id'];
 
 		// Is this user allowed to post here?
-		$this->_cache['assigned_channels'] = $this->EE->functions->fetch_assigned_channels();
+		$this->_cache['assigned_channels'] = ee()->functions->fetch_assigned_channels();
 		
-		if ($this->EE->session->userdata('group_id') != 1)
+		if (ee()->session->userdata('group_id') != 1)
 		{
 			if ( ! in_array($this->channel_id, $this->_cache['assigned_channels']))
 			{
-				show_error($this->EE->lang->line('unauthorized_for_this_channel'));
+				show_error(ee()->lang->line('unauthorized_for_this_channel'));
 			}
 		}
 		
@@ -848,13 +766,13 @@ class Api_channel_entries extends Api {
 
 		if ($this->autosave === FALSE)
 		{
-			if ( ! isset($this->EE->api_channel_fields) OR ! isset($this->EE->api_channel_fields->settings))
+			if ( ! isset(ee()->api_channel_fields) OR ! isset(ee()->api_channel_fields->settings))
 			{
 				$this->instantiate('channel_fields');
-				$this->EE->api_channel_fields->fetch_custom_channel_fields();
+				ee()->api_channel_fields->fetch_custom_channel_fields();
 			}
 			
-			$field_ids = array_keys($this->EE->api_channel_fields->settings);
+			$field_ids = array_keys(ee()->api_channel_fields->settings);
 
 			foreach($field_ids as $id)
 			{
@@ -865,7 +783,7 @@ class Api_channel_entries extends Api {
 					
 					if ($this->entry_id == 0 && ! isset($data['field_ft_'.$nid]))
 					{
-						$data['field_ft_'.$nid] = $this->EE->api_channel_fields->settings[$nid]['field_fmt'];
+						$data['field_ft_'.$nid] = ee()->api_channel_fields->settings[$nid]['field_fmt'];
 					}
 				}
 
@@ -876,8 +794,8 @@ class Api_channel_entries extends Api {
 			}
 		}
 		// Helpers
-		$this->EE->load->helper('text');
-		$this->EE->load->helper('custom_field');
+		ee()->load->helper('text');
+		ee()->load->helper('custom_field');
 		return TRUE;
 	}
 	
@@ -902,7 +820,7 @@ class Api_channel_entries extends Api {
 			$channel_id = $this->channel_id;
 		}
 		
-		$query = $this->EE->api_channel_structure->get_channel_info($channel_id);
+		$query = ee()->api_channel_structure->get_channel_info($channel_id);
 
 		foreach(array('channel_url', 'rss_url', 'deft_status', 'comment_url', 'comment_system_enabled', 'enable_versioning', 'max_revisions') as $key)
 		{
@@ -929,9 +847,9 @@ class Api_channel_entries extends Api {
 	{
 		if (isset($data['new_channel']) && $data['new_channel'] && $data['new_channel'] != $this->channel_id)
 		{
-			$this->EE->db->select('status_group, cat_group, field_group, channel_id');
-			$this->EE->db->where_in('channel_id', array($this->channel_id, $data['new_channel']));
-			$query = $this->EE->db->get('channels');
+			ee()->db->select('status_group, cat_group, field_group, channel_id');
+			ee()->db->where_in('channel_id', array($this->channel_id, $data['new_channel']));
+			$query = ee()->db->get('channels');
 			
 			if ($query->num_rows() == 2)
 			{
@@ -942,7 +860,7 @@ class Api_channel_entries extends Api {
 					$result_zero->cat_group == $result_one->cat_group &&
 					$result_zero->field_group == $result_one->field_group)
 				{
-					if ($this->EE->session->userdata('group_id') == 1 OR in_array($data['new_channel'], $this->_cache['assigned_channels']))
+					if (ee()->session->userdata('group_id') == 1 OR in_array($data['new_channel'], $this->_cache['assigned_channels']))
 					{
 						$data['old_channel'] = $this->channel_id;
 						$this->channel_id = $data['new_channel'];
@@ -966,7 +884,7 @@ class Api_channel_entries extends Api {
 	 */
 	function _fetch_module_data(&$data, &$mod_data)
 	{
-		//$errors = $this->EE->api_channel_fields->get_module_methods('validate_publish', array('data' => $data));
+		//$errors = ee()->api_channel_fields->get_module_methods('validate_publish', array('data' => $data));
 
 		// Note coming from cp- return
 		if ( ! isset($data['cp_call']) OR $data['cp_call'] !== TRUE)
@@ -978,7 +896,7 @@ class Api_channel_entries extends Api {
 		$params = array('validate_publish' => array($data), 'publish_tabs' => array($data['channel_id'], $this->entry_id));
 
 		$this->instantiate('channel_fields');
-		$module_data = $this->EE->api_channel_fields->get_module_methods($methods, $params);		
+		$module_data = ee()->api_channel_fields->get_module_methods($methods, $params);		
 
 		if ($module_data !== FALSE)
 		{
@@ -1038,8 +956,8 @@ class Api_channel_entries extends Api {
 		
 		// Set entry_date and edit_date to "now" if empty
 
-		$data['entry_date'] = empty($data['entry_date']) ? $this->EE->localize->now : $data['entry_date'];
-		$data['edit_date'] = empty($data['edit_date']) ? $this->EE->localize->now : $data['edit_date'];
+		$data['entry_date'] = empty($data['entry_date']) ? ee()->localize->now : $data['entry_date'];
+		$data['edit_date'] = empty($data['edit_date']) ? ee()->localize->now : $data['edit_date'];
 		
 		//	Convert built-in date fields to UNIX timestamps
 
@@ -1061,7 +979,7 @@ class Api_channel_entries extends Api {
 		{
 			if ( ! is_numeric($data[$date]) && trim($data[$date]))
 			{
-				$data[$date] = $this->EE->localize->string_to_timestamp($data[$date]);
+				$data[$date] = ee()->localize->string_to_timestamp($data[$date]);
 			}
 			
 			if ($data[$date] === FALSE)
@@ -1142,23 +1060,23 @@ class Api_channel_entries extends Api {
 		
 		// Validate author id
 		
-		$data['author_id'] = ( ! isset($data['author_id']) OR ! $data['author_id']) ? $this->EE->session->userdata('member_id'): $data['author_id'];
+		$data['author_id'] = ( ! isset($data['author_id']) OR ! $data['author_id']) ? ee()->session->userdata('member_id'): $data['author_id'];
 
-		if ($data['author_id'] != $this->EE->session->userdata('member_id') && $this->EE->session->userdata('can_edit_other_entries') != 'y')
+		if ($data['author_id'] != ee()->session->userdata('member_id') && ee()->session->userdata('can_edit_other_entries') != 'y')
 		{
 			$this->_set_error('not_authorized');
 		}
 		
-		if (isset($this->_cache['orig_author_id']) && $data['author_id'] != $this->_cache['orig_author_id'] && ($this->EE->session->userdata('can_edit_other_entries') != 'y' OR $this->EE->session->userdata('can_assign_post_authors') != 'y'))
+		if (isset($this->_cache['orig_author_id']) && $data['author_id'] != $this->_cache['orig_author_id'] && (ee()->session->userdata('can_edit_other_entries') != 'y' OR ee()->session->userdata('can_assign_post_authors') != 'y'))
 		{
 			$this->_set_error('not_authorized');
 		}
 				
-		if ($data['author_id'] != $this->EE->session->userdata('member_id') && $this->EE->session->userdata('group_id') != 1)
+		if ($data['author_id'] != ee()->session->userdata('member_id') && ee()->session->userdata('group_id') != 1)
 		{
 			if ( ! isset($this->_cache['orig_author_id']) OR $data['author_id'] != $this->_cache['orig_author_id'])
 			{
-				if ($this->EE->session->userdata('can_assign_post_authors') != 'y')
+				if (ee()->session->userdata('can_assign_post_authors') != 'y')
 				{
 					$this->_set_error('not_authorized', 'author');
 				}
@@ -1166,8 +1084,8 @@ class Api_channel_entries extends Api {
 				{
 					$allowed_authors = array();
 					
-					$this->EE->load->model('member_model');
-					$query = $this->EE->member_model->get_authors();
+					ee()->load->model('member_model');
+					$query = ee()->member_model->get_authors();
 
 					if ($query->num_rows() > 0)
 					{
@@ -1189,13 +1107,13 @@ class Api_channel_entries extends Api {
 		
 		$data['status'] = ( ! isset($data['status']) OR $data['status'] === FALSE) ? $this->c_prefs['deft_status'] : $data['status'];
 
-		if ($this->EE->session->userdata('group_id') != 1)
+		if (ee()->session->userdata('group_id') != 1)
 		{
 			$disallowed_statuses = array();
 			$valid_statuses = array();
 			
-			$this->EE->load->model('status_model');
-			$query = $this->EE->status_model->get_statuses('', $this->channel_id);
+			ee()->load->model('status_model');
+			$query = ee()->status_model->get_statuses('', $this->channel_id);
 
 			if ($query->num_rows() > 0)
 			{
@@ -1205,7 +1123,7 @@ class Api_channel_entries extends Api {
 				}
 			}
 
-			$query = $this->EE->status_model->get_disallowed_statuses($this->EE->session->userdata('group_id'));
+			$query = ee()->status_model->get_disallowed_statuses(ee()->session->userdata('group_id'));
 
 			if ($query->num_rows() > 0)
 			{
@@ -1238,9 +1156,9 @@ class Api_channel_entries extends Api {
 	 */
 	function _validate_url_title($url_title = '', $title = '', $update = FALSE)
 	{
-		$word_separator = $this->EE->config->item('word_separator');
+		$word_separator = ee()->config->item('word_separator');
 		
-		$this->EE->load->helper('url');
+		ee()->load->helper('url');
 
 		if ( ! trim($url_title))
 		{
@@ -1251,8 +1169,8 @@ class Api_channel_entries extends Api {
 
 		if ($update)
 		{
-			$this->EE->db->select('url_title');
-			$url_query = $this->EE->db->get_where('channel_titles', array('entry_id' => $this->entry_id));
+			ee()->db->select('url_title');
+			$url_query = ee()->db->get_where('channel_titles', array('entry_id' => $this->entry_id));
 
 			if ($url_query->row('url_title') != $url_title)
 			{
@@ -1336,7 +1254,7 @@ class Api_channel_entries extends Api {
 		//  Date might already be numeric format- so we check
 		if ( ! is_numeric($data['field_id_'.$row['field_id']]))
 		{
-			$data['field_id_'.$row['field_id']] = $this->EE->localize->string_to_timestamp($data['field_id_'.$row['field_id']]);
+			$data['field_id_'.$row['field_id']] = ee()->localize->string_to_timestamp($data['field_id_'.$row['field_id']]);
 		}
 
 		if ($data['field_id_'.$row['field_id']] === FALSE)
@@ -1356,7 +1274,7 @@ class Api_channel_entries extends Api {
 			}
 			else
 			{
-				$data['field_dt_'.$row['field_id']] = $this->EE->session->userdata('timezone');
+				$data['field_dt_'.$row['field_id']] = ee()->session->userdata('timezone');
 			}
 		}
 	}
@@ -1403,7 +1321,7 @@ class Api_channel_entries extends Api {
 	{
 		$this->instantiate('channel_categories');
 
-		$this->EE->api_channel_categories->initialize(array(
+		ee()->api_channel_categories->initialize(array(
 			'categories'  => array(),
 			'cat_parents' => array(),
 			'cat_array'   => array()
@@ -1415,12 +1333,12 @@ class Api_channel_entries extends Api {
 		{
 			foreach ($data['category'] as $cat_id)
 			{
-				$this->EE->api_channel_categories->cat_parents[] = $cat_id;
+				ee()->api_channel_categories->cat_parents[] = $cat_id;
 			}
 
-			if ($this->EE->api_channel_categories->assign_cat_parent == TRUE)
+			if (ee()->api_channel_categories->assign_cat_parent == TRUE)
 			{
-				$this->EE->api_channel_categories->fetch_category_parents($data['category']);
+				ee()->api_channel_categories->fetch_category_parents($data['category']);
 			}
 		}
 		
@@ -1476,18 +1394,18 @@ class Api_channel_entries extends Api {
 			// Will be removed in 2.1.2, and a note to that effect is in the 2.1.1 update notes
 			// $this->field_id should be used instead as documented
 			// http://ellislab.com/expressionengine/user-guide/development/fieldtypes.html#class-variables
-			$this->EE->api_channel_fields->settings[$row['field_id']]['field_id'] = $row['field_id'];
+			ee()->api_channel_fields->settings[$row['field_id']]['field_id'] = $row['field_id'];
 			
 			if (isset($data[$field_name]) OR isset($mod_data[$field_name]))
 			{
-				$this->EE->api_channel_fields->setup_handler($row['field_id']);
+				ee()->api_channel_fields->setup_handler($row['field_id']);
 
 				// Break out module fields here
 				if (isset($data[$field_name]))
 				{
 					if ( ! $autosave)
 					{
-						$data[$field_name] = $this->EE->api_channel_fields->apply('save', array($data[$field_name]));
+						$data[$field_name] = ee()->api_channel_fields->apply('save', array($data[$field_name]));
 					}
 					
 					if (isset($data['revision_post'][$field_name]))
@@ -1500,7 +1418,7 @@ class Api_channel_entries extends Api {
 				{
 					if ( ! $autosave)
 					{
-						$mod_data[$field_name] = $this->EE->api_channel_fields->apply('save', array($mod_data[$field_name]));
+						$mod_data[$field_name] = ee()->api_channel_fields->apply('save', array($mod_data[$field_name]));
 					}
 
 					if (isset($data['revision_post'][$field_name]))
@@ -1510,110 +1428,6 @@ class Api_channel_entries extends Api {
 				}
 			}				
 		}
-	}
-	
-	// --------------------------------------------------------------------
-	
-	/**
-	 * Build Relationships
-	 *
-	 * Build the relationships for our entry
-	 *
-	 * @access	private
-	 * @param	mixed
-	 * @return	void
-	 */
-	function _build_relationships(&$data)
-	{
-		if ($this->autosave)
-		{
-			return;
-		}
-
-		$this->EE->db->select('field_id, field_related_to, field_related_id');
-		$query = $this->EE->db->get_where('channel_fields', array('field_type' => 'rel'));
-		
-		// No results, bail out early
-		if ( ! $query->num_rows())
-		{
-			$this->_cache['rel_updates'] = array();
-			return;
-		}
-
-		$rel_updates = array();
-		
-		foreach ($query->result_array() as $row)
-		{
-			$field_id = $row['field_id'];
-
-			// No field - skip
-			if ( ! isset($data['field_id_'.$field_id]))
-			{
-				continue;
-			}
-
-			$data['field_ft_'.$field_id] = 'none';
-			$rel_exists = FALSE;
-
-			// If editing an existing entry....
-			// Does an existing relationship exist? If so, we may not need to recompile the data
-					
-			if ($this->entry_id)
-			{
-				// First we fetch the previously stored related child id.
-
-				$this->EE->db->select('field_id_'.$field_id.', rel_child_id, rel_id');
-				$this->EE->db->from('channel_data');
-				$this->EE->db->join('relationships', 'field_id_'.$field_id.' = rel_id', 'left');
-				$this->EE->db->where('entry_id', $this->entry_id);
-				$rel_data = $this->EE->db->get();
-						
-				$current_related = FALSE;
-				$rel_id = FALSE;
-						
-				if ($rel_data->num_rows() > 0)
-				{
-					foreach ($rel_data->result() as $r)
-					{
-						$current_related = $r->rel_child_id;
-						$rel_id = $r->rel_id;
-					}
-				}
-												
-				// If the previous ID matches the current ID being submitted it means that
-				// the existing relationship has not changed so there's no need to recompile.
-				// If it has changed we'll clear the old relationship.
-
-				if ($current_related  == $data['field_id_'.$field_id])
-				{
-					$rel_exists = TRUE;
-					$data['field_id_'.$field_id] = $rel_id;
-				}
-				elseif ($rel_id)
-				{
-					$this->EE->db->where('rel_id', $rel_id);
-					$this->EE->db->delete('relationships');
-				}
-			}
-
-			if (is_numeric($data['field_id_'.$field_id]) && $data['field_id_'.$field_id] != '0' && $rel_exists == FALSE)
-			{
-				$reldata = array(
-					'type'			=> $row['field_related_to'],
-					'parent_id'		=> $this->entry_id, // we may have an empty entry_id at this point, if so, zero for now, gets updated below
-					'child_id'		=> $data['field_id_'.$field_id]
-				);
-
-				$data['field_id_'.$field_id] = $this->EE->functions->compile_relationship($reldata, TRUE);
-				$rel_updates[] = $data['field_id_'.$field_id];
-			}
-			elseif($data['field_id_'.$field_id] == '')
-			{
-				$data['field_id_'.$field_id] = 0;
-			}
-		}
-		
-		$this->_cache['rel_updates'] = $rel_updates;
 	}
 	
 	// --------------------------------------------------------------------
@@ -1635,8 +1449,8 @@ class Api_channel_entries extends Api {
 		{
 			if ($this->autosave_entry_id)
 			{
-				$this->EE->db->where('entry_id', $this->autosave_entry_id);
-				$this->EE->db->update('channel_entries_autosave', $meta);
+				ee()->db->where('entry_id', $this->autosave_entry_id);
+				ee()->db->update('channel_entries_autosave', $meta);
 				$this->entry_id = $this->autosave_entry_id;
 			}
 			else
@@ -1647,29 +1461,19 @@ class Api_channel_entries extends Api {
 					$meta['original_entry_id'] = 0;
 				}
 				
-				$this->EE->db->insert('channel_entries_autosave', $meta);
-				$this->entry_id = $this->EE->db->insert_id();
+				ee()->db->insert('channel_entries_autosave', $meta);
+				$this->entry_id = ee()->db->insert_id();
 			}
 		}
 		else
 		{
-			$this->EE->db->insert('channel_titles', $meta);
-			$this->entry_id = $this->EE->db->insert_id();
+			ee()->db->insert('channel_titles', $meta);
+			$this->entry_id = ee()->db->insert_id();
 		}		
-		
-		// Update Relationships (autosave skips this)
-		
-		if ( ! $this->autosave && count($this->_cache['rel_updates']) > 0)
-		{
-			$this->EE->db->set('rel_parent_id', $this->entry_id);
-			$this->EE->db->where_in('rel_id', $this->_cache['rel_updates']);
-			$this->EE->db->update('relationships');
-		}
-		
 		
 		// Insert custom field data
 		
-		$cust_fields = array('entry_id' => $this->entry_id, 'channel_id' => $this->channel_id, 'site_id' => $this->EE->config->item('site_id'));
+		$cust_fields = array('entry_id' => $this->entry_id, 'channel_id' => $this->channel_id, 'site_id' => ee()->config->item('site_id'));
 		
 
 		foreach($data as $key => $val)
@@ -1684,7 +1488,7 @@ class Api_channel_entries extends Api {
 			{
 				if (strncmp($key, 'field_id_', 9) == 0 && ! is_numeric($val))
 				{
-					if ($this->EE->config->item('auto_convert_high_ascii') == 'y')
+					if (ee()->config->item('auto_convert_high_ascii') == 'y')
 					{
 						$cust_fields[$key] = (is_array($val)) ? $this->_recursive_ascii_to_entities($val) : $val;
 					}
@@ -1704,7 +1508,7 @@ class Api_channel_entries extends Api {
 		
 
 		// Check that data complies with mysql strict mode rules
-		$all_fields = $this->EE->db->field_data('channel_data');
+		$all_fields = ee()->db->field_data('channel_data');
 
 		foreach ($all_fields as $field)
 		{
@@ -1733,44 +1537,44 @@ class Api_channel_entries extends Api {
 			// Entry for this was made earlier, now its an update not an insert
 			$cust_fields['entry_id'] = $this->entry_id;
 			$cust_fields['original_entry_id'] = 0;
-			$this->EE->db->where('entry_id', $this->entry_id);
-			$this->EE->db->set('entry_data', serialize(array_merge($cust_fields, $mod_data))); 
-			$this->EE->db->update('channel_entries_autosave'); // reinsert
+			ee()->db->where('entry_id', $this->entry_id);
+			ee()->db->set('entry_data', serialize(array_merge($cust_fields, $mod_data))); 
+			ee()->db->update('channel_entries_autosave'); // reinsert
 			
 			return $this->entry_id;
 		}
-		$this->EE->db->insert('channel_data', $cust_fields);
+		ee()->db->insert('channel_data', $cust_fields);
 
 
 		// If remove old autosave data
 		if ($this->autosave_entry_id)
 		{
-			$this->EE->db->delete('channel_entries_autosave', array('entry_id' => $this->autosave_entry_id));
+			ee()->db->delete('channel_entries_autosave', array('entry_id' => $this->autosave_entry_id));
 		}
 
 
 		// Update member stats
 		
-		if ($meta['author_id'] == $this->EE->session->userdata('member_id'))
+		if ($meta['author_id'] == ee()->session->userdata('member_id'))
 		{
-			$total_entries = $this->EE->session->userdata('total_entries') + 1;
+			$total_entries = ee()->session->userdata('total_entries') + 1;
 		}
 		else
 		{
-			$this->EE->db->select('total_entries');
-			$query = $this->EE->db->get_where('members', array('member_id' => $meta['author_id']));
+			ee()->db->select('total_entries');
+			$query = ee()->db->get_where('members', array('member_id' => $meta['author_id']));
 			$total_entries = $query->row('total_entries')  + 1;
 		}
 		
-		$this->EE->db->set(array('total_entries' => $total_entries, 'last_entry_date' => $this->EE->localize->now));
-		$this->EE->db->where('member_id', $meta['author_id']);
-		$this->EE->db->update('members');
+		ee()->db->set(array('total_entries' => $total_entries, 'last_entry_date' => ee()->localize->now));
+		ee()->db->where('member_id', $meta['author_id']);
+		ee()->db->update('members');
 
 		// Send admin notification
 		if ($this->c_prefs['notify_address'] != '')
 		{
-			$this->EE->load->library('notifications');
-			$this->EE->notifications->send_admin_notification($this->c_prefs['notify_address'], $this->channel_id, $this->entry_id);
+			ee()->load->library('notifications');
+			ee()->notifications->send_admin_notification($this->c_prefs['notify_address'], $this->channel_id, $this->entry_id);
 		}
 	}
 	
@@ -1790,8 +1594,8 @@ class Api_channel_entries extends Api {
 	{
 		
 		// See if the author changed and store the old author ID for updating stats later
-		$this->EE->db->select('author_id');
-		$query = $this->EE->db->get_where('channel_titles', array('entry_id' => $this->entry_id));
+		ee()->db->select('author_id');
+		$query = ee()->db->get_where('channel_titles', array('entry_id' => $this->entry_id));
 		$old_author = $query->row('author_id');
 		
 		// Update the entry data
@@ -1800,16 +1604,16 @@ class Api_channel_entries extends Api {
 		
 		if ($this->autosave)
 		{
-			$this->EE->db->delete('channel_entries_autosave', array('original_entry_id' => $this->entry_id)); // remove all entries for this
+			ee()->db->delete('channel_entries_autosave', array('original_entry_id' => $this->entry_id)); // remove all entries for this
 			$meta['original_entry_id'] = $this->entry_id;
-			$this->EE->db->insert('channel_entries_autosave', $meta); // reinsert
+			ee()->db->insert('channel_entries_autosave', $meta); // reinsert
 			
-			$autosave_entry_id = $this->EE->db->insert_id();
+			$autosave_entry_id = ee()->db->insert_id();
 		}
 		else
 		{
-			$this->EE->db->where('entry_id', $this->entry_id);
-			$this->EE->db->update('channel_titles', $meta);
+			ee()->db->where('entry_id', $this->entry_id);
+			ee()->db->update('channel_titles', $meta);
 		}
 		
 		// Update Custom fields
@@ -1827,7 +1631,7 @@ class Api_channel_entries extends Api {
 			{
 				if (strncmp($key, 'field_id_', 9) == 0 && ! is_numeric($val))
 				{
-					if ($this->EE->config->item('auto_convert_high_ascii') == 'y')
+					if (ee()->config->item('auto_convert_high_ascii') == 'y')
 					{
 						$cust_fields[$key] = (is_array($val)) ? $this->_recursive_ascii_to_entities($val) : $val;
 					}
@@ -1851,13 +1655,13 @@ class Api_channel_entries extends Api {
 				
 				$this->instantiate('channel_categories');
 		
-				if ($this->EE->api_channel_categories->cat_parents > 0)
+				if (ee()->api_channel_categories->cat_parents > 0)
 				{
-					$this->EE->api_channel_categories->cat_parents = array_unique($this->EE->api_channel_categories->cat_parents);
+					ee()->api_channel_categories->cat_parents = array_unique(ee()->api_channel_categories->cat_parents);
 					
-					sort($this->EE->api_channel_categories->cat_parents);
+					sort(ee()->api_channel_categories->cat_parents);
 
-					foreach($this->EE->api_channel_categories->cat_parents as $val)
+					foreach(ee()->api_channel_categories->cat_parents as $val)
 					{
 						if ($val != '')
 						{
@@ -1869,14 +1673,14 @@ class Api_channel_entries extends Api {
 				// Entry for this was made earlier, now its an update not an insert
 				$cust_fields['entry_id'] = $this->entry_id;
 				$cust_fields['original_entry_id'] = $this->entry_id;
-				$this->EE->db->where('original_entry_id', $this->entry_id);
-				$this->EE->db->set('entry_data', serialize(array_merge($cust_fields, $mod_data))); 
-				$this->EE->db->update('channel_entries_autosave'); // reinsert
+				ee()->db->where('original_entry_id', $this->entry_id);
+				ee()->db->set('entry_data', serialize(array_merge($cust_fields, $mod_data))); 
+				ee()->db->update('channel_entries_autosave'); // reinsert
 			}
 			else
 			{
 				// Check that data complies with mysql strict mode rules
-				$all_fields = $this->EE->db->field_data('channel_data');
+				$all_fields = ee()->db->field_data('channel_data');
 
 				foreach ($all_fields as $field)
 				{
@@ -1897,8 +1701,8 @@ class Api_channel_entries extends Api {
 					}
 				} 		
 
-				$this->EE->db->where('entry_id', $this->entry_id);
-				$this->EE->db->update('channel_data', $cust_fields);
+				ee()->db->where('entry_id', $this->entry_id);
+				ee()->db->update('channel_data', $cust_fields);
 			}
 		}
 
@@ -1911,8 +1715,8 @@ class Api_channel_entries extends Api {
 		// for old author and new author
 		if ( ! $this->autosave && $old_author != $meta['author_id'])
 		{
-			$this->EE->load->model('member_model');
-			$this->EE->member_model->update_member_entry_stats(
+			ee()->load->model('member_model');
+			ee()->member_model->update_member_entry_stats(
 				array(
 					$old_author,
 					$meta['author_id']
@@ -1921,10 +1725,10 @@ class Api_channel_entries extends Api {
 		}
 
 		// Remove any autosaved data
-		$this->EE->db->delete('channel_entries_autosave', array('original_entry_id' => $this->entry_id));
+		ee()->db->delete('channel_entries_autosave', array('original_entry_id' => $this->entry_id));
 
 		// Delete Categories - resubmitted in the next step
-		$this->EE->db->delete('category_posts', array('entry_id' => $this->entry_id));
+		ee()->db->delete('category_posts', array('entry_id' => $this->entry_id));
 	}
 
 	// --------------------------------------------------------------------
@@ -1974,23 +1778,20 @@ class Api_channel_entries extends Api {
 		
 		$this->instantiate('channel_categories');
 		
-		if ($this->EE->api_channel_categories->cat_parents > 0)
+		if (ee()->api_channel_categories->cat_parents > 0)
 		{
-			$this->EE->api_channel_categories->cat_parents = array_unique($this->EE->api_channel_categories->cat_parents);
+			ee()->api_channel_categories->cat_parents = array_unique(ee()->api_channel_categories->cat_parents);
 
-			sort($this->EE->api_channel_categories->cat_parents);
+			sort(ee()->api_channel_categories->cat_parents);
 
-			foreach($this->EE->api_channel_categories->cat_parents as $val)
+			foreach(ee()->api_channel_categories->cat_parents as $val)
 			{
 				if ($val != '')
 				{
-					$this->EE->db->insert('category_posts', array('entry_id' => $this->entry_id, 'cat_id' => $val));
+					ee()->db->insert('category_posts', array('entry_id' => $this->entry_id, 'cat_id' => $val));
 				}
 			}
 		}
-
-		// Recompile Relationships
-		$this->update_related_cache($this->entry_id);
 		
 		// Save revisions if needed
 		
@@ -2001,17 +1802,17 @@ class Api_channel_entries extends Api {
 			// so let's overwrite it now
 			$data['revision_post']['entry_id'] = $this->entry_id;
 			
-			$this->EE->db->insert('entry_versioning', array(
+			ee()->db->insert('entry_versioning', array(
 				'entry_id'		=> $this->entry_id,
 				'channel_id'	=> $this->channel_id,
-				'author_id'		=> $this->EE->session->userdata('member_id'),
-				'version_date'	=> $this->EE->localize->now,
+				'author_id'		=> ee()->session->userdata('member_id'),
+				'version_date'	=> ee()->localize->now,
 				'version_data'	=> serialize($data['revision_post'])
 			));
 			
 			$max = (is_numeric($this->c_prefs['max_revisions']) AND $this->c_prefs['max_revisions'] > 0) ? $this->c_prefs['max_revisions'] : 10;
 			
-			$this->EE->channel_entries_model->prune_revisions($this->entry_id, $max);
+			ee()->channel_entries_model->prune_revisions($this->entry_id, $max);
 		}
 		
 		// Post update custom fields
@@ -2021,18 +1822,18 @@ class Api_channel_entries extends Api {
 		{
 			$field_name = 'field_id_'.$row['field_id'];
 			
-			$this->EE->api_channel_fields->settings[$row['field_id']]['entry_id'] = $this->entry_id;
+			ee()->api_channel_fields->settings[$row['field_id']]['entry_id'] = $this->entry_id;
 			
 			// @todo remove in 2.1.2
 			// backwards compatible for some incorrect code noticed in a few third party modules.
 			// Will be removed in 2.1.2, and a note to that effect is in the 2.1.1 update notes
 			// $this->field_id should be used instead as documented
 			// http://ellislab.com/expressionengine/user-guide/development/fieldtypes.html#class-variables
-			$this->EE->api_channel_fields->settings[$row['field_id']]['field_id'] = $row['field_id'];
+			ee()->api_channel_fields->settings[$row['field_id']]['field_id'] = $row['field_id'];
 			
 			$fdata = isset($data[$field_name]) ? $data[$field_name] : '';
-			$this->EE->api_channel_fields->setup_handler($row['field_id']);
-			$this->EE->api_channel_fields->apply('post_save', array($fdata));				
+			ee()->api_channel_fields->setup_handler($row['field_id']);
+			ee()->api_channel_fields->apply('post_save', array($fdata));				
 		}
 	}
 	
@@ -2050,7 +1851,7 @@ class Api_channel_entries extends Api {
 		$methods = array('publish_data_db');
 		$params = array('publish_data_db' => array('meta' => $meta, 'data' => $data, 'mod_data' => $mod_data, 'entry_id' => $this->entry_id));
 		
-		$module_data = $this->EE->api_channel_fields->get_module_methods($methods, $params);
+		$module_data = ee()->api_channel_fields->get_module_methods($methods, $params);
 
 	}
 	
@@ -2068,22 +1869,22 @@ class Api_channel_entries extends Api {
 	 */
 	function _process_pings($ping_servers, $channel_title, $ping_url, $rss_url)
 	{
-		$this->EE->db->select('server_name, server_url, port');
-		$this->EE->db->where_in('id', $ping_servers);
-		$query = $this->EE->db->get('ping_servers');
+		ee()->db->select('server_name, server_url, port');
+		ee()->db->where_in('id', $ping_servers);
+		$query = ee()->db->get('ping_servers');
 
 		if ($query->num_rows() == 0)
 		{
 			return FALSE;
 		}
 
-		$this->EE->load->library('xmlrpc');
+		ee()->load->library('xmlrpc');
 
 		$result = array();
 
 		foreach ($query->result_array() as $row)
 		{
-			if (($response = $this->EE->xmlrpc->weblogs_com_ping($row['server_url'], $row['port'], $channel_title, $ping_url, $rss_url)) !== TRUE)
+			if (($response = ee()->xmlrpc->weblogs_com_ping($row['server_url'], $row['port'], $channel_title, $ping_url, $rss_url)) !== TRUE)
 			{
 				$result[] = array($row['server_name'], $response);
 			}
@@ -2103,10 +1904,10 @@ class Api_channel_entries extends Api {
 	 */
 	private function _get_custom_fields()
 	{
-		$this->EE->db->select('field_id, field_name, field_label, field_type, field_required');
-		$this->EE->db->join('channels', 'channels.field_group = channel_fields.group_id', 'left');
-		$this->EE->db->where('channel_id', $this->channel_id);
-		$query = $this->EE->db->get('channel_fields');
+		ee()->db->select('field_id, field_name, field_label, field_type, field_required');
+		ee()->db->join('channels', 'channels.field_group = channel_fields.group_id', 'left');
+		ee()->db->where('channel_id', $this->channel_id);
+		$query = ee()->db->get('channel_fields');
 		$result = $query->result_array();
 
 		// ----------------------------------------------------------------
@@ -2114,10 +1915,10 @@ class Api_channel_entries extends Api {
 		// - Take the custom fields query array result, do what you wish
 		// - added 2.6
 		//
-		if ($this->EE->extensions->active_hook('api_channel_entries_custom_field_query') === TRUE)
+		if (ee()->extensions->active_hook('api_channel_entries_custom_field_query') === TRUE)
 		{
-			$result = $this->EE->extensions->call('api_channel_entries_custom_field_query', $result);
-			if ($this->EE->extensions->end_script === TRUE) return;
+			$result = ee()->extensions->call('api_channel_entries_custom_field_query', $result);
+			if (ee()->extensions->end_script === TRUE) return;
 		}
 		//
 		// ----------------------------------------------------------------

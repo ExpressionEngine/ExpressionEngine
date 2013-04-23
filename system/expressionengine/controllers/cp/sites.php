@@ -24,8 +24,8 @@
  */
 class Sites extends CP_Controller {
 
-	var $version 			= '2.1.4';
-	var $build_number		= '20120911';
+	var $version 			= '2.1.5';
+	var $build_number		= '20130410';
 	var $allow_new_sites 	= FALSE;
 
 	/**
@@ -1253,7 +1253,7 @@ class Sites extends CP_Controller {
 									$field_match[$old_field_id] = $field_id;
 									
 									// Channel Data Field Creation, Whee!
-									if ($row['field_type'] == 'date' OR $row['field_type'] == 'rel')
+									if ($row['field_type'] == 'date' OR $row['field_type'] == 'relationship')
 									{
 										$columns = array(
 											'field_id_'.$field_id => array(
@@ -1584,7 +1584,7 @@ class Sites extends CP_Controller {
 						// Find Relationships for Old Entry IDs That Have Been Moveed
 						if ($rel_check)
 						{
-							$query = $this->db->where_in('rel_parent_id', array_flip($complete_entries))
+							$query = $this->db->where_in('parent_id', array_flip($complete_entries))
 								->get('relationships');
 						
 							if ($query->num_rows() > 0)
@@ -1593,12 +1593,12 @@ class Sites extends CP_Controller {
 								{
 									// Only If Child Moveed As Well...
 								
-									if (isset($complete_entries[$row['rel_child_id']]))
+									if (isset($complete_entries[$row['child_id']]))
 									{
-										$old_rel_id 		  = $row['rel_id'];
-										unset($row['rel_id']);
-										$row['rel_child_id']  = $complete_entries[$row['rel_child_id']];
-										$row['rel_parent_id'] = $complete_entries[$row['rel_parent_id']];
+										$old_rel_id = $row['relationship_id'];
+										unset($row['relationship_id']);
+										$row['child_id'] = $complete_entries[$row['child_id']];
+										$row['parent_id'] = $complete_entries[$row['parent_id']];
 									
 										$this->db->insert('relationships', $row);
 									
@@ -1633,7 +1633,7 @@ class Sites extends CP_Controller {
 				
 					foreach($moved as $channel_id => $field_group)
 					{
-						$query = $this->db->select('field_id, field_type, field_related_to')
+						$query = $this->db->select('field_id, field_type')
 							->get_where(
 								'channel_fields',
 								array('group_id' => $field_group)
@@ -1699,7 +1699,7 @@ class Sites extends CP_Controller {
 										->update('channel_data');
 								}
 								
-								if ($row['field_type'] == 'rel' && $row['field_related_to'] == 'channel')
+								if ($row['field_type'] == 'relationship')
 								{
 									$related_fields[] = 'field_ft_'.$field_match[$row['field_id']];  // We used this for moved relationships, see above
 								}
@@ -1935,19 +1935,19 @@ class Sites extends CP_Controller {
 			$this->db->delete('category_posts');
 
 			// delete parents
-			$this->db->where_in('rel_parent_id', $entries);
+			$this->db->where_in('parent_id', $entries);
 			$this->db->delete('relationships');
 			
 			// are there children?
-			$this->db->select('rel_id');
-			$this->db->where_in('rel_child_id', $entries);
+			$this->db->select('relationship_id');
+			$this->db->where_in('child_id', $entries);
 			$child_results = $this->db->get('relationships');
 
 			if ($child_results->num_rows() > 0)
 			{
 				// gather related fields
 				$this->db->select('field_id');
-				$this->db->where('field_type', 'rel');
+				$this->db->where('field_type', 'relationship');
 				$fquery = $this->db->get('channel_fields');
 
 				// We have children, so we need to do a bit of housekeeping
@@ -1956,7 +1956,7 @@ class Sites extends CP_Controller {
 
 				foreach ($child_results->result_array() as $row)
 				{
-					$cids[] = $row['rel_id'];
+					$cids[] = $row['relationship_id'];
 				}
 
 				foreach($fquery->result_array() as $row)
@@ -1967,7 +1967,7 @@ class Sites extends CP_Controller {
 			}
 
 			// aaaand delete
-			$this->db->where_in('rel_child_id', $entries);
+			$this->db->where_in('child_id', $entries);
 			$this->db->delete('relationships');
 		}
 

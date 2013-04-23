@@ -37,7 +37,7 @@ class Updated_sites_mcp {
 		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();
 		
-		$this->EE->cp->set_right_nav(array(
+		ee()->cp->set_right_nav(array(
 		        'updated_sites_create_new' => 
 		        BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=updated_sites'.AMP.'method=create'));
 		
@@ -50,16 +50,16 @@ class Updated_sites_mcp {
 	  */
 	function index()
 	{
-		$this->EE->load->library('table');
-		$this->EE->load->library('javascript');
-		$this->EE->load->helper('form');
+		ee()->load->library('table');
+		ee()->load->library('javascript');
+		ee()->load->helper('form');
 
-		$this->EE->jquery->tablesorter('.mainTable', '{
+		ee()->jquery->tablesorter('.mainTable', '{
 			headers: {1: {sorter: false}, 3: {sorter: false}},
 			widgets: ["zebra"]
 		}');
 
-		$this->EE->javascript->output(array(
+		ee()->javascript->output(array(
 				'$(".toggle_all").toggle(
 					function(){
 						$("input.toggle").each(function() {
@@ -75,21 +75,21 @@ class Updated_sites_mcp {
 			)
 		);
 
-		$vars['cp_page_title'] = $this->EE->lang->line('updated_sites_module_name');
+		$vars['cp_page_title'] = ee()->lang->line('updated_sites_module_name');
 
-		$api_url = $this->EE->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$this->EE->cp->fetch_action_id('Updated_sites', 'incoming');
+		$api_url = ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.ee()->cp->fetch_action_id('Updated_sites', 'incoming');
 
-		$this->EE->db->select('updated_sites_pref_name, updated_sites_id');
-		$query = $this->EE->db->get('updated_sites');
+		ee()->db->select('updated_sites_pref_name, updated_sites_id');
+		$query = ee()->db->get('updated_sites');
 
 		$vars['pings'] = array();
 		
-		$this->EE->javascript->compile();
+		ee()->javascript->compile();
 
 		if ($query->num_rows() == 0)
 		{
-			$vars['message'] = $this->EE->lang->line('no_ping_configs');
-			return $this->EE->load->view('index', $vars, TRUE);
+			$vars['message'] = ee()->lang->line('no_ping_configs');
+			return ee()->load->view('index', $vars, TRUE);
 			exit;
 		}
 
@@ -106,7 +106,7 @@ class Updated_sites_mcp {
 			    														);
 		}
 
-		return $this->EE->load->view('index', $vars, TRUE);
+		return ee()->load->view('index', $vars, TRUE);
 	}
 
 	// ------------------------------------------------------------------------
@@ -127,11 +127,11 @@ class Updated_sites_mcp {
 	  */
 	function modify($id = '')
 	{
-		$this->EE->load->library('form_validation');
-		$this->EE->load->helper('form');
-		$this->EE->load->library('table');
+		ee()->load->library('form_validation');
+		ee()->load->helper('form');
+		ee()->load->library('table');
 
-		$id = ( ! $this->EE->input->get('id')) ? $id : $this->EE->input->get_post('id');
+		$id = ( ! ee()->input->get('id')) ? $id : ee()->input->get_post('id');
 
 		//  Default Form Values
 		$vars['updated_sites_pref_name']		= 'Updated Sites';
@@ -140,18 +140,18 @@ class Updated_sites_mcp {
 		$vars['updated_sites_prune']			= 500;
 
 
-		$this->EE->jquery->tablesorter('.mainTable', '{
+		ee()->jquery->tablesorter('.mainTable', '{
 			headers: {6: {sorter: false}},
 			widgets: ["zebra"]
 		}');
 		
-		$this->EE->form_validation->set_rules('updated_sites_id',			'lang:updated_sites_id',			'required');
-		$this->EE->form_validation->set_rules('updated_sites_pref_name',	'lang:updated_sites_pref_name',		'required');
-		$this->EE->form_validation->set_rules('updated_sites_short_name',	'lang:updated_sites_short_name',	'required|callback__check_duplicate');
-		$this->EE->form_validation->set_rules('updated_sites_allowed',		'lang:updated_sites_allowed',		'required');
-		$this->EE->form_validation->set_rules('updated_sites_prune',		'lang:updated_sites_prune',			'required|is_natural');
+		ee()->form_validation->set_rules('updated_sites_id',			'lang:updated_sites_id',			'required');
+		ee()->form_validation->set_rules('updated_sites_pref_name',	'lang:updated_sites_pref_name',		'required');
+		ee()->form_validation->set_rules('updated_sites_short_name',	'lang:updated_sites_short_name',	'required|callback__check_duplicate');
+		ee()->form_validation->set_rules('updated_sites_allowed',		'lang:updated_sites_allowed',		'required');
+		ee()->form_validation->set_rules('updated_sites_prune',		'lang:updated_sites_prune',			'required|is_natural');
 
-		$this->EE->form_validation->set_error_delimiters('<p class="notice">', '</p>');
+		ee()->form_validation->set_error_delimiters('<p class="notice">', '</p>');
 
 		$vars['submit_text']	= 'submit'; // button label lang key
 
@@ -159,11 +159,11 @@ class Updated_sites_mcp {
 		{
 			$vars['submit_text']	= 'update'; // button label lang key
 
-			$query = $this->EE->db->get_where('updated_sites', array('updated_sites_id' => $id));
+			$query = ee()->db->get_where('updated_sites', array('updated_sites_id' => $id));
 
 			if ($query->num_rows() == 0)
 			{
-				$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=updated_sites');
+				ee()->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=updated_sites');
 			}
 
 			foreach($query->row_array() as $name => $pref)
@@ -172,21 +172,21 @@ class Updated_sites_mcp {
 				$vars["$name"] = $pref;
 			}
 			
-			$this->EE->form_validation->set_old_value('id', $id);
+			ee()->form_validation->set_old_value('id', $id);
 		}
 
-		if ($this->EE->form_validation->run() === FALSE)
+		if (ee()->form_validation->run() === FALSE)
 		{
-			$this->EE->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=updated_sites', $this->EE->lang->line('updated_sites_module_name'));
+			ee()->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=updated_sites', ee()->lang->line('updated_sites_module_name'));
 
-			$vars['cp_page_title'] = ($id == 'new') ? $this->EE->lang->line('new_config') : $this->EE->lang->line('modify_config');
+			$vars['cp_page_title'] = ($id == 'new') ? ee()->lang->line('new_config') : ee()->lang->line('modify_config');
 			$vars['form_action'] = 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=updated_sites'.AMP.'method='. (($id == 'new') ? 'create' : 'modify'.AMP.'id='.$id);
 
 			$vars['form_hidden']['updated_sites_id'] =$id;
 
 			$vars['updated_sites_allowed'] = str_replace("|", "\n", trim($vars['updated_sites_allowed']));
 			
-			return $this->EE->load->view('create_modify', $vars, TRUE);
+			return ee()->load->view('create_modify', $vars, TRUE);
 		}
 		else
 		{
@@ -203,20 +203,20 @@ class Updated_sites_mcp {
 			{
 				unset($data['updated_sites_id']);
 
-				$this->EE->db->insert('updated_sites', $data);
+				ee()->db->insert('updated_sites', $data);
 
-				$message = $this->EE->lang->line('configuration_created');
+				$message = ee()->lang->line('configuration_created');
 			}
 			else
 			{
-				$this->EE->db->where('updated_sites_id', $_POST['updated_sites_id']);
-				$this->EE->db->update('updated_sites', $data);
+				ee()->db->where('updated_sites_id', $_POST['updated_sites_id']);
+				ee()->db->update('updated_sites', $data);
 
-				$message = $this->EE->lang->line('configuration_updated');
+				$message = ee()->lang->line('configuration_updated');
 			}
 
-			$this->EE->session->set_flashdata('message_success', $message);
-			$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=updated_sites');
+			ee()->session->set_flashdata('message_success', $message);
+			ee()->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=updated_sites');
 		}
 	}
 
@@ -227,17 +227,17 @@ class Updated_sites_mcp {
 	  */
 	function _check_duplicate($str)
 	{
-		$id = $this->EE->form_validation->old_value('id');
+		$id = ee()->form_validation->old_value('id');
 		if ($id)
 		{
-			$this->EE->db->where('updated_sites_id !=', $id);
+			ee()->db->where('updated_sites_id !=', $id);
 		}
 		
-		$this->EE->db->where('updated_sites_short_name', $str);
+		ee()->db->where('updated_sites_short_name', $str);
 		
-		if ($this->EE->db->count_all_results('updated_sites') > 0)
+		if (ee()->db->count_all_results('updated_sites') > 0)
 		{
-			$this->EE->form_validation->set_message('_check_duplicate', $this->EE->lang->line('updated_sites_short_name_taken'));
+			ee()->form_validation->set_message('_check_duplicate', ee()->lang->line('updated_sites_short_name_taken'));
 			return FALSE;
 		}
 		
@@ -251,26 +251,26 @@ class Updated_sites_mcp {
 	  */
 	function pings($id = '1')
 	{
-		$this->EE->load->library('pagination');
-		$this->EE->load->library('javascript');
-		$this->EE->load->library('table');
-		$this->EE->load->helper('form');
-		$this->EE->load->helper('text');
+		ee()->load->library('pagination');
+		ee()->load->library('javascript');
+		ee()->load->library('table');
+		ee()->load->helper('form');
+		ee()->load->helper('text');
 
-		$this->EE->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=updated_sites', $this->EE->lang->line('updated_sites_module_name'));
+		ee()->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=updated_sites', ee()->lang->line('updated_sites_module_name'));
 
-		$vars['cp_page_title'] = $this->EE->lang->line('view_pings');
+		$vars['cp_page_title'] = ee()->lang->line('view_pings');
 
-		$this->EE->cp->add_js_script(array('plugin' => 'dataTables'));
+		ee()->cp->add_js_script(array('plugin' => 'dataTables'));
 
-		$id = ( ! $this->EE->input->get('id')) ? $id : $this->EE->input->get_post('id');
+		$id = ( ! ee()->input->get('id')) ? $id : ee()->input->get_post('id');
 		if ($id != '')
 		{
 			$vars['form_hidden']['config_id'] = $id;
 			$id_get = '&id='.$id;
 		}
 
-	$this->EE->javascript->output('
+	ee()->javascript->output('
 var oCache = {
 	iCacheLower: -1
 };
@@ -388,13 +388,13 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		"aoColumns": [null, null, null, null, { "bSortable" : false } ],
 					
 		"oLanguage": {
-			"sZeroRecords": "'.$this->EE->lang->line('no_pings').'",
+			"sZeroRecords": "'.ee()->lang->line('no_pings').'",
 			
 			"oPaginate": {
-				"sFirst": "<img src=\"'.$this->EE->cp->cp_theme_url.'images/pagination_first_button.gif\" width=\"13\" height=\"13\" alt=\"&lt; &lt;\" />",
-				"sPrevious": "<img src=\"'.$this->EE->cp->cp_theme_url.'images/pagination_prev_button.gif\" width=\"13\" height=\"13\" alt=\"&lt; &lt;\" />",
-				"sNext": "<img src=\"'.$this->EE->cp->cp_theme_url.'images/pagination_next_button.gif\" width=\"13\" height=\"13\" alt=\"&lt; &lt;\" />", 
-				"sLast": "<img src=\"'.$this->EE->cp->cp_theme_url.'images/pagination_last_button.gif\" width=\"13\" height=\"13\" alt=\"&lt; &lt;\" />"
+				"sFirst": "<img src=\"'.ee()->cp->cp_theme_url.'images/pagination_first_button.gif\" width=\"13\" height=\"13\" alt=\"&lt; &lt;\" />",
+				"sPrevious": "<img src=\"'.ee()->cp->cp_theme_url.'images/pagination_prev_button.gif\" width=\"13\" height=\"13\" alt=\"&lt; &lt;\" />",
+				"sNext": "<img src=\"'.ee()->cp->cp_theme_url.'images/pagination_next_button.gif\" width=\"13\" height=\"13\" alt=\"&lt; &lt;\" />", 
+				"sLast": "<img src=\"'.ee()->cp->cp_theme_url.'images/pagination_last_button.gif\" width=\"13\" height=\"13\" alt=\"&lt; &lt;\" />"
 			}
 		},
 
@@ -409,7 +409,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 
 	');	
 
-		$this->EE->javascript->output(array(
+		ee()->javascript->output(array(
 				'$(".toggle_all").toggle(
 					function(){
 						$("input.toggle").each(function() {
@@ -425,7 +425,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			)
 		);
 
-		$this->EE->cp->add_to_foot('<script type="text/javascript">
+		ee()->cp->add_to_foot('<script type="text/javascript">
 			function showHide(entryID, htmlObj, linkType) {
 
 				extTextDivID = ("extText" + (entryID));
@@ -448,19 +448,19 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			</script>');
 
 
-		$rownum = ($this->EE->input->get_post('rownum') != '') ? $this->EE->input->get_post('rownum') : 0;
+		$rownum = (ee()->input->get_post('rownum') != '') ? ee()->input->get_post('rownum') : 0;
 
 		// some page defaults
 		$vars['form_hidden'] = '';
 
-		$this->EE->db->where('ping_config_id', $id);
-		$vars['ping_count'] = $this->EE->db->count_all_results('updated_site_pings');
+		ee()->db->where('ping_config_id', $id);
+		$vars['ping_count'] = ee()->db->count_all_results('updated_site_pings');
 
 		$query = $this->pings_search($id, '', $rownum);
 		
 		$vars['pings'] = array();
 
-		$site_url = $this->EE->config->item('site_url');
+		$site_url = ee()->config->item('site_url');
 
 		foreach ($query->result() as $row)
 		{
@@ -468,14 +468,14 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			$vars['pings'][$row->ping_id]['name'] = $row->ping_site_name;
 
 			// URL
-			$vars['pings'][$row->ping_id]['full_url'] = $this->EE->functions->fetch_site_index().QUERY_MARKER.'URL='.$row->ping_site_url;
+			$vars['pings'][$row->ping_id]['full_url'] = ee()->functions->fetch_site_index().QUERY_MARKER.'URL='.$row->ping_site_url;
 			$vars['pings'][$row->ping_id]['display_url'] = character_limiter(str_replace('http://', '', $row->ping_site_url), 40);
 
 			// RSS
 			$vars['pings'][$row->ping_id]['rss'] = $row->ping_site_rss;
 
 			// Date
-			$vars['pings'][$row->ping_id]['date'] = ($row->ping_date != '' AND $row->ping_date != 0) ? $this->EE->localize->human_time($row->ping_date) : '-';
+			$vars['pings'][$row->ping_id]['date'] = ($row->ping_date != '' AND $row->ping_date != 0) ? ee()->localize->human_time($row->ping_date) : '-';
 
 			// delete checkbox
 			$vars['pings'][$row->ping_id]['toggle'] = array(
@@ -495,55 +495,55 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		$config['query_string_segment'] = 'rownum';
 		$config['full_tag_open'] = '<p id="paginationLinks">';
 		$config['full_tag_close'] = '</p>';
-		$config['prev_link'] = '<img src="'.$this->EE->cp->cp_theme_url.'images/pagination_prev_button.gif" width="13" height="13" alt="&lt;" />';
-		$config['next_link'] = '<img src="'.$this->EE->cp->cp_theme_url.'images/pagination_next_button.gif" width="13" height="13" alt="&gt;" />';
-		$config['first_link'] = '<img src="'.$this->EE->cp->cp_theme_url.'images/pagination_first_button.gif" width="13" height="13" alt="&lt; &lt;" />';
-		$config['last_link'] = '<img src="'.$this->EE->cp->cp_theme_url.'images/pagination_last_button.gif" width="13" height="13" alt="&gt; &gt;" />';
+		$config['prev_link'] = '<img src="'.ee()->cp->cp_theme_url.'images/pagination_prev_button.gif" width="13" height="13" alt="&lt;" />';
+		$config['next_link'] = '<img src="'.ee()->cp->cp_theme_url.'images/pagination_next_button.gif" width="13" height="13" alt="&gt;" />';
+		$config['first_link'] = '<img src="'.ee()->cp->cp_theme_url.'images/pagination_first_button.gif" width="13" height="13" alt="&lt; &lt;" />';
+		$config['last_link'] = '<img src="'.ee()->cp->cp_theme_url.'images/pagination_last_button.gif" width="13" height="13" alt="&gt; &gt;" />';
 
-		$this->EE->pagination->initialize($config);
+		ee()->pagination->initialize($config);
 
-		$vars['pagination'] = $this->EE->pagination->create_links();
+		$vars['pagination'] = ee()->pagination->create_links();
 
-		$this->EE->javascript->compile();
+		ee()->javascript->compile();
 
-		return $this->EE->load->view('pings', $vars, TRUE);
+		return ee()->load->view('pings', $vars, TRUE);
 	}
 
 
 	function pings_ajax_filter()
 	{
-		$this->EE->output->enable_profiler(FALSE);
-		$this->EE->load->helper('text');
+		ee()->output->enable_profiler(FALSE);
+		ee()->load->helper('text');
 				
 		$col_map = array('ping_site_name', 'ping_site_url', 'ping_site_url', 'ping_date');
 
-		$id = ($this->EE->input->get_post('id')) ? $this->EE->input->get_post('id') : '';		
+		$id = (ee()->input->get_post('id')) ? ee()->input->get_post('id') : '';		
 
 
 		// Note- we pipeline the js, so pull more data than are displayed on the page		
-		$perpage = $this->EE->input->get_post('iDisplayLength');
-		$offset = ($this->EE->input->get_post('iDisplayStart')) ? $this->EE->input->get_post('iDisplayStart') : 0; // Display start point
-		$sEcho = $this->EE->input->get_post('sEcho');
+		$perpage = ee()->input->get_post('iDisplayLength');
+		$offset = (ee()->input->get_post('iDisplayStart')) ? ee()->input->get_post('iDisplayStart') : 0; // Display start point
+		$sEcho = ee()->input->get_post('sEcho');
 
 		
 		/* Ordering */
 		$order = array();
 		
-		if ($this->EE->input->get('iSortCol_0') !== FALSE)
+		if (ee()->input->get('iSortCol_0') !== FALSE)
 		{
-			for ( $i=0; $i < $this->EE->input->get('iSortingCols'); $i++ )
+			for ( $i=0; $i < ee()->input->get('iSortingCols'); $i++ )
 			{
-				if (isset($col_map[$this->EE->input->get('iSortCol_'.$i)]))
+				if (isset($col_map[ee()->input->get('iSortCol_'.$i)]))
 				{
-					$order[$col_map[$this->EE->input->get('iSortCol_'.$i)]] = ($this->EE->input->get('sSortDir_'.$i) == 'asc') ? 'asc' : 'desc';
+					$order[$col_map[ee()->input->get('iSortCol_'.$i)]] = (ee()->input->get('sSortDir_'.$i) == 'asc') ? 'asc' : 'desc';
 				}
 			}
 		}
 		
 		$query = $this->pings_search($id, $order, $offset, $perpage);
 
-		$this->EE->db->where('ping_config_id', $id);
-		$total = $this->EE->db->count_all_results('updated_site_pings');
+		ee()->db->where('ping_config_id', $id);
+		$total = ee()->db->count_all_results('updated_site_pings');
 
 		$j_response['sEcho'] = $sEcho;
 		$j_response['iTotalRecords'] = $total;
@@ -556,10 +556,10 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		{
 		
 			$m[] = $ping['ping_site_name'];
-			$m[] =  '<a href="'.$this->EE->functions->fetch_site_index().
+			$m[] =  '<a href="'.ee()->functions->fetch_site_index().
 			QUERY_MARKER.'URL='.$ping['ping_site_url'].'">'.character_limiter(str_replace('http://', '', $ping['ping_site_url']), 40).'</a>';
 			$m[] =	$ping['ping_site_rss'];
-			$m[] =	($ping['ping_date'] != '' AND $ping['ping_date'] != 0) ? $this->EE->localize->human_time($ping['ping_date']) : '-';
+			$m[] =	($ping['ping_date'] != '' AND $ping['ping_date'] != 0) ? ee()->localize->human_time($ping['ping_date']) : '-';
 			$m[] = '<input class="toggle" type="checkbox" name="email[]" value="'.$ping['ping_id'].'" />';		
 
 			$tdata[$i] = $m;
@@ -568,7 +568,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		}		
 
 		$j_response['aaData'] = $tdata;	
-		$sOutput = $this->EE->javascript->generate_json($j_response, TRUE);
+		$sOutput = json_encode($j_response);
 	
 		die($sOutput);
 	}
@@ -578,24 +578,24 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 	{
 		$perpage = ($perpage == '') ? $this->perpage: $perpage;
 		
-		$this->EE->db->from('updated_site_pings');
+		ee()->db->from('updated_site_pings');
 		
 		if (is_array($order) && count($order) > 0)
 		{
 			foreach ($order as $key => $val)
 			{
-				$this->EE->db->order_by($key, $val);
+				ee()->db->order_by($key, $val);
 			}
 		}
 		else
 		{
-			$this->EE->db->order_by('ping_date', 'desc');
+			ee()->db->order_by('ping_date', 'desc');
 		}
 
-		$this->EE->db->where('ping_config_id', $id);
+		ee()->db->where('ping_config_id', $id);
 
-		$this->EE->db->limit($perpage, $rownum);
-		$query = $this->EE->db->get();
+		ee()->db->limit($perpage, $rownum);
+		$query = ee()->db->get();
 		
 		return $query;
 	}
@@ -608,29 +608,29 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 	  */
 	function delete_confirm()
 	{
-		if ( ! $this->EE->input->post('toggle'))
+		if ( ! ee()->input->post('toggle'))
 		{
-			$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=updated_sites');
+			ee()->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=updated_sites');
 		}
 
-		$id = ( ! $this->EE->input->get('config_id')) ? '1' : $this->EE->input->get_post('config_id');
+		$id = ( ! ee()->input->get('config_id')) ? '1' : ee()->input->get_post('config_id');
 
-		$this->EE->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=updated_sites', $this->EE->lang->line('updated_sites_module_name'));
+		ee()->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=updated_sites', ee()->lang->line('updated_sites_module_name'));
 
-		$vars['cp_page_title'] = $this->EE->lang->line('updated_sites_delete_confirm');
+		$vars['cp_page_title'] = ee()->lang->line('updated_sites_delete_confirm');
 		$vars['question_key'] = 'ml_delete_question';
-		$vars['form_hidden']['config_id'] = ( ! $this->EE->input->get('config_id')) ? '1' : $this->EE->input->get_post('config_id');
+		$vars['form_hidden']['config_id'] = ( ! ee()->input->get('config_id')) ? '1' : ee()->input->get_post('config_id');
 
-		$this->EE->load->helper('form');
+		ee()->load->helper('form');
 
 		foreach ($_POST['toggle'] as $key => $val)
 		{
 			$vars['damned'][] = $val;
 		}
 
-		$this->EE->javascript->compile();
+		ee()->javascript->compile();
 
-		return $this->EE->load->view('delete_confirm', $vars, TRUE);
+		return ee()->load->view('delete_confirm', $vars, TRUE);
 	}
 
 	// --------------------------------------------------------------------
@@ -640,21 +640,21 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 	  */
 	function delete_configs()
 	{
-		$id = ( ! $this->EE->input->get('config_id')) ? '1' : $this->EE->input->get_post('config_id');
+		$id = ( ! ee()->input->get('config_id')) ? '1' : ee()->input->get_post('config_id');
 
-		if ( ! $this->EE->input->post('delete'))
+		if ( ! ee()->input->post('delete'))
 		{
 			return $this->pings($id);
 		}
 
 		//  Delete Configurations
-		$this->EE->db->where_in('updated_sites_id', $_POST['delete']);
-		$this->EE->db->delete('updated_sites');
+		ee()->db->where_in('updated_sites_id', $_POST['delete']);
+		ee()->db->delete('updated_sites');
 		
-		$message = (count($_POST['delete']) == 1) ? $this->EE->lang->line('updated_site_deleted') : $this->EE->lang->line('updated_sites_deleted');
+		$message = (count($_POST['delete']) == 1) ? ee()->lang->line('updated_site_deleted') : ee()->lang->line('updated_sites_deleted');
 
-		$this->EE->session->set_flashdata('message_success', $message);
-		$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=updated_sites');
+		ee()->session->set_flashdata('message_success', $message);
+		ee()->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=updated_sites');
 	}
 
 	// --------------------------------------------------------------------
@@ -665,29 +665,29 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 	  */
 	function delete_pings_confirm()
 	{
-		if ( ! $this->EE->input->post('toggle'))
+		if ( ! ee()->input->post('toggle'))
 		{
-			$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=updated_sites');
+			ee()->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=updated_sites');
 		}
 
-		$id = ( ! $this->EE->input->get('config_id')) ? '1' : $this->EE->input->get_post('config_id');
+		$id = ( ! ee()->input->get('config_id')) ? '1' : ee()->input->get_post('config_id');
 
-		$this->EE->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=updated_sites', $this->EE->lang->line('updated_sites_module_name'));
+		ee()->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=updated_sites', ee()->lang->line('updated_sites_module_name'));
 
-		$vars['cp_page_title'] = $this->EE->lang->line('delete_pings_confirm');
+		$vars['cp_page_title'] = ee()->lang->line('delete_pings_confirm');
 		$vars['question_key'] = 'ml_delete_question';
-		$vars['form_hidden']['config_id'] = ( ! $this->EE->input->get('config_id')) ? '1' : $this->EE->input->get_post('config_id');
+		$vars['form_hidden']['config_id'] = ( ! ee()->input->get('config_id')) ? '1' : ee()->input->get_post('config_id');
 
-		$this->EE->load->helper('form');
+		ee()->load->helper('form');
 
 		foreach ($_POST['toggle'] as $key => $val)
 		{
 			$vars['damned'][] = $val;
 		}
 
-		$this->EE->javascript->compile();
+		ee()->javascript->compile();
 
-		return $this->EE->load->view('delete_pings_confirm', $vars, TRUE);
+		return ee()->load->view('delete_pings_confirm', $vars, TRUE);
 	}
 
 
@@ -698,18 +698,18 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 	  */
 	function delete_pings()
 	{
-		$id = ( ! $this->EE->input->get('config_id')) ? '1' : $this->EE->input->get_post('config_id');
+		$id = ( ! ee()->input->get('config_id')) ? '1' : ee()->input->get_post('config_id');
 		
-		if ( ! $this->EE->input->post('delete'))
+		if ( ! ee()->input->post('delete'))
 		{
 			return $this->pings($id);
 		}
 
 		//  Delete Referrers
-		$this->EE->db->where_in('ping_id', $_POST['delete']);
-		$this->EE->db->delete('updated_site_pings');
+		ee()->db->where_in('ping_id', $_POST['delete']);
+		ee()->db->delete('updated_site_pings');
 
-		return $this->pings($id, $this->EE->lang->line('pings_deleted'));
+		return $this->pings($id, ee()->lang->line('pings_deleted'));
 	}
 }
 

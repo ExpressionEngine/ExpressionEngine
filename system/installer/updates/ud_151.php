@@ -45,7 +45,7 @@ class Updater {
 		// Run the queries
 		foreach ($Q as $sql)
 		{
-			$this->EE->db->query($sql);
+			ee()->db->query($sql);
 		}
 		
 		return TRUE;

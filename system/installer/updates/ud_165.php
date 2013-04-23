@@ -39,7 +39,7 @@ class Updater {
 		$Q[] = "ALTER TABLE `exp_templates` ADD `last_author_id` INT(10) UNSIGNED NOT NULL AFTER `edit_date`";
 		$Q[] = "ALTER TABLE `exp_revision_tracker` ADD `item_author_id` INT(10) UNSIGNED NOT NULL AFTER `item_date`";
 		
-		$query = $this->EE->db->query('SHOW FIELDS FROM exp_weblog_data');
+		$query = ee()->db->query('SHOW FIELDS FROM exp_weblog_data');
 
 		foreach ($query->result_array() as $row)
 		{
@@ -52,13 +52,13 @@ class Updater {
 		// run our queries
 		foreach ($Q as $sql)
 		{
-			$this->EE->db->query($sql);
+			ee()->db->query($sql);
 		}
 		
-		$this->EE->load->helper('string');
+		ee()->load->helper('string');
 			
 		// We need to add a new template preference, so we'll fetch the existing site template prefs
-		$query = $this->EE->db->query("SELECT site_id, site_template_preferences FROM exp_sites");
+		$query = ee()->db->query("SELECT site_id, site_template_preferences FROM exp_sites");
 
 		foreach ($query->result_array() as $row)
 		{
@@ -68,7 +68,7 @@ class Updater {
 			$prefs['strict_urls'] = ($prefs['site_404'] == FALSE) ? 'n' : 'y';
 			
 			// Update the DB
-			$this->EE->db->query($this->EE->db->update_string('exp_sites', array('site_template_preferences' => serialize($prefs)), "site_id = '".$row['site_id']."'"));
+			ee()->db->query(ee()->db->update_string('exp_sites', array('site_template_preferences' => serialize($prefs)), "site_id = '".$row['site_id']."'"));
 		}
 
 		return TRUE;
