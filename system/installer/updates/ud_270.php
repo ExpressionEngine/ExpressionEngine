@@ -58,7 +58,10 @@ class Updater {
 	 */
 	private function _drop_pings()
 	{
+		ee()->dbforge->drop_table('entry_ping_status');
+		ee()->dbforge->drop_table('ping_servers');
 
+		ee()->smartforge->drop_column('channels', 'ping_return_url');
 	}
 
 	// --------------------------------------------------------------------
