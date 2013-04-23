@@ -257,9 +257,6 @@ $lang = array(
 'european' => 
 'European',
 
-'your_ping_servers' =>
-'Ping Servers',
-
 'your_html_buttons' => 
 'HTML Formatting Buttons',
 
@@ -472,12 +469,6 @@ $lang = array(
 
 'password_change_warning' =>
 'Note: You have changed your password so you will have to log back in.',
-
-'ping_servers' =>
-'Ping Servers',
-
-'pingservers_updated' =>
-'Ping Servers Updated',
 
 'html_buttons' =>
 'HTML Formatting Buttons',

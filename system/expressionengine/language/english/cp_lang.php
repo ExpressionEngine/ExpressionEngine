@@ -108,8 +108,6 @@ $lang = array(
 	'nav_file_upload_preferences_short_desc'	=> 'Create, edit, and delete File Upload Preferences',
 	'nav_file_watermark_preferences'			=> 'Watermark Preferences',
 	'nav_file_watermark_preferences_short_desc' => 'Create, edit, and delete File Watermark Preferences',
-	'nav_default_ping_servers'					=> 'Default Ping Servers',
-	'nav_default_ping_servers_short_desc'		=> 'Create, edit, and delete  Default Ping Servers',
 	'nav_default_html_buttons'					=> 'Default HTML Buttons',
 	'nav_default_html_buttons_short_desc'		=> 'Create, edit, and delete Default HTML Buttons',
 
