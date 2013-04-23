@@ -298,6 +298,7 @@ class EE_Core {
 		ee()->load->library('remember');
 		ee()->load->library('localize');
 		ee()->load->library('session');
+		ee()->load->library('user_agent');
 
 		// Load the "core" language file - must happen after the session is loaded
 		ee()->lang->loadfile('core');
