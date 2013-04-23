@@ -300,9 +300,6 @@ $lang = array(
 'any' =>
 'Any',
 
-'mobile_not_supported' => 
-'This feature is not supported in the mobile browser',
-
 'required_fields' =>
 'Indicates required fields',
 
