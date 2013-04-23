@@ -545,65 +545,6 @@ class Admin_model extends CI_Model {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Get Ping Servers
-	 *
-	 * @access	public
-	 * @return	object
-	 */
-	function get_ping_servers($member_id = 0)
-	{
-		$this->db->where('site_id', $this->config->item('site_id'));
-		$this->db->where('member_id', $member_id);
-		$this->db->order_by('server_order');
-		return $this->db->get('ping_servers');
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Delete Ping Server
-	 *
-	 * @access	public
-	 * @return	NULL
-	 */
-	function delete_ping_server($id)
-	{
-		$this->db->from('ping_servers');
-		$this->db->where('site_id', $this->config->item('site_id'));
-		$this->db->where('id', $id);
-		$this->db->delete();
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Update Ping Servers
-	 *
-	 * @access	public
-	 * @return	object
-	 */
-	function update_ping_servers($member_id, $servers, $remove_servers = TRUE)
-	{
-		if ($remove_servers != FALSE)
-		{
-			// remove all ping servers for this member
-			$this->db->from('ping_servers');
-			$this->db->where('site_id', $this->config->item('site_id'));
-			$this->db->where('member_id', $member_id);
-			$this->db->delete();
-		}
-
-		// now add in the new buttons
-		foreach ($servers as $server)
-		{
-			$this->db->insert('ping_servers', $server);
-		}
-
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Unique Upload Name
 	 *
 	 * @access	public
