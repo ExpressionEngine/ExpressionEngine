@@ -26,19 +26,23 @@
 		},
 
 		/**
-		 * Allows columns to be reordered
+		 * Allows rows to be reordered
 		 */
 		_bindSortable: function()
 		{
 			this.rowContainer.sortable({
 				axis: 'y',						// Only allow vertical dragging
 				containment: 'parent',			// Contain to parent
-				handle: 'td.grid_handle',		// Set drag handle to the top box
-				items: 'tr',					// Only allow these to be sortable
+				handle: 'td.grid_handle',		// Set drag handle
+				items: 'tr.grid_row',			// Only allow these to be sortable
 				sort: EE.sortable_sort_helper	// Custom sort handler
 			});
 		},
 
+		/**
+		 * Adds rows to a Grid field based on the fields minimum rows setting
+		 * and how many rows already exist
+		 */
 		_addMinimumRows: function()
 		{
 			// Figure out how many rows we need to add, plus 2 to account for
@@ -52,6 +56,7 @@
 				this.emptyField.show();
 			}
 
+			// Add the needed rows
 			while (neededRows > 0)
 			{
 				this._addRow();
@@ -87,6 +92,8 @@
 
 		/**
 		 * Returns current number of data rows in the Grid field
+		 *
+		 * @return	{int}	Number of rows
 		 */
 		_getNumberOfRows: function()
 		{

@@ -27,6 +27,8 @@
 class Grid_lib {
 
 	protected $_fieldtypes = array();
+	protected $_columns = array();
+	protected $_validated = array();
 	protected $_table = 'grid_columns';
 	protected $_table_prefix = 'grid_field_';
 
@@ -152,18 +154,30 @@ class Grid_lib {
 		// Get columns just for this field
 		$vars['columns'] = $this->get_columns_for_field($settings['field_id']);
 
-		// TODO: Move DB stuff like this into a model?
-		$rows = ee()->db->where('entry_id', $entry_id)
-			->order_by('row_order')
-			->get($table_name)
-			->result_array();
+		if (is_array($data))
+		{
+			$rows = $this->_validated[$settings['field_id']]['value'];
+		}
+		else
+		{
+			// TODO: Move DB stuff like this into a model?
+			$rows = ee()->db->where('entry_id', $entry_id)
+				->order_by('row_order')
+				->get($table_name)
+				->result_array();
+		}
 
 		$vars['rows'] = array();
 
 		// Loop through row data and construct an array of publish field HTML
 		// for the supplied field data
-		foreach ($rows as $row)
+		foreach ($rows as $row_id => $row)
 		{
+			if ( ! is_numeric($row_id))
+			{
+				$row['row_id'] = $row_id;
+			}
+			
 			foreach ($vars['columns'] as $column)
 			{
 				$vars['rows'][$row['row_id']]['col_id_'.$column['col_id']] = $this->_publish_field_cell(
@@ -171,6 +185,11 @@ class Grid_lib {
 					$column,
 					$row
 				);
+
+				if (isset($row['col_id_'.$column['col_id'].'_error']))
+				{
+					$vars['rows'][$row['row_id']]['col_id_'.$column['col_id'].'_error'] = $row['col_id_'.$column['col_id'].'_error'];
+				}
 			}
 		}
 
@@ -208,7 +227,7 @@ class Grid_lib {
 		// Assign settings to fieldtype manually so they're available like
 		// normal field settings
 		$fieldtype->field_id = $column['col_id'];
-		$fieldtype->field_name = $column['col_name'];
+		$fieldtype->field_name = 'col_id_'.$column['col_id'];
 		$fieldtype->settings = $column['col_settings'];
 
 		// Developers can optionally implement grid_display_field, otherwise
@@ -216,18 +235,112 @@ class Grid_lib {
 		$method = $ft_api->check_method_exists('grid_display_field')
 			? 'grid_display_field' : 'display_publish_field';
 
-		// Call the fieldtypes field display method and capture the output
+		// Call the fieldtype's field display method and capture the output
 		$display_field = $ft_api->apply($method, array($row_data['col_id_'.$column['col_id']]));
 
 		// How we'll namespace new and existing rows
-		$row_id = (empty($row_data)) ? 'new_row_0' : 'row_id_'.$row_data['row_id'];
+		$row_id = ( ! isset($row_data['row_id'])) ? 'new_row_0' : 'row_id_'.$row_data['row_id'];
 
 		// Return the publish field HTML with namespaced form field names
 		return preg_replace(
 			'/(<[input|select|textarea][^>]*)name=["\']([^"]*)["\']/',
-			'$1name="'.$field_name.'[rows]['.$row_id.'][col_id_'.$column['col_id'].'][$2]"',
+			'$1name="'.$field_name.'[rows]['.$row_id.'][$2]"',
 			$display_field
 		);
+	}
+
+	// ------------------------------------------------------------------------
+
+	public function validate($data, $field_id)
+	{
+		// Empty field
+		if ( ! isset($data['rows']))
+		{
+			return TRUE;
+		}
+
+		$ft_api = ee()->api_channel_fields;
+
+		$columns = $this->get_columns_for_field($field_id);
+
+		$final_values = array();
+		$errors = FALSE;
+
+		foreach ($data['rows'] as $row_id => $row)
+		{
+			foreach ($columns as $column)
+			{
+				$col_id = 'col_id_'.$column['col_id'];
+
+				if ( ! isset($row[$col_id]))
+				{
+					$row[$col_id] = NULL;
+				}
+
+				foreach ($row as $key => $value)
+				{
+					$_POST[$key] = $value;
+				}
+
+				// Instantiate fieldtype
+				$fieldtype = $ft_api->setup_handler($column['col_type'], TRUE);
+
+				// Assign settings to fieldtype manually so they're available like
+				// normal field settings
+				$fieldtype->field_id = $column['col_id'];
+				$fieldtype->field_name = 'col_id_'.$column['col_id'];
+				$fieldtype->settings = $column['col_settings'];
+
+				// Developers can optionally implement grid_validate, otherwise we
+				// will try to use validate
+				$method = $ft_api->check_method_exists('grid_validate')
+					? 'grid_validate' : 'validate';
+
+				// Call the fieldtype's validate method and capture the output
+				$validate = $ft_api->apply($method, array($row[$col_id]));
+
+				$error = $validate;
+				$value = $row[$col_id];
+
+				if (is_array($validate))
+				{
+					extract($validate, EXTR_OVERWRITE);
+				}
+
+				$final_values[$row_id][$col_id] = $value;
+
+				if (is_string($error) && ! empty($error))
+				{
+					$final_values[$row_id][$col_id] = $row[$col_id];
+					$final_values[$row_id][$col_id.'_error'] = $error;
+					$errors = lang('grid_validation_error');
+				}
+
+				foreach ($row as $key => $value)
+				{
+					unset($_POST[$key]);
+				}
+			}
+		}
+
+		$this->_validated[$field_id] = array('value' => $final_values, 'error' => $errors);
+
+		return $this->_validated[$field_id];
+	}
+
+	// ------------------------------------------------------------------------
+
+	public function save($data, $field_id)
+	{
+		$validated = (isset($this->_validated[$field_id]))
+			? $this->_validated[$field_id] : $this->validate($data, $field_id);
+
+		if (is_array($validated) && $validated['error'] === FALSE)
+		{
+			$col_type = 'yes';
+		}
+
+		return TRUE;
 	}
 
 	// ------------------------------------------------------------------------
@@ -341,6 +454,7 @@ class Grid_lib {
 			$column['required'] = isset($column['required']) ? 'y' : 'n';
 			$column['searchable'] = isset($column['searchable']) ? 'y' : 'n';
 			$column['settings'] = $this->_save_settings($column);
+			$column['settings']['field_required'] = $column['required'];
 
 			$column_data = array(
 				'field_id'			=> $settings['field_id'],
@@ -461,17 +575,24 @@ class Grid_lib {
 	 */
 	public function get_columns_for_field($field_id)
 	{
+		if (isset($this->_columns[$field_id]))
+		{
+			return $this->_columns[$field_id];
+		}
+
 		$columns = ee()->db->where('field_id', $field_id)
 			->order_by('col_order')
 			->get($this->_table)
 			->result_array();
 
+		$this->_columns[$field_id] = array();
 		foreach ($columns as &$column)
 		{
 			$column['col_settings'] = json_decode($column['col_settings'], TRUE);
+			$this->_columns[$field_id][$column['col_id']] = $column;
 		}
-
-		return $columns;
+		
+		return $this->_columns[$field_id];
 	}
 
 	// ------------------------------------------------------------------------

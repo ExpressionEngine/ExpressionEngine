@@ -21,7 +21,13 @@
 							<td class="grid_handle">&nbsp;</td>
 							<?php foreach ($columns as $column): ?>
 								<td width="33%">
+									<?php if ($column == end($columns)):?>
+										<a href="#" class="grid_button_delete" title="<?=lang('grid_delete_row')?>"><?=lang('grid_delete_row')?></a>
+									<?php endif ?>
 									<?=$row['col_id_'.$column['col_id']]?>
+									<?php if (isset($row['col_id_'.$column['col_id'].'_error'])): ?>
+										<p class="grid_error"><?=$row['col_id_'.$column['col_id'].'_error']?></p>
+									<?php endif ?>
 								</td>
 							<?php endforeach ?>
 						</tr>
@@ -30,9 +36,9 @@
 						<td class="grid_handle">&nbsp;</td>
 						<?php foreach ($columns as $column): ?>
 							<td width="33%">
-								<? if ($column == end($columns)):?>
+								<?php if ($column == end($columns)):?>
 									<a href="#" class="grid_button_delete" title="<?=lang('grid_delete_row')?>"><?=lang('grid_delete_row')?></a>
-								<? endif ?>
+								<?php endif ?>
 								<?=$blank_row['col_id_'.$column['col_id']]?>
 							</td>
 						<?php endforeach ?>

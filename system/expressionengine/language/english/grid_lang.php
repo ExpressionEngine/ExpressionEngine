@@ -26,6 +26,7 @@ $lang = array(
 'grid_delete_row'		=> 'Delete Row',
 'grid_delete_column'	=> 'Delete Column',
 'grid_copy_column'		=> 'Copy',
+'grid_validation_error'	=> 'There was a problem with one or more Grid fields',
 
 // IGNORE
 ''=>'');

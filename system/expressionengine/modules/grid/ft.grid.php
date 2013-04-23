@@ -47,7 +47,22 @@ class Grid_ft extends EE_Fieldtype {
 
 	public function validate($data)
 	{
-		return TRUE;
+		ee()->lang->loadfile('grid');
+		ee()->load->library('grid_lib');
+
+		return ee()->grid_lib->validate(ee()->input->post($this->field_name), $this->field_id);
+	}
+
+	// --------------------------------------------------------------------
+
+	public function save($data)
+	{
+		ee()->load->library('grid_lib');
+		ee()->grid_lib->save(ee()->input->post($this->field_name), $this->field_id);
+
+		// TODO: Return string of searchable columns?
+
+		return NULL;
 	}
 
 	// --------------------------------------------------------------------
@@ -74,13 +89,6 @@ class Grid_ft extends EE_Fieldtype {
 			$data,
 			$this->settings
 		);
-	}
-
-	// --------------------------------------------------------------------
-
-	public function save($data)
-	{
-		
 	}
 
 	// --------------------------------------------------------------------

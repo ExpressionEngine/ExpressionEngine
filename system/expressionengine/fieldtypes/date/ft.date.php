@@ -62,7 +62,7 @@ class Date_ft extends EE_Fieldtype {
 			return lang('invalid_date');
 		}
 
-		return TRUE;
+		return array('value' => $data);
 	}
 	
 	// --------------------------------------------------------------------
@@ -83,10 +83,11 @@ class Date_ft extends EE_Fieldtype {
 		$custom_date = '';
 		$localize = TRUE;
 
-		if (isset($_POST[$date_field]) && ! is_numeric($_POST[$date_field]))
+		if ((isset($_POST[$date_field]) && ! is_numeric($_POST[$date_field]))
+			OR ( ! is_numeric($field_data) && ! empty($field_data)))
 		{
 			// probably had a validation error so repopulate as-is
-			$custom_date = ee()->input->post($date_field, TRUE);
+			$custom_date = $field_data;
 		}
 		else
 		{
@@ -150,8 +151,11 @@ class Date_ft extends EE_Fieldtype {
 				'n' => ee()->lang->line('fixed_date')
 			);
 
+			$text_direction = (isset($this->settings['field_text_direction']))
+				? $this->settings['field_text_direction'] : 'ltr';
+
 			$r .= NBS.NBS.NBS.NBS;
-			$r .= form_dropdown($date_local, $localized_opts, $localized, 'dir="'.$this->settings['field_text_direction'].'" id="'.$date_local.'"');
+			$r .= form_dropdown($date_local, $localized_opts, $localized, 'dir="'.$text_direction.'" id="'.$date_local.'"');
 		}
 
 		return $r;
