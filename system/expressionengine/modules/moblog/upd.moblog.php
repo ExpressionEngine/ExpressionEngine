@@ -25,7 +25,7 @@
 
 class Moblog_upd {
 
-	var $version 			= '3.1';
+	var $version 			= '3.2';
 
 	function Moblog_upd()
 	{
@@ -87,8 +87,7 @@ class Moblog_upd {
 			'moblog_email_password'		=> array('type' => 'varchar', 'constraint' => 125, 'default' => ''),
 			'moblog_subject_prefix'		=> array('type' => 'varchar', 'constraint' => 50, 'default' => ''),
 			'moblog_valid_from'			=> array('type' => 'text'),
-			'moblog_ignore_text'		=> array('type' => 'text'),
-			'moblog_ping_servers'		=> array('type' => 'varchar', 'constraint' => 50, 'default' => ''),
+			'moblog_ignore_text'		=> array('type' => 'text')
 		);
 		
 		ee()->dbforge->add_field($fields);
@@ -226,6 +225,11 @@ class Moblog_upd {
 
 			// Drop unused columns
 			$this->_drop_columns(array('moblog_image_width', 'moblog_image_height', 'moblog_resize_image', 'moblog_resize_width', 'moblog_resize_height', 'moblog_create_thumbnail', 'moblog_thumbnail_width', 'moblog_thumbnail_height'));
+		}
+
+		if (version_compare($current, '3.2', '<'))
+		{
+			$this->_drop_columns(array('moblog_ping_servers'));
 		}
 
 		return TRUE;
