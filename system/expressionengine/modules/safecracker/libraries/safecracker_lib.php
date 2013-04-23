@@ -1421,10 +1421,6 @@ class Safecracker_lib
 			$_POST['status'] = $this->settings['override_status'][ee()->config->item('site_id')][$this->_meta['channel_id']];
 		}
 		
-		$_POST['ping_servers'] = (is_array(ee()->input->post('ping'))) ? ee()->input->post('ping', TRUE) : array();
-		
-		$_POST['ping_errors'] = FALSE;
-		
 		$_POST['revision_post'] = $_POST;
 		
 		$this->load_session_override();
