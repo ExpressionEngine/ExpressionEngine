@@ -235,6 +235,7 @@ class Wizard extends CI_Controller {
 		$this->year		= gmdate('Y', $this->now);
 		$this->month	= gmdate('m', $this->now);
 		$this->day		= gmdate('d', $this->now);	
+		
 	}
 
 	// --------------------------------------------------------------------
@@ -275,7 +276,7 @@ class Wizard extends CI_Controller {
 		{
 			show_error($this->lang->line('invalid_action'));
 		}
-
+		
 		// Call the action
 		$this->$action();		
 	}
@@ -300,7 +301,7 @@ class Wizard extends CI_Controller {
 		}
 
 		// Is the config file readable?
-		if ( ! @include($this->config->config_path))
+		if ( ! include($this->config->config_path))
 		{			
 			$this->_set_output('error', array('error' => $this->lang->line('unreadable_config')));
 			return FALSE;
@@ -314,7 +315,7 @@ class Wizard extends CI_Controller {
 		}
 
 		// Is the database.php file readable?
-		if ( ! @include($this->config->database_path))
+		if ( ! include($this->config->database_path))
 		{
 			$this->_set_output('error', array('error' => $this->lang->line('unreadable_database')));
 			return FALSE;
@@ -498,6 +499,8 @@ class Wizard extends CI_Controller {
 		// We will show the "you are running the most current version" template
 		if ($this->next_update === FALSE)
 		{
+			$this->_assign_install_values();
+			
 			$vars['installer_path'] = '/'.SYSDIR.'/installer';
 
 			// Set the path to the site and CP
@@ -566,7 +569,7 @@ class Wizard extends CI_Controller {
 		}
 
 		// Before moving on, let's load the update file to make sure it's readable
-		if ( ! @include(APPPATH.'updates/ud_'.$this->next_update.EXT))
+		if ( ! include(APPPATH.'updates/ud_'.$this->next_update.EXT))
 		{
 			$this->_set_output('error', array('error' => $this->lang->line('unreadable_files')));
 			return FALSE;
@@ -618,6 +621,7 @@ class Wizard extends CI_Controller {
 		$data['is_installed'] = $this->is_installed;
 
 		return $this->_set_output('optionselect', $data);
+
 	}
 	
 	// --------------------------------------------------------------------
@@ -1478,7 +1482,7 @@ PAPAYA;
 	 */			
 	function _fetch_updates($current_version = 0)
 	{	
-		if ( ! $fp = @opendir(APPPATH.'updates/'))
+		if ( ! $fp = opendir(APPPATH.'updates/'))
 		{
 			return FALSE;
 		}
@@ -1730,7 +1734,7 @@ PAPAYA;
 	{
 		$modules = array();
 
-		if ($fp = @opendir(EE_APPPATH.'/modules/')) 
+		if ($fp = opendir(EE_APPPATH.'/modules/')) 
 		{
 			while (FALSE !== ($file = readdir($fp))) 
 			{
@@ -1799,7 +1803,7 @@ PAPAYA;
 	{						
 		$themes = array();
 
-		if ($fp = @opendir($this->theme_path)) 
+		if ($fp = opendir($this->theme_path)) 
 		{ 
 			while (false !== ($folder = readdir($fp))) 
 			{ 
@@ -1955,11 +1959,11 @@ PAPAYA;
 			'php'  => 'webpage',
 		);
 
-		if ($this->userdata['theme'] != '' && $this->userdata['theme'] != 'none' && ($fp = @opendir($this->theme_path.$this->userdata['theme'])))
+		if ($this->userdata['theme'] != '' && $this->userdata['theme'] != 'none' && ($fp = opendir($this->theme_path.$this->userdata['theme'])))
 		{
 			while (FALSE !== ($folder = readdir($fp))) 
 			{	
-				if (@is_dir($this->theme_path.$this->userdata['theme'].'/'.$folder) && substr($folder, -6) == '.group')
+				if (is_dir($this->theme_path.$this->userdata['theme'].'/'.$folder) && substr($folder, -6) == '.group')
 				{
 					++$i;
 					
@@ -1978,7 +1982,7 @@ PAPAYA;
 					
 					$templates = array('index.html' => 'index.html');  // Required
 					
-					if ($tgfp = @opendir($this->theme_path.$this->userdata['theme'].'/'.$folder))
+					if ($tgfp = opendir($this->theme_path.$this->userdata['theme'].'/'.$folder))
 					{
 						while (FALSE !== ($file = readdir($tgfp)))
 						{
@@ -2027,7 +2031,7 @@ PAPAYA;
 							'group_id'			=> $i,
 							'template_name'		=> $name,
 							'template_type'		=> $type,
-							'template_data'		=> @file_get_contents($this->theme_path.$this->userdata['theme'].'/'.$folder.'/'.$file),
+							'template_data'		=> file_get_contents($this->theme_path.$this->userdata['theme'].'/'.$folder.'/'.$file),
 							'edit_date'			=> $this->now,
 							'last_author_id'	=> 1
 						);
@@ -2121,7 +2125,7 @@ PAPAYA;
 					$vars = array();
 
 					// can't use get_filenames() since it doesn't read hidden files
-					if ($fp = @opendir($dir))
+					if ($fp = opendir($dir))
 					{
 						while (FALSE !== ($file = readdir($fp)))
 						{
@@ -2939,7 +2943,7 @@ PAPAYA;
 /* Location: ./system/expressionengine/config/database.php */';
 			 
 	
-		if ( ! $fp = @fopen($this->config->database_path, FOPEN_WRITE_CREATE_DESTRUCTIVE))
+		if ( ! $fp = fopen($this->config->database_path, FOPEN_WRITE_CREATE_DESTRUCTIVE))
 		{
 			return FALSE;
 		}                

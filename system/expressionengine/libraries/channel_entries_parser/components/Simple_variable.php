@@ -1,4 +1,5 @@
-<?php
+<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -303,8 +304,13 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 	 */
 	protected function _urls($data, $tagdata, $key, $val, $prefix)
 	{
+		if ($key == $prefix.'url_title')
+		{
+			$tagdata = str_replace(LD.$val.RD, $data['url_title'], $tagdata);
+		}
+		
 		//  {trimmed_url} - used by Atom feeds
-		if ($key == $prefix."trimmed_url")
+		elseif ($key == $prefix."trimmed_url")
 		{
 			$channel_url = (isset($data['channel_url']) AND $data['channel_url'] != '') ? $data['channel_url'] : '';
 

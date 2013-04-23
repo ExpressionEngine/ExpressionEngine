@@ -1,4 +1,4 @@
-<?php
+<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 /**
  * ExpressionEngine - by EllisLab
@@ -203,7 +203,6 @@ class EE_Channel_data_parser {
 		$orig_tagdata = $this->_parser->tagdata();
 		$parser_components = $this->_parser->components();
 
-
 		$dt = 0;
 
 		foreach ($entries as $row)
@@ -275,12 +274,6 @@ class EE_Channel_data_parser {
 
 			// conditionals!
 			$cond = $this->_get_conditional_data($row, $prefix, $channel);
-
-			foreach ($channel->mfields as $key => $value)
-			{
-				$cond[$key] = ( ! array_key_exists('m_field_id_'.$value[0], $row)) ? '' : $row['m_field_id_'.$value[0]];
-			}
-
 
 			//  Parse Variable Pairs
 			foreach ($pairs as $key => $val)
@@ -444,6 +437,8 @@ class EE_Channel_data_parser {
 	 */
 	protected function _get_conditional_data($row, $prefix, $channel)
 	{
+		$pre = $this->_preparser;
+
 		$cond = $row;
 		$cond['logged_in']			= (ee()->session->userdata('member_id') == 0) ? 'FALSE' : 'TRUE';
 		$cond['logged_out']			= (ee()->session->userdata('member_id') != 0) ? 'FALSE' : 'TRUE';
@@ -479,6 +474,48 @@ class EE_Channel_data_parser {
 		$cond['relative_date']			= timespan($row['entry_date']);
 
 		foreach($channel->mfields as $key => $value)
+		{
+			$cond[$key] = ( ! array_key_exists('m_field_id_'.$value[0], $row)) ? '' : $row['m_field_id_'.$value[0]];
+		}
+
+		// custom field conditionals
+		if (isset($channel->cfields[$row['site_id']]))
+		{
+			foreach($channel->cfields[$row['site_id']] as $key => $value)
+			{
+				$cond[$key] = ( ! isset($row['field_id_'.$value])) ? '' : $row['field_id_'.$value];
+				
+				// Is this field used with a modifier anywhere?
+				if (isset($pre->modified_conditionals[$key]) && count($pre->modified_conditionals[$key]))
+				{
+					ee()->load->library('api');
+					ee()->api->instantiate('channel_fields');
+
+					if (ee()->api_channel_fields->setup_handler($value))
+					{
+						foreach($pre->modified_conditionals[$key] as $modifier)
+						{
+							ee()->api_channel_fields->apply('_init', array(array('row' => $row)));
+							$data = ee()->api_channel_fields->apply('pre_process', array($cond[$key]));
+							if (ee()->api_channel_fields->check_method_exists('replace_'.$modifier))
+							{
+								$cond[$key.':'.$modifier] = ee()->api_channel_fields->apply('replace_'.$modifier, array($data, array(), FALSE));
+							}
+							else
+							{							
+								$cond[$key.':'.$modifier] = FALSE;
+								ee()->TMPL->log_item('Unable to find parse type for custom field conditional: '.$key.':'.$modifier);
+							}
+						}
+					}
+				}
+			}
+		}
+
+
+
+
+		foreach ($channel->mfields as $key => $value)
 		{
 			$cond[$key] = ( ! array_key_exists('m_field_id_'.$value[0], $row)) ? '' : $row['m_field_id_'.$value[0]];
 		}

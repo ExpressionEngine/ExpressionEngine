@@ -274,7 +274,7 @@ class Localize {
 		// notation and needs to be converted
 		if ( ! in_array($timezone, DateTimeZone::listIdentifiers()))
 		{
-			$timezone = $this->_get_php_timezone($timezone);
+			$timezone = $this->get_php_timezone($timezone);
 		}
 		
 		try
@@ -449,7 +449,7 @@ EOF;
 			// If default selection isn't valid, it may be our legacy timezone format
 			if ( ! in_array($default, $timezone_ids))
 			{
-				$default = $this->_get_php_timezone($default);
+				$default = $this->get_php_timezone($default);
 			}
 			
 			$selected_country = $this->_get_country_for_php_timezone($default);
@@ -558,16 +558,15 @@ EOF;
 	// --------------------------------------------------------------------
 
 	/**
-	 * Get PHP Timezone
+	 * Gets the PHP timezone for the legacy timezone format EE used to
+	 * store timezones with which was based on offsets; for example, given
+	 * "UM5", it returns "America/New_York"
 	 *
-	 * Returns the PHP timezone for a given EE-format timezone.
-	 * For example, given "UM5" it returns "America/New_York"
-	 *
-	 * @access	private
+	 * @access	public
 	 * @param	string
 	 * @return	string
 	 */
-	private function _get_php_timezone($zone = 'UTC')
+	public function get_php_timezone($zone = 'UTC')
 	{
 		$zones = array(
 			'UM12'		=> 'Kwajalein', 					// -12

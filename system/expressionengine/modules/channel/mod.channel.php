@@ -33,14 +33,6 @@ class Channel {
 	public $query;
 	public $TYPE;
 	public $entry_id				= '';
-
-	/**
-	 * Cache of entry ids from the entries we just pulled, generated in
-	 * build_sql_query() and then sent to the Relationships library when
-	 * pulling relationships.
- 	 */
-	protected $_entry_ids				= array();
-
 	public $uri						= '';
 	public $uristr					= '';
 	public $return_data				= '';	 	// Final data
@@ -217,7 +209,6 @@ class Channel {
 	  */
 	public function entries()
 	{
-
 		// If the "related_categories" mode is enabled
 		// we'll call the "related_categories" function
 		// and bail out.
@@ -350,228 +341,6 @@ class Channel {
 	// ------------------------------------------------------------------------
 
 	/**
-	  *  Process reverse related entries
-	  */
-	public function parse_reverse_related_entries()
-	{
-
-				if ( ! is_array($params))
-				{
-					$params = array('status' => 'open');
-				}
-				elseif ( ! isset($params['status']))
-				{
-					$params['status'] = 'open';
-				}
-				else
-				{
-					$params['status'] = trim($params['status'], " |\t\n\r");
-				}
-
-				//  Entries have to be ordered, sorted and other stuff
-
-				$new	= array();
-				$order	= ( ! isset($params['orderby'])) ? 'date' : $params['orderby'];
-				$offset	= ( ! isset($params['offset']) OR ! is_numeric($params['offset'])) ? 0 : $params['offset'];
-				$limit	= ( ! isset($params['limit']) OR ! is_numeric($params['limit'])) ? 100 : $params['limit'];
-				$sort	= ( ! isset($params['sort']))	 ? 'asc' : $params['sort'];
-				$random = ($order == 'random') ? TRUE : FALSE;
-
-				$base_orders = array('random', 'date', 'title', 'url_title', 'edit_date', 'comment_total', 'username', 'screen_name', 'most_recent_comment', 'expiration_date', 'entry_id', 
-									 'view_count_one', 'view_count_two', 'view_count_three', 'view_count_four', 'status');
-
-				$str_sort = array('title', 'url_title', 'username', 'screen_name', 'status');
-				
-				if ( ! in_array($order, $base_orders))
-				{
-					$set = 'n';
-					foreach($this->cfields as $site_id => $cfields)
-					{
-						if ( isset($cfields[$order]))
-						{
-							$multi_order[] = 'field_id_'.$cfields[$order]; 
-							$set = 'y';
-							$str_sort[] = 'field_id_'.$cfields[$order];
-							//break;
-						}
-					}
-
-					if ( $set == 'n' )
-					{
-						$order = 'date';
-					}
-				}
-
-				if ($order == 'date' OR $order == 'random')
-				{
-					$order = 'entry_date';
-				}
-
-				if (isset($params['channel']) && trim($params['channel']) != '')
-				{
-					if (count($this->channels_array) == 0)
-					{
-						ee()->db->select('channel_id, channel_name');
-						ee()->db->where_in('site_id', ee()->TMPL->site_ids);
-						$results = ee()->db->get('channels');
-
-						foreach($results->result_array() as $row)
-						{
-							$this->channels_array[$row['channel_id']] = $row['channel_name'];
-						}
-					}
-
-					$channels = explode('|', trim($params['channel']));
-					$allowed = array();
-
-					if (strncmp($channels[0], 'not ', 4) == 0)
-					{
-						$channels[0] = trim(substr($channels[0], 3));
-						$allowed	  = $this->channels_array;
-
-						foreach($channels as $name)
-						{
-							if (in_array($name, $allowed))
-							{
-								foreach (array_keys($allowed, $name) AS $k)
-								{
-									unset($allowed[$k]);
-								}
-							}
-						}
-					}
-					else
-					{
-						foreach($channels as $name)
-						{
-							if (in_array($name, $this->channels_array))
-							{
-								foreach (array_keys($this->channels_array, $name) AS $k)
-								{
-									$allowed[$k] = $name;
-								}
-							}
-						}
-					}
-				}
-
-
-				$stati			= explode('|', $params['status']);
-				$stati			= array_map('strtolower', $stati);	// match MySQL's case-insensitivity
-				$status_state	= 'positive';
-
-
-				// Check for "not "
-				if (substr($stati[0], 0, 4) == 'not ')
-				{
-					$status_state = 'negative';
-					$stati[0] = trim(substr($stati[0], 3));
-					$stati[] = 'closed';
-				}
-
-				$r = 1;  // Fixes a problem when a sorting key occurs twice
-
-				foreach($entry_data[$entry_id] as $relating_data)
-				{
-					$post_fix = ' '.$r;
-					$order_set = FALSE;
-					
-					if ( ! isset($params['channel']) OR ($relating_data['query']->row('channel_id') &&  array_key_exists($relating_data['query']->row('channel_id'), $allowed))) 
-					{
-						$query_row = $relating_data['query']->row_array();
-						
-						if (isset($multi_order))
-						{
-							foreach ($multi_order as $field_val)
-							{
-								if (isset($query_row[$field_val]))
-								{
-								 	$order_set = TRUE;
-									$order_key = '';
-									
-									if ($query_row[$field_val] != '')
-									{
-										$order_key = $query_row[$field_val];
-										$order = $field_val;
-										break;
-									}
-								}
-							}
-						}
-						elseif (isset($query_row[$order]))
-						{
-							$order_set = TRUE;
-							$order_key = $query_row[$order];
-						}					
-
-						// Needs to have the field we're ordering by
-						if ($order_set)
-						{
-							if ($status_state == 'negative' && ! in_array(strtolower($query_row['status']) , $stati))
-							{
-								$new[$order_key.$post_fix] = $relating_data;
-							}
-							elseif (in_array(strtolower($query_row['status']) , $stati))
-							{
-								$new[$order_key.$post_fix] = $relating_data;
-							}
-						}
-
-						++$r;
-					}
-				}
-				
-				$sort_flags = SORT_REGULAR;
-				
-				// Check if the custom field to sort on is numeric, sort numericaly if it is
-				if (strncmp($order, 'field_id_', 9) === 0)
-				{
-					ee()->load->library('api');
-					ee()->api->instantiate('channel_fields');
-					$field_settings = ee()->api_channel_fields->get_settings(substr($order, 9));
-					if (isset($field_settings['field_content_type']) && in_array($field_settings['field_content_type'], array('numeric', 'integer', 'decimal')))
-					{
-						$sort_flags = SORT_NUMERIC;
-					}
-				}
-				
-				// Shuffle if random
-				if ($random === TRUE)
-				{
-					shuffle($new);
-				}
-				else
-				{
-					// Sort keys by string comparison
-					if (in_array($order, $str_sort))
-					{
-						uksort($new, 'strnatcasecmp'); 
-					}
-					// If it's in the base options and not a string?
-					// Sort numeric
-					elseif (in_array($order, $base_orders))
-					{
-						ksort($new, SORT_NUMERIC);						
-					}
-					// Sort keys based on set sort flags
-					else
-					{
-						ksort($new, $sort_flags);
-					}
-					
-					// Reverse sorted array if we're sorting descending
-					if ($sort != 'asc')
-					{
-						$new = array_reverse($new, TRUE);
-					}
-				}
-				
-				$output_data[$entry_id] = array_slice($new, $offset, $limit);
-	}
-
-	// ------------------------------------------------------------------------
-
-	/**
 	  *  Track Views
 	  */
 	public function track_views()
@@ -612,9 +381,10 @@ class Channel {
 	  */
 	public function fetch_custom_channel_fields()
 	{
-		if (isset(ee()->session->cache['channel']['custom_channel_fields']) && isset(ee()->session->cache['channel']['date_fields'])
-			&& isset(ee()->session->cache['channel']['relationship_fields'])
-			&& isset(ee()->session->cache['channel']['pair_custom_fields']))
+		if (isset(ee()->session->cache['channel']['custom_channel_fields']) &&
+			isset(ee()->session->cache['channel']['date_fields']) &&
+			isset(ee()->session->cache['channel']['relationship_fields']) &&
+			isset(ee()->session->cache['channel']['pair_custom_fields']))
 		{
 			$this->cfields = ee()->session->cache['channel']['custom_channel_fields'];
 			$this->dfields = ee()->session->cache['channel']['date_fields'];
@@ -1932,8 +1702,7 @@ class Channel {
 					/*	PHP script this is the best approach possible.
 					/*  ---------------------------------*/
 
-					$timezones = timezones();
-					$loc_offset = $timezones[ee()->config->item('server_timezone')] * 3600;
+					$loc_offset = $this->_get_timezone_offset();
 
 					if (ee()->TMPL->fetch_param('start_day') === 'Monday')
 					{
@@ -2044,7 +1813,7 @@ class Channel {
 
 							foreach ($distinct as $val)
 							{
-								$sql_offset = $timezones[ee()->config->item('server_timezone')] * 3600;
+								$sql_offset = $this->_get_timezone_offset();
 
 								if (ee()->TMPL->fetch_param('start_day') === 'Monday')
 								{
@@ -2593,7 +2362,6 @@ class Channel {
 				continue;
 			}
 			
-			$this->_entry_ids[] = $row['entry_id'];
 			$this->sql .= $row['entry_id'].',';
 		}
 
@@ -2613,6 +2381,40 @@ class Channel {
 		}
 
 		$this->sql .= $end;
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Gets timezone offset for use in SQL queries for the display_by parameter
+	 * 
+	 * @return int
+	 */
+	private function _get_timezone_offset()
+	{
+		ee()->load->helper('date');
+
+		$offset = 0;
+		$timezones = timezones();
+		$timezone = ee()->config->item('server_timezone');
+
+		// Check legacy timezone formats
+		if (isset($timezones[$timezone]))
+		{
+			$offset = $timezones[$timezone] * 3600;
+		}
+		// Otherwise, get the offset from DateTime
+		else
+		{
+			$dt = new DateTime('now', new DateTimeZone($timezone));
+
+			if ($dt)
+			{
+				$offset = $dt->getOffset();
+			}
+		}
+
+		return $offset;
 	}
 
 	// ------------------------------------------------------------------------
@@ -2645,15 +2447,28 @@ class Channel {
 		ee()->load->library('channel_entries_parser');
 		$parser = ee()->channel_entries_parser->create(ee()->TMPL->tagdata/*, $prefix=''*/);
 
-		// We'll process what we can before starting to replace things to
-		// avoid redundant processing cycles in the foreach loop below
 
-		$preparsed = $parser->pre_parser($this, $this->_entry_ids);
+		$disable = array();
 
-		$data_parser = $parser->data_parser($preparsed);
+		foreach ($this->enable as $k => $v)
+		{
+			if ($v === FALSE)
+			{
+				$disable[] = $k;
+			}
+		}
+
+		// Relate entry_ids to their entries for quick lookup and then parse
+		$entries = array();
+
+		foreach ($query_result as $i => $row)
+		{
+			unset($query_result[$i]);
+			$entries[$row['entry_id']] = $row;
+		}
 
 		$data = array(
-			'entries'			=> $query_result,
+			'entries'			=> $entries,
 			'categories'		=> $this->categories,
 			'absolute_results'	=> $this->absolute_results,
 			'absolute_offset'	=> $this->pagination->offset
@@ -2664,61 +2479,20 @@ class Channel {
 				'entry_row_data'	 => array($this, 'callback_entry_row_data'),
 				'tagdata_loop_start' => array($this, 'callback_tagdata_loop_start'),
 				'tagdata_loop_end'	 => array($this, 'callback_tagdata_loop_end')
-			)
+			),
+			'disable' => compact('disable')
 		);
 
-		$this->return_data = $data_parser->parse($data, $config);
+		$this->return_data = $parser->parse($this, $data, $config);
 
-		// Start the main processing loop
-/*
-		foreach $query_result as $count => $row)
+
+		unset($parser, $entries, $data);
+
+		if (function_exists('gc_collect_cycles'))
 		{
-
-		//	...
-		//	$cond['signature_image_url']	= ee()->config->slash_item('sig_img_url').$row['sig_img_filename'];
-		//	$cond['signature_image_width']	= $row['sig_img_width'];
-		//	$cond['signature_image_height']	= $row['sig_img_height'];
-		//	$cond['relative_date']			= timespan($row['entry_date']);
-
-			if (isset($this->cfields[$row['site_id']]))
-			{
-				foreach($this->cfields[$row['site_id']] as $key => $value)
-				{
-					$cond[$key] = ( ! isset($row['field_id_'.$value])) ? '' : $row['field_id_'.$value];
-					
-					// Is this field used with a modifier anywhere?
-					if (isset($modified_conditionals[$key]) && count($modified_conditionals[$key]))
-					{
-						ee()->load->library('api');
-						ee()->api->instantiate('channel_fields');
-
-						if (ee()->api_channel_fields->setup_handler($value))
-						{
-							foreach($modified_conditionals[$key] as $modifier)
-							{
-								ee()->api_channel_fields->apply('_init', array(array('row' => $row)));
-								$data = ee()->api_channel_fields->apply('pre_process', array($cond[$key]));
-								if (ee()->api_channel_fields->check_method_exists('replace_'.$modifier))
-								{
-									$cond[$key.':'.$modifier] = ee()->api_channel_fields->apply('replace_'.$modifier, array($data, array(), FALSE));
-								}
-								else
-								{							
-									$cond[$key.':'.$modifier] = FALSE;
-									ee()->TMPL->log_item('Unable to find parse type for custom field conditional: '.$key.':'.$modifier);
-								}
-							}
-						}
-					}
-				}
-			}
-
-			// Reset custom variable pair cache
-			$parsed_custom_pairs = array();
-
+			gc_collect_cycles();
 		}
-		// END FOREACH LOOP
-*/
+
 		// Kill multi_field variable
 		if (strpos($this->return_data, 'multi_field=') !== FALSE)
 		{
@@ -5141,6 +4915,22 @@ class Channel {
 
 	// ------------------------------------------------------------------------
 
+	// The old relationship functions. No longer needed, stop calling them.
+	
+	public function parse_reverse_related_entries()
+	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated('2.6');
+	}
+
+	public function parse_related_entries()
+	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated('2.6');
+	}
+
+	// ------------------------------------------------------------------------
+
 	/**
 	  *  Related Categories Mode
 	  *
@@ -5355,12 +5145,13 @@ class Channel {
 	function _fetch_disable_param()
 	{
 		$this->enable = array(
-							'categories' 		=> TRUE,
-							'category_fields'	=> TRUE,
-							'custom_fields'		=> TRUE,
-							'member_data'		=> TRUE,
-							'pagination' 		=> TRUE,
-							);
+			'categories' 		=> TRUE,
+			'category_fields'	=> TRUE,
+			'custom_fields'		=> TRUE,
+			'member_data'		=> TRUE,
+			'pagination' 		=> TRUE,
+			'relationships'		=> TRUE
+		);
 
 		if ($disable = ee()->TMPL->fetch_param('disable'))
 		{

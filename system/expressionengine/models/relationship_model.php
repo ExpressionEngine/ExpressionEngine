@@ -50,7 +50,6 @@ class Relationship_model extends CI_Model {
 		$entry_ids = array_unique($entry_ids);
 		$result_ids = $this->_run_node_query($node, $entry_ids);
 
-		// @todo check node for categories
 		return $result_ids;
 	}
 
@@ -116,8 +115,11 @@ class Relationship_model extends CI_Model {
 				);
 			}
 
+			$db->order_by('L0.order', 'asc');
+
 			if ($level > 0)
 			{
+				$db->order_by('L'.$level.'.order', 'asc');
 				$db->select('L' . $level . '.field_id as L' . $level . '_field');
 				$db->select('L' . $level . '.parent_id AS L' . $level . '_parent');
 				$db->select('L' . $level . '.child_id as L' . $level . '_id');
@@ -131,8 +133,35 @@ class Relationship_model extends CI_Model {
 
 		$db->where_in($relative_parent, $entry_ids);
 
-		// @todo cache unique ids
-		return $db->get()->result_array();
+		// -------------------------------------------
+		// 'relationships_query' hook.
+		// - Use entry_ids and depths to reconstruct the above query as needed.
+		// 
+		// 	 There are 3 ways to use this hook:
+		// 	 	1) Add to the existing Active Record call, e.g. ee()->db->where('foo', 'bar');
+		// 	 	2) Call ee()->db->_reset_select(); to terminate this AR call and start a new one
+		// 	 	3) Call ee()->db->_reset_select(); and modify the currently compiled SQL string
+		//   
+		//   All 3 require a returned query result array.
+		//
+			if (ee()->extensions->active_hook('relationships_query') === TRUE)
+			{
+				$result = ee()->extensions->call(
+					'relationships_query',
+					$node->field_name(),
+					$entry_ids,
+					$depths,
+					$db->_compile_select()
+				);
+			}
+			else
+			{
+				$result = $db->get()->result_array();
+			}
+		//
+		// -------------------------------------------
+
+		return $result;
 	}
 
 

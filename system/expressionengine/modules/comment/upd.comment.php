@@ -25,7 +25,7 @@
 
 class Comment_upd {
 
-	var $version = '2.3';
+	var $version = '2.3.1';
 
 	function Comment_upd()
 	{
@@ -93,46 +93,33 @@ class Comment_upd {
 			'method'	=> 'edit_comment'
 		);
 
-		ee()->db->insert('actions', $data);		
+		ee()->db->insert('actions', $data);
 		
 
 		$fields = array(
-						'comment_id'		  => array(	'type' 			 => 'int',
-														'constraint'	 => '10',
-														'unsigned'		 => TRUE,
-														'auto_increment' => TRUE),
-						'site_id'			  => array(	'type'			=> 'int',
-														'constraint'	=> '4',
-														'default'		=> 1),
-						'entry_id'			  => array(	'type'			=> 'int',
-														'constraint'	=> '10',
-														'unsigned'		=> TRUE,
-														'default'		=> 0),
-						'channel_id'		  => array( 'type'		 	=> 'int',
-														'constraint' 	=> '4',
-														'unsigned'	 	=> TRUE,
-														'default'	 	=> 1),
-						'author_id'			  => array(	'type'		 	=> 'int',
-														'constraint' 	=> '10',
-														'unsigned'	 	=> TRUE,
-														'default'	 	=> 0),
-						'status'			 => array(	'type'			=> 'char',
-														'constraint'	=> '1',
-														'default'	 	=> '0'),
-						'name'				 => array('type' => 'varchar' , 'constraint' => '50'),
-						'email'				 => array('type' => 'varchar' , 'constraint' => '50'),
-						'url'				 => array('type' => 'varchar' , 'constraint' => '75'),
-						'location'			 => array('type' => 'varchar' , 'constraint' => '50'),
-						'ip_address'		 => array('type' => 'varchar' , 'constraint' => '45'),
-						'comment_date'		 => array('type'	=> 'int'  , 'constraint' => '10'),
-						'edit_date'			 => array('type'	=> 'int'  , 'constraint' => '10'),
-						'comment'			 => array('type'	=> 'text')
+			'comment_id'	=> array('type' => 'int', 'constraint' => '10', 'unsigned' => TRUE, 'auto_increment' => TRUE),
+			'site_id'		=> array('type' => 'int', 'constraint' => '4', 'default' => 1),
+			'entry_id'		=> array('type' => 'int', 'constraint' => '10', 'unsigned' => TRUE, 'default' => 0),
+			'channel_id'	=> array('type' => 'int', 'constraint' => '4', 'unsigned' => TRUE, 'default' => 1),
+			'author_id'		=> array('type' => 'int', 'constraint' => '10', 'unsigned' => TRUE, 'default' => 0),
+			'status'		=> array('type' => 'char', 'constraint'	=> '1', 'default' => 0),
+			'name'			=> array('type' => 'varchar' , 'constraint' => '50'),
+			'email'			=> array('type' => 'varchar' , 'constraint' => '50'),
+			'url'			=> array('type' => 'varchar' , 'constraint' => '75'),
+			'location'		=> array('type' => 'varchar' , 'constraint' => '50'),
+			'ip_address'	=> array('type' => 'varchar' , 'constraint' => '45'),
+			'comment_date'	=> array('type' => 'int' , 'constraint' => '10'),
+			'edit_date'		=> array('type' => 'int' , 'constraint' => '10'),
+			'comment'		=> array('type' => 'text')
 		);
 
 		ee()->dbforge->add_field($fields);
 		ee()->dbforge->add_key('comment_id', TRUE);
 		ee()->dbforge->add_key(array('entry_id', 'channel_id', 'author_id', 'status', 'site_id'));
 		ee()->dbforge->create_table('comments');
+		
+		ee()->load->library('smartforge');
+		ee()->smartforge->add_key('comments', 'comment_date', 'comment_date_idx');
 		
 		
 		$fields = array(
@@ -255,7 +242,7 @@ class Comment_upd {
 			{
 				ee()->db->query("ALTER TABLE `exp_comments` ADD KEY (`channel_id`)");				
 			}
-		}	
+		}
 
 		if (version_compare($current, '2.3', '<'))
 		{
@@ -272,6 +259,34 @@ class Comment_upd {
 					)
 				)
 			);
+		}
+
+		if (version_compare($current, '2.3.1', '<'))
+		{
+			ee()->load->library('smartforge');
+
+			// Correcting schema disparities from upgrade vs. fresh install.
+			// Just going for a full pass.
+			$fields = array(
+				'comment_id'	=> array('type' => 'int',		'constraint' => '10',	'unsigned' => TRUE,	'auto_increment' => TRUE),
+				'site_id'		=> array('type' => 'int',		'constraint' => '4',	'default' => 1),
+				'entry_id'		=> array('type' => 'int',		'constraint' => '10',	'unsigned' => TRUE,	'default' => 0),
+				'channel_id'	=> array('type' => 'int',		'constraint' => '4',	'unsigned' => TRUE,	'default' => 1),
+				'author_id'		=> array('type' => 'int',		'constraint' => '10',	'unsigned' => TRUE,	'default' => 0),
+				'status'		=> array('type' => 'char',		'constraint' => '1',	'default' => 0),
+				'name'			=> array('type' => 'varchar',	'constraint' => '50'),
+				'email'			=> array('type' => 'varchar',	'constraint' => '50'),
+				'url'			=> array('type' => 'varchar',	'constraint' => '75'),
+				'location'		=> array('type' => 'varchar',	'constraint' => '50'),
+				'ip_address'	=> array('type' => 'varchar',	'constraint' => '45'),
+				'comment_date'	=> array('type'	=> 'int',		'constraint' => '10'),
+				'edit_date'		=> array('type'	=> 'int',		'constraint' => '10'),
+				'comment'		=> array('type'	=> 'text')
+			);
+
+			ee()->smartforge->modify_column('comments', $fields);
+
+			ee()->smartforge->add_key('comments', 'comment_date', 'comment_date_idx');
 		}
 
 		return TRUE;

@@ -491,13 +491,16 @@ EE.cp.zebra_tables = function(table) {
 	// anything but jquery and global_js shouldn't be there.
 	if (scripts.length > SCRIPT_COUNT) {
 
-		console.groupCollapsed('Found third party scripts in <head> tag.');
+		var fn = console.groupCollapsed || console.log;
+		fn.call(console, 'Found third party scripts in <head> tag.');
 		console.log('Please use cp->add_to_foot() to add scripts. jQuery and the EE global will be moved down in a future release.');
 
 		scripts.slice(SCRIPT_COUNT).each(function() {
 			console.log(this.src && this.src || '[Inline Script]');
 		});
 
-		console.groupEnd();
+		if (fn == console.groupCollapsed) {
+			console.groupEnd();
+		}
 	}
 })();

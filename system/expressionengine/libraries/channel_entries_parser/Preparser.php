@@ -1,4 +1,4 @@
-<?php
+<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 /**
  * ExpressionEngine - by EllisLab
@@ -85,12 +85,6 @@ class EE_Channel_preparser {
 
 		$this->pairs	= $this->_extract_prefixed(ee()->TMPL->var_pair);
 		$this->singles	= $this->_extract_prefixed(ee()->TMPL->var_single);
-/*
-		$this->pairs	= $this->_extract_prefixed(ee()->TMPL->var_pair);
-		$this->singles	= $this->_extract_prefixed(ee()->TMPL->var_single);
-*/
-
-
 
 		// Run through component pre_processing steps, skipping any that
 		// were specified as being disabled.
@@ -113,8 +107,8 @@ class EE_Channel_preparser {
 
 		}
 
-		// @todo these need to move elsewhere
-		$this->subscriber_totals	= $this->_subscriber_totals();
+		// Some more pre-processing work.
+		$this->subscriber_totals	 = $this->_subscriber_totals();
 		$this->modified_conditionals = $this->_find_modified_conditionals();
 	}
 
@@ -296,7 +290,7 @@ class EE_Channel_preparser {
    
 		$filtered = array();
 		$tagdata  = $this->_tagdata;
-		$regex_prefix = '/^'.preg_quote($this->_prefix, '/').'[^:]+( |$)/';
+		$regex_prefix = '/^'.preg_quote($this->_prefix, '/').'.*+( |$)/';
 
 		foreach (preg_grep($regex_prefix, array_keys($data)) as $key)
 		{
@@ -306,7 +300,16 @@ class EE_Channel_preparser {
 		return $filtered;
 	}
 
-	// @todo (re-)move
+	// --------------------------------------------------------------------
+
+	/**
+	 * Comment subscriber lookup
+	 *
+	 * Not entirely sure this should be here. It falls into a similar realm
+	 * as categories, so we might be able to do it earlier. It's fine for now.
+	 *
+	 * @return subscriber information
+	 */
 	protected function _subscriber_totals()
 	{
 		$subscribers = array();
@@ -323,7 +326,17 @@ class EE_Channel_preparser {
 		return $subscribers;
 	}
 
-	// @todo (re-)move
+	// --------------------------------------------------------------------
+
+	/**
+	 * Find modified conditionals
+	 *
+	 * The regular custom field conditional prep does not correctly identify
+	 * custom fields with modifiers in conditionals ie. {if image:small}, so
+	 * we grab those separately.
+	 *
+	 * @return list of modified variables in conditionals
+	 */
 	public function _find_modified_conditionals()
 	{
 		$prefix = $this->_prefix;

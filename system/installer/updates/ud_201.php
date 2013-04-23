@@ -40,7 +40,7 @@ class Updater {
 			array(
 				'has_publish_fields' => array(
 					'type'				=> 'char',
-					'constraint'	=> 1,
+					'constraint'		=> 1,
 					'null'				=> FALSE,
 					'default'			=> 'n'
 				)
@@ -131,8 +131,12 @@ class Updater {
 			ee()->smartforge->insert_set('fieldtypes', $values, $values);
 		}
 		
-		// Remove weblog from specialty_templates 
-		ee()->db->query("UPDATE `exp_specialty_templates` SET `template_data` = REPLACE(`template_data`, 'weblog_name', 'channel_name')");
+		// Remove weblog from specialty_templates
+		ee()->db->set('data_title', "REPLACE(`data_title`, 'weblog', 'channel')", FALSE);
+		ee()->db->update('specialty_templates');
+		
+		ee()->db->set('template_data', "REPLACE(`template_data`, 'weblog_name', 'channel_name')", FALSE);
+		ee()->db->update('specialty_templates');
 		
 		// Ditch 
 		ee()->db->where('template_name', 'admin_notify_trackback');

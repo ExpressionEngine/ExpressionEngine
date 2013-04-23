@@ -263,11 +263,16 @@ class File_ft extends EE_Fieldtype {
 			{
 				$data = $file_info[$key];
 			}
+
+			if (empty($data))
+			{
+				return $tagdata;
+			}
 			
 			if (isset($params['wrap']))
 			{
 				return $this->_wrap_it($file_info, $params['wrap'], $data);
-			}			
+			}
 			
 			return $data;
 		}

@@ -4150,7 +4150,7 @@ div.pageContents,
 .multiselect-filter {
 	border: 1px solid #B6C0C2;
 	border-bottom: none;
-	margin: 0;
+	margin: 7px 0 0 0;
 }
 
 .multiselect-filter input,
@@ -4219,8 +4219,7 @@ div.pageContents,
 	font-size: 14px;
 	font-weight: bold;
 	margin: 0;
-	padding-top: 24%;
-	padding: 0;
+	padding: 24% 0 0 0;
 	text-align: center;
 	text-shadow: 0 1px 1px #EDF2F5;
 }

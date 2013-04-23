@@ -1150,47 +1150,16 @@ class EE_Template {
 				// Fetch Form Class/Id Attributes
 				$this->tag_data[$i] = $this->_assign_form_params($this->tag_data[$i]);
 
-				// Relationship Data Pulled Out
-				
-				// If the channel:entries tag or search:search_results is being called
-				// we need to extract any relationship data that might be present.
-				// Note: This needs to happen before extracting the variables
-				// in the tag so it doesn't get confused as to which entry the
-				// variables belong to.
-				
-				if (($this->tag_data[$i]['class'] == 'channel' AND $this->tag_data[$i]['method'] == 'entries')
-					OR ($this->tag_data[$i]['class'] == 'search' AND $this->tag_data[$i]['method'] == 'search_results'))
-				{				
-					$this->tagdata = $this->assign_relationship_data($this->tagdata);
-				}		 
-
 				// LEGACY CODE
 				// Fetch the variables for this particular tag
 				// Hopefully, with Jones' new parsing code we should be able to stop using the
 				// assign_variables and assign_conditional_variables() methods entirely. -Paul
 															  
 				$vars = ee()->functions->assign_variables($this->tag_data[$i]['block']);
-				
-				if (count($this->related_markers) > 0)
-				{
-					foreach ($this->related_markers as $mkr)
-					{
-						if ( ! isset($vars['var_single'][$mkr]))
-						{
-							$vars['var_single'][$mkr] = $mkr;
-						}
-					}
-				}
 
 				$this->var_single	= $vars['var_single'];
 				$this->var_pair		= $vars['var_pair'];
 
-				if ($this->related_id != '')
-				{
-					$this->var_single[$this->related_id] = $this->related_id;
-					$this->related_id = '';
-				}
-				
 				// Assign the class name and method name
 				$class_name = ucfirst($this->tag_data[$i]['class']);
 				$meth_name = $this->tag_data[$i]['method'];
@@ -1354,6 +1323,9 @@ class EE_Template {
 	 */	
 	public function assign_relationship_data($chunk)
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated('2.6');
+
 		$this->related_markers = array();
 		
 			if (preg_match_all("/".LD."related_entries\s+id\s*=\s*[\"\'](.+?)[\"\']".RD."(.+?)".LD.'\/'."related_entries".RD."/is", $chunk, $matches))
@@ -2731,13 +2703,18 @@ class EE_Template {
 					// If the status code isn't a 3xx redirect code, it will be ignored
 					// by redirect().
 					$status_code = NULL;
-					if(isset($match[5])) {
+
+					if (isset($match[5]))
+					{
 						$status_code = $match[5];
-					} 
+					}
 
 					// Functions::redirect() exits on its own
-					ee()->functions->redirect(ee()->functions->create_url(ee()->functions->extract_path("=".$match['2'])), FALSE, $status_code);
-					
+					ee()->functions->redirect(
+						ee()->functions->create_url(ee()->functions->extract_path("=".$match['2'])),
+						FALSE,
+						$status_code
+					);
 				}
 			}
 		}

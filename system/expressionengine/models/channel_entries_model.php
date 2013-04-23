@@ -30,24 +30,9 @@ class Channel_entries_model extends CI_Model {
 	/**
 	 *
 	 */
-	public function get_entry_sql(array $entries, $categories=FALSE, $yearweek=FALSE)
+	public function get_entry_data(array $entries)
 	{
-		$sql = 'SELECT ';
-
-		if ($categories)
-		{
-			// Using DISTINCT like this is bogus but since
-			// FULL OUTER JOINs are not supported in older versions
-			// of MySQL it's our only choice
-			$sql .= ' DISTINCT(t.entry_id), ';
-		}
-
-		if ($yearweek)
-		{
-			$sql .= $yearweek . ', ';
-		}
-
-		$sql .= ' t.entry_id, t.channel_id, t.forum_topic_id, t.author_id, t.ip_address, t.title, t.url_title, t.status, t.view_count_one, t.view_count_two, t.view_count_three, t.view_count_four, t.allow_comments, t.comment_expiration_date, t.sticky, t.entry_date, t.year, t.month, t.day, t.edit_date, t.expiration_date, t.recent_comment_date, t.comment_total, t.site_id as entry_site_id,
+		$sql = 'SELECT t.entry_id, t.channel_id, t.forum_topic_id, t.author_id, t.ip_address, t.title, t.url_title, t.status, t.view_count_one, t.view_count_two, t.view_count_three, t.view_count_four, t.allow_comments, t.comment_expiration_date, t.sticky, t.entry_date, t.year, t.month, t.day, t.edit_date, t.expiration_date, t.recent_comment_date, t.comment_total, t.site_id as entry_site_id,
 				  w.channel_title, w.channel_name, w.channel_url, w.comment_url, w.comment_moderate, w.channel_html_formatting, w.channel_allow_img_urls, w.channel_auto_link_urls, w.comment_system_enabled, 
 				  m.group_id, m.username, m.email, m.url, m.screen_name, m.location, m.occupation, m.interests, m.aol_im, m.yahoo_im, m.msn_im, m.icq, m.signature, m.sig_img_filename, m.sig_img_width, m.sig_img_height, m.avatar_filename, m.avatar_width, m.avatar_height, m.photo_filename, m.photo_width, m.photo_height, m.group_id, m.member_id, m.bday_d, m.bday_m, m.bday_y, m.bio,
 				  md.*,
@@ -58,16 +43,12 @@ class Channel_entries_model extends CI_Model {
 				LEFT JOIN exp_members		AS m  ON m.member_id = t.author_id
 				LEFT JOIN exp_member_data	AS md ON md.member_id = m.member_id ';
 
-		$sql .= 'WHERE t.entry_id IN (';
+		$sql .= 'WHERE t.entry_id IN ('.implode(',', $entries).')';
 
-		foreach ($entries as $id)
-		{
-			$sql .= $id . ',';
-		}
-		
-		$sql = substr($sql, 0, -1).') ';
-		
-		return $sql;
+		$query_result = ee()->db->query($sql);
+		$entries = $query_result->result_array();
+		$query_result->free_result();
+		return $entries;
 	}
 
 	// --------------------------------------------------------------------

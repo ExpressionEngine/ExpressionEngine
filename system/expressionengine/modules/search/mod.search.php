@@ -1410,23 +1410,8 @@ class Search {
 		
 		$channel->fetch_categories();
 		$channel->parse_channel_entries();
-		
-		$tagdata = ee()->TMPL->tagdata;
 
-		// Does the tag contain "related entries" that we need to parse out?
-		if (count(ee()->TMPL->related_data) > 0 AND count($channel->related_entries) > 0)
-		{
-			$channel->parse_related_entries();
-		}
-		
-		if (count(ee()->TMPL->reverse_related_data) > 0 AND count($channel->reverse_related_entries) > 0)
-		{
-			$channel->parse_reverse_related_entries();
-		}
-				
 		$output = $channel->return_data;
-		
-		ee()->TMPL->tagdata = $tagdata;
 		
 		// Fetch member path variable
 		// We do it here in case it's used in multiple places.		
