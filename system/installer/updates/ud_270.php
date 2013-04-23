@@ -62,6 +62,9 @@ class Updater {
 		ee()->dbforge->drop_table('ping_servers');
 
 		ee()->smartforge->drop_column('channels', 'ping_return_url');
+
+		ee()->load->library('layout');
+		ee()->layout->delete_layout_fields('ping');
 	}
 
 	// --------------------------------------------------------------------
