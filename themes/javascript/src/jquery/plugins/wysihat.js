@@ -607,14 +607,9 @@ WysiHat.Paster = (function() {
 						// on an empty editor we want to completely replace
 						// otherwise the first paragraph gets munged
 						Editor.selectEmptyParagraph();
-						Editor.Commands.insertHTML(
-							$paster.html()
-						);
 					}
-					else
-					{
-						Editor.Commands.insertHTML($paster.html());
-					}
+					
+					Editor.Commands.insertHTML($paster.html());
 
 					// The final cleanup pass will inevitably lose the selection
 					// as it removes garbage from the markup.
