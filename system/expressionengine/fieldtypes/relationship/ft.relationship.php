@@ -404,7 +404,7 @@ class Relationship_ft extends EE_Fieldtype {
 		$class .= '"';
 
 		$str = '<div class="multiselect-filter js_show">';
-		$str .= form_input('', '', 'placeholder="'.lang('rel_ft_filter_by_title').'" id="'.$field_name.'-filter"');
+		$str .= form_input('', '', 'id="'.$field_name.'-filter"');
 		$str .= '</div>';
 
 		$str .= '<div id="'.$field_name.'" '.$class.'>';
