@@ -255,6 +255,14 @@ class Relationship_ft extends EE_Fieldtype {
 		$show_expired = (bool) $this->settings['expired'];
 		$show_future = (bool) $this->settings['future'];
 
+		$order_field = $this->settings['order_field'];
+
+		// Bug 19321, old fields use date
+		if ($order_field == 'date')
+		{
+			$order_field = 'entry_date';
+		}
+
 		ee()->db
 			->select('channel_titles.entry_id, channel_titles.title')
 			->order_by($this->settings['order_field'], $this->settings['order_dir']);
