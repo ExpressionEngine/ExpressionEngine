@@ -568,8 +568,7 @@ WysiHat.Paster = (function() {
 						}
 					}
 
-					var $parentBlock = $(startC).closest(WysiHat.Element.getBlocks().join(',')),
-						html = Editor.$editor.html();
+					var $parentBlock = $(startC).closest(WysiHat.Element.getBlocks().join(','));
 					
 					if ($parentBlock.length)
 					{
@@ -583,24 +582,57 @@ WysiHat.Paster = (function() {
 					Editor.$editor.focus();
 					Editor.Commands.restoreRanges(ranges);
 
+					// attempt to clear out the range, this is necessary if they
+					// select and paste. The browsers will still report the old contents.
+					if (ranges[0].deleteContents)
+					{
+						ranges[0].deleteContents();
+					}
+					else
+					{
+						Editor.Commands.insertHTML(''); // IE 8 can't do deleteContents
+					}
+
+					html = Editor.$editor.html();
+
 					if ( html == '' ||
+						 html == '\0' ||
 						 html == '<br>' ||
 						 html == '<br/>' ||
 						 html == '<p></p>' ||
+						 html == '<p><br></p>' ||
 						 html == '<p>\0</p>' ||
 						 html == Editor._empty())
 					{
 						// on an empty editor we want to completely replace
 						// otherwise the first paragraph gets munged
-						Editor.$editor.html($paster.html());
+						Editor.selectEmptyParagraph();
+						Editor.Commands.insertHTML(
+							$paster.html()
+						);
 					}
 					else
 					{
 						Editor.Commands.insertHTML($paster.html());
 					}
 
+					// The final cleanup pass will inevitably lose the selection
+					// as it removes garbage from the markup.
+					var selection = Editor.Selection.get();
+
+					// This is basically a final cleanup pass. I wanted to avoid
+					// running these since they touch the whole editor and not just
+					// the pasted bits, but these methods are great at removing
+					// markup cruft. So here we are.
+					Editor.updateField();
+					Editor.updateEditor();
+
+					Editor.Selection.set(selection);
+
 					$paster = $paster.remove();
+
 					finalize();
+
 				}, _pollTime);
 
 				return false;
