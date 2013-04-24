@@ -2480,7 +2480,7 @@ class Channel {
 				'tagdata_loop_start' => array($this, 'callback_tagdata_loop_start'),
 				'tagdata_loop_end'	 => array($this, 'callback_tagdata_loop_end')
 			),
-			'disable' => compact('disable')
+			'disable' => $disable
 		);
 
 		$this->return_data = $parser->parse($this, $data, $config);
