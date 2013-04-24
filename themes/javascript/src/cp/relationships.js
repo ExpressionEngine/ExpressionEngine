@@ -351,7 +351,6 @@ Some brainstorming with how yui does accent folding ... maybe in a future iterat
 			// hookup sortable
 			this.active.find('ul').sortable({
 				axis: 'y',
-				handle: '.reorder-handle',
 				start: start,
 				update: update
 			});
