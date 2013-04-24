@@ -27,118 +27,8 @@
 class Grid_lib {
 
 	protected $_fieldtypes = array();
-	protected $_columns = array();
 	protected $_validated = array();
-	protected $_table = 'grid_columns';
-	protected $_table_prefix = 'grid_field_';
 
-	/**
-	 * Performs fieldtype install
-	 *
-	 * @return	void
-	 */
-	public function install()
-	{
-		$columns = array(
-			'col_id' => array(
-				'type'				=> 'int',
-				'constraint'		=> 10,
-				'unsigned'			=> TRUE,
-				'auto_increment'	=> TRUE
-			),
-			'field_id' => array(
-				'type'				=> 'int',
-				'constraint'		=> 10,
-				'unsigned'			=> TRUE
-			),
-			'col_order' => array(
-				'type'				=> 'int',
-				'constraint'		=> 3,
-				'unsigned'			=> TRUE
-			),
-			'col_type' => array(
-				'type'				=> 'varchar',
-				'constraint'		=> 50
-			),
-			'col_label' => array(
-				'type'				=> 'varchar',
-				'constraint'		=> 50
-			),
-			'col_name' => array(
-				'type'				=> 'varchar',
-				'constraint'		=> 32
-			),
-			'col_instructions' => array(
-				'type'				=> 'text'
-			),
-			'col_required' => array(
-				'type'				=> 'char',
-				'constraint'		=> 1
-			),
-			'col_search' => array(
-				'type'				=> 'char',
-				'constraint'		=> 1
-			),
-			'col_settings' => array(
-				'type'				=> 'text'
-			)
-		);
-
-		ee()->load->dbforge();
-		ee()->dbforge->add_field($columns);
-		ee()->dbforge->add_key('col_id', TRUE);
-		ee()->dbforge->create_table($this->_table);
-	}
-
-	// ------------------------------------------------------------------------
-
-	/**
-	 * Performs fieldtype uninstall
-	 *
-	 * @return	void
-	 */
-	public function uninstall()
-	{
-		// Get field IDs to drop corresponding field table
-		$grid_fields = ee()->db->distinct('field_id')
-			->get($this->_table)
-			->result_array();
-
-		// Drop grid_field_n tables
-		foreach ($grid_fields as $row)
-		{
-			$this->delete_field($row['field_id']);
-		}
-
-		// Drop grid_columns table
-		ee()->load->dbforge();
-		ee()->dbforge->drop_table($this->_table);
-	}
-
-	// ------------------------------------------------------------------------
-
-	/**
-	 * Performs cleanup on our end if a Grid field is deleted from a channel:
-	 * drops field's table, removes column settings from grid_columns table
-	 *
-	 * @param	int		Field ID of field to delete
-	 * @return	void
-	 */
-	public function delete_field($field_id)
-	{
-		$table_name = $this->_table_prefix . $field_id;
-
-		if (ee()->db->table_exists($table_name))
-		{
-			ee()->load->dbforge();
-			ee()->dbforge->drop_table($table_name);
-		}
-
-		ee()->db->delete($this->_table, array('field_id' => $field_id));
-	}
-
-	// ------------------------------------------------------------------------
-	
 	/**
 	 * Handles EE_Fieldtype's display_field for displaying the Grid field
 	 *
@@ -147,24 +37,21 @@ class Grid_lib {
 	 */
 	public function display_field($entry_id, $data, $settings)
 	{
-		$ft_api = ee()->api_channel_fields;
-
-		$table_name = $this->_table_prefix . $settings['field_id'];
+		ee()->load->model('grid_model');
 
 		// Get columns just for this field
-		$vars['columns'] = $this->get_columns_for_field($settings['field_id']);
+		$vars['columns'] = ee()->grid_model->get_columns_for_field($settings['field_id']);
 
+		// If $data is an array, we're likely coming back to the form on a
+		// validation error
 		if (is_array($data))
 		{
 			$rows = $this->_validated[$settings['field_id']]['value'];
 		}
+		// Otherwise, we're editing or creating a new entry
 		else
 		{
-			// TODO: Move DB stuff like this into a model?
-			$rows = ee()->db->where('entry_id', $entry_id)
-				->order_by('row_order')
-				->get($table_name)
-				->result_array();
+			$rows = ee()->grid_model->get_entry_rows($entry_id, $settings['field_id']);
 		}
 
 		$vars['rows'] = array();
@@ -259,9 +146,16 @@ class Grid_lib {
 			return TRUE;
 		}
 
+		if (isset($this->_validated[$field_id]))
+		{
+			return $this->_validated[$field_id];
+		}
+
 		$ft_api = ee()->api_channel_fields;
 
-		$columns = $this->get_columns_for_field($field_id);
+		ee()->load->model('grid_model');
+
+		$columns = ee()->grid_model->get_columns_for_field($field_id);
 
 		$final_values = array();
 		$errors = FALSE;
@@ -332,12 +226,11 @@ class Grid_lib {
 
 	public function save($data, $field_id)
 	{
-		$validated = (isset($this->_validated[$field_id]))
-			? $this->_validated[$field_id] : $this->validate($data, $field_id);
+		$validated = $this->validate($data, $field_id);
 
-		if (is_array($validated) && $validated['error'] === FALSE)
+		if ($validated['error'] === FALSE)
 		{
-			$col_type = 'yes';
+			// Save
 		}
 
 		return TRUE;
@@ -391,68 +284,23 @@ class Grid_lib {
 	 */
 	public function apply_settings($settings)
 	{
-		$table_name = $this->_table_prefix . $settings['field_id'];
-		$ft_api = ee()->api_channel_fields;
-
-		// Our settings we need to pass along to the channel fields API when
-		// working with managing the data columns for our fieldtypes
-		$ft_api_settings = array(
-			'id_field'				=> 'col_id',
-			'type_field'			=> 'col_type',
-			'col_settings_method'	=> 'grid_settings_modify_column',
-			'col_prefix'			=> 'col',
-			'fields_table'			=> $this->_table,
-			'data_table'			=> $table_name,
-		);
-
-		$modify_field = ee()->db->table_exists($table_name);
-
-		ee()->load->dbforge();
-
-		// Create field table if it doesn't exist
-		if ( ! $modify_field)
-		{
-			// Every field table needs these two rows, we'll start here and
-			// add field columns as necessary
-			$db_columns = array(
-				'row_id' => array(
-					'type'				=> 'int',
-					'constraint'		=> 10,
-					'unsigned'			=> TRUE,
-					'auto_increment'	=> TRUE
-				),
-				'entry_id' => array(
-					'type'				=> 'int',
-					'constraint'		=> 10,
-					'unsigned'			=> TRUE
-				),
-				'row_order' => array(
-					'type'				=> 'int',
-					'constraint'		=> 10,
-					'unsigned'			=> TRUE
-				)
-			);
-
-			ee()->dbforge->add_field($db_columns);
-			ee()->dbforge->add_key('row_id', TRUE);
-			ee()->dbforge->create_table($table_name);
-		}
+		ee()->load->model('grid_model');
+		$new_field = ee()->grid_model->create_field($settings['field_id']);
 
 		// We'll use the order of the posted fields to determine the column order
 		$count = 0;
 
+		// Keep track of column IDs that exist so we can compare it against
+		// other columns in the DB to see which we should delete
 		$col_ids = array();
 
 		// Go through ALL posted columns for this field
 		foreach ($settings['grid']['cols'] as $col_field => $column)
 		{
-			// Look for a column field name prefixed with "new_" to see if we're
-			// creating a new column here or modifying an existing one
-			$modify = (strpos($col_field, 'new_') === FALSE);
-
-			// Handle checkboxes
+			// Handle checkbox defaults
 			$column['required'] = isset($column['required']) ? 'y' : 'n';
 			$column['searchable'] = isset($column['searchable']) ? 'y' : 'n';
+
 			$column['settings'] = $this->_save_settings($column);
 			$column['settings']['field_required'] = $column['required'];
 
@@ -468,54 +316,20 @@ class Grid_lib {
 				'col_settings'		=> json_encode($column['settings'])
 			);
 
-			$col_id = 0;
+			// Attempt to get the column ID; if the field name contains 'new_',
+			// it's a new field, otherwise extract column ID
+			$col_id = (strpos($col_field, 'new_') === FALSE)
+				? str_replace('col_id_', '', $col_field) : FALSE;
 
-			// Update existing column with new settings
-			if ($modify)
-			{
-				$col_id = str_replace('col_id_', '', $col_field);
-
-				// Make any column modifications necessary
-				$ft_api->edit_datatype(
-					$col_id,
-					$column['type'],
-					$column['settings'],
-					$ft_api_settings);
-
-				ee()->db->where('col_id', $col_id);
-				ee()->db->update($this->_table, $column_data);
-			}
-			// This is a new field, insert it into the columns table and get
-			// the new column ID
-			else
-			{
-				ee()->db->insert($this->_table, $column_data);
-				$col_id = ee()->db->insert_id();
-
-				// Add the fieldtype's columns to our data table
-				$ft_api->setup_handler($column['type']);
-				$ft_api->set_datatype(
-					$col_id,
-					$column['settings'],
-					array(),
-					TRUE,
-					FALSE,
-					$ft_api_settings);
-			}
-
-			$col_ids[] = $col_id;
+			$col_ids[] = ee()->grid_model->save_col_settings($column_data, $col_id);
 
 			$count++;
 		}
 
 		// Delete columns that were not including in new field settings
-		if ($modify_field)
+		if ( ! $new_field)
 		{
-			// Get current columns to compare to the new list of columns
-			$columns = ee()->db->select('col_id, col_type')
-				->where('field_id', $settings['field_id'])
-				->get($this->_table)
-				->result_array();
+			$columns = ee()->grid_model->get_columns_for_field($settings['field_id'], FALSE);
 
 			$old_cols = array();
 			foreach ($columns as $column)
@@ -529,15 +343,7 @@ class Grid_lib {
 			// If any columns are missing from the new settings, delete them
 			if ( ! empty($cols_to_delete))
 			{
-				ee()->db->where_in('col_id', $cols_to_delete);
-				ee()->db->delete($this->_table);
-
-				foreach ($cols_to_delete as $col_id)
-				{
-					// Delete columns from data table
-					$ft_api->setup_handler($old_cols[$col_id]);
-					$ft_api->delete_datatype($col_id, array(), $ft_api_settings);
-				}
+				ee()->grid_model->delete_columns($cols_to_delete, $old_cols, $settings['field_id']);
 			}
 		}
 	}
@@ -563,36 +369,6 @@ class Grid_lib {
 		}
 
 		return $column['settings'];
-	}
-
-	// ------------------------------------------------------------------------
-	
-	/**
-	 * Gets array of all columns and settings for a given field ID
-	 *
-	 * @param	int		Field ID to get columns for
-	 * @return	array	Settings from grid_columns table
-	 */
-	public function get_columns_for_field($field_id)
-	{
-		if (isset($this->_columns[$field_id]))
-		{
-			return $this->_columns[$field_id];
-		}
-
-		$columns = ee()->db->where('field_id', $field_id)
-			->order_by('col_order')
-			->get($this->_table)
-			->result_array();
-
-		$this->_columns[$field_id] = array();
-		foreach ($columns as &$column)
-		{
-			$column['col_settings'] = json_decode($column['col_settings'], TRUE);
-			$this->_columns[$field_id][$column['col_id']] = $column;
-		}
-		
-		return $this->_columns[$field_id];
 	}
 
 	// ------------------------------------------------------------------------

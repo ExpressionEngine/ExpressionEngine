@@ -504,7 +504,7 @@ class Api_channel_fields extends Api {
 		$old_fields = array();
 		
 		// First we get the data
-		$query = ee()->db->get_where($fields_table, array('field_id' => $field_id));
+		$query = ee()->db->get_where($fields_table, array($id_field => $field_id));
 		
 		$this->setup_handler($query->row($type_field));
 		

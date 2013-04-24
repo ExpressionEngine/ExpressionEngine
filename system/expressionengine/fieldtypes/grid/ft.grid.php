@@ -31,16 +31,16 @@ class Grid_ft extends EE_Fieldtype {
 
 	public function install()
 	{
-		ee()->load->library('grid_lib');
-		ee()->grid_lib->install();
+		ee()->load->model('grid_model');
+		ee()->grid_model->install();
 	}
 
 	// --------------------------------------------------------------------
 	
 	public function uninstall()
 	{
-		ee()->load->library('grid_lib');
-		ee()->grid_lib->uninstall();
+		ee()->load->model('grid_model');
+		ee()->grid_model->uninstall();
 	}
 	
 	// --------------------------------------------------------------------
@@ -138,6 +138,7 @@ class Grid_ft extends EE_Fieldtype {
 		);
 
 		ee()->load->library('grid_lib');
+		ee()->load->model('grid_model');
 
 		$vars = array();
 
@@ -153,7 +154,7 @@ class Grid_ft extends EE_Fieldtype {
 		
 		if ( ! empty($field_id))
 		{
-			$columns = ee()->grid_lib->get_columns_for_field($field_id);
+			$columns = ee()->grid_model->get_columns_for_field($field_id);
 
 			foreach ($columns as $column)
 			{
@@ -212,9 +213,8 @@ class Grid_ft extends EE_Fieldtype {
 	{
 		if (isset($data['ee_action']) && $data['ee_action'] == 'delete')
 		{
-			ee()->load->library('grid_lib');
-			
-			ee()->grid_lib->delete_field($data['field_id']);
+			ee()->load->model('grid_model');
+			ee()->grid_model->delete_field($data['field_id']);
 		}
 	}
 }
