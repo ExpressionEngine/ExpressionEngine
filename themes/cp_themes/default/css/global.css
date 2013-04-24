@@ -4162,21 +4162,20 @@ div.pageContents,
 }
 
 .multiselect-filter:after {
+	background: transparent url('../images/relationship-sprite.png') no-repeat -20px 0;
 	content: '';
+	height: 10px;
 	position: absolute;
 	right: 15px;
 	top: 14px;
 	width: 10px;
-	height: 10px;
-	background: transparent url('../images/relationship-sprite.png') no-repeat -20px 0;
 }
 
 .multiselect-filter input,
 .multiselect-filter input:focus {
 	border-radius: 13px;
 	border: 1px solid rgb(182, 192, 194);
-	padding: 3px 10px 2px 8px;
-	line-height: 1.5;
+	padding: 5px 10px 4px 8px;
 	width: 100%;
 }
 
