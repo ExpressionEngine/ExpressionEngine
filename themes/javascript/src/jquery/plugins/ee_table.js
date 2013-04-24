@@ -212,12 +212,17 @@ $.widget('ee.table', {
 			evts = 'interact.ee_table',
 			_timeout;
 		
-		if (form) {
-			
+		if (form && obj.is(form)) {
 			// bind to submit only if it's a form
-			if (obj.is(form)) {
-				evts += ' submit.ee_table';
-			}
+			evts += ' submit.ee_table';
+		} else {
+			// A filter outside of a form? We most likely don't want enter to
+			// do anything. This was happening in the file modal search box
+			obj.bind('keydown', function(e) {
+				if (e.keyCode == 13) {
+					e.preventDefault();
+				}
+			});
 		}
 		
 		$(obj).bind(evts, function(e) {
