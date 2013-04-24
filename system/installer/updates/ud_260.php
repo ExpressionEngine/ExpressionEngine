@@ -462,6 +462,9 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		require_once(APPPATH . 'libraries/Extensions.php');
 		ee()->extensions = new Installer_Extensions();
 
+		require_once(APPPATH . 'libraries/Addons.php');
+		ee()->addons = new Installer_Addons();
+
 		$installer_config = ee()->config;
 		ee()->config = new MSM_Config();
 
