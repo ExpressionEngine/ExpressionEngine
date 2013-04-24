@@ -4188,11 +4188,11 @@ div.pageContents,
 
 .multiselect-active li:hover .remove-item {
 	display: inline-block;
+	cursor: pointer;
 }
 
 .multiselect-active .reorder-handle {
 	background: url("../images/reorder-pull.png") center 10px no-repeat;
-	cursor: move;
 	display: inline-block;
 	height: 100%;
 	left: 0;
@@ -4208,7 +4208,7 @@ div.pageContents,
 	color: #2a7c10;
 	font-weight: bold;
 	padding-left: 30px;
-	cursor: pointer;
+	cursor: move;
 }
 
 .multiselect.empty li,
