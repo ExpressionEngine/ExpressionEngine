@@ -35,35 +35,43 @@
 		settings = $.extend({}, default_options, options);
 		
 		$.ee_filebrowser.endpoint_request('setup_upload', function(data) {
-			file_uploader = $(data.uploader).appendTo(document.body);
-			
-			// Hide the Choose File button
-			file_uploader.removeClass().addClass('before_upload');
-			
-			// Remove unneeded buttons
-			if (settings.type == "filemanager") {
-				file_uploader.find('.button_bar .filebrowser').remove();
-			} else if (settings.type == "filebrowser") {
-				file_uploader.find('.button_bar .filemanager').remove();
-			}
-			
-			$(document).ready(function() {
-				$.ee_fileuploader.build_dialog();
-			});
-			
-			// Call load callback
-			if (typeof settings.load == 'function') {
-				settings.load.call(this, file_uploader);
-			}
+			file_uploader = $(data.uploader);
+			$(document.body).append(file_uploader);
+			_EE_uploader_attached();
 		});
 	};
+
+
+	$.ee_fileuploader.setSource = function(id, url) {
+		file_uploader.find(id).attr('src', url);
+		file_uploader = file_uploader.first();
+
+		// Hide the Choose File button
+		file_uploader.removeClass().addClass('before_upload');
+		
+		// Remove unneeded buttons
+		if (settings.type == "filemanager") {
+			file_uploader.find('.button_bar .filebrowser').remove();
+		} else if (settings.type == "filebrowser") {
+			file_uploader.find('.button_bar .filemanager').remove();
+		}
+
+		$(document).ready(function() {
+			$.ee_fileuploader.build_dialog();
+		});
+		
+		// Call load callback
+		if (typeof settings.load == 'function') {
+			settings.load.call(this, file_uploader);
+		}
+	}
 	
 	// --------------------------------------------------------------------
 	
 	/**
 	 * Builds the jQuery UI dialog, adds two listeners to the dialog, and adds
 	 * a listener to the upload button on the file chooser
-	 */	
+	 */
 	$.ee_fileuploader.build_dialog = function() {
 		file_uploader.dialog({
 			width: 600,
@@ -76,6 +84,7 @@
 			autoOpen: false,
 			zIndex: 99999,
 			open: function() {
+
 				// Make sure we're on before_upload
 				change_class('before_upload');
 		
@@ -87,7 +96,7 @@
 				
 				// Disable upload file button
 				$.ee_fileuploader.reset_upload();
-				
+
 				// Save original contents for reset on close
 				if (original_upload_html === undefined) {
 					original_upload_html = file_uploader.html();
@@ -133,7 +142,7 @@
 		});
 		
 		// Bind the open event to the specified trigger
-		$(settings.trigger).live('click', function(event) {
+		$(document).on('click', settings.trigger, function(event) {
 			event.preventDefault();
 			file_uploader.dialog('open');
 		});
