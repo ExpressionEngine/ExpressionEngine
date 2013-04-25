@@ -420,7 +420,7 @@ class Rte_lib {
 		$data = preg_replace('/>\n+</is', '><', $data);
 		$data = preg_replace('/<br\/?>\n+/is', '<br>', $data);
 		$data = str_replace(array('<br>', '<p>', '</p>'), "\n", $data);
-		
+
 		$data = htmlspecialchars_decode($data, ENT_QUOTES);
 
 		// decode double encoded code chunks
@@ -512,7 +512,7 @@ class Rte_lib {
 			{
 				ee()->load->library('typography');
 
-				$data = ee()->typography->_format_newlines($data);
+				$data = ee()->typography->_format_newlines($data."\n");
 
 				// Remove double paragraph tags
 				$data = preg_replace("/(<\/?p>)\\1/is", "\\1", $data);

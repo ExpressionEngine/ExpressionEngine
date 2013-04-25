@@ -8,7 +8,7 @@
  *  WysiHat is freely distributable under the terms of an MIT-style license.
  *--------------------------------------------------------------------------*/
 
-(function(document, $, undefined){
+(function(document, $, undefined) {
 
 // ---------------------------------------------------------------------
 
@@ -337,8 +337,7 @@ WysiHat.Element = (function(){
 		var
 		i	= arguments.length,
 		ret	= false;
-		while ( ret == false &&
-				i-- > 1 )
+		while (ret == false && i-- > 1)
 		{
 			ret	= $el.is( arguments[i].join(',') );
 		}
