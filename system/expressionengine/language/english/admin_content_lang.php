@@ -224,12 +224,6 @@ $lang = array(
 'search_results_url_exp' =>
 'The URL where the search results from this channel should be pointed to.',
 
-'ping_return_url' =>
-'Ping Return URL',
-
-'ping_return_url_exp' =>
-'The URL where you want people to visit when they see your link on sites that you ping.',
-
 'comment_expiration' =>
 'Comment Expiration',
 
@@ -455,9 +449,6 @@ $lang = array(
 'invalid_field_group_selected' =>
 'Invalid field group',
 
-'missing_channel_data_for_pings' =>
-'In order to send pings, your channel needs a title and URL.  Please update your channel preferences.',
-
 'open' => 
 'Open',
 
@@ -493,34 +484,6 @@ $lang = array(
 
 'row' =>
 'Row',
-
-'server_name' =>
-'Server Name',
-
-'server_url' =>
-'Server URL/Path',
-
-'port' =>
-'Port',
-
-'protocol' =>
-'Protocol',
-
-'is_default' =>
-'Default',
-
-'server_order' =>
-'Order',
-
-'define_ping_servers' =>
-'This form allows you to define a list of servers that can be pinged when you submit channel entries',
-
-'pingserver_delete_instructions' =>
-'To delete an item submit the form with the server name blank',
-
-'assign_channels' =>
-'Choose which channel(s) you want this group assigned to',
-
 
 //----------------------------
 // Generic Phrases

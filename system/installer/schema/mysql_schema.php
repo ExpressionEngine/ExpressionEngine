@@ -570,7 +570,6 @@ class EE_Schema {
 			comment_notify_emails varchar(255) NULL DEFAULT NULL,
 			comment_expiration int(4) unsigned NOT NULL default '0',
 			search_results_url varchar(80) NULL DEFAULT NULL,
-			ping_return_url varchar(80) NULL DEFAULT NULL, 
 			show_button_cluster char(1) NOT NULL default 'y',
 			rss_url varchar(80) NULL DEFAULT NULL,
 			enable_versioning char(1) NOT NULL default 'n',
@@ -750,17 +749,6 @@ class EE_Schema {
 			KEY `channel_id` (`channel_id`),
 			KEY `site_id` (`site_id`)
 		)";
-
-		// Ping Status
-		// This table saves the status of the xml-rpc ping buttons
-		// that were selected when an entry was submitted.This
-		// enables us to set the buttons to the same state when editing
-		
-		$Q[] = "CREATE TABLE exp_entry_ping_status (
-			entry_id int(10) unsigned NOT NULL,
-			ping_id int(10) unsigned NOT NULL,
-			PRIMARY KEY `entry_id_ping_id` (`entry_id`, `ping_id`)
-		)";
 		
 		// Status Groups
 		
@@ -927,24 +915,7 @@ class EE_Schema {
 			KEY `member_group` (`member_group`),
 			KEY `channel_id` (`channel_id`)
 		)";
-		
-		// Ping Servers
-		// Each member can have their own set ping server definitions
-		
-		$Q[] = "CREATE TABLE exp_ping_servers (
-			id int(10) unsigned NOT NULL auto_increment,
-			site_id INT(4) UNSIGNED NOT NULL DEFAULT 1,
-			member_id int(10) default 0 NOT NULL,
-			server_name varchar(32) NOT NULL,
-			server_url varchar(150) NOT NULL,
-			port varchar(4) NOT NULL default '80',
-			ping_protocol varchar(12) NOT NULL default 'xmlrpc',
-			is_default char(1) NOT NULL default 'y',
-			server_order int(3) unsigned NOT NULL,
-			PRIMARY KEY `id` (`id`),
-			KEY `site_id` (`site_id`)
-		)";
-		
+
 		// Template Groups
 		
 		$Q[] = "CREATE TABLE exp_template_groups (

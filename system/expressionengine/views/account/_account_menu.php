@@ -65,7 +65,6 @@
 	</li>
 	<li><span class="top_menu"><?=lang('channel_preferences')?></span>
 		<ul>
-			<li><a href="<?=BASE.AMP.'C=myaccount'.AMP.'M=ping_servers'.AMP.'id='.$id?>"><?=lang('your_ping_servers')?></a></li>
 			<li id="myaccountHtmlButtonsLink" style="display: none;"><a href="<?=BASE.AMP.'C=myaccount'.AMP.'M=html_buttons'.AMP.'id='.$id?>"><?=lang('your_html_buttons')?></a></li>
 			<li><a href="<?=BASE.AMP.'C=myaccount'.AMP.'M=bookmarklet'.AMP.'id='.$id?>"><?=lang('bookmarklet')?></a></li>
 			<?php if ( count( $additional_nav['channel_preferences'] ) ):?>

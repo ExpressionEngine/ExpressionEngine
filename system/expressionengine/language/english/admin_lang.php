@@ -1308,9 +1308,6 @@ $lang = array(
 'missing_required_fields' =>
 'You Are Missing Required Field(s):',
 
-"default_ping_servers" => 
-"Default Ping Servers",
-
 "statuses" => 
 "Statuses",
 

@@ -3,7 +3,7 @@
 
 // Default channel preference data
 
-$Q[] = "INSERT INTO exp_channels (cat_group, channel_name, channel_title, channel_url, comment_url, search_results_url, ping_return_url, channel_lang, total_entries, last_entry_date, status_group, deft_status, field_group, deft_comments, comment_max_chars, comment_require_email, comment_require_membership, channel_require_membership, comment_text_formatting, search_excerpt)  values ('1', 'default_site', 'Default Site Channel', '".$this->userdata['site_url'].$this->userdata['site_index']."/site/index/', '".$this->userdata['site_url'].$this->userdata['site_index']."/site/comments/', '".$this->userdata['site_url'].$this->userdata['site_index']."/site/comments/', '".$this->userdata['site_url'].$this->userdata['site_index']."', 'en', '1', '$this->now', '1', 'open', '1', 'y', '5000', 'y', 'n', 'y', 'xhtml', '2')";
+$Q[] = "INSERT INTO exp_channels (cat_group, channel_name, channel_title, channel_url, comment_url, search_results_url, channel_lang, total_entries, last_entry_date, status_group, deft_status, field_group, deft_comments, comment_max_chars, comment_require_email, comment_require_membership, channel_require_membership, comment_text_formatting, search_excerpt)  values ('1', 'default_site', 'Default Site Channel', '".$this->userdata['site_url'].$this->userdata['site_index']."/site/index/', '".$this->userdata['site_url'].$this->userdata['site_index']."/site/comments/', '".$this->userdata['site_url'].$this->userdata['site_index']."/site/comments/', 'en', '1', '$this->now', '1', 'open', '1', 'y', '5000', 'y', 'n', 'y', 'xhtml', '2')";
 
 // Custom field and field group data
 

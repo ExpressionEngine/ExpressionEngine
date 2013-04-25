@@ -122,7 +122,6 @@ class EE_Menu {
 			'email_configuration'			=> BASE.AMP.'C=admin_system'.AMP.'M=email_configuration',
 			'----',
 			'admin_content'	=> array(
-				'default_ping_servers'			=> BASE.AMP.'C=admin_content'.AMP.'M=default_ping_servers',
 				'default_html_buttons'			=> BASE.AMP.'C=admin_content'.AMP.'M=default_html_buttons'
 			),
 			'admin_system'	=> array(
@@ -862,7 +861,6 @@ class EE_Menu {
 				'field_edit'						=> 'cp/admin/channels/custom_fields_edit.html',
 				'field_group_edit'					=> 'cp/admin/channels/custom_channel_fields.html',
 				'default_html_buttons'				=> 'cp/admin/default_html_buttons.html',
-				'default_ping_servers'				=> 'cp/admin/default_ping_servers.html',
 				'global_channel_preferences'		=> 'cp/admin/channels/global_channel_preferences.html',
 				'status_group_edit'					=> 'cp/admin/channels/statuses_edit.html',
 				'file_upload_preferences'			=> 'cp/admin/channels/file_upload_preferences.html',

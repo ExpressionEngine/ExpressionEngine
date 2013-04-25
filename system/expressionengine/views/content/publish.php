@@ -24,8 +24,21 @@
 				<!-- Tabs -->
 				<ul class="tab_menu" id="tab_menu_tabs">
 					<?php foreach ($tabs as $tab => $tab_fields):?>
+							<?php
+								$has_error = FALSE;
+								foreach($tab_fields as $_field) {
+									if (form_error($_field) != '') {
+										$has_error = TRUE;
+									}
+								}
+							?>
 						<li id="menu_<?=$tab?>" title="<?=form_prep($tab_labels[$tab])?>" class="content_tab">
-							<a href="#" title="menu_<?=$tab?>" class="menu_<?=$tab?>"><?=lang($tab_labels[$tab])?></a>&nbsp;
+							<a href="#" title="menu_<?=$tab?>" class="menu_<?=$tab?>">
+								<?php if ($has_error): ?>
+									<img src="<?=$cp_theme_url?>images/error.png" alt="" width="12" height="12" />
+								<?php endif; ?>
+								<?=lang($tab_labels[$tab])?>
+							</a>&nbsp;
 						</li>
 					<?php endforeach;?>
 					
