@@ -2593,19 +2593,28 @@ WysiHat.Formatting = {
 	},
 
 	reBlocks: new RegExp(
-		'(<(?:ul|ol)>|<\/(?:' + WysiHat.Element.getBlocks().join('|') + ')>)[\r\n]*',
+		'(<\/(?:ul|ol)>|<\/(?:' + WysiHat.Element.getBlocks().join('|') + ')>)',
 		'g'
 	),
 
 	format: function( $el )
 	{
+		var that = this;
+
 		$el.html(function(i, old) {
-			return old.replace('<p>&nbsp;</p>', '')
-				.replace(/<br\/?><\/p>/, '</p>')
-				.replace(this.reBlocks, '$1\n')
-				.replace(/\n+/, '\n')
-				.replace(/<p>\n+<\/p>/, '');
+			return old
+				.replace( /<\/?[A-Z]+/g, function(tag) {
+					return tag.toLowerCase();
+				})
+				.replace(/(\t|\n| )+/g, ' ')		// reduce whitespace to spaces
+				.replace(/[ ]*(<|>)[ ]*/g, '$1')	// reomve whitespace next to tags
+				.replace('<p>&nbsp;</p>', '')		// remove empty paragraphs
+				.replace(/<br\/?><\/p>/, '</p>')	// remove brs at ends of paragraphs
+				.replace(/<p>\n+<\/p>/, '')			// remove paragraphs full of newlines
+				.replace(that.reBlocks, '$1\n\n')	// line between blocks
+				.replace(/<br\/?>/g, '<br>\n')		// newlines after brs
 		});
+
 	},
 	
 	getBrowserMarkupFrom: function( $el )
@@ -2613,7 +2622,7 @@ WysiHat.Formatting = {
 		var $container = $('<div>' + $el.val().replace(/\n/, '') + '</div>'),
 			html;
 
-		this.cleanup( $container );
+		this.cleanup($container);
 		html = $container.html();
 
 		if (html == '' ||
@@ -2646,16 +2655,9 @@ WysiHat.Formatting = {
 		this.cleanup( $container );
 		this.format( $container );
 
-		$container.find('*').html(function(i, val) {
-			return val
-				.replace('\n', '<br>\n')
-				.replace(/(<br>)+/g, '<br>')
-				.replace(/(\t| +)/g, ' ');
-		});
-
 		return $container
 				.html()
-				.replace( /<\/?[A-Z]+/g, function(tag){
+				.replace( /<\/?[A-Z]+/g, function(tag) {
 					return tag.toLowerCase();
 				 });
 	}

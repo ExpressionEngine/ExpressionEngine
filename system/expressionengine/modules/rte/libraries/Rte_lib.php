@@ -416,7 +416,11 @@ class Rte_lib {
 			return NULL;
 		}
 
-		$data = str_replace('<br>', "\n", $data); // must happen before the decode or we won't know which are ours
+		// these must happen before the decode or we won't know which are ours
+		$data = preg_replace('/>\n+</is', '><', $data);
+		$data = preg_replace('/<br\/?>\n+/is', '<br>', $data);
+		$data = str_replace(array('<br>', '<p>', '</p>'), "\n", $data);
+		
 		$data = htmlspecialchars_decode($data, ENT_QUOTES);
 
 		// decode double encoded code chunks
