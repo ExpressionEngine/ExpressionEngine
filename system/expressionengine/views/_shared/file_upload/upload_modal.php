@@ -1,5 +1,5 @@
 <div id="file_uploader" class="pageContents">
-	<iframe name="upload_iframe" src="<?= $base_url ?>" frameBorder="0" class="group"></iframe>
+	<iframe name="upload_iframe" id="upload_iframe" frameBorder="0" class="group"></iframe>
 	<div class="button_bar ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix">
 		<a href="#" class="edit_modal filebrowser cancel" id="cancel_changes"><?= lang('cancel_changes') ?></a>
 		<img src="<?=PATH_CP_GBL_IMG?>/indicator_upload.gif" alt="<?=lang('loading')?>..." class="before_upload visualEscapism loading" />
@@ -13,6 +13,13 @@
 		<input type="submit" class="after_upload edit_modal filebrowser submit" name="choose_file" value="<?= lang('use_file') ?>" id="choose_file" />
 	</div>
 </div>
+<script>
+// This is a super clean and not at all silly fix for bug #19196.
+function _EE_uploader_attached()
+{
+	$.ee_fileuploader.setSource('#upload_iframe', '<?=str_replace(AMP, "&", $base_url)?>');
+}
+</script>
 
 
 <?php

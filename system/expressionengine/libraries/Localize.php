@@ -477,11 +477,13 @@ EOF;
 	 * codes corresponding to country names
 	 *
 	 * @access	private
+	 * @param	boolean	Whether or not to return timezones mapped to
+	 *				countries instead
 	 * @return	string
 	 */
-	private function _get_countries()
+	private function _get_countries($return_timezones = FALSE)
 	{
-		if ( ! empty($this->_countries))
+		if ( ! empty($this->_countries) AND ! $return_timezones)
 		{
 			return $this->_countries;
 		}
@@ -496,6 +498,11 @@ EOF;
 		if ( ! include($countries_path))
 		{
 			show_error(lang('countryfile_missing'));
+		}
+
+		if ($return_timezones)
+		{
+			return $timezones;
 		}
 
 		foreach ($countries as $code => $country)
@@ -523,11 +530,20 @@ EOF;
 			return $this->_timezones_by_country;
 		}
 
-		foreach ($this->_get_countries() as $code => $country)
+		// PHP 5.3+
+		if (defined('DateTimeZone::PER_COUNTRY'))
 		{
-			$this->_timezones_by_country[$code] = DateTimeZone::listIdentifiers(
-				DateTimeZone::PER_COUNTRY, strtoupper($code)
-			);
+			foreach ($this->_get_countries() as $code => $country)
+			{
+				$this->_timezones_by_country[$code] = DateTimeZone::listIdentifiers(
+					DateTimeZone::PER_COUNTRY, strtoupper($code)
+				);
+			}
+		}
+		// < PHP 5.3
+		else
+		{
+			$this->_timezones_by_country = $this->_get_countries(TRUE);
 		}
 
 		return $this->_timezones_by_country;

@@ -3513,6 +3513,7 @@ class Design extends CP_Controller {
 		// Load the design model
 		$this->load->model('design_model');
 		
+		$this->load->library('api');
 		$this->api->instantiate('template_structure');
 
 		$templates = $this->design_model->export_tmpl_group($this->input->get_post('group_id'));
