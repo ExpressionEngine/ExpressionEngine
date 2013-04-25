@@ -2355,6 +2355,10 @@ div#template_keywords_reset span {
 	font-weight: 		bold;
 }
 
+#mainContent .tab_menu li img {
+	margin: 0 2px -2px -5px;
+}
+
 #mainContent .tab_menu li a:hover {
 	text-decoration:	none;
 }
