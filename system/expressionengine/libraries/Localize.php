@@ -326,7 +326,7 @@ class Localize {
 	 * @param	string	Name of dropdown form field element
 	 * @return	string	HTML for dropdown list
 	 */
-	public function timezone_menu($default = NULL, $name = 'server_timezone')
+	public function timezone_menu($default = NULL, $name = 'default_site_timezone')
 	{
 		// For the installer
 		ee()->load->helper('language');
@@ -771,7 +771,7 @@ EOF;
 			$now = $this->now;
 		}
 
-		if ($tz = ee()->config->item('server_timezone'))
+		if ($tz = ee()->config->item('default_site_timezone'))
 		{
 			$now += $zones[$tz] * 3600;
 		}
@@ -851,7 +851,7 @@ EOF;
 
 		if (ee()->session->userdata['timezone'] == '')
 		{
-			if ($tz = ee()->config->item('server_timezone'))
+			if ($tz = ee()->config->item('default_site_timezone'))
 			{
 				$offset += $zones[$tz];
 			}

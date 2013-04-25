@@ -155,11 +155,7 @@ class Admin_system extends CP_Controller {
 			$vars['form_action'] = 'C=admin_system'.AMP.'M='.$return_loc;
 
 			if ($validated)
-			{
-				$this->_final_post_prep($type);
-				
-				$config_update = $this->config->update_site_prefs($_POST);
-		
+			{		
 				if ( ! empty($config_update))
 				{
 					$this->session->set_flashdata('message_failure', ul($config_update, array('class' => 'bad_path_error_list')));
@@ -358,34 +354,6 @@ class Admin_system extends CP_Controller {
 
 		return $vars;	
 	}
-
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Final POST Prep
-	 *
-	 * Any special tweaking before $_POST is inserted
-	 * can happen here
-	 *
-	 * @access	public
-	 * @return	void
-	 */
-	function _final_post_prep($type)
-	{
-		if ($type == 'localization_cfg')
-		{
-			$config = $this->member_model->get_localization_default(TRUE);
-			
-			// Do we need to set the localization defaults to match the server?
-			if ($config['member_id'] = '')
-			{
-				array_merge($_POST, array('default_site_timezone' => $this->input->post('server_timezone'), 
-										'default_site_dst' => $this->input->post('daylight_savings')));
-			}
-		}		
-	}
-
 
 	// --------------------------------------------------------------------
 
