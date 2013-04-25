@@ -2602,9 +2602,11 @@ WysiHat.Formatting = {
 
 		$el.html(function(i, old) {
 			return old
+				// lowercase all tags
 				.replace( /<\/?[A-Z]+/g, function(tag) {
 					return tag.toLowerCase();
 				})
+				// cleanup whitespace and emtpy tags
 				.replace(/(\t|\n| )+/g, ' ')		// reduce whitespace to spaces
 				.replace(/[ ]*(<|>)[ ]*/g, '$1')	// reomve whitespace next to tags
 				.replace('<p>&nbsp;</p>', '')		// remove empty paragraphs
@@ -2616,7 +2618,14 @@ WysiHat.Formatting = {
 				// prettify lists
 				.replace(/><li>/g, '>\n<li>')
 				.replace(/<\/li>\n+</g, '</li>\n<')
-				.replace(/<li>/g, '    <li>');
+				.replace(/<li>/g, '    <li>')
+
+				// prettify tables
+				.replace(/>\s*(<\/?tr>)/g, '>$1')
+				.replace(/(<\/?tr>)\s*</g, '$1<')
+				.replace(/<(\/?(table|tbody))>/g, '<$1>\n')
+				.replace(/<\/tr>/g, '<\/tr>\n')
+				.replace(/<tr>/g, '    <tr>');
 		});
 
 	},
