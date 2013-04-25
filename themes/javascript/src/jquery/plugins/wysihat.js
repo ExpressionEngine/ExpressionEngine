@@ -2612,6 +2612,11 @@ WysiHat.Formatting = {
 				.replace(/<p>\n+<\/p>/, '')			// remove paragraphs full of newlines
 				.replace(that.reBlocks, '$1\n\n')	// line between blocks
 				.replace(/<br\/?>/g, '<br>\n')		// newlines after brs
+
+				// prettify lists
+				.replace(/><li>/g, '>\n<li>')
+				.replace(/<\/li>\n+</g, '</li>\n<')
+				.replace(/<li>/g, '    <li>');
 		});
 
 	},
