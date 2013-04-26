@@ -2165,7 +2165,7 @@ class Members extends CP_Controller {
 			array(
 				'field'  => 'group_id', 
 				'label'  => 'lang:member_group_assignment', 
-				'rules'  => 'required|integer'
+				'rules' => 'required|integer|callback_valid_group_id'
 			)
 		);
 
@@ -2400,6 +2400,33 @@ class Members extends CP_Controller {
 		));
 		
 		$this->functions->redirect(BASE.AMP.'C=members'.AMP.'M=view_all_members');
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Verify that the group ID is a valid choice
+	 * @param  String $group_id Group ID from the form
+	 * @return Boolean          TRUE if valid group, FALSE otherwise
+	 */
+	public function valid_group_id($group_id)
+	{
+		$group_ids = array();
+		$is_locked = (ee()->session->userdata['group_id'] == 1) ? array() : array('is_locked' => 'n');
+		$member_groups = ee()->member_model->get_member_groups('', $is_locked);
+		
+		foreach ($member_groups->result() as $group)
+		{
+			$group_ids[] = $group->group_id;
+		}
+
+		if ( ! in_array($group_id, $group_ids))
+		{
+			ee()->form_validation->set_message('valid_group_id', lang('invalid_group_id'));
+			return FALSE;
+		}
+
+		return TRUE;
 	}
 
 	// --------------------------------------------------------------------
