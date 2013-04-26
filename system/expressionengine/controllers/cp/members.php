@@ -2138,33 +2138,33 @@ class Members extends CP_Controller {
 		
 		$config = array(
 			array(
-				'field'  => 'username', 
-				'label'  => 'lang:username', 
-				'rules'  => 'required|trim|valid_username[new]'
+				'field' => 'username', 
+				'label' => 'lang:username', 
+				'rules' => 'required|trim|valid_username[new]'
 			),
 			array(
-				'field'  => 'screen_name',
-				'label'  => 'lang:screen_name',
-				'rules'  => 'trim|valid_screen_name[new]'
+				'field' => 'screen_name',
+				'label' => 'lang:screen_name',
+				'rules' => 'trim|valid_screen_name[new]'
 			),
 			array(
-				'field'  => 'password', 
-				'label'  => 'lang:password', 
-				'rules'  => 'required|valid_password[username]'
+				'field' => 'password', 
+				'label' => 'lang:password', 
+				'rules' => 'required|valid_password[username]'
 			),
 			array(
-				'field'  => 'password_confirm', 
-				'label'  => 'lang:password_confirm', 
-				'rules'  => 'required|matches[password]'
+				'field' => 'password_confirm', 
+				'label' => 'lang:password_confirm', 
+				'rules' => 'required|matches[password]'
 			),
 			array(
-				'field'  => 'email', 
-				'label'  => 'lang:email', 
-				'rules'  => 'trim|required|valid_user_email[new]'
+				'field' => 'email', 
+				'label' => 'lang:email', 
+				'rules' => 'trim|required|valid_user_email[new]'
 			),
 			array(
-				'field'  => 'group_id', 
-				'label'  => 'lang:member_group_assignment', 
+				'field' => 'group_id', 
+				'label' => 'lang:member_group_assignment', 
 				'rules' => 'required|integer|callback_valid_group_id'
 			)
 		);
@@ -2233,11 +2233,11 @@ class Members extends CP_Controller {
 			//  Add validation rules for custom fields
 			foreach ($query->result_array() as $row)
 			{
-				$required  = ($row['m_field_required'] == 'n') ? '' : 'required';
+				$required = ($row['m_field_required'] == 'n') ? '' : 'required';
 				$c_config[] = array(
-					'field'  => 'm_field_id_'.$row['m_field_id'], 
-					'label'  => $row['m_field_label'], 
-					'rules'  => $required
+					'field' => 'm_field_id_'.$row['m_field_id'], 
+					'label' => $row['m_field_label'], 
+					'rules' => $required
 				);
 			}
 			
