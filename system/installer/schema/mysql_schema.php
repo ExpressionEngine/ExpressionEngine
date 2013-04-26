@@ -1334,7 +1334,7 @@ class EE_Schema {
 		$quick_link = '';
 		
 		$Q[] = "INSERT INTO exp_members (group_id, username, password, unique_id, email, screen_name, join_date, ip_address, timezone, quick_links, language) 
-			VALUES ('1', '".ee()->db->escape_str($this->userdata['username'])."', '".$this->userdata['password']."', '".$this->userdata['unique_id']."', '".ee()->db->escape_str($this->userdata['email_address'])."', '".ee()->db->escape_str($this->userdata['screen_name'])."', '".$this->now."', '".ee()->input->ip_address()."', '".$this->userdata['server_timezone']."', '$quick_link', '".ee()->db->escape_str($this->userdata['deft_lang'])."')";
+			VALUES ('1', '".ee()->db->escape_str($this->userdata['username'])."', '".$this->userdata['password']."', '".$this->userdata['unique_id']."', '".ee()->db->escape_str($this->userdata['email_address'])."', '".ee()->db->escape_str($this->userdata['screen_name'])."', '".$this->now."', '".ee()->input->ip_address()."', '".$this->userdata['default_site_timezone']."', '$quick_link', '".ee()->db->escape_str($this->userdata['deft_lang'])."')";
 		
 		$Q[] = "INSERT INTO exp_member_homepage (member_id, recent_entries_order, recent_comments_order, site_statistics_order, notepad_order, pmachine_news_feed) 
 			VALUES ('1', '1', '2', '1', '2', 'l')";
