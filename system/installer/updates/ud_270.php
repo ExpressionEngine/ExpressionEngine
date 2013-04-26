@@ -117,7 +117,8 @@ class Updater {
 
 				unset(
 					$data['server_timezone'],
-					$data['default_site_dst']
+					$data['default_site_dst'],
+					$data['honor_entry_dst']
 				);
 			}
 
