@@ -38,8 +38,9 @@ class Updater {
 
 		$steps = new ProgressIterator(
 			array(
-				'_drop_updated_pings',
-				'_drop_updated_sites'
+				'_drop_pings',
+				'_drop_updated_sites',
+				'_update_localization_preferences'
 			)
 		);
 
@@ -87,6 +88,48 @@ class Updater {
 			ee()->dbforge->drop_table('updated_sites');
 			ee()->dbforge->drop_table('updated_site_pings');			
 		}
+
+		return TRUE;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Remove the default localization member in favor or a site setting
+	 * under global localization prefs.
+	 */
+	private function _update_localization_preferences()
+	{
+		$query = ee()->db->query("SELECT * FROM exp_sites");
+
+		foreach ($query->result_array() as $row)
+		{
+			$conf = $row['site_system_preferences'];
+			$data = unserialize(base64_decode($conf));
+
+			if (isset($data['server_timezone']))
+			{
+				if ( ! isset($data['default_site_timezone']) ||
+					$data['default_site_timezone'] == '')
+				{
+					$data['default_site_timezone'] = $data['server_timezone'];
+				}
+
+				unset(
+					$data['server_timezone'],
+					$data['default_site_dst'],
+					$data['honor_entry_dst']
+				);
+			}
+
+			ee()->db->update(
+				'sites',
+				array('site_system_preferences' => base64_encode(serialize($data))),
+				array('site_id' => $row['site_id'])
+			);
+		}
+
+		ee()->smartforge->drop_column('members', 'localization_is_site_default');
 
 		return TRUE;
 	}

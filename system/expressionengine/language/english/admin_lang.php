@@ -1119,8 +1119,8 @@ $lang = array(
 "european" => 
 "European",
 
-"server_timezone" => 
-"Server Timezone",
+"default_site_timezone" => 
+"Site Timezone",
 
 "cookie_cfg" => 
 "Cookie Settings",
