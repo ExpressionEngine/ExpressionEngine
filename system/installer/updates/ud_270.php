@@ -38,7 +38,7 @@ class Updater {
 
 		$steps = new ProgressIterator(
 			array(
-				'_drop_updated_pings',
+				'_drop_pings',
 				'_drop_updated_sites',
 				'_update_localization_preferences'
 			)
