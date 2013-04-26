@@ -122,9 +122,6 @@ $lang = array(
 'comment' =>
 'Comment',
 
-'localization_is_site_default' =>
-'Use this member\'s localization settings as the master site default?',
-
 'preferences_updated' =>
 'Preferences Updated',
 
