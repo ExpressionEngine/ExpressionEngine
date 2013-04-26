@@ -129,6 +129,8 @@ class Updater {
 			);
 		}
 
+		ee()->smartforge->drop_column('members', 'localization_is_site_default');
+
 		return TRUE;
 	}
 }	

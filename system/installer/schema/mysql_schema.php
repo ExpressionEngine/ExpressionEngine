@@ -341,7 +341,6 @@ class EE_Schema {
 			smart_notifications char(1) NOT NULL default 'y',
 			language varchar(50) NOT NULL,
 			timezone varchar(50) NOT NULL,
-			localization_is_site_default char(1) NOT NULL default 'n',
 			time_format char(2) default 'us' NOT NULL,
 			cp_theme varchar(32) NULL DEFAULT NULL,
 			profile_theme varchar(32) NULL DEFAULT NULL,
