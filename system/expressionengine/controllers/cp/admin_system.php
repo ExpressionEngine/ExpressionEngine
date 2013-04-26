@@ -155,7 +155,9 @@ class Admin_system extends CP_Controller {
 			$vars['form_action'] = 'C=admin_system'.AMP.'M='.$return_loc;
 
 			if ($validated)
-			{		
+			{
+				$config_update = $this->config->update_site_prefs($_POST);
+
 				if ( ! empty($config_update))
 				{
 					$this->session->set_flashdata('message_failure', ul($config_update, array('class' => 'bad_path_error_list')));
