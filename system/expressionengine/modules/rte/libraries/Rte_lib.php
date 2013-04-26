@@ -416,7 +416,11 @@ class Rte_lib {
 			return NULL;
 		}
 
-		$data = str_replace('<br>', "\n", $data); // must happen before the decode or we won't know which are ours
+		// these must happen before the decode or we won't know which are ours
+		$data = preg_replace('/>\s+</is', '><', $data);
+		$data = preg_replace('/<br( *\/)?>\n*/is', '<br>', $data);
+		$data = str_replace(array('<br>', '</p>', '<p>'), array("\n", "\n\n", ''), $data);
+
 		$data = htmlspecialchars_decode($data, ENT_QUOTES);
 
 		// decode double encoded code chunks
@@ -472,13 +476,19 @@ class Rte_lib {
 		{
 			$data = trim($data);
 
-			// Undo any existing newline formatting. Typography will change
-			// it anyways and the rtf will add its own. Having this here
+			// Collapse tags and undo any existing newline formatting. Typography
+			// will change it anyways and the rtf will add its own. Having this here
 			// prevents growing-newline syndrome in the rtf and lets us switch
 			// between rtf and non-rtf.
 
+			$data = preg_replace('/>\s+</is', '><', $data);
+			$data = preg_replace('/<br( *\/)?>\n*/is', "<br>\n", $data);
+
 			$data = preg_replace("/<\/p>\n*<p>/is", "\n\n", $data);
-			$data = preg_replace("/<br( \/)?>\n/is", "\n", $data);
+			$data = preg_replace("/<br>\n/is", "\n", $data);
+
+			// most newlines we should ever have is 2
+			$data = preg_replace('/\n\n+/', "\n\n", $data);
 		}
 
 		// remove code chunks
@@ -508,7 +518,7 @@ class Rte_lib {
 			{
 				ee()->load->library('typography');
 
-				$data = ee()->typography->_format_newlines($data);
+				$data = ee()->typography->_format_newlines($data."\n");
 
 				// Remove double paragraph tags
 				$data = preg_replace("/(<\/?p>)\\1/is", "\\1", $data);

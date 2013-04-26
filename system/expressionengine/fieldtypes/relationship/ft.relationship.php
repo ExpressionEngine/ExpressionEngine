@@ -255,6 +255,14 @@ class Relationship_ft extends EE_Fieldtype {
 		$show_expired = (bool) $this->settings['expired'];
 		$show_future = (bool) $this->settings['future'];
 
+		$order_field = $this->settings['order_field'];
+
+		// Bug 19321, old fields use date
+		if ($order_field == 'date')
+		{
+			$order_field = 'entry_date';
+		}
+
 		ee()->db
 			->select('channel_titles.entry_id, channel_titles.title')
 			->order_by($this->settings['order_field'], $this->settings['order_dir']);
@@ -404,7 +412,7 @@ class Relationship_ft extends EE_Fieldtype {
 		$class .= '"';
 
 		$str = '<div class="multiselect-filter js_show">';
-		$str .= form_input('', '', 'placeholder="'.lang('rel_ft_filter_by_title').'" id="'.$field_name.'-filter"');
+		$str .= form_input('', '', 'id="'.$field_name.'-filter"');
 		$str .= '</div>';
 
 		$str .= '<div id="'.$field_name.'" '.$class.'>';

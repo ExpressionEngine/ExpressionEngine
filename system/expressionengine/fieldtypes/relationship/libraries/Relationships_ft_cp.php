@@ -333,8 +333,15 @@ class Relationship_settings_form {
 		$data = array_intersect_key($data, $this->_fields);
 		$this->_selected = array_merge($this->_selected, $this->_fields, $data);
 
+		// Bug 19321: Old relationship fields use "date" instead of "entry_date"
+		if (isset($data['order_field']) && $data['order_field'] == 'date')
+		{
+			$data['order_field'] = 'entry_date';
+		}
+
 		// array_merge_recursive($this->_fields, $data) without
 		// php's super weird recursive merging on on arrays
+
 		foreach ($data as $k => $v)
 		{
 			if (is_array($this->_fields[$k]))

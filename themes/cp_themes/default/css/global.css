@@ -2355,6 +2355,10 @@ div#template_keywords_reset span {
 	font-weight: 		bold;
 }
 
+#mainContent .tab_menu li img {
+	margin: 0 2px -2px -5px;
+}
+
 #mainContent .tab_menu li a:hover {
 	text-decoration:	none;
 }
@@ -4130,7 +4134,12 @@ div.pageContents,
 .multiselect,
 .multiselect-active,
 .multiselect-filter {
-	width: 48%;
+	width: 49%;
+
+	/* we don't support IE 6 or 7 */
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
 }
 
 .multiselect,
@@ -4143,22 +4152,35 @@ div.pageContents,
 
 .multiselect-active {
 	float: right;
-	height: 270px;		/* multiselect + filter box */
+	height: 279px;		/* multiselect + filter box */
 	line-height: 160%;
 }
 
 .multiselect-filter {
+	background: rgb(229, 233, 235);
 	border: 1px solid #B6C0C2;
 	border-bottom: none;
 	margin: 7px 0 0 0;
+	padding: 6px 4px;
+	position: relative;
+}
+
+.multiselect-filter:after {
+	background: transparent url('../images/relationship-sprite.png') no-repeat -20px 0;
+	content: '';
+	height: 10px;
+	position: absolute;
+	right: 15px;
+	top: 14px;
+	width: 10px;
 }
 
 .multiselect-filter input,
 .multiselect-filter input:focus {
-	border-radius: 0;
-	border: none;
-	line-height: 1.5;
-	padding: 5px 10px;
+	border-radius: 13px;
+	border: 1px solid rgb(182, 192, 194);
+	padding: 5px 10px 4px 8px;
+	width: 100%;
 }
 
 .multiselect li,
@@ -4175,6 +4197,10 @@ div.pageContents,
 	background: #F7FBFE;
 }
 
+.multiselect-active li {
+	padding-left: 30px;
+}
+
 .multiselect-active .remove-item {
 	color: #E67174;
 	display: none;
@@ -4188,27 +4214,23 @@ div.pageContents,
 
 .multiselect-active li:hover .remove-item {
 	display: inline-block;
+	cursor: pointer;
 }
 
 .multiselect-active .reorder-handle {
-	background: url("../images/reorder-pull.png") center 10px no-repeat;
-	cursor: move;
-	display: inline-block;
+	background: transparent url('../images/relationship-sprite.png') no-repeat -12px 10px;
 	height: 100%;
-	left: 0;
-	padding-left: 10px;
-	position: absolute;
-	top: 0;
-	width: 20px;
 	width: 8px;
+	position: absolute;
+	left: 6px;
+	top: 0;
 }
 
 .multiselect-active li {
 	vertical-align: baseline;
 	color: #2a7c10;
 	font-weight: bold;
-	padding-left: 30px;
-	cursor: pointer;
+	cursor: move;
 }
 
 .multiselect.empty li,
@@ -4225,11 +4247,20 @@ div.pageContents,
 }
 
 .multiselect li label {
-	background: url("../images/relate-check.gif") 0 5px no-repeat;
-	background-size: 0 0;
+	-webkit-transition: padding .1s linear;
+	-moz-transition: padding .1s linear;
+}
 
-	-webkit-transition-property: padding, background-size;
-	-webkit-transition-duration: .1s, .1s;
+.multiselect li label:before {
+  content: '';
+  position: absolute;
+  left: 10px;
+  width: 12px;
+  height: 20px;
+  background: transparent url('../images/relationship-sprite.png') no-repeat 0 5px;
+  opacity: 0;
+
+  -moz-transition: opacity .1s linear; /* firefox is the only browser that can animate :before */
 }
 
 .multiselect li.selected {
@@ -4237,10 +4268,13 @@ div.pageContents,
 }
 
 .multiselect li.selected label {
-	background-size: 11px 8px;
 	color: #2a7c10;
 	font-weight: bold;
 	padding-left: 20px;
+}
+
+.multiselect li.selected label:before {
+	opacity: 1;
 }
 
 .force-scroll {

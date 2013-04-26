@@ -985,7 +985,12 @@ class Member_model extends CI_Model {
 		}
 	
 		$this->db->where('in_authorlist', 'y');
-		$this->db->or_where_in('group_id', $groups);
+
+		if (count($groups))
+		{
+			$this->db->or_where_in('group_id', $groups);
+		}
+		
 		$this->db->order_by('screen_name', 'ASC');
 		$this->db->order_by('username', 'ASC');
 		
