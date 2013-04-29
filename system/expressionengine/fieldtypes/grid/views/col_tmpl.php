@@ -30,6 +30,14 @@
 			(isset($column['col_label']) && $column['col_search'] == 'y')
 		).form_label(lang('grid_col_searchable'))?>
 	</div>
+	<div class="grid_col_settings_section grid_col_width">
+		<?=form_input(array(
+				'name'	=> 'grid[cols]['.$field_name.'][width]',
+				'value'	=> (isset($column['col_width'])) ? $column['col_width'] : '',
+				'class'	=> 'grid_input_text_small'
+			)).NBS.NBS.NBS.
+			'<i class="instruction_text">'.lang('grid_col_width_percent').'</i>';?>
+	</div>
 	<div class="grid_col_settings_custom" data-field-name="<?=$field_name?>">
 		<?php if (isset($column['settings_form'])): ?>
 			<?=$column['settings_form']?>

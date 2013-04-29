@@ -112,12 +112,17 @@ p.grid_error {
 #grid_min_rows,
 #grid_max_rows,
 #grid_settings .grid_input_text_small {
-	height: 27px;
-	margin: -6px 0 -5px 0;
+	margin: -4px 0 -4px 0;
+	padding: 6px;
 	position: relative;
 	text-align: center;
 	width: 47px;
-	vertical-align: text-top;
+	vertical-align: middle;
+}
+
+.grid_col_width .instruction_text {
+	position: relative;
+	top: 1px;
 }
 
 #grid_min_rows,
@@ -170,7 +175,7 @@ span.instruction_text {
 
 .grid_col_settings_section {
 	border-bottom: 1px solid #c0cfd6;
-	padding: 10px;
+	padding: 9px 10px;
 }
 
 .grid_col_settings_section.text {

@@ -313,6 +313,7 @@ class Grid_lib {
 				'col_instructions'	=> $column['instr'],
 				'col_required'		=> $column['required'],
 				'col_search'		=> $column['searchable'],
+				'col_width'			=> str_replace('%', '', $column['width']),
 				'col_settings'		=> json_encode($column['settings'])
 			);
 

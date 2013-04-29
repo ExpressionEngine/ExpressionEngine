@@ -75,6 +75,11 @@ class Grid_model extends CI_Model {
  				'type'				=> 'char',
  				'constraint'		=> 1
  			),
+ 			'col_width' => array(
+ 				'type'				=> 'int',
+ 				'constraint'		=> 3,
+ 				'unsigned'			=> TRUE
+ 			),
  			'col_settings' => array(
  				'type'				=> 'text'
  			)

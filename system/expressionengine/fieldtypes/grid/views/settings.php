@@ -9,6 +9,7 @@
 		<?=form_label(lang('grid_col_name'), NULL, array('class' => 'grid_col_setting_label'))?>
 		<?=form_label(lang('grid_col_instr'), NULL, array('class' => 'grid_col_setting_label'))?>
 		<?=form_label(lang('grid_col_options'), NULL, array('class' => 'grid_col_setting_label grid_data_search'))?>
+		<?=form_label(lang('grid_col_width'), NULL, array('class' => 'grid_col_setting_label'))?>
 	</div>
 
 	<div id="grid_col_settings_container">

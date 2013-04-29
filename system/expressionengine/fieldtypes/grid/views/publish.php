@@ -5,7 +5,7 @@
 				<thead>
 					<th class="grid_handle">&nbsp;</th>
 					<?php foreach ($columns as $column): ?>
-						<th>
+						<th width="<?=$column['col_width']?>%">
 							<b><?=$column['col_label']?></b>
 							<?php if ( ! empty($column['col_instructions'])): ?>
 								<span class="instruction_text">
@@ -20,7 +20,7 @@
 						<tr class="grid_row">
 							<td class="grid_handle">&nbsp;</td>
 							<?php foreach ($columns as $column): ?>
-								<td width="33%">
+								<td width="<?=$column['col_width']?>%">
 									<?php if ($column == end($columns)):?>
 										<a href="#" class="grid_button_delete" title="<?=lang('grid_delete_row')?>"><?=lang('grid_delete_row')?></a>
 									<?php endif ?>
@@ -35,7 +35,7 @@
 					<tr class="grid_row blank_row">
 						<td class="grid_handle">&nbsp;</td>
 						<?php foreach ($columns as $column): ?>
-							<td width="33%">
+							<td width="<?=$column['col_width']?>%">
 								<?php if ($column == end($columns)):?>
 									<a href="#" class="grid_button_delete" title="<?=lang('grid_delete_row')?>"><?=lang('grid_delete_row')?></a>
 								<?php endif ?>
