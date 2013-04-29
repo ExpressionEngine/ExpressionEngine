@@ -35,7 +35,20 @@
 				containment: 'parent',			// Contain to parent
 				handle: 'td.grid_handle',		// Set drag handle
 				items: 'tr.grid_row',			// Only allow these to be sortable
-				sort: EE.sortable_sort_helper	// Custom sort handler
+				sort: EE.sortable_sort_helper,	// Custom sort handler
+				helper: function(e, tr)			// Fix issue where cell widths collapse on drag
+				{
+					var $originals = tr.children();
+					var $helper = tr.clone();
+
+					$helper.children().each(function(index)
+					{
+						// Set helper cell sizes to match the original sizes
+						$(this).width($originals.eq(index).width())
+					});
+					
+					return $helper;
+				},
 			});
 		},
 

@@ -43,6 +43,10 @@ table.grid_field td {
 	vertical-align: top;
 }
 
+table.grid_field tr.ui-sortable-helper td {
+	border-bottom: 1px solid #c9cfd4;
+}
+
 table.grid_field tr {
 	background-color: #fff;
 }
