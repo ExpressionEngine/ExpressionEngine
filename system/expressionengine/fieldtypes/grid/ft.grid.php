@@ -47,7 +47,7 @@ class Grid_ft extends EE_Fieldtype {
 
 	public function validate($data)
 	{
-		ee()->lang->loadfile('grid');
+		ee()->lang->loadfile('fieldtypes');
 		ee()->load->library('grid_lib');
 
 		return ee()->grid_lib->validate(ee()->input->post($this->field_name), $this->field_id);
@@ -70,7 +70,7 @@ class Grid_ft extends EE_Fieldtype {
 	public function display_field($data)
 	{
 		ee()->load->library('grid_lib');
-		ee()->lang->loadfile('grid');
+		ee()->lang->loadfile('fieldtypes');
 
 		ee()->cp->add_to_head(ee()->view->head_link('css/grid.css'));
 
@@ -104,7 +104,7 @@ class Grid_ft extends EE_Fieldtype {
 	{
 		$field_id = isset($data['field_id']) ? $data['field_id'] : 0;
 
-		ee()->lang->loadfile('grid');
+		ee()->lang->loadfile('fieldtypes');
 
 		ee()->table->set_heading(array(
 			'data' => lang('grid_options'),
