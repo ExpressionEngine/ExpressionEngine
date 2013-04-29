@@ -218,13 +218,20 @@ table.grid_field th {
 
 table.grid_field td.grid_handle {
 	background: #f5f6f5 url('../images/grid-sprite.png') no-repeat -65px 7px;
-	cursor: move;
 }
 
 .grid_col_settings_section.grid_data_type {
-	cursor: move;
 	padding: 16px 14px;
 	position: relative;
+}
+
+table.grid_field td.grid_handle,
+.grid_col_settings_section.grid_data_type {
+	cursor: move;
+	cursor: hand;
+	cursor: grab !important;
+	cursor: -moz-grab;
+	cursor: -webkit-grab;
 }
 
 .grid_col_setting_label_fixed_width {
