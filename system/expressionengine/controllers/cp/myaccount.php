@@ -1212,7 +1212,7 @@ class MyAccount extends CP_Controller {
 
 		if ($vars['timezone'] == '')
 		{
-			$vars['timezone'] = ($this->config->item('default_site_timezone') && $this->config->item('default_site_timezone') != '') ? $this->config->item('default_site_timezone') : 'UTC';
+			$vars['timezone'] = $this->config->item('default_site_timezone') ? $this->config->item('default_site_timezone') : 'UTC';
 		}
 		
 		if ($vars['time_format'] == '')
@@ -1265,18 +1265,7 @@ class MyAccount extends CP_Controller {
 
 		$this->member_model->update_member($this->id, $data);
 
-		$config = $this->member_model->get_localization_default(TRUE);
-
-		//	Update Config Values
-		if ($config['member_id'] == $this->id)
-		{
-			unset($config['member_id']);
-			$config_update = $this->config->update_site_prefs($config);
-		}
-
 		$this->session->set_flashdata('message_success', lang('settings_updated'));
-
-
 		$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=localization'.AMP.'id='.$this->id.AMP.'U=1');
 	}
 
@@ -1776,7 +1765,7 @@ class MyAccount extends CP_Controller {
 
 		$vars = array_merge($this->_account_menu_setup(), $vars);
 
-		$query = $this->member_model->get_member_data($this->id, array('ip_address', 'in_authorlist', 'group_id', 'localization_is_site_default'));
+		$query = $this->member_model->get_member_data($this->id, array('ip_address', 'in_authorlist', 'group_id'));
 
 		foreach ($query->row_array() as $key => $val)
 		{
@@ -1834,7 +1823,6 @@ class MyAccount extends CP_Controller {
 		$this->load->model('site_model');
 
 		$data['in_authorlist'] = ($this->input->post('in_authorlist') == 'y') ? 'y' : 'n';
-		$data['localization_is_site_default'] = ($this->input->post('localization_is_site_default') == 'y') ? 'y' : 'n';
 
 		if ($this->input->post('group_id'))
 		{
@@ -1875,29 +1863,7 @@ class MyAccount extends CP_Controller {
 			}			
 		}
 		
-		// If this member is set to be the default localization, wipe 'em all
-		if ($data['localization_is_site_default'] == 'y') 
-		{
-			$this->db->where('localization_is_site_default', 'y');
-			$this->db->update('members', array('localization_is_site_default' => 'n'));
-		}
-		
 		$this->member_model->update_member($this->id, $data);
-
-		$config = $this->member_model->get_localization_default();
-
-		//	Update Config Values
-
-		$query = $this->site_model->get_site_system_preferences($this->config->item('site_id'));
-
-		$prefs = unserialize(base64_decode($query->row('site_system_preferences')));
-
-		foreach($config as $key => $value)
-		{
-			$prefs[$key] = $value;
-		}
-
-		$this->site_model->update_site_system_preferences($prefs, $this->config->item('site_id'));
 
 		$this->session->set_flashdata('message_success', lang('administrative_options_updated'));
 		$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=member_preferences'.AMP.'id='.$this->id);

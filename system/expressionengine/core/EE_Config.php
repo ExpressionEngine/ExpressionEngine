@@ -445,7 +445,6 @@ class EE_Config Extends CI_Config {
 			'log_referrers',
 			'max_referrers',
 			'time_format',
-			'server_timezone',
 			'server_offset',
 			'default_site_timezone',
 			'mail_protocol',

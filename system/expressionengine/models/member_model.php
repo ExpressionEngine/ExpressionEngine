@@ -1521,27 +1521,16 @@ class Member_model extends CI_Model {
 	 */
 	function get_localization_default($get_id = FALSE)
 	{
-		$this->db->select('member_id, timezone, time_format');
-		$this->db->where('localization_is_site_default', 'y');
-		$query = $this->db->get('members');
+		ee()->load->library('logger');
+		ee()->logger->deprecated('2.7');
 
-		if ($query->num_rows() == 1)
-		{
-			$config = array('default_site_timezone' => $query->row('timezone'));
-							
-			if ($get_id)
-			{
-				$config['member_id'] = $query->row('member_id');
-			}				
-		}
-		else
-		{
-			$config = array('default_site_timezone' => '');
+		$config = array(
+			'default_site_timezone' => ee()->config->item('default_site_timezone')
+		);
 
-			if ($get_id)
-			{
-				$config['member_id'] = '';
-			}
+		if ($get_id)
+		{
+			$config['member_id'] = 1; // basically? ick. but probably a super admin
 		}
 
 		return $config;

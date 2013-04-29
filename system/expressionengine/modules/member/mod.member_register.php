@@ -452,9 +452,7 @@ class Member_register extends Member {
 									ee()->config->item('deft_lang') : 'english',
 			'time_format'	=> (ee()->config->item('time_format')) ? 
 									ee()->config->item('time_format') : 'us',
-			'timezone'		=> (ee()->config->item('default_site_timezone') && 
-								ee()->config->item('default_site_timezone') != '') ? 
-									ee()->config->item('default_site_timezone') : ee()->config->item('server_timezone')	
+			'timezone'		=> ee()->config->item('default_site_timezone')
 		);
 		
 		// Set member group

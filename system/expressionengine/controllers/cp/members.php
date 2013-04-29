@@ -2319,8 +2319,8 @@ class Members extends CP_Controller {
 		$data['ip_address']	= $this->input->ip_address();
 		$data['join_date']	= $this->localize->now;
 		$data['language'] 	= $this->config->item('deft_lang');
-		$data['timezone'] 	= ($this->config->item('default_site_timezone') && $this->config->item('default_site_timezone') != '') ? $this->config->item('default_site_timezone') : $this->config->item('server_timezone');
-		$data['time_format'] = ($this->config->item('time_format') && $this->config->item('time_format') != '') ? $this->config->item('time_format') : 'us';
+		$data['timezone'] 	= $this->config->item('default_site_timezone');
+		$data['time_format'] = $this->config->item('time_format') ? $this->config->item('time_format') : 'us';
 
 		// Was a member group ID submitted?
 
