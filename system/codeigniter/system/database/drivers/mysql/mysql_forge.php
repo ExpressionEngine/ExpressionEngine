@@ -225,9 +225,11 @@ class CI_DB_mysql_forge extends CI_DB_forge {
 	 * @param	string	the field after which we should add the new field
 	 * @return	object
 	 */
-	function _alter_table($alter_type, $table, $fields, $after_field = '')
+	function _alter_table($alter_type, $table, $fields, $after_field = '', $settings = array())
 	{
-		$sql = 'ALTER TABLE '.$this->db->_protect_identifiers($table)." $alter_type ";
+		$ignore = (isset($settings['ignore']) && $settings['ignore'] == TRUE) ? ' IGNORE ' : '';
+
+		$sql = 'ALTER'.$ignore.' TABLE '.$this->db->_protect_identifiers($table)." $alter_type ";
 
 		// DROP has everything it needs now.
 		if ($alter_type == 'DROP')

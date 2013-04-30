@@ -222,7 +222,7 @@ class Smartforge {
 				else
 				{
 					// Rename column A -> B.
-					if (ee()->dbforge->modify_column($table, array($k => $field[$k])))
+					if (ee()->dbforge->modify_column($table, array($k => $field[$k]), array('ignore' => TRUE)))
 					{
 						$result = TRUE;
 					}
