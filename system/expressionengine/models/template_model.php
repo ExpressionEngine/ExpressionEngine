@@ -358,6 +358,8 @@ class Template_model extends CI_Model {
 	 */
 	public function save_to_database(Template_Entity $entity)
 	{
+		$entity->edit_date = ee()->localize->now;
+
 		$data = $this->_entity_to_db_array($entity);
 		if ($entity->template_id)
 		{
