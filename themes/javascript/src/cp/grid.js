@@ -1,6 +1,47 @@
 (function($) {
 
-	function Grid(field, settings)
+	/**
+	 * Grid Namespace
+	 */
+	var Grid = window.Grid = {
+
+		// Event handlers stored here, direct access outside only from
+		// Grid.Publish class
+		_eventHandlers: [],
+
+		/**
+		 * Binds an event to a fieldtype
+		 *
+		 * Available events are:
+		 * 'display' - When a row is displayed
+		 * 'remove' - When a row is deleted
+		 * 'beforeSort' - Before sort starts
+		 * 'afterSort' - After sort ends
+		 * 
+		 * @param	{string}	fieldtypeName	Class name of fieldtype so the
+		 *				correct cell object can be passed to the handler
+		 * @param	{string}	action			Name of action
+		 * @param	{func}		func			Callback function for event
+		 */
+		bind: function(fieldtypeName, action, func)
+		{
+			if (this._eventHandlers[action] == undefined)
+			{
+				this._eventHandlers[action] = [];
+			}
+
+			// Each fieldtype gets one method per handler
+			this._eventHandlers[action][fieldtypeName] = func;
+		}
+	}
+
+	/**
+	 * Grid Publish class
+	 * 
+	 * @param	{string}	field		Field ID of table to instantiate as a Grid
+	 * @param	{string}	settings	JSON string of field settings
+	 */
+	Grid.Publish = function(field, settings)
 	{
 		this.root = $(field);
 		this.blankRow = this.root.find('tr.blank_row');
@@ -8,9 +49,11 @@
 		this.rowContainer = this.root.find('.grid_row_container');
 		this.settings = settings;
 		this.init();
+
+		this.eventHandlers = [];
 	}
 
-	Grid.prototype = {
+	Grid.Publish.prototype = {
 
 		init: function()
 		{
@@ -19,6 +62,16 @@
 			this._bindAddButton();
 			this._bindDeleteButton();
 			this._toggleRowManipulationButtons();
+
+			var that = this;
+			
+			window.setTimeout(function()
+			{
+				that._getRows().each(function()
+				{
+					that._fireEvent('display', $(this));
+				});
+			}, 500);
 
 			// Disable input elements in our blank template container so they
 			// don't get submitted on form submission
@@ -46,7 +99,7 @@
 						// Set helper cell sizes to match the original sizes
 						$(this).width($originals.eq(index).width())
 					});
-					
+
 					return $helper;
 				},
 			});
@@ -60,7 +113,7 @@
 		{
 			// Figure out how many rows we need to add, plus 2 to account for
 			// the blank template row and empty field row
-			var rowsCount = this._getNumberOfRows(),
+			var rowsCount = this._getRows().size(),
 				neededRows = this.settings.grid_min_rows - rowsCount;
 
 			// Show empty field message if field is empty and no rows are needed
@@ -84,7 +137,7 @@
 		 */
 		_toggleRowManipulationButtons: function()
 		{
-			var rowCount = this._getNumberOfRows();
+			var rowCount = this._getRows().size();
 
 			if (this.settings.grid_max_rows !== '')
 			{
@@ -108,12 +161,11 @@
 		 *
 		 * @return	{int}	Number of rows
 		 */
-		_getNumberOfRows: function()
+		_getRows: function()
 		{
 			return this.rowContainer
 				.find('tr.grid_row')
-				.not(this.blankRow.add(this.emptyField))
-				.size()
+				.not(this.blankRow.add(this.emptyField));
 		},
 
 		/**
@@ -153,6 +205,9 @@
 			// Enable inputs
 			el.find(':input').removeAttr('disabled');
 
+			// TODO: Put row ID in data attribute, come up with a way
+			// to tell developers this is a new row
+
 			// Append the row to the end of the row container
 			this.rowContainer.append(el);
 
@@ -162,7 +217,8 @@
 			// Hide/show delete buttons depending on minimum row setting
 			this._toggleRowManipulationButtons();
 
-			// TODO: fire JS event so fieldtypes can bind listeners and things
+			// Fire 'display' event for the new row
+			this._fireEvent('display', el);
 		},
 
 		/**
@@ -176,18 +232,63 @@
 			{
 				event.preventDefault();
 
+				row = $(this).parents('tr.grid_row');
+
+				// Fire 'remove' event for this row
+				that._fireEvent('remove', row);
+
 				// Remove the row
-				$(this).parents('tr.grid_row').remove();
+				row.remove();
 
 				that._toggleRowManipulationButtons();
 
 				// Show our empty field message if we have no rows left
-				if (that._getNumberOfRows() == 0)
+				if (that._getRows().size() == 0)
 				{
 					that.emptyField.show();
 				}
 			});
 		},
+
+		/**
+		 * Called after main initialization to fire the 'display' event
+		 * on pre-exising rows
+		 */
+		_fieldDisplay: function()
+		{
+			var that = this;
+
+			this._getRows().each(function()
+			{
+				that._fireEvent('display', $(this));
+			});
+		},
+
+		/**
+		 * Fires event to fieldtype callbacks
+		 * 
+		 * @param	{string}		action	Action name
+		 * @param	{jQuery object}	row		jQuery object of affected row
+		 */
+		_fireEvent: function(action, row)
+		{
+			// If no events regsitered, don't bother
+			if (Grid._eventHandlers[action] === undefined)
+			{
+				return;
+			}
+			
+			// For each fieldtype binded to this action
+			for (var fieldtype in Grid._eventHandlers[action])
+			{
+				// Find the sepecic cell(s) for this fieldtype and send each
+				// to the fieldtype's event hander
+				row.find('td[data-fieldtype="'+fieldtype+'"]').each(function()
+				{
+					Grid._eventHandlers[action][fieldtype]($(this));
+				});
+			}
+		}
 	};
 
 	/**
@@ -195,7 +296,7 @@
 	 */
 	EE.grid = function(field, settings)
 	{
-		return new Grid(field, settings);
+		return new Grid.Publish(field, settings);
 	};
 
 })(jQuery);

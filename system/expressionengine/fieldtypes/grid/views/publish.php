@@ -20,7 +20,11 @@
 						<tr class="grid_row">
 							<td class="grid_handle">&nbsp;</td>
 							<?php foreach ($columns as $column): ?>
-								<td width="<?=$column['col_width']?>%">
+								<td width="<?=$column['col_width']?>%"
+									data-fieldtype="<?=$column['col_type']?>"
+									data-column-id="<?=$column['col_id']?>"
+									data-row-id="<?=$row['row_id']?>">
+
 									<?php if ($column == end($columns)):?>
 										<a href="#" class="grid_button_delete" title="<?=lang('grid_delete_row')?>"><?=lang('grid_delete_row')?></a>
 									<?php endif ?>
@@ -28,6 +32,7 @@
 									<?php if (isset($row['col_id_'.$column['col_id'].'_error'])): ?>
 										<p class="grid_error"><?=$row['col_id_'.$column['col_id'].'_error']?></p>
 									<?php endif ?>
+
 								</td>
 							<?php endforeach ?>
 						</tr>
@@ -35,11 +40,15 @@
 					<tr class="grid_row blank_row">
 						<td class="grid_handle">&nbsp;</td>
 						<?php foreach ($columns as $column): ?>
-							<td width="<?=$column['col_width']?>%">
+							<td width="<?=$column['col_width']?>%"
+								data-fieldtype="<?=$column['col_type']?>"
+								data-column-id="<?=$column['col_id']?>">
+
 								<?php if ($column == end($columns)):?>
 									<a href="#" class="grid_button_delete" title="<?=lang('grid_delete_row')?>"><?=lang('grid_delete_row')?></a>
 								<?php endif ?>
 								<?=$blank_row['col_id_'.$column['col_id']]?>
+								
 							</td>
 						<?php endforeach ?>
 					</tr>

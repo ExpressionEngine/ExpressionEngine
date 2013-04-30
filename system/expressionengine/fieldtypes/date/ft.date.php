@@ -128,18 +128,42 @@ class Date_ft extends EE_Fieldtype {
 			var jsCurrentUTC = d.getTimezoneOffset()*60;
 			var adjustedDefault = 1000*('.$date.'+jsCurrentUTC);
 		
-			$("#'.$this->field_name.'").datepicker({
+			$("#'.$this->field_name.'").not(".grid_field_container #'.$this->field_name.'").datepicker({
 				constrainInput: false,
 				dateFormat: $.datepicker.W3C + EE.date_obj_time,
 				defaultDate: new Date(adjustedDefault)
 			});
 		');
 
+		if ( ! ee()->session->cache(__CLASS__, 'grid_js_loaded'))
+		{
+			ee()->javascript->output('
+				
+				Grid.bind("date", "display", function(cell)
+				{
+					var d = new Date();
+					var jsCurrentUTC = d.getTimezoneOffset()*60;
+					var adjustedDefault = 1000*('.$date.'+jsCurrentUTC);
+
+					field = cell.find(".ee_datepicker");
+					field.removeAttr("id");
+					
+					cell.find(".ee_datepicker").datepicker({
+						constrainInput: false,
+						dateFormat: $.datepicker.W3C + EE.date_obj_time,
+						defaultDate: new Date(adjustedDefault)
+					});
+				});
+			');
+
+			ee()->session->set_cache(__CLASS__, 'grid_js_loaded', TRUE);
+		}
+
 		$r = form_input(array(
 			'name'	=> $this->field_name,
 			'id'	=> $this->field_name,
 			'value'	=> $custom_date,
-			'class'	=> 'field'
+			'class'	=> 'field ee_datepicker'
 		));
 
 		if ( ! in_array($this->field_name, $special))

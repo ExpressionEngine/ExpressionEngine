@@ -73,6 +73,8 @@ class Grid_lib {
 					$row
 				);
 
+				$vars['rows'][$row['row_id']]['row_id'] = $row_id;
+
 				if (isset($row['col_id_'.$column['col_id'].'_error']))
 				{
 					$vars['rows'][$row['row_id']]['col_id_'.$column['col_id'].'_error'] = $row['col_id_'.$column['col_id'].'_error'];
