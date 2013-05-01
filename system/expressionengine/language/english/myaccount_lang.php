@@ -570,6 +570,9 @@ $lang = array(
 'You do not have the required permissions to add new members to any group.<br />
 Please <a href="%s">contact your System Admin</a> if you feel this is incorrect.',
 
+'invalid_group_id' =>
+'You must select a valid group.',
+
 ''=>''
 );
 

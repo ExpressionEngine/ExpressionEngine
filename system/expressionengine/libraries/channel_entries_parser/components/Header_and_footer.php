@@ -190,6 +190,7 @@ class EE_Channel_header_and_footer_parser implements EE_Channel_parser_component
 			// Set the display preference
 
 			$display = (is_array($val) AND isset($val['display'])) ? $val['display'] : 'daily';
+			$query_result = array_values($obj->data('entries', array()));
 
 			//  Hourly footer
 			if ($display == 'hourly')

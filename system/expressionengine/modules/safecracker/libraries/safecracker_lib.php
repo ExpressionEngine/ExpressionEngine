@@ -1187,10 +1187,10 @@ class Safecracker_lib
 		{
 			$valid_status = FALSE;
 			$this->fetch_statuses();
-		
-			foreach ($this->statuses as $status)
+
+			foreach ($this->statuses as $status_array)
 			{
-				if ($status == $status['status'])
+				if ($status == $status_array['status'])
 				{
 					$valid_status = TRUE;
 					break;
@@ -1420,7 +1420,7 @@ class Safecracker_lib
 		{
 			$_POST['status'] = $this->settings['override_status'][ee()->config->item('site_id')][$this->_meta['channel_id']];
 		}
-		
+
 		$_POST['ping_servers'] = (is_array(ee()->input->post('ping'))) ? ee()->input->post('ping', TRUE) : array();
 		
 		$_POST['ping_errors'] = FALSE;

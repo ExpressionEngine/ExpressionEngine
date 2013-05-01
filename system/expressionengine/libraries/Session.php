@@ -456,7 +456,7 @@ class EE_Session {
 	 */
 	public function destroy()
 	{
-		if ($this->userdata['session_id'] == 0)
+		if ($this->userdata['session_id'] === 0)
 		{
 			// just to be sure
 			$this->fetch_guest_data();
