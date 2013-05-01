@@ -286,8 +286,7 @@ class Text_ft extends EE_Fieldtype {
 			default:
 				$fields[$field_name] = array(
 					'type'		=> 'text',
-					'null'		=> TRUE,
-					'default'	=> NULL
+					'null'		=> TRUE
 				);
 		}
 		

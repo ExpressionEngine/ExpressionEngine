@@ -306,6 +306,11 @@ class Grid_lib {
 			$column['settings'] = $this->_save_settings($column);
 			$column['settings']['field_required'] = $column['required'];
 
+			if (empty($column['width']))
+			{
+				$column['width'] = 0;
+			}
+
 			$column_data = array(
 				'field_id'			=> $settings['field_id'],
 				'col_order'			=> $count,
@@ -366,6 +371,11 @@ class Grid_lib {
 
 		$ft_api->setup_handler($column['type']);
 
+		if ( ! isset($column['settings']))
+		{
+			$column['settings'] = array();
+		}
+
 		if ($ft_api->check_method_exists('grid_save_settings'))
 		{
 			return $ft_api->apply('grid_save_settings', array($column['settings']));
@@ -397,6 +407,11 @@ class Grid_lib {
 
 		$column['settings_form'] = (empty($column))
 			? $this->get_settings_form('text') : $this->get_settings_form($column['col_type'], $column);
+
+		if (isset($column['col_width']) && $column['col_width'] == 0)
+		{
+			$column['col_width'] = '';
+		}
 
 		return ee()->load->view(
 			'col_tmpl',

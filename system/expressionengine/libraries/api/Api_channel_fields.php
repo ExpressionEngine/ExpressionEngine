@@ -451,7 +451,7 @@ class Api_channel_fields extends Api {
 			$fields[$id_field_name] = '';
 		}
 		
-		if ( ! isset($fields[$ft_field_name]))
+		if ( ! isset($fields[$ft_field_name]) && $id_field != 'col_id')
 		{
 			$fields[$ft_field_name] = '';
 		}		
@@ -528,7 +528,7 @@ class Api_channel_fields extends Api {
 			$old_fields[$id_field_name]['null'] = TRUE;
 		}
 		
-		if ( ! isset($old_fields[$ft_field_name]))
+		if ( ! isset($old_fields[$ft_field_name]) && $id_field != 'col_id')
 		{
 			$old_fields[$ft_field_name]['type'] = 'tinytext';
 			$old_fields[$ft_field_name]['null'] = TRUE;
@@ -608,7 +608,7 @@ class Api_channel_fields extends Api {
 			$fields[$id_field_name]['null'] = TRUE;
 		}
 		
-		if ( ! isset($fields[$col_prefix.'_ft_'.$field_id]))
+		if ( ! isset($fields[$col_prefix.'_ft_'.$field_id]) && $id_field != 'col_id')
 		{
 			$fields[$ft_field_name]['type'] = 'tinytext';
 			$fields[$ft_field_name]['null'] = TRUE;
