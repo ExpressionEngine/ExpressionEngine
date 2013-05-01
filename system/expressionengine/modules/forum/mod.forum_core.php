@@ -8889,6 +8889,16 @@ class Forum_Core extends Forum {
 			}
 		}
 
+		// Secure forms?
+		// If the hash is not found we'll simply reload the page.
+		if ($member_id == '' && $new_topic_search === FALSE && $view_pending_topics === FALSE)
+		{
+			if ( ! ee()->security->secure_forms_check(ee()->input->post('XID')))
+			{
+				ee()->functions->redirect($this->forum_path('search'));
+			}
+		}
+
 		// Fetch allowed forums
 		// Before doing anything else we'll fetch the forum IDs 
 		// that the user is allowed to search in.
