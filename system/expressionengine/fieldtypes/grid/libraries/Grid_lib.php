@@ -108,24 +108,18 @@ class Grid_lib {
 	 */
 	protected function _publish_field_cell($field_name, $column, $row_data = NULL)
 	{
-		$ft_api = ee()->api_channel_fields;
-
-		// Instantiate fieldtype
-		$fieldtype = $ft_api->setup_handler($column['col_type'], TRUE);
-
-		// Assign settings to fieldtype manually so they're available like
-		// normal field settings
-		$fieldtype->field_id = $column['col_id'];
-		$fieldtype->field_name = 'col_id_'.$column['col_id'];
-		$fieldtype->settings = $column['col_settings'];
+		$this->_instantiate_fieldtype($column);
 
 		// Developers can optionally implement grid_display_field, otherwise
 		// we will try to use display_field
-		$method = $ft_api->check_method_exists('grid_display_field')
+		$method = ee()->api_channel_fields->check_method_exists('grid_display_field')
 			? 'grid_display_field' : 'display_publish_field';
 
 		// Call the fieldtype's field display method and capture the output
-		$display_field = $ft_api->apply($method, array($row_data['col_id_'.$column['col_id']]));
+		$display_field = ee()->api_channel_fields->apply(
+			$method,
+			array($row_data['col_id_'.$column['col_id']])
+		);
 
 		// How we'll namespace new and existing rows
 		$row_id = ( ! isset($row_data['row_id'])) ? 'new_row_0' : 'row_id_'.$row_data['row_id'];
@@ -153,10 +147,7 @@ class Grid_lib {
 			return $this->_validated[$field_id];
 		}
 
-		$ft_api = ee()->api_channel_fields;
-
 		ee()->load->model('grid_model');
-
 		$columns = ee()->grid_model->get_columns_for_field($field_id);
 
 		$final_values = array();
@@ -173,27 +164,21 @@ class Grid_lib {
 					$row[$col_id] = NULL;
 				}
 
+				// Assign any other input fields to POST data for normal access
 				foreach ($row as $key => $value)
 				{
 					$_POST[$key] = $value;
 				}
 
-				// Instantiate fieldtype
-				$fieldtype = $ft_api->setup_handler($column['col_type'], TRUE);
-
-				// Assign settings to fieldtype manually so they're available like
-				// normal field settings
-				$fieldtype->field_id = $column['col_id'];
-				$fieldtype->field_name = 'col_id_'.$column['col_id'];
-				$fieldtype->settings = $column['col_settings'];
+				$this->_instantiate_fieldtype($column);
 
 				// Developers can optionally implement grid_validate, otherwise we
 				// will try to use validate
-				$method = $ft_api->check_method_exists('grid_validate')
+				$method = ee()->api_channel_fields->check_method_exists('grid_validate')
 					? 'grid_validate' : 'validate';
 
 				// Call the fieldtype's validate method and capture the output
-				$validate = $ft_api->apply($method, array($row[$col_id]));
+				$validate = ee()->api_channel_fields->apply($method, array($row[$col_id]));
 
 				$error = $validate;
 				$value = $row[$col_id];
@@ -212,6 +197,7 @@ class Grid_lib {
 					$errors = lang('grid_validation_error');
 				}
 
+				// Remove previous input fields from POST
 				foreach ($row as $key => $value)
 				{
 					unset($_POST[$key]);
@@ -299,37 +285,35 @@ class Grid_lib {
 		// Go through ALL posted columns for this field
 		foreach ($settings['grid']['cols'] as $col_field => $column)
 		{
-			// Handle checkbox defaults
-			$column['required'] = isset($column['required']) ? 'y' : 'n';
-			$column['searchable'] = isset($column['searchable']) ? 'y' : 'n';
+			// Attempt to get the column ID; if the field name contains 'new_',
+			// it's a new field, otherwise extract column ID
+			$column['col_id'] = (strpos($col_field, 'new_') === FALSE)
+				? str_replace('col_id_', '', $col_field) : FALSE;
 
-			$column['settings'] = $this->_save_settings($column);
-			$column['settings']['field_required'] = $column['required'];
+			$column['col_required'] = isset($column['col_required']) ? 'y' : 'n';
+			$column['col_settings'] = $this->_save_settings($column);
+			$column['col_settings']['field_required'] = $column['col_required'];
 
-			if (empty($column['width']))
+			// Default width to zero
+			if (empty($column['col_width']))
 			{
-				$column['width'] = 0;
+				$column['col_width'] = 0;
 			}
 
 			$column_data = array(
 				'field_id'			=> $settings['field_id'],
 				'col_order'			=> $count,
-				'col_type'			=> $column['type'],
-				'col_label'			=> $column['label'],
-				'col_name'			=> $column['name'],
-				'col_instructions'	=> $column['instr'],
-				'col_required'		=> $column['required'],
-				'col_search'		=> $column['searchable'],
-				'col_width'			=> str_replace('%', '', $column['width']),
-				'col_settings'		=> json_encode($column['settings'])
+				'col_type'			=> $column['col_type'],
+				'col_label'			=> $column['col_label'],
+				'col_name'			=> $column['col_name'],
+				'col_instructions'	=> $column['col_instructions'],
+				'col_required'		=> $column['col_required'],
+				'col_search'		=> isset($column['col_search']) ? 'y' : 'n',
+				'col_width'			=> str_replace('%', '', $column['col_width']),
+				'col_settings'		=> json_encode($column['col_settings'])
 			);
 
-			// Attempt to get the column ID; if the field name contains 'new_',
-			// it's a new field, otherwise extract column ID
-			$col_id = (strpos($col_field, 'new_') === FALSE)
-				? str_replace('col_id_', '', $col_field) : FALSE;
-
-			$col_ids[] = ee()->grid_model->save_col_settings($column_data, $col_id);
+			$col_ids[] = ee()->grid_model->save_col_settings($column_data, $column['col_id']);
 
 			$count++;
 		}
@@ -367,21 +351,19 @@ class Grid_lib {
 	 */
 	protected function _save_settings($column)
 	{
-		$ft_api = ee()->api_channel_fields;
+		$this->_instantiate_fieldtype($column);
 
-		$ft_api->setup_handler($column['type']);
-
-		if ( ! isset($column['settings']))
+		if ( ! isset($column['col_settings']))
 		{
-			$column['settings'] = array();
+			$column['col_settings'] = array();
 		}
 
-		if ($ft_api->check_method_exists('grid_save_settings'))
+		if (ee()->api_channel_fields->check_method_exists('grid_save_settings'))
 		{
-			return $ft_api->apply('grid_save_settings', array($column['settings']));
+			return ee()->api_channel_fields->apply('grid_save_settings', array($column['col_settings']));
 		}
 
-		return $column['settings'];
+		return $column['col_settings'];
 	}
 
 	// ------------------------------------------------------------------------
@@ -436,25 +418,23 @@ class Grid_lib {
 	 */
 	public function get_settings_form($type, $column = NULL)
 	{
-		$ft_api = ee()->api_channel_fields;
-
-		$ft_api->setup_handler($type);
-
 		// Returns blank settings form for a specific fieldtype
 		if (empty($column))
 		{
-			$ft_api->setup_handler($type);
+			ee()->api_channel_fields->setup_handler($type);
 
 			return $this->_view_for_col_settings(
 				$type,
-				$ft_api->apply('grid_display_settings', array(array()))
+				ee()->api_channel_fields->apply('grid_display_settings', array(array()))
 			);
 		}
+
+		$this->_instantiate_fieldtype($column);
 
 		// Otherwise, return the prepopulated settings form based on column settings
 		return $this->_view_for_col_settings(
 			$type,
-			$ft_api->apply('grid_display_settings', array($column['col_settings'])),
+			ee()->api_channel_fields->apply('grid_display_settings', array($column['col_settings'])),
 			$column['col_id']
 		);
 	}
@@ -487,9 +467,31 @@ class Grid_lib {
 		// Namespace form field names
 		return preg_replace(
 			'/(<[input|select|textarea][^>]*)name=["\']([^"]*)["\']/',
-			'$1name="grid[cols]['.$col_id.'][settings][$2]"',
+			'$1name="grid[cols]['.$col_id.'][col_settings][$2]"',
 			$settings_view
 		);
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Instantiates fieldtype handler and assigns information to the object
+	 *
+	 * @param	array	Column information
+	 * @return	object	Fieldtype object
+	 */
+	protected function _instantiate_fieldtype($column)
+	{
+		// Instantiate fieldtype
+		$fieldtype = ee()->api_channel_fields->setup_handler($column['col_type'], TRUE);
+
+		// Assign settings to fieldtype manually so they're available like
+		// normal field settings
+		$fieldtype->field_id = $column['col_id'];
+		$fieldtype->field_name = 'col_id_'.$column['col_id'];
+		$fieldtype->settings = $column['col_settings'];
+
+		return $fieldtype;
 	}
 }
 
