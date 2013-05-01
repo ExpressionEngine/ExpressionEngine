@@ -55,14 +55,19 @@ class Grid_ft extends EE_Fieldtype {
 
 	// --------------------------------------------------------------------
 
+	// Actual saving takes place in post_save so we have an entry_id
+	// TODO: what to do about autosave and revisions?
 	public function save($data)
 	{
-		ee()->load->library('grid_lib');
-		ee()->grid_lib->save(ee()->input->post($this->field_name), $this->field_id);
-
 		// TODO: Return string of searchable columns?
 
 		return NULL;
+	}
+
+	public function post_save($data)
+	{
+		ee()->load->library('grid_lib');
+		ee()->grid_lib->save($data, $this->field_id, $this->settings['entry_id']);
 	}
 
 	// --------------------------------------------------------------------

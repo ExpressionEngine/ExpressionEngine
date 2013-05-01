@@ -67,6 +67,7 @@ class Grid_lib {
 			
 			foreach ($vars['columns'] as $column)
 			{
+				// Construct the HTML for this particular row and column
 				$vars['rows'][$row['row_id']]['col_id_'.$column['col_id']] = $this->_publish_field_cell(
 					$settings['field_name'],
 					$column,
@@ -75,6 +76,8 @@ class Grid_lib {
 
 				$vars['rows'][$row['row_id']]['row_id'] = $row_id;
 
+				// If we're coming back from a validation error, make sure the
+				// error message is set
 				if (isset($row['col_id_'.$column['col_id'].'_error']))
 				{
 					$vars['rows'][$row['row_id']]['col_id_'.$column['col_id'].'_error'] = $row['col_id_'.$column['col_id'].'_error'];
@@ -134,6 +137,13 @@ class Grid_lib {
 
 	// ------------------------------------------------------------------------
 
+	/**
+	 * Interface for Grid fieldtype validation
+	 * 
+	 * @param	array	POST data from publish form
+	 * @param	int		Field ID of field being validated
+	 * @return	array	Validated field data
+	 */
 	public function validate($data, $field_id)
 	{
 		// Empty field
@@ -142,23 +152,90 @@ class Grid_lib {
 			return TRUE;
 		}
 
+		// Return from cache if exists
 		if (isset($this->_validated[$field_id]))
 		{
 			return $this->_validated[$field_id];
 		}
 
+		// Process the posted data and cache
+		$this->_validated[$field_id] = $this->_process_field_data('validate', $data, $field_id);
+
+		return $this->_validated[$field_id];
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Interface for Grid fieldtype saving
+	 * 
+	 * @param	array	Validated Grid publish form data
+	 * @param	int		Field ID of field being saved
+	 * @return	boolean
+	 */
+	public function save($data, $field_id, $entry_id)
+	{
+		if (isset($this->_validated[$field_id]['value']))
+		{
+			$field_data = $this->_process_field_data(
+				'save',
+				$this->_validated[$field_id]['value'],
+				$field_id
+			);
+
+			ee()->load->model('grid_model');
+
+			ee()->grid_model->save_field_data(
+				$field_data['value'],
+				$field_id,
+				$entry_id
+			);
+		}
+
+		return FALSE;
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Processes a POSTed Grid field for validation for saving
+	 *
+	 * The main point of the validation method is, of course, to validate the
+	 * data in each cell and collect any errors. But it also reconstructs
+	 * the post data in a way that display_field can take it if there is a
+	 * validation error. The validation routine also keeps track of any other
+	 * input fields and carries them through to the save method so that those
+	 * values are available to fieldtypes while they run their save methods.
+	 *
+	 * The save method takes the validated data and gives it to the fieldtype's
+	 * save method for further processing, in which the fieldtype can specify
+	 * other columns that need to be filled.
+	 * 
+	 * @param	string	Method to process, 'save' or 'validate'
+	 * @param	array	Grid publish form data
+	 * @param	int		Field ID of field being saved
+	 * @return	boolean
+	 */
+	protected function _process_field_data($method, $data, $field_id)
+	{
+		// Get column data for the current field
 		ee()->load->model('grid_model');
 		$columns = ee()->grid_model->get_columns_for_field($field_id);
 
+		// We'll store our final values and errors here
 		$final_values = array();
 		$errors = FALSE;
 
-		foreach ($data['rows'] as $row_id => $row)
+		// Rows key may not be set if we're at the saving stage
+		$data = (isset($data['rows'])) ? $data['rows'] : $data;
+
+		foreach ($data as $row_id => $row)
 		{
 			foreach ($columns as $column)
 			{
 				$col_id = 'col_id_'.$column['col_id'];
 
+				// Handle empty data for default input name
 				if ( ! isset($row[$col_id]))
 				{
 					$row[$col_id] = NULL;
@@ -168,33 +245,73 @@ class Grid_lib {
 				foreach ($row as $key => $value)
 				{
 					$_POST[$key] = $value;
+
+					// If we're validating, keep these extra values around so
+					// fieldtypes can access them on save
+					if ($method == 'validate')
+					{
+						$final_values[$row_id][$key] = $value;
+					}
 				}
 
 				$this->_instantiate_fieldtype($column);
 
-				// Developers can optionally implement grid_validate, otherwise we
-				// will try to use validate
-				$method = ee()->api_channel_fields->check_method_exists('grid_validate')
-					? 'grid_validate' : 'validate';
+				// Developers can optionally implement grid_validate/grid_save,
+				// otherwise we will try to use validate/save
+				$ft_method = ee()->api_channel_fields->check_method_exists('grid_'.$method)
+					? 'grid_'.$method : $method;
 
-				// Call the fieldtype's validate method and capture the output
-				$validate = ee()->api_channel_fields->apply($method, array($row[$col_id]));
+				// Call the fieldtype's validate/save method and capture the output
+				$result = ee()->api_channel_fields->apply($ft_method, array($row[$col_id]));
 
-				$error = $validate;
-				$value = $row[$col_id];
-
-				if (is_array($validate))
+				// For validation, gather errors and validated data
+				if ($method == 'validate')
 				{
-					extract($validate, EXTR_OVERWRITE);
+					$error = $result;
+
+					// First, assign the row data as the final value
+					$value = $row[$col_id];
+
+					// Here we extract possible $value and $error variables to
+					// overwrite the assumptions we've made, this is a chance for
+					// fieldtypes to correct input data or show an error message
+					if (is_array($result))
+					{
+						extract($result, EXTR_OVERWRITE);
+					}
+
+					// Assign the final value to the array
+					$final_values[$row_id][$col_id] = $value;
+
+					// If there's an error, assign the old row data back so the
+					// user can see the error, and set the error message
+					if (is_string($error) && ! empty($error))
+					{
+						$final_values[$row_id][$col_id] = $row[$col_id];
+						$final_values[$row_id][$col_id.'_error'] = $error;
+						$errors = lang('grid_validation_error');
+					}
 				}
-
-				$final_values[$row_id][$col_id] = $value;
-
-				if (is_string($error) && ! empty($error))
+				// 'save' method
+				elseif ($method == 'save')
 				{
-					$final_values[$row_id][$col_id] = $row[$col_id];
-					$final_values[$row_id][$col_id.'_error'] = $error;
-					$errors = lang('grid_validation_error');
+					// If an array was returned, add each key and value to the final
+					// array for saving, they likely have extra columns in the grid
+					// data table that need to be filled, as specified by their
+					// grid_settings_modify_column() method
+					if (is_array($result))
+					{
+						foreach ($result as $key => $value)
+						{
+							$final_values[$row_id][$key] = $value;
+						}
+					}
+					// Otherwise, should be a string or similar value, this will go
+					// into their col_id_x column in the table
+					else
+					{
+						$final_values[$row_id][$col_id] = $result;
+					}
 				}
 
 				// Remove previous input fields from POST
@@ -205,23 +322,7 @@ class Grid_lib {
 			}
 		}
 
-		$this->_validated[$field_id] = array('value' => $final_values, 'error' => $errors);
-
-		return $this->_validated[$field_id];
-	}
-
-	// ------------------------------------------------------------------------
-
-	public function save($data, $field_id)
-	{
-		$validated = $this->validate($data, $field_id);
-
-		if ($validated['error'] === FALSE)
-		{
-			// Save
-		}
-
-		return TRUE;
+		return array('value' => $final_values, 'error' => $errors);
 	}
 
 	// ------------------------------------------------------------------------
