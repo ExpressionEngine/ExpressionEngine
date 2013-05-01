@@ -354,6 +354,10 @@ class Grid_model extends CI_Model {
  		$new_rows = array();
  		$order = 0;
 
+ 		// Log existing row IDs so we can delete all others related to this
+ 		// field and entry
+ 		$row_ids = array();
+
  		foreach ($data as $row_id => $columns)
  		{
  			// Each row gets its order updated
@@ -369,6 +373,7 @@ class Grid_model extends CI_Model {
  			elseif (strpos($row_id, 'row_id_') !== FALSE)
  			{
  				$columns['row_id'] = str_replace('row_id_', '', $row_id);
+ 				$row_ids[] = $columns['row_id'];
 
  				$updated_rows[] = $columns;
  			}
@@ -378,7 +383,14 @@ class Grid_model extends CI_Model {
 
  		$table_name = $this->_table_prefix . $field_id;
 
- 		// TODO: Delete deleted rows before inserting new ones
+ 		// If there are other existing rows for this entry that weren't in
+ 		// the data array, they are to be deleted
+ 		if ( ! empty($row_ids))
+ 		{
+ 			ee()->db->where('entry_id', $entry_id)
+ 				->where_not_in('row_id', $row_ids)
+ 				->delete($table_name);
+ 		}
 
  		// Batch update and insert rows to save queries
  		if ( ! empty($updated_rows))
