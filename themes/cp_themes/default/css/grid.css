@@ -54,7 +54,7 @@ table.grid_field tr {
 table.grid_field th.grid_handle,
 table.grid_field td.grid_handle {
 	border-left: none;
-	width: 5px;
+	width: 4px;
 }
 
 table.grid_field tr.blank_row,
@@ -226,7 +226,7 @@ table.grid_field th {
 }
 
 table.grid_field td.grid_handle {
-	background: #f5f6f5 url('../images/grid-sprite.png') no-repeat -65px 7px;
+	background: #f5f6f5 url('../images/grid-sprite.png') no-repeat -66px 7px;
 }
 
 .grid_col_settings_section.grid_data_type {

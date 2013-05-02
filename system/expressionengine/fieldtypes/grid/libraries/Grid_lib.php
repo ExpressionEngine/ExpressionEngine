@@ -42,9 +42,14 @@ class Grid_lib {
 		// Get columns just for this field
 		$vars['columns'] = ee()->grid_model->get_columns_for_field($settings['field_id']);
 
+		// Load autosaved data
+		if (isset($data['rows']))
+		{
+			$rows = $data['rows'];
+		}
 		// If $data is an array, we're likely coming back to the form on a
 		// validation error
-		if (is_array($data))
+		elseif (is_array($data))
 		{
 			$rows = $this->_validated[$settings['field_id']]['value'];
 		}
