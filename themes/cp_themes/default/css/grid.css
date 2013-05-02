@@ -80,6 +80,19 @@ table.grid_field td.empty_field a:hover {
 	text-decoration: underline;
 }
 
+/* File field */
+
+table.grid_field td div.file_field {
+	text-align: center;
+}
+
+table.grid_field td div.file_field p.filename {
+	display: inline-block;
+	float: none;
+}
+
+/* End File field */
+
 table.grid_field a.grid_button_delete {
 	display: none;
 	position: absolute;

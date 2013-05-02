@@ -50,7 +50,7 @@ class Grid_ft extends EE_Fieldtype {
 		ee()->lang->loadfile('fieldtypes');
 		ee()->load->library('grid_lib');
 
-		return ee()->grid_lib->validate(ee()->input->post($this->field_name), $this->field_id);
+		return ee()->grid_lib->validate($data, $this->field_id);
 	}
 
 	// --------------------------------------------------------------------
@@ -59,6 +59,8 @@ class Grid_ft extends EE_Fieldtype {
 	// TODO: what to do about autosave and revisions?
 	public function save($data)
 	{
+		ee()->session->set_cache(__CLASS__, $this->field_name, $data);
+
 		// TODO: Return string of searchable columns?
 
 		return NULL;
@@ -67,7 +69,12 @@ class Grid_ft extends EE_Fieldtype {
 	public function post_save($data)
 	{
 		ee()->load->library('grid_lib');
-		ee()->grid_lib->save($data, $this->field_id, $this->settings['entry_id']);
+		
+		ee()->grid_lib->save(
+			ee()->session->cache(__CLASS__, $this->field_name),
+			$this->field_id,
+			$this->settings['entry_id']
+		);
 	}
 
 	// --------------------------------------------------------------------

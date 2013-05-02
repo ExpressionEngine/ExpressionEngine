@@ -92,7 +92,7 @@ class File_field {
 		$vars['alt'] = $vars['filename'];
 		
 		// Create the hidden fields for the file and directory
-		$vars['hidden']	  = form_hidden($field_name.'_hidden', $vars['filename']);
+		$vars['hidden']	  = form_hidden($field_name.'_hidden_file', $vars['filename']);
 		$vars['hidden']	 .= form_hidden($field_name.'_hidden_dir', $vars['upload_location_id']);
 		
 		// Create a standard file upload field and dropdown for folks 
@@ -183,7 +183,7 @@ class File_field {
 	public function validate($data, $field_name, $required = 'n')
 	{
 		$dir_field		= $field_name.'_directory';
-		$hidden_field	= $field_name.'_hidden';
+		$hidden_field	= $field_name.'_hidden_file';
 		$hidden_dir		= (ee()->input->post($field_name.'_hidden_dir')) ? ee()->input->post($field_name.'_hidden_dir') : '';
 		$allowed_dirs	= array();
 		
@@ -280,7 +280,8 @@ class File_field {
 	{
 		if ($file_name != '')
 		{
-			if ( ! empty($directory_id))
+			if ( ! empty($directory_id) &&
+				strpos($file_name, '{filedir_'.$directory_id.'}') === FALSE)
 			{
 			     return '{filedir_'.$directory_id.'}'.$file_name;
 			}

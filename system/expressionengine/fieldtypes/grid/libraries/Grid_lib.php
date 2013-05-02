@@ -42,16 +42,16 @@ class Grid_lib {
 		// Get columns just for this field
 		$vars['columns'] = ee()->grid_model->get_columns_for_field($settings['field_id']);
 
-		// Load autosaved data
-		if (isset($data['rows']))
-		{
-			$rows = $data['rows'];
-		}
-		// If $data is an array, we're likely coming back to the form on a
+		// If validation data is set, we're likely coming back to the form on a
 		// validation error
-		elseif (is_array($data))
+		if (isset($this->_validated[$settings['field_id']]['value']))
 		{
 			$rows = $this->_validated[$settings['field_id']]['value'];
+		}
+		// Load autosaved data
+		elseif (isset($data['rows']))
+		{
+			$rows = $data['rows'];
 		}
 		// Otherwise, we're editing or creating a new entry
 		else
@@ -184,7 +184,7 @@ class Grid_lib {
 		{
 			$field_data = $this->_process_field_data(
 				'save',
-				$this->_validated[$field_id]['value'],
+				$data,
 				$field_id
 			);
 

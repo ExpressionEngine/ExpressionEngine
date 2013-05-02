@@ -158,7 +158,7 @@ EE.namespace('EE.publish.file_browser');
 	 * @param {Object} field jQuery object of the field
 	 */
 	function file_field_changed(file, field) {
-		var container = $("input[name="+field+"]").parent().parent().parent();
+		var container = $("input[name='"+field+"']").parents('div.file_field');
 
 		if (file.is_image == false) {
 			container.find(".file_set").show().find(".filename").html("<img src=\""+EE.PATH_CP_GBL_IMG+"default.png\" alt=\""+EE.PATH_CP_GBL_IMG+"default.png\" /><br />"+file.file_name);
@@ -166,8 +166,8 @@ EE.namespace('EE.publish.file_browser');
 			container.find(".file_set").show().find(".filename").html("<img src=\""+file.thumb+"\" /><br />"+file.file_name);
 		}
 
-		$("input[name="+field+"_hidden]").val(file.file_name);
-		$("input[name="+field+"_hidden_dir], select[name="+field+"_directory]").val(file.upload_location_id);
+		container.find('input[name*="_hidden_file"]').val(file.file_name);
+		container.find('input[name*="_hidden_dir"], select[name*="_directory"]').val(file.upload_location_id);
 	}
 	
 	/**
