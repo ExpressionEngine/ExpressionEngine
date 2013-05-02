@@ -193,6 +193,26 @@ EE.namespace('EE.publish.file_browser');
 		
 			$.ee_filebrowser.add_trigger(trigger, $(this).attr("name"), settings, file_field_changed);
 
+			// Bind a new trigger when a new Grid row is added
+			Grid.bind('file', 'display', function(cell)
+			{
+				file_field = cell.find('.choose_file');
+				input = cell.find('input[type=file]');
+
+				if (file_field && input)
+				{
+					$.ee_filebrowser.add_trigger(
+						file_field,
+						input.attr('name'),
+						{
+							"content_type": input.data('content-type'),
+							"directory": input.data('directory')
+						},
+						file_field_changed
+					);
+				}
+			});
+
 			container.find(".remove_file").click(function() {
 				container.find("input[type=hidden]").val("");
 				container.find(".file_set").hide();
