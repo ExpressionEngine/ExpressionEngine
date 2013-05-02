@@ -403,4 +403,26 @@ class Grid_model extends CI_Model {
  			ee()->db->insert_batch($table_name, $new_rows);
  		}
  	}
+
+ 	// ------------------------------------------------------------------------
+
+ 	/**
+ 	 * Deletes Grid data for given entry IDs
+ 	 * 
+ 	 * @param	array	Entry IDs to delete data for
+ 	 */
+ 	public function delete_entries($entry_ids)
+ 	{
+ 		// Get all Grid field IDs
+ 		$field_ids = ee()->db->distinct('field_id')
+ 			->get($this->_table)
+ 			->result_array();
+
+ 		// Delete entries out of each Grid field data table
+ 		foreach ($field_ids as $row)
+ 		{
+ 			ee()->db->where_in('entry_id', $entry_ids)
+ 				->delete($this->_table_prefix . $row['field_id']);
+ 		}
+ 	}
 }

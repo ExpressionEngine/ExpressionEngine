@@ -79,6 +79,19 @@ class Grid_ft extends EE_Fieldtype {
 
 	// --------------------------------------------------------------------
 
+	/**
+	 * Called when entries are deleted
+	 *
+	 * @param	array	Entry IDs to delete data for
+	 */
+	public function delete($entry_ids)
+	{
+		ee()->load->model('grid_model');
+		ee()->grid_model->delete_entries($entry_ids);
+	}
+
+	// --------------------------------------------------------------------
+
 	public function display_field($data)
 	{
 		ee()->load->library('grid_lib');
