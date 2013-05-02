@@ -676,7 +676,6 @@ class EE_Functions {
 	 */	
 	function evaluate($str)
 	{
-		exit($str);
 		return eval('?'.'>'.$str.'<?php ');		
 	}
 	
