@@ -1118,6 +1118,10 @@ class EE_Config Extends CI_Config {
 			show_error('Your database.php file seems to have a problem.  Unable to find the active group.', 503);
 		}
 		
+		// load the file helper
+		$EE =& get_instance();
+		$EE->load->helper('file');
+
 		// Now we read the file data as a string
 		$config_file = read_file($this->database_path);
 
