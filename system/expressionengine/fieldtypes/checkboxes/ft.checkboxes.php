@@ -56,15 +56,13 @@ class Checkboxes_ft extends EE_Fieldtype {
 	
 	function validate($data)
 	{
-		$text_direction = ($this->settings['field_text_direction'] == 'rtl') ? 'rtl' : 'ltr';
-
 		$this->settings['selected'] = $data;
 
 		// in case another field type was here
 		$field_options	= $this->_get_field_options($data);
 
 		// If they've selected something we'll make sure that it's a valid choice
-		$selected = ee()->input->post('field_id_'.$this->settings['field_id']);
+		$selected = ee()->input->post($this->field_name);
 	
 		if ($selected)
 		{
@@ -260,7 +258,8 @@ class Checkboxes_ft extends EE_Fieldtype {
 	{
 		$field_options = array();
 
-		if ($this->settings['field_pre_populate'] == 'n')
+		if ((isset($this->settings['field_pre_populate']) && $this->settings['field_pre_populate'] == 'n')
+			OR ! isset($this->settings['field_pre_populate']))
 		{
 			if ( ! is_array($this->settings['field_list_items']))
 			{

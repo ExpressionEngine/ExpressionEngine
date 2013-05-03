@@ -39,22 +39,12 @@ class Date_ft extends EE_Fieldtype {
 			$data = ee()->localize->string_to_timestamp($data);
 		}
 
-		return $data;
-	}
-
-	function grid_save($data)
-	{
-		if ( ! is_numeric($data))
-		{
-			$data = ee()->localize->string_to_timestamp($data);
-		}
-
 		if (empty($data))
 		{
 			$data = 0;
 		}
 
-		return array('col_id_'.$this->field_id => $data, 'col_dt_'.$this->field_id => 'test');
+		return $data;
 	}
 	
 	// --------------------------------------------------------------------

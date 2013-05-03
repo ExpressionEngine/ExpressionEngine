@@ -133,10 +133,9 @@ class Grid_lib {
 		$row_id = ( ! isset($row_data['row_id'])) ? 'new_row_0' : 'row_id_'.$row_data['row_id'];
 
 		// Return the publish field HTML with namespaced form field names
-		return preg_replace(
-			'/(<[input|select|textarea][^>]*)name=["\']([^"]*)["\']/',
-			'$1name="'.$field_name.'[rows]['.$row_id.'][$2]"',
-			$display_field
+		return $this->_namespace_inputs(
+			$display_field,
+			'$1name="'.$field_name.'[rows]['.$row_id.'][$2]$3"'
 		);
 	}
 
@@ -223,6 +222,8 @@ class Grid_lib {
 	 */
 	protected function _process_field_data($method, $data, $field_id)
 	{
+		ee()->load->helper('custom_field_helper');
+
 		// Get column data for the current field
 		ee()->load->model('grid_model');
 		$columns = ee()->grid_model->get_columns_for_field($field_id);
@@ -300,23 +301,13 @@ class Grid_lib {
 				// 'save' method
 				elseif ($method == 'save')
 				{
-					// If an array was returned, add each key and value to the final
-					// array for saving, they likely have extra columns in the grid
-					// data table that need to be filled, as specified by their
-					// grid_settings_modify_column() method
+					// Flatten array
 					if (is_array($result))
 					{
-						foreach ($result as $key => $value)
-						{
-							$final_values[$row_id][$key] = $value;
-						}
+						$result = encode_multi_field($result);
 					}
-					// Otherwise, should be a string or similar value, this will go
-					// into their col_id_x column in the table
-					else
-					{
-						$final_values[$row_id][$col_id] = $result;
-					}
+					
+					$final_values[$row_id][$col_id] = $result;
 				}
 
 				// Remove previous input fields from POST
@@ -571,10 +562,9 @@ class Grid_lib {
 		$col_id = (empty($col_id)) ? 'new_0' : 'col_id_'.$col_id;
 
 		// Namespace form field names
-		return preg_replace(
-			'/(<[input|select|textarea][^>]*)name=["\']([^"]*)["\']/',
-			'$1name="grid[cols]['.$col_id.'][col_settings][$2]"',
-			$settings_view
+		return $this->_namespace_inputs(
+			$settings_view,
+			'name="grid[cols]['.$col_id.'][col_settings][$1]$2"'
 		);
 	}
 
@@ -598,6 +588,25 @@ class Grid_lib {
 		$fieldtype->settings = $column['col_settings'];
 
 		return $fieldtype;
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Performes find and replace for input names in order to namespace them
+	 * for a POST array
+	 *
+	 * @param	string	String to search
+	 * @param	string	String to use for replacement
+	 * @return	string	String with namespaced inputs
+	 */
+	protected function _namespace_inputs($search, $replace)
+	{
+		return preg_replace(
+			'/(<[input|select|textarea][^>]*)name=["\']([^"\'\[\]]+)([^"\']*)["\']/',
+			$replace,
+			$search
+		);
 	}
 }
 
