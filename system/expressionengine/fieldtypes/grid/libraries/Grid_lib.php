@@ -564,7 +564,7 @@ class Grid_lib {
 		// Namespace form field names
 		return $this->_namespace_inputs(
 			$settings_view,
-			'name="grid[cols]['.$col_id.'][col_settings][$1]$2"'
+			'$1name="grid[cols]['.$col_id.'][col_settings][$2]$3"'
 		);
 	}
 

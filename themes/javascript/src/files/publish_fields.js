@@ -210,10 +210,7 @@ EE.namespace('EE.publish.file_browser');
 		// Bind a new trigger when a new Grid row is added
 		Grid.bind('file', 'display', function(cell)
 		{
-			if (cell.find('.file_field'))
-			{
-				add_trigger(cell.find('input[type=file]'), cell);
-			}
+			add_trigger('input[type=file]', cell);
 		});
 	};
 
