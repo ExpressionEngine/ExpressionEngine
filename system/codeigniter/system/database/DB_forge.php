@@ -327,13 +327,13 @@ class CI_DB_forge {
 	 * @param	string	the column definition
 	 * @return	bool
 	 */
-	function modify_column($table = '', $field = array())
+	function modify_column($table = '', $field = array(), $settings = array())
 	{
 		if ($table == '')
 		{
 			show_error('A table name is required for that operation.');
 		}
-
+		
 		// add field info into field array, but we can only do one at a time
 		// so we cycle through
 
@@ -346,7 +346,7 @@ class CI_DB_forge {
 				show_error('Field information is required.');
 			}
 
-			$sql = $this->_alter_table('CHANGE', $this->db->dbprefix.$table, $this->fields);
+			$sql = $this->_alter_table('CHANGE', $this->db->dbprefix.$table, $this->fields, '', $settings);
 
 			$this->_reset();
 

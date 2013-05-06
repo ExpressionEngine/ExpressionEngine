@@ -477,6 +477,13 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		// Foreach template
 		foreach($templates as $template)
 		{
+			// If there aren't any related entries tags, then we don't need to continue.
+			if (strpos($template->template_data, 'related_entries') === FALSE 
+				&& strpos($template->template_data, 'reverse_related_entries') === FALSE)
+			{
+				continue;
+			}
+
 			// Find the {related_entries} and {reverse_related_entries} tags 
 			// (match pairs and wrapped tags)
 			$this->_replace_related_entries_tags($template);
