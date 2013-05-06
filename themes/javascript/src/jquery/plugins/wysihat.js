@@ -8,7 +8,7 @@
  *  WysiHat is freely distributable under the terms of an MIT-style license.
  *--------------------------------------------------------------------------*/
 
-(function(document, $, undefined){
+(function(document, $, undefined) {
 
 // ---------------------------------------------------------------------
 
@@ -337,8 +337,7 @@ WysiHat.Element = (function(){
 		var
 		i	= arguments.length,
 		ret	= false;
-		while ( ret == false &&
-				i-- > 1 )
+		while (ret == false && i-- > 1)
 		{
 			ret	= $el.is( arguments[i].join(',') );
 		}
@@ -568,8 +567,7 @@ WysiHat.Paster = (function() {
 						}
 					}
 
-					var $parentBlock = $(startC).closest(WysiHat.Element.getBlocks().join(',')),
-						html = Editor.$editor.html();
+					var $parentBlock = $(startC).closest(WysiHat.Element.getBlocks().join(','));
 					
 					if ($parentBlock.length)
 					{
@@ -583,24 +581,52 @@ WysiHat.Paster = (function() {
 					Editor.$editor.focus();
 					Editor.Commands.restoreRanges(ranges);
 
+					// attempt to clear out the range, this is necessary if they
+					// select and paste. The browsers will still report the old contents.
+					if (ranges[0].deleteContents)
+					{
+						ranges[0].deleteContents();
+					}
+					else
+					{
+						Editor.Commands.insertHTML(''); // IE 8 can't do deleteContents
+					}
+
+					html = Editor.$editor.html();
+
 					if ( html == '' ||
+						 html == '\0' ||
 						 html == '<br>' ||
 						 html == '<br/>' ||
 						 html == '<p></p>' ||
+						 html == '<p><br></p>' ||
 						 html == '<p>\0</p>' ||
 						 html == Editor._empty())
 					{
 						// on an empty editor we want to completely replace
 						// otherwise the first paragraph gets munged
-						Editor.$editor.html($paster.html());
+						Editor.selectEmptyParagraph();
 					}
-					else
-					{
-						Editor.Commands.insertHTML($paster.html());
-					}
+					
+					Editor.Commands.insertHTML($paster.html());
+
+					// The final cleanup pass will inevitably lose the selection
+					// as it removes garbage from the markup.
+					var selection = Editor.Selection.get();
+
+					// This is basically a final cleanup pass. I wanted to avoid
+					// running these since they touch the whole editor and not just
+					// the pasted bits, but these methods are great at removing
+					// markup cruft. So here we are.
+					Editor.updateField();
+					Editor.updateEditor();
+
+					Editor.Selection.set(selection);
 
 					$paster = $paster.remove();
+
 					finalize();
+
 				}, _pollTime);
 
 				return false;
@@ -2566,19 +2592,42 @@ WysiHat.Formatting = {
 	},
 
 	reBlocks: new RegExp(
-		'(<(?:ul|ol)>|<\/(?:' + WysiHat.Element.getBlocks().join('|') + ')>)[\r\n]*',
+		'(<\/(?:ul|ol)>|<\/(?:' + WysiHat.Element.getBlocks().join('|') + ')>)',
 		'g'
 	),
 
 	format: function( $el )
 	{
+		var that = this;
+
 		$el.html(function(i, old) {
-			return old.replace('<p>&nbsp;</p>', '')
-				.replace(/<br\/?><\/p>/, '</p>')
-				.replace(this.reBlocks, '$1\n')
-				.replace(/\n+/, '\n')
-				.replace(/<p>\n+<\/p>/, '');
+			return old
+				// lowercase all tags
+				.replace( /<\/?[A-Z]+/g, function(tag) {
+					return tag.toLowerCase();
+				})
+				// cleanup whitespace and emtpy tags
+				.replace(/(\t|\n| )+/g, ' ')		// reduce whitespace to spaces
+				.replace(/[ ]*(<|>)[ ]*/g, '$1')	// reomve whitespace next to tags
+				.replace('<p>&nbsp;</p>', '')		// remove empty paragraphs
+				.replace(/<br\/?><\/p>/, '</p>')	// remove brs at ends of paragraphs
+				.replace(/<p>\n+<\/p>/, '')			// remove paragraphs full of newlines
+				.replace(that.reBlocks, '$1\n\n')	// line between blocks
+				.replace(/<br\/?>/g, '<br>\n')		// newlines after brs
+
+				// prettify lists
+				.replace(/><li>/g, '>\n<li>')
+				.replace(/<\/li>\n+</g, '</li>\n<')
+				.replace(/<li>/g, '    <li>')
+
+				// prettify tables
+				.replace(/>\s*(<\/?tr>)/g, '>$1')
+				.replace(/(<\/?tr>)\s*</g, '$1<')
+				.replace(/<(\/?(table|tbody))>/g, '<$1>\n')
+				.replace(/<\/tr>/g, '<\/tr>\n')
+				.replace(/<tr>/g, '    <tr>');
 		});
+
 	},
 	
 	getBrowserMarkupFrom: function( $el )
@@ -2586,7 +2635,7 @@ WysiHat.Formatting = {
 		var $container = $('<div>' + $el.val().replace(/\n/, '') + '</div>'),
 			html;
 
-		this.cleanup( $container );
+		this.cleanup($container);
 		html = $container.html();
 
 		if (html == '' ||
@@ -2619,16 +2668,9 @@ WysiHat.Formatting = {
 		this.cleanup( $container );
 		this.format( $container );
 
-		$container.find('*').html(function(i, val) {
-			return val
-				.replace('\n', '<br>\n')
-				.replace(/(<br>)+/g, '<br>')
-				.replace(/(\t| +)/g, ' ');
-		});
-
 		return $container
 				.html()
-				.replace( /<\/?[A-Z]+/g, function(tag){
+				.replace( /<\/?[A-Z]+/g, function(tag) {
 					return tag.toLowerCase();
 				 });
 	}
