@@ -56,6 +56,15 @@ class Rte_ft extends EE_Fieldtype {
 
 	// --------------------------------------------------------------------
 
+	function grid_display_field($data)
+	{
+		ee()->load->library('rte_lib');
+		
+		return ee()->rte_lib->display_field($data, $this->field_name, $this->settings, 'grid');
+	}
+
+	// --------------------------------------------------------------------
+
 	function save($data)
 	{
 		ee()->load->library('rte_lib');

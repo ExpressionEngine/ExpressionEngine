@@ -80,8 +80,6 @@ table.grid_field td.empty_field a:hover {
 	text-decoration: underline;
 }
 
-/* File field */
-
 table.grid_field td div.file_field {
 	text-align: center;
 }
@@ -91,13 +89,46 @@ table.grid_field td div.file_field p.filename {
 	float: none;
 }
 
-/* End File field */
+table.grid_field div.grid_padding {
+	padding: 6px 10px;
+}
+
+table.grid_field select.multiselect_input {
+	border-color: #c8cfd8;
+	width: 100%;
+}
 
 table.grid_field a.grid_button_delete {
 	display: none;
 	position: absolute;
 	right: -29px;
 	top: 0px;
+}
+
+table.grid_field .grid_full_cell_container {
+	margin: -5px;
+}
+
+/* RTE */
+
+table.grid_field .WysiHat-container {
+	width: 100%;
+}
+
+table.grid_field .WysiHat-editor-toolbar {
+	border: 0;
+	border-bottom: 1px solid #e3e3e3;
+}
+
+table.grid_field .WysiHat-editor,
+table.grid_field textarea.WysiHat-field {
+	border: 1px solid #c8cfd8;
+	border-radius: 0;
+	margin: 5px;
+}
+
+table.grid_field textarea.WysiHat-field {
+	width: 99%;
 }
 
 p.grid_error {

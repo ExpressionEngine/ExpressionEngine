@@ -93,6 +93,20 @@ class Checkboxes_ft extends EE_Fieldtype {
 	
 	function display_field($data)
 	{
+		return $this->_display_field($data);
+	}
+
+	// --------------------------------------------------------------------
+	
+	function grid_display_field($data)
+	{
+		return $this->_display_field($data, 'grid');
+	}
+
+	// --------------------------------------------------------------------
+	
+	private function _display_field($data, $container = 'fieldset')
+	{
 		array_merge($this->settings, $this->settings_vars);
 
 		$values = decode_multi_field($data);
@@ -111,14 +125,26 @@ class Checkboxes_ft extends EE_Fieldtype {
 
 		$values = decode_multi_field($data);
 
-		$r = form_fieldset('');
+		$r = '';
 
 		foreach($field_options as $option)
 		{
 			$checked = (in_array(form_prep($option), $values)) ? TRUE : FALSE;
 			$r .= '<label>'.form_checkbox($this->field_name.'[]', $option, $checked).NBS.$option.'</label>';
 		}
-		return $r.form_fieldset_close();
+
+		switch ($container)
+		{
+			case 'grid':
+				$r = $this->grid_padding_container($r);
+				break;
+			
+			default:
+				$r = form_fieldset('').$r.form_fieldset_close();
+				break;
+		}
+
+		return $r;
 	}
 	
 	// --------------------------------------------------------------------

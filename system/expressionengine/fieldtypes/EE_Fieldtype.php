@@ -529,6 +529,32 @@ class EE_Fieldtype {
 				'class'	=> 'grid_input_text_small'
 			));
 	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Wraps a field in a DIV with a little extra padding rather than a
+	 * Grid cell's default 5px
+	 *
+	 * @return string
+	 */
+	public function grid_padding_container($string)
+	{
+		return '<div class="grid_padding">'.$string.'</div>';
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Wraps a field in a DIV that will ignore default Grid cell padding
+	 * settings
+	 *
+	 * @return string
+	 */
+	public function grid_full_cell_container($string)
+	{
+		return '<div class="grid_full_cell_container">'.$string.'</div>';
+	}
 }
 // END EE_Fieldtype class
 

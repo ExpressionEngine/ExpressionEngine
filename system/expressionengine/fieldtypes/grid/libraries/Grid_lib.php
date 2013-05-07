@@ -38,6 +38,7 @@ class Grid_lib {
 	public function display_field($entry_id, $data, $settings)
 	{
 		ee()->load->model('grid_model');
+		ee()->load->helper('form_helper');
 
 		// Get columns just for this field
 		$vars['columns'] = ee()->grid_model->get_columns_for_field($settings['field_id']);
@@ -126,7 +127,7 @@ class Grid_lib {
 		// Call the fieldtype's field display method and capture the output
 		$display_field = ee()->api_channel_fields->apply(
 			$method,
-			array($row_data['col_id_'.$column['col_id']])
+			form_prep(array($row_data['col_id_'.$column['col_id']]))
 		);
 
 		// How we'll namespace new and existing rows
@@ -254,12 +255,12 @@ class Grid_lib {
 
 					// If we're validating, keep these extra values around so
 					// fieldtypes can access them on save
-					if ($method == 'validate')
+					if ($method == 'validate' && ! isset($final_values[$row_id][$key]))
 					{
 						$final_values[$row_id][$key] = $value;
 					}
 				}
-
+				
 				$this->_instantiate_fieldtype($column);
 
 				// Developers can optionally implement grid_validate/grid_save,

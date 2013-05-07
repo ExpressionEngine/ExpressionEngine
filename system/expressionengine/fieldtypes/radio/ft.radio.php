@@ -80,25 +80,49 @@ class Radio_ft extends EE_Fieldtype {
 
 	function display_field($data)
 	{
+		return $this->_display_field($data);
+	}
+
+	// --------------------------------------------------------------------
+
+	function grid_display_field($data)
+	{
+		return $this->_display_field($data, 'grid');
+	}
+
+	// --------------------------------------------------------------------
+
+	private function _display_field($data, $container = 'fieldset')
+	{
 		array_merge($this->settings, $this->settings_vars);
 
-		$text_direction = ($this->settings['field_text_direction'] == 'rtl') ? 'rtl' : 'ltr';
+		$text_direction = (isset($this->settings['field_text_direction']))
+			? $this->settings['field_text_direction'] : 'ltr';
 
 		$field_options = $this->_get_field_options($data);
-		
-		// If they've selected something we'll make sure that it's a valid choice
+
 		$selected = $data;
-//ee()->input->post($this->field_name);
-		
-		$r = form_fieldset('');
+
+		$r = '';
 
 		foreach($field_options as $option)
 		{
 			$selected = ($option == $data);
 			$r .= '<label>'.form_radio($this->field_name, $option, $selected).NBS.$option.'</label>';
 		}
+
+		switch ($container)
+		{
+			case 'grid':
+				$r = $this->grid_padding_container($r);
+				break;
+			
+			default:
+				$r = form_fieldset('').$r.form_fieldset_close();
+				break;
+		}
 		
-		return $r.form_fieldset_close();
+		return $r;
 	}
 	
 	// --------------------------------------------------------------------
@@ -142,7 +166,8 @@ class Radio_ft extends EE_Fieldtype {
 	{
 		$field_options = array();
 		
-		if ($this->settings['field_pre_populate'] == 'n')
+		if ((isset($this->settings['field_pre_populate']) && $this->settings['field_pre_populate'] == 'n')
+			OR ! isset($this->settings['field_pre_populate']))
 		{
 			if ( ! is_array($this->settings['field_list_items']))
 			{

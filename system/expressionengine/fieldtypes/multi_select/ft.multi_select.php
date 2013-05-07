@@ -34,11 +34,14 @@ class Multi_select_ft extends EE_Fieldtype {
 	function display_field($data)
 	{
 		ee()->load->helper('custom_field');
-		
+
 		$values = decode_multi_field($data);
 		$field_options = $this->_get_field_options($data);
+		
+		$text_direction = (isset($this->settings['field_text_direction']))
+			? $this->settings['field_text_direction'] : 'ltr';
 
-		return form_multiselect($this->field_name.'[]', $field_options, $values, 'dir="'.$this->settings['field_text_direction'].'" id="field_id_'.$this->field_id.'"');
+		return form_multiselect($this->field_name.'[]', $field_options, $values, 'dir="'.$text_direction.'" class="multiselect_input" id="field_id_'.$this->field_id.'"');
 	}
 	
 	// --------------------------------------------------------------------
@@ -178,7 +181,8 @@ class Multi_select_ft extends EE_Fieldtype {
 	{
 		$field_options = array();
 
-		if ($this->settings['field_pre_populate'] == 'n')
+		if ((isset($this->settings['field_pre_populate']) && $this->settings['field_pre_populate'] == 'n')
+			OR ! isset($this->settings['field_pre_populate']))
 		{
 			if ( ! is_array($this->settings['field_list_items']))
 			{
