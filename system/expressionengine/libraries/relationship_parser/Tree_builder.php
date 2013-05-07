@@ -207,15 +207,12 @@ class EE_relationship_tree_builder {
 			return NULL;
 		}
 
-		// nesting trackers
-		// this code would probably be a little prettier with a state machine
-		// instead of the crazy regex.
-		$uuid = 1;
-		$id_stack = array(0);
-		$rel_stack = array();
 
 		$root = new QueryNode('__root__');
-		$nodes = array($root);
+
+		$open_nodes = array(
+			'__root__' => $root
+		);
 
 		foreach ($matches as $match)
 		{
@@ -225,20 +222,19 @@ class EE_relationship_tree_builder {
 			$is_closing				= ($match[0][1] == '/');
 			$is_only_relationship	= (substr($relationship_prefix, -1) != ':');
 
+			$tag_name = rtrim($relationship_prefix, ':');
+
 			// catch closing tags right away, we don't need them
 			if ($is_closing)
 			{
-				// closing a relationship tag - pop the stacks
+				// closing a relationship tag - remove from open
 				if ($is_only_relationship)
 				{
-					array_pop($rel_stack);
-					array_pop($id_stack);
+					unset($open_nodes[$tag_name]);
 				}
 
 				continue;
 			}
-
-			$tag_name = rtrim($relationship_prefix, ':');
 
 			// Opening tags are a little harder, it's a shortcut if it has
 			// a non prefix portion and the prefix does not yet exist on the
@@ -246,20 +242,9 @@ class EE_relationship_tree_builder {
 			// Of course, if it has no tag, it's definitely a relationship
 			// field and we have to track it.
 
-			if ( ! $is_only_relationship && in_array($tag_name, $rel_stack))
+			if ( ! $is_only_relationship && isset($open_nodes[$tag_name]))
 			{
 				continue;
-			}
-
-
-			list($tag, $parameters) = preg_split("/\s+/", $match[2].' ', 2);
-			$parent_id = end($id_stack);
-
-			// no closing tag tracking for shortcuts
-			if ($is_only_relationship)
-			{
-				$id_stack[] = ++$uuid;
-				$rel_stack[] = $tag_name;
 			}
 
 			// extract the full name and determining relationship
@@ -267,16 +252,20 @@ class EE_relationship_tree_builder {
 
 			if ($last_colon === FALSE)
 			{
+				$parent_node = $open_nodes['__root__'];
 				$determinant_relationship = $tag_name;
 			}
 			else
 			{
+				$parent_node = $open_nodes[substr($tag_name, 0, $last_colon)];
 				$determinant_relationship = substr($tag_name, $last_colon + 1);
 			}
 
 			// prep parameters
+			list($tag, $parameters) = preg_split("/\s+/", $match[2].' ', 2);
 			$params = ee()->functions->assign_parameters($parameters);
 			$params = $params ? $params : array();
+
 
 			// setup node type
 			// if it's a root sibling tag, or the determining relationship
@@ -300,17 +289,17 @@ class EE_relationship_tree_builder {
 
 			if ($is_only_relationship)
 			{
-				$nodes[$uuid] = $node;
+				$open_nodes[$tag_name] = $node;
 			}
 
-			$parent = $nodes[$parent_id];
-			$parent->add($node);
+			$parent_node->add($node);
 		}
 
 		// Doing our own parsing let's us do error checking
-		if (count($rel_stack))
+		if (count($open_nodes) > 1)
 		{
-			throw new EE_Relationship_exception('Unmatched Relationship Tag: "{'.end($rel_stack).'}"');
+			$open = $open_nodes[1];
+			throw new EE_Relationship_exception('Unmatched Relationship Tag: "{'.$open->name().'}"');
 		}
 
 		return $root;
