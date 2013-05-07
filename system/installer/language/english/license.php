@@ -1,6 +1,6 @@
 This license is a legal agreement between you and EllisLab, Inc. for the use of ExpressionEngine (*all versions*) Software (the "Software"). By downloading any version of ExpressionEngine or any ExpressionEngine Add-ons you agree to be bound by the terms and conditions of this license. EllisLab, Inc. reserves the right to alter this agreement at any time, for any reason, without notice.
 
-Revised on: 18 December, 2012
+Revised on: 1 May, 2013
 
 EXPRESSIONENGINE INSTALLATIONS
 
@@ -55,7 +55,7 @@ Due to the non-returnable nature of downloadable software, EllisLab, Inc. does n
 
 INDEMNITY
 
-You agree to indemnify and hold harmless EllisLab, Inc. and EngineHosting for any third-party claims, actions or suits, as well as any related expenses, liabilities, damages, settlements or fees arising from your use or misuse of the Software, or a violation of any terms of this license.
+You agree to indemnify and hold harmless EllisLab, Inc. for any third-party claims, actions or suits, as well as any related expenses, liabilities, damages, settlements or fees arising from your use or misuse of the Software, or a violation of any terms of this license.
 
 DISCLAIMER OF WARRANTY
 

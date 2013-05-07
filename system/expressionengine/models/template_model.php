@@ -111,7 +111,7 @@ class Template_model extends CI_Model {
 		$basepath = rtrim($this->config->item('tmpl_file_basepath'), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
 		
 		$filepath = $basepath . $this->config->item('site_short_name') . DIRECTORY_SEPARATOR 
-			. $template->getGroup()->group_name . '.group' . DIRECTORY_SEPARATOR . $template->template_name
+			. $template->get_group()->group_name . '.group' . DIRECTORY_SEPARATOR . $template->template_name
 			. $this->api_template_structure->file_extensions($template->template_type);
 
 	
@@ -205,7 +205,7 @@ class Template_model extends CI_Model {
 			$entity = new Template_Entity($row);
 			if ($load_groups)
 			{
-				$entity->setGroup(new Template_Group_Entity($row));
+				$entity->set_group(new Template_Group_Entity($row));
 			}
 			$entities[] = $entity;
 		}
@@ -321,7 +321,7 @@ class Template_model extends CI_Model {
 		}
 		
 		// and finally with our template group
-		$basepath .= '/'.$template->getGroup()->group_name.'.group';
+		$basepath .= DIRECTORY_SEPARATOR . $template->get_group()->group_name . '.group';
 
 		if ( ! is_dir($basepath))
 		{
@@ -334,7 +334,7 @@ class Template_model extends CI_Model {
 		
 		$filename = $template->template_name . $this->api_template_structure->file_extensions($template->template_type);
 		
-		if ( ! $fp = fopen($basepath.'/'.$filename, FOPEN_WRITE_CREATE_DESTRUCTIVE))
+		if ( ! $fp = fopen($basepath . DIRECTORY_SEPARATOR . $filename, FOPEN_WRITE_CREATE_DESTRUCTIVE))
 		{
 			return FALSE;
 		}
@@ -345,7 +345,7 @@ class Template_model extends CI_Model {
 			flock($fp, LOCK_UN);
 			fclose($fp);
 			
-			chmod($basepath.'/'.$filename, FILE_WRITE_MODE); 
+			chmod($basepath . DIRECTORY_SEPARATOR . $filename, FILE_WRITE_MODE); 
 		}
 
 		return TRUE;
@@ -358,6 +358,8 @@ class Template_model extends CI_Model {
 	 */
 	public function save_to_database(Template_Entity $entity)
 	{
+		$entity->edit_date = ee()->localize->now;
+
 		$data = $this->_entity_to_db_array($entity);
 		if ($entity->template_id)
 		{
@@ -1246,7 +1248,7 @@ class Template_Entity
 	/**
 	 *
 	 */
-	public function getGroup()
+	public function get_group()
 	{
 		return $this->template_group;
 	}
@@ -1254,7 +1256,7 @@ class Template_Entity
 	/**
 	 *
 	 */
-	public function setGroup(Template_Group_Entity $group)
+	public function set_group(Template_Group_Entity $group)
 	{
 		$this->template_group = $group;
 		$this->group_id = $group->group_id;

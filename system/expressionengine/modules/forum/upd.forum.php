@@ -26,7 +26,7 @@
 
 class Forum_upd {
 
-	var $version			= '3.1.11';
+	var $version			= '3.1.12';
 	
 	function Forum_upd()
 	{
@@ -556,6 +556,9 @@ class Forum_upd {
 			return FALSE;
 		}
 	
+		ee()->load->dbforge();
+		ee()->load->library('smartforge');
+		
 		if (version_compare($current, '1.3', '<'))
 		{
 			ee()->db->query("ALTER TABLE exp_forum_moderators ADD COLUMN mod_can_split char(1) NOT NULL default 'n'");
@@ -922,8 +925,6 @@ class Forum_upd {
 		if (version_compare($current, '3.1.9', '<'))
 		{
 			// Update ip_address column
-			ee()->load->dbforge();
-
 			$tables = array('forum_topics', 'forum_posts', 'forum_search');
 
 			foreach ($tables as $table)

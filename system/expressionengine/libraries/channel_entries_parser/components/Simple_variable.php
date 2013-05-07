@@ -77,7 +77,7 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 		// so we spend less time doing silly comparisons
 		if (strpos($tag, '_path') !== FALSE OR strpos($tag, 'permalink') !== FALSE)
 		{
-			return $this->_paths($data, $tagdata, $tag, $prefix);
+			return $this->_paths($data, $tagdata, $tag, $tag_options, $prefix);
 		}
 
 		if (strpos($tag, 'url') !== FALSE)
@@ -130,7 +130,7 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 		//  {signature}
 		elseif ($key == $prefix."signature")
 		{
-			if (ee()->session->userdata('display_signatures') == 'n' OR $data['signature'] == '' OR ee()->session->userdata('display_signatures') == 'n')
+			if (ee()->session->userdata('display_signatures') == 'n' OR $data['signature'] == '')
 			{
 				$tagdata = str_replace(LD.$key.RD, '', $tagdata);
 			}
@@ -149,17 +149,9 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 				);
 			}
 		}
-
-		//  parse basic fields (username, screen_name, etc.)
-		//  Use array_key_exists to handle null values
 		else
 		{
-			$raw_val = preg_replace('/^'.$prefix.'/', '', $val);
-
-			if ($raw_val AND array_key_exists($raw_val, $data))
-			{
-				$tagdata = str_replace(LD.$val.RD, $data[$raw_val], $tagdata);
-			}
+			return $this->_basic($data, $tagdata, $tag, $tag_options, $prefix);
 		}
 
 		return $tagdata;
@@ -173,11 +165,12 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 	 * @param Array		The row data
 	 * @param String	The template text
 	 * @param String	The var_single key (tag name)
+	 * @param String	The var_single value
 	 * @param String	The current parsing prefix
 	 *
 	 * @return String	The processed tagdata
 	 */
-	protected function _paths($data, $tagdata, $key, $prefix)
+	protected function _paths($data, $tagdata, $key, $val, $prefix)
 	{
 		$unprefixed = substr($key, 0, strcspn($key, ' ='));
 		$unprefixed = preg_replace('/^'.$prefix.'/', '', $unprefixed);
@@ -284,6 +277,10 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 				reduce_double_slashes($path.'/'.$data['entry_id']),
 				$tagdata
 			);
+		}
+		else
+		{
+			return $this->_basic($data, $tagdata, $key, $val, $prefix);
 		}
 
 		return $tagdata;
@@ -418,6 +415,39 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 				$tagdata = str_replace(LD.$prefix.'photo_image_width'.RD, $data['photo_width'], $tagdata);
 				$tagdata = str_replace(LD.$prefix.'photo_image_height'.RD, $data['photo_height'], $tagdata);
 			}
+		}
+		else
+		{
+			return $this->_basic($data, $tagdata, $key, $val, $prefix);
+		}
+
+		return $tagdata;
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Handle regular fields as basic replacements.
+	 *
+	 * This is used as a fallback in case the tag does not match any of our
+	 * presets. We fallback on urls and paths because third parties can add
+	 * anything they want to the entry data. (@see bug #19337)
+	 *
+	 * @param Array		The row data
+	 * @param String	The template text
+	 * @param String	The var_single key (tag name)
+	 * @param String	The var_single value
+	 * @param String	The current parsing prefix
+	 *
+	 * @return String	The processed tagdata
+	 */
+	protected function _basic($data, $tagdata, $key, $val, $prefix)
+	{
+		$raw_val = preg_replace('/^'.$prefix.'/', '', $val);
+
+		if ($raw_val AND array_key_exists($raw_val, $data))
+		{
+			$tagdata = str_replace(LD.$val.RD, $data[$raw_val], $tagdata);
 		}
 
 		return $tagdata;
