@@ -97,10 +97,15 @@ class Grid_ft extends EE_Fieldtype {
 		ee()->load->library('grid_lib');
 		ee()->lang->loadfile('fieldtypes');
 
-		ee()->cp->add_to_head(ee()->view->head_link('css/grid.css'));
+		if ( ! ee()->session->cache(__CLASS__, 'grid_assets_loaded'))
+		{
+			ee()->cp->add_to_head(ee()->view->head_link('css/grid.css'));
 
-		ee()->cp->add_to_foot(ee()->view->script_tag('cp/sort_helper.js'));
-		ee()->cp->add_to_foot(ee()->view->script_tag('cp/grid.js'));
+			ee()->cp->add_to_foot(ee()->view->script_tag('cp/sort_helper.js'));
+			ee()->cp->add_to_foot(ee()->view->script_tag('cp/grid.js'));
+
+			ee()->session->set_cache(__CLASS__, 'grid_assets_loaded', TRUE);
+		}
 
 		$settings = array(
 			'grid_min_rows' => $this->settings['grid_min_rows'],
