@@ -135,7 +135,9 @@ class EE_Relationship_data_parser {
 			$entry_ids = array_unique($entry_ids[$parent_id]);
 			$entry_id = reset($entry_ids);
 
-			if (preg_match_all('/'.$open_tag.'(.+?){\/'.$tag.':'.$node->shortcut.'}/is', $tagdata, $matches, PREG_SET_ORDER))
+			$shortcut = preg_quote($node->shortcut, '/');
+
+			if (preg_match_all('/'.$open_tag.'(.+?){\/'.$tag.':'.$shortcut.'}/is', $tagdata, $matches, PREG_SET_ORDER))
 			{
 				foreach ($matches as &$match)
 				{
