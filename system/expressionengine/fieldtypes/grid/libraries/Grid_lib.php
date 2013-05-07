@@ -180,22 +180,19 @@ class Grid_lib {
 	 */
 	public function save($data, $field_id, $entry_id)
 	{
-		if (isset($this->_validated[$field_id]['value']))
-		{
-			$field_data = $this->_process_field_data(
-				'save',
-				$data,
-				$field_id
-			);
+		$field_data = $this->_process_field_data(
+			'save',
+			$data,
+			$field_id
+		);
 
-			ee()->load->model('grid_model');
+		ee()->load->model('grid_model');
 
-			ee()->grid_model->save_field_data(
-				$field_data['value'],
-				$field_id,
-				$entry_id
-			);
-		}
+		ee()->grid_model->save_field_data(
+			$field_data['value'],
+			$field_id,
+			$entry_id
+		);
 
 		return FALSE;
 	}

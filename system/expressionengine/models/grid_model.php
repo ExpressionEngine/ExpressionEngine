@@ -356,7 +356,7 @@ class Grid_model extends CI_Model {
 
  		// Log existing row IDs so we can delete all others related to this
  		// field and entry
- 		$row_ids = array();
+ 		$row_ids = array(0);
 
  		foreach ($data as $row_id => $columns)
  		{
@@ -385,12 +385,11 @@ class Grid_model extends CI_Model {
 
  		// If there are other existing rows for this entry that weren't in
  		// the data array, they are to be deleted
- 		if ( ! empty($row_ids))
- 		{
- 			ee()->db->where('entry_id', $entry_id)
- 				->where_not_in('row_id', $row_ids)
- 				->delete($table_name);
- 		}
+ 		ee()->db->where('entry_id', $entry_id)
+ 			->where_not_in('row_id', $row_ids)
+ 			->delete($table_name);
+
+ 			echo ee()->db->last_query();
 
  		// Batch update and insert rows to save queries
  		if ( ! empty($updated_rows))
