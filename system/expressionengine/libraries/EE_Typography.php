@@ -841,7 +841,7 @@ class EE_Typography extends CI_Typography {
 	        		}
 					else
 					{
-						if (($space_pos = strpos($url, ' ') !== FALSE)
+						if (($space_pos = strpos($url, ' ')) !== FALSE)
 						{
 							// If allowed is none- we ditch everything but the url
 							if ($this->html_format == 'none')
