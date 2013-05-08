@@ -119,15 +119,10 @@ class Grid_lib {
 	{
 		$this->_instantiate_fieldtype($column);
 
-		// Developers can optionally implement grid_display_field, otherwise
-		// we will try to use display_field
-		$method = ee()->api_channel_fields->check_method_exists('grid_display_field')
-			? 'grid_display_field' : 'display_publish_field';
-
 		// Call the fieldtype's field display method and capture the output
-		$display_field = ee()->api_channel_fields->apply(
-			$method,
-			form_prep(array($row_data['col_id_'.$column['col_id']]))
+		$display_field = $this->_call(
+			'display_field',
+			form_prep($row_data['col_id_'.$column['col_id']])
 		);
 
 		// How we'll namespace new and existing rows
@@ -164,7 +159,12 @@ class Grid_lib {
 		}
 
 		// Process the posted data and cache
-		$this->_validated[$field_id] = $this->_process_field_data('validate', $data, $field_id);
+		$this->_validated[$field_id] = $this->_process_field_data(
+			'validate',
+			$data,
+			$field_id,
+			ee()->input->post('entry_id')
+		);
 
 		return $this->_validated[$field_id];
 	}
@@ -183,7 +183,8 @@ class Grid_lib {
 		$field_data = $this->_process_field_data(
 			'save',
 			$data,
-			$field_id
+			$field_id,
+			$entry_id
 		);
 
 		ee()->load->model('grid_model');
@@ -193,6 +194,26 @@ class Grid_lib {
 			$field_id,
 			$entry_id
 		);
+
+		$columns = ee()->grid_model->get_columns_for_field($field_id);
+
+		// Call post_save callback for fieldtypes
+		foreach ($field_data['value'] as $row_id => $data)
+		{
+			foreach ($columns as $col_id => $column)
+			{
+				if ( ! isset($data['col_id_'.$col_id]))
+				{
+					continue;
+				}
+
+				$fieldtype = $this->_instantiate_fieldtype($column);
+				$fieldtype->settings['entry_id'] = $entry_id;
+				$fieldtype->settings['grid_field_id'] = $field_id;
+
+				$this->_call('post_save', $data['col_id_'.$col_id]);
+			}
+		}
 
 		return FALSE;
 	}
@@ -216,9 +237,10 @@ class Grid_lib {
 	 * @param	string	Method to process, 'save' or 'validate'
 	 * @param	array	Grid publish form data
 	 * @param	int		Field ID of field being saved
+	 * @param	int		Entry ID of entry being saved
 	 * @return	boolean
 	 */
-	protected function _process_field_data($method, $data, $field_id)
+	protected function _process_field_data($method, $data, $field_id, $entry_id)
 	{
 		ee()->load->helper('custom_field_helper');
 
@@ -258,15 +280,12 @@ class Grid_lib {
 					}
 				}
 				
-				$this->_instantiate_fieldtype($column);
-
-				// Developers can optionally implement grid_validate/grid_save,
-				// otherwise we will try to use validate/save
-				$ft_method = ee()->api_channel_fields->check_method_exists('grid_'.$method)
-					? 'grid_'.$method : $method;
+				$fieldtype = $this->_instantiate_fieldtype($column);
+				$fieldtype->settings['entry_id'] = $entry_id;
+				$fieldtype->settings['grid_field_id'] = $field_id;
 
 				// Call the fieldtype's validate/save method and capture the output
-				$result = ee()->api_channel_fields->apply($ft_method, array($row[$col_id]));
+				$result = $this->_call($method, $row[$col_id]);
 
 				// For validation, gather errors and validated data
 				if ($method == 'validate')
@@ -606,6 +625,30 @@ class Grid_lib {
 			$replace,
 			$search
 		);
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Calls a method on a fieldtype and returns the result. If the method
+	 * exists with a prefix of grid_, that will be called in place of it.
+	 *
+	 * @param	string	Method name to call
+	 * @param	string	Data to send to method
+	 * @return	string	Returned data from fieldtype method
+	 */
+	protected function _call($method, $data)
+	{
+		$ft_method = ee()->api_channel_fields->check_method_exists('grid_'.$method)
+			? 'grid_'.$method : $method;
+
+		// If no method is implemented, bail out
+		if ( ! ee()->api_channel_fields->check_method_exists($ft_method))
+		{
+			return NULL;
+		}
+
+		return ee()->api_channel_fields->apply($ft_method, array($data));
 	}
 }
 

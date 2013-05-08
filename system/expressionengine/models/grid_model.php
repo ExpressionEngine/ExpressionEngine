@@ -389,8 +389,6 @@ class Grid_model extends CI_Model {
  			->where_not_in('row_id', $row_ids)
  			->delete($table_name);
 
- 			echo ee()->db->last_query();
-
  		// Batch update and insert rows to save queries
  		if ( ! empty($updated_rows))
  		{
