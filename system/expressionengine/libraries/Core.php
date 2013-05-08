@@ -333,7 +333,8 @@ class EE_Core {
 		{
 			if (REQ == 'CP')
 			{
-				ee()->functions->redirect(BASE);
+				ee()->session->set_flashdata('message_failure', lang('invalid_action'));
+				ee()->functions->redirect(SELF);
 			}
 			else
 			{
