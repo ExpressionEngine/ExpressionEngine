@@ -326,6 +326,19 @@ class EE_Core {
 		 */
 
 		ee()->input->filter_get_data(REQ);
+
+		// Secure forms stuff
+		if( ! ee()->security->have_valid_xid())
+		{
+			if (REQ == 'CP')
+			{
+				ee()->functions->redirect(BASE);
+			}
+			else
+			{
+				ee()->output->show_user_error('general', array(lang('invalid_action')));
+			}
+		}
 		
 		// Update system stats
 		ee()->load->library('stats');
@@ -494,12 +507,6 @@ class EE_Core {
 		// Load common helper files
 		ee()->load->helper(array('url', 'form', 'quicktab'));
 
-		// Secure forms stuff
-		if( ! ee()->security->have_valid_xid())
-		{
-			return ee()->functions->redirect(BASE);
-		}
-		
 		// Certain variables will be included in every page, so we make sure they are set here
 		// Prevents possible PHP errors, if a developer forgets to set it explicitly.
 		ee()->cp->set_default_view_variables();
