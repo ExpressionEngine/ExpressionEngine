@@ -240,7 +240,6 @@ class Content_publish extends CP_Controller {
 		$this->_tab_labels = array(
 			'publish' 		=> lang('publish'),
 			'categories' 	=> lang('categories'),
-			'pings'			=> lang('pings'),
 			'options'		=> lang('options'),
 			'date'			=> lang('date'),
 		);
@@ -396,16 +395,8 @@ class Content_publish extends CP_Controller {
 		$data['cp_call']		= TRUE;
 		$data['author_id']		= $this->input->post('author');	// @todo double check if this is validated
 		$data['revision_post']	= $_POST;			// @todo only if revisions - memory
-		$data['ping_servers']	= array();
-		
-		// Fetch xml-rpc ping server IDs
-		if (isset($_POST['ping']) && is_array($_POST['ping']))
-		{
-			$data['ping_servers'] = $_POST['ping'];
-		}
 		
 		// Remove leftovers
-		unset($data['ping']);
 		unset($data['author']);
 		unset($data['filter']);
 		unset($data['return_url']);
@@ -1224,18 +1215,9 @@ class Content_publish extends CP_Controller {
 		$data['cp_call']		= TRUE;
 		$data['author_id']		= $this->input->post('author');		// @todo double check if this is validated
 		$data['revision_post']	= $_POST;							// @todo only if revisions - memory
-		$data['ping_servers']	= array();
-		
-		
-		// Fetch xml-rpc ping server IDs
-		if (isset($_POST['ping']) && is_array($_POST['ping']))
-		{
-			$data['ping_servers'] = $_POST['ping'];
-		}
-		
-		
+
+
 		// Remove leftovers
-		unset($data['ping']);
 		unset($data['author']);
 		unset($data['filter']);
 		unset($data['return_url']);
@@ -1297,21 +1279,6 @@ class Content_publish extends CP_Controller {
 		{
 			return TRUE;
 		}
-		
-		
-		// Check for ping errors
-		if ($ping_errors = $this->api_channel_entries->get_errors('pings'))
-		{
-			$entry_link = $view_url;
-			$data = compact('ping_errors', 'channel_id', 'entry_id', 'entry_link');
-			
-			$data['cp_page_title'] = lang('xmlrpc_ping_errors');
-			
-			$this->cp->render('content/ping_errors', $data);
-			
-			return TRUE;	// tricking it into not publish again
-		}
-		
 
 		// Trigger the entry submission absolute end hook
 		if ($this->api_channel_entries->trigger_hook('entry_submission_absolute_end', $view_url) === TRUE)
@@ -1687,7 +1654,7 @@ class Content_publish extends CP_Controller {
 			'publish'		=> array('title', 'url_title'),
 			'date'			=> array('entry_date', 'expiration_date', 'comment_expiration_date'),
 			'categories'	=> array('category'),
-			'options'		=> array('new_channel', 'status', 'author', 'options', 'ping'),
+			'options'		=> array('new_channel', 'status', 'author', 'options'),
 		);
 
 		if (isset($this->_channel_data['enable_versioning']) 
@@ -1739,7 +1706,6 @@ class Content_publish extends CP_Controller {
 	private function _setup_field_blocks($field_data, $entry_data)
 	{
 		$categories 	= $this->_build_categories_block($entry_data);
-		$pings 			= $this->_build_ping_block($entry_data['entry_id']);
 		$options		= $this->_build_options_block($entry_data);
 		$revisions		= $this->_build_revisions_block($entry_data);
 		$third_party  	= $this->_build_third_party_blocks($entry_data);
@@ -1747,7 +1713,6 @@ class Content_publish extends CP_Controller {
 		return array_merge(
 			$field_data,
 			$categories,
-			$pings,
 			$options,
 			$revisions,
 			$third_party
@@ -1769,42 +1734,6 @@ class Content_publish extends CP_Controller {
 			(isset($entry_data['category'])) ? $entry_data['category'] : NULL, 
 			$this->_channel_data['deft_category']
 		);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Ping Block
-	 *
-	 * Setup block that contains ping servers
-	 *
-	 * @param 	integer		Entry Id
-	 * @return 	array
-	 */
-	private function _build_ping_block($entry_id) 
-	{
-		$ping_servers = $this->channel_entries_model->fetch_ping_servers($entry_id);
-
-		$settings = array('ping' => 
-			array(
-				'string_override'		=> (isset($ping_servers) && $ping_servers != '') ? '<fieldset>'.$ping_servers.'</fieldset>' : lang('no_ping_sites').'<p><a href="'.BASE.AMP.'C=myaccount'.AMP.'M=ping_servers'.AMP.'id='.$this->session->userdata('member_id').'">'.lang('add_ping_sites').'</a></p>',
-				'field_id'				=> 'ping',
-				'field_label'			=> lang('pings'),
-				'field_required'		=> 'n',
-				'field_type'			=> 'checkboxes',
-				'field_text_direction'	=> 'ltr',
-				'field_data'			=> $ping_servers,
-				'field_fmt'				=> 'text',
-				'field_instructions'	=> '',
-				'field_show_fmt'		=> 'n',
-				'field_pre_populate'	=> 'n',
-				'field_list_items'		=> array()
-			)
-		);
-
-		$this->api_channel_fields->set_settings('ping', $settings['ping']);
-		
-		return $settings;
 	}
 
 	// --------------------------------------------------------------------

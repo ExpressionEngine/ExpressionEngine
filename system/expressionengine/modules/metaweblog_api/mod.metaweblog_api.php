@@ -215,7 +215,6 @@ class Metaweblog_api {
 		/** ---------------------------------------*/
 
 		$this->title = $parameters['3']['title'];
-		$ping_urls	 = ( ! isset($parameters['3']['mt_tb_ping_urls'])) ? '' : implode("\n",$parameters['3']['mt_tb_ping_urls']);
 
 		$this->field_data['excerpt']  = ( ! isset($parameters['3']['mt_excerpt'])) ? '' : $parameters['3']['mt_excerpt'];
 		$this->field_data['content']  = ( ! isset($parameters['3']['description'])) ? '' : $parameters['3']['description'];
@@ -278,8 +277,7 @@ class Metaweblog_api {
 							'month'				=> gmdate('m', $entry_date),
 							'day'				=> gmdate('d', $entry_date),
 							'status'			=> $this->status,
-							'allow_comments'	=> $deft_comments,
-							'ping_servers'		=> array()
+							'allow_comments'	=> $deft_comments
 						  );
 
 		/** ---------------------------------------
@@ -500,8 +498,6 @@ class Metaweblog_api {
 		/** ---------------------------------------*/
 
 		$this->title = $parameters['3']['title'];
-
-		$ping_urls		 = ( ! isset($parameters['3']['mt_tb_ping_urls'])) ? '' : implode("\n",$parameters['3']['mt_tb_ping_urls']);
 
 		$this->field_data['excerpt']  = ( ! isset($parameters['3']['mt_excerpt'])) ? '' : $parameters['3']['mt_excerpt'];
 		$this->field_data['content']  = ( ! isset($parameters['3']['description'])) ? '' : $parameters['3']['description'];
@@ -902,7 +898,6 @@ class Metaweblog_api {
 			}
 
 			// Entry Data to XML-RPC form
-			$pings = array();
 			$entry_data = array(array(
 										'userid' =>
 										array($row['author_id'],'string'),
@@ -931,9 +926,7 @@ class Metaweblog_api {
 										'categories' =>
 										array($cat_array,'array'),
 										'mt_allow_comments' =>
-										array(($row['allow_comments'] == 'y') ? 1 : 0,'int'),
-										'mt_tb_ping_urls' =>
-										array($pings,'array')
+										array(($row['allow_comments'] == 'y') ? 1 : 0,'int')
 										),
 									'struct');
 

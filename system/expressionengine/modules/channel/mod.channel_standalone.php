@@ -151,7 +151,6 @@ class Channel_standalone extends Channel {
 			ee()->load->library('api');
 			ee()->api->instantiate(array('channel_entries', 'channel_categories', 'channel_fields'));
 			
-			unset($_POST['hidden_pings']);
 			unset($_POST['status_id']);
 			unset($_POST['allow_cmts']);
 			unset($_POST['sticky_entry']);
@@ -205,18 +204,8 @@ class Channel_standalone extends Channel {
 			
 			$extra = array(
 				'url_title'		=> '',
-				'ping_errors'	=> FALSE,
 				'revision_post'	=> $_POST,
-				);
-		
-			// Fetch xml-rpc ping server IDs
-			$data['ping_servers'] = array();
-		
-			if (isset($_POST['ping']) && is_array($_POST['ping']))
-			{
-				$data['ping_servers'] = $_POST['ping'];	
-				unset($_POST['ping']);		
-			}
+			);
 		
 			$data = array_merge($extra, $data);
 	
@@ -226,11 +215,6 @@ class Channel_standalone extends Channel {
 			{
 				$errors = ee()->api_channel_entries->errors;
 				return ee()->output->show_user_error('general', $errors);
-			}
-		
-			if (ee()->api_channel_entries->get_errors('pings'))
-			{
-				return FALSE;
 			}
 
 			$loc = ($return_url == '') ? ee()->functions->fetch_site_index() : ee()->functions->create_url($return_url, 1, 0);
@@ -594,31 +578,6 @@ class Channel_standalone extends Channel {
 			}
 		}
 
-		/** ----------------------------------------
-		/**  Add pings to hidden fields
-		/** ----------------------------------------*/
-
-		$hidden_pings = ( ! isset($_POST['hidden_pings'])) ? ee()->TMPL->fetch_param('hidden_pings') : $_POST['hidden_pings'];
-
-		if ($hidden_pings == 'yes')
-		{
-			$hidden_fields['hidden_pings'] = 'yes';
-
-			$ping_servers = $this->fetch_ping_servers('new');
-
-			if (is_array($ping_servers) AND count($ping_servers) > 0)
-			{
-				$i = 0;
-				foreach ($ping_servers as $val)
-				{
-					if ($val['1'] != '')
-					{
-						$hidden_fields['ping['.($i++).']'] = $val['0'];						
-					}
-				}
-			}
-		}
-		
 		// Parse out the tag
 		$tagdata = ee()->TMPL->tagdata;	
 
@@ -708,42 +667,6 @@ class Channel_standalone extends Channel {
 				}
 
 				$match['1'] = str_replace(LD.'select_options'.RD, $c, $match['1']);
-				$tagdata = str_replace ($match['0'], $match['1'], $tagdata);
-			}
-		}
-
-		// Ping Servers
-		if (preg_match("#".LD."ping_servers".RD."(.+?)".LD.'/'."ping_servers".RD."#s", $tagdata, $match))
-		{
-			$field = (preg_match("#".LD."ping_row".RD."(.+?)".LD.'/'."ping_row".RD."#s", $tagdata, $match1)) ? $match1['1'] : '';
-
-			if ( ! isset($match1['0']))
-			{
-				$tagdata = str_replace ($match['0'], '', $tagdata);
-			}
-
-			$ping_servers = $this->fetch_ping_servers($which);
-
-			if ( ! is_array($ping_servers) OR count($ping_servers) == 0)
-			{
-				$tagdata = str_replace ($match['0'], '', $tagdata);
-			}
-			else
-			{
-				$ping_build = '';
-
-				foreach ($ping_servers as $val)
-				{
-					$temp = $field;
-
-					$temp = str_replace(LD.'ping_value'.RD, $val['0'], $temp);
-					$temp = str_replace(LD.'ping_checked'.RD, $val['1'], $temp);
-					$temp = str_replace(LD.'ping_server_name'.RD, $val['2'], $temp);
-
-					$ping_build .= $temp;
-				}
-
-				$match['1'] = str_replace ($match1['0'], $ping_build, $match['1']);
 				$tagdata = str_replace ($match['0'], $match['1'], $tagdata);
 			}
 		}
@@ -1210,65 +1133,6 @@ class Channel_standalone extends Channel {
 				$this->_category_subtree_form($key, $cat_array, $depth, $action, $default, $selected);
 			}
 		}
-	}
-
-	// --------------------------------------------------------------------	
-
-	/**
-	 * Fetch ping servers
-	 *
-	 * This function displays the ping server checkboxes
-	 *
-	 * @param 	string
-	 * @return 	array
-	 */
-	function fetch_ping_servers($which = 'new')
-	{
-		ee()->db->select('COUNT(*) as count');
-		ee()->db->where('site_id', ee()->config->item('site_id'));
-		ee()->db->where('member_id', ee()->session->userdata('member_id'));
-		$pingq = ee()->db->get('ping_servers');
-		
-		$member_id = ($pingq->row('count')  == 0) ? 0 : ee()->session->userdata('member_id');
-
-		ee()->db->select('id, server_name, is_default');
-		ee()->db->where('site_id', ee()->config->item('site_id'));
-		ee()->db->where('member_id', $member_id);
-		ee()->db->order_by('server_order');
-		$pingq = ee()->db->get('ping_servers');
-
-		if ($pingq->num_rows() == 0)
-		{
-			return FALSE;
-		}
-
-		$ping_array = array();
-
-		foreach($pingq->result_array() as $row)
-		{
-			if (isset($_POST['preview']))
-			{
-				$selected = '';
-				foreach ($_POST as $key => $val)
-				{
-					if (strpos($key, 'ping') !== FALSE && $val == $row['id'])
-					{
-						$selected = " checked='checked' ";
-						break;
-					}
-				}
-			}
-			else
-			{
-				$selected = ($row['is_default'] == 'y') ? " checked='checked' " : '';
-			}
-
-
-			$ping_array[] = array($row['id'], $selected, $row['server_name']);
-		}
-
-
-		return $ping_array;
 	}
 
 	// --------------------------------------------------------------------

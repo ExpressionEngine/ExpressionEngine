@@ -24,7 +24,7 @@
  */
 class Wizard extends CI_Controller {
 
-	var $version			= '2.6.0';	// The version being installed
+	var $version			= '2.7.0';	// The version being installed
 	var $installed_version	= ''; 		// The version the user is currently running (assuming they are running EE)
 	var $minimum_php		= '5.2.4';	// Minimum version required to run EE
 	var $schema				= NULL;		// This will contain the schema object with our queries	
@@ -72,7 +72,7 @@ class Wizard extends CI_Controller {
 		'email', 'emoticon', 'file', 'forum', 'gallery', 'ip_to_nation', 
 		'jquery', 'mailinglist', 'member', 'metaweblog_api', 'moblog', 'pages',
 		'query', 'referrer', 'rss', 'rte', 'safecracker', 'search',
-		'simple_commerce', 'stats', 'updated_sites', 'wiki');
+		'simple_commerce', 'stats', 'wiki');
 
 	// Third Party Modules may send error messages if something goes wrong.
 	var $module_install_errors = array(); // array that collects all error messages
@@ -106,7 +106,7 @@ class Wizard extends CI_Controller {
 		'webmaster_email'		=> '',
 		'deft_lang'				=> 'english',
 		'theme'					=> '01',
-		'server_timezone'		=> 'UTC',
+		'default_site_timezone'	=> 'UTC',
 		'redirect_method'		=> 'redirect',
 		'upload_folder'			=> 'uploads/',
 		'image_path'			=> '',
@@ -699,7 +699,7 @@ class Wizard extends CI_Controller {
 		$this->load->library('localize');
 
 		// Preload server timezone
-		$this->userdata['server_timezone'] = date_default_timezone_get();
+		$this->userdata['default_site_timezone'] = date_default_timezone_get();
 		
 		// Display the form and pass the userdata array to it	
 		$this->_set_output('install_form', $this->userdata);
@@ -2399,10 +2399,8 @@ PAPAYA;
 			'is_system_on'					=>	'y',
 			'allow_extensions'				=>	'y',
 			'time_format'					=>	'us',
-			'server_timezone'				=>	$this->userdata['server_timezone'],
 			'server_offset'					=>	'',
-			'default_site_timezone'			=>	$this->userdata['server_timezone'],
-			'honor_entry_dst'				=>	'y',
+			'default_site_timezone'			=>	$this->userdata['default_site_timezone'],
 			'mail_protocol'					=>	'mail',
 			'smtp_server'					=>	'',
 			'smtp_username'					=>	'',
@@ -2553,10 +2551,8 @@ PAPAYA;
 			'log_referrers',
 			'max_referrers',
 			'time_format',
-			'server_timezone',
 			'server_offset',
 			'default_site_timezone',
-			'honor_entry_dst',
 			'mail_protocol',
 			'smtp_server',
 			'smtp_username',

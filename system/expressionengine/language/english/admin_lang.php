@@ -1119,8 +1119,8 @@ $lang = array(
 "european" => 
 "European",
 
-"server_timezone" => 
-"Server Timezone",
+"default_site_timezone" => 
+"Site Timezone",
 
 "cookie_cfg" => 
 "Cookie Settings",
@@ -1307,9 +1307,6 @@ $lang = array(
 
 'missing_required_fields' =>
 'You Are Missing Required Field(s):',
-
-"default_ping_servers" => 
-"Default Ping Servers",
 
 "statuses" => 
 "Statuses",

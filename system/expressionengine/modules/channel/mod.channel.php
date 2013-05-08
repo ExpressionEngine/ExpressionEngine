@@ -2396,7 +2396,7 @@ class Channel {
 
 		$offset = 0;
 		$timezones = timezones();
-		$timezone = ee()->config->item('server_timezone');
+		$timezone = ee()->config->item('default_site_timezone');
 
 		// Check legacy timezone formats
 		if (isset($timezones[$timezone]))

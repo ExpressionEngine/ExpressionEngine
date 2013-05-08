@@ -135,7 +135,9 @@ class EE_Relationship_data_parser {
 			$entry_ids = array_unique($entry_ids[$parent_id]);
 			$entry_id = reset($entry_ids);
 
-			if (preg_match_all('/'.$open_tag.'(.+?){\/'.$tag.':'.$node->shortcut.'}/is', $tagdata, $matches, PREG_SET_ORDER))
+			$shortcut = preg_quote($node->shortcut, '/');
+
+			if (preg_match_all('/'.$open_tag.'(.+?){\/'.$tag.':'.$shortcut.'}/is', $tagdata, $matches, PREG_SET_ORDER))
 			{
 				foreach ($matches as &$match)
 				{
@@ -247,6 +249,12 @@ class EE_Relationship_data_parser {
 
 		if ($has_no_results && preg_match("/".LD."if {$tag}:no_results".RD."(.*?)".LD.'\/'."if".RD."/s", $tagdata, $match))
 		{
+			if (stristr($match[1], LD.'if'))
+			{
+				$match[0] = ee()->functions->full_tag($match[0], $tagdata, LD.'if', LD.'\/'."if".RD);
+				$match[1] = substr($match[0], strlen(LD."if {$tag}:no_results".RD), -strlen(LD.'/'."if".RD));
+			}
+
 			$node->no_results = $match;
 			return;
 		}

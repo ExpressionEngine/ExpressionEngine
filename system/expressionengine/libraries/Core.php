@@ -86,8 +86,8 @@ class EE_Core {
 		// application constants
 		define('IS_CORE',		FALSE);
 		define('APP_NAME',		'ExpressionEngine'.(IS_CORE ? ' Core' : ''));
-		define('APP_BUILD',		'20130315');
-		define('APP_VER',		'2.6.0');
+		define('APP_BUILD',		'20130506');
+		define('APP_VER',		'2.6.1');
 		define('SLASH',			'&#47;');
 		define('LD',			'{');
 		define('RD',			'}');
@@ -262,12 +262,12 @@ class EE_Core {
 			'blacklist', 'channel', 'comment', 'commerce', 'email', 'emoticon',
 			'file', 'forum', 'ip_to_nation', 'jquery', 'mailinglist', 'member',
 			'metaweblog_api', 'moblog', 'pages', 'query', 'referrer', 'rss', 'rte',
-			'safecracker', 'search', 'simple_commerce', 'stats',
-			'updated_sites', 'wiki'
+			'safecracker', 'search', 'simple_commerce', 'stats', 'wiki'
 		);
-		$this->standard_modules = array('blacklist', 'email', 'forum', 'ip_to_nation',
-			'mailinglist', 'member', 'moblog', 'query', 'simple_commerce',
-			'updated_sites', 'wiki');
+		$this->standard_modules = array(
+			'blacklist', 'email', 'forum', 'ip_to_nation', 'mailinglist',
+			'member', 'moblog', 'query', 'simple_commerce', 'wiki'
+		);
 		
 		// Is this a stylesheet request?  If so, we're done.
 		if (isset($_GET['css']) OR (isset($_GET['ACT']) && $_GET['ACT'] == 'css')) 
@@ -298,6 +298,7 @@ class EE_Core {
 		ee()->load->library('remember');
 		ee()->load->library('localize');
 		ee()->load->library('session');
+		ee()->load->library('user_agent');
 
 		// Load the "core" language file - must happen after the session is loaded
 		ee()->lang->loadfile('core');
@@ -420,38 +421,21 @@ class EE_Core {
 			ee()->functions->redirect(BASE.'C=homepage');
 		}
 
-		// load the user agent lib to check for mobile
-		ee()->load->library('user_agent');
-		
-		/* -------------------------------------------
-		/*	Hidden Configuration Variable
-		/*	- use_mobile_control_panel => Automatically use mobile cp theme when accessed with a mobile device? (y/n)
-		/* -------------------------------------------*/
-		
-		$cp_theme		= 'default';
-		$theme_options	= array();
-		
-		if (ee()->agent->is_mobile() && ee()->config->item('use_mobile_control_panel') != 'n')
-		{
-			// iphone, ipod, blackberry, palm, etc.
-			$agent = array_search(ee()->agent->mobile(), ee()->agent->mobiles);
-			$agent = ee()->security->sanitize_filename($agent);
-			
-			$theme_options = array('mobile_'.$agent, 'mobile');
-		}
-		else
-		{
-			$theme_options = array(
-				ee()->session->userdata('cp_theme'),
-				ee()->config->item('cp_theme')
-			);
 
-			if (count($theme_options) >= 2)
+		// Check user theme preference, then site theme preference, and fallback
+		// to default if none are found.
+		$cp_theme		= 'default';
+
+		$theme_options = array(
+			ee()->session->userdata('cp_theme'),
+			ee()->config->item('cp_theme')
+		);
+
+		if (count($theme_options) >= 2)
+		{
+			if ( ! $theme_options[0])
 			{
-				if ( ! $theme_options[0])
-				{
-					unset($theme_options[0]);
-				}
+				unset($theme_options[0]);
 			}
 		}
 
