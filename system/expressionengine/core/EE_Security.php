@@ -49,10 +49,9 @@ class EE_Security extends CI_Security {
 	public function have_valid_xid()
 	{
 		$hash = '';
-		
-		$EE = get_instance();	
+		$request_xid = '';
 			
-		if ($EE->config->item('secure_forms') == 'y')
+		if (ee()->config->item('secure_forms') == 'y')
 		{
 			if (count($_POST) > 0)
 			{
@@ -62,12 +61,19 @@ class EE_Security extends CI_Security {
 					return FALSE;
 				}
 				
-				unset($_POST['XID']);
+				$request_xid = $_POST['XID'];
+
+				// @deprecated since 2.7
+				if (REQ == 'CP')
+				{
+					unset($_POST['XID']);
+				}
 			}
 			
 			$hash = $this->generate_xid();
 		}
 		
+		define('REQUEST_XID', $request_xid);
 		define('XID_SECURE_HASH', $hash);
 		return TRUE;
 	}
@@ -82,39 +88,50 @@ class EE_Security extends CI_Security {
 	 */
 	public function secure_forms_check($xid)
 	{	
-		$check = $this->check_xid($xid);
-
-		if ( ! (REQ == 'CP' &&  AJAX_REQUEST))
+		if (ee()->config->item('secure_forms') != 'y' OR $xid === FALSE)
 		{
-			$this->delete_xid($xid);
+			return TRUE;
 		}
 
-		return $check;
+		ee()->db->update(
+			'security_hashes',
+			array('used' => 1),
+			array(
+				'used'			=> 0,
+				'hash' 			=> $xid,
+				'session_id' 	=> ee()->session->userdata('session_id'),
+				'date >' 		=> ee()->localize->now - $this->_xid_ttl
+			)
+		);
+
+		if (ee()->db->affected_rows() == 0)
+		{
+			return FALSE;
+		}
+		
+		return TRUE;
 	}
 	
 	// --------------------------------------------------------------------
 
 	/**
-	 * Check for Valid Security Hash
+	 * Check for a Valid Security Hash
 	 *
-	 * @param 	string
+	 * This method does not mark the hash as used, you probably want
+	 * the secure_forms_check() method instead.
+	 *
+	 * @param	string
 	 * @return	bool
 	 */
-	public function check_xid($xid)
+	public function check_xid($xid = REQUEST_XID)
 	{
-		$EE = get_instance();
-		
-		if ($EE->config->item('secure_forms') != 'y')
+		if (ee()->config->item('secure_forms') != 'y' OR $xid === FALSE)
 		{
 			return TRUE;
 		}
-		
-		if ( ! $xid)
-		{
-			return FALSE;
-		}
 
 		$total = $EE->db->where(array(
+				'used'			=> 0,
 				'hash' 			=> $xid,
 				'session_id' 	=> $EE->session->userdata('session_id'),
 				'date >' 		=> $EE->localize->now - $this->_xid_ttl
@@ -135,27 +152,27 @@ class EE_Security extends CI_Security {
 	/**
 	 * Generate Security Hash
 	 *
+	 * @param	int   number of xids to create
+	 * @param	bool  return as array even if $count = 1
 	 * @return String XID generated
 	 */
 	public function generate_xid($count = 1, $array = FALSE)
 	{
-		$EE = get_instance();
-
 		$hashes = array();
 		$inserts = array();
 
 		for ($i = 0; $i < $count; $i++)
 		{
-			$hash = $EE->functions->random('encrypt');
+			$hash = ee()->functions->random('encrypt');
 			$inserts[] = array(
-				'date' 			=> $EE->localize->now,
-				'session_id'	=> $EE->session->userdata('session_id'),
+				'date' 			=> ee()->localize->now,
+				'session_id'	=> ee()->session->userdata('session_id'),
 				'hash' 			=> $hash
 			);
 			$hashes[] = $hash;	
 		}
 		
-		$EE->db->insert_batch('security_hashes', $inserts);
+		ee()->db->insert_batch('security_hashes', $inserts);
 
 		return (count($hashes) > 1 OR $array) ? $hashes : $hashes[0];
 	}
@@ -168,20 +185,43 @@ class EE_Security extends CI_Security {
 	 * @param 	string
 	 * @return	void
 	 */
-	public function delete_xid($xid)
-	{
-		$EE = get_instance();
-		
-		if ($EE->config->item('secure_forms') != 'y' OR $xid === FALSE)
+	public function delete_xid($xid = REQUEST_XID)
+	{		
+		if (ee()->config->item('secure_forms') != 'y' OR $xid === FALSE)
 		{
 			return;
 		}
 
-		$EE->db->where('hash', $xid)
-			->or_where('date <', $EE->localize->now - $this->_xid_ttl)
+		ee()->db->where('hash', $xid)
+			->or_where('date <', ee()->localize->now - $this->_xid_ttl)
 			->delete('security_hashes');
-		
-		return;		
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Restore the XID if it was not used.
+	 *
+	 * This is used when we show an error to the user instead of using
+	 * form validation. In some ways that means it's a stopgap measure,
+	 * but a necessary one since this is the default behavior on the
+	 * frontend.
+	 *
+	 * @param 	string
+	 * @return	void
+	 */
+	public function restore_xid($xid = REQUEST_XID)
+	{
+		if (ee()->config->item('secure_forms') != 'y' OR $xid === FALSE)
+		{
+			return;
+		}
+
+		ee()->db->update(
+			'security_hashes',
+			array('used' => 0),
+			array('hash' => $xid)
+		);
 	}
 
 	// --------------------------------------------------------------------
@@ -191,9 +231,12 @@ class EE_Security extends CI_Security {
 	 */
 	public function garbage_collect_xids()
 	{
-		$EE = get_instance();
-		$EE->db->where('date <', $EE->localize->now - $this->_xid_ttl)
-			->delete('security_hashes');
+		ee()->db->delete(
+			'security_hashes',
+			array(
+				'date <' => (ee()->localize->now - $this->_xid_ttl)
+			)
+		);
 	}
 
 }
