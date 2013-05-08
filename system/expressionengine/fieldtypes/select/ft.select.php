@@ -71,31 +71,12 @@ class Select_ft extends EE_Fieldtype {
 	
 	function display_field($data)
 	{
-		return $this->_display_field($data);
-	}
-
-	// --------------------------------------------------------------------
-
-	public function grid_display_field($data)
-	{
-		return $this->_display_field($data, 'grid');
-	}
-
-	// --------------------------------------------------------------------
-
-	private function _display_field($data, $container = NULL)
-	{
 		$text_direction = (isset($this->settings['field_text_direction']))
 			? $this->settings['field_text_direction'] : 'ltr';
 		$field_options = $this->_get_field_options($data);
 		$field_id = (ctype_digit($this->field_id)) ? 'field_id_'.$this->field_id : $this->field_id;
 		
 		$field = form_dropdown($this->field_name, $field_options, $data, 'dir="'.$text_direction.'" id="'.$field_id.'"');
-
-		if ($container == 'grid')
-		{
-			$field = $this->grid_padding_container($field);
-		}
 
 		return $field;
 	}

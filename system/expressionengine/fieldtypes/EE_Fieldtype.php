@@ -419,17 +419,45 @@ class EE_Fieldtype {
 	 *
 	 * @return string
 	 */
-	public function grid_dropdown_row($label, $name, $data, $selected = NULL)
+	public function grid_dropdown_row($label, $name, $data, $selected = NULL, $multiple = FALSE, $wide = FALSE, $attributes = NULL)
 	{
+		$classes = '';
+		$classes .= ($multiple) ? 'grid_settings_multiselect' : 'select';
+		$classes .= ($wide) ? ' grid_select_wide' : '';
+
+		$attributes .= 'class="'.$classes.'"';
+		$attributes .= ($multiple) ? ' multiple' : '';
+
+		$label_class = ($wide)
+			? 'grid_col_setting_label_small_width' : 'grid_col_setting_label_fixed_width';
+
 		return form_label($label, NULL,
-				array('class' => 'grid_col_setting_label_fixed_width')
+				array('class' => $label_class)
 			).
 			form_dropdown(
 				$name,
 				$data,
 				$selected,
-				'class="select"'
+				$attributes
 			);
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Creates a checkbox row in a Grid column settings field
+	 *
+	 * @return string
+	 */
+	public function grid_checkbox_row($label, $name, $value, $checked)
+	{
+		return form_label(
+			form_checkbox(
+				$name,
+				$value,
+				$checked
+			).$label
+		);
 	}
 	
 	// --------------------------------------------------------------------

@@ -584,6 +584,7 @@ class Grid_lib {
 		$fieldtype->field_id = $column['col_id'];
 		$fieldtype->field_name = 'col_id_'.$column['col_id'];
 		$fieldtype->settings = $column['col_settings'];
+		$fieldtype->settings['field_required'] = $column['col_required'];
 
 		return $fieldtype;
 	}

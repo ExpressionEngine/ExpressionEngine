@@ -557,6 +557,87 @@ class Relationship_ft extends EE_Fieldtype {
 
 	// --------------------------------------------------------------------
 
+	public function grid_display_settings($data)
+	{
+		ee()->load->library('Relationships_ft_cp');
+		$util = ee()->relationships_ft_cp;
+
+		return array(
+			$this->grid_checkbox_row(
+				lang('rel_ft_include_expired'),
+				'expired',
+				1,
+				(isset($data['expired']) && $data['expired'] == 1)
+			),
+			$this->grid_checkbox_row(
+				lang('rel_ft_include_future'),
+				'future',
+				1,
+				(isset($data['future']) && $data['future'] == 1)
+			),
+			$this->grid_dropdown_row(
+				lang('channels'),
+				'channels[]',
+				$util->all_channels(),
+				isset($data['channels']) ? $data['channels'] : NULL,
+				TRUE, // Multiselect
+				TRUE, // Wide select box
+				'style="height: 140px"'
+			),
+			$this->grid_dropdown_row(
+				lang('categories'),
+				'categories[]',
+				$util->all_categories(),
+				isset($data['categories']) ? $data['categories'] : NULL,
+				TRUE,
+				TRUE,
+				'style="height: 140px"'
+			),
+			$this->grid_dropdown_row(
+				lang('authors'),
+				'authors[]',
+				$util->all_authors(),
+				isset($data['authors']) ? $data['authors'] : NULL,
+				TRUE,
+				TRUE,
+				'style="height: 57px"'
+			),
+			$this->grid_dropdown_row(
+				lang('statuses'),
+				'statuses[]',
+				$util->all_statuses(),
+				isset($data['statuses']) ? $data['statuses'] : NULL,
+				TRUE,
+				TRUE,
+				'style="height: 43px"'
+			),
+			form_label(lang('grid_show')).NBS.NBS.NBS.
+			form_input(array(
+				'name'	=> 'limit',
+				'size'	=> 4,
+				'value'	=> isset($data['limit']) ? $data['limit'] : 100,
+				'class'	=> 'grid_input_text_small'
+			)).NBS.NBS.NBS.
+			form_label(lang('entries')),
+
+			// Order by row
+			form_label(lang('grid_order_by')).NBS.NBS.
+			form_dropdown(
+				'order_field',
+				$util->all_order_options(),
+				isset($data['order_field']) ? $data['order_field'] : NULL
+			).NBS.NBS.
+			form_label(lang('in')).NBS.NBS.
+			form_dropdown(
+				'order_dir',
+				$util->all_order_directions(),
+				isset($data['order_dir']) ? $data['order_dir'] : NULL
+			)
+		);
+	}
+
+	// --------------------------------------------------------------------
+
 	/**
 	 * Table row helper
 	 *
