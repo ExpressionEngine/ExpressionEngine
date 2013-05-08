@@ -18,17 +18,17 @@
 		<?=form_input('grid[cols]['.$field_name.'][col_instructions]', isset($column['col_instructions']) ? $column['col_instructions'] : '')?>
 	</div>
 	<div class="grid_col_settings_section grid_data_search alt">
-		<?=form_checkbox(
+		<?=form_label(form_checkbox(
 			'grid[cols]['.$field_name.'][col_required]',
 			'column_required',
 			(isset($column['col_label']) && $column['col_required'] == 'y')
-		).form_label(lang('grid_col_required'))?>
+		).lang('grid_col_required'))?>
 
-		<?=form_checkbox(
+		<?=form_label(form_checkbox(
 			'grid[cols]['.$field_name.'][col_search]',
 			'column_searchable',
 			(isset($column['col_label']) && $column['col_search'] == 'y')
-		).form_label(lang('grid_col_searchable'))?>
+		).lang('grid_col_searchable'))?>
 	</div>
 	<div class="grid_col_settings_section grid_col_width">
 		<?=form_input(array(
