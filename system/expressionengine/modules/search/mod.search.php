@@ -54,12 +54,6 @@ class Search {
 	function do_search()
 	{
 		ee()->lang->loadfile('search');
-
-		// We make an exception for "view all posts by member" - it's a link
-		if ( ! isset($_GET['mbr']) && ! ee()->security->secure_forms_check(ee()->input->post('XID')))
-		{
-			return ee()->output->show_user_error('general', array(lang('invalid_action')));
-		}
 		
 		// Get hidden meta vars 
 		if (isset($_POST['meta']))
@@ -316,6 +310,7 @@ class Search {
 			).'/'.$hash.'/'
 		);
 		
+		ee()->security->restore_xid();
 		return ee()->functions->redirect($path);
 	}
 	
