@@ -351,7 +351,7 @@ class Grid_lib {
 			}
 		}
 
-		ksort($this->_fieldtypes);
+		asort($this->_fieldtypes);
 
 		return $this->_fieldtypes;
 	}
