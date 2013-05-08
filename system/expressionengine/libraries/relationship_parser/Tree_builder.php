@@ -396,7 +396,7 @@ class EE_relationship_tree_builder {
 						$field_ids[] = $this->relationship_field_ids[$name];
 					}
 				}
-				else
+				elseif (isset($leaves[$depth]))
 				{
 					// no parameter, everything is fair game
 					$field_ids = array_keys($leaves[$depth]);
