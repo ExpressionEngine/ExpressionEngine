@@ -189,6 +189,7 @@ class Relationship_ft extends EE_Fieldtype {
 	public function display_field($data)
 	{
 		$field_name = $this->field_name;
+
 		$entry_id = ee()->input->get('entry_id');
 
 		$order = array();
@@ -385,7 +386,7 @@ class Relationship_ft extends EE_Fieldtype {
 		if (count($entries))
 		{
 			ee()->cp->add_js_script('file', 'cp/relationships');
-			ee()->javascript->output("EE.setup_relationship_field('#${field_name}');");
+			ee()->javascript->output("EE.setup_relationship_field('".$this->field_name."');");
 		}
 
 		return $str;
@@ -407,15 +408,15 @@ class Relationship_ft extends EE_Fieldtype {
 		$input_sort = $field_name.'[sort]';
 		$input_field = $field_name.'[data]';
 
-		$class = 'class="multiselect ';
-		$class .= count($entries) ? 'force-scroll' : 'empty';
+		$class = 'class="multiselect '.$field_name;
+		$class .= count($entries) ? ' force-scroll' : ' empty';
 		$class .= '"';
 
 		$str = '<div class="multiselect-filter js_show">';
-		$str .= form_input('', '', 'id="'.$field_name.'-filter"');
+		$str .= form_input('', '', 'class="'.$field_name.'-filter"');
 		$str .= '</div>';
 
-		$str .= '<div id="'.$field_name.'" '.$class.'>';
+		$str .= '<div '.$class.'>';
 
 		$str .= '<ul>';
 
@@ -451,14 +452,14 @@ class Relationship_ft extends EE_Fieldtype {
 	 */
 	public function _active_div($field_name)
 	{
-		$class = 'class="multiselect-active force-scroll"';
+		$class = 'class="multiselect-active force-scroll '.$field_name.'-active"';
 
 		// underscore.js template string
 		$active_template = '<li><span class="reorder-handle">&nbsp;</span>';
 		$active_template .= '<%= title %>';
 		$active_template .= '<span class="remove-item">&times;</span></li>';
 
-		$str = '<div id="'.$field_name.'-active" '.$class.' data-template="'.form_prep($active_template).'">';
+		$str = '<div '.$class.' data-template="'.form_prep($active_template).'">';
 		$str .= '<ul></ul>';
 		$str .= '</div>';
 
@@ -632,7 +633,21 @@ class Relationship_ft extends EE_Fieldtype {
 				'order_dir',
 				$util->all_order_directions(),
 				isset($data['order_dir']) ? $data['order_dir'] : NULL
+			),
+
+			$this->grid_checkbox_row(
+				lang('rel_ft_allow_multi'),
+				'allow_multiple',
+				1,
+				(isset($data['allow_multiple']) && $data['allow_multiple'] == 1)
+			),
+/*
+			// Allow multiple
+			$this->_row(
+				lang('rel_ft_allow_multi'),
+				'<label>'.$form->checkbox('allow_multiple').' '.lang('yes').' </label> <i class="instruction_text">('.lang('rel_ft_allow_multi_subtext').')</i>'
 			)
+*/
 		);
 	}
 
