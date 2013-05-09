@@ -101,9 +101,9 @@ class Grid_ft extends EE_Fieldtype {
 		{
 			ee()->cp->add_to_head(ee()->view->head_link('css/grid.css'));
 
-			ee()->cp->add_to_foot(ee()->view->script_tag('cp/sort_helper.js'));
-			ee()->cp->add_to_foot(ee()->view->script_tag('cp/grid.js'));
-
+			ee()->cp->add_js_script('file', 'cp/sort_helper');
+			ee()->cp->add_js_script('file', 'cp/grid');
+			
 			ee()->session->set_cache(__CLASS__, 'grid_assets_loaded', TRUE);
 		}
 
