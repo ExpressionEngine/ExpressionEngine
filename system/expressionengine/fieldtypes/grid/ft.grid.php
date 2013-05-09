@@ -66,8 +66,6 @@ class Grid_ft extends EE_Fieldtype {
 	{
 		ee()->session->set_cache(__CLASS__, $this->field_name, $data);
 
-		// TODO: Return string of searchable columns?
-
 		return NULL;
 	}
 

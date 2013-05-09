@@ -188,6 +188,9 @@ class Grid_lib {
 
 		$columns = ee()->grid_model->get_columns_for_field($this->field_id);
 
+		// We'll keep track of searchable data for columns marked as searchable here
+		$searchable_data = array();
+
 		// Call post_save callback for fieldtypes
 		foreach ($field_data['value'] as $row_id => $data)
 		{
@@ -199,8 +202,13 @@ class Grid_lib {
 				}
 
 				$this->_instantiate_fieldtype($column);
-
 				$this->_call('post_save', $data['col_id_'.$col_id]);
+
+				// Add to searchable array if searchable
+				if ($column['col_search'] == 'y')
+				{
+					$searchable_data[] = $data['col_id_'.$col_id];
+				}
 			}
 		}
 
@@ -212,6 +220,18 @@ class Grid_lib {
 		}
 
 		$this->delete_rows($row_ids);
+
+		if ( ! empty($searchable_data))
+		{
+			ee()->load->helper('custom_field_helper');
+
+			// Update row in channel_data with searchable data string
+			ee()->db->where('entry_id', $this->entry_id)
+				->update('channel_data', array(
+					'field_id_'.$this->field_id => encode_multi_field($searchable_data)
+				)
+			);
+		}
 
 		return FALSE;
 	}
