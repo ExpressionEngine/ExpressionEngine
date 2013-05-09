@@ -130,8 +130,16 @@ class Grid_lib {
 			form_prep($row_data['col_id_'.$column['col_id']])
 		);
 
-		// How we'll namespace new and existing rows
-		$row_id = ( ! isset($row_data['row_id'])) ? 'new_row_0' : 'row_id_'.$row_data['row_id'];
+		// Default name for new rows
+		$row_id = 'new_row_0';
+
+		// If row_id is set, perform an extra check before assigning it in case
+		// we are coming back from a validation error
+		if (isset($row_data['row_id']))
+		{
+			$row_id = (is_numeric($row_data['row_id']))
+				? 'row_id_'.$row_data['row_id'] : $row_data['row_id'];
+		}
 
 		// Return the publish field HTML with namespaced form field names
 		return $this->_namespace_inputs(
