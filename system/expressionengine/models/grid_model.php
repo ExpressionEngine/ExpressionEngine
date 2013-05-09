@@ -273,12 +273,14 @@ class Grid_model extends CI_Model {
  	 * @param	int		Field ID to get row data for
  	 * @return	array	Row data
  	 */
- 	public function get_entry_rows($entry_id, $field_id)
+ 	public function get_entry_rows($entry_ids, $field_id)
  	{
- 		// TODO: Will likely need to optimize to handle multiple entries
- 		// and fields for better publish screen performance and front-end
- 		// rendering performace; one query is better than 50
- 		return ee()->db->where('entry_id', $entry_id)
+ 		if ( ! is_array($entry_ids))
+ 		{
+ 			$entry_ids = array($entry_ids);
+ 		}
+ 		
+ 		return ee()->db->where_in('entry_id', $entry_ids)
  			->order_by('row_order')
  			->get($this->_table_prefix . $field_id)
  			->result_array();
@@ -345,6 +347,7 @@ class Grid_model extends CI_Model {
  	 * @param	array 	Field data array
  	 * @param	int 	Field ID of field we're saving
  	 * @param	int 	Entry ID to assign the row to
+ 	 * @return	array 	IDs of rows to be deleted
  	 */
  	public function save_field_data($data, $field_id, $entry_id)
  	{
@@ -385,9 +388,11 @@ class Grid_model extends CI_Model {
 
  		// If there are other existing rows for this entry that weren't in
  		// the data array, they are to be deleted
- 		ee()->db->where('entry_id', $entry_id)
+ 		$deleted_rows = ee()->db->select('row_id')
+ 			->where('entry_id', $entry_id)
  			->where_not_in('row_id', $row_ids)
- 			->delete($table_name);
+ 			->get($table_name)
+ 			->result_array();
 
  		// Batch update and insert rows to save queries
  		if ( ! empty($updated_rows))
@@ -399,27 +404,24 @@ class Grid_model extends CI_Model {
  		{
  			ee()->db->insert_batch($table_name, $new_rows);
  		}
+
+ 		// Return deleted row IDs
+ 		return $deleted_rows;
  	}
 
  	// ------------------------------------------------------------------------
 
  	/**
- 	 * Deletes Grid data for given entry IDs
+ 	 * Deletes Grid data for given row IDs
  	 * 
- 	 * @param	array	Entry IDs to delete data for
+ 	 * @param	array	Row IDs to delete data for
  	 */
- 	public function delete_entries($entry_ids)
+ 	public function delete_rows($row_ids, $field_id)
  	{
- 		// Get all Grid field IDs
- 		$field_ids = ee()->db->distinct('field_id')
- 			->get($this->_table)
- 			->result_array();
-
- 		// Delete entries out of each Grid field data table
- 		foreach ($field_ids as $row)
+ 		if ( ! empty($row_ids))
  		{
- 			ee()->db->where_in('entry_id', $entry_ids)
- 				->delete($this->_table_prefix . $row['field_id']);
+ 			ee()->db->where_in('row_id', $row_ids)
+ 				->delete($this->_table_prefix . $field_id);
  		}
  	}
 }

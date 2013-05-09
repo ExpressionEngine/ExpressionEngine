@@ -384,7 +384,7 @@ class Api_channel_entries extends Api {
 		
 		foreach($fquery->result_array() as $row)
 		{
-			$group_fields[$row['group_id']][] = $row['field_type'];
+			$group_fields[$row['group_id']][] = $row['field_id'];
 		}
 		
 
@@ -488,7 +488,7 @@ class Api_channel_entries extends Api {
 			$entries[] = $val;
 		}
 		
-		$fts = ee()->api_channel_fields->fetch_installed_fieldtypes();
+		$fts = ee()->api_channel_fields->fetch_custom_channel_fields();
 		
 		// Pass to custom fields
 		foreach($ft_to_ids as $fieldtype => $ids)

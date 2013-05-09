@@ -87,7 +87,17 @@ class Grid_ft extends EE_Fieldtype {
 	 */
 	public function delete($entry_ids)
 	{
-		ee()->grid_model->delete_entries($entry_ids);
+		$rows = ee()->grid_model->get_entry_rows($entry_ids, $this->field_id);
+
+		$row_ids = array();
+		foreach ($rows as $row)
+		{
+			$row_ids[] = $row['row_id'];
+		}
+
+		$this->_load_grid_lib();
+
+		ee()->grid_lib->delete_rows($row_ids);
 	}
 
 	// --------------------------------------------------------------------

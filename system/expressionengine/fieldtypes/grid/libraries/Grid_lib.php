@@ -33,6 +33,13 @@ class Grid_lib {
 	protected $_fieldtypes = array();
 	protected $_validated = array();
 
+	public function __construct()
+	{
+		ee()->load->model('grid_model');
+	}
+
+	// ------------------------------------------------------------------------
+
 	/**
 	 * Handles EE_Fieldtype's display_field for displaying the Grid field
 	 *
@@ -41,7 +48,6 @@ class Grid_lib {
 	 */
 	public function display_field($data)
 	{
-		ee()->load->model('grid_model');
 		ee()->load->helper('form_helper');
 
 		// Get columns just for this field
@@ -174,9 +180,7 @@ class Grid_lib {
 	{
 		$field_data = $this->_process_field_data('save', $data);
 
-		ee()->load->model('grid_model');
-
-		ee()->grid_model->save_field_data(
+		$deleted_rows = ee()->grid_model->save_field_data(
 			$field_data['value'],
 			$this->field_id,
 			$this->entry_id
@@ -200,7 +204,45 @@ class Grid_lib {
 			}
 		}
 
+		// Collect row IDs of deleted rows to send to fieldtypes
+		$row_ids = array();
+		foreach ($deleted_rows as $row)
+		{
+			$row_ids[] = $row['row_id'];
+		}
+
+		$this->delete_rows($row_ids);
+
 		return FALSE;
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Notifies fieldtypes of impending deletion of their Grid rows, and then
+	 * deletes those rows
+	 * 
+	 * @param	array	Validated Grid publish form data
+	 * @return	boolean
+	 */
+	public function delete_rows($row_ids)
+	{
+		if (empty($row_ids))
+		{
+			return;
+		}
+
+		$columns = ee()->grid_model->get_columns_for_field($this->field_id);
+
+		// Call delete/grid_delete on each affected fieldtype and send along
+		// the row IDs
+		foreach ($columns as $column)
+		{
+			$this->_instantiate_fieldtype($column);
+			$this->_call('delete', $row_ids);
+		}
+
+		ee()->grid_model->delete_rows($row_ids, $this->field_id);
 	}
 
 	// ------------------------------------------------------------------------
@@ -230,7 +272,6 @@ class Grid_lib {
 		ee()->load->helper('custom_field_helper');
 
 		// Get column data for the current field
-		ee()->load->model('grid_model');
 		$columns = ee()->grid_model->get_columns_for_field($this->field_id);
 
 		// We'll store our final values and errors here
@@ -369,7 +410,6 @@ class Grid_lib {
 	 */
 	public function apply_settings($settings)
 	{
-		ee()->load->model('grid_model');
 		$new_field = ee()->grid_model->create_field($settings['field_id']);
 
 		// We'll use the order of the posted fields to determine the column order
