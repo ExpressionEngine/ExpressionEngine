@@ -229,6 +229,13 @@ class Text_ft extends EE_Fieldtype {
 	}
 
 	// --------------------------------------------------------------------
+
+	function grid_save_settings($data)
+	{
+		return $data;
+	}
+
+	// --------------------------------------------------------------------
 	
 	function settings_modify_column($data)
 	{

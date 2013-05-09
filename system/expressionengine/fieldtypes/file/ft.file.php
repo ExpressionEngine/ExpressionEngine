@@ -408,6 +408,13 @@ class File_ft extends EE_Fieldtype {
 			'field_fmt' 			=> 'none'
 		);
 	}
+
+	// --------------------------------------------------------------------
+
+	function grid_save_settings($data)
+	{
+		return $data;
+	}
 }
 
 // END File_ft class

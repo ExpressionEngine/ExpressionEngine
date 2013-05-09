@@ -26,28 +26,32 @@
 
 class Grid_lib {
 
+	public $field_id;
+	public $field_name;
+	public $entry_id;
+
 	protected $_fieldtypes = array();
 	protected $_validated = array();
 
 	/**
 	 * Handles EE_Fieldtype's display_field for displaying the Grid field
 	 *
-	 * @param	int		Field ID of field to delete
-	 * @return	void
+	 * @param	array	Field data to display prepopulated in publish field
+	 * @return	string	HTML of publish field
 	 */
-	public function display_field($entry_id, $data, $settings)
+	public function display_field($data)
 	{
 		ee()->load->model('grid_model');
 		ee()->load->helper('form_helper');
 
 		// Get columns just for this field
-		$vars['columns'] = ee()->grid_model->get_columns_for_field($settings['field_id']);
+		$vars['columns'] = ee()->grid_model->get_columns_for_field($this->field_id);
 
 		// If validation data is set, we're likely coming back to the form on a
 		// validation error
-		if (isset($this->_validated[$settings['field_id']]['value']))
+		if (isset($this->_validated[$this->field_id]['value']))
 		{
-			$rows = $this->_validated[$settings['field_id']]['value'];
+			$rows = $this->_validated[$this->field_id]['value'];
 		}
 		// Load autosaved data
 		elseif (isset($data['rows']))
@@ -57,7 +61,7 @@ class Grid_lib {
 		// Otherwise, we're editing or creating a new entry
 		else
 		{
-			$rows = ee()->grid_model->get_entry_rows($entry_id, $settings['field_id']);
+			$rows = ee()->grid_model->get_entry_rows($this->entry_id, $this->field_id);
 		}
 
 		$vars['rows'] = array();
@@ -75,7 +79,6 @@ class Grid_lib {
 			{
 				// Construct the HTML for this particular row and column
 				$vars['rows'][$row['row_id']]['col_id_'.$column['col_id']] = $this->_publish_field_cell(
-					$settings['field_name'],
 					$column,
 					$row
 				);
@@ -94,13 +97,10 @@ class Grid_lib {
 		// Create a blank row for cloning to enter more data
 		foreach ($vars['columns'] as $column)
 		{
-			$vars['blank_row']['col_id_'.$column['col_id']] = $this->_publish_field_cell(
-				$settings['field_name'],
-				$column
-			);
+			$vars['blank_row']['col_id_'.$column['col_id']] = $this->_publish_field_cell($column);
 		}
 
-		$vars['field_id'] = $settings['field_name'];
+		$vars['field_id'] = $this->field_name;
 
 		return ee()->load->view('publish', $vars, TRUE);
 	}
@@ -110,12 +110,11 @@ class Grid_lib {
 	/**
 	 * Returns publish field HTML for a given cell
 	 *
-	 * @param	string	Field name for input field namespacing
 	 * @param	array	Column data
 	 * @param	array	Data for current row
 	 * @return	string	HTML for specified cell's publish field
 	 */
-	protected function _publish_field_cell($field_name, $column, $row_data = NULL)
+	protected function _publish_field_cell($column, $row_data = NULL)
 	{
 		$this->_instantiate_fieldtype($column);
 
@@ -131,7 +130,7 @@ class Grid_lib {
 		// Return the publish field HTML with namespaced form field names
 		return $this->_namespace_inputs(
 			$display_field,
-			'$1name="'.$field_name.'[rows]['.$row_id.'][$2]$3"'
+			'$1name="'.$this->field_name.'[rows]['.$row_id.'][$2]$3"'
 		);
 	}
 
@@ -141,10 +140,9 @@ class Grid_lib {
 	 * Interface for Grid fieldtype validation
 	 * 
 	 * @param	array	POST data from publish form
-	 * @param	int		Field ID of field being validated
 	 * @return	array	Validated field data
 	 */
-	public function validate($data, $field_id)
+	public function validate($data)
 	{
 		// Empty field
 		if ( ! isset($data['rows']))
@@ -153,20 +151,15 @@ class Grid_lib {
 		}
 
 		// Return from cache if exists
-		if (isset($this->_validated[$field_id]))
+		if (isset($this->_validated[$this->field_id]))
 		{
-			return $this->_validated[$field_id];
+			return $this->_validated[$this->field_id];
 		}
 
 		// Process the posted data and cache
-		$this->_validated[$field_id] = $this->_process_field_data(
-			'validate',
-			$data,
-			$field_id,
-			ee()->input->post('entry_id')
-		);
+		$this->_validated[$this->field_id] = $this->_process_field_data('validate', $data);
 
-		return $this->_validated[$field_id];
+		return $this->_validated[$this->field_id];
 	}
 
 	// ------------------------------------------------------------------------
@@ -175,27 +168,21 @@ class Grid_lib {
 	 * Interface for Grid fieldtype saving
 	 * 
 	 * @param	array	Validated Grid publish form data
-	 * @param	int		Field ID of field being saved
 	 * @return	boolean
 	 */
-	public function save($data, $field_id, $entry_id)
+	public function save($data)
 	{
-		$field_data = $this->_process_field_data(
-			'save',
-			$data,
-			$field_id,
-			$entry_id
-		);
+		$field_data = $this->_process_field_data('save', $data);
 
 		ee()->load->model('grid_model');
 
 		ee()->grid_model->save_field_data(
 			$field_data['value'],
-			$field_id,
-			$entry_id
+			$this->field_id,
+			$this->entry_id
 		);
 
-		$columns = ee()->grid_model->get_columns_for_field($field_id);
+		$columns = ee()->grid_model->get_columns_for_field($this->field_id);
 
 		// Call post_save callback for fieldtypes
 		foreach ($field_data['value'] as $row_id => $data)
@@ -207,9 +194,7 @@ class Grid_lib {
 					continue;
 				}
 
-				$fieldtype = $this->_instantiate_fieldtype($column);
-				$fieldtype->settings['entry_id'] = $entry_id;
-				$fieldtype->settings['grid_field_id'] = $field_id;
+				$this->_instantiate_fieldtype($column);
 
 				$this->_call('post_save', $data['col_id_'.$col_id]);
 			}
@@ -240,13 +225,13 @@ class Grid_lib {
 	 * @param	int		Entry ID of entry being saved
 	 * @return	boolean
 	 */
-	protected function _process_field_data($method, $data, $field_id, $entry_id)
+	protected function _process_field_data($method, $data)
 	{
 		ee()->load->helper('custom_field_helper');
 
 		// Get column data for the current field
 		ee()->load->model('grid_model');
-		$columns = ee()->grid_model->get_columns_for_field($field_id);
+		$columns = ee()->grid_model->get_columns_for_field($this->field_id);
 
 		// We'll store our final values and errors here
 		$final_values = array();
@@ -280,9 +265,7 @@ class Grid_lib {
 					}
 				}
 				
-				$fieldtype = $this->_instantiate_fieldtype($column);
-				$fieldtype->settings['entry_id'] = $entry_id;
-				$fieldtype->settings['grid_field_id'] = $field_id;
+				$this->_instantiate_fieldtype($column);
 
 				// Call the fieldtype's validate/save method and capture the output
 				$result = $this->_call($method, $row[$col_id]);
@@ -604,6 +587,8 @@ class Grid_lib {
 		$fieldtype->field_name = 'col_id_'.$column['col_id'];
 		$fieldtype->settings = $column['col_settings'];
 		$fieldtype->settings['field_required'] = $column['col_required'];
+		$fieldtype->settings['entry_id'] = $this->entry_id;
+		$fieldtype->settings['grid_field_id'] = $this->field_id;
 
 		return $fieldtype;
 	}

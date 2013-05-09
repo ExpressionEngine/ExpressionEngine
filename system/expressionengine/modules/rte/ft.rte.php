@@ -137,7 +137,14 @@ class Rte_ft extends EE_Fieldtype {
 		$data['field_ta_rows'] = ee()->input->post('rte_ta_rows');
 
 		return $data;
-	}	
+	}
+
+	// --------------------------------------------------------------------
+
+	function grid_save_settings($data)
+	{
+		return $data;
+	}
 }
 
 // END Rte_ft class

@@ -29,9 +29,16 @@ class Grid_ft extends EE_Fieldtype {
 		'version'	=> '1.0'
 	);
 
+	public function __construct()
+	{
+		ee()->lang->loadfile('fieldtypes');
+		ee()->load->model('grid_model');
+	}
+
+	// --------------------------------------------------------------------
+
 	public function install()
 	{
-		ee()->load->model('grid_model');
 		ee()->grid_model->install();
 	}
 
@@ -39,7 +46,6 @@ class Grid_ft extends EE_Fieldtype {
 	
 	public function uninstall()
 	{
-		ee()->load->model('grid_model');
 		ee()->grid_model->uninstall();
 	}
 	
@@ -47,10 +53,9 @@ class Grid_ft extends EE_Fieldtype {
 
 	public function validate($data)
 	{
-		ee()->lang->loadfile('fieldtypes');
-		ee()->load->library('grid_lib');
+		$this->_load_grid_lib();
 
-		return ee()->grid_lib->validate($data, $this->field_id);
+		return ee()->grid_lib->validate($data);
 	}
 
 	// --------------------------------------------------------------------
@@ -68,13 +73,9 @@ class Grid_ft extends EE_Fieldtype {
 
 	public function post_save($data)
 	{
-		ee()->load->library('grid_lib');
-		
-		ee()->grid_lib->save(
-			ee()->session->cache(__CLASS__, $this->field_name),
-			$this->field_id,
-			$this->settings['entry_id']
-		);
+		$this->_load_grid_lib();
+
+		ee()->grid_lib->save(ee()->session->cache(__CLASS__, $this->field_name));
 	}
 
 	// --------------------------------------------------------------------
@@ -86,7 +87,6 @@ class Grid_ft extends EE_Fieldtype {
 	 */
 	public function delete($entry_ids)
 	{
-		ee()->load->model('grid_model');
 		ee()->grid_model->delete_entries($entry_ids);
 	}
 
@@ -94,9 +94,6 @@ class Grid_ft extends EE_Fieldtype {
 
 	public function display_field($data)
 	{
-		ee()->load->library('grid_lib');
-		ee()->lang->loadfile('fieldtypes');
-
 		if ( ! ee()->session->cache(__CLASS__, 'grid_assets_loaded'))
 		{
 			ee()->cp->add_to_head(ee()->view->head_link('css/grid.css'));
@@ -114,11 +111,9 @@ class Grid_ft extends EE_Fieldtype {
 
 		ee()->javascript->output('EE.grid("#'.$this->field_name.'", '.json_encode($settings).');');
 
-		return ee()->grid_lib->display_field(
-			$this->EE->input->get('entry_id'),
-			$data,
-			$this->settings
-		);
+		$this->_load_grid_lib();
+
+		return ee()->grid_lib->display_field($data);
 	}
 
 	// --------------------------------------------------------------------
@@ -133,8 +128,6 @@ class Grid_ft extends EE_Fieldtype {
 	public function display_settings($data)
 	{
 		$field_id = isset($data['field_id']) ? $data['field_id'] : 0;
-
-		ee()->lang->loadfile('fieldtypes');
 
 		ee()->table->set_heading(array(
 			'data' => lang('grid_options'),
@@ -167,8 +160,7 @@ class Grid_ft extends EE_Fieldtype {
 			'<br><i class="instruction_text">'.lang('grid_max_rows_desc').'</i></div>'
 		);
 
-		ee()->load->library('grid_lib');
-		ee()->load->model('grid_model');
+		$this->_load_grid_lib();
 
 		$vars = array();
 
@@ -207,8 +199,9 @@ class Grid_ft extends EE_Fieldtype {
 
 		ee()->cp->add_to_head(ee()->view->head_link('css/grid.css'));
 
-		ee()->cp->add_to_foot(ee()->view->script_tag('cp/sort_helper.js'));
-		ee()->cp->add_to_foot(ee()->view->script_tag('cp/grid_settings.js'));
+		ee()->cp->add_js_script('file', 'cp/sort_helper');
+		ee()->cp->add_js_script('file', 'cp/grid_settings');
+
 		ee()->javascript->output('EE.grid_settings();');
 		
 		return ee()->table->generate();
@@ -229,13 +222,12 @@ class Grid_ft extends EE_Fieldtype {
 
 	public function post_save_settings($data)
 	{
-		ee()->load->library('grid_lib');
-		
 		// Need to get the field ID of the possibly newly-created field, so
 		// we'll actually re-save the field settings in the Grid library
 		$data['field_id'] = $this->settings['field_id'];
 		$data['grid'] = ee()->input->post('grid');
 
+		$this->_load_grid_lib();
 		ee()->grid_lib->apply_settings($data);
 	}
 
@@ -243,9 +235,23 @@ class Grid_ft extends EE_Fieldtype {
 	{
 		if (isset($data['ee_action']) && $data['ee_action'] == 'delete')
 		{
-			ee()->load->model('grid_model');
 			ee()->grid_model->delete_field($data['field_id']);
 		}
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Loads Grid library and assigns relevant field information to it
+	 */
+	private function _load_grid_lib()
+	{
+		ee()->load->library('grid_lib');
+
+		ee()->grid_lib->entry_id = (isset($this->settings['entry_id']))
+			? $this->settings['entry_id'] : ee()->input->get_post('entry_id');
+		ee()->grid_lib->field_id = $this->field_id;
+		ee()->grid_lib->field_name = $this->field_name;
 	}
 }
 
