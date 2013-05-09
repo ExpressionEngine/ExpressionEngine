@@ -472,12 +472,12 @@ class Grid_lib {
 			$column['col_settings'] = array();
 		}
 
-		if (ee()->api_channel_fields->check_method_exists('grid_save_settings'))
+		if ( ! ($settings = $this->_call('save_settings', $column['col_settings'])))
 		{
-			return ee()->api_channel_fields->apply('grid_save_settings', array($column['col_settings']));
+			return $column['col_settings'];
 		}
 
-		return $column['col_settings'];
+		return $settings;
 	}
 
 	// ------------------------------------------------------------------------
