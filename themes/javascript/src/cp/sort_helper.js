@@ -53,4 +53,4 @@ EE.sortable_sort_helper = function(e, ui)
 			}
 		}
 	});
-}
+};
