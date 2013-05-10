@@ -371,99 +371,13 @@ class Relationship_ft extends EE_Fieldtype {
 			return form_dropdown($field_name.'[data][]', $options, current($selected));
 		}
 
-
-// Performance debug
-//		$entries = array_merge($entries, $entries, $entries, $entries, $entries); // 5n
-//		$entries = array_merge($entries, $entries, $entries, $entries, $entries); // 25n
-//		$entries = array_merge($entries, $entries, $entries, $entries, $entries); // 125n
-
-		$str = '';
-		$str .= $this->_active_div($field_name);
-		$str .= $this->_multi_div($entries, $selected, $order, $field_name);
-
-		// The active section
-
 		if (count($entries))
 		{
 			ee()->cp->add_js_script('file', 'cp/relationships');
 			ee()->javascript->output("EE.setup_relationship_field('".$this->field_name."');");
 		}
 
-		return $str;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Draw the active/sortable half of the field
-	 *
-	 * @param
-	 *		entries - [ [title, entry_id], [...] ]
-	 *		selected - array of entry ids
-	 *		field_name - custom field name
-	 * @return	interface string
-	 */
-	public function _multi_div($entries, $selected, $order, $field_name)
-	{
-		$input_sort = $field_name.'[sort]';
-		$input_field = $field_name.'[data]';
-
-		$class = 'class="multiselect '.$field_name;
-		$class .= count($entries) ? ' force-scroll' : ' empty';
-		$class .= '"';
-
-		$str = '<div class="multiselect-filter js_show">';
-		$str .= form_input('', '', 'class="'.$field_name.'-filter"');
-		$str .= '</div>';
-
-		$str .= '<div '.$class.'>';
-
-		$str .= '<ul>';
-
-		foreach ($entries as $row)
-		{
-			$checked = in_array($row['entry_id'], $selected);
-			$sort = $checked ? $order[$row['entry_id']] : 0;
-
-			$str .= '<li'.($checked ? ' class="selected"' : '').'><label>';
-			$str .= form_input($input_sort.'[]', $sort, 'class="js_hide"');
-			$str .= form_checkbox($input_field.'[]', $row['entry_id'], $checked, 'class="js_hide"');
-			$str .= $row['title'].'</label></li>';
-		}
-
-		if ( ! count($entries))
-		{
-			$str .= '<li>'.lang('rel_ft_no_entries').'</li>';
-		}
-
-		$str .= '</ul>';
-		$str .= '</div>';
-
-		return $str;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Draw the active/sortable half of the field
-	 *
-	 * @param   custom field name
-	 * @return	interface string
-	 */
-	public function _active_div($field_name)
-	{
-		$class = 'class="multiselect-active force-scroll '.$field_name.'-active"';
-
-		// underscore.js template string
-		$active_template = '<li><span class="reorder-handle">&nbsp;</span>';
-		$active_template .= '<%= title %>';
-		$active_template .= '<span class="remove-item">&times;</span></li>';
-
-		$str = '<div '.$class.' data-template="'.form_prep($active_template).'">';
-		$str .= '<ul></ul>';
-		$str .= '</div>';
-
-		return $str;
+		return ee()->load->view('publish', compact('field_name', 'entries', 'selected', 'order'), TRUE);
 	}
 
 	// --------------------------------------------------------------------
@@ -635,19 +549,13 @@ class Relationship_ft extends EE_Fieldtype {
 				isset($data['order_dir']) ? $data['order_dir'] : NULL
 			),
 
+			// Allow multiple
 			$this->grid_checkbox_row(
 				lang('rel_ft_allow_multi'),
 				'allow_multiple',
 				1,
 				(isset($data['allow_multiple']) && $data['allow_multiple'] == 1)
-			),
-/*
-			// Allow multiple
-			$this->_row(
-				lang('rel_ft_allow_multi'),
-				'<label>'.$form->checkbox('allow_multiple').' '.lang('yes').' </label> <i class="instruction_text">('.lang('rel_ft_allow_multi_subtext').')</i>'
 			)
-*/
 		);
 	}
 
@@ -681,7 +589,6 @@ class Relationship_ft extends EE_Fieldtype {
 			);
 		}
 	}
-
 
 	// --------------------------------------------------------------------
 
