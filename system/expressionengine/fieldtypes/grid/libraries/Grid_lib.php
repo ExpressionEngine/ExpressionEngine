@@ -199,23 +199,26 @@ class Grid_lib {
 		// We'll keep track of searchable data for columns marked as searchable here
 		$searchable_data = array();
 
+		// Get row data to send back to fieldtypes with new row IDs
+		$rows = ee()->grid_model->get_entry_rows($this->entry_id, $this->field_id);
+
 		// Call post_save callback for fieldtypes
-		foreach ($field_data['value'] as $row_id => $data)
+		foreach ($rows as $row)
 		{
 			foreach ($columns as $col_id => $column)
 			{
-				if ( ! isset($data['col_id_'.$col_id]))
+				if ( ! isset($row['col_id_'.$col_id]))
 				{
 					continue;
 				}
 
-				$this->_instantiate_fieldtype($column, $row_id);
-				$this->_call('post_save', $data['col_id_'.$col_id]);
+				$this->_instantiate_fieldtype($column, $row['row_id']);
+				$this->_call('post_save', $row['col_id_'.$col_id]);
 
 				// Add to searchable array if searchable
 				if ($column['col_search'] == 'y')
 				{
-					$searchable_data[] = $data['col_id_'.$col_id];
+					$searchable_data[] = $row['col_id_'.$col_id];
 				}
 			}
 		}
@@ -658,6 +661,14 @@ class Grid_lib {
 		$fieldtype->settings['field_required'] = $column['col_required'];
 		$fieldtype->settings['entry_id'] = $this->entry_id;
 		$fieldtype->settings['grid_field_id'] = $this->field_id;
+
+		// If row exists, send existing row ID, otherwise send new row identifier
+		if ( ! empty($row_id))
+		{
+			$row_id = (strpos($row_id, 'new_row_') === FALSE)
+				? str_replace('row_id_', '', $row_id) : $row_id;
+		}
+
 		$fieldtype->settings['grid_row_id'] = $row_id;
 
 		return $fieldtype;
