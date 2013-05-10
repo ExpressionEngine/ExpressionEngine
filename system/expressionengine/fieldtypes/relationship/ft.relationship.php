@@ -86,7 +86,14 @@ class Relationship_ft extends EE_Fieldtype {
 
 		$sort = array_filter($sort);
 
-		ee()->session->set_cache(__CLASS__, $this->field_name, array(
+		$cache_name = $this->field_name;
+
+		if (isset($this->settings['grid_row_name']))
+		{
+			$cache_name .= $this->settings['grid_row_name'];
+		}
+
+		ee()->session->set_cache(__CLASS__, $cache_name, array(
 			'data' => $data,
 			'sort' => $sort
 		));
@@ -110,7 +117,15 @@ class Relationship_ft extends EE_Fieldtype {
 	{
 		$field_id = $this->field_id;
 		$entry_id = $this->settings['entry_id'];
-		$post = ee()->session->cache(__CLASS__, $this->field_name);
+
+		$cache_name = $this->field_name;
+		
+		if (isset($this->settings['grid_row_name']))
+		{
+			$cache_name .= $this->settings['grid_row_name'];
+		}
+
+		$post = ee()->session->cache(__CLASS__, $cache_name);
 
 		$order = array_values($post['sort']);
 		$data = $post['data'];
