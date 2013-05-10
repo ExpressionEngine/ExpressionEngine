@@ -209,9 +209,7 @@ class Grid_lib {
 					continue;
 				}
 
-				$fieldtype = $this->_instantiate_fieldtype($column);
-				$fieldtype->settings['grid_row_id'] = $row_id;
-				
+				$this->_instantiate_fieldtype($column, $row_id);
 				$this->_call('post_save', $data['col_id_'.$col_id]);
 
 				// Add to searchable array if searchable
@@ -336,8 +334,7 @@ class Grid_lib {
 					}
 				}
 				
-				$fieldtype = $this->_instantiate_fieldtype($column);
-				$fieldtype->settings['grid_row_id'] = $row_id;
+				$this->_instantiate_fieldtype($column, $row_id);
 
 				// Call the fieldtype's validate/save method and capture the output
 				$result = $this->_call($method, $row[$col_id]);
@@ -645,9 +642,10 @@ class Grid_lib {
 	 * Instantiates fieldtype handler and assigns information to the object
 	 *
 	 * @param	array	Column information
+	 * @param	string	Unique row identifier
 	 * @return	object	Fieldtype object
 	 */
-	protected function _instantiate_fieldtype($column)
+	protected function _instantiate_fieldtype($column, $row_id = NULL)
 	{
 		// Instantiate fieldtype
 		$fieldtype = ee()->api_channel_fields->setup_handler($column['col_type'], TRUE);
@@ -660,6 +658,7 @@ class Grid_lib {
 		$fieldtype->settings['field_required'] = $column['col_required'];
 		$fieldtype->settings['entry_id'] = $this->entry_id;
 		$fieldtype->settings['grid_field_id'] = $this->field_id;
+		$fieldtype->settings['grid_row_id'] = $row_id;
 
 		return $fieldtype;
 	}
