@@ -209,7 +209,9 @@ class Grid_lib {
 					continue;
 				}
 
-				$this->_instantiate_fieldtype($column);
+				$fieldtype = $this->_instantiate_fieldtype($column);
+				$fieldtype->settings['grid_row_id'] = $row_id;
+				
 				$this->_call('post_save', $data['col_id_'.$col_id]);
 
 				// Add to searchable array if searchable
@@ -334,7 +336,8 @@ class Grid_lib {
 					}
 				}
 				
-				$this->_instantiate_fieldtype($column);
+				$fieldtype = $this->_instantiate_fieldtype($column);
+				$fieldtype->settings['grid_row_id'] = $row_id;
 
 				// Call the fieldtype's validate/save method and capture the output
 				$result = $this->_call($method, $row[$col_id]);
