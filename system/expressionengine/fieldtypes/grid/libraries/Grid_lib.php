@@ -663,10 +663,9 @@ class Grid_lib {
 		$fieldtype->settings['grid_field_id'] = $this->field_id;
 
 		// If row exists, send existing row ID, otherwise send new row identifier
-		if ( ! empty($row_id))
+		if ( ! empty($row_id) && strpos($row_id, 'new_row_') === FALSE)
 		{
-			$row_id = (strpos($row_id, 'new_row_') === FALSE)
-				? str_replace('row_id_', '', $row_id) : $row_id;
+			$row_id = str_replace('row_id_', '', $row_id);
 		}
 
 		$fieldtype->settings['grid_row_id'] = $row_id;
