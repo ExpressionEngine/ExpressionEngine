@@ -660,11 +660,21 @@ class Grid_lib {
 		// normal field settings
 		$fieldtype->field_id = $column['col_id'];
 		$fieldtype->field_name = 'col_id_'.$column['col_id'];
-		$fieldtype->settings = $column['col_settings'];
-		$fieldtype->settings['field_required'] = $column['col_required'];
-		$fieldtype->settings['entry_id'] = $this->entry_id;
-		$fieldtype->settings['grid_field_id'] = $this->field_id;
-		$fieldtype->settings['grid_row_name'] = $row_name;
+
+		// Assign fieldtype column settings and any other information that will
+		// be helpful to be accessible by fieldtypes
+		$fieldtype->settings = array_merge(
+			$column['col_settings'],
+			array(
+				'field_required'	=> $column['col_required'],
+				'col_id'			=> $column['col_id'],
+				'col_name'			=> $column['col_name'],
+				'col_required'		=> $column['col_required'],
+				'entry_id'			=> $this->entry_id,
+				'grid_field_id'		=> $this->field_id,
+				'grid_row_name'		=> $row_name
+			)
+		);
 
 		return $fieldtype;
 	}
