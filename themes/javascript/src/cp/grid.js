@@ -63,15 +63,8 @@
 			this._bindDeleteButton();
 			this._toggleRowManipulationButtons();
 
-			var that = this;
-			
-			window.setTimeout(function()
-			{
-				that._getRows().each(function()
-				{
-					that._fireEvent('display', $(this));
-				});
-			}, 500);
+			// Fire display event after a short delay to allow scripts to catch up
+			window.setTimeout(this._fieldDisplay(), 500);
 
 			// Disable input elements in our blank template container so they
 			// don't get submitted on form submission
