@@ -59,10 +59,10 @@ class Grid_lib {
 		{
 			$rows = $this->_validated[$this->field_id]['value'];
 		}
-		// Load autosaved data
-		elseif (isset($data['rows']))
+		// Load autosaved/revision data
+		elseif (is_array($data))
 		{
-			$rows = $data['rows'];
+			$rows = isset($data['rows']) ? $data['rows'] : $data;
 		}
 		// Otherwise, we're editing or creating a new entry
 		else
