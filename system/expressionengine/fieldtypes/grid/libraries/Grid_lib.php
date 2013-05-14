@@ -528,12 +528,12 @@ class Grid_lib {
 	 */
 	protected function _save_settings($column)
 	{
-		$this->_instantiate_fieldtype($column);
-
 		if ( ! isset($column['col_settings']))
 		{
 			$column['col_settings'] = array();
 		}
+
+		$this->_instantiate_fieldtype($column);
 
 		if ( ! ($settings = $this->_call('save_settings', $column['col_settings'])))
 		{

@@ -56,6 +56,7 @@ $lang = array(
 'grid_output_format'		=> 'Output formatting?',
 'grid_text_direction'		=> 'Text direction?',
 'grid_limit_input'			=> 'Limit input?',
+'grid_date_localized'		=> 'Localized?',
 'grid_chars_allowed'		=> 'Characters allowed.',
 'grid_order_by'				=> 'Order by',
 'grid_show'					=> 'Show',
