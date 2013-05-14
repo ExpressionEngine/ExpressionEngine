@@ -26,18 +26,6 @@
 class Newrelic {
 
 	/**
-	 * Constructor
-	 *
-	 * @access	public
-	 */
-	function __construct()
-	{
-		// nothing to see here
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Give Newrelic a name for this transaction
 	 *
 	 * @access	public
