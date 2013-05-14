@@ -31,6 +31,8 @@ class Grid_ft extends EE_Fieldtype {
 
 	public function __construct()
 	{
+		parent::__construct();
+		
 		ee()->lang->loadfile('fieldtypes');
 		ee()->load->model('grid_model');
 	}

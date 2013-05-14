@@ -340,7 +340,13 @@ class Grid_lib {
 					}
 				}
 				
-				$this->_instantiate_fieldtype($column, $row_id);
+				$fieldtype = $this->_instantiate_fieldtype($column, $row_id);
+
+				// Pass Grid row ID to fieldtype if it's an existing row
+				if (strpos($row_id, 'row_id_') !== FALSE)
+				{
+					$fieldtype->settings['grid_row_id'] = str_replace('row_id_', '', $row_id);
+				}
 
 				// Call the fieldtype's validate/save method and capture the output
 				$result = $this->_call($method, $row[$col_id]);

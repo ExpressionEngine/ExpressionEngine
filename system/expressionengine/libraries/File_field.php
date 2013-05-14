@@ -177,10 +177,11 @@ class File_field {
 	 * @param string $data The data in the field we're validating
 	 * @param string $field_name The name of the field we're validating
 	 * @param string $required Set to 'y' if the field is required
+	 * @param array  $grid Array of data needed to validate a Grid field
 	 * @return array Associative array containing ONLY the name of the 
 	 * 		file uploaded
 	 */
-	public function validate($data, $field_name, $required = 'n')
+	public function validate($data, $field_name, $required = 'n', $grid = array())
 	{
 		$dir_field		= $field_name.'_directory';
 		$hidden_field	= $field_name.'_hidden_file';
@@ -241,7 +242,20 @@ class File_field {
 			$eid = (int) ee()->input->post('entry_id');
 			
 			ee()->db->select($field_name);
-			$query = ee()->db->get_where('channel_data', array('entry_id'=>$eid));	
+			$table = 'channel_data';
+
+			// Different DB selection criteria for Grid
+			if ( ! empty($grid['grid_row_id']))
+			{
+				ee()->db->where('row_id', $grid['grid_row_id']);
+				$table = 'grid_field_'.$grid['grid_field_id'];
+			}
+			else
+			{
+				ee()->db->where('entry_id', $eid);
+			}
+
+			$query = ee()->db->get($table);	
 
 			if ($query->num_rows() == 0)
 			{
