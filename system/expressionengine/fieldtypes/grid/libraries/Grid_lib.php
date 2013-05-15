@@ -370,6 +370,14 @@ class Grid_lib {
 					// Assign the final value to the array
 					$final_values[$row_id][$col_id] = $value;
 
+					// If column is required and the value from validation is empty,
+					// throw an error, except if the value is 0 because that can be
+					// a legitimate data entry
+					if ($column['col_required'] == 'y' && empty($value) && $value !== 0 && $value !== '0')
+					{
+						$error = lang('grid_field_required');
+					}
+
 					// If there's an error, assign the old row data back so the
 					// user can see the error, and set the error message
 					if (is_string($error) && ! empty($error))
