@@ -77,12 +77,6 @@ $lang = array(
 'mbr_activation_instructions_desc' =>
 'This template defines the member activation instructions that are sent to people who register at this site',
 
-'reset_password_notification' =>
-'Password Reset Notification',
-
-'reset_password_notification_desc' =>
-'This template defines the password resetting instructions',
-
 'validated_member_notify' =>
 'Member Account Validation Notification',
 

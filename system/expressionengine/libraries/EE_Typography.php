@@ -841,12 +841,21 @@ class EE_Typography extends CI_Typography {
 	        		}
 					else
 					{
-						// If allowed is none- we ditch everything but the url
-						if ($this->html_format == 'none' && ($space_pos = strpos($url, ' ')) !== FALSE)
+						if (($space_pos = strpos($url, ' ')) !== FALSE)
 						{
-							$url = substr($url, 0, $space_pos);
+							// If allowed is none- we ditch everything but the url
+							if ($this->html_format == 'none')
+							{
+								$url = substr($url, 0, $space_pos);
+							}
+							else
+							{
+								$full_string = $url;
+								$url = substr($url, 0, $space_pos);
+
+								$extra = ' '.trim(str_replace($url, '', $full_string));
+							}
 						}
-						
 						
 						// get rid of opening = and surrounding quotes (again for allow all!)
 						$url = preg_replace(array('/^=(\042|\047)?/', '/(\042|\047)$/'), '', $url);	
