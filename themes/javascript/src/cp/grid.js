@@ -76,16 +76,18 @@
 		 */
 		_bindSortable: function()
 		{
+			var that = this;
+
 			this.rowContainer.sortable({
 				axis: 'y',						// Only allow vertical dragging
 				containment: 'parent',			// Contain to parent
 				handle: 'td.grid_handle',		// Set drag handle
 				items: 'tr.grid_row',			// Only allow these to be sortable
 				sort: EE.sortable_sort_helper,	// Custom sort handler
-				helper: function(e, tr)			// Fix issue where cell widths collapse on drag
+				helper: function(event, row)	// Fix issue where cell widths collapse on drag
 				{
-					var $originals = tr.children();
-					var $helper = tr.clone();
+					var $originals = row.children();
+					var $helper = row.clone();
 
 					$helper.children().each(function(index)
 					{
@@ -95,6 +97,16 @@
 
 					return $helper;
 				},
+				// Fire 'beforeSort' event on sort start
+				start: function(event, row)
+				{
+					that._fireEvent('beforeSort', row.item);
+				},
+				// Fire 'afterSort' event on sort stop
+				stop: function(event, row)
+				{
+					that._fireEvent('afterSort', row.item);
+				}
 			});
 		},
 
