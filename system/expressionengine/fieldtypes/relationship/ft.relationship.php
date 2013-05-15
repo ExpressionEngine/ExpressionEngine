@@ -265,7 +265,7 @@ class Relationship_ft extends EE_Fieldtype {
 
 		ee()->db
 			->select('channel_titles.entry_id, channel_titles.title')
-			->order_by($this->settings['order_field'], $this->settings['order_dir']);
+			->order_by($order_field, $this->settings['order_dir']);
 
 		if ($limit)
 		{

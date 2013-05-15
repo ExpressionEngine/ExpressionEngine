@@ -57,7 +57,7 @@ class Content_files extends CP_Controller {
 		$this->cp->add_to_head($this->view->head_link('css/file_browser.css'));
 
 		// Get upload dirs
-		$upload_dirs = $this->filemanager->fetch_upload_dirs();
+		$upload_dirs = $this->filemanager->fetch_upload_dirs(array('ignore_site_id' => FALSE));
 
 		foreach ($upload_dirs as $row)
 		{

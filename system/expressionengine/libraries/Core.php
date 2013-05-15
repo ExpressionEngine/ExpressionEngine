@@ -405,7 +405,7 @@ class EE_Core {
 		if (ee()->router->fetch_class() == '' OR
 			! isset($_GET['S']))
 		{
-			ee()->functions->redirect(BASE.'C=homepage');
+			ee()->functions->redirect(BASE.AMP.'C=homepage');
 		}
 
 
