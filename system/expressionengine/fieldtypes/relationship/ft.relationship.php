@@ -112,6 +112,12 @@ class Relationship_ft extends EE_Fieldtype {
 		$entry_id = $this->settings['entry_id'];
 		$post = ee()->session->cache(__CLASS__, $this->field_name);
 
+		if ($post === FALSE)
+		{
+			// this is a safecracker edit - save() was not called. Don't do anything.
+			return;
+		}
+
 		$order = array_values($post['sort']);
 		$data = $post['data'];
 
