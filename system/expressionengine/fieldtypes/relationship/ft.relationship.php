@@ -382,7 +382,7 @@ class Relationship_ft extends EE_Fieldtype {
 
 		// The active section
 
-		if (count($entries))
+		if (REQ == 'CP' && count($entries))
 		{
 			ee()->cp->add_js_script('file', 'cp/relationships');
 			ee()->javascript->output("EE.setup_relationship_field('#${field_name}');");
