@@ -199,8 +199,6 @@ To reset your password, please go to the following page:
 
 {reset_url}
 
-Your password will be automatically reset, and a new password will be emailed to you.
-
 If you do not wish to reset your password, ignore this message. It will expire in 24 hours.
 
 {site_name}
@@ -208,43 +206,6 @@ If you do not wish to reset your password, ignore this message. It will expire i
 EOF;
 	}
 }
-
-
-
-
-//---------------------------------------------------
-//	Reset Password Notification
-//--------------------------------------------------
-
-if ( ! function_exists('reset_password_notification_title'))
-{
-	function reset_password_notification_title()
-	{
-return <<<EOF
-New Login Information
-EOF;
-	}
-}
-
-if ( ! function_exists('reset_password_notification'))
-{
-	function reset_password_notification()
-	{
-return <<<EOF
-{name},
-
-Here is your new login information:
-
-Username: {username}
-Password: {password}
-
-{site_name}
-{site_url}
-EOF;
-	}
-}
-
-
 
 
 //---------------------------------------------------

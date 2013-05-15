@@ -386,7 +386,7 @@ class Relationship_ft extends EE_Fieldtype {
 			return form_dropdown($field_name.'[data][]', $options, current($selected));
 		}
 
-		if (count($entries))
+		if (REQ == 'CP' && count($entries))
 		{
 			ee()->cp->add_js_script('file', 'cp/relationships');
 			ee()->javascript->output("EE.setup_relationship_field('".$this->field_name."');");

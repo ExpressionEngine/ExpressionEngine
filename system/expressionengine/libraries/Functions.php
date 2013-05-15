@@ -2677,7 +2677,7 @@ class EE_Functions {
 				foreach ($protect as $key => $value)
 				{
 					// Make sure $key doesn't appear as "{$key " or ":$key "
-					if ( ! strstr($match, LD.$key.' ') AND ! strstr($match, ':'.$key.' '))
+					if (strpos($match, LD.$key.' ') === FALSE AND strpos($match, ':'.$key) === FALSE)
 					{
 						$match = str_replace($key, $value, $match);
 					}

@@ -249,6 +249,12 @@ class EE_Relationship_data_parser {
 
 		if ($has_no_results && preg_match("/".LD."if {$tag}:no_results".RD."(.*?)".LD.'\/'."if".RD."/s", $tagdata, $match))
 		{
+			if (stristr($match[1], LD.'if'))
+			{
+				$match[0] = ee()->functions->full_tag($match[0], $tagdata, LD.'if', LD.'\/'."if".RD);
+				$match[1] = substr($match[0], strlen(LD."if {$tag}:no_results".RD), -strlen(LD.'/'."if".RD));
+			}
+
 			$node->no_results = $match;
 			return;
 		}
