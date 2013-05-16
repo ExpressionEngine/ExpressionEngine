@@ -573,8 +573,9 @@ class EE_Relationship_data_parser {
 
 		foreach ($order_by as $i => $v)
 		{
-			$sort_parameters[] = $columns[$v];
-			$sort_parameters[] = constant('SORT_'.strtoupper($sort[$i]));
+			$sort_parameters[] = &$columns[$v];
+			$con_sort = constant('SORT_'.strtoupper($sort[$i]));
+			$sort_parameters[] = &$con_sort;
 		}
 
 		$sort_parameters[] = &$entry_ids;
