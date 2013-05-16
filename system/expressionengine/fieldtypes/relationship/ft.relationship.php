@@ -229,7 +229,7 @@ class Relationship_ft extends EE_Fieldtype {
 					'relationships_display_field',
 					$entry_id,
 					$this->field_id,
-					ee()->db->_compile_select()
+					ee()->db->_compile_select(FALSE, FALSE)
 				);
 			}
 			else
