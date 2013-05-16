@@ -78,6 +78,7 @@ class Rte_ft extends EE_Fieldtype {
 				ee()->typography->parse_file_paths($data)
 			),
 			array(
+				'text_format'	=> 'xhtml',
 				'html_format'	=> $this->row['channel_html_formatting'],
 				'auto_links'	=> $this->row['channel_auto_link_urls'],
 				'allow_img_url' => $this->row['channel_allow_img_urls']
