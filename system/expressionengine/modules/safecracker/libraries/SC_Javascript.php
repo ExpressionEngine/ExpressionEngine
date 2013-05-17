@@ -58,7 +58,7 @@ class SC_Javascript
 		
 		if ($this->input->get('use_live_url') == 'y')
 		{
-			$this->output->append_output($this->safecracker->channel_standalone->_url_title_js()."\n\n");
+			$this->output->append_output($this->_url_title_js()."\n\n");
 		}
 		
 		$this->load->helper('smiley');

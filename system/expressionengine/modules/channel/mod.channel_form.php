@@ -24,240 +24,14 @@
  * @link		http://ellislab.com
  */
 
-class Channel_standalone extends Channel {
+class Channel_form extends Channel {
 
 	var $categories 		= array();
-	var $cat_parents 		= array();
-	var $assign_cat_parent 	= FALSE;
-	var $upload_div 		= '';
 	var $output_js 			= NULL;
 	var $default_entry_title = '';
 	var $url_title_prefix 	= '';
 	var $_installed_mods	= array('smileys' => FALSE, 'spellcheck' => FALSE);
 	var $theme_url;
-
-	// --------------------------------------------------------------------	
-
-	/**
-	 * Run Filemanager
-	 *
-	 * @param 	string	
-	 * @param	array
-	 * @return 	mixed
-	 */
-	function run_filemanager($function = '', $params = array())
-	{
-		ee()->load->library('filemanager');
-		ee()->lang->loadfile('content');
-		
-		$config = array();
-		
-		ee()->filemanager->_initialize($config);
-		
-		return call_user_func_array(array(ee()->filemanager, $function), $params);
-	}
-
-	// --------------------------------------------------------------------	
-
-	/**
-	 * Insert New Channel entry
-	 *
-	 * This function serves dual purpose:
-	 * 1. It allows submitted data to be previewed
-	 * 2. It allows submitted data to be inserted
-	 */
-	function insert_new_entry()
-	{
-		ee()->lang->loadfile('channel');
-		ee()->lang->loadfile('content');
-		ee()->load->model('field_model');
-		ee()->load->model('channel_model');
-
-		// Ya gotta be logged-in billy bob...
-		if (ee()->session->userdata('member_id') == 0)
-		{
-			return ee()->output->show_user_error('general', ee()->lang->line('channel_must_be_logged_in'));
-		}
-
-		if ( ! $channel_id = ee()->input->post('channel_id') OR ! is_numeric($channel_id))
-		{
-			return false;
-		}
-
-		// Prep file fields
-		$file_fields = array();
-		
-		ee()->db->select('field_group');
-		ee()->db->where('channel_id', $channel_id);
-		$query = ee()->db->get('channels');
-		
-		if ($query->num_rows() > 0)
-		{
-			$row = $query->row();
-			$field_group =  $row->field_group;
-		
-			ee()->db->select('field_id');
-			ee()->db->where('group_id', $field_group);
-			ee()->db->where('field_type', 'file');
-			
-			$f_query = ee()->db->get('channel_fields');
-			
-			if ($f_query->num_rows() > 0)
-			{
-				foreach ($f_query->result() as $row)
-				{
-   					$file_fields[] = $row->field_id;
-				}
-			} 
-		} 
-
-		foreach ($file_fields as $v)
-		{
-			if (isset($_POST['field_id_'.$v.'_hidden']))
-			{
-				$_POST['field_id_'.$v] = $_POST['field_id_'.$v.'_hidden'];
-				if ( ! ee()->input->post('preview'))
-				{
-					unset($_POST['field_id_'.$v.'_hidden']);
-				}
-			}
-
-			// Upload or maybe just a path in the hidden field?
-			if (isset($_FILES['field_id_'.$v]) && $_FILES['field_id_'.$v]['size'] > 0 && isset($_POST['field_id_'.$v.'_directory']))
-			{
-				$data = $this->run_filemanager('upload_file', array($_POST['field_id_'.$v.'_directory'], 'field_id_'.$v));
-					
-				if (array_key_exists('error', $data))
-				{
-					die('error '.$data['error']);
-				}
-				else
-				{
-					$_POST['field_id_'.$v] = $data['name'];
-					
-					if (ee()->input->post('preview') !== FALSE)
-					{
-						$_POST['field_id_'.$v.'_hidden'] = $data['name'];
-					}
-				}
-			}
-		}
-
-		/** ----------------------------------------
-		/**  Prep data for insertion
-		/** ----------------------------------------*/
-		if ( ! ee()->input->post('preview'))
-		{
-			ee()->load->library('api');
-			ee()->api->instantiate(array('channel_entries', 'channel_categories', 'channel_fields'));
-			
-			unset($_POST['status_id']);
-			unset($_POST['allow_cmts']);
-			unset($_POST['sticky_entry']);
-			
-			$return_url	= ( ! ee()->input->post('return_url')) ? '' : ee()->input->get_post('return_url');
-			unset($_POST['return_url']);
-
-			
-			if ( ! ee()->input->post('entry_date'))
-			{
-				$_POST['entry_date'] = ee()->localize->human_time(ee()->localize->now);
-			}
-
-			$data = $_POST;
-			
-			
-			
-			// Rudimentary handling of custom fields
-			
-			$field_query = ee()->channel_model->get_channel_fields($field_group);
-			
-			foreach ($field_query->result_array() as $row)
-			{
-				$field_data = '';
-				$field_dt = '';
-				$field_fmt	= $row['field_fmt'];
-
-
-				// Settings that need to be prepped			
-				$settings = array(
-					'field_instructions'	=> trim($row['field_instructions']),
-					'field_text_direction'	=> ($row['field_text_direction'] == 'rtl') ? 'rtl' : 'ltr',
-					'field_fmt'				=> $field_fmt,
-					'field_dt'				=> $field_dt,
-					'field_data'			=> $field_data,
-					'field_name'			=> 'field_id_'.$row['field_id']
-				);
-
-				$ft_settings = array();
-
-				if (isset($row['field_settings']) && strlen($row['field_settings']))
-				{
-					$ft_settings = unserialize(base64_decode($row['field_settings']));
-				}
-
-				$settings = array_merge($row, $settings, $ft_settings);
-
-				ee()->api_channel_fields->set_settings($row['field_id'], $settings);
-			}
-			
-			
-			$extra = array(
-				'url_title'		=> '',
-				'revision_post'	=> $_POST,
-			);
-		
-			$data = array_merge($extra, $data);
-	
-			$success = ee()->api_channel_entries->save_entry($data, $channel_id);
-
-			if ( ! $success)
-			{
-				$errors = ee()->api_channel_entries->errors;
-				return ee()->output->show_user_error('general', $errors);
-			}
-
-			$loc = ($return_url == '') ? ee()->functions->fetch_site_index() : ee()->functions->create_url($return_url, 1, 0);
-
-			$loc = ee()->api_channel_entries->trigger_hook('entry_submission_redirect', $loc);
-
-			ee()->functions->redirect($loc);
-		} // END Insert
-
-
-		/** ----------------------------------------
-		/**  Preview Entry
-		/** ----------------------------------------*/
-
-		if (ee()->input->post('PRV') == '')
-		{
-			ee()->lang->loadfile('channel');
-
-			return ee()->output->show_user_error('general', ee()->lang->line('channel_no_preview_template'));
-		}
-
-		ee()->functions->clear_caching('all', $_POST['PRV']);
-
-		require APPPATH.'libraries/Template.php';
-
-		ee()->TMPL = new EE_Template();
-
-		$preview = ( ! ee()->input->post('PRV')) ? '' : ee()->input->get_post('PRV');
-
-		if (strpos($preview, '/') === FALSE)
-		{
-			return FALSE;
-		}
-
-		$ex = explode("/", $preview);
-
-		if (count($ex) != 2)
-		{
-			return FALSE;
-		}
-
-		ee()->TMPL->run_template_engine($ex['0'], $ex['1']);
-	}
 
 	// --------------------------------------------------------------------	
 
@@ -284,15 +58,15 @@ class Channel_standalone extends Channel {
 		if ( ! $channel = ee()->TMPL->fetch_param('channel'))
 		{
 			return ee()->output->show_user_error('general', ee()->lang->line('channel_not_specified'));
-	  	}
-	  
-	  	// Fetch the action ID number.  Even though we don't need it until later
-	  	// we'll grab it here.  If not found it means the action table doesn't
-	  	// contain the ID, which means the user has not updated properly.  Ya know?
-	  	if ( ! $insert_action = ee()->functions->fetch_action_id('Channel', 'insert_new_entry'))
-	  	{
+		}
+		
+		// Fetch the action ID number.  Even though we don't need it until later
+		// we'll grab it here.  If not found it means the action table doesn't
+		// contain the ID, which means the user has not updated properly.  Ya know?
+		if ( ! $insert_action = ee()->functions->fetch_action_id('Channel', 'insert_new_entry'))
+		{
 			return ee()->output->show_user_error('general', ee()->lang->line('channel_no_action_found'));
-	  	}
+		}
 	
 		$this->theme_url = ee()->config->item('theme_folder_url').'cp_themes/'.ee()->config->item('cp_theme').'/';
 	
@@ -1135,62 +909,6 @@ class Channel_standalone extends Channel {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
-	/**
-	 * Combo Loaded Javascript for the Stand-Alone Entry Form
-	 *
-	 * Given the heafty amount of javascript needed for this form, we don't
-	 * want to kill page speeds, so we're going to combo load what is needed
-	 *
-	 * @return void
-	 */
-	function saef_javascript()
-	{
-		$scripts = array(
-				'ui'		=> array('core', 'widget', 'button', 'dialog'),
-				'plugins'	=> array('scrollable', 'scrollable.navigator', 
-										'ee_filebrowser', 'markitup',
-										'thickbox')
-			);
-
-		$type = (ee()->config->item('use_compressed_js') == 'n') ? 'src' : 'compressed';
-
-		if ( ! defined('PATH_JQUERY'))
-		{			
-			define('PATH_JQUERY', PATH_THEMES.'javascript/'.$type.'/jquery/');
-		}
-		
-		$output = '';
-		
-		foreach ($scripts as $key => $val)
-		{
-			foreach ($val as $script)
-			{
-				$filename = ($key == 'ui') ? 'jquery.ui.'.$script.'.js' : $script.'.js';
-				
-				$output .= file_get_contents(PATH_JQUERY.$key.'/'.$filename)."\n";
-			}
-		}
-		
-		if (ee()->input->get('use_live_url') == 'y')
-		{
-			$output .= $this->_url_title_js();
-		}
-		
-		ee()->load->helper('smiley');
-		
-		$output .= (ee()->config->item('use_compressed_js') != 'n') ? str_replace(array("\n", "\t"), '', smiley_js('', '', FALSE)) : smiley_js('', '', FALSE);
-
-		$output .= file_get_contents(PATH_THEMES.'javascript/'.$type.'/saef.js');
-
-		ee()->output->out_type = 'cp_asset';
-		ee()->output->set_header("Content-Type: text/javascript");
-		
-		ee()->output->set_header('Content-Length: '.strlen($output));
-		ee()->output->set_output($output);
-	}
-	
 	// --------------------------------------------------------------------
 	
 	/**
@@ -2222,116 +1940,6 @@ class Channel_standalone extends Channel {
 		return $chunk;
 	}
 
-	// --------------------------------------------------------------------	
-
-	/**
-	 * SAEF URL Title Javascript
-	 * 
-	 * This function adds url_title javascript to the js script compiled in saef_javascript()
-	 *
-	 * @return string
-	 */
-	function _url_title_js()
-	{
-		// js for URL Title
-		$convert_ascii = (ee()->config->item('auto_convert_high_ascii') == 'y') ? TRUE : FALSE;
-		$word_separator = ee()->config->item('word_separator') != "dash" ? '_' : '-';
-
-		// Foreign Character Conversion Javascript
-		include(APPPATH.'config/foreign_chars.php');
-
-		/* -------------------------------------
-		/*  'foreign_character_conversion_array' hook.
-		/*  - Allows you to use your own foreign character conversion array
-		/*  - Added 1.6.0
-		/* 	- Note: in 2.0, you can edit the foreign_chars.php config file as well
-		*/  
-			if (isset($this->extensions->extensions['foreign_character_conversion_array']))
-			{
-				$foreign_characters = $this->extensions->call('foreign_character_conversion_array');
-			}
-		/*
-		/* -------------------------------------*/
-
-		$foreign_replace = '';
-
-		foreach($foreign_characters as $old => $new)
-		{
-			$foreign_replace .= "if (c == '$old') {NewTextTemp += '$new'; continue;}\n\t\t\t\t";
-		}
-
-		$url_title_js = <<<YOYOYO
-
-function liveUrlTitle()
-{
-	var defaultTitle = '{$this->default_entry_title}';
-	var NewText = document.getElementById("title").value;
-
-	if (defaultTitle != '')
-	{
-		if (NewText.substr(0, defaultTitle.length) == defaultTitle)
-		{
-			NewText = NewText.substr(defaultTitle.length);
-		}
-	}
-
-	NewText = NewText.toLowerCase();
-	var separator = "{$word_separator}";
-
-	/* Foreign Character Attempt */
-
-	var NewTextTemp = '';
-	for(var pos=0; pos<NewText.length; pos++)
-	{
-		var c = NewText.charCodeAt(pos);
-
-		if (c >= 32 && c < 128)
-		{
-			NewTextTemp += NewText.charAt(pos);
-		}
-		else
-		{
-			{$foreign_replace}
-		}
-	}
-
-	var multiReg = new RegExp(separator + '{2,}', 'g');
-
-	NewText = NewTextTemp;
-
-	NewText = NewText.replace('/<(.*?)>/g', '');
-	NewText = NewText.replace(/\s+/g, separator);
-	NewText = NewText.replace(/\//g, separator);
-	NewText = NewText.replace(/[^a-z0-9\-\._]/g,'');
-	NewText = NewText.replace(/\+/g, separator);
-	NewText = NewText.replace(multiReg, separator);
-	NewText = NewText.replace(/-$/g,'');
-	NewText = NewText.replace(/_$/g,'');
-	NewText = NewText.replace(/^_/g,'');
-	NewText = NewText.replace(/^-/g,'');
-
-	if (document.getElementById("url_title"))
-	{
-		document.getElementById("url_title").value = "{$this->url_title_prefix}" + NewText;
-	}
-	else
-	{
-		document.forms['entryform'].elements['url_title'].value = "{$this->url_title_prefix}" + NewText;
-	}
-}
-
-YOYOYO;
-
-		$ret = $url_title_js;
-
-		if (ee()->config->item('use_compressed_js') != 'n')
-		{
-			return str_replace(array("\n", "\t"), '', $ret);			
-		}
-
-		return $ret;
-	}	
-	
 	// --------------------------------------------------------------------	
 
 	/**

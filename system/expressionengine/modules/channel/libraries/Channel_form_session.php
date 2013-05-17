@@ -1,6 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class SC_Session extends EE_Session
+class Channel_form_session extends EE_Session
 {
 	public $logged_out_member_id;
 	public $logged_out_group_id;

@@ -43,7 +43,7 @@ class Safecracker
 		//proceed if called from a template
 		if ( ! empty(ee()->TMPL))
 		{
-			$this->return_data = ee()->safecracker->entry_form();
+			$this->return_data = ee()->safecracker->entry_form($this);
 		}
 	}
 

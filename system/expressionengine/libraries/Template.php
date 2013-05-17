@@ -2997,7 +2997,7 @@ class EE_Template {
 				$str = str_replace('{PREVIEW_TEMPLATE}', $match[2][$i], $str);	
 			}
 		}
-		
+		/*
 		// Generate Stand-alone Publish form
 		if (preg_match_all("#{{NOCACHE_CHANNEL_FORM(.*?)}}(.+?){{/NOCACHE_FORM}}#s", $str, $match))
 		{
@@ -3030,6 +3030,7 @@ class EE_Template {
 				$str = str_replace('{PREVIEW_TEMPLATE}', (isset($_POST['PRV'])) ? $_POST['PRV'] : $this->fetch_param('preview'), $str);	
 			}
 		}
+		*/
 
 		return $str;
 	}

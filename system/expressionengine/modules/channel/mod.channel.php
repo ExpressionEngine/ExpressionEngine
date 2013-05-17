@@ -5199,26 +5199,6 @@ class Channel {
 		$WC = new Channel_calendar();
 		return $WC->calendar();
 	}
-
-	// ------------------------------------------------------------------------
-
-	/**
-	  *  Insert a new channel entry
-	  *
-	  * This function serves dual purpose:
-	  * 1. It allows submitted data to be previewed
-	  * 2. It allows submitted data to be inserted
-	  */
-	public function insert_new_entry()
-	{
-		if ( ! class_exists('Channel_standalone'))
-		{
-			require PATH_MOD.'channel/mod.channel_standalone.php';
-		}
-
-		$WS = new Channel_standalone();
-		$WS->insert_new_entry();
-	}
 	
 	// ------------------------------------------------------------------------
 
@@ -5368,18 +5348,17 @@ class Channel {
 
 	// ------------------------------------------------------------------------
 
-	/**
-	  *  Stand-alone version of the entry form
-	  */
-	public function entry_form($return_form = FALSE, $captcha = '')
+	public function form()
 	{
-		if ( ! class_exists('Channel_standalone'))
+		ee()->load->library('channel_form_lib');
+
+		if ( ! empty(ee()->TMPL))
 		{
-			require PATH_MOD.'channel/mod.channel_standalone.php';
+			require_once PATH_MOD.'channel/mod.channel_form.php';
+			return ee()->channel_form_lib->entry_form();
 		}
 
-		$WS = new Channel_standalone();
-		return $WS->entry_form($return_form, $captcha);
+		return '';
 	}
 
 	// ------------------------------------------------------------------------
@@ -5398,6 +5377,37 @@ class Channel {
 		return $channel_js->saef_javascript();
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * submit_entry
+	 * 
+	 * @return	void
+	 */
+	public function submit_entry()
+	{
+		//exit if not called as an action
+		if ( ! empty(ee()->TMPL) || ! ee()->input->get_post('ACT'))
+		{
+			return '';
+		}
+		
+		ee()->safecracker->submit_entry();
+	}
+
+	// --------------------------------------------------------------------	
+
+	/**
+	 * combo_loader
+	 * 
+	 * @return	void
+	 */
+	public function combo_loader()
+	{
+		ee()->load->library('channel_form_lib');
+		ee()->load->library('channel_form_javascript');
+		return ee()->channel_form_javascript->combo_load();
+	}
 }
 // END CLASS
 
