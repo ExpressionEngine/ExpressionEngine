@@ -629,7 +629,7 @@ class Member_settings extends Member {
 				if (ee()->session->userdata('member_id') != $this->cur_id)
 				{  
 					// Default is UTC?
-					$locale = ($default_fields['timezone'] == '') ? 'UTC' : $default_fields['timezone'];
+					$locale = ($row['timezone'] == '') ? 'UTC' : $row['timezone'];
 				}
 
 				$content = $this->_var_swap_single(
