@@ -210,7 +210,7 @@ $lang = array(
 'Publish Page Customization',
 
 'show_button_cluster' =>
-'Display Rich Formatting Buttons',
+'Display Formatting Buttons',
 
 'paths' =>
 'Path Settings',
