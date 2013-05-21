@@ -41,6 +41,7 @@ class Channel {
 	public $cfields					= array();
 	public $dfields					= array();
 	public $rfields					= array();
+	public $gfields					= array();
 	public $mfields					= array();
 	public $pfields					= array();
 	public $categories				= array();
@@ -401,6 +402,7 @@ class Channel {
 		$this->cfields = $fields['custom_channel_fields'];
 		$this->dfields = $fields['date_fields'];
 		$this->rfields = $fields['relationship_fields'];
+		$this->gfields = $fields['grid_fields'];
 		$this->pfields = $fields['pair_custom_fields'];
 
   		ee()->session->cache['channel']['custom_channel_fields']	= $this->cfields;

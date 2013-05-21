@@ -116,8 +116,7 @@
 		 */
 		_addMinimumRows: function()
 		{
-			// Figure out how many rows we need to add, plus 2 to account for
-			// the blank template row and empty field row
+			// Figure out how many rows we need to add
 			var rowsCount = this._getRows().size(),
 				neededRows = this.settings.grid_min_rows - rowsCount;
 

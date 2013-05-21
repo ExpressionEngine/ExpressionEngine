@@ -269,21 +269,41 @@ class Grid_model extends CI_Model {
  	/**
  	 * Returns entry row data for a given entry ID and field ID
  	 *
- 	 * @param	int		Entry ID to get row data for
+ 	 * @param	array	Entry IDs to get row data for
  	 * @param	int		Field ID to get row data for
  	 * @return	array	Row data
  	 */
- 	public function get_entry_rows($entry_ids, $field_id)
+ 	public function get_entry_rows($entry_ids, $field_id, $options = array())
  	{
  		if ( ! is_array($entry_ids))
  		{
  			$entry_ids = array($entry_ids);
  		}
+
+ 		if (isset($options['row_id']) && ! empty($options['row_id']))
+ 		{
+ 			ee()->functions->ar_andor_string($options['row_id'], 'row_id');
+ 		}
+
+ 		ee()->load->helper('array_helper');
  		
- 		return ee()->db->where_in('entry_id', $entry_ids)
- 			->order_by('row_order')
+ 		$rows = ee()->db->where_in('entry_id', $entry_ids)
+ 			->order_by(
+ 				element('orderby', $options, 'row_id'),
+ 				element('sort', $options, 'asc')
+ 			)
+ 			->offset(element('offset', $options, 0))
  			->get($this->_table_prefix . $field_id)
  			->result_array();
+
+ 		$return_data = array();
+ 		
+ 		foreach ($rows as $row)
+ 		{
+ 			$return_data[$row['entry_id']][] = $row;
+ 		}
+
+ 		return $return_data;
  	}
 
  	// ------------------------------------------------------------------------
@@ -295,26 +315,40 @@ class Grid_model extends CI_Model {
  	 * @param	boolean	Skip the cache and get a fresh set of columns
  	 * @return	array	Settings from grid_columns table
  	 */
- 	public function get_columns_for_field($field_id, $cache = TRUE)
+ 	public function get_columns_for_field($field_ids, $cache = TRUE)
  	{
- 		if (isset($this->_columns[$field_id]) && $cache)
+ 		$multi_column = is_array($field_ids);
+
+ 		if ( ! $multi_column)
  		{
- 			return $this->_columns[$field_id];
+ 			if (isset($this->_columns[$field_ids]) && $cache)
+ 			{
+ 				return $this->_columns[$field_ids];
+ 			}
+
+ 			$field_ids = array($field_ids);
  		}
 
- 		$columns = ee()->db->where('field_id', $field_id)
+ 		$columns = ee()->db->where_in('field_id', $field_ids)
  			->order_by('col_order')
  			->get($this->_table)
  			->result_array();
 
- 		$this->_columns[$field_id] = array();
  		foreach ($columns as &$column)
  		{
  			$column['col_settings'] = json_decode($column['col_settings'], TRUE);
- 			$this->_columns[$field_id][$column['col_id']] = $column;
+ 			$this->_columns[$column['field_id']][$column['col_id']] = $column;
+ 		}
+
+ 		foreach ($field_ids as $field_id)
+ 		{
+ 			if ( ! isset($this->_columns[$field_id]))
+ 			{
+ 				$this->_columns[$field_id] = array();
+ 			}
  		}
  		
- 		return $this->_columns[$field_id];
+ 		return ($multi_column) ? $this->_columns : $this->_columns[$field_id];
  	}
 
  	// ------------------------------------------------------------------------

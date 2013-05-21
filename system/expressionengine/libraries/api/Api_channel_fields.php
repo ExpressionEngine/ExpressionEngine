@@ -155,6 +155,10 @@ class Api_channel_fields extends Api {
 			{
 				$rfields[$row['site_id']][$row['field_name']] = $row['field_id'];
 			}
+			elseif ($row['field_type'] == 'grid')
+			{
+				$gfields[$row['site_id']][$row['field_name']] = $row['field_id'];
+			}
 			else
 			{
 				$field_handler = $this->field_types[$row['field_type']];
@@ -186,6 +190,7 @@ class Api_channel_fields extends Api {
 			'custom_channel_fields'	=> $cfields,
 			'date_fields'			=> $dfields,
 			'relationship_fields'	=> $rfields,
+			'grid_fields'			=> $gfields,
 			'pair_custom_fields'	=> $pfields
 		);
 	}
