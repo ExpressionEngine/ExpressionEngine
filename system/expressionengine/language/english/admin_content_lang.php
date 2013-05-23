@@ -1026,6 +1026,31 @@ $lang = array(
 'Your field name exceeds the maximum length and has been truncated.  Please review.',
 
 //----------------------------
+// Channel Form Settings
+//----------------------------
+
+'channel_form_settings' =>
+'Channel Form Settings',
+
+'channel_form_settings_updated' =>
+'Channel Form Settings Saved',
+
+'channel_form_default_status' =>
+'Default Status',
+
+'channel_form_allow_guest_posts' =>
+'Allow Guest Posts?',
+
+'channel_form_guest_captcha' =>
+'Guest Captcha?',
+
+'channel_form_guest_author' =>
+'Guest Author',
+
+'channel_form_default_status' =>
+'-- Use Channel Default --',
+
+//----------------------------
 // Channel Entries API
 //----------------------------
 

@@ -43,6 +43,8 @@ class Admin_content extends CP_Controller {
 		parent::__construct();
 
 		$this->lang->loadfile('admin');
+		$this->lang->loadfile('admin_content');
+
 		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content', lang('admin_content'));
 		
 		// Note- no access check here to allow the publish page access to categories
@@ -88,7 +90,6 @@ class Admin_content extends CP_Controller {
         ));
 
 		$this->load->library('table');
-		$this->lang->loadfile('admin_content');
 		$this->load->model('channel_model');
 
 		$this->jquery->tablesorter('.mainTable', '{
@@ -124,7 +125,6 @@ class Admin_content extends CP_Controller {
 			return $this->channel_update();
 		}
 
-		$this->lang->loadfile('admin_content');
 		$this->load->helper('snippets');
 		$this->load->model('channel_model');
 		$this->load->model('category_model');
@@ -239,7 +239,6 @@ class Admin_content extends CP_Controller {
 		// Get modules that are installed
 		$this->cp->get_installed_modules();
 
-		$this->lang->loadfile('admin_content');
 		$this->load->library('table');
 		$this->load->helper('snippets');
 		$this->load->model('channel_model');
@@ -447,8 +446,6 @@ class Admin_content extends CP_Controller {
 	function channel_update()
 	{
 		$this->_restrict_prefs_access();
-
-		$this->lang->loadfile('admin_content');
 
 		unset($_POST['channel_prefs_submit']); // submit button
 
@@ -711,8 +708,6 @@ class Admin_content extends CP_Controller {
 		$data['field_group'] = ($this->input->post('field_group') != FALSE && $this->input->post('field_group') != '') ? $this->input->post('field_group') : NULL;
 		$data['status_group'] = ($this->input->post('status_group') != FALSE && $this->input->post('status_group') != '') ? $this->input->post('status_group') : NULL;
 
-		$this->lang->loadfile('admin_content');
-
 		if (isset($_POST['cat_group']) && is_array($_POST['cat_group']))
 		{
 			$data['cat_group'] = ltrim(implode('|', $_POST['cat_group']), '|');
@@ -819,7 +814,6 @@ class Admin_content extends CP_Controller {
 			show_error(lang('not_authorized'));
 		}
 
-		$this->lang->loadfile('admin_content');
 		$this->load->model(array(
  			'channel_model', 'category_model', 'status_model', 'field_model'
 		));
@@ -916,7 +910,6 @@ class Admin_content extends CP_Controller {
 			show_error(lang('not_authorized'));
 		}
 
-		$this->lang->loadfile('admin_content');
 		$this->load->model('channel_model');
 
 		$this->view->cp_page_title = lang('delete_channel');
@@ -961,7 +954,6 @@ class Admin_content extends CP_Controller {
 			show_error(lang('not_authorized'));
 		}
 
-		$this->lang->loadfile('admin_content');
 		$this->load->model('channel_model');
 
 		$query = $this->channel_model->get_channel_info($channel_id);
@@ -1001,6 +993,151 @@ class Admin_content extends CP_Controller {
 
 		$this->session->set_flashdata('message_success', lang('channel_deleted').NBS.$channel_title);
 		$this->functions->redirect(BASE.AMP.'C=admin_content'.AMP.'M=channel_management');
+	}
+
+	// --------------------------------------------------------------------
+
+	function channel_form_settings()
+	{
+		$this->_restrict_prefs_access();
+
+		$this->load->library('table');
+
+		$all_channels = array();
+		$all_settings = array();
+		$all_statuses = array();
+		$all_authors = array();
+
+		$this->load->model('channel_model');
+		$channels = $this->channel_model->get_channels()->result();
+
+		$default_statuses = array(
+			''		 => lang('channel_form_default_status'),
+			'open'	 => lang('open'),
+			'closed' => lang('closed')
+		);
+
+		foreach ($channels as &$channel)
+		{
+			$channel->statuses = $default_statuses;
+			$all_channels[$channel->channel_id] = $channel;
+			$all_statuses[$channel->status_group] = $channel->channel_id;
+		}
+
+		$status_group_ids = array_filter(array_keys($all_statuses));
+
+		if (count($status_group_ids))
+		{
+			$statuses = $this->db
+				->where_in('group_id', $status_group_ids)
+				->get('statuses')
+				->result();
+
+			foreach ($statuses as $status)
+			{
+				$channel_id = $all_statuses[$status->group_id];
+				$all_channels[$channel_id]['statuses'][$status->status] = $status->status;
+			}
+		}
+
+		$this->load->model('member_model');
+		$authors = $this->member_model->get_authors()->result();
+
+		foreach ($authors as $author)
+		{
+			$all_authors[$author->member_id] = $author->username;
+		}
+
+		$channels = array();
+		$default = array(
+			'default_author'	=> 0,
+			'default_status'	=> '',
+			'require_captcha'	=> 'n',
+			'allow_guest_posts'	=> 'n'
+		);
+
+		$settings = $this->db
+			->where_in('channel_id', array_keys($all_channels))
+			->get('channel_form_settings')
+			->result();
+
+		foreach ($settings as &$row)
+		{
+			$all_settings[$row->channel_id] = $row;
+		}
+
+		foreach ($all_channels as $id => $channel)
+		{
+			$channels[$id] = $default;
+
+			if (isset($all_settings[$id]))
+			{
+				$channels[$id] = array_merge($channels[$id], (array) $all_settings[$id]);
+			}
+			
+			$channels[$id]['title'] = $channel->channel_name;
+			$channels[$id]['channel_id'] = $id;
+			$channels[$id]['statuses'] = $channel->statuses;
+			$channels[$id]['authors'] = $all_authors;
+		}
+
+		$this->view->cp_page_title = lang('channel_form_settings');
+
+		$this->cp->add_js_script('file', 'cp/admin_content/channel_form_settings');
+		$this->cp->render('admin/channel_form_settings', compact('channels'));
+	}
+
+	// --------------------------------------------------------------------
+
+	function update_channel_form_settings()
+	{
+		$this->_restrict_prefs_access();
+
+		$this->load->model('channel_model');
+		$channels = $this->channel_model->get_channels()->result();
+
+		$settings = array();
+		$default = array(
+			'default_author'	=> 0,
+			'default_status'	=> '',
+			'require_captcha'	=> 'n',
+			'allow_guest_posts'	=> 'n'
+		);
+
+		$site_id		   = $this->config->item('site_id');
+		$default_status    = (array) $this->input->post('default_status');
+		$default_author	   = (array) $this->input->post('default_author');
+		$require_captcha   = (array) $this->input->post('require_captcha');
+		$allow_guest_posts = (array) $this->input->post('allow_guest_posts');
+
+		foreach ($channels as $channel)
+		{
+			$id = $channel->channel_id;
+
+			$settings[$id] = $default;
+			$settings[$id]['site_id'] = $site_id;
+			$settings[$id]['channel_id'] = $id;
+
+			if (isset($default_status[$id]))
+			{
+				$settings[$id]['default_status'] = $default_status[$id];
+			}
+
+			if ($allow_guest_posts[$id] == 'y')
+			{
+				$settings[$id]['default_author'] = $default_author[$id];
+				$settings[$id]['require_captcha'] = $require_captcha[$id];
+				$settings[$id]['allow_guest_posts'] = $allow_guest_posts[$id];
+			}
+		}
+
+		// clear all for this site id and re-insert
+		$this->db->delete('channel_form_settings', array('site_id' => $site_id));
+		$this->db->insert_batch('channel_form_settings', $settings);
+
+
+		$this->session->set_flashdata('message_success', lang('channel_form_settings_updated'));
+		$this->functions->redirect(BASE.AMP.'C=admin_content'.AMP.'M=channel_form_settings');
 	}
 
 	// --------------------------------------------------------------------
@@ -1852,7 +1989,6 @@ class Admin_content extends CP_Controller {
 			show_error(lang('not_authorized'));
 		}
 
-		$this->lang->loadfile('admin_content');
 		$this->load->model('category_model');
 
 		$group_id = $this->category_model->delete_category($cat_id);
