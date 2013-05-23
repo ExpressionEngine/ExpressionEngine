@@ -53,6 +53,79 @@ class EE_Grid_parser {
 
 		return NULL;
 	}
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Instantiates fieldtype handler and assigns information to the object
+	 *
+	 * @param	array	Column information
+	 * @param	string	Unique row identifier
+	 * @return	object	Fieldtype object
+	 */
+	public function instantiate_fieldtype($column, $row_name = NULL, $field_id = 0, $entry_id = 0)
+	{
+		// Instantiate fieldtype
+		$fieldtype = ee()->api_channel_fields->setup_handler($column['col_type'], TRUE);
+
+		// Assign settings to fieldtype manually so they're available like
+		// normal field settings
+		$fieldtype->field_id = $column['col_id'];
+		$fieldtype->field_name = 'col_id_'.$column['col_id'];
+
+		// Assign fieldtype column settings and any other information that will
+		// be helpful to be accessible by fieldtypes
+		$fieldtype->settings = array_merge(
+			$column['col_settings'],
+			array(
+				'field_required'	=> $column['col_required'],
+				'col_id'			=> $column['col_id'],
+				'col_name'			=> $column['col_name'],
+				'col_required'		=> $column['col_required'],
+				'entry_id'			=> $entry_id,
+				'grid_field_id'		=> $field_id,
+				'grid_row_name'		=> $row_name
+			)
+		);
+
+		return $fieldtype;
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Calls a method on a fieldtype and returns the result. If the method
+	 * exists with a prefix of grid_, that will be called in place of it.
+	 *
+	 * @param	string	Method name to call
+	 * @param	string	Data to send to method
+	 * @return	string	Returned data from fieldtype method
+	 */
+	public function call($method, $data, $multi_param = FALSE)
+	{
+		$ft_api = ee()->api_channel_fields;
+
+		// Add fieldtype package path
+		$_ft_path = $ft_api->ft_paths[$ft_api->field_type];
+		ee()->load->add_package_path($_ft_path, FALSE);
+
+		$ft_method = $ft_api->check_method_exists('grid_'.$method)
+			? 'grid_'.$method : $method;
+
+		// If single parameter, put into an array, otherwise if it's
+		// multi-parameter, parameters will already be in an array
+		if ( ! $multi_param)
+		{
+			$data = array($data);
+		}
+
+		$result = ($ft_api->check_method_exists($ft_method))
+			? $ft_api->apply($ft_method, $data) : NULL;
+
+		ee()->load->remove_package_path($_ft_path);
+
+		return $result;
+	}
 }
 
 class EE_Grid_field_parser {
@@ -264,8 +337,10 @@ class EE_Grid_field_parser {
 	 * @param	string	Tag data at this point of the channel parsing
 	 * @return	string	Tag data with all Grid fields parsed
 	 */
-	public function parse($entry_id, $tagdata)
+	public function parse($channel_row, $tagdata)
 	{
+		$entry_id = $channel_row['entry_id'];
+
 		// Create an easily-traversible array of columns by field ID
 		// and column name
 		$cols_by_field = array();
@@ -325,7 +400,15 @@ class EE_Grid_field_parser {
 							{
 								// TODO: pass to fieldtype for parsing
 								$column = $cols_by_field[$field_id][$value[2]];
-								$replace_data = $row['col_id_'.$column['col_id']];
+								$channel_row['col_id_'.$column['col_id']] = $row['col_id_'.$column['col_id']];
+								$replace_data = $this->replace_tag(
+									$column,
+									$field_id,
+									$data['field_name'],
+									$entry_id,
+									$value[2],
+									$channel_row
+								);
 							}
 							// Check to see if this is a field in the table for
 							// this field, e.g. row_id
@@ -363,6 +446,55 @@ class EE_Grid_field_parser {
 		}
 		
 		return $tagdata;
+	}
+
+	public function replace_tag($column, $field_id, $field_name, $entry_id, $tag, $data)
+	{
+		$fieldtype = ee()->grid_parser->instantiate_fieldtype($column, NULL, $field_id, $entry_id);
+
+		if ( ! $fieldtype)
+		{
+			return ee()->typography->parse_type(
+				ee()->functions->encode_ee_tags($data['col_id_'.$column['col_id']])
+			);
+		}
+
+		$unprefixed_tag	= preg_replace('/^'.$field_name.'/', '', $tag);
+		$field_name		= substr($unprefixed_tag.' ', 0, strpos($unprefixed_tag.' ', ' '));
+
+		$param_string	= substr($unprefixed_tag.' ', strlen($field_name));
+
+		$modifier = '';
+		$modifier_loc = strpos($field_name, ':');
+
+		if ($modifier_loc !== FALSE)
+		{
+			$modifier = substr($field_name, $modifier_loc + 1);
+			$field_name = substr($field_name, 0, $modifier_loc);
+		}
+
+		$params_array = array();
+
+		$parse_fnc = ($modifier) ? 'replace_'.$modifier : 'replace_tag';
+
+		if ($param_string)
+		{
+			$params_array = ee()->functions->assign_parameters($param_string);
+		}
+
+		$fieldtype->_init(array('row' => $data));
+
+		$data = ee()->grid_parser->call('pre_process', $data['col_id_'.$column['col_id']]);
+
+		$params = array($data, $params_array, FALSE);
+
+		if ($modifier && ! method_exists($obj, $parse_fnc))
+		{
+			$parse_fnc = 'replace_tag_catchall';
+			$params[] = $mofifier;
+		}
+
+		return ee()->grid_parser->call($parse_fnc, $params, TRUE);
 	}
 }
 

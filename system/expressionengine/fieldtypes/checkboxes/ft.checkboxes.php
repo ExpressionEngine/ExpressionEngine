@@ -205,7 +205,7 @@ class Checkboxes_ft extends EE_Fieldtype {
 		return ee()->typography->parse_type(
 				ee()->functions->encode_ee_tags($entry),
 				array(
-						'text_format'	=> $this->row['field_ft_'.$this->field_id],
+						'text_format'	=> 'none',
 						'html_format'	=> $this->row['channel_html_formatting'],
 						'auto_links'	=> $this->row['channel_auto_link_urls'],
 						'allow_img_url' => $this->row['channel_allow_img_urls']

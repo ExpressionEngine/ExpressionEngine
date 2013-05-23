@@ -36,6 +36,7 @@ class Grid_lib {
 	public function __construct()
 	{
 		ee()->load->model('grid_model');
+		ee()->load->library('grid_parser');
 	}
 
 	// ------------------------------------------------------------------------
@@ -123,10 +124,15 @@ class Grid_lib {
 	 */
 	protected function _publish_field_cell($column, $row_data = NULL)
 	{
-		$this->_instantiate_fieldtype($column);
+		ee()->grid_parser->instantiate_fieldtype(
+			$column,
+			NULL,
+			$this->field_id,
+			$this->entry_id
+		);
 
 		// Call the fieldtype's field display method and capture the output
-		$display_field = $this->_call(
+		$display_field = ee()->grid_parser->call(
 			'display_field',
 			form_prep($row_data['col_id_'.$column['col_id']])
 		);
@@ -212,7 +218,13 @@ class Grid_lib {
 			{
 				$cell_data = isset($data['col_id_'.$col_id]) ? $data['col_id_'.$col_id] : '';
 
-				$fieldtype = $this->_instantiate_fieldtype($column, $row_name);
+				$fieldtype = ee()->grid_parser->instantiate_fieldtype(
+					$column,
+					$row_name,
+					$this->field_id,
+					$this->entry_id
+				);
+
 				$fieldtype->settings['grid_row_id'] = $rows[$i]['row_id'];
 
 				$this->_call('post_save', $cell_data);
@@ -273,8 +285,8 @@ class Grid_lib {
 		// the row IDs
 		foreach ($columns as $column)
 		{
-			$this->_instantiate_fieldtype($column);
-			$this->_call('delete', $row_ids);
+			ee()->grid_parser->instantiate_fieldtype($column, NULL, $this->field_id, 0);
+			ee()->grid_parser->call('delete', $row_ids);
 		}
 
 		ee()->grid_model->delete_rows($row_ids, $this->field_id);
@@ -341,7 +353,12 @@ class Grid_lib {
 					}
 				}
 				
-				$fieldtype = $this->_instantiate_fieldtype($column, $row_id);
+				$fieldtype = ee()->grid_parser->instantiate_fieldtype(
+					$column,
+					$row_id,
+					$this->field_id,
+					$this->entry_id
+				);
 
 				// Pass Grid row ID to fieldtype if it's an existing row
 				if (strpos($row_id, 'row_id_') !== FALSE)
@@ -350,7 +367,7 @@ class Grid_lib {
 				}
 
 				// Call the fieldtype's validate/save method and capture the output
-				$result = $this->_call($method, $row[$col_id]);
+				$result = ee()->grid_parser->call($method, $row[$col_id]);
 
 				// For validation, gather errors and validated data
 				if ($method == 'validate')
@@ -542,9 +559,9 @@ class Grid_lib {
 			$column['col_settings'] = array();
 		}
 
-		$this->_instantiate_fieldtype($column);
+		ee()->grid_parser->instantiate_fieldtype($column, NULL, $this->field_id, 0);
 
-		if ( ! ($settings = $this->_call('save_settings', $column['col_settings'])))
+		if ( ! ($settings = ee()->grid_parser->call('save_settings', $column['col_settings'])))
 		{
 			return $column['col_settings'];
 		}
@@ -615,7 +632,7 @@ class Grid_lib {
 			);
 		}
 
-		$this->_instantiate_fieldtype($column);
+		ee()->grid_parser->instantiate_fieldtype($column, NULL, $this->field_id, 0);
 
 		// Otherwise, return the prepopulated settings form based on column settings
 		return $this->_view_for_col_settings(
@@ -660,43 +677,6 @@ class Grid_lib {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Instantiates fieldtype handler and assigns information to the object
-	 *
-	 * @param	array	Column information
-	 * @param	string	Unique row identifier
-	 * @return	object	Fieldtype object
-	 */
-	protected function _instantiate_fieldtype($column, $row_name = NULL)
-	{
-		// Instantiate fieldtype
-		$fieldtype = ee()->api_channel_fields->setup_handler($column['col_type'], TRUE);
-
-		// Assign settings to fieldtype manually so they're available like
-		// normal field settings
-		$fieldtype->field_id = $column['col_id'];
-		$fieldtype->field_name = 'col_id_'.$column['col_id'];
-
-		// Assign fieldtype column settings and any other information that will
-		// be helpful to be accessible by fieldtypes
-		$fieldtype->settings = array_merge(
-			$column['col_settings'],
-			array(
-				'field_required'	=> $column['col_required'],
-				'col_id'			=> $column['col_id'],
-				'col_name'			=> $column['col_name'],
-				'col_required'		=> $column['col_required'],
-				'entry_id'			=> $this->entry_id,
-				'grid_field_id'		=> $this->field_id,
-				'grid_row_name'		=> $row_name
-			)
-		);
-
-		return $fieldtype;
-	}
-
-	// ------------------------------------------------------------------------
-
-	/**
 	 * Performes find and replace for input names in order to namespace them
 	 * for a POST array
 	 *
@@ -711,30 +691,6 @@ class Grid_lib {
 			$replace,
 			$search
 		);
-	}
-
-	// ------------------------------------------------------------------------
-
-	/**
-	 * Calls a method on a fieldtype and returns the result. If the method
-	 * exists with a prefix of grid_, that will be called in place of it.
-	 *
-	 * @param	string	Method name to call
-	 * @param	string	Data to send to method
-	 * @return	string	Returned data from fieldtype method
-	 */
-	protected function _call($method, $data)
-	{
-		$ft_method = ee()->api_channel_fields->check_method_exists('grid_'.$method)
-			? 'grid_'.$method : $method;
-
-		// If no method is implemented, bail out
-		if ( ! ee()->api_channel_fields->check_method_exists($ft_method))
-		{
-			return NULL;
-		}
-
-		return ee()->api_channel_fields->apply($ft_method, array($data));
 	}
 }
 

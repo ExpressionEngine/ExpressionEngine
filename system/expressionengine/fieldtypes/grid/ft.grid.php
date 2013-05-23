@@ -230,6 +230,8 @@ class Grid_ft extends EE_Fieldtype {
 		return $data;
 	}
 
+	// --------------------------------------------------------------------
+
 	public function post_save_settings($data)
 	{
 		// Need to get the field ID of the possibly newly-created field, so
@@ -240,6 +242,8 @@ class Grid_ft extends EE_Fieldtype {
 		$this->_load_grid_lib();
 		ee()->grid_lib->apply_settings($data);
 	}
+
+	// --------------------------------------------------------------------
 
 	public function settings_modify_column($data)
 	{

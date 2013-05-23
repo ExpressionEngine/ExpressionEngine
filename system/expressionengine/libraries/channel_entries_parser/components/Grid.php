@@ -84,8 +84,6 @@ class EE_Channel_grid_parser implements EE_Channel_parser_component {
 			return $tagdata;
 		}
 
-		$row = $obj->row();
-
-		return $grid_parser->parse($row['entry_id'], $tagdata);
+		return $grid_parser->parse($obj->row(), $tagdata);
 	}
 }
