@@ -370,6 +370,8 @@ class EE_Grid_field_parser {
 				$field_data = array();
 			}
 
+			$field_id = $data['field_id'];
+
 			$open_tag_quoted = preg_quote($open_tag, '/');
 			$closing_tag = preg_quote($data['field_name'], '/');
 
@@ -381,8 +383,6 @@ class EE_Grid_field_parser {
 					PREG_SET_ORDER)
 				)
 			{
-				$field_id = $data['field_id'];
-
 				// Loop through all matching Grid fields
 				foreach ($matches as $match)
 				{
@@ -395,18 +395,48 @@ class EE_Grid_field_parser {
 
 						foreach ($data['fields'] as $key => $value)
 						{
-							// Check to see if this field is a column field
-							if (isset($cols_by_field[$field_id][$value[2]]))
+							$field = ee()->api_channel_fields->get_single_field($value[2], $data['field_name']);
+
+							// Get any field pairs
+							$pchunks = ee()->api_channel_fields->get_pair_field(
+								$match[1],
+								$field['field_name'],
+								$data['field_name'].':'
+							);
+
+							// Work through field pairs first
+							foreach ($pchunks as $chk_data)
 							{
-								// TODO: pass to fieldtype for parsing
-								$column = $cols_by_field[$field_id][$value[2]];
+								list($modifier, $content, $params, $chunk) = $chk_data;
+
+								$column = $cols_by_field[$field_id][$field['field_name']];
 								$channel_row['col_id_'.$column['col_id']] = $row['col_id_'.$column['col_id']];
 								$replace_data = $this->replace_tag(
 									$column,
 									$field_id,
-									$data['field_name'],
 									$entry_id,
-									$value[2],
+									array(
+										'modifier'	=> $modifier,
+										'params'	=> $params
+									),
+									$channel_row,
+									$content
+								);
+
+								$grid_row = str_replace($chunk, $replace_data, $grid_row);
+							}
+
+							// Now work through any single variables
+							if (isset($cols_by_field[$field_id][$field['field_name']]) &&
+								strpos($grid_row, $value[0]) !== FALSE)
+							{
+								$column = $cols_by_field[$field_id][$field['field_name']];
+								$channel_row['col_id_'.$column['col_id']] = $row['col_id_'.$column['col_id']];
+								$replace_data = $this->replace_tag(
+									$column,
+									$field_id,
+									$entry_id,
+									$field,
 									$channel_row
 								);
 							}
@@ -448,7 +478,9 @@ class EE_Grid_field_parser {
 		return $tagdata;
 	}
 
-	public function replace_tag($column, $field_id, $field_name, $entry_id, $tag, $data)
+	// --------------------------------------------------------------------
+
+	public function replace_tag($column, $field_id, $entry_id, $field, $data, $content = FALSE, $fieldtype = FALSE)
 	{
 		$fieldtype = ee()->grid_parser->instantiate_fieldtype($column, NULL, $field_id, $entry_id);
 
@@ -459,39 +491,20 @@ class EE_Grid_field_parser {
 			);
 		}
 
-		$unprefixed_tag	= preg_replace('/^'.$field_name.'/', '', $tag);
-		$field_name		= substr($unprefixed_tag.' ', 0, strpos($unprefixed_tag.' ', ' '));
-
-		$param_string	= substr($unprefixed_tag.' ', strlen($field_name));
-
-		$modifier = '';
-		$modifier_loc = strpos($field_name, ':');
-
-		if ($modifier_loc !== FALSE)
-		{
-			$modifier = substr($field_name, $modifier_loc + 1);
-			$field_name = substr($field_name, 0, $modifier_loc);
-		}
-
-		$params_array = array();
+		$modifier = $field['modifier'];
 
 		$parse_fnc = ($modifier) ? 'replace_'.$modifier : 'replace_tag';
-
-		if ($param_string)
-		{
-			$params_array = ee()->functions->assign_parameters($param_string);
-		}
 
 		$fieldtype->_init(array('row' => $data));
 
 		$data = ee()->grid_parser->call('pre_process', $data['col_id_'.$column['col_id']]);
 
-		$params = array($data, $params_array, FALSE);
+		$params = array($data, $field['params'], $content);
 
-		if ($modifier && ! method_exists($obj, $parse_fnc))
+		if ($modifier && ! method_exists($fieldtype, $parse_fnc))
 		{
 			$parse_fnc = 'replace_tag_catchall';
-			$params[] = $mofifier;
+			$params[] = $modifier;
 		}
 
 		return ee()->grid_parser->call($parse_fnc, $params, TRUE);

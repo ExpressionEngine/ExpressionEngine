@@ -59,6 +59,8 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
 		{
 			$pfield_names = array_intersect($channel->cfields[$site_id], array_keys($pfields));
 
+			$pfield_chunk[$site_id] = array();
+
 			foreach($pfield_names as $field_name => $field_id)
 			{
 				if ( ! $pre->has_tag_pair($field_name))
@@ -66,55 +68,11 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
 					continue;
 				}
 
-				$offset = 0;
-				$field_name = $prefix.$field_name;
-				
-				while (($end = strpos($tagdata, LD.'/'.$field_name, $offset)) !== FALSE)
-				{
-					// This hurts soo much. Using custom fields as pair and single vars in the same
-					// channel tags could lead to something like this: {field}...{field}inner{/field}
-					// There's no efficient regex to match this case, so we'll find the last nested
-					// opening tag and re-cut the chunk.
-
-					if (preg_match("/".LD."{$field_name}((?::\S+)?)(\s.*?)?".RD."(.*?)".LD.'\/'."{$field_name}\\1".RD."/s", $tagdata, $matches, 0, $offset))
-					{
-						$chunk = $matches[0];
-						$modifier = $matches[1];
-						$params = $matches[2];
-						$content = $matches[3];
-
-						// We might've sandwiched a single tag - no good, check again (:sigh:)
-						if ((strpos($chunk, LD.$field_name.$modifier, 1) !== FALSE) && preg_match_all("/".LD."{$field_name}{$modifier}(\s.*?)?".RD."/s", $chunk, $match))
-						{
-							// Let's start at the end
-							$idx = count($match[0]) - 1;
-							$tag = $match[0][$idx];
-							
-							// Reassign the parameter
-							$params = $match[1][$idx];
-
-							// Cut the chunk at the last opening tag
-							$offset = strrpos($chunk, $tag);
-							$chunk = substr($chunk, $offset);
-							$chunk = strstr($chunk, LD.$field_name);
-							$content = substr($chunk, strlen($tag), -strlen(LD.'/'.$field_name.RD));
-						}
-
-						$params = ee()->functions->assign_parameters($params);
-						$params = $params ? $params : array();
-
-						$chunk_array = array(
-							ltrim($modifier, ':'),
-							$content,
-							$params,
-							$chunk
-						);
-
-						$pfield_chunk[$site_id][$field_name][] = $chunk_array;
-					}
-					
-					$offset = $end + 1;
-				}
+				$pfield_chunk[$site_id][$field_name] = ee()->api_channel_fields->get_pair_field(
+					$tagdata,
+					$field_name,
+					$prefix
+				);
 			}
 		}
 

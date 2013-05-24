@@ -1785,6 +1785,102 @@ class Api_channel_fields extends Api {
 		
 		return $vars;
 	}
+
+	/**
+	 * Gets field pair template tags for a specified field name in specified
+	 * tag data with an optional prefix
+	 *
+	 * @param	string	Tag data
+	 * @param	string	Field name to get variables for
+	 * @param	string	Optional tag prefix, i.e. for Relationships or Grid
+	 * @return	array	Structured tag pair template tags
+	 */
+	public function get_pair_field($tagdata, $field_name, $prefix = '')
+	{
+		$pfield_chunk = array();
+		$offset = 0;
+		$field_name = $prefix.$field_name;
+		
+		while (($end = strpos($tagdata, LD.'/'.$field_name, $offset)) !== FALSE)
+		{
+			// This hurts soo much. Using custom fields as pair and single vars in the same
+			// channel tags could lead to something like this: {field}...{field}inner{/field}
+			// There's no efficient regex to match this case, so we'll find the last nested
+			// opening tag and re-cut the chunk.
+
+			if (preg_match("/".LD."{$field_name}((?::\S+)?)(\s.*?)?".RD."(.*?)".LD.'\/'."{$field_name}\\1".RD."/s", $tagdata, $matches, 0, $offset))
+			{
+				$chunk = $matches[0];
+				$modifier = $matches[1];
+				$params = $matches[2];
+				$content = $matches[3];
+
+				// We might've sandwiched a single tag - no good, check again (:sigh:)
+				if ((strpos($chunk, LD.$field_name.$modifier, 1) !== FALSE) && preg_match_all("/".LD."{$field_name}{$modifier}(\s.*?)?".RD."/s", $chunk, $match))
+				{
+					// Let's start at the end
+					$idx = count($match[0]) - 1;
+					$tag = $match[0][$idx];
+					
+					// Reassign the parameter
+					$params = $match[1][$idx];
+
+					// Cut the chunk at the last opening tag
+					$offset = strrpos($chunk, $tag);
+					$chunk = substr($chunk, $offset);
+					$chunk = strstr($chunk, LD.$field_name);
+					$content = substr($chunk, strlen($tag), -strlen(LD.'/'.$field_name.RD));
+				}
+
+				$params = ee()->functions->assign_parameters($params);
+				$params = $params ? $params : array();
+
+				$chunk_array = array(
+					ltrim($modifier, ':'),
+					$content,
+					$params,
+					$chunk
+				);
+
+				$pfield_chunk[] = $chunk_array;
+			}
+			
+			$offset = $end + 1;
+		}
+
+		return $pfield_chunk;
+	}
+
+	/**
+	 * Gets information for a single variable field in a template
+	 *
+	 * @param	string	Tag to get field name, modifier and params from
+	 * @param	string	Optional prefix
+	 * @return	array	Field name, modifier and params for field
+	 */
+	public function get_single_field($tag, $prefix = '')
+	{
+		$field_info = array();
+
+		$unprefixed_tag	= preg_replace('/^'.$prefix.'/', '', $tag);
+		$field_name 	= substr($unprefixed_tag.' ', 0, strpos($unprefixed_tag.' ', ' '));
+		$param_string	= substr($unprefixed_tag.' ', strlen($field_name));
+
+		$modifier = '';
+		$modifier_loc = strpos($field_name, ':');
+
+		if ($modifier_loc !== FALSE)
+		{
+			$modifier = substr($field_name, $modifier_loc + 1);
+			$field_name = substr($field_name, 0, $modifier_loc);
+		}
+
+		$field_info['field_name'] = $field_name;
+		$field_info['params'] = ($param_string) ? ee()->functions->assign_parameters($param_string) : array();
+		$field_info['modifier'] = $modifier;
+
+		return $field_info;
+	}
 }
 
 // END Api_channel_fields class
