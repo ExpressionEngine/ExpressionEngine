@@ -99,6 +99,7 @@ class EE_Grid_parser {
 	 *
 	 * @param	string	Method name to call
 	 * @param	string	Data to send to method
+	 * @param	bool	Whether or not to expect multiple parameters
 	 * @return	string	Returned data from fieldtype method
 	 */
 	public function call($method, $data, $multi_param = FALSE)
@@ -388,13 +389,16 @@ class EE_Grid_field_parser {
 				{
 					$grid_chunk = '';
 
+					// Loop through data rows for this field
 					foreach ($field_data as $row)
 					{
 						// Chunk in between tag pairs
 						$grid_row = $match[1];
 
+						// Loop through tag tree
 						foreach ($data['fields'] as $key => $value)
 						{
+							// Get tag name, modifier and params for this tag
 							$field = ee()->api_channel_fields->get_single_field($value[2], $data['field_name']);
 
 							// Get any field pairs
@@ -411,7 +415,7 @@ class EE_Grid_field_parser {
 
 								$column = $cols_by_field[$field_id][$field['field_name']];
 								$channel_row['col_id_'.$column['col_id']] = $row['col_id_'.$column['col_id']];
-								$replace_data = $this->replace_tag(
+								$replace_data = $this->_replace_tag(
 									$column,
 									$field_id,
 									$entry_id,
@@ -423,16 +427,17 @@ class EE_Grid_field_parser {
 									$content
 								);
 
+								// Replace tag pair
 								$grid_row = str_replace($chunk, $replace_data, $grid_row);
 							}
 
-							// Now work through any single variables
+							// Now handle any single variables
 							if (isset($cols_by_field[$field_id][$field['field_name']]) &&
 								strpos($grid_row, $value[0]) !== FALSE)
 							{
 								$column = $cols_by_field[$field_id][$field['field_name']];
 								$channel_row['col_id_'.$column['col_id']] = $row['col_id_'.$column['col_id']];
-								$replace_data = $this->replace_tag(
+								$replace_data = $this->_replace_tag(
 									$column,
 									$field_id,
 									$entry_id,
@@ -480,10 +485,19 @@ class EE_Grid_field_parser {
 
 	// --------------------------------------------------------------------
 
-	public function replace_tag($column, $field_id, $entry_id, $field, $data, $content = FALSE, $fieldtype = FALSE)
+	/**
+	 * Calls fieldtype's grid_replace_tag/replace_tag given tag properties
+	 * (modifier, params) and returns the result
+	 *
+	 * @param	int		Entry ID of current entry being parsed
+	 * @param	string	Tag data at this point of the channel parsing
+	 * @return	string	Tag data with all Grid fields parsed
+	 */
+	protected function _replace_tag($column, $field_id, $entry_id, $field, $data, $content = FALSE)
 	{
 		$fieldtype = ee()->grid_parser->instantiate_fieldtype($column, NULL, $field_id, $entry_id);
 
+		// Return the raw data if no fieldtype found
 		if ( ! $fieldtype)
 		{
 			return ee()->typography->parse_type(
@@ -491,16 +505,18 @@ class EE_Grid_field_parser {
 			);
 		}
 
+		// Determine the replace function to call based on presence of modifier
 		$modifier = $field['modifier'];
-
 		$parse_fnc = ($modifier) ? 'replace_'.$modifier : 'replace_tag';
 
 		$fieldtype->_init(array('row' => $data));
 
 		$data = ee()->grid_parser->call('pre_process', $data['col_id_'.$column['col_id']]);
 
+		// Params sent to parse function
 		$params = array($data, $field['params'], $content);
 
+		// Sent to catchall if modifier function doesn't exist
 		if ($modifier && ! method_exists($fieldtype, $parse_fnc))
 		{
 			$parse_fnc = 'replace_tag_catchall';
