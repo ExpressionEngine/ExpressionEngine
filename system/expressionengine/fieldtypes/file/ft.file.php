@@ -329,7 +329,7 @@ class File_ft extends EE_Fieldtype {
 			form_dropdown(
 				'file_field_content_type',
 				$this->_field_content_options(),
-				$data['field_content_type'],
+				set_value('file_field_content_type', $data['field_content_type']),
 				'id="'.$prefix.'field_content_type"'
 			)
 		);
@@ -337,11 +337,11 @@ class File_ft extends EE_Fieldtype {
 		$allowed_directories = ( ! isset($data['allowed_directories'])) ? 'all' : $data['allowed_directories'];
 
 		ee()->table->add_row(
-			lang('allowed_dirs_file', $prefix.'field_allowed_dirs'),
+			lang('allowed_dirs_file', $prefix.'field_allowed_dirs').form_error('file_allowed_directories'),
 			form_dropdown(
 				'file_allowed_directories',
 				$this->_allowed_directories_options(),
-				$allowed_directories,
+				set_value('file_allowed_directories', $allowed_directories),
 				'id="'.$prefix.'field_allowed_dirs"'
 			)
 		);		
@@ -405,6 +405,17 @@ class File_ft extends EE_Fieldtype {
 	}
 	
 	// --------------------------------------------------------------------
+	
+	function validate_settings($data)
+	{
+		ee()->form_validation->set_rules(
+			'file_allowed_directories',
+			'lang:allowed_dirs_file',
+			'required|callback__check_directories'
+		);
+	}
+
+	// --------------------------------------------------------------------
 
 	function save_settings($data)
 	{		
@@ -413,6 +424,31 @@ class File_ft extends EE_Fieldtype {
 			'allowed_directories'	=> ee()->input->post('file_allowed_directories'),
 			'field_fmt' 			=> 'none'
 		);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Makes sure there are file upload directories available before
+	 * allowing a new file field to be saved
+	 *
+	 * @param	string	Selected file dir
+	 * @return	boolean	Whether or not to pass validation
+	 */
+	public function _check_directories($file_dir)
+	{
+		ee()->load->model('file_upload_preferences_model');
+		$upload_dir_prefs = ee()->file_upload_preferences_model->get_file_upload_preferences();
+		
+		// count upload dirs
+		if (count($upload_dir_prefs) === 0)
+		{
+			ee()->lang->loadfile('filemanager');
+			ee()->form_validation->set_message('_check_directories', lang('please_add_upload'));
+			return FALSE;
+		}
+
+		return TRUE;
 	}
 
 	// --------------------------------------------------------------------

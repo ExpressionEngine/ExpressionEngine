@@ -3430,9 +3430,7 @@ class Admin_content extends CP_Controller {
 	{
 		$this->_restrict_prefs_access();
 		
-		$this->load->library('table');
-
-		$this->load->library('api');
+		$this->load->library(array('table', 'api', 'form_validation'));
 		$this->load->helper(array('snippets_helper', 'form'));
 		
 		$this->api->instantiate('channel_fields');
@@ -3442,6 +3440,56 @@ class Admin_content extends CP_Controller {
 
 		$group_id = $this->input->get_post('group_id');
 		$field_id = $this->input->get_post('field_id');
+
+		ee()->form_validation->set_rules(
+			array(
+				array(
+					'field' => 'field_type',
+					'label' => 'lang:field_type',
+					'rules' => 'required'
+				),
+				array(
+					'field' => 'field_label',
+					'label' => 'lang:field_label',
+					'rules' => 'required'
+				),
+				array(
+					'field' => 'field_name',
+					'label' => 'lang:field_name',
+					'rules' => 'trim|required|callback__valid_field_name'
+				),
+				array(
+					'field' => 'field_order',
+					'label' => 'lang:field_order',
+					'rules' => 'trim|numeric'
+				)
+			)
+		);
+
+		// Allow the saved fieldtype to set form validation rules
+		if ($field_type = ee()->input->post('field_type'))
+		{
+			ee()->api_channel_fields->fetch_all_fieldtypes();
+			$obj = ee()->api_channel_fields->setup_handler($field_type, TRUE);
+
+			if (ee()->api_channel_fields->check_method_exists('validate_settings'))
+			{
+				// Pass the fieldtype object to Form Validation so that it may
+				// call callback methods on it
+				ee()->form_validation->set_fieldtype($obj);
+				ee()->api_channel_fields->apply(
+					'validate_settings',
+					array(ee()->api_channel_fields->get_posted_field_settings($field_type))
+				);
+			}
+		}
+
+		ee()->form_validation->set_error_delimiters('<p class="notice">', '</p>');
+
+		if (ee()->form_validation->run() !== FALSE)
+		{
+			return $this->field_update();
+		}
 
 		if ($field_id == '')
 		{
@@ -3497,6 +3545,61 @@ class Admin_content extends CP_Controller {
 		$this->cp->render('admin/field_edit', $vars);
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * Validates field short name to make sure no disallowed characters or
+	 * words are in there and that the name isn't already taken. Marked as
+	 * public so form validation can access it, but really should be private.
+	 *
+	 * @param	string	Field name
+	 * @return	boolean	Whether or not field name passed validation
+	 */
+	public function _valid_field_name($field_name)
+	{
+		// Does field name contain invalid characters?
+		if (preg_match('/[^a-z0-9\_\-]/i', $field_name))
+		{
+			$this->form_validation->set_message('_valid_field_name', lang('invalid_characters'));
+			return FALSE;
+		}
+
+		// Does the field name match any reserved words?
+		if (in_array($field_name, ee()->cp->invalid_custom_field_names()))
+		{
+			$this->form_validation->set_message('_valid_field_name', lang('reserved_word'));
+			return FALSE;
+		}
+		
+		// Truncated field name to test against duplicates
+		$trunc_field_name = substr($field_name, 0, 32);
+		$old_field_name = $this->form_validation->old_value('field_name');
+
+		// Is the field name taken?
+		ee()->db->where(array(
+			'site_id' => ee()->config->item('site_id'),
+			'field_name' => $trunc_field_name,
+		));
+
+		// If editing a field, exclude the current field from the query
+		if ($field_id = ee()->input->post('field_id'))
+		{
+			ee()->db->where('field_id !=', $field_id);
+		}
+
+		// Duplicate exists
+		if (ee()->db->count_all_results('channel_fields') > 0)
+		{
+			$error = ($trunc_field_name != $field_name)
+				? lang('duplicate_truncated_field_name') : lang('duplicate_field_name');
+
+			$this->form_validation->set_message('_valid_field_name', $error);
+
+			return FALSE;
+		}
+
+		return $trunc_field_name;
+	}
 
 	// --------------------------------------------------------------------
 

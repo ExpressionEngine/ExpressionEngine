@@ -6,10 +6,26 @@ class Api_channel_fields extends Api {
 	var $field_types		= array();
 	var $ft_paths			= array();
 	var $settings			= array();
+	var $native				= array();
 
 	var $ee_base_ft			= FALSE;
 	var $global_settings;
 	
+	public function __construct()
+	{
+		parent::__construct();
+
+		$this->native = array(
+			'field_id', 'site_id', 'group_id',
+			'field_name', 'field_label', 'field_instructions',
+			'field_type', 'field_list_items', 'field_pre_populate',
+			'field_pre_channel_id', 'field_pre_field_id',
+			'field_ta_rows', 'field_maxl', 'field_required',
+			'field_text_direction', 'field_search', 'field_is_hidden', 'field_fmt', 'field_show_fmt',
+			'field_order'
+		);
+	}
+
 	// --------------------------------------------------------------------
 	
 	/**
@@ -1253,33 +1269,11 @@ class Api_channel_fields extends Api {
 		{
 			return FALSE;
 		}
-		
-		$native = array(
-			'field_id', 'site_id', 'group_id',
-			'field_name', 'field_label', 'field_instructions',
-			'field_type', 'field_list_items', 'field_pre_populate',
-			'field_pre_channel_id', 'field_pre_field_id',
-			'field_ta_rows', 'field_maxl', 'field_required',
-			'field_text_direction', 'field_search', 'field_is_hidden', 'field_fmt', 'field_show_fmt',
-			'field_order'
-		);
-		
-		$_posted = array();
-		$_field_posted = preg_grep('/^'.$field_type.'_.*/', array_keys($field_data));
-		$_keys = array_merge($native,  $_field_posted);
-
-		foreach($_keys as $key)
-		{
-			if (isset($field_data[$key]))
-			{
-				$_posted[$key] = $field_data[$key];
-			}
-		}
 
 		// Get the field type settings
 		$this->fetch_all_fieldtypes();
 		$this->setup_handler($field_type);
-		$ft_settings = $this->apply('save_settings', array($_posted));
+		$ft_settings = $this->apply('save_settings', array($this->get_posted_field_settings($field_type)));
 		
 		// Default display options
 		foreach(array('smileys', 'glossary', 'spellcheck', 'formatting_btns', 'file_selector', 'writemode') as $key)
@@ -1290,7 +1284,7 @@ class Api_channel_fields extends Api {
 		
 		// Now that they've had a chance to mess with the POST array,
 		// grab post values for the native fields (and check namespaced fields)
-		foreach($native as $key)
+		foreach($this->native as $key)
 		{
 			$native_settings[$key] = $this->_get_ft_data($field_type, $key, $field_data);
 		}
@@ -1321,7 +1315,7 @@ class Api_channel_fields extends Api {
 		
 		foreach($ft_settings as $key => $val)
 		{
-			if (in_array($key, $native))
+			if (in_array($key, $this->native))
 			{
 				unset($ft_settings[$key]);
 				$native_settings[$key] = $val;
@@ -1498,6 +1492,31 @@ class Api_channel_fields extends Api {
 		ee()->functions->clear_caching('all', '');
 		
 		return $native_settings['field_id'];
+	}
+
+	/**
+	 * Creates an array of field settings to pass to a fieldtype's validate_settings
+	 * and save_settings methods
+	 * 
+	 * @return mixed the fieldtype setting requested
+	 */
+	public function get_posted_field_settings($field_type)
+	{
+		$keys = array_merge(
+			$this->native,
+			preg_grep('/^'.$field_type.'_.*/', array_keys($_POST))
+		);
+
+		$posted = array();
+		foreach($keys as $key)
+		{
+			if (isset($_POST[$key]))
+			{
+				$posted[$key] = $_POST[$key];
+			}
+		}
+
+		return $posted;
 	}
 	
 	/**
@@ -1703,18 +1722,18 @@ class Api_channel_fields extends Api {
 		
 		$default_values = array(
 			'field_type'					=> isset($fts['text']) ? 'text' : key($fts),
-			'field_show_fmt'				=> 'n',
-			'field_required'				=> 'n',
-			'field_search'					=> 'n',
-			'field_is_hidden'				=> 'n',
-			'field_pre_populate'			=> 'n',
-			'field_show_spellcheck'			=> 'n',
-			'field_show_smileys'			=> 'n',
-			'field_show_glossary'			=> 'n',
-			'field_show_formatting_btns'	=> 'n',
-			'field_show_writemode'			=> 'n',
-			'field_show_file_selector'		=> 'n',
-			'field_text_direction'			=> 'ltr'
+			'field_show_fmt'				=> set_value('field_show_fmt', 'n'),
+			'field_required'				=> set_value('field_required', 'n'),
+			'field_search'					=> set_value('field_search', 'n'),
+			'field_is_hidden'				=> set_value('field_is_hidden', 'n'),
+			'field_pre_populate'			=> set_value('field_pre_populate', 'n'),
+			'field_show_spellcheck'			=> set_value('field_show_spellcheck', 'n'),
+			'field_show_smileys'			=> set_value('field_show_smileys', 'n'),
+			'field_show_glossary'			=> set_value('field_show_glossary', 'n'),
+			'field_show_formatting_btns'	=> set_value('field_show_formatting_btns', 'n'),
+			'field_show_writemode'			=> set_value('field_show_writemode', 'n'),
+			'field_show_file_selector'		=> set_value('field_show_file_selector', 'n'),
+			'field_text_direction'			=> set_value('field_text_direction', 'ltr')
 		);
 
 		foreach($default_values as $key => $val)
