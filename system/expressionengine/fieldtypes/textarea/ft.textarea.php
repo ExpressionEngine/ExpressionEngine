@@ -85,7 +85,7 @@ class Textarea_ft extends EE_Fieldtype {
 		
 		ee()->table->add_row(
 			lang('textarea_rows', 'field_ta_rows'),
-			form_input(array('id'=>'field_ta_rows','name'=>'field_ta_rows', 'size'=>4,'value'=>$field_rows))
+			form_input(array('id'=>'field_ta_rows','name'=>'field_ta_rows', 'size'=>4,'value'=>set_value('field_ta_rows', $field_rows)))
 		);
 		
 		$this->field_formatting_row($data, $prefix);

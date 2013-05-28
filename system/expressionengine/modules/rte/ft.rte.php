@@ -112,7 +112,7 @@ class Rte_ft extends EE_Fieldtype {
 				'id'	=> $prefix.'_ta_rows',
 				'name'	=> $prefix.'_ta_rows',
 				'size'	=> 4,
-				'value'	=> $field_rows
+				'value'	=> set_value($prefix.'_ta_rows', $field_rows)
 				)
 			)
 		);

@@ -164,7 +164,7 @@ class Text_ft extends EE_Fieldtype {
 		
 		ee()->table->add_row(
 			lang('field_max_length', $prefix.'field_max_length'),
-			form_input(array('id'=>$prefix.'field_max_length','name'=>'field_maxl', 'size'=>4,'value'=>$field_maxl))
+			form_input(array('id'=>$prefix.'field_max_length','name'=>'field_maxl', 'size'=>4,'value'=>set_value('field_maxl', $field_maxl)))
 		);
 
 		$this->field_formatting_row($data, $prefix);
@@ -172,7 +172,7 @@ class Text_ft extends EE_Fieldtype {
 
 		ee()->table->add_row(
 			lang('field_content_text', $prefix.'field_content_type'),
-			form_dropdown('text_field_content_type', $this->_get_content_options(), $data['field_content_type'], 'id="'.$prefix.'field_content_type"').$extra
+			form_dropdown('text_field_content_type', $this->_get_content_options(), set_value('text_field_content_type', $data['field_content_type']), 'id="'.$prefix.'field_content_type"').$extra
 		);
 
 		$this->field_show_smileys_row($data, $prefix);
