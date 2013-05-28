@@ -710,15 +710,15 @@ class EE_Form_validation extends CI_Form_validation {
 			// Call the function that corresponds to the rule
 			if ($callback === TRUE)
 			{
-				// Check fieldtype for the callback first if it exists
-				if (method_exists($this->_fieldtype, $rule))
+				// Check the controller for the callback first
+				if (method_exists($this->CI, $rule))
 				{
-					$object = $this->_fieldtype;
-				}
-				// Check the controller for the callback
-				elseif (method_exists($this->CI, $rule))
-				{ 
 					$object = $this->CI;
+				}
+				// Check fieldtype for the callback
+				elseif (method_exists($this->_fieldtype, $rule))
+				{ 
+					$object = $this->_fieldtype;
 				}
 				else
 				{
