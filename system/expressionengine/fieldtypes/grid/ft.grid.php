@@ -130,7 +130,7 @@ class Grid_ft extends EE_Fieldtype {
 
 	public function replace_tag($data, $params = '', $tagdata = '')
 	{
-		
+		return $tagdata;
 	}
 	
 	// --------------------------------------------------------------------
@@ -149,12 +149,13 @@ class Grid_ft extends EE_Fieldtype {
 			form_input(array(
 				'name' => 'grid_min_rows',
 				'id' => 'grid_min_rows',
-				'value' => (isset($data['grid_min_rows'])) ? $data['grid_min_rows'] : 0,
+				'value' => set_value('grid_min_rows', (isset($data['grid_min_rows'])) ? $data['grid_min_rows'] : 0),
 				'class' => 'grid_input_text_small'
 			)).
 			'<div class="grid_input_label_group">'.
 			form_label(lang('grid_min_rows'), 'grid_min_rows').
-			'<br><i class="instruction_text">'.lang('grid_min_rows_desc').'</i></div>'
+			'<br><i class="instruction_text">'.lang('grid_min_rows_desc').'</i></div>'.
+			'<div class="grid_validation_error">'.form_error('grid_max_rows').'</div>'
 		);
 
 		// Maximum rows field
@@ -162,50 +163,66 @@ class Grid_ft extends EE_Fieldtype {
 			form_input(array(
 				'name' => 'grid_max_rows',
 				'id' => 'grid_max_rows',
-				'value' => (isset($data['grid_max_rows'])) ? $data['grid_max_rows'] : '',
+				'value' => set_value('grid_max_rows', (isset($data['grid_max_rows'])) ? $data['grid_max_rows'] : ''),
 				'class' => 'grid_input_text_small'
 			)).
 			'<div class="grid_input_label_group">'.
 			form_label(lang('grid_max_rows'), 'grid_max_rows').
-			'<br><i class="instruction_text">'.lang('grid_max_rows_desc').'</i></div>'
+			'<br><i class="instruction_text">'.lang('grid_max_rows_desc').'</i></div>'.
+			'<div class="grid_validation_error">'.form_error('grid_max_rows').'</div>'
 		);
 
-		$this->_load_grid_lib();
+		// Settings header
+		$settings_html = form_label(lang('grid_config')).'<br>'.
+			'<i class="instruction_text">'.lang('grid_config_desc').'</i>';
 
-		$vars = array();
-
-		// Fresh settings forms ready to be used for added columns
-		$vars['settings_forms'] = array();
-		foreach (ee()->grid_lib->get_grid_fieldtypes() as $field_name => $data)
+		// If we're coming from a form validation error, load the previous
+		// screen's HTML for the Grid field for easy repopulation
+		if ($grid_html = ee()->input->post('grid_html'))
 		{
-			$vars['settings_forms'][$field_name] = ee()->grid_lib->get_settings_form($field_name);
+			$settings_html .= form_error('grid_validation');
+			$settings_html .= $grid_html;
 		}
-
-		// Gather columns for current field
-		$vars['columns'] = array();
-		
-		if ( ! empty($field_id))
+		// Otherwise load settings from the database
+		else
 		{
-			$columns = ee()->grid_model->get_columns_for_field($field_id);
+			$this->_load_grid_lib();
 
-			foreach ($columns as $column)
+			$vars = array();
+
+			// Fresh settings forms ready to be used for added columns
+			$vars['settings_forms'] = array();
+			foreach (ee()->grid_lib->get_grid_fieldtypes() as $field_name => $data)
 			{
-				$vars['columns'][] = ee()->grid_lib->get_column_view($column);
+				$vars['settings_forms'][$field_name] = ee()->grid_lib->get_settings_form($field_name);
 			}
+
+			// Gather columns for current field
+			$vars['columns'] = array();
+			
+			if ( ! empty($field_id))
+			{
+				$columns = ee()->grid_model->get_columns_for_field($field_id);
+
+				foreach ($columns as $column)
+				{
+					$vars['columns'][] = ee()->grid_lib->get_column_view($column);
+				}
+			}
+
+			// Will be our template for newly-created columns
+			$vars['blank_col'] = ee()->grid_lib->get_column_view();
+
+			if (empty($vars['columns']))
+			{
+				$vars['columns'][] = $vars['blank_col'];
+			}
+
+			$settings_html .= ee()->load->view('settings', $vars, TRUE);
 		}
 
-		// Will be our template for newly-created columns
-		$vars['blank_col'] = ee()->grid_lib->get_column_view();
-
-		if (empty($vars['columns']))
-		{
-			$vars['columns'][] = $vars['blank_col'];
-		}
-		
 		// The big column configuration row, generated from the settings view
-		ee()->table->add_row(
-			ee()->load->view('settings', $vars, TRUE)
-		);
+		ee()->table->add_row($settings_html);
 
 		ee()->cp->add_to_head(ee()->view->head_link('css/grid.css'));
 
@@ -215,6 +232,66 @@ class Grid_ft extends EE_Fieldtype {
 		ee()->javascript->output('EE.grid_settings();');
 		
 		return ee()->table->generate();
+	}
+
+	// --------------------------------------------------------------------
+
+	public function validate_settings($data)
+	{
+		ee()->form_validation->set_rules(
+			array(
+				array(
+					'field' => 'grid_min_rows',
+					'label' => 'lang:grid_max_rows',
+					'rules' => 'trim|numeric'
+				),
+				array(
+					'field' => 'grid_max_rows',
+					'label' => 'lang:grid_max_rows',
+					'rules' => 'trim|numeric'
+				),
+				array(
+					// Validate against dummpy field so that the field data
+					// isn't sent to Form Validation, otherwise it will cause
+					// a loop because of the nested array
+					'field' => 'grid_validation',
+					'label' => 'Grid',
+					'rules' => 'callback__validate_grid'
+				),
+			)
+		);
+	}
+
+	// -------------------------------------------------------------------
+
+	/**
+	 * Callback for Form Validation
+	 *
+	 * @param	array	Empty array because we sent a fake field to Form
+	 *                  Validation
+	 * @return	boolean	Wheather or not the settings passed validation
+	 */
+	public function _validate_grid($data)
+	{
+		$this->_load_grid_lib();
+
+		$validate = ee()->grid_lib->validate_settings(array('grid' => ee()->input->post('grid')));
+
+		if ($validate !== TRUE)
+		{
+			$errors = '';
+
+			foreach ($validate as $error)
+			{
+				$errors .= lang($error).'<br>';
+			}
+
+			ee()->form_validation->set_message('_validate_grid', $errors);
+
+			return FALSE;
+		}
+		
+		return TRUE;
 	}
 	
 	// --------------------------------------------------------------------

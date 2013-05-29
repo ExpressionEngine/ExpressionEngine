@@ -468,6 +468,60 @@ class Grid_lib {
 	// ------------------------------------------------------------------------
 	
 	/**
+	 * Validates settings before form is saved
+	 *
+	 * @param	array	POSTed column settings from field settings page
+	 * @return	mixed	Array of errors or TRUE for successful validation
+	 */
+	public function validate_settings($settings)
+	{
+		$errors = array();
+		$col_names = array();
+
+		// Create an array of column names for counting to see if there are
+		// duplicate column names; they should be unique
+		foreach ($settings['grid']['cols'] as $col_field => $column)
+		{
+			$col_names[] = $column['col_name'];
+		}
+
+		$col_name_count = array_count_values($col_names);
+
+		foreach ($settings['grid']['cols'] as $col_field => $column)
+		{
+			// Column labels are required
+			if (empty($column['col_label']))
+			{
+				$errors[] .= 'grid_col_label_required';
+			}
+
+			// Column names are required
+			if (empty($column['col_name']))
+			{
+				$errors[] = 'grid_col_name_required';
+			}
+			// There cannot be duplicate column names
+			elseif ($col_name_count[$column['col_name']] > 1)
+			{
+				$errors[] = 'grid_duplicate_col_name';
+			}
+
+			// Column widths, if specified, must be numeric
+			if ( ! empty($column['col_width']) &&
+				 ! is_numeric(str_replace('%', '', $column['col_width'])))
+			{
+				$errors[] = 'grid_numeric_percentage';
+			}
+		}
+
+		$errors = array_unique($errors);
+
+		return (empty($errors)) ? TRUE : $errors;
+	}
+
+	// ------------------------------------------------------------------------
+	
+	/**
 	 * Given POSTed column settings, adds new columns to the database and
 	 * figures out if any columns need deleting
 	 *

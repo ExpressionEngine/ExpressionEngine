@@ -179,6 +179,13 @@ p.grid_error {
 	margin: 3px 5px 3px 0;
 }
 
+#mainContent .grid_validation_error p.notice {
+	clear: both;
+	margin: 5px 0;
+	position: relative;
+	top: 5px;
+}
+
 .grid_input_label_group {
 	float: left;
 	margin: 1px 0 3px 5px;

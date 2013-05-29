@@ -22,6 +22,7 @@
 			this._bindDeleteButton();
 			this._toggleDeleteButtons();
 			this._bindColTypeChange();
+			this._bindSubmit();
 
 			// Disable input elements in our blank template container so they
 			// don't get submitted on form submission
@@ -257,6 +258,7 @@
 		 * @param	{jQuery Object}	el	Column to base new column off of, when
 		 *				copying an existing column for example; if left blank,
 		 *				defaults to blank column
+		 * @return	{jQuery Object}	New column element
 		 */
 		_buildNewColumn: function(el)
 		{
@@ -267,52 +269,7 @@
 			else
 			{
 				// Clone our example column
-				el_clone = el.clone();
-
-				// Data input by the user since the page was loaded may not have
-				// been cloned, so we have to manually repopulate the fields in
-				// the cloned column
-				el.find(":input").each(function()
-				{
-					// Find the new input in the cloned column for editing
-					var new_input = el_clone.find(":input[name='"+$(this).attr('name')+"']");
-
-					if ($(this).is("select"))
-					{
-						new_input
-							.find('option')
-							.removeAttr('selected')
-							.filter('[value="'+$(this).val()+'"]')
-							.attr('selected', 'selected');
-					}
-					// Handle checkboxes
-					else if ($(this).attr('type') == 'checkbox')
-					{
-						// .prop('checked', true) doesn't work, must set the attribute
-						new_input.attr('checked', $(this).attr('checked'));
-					}
-					// Handle radio buttons
-					else if ($(this).attr('type') == 'radio')
-					{
-						new_input
-							.removeAttr('selected')
-							.filter("[value='"+$(this).val()+"']")
-							.attr('checked', $(this).attr('checked'));
-					}
-					// Handle textareas
-					else if ($(this).is("textarea"))
-					{
-						new_input.html($(this).val());
-					}
-					// Everything else should handle the value attribute
-					else
-					{
-						// .val('new val') doesn't work, must set the attribute
-						new_input.attr('value', $(this).val());
-					}
-				});
-
-				el = el_clone;
+				el = this._cloneWithFormValues(el);
 			}
 
 			// Clear out column name field in new column because it has to be unique
@@ -365,6 +322,81 @@
 				// Find the container holding the settings form, replace its contents
 				customSettingsContainer.html(settings);
 			});
+		},
+
+		/**
+		 * Binds to form submission to pass along the entire HTML for the last
+		 * row in the Grid settings table for easy repopulated upon form
+		 * validation failing
+		 */
+		_bindSubmit: function()
+		{
+			var that = this;
+
+			this.root.parents('form').submit(function()
+			{
+				grid_html = that._cloneWithFormValues(that.root.parent('#grid_settings_container'));
+
+				$('<input/>', {
+					'type': 'hidden',
+					'name': 'grid_html',
+					'value': '<div id="grid_settings_container">'+grid_html.html()+'</div>'
+				}).appendTo(that.root);
+			});
+		},
+
+		/**
+		 * Clones an element and copies over any form input values because
+		 * normal cloning won't handle that
+		 * 
+		 * @param	{jQuery Object}	el	Element to clone
+		 * @return	{jQuery Object}	Cloned element with form fields populated
+		 */
+		_cloneWithFormValues: function(el)
+		{
+			var cloned = el.clone();
+
+			el.find(":input").each(function()
+			{
+				// Find the new input in the cloned column for editing
+				var new_input = cloned.find(":input[name='"+$(this).attr('name')+"']");
+
+				if ($(this).is("select"))
+				{
+					new_input
+						.find('option')
+						.removeAttr('selected')
+						.filter('[value="'+$(this).val()+'"]')
+						.attr('selected', 'selected');
+				}
+				// Handle checkboxes
+				else if ($(this).attr('type') == 'checkbox')
+				{
+					// .prop('checked', true) doesn't work, must set the attribute
+					new_input.attr('checked', $(this).attr('checked'));
+				}
+				// Handle radio buttons
+				else if ($(this).attr('type') == 'radio')
+				{
+					new_input
+						.removeAttr('selected')
+						.filter("[value='"+$(this).val()+"']")
+						.attr('checked', $(this).attr('checked'));
+				}
+				// Handle textareas
+				else if ($(this).is("textarea"))
+				{
+					new_input.html($(this).val());
+				}
+				// Everything else should handle the value attribute
+				else
+				{
+					// .val('new val') doesn't work, must set the attribute
+					new_input.attr('value', $(this).val());
+				}
+			});
+			
+			return cloned;
 		}
 	};
 

@@ -3469,17 +3469,23 @@ class Admin_content extends CP_Controller {
 		// Allow the saved fieldtype to set form validation rules
 		if ($field_type = ee()->input->post('field_type'))
 		{
-			ee()->api_channel_fields->fetch_all_fieldtypes();
-			$obj = ee()->api_channel_fields->setup_handler($field_type, TRUE);
+			$ft_api = ee()->api_channel_fields;
 
-			if (ee()->api_channel_fields->check_method_exists('validate_settings'))
+			$ft_api->fetch_all_fieldtypes();
+			$obj = $ft_api->setup_handler($field_type, TRUE);
+
+			if ($ft_api->check_method_exists('validate_settings'))
 			{
 				// Pass the fieldtype object to Form Validation so that it may
 				// call callback methods on it
 				ee()->form_validation->set_fieldtype($obj);
-				ee()->api_channel_fields->apply(
+
+				$_ft_path = $ft_api->ft_paths[$ft_api->field_type];
+				ee()->load->add_package_path($_ft_path, FALSE);
+
+				$ft_api->apply(
 					'validate_settings',
-					array(ee()->api_channel_fields->get_posted_field_settings($field_type))
+					array($ft_api->get_posted_field_settings($field_type))
 				);
 			}
 		}
