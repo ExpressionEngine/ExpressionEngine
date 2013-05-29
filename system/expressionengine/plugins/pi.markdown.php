@@ -29,7 +29,7 @@ $plugin_info = array(
 	'pi_version'	=> '1.0',
 	'pi_author'		=> 'EllisLab',
 	'pi_author_url'	=> 'http://ellislab.com/',
-	'pi_description'=> '...',
+	'pi_description'=> 'Parse text using Markdown and Smartypants',
 	'pi_usage'		=> Markdown::usage()
 );
 
@@ -41,13 +41,14 @@ class Markdown {
 	/**
 	 * Constructor
 	 */
-	public function __construct()
+	public function __construct($tagdata = '')
 	{
+		$tagdata		= (empty($tagdata)) ? ee()->TMPL->tagdata : $tagdata;
 		$encode_ee_tags	= ee()->TMPL->fetch_param('encode_ee_tags', 'yes');
 		$smartypants	= ee()->TMPL->fetch_param('smartypants', 'yes');
 
 		$this->return_data = ee()->typography->markdown(
-			ee()->TMPL->tagdata,
+			$tagdata,
 			compact('encode_ee_tags', 'smartypants')
 		);
 
@@ -63,8 +64,19 @@ class Markdown {
 	{
 		ob_start();
 ?>
+This plugin parses text using Markdown and Smartypants. To use this plugin wrap
+any text in this tag pair:
 
- Since you did not provide instructions on the form, make sure to put plugin documentation here.
+{exp:markdown}
+Text to be **parsed**.
+{/exp:markdown}
+
+There are two parameters you can set:
+
+- encode_ee_tags - ('yes'/'no') defaults to 'yes', when set to 'no' allows EE 
+  code to be rendered
+- smartypants - ('yes'/'no') defaults to 'yes', when set to 'no' stops 
+  SmartyPants from running which leaves your quotes and hyphens alone
 <?php
 		$buffer = ob_get_contents();
 		ob_end_clean();

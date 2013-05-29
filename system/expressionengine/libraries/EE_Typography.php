@@ -252,7 +252,7 @@ class EE_Typography extends CI_Typography {
 
 		if ($str == '')
 		{
-			return;	
+			return;
 		}
 		
 		// -------------------------------------------
@@ -262,7 +262,7 @@ class EE_Typography extends CI_Typography {
 			if (ee()->extensions->active_hook('typography_parse_type_start') === TRUE)
 			{
 				$str = ee()->extensions->call('typography_parse_type_start', $str, $this, $prefs);
-			}	
+			}
 		//
 		// -------------------------------------------
 
@@ -313,7 +313,7 @@ class EE_Typography extends CI_Typography {
 						{
 							$this->text_format = $prefs['text_format'];
 						}
-					}					
+					}
 				}
 			}
 		
@@ -357,8 +357,8 @@ class EE_Typography extends CI_Typography {
 		if ($this->highlight_code == TRUE)
 		{
 			$str = str_replace(array('[pre]', '[/pre]'), array('[code]', '[/code]'), $str);
-		}		
-			
+		}
+		
 		// We don't want BBCode parsed if it's within code examples so we'll convert the brackets
 		$str = $this->_protect_bbcode($str);
 
@@ -408,7 +408,7 @@ class EE_Typography extends CI_Typography {
 				$str = $this->auto_typography($str);
 				break;
 			case 'markdown':
-				$str = $this->markdown($str);
+				$str = $this->markdown($str, $prefs);
 				break;
 			case 'lite':
 				$str = $this->format_characters($str); // Used with channel entry titles
@@ -422,7 +422,7 @@ class EE_Typography extends CI_Typography {
 				{
 					require APPPATH.'libraries/Template.php';
 					ee()->TMPL = new EE_Template();
-				}			
+				}
 				
 				$plugin = ucfirst($this->text_format);
 				
@@ -449,7 +449,6 @@ class EE_Typography extends CI_Typography {
 				}
 				break;
 		}
-		
 
 		//  Parse emoticons
 		$str = $this->emoticon_replace($str);
@@ -458,7 +457,7 @@ class EE_Typography extends CI_Typography {
 		if ($this->word_censor === TRUE && count($this->censored_words > 0))
 		{
 			ee()->load->helper('text');
-			$str = word_censor($str, $this->censored_words, $this->censored_replace);			
+			$str = word_censor($str, $this->censored_words, $this->censored_replace);
 		}
 
 		/** ------------------------------------------
@@ -475,10 +474,10 @@ class EE_Typography extends CI_Typography {
 			if (preg_match_all("/\{encode=(.+?)\}/i", $str, $matches))
 			{	
 				for ($j = 0; $j < count($matches['0']); $j++)
-				{	
+				{
 					$str = str_replace($matches['0'][$j], ee()->functions->encode_email($matches['1'][$j]), $str);
 				}
-			}  		
+			}
 		}
 		
 		// Standard email addresses
@@ -494,7 +493,7 @@ class EE_Typography extends CI_Typography {
 			if (ee()->extensions->active_hook('typography_parse_type_end') === TRUE)
 			{
 				$str = ee()->extensions->call('typography_parse_type_end', $str, $this, $prefs);
-			}	
+			}
 		//
 		// -------------------------------------------
 		
@@ -515,7 +514,7 @@ class EE_Typography extends CI_Typography {
 		if ( ! in_array($this->html_format, $html_options))
 		{
 			$this->html_format = 'safe';
-		}	
+		}
 	
 		if ($this->html_format == 'all')
 		{
@@ -536,22 +535,23 @@ class EE_Typography extends CI_Typography {
 		// We strip any JavaScript event handlers from image links or anchors
 		// This prevents cross-site scripting hacks.
 		
-		$js = array(	
-				'onblur',
-				'onchange',
-				'onclick',
-				'onfocus',
-				'onload',
-				'onmouseover',
-				'onmouseup',
-				'onmousedown',
-				'onselect',
-				'onsubmit',
-				'onunload',
-				'onkeypress',
-				'onkeydown',
-				'onkeyup',
-				'onresize');
+		$js = array(
+			'onblur',
+			'onchange',
+			'onclick',
+			'onfocus',
+			'onload',
+			'onmouseover',
+			'onmouseup',
+			'onmousedown',
+			'onselect',
+			'onsubmit',
+			'onunload',
+			'onkeypress',
+			'onkeydown',
+			'onkeyup',
+			'onresize'
+		);
 		
 		foreach ($js as $val)
 		{
@@ -636,14 +636,16 @@ class EE_Typography extends CI_Typography {
 			$str = ee()->functions->encode_ee_tags($str);
 		}
 
+		$str = Markdown($str);
+
 		// Run everything through SmartyPants
 		if ( ! isset($options['smartypants']) OR $options['smartypants'] == 'yes')
 		{
 			require_once(APPPATH.'libraries/typography/SmartyPants/smartypants.php');
-			return SmartyPants(Markdown($str));
+			$str = SmartyPants($str);
 		}
 
-		return Markdown($str);
+		return $str;
 	}
 
 	// --------------------------------------------------------------------	
