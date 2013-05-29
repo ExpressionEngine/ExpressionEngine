@@ -227,7 +227,7 @@ class Grid_ft extends EE_Fieldtype {
 		ee()->cp->add_to_head(ee()->view->head_link('css/grid.css'));
 
 		ee()->cp->add_js_script('file', 'cp/sort_helper');
-		ee()->cp->add_js_script('file', 'cp/grid_settings');
+		ee()->cp->add_js_script('file', 'cp/grid');
 
 		ee()->javascript->output('EE.grid_settings();');
 		
