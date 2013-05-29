@@ -29,8 +29,9 @@
 		},
 
 		/**
-		 * Upon page load, we need to resize the column container to match the
-		 * width of the page, minus the width of the labels on the left
+		 * Upon page load, we need to resize the settings container to match the
+		 * width of the page, minus the width of the labels on the left, and also
+		 * need to resize the column container to fit the number of columns we have
 		 */
 		_bindResize: function()
 		{
@@ -38,14 +39,35 @@
 
 			$(document).ready(function()
 			{
-				that.settingsScroller.width(
-					that.root.width() - that.root.find('#grid_col_settings_labels').width()
-				);
+				that._resizeSettingsContainer();
+
+				// Resize settings container on window resize
+				$(window).resize(function()
+				{
+					that._resizeSettingsContainer();
+				});
 
 				// Now, resize the inner container to fit the number of columns
 				// we have ready on page load
 				that._resizeColContainer();
 			});
+		},
+
+		/**
+		 * Resizes the scrollable settings container to fit within EE's settings
+		 * table; this is called on page load and window resize
+		 */
+		_resizeSettingsContainer: function()
+		{
+			// First need to set container smaller so that it's not affecting the
+			// root with; for example, if the user makes the window width smaller,
+			// the root with won't change if the settings scroller container doesn't
+			// get smaller, thus the container runs off the page
+			this.settingsScroller.width(500);
+
+			this.settingsScroller.width(
+				this.root.width() - this.root.find('#grid_col_settings_labels').width()
+			)
 		},
 
 		/**
