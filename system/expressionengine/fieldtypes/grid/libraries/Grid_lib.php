@@ -512,6 +512,23 @@ class Grid_lib {
 			{
 				$errors[] = 'grid_numeric_percentage';
 			}
+
+			$column['col_id'] = (strpos($col_field, 'new_') === FALSE)
+				? str_replace('col_id_', '', $col_field) : FALSE;
+			$column['col_required'] = isset($column['col_required']) ? 'y' : 'n';
+			$column['col_settings']['field_required'] = $column['col_required'];
+
+			ee()->grid_parser->instantiate_fieldtype($column, NULL, $this->field_id, 0);
+
+			// Let fieldtypes validate their Grid column settings; we'll
+			// specifically call grid_validate_settings() because validate_settings
+			// works differently and we don't want to call that on accident
+			$ft_validate = ee()->grid_parser->call('grid_validate_settings', $column['col_settings']);
+
+			if (is_string($ft_validate))
+			{
+				$errors[] = $ft_validate;
+			}
 		}
 
 		$errors = array_unique($errors);

@@ -417,6 +417,26 @@ class File_ft extends EE_Fieldtype {
 
 	// --------------------------------------------------------------------
 
+	/**
+	 * Grid settings validation callback; makes sure there are file upload
+	 * directories available before allowing a new file field to be saved
+	 *
+	 * @param	array	Grid settings
+	 * @return	mixed	Validation error or TRUE if passed
+	 */
+	function grid_validate_settings($data)
+	{
+		if ( ! $this->_check_directories())
+		{
+			ee()->lang->loadfile('filemanager');
+			return lang('please_add_upload');
+		}
+
+		return TRUE;
+	}
+
+	// --------------------------------------------------------------------
+
 	function save_settings($data)
 	{		
 		return array(
@@ -429,19 +449,16 @@ class File_ft extends EE_Fieldtype {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Makes sure there are file upload directories available before
-	 * allowing a new file field to be saved
+	 * Form Validation callback; makes sure there are file upload
+	 * directories available before allowing a new file field to be saved
 	 *
 	 * @param	string	Selected file dir
 	 * @return	boolean	Whether or not to pass validation
 	 */
-	public function _check_directories($file_dir)
+	public function _validate_file_settings($file_dir)
 	{
-		ee()->load->model('file_upload_preferences_model');
-		$upload_dir_prefs = ee()->file_upload_preferences_model->get_file_upload_preferences();
-		
 		// count upload dirs
-		if (count($upload_dir_prefs) === 0)
+		if ( ! $this->_check_directories())
 		{
 			ee()->lang->loadfile('filemanager');
 			ee()->form_validation->set_message('_check_directories', lang('please_add_upload'));
@@ -449,6 +466,22 @@ class File_ft extends EE_Fieldtype {
 		}
 
 		return TRUE;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Tells us whether or not upload destinations exist
+	 *
+	 * @return	boolean	Whether or not upload destinations exist
+	 */
+	private function _check_directories()
+	{
+		ee()->load->model('file_upload_preferences_model');
+		$upload_dir_prefs = ee()->file_upload_preferences_model->get_file_upload_preferences();
+		
+		// count upload dirs
+		return (count($upload_dir_prefs) !== 0);
 	}
 
 	// --------------------------------------------------------------------
