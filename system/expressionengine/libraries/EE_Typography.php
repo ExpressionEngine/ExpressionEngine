@@ -267,27 +267,6 @@ class EE_Typography extends CI_Typography {
 		// -------------------------------------------
 
 		/** -------------------------------------
-		/**  Encode PHP tags
-		/** -------------------------------------*/
-		
-		// Before we do anything else, we'll convert PHP tags into character entities.
-		// This is so that PHP submitted in channel entries, comments, etc. won't get parsed.
-		// Since you can enable templates to parse PHP, it would open up a security
-		// hole to leave PHP submitted in entries and comments intact.
-		
-		ee()->load->helper('security');
-		
-		$str = encode_php_tags($str);
-
-		/** -------------------------------------
-		/**  Encode EE tags
-		/** -------------------------------------*/
-		
-		// Next, we need to encode EE tags contained in entries, comments, etc. so that they don't get parsed.
-				
-		$str = ee()->functions->encode_ee_tags($str, $this->convert_curly);  
-			
-		/** -------------------------------------
 		/**  Set up our preferences
 		/** -------------------------------------*/
 		
@@ -332,6 +311,31 @@ class EE_Typography extends CI_Typography {
 				$this->allow_img_url = $prefs['allow_img_url'];
 			}
 		}
+
+		/** -------------------------------------
+		/**  Encode PHP tags
+		/** -------------------------------------*/
+		
+		// Before we do anything else, we'll convert PHP tags into character entities.
+		// This is so that PHP submitted in channel entries, comments, etc. won't get parsed.
+		// Since you can enable templates to parse PHP, it would open up a security
+		// hole to leave PHP submitted in entries and comments intact.
+		// If we're dealing with Markdown, don't encode now in case of code 
+		// snippets
+		
+		ee()->load->helper('security');
+		if ($this->text_format != 'markdown')
+		{
+			$str = encode_php_tags($str);
+		}
+
+		/** -------------------------------------
+		/**  Encode EE tags
+		/** -------------------------------------*/
+		
+		// Next, we need to encode EE tags contained in entries, comments, etc. so that they don't get parsed.
+		
+		$str = ee()->functions->encode_ee_tags($str, $this->convert_curly);  
 		
 		/** -------------------------------------
 		/**  Are single lines considered paragraphs?
@@ -448,6 +452,12 @@ class EE_Typography extends CI_Typography {
 					}
 				}
 				break;
+		}
+
+		// Encode PHP post-Markdown parsing
+		if ($this->text_format == 'markdown')
+		{
+			$str = encode_php_tags($str);
 		}
 
 		//  Parse emoticons
