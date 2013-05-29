@@ -667,14 +667,15 @@ class Content_publish extends CP_Controller {
 				}
 				else
 				{
-					$r .= $this->typography->parse_type($resrow[$key],
-											 array(
-														'text_format'	=> $resrow['field_ft_'.$expl['1']],
-														'html_format'	=> $channel_info->channel_html_formatting,
-														'auto_links'	=> $channel_info->channel_auto_link_urls,
-														'allow_img_url' => $channel_info->channel_allow_img_urls,
-													)
-											);
+					$r .= $this->typography->parse_type(
+						$resrow[$key],
+						array(
+							'text_format'	=> $resrow['field_ft_'.$expl['1']],
+							'html_format'	=> $channel_info->channel_html_formatting,
+							'auto_links'	=> $channel_info->channel_auto_link_urls,
+							'allow_img_url' => $channel_info->channel_allow_img_urls,
+						)
+					);
 				}
 			}
 		}

@@ -103,23 +103,23 @@ class EE_Typography extends CI_Typography {
 		$this->single_line_pgfs		= TRUE;		// Whether to treat single lines as paragraphs in auto-xhtml
 		$this->text_format			= 'xhtml';  // xhtml, markdown, br, none, or lite
 		$this->html_format			= 'safe';	// safe, all, none
-		$this->auto_links	 		= 'y'; 
-		$this->allow_img_url  		= 'n';
+		$this->auto_links			= 'y'; 
+		$this->allow_img_url		= 'n';
 		$this->parse_images			= TRUE;
 		$this->allow_headings		= TRUE;
 		$this->encode_email			= TRUE;
 		$this->encode_type			= 'javascript'; // javascript or noscript
-		$this->use_span_tags  		= TRUE;
+		$this->use_span_tags		= TRUE;
 		$this->popup_links			= FALSE;
 		$this->bounce				= '';
 		$this->smiley_array			= FALSE;
 		$this->parse_smileys		= TRUE;
 		$this->highlight_code		= TRUE;
 		$this->convert_curly		= TRUE;		// Convert Curly Brackets Into Entities
-		$this->emoticon_url  		= '';
+		$this->emoticon_url			= '';
 		$this->site_index			= '';
 		$this->word_censor			= FALSE;
-		$this->censored_words 		= array();
+		$this->censored_words		= array();
 		$this->censored_replace		= '';
 		$this->text_fmt_types		= array('xhtml', 'markdown', 'br', 'none', 'lite');
 		$this->text_fmt_plugins		= array();
@@ -128,7 +128,7 @@ class EE_Typography extends CI_Typography {
 		$this->code_chunks			= array();
 		$this->code_counter			= 0;
 		
-		$this->http_hidden 			= unique_marker('typography_url_protect'); // hash to protect URLs in [url] BBCode
+		$this->http_hidden			= unique_marker('typography_url_protect'); // hash to protect URLs in [url] BBCode
 		$this->safe_img_src_end		= unique_marker('typography_img_src_end'); // hash to mark end of image URLs during sanitizing of image tags
 
 		foreach ($config as $key => $val)
@@ -145,19 +145,19 @@ class EE_Typography extends CI_Typography {
 		$this->safe_encode = array('b', 'i', 'em', 'del', 'ins', 'strong', 'pre', 'code', 'blockquote');
 
 		$this->safe_decode = array(
-									'b'			 	=> 'b', 
-									'i'			 	=> 'i',
-									'em'			=> 'em', 
-									'del'			=> 'del',
-									'ins'			=> 'ins',
-									'strong'		=> 'strong', 
-									'pre'			=> 'pre', 
-									'code'			=> 'code', 
-									'blockquote'	=> 'blockquote',
-									'quote'			=> 'blockquote',
-									'QUOTE'			=> 'blockquote'
-								 );
-								
+			'b'				=> 'b',
+			'i'				=> 'i',
+			'em'			=> 'em',
+			'del'			=> 'del',
+			'ins'			=> 'ins',
+			'strong'		=> 'strong',
+			'pre'			=> 'pre',
+			'code'			=> 'code',
+			'blockquote'	=> 'blockquote',
+			'quote'			=> 'blockquote',
+			'QUOTE'			=> 'blockquote'
+		);
+		
 		// enable quote protection within braces for EE {variable="attributes"}
 		$this->protect_braced_quotes = TRUE;
 
@@ -241,10 +241,10 @@ class EE_Typography extends CI_Typography {
 	public function parse_type($str, $prefs = '')
 	{
 		if ($this->parse_images === TRUE)
-        {
-            $this->file_paths = ee()->functions->fetch_file_paths();
-        }
-        
+		{
+			$this->file_paths = ee()->functions->fetch_file_paths();
+		}
+		
 		// In the future, we might think about caching all of this processing, ya know.
 		// Do an md5 of the content, process it, store it, retrieve it, et cetera.
 		// Not sure how the clearing of it out would go, and if we stored it in the database
@@ -536,7 +536,7 @@ class EE_Typography extends CI_Typography {
 		// We strip any JavaScript event handlers from image links or anchors
 		// This prevents cross-site scripting hacks.
 		
-	 	$js = array(	
+		$js = array(	
 				'onblur',
 				'onchange',
 				'onclick',
@@ -588,8 +588,8 @@ class EE_Typography extends CI_Typography {
 		}
 
 		// Convert anchors to BBCode
-        // We do this to prevent allowed HTML from getting converted in the next step
-        // Old method would only convert links that had href= as the first tag attribute
+		// We do this to prevent allowed HTML from getting converted in the next step
+		// Old method would only convert links that had href= as the first tag attribute
 		// $str = preg_replace("#<a\s+href=[\"'](\S+?)[\"'](.*?)\>(.*?)</a>#si", "[url=\"\\1\"\\2]\\3[/url]", $str);
 		
 		if (stristr($str, '<a') !== FALSE)
@@ -760,8 +760,8 @@ class EE_Typography extends CI_Typography {
 	public function decode_bbcode($str)
 	{
 		/** -------------------------------------
-        /**  Remap some deprecated tags with valid counterparts
-        /** -------------------------------------*/
+		/**  Remap some deprecated tags with valid counterparts
+		/** -------------------------------------*/
 		
 		$str = str_ireplace(array('[strike]', '[/strike]', '[u]', '[/u]'), array('[del]', '[/del]', '[em]', '[/em]'), $str);
 		
@@ -775,8 +775,8 @@ class EE_Typography extends CI_Typography {
 		}
 		
 		/** -------------------------------------
-        /**  Decode codeblock division for code tag
-        /** -------------------------------------*/
+		/**  Decode codeblock division for code tag
+		/** -------------------------------------*/
 
 		if (count($this->code_chunks) > 0)
 		{
@@ -784,7 +784,7 @@ class EE_Typography extends CI_Typography {
 			{
 				$str = str_replace('[div class="codeblock"]{'.$key.'yH45k02wsSdrp}[/div]', '<div class="codeblock">{'.$key.'yH45k02wsSdrp}</div>', $str);
 			}
- 		}
+		}
 
 		/** -------------------------------------
 		/**  Decode color tags
@@ -875,7 +875,7 @@ class EE_Typography extends CI_Typography {
 
 						// url encode a few characters that we want to allow, in the wiki for example
 						$url = str_replace(array('"', "'", '!'), array('%22', '%27', '%21'), $url);
-	        		}
+					}
 					else
 					{
 						if (($space_pos = strpos($url, ' ')) !== FALSE)
@@ -1067,7 +1067,7 @@ class EE_Typography extends CI_Typography {
 		}
 
 		// get rid of surrounding quotes
-		$matches['1'] = preg_replace(array('/(^"|\')/', '/("|\'$)/'), '', $matches['1']);	
+		$matches['1'] = preg_replace(array('/(^"|\')/', '/("|\'$)/'), '', $matches['1']);
 		
 		$title = ( ! isset($matches['2'])) ? $matches['1'] : $matches['2'];
 		
@@ -1175,14 +1175,14 @@ class EE_Typography extends CI_Typography {
 			}
 		}
 		
-        // Flip code chunks back in
+		// Flip code chunks back in
 		if ($counter > 0)
 		{
 			foreach ($code_chunk as $key => $val)
 			{
 				$str = str_replace('{'.$key.'xyH45k02wsSdrp}', $val, $str);
 			}
- 		}
+		}
 
 		return ltrim($str);
 	}
@@ -1194,10 +1194,10 @@ class EE_Typography extends CI_Typography {
 	 */
 	public function filter_censored_words($str)
 	{
-        if ($this->word_censor == FALSE)
-        {
-            return $str;    
-        }
+		if ($this->word_censor == FALSE)
+		{
+			return $str;
+		}
 		
 		ee()->load->helper('text');
 		return word_censor($str, $this->censored_words, $this->censored_replace);
