@@ -25,7 +25,7 @@
 class EE_Typography extends CI_Typography {
 
 	var $single_line_pgfs			= TRUE;		// Whether to treat single lines as paragraphs in auto-xhtml
-	var $text_format				= 'xhtml';  // xhtml, br, none, or lite
+	var $text_format				= 'xhtml';  // xhtml, markdown, br, none, or lite
 	var $html_format				= 'safe';	// safe, all, none
 	var $auto_links	 				= 'y'; 
 	var $allow_img_url  			= 'n';
@@ -45,7 +45,7 @@ class EE_Typography extends CI_Typography {
 	var $word_censor				= FALSE;
 	var $censored_words 			= array();
 	var $censored_replace			= '';
-	var $text_fmt_types				= array('xhtml', 'br', 'none', 'lite');
+	var $text_fmt_types				= array('xhtml', 'markdown', 'br', 'none', 'lite');
 	var $text_fmt_plugins			= array();
 	var $html_fmt_types				= array('safe', 'all', 'none');
 	var $yes_no_syntax				= array('y', 'n');
@@ -101,7 +101,7 @@ class EE_Typography extends CI_Typography {
 	{
 		// reset class properties
 		$this->single_line_pgfs		= TRUE;		// Whether to treat single lines as paragraphs in auto-xhtml
-		$this->text_format			= 'xhtml';  // xhtml, br, none, or lite
+		$this->text_format			= 'xhtml';  // xhtml, markdown, br, none, or lite
 		$this->html_format			= 'safe';	// safe, all, none
 		$this->auto_links	 		= 'y'; 
 		$this->allow_img_url  		= 'n';
@@ -121,7 +121,7 @@ class EE_Typography extends CI_Typography {
 		$this->word_censor			= FALSE;
 		$this->censored_words 		= array();
 		$this->censored_replace		= '';
-		$this->text_fmt_types		= array('xhtml', 'br', 'none', 'lite');
+		$this->text_fmt_types		= array('xhtml', 'markdown', 'br', 'none', 'lite');
 		$this->text_fmt_plugins		= array();
 		$this->html_fmt_types		= array('safe', 'all', 'none');
 		$this->yes_no_syntax		= array('y', 'n');
@@ -404,44 +404,49 @@ class EE_Typography extends CI_Typography {
 		{
 			case 'none';
 				break;
-			case 'xhtml'	: $str = $this->auto_typography($str);
+			case 'xhtml':
+				$str = $this->auto_typography($str);
 				break;
-			case 'lite'		: $str = $this->format_characters($str);  // Used with channel entry titles
+			case 'markdown':
+				$str = $this->markdown($str);
 				break;
-			case 'br'		: $str = $this->nl2br_except_pre($str);
+			case 'lite':
+				$str = $this->format_characters($str); // Used with channel entry titles
 				break;
-			default			:
-			
-			if ( ! class_exists('EE_Template'))
-			{
-				require APPPATH.'libraries/Template.php';
-				ee()->TMPL = new EE_Template();
-			}			
-			
-			$plugin = ucfirst($this->text_format);
-			
-			if ( ! class_exists($plugin))
-			{	
-				if (in_array($this->text_format, ee()->core->native_plugins))
+			case 'br':
+				$str = $this->nl2br_except_pre($str);
+				break;
+			default:
+				// Plugin of some sort
+				if ( ! class_exists('EE_Template'))
 				{
-					require_once PATH_PI.'pi.'.$this->text_format.'.php';
+					require APPPATH.'libraries/Template.php';
+					ee()->TMPL = new EE_Template();
+				}			
+				
+				$plugin = ucfirst($this->text_format);
+				
+				if ( ! class_exists($plugin))
+				{	
+					if (in_array($this->text_format, ee()->core->native_plugins))
+					{
+						require_once PATH_PI.'pi.'.$this->text_format.'.php';
+					}
+					else
+					{
+						require_once PATH_THIRD.$this->text_format.'/pi.'.$this->text_format.'.php';
+					}
 				}
-				else
+				
+				if (class_exists($plugin))
 				{
-					require_once PATH_THIRD.$this->text_format.'/pi.'.$this->text_format.'.php';
+					$PLG = new $plugin($str);
+				
+					if (isset($PLG->return_data))
+					{
+						$str = $PLG->return_data;
+					}
 				}
-			}
-			
-			if (class_exists($plugin))
-			{
-				$PLG = new $plugin($str);
-			
-				if (isset($PLG->return_data))
-				{
-					$str = $PLG->return_data;
-				}
-			}
-			
 				break;
 		}
 		
@@ -607,6 +612,38 @@ class EE_Typography extends CI_Typography {
 		}
 		
 		return $this->encode_tags($str);
+	}
+
+	// --------------------------------------------------------------------	
+
+	/**
+	 * Parse content to Markdown
+	 * @param  string $str     String to parse
+	 * @param  array  $options Associative array containing options
+	 *                         - encode_ee_tags (yes/no) can be used to disable
+	 *                         	ee tag encoding
+	 *                         - smartypants (yes/no) enable or disable 
+	 *                         	smartypants
+	 * @return string          Parsed Markdown content
+	 */
+	public function markdown($str, $options = array())
+	{
+		require_once(APPPATH.'libraries/typography/Markdown/markdown.php');
+
+		// Encode EE Tags
+		if ( ! isset($options['encode_ee_tags']) OR $options['encode_ee_tags'] == 'yes')
+		{
+			$str = ee()->functions->encode_ee_tags($str);
+		}
+
+		// Run everything through SmartyPants
+		if ( ! isset($options['smartypants']) OR $options['smartypants'] == 'yes')
+		{
+			require_once(APPPATH.'libraries/typography/SmartyPants/smartypants.php');
+			return SmartyPants(Markdown($str));
+		}
+
+		return Markdown($str);
 	}
 
 	// --------------------------------------------------------------------	

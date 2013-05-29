@@ -1391,7 +1391,7 @@ class Api_channel_fields extends Api {
 
 			ee()->db->update('channel_data', array('field_ft_'.$insert_id => $native_settings['field_fmt'])); 
 
-			$field_formatting = array('none', 'br', 'xhtml');
+			$field_formatting = array('none', 'br', 'markdown', 'xhtml');
 			
 			//if the selected field formatting is not one of the native formats, make sure it gets added to exp_field_formatting for this field
 			if ( ! in_array($native_settings['field_fmt'], $field_formatting))

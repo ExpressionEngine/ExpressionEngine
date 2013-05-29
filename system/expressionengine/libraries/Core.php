@@ -257,7 +257,7 @@ class EE_Core {
 	 */
 	public function run_ee()
 	{
-		$this->native_plugins = array('magpie', 'xml_encode');
+		$this->native_plugins = array('magpie', 'markdown', 'xml_encode');
 		$this->native_modules = array(
 			'blacklist', 'channel', 'comment', 'commerce', 'email', 'emoticon',
 			'file', 'forum', 'ip_to_nation', 'jquery', 'mailinglist', 'member',
