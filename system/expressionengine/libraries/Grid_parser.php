@@ -323,8 +323,18 @@ class EE_Grid_field_parser {
 			$orderby = 'col_id_'.$sortable_columns[$orderby];
 		}
 
+		// Gather search:field_name parameters
+		$search = array();
+		foreach ($params as $key => $val)
+		{
+			if (strncmp($key, 'search:', 7) == 0)
+			{
+				$search[substr($key, 7)] = $val;
+			}
+		}
+
 		return compact(
-			'sort', 'orderby', 'limit', 'offset',
+			'sort', 'orderby', 'limit', 'offset', 'search',
 			'backspace', 'row_id', 'fixed_order'
 		);
 	}

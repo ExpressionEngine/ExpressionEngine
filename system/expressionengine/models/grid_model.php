@@ -282,10 +282,14 @@ class Grid_model extends CI_Model {
  			$entry_ids = array($entry_ids);
  		}
 
+ 		// row_id parameter
  		if (isset($options['row_id']) && ! empty($options['row_id']))
  		{
  			ee()->functions->ar_andor_string($options['row_id'], 'row_id');
  		}
+
+ 		// search:field parameter
+ 		$this->_field_search($options['search'], $field_id);
 
  		ee()->load->helper('array_helper');
  		
@@ -294,7 +298,6 @@ class Grid_model extends CI_Model {
  				element('orderby', $options, 'row_id'),
  				element('sort', $options, 'asc')
  			)
- 			->offset(element('offset', $options, 0))
  			->get($this->_table_prefix . $field_id)
  			->result_array();
 
@@ -306,6 +309,66 @@ class Grid_model extends CI_Model {
  		}
 
  		return $return_data;
+ 	}
+
+ 	// ------------------------------------------------------------------------
+ 	
+ 	/**
+ 	 * Constructs query for search params and adds it to the current
+ 	 * Active Record call
+ 	 *
+ 	 * @param	array	Array of field names mapped to search terms
+ 	 * @param	int		Field ID to get column data for
+ 	 */
+ 	protected function _field_search($search_terms, $field_id)
+ 	{
+ 		if (empty($search_terms))
+ 		{
+ 			return;
+ 		}
+
+ 		ee()->load->model('channel_model');
+
+ 		$columns = ee()->grid_model->get_columns_for_field($field_id);
+
+ 		// We'll need to map column names to field IDs so we know which column
+ 		// to search
+ 		foreach ($columns as $col)
+ 		{
+ 			$column_ids[$col['col_name']] = $col['col_id'];
+ 		}
+
+ 		foreach ($search_terms as $col_name => $terms)
+ 		{
+ 			$terms = trim($terms);
+
+ 			// Empty search param or invalid field name? Bail out
+ 			if (empty($search_terms) ||
+ 				$search_terms === '=' ||
+ 				! isset($column_ids[$col_name]))
+ 			{
+ 				continue;
+ 			}
+
+ 			// We'll search on this column name
+ 			$field_name = 'col_id_'.$column_ids[$col_name];
+
+ 			// Exact search
+ 			if (strncmp($terms, '=', 1) ==  0)
+ 			{
+ 				// Remove the '=' sign that specified exact match.
+ 				$terms = substr($terms, 1);
+ 				
+ 				$search_sql = ee()->channel_model->_exact_field_search($terms, $field_name);
+ 			}
+ 			// Contains search
+ 			else
+ 			{
+ 				$search_sql = ee()->channel_model->_field_search($terms, $field_name);
+ 			}
+
+ 			ee()->db->where('('.$search_sql.')');
+ 		}
  	}
 
  	// ------------------------------------------------------------------------

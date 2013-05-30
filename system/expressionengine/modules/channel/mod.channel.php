@@ -562,124 +562,6 @@ class Channel {
     *  all of those fields will be searched.  
     *
     *****************************************************************/
-	/**
-	 *	Generate the SQL for an exact query in field search.
-	 *
-	 *	search:field="=words|other words"	
-	 */
-	private function _exact_field_search($terms, $field_name, $site_id)
-	{
-
-		// Trivial case, we don't have special IS_EMPTY handling.
-		if(strpos($terms, 'IS_EMPTY') === FALSE) 
-		{
-			return substr(ee()->functions->sql_andor_string($terms, 'wd.field_id_'.$this->cfields[$site_id][$field_name]), 3).' ';
-		}
-
-		// Did this because I don't like repeatedly checking
-		// the beginning of the string with strncmp for that
-		// 'not', much prefer to do it once and then set a 
-		// boolean.  But.. [cont:1]
-		$not = false;
-		if (strncmp($terms, 'not ', 4) == 0)
-		{
-			$not = true;
-			$terms = substr($terms, 4);
-		}
-
-		if (strpos($terms, '|') !== false)
-		{  
-			$terms = str_replace('IS_EMPTY|', '', $terms);
-		}
-		else 
-		{
-			$terms = str_replace('IS_EMPTY', '', $terms);
-		}
-		   
-		$add_search = '';
-		$conj = ''; 
-	
-		// If we have search terms, then we need to build the search.
-		if ( ! empty($terms)) 
-		{
-			// [cont:1]...it makes this a little hacky.  Gonna leave it for the moment,
-			// but may come back to it.
-			$add_search = ee()->functions->sql_andor_string(($not ? 'not ' . $terms : $terms), 'wd.field_id_'.$this->cfields[$site_id][$field_name]);
-			// remove the first AND output by ee()->functions->sql_andor_string() so we can parenthesize this clause
-			$add_search = '(wd.site_id=' . $site_id . ' AND ' . substr($add_search, 3) . ')';
-											
-			$conj = ($add_search != '' && ! $not) ? 'OR' : 'AND';
-		}
-
-		// If we reach here, we have an IS_EMPTY in addition to possible search terms.
-		// Add the empty check condition.
-		if ($not)
-		{
-			return $add_search . ' ' . $conj . ' (wd.site_id=' . $site_id . ' AND wd.field_id_'.$this->cfields[$site_id][$field_name].' != "")';
-		}
-
-		return $add_search.' '.$conj.' (wd.site_id=' . $site_id . ' AND wd.field_id_'.$this->cfields[$site_id][$field_name].' = "")';
-	}
-
-	// ------------------------------------------------------------------------
-
-	/**
-	 * Generate the SQL for a LIKE query in field search.
-	 *
-	 * 		search:field="words|other words|IS_EMPTY"
-	 */
-	private function _field_search($terms, $field_name, $site_id)
-	{
-		$not = '';
-		if (strncmp($terms, 'not ', 4) == 0)
-		{
-			$terms = substr($terms, 4);
-			$not = 'NOT';
-		}
-
-		if (strpos($terms, '&&') !== FALSE)
-		{
-			$terms = explode('&&', $terms);
-			$andor = $not == 'NOT' ? 'OR' : 'AND';
-		}
-		else
-		{
-			$terms = explode('|', $terms);
-			$andor = $not == 'NOT' ? 'AND' : 'OR';
-		}
-
-
-		$search_sql = '';
-		foreach ($terms as $term)
-		{
-			if($search_sql !== '') 
-			{
-				$search_sql .= $andor;
-			}
-			if ($term == 'IS_EMPTY')
-			{
-				$search_sql .= ' (wd.site_id=' . $site_id
-					. ' AND wd.field_id_' . $this->cfields[$site_id][$field_name] . ($not=='NOT' ? '!' : '') . '="") ';
-			}
-			elseif (strpos($term, '\W') !== FALSE) // full word only, no partial matches
-			{
-				// Note: MySQL's nutty POSIX regex word boundary is [[:>:]]
-				$term = '([[:<:]]|^)'.preg_quote(str_replace('\W', '', $term)).'([[:>:]]|$)';
-
-				$search_sql .= ' (wd.site_id=' . $site_id 
-					. ' AND wd.field_id_' . $this->cfields[$site_id][$field_name] . ' ' . $not 
-					. ' REGEXP "' . ee()->db->escape_str($term).'") ';
-			}
-			else
-			{	
-				$search_sql .= ' (wd.site_id=' . $site_id 
-					. ' AND wd.field_id_' . $this->cfields[$site_id][$field_name] . ' '
-					. $not . ' LIKE "%' . ee()->db->escape_like_str($term) . '%") ';
-			}
-		}
-
-		return $search_sql;
-	}
 
 	// ------------------------------------------------------------------------
 
@@ -708,6 +590,8 @@ class Channel {
 	private function _generate_field_search_sql($search_fields, $site_ids) 
 	{	
 		$sql = '';
+
+		ee()->load->model('channel_model');
 
 		foreach ($search_fields as $field_name => $search_terms)
 		{  
@@ -745,17 +629,19 @@ class Channel {
 				{
 					continue;
 				}
-			
+
+				$search_column_name = 'wd.field_id_'.$this->cfields[$site_id][$field_name];
+				
 				if (strncmp($terms, '=', 1) ==  0)
 				{
 					// Remove the '=' sign that specified exact match.
 					$terms = substr($terms, 1);
 					
-					$fields_sql .= $this->_exact_field_search($terms, $field_name, $site_id);	
+					$fields_sql .= ee()->channel_model->_exact_field_search($terms, $search_column_name, $site_id);
 				}
 				else
 				{
-					$fields_sql .= $this->_field_search($terms, $field_name, $site_id);
+					$fields_sql .= ee()->channel_model->_field_search($terms, $search_column_name, $site_id);
 				}
 				
 			} // foreach($sites as $site_id)
