@@ -180,9 +180,7 @@ class Updater {
 
 		foreach ($fields as $row)
 		{
-			if (empty($exlude) OR 
-				(! empty($exclude) && ! in_array($row['field_id'], $exclude))
-			)
+			if (empty($exlude) OR ! in_array($row['field_id'], $exclude))
 			{
 				$ids[] = $row['field_id'];
 			}
