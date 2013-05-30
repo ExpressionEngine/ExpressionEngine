@@ -506,6 +506,12 @@ class Grid_lib {
 				$errors[] = 'grid_duplicate_col_name';
 			}
 
+			// Column names must contain only alpha-numeric characters and no spaces
+			if (preg_match('/[^a-z0-9\-\_]/i', $column['col_name']))
+			{
+				$errors[] = 'grid_invalid_column_name';
+			}
+
 			// Column widths, if specified, must be numeric
 			if ( ! empty($column['col_width']) &&
 				 ! is_numeric(str_replace('%', '', $column['col_width'])))
