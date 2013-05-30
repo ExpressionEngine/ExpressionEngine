@@ -208,6 +208,7 @@ class Grid_lib {
 
 		// Get row data to send back to fieldtypes with new row IDs
 		$rows = ee()->grid_model->get_entry_rows($this->entry_id, $this->field_id);
+		$rows = $rows[$this->entry_id];
 
 		$i = 0;
 
@@ -227,7 +228,7 @@ class Grid_lib {
 
 				$fieldtype->settings['grid_row_id'] = $rows[$i]['row_id'];
 
-				$this->_call('post_save', $cell_data);
+				ee()->grid_parser->call('post_save', $cell_data);
 
 				// Add to searchable array if searchable
 				if ($column['col_search'] == 'y')

@@ -289,7 +289,7 @@ class Grid_model extends CI_Model {
  		}
 
  		// fixed_order parameter
- 		if ( ! empty($options['fixed_order']))
+ 		if (isset($options['fixed_order']) && ! empty($options['fixed_order']))
  		{
  			ee()->functions->ar_andor_string($options['fixed_order'], 'row_id');
  			ee()->db->order_by(
@@ -300,13 +300,16 @@ class Grid_model extends CI_Model {
  		}
 
  		// search:field parameter
- 		$this->_field_search($options['search'], $field_id);
+ 		if (isset($options['search']) && ! empty($options['search']))
+ 		{
+ 			$this->_field_search($options['search'], $field_id);
+ 		}
 
  		ee()->load->helper('array_helper');
  		
  		$rows = ee()->db->where_in('entry_id', $entry_ids)
  			->order_by(
- 				element('orderby', $options, 'row_id'),
+ 				element('orderby', $options, 'row_order'),
  				element('sort', $options, 'asc')
  			)
  			->get($this->_table_prefix . $field_id)
