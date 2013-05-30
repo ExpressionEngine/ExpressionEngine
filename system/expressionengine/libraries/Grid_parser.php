@@ -325,11 +325,14 @@ class EE_Grid_field_parser {
 
 		// Gather search:field_name parameters
 		$search = array();
-		foreach ($params as $key => $val)
+		if ($params !== FALSE)
 		{
-			if (strncmp($key, 'search:', 7) == 0)
+			foreach ($params as $key => $val)
 			{
-				$search[substr($key, 7)] = $val;
+				if (strncmp($key, 'search:', 7) == 0)
+				{
+					$search[substr($key, 7)] = $val;
+				}
 			}
 		}
 

@@ -288,6 +288,17 @@ class Grid_model extends CI_Model {
  			ee()->functions->ar_andor_string($options['row_id'], 'row_id');
  		}
 
+ 		// fixed_order parameter
+ 		if ( ! empty($options['fixed_order']))
+ 		{
+ 			ee()->functions->ar_andor_string($options['fixed_order'], 'row_id');
+ 			ee()->db->order_by(
+ 					'FIELD(row_id, '.implode(', ', explode('|', $options['fixed_order'])).')',
+ 					element('sort', $options, 'asc'),
+ 					FALSE
+ 				);
+ 		}
+
  		// search:field parameter
  		$this->_field_search($options['search'], $field_id);
 
