@@ -488,7 +488,7 @@ class Tools_utilities extends CP_Controller {
 		$xml_file   = ( ! $this->input->post('xml_file'))  ? '' : $this->input->post('xml_file');
 
 		//  Read XML file contents
-		$this->load->load->helper('file');
+		$this->load->helper('file');
 		$contents = read_file($xml_file);
 		
 		if ($contents === FALSE)
@@ -576,7 +576,7 @@ class Tools_utilities extends CP_Controller {
 		}
 
 		//  Read XML file contents
-		$this->load->load->helper('file');
+		$this->load->helper('file');
 		$contents = read_file($xml_file);
 		$new_custom_fields = array();
 		
