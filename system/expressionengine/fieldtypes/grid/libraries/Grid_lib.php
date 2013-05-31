@@ -69,7 +69,7 @@ class Grid_lib {
 		else
 		{
 			$rows = ee()->grid_model->get_entry_rows($this->entry_id, $this->field_id);
-			$rows = $rows[$this->entry_id];
+			$rows = (isset($rows[$this->entry_id])) ? $rows[$this->entry_id] : array();
 		}
 
 		$vars['rows'] = array();

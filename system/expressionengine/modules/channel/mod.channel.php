@@ -385,11 +385,13 @@ class Channel {
 		if (isset(ee()->session->cache['channel']['custom_channel_fields']) &&
 			isset(ee()->session->cache['channel']['date_fields']) &&
 			isset(ee()->session->cache['channel']['relationship_fields']) &&
+			isset(ee()->session->cache['channel']['grid_fields']) &&
 			isset(ee()->session->cache['channel']['pair_custom_fields']))
 		{
 			$this->cfields = ee()->session->cache['channel']['custom_channel_fields'];
 			$this->dfields = ee()->session->cache['channel']['date_fields'];
 			$this->rfields = ee()->session->cache['channel']['relationship_fields'];
+			$this->gfields = ee()->session->cache['channel']['grid_fields'];
 			$this->pfields = ee()->session->cache['channel']['pair_custom_fields'];
 			return;
 		}
@@ -408,6 +410,7 @@ class Channel {
   		ee()->session->cache['channel']['custom_channel_fields']	= $this->cfields;
 		ee()->session->cache['channel']['date_fields']				= $this->dfields;
 		ee()->session->cache['channel']['relationship_fields']		= $this->rfields;
+		ee()->session->cache['channel']['grid_fields']				= $this->gfields;
 		ee()->session->cache['channel']['pair_custom_fields']		= $this->pfields;
 	}
 

@@ -29,6 +29,8 @@ class Grid_ft extends EE_Fieldtype {
 		'version'	=> '1.0'
 	);
 
+	var $has_array_data = TRUE;
+
 	public function __construct()
 	{
 		parent::__construct();
@@ -128,9 +130,24 @@ class Grid_ft extends EE_Fieldtype {
 
 	// --------------------------------------------------------------------
 
+	/**
+	 * Replace Grid template tags
+	 */
 	public function replace_tag($data, $params = '', $tagdata = '')
 	{
-		return $tagdata;
+		ee()->load->library('grid_parser');
+
+		return ee()->grid_parser->parse($this->row, $this->field_id, $params, $tagdata);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * :total_rows modifier
+	 */
+	public function replace_total_rows($data, $params = '', $tagdata = '')
+	{
+		// TODO
 	}
 	
 	// --------------------------------------------------------------------

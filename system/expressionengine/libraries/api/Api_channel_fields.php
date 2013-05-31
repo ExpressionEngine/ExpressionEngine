@@ -152,6 +152,7 @@ class Api_channel_fields extends Api {
 		$cfields = array();
 		$dfields = array();
 		$rfields = array();
+		$gfields = array();
 		$pfields = array();
 		
 		foreach ($query->result_array() as $row)
@@ -170,10 +171,6 @@ class Api_channel_fields extends Api {
 			elseif ($row['field_type'] == 'relationship')
 			{
 				$rfields[$row['site_id']][$row['field_name']] = $row['field_id'];
-			}
-			elseif ($row['field_type'] == 'grid')
-			{
-				$gfields[$row['site_id']][$row['field_name']] = $row['field_id'];
 			}
 			else
 			{
@@ -196,6 +193,11 @@ class Api_channel_fields extends Api {
 				$settings['field_fmt'] = $row['field_fmt'];
 				
 				$this->set_settings($row['field_id'], $settings);
+			}
+
+			if ($row['field_type'] == 'grid')
+			{
+				$gfields[$row['site_id']][$row['field_name']] = $row['field_id'];
 			}
 			
 			

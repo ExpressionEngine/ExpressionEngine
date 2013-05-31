@@ -398,8 +398,29 @@ class Grid_model extends CI_Model {
  	{
  		$multi_column = is_array($field_ids);
 
- 		if ( ! $multi_column)
+ 		if ($multi_column && $cache)
  		{
+ 			$cached = array();
+
+ 			// Only get the colums for the field IDs we don't already have
+ 			foreach ($field_ids as $key => $field_id)
+ 			{
+ 				if (isset($this->_columns[$field_id]) && $cache)
+ 				{
+ 					$cached[$field_id] = $this->_columns[$field_id];
+ 					unset($field_ids[$key]);
+ 				}
+ 			}
+
+ 			// If there are no field IDs to query, great!
+ 			if (empty($field_ids))
+ 			{
+ 				return $cached;
+ 			}
+ 		}
+ 		else
+ 		{
+ 			// Return fron cache if exists and allowed
  			if (isset($this->_columns[$field_ids]) && $cache)
  			{
  				return $this->_columns[$field_ids];

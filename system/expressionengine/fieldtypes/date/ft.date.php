@@ -257,6 +257,11 @@ class Date_ft extends EE_Fieldtype {
 		ee()->load->helper('custom_field_helper');
 		$date = decode_multi_field($data);
 
+		if ( ! isset($date[0]))
+		{
+			return '';
+		}
+
 		if (isset($params['format']))
 		{
 			$localize = TRUE;

@@ -59,11 +59,7 @@ class EE_Channel_grid_parser implements EE_Channel_parser_component {
 
 		ee()->load->library('grid_parser');
 
-		return ee()->grid_parser->create(
-			$gfields[$site_id],
-			$pre->entry_ids(),
-			$tagdata
-		);
+		return ee()->grid_parser->pre_process($tagdata, $pre, $gfields[$site_id]);
 	}
 
 	// ------------------------------------------------------------------------
@@ -79,11 +75,6 @@ class EE_Channel_grid_parser implements EE_Channel_parser_component {
 	 */
 	public function replace($tagdata, EE_Channel_data_parser $obj, $grid_parser)
 	{
-		if ( ! $grid_parser)
-		{
-			return $tagdata;
-		}
-
-		return $grid_parser->parse($obj->row(), $tagdata);
+		return $tagdata;
 	}
 }
