@@ -244,6 +244,7 @@ class File_field {
 			// Some legacy fields will have only a full path specified
 			if ($filedir == '')
 			{
+				unset($_POST[$field_name.'_hidden_dir']);
 				return array('value' => $_POST[$field_name]);			
 			}
 
