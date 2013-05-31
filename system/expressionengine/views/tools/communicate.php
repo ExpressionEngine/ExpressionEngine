@@ -141,7 +141,7 @@
 				  'name'        => 'accept_admin_email',
 				  'id'          => 'accept_admin_email',
 				  'value'       =>  'y',
-				  'checked'		=> set_checkbox('accept_admin_email', 'y')
+				  'checked'		=> set_checkbox('accept_admin_email', 'y', $accept_admin_email)
 				);
 				echo form_checkbox($accept_admin_email);?> 
 				
