@@ -32,9 +32,10 @@
 	</div>
 	<div class="grid_col_settings_section grid_col_width">
 		<?=form_input(array(
-				'name'	=> 'grid[cols]['.$field_name.'][col_width]',
-				'value'	=> (isset($column['col_width'])) ? $column['col_width'] : '',
-				'class'	=> 'grid_input_text_small'
+				'name'		=> 'grid[cols]['.$field_name.'][col_width]',
+				'value'		=> (isset($column['col_width'])) ? $column['col_width'] : '',
+				'class'		=> 'grid_input_text_small',
+				'maxlength'	=> 3
 			)).NBS.NBS.NBS.
 			'<i class="instruction_text">'.lang('grid_col_width_percent').'</i>';?>
 	</div>
