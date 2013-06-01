@@ -299,13 +299,14 @@ Grid.Publish.prototype = {
 /**
  * Grid Settings class
  */
-Grid.Settings = function()
+Grid.Settings = function(settings)
 {
 	this.root = $('#grid_settings');
 	this.settingsScroller = this.root.find('#grid_col_settings_container');
 	this.settingsContainer = this.root.find('#grid_col_settings_container_inner');
 	this.colTemplateContainer = $('#grid_col_settings_elements');
 	this.blankColumn = this.colTemplateContainer.find('.grid_col_settings');
+	this.settings = settings;
 
 	this.init();
 }
@@ -323,6 +324,7 @@ Grid.Settings.prototype = {
 		this._toggleDeleteButtons();
 		this._bindColTypeChange();
 		this._bindSubmit();
+		this._highlightErrors();
 
 		// Fire displaySettings event
 		this._settingsDisplay();
@@ -644,6 +646,9 @@ Grid.Settings.prototype = {
 
 		this.root.parents('form').submit(function()
 		{
+			// Remove existing validation error classes
+			$('.grid_col_settings_section input[type=text]').removeClass('grid_settings_error');
+
 			grid_html = that._cloneWithFormValues(that.root.parent('#grid_settings_container'));
 
 			$('<input/>', {
@@ -740,6 +745,21 @@ Grid.Settings.prototype = {
 		}
 
 		Grid._eventHandlers[action][fieldtype]($(el));
+	},
+
+	/**
+	 * If there are fields with form validation errors in our settings
+	 * object, highlight them
+	 */
+	_highlightErrors: function()
+	{
+		if (this.settings.error_fields != undefined)
+		{
+			$.each(this.settings.error_fields, function(index, val)
+			{
+				 $('input[name="'+val+'"]').addClass('grid_settings_error');
+			});
+		}
 	}
 };
 
@@ -754,9 +774,9 @@ EE.grid = function(field, settings)
 /**
  * Public method to instantiate Grid settings
  */
-EE.grid_settings = function()
+EE.grid_settings = function(settings)
 {
-	return new Grid.Settings();
+	return new Grid.Settings(settings);
 };
 
 })(jQuery);

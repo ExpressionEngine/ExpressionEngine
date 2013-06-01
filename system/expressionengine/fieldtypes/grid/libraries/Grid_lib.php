@@ -493,31 +493,31 @@ class Grid_lib {
 			// Column labels are required
 			if (empty($column['col_label']))
 			{
-				$errors[] .= 'grid_col_label_required';
+				$errors[$col_field]['col_label'] = 'grid_col_label_required';
 			}
 
 			// Column names are required
 			if (empty($column['col_name']))
 			{
-				$errors[] = 'grid_col_name_required';
+				$errors[$col_field]['col_name'] = 'grid_col_name_required';
 			}
 			// There cannot be duplicate column names
 			elseif ($col_name_count[$column['col_name']] > 1)
 			{
-				$errors[] = 'grid_duplicate_col_name';
+				$errors[$col_field]['col_name'] = 'grid_duplicate_col_name';
 			}
 
 			// Column names must contain only alpha-numeric characters and no spaces
 			if (preg_match('/[^a-z0-9\-\_]/i', $column['col_name']))
 			{
-				$errors[] = 'grid_invalid_column_name';
+				$errors[$col_field]['col_name'] = 'grid_invalid_column_name';
 			}
 
 			// Column widths, if specified, must be numeric
 			if ( ! empty($column['col_width']) &&
 				 ! is_numeric(str_replace('%', '', $column['col_width'])))
 			{
-				$errors[] = 'grid_numeric_percentage';
+				$errors[$col_field]['col_width'] = 'grid_numeric_percentage';
 			}
 
 			$column['col_id'] = (strpos($col_field, 'new_') === FALSE)
@@ -534,11 +534,9 @@ class Grid_lib {
 
 			if (is_string($ft_validate))
 			{
-				$errors[] = $ft_validate;
+				$errors[$col_field]['custom'] = $ft_validate;
 			}
 		}
-
-		$errors = array_unique($errors);
 
 		return (empty($errors)) ? TRUE : $errors;
 	}

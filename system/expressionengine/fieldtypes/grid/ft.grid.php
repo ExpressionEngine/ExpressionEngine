@@ -193,12 +193,21 @@ class Grid_ft extends EE_Fieldtype {
 		$settings_html = form_label(lang('grid_config')).'<br>'.
 			'<i class="instruction_text">'.lang('grid_config_desc').'</i>';
 
+		// Settings to initialize JS with
+		$settings = array();
+
 		// If we're coming from a form validation error, load the previous
 		// screen's HTML for the Grid field for easy repopulation
 		if ($grid_html = ee()->input->post('grid_html'))
 		{
 			$settings_html .= form_error('grid_validation');
 			$settings_html .= $grid_html;
+
+			// Array of field names that had validation errors, we'll highlight them
+			if ($error_fields = ee()->session->cache(__CLASS__, 'grid_settings_field_errors'))
+			{
+				$settings['error_fields'] = $error_fields;
+			}
 		}
 		// Otherwise load settings from the database
 		else
@@ -246,7 +255,7 @@ class Grid_ft extends EE_Fieldtype {
 		ee()->cp->add_js_script('file', 'cp/sort_helper');
 		ee()->cp->add_js_script('file', 'cp/grid');
 
-		ee()->javascript->output('EE.grid_settings();');
+		ee()->javascript->output('EE.grid_settings('.json_encode($settings).');');
 		
 		return ee()->table->generate();
 	}
@@ -296,14 +305,34 @@ class Grid_ft extends EE_Fieldtype {
 
 		if ($validate !== TRUE)
 		{
-			$errors = '';
+			$errors = array();
+			$field_names = array();
 
-			foreach ($validate as $error)
+			// Gather error messages and fields with errors so that we can
+			// display the error messages and highlight the fields that
+			// have errors
+			foreach ($validate as $column => $fields)
 			{
-				$errors .= lang($error).'<br>';
+				foreach ($fields as $field => $error)
+				{
+					$errors[] = $error;
+					$field_names[] = 'grid[cols]['.$column.']['.$field.']';
+				}
 			}
 
-			ee()->form_validation->set_message('_validate_grid', $errors);
+			// Make error messages unique and convert to a string to pass
+			// to form validaiton library
+			$errors = array_unique($errors);
+			$error_string = '';
+			foreach ($errors as $error)
+			{
+				$error_string .= lang($error).'<br>';
+			}
+
+			ee()->form_validation->set_message('_validate_grid', $error_string);
+
+			// We'll get this later in display_settings()
+			ee()->session->set_cache(__CLASS__, 'grid_settings_field_errors', $field_names);
 
 			return FALSE;
 		}

@@ -246,6 +246,12 @@ span.instruction_text {
 	padding: 6px;
 }
 
+.grid_col_settings_section input[type=text].grid_settings_error,
+.grid_col_settings_section input[type=text].grid_settings_error:focus {
+	background-color: #f5e9e9;
+	border-color: #f6b5b5;
+}
+
 .grid_field input[type=text]:focus,
 .grid_field textarea:focus,
 .grid_col_settings_section input[type=text]:focus,

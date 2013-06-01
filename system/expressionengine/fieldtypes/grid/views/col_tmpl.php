@@ -21,13 +21,13 @@
 		<?=form_label(form_checkbox(
 			'grid[cols]['.$field_name.'][col_required]',
 			'column_required',
-			(isset($column['col_label']) && $column['col_required'] == 'y')
+			(isset($column['col_required']) && $column['col_required'] == 'y')
 		).lang('grid_col_required'))?>
 
 		<?=form_label(form_checkbox(
 			'grid[cols]['.$field_name.'][col_search]',
 			'column_searchable',
-			(isset($column['col_label']) && $column['col_search'] == 'y')
+			(isset($column['col_search']) && $column['col_search'] == 'y')
 		).lang('grid_col_searchable'))?>
 	</div>
 	<div class="grid_col_settings_section grid_col_width">
