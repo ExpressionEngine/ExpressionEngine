@@ -28,12 +28,11 @@ class Grid_parser {
 
 	public $modifiers = array();
 
-	// Grid field data will persist here throughout the request
-	protected $_grid_data = array();
+	protected $_grid_field_names = array();
 
 	public function __construct()
 	{
-		$this->modifiers = array('next_row', 'prev_row');
+		$this->modifiers = array('next_row', 'prev_row', 'total_rows');
 	}
 
 	// --------------------------------------------------------------------
@@ -90,80 +89,23 @@ class Grid_parser {
 		}
 
 		ee()->load->model('grid_model');
-		$columns = ee()->grid_model->get_columns_for_field(array_unique($field_ids));
 
+		// Cache column data for all fields used in the Channel loop
+		ee()->grid_model->get_columns_for_field(array_unique($field_ids));
+		
+		// Attempt to gather all data needed for the entries loop before
+		// the loop runs
 		foreach ($matches as $match)
 		{
 			$field_name = rtrim(str_replace($pre_parser->prefix(), '', $match[1]), ':');
 			$params = $match[2];
 			$field_id = $grid_fields[$field_name];
-			$this->_grid_data[$field_id]['field_name'] = rtrim($match[1], ':');
+			$this->_grid_field_names[$field_id] = rtrim($match[1], ':');
 
-			$params = ee()->functions->assign_parameters($params);
-
-			// Create a unique marker for this dataset so we can find it later
-			$marker = $this->_get_tag_marker($params);
-
-			// Validate the params after creating the marker because the params
-			// we get at parse() are unvalidated
-			$params = $this->_validate_params($params, $field_id, $columns);
-
-			$entry_ids = $pre_parser->entry_ids();
-			foreach ($entry_ids as $key => $entry_id)
-			{
-				// If we already have data for this particular tag configuation
-				// and entry ID, we don't need to get it again
-				if (isset($this->_grid_data[$field_id][$marker][$entry_id]))
-				{
-					unset($entry_ids[$key]);
-				}
-			}
-
-			if ( ! isset($this->_grid_data[$field_id][$marker]))
-			{
-				$this->_grid_data[$field_id][$marker] = array();
-			}
-
-			// If there are entries to query for, go get them!
-			if ( ! empty($entry_ids))
-			{
-				$this->_grid_data[$field_id][$marker] += ee()->grid_model->get_entry_rows(
-					$entry_ids,
-					$field_id,
-					$params
-				);
-			}
+			ee()->grid_model->get_entry_rows($pre_parser->entry_ids(), $field_id, $params);
 		}
 
 		return TRUE;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Creates a unique marker for this tag configuration based on its
-	 * parameters so we can match up the field data later in parse();
-	 * if there are no parameters, we'll just use 'data'
-	 * 
-	 * @param	array	Unvalidated params
-	 * @return	string	Marker
-	 */
-	private function _get_tag_marker($params)
-	{
-		ee()->load->helper('array_helper');
-
-		// These are the only parameters that affect the DB query so we'll
-		// only check against these; we could put some of these other
-		// parameters in the code later on  so that even more tags could
-		// use the same data set
-		$db_params = array(
-			'fixed_order'	=> element('fixed_order', $params),
-			'search'		=> element('search', $params),
-			'orderby'		=> element('orderby', $params),
-			'sort'			=> element('sort', $params),
-		);
-
-		return md5(json_encode($db_params));
 	}
 
 	// --------------------------------------------------------------------
@@ -186,22 +128,19 @@ class Grid_parser {
 		}
 
 		$entry_id = $channel_row['entry_id'];
-		$marker = $this->_get_tag_marker($params);
 
-		// See if our unique marker matches anything in _grid_data
-		if ( ! isset($this->_grid_data[$field_id][$marker][$entry_id]))
+		ee()->load->model('grid_model');
+		$entry_data = ee()->grid_model->get_entry_rows($entry_id, $field_id, $params);
+
+		// Bail out if no entry data
+		if ($entry_data === FALSE OR ! isset($entry_data[$entry_id]))
 		{
 			return '';
 		}
 
-		$entry_data = $this->_grid_data[$field_id][$marker][$entry_id];
-		$field_name = $this->_grid_data[$field_id]['field_name'];
-
-		ee()->load->model('grid_model');
-		$columns = ee()->grid_model->get_columns_for_field($field_id);
-
-		// Validate our params and set defaults
-		$params = $this->_validate_params($params, $field_id, array($field_id => $columns));
+		$params = $entry_data['params'];
+		$entry_data = $entry_data[$entry_id];
+		$field_name = $this->_grid_field_names[$field_id];
 
 		// :field_total_rows single variable
 		// Currently does not work well with fixed_order and search params
@@ -343,7 +282,7 @@ class Grid_parser {
 	private function _parse_row($channel_row, $field_id, $tagdata, $row)
 	{
 		$grid_row = $tagdata;
-		$field_name = $this->_grid_data[$field_id]['field_name'];
+		$field_name = $this->_grid_field_names[$field_id];
 		$entry_id = $channel_row['entry_id'];
 
 		// Gather the variables to parse
@@ -357,7 +296,6 @@ class Grid_parser {
 			return $tagdata;
 		}
 
-		ee()->load->model('grid_model');
 		$columns = ee()->grid_model->get_columns_for_field($field_id);
 
 		// Create an easily-traversible array of columns by field ID
@@ -437,87 +375,6 @@ class Grid_parser {
 		}
 
 		return $grid_row;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Assigns some default parameters and makes sure parameters can be
-	 * safely used in an SQL query or otherwise used to help parsing
-	 *
-	 * @param	array	Array of parameters from Functions::assign_parameters
-	 * @param	int		Field ID of field being parsed so we can make sure
-	 * 					the orderby parameter is ordering via a real column
-	 * @return	array	Array of validated and default parameters to use for parsing
-	 */
-	protected function _validate_params($params, $field_id, $columns)
-	{
-		ee()->load->helper('array_helper');
-
-		// dynamic_parameters
-		if (($dynamic_params = element('dynamic_parameters', $params)) != FALSE)
-		{
-			foreach (explode('|', $dynamic_params) as $param)
-			{
-				// Add its value to the params array if exists in POST
-				if (($value = ee()->input->post($param)) !== FALSE)
-				{
-					$params[$param] = $value;
-				}
-			}
-		}
-
-		// Gather params and defaults
-		$sort 			= element('sort', $params);
-		$orderby		= element('orderby', $params);
-		$limit			= element('limit', $params, 100);
-		$offset			= element('offset', $params, 0);
-		$backspace		= element('backspace', $params, 0);
-		$row_id			= element('row_id', $params, 0);
-		$fixed_order	= element('fixed_order', $params, 0);
-		
-		// Validate sort parameter, only 'asc' and 'desc' allowed, default to 'asc'
-		if ( ! in_array($sort, array('asc', 'desc')))
-		{
-			$sort = 'asc';
-		}
-
-		$sortable_columns = array();
-		foreach ($columns[$field_id] as $col)
-		{
-			$sortable_columns[$col['col_name']] = $col['col_id'];
-		}
-
-		// orderby parameter can only order by the columns available to it,
-		// default to 'row_id'
-		if ( ! in_array($orderby, array_keys($sortable_columns)))
-		{
-			$orderby = 'row_order';
-		}
-		// Convert the column name to its matching table column name to hand
-		// off to the query for proper sorting
-		else
-		{
-			$orderby = 'col_id_'.$sortable_columns[$orderby];
-		}
-
-		// Gather search:field_name parameters
-		$search = array();
-		if ($params !== FALSE)
-		{
-			foreach ($params as $key => $val)
-			{
-				if (strncmp($key, 'search:', 7) == 0)
-				{
-					$search[substr($key, 7)] = $val;
-				}
-			}
-		}
-
-		return compact(
-			'sort', 'orderby', 'limit', 'offset', 'search',
-			'backspace', 'row_id', 'fixed_order'
-		);
 	}
 
 	// ------------------------------------------------------------------------

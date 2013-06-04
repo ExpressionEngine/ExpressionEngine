@@ -26,6 +26,7 @@ class Grid_model extends CI_Model {
 	
 	protected $_table = 'grid_columns';
 	protected $_table_prefix = 'grid_field_';
+	protected $_grid_data = array();
 	protected $_columns = array();
 
  	/**
@@ -269,10 +270,12 @@ class Grid_model extends CI_Model {
  	// ------------------------------------------------------------------------
  	
  	/**
- 	 * Returns entry row data for a given entry ID and field ID
+ 	 * Returns entry row data for a given entry ID and field ID, caches data
+ 	 * it has already queried for
  	 *
  	 * @param	array	Entry IDs to get row data for
  	 * @param	int		Field ID to get row data for
+ 	 * @param	array	Options for the query, often filled by tag parameters
  	 * @return	array	Row data
  	 */
  	public function get_entry_rows($entry_ids, $field_id, $options = array())
@@ -282,41 +285,184 @@ class Grid_model extends CI_Model {
  			$entry_ids = array($entry_ids);
  		}
 
- 		// fixed_order parameter
- 		if (isset($options['fixed_order']) && ! empty($options['fixed_order']))
+ 		// Validate the passed parameters and create a unique marker for these
+ 		// specific parameters so we know not to query for them again
+ 		$options = $this->_validate_params($options, $field_id);
+ 		$marker = $this->_get_tag_marker($options);
+
+ 		foreach ($entry_ids as $key => $entry_id)
  		{
- 			ee()->functions->ar_andor_string($options['fixed_order'], 'row_id');
- 			ee()->db->order_by(
- 					'FIELD(row_id, '.implode(', ', explode('|', $options['fixed_order'])).')',
- 					element('sort', $options, 'asc'),
- 					FALSE
- 				);
+ 			// If we already have data for this particular tag configuation
+ 			// and entry ID, we don't need to get it again
+ 			if (isset($this->_grid_data[$field_id][$marker][$entry_id]))
+ 			{
+ 				unset($entry_ids[$key]);
+ 			}
  		}
 
- 		// search:field parameter
- 		if (isset($options['search']) && ! empty($options['search']))
+ 		$this->_grid_data[$field_id][$marker]['params'] = $options;
+
+ 		if ( ! empty($entry_ids))
  		{
- 			$this->_field_search($options['search'], $field_id);
+ 			// Insert a blank array for each entry ID in case the query returns
+ 			// no results, we don't want the cache check to fail and we keep
+ 			// querying for data that doesn't exist
+ 			foreach ($entry_ids as $entry_id)
+ 			{
+ 				$this->_grid_data[$field_id][$marker][$entry_id] = array();
+ 			}
+
+ 			// fixed_order parameter
+ 			if (isset($options['fixed_order']) && ! empty($options['fixed_order']))
+ 			{
+ 				ee()->functions->ar_andor_string($options['fixed_order'], 'row_id');
+ 				ee()->db->order_by(
+ 						'FIELD(row_id, '.implode(', ', explode('|', $options['fixed_order'])).')',
+ 						element('sort', $options, 'asc'),
+ 						FALSE
+ 					);
+ 			}
+
+ 			// search:field parameter
+ 			if (isset($options['search']) && ! empty($options['search']))
+ 			{
+ 				$this->_field_search($options['search'], $field_id);
+ 			}
+
+ 			ee()->load->helper('array_helper');
+ 			
+ 			$rows = ee()->db->where_in('entry_id', $entry_ids)
+ 				->order_by(
+ 					element('orderby', $options, 'row_order'),
+ 					element('sort', $options, 'asc')
+ 				)
+ 				->get($this->_table_prefix . $field_id)
+ 				->result_array();
+ 			
+ 			// Add these rows to the cache
+ 			foreach ($rows as $row)
+ 			{
+ 				$this->_grid_data[$field_id][$marker][$row['entry_id']][$row['row_id']] = $row;
+ 			}
  		}
 
+ 		return isset($this->_grid_data[$field_id][$marker]) ? $this->_grid_data[$field_id][$marker] : FALSE;
+ 	}
+
+ 	// --------------------------------------------------------------------
+
+ 	/**
+ 	 * Assigns some default parameters and makes sure parameters can be
+ 	 * safely used in an SQL query or otherwise used to help parsing
+ 	 *
+ 	 * @param	array	Array of parameters from Functions::assign_parameters
+ 	 * @param	int		Field ID of field being parsed so we can make sure
+ 	 * 					the orderby parameter is ordering via a real column
+ 	 * @return	array	Array of validated and default parameters to use for parsing
+ 	 */
+ 	protected function _validate_params($params, $field_id)
+ 	{
  		ee()->load->helper('array_helper');
- 		
- 		$rows = ee()->db->where_in('entry_id', $entry_ids)
- 			->order_by(
- 				element('orderby', $options, 'row_order'),
- 				element('sort', $options, 'asc')
- 			)
- 			->get($this->_table_prefix . $field_id)
- 			->result_array();
 
- 		$return_data = array();
- 		
- 		foreach ($rows as $row)
+ 		if (is_string($params))
  		{
- 			$return_data[$row['entry_id']][$row['row_id']] = $row;
+ 			$params = ee()->functions->assign_parameters($params);
  		}
 
- 		return $return_data;
+ 		// dynamic_parameters
+ 		if (($dynamic_params = element('dynamic_parameters', $params)) != FALSE)
+ 		{
+ 			foreach (explode('|', $dynamic_params) as $param)
+ 			{
+ 				// Add its value to the params array if exists in POST
+ 				if (($value = ee()->input->post($param)) !== FALSE)
+ 				{
+ 					$params[$param] = $value;
+ 				}
+ 			}
+ 		}
+
+ 		// Gather params and defaults
+ 		$sort 			= element('sort', $params);
+ 		$orderby		= element('orderby', $params);
+ 		$limit			= element('limit', $params, 100);
+ 		$offset			= element('offset', $params, 0);
+ 		$backspace		= element('backspace', $params, 0);
+ 		$row_id			= element('row_id', $params, 0);
+ 		$fixed_order	= element('fixed_order', $params, 0);
+ 		
+ 		// Validate sort parameter, only 'asc' and 'desc' allowed, default to 'asc'
+ 		if ( ! in_array($sort, array('asc', 'desc')))
+ 		{
+ 			$sort = 'asc';
+ 		}
+
+ 		$columns = $this->get_columns_for_field($field_id);
+
+ 		$sortable_columns = array();
+ 		foreach ($columns as $col)
+ 		{
+ 			$sortable_columns[$col['col_name']] = $col['col_id'];
+ 		}
+
+ 		// orderby parameter can only order by the columns available to it,
+ 		// default to 'row_id'
+ 		if ( ! in_array($orderby, array_keys($sortable_columns)))
+ 		{
+ 			$orderby = 'row_order';
+ 		}
+ 		// Convert the column name to its matching table column name to hand
+ 		// off to the query for proper sorting
+ 		else
+ 		{
+ 			$orderby = 'col_id_'.$sortable_columns[$orderby];
+ 		}
+
+ 		// Gather search:field_name parameters
+ 		$search = array();
+ 		if ($params !== FALSE)
+ 		{
+ 			foreach ($params as $key => $val)
+ 			{
+ 				if (strncmp($key, 'search:', 7) == 0)
+ 				{
+ 					$search[substr($key, 7)] = $val;
+ 				}
+ 			}
+ 		}
+
+ 		return compact(
+ 			'sort', 'orderby', 'limit', 'offset', 'search',
+ 			'backspace', 'row_id', 'fixed_order'
+ 		);
+ 	}
+
+ 	// --------------------------------------------------------------------
+
+ 	/**
+ 	 * Creates a unique marker for this tag configuration based on its
+ 	 * parameters so we can match up the field data later in parse();
+ 	 * if there are no parameters, we'll just use 'data'
+ 	 * 
+ 	 * @param	array	Unvalidated params
+ 	 * @return	string	Marker
+ 	 */
+ 	private function _get_tag_marker($params)
+ 	{
+ 		ee()->load->helper('array_helper');
+
+ 		// These are the only parameters that affect the DB query so we'll
+ 		// only check against these; we could put some of these other
+ 		// parameters in the code later on  so that even more tags could
+ 		// use the same data set
+ 		$db_params = array(
+ 			'fixed_order'	=> element('fixed_order', $params),
+ 			'search'		=> element('search', $params),
+ 			'orderby'		=> element('orderby', $params),
+ 			'sort'			=> element('sort', $params),
+ 		);
+
+ 		return md5(json_encode($db_params));
  	}
 
  	// ------------------------------------------------------------------------
@@ -337,7 +483,7 @@ class Grid_model extends CI_Model {
 
  		ee()->load->model('channel_model');
 
- 		$columns = ee()->grid_model->get_columns_for_field($field_id);
+ 		$columns = $this->get_columns_for_field($field_id);
 
  		// We'll need to map column names to field IDs so we know which column
  		// to search

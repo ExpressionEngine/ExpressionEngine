@@ -89,12 +89,15 @@ class Grid_ft extends EE_Fieldtype {
 	 */
 	public function delete($entry_ids)
 	{
-		$rows = ee()->grid_model->get_entry_rows($entry_ids, $this->field_id);
+		$entries = ee()->grid_model->get_entry_rows($entry_ids, $this->field_id);
 
 		$row_ids = array();
-		foreach ($rows as $row)
+		foreach ($entries as $rows)
 		{
-			$row_ids[] = $row['row_id'];
+			foreach ($rows as $row)
+			{
+				$row_ids[] = $row['row_id'];
+			}
 		}
 
 		$this->_load_grid_lib();
@@ -147,7 +150,17 @@ class Grid_ft extends EE_Fieldtype {
 	 */
 	public function replace_total_rows($data, $params = '', $tagdata = '')
 	{
-		// TODO
+		$entry_id = $this->row['entry_id'];
+
+		ee()->load->model('grid_model');
+		$entry_data = ee()->grid_model->get_entry_rows($entry_id, $this->field_id, $params);
+
+		if ($entry_data !== FALSE && isset($entry_data[$entry_id]))
+		{
+			return count($entry_data[$entry_id]);
+		}
+
+		return 0;
 	}
 
 	// --------------------------------------------------------------------
