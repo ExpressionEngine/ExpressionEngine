@@ -454,6 +454,19 @@ class Grid_parser {
 	{
 		ee()->load->helper('array_helper');
 
+		// dynamic_parameters
+		if (($dynamic_params = element('dynamic_parameters', $params)) != FALSE)
+		{
+			foreach (explode('|', $dynamic_params) as $param)
+			{
+				// Add its value to the params array if exists in POST
+				if (($value = ee()->input->post($param)) !== FALSE)
+				{
+					$params[$param] = $value;
+				}
+			}
+		}
+
 		// Gather params and defaults
 		$sort 			= element('sort', $params);
 		$orderby		= element('orderby', $params);
@@ -462,7 +475,6 @@ class Grid_parser {
 		$backspace		= element('backspace', $params, 0);
 		$row_id			= element('row_id', $params, 0);
 		$fixed_order	= element('fixed_order', $params, 0);
-		// TODO: Dynamic_parameters?
 		
 		// Validate sort parameter, only 'asc' and 'desc' allowed, default to 'asc'
 		if ( ! in_array($sort, array('asc', 'desc')))
