@@ -282,12 +282,6 @@ class Grid_model extends CI_Model {
  			$entry_ids = array($entry_ids);
  		}
 
- 		// row_id parameter
- 		if (isset($options['row_id']) && ! empty($options['row_id']))
- 		{
- 			ee()->functions->ar_andor_string($options['row_id'], 'row_id');
- 		}
-
  		// fixed_order parameter
  		if (isset($options['fixed_order']) && ! empty($options['fixed_order']))
  		{
@@ -319,7 +313,7 @@ class Grid_model extends CI_Model {
  		
  		foreach ($rows as $row)
  		{
- 			$return_data[$row['entry_id']][] = $row;
+ 			$return_data[$row['entry_id']][$row['row_id']] = $row;
  		}
 
  		return $return_data;

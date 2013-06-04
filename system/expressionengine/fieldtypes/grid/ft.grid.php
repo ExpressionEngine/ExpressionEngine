@@ -149,6 +149,43 @@ class Grid_ft extends EE_Fieldtype {
 	{
 		// TODO
 	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * :next_row modifier
+	 */
+	public function replace_next_row($data, $params = '', $tagdata = '')
+	{
+		return $this->_parse_prev_next_row($this->row, $this->field_id, $params, $tagdata, TRUE);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * :prev_row modifier
+	 */
+	public function replace_prev_row($data, $params = '', $tagdata = '')
+	{
+		return $this->_parse_prev_next_row($this->row, $this->field_id, $params, $tagdata);
+	}
+
+	// --------------------------------------------------------------------
+	
+	private function _parse_prev_next_row($row, $field_id, $params, $tagdata, $next = FALSE)
+	{
+		if ( ! isset($params['row_id']))
+		{
+			return '';
+		}
+
+		$params['offset'] = ($next) ? 1 : -1;
+		$params['limit'] = 1;
+
+		ee()->load->library('grid_parser');
+
+		return ee()->grid_parser->parse($row, $field_id, $params, $tagdata);
+	}
 	
 	// --------------------------------------------------------------------
 	

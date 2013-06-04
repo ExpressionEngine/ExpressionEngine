@@ -26,8 +26,17 @@
 
 class Grid_parser {
 
+	public $modifiers = array();
+
 	// Grid field data will persist here throughout the request
 	protected $_grid_data = array();
+
+	public function __construct()
+	{
+		$this->modifiers = array('next_row', 'prev_row');
+	}
+
+	// --------------------------------------------------------------------
 
 	/**
 	 * Called before each channel entries loop to gather the information
@@ -53,15 +62,22 @@ class Grid_parser {
 		// Validate matches
 		foreach ($matches as $key => $match)
 		{
-			// Throw own variables and closing tags, we'll deal with them
+			$field_name = str_replace($pre_parser->prefix(), '', $match[1]);
+
+			// Analyze the field to see if its modifier matches any of our
+			// reserved modifier names
+			$field = ee()->api_channel_fields->get_single_field($match[2], $field_name);
+
+			// Throw out variables and closing tags, we'll deal with them
 			// in the parsing stage
-			if (substr($match[1], -1) == ':' || substr($match[0], 0, 2) == LD.'/')
+			if (( ! in_array($field['field_name'], $this->modifiers) && substr($match[1], -1) == ':')
+				|| substr($match[0], 0, 2) == LD.'/')
 			{
 				unset($matches[$key]);
 				continue;
 			}
 
-			$field_name = str_replace($pre_parser->prefix(), '', $match[1]);
+			$field_name = rtrim($field_name, ':');
 			
 			// Make sure the supposed field name is an actual Grid field
 			if ( ! isset($grid_fields[$field_name]))
@@ -78,23 +94,20 @@ class Grid_parser {
 
 		foreach ($matches as $match)
 		{
-			$field_name = str_replace($pre_parser->prefix(), '', $match[1]);
+			$field_name = rtrim(str_replace($pre_parser->prefix(), '', $match[1]), ':');
 			$params = $match[2];
 			$field_id = $grid_fields[$field_name];
-			$this->_grid_data[$field_id]['field_name'] = $match[1];
+			$this->_grid_data[$field_id]['field_name'] = rtrim($match[1], ':');
 
 			$params = ee()->functions->assign_parameters($params);
 
-			// Create a unique marker for this tag configuration based on its
-			// parameters so we can match up the field data later in parse();
-			// if there are no parameters, we'll just use 'data'
-			$marker = (empty($params)) ? 'data' : md5(json_encode($params));
+			// Create a unique marker for this dataset so we can find it later
+			$marker = $this->_get_tag_marker($params);
 
 			// Validate the params after creating the marker because the params
 			// we get at parse() are unvalidated
-			$params = $this->validate_params($params, $field_id, $columns);
+			$params = $this->_validate_params($params, $field_id, $columns);
 
-			// Only get the data we don't already have
 			$entry_ids = $pre_parser->entry_ids();
 			foreach ($entry_ids as $key => $entry_id)
 			{
@@ -106,10 +119,15 @@ class Grid_parser {
 				}
 			}
 
+			if ( ! isset($this->_grid_data[$field_id][$marker]))
+			{
+				$this->_grid_data[$field_id][$marker] = array();
+			}
+
 			// If there are entries to query for, go get them!
 			if ( ! empty($entry_ids))
 			{
-				$this->_grid_data[$field_id][$marker] = ee()->grid_model->get_entry_rows(
+				$this->_grid_data[$field_id][$marker] += ee()->grid_model->get_entry_rows(
 					$entry_ids,
 					$field_id,
 					$params
@@ -118,6 +136,34 @@ class Grid_parser {
 		}
 
 		return TRUE;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Creates a unique marker for this tag configuration based on its
+	 * parameters so we can match up the field data later in parse();
+	 * if there are no parameters, we'll just use 'data'
+	 * 
+	 * @param	array	Unvalidated params
+	 * @return	string	Marker
+	 */
+	private function _get_tag_marker($params)
+	{
+		ee()->load->helper('array_helper');
+
+		// These are the only parameters that affect the DB query so we'll
+		// only check against these; we could put some of these other
+		// parameters in the code later on  so that even more tags could
+		// use the same data set
+		$db_params = array(
+			'fixed_order'	=> element('fixed_order', $params),
+			'search'		=> element('search', $params),
+			'orderby'		=> element('orderby', $params),
+			'sort'			=> element('sort', $params),
+		);
+
+		return md5(json_encode($db_params));
 	}
 
 	// --------------------------------------------------------------------
@@ -134,9 +180,13 @@ class Grid_parser {
 	 */
 	public function parse($channel_row, $field_id, $params, $tagdata)
 	{
-		$entry_id = $channel_row['entry_id'];
+		if (empty($tagdata))
+		{
+			return '';
+		}
 
-		$marker = (empty($params)) ? 'data' : md5(json_encode($params));
+		$entry_id = $channel_row['entry_id'];
+		$marker = $this->_get_tag_marker($params);
 
 		// See if our unique marker matches anything in _grid_data
 		if ( ! isset($this->_grid_data[$field_id][$marker][$entry_id]))
@@ -147,12 +197,160 @@ class Grid_parser {
 		$entry_data = $this->_grid_data[$field_id][$marker][$entry_id];
 		$field_name = $this->_grid_data[$field_id]['field_name'];
 
+		ee()->load->model('grid_model');
+		$columns = ee()->grid_model->get_columns_for_field($field_id);
+
+		// Validate our params and set defaults
+		$params = $this->_validate_params($params, $field_id, array($field_id => $columns));
+
+		// :field_total_rows single variable
+		$field_total_rows = count($entry_data);
+
+		$row_ids = $params['row_id'];
+		$not = (strncmp($row_ids, 'not ', 4) == 0);
+
+		// row_id parameter
+		if ($row_ids !== 0)
+		{
+			if ($not)
+			{
+				$row_ids = substr($row_ids, 4);
+			}
+
+			$row_ids = explode('|', $row_ids);
+
+			// If there are mutliple row IDs
+			if (count($row_ids) > 1)
+			{
+				// Unset the "not" row_ids from entry_data
+				if ($not)
+				{
+					foreach ($row_ids as $row_id)
+					{
+						if (isset($entry_data[$row_id]))
+						{
+							unset($entry_data[$row_id]);
+						}
+					}
+				}
+				// Unset all rows that AREN'T in the row_id parameter
+				else
+				{
+					foreach (array_diff(array_keys($entry_data), $row_ids) as $row_id)
+					{
+						unset($entry_data[$row_id]);
+					}
+				}
+			}
+			// Otherwise, if there is just one row_id, we're likely inside
+			// a next_row or prev_row tag, don't modify the entry_data
+			// so we still have access to next and previous rows
+			elseif (count($row_ids) == 1)
+			{
+				$row_index = array_search(current($row_ids), array_keys($entry_data));
+
+				$params['offset'] += $row_index;
+				$params['limit'] = 1;
+			}
+		}
+
+		// We'll handle limit and offset parameters this way; we can't do
+		// it via SQL because we query for multiple entries at once
+		$display_entry_data = array_slice(
+			$entry_data,
+			$params['offset'],
+			$params['limit'],
+			TRUE
+		);
+
+		$row_ids = array_keys($entry_data);
+
+		// :total_rows single variable
+		$total_rows = count($display_entry_data);
+
+		// Grid field output will be stored here
+		$grid_tagdata = '';
+
+		// :count single variable
+		$count = 1;
+		
+		foreach ($display_entry_data as $row)
+		{
+			$grid_row = $tagdata;
+
+			$position = array_search($row['row_id'], $row_ids);
+
+			// Extra single vars
+			$row['count'] = $count;
+			$row['index'] = $count - 1;
+			$row['total_rows'] = $total_rows;
+			$row['field_total_rows'] = $field_total_rows;
+			$count++;
+
+			// Parse next_row and prev_row tags inside a Grid field tag pair
+			foreach (array('next_row', 'prev_row') as $modifier)
+			{
+				// Get any field pairs
+				$pchunks = ee()->api_channel_fields->get_pair_field(
+					$tagdata,
+					$modifier,
+					$field_name.':'
+				);
+
+				foreach ($pchunks as $chk_data)
+				{
+					list($pair_modifier, $content, $params, $chunk) = $chk_data;
+
+					$next_prev_row = array();
+
+					// Advance or go back in the entry data array
+					if ($modifier == 'next_row' && isset($row_ids[$position + 1]))
+					{
+						$next_prev_row = $entry_data[$row_ids[$position + 1]];
+					}
+					elseif ($modifier == 'prev_row' && isset($row_ids[$position - 1]))
+					{
+						$next_prev_row = $entry_data[$row_ids[$position - 1]];
+					}
+
+					// Send the next or previous row to _parse_row for parsing
+					$replace_data = ( ! empty($next_prev_row))
+						? $this->_parse_row($channel_row, $field_id, $content, $next_prev_row) : '';
+
+					// Replace tag pair
+					$grid_row = str_replace($chunk, $replace_data, $grid_row);
+				}
+			}
+
+			$grid_tagdata .= $this->_parse_row($channel_row, $field_id, $grid_row, $row);
+		}
+
+		return $grid_tagdata;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Parses individual row in Grid field
+	 *
+	 * @param	array	Channel entry row data typically sent to fieldtypes
+	 * @param	int		Field ID of field being parsed so we can make sure
+	 * @param	string	Tagdata with variables to replace
+	 * @param	array	Grid single row data
+	 * @return	string	Parsed field data
+	 */
+	private function _parse_row($channel_row, $field_id, $tagdata, $row)
+	{
+		$grid_row = $tagdata;
+		$field_name = $this->_grid_data[$field_id]['field_name'];
+		$entry_id = $channel_row['entry_id'];
+
 		// Gather the variables to parse
 		if ( ! preg_match_all(
 				"/".LD.'?[^\/]((?:(?:'.preg_quote($field_name).'):?)+)\b([^}{]*)?'.RD."/",
 				$tagdata,
 				$matches,
-				PREG_SET_ORDER)
+				PREG_SET_ORDER) || empty($row)
 			)
 		{
 			return $tagdata;
@@ -169,112 +367,75 @@ class Grid_parser {
 			$column_names[$col['col_name']] = $col;
 		}
 
-		// Validate our params and set defaults
-		$params = $this->validate_params($params, $field_id, array($field_id => $columns));
-
-		// :field_total_rows single variable
-		$field_total_rows = count($entry_data);
-
-		// We'll handle limit and offset parameters this way; we can't do
-		// it via SQL because we query for multiple entries at once
-		$entry_data = array_slice(
-			$entry_data,
-			$params['offset'],
-			$params['limit']
-		);
-
-		// :total_rows single variable
-		$total_rows = count($entry_data);
-
-		// Grid field output will be stored here
-		$grid_tagdata = '';
-
-		// :count single variable
-		$count = 1;
-
-		foreach ($entry_data as $row)
+		foreach ($matches as $match)
 		{
-			$grid_row = $tagdata;
+			// Get tag name, modifier and params for this tag
+			$field = ee()->api_channel_fields->get_single_field($match[2], $field_name);
 
-			// Extra single vars
-			$row['count'] = $count;
-			$row['index'] = $count - 1;
-			$row['total_rows'] = $total_rows;
-			$row['field_total_rows'] = $field_total_rows;
-			$count++;
+			// Get any field pairs
+			$pchunks = ee()->api_channel_fields->get_pair_field(
+				$tagdata,
+				$field['field_name'],
+				$field_name.':'
+			);
 
-			foreach ($matches as $match)
+			// Work through field pairs first
+			foreach ($pchunks as $chk_data)
 			{
-				// Get tag name, modifier and params for this tag
-				$field = ee()->api_channel_fields->get_single_field($match[2], $field_name);
+				list($modifier, $content, $params, $chunk) = $chk_data;
 
-				// Get any field pairs
-				$pchunks = ee()->api_channel_fields->get_pair_field(
-					$tagdata,
-					$field['field_name'],
-					$field_name.':'
+				$column = $column_names[$field['field_name']];
+				$channel_row['col_id_'.$column['col_id']] = $row['col_id_'.$column['col_id']];
+				$replace_data = $this->_replace_tag(
+					$column,
+					$field_id,
+					$entry_id,
+					array(
+						'modifier'	=> $modifier,
+						'params'	=> $params
+					),
+					$channel_row,
+					$content
 				);
 
-				// Work through field pairs first
-				foreach ($pchunks as $chk_data)
-				{
-					list($modifier, $content, $params, $chunk) = $chk_data;
-
-					$column = $column_names[$field['field_name']];
-					$channel_row['col_id_'.$column['col_id']] = $row['col_id_'.$column['col_id']];
-					$replace_data = $this->_replace_tag(
-						$column,
-						$field_id,
-						$entry_id,
-						array(
-							'modifier'	=> $modifier,
-							'params'	=> $params
-						),
-						$channel_row,
-						$content
-					);
-
-					// Replace tag pair
-					$grid_row = str_replace($chunk, $replace_data, $grid_row);
-				}
-
-				// Now handle any single variables
-				if (isset($column_names[$field['field_name']]) &&
-					strpos($grid_row, $match[0]) !== FALSE)
-				{
-					$column = $column_names[$field['field_name']];
-					$channel_row['col_id_'.$column['col_id']] = $row['col_id_'.$column['col_id']];
-					$replace_data = $this->_replace_tag(
-						$column,
-						$field_id,
-						$entry_id,
-						$field,
-						$channel_row
-					);
-				}
-				// Check to see if this is a field in the table for
-				// this field, e.g. row_id
-				elseif (isset($row[$match[2]]))
-				{
-					$replace_data = $row[$match[2]];
-				}
-				else
-				{
-					$replace_data = '';
-				}
-
-				// Finally, do the replacement
-				$grid_row = str_replace(
-					$match[0],
-					$replace_data,
-					$grid_row
-				);
+				// Replace tag pair
+				$grid_row = str_replace($chunk, $replace_data, $grid_row);
 			}
 
-			$grid_tagdata .= $grid_row;
+			// Now handle any single variables
+			if (isset($column_names[$field['field_name']]) &&
+				strpos($grid_row, $match[0]) !== FALSE)
+			{
+				$column = $column_names[$field['field_name']];
+				$channel_row['col_id_'.$column['col_id']] = $row['col_id_'.$column['col_id']];
+				$replace_data = $this->_replace_tag(
+					$column,
+					$field_id,
+					$entry_id,
+					$field,
+					$channel_row
+				);
+			}
+			// Check to see if this is a field in the table for
+			// this field, e.g. row_id
+			elseif (isset($row[$match[2]]))
+			{
+				$replace_data = $row[$match[2]];
+			}
+			else
+			{
+				$replace_data = $match[0];
+			}
+
+			// Finally, do the replacement
+			$grid_row = str_replace(
+				$match[0],
+				$replace_data,
+				$grid_row
+			);
 		}
 
-		return $grid_tagdata;
+		return $grid_row;
 	}
 
 	// --------------------------------------------------------------------
@@ -288,7 +449,7 @@ class Grid_parser {
 	 * 					the orderby parameter is ordering via a real column
 	 * @return	array	Array of validated and default parameters to use for parsing
 	 */
-	public function validate_params($params, $field_id, $columns)
+	protected function _validate_params($params, $field_id, $columns)
 	{
 		ee()->load->helper('array_helper');
 
@@ -298,11 +459,9 @@ class Grid_parser {
 		$limit			= element('limit', $params, 100);
 		$offset			= element('offset', $params, 0);
 		$backspace		= element('backspace', $params, 0);
-		$row_id			= element('row_id', $params, 0); // Grid model will handle this
+		$row_id			= element('row_id', $params, 0);
 		$fixed_order	= element('fixed_order', $params, 0);
-		// TODO: Search
 		// TODO: Dynamic_parameters?
-		// TODO: Fixed_order
 		
 		// Validate sort parameter, only 'asc' and 'desc' allowed, default to 'asc'
 		if ( ! in_array($sort, array('asc', 'desc')))
@@ -320,7 +479,7 @@ class Grid_parser {
 		// default to 'row_id'
 		if ( ! in_array($orderby, array_keys($sortable_columns)))
 		{
-			$orderby = 'row_id';
+			$orderby = 'row_order';
 		}
 		// Convert the column name to its matching table column name to hand
 		// off to the query for proper sorting
