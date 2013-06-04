@@ -370,10 +370,6 @@ class EE_TreeNode {
 	/**
 	 * Get the node's first child
 	 *
-	 * For the very common case where you only have one root. The tree
-	 * library always has to assume that you might have multiple roots when
-	 * it generates data from db results.
-	 *
 	 * @return <EE_TreeNode>
 	 */
 	public function first_child()
