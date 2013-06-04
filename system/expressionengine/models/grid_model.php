@@ -361,19 +361,7 @@ class Grid_model extends CI_Model {
  			// We'll search on this column name
  			$field_name = 'col_id_'.$column_ids[$col_name];
 
- 			// Exact search
- 			if (strncmp($terms, '=', 1) ==  0)
- 			{
- 				// Remove the '=' sign that specified exact match.
- 				$terms = substr($terms, 1);
- 				
- 				$search_sql = ee()->channel_model->_exact_field_search($terms, $field_name);
- 			}
- 			// Contains search
- 			else
- 			{
- 				$search_sql = ee()->channel_model->_field_search($terms, $field_name);
- 			}
+ 			$search_sql = ee()->channel_model->field_search_sql($terms, $field_name);
 
  			ee()->db->where('('.$search_sql.')');
  		}

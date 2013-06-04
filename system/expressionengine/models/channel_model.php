@@ -477,13 +477,62 @@ class Channel_model extends CI_Model {
 	// --------------------------------------------------------------------
 	
 	/**
+	 * Generates SQL for a field search
+	 * 
+	 * @param	string	Search terms from search parameter
+	 * @param	string	Database column name to search
+	 * @param	int		Site ID
+	 * @return	string	SQL to include in an existing query's WHERE clause
+	 */
+	public function field_search_sql($terms, $col_name, $site_id = FALSE)
+	{
+		$search_method = '_field_search';
+
+		if (strncmp($terms, '=', 1) ==  0)
+		{
+			// Remove the '=' sign that specified exact match.
+			$terms = substr($terms, 1);
+
+			$search_method = '_exact_field_search';
+		}
+		elseif (strncmp($terms, '<', 1) == 0 ||
+				strncmp($terms, '>', 1) == 0)
+		{
+			$search_method = '_numeric_comparison_search';
+		}
+
+		return $this->$search_method($terms, $col_name, $site_id);
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Generate the SQL for a numeric comparison search
+	 * <, >, <=, >= operators
+	 *
+	 * search:field=">=20"
+	 */
+	private function _numeric_comparison_search($terms, $col_name, $site_id)
+	{
+		if ( ! preg_match('/^([<>]=?)(\d+)/', $terms, $match))
+		{
+			return $this->_field_search($terms, $col_name, $site_id);
+		}
+
+		$site_id = ($site_id !== FALSE) ? 'wd.site_id=' . $site_id . ' AND ' : '';
+
+		// col_name >= 20
+		return '(' . $site_id . ' ' . $col_name . ' ' . $match[1] . ' ' . $match[2] . ')';
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
 	 * Generate the SQL for an exact query in field search.
 	 *
 	 * search:field="=words|other words"
-	 *
-	 * Not intended for third-party use
 	 */
-	public function _exact_field_search($terms, $col_name, $site_id = FALSE)
+	private function _exact_field_search($terms, $col_name, $site_id = FALSE)
 	{
 		// Trivial case, we don't have special IS_EMPTY handling.
 		if(strpos($terms, 'IS_EMPTY') === FALSE) 
@@ -544,10 +593,8 @@ class Channel_model extends CI_Model {
 	 * Generate the SQL for a LIKE query in field search.
 	 *
 	 * 		search:field="words|other words|IS_EMPTY"
-	 *
-	 * Not intended for third-party use
 	 */
-	public function _field_search($terms, $col_name, $site_id = FALSE)
+	private function _field_search($terms, $col_name, $site_id = FALSE)
 	{
 		$not = '';
 		if (strncmp($terms, 'not ', 4) == 0)

@@ -226,7 +226,9 @@ class Grid_lib {
 					$this->entry_id
 				);
 
-				$fieldtype->settings['grid_row_id'] = $rows[$i]['row_id'];
+				$row = array_slice($rows, $i, 1);
+
+				$fieldtype->settings['grid_row_id'] = $row[0]['row_id'];
 
 				ee()->grid_parser->call('post_save', $cell_data);
 

@@ -634,18 +634,8 @@ class Channel {
 				}
 
 				$search_column_name = 'wd.field_id_'.$this->cfields[$site_id][$field_name];
-				
-				if (strncmp($terms, '=', 1) ==  0)
-				{
-					// Remove the '=' sign that specified exact match.
-					$terms = substr($terms, 1);
-					
-					$fields_sql .= ee()->channel_model->_exact_field_search($terms, $search_column_name, $site_id);
-				}
-				else
-				{
-					$fields_sql .= ee()->channel_model->_field_search($terms, $search_column_name, $site_id);
-				}
+
+				$fields_sql .= ee()->channel_model->field_search_sql($terms, $search_column_name, $site_id);
 				
 			} // foreach($sites as $site_id)
 			if ( ! empty($fields_sql))

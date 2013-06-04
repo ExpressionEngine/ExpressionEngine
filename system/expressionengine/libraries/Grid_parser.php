@@ -204,6 +204,7 @@ class Grid_parser {
 		$params = $this->_validate_params($params, $field_id, array($field_id => $columns));
 
 		// :field_total_rows single variable
+		// Currently does not work well with fixed_order and search params
 		$field_total_rows = count($entry_data);
 
 		$row_ids = $params['row_id'];
