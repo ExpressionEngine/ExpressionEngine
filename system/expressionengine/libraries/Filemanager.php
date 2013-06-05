@@ -632,6 +632,9 @@ class Filemanager {
 	 */
 	function frontend_filebrowser($endpoint_url, $include_jquery_base = TRUE)
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated('2.7');
+
 		ee()->lang->loadfile('filebrowser');
 
 		$ret = array();
