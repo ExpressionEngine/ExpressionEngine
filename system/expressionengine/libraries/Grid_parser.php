@@ -213,6 +213,8 @@ class Grid_parser {
 
 		// :count single variable
 		$count = 1;
+
+		$columns = ee()->grid_model->get_columns_for_field($field_id);
 		
 		foreach ($display_entry_data as $row)
 		{
@@ -227,12 +229,31 @@ class Grid_parser {
 			$row['field_total_rows'] = $field_total_rows;
 			$count++;
 
+			// Compile conditional vars
+			$cond = array();
+
+			// Map column names to their values in the DB
+			foreach ($columns as $col_id => $col)
+			{
+				$value = (isset($row['col_id_'.$col_id])) ? $row['col_id_'.$col_id] : '';
+				
+				$cond[$field_name.':'.$col['col_name']] = $value;
+			}
+
+			// Anything in the $row array can be checked in a conditional
+			foreach ($row as $key => $value)
+			{
+				$cond[$field_name.':'.$key] = $value;
+			}
+
+			$grid_row = ee()->functions->prep_conditionals($grid_row, $cond);
+
 			// Parse next_row and prev_row tags inside a Grid field tag pair
 			foreach (array('next_row', 'prev_row') as $modifier)
 			{
 				// Get any field pairs
 				$pchunks = ee()->api_channel_fields->get_pair_field(
-					$tagdata,
+					$grid_row,
 					$modifier,
 					$field_name.':'
 				);
