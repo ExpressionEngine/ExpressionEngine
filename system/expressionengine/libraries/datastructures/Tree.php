@@ -187,7 +187,7 @@ class EE_TreeNode {
 	/**
 	 * Retrieve the payload data.
 	 *
-	 * If they payload is an array we treat the entire object as an
+	 * If the payload is an array we treat the entire object as an
 	 * accessor to the payload. Otherwise the key must be "data" to
 	 * mimic regular object access.
 	 *
@@ -334,7 +334,7 @@ class EE_TreeNode {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Get all of the tree's root node
+	 * Get the tree's root node
 	 *
 	 * If the current node is not a root node, we move our
 	 * way up until we have a root.
